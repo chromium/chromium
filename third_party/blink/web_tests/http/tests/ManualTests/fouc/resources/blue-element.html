@@ -10,7 +10,7 @@
     var d = document.currentScript.ownerDocument;
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
-      this.createShadowRoot().appendChild(this.ownerDocument.importNode(d.querySelector("template").content));
+      this.attachShadow({mode: 'open'}).appendChild(this.ownerDocument.importNode(d.querySelector("template").content));
     };
 
     window.MyElement = document.registerElement('my-blue', { prototype: proto });

@@ -19,12 +19,14 @@ class LengthPropertyFunctions {
   STATIC_ONLY(LengthPropertyFunctions);
 
  public:
-  static ValueRange GetValueRange(const CSSProperty&);
+  static Length::ValueRange GetValueRange(const CSSProperty&);
   static bool IsZoomedLength(const CSSProperty&);
   static bool GetPixelsForKeyword(const CSSProperty&,
                                   CSSValueID,
                                   double& result_pixels);
-  static bool GetInitialLength(const CSSProperty&, Length& result);
+  static bool GetInitialLength(const CSSProperty&,
+                               const ComputedStyle& initial_style,
+                               Length& result);
   static bool GetLength(const CSSProperty&,
                         const ComputedStyle&,
                         Length& result);

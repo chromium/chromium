@@ -1,0 +1,127 @@
+<!doctype HTML>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resize-observer/resources/resizeTestHelper.js"></script>
+<body>
+  <svg height="430" width="500" >
+    <rect x="0" y="380" width="10.5" height="10" style="fill:orange; stroke:black; stroke-width:1" />
+  </svg>
+</body>
+
+<script>
+'use strict';
+
+function test() {
+  let t = document.querySelector('rect');
+  let helper = new ResizeTestHelper(
+    "An observation is fired for an svg rect when device-pixel-content-box is being " +
+    "observed, device scale factor is 2 and use-zoom-for-dsf is disabled",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 10.5, "target width");
+        assert_equals(entries[0].contentRect.height, 10, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 10.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize,10,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 10.5,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 10,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 22,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 20,
+                      "target device-pixel-content-box block size");
+      }
+    }
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+function test2() {
+  let t = document.createElement("div");
+  document.body.appendChild(t);
+  t.style.height = "50.25px";
+  t.style.width = "80.5px";
+  let helper = new ResizeTestHelper(
+    "An observation is fired when device-pixel-content-box is being " +
+    "observed, device scale factor is 2 and use-zoom-for-dsf is disabled",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 80.5, "target width");
+        assert_equals(entries[0].contentRect.height, 50.25, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 80.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 50.25,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 80.5,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 50.25,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 162,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 100,
+                      "target device-pixel-content-box block size");
+      }
+    }
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+function test3() {
+  let t = document.createElement("div");
+  document.body.appendChild(t);
+  t.style.height = "50.25px";
+  t.style.width = "80.75px";
+  t.style.marginLeft = "10.25px";
+  let helper = new ResizeTestHelper(
+    "Non integral pixel offsets are computed correctly for delivered " +
+    "observations when device scale factor is 2 and use-zoom-for-dsf is disabled",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 80.75, "target width");
+        assert_equals(entries[0].contentRect.height, 50.25, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 80.75,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 50.25,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 80.75,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 50.25,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 162,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 102,
+                      "target device-pixel-content-box block size");
+      }
+    }
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+test();
+test2();
+test3();
+
+</script>

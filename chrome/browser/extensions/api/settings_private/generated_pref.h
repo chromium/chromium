@@ -7,9 +7,10 @@
 
 #include <memory>
 #include <string>
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/prefs/pref_service.h"
 
 namespace base {
 class Value;
@@ -33,15 +34,19 @@ class GeneratedPref {
   class Observer {
    public:
     Observer();
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer();
 
     // This method is called to notify observer that visible value
     // of the preference has changed.
     virtual void OnGeneratedPrefChanged(const std::string& pref_name) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
+
+  GeneratedPref(const GeneratedPref&) = delete;
+  GeneratedPref& operator=(const GeneratedPref&) = delete;
 
   virtual ~GeneratedPref();
 
@@ -62,10 +67,27 @@ class GeneratedPref {
   // Call this when the pref value changes.
   void NotifyObservers(const std::string& pref_name);
 
+  // Sets controlled_by for |pref_object| based on provided |pref| for a limited
+  // subset of controlled_by sources relevant to generated pref use cases.
+  static void ApplyControlledByFromPref(
+      api::settings_private::PrefObject* pref_object,
+      const PrefService::Preference* pref);
+
+  // Sets controlled_by for |pref_object| base on provided |setting_source|
+  // for a limited subset of controlled_by sources relevant for content
+  // settings.
+  static void ApplyControlledByFromContentSettingSource(
+      api::settings_private::PrefObject* pref_object,
+      content_settings::SettingSource setting_source);
+
+  // Adds the provided |value| to the user selectable values of |pref_object|,
+  // creating the base::Value vector if required.
+  static void AddUserSelectableValue(
+      extensions::api::settings_private::PrefObject* pref_object,
+      int value);
+
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPref);
 };
 
 }  // namespace settings_private

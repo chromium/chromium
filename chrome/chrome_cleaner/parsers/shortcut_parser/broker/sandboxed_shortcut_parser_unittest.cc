@@ -6,10 +6,12 @@
 
 #include <set>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
@@ -19,7 +21,6 @@
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/sandboxed_lnk_parser_test_util.h"
 #include "chrome/chrome_cleaner/parsers/target/sandbox_setup.h"
 #include "chrome/chrome_cleaner/test/child_process_logger.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +31,7 @@ namespace {
 // Arbitrary value of temp_dirs.
 constexpr unsigned int kDirQuantity = 5;
 
-const base::string16 kLnkArguments = L"-a -b -c -d GenericExample";
+const std::wstring kLnkArguments = L"-a -b -c -d GenericExample";
 
 class LoggedParserSandboxSetupHooks : public ParserSandboxSetupHooks {
  public:
@@ -170,6 +171,44 @@ TEST_F(SandboxedShortcutParserTest, ParseMultipleFoldersWithChromeLnk) {
   }
 }
 
+TEST_F(SandboxedShortcutParserTest,
+       ParseShortcutWithChromeTargetDifferentName) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::win::ShortcutProperties shortcut;
+  base::FilePath fake_chrome_path =
+      fake_chrome_exe_file_path_set_.ToVector()[0];
+  shortcut.set_target(fake_chrome_path);
+
+  base::win::ScopedHandle fake_chrome_shortcut_handle =
+      CreateAndOpenShortcutInTempDir("Google Chrome-New Profile.lnk", shortcut,
+                                     &temp_dir);
+  ASSERT_TRUE(fake_chrome_shortcut_handle.IsValid());
+
+  base::RunLoop run_loop;
+  std::vector<ShortcutInformation> found_shortcuts;
+  FilePathSet empty_file_path_set;
+  shortcut_parser_->FindAndParseChromeShortcutsInFoldersAsync(
+      {
+          temp_dir.GetPath(),
+      },
+      fake_chrome_exe_file_path_set_,
+      base::BindOnce(
+          [](std::vector<ShortcutInformation>* found_shortcuts,
+             base::OnceClosure closure,
+             std::vector<ShortcutInformation> parsed_shortcuts) {
+            *found_shortcuts = parsed_shortcuts;
+            std::move(closure).Run();
+          },
+          &found_shortcuts, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_EQ(found_shortcuts.size(), 1ul);
+  EXPECT_TRUE(PathEqual(fake_chrome_path,
+                        base::FilePath(found_shortcuts[0].target_path)));
+}
+
 TEST_F(SandboxedShortcutParserTest, ParseShortcutWithEmptyIconSet) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -258,7 +297,7 @@ TEST_F(SandboxedShortcutParserTest, ParseShortcutsWithSpecifiedIconsOnly) {
   base::win::ShortcutProperties reported_shortcut_properties;
   reported_shortcut_properties.set_target(not_lnk_file_path_);
   reported_shortcut_properties.set_icon(kSomeChromeIconLocation,
-                                        /*icon_index=*/0);
+                                        /*icon_index=*/1);
 
   base::win::ScopedHandle reported_shortcut_handle =
       CreateAndOpenShortcutInTempDir("reported shortcut.lnk",
@@ -285,6 +324,7 @@ TEST_F(SandboxedShortcutParserTest, ParseShortcutsWithSpecifiedIconsOnly) {
   ASSERT_EQ(found_shortcuts.size(), 1u);
   EXPECT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].icon_location),
                         kSomeChromeIconLocation));
+  ASSERT_EQ(found_shortcuts[0].icon_index, 1);
 }
 
 }  // namespace chrome_cleaner

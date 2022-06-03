@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/net/dns_util.h"
+#include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -31,8 +31,7 @@ namespace policy {
 
 class SecureDnsPolicyHandlerTest : public testing::Test {
  protected:
-  void SetPolicyValue(const std::string& policy,
-                      std::unique_ptr<base::Value> value) {
+  void SetPolicyValue(const std::string& policy, base::Value value) {
     policies_.Set(policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_PLATFORM, std::move(value), nullptr);
   }
@@ -73,7 +72,7 @@ TEST_F(SecureDnsPolicyHandlerTest, PoliciesNotSet) {
 // Sanity check tests to ensure the policy errors have the correct name.
 TEST_F(SecureDnsPolicyHandlerTest, ModePolicyErrorName) {
   // Do anything that causes a policy error.
-  SetPolicyValue(key::kDnsOverHttpsMode, std::make_unique<base::Value>(1));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(1));
 
   CheckAndApplyPolicySettings();
 
@@ -84,7 +83,7 @@ TEST_F(SecureDnsPolicyHandlerTest, ModePolicyErrorName) {
 
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyErrorName) {
   // Do anything that causes a policy error.
-  SetPolicyValue(key::kDnsOverHttpsTemplates, std::make_unique<base::Value>(1));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(1));
 
   CheckAndApplyPolicySettings();
 
@@ -94,7 +93,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyErrorName) {
 }
 
 TEST_F(SecureDnsPolicyHandlerTest, EmptyModePolicyValue) {
-  SetPolicyValue(key::kDnsOverHttpsMode, std::make_unique<base::Value>(""));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(""));
 
   CheckAndApplyPolicySettings();
 
@@ -110,8 +109,7 @@ TEST_F(SecureDnsPolicyHandlerTest, EmptyModePolicyValue) {
 }
 
 TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyValue) {
-  SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>("invalid"));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value("invalid"));
 
   CheckAndApplyPolicySettings();
 
@@ -128,7 +126,7 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyValue) {
 
 TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyType) {
   // Give an int to a string-enum policy.
-  SetPolicyValue(key::kDnsOverHttpsMode, std::make_unique<base::Value>(1));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(1));
 
   CheckAndApplyPolicySettings();
 
@@ -145,11 +143,9 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyType) {
 }
 
 TEST_F(SecureDnsPolicyHandlerTest, ValidModePolicyValueOff) {
-  const std::string test_policy_value =
-      chrome_browser_net::kDnsOverHttpsModeOff;
+  const std::string test_policy_value = SecureDnsConfig::kModeOff;
 
-  SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -163,11 +159,9 @@ TEST_F(SecureDnsPolicyHandlerTest, ValidModePolicyValueOff) {
 }
 
 TEST_F(SecureDnsPolicyHandlerTest, ValidModePolicyValueAutomatic) {
-  const std::string test_policy_value =
-      chrome_browser_net::kDnsOverHttpsModeAutomatic;
+  const std::string test_policy_value = SecureDnsConfig::kModeAutomatic;
 
-  SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -180,41 +174,33 @@ TEST_F(SecureDnsPolicyHandlerTest, ValidModePolicyValueAutomatic) {
   EXPECT_EQ(mode, test_policy_value);
 }
 
-// TODO(http://crbug.com/955454) This test should be modified once secure is a
-// valid policy value for DnsOverHttpsMode.
-TEST_F(SecureDnsPolicyHandlerTest, ModePolicySecureShouldError) {
-  // Secure will eventually be a valid option, but for the moment it should
-  // error.
-  SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeSecure));
+TEST_F(SecureDnsPolicyHandlerTest, ValidModePolicySecure) {
+  const std::string test_policy_value = SecureDnsConfig::kModeSecure;
+
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value(test_policy_value));
+
+  // The template policy requires a value if the mode is set to secure, so set
+  // it to anything.
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value("https://foo.test/"));
 
   CheckAndApplyPolicySettings();
 
-  // Should have errors.
-  auto expected_error =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR);
-  // The templates policy will also throw an error but we're not interested in
-  // it for this test. Check the total count, but only look at the error we
-  // want.
-  EXPECT_EQ(errors().size(), 2U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  // Shouldn't error.
+  EXPECT_EQ(errors().size(), 0U);
 
   std::string mode;
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsMode, &mode));
-  // Pref should have changed to "off."
-  EXPECT_EQ(mode, chrome_browser_net::kDnsOverHttpsModeOff);
+  // Pref should now be the test value.
+  EXPECT_EQ(mode, test_policy_value);
 }
 
 TEST_F(SecureDnsPolicyHandlerTest, InvalidTemplatesPolicyValue) {
   // The templates policy requires a valid Mode policy or it will give an error
   // we're not testing for.
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeAutomatic));
+                 base::Value(SecureDnsConfig::kModeAutomatic));
   const std::string test_policy_value = "invalid";
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -236,10 +222,9 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidTemplatesPolicyType) {
   // The templates policy requires a valid Mode policy or it will give an error
   // we're not testing for.
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeAutomatic));
+                 base::Value(SecureDnsConfig::kModeAutomatic));
   // Give an int to a string policy.
-  SetPolicyValue(key::kDnsOverHttpsTemplates, std::make_unique<base::Value>(1));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(1));
 
   CheckAndApplyPolicySettings();
 
@@ -257,13 +242,11 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidTemplatesPolicyType) {
 
 // Templates policy should error when the Mode makes its value irrelevant.
 TEST_F(SecureDnsPolicyHandlerTest, IrrelevantTemplatesPolicyWithModeOff) {
-  SetPolicyValue(
-      key::kDnsOverHttpsMode,
-      std::make_unique<base::Value>(chrome_browser_net::kDnsOverHttpsModeOff));
+  SetPolicyValue(key::kDnsOverHttpsMode,
+                 base::Value(SecureDnsConfig::kModeOff));
   // Set templates to anything.
   const std::string test_policy_value = "https://foo.test/";
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -285,8 +268,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeNotSet) {
   // Don't set mode.
   // Set templates to anything.
   const std::string test_policy_value = "https://foo.test/";
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -306,11 +288,10 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeNotSet) {
 
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeInvalid) {
   // Set mode so that it's invalid.
-  SetPolicyValue(key::kDnsOverHttpsMode, std::make_unique<base::Value>("foo"));
+  SetPolicyValue(key::kDnsOverHttpsMode, base::Value("foo"));
   // Set templates to anything.
   const std::string test_policy_value = "https://foo.test/";
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -332,26 +313,18 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeInvalid) {
   EXPECT_EQ(templates, test_policy_value);
 }
 
-// TODO(http://crbug.com/955454) These tests should be modified once secure is a
-// valid policy value for DnsOverHttpsMode.
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotSetWithModeSecure) {
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeSecure));
+                 base::Value(SecureDnsConfig::kModeSecure));
 
   CheckAndApplyPolicySettings();
 
-  // Should have errors.
-  // TODO(http://crbug.com/955454) Secure will eventually be a valid option, but
-  // for the moment it should error.
-  auto expected_error1 =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR);
-  auto expected_error2 = l10n_util::GetStringUTF16(
+  // Should have an error.
+  auto expected_error = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  ASSERT_EQ(errors().size(), 2U);
+  ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  EXPECT_EQ(it++->second, expected_error1);
-  EXPECT_EQ(it->second, expected_error2);
+  EXPECT_EQ(it->second, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -363,23 +336,17 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotSetWithModeSecure) {
 
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotStringWithModeSecure) {
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeSecure));
-  SetPolicyValue(key::kDnsOverHttpsTemplates, std::make_unique<base::Value>(1));
+                 base::Value(SecureDnsConfig::kModeSecure));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(1));
 
   CheckAndApplyPolicySettings();
 
-  // Should have errors.
-  // TODO(http://crbug.com/955454) Secure will eventually be a valid option, but
-  // for the moment it should error.
-  auto expected_error1 =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR);
-  auto expected_error2 = l10n_util::GetStringUTF16(
+  // Should have an error.
+  auto expected_error = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  ASSERT_EQ(errors().size(), 2U);
+  ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  EXPECT_EQ(it++->second, expected_error1);
-  EXPECT_EQ(it->second, expected_error2);
+  EXPECT_EQ(it->second, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -391,23 +358,16 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotStringWithModeSecure) {
 
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesEmptyWithModeSecure) {
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeSecure));
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(""));
+                 base::Value(SecureDnsConfig::kModeSecure));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(""));
 
   CheckAndApplyPolicySettings();
 
-  // Should have errors.
-  // TODO(http://crbug.com/955454) For now the value "secure" for the mode
-  // policy will throw an error but we're not interested in it for this test.
-  // Check the total count but only look at the error we want. Modify this test
-  // when "secure" becomes valid.
+  // Should have an error.
   auto expected_error = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
-  ASSERT_EQ(errors().size(), 2U);
+  ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  ++it;
   EXPECT_EQ(it->second, expected_error);
 
   // Pref should be set.
@@ -420,10 +380,8 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesEmptyWithModeSecure) {
 
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesEmptyWithModeAutomatic) {
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeAutomatic));
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(""));
+                 base::Value(SecureDnsConfig::kModeAutomatic));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(""));
 
   CheckAndApplyPolicySettings();
 
@@ -442,13 +400,11 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyWithModeAutomatic) {
   // The templates policy requires a valid Mode policy or it will give an error
   // we're not testing for.
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeAutomatic));
+                 base::Value(SecureDnsConfig::kModeAutomatic));
   const std::string test_policy_value =
       "https://foo.test/ https://bar.test/dns-query{?dns}";
 
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
@@ -461,27 +417,20 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyWithModeAutomatic) {
   EXPECT_EQ(templates, test_policy_value);
 }
 
-// TODO(http://crbug.com/955454) This test should be modified once secure is a
-// valid policy value for DnsOverHttpsMode.
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyWithModeSecure) {
   // The templates policy requires a valid Mode policy or it will give an error
   // we're not testing for.
   SetPolicyValue(key::kDnsOverHttpsMode,
-                 std::make_unique<base::Value>(
-                     chrome_browser_net::kDnsOverHttpsModeSecure));
+                 base::Value(SecureDnsConfig::kModeSecure));
   const std::string test_policy_value =
       "https://foo.test/ https://bar.test/dns-query{?dns}";
 
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 std::make_unique<base::Value>(test_policy_value));
+  SetPolicyValue(key::kDnsOverHttpsTemplates, base::Value(test_policy_value));
 
   CheckAndApplyPolicySettings();
 
-  // Should have an error
-  auto expected_error =
-      l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR);
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  // Shouldn't error.
+  EXPECT_EQ(errors().size(), 0U);
 
   std::string templates;
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplates, &templates));

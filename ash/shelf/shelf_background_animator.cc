@@ -8,16 +8,15 @@
 #include <memory>
 
 #include "ash/animation/animation_change_type.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/shell.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
@@ -179,7 +178,7 @@ void ShelfBackgroundAnimator::CreateAnimator(
     case ShelfBackgroundType::kAppList:
     case ShelfBackgroundType::kHomeLauncher:
     case ShelfBackgroundType::kMaximizedWithAppList:
-      duration = base::TimeDelta::FromMilliseconds(500);
+      duration = base::Milliseconds(500);
       break;
     case ShelfBackgroundType::kMaximized:
     case ShelfBackgroundType::kOobe:
@@ -187,7 +186,7 @@ void ShelfBackgroundAnimator::CreateAnimator(
     case ShelfBackgroundType::kLoginNonBlurredWallpaper:
     case ShelfBackgroundType::kOverview:
     case ShelfBackgroundType::kInApp:
-      duration = base::TimeDelta::FromMilliseconds(250);
+      duration = base::Milliseconds(250);
       break;
   }
 
@@ -229,8 +228,7 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       break;
     case ShelfBackgroundType::kOverview:
       shelf_target_color =
-          (chromeos::switches::ShouldShowShelfHotseat() &&
-           Shell::Get()->tablet_mode_controller()->InTabletMode())
+          Shell::Get()->tablet_mode_controller()->InTabletMode()
               ? ShelfConfig::Get()->GetMaximizedShelfColor()
               : ShelfConfig::Get()->GetDefaultShelfColor();
       break;
@@ -241,9 +239,8 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       shelf_target_color = SK_ColorTRANSPARENT;
       break;
     case ShelfBackgroundType::kLoginNonBlurredWallpaper:
-      shelf_target_color =
-          SkColorSetA(login_constants::kDefaultBaseColor,
-                      login_constants::kNonBlurredWallpaperBackgroundAlpha);
+      shelf_target_color = AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield80);
       break;
   }
   return shelf_target_color;

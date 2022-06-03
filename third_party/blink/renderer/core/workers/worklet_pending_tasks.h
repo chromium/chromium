@@ -37,7 +37,7 @@ class CORE_EXPORT WorkletPendingTasks final
   // Decrements |counter_| and resolves the promise if the counter becomes 0.
   void DecrementCounter();
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   // The number of pending tasks. -1 indicates these tasks are aborted and

@@ -5,11 +5,12 @@
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/dial_registry.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,6 +53,10 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
             mock_sink_discovered_cb_.Get(),
             base::SequencedTaskRunnerHandle::Get())) {}
 
+  DialMediaSinkServiceImplTest(const DialMediaSinkServiceImplTest&) = delete;
+  DialMediaSinkServiceImplTest& operator=(const DialMediaSinkServiceImplTest&) =
+      delete;
+
   void SetUp() override {
     media_sink_service_->SetDialRegistryForTest(&test_dial_registry_);
 
@@ -73,8 +78,8 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  DialMediaSinkServiceImpl::SinkQueryByAppSubscription
-  StartMonitoringAvailableSinksForApp(const std::string& app_name) {
+  base::CallbackListSubscription StartMonitoringAvailableSinksForApp(
+      const std::string& app_name) {
     return media_sink_service_->StartMonitoringAvailableSinksForApp(
         app_name, base::BindRepeating(
                       &DialMediaSinkServiceImplTest::GetAvailableSinksForApp,
@@ -117,8 +122,6 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
 
   MediaSinkInternal dial_sink_1_ = CreateDialSink(1);
   MediaSinkInternal dial_sink_2_ = CreateDialSink(2);
-
-  DISALLOW_COPY_AND_ASSIGN(DialMediaSinkServiceImplTest);
 };
 
 TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionAvailable) {
@@ -233,13 +236,15 @@ TEST_F(DialMediaSinkServiceImplTest, StartStopMonitoringAvailableSinksForApp) {
               DoFetchDialAppInfo(sink_id, "YouTube"))
       .Times(1);
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
-  auto sub2 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription2 =
+      StartMonitoringAvailableSinksForApp("YouTube");
   EXPECT_EQ(1u, media_sink_service_->sink_queries_.size());
 
-  sub1.reset();
+  subscription1 = {};
   EXPECT_EQ(1u, media_sink_service_->sink_queries_.size());
-  sub2.reset();
+  subscription2 = {};
   EXPECT_TRUE(media_sink_service_->sink_queries_.empty());
 }
 
@@ -256,7 +261,8 @@ TEST_F(DialMediaSinkServiceImplTest, OnDialAppInfoAvailableNoSink) {
   const MediaSink::Id& sink_id = dial_sink_1_.sink().id();
 
   EXPECT_CALL(*this, OnSinksAvailableForApp("YouTube", _)).Times(0);
-  auto sub = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription =
+      StartMonitoringAvailableSinksForApp("YouTube");
   media_sink_service_->OnAppInfoParseCompleted(
       sink_id, "YouTube", CreateDialAppInfoResult("YouTube"));
 }
@@ -277,8 +283,10 @@ TEST_F(DialMediaSinkServiceImplTest, OnDialAppInfoAvailableSinksAdded) {
   EXPECT_CALL(*mock_app_discovery_service_,
               DoFetchDialAppInfo(sink_id2, "Netflix"));
   EXPECT_CALL(*this, OnSinksAvailableForApp(_, _)).Times(0);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
-  auto sub2 = StartMonitoringAvailableSinksForApp("Netflix");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription2 =
+      StartMonitoringAvailableSinksForApp("Netflix");
 
   // Either kStopped or kRunning means the app is available on the sink.
   EXPECT_CALL(*this,
@@ -300,7 +308,7 @@ TEST_F(DialMediaSinkServiceImplTest, OnDialAppInfoAvailableSinksAdded) {
       sink_id2, "Netflix", CreateDialAppInfoResult("Netflix"));
 
   // Stop listening for Netflix.
-  sub2.reset();
+  subscription2 = {};
   EXPECT_CALL(*this, OnSinksAvailableForApp("Netflix", _)).Times(0);
   media_sink_service_->OnAppInfoParseCompleted(
       sink_id1, "Netflix", CreateDialAppInfoResult("Netflix"));
@@ -315,7 +323,8 @@ TEST_F(DialMediaSinkServiceImplTest, OnDialAppInfoAvailableSinksRemoved) {
 
   EXPECT_CALL(*mock_app_discovery_service_, DoFetchDialAppInfo(_, _));
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
 
   EXPECT_CALL(*this,
               OnSinksAvailableForApp(
@@ -334,7 +343,8 @@ TEST_F(DialMediaSinkServiceImplTest,
 
   EXPECT_CALL(*mock_app_discovery_service_, DoFetchDialAppInfo(_, _));
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
 
   EXPECT_CALL(*this,
               OnSinksAvailableForApp(
@@ -349,7 +359,8 @@ TEST_F(DialMediaSinkServiceImplTest,
 TEST_F(DialMediaSinkServiceImplTest, StartAfterStopMonitoringForApp) {
   EXPECT_CALL(*mock_app_discovery_service_, DoFetchDialAppInfo(_, _));
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
   std::vector<MediaSinkInternal> expected_sinks = {dial_sink_1_};
 
   EXPECT_CALL(*this, OnSinksAvailableForApp("YouTube", expected_sinks))
@@ -357,10 +368,11 @@ TEST_F(DialMediaSinkServiceImplTest, StartAfterStopMonitoringForApp) {
   media_sink_service_->OnAppInfoParseCompleted(
       dial_sink_1_.sink().id(), "YouTube", CreateDialAppInfoResult("YouTube"));
 
-  sub1.reset();
+  subscription1 = {};
 
   EXPECT_EQ(expected_sinks, media_sink_service_->GetAvailableSinks("YouTube"));
-  auto sub2 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription2 =
+      StartMonitoringAvailableSinksForApp("YouTube");
   EXPECT_EQ(expected_sinks, media_sink_service_->GetAvailableSinks("YouTube"));
 }
 
@@ -371,7 +383,8 @@ TEST_F(DialMediaSinkServiceImplTest, FetchDialAppInfoWithDiscoveryOnlySink) {
 
   EXPECT_CALL(*mock_app_discovery_service_, DoFetchDialAppInfo(_, _)).Times(0);
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
-  auto sub1 = StartMonitoringAvailableSinksForApp("YouTube");
+  base::CallbackListSubscription subscription1 =
+      StartMonitoringAvailableSinksForApp("YouTube");
 }
 
 }  // namespace media_router

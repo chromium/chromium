@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -41,9 +42,7 @@ const BorderImageLengthBox& GetBorderImageLengthBox(
       return style.MaskBoxImageWidth();
     default:
       NOTREACHED();
-      return GetBorderImageLengthBox(
-          CSSProperty::Get(CSSPropertyID::kBorderImageOutset),
-          ComputedStyle::InitialStyle());
+      return style.BorderImageOutset();
   }
 }
 
@@ -98,8 +97,16 @@ class CSSBorderImageLengthBoxSideNonInterpolableValue
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(
     CSSBorderImageLengthBoxSideNonInterpolableValue);
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(
-    CSSBorderImageLengthBoxSideNonInterpolableValue);
+template <>
+struct DowncastTraits<CSSBorderImageLengthBoxSideNonInterpolableValue> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() ==
+           CSSBorderImageLengthBoxSideNonInterpolableValue::static_type_;
+  }
+};
 
 namespace {
 
@@ -134,9 +141,11 @@ SideType GetSideType(const NonInterpolableValue* side) {
   // In cases where LengthInterpolationFunctions is not used to convert the
   // value (kAuto, kNumber), we will always have a non-interpolable value of
   // type CSSBorderImageLengthBoxSideNonInterpolableValue.
-  if (!side || !IsCSSBorderImageLengthBoxSideNonInterpolableValue(side))
+  auto* non_interpolable =
+      DynamicTo<CSSBorderImageLengthBoxSideNonInterpolableValue>(side);
+  if (!side || !non_interpolable)
     return SideType::kLength;
-  return ToCSSBorderImageLengthBoxSideNonInterpolableValue(*side).GetSideType();
+  return non_interpolable->GetSideType();
 }
 
 struct SideTypes {
@@ -154,7 +163,7 @@ struct SideTypes {
   }
   explicit SideTypes(const InterpolationValue& underlying) {
     const auto& non_interpolable_list =
-        ToNonInterpolableList(*underlying.non_interpolable_value);
+        To<NonInterpolableList>(*underlying.non_interpolable_value);
     DCHECK_EQ(kSideIndexCount, non_interpolable_list.length());
     type[kSideTop] = GetSideType(non_interpolable_list.Get(0));
     type[kSideRight] = GetSideType(non_interpolable_list.Get(1));
@@ -282,10 +291,12 @@ CSSBorderImageLengthBoxInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue
 CSSBorderImageLengthBoxInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return ConvertBorderImageLengthBox(
-      GetBorderImageLengthBox(CssProperty(), ComputedStyle::InitialStyle()), 1);
+      GetBorderImageLengthBox(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue
@@ -375,21 +386,21 @@ void CSSBorderImageLengthBoxInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const InterpolableList& list = ToInterpolableList(interpolable_value);
-  const NonInterpolableList& non_interpolable_list =
-      ToNonInterpolableList(*non_interpolable_value);
+  const auto& list = To<InterpolableList>(interpolable_value);
+  const auto& non_interpolable_list =
+      To<NonInterpolableList>(*non_interpolable_value);
   const auto& convert_side = [&list, &non_interpolable_list,
                               &state](wtf_size_t index) -> BorderImageLength {
     switch (GetSideType(non_interpolable_list.Get(index))) {
       case SideType::kNumber:
-        return clampTo<double>(ToInterpolableNumber(list.Get(index))->Value(),
+        return ClampTo<double>(To<InterpolableNumber>(list.Get(index))->Value(),
                                0);
       case SideType::kAuto:
         return Length::Auto();
       case SideType::kLength:
         return To<InterpolableLength>(*list.Get(index))
             .CreateLength(state.CssToLengthConversionData(),
-                          kValueRangeNonNegative);
+                          Length::ValueRange::kNonNegative);
       default:
         NOTREACHED();
         return Length::Auto();

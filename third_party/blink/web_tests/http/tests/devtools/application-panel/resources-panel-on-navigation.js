@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel response to a main frame navigation.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('resources');
 
   function createIndexedDB(callback) {
@@ -33,7 +33,7 @@
   function dumpCurrentState(label) {
     var view = UI.panels.resources;
     TestRunner.addResult(label);
-    dump(view._sidebar._sidebarTree.rootElement(), '');
+    dump(view.sidebar.sidebarTree.rootElement(), '');
     TestRunner.addResult('Visible view is a query view: ' + (view.visibleView instanceof Resources.DatabaseQueryView));
   }
 
@@ -44,8 +44,8 @@
 
   await new Promise(createIndexedDB);
   await ApplicationTestRunner.createWebSQLDatabase('database-for-test');
-  UI.viewManager.showView('resources');
-  UI.panels.resources._sidebar.databasesListTreeElement.firstChild().select(false, true);
+  await UI.viewManager.showView('resources');
+  UI.panels.resources.sidebar.databasesListTreeElement.firstChild().select(false, true);
   dumpCurrentState('Initial state:');
   await TestRunner.reloadPagePromise();
   dumpCurrentState('After navigation:');

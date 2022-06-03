@@ -9,7 +9,6 @@
 
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -18,6 +17,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextElement
     : public AssistantUiElement {
  public:
   explicit AssistantTextElement(const std::string& text);
+
+  AssistantTextElement(const AssistantTextElement&) = delete;
+  AssistantTextElement& operator=(const AssistantTextElement&) = delete;
+
   ~AssistantTextElement() override;
 
   const std::string& text() const { return text_; }
@@ -25,7 +28,8 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextElement
  private:
   const std::string text_;
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantTextElement);
+  // AssistantUiElement:
+  bool Compare(const AssistantUiElement& other) const override;
 };
 
 }  // namespace ash

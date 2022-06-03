@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,9 +19,8 @@
 
 namespace ui {
 
-class DrmDisplayHostManager;
 class DrmCursor;
-class DrmOverlayManager;
+class DrmDisplayHostManager;
 class DrmWindowHostManager;
 class EventFactoryEvdev;
 class GpuThreadAdapter;
@@ -47,8 +45,11 @@ class DrmWindowHost : public PlatformWindow,
                 EventFactoryEvdev* event_factory,
                 DrmCursor* cursor,
                 DrmWindowHostManager* window_manager,
-                DrmDisplayHostManager* display_manager,
-                DrmOverlayManager* overlay_manager);
+                DrmDisplayHostManager* display_manager);
+
+  DrmWindowHost(const DrmWindowHost&) = delete;
+  DrmWindowHost& operator=(const DrmWindowHost&) = delete;
+
   ~DrmWindowHost() override;
 
   void Initialize();
@@ -64,8 +65,8 @@ class DrmWindowHost : public PlatformWindow,
   bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
-  gfx::Rect GetBounds() override;
-  void SetTitle(const base::string16& title) override;
+  gfx::Rect GetBounds() const override;
+  void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;
   bool HasCapture() const override;
@@ -78,7 +79,7 @@ class DrmWindowHost : public PlatformWindow,
   void Deactivate() override;
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
-  void SetCursor(PlatformCursor cursor) override;
+  void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
@@ -107,15 +108,11 @@ class DrmWindowHost : public PlatformWindow,
   DrmCursor* const cursor_;                       // Not owned.
   DrmWindowHostManager* const window_manager_;    // Not owned.
   DrmDisplayHostManager* const display_manager_;  // Not owned.
-  // TODO(crbug.com/936425): Remove after VizDisplayCompositor feature launches.
-  DrmOverlayManager* const overlay_manager_;  // Not owned.
 
   gfx::Rect bounds_;
   const gfx::AcceleratedWidget widget_;
 
   gfx::Rect cursor_confined_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindowHost);
 };
 
 }  // namespace ui

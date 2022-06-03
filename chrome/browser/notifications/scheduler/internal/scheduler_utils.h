@@ -7,11 +7,9 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"

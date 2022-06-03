@@ -1,0 +1,24 @@
+<html>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <iframe id="ifr">
+  </iframe>
+<script>
+
+let triggered = null;
+
+function trigger()
+{
+  ifr.remove();
+  triggered();
+}
+
+promise_test(t => {
+  ifr.src = "resources/statechange-iframe-destroy-child.html";
+  return new Promise(resolve => {
+    triggered = resolve;
+  });
+}, 'Remove iframe from a statechange callback invoked from iframe');
+
+</script>
+</html>

@@ -12,3 +12,11 @@ imageset("menu_shadow") {
     "menu_shadow.imageset/menu_shadow@3x.png",
   ]
 }
+
+imageset("password_key") {
+  sources = [
+    "password_key.imageset/Contents.json",
+    "password_key.imageset/password_key@2x.png",
+    "password_key.imageset/password_key@3x.png",
+  ]
+}

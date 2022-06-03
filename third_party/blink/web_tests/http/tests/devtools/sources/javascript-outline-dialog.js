@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify JavaScriptOutlineDialog scoring.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addScriptTag('resources/javascript-outline-dialog.js');
@@ -13,7 +13,7 @@
   var provider;
   function onSourceShown(sourceFrame) {
     TestRunner.addSniffer(Sources.OutlineQuickOpen.prototype, 'refresh', onQuickOpenFulfilled);
-    UI.panels.sources._sourcesView._showOutlineQuickOpen();
+    UI.panels.sources.sourcesView().showOutlineQuickOpen();
   }
 
   function onQuickOpenFulfilled() {

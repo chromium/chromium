@@ -22,7 +22,10 @@
   return self;
 }
 
-- (void)cleanDeviceSharingManager {
-  // no-op
+#pragma mark - BrowserInterfaceProvider
+
+- (BOOL)hasIncognitoInterface {
+  return _incognitoInterface;
 }
+
 @end

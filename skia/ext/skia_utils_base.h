@@ -42,11 +42,17 @@ SK_API void WriteSkFontIdentity(
 // Writes style into the request pickle.
 SK_API void WriteSkFontStyle(base::Pickle* pickle, SkFontStyle style);
 
-// Converts an SkBitmap to an Opaque or Premul N32 SkBitmap. If the input is in
-// the right format (N32 Opaque or Premul) already, points |out| directly at
-// |in|. |out| may or may not be GPU-backed.
+// Converts an SkBitmap to an Opaque or Premul N32 SkBitmap with stride matching
+// the width of each row. If the input is has the right format (N32 Opaque or
+// Premul) without stride padding already, this assigns `in` to `out`, sharing
+// the backing pixels. `out` may or may not be GPU-backed.
 //
 // If unsuccessful, returns false, but |out| may be modified.
+//
+// This should be called as early as possible at IPC endpoints from
+// less-privileged contexts (e.g. on a message from the renderer process) if the
+// code handling the SkBitmap wants to work with an N32 type, rather than
+// delaying this conversion until a later time.
 SK_API bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out);
 
 }  // namespace skia

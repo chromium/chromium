@@ -16,6 +16,9 @@ namespace multidevice_setup {
 // MultiDeviceSetup implementation which accepts receivers to bind to it.
 class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
  public:
+  MultiDeviceSetupBase(const MultiDeviceSetupBase&) = delete;
+  MultiDeviceSetupBase& operator=(const MultiDeviceSetupBase&) = delete;
+
   ~MultiDeviceSetupBase() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
@@ -23,8 +26,10 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
 
   // Sets the device with the given ID as the multi-device host for this
   // account.
+  // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, only
+  // use Instance ID since all devices are guaranteed to have one.
   virtual void SetHostDeviceWithoutAuthToken(
-      const std::string& host_device_id,
+      const std::string& host_instance_id_or_legacy_device_id,
       mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) = 0;
 
  protected:
@@ -32,8 +37,6 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
 
  private:
   mojo::ReceiverSet<mojom::MultiDeviceSetup> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupBase);
 };
 
 }  // namespace multidevice_setup

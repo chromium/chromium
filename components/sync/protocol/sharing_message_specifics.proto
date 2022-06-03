@@ -1,0 +1,85 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for sharing message.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message SharingMessageSpecifics {
+  // Unique identifier of message.
+  optional string message_id = 1;
+
+  message ChannelConfiguration {
+    message FCMChannelConfiguration {
+      // FCM registration token of target device.
+      optional string token = 1;
+
+      // Time to live for a FCM message (in seconds) - if specified, the message
+      // will expire based on the TTL.
+      optional int32 ttl = 2;
+
+      // Priority level of a FCM message. 5 = normal, 10 = high.
+      optional int32 priority = 3;
+    }
+
+    oneof channel_configuration {
+      // FCM channel configuration. Message will be delivered as a FCM message.
+      FCMChannelConfiguration fcm = 1;
+
+      // Opaque server channel configuration. Message will be delivered through
+      // server channel.
+      bytes server = 2;
+    }
+  }
+
+  optional ChannelConfiguration channel_configuration = 2;
+
+  // Payload encrypted using the target user keys according to WebPush
+  // encryption scheme. The payload has to be a valid
+  // chrome/browser/sharing/proto/sharing_message.proto serialized using
+  // SerializeToString.
+  optional bytes payload = 3;
+}
+
+// Used for the server to return fine grained commit errors back to the client.
+message SharingMessageCommitError {
+  // This enum is used in histograms. Entries should not be renumbered and
+  // numeric values should never be reused. Also remember to update in
+  // tools/metrics/histograms/enums.xml SyncSharingMessageCommitErrorCode enum.
+  enum ErrorCode {
+    NONE = 0;
+    INVALID_ARGUMENT = 1;
+    NOT_FOUND = 2;
+    INTERNAL = 3;
+    UNAVAILABLE = 4;
+    RESOURCE_EXHAUSTED = 5;
+    UNAUTHENTICATED = 6;
+    PERMISSION_DENIED = 7;
+
+    // Client-specific error codes.
+    SYNC_TURNED_OFF = 8;
+    SYNC_NETWORK_ERROR = 9;
+    // Deprecated UMA bucket, prior to splitting between SYNC_SERVER_ERROR and
+    // SYNC_AUTH_ERROR.
+    DEPRECATED_SYNC_SERVER_OR_AUTH_ERROR = 10;
+    // Message wasn't committed before timeout.
+    SYNC_TIMEOUT = 11;
+    // Error code for server error or unparsable server response.
+    SYNC_SERVER_ERROR = 12;
+    // Auth error when communicating with the server.
+    SYNC_AUTH_ERROR = 13;
+  }
+
+  optional ErrorCode error_code = 1;
+}

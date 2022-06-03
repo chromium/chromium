@@ -26,6 +26,9 @@ class VpnService;
 // Factory to create VpnService.
 class VpnServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  VpnServiceFactory(const VpnServiceFactory&) = delete;
+  VpnServiceFactory& operator=(const VpnServiceFactory&) = delete;
+
   static VpnService* GetForBrowserContext(content::BrowserContext* context);
   static VpnServiceFactory* GetInstance();
 
@@ -40,8 +43,6 @@ class VpnServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnServiceFactory);
 };
 
 }  // namespace chromeos

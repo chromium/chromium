@@ -7,18 +7,18 @@
 
 #include <string>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // Change windows accelerator style to GTK style. (GTK uses _ for
 // accelerators.  Windows uses & with && as an escape for &.)
-UI_BASE_EXPORT std::string ConvertAcceleratorsFromWindowsStyle(
-    const std::string& label);
+COMPONENT_EXPORT(UI_BASE)
+std::string ConvertAcceleratorsFromWindowsStyle(const std::string& label);
 
 // Removes the "&" accelerators from a Windows label.
-UI_BASE_EXPORT std::string RemoveWindowsStyleAccelerators(
-    const std::string& label);
+COMPONENT_EXPORT(UI_BASE)
+std::string RemoveWindowsStyleAccelerators(const std::string& label);
 
 }  // namespace ui
 

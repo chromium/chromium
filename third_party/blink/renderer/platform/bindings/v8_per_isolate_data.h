@@ -28,9 +28,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
+#include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/v8_global_value_map.h"
@@ -43,11 +44,10 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace blink {
 
-class ActiveScriptWrappableBase;
 class DOMWrapperWorld;
 class ScriptState;
 class StringCache;
@@ -56,7 +56,7 @@ struct WrapperTypeInfo;
 
 // Used to hold data that is associated with a single v8::Isolate object, and
 // has a 1:1 relationship with v8::Isolate.
-class PLATFORM_EXPORT V8PerIsolateData {
+class PLATFORM_EXPORT V8PerIsolateData final {
   USING_FAST_MALLOC(V8PerIsolateData);
 
  public:
@@ -106,11 +106,13 @@ class PLATFORM_EXPORT V8PerIsolateData {
    public:
     virtual ~GarbageCollectedData() = default;
     virtual void WillBeDestroyed() {}
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
   };
 
   static v8::Isolate* Initialize(scoped_refptr<base::SingleThreadTaskRunner>,
-                                 V8ContextSnapshotMode);
+                                 V8ContextSnapshotMode,
+                                 v8::CreateHistogramCallback,
+                                 v8::AddHistogramSampleCallback);
 
   static V8PerIsolateData* From(v8::Isolate* isolate) {
     DCHECK(isolate);
@@ -118,6 +120,9 @@ class PLATFORM_EXPORT V8PerIsolateData {
     return static_cast<V8PerIsolateData*>(
         isolate->GetData(gin::kEmbedderBlink));
   }
+
+  V8PerIsolateData(const V8PerIsolateData&) = delete;
+  V8PerIsolateData& operator=(const V8PerIsolateData&) = delete;
 
   static void WillBeDestroyed(v8::Isolate*);
   static void Destroy(v8::Isolate*);
@@ -139,19 +144,22 @@ class PLATFORM_EXPORT V8PerIsolateData {
     is_handling_recursion_level_error_ = value;
   }
 
-  bool IsReportingException() const { return is_reporting_exception_; }
-  void SetReportingException(bool value) { is_reporting_exception_ = value; }
-
   bool IsUseCounterDisabled() const { return use_counter_disabled_; }
 
   V8PrivateProperty* PrivateProperty() { return private_property_.get(); }
 
-  // Accessors to the cache of interface templates.
-  v8::Local<v8::FunctionTemplate> FindInterfaceTemplate(const DOMWrapperWorld&,
-                                                        const void* key);
-  void SetInterfaceTemplate(const DOMWrapperWorld&,
-                            const void* key,
-                            v8::Local<v8::FunctionTemplate>);
+  // Accessors to the cache of v8::Templates.
+  v8::Local<v8::Template> FindV8Template(const DOMWrapperWorld& world,
+                                         const void* key);
+  void AddV8Template(const DOMWrapperWorld& world,
+                     const void* key,
+                     v8::Local<v8::Template> value);
+
+  bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
+                   v8::Local<v8::Value> untrusted_value);
+  bool HasInstanceOfUntrustedType(
+      const WrapperTypeInfo* untrusted_wrapper_type_info,
+      v8::Local<v8::Value> untrusted_value);
 
   // When v8::SnapshotCreator::CreateBlob() is called, we must not have
   // persistent handles in Blink. This method clears them.
@@ -163,33 +171,14 @@ class PLATFORM_EXPORT V8PerIsolateData {
   V8ContextSnapshotMode GetV8ContextSnapshotMode() const {
     return v8_context_snapshot_mode_;
   }
-  void BailoutAndDisableV8ContextSnapshot() {
-    DCHECK_EQ(V8ContextSnapshotMode::kUseSnapshot, v8_context_snapshot_mode_);
-    v8_context_snapshot_mode_ = V8ContextSnapshotMode::kDontUseSnapshot;
-  }
-
-  // Accessor to the cache of cross-origin accessible operation's templates.
-  // Created templates get automatically cached.
-  v8::Local<v8::FunctionTemplate> FindOrCreateOperationTemplate(
-      const DOMWrapperWorld&,
-      const void* key,
-      v8::FunctionCallback,
-      v8::Local<v8::Value> data,
-      v8::Local<v8::Signature>,
-      int length);
 
   // Obtains a pointer to an array of names, given a lookup key. If it does not
   // yet exist, it is created from the given array of strings. Once created,
   // these live for as long as the isolate, so this is appropriate only for a
   // compile-time list of related names, such as IDL dictionary keys.
-  const v8::Eternal<v8::Name>* FindOrCreateEternalNameCache(
+  const base::span<const v8::Eternal<v8::Name>> FindOrCreateEternalNameCache(
       const void* lookup_key,
-      const char* const names[],
-      size_t count);
-
-  bool HasInstance(const WrapperTypeInfo* untrusted, v8::Local<v8::Value>);
-  v8::Local<v8::Object> FindInstanceInPrototypeChain(const WrapperTypeInfo*,
-                                                     v8::Local<v8::Value>);
+      const base::span<const char* const>& names);
 
   v8::Local<v8::Context> EnsureScriptRegexpContext();
   void ClearScriptRegexpContext();
@@ -208,62 +197,66 @@ class PLATFORM_EXPORT V8PerIsolateData {
   void SetProfilerGroup(V8PerIsolateData::GarbageCollectedData*);
   V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
 
-  using ActiveScriptWrappableSet =
-      HeapHashSet<WeakMember<ActiveScriptWrappableBase>>;
-  void AddActiveScriptWrappable(ActiveScriptWrappableBase*);
-  const ActiveScriptWrappableSet* ActiveScriptWrappables() const {
-    return active_script_wrappables_.Get();
+  void SetCanvasResourceTracker(V8PerIsolateData::GarbageCollectedData*);
+  V8PerIsolateData::GarbageCollectedData* CanvasResourceTracker();
+
+  ActiveScriptWrappableManager* GetActiveScriptWrappableManager() const {
+    return active_script_wrappable_manager_;
   }
+
+  void SetActiveScriptWrappableManager(ActiveScriptWrappableManager* manager) {
+    DCHECK(manager);
+    active_script_wrappable_manager_ = manager;
+  }
+
+  void SetGCCallbacks(v8::Isolate* isolate,
+                      v8::Isolate::GCCallback prologue_callback,
+                      v8::Isolate::GCCallback epilogue_callback);
+
+  void EnterGC() { gc_callback_depth_++; }
+
+  void LeaveGC() { gc_callback_depth_--; }
 
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
-                   V8ContextSnapshotMode);
-  V8PerIsolateData();
+                   V8ContextSnapshotMode,
+                   v8::CreateHistogramCallback,
+                   v8::AddHistogramSampleCallback);
+  explicit V8PerIsolateData(V8ContextSnapshotMode);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of
   // possible keys for this is relatively small and fixed at compile time, so
   // collisions are less of a worry than they would otherwise be.
-  struct SimplePtrHash : WTF::PtrHash<const void> {
+  struct SimplePtrHash final : public WTF::PtrHash<const void> {
     static unsigned GetHash(const void* key) {
       uintptr_t k = reinterpret_cast<uintptr_t>(key);
       return static_cast<unsigned>(k ^ (k >> 8));
     }
   };
-  using V8FunctionTemplateMap =
-      HashMap<const void*, v8::Eternal<v8::FunctionTemplate>, SimplePtrHash>;
-  V8FunctionTemplateMap& SelectInterfaceTemplateMap(const DOMWrapperWorld&);
-  V8FunctionTemplateMap& SelectOperationTemplateMap(const DOMWrapperWorld&);
-  bool HasInstance(const WrapperTypeInfo* untrusted,
-                   v8::Local<v8::Value>,
-                   V8FunctionTemplateMap&);
-  v8::Local<v8::Object> FindInstanceInPrototypeChain(const WrapperTypeInfo*,
-                                                     v8::Local<v8::Value>,
-                                                     V8FunctionTemplateMap&);
+  using V8TemplateMap =
+      HashMap<const void*, v8::Eternal<v8::Template>, SimplePtrHash>;
+  V8TemplateMap& SelectV8TemplateMap(const DOMWrapperWorld&);
+  bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
+                   v8::Local<v8::Value> untrusted_value,
+                   const V8TemplateMap& map);
+  bool HasInstanceOfUntrustedType(
+      const WrapperTypeInfo* untrusted_wrapper_type_info,
+      v8::Local<v8::Value> untrusted_value,
+      const V8TemplateMap& map);
 
   V8ContextSnapshotMode v8_context_snapshot_mode_;
+
   // This isolate_holder_ must be initialized before initializing some other
   // members below.
   gin::IsolateHolder isolate_holder_;
 
-  // interface_template_map_for_{,non_}main_world holds function templates for
-  // the inerface objects.
-  V8FunctionTemplateMap interface_template_map_for_main_world_;
-  V8FunctionTemplateMap interface_template_map_for_non_main_world_;
-
-  // m_operationTemplateMapFor{,Non}MainWorld holds function templates for
-  // the cross-origin accessible DOM operations.
-  V8FunctionTemplateMap operation_template_map_for_main_world_;
-  V8FunctionTemplateMap operation_template_map_for_non_main_world_;
+  // v8::Template cache of interface objects, namespace objects, etc.
+  V8TemplateMap v8_template_map_for_main_world_;
+  V8TemplateMap v8_template_map_for_non_main_worlds_;
 
   // Contains lists of eternal names, such as dictionary keys.
   HashMap<const void*, Vector<v8::Eternal<v8::Name>>> eternal_name_cache_;
-
-  // When taking a V8 context snapshot, we can't keep V8 objects with eternal
-  // handles. So we use a special interface map that doesn't use eternal handles
-  // instead of the default V8FunctionTemplateMap.
-  V8GlobalValueMap<const WrapperTypeInfo*, v8::FunctionTemplate>
-      interface_template_map_for_v8_context_snapshot_;
 
   std::unique_ptr<StringCache> string_cache_;
   std::unique_ptr<V8PrivateProperty> private_property_;
@@ -276,17 +269,19 @@ class PLATFORM_EXPORT V8PerIsolateData {
   friend class UseCounterDisabledScope;
 
   bool is_handling_recursion_level_error_;
-  bool is_reporting_exception_;
 
   Vector<base::OnceClosure> end_of_scope_tasks_;
   std::unique_ptr<Data> thread_debugger_;
   Persistent<GarbageCollectedData> profiler_group_;
+  Persistent<GarbageCollectedData> canvas_resource_tracker_;
 
-  Persistent<ActiveScriptWrappableSet> active_script_wrappables_;
+  Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 
   RuntimeCallStats runtime_call_stats_;
 
-  DISALLOW_COPY_AND_ASSIGN(V8PerIsolateData);
+  v8::Isolate::GCCallback prologue_callback_;
+  v8::Isolate::GCCallback epilogue_callback_;
+  size_t gc_callback_depth_ = 0;
 };
 
 }  // namespace blink

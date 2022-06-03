@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ANDROID_GESTURE_EVENT_TYPE_H_
-#define UI_ANDROID_GESTURE_EVENT_TYPE_H_
+#ifndef UI_EVENTS_ANDROID_GESTURE_EVENT_TYPE_H_
+#define UI_EVENTS_ANDROID_GESTURE_EVENT_TYPE_H_
 
 namespace ui {
 
@@ -36,4 +36,4 @@ enum GestureEventType {
 
 }  // namespace ui
 
-#endif  // UI_ANDROID_GESTURE_EVENT_TYPE_H_
+#endif  // UI_EVENTS_ANDROID_GESTURE_EVENT_TYPE_H_

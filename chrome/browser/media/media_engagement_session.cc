@@ -150,20 +150,11 @@ void MediaEngagementSession::CommitPendingData() {
   if (WasSignificantPlaybackRecorded() && HasPendingPlaybackToCommit()) {
     score.IncrementMediaPlaybacks();
 
-    if (pending_data_to_commit_.audio_context_playback)
-      score.IncrementAudioContextPlaybacks();
-
-    if (pending_data_to_commit_.media_element_playback)
-      score.IncrementMediaElementPlaybacks();
-
     // Use the stored significant playback time.
     score.set_last_media_playback_time(first_significant_playback_time_);
   }
 
   if (pending_data_to_commit_.players) {
-    score.IncrementAudiblePlaybacks(audible_players_delta_);
-    score.IncrementSignificantPlaybacks(significant_players_delta_);
-
     audible_players_total_ += audible_players_delta_;
     significant_players_total_ += significant_players_delta_;
 

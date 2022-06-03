@@ -48,7 +48,7 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     [CEReactions] attribute DOMString preload;
     readonly attribute TimeRanges buffered;
     void load();
-    [HighEntropy, Measure] CanPlayTypeResult canPlayType(DOMString type);
+    [CallWith=ExecutionContext, HighEntropy, Measure] CanPlayTypeResult canPlayType(DOMString type);
 
     // ready state
     const unsigned short HAVE_NOTHING = 0;
@@ -76,6 +76,8 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     void pause();
     [RuntimeEnabled=MediaLatencyHint, CEReactions]
     attribute double latencyHint;
+    [RuntimeEnabled=MediaPreservesPitch]
+    attribute boolean preservesPitch;
 
     // controls
     [CEReactions, Reflect] attribute boolean controls;

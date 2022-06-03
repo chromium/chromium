@@ -26,6 +26,9 @@ LocationBarState::LocationBarState(const GURL& url,
 
 LocationBarState::LocationBarState(const LocationBarState& other) = default;
 
+LocationBarState& LocationBarState::operator=(const LocationBarState& other) =
+    default;
+
 bool LocationBarState::operator==(const LocationBarState& other) const {
   return (gurl == other.gurl && security_level == other.security_level &&
           vector_icon == other.vector_icon &&

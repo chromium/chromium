@@ -5,8 +5,6 @@
 #ifndef NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_H_
 #define NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake.h"
@@ -33,6 +31,11 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
     // not confirm the handshake.
     ZERO_RTT,
 
+    // ASYNC_ZERO_RTT indicates that 0-RTT setup will be completed
+    // asynchronously. This is possible in TLS. Tests need to call
+    // NotifySessionZeroRttComplete() to setup 0-RTT encryption.
+    ASYNC_ZERO_RTT,
+
     // COLD_START indicates that CryptoConnect will neither establish encryption
     // nor confirm the handshake.
     COLD_START,
@@ -53,6 +56,10 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
       HandshakeMode handshake_mode,
       const net::ProofVerifyDetailsChromium* proof_verify_details_,
       bool use_mock_crypter);
+
+  MockCryptoClientStream(const MockCryptoClientStream&) = delete;
+  MockCryptoClientStream& operator=(const MockCryptoClientStream&) = delete;
+
   ~MockCryptoClientStream() override;
 
   // CryptoFramerVisitorInterface implementation.
@@ -61,15 +68,23 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   // QuicCryptoClientStream implementation.
   bool CryptoConnect() override;
   bool encryption_established() const override;
-  bool handshake_confirmed() const override;
+  bool one_rtt_keys_available() const override;
+  quic::HandshakeState GetHandshakeState() const override;
   const quic::QuicCryptoNegotiatedParameters& crypto_negotiated_params()
       const override;
   quic::CryptoMessageParser* crypto_message_parser() override;
+  void OnOneRttPacketAcknowledged() override;
+  bool EarlyDataAccepted() const override;
+  // Override QuicCryptoClientStream::SetServerApplicationStateForResumption()
+  // to avoid tripping over the DCHECK on handshaker state.
+  void SetServerApplicationStateForResumption(
+      std::unique_ptr<quic::ApplicationState> application_state) override {}
 
-  // Invokes the sessions's CryptoHandshakeEvent method with the specified
-  // event.
-  void SendOnCryptoHandshakeEvent(
-      quic::QuicSession::CryptoHandshakeEvent event);
+  // Notify session that 1-RTT key is available.
+  void NotifySessionOneRttKeyAvailable();
+
+  // Notify session that 0-RTT setup is complete.
+  void NotifySessionZeroRttComplete();
 
   static quic::CryptoHandshakeMessage GetDummyCHLOMessage();
 
@@ -94,8 +109,6 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   const quic::QuicServerId server_id_;
   const net::ProofVerifyDetailsChromium* proof_verify_details_;
   const quic::QuicConfig config_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptoClientStream);
 };
 
 }  // namespace net

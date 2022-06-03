@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -10,104 +11,108 @@ import("//ui/webui/webui_features.gni")
 aggregate_vector_icons("chrome_vector_icons") {
   icon_directory = "."
 
-  icons = [
+  # Keep sorted alphabetically.
+  sources = [
+    "${branding_path_component}/product.icon",
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",
+    "account_circle.icon",
     "add.icon",
-    "ads.icon",
     "apps.icon",
+    "autofill/local_offer_flipped.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
-    "blocked_badge.icon",
+    "back_arrow_touch.icon",
     "blocked_redirect.icon",
-    "bluetooth.icon",
+    "bookmarkbar_touch_overflow.icon",
     "browser_tools.icon",
-    "browser_tools_animated.icon",
     "browser_tools_error.icon",
+    "browser_tools_touch.icon",
     "browser_tools_update.icon",
-    "caret_down.icon",
-    "caret_up.icon",
-    "certificate.icon",
+    "chevron_right.icon",
+    "chrome_labs.icon",
+    "chrome_labs_touch.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
-    "close_all.icon",
-    "code.icon",
-
-    # Alternative squarer content_paste icon optimised for display at 18x18dip.
-    # Currently only used in the Page Info bubble.
-    "back_arrow_touch.icon",
-    "bookmarkbar_touch_overflow.icon",
-    "browser_tools_error_touch.icon",
-    "browser_tools_touch.icon",
-    "browser_tools_update_touch.icon",
-    "cast_for_education.icon",
-    "content_paste.icon",
-    "cookie.icon",
+    "close_group.icon",
+    "computer_with_circle_background.icon",
     "copy.icon",
     "crashed_tab.icon",
     "credit_card.icon",
     "default_touch_favicon.icon",
     "default_touch_favicon_mask.icon",
     "eol.icon",
-    "extension.icon",
     "extension_crashed.icon",
-    "file_download.icon",
+    "eye.icon",
+    "eye_crossed.icon",
     "file_download_shelf.icon",
     "fingerprint.icon",
     "forward_arrow_touch.icon",
     "fullscreen.icon",
     "generic_stop.icon",
     "globe.icon",
+    "guest_menu_art.icon",
     "hardware_computer.icon",
+    "hardware_computer_small.icon",
     "hardware_smartphone.icon",
     "horizontal_menu.icon",
     "incognito.icon",
+    "incognito_menu_art.icon",
     "incognito_profile.icon",
     "input.icon",
     "key.icon",
+    "keyboard_arrow_down.icon",
+    "keyboard_arrow_right.icon",
+    "keyboard_arrow_up.icon",
     "laptop.icon",
-    "launch.icon",
+    "media_controls_arrow_drop_down.icon",
+    "media_controls_arrow_drop_up.icon",
     "media_toolbar_button.icon",
     "media_toolbar_button_touch.icon",
     "mixed_content.icon",
+    "mono_color_product.icon",
+    "move_group_to_new_window.icon",
     "my_location.icon",
     "navigate_home.icon",
     "navigate_home_touch.icon",
     "navigate_stop.icon",
     "navigate_stop_touch.icon",
+    "new_tab_in_group.icon",
     "nfc.icon",
     "overflow_chevron.icon",
-    "page_info_content_paste.icon",
     "paintbrush.icon",
-    "password_check_warning.icon",
-    "password_check_warning_dark.icon",
-    "photo.icon",
+    "person_filled_padded_large.icon",
+    "person_filled_padded_small.icon",
     "photo_camera.icon",
-    "picture_in_picture_control_background.icon",
     "picture_in_picture_alt.icon",
-    "protected_content.icon",
+    "picture_in_picture_control_background.icon",
     "qrcode_generator.icon",
+    "read_later.icon",
+    "read_later_add.icon",
     "reader_mode.icon",
+    "reader_mode_disabled.icon",
     "reload_touch.icon",
     "remove.icon",
     "remove_box.icon",
     "resize_handle.icon",
     "sad_tab.icon",
-    "save_original_file.icon",
+    "save_group.icon",
+    "save_page.icon",
+    "scrolling_tabstrip_leading.icon",
+    "scrolling_tabstrip_trailing.icon",
     "security.icon",
     "send_tab_to_self.icon",
-    "eye_crossed.icon",
-    "eye.icon",
-    "sensors.icon",
-    "signin_button_drop_down_arrow.icon",
+    "sharing_hub_screenshot.icon",
+    "side_panel.icon",
+    "side_panel_touch.icon",
     "sign_out.icon",
+    "signin_button_drop_down_arrow.icon",
     "smartphone.icon",
     "speaker.icon",
     "speaker_group.icon",
     "supervisor_account.icon",
     "supervisor_account_circle.icon",
-    "sync.icon",
     "sync_circle.icon",
     "sync_error_circle.icon",
     "sync_paused.icon",
@@ -120,35 +125,31 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_audio_muting_rounded.icon",
     "tab_audio_rounded.icon",
     "tab_bluetooth_connected.icon",
+    "tab_bluetooth_scan_active.icon",
     "tab_close_normal.icon",
+    "tab_group.icon",
     "tab_media_capturing.icon",
     "tab_media_capturing_with_arrow.icon",
     "tab_media_recording.icon",
+    "tab_search.icon",
     "tab_usb_connected.icon",
     "tablet.icon",
     "translate.icon",
     "trash_can.icon",
     "tv.icon",
-    "usb_security_key.icon",
+    "ungroup.icon",
+    "usb_cable.icon",
     "user_account_avatar.icon",
     "user_menu_guest.icon",
     "user_menu_right_arrow.icon",
-    "volume_up.icon",
-    "vr_headset.icon",
-    "warning_badge.icon",
     "web.icon",
-    "webauthn/webauthn_ble.icon",
-    "webauthn/webauthn_ble_dark.icon",
-    "webauthn/webauthn_ble_name.icon",
-    "webauthn/webauthn_ble_name_dark.icon",
-    "webauthn/webauthn_ble_pin.icon",
-    "webauthn/webauthn_ble_pin_dark.icon",
-    "webauthn/webauthn_ble_tap.icon",
-    "webauthn/webauthn_ble_tap_dark.icon",
+    "webauthn/webauthn_aoa.icon",
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_bluetooth.icon",
     "webauthn/webauthn_error_bluetooth_dark.icon",
     "webauthn/webauthn_error_dark.icon",
+    "webauthn/webauthn_fingerprint.icon",
+    "webauthn/webauthn_fingerprint_dark.icon",
     "webauthn/webauthn_permission.icon",
     "webauthn/webauthn_permission_dark.icon",
     "webauthn/webauthn_phone.icon",
@@ -159,18 +160,17 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/webauthn_welcome_dark.icon",
     "zoom_minus.icon",
     "zoom_plus.icon",
-    "${branding_path_component}/product.icon",
   ]
 
   if (is_mac) {
-    icons += [
+    sources += [
       "default_favicon.icon",
       "new_tab_mac_touchbar.icon",
     ]
   }
 
   if (is_win) {
-    icons += [
+    sources += [
       "back_arrow_windows.icon",
       "back_arrow_windows_touch.icon",
       "inactive_toast_arrow.icon",
@@ -179,15 +179,24 @@ aggregate_vector_icons("chrome_vector_icons") {
       "navigate_stop_windows.icon",
       "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
+      "payments/secure_payment_confirmation_face.icon",
+      "payments/secure_payment_confirmation_face_dark.icon",
       "reload_windows.icon",
       "reload_windows_touch.icon",
     ]
+  } else {
+    sources += [
+      "payments/secure_payment_confirmation_fingerprint.icon",
+      "payments/secure_payment_confirmation_fingerprint_dark.icon",
+    ]
   }
 
-  if (is_chromeos) {
-    icons += [
-      "notification_captive_portal.icon",
+  if (is_chromeos_ash) {
+    sources += [
+      "autocorrect_undo.icon",
+      "full_restore_notification.icon",
       "notification_battery.icon",
+      "notification_captive_portal.icon",
       "notification_cellular_alert.icon",
       "notification_download.icon",
       "notification_end_of_support.icon",
@@ -205,25 +214,40 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_printing_warning.icon",
       "notification_storage_full.icon",
       "notification_vpn.icon",
+      "notification_wifi.icon",
       "notification_wifi_off.icon",
-      "warning_badge_circle.icon",
+      "person_add.icon",
+      "sharesheet_link.icon",
+      "sharesheet_share_with_others.icon",
+      "sharesheet_text.icon",
+      "shutdown_guest_os.icon",
     ]
+  }
+
+  if (!is_android) {
+    sources += [ "nearby_share.icon" ]
   }
 
   if (enable_vr && !is_android) {
     # Used on desktop VR headsets and Linux unit tests.
-    icons += [ "open_in_browser.icon" ]
+    sources += [ "open_in_browser.icon" ]
   }
 
   if (enable_webui_tab_strip) {
-    icons += [ "new_tab_toolbar_button.icon" ]
+    sources += [ "new_tab_toolbar_button.icon" ]
   }
 
   if (is_chrome_branded) {
-    icons += [
+    sources += [
       "google_chrome/google_g_logo.icon",
+      "google_chrome/google_g_logo_monochrome.icon",
+      "google_chrome/google_lens_full_logo.icon",
       "google_chrome/google_pay_logo.icon",
     ]
+  }
+
+  if (is_chrome_branded && is_chromeos_ash) {
+    sources += [ "google_chrome/assistant.icon" ]
   }
 }
 

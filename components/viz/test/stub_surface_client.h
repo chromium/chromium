@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_TEST_STUB_SURFACE_CLIENT_H_
 #define COMPONENTS_VIZ_TEST_STUB_SURFACE_CLIENT_H_
 
+#include <vector>
+
 #include "components/viz/service/surfaces/surface_client.h"
 
 #include "base/memory/weak_ptr.h"
@@ -21,13 +23,11 @@ class StubSurfaceClient : public SurfaceClient {
   void OnSurfaceWillDraw(Surface* surface) override {}
   void RefResources(
       const std::vector<TransferableResource>& resources) override {}
-  void UnrefResources(const std::vector<ReturnedResource>& resources) override {
-  }
-  void ReturnResources(
-      const std::vector<ReturnedResource>& resources) override {}
+  void UnrefResources(std::vector<ReturnedResource> resources) override {}
+  void ReturnResources(std::vector<ReturnedResource> resources) override {}
   void ReceiveFromChild(
       const std::vector<TransferableResource>& resources) override {}
-  std::vector<std::unique_ptr<CopyOutputRequest>> TakeCopyOutputRequests(
+  std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
       const LocalSurfaceId& latest_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override {}
   void OnSurfaceProcessed(Surface* surface) override {}
@@ -41,6 +41,7 @@ class StubSurfaceClient : public SurfaceClient {
                           base::TimeTicks draw_start_timestamp,
                           const gfx::SwapTimings& swap_timings,
                           const gfx::PresentationFeedback& feedback) override {}
+  bool IsVideoCaptureStarted() override;
 
   base::WeakPtrFactory<StubSurfaceClient> weak_factory{this};
 };

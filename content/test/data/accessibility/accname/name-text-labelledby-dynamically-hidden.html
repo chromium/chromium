@@ -1,0 +1,20 @@
+<!--
+@BLINK-DENY:description
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="test" aria-labelledby="t1">
+  <div id="t1" hidden>foo</div>
+</body>
+</html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelector("input").hidden = true;
+      document.title='done';
+    }, 50);
+  });
+</script>

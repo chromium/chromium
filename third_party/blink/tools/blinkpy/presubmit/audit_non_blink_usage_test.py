@@ -23,9 +23,50 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
                 self.assertIsInstance(entry['allowed'], self._REGEXP_CLASS)
             if 'disallowed' in entry:
                 self.assertIsInstance(entry['disallowed'], self._REGEXP_CLASS)
-            for match, advice in entry.get('advice', []):
+            for match, advice, warning in entry.get('advice', []):
                 self.assertIsInstance(match, self._REGEXP_CLASS)
                 self.assertIsInstance(advice, str)
+
+    def test_for_special_cases(self):
+        for entry in audit_non_blink_usage._COMPILED_CONFIG:
+            if entry['paths'] == ['third_party/blink/renderer/']:
+                check_list = [
+                    {
+                        'type': 'url::mojom::Origin',
+                        'allowed': False
+                    },
+                    {
+                        'type': '::media::mojom::InterfaceFactory',
+                        'allowed': False
+                    },
+                    {
+                        'type': 'Hogenetwork::mojom::URLLoaderFactory',
+                        'allowed': False
+                    },
+                    {
+                        'type': 'url::mojom::blink::Origin',
+                        'allowed': True
+                    },
+                    {
+                        'type': '::media::mojom::blink::InterfaceFactory',
+                        'allowed': True
+                    },
+                    {
+                        'type': 'network::mojom::URLLoaderFactory',
+                        'allowed': True
+                    },
+                    {
+                        'type': '::network::mojom::URLLoaderFactory',
+                        'allowed': True
+                    },
+                ]
+                for item in check_list:
+                    if item['allowed']:
+                        self.assertIsNone(
+                            re.match(entry['disallowed'], item['type']))
+                    elif not item['allowed']:
+                        self.assertIsNotNone(
+                            re.match(entry['disallowed'], item['type']))
 
 
 if __name__ == '__main__':

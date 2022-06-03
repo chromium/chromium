@@ -44,7 +44,7 @@ void ClipboardAPI::OnClipboardDataChanged() {
     std::unique_ptr<Event> event(
         new Event(events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
                   clipboard::OnClipboardDataChanged::kEventName,
-                  std::make_unique<base::ListValue>()));
+                  std::vector<base::Value>()));
     router->BroadcastEvent(std::move(event));
   }
 }
@@ -53,7 +53,7 @@ ClipboardSetImageDataFunction::~ClipboardSetImageDataFunction() {}
 
 ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
   std::unique_ptr<clipboard::SetImageData::Params> params(
-      clipboard::SetImageData::Params::Create(*args_));
+      clipboard::SetImageData::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Fill in the omitted additional data items with empty data.
@@ -65,10 +65,12 @@ ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
   }
 
   ExtensionsAPIClient::Get()->SaveImageDataToClipboard(
-      std::vector<char>(params->image_data.begin(), params->image_data.end()),
-      params->type, std::move(*params->additional_items),
-      base::Bind(&ClipboardSetImageDataFunction::OnSaveImageDataSuccess, this),
-      base::Bind(&ClipboardSetImageDataFunction::OnSaveImageDataError, this));
+      std::move(params->image_data), params->type,
+      std::move(*params->additional_items),
+      base::BindOnce(&ClipboardSetImageDataFunction::OnSaveImageDataSuccess,
+                     this),
+      base::BindOnce(&ClipboardSetImageDataFunction::OnSaveImageDataError,
+                     this));
   return RespondLater();
 }
 

@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,22 +19,20 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.settings.ChromeSwitchPreference;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.homepage.HomepageEditor;
-import org.chromium.chrome.browser.settings.homepage.HomepageSettings;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
+import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -54,6 +49,9 @@ public class PartnerHomepageIntegrationTest {
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
             new BasePartnerBrowserCustomizationIntegrationTestRule();
+    @Rule
+    public SettingsActivityTestRule<HomepageSettings> mHomepageSettingsTestRule =
+            new SettingsActivityTestRule<>(HomepageSettings.class);
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
 
@@ -68,10 +66,10 @@ public class PartnerHomepageIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Homepage"})
-    @RetryOnFailure
     public void testHomepageInitialLoading() {
         Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                Uri.parse(mActivityTestRule.getActivity().getActivityTab().getUrl()));
+                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivityTestRule.getActivity().getActivityTab())));
     }
 
     /**
@@ -88,7 +86,8 @@ public class PartnerHomepageIntegrationTest {
             mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
             UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
             Assert.assertNotSame(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                    Uri.parse(mActivityTestRule.getActivity().getActivityTab().getUrl()));
+                    Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivityTestRule.getActivity().getActivityTab())));
 
             // Click homepage button.
             ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
@@ -103,7 +102,8 @@ public class PartnerHomepageIntegrationTest {
                         }
                     });
             Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                    Uri.parse(mActivityTestRule.getActivity().getActivityTab().getUrl()));
+                    Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivityTestRule.getActivity().getActivityTab())));
         } finally {
             testServer.stopAndDestroyServer();
         }
@@ -138,47 +138,11 @@ public class PartnerHomepageIntegrationTest {
     }
 
     /**
-     * Custom homepage URI should be fixed (e.g., "chrome.com" -> "http://chrome.com/")
-     * when the URI is saved from the home page edit screen.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Homepage"})
-    @RetryOnFailure
-    public void testPreferenceCustomUriFixup() {
-        // Change home page custom URI on hompage edit screen.
-        final SettingsActivity editHomepagePreferenceActivity =
-                mActivityTestRule.startSettingsActivity(HomepageEditor.class.getName());
-        TestThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            // TODO(crbug.com/635567): Fix this properly.
-            @SuppressLint("SetTextI18n")
-            public void run() {
-                ((EditText) editHomepagePreferenceActivity.findViewById(R.id.homepage_url_edit))
-                        .setText("chrome.com");
-            }
-        });
-        Button saveButton =
-                (Button) editHomepagePreferenceActivity.findViewById(R.id.homepage_save);
-        TouchCommon.singleClickView(saveButton);
-
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return editHomepagePreferenceActivity.isDestroyed();
-            }
-        });
-
-        Assert.assertEquals("http://chrome.com/", HomepageManager.getHomepageUri());
-    }
-
-    /**
      * Closing the last tab should also close Chrome on Tabbed mode.
      */
     @Test
     @MediumTest
     @Feature({"Homepage"})
-    @RetryOnFailure
     public void testLastTabClosed() {
         ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(),
                 (ChromeTabbedActivity) mActivityTestRule.getActivity());
@@ -196,18 +160,14 @@ public class PartnerHomepageIntegrationTest {
     public void testCloseAllTabs() {
         final CallbackHelper tabClosed = new CallbackHelper();
         final TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        mActivityTestRule.getActivity().getCurrentTabModel().addObserver(
-                new EmptyTabModelObserver() {
-                    @Override
-                    public void didCloseTab(int tabId, boolean incognito) {
-                        if (tabModel.getCount() == 0) tabClosed.notifyCalled();
-                    }
-                });
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
-            }
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didCloseTab(int tabId, boolean incognito) {
+                    if (tabModel.getCount() == 0) tabClosed.notifyCalled();
+                }
+            });
+            mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
         });
 
         try {
@@ -237,10 +197,8 @@ public class PartnerHomepageIntegrationTest {
     private void toggleHomepageSwitchPreference(boolean expected) {
         // Launch preference activity with Homepage settings fragment.
         SettingsActivity homepagePreferenceActivity =
-                mActivityTestRule.startSettingsActivity(HomepageSettings.class.getName());
-        PreferenceFragmentCompat fragment =
-                (PreferenceFragmentCompat) homepagePreferenceActivity.getSupportFragmentManager()
-                        .findFragmentById(android.R.id.content);
+                mHomepageSettingsTestRule.startSettingsActivity();
+        HomepageSettings fragment = mHomepageSettingsTestRule.getFragment();
         ChromeSwitchPreference preference = (ChromeSwitchPreference) fragment.findPreference(
                 HomepageSettings.PREF_HOMEPAGE_SWITCH);
         Assert.assertNotNull(preference);

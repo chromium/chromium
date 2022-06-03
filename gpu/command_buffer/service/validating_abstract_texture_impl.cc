@@ -78,9 +78,8 @@ void ValidatingAbstractTextureImpl::BindImage(gl::GLImage* image,
                                        image);
 }
 
-void ValidatingAbstractTextureImpl::BindStreamTextureImage(
-    GLStreamTextureImage* image,
-    GLuint service_id) {
+void ValidatingAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
+                                                           GLuint service_id) {
   DCHECK(image);
   DCHECK(!decoder_managed_image_);
 
@@ -132,6 +131,10 @@ ContextGroup* ValidatingAbstractTextureImpl::GetContextGroup() const {
 ErrorState* ValidatingAbstractTextureImpl::GetErrorState() const {
   DCHECK(decoder_context_);
   return decoder_context_->GetErrorState();
+}
+
+void ValidatingAbstractTextureImpl::NotifyOnContextLost() {
+  NOTIMPLEMENTED();
 }
 
 void ValidatingAbstractTextureImpl::OnDecoderWillDestroy(bool have_context) {

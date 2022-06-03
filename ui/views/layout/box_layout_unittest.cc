@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
@@ -194,7 +196,7 @@ TEST_F(BoxLayoutTest, EmptyPreferredSize) {
     BoxLayout::Orientation orientation =
         i == 0 ? BoxLayout::Orientation::kHorizontal
                : BoxLayout::Orientation::kVertical;
-    host_->RemoveAllChildViews(true);
+    host_->RemoveAllChildViews();
     host_->SetLayoutManager(
         std::make_unique<BoxLayout>(orientation, gfx::Insets(), 5));
     View* v1 = new StaticSizedView(gfx::Size());
@@ -216,7 +218,7 @@ TEST_F(BoxLayoutTest, EmptyPreferredSize) {
 // Verifies that a BoxLayout correctly handles child spacing, flex layout, and
 // empty preferred size, simultaneously.
 TEST_F(BoxLayoutTest, EmptyPreferredSizeWithFlexLayoutAndChildSpacing) {
-  host_->RemoveAllChildViews(true);
+  host_->RemoveAllChildViews();
   BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), 5));
   View* v1 = new StaticSizedView(gfx::Size());
@@ -860,7 +862,7 @@ TEST_F(BoxLayoutTest, OverlappingCrossMarginsAlignEnd) {
 
     EXPECT_EQ(9, layout->GetPreferredSize(host_.get()).height());
   }
-  host_->RemoveAllChildViews(true);
+  host_->RemoveAllChildViews();
   {
     BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
         BoxLayout::Orientation::kHorizontal, gfx::Insets(0, 0), 0, true));
@@ -890,7 +892,7 @@ TEST_F(BoxLayoutTest, OverlappingCrossMarginsAlignStretch) {
 
     EXPECT_EQ(10, layout->GetPreferredSize(host_.get()).height());
   }
-  host_->RemoveAllChildViews(true);
+  host_->RemoveAllChildViews();
   {
     BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
         BoxLayout::Orientation::kHorizontal, gfx::Insets(0, 0), 0, true));
@@ -920,7 +922,7 @@ TEST_F(BoxLayoutTest, OverlappingCrossMarginsAlignStart) {
 
     EXPECT_EQ(9, layout->GetPreferredSize(host_.get()).height());
   }
-  host_->RemoveAllChildViews(true);
+  host_->RemoveAllChildViews();
   {
     BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
         BoxLayout::Orientation::kHorizontal, gfx::Insets(0, 0), 0, true));

@@ -25,12 +25,28 @@ enum class ShelfAlignment {
 enum class HotseatState {
   // Hotseat is shown off screen.
   kHidden,
-  // Hotseat is shown within the shelf. This will always be the case
-  // in clamshell mode.
-  kShown,
+
+  // Hotseat is shown within the shelf in clamshell mode.
+  kShownClamshell,
+
+  // Hotseat is shown in the tablet mode home launcher's shelf.
+  // Compared to kShownClamshell state, in this state, the shelf background is
+  // not visible behind the hotseat (shelf itself is transparent on the home
+  // screen). The hotseat also differs in size, and its bounds are moved
+  // slightly up to leave more space between the hotseat background and the
+  // bottom of the screen.
+  kShownHomeLauncher,
+
   // Hotseat is shown above the shelf.
   kExtended,
+
+  // No value,
+  kNone
 };
+
+// Defines the density of hotseat. Hotseat is "denser" if it can accommodate
+// more shelf buttons without scrolling for the given available space.
+enum class HotseatDensity { kNormal, kSemiDense, kDense };
 
 enum class ShelfAutoHideBehavior {
   kAlways,        // Always auto-hide.
@@ -101,8 +117,14 @@ enum ShelfLaunchSource {
   // The item was launched from an app list search view.
   LAUNCH_FROM_APP_LIST_SEARCH,
 
+  // The item was launched from an app list search Recommendation.
+  LAUNCH_FROM_APP_LIST_RECOMMENDATION,
+
   // The item was launched from the shelf itself.
   LAUNCH_FROM_SHELF,
+
+  // The item was launched internally, for example from test.
+  LAUNCH_FROM_INTERNAL,
 };
 
 // The actions that may be performed when a shelf item is selected.
@@ -141,7 +163,14 @@ enum ShelfItemType {
   // - Extension "V1" (legacy packaged and hosted) apps,
   // - Extension "V2" (platform) apps,
   // - ARC (App Runtime for Chrome - Android Play Store) apps.
+  // - Lacros.
   TYPE_APP,
+
+  // Similar to TYPE_BROWSER_SHORTCUT, but not pinned.
+  // This is for the Lacros migration.
+  // After Lacros is completely made, TYPE_BROWSER_SHORTCUT and
+  // TYPE_UNPINNED_BROWSER_SHORTCUT will be removed, eventually.
+  TYPE_UNPINNED_BROWSER_SHORTCUT,
 
   // Represents an open dialog.
   TYPE_DIALOG,
@@ -152,6 +181,9 @@ enum ShelfItemType {
 
 // Returns true if |type| is a valid ShelfItemType.
 ASH_PUBLIC_EXPORT bool IsValidShelfItemType(int64_t type);
+
+// Returns true if |type| is a pinned type (i.e. not a running app or dialog).
+ASH_PUBLIC_EXPORT bool IsPinnedShelfItemType(ShelfItemType type);
 
 // Returns true if types |a| and |b| have the same pin state, i.e. if they
 // are both pinned apps (or a browser shortcut which is always pinned) or both
@@ -166,6 +198,16 @@ enum ShelfItemStatus {
   STATUS_RUNNING,
   // A shelf item that needs user's attention.
   STATUS_ATTENTION,
+};
+
+// Represents the app status in the shelf or app_list.
+enum AppStatus {
+  // The app is ready.
+  kReady,
+  // The app is blocked.
+  kBlocked,
+  // The app is paused.
+  kPaused,
 };
 
 // A unique shelf item id composed of an |app_id| and a |launch_id|.

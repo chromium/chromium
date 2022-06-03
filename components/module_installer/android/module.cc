@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/module_installer/android/jni_headers/Module_jni.h"
@@ -52,10 +52,11 @@ void* LoadLibrary(const std::string& library_name,
   // (hence there is no reason for the Java ClassLoader to be aware of the
   // library, for lazy JNI registration).
   const std::string partition_name = module_name + "_partition";
-  library_handle =
-      BundleUtils::DlOpenModuleLibraryPartition(library_name, partition_name);
+  library_handle = BundleUtils::DlOpenModuleLibraryPartition(
+      library_name, partition_name, module_name);
 #elif defined(COMPONENT_BUILD)
-  std::string library_path = BundleUtils::ResolveLibraryPath(library_name);
+  std::string library_path =
+      BundleUtils::ResolveLibraryPath(library_name, module_name);
   library_handle = dlopen(library_path.c_str(), RTLD_LOCAL);
 #else
 #error "Unsupported configuration."
@@ -77,9 +78,9 @@ void RegisterJni(JNIEnv* env, void* library_handle, const std::string& name) {
   CHECK(registration_function(env)) << "JNI registration failed: " << name;
 }
 
-void LoadResources(const std::string& pak) {
+void LoadResources(const std::string& pak, const std::string& name) {
   module_installer::ScopedAllowModulePakLoad scoped_allow_module_pak_load;
-  ui::LoadPackFileFromApk("assets/" + pak);
+  ui::LoadPackFileFromApk("assets/" + pak, name);
 }
 
 }  // namespace
@@ -107,7 +108,7 @@ static void JNI_Module_LoadNative(
   std::vector<std::string> paks;
   base::android::AppendJavaStringArrayToStringVector(env, jpaks, &paks);
   for (const auto& pak : paks) {
-    LoadResources(pak);
+    LoadResources(pak, name);
   }
 }
 

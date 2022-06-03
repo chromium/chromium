@@ -64,7 +64,7 @@ public abstract class CronetEngine {
         /**
          * Constructs a {@link Builder} object that facilitates creating a
          * {@link CronetEngine}. The default configuration enables HTTP/2 and
-         * disables QUIC and the HTTP cache.
+         * QUIC, but disables the HTTP cache.
          *
          * @param context Android {@link Context}, which is used by
          *                {@link Builder} to retrieve the application
@@ -142,7 +142,7 @@ public abstract class CronetEngine {
 
         /**
          * Sets whether <a href="https://www.chromium.org/quic">QUIC</a> protocol
-         * is enabled. Defaults to disabled. If QUIC is enabled, then QUIC User Agent Id
+         * is enabled. Defaults to enabled. If QUIC is enabled, then QUIC User Agent Id
          * containing application name and Cronet version is sent to the server.
          * @param value {@code true} to enable QUIC, {@code false} to disable.
          * @return the builder to facilitate chaining.

@@ -3,26 +3,33 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "mojo/core/test/mojo_test_base.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/remote_unittest.test-mojom.h"
@@ -33,6 +40,7 @@
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/scoping.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -261,7 +269,7 @@ TEST_P(EndToEndRemoteTest, EndToEnd) {
 }
 
 TEST_P(EndToEndRemoteTest, EndToEndOnSequence) {
-  RunTest(base::CreateSequencedTaskRunner({base::ThreadPool()}));
+  RunTest(base::ThreadPool::CreateSequencedTaskRunner({}));
 }
 
 TEST_P(RemoteTest, Movable) {
@@ -523,11 +531,11 @@ TEST(StrongConnectorTest, Math) {
   {
     MathCalculatorUI calculator_ui(std::move(calc));
 
-    base::RunLoop run_loop, run_loop2;
-    calculator_ui.Add(2.0, run_loop.QuitClosure());
-    calculator_ui.Multiply(5.0, run_loop2.QuitClosure());
-    run_loop.Run();
+    base::RunLoop run_loop2, run_loop3;
+    calculator_ui.Add(2.0, run_loop2.QuitClosure());
+    calculator_ui.Multiply(5.0, run_loop3.QuitClosure());
     run_loop2.Run();
+    run_loop3.Run();
 
     EXPECT_EQ(10.0, calculator_ui.GetOutput());
     EXPECT_FALSE(disconnected);
@@ -595,11 +603,11 @@ TEST(WeakConnectorTest, Math) {
     MathCalculatorUI calculator_ui(
         PendingRemote<math::Calculator>(std::move(pipe.handle1), 0u));
 
-    base::RunLoop run_loop, run_loop2;
-    calculator_ui.Add(2.0, run_loop.QuitClosure());
-    calculator_ui.Multiply(5.0, run_loop2.QuitClosure());
-    run_loop.Run();
+    base::RunLoop run_loop2, run_loop3;
+    calculator_ui.Add(2.0, run_loop2.QuitClosure());
+    calculator_ui.Multiply(5.0, run_loop3.QuitClosure());
     run_loop2.Run();
+    run_loop3.Run();
 
     EXPECT_EQ(10.0, calculator_ui.GetOutput());
     EXPECT_FALSE(disconnected);
@@ -880,8 +888,7 @@ TEST_P(RemoteTest, SharedRemote) {
 
   // Send a message on |thread_safe_remote| from a different sequence.
   auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
-  auto sender_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+  auto sender_task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
   sender_task_runner->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&] {
         shared_remote->Add(
@@ -898,7 +905,7 @@ TEST_P(RemoteTest, SharedRemote) {
 
 TEST_P(RemoteTest, SharedRemoteWithTaskRunner) {
   const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+      base::ThreadPool::CreateSequencedTaskRunner({});
 
   PendingRemote<math::Calculator> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
@@ -937,12 +944,225 @@ TEST_P(RemoteTest, SharedRemoteWithTaskRunner) {
   shared_remote.reset();
 }
 
+class SequenceCheckerImpl : public mojom::SequenceChecker {
+ public:
+  SequenceCheckerImpl() = default;
+  ~SequenceCheckerImpl() override = default;
+
+  void set_quit_callback(base::OnceClosure callback) {
+    quit_callback_ = std::move(callback);
+  }
+
+  // mojom::SequenceChecker:
+  void Bind(
+      PendingAssociatedReceiver<mojom::SequenceChecker> receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void AddClient(
+      PendingAssociatedRemote<mojom::SequenceCheckerClient> client) override {
+    clients_.Add(std::move(client));
+  }
+
+  void Check(int32_t n) override {
+    CHECK_EQ(next_expected_value_, n);
+    ++next_expected_value_;
+  }
+
+  void GetNextExpectedValue(GetNextExpectedValueCallback callback) override {
+    for (auto& client : clients_)
+      client->OnNextExpectedValueQueried(next_expected_value_);
+    std::move(callback).Run(next_expected_value_);
+  }
+
+  void Quit(QuitCallback callback) override {
+    for (auto& client : clients_)
+      client->OnQuit();
+
+    // Destroys `this`, so we don't bother responding.
+    DCHECK(quit_callback_);
+    std::move(quit_callback_).Run();
+  }
+
+ private:
+  int32_t next_expected_value_ = 0;
+  AssociatedReceiverSet<mojom::SequenceChecker> receivers_;
+  AssociatedRemoteSet<mojom::SequenceCheckerClient> clients_;
+  base::OnceClosure quit_callback_;
+};
+
+class SequenceCheckerClientImpl : public mojom::SequenceCheckerClient {
+ public:
+  SequenceCheckerClientImpl() = default;
+  ~SequenceCheckerClientImpl() override = default;
+
+  PendingAssociatedRemote<mojom::SequenceCheckerClient> MakeRemote() {
+    PendingAssociatedRemote<mojom::SequenceCheckerClient> remote;
+    receivers_.Add(this, remote.InitWithNewEndpointAndPassReceiver());
+    return remote;
+  }
+
+  // mojom::SequenceCheckerClient:
+  void OnNextExpectedValueQueried(int32_t n) override {}
+  void OnQuit() override {}
+
+ private:
+  AssociatedReceiverSet<mojom::SequenceCheckerClient> receivers_;
+};
+
+TEST_P(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
+  // Verifies that we can start passing associated endpoints over a SharedRemote
+  // as soon as it's constructed, even if it's still scheduled to bind on a
+  // background thread.
+  const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  PendingRemote<mojom::SequenceChecker> remote;
+  other_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SequenceChecker> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SequenceCheckerImpl>(),
+                           std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+
+  SharedRemote<mojom::SequenceChecker> checker(std::move(remote),
+                                               other_thread_task_runner);
+  PendingAssociatedRemote<mojom::SequenceChecker> pending_associated_checker;
+  checker->Bind(
+      pending_associated_checker.InitWithNewEndpointAndPassReceiver());
+
+  SharedAssociatedRemote<mojom::SequenceChecker> associated_checker =
+      mojo::SharedAssociatedRemote<mojom::SequenceChecker>(
+          std::move(pending_associated_checker), other_thread_task_runner);
+
+  PendingAssociatedRemote<mojom::SequenceChecker>
+      later_pending_associated_checker;
+  auto later_associated_receiver =
+      later_pending_associated_checker.InitWithNewEndpointAndPassReceiver();
+  SharedAssociatedRemote<mojom::SequenceChecker> later_associated_checker =
+      mojo::SharedAssociatedRemote<mojom::SequenceChecker>(
+          std::move(later_pending_associated_checker),
+          other_thread_task_runner);
+  checker->Bind(std::move(later_associated_receiver));
+
+  checker->Check(0);
+  associated_checker->Check(1);
+  later_associated_checker->Check(2);
+  checker->Check(3);
+
+  // Make sure the above Checks reach the impl before we pass the test.
+  int32_t next_expected_value = 0;
+  EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
+  EXPECT_EQ(4, next_expected_value);
+}
+
+TEST_P(RemoteTest, SharedRemoteEarlySyncCall) {
+  // Verifies that sync calls made immediately after SharedRemote setup (with
+  // off-thread binding) do not deadlock.
+  const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  PendingRemote<mojom::SequenceChecker> remote;
+  other_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SequenceChecker> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SequenceCheckerImpl>(),
+                           std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+  SharedRemote<mojom::SequenceChecker> checker(std::move(remote),
+                                               other_thread_task_runner);
+
+  int32_t next_expected_value = -1;
+  EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
+  EXPECT_EQ(0, next_expected_value);
+}
+
+TEST_P(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
+  // Verifies that a sync reply on a SharedRemote is properly handled even if
+  // there's an another event (in this case, an async message to an associated
+  // interface) ahead of it in the underlying router's task queue.
+  const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  PendingRemote<mojom::SequenceChecker> remote;
+  other_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SequenceChecker> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SequenceCheckerImpl>(),
+                           std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+  SharedRemote<mojom::SequenceChecker> checker(std::move(remote),
+                                               other_thread_task_runner);
+
+  SequenceCheckerClientImpl client;
+  checker->AddClient(client.MakeRemote());
+
+  int32_t next_expected_value = -1;
+  EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
+  EXPECT_EQ(0, next_expected_value);
+}
+
+// Flaky on all platforms. https://crbug.com/1224768
+TEST_P(RemoteTest, DISABLED_DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
+  // Regression test for https://crbug.com/1223628.
+  //
+  // This tests a fairly obscure edge case where one or more message tasks is
+  // queued and ready for dispatch to one or more endpoints on a pipe, but
+  // another endpoint on one of the same sequences is blocking the thread on an
+  // off-thread sync wait via a SharedAssociatedRemote proxy. We test that in
+  // this scenario, disconnection of the underlying pipe will interrupt the sync
+  // wait as expected.
+
+  const scoped_refptr<base::SequencedTaskRunner> impl_sequence =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  const scoped_refptr<base::SequencedTaskRunner> associated_sequence =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  SharedRemote<mojom::SequenceChecker> remote;
+  UniqueReceiverSet<mojom::SequenceChecker> checkers;
+  base::RunLoop bind_loop;
+  base::OnceClosure bind_done = bind_loop.QuitClosure();
+  impl_sequence->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        // Make sure the impl clears `checkers` immediately when Quit() is
+        // invoked so that it self-destructs.
+        auto impl = std::make_unique<SequenceCheckerImpl>();
+        impl->set_quit_callback(
+            base::BindLambdaForTesting([&] { checkers.Clear(); }));
+        checkers.Add(std::move(impl),
+                     remote.BindNewPipeAndPassReceiver(impl_sequence));
+        std::move(bind_done).Run();
+      }));
+  bind_loop.Run();
+
+  // Bind an associated endpoint that sends messages from a different background
+  // sequence.
+  SharedAssociatedRemote<mojom::SequenceChecker> associated_remote;
+  remote->Bind(
+      associated_remote.BindNewEndpointAndPassReceiver(associated_sequence));
+
+  // Add a new client, so that the impl can queue up an outgoing message before
+  // disconnecting. We do this to ensure there's a non-error task in the local
+  // endpoint's task queue before disconnection can be observed. The task won't
+  // dispatch because this thread will be blocked on the sync wait below.
+  SequenceCheckerClientImpl client;
+  associated_remote->AddClient(client.MakeRemote());
+
+  // Finally, do a sync call. This should still terminate as soon as the remote
+  // is disconnected by the impl's quit callback set above, despite the fact
+  // that there will be undispatched tasks queued on the local client endpoint.
+  // The bug this test is covering would cause this wait to hang indefinitely.
+  EXPECT_FALSE(associated_remote->Quit());
+}
+
 TEST_P(RemoteTest, SharedRemoteDisconnectCallback) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+      base::ThreadPool::CreateSequencedTaskRunner({});
   SharedRemote<math::Calculator> shared_remote(std::move(remote),
                                                main_task_runner);
 
@@ -994,8 +1214,8 @@ TEST_P(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
   // See https://crbug.com/1016022.
 
   const scoped_refptr<base::SequencedTaskRunner> bound_task_runner =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::WithBaseSyncPrimitives()});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::WithBaseSyncPrimitives()});
 
   PendingRemote<mojom::SharedRemoteSyncTest> pending_remote;
   auto receiver = pending_remote.InitWithNewPipeAndPassReceiver();
@@ -1003,14 +1223,13 @@ TEST_P(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
   SharedRemote<mojom::SharedRemoteSyncTest> remote(std::move(pending_remote),
                                                    bound_task_runner);
   bound_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](mojo::PendingReceiver<mojom::SharedRemoteSyncTest> receiver) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<SharedRemoteSyncTestImpl>(),
-                std::move(receiver));
-          },
-          std::move(receiver)));
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SharedRemoteSyncTest> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SharedRemoteSyncTestImpl>(),
+                           std::move(receiver));
+                     },
+                     std::move(receiver)));
 
   int32_t value = 0;
   remote->Fetch(&value);
@@ -1024,8 +1243,72 @@ TEST_P(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
   task_environment()->RunUntilIdle();
 }
 
+TEST_P(RemoteTest, SharedRemoteSyncCallsFromOffBoundConstructionSequence) {
+  // Regression test for https://crbug.com/1102921. Verifies that when
+  // bound to its construction sequence, a SharedRemote doesn't try blocking
+  // that sequence when a sync call is made from another sequence.
+
+  const scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::WithBaseSyncPrimitives()});
+
+  // Ensure waiting on the main thread is not allowed so that blocking attempts
+  // will break the test.
+  base::DisallowBaseSyncPrimitives();
+
+  PendingRemote<mojom::SharedRemoteSyncTest> pending_remote;
+  SharedRemoteSyncTestImpl impl;
+  Receiver<mojom::SharedRemoteSyncTest> receiver(
+      &impl, pending_remote.InitWithNewPipeAndPassReceiver());
+
+  int32_t value = 0;
+  base::RunLoop loop;
+  base::OnceClosure quit = loop.QuitClosure();
+  SharedRemote<mojom::SharedRemoteSyncTest> remote(std::move(pending_remote));
+  background_task_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([remote, &value, &quit] {
+        EXPECT_TRUE(remote->Fetch(&value));
+        EXPECT_EQ(kMagicNumber, value);
+        std::move(quit).Run();
+      }));
+
+  loop.Run();
+
+  // TaskEnvironment teardown wants to block the main thread.
+  base::internal::ResetThreadRestrictionsForTesting();
+}
+
+TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
+  // Regression test for https://crbug.com/1102921. Verifies that when
+  // bound to some sequence other than that which constructed it, a SharedRemote
+  // properly blocks when making sync calls from the bound sequence.
+
+  const scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::WithBaseSyncPrimitives()});
+
+  PendingRemote<mojom::SharedRemoteSyncTest> pending_remote;
+  SharedRemoteSyncTestImpl impl;
+  Receiver<mojom::SharedRemoteSyncTest> receiver(
+      &impl, pending_remote.InitWithNewPipeAndPassReceiver());
+
+  int32_t value = 0;
+  base::RunLoop loop;
+  base::OnceClosure quit = loop.QuitClosure();
+  SharedRemote<mojom::SharedRemoteSyncTest> remote(std::move(pending_remote),
+                                                   background_task_runner);
+  background_task_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([remote, &value, &quit] {
+        EXPECT_TRUE(remote->Fetch(&value));
+        EXPECT_EQ(kMagicNumber, value);
+        std::move(quit).Run();
+      }));
+
+  loop.Run();
+}
+
 TEST_P(RemoteTest, RemoteSet) {
-  std::vector<base::Optional<MathCalculatorImpl>> impls(3);
+  std::vector<absl::optional<MathCalculatorImpl>> impls(3);
 
   PendingRemote<math::Calculator> remote0;
   PendingRemote<math::Calculator> remote1;
@@ -1043,18 +1326,28 @@ TEST_P(RemoteTest, RemoteSet) {
   {
     base::RunLoop loop;
     constexpr double kValue = 42.0;
-    auto on_add = base::BarrierClosure(3, loop.QuitClosure());
+    auto on_add = base::BarrierClosure(6, loop.QuitClosure());
     for (auto& remote : remotes) {
       remote->Add(kValue, base::BindLambdaForTesting([&](double total) {
                     EXPECT_EQ(kValue, total);
                     on_add.Run();
                   }));
     }
+
+    // Use Get() to get a specified remote from RemoteSet.
+    std::vector<mojo::RemoteSetElementId> ids = {id0, id1, id2};
+    for (auto& id : ids) {
+      remotes.Get(id)->Add(kValue,
+                           base::BindLambdaForTesting([&](double total) {
+                             EXPECT_EQ(kValue * 2, total);
+                             on_add.Run();
+                           }));
+    }
     loop.Run();
 
-    EXPECT_EQ(kValue, impls[0]->total());
-    EXPECT_EQ(kValue, impls[1]->total());
-    EXPECT_EQ(kValue, impls[2]->total());
+    EXPECT_EQ(kValue * 2, impls[0]->total());
+    EXPECT_EQ(kValue * 2, impls[1]->total());
+    EXPECT_EQ(kValue * 2, impls[2]->total());
   }
 
   EXPECT_FALSE(remotes.empty());
@@ -1110,7 +1403,84 @@ TEST_P(RemoteTest, RemoteSet) {
   EXPECT_TRUE(remotes.empty());
 }
 
+bool* dump_without_crashing_flag;
+extern "C" void HandleDumpWithoutCrashing() {
+  *dump_without_crashing_flag = true;
+}
+
+class LargeMessageTestImpl : public mojom::LargeMessageTest {
+ public:
+  explicit LargeMessageTestImpl(
+      PendingReceiver<mojom::LargeMessageTest> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~LargeMessageTestImpl() override = default;
+
+  // mojom::LargeMessageTest implementation:
+  void ProcessData(const std::vector<uint8_t>& data,
+                   ProcessDataCallback callback) override {
+    std::move(callback).Run(data.size());
+  }
+
+  void ProcessLotsOfData(const std::vector<uint8_t>& data,
+                         ProcessLotsOfDataCallback callback) override {
+    std::move(callback).Run(data.size());
+  }
+
+  void GetLotsOfData(uint64_t data_size,
+                     GetLotsOfDataCallback callback) override {
+    std::move(callback).Run(std::vector<uint8_t>(data_size));
+  }
+
+ private:
+  Receiver<mojom::LargeMessageTest> receiver_;
+};
+
+TEST_P(RemoteTest, SendVeryLargeMessages) {
+  Remote<mojom::LargeMessageTest> remote;
+  LargeMessageTestImpl impl(remote.BindNewPipeAndPassReceiver());
+
+  bool did_dump_without_crashing = false;
+  dump_without_crashing_flag = &did_dump_without_crashing;
+  base::debug::SetDumpWithoutCrashingFunction(&HandleDumpWithoutCrashing);
+
+  // The test runner configures Mojo to cap message size at
+  // `kMaxMessageSizeInTests`, so we test with data that's double that size.
+  constexpr size_t kBigDataSize =
+      core::test::MojoTestBase::kMaxMessageSizeInTests * 2;
+  std::vector<uint8_t> lots_of_data(kBigDataSize);
+  uint64_t data_size = 0;
+  ASSERT_TRUE(remote->ProcessData(lots_of_data, &data_size));
+  EXPECT_EQ(kBigDataSize, data_size);
+
+  if (GetParam() == BindingsTestSerializationMode::kNeverSerialize) {
+    // If the message is never serialized, there won't be a crash report even
+    // without the [UnlimitedSize] attribute.
+    EXPECT_FALSE(did_dump_without_crashing);
+  } else {
+    EXPECT_TRUE(did_dump_without_crashing);
+  }
+
+  did_dump_without_crashing = false;
+  data_size = 0;
+  ASSERT_TRUE(remote->ProcessLotsOfData(lots_of_data, &data_size));
+  EXPECT_EQ(kBigDataSize, data_size);
+
+  // Serialized or not, this message won't generate a crash report because it's
+  // explicitly marked with [UnlimitedSize].
+  EXPECT_FALSE(did_dump_without_crashing);
+
+  // [UnlimitedSize] also allows replies to be large.
+  did_dump_without_crashing = false;
+  lots_of_data.clear();
+  ASSERT_TRUE(remote->GetLotsOfData(kBigDataSize, &lots_of_data));
+  EXPECT_EQ(kBigDataSize, lots_of_data.size());
+  EXPECT_FALSE(did_dump_without_crashing);
+
+  base::debug::SetDumpWithoutCrashingFunction(nullptr);
+}
+
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(RemoteTest);
+INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(EndToEndRemoteTest);
 
 }  // namespace
 }  // namespace remote_unittest

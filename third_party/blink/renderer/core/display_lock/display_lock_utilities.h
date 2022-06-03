@@ -7,7 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -19,29 +22,161 @@ class CORE_EXPORT DisplayLockUtilities {
  public:
   // This class forces updates on display locks from the given node up the
   // ancestor chain until the local frame root.
-  class ScopedChainForcedUpdate {
-    DISALLOW_COPY_AND_ASSIGN(ScopedChainForcedUpdate);
+  class CORE_EXPORT ScopedForcedUpdate {
+    STACK_ALLOCATED();
 
    public:
-    explicit ScopedChainForcedUpdate(const Node* node,
-                                     bool include_self = false);
-    ~ScopedChainForcedUpdate() = default;
-
-    void CreateParentFrameScopeIfNeeded(const Node* node);
+    ScopedForcedUpdate(ScopedForcedUpdate&& other) : impl_(other.impl_) {
+      other.impl_ = nullptr;
+    }
+    ScopedForcedUpdate& operator=(ScopedForcedUpdate&& other) {
+      impl_ = other.impl_;
+      other.impl_ = nullptr;
+      return *this;
+    }
+    ~ScopedForcedUpdate() {
+      if (impl_)
+        impl_->Destroy();
+    }
 
    private:
-    Vector<DisplayLockContext::ScopedForcedUpdate> scoped_update_forced_list_;
-    std::unique_ptr<ScopedChainForcedUpdate> parent_frame_scope_;
+    // It is important not to create multiple ScopedChainForcedUpdate scopes.
+    // The following functions update some combination of Style, Layout, Paint
+    // information after forcing the display locks. It should be enough to use
+    // one of the following functions instead of forcing the scope manually.
+    friend void Document::UpdateStyleAndLayoutForNode(
+        const Node* node,
+        DocumentUpdateReason reason);
+    friend void Document::UpdateStyleAndLayoutTreeForNode(const Node*);
+    friend void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node);
+    friend void Document::EnsurePaintLocationDataValidForNode(
+        const Node* node,
+        DocumentUpdateReason reason);
+    friend VisibleSelection
+    FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
+    friend FloatRect Range::BoundingRect() const;
+    friend DOMRectList* Range::getClientRects() const;
+
+    friend class DisplayLockContext;
+
+    // Test friends.
+    friend class DisplayLockContextRenderingTest;
+
+    explicit ScopedForcedUpdate(const Node* node,
+                                DisplayLockContext::ForcedPhase phase,
+                                bool include_self = false)
+        : impl_(MakeGarbageCollected<Impl>(node, phase, include_self)) {}
+    explicit ScopedForcedUpdate(const Range* range,
+                                DisplayLockContext::ForcedPhase phase)
+        : impl_(MakeGarbageCollected<Impl>(range, phase)) {}
+
+    friend class DisplayLockDocumentState;
+
+    class CORE_EXPORT Impl final : public GarbageCollected<Impl> {
+     public:
+      Impl(const Node* node,
+           DisplayLockContext::ForcedPhase phase,
+           bool include_self = false);
+      Impl(const Range* range, DisplayLockContext::ForcedPhase phase);
+
+      // Adds another display-lock scope to this chain. Added when a new lock is
+      // created in the ancestor chain of this chain's node.
+      void AddForcedUpdateScopeForContext(DisplayLockContext*);
+
+      void Destroy();
+
+      void Trace(Visitor* visitor) const {
+        visitor->Trace(node_);
+        visitor->Trace(forced_context_set_);
+        visitor->Trace(parent_frame_impl_);
+      }
+
+     private:
+      Member<const Node> node_;
+      DisplayLockContext::ForcedPhase phase_;
+      HeapHashSet<Member<DisplayLockContext>> forced_context_set_;
+      Member<Impl> parent_frame_impl_;
+    };
+
+    Impl* impl_ = nullptr;
   };
+
+  class LockCheckMemoizationScope {
+    STACK_ALLOCATED();
+
+   public:
+    LockCheckMemoizationScope(LockCheckMemoizationScope&& other) {
+      if (DisplayLockUtilities::memoizer_ == &other)
+        DisplayLockUtilities::memoizer_ = this;
+    }
+    LockCheckMemoizationScope(const LockCheckMemoizationScope&) = delete;
+    ~LockCheckMemoizationScope() {
+      if (DisplayLockUtilities::memoizer_ == this) {
+        DisplayLockUtilities::memoizer_ = nullptr;
+      }
+    }
+
+   private:
+    friend class DisplayLockUtilities;
+    LockCheckMemoizationScope() {
+      if (!DisplayLockUtilities::memoizer_)
+        DisplayLockUtilities::memoizer_ = this;
+    }
+
+    absl::optional<bool> IsNodeLocked(const Node* node) {
+      if (nodes_preventing_paint.Contains(node))
+        return true;
+      if (unlocked_nodes.Contains(node))
+        return false;
+      return absl::nullopt;
+    }
+
+    absl::optional<bool> IsNodeLockedForAccessibility(const Node* node) {
+      if (nodes_preventing_accessibility.Contains(node))
+        return true;
+      if (unlocked_nodes.Contains(node))
+        return false;
+      return absl::nullopt;
+    }
+
+    void NotifyLocked(const Node* node) {
+      if (IsMemoizationScopeFull())
+        return;
+      nodes_preventing_paint.insert(node);
+    }
+
+    void NotifyLockedForAccessibility(const Node* node) {
+      if (IsMemoizationScopeFull())
+        return;
+      nodes_preventing_accessibility.insert(node);
+    }
+
+    void NotifyUnlocked(const Node* node) {
+      if (IsMemoizationScopeFull())
+        return;
+      unlocked_nodes.insert(node);
+    }
+
+    bool IsMemoizationScopeFull() {
+      constexpr int kTotalMemoizedNodeLimit = 2000;
+      return (nodes_preventing_paint.size() +
+              nodes_preventing_accessibility.size() + unlocked_nodes.size()) >=
+             kTotalMemoizedNodeLimit;
+    }
+
+    HeapHashSet<Member<const Node>> nodes_preventing_paint;
+    HeapHashSet<Member<const Node>> nodes_preventing_accessibility;
+    HeapHashSet<Member<const Node>> unlocked_nodes;
+  };
+
+  static LockCheckMemoizationScope CreateLockCheckMemoizationScope() {
+    return LockCheckMemoizationScope();
+  }
+
   // Activates all the nodes within a find-in-page match |range|.
   // Returns true if at least one node gets activated.
   // See: http://bit.ly/2RXULVi, "beforeactivate Event" part.
   static bool ActivateFindInPageMatchRangeIfNeeded(
-      const EphemeralRangeInFlatTree& range);
-
-  // Activates all locked nodes in |range| that are activatable and doesn't
-  // have user-select:none. Returns true if we activated at least one node.
-  static bool ActivateSelectionRangeIfNeeded(
       const EphemeralRangeInFlatTree& range);
 
   // Returns activatable-locked inclusive ancestors of |node|.
@@ -52,30 +187,108 @@ class CORE_EXPORT DisplayLockUtilities {
       const Node& node,
       DisplayLockActivationReason reason);
 
-  // Returns the nearest inclusive ancestor of |node| that is display locked.
-  static const Element* NearestLockedInclusiveAncestor(const Node& node);
-  static Element* NearestLockedInclusiveAncestor(Node& node);
+  // Returns the nearest inclusive ancestor of |element| that has
+  // content-visibility: hidden-matchable.
+  // TODO(crbug.com/1249939): Remove this.
+  static Element* NearestHiddenMatchableInclusiveAncestor(Element& element);
 
-  // Returns the nearest non-inclusive ancestor of |node| that is display
-  // locked.
-  static Element* NearestLockedExclusiveAncestor(const Node& node);
+  // Ancestor navigation functions.
 
-  // Returns the highest inclusive ancestor of |node| that is display locked.
-  static Element* HighestLockedInclusiveAncestor(const Node& node);
+  // Helpers for ancestor navigation to find locks.
+  static const Element* LockedInclusiveAncestorPreventingLayout(
+      const Node& node);
+  static const Element* LockedInclusiveAncestorPreventingPaint(
+      const LayoutObject& object);
+  static const Element* LockedInclusiveAncestorPreventingPaint(
+      const Node& node);
+
+  // The following don't consider the passed argument as a valid lock (i.e. they
+  // are exclusive checks).
+  static Element* LockedAncestorPreventingLayout(const LayoutObject& object);
+  static Element* LockedAncestorPreventingLayout(const Node& node);
+  static Element* LockedAncestorPreventingPaint(const LayoutObject& object);
+  static Element* LockedAncestorPreventingPaint(const Node& node);
+  static Element* LockedAncestorPreventingPrePaint(const LayoutObject& object);
+  static Element* LockedAncestorPreventingStyle(const Node& element);
+
+  // Use these functions to check for locked node preventing paint if the
+  // actual Element that has the lock is not important. These functions can be
+  // significantly faster if the memoization scope has been created. If the
+  // scope does not exist, they are equivalent to LockedAncestorPreventingPaint.
+  static bool IsDisplayLockedPreventingPaint(const Node* node,
+                                             bool inclusive_check = false);
+  static bool IsDisplayLockedPreventingPaint(const LayoutObject* object);
+
+  // Returns the nearest inclusive ancestor of |node| that is display locked
+  // and blocks style & layout tree building within the same TreeScope as
+  // |node|, meaning that no flat tree traversals are made.
+  static Element* LockedInclusiveAncestorPreventingStyleWithinTreeScope(
+      const Node& node);
 
   // Returns the highest exclusive ancestor of |node| that is display locked.
+  // Note that this function crosses local frames.
   static Element* HighestLockedExclusiveAncestor(const Node& node);
+  static Element* HighestLockedInclusiveAncestor(const Node& node);
 
-  // LayoutObject versions of the NearestLocked* ancestor functions.
-  static Element* NearestLockedInclusiveAncestor(const LayoutObject& object);
-  static Element* NearestLockedExclusiveAncestor(const LayoutObject& object);
+  // Returns true if |node| is not in a locked subtree, or if it's possible to
+  // activate all of the locked ancestors for |activation_reason|.
+  static bool IsInUnlockedOrActivatableSubtree(
+      const Node& node,
+      DisplayLockActivationReason activation_reason =
+          DisplayLockActivationReason::kAny);
 
-  // Whether this node has non-activatable locked exclusive ancestors or not.
-  static bool IsInNonActivatableLockedSubtree(const Node& node);
+  // Returns true if |node| is in a locked subtree, and at least one of its
+  // locked ancestors can't be activated with |activation_reason|. In other
+  // words, this node should be treated as if it's not in the tree for
+  // |activation_reason|.
+  static bool ShouldIgnoreNodeDueToDisplayLock(
+      const Node& node,
+      DisplayLockActivationReason activation_reason) {
+    return !IsInUnlockedOrActivatableSubtree(node, activation_reason);
+  }
 
   // Returns true if the element is in a locked subtree (or is self-locked with
   // no self-updates). This crosses frames while navigating the ancestor chain.
-  static bool IsInLockedSubtreeCrossingFrames(const Node& node);
+  static bool IsInLockedSubtreeCrossingFrames(
+      const Node& node,
+      IncludeSelfOrNot self = kExcludeSelf);
+
+  // Called when the focused element changes. These functions update locks to
+  // ensure that focused element ancestors remain unlocked for 'auto' state.
+  static void ElementLostFocus(Element*);
+  static void ElementGainedFocus(Element*);
+
+  static void SelectionChanged(const EphemeralRangeInFlatTree& old_selection,
+                               const EphemeralRangeInFlatTree& new_selection);
+  static void SelectionRemovedFromDocument(Document& document);
+
+  static bool PrePaintBlockedInParentFrame(LayoutView* layout_view);
+
+  static bool IsAutoWithoutLayout(const LayoutObject& object);
+
+  // Walks up the ancestor chain and expands all elements with the
+  // hidden=until-found attribute found along by removing the hidden attribute.
+  // If any were expanded, returns true.
+  // This method may run script because of the mutation events fired when
+  // removing the hidden attribute.
+  static bool RevealHiddenUntilFoundAncestors(const Node&);
+
+  // This checks if the node is unlocked for sure, but can have false negatives.
+  // In other words, if this returns true then the node is definitely not
+  // locked. If this returns false, then the node _may_ be locked. This is a
+  // fast function. For a more accurate, but slower result, use one of the other
+  // functions such as IsDisplayLockedPreventingPaint or
+  // LockedAncestorPreventing*.
+  static bool IsUnlockedQuickCheck(const Node& node);
+
+ private:
+  // This is a helper function for ShouldIgnoreNodeDueToDisplayLock() when the
+  // activation reason is kAccessibility. Note that it's private because it
+  // assumes certain conditions (specifically the presence of `memoizer_`, which
+  // is checked in the caller.
+  static bool IsLockedForAccessibility(const Node& node);
+
+  static LockCheckMemoizationScope* memoizer_;
 };
 
 }  // namespace blink

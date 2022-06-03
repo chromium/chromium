@@ -38,9 +38,6 @@ double ZoomController::GetZoomLevelForWebContents(
 
 ZoomController::ZoomController(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      can_show_bubble_(true),
-      zoom_mode_(ZOOM_MODE_DEFAULT),
-      zoom_level_(1.0),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
@@ -112,7 +109,7 @@ bool ZoomController::SetZoomLevelByClient(
   // Cannot zoom in disabled mode. Also, don't allow changing zoom level on
   // a crashed tab, an error page or an interstitial page.
   if (zoom_mode_ == ZOOM_MODE_DISABLED ||
-      !web_contents()->GetRenderViewHost()->IsRenderViewLive())
+      !web_contents()->GetMainFrame()->GetRenderViewHost()->IsRenderViewLive())
     return false;
 
   // Store client data so the |client| can be attributed when the zoom
@@ -154,11 +151,16 @@ bool ZoomController::SetZoomLevelByClient(
       content::HostZoomMap::GetForWebContents(web_contents());
   DCHECK(zoom_map);
   DCHECK(!event_data_);
-  event_data_.reset(new ZoomChangedEventData(web_contents(), GetZoomLevel(),
-                                             zoom_level, zoom_mode_,
-                                             false /* can_show_bubble */));
-  int process_id = web_contents()->GetRenderViewHost()->GetProcess()->GetID();
-  int view_id = web_contents()->GetRenderViewHost()->GetRoutingID();
+  event_data_ = std::make_unique<ZoomChangedEventData>(
+      web_contents(), GetZoomLevel(), zoom_level, zoom_mode_,
+      false /* can_show_bubble */);
+  int process_id = web_contents()
+                       ->GetMainFrame()
+                       ->GetRenderViewHost()
+                       ->GetProcess()
+                       ->GetID();
+  int view_id =
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
   if (zoom_mode_ == ZOOM_MODE_ISOLATED ||
       zoom_map->UsesTemporaryZoomLevel(process_id, view_id)) {
     zoom_map->SetTemporaryZoomLevel(process_id, view_id, zoom_level);
@@ -188,14 +190,19 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents());
   DCHECK(zoom_map);
-  int process_id = web_contents()->GetRenderViewHost()->GetProcess()->GetID();
-  int view_id = web_contents()->GetRenderViewHost()->GetRoutingID();
+  int process_id = web_contents()
+                       ->GetMainFrame()
+                       ->GetRenderViewHost()
+                       ->GetProcess()
+                       ->GetID();
+  int view_id =
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
   double original_zoom_level = GetZoomLevel();
 
   DCHECK(!event_data_);
-  event_data_.reset(new ZoomChangedEventData(
+  event_data_ = std::make_unique<ZoomChangedEventData>(
       web_contents(), original_zoom_level, original_zoom_level, new_mode,
-      new_mode != ZOOM_MODE_DEFAULT));
+      new_mode != ZOOM_MODE_DEFAULT);
 
   switch (new_mode) {
     case ZOOM_MODE_DEFAULT: {
@@ -279,20 +286,25 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   if (zoom_mode_ != ZOOM_MODE_ISOLATED && zoom_mode_ != ZOOM_MODE_MANUAL)
     return;
 
-  int process_id = web_contents()->GetRenderViewHost()->GetProcess()->GetID();
-  int view_id = web_contents()->GetRenderViewHost()->GetRoutingID();
+  int process_id = web_contents()
+                       ->GetMainFrame()
+                       ->GetRenderViewHost()
+                       ->GetProcess()
+                       ->GetID();
+  int view_id =
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents());
   zoom_level_ = zoom_map->GetDefaultZoomLevel();
   double old_zoom_level = zoom_map->GetZoomLevel(web_contents());
   double new_zoom_level = zoom_map->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
-  event_data_.reset(new ZoomChangedEventData(web_contents(), old_zoom_level,
-                                             new_zoom_level, ZOOM_MODE_DEFAULT,
-                                             false /* can_show_bubble */));
+  event_data_ = std::make_unique<ZoomChangedEventData>(
+      web_contents(), old_zoom_level, new_zoom_level, ZOOM_MODE_DEFAULT,
+      false /* can_show_bubble */);
   // The call to ClearTemporaryZoomLevel() doesn't generate any events from
-  // HostZoomMap, but the call to UpdateState() at the end of this function
-  // will notify our observers.
+  // HostZoomMap, but the call to UpdateState() at the end of
+  // DidFinishNavigation will notify our observers.
   // Note: it's possible the render_process/view ids have disappeared (e.g.
   // if we navigated to a new origin), but this won't cause a problem in the
   // call below.
@@ -303,8 +315,10 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
 void ZoomController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
     return;
+  }
 
   if (navigation_handle->IsErrorPage())
     content::HostZoomMap::SendErrorPageZoomLevelRefresh(web_contents());
@@ -316,6 +330,7 @@ void ZoomController::DidFinishNavigation(
   // zoom level from the old one.
   UpdateState(std::string());
   DCHECK(!event_data_);
+  last_page_scale_factor_was_one_ = PageScaleFactorIsOne();
 }
 
 void ZoomController::WebContentsDestroyed() {
@@ -329,7 +344,7 @@ void ZoomController::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If our associated HostZoomMap changes, update our event subscription.
+  // If our associated HostZoomMap changes, update our subscription.
   content::HostZoomMap* new_host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents());
   if (new_host_zoom_map == host_zoom_map_)
@@ -339,6 +354,16 @@ void ZoomController::RenderFrameHostChanged(
   zoom_subscription_ =
       host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
           &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+}
+
+void ZoomController::OnPageScaleFactorChanged(float page_scale_factor) {
+  const bool is_one = page_scale_factor == 1.f;
+  if (is_one != last_page_scale_factor_was_one_) {
+    // We send a no-op zoom change to inform observers that PageScaleFactorIsOne
+    // has changed.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 void ZoomController::OnZoomLevelChanged(
@@ -390,16 +415,23 @@ void ZoomController::UpdateState(const std::string& host) {
 }
 
 void ZoomController::SetPageScaleFactorIsOneForTesting(bool is_one) {
-  int process_id = web_contents()->GetRenderViewHost()->GetProcess()->GetID();
-  int view_id = web_contents()->GetRenderViewHost()->GetRoutingID();
-  host_zoom_map_->SetPageScaleFactorIsOneForView(process_id, view_id, is_one);
+  page_scale_factor_is_one_for_testing_ = is_one;
+
+  if (is_one != last_page_scale_factor_was_one_) {
+    // See OnPageScaleFactorChanged for why this is done.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 bool ZoomController::PageScaleFactorIsOne() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return content::HostZoomMap::PageScaleFactorIsOne(web_contents());
+  if (page_scale_factor_is_one_for_testing_.has_value())
+    return page_scale_factor_is_one_for_testing_.value();
+
+  return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController);
 
 }  // namespace zoom

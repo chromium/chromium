@@ -12,13 +12,17 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/google/zip.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
+
+base::StringPiece AsStringPiece(NSString* str) {
+  const char* data = [str fileSystemRepresentation];
+  return data ? base::StringPiece(data) : base::StringPiece();
+}
 
 // Given the |path| of a package, returns the destination that the package
 // should be zipped to. Returns an empty path on any errors.
@@ -33,12 +37,12 @@ base::FilePath ZipDestination(const base::FilePath& path) {
   // TMPDIR/<bundleID>/zip_cache/<guid>
 
   NSString* bundleID = [[NSBundle mainBundle] bundleIdentifier];
-  dest = dest.Append([bundleID fileSystemRepresentation]);
+  dest = dest.Append(AsStringPiece(bundleID));
 
   dest = dest.Append("zip_cache");
 
   NSString* guid = [[NSProcessInfo processInfo] globallyUniqueString];
-  dest = dest.Append([guid fileSystemRepresentation]);
+  dest = dest.Append(AsStringPiece(guid));
 
   return dest;
 }
@@ -117,8 +121,8 @@ void FileSelectHelper::ProcessSelectedFilesMac(
     }
   }
 
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&FileSelectHelper::ProcessSelectedFilesMacOnUIThread,
                      base::Unretained(this), files_out, temporary_files));
 }

@@ -5,10 +5,10 @@
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 
 #include <algorithm>
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -50,10 +50,10 @@ static inline int PartialStringToInt(const String& string,
 
 }  // namespace
 
-WebVector<WebSize> WebIconSizesParser::ParseIconSizes(
+WebVector<gfx::Size> WebIconSizesParser::ParseIconSizes(
     const WebString& web_sizes_string) {
   String sizes_string = web_sizes_string;
-  Vector<WebSize> icon_sizes;
+  Vector<gfx::Size> icon_sizes;
   if (sizes_string.IsEmpty())
     return icon_sizes;
 
@@ -67,7 +67,7 @@ WebVector<WebSize> WebIconSizesParser::ParseIconSizes(
     // See if the current size is "any".
     if (sizes_string.Substring(i, 3).StartsWithIgnoringCase("any") &&
         (i + 3 == length || IsWhitespace(sizes_string[i + 3]))) {
-      icon_sizes.push_back(WebSize(0, 0));
+      icon_sizes.push_back(gfx::Size());
       i = i + 3;
       continue;
     }
@@ -100,8 +100,8 @@ WebVector<WebSize> WebIconSizesParser::ParseIconSizes(
 
     // Append the parsed size to iconSizes.
     icon_sizes.push_back(
-        WebSize(PartialStringToInt(sizes_string, width_start, width_end),
-                PartialStringToInt(sizes_string, height_start, height_end)));
+        gfx::Size(PartialStringToInt(sizes_string, width_start, width_end),
+                  PartialStringToInt(sizes_string, height_start, height_end)));
   }
   return icon_sizes;
 }

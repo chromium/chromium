@@ -9,24 +9,21 @@ import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.junit.rules.TestRule;
 import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.test.BaseTestResult.PreTestHook;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.test.annotations.Policies;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,7 +50,7 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
     }
 
     @Override
-    protected List<PreTestHook> getPreTestHooks() {
+    protected List<TestHook> getPreTestHooks() {
         return addToList(super.getPreTestHooks(), Policies.getRegistrationHook());
     }
 
@@ -145,19 +142,18 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
             return Build.DEVICE.equals("vega");
         }
 
-        private boolean isVrSettingsServiceEnabled() {
-            // We can't directly check whether the VR settings service is enabled since we don't
-            // have permission to read the VrCore settings file. Instead, pass a flag.
-            return CommandLine.getInstance().hasSwitch("vr-settings-service-enabled");
+        private boolean isVrDonEnabled() {
+            // We can't directly check whether the VR DON flow is enabled since we don't have
+            // permission to read the VrCore settings file. Instead, pass a flag.
+            return CommandLine.getInstance().hasSwitch("vr-don-enabled");
         }
 
         @Override
         protected boolean restrictionApplies(String restriction) {
             if (TextUtils.equals(
                         restriction, ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-                    && (ConnectionResult.SUCCESS
-                               != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                                          getTargetContext()))) {
+                    && (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
+                            getTargetContext()))) {
                 return true;
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_OFFICIAL_BUILD)
@@ -203,9 +199,8 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_SVR)) {
                 return isOnStandaloneVrDevice();
             }
-            if (TextUtils.equals(
-                        restriction, ChromeRestriction.RESTRICTION_TYPE_VR_SETTINGS_SERVICE)) {
-                return !isVrSettingsServiceEnabled();
+            if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_VR_DON_ENABLED)) {
+                return !isVrDonEnabled();
             }
             return false;
         }

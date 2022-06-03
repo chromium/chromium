@@ -14,3 +14,9 @@ def GetGitHeadSHA1(in_directory):
   command_line = ['git', 'log', '-1', '--pretty=format:%H']
   output = cmd_helper.GetCmdOutput(command_line, cwd=in_directory)
   return output[0:40]
+
+
+def GetGitOriginMasterHeadSHA1(in_directory):
+  command_line = ['git', 'rev-parse', 'origin/master']
+  output = cmd_helper.GetCmdOutput(command_line, cwd=in_directory)
+  return output.strip()

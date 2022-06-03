@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -149,8 +149,7 @@ void RecordUserInitiatedUMA(
 } // namespace
 
 WebViewPermissionHelper::WebViewPermissionHelper(WebViewGuest* web_view_guest)
-    : content::WebContentsObserver(web_view_guest->web_contents()),
-      next_permission_request_id_(guest_view::kInstanceIDNone),
+    : next_permission_request_id_(guest_view::kInstanceIDNone),
       web_view_guest_(web_view_guest),
       default_media_access_permission_(false) {
   web_view_permission_helper_delegate_.reset(
@@ -164,31 +163,19 @@ WebViewPermissionHelper::~WebViewPermissionHelper() {
 WebViewPermissionHelper* WebViewPermissionHelper::FromFrameID(
     int render_process_id,
     int render_frame_id) {
-  WebViewGuest* web_view_guest = WebViewGuest::FromFrameID(
-      render_process_id, render_frame_id);
-  if (!web_view_guest) {
-    return NULL;
-  }
-  return web_view_guest->web_view_permission_helper_.get();
+  WebViewGuest* web_view_guest =
+      WebViewGuest::FromFrameID(render_process_id, render_frame_id);
+  return web_view_guest ? web_view_guest->web_view_permission_helper()
+                        : nullptr;
 }
 
 // static
 WebViewPermissionHelper* WebViewPermissionHelper::FromWebContents(
-      content::WebContents* web_contents) {
+    content::WebContents* web_contents) {
   WebViewGuest* web_view_guest = WebViewGuest::FromWebContents(web_contents);
-  if (!web_view_guest)
-      return NULL;
-  return web_view_guest->web_view_permission_helper_.get();
+  return web_view_guest ? web_view_guest->web_view_permission_helper()
+                        : nullptr;
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-bool WebViewPermissionHelper::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  return web_view_permission_helper_delegate_->OnMessageReceived(
-      message, render_frame_host);
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void WebViewPermissionHelper::RequestMediaAccessPermission(
     content::WebContents* source,
@@ -214,7 +201,9 @@ bool WebViewPermissionHelper::CheckMediaAccessPermission(
   return web_view_guest()
       ->embedder_web_contents()
       ->GetDelegate()
-      ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
+      ->CheckMediaAccessPermission(
+          web_view_guest()->web_contents()->GetOuterWebContentsFrame(),
+          security_origin, type);
 }
 
 void WebViewPermissionHelper::OnMediaPermissionResponse(
@@ -262,18 +251,11 @@ void WebViewPermissionHelper::RequestPointerLockPermission(
 }
 
 void WebViewPermissionHelper::RequestGeolocationPermission(
-    int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
     base::OnceCallback<void(bool)> callback) {
   web_view_permission_helper_delegate_->RequestGeolocationPermission(
-      bridge_id, requesting_frame, user_gesture, std::move(callback));
-}
-
-void WebViewPermissionHelper::CancelGeolocationPermissionRequest(
-    int bridge_id) {
-  web_view_permission_helper_delegate_->CancelGeolocationPermissionRequest(
-      bridge_id);
+      requesting_frame, user_gesture, std::move(callback));
 }
 
 void WebViewPermissionHelper::RequestFileSystemPermission(

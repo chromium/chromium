@@ -31,7 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SANDBOX_SUPPORT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SANDBOX_SUPPORT_H_
 
+#include "base/mac/scoped_cftyperef.h"
 #include "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 typedef struct CGFont* CGFontRef;
@@ -44,22 +46,20 @@ class WebSandboxSupport {
   virtual ~WebSandboxSupport() {}
 
   // Given an input font - |srcFont| [which can't be loaded due to sandbox
-  // restrictions]. Return a font belonging to an equivalent font file
-  // that can be used to access the font and a unique identifier corresponding
-  // to the on-disk font file.
-  //
-  // If this function succeeds, the caller assumes ownership of the |out|
-  // parameter and must call CGFontRelease() to unload it when done.
+  // restrictions]. Return a font descriptor based on data belonging to an
+  // equivalent font file that can be used to access the font and a unique
+  // identifier corresponding to the on-disk font file.
   //
   // Returns: true on success, false on error.
-  virtual bool LoadFont(CTFontRef src_font,
-                        CGFontRef* out,
-                        uint32_t* font_id) = 0;
+  virtual bool LoadFont(
+      CTFontRef src_font,
+      base::ScopedCFTypeRef<CTFontDescriptorRef>* out_descriptor,
+      uint32_t* font_id) = 0;
 
   // Returns the system's preferred value for a named color.
-  virtual SkColor GetSystemColor(MacSystemColorID) = 0;
+  virtual SkColor GetSystemColor(MacSystemColorID, mojom::ColorScheme) = 0;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SANDBOX_SUPPORT_H_

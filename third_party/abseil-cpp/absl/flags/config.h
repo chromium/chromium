@@ -45,4 +45,32 @@
 #define ABSL_FLAGS_STRIP_HELP ABSL_FLAGS_STRIP_NAMES
 #endif
 
+// ABSL_FLAGS_INTERNAL_HAS_RTTI macro is used for selecting if we can use RTTI
+// for flag type identification.
+#ifdef ABSL_FLAGS_INTERNAL_HAS_RTTI
+#error ABSL_FLAGS_INTERNAL_HAS_RTTI cannot be directly set
+#elif !defined(__GNUC__) || defined(__GXX_RTTI)
+#define ABSL_FLAGS_INTERNAL_HAS_RTTI 1
+#endif  // !defined(__GNUC__) || defined(__GXX_RTTI)
+
+// These macros represent the "source of truth" for the list of supported
+// built-in types.
+#define ABSL_FLAGS_INTERNAL_BUILTIN_TYPES(A) \
+  A(bool, bool)                              \
+  A(short, short)                            \
+  A(unsigned short, unsigned_short)          \
+  A(int, int)                                \
+  A(unsigned int, unsigned_int)              \
+  A(long, long)                              \
+  A(unsigned long, unsigned_long)            \
+  A(long long, long_long)                    \
+  A(unsigned long long, unsigned_long_long)  \
+  A(double, double)                          \
+  A(float, float)
+
+#define ABSL_FLAGS_INTERNAL_SUPPORTED_TYPES(A) \
+  ABSL_FLAGS_INTERNAL_BUILTIN_TYPES(A)         \
+  A(std::string, std_string)                   \
+  A(std::vector<std::string>, std_vector_of_string)
+
 #endif  // ABSL_FLAGS_CONFIG_H_

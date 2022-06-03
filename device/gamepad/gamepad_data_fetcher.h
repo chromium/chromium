@@ -5,12 +5,12 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/public/cpp/gamepad.h"
-#include "device/gamepad/public/mojom/gamepad.mojom.h"
+#include "device/gamepad/public/mojom/gamepad.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -62,7 +62,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadDataFetcher {
   static int64_t TimeInMicroseconds(base::TimeTicks update_time);
 
   // Perform one-time string initialization on the gamepad state in |pad|.
-  static void UpdateGamepadStrings(const std::string& name,
+  static void UpdateGamepadStrings(const std::string& product_name,
                                    uint16_t vendor_id,
                                    uint16_t product_id,
                                    bool has_standard_mapping,

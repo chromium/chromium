@@ -11,11 +11,12 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/url_constants.h"
 #include "net/base/mime_util.h"
@@ -23,19 +24,19 @@
 namespace chromeos {
 namespace {
 
-const char kWhitelistedDirectory[] = "oobe_videos";
+const char kAllowlistedDirectory[] = "oobe_videos";
 
-bool IsWhitelisted(const std::string& path) {
+bool IsAllowlisted(const std::string& path) {
   base::FilePath file_path(path);
   if (file_path.ReferencesParent())
     return false;
 
-  // Check if the path starts with a whitelisted directory.
+  // Check if the path starts with a allowlisted directory.
   std::vector<std::string> components;
   file_path.GetComponents(&components);
   if (components.empty())
     return false;
-  return components[0] == kWhitelistedDirectory;
+  return components[0] == kAllowlistedDirectory;
 }
 
 // Callback for user_manager::UserImageLoader.
@@ -55,8 +56,8 @@ void VideoLoaded(content::URLDataSource::GotDataCallback got_data_callback,
 }  // namespace
 
 VideoSource::VideoSource() {
-  task_runner_ = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
@@ -71,16 +72,15 @@ void VideoSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback got_data_callback) {
   const std::string path = content::URLDataSource::URLToRequestPath(url);
-  if (!IsWhitelisted(path)) {
+  if (!IsAllowlisted(path)) {
     std::move(got_data_callback).Run(nullptr);
     return;
   }
 
   const base::FilePath asset_dir(chrome::kChromeOSAssetPath);
   const base::FilePath video_path = asset_dir.AppendASCII(path);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&base::PathExists, video_path),
       base::BindOnce(&VideoSource::StartDataRequestAfterPathExists,
                      weak_factory_.GetWeakPtr(), video_path,

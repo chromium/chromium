@@ -5,7 +5,7 @@
  *
  * Other contributors:
  *   Robert O'Callahan <roc+@cs.cmu.edu>
- *   David Baron <dbaron@fas.harvard.edu>
+ *   David Baron <dbaron@dbaron.org>
  *   Christian Biesinger <cbiesinger@web.de>
  *   Randall Jesup <rjesup@wgate.com>
  *   Roland Mainz <roland.mainz@informatik.med.uni-giessen.de>
@@ -50,32 +50,10 @@
 
 namespace blink {
 
-enum ScrollAlignmentBehavior {
-  kScrollAlignmentNoScroll,
-  kScrollAlignmentCenter,
-  kScrollAlignmentTop,
-  kScrollAlignmentBottom,
-  kScrollAlignmentLeft,
-  kScrollAlignmentRight,
-  kScrollAlignmentClosestEdge
-};
-
 struct PhysicalRect;
 
-struct CORE_EXPORT ScrollAlignment {
-  STACK_ALLOCATED();
-
+class CORE_EXPORT ScrollAlignment {
  public:
-  static ScrollAlignmentBehavior GetVisibleBehavior(const ScrollAlignment& s) {
-    return s.rect_visible_;
-  }
-  static ScrollAlignmentBehavior GetPartialBehavior(const ScrollAlignment& s) {
-    return s.rect_partial_;
-  }
-  static ScrollAlignmentBehavior GetHiddenBehavior(const ScrollAlignment& s) {
-    return s.rect_hidden_;
-  }
-
   // Returns the scroll offset the scroller needs to scroll to in order to put
   // |expose_rect| into |visible_scroll_snapport_rect| aligned by |align_x| and
   // |align_y|.
@@ -88,29 +66,29 @@ struct CORE_EXPORT ScrollAlignment {
   static ScrollOffset GetScrollOffsetToExpose(
       const PhysicalRect& visible_scroll_snapport_rect,
       const PhysicalRect& expose_rect,
-      const ScrollAlignment& align_x,
-      const ScrollAlignment& align_y,
+      const mojom::blink::ScrollAlignment& align_x,
+      const mojom::blink::ScrollAlignment& align_y,
       const ScrollOffset& current_scroll_offset);
 
-  static const ScrollAlignment kAlignCenterIfNeeded;
-  static const ScrollAlignment kAlignToEdgeIfNeeded;
-  static const ScrollAlignment kAlignCenterAlways;
-  static const ScrollAlignment kAlignTopAlways;
-  static const ScrollAlignment kAlignBottomAlways;
-  static const ScrollAlignment kAlignLeftAlways;
-  static const ScrollAlignment kAlignRightAlways;
+  static const mojom::blink::ScrollAlignment& CenterIfNeeded();
+  static const mojom::blink::ScrollAlignment& ToEdgeIfNeeded();
+  static const mojom::blink::ScrollAlignment& CenterAlways();
+  static const mojom::blink::ScrollAlignment& TopAlways();
+  static const mojom::blink::ScrollAlignment& BottomAlways();
+  static const mojom::blink::ScrollAlignment& LeftAlways();
+  static const mojom::blink::ScrollAlignment& RightAlways();
 
-  ScrollAlignmentBehavior rect_visible_;
-  ScrollAlignmentBehavior rect_hidden_;
-  ScrollAlignmentBehavior rect_partial_;
+  static mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+      const mojom::blink::ScrollAlignment& align_x = CenterIfNeeded(),
+      const mojom::blink::ScrollAlignment& align_y = CenterIfNeeded(),
+      mojom::blink::ScrollType scroll_type =
+          mojom::blink::ScrollType::kProgrammatic,
+      bool make_visible_in_visual_viewport = true,
+      mojom::blink::ScrollBehavior scroll_behavior =
+          mojom::blink::ScrollBehavior::kAuto,
+      bool is_for_scroll_sequence = false,
+      bool zoom_into_rect = false);
 };
-
-inline bool PLATFORM_EXPORT operator==(const ScrollAlignment& lhs,
-                                       const ScrollAlignment& rhs) {
-  return lhs.rect_visible_ == rhs.rect_visible_ &&
-         lhs.rect_hidden_ == rhs.rect_hidden_ &&
-         lhs.rect_partial_ == rhs.rect_partial_;
-}
 
 }  // namespace blink
 

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -134,6 +133,9 @@ class MetadataDatabase {
       std::unique_ptr<LevelDBWrapper> db,
       bool enable_on_disk_index,
       std::unique_ptr<MetadataDatabase>* metadata_database_out);
+
+  MetadataDatabase(const MetadataDatabase&) = delete;
+  MetadataDatabase& operator=(const MetadataDatabase&) = delete;
 
   ~MetadataDatabase();
 
@@ -403,8 +405,6 @@ class MetadataDatabase {
   std::unique_ptr<MetadataDatabaseIndexInterface> index_;
 
   base::WeakPtrFactory<MetadataDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabase);
 };
 
 }  // namespace drive_backend

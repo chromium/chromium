@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"
@@ -16,12 +15,22 @@
 class FakeClipboardRecentContent : public ClipboardRecentContent {
  public:
   FakeClipboardRecentContent();
+
+  FakeClipboardRecentContent(const FakeClipboardRecentContent&) = delete;
+  FakeClipboardRecentContent& operator=(const FakeClipboardRecentContent&) =
+      delete;
+
   ~FakeClipboardRecentContent() override;
 
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<base::string16> GetRecentTextFromClipboard() override;
-  base::Optional<gfx::Image> GetRecentImageFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
+  void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  bool HasRecentImageFromClipboard() override;
+  void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
+                                     HasDataCallback callback) override;
+  void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;
+  void GetRecentTextFromClipboard(GetRecentTextCallback callback) override;
   base::TimeDelta GetClipboardContentAge() const override;
   void SuppressClipboardContent() override;
   void ClearClipboardContent() override;
@@ -29,19 +38,17 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   // Sets the URL and clipboard content age. This clears the text and image.
   void SetClipboardURL(const GURL& url, base::TimeDelta content_age);
   // Sets the text and clipboard content age. This clears the URL and image.
-  void SetClipboardText(const base::string16& text,
+  void SetClipboardText(const std::u16string& text,
                         base::TimeDelta content_age);
   // Sets the image and clipboard content age. This clears the URL and text.
   void SetClipboardImage(const gfx::Image& image, base::TimeDelta content_age);
 
  private:
-  base::Optional<GURL> clipboard_url_content_;
-  base::Optional<base::string16> clipboard_text_content_;
-  base::Optional<gfx::Image> clipboard_image_content_;
+  absl::optional<GURL> clipboard_url_content_;
+  absl::optional<std::u16string> clipboard_text_content_;
+  absl::optional<gfx::Image> clipboard_image_content_;
   base::TimeDelta content_age_;
   bool suppress_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClipboardRecentContent);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_

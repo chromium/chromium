@@ -4,7 +4,12 @@
 # found in the LICENSE file.
 
 from __future__ import print_function
-import argparse, os, sys, json, subprocess, pickle, StringIO
+import argparse, os, sys, json, subprocess, pickle
+
+try:
+  from StringIO import StringIO  # Python 2
+except:
+  from io import StringIO
 
 parser = argparse.ArgumentParser(
   description =
@@ -56,6 +61,14 @@ ignored_cycles = []
 
 # Global flag to determine exit code.
 global_reported_error = False
+
+try:
+  # Python3 remove sys.maxint.
+  maxint = sys.maxint
+except AttributeError:
+  # Also see https://stackoverflow.com/a/13795777/4052492.
+  maxint = sys.maxsize
+
 
 def set_reported_error(value):
   global global_reported_error
@@ -109,18 +122,20 @@ class Node:
     else:
       self.edges[new_edge.key] = new_edge
   def super_edges(self):
-    return [ e for e in self.edges.itervalues() if e.is_super() ]
+    return [e for e in self.edges.values() if e.is_super()]
+
   def subclass_edges(self):
-    return [ e for e in self.edges.itervalues() if e.is_subclass() ]
+    return [e for e in self.edges.values() if e.is_subclass()]
+
   def reset(self):
-    self.cost = sys.maxint
+    self.cost = maxint
     self.visited = False
     self.path = None
     self.counts = {}
     for ptr in ptr_types:
       self.counts[ptr] = 0
   def update_counts(self):
-    for e in self.edges.itervalues():
+    for e in self.edges.values():
       inc_ptr(e.dst, e.ptr)
 
 # Representation of directed graph edges.
@@ -199,7 +214,7 @@ def copy_super_edges(edge):
     copy_super_edges(e)
   # Copy strong super-class edges (ignoring sub-class edges) to the sub class.
   sub_node = graph[edge.src]
-  for e in super_node.edges.itervalues():
+  for e in super_node.edges.values():
     if e.keeps_alive() and not e.is_subclass():
       new_edge = Edge(
         src = sub_node.name,
@@ -222,16 +237,16 @@ def copy_super_edges(edge):
   super_node.edges[sub_edge.key] = sub_edge
 
 def complete_graph():
-  for node in graph.itervalues():
+  for node in graph.values():
     for edge in node.super_edges():
       copy_super_edges(edge)
-    for edge in node.edges.itervalues():
+    for edge in node.edges.values():
       if edge.is_root():
         roots.append(edge)
   log("Copied edges down <super> edges for %d graph nodes" % global_inc_copy)
 
 def reset_graph():
-  for n in graph.itervalues():
+  for n in graph.values():
     n.reset()
 
 def shortest_path(start, end):
@@ -243,7 +258,7 @@ def shortest_path(start, end):
     current.visited = True
     if current == end or current.cost >= end.cost + 1:
       return
-    for e in current.edges.itervalues():
+    for e in current.edges.values():
       if not e.keeps_alive():
         continue
       dst = graph.get(e.dst)
@@ -276,7 +291,7 @@ def detect_cycles():
       continue
     # Find the shortest path from the root target (dst) to its host (src)
     shortest_path(dst, src)
-    if src.cost < sys.maxint:
+    if src.cost < maxint:
       report_cycle(root_edge)
 
 def is_ignored_cycle(cycle):
@@ -307,7 +322,7 @@ def report_cycle(root_edge):
   for p in path:
     if len(p.loc) > max_loc:
       max_loc = len(p.loc)
-  out = StringIO.StringIO()
+  out = StringIO()
   for p in path[:-1]:
     print((p.loc + ':').ljust(max_loc + 1), p, file=out)
   sout = out.getvalue()
@@ -349,6 +364,8 @@ def read_ignored_cycles():
 gc_bases = (
   'blink::GarbageCollected',
   'blink::GarbageCollectedMixin',
+  'cppgc::GarbageCollected',
+  'cppgc::GarbageCollectedMixin',
 )
 ref_bases = (
   'WTF::RefCounted',
@@ -370,7 +387,7 @@ def print_stats():
   gc_managed = []
   hierarchies = []
 
-  for node in graph.itervalues():
+  for node in graph.values():
     node.update_counts()
     for sup in node.super_edges():
       if sup.dst in gcref_bases:
@@ -395,7 +412,7 @@ def print_stats():
     hierarchies.append((base, stats))
 
   print("\nHierarchies in transition (RefCountedGarbageCollected):")
-  hierarchies.sort(key=lambda (n,s): -s['classes'])
+  hierarchies.sort(key=lambda n: -n[1]['classes'])
   for (node, stats) in hierarchies:
     total = stats['mem'] + stats['ref'] + stats['raw']
     print(
@@ -403,7 +420,8 @@ def print_stats():
          % (
              stats['ref'] == 0 and stats['ref-mixins'] == 0 and "*" or " ",
              total == 0 and 100 or stats['mem'] * 100 / total,
-             node.name.replace('blink::', ''),
+             node.name.replace('blink::', '').replace(
+                 'cppgc::subtle::', '').replace('cppgc::', ''),
              stats['classes'],
              stats['mem'],
              stats['ref'],

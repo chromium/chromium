@@ -10,12 +10,13 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/host/drm_device_connector.h"
 #include "ui/ozone/platform/drm/host/drm_display_host_manager.h"
@@ -23,9 +24,7 @@
 
 namespace ui {
 
-HostDrmDevice::HostDrmDevice(DrmCursor* cursor) : cursor_(cursor) {
-  DETACH_FROM_THREAD(on_io_thread_);
-}
+HostDrmDevice::HostDrmDevice(DrmCursor* cursor) : cursor_(cursor) {}
 
 HostDrmDevice::~HostDrmDevice() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
@@ -128,34 +127,19 @@ bool HostDrmDevice::GpuRefreshNativeDisplays() {
   return true;
 }
 
-bool HostDrmDevice::GpuConfigureNativeDisplay(int64_t id,
-                                              const DisplayMode_Params& pmode,
-                                              const gfx::Point& origin) {
+void HostDrmDevice::GpuConfigureNativeDisplays(
+    const std::vector<display::DisplayConfigurationParams>& config_requests,
+    display::ConfigureCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-
-  // TODO(rjkroege): Remove the use of mode here.
-  auto mode = CreateDisplayModeFromParams(pmode);
-  auto callback =
-      base::BindOnce(&HostDrmDevice::GpuConfigureNativeDisplayCallback, this);
-
-  drm_device_->ConfigureNativeDisplay(id, std::move(mode), origin,
-                                      std::move(callback));
-
-  return true;
-}
-
-bool HostDrmDevice::GpuDisableNativeDisplay(int64_t id) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-  auto callback =
-      base::BindOnce(&HostDrmDevice::GpuDisableNativeDisplayCallback, this);
-
-  drm_device_->DisableNativeDisplay(id, std::move(callback));
-
-  return true;
+  if (IsConnected()) {
+    drm_device_->ConfigureNativeDisplays(config_requests, std::move(callback));
+  } else {
+    // Post this task to protect the callstack from accumulating too many
+    // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU
+    // process crashes repeatedly.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+  }
 }
 
 bool HostDrmDevice::GpuTakeDisplayControl() {
@@ -182,24 +166,14 @@ bool HostDrmDevice::GpuRelinquishDisplayControl() {
   return true;
 }
 
-bool HostDrmDevice::GpuAddGraphicsDeviceOnUIThread(const base::FilePath& path,
-                                                   base::ScopedFD fd) {
+void HostDrmDevice::GpuAddGraphicsDevice(const base::FilePath& path,
+                                         base::ScopedFD fd) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-  base::File file(std::move(fd));
+  if (!drm_device_.is_bound())
+    return;
 
+  base::File file(std::move(fd));
   drm_device_->AddGraphicsDevice(path, std::move(file));
-
-  return true;
-}
-
-void HostDrmDevice::GpuAddGraphicsDeviceOnIOThread(const base::FilePath& path,
-                                                   base::ScopedFD fd) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_io_thread_);
-  DCHECK(drm_device_on_io_thread_.is_bound());
-  base::File file(std::move(fd));
-  drm_device_on_io_thread_->AddGraphicsDevice(path, std::move(file));
 }
 
 bool HostDrmDevice::GpuRemoveGraphicsDevice(const base::FilePath& path) {
@@ -223,14 +197,17 @@ bool HostDrmDevice::GpuGetHDCPState(int64_t display_id) {
   return true;
 }
 
-bool HostDrmDevice::GpuSetHDCPState(int64_t display_id,
-                                    display::HDCPState state) {
+bool HostDrmDevice::GpuSetHDCPState(
+    int64_t display_id,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (!IsConnected())
     return false;
   auto callback = base::BindOnce(&HostDrmDevice::GpuSetHDCPStateCallback, this);
 
-  drm_device_->SetHDCPState(display_id, state, std::move(callback));
+  drm_device_->SetHDCPState(display_id, state, protection_method,
+                            std::move(callback));
 
   return true;
 }
@@ -257,25 +234,19 @@ bool HostDrmDevice::GpuSetGammaCorrection(
   return true;
 }
 
-
-void HostDrmDevice::GpuConfigureNativeDisplayCallback(int64_t display_id,
-                                                      bool success) const {
+bool HostDrmDevice::GpuSetPrivacyScreen(int64_t display_id, bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  display_manager_->GpuConfiguredDisplay(display_id, success);
+  if (!IsConnected())
+    return false;
+
+  drm_device_->SetPrivacyScreen(display_id, enabled);
+  return true;
 }
 
-// TODO(rjkroege): Remove the unnecessary conversion back into params.
 void HostDrmDevice::GpuRefreshNativeDisplaysCallback(
-    std::vector<std::unique_ptr<display::DisplaySnapshot>> displays) const {
+    MovableDisplaySnapshots displays) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  display_manager_->GpuHasUpdatedNativeDisplays(
-      CreateDisplaySnapshotParams(displays));
-}
-
-void HostDrmDevice::GpuDisableNativeDisplayCallback(int64_t display_id,
-                                                    bool success) const {
-  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  display_manager_->GpuConfiguredDisplay(display_id, success);
+  display_manager_->GpuHasUpdatedNativeDisplays(std::move(displays));
 }
 
 void HostDrmDevice::GpuTakeDisplayControlCallback(bool success) const {
@@ -288,11 +259,14 @@ void HostDrmDevice::GpuRelinquishDisplayControlCallback(bool success) const {
   display_manager_->GpuRelinquishedDisplayControl(success);
 }
 
-void HostDrmDevice::GpuGetHDCPStateCallback(int64_t display_id,
-                                            bool success,
-                                            display::HDCPState state) const {
+void HostDrmDevice::GpuGetHDCPStateCallback(
+    int64_t display_id,
+    bool success,
+    display::HDCPState state,
+    display::ContentProtectionMethod protection_method) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  display_manager_->GpuReceivedHDCPState(display_id, success, state);
+  display_manager_->GpuReceivedHDCPState(display_id, success, state,
+                                         protection_method);
 }
 
 void HostDrmDevice::GpuSetHDCPStateCallback(int64_t display_id,
@@ -301,31 +275,18 @@ void HostDrmDevice::GpuSetHDCPStateCallback(int64_t display_id,
   display_manager_->GpuUpdatedHDCPState(display_id, success);
 }
 
-void HostDrmDevice::OnGpuServiceLaunchedOnIOThread(
-    mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runner) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_io_thread_);
-  // The observers might send IPC messages from the IO thread during the call to
-  // OnGpuProcessLaunched.
-  drm_device_on_io_thread_.Bind(std::move(drm_device));
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuProcessLaunched();
-  // In the single-threaded mode, there won't be separate UI and IO threads.
-  if (ui_runner->BelongsToCurrentThread()) {
-    OnGpuServiceLaunchedOnUIThread(drm_device_on_io_thread_.Unbind());
-  } else {
-    ui_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HostDrmDevice::OnGpuServiceLaunchedOnUIThread, this,
-                       drm_device_on_io_thread_.Unbind()));
-  }
-}
-
-void HostDrmDevice::OnGpuServiceLaunchedOnUIThread(
+void HostDrmDevice::OnGpuServiceLaunched(
     mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
 
+  // We can get into this state if a new instance of GpuProcessHost is created
+  // before the old one is destroyed.
+  if (IsConnected())
+    OnGpuServiceLost();
+
   drm_device_.Bind(std::move(drm_device));
+  for (GpuThreadObserver& observer : gpu_thread_observers_)
+    observer.OnGpuProcessLaunched();
 
   // Create two DeviceCursor connections: one for the UI thread and one for the
   // IO thread.

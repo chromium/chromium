@@ -5,22 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl (positioned) INPUT id='input'",
-          "rect": [8, 8, 244, 68],
-          "reason": "background"
-        },
-        {
-          "object": "InlineTextBox 'NEW'",
-          "rect": [30, 30, 46, 23],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'OLD'",
-          "rect": [30, 30, 41, 23],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [8, 8, 244, 68]
       ]
     }
   ]

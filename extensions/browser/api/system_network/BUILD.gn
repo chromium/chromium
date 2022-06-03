@@ -14,10 +14,9 @@ source_set("system_network") {
   ]
 
   deps = [
+    "//content/public/browser",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

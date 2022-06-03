@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 
 #include <stddef.h>
+#include <utility>
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -124,7 +126,7 @@ class MIMEHeader final : public GarbageCollected<MIMEHeader> {
   String EndOfPartBoundary() const { return end_of_part_boundary_; }
   String EndOfDocumentBoundary() const { return end_of_document_boundary_; }
 
-  void Trace(blink::Visitor* visitor) {}
+  void Trace(Visitor* visitor) const {}
 
  private:
   static Encoding ParseContentTransferEncoding(const String&);
@@ -150,7 +152,9 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
   while (!(line = buffer->NextChunkAsUTF8StringWithLatin1Fallback()).IsNull()) {
     if (line.IsEmpty())
       break;  // Empty line means end of key/value section.
-    if (line[0] == '\t') {
+    // RFC822 continuation: A line that starts with LWSP is a continuation of
+    // the prior line.
+    if ((line[0] == '\t') || (line[0] == ' ')) {
       value.Append(line.Substring(1));
       continue;
     }
@@ -234,7 +238,7 @@ MIMEHeader* MIMEHeader::ParseHeader(SharedBufferChunkReader* buffer) {
 
 MIMEHeader::Encoding MIMEHeader::ParseContentTransferEncoding(
     const String& text) {
-  String encoding = text.StripWhiteSpace().DeprecatedLower();
+  String encoding = text.StripWhiteSpace().LowerASCII();
   if (encoding == "base64")
     return Encoding::kBase64;
   if (encoding == "quoted-printable")

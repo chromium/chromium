@@ -34,7 +34,7 @@ class USBEndpoint : public ScriptWrappable {
   String type() const;
   unsigned packetSize() const { return Info().packet_size; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<const USBAlternateInterface> alternate_;

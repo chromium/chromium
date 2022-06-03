@@ -38,33 +38,25 @@
 
 namespace blink {
 
-#define INSTANCE_COUNTERS_LIST(V)                \
-  V(AudioHandler)                                \
-  V(Document)                                    \
-  V(Frame)                                       \
-  V(JSEventListener)                             \
-  V(LayoutObject)                                \
-  V(MediaKeySession)                             \
-  V(MediaKeys)                                   \
-  V(Node)                                        \
-  V(Resource)                                    \
-  V(ContextLifecycleStateObserver)               \
-  V(V8PerContextData)                            \
-  V(WorkerGlobalScope)                           \
-  V(UACSSResource)                               \
-  V(RTCPeerConnection)                           \
-  V(ResourceFetcher)                             \
-  V(AdSubframe)                                  \
-  V(DetachedScriptState)                         \
-  V(V8CallInDetachedWindowByNavigation)          \
-  V(V8CallInDetachedWindowByNavigationAfter10s)  \
-  V(V8CallInDetachedWindowByNavigationAfter1min) \
-  V(V8CallInDetachedWindowByClosing)             \
-  V(V8CallInDetachedWindowByClosingAfter10s)     \
-  V(V8CallInDetachedWindowByClosingAfter1min)    \
-  V(V8CallInDetachedWindowByOtherReason)         \
-  V(V8CallInDetachedWindowByOtherReasonAfter10s) \
-  V(V8CallInDetachedWindowByOtherReasonAfter1min)
+#define INSTANCE_COUNTERS_LIST(V)  \
+  V(AudioHandler)                  \
+  V(Document)                      \
+  V(Frame)                         \
+  V(JSEventListener)               \
+  V(LayoutObject)                  \
+  V(MediaKeySession)               \
+  V(MediaKeys)                     \
+  V(Node)                          \
+  V(Resource)                      \
+  V(ContextLifecycleStateObserver) \
+  V(V8PerContextData)              \
+  V(WorkerGlobalScope)             \
+  V(UACSSResource)                 \
+  V(RTCPeerConnection)             \
+  V(ResourceFetcher)               \
+  V(AdSubframe)                    \
+  V(DetachedScriptState)           \
+  V(ArrayBufferContents)
 
 // Atomic counters of the number of instances of objects that exist.
 //
@@ -113,4 +105,4 @@ class InstanceCounters {
 
 }  // namespace blink
 
-#endif  // !defined(InstanceCounters_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_INSTANCE_COUNTERS_H_

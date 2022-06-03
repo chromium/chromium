@@ -7,18 +7,14 @@ import("//build/win/message_compiler.gni")
 import("//chrome/process_version_rc_template.gni")
 
 message_compiler("gcp_eventlog_messages") {
-  sources = [
-    "gcp_eventlog_messages.mc",
-  ]
+  sources = [ "gcp_eventlog_messages.mc" ]
 
   user_mode_logging = false
   compile_generated_code = false
 }
 
 process_version_rc_template("gcp_eventlog_provider_dll_version") {
-  sources = [
-    "gcp_eventlog_provider.ver",
-  ]
+  sources = [ "gcp_eventlog_provider.ver" ]
   output = "$target_gen_dir/gcp_eventlog_provider_dll_version.rc"
 }
 
@@ -28,7 +24,7 @@ shared_library("gcp_eventlog_provider") {
     "gcp_eventlog_provider.cc",
   ]
 
-  if (!is_asan && !use_clang_coverage) {
+  if (!is_asan && !use_clang_profiling) {
     no_default_deps = true
     ldflags = [ "/NOENTRY" ]
   }

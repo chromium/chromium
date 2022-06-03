@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/policy_export.h"
@@ -43,12 +42,19 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  UserCloudPolicyManager(const UserCloudPolicyManager&) = delete;
+  UserCloudPolicyManager& operator=(const UserCloudPolicyManager&) = delete;
   ~UserCloudPolicyManager() override;
 
   // ConfigurationPolicyProvider overrides:
   void Shutdown() override;
 
   void SetSigninAccountId(const AccountId& account_id);
+
+  // Sets whether or not policies are required for this policy manager.
+  // This might be set to false if the user profile is an unmanaged consumer
+  // profile.
+  void SetPoliciesRequired(bool required);
 
   // Initializes the cloud connection. |local_state| must stay valid until this
   // object is deleted or DisconnectAndRemovePolicy() gets called. Virtual for
@@ -63,10 +69,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // provided by this object until the next time Initialize() is invoked.
   void DisconnectAndRemovePolicy();
 
-  // Returns true if the underlying CloudPolicyClient is already registered.
-  // Virtual for mocking.
-  virtual bool IsClientRegistered() const;
-
   // Creates a CloudPolicyClient for this client. Used in situations where
   // callers want to create a DMToken without actually initializing the
   // profile's policy infrastructure (for example, during signin when we
@@ -75,9 +77,14 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // ConfigurationPolicyProvider:
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
+
  private:
   // CloudPolicyManager:
   void GetChromePolicy(PolicyMap* policy_map) override;
+
+  bool policies_required_ = false;
 
   // Typed pointer to the store owned by UserCloudPolicyManager. Note that
   // CloudPolicyManager only keeps a plain CloudPolicyStore pointer.
@@ -88,8 +95,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManager);
 };
 
 }  // namespace policy

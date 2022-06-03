@@ -5,7 +5,7 @@
 #include "chrome/test/data/webui/async_gen.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
@@ -27,10 +27,10 @@ void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::HandleCallJS(
 }
 
 void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "callJS", base::BindRepeating(&AsyncWebUIMessageHandler::HandleCallJS,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "tearDown", base::BindRepeating(&AsyncWebUIMessageHandler::HandleTearDown,
                                       base::Unretained(this)));
 }

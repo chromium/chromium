@@ -4,5 +4,5 @@
 
 package org.chromium.chrome.browser.webapps;
 
-/** WebApkActivity variant which is translucent and has documentLaunchMode="none". */
-public class SameTaskWebApkActivity extends WebApkActivity {}
+/** WebappActivity variant which is translucent and has documentLaunchMode="none". */
+public class SameTaskWebApkActivity extends WebappActivity {}

@@ -54,4 +54,4 @@ class PLATFORM_EXPORT SimpleThreadImpl : public SimpleThread {
 }  // namespace sequence_manager
 }  // namespace base
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FUZZER_SIMPLE_THREAD_IMPL_H_

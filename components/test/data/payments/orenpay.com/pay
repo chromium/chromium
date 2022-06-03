@@ -1,0 +1,12 @@
+{
+  "default_applications": ["pay"],
+  "name": "Nick Pay",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "40x40",
+    "type": "image/png"
+  }],
+  "serviceworker": {
+    "src": "app.js"
+  }
+}

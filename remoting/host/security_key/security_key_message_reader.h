@@ -24,7 +24,7 @@ class SecurityKeyMessageReader {
   // instance is destroyed and may be destroyed as a result of the callback
   // being invoked.
   virtual void Start(const SecurityKeyMessageCallback& message_callback,
-                     const base::Closure& error_callback) = 0;
+                     base::OnceClosure error_callback) = 0;
 };
 
 }  // namespace remoting

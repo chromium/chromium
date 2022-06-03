@@ -17,6 +17,7 @@ source_set("sessions") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web_state_list",

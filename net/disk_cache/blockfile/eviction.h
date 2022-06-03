@@ -20,6 +20,10 @@ struct IndexHeader;
 class Eviction {
  public:
   Eviction();
+
+  Eviction(const Eviction&) = delete;
+  Eviction& operator=(const Eviction&) = delete;
+
   ~Eviction();
 
   void Init(BackendImpl* backend);
@@ -82,8 +86,6 @@ class Eviction {
   bool init_;
   bool test_mode_;
   base::WeakPtrFactory<Eviction> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Eviction);
 };
 
 }  // namespace disk_cache

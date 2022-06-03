@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/touch_event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/core/layout/layout_slider.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -26,8 +27,8 @@ bool MediaControlElementsHelper::IsUserInteractionEvent(const Event& event) {
          type == event_type_names::kMouseup ||
          type == event_type_names::kClick ||
          type == event_type_names::kDblclick ||
-         type == event_type_names::kGesturetap || event.IsKeyboardEvent() ||
-         event.IsTouchEvent();
+         type == event_type_names::kGesturetap || IsA<KeyboardEvent>(event) ||
+         IsA<TouchEvent>(event);
 }
 
 // static
@@ -41,12 +42,14 @@ bool MediaControlElementsHelper::IsUserInteractionEventForSlider(
     return true;
 
   // Some events are only captured during a slider drag.
-  const LayoutSlider* slider = ToLayoutSlider(layout_object);
-  // TODO(crbug.com/695459#c1): LayoutSliderItem::inDragMode is incorrectly
+  const HTMLInputElement* slider = nullptr;
+  if (layout_object)
+    slider = DynamicTo<HTMLInputElement>(layout_object->GetNode());
+  // TODO(crbug.com/695459#c1): HTMLInputElement::IsDraggedSlider is incorrectly
   // false for drags that start from the track instead of the thumb.
-  // Use SliderThumbElement::m_inDragMode and
-  // SliderContainerElement::m_touchStarted instead.
-  if (slider && !slider->InDragMode())
+  // Use SliderThumbElement::in_drag_mode_ and
+  // SliderContainerElement::touch_started_ instead.
+  if (slider && !slider->IsDraggedSlider())
     return false;
 
   const AtomicString& type = event.type();
@@ -81,22 +84,22 @@ HTMLDivElement* MediaControlElementsHelper::CreateDiv(const AtomicString& id,
 }
 
 // static
-WebSize MediaControlElementsHelper::GetSizeOrDefault(
+gfx::Size MediaControlElementsHelper::GetSizeOrDefault(
     const Element& element,
-    const WebSize& default_size) {
+    const gfx::Size& default_size) {
   float zoom_factor = 1.0f;
-  int width = default_size.width;
-  int height = default_size.height;
+  int width = default_size.width();
+  int height = default_size.height();
 
   if (LayoutBox* box = element.GetLayoutBox()) {
     width = box->LogicalWidth().Round();
     height = box->LogicalHeight().Round();
   }
 
-  if (element.GetDocument().GetLayoutView())
-    zoom_factor = element.GetDocument().GetLayoutView()->ZoomFactor();
+  if (const LocalFrame* frame = element.GetDocument().GetFrame())
+    zoom_factor = frame->PageZoomFactor();
 
-  return WebSize(round(width / zoom_factor), round(height / zoom_factor));
+  return gfx::Size(round(width / zoom_factor), round(height / zoom_factor));
 }
 
 // static

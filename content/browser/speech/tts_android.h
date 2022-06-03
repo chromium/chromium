@@ -5,22 +5,27 @@
 #ifndef CONTENT_BROWSER_SPEECH_TTS_ANDROID_H_
 #define CONTENT_BROWSER_SPEECH_TTS_ANDROID_H_
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/speech/tts_platform_impl.h"
 
 namespace content {
 
+class TtsEnvironmentAndroid;
+
 class TtsPlatformImplAndroid : public TtsPlatformImpl {
  public:
   // TtsPlatform overrides.
-  bool PlatformImplAvailable() override;
-  void Speak(int utterance_id,
-             const std::string& utterance,
-             const std::string& lang,
-             const VoiceData& voice,
-             const UtteranceContinuousParameters& params,
-             base::OnceCallback<void(bool)> on_speak_finished) override;
+  bool PlatformImplSupported() override;
+  bool PlatformImplInitialized() override;
+  void Speak(
+      int utterance_id,
+      const std::string& utterance,
+      const std::string& lang,
+      const VoiceData& voice,
+      const UtteranceContinuousParameters& params,
+      base::OnceCallback<void(bool)> did_start_speaking_callback) override;
   bool StopSpeaking() override;
   void Pause() override;
   void Resume() override;
@@ -28,22 +33,16 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   void GetVoices(std::vector<VoiceData>* out_voices) override;
 
   // Methods called from Java via JNI.
-  void RequestTtsStop(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void VoicesChanged(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
-  void OnEndEvent(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
-                  jint utterance_id);
-  void OnErrorEvent(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
-                    jint utterance_id);
-  void OnStartEvent(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
-                    jint utterance_id);
+  void VoicesChanged(JNIEnv* env);
+  void OnEndEvent(JNIEnv* env, jint utterance_id);
+  void OnErrorEvent(JNIEnv* env, jint utterance_id);
+  void OnStartEvent(JNIEnv* env, jint utterance_id);
 
   // Static functions.
   static TtsPlatformImplAndroid* GetInstance();
+
+  TtsPlatformImplAndroid(const TtsPlatformImplAndroid&) = delete;
+  TtsPlatformImplAndroid& operator=(const TtsPlatformImplAndroid&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<TtsPlatformImplAndroid>;
@@ -55,20 +54,31 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
                          TtsEventType event_type,
                          int char_index);
 
+  // Called once TtsController has stripped ssml.
   void ProcessSpeech(int utterance_id,
                      const std::string& lang,
                      const VoiceData& voice,
                      const UtteranceContinuousParameters& params,
-                     base::OnceCallback<void(bool)> on_speak_finished,
+                     base::OnceCallback<void(bool)> did_start_speaking_callback,
                      const std::string& parsed_utterance);
+
+  // Starts speaking the utterance now. Returns true if speech started, false
+  // if it is not possible to speak now.
+  bool StartSpeakingNow(int utterance_id,
+                        const std::string& lang,
+                        const UtteranceContinuousParameters& params,
+                        const std::string& parsed_utterance,
+                        const std::string& engine_id);
+
+  // Called when TtsEnvironmentAndroid::CanSpeakNow() may have changed.
+  void OnCanSpeakNowChanged();
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   int utterance_id_;
   std::string utterance_;
+  std::unique_ptr<TtsEnvironmentAndroid> environment_android_;
 
   base::WeakPtrFactory<TtsPlatformImplAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplAndroid);
 };
 
 }  // namespace content

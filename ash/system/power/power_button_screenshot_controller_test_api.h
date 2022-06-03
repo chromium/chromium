@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_TEST_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -18,6 +17,12 @@ class PowerButtonScreenshotControllerTestApi {
  public:
   explicit PowerButtonScreenshotControllerTestApi(
       PowerButtonScreenshotController* controller);
+
+  PowerButtonScreenshotControllerTestApi(
+      const PowerButtonScreenshotControllerTestApi&) = delete;
+  PowerButtonScreenshotControllerTestApi& operator=(
+      const PowerButtonScreenshotControllerTestApi&) = delete;
+
   ~PowerButtonScreenshotControllerTestApi();
 
   // If |controller_->volume_down_timer_| is running, stops it, runs its task,
@@ -30,8 +35,6 @@ class PowerButtonScreenshotControllerTestApi {
 
  private:
   PowerButtonScreenshotController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerTestApi);
 };
 
 }  // namespace ash

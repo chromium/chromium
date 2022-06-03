@@ -6,21 +6,20 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
 #include "components/domain_reliability/util.h"
-#include "net/base/load_flags.h"
+#include "net/base/elements_upload_data_stream.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
 
 namespace domain_reliability {
 
@@ -28,43 +27,40 @@ namespace {
 
 const char kJsonMimeType[] = "application/json; charset=utf-8";
 
-class UploadUserData : public base::SupportsUserData::Data {
- public:
-  static net::URLFetcher::CreateDataCallback CreateCreateDataCallback(
-      int depth) {
-    return base::Bind(&UploadUserData::CreateUploadUserData, depth);
-  }
+// Each DR upload is tagged with an instance of this class, which identifies the
+// depth of the upload. This is to prevent infinite loops of DR uploads about DR
+// uploads, leading to an unbounded number of requests.
+// Deeper requests will still generate a report beacon, but they won't trigger a
+// separate upload. See DomainReliabilityContext::kMaxUploadDepthToSchedule.
+struct UploadDepthData : public base::SupportsUserData::Data {
+  explicit UploadDepthData(int depth) : depth(depth) {}
 
+  // Key that identifies this data within SupportsUserData's map of data.
   static const void* const kUserDataKey;
 
-  int depth() const { return depth_; }
-
- private:
-  UploadUserData(int depth) : depth_(depth) {}
-
-  static std::unique_ptr<base::SupportsUserData::Data> CreateUploadUserData(
-      int depth) {
-    return base::WrapUnique(new UploadUserData(depth));
-  }
-
-  int depth_;
+  // This is 0 if the report being uploaded does not contain a beacon about a
+  // DR upload request. Otherwise, it is 1 + the depth of the deepest DR upload
+  // described in the report.
+  int depth;
 };
 
-const void* const UploadUserData::kUserDataKey =
-    &UploadUserData::kUserDataKey;
+const void* const UploadDepthData::kUserDataKey =
+    &UploadDepthData::kUserDataKey;
 
-class DomainReliabilityUploaderImpl
-    : public DomainReliabilityUploader, net::URLFetcherDelegate {
+}  // namespace
+
+class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
+                                      public net::URLRequest::Delegate {
  public:
-  DomainReliabilityUploaderImpl(
-      MockableTime* time,
-      const scoped_refptr<net::URLRequestContextGetter>&
-          url_request_context_getter)
+  DomainReliabilityUploaderImpl(MockableTime* time,
+                                net::URLRequestContext* url_request_context)
       : time_(time),
-        url_request_context_getter_(url_request_context_getter),
+        url_request_context_(url_request_context),
         discard_uploads_(true),
         shutdown_(false),
-        discarded_upload_count_(0u) {}
+        discarded_upload_count_(0u) {
+    DCHECK(url_request_context_);
+  }
 
   ~DomainReliabilityUploaderImpl() override {
     DCHECK(shutdown_);
@@ -75,7 +71,8 @@ class DomainReliabilityUploaderImpl
       const std::string& report_json,
       int max_upload_depth,
       const GURL& upload_url,
-      const DomainReliabilityUploader::UploadCallback& callback) override {
+      const net::NetworkIsolationKey& network_isolation_key,
+      DomainReliabilityUploader::UploadCallback callback) override {
     DVLOG(1) << "Uploading report to " << upload_url;
     DVLOG(2) << "Report JSON: " << report_json;
 
@@ -86,7 +83,7 @@ class DomainReliabilityUploaderImpl
       DVLOG(1) << "Discarding report instead of uploading.";
       UploadResult result;
       result.status = UploadResult::SUCCESS;
-      callback.Run(result);
+      std::move(callback).Run(result);
       return;
     }
 
@@ -116,19 +113,31 @@ class DomainReliabilityUploaderImpl
               "data to Google'."
             policy_exception_justification: "Not implemented."
           })");
-    std::unique_ptr<net::URLFetcher> owned_fetcher = net::URLFetcher::Create(
-        0, upload_url, net::URLFetcher::POST, this, traffic_annotation);
-    net::URLFetcher* fetcher = owned_fetcher.get();
-    fetcher->SetRequestContext(url_request_context_getter_.get());
-    fetcher->SetAllowCredentials(false);
-    fetcher->SetUploadData(kJsonMimeType, report_json);
-    fetcher->SetAutomaticallyRetryOn5xx(false);
-    fetcher->SetURLRequestUserData(
-        UploadUserData::kUserDataKey,
-        UploadUserData::CreateCreateDataCallback(max_upload_depth + 1));
-    fetcher->Start();
+    std::unique_ptr<net::URLRequest> request =
+        url_request_context_->CreateRequest(
+            upload_url, net::RequestPriority::IDLE, this /* delegate */,
+            traffic_annotation);
+    request->set_method("POST");
+    request->set_allow_credentials(false);
+    request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
+                                         kJsonMimeType, true /* overwrite */);
+    request->set_isolation_info(net::IsolationInfo::CreatePartial(
+        net::IsolationInfo::RequestType::kOther, network_isolation_key));
+    std::vector<char> report_data(report_json.begin(), report_json.end());
+    auto upload_reader =
+        std::make_unique<net::UploadOwnedBytesElementReader>(&report_data);
+    request->set_upload(net::ElementsUploadDataStream::CreateWithReader(
+        std::move(upload_reader), 0 /* identifier */));
+    request->SetUserData(
+        UploadDepthData::kUserDataKey,
+        std::make_unique<UploadDepthData>(max_upload_depth + 1));
 
-    uploads_[fetcher] = {std::move(owned_fetcher), callback};
+    UploadMap::iterator it;
+    bool inserted;
+    std::tie(it, inserted) = uploads_.insert(
+        std::make_pair(std::move(request), std::move(callback)));
+    DCHECK(inserted);
+    it->first->Start();
   }
 
   void SetDiscardUploads(bool discard_uploads) override {
@@ -146,24 +155,22 @@ class DomainReliabilityUploaderImpl
     return discarded_upload_count_;
   }
 
-  // net::URLFetcherDelegate implementation:
-  void OnURLFetchComplete(const net::URLFetcher* fetcher) override {
-    DCHECK(fetcher);
+  // net::URLRequest::Delegate implementation:
+  void OnResponseStarted(net::URLRequest* request, int net_error) override {
+    DCHECK(!shutdown_);
 
-    auto callback_it = uploads_.find(fetcher);
-    DCHECK(callback_it != uploads_.end());
+    auto request_it = uploads_.find(request);
+    DCHECK(request_it != uploads_.end());
 
-    int net_error = GetNetErrorFromURLRequestStatus(fetcher->GetStatus());
-    int http_response_code = fetcher->GetResponseCode();
+    int http_response_code = -1;
     base::TimeDelta retry_after;
-    {
+    if (net_error == net::OK) {
+      http_response_code = request->GetResponseCode();
       std::string retry_after_string;
-      if (fetcher->GetResponseHeaders() &&
-          fetcher->GetResponseHeaders()->EnumerateHeader(nullptr,
-                                                         "Retry-After",
-                                                         &retry_after_string)) {
-        net::HttpUtil::ParseRetryAfterHeader(retry_after_string,
-                                             time_->Now(),
+      if (request->response_headers() &&
+          request->response_headers()->EnumerateHeader(nullptr, "Retry-After",
+                                                       &retry_after_string)) {
+        net::HttpUtil::ParseRetryAfterHeader(retry_after_string, time_->Now(),
                                              &retry_after);
       }
     }
@@ -172,30 +179,31 @@ class DomainReliabilityUploaderImpl
              << ", response code " << http_response_code << ", retry after "
              << retry_after;
 
-    UploadResult result;
-    GetUploadResultFromResponseDetails(net_error,
-                                       http_response_code,
-                                       retry_after,
-                                       &result);
-    callback_it->second.second.Run(result);
+    std::move(request_it->second)
+        .Run(GetUploadResultFromResponseDetails(net_error, http_response_code,
+                                                retry_after));
+    uploads_.erase(request_it);
+  }
 
-    uploads_.erase(callback_it);
+  // Requests are cancelled in OnResponseStarted() once response headers are
+  // read, without reading the body, so this is not needed.
+  void OnReadCompleted(net::URLRequest* request, int bytes_read) override {
+    NOTREACHED();
   }
 
  private:
-  using DomainReliabilityUploader::UploadCallback;
-
   MockableTime* time_;
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
-  std::map<const net::URLFetcher*,
-           std::pair<std::unique_ptr<net::URLFetcher>, UploadCallback>>
-      uploads_;
+  net::URLRequestContext* url_request_context_;
+  // Stores each in-flight upload request with the callback to notify its
+  // initiating DRContext of its completion.
+  using UploadMap = std::map<std::unique_ptr<net::URLRequest>,
+                             UploadCallback,
+                             base::UniquePtrComparator>;
+  UploadMap uploads_;
   bool discard_uploads_;
   bool shutdown_;
   int discarded_upload_count_;
 };
-
-}  // namespace
 
 DomainReliabilityUploader::DomainReliabilityUploader() {}
 DomainReliabilityUploader::~DomainReliabilityUploader() {}
@@ -203,22 +211,17 @@ DomainReliabilityUploader::~DomainReliabilityUploader() {}
 // static
 std::unique_ptr<DomainReliabilityUploader> DomainReliabilityUploader::Create(
     MockableTime* time,
-    const scoped_refptr<net::URLRequestContextGetter>&
-        url_request_context_getter) {
-  return std::unique_ptr<DomainReliabilityUploader>(
-      new DomainReliabilityUploaderImpl(time, url_request_context_getter));
+    net::URLRequestContext* url_request_context) {
+  return std::make_unique<DomainReliabilityUploaderImpl>(time,
+                                                         url_request_context);
 }
 
 // static
 int DomainReliabilityUploader::GetURLRequestUploadDepth(
     const net::URLRequest& request) {
-  UploadUserData* data = static_cast<UploadUserData*>(
-      request.GetUserData(UploadUserData::kUserDataKey));
-  if (!data)
-    return 0;
-  return data->depth();
+  UploadDepthData* data = static_cast<UploadDepthData*>(
+      request.GetUserData(UploadDepthData::kUserDataKey));
+  return data ? data->depth : 0;
 }
-
-void DomainReliabilityUploader::Shutdown() {}
 
 }  // namespace domain_reliability

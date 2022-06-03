@@ -1,0 +1,28 @@
+<style>
+  :host(:focus) {
+    outline: none;
+  }
+
+  #thumbnails {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 24px;
+    padding-inline-end: var(--viewer-thumbnail-bar-padding-inline-end);
+    text-align: center;
+  }
+
+  viewer-thumbnail {
+    padding-top: 24px;
+  }
+</style>
+<div id="thumbnails" hidden$="[[!isPluginActive_]]">
+  <template is="dom-repeat" items="[[pageNumbers_]]"
+      on-dom-change="onDomChange_">
+    <viewer-thumbnail tabindex="0" role="button"
+        aria-label$="[[getAriaLabel_(item)]]"
+        clockwise-rotations="[[clockwiseRotations]]"
+        is-active="[[isActivePage_(item, activePage)]]" page-number="[[item]]">
+    </viewer-thumbnail>
+  </template>
+</div>

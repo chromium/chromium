@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GWP_ASAN_CRASH_HANDLER_CRASH_HANDLER_H_
 #define COMPONENTS_GWP_ASAN_CRASH_HANDLER_CRASH_HANDLER_H_
 
-#include "base/macros.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 namespace crashpad {
@@ -29,11 +28,11 @@ class UserStreamDataSource : public crashpad::UserStreamDataSource {
  public:
   UserStreamDataSource() = default;
 
+  UserStreamDataSource(const UserStreamDataSource&) = delete;
+  UserStreamDataSource& operator=(const UserStreamDataSource&) = delete;
+
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserStreamDataSource);
 };
 
 }  // namespace gwp_asan

@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 // The CGSConnectionID is used to create the CAContext in the process that is
 // going to share the CALayers that it is rendering to another process to
@@ -54,7 +54,7 @@ namespace ui {
 
 // This function will check if all of the interfaces listed above are supported
 // on the system, and return true if they are.
-bool UI_BASE_EXPORT RemoteLayerAPISupported();
+bool COMPONENT_EXPORT(UI_BASE) RemoteLayerAPISupported();
 
 }  // namespace ui
 

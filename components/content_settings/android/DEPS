@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/embedder_support/android",
+  "+components/permissions",
+  "+content/public/android",
+  "+content/public/browser",
+]

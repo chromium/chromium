@@ -20,9 +20,9 @@ class TestRegionDataLoader : public RegionDataLoader {
   ~TestRegionDataLoader() override;
 
   // RegionDataLoader.
-  void LoadRegionData(const std::string& country_code,
-                      autofill::RegionDataLoader::RegionDataLoaded callback,
-                      int64_t timeout_ms) override;
+  void LoadRegionData(
+      const std::string& country_code,
+      autofill::RegionDataLoader::RegionDataLoaded callback) override;
   void ClearCallback() override;
 
   std::string country_code() { return country_code_; }

@@ -1,0 +1,10 @@
+Test css.setLocalFontsEnabled method.
+
+Running test: testElementFontsWithLocalFontsEnabled
+Expected p font: "Arial local" on Win/Mac and "DejaVu Sans" on Linux
+Actual p font: "Arial local"
+
+Running test: testElementFontsWithLocalFontsDisabled
+Expected p font: "Ahem network"
+Actual p font: "Ahem network"
+

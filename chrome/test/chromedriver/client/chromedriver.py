@@ -2,18 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import platform
 import sys
 import util
+import psutil
 
 import command_executor
 from command_executor import Command
 from webelement import WebElement
+from webshadowroot import WebShadowRoot
 from websocket_connection import WebSocketConnection
 
 ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
 ELEMENT_KEY = "ELEMENT"
-MAX_RETRY_COUNT = 3
+SHADOW_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
+MAX_RETRY_COUNT = 5
 
 class ChromeDriverException(Exception):
   pass
@@ -60,6 +64,10 @@ class InvalidArgument(ChromeDriverException):
 class ElementNotInteractable(ChromeDriverException):
   pass
 class UnsupportedOperation(ChromeDriverException):
+  pass
+class NoSuchShadowRoot(ChromeDriverException):
+  pass
+class DetachedShadowRoot(ChromeDriverException):
   pass
 
 def _ExceptionForLegacyResponse(response):
@@ -115,6 +123,8 @@ def _ExceptionForStandardResponse(response):
     'invalid argument': InvalidArgument,
     'element not interactable': ElementNotInteractable,
     'unsupported operation': UnsupportedOperation,
+    'no such shadow root': NoSuchShadowRoot,
+    'detached shadow root': DetachedShadowRoot,
   }
 
   error = response['value']['error']
@@ -127,21 +137,43 @@ class ChromeDriver(object):
   retry_count = 0
   retried_tests = []
 
-  def __init__(self, *args, **kwargs):
+  def __init__(self, server_url, server_pid, **kwargs):
     try:
-      self._InternalInit(*args, **kwargs)
+      self._InternalInit(server_url, **kwargs)
     except Exception as e:
       if not e.message.startswith('timed out'):
         raise
       else:
+        # Kill ChromeDriver child processes recursively
+        # (i.e. browsers and their child processes etc)
+        # when there is a timeout for launching browser
+        if server_pid:
+          processes = psutil.Process(server_pid).children(recursive=True)
+          if len(processes):
+            print('Terminating', len(processes), 'processes')
+            for p in processes:
+              p.terminate()
+
+            gone, alive = psutil.wait_procs(processes, timeout=3)
+            if len(alive):
+              print('Killing', len(alive), 'processes')
+              for p in alive:
+                p.kill()
+
         if ChromeDriver.retry_count < MAX_RETRY_COUNT:
-          ChromeDriver.retry_count = ChromeDriver.retry_count + 1
           ChromeDriver.retried_tests.append(kwargs.get('test_name'))
-          self._InternalInit(*args, **kwargs)
+          try:
+            self._InternalInit(server_url, **kwargs)
+          except:
+            # Only count it as retry if failed
+            print('Retry', ChromeDriver.retry_count, 'failed')
+            ChromeDriver.retry_count = ChromeDriver.retry_count + 1
+            raise
         else:
           raise
 
-  def _InternalInit(self, server_url, chrome_binary=None, android_package=None,
+  def _InternalInit(self, server_url,
+      chrome_binary=None, android_package=None,
       android_activity=None, android_process=None,
       android_use_running_app=None, chrome_switches=None,
       chrome_extensions=None, chrome_log_path=None,
@@ -151,7 +183,7 @@ class ChromeDriver(object):
       send_w3c_capability=True, send_w3c_request=True,
       page_load_strategy=None, unexpected_alert_behaviour=None,
       devtools_events_to_log=None, accept_insecure_certs=None,
-      timeouts=None, test_name=None):
+      timeouts=None, test_name=None, web_socket_url=None):
     self._executor = command_executor.CommandExecutor(server_url)
     self._server_url = server_url
     self.w3c_compliant = False
@@ -215,7 +247,7 @@ class ChromeDriver(object):
       log_types = ['client', 'driver', 'browser', 'server', 'performance',
         'devtools']
       log_levels = ['ALL', 'DEBUG', 'INFO', 'WARNING', 'SEVERE', 'OFF']
-      for log_type, log_level in logging_prefs.iteritems():
+      for log_type, log_level in logging_prefs.items():
         assert log_type in log_types
         assert log_level in log_levels
     else:
@@ -266,6 +298,9 @@ class ChromeDriver(object):
     if test_name is not None:
       params['goog:testName'] = test_name
 
+    if web_socket_url is not None:
+      params['webSocketUrl'] = web_socket_url
+
     if send_w3c_request:
       params = {'capabilities': {'alwaysMatch': params}}
     else:
@@ -276,6 +311,8 @@ class ChromeDriver(object):
       self.w3c_compliant = True
       self._session_id = response['value']['sessionId']
       self.capabilities = self._UnwrapValue(response['value']['capabilities'])
+      self.debuggerAddress = str(
+          self.capabilities['goog:chromeOptions']['debuggerAddress'])
     elif isinstance(response['status'], int):
       self.w3c_compliant = False
       self._session_id = response['sessionId']
@@ -295,6 +332,8 @@ class ChromeDriver(object):
         return {ELEMENT_KEY_W3C: value._id}
       else:
         return {ELEMENT_KEY: value._id}
+    elif isinstance(value, WebShadowRoot):
+        return {SHADOW_KEY: value._id}
     elif isinstance(value, list):
       return list(self._WrapValue(item) for item in value)
     else:
@@ -307,6 +346,9 @@ class ChromeDriver(object):
           and isinstance(
             value[ELEMENT_KEY_W3C], basestring)):
         return WebElement(self, value[ELEMENT_KEY_W3C])
+      elif (len(value) == 1 and SHADOW_KEY in value
+            and isinstance(value[SHADOW_KEY], basestring)):
+        return WebShadowRoot(self, value[SHADOW_KEY])
       elif (len(value) == 1 and ELEMENT_KEY in value
             and isinstance(value[ELEMENT_KEY], basestring)):
         return WebElement(self, value[ELEMENT_KEY])
@@ -322,7 +364,13 @@ class ChromeDriver(object):
 
   def _ExecuteCommand(self, command, params={}):
     params = self._WrapValue(params)
-    response = self._executor.Execute(command, params)
+    try:
+      response = self._executor.Execute(command, params)
+    except Exception as e:
+      if e.message.startswith('timed out'):
+        self._RequestCrash()
+      raise e
+
     if ('status' in response
         and response['status'] != 0):
       raise _ExceptionForLegacyResponse(response)
@@ -330,6 +378,24 @@ class ChromeDriver(object):
           and 'error' in response['value']):
       raise _ExceptionForStandardResponse(response)
     return response
+
+  def _RequestCrash(self):
+    # Can't issue a new command without session_id
+    if not hasattr(self, '_session_id') or self._session_id == None:
+      return
+    tempDriver = ChromeDriver(self._server_url, None,
+      debugger_address=self.debuggerAddress, test_name='_forceCrash')
+    try:
+      tempDriver.SendCommandAndGetResult("Page.crash", {})
+      # allow time to complete writing the minidump
+      time.sleep(5)
+    except Exception as e:
+      # In some cases, Chrome will not honor the request
+      # Print the exception as it may give information on the Chrome state
+      # but Page.crash will also generate exception, so filter that out
+      if 'session deleted because of page crash' not in e.message:
+        print('\n Exception from Page.crash: ' + str(e.message) + '\n')
+    tempDriver.Quit()
 
   def ExecuteCommand(self, command, params={}):
     params['sessionId'] = self._session_id
@@ -567,6 +633,12 @@ class ChromeDriver(object):
   def TakeScreenshot(self):
     return self.ExecuteCommand(Command.SCREENSHOT)
 
+  def TakeFullPageScreenshot(self):
+    return self.ExecuteCommand(Command.FULL_PAGE_SCREENSHOT)
+
+  def PrintPDF(self, params={}):
+    return self.ExecuteCommand(Command.PRINT, params)
+
   def Quit(self):
     """Quits the browser and ends the session."""
     self.ExecuteCommand(Command.QUIT)
@@ -630,9 +702,13 @@ class ChromeDriver(object):
   def GenerateTestReport(self, message):
     self.ExecuteCommand(Command.GENERATE_TEST_REPORT, {'message': message})
 
+  def SetTimeZone(self, timeZone):
+    return self.ExecuteCommand(Command.SET_TIME_ZONE, {'time_zone': timeZone})
+
   def AddVirtualAuthenticator(self, protocol=None, transport=None,
                               hasResidentKey=None, hasUserVerification=None,
-                              isUserConsenting=None, isUserVerified=None):
+                              isUserConsenting=None, isUserVerified=None,
+                              extensions=None):
     options = {}
     if protocol is not None:
       options['protocol'] = protocol
@@ -646,6 +722,8 @@ class ChromeDriver(object):
       options['isUserConsenting'] = isUserConsenting
     if isUserVerified is not None:
       options['isUserVerified'] = isUserVerified
+    if extensions is not None:
+      options['extensions'] = extensions
 
     return self.ExecuteCommand(Command.ADD_VIRTUAL_AUTHENTICATOR, options)
 
@@ -655,7 +733,7 @@ class ChromeDriver(object):
 
   def AddCredential(self, authenticatorId=None, credentialId=None,
                     isResidentCredential=None, rpId=None, privateKey=None,
-                    userHandle=None, signCount=None):
+                    userHandle=None, signCount=None, largeBlob=None):
     options = {}
     if authenticatorId is not None:
       options['authenticatorId'] = authenticatorId
@@ -671,6 +749,8 @@ class ChromeDriver(object):
       options['userHandle'] = userHandle
     if signCount is not None:
       options['signCount'] = signCount
+    if largeBlob is not None:
+      options['largeBlob'] = largeBlob
     return self.ExecuteCommand(Command.ADD_CREDENTIAL, options)
 
   def GetCredentials(self, authenticatorId):
@@ -690,3 +770,13 @@ class ChromeDriver(object):
     params = {'authenticatorId': authenticatorId,
               'isUserVerified': isUserVerified}
     return self.ExecuteCommand(Command.SET_USER_VERIFIED, params)
+
+  def SetSPCTransactionMode(self, mode):
+    params = {'mode': mode}
+    return self.ExecuteCommand(Command.SET_SPC_TRANSACTION_MODE, params)
+
+  def GetSessionId(self):
+    if not hasattr(self, '_session_id'):
+      return None
+    return self._session_id
+

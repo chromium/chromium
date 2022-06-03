@@ -1,0 +1,33 @@
+<!--
+@BLINK-ALLOW:hierarchicalLevel*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:setSize*
+@WIN-ALLOW:group_level*
+@WIN-ALLOW:similar_items_in_group*
+@WIN-ALLOW:position_in_group*
+@UIA-WIN-ALLOW:Level*
+@UIA-WIN-ALLOW:PositionInSet*
+@UIA-WIN-ALLOW:SizeOfSet*
+@UIA-WIN-DENY:IsControlElement*
+-->
+<html>
+<body>
+  <ul>
+    <li aria-setsize="-1" aria-posinset="5">Level 1, item 5 of set size unknown</li>
+    <li aria-setsize="-1" aria-posinset="6">Level 1, item 6 of set size unknown
+      <ul>
+        <li aria-setsize="-1" aria-posinset="6">Level 2, item 6 of set size unknown</li>
+        <li aria-setsize="-1" aria-posinset="7">Level 2, item 7 of set size unknown</li>
+      </ul>
+    </li>
+    <li aria-setsize="2" aria-posinset="7">Level 1, item 7 of set size 2</li>
+    <li aria-setsize="3" aria-posinset="8">Level 1, item 8 of set size 3</li>
+  </ul>
+
+  <style>
+    li {
+      list-style-type: none;
+    }
+  </style>
+</body>
+</html>

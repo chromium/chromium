@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_
 #define CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_
 
-#include <string>
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "url/gurl.h"
 
 class Browser;
+class LaunchModeRecorder;
 class Profile;
 class StartupBrowserCreator;
 class StartupTabProvider;
@@ -47,15 +47,22 @@ class StartupBrowserCreatorImpl {
                             const base::CommandLine& command_line,
                             StartupBrowserCreator* browser_creator,
                             chrome::startup::IsFirstRun is_first_run);
-  ~StartupBrowserCreatorImpl();
+  StartupBrowserCreatorImpl(const StartupBrowserCreatorImpl&) = delete;
+  StartupBrowserCreatorImpl& operator=(const StartupBrowserCreatorImpl&) =
+      delete;
+  ~StartupBrowserCreatorImpl() = default;
+
+  // If command line specifies kiosk mode, or full screen mode, switch
+  // to full screen.
+  static void MaybeToggleFullscreen(Browser* browser);
 
   // Creates the necessary windows for startup. Returns true on success,
   // false on failure. process_startup is true if Chrome is just
   // starting up. If process_startup is false, it indicates Chrome was
   // already running and the user wants to launch another instance.
   bool Launch(Profile* profile,
-              const std::vector<GURL>& urls_to_open,
-              bool process_startup);
+              bool process_startup,
+              std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.
@@ -72,9 +79,11 @@ class StartupBrowserCreatorImpl {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_Crash);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
-                           DetermineStartupTabs_MasterPrefs);
+                           DetermineStartupTabs_InitialPrefs);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_CommandLine);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
+                           DetermineStartupTabs_Crosapi);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_NewTabPage);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
@@ -88,7 +97,23 @@ class StartupBrowserCreatorImpl {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineBrowserOpenBehavior_NotStartup);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
-                           DetermineStartupTabs_ExtensionCheckupPage);
+                           DetermineStartupTabs_NewFeaturesPage);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest, ShouldLaunch);
+
+  enum class LaunchResult {
+    kNormally,
+    kWithGivenUrls,  // URLs are given from platform, e.g. via command line.
+  };
+
+  struct DetermineStartupTabsResult {
+    DetermineStartupTabsResult(StartupTabs tabs, LaunchResult launch_result);
+    DetermineStartupTabsResult(DetermineStartupTabsResult&&);
+    DetermineStartupTabsResult& operator=(DetermineStartupTabsResult&&);
+    ~DetermineStartupTabsResult();
+
+    StartupTabs tabs;  // List of startup tabs.
+    LaunchResult launch_result;
+  };
 
   enum class WelcomeRunType {
     NONE,                // Do not inject the welcome page for this run.
@@ -116,44 +141,31 @@ class StartupBrowserCreatorImpl {
   // Creates a tab for each of the Tabs in |tabs|. If browser is non-null
   // and a tabbed browser, the tabs are added to it. Otherwise a new tabbed
   // browser is created and the tabs are added to it. The browser the tabs
-  // are added to is returned, which is either |browser| or the newly created
-  // browser.
+  // are added to is returned, which is either |browser|, the newly created
+  // browser, or nullptr if browser could not be created.
   Browser* OpenTabsInBrowser(Browser* browser,
                              bool process_startup,
                              const StartupTabs& tabs);
 
-  // If the process was launched with the web application command line flags,
-  // e.g. --app=http://www.google.com/ or --app_id=... return true.
-  // In this case |app_url| or |app_id| are populated if they're non-null.
-  bool IsAppLaunch(std::string* app_url, std::string* app_id);
-
-  // If IsAppLaunch is true, tries to open an application window.
-  // If the app is specified to start in a tab, or IsAppLaunch is false,
-  // returns false to specify default processing.
-  bool OpenApplicationWindow(Profile* profile);
-
-  // If IsAppLaunch is true and the user set a pref indicating that the app
-  // should open in a tab, do so.
-  bool OpenApplicationTab(Profile* profile);
-
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore
   // is necessary, and opens the URLs in a new or restored browser accordingly.
-  void DetermineURLsAndLaunch(bool process_startup,
-                              const std::vector<GURL>& cmd_line_urls);
+  LaunchResult DetermineURLsAndLaunch(bool process_startup);
 
-  // Returns the tabs to be shown on startup, based on the policy functions in
-  // the given StartupTabProvider, the given tabs passed by the command line,
-  // and the interactions between those policies.
-  StartupTabs DetermineStartupTabs(const StartupTabProvider& provider,
-                                   const StartupTabs& cmd_line_tabs,
-                                   bool process_startup,
-                                   bool is_ephemeral_profile,
-                                   bool is_post_crash_launch,
-                                   bool has_incompatible_applications,
-                                   bool promotional_tabs_enabled,
-                                   bool welcome_enabled,
-                                   bool serve_extensions_page);
+  // Returns a tuple of
+  // - the tabs to be shown on startup, based on the policy functions in
+  //   the given StartupTabProvider, the given tabs passed by the command line,
+  //   and the interactions between those policies.
+  // - Whether there's launch tabs.
+  DetermineStartupTabsResult DetermineStartupTabs(
+      const StartupTabProvider& provider,
+      bool process_startup,
+      bool is_ephemeral_profile,
+      bool is_post_crash_launch,
+      bool has_incompatible_applications,
+      bool promotional_tabs_enabled,
+      bool welcome_enabled,
+      bool whats_new_enabled);
 
   // Begins an asynchronous session restore if current state allows it (e.g.,
   // this is not process startup) and SessionService indicates that one is
@@ -168,10 +180,11 @@ class StartupBrowserCreatorImpl {
   // this may attempt a session restore or create a new browser. May also allow
   // DOM Storage to begin cleanup once it's clear it is not needed anymore.
   Browser* RestoreOrCreateBrowser(
-    const StartupTabs& tabs, BrowserOpenBehavior behavior,
-    SessionRestore::BehaviorBitmask restore_options, bool process_startup,
-    bool is_post_crash_launch);
-
+      const StartupTabs& tabs,
+      BrowserOpenBehavior behavior,
+      SessionRestore::BehaviorBitmask restore_options,
+      bool process_startup,
+      bool is_post_crash_launch);
 
   // Adds any startup infobars to the selected tab of the given browser.
   void AddInfoBarsIfNecessary(
@@ -190,12 +203,14 @@ class StartupBrowserCreatorImpl {
       bool has_create_browser_switch,
       bool was_mac_login_or_resume);
 
+  // Returns whether or not a browser window should be created/restored.
+  static bool ShouldLaunch(const base::CommandLine& command_line);
+
   const base::FilePath cur_dir_;
   const base::CommandLine& command_line_;
-  Profile* profile_;
+  Profile* profile_ = nullptr;
   StartupBrowserCreator* browser_creator_;
   bool is_first_run_;
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_

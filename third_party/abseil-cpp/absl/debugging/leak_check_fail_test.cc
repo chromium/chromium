@@ -25,7 +25,7 @@ TEST(LeakCheckTest, LeakMemory) {
   // failed exit code.
 
   char* foo = strdup("lsan should complain about this leaked string");
-  ABSL_RAW_LOG(INFO, "Should detect leaked std::string %s", foo);
+  ABSL_RAW_LOG(INFO, "Should detect leaked string %s", foo);
 }
 
 TEST(LeakCheckTest, LeakMemoryAfterDisablerScope) {
@@ -34,7 +34,7 @@ TEST(LeakCheckTest, LeakMemoryAfterDisablerScope) {
   // failed exit code.
   { absl::LeakCheckDisabler disabler; }
   char* foo = strdup("lsan should also complain about this leaked string");
-  ABSL_RAW_LOG(INFO, "Re-enabled leak detection.Should detect leaked std::string %s",
+  ABSL_RAW_LOG(INFO, "Re-enabled leak detection.Should detect leaked string %s",
                foo);
 }
 

@@ -4,6 +4,7 @@
 
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 
+#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"

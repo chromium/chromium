@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that Computed Style preserves property expansion on re-rendering.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -30,17 +30,17 @@
 
   ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('inspected', step1);
 
-  function step1() {
+  async function step1() {
     var treeElement = ElementsTestRunner.findComputedPropertyWithName('display');
     treeElement.expand();
     TestRunner.addResult('\n#inspected computed styles: ');
-    ElementsTestRunner.dumpComputedStyle(true);
+    await ElementsTestRunner.dumpComputedStyle(true);
     ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('other', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('\n#other computed styles: ');
-    ElementsTestRunner.dumpComputedStyle(true);
+    await ElementsTestRunner.dumpComputedStyle(true);
     TestRunner.completeTest();
   }
 })();

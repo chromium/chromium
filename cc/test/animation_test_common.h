@@ -5,22 +5,22 @@
 #ifndef CC_TEST_ANIMATION_TEST_COMMON_H_
 #define CC_TEST_ANIMATION_TEST_COMMON_H_
 
-#include "cc/animation/animation_curve.h"
+#include <memory>
+
 #include "cc/animation/animation_timeline.h"
-#include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/test/geometry_test_utils.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
-class ScrollOffset;
+class Vector2dF;
 }
 
 namespace cc {
 
-class FakeFloatAnimationCurve : public FloatAnimationCurve {
+class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
  public:
   FakeFloatAnimationCurve();
   explicit FakeFloatAnimationCurve(double duration);
@@ -28,33 +28,29 @@ class FakeFloatAnimationCurve : public FloatAnimationCurve {
 
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta now) const override;
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeTransformTransition : public TransformAnimationCurve {
+class FakeTransformTransition : public gfx::TransformAnimationCurve {
  public:
   explicit FakeTransformTransition(double duration);
   ~FakeTransformTransition() override;
 
   base::TimeDelta Duration() const override;
-  TransformOperations GetValue(base::TimeDelta time) const override;
-  bool IsTranslation() const override;
+  gfx::TransformOperations GetValue(base::TimeDelta time) const override;
   bool PreservesAxisAlignment() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeFloatTransition : public FloatAnimationCurve {
+class FakeFloatTransition : public gfx::FloatAnimationCurve {
  public:
   FakeFloatTransition(double duration, float from, float to);
   ~FakeFloatTransition() override;
@@ -62,7 +58,7 @@ class FakeFloatTransition : public FloatAnimationCurve {
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta time) const override;
 
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
@@ -71,47 +67,45 @@ class FakeFloatTransition : public FloatAnimationCurve {
 };
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,
-                                        gfx::ScrollOffset initial_value,
-                                        gfx::ScrollOffset target_value,
-                                        KeyframeEffectId effect_id = 0);
+                                        gfx::Vector2dF initial_value,
+                                        gfx::Vector2dF target_value);
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
                                     int delta_x,
-                                    int delta_y,
-                                    KeyframeEffectId effect_id = 0);
+                                    int delta_y);
+
+int AddAnimatedCustomPropertyToAnimation(Animation* animation,
+                                         double duration,
+                                         int start_value,
+                                         int end_value);
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
-                                    TransformOperations start_operations,
-                                    TransformOperations operations,
-                                    KeyframeEffectId effect_id = 0);
+                                    gfx::TransformOperations start_operations,
+                                    gfx::TransformOperations operations);
 
 int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
                                     float start_opacity,
                                     float end_opacity,
-                                    bool use_timing_function,
-                                    KeyframeEffectId effect_id = 0);
+                                    bool use_timing_function);
 
 int AddAnimatedFilterToAnimation(Animation* animation,
                                  double duration,
                                  float start_brightness,
-                                 float end_brightness,
-                                 KeyframeEffectId effect_id = 0);
+                                 float end_brightness);
 
 int AddAnimatedBackdropFilterToAnimation(Animation* animation,
                                          double duration,
                                          float start_invert,
-                                         float end_invert,
-                                         KeyframeEffectId effect_id = 0);
+                                         float end_invert);
 
 int AddOpacityStepsToAnimation(Animation* animation,
                                double duration,
                                float start_opacity,
                                float end_opacity,
-                               int num_steps,
-                               KeyframeEffectId effect_id = 0);
+                               int num_steps);
 
 void AddKeyframeModelToElementWithAnimation(
     ElementId element_id,
@@ -150,8 +144,8 @@ int AddAnimatedTransformToElementWithAnimation(
     ElementId element_id,
     scoped_refptr<AnimationTimeline> timeline,
     double duration,
-    TransformOperations start_operations,
-    TransformOperations operations);
+    gfx::TransformOperations start_operations,
+    gfx::TransformOperations operations);
 
 int AddOpacityTransitionToElementWithAnimation(
     ElementId element_id,

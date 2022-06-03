@@ -25,7 +25,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
@@ -35,9 +35,10 @@
 
 namespace component_updater {
 
-constexpr base::TaskTraits RecoveryComponentActionHandler::kTaskTraits;
 constexpr base::TaskTraits
-    RecoveryComponentActionHandler::kTaskTraitsRunCommand;
+    RecoveryComponentActionHandler::kThreadPoolTaskTraits;
+constexpr base::TaskTraits
+    RecoveryComponentActionHandler::kThreadPoolTaskTraitsRunCommand;
 
 RecoveryComponentActionHandler::RecoveryComponentActionHandler(
     const std::vector<uint8_t>& key_hash,
@@ -55,7 +56,7 @@ void RecoveryComponentActionHandler::Handle(const base::FilePath& action,
   session_id_ = session_id;
   callback_ = std::move(callback);
 
-  base::CreateSequencedTaskRunner(kTaskTraits)
+  base::ThreadPool::CreateSequencedTaskRunner(kThreadPoolTaskTraits)
       ->PostTask(
           FROM_HERE,
           component_updater::IsPerUserInstall()
@@ -100,17 +101,23 @@ void RecoveryComponentActionHandler::RunCommand(
   options.start_hidden = true;
 #endif
   base::Process process = base::LaunchProcess(cmdline, options);
-  base::PostTask(FROM_HERE, kTaskTraitsRunCommand,
-                 base::BindOnce(&RecoveryComponentActionHandler::WaitForCommand,
-                                this, std::move(process)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, kThreadPoolTaskTraitsRunCommand,
+      base::BindOnce(&RecoveryComponentActionHandler::WaitForCommand, this,
+                     std::move(process)));
 }
 
 void RecoveryComponentActionHandler::WaitForCommand(base::Process process) {
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
-  const bool succeeded =
-      process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
-  base::DeleteFileRecursively(unpack_path_);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
+  bool succeeded = false;
+  if (!process.IsValid()) {
+    exit_code =
+        static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED);
+  } else {
+    succeeded = process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
+  }
+  base::DeletePathRecursively(unpack_path_);
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), succeeded, exit_code, 0));
 }
@@ -133,7 +140,7 @@ bool RecoveryImprovedInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 RecoveryImprovedInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -143,13 +150,13 @@ void RecoveryImprovedInstallerPolicy::OnCustomUninstall() {}
 void RecoveryImprovedInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DVLOG(1) << "RecoveryImproved component is ready.";
 }
 
 // Called during startup and installation before ComponentReady().
 bool RecoveryImprovedInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }
@@ -170,10 +177,6 @@ std::string RecoveryImprovedInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 RecoveryImprovedInstallerPolicy::GetInstallerAttributes() const {
-  return {};
-}
-
-std::vector<std::string> RecoveryImprovedInstallerPolicy::GetMimeTypes() const {
   return {};
 }
 

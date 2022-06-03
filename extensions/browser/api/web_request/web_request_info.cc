@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/websocket_handshake_request_info.h"
@@ -23,6 +23,8 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader.h"
@@ -45,6 +47,10 @@ class UploadDataSource {
 class BytesUploadDataSource : public UploadDataSource {
  public:
   BytesUploadDataSource(const base::StringPiece& bytes) : bytes_(bytes) {}
+
+  BytesUploadDataSource(const BytesUploadDataSource&) = delete;
+  BytesUploadDataSource& operator=(const BytesUploadDataSource&) = delete;
+
   ~BytesUploadDataSource() override = default;
 
   // UploadDataSource:
@@ -54,13 +60,15 @@ class BytesUploadDataSource : public UploadDataSource {
 
  private:
   base::StringPiece bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BytesUploadDataSource);
 };
 
 class FileUploadDataSource : public UploadDataSource {
  public:
   FileUploadDataSource(const base::FilePath& path) : path_(path) {}
+
+  FileUploadDataSource(const FileUploadDataSource&) = delete;
+  FileUploadDataSource& operator=(const FileUploadDataSource&) = delete;
+
   ~FileUploadDataSource() override = default;
 
   // UploadDataSource:
@@ -70,8 +78,6 @@ class FileUploadDataSource : public UploadDataSource {
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileUploadDataSource);
 };
 
 bool CreateUploadDataSourcesFromResourceRequest(
@@ -82,20 +88,19 @@ bool CreateUploadDataSourcesFromResourceRequest(
 
   for (auto& element : *request.request_body->elements()) {
     switch (element.type()) {
-      case network::mojom::DataElementType::kDataPipe:
+      case network::DataElement::Tag::kDataPipe:
         // TODO(https://crbug.com/721414): Support data pipe elements.
         break;
 
-      case network::mojom::DataElementType::kBytes:
+      case network::DataElement::Tag::kBytes:
         data_sources->push_back(std::make_unique<BytesUploadDataSource>(
-            base::StringPiece(element.bytes(), element.length())));
+            element.As<network::DataElementBytes>().AsStringPiece()));
         break;
-
-      case network::mojom::DataElementType::kFile:
+      case network::DataElement::Tag::kFile:
         // TODO(https://crbug.com/715679): This may not work when network
         // process is sandboxed.
-        data_sources->push_back(
-            std::make_unique<FileUploadDataSource>(element.path()));
+        data_sources->push_back(std::make_unique<FileUploadDataSource>(
+            element.As<network::DataElementFile>().path()));
         break;
 
       default:
@@ -148,42 +153,33 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
 }  // namespace
 
 WebRequestInfoInitParams::WebRequestInfoInitParams() = default;
-WebRequestInfoInitParams::WebRequestInfoInitParams(
-    WebRequestInfoInitParams&& other) = default;
-WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
-    WebRequestInfoInitParams&& other) = default;
 
 WebRequestInfoInitParams::WebRequestInfoInitParams(
     uint64_t request_id,
     int render_process_id,
     int render_frame_id,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-    int32_t routing_id,
+    int32_t view_routing_id,
     const network::ResourceRequest& request,
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    base::Optional<int64_t> navigation_id)
+    absl::optional<int64_t> navigation_id,
+    ukm::SourceIdObj ukm_source_id)
     : id(request_id),
       url(request.url),
-      site_for_cookies(request.site_for_cookies.RepresentativeUrl()),
       render_process_id(render_process_id),
-      routing_id(routing_id),
+      view_routing_id(view_routing_id),
       frame_id(render_frame_id),
       method(request.method),
       is_navigation_request(!!navigation_ui_data),
       initiator(request.request_initiator),
-      type(static_cast<content::ResourceType>(request.resource_type)),
       is_async(is_async),
       extra_request_headers(request.headers),
       is_service_worker_script(is_service_worker_script),
-      navigation_id(std::move(navigation_id)) {
-  if (url.SchemeIsWSOrWSS())
-    web_request_type = WebRequestResourceType::WEB_SOCKET;
-  else if (is_download)
-    web_request_type = WebRequestResourceType::OTHER;
-  else
-    web_request_type = ToWebRequestResourceType(type);
+      navigation_id(std::move(navigation_id)),
+      ukm_source_id(ukm_source_id) {
+  web_request_type = ToWebRequestResourceType(request, is_download);
 
   DCHECK_EQ(is_navigation_request, navigation_id.has_value());
 
@@ -196,6 +192,12 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
   }
 }
 
+WebRequestInfoInitParams::WebRequestInfoInitParams(
+    WebRequestInfoInitParams&& other) = default;
+
+WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
+    WebRequestInfoInitParams&& other) = default;
+
 WebRequestInfoInitParams::~WebRequestInfoInitParams() = default;
 
 void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
@@ -206,11 +208,12 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     web_view_rules_registry_id =
         navigation_ui_data->web_view_rules_registry_id();
     frame_data = navigation_ui_data->frame_data();
+    parent_routing_id = navigation_ui_data->parent_routing_id();
   } else if (frame_id >= 0) {
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
     if (WebViewRendererState::GetInstance()->GetInfo(
-            render_process_id, routing_id, &web_view_info)) {
+            render_process_id, view_routing_id, &web_view_info)) {
       is_web_view = true;
       web_view_instance_id = web_view_info.instance_id;
       web_view_rules_registry_id = web_view_info.rules_registry_id;
@@ -218,23 +221,24 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
 
     // For subresource loads we attempt to resolve the FrameData immediately.
-    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(render_process_id,
-                                                             frame_id);
+    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(
+        content::GlobalRenderFrameHostId(render_process_id, frame_id));
+
+    parent_routing_id =
+        content::GlobalRenderFrameHostId(render_process_id, frame_id);
   }
 }
 
 WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
     : id(params.id),
       url(std::move(params.url)),
-      site_for_cookies(std::move(params.site_for_cookies)),
       render_process_id(params.render_process_id),
-      routing_id(params.routing_id),
+      view_routing_id(params.view_routing_id),
       frame_id(params.frame_id),
       method(std::move(params.method)),
       is_navigation_request(params.is_navigation_request),
       initiator(std::move(params.initiator)),
       frame_data(std::move(params.frame_data)),
-      type(params.type),
       web_request_type(params.web_request_type),
       is_async(params.is_async),
       extra_request_headers(std::move(params.extra_request_headers)),
@@ -244,7 +248,9 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
       web_view_rules_registry_id(params.web_view_rules_registry_id),
       web_view_embedder_process_id(params.web_view_embedder_process_id),
       is_service_worker_script(params.is_service_worker_script),
-      navigation_id(std::move(params.navigation_id)) {}
+      navigation_id(std::move(params.navigation_id)),
+      ukm_source_id(params.ukm_source_id),
+      parent_routing_id(params.parent_routing_id) {}
 
 WebRequestInfo::~WebRequestInfo() = default;
 

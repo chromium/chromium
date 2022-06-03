@@ -18,6 +18,10 @@ namespace display {
 class DISPLAY_EXPORT ScreenBase : public Screen {
  public:
   ScreenBase();
+
+  ScreenBase(const ScreenBase&) = delete;
+  ScreenBase& operator=(const ScreenBase&) = delete;
+
   ~ScreenBase() override;
 
   DisplayList& display_list() { return display_list_; }
@@ -27,6 +31,9 @@ class DISPLAY_EXPORT ScreenBase : public Screen {
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override;
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& screen_point,
+      const std::set<gfx::NativeWindow>& ignore) override;
   Display GetPrimaryDisplay() const override;
   Display GetDisplayNearestWindow(gfx::NativeWindow window) const override;
   Display GetDisplayNearestPoint(const gfx::Point& point) const override;
@@ -45,8 +52,6 @@ class DISPLAY_EXPORT ScreenBase : public Screen {
 
  private:
   DisplayList display_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenBase);
 };
 
 }  // namespace display

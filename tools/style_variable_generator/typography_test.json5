@@ -1,0 +1,21 @@
+{
+  options: {
+    CSS: {
+      prefix: 'cros'
+    },
+  },
+  typography: {
+    font_families: {
+      font_family_test: "'Google Sans', 'Noto Sans', sans-serif",
+      font_family_other: "Roboto, 'Noto Sans', sans-serif",
+    },
+    typefaces: {
+      headline_1: {
+        font_family: '$font_family_test',
+        font_size: 15,
+        font_weight: 500,
+        line_height: 22,
+      }
+    }
+  }
+}

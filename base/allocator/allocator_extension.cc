@@ -4,7 +4,7 @@
 
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 #if BUILDFLAG(USE_TCMALLOC)
 #include "third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h"
@@ -24,15 +24,17 @@ void ReleaseFreeMemory() {
 bool GetNumericProperty(const char* name, size_t* value) {
 #if BUILDFLAG(USE_TCMALLOC)
   return ::MallocExtension::instance()->GetNumericProperty(name, value);
-#endif
+#else
   return false;
+#endif
 }
 
 bool SetNumericProperty(const char* name, size_t value) {
 #if BUILDFLAG(USE_TCMALLOC)
   return ::MallocExtension::instance()->SetNumericProperty(name, value);
-#endif
+#else
   return false;
+#endif
 }
 
 void GetHeapSample(std::string* writer) {
@@ -44,8 +46,9 @@ void GetHeapSample(std::string* writer) {
 bool IsHeapProfilerRunning() {
 #if BUILDFLAG(USE_TCMALLOC) && defined(ENABLE_PROFILING)
   return ::IsHeapProfilerRunning();
-#endif
+#else
   return false;
+#endif
 }
 
 void SetHooks(AllocHookFunc alloc_hook, FreeHookFunc free_hook) {
@@ -65,8 +68,9 @@ void SetHooks(AllocHookFunc alloc_hook, FreeHookFunc free_hook) {
 int GetCallStack(void** stack, int max_stack_size) {
 #if BUILDFLAG(USE_TCMALLOC)
   return MallocHook::GetCallerStackTrace(stack, max_stack_size, 0);
-#endif
+#else
   return 0;
+#endif
 }
 
 }  // namespace allocator

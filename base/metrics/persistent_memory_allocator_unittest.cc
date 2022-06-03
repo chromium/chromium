@@ -79,9 +79,9 @@ class PersistentMemoryAllocatorTest : public testing::Test {
   void SetUp() override {
     allocator_.reset();
     ::memset(mem_segment_.get(), 0, TEST_MEMORY_SIZE);
-    allocator_.reset(new PersistentMemoryAllocator(
-        mem_segment_.get(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE,
-        TEST_ID, TEST_NAME, false));
+    allocator_ = std::make_unique<PersistentMemoryAllocator>(
+        mem_segment_.get(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
+        TEST_NAME, false);
   }
 
   void TearDown() override {
@@ -382,6 +382,9 @@ class CounterThread : public SimpleThread {
         count_(0),
         wake_up_(wake_up) {}
 
+  CounterThread(const CounterThread&) = delete;
+  CounterThread& operator=(const CounterThread&) = delete;
+
   void Run() override {
     // Wait so all threads can start at approximately the same time.
     // Best performance comes from releasing a single worker which then
@@ -415,8 +418,6 @@ class CounterThread : public SimpleThread {
   ConditionVariable* condition_;
   unsigned count_;
   bool* wake_up_;
-
-  DISALLOW_COPY_AND_ASSIGN(CounterThread);
 };
 
 // Ensure that parallel iteration returns the same number of objects as
@@ -868,7 +869,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     const MemoryMappedFile::Access map_access =
         read_only ? MemoryMappedFile::READ_ONLY : MemoryMappedFile::READ_WRITE;
 
-    mmfile.reset(new MemoryMappedFile());
+    mmfile = std::make_unique<MemoryMappedFile>();
     ASSERT_TRUE(mmfile->Initialize(File(file_path, file_flags), map_access));
     EXPECT_EQ(filesize, mmfile->length());
     if (FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, read_only)) {
@@ -910,7 +911,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     }
     ASSERT_TRUE(PathExists(file_path));
 
-    mmfile.reset(new MemoryMappedFile());
+    mmfile = std::make_unique<MemoryMappedFile>();
     ASSERT_TRUE(mmfile->Initialize(File(file_path, file_flags), map_access));
     EXPECT_EQ(filesize, mmfile->length());
     if (FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, read_only)) {

@@ -12,6 +12,13 @@
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 8],
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     }
   ],
   "transforms": [

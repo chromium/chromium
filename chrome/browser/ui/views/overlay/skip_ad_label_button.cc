@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace {
 
@@ -15,16 +18,16 @@ const int kSkipAdButtonWidth = 72;
 const int kSkipAdButtonHeight = 24;
 const int kSkipAdButtonMarginBottom = 48;
 
-constexpr SkColor kSkipAdButtonTextColor = SK_ColorWHITE;
-constexpr SkColor kSkipAdButtonBorderColor = SK_ColorWHITE;
+constexpr SkColor kSkipAdButtonTextColor = kPipWindowIconColor;
+constexpr SkColor kSkipAdButtonBorderColor = kPipWindowIconColor;
 constexpr SkColor kSkipAdButtonBackgroundColor = gfx::kGoogleGrey700;
 
 }  // namespace
 
 namespace views {
 
-SkipAdLabelButton::SkipAdLabelButton(ButtonListener* listener)
-    : LabelButton(listener,
+SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
+    : LabelButton(std::move(callback),
                   l10n_util::GetStringUTF16(
                       IDS_PICTURE_IN_PICTURE_SKIP_AD_CONTROL_TEXT)) {
   SetBackground(
@@ -32,10 +35,10 @@ SkipAdLabelButton::SkipAdLabelButton(ButtonListener* listener)
           kSkipAdButtonBackgroundColor, kSkipAdButtonBorderColor, 1.f)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kSkipAdButtonTextColor);
+  SetTextColor(views::Button::STATE_DISABLED, kSkipAdButtonTextColor);
   SetSize(gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight));
 
   // Accessibility.
-  SetFocusForPlatform();
   SetAccessibleName(label()->GetText());
   SetTooltipText(label()->GetText());
   SetInstallFocusRingOnFocus(true);
@@ -47,11 +50,15 @@ void SkipAdLabelButton::SetPosition(const gfx::Size& size) {
       size.height() - kSkipAdButtonHeight - kSkipAdButtonMarginBottom));
 }
 
-void SkipAdLabelButton::ToggleVisibility(bool is_visible) {
-  layer()->SetVisible(is_visible);
-  SetEnabled(is_visible);
-  SetSize(is_visible ? gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight)
-                     : gfx::Size());
+void SkipAdLabelButton::SetVisible(bool visible) {
+  // We need to do more than the usual visibility change because otherwise the
+  // overlay window cannot be dragged when grabbing within the label area.
+  LabelButton::SetVisible(visible);
+  SetSize(visible ? gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight)
+                  : gfx::Size());
 }
+
+BEGIN_METADATA(SkipAdLabelButton, views::LabelButton)
+END_METADATA
 
 }  // namespace views

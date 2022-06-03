@@ -19,6 +19,9 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
   SingleSampleMetricImpl(mojo::PendingRemote<mojom::SingleSampleMetric> metric)
       : metric_(std::move(metric)) {}
 
+  SingleSampleMetricImpl(const SingleSampleMetricImpl&) = delete;
+  SingleSampleMetricImpl& operator=(const SingleSampleMetricImpl&) = delete;
+
   ~SingleSampleMetricImpl() override {
     DCHECK(thread_checker_.CalledOnValidThread());
   }
@@ -31,8 +34,6 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
  private:
   base::ThreadChecker thread_checker_;
   mojo::Remote<mojom::SingleSampleMetric> metric_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricImpl);
 };
 
 }  // namespace

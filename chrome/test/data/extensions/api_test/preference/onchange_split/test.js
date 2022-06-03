@@ -184,7 +184,7 @@ chrome.test.runTests([
 
     if (inIncognitoContext) {
       expected[1] = {
-        'value': true,
+        'value': false,
         'incognitoSpecific': false,
         'levelOfControl': 'controllable_by_this_extension'
       };

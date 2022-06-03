@@ -5,26 +5,48 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include "base/auto_reset.h"
+#include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
+
+namespace {
+
+typedef HeapVector<Member<Document>, 32> DocumentsVector;
+
+enum OnlyThrottledOrNot { OnlyNonThrottled, AllDocuments };
+
+// We walk through all the frames in DOM tree order and get all the documents
+DocumentsVector GetAllDocuments(Frame* main_frame,
+                                OnlyThrottledOrNot which_documents) {
+  DocumentsVector documents;
+  for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      Document* document = local_frame->GetDocument();
+      if (which_documents == AllDocuments || !document->View() ||
+          !document->View()->CanThrottleRendering())
+        documents.push_back(document);
+    }
+  }
+  return documents;
+}
+
+}  // namespace
 
 PageAnimator::PageAnimator(Page& page)
     : page_(page),
       servicing_animations_(false),
       updating_layout_and_style_for_painting_(false) {}
 
-void PageAnimator::Trace(blink::Visitor* visitor) {
+void PageAnimator::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
 }
 
@@ -37,81 +59,55 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().SetAllowedToDynamicallyUpdateTime(false);
   Clock().UpdateTime(monotonic_animation_start_time);
 
-  HeapVector<Member<Document>, 32> documents;
-  for (Frame* frame = page_->MainFrame(); frame;
-       frame = frame->Tree().TraverseNext()) {
-    if (auto* local_frame = DynamicTo<LocalFrame>(frame))
-      documents.push_back(local_frame->GetDocument());
-  }
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame(), AllDocuments);
 
   for (auto& document : documents) {
-    ScopedFrameBlamer frame_blamer(document->GetFrame());
-    TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
-    document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
-    if (document->View()) {
-      if (document->View()->ShouldThrottleRendering()) {
-        document->SetCurrentFrameIsThrottled(true);
-        continue;
-      }
-      // Disallow throttling in case any script needs to do a synchronous
-      // lifecycle update in other frames which are throttled.
-      DocumentLifecycle::DisallowThrottlingScope no_throttling_scope(
-          document->Lifecycle());
-      if (ScrollableArea* scrollable_area =
-              document->View()->GetScrollableArea()) {
-        scrollable_area->ServiceScrollAnimations(
-            monotonic_animation_start_time.since_origin().InSecondsF());
-      }
-
-      if (const LocalFrameView::ScrollableAreaSet* animating_scrollable_areas =
-              document->View()->AnimatingScrollableAreas()) {
-        // Iterate over a copy, since ScrollableAreas may deregister
-        // themselves during the iteration.
-        HeapVector<Member<PaintLayerScrollableArea>>
-            animating_scrollable_areas_copy;
-        CopyToVector(*animating_scrollable_areas,
-                     animating_scrollable_areas_copy);
-        for (PaintLayerScrollableArea* scrollable_area :
-             animating_scrollable_areas_copy) {
-          scrollable_area->ServiceScrollAnimations(
-              monotonic_animation_start_time.since_origin().InSecondsF());
-        }
-      }
-      document->GetFrame()->AnimateSnapFling(monotonic_animation_start_time);
-      SVGDocumentExtensions::ServiceOnAnimationFrame(*document);
+    absl::optional<ScopedFrameBlamer> frame_blamer;
+    // TODO(szager): The following logic evolved piecemeal, and this conditional
+    // is suspect.
+    if (!document->View() || !document->View()->CanThrottleRendering()) {
+      frame_blamer.emplace(document->GetFrame());
+      TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
     }
-    // TODO(skyostil): This function should not run for documents without views.
-    DocumentLifecycle::DisallowThrottlingScope no_throttling_scope(
-        document->Lifecycle());
-    document->ServiceScriptedAnimations(monotonic_animation_start_time);
+    if (!document->View()) {
+      document->GetDocumentAnimations()
+          .UpdateAnimationTimingForAnimationFrame();
+      continue;
+    }
+    document->View()->ServiceScriptedAnimations(monotonic_animation_start_time);
   }
 
   page_->GetValidationMessageClient().LayoutOverlay();
 }
 
 void PageAnimator::PostAnimate() {
-  HeapVector<Member<Document>, 32> documents;
-  for (Frame* frame = page_->MainFrame(); frame;
-       frame = frame->Tree().TraverseNext()) {
-    if (frame->IsLocalFrame())
-      documents.push_back(To<LocalFrame>(frame)->GetDocument());
-  }
-
-  // Run the post-animation frame callbacks. See
-  // https://github.com/WICG/requestPostAnimationFrame
-  for (auto& document : documents)
-    document->RunPostAnimationFrameCallbacks();
-
   // If we don't have an imminently incoming frame, we need to let the
   // AnimationClock update its own time to properly service out-of-lifecycle
   // events such as setInterval (see https://crbug.com/995806). This isn't a
   // perfect heuristic, but at the very least we know that if there is a pending
   // RAF we will be getting a new frame and thus don't need to unlock the clock.
-  bool next_frame_has_raf = false;
-  for (auto& document : documents)
-    next_frame_has_raf |= document->NextFrameHasPendingRAF();
-  if (!next_frame_has_raf)
+  if (!next_frame_has_pending_raf_)
     Clock().SetAllowedToDynamicallyUpdateTime(true);
+  next_frame_has_pending_raf_ = false;
+}
+
+void PageAnimator::SetHasCanvasInvalidation() {
+  has_canvas_invalidation_ = true;
+}
+
+void PageAnimator::ReportFrameAnimations(cc::AnimationHost* animation_host) {
+  if (animation_host) {
+    animation_host->SetHasCanvasInvalidation(has_canvas_invalidation_);
+    animation_host->SetHasInlineStyleMutation(has_inline_style_mutation_);
+    animation_host->SetHasSmilAnimation(has_smil_animation_);
+    animation_host->SetCurrentFrameHadRaf(current_frame_had_raf_);
+    animation_host->SetNextFrameHasPendingRaf(next_frame_has_pending_raf_);
+  }
+  has_canvas_invalidation_ = false;
+  has_inline_style_mutation_ = false;
+  has_smil_animation_ = false;
+  current_frame_had_raf_ = false;
+  // next_frame_has_pending_raf_ is reset at PostAnimate().
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -123,6 +119,22 @@ void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
   suppress_frame_requests_workaround_for704763_only_ = suppress_frame_requests;
 }
 
+void PageAnimator::SetHasInlineStyleMutation() {
+  has_inline_style_mutation_ = true;
+}
+
+void PageAnimator::SetHasSmilAnimation() {
+  has_smil_animation_ = true;
+}
+
+void PageAnimator::SetCurrentFrameHadRaf() {
+  current_frame_had_raf_ = true;
+}
+
+void PageAnimator::SetNextFrameHasPendingRaf() {
+  next_frame_has_pending_raf_ = true;
+}
+
 DISABLE_CFI_PERF
 void PageAnimator::ScheduleVisualUpdate(LocalFrame* frame) {
   if (servicing_animations_ || updating_layout_and_style_for_painting_ ||
@@ -132,37 +144,39 @@ void PageAnimator::ScheduleVisualUpdate(LocalFrame* frame) {
   page_->GetChromeClient().ScheduleAnimation(frame->View());
 }
 
-void PageAnimator::UpdateAllLifecyclePhases(
-    LocalFrame& root_frame,
-    DocumentLifecycle::LifecycleUpdateReason reason) {
+void PageAnimator::UpdateAllLifecyclePhases(LocalFrame& root_frame,
+                                            DocumentUpdateReason reason) {
   LocalFrameView* view = root_frame.View();
   base::AutoReset<bool> servicing(&updating_layout_and_style_for_painting_,
                                   true);
   view->UpdateAllLifecyclePhases(reason);
-  UpdateHitTestOcclusionData(root_frame);
 }
 
-void PageAnimator::UpdateAllLifecyclePhasesExceptPaint(LocalFrame& root_frame) {
+void PageAnimator::UpdateLifecycleToPrePaintClean(LocalFrame& root_frame,
+                                                  DocumentUpdateReason reason) {
   LocalFrameView* view = root_frame.View();
   base::AutoReset<bool> servicing(&updating_layout_and_style_for_painting_,
                                   true);
-  view->UpdateAllLifecyclePhasesExceptPaint();
+  view->UpdateLifecycleToPrePaintClean(reason);
 }
 
-void PageAnimator::UpdateLifecycleToLayoutClean(LocalFrame& root_frame) {
+void PageAnimator::UpdateLifecycleToLayoutClean(LocalFrame& root_frame,
+                                                DocumentUpdateReason reason) {
   LocalFrameView* view = root_frame.View();
   base::AutoReset<bool> servicing(&updating_layout_and_style_for_painting_,
                                   true);
-  view->UpdateLifecycleToLayoutClean();
+  view->UpdateLifecycleToLayoutClean(reason);
 }
 
-void PageAnimator::UpdateHitTestOcclusionData(LocalFrame& root_frame) {
-  for (Frame* frame = &root_frame; frame;
-       frame = frame->Tree().TraverseNext()) {
-    if (!frame->IsRemoteFrame())
-      continue;
-    To<RemoteFrame>(frame)->UpdateHitTestOcclusionData();
+HeapVector<Member<Animation>> PageAnimator::GetAnimations(
+    const TreeScope& tree_scope) {
+  HeapVector<Member<Animation>> animations;
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame(), AllDocuments);
+  for (auto& document : documents) {
+    document->GetDocumentAnimations().GetAnimationsTargetingTreeScope(
+        animations, tree_scope);
   }
+  return animations;
 }
 
 }  // namespace blink

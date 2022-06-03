@@ -61,13 +61,14 @@
 #include <endpointvolume.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <windows.media.effects.h>
 #include <wrl/client.h>
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -91,65 +92,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
       public base::DelegateSimpleThread::Delegate,
       public AudioConverter::InputCallback {
  public:
-  // The ctor takes all the usual parameters, plus |manager| which is the
-  // the audio manager who is creating this object.
-  WASAPIAudioInputStream(AudioManagerWin* manager,
-                         const AudioParameters& params,
-                         const std::string& device_id,
-                         const AudioManager::LogCallback& log_callback);
-
-  // The dtor is typically called by the AudioManager only and it is usually
-  // triggered by calling AudioInputStream::Close().
-  ~WASAPIAudioInputStream() override;
-
-  // Implementation of AudioInputStream.
-  bool Open() override;
-  void Start(AudioInputCallback* callback) override;
-  void Stop() override;
-  void Close() override;
-  double GetMaxVolume() override;
-  void SetVolume(double volume) override;
-  double GetVolume() override;
-  bool IsMuted() override;
-  void SetOutputDeviceForAec(const std::string& output_device_id) override;
-
-  bool started() const { return started_; }
-
- private:
-  // DelegateSimpleThread::Delegate implementation.
-  void Run() override;
-
-  // Pulls capture data from the endpoint device and pushes it to the sink.
-  void PullCaptureDataAndPushToSink();
-
-  // Issues the OnError() callback to the |sink_|.
-  void HandleError(HRESULT err);
-
-  // The Open() method is divided into these sub methods.
-  HRESULT SetCaptureDevice();
-  HRESULT GetAudioEngineStreamFormat();
-  // Returns whether the desired format is supported or not and writes the
-  // result of a failing system call to |*hr|, or S_OK if successful. If this
-  // function returns false with |*hr| == S_FALSE, the OS supports a closest
-  // match but we don't support conversion to it.
-  bool DesiredFormatIsSupported(HRESULT* hr);
-  void SetupConverterAndStoreFormatInfo();
-  HRESULT InitializeAudioEngine();
-  void ReportOpenResult(HRESULT hr) const;
-  // Reports stats for format related audio client initilization
-  // (IAudioClient::Initialize) errors, that is if |hr| is an error related to
-  // the format.
-  void MaybeReportFormatRelatedInitError(HRESULT hr) const;
-
-  // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
-
-  // Detects and counts glitches based on |device_position|.
-  void UpdateGlitchCount(UINT64 device_position);
-
-  // Reports glitch stats and resets associated variables.
-  void ReportAndResetGlitchStats();
-
   // Used to track down where we fail during initialization which at the
   // moment seems to be happening frequently and we're not sure why.
   // The reason might be expected (e.g. trying to open "default" on a machine
@@ -174,6 +116,92 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     OPEN_RESULT_OK_WITH_RESAMPLING = 14,
     OPEN_RESULT_MAX = OPEN_RESULT_OK_WITH_RESAMPLING
   };
+
+  // The ctor takes all the usual parameters, plus |manager| which is the
+  // the audio manager who is creating this object.
+  WASAPIAudioInputStream(AudioManagerWin* manager,
+                         const AudioParameters& params,
+                         const std::string& device_id,
+                         AudioManager::LogCallback log_callback);
+
+  WASAPIAudioInputStream(const WASAPIAudioInputStream&) = delete;
+  WASAPIAudioInputStream& operator=(const WASAPIAudioInputStream&) = delete;
+
+  // The dtor is typically called by the AudioManager only and it is usually
+  // triggered by calling AudioInputStream::Close().
+  ~WASAPIAudioInputStream() override;
+
+  // Implementation of AudioInputStream.
+  AudioInputStream::OpenOutcome Open() override;
+  void Start(AudioInputCallback* callback) override;
+  void Stop() override;
+  void Close() override;
+  double GetMaxVolume() override;
+  void SetVolume(double volume) override;
+  double GetVolume() override;
+  bool IsMuted() override;
+  void SetOutputDeviceForAec(const std::string& output_device_id) override;
+
+  bool started() const { return started_; }
+
+ private:
+  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+
+  // DelegateSimpleThread::Delegate implementation.
+  void Run() override;
+
+  // Pulls capture data from the endpoint device and pushes it to the sink.
+  void PullCaptureDataAndPushToSink();
+
+  // Issues the OnError() callback to the |sink_|.
+  void HandleError(HRESULT err);
+
+  // The Open() method is divided into these sub methods.
+  HRESULT SetCaptureDevice();
+  // Returns whether raw audio processing is supported or not for the selected
+  // capture device.
+  bool RawProcessingSupported();
+  // The Windows.Media.Effects.AudioEffectsManager UWP API contains a method
+  // called CreateAudioCaptureEffectsManagerWithMode() which is needed to
+  // enumerate active audio effects on the capture stream. This UWP method
+  // needs a device ID which differs from what can be derived from the default
+  // Win32 API in CoreAudio. The GetUWPDeviceId() method builds up the required
+  // device ID that the audio effects manager needs. Note that it is also
+  // possible to get the ID directly from the Windows.Devices.Enumeration UWP
+  // API but that is rather complex and requires use of asynchronous methods.
+  std::string GetUWPDeviceId();
+  // For the selected |uwp_device_id|, generate two lists of enabled audio
+  // effects and store them in |default_effect_types_| and |raw_effect_types_|.
+  HRESULT GetAudioCaptureEffects(const std::string& uwp_device_id);
+  // Returns the native number of channels that the audio engine uses for its
+  // internal processing of shared-mode streams.
+  HRESULT GetAudioEngineNumChannels(WORD* channels);
+  // Sets communications policy and excludes any built-in audio processing,
+  // i.e., activates raw capture mode.
+  // Raw capture mode is only enabled if the native number of input channels is
+  // less than |media::kMaxConcurrentChannels| (8).
+  HRESULT SetCommunicationsCategoryAndMaybeRawCaptureMode(WORD channels);
+  // Returns whether the desired format is supported or not and writes the
+  // result of a failing system call to |*hr|, or S_OK if successful. If this
+  // function returns false with |*hr| == S_FALSE, the OS supports a closest
+  // match but we don't support conversion to it.
+  bool DesiredFormatIsSupported(HRESULT* hr);
+  void SetupConverterAndStoreFormatInfo();
+  HRESULT InitializeAudioEngine();
+  void ReportOpenResult(HRESULT hr);
+  // Reports stats for format related audio client initialization
+  // (IAudioClient::Initialize) errors, that is if |hr| is an error related to
+  // the format.
+  void MaybeReportFormatRelatedInitError(HRESULT hr) const;
+
+  // AudioConverter::InputCallback implementation.
+  double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
+
+  // Detects and counts glitches based on |device_position|.
+  void UpdateGlitchCount(UINT64 device_position);
+
+  // Reports glitch stats and resets associated variables.
+  void ReportAndResetGlitchStats();
 
   // Our creator, the audio manager needs to be notified when we close.
   AudioManagerWin* const manager_;
@@ -246,11 +274,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // from a capture endpoint buffer.
   Microsoft::WRL::ComPtr<IAudioCaptureClient> audio_capture_client_;
 
-  // The IAudioClock interface is used to get the current timestamp, as the
-  // timestamp from IAudioCaptureClient::GetBuffer can be unreliable with some
-  // devices.
-  Microsoft::WRL::ComPtr<IAudioClock> audio_clock_;
-
   // The ISimpleAudioVolume interface enables a client to control the
   // master volume level of an audio session.
   // The volume-level is a value in the range 0.0 to 1.0.
@@ -283,7 +306,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   std::unique_ptr<AudioBus> convert_bus_;
   bool imperfect_buffer_size_conversion_ = false;
 
-  // Callback to send log messages.
+  // Callback to send log messages to registered clients.
   AudioManager::LogCallback log_callback_;
 
   // For detecting and reporting glitches.
@@ -292,13 +315,38 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   UINT64 total_lost_frames_ = 0;
   UINT64 largest_glitch_frames_ = 0;
 
+  // Tracks error messages from IAudioCaptureClient::GetBuffer.
+  UINT64 num_data_discontinuity_warnings_ = 0;
+  UINT64 num_timestamp_errors_ = 0;
+  base::TimeTicks record_start_time_;
+  base::TimeDelta time_until_first_timestamp_error_;
+
+  // Contains the last capture timestamp from IAudioCaptureClient::GetBuffer.
+  base::TimeTicks last_capture_time_;
+
+  // Max and min of difference in time between two successive timestamps.
+  // |min_timestamp_diff_| should always be larger than or equal to one micro-
+  // second.
+  base::TimeDelta max_timestamp_diff_;
+  base::TimeDelta min_timestamp_diff_;
+
   // Enabled if the volume level of the audio session is set to zero when the
   // session starts. Utilized in UMA histogram.
   bool audio_session_starts_at_zero_volume_ = false;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Set to true if the selected audio device supports raw audio capture.
+  // Also added to a UMS histogram.
+  bool raw_processing_supported_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(WASAPIAudioInputStream);
+  // List of supported and active capture effects for the selected device in
+  // default (normal) audio processing mode.
+  std::vector<ABI::Windows::Media::Effects::AudioEffectType>
+      default_effect_types_;
+  // List of supported and active capture effects for the selected device in
+  // raw (minimal) audio processing mode. Will be empty in most cases.
+  std::vector<ABI::Windows::Media::Effects::AudioEffectType> raw_effect_types_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

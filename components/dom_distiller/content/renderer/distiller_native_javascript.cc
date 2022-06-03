@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
+#include "components/dom_distiller/core/distilled_page_prefs.h"
+#include "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
@@ -16,13 +18,41 @@
 #include "third_party/blink/public/web/blink.h"
 #include "v8/include/v8.h"
 
+namespace {
+
+// These values should agree with those in distilled_page_prefs.cc.
+const float kMinFontScale = 0.4f;
+const float kMaxFontScale = 3.0f;
+
+}  // namespace
+
 namespace dom_distiller {
 
 DistillerNativeJavaScript::DistillerNativeJavaScript(
     content::RenderFrame* render_frame)
     : render_frame_(render_frame) {}
 
-DistillerNativeJavaScript::~DistillerNativeJavaScript() {}
+DistillerNativeJavaScript::~DistillerNativeJavaScript() = default;
+
+void DistillerNativeJavaScript::StoreIntTheme(int int_theme) {
+  auto theme = static_cast<mojom::Theme>(int_theme);
+  if (!mojom::IsKnownEnumValue(theme))
+    return;
+  distiller_js_service_->HandleStoreThemePref(theme);
+}
+
+void DistillerNativeJavaScript::StoreIntFontFamily(int int_font_family) {
+  auto font_family = static_cast<mojom::FontFamily>(int_font_family);
+  if (!mojom::IsKnownEnumValue(font_family))
+    return;
+  distiller_js_service_->HandleStoreFontFamilyPref(font_family);
+}
+
+void DistillerNativeJavaScript::StoreFloatFontScaling(float float_font_scale) {
+  if (float_font_scale < kMinFontScale || float_font_scale > kMaxFontScale)
+    return;
+  distiller_js_service_->HandleStoreFontScalingPref(float_font_scale);
+}
 
 void DistillerNativeJavaScript::AddJavaScriptObjectToFrame(
     v8::Local<v8::Context> context) {
@@ -43,9 +73,24 @@ void DistillerNativeJavaScript::AddJavaScriptObjectToFrame(
   // does not transfer ownership of the interface.
   BindFunctionToObject(
       isolate, distiller_obj, "openSettings",
-      base::Bind(
+      base::BindRepeating(
           &mojom::DistillerJavaScriptService::HandleDistillerOpenSettingsCall,
           base::Unretained(distiller_js_service_.get())));
+
+  BindFunctionToObject(
+      isolate, distiller_obj, "storeThemePref",
+      base::BindRepeating(&DistillerNativeJavaScript::StoreIntTheme,
+                          base::Unretained(this)));
+
+  BindFunctionToObject(
+      isolate, distiller_obj, "storeFontFamilyPref",
+      base::BindRepeating(&DistillerNativeJavaScript::StoreIntFontFamily,
+                          base::Unretained(this)));
+
+  BindFunctionToObject(
+      isolate, distiller_obj, "storeFontScalingPref",
+      base::BindRepeating(&DistillerNativeJavaScript::StoreFloatFontScaling,
+                          base::Unretained(this)));
 }
 
 template <typename Sig>
@@ -53,7 +98,7 @@ void DistillerNativeJavaScript::BindFunctionToObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> javascript_object,
     const std::string& name,
-    const base::Callback<Sig> callback) {
+    const base::RepeatingCallback<Sig>& callback) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   // Get the isolate associated with this object.
   javascript_object

@@ -11,10 +11,17 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
+}
+
+namespace display {
+class DisplayManager;
+}
+
+namespace ui {
+class Accelerator;
 }
 
 namespace ash {
@@ -26,13 +33,16 @@ class PaginationModel;
 class PowerPrefs;
 class ScreenPositionController;
 class Shell;
-class SystemGestureEventFilter;
 class WorkspaceController;
 
 // Accesses private data from a Shell for testing.
 class ASH_EXPORT ShellTestApi {
  public:
   ShellTestApi();
+
+  ShellTestApi(const ShellTestApi&) = delete;
+  ShellTestApi& operator=(const ShellTestApi&) = delete;
+
   ~ShellTestApi();
 
   // TabletModeController usually takes a screenshot before animating from
@@ -40,13 +50,26 @@ class ASH_EXPORT ShellTestApi {
   // operation that we want to disable for most tests.
   static void SetTabletControllerUseScreenshotForTest(bool use_screenshot);
 
+  // `SessionStateNotificationBlocker` adds a 6 second delays for showing all
+  // non system component notifications after login. This behavior can cause
+  // tests that expect to generate a notification to fail so should be disabled
+  // for most tests. If a test deals specifically with this delay and needs to
+  // set this to enabled, the test is responsible for setting it back to
+  // disabled to prevent failing subsequent tests.
+  static void SetUseLoginNotificationDelayForTest(bool use_delay);
+
+  // Whether a notification is shown at startup about new shortcuts. This
+  // can interfere with tests that expect a certain window to be active,
+  // that count notifications, or that test ChromeVox output.
+  static void SetShouldShowShortcutNotificationForTest(bool show_notification);
+
   MessageCenterController* message_center_controller();
-  SystemGestureEventFilter* system_gesture_event_filter();
   WorkspaceController* workspace_controller();
   ScreenPositionController* screen_position_controller();
   NativeCursorManagerAsh* native_cursor_manager_ash();
   DragDropController* drag_drop_controller();
   PowerPrefs* power_prefs();
+  display::DisplayManager* display_manager();
 
   // Resets |shell_->power_button_controller_| to hold a new object to simulate
   // Chrome starting.
@@ -61,10 +84,8 @@ class ASH_EXPORT ShellTestApi {
 
   // Enables or disables the tablet mode. TabletMode switch can be
   // asynchronous, and this will wait until the transition is complete
-  // by default. Set |wait_for_completion| to false if you do not want
-  // to wait.
-  void SetTabletModeEnabledForTest(bool enable,
-                                   bool wait_for_completion = true);
+  // by default.
+  void SetTabletModeEnabledForTest(bool enable);
 
   // Enables the keyboard and associates it with the primary root window
   // controller. In tablet mode, enables the virtual keyboard.
@@ -73,9 +94,6 @@ class ASH_EXPORT ShellTestApi {
   // Fullscreens the active window, as if the user had pressed the hardware
   // fullscreen button.
   void ToggleFullscreen();
-
-  // Returns true if it is in overview selecting mode.
-  bool IsOverviewSelecting();
 
   // Used to emulate display change when run in a desktop environment instead
   // of on a device.
@@ -99,18 +117,36 @@ class ASH_EXPORT ShellTestApi {
 
   void WaitForWindowFinishAnimating(aura::Window* window);
 
+  // Creates a closure that, when run, starts waiter for the window's current
+  // animator to finish animating.
+  // It can be used to wait for window animations when the window layer is
+  // recreated while the animation is set up (as is the case for window hide
+  // animations).
+  // Example usage:
+  //   base::OnceClosure waiter =
+  //   CreateWaiterForFinishingWindowAnimation(window);
+  //   aura::WindowState::Get(window)->Minimize();
+  //   std::move(waiter).Run();
+  base::OnceClosure CreateWaiterForFinishingWindowAnimation(
+      aura::Window* window);
+
   // Returns the pagination model of the currently visible app-list view.
   // It returns nullptr when app-list is not shown.
   PaginationModel* GetAppListPaginationModel();
 
-  // Returns the list of windows used in overview item. Returns empty
-  // if not in the overview mode.
-  std::vector<aura::Window*> GetItemWindowListInOverviewGrids();
+  // Returns true if the context menu associated with the primary root window is
+  // shown.
+  bool IsContextMenuShown() const;
+
+  // Sends accelerator directly to AcceleratorController.
+  bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;
+  bool PressAccelerator(const ui::Accelerator& accelerator);
+
+  // Returns true when Ash HUD is shown.
+  bool IsHUDShown();
 
  private:
   Shell* shell_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestApi);
 };
 
 }  // namespace ash

@@ -70,7 +70,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/%{name}{,-python}-%{version}
 
 %check
-make check
+make tests
 
 %clean
 rm -fr %{buildroot}
@@ -122,7 +122,6 @@ rm -fr %{buildroot}
 %doc AUTHORS ChangeLog.gz NEWS README Copyright FEATURES
 %{_libdir}/python*/site-packages/libxslt.py*
 %{_libdir}/python*/site-packages/libxsltmod*
-%doc python/TODO
 %doc python/libxsltclass.txt
 %doc python/tests/*.py
 %doc python/tests/*.xml

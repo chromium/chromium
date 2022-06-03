@@ -16,7 +16,7 @@ description("Test dynamically changing sibling rule matches in ShadowRoots");
 
 debug("Dynamically change the :first-child");
 var host = sandbox.appendChild(document.createElement("div"));
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = "<span>Black</span><style>:first-child { color: red; }</style>";
 document.body.offsetTop;
 var second = root.firstElementChild;
@@ -29,7 +29,7 @@ cleanUp();
 
 debug("Dynamically change the :last-child");
 var host = sandbox.appendChild(document.createElement("div"));
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = "<style>:last-child { color: red; }</style><span>Black</span>";
 document.body.offsetTop;
 var secondToLast = root.lastElementChild;
@@ -42,7 +42,7 @@ cleanUp();
 
 debug("Dynamically change what a + combinator matches");
 var host = sandbox.appendChild(document.createElement("div"));
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = "<div></div><span>Black</span><style>div + span { color: red; }</style>";
 document.body.offsetTop;
 var div = root.firstElementChild;
@@ -54,7 +54,7 @@ cleanUp();
 
 debug("Dynamically change what a ~ combinator matches");
 var host = sandbox.appendChild(document.createElement("div"));
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = "<div></div><span>Black</span><style>div ~ span { color: red; }</style>";
 document.body.offsetTop;
 var div = root.firstElementChild;

@@ -5,7 +5,6 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -23,8 +22,7 @@ namespace ash {
 class ElementAnimator {
  public:
   // Fade out duration used in the default implementation of |FadeOut|.
-  constexpr static base::TimeDelta kFadeOutDuration =
-      base::TimeDelta::FromMilliseconds(150);
+  constexpr static base::TimeDelta kFadeOutDuration = base::Milliseconds(150);
   // Fade out opacity used in the default implementation of |FadeOut|.
   constexpr static float kFadeOutOpacity = 0.26f;
   // Minimum allowed opacity as a target when fading out.
@@ -34,7 +32,11 @@ class ElementAnimator {
   // value, it should be safe to circumnavigate this DCHECK.
   constexpr static float kMinimumAnimateOutOpacity = 0.0001f;
 
-  ElementAnimator(views::View* animated_view);
+  explicit ElementAnimator(views::View* animated_view);
+
+  ElementAnimator(const ElementAnimator&) = delete;
+  ElementAnimator& operator=(const ElementAnimator&) = delete;
+
   virtual ~ElementAnimator() = default;
 
   // Fade out the current element, meaning it will still be visible but
@@ -53,7 +55,6 @@ class ElementAnimator {
   // The view that is being animated.
   virtual views::View* view() const;
 
- protected:
   // The layer that needs to be animated.
   // Used by the default implementations for |FadeOut| and |AbortAnimation|.
   // Defaults to |view()->layer()|.
@@ -63,8 +64,6 @@ class ElementAnimator {
   // The parent |AnimatedContainerView| owns both |view_| and |this| and will
   // delete |this| when |view_| is removed.
   views::View* const view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementAnimator);
 };
 
 }  // namespace ash

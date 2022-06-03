@@ -14,13 +14,13 @@ source_set("power") {
   ]
 
   deps = [
+    "//content/public/browser",
     "//content/public/common",
+    "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

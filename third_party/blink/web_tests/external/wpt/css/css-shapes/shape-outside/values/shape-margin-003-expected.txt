@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+FAIL calc(10in) - inline style assert_equals: expected "calc(960px)" but got "calc(10in)"
+PASS calc(10in + 20px) - inline style
+PASS calc(30%) - inline style
+PASS calc(100%/4) - inline style
+PASS calc(25%*3) - inline style
+FAIL calc(25%*3 - 10in) - inline style assert_equals: expected "calc(75% - 960px)" but got "calc(75% - 10in)"
+FAIL calc((12.5%*6 + 10in) / 4) - inline style assert_equals: expected "calc(18.75% + 240px)" but got "calc((75% + 10in) / 4)"
+PASS calc(10in) - computed style
+PASS calc(10in + 20px) - computed style
+PASS calc(30%) - computed style
+PASS calc(100%/4) - computed style
+PASS calc(25%*3) - computed style
+PASS calc(25%*3 - 10in) - computed style
+PASS calc((12.5%*6 + 10in) / 4) - computed style
+Harness: the test ran to completion.
+

@@ -1,0 +1,82 @@
+<html>
+<head>
+<script src="resources/canvas_runner.js"></script>
+<style type="text/css">
+body, canvas { padding: 0; margin: 0; }
+</style>
+<script type="text/javascript">
+
+const NUM_PIXELS = 1000;
+var webGLContext;
+// A very simple vertex shader
+const VERTEX_SHADER_STRING = `
+  attribute vec2 pos;
+  void main() {
+    gl_Position = vec4(pos, 0, 1);
+  }`;
+// A heavy fragment shader that calculates sin() 100,000 times per pixel
+const FRAGMENT_SHADER_STRING = `
+  precision mediump float;
+
+  void main() {
+    float x = 0.0;
+    for (float i = 0.0; i < 100000.0; i += 1.0) {
+      x = sin(i);
+    }
+    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+  }`;
+
+function createShaderCanvas(vs, fs) {
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.sqrt(NUM_PIXELS);
+  canvas.height = Math.sqrt(NUM_PIXELS);
+  const gl = canvas.getContext("webgl");
+  const glProgram = gl.createProgram();
+  const vertexShader = gl.createShader(gl.VERTEX_SHADER)
+  gl.shaderSource(vertexShader, vs);
+  gl.compileShader(vertexShader);
+  if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(vertexShader));
+  }
+  gl.attachShader(glProgram, vertexShader);
+
+  const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragmentShader, fs);
+  gl.compileShader(fragmentShader);
+  if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(fragmentShader));
+  }
+  gl.attachShader(glProgram, fragmentShader);
+
+  gl.linkProgram(glProgram);
+  if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(glProgram));
+  }
+
+  gl.useProgram(glProgram);
+
+  const vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Int8Array([-3, 1, 1, -3, 1, 1]), gl.STATIC_DRAW);
+
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.BYTE, 0, 0, 0);
+
+  document.body.appendChild(canvas);
+  return gl;
+}
+
+function doRun() {
+  webGLContext.drawArrays(6, 0, 3);
+  requestAnimationFrame(doRun);
+}
+
+window.onload = function() {
+  webGLContext = createShaderCanvas(VERTEX_SHADER_STRING, FRAGMENT_SHADER_STRING);
+  webGLContext.drawArrays(6, 0, 3);
+  doRun();
+}
+
+</script>
+</head>
+</html>

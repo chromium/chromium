@@ -85,7 +85,7 @@ assertInterpolation({
   to: 'calc(100px + 100%)',
 }, [
   {at: -0.3, is: 'calc(-30% + -30px)'},
-  {at: 0, is: '0px'},
+  {at: 0, is: 'calc(0% + 0px)'},
   {at: 0.5, is: 'calc(50% + 50px)'},
   {at: 1, is: 'calc(100% + 100px)'},
   {at: 1.5, is: 'calc(150% + 150px)'}

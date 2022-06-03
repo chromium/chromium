@@ -6,7 +6,6 @@
 
 #include "components/metrics/machine_id_provider.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +34,7 @@ TEST(ClonedInstallDetectorTest, SaveId) {
 
 TEST(ClonedInstallDetectorTest, DetectClone) {
   TestingPrefServiceSimple prefs;
-  MetricsStateManager::RegisterPrefs(prefs.registry());
+  ClonedInstallDetector::RegisterPrefs(prefs.registry());
 
   // Save a machine id that will cause a clone to be detected.
   prefs.SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
@@ -44,6 +43,43 @@ TEST(ClonedInstallDetectorTest, DetectClone) {
   detector.SaveMachineId(&prefs, kTestRawId);
 
   EXPECT_TRUE(prefs.GetBoolean(prefs::kMetricsResetIds));
+  EXPECT_TRUE(detector.ShouldResetClientIds(&prefs));
+}
+
+TEST(ClonedInstallDetectorTest, ShouldResetClientIds) {
+  TestingPrefServiceSimple prefs;
+  ClonedInstallDetector::RegisterPrefs(prefs.registry());
+
+  ClonedInstallDetector detector;
+  EXPECT_FALSE(detector.ShouldResetClientIds(&prefs));
+
+  // Save a machine id that will cause a clone to be detected.
+  prefs.SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
+  detector.SaveMachineId(&prefs, kTestRawId);
+
+  // Multiple different services may call into the cloned install detector, it
+  // needs to continue supporting giving the same answer more than once
+  EXPECT_TRUE(detector.ShouldResetClientIds(&prefs));
+  EXPECT_TRUE(detector.ShouldResetClientIds(&prefs));
+}
+
+TEST(ClonedInstallDetectorTest, ClonedInstallDetectedInCurrentSession) {
+  TestingPrefServiceSimple prefs;
+  ClonedInstallDetector::RegisterPrefs(prefs.registry());
+
+  ClonedInstallDetector detector;
+  EXPECT_FALSE(detector.ShouldResetClientIds(&prefs));
+  EXPECT_FALSE(detector.ClonedInstallDetectedInCurrentSession());
+
+  // Save a machine id that will cause a clone to be detected.
+  prefs.SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
+  detector.SaveMachineId(&prefs, kTestRawId);
+
+  // Ensure that the current session call returns true both before things are
+  // modified by ShouldResetClientIds and after
+  EXPECT_TRUE(detector.ClonedInstallDetectedInCurrentSession());
+  EXPECT_TRUE(detector.ShouldResetClientIds(&prefs));
+  EXPECT_TRUE(detector.ClonedInstallDetectedInCurrentSession());
 }
 
 }  // namespace metrics

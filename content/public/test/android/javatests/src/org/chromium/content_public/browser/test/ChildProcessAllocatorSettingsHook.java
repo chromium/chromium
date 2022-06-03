@@ -6,19 +6,19 @@ package org.chromium.content_public.browser.test;
 
 import android.content.Context;
 
-import org.chromium.base.test.BaseTestResult.PreTestHook;
-import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
+import org.junit.runners.model.FrameworkMethod;
 
-import java.lang.reflect.Method;
+import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
+import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 
 /**
  * PreTestHook used to register the ChildProcessAllocatorSettings annotation.
  *
  * TODO(yolandyan): convert this to TestRule once content tests are changed JUnit4
  * */
-public final class ChildProcessAllocatorSettingsHook implements PreTestHook {
+public final class ChildProcessAllocatorSettingsHook implements TestHook {
     @Override
-    public void run(Context targetContext, Method testMethod) {
+    public void run(Context targetContext, FrameworkMethod testMethod) {
         ChildProcessAllocatorSettings annotation =
                 testMethod.getAnnotation(ChildProcessAllocatorSettings.class);
         if (annotation != null) {

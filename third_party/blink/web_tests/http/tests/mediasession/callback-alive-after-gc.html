@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Test that setting MediaSession callbacks are alive after garbage-collection</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import '/js-test-resources/gc.js';
+
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {MediaSessionAction} from '/gen/services/media_session/public/mojom/media_session.mojom.m.js';
+
+async_test(t => {
+  const mock = new MediaSessionServiceMock;
+  mock.setClientCallback(_ => {
+    gc();
+    setTimeout(_ => {
+      mock.getClient().didReceiveAction(MediaSessionAction.kPlay);
+    });
+  });
+  window.navigator.mediaSession.setActionHandler("play", _ => { t.done(); });
+});
+</script>

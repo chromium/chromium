@@ -9,17 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
-#include "components/security_state/core/insecure_input_event_data.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "url/gurl.h"
-
-class PrefRegistrySimple;
 
 // Provides helper methods and data types that are used to determine the
 // high-level security information about a page or request.
@@ -56,7 +51,9 @@ enum SecurityLevel {
   // HTTP_SHOW_WARNING = 1,
 
   // HTTPS with valid EV cert.
-  EV_SECURE = 2,
+  // DEPRECATED: EV certs no longer receive special UI treatment.
+  // See https://crbug.com/1006943.
+  // EV_SECURE = 2,
 
   // HTTPS (non-EV) with valid cert.
   SECURE = 3,
@@ -134,7 +131,10 @@ enum class SafetyTipStatus {
   // The current page had a lookalike URL, but a Safety Tip was not shown since
   // it had been previously ignored by the user.
   kLookalikeIgnored = 6,
-  kMaxValue = kLookalikeIgnored,
+  // Safety tip UI was ignored because of the lookalike's digital asset link
+  // manifest matched the target's.
+  kDigitalAssetLinkMatch = 7,
+  kMaxValue = kDigitalAssetLinkMatch,
 };
 
 // Information about the last safety tip shown in the UI. This is used in page
@@ -198,18 +198,14 @@ struct VisibleSecurityState {
   bool is_view_source;
   // True if the page is a devtools page.
   bool is_devtools;
-  // True if the page was loaded over a legacy TLS version.
-  bool connection_used_legacy_tls;
-  // True if the page should be excluded from a UI treatment for legacy TLS
-  // (used for control group in an experimental UI rollout).
-  bool should_suppress_legacy_tls_warning;
-  // True if the page should be excluded from a warning UI treatment for mixed
-  // content. If set to false, the page will receive a neutral (rather than
-  // positively secure) UI treatment.
-  bool should_suppress_mixed_content_warning;
-  // Contains information about input events that may impact the security
-  // level of the page.
-  InsecureInputEventData insecure_input_events;
+  // True if the page is a reader mode page.
+  bool is_reader_mode;
+  // True if mixed forms should be treated as secure from the visible security
+  // state perspective (for example, if a different warning is being shown for
+  // them).
+  bool should_treat_displayed_mixed_forms_as_secure;
+  // True if the page was the result of an HTTPS-Only Mode upgrade.
+  bool is_https_only_mode_upgraded;
 };
 
 // These security levels describe the treatment given to pages that
@@ -219,26 +215,18 @@ constexpr SecurityLevel kDisplayedInsecureContentLevel = NONE;
 constexpr SecurityLevel kDisplayedInsecureContentWarningLevel = WARNING;
 constexpr SecurityLevel kRanInsecureContentLevel = DANGEROUS;
 
-// Returns true if the given |url|'s origin should be considered secure.
-using IsOriginSecureCallback = base::RepeatingCallback<bool(const GURL& url)>;
-
 // Returns a SecurityLevel to describe the current page.
 // |visible_security_state| contains the relevant security state.
 // |used_policy_installed_certificate| indicates whether the page or request
 // is known to be loaded with a certificate installed by the system admin.
-// |is_origin_secure_callback| determines whether a URL's origin should be
-// considered secure.
 SecurityLevel GetSecurityLevel(
     const VisibleSecurityState& visible_security_state,
-    bool used_policy_installed_certificate,
-    IsOriginSecureCallback is_origin_secure_callback);
+    bool used_policy_installed_certificate);
 
 // Returns true if the current page was loaded using a cryptographic protocol
 // and its certificate has any major errors.
 bool HasMajorCertificateError(
     const VisibleSecurityState& visible_security_state);
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns true for a valid |url| with a cryptographic scheme, e.g., HTTPS, WSS.
 bool IsSchemeCryptographic(const GURL& url);
@@ -246,8 +234,8 @@ bool IsSchemeCryptographic(const GURL& url);
 // Returns true for a valid |url| with localhost or file:// scheme origin.
 bool IsOriginLocalhostOrFile(const GURL& url);
 
-// Returns true if the page has a valid SSL certificate. Only EV_SECURE,
-// SECURE, and SECURE_WITH_POLICY_INSTALLED_CERT are considered valid.
+// Returns true if the page has a valid SSL certificate. Only SECURE and
+// SECURE_WITH_POLICY_INSTALLED_CERT are considered valid.
 bool IsSslCertificateValid(security_state::SecurityLevel security_level);
 
 // Returns the given prefix suffixed with a dot and the current security level.
@@ -258,23 +246,11 @@ std::string GetSecurityLevelHistogramName(
 std::string GetSafetyTipHistogramName(const std::string& prefix,
                                       SafetyTipStatus safety_tip_status);
 
-// Returns whether the given VisibleSecurityState would trigger a legacy TLS
-// warning (i.e., uses legacy TLS and isn't in the control group), if the user
-// were in the appropriate field trial.
-bool GetLegacyTLSWarningStatus(
-    const VisibleSecurityState& visible_security_state);
-
-// Returns the given prefix suffixed with a dot and the legacy TLS status
-// derived from the VisibleSecurityStatus.
-std::string GetLegacyTLSHistogramName(
-    const std::string& prefix,
-    const VisibleSecurityState& visible_security_state);
-
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
 
-// Returns whether the WARNING state should downgrade the security icon from
-// info to danger triangle as part of an experiment (crbug.com/997972).
-bool ShouldShowDangerTriangleForWarningLevel();
+// Returns true if Safety Tip UI should be shown because a relevant field trial
+// is enabled.
+bool IsSafetyTipUIFeatureEnabled();
 
 }  // namespace security_state
 

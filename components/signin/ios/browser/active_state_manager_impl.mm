@@ -4,7 +4,7 @@
 
 #include "components/signin/ios/browser/active_state_manager_impl.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_thread.h"

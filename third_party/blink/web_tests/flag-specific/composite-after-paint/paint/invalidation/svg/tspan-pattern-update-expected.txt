@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Y'",
-          "rect": [8, 8, 300, 100],
-          "reason": "subtree"
-        }
+      "invalidations": [
+        [108, 8, 100, 100]
       ]
     }
   ]

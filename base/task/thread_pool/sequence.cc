@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/critical_closure.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_features.h"
 #include "base/time/time.h"
@@ -38,16 +38,18 @@ void Sequence::Transaction::PushTask(Task task) {
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
-  DCHECK(task.queue_time.is_null());
+  DCHECK(!task.queue_time.is_null());
 
   bool should_be_queued = WillPushTask();
-  task.queue_time = TimeTicks::Now();
-
   task.task = sequence()->traits_.shutdown_behavior() ==
                       TaskShutdownBehavior::BLOCK_SHUTDOWN
-                  ? MakeCriticalClosure(std::move(task.task))
+                  ? MakeCriticalClosure(task.posted_from, std::move(task.task))
                   : std::move(task.task);
 
+  if (sequence()->queue_.empty()) {
+    sequence()->ready_time_.store(task.GetDesiredExecutionTime(),
+                                  std::memory_order_relaxed);
+  }
   sequence()->queue_.push(std::move(task));
 
   // AddRef() matched by manual Release() when the sequence has no more tasks
@@ -82,6 +84,9 @@ Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
 
   auto next_task = std::move(queue_.front());
   queue_.pop();
+  if (!queue_.empty()) {
+    ready_time_.store(queue_.front().queue_time, std::memory_order_relaxed);
+  }
   return next_task;
 }
 
@@ -102,9 +107,10 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   return true;
 }
 
-SequenceSortKey Sequence::GetSortKey() const {
-  DCHECK(!queue_.empty());
-  return SequenceSortKey(traits_.priority(), queue_.front().queue_time);
+TaskSourceSortKey Sequence::GetSortKey(
+    bool /* disable_fair_scheduling */) const {
+  return TaskSourceSortKey(priority_racy(),
+                           ready_time_.load(std::memory_order_relaxed));
 }
 
 Task Sequence::Clear(TaskSource::Transaction* transaction) {
@@ -119,7 +125,7 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
                       queue.pop();
                   },
                   std::move(queue_)),
-              TimeDelta());
+              TimeTicks(), TimeDelta());
 }
 
 void Sequence::ReleaseTaskRunner() {

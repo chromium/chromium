@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -27,6 +25,10 @@ namespace app_list {
 class FrecencyStore {
  public:
   FrecencyStore(int value_limit, float decay_coeff);
+
+  FrecencyStore(const FrecencyStore&) = delete;
+  FrecencyStore& operator=(const FrecencyStore&) = delete;
+
   ~FrecencyStore();
 
   // Records all information about a value: its id and score, along with the
@@ -48,11 +50,14 @@ class FrecencyStore {
   void Remove(const std::string& value);
 
   // Returns the ID for the given value. If the value is not in the store,
-  // return base::nullopt.
-  base::Optional<unsigned int> GetId(const std::string& value);
-  // Return all stored value data. This ensures all scores have been correctly
+  // return absl::nullopt.
+  absl::optional<unsigned int> GetId(const std::string& value);
+  // Returns all stored value data. This ensures all scores have been correctly
   // updated, and none of the scores are below the |min_score_| threshold.
   const ScoreTable& GetAll();
+
+  // Returns the number of values in the store.
+  int size() { return values_.size(); }
 
   // Returns the underlying storage data structure. This does not ensure scores
   // are correct, and should not be used for scoring items. However it is
@@ -89,8 +94,6 @@ class FrecencyStore {
   unsigned int num_updates_ = 0;
   // The next ID available for a value to used. This is guaranteed to be unique.
   unsigned int next_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FrecencyStore);
 };
 
 }  // namespace app_list

@@ -19,5 +19,5 @@
             android:paddingTop="16dp"
             android:paddingBottom="8dp"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.BlackHint1" />
+            android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
 </LinearLayout>

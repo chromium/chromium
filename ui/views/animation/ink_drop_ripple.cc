@@ -5,7 +5,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -41,8 +41,8 @@ void InkDropRipple::AnimateToState(InkDropState ink_drop_state) {
     GetRootLayer()->SetVisible(true);
   }
 
-  AnimateStateChange(old_ink_drop_state, target_ink_drop_state_,
-                     animation_observer_.get());
+  AnimateStateChange(old_ink_drop_state, target_ink_drop_state_);
+
   animation_observer_->SetActive();
   // |this| may be deleted! |animation_observer_| might synchronously call
   // AnimationEndedCallback which can delete |this|.
@@ -75,6 +75,10 @@ void InkDropRipple::SnapToHidden() {
 
 test::InkDropRippleTestApi* InkDropRipple::GetTestApi() {
   return nullptr;
+}
+
+ui::LayerAnimationObserver* InkDropRipple::GetLayerAnimationObserver() {
+  return animation_observer_.get();
 }
 
 void InkDropRipple::AnimationStartedCallback(

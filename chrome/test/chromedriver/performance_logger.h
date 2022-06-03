@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/command_listener.h"
@@ -36,7 +35,11 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Creates a |PerformanceLogger| with specific preferences.
   PerformanceLogger(Log* log,
                     const Session* session,
-                    const PerfLoggingPrefs& prefs);
+                    const PerfLoggingPrefs& prefs,
+                    bool enable_service_worker = false);
+
+  PerformanceLogger(const PerformanceLogger&) = delete;
+  PerformanceLogger& operator=(const PerformanceLogger&) = delete;
 
   // PerformanceLogger subscribes to browser-wide |DevToolsClient| for tracing.
   bool subscribes_to_browser() override;
@@ -50,7 +53,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
                  const std::string& method,
                  const base::DictionaryValue& params) override;
 
-  // Before whitelisted commands, if tracing enabled, calls CollectTraceEvents.
+  // Before allowed commands, if tracing enabled, calls CollectTraceEvents.
   Status BeforeCommand(const std::string& command_name) override;
 
  private:
@@ -86,8 +89,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   PerfLoggingPrefs prefs_;
   DevToolsClient* browser_client_; // Pointer to browser-wide |DevToolsClient|.
   bool trace_buffering_;  // True unless trace stopped and all events received.
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceLogger);
+  bool enable_service_worker_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_PERFORMANCE_LOGGER_H_

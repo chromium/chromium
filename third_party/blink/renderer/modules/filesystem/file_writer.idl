@@ -32,7 +32,7 @@
 // https://www.w3.org/TR/2012/WD-file-writer-api-20120417/#idl-def-FileWriter
 [
   ActiveScriptWrappable,
-  NoInterfaceObject
+  LegacyNoInterfaceObject
 ] interface FileWriter : EventTarget {
   // ready states
   const unsigned short INIT = 0;

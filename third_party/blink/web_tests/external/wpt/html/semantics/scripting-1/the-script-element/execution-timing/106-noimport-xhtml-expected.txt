@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Stylesheet in XHTML HEAD blocking scripts assert_equals: expected "fixed" but got "static"
+Harness: the test ran to completion.
+

@@ -32,7 +32,7 @@ Unpack::Unpack(ComprDataIO *DataIO)
   UnpSomeRead=false;
 #ifdef RAR_SMP
   MaxUserThreads=1;
-  UnpThreadPool=CreateThreadPool();
+  UnpThreadPool=NULL;
   ReadBufMT=NULL;
   UnpThreadData=NULL;
 #endif
@@ -58,11 +58,22 @@ Unpack::~Unpack()
   if (Window!=NULL)
     free(Window);
 #ifdef RAR_SMP
-  DestroyThreadPool(UnpThreadPool);
+  delete UnpThreadPool;
   delete[] ReadBufMT;
   delete[] UnpThreadData;
 #endif
 }
+
+
+#ifdef RAR_SMP
+void Unpack::SetThreads(uint Threads)
+{
+  // More than 8 threads are unlikely to provide noticeable gain
+  // for unpacking, but would use the additional memory.
+  MaxUserThreads=Min(Threads,8);
+  UnpThreadPool=new ThreadPool(MaxUserThreads);
+}
+#endif
 
 
 void Unpack::Init(size_t WinSize,bool Solid)

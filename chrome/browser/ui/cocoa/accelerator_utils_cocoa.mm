@@ -6,16 +6,16 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
 namespace chrome {
 
-bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
+bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   NSUInteger modifiers = (accelerator.IsCtrlDown() ? NSControlKeyMask : 0) |
                          (accelerator.IsCmdDown() ? NSCommandKeyMask : 0) |
                          (accelerator.IsAltDown() ? NSAlternateKeyMask : 0) |
@@ -52,12 +52,8 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
   return CommandForKeyEvent(event).found();
 }
 
-ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkTab() {
-  const ui::Accelerator* accelerator =
-      AcceleratorsCocoa::GetInstance()->GetAcceleratorForCommand(
-          IDC_BOOKMARK_THIS_TAB);
-
-  return accelerator ? *accelerator : ui::Accelerator();
+ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
+  return BrowserView::GetBrowserViewForBrowser(browser);
 }
 
 }  // namespace chrome

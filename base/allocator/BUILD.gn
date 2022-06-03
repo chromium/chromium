@@ -4,8 +4,8 @@
 
 import("//base/allocator/allocator.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/allocator.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
   # Provide a way to force disable debugallocation in Debug builds,
@@ -64,7 +64,7 @@ config("tcmalloc_flags") {
     cflags = []
   }
 
-  if (is_linux || is_android) {
+  if (is_linux || is_chromeos || is_android) {
     # We enable all warnings by default, but upstream disables a few.
     # Keep "-Wno-*" flags in sync with upstream by comparing against:
     # http://code.google.com/p/google-perftools/source/browse/trunk/Makefile.am
@@ -89,9 +89,6 @@ if (use_allocator == "tcmalloc") {
       # Generated for our configuration from tcmalloc's build
       # and checked in.
       "$tcmalloc_dir/src/config.h",
-      "$tcmalloc_dir/src/config_android.h",
-      "$tcmalloc_dir/src/config_linux.h",
-      "$tcmalloc_dir/src/config_win.h",
 
       # tcmalloc native and forked files.
       "$tcmalloc_dir/src/base/abort.cc",
@@ -180,6 +177,18 @@ if (use_allocator == "tcmalloc") {
       #"win_allocator.cc",
     ]
 
+    if (is_android) {
+      sources += [ "$tcmalloc_dir/src/config_android.h" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      sources += [ "$tcmalloc_dir/src/config_linux.h" ]
+    }
+
+    if (is_win) {
+      sources += [ "$tcmalloc_dir/src/config_win.h" ]
+    }
+
     # Not included on mips64el.
     if (current_cpu == "mips64el") {
       sources -= [
@@ -215,6 +224,7 @@ if (use_allocator == "tcmalloc") {
 
     deps = [
       ":buildflags",
+      "//build:chromeos_buildflags",
     ]
 
     if (enable_profiling) {
@@ -235,7 +245,7 @@ if (use_allocator == "tcmalloc") {
       defines += [ "ENABLE_PROFILING=1" ]
     }
 
-    if (is_linux || is_android) {
+    if (is_linux || is_chromeos || is_android) {
       sources -= [
         "$tcmalloc_dir/src/system-alloc.h",
         "$tcmalloc_dir/src/windows/port.cc",
@@ -278,12 +288,34 @@ if (use_allocator == "tcmalloc") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "USE_ALLOCATOR_SHIM=$use_allocator_shim" ]
-  if (use_allocator == "tcmalloc") {
-    flags += [ "USE_TCMALLOC=1" ]
-  } else {
-    flags += [ "USE_TCMALLOC=0" ]
-  }
+  _use_partition_alloc_as_malloc = use_allocator == "partition"
+  _use_tcmalloc_as_malloc = use_allocator == "tcmalloc"
+  assert(use_allocator_shim || !_use_partition_alloc_as_malloc,
+         "Partition alloc requires the allocator shim")
+
+  # BackupRefPtr(BRP) build flags.
+  _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
+  _use_backup_ref_ptr_fake =
+      use_backup_ref_ptr_fake && use_partition_alloc && !is_nacl
+  _put_ref_count_in_previous_slot =
+      put_ref_count_in_previous_slot && _use_backup_ref_ptr
+  _never_remove_from_brp_pool_from_blocklist =
+      never_remove_from_brp_pool_blocklist && _use_backup_ref_ptr
+  _enable_backup_ref_ptr_slow_checks =
+      enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
+
+  flags = [
+    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
+    "USE_TCMALLOC=$_use_tcmalloc_as_malloc",
+    "USE_PARTITION_ALLOC=$use_partition_alloc",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
+
+    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
+    "USE_BACKUP_REF_PTR_FAKE=$_use_backup_ref_ptr_fake",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+    "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
+  ]
 }
 
 # Used to shim malloc symbols on Android. see //base/allocator/README.md.
@@ -297,5 +329,19 @@ config("wrap_malloc_symbols") {
     "-Wl,-wrap,pvalloc",
     "-Wl,-wrap,realloc",
     "-Wl,-wrap,valloc",
+
+    # <stdlib.h> functions
+    "-Wl,-wrap,realpath",
+
+    # <string.h> functions
+    "-Wl,-wrap,strdup",
+    "-Wl,-wrap,strndup",
+
+    # <unistd.h> functions
+    "-Wl,-wrap,getcwd",
+
+    # <stdio.h> functions
+    "-Wl,-wrap,asprintf",
+    "-Wl,-wrap,vasprintf",
   ]
 }

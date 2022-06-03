@@ -12,19 +12,19 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/common/resource_type.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
 
 namespace internal {
 
 typedef struct {
-  char* url;
-  char* host_ip;
+  const char* url;
+  const char* host_ip;
   uint16_t port;
 } PageAddressInfo;
 
@@ -35,42 +35,31 @@ typedef struct {
 } UkmMetricInfo;
 
 static const PageAddressInfo
-    kPublicPage = {(char*)"https://foo.com/", (char*)"216.58.195.78", 443},
-    kPublicPageIPv6 = {(char*)"https://google.com/",
-                       (char*)"2607:f8b0:4005:809::200e", 443},
-    kPrivatePage = {(char*)"http://test.local/", (char*)"192.168.10.123", 80},
-    kLocalhostPage = {(char*)"http://localhost/", (char*)"127.0.0.1", 80},
-    kLocalhostPageIPv6 = {(char*)"http://[::1]/", (char*)"::1", 80},
-    kPublicRequest1 = {(char*)"http://bar.com/", (char*)"100.150.200.250", 80},
-    kPublicRequest2 = {(char*)"https://www.baz.com/", (char*)"192.10.20.30",
-                       443},
-    kSameSubnetRequest1 = {(char*)"http://test2.local:9000/",
-                           (char*)"192.168.10.200", 9000},
-    kSameSubnetRequest2 = {(char*)"http://test2.local:8000/index.html",
-                           (char*)"192.168.10.200", 8000},
-    kSameSubnetRequest3 = {(char*)"http://test2.local:8000/bar.html",
-                           (char*)"192.168.10.200", 8000},
-    kDiffSubnetRequest1 = {(char*)"http://10.0.10.200/", (char*)"10.0.10.200",
-                           80},
-    kDiffSubnetRequest2 = {(char*)"http://172.16.0.85:8181/",
-                           (char*)"172.16.0.85", 8181},
-    kDiffSubnetRequest3 = {(char*)"http://10.15.20.25:12345/",
-                           (char*)"10.15.20.25", 12345},
-    kDiffSubnetRequest4 = {(char*)"http://172.31.100.20:515/",
-                           (char*)"172.31.100.20", 515},
-    kLocalhostRequest1 = {(char*)"http://localhost:8080/", (char*)"127.0.0.1",
-                          8080},  // WEB
-    kLocalhostRequest2 = {(char*)"http://127.0.1.1:3306/", (char*)"127.0.1.1",
-                          3306},  // DB
-    kLocalhostRequest3 = {(char*)"http://localhost:515/", (char*)"127.0.2.1",
-                          515},  // PRINT
-    kLocalhostRequest4 = {(char*)"http://127.100.150.200:9000/",
-                          (char*)"127.100.150.200", 9000},  // DEV
-    kLocalhostRequest5 = {(char*)"http://127.0.0.1:9876/", (char*)"127.0.0.1",
+    kPublicPage = {"https://foo.com/", "216.58.195.78", 443},
+    kPublicPageIPv6 = {"https://google.com/", "2607:f8b0:4005:809::200e", 443},
+    kPrivatePage = {"http://test.local/", "192.168.10.123", 80},
+    kLocalhostPage = {"http://localhost/", "127.0.0.1", 80},
+    kLocalhostPageIPv6 = {"http://[::1]/", "::1", 80},
+    kPublicRequest1 = {"http://bar.com/", "100.150.200.250", 80},
+    kPublicRequest2 = {"https://www.baz.com/", "192.10.20.30", 443},
+    kSameSubnetRequest1 = {"http://test2.local:9000/", "192.168.10.200", 9000},
+    kSameSubnetRequest2 = {"http://test2.local:8000/index.html",
+                           "192.168.10.200", 8000},
+    kSameSubnetRequest3 = {"http://test2.local:8000/bar.html", "192.168.10.200",
+                           8000},
+    kDiffSubnetRequest1 = {"http://10.0.10.200/", "10.0.10.200", 80},
+    kDiffSubnetRequest2 = {"http://172.16.0.85:8181/", "172.16.0.85", 8181},
+    kDiffSubnetRequest3 = {"http://10.15.20.25:12345/", "10.15.20.25", 12345},
+    kDiffSubnetRequest4 = {"http://172.31.100.20:515/", "172.31.100.20", 515},
+    kLocalhostRequest1 = {"http://localhost:8080/", "127.0.0.1", 8080},  // WEB
+    kLocalhostRequest2 = {"http://127.0.1.1:3306/", "127.0.1.1", 3306},  // DB
+    kLocalhostRequest3 = {"http://localhost:515/", "127.0.2.1", 515},  // PRINT
+    kLocalhostRequest4 = {"http://127.100.150.200:9000/", "127.100.150.200",
+                          9000},  // DEV
+    kLocalhostRequest5 = {"http://127.0.0.1:9876/", "127.0.0.1",
                           9876},  // OTHER
-    kRouterRequest1 = {(char*)"http://10.0.0.1/", (char*)"10.0.0.1", 80},
-    kRouterRequest2 = {(char*)"https://192.168.10.1/", (char*)"192.168.10.1",
-                       443};
+    kRouterRequest1 = {"http://10.0.0.1/", "10.0.0.1", 80},
+    kRouterRequest2 = {"https://192.168.10.1/", "192.168.10.1", 443};
 
 }  // namespace internal
 
@@ -119,8 +108,7 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
         !net_error /* was_cached */,
         (net_error ? 1024 * 20 : 0) /* raw_body_bytes */,
         0 /* original_network_content_length */,
-        nullptr /* data_reduction_proxy_data */,
-        content::ResourceType::kMainFrame, net_error,
+        network::mojom::RequestDestination::kDocument, net_error,
         {} /* load_timing_info */);
 
     tester()->SimulateLoadedResource(
@@ -735,7 +723,13 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // At this point, we should still only see the domain type UKM entry.
   // Also history manipulation intervention will log a UKM for navigating away
   // from a page without user interaction.
-  EXPECT_EQ(2ul, tester()->test_ukm_recorder().entries_count());
+  EXPECT_EQ(
+      1ul,
+      tester()->test_ukm_recorder().GetEntriesByName("PageDomainInfo").size());
+  EXPECT_EQ(1ul, tester()
+                     ->test_ukm_recorder()
+                     .GetEntriesByName("HistoryManipulationIntervention")
+                     .size());
 
   // Close the page.
   DeleteContents();
@@ -789,8 +783,8 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
       {url::Origin::Create(GURL(internal::kDiffSubnetRequest2.url)),
        net::IPEndPoint(), -1 /* frame_tree_node_id */, true /* was_cached */,
        1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
-       content::ResourceType::kMainFrame, 0, nullptr /* load_timing_info */},
+       network::mojom::RequestDestination::kDocument, 0,
+       nullptr /* load_timing_info */},
       GetGlobalRequestID());
   DeleteContents();
 
@@ -816,8 +810,8 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
       {url::Origin::Create(GURL(internal::kPrivatePage.url)), net::IPEndPoint(),
        -1 /* frame_tree_node_id */, false /* was_cached */,
        0 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
-       content::ResourceType::kMainFrame, -20, nullptr /* load_timing_info */},
+       network::mojom::RequestDestination::kDocument, -20,
+       nullptr /* load_timing_info */},
       GetGlobalRequestID());
   DeleteContents();
 
@@ -904,6 +898,9 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageFailedLoad) {
   // Nothing should have been generated.
   // Note that the expected count is 1 because history manipulation intervention
   // will log a UKM for navigating away from a page without user interaction.
-  EXPECT_EQ(1ul, tester()->test_ukm_recorder().entries_count());
+  EXPECT_EQ(1ul, tester()
+                     ->test_ukm_recorder()
+                     .GetEntriesByName("HistoryManipulationIntervention")
+                     .size());
   ExpectNoHistograms();
 }

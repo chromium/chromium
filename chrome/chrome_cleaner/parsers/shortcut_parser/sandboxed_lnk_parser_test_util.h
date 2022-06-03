@@ -15,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/shortcut.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 
@@ -25,16 +26,20 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
 
 bool CheckParsedShortcut(const ParsedLnkFile& parsed_shortcut,
                          base::FilePath expected_target_path,
-                         base::string16 expected_arguments,
-                         base::FilePath expected_icon_location);
+                         base::FilePath expected_working_dir,
+                         std::wstring expected_arguments,
+                         base::FilePath expected_icon_location,
+                         const int32_t icon_index);
 void OnLnkParseDone(
     ParsedLnkFile* out_parsed_shortcut,
     mojom::LnkParsingResult* out_result_code,
     base::OnceClosure callback,
     mojom::LnkParsingResult result_code,
-    const base::Optional<base::string16>& optional_file_path,
-    const base::Optional<base::string16>& optional_command_line_arguments,
-    const base::Optional<base::string16>& optional_icon_location);
+    const absl::optional<std::wstring>& optional_target_path,
+    const absl::optional<std::wstring>& optional_working_dir,
+    const absl::optional<std::wstring>& optional_command_line_arguments,
+    const absl::optional<std::wstring>& optional_icon_location,
+    int32_t optional_icon_index);
 
 }  // namespace chrome_cleaner
 

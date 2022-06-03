@@ -20,7 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_ellipse_element.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_ellipse.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -58,7 +60,7 @@ SVGEllipseElement::SVGEllipseElement(Document& document)
   AddToPropertyMap(ry_);
 }
 
-void SVGEllipseElement::Trace(blink::Visitor* visitor) {
+void SVGEllipseElement::Trace(Visitor* visitor) const {
   visitor->Trace(cx_);
   visitor->Trace(cy_);
   visitor->Trace(rx_);
@@ -70,23 +72,20 @@ Path SVGEllipseElement::AsPath() const {
   Path path;
 
   SVGLengthContext length_context(this);
-  DCHECK(GetLayoutObject());
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
+  const ComputedStyle& style = ComputedStyleRef();
 
-  FloatSize radii(ToFloatSize(
-      length_context.ResolveLengthPair(svg_style.Rx(), svg_style.Ry(), style)));
-  if (svg_style.Rx().IsAuto())
-    radii.SetWidth(radii.Height());
-  else if (svg_style.Ry().IsAuto())
-    radii.SetHeight(radii.Width());
-  if (radii.Width() < 0 || radii.Height() < 0 ||
-      (!radii.Width() && !radii.Height()))
+  gfx::Vector2dF radii =
+      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+  if (style.Rx().IsAuto())
+    radii.set_x(radii.y());
+  else if (style.Ry().IsAuto())
+    radii.set_y(radii.x());
+  if (radii.x() < 0 || radii.y() < 0 || (!radii.x() && !radii.y()))
     return path;
 
-  FloatPoint center(
-      length_context.ResolveLengthPair(svg_style.Cx(), svg_style.Cy(), style));
-  path.AddEllipse(FloatRect(center - radii, radii.ScaledBy(2)));
+  gfx::PointF center = gfx::PointAtOffsetFromOrigin(
+      length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
+  path.AddEllipse(center, radii.x(), radii.y());
   return path;
 }
 
@@ -113,7 +112,9 @@ void SVGEllipseElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGEllipseElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGEllipseElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
       attr_name == svg_names::kRxAttr || attr_name == svg_names::kRyAttr) {
     UpdateRelativeLengthsInformation();
@@ -121,7 +122,7 @@ void SVGEllipseElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGEllipseElement::SelfHasRelativeLengths() const {
@@ -132,7 +133,7 @@ bool SVGEllipseElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGEllipseElement::CreateLayoutObject(const ComputedStyle&,
                                                     LegacyLayout) {
-  return new LayoutSVGEllipse(this);
+  return MakeGarbageCollected<LayoutSVGEllipse>(this);
 }
 
 }  // namespace blink

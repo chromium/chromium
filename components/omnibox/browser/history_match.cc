@@ -4,13 +4,13 @@
 
 #include "components/omnibox/browser/history_match.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace history {
 
 HistoryMatch::HistoryMatch()
-    : input_location(base::string16::npos),
+    : input_location(std::u16string::npos),
       match_in_scheme(false),
       match_in_subdomain(false),
       innermost_match(true) {}

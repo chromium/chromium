@@ -14,7 +14,7 @@
 #include "ui/gfx/ipc/gfx_param_traits_macros.h"
 #include "ui/gfx/selection_bound.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -34,7 +34,7 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::Range> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort> {
   typedef gfx::ScopedRefCountedIOSurfaceMachPort param_type;
@@ -48,7 +48,17 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+
+template <>
+struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedIOSurface> {
+  typedef gfx::ScopedIOSurface param_type;
+  static void Write(base::Pickle* m, const param_type p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+#endif  // defined(OS_MAC)
 
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::SelectionBound> {

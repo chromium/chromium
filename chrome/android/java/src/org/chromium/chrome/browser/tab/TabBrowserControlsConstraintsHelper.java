@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.BrowserControlsState;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Manages the state of tab browser controls.
@@ -76,13 +80,13 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mConstraintsChangedCallback = (constraints) -> updateEnabledState();
         mTab.addObserver(new EmptyTabObserver() {
             @Override
-            public void onInitialized(Tab tab, TabState tabState) {
+            public void onInitialized(Tab tab, String appId) {
                 updateVisibilityDelegate();
             }
 
             @Override
-            public void onActivityAttachmentChanged(Tab tab, boolean isAttached) {
-                if (isAttached) updateVisibilityDelegate();
+            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                if (window != null) updateVisibilityDelegate();
             }
 
             @Override
@@ -90,17 +94,9 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 tab.removeObserver(this);
             }
 
-            @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame()) return;
-
-                // At this point, we might have switched renderer processes, so push the existing
-                // constraints to the new renderer (has the potential to be slightly spammy, but
-                // the renderer has logic to suppress duplicate calls).
-
-                @BrowserControlsState
+            private void updateAfterRendererProcessSwitch(Tab tab, boolean hasCommitted) {
                 int constraints = getConstraints();
-                if (constraints == BrowserControlsState.SHOWN && navigationHandle.hasCommitted()
+                if (constraints == BrowserControlsState.SHOWN && hasCommitted
                         && TabBrowserControlsOffsetHelper.get(tab).topControlsOffset() == 0) {
                     // If the browser controls were already fully visible on the previous page, then
                     // avoid an animation to keep the controls from jumping around.
@@ -108,6 +104,21 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 } else {
                     updateEnabledState();
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
+
+                // At this point, we might have switched renderer processes, so push the existing
+                // constraints to the new renderer (has the potential to be slightly spammy, but
+                // the renderer has logic to suppress duplicate calls).
+                updateAfterRendererProcessSwitch(tab, navigationHandle.hasCommitted());
+            }
+
+            @Override
+            public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                updateAfterRendererProcessSwitch(tab, true);
             }
         });
         if (mTab.isInitialized() && !TabImpl.isDetached(mTab)) updateVisibilityDelegate();

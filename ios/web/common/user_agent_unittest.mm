@@ -18,6 +18,12 @@
 #endif
 
 namespace {
+const char kDesktopUserAgentWithProduct[] =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) desktop_product_name "
+    "Version/11.1.1 "
+    "Safari/605.1.15";
+
 const char kDesktopUserAgent[] =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) "
@@ -31,8 +37,12 @@ using UserAgentTest = PlatformTest;
 
 // Tests conversions between UserAgentType values and their descriptions
 TEST_F(UserAgentTest, UserAgentTypeDescription) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kUseDefaultUserAgentInWebClient);
+
   const std::string kMobileDescription("MOBILE");
   const std::string kDesktopDescription("DESKTOP");
+  const std::string kAutomaticDescription("AUTOMATIC");
   const std::string kNoneDescription("NONE");
   const std::string kInvalidDescription(
       "not returned by GetUserAgentTypeDescription()");
@@ -49,6 +59,10 @@ TEST_F(UserAgentTest, UserAgentTypeDescription) {
             GetUserAgentTypeWithDescription(kNoneDescription));
   EXPECT_EQ(UserAgentType::NONE,
             GetUserAgentTypeWithDescription(kInvalidDescription));
+  EXPECT_EQ(kAutomaticDescription,
+            GetUserAgentTypeDescription(UserAgentType::AUTOMATIC));
+  EXPECT_EQ(UserAgentType::AUTOMATIC,
+            GetUserAgentTypeWithDescription(kAutomaticDescription));
 }
 
 // Tests the mobile user agent returned for a specific product.
@@ -80,18 +94,21 @@ TEST_F(UserAgentTest, MobileUserAgentForProduct) {
       "like Gecko) %s Mobile/15E148 Safari/604.1",
       platform.c_str(), cpu.c_str(), os_version.c_str(), product.c_str());
 
-  std::string result =
-      BuildUserAgentFromProduct(web::UserAgentType::MOBILE, product);
+  std::string result = BuildMobileUserAgent(product);
 
   EXPECT_EQ(expected_user_agent, result);
 }
 
 // Tests the desktop user agent, checking that the product isn't taken into
-// account.
+// account when it is empty.
 TEST_F(UserAgentTest, DesktopUserAgentForProduct) {
-  EXPECT_EQ(kDesktopUserAgent,
-            BuildUserAgentFromProduct(web::UserAgentType::DESKTOP,
-                                      "my_product_name"));
+  EXPECT_EQ(kDesktopUserAgent, BuildDesktopUserAgent(""));
+}
+
+// Tests the desktop user agent for a specific product name.
+TEST_F(UserAgentTest, DesktopUserAgentWithProduct) {
+  EXPECT_EQ(kDesktopUserAgentWithProduct,
+            BuildDesktopUserAgent("desktop_product_name"));
 }
 
 }  // namespace web

@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -20,13 +20,18 @@ void DataPipeBytesConsumer::CompletionNotifier::SignalComplete() {
     bytes_consumer_->SignalComplete();
 }
 
+void DataPipeBytesConsumer::CompletionNotifier::SignalSize(uint64_t size) {
+  if (bytes_consumer_)
+    bytes_consumer_->SignalSize(size);
+}
+
 void DataPipeBytesConsumer::CompletionNotifier::SignalError(
     const BytesConsumer::Error& error) {
   if (bytes_consumer_)
     bytes_consumer_->SignalError(error);
 }
 
-void DataPipeBytesConsumer::CompletionNotifier::Trace(Visitor* visitor) {
+void DataPipeBytesConsumer::CompletionNotifier::Trace(Visitor* visitor) const {
   visitor->Trace(bytes_consumer_);
 }
 
@@ -79,6 +84,10 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
       return Result::kShouldWait;
     case MOJO_RESULT_FAILED_PRECONDITION:
       ClearDataPipe();
+      if (total_size_ && num_read_bytes_ < *total_size_) {
+        SetError(Error("error"));
+        return Result::kError;
+      }
       MaybeClose();
       // We hit the end of the pipe, but we may still need to wait for
       // SignalComplete() or SignalError() to be called.
@@ -102,6 +111,7 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
     SetError(Error("error"));
     return Result::kError;
   }
+  num_read_bytes_ += read;
   if (has_pending_complete_) {
     has_pending_complete_ = false;
     SignalComplete();
@@ -112,6 +122,13 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
     SignalError(Error("error"));
     return Result::kError;
   }
+  if (total_size_ == num_read_bytes_) {
+    ClearDataPipe();
+    ClearClient();
+    SignalComplete();
+    return Result::kDone;
+  }
+
   if (has_pending_notification_) {
     has_pending_notification_ = false;
     task_runner_->PostTask(FROM_HERE,
@@ -153,7 +170,7 @@ BytesConsumer::PublicState DataPipeBytesConsumer::GetPublicState() const {
   return GetPublicStateFromInternalState(state_);
 }
 
-void DataPipeBytesConsumer::Trace(blink::Visitor* visitor) {
+void DataPipeBytesConsumer::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   BytesConsumer::Trace(visitor);
 }
@@ -191,6 +208,22 @@ void DataPipeBytesConsumer::SignalComplete() {
   // to hit the end of the pipe.  Arm the watcher to make sure we see the
   // pipe close even if the stream is not being actively read.
   watcher_.ArmOrNotify();
+}
+
+void DataPipeBytesConsumer::SignalSize(uint64_t size) {
+  if (!IsReadableOrWaiting() || has_pending_complete_ || has_pending_error_)
+    return;
+  total_size_ = absl::make_optional(size);
+  DCHECK_LE(num_read_bytes_, *total_size_);
+  if (!data_pipe_.is_valid() && num_read_bytes_ < *total_size_) {
+    SignalError(Error());
+    return;
+  }
+
+  if (!is_in_two_phase_read_ && *total_size_ == num_read_bytes_) {
+    ClearDataPipe();
+    SignalComplete();
+  }
 }
 
 void DataPipeBytesConsumer::SignalError(const Error& error) {

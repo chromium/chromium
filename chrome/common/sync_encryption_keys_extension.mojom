@@ -11,5 +11,13 @@ interface SyncEncryptionKeysExtension {
   // Provides sync encryption keys to the browser process. Returns true if no
   // further encryption keys are needed (which includes the case, among others,
   // of encryption keys not being needed even prior to this call).
-  SetEncryptionKeys(array<array<uint8>> encryption_keys, string gaia_id) => ();
+  SetEncryptionKeys(string gaia_id, array<array<uint8>> encryption_keys,
+                    int32 last_key_version) => ();
+
+  // Registers a new trusted recovery method that can be used by other clients
+  // to retrieve sync trusted vault encryption keys. |method_type_hint| is an
+  // opaque value provided server-side that may be used for related future
+  // interactions with the server.
+  AddTrustedRecoveryMethod(string gaia_id, array<uint8> public_key,
+                           int32 method_type_hint) => ();
 };

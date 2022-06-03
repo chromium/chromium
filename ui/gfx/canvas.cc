@@ -9,8 +9,10 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -21,13 +23,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 
@@ -63,7 +64,7 @@ void Canvas::RecreateBackingCanvas(const Size& size,
 }
 
 // static
-void Canvas::SizeStringInt(const base::string16& text,
+void Canvas::SizeStringInt(const std::u16string& text,
                            const FontList& font_list,
                            int* width,
                            int* height,
@@ -73,12 +74,12 @@ void Canvas::SizeStringInt(const base::string16& text,
   float factional_height = static_cast<float>(*height);
   SizeStringFloat(text, font_list, &fractional_width, &factional_height,
                   line_height, flags);
-  *width = ToCeiledInt(fractional_width);
-  *height = ToCeiledInt(factional_height);
+  *width = base::ClampCeil(fractional_width);
+  *height = base::ClampCeil(factional_height);
 }
 
 // static
-int Canvas::GetStringWidth(const base::string16& text,
+int Canvas::GetStringWidth(const std::u16string& text,
                            const FontList& font_list) {
   int width = 0, height = 0;
   SizeStringInt(text, font_list, &width, &height, 0, NO_ELLIPSIS);
@@ -86,7 +87,7 @@ int Canvas::GetStringWidth(const base::string16& text,
 }
 
 // static
-float Canvas::GetStringWidthF(const base::string16& text,
+float Canvas::GetStringWidthF(const std::u16string& text,
                               const FontList& font_list) {
   float width = 0, height = 0;
   SizeStringFloat(text, font_list, &width, &height, 0, NO_ELLIPSIS);
@@ -96,34 +97,6 @@ float Canvas::GetStringWidthF(const base::string16& text,
 // static
 int Canvas::DefaultCanvasTextAlignment() {
   return base::i18n::IsRTL() ? TEXT_ALIGN_RIGHT : TEXT_ALIGN_LEFT;
-}
-
-void Canvas::DrawDashedRect(const RectF& inrect, SkColor color) {
-  if (inrect.IsEmpty())
-    return;
-  RectF rect = inrect;
-
-  cc::PaintFlags flags;
-  flags.setColor(color);
-  SkScalar intervals[] = {1.f, 1.f};
-  flags.setStrokeWidth(1.f);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  rect.Inset(gfx::InsetsF(0.5f));
-
-  flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
-
-  // Top-left to top-right.
-  canvas_->drawLine(rect.x() - 0.5f, rect.y(), rect.right() + 0.5f, rect.y(),
-                    flags);
-  // Top-left to bottom-left.
-  canvas_->drawLine(rect.right() + 0.5f, rect.bottom(), rect.x() - 0.5f,
-                    rect.bottom(), flags);
-  // Bottom-right to bottom-left.
-  canvas_->drawLine(rect.x(), rect.y() - 0.5f, rect.x(), rect.bottom() + 0.5f,
-                    flags);
-  // Bottom-right to top-right.
-  canvas_->drawLine(rect.right(), rect.bottom() + 0.5f, rect.right(),
-                    rect.y() - 0.5f, flags);
 }
 
 float Canvas::UndoDeviceScaleFactor() {
@@ -309,14 +282,6 @@ void Canvas::DrawPath(const SkPath& path, const cc::PaintFlags& flags) {
   canvas_->drawPath(path, flags);
 }
 
-void Canvas::DrawFocusRect(const Rect& rect) {
-  DrawFocusRect(RectF(rect));
-}
-
-void Canvas::DrawFocusRect(const RectF& rect) {
-  DrawDashedRect(rect, SK_ColorGRAY);
-}
-
 void Canvas::DrawSolidFocusRect(RectF rect, SkColor color, int thickness) {
   cc::PaintFlags flags;
   flags.setColor(color);
@@ -351,8 +316,8 @@ void Canvas::DrawImageInt(const ImageSkia& image,
   ScopedCanvas scoper(this);
   canvas_->scale(SkFloatToScalar(1.0f / bitmap_scale),
                  SkFloatToScalar(1.0f / bitmap_scale));
-  canvas_->translate(std::round(x * bitmap_scale),
-                     std::round(y * bitmap_scale));
+  canvas_->translate(SkFloatToScalar(std::round(x * bitmap_scale)),
+                     SkFloatToScalar(std::round(y * bitmap_scale)));
   canvas_->saveLayer(nullptr, &flags);
   canvas_->drawPicture(image_rep.GetPaintRecord());
   canvas_->restore();
@@ -429,11 +394,13 @@ void Canvas::DrawImageInPath(const ImageSkia& image,
 
 void Canvas::DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                          const Rect& dst,
-                         float t) {
-  canvas_->drawSkottie(std::move(skottie), RectToSkRect(dst), t);
+                         float t,
+                         cc::SkottieFrameDataMap images) {
+  canvas_->drawSkottie(std::move(skottie), RectToSkRect(dst), t,
+                       std::move(images));
 }
 
-void Canvas::DrawStringRect(const base::string16& text,
+void Canvas::DrawStringRect(const std::u16string& text,
                             const FontList& font_list,
                             SkColor color,
                             const Rect& display_rect) {
@@ -502,7 +469,7 @@ bool Canvas::InitPaintFlagsForTiling(const ImageSkia& image,
 }
 
 void Canvas::Transform(const gfx::Transform& transform) {
-  canvas_->concat(transform.matrix());
+  canvas_->concat(SkMatrix(transform.matrix()));
 }
 
 SkBitmap Canvas::GetBitmap() const {
@@ -555,7 +522,8 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
 
   cc::PaintFlags flags(original_flags);
-  flags.setFilterQuality(filter ? kLow_SkFilterQuality : kNone_SkFilterQuality);
+  flags.setFilterQuality(filter ? cc::PaintFlags::FilterQuality::kLow
+                                : cc::PaintFlags::FilterQuality::kNone);
   flags.setShader(CreateImageRepShaderForScale(
       image_rep, SkTileMode::kRepeat, SkTileMode::kRepeat, shader_scale,
       remove_image_scale ? image_rep.scale() : 1.f));

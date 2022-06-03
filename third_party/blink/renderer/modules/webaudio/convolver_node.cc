@@ -24,14 +24,18 @@
  */
 
 #include "third_party/blink/renderer/modules/webaudio/convolver_node.h"
+
 #include <memory>
+
+#include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_convolver_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/convolver_options.h"
 #include "third_party/blink/renderer/platform/audio/reverb.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 // Note about empirical tuning:
 // The maximum FFT size affects reverb performance and accuracy.
@@ -40,7 +44,7 @@
 // a good value.  But, the Reverb object is multi-threaded, so we want this as
 // high as possible without losing too much accuracy.  Very large FFTs will have
 // worse phase errors. Given these constraints 32768 is a good compromise.
-const size_t MaxFFTSize = 32768;
+const unsigned MaxFFTSize = 32768;
 
 namespace blink {
 
@@ -89,7 +93,8 @@ void ConvolverHandler::Process(uint32_t frames_to_process) {
       // FIXME:  If we wanted to get fancy we could try to factor in the 'tail
       // time' and stop processing once the tail dies down if
       // we keep getting fed silence.
-      reverb_->Process(Input(0).Bus(), output_bus, frames_to_process);
+      scoped_refptr<AudioBus> input_bus = Input(0).Bus();
+      reverb_->Process(input_bus.get(), output_bus, frames_to_process);
     }
   } else {
     // Too bad - the tryLock() failed.  We must be in the middle of setting a
@@ -140,7 +145,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   {
     // Get some statistics on the size of the impulse response.
     UMA_HISTOGRAM_LONG_TIMES("WebAudio.ConvolverNode.ImpulseResponseLength",
-                             base::TimeDelta::FromSecondsD(buffer->duration()));
+                             base::Seconds(buffer->duration()));
   }
 
   // Wrap the AudioBuffer by an AudioBus. It's an efficient pointer set and not
@@ -148,8 +153,31 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   // reference to it is kept for later use in that class.
   scoped_refptr<AudioBus> buffer_bus =
       AudioBus::Create(number_of_channels, buffer_length, false);
+
+  // Check to see if any of the channels have been transferred.  Note that an
+  // AudioBuffer cannot be created with a length of 0, so if any channel has a
+  // length of 0, it was transferred.
+  bool any_buffer_detached = false;
   for (unsigned i = 0; i < number_of_channels; ++i) {
-    buffer_bus->SetChannelMemory(i, buffer->getChannelData(i).View()->Data(),
+    if (buffer->getChannelData(i)->length() == 0) {
+      any_buffer_detached = true;
+      break;
+    }
+  }
+
+  if (any_buffer_detached) {
+    // If any channel is detached, we're supposed to treat it as if all were.
+    // This means the buffer effectively has length 0, which is the same as if
+    // no buffer were given.
+    BaseAudioContext::GraphAutoLocker context_locker(Context());
+    MutexLocker locker(process_lock_);
+    reverb_.reset();
+    shared_buffer_ = nullptr;
+    return;
+  }
+
+  for (unsigned i = 0; i < number_of_channels; ++i) {
+    buffer_bus->SetChannelMemory(i, buffer->getChannelData(i)->Data(),
                                  buffer_length);
   }
 
@@ -157,8 +185,8 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
 
   // Create the reverb with the given impulse response.
   std::unique_ptr<Reverb> reverb = std::make_unique<Reverb>(
-      buffer_bus.get(), audio_utilities::kRenderQuantumFrames, MaxFFTSize,
-      Context() && Context()->HasRealtimeConstraint(), normalize_);
+      buffer_bus.get(), GetDeferredTaskHandler().RenderQuantumFrames(),
+      MaxFFTSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
 
   {
     // The context must be locked since changing the buffer can
@@ -211,7 +239,7 @@ unsigned ConvolverHandler::ComputeNumberOfOutputChannels(
   // The number of output channels for a Convolver must be one or two.
   // And can only be one if there's a mono source and a mono response
   // buffer.
-  return clampTo(std::max(input_channels, response_channels), 1, 2);
+  return ClampTo(std::max(input_channels, response_channels), 1, 2);
 }
 
 void ConvolverHandler::SetChannelCount(unsigned channel_count,
@@ -219,11 +247,19 @@ void ConvolverHandler::SetChannelCount(unsigned channel_count,
   DCHECK(IsMainThread());
   BaseAudioContext::GraphAutoLocker locker(Context());
 
-  // channelCount must be 2.
-  if (channel_count != 2) {
+  // channelCount must be 1 or 2
+  if (channel_count == 1 || channel_count == 2) {
+    if (channel_count_ != channel_count) {
+      channel_count_ = channel_count;
+      UpdateChannelsForInputs();
+    }
+  } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "ConvolverNode: channelCount cannot be changed from 2");
+        ExceptionMessages::IndexOutsideRange<uint32_t>(
+            "channelCount", channel_count, 1,
+            ExceptionMessages::kInclusiveBound, 2,
+            ExceptionMessages::kInclusiveBound));
   }
 }
 
@@ -232,11 +268,27 @@ void ConvolverHandler::SetChannelCountMode(const String& mode,
   DCHECK(IsMainThread());
   BaseAudioContext::GraphAutoLocker locker(Context());
 
-  // channcelCountMode must be 'clamped-max'.
-  if (mode != "clamped-max") {
+  ChannelCountMode old_mode = InternalChannelCountMode();
+
+  // The channelCountMode cannot be "max".  For a convolver node, the
+  // number of input channels must be 1 or 2 (see
+  // https://webaudio.github.io/web-audio-api/#audionode-channelcount-constraints)
+  // and "max" would be incompatible with that.
+  if (mode == "max") {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "ConvolverNode: channelCountMode cannot be changed from 'clamped-max'");
+        "ConvolverNode: channelCountMode cannot be changed to 'max'");
+    new_channel_count_mode_ = old_mode;
+  } else if (mode == "explicit") {
+    new_channel_count_mode_ = kExplicit;
+  } else if (mode == "clamped-max") {
+    new_channel_count_mode_ = kClampedMax;
+  } else {
+    NOTREACHED();
+  }
+
+  if (new_channel_count_mode_ != old_mode) {
+    Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
   }
 }
 
@@ -245,7 +297,7 @@ void ConvolverHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   Context()->AssertGraphOwner();
 
   DCHECK(input);
-  DCHECK_EQ(input, &this->Input(0));
+  DCHECK_EQ(input, &Input(0));
 
   if (shared_buffer_) {
     unsigned number_of_output_channels = ComputeNumberOfOutputChannels(
@@ -322,7 +374,7 @@ void ConvolverNode::setNormalize(bool normalize) {
   GetConvolverHandler().SetNormalize(normalize);
 }
 
-void ConvolverNode::Trace(Visitor* visitor) {
+void ConvolverNode::Trace(Visitor* visitor) const {
   visitor->Trace(buffer_);
   AudioNode::Trace(visitor);
 }

@@ -21,7 +21,7 @@ MockCryptoClientStreamFactory::MockCryptoClientStreamFactory()
       use_mock_crypter_(false) {}
 
 void MockCryptoClientStreamFactory::SetConfig(const quic::QuicConfig& config) {
-  config_.reset(new quic::QuicConfig(config));
+  config_ = std::make_unique<quic::QuicConfig>(config);
 }
 
 quic::QuicCryptoClientStream*

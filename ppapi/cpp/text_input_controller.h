@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "ppapi/c/ppb_text_input_controller.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/var.h"

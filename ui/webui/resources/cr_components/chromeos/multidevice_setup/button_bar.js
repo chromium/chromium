@@ -32,27 +32,21 @@ Polymer({
     shouldShowShadow: {
       type: Boolean,
       value: false,
-      observer: 'onShouldShowShadowChange_',
     }
   },
 
   /** @private */
-  onForwardButtonClicked_: function() {
+  onForwardButtonClicked_() {
     this.fire('forward-navigation-requested');
   },
 
   /** @private */
-  onCancelButtonClicked_: function() {
+  onCancelButtonClicked_() {
     this.fire('cancel-requested');
   },
 
   /** @private */
-  onBackwardButtonClicked_: function() {
+  onBackwardButtonClicked_() {
     this.fire('backward-navigation-requested');
-  },
-
-  /** @private */
-  onShouldShowShadowChange_: function() {
-    this.$.shadow.hidden = !!this.shouldShowShadow;
   },
 });

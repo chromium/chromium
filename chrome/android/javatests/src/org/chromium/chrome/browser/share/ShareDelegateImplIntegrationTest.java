@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.share;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,17 +14,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -46,8 +49,7 @@ public class ShareDelegateImplIntegrationTest {
             "/chrome/test/data/android/share/link_share_no_canonical.html";
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -104,7 +106,7 @@ public class ShareDelegateImplIntegrationTest {
         HistogramDelta urlResultDelta = new HistogramDelta(
                 ShareDelegateImpl.CANONICAL_URL_RESULT_HISTOGRAM, expectedUrlResult);
         ShareParams params = triggerShare();
-        Assert.assertEquals(expectedShareUrl, params.getUrl());
+        Assert.assertTrue(params.getTextAndUrl().contains(expectedShareUrl));
         Assert.assertEquals(1, urlResultDelta.getDelta());
     }
 
@@ -114,17 +116,23 @@ public class ShareDelegateImplIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShareSheetDelegate delegate = new ShareSheetDelegate() {
                 @Override
-                void share(ShareParams params, BottomSheetController controller,
-                        ActivityTabProvider tabProvider, TabCreatorManager.TabCreator tabCreator) {
+                void share(ShareParams params, ChromeShareExtras chromeShareParams,
+                        BottomSheetController controller,
+                        ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
+                        Callback<Tab> printCallback, int shareOrigin, boolean syncState,
+                        long shareStartTime, boolean sharingHubEnabled) {
                     paramsRef.set(params);
                     helper.notifyCalled();
                 }
             };
 
-            new ShareDelegateImpl(mActivityTestRule.getActivity().getBottomSheetController(),
-                    mActivityTestRule.getActivity().getActivityTabProvider(), delegate,
-                    mActivityTestRule.getActivity().getCurrentTabCreator())
-                    .share(mActivityTestRule.getActivity().getActivityTab(), false);
+            new ShareDelegateImpl(mActivityTestRule.getActivity()
+                                          .getRootUiCoordinatorForTesting()
+                                          .getBottomSheetController(),
+                    mActivityTestRule.getActivity().getLifecycleDispatcher(),
+                    mActivityTestRule.getActivity().getActivityTabProvider(), delegate, false)
+                    .share(mActivityTestRule.getActivity().getActivityTab(), false,
+                            /*shareOrigin=*/0);
         });
         helper.waitForCallback(0);
         return paramsRef.get();

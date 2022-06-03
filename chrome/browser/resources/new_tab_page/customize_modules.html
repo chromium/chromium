@@ -1,0 +1,102 @@
+<style>
+  :host {
+    line-height: 20px;
+  }
+
+  #show {
+    align-items: center;
+    display: flex;
+    margin-bottom: 24px;
+    margin-top: 14px;
+  }
+
+  cr-radio-button {
+    height: 20px;
+    padding: 0;
+  }
+
+  cr-radio-button + cr-radio-button {
+    margin-top: 31px;
+  }
+
+  #show cr-policy-indicator {
+    --cr-icon-size: 48px;
+    margin-inline-start: 48px;
+  }
+
+  #toggles {
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-inline-end: 51px;
+    margin-inline-start: 36px;
+    max-width: 544px;
+  }
+
+  .toggle-row,
+  .discount-toggle-row {
+    align-items: center;
+    display: flex;
+    height: 52px;
+  }
+
+  .toggle-section + .toggle-section {
+    border-top: 1px solid var(--ntp-border-color);
+  }
+
+  .toggle-name {
+    flex-grow: 1;
+    margin-inline-start: 24px;
+  }
+
+  .toggle-row cr-policy-indicator {
+    margin-inline-end: 24px;
+  }
+
+  cr-toggle {
+    margin-inline-end: 20px;
+  }
+</style>
+<div id="show">
+  <cr-radio-group selected="[[radioSelection_(show_)]]"
+      disabled="[[showManagedByPolicy_]]"
+      on-selected-changed="onShowRadioSelectionChanged_">
+    <cr-radio-button id="hideButton" name="hide">
+      [[i18n('hideAllCards')]]
+    </cr-radio-button>
+    <cr-radio-button id="customizeButton" name="customize">
+      [[i18n('customizeCards')]]
+    </cr-radio-button>
+  </cr-radio-group>
+  <cr-policy-indicator indicator-type="devicePolicy"
+      hidden="[[!showManagedByPolicy_]]">
+  </cr-policy-indicator>
+</div>
+<div id="toggles">
+  <template id="toggleRepeat" is="dom-repeat" items="[[modules_]]">
+    <div class="toggle-section">
+      <div class="toggle-row">
+        <div class="toggle-name">[[item.name]]</div>
+        <cr-policy-indicator indicator-type="devicePolicy"
+            hidden="[[!showManagedByPolicy_]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{item.checked}}"
+            disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]">
+        </cr-toggle>
+      </div>
+      <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
+      removed after module customization is better defined. Please avoid
+      using similar pattern for other features. -->
+      <template is="dom-if"
+          if=
+      "[[showDiscountToggle_(item.id, item.checked, discountToggleEligible_)]]">
+        <div class="discount-toggle-row">
+          <div class="toggle-name">
+            [[i18n('modulesCartDiscountConsentAccept')]]
+          </div>
+          <cr-toggle checked="{{discountToggle_.enabled}}"></cr-toggle>
+        </div>
+      </template>
+    </div>
+  </template>
+</div>

@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-API_AVAILABLE(macos(10.12.2))
+API_AVAILABLE(macos(10.13.1))
 @interface NowPlayingInfoCenterDelegateCocoa : NSObject
 
 - (instancetype)init;
@@ -21,6 +21,12 @@ API_AVAILABLE(macos(10.12.2))
 - (void)setTitle:(NSString*)title;
 - (void)setArtist:(NSString*)artist;
 - (void)setAlbum:(NSString*)album;
+- (void)setPlaybackRate:(NSNumber*)rate;
+- (void)setCurrentPlaybackDate:(NSDate*)date;
+- (void)setElapsedPlaybackTime:(NSNumber*)time;
+- (void)setDuration:(NSNumber*)duration;
+- (void)setThumbnail:(NSImage*)image;
+- (void)updateNowPlayingInfo;
 
 // Sets all metadata to default values.
 - (void)clearMetadata;

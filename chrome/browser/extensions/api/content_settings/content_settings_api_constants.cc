@@ -23,6 +23,5 @@ const char kIncognitoSessionOnlyError[] =
     "You cannot read incognito content settings when no incognito window "
     "is open.";
 const char kInvalidUrlError[] = "The URL \"*\" is invalid.";
-
 }  // namespace content_settings_api_constants
 }  // namespace extensions

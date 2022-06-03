@@ -34,9 +34,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "background_loader_contents_unittest.cc",
-  ]
+  sources = [ "background_loader_contents_unittest.cc" ]
   deps = [
     ":background_loader",
     "//base",

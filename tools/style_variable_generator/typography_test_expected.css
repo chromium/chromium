@@ -1,0 +1,23 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+ *  typography_test.json5
+ */
+
+html:not(body) {}
+
+html {
+  /* font families */
+  --cros-font-family-test: 'Google Sans', 'Noto Sans', sans-serif;
+  --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;
+
+  /* typefaces */
+  --cros-headline-1-font: 500 15px/22px var(--cros-font-family-test);
+  --cros-headline-1-font-family: var(--cros-font-family-test);
+  --cros-headline-1-font-size: 15px;
+  --cros-headline-1-font-weight: 500;
+  --cros-headline-1-line-height: 22px;
+
+}

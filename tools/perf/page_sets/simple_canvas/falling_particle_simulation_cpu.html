@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+<script>
+const sideLength = 10;
+const numPixelsPerParticle = sideLength * sideLength;
+// An unpainted particle has 10 x 10 pixels with rbga(0,0,0,0)
+const unpaintedParticle = new Uint8ClampedArray(numPixelsPerParticle * 4);
+
+var particles = [];
+
+var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d", {willReadFrequently: true});
+document.body.appendChild(canvas);
+canvas.width = 1024;
+canvas.height = 1024;
+
+function fallingParticleSimulationInCPU() {
+  draw();
+
+  for (var i = 0; i < 5; i++) {
+    particles.push({ x: Math.random() * canvas.width, y: 0 });
+  }
+  requestAnimationFrame(fallingParticleSimulationInCPU);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "white";
+  for (const particle of particles) {
+    // Check the pixels of the size of a particle below the current one,
+    // move the particle down if the pixels are unpainted,
+    // ie. all pixels have rgba(0,0,0,0).
+    if (particle.y < canvas.height - sideLength) {
+      var particleBelow = ctx.getImageData(
+        particle.x, particle.y + sideLength, sideLength, sideLength).data;
+      if (compareImageData(particleBelow, unpaintedParticle)) {
+        particle.y += sideLength;
+      }
+    } else {
+      particle.y = canvas.height - sideLength;
+    }
+    ctx.fillRect(particle.x, particle.y, sideLength, sideLength);
+  }
+}
+
+function compareImageData(imgData1, imgData2) {
+  if (imgData1.length != imgData2.length) return false;
+  for (var i = 0; i < imgData1.length; i++) {
+    if (imgData1[i] != imgData2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+window.onload = function () {
+  fallingParticleSimulationInCPU();
+}
+
+</script>
+</body>
+</html>

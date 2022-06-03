@@ -1,4 +1,4 @@
-// META: global=worker
+// META: global=window,worker
 
 'use strict';
 
@@ -28,13 +28,15 @@ const badChunks = [
     // Use a getter to postpone construction so that all tests don't fail where
     // SharedArrayBuffer is not yet implemented.
     get value() {
-      return new SharedArrayBuffer();
+      // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
+      return new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer;
     }
   },
   {
     name: 'shared Uint8Array',
     get value() {
-      return new Uint8Array(new SharedArrayBuffer())
+      // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
+      return new Uint8Array(new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer)
     }
   },
 ];
@@ -46,8 +48,8 @@ for (const chunk of badChunks) {
     const writer = cs.writable.getWriter();
     const writePromise = writer.write(chunk.value);
     const readPromise = reader.read();
-    await promise_rejects(t, new TypeError(), writePromise, 'write should reject');
-    await promise_rejects(t, new TypeError(), readPromise, 'read should reject');
+    await promise_rejects_js(t, TypeError, writePromise, 'write should reject');
+    await promise_rejects_js(t, TypeError, readPromise, 'read should reject');
   }, `chunk of type ${chunk.name} should error the stream for gzip`);
 
   promise_test(async t => {
@@ -56,7 +58,7 @@ for (const chunk of badChunks) {
     const writer = cs.writable.getWriter();
     const writePromise = writer.write(chunk.value);
     const readPromise = reader.read();
-    await promise_rejects(t, new TypeError(), writePromise, 'write should reject');
-    await promise_rejects(t, new TypeError(), readPromise, 'read should reject');
+    await promise_rejects_js(t, TypeError, writePromise, 'write should reject');
+    await promise_rejects_js(t, TypeError, readPromise, 'read should reject');
   }, `chunk of type ${chunk.name} should error the stream for deflate`);
 }

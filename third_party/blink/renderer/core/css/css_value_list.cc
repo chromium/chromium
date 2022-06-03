@@ -20,15 +20,13 @@
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 struct SameSizeAsCSSValueList : CSSValue {
-  Vector<Member<CSSValue>, 4> list_values;
+  HeapVector<Member<CSSValue>, 4> list_values;
 };
 ASSERT_SIZE(CSSValueList, SameSizeAsCSSValueList);
 
@@ -52,16 +50,13 @@ bool CSSValueList::RemoveAll(const CSSValue& val) {
       found = true;
     }
   }
-
   return found;
 }
 
 bool CSSValueList::HasValue(const CSSValue& val) const {
-  for (wtf_size_t index = 0; index < values_.size(); index++) {
-    const Member<const CSSValue>& value = values_.at(index);
-    if (value && *value == val) {
+  for (const auto& value : values_) {
+    if (value && *value == val)
       return true;
-    }
   }
   return false;
 }
@@ -86,8 +81,7 @@ CSSValueList* CSSValueList::Copy() const {
 }
 
 String CSSValueList::CustomCSSText() const {
-  StringBuilder result;
-  String separator;
+  StringView separator;
   switch (value_list_separator_) {
     case kSpaceSeparator:
       separator = " ";
@@ -102,14 +96,17 @@ String CSSValueList::CustomCSSText() const {
       NOTREACHED();
   }
 
-  unsigned size = values_.size();
-  for (unsigned i = 0; i < size; i++) {
+  StringBuilder result;
+  for (const auto& value : values_) {
     if (!result.IsEmpty())
       result.Append(separator);
-    result.Append(values_[i]->CssText());
+    // TODO(crbug.com/1213338): value_[i] can be null by CSSMathExpressionNode
+    // which is implemented by css-values-3. Until fully implement the
+    // css-values-4 features, we should append empty string to remove
+    // null-pointer exception.
+    result.Append(value ? value->CssText() : " ");
   }
-
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSValueList::Equals(const CSSValueList& other) const {
@@ -118,8 +115,8 @@ bool CSSValueList::Equals(const CSSValueList& other) const {
 }
 
 bool CSSValueList::HasFailedOrCanceledSubresources() const {
-  for (unsigned i = 0; i < values_.size(); ++i) {
-    if (values_[i]->HasFailedOrCanceledSubresources())
+  for (const auto& value : values_) {
+    if (value->HasFailedOrCanceledSubresources())
       return true;
   }
   return false;
@@ -138,7 +135,7 @@ void CSSValueList::ReResolveUrl(const Document& document) const {
     value->ReResolveUrl(document);
 }
 
-void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(values_);
   CSSValue::TraceAfterDispatch(visitor);
 }

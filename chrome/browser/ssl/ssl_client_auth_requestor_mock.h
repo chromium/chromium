@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -27,6 +28,7 @@ class SSLClientAuthRequestorMock
       const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info);
 
   std::unique_ptr<content::ClientCertificateDelegate> CreateDelegate();
+  void WaitForCompletion();
 
   MOCK_METHOD2(CertificateSelected,
                void(net::X509Certificate* cert, net::SSLPrivateKey* key));
@@ -37,6 +39,9 @@ class SSLClientAuthRequestorMock
  protected:
   friend class base::RefCountedThreadSafe<SSLClientAuthRequestorMock>;
   virtual ~SSLClientAuthRequestorMock();
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CLIENT_AUTH_REQUESTOR_MOCK_H_

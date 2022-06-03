@@ -7,8 +7,11 @@
 namespace ui {
 
 GamepadDevice::GamepadDevice(const InputDevice& input_device,
-                             std::vector<GamepadDevice::Axis>&& axes)
-    : InputDevice(input_device), axes(std::move(axes)) {}
+                             std::vector<GamepadDevice::Axis>&& axes,
+                             bool supports_rumble)
+    : InputDevice(input_device),
+      axes(std::move(axes)),
+      supports_vibration_rumble(supports_rumble) {}
 
 GamepadDevice::GamepadDevice(const GamepadDevice& other) = default;
 

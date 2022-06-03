@@ -26,6 +26,12 @@ const char kTestFeature[] = "testFeature";
 
 class SecureChannelPendingBleInitiatorConnectionRequestTest
     : public testing::Test {
+ public:
+  SecureChannelPendingBleInitiatorConnectionRequestTest(
+      const SecureChannelPendingBleInitiatorConnectionRequestTest&) = delete;
+  SecureChannelPendingBleInitiatorConnectionRequestTest& operator=(
+      const SecureChannelPendingBleInitiatorConnectionRequestTest&) = delete;
+
  protected:
   SecureChannelPendingBleInitiatorConnectionRequestTest() = default;
   ~SecureChannelPendingBleInitiatorConnectionRequestTest() override = default;
@@ -42,13 +48,13 @@ class SecureChannelPendingBleInitiatorConnectionRequestTest
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
     pending_ble_initiator_request_ =
-        PendingBleInitiatorConnectionRequest::Factory::Get()->BuildInstance(
+        PendingBleInitiatorConnectionRequest::Factory::Create(
             std::move(fake_client_connection_parameters),
             ConnectionPriority::kLow,
             fake_pending_connection_request_delegate_.get(), mock_adapter_);
   }
 
-  const base::Optional<
+  const absl::optional<
       PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
@@ -56,7 +62,7 @@ class SecureChannelPendingBleInitiatorConnectionRequestTest
             pending_ble_initiator_request_->GetRequestId());
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() {
     return fake_client_connection_parameters_->failure_reason();
   }
@@ -75,9 +81,6 @@ class SecureChannelPendingBleInitiatorConnectionRequestTest
 
   std::unique_ptr<PendingConnectionRequest<BleInitiatorFailureType>>
       pending_ble_initiator_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelPendingBleInitiatorConnectionRequestTest);
 };
 
 TEST_F(SecureChannelPendingBleInitiatorConnectionRequestTest,

@@ -33,6 +33,13 @@ To initially evaluate accuracy of a quality of experience metric, we rely heavil
 * Use the metric implementation to sort the samples.
 * Use [Spearman's rank-order correlation](https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php) to evaluate how similar the metric implementation is to the hand ordering.
 
+## Incentivizes the right optimizations
+
+Ideally developers optimize their sites' performance on metrics by improving the user experience.
+But if developers can easily improve their performance on a metric without improving the actual user experience, the metric does not incentivize the right things.
+
+For example, if we use the onload event as the time at which we consider a web page to be fully loaded, developers will shift work after the onload event to improve their page load time. In many cases, this is the right thing to do. But since the onload event doesn't correspond to any real user-visible milestone in loading the page, it's easy to just keep shifting work after it, until eventually the entire page is loaded after onload. So instead we work to write metrics that capture user experience in a way that it's clearer to developers how they should optimize.
+
 ## Stable
 
 A metric is stable if the result doesn’t vary much between successive runs on similar input. This can be quantitatively evaluated, ideally using Chrome Trace Processor and cluster telemetry on the top 10k sites. Eventually we hope to have a concrete threshold for a specific spread metric here, but for now, we gather the stability data, and analyze it by hand.
@@ -63,9 +70,17 @@ This is frequently at odds with the interpretability requirement. For example, F
 
 If your metric involves thresholds (such as the 50ms task length threshold in TTI), or heuristics (looking at the largest jump in the number of layout objects in FMP), it’s likely to be non-elastic.
 
-## Realtime
+## Performant to compute
 
-We’d like to have metrics which we can compute in realtime. For example, if we’re measuring First Meaningful Paint, we’d like to know when First Meaningful Paint occurred *at the time it occurred*. This isn’t always attainable, but when possible, it avoids some classes of [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias), which makes metrics easier to analyze.
+If a metric is to be made available in a real-user monitoring context, it must be performant enough to compute that computing the metric does not slow down the user's browsing experience. Some metrics, like [Speed Index](https://web.dev/speed-index/), are very difficult to compute quickly enough for real-user monitoring.
+
+## Immediate
+
+Ideally we would know the metric's value *at the time it occurred*. For example, as soon as there is a contentful paint, we know that First Contentful Paint has occurred. But when the largest image or text paints to the screen, while we know it is the Largest Contentful Paint *so far*, we do not know if there will be another, larger contentful paint later on. So we can't know the value of Largest Contentful Paint until an input, scroll, or page unload.
+
+This isn’t always attainable, but when possible, it avoids some classes of [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias), which makes metrics easier to analyze.
+
+It also makes it easier for developers to reason about simple things like when to send a beacon to analytics, and more complex things like deferring work until after a metric representing a major milestone, like the main content being displayed.
 
 ## Orthogonal
 
@@ -90,18 +105,22 @@ We'd like to have metrics that correlate well in the wild and in the lab, so tha
     * Summary [here](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c/edit#heading=h.iqlwzaf6lqrh), analysis [here](https://docs.google.com/document/d/1pZsTKqcBUb1pc49J89QbZDisCmHLpMyUqElOwYqTpSI/edit#bookmark=id.4euqu19nka18). Overall, based on manual investigation of 25 sites, our approach fired uncontroversially at the right time 64% of the time, and possibly too late the other 36% of time. We split TTI in two to allow this metric to be quite pessimistic about when TTI fires, so we’re happy with when this fires for all 25 sites. A few issues with this research:
         * Ideally someone less familiar with our approach would have performed the evaluation.
         * Ideally we’d have looked at more than 25 sites.
+* Incentivizes the right optimizations
+    * In real-user monitoring, Time To Interactive often isn't fully measured before the page is loaded. If users leave the page before TTI is complete, the value isn't tracked. This means that sites could accidentally improve the metric if the slowest users leave the page earlier. This doesn't incentivize the right thing, which is part of the reason we recommend [First Input Delay](https://web.dev/fid) for real-user monitoring instead.
 * Stable
     * Analysis [here](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c/edit#heading=h.27s41u6tkfzj).
 * Interpretable
     * Time to Interactive is easy to explain. We report the first 5 second window where the network is roughly idle and no tasks are greater than 50ms long.
 * Elastic
-    * Time to Interactive is generally non-elastic. We’re investigating another metric which will quantify how busy the main thread is between FMP and TTI, which should be a nice elastic proxy metric for TTI.
+    * Time to Interactive is generally non-elastic. This is the reason we now recommend Total Blocking Time (TBT) for lab monitoring. Analysis [here](https://docs.google.com/document/d/1xCERB_X7PiP5RAZDwyIkODnIXoBk-Oo7Mi9266aEdGg/edit).
 * Simple
     * Time To Interactive has a reasonable amount of complexity, but is much simpler than Time to First Interactive. Time to Interactive has 3 parameters:
         * Number of allowable requests during network idle (currently 2).
         * Length of allowable tasks during main thread idle (currently 50ms).
         * Window length (currently 5 seconds).
-* Realtime
-    * Time To Interactive is definitely not realtime, as it needs to wait until it’s seen 5 seconds of idle time before declaring that we became interactive at the start of the 5 second window.
+* Immediate
+    * Time To Interactive is definitely not immediate, as it needs to wait until it’s seen 5 seconds of idle time before declaring that we became interactive at the start of the 5 second window. First Input Delay is an immediate alternative.
+* Performant to Compute
+    * Time To Interactive is performant enough in Chrome that it can be used for real-user monitoring, but we recommend [First Input Delay](https://web.dev/fid) due to its issues with incentivizing the right optimizations and elasticity.
 * Orthogonal
-    * Time to Interactive aims to represent interactivity during page load, which is also what [First Input Delay](https://web.dev/fid/) aims to represent. The reason is that we haven't found a way to accurately represent this across the lab (TTI) and wild (FID) with a single metric.
+    * Time to Interactive aims to represent interactivity during page load, which is also what [First Input Delay](https://web.dev/fid/) aims to represent. The reason is that we haven't found a way to accurately represent this across the lab (TBT/TTI) and wild (FID) with a single metric.

@@ -14,14 +14,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -45,8 +43,6 @@ class BackendCleanupTracker;
 class SimpleIndexDelegate;
 class SimpleIndexFile;
 struct SimpleIndexLoadResult;
-
-NET_EXPORT_PRIVATE extern const base::Feature kSimpleCacheEvictionWithSize;
 
 class NET_EXPORT_PRIVATE EntryMetadata {
  public:
@@ -80,7 +76,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
                    bool app_cache_has_trailer_prefetch_size);
 
   static base::TimeDelta GetLowerEpsilonForTimeComparisons() {
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
   }
   static base::TimeDelta GetUpperEpsilonForTimeComparisons() {
     return base::TimeDelta();
@@ -220,9 +216,6 @@ class NET_EXPORT_PRIVATE SimpleIndex
 
   IndexInitMethod init_method() const { return init_method_; }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   // Returns base::Time() if hash not known.
   base::Time GetLastUsedTime(uint64_t entry_hash);
   void SetLastUsedTimeForTest(uint64_t entry_hash, const base::Time last_used);
@@ -245,6 +238,8 @@ class NET_EXPORT_PRIVATE SimpleIndex
   FRIEND_TEST_ALL_PREFIXES(SimpleIndexTest, DiskWriteExecuted);
   FRIEND_TEST_ALL_PREFIXES(SimpleIndexTest, DiskWritePostponed);
   FRIEND_TEST_ALL_PREFIXES(SimpleIndexAppCacheTest, DiskWriteQueued);
+  FRIEND_TEST_ALL_PREFIXES(SimpleIndexCodeCacheTest, DisableEvictBySize);
+  FRIEND_TEST_ALL_PREFIXES(SimpleIndexCodeCacheTest, EnableEvictBySize);
 
   void StartEvictionIfNeeded();
   void EvictionDone(int result);
@@ -297,13 +292,8 @@ class NET_EXPORT_PRIVATE SimpleIndex
   // enforces this.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Timestamp of the last time we wrote the index to disk.
-  // PostponeWritingToDisk() may give up postponing and allow the write if it
-  // has been a while since last time we wrote.
-  base::TimeTicks last_write_to_disk_;
-
   base::OneShotTimer write_to_disk_timer_;
-  base::Closure write_to_disk_cb_;
+  base::RepeatingClosure write_to_disk_cb_;
 
   typedef std::list<net::CompletionOnceCallback> CallbackList;
   CallbackList to_run_when_initialized_;

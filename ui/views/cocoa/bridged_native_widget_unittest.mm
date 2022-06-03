@@ -13,8 +13,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +23,6 @@
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/material_design/material_design_controller.h"
 #import "ui/base/test/cocoa_helper.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -134,7 +131,7 @@ NSRange EmptyRange() {
 // Sets |composition_text| as the composition text with caret placed at
 // |caret_pos| and updates |caret_range|.
 void SetCompositionText(ui::TextInputClient* client,
-                        const base::string16& composition_text,
+                        const std::u16string& composition_text,
                         const int caret_pos,
                         NSRange* caret_range) {
   ui::CompositionText composition;
@@ -155,7 +152,7 @@ gfx::Rect GetCaretBounds(const ui::TextInputClient* client) {
 // Returns a zero width rectangle corresponding to caret bounds when it's placed
 // at |caret_pos| and updates |caret_range|.
 gfx::Rect GetCaretBoundsForPosition(ui::TextInputClient* client,
-                                    const base::string16& composition_text,
+                                    const std::u16string& composition_text,
                                     const int caret_pos,
                                     NSRange* caret_range) {
   SetCompositionText(client, composition_text, caret_pos, caret_range);
@@ -165,7 +162,7 @@ gfx::Rect GetCaretBoundsForPosition(ui::TextInputClient* client,
 // Returns the expected boundary rectangle for characters of |composition_text|
 // within the |query_range|.
 gfx::Rect GetExpectedBoundsForRange(ui::TextInputClient* client,
-                                    const base::string16& composition_text,
+                                    const std::u16string& composition_text,
                                     NSRange query_range) {
   gfx::Rect left_caret = GetCaretBoundsForPosition(
       client, composition_text, query_range.location, nullptr);
@@ -300,6 +297,10 @@ class MockNativeWidgetMac : public NativeWidgetMac {
  public:
   explicit MockNativeWidgetMac(internal::NativeWidgetDelegate* delegate)
       : NativeWidgetMac(delegate) {}
+
+  MockNativeWidgetMac(const MockNativeWidgetMac&) = delete;
+  MockNativeWidgetMac& operator=(const MockNativeWidgetMac&) = delete;
+
   using NativeWidgetMac::GetInProcessNSWindowBridge;
   using NativeWidgetMac::GetNSWindowHost;
 
@@ -318,22 +319,20 @@ class MockNativeWidgetMac : public NativeWidgetMac {
             NativeWidgetMacNSWindowHost::GetFromNativeView(params.parent)) {
       GetNSWindowHost()->SetParent(parent);
     }
-    GetNSWindowHost()->InitWindow(params);
+    GetNSWindowHost()->InitWindow(params,
+                                  ConvertBoundsToScreenIfNeeded(params.bounds));
 
     // Usually the bridge gets initialized here. It is skipped to run extra
     // checks in tests, and so that a second window isn't created.
     delegate()->OnNativeWidgetCreated();
 
     // To allow events to dispatch to a view, it needs a way to get focus.
-    GetNSWindowHost()->SetFocusManager(GetWidget()->GetFocusManager());
+    SetFocusManager(GetWidget()->GetFocusManager());
   }
 
   void ReorderNativeViews() override {
     // Called via Widget::Init to set the content view. No-op in these tests.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNativeWidgetMac);
 };
 
 // Helper test base to construct a NativeWidgetNSWindowBridge with a valid
@@ -348,6 +347,10 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
   explicit BridgedNativeWidgetTestBase(SkipInitialization tag)
       : native_widget_mac_(nullptr) {}
+
+  BridgedNativeWidgetTestBase(const BridgedNativeWidgetTestBase&) = delete;
+  BridgedNativeWidgetTestBase& operator=(const BridgedNativeWidgetTestBase&) =
+      delete;
 
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() {
     return native_widget_mac_->GetInProcessNSWindowBridge();
@@ -374,8 +377,6 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
   // Overridden from testing::Test:
   void SetUp() override {
     ui::CocoaTest::SetUp();
-
-    ui::MaterialDesignController::Initialize();
 
     Widget::InitParams init_params;
     init_params.native_widget = native_widget_mac_;
@@ -423,8 +424,6 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTestBase);
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
@@ -434,12 +433,16 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
       base::RepeatingCallback<bool(Textfield*, const ui::KeyEvent& key_event)>;
 
   BridgedNativeWidgetTest();
+
+  BridgedNativeWidgetTest(const BridgedNativeWidgetTest&) = delete;
+  BridgedNativeWidgetTest& operator=(const BridgedNativeWidgetTest&) = delete;
+
   ~BridgedNativeWidgetTest() override;
 
   // Install a textfield with input type |text_input_type| in the view hierarchy
   // and make it the text input client. Also initializes |dummy_text_view_|.
   Textfield* InstallTextField(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputType text_input_type = ui::TEXT_INPUT_TYPE_TEXT);
   Textfield* InstallTextField(const std::string& text);
 
@@ -513,9 +516,6 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTest);
 };
 
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them
@@ -540,13 +540,13 @@ BridgedNativeWidgetTest::BridgedNativeWidgetTest() = default;
 BridgedNativeWidgetTest::~BridgedNativeWidgetTest() = default;
 
 Textfield* BridgedNativeWidgetTest::InstallTextField(
-    const base::string16& text,
+    const std::u16string& text,
     ui::TextInputType text_input_type) {
   Textfield* textfield = new Textfield();
   textfield->SetText(text);
   textfield->SetTextInputType(text_input_type);
   textfield->set_controller(this);
-  view_->RemoveAllChildViews(true);
+  view_->RemoveAllChildViews();
   view_->AddChildView(textfield);
   textfield->SetBoundsRect(bounds_);
 
@@ -738,11 +738,11 @@ void BridgedNativeWidgetTest::TestDeleteEnd(SEL sel) {
 
 void BridgedNativeWidgetTest::TestEditingCommands(NSArray* selectors) {
   struct {
-    base::string16 test_string;
+    std::u16string test_string;
     bool is_rtl;
   } test_cases[] = {
-      {base::WideToUTF16(L"ab c"), false},
-      {base::WideToUTF16(L"\x0634\x0632 \x064A"), true},
+      {u"ab c", false},
+      {u"\x0634\x0632 \x064A", true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -854,7 +854,7 @@ TEST_F(BridgedNativeWidgetTest, ViewSizeTracksWindow) {
 }
 
 TEST_F(BridgedNativeWidgetTest, GetInputMethodShouldNotReturnNull) {
-  EXPECT_TRUE(GetNSWindowHost()->GetInputMethod());
+  EXPECT_TRUE(native_widget_mac_->GetInputMethod());
 }
 
 // A simpler test harness for testing initialization flows.
@@ -862,6 +862,10 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
  public:
   BridgedNativeWidgetInitTest()
       : BridgedNativeWidgetTestBase(SkipInitialization()) {}
+
+  BridgedNativeWidgetInitTest(const BridgedNativeWidgetInitTest&) = delete;
+  BridgedNativeWidgetInitTest& operator=(const BridgedNativeWidgetInitTest&) =
+      delete;
 
   // Prepares a new |window_| and |widget_| for a call to PerformInit().
   void CreateNewWidgetToInit() {
@@ -879,9 +883,6 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
     init_params.shadow_type = shadow_type_;
     widget_->Init(std::move(init_params));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetInitTest);
 };
 
 // Test that NativeWidgetNSWindowBridge remains sane if Init() is never called.
@@ -898,7 +899,9 @@ TEST_F(BridgedNativeWidgetInitTest, InitNotCalled) {
 }
 
 // Tests the shadow type given in InitParams.
-TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
+// Disabled because shadows are disabled on the bots - see
+// https://crbug.com/899286.
+TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
   // Verify Widget::InitParam defaults and arguments added from SetUp().
   EXPECT_EQ(Widget::InitParams::TYPE_WINDOW_FRAMELESS, type_);
   EXPECT_EQ(Widget::InitParams::WindowOpacity::kOpaque, opacity_);
@@ -936,7 +939,7 @@ TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
 // Ensure a nil NSTextInputContext is returned when the ui::TextInputClient is
 // not editable, a password field, or unset.
 TEST_F(BridgedNativeWidgetTest, InputContext) {
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_FALSE([ns_view_ inputContext]);
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
@@ -1390,7 +1393,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange_Caret) {
   EXPECT_EQ_RANGE(caret_range, actual_range);
 
   // Set composition with caret before second character ('e').
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, &caret_range);
 
@@ -1440,7 +1443,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange) {
   InstallTextField("");
   ui::TextInputClient* client = [ns_view_ textInputClient];
 
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, nullptr);
 
@@ -1504,7 +1507,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulatePhoneticIme) {
       },
       &saw_vkey_return));
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
 
   g_fake_interpret_key_events = &handle_q_in_ime;
   [ns_view_ keyDown:q_in_ime];
@@ -1574,7 +1577,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1598,6 +1601,92 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
   EXPECT_EQ(base::SysNSStringToUTF16(@"mô"),
             textfield->GetText());    // No change.
   EXPECT_EQ(1, enter_view->count());  // Now we see the accelerator.
+}
+
+// Simulate 'a' and candidate selection keys. This should just insert "啊",
+// suppressing accelerators.
+TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
+  Textfield* textfield = InstallTextField("");
+  EXPECT_TRUE([ns_view_ textInputClient]);
+
+  EnterAcceleratorView* enter_view = new EnterAcceleratorView();
+  textfield->parent()->AddChildView(enter_view);
+
+  // Sequence of calls (and corresponding keyDown events) obtained via tracing
+  // with Pinyin IME and pressing 'a', Tab, PageDown, PageUp, Right, Down, Left,
+  // and finally Up on the keyboard.
+  // Note 0 is the actual keyCode for 'a', not a placeholder.
+  NSEvent* a_in_ime = UnicodeKeyDown(0, @"a");
+  InterpretKeyEventsCallback handle_a_in_ime = base::BindRepeating([](id view) {
+    // Pinyin does not change composition text while selecting candidate words.
+    [view setMarkedText:@"a"
+           selectedRange:NSMakeRange(1, 0)
+        replacementRange:NSMakeRange(NSNotFound, 0)];
+  });
+
+  InterpretKeyEventsCallback handle_tab_in_ime =
+      base::BindRepeating([](id view) {
+        [view setMarkedText:@"ā"
+               selectedRange:NSMakeRange(0, 1)
+            replacementRange:NSMakeRange(NSNotFound, 0)];
+      });
+
+  // Composition text will not change in candidate selection.
+  InterpretKeyEventsCallback handle_candidate_select_in_ime =
+      base::BindRepeating([](id view) {});
+
+  InterpretKeyEventsCallback handle_space_in_ime =
+      base::BindRepeating([](id view) {
+        // Space will confirm the composition.
+        [view insertText:@"啊" replacementRange:NSMakeRange(NSNotFound, 0)];
+      });
+
+  InterpretKeyEventsCallback handle_enter_in_ime =
+      base::BindRepeating([](id view) {
+        // Space after Space will generate -insertNewLine:.
+        [view doCommandBySelector:@selector(insertNewLine:)];
+      });
+
+  EXPECT_EQ(u"", textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
+  g_fake_interpret_key_events = &handle_a_in_ime;
+  [ns_view_ keyDown:a_in_ime];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"a"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  g_fake_interpret_key_events = &handle_tab_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_RETURN)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"ā"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());  // Not seen as an accelerator.
+
+  // Pinyin changes candidate word on this sequence of keys without changing the
+  // composition text. At the end of this sequence, the word "啊" should be
+  // selected.
+  const ui::KeyboardCode key_seqence[] = {ui::VKEY_NEXT,  ui::VKEY_PRIOR,
+                                          ui::VKEY_RIGHT, ui::VKEY_DOWN,
+                                          ui::VKEY_LEFT,  ui::VKEY_UP};
+
+  g_fake_interpret_key_events = &handle_candidate_select_in_ime;
+  for (auto key : key_seqence) {
+    [ns_view_ keyDown:VkeyKeyDown(key)];
+    EXPECT_EQ(base::SysNSStringToUTF16(@"ā"),
+              textfield->GetText());  // No change.
+    EXPECT_EQ(0, enter_view->count());
+  }
+
+  // Space to confirm composition
+  g_fake_interpret_key_events = &handle_space_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_SPACE)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"啊"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  // The next Enter should be processed as accelerator.
+  g_fake_interpret_key_events = &handle_enter_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_RETURN)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"啊"), textfield->GetText());
+  EXPECT_EQ(1, enter_view->count());
 }
 
 // Simulate 'a', Enter in Hiragana. This should just insert "あ", suppressing
@@ -1628,7 +1717,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
   InterpretKeyEventsCallback handle_second_return_in_ime = base::BindRepeating(
       [](id view) { [view doCommandBySelector:@selector(insertNewLine:)]; });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1695,7 +1784,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);

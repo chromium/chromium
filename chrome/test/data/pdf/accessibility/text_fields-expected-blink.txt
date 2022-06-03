@@ -1,0 +1,21 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Test Form<newline>' restriction=readOnly
+++++++++inlineTextBox name='Test Form<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Read Only:<newline>' restriction=readOnly
+++++++++inlineTextBox name='Read Only:<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Sample Text<newline>' restriction=readOnly
+++++++++inlineTextBox name='Sample Text<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='*required field<newline>' restriction=readOnly
+++++++++inlineTextBox name='*required field<newline>' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Password:' restriction=readOnly
+++++++++inlineTextBox name='Password:' restriction=readOnly
+++++++textField name='Text Box' value='Text'
+++++++textField name='ReadOnly' value='Elephant' restriction=readOnly
+++++++textField required name='Required' value='Required Field'
+++++++textField protected name='Password'

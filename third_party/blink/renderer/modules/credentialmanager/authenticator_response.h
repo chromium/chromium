@@ -21,7 +21,7 @@ class MODULES_EXPORT AuthenticatorResponse : public ScriptWrappable {
 
   DOMArrayBuffer* clientDataJSON() const { return client_data_json_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   const Member<DOMArrayBuffer> client_data_json_;

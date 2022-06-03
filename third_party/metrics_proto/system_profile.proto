@@ -5,17 +5,19 @@
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
 
 option java_outer_classname = "SystemProfileProtos";
-option java_package = "org.chromium.components.metrics";
 
 package metrics;
 
 import "extension_install.proto";
 
 // Stores information about the user's brower and system configuration.
-// The system configuration fields are recorded once per client session.
-// Next tag: 31
+// Almost all the fields should be populated on every upload. (The only
+// exception is some fields in the stability section that are only uploaded
+// once per browsing session, usually shortly after startup.)
+// Next tag: 41
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -44,6 +46,13 @@ message SystemProfileProto {
   // specific.
   optional string app_version = 2;
 
+  // The application can create logs about previous versions. In particular the
+  // initial stability log refers to the previous run, which can be an older
+  // version. This field is set by the client when the log being written has an
+  // app_version that's different than the version of the app writing the log.
+  // Note that the version uploading the log may also be different.
+  optional string log_written_by_app_version = 40;
+
   // The brand code or distribution tag assigned to a partner, if available.
   // Brand codes are only available on Windows.  Not every Windows install
   // though will have a brand code.
@@ -58,6 +67,10 @@ message SystemProfileProto {
     CHANNEL_STABLE = 4;
   }
   optional Channel channel = 10;
+
+  // True for a client following updates on the extended stable channel;
+  // see go/chrome-extended-dd.
+  optional bool is_extended_stable_channel = 36 [default = false];
 
   // True if Chrome build is instrumented (e.g. built with ASAN instrumentation
   // or with DCHECKs enabled).
@@ -74,21 +87,81 @@ message SystemProfileProto {
   // For privacy, this is rounded to the nearest hour.
   optional int64 install_date = 16;
 
+  // A message about the cloned install detection that helps improve data
+  // quality by identifying potential VMs and bots. This message will be
+  // set in every record after the client has ever been reset due to cloned
+  // install detection. However, the `cloned_from_client_id`
+  // field will only be set in the resetting session because this is not
+  // persisted in the local prefs.
+  // Next tag: 5
+  message ClonedInstallInfo {
+    // The latest timestamp we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 last_timestamp = 1;
+
+    // The client_id that this client is cloned from. This field is tied to the
+    // cloned install detector only; any other way of resetting client_id
+    // doesn't touch this field. This field is only reported in the
+    // resetting session.
+    optional fixed64 cloned_from_client_id = 2;
+
+    // The first timestamp when we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 first_timestamp = 3;
+
+    // The number of times this client has been reset due to cloned install.
+    // Increment by one per reset happens.
+    optional int32 count = 4;
+  }
+  optional ClonedInstallInfo cloned_install_info = 39;
+
+  // The non-identifying low entropy source value. This value seeds the
+  // pseudorandom generator which picks experimental groups.
+  optional int32 low_entropy_source = 31;
+
+  // The old low entropy value. This value is thought to be biased in the wild,
+  // and is no longer used for experiments requiring low entropy. Clients which
+  // already have an "old" value continue incorporating it into the high entropy
+  // source, to avoid changing those group assignments. New clients only have
+  // the new source.
+  optional int32 old_low_entropy_source = 32;
+
+  // A pseudo low entropy value. The actual low_entropy_source value is used for
+  // assignment to experiment arms, and this use may cause drift over time (for
+  // example, if a bad experiment arm drives away some users permanently.) This
+  // pseudo low entropy value is generated identically to low_entropy_source,
+  // but it is generated with a different randomization seed and is not used for
+  // experiment randomization. Consequently, it can be used in statistical
+  // validation to answer the question of how our data would be distributed if
+  // we didn't have to worry about low entropy source drift.
+  optional int32 pseudo_low_entropy_source = 37;
+
   // The user's selected application locale, i.e. the user interface language.
   // The locale includes a language code and, possibly, also a country code,
   // e.g. "en-US".
   optional string application_locale = 4;
 
+  // Hashes of command line keys used in the browser session when the MetricsLog
+  // is created. This takes into account the command line switches that were
+  // used when launching the session, as well as any modifications made to them,
+  // for example via CommandLine::AppendSwitch and CommandLine::RemoveSwitch.
+  // Values are the lower 32-bit of SHA1 hash in little-endian.
+  repeated fixed32 command_line_key_hash = 38 [packed = true];
+
   // Information on the user's operating system.
-  // Next tag: 8
+  // Next tag: 9
   message OS {
     // The user's operating system. This should be one of:
-    // - Android
-    // - Windows NT
-    // - Linux (includes ChromeOS)
-    // - iOS (iOS versions >= 9)
-    // - iPhone OS (iOS versions <= 8)
-    // - Mac OS X
+    // - 'Android'
+    // - 'Windows NT'
+    // - 'CrOS' (as of 07/2020)
+    // - 'Lacros'  (the Lacros browser runs on Chrome OS, but reports a special
+    //              OS name to differentiate itself from the built-in ash
+    //              browser + window manager binary.)
+    // - 'Linux' (includes ChromeOS prior to 07/2020)
+    // - 'iOS' (iOS versions >= 9)
+    // - 'iPhone OS' (iOS versions <= 8)
+    // - 'Mac OS X'
     optional string name = 1;
 
     // The version of the OS.  The meaning of this field is OS-dependent.
@@ -126,16 +199,44 @@ message SystemProfileProto {
     // histogram to determine if ARC is enabled for current report.
     // Logged on ChromeOS only.
     optional Arc arc = 7;
+
+    // Data related to system-level dark mode configuration. This is currently
+    // only uploaded on Android. "*_APP" variants are included to reflect when
+    // the user overrides the system configuration within the browser
+    enum DarkModeState {
+      UNKNOWN = 0;
+
+      // Both the system and the browser are in dark mode.
+      DARK_MODE_SYSTEM = 1;
+
+      // The browser is in dark mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      DARK_MODE_APP = 2;
+
+      // Both the system and the browser are in light mode.
+      LIGHT_MODE_SYSTEM = 3;
+
+      // The browser is in light mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      LIGHT_MODE_APP = 4;
+    }
+    optional DarkModeState dark_mode_state = 8 [default = UNKNOWN];
   }
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 20
+  // Next tag: 22
   message Hardware {
-    // CPU architecture. Taken from uname -m and modified in Chromium logic.
+    // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
     // Not recorded on iOS.
     optional string cpu_architecture = 1;
+
+    // Browser process CPU architecture. Will be different from
+    // `cpu_architecture` in the case where Chromium runs non-natively (e.g.
+    // macOS Rosetta or Arm Windows). One of four values: x86, x86_64, ARM,
+    // ARM_64. Added in M90.
+    optional string app_cpu_architecture = 21;
 
     // The amount of RAM present on the system, in megabytes.
     optional int64 system_ram_mb = 2;
@@ -184,21 +285,9 @@ message SystemProfileProto {
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
 
-    // Device form factors.
-    enum FormFactor {
-      FORM_FACTOR_UNKNOWN = 0;
-      FORM_FACTOR_DESKTOP = 1;
-      FORM_FACTOR_PHONE = 2;
-      FORM_FACTOR_TABLET = 3;
-      FORM_FACTOR_KIOSK = 4;
-    }
-
-    // The device form factor.
-    optional FormFactor form_factor = 19;
-
     // Information on the CPU obtained by CPUID.
     message CPU {
-      // A 12 character string naming the vendor, e.g. "GeniuneIntel".
+      // A 12 character string naming the vendor, e.g. "GenuineIntel".
       optional string vendor_name = 1;
 
       // The signature reported by CPUID (from EAX).
@@ -224,9 +313,6 @@ message SystemProfileProto {
       // The driver version on the GPU.
       optional string driver_version = 3;
 
-      // The driver date on the GPU.
-      optional string driver_date = 4;
-
       // The GL_VENDOR string. An example of a gl_vendor string is
       // "Imagination Technologies". "" if we are not using OpenGL.
       optional string gl_vendor = 6;
@@ -237,152 +323,61 @@ message SystemProfileProto {
     }
     optional Graphics gpu = 8;
 
-    // Information about Bluetooth devices paired with the system.
-    message Bluetooth {
-      // Whether Bluetooth is present on this system.
-      optional bool is_present = 1;
-
-      // Whether Bluetooth is enabled on this system.
-      optional bool is_enabled = 2;
-
-      // Describes a paired device.
-      message PairedDevice {
-        // Assigned class of the device. This is a bitfield according to the
-        // Bluetooth specification available at the following URL:
-        // https://www.bluetooth.org/en-us/specification/assigned-numbers-overview/baseband
-        optional uint32 bluetooth_class = 1;
-
-        // Decoded device type.
-        enum Type {
-          DEVICE_UNKNOWN = 0;
-          DEVICE_COMPUTER = 1;
-          DEVICE_PHONE = 2;
-          DEVICE_MODEM = 3;
-          DEVICE_AUDIO = 4;
-          DEVICE_CAR_AUDIO = 5;
-          DEVICE_VIDEO = 6;
-          DEVICE_PERIPHERAL = 7;
-          DEVICE_JOYSTICK = 8;
-          DEVICE_GAMEPAD = 9;
-          DEVICE_KEYBOARD = 10;
-          DEVICE_MOUSE = 11;
-          DEVICE_TABLET = 12;
-          DEVICE_KEYBOARD_MOUSE_COMBO = 13;
-        }
-        optional Type type = 2;
-
-        // Vendor prefix of the Bluetooth address, these are OUI registered by
-        // the IEEE and are encoded with the first byte in bits 16-23, the
-        // second byte in bits 8-15 and the third byte in bits 0-7.
-        //
-        // ie. Google's OUI (00:1A:11) is encoded as 0x00001A11
-        optional uint32 vendor_prefix = 4;
-
-        // The Vendor ID of a device, returned in vendor_id below, can be
-        // either allocated by the Bluetooth SIG or USB IF, providing two
-        // completely overlapping namespaces for identifiers.
-        //
-        // This field should be read along with vendor_id to correctly
-        // identify the vendor. For example Google is identified by either
-        // vendor_id_source = VENDOR_ID_BLUETOOTH, vendor_id = 0x00E0 or
-        // vendor_id_source = VENDOR_ID_USB, vendor_id = 0x18D1.
-        //
-        // If the device does not support the Device ID specification the
-        // unknown value will be set.
-        enum VendorIDSource {
-          VENDOR_ID_UNKNOWN = 0;
-          VENDOR_ID_BLUETOOTH = 1;
-          VENDOR_ID_USB = 2;
-        }
-        optional VendorIDSource vendor_id_source = 8;
-
-        // Vendor ID of the device, where available.
-        optional uint32 vendor_id = 5;
-
-        // Product ID of the device, where available.
-        optional uint32 product_id = 6;
-
-        // Device ID of the device, generally the release or version number in
-        // BCD format, where available.
-        optional uint32 device_id = 7;
-      }
-      repeated PairedDevice paired_device = 3;
-    }
-    optional Bluetooth bluetooth = 11;
-
-    // Information about connected USB devices on Chrome OS systems.
-    message USB {
-      // The number of USB buses on the system.
-      optional uint32 bus_count = 1;
-
-      // Describes an attached USB device.
-      message USBDevice {
-        // Vendor ID (assigned by USB-IF).
-        optional fixed32 vendor_id = 1;
-
-        // Product ID (assigned by manufacturer).
-        optional fixed32 product_id = 2;
-
-        // Base Class as defined by USB-IF.
-        optional uint32 device_class = 3;
-
-        // SubClass as defined by USB-IF.
-        optional uint32 device_subclass = 4;
-
-        // The device release number with the decimal shifted out. The bcdDevice
-        // field from which this value originates is a 2-byte BCD in the range
-        // [00.00 - 99.99]. This value is multiplied by 100 to remove the
-        // decimal (device_release_number = bcdDevice * 100).
-        optional uint32 device_release_number = 5;
-
-        // A subset of information from the interface descriptors.
-        message InterfaceDescriptor {
-          // Base Class as defined by USB-IF.
-          optional uint32 interface_class = 1;
-
-          // SubClass as defined by USB-IF.
-          optional uint32 interface_subclass = 2;
-
-          // The configuration value for the configuration that holds this
-          // interface. Typically, all interfaces will belong to the same
-          // configuration.
-          optional uint32 configuration_value = 3;
-        }
-        repeated InterfaceDescriptor interface_descriptors = 6;
-
-        // The number of hubs above this device, including the root hub.
-        optional uint32 hops_from_root = 7;
-
-        // The vendor ID of the parent hub, if present.
-        optional fixed32 parent_vendor_id = 8;
-
-        // The product ID of the parent hub, if present.
-        optional fixed32 parent_product_id = 9;
-
-        // If this device is a hub, the number of ports on this hub.
-        optional uint32 port_count = 10;
-      }
-      repeated USBDevice usb_devices = 2;
-    }
-    optional USB usb = 30;
-
     // Whether the internal display produces touch events. Omitted if unknown.
     // Logged on ChromeOS only.
     optional bool internal_display_supports_touch = 14;
 
-    // Vendor ids and product ids of external touchscreens.
-    // Deprecated as of 8/11/2017.
-    message DeprecatedTouchScreen {
-      // Touch screen vendor id.
+    // Internal storage device information on ChromeOS.
+    // TODO(dlunev): Expand comment about which milestone this
+    // started to be logged on once the client code is submitted.
+    // Next tag: 9
+    message InternalStorageDevice {
+      // Id of the storage device manufcaturer.
+      // Can be vendor_id(32bit), oemid(16bit) etc. depending on the device
+      // type.
       optional uint32 vendor_id = 1;
-      // Touch screen product id.
-      optional uint32 product_id = 2;
+
+      // Id of the storage device product.
+      // Can be product_id(32bit), PNM(48bit) etc. depending on the device type.
+      optional uint64 product_id = 2;
+
+      // Revision of the storage device product.
+      // Can be PCIe rev(8bit), PRV(8bit) etc. depending on the device type.
+      optional uint32 revision = 3;
+
+      // Storage Device model. Comes from /sys/block/<device>/device/model.
+      optional string model = 4;
+
+      // Storage Device capacity in MB.
+      optional uint32 size_mb = 5;
+
+      // 8 byte FW revision of a storage device. Usually a string, but may
+      // contain non-printable characters.
+      optional uint64 firmware_version = 6;
+
+      // Type of the storage device interface.
+      // TYPE_UNKNOWN signifies an error on population side.
+      enum Type {
+        TYPE_UNKNOWN = 0;
+        TYPE_EMMC = 1;
+        TYPE_NVME = 2;
+        TYPE_UFS = 3;
+        TYPE_SD_EXPRESS_INTERNAL = 4;
+      }
+      optional Type type = 7;
+
+      // Purpose defines how the OS uses the device.
+      // PURPOSE_UNKNOWN signifies an error on population side.
+      enum Purpose {
+        PURPOSE_UNKNOWN = 0;
+        PURPOSE_BOOT = 1;
+        PURPOSE_SWAP = 2;
+        PURPOSE_BOOT_SWAP = 3;
+      }
+      optional Purpose purpose = 8;
     }
-    // Lists vendor and product ids of external touchscreens.
-    // Logged on ChromeOS only.
-    // Deprecated as of 8/11/2017.
-    repeated DeprecatedTouchScreen deprecated_external_touchscreen = 15
-        [deprecated = true];
+    // List of internal storage devices on a Chrome OS device.
+    repeated InternalStorageDevice internal_storage_devices = 20;
 
     // Drive messages are currently logged on Windows 7+, iOS, and Android.
     message Drive {
@@ -420,6 +415,7 @@ message SystemProfileProto {
       // to be used in logs processing as a more convenient way to manage the
       // ambiguous case when breaking down stats by connection_type.
       CONNECTION_AMBIGUOUS = 8;
+      CONNECTION_5G = 9;
     }
     // The connection type according to NetworkChangeNotifier.
     optional ConnectionType connection_type = 2;
@@ -437,55 +433,12 @@ message SystemProfileProto {
       WIFI_PHY_LAYER_PROTOCOL_G = 4;
       WIFI_PHY_LAYER_PROTOCOL_N = 5;
       WIFI_PHY_LAYER_PROTOCOL_UNKNOWN = 6;
+      WIFI_PHY_LAYER_PROTOCOL_AC = 7;
+      WIFI_PHY_LAYER_PROTOCOL_AD = 8;
+      WIFI_PHY_LAYER_PROTOCOL_AX = 9;
     }
     // The physical layer mode of the associated wifi access point, if any.
     optional WifiPHYLayerProtocol wifi_phy_layer_protocol = 4;
-
-    // Describe wifi access point information.
-    message WifiAccessPoint {
-      // Vendor prefix of the access point's BSSID. These are OUIs
-      // (Organizationally Unique Identifiers) registered by
-      // the IEEE and are encoded with the first byte in bits 16-23, the
-      // second byte in bits 8-15 and the third byte in bits 0-7.
-      optional uint32 vendor_prefix = 1;
-
-      // Access point security mode definitions.
-      enum SecurityMode {
-        SECURITY_UNKNOWN = 0;
-        SECURITY_WPA = 1;
-        SECURITY_WEP = 2;
-        SECURITY_RSN = 3;
-        SECURITY_802_1X = 4;
-        SECURITY_PSK = 5;
-        SECURITY_NONE = 6;
-      }
-      // The security mode of the access point.
-      optional SecurityMode security_mode = 2;
-
-      // Vendor specific information.
-      message VendorInformation {
-        // The model number, for example "0".
-        optional string model_number = 1;
-
-        // The model name (sometimes the same as the model_number),
-        // for example "WZR-HP-AG300H".
-        optional string model_name = 2;
-
-        // The device name (sometimes the same as the model_number),
-        // for example "Dummynet".
-        optional string device_name = 3;
-
-        // The list of vendor-specific OUIs (Organizationally Unique
-        // Identifiers). These are provided by the vendor through WPS
-        // (Wireless Provisioning Service) information elements, which
-        // identifies the content of the element.
-        repeated uint32 element_identifier = 4;
-      }
-      // The wireless access point vendor information.
-      optional VendorInformation vendor_info = 3;
-    }
-    // Information of the wireless access point that device is connected to.
-    optional WifiAccessPoint access_point_info = 5;
 
     // Derived from net::NetworkQualityEstimator::EffectiveConnectionType
     // translated through NetworkMetricsProvider::GetConnectionType.
@@ -500,16 +453,6 @@ message SystemProfileProto {
       EFFECTIVE_CONNECTION_TYPE_3G = 5;
       EFFECTIVE_CONNECTION_TYPE_4G = 6;
     }
-
-    // Deprecated: The connection type according to
-    // net::NetworkQualityEstimator. EffectiveConnectionType is the connection
-    // type whose typical performance is most similar to the measured
-    // performance of the network in use. In many cases, the "effective"
-    // connection type and the actual type of connection in use are the same,
-    // but often a network connection performs significantly differently,
-    // usually worse, from its expected capabilities.
-    optional EffectiveConnectionType deprecated_effective_connection_type = 6
-        [deprecated = true];
 
     // The minimum and maximum values of the effective connection type enum
     // during the lifetime of the log according to net::NetworkQualityEstimator.
@@ -650,11 +593,12 @@ message SystemProfileProto {
     // client session.
     //
 
-    // The number of times the program was launched.
-    // This will typically be equal to 1.  However, it is possible that Chrome
-    // was unable to upload stability metrics for previous launches (e.g. due to
-    // crashing early during startup), and hence this value might be greater
-    // than 1.
+    // The number of times the program was launched since the last time metrics
+    // was uploaded. For the initial metrics upload (right after startup), this
+    // will often be equal to 1.  However, it is possible that Chrome was unable
+    // to upload stability metrics for previous launches (e.g. due to crashing
+    // early during startup), making this value greater than 1.  For subsequent
+    // metrics uploads, this value will be 0.
     optional int32 launch_count = 15;
     // The number of times that it didn't exit cleanly (which we assume to be
     // mostly crashes). On Android M71+ this does not include times when the Gms
@@ -665,8 +609,6 @@ message SystemProfileProto {
     // |crash_count| in which we exclude unclean exits that are likely caused by
     // GMS Core updates.
     optional int32 crash_count_due_to_gms_core_update = 30;
-    // Historical, no longer recorded since 2018-09.
-    optional int32 crash_count_without_gms_core_update = 28 [deprecated = true];
 
     // The number of times the program began, but did not complete, the shutdown
     // process.  (For example, this may occur when Windows is shutting down, and
@@ -739,6 +681,15 @@ message SystemProfileProto {
   // Seed version from variations_seed.proto used to instantiate FieldTrials
   // for this session.
   optional string variations_seed_version = 28;
+
+  // Whether the client_id in the log matches the client_id we used to assign
+  // field trials.
+  optional bool client_id_was_used_for_trial_assignment = 33;
+
+  // The unhashed client_id for this report. This is a uuid in its canonical
+  // textual represetnation in the form 8-4-4-4-12 for a total of 36 characters.
+  // Used to simulate field trial assignments for the client.
+  optional string client_uuid = 34;
 
   // Information about the A/V output device(s) (typically just a TV).
   // However, a configuration may have one or more intermediate A/V devices
@@ -928,7 +879,8 @@ message SystemProfileProto {
   // Information about the current wireless access point. Collected directly
   // from the wireless access point via standard apis if the device is
   // connected to the Internet wirelessly. Introduced for Chrome on TV devices
-  // but also can be collected by ChromeOS, Android or other clients.
+  // but also can be collected by cast devices running Chrome OS and Android.
+  // Not logged by Chrome browser platforms.
   message ExternalAccessPoint {
     // The manufacturer name, for example "ASUSTeK Computer Inc.".
     optional string manufacturer = 1;
@@ -1071,6 +1023,9 @@ message SystemProfileProto {
     DEMO_MODE_RESOURCES = 24;
     ON_DEVICE_HEAD_SUGGEST = 25;
     CROS_SMART_DIM = 26;
+    ZXCVBN_DATA = 27;
+    AUTOFILL_REGEX_CONSTANTS = 28;
+    WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
   }
 
   // Information about what Chrome components are registered and at which
@@ -1101,6 +1056,22 @@ message SystemProfileProto {
   // The Chrome package name on Android, if it's different from
   // "com.android.chrome".
   optional string app_package_name = 26;
+
+  // The package which installed Chrome, as reported by
+  // PackageManager.getInstallerPackageName().
+  enum InstallerPackage {
+    // This field was not set.
+    INSTALLER_PACKAGE_UNKNOWN = 0;
+    // The installer package name returned by Android was empty.
+    INSTALLER_PACKAGE_NONE = 1;
+    // 'com.android.vending'.
+    INSTALLER_PACKAGE_GOOGLE_PLAY_STORE = 2;
+    // Any other non-empty value.
+    INSTALLER_PACKAGE_OTHER = 3;
+  }
+
+  // The package which installed Chrome, as reported by Android.
+  optional InstallerPackage installer_package = 35;
 
   // Data related to the "Better Together" multi-device features. This is only
   // uploaded on Chrome OS.

@@ -9,34 +9,33 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "printing/metafile.h"
-
-namespace gfx {
-class Rect;
-class Size;
-}
 
 namespace printing {
 
 // This class creates a graphics context that renders into a PDF data stream.
-class PRINTING_EXPORT PdfMetafileCg : public Metafile {
+class COMPONENT_EXPORT(PRINTING_METAFILE) PdfMetafileCg : public Metafile {
  public:
   PdfMetafileCg();
+  PdfMetafileCg(const PdfMetafileCg&) = delete;
+  PdfMetafileCg& operator=(const PdfMetafileCg&) = delete;
   ~PdfMetafileCg() override;
 
   // Metafile methods.
   bool Init() override;
-  bool InitFromData(const void* src_buffer, size_t src_buffer_size) override;
+  bool InitFromData(base::span<const uint8_t> data) override;
   void StartPage(const gfx::Size& page_size,
                  const gfx::Rect& content_area,
-                 const float& scale_factor) override;
+                 float scale_factor,
+                 mojom::PageOrientation page_orientation) override;
   bool FinishPage() override;
   bool FinishDocument() override;
 
   uint32_t GetDataSize() const override;
   bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
   unsigned int GetPageCount() const override;
@@ -47,11 +46,12 @@ class PRINTING_EXPORT PdfMetafileCg : public Metafile {
 
   bool RenderPage(unsigned int page_number,
                   printing::NativeDrawingContext context,
-                  const CGRect rect,
-                  const MacRenderPageParams& params) const override;
+                  const CGRect& rect,
+                  bool autorotate,
+                  bool fit_to_page) const override;
 
  private:
-  // Returns a CGPDFDocumentRef version of |pdf_data_|.
+  // Returns a CGPDFDocumentRef version of `pdf_data_`.
   CGPDFDocumentRef GetPDFDocument() const;
 
   // Context for rendering to the pdf.
@@ -60,13 +60,11 @@ class PRINTING_EXPORT PdfMetafileCg : public Metafile {
   // PDF backing store.
   base::ScopedCFTypeRef<CFMutableDataRef> pdf_data_;
 
-  // Lazily-created CGPDFDocument representation of |pdf_data_|.
+  // Lazily-created CGPDFDocument representation of `pdf_data_`.
   mutable base::ScopedCFTypeRef<CGPDFDocumentRef> pdf_doc_;
 
   // Whether or not a page is currently open.
-  bool page_is_open_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfMetafileCg);
+  bool page_is_open_ = false;
 };
 
 }  // namespace printing

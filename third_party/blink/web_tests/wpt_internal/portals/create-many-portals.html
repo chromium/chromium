@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    setup (() => {
+      internals.setMaxNumberOfFramesToTen(true);
+    })
+    promise_test(async () => {
+      assert_implements("HTMLPortalElement" in self);
+      const beyondLimit = 11;
+      // We should not crash if we exceed the frame limit.
+      for (let i = 0; i < beyondLimit; ++i) {
+        let portal = document.createElement('portal');
+        portal.src = new URL("resources/simple-portal.html", location.href);
+        document.body.appendChild(portal);
+      }
+      // One extra element for <script>.
+      assert_equals(document.body.childElementCount, beyondLimit + 1);
+    }, "can create many portals");
+  </script>
+</body>

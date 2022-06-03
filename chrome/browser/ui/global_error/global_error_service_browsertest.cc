@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
 namespace {
@@ -24,6 +24,9 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
  public:
   BubbleViewError() : bubble_view_close_count_(0) { }
 
+  BubbleViewError(const BubbleViewError&) = delete;
+  BubbleViewError& operator=(const BubbleViewError&) = delete;
+
   int bubble_view_close_count() { return bubble_view_close_count_; }
 
   bool HasMenuItem() override { return false; }
@@ -31,23 +34,19 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
     ADD_FAILURE();
     return 0;
   }
-  base::string16 MenuItemLabel() override {
+  std::u16string MenuItemLabel() override {
     ADD_FAILURE();
-    return base::string16();
+    return std::u16string();
   }
   void ExecuteMenuItem(Browser* browser) override { ADD_FAILURE(); }
 
   bool HasBubbleView() override { return true; }
-  base::string16 GetBubbleViewTitle() override { return base::string16(); }
-  std::vector<base::string16> GetBubbleViewMessages() override {
-    return std::vector<base::string16>();
+  std::u16string GetBubbleViewTitle() override { return std::u16string(); }
+  std::vector<std::u16string> GetBubbleViewMessages() override {
+    return std::vector<std::u16string>();
   }
-  base::string16 GetBubbleViewAcceptButtonLabel() override {
-    return base::ASCIIToUTF16("OK");
-  }
-  base::string16 GetBubbleViewCancelButtonLabel() override {
-    return base::ASCIIToUTF16("Cancel");
-  }
+  std::u16string GetBubbleViewAcceptButtonLabel() override { return u"OK"; }
+  std::u16string GetBubbleViewCancelButtonLabel() override { return u"Cancel"; }
   void OnBubbleViewDidClose(Browser* browser) override {
     EXPECT_TRUE(browser);
     ++bubble_view_close_count_;
@@ -57,8 +56,6 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
 
  private:
   int bubble_view_close_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleViewError);
 };
 
 } // namespace

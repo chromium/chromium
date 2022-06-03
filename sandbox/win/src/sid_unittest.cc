@@ -179,4 +179,12 @@ TEST(SidTest, SubAuthorities) {
   ASSERT_TRUE(EqualSid(sid_admin, ATL::Sids::Admins()));
 }
 
+TEST(SidTest, RandomSid) {
+  Sid sid1 = Sid::GenerateRandomSid();
+  ASSERT_TRUE(sid1.IsValid());
+  Sid sid2 = Sid::GenerateRandomSid();
+  ASSERT_TRUE(sid2.IsValid());
+  ASSERT_FALSE(::EqualSid(sid1.GetPSID(), sid2.GetPSID()));
+}
+
 }  // namespace sandbox

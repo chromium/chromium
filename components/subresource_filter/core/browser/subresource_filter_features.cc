@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -38,6 +39,9 @@ class CommaSeparatedStrings {
                                        base::TRIM_WHITESPACE,
                                        base::SPLIT_WANT_NONEMPTY)) {}
 
+  CommaSeparatedStrings(const CommaSeparatedStrings&) = delete;
+  CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
+
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
     const auto predicate = [lowercase_key](base::StringPiece element) {
       return base::LowerCaseEqualsASCII(element, lowercase_key);
@@ -49,8 +53,6 @@ class CommaSeparatedStrings {
  private:
   const std::string backing_string_;
   const std::vector<base::StringPiece> pieces_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommaSeparatedStrings);
 };
 
 std::string TakeVariationParamOrReturnEmpty(
@@ -233,11 +235,14 @@ base::LazyInstance<scoped_refptr<ConfigurationList>>::Leaky
 const base::Feature kSafeBrowsingSubresourceFilter{
     "SubresourceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSafeBrowsingSubresourceFilterConsiderRedirects{
-    "SubresourceFilterConsiderRedirects", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kFilterAdsOnAbusiveSites{"FilterAdsOnAbusiveSites",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAdsInterventionsEnforced{
+    "AdsInterventionsEnforced", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<base::TimeDelta> kAdsInterventionDuration = {
+    &kAdsInterventionsEnforced, "kAdsInterventionDuration", base::Days(3)};
 
 // Legacy name `activation_state` is used in variation parameters.
 const char kActivationLevelParameterName[] = "activation_state";

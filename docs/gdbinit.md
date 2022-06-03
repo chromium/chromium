@@ -11,3 +11,8 @@ To use, add the following to your `~/.gdbinit`
 ```
 source /path/to/chromium/src/tools/gdb/gdbinit
 ```
+
+*** promo
+Notice that in components builds, the debug files will be loaded lazily. Because of this, the program needs to run at least once before breakpoints can be set. Alternatively, gdb will ask for confirmation as follows:
+> Make breakpoint pending on future shared library load? (y or [n])
+***

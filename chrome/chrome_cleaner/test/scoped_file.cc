@@ -4,14 +4,16 @@
 
 #include "chrome/chrome_cleaner/test/scoped_file.h"
 
+#include <string>
+
 #include "base/base_paths_win.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 
 // static
 std::unique_ptr<ScopedFile> ScopedFile::Create(const base::FilePath& dir,
-                                               const base::string16& file_name,
+                                               const std::wstring& file_name,
                                                const std::string& contents) {
   base::FilePath file_path = dir.Append(file_name);
   CHECK(base::PathExists(file_path.DirName()));
@@ -27,7 +29,7 @@ ScopedFile::ScopedFile(const base::FilePath& file_path)
 
 ScopedFile::~ScopedFile() {
   if (base::PathExists(file_path_))
-    PCHECK(base::DeleteFile(file_path_, false /*recursive*/));
+    PCHECK(base::DeleteFile(file_path_));
 }
 
 const base::FilePath& ScopedFile::file_path() {

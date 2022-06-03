@@ -16,6 +16,10 @@ namespace extensions {
 class CastExtensionsClient : public ExtensionsClient {
  public:
   CastExtensionsClient();
+
+  CastExtensionsClient(const CastExtensionsClient&) = delete;
+  CastExtensionsClient& operator=(const CastExtensionsClient&) = delete;
+
   ~CastExtensionsClient() override;
 
   // ExtensionsClient overrides:
@@ -27,8 +31,8 @@ class CastExtensionsClient : public ExtensionsClient {
   void FilterHostPermissions(const URLPatternSet& hosts,
                              URLPatternSet* new_hosts,
                              PermissionIDSet* permissions) const override;
-  void SetScriptingWhitelist(const ScriptingWhitelist& whitelist) override;
-  const ScriptingWhitelist& GetScriptingWhitelist() const override;
+  void SetScriptingAllowlist(const ScriptingAllowlist& allowlist) override;
+  const ScriptingAllowlist& GetScriptingAllowlist() const override;
   URLPatternSet GetPermittedChromeSchemeHosts(
       const Extension* extension,
       const APIPermissionSet& api_permissions) const override;
@@ -38,12 +42,10 @@ class CastExtensionsClient : public ExtensionsClient {
   bool IsBlacklistUpdateURL(const GURL& url) const override;
 
  private:
-  ScriptingWhitelist scripting_whitelist_;
+  ScriptingAllowlist scripting_allowlist_;
 
   const GURL webstore_base_url_;
   const GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsClient);
 };
 
 }  // namespace extensions

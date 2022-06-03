@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.material.appbar.AppBarLayout;
+
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
 /**
@@ -17,6 +25,14 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
  */
 public interface TasksSurface {
     /**
+     * Called to initialize this interface.
+     * It should be called before showing.
+     * It should not be called in the critical startup process since it will do expensive work.
+     * It might be called many times.
+     */
+    void initialize();
+
+    /**
      * Set the listener to get the {@link Layout#onTabSelecting} event from the Grid Tab Switcher.
      * @param listener The {@link TabSwitcher.OnTabSelectingListener} to use.
      */
@@ -25,12 +41,20 @@ public interface TasksSurface {
     /**
      * @return Controller implementation for overview observation and visibility changes.
      */
+    @Nullable
     TabSwitcher.Controller getController();
 
     /**
      * @return TabListDelegate implementation to access the tab grid.
      */
+    @Nullable
     TabSwitcher.TabListDelegate getTabListDelegate();
+
+    /**
+     * @return {@link Supplier} that provides dialog visibility.
+     */
+    @Nullable
+    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
      * Get the view container {@link ViewGroup} of the tasks surface body.
@@ -43,4 +67,51 @@ public interface TasksSurface {
      * @return The surface's container {@link View}.
      */
     View getView();
+
+    /**
+     * Get the view {@link View} of the top transparent placeholder on start surface.
+     */
+    View getTopToolbarPlaceholderView();
+
+    /**
+     * Called when the native initialization is completed. Anything to construct a TasksSurface but
+     * require native initialization should be constructed here.
+     */
+    void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub);
+
+    /**
+     * @param onOffsetChangedListener Registers listener for the offset changes of the header view.
+     */
+    void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * @param onOffsetChangedListener Unregisters listener for the offset changes of the header
+     *         view.
+     */
+    void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * Add the fake search box shrink animation.
+     */
+    void addFakeSearchBoxShrinkAnimation();
+
+    /**
+     * Remove the omnibox shrink animation.
+     */
+    void removeFakeSearchBoxShrinkAnimation();
+
+    /**
+     * Called when the Tasks surface is hidden.
+     */
+    void onHide();
+
+    @VisibleForTesting
+    /** Returns whether the cleanup of MV tiles has been done after hiding the Start surface. */
+    boolean isMVTilesCleanedUp();
+
+    @VisibleForTesting
+    /** Returns whether the MV tiles has been initialized. */
+    boolean isMVTilesInitialized();
 }

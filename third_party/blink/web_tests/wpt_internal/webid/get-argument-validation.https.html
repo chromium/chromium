@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Basic parameter validation for navigator.id.get()</title>
+<link rel="author" title="Majid Valipour" href="mailto:majidvp@chromium.org">
+<link rel="help" href="https://wicg.github.io/WebID">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  // provider
+  promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
+    const result = navigator.id.get({
+      client_id: '1',
+      nonce: '2',
+    });
+    return promise_rejects_js(t, TypeError, result);
+  }, "Reject when provider is missing" );
+
+  promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
+    const result = navigator.id.get({
+      provider: 'not_a_url',
+      client_id: '1',
+      nonce: '2',
+    });
+    return promise_rejects_dom(t, 'SyntaxError', result);
+  }, `Reject when provider is an invalid URL`);
+
+  // mode
+  promise_test(async t => {
+    assert_implements(navigator.id, 'missing navigator.id.');
+    const result = navigator.id.get({
+      provider: 'https://idp.test',
+      client_id: '1',
+      nonce: '2',
+      mode: 'invalid_mode'
+    });
+    return promise_rejects_js(t, TypeError, result);
+  }, "Reject when mode is invalid");
+</script>

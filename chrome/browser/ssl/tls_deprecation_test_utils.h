@@ -14,17 +14,8 @@ class WebContents;
 
 class GURL;
 
-const char kLegacyTLSDefaultURL[] = "https://example.test";
-const char kLegacyTLSControlURL[] = "https://control.test";
-// SHA-256 hash of kMockNonsecureHostname for use in setting a control site in
-// the LegacyTLSExperimentConfig for Legacy TLS tests. Generated with
-// `echo -n "control.test" | openssl sha256`.
-const char kLegacyTlsControlUrlHash[] =
-    "f12b47771bb3c2bcc85a5347d195523013ec5a23b4c761b5d6aacf04bafc5e23";
-
-void InitializeEmptyLegacyTLSConfig();
-
-void InitializeLegacyTLSConfigWithControl();
+const char kLegacyTLSHost[] = "example-nonsecure.test";
+const char kLegacyTLSURL[] = "https://example-nonsecure.test";
 
 // Creates and starts a simulated navigation using the specified SSL protocol
 // version (e.g., net::SSL_CONNECTION_VERSION_TLS1_2).

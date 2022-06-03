@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -24,18 +23,6 @@ class FormStructure;
 
 // WebView extension of AutofillClientIOSBridge.
 @protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
-
-// Bridge for AutofillClient's method |ConfirmSaveAutofillProfile|.
-- (void)confirmSaveAutofillProfile:(const autofill::AutofillProfile&)profile
-                          callback:(base::OnceClosure)callback;
-
-// Bridge for AutofillClient's method |ConfirmSaveCreditCardLocally|.
-- (void)confirmSaveCreditCardLocally:(const autofill::CreditCard&)creditCard
-               saveCreditCardOptions:
-                   (autofill::AutofillClient::SaveCreditCardOptions)
-                       saveCreditCardOptions
-                            callback:(autofill::AutofillClient::
-                                          LocalSaveCardPromptCallback)callback;
 
 // Bridge for AutofillClient's method |ConfirmSaveCreditCardToCloud|.
 - (void)confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard

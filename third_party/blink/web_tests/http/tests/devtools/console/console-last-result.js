@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console exposes last evaluation result as $_.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
 
@@ -34,8 +34,8 @@
   function evaluateLastResultAndDump(callback) {
     ConsoleTestRunner.evaluateInConsole('$_', didEvaluate);
 
-    function didEvaluate() {
-      ConsoleTestRunner.dumpConsoleMessages();
+    async function didEvaluate() {
+      await ConsoleTestRunner.dumpConsoleMessages();
 
       if (callback)
         callback();

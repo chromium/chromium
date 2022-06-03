@@ -27,6 +27,13 @@
 // Cell subtitle.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
+// Sets the image view's tint color.
+- (void)setImageViewTintColor:(UIColor*)color;
+
+// If alignImageWithFirstBaseline is YES, activates the constraints to align the
+// image with the first line of text.
+- (void)alignImageWithFirstLineOfText:(BOOL)alignImageWithFirstBaseline;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_IMAGE_DETAIL_TEXT_CELL_H_

@@ -191,47 +191,47 @@ test(function() {
 
     // Throw errors
     INVALID_HEADER_NAMES.forEach(function(name) {
-        assert_throws({name: 'TypeError'},
-                      function() {
-                        var obj = {};
-                        obj[name] = 'a';
-                        var headers = new Headers(obj);
-                      },
-                      'new Headers with an invalid name (' + name +
-                      ') should throw');
-        assert_throws({name: 'TypeError'},
-                      function() { var headers = new Headers([[name, 'a']]); },
-                      'new Headers with an invalid name (' + name +
-                      ') should throw');
+        assert_throws_js(TypeError,
+                         function() {
+                           var obj = {};
+                           obj[name] = 'a';
+                           var headers = new Headers(obj);
+                         },
+                         'new Headers with an invalid name (' + name +
+                         ') should throw');
+        assert_throws_js(TypeError,
+                         function() { var headers = new Headers([[name, 'a']]); },
+                         'new Headers with an invalid name (' + name +
+                         ') should throw');
       });
 
 
     INVALID_HEADER_VALUES.forEach(function(value) {
-        assert_throws({name: 'TypeError'},
-                      function() { var headers = new Headers({'a': value}); },
-                      'new Headers with an invalid value should throw');
-        assert_throws({name: 'TypeError'},
-                      function() { var headers = new Headers([['a', value]]); },
-                      'new Headers with an invalid value should throw');
+        assert_throws_js(TypeError,
+                         function() { var headers = new Headers({'a': value}); },
+                         'new Headers with an invalid value should throw');
+        assert_throws_js(TypeError,
+                         function() { var headers = new Headers([['a', value]]); },
+                         'new Headers with an invalid value should throw');
       });
 
-    assert_throws({name: 'TypeError'},
-                  function() { var headers = new Headers([[]]); },
-                  'new Headers with a sequence with less than two strings ' +
-                  'should throw');
-    assert_throws({name: 'TypeError'},
-                  function() { var headers = new Headers([['a']]); },
-                  'new Headers with a sequence with less than two strings ' +
-                  'should throw');
-    assert_throws({name: 'TypeError'},
-                  function() { var headers = new Headers([['a', 'b'], []]); },
-                  'new Headers with a sequence with less than two strings ' +
-                  'should throw');
-    assert_throws({name: 'TypeError'},
-                  function() { var headers = new Headers([['a', 'b'],
-                                                          ['x', 'y', 'z']]); },
-                  'new Headers with a sequence with more than two strings ' +
-                  'should throw');
+    assert_throws_js(TypeError,
+                     function() { var headers = new Headers([[]]); },
+                     'new Headers with a sequence with less than two strings ' +
+                     'should throw');
+    assert_throws_js(TypeError,
+                     function() { var headers = new Headers([['a']]); },
+                     'new Headers with a sequence with less than two strings ' +
+                     'should throw');
+    assert_throws_js(TypeError,
+                     function() { var headers = new Headers([['a', 'b'], []]); },
+                     'new Headers with a sequence with less than two strings ' +
+                     'should throw');
+    assert_throws_js(TypeError,
+                     function() { var headers = new Headers([['a', 'b'],
+                                                             ['x', 'y', 'z']]); },
+                     'new Headers with a sequence with more than two strings ' +
+                     'should throw');
   }, 'Headers');
 
 test(function(t) {

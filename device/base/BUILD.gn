@@ -10,24 +10,17 @@ component("base") {
 
   sources = [
     "device_base_export.h",
-    "device_info_query_win.cc",
-    "device_info_query_win.h",
-    "device_monitor_win.cc",
-    "device_monitor_win.h",
     "features.cc",
     "features.h",
   ]
 
   defines = [ "DEVICE_BASE_IMPLEMENTATION" ]
 
-  deps = [
-    "//device/vr/buildflags",
-  ]
-
   public_deps = [
     "//base",
+    "//device/vr/buildflags",
   ]
-
+  deps = [ "//build:chromeos_buildflags" ]
   if (use_udev) {
     sources += [
       "device_monitor_linux.cc",
@@ -38,6 +31,12 @@ component("base") {
   }
 
   if (is_win) {
+    sources += [
+      "device_info_query_win.cc",
+      "device_info_query_win.h",
+      "device_monitor_win.cc",
+      "device_monitor_win.h",
+    ]
     libs = [ "setupapi.lib" ]
   }
 }

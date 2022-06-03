@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local" value="2019-02-14T13:02">
+<script>
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById("datetime-local");
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+
+    assert_equals(dateTimeElement.value, "2019-02-22T13:02", "Using arrow keys to navigate calendar part of control should update in-page control without pressing Enter key.");
+
+    // TODO crbug.com/1061145 Remove the focus() call and use the commented Tab
+    // navigations instead.
+    internals.pagePopupWindow.document.querySelectorAll(".time-column")[0].focus();
+    // eventSender.keyDown('Tab');
+    // eventSender.keyDown('Tab');
+
+    eventSender.keyDown('ArrowDown');
+    assert_equals(dateTimeElement.value, "2019-02-22T14:02", "Using arrow keys to navigate time part of control should update in-page control without pressing Enter key.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(dateTimeElement.value, "2019-02-14T13:02", "Escape key should restore control to initial value.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Second escape key should dismiss popup.");
+  });
+}, "DateTime-local picker: Navigating with arrow keys should update in-page control without Enter key");
+
+</script>
+</body>
+</html>

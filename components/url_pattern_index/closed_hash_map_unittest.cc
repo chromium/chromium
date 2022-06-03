@@ -15,31 +15,31 @@ namespace url_pattern_index {
 namespace {
 
 template <typename MapType>
-void ExpectHashMapIntegrity(const MapType& map, size_t min_capacity = 0) {
+void ExpectHashMapIntegrity(const MapType& map, uint32_t min_capacity = 0) {
   EXPECT_EQ(map.entries().size(), map.size());
   EXPECT_EQ(map.hash_table().size(), map.table_size());
   EXPECT_LE(map.size() * 2, map.table_size());
   EXPECT_LE(min_capacity * 2, map.table_size());
 
   std::vector<bool> entry_is_referenced(map.size());
-  for (size_t i = 0; i < map.table_size(); ++i) {
+  for (uint32_t i = 0; i < map.table_size(); ++i) {
     SCOPED_TRACE(testing::Message() << "Hash-table slot: " << i);
 
     const uint32_t entry_index = map.hash_table()[i];
-    if (static_cast<size_t>(entry_index) >= map.size())
+    if (static_cast<uint32_t>(entry_index) >= map.size())
       continue;
     EXPECT_FALSE(entry_is_referenced[entry_index]);
     entry_is_referenced[entry_index] = true;
   }
 
-  for (size_t i = 0; i < map.size(); ++i) {
+  for (uint32_t i = 0; i < map.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "Hash-table entry index: " << i);
     EXPECT_TRUE(entry_is_referenced[i]);
   }
 }
 
 template <typename MapType>
-void ExpectEmptyMap(const MapType& map, size_t min_capacity) {
+void ExpectEmptyMap(const MapType& map, uint32_t min_capacity) {
   ExpectHashMapIntegrity(map, min_capacity);
   EXPECT_EQ(0u, map.size());
 }
@@ -89,7 +89,7 @@ TEST(ClosedHashMapTest, InsertExistingAndGet) {
 }
 
 TEST(ClosedHashMapTest, InsertManyKeysWithCustomHasher) {
-  using CustomProber = SimpleQuadraticProber<uint64_t, Uint64Hasher>;
+  using CustomProber = SimpleQuadraticProber<uint64_t, Uint64ToUint32Hasher>;
 
   ClosedHashMap<uint64_t, std::string, CustomProber> hm;
   ExpectEmptyMap(hm, 0);
@@ -99,7 +99,7 @@ TEST(ClosedHashMapTest, InsertManyKeysWithCustomHasher) {
     entries.push_back(std::make_pair(key, std::to_string(key)));
   }
 
-  size_t expected_size = 0;
+  uint32_t expected_size = 0;
   for (const auto& entry : entries) {
     EXPECT_TRUE(hm.Insert(entry.first, entry.second));
     EXPECT_FALSE(hm.Insert(entry.first, "-1"));
@@ -121,7 +121,7 @@ TEST(ClosedHashMapTest, OperatorBrackets) {
   HashMap<int, int> hm;
 
   for (int i = 0; i < 5; ++i) {
-    const size_t expected_size = i ? 1 : 0;
+    const uint32_t expected_size = i ? 1 : 0;
     EXPECT_EQ(expected_size, hm.size());
 
     int expected_value = (i + 1) * 10;
@@ -143,7 +143,7 @@ TEST(ClosedHashMapTest, OperatorBrackets) {
 
 TEST(ClosedHashMapTest, ManualRehash) {
   HashMap<int, int> hm(3);
-  const size_t expected_table_size = hm.table_size();
+  const uint32_t expected_table_size = hm.table_size();
 
   static const int kKeys[] = {1, 5, 10};
   for (int key : kKeys) {

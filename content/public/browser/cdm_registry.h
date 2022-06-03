@@ -32,9 +32,6 @@ class CONTENT_EXPORT CdmRegistry {
   // reported and what is actually available, if the reported functionality
   // changes between versions. (http://crbug.com/599588)
   virtual void RegisterCdm(const CdmInfo& info) = 0;
-
-  // Returns the list of all registered CDMs and the associated data.
-  virtual const std::vector<CdmInfo>& GetAllRegisteredCdms() = 0;
 };
 
 }  // namespace content

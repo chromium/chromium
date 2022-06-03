@@ -1,0 +1,62 @@
+This is a testharness.js-based test.
+Found 58 tests; 55 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS alignment-baseline presentation attribute supported on an unknown SVG element
+PASS baseline-shift presentation attribute supported on an unknown SVG element
+PASS clip-path presentation attribute supported on an unknown SVG element
+PASS clip-rule presentation attribute supported on an unknown SVG element
+PASS color presentation attribute supported on an unknown SVG element
+PASS color-interpolation-filters presentation attribute supported on an unknown SVG element
+PASS color-interpolation presentation attribute supported on an unknown SVG element
+PASS cursor presentation attribute supported on an unknown SVG element
+PASS direction presentation attribute supported on an unknown SVG element
+PASS display presentation attribute supported on an unknown SVG element
+PASS dominant-baseline presentation attribute supported on an unknown SVG element
+PASS fill presentation attribute supported on an unknown SVG element
+PASS fill-opacity presentation attribute supported on an unknown SVG element
+PASS fill-rule presentation attribute supported on an unknown SVG element
+PASS filter presentation attribute supported on an unknown SVG element
+PASS flood-color presentation attribute supported on an unknown SVG element
+PASS flood-opacity presentation attribute supported on an unknown SVG element
+PASS font-family presentation attribute supported on an unknown SVG element
+PASS font-size presentation attribute supported on an unknown SVG element
+FAIL font-size-adjust presentation attribute supported on an unknown SVG element assert_true: Presentation attribute font-size-adjust="0.5" should be supported on unknown element expected true got false
+PASS font-stretch presentation attribute supported on an unknown SVG element
+PASS font-style presentation attribute supported on an unknown SVG element
+PASS font-variant presentation attribute supported on an unknown SVG element
+PASS font-weight presentation attribute supported on an unknown SVG element
+PASS image-rendering presentation attribute supported on an unknown SVG element
+PASS letter-spacing presentation attribute supported on an unknown SVG element
+PASS lighting-color presentation attribute supported on an unknown SVG element
+PASS marker-end presentation attribute supported on an unknown SVG element
+PASS marker-mid presentation attribute supported on an unknown SVG element
+PASS marker-start presentation attribute supported on an unknown SVG element
+PASS mask-type presentation attribute supported on an unknown SVG element
+PASS mask presentation attribute supported on an unknown SVG element
+PASS opacity presentation attribute supported on an unknown SVG element
+PASS overflow presentation attribute supported on an unknown SVG element
+PASS paint-order presentation attribute supported on an unknown SVG element
+PASS pointer-events presentation attribute supported on an unknown SVG element
+PASS shape-rendering presentation attribute supported on an unknown SVG element
+PASS stop-color presentation attribute supported on an unknown SVG element
+PASS stop-opacity presentation attribute supported on an unknown SVG element
+PASS stroke presentation attribute supported on an unknown SVG element
+PASS stroke-dasharray presentation attribute supported on an unknown SVG element
+PASS stroke-dashoffset presentation attribute supported on an unknown SVG element
+PASS stroke-linecap presentation attribute supported on an unknown SVG element
+PASS stroke-linejoin presentation attribute supported on an unknown SVG element
+PASS stroke-miterlimit presentation attribute supported on an unknown SVG element
+PASS stroke-opacity presentation attribute supported on an unknown SVG element
+PASS stroke-width presentation attribute supported on an unknown SVG element
+PASS text-anchor presentation attribute supported on an unknown SVG element
+PASS text-decoration presentation attribute supported on an unknown SVG element
+FAIL text-overflow presentation attribute supported on an unknown SVG element assert_true: Presentation attribute text-overflow="ellipsis" should be supported on unknown element expected true got false
+PASS text-rendering presentation attribute supported on an unknown SVG element
+PASS transform-origin presentation attribute supported on an unknown SVG element
+PASS unicode-bidi presentation attribute supported on an unknown SVG element
+PASS vector-effect presentation attribute supported on an unknown SVG element
+PASS visibility presentation attribute supported on an unknown SVG element
+FAIL white-space presentation attribute supported on an unknown SVG element assert_true: Presentation attribute white-space="pre" should be supported on unknown element expected true got false
+PASS word-spacing presentation attribute supported on an unknown SVG element
+PASS writing-mode presentation attribute supported on an unknown SVG element
+Harness: the test ran to completion.
+

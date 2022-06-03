@@ -5,7 +5,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/webplugininfo.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/test/test_extension_dir.h"
@@ -29,6 +30,7 @@ using content::PluginService;
 using content::WebContents;
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -131,7 +133,7 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
   }
 
   void CheckPluginsCreated(const GURL& url, PluginType expected_to_succeed) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     // Don't run tests if the NaCl plugin isn't loaded.
     if (!IsNaClPluginLoaded())
       return;
@@ -183,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_NonWebStoreExtension) {
 IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_ComponentExtension) {
   const Extension* extension = InstallExtension(INSTALL_TYPE_COMPONENT);
   ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->location(), Manifest::COMPONENT);
+  ASSERT_EQ(extension->location(), ManifestLocation::kComponent);
   CheckPluginsCreated(extension, PLUGIN_TYPE_ALL);
 }
 
@@ -192,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_ComponentExtension) {
 IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_UnpackedExtension) {
   const Extension* extension = InstallExtension(INSTALL_TYPE_UNPACKED);
   ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->location(), Manifest::UNPACKED);
+  ASSERT_EQ(extension->location(), ManifestLocation::kUnpacked);
   CheckPluginsCreated(extension, PLUGIN_TYPE_ALL);
 }
 
@@ -246,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
 
   // Navigate to a page with an iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Navigate the subframe to the extension's html file.
   content::WebContents* web_contents =
@@ -256,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
 
   // Sanity check - the test setup should cause main frame and subframe to be in
   // a different process.
-  content::RenderFrameHost* subframe = web_contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe = ChildFrameAt(web_contents, 0);
   EXPECT_NE(web_contents->GetMainFrame()->GetProcess(), subframe->GetProcess());
 
   // Insert a plugin element into the subframe.  Before the fix from
@@ -271,9 +273,11 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
       embed.addEventListener('error', function() {
           window.domAutomationController.send(true);
       });
-      document.body.appendChild(embed); )";
+      document.body.appendChild(embed);
+       )";
   bool done;
   EXPECT_TRUE(ExecuteScriptAndExtractBool(subframe, script, &done));
+  EXPECT_TRUE(done);
 
   // If we get here, then it means that the renderer didn't crash (the crash
   // would have prevented the "error" event from firing and so

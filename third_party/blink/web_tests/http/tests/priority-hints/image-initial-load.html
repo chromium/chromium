@@ -5,27 +5,27 @@
 <script>
 const priority_tests = [
   {
-    promise: internals.getResourcePriority(new URL('../resources/square.png', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/square.png', location), document),
     expected_priority: kHigh,
     description: 'high importance on <img> must translate to kHigh resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/square.png?1', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/square.png?1', location), document),
     expected_priority: kLow,
     description: 'low importance on <img> must translate to kLow resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/square.png?2', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/square.png?2', location), document),
     expected_priority: kLow,
     description: 'auto importance on <img> must translate to kLow resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/square.png?3', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/square.png?3', location), document),
     expected_priority: kLow,
     description: 'invalid importance on <img> must translate to kLow resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/square.png?3', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/square.png?4', location), document),
     expected_priority: kLow,
     description: 'missing importance on <img> must translate to kLow resource load priority'
   }
@@ -54,7 +54,7 @@ const priority_tests = [
   }, 'all images must be fetched by the preload scanner');
 
   // Setup the tests described by |priority_tests|.
-  for (test of priority_tests) {
+  for (const test of priority_tests) {
     promise_test(async () => {
       const priority = await test.promise;
       assert_equals(priority, test.expected_priority);

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_DEPENDENCY_DEADLINE_H_
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_DEPENDENCY_DEADLINE_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/viz/service/viz_service_export.h"
 
@@ -21,6 +21,11 @@ class FrameDeadline;
 class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
  public:
   explicit SurfaceDependencyDeadline(const base::TickClock* tick_clock);
+
+  SurfaceDependencyDeadline(const SurfaceDependencyDeadline&) = delete;
+  SurfaceDependencyDeadline& operator=(const SurfaceDependencyDeadline&) =
+      delete;
+
   ~SurfaceDependencyDeadline();
 
   // Sets up a deadline in wall time where
@@ -32,12 +37,12 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
 
   // If a deadline had been set, then cancel the deadline and return the
   // the duration of the event tracked by this object. If there was no
-  // deadline set, then return base::nullopt.
-  base::Optional<base::TimeDelta> Cancel();
+  // deadline set, then return absl::nullopt.
+  absl::optional<base::TimeDelta> Cancel();
 
   bool has_deadline() const { return deadline_.has_value(); }
 
-  base::Optional<base::TimeTicks> deadline_for_testing() const {
+  absl::optional<base::TimeTicks> deadline_for_testing() const {
     return deadline_;
   }
 
@@ -49,9 +54,7 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
  private:
   const base::TickClock* tick_clock_;
   base::TimeTicks start_time_;
-  base::Optional<base::TimeTicks> deadline_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceDependencyDeadline);
+  absl::optional<base::TimeTicks> deadline_;
 };
 
 }  // namespace viz

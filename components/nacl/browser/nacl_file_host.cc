@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/nacl/browser/bad_message.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
@@ -21,7 +21,7 @@
 #include "components/nacl/common/nacl_host_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "ipc/ipc_platform_file.h"
 
@@ -54,8 +54,7 @@ void DoRegisterOpenedNaClExecutableFile(
     base::FilePath file_path,
     IPC::Message* reply_msg,
     WriteFileInfoReply write_reply_message) {
-  // IO thread owns the NaClBrowser singleton.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   nacl::NaClBrowser* nacl_browser = nacl::NaClBrowser::GetInstance();
   uint64_t file_token_lo = 0;
@@ -98,12 +97,12 @@ void DoOpenPnaclFile(
   }
 
   // This function is running on the blocking pool, but the path needs to be
-  // registered in a structure owned by the IO thread.
+  // registered in a structure owned by the UI thread.
   // Not all PNaCl files are executable. Only register those that are
   // executable in the NaCl file_path cache.
   if (is_executable) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&DoRegisterOpenedNaClExecutableFile,
                        nacl_host_message_filter, std::move(file_to_open),
                        full_filepath, reply_msg,
@@ -145,9 +144,9 @@ void DoOpenNaClExecutableOnThreadPool(
     // reason to do that unnecessary registration.
     if (enable_validation_caching) {
       // This function is running on the blocking pool, but the path needs to be
-      // registered in a structure owned by the IO thread.
-      base::PostTask(
-          FROM_HERE, {BrowserThread::IO},
+      // registered in a structure owned by the UI thread.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(
               &DoRegisterOpenedNaClExecutableFile, nacl_host_message_filter,
               std::move(file), file_path, reply_msg,
@@ -176,9 +175,10 @@ void GetReadonlyPnaclFd(
     const std::string& filename,
     bool is_executable,
     IPC::Message* reply_msg) {
-  base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
-                 base::BindOnce(&DoOpenPnaclFile, nacl_host_message_filter,
-                                filename, is_executable, reply_msg));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DoOpenPnaclFile, nacl_host_message_filter, filename,
+                     is_executable, reply_msg));
 }
 
 // This function is security sensitive.  Be sure to check with a security
@@ -207,7 +207,7 @@ bool PnaclCanOpenFile(const std::string& filename,
       pnacl_dir.empty())
     return false;
 
-  // Prepend the prefix to restrict files to a whitelisted set.
+  // Prepend the prefix to restrict files to an allowlist set.
   base::FilePath full_path = pnacl_dir.AppendASCII(
       std::string(kExpectedFilePrefix) + filename);
   *file_to_open = full_path;
@@ -216,31 +216,31 @@ bool PnaclCanOpenFile(const std::string& filename,
 
 void OpenNaClExecutable(
     scoped_refptr<nacl::NaClHostMessageFilter> nacl_host_message_filter,
-    int render_view_id,
+    int render_frame_id,
     const GURL& file_url,
     bool enable_validation_caching,
     IPC::Message* reply_msg) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&OpenNaClExecutable, nacl_host_message_filter,
-                                  render_view_id, file_url,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&OpenNaClExecutable, nacl_host_message_filter,
+                                  render_frame_id, file_url,
                                   enable_validation_caching, reply_msg));
     return;
   }
 
-  // Make sure render_view_id is valid and that the URL is a part of the
-  // render view's site. Without these checks, apps could probe the extension
+  // Make sure render_frame_id is valid and that the URL is a part of the
+  // render frame's site. Without these checks, apps could probe the extension
   // directory or run NaCl code from other extensions.
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      nacl_host_message_filter->render_process_id(), render_view_id);
-  if (!rvh) {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      nacl_host_message_filter->render_process_id(), render_frame_id);
+  if (!rfh) {
     nacl::bad_message::ReceivedBadMessage(
         nacl_host_message_filter.get(),
         nacl::bad_message::NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID);
     delete reply_msg;
     return;
   }
-  content::SiteInstance* site_instance = rvh->GetSiteInstance();
+  content::SiteInstance* site_instance = rfh->GetSiteInstance();
   if (!site_instance->IsSameSiteWithURL(file_url)) {
     NotifyRendererOfError(nacl_host_message_filter.get(), reply_msg);
     return;
@@ -253,8 +253,8 @@ void OpenNaClExecutable(
   // The URL is part of the current app. Now query the extension system for the
   // file path and convert that to a file descriptor. This should be done on a
   // blocking pool thread.
-  base::PostTask(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoOpenNaClExecutableOnThreadPool,
                      nacl_host_message_filter, file_url,
                      enable_validation_caching, map_url_callback, reply_msg));

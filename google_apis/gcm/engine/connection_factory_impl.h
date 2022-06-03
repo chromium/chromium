@@ -39,6 +39,10 @@ class GCM_EXPORT ConnectionFactoryImpl
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  ConnectionFactoryImpl(const ConnectionFactoryImpl&) = delete;
+  ConnectionFactoryImpl& operator=(const ConnectionFactoryImpl&) = delete;
+
   ~ConnectionFactoryImpl() override;
 
   // ConnectionFactory implementation.
@@ -91,8 +95,8 @@ class GCM_EXPORT ConnectionFactoryImpl
 
   // Callback for Socket connection completion. This is public for testing.
   void OnConnectDone(int result,
-                     const base::Optional<net::IPEndPoint>& local_addr,
-                     const base::Optional<net::IPEndPoint>& peer_addr,
+                     const absl::optional<net::IPEndPoint>& local_addr,
+                     const absl::optional<net::IPEndPoint>& peer_addr,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -196,8 +200,6 @@ class GCM_EXPORT ConnectionFactoryImpl
   ConnectionListener* listener_;
 
   base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionFactoryImpl);
 };
 
 }  // namespace gcm

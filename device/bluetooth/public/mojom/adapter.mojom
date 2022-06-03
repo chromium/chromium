@@ -5,6 +5,7 @@
 module bluetooth.mojom;
 
 import "device/bluetooth/public/mojom/device.mojom";
+import "device/bluetooth/public/mojom/uuid.mojom";
 
 // Possible errors sent as a response by Adapter.ConnectToDevice on a Device
 // connection request.
@@ -21,9 +22,26 @@ enum ConnectResult {
   DEVICE_NO_LONGER_IN_RANGE,
 };
 
+// The results of a successful connection via ConnectToServiceInsecurely().
+struct ConnectToServiceResult {
+  pending_remote<Socket> socket;
+  handle<data_pipe_consumer> receive_stream;
+  handle<data_pipe_producer> send_stream;
+};
+
+// The results of a successful connection via ServerSocket::Accept().
+struct AcceptConnectionResult {
+  DeviceInfo device;
+  pending_remote<Socket> socket;
+  handle<data_pipe_consumer> receive_stream;
+  handle<data_pipe_producer> send_stream;
+};
+
 struct AdapterInfo {
+  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
   string address;
   string name;
+  string system_name;
   bool initialized;
   bool present;
   bool powered;
@@ -31,6 +49,26 @@ struct AdapterInfo {
   bool discovering;
 };
 
+// Represents an ongoing BLE advertisement. Releasing it will release the
+// underlying object and stop the advertisement, but callers should prefer to
+// let a call to Unregister() to finish first.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
+interface Advertisement {
+  // Use to gracefully stop advertising before destroying the message pipe. The
+  // reply callback can be used to synchronize an attempt to re-register an
+  // advertisement; attempting to register an advertisement without first
+  // releasing limited advertisement slots in the hardware may fail with a
+  // busy error.
+  [Sync]
+  Unregister() => ();
+};
+
+// Represents a request to discover nearby devices.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
 interface DiscoverySession {
   // Returns true if the session is active, false otherwise. If false, the
   // adapter might still be discovering as there might still be other active
@@ -38,6 +76,7 @@ interface DiscoverySession {
   // whether or not discovery should continue. In this case, a new
   // DiscoverySession should be started to make sure that device discovery
   // continues.
+  [Sync]
   IsActive() => (bool active);
 
   // Requests this discovery session instance to stop. If this instance is
@@ -48,13 +87,57 @@ interface DiscoverySession {
   // disconnecting the message pipe, so that they can respond to the result.
   // Returns true on success. Returns false if this session is inactive or an
   // error occurs while stopping the session.
+  [Sync]
   Stop() => (bool success);
 };
 
+// Represents an open connection to a remote device. Releasing it will destroy
+// the underlying connection, but if callers want to try again soon, they should
+// call Disconnect() first and wait for completion to ensure that the resource
+// has been completely released.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
+interface Socket {
+  // Use to gracefully close the underlying connection before destroying. The
+  // reply callback can be used to synchronize a reconnection attempt;
+  // attempting to reconnect to the same service on this device may fail with a
+  // busy error until the reply callback is invoked.
+  [Sync]
+  Disconnect() => ();
+};
+
+// Represents a pending connecting from a remote device. Releasing it will
+// stop listening for an incoming connection, but if callers want to start
+// listening again soon, they should call Disconnect() first and wait for
+// completion to ensure that the resource has been completely released.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
+interface ServerSocket {
+  // Accept the next incoming connection from a remote device. If something
+  // goes wrong, the returned |result| will be null.
+  [Sync]
+  Accept() => (AcceptConnectionResult? result);
+
+  // Use to gracefully close the underlying resource before destroying. The
+  // reply callback can be used to synchronize an attempt to re-initialize
+  // a server socket; attempting to listen on the same server socket on this
+  // device may fail with a busy error until the reply callback is invoked.
+  [Sync]
+  Disconnect() => ();
+};
+
+// Handles requests to either query Bluetooth adapter capabilities or state, or
+// find or connect to remote devices. Backed by //device/bluetooth.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
 interface Adapter {
   // Creates a GATT connection to the device with |address| and returns a
   // Device if the connection was succesful. The GATT connection is tied to the
   // the lifetime of the Device message pipe.
+  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
   ConnectToDevice(string address) =>
       (ConnectResult result, pending_remote<Device>? device);
 
@@ -64,17 +147,79 @@ interface Adapter {
   GetDevices() => (array<DeviceInfo> devices);
 
   // Gets basic information about the adapter.
+  [Sync]
   GetInfo() => (AdapterInfo info);
 
-  // Sets the client that listens for the adapter's events.
-  SetClient(pending_remote<AdapterClient> client);
+  // Adds an observer that listens for the adapter's events.
+  [Sync]
+  AddObserver(pending_remote<AdapterObserver> observer) => ();
+
+  // Requests the adapter to broadcast a BLE advertisement on |service_id| with
+  // the associated packet |service_data|. Returns null if advertisement is not
+  // registered successfully.
+  //
+  // When |use_scan_response| is true, the |service_data| is added to the scan
+  // response instead of the initial advertisement. A few assumptions are made:
+  //
+  // 1) The |service_id| provided is a valid 16-bit UUID in 128-bit format.
+  //    The identifying 16-bits will be extracted for the short service id used
+  //    in the scan response.
+  // 2) The Ad Type is assumed to be 0x16 as that is all that is supported by
+  //    the Platform right now.
+  //
+  // Important notes:
+  // * This method registers a "non-connectable" advertisement. Any future
+  //   effort to allow this API to support "connectable" advertisements would
+  //   also require the addition of an API to support hosting a GATT server.
+  // * Bluetooth chips generally can only broadcast a few advertisements,
+  //   sometimes even only one, simultaneously. This can be mitigated by
+  //   operating systems "rotating" advertisements in the higher software layer,
+  //   as Chrome OS does. Non-Chrome OS clients of this API are responsible for
+  //   understanding their host OS's and/or hardware's limitations.
+  [Sync]
+  RegisterAdvertisement(UUID service_id, array<uint8> service_data,
+      bool use_scan_response) => (pending_remote<Advertisement>? advertisement);
+
+  // Requests the local device to make itself discoverable to nearby remote
+  // devices.
+  [Sync]
+  SetDiscoverable(bool discoverable) => (bool success);
+
+  // Change the name of the local device as it appears to remote devices.
+  // TODO(crbug.com/1117654): Implement a mechanism to request this resource
+  // before being able to use it.
+  [Sync]
+  SetName(string name) => (bool success);
 
   // Requests the adapter to start a new discovery session. Returns null if
   // session not created successfully.
-  StartDiscoverySession() => (pending_remote<DiscoverySession>? session);
+  [Sync]
+  StartDiscoverySession(string client_name) => (pending_remote<DiscoverySession>? session);
+
+  // Attempts to initiate an insecure outgoing L2CAP or RFCOMM connection to the
+  // advertised service on this device matching |service_uuid|. This method is
+  // marked as "Insecurely" because the outgoing connection will not request
+  // bonding (pairing) to the remote device. If the connection attempt fails,
+  // the returned |result| will be null. See Socket for details on how to close
+  // the connection.
+  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  [Sync]
+  ConnectToServiceInsecurely(string address, UUID service_uuid)
+      => (ConnectToServiceResult? result);
+
+  // Creates an RFCOMM service on this adapter advertised with |service_name|
+  // and |service_uuid|. This method is marked as "Insecurely" because the local
+  // device will not request bonding (pairing) with the remote device: clients
+  // are responsible for securing the connection at the application-level. If
+  // the service creation attempt fails, the returned |server_socket| will be
+  // null. See ServerSocket for details on how to stop listening.
+  [Sync]
+  CreateRfcommServiceInsecurely(string service_name, UUID service_uuid)
+      => (pending_remote<ServerSocket>? server_socket);
 };
 
-interface AdapterClient {
+// Listener on Bluetooth events. Register as an observer via AddObserver().
+interface AdapterObserver {
   // Called when the presence of the adapter changes.
   PresentChanged(bool present);
 
@@ -102,4 +247,3 @@ interface AdapterClient {
   // Called after the device hasn't been seen for 3 minutes.
   DeviceRemoved(DeviceInfo device);
 };
-

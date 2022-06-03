@@ -52,7 +52,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='2008'
 ++++++popUpButton name='Show date picker'
 ++++++rootWebArea
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++genericContainer ignored
@@ -62,25 +62,25 @@ rootWebArea
 ++++++++++++++++++++svgRoot
 ++++++++++++++++button name='Show previous month'
 ++++++++++++++++++svgRoot
-++++++++++++++++button name='Today'
-++++++++++++++++++genericContainer
 ++++++++++++++++button name='Show next month'
 ++++++++++++++++++svgRoot
 ++++++++++++++grid
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Sun'
+++++++++++++++++++++staticText name='S'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Mon'
+++++++++++++++++++++staticText name='M'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Tue'
+++++++++++++++++++++staticText name='T'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Wed'
+++++++++++++++++++++staticText name='W'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Thu'
+++++++++++++++++++++staticText name='T'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Fri'
+++++++++++++++++++++staticText name='F'
 ++++++++++++++++++genericContainer
-++++++++++++++++++++staticText name='Sat'
+++++++++++++++++++++staticText name='S'
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
+++++++++++++++++button name='Today'
+++++++++++++++++++staticText name='Today'

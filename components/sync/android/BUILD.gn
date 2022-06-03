@@ -8,51 +8,14 @@ import("//build/config/android/rules.gni")
 android_library("sync_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//components/signin/core/browser/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_sdk:android_gcm_java",
-    "//third_party/cacheinvalidation:cacheinvalidation_javalib",
-    "//third_party/cacheinvalidation:cacheinvalidation_proto_java",
-    "//third_party/jsr-305:jsr_305_javalib",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums" ]
-  java_files = [
-    "java/src/org/chromium/components/sync/AndroidSyncSettings.java",
-    "java/src/org/chromium/components/sync/ModelTypeHelper.java",
+  sources = [
     "java/src/org/chromium/components/sync/Passphrase.java",
-    "java/src/org/chromium/components/sync/SyncConstants.java",
-    "java/src/org/chromium/components/sync/SyncContentResolverDelegate.java",
-    "java/src/org/chromium/components/sync/SystemSyncContentResolverDelegate.java",
-    "java/src/org/chromium/components/sync/notifier/InvalidationClientNameGenerator.java",
-    "java/src/org/chromium/components/sync/notifier/InvalidationClientNameProvider.java",
-    "java/src/org/chromium/components/sync/notifier/InvalidationIntentProtocol.java",
-    "java/src/org/chromium/components/sync/notifier/InvalidationPreferences.java",
-    "java/src/org/chromium/components/sync/notifier/RandomizedInvalidationClientNameGenerator.java",
-  ]
-}
-
-android_library("sync_javatests") {
-  testonly = true
-  deps = [
-    ":sync_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//components/signin/core/browser/android:java",
-    "//components/signin/core/browser/android:signin_java_test_support",
-    "//components/sync:sync_java_test_support",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/cacheinvalidation:cacheinvalidation_javalib",
-    "//third_party/cacheinvalidation:cacheinvalidation_proto_java",
-    "//third_party/jsr-305:jsr_305_javalib",
-    "//third_party/junit",
-  ]
-  java_files = [
-    "javatests/src/org/chromium/components/sync/AndroidSyncSettingsTest.java",
-    "javatests/src/org/chromium/components/sync/notifier/InvalidationClientNameProviderTest.java",
-    "javatests/src/org/chromium/components/sync/notifier/InvalidationPreferencesTest.java",
   ]
 }
 
@@ -62,11 +25,5 @@ java_cpp_enum("java_enums") {
     "//components/sync/base/passphrase_enums.h",
     "//components/sync/base/stop_source.h",
     "//components/sync/driver/sync_service_utils.h",
-  ]
-}
-
-generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/sync/ModelTypeHelper.java",
   ]
 }

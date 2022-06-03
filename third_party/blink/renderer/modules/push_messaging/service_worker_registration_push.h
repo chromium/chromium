@@ -18,13 +18,16 @@ class ServiceWorkerRegistration;
 class ServiceWorkerRegistrationPush final
     : public GarbageCollected<ServiceWorkerRegistrationPush>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationPush);
-
  public:
   static const char kSupplementName[];
 
   explicit ServiceWorkerRegistrationPush(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationPush(const ServiceWorkerRegistrationPush&) = delete;
+  ServiceWorkerRegistrationPush& operator=(
+      const ServiceWorkerRegistrationPush&) = delete;
+
   virtual ~ServiceWorkerRegistrationPush();
   static ServiceWorkerRegistrationPush& From(
       ServiceWorkerRegistration& registration);
@@ -32,13 +35,10 @@ class ServiceWorkerRegistrationPush final
   static PushManager* pushManager(ServiceWorkerRegistration& registration);
   PushManager* pushManager();
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<PushManager> push_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationPush);
 };
 
 }  // namespace blink

@@ -13,6 +13,9 @@
 // A tab helper for the Net Export WebUI page.
 class NetExportTabHelper : public web::WebStateUserData<NetExportTabHelper> {
  public:
+  NetExportTabHelper(const NetExportTabHelper&) = delete;
+  NetExportTabHelper& operator=(const NetExportTabHelper&) = delete;
+
   ~NetExportTabHelper() override;
 
   // Creates a NetExportTabHelper and attaches it to |web_state|. The |delegate|
@@ -31,8 +34,6 @@ class NetExportTabHelper : public web::WebStateUserData<NetExportTabHelper> {
   __weak id<NetExportTabHelperDelegate> delegate_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_NET_EXPORT_TAB_HELPER_H_

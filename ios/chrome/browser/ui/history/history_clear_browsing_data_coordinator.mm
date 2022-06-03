@@ -7,17 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/ui/history/history_local_commands.h"
+#import "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_local_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_service.h"
-#import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
 #import "ios/web/public/navigation/referrer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,20 +38,23 @@
 @implementation HistoryClearBrowsingDataCoordinator
 @synthesize clearBrowsingDataTableViewController =
     _clearBrowsingDataTableViewController;
-@synthesize dispatcher = _dispatcher;
 @synthesize historyClearBrowsingDataNavigationController =
     _historyClearBrowsingDataNavigationController;
-@synthesize localDispatcher = _localDispatcher;
+@synthesize delegate = _delegate;
 @synthesize presentationDelegate = _presentationDelegate;
 
 - (void)start {
   self.clearBrowsingDataTableViewController =
       [[ClearBrowsingDataTableViewController alloc]
-          initWithBrowserState:self.browserState];
+          initWithBrowser:self.browser];
   self.clearBrowsingDataTableViewController.extendedLayoutIncludesOpaqueBars =
       YES;
-  self.clearBrowsingDataTableViewController.localDispatcher = self;
-  self.clearBrowsingDataTableViewController.dispatcher = self.dispatcher;
+  self.clearBrowsingDataTableViewController.delegate = self;
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  self.clearBrowsingDataTableViewController.dispatcher =
+      static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
+          self.browser->GetCommandDispatcher());
   // Configure and present ClearBrowsingDataNavigationController.
   self.historyClearBrowsingDataNavigationController =
       [[TableViewNavigationController alloc]
@@ -60,15 +62,11 @@
   self.historyClearBrowsingDataNavigationController.toolbarHidden = YES;
 
   BOOL useCustomPresentation = YES;
-  if (IsCollectionsCardPresentationStyleEnabled()) {
-    if (@available(iOS 13, *)) {
       [self.historyClearBrowsingDataNavigationController
           setModalPresentationStyle:UIModalPresentationFormSheet];
       self.historyClearBrowsingDataNavigationController.presentationController
           .delegate = self.clearBrowsingDataTableViewController;
       useCustomPresentation = NO;
-    }
-  }
 
   if (useCustomPresentation) {
     // Stacks on top of history "bubble" for non-compact devices.
@@ -111,16 +109,15 @@
   }
 }
 
-#pragma mark - ClearBrowsingDataLocalCommands
+#pragma mark - ClearBrowsingDataUIDelegate
 
 - (void)openURL:(const GURL&)URL {
   DCHECK(self.historyClearBrowsingDataNavigationController);
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.load_strategy = self.loadStrategy;
   [self stopWithCompletion:^() {
-    [self.localDispatcher dismissHistoryWithCompletion:^{
-      UrlLoadingServiceFactory::GetForBrowserState(self.browserState)
-          ->Load(params);
+    [self.delegate dismissHistoryWithCompletion:^{
+      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
       [self.presentationDelegate showActiveRegularTabFromHistory];
     }];
   }];

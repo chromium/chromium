@@ -11,21 +11,23 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
+
 namespace history {
 class WebHistoryService;
 }
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all WebHistoryServices and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static history::WebHistoryService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static WebHistoryServiceFactory* GetInstance();
+
+  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
+  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebHistoryServiceFactory>;
@@ -36,8 +38,6 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebHistoryServiceFactory);
 };
 
 }  // namespace ios

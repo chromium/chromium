@@ -86,6 +86,11 @@ void TouchExplorationController::SetExcludeBounds(const gfx::Rect& bounds) {
   exclude_bounds_ = bounds;
 }
 
+void TouchExplorationController::SetLiftActivationBounds(
+    const gfx::Rect& bounds) {
+  lift_activation_bounds_ = bounds;
+}
+
 ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
@@ -195,9 +200,15 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
   if (side_gesture_pass_through_ && type == ui::ET_TOUCH_PRESSED &&
       FindEdgesWithinInset(location, gesture_start_width_,
                            gesture_start_height_) != NO_EDGE) {
+    // If we are already in pass-through, ignore additional presses
+    // or the other fingers will clobber our initial press.
+    if (state_ == ONE_FINGER_PASSTHROUGH) {
+      return DiscardEvent(continuation);
+    }
+
     SET_STATE(ONE_FINGER_PASSTHROUGH);
     initial_press_ = std::make_unique<ui::TouchEvent>(touch_event);
-    last_unused_finger_event_.reset(new ui::TouchEvent(touch_event));
+    passthrough_offset_ = gfx::Vector2dF(0, 0);
     return SendEvent(continuation, &event);
   }
 
@@ -214,6 +225,12 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
       if (DVLOG_on_) {
         DVLOG(1) << "Reset to no fingers in Rewrite event because the touch  "
                     "release or cancel was on the edge of the screen.";
+      }
+      if (side_gesture_pass_through_) {
+        // Don't discard event when side gesture pass through is enabled. It
+        // interferes with gesture detector logic further down the processing
+        // stack.
+        return SendEvent(continuation, &event);
       }
       return DiscardEvent(continuation);
     }
@@ -233,7 +250,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     if (gesture_provider_->OnTouchEvent(&touch_event_dip)) {
       gesture_provider_->OnTouchEventAck(
           touch_event_dip.unique_event_id(), false /* event_consumed */,
-          false /* is_source_touch_event_set_non_blocking */);
+          false /* is_source_touch_event_set_blocking */);
     }
     ProcessGestureEvents();
   }
@@ -292,7 +309,6 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
     const ui::TouchEvent& event,
     const Continuation continuation) {
   const ui::EventType type = event.type();
-
   if (type == ui::ET_TOUCH_PRESSED) {
     initial_presses_[event.pointer_details().id] = event.location();
     SET_STATE(TWO_FINGER_TAP);
@@ -413,7 +429,7 @@ ui::EventDispatchDetails TouchExplorationController::InDoubleTapPending(
     if (current_touch_ids_.size() != 0)
       return DiscardEvent(continuation);
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
 
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
@@ -433,7 +449,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
     if (current_touch_ids_.size() != 0)
       return DiscardEvent(continuation);
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
@@ -465,6 +481,8 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     return SendEvent(continuation, &event);
   }
 
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
+                                        event.location_f());
   // Rewrite as a mouse-move event.
   // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
   // |screen coords.
@@ -578,7 +596,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
       return DiscardEvent(continuation);
     }
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
 
     SET_STATE(TOUCH_EXPLORATION);
     EnterTouchToMouseMode();
@@ -596,17 +614,11 @@ ui::EventDispatchDetails TouchExplorationController::InWaitForNoFingers(
   return DiscardEvent(continuation);
 }
 
-void TouchExplorationController::SendSimulatedClickOrTap(
+void TouchExplorationController::SendSimulatedClick(
     const Continuation continuation) {
-  // If we got an anchor point from ChromeVox, send a double-tap gesture
-  // and let ChromeVox handle the click.
   const gfx::Point location;
   delegate_->HandleTap(location);
-  if (anchor_point_state_ == ANCHOR_POINT_EXPLICITLY_SET) {
-    delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kClick);
-    return;
-  }
-  SendSimulatedTap(continuation);
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kClick);
 }
 
 void TouchExplorationController::SendSimulatedTap(
@@ -727,6 +739,8 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
   }
   EnterTouchToMouseMode();
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
+                                        initial_press_->location_f());
   std::unique_ptr<ui::Event> mouse_move = CreateMouseMoveEvent(
       initial_press_->location_f(), initial_press_->flags());
   DispatchEvent(mouse_move.get(), initial_press_continuation_);

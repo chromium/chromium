@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILES_RENDERER_UPDATER_FACTORY_H_
 #define CHROME_BROWSER_PROFILES_RENDERER_UPDATER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,9 @@ class RendererUpdaterFactory : public BrowserContextKeyedServiceFactory {
   // Returns the instance of RendererUpdater for the passed |profile|.
   static RendererUpdater* GetForProfile(Profile* profile);
 
+  RendererUpdaterFactory(const RendererUpdaterFactory&) = delete;
+  RendererUpdaterFactory& operator=(const RendererUpdaterFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
@@ -33,8 +35,6 @@ class RendererUpdaterFactory : public BrowserContextKeyedServiceFactory {
 
   RendererUpdaterFactory();
   ~RendererUpdaterFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererUpdaterFactory);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_RENDERER_UPDATER_FACTORY_H_

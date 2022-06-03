@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/tick_clock.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,13 +23,13 @@ using testing::NotNull;
 
 class FakeTickClock : public base::TickClock {
  public:
-  FakeTickClock() : call_count_(0) {}
+  FakeTickClock() = default;
 
   // How much the mock clock advances after each call to the mocked
   // base::TimeTicks::Now(). We do this because we are testing functions which
   // call NowTicks() twice.
   static constexpr base::TimeDelta kTicksAdvanceAfterEachCall =
-      base::TimeDelta::FromMilliseconds(250);
+      base::Milliseconds(250);
 
   base::TimeTicks NowTicks() const override {
     int current_call_count = call_count_;
@@ -40,7 +40,7 @@ class FakeTickClock : public base::TickClock {
   int call_count() const { return call_count_; }
 
  private:
-  mutable int call_count_;
+  mutable int call_count_ = 0;
 };
 
 constexpr base::TimeDelta FakeTickClock::kTicksAdvanceAfterEachCall;

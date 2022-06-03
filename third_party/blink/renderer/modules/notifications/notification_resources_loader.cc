@@ -6,12 +6,11 @@
 
 #include <cmath>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -21,11 +20,11 @@ namespace blink {
 namespace {
 
 // 99.9% of all images were fetched successfully in 90 seconds.
-constexpr base::TimeDelta kImageFetchTimeout = base::TimeDelta::FromSeconds(90);
+constexpr base::TimeDelta kImageFetchTimeout = base::Seconds(90);
 
 enum class NotificationIconType { kImage, kIcon, kBadge, kActionIcon };
 
-WebSize GetIconDimensions(NotificationIconType type) {
+gfx::Size GetIconDimensions(NotificationIconType type) {
   switch (type) {
     case NotificationIconType::kImage:
       return {kNotificationMaxImageWidthPx, kNotificationMaxImageHeightPx};
@@ -102,14 +101,14 @@ void NotificationResourcesLoader::Stop() {
     icon_loader->Stop();
 }
 
-void NotificationResourcesLoader::Trace(blink::Visitor* visitor) {
+void NotificationResourcesLoader::Trace(Visitor* visitor) const {
   visitor->Trace(icon_loaders_);
 }
 
 void NotificationResourcesLoader::LoadIcon(
     ExecutionContext* context,
     const KURL& url,
-    const WebSize& resize_dimensions,
+    const gfx::Size& resize_dimensions,
     ThreadedIconLoader::IconCallback icon_callback) {
   if (url.IsNull() || url.IsEmpty() || !url.IsValid()) {
     std::move(icon_callback).Run(SkBitmap(), -1.0);
@@ -117,7 +116,7 @@ void NotificationResourcesLoader::LoadIcon(
   }
 
   ResourceRequest resource_request(url);
-  resource_request.SetRequestContext(mojom::RequestContextType::IMAGE);
+  resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestDestination(
       network::mojom::RequestDestination::kImage);
   resource_request.SetPriority(ResourceLoadPriority::kMedium);

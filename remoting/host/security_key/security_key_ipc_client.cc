@@ -9,14 +9,19 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "remoting/host/chromoting_messages.h"
-#include "remoting/host/ipc_constants.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
+
+#if defined(OS_WIN)
+#include <Windows.h>
+#endif
 
 namespace remoting {
 
@@ -38,22 +43,22 @@ bool SecurityKeyIpcClient::CheckForSecurityKeyIpcServerChannel() {
 }
 
 void SecurityKeyIpcClient::EstablishIpcConnection(
-    const ConnectedCallback& connected_callback,
-    const base::Closure& connection_error_callback) {
+    ConnectedCallback connected_callback,
+    base::OnceClosure connection_error_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(connected_callback);
   DCHECK(connection_error_callback);
   DCHECK(!ipc_channel_);
 
-  connected_callback_ = connected_callback;
-  connection_error_callback_ = connection_error_callback;
+  connected_callback_ = std::move(connected_callback);
+  connection_error_callback_ = std::move(connection_error_callback);
 
   ConnectToIpcChannel();
 }
 
 bool SecurityKeyIpcClient::SendSecurityKeyRequest(
     const std::string& request_payload,
-    const ResponseCallback& response_callback) {
+    ResponseCallback response_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!request_payload.empty());
   DCHECK(response_callback);
@@ -69,7 +74,7 @@ bool SecurityKeyIpcClient::SendSecurityKeyRequest(
     return false;
   }
 
-  response_callback_ = response_callback;
+  response_callback_ = std::move(response_callback);
   return ipc_channel_->Send(
       new ChromotingRemoteSecurityKeyToNetworkMsg_Request(request_payload));
 }

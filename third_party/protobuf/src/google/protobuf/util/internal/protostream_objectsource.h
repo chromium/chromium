@@ -41,7 +41,7 @@
 #include <google/protobuf/util/internal/object_source.h>
 #include <google/protobuf/util/internal/object_writer.h>
 #include <google/protobuf/util/type_resolver.h>
-#include <google/protobuf/stubs/stringpiece.h>
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/hash.h>
 #include <google/protobuf/stubs/status.h>
 #include <google/protobuf/stubs/statusor.h>
@@ -131,7 +131,7 @@ class PROTOBUF_EXPORT ProtoStreamObjectSource : public ObjectSource {
   // nested messages (end with 0) and nested groups (end with group end tag).
   // The include_start_and_end parameter allows this method to be called when
   // already inside of an object, and skip calling StartObject and EndObject.
-  virtual util::Status WriteMessage(const google::protobuf::Type& descriptor,
+  virtual util::Status WriteMessage(const google::protobuf::Type& type,
                                       StringPiece name,
                                       const uint32 end_tag,
                                       bool include_start_and_end,
@@ -160,6 +160,9 @@ class PROTOBUF_EXPORT ProtoStreamObjectSource : public ObjectSource {
       const google::protobuf::Field& field) const;
 
 
+  // Returns the input stream.
+  io::CodedInputStream* stream() const { return stream_; }
+
  private:
   ProtoStreamObjectSource(io::CodedInputStream* stream,
                           const TypeInfo* typeinfo,
@@ -184,7 +187,6 @@ class PROTOBUF_EXPORT ProtoStreamObjectSource : public ObjectSource {
   // {tag item1 tag item2 tag item3}.
   util::Status RenderPacked(const google::protobuf::Field* field,
                               ObjectWriter* ow) const;
-
 
   // Renders a google.protobuf.Timestamp value to ObjectWriter
   static util::Status RenderTimestamp(const ProtoStreamObjectSource* os,
@@ -282,7 +284,7 @@ class PROTOBUF_EXPORT ProtoStreamObjectSource : public ObjectSource {
                                          StringPiece field_name) const;
 
   // Input stream to read from. Ownership rests with the caller.
-  io::CodedInputStream* stream_;
+  mutable io::CodedInputStream* stream_;
 
   // Type information for all the types used in the descriptor. Used to find
   // google::protobuf::Type of nested messages/enums.
@@ -324,6 +326,8 @@ class PROTOBUF_EXPORT ProtoStreamObjectSource : public ObjectSource {
   // "'objectName' : {}". If true, then no outputs. This only happens when all
   // the fields of the message are filtered out by field mask.
   bool suppress_empty_object_;
+
+  bool use_legacy_json_map_format_;
 
   GOOGLE_DISALLOW_IMPLICIT_CONSTRUCTORS(ProtoStreamObjectSource);
 };

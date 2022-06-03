@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +18,7 @@ namespace {
 const char kNotificationTagSeparator = '#';
 const char kPersistentNotificationPrefix = 'p';
 const char kNonPersistentNotificationPrefix = 'n';
+const char kNotificationShownByBrowserFlag = 'b';
 
 }  // namespace
 
@@ -36,17 +37,23 @@ bool NotificationIdGenerator::IsNonPersistentNotification(
 }
 
 // Notification Id is of the following format:
-// p#<origin>#[1|0][<developer_tag>|persistent_notification_id]
+// p[b]#<origin>#[1|0][<developer_tag>|persistent_notification_id]
 std::string NotificationIdGenerator::GenerateForPersistentNotification(
     const GURL& origin,
     const std::string& tag,
+    bool is_shown_by_browser,
     int64_t persistent_notification_id) const {
   DCHECK(origin.is_valid());
-  DCHECK_EQ(origin, origin.GetOrigin());
+  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
 
   std::stringstream stream;
 
-  stream << kPersistentNotificationPrefix << kNotificationTagSeparator;
+  stream << kPersistentNotificationPrefix;
+
+  if (is_shown_by_browser)
+    stream << kNotificationShownByBrowserFlag;
+
+  stream << kNotificationTagSeparator;
   stream << origin;
   stream << kNotificationTagSeparator;
 
@@ -60,7 +67,7 @@ std::string NotificationIdGenerator::GenerateForPersistentNotification(
 }
 
 // Notification Id is of the following format:
-// p#<origin>#<token>
+// n#<origin>#<token>
 std::string NotificationIdGenerator::GenerateForNonPersistentNotification(
     const url::Origin& origin,
     const std::string& token) const {

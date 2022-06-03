@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/simple_task_executor.h"
 #include "base/threading/thread.h"
 #include "ios/web/public/thread/web_thread.h"
 
@@ -66,10 +65,6 @@ class WebThreadImpl : public WebThread {
   // The identifier of this thread.  Only one thread can exist with a given
   // identifier at a given time.
   ID identifier_;
-
-  // Here to support base::CurrentThread and base::GetContinuationTaskRunner on
-  // the UI thread.
-  base::Optional<base::SimpleTaskExecutor> ui_thread_tls_executor_;
 };
 
 }  // namespace web

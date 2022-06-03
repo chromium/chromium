@@ -21,7 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -55,9 +55,9 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   // interfaces used to connect to the internet can cause critical network
   // changed signals to be lost allowing incorrect stale state to persist.
   AddressTrackerLinux(
-      const base::Closure& address_callback,
-      const base::Closure& link_callback,
-      const base::Closure& tunnel_callback,
+      const base::RepeatingClosure& address_callback,
+      const base::RepeatingClosure& link_callback,
+      const base::RepeatingClosure& tunnel_callback,
       const std::unordered_set<std::string>& ignored_interfaces);
   virtual ~AddressTrackerLinux();
 
@@ -89,6 +89,11 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
 
  private:
   friend class AddressTrackerLinuxTest;
+  FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
+                           TestInitializeTwoTrackers);
+  FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
+                           TestInitializeTwoTrackersInPidNamespaces);
+  friend int ChildProcessInitializeTrackerForTesting();
 
   // In tracking mode, holds |lock| while alive. In non-tracking mode,
   // enforces single-threaded access.
@@ -96,12 +101,13 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
    public:
     AddressTrackerAutoLock(const AddressTrackerLinux& tracker,
                            base::Lock& lock);
+    AddressTrackerAutoLock(const AddressTrackerAutoLock&) = delete;
+    AddressTrackerAutoLock& operator=(const AddressTrackerAutoLock&) = delete;
     ~AddressTrackerAutoLock();
 
    private:
     const AddressTrackerLinux& tracker_;
     base::Lock& lock_;
-    DISALLOW_COPY_AND_ASSIGN(AddressTrackerAutoLock);
   };
 
   // A function that returns the name of an interface given the interface index
@@ -146,14 +152,18 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   // for |connection_type_initialized_cv_|.
   int GetThreadsWaitingForConnectionTypeInitForTesting();
 
+  // Used by AddressTrackerLinuxNetlinkTest, returns true iff `Init` succeeded.
+  // Undefined for non-tracking mode.
+  bool DidTrackingInitSucceedForTesting() const;
+
   // Gets the name of an interface given the interface index |interface_index|.
   // May return empty string if it fails but should not return NULL. This is
   // overridden by tests.
   GetInterfaceNameFunction get_interface_name_;
 
-  base::Closure address_callback_;
-  base::Closure link_callback_;
-  base::Closure tunnel_callback_;
+  base::RepeatingClosure address_callback_;
+  base::RepeatingClosure link_callback_;
+  base::RepeatingClosure tunnel_callback_;
 
   // Note that |watcher_| must be inactive when |netlink_fd_| is closed.
   base::ScopedFD netlink_fd_;

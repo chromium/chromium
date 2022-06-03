@@ -4,6 +4,7 @@
 
 #include "components/sync/driver/test_sync_user_settings.h"
 
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -28,21 +29,6 @@ void TestSyncUserSettings::SetSyncRequested(bool requested) {
     disable_reasons.Remove(SyncService::DISABLE_REASON_USER_CHOICE);
   } else {
     disable_reasons.Put(SyncService::DISABLE_REASON_USER_CHOICE);
-  }
-  service_->SetDisableReasons(disable_reasons);
-}
-
-bool TestSyncUserSettings::IsSyncAllowedByPlatform() const {
-  return !service_->HasDisableReason(
-      SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-}
-
-void TestSyncUserSettings::SetSyncAllowedByPlatform(bool allowed) {
-  SyncService::DisableReasonSet disable_reasons = service_->GetDisableReasons();
-  if (allowed) {
-    disable_reasons.Remove(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-  } else {
-    disable_reasons.Put(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
   }
   service_->SetDisableReasons(disable_reasons);
 }
@@ -92,7 +78,7 @@ UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
   return UserSelectableTypeSet::All();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
   return sync_all_os_types_enabled_;
 }
@@ -130,7 +116,7 @@ UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
   return UserSelectableOsTypeSet::All();
 }
 
-bool TestSyncUserSettings::GetOsSyncFeatureEnabled() const {
+bool TestSyncUserSettings::IsOsSyncFeatureEnabled() const {
   return os_sync_feature_enabled_;
 }
 
@@ -139,20 +125,18 @@ void TestSyncUserSettings::SetOsSyncFeatureEnabled(bool enabled) {
 }
 #endif
 
-bool TestSyncUserSettings::IsEncryptEverythingAllowed() const {
+bool TestSyncUserSettings::IsCustomPassphraseAllowed() const {
   return true;
 }
 
-void TestSyncUserSettings::SetEncryptEverythingAllowed(bool allowed) {}
+void TestSyncUserSettings::SetCustomPassphraseAllowed(bool allowed) {}
 
 bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
   return false;
 }
 
-void TestSyncUserSettings::EnableEncryptEverything() {}
-
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
-  if (!IsUsingSecondaryPassphrase()) {
+  if (!IsUsingExplicitPassphrase()) {
     // PASSWORDS and WIFI_CONFIGURATIONS are always encrypted.
     return ModelTypeSet(PASSWORDS, WIFI_CONFIGURATIONS);
   }
@@ -170,13 +154,29 @@ bool TestSyncUserSettings::IsPassphraseRequiredForPreferredDataTypes() const {
   return passphrase_required_for_preferred_data_types_;
 }
 
+bool TestSyncUserSettings::IsPassphrasePromptMutedForCurrentProductVersion()
+    const {
+  return false;
+}
+
+void TestSyncUserSettings::MarkPassphrasePromptMutedForCurrentProductVersion() {
+}
+
+bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {
+  return trusted_vault_key_required_;
+}
+
 bool TestSyncUserSettings::IsTrustedVaultKeyRequiredForPreferredDataTypes()
     const {
   return trusted_vault_key_required_for_preferred_data_types_;
 }
 
-bool TestSyncUserSettings::IsUsingSecondaryPassphrase() const {
-  return using_secondary_passphrase_;
+bool TestSyncUserSettings::IsTrustedVaultRecoverabilityDegraded() const {
+  return trusted_vault_recoverability_degraded_;
+}
+
+bool TestSyncUserSettings::IsUsingExplicitPassphrase() const {
+  return using_explicit_passphrase_;
 }
 
 base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
@@ -184,8 +184,8 @@ base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
 }
 
 PassphraseType TestSyncUserSettings::GetPassphraseType() const {
-  return IsUsingSecondaryPassphrase() ? PassphraseType::kCustomPassphrase
-                                      : PassphraseType::kImplicitPassphrase;
+  return IsUsingExplicitPassphrase() ? PassphraseType::kCustomPassphrase
+                                     : PassphraseType::kImplicitPassphrase;
 }
 
 void TestSyncUserSettings::SetEncryptionPassphrase(
@@ -195,10 +195,6 @@ bool TestSyncUserSettings::SetDecryptionPassphrase(
     const std::string& passphrase) {
   return false;
 }
-
-void TestSyncUserSettings::AddTrustedVaultDecryptionKeys(
-    const std::string& gaia_id,
-    const std::vector<std::string>& keys) {}
 
 void TestSyncUserSettings::SetFirstSetupComplete() {
   first_setup_complete_ = true;
@@ -217,13 +213,22 @@ void TestSyncUserSettings::SetPassphraseRequiredForPreferredDataTypes(
   passphrase_required_for_preferred_data_types_ = required;
 }
 
+void TestSyncUserSettings::SetTrustedVaultKeyRequired(bool required) {
+  trusted_vault_key_required_ = required;
+}
+
 void TestSyncUserSettings::SetTrustedVaultKeyRequiredForPreferredDataTypes(
     bool required) {
   trusted_vault_key_required_for_preferred_data_types_ = required;
 }
 
-void TestSyncUserSettings::SetIsUsingSecondaryPassphrase(bool enabled) {
-  using_secondary_passphrase_ = enabled;
+void TestSyncUserSettings::SetTrustedVaultRecoverabilityDegraded(
+    bool degraded) {
+  trusted_vault_recoverability_degraded_ = degraded;
+}
+
+void TestSyncUserSettings::SetIsUsingExplicitPassphrase(bool enabled) {
+  using_explicit_passphrase_ = enabled;
 }
 
 }  // namespace syncer

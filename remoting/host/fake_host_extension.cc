@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/host_extension_session.h"
@@ -18,6 +18,10 @@ namespace remoting {
 class FakeExtension::Session : public HostExtensionSession {
  public:
   Session(FakeExtension* extension, const std::string& message_type);
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   ~Session() override = default;
 
   // HostExtensionSession interface.
@@ -28,8 +32,6 @@ class FakeExtension::Session : public HostExtensionSession {
  private:
   FakeExtension* extension_;
   std::string message_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
 FakeExtension::Session::Session(FakeExtension* extension,

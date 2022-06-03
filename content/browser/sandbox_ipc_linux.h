@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux_sandbox_ipc.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/sandbox_ipc.md
 
 #ifndef CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_
 #define CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/threading/simple_thread.h"
 #include "content/common/content_export.h"
@@ -26,6 +24,10 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
   // the other end of.
   // browser_socket: the browser's end of the sandbox IPC socketpair.
   SandboxIPCHandler(int lifeline_fd, int browser_socket);
+
+  SandboxIPCHandler(const SandboxIPCHandler&) = delete;
+  SandboxIPCHandler& operator=(const SandboxIPCHandler&) = delete;
+
   ~SandboxIPCHandler() override;
 
   void Run() override;
@@ -43,10 +45,8 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
 
   const int lifeline_fd_;
   const int browser_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxIPCHandler);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_SANDBOX_IPC_LINUX_H_
+#endif  // CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_

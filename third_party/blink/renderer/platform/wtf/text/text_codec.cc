@@ -25,6 +25,7 @@
  */
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
+#include "base/notreached.h"
 
 namespace WTF {
 

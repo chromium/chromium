@@ -33,6 +33,11 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
 
   explicit ModuleLoadAttemptLogListener(
       OnModuleBlockedCallback on_module_blocked_callback);
+
+  ModuleLoadAttemptLogListener(const ModuleLoadAttemptLogListener&) = delete;
+  ModuleLoadAttemptLogListener& operator=(const ModuleLoadAttemptLogListener&) =
+      delete;
+
   ~ModuleLoadAttemptLogListener() override;
 
   // base::win::ObjectWatcher::Delegate:
@@ -68,12 +73,10 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
 
   // A cache of the mapping of device path roots to their drive letter root
   // equivalent.
-  std::vector<std::pair<base::FilePath, base::string16>>
+  std::vector<std::pair<base::FilePath, std::wstring>>
       device_to_letter_path_mapping_;
 
   base::WeakPtrFactory<ModuleLoadAttemptLogListener> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleLoadAttemptLogListener);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LOAD_ATTEMPT_LOG_LISTENER_H_

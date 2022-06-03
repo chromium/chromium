@@ -87,9 +87,9 @@ function reportExpected(success, testFuncString, comparison, expected, observed)
     logResult(success, msg);
 }
 
-function waitForEventAndEnd(element, eventName, funcString)
+function waitForEventOnceAndEnd(element, eventName, funcString)
 {
-    waitForEvent(element, eventName, funcString, true)
+    waitForEvent(element, eventName, funcString, true, true)
 }
 
 function waitForEventOnce(element, eventName, func, endit)

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {
@@ -21,6 +20,10 @@ namespace {
 class FakeClient : public SyncProcessRunner::Client {
  public:
   FakeClient() : service_state_(SYNC_SERVICE_RUNNING) {}
+
+  FakeClient(const FakeClient&) = delete;
+  FakeClient& operator=(const FakeClient&) = delete;
+
   ~FakeClient() override {}
 
   SyncServiceState GetSyncServiceState() override { return service_state_; }
@@ -33,22 +36,24 @@ class FakeClient : public SyncProcessRunner::Client {
 
  private:
   SyncServiceState service_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClient);
 };
 
 class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
  public:
   FakeTimerHelper() {}
+
+  FakeTimerHelper(const FakeTimerHelper&) = delete;
+  FakeTimerHelper& operator=(const FakeTimerHelper&) = delete;
+
   ~FakeTimerHelper() override {}
 
   bool IsRunning() override { return !timer_task_.is_null(); }
 
   void Start(const base::Location& from_here,
              const base::TimeDelta& delay,
-             const base::Closure& closure) override {
+             base::OnceClosure closure) override {
     scheduled_time_ = current_time_ + delay;
-    timer_task_ = closure;
+    timer_task_ = std::move(closure);
   }
 
   base::TimeTicks Now() const override { return current_time_; }
@@ -58,9 +63,7 @@ class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
     if (current_time_ < scheduled_time_ || timer_task_.is_null())
       return;
 
-    base::Closure task = timer_task_;
-    timer_task_.Reset();
-    task.Run();
+    std::move(timer_task_).Run();
   }
 
   void AdvanceToScheduledTime() {
@@ -75,9 +78,7 @@ class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
  private:
   base::TimeTicks current_time_;
   base::TimeTicks scheduled_time_;
-  base::Closure timer_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerHelper);
+  base::OnceClosure timer_task_;
 };
 
 class FakeSyncProcessRunner : public SyncProcessRunner {
@@ -91,10 +92,13 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
                           max_parallel_task),
         max_parallel_task_(max_parallel_task) {}
 
-  void StartSync(const SyncStatusCallback& callback) override {
+  void StartSync(SyncStatusCallback callback) override {
     EXPECT_LT(running_tasks_.size(), max_parallel_task_);
-    running_tasks_.push(callback);
+    running_tasks_.push(std::move(callback));
   }
+
+  FakeSyncProcessRunner(const FakeSyncProcessRunner&) = delete;
+  FakeSyncProcessRunner& operator=(const FakeSyncProcessRunner&) = delete;
 
   ~FakeSyncProcessRunner() override {}
 
@@ -104,9 +108,9 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
 
   void CompleteTask(SyncStatusCode status) {
     ASSERT_FALSE(running_tasks_.empty());
-    SyncStatusCallback task = running_tasks_.front();
+    SyncStatusCallback task = std::move(running_tasks_.front());
     running_tasks_.pop();
-    task.Run(status);
+    std::move(task).Run(status);
   }
 
   bool HasRunningTask() const {
@@ -116,8 +120,6 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
  private:
   size_t max_parallel_task_;
   base::queue<SyncStatusCallback> running_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncProcessRunner);
 };
 
 }  // namespace

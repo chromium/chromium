@@ -22,6 +22,11 @@ class TextToSpeechPlaybackController : public KeyedService,
  public:
   explicit TextToSpeechPlaybackController();
 
+  TextToSpeechPlaybackController(const TextToSpeechPlaybackController&) =
+      delete;
+  TextToSpeechPlaybackController& operator=(
+      const TextToSpeechPlaybackController&) = delete;
+
   // The BrowserState's WebStateList.
   void SetWebStateList(WebStateList* web_state_list);
 
@@ -49,7 +54,7 @@ class TextToSpeechPlaybackController : public KeyedService,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,
                            int active_index,
-                           int reason) override;
+                           ActiveWebStateChangeReason reason) override;
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index) override;
@@ -71,8 +76,6 @@ class TextToSpeechPlaybackController : public KeyedService,
 
   // The WebState being observed.
   web::WebState* web_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TextToSpeechPlaybackController);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_

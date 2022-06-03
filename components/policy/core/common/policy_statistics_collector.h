@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_STATISTICS_COLLECTOR_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/policy_details.h"
@@ -24,6 +23,14 @@ namespace policy {
 
 class PolicyService;
 
+// Different types of policies
+enum Condition {
+  kDefault,
+  kMandatory,
+  kRecommended,
+  kIgnoredByAtomicGroup,
+};
+
 // Manages regular updates of policy usage UMA histograms.
 class POLICY_EXPORT PolicyStatisticsCollector {
  public:
@@ -37,6 +44,9 @@ class POLICY_EXPORT PolicyStatisticsCollector {
                             PolicyService* policy_service,
                             PrefService* prefs,
                             const scoped_refptr<base::TaskRunner>& task_runner);
+  PolicyStatisticsCollector(const PolicyStatisticsCollector&) = delete;
+  PolicyStatisticsCollector& operator=(const PolicyStatisticsCollector&) =
+      delete;
   virtual ~PolicyStatisticsCollector();
 
   // Completes initialization and starts periodical statistic updates.
@@ -46,9 +56,7 @@ class POLICY_EXPORT PolicyStatisticsCollector {
 
  protected:
   // protected virtual for mocking.
-  virtual void RecordPolicyUse(int id);
-  virtual void RecordPolicyGroupWithConflicts(int id);
-  virtual void RecordPolicyIgnoredByAtomicGroup(int id);
+  virtual void RecordPolicyUse(int id, Condition condition);
 
  private:
   void CollectStatistics();
@@ -59,11 +67,9 @@ class POLICY_EXPORT PolicyStatisticsCollector {
   PolicyService* policy_service_;
   PrefService* prefs_;
 
-  base::CancelableClosure update_callback_;
+  base::CancelableOnceClosure update_callback_;
 
   const scoped_refptr<base::TaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyStatisticsCollector);
 };
 
 }  // namespace policy

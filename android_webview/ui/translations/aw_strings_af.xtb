@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="6106989379647458772">Die webbladsy by <ph name="PAGE" /> is dalk tydelik af, of dit het dalk permanent na 'n nuwe webadres geskuif.</translation>
-<translation id="6312113039770857350">Webbladsy is nie beskikbaar nie</translation>
-<translation id="8681531050781943054">Die webbladsy by <ph name="PAGE" /> kon nie gelaai word nie, want:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Voorstelle:<ph name="MARKUP_2" />Maak seker dat jy 'n dataverbinding het<ph name="MARKUP_3" />Herlaai hierdie webbladsy later<ph name="MARKUP_4" />Gaan die adres na wat jy ingevoer het<ph name="MARKUP_5" /></translation>
 </translationbundle>

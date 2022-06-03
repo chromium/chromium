@@ -7,11 +7,15 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
@@ -79,6 +83,7 @@ UIImage* LoadImage(const GURL& image_url) {
 }
 
 using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 
 namespace web {
@@ -93,6 +98,31 @@ bool IsWebViewContainingText(web::WebState* web_state,
     return body.find(text) != std::string::npos;
   }
   return false;
+}
+
+bool IsWebViewContainingTextInFrame(web::WebState* web_state,
+                                    const std::string& text) {
+  __block NSInteger number_frames_processing = 0;
+  __block bool text_found = false;
+  for (WebFrame* frame : web_state->GetWebFramesManager()->GetAllWebFrames()) {
+    number_frames_processing++;
+
+    FindInPageJavaScriptFeature* find_in_page_feature =
+        FindInPageJavaScriptFeature::GetInstance();
+    find_in_page_feature->Search(
+        frame, text, base::BindOnce(^(absl::optional<int> result_matches) {
+          if (result_matches && result_matches.value() >= 1) {
+            text_found = true;
+          }
+          number_frames_processing--;
+        }));
+  }
+  bool success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    if (text_found)
+      return true;
+    return number_frames_processing == 0;
+  });
+  return text_found && success;
 }
 
 bool WaitForWebViewContainingText(web::WebState* web_state,
@@ -110,6 +140,15 @@ bool WaitForWebViewNotContainingText(web::WebState* web_state,
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return !IsWebViewContainingText(web_state, text);
+  });
+}
+
+bool WaitForWebViewContainingTextInFrame(web::WebState* web_state,
+                                         std::string text,
+                                         NSTimeInterval timeout) {
+  return WaitUntilConditionOrTimeout(timeout, ^{
+    base::RunLoop().RunUntilIdle();
+    return IsWebViewContainingTextInFrame(web_state, text);
   });
 }
 

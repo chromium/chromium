@@ -31,10 +31,9 @@ function loadFrame(iframe, src) {
         resolve(e.data);
       }, { once: true });
     }).then(function(data) {
-      // paymentrequest is enabled if:
-      //     a. same origin; or
-      //     b. enabled by allowpaymentrequest.
-      if (src === srcs[0] || allowpaymentrequest) {
+      // paymentrequest is enabled if same origin, and blocked if not,
+      // regardless of the allowpaymentrequest attribute.
+      if (src === srcs[0]) {
         assert_true(data.enabled, 'Paymentrequest():');
       } else {
         assert_false(data.enabled, 'Paymentrequest():');

@@ -37,10 +37,12 @@ namespace blink {
 
 class CompositorTransformOperations;
 class TransformOperations;
+class FloatSize;
 
 PLATFORM_EXPORT void ToCompositorTransformOperations(
     const TransformOperations& in_operations,
-    CompositorTransformOperations* out_operations);
+    CompositorTransformOperations* out_operations,
+    const FloatSize& box_size);
 
 }  // namespace blink
 

@@ -1,16 +1,24 @@
 # This is reserved for people that are comfortably with buildbot recipes
 # and understand the implications of changing these files.
 
-crouleau@chromium.org
-dpranke@chromium.org
+dpranke@google.com
 kbr@chromium.org
 martiniss@chromium.org
 
 per-file check_static_initializers.py=thakis@chromium.org
 per-file check_static_initializers.py=thomasanderson@chromium.org
 
-per-file run-wpt_tests.py=lpz@chromium.org
-per-file run_wpt_tests.py=robertma@chromium.org
+per-file run_wpt_tests.py=smcgruer@chromium.org
+per-file run_android_wpt.py*=rmhasan@google.com
+per-file wpt_common*.py=smcgruer@chromium.org
+per-file wpt_common*.py=rmhasan@google.com
 
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Infra>Client>Chrome
+per-file run_performance_tests.py=johnchen@chromium.org
+per-file run_performance_tests.py=wenbinzhang@google.com
+
+per-file run_chromedriver_tests.py=johnchen@chromium.org
+
+per-file run_variations_smoke_tests.py=liaoyuke@chromium.org
+per-file run_variations_smoke_tests.py=wuwang@chromium.org
+per-file variations_seed_access_helper.py=liaoyuke@chromium.org
+per-file variations_seed_access_helper.py=wuwang@chromium.org

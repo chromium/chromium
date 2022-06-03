@@ -83,6 +83,8 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
   switch (operation_type) {
     case FilterOperation::NONE:
     case FilterOperation::BOX_REFLECT:
+    case FilterOperation::CONVOLVE_MATRIX:
+    case FilterOperation::COMPONENT_TRANSFER:
       NOTREACHED();
       return;
     case FilterOperation::REFERENCE:
@@ -99,6 +101,12 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
       break;
     case FilterOperation::HUE_ROTATE:
       feature = WebFeature::kCSSFilterHueRotate;
+      break;
+    case FilterOperation::LUMINANCE_TO_ALPHA:
+      feature = WebFeature::kCSSFilterLuminanceToAlpha;
+      break;
+    case FilterOperation::COLOR_MATRIX:
+      feature = WebFeature::kCSSFilterColorMatrix;
       break;
     case FilterOperation::INVERT:
       feature = WebFeature::kCSSFilterInvert;
@@ -156,7 +164,8 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
 
 FilterOperations FilterOperationResolver::CreateFilterOperations(
     StyleResolverState& state,
-    const CSSValue& in_value) {
+    const CSSValue& in_value,
+    CSSPropertyID property_id) {
   FilterOperations operations;
 
   if (auto* in_identifier_value = DynamicTo<CSSIdentifierValue>(in_value)) {
@@ -173,9 +182,8 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::REFERENCE, state.GetDocument());
 
       SVGResource* resource =
-          state.GetElementStyleResources().GetSVGResourceFromValue(
-              state.GetTreeScope(), *url_value,
-              ElementStyleResources::kAllowExternalResource);
+          state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
+                                                                   *url_value);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
               url_value->ValueForSerialization(), resource));
@@ -224,7 +232,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
             conversion_data, &state, filter_value->Item(0));
         // TODO(fs): Resolve 'currentcolor' when constructing the filter chain.
         if (shadow.GetColor().IsCurrentColor()) {
-          shadow.OverrideColor(state.Style()->GetColor());
+          shadow.OverrideColor(state.Style()->GetCurrentColor());
         }
         operations.Operations().push_back(
             MakeGarbageCollected<DropShadowFilterOperation>(shadow));
@@ -254,8 +262,10 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   CSSToLengthConversionData::FontSizes font_sizes(
       kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, &font, zoom);
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
+  CSSToLengthConversionData::ContainerSizes container_sizes;
   CSSToLengthConversionData conversion_data(nullptr,  // ComputedStyle
                                             font_sizes, viewport_size,
+                                            container_sizes,
                                             1);  // zoom
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {

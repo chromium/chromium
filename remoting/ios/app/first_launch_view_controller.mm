@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "remoting/ios/app/first_launch_view_controller.h"
+
+#import <MaterialComponents/MaterialButtons.h>
+
+#include "remoting/base/string_resources.h"
+#import "remoting/ios/app/remoting_theme.h"
+#include "ui/base/l10n/l10n_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#import "remoting/ios/app/first_launch_view_controller.h"
-
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
-#import "remoting/ios/app/remoting_theme.h"
-
-#include "remoting/base/string_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 
 static const float kLogoSizeMultiplier = 0.381966f;
 static const float kLogoYOffset = -10.f;

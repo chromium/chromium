@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/blob/blob_url_loader.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "storage/browser/blob/blob_url_registry.h"
 
 namespace storage {
 
@@ -20,15 +20,14 @@ namespace {
 // by this method.
 void CreateFactoryForToken(
     mojo::Remote<blink::mojom::BlobURLToken>,
-    const base::WeakPtr<BlobStorageContext>& context,
+    base::WeakPtr<BlobUrlRegistry> url_registry,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     const base::UnguessableToken& token) {
   mojo::PendingRemote<blink::mojom::Blob> blob;
   GURL blob_url;
-  if (context)
-    context->registry().GetTokenMapping(token, &blob_url, &blob);
-  BlobURLLoaderFactory::Create(std::move(blob), blob_url, context,
-                               std::move(receiver));
+  if (url_registry)
+    url_registry->GetTokenMapping(token, &blob_url, &blob);
+  BlobURLLoaderFactory::Create(std::move(blob), blob_url, std::move(receiver));
 }
 
 }  // namespace
@@ -37,38 +36,15 @@ void CreateFactoryForToken(
 void BlobURLLoaderFactory::Create(
     mojo::PendingRemote<blink::mojom::Blob> pending_blob,
     const GURL& blob_url,
-    base::WeakPtr<BlobStorageContext> context,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  if (!pending_blob) {
-    new BlobURLLoaderFactory(nullptr, blob_url, std::move(receiver));
-    return;
-  }
-  // Not every URLLoaderFactory user deals with the URLLoaderFactory simply
-  // disconnecting very well, so make sure we always at least bind the receiver
-  // to some factory that can then fail with a network error. Hence the callback
-  // is wrapped in WrapCallbackWithDefaultInvokeIfNotRun.
-  mojo::Remote<blink::mojom::Blob> blob(std::move(pending_blob));
-  blink::mojom::Blob* raw_blob = blob.get();
-  raw_blob->GetInternalUUID(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      base::BindOnce(
-          [](mojo::Remote<blink::mojom::Blob>,
-             base::WeakPtr<BlobStorageContext> context, const GURL& blob_url,
-             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-             const std::string& uuid) {
-            std::unique_ptr<BlobDataHandle> blob;
-            if (context)
-              blob = context->GetBlobDataFromUUID(uuid);
-            new BlobURLLoaderFactory(std::move(blob), blob_url,
-                                     std::move(receiver));
-          },
-          std::move(blob), std::move(context), blob_url, std::move(receiver)),
-      ""));
+  new BlobURLLoaderFactory(std::move(pending_blob), blob_url,
+                           std::move(receiver));
 }
 
 // static
 void BlobURLLoaderFactory::Create(
     mojo::PendingRemote<blink::mojom::BlobURLToken> token,
-    base::WeakPtr<BlobStorageContext> context,
+    base::WeakPtr<BlobUrlRegistry> url_registry,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   // Not every URLLoaderFactory user deals with the URLLoaderFactory simply
   // disconnecting very well, so make sure we always at least bind the receiver
@@ -78,13 +54,12 @@ void BlobURLLoaderFactory::Create(
   auto* raw_token = token_remote.get();
   raw_token->GetToken(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&CreateFactoryForToken, std::move(token_remote),
-                     std::move(context), std::move(receiver)),
+                     std::move(url_registry), std::move(receiver)),
       base::UnguessableToken()));
 }
 
 void BlobURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -96,9 +71,14 @@ void BlobURLLoaderFactory::CreateLoaderAndStart(
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_INVALID_URL));
     return;
   }
-  BlobURLLoader::CreateAndStart(
-      std::move(loader), request, std::move(client),
-      handle_ ? std::make_unique<BlobDataHandle>(*handle_) : nullptr);
+  if (!blob_) {
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_FILE_NOT_FOUND));
+    return;
+  }
+  blob_->Load(std::move(loader), request.method, request.headers,
+              std::move(client));
 }
 
 void BlobURLLoaderFactory::Clone(
@@ -107,10 +87,10 @@ void BlobURLLoaderFactory::Clone(
 }
 
 BlobURLLoaderFactory::BlobURLLoaderFactory(
-    std::unique_ptr<BlobDataHandle> handle,
+    mojo::PendingRemote<blink::mojom::Blob> blob,
     const GURL& blob_url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-    : handle_(std::move(handle)), url_(blob_url) {
+    : blob_(std::move(blob)), url_(blob_url) {
   receivers_.Add(this, std::move(receiver));
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BlobURLLoaderFactory::OnConnectionError, base::Unretained(this)));

@@ -7,12 +7,17 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_delegate_impl.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/network_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace network {
 
@@ -27,6 +32,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
       bool validate_referrer_policy_on_initial_request,
       mojo::PendingRemote<mojom::ProxyErrorClient> proxy_error_client_remote,
       NetworkContext* network_context);
+
+  NetworkServiceNetworkDelegate(const NetworkServiceNetworkDelegate&) = delete;
+  NetworkServiceNetworkDelegate& operator=(
+      const NetworkServiceNetworkDelegate&) = delete;
+
   ~NetworkServiceNetworkDelegate() override;
 
   void set_enable_referrers(bool enable_referrers) {
@@ -38,30 +48,29 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,
                          GURL* new_url) override;
-  void OnBeforeSendHeaders(net::URLRequest* request,
-                           const net::ProxyInfo& proxy_info,
-                           const net::ProxyRetryInfoMap& proxy_retry_info,
-                           net::HttpRequestHeaders* headers) override;
-  int OnBeforeStartTransaction(net::URLRequest* request,
-                               net::CompletionOnceCallback callback,
-                               net::HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      net::URLRequest* request,
+      const net::HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
   int OnHeadersReceived(
       net::URLRequest* request,
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
       const net::IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
   void OnBeforeRedirect(net::URLRequest* request,
                         const GURL& new_location) override;
   void OnResponseStarted(net::URLRequest* request, int net_error) override;
   void OnCompleted(net::URLRequest* request,
                    bool started,
                    int net_error) override;
-  void OnPACScriptError(int line_number, const base::string16& error) override;
-  bool OnCanGetCookies(const net::URLRequest& request,
-                       const net::CookieList& cookie_list,
-                       bool allowed_from_caller) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const net::URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       net::CookieOptions* options,
@@ -69,7 +78,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   bool OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      net::SamePartyContext::Type same_party_context_type) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const net::URLRequest& request,
       const GURL& target_url,
@@ -109,8 +119,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
 
   mutable base::WeakPtrFactory<NetworkServiceNetworkDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceNetworkDelegate);
 };
 
 }  // namespace network

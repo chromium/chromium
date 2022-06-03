@@ -1,18 +1,6 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
-<link rel="import" href="browser_service.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="strings.html">
-
-<!-- Lazy loaded: cr-toolbar-selection-overlay. -->
-
-<dom-module id="history-toolbar">
-  <template>
     <style include="shared-style">
       :host {
         display: flex;
-        overflow: hidden;
         position: relative;
       }
 
@@ -44,11 +32,10 @@
         clear-label="$i18n{clearSearch}"
         search-prompt="$i18n{searchPrompt}"
         spinner-active="[[spinnerActive]]"
+        autofocus
         show-menu="[[hasDrawer]]"
-        show-menu-promo="[[canShowMenuPromo_(showMenuPromo)]]"
         menu-label="$i18n{historyMenuButton}"
-        menu-promo="$i18n{menuPromo}"
-        close-menu-promo="$i18n{closeMenuPromo}"
+        narrow-threshold="1023"
         on-search-changed="onSearchChanged_">
     </cr-toolbar>
     <cr-toolbar-selection-overlay show="[[itemsSelected_]]"
@@ -59,6 +46,3 @@
         on-clear-selected-items="clearSelectedItems"
         on-delete-selected-items="deleteSelectedItems">
     </cr-toolbar-selection-overlay>
-  </template>
-  <script src="history_toolbar.js"></script>
-</dom-module>

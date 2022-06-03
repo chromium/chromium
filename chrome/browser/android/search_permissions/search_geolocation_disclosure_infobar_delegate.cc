@@ -9,11 +9,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/infobars/search_geolocation_disclosure_infobar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,11 +41,11 @@ SearchGeolocationDisclosureInfoBarDelegate::
 void SearchGeolocationDisclosureInfoBarDelegate::Create(
     content::WebContents* web_contents,
     const GURL& search_url,
-    const base::string16& search_engine_name) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
+    const std::u16string& search_engine_name) {
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
   // Add the new delegate.
-  infobar_service->AddInfoBar(
+  infobar_manager->AddInfoBar(
       std::make_unique<SearchGeolocationDisclosureInfoBar>(
           base::WrapUnique(new SearchGeolocationDisclosureInfoBarDelegate(
               web_contents, search_url, search_engine_name))));
@@ -54,10 +54,10 @@ void SearchGeolocationDisclosureInfoBarDelegate::Create(
 // static
 bool SearchGeolocationDisclosureInfoBarDelegate::
     IsSearchGeolocationDisclosureOpen(content::WebContents* web_contents) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  for (size_t i = 0; i < infobar_service->infobar_count(); ++i) {
-    infobars::InfoBar* existing_infobar = infobar_service->infobar_at(i);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
+    infobars::InfoBar* existing_infobar = infobar_manager->infobar_at(i);
     if (existing_infobar->delegate()->GetIdentifier() ==
         infobars::InfoBarDelegate::
             SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID) {
@@ -78,14 +78,14 @@ SearchGeolocationDisclosureInfoBarDelegate::
     SearchGeolocationDisclosureInfoBarDelegate(
         content::WebContents* web_contents,
         const GURL& search_url,
-        const base::string16& search_engine_name)
+        const std::u16string& search_engine_name)
     : infobars::InfoBarDelegate(),
       search_url_(search_url),
       result_(DisclosureResult::IGNORED),
       creation_time_(base::Time::Now()) {
   pref_service_ = Profile::FromBrowserContext(web_contents->GetBrowserContext())
                       ->GetPrefs();
-  base::string16 link = l10n_util::GetStringUTF16(
+  std::u16string link = l10n_util::GetStringUTF16(
       IDS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_SETTINGS_LINK_TEXT);
   std::vector<size_t> offsets;
   message_text_ =

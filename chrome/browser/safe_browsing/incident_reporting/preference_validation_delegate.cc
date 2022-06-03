@@ -11,7 +11,7 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_receiver.h"
 #include "chrome/browser/safe_browsing/incident_reporting/tracked_preference_incident.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
 namespace safe_browsing {
@@ -61,7 +61,7 @@ PreferenceValidationDelegate::~PreferenceValidationDelegate() {
 
 void PreferenceValidationDelegate::OnAtomicPreferenceValidation(
     const std::string& pref_path,
-    base::Optional<base::Value> value,
+    absl::optional<base::Value> value,
     ValueState value_state,
     ValueState external_validation_value_state,
     bool is_personal) {

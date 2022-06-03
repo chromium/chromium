@@ -9,6 +9,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/core/wm_core_export.h"
 
+namespace ui {
+enum class CursorSize;
+}
+
 namespace wm {
 
 // The non-public interface that CursorManager exposes to its users. This

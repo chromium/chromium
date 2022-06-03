@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ZoomControllerTest;
 
@@ -28,6 +28,10 @@ class ZoomObserver;
 class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
  public:
   ZoomRequestClient() {}
+
+  ZoomRequestClient(const ZoomRequestClient&) = delete;
+  ZoomRequestClient& operator=(const ZoomRequestClient&) = delete;
+
   virtual bool ShouldSuppressBubble() const = 0;
 
  protected:
@@ -35,8 +39,6 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
 
  private:
   friend class base::RefCounted<ZoomRequestClient>;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomRequestClient);
 };
 
 // Per-tab class to manage zoom changes and the Omnibox zoom icon. Lives on the
@@ -92,6 +94,9 @@ class ZoomController : public content::WebContentsObserver,
   // a simple, safe and reliable method to find the current zoom level for a
   // given WebContents*.
   static double GetZoomLevelForWebContents(content::WebContents* web_contents);
+
+  ZoomController(const ZoomController&) = delete;
+  ZoomController& operator=(const ZoomController&) = delete;
 
   ~ZoomController() override;
 
@@ -154,6 +159,7 @@ class ZoomController : public content::WebContentsObserver,
   void WebContentsDestroyed() override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+  void OnPageScaleFactorChanged(float page_scale_factor) override;
 
  protected:
   // Protected for testing.
@@ -173,10 +179,10 @@ class ZoomController : public content::WebContentsObserver,
   void UpdateState(const std::string& host);
 
   // True if changes to zoom level can trigger the zoom notification bubble.
-  bool can_show_bubble_;
+  bool can_show_bubble_ = true;
 
   // The current zoom mode.
-  ZoomMode zoom_mode_;
+  ZoomMode zoom_mode_ = ZOOM_MODE_DEFAULT;
 
   // Current zoom level.
   double zoom_level_;
@@ -194,11 +200,16 @@ class ZoomController : public content::WebContentsObserver,
   // Keep track of the HostZoomMap we're currently subscribed to.
   content::HostZoomMap* host_zoom_map_;
 
-  std::unique_ptr<content::HostZoomMap::Subscription> zoom_subscription_;
+  base::CallbackListSubscription zoom_subscription_;
+
+  // Whether the page scale factor was one the last time we notified our
+  // observers of a change to PageScaleFactorIsOne.
+  bool last_page_scale_factor_was_one_ = true;
+
+  // If set, this value is returned in PageScaleFactorIsOne.
+  absl::optional<bool> page_scale_factor_is_one_for_testing_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomController);
 };
 
 }  // namespace zoom

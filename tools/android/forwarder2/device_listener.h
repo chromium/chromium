@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
@@ -53,6 +52,9 @@ class DeviceListener {
       std::unique_ptr<Socket> host_socket,
       int port,
       ErrorCallback error_callback);
+
+  DeviceListener(const DeviceListener&) = delete;
+  DeviceListener& operator=(const DeviceListener&) = delete;
 
   ~DeviceListener();
 
@@ -100,8 +102,6 @@ class DeviceListener {
   scoped_refptr<base::SingleThreadTaskRunner> deletion_task_runner_;
   base::Thread thread_;
   ForwardersManager forwarders_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListener);
 };
 
 }  // namespace forwarder

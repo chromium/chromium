@@ -10,28 +10,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.chromium.android_browsertests_apk">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
     <uses-feature android:glEsVersion="0x00020000" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <application android:name="ChromeBrowserTestsApplication"
-            android:label="ChromeBrowserTests">
+            android:label="ChromeBrowserTests"
+            android:requestLegacyExternalStorage="true">
         <activity android:name="ChromeBrowserTestsActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.Chromium.TabbedMode"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:hardwareAccelerated="true"
+                  android:exported="true"
                   android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -100,6 +104,27 @@
           </intent-filter>
         </activity>
 
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSmall"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderMedium"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
+
         <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
                  android:exported="false"
                  android:permission="android.permission.BIND_JOB_SERVICE"/>
@@ -136,7 +161,7 @@
         {% endfor %}
     </application>
 
-    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+    <instrumentation android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsInstrumentationTestRunner"
             android:label="ChromeBrowserTests"
             android:targetPackage="org.chromium.android_browsertests_apk"
             chromium-junit3="true"/>

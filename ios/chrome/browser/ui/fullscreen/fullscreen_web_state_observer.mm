@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_observer.h"
 
+#include "base/check_op.h"
 #include "base/ios/ios_util.h"
-#include "base/logging.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_mediator.h"
@@ -13,8 +13,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_proxy_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #include "ios/web/common/url_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -85,9 +83,8 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   id<CRWWebViewProxy> web_view_proxy = web_state->GetWebViewProxy();
   web_view_proxy.shouldUseViewContentInset = is_pdf;
 
-  model_->SetResizesScrollView(!is_pdf && !ios::GetChromeBrowserProvider()
-                                               ->GetFullscreenProvider()
-                                               ->IsInitialized());
+  model_->SetResizesScrollView(
+      !is_pdf && !fullscreen::features::ShouldUseSmoothScrolling());
 
   // Only reset the model for document-changing navigations or same-document
   // navigations that update the visible URL.

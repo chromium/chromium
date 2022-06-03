@@ -20,6 +20,7 @@ include_rules = [
   "+google_apis",
   "+ios/chrome/app",
   "+ios/chrome/browser",
+  "+ios/components/webui",
   "+ios/public/provider/chrome",
   "+ios/web/web_state/ui",
   "+ios/public/test",

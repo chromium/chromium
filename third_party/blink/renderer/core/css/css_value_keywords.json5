@@ -109,6 +109,12 @@
     "bolder",
     "lighter",
 
+    // font-synthesis
+    // none
+    // style
+    // small-caps
+    "weight",
+
     //
     // font-stretch
     //
@@ -135,17 +141,22 @@
     "smaller",
     "larger",
     "-webkit-xxx-large",
+    // math
 
     //
     // font-family (<generic-family> in CSS 2.1)
     //
+    // If you modify this list, please make sure you update css_parsing_utils's
+    // ConsumeGenericFamily, ComputedStyleUtils::IdentifierForFamily and
+    // FontFamily::InferredTypeFor accordingly.
     "serif",
     "sans-serif",
     "cursive",
     "fantasy",
     "monospace",
+    "system-ui",
     "-webkit-body",
-    "-webkit-pictograph",
+    "math",
 
     //
     // font-display
@@ -156,7 +167,6 @@
     "fallback",
     "optional",
 
-    //
     //
     // *-color
     //
@@ -228,9 +238,141 @@
     // Value used to implement the behavior in:
     // https://quirks.spec.whatwg.org/#the-tables-inherit-color-from-body-quirk
     "-internal-quirk-inherit",
-    // The default color value for the root element. Using a keyword to account
-    // for different values for different color schemes like dark mode.
-    "-internal-root-color",
+
+    //
+    // "Extended" named colors
+    //
+    "aliceblue",
+    "antiquewhite",
+    "aquamarine",
+    "azure",
+    "beige",
+    "bisque",
+    "blanchedalmond",
+    "blueviolet",
+    "brown",
+    "burlywood",
+    "cadetblue",
+    "chartreuse",
+    "chocolate",
+    "coral",
+    "cornflowerblue",
+    "cornsilk",
+    "crimson",
+    "cyan",
+    "darkblue",
+    "darkcyan",
+    "darkgoldenrod",
+    "darkgray",
+    "darkgreen",
+    "darkgrey",
+    "darkkhaki",
+    "darkmagenta",
+    "darkolivegreen",
+    "darkorange",
+    "darkorchid",
+    "darkred",
+    "darksalmon",
+    "darkseagreen",
+    "darkslateblue",
+    "darkslategray",
+    "darkslategrey",
+    "darkturquoise",
+    "darkviolet",
+    "deeppink",
+    "deepskyblue",
+    "dimgray",
+    "dimgrey",
+    "dodgerblue",
+    "firebrick",
+    "floralwhite",
+    "forestgreen",
+    "gainsboro",
+    "ghostwhite",
+    "gold",
+    "goldenrod",
+    "greenyellow",
+    "honeydew",
+    "hotpink",
+    "indianred",
+    "indigo",
+    "ivory",
+    "khaki",
+    "lavender",
+    "lavenderblush",
+    "lawngreen",
+    "lemonchiffon",
+    "lightblue",
+    "lightcoral",
+    "lightcyan",
+    "lightgoldenrodyellow",
+    "lightgray",
+    "lightgreen",
+    "lightgrey",
+    "lightpink",
+    "lightsalmon",
+    "lightseagreen",
+    "lightskyblue",
+    "lightslategray",
+    "lightslategrey",
+    "lightsteelblue",
+    "lightyellow",
+    "limegreen",
+    "linen",
+    "magenta",
+    "mediumaquamarine",
+    "mediumblue",
+    "mediumorchid",
+    "mediumpurple",
+    "mediumseagreen",
+    "mediumslateblue",
+    "mediumspringgreen",
+    "mediumturquoise",
+    "mediumvioletred",
+    "midnightblue",
+    "mintcream",
+    "mistyrose",
+    "moccasin",
+    "navajowhite",
+    "oldlace",
+    "olivedrab",
+    "orangered",
+    "orchid",
+    "palegoldenrod",
+    "palegreen",
+    "paleturquoise",
+    "palevioletred",
+    "papayawhip",
+    "peachpuff",
+    "peru",
+    "pink",
+    "plum",
+    "powderblue",
+    "rebeccapurple",
+    "rosybrown",
+    "royalblue",
+    "saddlebrown",
+    "salmon",
+    "sandybrown",
+    "seagreen",
+    "seashell",
+    "sienna",
+    "skyblue",
+    "slateblue",
+    "slategray",
+    "slategrey",
+    "snow",
+    "springgreen",
+    "steelblue",
+    "tan",
+    "thistle",
+    "tomato",
+    "turquoise",
+    "violet",
+    "wheat",
+    "whitesmoke",
+    "yellowgreen",
+
     //
     // background-repeat
     //
@@ -299,75 +441,28 @@
     "inside",
     //
     // list-style-type
-    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
     //
     "disc",
     "circle",
     "square",
+    "disclosure-open",
+    "disclosure-closed",
     "decimal",
-    "decimal-leading-zero",
-    "arabic-indic",
-    "bengali",
-    "cambodian",
-    "khmer",
-    "devanagari",
-    "gujarati",
-    "gurmukhi",
-    "kannada",
-    "lao",
-    "malayalam",
-    "mongolian",
-    "myanmar",
-    "oriya",
-    "persian",
-    "urdu",
-    "telugu",
-    "tibetan",
-    "thai",
-    "lower-roman",
-    "upper-roman",
-    "lower-greek",
-    "lower-alpha",
-    "lower-latin",
-    "upper-alpha",
-    "upper-latin",
-    "cjk-earthly-branch",
-    "cjk-heavenly-stem",
-    "ethiopic-halehame",
-    "ethiopic-halehame-am",
-    "ethiopic-halehame-ti-er",
-    "ethiopic-halehame-ti-et",
-    "hangul",
-    "hangul-consonant",
-    "korean-hangul-formal",
-    "korean-hanja-formal",
-    "korean-hanja-informal",
-    "hebrew",
-    "armenian",
-    "lower-armenian",
-    "upper-armenian",
-    "georgian",
-    "cjk-ideographic",
-    "simp-chinese-formal",
-    "simp-chinese-informal",
-    "trad-chinese-formal",
-    "trad-chinese-informal",
-    "hiragana",
-    "katakana",
-    "hiragana-iroha",
-    "katakana-iroha",
     //none
     //
-    // display
-    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
-    //
+    // The order must match the order found in IsDisplayOutside().
     "inline",
     "block",
+    // The order must match the order found in IsDisplayInside().
     "flow-root",
-    "list-item",
-    "inline-block",
     "table",
-    "inline-table",
+    "flex",
+    "grid",
+    //"math",
+    // The order must match the order found in IsDisplayBox().
+    "contents",
+    //none
+    // The order must match the order found in IsDisplayInternal().
     "table-row-group",
     "table-header-group",
     "table-footer-group",
@@ -376,20 +471,18 @@
     "table-column",
     "table-cell",
     "table-caption",
+    // The order must match the order found in IsDisplayLegacy().
+    "inline-block",
+    "inline-table",
+    "inline-flex",
+    "inline-grid",
     "-webkit-box",
     "-webkit-inline-box",
-    "flex",
-    "inline-flex",
-    "grid",
-    "inline-grid",
-    "math",
-    "inline-math",
-    "contents",
-    //none
     "-webkit-flex",
     "-webkit-inline-flex",
     "layout",
     "inline-layout",
+    "list-item",
     //
     // cursor
     // The order of this enum must match the order found in CSSPropertyParser::ConsumeCursor().
@@ -446,6 +539,7 @@
     "uppercase",
     "lowercase",
     //none
+    "math-auto",
     //
     // visibility
     //
@@ -480,6 +574,8 @@
     "-webkit-isolate",
     "-webkit-isolate-override",
     "-webkit-plaintext",
+    "jis-b5",
+    "jis-b4",
     "landscape",
     "ledger",
     "legal",
@@ -506,6 +602,14 @@
     "underline",
     "wavy",
     "-webkit-nowrap",
+
+    // math-shift
+    // normal
+    "compact",
+
+    // math-style
+    // normal
+    // compact
 
     // CSS3 Values
     // box-align
@@ -614,10 +718,29 @@
     "ellipsis",
 
     //
+    // text-decoration-line
+    //
+    "spelling-error",
+    "grammar-error",
+
+    //
     // text-decoration-skip-ink
     //
     // auto
     // none
+
+    //
+    // text-decoration-thickness
+    //
+    // auto
+    "from-font",
+
+    // text-underline-position
+    // auto
+    // "from-font",
+    // under
+    // left
+    // right
 
     //
     // word-break
@@ -889,6 +1012,11 @@
     // image-orientation
     "from-image",
 
+    // page-orientation
+    // upright
+    "rotate-left",
+    "rotate-right",
+
     // shape-outside
     "nonzero",
     "evenodd",
@@ -953,7 +1081,7 @@
 
     // text-indent
     "each-line",
-    //hanging   // hanging exists in SVGCSSValueKeywords.in
+    "hanging",
 
     // (scan:) media feature
     "progressive",
@@ -966,6 +1094,53 @@
     // fill
     // stroke
     "markers",
+
+    // mask-type
+    "alpha",
+    "luminance",
+
+    // color-interpolation / color-interpolation-filters
+    // auto
+    "srgb",
+    "linearrgb",
+
+    // stroke-linecap
+    "butt",
+    // round
+    // square
+
+    // stroke-linejoin
+    "miter",
+    // round
+    "bevel",
+
+    // alignment-baseline
+    // auto
+    // baseline
+    "before-edge",
+    "after-edge",
+    // middle
+    "central",
+    "text-before-edge",
+    "text-after-edge",
+    "ideographic",
+    // hanging
+    "mathematical",
+
+    // dominant-baseline
+    // auto
+    "use-script",
+    "no-change",
+    "reset-size",
+
+    // buffered-rendering
+    // auto
+    // static
+    "dynamic",
+
+    // vector-effect
+    // none
+    "non-scaling-stroke",
 
     //
     // CSS3 viewport-length keywords
@@ -1020,6 +1195,7 @@
     // initial
     // inherit
     "revert",
+    "revert-layer",
     "unset",
 
     // background-image, etc.
@@ -1076,7 +1252,7 @@
     "rgba",
     "hsl",
     "hsla",
-    "-internal-light-dark-color",
+    "-internal-light-dark",
 
     // transform
     "matrix",
@@ -1119,6 +1295,12 @@
     "max",
     "clamp",
 
+    //<calc-constant>
+    //https://drafts.csswg.org/css-values/#calc-syntax
+    "infinity",
+    "-infinity",
+    "nan",
+
     // scroll-snap-type
     // none
     // x
@@ -1145,6 +1327,8 @@
     "style",
     // layout
     "size",
+    "block-size",
+    "inline-size",
 
     // grid auto-repeat
     "auto-fill",
@@ -1161,14 +1345,14 @@
     "verso",
     "avoid-column",
 
-    // shape
-    // rect
-    // round
-
     // color-gamut
     // srgb
     "p3",
     "rec2020",
+
+    // math-depth
+    "add",
+    "auto-add",
 
     // overscroll-behavior
     // auto,
@@ -1200,19 +1384,84 @@
     "only",
 
     // (prefers-reduced-motion:) media feature
+    // (prefers-reduced-data:) media feature
     "reduce",
 
     // (forced-colors:) media feature
     // none
     "active",
 
+    // forced-color-adjust
+    // auto
+    // none
+    "preserve-parent-color",
+
     // (navigation-controls) media feature
     // none
     "back-button",
 
-    // render-subtree
-    "invisible",
-    "skip-activation",
-    "skip-viewport-activation",
+    // content-visibility
+    "hidden-matchable",
+
+    // -internal-empty-line-height
+    // none
+    "fabricated",
+
+    // @supports selector(...)
+    // https://drafts.csswg.org/css-conditional-4/#typedef-supports-selector-fn
+    "selector",
+
+    // (device-posture) media feature
+    "continuous",
+    "folded",
+    "folded-over",
+
+    // scrollbar-gutter
+    // auto
+    "stable",
+    "both-edges",
+
+    // (prefers-contrast:) media feature
+    // no-preference
+    "more",
+    "less",
+    "custom",
+
+    // @counter-style system
+    "cyclic",
+    // fixed,
+    "symbolic",
+    // alphabetic,
+    "numeric",
+    "additive",
+    "extends",
+    // Predefined counter styles that don't use the above systems
+    "-internal-simp-chinese-informal",
+    "-internal-simp-chinese-formal",
+    "-internal-trad-chinese-informal",
+    "-internal-trad-chinese-formal",
+    "-internal-korean-hangul-formal",
+    "-internal-korean-hanja-informal",
+    "-internal-korean-hanja-formal",
+    "-internal-hebrew",
+    "-internal-lower-armenian",
+    "-internal-upper-armenian",
+    "-internal-ethiopic-numeric",
+
+    // @counter-style range
+    // infinite,
+
+    // @counter-style speak-as
+    // auto
+    "bullets",
+    "numbers",
+    "words",
+
+    // ([video]-dynamic-range) media feature
+    "standard",
+    "high",
+
+    // Layered @import rule
+    "layer",
   ],
 }

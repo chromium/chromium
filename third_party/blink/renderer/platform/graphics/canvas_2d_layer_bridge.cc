@@ -30,7 +30,7 @@
 
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -57,15 +56,14 @@
 namespace blink {
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const IntSize& size,
-                                         AccelerationMode acceleration_mode,
-                                         const CanvasColorParams& color_params)
+                                         RasterMode raster_mode,
+                                         OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
       is_hidden_(false),
       is_being_displayed_(false),
-      software_rendering_while_hidden_(false),
-      acceleration_mode_(acceleration_mode),
-      color_params_(color_params),
+      raster_mode_(raster_mode),
+      opacity_mode_(opacity_mode),
       size_(size),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr),
@@ -75,22 +73,6 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(const IntSize& size,
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
   TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
                        TRACE_EVENT_SCOPE_GLOBAL);
-
-  // A raw pointer is safe here because the callback is only used by the
-  // |recorder_|.
-  finalize_frame_callback_ = WTF::BindRepeating(
-      &Canvas2DLayerBridge::FinalizeFrame, WTF::Unretained(this));
-  StartRecording();
-
-  // Clear the background transparent or opaque. Similar code at
-  // CanvasResourceProvider::Clear().
-  if (IsValid()) {
-    DCHECK(recorder_);
-    recorder_->getRecordingCanvas()->clear(
-        color_params_.GetOpacityMode() == kOpaque ? SK_ColorBLACK
-                                                  : SK_ColorTRANSPARENT);
-    DidDraw(FloatRect(0.f, 0.f, size_.Width(), size_.Height()));
-  }
 }
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
@@ -102,8 +84,7 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (!layer_)
     return;
 
-  if (acceleration_mode_ != kDisableAcceleration) {
-    GraphicsLayer::UnregisterContentsLayer(layer_.get());
+  if (raster_mode_ == RasterMode::kGPU) {
     layer_->ClearTexture();
     // Orphaning the layer is required to trigger the recreation of a new layer
     // in the case where destruction is caused by a canvas resize. Test:
@@ -114,18 +95,8 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   layer_ = nullptr;
 }
 
-void Canvas2DLayerBridge::StartRecording() {
-  recorder_ =
-      std::make_unique<MemoryManagedPaintRecorder>(finalize_frame_callback_);
-  cc::PaintCanvas* canvas =
-      recorder_->beginRecording(size_.Width(), size_.Height());
-
-  // Always save an initial frame, to support resetting the top level matrix
-  // and clip.
-  canvas->save();
-
-  if (resource_host_)
-    resource_host_->RestoreCanvasMatrixClipStack(canvas);
+void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {
+  resource_host_ = host;
 }
 
 void Canvas2DLayerBridge::ResetResourceProvider() {
@@ -133,47 +104,30 @@ void Canvas2DLayerBridge::ResetResourceProvider() {
     resource_host_->ReplaceResourceProvider(nullptr);
 }
 
-bool Canvas2DLayerBridge::ShouldAccelerate(AccelerationHint hint) const {
-  bool accelerate;
-  if (software_rendering_while_hidden_) {
-    accelerate = false;
-  } else if (acceleration_mode_ == kForceAccelerationForTesting) {
-    accelerate = true;
-  } else if (acceleration_mode_ == kDisableAcceleration) {
-    accelerate = false;
-  } else if (acceleration_mode_ == kEnableAcceleration) {
-    accelerate = true;
-  } else {
-    accelerate = hint == kPreferAcceleration ||
-                 hint == kPreferAccelerationAfterVisibilityChange;
-  }
+bool Canvas2DLayerBridge::ShouldAccelerate() const {
+  bool use_gpu = raster_mode_ == RasterMode::kGPU;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (accelerate && (!context_provider_wrapper ||
-                     context_provider_wrapper->ContextProvider()
-                             ->RasterInterface()
-                             ->GetGraphicsResetStatusKHR() != GL_NO_ERROR)) {
-    accelerate = false;
+  if (use_gpu &&
+      (!context_provider_wrapper ||
+       context_provider_wrapper->ContextProvider()->IsContextLost())) {
+    use_gpu = false;
   }
-  return accelerate;
+  return use_gpu;
 }
 
 bool Canvas2DLayerBridge::IsAccelerated() const {
-  if (acceleration_mode_ == kDisableAcceleration)
+  if (raster_mode_ == RasterMode::kCPU)
     return false;
   if (IsHibernating())
-    return false;
-  if (software_rendering_while_hidden_)
     return false;
   if (resource_host_ && resource_host_->ResourceProvider())
     return resource_host_->ResourceProvider()->IsAccelerated();
 
-  // Whether or not to accelerate is not yet resolved. Determine whether
-  // immediate presentation of the canvas would result in the canvas being
-  // accelerated. Presentation is assumed to be a 'PreferAcceleration'
-  // operation.
-  return ShouldAccelerate(kPreferAcceleration);
+  // Whether or not to accelerate is not yet resolved, the canvas cannot be
+  // accelerated if the gpu context is lost.
+  return ShouldAccelerate();
 }
 
 static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
@@ -221,12 +175,6 @@ void Canvas2DLayerBridge::Hibernate() {
   }
 
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::hibernate");
-  sk_sp<SkSurface> temp_hibernation_surface =
-      SkSurface::MakeRasterN32Premul(size_.Width(), size_.Height());
-  if (!temp_hibernation_surface) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueToAllocationFailure);
-    return;
-  }
   // No HibernationEvent reported on success. This is on purppose to avoid
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
@@ -244,9 +192,7 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  temp_hibernation_surface->getCanvas()->drawImage(
-      snapshot->PaintImageForCurrentFrame().GetSkImage(), 0, 0, &copy_paint);
-  hibernation_image_ = temp_hibernation_surface->makeImageSnapshot();
+  hibernation_image_ = snapshot->PaintImageForCurrentFrame().GetSwSkImage();
   ResetResourceProvider();
   if (layer_)
     layer_->ClearTexture();
@@ -261,8 +207,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
   return resource_host_ ? resource_host_->ResourceProvider() : nullptr;
 }
 
-CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider(
-    AccelerationHint hint) {
+CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   DCHECK(resource_host_);
   CanvasResourceProvider* resource_provider = ResourceProvider();
 
@@ -286,36 +231,43 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider(
     return resource_provider;
   }
 
-  if (layer_ && !IsHibernating() && hint == kPreferAcceleration &&
-      acceleration_mode_ != kDisableAcceleration) {
-    return nullptr;  // re-creation will happen through restore()
-  }
+  // Restore() is tried at most four times in two seconds to recreate the
+  // ResourceProvider before the final attempt, in which a new
+  // Canvas2DLayerBridge is created along with its resource provider.
 
-  bool want_acceleration = ShouldAccelerate(hint);
-  if (CANVAS2D_BACKGROUND_RENDER_SWITCH_TO_CPU && IsHidden() &&
-      want_acceleration) {
-    want_acceleration = false;
-    software_rendering_while_hidden_ = true;
+  bool want_acceleration = ShouldAccelerate();
+  RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
+                                                   : RasterModeHint::kPreferCPU;
+
+  // Re-creation will happen through Restore().
+  // If the Canvas2DLayerBridge has just been created, possibly due to failed
+  // attempts of Restore(), the layer would not exist, therefore, it will not
+  // fall through this clause to try Restore() again
+  if (layer_ && !IsHibernating() &&
+      adjusted_hint == RasterModeHint::kPreferGPU) {
+    return nullptr;
   }
-  AccelerationHint adjusted_hint =
-      want_acceleration ? kPreferAcceleration : kPreferNoAcceleration;
 
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack from HTMLCanvasElement.
   resource_provider =
       resource_host_->GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
-  if (!resource_provider)
+  if (!resource_provider || !resource_provider->IsValid())
     return nullptr;
+
+  // Calling to DidDraw because GetOrCreateResourceProvider created a new
+  // provider and cleared it
+  // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
+  DidDraw();
 
   if (IsAccelerated() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    layer_->SetContentsOpaque(ColorParams().GetOpacityMode() == kOpaque);
-    layer_->SetBlendBackgroundColor(ColorParams().GetOpacityMode() != kOpaque);
+    layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
+    layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
-                               kNone_SkFilterQuality);
-    GraphicsLayer::RegisterContentsLayer(layer_.get());
+                               cc::PaintFlags::FilterQuality::kNone);
   }
 
   if (!IsHibernating())
@@ -332,13 +284,10 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider(
     }
   }
 
-  PaintFlags copy_paint;
-  copy_paint.setBlendMode(SkBlendMode::kSrc);
   PaintImageBuilder builder = PaintImageBuilder::WithDefault();
   builder.set_image(hibernation_image_, PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
-  resource_provider->Canvas()->drawImage(builder.TakePaintImage(), 0, 0,
-                                         &copy_paint);
+  resource_provider->RestoreBackBuffer(builder.TakePaintImage());
   hibernation_image_.reset();
 
   if (resource_host_) {
@@ -348,17 +297,23 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider(
   return resource_provider;
 }
 
-cc::PaintCanvas* Canvas2DLayerBridge::DrawingCanvas() {
+cc::PaintCanvas* Canvas2DLayerBridge::GetPaintCanvas() {
   DCHECK(resource_host_);
-  return recorder_->getRecordingCanvas();
+  // We avoid only using GetOrCreateResourceProvider() here to skip the
+  // IsValid/ContextLost checks since this is in hot code paths. The context
+  // does not need to be valid here since only the recording canvas is used.
+  if (!ResourceProvider() && !GetOrCreateResourceProvider())
+    return nullptr;
+  return ResourceProvider()->Canvas();
 }
 
-void Canvas2DLayerBridge::UpdateFilterQuality() {
-  SkFilterQuality filter_quality = resource_host_->FilterQuality();
-  if (GetOrCreateResourceProvider())
-    ResourceProvider()->SetFilterQuality(filter_quality);
+void Canvas2DLayerBridge::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
+  if (CanvasResourceProvider* resource_provider = ResourceProvider())
+    resource_provider->SetFilterQuality(filter_quality);
   if (layer_)
-    layer_->SetNearestNeighbor(filter_quality == kNone_SkFilterQuality);
+    layer_->SetNearestNeighbor(filter_quality ==
+                               cc::PaintFlags::FilterQuality::kNone);
 }
 
 void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
@@ -385,28 +340,6 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
           WTF::Bind(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
     }
   }
-  if (!IsHidden() && software_rendering_while_hidden_) {
-    FlushRecording();
-    PaintFlags copy_paint;
-    copy_paint.setBlendMode(SkBlendMode::kSrc);
-
-    std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-        resource_host_->ReplaceResourceProvider(nullptr);
-
-    software_rendering_while_hidden_ = false;
-    GetOrCreateResourceProvider(kPreferAccelerationAfterVisibilityChange);
-
-    if (ResourceProvider()) {
-      if (old_resource_provider) {
-        cc::PaintImage snapshot =
-            old_resource_provider->Snapshot()->PaintImageForCurrentFrame();
-        ResourceProvider()->Canvas()->drawImage(snapshot, 0, 0, &copy_paint);
-      }
-    } else {
-      // New resource provider could not be created. Stay with old one.
-      resource_host_->ReplaceResourceProvider(std::move(old_resource_provider));
-    }
-  }
   if (!IsHidden() && IsHibernating())
     GetOrCreateResourceProvider();  // Rude awakening
 }
@@ -425,7 +358,7 @@ void Canvas2DLayerBridge::SetIsBeingDisplayed(bool displayed) {
 }
 
 void Canvas2DLayerBridge::DrawFullImage(const cc::PaintImage& image) {
-  DrawingCanvas()->drawImage(image, 0, 0);
+  GetPaintCanvas()->drawImage(image, 0, 0);
 }
 
 bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
@@ -436,36 +369,27 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   if (!GetOrCreateResourceProvider())
     return false;
 
-  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.Width() &&
-      y + orig_info.height() >= size_.Height()) {
+  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.width() &&
+      y + orig_info.height() >= size_.height()) {
     SkipQueuedDrawCommands();
   } else {
     FlushRecording();
     if (!GetOrCreateResourceProvider())
       return false;
   }
-
-  last_record_tainted_by_write_pixels_ = true;
   have_recorded_draw_commands_ = false;
-  // Add a save to initialize the transform/clip stack and then restore it after
-  // the draw. This is needed because each recording initializes and the resets
-  // this state after every flush.
-  cc::PaintCanvas* canvas = ResourceProvider()->Canvas();
-  PaintCanvasAutoRestore auto_restore(canvas, true);
-  if (GetOrCreateResourceProvider()) {
-    resource_host_->RestoreCanvasMatrixClipStack(canvas);
-  }
 
-  ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
-  return true;
+  bool wrote_pixels =
+      ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
+  if (wrote_pixels)
+    last_record_tainted_by_write_pixels_ = true;
+
+  return wrote_pixels;
 }
 
 void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
-  if (have_recorded_draw_commands_) {
-    recorder_->finishRecordingAsPicture();
-    StartRecording();
-    have_recorded_draw_commands_ = false;
-  }
+  ResourceProvider()->SkipQueuedDrawCommands();
+  have_recorded_draw_commands_ = false;
 
   if (rate_limiter_)
     rate_limiter_->Reset();
@@ -513,12 +437,12 @@ void Canvas2DLayerBridge::FinishRasterTimers(
     raster_interface->GetQueryObjectuivEXT(it->gl_query_id, GL_QUERY_RESULT_EXT,
                                            &raw_gpu_duration);
     base::TimeDelta gpu_duration_microseconds =
-        base::TimeDelta::FromMicroseconds(raw_gpu_duration);
+        base::Microseconds(raw_gpu_duration);
     base::TimeDelta total_time =
         gpu_duration_microseconds + it->cpu_raster_duration;
 
-    base::TimeDelta min = base::TimeDelta::FromMicroseconds(1);
-    base::TimeDelta max = base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta min = base::Microseconds(1);
+    base::TimeDelta max = base::Milliseconds(100);
     int num_buckets = 100;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.Canvas.RasterDuration.Accelerated.GPU",
@@ -553,10 +477,16 @@ void Canvas2DLayerBridge::FlushRecording() {
 
   // Sample one out of every kRasterMetricProbability frames to time
   // If the canvas is accelerated, we also need access to the raster_interface
-  bool measure_raster_metric = (raster_interface || !IsAccelerated()) &&
-                               bernoulli_distribution_(random_generator_);
+
+  // We are using @dont_use_idle_scheduling_for_testing_ temporarily to always
+  // measure while testing.
+  const bool will_measure = dont_use_idle_scheduling_for_testing_ ||
+                            bernoulli_distribution_(random_generator_);
+  const bool measure_raster_metric =
+      (raster_interface || !IsAccelerated()) && will_measure;
+
   RasterTimer rasterTimer;
-  base::Optional<base::ElapsedTimer> timer;
+  absl::optional<base::ElapsedTimer> timer;
   // Start Recording the raster duration
   if (measure_raster_metric) {
     if (IsAccelerated()) {
@@ -568,17 +498,15 @@ void Canvas2DLayerBridge::FlushRecording() {
     timer.emplace();
   }
 
-  {  // Make a new scope so that PaintRecord gets deleted and that gets timed
-    cc::PaintCanvas* canvas = ResourceProvider()->Canvas();
-    last_recording_ = recorder_->finishRecordingAsPicture();
-    canvas->drawPicture(last_recording_);
-    last_record_tainted_by_write_pixels_ = false;
-    if (!clear_frame_ || !resource_host_ || !resource_host_->IsPrinting()) {
-      last_recording_ = nullptr;
-      clear_frame_ = false;
-    }
-    ResourceProvider()->FlushSkia();
+  if (!clear_frame_ || !resource_host_ || !resource_host_->IsPrinting()) {
+    ResourceProvider()->FlushCanvas();
+    last_recording_ = nullptr;
+    clear_frame_ = false;
+  } else {
+    last_recording_ = ResourceProvider()->FlushCanvasAndPreserveRecording();
   }
+
+  last_record_tainted_by_write_pixels_ = false;
 
   // Finish up the timing operation
   if (measure_raster_metric) {
@@ -589,8 +517,7 @@ void Canvas2DLayerBridge::FlushRecording() {
     } else {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Blink.Canvas.RasterDuration.Unaccelerated", timer->Elapsed(),
-          base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromMilliseconds(100), 100);
+          base::Microseconds(1), base::Milliseconds(100), 100);
     }
   }
 
@@ -601,7 +528,6 @@ void Canvas2DLayerBridge::FlushRecording() {
   if (GetOrCreateResourceProvider())
     ResourceProvider()->ReleaseLockedImages();
 
-  StartRecording();
   have_recorded_draw_commands_ = false;
 }
 
@@ -616,7 +542,7 @@ bool Canvas2DLayerBridge::IsValid() {
 bool Canvas2DLayerBridge::CheckResourceProviderValid() {
   if (IsHibernating())
     return true;
-  if (!layer_ || acceleration_mode_ == kDisableAcceleration)
+  if (!layer_ || raster_mode_ == RasterMode::kCPU)
     return true;
   if (context_lost_)
     return false;
@@ -638,20 +564,14 @@ bool Canvas2DLayerBridge::Restore() {
     return false;
   DCHECK(!ResourceProvider());
 
-  gpu::raster::RasterInterface* shared_raster_interface = nullptr;
   layer_->ClearTexture();
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (context_provider_wrapper) {
-    shared_raster_interface =
-        context_provider_wrapper->ContextProvider()->RasterInterface();
-  }
 
-  if (shared_raster_interface &&
-      shared_raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
+  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
     CanvasResourceProvider* resource_provider =
         resource_host_->GetOrCreateCanvasResourceProviderImpl(
-            kPreferAcceleration);
+            RasterModeHint::kPreferGPU);
 
     // The current paradigm does not support switching from accelerated to
     // non-accelerated, which would be tricky due to changes to the layer tree,
@@ -674,7 +594,7 @@ bool Canvas2DLayerBridge::Restore() {
 bool Canvas2DLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   DCHECK(layer_);  // This explodes if FinalizeFrame() was not called.
 
   frames_since_last_commit_ = 0;
@@ -682,7 +602,7 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
     rate_limiter_->Reset();
 
   // If hibernating but not hidden, we want to wake up from hibernation.
-  if ((IsHibernating() || software_rendering_while_hidden_) && IsHidden())
+  if (IsHibernating() && IsHidden())
     return false;
 
   if (!IsValid())
@@ -708,8 +628,7 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
     // If the resource did not change, the release will be handled correctly
     // when the callback from the previous frame is dispatched. But run the
     // |out_release_callback| to release the ref acquired above.
-    (*out_release_callback)->Run(gpu::SyncToken(), false /* is_lost */);
-    *out_release_callback = nullptr;
+    std::move(*out_release_callback).Run(gpu::SyncToken(), false /* is_lost */);
     return false;
   }
 
@@ -718,11 +637,11 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
 
 cc::Layer* Canvas2DLayerBridge::Layer() {
   // Trigger lazy layer creation
-  GetOrCreateResourceProvider(kPreferAcceleration);
+  GetOrCreateResourceProvider();
   return layer_.get();
 }
 
-void Canvas2DLayerBridge::DidDraw(const FloatRect& /* rect */) {
+void Canvas2DLayerBridge::DidDraw() {
   have_recorded_draw_commands_ = true;
 }
 
@@ -731,7 +650,7 @@ void Canvas2DLayerBridge::FinalizeFrame() {
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
-  if (!GetOrCreateResourceProvider(kPreferAcceleration))
+  if (!GetOrCreateResourceProvider())
     return;
 
   FlushRecording();
@@ -752,13 +671,12 @@ void Canvas2DLayerBridge::FinalizeFrame() {
     rate_limiter_->Tick();
 }
 
-void Canvas2DLayerBridge::DoPaintInvalidation(const FloatRect& dirty_rect) {
-  if (layer_ && acceleration_mode_ != kDisableAcceleration)
-    layer_->SetNeedsDisplayRect(EnclosingIntRect(dirty_rect));
+void Canvas2DLayerBridge::DoPaintInvalidation(const IntRect& dirty_rect) {
+  if (layer_ && raster_mode_ == RasterMode::kGPU)
+    layer_->SetNeedsDisplayRect(ToGfxRect(dirty_rect));
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
-    AccelerationHint hint) {
+scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {
   if (snapshot_state_ == kInitialSnapshotState)
     snapshot_state_ = kDidAcquireSnapshot;
   if (IsHibernating())
@@ -768,10 +686,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account, as well as after
   // FlushRecording, in case the playback crashed the GPU context.
-  if (!GetOrCreateResourceProvider(hint))
+  if (!GetOrCreateResourceProvider())
     return nullptr;
   FlushRecording();
-  if (!GetOrCreateResourceProvider(hint))
+  if (!GetOrCreateResourceProvider())
     return nullptr;
   return ResourceProvider()->Snapshot();
 }

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_
 
-#include <string>
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class DictionaryValue;
@@ -18,20 +18,25 @@ class ExternalCacheDelegate {
   virtual ~ExternalCacheDelegate() = default;
 
   // Caller owns |prefs|.
-  virtual void OnExtensionListsUpdated(const base::DictionaryValue* prefs) = 0;
+  virtual void OnExtensionListsUpdated(const base::DictionaryValue* prefs);
 
   // Called after extension with |id| is loaded in cache.
-  virtual void OnExtensionLoadedInCache(const std::string& id) = 0;
+  virtual void OnExtensionLoadedInCache(const extensions::ExtensionId& id);
 
   // Called when extension with |id| fails to load due to a download error.
-  virtual void OnExtensionDownloadFailed(const std::string& id) = 0;
+  virtual void OnExtensionDownloadFailed(const extensions::ExtensionId& id);
 
-  // Cache needs to provide already installed extensions otherwise they
-  // will be removed. Cache calls this function to get version of installed
-  // extension or empty string if not installed.
-  virtual std::string GetInstalledExtensionVersion(const std::string& id) = 0;
+  // Called when the cached .crx file for |id| is deleted (e.g. due to failed
+  // install / corrupted file).
+  virtual void OnCachedExtensionFileDeleted(const extensions::ExtensionId& id);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ExternalCacheDelegate;
+}
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_DELEGATE_H_

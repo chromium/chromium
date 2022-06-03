@@ -9,7 +9,6 @@ import org.chromium.blink.mojom.RemoteObjectHost;
 import org.chromium.mojo.bindings.InterfaceRequest;
 import org.chromium.mojo.system.MojoException;
 
-import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 
 /**
@@ -29,13 +28,6 @@ import java.lang.ref.WeakReference;
  */
 class RemoteObjectHostImpl implements RemoteObjectHost {
     /**
-     * Annotation required on all exposed methods.
-     * If null, no annotation is required.
-     * In practice, this is usually {@link android.webkit.JavascriptInterface}.
-     */
-    private final Class<? extends Annotation> mSafeAnnotationClass;
-
-    /**
      * Auditor passed on to {@link RemoteObjectImpl}.
      * Should not hold any strong references that may lead to the contents.
      */
@@ -47,11 +39,17 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
      */
     private final WeakReference<RemoteObjectRegistry> mRegistry;
 
-    RemoteObjectHostImpl(Class<? extends Annotation> safeAnnotationClass,
-            RemoteObjectImpl.Auditor auditor, RemoteObjectRegistry registry) {
-        mSafeAnnotationClass = safeAnnotationClass;
+    private boolean mAllowInspection;
+
+    RemoteObjectHostImpl(RemoteObjectImpl.Auditor auditor, RemoteObjectRegistry registry,
+            boolean allowInspection) {
         mAuditor = auditor;
         mRegistry = new WeakReference<>(registry);
+        mAllowInspection = allowInspection;
+    }
+
+    public void setAllowInspection(boolean allow) {
+        mAllowInspection = allow;
     }
 
     @Override
@@ -65,10 +63,19 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
             if (target == null) {
                 return;
             }
-            RemoteObjectImpl impl =
-                    new RemoteObjectImpl(target, mSafeAnnotationClass, mAuditor, registry);
+            RemoteObjectImpl impl = new RemoteObjectImpl(target,
+                    registry.getSafeAnnotationClass(target), mAuditor, registry, mAllowInspection);
             RemoteObject.MANAGER.bind(impl, request);
         }
+    }
+
+    @Override
+    public void acquireObject(int objectId) {
+        RemoteObjectRegistry registry = mRegistry.get();
+        if (registry == null) {
+            return;
+        }
+        registry.refObjectById(objectId);
     }
 
     @Override
@@ -77,7 +84,7 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
         if (registry == null) {
             return;
         }
-        registry.removeObjectById(objectId);
+        registry.unrefObjectById(objectId);
     }
 
     @Override

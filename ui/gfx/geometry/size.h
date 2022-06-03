@@ -16,7 +16,7 @@
 
 #if defined(OS_WIN)
 typedef struct tagSIZE SIZE;
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
 typedef struct CGSize CGSize;
 #endif
 
@@ -28,11 +28,11 @@ class GEOMETRY_EXPORT Size {
   constexpr Size() : width_(0), height_(0) {}
   constexpr Size(int width, int height)
       : width_(std::max(0, width)), height_(std::max(0, height)) {}
-#if defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_APPLE)
   explicit Size(const CGSize& s);
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_APPLE)
   Size& operator=(const CGSize& s);
 #endif
 
@@ -42,7 +42,7 @@ class GEOMETRY_EXPORT Size {
 
 #if defined(OS_WIN)
   SIZE ToSIZE() const;
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   CGSize ToCGSize() const;
 #endif
 
@@ -57,6 +57,8 @@ class GEOMETRY_EXPORT Size {
   // Returns a checked numeric representation of the area.
   base::CheckedNumeric<int> GetCheckedArea() const;
 
+  uint64_t Area64() const { return static_cast<uint64_t>(width_) * height_; }
+
   void SetSize(int width, int height) {
     set_width(width);
     set_height(height);
@@ -68,6 +70,7 @@ class GEOMETRY_EXPORT Size {
   void SetToMax(const Size& other);
 
   bool IsEmpty() const { return !width() || !height(); }
+  bool IsZero() const { return !width() && !height(); }
 
   std::string ToString() const;
 

@@ -17,14 +17,15 @@ namespace chromecast {
 class QueryableDataHostFuchsia : public QueryableDataHost {
  public:
   QueryableDataHostFuchsia();
+
+  QueryableDataHostFuchsia(const QueryableDataHostFuchsia&) = delete;
+  QueryableDataHostFuchsia& operator=(const QueryableDataHostFuchsia&) = delete;
+
   ~QueryableDataHostFuchsia() override;
 
   // chromecast::QueryableDataHost implementation:
   void SendQueryableValue(const std::string& key,
                           const base::Value& value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryableDataHostFuchsia);
 };
 
 }  // namespace chromecast

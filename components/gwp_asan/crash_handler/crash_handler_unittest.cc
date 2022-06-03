@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/page_size.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
@@ -34,7 +34,7 @@
 #include "third_party/crashpad/crashpad/snapshot/minidump/process_snapshot_minidump.h"
 #include "third_party/crashpad/crashpad/tools/tool_support.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #endif
 
@@ -84,7 +84,7 @@ MULTIPROCESS_TEST_MAIN(CrashpadHandler) {
 
 // Child process that launches the crashpad handler and then crashes.
 MULTIPROCESS_TEST_MAIN(CrashingProcess) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Disable the system crash reporter from inspecting this crash (it is slow
   // and causes test timeouts.)
   crashpad::CrashpadInfo::GetCrashpadInfo()
@@ -122,24 +122,24 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   std::map<std::string, std::string> annotations;
   std::vector<std::string> arguments;
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   static crashpad::SanitizationInformation sanitization_info = {};
-  static crashpad::SanitizationMemoryRangeWhitelist memory_whitelist;
+  static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
   if (cmd_line->HasSwitch("sanitize")) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
     auto* range_array =
-        new crashpad::SanitizationMemoryRangeWhitelist::Range[memory_ranges
-                                                                  .size()];
+        new crashpad::SanitizationAllowedMemoryRanges::Range[memory_ranges
+                                                                 .size()];
     for (size_t i = 0; i < memory_ranges.size(); i++) {
       range_array[i].base =
           reinterpret_cast<crashpad::VMAddress>(memory_ranges[i].first);
       range_array[i].length = memory_ranges[i].second;
     }
-    memory_whitelist.size = memory_ranges.size();
-    memory_whitelist.entries =
+    allowed_memory_ranges.size = memory_ranges.size();
+    allowed_memory_ranges.entries =
         reinterpret_cast<crashpad::VMAddress>(range_array);
-    sanitization_info.memory_range_whitelist_address =
-        reinterpret_cast<crashpad::VMAddress>(&memory_whitelist);
+    sanitization_info.allowed_memory_ranges_address =
+        reinterpret_cast<crashpad::VMAddress>(&allowed_memory_ranges);
     arguments.push_back(base::StringPrintf("--sanitization-information=%p",
                                            &sanitization_info));
   }
@@ -150,7 +150,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
 #endif
 
   crashpad::CrashpadClient* client = new crashpad::CrashpadClient();
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool handler =
       client->StartHandlerAtCrash(/* handler */ cmd_line->GetProgram(),
                                   /* database */ directory,
@@ -458,7 +458,7 @@ TEST_P(CrashHandlerTest, MAYBE_DISABLED(UnrelatedException)) {
 INSTANTIATE_TEST_SUITE_P(VaryAllocator,
                          CrashHandlerTest,
                          testing::Values(
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
                              TestParams("malloc", true),
 #endif
                              TestParams("malloc", false),

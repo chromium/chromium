@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/animationworklet/animator.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_state_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/worklet_animation_effect_or_worklet_group_effect.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_workletanimationeffect_workletgroupeffect.h"
 #include "third_party/blink/renderer/modules/animationworklet/animator_definition.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -19,20 +19,23 @@ Animator::Animator(v8::Isolate* isolate,
                    v8::Local<v8::Value> instance,
                    const String& name,
                    WorkletAnimationOptions options,
-                   const Vector<base::Optional<base::TimeDelta>>& local_times,
-                   const Vector<Timing>& timings)
+                   const Vector<absl::optional<base::TimeDelta>>& local_times,
+                   const Vector<Timing>& timings,
+                   const Vector<Timing::NormalizedTiming>& normalized_timings)
     : definition_(definition),
       instance_(isolate, instance),
       name_(name),
       options_(options),
       group_effect_(
-          MakeGarbageCollected<WorkletGroupEffect>(local_times, timings)) {
+          MakeGarbageCollected<WorkletGroupEffect>(local_times,
+                                                   timings,
+                                                   normalized_timings)) {
   DCHECK_GE(local_times.size(), 1u);
 }
 
 Animator::~Animator() = default;
 
-void Animator::Trace(blink::Visitor* visitor) {
+void Animator::Trace(Visitor* visitor) const {
   visitor->Trace(definition_);
   visitor->Trace(instance_);
   visitor->Trace(group_effect_);
@@ -44,15 +47,19 @@ bool Animator::Animate(
     AnimationWorkletDispatcherOutput::AnimationState* output) {
   DCHECK(!std::isnan(current_time));
 
-  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.Get(isolate);
   if (IsUndefinedOrNull(instance))
     return false;
 
-  WorkletAnimationEffectOrWorkletGroupEffect effect;
+  V8UnionWorkletAnimationEffectOrWorkletGroupEffect* effect = nullptr;
   if (group_effect_->getChildren().size() == 1) {
-    effect.SetWorkletAnimationEffect(group_effect_->getChildren()[0]);
+    effect =
+        MakeGarbageCollected<V8UnionWorkletAnimationEffectOrWorkletGroupEffect>(
+            group_effect_->getChildren()[0]);
   } else {
-    effect.SetWorkletGroupEffect(group_effect_);
+    effect =
+        MakeGarbageCollected<V8UnionWorkletAnimationEffectOrWorkletGroupEffect>(
+            group_effect_);
   }
 
   v8::TryCatch try_catch(isolate);
@@ -76,6 +83,16 @@ Vector<Timing> Animator::GetTimings() const {
   return timings;
 }
 
+Vector<Timing::NormalizedTiming> Animator::GetNormalizedTimings() const {
+  Vector<Timing::NormalizedTiming> normalized_timings;
+  normalized_timings.ReserveInitialCapacity(
+      group_effect_->getChildren().size());
+  for (const auto& effect : group_effect_->getChildren()) {
+    normalized_timings.push_back(effect->NormalizedTiming());
+  }
+  return normalized_timings;
+}
+
 bool Animator::IsStateful() const {
   return definition_->IsStateful();
 }
@@ -85,7 +102,7 @@ v8::Local<v8::Value> Animator::State(v8::Isolate* isolate,
   if (!IsStateful())
     return v8::Undefined(isolate);
 
-  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.Get(isolate);
   DCHECK(!IsUndefinedOrNull(instance));
 
   v8::TryCatch try_catch(isolate);

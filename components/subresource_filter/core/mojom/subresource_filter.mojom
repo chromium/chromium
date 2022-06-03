@@ -4,12 +4,24 @@
 
 module subresource_filter.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 enum ActivationLevel {
   kDisabled,
   kDryRun,
   kEnabled
+};
+
+// Enumerates which ads violations are recorded for a page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please update the enum named
+// AdsViolations in enums.xml when adding a new entry here.
+enum AdsViolation {
+    kMobileAdDensityByHeightAbove30,
+    kHeavyAdsInterventionAtHostLimit,
+    kLargeStickyAd,
+    kOverlayPopupAd,
 };
 
 struct ActivationState {
@@ -23,10 +35,10 @@ struct ActivationState {
   // frames). See proto::ActivationType for details.
   //
   // |filtering_disabled_for_document| indicates whether the document in this
-  // frame is subject to a whitelist rule with DOCUMENT activation type.
+  // frame is subject to an allowlist rule with DOCUMENT activation type.
   //
   // |generic_blocking_rules_disabled| indicates whether the document in this
-  // frame is subject to a whitelist rule with GENERICBLOCK activation type, and
+  // frame is subject to an allowlist rule with GENERICBLOCK activation type, and
   // is only defined if |filtering_disabled_for_document| is false.
   bool filtering_disabled_for_document = false;
   bool generic_blocking_rules_disabled = false;
@@ -71,6 +83,10 @@ interface SubresourceFilterHost {
   // ReadyToCommitNavigation time.
   FrameIsAdSubframe();
 
+  // Called when a RenderFrame is created with ad script on the v8 stack. The
+  // browser keeps track of this for deciding whether to tag subframes as ads.
+  SubframeWasCreatedByAdScript();
+
   // This is sent to a RenderFrameHost in the browser when a document load is
   // finished, just before the DidFinishLoad message, and contains statistics
   // collected by the DocumentSubresourceFilter up until that point: the number
@@ -78,4 +94,16 @@ interface SubresourceFilterHost {
   // evaluating subresource loads in its allowLoad method. The time metrics are
   // equal to zero if performance measurements were disabled for the load.
   SetDocumentLoadStatistics(DocumentLoadStatistics statistics);
+
+  // Called when a render frame detects an ads violation. It is used to record
+  // ads violations within the ads intervention manager.
+  OnAdsViolationTriggered(AdsViolation violation);
+};
+
+// Subresource filter implemented by the renderer.
+interface SubresourceFilterRulesetObserver {
+  // Sends a read-only mode file handle with the ruleset data to a renderer
+  // process, containing the subresource filtering rules to be consulted for all
+  // subsequent document loads that have subresource filtering activated.
+  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
 };

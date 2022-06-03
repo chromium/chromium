@@ -13,14 +13,10 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
+#include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "ui/base/dragdrop/download_file_interface.h"
-#include "ui/base/ui_base_export.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
 
@@ -28,14 +24,10 @@ namespace base {
 class Pickle;
 }
 
-namespace gfx {
-class ImageSkia;
-class Vector2d;
-}
-
 namespace ui {
 
-struct ClipboardFormatType;
+class ClipboardFormatType;
+class DataTransferEndpoint;
 struct FileInfo;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,7 +44,7 @@ struct FileInfo;
 // TabContentsViewGtk uses a different class to handle drag support that does
 // not use OSExchangeData. As such, file contents and html support is only
 // compiled on windows.
-class UI_BASE_EXPORT OSExchangeData {
+class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  public:
   // Enumeration of the known formats.
   enum Format {
@@ -60,108 +52,25 @@ class UI_BASE_EXPORT OSExchangeData {
     URL            = 1 << 1,
     FILE_NAME      = 1 << 2,
     PICKLED_DATA   = 1 << 3,
-#if defined(OS_WIN)
     FILE_CONTENTS  = 1 << 4,
-#endif
 #if defined(USE_AURA)
     HTML           = 1 << 5,
-#endif
-  };
-
-  // Controls whether or not filenames should be converted to file: URLs when
-  // getting a URL.
-  enum FilenameToURLPolicy { CONVERT_FILENAMES, DO_NOT_CONVERT_FILENAMES, };
-
-  // Encapsulates the info about a file to be downloaded.
-  struct UI_BASE_EXPORT DownloadFileInfo {
-    DownloadFileInfo(const base::FilePath& filename,
-                     std::unique_ptr<DownloadFileProvider> downloader);
-    ~DownloadFileInfo();
-
-    base::FilePath filename;
-    std::unique_ptr<DownloadFileProvider> downloader;
-  };
-
-  // Provider defines the platform specific part of OSExchangeData that
-  // interacts with the native system.
-  class UI_BASE_EXPORT Provider {
-   public:
-    Provider() {}
-    virtual ~Provider() {}
-
-    virtual std::unique_ptr<Provider> Clone() const = 0;
-
-    virtual void MarkOriginatedFromRenderer() = 0;
-    virtual bool DidOriginateFromRenderer() const = 0;
-
-    virtual void SetString(const base::string16& data) = 0;
-    virtual void SetURL(const GURL& url, const base::string16& title) = 0;
-    virtual void SetFilename(const base::FilePath& path) = 0;
-    virtual void SetFilenames(const std::vector<FileInfo>& file_names) = 0;
-    virtual void SetPickledData(const ClipboardFormatType& format,
-                                const base::Pickle& data) = 0;
-
-    virtual bool GetString(base::string16* data) const = 0;
-    virtual bool GetURLAndTitle(FilenameToURLPolicy policy,
-                                GURL* url,
-                                base::string16* title) const = 0;
-    virtual bool GetFilename(base::FilePath* path) const = 0;
-    virtual bool GetFilenames(std::vector<FileInfo>* file_names) const = 0;
-    virtual bool GetPickledData(const ClipboardFormatType& format,
-                                base::Pickle* data) const = 0;
-
-    virtual bool HasString() const = 0;
-    virtual bool HasURL(FilenameToURLPolicy policy) const = 0;
-    virtual bool HasFile() const = 0;
-    virtual bool HasCustomFormat(const ClipboardFormatType& format) const = 0;
-
-#if defined(USE_X11) || defined(OS_WIN)
-    virtual void SetFileContents(const base::FilePath& filename,
-                                 const std::string& file_contents) = 0;
-#endif
-#if defined(OS_WIN)
-    virtual bool GetFileContents(base::FilePath* filename,
-                                 std::string* file_contents) const = 0;
-    virtual bool HasFileContents() const = 0;
-    virtual bool HasVirtualFilenames() const = 0;
-    virtual bool GetVirtualFilenames(
-        std::vector<FileInfo>* file_names) const = 0;
-    virtual bool GetVirtualFilesAsTempFiles(
-        base::OnceCallback<void(
-            const std::vector<std::pair</*temp path*/ base::FilePath,
-                                        /*display name*/ base::FilePath>>&)>
-            callback) const = 0;
-    virtual void SetVirtualFileContentsForTesting(
-        const std::vector<std::pair<base::FilePath, std::string>>&
-            filenames_and_contents,
-        DWORD tymed) = 0;
-    virtual void SetDownloadFileInfo(DownloadFileInfo* download) = 0;
-#endif
-
-#if defined(USE_AURA)
-    virtual void SetHtml(const base::string16& html, const GURL& base_url) = 0;
-    virtual bool GetHtml(base::string16* html, GURL* base_url) const = 0;
-    virtual bool HasHtml() const = 0;
-#endif
-
-#if defined(USE_AURA) || defined(OS_MACOSX)
-    virtual void SetDragImage(const gfx::ImageSkia& image,
-                              const gfx::Vector2d& cursor_offset) = 0;
-    virtual gfx::ImageSkia GetDragImage() const = 0;
-    virtual gfx::Vector2d GetDragImageOffset() const = 0;
 #endif
   };
 
   OSExchangeData();
   // Creates an OSExchangeData with the specified provider. OSExchangeData
   // takes ownership of the supplied provider.
-  explicit OSExchangeData(std::unique_ptr<Provider> provider);
+  explicit OSExchangeData(std::unique_ptr<OSExchangeDataProvider> provider);
+
+  OSExchangeData(const OSExchangeData&) = delete;
+  OSExchangeData& operator=(const OSExchangeData&) = delete;
 
   ~OSExchangeData();
 
   // Returns the Provider, which actually stores and manages the data.
-  const Provider& provider() const { return *provider_; }
-  Provider& provider() { return *provider_; }
+  const OSExchangeDataProvider& provider() const { return *provider_; }
+  OSExchangeDataProvider& provider() { return *provider_; }
 
   // Marks drag data as tainted if it originates from the renderer. This is used
   // to avoid granting privileges to a renderer when dragging in tainted data,
@@ -179,9 +88,9 @@ class UI_BASE_EXPORT OSExchangeData {
   //            the order of enumeration in our IEnumFORMATETC implementation!
   //            This comes into play when selecting the best (most preferable)
   //            data type for insertion into a DropTarget.
-  void SetString(const base::string16& data);
+  void SetString(const std::u16string& data);
   // A URL can have an optional title in some exchange formats.
-  void SetURL(const GURL& url, const base::string16& title);
+  void SetURL(const GURL& url, const std::u16string& title);
   // A full path to a file.
   void SetFilename(const base::FilePath& path);
   // Full path to one or more files. See also SetFilenames() in Provider.
@@ -197,10 +106,10 @@ class UI_BASE_EXPORT OSExchangeData {
   // NULL.
   // GetString() returns the plain text representation of the pasteboard
   // contents.
-  bool GetString(base::string16* data) const;
+  bool GetString(std::u16string* data) const;
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
-                      base::string16* title) const;
+                      std::u16string* title) const;
   // Return the path of a file, if available.
   bool GetFilename(base::FilePath* path) const;
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
@@ -212,6 +121,7 @@ class UI_BASE_EXPORT OSExchangeData {
   bool HasString() const;
   bool HasURL(FilenameToURLPolicy policy) const;
   bool HasFile() const;
+  bool HasFileContents() const;
   bool HasCustomFormat(const ClipboardFormatType& format) const;
 
   // Returns true if this OSExchangeData has data in any of the formats in
@@ -219,7 +129,6 @@ class UI_BASE_EXPORT OSExchangeData {
   bool HasAnyFormat(int formats,
                     const std::set<ClipboardFormatType>& types) const;
 
-#if defined(OS_WIN)
   // Adds the bytes of a file (CFSTR_FILECONTENTS and CFSTR_FILEDESCRIPTOR on
   // Windows).
   void SetFileContents(const base::FilePath& filename,
@@ -227,6 +136,7 @@ class UI_BASE_EXPORT OSExchangeData {
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const;
 
+#if defined(OS_WIN)
   // Methods used to query and retrieve file data from a drag source
   // IDataObject implementation packaging the data with the
   // CFSTR_FILEDESCRIPTOR/CFSTR_FILECONTENTS clipboard formats instead of the
@@ -264,24 +174,25 @@ class UI_BASE_EXPORT OSExchangeData {
                                   base::FilePath,
                                   /*display name*/ base::FilePath>>&)> callback)
       const;
-
-  // Adds a download file with full path (CF_HDROP).
-  void SetDownloadFileInfo(DownloadFileInfo* download);
 #endif
 
 #if defined(USE_AURA)
   // Adds a snippet of HTML.  |html| is just raw html but this sets both
   // text/html and CF_HTML.
-  void SetHtml(const base::string16& html, const GURL& base_url);
-  bool GetHtml(base::string16* html, GURL* base_url) const;
+  void SetHtml(const std::u16string& html, const GURL& base_url);
+  bool GetHtml(std::u16string* html, GURL* base_url) const;
   bool HasHtml() const;
 #endif
 
+  // Adds a DataTransferEndpoint to represent the source of the data.
+  // TODO(crbug.com/1142406): Update all drag-and-drop references to set the
+  // source of the data.
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source);
+  DataTransferEndpoint* GetSource() const;
+
  private:
   // Provides the actual data.
-  std::unique_ptr<Provider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSExchangeData);
+  std::unique_ptr<OSExchangeDataProvider> provider_;
 };
 
 }  // namespace ui

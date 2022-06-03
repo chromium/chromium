@@ -7,11 +7,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -22,10 +24,6 @@
 
 #if defined(OS_WIN)
 #include "ui/base/win/shell.h"
-#endif
-
-#if defined(OS_MACOSX)
-#include "base/mac/mac_util.h"
 #endif
 
 namespace extensions {
@@ -55,7 +53,9 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 }
 
 // TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent DISABLED_OnMaximizedEvent
 #define MAYBE_OnRestoredEvent DISABLED_OnRestoredEvent
@@ -63,78 +63,78 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #define MAYBE_OnMinimizedEvent OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent OnMaximizedEvent
 #define MAYBE_OnRestoredEvent OnRestoredEvent
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
-#if defined(OS_MACOSX)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "minimized"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "minimized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMaximizedEvent) {
-#if defined(OS_MACOSX)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "maximized"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "maximized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnRestoredEvent) {
-#if defined(OS_MACOSX)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582,
-#endif
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "restored"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "restored"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OnBoundsChangedEvent) {
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "boundsChanged"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
+                               {.custom_arg = "boundsChanged"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/has_permissions")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_always_on_top/has_permissions",
+      {.launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithOldPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/has_old_permissions"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_always_on_top/has_old_permissions",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopNoPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/no_permissions")) << message_;
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_always_on_top/no_permissions",
+                       {.launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, Get) {
-  EXPECT_TRUE(RunPlatformAppTest("platform_apps/windows_api_get"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_get",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeHasPerm) {
-  EXPECT_TRUE(
-      RunPlatformAppTest("platform_apps/windows_api_shape/has_permission"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_shape/has_permission",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
-  EXPECT_TRUE(
-      RunPlatformAppTest("platform_apps/windows_api_shape/no_permission"))
+  EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_shape/no_permission",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
+// Fails on Ozone/X11.  https://crbug.com/1109112
+#if defined(USE_OZONE)
+#define MAYBE_AlphaEnabledHasPermissions DISABLED_AlphaEnabledHasPermissions
+#else
+#define MAYBE_AlphaEnabledHasPermissions AlphaEnabledHasPermissions
+#endif
+IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
   const char kNoAlphaDir[] =
       "platform_apps/windows_api_alpha_enabled/has_permissions_no_alpha";
   const char kHasAlphaDir[] =
@@ -142,7 +142,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
   ALLOW_UNUSED_LOCAL(kHasAlphaDir);
   const char* test_dir = kNoAlphaDir;
 
-#if defined(USE_AURA) && (defined(OS_CHROMEOS) || !defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(USE_AURA) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;
 
 #if defined(OS_WIN)
@@ -150,59 +152,67 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
     test_dir = kNoAlphaDir;
   }
 #endif  // OS_WIN
-#endif  // USE_AURA && (OS_CHROMEOS || !OS_LINUX)
+#endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
-  EXPECT_TRUE(RunPlatformAppTest(test_dir)) << message_;
+  EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledNoPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_alpha_enabled/no_permissions"))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_alpha_enabled/no_permissions",
+                       {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(
-      "platform_apps/windows_api_alpha_enabled/in_stable",
-      // Ignore manifest warnings because the extension will not load at all
-      // in stable.
-      kFlagIgnoreManifestWarnings))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_alpha_enabled/in_stable",
+                       {.launch_as_platform_app = true},
+                       // Ignore manifest warnings because the extension will
+                       // not load at all in stable.
+                       {.ignore_manifest_warnings = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledWrongFrameType) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_alpha_enabled/wrong_frame_type"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_alpha_enabled/wrong_frame_type",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_visible_on_all_workspaces/in_stable"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_visible_on_all_workspaces/in_stable",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/has_permissions_whitelisted"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_ime/has_permissions_whitelisted", {},
+      {.load_as_component = true}))
       << message_;
 
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(
+  EXPECT_TRUE(RunExtensionTest(
       "platform_apps/windows_api_ime/has_permissions_platform_app",
-      kFlagIgnoreManifestWarnings))
+      {.launch_as_platform_app = true}, {.ignore_manifest_warnings = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNoPermissions) {
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/no_permissions_whitelisted"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_ime/no_permissions_whitelisted", {},
+      {.load_as_component = true}))
       << message_;
 
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_ime/no_permissions_platform_app"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_ime/no_permissions_platform_app",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -212,10 +222,11 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
   command_line->AppendSwitchASCII(switches::kAppId,
                                   "jkghodnilhceideoidjikpgommlajknk");
 
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen"))
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen", {},
+      {.load_as_component = true}))
       << message_;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

@@ -13,25 +13,25 @@
 #include "components/sync/engine/polling_constants.h"
 
 namespace {
+
 // Given the current delay calculate the minimum and maximum wait times for
-// the next retry.
-DelayInfo CalculateDelay(int64_t current_delay) {
-  int64_t backoff_s =
-      std::max(static_cast<int64_t>(1),
-               current_delay * syncer::kBackoffRandomizationFactor);
+// the next retry. This is analogous to the production logic in
+// BackoffDelayProvider::GetDelay().
+DelayInfo CalculateDelay(base::TimeDelta current_delay) {
+  base::TimeDelta backoff = std::max(
+      base::Seconds(1), current_delay * syncer::kBackoffMultiplyFactor);
 
   DelayInfo delay_info;
-  delay_info.min_delay = backoff_s + (-1 * current_delay/
-                             syncer::kBackoffRandomizationFactor);
-  delay_info.max_delay = backoff_s + current_delay/2;
+  delay_info.min_delay = backoff - current_delay * syncer::kBackoffJitterFactor;
+  delay_info.max_delay = backoff + current_delay * syncer::kBackoffJitterFactor;
 
   delay_info.min_delay =
-      std::max(static_cast<int64_t>(1),
-               std::min(delay_info.min_delay, syncer::kMaxBackoffSeconds));
+      std::max(base::Seconds(1),
+               std::min(delay_info.min_delay, syncer::kMaxBackoffTime));
 
   delay_info.max_delay =
-      std::max(static_cast<int64_t>(1),
-               std::min(delay_info.max_delay, syncer::kMaxBackoffSeconds));
+      std::max(base::Seconds(1),
+               std::min(delay_info.max_delay, syncer::kMaxBackoffTime));
 
   return delay_info;
 }
@@ -41,15 +41,15 @@ DelayInfo CalculateDelay(int64_t current_delay) {
 void FillDelayTable(DelayInfo* delay_table, int count) {
   DCHECK_GT(count, 1);
 
-  // We start off with the minimum value of 2 seconds.
-  delay_table[0].min_delay = static_cast<int64_t>(2);
-  delay_table[0].max_delay = static_cast<int64_t>(2);
+  // Start off with the initial value used for tests, where SyncTest forces a
+  // short retry time via command-line kSyncShortInitialRetryOverride.
+  delay_table[0] = CalculateDelay(syncer::kInitialBackoffShortRetryTime);
 
-  for (int i = 1 ; i < count ; ++i) {
-    delay_table[i].min_delay = CalculateDelay(delay_table[i-1].min_delay).
-                               min_delay;
-    delay_table[i].max_delay = CalculateDelay(delay_table[i-1].max_delay).
-                               max_delay;
+  for (int i = 1; i < count; ++i) {
+    delay_table[i].min_delay =
+        CalculateDelay(delay_table[i - 1].min_delay).min_delay;
+    delay_table[i].max_delay =
+        CalculateDelay(delay_table[i - 1].max_delay).max_delay;
   }
 }
 }  // namespace
@@ -58,27 +58,23 @@ void FillDelayTable(DelayInfo* delay_table, int count) {
 // maximum value of the retry range in verifying, only the minimum. Reason
 // being there is no guarantee that the retry will be on the dot. However in
 // practice it is on the dot. But making that assumption for all the platforms
-// would make the test flaky. However we have the global timeout for the
-// verification which would make sure all retries take place in a reasonable
-// amount of time. The global timeout is defined in profile sync service
-// harness as |kExponentialBackoffVerificationTimeoutMs|.
-bool IsRetryOnTime(DelayInfo* delay_table, int retry_count,
+// would make the test flaky.
+bool IsRetryOnTime(DelayInfo* delay_table,
+                   int retry_count,
                    const base::TimeDelta& time_elapsed) {
   DVLOG(1) << "Retry Count : " << retry_count
-           << " Time elapsed : " << time_elapsed.InSeconds()
+           << " Time elapsed : " << time_elapsed
            << " Retry table min: " << delay_table[retry_count].min_delay
            << " Retry table max: " << delay_table[retry_count].max_delay;
-  return ((time_elapsed.InSeconds() >= delay_table[retry_count].min_delay));
+  return time_elapsed >= delay_table[retry_count].min_delay;
 }
 
-RetryVerifier::RetryVerifier() : retry_count_(0),
-                                 success_(false),
-                                 done_(false) {
+RetryVerifier::RetryVerifier()
+    : retry_count_(0), success_(false), done_(false) {
   memset(&delay_table_, 0, sizeof(delay_table_));
 }
 
-RetryVerifier::~RetryVerifier() {
-}
+RetryVerifier::~RetryVerifier() {}
 
 // Initializes the state for verification.
 void RetryVerifier::Initialize(const syncer::SyncCycleSnapshot& snap) {
@@ -111,4 +107,3 @@ void RetryVerifier::VerifyRetryInterval(const syncer::SyncCycleSnapshot& snap) {
     return;
   }
 }
-

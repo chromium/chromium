@@ -14,8 +14,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/posix/eintr_wrapper.h"
+#include "base/posix/eintr_wrapper.h"  //nogncheck
 #include "sandbox/mac/sandbox_logging.h"
 #include "sandbox/mac/seatbelt.h"
 

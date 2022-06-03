@@ -8,23 +8,22 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/logging.h"
 #include "chrome/android/chrome_jni_headers/NotificationSchedulerTask_jni.h"
+#include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile_key.h"
 
 // static
 void JNI_NotificationSchedulerTask_OnStartTask(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_caller,
-    const base::android::JavaParamRef<jobject>& j_profile,
     const base::android::JavaParamRef<jobject>& j_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  auto* service =
-      NotificationScheduleServiceFactory::GetForBrowserContext(profile);
+  ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
+  auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();
   auto callback =
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
@@ -35,11 +34,9 @@ void JNI_NotificationSchedulerTask_OnStartTask(
 // static
 jboolean JNI_NotificationSchedulerTask_OnStopTask(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
-    const base::android::JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  auto* service =
-      NotificationScheduleServiceFactory::GetForBrowserContext(profile);
+    const base::android::JavaParamRef<jobject>& j_caller) {
+  ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
+  auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();
   handler->OnStopTask();
   return false;

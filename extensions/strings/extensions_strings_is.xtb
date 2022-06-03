@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Jæks! Það mistókst að útbúa RSA-einkalykil af handahófi.</translation>
 <translation id="1445572445564823378">Þessi viðbót hægir á <ph name="PRODUCT_NAME" />. Þú ættir að slökkva á henni til að <ph name="PRODUCT_NAME" /> starfi betur.</translation>
 <translation id="1468038450257740950">WebGL er ekki stutt.</translation>
-<translation id="149347756975725155">Ekki var hægt að hlaða viðbótartáknið „<ph name="ICON" />“.</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Mistókst að lesa einkalykil.</translation>
 <translation id="6391538222494443604">Inntaksmappa verður að vera fyrir hendi.</translation>
 <translation id="641087317769093025">Ekki var hægt að afþjappa viðbót</translation>
-<translation id="6413453408918378296">Táknið er ekki nægilega sýnilegt „<ph name="ICON" />“.</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ biður um aðgang að einu eða fleiri tækjum:</translation>
 <translation id="657064425229075395">Ekki var hægt að hlaða bakgrunnsskriftu „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> frá <ph name="VENDOR_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>

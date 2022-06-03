@@ -6,9 +6,12 @@
 #define CC_METRICS_COMPOSITOR_TIMING_HISTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/event_metrics.h"
+#include "cc/scheduler/scheduler.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -20,13 +23,7 @@ class CompositorTimingHistory;
 }  // namespace protos
 }  // namespace perfetto
 
-namespace viz {
-struct FrameTimingDetails;
-}
-
 namespace cc {
-struct BeginMainFrameMetrics;
-class CompositorFrameReportingController;
 class RenderingStatsInstrumentation;
 
 class CC_EXPORT CompositorTimingHistory {
@@ -41,16 +38,11 @@ class CC_EXPORT CompositorTimingHistory {
   CompositorTimingHistory(
       bool using_synchronous_renderer_compositor,
       UMACategory uma_category,
-      RenderingStatsInstrumentation* rendering_stats_instrumentation,
-      CompositorFrameReportingController*
-          compositor_frame_reporting_controller);
+      RenderingStatsInstrumentation* rendering_stats_instrumentation);
   CompositorTimingHistory(const CompositorTimingHistory&) = delete;
   virtual ~CompositorTimingHistory();
 
   CompositorTimingHistory& operator=(const CompositorTimingHistory&) = delete;
-
-  void AsProtozeroInto(
-      perfetto::protos::pbzero::CompositorTimingHistory* state) const;
 
   // The main thread responsiveness depends heavily on whether or not the
   // on_critical_path flag is set, so we record response times separately.
@@ -65,21 +57,22 @@ class CC_EXPORT CompositorTimingHistory {
   virtual base::TimeDelta ActivateDurationEstimate() const;
   virtual base::TimeDelta DrawDurationEstimate() const;
 
+  base::TimeDelta BeginMainFrameStartToReadyToCommitCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameStartToReadyToCommitNotCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameQueueToActivateCriticalEstimate() const;
+
   // State that affects when events should be expected/recorded/reported.
   void SetRecordingEnabled(bool enabled);
-  void DidCreateAndInitializeLayerTreeFrameSink();
 
   // Events to be timed.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args,
-                          bool new_active_tree_is_likely,
                           base::TimeTicks now);
   void WillFinishImplFrame(bool needs_redraw);
   void BeginImplFrameNotExpectedSoon();
-  void WillBeginMainFrame(bool on_critical_path,
-                          base::TimeTicks main_frame_time);
-  void BeginMainFrameStarted(base::TimeTicks main_thread_start_time);
+  void WillBeginMainFrame(const viz::BeginFrameArgs& args);
+  void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time_);
   void BeginMainFrameAborted();
-  void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
+  void NotifyReadyToCommit();
   void WillCommit();
   void DidCommit();
   void WillPrepareTiles();
@@ -87,40 +80,25 @@ class CC_EXPORT CompositorTimingHistory {
   void ReadyToActivate();
   void WillActivate();
   void DidActivate();
-  void DrawAborted();
   void WillDraw();
   void DidDraw(bool used_new_active_tree,
-               base::TimeTicks impl_frame_time,
-               size_t composited_animations_count,
-               size_t main_thread_animations_count,
-               bool current_frame_had_raf,
-               bool next_frame_has_pending_raf,
                bool has_custom_property_animations);
-  void DidSubmitCompositorFrame(uint32_t frame_token);
-  void DidReceiveCompositorFrameAck();
-  void DidPresentCompositorFrame(uint32_t frame_token,
-                                 const viz::FrameTimingDetails& details);
   void WillInvalidateOnImplSide();
   void SetTreePriority(TreePriority priority);
+
+  // Record the scheduler's deadline mode and send to UMA.
+  using DeadlineMode = SchedulerStateMachine::BeginImplFrameDeadlineMode;
+  void RecordDeadlineMode(DeadlineMode deadline_mode);
 
   base::TimeTicks begin_main_frame_sent_time() const {
     return begin_main_frame_sent_time_;
   }
 
   void ClearHistory();
-  size_t begin_main_frame_start_to_ready_to_commit_sample_count() const {
-    return begin_main_frame_start_to_ready_to_commit_duration_history_
-        .sample_count();
-  }
-  size_t commit_to_ready_to_activate_sample_count() const {
-    return commit_to_ready_to_activate_duration_history_.sample_count();
-  }
 
  protected:
   void DidBeginMainFrame(base::TimeTicks begin_main_frame_end_time);
 
-  void SetBeginMainFrameNeededContinuously(bool active);
-  void SetBeginMainFrameCommittingContinuously(bool active);
   void SetCompositorDrawingContinuously(bool active);
 
   static std::unique_ptr<UMAReporter> CreateUMAReporter(UMACategory category);
@@ -131,12 +109,8 @@ class CC_EXPORT CompositorTimingHistory {
 
   // Used to calculate frame rates of Main and Impl threads.
   bool did_send_begin_main_frame_;
-  bool begin_main_frame_needed_continuously_;
-  bool begin_main_frame_committing_continuously_;
   bool compositor_drawing_continuously_;
-  base::TimeTicks begin_main_frame_end_time_prev_;
   base::TimeTicks new_active_tree_draw_end_time_prev_;
-  base::TimeTicks new_active_tree_draw_end_time_prev_committing_continuously_;
   base::TimeTicks draw_end_time_prev_;
 
   // If you add any history here, please remember to reset it in
@@ -152,19 +126,30 @@ class CC_EXPORT CompositorTimingHistory {
   RollingTimeDeltaHistory activate_duration_history_;
   RollingTimeDeltaHistory draw_duration_history_;
 
+  // Used for duration estimates when enabled. Without this feature, compositor
+  // timing history collects timing history of each stage and use sum of
+  // percentile for duration estimates. With this feature, we use percentile of
+  // sum instead.
+  bool duration_estimates_enabled_;
+  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_critical_history_;
+  double bmf_start_to_ready_to_commit_critical_percentile_;
+  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_not_critical_history_;
+  double bmf_start_to_ready_to_commit_not_critical_percentile_;
+  RollingTimeDeltaHistory bmf_queue_to_activate_critical_history_;
+  double bmf_queue_to_activate_critical_percentile_;
+
+  base::TimeDelta begin_main_frame_queue_duration_;
+  base::TimeDelta bmf_start_to_activate_duration_;
+
   bool begin_main_frame_on_critical_path_;
-  base::TimeTicks begin_main_frame_frame_time_;
   base::TimeTicks begin_main_frame_sent_time_;
   base::TimeTicks begin_main_frame_start_time_;
   base::TimeTicks commit_start_time_;
-  base::TimeTicks pending_tree_main_frame_time_;
   base::TimeTicks pending_tree_creation_time_;
   base::TimeTicks pending_tree_ready_to_activate_time_;
   base::TimeTicks prepare_tiles_start_time_;
   base::TimeTicks activate_start_time_;
-  base::TimeTicks active_tree_main_frame_time_;
   base::TimeTicks draw_start_time_;
-  base::TimeTicks submit_start_time_;
 
   bool pending_tree_is_impl_side_;
 
@@ -173,15 +158,8 @@ class CC_EXPORT CompositorTimingHistory {
   // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
   RenderingStatsInstrumentation* rendering_stats_instrumentation_;
 
-  // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
-  // destroyed.
-  CompositorFrameReportingController* compositor_frame_reporting_controller_;
-
   // Used only for reporting animation targeted UMA.
-  bool previous_frame_had_composited_animations_ = false;
-  bool previous_frame_had_main_thread_animations_ = false;
   bool previous_frame_had_custom_property_animations_ = false;
-  bool previous_frame_had_raf_ = false;
 
   TreePriority tree_priority_ = SAME_PRIORITY_FOR_BOTH_TREES;
 };

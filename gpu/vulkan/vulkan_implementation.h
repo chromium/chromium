@@ -5,16 +5,15 @@
 #ifndef GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 #define GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/semaphore_handle.h"
-#include "gpu/vulkan/vulkan_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -33,7 +32,9 @@ struct GpuMemoryBufferHandle;
 namespace gpu {
 class VulkanDeviceQueue;
 class VulkanSurface;
+class VulkanImage;
 class VulkanInstance;
+struct GPUInfo;
 struct VulkanYCbCrInfo;
 
 #if defined(OS_FUCHSIA)
@@ -46,11 +47,13 @@ class SysmemBufferCollection {
 // Base class which provides functions for creating vulkan objects for different
 // platforms that use platform-specific extensions (e.g. for creation of
 // VkSurfaceKHR objects). It also provides helper/utility functions.
-class VULKAN_EXPORT VulkanImplementation {
+class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  public:
-  VulkanImplementation(bool use_swiftshader = false,
-                       bool allow_protected_memory = false,
-                       bool enforce_protected_memory = false);
+  explicit VulkanImplementation(bool use_swiftshader = false,
+                                bool allow_protected_memory = false);
+
+  VulkanImplementation(const VulkanImplementation&) = delete;
+  VulkanImplementation& operator=(const VulkanImplementation&) = delete;
 
   virtual ~VulkanImplementation();
 
@@ -70,6 +73,7 @@ class VULKAN_EXPORT VulkanImplementation {
       uint32_t queue_family_index) = 0;
 
   virtual std::vector<const char*> GetRequiredDeviceExtensions() = 0;
+  virtual std::vector<const char*> GetOptionalDeviceExtensions() = 0;
 
   // Creates a VkFence that is exportable to a gfx::GpuFence.
   virtual VkFence CreateVkFenceForGpuFence(VkDevice vk_device) = 0;
@@ -108,32 +112,13 @@ class VULKAN_EXPORT VulkanImplementation {
   // |vk_image|, |vk_image_info|, |vk_device_memory| and |mem_allocation_size|.
   // Implementation must verify that the specified |size| fits in the size
   // specified when |gmb_handle| was allocated.
-  virtual bool CreateImageFromGpuMemoryHandle(
-      VkDevice vk_device,
+  virtual std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      base::Optional<VulkanYCbCrInfo>* ycbcr_info) = 0;
+      VkFormat vk_formae) = 0;
 
 #if defined(OS_ANDROID)
-  // Create a VkImage, import Android AHardwareBuffer object created outside of
-  // the Vulkan device into Vulkan memory object and bind it to the VkImage.
-  // TODO(sergeyu): Remove this method and use
-  // CreateVkImageFromGpuMemoryHandle() instead.
-  virtual bool CreateVkImageAndImportAHB(
-      const VkDevice& vk_device,
-      const VkPhysicalDevice& vk_physical_device,
-      const gfx::Size& size,
-      base::android::ScopedHardwareBufferHandle ahb_handle,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      VulkanYCbCrInfo* ycbcr_info = nullptr) = 0;
-
   // Get the sampler ycbcr conversion information from the AHB.
   virtual bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
@@ -150,24 +135,28 @@ class VULKAN_EXPORT VulkanImplementation {
   virtual std::unique_ptr<SysmemBufferCollection>
   RegisterSysmemBufferCollection(VkDevice device,
                                  gfx::SysmemBufferCollectionId id,
-                                 zx::channel token) = 0;
+                                 zx::channel token,
+                                 gfx::BufferFormat format,
+                                 gfx::BufferUsage usage,
+                                 gfx::Size size,
+                                 size_t min_buffer_count,
+                                 bool register_with_image_pipe) = 0;
 #endif  // defined(OS_FUCHSIA)
 
   bool use_swiftshader() const { return use_swiftshader_; }
   bool allow_protected_memory() const { return allow_protected_memory_; }
-  bool enforce_protected_memory() const { return enforce_protected_memory_; }
 
  private:
   const bool use_swiftshader_;
   const bool allow_protected_memory_;
-  const bool enforce_protected_memory_;
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementation);
 };
 
-VULKAN_EXPORT
+COMPONENT_EXPORT(VULKAN)
 std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     VulkanImplementation* vulkan_implementation,
-    uint32_t option);
+    uint32_t option,
+    const GPUInfo* gpu_info = nullptr,
+    uint32_t heap_memory_limit = 0);
 
 }  // namespace gpu
 

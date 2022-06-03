@@ -28,6 +28,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/protocol_handler.h"
@@ -52,7 +53,7 @@ class ChromeConfigurator : public update_client::Configurator {
                      PrefService* pref_service);
 
   // update_client::Configurator overrides.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -67,6 +68,8 @@ class ChromeConfigurator : public update_client::Configurator {
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
+      override;
+  scoped_refptr<update_client::CrxDownloaderFactory> GetCrxDownloaderFactory()
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
@@ -86,10 +89,11 @@ class ChromeConfigurator : public update_client::Configurator {
   ConfiguratorImpl configurator_impl_;
   PrefService* pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
 
-  ~ChromeConfigurator() override {}
+  ~ChromeConfigurator() override = default;
 };
 
 // Allows the component updater to use non-encrypted communication with the
@@ -103,7 +107,7 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
   DCHECK(pref_service_);
 }
 
-int ChromeConfigurator::InitialDelay() const {
+double ChromeConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 
@@ -137,7 +141,7 @@ base::Version ChromeConfigurator::GetBrowserVersion() const {
 }
 
 std::string ChromeConfigurator::GetChannel() const {
-  return chrome::GetChannelName();
+  return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 std::string ChromeConfigurator::GetBrand() const {
@@ -182,6 +186,15 @@ ChromeConfigurator::GetNetworkFetcherFactory() {
             base::BindRepeating([](const GURL& url) { return false; }));
   }
   return network_fetcher_factory_;
+}
+
+scoped_refptr<update_client::CrxDownloaderFactory>
+ChromeConfigurator::GetCrxDownloaderFactory() {
+  if (!crx_downloader_factory_) {
+    crx_downloader_factory_ =
+        update_client::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
+  }
+  return crx_downloader_factory_;
 }
 
 scoped_refptr<update_client::UnzipperFactory>

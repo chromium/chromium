@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/status_bubble_views_browsertest_mac.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/widget/widget.h"
 
@@ -45,23 +46,23 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   EXPECT_FALSE(GetWidget());
 
   // Setting status text shows the widget.
-  bubble->SetStatus(base::ASCIIToUTF16("test"));
+  bubble->SetStatus(u"test");
   views::Widget* widget = GetWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
   // Changing status text keeps the widget visible.
-  bubble->SetStatus(base::ASCIIToUTF16("foo"));
+  bubble->SetStatus(u"foo");
   EXPECT_TRUE(widget->IsVisible());
 
   // Setting the URL keeps the widget visible.
   bubble->SetURL(GURL("http://www.foo.com"));
   EXPECT_TRUE(widget->IsVisible());
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   // Clearing the URL and status closes the widget on platforms other than Mac.
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
-  bubble->SetStatus(base::string16());
+  bubble->SetStatus(std::u16string());
   bubble->SetURL(GURL());
   // The widget is not hidden immediately, instead a task is scheduled. Run that
   // now.
@@ -70,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());
@@ -86,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
 
 // Mac does not delete the widget after a delay, so this test only runs on
 // non-mac platforms.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -97,12 +98,12 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(bubble);
 
   // Setting status text shows the widget.
-  bubble->SetStatus(base::ASCIIToUTF16("test"));
+  bubble->SetStatus(u"test");
   views::Widget* widget = GetWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  bubble->SetStatus(base::string16());
+  bubble->SetStatus(std::u16string());
   // The widget is not hidden immediately, instead a task is scheduled. Run that
   // now.
   task_runner->RunPendingTasks();
@@ -110,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   EXPECT_FALSE(GetWidget());
 
   // Setting status text shows the widget.
-  bubble->SetStatus(base::ASCIIToUTF16("test"));
+  bubble->SetStatus(u"test");
   widget = GetWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date0" value="2019-02-14">
+<input type="date" id="date1" value="2019-02-14" step="2">
+<input type="date" id="date2" value="2019-02-14" step="30">
+<input type="date" id="date3" value="2019-02-14" min="2019-02-13">
+<input type="date" id="date4" value="2019-02-14" max="2019-02-21">
+
+<script>
+promise_test(() => {
+  let dateElement = document.getElementById("date0");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    assert_equals(dateElement.value, "2019-02-22", "Using arrow keys to navigate date picker should update in-page control without pressing Enter key.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+    assert_equals(dateElement.value, "2019-02-22", "Updated date should remain after closing popup with Enter.");
+  });
+}, "Date picker: Arrow keys should allow user to chooser date");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date1");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    assert_equals(dateElement.value, "2019-02-16", "Right arrow key should skip over invalid date.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Picker with step should allow keyboard user to jump over invalid values -- right arrow");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date1");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowUp');
+    assert_equals(dateElement.value, "2019-02-08", "Up arrow key should skip over invalid date.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Picker with step should allow keyboard user to jump over invalid values -- up arrow");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date2");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowDown');
+    assert_equals(dateElement.value, "2019-03-16", "Arrow key should skip to next valid date even if it's in a different month.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Picker with step should allow keyboard user to skip to next month with valid date");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date3");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowLeft');
+    eventSender.keyDown('ArrowLeft');
+    eventSender.keyDown('ArrowUp');
+    assert_equals(dateElement.value, "2019-02-13", "Min attribute should prevent user from arrowing into invalid values");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Picker with min value should prevent user from using arrow keys to get into invalid values");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date4");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('ArrowRight');
+    assert_equals(dateElement.value, "2019-02-21", "Max attribute should prevent user from arrowing into invalid values");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Picker with max value should prevent user from using arrow keys to get into invalid values");
+
+</script>
+</body>
+</html>

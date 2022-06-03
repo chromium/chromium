@@ -64,7 +64,7 @@ MediaPipelineBackend::BufferStatus MediaSinkDesktop::PushBuffer(
   //    Those tests are wrong should be fixed.
   // TODO(alokp): Fix these issues when the next version of CMA backend is
   // scheduled to roll out. crbug.com/678394
-  auto timestamp = base::TimeDelta::FromMicroseconds(buffer->timestamp());
+  auto timestamp = base::Microseconds(buffer->timestamp());
   if (timestamp != ::media::kNoTimestamp) {
     last_frame_pts_ = timestamp;
     time_interpolator_.SetUpperBound(last_frame_pts_);
@@ -81,8 +81,8 @@ void MediaSinkDesktop::ScheduleEndOfStreamTask() {
     return;
 
   eos_task_.Reset(
-      base::Bind(&MediaPipelineBackend::Decoder::Delegate::OnEndOfStream,
-                 base::Unretained(delegate_)));
+      base::BindOnce(&MediaPipelineBackend::Decoder::Delegate::OnEndOfStream,
+                     base::Unretained(delegate_)));
   base::TimeDelta delay = (last_frame_pts_ - GetCurrentPts()) / playback_rate_;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, eos_task_.callback(), delay);

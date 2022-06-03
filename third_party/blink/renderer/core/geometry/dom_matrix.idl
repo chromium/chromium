@@ -6,10 +6,11 @@
 
 [
     Exposed=(Window,Worker),
+    LegacyWindowAlias=WebKitCSSMatrix,
     Serializable
 ] interface DOMMatrix : DOMMatrixReadOnly {
     [CallWith=ExecutionContext, RaisesException] constructor(optional (DOMString or sequence<unrestricted double>) init);
-    [RaisesException, NewObject] static DOMMatrix fromMatrix(optional DOMMatrixInit other);
+    [RaisesException, NewObject] static DOMMatrix fromMatrix(optional DOMMatrixInit other = {});
     [RaisesException, NewObject] static DOMMatrix fromFloat32Array(Float32Array array32);
     [RaisesException, NewObject] static DOMMatrix fromFloat64Array(Float64Array array64);
 
@@ -39,8 +40,8 @@
     inherit attribute unrestricted double m44;
 
     // Mutable transform methods
-    [RaisesException] DOMMatrix multiplySelf(optional DOMMatrixInit other);
-    [RaisesException] DOMMatrix preMultiplySelf(optional DOMMatrixInit other);
+    [RaisesException] DOMMatrix multiplySelf(optional DOMMatrixInit other = {});
+    [RaisesException] DOMMatrix preMultiplySelf(optional DOMMatrixInit other = {});
     DOMMatrix translateSelf(optional unrestricted double tx = 0,
                             optional unrestricted double ty = 0,
                             optional unrestricted double tz = 0);

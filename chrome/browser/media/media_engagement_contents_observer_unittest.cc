@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -24,6 +24,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
@@ -31,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug/1004580) All these tests crash on Android
 #if !defined(OS_ANDROID)
@@ -75,7 +77,7 @@ class MediaEngagementContentsObserverTest
   }
 
   bool IsTimerRunningForPlayer(int id) const {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     auto audible_row = contents_observer_->audible_players_.find(player_id);
     return audible_row != contents_observer_->audible_players_.end() &&
            audible_row->second.second;
@@ -115,7 +117,7 @@ class MediaEngagementContentsObserverTest
   }
 
   void SimulateResizeEvent(int id, gfx::Size size) {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->MediaResized(size, player_id);
   }
 
@@ -131,7 +133,7 @@ class MediaEngagementContentsObserverTest
       content::WebContentsObserver::MediaPlayerInfo player_info,
       int id,
       bool muted_state) {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->MediaStartedPlaying(player_info, player_id);
     SimulateMutedStateChange(id, muted_state);
   }
@@ -142,7 +144,7 @@ class MediaEngagementContentsObserverTest
     test_clock_.Advance(elapsed);
 
     content::WebContentsObserver::MediaPlayerInfo player_info(true, true);
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->MediaStoppedPlaying(
         player_info, player_id,
         finished
@@ -152,11 +154,11 @@ class MediaEngagementContentsObserverTest
   }
 
   void SimulatePlaybackStopped(int id) {
-    SimulatePlaybackStoppedWithTime(id, true, base::TimeDelta::FromSeconds(0));
+    SimulatePlaybackStoppedWithTime(id, true, base::Seconds(0));
   }
 
   void SimulateMutedStateChange(int id, bool muted) {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->MediaMutedStatusChanged(player_id, muted);
   }
 
@@ -202,7 +204,7 @@ class MediaEngagementContentsObserverTest
 
   void SimulateSignificantPlaybackTimeForPlayer(int id) {
     SimulateLongMediaPlayback(id);
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->OnSignificantMediaPlaybackTimeForPlayer(player_id);
   }
 
@@ -214,44 +216,29 @@ class MediaEngagementContentsObserverTest
     task_runner_->FastForwardBy(kMaxWaitingTime);
   }
 
+  void SimulateMediaDestroyed(int id) {
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
+    contents_observer_->MediaDestroyed(player_id);
+  }
+
   void ExpectScores(const url::Origin origin,
                     double expected_score,
                     int expected_visits,
-                    int expected_media_playbacks,
-                    int expected_audible_playbacks,
-                    int expected_significant_playbacks,
-                    int expected_media_element_playbacks,
-                    int expected_audio_context_playbacks) {
+                    int expected_media_playbacks) {
     EXPECT_EQ(service_->GetEngagementScore(origin), expected_score);
     EXPECT_EQ(service_->GetScoreMapForTesting()[origin], expected_score);
 
     MediaEngagementScore score = service_->CreateEngagementScore(origin);
     EXPECT_EQ(expected_visits, score.visits());
     EXPECT_EQ(expected_media_playbacks, score.media_playbacks());
-    EXPECT_EQ(expected_audible_playbacks, score.audible_playbacks());
-    EXPECT_EQ(expected_significant_playbacks, score.significant_playbacks());
-    EXPECT_EQ(expected_media_element_playbacks,
-              score.media_element_playbacks());
-    EXPECT_EQ(expected_audio_context_playbacks,
-              score.audio_context_playbacks());
   }
 
-  void SetScores(const url::Origin& origin,
-                 int visits,
-                 int media_playbacks,
-                 int audible_playbacks,
-                 int significant_playbacks) {
+  void SetScores(const url::Origin& origin, int visits, int media_playbacks) {
     MediaEngagementScore score =
         contents_observer_->service_->CreateEngagementScore(origin);
     score.SetVisits(visits);
     score.SetMediaPlaybacks(media_playbacks);
-    score.set_audible_playbacks(audible_playbacks);
-    score.set_significant_playbacks(significant_playbacks);
     score.Commit();
-  }
-
-  void SetScores(const url::Origin& origin, int visits, int media_playbacks) {
-    SetScores(origin, visits, media_playbacks, 0, 0);
   }
 
   void Navigate(const GURL& url) {
@@ -354,7 +341,7 @@ class MediaEngagementContentsObserverTest
   }
 
   void ForceUpdateTimer(int id) {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     contents_observer_->UpdatePlayerTimer(player_id);
   }
 
@@ -385,7 +372,7 @@ class MediaEngagementContentsObserverTest
   }
 
   void ExpectPlaybackTime(int id, base::TimeDelta expected_time) {
-    content::MediaPlayerId player_id(nullptr /* RenderFrameHost */, id);
+    content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
     EXPECT_EQ(expected_time, contents_observer_->GetPlayerState(player_id)
                                  .playback_timer->Elapsed());
   }
@@ -409,9 +396,7 @@ class MediaEngagementContentsObserverTest
 
   base::Time Now() { return test_clock_.Now(); }
 
-  void Advance15Minutes() {
-    test_clock_.Advance(base::TimeDelta::FromMinutes(15));
-  }
+  void Advance15Minutes() { test_clock_.Advance(base::Minutes(15)); }
 
   ukm::TestAutoSetUkmRecorder& test_ukm_recorder() {
     return test_ukm_recorder_;
@@ -433,7 +418,7 @@ class MediaEngagementContentsObserverTest
 
   const base::TimeDelta kMaxWaitingTime =
       MediaEngagementContentsObserver::kSignificantMediaPlaybackTime +
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 };
 
 // TODO(mlamouri): test that visits are not recorded multiple times when a
@@ -805,20 +790,20 @@ TEST_F(MediaEngagementContentsObserverTest,
 TEST_F(MediaEngagementContentsObserverTest, InteractionsRecorded) {
   url::Origin origin = url::Origin::Create(GURL("https://www.example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://www.example.org"));
-  ExpectScores(origin, 0.0, 0, 0, 0, 0, 0, 0);
+  ExpectScores(origin, 0.0, 0, 0);
 
   Navigate(origin.GetURL());
   Navigate(origin2.GetURL());
-  ExpectScores(origin, 0.0, 1, 0, 0, 0, 0, 0);
+  ExpectScores(origin, 0.0, 1, 0);
 
   Navigate(origin.GetURL());
   SimulateAudible();
   SimulateSignificantMediaElementPlaybackTimeForPage();
 
   // We need to navigate to another page to commit the scores.
-  ExpectScores(origin, 0.0, 1, 0, 0, 0, 0, 0);
+  ExpectScores(origin, 0.0, 1, 0);
   Navigate(origin2.GetURL());
-  ExpectScores(origin, 0.05, 2, 1, 0, 0, 1, 0);
+  ExpectScores(origin, 0.05, 2, 1);
 
   // Simulate both audio context and media element on the same page.
   Navigate(origin.GetURL());
@@ -829,7 +814,7 @@ TEST_F(MediaEngagementContentsObserverTest, InteractionsRecorded) {
 
   // We need to navigate to another page to commit the scores.
   Navigate(origin2.GetURL());
-  ExpectScores(origin, 0.1, 3, 2, 0, 0, 2, 1);
+  ExpectScores(origin, 0.1, 3, 2);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
@@ -971,7 +956,7 @@ TEST_F(MediaEngagementContentsObserverTest, VisibilityNotRequired_Media) {
 
 TEST_F(MediaEngagementContentsObserverTest, RecordUkmMetricsOnDestroy) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 3, 1);
+  SetScores(origin, 24, 20);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantPlaybackRecorded());
@@ -982,14 +967,14 @@ TEST_F(MediaEngagementContentsObserverTest, RecordUkmMetricsOnDestroy) {
   EXPECT_TRUE(WasSignificantPlaybackRecorded());
 
   SimulateDestroy();
-  ExpectScores(origin, 21.0 / 25.0, 25, 21, 5, 2, 1, 0);
+  ExpectScores(origin, 21.0 / 25.0, 25, 21);
   ExpectUkmEntry(origin, 21, 25, 84, 2, 1);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
        RecordUkmMetricsOnDestroy_AudioContextOnly) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 2, 1);
+  SetScores(origin, 24, 20);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantAudioContextPlaybackRecorded());
@@ -1000,26 +985,26 @@ TEST_F(MediaEngagementContentsObserverTest,
   SimulateDestroy();
 
   // AudioContext playbacks should count as a significant playback.
-  ExpectScores(origin, 21.0 / 25.0, 25, 21, 2, 1, 0, 1);
+  ExpectScores(origin, 21.0 / 25.0, 25, 21);
   ExpectUkmEntry(origin, 21, 25, 84, 0, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
        RecordUkmMetricsOnDestroy_NoPlaybacks) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 2, 1);
+  SetScores(origin, 24, 20);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantPlaybackRecorded());
 
   SimulateDestroy();
-  ExpectScores(origin, 20.0 / 25.0, 25, 20, 2, 1, 0, 0);
+  ExpectScores(origin, 20.0 / 25.0, 25, 20);
   ExpectUkmEntry(origin, 20, 25, 80, 0, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, RecordUkmMetricsOnNavigate) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 3, 1);
+  SetScores(origin, 24, 20);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantPlaybackRecorded());
@@ -1030,14 +1015,14 @@ TEST_F(MediaEngagementContentsObserverTest, RecordUkmMetricsOnNavigate) {
   EXPECT_TRUE(WasSignificantPlaybackRecorded());
 
   Navigate(GURL("https://www.example.org"));
-  ExpectScores(origin, 21.0 / 25.0, 25, 21, 5, 2, 1, 0);
+  ExpectScores(origin, 21.0 / 25.0, 25, 21);
   ExpectUkmEntry(origin, 21, 25, 84, 2, 1);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
        RecordUkmMetricsOnNavigate_AudioContextOnly) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 2, 1);
+  SetScores(origin, 24, 20);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantAudioContextPlaybackRecorded());
@@ -1049,27 +1034,27 @@ TEST_F(MediaEngagementContentsObserverTest,
   Navigate(GURL("https://www.example.org"));
 
   // AudioContext playbacks should count as a media playback.
-  ExpectScores(origin, 21.0 / 25.0, 25, 21, 2, 1, 0, 1);
+  ExpectScores(origin, 21.0 / 25.0, 25, 21);
   ExpectUkmEntry(origin, 21, 25, 84, 0, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
        RecordUkmMetricsOnNavigate_NoPlaybacks) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 27, 6, 2, 1);
+  SetScores(origin, 27, 6);
   Navigate(origin.GetURL());
 
   EXPECT_FALSE(WasSignificantPlaybackRecorded());
 
   Navigate(GURL("https://www.example.org"));
-  ExpectScores(origin, 6 / 28.0, 28, 6, 2, 1, 0, 0);
+  ExpectScores(origin, 6 / 28.0, 28, 6);
   ExpectUkmEntry(origin, 6, 28, 21, 0, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest,
        RecordUkmMetrics_MultiplePlaybackTime) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  SetScores(origin, 24, 20, 3, 1);
+  SetScores(origin, 24, 20);
   Advance15Minutes();
   SetLastPlaybackTime(origin, Now());
   Navigate(origin.GetURL());
@@ -1085,7 +1070,7 @@ TEST_F(MediaEngagementContentsObserverTest,
   SimulateSignificantPlaybackTimeForPlayer(1);
 
   SimulateDestroy();
-  ExpectScores(origin, 21.0 / 25.0, 25, 21, 5, 3, 1, 0);
+  ExpectScores(origin, 21.0 / 25.0, 25, 21);
   ExpectLastPlaybackTime(origin, first);
   ExpectUkmEntry(origin, 21, 25, 84, 2, 2);
 }
@@ -1135,7 +1120,7 @@ TEST_F(MediaEngagementContentsObserverTest, RecordAudiblePlayers_OnDestroy) {
 
   // Test that when we destroy the audible players the scores are recorded.
   SimulateDestroy();
-  ExpectScores(origin, 0.05, 1, 1, 3, 3, 1, 0);
+  ExpectScores(origin, 0.05, 1, 1);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, RecordAudiblePlayers_OnNavigate) {
@@ -1168,12 +1153,12 @@ TEST_F(MediaEngagementContentsObserverTest, RecordAudiblePlayers_OnNavigate) {
   Navigate(GURL("https://www.google.com/test"));
   SimulateSignificantAudioPlayer(1);
   SimulateLongMediaPlayback(1);
-  ExpectScores(origin, 0.0, 0, 0, 0, 0, 0, 0);
+  ExpectScores(origin, 0.0, 0, 0);
 
   // Test that when we navigate to a new origin the audible players the scores
   // are recorded.
   Navigate(GURL("https://www.google.co.uk"));
-  ExpectScores(origin, 0.05, 1, 1, 4, 3, 1, 0);
+  ExpectScores(origin, 0.05, 1, 1);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, TimerSpecificToPlayer) {
@@ -1185,7 +1170,7 @@ TEST_F(MediaEngagementContentsObserverTest, TimerSpecificToPlayer) {
   ForceUpdateTimer(1);
 
   SimulateDestroy();
-  ExpectScores(origin, 0, 1, 0, 1, 0, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, PagePlayerTimersDifferent) {
@@ -1214,7 +1199,7 @@ TEST_F(MediaEngagementContentsObserverTest, SignificantAudibleTabMuted_On) {
   SimulateSignificantPlaybackTimeForPlayer(0);
 
   SimulateDestroy();
-  ExpectScores(origin, 0, 1, 0, 1, 0, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, SignificantAudibleTabMuted_Off) {
@@ -1225,25 +1210,25 @@ TEST_F(MediaEngagementContentsObserverTest, SignificantAudibleTabMuted_Off) {
   SimulateSignificantPlaybackTimeForPlayer(0);
 
   SimulateDestroy();
-  ExpectScores(origin, 0, 1, 0, 1, 1, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
 }
 
 TEST_F(MediaEngagementContentsObserverTest, RecordPlaybackTime) {
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(3));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(3));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(3));
+  ExpectPlaybackTime(0, base::Seconds(3));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(6));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(9));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(6));
+  ExpectPlaybackTime(0, base::Seconds(9));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, true, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(11));
+  SimulatePlaybackStoppedWithTime(0, true, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(11));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(2));
 }
 
 TEST_F(MediaEngagementContentsObserverTest, ShortMediaIgnored) {
@@ -1254,19 +1239,19 @@ TEST_F(MediaEngagementContentsObserverTest, ShortMediaIgnored) {
   SimulateSignificantAudioPlayer(0);
   SimulateSignificantPlaybackTimeForPlayer(0);
   SimulateSignificantVideoPlayer(1);
-  SimulatePlaybackStoppedWithTime(1, true, base::TimeDelta::FromSeconds(1));
+  SimulatePlaybackStoppedWithTime(1, true, base::Seconds(1));
   SimulateSignificantVideoPlayer(2);
   SimulateSignificantPlaybackTimeForPlayer(2);
 
   // Navigate to a sub page and continue watching.
   Navigate(GURL("https://www.google.com/test"));
   SimulateSignificantAudioPlayer(1);
-  SimulatePlaybackStoppedWithTime(1, true, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(1, true, base::Seconds(2));
 
   // Test that when we navigate to a new origin the audible players the scores
   // are recorded and we log extra UKM events with the times.
   Navigate(GURL("https://www.google.co.uk"));
-  ExpectScores(origin, 0, 1, 0, 2, 2, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
   ExpectUkmIgnoredEntries(origin, std::vector<int64_t>{1000, 2000});
 }
 
@@ -1275,15 +1260,15 @@ TEST_F(MediaEngagementContentsObserverTest, TotalTimeUsedInShortCalculation) {
   Navigate(origin.GetURL());
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(8));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(8));
   SimulateSignificantPlaybackTimeForPlayer(0);
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, true, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(10));
+  SimulatePlaybackStoppedWithTime(0, true, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(10));
 
   SimulateDestroy();
-  ExpectScores(origin, 0, 1, 0, 1, 1, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
   ExpectNoUkmIgnoreEntry();
 }
 
@@ -1292,10 +1277,10 @@ TEST_F(MediaEngagementContentsObserverTest, OnlyIgnoreFinishedMedia) {
   Navigate(origin.GetURL());
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(2));
 
   SimulateDestroy();
-  ExpectScores(origin, 0, 1, 0, 1, 0, 0, 0);
+  ExpectScores(origin, 0, 1, 0);
   ExpectNoUkmIgnoreEntry();
 }
 
@@ -1360,6 +1345,20 @@ TEST_F(MediaEngagementContentsObserverTest, IgnoreAudioContextIfDisabled) {
 
   SimulateAudioContextPlaybackTimerFired();
   EXPECT_FALSE(WasSignificantAudioContextPlaybackRecorded());
+}
+
+TEST_F(MediaEngagementContentsObserverTest, PlayerStateIsCleanedUp) {
+  Navigate(GURL("https://www.example.com"));
+
+  EXPECT_EQ(0u, GetStoredPlayerStatesCount());
+  SimulateSignificantVideoPlayer(0);
+  EXPECT_EQ(1u, GetStoredPlayerStatesCount());
+  SimulateSignificantVideoPlayer(1);
+  EXPECT_EQ(2u, GetStoredPlayerStatesCount());
+  SimulateMediaDestroyed(0);
+  EXPECT_EQ(1u, GetStoredPlayerStatesCount());
+  SimulateMediaDestroyed(1);
+  EXPECT_EQ(0u, GetStoredPlayerStatesCount());
 }
 
 #endif  // !defined(OS_ANDROID)

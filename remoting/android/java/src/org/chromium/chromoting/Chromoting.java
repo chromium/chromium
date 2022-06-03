@@ -14,13 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -31,6 +24,14 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import org.chromium.base.Log;
 import org.chromium.chromoting.accountswitcher.AccountSwitcher;
@@ -61,9 +62,9 @@ public class Chromoting extends AppCompatActivity
     private static final String ACCOUNT_TYPE = "com.google";
 
     /** Scope to use when fetching the OAuth token. */
-    // To use these scopes in a debug build, your development account will need to be whitelisted.
-    private static final String TOKEN_SCOPE = "oauth2:https://www.googleapis.com/auth/chromoting "
-            + "https://www.googleapis.com/auth/chromoting.directory "
+    // To use these scopes in a debug build, your development account will need to be allowlisted.
+    private static final String TOKEN_SCOPE =
+            "oauth2:https://www.googleapis.com/auth/chromoting.directory "
             + "https://www.googleapis.com/auth/tachyon";
 
     /** Result code used for starting {@link DesktopActivity}. */

@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include <string>
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
@@ -90,8 +90,9 @@ CandidateWindow::CandidateWindowProperty::CandidateWindowProperty()
       is_cursor_visible(true),
       is_vertical(false),
       show_window_at_composition(false),
-      is_auxiliary_text_visible(false) {
-}
+      is_auxiliary_text_visible(false),
+      current_candidate_index(-1),
+      total_candidates(0) {}
 
 CandidateWindow::CandidateWindowProperty::~CandidateWindowProperty() {
 }

@@ -1,5 +1,5 @@
 initial_response {
-  [search.now.wire.feed.FeedResponse.feed_response] {
+  [components.feed.core.proto.wire.FeedResponse.feed_response] {
   data_operation {
     operation: CLEAR_ALL
   }
@@ -412,7 +412,7 @@ initial_response {
     }
     feature {
       renderable_unit: STREAM
-      [search.now.ui.stream.Stream.stream_extension] {
+      [components.feed.core.proto.ui.stream.Stream.stream_extension] {
       }
     }
   }
@@ -432,7 +432,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.24852186
@@ -447,7 +447,7 @@ initial_response {
           publisher: "CNN.com"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.cnn.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -502,9 +502,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -516,16 +516,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -538,7 +538,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -551,7 +551,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -564,7 +564,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -574,7 +574,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -608,7 +608,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -653,7 +653,7 @@ initial_response {
                   binding_values {
                     binding_id: "store-video-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://amp.cnn.com/cnn/2019/10/28/tech/airpods-pro/index.html"
                         offline_binding {
                           visibility: GONE
@@ -694,7 +694,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://amp.cnn.com/cnn/2019/10/28/tech/airpods-pro/index.html"
                         offline_binding {
                           visibility: VISIBLE
@@ -738,10 +738,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -791,7 +791,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -811,7 +811,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.23091772
@@ -825,7 +825,7 @@ initial_response {
           publisher: "NPR"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.npr.org&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -877,9 +877,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -891,16 +891,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -913,7 +913,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -926,7 +926,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -939,7 +939,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -949,7 +949,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -983,7 +983,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -1036,7 +1036,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://www.npr.org/2019/10/28/774010986/secret-air-force-space-plane-lands-after-more-than-2-years-in-orbit"
                         offline_binding {
                           visibility: VISIBLE
@@ -1080,10 +1080,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -1133,7 +1133,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -1153,7 +1153,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.23098952
@@ -1167,7 +1167,7 @@ initial_response {
           publisher: "Yahoo"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.yahoo.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -1219,9 +1219,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -1233,16 +1233,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -1255,7 +1255,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -1268,7 +1268,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -1281,7 +1281,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -1291,7 +1291,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -1325,7 +1325,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -1378,7 +1378,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://www.yahoo.com/entertainment/t-says-iggy-azalea-started-182613881.html"
                         offline_binding {
                           visibility: VISIBLE
@@ -1422,10 +1422,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -1475,7 +1475,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -1495,7 +1495,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.22743402
@@ -1510,7 +1510,7 @@ initial_response {
           publisher: "ZDNet"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.zdnet.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -1565,9 +1565,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -1579,16 +1579,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -1601,7 +1601,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -1614,7 +1614,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -1627,7 +1627,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -1637,7 +1637,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -1671,7 +1671,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -1724,7 +1724,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://www.zdnet.com/google-amp/article/undoing-my-1000-mistake-why-im-returning-the-pixel-4xl-to-google/"
                         offline_binding {
                           visibility: VISIBLE
@@ -1768,10 +1768,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -1821,7 +1821,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -1841,7 +1841,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.22031662
@@ -1856,7 +1856,7 @@ initial_response {
           publisher: "The Verge"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.theverge.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -1911,9 +1911,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -1925,16 +1925,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -1947,7 +1947,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -1960,7 +1960,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -1973,7 +1973,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -1983,7 +1983,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -2017,7 +2017,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -2070,7 +2070,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://www.theverge.com/platform/amp/2019/10/29/20937559/amazon-echo-buds-wireless-earbuds-review-features-bose-noise-reduction-price"
                         offline_binding {
                           visibility: VISIBLE
@@ -2114,10 +2114,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -2167,7 +2167,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -2187,7 +2187,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.21396348
@@ -2202,7 +2202,7 @@ initial_response {
           publisher: "Ars Technica"
           favicon_url: "https://www.google.com/s2/favicons?domain=arstechnica.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -2257,9 +2257,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -2271,16 +2271,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -2293,7 +2293,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -2306,7 +2306,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -2319,7 +2319,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -2329,7 +2329,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -2363,7 +2363,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -2416,7 +2416,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://arstechnica.com/information-technology/2019/10/att-loses-another-1-3-million-tv-customers-as-directv-freefall-continues/?amp=1"
                         offline_binding {
                           visibility: VISIBLE
@@ -2460,10 +2460,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -2513,7 +2513,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -2533,7 +2533,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CONTENT
-      [search.now.ui.stream.Content.content_extension] {
+      [components.feed.core.proto.ui.stream.Content.content_extension] {
         type: PIET
         basic_logging_metadata {
           score: 0.22791371
@@ -2548,7 +2548,7 @@ initial_response {
           publisher: "CNN.com"
           favicon_url: "https://www.google.com/s2/favicons?domain=www.cnn.com&sz=48"
         }
-        [search.now.ui.stream.PietContent.piet_content_extension] {
+        [components.feed.core.proto.ui.stream.PietContent.piet_content_extension] {
           piet_shared_states {
             content_domain: "piet-shared-state"
             id: 1243929906
@@ -2603,9 +2603,9 @@ initial_response {
                     binding_id: "story-click-action"
                     actions {
                       on_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_URL
                                 open_url_data {
@@ -2617,16 +2617,16 @@ initial_response {
                         }
                       }
                       on_long_click_action {
-                        [search.now.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
+                        [components.feed.core.proto.ui.action.PietFeedActionPayload.piet_feed_action_payload_extension] {
                           feed_action_payload {
-                            [search.now.ui.action.FeedAction.feed_action_extension] {
+                            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                               metadata {
                                 type: OPEN_CONTEXT_MENU
                                 open_context_menu_data {
                                   context_menu_data {
                                     label: "Open in new tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_TAB
                                           open_url_data {
@@ -2639,7 +2639,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in incognito tab"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_INCOGNITO
                                           open_url_data {
@@ -2652,7 +2652,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Open in other window"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: OPEN_URL_NEW_WINDOW
                                           open_url_data {
@@ -2665,7 +2665,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Download link"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DOWNLOAD
                                         }
@@ -2675,7 +2675,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Remove"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: DISMISS_LOCAL
                                           dismiss_data {
@@ -2709,7 +2709,7 @@ initial_response {
                                   context_menu_data {
                                     label: "Learn more"
                                     feed_action_payload {
-                                      [search.now.ui.action.FeedAction.feed_action_extension] {
+                                      [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
                                         metadata {
                                           type: LEARN_MORE
                                         }
@@ -2754,7 +2754,7 @@ initial_response {
                   binding_values {
                     binding_id: "store-video-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://amp.cnn.com/cnn/2019/10/29/politics/vindman-testimony-whistleblower-identity/index.html"
                         offline_binding {
                           visibility: GONE
@@ -2795,7 +2795,7 @@ initial_response {
                   binding_values {
                     binding_id: "story-offline-badge-visible"
                     host_binding_data {
-                      [search.now.ui.stream.OfflineExtension.offline_extension] {
+                      [components.feed.core.proto.ui.stream.OfflineExtension.offline_extension] {
                         url: "https://amp.cnn.com/cnn/2019/10/29/politics/vindman-testimony-whistleblower-identity/index.html"
                         offline_binding {
                           visibility: VISIBLE
@@ -2839,10 +2839,10 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CARD
-      [search.now.ui.stream.Card.card_extension] {
-        [search.now.ui.stream.SwipeActionExtension.swipe_action_extension] {
+      [components.feed.core.proto.ui.stream.Card.card_extension] {
+        [components.feed.core.proto.ui.stream.SwipeActionExtension.swipe_action_extension] {
           swipe_action {
-            [search.now.ui.action.FeedAction.feed_action_extension] {
+            [components.feed.core.proto.ui.action.FeedAction.feed_action_extension] {
               metadata {
                 type: DISMISS_LOCAL
                 dismiss_data {
@@ -2892,7 +2892,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: CLUSTER
-      [search.now.ui.stream.Cluster.cluster_extension] {
+      [components.feed.core.proto.ui.stream.Cluster.cluster_extension] {
       }
     }
   }
@@ -2912,7 +2912,7 @@ initial_response {
         table: "FEATURE"
       }
       renderable_unit: TOKEN
-      [search.now.wire.feed.Token.token_extension] {
+      [components.feed.core.proto.wire.Token.token_extension] {
         next_page_token: "dummy_token"
       }
     }

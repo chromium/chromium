@@ -4,29 +4,46 @@
 
 import("//build/config/gclient_args.gni")
 import("//build/config/ios/ios_sdk.gni")
+import("//build/config/zip.gni")
 
-# Using a locally-built WebKit is only supported for Debug simulator builds.
-_build_custom_webkit = checkout_ios_webkit && is_debug && use_ios_simulator
-
-group("webkit") {
-  if (_build_custom_webkit) {
-    deps = [
-      ":bundle_webkit_frameworks",
-    ]
-  }
-
-  all_dependent_configs = [ ":_webkit_config" ]
+declare_args() {
+  build_mac_webkit = false
 }
 
-if (_build_custom_webkit) {
-  # WebKit is built from source using xcodebuild (invoked via the
-  # build_webkit.py wrapper script).  The WebKit build places its frameworks in
-  # a sub-directory named "Debug-iphonesimulator".
-  _webkit_xcodebuild_out_dir = "Debug-iphonesimulator"
+# Using a locally-built iOS WebKit is only supported for simulator builds, and
+# only if not building WebKit for macOS.
+_build_ios_webkit = checkout_ios_webkit && target_environment == "simulator" &&
+                    !build_mac_webkit
+_build_mac_webkit = checkout_ios_webkit && build_mac_webkit
 
-  action("compile_webkit") {
+group("webkit") {
+  if (_build_ios_webkit) {
+    deps = [ ":bundle_webkit_ios_frameworks" ]
+  }
+
+  public_configs = [ ":_webkit_ios_config" ]
+}
+
+# WebKit is built from source using xcodebuild (invoked via the
+# build_webkit.py wrapper script).  The WebKit build places its output in a
+# sub-directory named "Release-iphonesimulator" for iOS builds and
+# "Release" for macOS builds.
+_webkit_ios_out_base_dir = "$target_out_dir/iOS"
+_webkit_mac_out_base_dir = "$target_out_dir/macOS"
+
+_webkit_ios_xcodebuild_out_dir_name = "Release-iphonesimulator"
+_webkit_mac_xcodebuild_out_dir_name = "Release"
+
+_webkit_ios_out_product_dir =
+    "$_webkit_ios_out_base_dir/$_webkit_ios_xcodebuild_out_dir_name"
+_webkit_mac_out_product_dir =
+    "$_webkit_mac_out_base_dir/$_webkit_mac_xcodebuild_out_dir_name"
+
+template("compile_webkit") {
+  action(target_name) {
     visibility = [
-      ":bundle_webkit_frameworks",
+      ":bundle_webkit_ios_frameworks",
+      ":copy_webkit_mac_minibrowser",
       ":webkit",
     ]
 
@@ -52,78 +69,123 @@ if (_build_custom_webkit) {
       "src/WebKitLibraries/ChangeLog",
     ]
 
-    _framework_out_dir = "$target_out_dir/$_webkit_xcodebuild_out_dir"
-    outputs = [
-      # The frameworks themselves include many resource files, but as a first
-      # step, use just the binaries.
-      "$_framework_out_dir/JavaScriptCore.framework",
-      "$_framework_out_dir/JavaScriptCore.framework/JavaScriptCore",
-      "$_framework_out_dir/WebCore.framework",
-      "$_framework_out_dir/WebCore.framework/WebCore",
-      "$_framework_out_dir/WebKit.framework",
-      "$_framework_out_dir/WebKit.framework/WebKit",
-      "$_framework_out_dir/WebKitLegacy.framework",
-      "$_framework_out_dir/WebKitLegacy.framework/WebKitLegacy",
-      "$_framework_out_dir/com.apple.WebKit.Networking.xpc",
-      "$_framework_out_dir/com.apple.WebKit.Networking.xpc/com.apple.WebKit.Networking.Development",
-      "$_framework_out_dir/com.apple.WebKit.Plugin.64.xpc",
-      "$_framework_out_dir/com.apple.WebKit.Plugin.64.xpc/com.apple.WebKit.Plugin.64.Development",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.Development.xpc",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.Development.xpc/com.apple.WebKit.WebContent.Development.Development",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.xpc",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.xpc/com.apple.WebKit.WebContent.Development",
-    ]
+    outputs = invoker.outputs
+
+    args = invoker.args
 
     # TODO(crbug.com/934252): "-j 4" restricts xcodebuild to four simultaneous
     # jobs. This is intended to prevent overloading the machine, because ninja
     # will already be spawning a large number of jobs in parallel with
     # xcodebuild, but it causes the webkit build to run very slowly. Find a way
     # to increase the parallelism here.
-    args = [
-      "--output_dir",
-      rebase_path("$target_out_dir"),
+    args += [
       "-j",
       "4",
       "-quiet",
     ]
   }
+}
 
-  bundle_data("bundle_webkit_frameworks") {
-    public_deps = [
-      ":compile_webkit",
-    ]
-
-    _framework_out_dir = "$target_out_dir/$_webkit_xcodebuild_out_dir"
-    sources = [
-      "$_framework_out_dir/JavaScriptCore.framework",
-      "$_framework_out_dir/WebCore.framework",
-      "$_framework_out_dir/WebKit.framework",
-      "$_framework_out_dir/WebKitLegacy.framework",
-      "$_framework_out_dir/com.apple.WebKit.Networking.xpc",
-      "$_framework_out_dir/com.apple.WebKit.Plugin.64.xpc",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.Development.xpc",
-      "$_framework_out_dir/com.apple.WebKit.WebContent.xpc",
-    ]
+if (_build_ios_webkit) {
+  compile_webkit("compile_webkit_ios_frameworks") {
     outputs = [
-      "{{bundle_contents_dir}}/WebKitFrameworks/{{source_file_part}}",
+      # The frameworks themselves include many resource files, but as a first
+      # step, use just the binaries.
+      "$_webkit_ios_out_product_dir/JavaScriptCore.framework",
+      "$_webkit_ios_out_product_dir/JavaScriptCore.framework/JavaScriptCore",
+      "$_webkit_ios_out_product_dir/WebCore.framework",
+      "$_webkit_ios_out_product_dir/WebCore.framework/WebCore",
+      "$_webkit_ios_out_product_dir/WebKit.framework",
+      "$_webkit_ios_out_product_dir/WebKit.framework/WebKit",
+      "$_webkit_ios_out_product_dir/WebKitLegacy.framework",
+      "$_webkit_ios_out_product_dir/WebKitLegacy.framework/WebKitLegacy",
+      "$_webkit_ios_out_product_dir/WebKitTestRunnerApp.app/Frameworks/libclang_rt.asan_iossim_dynamic.dylib",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc/com.apple.WebKit.Networking.Development",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc/com.apple.WebKit.WebContent.Development.Development",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.xpc",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.xpc/com.apple.WebKit.WebContent.Development",
     ]
+    args = [
+      "--ios_simulator",
+      "--asan",
+      "--output_dir",
+      rebase_path("$_webkit_ios_out_base_dir"),
+    ]
+  }
+
+  bundle_data("bundle_webkit_ios_frameworks") {
+    public_deps = [ ":compile_webkit_ios_frameworks" ]
+
+    sources = [
+      "$_webkit_ios_out_product_dir/JavaScriptCore.framework",
+      "$_webkit_ios_out_product_dir/WebCore.framework",
+      "$_webkit_ios_out_product_dir/WebKit.framework",
+      "$_webkit_ios_out_product_dir/WebKitLegacy.framework",
+      "$_webkit_ios_out_product_dir/WebKitTestRunnerApp.app/Frameworks/libclang_rt.asan_iossim_dynamic.dylib",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc",
+      "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.xpc",
+    ]
+    outputs =
+        [ "{{bundle_contents_dir}}/WebKitFrameworks/{{source_file_part}}" ]
   }
 }
 
-config("_webkit_config") {
-  if (_build_custom_webkit) {
+if (_build_mac_webkit) {
+  compile_webkit("compile_webkit_mac_minibrowser") {
+    outputs = [ "$_webkit_mac_out_product_dir" ]
+    args = [
+      "--asan",
+      "--clean",
+      "--output_dir",
+      rebase_path("$_webkit_mac_out_base_dir"),
+
+      # The arguments below allow building with Xcode 11.4 on macOS 11.
+      "MACOSX_DEPLOYMENT_TARGET=10.15",
+      "TARGET_MAC_OS_X_VERSION_MAJOR=101500",
+      "MAC_OS_X_VERSION_ACTUAL=101507",
+      "MAC_OS_X_VERSION_MAJOR=101500",
+      "MAC_OS_X_VERSION_MINOR=1507",
+      "MAC_OS_X_PRODUCT_BUILD_VERSION=19H2",
+    ]
+  }
+
+  action("copy_webkit_mac_minibrowser") {
+    script = "copy_webkit_for_clusterfuzz.py"
+
+    sources = [
+      "$_webkit_mac_out_product_dir",
+      "run-clusterfuzz.sh",
+    ]
+    outputs = [ "$root_out_dir/WebKitMacOS" ]
+
+    _clang_asan_lib = rebase_path(sources[0], root_build_dir) + "/WebKitTestRunnerApp.app/Contents/Frameworks/libclang_rt.asan_osx_dynamic.dylib"
+
+    args = [
+      "--output",
+      rebase_path(outputs[0], root_build_dir),
+      "--webkit_build",
+      rebase_path(sources[0], root_build_dir),
+      "--clusterfuzz_script",
+      rebase_path(sources[1], root_build_dir),
+      "--clang_asan_library",
+      "$_clang_asan_lib",
+    ]
+
+    public_deps = [ ":compile_webkit_mac_minibrowser" ]
+  }
+}
+
+config("_webkit_ios_config") {
+  if (_build_ios_webkit) {
     # From the ld documentation: "Directories specified with -F are searched in
     # the order they appear on the command line and before the default search
     # path."
-    _framework_out_dir = "$target_out_dir/$_webkit_xcodebuild_out_dir"
-    common_flags = [
-      "-F",
-      rebase_path("$_framework_out_dir/", root_build_dir),
-    ]
-
-    cflags = common_flags
-    ldflags = common_flags
+    framework_dirs =
+        [ "$_webkit_ios_out_base_dir/$_webkit_ios_xcodebuild_out_dir_name" ]
   }
 
-  libs = [ "WebKit.framework" ]
+  frameworks = [ "WebKit.framework" ]
 }

@@ -20,11 +20,6 @@ namespace sync_sessions {
 
 class OpenTabsUIDelegate {
  public:
-  // If a valid favicon for the page at |page_url| is found, returns a pointer
-  // to the png-encoded image. Otherwise, returns nullptr.
-  virtual favicon_base::FaviconRawBitmapResult GetSyncedFaviconForPageURL(
-      const GURL& page_url) const = 0;
-
   // Builds a list of all foreign sessions, ordered from most recent to least
   // recent. Caller does NOT own SyncedSession objects.
   // Returns true if foreign sessions were found, false otherwise.
@@ -60,10 +55,6 @@ class OpenTabsUIDelegate {
   // Sets |*local| to point to the sessions sync representation of the
   // local machine.
   virtual bool GetLocalSession(const SyncedSession** local) = 0;
-
-  // Returns the foreign icon url associated with |page_url| if such exists,
-  // otherwise returns the empty GURL.
-  virtual GURL GetIconUrlForPageUrl(const GURL& page_url) = 0;
 
  protected:
   virtual ~OpenTabsUIDelegate();

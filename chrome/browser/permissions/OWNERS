@@ -1,6 +1,1 @@
-file://chrome/browser/permissions/PERMISSIONS_OWNERS
-felt@chromium.org
-mlamouri@chromium.org
-
-# COMPONENT: Internals>Permissions
-# TEAM: permissions-dev@chromium.org
+file://components/permissions/PERMISSIONS_OWNERS

@@ -40,45 +40,44 @@ BlockedInterceptionUI::~BlockedInterceptionUI() {
 }
 
 void BlockedInterceptionUI::PopulateStringsForHTML(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   CHECK(load_time_data);
 
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
       ssl_info_, base::Time::NowFromSystemTime(), load_time_data);
-  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
 
-  load_time_data->SetBoolean("overridable", true);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetBoolean("bad_clock", false);
-  load_time_data->SetString("type", "BLOCKED_INTERCEPTION");
+  load_time_data->SetBoolKey("overridable", true);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+  load_time_data->SetBoolKey("bad_clock", false);
+  load_time_data->SetStringKey("type", "BLOCKED_INTERCEPTION");
 
-  const base::string16 hostname(
+  const std::u16string hostname(
       common_string_util::GetFormattedHostName(request_url_));
 
   // Set strings that are shared between enterprise and non-enterprise
   // interstitials.
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "tabTitle",
       l10n_util::GetStringFUTF16(IDS_BLOCKED_INTERCEPTION_HEADING, hostname));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "heading",
       l10n_util::GetStringFUTF16(IDS_BLOCKED_INTERCEPTION_HEADING, hostname));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_SAFETY_BUTTON));
-  load_time_data->SetString("finalParagraph", std::string());
+  load_time_data->SetStringKey("finalParagraph", std::string());
 
   // Reuse the strings from the WebUI page.
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY1));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY2));
 
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "finalParagraph", l10n_util::GetStringFUTF16(
                             IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, hostname));
 }
@@ -107,6 +106,11 @@ void BlockedInterceptionUI::HandleCommand(SecurityInterstitialCommand command) {
       break;
     case CMD_OPEN_WHITEPAPER:
       controller_->OpenExtendedReportingWhitepaper(true);
+      break;
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+      controller_->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
+      controller_->OpenEnhancedProtectionSettings();
       break;
     case CMD_OPEN_HELP_CENTER:
     case CMD_DONT_PROCEED:

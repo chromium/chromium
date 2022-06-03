@@ -1,7 +1,0 @@
-This test checks that grid-template-{rows|columns} dynamic updates recomputes the positions of automatically placed grid items.
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

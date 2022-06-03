@@ -24,10 +24,15 @@ class KeyEventMapper : public protocol::InputFilter {
  public:
   KeyEventMapper();
   explicit KeyEventMapper(InputStub* input_stub);
+
+  KeyEventMapper(const KeyEventMapper&) = delete;
+  KeyEventMapper& operator=(const KeyEventMapper&) = delete;
+
   ~KeyEventMapper() override;
 
   // Callback type for use with SetTrapCallback(), below.
-  typedef base::Callback<void(const protocol::KeyEvent&)> KeyTrapCallback;
+  typedef base::RepeatingCallback<void(const protocol::KeyEvent&)>
+      KeyTrapCallback;
 
   // Sets the callback to which trapped keys will be delivered.
   void SetTrapCallback(KeyTrapCallback callback);
@@ -47,8 +52,6 @@ class KeyEventMapper : public protocol::InputFilter {
   std::map<uint32_t, uint32_t> mapped_keys;
   std::set<uint32_t> trapped_keys;
   KeyTrapCallback trap_callback;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventMapper);
 };
 
 }  // namespace remoting

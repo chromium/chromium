@@ -5,6 +5,8 @@
 #include "components/sessions/core/tab_restore_service.h"
 
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 
 namespace sessions {
 
@@ -28,10 +30,9 @@ TabRestoreService::Tab::~Tab() = default;
 
 size_t TabRestoreService::Tab::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
-  return
-      EstimateMemoryUsage(navigations) +
-      EstimateMemoryUsage(extension_app_id) +
-      EstimateMemoryUsage(user_agent_override);
+  return EstimateMemoryUsage(navigations) +
+         EstimateMemoryUsage(extension_app_id) +
+         user_agent_override.EstimateMemoryUsage();
 }
 
 TabRestoreService::Window::Window() : Entry(WINDOW) {}
@@ -42,6 +43,14 @@ size_t TabRestoreService::Window::EstimateMemoryUsage() const {
   return
       EstimateMemoryUsage(tabs) +
       EstimateMemoryUsage(app_name);
+}
+
+TabRestoreService::Group::Group() : Entry(GROUP) {}
+TabRestoreService::Group::~Group() = default;
+
+size_t TabRestoreService::Group::EstimateMemoryUsage() const {
+  using base::trace_event::EstimateMemoryUsage;
+  return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title());
 }
 
 // TabRestoreService ----------------------------------------------------------

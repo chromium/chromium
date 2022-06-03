@@ -34,7 +34,7 @@ base::File::Error SafeWebBundleParser::OpenFile(base::File file) {
 }
 
 void SafeWebBundleParser::OpenDataSource(
-    mojo::PendingRemote<mojom::BundleDataSource> data_source) {
+    mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source) {
   DCHECK(disconnected_);
   GetFactory()->GetParserForDataSource(parser_.BindNewPipeAndPassReceiver(),
                                        std::move(data_source));
@@ -45,14 +45,15 @@ void SafeWebBundleParser::OpenDataSource(
 }
 
 void SafeWebBundleParser::ParseMetadata(
-    mojom::WebBundleParser::ParseMetadataCallback callback) {
+    web_package::mojom::WebBundleParser::ParseMetadataCallback callback) {
   // This method is designed to be called once. So, allowing only once
   // simultaneous request is fine enough.
   if (disconnected_ || !metadata_callback_.is_null()) {
     std::move(callback).Run(
-        nullptr, mojom::BundleMetadataParseError::New(
-                     mojom::BundleParseErrorType::kParserInternalError,
-                     GURL() /* fallback_url */, kConnectionError));
+        nullptr,
+        web_package::mojom::BundleMetadataParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            GURL() /* fallback_url */, kConnectionError));
     return;
   }
   metadata_callback_ = std::move(callback);
@@ -63,16 +64,17 @@ void SafeWebBundleParser::ParseMetadata(
 void SafeWebBundleParser::ParseResponse(
     uint64_t response_offset,
     uint64_t response_length,
-    mojom::WebBundleParser::ParseResponseCallback callback) {
+    web_package::mojom::WebBundleParser::ParseResponseCallback callback) {
   // This method allows simultaneous multiple requests. But if the unique ID
   // overflows, and the previous request that owns the same ID hasn't finished,
   // we just make the new request fail with kConnectionError.
   if (disconnected_ ||
       response_callbacks_.contains(response_callback_next_id_)) {
     std::move(callback).Run(
-        nullptr, mojom::BundleResponseParseError::New(
-                     mojom::BundleParseErrorType::kParserInternalError,
-                     kConnectionError));
+        nullptr,
+        web_package::mojom::BundleResponseParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            kConnectionError));
     return;
   }
   size_t callback_id = response_callback_next_id_++;
@@ -82,7 +84,7 @@ void SafeWebBundleParser::ParseResponse(
                                         base::Unretained(this), callback_id));
 }
 
-mojom::WebBundleParserFactory* SafeWebBundleParser::GetFactory() {
+web_package::mojom::WebBundleParserFactory* SafeWebBundleParser::GetFactory() {
   if (!factory_) {
     data_decoder_.GetService()->BindWebBundleParserFactory(
         factory_.BindNewPipeAndPassReceiver());
@@ -100,30 +102,32 @@ void SafeWebBundleParser::OnDisconnect() {
   disconnected_ = true;
   if (!metadata_callback_.is_null())
     std::move(metadata_callback_)
-        .Run(nullptr, mojom::BundleMetadataParseError::New(
-                          mojom::BundleParseErrorType::kParserInternalError,
-                          GURL() /* fallback_url */, kConnectionError));
+        .Run(nullptr,
+             web_package::mojom::BundleMetadataParseError::New(
+                 web_package::mojom::BundleParseErrorType::kParserInternalError,
+                 GURL() /* fallback_url */, kConnectionError));
   for (auto& callback : response_callbacks_)
     std::move(callback.second)
-        .Run(nullptr, mojom::BundleResponseParseError::New(
-                          mojom::BundleParseErrorType::kParserInternalError,
-                          kConnectionError));
+        .Run(nullptr,
+             web_package::mojom::BundleResponseParseError::New(
+                 web_package::mojom::BundleParseErrorType::kParserInternalError,
+                 kConnectionError));
   response_callbacks_.clear();
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 }
 
 void SafeWebBundleParser::OnMetadataParsed(
-    mojom::BundleMetadataPtr metadata,
-    mojom::BundleMetadataParseErrorPtr error) {
+    web_package::mojom::BundleMetadataPtr metadata,
+    web_package::mojom::BundleMetadataParseErrorPtr error) {
   DCHECK(!metadata_callback_.is_null());
   std::move(metadata_callback_).Run(std::move(metadata), std::move(error));
 }
 
 void SafeWebBundleParser::OnResponseParsed(
     size_t callback_id,
-    mojom::BundleResponsePtr response,
-    mojom::BundleResponseParseErrorPtr error) {
+    web_package::mojom::BundleResponsePtr response,
+    web_package::mojom::BundleResponseParseErrorPtr error) {
   auto it = response_callbacks_.find(callback_id);
   DCHECK(it != response_callbacks_.end());
   auto callback = std::move(it->second);

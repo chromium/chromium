@@ -9,10 +9,10 @@
 
 namespace blink {
 
-struct PaintInfo;
-class LayoutPoint;
 class LayoutUnit;
 class RootInlineBox;
+struct PaintInfo;
+struct PhysicalOffset;
 
 class RootInlineBoxPainter {
   STACK_ALLOCATED();
@@ -22,13 +22,13 @@ class RootInlineBoxPainter {
       : root_inline_box_(root_inline_box) {}
 
   void Paint(const PaintInfo&,
-             const LayoutPoint&,
+             const PhysicalOffset&,
              LayoutUnit line_top,
              LayoutUnit line_bottom);
 
  private:
   void PaintEllipsisBox(const PaintInfo&,
-                        const LayoutPoint& paint_offset,
+                        const PhysicalOffset& paint_offset,
                         LayoutUnit line_top,
                         LayoutUnit line_bottom) const;
 

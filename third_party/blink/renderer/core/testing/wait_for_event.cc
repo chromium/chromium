@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
 
@@ -10,16 +11,17 @@ namespace blink {
 
 WaitForEvent::WaitForEvent(Element* element, const AtomicString& name)
     : element_(element), event_name_(name) {
-  element_->addEventListener(event_name_, this);
+  element_->addEventListener(event_name_, this, /*use_capture=*/false);
+  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   run_loop_.Run();
 }
 
 void WaitForEvent::Invoke(ExecutionContext*, Event*) {
   run_loop_.Quit();
-  element_->removeEventListener(event_name_, this);
+  element_->removeEventListener(event_name_, this, /*use_capture=*/false);
 }
 
-void WaitForEvent::Trace(Visitor* visitor) {
+void WaitForEvent::Trace(Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
   visitor->Trace(element_);
 }

@@ -14,37 +14,58 @@ FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
 
 FragmentData::RareData::~RareData() = default;
 
-void FragmentData::DestroyTail() {
+void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
+  if (layer && layer != new_layer)
+    layer->Destroy();
+  layer = new_layer;
+}
+
+void FragmentData::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(layer);
+  visitor->Trace(next_fragment_);
+}
+
+void FragmentData::ClearNextFragment() {
   if (!rare_data_)
     return;
   // Take next_fragment_ which clears it in this fragment.
-  std::unique_ptr<FragmentData> next = std::move(rare_data_->next_fragment_);
+  FragmentData* next = rare_data_->next_fragment_.Release();
   while (next && next->rare_data_) {
-    // Take next_fragment_ which clears it in that fragment, and the assignment
-    // deletes the previous |next|.
-    next = std::move(next->rare_data_->next_fragment_);
+    next = next->rare_data_->next_fragment_.Release();
   }
-  // The last |next| will be deleted on return.
 }
 
 FragmentData& FragmentData::EnsureNextFragment() {
   if (!NextFragment())
-    EnsureRareData().next_fragment_ = std::make_unique<FragmentData>();
+    EnsureRareData().next_fragment_ = MakeGarbageCollected<FragmentData>();
   return *rare_data_->next_fragment_;
+}
+
+FragmentData& FragmentData::LastFragment() {
+  for (FragmentData* fragment = this;;) {
+    FragmentData* next = fragment->NextFragment();
+    if (!next)
+      return *fragment;
+    fragment = next;
+  }
+}
+
+const FragmentData& FragmentData::LastFragment() const {
+  return const_cast<FragmentData*>(this)->LastFragment();
 }
 
 FragmentData::RareData& FragmentData::EnsureRareData() {
   if (!rare_data_)
-    rare_data_ = std::make_unique<RareData>();
+    rare_data_ = MakeGarbageCollected<RareData>();
   return *rare_data_;
 }
 
-void FragmentData::SetLayer(std::unique_ptr<PaintLayer> layer) {
+void FragmentData::SetLayer(PaintLayer* layer) {
   if (rare_data_ || layer)
-    EnsureRareData().layer = std::move(layer);
+    EnsureRareData().SetLayer(layer);
 }
 
-const TransformPaintPropertyNode& FragmentData::PreTransform() const {
+const TransformPaintPropertyNodeOrAlias& FragmentData::PreTransform() const {
   if (const auto* properties = PaintProperties()) {
     if (const auto* transform = properties->Transform()) {
       DCHECK(transform->Parent());
@@ -54,7 +75,8 @@ const TransformPaintPropertyNode& FragmentData::PreTransform() const {
   return LocalBorderBoxProperties().Transform();
 }
 
-const TransformPaintPropertyNode& FragmentData::PostScrollTranslation() const {
+const TransformPaintPropertyNodeOrAlias& FragmentData::PostScrollTranslation()
+    const {
   if (const auto* properties = PaintProperties()) {
     if (properties->TransformIsolationNode())
       return *properties->TransformIsolationNode();
@@ -68,7 +90,7 @@ const TransformPaintPropertyNode& FragmentData::PostScrollTranslation() const {
   return LocalBorderBoxProperties().Transform();
 }
 
-const ClipPaintPropertyNode& FragmentData::PreClip() const {
+const ClipPaintPropertyNodeOrAlias& FragmentData::PreClip() const {
   if (const auto* properties = PaintProperties()) {
     if (const auto* clip = properties->ClipPathClip()) {
       // SPv1 composited clip-path has an alternative clip tree structure.
@@ -90,7 +112,7 @@ const ClipPaintPropertyNode& FragmentData::PreClip() const {
   return LocalBorderBoxProperties().Clip();
 }
 
-const ClipPaintPropertyNode& FragmentData::PostOverflowClip() const {
+const ClipPaintPropertyNodeOrAlias& FragmentData::PostOverflowClip() const {
   if (const auto* properties = PaintProperties()) {
     if (properties->ClipIsolationNode())
       return *properties->ClipIsolationNode();
@@ -102,7 +124,7 @@ const ClipPaintPropertyNode& FragmentData::PostOverflowClip() const {
   return LocalBorderBoxProperties().Clip();
 }
 
-const EffectPaintPropertyNode& FragmentData::PreEffect() const {
+const EffectPaintPropertyNodeOrAlias& FragmentData::PreEffect() const {
   if (const auto* properties = PaintProperties()) {
     if (const auto* effect = properties->Effect()) {
       DCHECK(effect->Parent());
@@ -116,7 +138,7 @@ const EffectPaintPropertyNode& FragmentData::PreEffect() const {
   return LocalBorderBoxProperties().Effect();
 }
 
-const EffectPaintPropertyNode& FragmentData::PreFilter() const {
+const EffectPaintPropertyNodeOrAlias& FragmentData::PreFilter() const {
   if (const auto* properties = PaintProperties()) {
     if (const auto* filter = properties->Filter()) {
       DCHECK(filter->Parent());
@@ -126,7 +148,8 @@ const EffectPaintPropertyNode& FragmentData::PreFilter() const {
   return LocalBorderBoxProperties().Effect();
 }
 
-const EffectPaintPropertyNode& FragmentData::PostIsolationEffect() const {
+const EffectPaintPropertyNodeOrAlias& FragmentData::PostIsolationEffect()
+    const {
   if (const auto* properties = PaintProperties()) {
     if (properties->EffectIsolationNode())
       return *properties->EffectIsolationNode();
@@ -139,7 +162,7 @@ void FragmentData::InvalidateClipPathCache() {
     return;
 
   rare_data_->is_clip_path_cache_valid = false;
-  rare_data_->clip_path_bounding_box = base::nullopt;
+  rare_data_->clip_path_bounding_box = absl::nullopt;
   rare_data_->clip_path_path = nullptr;
 }
 
@@ -151,14 +174,14 @@ void FragmentData::SetClipPathCache(const IntRect& bounding_box,
 }
 
 void FragmentData::MapRectToFragment(const FragmentData& fragment,
-                                     IntRect& rect) const {
+                                     gfx::Rect& rect) const {
   if (this == &fragment)
     return;
   const auto& from_transform = LocalBorderBoxProperties().Transform();
   const auto& to_transform = fragment.LocalBorderBoxProperties().Transform();
-  rect.MoveBy(RoundedIntPoint(PaintOffset()));
+  rect.Offset(ToRoundedPoint(PaintOffset()).OffsetFromOrigin());
   GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
-  rect.MoveBy(-RoundedIntPoint(fragment.PaintOffset()));
+  rect.Offset(-ToRoundedPoint(fragment.PaintOffset()).OffsetFromOrigin());
 }
 
 }  // namespace blink

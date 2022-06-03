@@ -4,38 +4,66 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkTypeface.h"
-
 // Include HarfBuzz to have a cross-platform way to retrieve table tags without
 // having to rely on the platform being able to instantiate this font format.
 #include <hb.h>
+
+#include "base/sys_byteorder.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
 namespace {
 
-struct HarfbuzzBlobDestroyer {
-  inline void operator()(hb_blob_t* blob) { hb_blob_destroy(blob); }
-};
+FontFormatCheck::COLRVersion determineCOLRVersion(
+    const FontFormatCheck::TableTagsVector& table_tags,
+    const hb_face_t* face) {
+  const hb_tag_t kCOLRTag = HB_TAG('C', 'O', 'L', 'R');
 
-struct HarfbuzzFaceDestroyer {
-  inline void operator()(hb_face_t* face) { hb_face_destroy(face); }
-};
+  // Only try to read version if header size is sufficient.
+  // https://docs.microsoft.com/en-us/typography/opentype/spec/colr#header
+  const unsigned int kMinCOLRHeaderSize = 14;
+  if (table_tags.size() && table_tags.Contains(kCOLRTag) &&
+      table_tags.Contains(HB_TAG('C', 'P', 'A', 'L'))) {
+    HbScoped<hb_blob_t> table_blob(hb_face_reference_table(face, kCOLRTag));
+    if (hb_blob_get_length(table_blob.get()) < kMinCOLRHeaderSize)
+      return FontFormatCheck::COLRVersion::kNoCOLR;
+
+    unsigned required_bytes_count = 2u;
+    const char* colr_data =
+        hb_blob_get_data(table_blob.get(), &required_bytes_count);
+    if (required_bytes_count < 2u)
+      return FontFormatCheck::COLRVersion::kNoCOLR;
+
+    uint16_t colr_version =
+        base::NetToHost16(*reinterpret_cast<const uint16_t*>(colr_data));
+
+    if (colr_version == 0)
+      return FontFormatCheck::COLRVersion::kCOLRV0;
+    else if (colr_version == 1)
+      return FontFormatCheck::COLRVersion::kCOLRV1;
+  }
+  return FontFormatCheck::COLRVersion::kNoCOLR;
+}
+
 }  // namespace
 
 FontFormatCheck::FontFormatCheck(sk_sp<SkData> sk_data) {
-  std::unique_ptr<hb_blob_t, HarfbuzzBlobDestroyer> font_blob(hb_blob_create(
-      reinterpret_cast<const char*>(sk_data->bytes()), sk_data->size(),
-      HB_MEMORY_MODE_READONLY, nullptr, nullptr));
-  std::unique_ptr<hb_face_t, HarfbuzzFaceDestroyer> face(
-      hb_face_create(font_blob.get(), 0));
+  HbScoped<hb_blob_t> font_blob(
+      hb_blob_create(reinterpret_cast<const char*>(sk_data->bytes()),
+                     base::checked_cast<unsigned>(sk_data->size()),
+                     HB_MEMORY_MODE_READONLY, nullptr, nullptr));
+  HbScoped<hb_face_t> face(hb_face_create(font_blob.get(), 0));
 
   unsigned table_count = 0;
   table_count = hb_face_get_table_tags(face.get(), 0, nullptr, nullptr);
   table_tags_.resize(table_count);
   if (!hb_face_get_table_tags(face.get(), 0, &table_count, table_tags_.data()))
     table_tags_.resize(0);
+
+  colr_version_ = determineCOLRVersion(table_tags_, face.get());
 }
 
 bool FontFormatCheck::IsVariableFont() {
@@ -48,10 +76,12 @@ bool FontFormatCheck::IsCbdtCblcColorFont() {
          table_tags_.Contains(HB_TAG('C', 'B', 'L', 'C'));
 }
 
-bool FontFormatCheck::IsColrCpalColorFont() {
-  return table_tags_.size() &&
-         table_tags_.Contains(HB_TAG('C', 'O', 'L', 'R')) &&
-         table_tags_.Contains(HB_TAG('C', 'P', 'A', 'L'));
+bool FontFormatCheck::IsColrCpalColorFontV0() {
+  return colr_version_ == COLRVersion::kCOLRV0;
+}
+
+bool FontFormatCheck::IsColrCpalColorFontV1() {
+  return colr_version_ == COLRVersion::kCOLRV1;
 }
 
 bool FontFormatCheck::IsSbixColorFont() {

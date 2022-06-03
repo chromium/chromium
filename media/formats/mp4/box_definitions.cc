@@ -8,11 +8,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/big_endian.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -30,8 +30,8 @@
 #include "media/video/h264_parser.h"  // nogncheck
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-#include "base/optional.h"
 #include "media/formats/mp4/dolby_vision.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -49,7 +49,7 @@ const size_t kFlacMetadataBlockStreaminfoSize = 34;
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 // Parse dvcC or dvvC box.
-base::Optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
+absl::optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
     BoxReader* reader) {
   {
     DolbyVisionConfiguration dvcc;
@@ -67,9 +67,67 @@ base::Optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+
+// Read color coordinate value as defined in the MasteringDisplayColorVolume
+// ('mdcv') box.  Each coordinate is a float encoded in uint16_t, with upper
+// bound set to 50000.
+bool ReadMdcvColorCoordinate(BoxReader* reader,
+                             float* normalized_value_in_float) {
+  const float kColorCoordinateUpperBound = 50000.;
+
+  uint16_t value_in_uint16;
+  RCHECK(reader->Read2(&value_in_uint16));
+
+  float value_in_float = static_cast<float>(value_in_uint16);
+
+  if (value_in_float >= kColorCoordinateUpperBound) {
+    *normalized_value_in_float = 1.f;
+    return true;
+  }
+
+  *normalized_value_in_float = value_in_float / kColorCoordinateUpperBound;
+  return true;
+}
+
+// Read "fixed point" value as defined in the
+// SMPTE2086MasteringDisplayMetadataBox ('SmDm') box. See
+// https://www.webmproject.org/vp9/mp4/#data-types-and-fields
+bool ReadFixedPoint16(float fixed_point_divisor,
+                      BoxReader* reader,
+                      float* normalized_value_in_float) {
+  uint16_t value;
+  RCHECK(reader->Read2(&value));
+  *normalized_value_in_float = value / fixed_point_divisor;
+  return true;
+}
+
+bool ReadFixedPoint32(float fixed_point_divisor,
+                      BoxReader* reader,
+                      float* normalized_value_in_float) {
+  uint32_t value;
+  RCHECK(reader->Read4(&value));
+  *normalized_value_in_float = value / fixed_point_divisor;
+  return true;
+}
+
+VideoColorSpace ConvertColorParameterInformationToColorSpace(
+    const ColorParameterInformation& info) {
+  auto primary_id =
+      static_cast<VideoColorSpace::PrimaryID>(info.colour_primaries);
+  auto transfer_id =
+      static_cast<VideoColorSpace::TransferID>(info.transfer_characteristics);
+  auto matrix_id =
+      static_cast<VideoColorSpace::MatrixID>(info.matrix_coefficients);
+
+  // Note that we don't check whether the embedded ids are valid.  We rely on
+  // the underlying video decoder to reject any ids that it doesn't support.
+  return VideoColorSpace(primary_id, transfer_id, matrix_id,
+                         info.full_range ? gfx::ColorSpace::RangeID::FULL
+                                         : gfx::ColorSpace::RangeID::LIMITED);
+}
 
 }  // namespace
 
@@ -660,6 +718,83 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
   return true;
 }
+
+bool AVCDecoderConfigurationRecord::Serialize(
+    std::vector<uint8_t>& output) const {
+  // See ISO/IEC 14496-15 5.3.3.1.2 for the format description
+  constexpr uint8_t sps_list_size_mask = (1 << 5) - 1;  // 5 bits
+  if (sps_list.size() > sps_list_size_mask)
+    return false;
+
+  constexpr uint8_t pps_list_size_mask = 0xff;
+  if (pps_list.size() > pps_list_size_mask)
+    return false;
+
+  if (length_size > 4)
+    return false;
+
+  // Calculating total size of the buffer we'll need for serialization
+  size_t expected_size =
+      1 +  // configurationVersion
+      1 +  // AVCProfileIndication
+      1 +  // profile_compatibility
+      1 +  // AVCLevelIndication
+      1 +  // lengthSizeMinusOne
+      1 +  // numOfSequenceParameterSets, i.e. length of sps_list
+      1;   // numOfPictureParameterSets, i.e. length of pps_list
+
+  constexpr size_t max_vector_size = (1 << 16) - 1;  // 2 bytes
+  for (auto& sps : sps_list) {
+    expected_size += 2;  // 2 bytes for sequenceParameterSetLength
+    if (sps.size() > max_vector_size)
+      return false;
+    expected_size += sps.size();
+  }
+
+  for (auto& pps : pps_list) {
+    expected_size += 2;  // 2 bytes for pictureParameterSetLength;
+    if (pps.size() > max_vector_size)
+      return false;
+    expected_size += pps.size();
+  }
+
+  output.clear();
+  output.resize(expected_size);
+  base::BigEndianWriter writer(reinterpret_cast<char*>(output.data()),
+                               output.size());
+  bool result = true;
+
+  // configurationVersion
+  result &= writer.WriteU8(version);
+  // AVCProfileIndication
+  result &= writer.WriteU8(profile_indication);
+  // profile_compatibility
+  result &= writer.WriteU8(profile_compatibility);
+  // AVCLevelIndication
+  result &= writer.WriteU8(avc_level);
+  // lengthSizeMinusOne
+  uint8_t length_size_minus_one = (length_size - 1) | 0xfc;
+  result &= writer.WriteU8(length_size_minus_one);
+  // numOfSequenceParameterSets
+  uint8_t sps_size = sps_list.size() | ~sps_list_size_mask;
+  result &= writer.WriteU8(sps_size);
+  // sequenceParameterSetNALUnits
+  for (auto& sps : sps_list) {
+    result &= writer.WriteU16(sps.size());
+    writer.WriteBytes(sps.data(), sps.size());
+  }
+  // numOfPictureParameterSets
+  uint8_t pps_size = pps_list.size();
+  result &= writer.WriteU8(pps_size);
+  // pictureParameterSetNALUnit
+  for (auto& pps : pps_list) {
+    result &= writer.WriteU16(pps.size());
+    writer.WriteBytes(pps.data(), pps.size());
+  }
+
+  return result;
+}
+
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 VPCodecConfigurationRecord::VPCodecConfigurationRecord()
@@ -698,6 +833,25 @@ bool VPCodecConfigurationRecord::Parse(BoxReader* reader) {
           << static_cast<uint32_t>(profile_indication);
       return false;
   }
+
+  RCHECK(reader->Read1(&level));
+
+  uint8_t depth_chroma_full_range;
+  RCHECK(reader->Read1(&depth_chroma_full_range));
+
+  uint8_t primary_id;
+  RCHECK(reader->Read1(&primary_id));
+
+  uint8_t transfer_id;
+  RCHECK(reader->Read1(&transfer_id));
+
+  uint8_t matrix_id;
+  RCHECK(reader->Read1(&matrix_id));
+
+  color_space = VideoColorSpace(primary_id, transfer_id, matrix_id,
+                                depth_chroma_full_range & 1
+                                    ? gfx::ColorSpace::RangeID::FULL
+                                    : gfx::ColorSpace::RangeID::LIMITED);
   return true;
 }
 
@@ -783,9 +937,118 @@ PixelAspectRatioBox::~PixelAspectRatioBox() = default;
 FourCC PixelAspectRatioBox::BoxType() const { return FOURCC_PASP; }
 
 bool PixelAspectRatioBox::Parse(BoxReader* reader) {
-  RCHECK(reader->Read4(&h_spacing) &&
-         reader->Read4(&v_spacing));
+  RCHECK(reader->Read4(&h_spacing) && reader->Read4(&v_spacing));
   return true;
+}
+
+ColorParameterInformation::ColorParameterInformation() = default;
+ColorParameterInformation::ColorParameterInformation(
+    const ColorParameterInformation& other) = default;
+ColorParameterInformation::~ColorParameterInformation() = default;
+FourCC ColorParameterInformation::BoxType() const {
+  return FOURCC_COLR;
+}
+
+bool ColorParameterInformation::Parse(BoxReader* reader) {
+  fully_parsed = false;
+
+  FourCC type;
+  RCHECK(reader->ReadFourCC(&type));
+
+  if (type != FOURCC_NCLX) {
+    // Ignore currently unsupported color information metadata parsing.
+    // TODO: Support 'nclc', 'rICC', and 'prof'.
+    return true;
+  }
+
+  uint8_t full_range_byte;
+  RCHECK(reader->Read2(&colour_primaries) &&
+         reader->Read2(&transfer_characteristics) &&
+         reader->Read2(&matrix_coefficients) &&
+         reader->Read1(&full_range_byte));
+  full_range = full_range_byte & 0x80;
+  fully_parsed = true;
+
+  return true;
+}
+
+MasteringDisplayColorVolume::MasteringDisplayColorVolume() = default;
+MasteringDisplayColorVolume::MasteringDisplayColorVolume(
+    const MasteringDisplayColorVolume& other) = default;
+MasteringDisplayColorVolume::~MasteringDisplayColorVolume() = default;
+
+FourCC MasteringDisplayColorVolume::BoxType() const {
+  return FOURCC_MDCV;
+}
+
+bool MasteringDisplayColorVolume::Parse(BoxReader* reader) {
+  // Technically the color coordinates may be in any order.  The spec recommends
+  // GBR and it is assumed that the color coordinates are in such order.
+  constexpr float kUnitOfMasteringLuminance = 10000;
+  RCHECK(ReadMdcvColorCoordinate(reader, &display_primaries_gx) &&
+         ReadMdcvColorCoordinate(reader, &display_primaries_gy) &&
+         ReadMdcvColorCoordinate(reader, &display_primaries_bx) &&
+         ReadMdcvColorCoordinate(reader, &display_primaries_by) &&
+         ReadMdcvColorCoordinate(reader, &display_primaries_rx) &&
+         ReadMdcvColorCoordinate(reader, &display_primaries_ry) &&
+         ReadMdcvColorCoordinate(reader, &white_point_x) &&
+         ReadMdcvColorCoordinate(reader, &white_point_y) &&
+         ReadFixedPoint32(kUnitOfMasteringLuminance, reader,
+                          &max_display_mastering_luminance) &&
+         ReadFixedPoint32(kUnitOfMasteringLuminance, reader,
+                          &min_display_mastering_luminance));
+  return true;
+}
+
+FourCC SMPTE2086MasteringDisplayMetadataBox::BoxType() const {
+  return FOURCC_SMDM;
+}
+
+bool SMPTE2086MasteringDisplayMetadataBox::Parse(BoxReader* reader) {
+  constexpr float kColorCoordinateUnit = 1 << 16;
+  constexpr float kLuminanceMaxUnit = 1 << 8;
+  constexpr float kLuminanceMinUnit = 1 << 14;
+
+  RCHECK(reader->ReadFullBoxHeader());
+
+  // Technically the color coordinates may be in any order.  The spec recommends
+  // RGB and it is assumed that the color coordinates are in such order.
+  RCHECK(
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_rx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_ry) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_gx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_gy) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_bx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_by) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &white_point_x) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &white_point_y) &&
+      ReadFixedPoint32(kLuminanceMaxUnit, reader,
+                       &max_display_mastering_luminance) &&
+      ReadFixedPoint32(kLuminanceMinUnit, reader,
+                       &min_display_mastering_luminance));
+  return true;
+}
+
+ContentLightLevelInformation::ContentLightLevelInformation() = default;
+ContentLightLevelInformation::ContentLightLevelInformation(
+    const ContentLightLevelInformation& other) = default;
+ContentLightLevelInformation::~ContentLightLevelInformation() = default;
+FourCC ContentLightLevelInformation::BoxType() const {
+  return FOURCC_CLLI;
+}
+
+bool ContentLightLevelInformation::Parse(BoxReader* reader) {
+  return reader->Read2(&max_content_light_level) &&
+         reader->Read2(&max_pic_average_light_level);
+}
+
+bool ContentLightLevel::Parse(BoxReader* reader) {
+  RCHECK(reader->ReadFullBoxHeader());
+  return ContentLightLevelInformation::Parse(reader);
+}
+
+FourCC ContentLightLevel::BoxType() const {
+  return FOURCC_COLL;
 }
 
 VideoSampleEntry::VideoSampleEntry()
@@ -793,7 +1056,7 @@ VideoSampleEntry::VideoSampleEntry()
       data_reference_index(0),
       width(0),
       height(0),
-      video_codec(kUnknownVideoCodec),
+      video_codec(VideoCodec::kUnknown),
       video_codec_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
       video_codec_level(kNoVideoCodecLevel) {}
 
@@ -839,7 +1102,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       std::unique_ptr<AVCDecoderConfigurationRecord> avcConfig(
           new AVCDecoderConfigurationRecord());
       RCHECK(reader->ReadChild(avcConfig.get()));
-      video_codec = kCodecH264;
+      video_codec = VideoCodec::kH264;
       video_codec_profile = H264Parser::ProfileIDCToVideoCodecProfile(
           avcConfig->profile_indication);
 
@@ -850,7 +1113,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       auto dv_config = ParseDOVIConfig(reader);
       if (dv_config.has_value()) {
         DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
-        video_codec = kCodecDolbyVision;
+        video_codec = VideoCodec::kDolbyVision;
         video_codec_profile = dv_config->codec_profile;
         video_codec_level = dv_config->dv_level;
       }
@@ -864,7 +1127,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       std::unique_ptr<HEVCDecoderConfigurationRecord> hevcConfig(
           new HEVCDecoderConfigurationRecord());
       RCHECK(reader->ReadChild(hevcConfig.get()));
-      video_codec = kCodecHEVC;
+      video_codec = VideoCodec::kHEVC;
       video_codec_profile = hevcConfig->GetVideoProfile();
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));
@@ -873,7 +1136,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       auto dv_config = ParseDOVIConfig(reader);
       if (dv_config.has_value()) {
         DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
-        video_codec = kCodecDolbyVision;
+        video_codec = VideoCodec::kDolbyVision;
         video_codec_profile = dv_config->codec_profile;
         video_codec_level = dv_config->dv_level;
       }
@@ -894,7 +1157,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
       auto dv_config = ParseDOVIConfig(reader);
       RCHECK(dv_config.has_value());
-      video_codec = kCodecDolbyVision;
+      video_codec = VideoCodec::kDolbyVision;
       video_codec_profile = dv_config->codec_profile;
       video_codec_level = dv_config->dv_level;
       break;
@@ -911,7 +1174,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
       auto dv_config = ParseDOVIConfig(reader);
       RCHECK(dv_config.has_value());
-      video_codec = kCodecDolbyVision;
+      video_codec = VideoCodec::kDolbyVision;
       video_codec_profile = dv_config->codec_profile;
       video_codec_level = dv_config->dv_level;
       break;
@@ -925,8 +1188,22 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
           new VPCodecConfigurationRecord());
       RCHECK(reader->ReadChild(vp_config.get()));
       frame_bitstream_converter = nullptr;
-      video_codec = kCodecVP9;
+      video_codec = VideoCodec::kVP9;
       video_codec_profile = vp_config->profile;
+      video_color_space = vp_config->color_space;
+      video_codec_level = vp_config->level;
+
+      SMPTE2086MasteringDisplayMetadataBox color_volume;
+      if (reader->HasChild(&color_volume)) {
+        RCHECK(reader->ReadChild(&color_volume));
+        mastering_display_color_volume = color_volume;
+      }
+
+      ContentLightLevel level_information;
+      if (reader->HasChild(&level_information)) {
+        RCHECK(reader->ReadChild(&level_information));
+        content_light_level_information = level_information;
+      }
       break;
     }
 #if BUILDFLAG(ENABLE_AV1_DECODER)
@@ -935,7 +1212,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       AV1CodecConfigurationRecord av1_config;
       RCHECK(reader->ReadChild(&av1_config));
       frame_bitstream_converter = nullptr;
-      video_codec = kCodecAV1;
+      video_codec = VideoCodec::kAV1;
       video_codec_profile = av1_config.profile;
       break;
     }
@@ -946,6 +1223,27 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
           << "Unsupported VisualSampleEntry type "
           << FourCCToString(actual_format);
       return false;
+  }
+
+  ColorParameterInformation color_parameter_information;
+  if (reader->HasChild(&color_parameter_information)) {
+    RCHECK(reader->ReadChild(&color_parameter_information));
+    if (color_parameter_information.fully_parsed) {
+      video_color_space = ConvertColorParameterInformationToColorSpace(
+          color_parameter_information);
+    }
+  }
+
+  MasteringDisplayColorVolume color_volume;
+  if (reader->HasChild(&color_volume)) {
+    RCHECK(reader->ReadChild(&color_volume));
+    mastering_display_color_volume = color_volume;
+  }
+
+  ContentLightLevelInformation level_information;
+  if (reader->HasChild(&level_information)) {
+    RCHECK(reader->ReadChild(&level_information));
+    content_light_level_information = level_information;
   }
 
   if (video_codec_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
@@ -1088,8 +1386,7 @@ bool FlacSpecificBox::Parse(BoxReader* reader) {
 }
 
 OpusSpecificBox::OpusSpecificBox()
-    : seek_preroll(base::TimeDelta::FromMilliseconds(80)),
-      codec_delay_in_frames(0) {}
+    : seek_preroll(base::Milliseconds(80)), codec_delay_in_frames(0) {}
 
 OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox& other) = default;
 

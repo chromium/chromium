@@ -13,10 +13,9 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/ui_resource_layer.h"
-#include "chrome/browser/android/thumbnail/thumbnail_cache.h"
+#include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -47,6 +46,9 @@ class TabContentManager : public ThumbnailCacheObserver {
                     jint write_queue_max_size,
                     jboolean use_approximation_thumbnail,
                     jboolean save_jpeg_thumbnails);
+
+  TabContentManager(const TabContentManager&) = delete;
+  TabContentManager& operator=(const TabContentManager&) = delete;
 
   virtual ~TabContentManager();
 
@@ -96,7 +98,7 @@ class TabContentManager : public ThumbnailCacheObserver {
   void InvalidateIfChanged(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            jint tab_id,
-                           const base::android::JavaParamRef<jstring>& jurl);
+                           const base::android::JavaParamRef<jobject>& jurl);
   void UpdateVisibleIds(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jintArray>& priority,
@@ -145,7 +147,7 @@ class TabContentManager : public ThumbnailCacheObserver {
       base::android::ScopedJavaGlobalRef<jobject> j_callback,
       bool need_downsampling,
       bool result,
-      SkBitmap bitmap);
+      const SkBitmap& bitmap);
 
   std::unique_ptr<ThumbnailCache> thumbnail_cache_;
   ThumbnailLayerMap static_layer_cache_;
@@ -154,8 +156,6 @@ class TabContentManager : public ThumbnailCacheObserver {
 
   JavaObjectWeakGlobalRef weak_java_tab_content_manager_;
   base::WeakPtrFactory<TabContentManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabContentManager);
 };
 
 }  // namespace android

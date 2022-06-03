@@ -22,8 +22,7 @@ class OverlayRequestUIStateTest : public PlatformTest {
  public:
   OverlayRequestUIStateTest()
       : PlatformTest(),
-        request_(
-            OverlayRequest::CreateWithConfig<FakeOverlayUserData>(nullptr)),
+        request_(OverlayRequest::CreateWithConfig<FakeOverlayUserData>()),
         state_(request_.get()) {}
 
   OverlayRequest* request() { return request_.get(); }

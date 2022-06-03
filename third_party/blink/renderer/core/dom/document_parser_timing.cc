@@ -66,7 +66,7 @@ void DocumentParserTiming::RecordParserBlockedOnScriptExecutionDuration(
   NotifyDocumentParserTimingChanged();
 }
 
-void DocumentParserTiming::Trace(Visitor* visitor) {
+void DocumentParserTiming::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 

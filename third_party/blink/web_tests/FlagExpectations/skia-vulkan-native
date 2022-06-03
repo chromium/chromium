@@ -1,0 +1,66 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Alpha Blending Video Failures
+crbug.com/1094635 fast/canvas/canvas-pattern-video.html [ Skip ]
+crbug.com/1094635 media/alpha-video-playback.html [ Skip ]
+crbug.com/1094635 fast/canvas/canvas-composite-video-shadow.html [ Skip ]
+crbug.com/1094635 fast/canvas/canvas-composite-video.html [ Skip ]
+
+# Viewport image is the wrong size.
+crbug.com/1009718 images/huge-image-viewport-scale.html [ Skip ]
+
+# Need Intel and NVIDIA specific baselines.
+crbug.com/1243824 compositing/masks/mask-with-added-filters.html [ Skip ]
+crbug.com/1243824 compositing/masks/mask-with-removed-filters.html [ Skip ]
+
+# Flakily crashing.
+crbug.com/1245420 compositing/geometry/vertical-scroll-composited.html [ Crash Pass ]
+crbug.com/1245420 compositing/lots-of-img-layers.html [ Crash Pass ]
+crbug.com/1245420 css3/blending/background-blend-mode-default-value.html [ Crash Pass ]
+crbug.com/1245420 css3/blending/background-blend-mode-image-color.html [ Crash Pass ]
+crbug.com/1245420 css3/blending/effect-background-blend-mode-tiled.html [ Crash Pass ]
+crbug.com/1245420 css3/blending/mix-blend-mode-isolated-group-1.html [ Crash Pass ]
+crbug.com/1245420 css3/masking/mask-repeat-round-border.html [ Crash Pass ]
+crbug.com/1245420 images/yuv-decode-eligible/color-profile-border-radius.html [ Crash Pass ]
+crbug.com/1245420 images/yuv-decode-eligible/color-profile-image-profile-match.html [ Crash Pass ]
+crbug.com/1245420 images/yuv-decode-eligible/color-profile-image.html [ Crash Pass ]
+crbug.com/1245420 media/video-layer-crash.html [ Crash Pass ]
+crbug.com/1245420 virtual/android/fullscreen/model/fully-exit-fullscreen-single.html [ Crash Pass ]
+
+# Flakily producing a slightly different but visually identical image.
+crbug.com/1245445 images/color-profile-image-canvas-pattern.html [ Failure Pass ]
+crbug.com/1245445 images/color-profile-mask-image-svg.html [ Failure Pass ]
+
+# Flakily timing out.
+crbug.com/1245752 css3/blending/background-blend-mode-crossfade-image-gradient.html [ Pass Timeout ]
+crbug.com/1245752 css3/blending/background-blend-mode-single-layer-no-blending.html [ Pass Timeout ]
+crbug.com/1245752 css3/blending/effect-background-blend-mode-stacking.html [ Pass Timeout ]
+crbug.com/1245752 css3/masking/mask-repeat-space-border.html [ Pass Timeout ]
+crbug.com/1245752 media/controls-layout-direction.html [ Pass Timeout ]
+
+# Affected by multiple of the above flakes.
+crbug.com/1245420 crbug.com/1245752 css3/background/background-repeat-round-auto1.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/background/background-repeat-round-content.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/blending/background-blend-mode-gradient-image.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245445 crbug.com/1245752 css3/blending/background-blend-mode-image-image.html [ Crash Failure Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/blending/background-blend-mode-image-svg.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/blending/background-blend-mode-multiple-background-layers.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/blending/background-blend-mode-tiled-gradient.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245752 css3/blending/mix-blend-mode-isolated-group-2.html [ Crash Pass Timeout ]
+crbug.com/1245420 crbug.com/1245445 images/color-profile-background-image-space.html [ Crash Failure Pass ]
+crbug.com/1245420 crbug.com/1245445 images/color-profile-image-canvas.html [ Crash Failure Pass ]
+
+# Flaky, media controls not hiding.
+crbug.com/1245418 media/video-controls-hide-on-move-outside-controls.html [ Failure Pass ]
+
+# One portion of the image is offset.
+crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
+
+# Flaky on Linux.
+crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]
+
+# These tests have large image differences, need investigation.
+crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
+crbug.com/993384 css3/filters/effect-reference-subregion.html [ Failure Pass ]

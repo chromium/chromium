@@ -36,6 +36,10 @@ class PPAPI_SHARED_EXPORT MessageLoopShared
   // invoked on the main thread.
   struct ForMainThread {};
   explicit MessageLoopShared(ForMainThread);
+
+  MessageLoopShared(const MessageLoopShared&) = delete;
+  MessageLoopShared& operator=(const MessageLoopShared&) = delete;
+
   virtual ~MessageLoopShared();
 
   // Handles posting to the message loop if there is one, or the pending queue
@@ -44,7 +48,7 @@ class PPAPI_SHARED_EXPORT MessageLoopShared
   //       This only makes sense for user code and completely thread-safe
   //       proxy operations (e.g., MessageLoop::QuitClosure).
   virtual void PostClosure(const base::Location& from_here,
-                           const base::Closure& closure,
+                           base::OnceClosure closure,
                            int64_t delay_ms) = 0;
 
   virtual base::SingleThreadTaskRunner* GetTaskRunner() = 0;
@@ -53,8 +57,6 @@ class PPAPI_SHARED_EXPORT MessageLoopShared
   // from JavaScript. This is used to make it illegal to use blocking callbacks
   // while the thread is handling a blocking message.
   virtual bool CurrentlyHandlingBlockingMessage() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopShared);
 };
 
 }  // namespace ppapi

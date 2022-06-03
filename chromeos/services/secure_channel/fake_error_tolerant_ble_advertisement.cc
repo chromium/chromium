@@ -22,17 +22,18 @@ FakeErrorTolerantBleAdvertisement::~FakeErrorTolerantBleAdvertisement() {
 }
 
 bool FakeErrorTolerantBleAdvertisement::HasBeenStopped() {
-  return !stop_callback_.is_null();
+  return stopped_;
 }
 
 void FakeErrorTolerantBleAdvertisement::InvokeStopCallback() {
   DCHECK(HasBeenStopped());
-  stop_callback_.Run();
+  std::move(stop_callback_).Run();
 }
 
-void FakeErrorTolerantBleAdvertisement::Stop(const base::Closure& callback) {
+void FakeErrorTolerantBleAdvertisement::Stop(base::OnceClosure callback) {
   DCHECK(!HasBeenStopped());
-  stop_callback_ = callback;
+  stopped_ = true;
+  stop_callback_ = std::move(callback);
 }
 
 }  // namespace secure_channel

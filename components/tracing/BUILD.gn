@@ -4,24 +4,18 @@
 
 import("//testing/test.gni")
 
-component("tracing") {
-  sources = [
-    "child/background_tracing_agent_impl.cc",
-    "child/background_tracing_agent_impl.h",
-    "child/background_tracing_agent_provider_impl.cc",
-    "child/background_tracing_agent_provider_impl.h",
-    "common/graphics_memory_dump_provider_android.cc",
-    "common/graphics_memory_dump_provider_android.h",
-    "tracing_export.h",
-  ]
+if (is_android) {
+  component("graphics_provider") {
+    sources = [
+      "common/graphics_memory_dump_provider_android.cc",
+      "common/graphics_memory_dump_provider_android.h",
+      "tracing_export.h",
+    ]
 
-  defines = [ "TRACING_IMPLEMENTATION" ]
+    defines = [ "TRACING_IMPLEMENTATION" ]
 
-  deps = [
-    "//base",
-    "//components/tracing/common:interfaces",
-    "//ipc",
-  ]
+    deps = [ "//base" ]
+  }
 }
 
 component("startup_tracing") {
@@ -37,31 +31,25 @@ component("startup_tracing") {
 
   defines = [ "TRACING_IMPLEMENTATION" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "child/background_tracing_agent_impl_unittest.cc",
-    "common/graphics_memory_dump_provider_android_unittest.cc",
-  ]
-
   deps = [
-    ":startup_tracing",
-    ":tracing",
     "//base/test:test_support",
-    "//components/tracing/common:interfaces",
-    "//ipc",
     "//testing/gmock:gmock",
     "//testing/gtest",
   ]
 
+  if (is_android) {
+    sources = [ "common/graphics_memory_dump_provider_android_unittest.cc" ]
+    deps += [ ":graphics_provider" ]
+  }
+
   if (!is_android) {
-    sources += [ "common/trace_startup_config_unittest.cc" ]
+    sources = [ "common/trace_startup_config_unittest.cc" ]
     deps += [ ":startup_tracing" ]
   }
 }

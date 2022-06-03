@@ -22,5 +22,5 @@ search_box.submit()
 # wait for the search result page to be loaded
 wait.until(EC.visibility_of_element_located((By.ID, 'search')))
 
-print driver.current_url
+print(driver.current_url)
 driver.quit()

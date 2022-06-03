@@ -8,7 +8,7 @@
 description('Calling ShadowRoot.cloneNode() should throw a NotSupportedError exception.');
 
 var host = document.createElement('div');
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shouldThrow('shadowRoot.cloneNode()', '"NotSupportedError: Failed to execute \'cloneNode\' on \'Node\': ShadowRoot nodes are not clonable."');
 </script>
 </html>

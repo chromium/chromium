@@ -1,0 +1,174 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/include_js_tests.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+grd_prefix = "gaia_auth_host"
+generate_grd("build_grd") {
+  out_grd = "$target_gen_dir/resources.grd"
+
+  # Resources are expected to be registered with paths like:
+  # gaia_auth_host/resource_name.js
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/resources", root_build_dir)
+  input_files = [
+    "gaia_auth_host/authenticator.m.js",
+    "gaia_auth_host/channel.m.js",
+    "gaia_auth_host/post_message_channel.m.js",
+    "gaia_auth_host/saml_handler.m.js",
+    "gaia_auth_host/saml_password_attributes.m.js",
+    "gaia_auth_host/saml_timestamps.m.js",
+    "gaia_auth_host/webview_event_manager.m.js",
+  ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [
+    ":build_grd",
+    ":modulize",
+  ]
+  outputs = [
+    "grit/gaia_auth_host_resources.h",
+    "grit/gaia_auth_host_resources_map.cc",
+    "grit/gaia_auth_host_resources_map.h",
+    "gaia_auth_host_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+# Since js2gtest()s don't compile in some scenarios when include_js_tests is
+# false, and since this file may be loaded even when it's false, we need to make
+# sure the js2gtest() target only exists in this file when it works.
+if (is_chromeos_ash && include_js_tests) {
+  js2gtest("login_unitjs_tests") {
+    # These could be unit tests, except they need a browser context in order
+    # to construct a DOMParser object - so they are webui tests.
+    test_type = "webui"
+    sources = [
+      "saml_password_attributes_test.unitjs",
+      "saml_timestamps_test.unitjs",
+    ]
+    gen_include_files = [
+      "saml_password_attributes.js",
+      "saml_timestamps.js",
+      "//ui/webui/resources/js/cr.js",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    deps = [ ":login_unitjs_tests" ]
+  }
+}
+
+js_type_check("closure_compile") {
+  closure_flags =
+      default_closure_args + [
+        "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+      ]
+  deps = [
+    ":authenticator.m",
+    ":channel.m",
+    ":post_message_channel.m",
+    ":saml_handler.m",
+    ":saml_password_attributes.m",
+    ":saml_timestamps.m",
+    ":webview_event_manager.m",
+  ]
+}
+
+js_library("channel.m") {
+  sources =
+      [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/channel.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("webview_event_manager.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/webview_event_manager.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("post_message_channel.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/post_message_channel.m.js" ]
+  deps = [ ":channel.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("saml_password_attributes.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/saml_password_attributes.m.js" ]
+  deps = [ ":saml_timestamps.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("saml_timestamps.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/saml_timestamps.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("saml_handler.m") {
+  sources = [
+    "$root_gen_dir/chrome/browser/resources/gaia_auth_host/saml_handler.m.js",
+  ]
+  deps = [
+    ":channel.m",
+    ":post_message_channel.m",
+    ":saml_password_attributes.m",
+    ":webview_event_manager.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("authenticator.m") {
+  sources = [
+    "$root_gen_dir/chrome/browser/resources/gaia_auth_host/authenticator.m.js",
+  ]
+  deps = [
+    ":saml_handler.m",
+    ":saml_password_attributes.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "authenticator.js",
+    "channel.js",
+    "post_message_channel.js",
+    "saml_handler.js",
+    "saml_password_attributes.js",
+    "saml_timestamps.js",
+    "webview_event_manager.js",
+  ]
+  namespace_rewrites = [
+    "DOMWindow|Object",
+    "cr.EventTarget|EventTarget",
+    "cr.login.SamlHandler|SamlHandler",
+    "samlPasswordAttributes.PasswordAttributes|PasswordAttributes",
+    "samlPasswordAttributes.readPasswordAttributes|readPasswordAttributes",
+    "samlTimestamps.decodeTimestamp|decodeTimestamp",
+    "XMLDocument|Object",
+  ]
+}

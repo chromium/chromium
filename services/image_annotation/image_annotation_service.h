@@ -31,14 +31,23 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
       std::string api_key,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       std::unique_ptr<Annotator::Client> annotator_client);
+
+  ImageAnnotationService(const ImageAnnotationService&) = delete;
+  ImageAnnotationService& operator=(const ImageAnnotationService&) = delete;
+
   ~ImageAnnotationService() override;
 
  private:
   // Service params:
 
-  static constexpr base::FeatureParam<std::string> kServerUrl{
+  // The url of the service that fetches descriptions given image pixels.
+  static constexpr base::FeatureParam<std::string> kPixelsServerUrl{
       &kExperiment, "server_url",
       "https://ckintersect-pa.googleapis.com/v1/intersect/pixels"};
+  // The url of the service that returns the supported languages.
+  static constexpr base::FeatureParam<std::string> kLangsServerUrl{
+      &kExperiment, "langs_server_url",
+      "https://ckintersect-pa.googleapis.com/v1/intersect/langs"};
   // An override Google API key. If empty, the API key with which the browser
   // was built (if any) will be used instead.
   static constexpr base::FeatureParam<std::string> kApiKey{&kExperiment,
@@ -55,8 +64,6 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
 
   mojo::Receiver<mojom::ImageAnnotationService> receiver_;
   Annotator annotator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageAnnotationService);
 };
 
 }  // namespace image_annotation

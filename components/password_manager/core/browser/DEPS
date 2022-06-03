@@ -1,22 +1,25 @@
 include_rules = [
   "+components/autofill/core/browser",
+  "+components/device_reauth",
   "+components/favicon/core",
   "+components/keyed_service/core",
+  "+components/profile_metrics",
   "+components/pref_registry",
   "+components/security_state",
   "+components/safe_browsing/buildflags.h",
-  "+components/safe_browsing/common/safe_browsing_prefs.h",
-  "+components/safe_browsing/features.h",
+  "+components/safe_browsing/core/common/safe_browsing_prefs.h",
+  "+components/safe_browsing/core/common/features.h",
   "+components/signin/public",
   "+components/sync/base",
   "+components/sync/driver",
-  "+components/sync/engine",
-  "+components/sync/model_impl",
+  "+components/sync/model",
   "+components/sync/test",
   "+components/sync_preferences",
   "+components/ukm",
   "+components/url_formatter",
+  "+components/variations",
   "+components/webdata/common",
+  "+components/variations/net",
   "+crypto",
   "+google_apis",
   "+grit",
@@ -26,29 +29,12 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/zxcvbn-cpp",
 ]
 
 specific_include_rules = {
   "hsts_query_unittest\.cc": [
     "+services/network",
-  ],
-  "new_password_form_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_autofill_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_form_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_form_metrics_recorder_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_manager_metrics_recorder_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_manager_unittest\.cc": [
-    "+components/ukm",
   ],
   "http_credentials_cleaner_unittest\.cc": [
     "+services/network",

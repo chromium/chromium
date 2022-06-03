@@ -1,4 +1,4 @@
-EMAIL_ADDRESS | logonId | Email Address: |  | logonId_1-default
+UNKNOWN_TYPE | logonId | Email Address: |  | logonId_1-default
 UNKNOWN_TYPE | logonPassword | Password: |  | logonId_1-default
 UNKNOWN_TYPE | rememberMe | Remember Me on Future Visits | true | logonId_1-default
 UNKNOWN_TYPE | billingShippingSame | Make shipping the same as my billing address | false | billingShippingSame_1-default
@@ -16,17 +16,17 @@ EMAIL_ADDRESS | billEmail | *Email Address: |  | billingShippingSame_1-default
 UNKNOWN_TYPE | sendMeEmail | Yes, please send me emails about news, special offers, exclusives and promotions from Advance Auto Parts. See our | checked | billingShippingSame_1-default
 UNKNOWN_TYPE | billPassword | Password: |  | billingShippingSame_1-default
 UNKNOWN_TYPE | billPasswordVerify | Confirm Password: |  | billingShippingSame_1-default
-NAME_FIRST | shipFirstName | *First Name: |  | shipFirstName_1-default
-NAME_LAST | shipLastName | *Last Name: |  | shipFirstName_1-default
-ADDRESS_HOME_LINE1 | shipAddress1 | *Street Address 1: |  | shipFirstName_1-default
-ADDRESS_HOME_LINE2 | shipAddress2 | Street Address 2: |  | shipFirstName_1-default
-ADDRESS_HOME_CITY | shipCity | *City: |  | shipFirstName_1-default
-ADDRESS_HOME_STATE | shipState | *State: | AL | shipFirstName_1-default
-ADDRESS_HOME_ZIP | shipZipCode | *Zip Code: |  | shipFirstName_1-default
-PHONE_HOME_CITY_CODE | shipDayPhonePart1 | *Day Phone: |  | shipFirstName_1-default
-PHONE_HOME_NUMBER | shipDayPhonePart2 | *Day Phone: |  | shipFirstName_1-default
-PHONE_HOME_NUMBER | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_1-default
-PHONE_HOME_CITY_CODE | shipNightPhonePart1 | Night Phone: |  | shipFirstName_1-default
-PHONE_HOME_NUMBER | shipNightPhonePart2 | Night Phone: |  | shipFirstName_1-default
-PHONE_HOME_NUMBER | shipNightPhonePart3 | Night Phone: |  | shipFirstName_1-default
-ADDRESS_HOME_ZIP | zipCode |  |  | zipCode_1-default
+NAME_FIRST | shipFirstName | *First Name: |  | shipFirstName_2-default
+NAME_LAST | shipLastName | *Last Name: |  | shipFirstName_2-default
+ADDRESS_HOME_LINE1 | shipAddress1 | *Street Address 1: |  | shipFirstName_2-default
+ADDRESS_HOME_LINE2 | shipAddress2 | Street Address 2: |  | shipFirstName_2-default
+ADDRESS_HOME_CITY | shipCity | *City: |  | shipFirstName_2-default
+ADDRESS_HOME_STATE | shipState | *State: | AL | shipFirstName_2-default
+ADDRESS_HOME_ZIP | shipZipCode | *Zip Code: |  | shipFirstName_2-default
+PHONE_HOME_CITY_CODE | shipDayPhonePart1 | *Day Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER | shipDayPhonePart2 | *Day Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_2-default
+PHONE_HOME_CITY_CODE | shipNightPhonePart1 | Night Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER | shipNightPhonePart2 | Night Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER | shipNightPhonePart3 | Night Phone: |  | shipFirstName_2-default
+UNKNOWN_TYPE | zipCode |  |  | zipCode_1-default

@@ -11,15 +11,15 @@ PHONE_HOME_WHOLE_NUMBER | shipping_day1 | Phone Number* |  | address_email_1-def
 PHONE_HOME_EXTENSION | shipping_ext1 | Ext. |  | address_email_1-default
 ADDRESS_HOME_STATE | shipping_county | County | UNKNOWN | address_email_1-default
 UNKNOWN_TYPE | billingAddressCheckBox | Same as Delivery/Shipping Address | on | address_email_1-default
-NAME_FIRST | firstName | First Name* |  | firstName_1-default
-NAME_LAST | lastName | Last Name* |  | firstName_1-default
-UNKNOWN_TYPE | country | Street Address Line 1* | US | firstName_1-default
-ADDRESS_HOME_LINE1 | address1 | Street Address Line 1* |  | firstName_1-default
-ADDRESS_HOME_LINE2 | address2 | Street Address Line 2 |  | firstName_1-default
-ADDRESS_HOME_CITY | city | City* |  | firstName_1-default
-ADDRESS_HOME_STATE | state | State* State* | AL | firstName_1-default
-ADDRESS_HOME_ZIP | zipCode | ZIP Code* ZIP Code* |  | firstName_1-default
-PHONE_HOME_WHOLE_NUMBER | day1 | Phone Number* |  | firstName_1-default
-PHONE_HOME_EXTENSION | ext1 | Ext. |  | firstName_1-default
-ADDRESS_HOME_STATE | county | County County | UNKNOWN | firstName_1-default
+NAME_FIRST | firstName | First Name* |  | firstName_2-default
+NAME_LAST | lastName | Last Name* |  | firstName_2-default
+UNKNOWN_TYPE | country | Street Address Line 1* | US | firstName_2-default
+ADDRESS_HOME_LINE1 | address1 | Street Address Line 1* |  | firstName_2-default
+ADDRESS_HOME_LINE2 | address2 | Street Address Line 2 |  | firstName_2-default
+ADDRESS_HOME_CITY | city | City* |  | firstName_2-default
+ADDRESS_HOME_STATE | state | State* State* | AL | firstName_2-default
+ADDRESS_HOME_ZIP | zipCode | ZIP Code* ZIP Code* |  | firstName_2-default
+PHONE_HOME_WHOLE_NUMBER | day1 | Phone Number* |  | firstName_2-default
+PHONE_HOME_EXTENSION | ext1 | Ext. |  | firstName_2-default
+ADDRESS_HOME_STATE | county | County County | UNKNOWN | firstName_2-default
 UNKNOWN_TYPE | KmartSpuSpecialInstr |  |  | KmartSpuSpecialInstr_1-default

@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer notUserSelectableStyle=true
+++++++++staticText name='1. unselectable' notUserSelectableStyle=true
+++++++++++inlineTextBox name='1. unselectable'
+++++++genericContainer
+++++++++staticText name='2. Selectable'
+++++++++++inlineTextBox name='2. Selectable'
+++++++genericContainer notUserSelectableStyle=true
+++++++++staticText name='3. unselectable' notUserSelectableStyle=true
+++++++++++inlineTextBox name='3. unselectable'
+++++++genericContainer
+++++++++staticText name='4. Selectable'
+++++++++++inlineTextBox name='4. Selectable'
+++++++list
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++genericContainer ignored
+++++++++genericContainer notUserSelectableStyle=true
+++++++++++staticText name='Inner' notUserSelectableStyle=true
+++++++++++++inlineTextBox name='Inner'

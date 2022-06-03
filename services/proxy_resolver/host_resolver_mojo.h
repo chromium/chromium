@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "net/dns/host_cache.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
+#include "services/proxy_resolver/proxy_host_resolver_cache.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace net {
@@ -38,6 +38,10 @@ class HostResolverMojo : public ProxyHostResolver {
 
   // |impl| must outlive |this|.
   explicit HostResolverMojo(Impl* impl);
+
+  HostResolverMojo(const HostResolverMojo&) = delete;
+  HostResolverMojo& operator=(const HostResolverMojo&) = delete;
+
   ~HostResolverMojo() override;
 
   // ProxyHostResolver overrides.
@@ -52,12 +56,11 @@ class HostResolverMojo : public ProxyHostResolver {
 
   Impl* const impl_;
 
-  std::unique_ptr<net::HostCache> host_cache_;
-  base::WeakPtrFactory<net::HostCache> host_cache_weak_factory_;
+  ProxyHostResolverCache host_cache_;
+  base::WeakPtrFactory<ProxyHostResolverCache> host_cache_weak_factory_{
+      &host_cache_};
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverMojo);
 };
 
 }  // namespace proxy_resolver

@@ -8,6 +8,7 @@ import("//remoting/build/config/remoting_build.gni")
 
 action("remoting_me2me_host_archive") {
   _installer_mac_files = [
+    "app-entitlements.plist",
     "do_signing.sh",
     "do_signing.props",
     "ChromotingHost.pkgproj",
@@ -31,9 +32,7 @@ action("remoting_me2me_host_archive") {
 
   zip_path = "$root_build_dir/remoting-me2me-host-mac.zip"
 
-  outputs = [
-    "$root_build_dir/remoting-me2me-host-mac.zip",
-  ]
+  outputs = [ "$root_build_dir/remoting-me2me-host-mac.zip" ]
 
   script = "//remoting/host/installer/build-installer-archive.py"
 
@@ -104,15 +103,9 @@ _uninstaller_plist = "uninstaller/remoting_uninstaller-Info.plist"
 # remoting_uninstaller-InfoPlist.strings
 foreach(locale, remoting_locales_with_underscores) {
   bundle_data("remoting_uninstaller_strings_${locale}_bundle_data") {
-    sources = [
-      "$root_gen_dir/remoting/host/remoting_uninstaller-InfoPlist.strings/$locale.lproj/InfoPlist.strings",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}",
-    ]
-    deps = [
-      "//remoting/host:remoting_infoplist_strings",
-    ]
+    sources = [ "$root_gen_dir/remoting/host/remoting_uninstaller-InfoPlist.strings/$locale.lproj/InfoPlist.strings" ]
+    outputs = [ "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}" ]
+    deps = [ "//remoting/host:remoting_infoplist_strings" ]
   }
 }
 
@@ -132,7 +125,7 @@ mac_app_bundle("remoting_host_uninstaller") {
     "uninstaller/remoting_uninstaller_app.mm",
   ]
 
-  libs = [
+  frameworks = [
     "Cocoa.framework",
     "CoreFoundation.framework",
     "Security.framework",
@@ -143,6 +136,7 @@ mac_app_bundle("remoting_host_uninstaller") {
     "//base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/mac:constants",
+    "//remoting/resources:strings",
     "//ui/base:base",
   ]
   foreach(locale, remoting_locales_with_underscores) {
@@ -151,11 +145,7 @@ mac_app_bundle("remoting_host_uninstaller") {
 }
 
 bundle_data("remoting_host_uninstaller_resources") {
-  sources = [
-    "uninstaller/remoting_uninstaller.icns",
-  ]
+  sources = [ "uninstaller/remoting_uninstaller.icns" ]
 
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

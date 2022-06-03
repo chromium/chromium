@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_SHELF_FOCUS_CYCLER_H_
 #define ASH_SHELF_SHELF_FOCUS_CYCLER_H_
 
-#include "base/macros.h"
-
 namespace ash {
 class Shelf;
 
@@ -15,7 +13,6 @@ class Shelf;
 enum class SourceView {
   kShelfNavigationView = 0,
   kShelfView,
-  kShelfOverflowView,
   kStatusAreaView,
 };
 
@@ -24,6 +21,10 @@ enum class SourceView {
 class ShelfFocusCycler {
  public:
   explicit ShelfFocusCycler(Shelf* shelf);
+
+  ShelfFocusCycler(const ShelfFocusCycler&) = delete;
+  ShelfFocusCycler& operator=(const ShelfFocusCycler&) = delete;
+
   ~ShelfFocusCycler() = default;
 
   // Moves focus from one container to the next. |reverse| will move the focus
@@ -37,17 +38,12 @@ class ShelfFocusCycler {
   // Focuses the shelf widget (app shortcuts).
   void FocusShelf(bool last_element);
 
-  // Focuses the overflow shelf (app shortcuts in the overflow menu).
-  void FocusOverflowShelf(bool last_element);
-
   // Focuses the status area widget.
   void FocusStatusArea(bool last_element);
 
  private:
   // Owned by RootWindowController.
   Shelf* shelf_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfFocusCycler);
 };
 
 }  // namespace ash

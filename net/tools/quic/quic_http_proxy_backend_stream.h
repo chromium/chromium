@@ -24,7 +24,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_data_stream.h"
@@ -61,6 +60,11 @@ class QuicHttpProxyBackend;
 class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
  public:
   explicit QuicHttpProxyBackendStream(QuicHttpProxyBackend* context);
+
+  QuicHttpProxyBackendStream(const QuicHttpProxyBackendStream&) = delete;
+  QuicHttpProxyBackendStream& operator=(const QuicHttpProxyBackendStream&) =
+      delete;
+
   ~QuicHttpProxyBackendStream() override;
 
   static const std::set<std::string> kHopHeaders;
@@ -80,7 +84,7 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
                   std::string quic_peer_ip);
 
   virtual bool SendRequestToBackend(
-      const spdy::SpdyHeaderBlock* incoming_request_headers,
+      const spdy::Http2HeaderBlock* incoming_request_headers,
       const std::string& incoming_body);
 
   quic::QuicConnectionId quic_connection_id() const {
@@ -116,16 +120,17 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
   void SendRequestOnBackendThread();
   void ReadOnceTask();
   void OnResponseCompleted();
-  void CopyHeaders(const spdy::SpdyHeaderBlock* incoming_request_headers);
+  void CopyHeaders(const spdy::Http2HeaderBlock* incoming_request_headers);
   bool ValidateHttpMethod(std::string method);
   bool AddRequestHeader(std::string name, std::string value);
   // Adds a request body to the request before it starts.
   void SetUpload(std::unique_ptr<net::UploadDataStream> upload);
   void SendResponseOnDelegateThread();
   void ReleaseRequest();
-  spdy::SpdyHeaderBlock getAsQuicHeaders(net::HttpResponseHeaders* resp_headers,
-                                         int response_code,
-                                         uint64_t response_decoded_body_size);
+  spdy::Http2HeaderBlock getAsQuicHeaders(
+      net::HttpResponseHeaders* resp_headers,
+      int response_code,
+      uint64_t response_decoded_body_size);
 
   // The quic proxy backend context
   QuicHttpProxyBackend* proxy_context_;
@@ -157,8 +162,6 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
   std::unique_ptr<quic::QuicBackendResponse> quic_response_;
 
   base::WeakPtrFactory<QuicHttpProxyBackendStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicHttpProxyBackendStream);
 };
 
 }  // namespace net

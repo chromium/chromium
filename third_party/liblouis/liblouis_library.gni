@@ -21,12 +21,8 @@ template("liblouis_library") {
   copy(tables_json_target_name) {
     forward_variables_from(invoker, [ "testonly" ])
     visibility = [ ":$final_target_name" ]
-    sources = [
-      "//third_party/liblouis/tables.json",
-    ]
-    outputs = [
-      "$dest_dir/{{source_file_part}}",
-    ]
+    sources = [ "//third_party/liblouis/tables.json" ]
+    outputs = [ "$dest_dir/{{source_file_part}}" ]
   }
 
   copy(wasm_target_name) {
@@ -38,9 +34,7 @@ template("liblouis_library") {
       "//third_party/liblouis/wasm/liblouis_wasm.wasm",
       "//third_party/liblouis/wasm/liblouis_wrapper.js",
     ]
-    outputs = [
-      "$dest_dir/{{source_file_part}}",
-    ]
+    outputs = [ "$dest_dir/{{source_file_part}}" ]
   }
 
   group(target_name) {

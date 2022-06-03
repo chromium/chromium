@@ -14,6 +14,7 @@ using cc::PaintImage;
 using cc::PaintImageBuilder;
 using cc::PaintImageGenerator;
 using cc::SkiaPaintImageGenerator;
+using cc::TextureBacking;
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_IMAGE_H_

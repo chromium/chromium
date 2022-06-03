@@ -13,7 +13,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * An interface for recording user interactions.  One implementation does logging to Ranker.
+ * Provides an interface for recording user interactions.  One implementation does logging to Ranker
+ * (which implements our ML model).
  */
 public interface ContextualSearchInteractionRecorder {
     // NOTE: this list needs to be kept in sync with the white list in

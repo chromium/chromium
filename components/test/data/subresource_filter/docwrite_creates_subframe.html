@@ -1,0 +1,15 @@
+<html>
+<body>
+<iframe src="/slow?100" id="iframe"></iframe>
+<script>
+  // slow takes 100 seconds to load, plenty of time to overwrite the
+  // provisional load.
+  iframe = document.getElementById("iframe");
+  let doc = iframe.contentDocument;
+
+  doc.open();
+  doc.write("<html><body>Rewritten. <iframe name='grandchild'></iframe></body></html>");
+  doc.close();
+</script>
+</body>
+</html>

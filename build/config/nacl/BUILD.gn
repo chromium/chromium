@@ -6,7 +6,7 @@ import("//build/config/nacl/config.gni")
 
 # Native Client Definitions
 config("nacl_defines") {
-  if (is_linux || is_android || is_nacl) {
+  if (is_linux || is_chromeos || is_android || is_nacl) {
     defines = [
       "_POSIX_C_SOURCE=199506",
       "_XOPEN_SOURCE=600",

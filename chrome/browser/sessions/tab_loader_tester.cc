@@ -5,7 +5,7 @@
 #include "chrome/browser/sessions/tab_loader_tester.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 
 TabLoaderTester::TabLoaderTester() = default;
 
@@ -72,6 +72,10 @@ base::OneShotTimer& TabLoaderTester::force_load_timer() {
 
 const TabLoader::TabVector& TabLoaderTester::tabs_to_load() const {
   return tab_loader_->tabs_to_load_;
+}
+
+const TabLoader::TabSet& TabLoaderTester::tabs_load_initiated() const {
+  return tab_loader_->tabs_load_initiated_;
 }
 
 size_t TabLoaderTester::scheduled_to_load_count() const {

@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
@@ -47,28 +48,28 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
       allow_result = PolicyPermission::ALLOW_SYSTEM_ONLY;
   }
 
-  // All native messaging hosts are allowed if there is no blacklist.
-  if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlacklist))
+  // All native messaging hosts are allowed if there is no blocklist.
+  if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlocklist))
     return allow_result;
-  const base::ListValue* blacklist =
-      pref_service->GetList(pref_names::kNativeMessagingBlacklist);
-  if (!blacklist)
+  const base::ListValue* blocklist =
+      pref_service->GetList(pref_names::kNativeMessagingBlocklist);
+  if (!blocklist)
     return allow_result;
 
-  // Check if the name or the wildcard is in the blacklist.
+  // Check if the name or the wildcard is in the blocklist.
   base::Value name_value(native_host_name);
   base::Value wildcard_value("*");
-  if (blacklist->Find(name_value) == blacklist->end() &&
-      blacklist->Find(wildcard_value) == blacklist->end()) {
+  if (!base::Contains(blocklist->GetList(), name_value) &&
+      !base::Contains(blocklist->GetList(), wildcard_value)) {
     return allow_result;
   }
 
-  // The native messaging host is blacklisted. Check the whitelist.
+  // The native messaging host is blocklisted. Check the allowlist.
   if (pref_service->IsManagedPreference(
-          pref_names::kNativeMessagingWhitelist)) {
-    const base::ListValue* whitelist =
-        pref_service->GetList(pref_names::kNativeMessagingWhitelist);
-    if (whitelist && whitelist->Find(name_value) != whitelist->end())
+          pref_names::kNativeMessagingAllowlist)) {
+    const base::ListValue* allowlist =
+        pref_service->GetList(pref_names::kNativeMessagingAllowlist);
+    if (allowlist && base::Contains(allowlist->GetList(), name_value))
       return allow_result;
   }
 
@@ -155,10 +156,10 @@ void ChromeMessagingDelegate::QueryIncognitoConnectability(
     const Extension* target_extension,
     content::WebContents* source_contents,
     const GURL& source_url,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(context->IsOffTheRecord());
   IncognitoConnectability::Get(context)->Query(
-      target_extension, source_contents, source_url, callback);
+      target_extension, source_contents, source_url, std::move(callback));
 }
 
 }  // namespace extensions

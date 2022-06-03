@@ -39,7 +39,8 @@
           maxlength="4" data-timeout-delay="250" aria-labelledby="pin"
           placeholder="$i18n{pinPlaceholder}" spellcheck="false"
           disabled$="[[inputDisabled_(pinEnabled_, inputValid_, disabled)]]"
-          error-message="$i18n{pinErrorMessage}" required auto-validate>
+          error-message="[[getPinErrorMessage_(inputValid_)]]" required
+          auto-validate>
       </cr-input>
     </div>
   </print-preview-settings-section>

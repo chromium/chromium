@@ -29,8 +29,8 @@ message ScheduleParams {
   // The end time of deliver time window for the notification.
   optional int64 deliver_time_end = 4;
 
-  // The custom suppression duration in ms.
-  optional int64 custom_suppression_duration_ms = 5;
+  // The duration to treat notification with NO_FEEDBACK impression as IGNORE.
+  optional int64 ignore_timeout_duration = 5;
 }
 
 // The notification entry that contains all data for a scheduled notification.

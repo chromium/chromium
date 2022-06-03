@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/vp8_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,7 +37,7 @@ class MockVP8Accelerator : public VP8Decoder::VP8Accelerator {
   MOCK_METHOD2(SubmitDecode,
                bool(scoped_refptr<VP8Picture> pic,
                     const Vp8ReferenceFrameVector& reference_frames));
-  MOCK_METHOD1(OutputPicture, bool(const scoped_refptr<VP8Picture>& pic));
+  MOCK_METHOD1(OutputPicture, bool(scoped_refptr<VP8Picture> pic));
 };
 
 // Test VP8Decoder by feeding different VP8 frame sequences and making sure it
@@ -81,6 +80,7 @@ void VP8DecoderTest::SetUp() {
 void VP8DecoderTest::DecodeFirstIFrame() {
   ASSERT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode(kNullFrame));
   ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(kIFrame));
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
   EXPECT_EQ(kVideoSize, decoder_->GetPicSize());
   EXPECT_LE(kRequiredNumOfPictures, decoder_->GetRequiredNumOfPictures());
 }
@@ -120,6 +120,8 @@ AcceleratedVideoDecoder::DecodeResult VP8DecoderTest::Decode(
                   AcceleratedVideoDecoder::DecodeResult::kRanOutOfStreamData ||
               result == AcceleratedVideoDecoder::DecodeResult::kConfigChange ||
               result == AcceleratedVideoDecoder::DecodeResult::kDecodeError);
+  if (result != AcceleratedVideoDecoder::DecodeResult::kDecodeError)
+    EXPECT_EQ(8u, decoder_->GetBitDepth());
   return result;
 }
 

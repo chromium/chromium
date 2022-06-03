@@ -19,13 +19,13 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
     case FilterOperation::BRIGHTNESS:
     case FilterOperation::CONTRAST:
     case FilterOperation::SATURATE:
-      return clampTo<double>(value, 0);
+      return ClampTo<double>(value, 0);
 
     case FilterOperation::GRAYSCALE:
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY:
     case FilterOperation::SEPIA:
-      return clampTo<double>(value, 0, 1);
+      return ClampTo<double>(value, 0, 1);
 
     case FilterOperation::HUE_ROTATE:
       return value;
@@ -41,7 +41,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
 std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeCreate(
     const FilterOperation& filter,
     double zoom) {
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
     case FilterOperation::GRAYSCALE:
@@ -92,7 +92,7 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeConvertCSSValue(
   const auto& filter = To<CSSFunctionValue>(css_value);
   DCHECK_LE(filter.length(), 1u);
 
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   FilterOperation::OperationType type =
       FilterOperationResolver::FilterOperationForType(filter.FunctionType());
   switch (type) {
@@ -133,7 +133,7 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::CreateInitialValue(
     FilterOperation::OperationType type) {
   // See https://drafts.fxtf.org/filter-effects-1/#filter-functions for the
   // mapping of OperationType to initial value.
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   switch (type) {
     case FilterOperation::GRAYSCALE:
     case FilterOperation::INVERT:
@@ -173,7 +173,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     case FilterOperation::SATURATE:
     case FilterOperation::SEPIA: {
       double value =
-          ClampParameter(ToInterpolableNumber(*value_).Value(), type_);
+          ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
       return MakeGarbageCollected<BasicColorMatrixFilterOperation>(value,
                                                                    type_);
     }
@@ -183,14 +183,14 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY: {
       double value =
-          ClampParameter(ToInterpolableNumber(*value_).Value(), type_);
+          ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
       return MakeGarbageCollected<BasicComponentTransferFilterOperation>(value,
                                                                          type_);
     }
 
     case FilterOperation::BLUR: {
       Length std_deviation = To<InterpolableLength>(*value_).CreateLength(
-          state.CssToLengthConversionData(), kValueRangeNonNegative);
+          state.CssToLengthConversionData(), Length::ValueRange::kNonNegative);
       return MakeGarbageCollected<BlurFilterOperation>(std_deviation);
     }
 

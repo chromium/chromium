@@ -33,7 +33,7 @@ ScriptPromise Keyboard::getLayoutMap(ScriptState* state,
   return keyboard_layout_->GetKeyboardLayoutMap(state, exception_state);
 }
 
-void Keyboard::Trace(blink::Visitor* visitor) {
+void Keyboard::Trace(Visitor* visitor) const {
   visitor->Trace(keyboard_lock_);
   visitor->Trace(keyboard_layout_);
   ScriptWrappable::Trace(visitor);

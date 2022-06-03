@@ -1,0 +1,39 @@
+<!doctype html>
+<title>Throws in incognito</title>
+<script>
+  'use strict';
+
+  async function tryAccessStorageFoundation() {
+    try {
+      await storageFoundation.getAll();
+      return false;
+    } catch (error) {}
+    try {
+      let file = await storageFoundation.open('foo');
+      await file.close();
+      return false;
+    } catch (error) {}
+    try {
+      await storageFoundation.rename('foo', 'bar');
+      return false;
+    } catch (error) {}
+    try {
+      await storageFoundation.delete('bar');
+      return false;
+    } catch (error) {}
+    return true;
+  }
+
+  function tryAccessStorageFoundationSync() {
+    return new Promise((resolve, reject) => {
+      let worker = new Worker("throws_in_incognito_sync.js");
+      worker.onmessage = result => {
+        resolve(result.data === 'Success');
+      };
+      worker.onerror = error => {
+        reject(error);
+      };
+      worker.postMessage('tryAccessStorageFoundationSync');
+    });
+  }
+</script>

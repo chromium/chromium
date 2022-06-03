@@ -5,8 +5,6 @@
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -14,6 +12,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
@@ -22,6 +23,7 @@
 namespace extensions {
 namespace {
 
+const std::string kSubscribePageAction = "subscribe_page_action/src";
 const std::string kFeedPage = "/feeds/feed.html";
 const std::string kNoFeedPage = "/feeds/no_feed.html";
 
@@ -31,7 +33,26 @@ const std::string kHashPageAHash = kHashPageA + "#asdf";
 const std::string kHashPageB =
     "/extensions/api_test/page_action/hash_change/test_page_B.html";
 
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionCrash25562) {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class PageActionBrowserTest : public ExtensionBrowserTest,
+                              public testing::WithParamInterface<ContextType> {
+ public:
+  PageActionBrowserTest() : ExtensionBrowserTest(GetParam()) {}
+  ~PageActionBrowserTest() override = default;
+  PageActionBrowserTest(const PageActionBrowserTest& other) = delete;
+  PageActionBrowserTest& operator=(const PageActionBrowserTest& other) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         PageActionBrowserTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         PageActionBrowserTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionCrash25562) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This page action will not show an icon, since it doesn't specify one but
@@ -42,35 +63,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionCrash25562) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }
 
 // Tests that we can load page actions in the Omnibox.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageAction) {
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action")));
+      test_data_dir_.AppendASCII(kSubscribePageAction)));
 
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Navigate to a page with no feed.
   GURL no_feed = embedded_test_server()->GetURL(kNoFeedPage);
-  ui_test_utils::NavigateToURL(browser(), no_feed);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_feed));
   // Make sure the page action goes away.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
 
 // Tests that we don't lose the page action icon on same-document navigations.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionSameDocumentNavigation) {
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, SameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::FilePath extension_path(test_data_dir_.AppendASCII("api_test")
@@ -80,31 +101,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionSameDocumentNavigation) {
 
   // Page action should become visible when we navigate here.
   GURL feed_url = embedded_test_server()->GetURL(kHashPageA);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Same-document navigation, page action should remain.
   feed_url = embedded_test_server()->GetURL(kHashPageAHash);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Not a same-document navigation, page action should go away.
   feed_url = embedded_test_server()->GetURL(kHashPageB);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
 
 // Tests that the location bar forgets about unloaded page actions.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, UnloadPageAction) {
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::FilePath extension_path(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(LoadExtension(extension_path));
 
   // Navigation prompts the location bar to load page actions.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
@@ -115,10 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, UnloadPageAction) {
   EXPECT_EQ(0u, extension_action_test_util::GetTotalPageActionCount(tab));
 }
 
-// Tests that we can load page actions in the Omnibox.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionRefreshCrash) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
+// Regression test for crbug.com/44415.
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
   ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
 
@@ -132,19 +151,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionRefreshCrash) {
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
 
-  LOG(INFO) << "Load extension A done  : "
-            << (base::TimeTicks::Now() - start_time).InMilliseconds()
-            << " ms" << std::flush;
-
   // Load extension B.
   const Extension* extensionB = LoadExtension(base_path.AppendASCII("ExtB"));
   ASSERT_TRUE(extensionB);
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(2));
   ASSERT_EQ(size_before + 2, registry->enabled_extensions().size());
-
-  LOG(INFO) << "Load extension B done  : "
-            << (base::TimeTicks::Now() - start_time).InMilliseconds()
-            << " ms" << std::flush;
 
   std::string idA = extensionA->id();
   ReloadExtension(extensionA->id());
@@ -152,22 +163,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionRefreshCrash) {
   ASSERT_EQ(size_before + 2, registry->enabled_extensions().size());
   extensionA = registry->enabled_extensions().GetByID(idA);
 
-  LOG(INFO) << "Reload extension A done: "
-            << (base::TimeTicks::Now() - start_time).InMilliseconds()
-            << " ms" << std::flush;
-
   ReloadExtension(extensionB->id());
-
-  LOG(INFO) << "Reload extension B done: "
-            << (base::TimeTicks::Now() - start_time).InMilliseconds()
-            << " ms" << std::flush;
 
   // This is where it would crash, before http://crbug.com/44415 was fixed.
   ReloadExtension(extensionA->id());
-
-  LOG(INFO) << "Test completed         : "
-            << (base::TimeTicks::Now() - start_time).InMilliseconds()
-            << " ms" << std::flush;
 }
 
 }  // namespace

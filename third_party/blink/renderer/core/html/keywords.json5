@@ -6,6 +6,7 @@
   metadata: {
     namespace: "keywords",
     export: "CORE_EXPORT",
+    allowDuplicates: true,
   },
 
   data: [
@@ -48,7 +49,7 @@
     // https://wicg.github.io/priority-hints/#solution-0
     "high",
     "low",
-    // "auto",
+    "auto",
 
     // inputmode attribute
     // https://html.spec.whatwg.org/C/#attr-inputmode
@@ -59,7 +60,7 @@
     "email",
     "numeric",
     "decimal",
-    // "search",
+    "search",
 
     // invisible attribute
     // https://github.com/rakina/searchable-invisible-dom
@@ -70,7 +71,7 @@
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
     "lazy",
     "eager",
-    // "auto",
+    "auto",
 
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
@@ -89,5 +90,10 @@
     "col",
     "rowgroup",
     "colgroup",
+
+    // This mode corresponds to virtualkeyboardpolicy
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardPolicy/explainer.md
+    "auto",
+    "manual",
   ],
 }

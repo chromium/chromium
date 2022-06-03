@@ -4,9 +4,9 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache_adapter.h"
 
-#include "base/task/post_task.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -21,8 +21,8 @@ void AbortAndDeleteBlobBuilder(
     return;
   }
 
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&storage::BlobBuilderFromStream::Abort,
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&storage::BlobBuilderFromStream::Abort,
                                 std::move(blob_builder)));
 }
 
@@ -37,10 +37,7 @@ PrefetchedSignedExchangeCacheAdapter::PrefetchedSignedExchangeCacheAdapter(
     : prefetched_signed_exchange_cache_(
           std::move(prefetched_signed_exchange_cache)),
       blob_context_getter_(std::move(blob_context_getter)),
-      cached_exchange_(
-          std::make_unique<PrefetchedSignedExchangeCache::Entry>()),
       prefetch_url_loader_(prefetch_url_loader) {
-  cached_exchange_->SetOuterUrl(request_url);
 }
 
 PrefetchedSignedExchangeCacheAdapter::~PrefetchedSignedExchangeCacheAdapter() {
@@ -48,32 +45,14 @@ PrefetchedSignedExchangeCacheAdapter::~PrefetchedSignedExchangeCacheAdapter() {
     AbortAndDeleteBlobBuilder(std::move(blob_builder_from_stream_));
 }
 
-void PrefetchedSignedExchangeCacheAdapter::OnReceiveOuterResponse(
-    network::mojom::URLResponseHeadPtr response) {
-  cached_exchange_->SetOuterResponse(std::move(response));
-}
-
-void PrefetchedSignedExchangeCacheAdapter::OnReceiveRedirect(
-    const GURL& new_url,
-    const base::Optional<net::SHA256HashValue> header_integrity,
-    const base::Time& signature_expire_time) {
-  DCHECK(header_integrity);
-  DCHECK(!signature_expire_time.is_null());
-  cached_exchange_->SetHeaderIntegrity(
-      std::make_unique<net::SHA256HashValue>(*header_integrity));
-  cached_exchange_->SetInnerUrl(new_url);
-  cached_exchange_->SetSignatureExpireTime(signature_expire_time);
-}
-
-void PrefetchedSignedExchangeCacheAdapter::OnReceiveInnerResponse(
-    network::mojom::URLResponseHeadPtr response) {
-  response->was_fetched_via_cache = true;
-  response->was_in_prefetch_cache = true;
-  cached_exchange_->SetInnerResponse(std::move(response));
+void PrefetchedSignedExchangeCacheAdapter::OnReceiveSignedExchange(
+    std::unique_ptr<PrefetchedSignedExchangeCacheEntry> entry) {
+  cached_exchange_ = std::move(entry);
 }
 
 void PrefetchedSignedExchangeCacheAdapter::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
+  DCHECK(cached_exchange_);
   DCHECK(cached_exchange_->inner_response());
   DCHECK(!cached_exchange_->completion_status());
   uint64_t length_hint = 0;
@@ -81,8 +60,8 @@ void PrefetchedSignedExchangeCacheAdapter::OnStartLoadingResponseBody(
     length_hint = cached_exchange_->inner_response()->content_length;
   }
   blob_is_streaming_ = true;
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &PrefetchedSignedExchangeCacheAdapter::CreateBlobBuilderFromStream,
           weak_factory_.GetWeakPtr(), std::move(body), length_hint,
@@ -94,6 +73,10 @@ void PrefetchedSignedExchangeCacheAdapter::OnStartLoadingResponseBody(
 
 void PrefetchedSignedExchangeCacheAdapter::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  if (!cached_exchange_) {
+    prefetch_url_loader_->SendOnComplete(status);
+    return;
+  }
   cached_exchange_->SetCompletionStatus(
       std::make_unique<network::URLLoaderCompletionStatus>(status));
   MaybeCallOnSignedExchangeStored();
@@ -102,14 +85,16 @@ void PrefetchedSignedExchangeCacheAdapter::OnComplete(
 void PrefetchedSignedExchangeCacheAdapter::StreamingBlobDone(
     storage::BlobBuilderFromStream* builder,
     std::unique_ptr<storage::BlobDataHandle> result) {
+  DCHECK(cached_exchange_);
   blob_is_streaming_ = false;
-  base::DeleteSoon(FROM_HERE, {BrowserThread::IO},
-                   std::move(blob_builder_from_stream_));
+  GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                        std::move(blob_builder_from_stream_));
   cached_exchange_->SetBlobDataHandle(std::move(result));
   MaybeCallOnSignedExchangeStored();
 }
 
 void PrefetchedSignedExchangeCacheAdapter::MaybeCallOnSignedExchangeStored() {
+  DCHECK(cached_exchange_);
   if (!cached_exchange_->completion_status() || blob_is_streaming_) {
     return;
   }
@@ -117,22 +102,14 @@ void PrefetchedSignedExchangeCacheAdapter::MaybeCallOnSignedExchangeStored() {
   const network::URLLoaderCompletionStatus completion_status =
       *cached_exchange_->completion_status();
 
-  // When SignedExchangePrefetchHandler failed to load the response (eg: invalid
-  // signed exchange format), the inner response is not set. In that case, we
-  // don't send the body to avoid the DCHECK() failure in URLLoaderClientImpl::
-  // OnStartLoadingResponseBody().
-  const bool should_send_body = cached_exchange_->inner_response().get();
-
   if (completion_status.error_code == net::OK &&
       cached_exchange_->blob_data_handle() &&
       cached_exchange_->blob_data_handle()->size()) {
     prefetched_signed_exchange_cache_->Store(std::move(cached_exchange_));
   }
 
-  if (should_send_body) {
-    if (!prefetch_url_loader_->SendEmptyBody())
-      return;
-  }
+  if (!prefetch_url_loader_->SendEmptyBody())
+    return;
   prefetch_url_loader_->SendOnComplete(completion_status);
 }
 
@@ -177,8 +154,8 @@ void PrefetchedSignedExchangeCacheAdapter::StreamingBlobDoneOnIO(
     storage::BlobBuilderFromStream* builder,
     std::unique_ptr<storage::BlobDataHandle> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&PrefetchedSignedExchangeCacheAdapter::StreamingBlobDone,
                      adapter, builder, std::move(result)));
 }

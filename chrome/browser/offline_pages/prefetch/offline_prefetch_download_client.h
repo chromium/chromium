@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 
 class SimpleFactoryKey;
@@ -25,6 +24,11 @@ class PrefetchDownloader;
 class OfflinePrefetchDownloadClient : public download::Client {
  public:
   explicit OfflinePrefetchDownloadClient(SimpleFactoryKey* simple_factory_key);
+
+  OfflinePrefetchDownloadClient(const OfflinePrefetchDownloadClient&) = delete;
+  OfflinePrefetchDownloadClient& operator=(
+      const OfflinePrefetchDownloadClient&) = delete;
+
   ~OfflinePrefetchDownloadClient() override;
 
  private:
@@ -47,8 +51,6 @@ class OfflinePrefetchDownloadClient : public download::Client {
   PrefetchDownloader* GetPrefetchDownloader() const;
 
   SimpleFactoryKey* simple_factory_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePrefetchDownloadClient);
 };
 
 }  // namespace offline_pages

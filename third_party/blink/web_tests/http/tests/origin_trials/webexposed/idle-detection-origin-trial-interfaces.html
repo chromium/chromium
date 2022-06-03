@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 IdleDetection --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AmM/8oz0XgNMwj1NNh2PVkFpTWCtcabrohUuLyaXVAReg3Ztok8LJnPsTeiirPEpa5VmzWz4jvC1SGlGIpulxgEAAABVeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiSWRsZURldGVjdGlvbiIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<title>IdleDetection - interfaces exposed by origin trial</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'IdleDetector': ['start', 'onchange', 'screenState', 'userState'],
+      },
+  );
+}, "IdleDetection related interfaces in Origin-Trial enabled document.");
+
+</script>

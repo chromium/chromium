@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SYNCHRONIZER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_synchronizer_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -19,35 +18,36 @@ namespace secure_channel {
 class FakeBleSynchronizer : public BleSynchronizerBase {
  public:
   FakeBleSynchronizer();
+
+  FakeBleSynchronizer(const FakeBleSynchronizer&) = delete;
+  FakeBleSynchronizer& operator=(const FakeBleSynchronizer&) = delete;
+
   ~FakeBleSynchronizer() override;
 
   size_t GetNumCommands();
 
   device::BluetoothAdvertisement::Data& GetAdvertisementData(size_t index);
-  const device::BluetoothAdapter::CreateAdvertisementCallback&
-  GetRegisterCallback(size_t index);
-  const device::BluetoothAdapter::AdvertisementErrorCallback&
-  GetRegisterErrorCallback(size_t index);
-
-  const device::BluetoothAdvertisement::SuccessCallback& GetUnregisterCallback(
+  device::BluetoothAdapter::CreateAdvertisementCallback GetRegisterCallback(
       size_t index);
-  const device::BluetoothAdvertisement::ErrorCallback&
-  GetUnregisterErrorCallback(size_t index);
+  device::BluetoothAdapter::AdvertisementErrorCallback GetRegisterErrorCallback(
+      size_t index);
+
+  device::BluetoothAdvertisement::SuccessCallback GetUnregisterCallback(
+      size_t index);
+  device::BluetoothAdvertisement::ErrorCallback GetUnregisterErrorCallback(
+      size_t index);
 
   device::BluetoothAdapter::DiscoverySessionCallback TakeStartDiscoveryCallback(
       size_t index);
   device::BluetoothAdapter::ErrorCallback TakeStartDiscoveryErrorCallback(
       size_t index);
 
-  const base::Closure& GetStopDiscoveryCallback(size_t index);
-  const device::BluetoothDiscoverySession::ErrorCallback&
+  base::OnceClosure GetStopDiscoveryCallback(size_t index);
+  device::BluetoothDiscoverySession::ErrorCallback
   GetStopDiscoveryErrorCallback(size_t index);
 
  protected:
   void ProcessQueue() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBleSynchronizer);
 };
 
 }  // namespace secure_channel

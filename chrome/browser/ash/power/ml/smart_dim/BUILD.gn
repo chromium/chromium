@@ -1,0 +1,41 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("smart_dim") {
+  public = [
+    "metrics.h",
+    "ml_agent.h",
+  ]
+
+  sources = [
+    "builtin_worker.cc",
+    "builtin_worker.h",
+    "download_worker.cc",
+    "download_worker.h",
+    "metrics.cc",
+    "ml_agent.cc",
+    "ml_agent.h",
+    "ml_agent_util.cc",
+    "ml_agent_util.h",
+    "smart_dim_worker.cc",
+    "smart_dim_worker.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
+    "//chrome/browser/chromeos:user_activity_event_proto",
+    "//chrome/common:constants",
+    "//chromeos:chromeos",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/assist_ranker",
+    "//components/assist_ranker/proto",
+    "//components/sessions",
+    "//services/data_decoder/public/cpp",
+    "//ui/base",
+  ]
+}

@@ -31,22 +31,22 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PARAMS_H_
 
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
-#include "third_party/blink/public/web/web_print_scaling_option.h"
+#include "printing/mojom/print.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
 struct WebPrintParams {
   // Specifies printable content rect in points (a point is 1/72 of an inch).
-  WebRect print_content_area;
+  gfx::Rect print_content_area;
 
   // Specifies the selected printer default printable area details in
   // points.
-  WebRect printable_area;
+  gfx::Rect printable_area;
 
   // Specifies the selected printer default paper size in points.
-  WebSize paper_size;
+  gfx::Size paper_size;
 
   // Specifies user selected DPI for printing.
   int printer_dpi = 72;
@@ -59,8 +59,8 @@ struct WebPrintParams {
 
   // Specifies whether to reduce/enlarge/retain the print contents to fit the
   // printable area. (This is used only by plugin printing).
-  WebPrintScalingOption print_scaling_option =
-      kWebPrintScalingOptionFitToPrintableArea;
+  printing::mojom::PrintScalingOption print_scaling_option =
+      printing::mojom::PrintScalingOption::kFitToPrintableArea;
 
   // Specifies whether printing layout needs to be applied.
   bool use_printing_layout = true;
@@ -70,17 +70,17 @@ struct WebPrintParams {
 
   WebPrintParams() = default;
 
-  WebPrintParams(const WebSize& paper_size)
+  WebPrintParams(const gfx::Size& paper_size)
       : WebPrintParams(paper_size, true) {}
 
-  WebPrintParams(const WebSize& paper_size, bool use_printing_layout)
-      : print_content_area(WebRect(0, 0, paper_size.width, paper_size.height)),
+  WebPrintParams(const gfx::Size& paper_size, bool use_printing_layout)
+      : print_content_area(paper_size),
         printable_area(print_content_area),
         paper_size(paper_size),
-        print_scaling_option(kWebPrintScalingOptionSourceSize),
+        print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
         use_printing_layout(use_printing_layout) {}
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PARAMS_H_

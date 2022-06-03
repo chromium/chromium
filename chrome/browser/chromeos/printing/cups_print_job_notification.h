@@ -7,10 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -32,22 +30,21 @@ class CupsPrintJobNotificationManager;
 // according to its state and respond to the user's action.
 class CupsPrintJobNotification : public message_center::NotificationObserver {
  public:
-  enum class ButtonCommand {
-    CANCEL_PRINTING,
-    GET_HELP,
-  };
-
   CupsPrintJobNotification(CupsPrintJobNotificationManager* manager,
                            base::WeakPtr<CupsPrintJob> print_job,
                            Profile* profile);
+
+  CupsPrintJobNotification(const CupsPrintJobNotification&) = delete;
+  CupsPrintJobNotification& operator=(const CupsPrintJobNotification&) = delete;
+
   virtual ~CupsPrintJobNotification();
 
   void OnPrintJobStatusUpdated();
 
   // message_center::NotificationObserver
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   // Update the notification based on the print job's status.
@@ -55,15 +52,9 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationTitle();
   void UpdateNotificationIcon();
   void UpdateNotificationBodyMessage();
-  void UpdateNotificationType();
-  void UpdateNotificationButtons();
+  void UpdateNotificationTimeout();
 
   void CleanUpNotification();
-
-  // Returns the buttons according to the print job's current status.
-  std::vector<ButtonCommand> GetButtonCommands() const;
-  base::string16 GetButtonLabel(ButtonCommand button) const;
-  gfx::Image GetButtonIcon(ButtonCommand button) const;
 
   CupsPrintJobNotificationManager* notification_manager_;
   std::unique_ptr<message_center::Notification> notification_;
@@ -76,20 +67,10 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   // and only show the print job done or failed notification.
   bool closed_in_middle_ = false;
 
-  // If this is true, the user cancelled the job using the cancel button and
-  // should not be notified of events.
-  bool cancelled_by_user_ = false;
-
-  // Maintains a list of button actions according to the print job's current
-  // status.
-  std::vector<ButtonCommand> button_commands_;
-
   // Timer to close the notification in case of success.
   std::unique_ptr<base::OneShotTimer> success_timer_;
 
   base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobNotification);
 };
 
 }  // namespace chromeos

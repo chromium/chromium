@@ -38,7 +38,7 @@ ExtensionFileLogger::ExtensionFileLogger(const base::FilePath& user_data_path)
 ExtensionFileLogger::~ExtensionFileLogger() = default;
 
 bool ExtensionFileLogger::GetExtensionFiles(
-    const base::string16& extension_id,
+    const std::wstring& extension_id,
     std::vector<internal::FileInformation>* files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!initialized_)

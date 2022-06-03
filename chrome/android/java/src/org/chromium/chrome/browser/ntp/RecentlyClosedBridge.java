@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +26,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private Runnable mTabsUpdatedRunnable;
 
     @CalledByNative
-    private static void pushTab(
-            List<RecentlyClosedTab> tabs, int id, String title, String url) {
+    private static void pushTab(List<RecentlyClosedTab> tabs, int id, String title, GURL url) {
         RecentlyClosedTab tab = new RecentlyClosedTab(id, title, url);
         tabs.add(tab);
     }
@@ -87,7 +88,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(RecentlyClosedBridge caller, Profile profile);
         void destroy(long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
         boolean getRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge,

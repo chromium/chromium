@@ -31,9 +31,8 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 #include <unicode/uset.h>
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -94,7 +93,7 @@ static USet* GetSmartSet(bool is_previous_character) {
       // Punctuation (kCFCharacterSetPunctuation)
       static const UChar* kPunctuationClass =
           reinterpret_cast<const UChar*>(u"[:P:]");
-      UErrorCode ec = U_ZERO_ERROR;
+      ec = U_ZERO_ERROR;
       USet* icu_punct = uset_openPattern(
           kPunctuationClass, LengthOfNullTerminatedString(kPunctuationClass),
           &ec);
@@ -113,4 +112,4 @@ bool IsCharacterSmartReplaceExempt(UChar32 c, bool is_previous_character) {
 }
 }
 
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_MAC)

@@ -4,7 +4,9 @@
 
 #include "net/url_request/url_request_context_builder.h"
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
@@ -16,6 +18,7 @@
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/net_log_with_source.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
@@ -26,10 +29,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/files/scoped_temp_dir.h"
@@ -55,6 +58,7 @@ class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
   int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                         HttpAuth::Target target,
                         const SSLInfo& ssl_info,
+                        const NetworkIsolationKey& network_isolation_key,
                         const GURL& origin,
                         CreateReason reason,
                         int nonce_count,
@@ -79,10 +83,10 @@ class URLRequestContextBuilderTest : public PlatformTest,
   URLRequestContextBuilderTest() {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("net/data/url_request_unittest")));
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     builder_.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
         ProxyConfigWithAnnotation::CreateDirect()));
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   }
 
   std::unique_ptr<HostResolver> host_resolver_ =
@@ -128,10 +132,11 @@ TEST_F(URLRequestContextBuilderTest, DefaultHttpAuthHandlerFactory) {
   SSLInfo null_ssl_info;
 
   // Verify that the default basic handler is present
-  EXPECT_EQ(OK,
-            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-                "basic", HttpAuth::AUTH_SERVER, null_ssl_info, gurl,
-                NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(
+      OK,
+      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+          "basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
+          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
 }
 
 TEST_F(URLRequestContextBuilderTest, CustomHttpAuthHandlerFactory) {
@@ -146,20 +151,23 @@ TEST_F(URLRequestContextBuilderTest, CustomHttpAuthHandlerFactory) {
   // Verify that a handler is returned for a custom scheme.
   EXPECT_EQ(kBasicReturnCode,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-                "ExtraScheme", HttpAuth::AUTH_SERVER, null_ssl_info, gurl,
-                NetLogWithSource(), host_resolver_.get(), &handler));
+                "ExtraScheme", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkIsolationKey(), gurl, NetLogWithSource(),
+                host_resolver_.get(), &handler));
 
   // Verify that the default basic handler isn't present
-  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
-            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-                "basic", HttpAuth::AUTH_SERVER, null_ssl_info, gurl,
-                NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(
+      ERR_UNSUPPORTED_AUTH_SCHEME,
+      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+          "basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
+          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
 
   // Verify that a handler isn't returned for a bogus scheme.
-  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
-            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-                "Bogus", HttpAuth::AUTH_SERVER, null_ssl_info, gurl,
-                NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(
+      ERR_UNSUPPORTED_AUTH_SCHEME,
+      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+          "Bogus", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
+          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -172,7 +180,8 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
   host_resolver->set_ondemand_mode(true);
   MockHostResolver* mock_host_resolver = host_resolver.get();
   builder_.set_host_resolver(std::move(host_resolver));
-  builder_.set_proxy_resolution_service(ProxyResolutionService::CreateDirect());
+  builder_.set_proxy_resolution_service(
+      ConfiguredProxyResolutionService::CreateDirect());
   builder_.set_reporting_policy(std::make_unique<ReportingPolicy>());
   builder_.set_network_error_logging_enabled(true);
   base::ScopedTempDir scoped_temp_dir;
@@ -182,8 +191,8 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
           scoped_temp_dir.GetPath().Append(
               FILE_PATH_LITERAL("ReportingAndNelStore")),
           base::ThreadTaskRunnerHandle::Get(),
-          base::CreateSequencedTaskRunner(
-              {base::ThreadPool(), base::MayBlock(),
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(),
                net::GetReportingAndNelStoreBackgroundSequencePriority(),
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
 
@@ -197,8 +206,9 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
   // Queue a pending upload.
   GURL url("https://www.foo.test");
   context->reporting_service()->GetContextForTesting()->uploader()->StartUpload(
-      url::Origin::Create(url), url, NetworkIsolationKey(), "report body", 0,
-      base::DoNothing());
+      url::Origin::Create(url), url, IsolationInfo::CreateTransient(),
+      "report body", 0,
+      /*eligible_for_credentials=*/false, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1, context->reporting_service()
                    ->GetContextForTesting()
@@ -222,7 +232,8 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       context->host_resolver()->CreateRequest(
-          HostPortPair("example.com", 1234), NetLogWithSource(), base::nullopt);
+          HostPortPair("example.com", 1234), NetworkIsolationKey(),
+          NetLogWithSource(), absl::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
   ASSERT_TRUE(mock_host_resolver->has_pending_requests());
@@ -231,7 +242,6 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   mock_host_resolver->ResolveAllPending();
 
   EXPECT_FALSE(mock_host_resolver->has_pending_requests());
-  EXPECT_TRUE(mock_host_resolver->rules_map().empty());
 
   // Request should never complete.
   base::RunLoop().RunUntilIdle();

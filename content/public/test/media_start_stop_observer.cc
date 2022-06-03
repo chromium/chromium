@@ -20,6 +20,17 @@ void MediaStartStopObserver::MediaStartedPlaying(const MediaPlayerInfo& info,
   run_loop_.Quit();
 }
 
+void MediaStartStopObserver::MediaPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  if (is_picture_in_picture && type_ != Type::kEnterPictureInPicture)
+    return;
+
+  if (!is_picture_in_picture && type_ != Type::kExitPictureInPicture)
+    return;
+
+  run_loop_.Quit();
+}
+
 void MediaStartStopObserver::MediaStoppedPlaying(
     const MediaPlayerInfo& info,
     const MediaPlayerId& id,

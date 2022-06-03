@@ -13,15 +13,14 @@ bool IsClearKey(const std::string& key_system) {
   return key_system == kClearKey;
 }
 
-bool IsChildKeySystemOf(const std::string& key_system,
-                        const std::string& base) {
+bool IsSubKeySystemOf(const std::string& key_system, const std::string& base) {
   std::string prefix = base + '.';
   return key_system.substr(0, prefix.size()) == prefix;
 }
 
 bool IsExternalClearKey(const std::string& key_system) {
   return key_system == kExternalClearKey ||
-         IsChildKeySystemOf(key_system, kExternalClearKey);
+         IsSubKeySystemOf(key_system, kExternalClearKey);
 }
 
 }  // namespace media

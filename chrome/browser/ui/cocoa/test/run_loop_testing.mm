@@ -16,12 +16,12 @@
  @private
   base::MessagePumpNSRunLoop* _pump;
 }
-- (id)initWithMessagePump:(base::MessagePumpNSRunLoop*)pump;
+- (instancetype)initWithMessagePump:(base::MessagePumpNSRunLoop*)pump;
 - (void)doQuit;
 @end
 
 @implementation CocoaQuitTask
-- (id)initWithMessagePump:(base::MessagePumpNSRunLoop*)pump {
+- (instancetype)initWithMessagePump:(base::MessagePumpNSRunLoop*)pump {
   if ((self = [super init])) {
     _pump = pump;
   }

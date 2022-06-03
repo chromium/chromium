@@ -46,7 +46,7 @@
 
         let layerTreeAsText = [];
         if (window.internals) {
-            layerTreeAsText.push(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS));
+            layerTreeAsText.push(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS));
             internals.stopTrackingRepaints(document);
         }
 
@@ -59,7 +59,7 @@
         selection.setBaseAndExtent(document.querySelector("#item1"), 0, document.querySelector("#item2"), 1);
 
         if (window.internals) {
-            layerTreeAsText.push(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS));
+            layerTreeAsText.push(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS));
             internals.stopTrackingRepaints(document);
         }
 

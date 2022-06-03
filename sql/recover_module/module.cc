@@ -6,11 +6,12 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -79,7 +80,7 @@ int ModuleCreate(sqlite3* sqlite_db,
   }
 
   base::StringPiece table_name(argv[kVirtualTableNameArgument]);
-  if (!table_name.starts_with("recover_")) {
+  if (!base::StartsWith(table_name, "recover_")) {
     // In the future, we may deploy UMA metrics that use the virtual table name
     // to attribute recovery events to Chrome features. In preparation for that
     // future, require all recovery table names to start with "recover_".

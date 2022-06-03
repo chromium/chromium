@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
-#include "content/browser/resource_context_impl.h"
+#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/task/task_runner_util.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/url_data_source_impl.h"
@@ -16,40 +18,27 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
-#include "net/url_request/url_request.h"
-
-namespace content {
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
+// A chrome-untrusted data source's name starts with chrome-untrusted://.
+bool IsChromeUntrustedDataSource(content::URLDataSource* source) {
+  static const base::NoDestructor<std::string> kChromeUntrustedSourceNamePrefix(
+      base::StrCat(
+          {content::kChromeUIUntrustedScheme, url::kStandardSchemeSeparator}));
 
-URLDataSource* GetSourceForURLHelper(ResourceContext* resource_context,
-                                     const GURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  URLDataSourceImpl* source =
-      GetURLDataManagerForResourceContext(resource_context)
-          ->GetDataSourceFromURL(url);
-  return source->source();
+  return base::StartsWith(source->GetSource(),
+                          *kChromeUntrustedSourceNamePrefix,
+                          base::CompareCase::SENSITIVE);
 }
-
 }  // namespace
+
+namespace content {
 
 // static
 void URLDataSource::Add(BrowserContext* browser_context,
                         std::unique_ptr<URLDataSource> source) {
   URLDataManager::AddDataSource(browser_context, std::move(source));
-}
-
-// static
-void URLDataSource::GetSourceForURL(
-    BrowserContext* browser_context,
-    const GURL& url,
-    base::OnceCallback<void(URLDataSource*)> callback) {
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&GetSourceForURLHelper,
-                     browser_context->GetResourceContext(), url),
-      std::move(callback));
 }
 
 // static
@@ -65,11 +54,6 @@ std::string URLDataSource::URLToRequestPath(const GURL& url) {
   return std::string();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-URLDataSource::TaskRunnerForRequestPath(const std::string& path) {
-  return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
-}
-
 bool URLDataSource::ShouldReplaceExistingSource() {
   return true;
 }
@@ -82,29 +66,68 @@ bool URLDataSource::ShouldAddContentSecurityPolicy() {
   return true;
 }
 
-std::string URLDataSource::GetContentSecurityPolicyScriptSrc() {
-  // Note: Do not add 'unsafe-eval' here. Instead override CSP for the
-  // specific pages that need it, see context http://crbug.com/525224.
-  return "script-src chrome://resources 'self';";
+std::string URLDataSource::GetContentSecurityPolicy(
+    network::mojom::CSPDirectiveName directive) {
+  switch (directive) {
+    case network::mojom::CSPDirectiveName::ChildSrc:
+      return "child-src 'none';";
+    case network::mojom::CSPDirectiveName::DefaultSrc:
+      return IsChromeUntrustedDataSource(this) ? "default-src 'self';"
+                                               : std::string();
+    case network::mojom::CSPDirectiveName::ObjectSrc:
+      return "object-src 'none';";
+    case network::mojom::CSPDirectiveName::ScriptSrc:
+      // Note: Do not add 'unsafe-eval' here. Instead override CSP for the
+      // specific pages that need it, see context http://crbug.com/525224.
+      return IsChromeUntrustedDataSource(this)
+                 ? "script-src chrome-untrusted://resources 'self';"
+                 : "script-src chrome://resources 'self';";
+    case network::mojom::CSPDirectiveName::FrameAncestors:
+      return "frame-ancestors 'none';";
+    case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
+      return "require-trusted-types-for 'script';";
+    case network::mojom::CSPDirectiveName::TrustedTypes:
+      return "trusted-types;";
+    case network::mojom::CSPDirectiveName::BaseURI:
+      return IsChromeUntrustedDataSource(this) ? "base-uri 'none';"
+                                               : std::string();
+    case network::mojom::CSPDirectiveName::FormAction:
+      return IsChromeUntrustedDataSource(this) ? "form-action 'none';"
+                                               : std::string();
+    case network::mojom::CSPDirectiveName::BlockAllMixedContent:
+    case network::mojom::CSPDirectiveName::ConnectSrc:
+    case network::mojom::CSPDirectiveName::FrameSrc:
+    case network::mojom::CSPDirectiveName::FontSrc:
+    case network::mojom::CSPDirectiveName::ImgSrc:
+    case network::mojom::CSPDirectiveName::ManifestSrc:
+    case network::mojom::CSPDirectiveName::MediaSrc:
+    case network::mojom::CSPDirectiveName::PrefetchSrc:
+    case network::mojom::CSPDirectiveName::ReportURI:
+    case network::mojom::CSPDirectiveName::Sandbox:
+    case network::mojom::CSPDirectiveName::ScriptSrcAttr:
+    case network::mojom::CSPDirectiveName::ScriptSrcElem:
+    case network::mojom::CSPDirectiveName::StyleSrc:
+    case network::mojom::CSPDirectiveName::StyleSrcAttr:
+    case network::mojom::CSPDirectiveName::StyleSrcElem:
+    case network::mojom::CSPDirectiveName::UpgradeInsecureRequests:
+    case network::mojom::CSPDirectiveName::TreatAsPublicAddress:
+    case network::mojom::CSPDirectiveName::WorkerSrc:
+    case network::mojom::CSPDirectiveName::ReportTo:
+    case network::mojom::CSPDirectiveName::NavigateTo:
+    case network::mojom::CSPDirectiveName::Unknown:
+      return std::string();
+  }
 }
 
-std::string URLDataSource::GetContentSecurityPolicyObjectSrc() {
-  return "object-src 'none';";
-}
-
-std::string URLDataSource::GetContentSecurityPolicyChildSrc() {
-  return "child-src 'none';";
-}
-
-std::string URLDataSource::GetContentSecurityPolicyStyleSrc() {
+std::string URLDataSource::GetCrossOriginOpenerPolicy() {
   return std::string();
 }
 
-std::string URLDataSource::GetContentSecurityPolicyImgSrc() {
+std::string URLDataSource::GetCrossOriginEmbedderPolicy() {
   return std::string();
 }
 
-std::string URLDataSource::GetContentSecurityPolicyWorkerSrc() {
+std::string URLDataSource::GetCrossOriginResourcePolicy() {
   return std::string();
 }
 
@@ -113,9 +136,10 @@ bool URLDataSource::ShouldDenyXFrameOptions() {
 }
 
 bool URLDataSource::ShouldServiceRequest(const GURL& url,
-                                         ResourceContext* resource_context,
+                                         BrowserContext* browser_context,
                                          int render_process_id) {
-  return url.SchemeIs(kChromeDevToolsScheme) || url.SchemeIs(kChromeUIScheme);
+  return url.SchemeIs(kChromeDevToolsScheme) || url.SchemeIs(kChromeUIScheme) ||
+         url.SchemeIs(kChromeUIUntrustedScheme);
 }
 
 bool URLDataSource::ShouldServeMimeTypeAsContentTypeHeader() {
@@ -127,7 +151,9 @@ std::string URLDataSource::GetAccessControlAllowOriginForOrigin(
   return std::string();
 }
 
-void URLDataSource::DisablePolymer2ForHost(const std::string& host) {}
+const ui::TemplateReplacements* URLDataSource::GetReplacements() {
+  return nullptr;
+}
 
 bool URLDataSource::ShouldReplaceI18nInJS() {
   return false;

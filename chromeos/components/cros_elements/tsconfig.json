@@ -1,0 +1,50 @@
+{
+ "compilerOptions": {
+  "baseUrl": "../../../third_party/material_web_components/components-chromium/node_modules/",
+  "target": "es2017",
+    "module": "es2020",
+    "moduleResolution": "node",
+    "lib": ["es2017", "dom", "dom.iterable"],
+    "declaration": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "composite": true,
+    "importHelpers": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "rules": {
+          "no-unknown-tag-name": "error",
+          "no-unclosed-tag": "error",
+          "no-unknown-property": "error",
+          "no-unintended-mixed-binding": "error",
+          "no-invalid-boolean-binding": "error",
+          "no-expressionless-property-binding": "error",
+          "no-noncallable-event-binding": "error",
+          "no-boolean-in-attribute-binding": "error",
+          "no-complex-attribute-binding": "error",
+          "no-nullable-attribute-binding": "error",
+          "no-incompatible-type-binding": "error",
+          "no-invalid-directive-binding": "error",
+          "no-incompatible-property-type": "error",
+          "no-unknown-property-converter": "error",
+          "no-invalid-attribute-name": "error",
+          "no-invalid-tag-name": "error",
+
+          "no-unknown-attribute": "off",
+          "no-unknown-event": "off",
+          "no-unknown-slot": "off",
+          "no-invalid-css": "off"
+        }
+      }
+    ]
+  }
+}

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL First meta applies. assert_equals: expected (string) "dark" but got (undefined) undefined
-FAIL Second meta applies after first one is removed. assert_equals: expected (string) "light" but got (undefined) undefined
-FAIL Initial color-scheme with both meta elements removed. assert_equals: expected (string) "normal" but got (undefined) undefined
-Harness: the test ran to completion.
-

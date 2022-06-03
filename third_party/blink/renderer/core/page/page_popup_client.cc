@@ -30,9 +30,12 @@
 
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 
+#include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -148,11 +151,28 @@ void PagePopupClient::AddProperty(const char* name,
                                   SharedBuffer* data) {
   data->Append(name, strlen(name));
   addLiteral(": {", data);
-  AddProperty("x", rect.X(), data);
-  AddProperty("y", rect.Y(), data);
-  AddProperty("width", rect.Width(), data);
-  AddProperty("height", rect.Height(), data);
+  AddProperty("x", rect.x(), data);
+  AddProperty("y", rect.y(), data);
+  AddProperty("width", rect.width(), data);
+  AddProperty("height", rect.height(), data);
   addLiteral("},\n", data);
+}
+
+void PagePopupClient::AddLocalizedProperty(const char* name,
+                                           int resource_id,
+                                           SharedBuffer* data) {
+  AddProperty(name, GetLocale().QueryString(resource_id), data);
+}
+
+CSSFontSelector* PagePopupClient::CreateCSSFontSelector(
+    Document& popup_document) {
+  return MakeGarbageCollected<CSSFontSelector>(popup_document);
+}
+
+PagePopupController* PagePopupClient::CreatePagePopupController(
+    Page& page,
+    PagePopup& popup) {
+  return MakeGarbageCollected<PagePopupController>(page, popup, this);
 }
 
 }  // namespace blink

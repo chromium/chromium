@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/guest_view",
   "+components/web_modal",
   "+content/public/browser",
   "+ui/aura",
@@ -7,6 +6,7 @@ include_rules = [
   "+ui/compositor",
   "+ui/display",
   "+ui/gfx",
+  "+ui/ozone/public",
   "+ui/views",
   "+ui/wm",
 ]

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/media_perception_private/conversion_utils.h"
+#include "base/notreached.h"
 
 namespace extensions {
 namespace api {

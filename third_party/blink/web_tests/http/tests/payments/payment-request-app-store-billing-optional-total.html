@@ -1,0 +1,103 @@
+<!doctype html>
+<title>PaymentRequest: Tests for app-store billing when total is optional</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../serviceworker/resources/test-helpers.js"></script>
+<script>
+test(() => {
+  assert_true(internals.runtimeFlags.digitalGoodsEnabled);
+}, "This test suite assumes that the runtime-enabled-flag DigitalGoods is enabled.");
+
+const onlySupportAppStoreBillingMethod = [{supportedMethods: "https://play.google.com/billing"}];
+const supportBothAppStoreBillingMethodAndNormalMethod = [{supportedMethods: "https://play.google.com/billing"},
+      {supportedMethods: "https://maxpay.com/payment-request"}];
+
+["omitted", undefined].forEach(total => {
+  test(() => {
+    let details = {id: "foo"};
+    if (total !== "omitted") Object.assign(details, { total });
+    try {
+      new PaymentRequest(onlySupportAppStoreBillingMethod, details)
+    } catch (err) {
+      assert_unreached(
+        `Unexpected error: ${err.message}.`
+      );
+    }
+  }, `The total field is optional (allowed to be ${JSON.stringify(total)}) when the merchant requests only app-store billing methods.`);
+});
+
+[null, {}].forEach(total => {
+  test(() => {
+    try {
+      new PaymentRequest(onlySupportAppStoreBillingMethod, {id: "foo", total});
+    } catch (err) {
+      let expectedMessage;
+      if (total === null) {
+        expectedMessage = "Failed to construct 'PaymentRequest': Failed to read the 'total' property from 'PaymentDetailsInit': The provided value is not of type 'PaymentItem'.";
+      } else {
+        expectedMessage = "Failed to construct 'PaymentRequest': Failed to read the 'total' property from 'PaymentDetailsInit': Failed to read the 'amount' property from 'PaymentItem': Failed to read the 'amount' property from 'PaymentItem': Required member is undefined.";
+      }
+      assert_equals(err.message, expectedMessage, `Error messages mismatch.`);
+      return;
+    }
+    assert_unreached(`Expect an exception.`);
+  }, `The total field is optional (though not allowed to be ${JSON.stringify(total)}) when the merchant requests only app-store billing methods.`)
+});
+
+[null, {}, "omitted", undefined].forEach(total => {
+  test(() => {
+    let details = {id: "foo"};
+    if (total !== "omitted") Object.assign(details, { total });
+    try {
+      new PaymentRequest(supportBothAppStoreBillingMethodAndNormalMethod, details);
+    } catch (err) {
+      let expectedMessage;
+      if (total === null) {
+        expectedMessage = "Failed to construct 'PaymentRequest': Failed to read the 'total' property from 'PaymentDetailsInit': The provided value is not of type 'PaymentItem'.";
+      } else if (["omitted", undefined].includes(total)) {
+        expectedMessage = "Failed to construct 'PaymentRequest': required member total is undefined.";
+      } else {
+        expectedMessage = "Failed to construct 'PaymentRequest': Failed to read the 'total' property from 'PaymentDetailsInit': Failed to read the 'amount' property from 'PaymentItem': Failed to read the 'amount' property from 'PaymentItem': Required member is undefined.";
+      }
+      assert_equals(err.message, expectedMessage,
+        `Error messages mismatch.`);
+      return;
+    }
+    assert_unreached(`Expect an exception.`);
+  }, `The total field is manadatory (not allowed to be ${JSON.stringify(total)}) when the merchant requests non-app-store billing methods.`)
+});
+
+["omitted", undefined, null, {}].forEach(details => {
+  test(() => {
+    try {
+      if (details === "omitted") {
+        new PaymentRequest(onlySupportAppStoreBillingMethod);
+      } else {
+        new PaymentRequest(onlySupportAppStoreBillingMethod, details);
+      }
+    } catch (err) {
+      assert_unreached(
+          `Unexpected error constructing PaymentReuqest with details being ${JSON.stringify(details)}: ${err.message}`
+        );
+    }
+  }, `The details field is optional (allowed to be ${JSON.stringify(details)}) when the merchant requests only app-store billing methods.`)
+});
+
+["omitted", undefined, null, {}].forEach(details => {
+  test(() => {
+    try {
+      if (details === "omitted") {
+        new PaymentRequest(supportBothAppStoreBillingMethodAndNormalMethod);
+      } else {
+        new PaymentRequest(supportBothAppStoreBillingMethodAndNormalMethod, details);
+      }
+    } catch (err) {
+      // Since the details pointer is always not null in the C++ code, total is checked as a fallback.
+      assert_equals(err.message, "Failed to construct 'PaymentRequest': required member details is undefined.",
+          `Error messages mismatch.`);
+      return;
+    }
+    assert_unreached(`Expect an exception.`);
+  }, `The details field is manadatory (not allowed to be ${JSON.stringify(details)}) when the merchant requests non-app-store billing methods.`)
+});
+</script>

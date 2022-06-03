@@ -15,7 +15,7 @@ namespace printing {
 
 class CupsOptionProvider;
 
-// Handles IPP attribute, usually by adding 1 or more items to |caps|.
+// Handles IPP attribute, usually by adding 1 or more items to `caps`.
 using AttributeHandler =
     base::RepeatingCallback<void(const CupsOptionProvider& printer,
                                  const char* name,

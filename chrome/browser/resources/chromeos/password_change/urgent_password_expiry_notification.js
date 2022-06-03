@@ -36,7 +36,7 @@ Polymer({
   countDownIntervalMs_: null,
 
   /** @override */
-  attached: function() {
+  attached() {
     this.$.dialog.showModal();
     if (loadTimeData.valueExists('initialTitle')) {
       this.title_ = loadTimeData.getString('initialTitle');
@@ -91,7 +91,7 @@ Polymer({
   },
 
   /** @private */
-  countDown_: function() {
+  countDown_() {
     this.ensureCountDownCalledOftenEnough_();
     const msUntilExpiry = this.expirationTime_ - Date.now();
     cr.sendWithPromise('getTitleText', msUntilExpiry).then((title) => {
@@ -100,7 +100,7 @@ Polymer({
   },
 
   /** @private */
-  onButtonTap_: function() {
+  onButtonTap_() {
     chrome.send('continue');
   },
 

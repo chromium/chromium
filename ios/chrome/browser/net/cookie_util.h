@@ -11,9 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "net/cookies/canonical_cookie.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 namespace net {
 class CookieCryptoDelegate;
@@ -85,7 +83,7 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 bool ShouldClearSessionCookies();
 
 // Clears the session cookies for |browser_state|.
-void ClearSessionCookies(ios::ChromeBrowserState* browser_state);
+void ClearSessionCookies(ChromeBrowserState* browser_state);
 
 }  // namespace cookie_util
 

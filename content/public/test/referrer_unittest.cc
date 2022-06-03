@@ -4,10 +4,12 @@
 
 #include "content/public/common/referrer.h"
 
+#include "base/macros.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "content/public/common/content_features.h"
+#include "net/url_request/referrer_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 
 namespace content {
 
@@ -68,59 +70,44 @@ TEST(ReferrerSanitizerTest, OnlyHTTPFamilyReferrer) {
   EXPECT_TRUE(result.url.is_empty());
 }
 
+TEST(ReferrerSanitizerTest, AboutBlankURLRequest) {
+  auto result = Referrer::SanitizeForRequest(
+      GURL("about:blank"),
+      Referrer(GURL("http://foo"), network::mojom::ReferrerPolicy::kAlways));
+  EXPECT_EQ(result.url, GURL("http://foo"));
+}
+
+TEST(ReferrerSanitizerTest, HTTPURLRequest) {
+  auto result = Referrer::SanitizeForRequest(
+      GURL("http://bar"),
+      Referrer(GURL("http://foo"), network::mojom::ReferrerPolicy::kAlways));
+  EXPECT_EQ(result.url, GURL("http://foo"));
+}
+
+TEST(ReferrerSanitizerTest, DataURLRequest) {
+  auto result = Referrer::SanitizeForRequest(
+      GURL("data:text/html,<div>foo</div>"),
+      Referrer(GURL("http://foo"), network::mojom::ReferrerPolicy::kAlways));
+  EXPECT_EQ(result.url, GURL("http://foo"));
+}
+
 TEST(ReferrerTest, BlinkNetRoundTripConversion) {
-  const net::URLRequest::ReferrerPolicy policies[] = {
-      net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      net::URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
-      net::URLRequest::NEVER_CLEAR_REFERRER,
-      net::URLRequest::ORIGIN,
-      net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN,
-      net::URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      net::URLRequest::NO_REFERRER,
+  const net::ReferrerPolicy policies[] = {
+      net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+      net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
+      net::ReferrerPolicy::NEVER_CLEAR,
+      net::ReferrerPolicy::ORIGIN,
+      net::ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+      net::ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      net::ReferrerPolicy::NO_REFERRER,
   };
 
   for (auto policy : policies) {
     EXPECT_EQ(Referrer::ReferrerPolicyForUrlRequest(
-                  Referrer::NetReferrerPolicyToBlinkReferrerPolicy(policy)),
+                  blink::ReferrerUtils::NetToMojoReferrerPolicy(policy)),
               policy);
   }
-}
-
-TEST(DefaultReferrerPolicyTest, Unconfigured) {
-  EXPECT_EQ(
-      Referrer::GetDefaultReferrerPolicy(),
-      net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
-}
-
-TEST(DefaultReferrerPolicyTest, FeatureOnly) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(features::kReducedReferrerGranularity);
-  EXPECT_EQ(
-      Referrer::GetDefaultReferrerPolicy(),
-      net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN);
-}
-
-TEST(DefaultReferrerPolicyTest, SetAndGetForceLegacy) {
-  EXPECT_FALSE(content::Referrer::ShouldForceLegacyDefaultReferrerPolicy());
-  content::Referrer::SetForceLegacyDefaultReferrerPolicy(true);
-  EXPECT_TRUE(content::Referrer::ShouldForceLegacyDefaultReferrerPolicy());
-}
-
-TEST(DefaultReferrerPolicyTest, ForceLegacyOnly) {
-  content::Referrer::SetForceLegacyDefaultReferrerPolicy(true);
-  EXPECT_EQ(
-      Referrer::GetDefaultReferrerPolicy(),
-      net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
-}
-
-TEST(DefaultReferrerPolicyTest, FeatureAndForceLegacy) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(features::kReducedReferrerGranularity);
-  content::Referrer::SetForceLegacyDefaultReferrerPolicy(true);
-  EXPECT_EQ(
-      Referrer::GetDefaultReferrerPolicy(),
-      net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
 }
 
 }  // namespace content

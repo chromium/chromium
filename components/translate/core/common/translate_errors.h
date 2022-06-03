@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_ERRORS_H_
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_ERRORS_H_
 
-#include "base/macros.h"
-
 namespace translate {
 
 // This file consolidates all the error types for translation of a page.
@@ -35,10 +33,11 @@ class TranslateErrors {
     TYPE_LAST = TRANSLATE_ERROR_MAX
   };
 
+  TranslateErrors(const TranslateErrors&) = delete;
+  TranslateErrors& operator=(const TranslateErrors&) = delete;
+
  private:
   TranslateErrors() {}
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateErrors);
 };
 
 }  // namespace translate

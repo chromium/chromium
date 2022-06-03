@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
@@ -25,17 +25,13 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
 }
 
-void StubAuthenticator::CompleteLogin(content::BrowserContext* context,
-                                      const UserContext& user_context) {
-  authentication_context_ = context;
+void StubAuthenticator::CompleteLogin(const UserContext& user_context) {
   if (expected_user_context_ != user_context)
     NOTREACHED();
   OnAuthSuccess();
 }
 
-void StubAuthenticator::AuthenticateToLogin(content::BrowserContext* context,
-                                            const UserContext& user_context) {
-  authentication_context_ = context;
+void StubAuthenticator::AuthenticateToLogin(const UserContext& user_context) {
   // Don't compare the entire |expected_user_context_| to |user_context| because
   // during non-online re-auth |user_context| does not have a gaia id.
   if (expected_user_context_.GetAccountId() == user_context.GetAccountId() &&
@@ -80,17 +76,6 @@ void StubAuthenticator::AuthenticateToLogin(content::BrowserContext* context,
                                 AuthFailure::FromNetworkAuthFailure(error)));
 }
 
-void StubAuthenticator::AuthenticateToUnlock(const UserContext& user_context) {
-  AuthenticateToLogin(NULL /* not used */, user_context);
-}
-
-void StubAuthenticator::LoginAsSupervisedUser(const UserContext& user_context) {
-  UserContext new_user_context = user_context;
-  new_user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail() +
-                                 kUserIdHashSuffix);
-  consumer_->OnAuthSuccess(new_user_context);
-}
-
 void StubAuthenticator::LoginOffTheRecord() {
   consumer_->OnOffTheRecordAuthSuccess();
 }
@@ -106,8 +91,7 @@ void StubAuthenticator::LoginAsPublicSession(const UserContext& user_context) {
 }
 
 void StubAuthenticator::LoginAsKioskAccount(
-    const AccountId& /* app_account_id */,
-    bool use_guest_mount) {
+    const AccountId& /* app_account_id */) {
   UserContext user_context(user_manager::UserType::USER_TYPE_KIOSK_APP,
                            expected_user_context_.GetAccountId());
   user_context.SetIsUsingOAuth(false);
@@ -193,7 +177,7 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
 }
 
 void StubAuthenticator::OnPasswordChangeDetected() {
-  consumer_->OnPasswordChangeDetected();
+  consumer_->OnPasswordChangeDetected(expected_user_context_);
 }
 
 void StubAuthenticator::OnOldEncryptionDetected() {

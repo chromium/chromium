@@ -17,6 +17,8 @@ namespace notifications {
 class PngIconConverterImpl : public IconConverter {
  public:
   PngIconConverterImpl();
+  PngIconConverterImpl(const PngIconConverterImpl&) = delete;
+  PngIconConverterImpl& operator=(const PngIconConverterImpl&) = delete;
   ~PngIconConverterImpl() override;
 
  private:
@@ -25,8 +27,6 @@ class PngIconConverterImpl : public IconConverter {
                            EncodeCallback callback) override;
   void ConvertStringToIcon(std::vector<std::string> encoded_data,
                            DecodeCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PngIconConverterImpl);
 };
 
 }  // namespace notifications

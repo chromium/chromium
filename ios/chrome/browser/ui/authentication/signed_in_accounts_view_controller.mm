@@ -4,31 +4,29 @@
 
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
 
+#import <MaterialComponents/MaterialDialogs.h>
+#import <MaterialComponents/MaterialTypography.h>
+
 #import "base/mac/foundation_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#include "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
-#import "ios/third_party/material_components_ios/src/components/Dialogs/src/MaterialDialogs.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,27 +60,33 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }  // namespace
 
 @interface SignedInAccountsCollectionViewController
-    : CollectionViewController<ChromeIdentityServiceObserver> {
-  ios::ChromeBrowserState* _browserState;  // Weak.
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
-  ResizedAvatarCache* _avatarCache;
+    : CollectionViewController <ChromeAccountManagerServiceObserver> {
+  ChromeBrowserState* _browserState;  // Weak.
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, CollectionViewItem*>* _identityMap;
 }
+
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
 @end
 
 @implementation SignedInAccountsCollectionViewController
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
   self =
       [super initWithLayout:layout style:CollectionViewControllerStyleDefault];
   if (self) {
     _browserState = browserState;
-    _avatarCache = [[ResizedAvatarCache alloc] init];
-    _identityServiceObserver.reset(
-        new ChromeIdentityServiceObserverBridge(self));
+    _accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
+    _accountManagerServiceObserver.reset(
+        new ChromeAccountManagerServiceObserverBridge(self,
+                                                      _accountManagerService));
     // TODO(crbug.com/764578): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
@@ -116,9 +120,14 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ChromeIdentity* identity = ios::GetChromeBrowserProvider()
-                                   ->GetChromeIdentityService()
-                                   ->GetIdentityWithGaiaID(account.gaia);
+    ChromeIdentity* identity =
+        self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
+
+    // If the account with a refresh token is invalidated during this operation
+    // then |identity| will be nil. Do not process it in this case.
+    if (!identity) {
+      continue;
+    }
     CollectionViewItem* item = [self accountItem:identity];
     [model addItem:item toSectionWithIdentifier:SectionIdentifierAccounts];
     [mutableIdentityMap setObject:item forKey:identity.gaiaID];
@@ -137,7 +146,8 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 - (void)updateAccountItem:(CollectionViewAccountItem*)item
              withIdentity:(ChromeIdentity*)identity {
-  item.image = [_avatarCache resizedAvatarForIdentity:identity];
+  item.image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::DefaultLarge);
   item.text = [identity userFullName];
   item.detailText = [identity userEmail];
   item.chromeIdentity = identity;
@@ -160,9 +170,9 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   return YES;
 }
 
-#pragma mark ChromeIdentityServiceObserver
+#pragma mark ChromeAccountManagerServiceObserver
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   CollectionViewAccountItem* item =
       base::mac::ObjCCastStrict<CollectionViewAccountItem>(
           [_identityMap objectForKey:identity.gaiaID]);
@@ -171,15 +181,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
 }
 
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
-}
-
 @end
 
 @interface SignedInAccountsViewController () <
     IdentityManagerObserverBridgeDelegate> {
-  ios::ChromeBrowserState* _browserState;  // Weak.
+  ChromeBrowserState* _browserState;  // Weak.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   MDCDialogTransitionController* _transitionController;
@@ -196,38 +202,20 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 @implementation SignedInAccountsViewController
 @synthesize dispatcher = _dispatcher;
 
-+ (BOOL)shouldBePresentedForBrowserState:
-    (ios::ChromeBrowserState*)browserState {
++ (BOOL)shouldBePresentedForBrowserState:(ChromeBrowserState*)browserState {
   if (!browserState || browserState->IsOffTheRecord()) {
     return NO;
   }
-
-  PreviousSessionInfo* prevSessionInfo = [PreviousSessionInfo sharedInstance];
-  if (prevSessionInfo.isFirstSessionAfterUpgrade &&
-      [prevSessionInfo.previousSessionVersion hasPrefix:@"77."]) {
-    // In M77, showing the signed-in account view was disabled due to the fact
-    // that the preferences used to compute
-    // authService->HaveAccountsChangedWhileInBackground() were not correctly
-    // updated (see crbug.com/1006717). To avoid user confusion, it is important
-    // to avoid showing the signed-in accounts dialog on the first session after
-    // an update from M77 in order to allow the authentication service to update
-    // its internal preferences.
-    //
-    // TODO(crbug.com/1007990) Remove this code after M81 (revert
-    // https://chromium-review.googlesource.com/c/chromium/src/+/1824259 ).
-    return NO;
-  }
-
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   return !gSignedInAccountsViewControllerIsShown &&
-         authService->IsAuthenticated() &&
-         authService->HaveAccountsChangedWhileInBackground();
+         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+         !authService->IsAccountListApprovedByUser();
 }
 
 #pragma mark Initialization
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                           dispatcher:
                               (id<ApplicationSettingsCommands>)dispatcher {
   self = [super initWithNibName:nil bundle:nil];
@@ -245,6 +233,9 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }
 
 - (void)dismissWithCompletion:(ProceduralBlock)completion {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  authService->ApproveAccountList();
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:completion];
 }

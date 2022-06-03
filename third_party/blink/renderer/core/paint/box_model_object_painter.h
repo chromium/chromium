@@ -33,9 +33,11 @@ class BoxModelObjectPainter : public BoxPainterBase {
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,
-      BackgroundBleedAvoidance) const override;
+      BackgroundBleedAvoidance,
+      bool is_painting_background_in_contents_space) const override;
+  bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
-  void PaintTextClipMask(GraphicsContext&,
+  void PaintTextClipMask(const PaintInfo&,
                          const IntRect& mask_rect,
                          const PhysicalOffset& paint_offset,
                          bool object_has_multiple_boxes) override;

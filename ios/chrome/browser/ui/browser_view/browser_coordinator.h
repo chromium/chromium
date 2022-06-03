@@ -8,35 +8,13 @@
 #include "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
-@protocol BrowsingDataCommands;
 @class BrowserViewController;
-@class TabModel;
-
-class AppUrlLoadingService;
 
 // Coordinator for BrowserViewController.
 @interface BrowserCoordinator : ChromeCoordinator
 
-// Use only -initWithBaseViewController:browser:
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
-
 // The main view controller.
 @property(nonatomic, strong, readonly) BrowserViewController* viewController;
-
-// Command handler for ApplicationCommands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandHandler;
-// Command handler for BrowsingDataCommands.
-@property(nonatomic, weak) id<BrowsingDataCommands> browsingDataCommandHandler;
-
-// The application level component for url loading. Should be used only by
-// browser state level UrlLoadingService instances.
-@property(nonatomic, assign) AppUrlLoadingService* appURLLoadingService;
 
 // Activates/deactivates the object. This will enable/disable the ability for
 // this object to browse, and to have live UIWebViews associated with it. While

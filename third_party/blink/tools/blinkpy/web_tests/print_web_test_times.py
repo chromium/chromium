@@ -35,12 +35,23 @@ from blinkpy.web_tests.port.base import Port
 
 def main(host, argv):
     parser = optparse.OptionParser(usage='%prog [times_ms.json]')
-    parser.add_option('-f', '--forward', action='store', type='int',
-                      help='group times by first N directories of test')
-    parser.add_option('-b', '--backward', action='store', type='int',
-                      help='group times by last N directories of test')
-    parser.add_option('--fastest', action='store', type='float',
-                      help='print a list of tests that will take N % of the time')
+    parser.add_option(
+        '-f',
+        '--forward',
+        action='store',
+        type='int',
+        help='group times by first N directories of test')
+    parser.add_option(
+        '-b',
+        '--backward',
+        action='store',
+        type='int',
+        help='group times by last N directories of test')
+    parser.add_option(
+        '--fastest',
+        action='store',
+        type='float',
+        help='print a list of tests that will take N % of the time')
 
     epilog = """
        You can print out aggregate times per directory using the -f and -b
@@ -59,7 +70,8 @@ def main(host, argv):
     if args and args[0]:
         times_ms_path = args[0]
     else:
-        times_ms_path = host.filesystem.join(port.artifacts_directory(), 'times_ms.json')
+        times_ms_path = host.filesystem.join(port.artifacts_directory(),
+                                             'times_ms.json')
 
     times_trie = json.loads(host.filesystem.read_text_file(times_ms_path))
 

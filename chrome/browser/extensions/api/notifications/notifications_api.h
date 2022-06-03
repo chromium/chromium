@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/common/extensions/api/notifications.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+
+class Profile;
 
 namespace message_center {
 class Notification;
@@ -21,7 +22,7 @@ namespace extensions {
 
 class ExtensionNotificationDisplayHelper;
 
-class NotificationsApiFunction : public ChromeAsyncExtensionFunction {
+class NotificationsApiFunction : public ExtensionFunction {
  public:
   // Whether the current extension and channel allow the API. Public for
   // testing.
@@ -32,14 +33,18 @@ class NotificationsApiFunction : public ChromeAsyncExtensionFunction {
   ~NotificationsApiFunction() override;
 
   bool CreateNotification(const std::string& id,
-                          api::notifications::NotificationOptions* options);
+                          api::notifications::NotificationOptions* options,
+                          std::string* error);
   bool UpdateNotification(const std::string& id,
                           api::notifications::NotificationOptions* options,
-                          message_center::Notification* notification);
+                          message_center::Notification* notification,
+                          std::string* error);
 
   bool IsNotificationsApiEnabled() const;
 
   bool AreExtensionNotificationsAllowed() const;
+
+  Profile* GetProfile() const;
 
   // Returns the display helper that should be used for interacting with the
   // common notification system.
@@ -49,11 +54,11 @@ class NotificationsApiFunction : public ChromeAsyncExtensionFunction {
   // notifications for a notifier have been disabled.
   virtual bool CanRunWhileDisabled() const;
 
-  // Called inside of RunAsync.
-  virtual bool RunNotificationsApi() = 0;
+  // Called inside of Run().
+  virtual ResponseAction RunNotificationsApi() = 0;
 
-  // UITHreadExtensionFunction:
-  bool RunAsync() override;
+  // ExtensionFunction:
+  ResponseAction Run() override;
 
   message_center::NotificationType MapApiTemplateTypeToType(
       api::notifications::TemplateType type);
@@ -64,7 +69,7 @@ class NotificationsCreateFunction : public NotificationsApiFunction {
   NotificationsCreateFunction();
 
   // NotificationsApiFunction:
-  bool RunNotificationsApi() override;
+  ResponseAction RunNotificationsApi() override;
 
  protected:
   ~NotificationsCreateFunction() override;
@@ -80,7 +85,7 @@ class NotificationsUpdateFunction : public NotificationsApiFunction {
   NotificationsUpdateFunction();
 
   // NotificationsApiFunction:
-  bool RunNotificationsApi() override;
+  ResponseAction RunNotificationsApi() override;
 
  protected:
   ~NotificationsUpdateFunction() override;
@@ -96,7 +101,7 @@ class NotificationsClearFunction : public NotificationsApiFunction {
   NotificationsClearFunction();
 
   // NotificationsApiFunction:
-  bool RunNotificationsApi() override;
+  ResponseAction RunNotificationsApi() override;
 
  protected:
   ~NotificationsClearFunction() override;
@@ -112,7 +117,7 @@ class NotificationsGetAllFunction : public NotificationsApiFunction {
   NotificationsGetAllFunction();
 
   // NotificationsApiFunction:
-  bool RunNotificationsApi() override;
+  ResponseAction RunNotificationsApi() override;
 
  protected:
   ~NotificationsGetAllFunction() override;
@@ -128,7 +133,7 @@ class NotificationsGetPermissionLevelFunction
 
   // NotificationsApiFunction:
   bool CanRunWhileDisabled() const override;
-  bool RunNotificationsApi() override;
+  ResponseAction RunNotificationsApi() override;
 
  protected:
   ~NotificationsGetPermissionLevelFunction() override;

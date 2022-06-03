@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -80,10 +79,16 @@ void MediaStreamComponent::AudioSourceProviderImpl::Wrap(
 }
 
 void MediaStreamComponent::GetSettings(
-    WebMediaStreamTrack::Settings& settings) {
+    MediaStreamTrackPlatform::Settings& settings) {
   DCHECK(platform_track_);
   source_->GetSettings(settings);
   platform_track_->GetSettings(settings);
+}
+
+MediaStreamTrackPlatform::CaptureHandle
+MediaStreamComponent::GetCaptureHandle() {
+  DCHECK(platform_track_);
+  return platform_track_->GetCaptureHandle();
 }
 
 void MediaStreamComponent::SetContentHint(
@@ -105,14 +110,14 @@ void MediaStreamComponent::SetContentHint(
     return;
   content_hint_ = hint;
 
-  WebPlatformMediaStreamTrack* native_track = GetPlatformTrack();
+  MediaStreamTrackPlatform* native_track = GetPlatformTrack();
   if (native_track)
     native_track->SetContentHint(ContentHint());
 }
 
 void MediaStreamComponent::AudioSourceProviderImpl::ProvideInput(
     AudioBus* bus,
-    uint32_t frames_to_process) {
+    int frames_to_process) {
   DCHECK(bus);
   if (!bus)
     return;
@@ -125,14 +130,22 @@ void MediaStreamComponent::AudioSourceProviderImpl::ProvideInput(
 
   // Wrap the AudioBus channel data using WebVector.
   uint32_t n = bus->NumberOfChannels();
-  WebVector<float*> web_audio_data(n);
-  for (uint32_t i = 0; i < n; ++i)
-    web_audio_data[i] = bus->Channel(i)->MutableData();
+  if (web_audio_data_.size() != n)
+    web_audio_data_ = WebVector<float*>(static_cast<size_t>(n));
 
-  web_audio_source_provider_->ProvideInput(web_audio_data, frames_to_process);
+  for (uint32_t i = 0; i < n; ++i)
+    web_audio_data_[i] = bus->Channel(i)->MutableData();
+
+  web_audio_source_provider_->ProvideInput(web_audio_data_, frames_to_process);
 }
 
-void MediaStreamComponent::Trace(blink::Visitor* visitor) {
+String MediaStreamComponent::ToString() const {
+  return String::Format(
+      "[id: %s, unique_id: %d, enabled: %s, muted=%s]", Id().Utf8().c_str(),
+      UniqueId(), Enabled() ? "true" : "false", Muted() ? "true" : "false");
+}
+
+void MediaStreamComponent::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
 }
 

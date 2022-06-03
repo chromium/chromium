@@ -24,11 +24,12 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
  public:
   ShelfBubble(views::View* anchor,
               ShelfAlignment alignment,
-              SkColor background_co0lor);
-  ~ShelfBubble() override;
+              SkColor background_color);
 
-  // views::BubbleDialogDelegateView
-  ax::mojom::Role GetAccessibleWindowRole() override;
+  ShelfBubble(const ShelfBubble&) = delete;
+  ShelfBubble& operator=(const ShelfBubble&) = delete;
+
+  ~ShelfBubble() override;
 
   // Returns true if we should close when we get a press down event within our
   // bounds.
@@ -45,17 +46,12 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
   void CreateBubble();
 
  private:
-  // BubbleDialogDelegateView overrides:
-  int GetDialogButtons() const override;
-
   // ShelfBackgroundAnimatorObserver:
   void UpdateShelfBackground(SkColor color) override;
 
   int border_radius_ = 0;
 
   ShelfBackgroundAnimator background_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfBubble);
 };
 
 }  // namespace ash

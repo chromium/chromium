@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("system_java") {
-  java_files = [
+  sources = [
     "system/src/org/chromium/mojo/system/Core.java",
     "system/src/org/chromium/mojo/system/DataPipe.java",
     "system/src/org/chromium/mojo/system/Flags.java",
@@ -16,19 +16,17 @@ android_library("system_java") {
     "system/src/org/chromium/mojo/system/MojoResult.java",
     "system/src/org/chromium/mojo/system/Pair.java",
     "system/src/org/chromium/mojo/system/ResultAnd.java",
+    "system/src/org/chromium/mojo/system/RunLoop.java",
     "system/src/org/chromium/mojo/system/SharedBufferHandle.java",
     "system/src/org/chromium/mojo/system/UntypedHandle.java",
-    "system/src/org/chromium/mojo/system/RunLoop.java",
     "system/src/org/chromium/mojo/system/Watcher.java",
   ]
 
-  deps = [
-    "//base:base_java",
-  ]
+  deps = [ "//base:base_java" ]
 }
 
 android_library("bindings_java") {
-  java_files = [
+  sources = [
     "bindings/src/org/chromium/mojo/bindings/AssociatedInterfaceNotSupported.java",
     "bindings/src/org/chromium/mojo/bindings/AssociatedInterfaceRequestNotSupported.java",
     "bindings/src/org/chromium/mojo/bindings/AutoCloseableRouter.java",
@@ -44,15 +42,15 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/ExceptionHandler.java",
     "bindings/src/org/chromium/mojo/bindings/ExecutorFactory.java",
     "bindings/src/org/chromium/mojo/bindings/HandleOwner.java",
-    "bindings/src/org/chromium/mojo/bindings/InterfaceControlMessagesHelper.java",
     "bindings/src/org/chromium/mojo/bindings/Interface.java",
+    "bindings/src/org/chromium/mojo/bindings/InterfaceControlMessagesHelper.java",
     "bindings/src/org/chromium/mojo/bindings/InterfaceRequest.java",
-    "bindings/src/org/chromium/mojo/bindings/MessageHeader.java",
     "bindings/src/org/chromium/mojo/bindings/Message.java",
+    "bindings/src/org/chromium/mojo/bindings/MessageHeader.java",
     "bindings/src/org/chromium/mojo/bindings/MessageReceiver.java",
     "bindings/src/org/chromium/mojo/bindings/MessageReceiverWithResponder.java",
-    "bindings/src/org/chromium/mojo/bindings/RouterImpl.java",
     "bindings/src/org/chromium/mojo/bindings/Router.java",
+    "bindings/src/org/chromium/mojo/bindings/RouterImpl.java",
     "bindings/src/org/chromium/mojo/bindings/SerializationException.java",
     "bindings/src/org/chromium/mojo/bindings/ServiceMessage.java",
     "bindings/src/org/chromium/mojo/bindings/SideEffectFreeCloseable.java",
@@ -63,13 +61,14 @@ android_library("bindings_java") {
   deps = [
     ":system_java",
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   srcjar_deps = [ "../interfaces/bindings:bindings_java_sources" ]
 }
 
 android_library("base_java") {
-  java_files = [ "base/src/org/chromium/mojo_base/BigBufferUtil.java" ]
+  sources = [ "base/src/org/chromium/mojo_base/BigBufferUtil.java" ]
 
   deps = [
     ":system_java",

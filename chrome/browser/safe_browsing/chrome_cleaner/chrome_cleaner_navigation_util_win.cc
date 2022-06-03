@@ -25,8 +25,8 @@ GURL GetCleanupPageURL() {
 Browser* FindBrowser() {
   BrowserList* browser_list = BrowserList::GetInstance();
   for (BrowserList::const_reverse_iterator browser_iterator =
-           browser_list->begin_last_active();
-       browser_iterator != browser_list->end_last_active();
+           browser_list->begin_browsers_ordered_by_activation();
+       browser_iterator != browser_list->end_browsers_ordered_by_activation();
        ++browser_iterator) {
     Browser* browser = *browser_iterator;
     if (browser->is_type_normal() &&

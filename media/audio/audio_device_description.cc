@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/localized_strings.h"
 

@@ -2,39 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var mobileNav = false;
+let showDetails = false;
 
-var showDetails = false;
-
-/**
- * For small screen mobile the navigation buttons are moved
- * below the advanced text.
- */
-function onResize() {
-  var mediaQuery = '(min-width: 240px) and (max-width: 420px) and ' +
-      '(max-height: 736px) and (min-height: 401px) and ' +
-      '(orientation: portrait), (max-width: 736px) and ' +
-      '(max-height: 420px) and (min-height: 240px) and ' +
-      '(min-width: 421px) and (orientation: landscape)';
-
-  // Check for change in nav status.
-  if (mobileNav != window.matchMedia(mediaQuery).matches) {
-    mobileNav = !mobileNav;
-    updateDetails();
-  }
-}
+let localWebApprovalsEnabled = false;
+let interstitialRefreshEnabled = false;
 
 function updateDetails() {
-  $('information-container').hidden = mobileNav && showDetails;
   $('details').hidden = !showDetails;
 }
-
-function setupMobileNav() {
-  window.addEventListener('resize', onResize);
-  onResize();
-}
-
-document.addEventListener('DOMContentLoaded', setupMobileNav);
 
 function sendCommand(cmd) {
   if (window.supervisedUserErrorPageController) {
@@ -42,8 +17,11 @@ function sendCommand(cmd) {
       case 'back':
         supervisedUserErrorPageController.goBack();
         break;
-      case 'request':
-        supervisedUserErrorPageController.requestPermission();
+      case 'requestUrlAccessRemote':
+        supervisedUserErrorPageController.requestUrlAccessRemote();
+        break;
+      case 'requestUrlAccessLocal':
+        supervisedUserErrorPageController.requestUrlAccessLocal();
         break;
       case 'feedback':
         supervisedUserErrorPageController.feedback();
@@ -62,18 +40,22 @@ function makeImageSet(url1x, url2x) {
 }
 
 function initialize() {
-  var allowAccessRequests = loadTimeData.getBoolean('allowAccessRequests');
-  if (allowAccessRequests) {
-    $('request-access-button').onclick = function(event) {
-      $('request-access-button').hidden = true;
-      sendCommand('request');
-    };
-  } else {
-    $('request-access-button').hidden = true;
+  const allowAccessRequests = loadTimeData.getBoolean('allowAccessRequests');
+  const avatarURL1x = loadTimeData.getString('avatarURL1x');
+  const avatarURL2x = loadTimeData.getString('avatarURL2x');
+  const custodianName = loadTimeData.getString('custodianName');
+  localWebApprovalsEnabled =
+      loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
+  interstitialRefreshEnabled =
+      loadTimeData.getBoolean('isWebFilterInterstitialRefreshEnabled');
+  if (localWebApprovalsEnabled && !interstitialRefreshEnabled) {
+    console.error(
+        'Local web approvals should not be enabled without web filter' +
+        'interstitial refresh being enabled.');
+    return;
   }
-  var avatarURL1x = loadTimeData.getString('avatarURL1x');
-  var avatarURL2x = loadTimeData.getString('avatarURL2x');
-  var custodianName = loadTimeData.getString('custodianName');
+  document.body.classList.toggle(
+      'interstitial-refresh-enabled', interstitialRefreshEnabled);
   if (custodianName && allowAccessRequests) {
     $('custodians-information').hidden = false;
     if (avatarURL1x) {
@@ -82,9 +64,9 @@ function initialize() {
     }
     $('custodian-name').textContent = custodianName;
     $('custodian-email').textContent = loadTimeData.getString('custodianEmail');
-    var secondAvatarURL1x = loadTimeData.getString('secondAvatarURL1x');
-    var secondAvatarURL2x = loadTimeData.getString('secondAvatarURL2x');
-    var secondCustodianName = loadTimeData.getString('secondCustodianName');
+    const secondAvatarURL1x = loadTimeData.getString('secondAvatarURL1x');
+    const secondAvatarURL2x = loadTimeData.getString('secondAvatarURL2x');
+    const secondCustodianName = loadTimeData.getString('secondCustodianName');
     if (secondCustodianName) {
       $('second-custodian-information').hidden = false;
       $('second-custodian-avatar-img').hidden = false;
@@ -97,10 +79,34 @@ function initialize() {
           'secondCustodianEmail');
     }
   }
-  $('back-button').onclick = function(event) {
-    sendCommand('back');
-  };
-  if (loadTimeData.getBoolean('showFeedbackLink')) {
+
+  const alreadyRequestedAccessRemote =
+      loadTimeData.getBoolean('alreadySentRemoteRequest');
+  if (alreadyRequestedAccessRemote) {
+    const isMainFrame = loadTimeData.getBoolean('isMainFrame');
+    requestCreated(true, isMainFrame);
+    return;
+  }
+
+  if (allowAccessRequests) {
+    $('remote-approvals-button').hidden = false;
+    if (interstitialRefreshEnabled && localWebApprovalsEnabled) {
+      $('local-approvals-button').hidden = false;
+      $('remote-approvals-button').classList.add('secondary-button');
+    }
+    $('remote-approvals-button').onclick = function(event) {
+      sendCommand('requestUrlAccessRemote');
+    };
+    $('local-approvals-button').onclick = function(event) {
+      sendCommand('requestUrlAccessLocal');
+    };
+  } else {
+    $('remote-approvals-button').hidden = true;
+  }
+
+  if (loadTimeData.getBoolean('showFeedbackLink') &&
+      !interstitialRefreshEnabled) {
+    $('show-details-link').hidden = false;
     $('show-details-link').onclick = function(event) {
       showDetails = true;
       $('show-details-link').hidden = true;
@@ -130,21 +136,46 @@ function initialize() {
  */
 function setRequestStatus(isSuccessful, isMainFrame) {
   console.log('setRequestStatus(' + isSuccessful +')');
+  requestCreated(isSuccessful, isMainFrame);
+  if (isSuccessful) {
+    $('back-button').focus();
+  }
+}
+
+/**
+ * Updates the interstitial to show that the request failed or was sent.
+ * @param {boolean} isSuccessful Whether the request was successful or not.
+ * @param {boolean} isMainFrame Whether the interstitial is being shown in main
+ *     frame.
+ */
+function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-header').hidden = true;
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
+  if (interstitialRefreshEnabled) {
+    $('custodians-information').hidden = true;
+    if (localWebApprovalsEnabled) {
+      $('local-approvals-button').hidden = false;
+    }
+  }
   showDetails = false;
   updateDetails();
-
+  $('back-button').onclick = function(event) {
+    sendCommand('back');
+  };
   if (isSuccessful) {
     $('request-failed-message').hidden = true;
     $('request-sent-message').hidden = false;
     $('back-button').hidden = !isMainFrame;
-    $('request-access-button').hidden = true;
+    $('remote-approvals-button').hidden = true;
     $('show-details-link').hidden = true;
+    if (interstitialRefreshEnabled) {
+      $('request-sent-description').hidden = false;
+      $('local-approvals-button').classList.add('secondary-button');
+    }
   } else {
     $('request-failed-message').hidden = false;
-    $('request-access-button').hidden = false;
+    $('remote-approvals-button').hidden = false;
     $('show-details-link').hidden = false;
   }
 }

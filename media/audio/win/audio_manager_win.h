@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/audio/audio_manager_base.h"
 
 namespace media {
@@ -22,6 +21,10 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
  public:
   AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
+
+  AudioManagerWin(const AudioManagerWin&) = delete;
+  AudioManagerWin& operator=(const AudioManagerWin&) = delete;
+
   ~AudioManagerWin() override;
 
   // Implementation of AudioManager.
@@ -74,8 +77,6 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
 
   // Listen for output device changes.
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerWin);
 };
 
 }  // namespace media

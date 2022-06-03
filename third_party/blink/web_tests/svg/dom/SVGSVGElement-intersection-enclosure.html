@@ -70,10 +70,10 @@
 
       debug('');
       debug('Zooming should not affect the results.');
-      if (window.eventSender) {
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
+      if (window.testRunner) {
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
       }
       check_enclosure_and_intersection(null, 100, 100, 64, 100);
       check_enclosure_and_intersection('container', 100, 100, 64, 100);

@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/login/auth/cryptohome_authenticator.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {
@@ -15,6 +14,10 @@ namespace chromeos {
 class PasswordChangeHandler : public content::WebUIMessageHandler {
  public:
   explicit PasswordChangeHandler(const std::string& password_change_url);
+
+  PasswordChangeHandler(const PasswordChangeHandler&) = delete;
+  PasswordChangeHandler& operator=(const PasswordChangeHandler&) = delete;
+
   ~PasswordChangeHandler() override;
 
   // content::WebUIMessageHandler:
@@ -25,10 +28,8 @@ class PasswordChangeHandler : public content::WebUIMessageHandler {
 
  private:
   const std::string password_change_url_;
-  scoped_refptr<CryptohomeAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordChangeHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordChangeHandler);
 };
 
 }  // namespace chromeos

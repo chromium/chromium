@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL :host::part works assert_equals: :host::part() works expected "rgb(0, 255, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

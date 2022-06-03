@@ -11,19 +11,19 @@ test(function(t) {
     document.getElementById("button1").focus();
     var canvas = document.getElementById("canvas").getContext("2d");
 
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(undefined);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(undefined, undefined);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(null);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(null, null);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded();
     });
 
@@ -32,10 +32,10 @@ test(function(t) {
     canvas.fillStyle = "#ccf";
     canvas.fill(path);
     // re-test null case after having defined a path (regression test for crbug.com/353248)
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(null);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       canvas.drawFocusIfNeeded(null, null);
     });
     canvas.drawFocusIfNeeded(path, document.getElementById("button1"));

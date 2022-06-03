@@ -6,20 +6,42 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.TabUma.TabCreationState;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Tab used for various testing purposes.
  */
 public class MockTab extends TabImpl {
+    private GURL mGurlOverride;
+    // TODO(crbug.com/1223963) set mIsInitialized to true when initialize is called
+    private boolean mIsInitialized;
+    private boolean mIsDestroyed;
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
     public static Tab createAndInitialize(int id, boolean incognito) {
         TabImpl tab = new MockTab(id, incognito);
-        tab.initialize(null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, false, null);
+        return tab;
+    }
+
+    /**
+     * Create a new Tab for testing and initializes Tab UserData objects.
+     */
+    public static Tab createAndInitialize(
+            int id, boolean incognito, @TabLaunchType int tabLaunchType) {
+        TabImpl tab = new MockTab(id, incognito, tabLaunchType);
+        tab.initialize(null, null, null, null, null, false, null);
+        return tab;
+    }
+
+    public static TabImpl initializeWithCriticalPersistedTabData(
+            TabImpl tab, CriticalPersistedTabData criticalPersistedTabData) {
+        tab.getUserDataHost().setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
+        tab.initialize(null, null, null, null, null, false, null);
         return tab;
     }
 
@@ -28,18 +50,64 @@ public class MockTab extends TabImpl {
      * these two fields only.
      */
     public MockTab(int id, boolean incognito) {
-        super(id, null, incognito, null);
+        super(id, incognito, null, null);
     }
 
     public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, null, incognito, type);
+        super(id, incognito, type, null);
     }
 
     @Override
     public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState, boolean unfreeze) {
-        TabHelpers.initTabHelpers(this, parent, creationState);
+            TabState tabState) {
+        if (loadUrlParams != null) {
+            mGurlOverride = new GURL(loadUrlParams.getUrl());
+            CriticalPersistedTabData.from(this).setUrl(mGurlOverride);
+        }
+        TabHelpers.initTabHelpers(this, parent);
+    }
+
+    @Override
+    public GURL getUrl() {
+        if (mGurlOverride == null) {
+            return super.getUrl();
+        }
+        return mGurlOverride;
+    }
+
+    public void broadcastOnLoadStopped(boolean toDifferentDocument) {
+        for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
+    }
+
+    public void setGurlOverrideForTesting(GURL url) {
+        mGurlOverride = url;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return mIsInitialized;
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
+    public void setIsInitialized(boolean isInitialized) {
+        mIsInitialized = isInitialized;
+    }
+
+    @Override
+    public void destroy() {
+        mIsDestroyed = true;
+        for (TabObserver observer : mObservers) observer.onDestroyed(this);
+        mObservers.clear();
+    }
+
+    @Override
+    public boolean isCustomTab() {
+        return false;
     }
 }

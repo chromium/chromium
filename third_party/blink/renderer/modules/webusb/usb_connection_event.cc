@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webusb/usb_connection_event.h"
 
-#include "third_party/blink/renderer/modules/webusb/usb_connection_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_connection_event_init.h"
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
 
 namespace blink {
@@ -29,7 +29,7 @@ USBConnectionEvent::USBConnectionEvent(const AtomicString& type,
                                        USBDevice* device)
     : Event(type, Bubbles::kNo, Cancelable::kNo), device_(device) {}
 
-void USBConnectionEvent::Trace(blink::Visitor* visitor) {
+void USBConnectionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   Event::Trace(visitor);
 }

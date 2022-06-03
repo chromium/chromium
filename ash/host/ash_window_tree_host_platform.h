@@ -10,7 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/transformer_helper.h"
+#include "base/gtest_prod_util.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/ozone/public/input_controller.h"
 
 namespace ui {
 struct PlatformWindowInitProperties;
@@ -18,6 +20,7 @@ struct PlatformWindowInitProperties;
 
 namespace ash {
 class ExtendedMouseWarpControllerTest;
+class AshWindowTreeHostPlatformTest;
 
 class ASH_EXPORT AshWindowTreeHostPlatform
     : public AshWindowTreeHost,
@@ -26,12 +29,18 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   explicit AshWindowTreeHostPlatform(
       ui::PlatformWindowInitProperties properties);
 
+  AshWindowTreeHostPlatform(const AshWindowTreeHostPlatform&) = delete;
+  AshWindowTreeHostPlatform& operator=(const AshWindowTreeHostPlatform&) =
+      delete;
+
   ~AshWindowTreeHostPlatform() override;
 
  protected:
   friend ExtendedMouseWarpControllerTest;
   FRIEND_TEST_ALL_PREFIXES(ExtendedMouseWarpControllerTest,
                            CheckHostPointToScreenInMouseWarpRegion);
+  friend AshWindowTreeHostPlatformTest;
+  FRIEND_TEST_ALL_PREFIXES(AshWindowTreeHostPlatformTest, UnadjustedMovement);
 
   AshWindowTreeHostPlatform();
 
@@ -57,6 +66,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   void OnCursorVisibilityChangedNative(bool show) override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
   void DispatchEvent(ui::Event* event) override;
+  std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
+  RequestUnadjustedMovement() override;
 
  private:
   // All constructors call into this.
@@ -67,9 +78,9 @@ class ASH_EXPORT AshWindowTreeHostPlatform
 
   TransformerHelper transformer_helper_;
 
-  gfx::Rect last_cursor_confine_bounds_in_pixels_;
+  ui::InputController* input_controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostPlatform);
+  gfx::Rect last_cursor_confine_bounds_in_pixels_;
 };
 
 }  // namespace ash

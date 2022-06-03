@@ -1,10 +1,12 @@
 include_rules = [
-    # To whitelist base/ stuff Blink is allowed to include, we list up all
+    # To only allow a subset of base/ in Blink, we explicitly list all
     # directories and files instead of writing 'base/'.
+    "+base/allocator/buildflags.h",
     "+base/allocator/partition_allocator",
+    "+base/android/build_info.h",
     "+base/atomic_ref_count.h",
     "+base/bind.h",
-    "+base/bind_helpers.h",
+    "+base/callback_helpers.h",
     "+base/bit_cast.h",
     "+base/command_line.h",
     "+base/compiler_specific.h",
@@ -19,6 +21,10 @@ include_rules = [
     "+base/mac/mac_util.h",
     "+base/memory",
     "+base/observer_list.h",
+    "+base/observer_list_threadsafe.h",
+    "+base/strings/string_number_conversions.h",
+    "+base/strings/string_piece.h",
+    "+base/strings/string_util.h",
     "+base/memory/shared_memory.h",
     "+base/message_loop/message_loop.h",
     "+base/metrics/histogram.h",
@@ -27,12 +33,14 @@ include_rules = [
     "+base/metrics/histogram_macros.h",
     "+base/metrics/histogram_samples.h",
     "+base/metrics/sparse_histogram.h",
+    "+base/no_destructor.h",
     "+base/numerics/checked_math.h",
     "+base/numerics/safe_conversions.h",
     "+base/process/memory.h",
     "+base/rand_util.h",
     "+base/run_loop.h",
     "+base/strings/pattern.h",
+    "+base/strings/string_split.h",
     "+base/strings/string_util.h",
     "+base/strings/stringprintf.h",
     "+base/synchronization/waitable_event.h",
@@ -41,7 +49,9 @@ include_rules = [
     "+base/task/sequence_manager/task_time_observer.h",
     "+base/test",
     "+base/test/fuzzed_data_provider.h",
+    "+base/threading/platform_thread.h",
     "+base/threading/thread_task_runner_handle.h",
+    "+base/threading/thread_restrictions.h",
     "+base/time",
     "+base/timer",
     "+base/trace_event",
@@ -62,6 +72,8 @@ include_rules = [
     "+services/metrics/public/cpp/ukm_entry_builder.h",
     "+services/metrics/public/cpp/ukm_recorder.h",
     "+services/metrics/public/cpp/ukm_source_id.h",
+    "+services/network/public/cpp",
+    "+services/network/public/mojom",
     "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h",
     "+skia/ext",
     #TODO(nverne): remove this
@@ -69,7 +81,13 @@ include_rules = [
     "+third_party/ced/src/compact_enc_det/compact_enc_det.h",
     "+third_party/khronos",
     "+third_party/skia",
-    "+ui/base/resource/scale_factor.h",
+    "+ui/base/cursor/cursor.h",
+    "+ui/base/prediction",
+    "+ui/base/resource/resource_scale_factor.h",
+    "+ui/display/mojom",
+    "+ui/display/display.h",
+    "+ui/display/screen_info.h",
+    "+ui/display/screen_infos.h",
     "+ui/gfx",
     "+url",
     "+webp",
@@ -85,10 +103,17 @@ specific_include_rules = {
         "+crypto",
         "+third_party/boringssl/src/include",
     ],
+    "platform.cc": [
+        "+components/viz/common/gpu/raster_context_provider.h",
+        "+gpu/ipc/client/gpu_channel_host.h",
+    ],
     "web_url_error\.cc": [
         "+net/base/net_errors.h"
     ],
     "ukm_time_aggregator_test.cc" : [
         "+components/ukm/test_ukm_recorder.h"
+    ],
+    "search_engine_utils.cc": [
+        "+components/search_engines/search_engine_utils.h"
     ],
 }

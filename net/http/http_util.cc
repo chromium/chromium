@@ -9,8 +9,8 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -20,6 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
+#include "net/base/mime_util.h"
+#include "net/base/parse_number.h"
 #include "net/base/url_util.h"
 
 namespace net {
@@ -94,147 +96,43 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
                                 std::string* charset,
                                 bool* had_charset,
                                 std::string* boundary) {
-  const std::string::const_iterator begin = content_type_str.begin();
-
-  // Trim leading and trailing whitespace from type.  We include '(' in
-  // the trailing trim set to catch media-type comments, which are not at all
-  // standard, but may occur in rare cases.
-  size_t type_val = content_type_str.find_first_not_of(HTTP_LWS);
-  type_val = std::min(type_val, content_type_str.length());
-  size_t type_end = content_type_str.find_first_of(HTTP_LWS ";(", type_val);
-  if (type_end == std::string::npos)
-    type_end = content_type_str.length();
-
-  std::string charset_value;
-  bool type_has_charset = false;
-  bool type_has_boundary = false;
-
-  // Iterate over parameters. Can't split the string around semicolons
-  // preemptively because quoted strings may include semicolons. Mostly matches
-  // logic in https://mimesniff.spec.whatwg.org/. Main differences: Does not
-  // validate characters are HTTP token code points / HTTP quoted-string token
-  // code points, and ignores spaces after "=" in parameters.
-  std::string::size_type offset = content_type_str.find_first_of(';', type_end);
-  while (offset < content_type_str.size()) {
-    DCHECK_EQ(';', content_type_str[offset]);
-    // Trim off the semicolon.
-    ++offset;
-
-    // Trim off any following spaces.
-    offset = content_type_str.find_first_not_of(HTTP_LWS, offset);
-    std::string::size_type param_name_start = offset;
-
-    // Extend parameter name until run into a semicolon or equals sign.  Per
-    // spec, trailing spaces are not removed.
-    offset = content_type_str.find_first_of(";=", offset);
-
-    // Nothing more to do if at end of string, or if there's no parameter
-    // value, since names without values aren't allowed.
-    if (offset == std::string::npos || content_type_str[offset] == ';')
-      continue;
-
-    base::StringPiece param_name(content_type_str.begin() + param_name_start,
-                                 content_type_str.begin() + offset);
-
-    // Now parse the value.
-    DCHECK_EQ('=', content_type_str[offset]);
-    // Trim off the '='.
-    offset++;
-
-    // Remove leading spaces. This violates the spec, though it matches
-    // pre-existing behavior.
-    //
-    // TODO(mmenke): Consider doing this (only?) after parsing quotes, which
-    // seems to align more with the spec - not the content-type spec, but the
-    // GET spec's way of getting an encoding, and the spec for handling
-    // boundary values as well.
-    // See https://encoding.spec.whatwg.org/#names-and-labels.
-    offset = content_type_str.find_first_not_of(HTTP_LWS, offset);
-
-    std::string param_value;
-    if (offset == std::string::npos || content_type_str[offset] == ';') {
-      // Nothing to do here - an unquoted string of only whitespace should be
-      // skipped.
-      continue;
-    } else if (content_type_str[offset] != '"') {
-      // If the first character is not a quotation mark, copy data directly.
-      std::string::size_type value_start = offset;
-      offset = content_type_str.find_first_of(';', offset);
-      std::string::size_type value_end = offset;
-
-      // Remove terminal whitespace. If ran off the end of the string, have to
-      // update |value_end| first.
-      if (value_end == std::string::npos)
-        value_end = content_type_str.size();
-      while (value_end > value_start &&
-             IsLWS(content_type_str[value_end - 1])) {
-        --value_end;
-      }
-
-      param_value =
-          content_type_str.substr(value_start, value_end - value_start);
-    } else {
-      // Otherwise, append data, with special handling for backslashes, until
-      // a close quote.
-
-      // Skip open quote.
-      DCHECK_EQ('"', content_type_str[offset]);
-      ++offset;
-
-      while (offset < content_type_str.size() &&
-             content_type_str[offset] != '"') {
-        // Skip over backslash and append the next character, when not at
-        // the end of the string. Otherwise, copy the next character (Which may
-        // be a backslash).
-        if (content_type_str[offset] == '\\' &&
-            offset + 1 < content_type_str.size()) {
-          ++offset;
-        }
-        param_value += content_type_str[offset];
-        ++offset;
-      }
-
-      param_value = TrimLWS(param_value).as_string();
-
-      offset = content_type_str.find_first_of(';', offset);
-    }
-
-    // TODO(mmenke): Check that name has only valid characters.
-    if (!type_has_charset &&
-        base::LowerCaseEqualsASCII(param_name, "charset")) {
-      type_has_charset = true;
-      charset_value = param_value;
-      continue;
-    }
-
-    if (boundary && !type_has_boundary &&
-        base::LowerCaseEqualsASCII(param_name, "boundary")) {
-      type_has_boundary = true;
-      boundary->assign(std::move(param_value));
-      continue;
-    }
-  }
-
+  std::string mime_type_value;
+  base::StringPairs params;
+  bool result = ParseMimeType(content_type_str, &mime_type_value, &params);
   // If the server sent "*/*", it is meaningless, so do not store it.
   // Also, reject a mime-type if it does not include a slash.
   // Some servers give junk after the charset parameter, which may
   // include a comma, so this check makes us a bit more tolerant.
-  if (content_type_str.length() == 0 || content_type_str == "*/*" ||
-      content_type_str.find_first_of('/') == std::string::npos) {
+  if (!result || content_type_str == "*/*")
     return;
+
+  std::string charset_value;
+  bool type_has_charset = false;
+  bool type_has_boundary = false;
+  for (const auto& param : params) {
+    // Trim LWS from param value, ParseMimeType() leaves WS for quoted-string.
+    // TODO(mmenke): Check that name has only valid characters.
+    if (!type_has_charset &&
+        base::LowerCaseEqualsASCII(param.first, "charset")) {
+      type_has_charset = true;
+      charset_value = std::string(HttpUtil::TrimLWS(param.second));
+      continue;
+    }
+
+    if (boundary && !type_has_boundary &&
+        base::LowerCaseEqualsASCII(param.first, "boundary")) {
+      type_has_boundary = true;
+      *boundary = std::string(HttpUtil::TrimLWS(param.second));
+      continue;
+    }
   }
 
-  // If type_val is the same as mime_type, then just update the charset.
-  // However, if charset is empty and mime_type hasn't changed, then don't
-  // wipe-out an existing charset.
-  // It is common that mime_type is empty.
-  bool eq = !mime_type->empty() &&
-            base::LowerCaseEqualsASCII(
-                base::StringPiece(begin + type_val, begin + type_end),
-                mime_type->data());
+  // If `mime_type_value` is the same as `mime_type`, then just update
+  // `charset`. However, if `charset` is empty and `mime_type` hasn't changed,
+  // then don't wipe-out an existing `charset`.
+  bool eq = base::LowerCaseEqualsASCII(mime_type->data(), mime_type_value);
   if (!eq) {
-    *mime_type = base::ToLowerASCII(
-        base::StringPiece(begin + type_val, begin + type_end));
+    *mime_type = base::ToLowerASCII(mime_type_value);
   }
   if ((!eq && *had_charset) || type_has_charset) {
     *had_charset = true;
@@ -364,19 +262,19 @@ bool HttpUtil::ParseContentRangeHeaderFor206(
 bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
                                      base::Time now,
                                      base::TimeDelta* retry_after) {
-  int seconds;
+  uint32_t seconds;
   base::Time time;
   base::TimeDelta interval;
 
-  if (base::StringToInt(retry_after_string, &seconds)) {
-    interval = base::TimeDelta::FromSeconds(seconds);
+  if (net::ParseUint32(retry_after_string, &seconds)) {
+    interval = base::Seconds(seconds);
   } else if (base::Time::FromUTCString(retry_after_string.c_str(), &time)) {
     interval = time - now;
   } else {
     return false;
   }
 
-  if (interval < base::TimeDelta::FromSeconds(0))
+  if (interval < base::Seconds(0))
     return false;
 
   *retry_after = interval;
@@ -581,7 +479,7 @@ bool UnquoteImpl(base::StringPiece str, bool strict_quotes, std::string* out) {
 std::string HttpUtil::Unquote(base::StringPiece str) {
   std::string result;
   if (!UnquoteImpl(str, false, &result))
-    return str.as_string();
+    return std::string(str);
 
   return result;
 }
@@ -718,7 +616,7 @@ std::string HttpUtil::AssembleRawHeaders(base::StringPiece input) {
 
   // Copy the status line.
   size_t status_line_end = FindStatusLineEnd(input);
-  input.substr(0, status_line_end).AppendToString(&raw_headers);
+  raw_headers.append(input.data(), status_line_end);
   input.remove_prefix(status_line_end);
 
   // After the status line, every subsequent line is a header line segment.
@@ -737,14 +635,10 @@ std::string HttpUtil::AssembleRawHeaders(base::StringPiece input) {
 
     if (prev_line_continuable && IsLWS(line[0])) {
       // Join continuation; reduce the leading LWS to a single SP.
-      raw_headers.push_back(' ');
-      RemoveLeadingNonLWS(line).AppendToString(&raw_headers);
+      base::StrAppend(&raw_headers, {" ", RemoveLeadingNonLWS(line)});
     } else {
-      // Terminate the previous line.
-      raw_headers.push_back('\n');
-
-      // Copy the raw data to output.
-      line.AppendToString(&raw_headers);
+      // Terminate the previous line and copy the raw data to output.
+      base::StrAppend(&raw_headers, {"\n", line});
 
       // Check if the current line can be continued.
       prev_line_continuable = IsLineSegmentContinuable(line);
@@ -767,8 +661,7 @@ std::string HttpUtil::ConvertHeadersBackToHTTPResponse(const std::string& str) {
   std::string disassembled_headers;
   base::StringTokenizer tokenizer(str, std::string(1, '\0'));
   while (tokenizer.GetNext()) {
-    tokenizer.token_piece().AppendToString(&disassembled_headers);
-    disassembled_headers.append("\r\n");
+    base::StrAppend(&disassembled_headers, {tokenizer.token_piece(), "\r\n"});
   }
   disassembled_headers.append("\r\n");
 
@@ -789,11 +682,17 @@ std::string HttpUtil::ExpandLanguageList(const std::string& language_prefs) {
     const std::string& language = languages[i];
     builder.AddLanguageCode(language);
 
-    // Extract the base language
+    // Extract the primary language subtag.
     const std::string& base_language = GetBaseLanguageCode(language);
 
-    // Look ahead and add the base language if the next language is not part
-    // of the same family.
+    // Skip 'x' and 'i' as a primary language subtag per RFC 5646 section 2.1.1.
+    if (base_language == "x" || base_language == "i")
+      continue;
+
+    // Look ahead and add the primary language subtag as a language if the next
+    // language is not part of the same family. This may not be perfect because
+    // an input of "en-US,fr,en" will yield "en-US,en,fr,en" and later make "en"
+    // a higher priority than "fr" despite the original preference.
     const size_t j = i + 1;
     if (j >= size || GetBaseLanguageCode(languages[j]) != base_language) {
       builder.AddLanguageCode(base_language);
@@ -851,7 +750,7 @@ bool HttpUtil::HasStrongValidators(HttpVersion version,
     std::string::const_iterator i = etag_header.begin();
     std::string::const_iterator j = etag_header.begin() + slash;
     TrimLWS(&i, &j);
-    if (!base::LowerCaseEqualsASCII(base::StringPiece(i, j), "w"))
+    if (!base::LowerCaseEqualsASCII(base::MakeStringPiece(i, j), "w"))
       return true;
   }
 
@@ -952,7 +851,7 @@ bool HttpUtil::HeadersIterator::GetNext() {
 
     TrimLWS(&name_begin_, &name_end_);
     DCHECK(name_begin_ < name_end_);
-    if (!IsToken(base::StringPiece(name_begin_, name_end_)))
+    if (!IsToken(base::MakeStringPiece(name_begin_, name_end_)))
       continue;  // skip malformed header
 
     values_begin_ = colon + 1;
@@ -970,8 +869,8 @@ bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
       << "the header name must be in all lower case";
 
   while (GetNext()) {
-    if (base::LowerCaseEqualsASCII(base::StringPiece(name_begin_, name_end_),
-                                   name)) {
+    if (base::LowerCaseEqualsASCII(
+            base::MakeStringPiece(name_begin_, name_end_), name)) {
       return true;
     }
   }
@@ -1093,8 +992,9 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(base::StringPiece(value_begin_, value_end_),
-                                   &unquoted_value_))
+      if (!HttpUtil::StrictUnquote(
+              base::MakeStringPiece(value_begin_, value_end_),
+              &unquoted_value_))
         return valid_ = false;
       return true;
     }
@@ -1111,7 +1011,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     } else {
       // Do not store iterators into this. See declaration of unquoted_value_.
       unquoted_value_ =
-          HttpUtil::Unquote(base::StringPiece(value_begin_, value_end_));
+          HttpUtil::Unquote(base::MakeStringPiece(value_begin_, value_end_));
     }
   }
 
@@ -1155,7 +1055,7 @@ bool HttpUtil::ParseAcceptEncoding(const std::string& accept_encoding,
     if (qvalue.empty())
       return false;
     if (qvalue[0] == '1') {
-      if (base::StringPiece("1.000").starts_with(qvalue)) {
+      if (base::StartsWith("1.000", qvalue)) {
         allowed_encodings->insert(base::ToLowerASCII(encoding));
         continue;
       }

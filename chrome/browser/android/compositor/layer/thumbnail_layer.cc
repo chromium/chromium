@@ -5,7 +5,7 @@
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 
 #include "cc/layers/ui_resource_layer.h"
-#include "chrome/browser/android/thumbnail/thumbnail.h"
+#include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace android {

@@ -11,22 +11,21 @@ namespace exo {
 namespace {
 
 TEST(PermissionsTest, ActiveCapability) {
-  Permission p{Permission::Capability::kActivate, base::TimeDelta::FromDays(1)};
+  Permission p{Permission::Capability::kActivate, base::Days(1)};
   ASSERT_TRUE(p.Check(Permission::Capability::kActivate));
   ASSERT_FALSE(p.Check(static_cast<Permission::Capability>(
       (int)(Permission::Capability::kActivate) + 1)));
 }
 
 TEST(PermissionsTest, Revoke) {
-  Permission p{Permission::Capability::kActivate, base::TimeDelta::FromDays(1)};
+  Permission p{Permission::Capability::kActivate, base::Days(1)};
   ASSERT_TRUE(p.Check(Permission::Capability::kActivate));
   p.Revoke();
   ASSERT_FALSE(p.Check(Permission::Capability::kActivate));
 }
 
 TEST(PermissionsTest, Expire) {
-  Permission p{Permission::Capability::kActivate,
-               base::TimeDelta::FromMilliseconds(0)};
+  Permission p{Permission::Capability::kActivate, base::Milliseconds(0)};
   ASSERT_FALSE(p.Check(Permission::Capability::kActivate));
 }
 

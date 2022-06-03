@@ -7,10 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,13 +15,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using content::BrowserThread;
 
 namespace extensions {
 
@@ -90,16 +85,6 @@ class EventRouterForwarderTest : public testing::Test {
   EventRouterForwarderTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-#if defined(OS_MACOSX)
-    base::PowerMonitorDeviceSource::AllocateSystemIOPorts();
-#endif
-    std::unique_ptr<base::PowerMonitorSource> power_monitor_source(
-        new base::PowerMonitorDeviceSource());
-    base::PowerMonitor::Initialize(std::move(power_monitor_source));
-  }
-
-  ~EventRouterForwarderTest() override {
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   void SetUp() override {
@@ -134,7 +119,8 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererUIIncognito) {
       new MockEventRouterForwarder);
   using ::testing::_;
   GURL url;
-  Profile* incognito = profile1_->GetOffTheRecordProfile();
+  Profile* incognito =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
                                              kEventName, profile1_, url));
   EXPECT_CALL(*event_router, CallEventRouter(incognito, _, _, _, _, _))
@@ -151,8 +137,10 @@ TEST_F(EventRouterForwarderTest,
       new MockEventRouterForwarder);
   using ::testing::_;
   GURL url;
-  Profile* incognito1 = profile1_->GetOffTheRecordProfile();
-  Profile* incognito2 = profile2_->GetOffTheRecordProfile();
+  Profile* incognito1 =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* incognito2 =
+      profile2_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
                                              kEventName, profile1_, url));
   EXPECT_CALL(*event_router, CallEventRouter(incognito1, _, _, _, _, _));
@@ -174,14 +162,14 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererIO) {
                                              kEventName, profile1_, url));
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
                                              kEventName, profile2_, url));
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&BroadcastEventToRenderers,
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BroadcastEventToRenderers,
                                 base::Unretained(event_router.get()),
                                 kHistogramValue, kEventName, url, false));
 
   // Wait for IO thread's message loop to be processed
-  scoped_refptr<base::ThreadTestHelper> helper(new base::ThreadTestHelper(
-      base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get()));
+  scoped_refptr<base::ThreadTestHelper> helper(
+      new base::ThreadTestHelper(content::GetIOThreadTaskRunner({}).get()));
   ASSERT_TRUE(helper->Run());
 
   base::RunLoop().RunUntilIdle();
@@ -203,7 +191,8 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIRestricted) {
 TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito1) {
   scoped_refptr<MockEventRouterForwarder> event_router(
       new MockEventRouterForwarder);
-  Profile* incognito = profile1_->GetOffTheRecordProfile();
+  Profile* incognito =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   using ::testing::_;
   GURL url;
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
@@ -221,8 +210,10 @@ TEST_F(
     UnicastRendererUIRestrictedIncognito1WithDispatchToOffTheRecordProfiles) {
   scoped_refptr<MockEventRouterForwarder> event_router(
       new MockEventRouterForwarder);
-  Profile* incognito1 = profile1_->GetOffTheRecordProfile();
-  Profile* incognito2 = profile2_->GetOffTheRecordProfile();
+  Profile* incognito1 =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* incognito2 =
+      profile2_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   using ::testing::_;
   GURL url;
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
@@ -239,7 +230,8 @@ TEST_F(
 TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito2) {
   scoped_refptr<MockEventRouterForwarder> event_router(
       new MockEventRouterForwarder);
-  Profile* incognito = profile1_->GetOffTheRecordProfile();
+  Profile* incognito =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   using ::testing::_;
   GURL url;
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, _, _, _, _, _))
@@ -258,7 +250,7 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestricted) {
   using ::testing::_;
   GURL url;
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
-                                             kEventName, NULL, url));
+                                             kEventName, nullptr, url));
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
@@ -268,11 +260,12 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestricted) {
 TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestrictedIncognito) {
   scoped_refptr<MockEventRouterForwarder> event_router(
       new MockEventRouterForwarder);
-  Profile* incognito = profile1_->GetOffTheRecordProfile();
+  Profile* incognito =
+      profile1_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   using ::testing::_;
   GURL url;
   EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
-                                             kEventName, NULL, url));
+                                             kEventName, nullptr, url));
   EXPECT_CALL(*event_router, CallEventRouter(incognito, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))

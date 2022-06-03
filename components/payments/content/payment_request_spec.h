@@ -10,9 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/payments/content/initialization_task.h"
@@ -51,7 +50,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Any class call add itself as Observer via AddObserver() and receive
   // notification about spec events.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the website is notified that the user selected shipping
     // options or a shipping address. This will be followed by a call to
@@ -62,14 +61,18 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
     virtual void OnSpecUpdated() = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   PaymentRequestSpec(mojom::PaymentOptionsPtr options,
                      mojom::PaymentDetailsPtr details,
                      std::vector<mojom::PaymentMethodDataPtr> method_data,
-                     PaymentRequestSpec::Observer* observer,
+                     base::WeakPtr<PaymentRequestSpec::Observer> observer,
                      const std::string& app_locale);
+
+  PaymentRequestSpec(const PaymentRequestSpec&) = delete;
+  PaymentRequestSpec& operator=(const PaymentRequestSpec&) = delete;
+
   ~PaymentRequestSpec() override;
 
   // Called when the merchant has new PaymentDetails. Will recompute every spec
@@ -80,7 +83,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   void Retry(mojom::PaymentValidationErrorsPtr validation_errors);
 
   // Gets the display string for the general retry error message.
-  const base::string16& retry_error_message() const {
+  const std::u16string& retry_error_message() const {
     return retry_error_message_;
   }
 
@@ -92,10 +95,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Gets the display string for the shipping address error for the given
   // |type|.
-  base::string16 GetShippingAddressError(autofill::ServerFieldType type);
+  std::u16string GetShippingAddressError(autofill::ServerFieldType type);
 
   // Gets the display string for the payer error for the given |type|.
-  base::string16 GetPayerError(autofill::ServerFieldType type);
+  std::u16string GetPayerError(autofill::ServerFieldType type);
 
   // Returns whether there is a shipping address error message set by merchant.
   bool has_shipping_address_error() const;
@@ -119,15 +122,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   bool request_payer_email() const override;
   PaymentShippingType shipping_type() const override;
 
+  const mojom::PaymentOptionsPtr& payment_options() const { return options_; }
+
   // Returns the query to be used for the quota on hasEnrolledInstrument()
-  // calls. Generally this returns the payment method identifiers and their
-  // corresponding data. However, in the case of basic-card with
-  // kStrictHasEnrolledAutofillInstrument feature enabled, this method also
-  // returns the following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // calls: the payment method identifiers and their corresponding data.
   const std::map<std::string, std::set<std::string>>& query_for_quota() const {
     return query_for_quota_;
   }
@@ -144,10 +142,6 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
       const {
     return stringified_method_data_;
   }
-  const std::set<autofill::CreditCard::CardType>& supported_card_types_set()
-      const {
-    return supported_card_types_set_;
-  }
   const std::vector<GURL>& url_payment_method_identifiers() const {
     return url_payment_method_identifiers_;
   }
@@ -161,7 +155,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Uses CurrencyFormatter to format the value of |currency_amount| with the
   // currency symbol for its currency.
-  base::string16 GetFormattedCurrencyAmount(
+  std::u16string GetFormattedCurrencyAmount(
       const mojom::PaymentCurrencyAmountPtr& currency_amount);
 
   // Uses CurrencyFormatter to get the formatted currency code for
@@ -175,7 +169,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // This may contain a non-empty error returned by the merchant. In this case
   // PaymentRequestState::selected_shipping_option_error_profile() will contain
   // the profile related to the error.
-  const base::string16& selected_shipping_option_error() const {
+  const std::u16string& selected_shipping_option_error() const {
     return selected_shipping_option_error_;
   }
 
@@ -200,9 +194,19 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
       const;
 
   const mojom::PaymentDetails& details() const { return *details_.get(); }
+  const mojom::PaymentDetailsPtr& details_ptr() const { return details_; }
+
   const std::vector<mojom::PaymentMethodDataPtr>& method_data() const {
     return method_data_;
   }
+
+  bool IsSecurePaymentConfirmationRequested() const;
+
+  // Returns true if one of the payment methods being requested is an app store
+  // billing method, such as "https://play.google.com/billing".
+  bool IsAppStoreBillingAlsoRequested() const;
+
+  base::WeakPtr<PaymentRequestSpec> AsWeakPtr();
 
  private:
   // Returns the first applicable modifier in the Payment Request for the
@@ -236,7 +240,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   const std::string app_locale_;
   // The currently shipping option as specified by the merchant.
   mojom::PaymentShippingOption* selected_shipping_option_;
-  base::string16 selected_shipping_option_error_;
+  std::u16string selected_shipping_option_error_;
 
   // One currency formatter is instantiated and cached per currency code.
   std::map<std::string, CurrencyFormatter> currency_formatters_;
@@ -247,15 +251,13 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::vector<std::string> supported_card_networks_;
   std::set<std::string> supported_card_networks_set_;
 
-  std::set<autofill::CreditCard::CardType> supported_card_types_set_;
-
   // Only the set of basic-card specified networks. NOTE: callers should use
   // |supported_card_networks_set_| to check merchant support.
   std::set<std::string> basic_card_specified_networks_;
 
-  // A list of supported url-based payment method identifers specified by the
+  // A list of supported url-based payment method identifiers specified by the
   // merchant. This encompasses one of the two types of payment method
-  // identifers, the other being standardized payment method identifiers i.e.,
+  // identifiers, the other being standardized payment method identifiers i.e.,
   // basic-card.
   std::vector<GURL> url_payment_method_identifiers_;
 
@@ -267,13 +269,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::map<std::string, std::set<std::string>> stringified_method_data_;
 
   // A mapping of the payment method names to the corresponding JSON-stringified
-  // payment method specific data. If kStrictHasEnrolledAutofillInstrument is
-  // enabled, then the key "basic-card-payment-options" also maps to the
-  // following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // payment method specific data.
   std::map<std::string, std::set<std::string>> query_for_quota_;
 
   // The reason why this payment request is waiting for updateWith.
@@ -281,12 +277,14 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // The |observer_for_testing_| will fire after all the |observers_| have been
   // notified.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
-  base::string16 retry_error_message_;
+  std::u16string retry_error_message_;
   mojom::PayerErrorsPtr payer_errors_;
 
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSpec);
+  std::set<std::string> app_store_billing_methods_;
+
+  base::WeakPtrFactory<PaymentRequestSpec> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

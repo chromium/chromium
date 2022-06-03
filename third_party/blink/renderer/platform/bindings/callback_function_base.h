@@ -26,12 +26,12 @@ class PLATFORM_EXPORT CallbackFunctionBase
     : public GarbageCollected<CallbackFunctionBase>,
       public NameClient {
  public:
-  virtual ~CallbackFunctionBase() = default;
+  ~CallbackFunctionBase() override = default;
 
-  virtual void Trace(blink::Visitor* visitor);
+  virtual void Trace(Visitor* visitor) const;
 
   v8::Local<v8::Object> CallbackObject() {
-    return callback_function_.NewLocal(GetIsolate());
+    return callback_function_.Get(GetIsolate());
   }
 
   v8::Isolate* GetIsolate() const {
@@ -52,15 +52,18 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // Returns the ScriptState of the relevant realm of the callback object iff
   // the callback is the same origin-domain. Otherwise, reports an error and
   // returns nullptr.
-  ScriptState* CallbackRelevantScriptStateOrReportError(const char* interface,
-                                                        const char* operation);
+  ScriptState* CallbackRelevantScriptStateOrReportError(
+      const char* interface_name,
+      const char* operation_name);
 
   // Returns the ScriptState of the relevant realm of the callback object iff
   // the callback is the same origin-domain. Otherwise, throws an exception and
   // returns nullptr.
   ScriptState* CallbackRelevantScriptStateOrThrowException(
-      const char* interface,
-      const char* operation);
+      const char* interface_name,
+      const char* operation_name);
+
+  ScriptState* IncumbentScriptState() { return incumbent_script_state_; }
 
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
@@ -82,29 +85,27 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // really need V8 *Scavenger* GC to collect the V8 function before V8 Full GC
   // runs.
   void DisposeV8FunctionImmediatelyToReduceMemoryFootprint() {
-    callback_function_.Clear();
+    callback_function_.Reset();
   }
 
  protected:
   explicit CallbackFunctionBase(v8::Local<v8::Object>);
 
   v8::Local<v8::Function> CallbackFunction() const {
-    return callback_function_.NewLocal(GetIsolate()).As<v8::Function>();
+    return callback_function_.Get(GetIsolate()).As<v8::Function>();
   }
-
-  ScriptState* IncumbentScriptState() { return incumbent_script_state_; }
 
  private:
   // The "callback function type" value.
   // Use v8::Object instead of v8::Function in order to handle
-  // [TreatNonObjectAsNull].
+  // [LegacyTreatNonObjectAsNull].
   TraceWrapperV8Reference<v8::Object> callback_function_;
   // The associated Realm of the callback function type value iff it's the same
   // origin-domain. Otherwise, nullptr.
   Member<ScriptState> callback_relevant_script_state_;
   // The callback context, i.e. the incumbent Realm when an ECMAScript value is
   // converted to an IDL value.
-  // https://heycam.github.io/webidl/#dfn-callback-context
+  // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
 };
 

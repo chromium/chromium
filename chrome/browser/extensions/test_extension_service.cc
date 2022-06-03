@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/test_extension_service.h"
+
+#include "chrome/browser/extensions/crx_installer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;
@@ -51,11 +52,6 @@ void TestExtensionService::CheckForUpdatesSoon() {
   ADD_FAILURE();
 }
 
-bool TestExtensionService::is_ready() {
-  ADD_FAILURE();
-  return false;
-}
-
 void TestExtensionService::AddExtension(const Extension* extension) {
   ADD_FAILURE();
 }
@@ -72,5 +68,15 @@ void TestExtensionService::UnloadExtension(
 
 void TestExtensionService::RemoveComponentExtension(
     const std::string& extension_id) {
+  ADD_FAILURE();
+}
+
+bool TestExtensionService::UserCanDisableInstalledExtension(
+    const std::string& extension_id) {
+  ADD_FAILURE();
+  return false;
+}
+
+void TestExtensionService::ReinstallProviderExtensions() {
   ADD_FAILURE();
 }

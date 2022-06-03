@@ -4,12 +4,12 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -23,24 +23,36 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityIpcErrorBrowserTest() {}
 
+  AccessibilityIpcErrorBrowserTest(const AccessibilityIpcErrorBrowserTest&) =
+      delete;
+  AccessibilityIpcErrorBrowserTest& operator=(
+      const AccessibilityIpcErrorBrowserTest&) = delete;
+
  protected:
   // Convenience method to get the value of a particular AXNode
   // attribute as a UTF-8 string.
   std::string GetAttr(const ui::AXNode* node,
                       const ax::mojom::StringAttribute attr) {
-    const ui::AXNodeData& data = node->data();
-    for (size_t i = 0; i < data.string_attributes.size(); ++i) {
-      if (data.string_attributes[i].first == attr)
-        return data.string_attributes[i].second;
+    for (const auto& attribute_pair : node->GetStringAttributes()) {
+      if (attribute_pair.first == attr)
+        return attribute_pair.second;
     }
     return std::string();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityIpcErrorBrowserTest);
 };
 
+// Failed on Android x86 in crbug.com/1123641.
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_ResetBrowserAccessibilityManager \
+  DISABLED_ResetBrowserAccessibilityManager
+#else
+#define MAYBE_ResetBrowserAccessibilityManager ResetBrowserAccessibilityManager
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
-                       ResetBrowserAccessibilityManager) {
+                       MAYBE_ResetBrowserAccessibilityManager) {
+  // Allow accessibility to reset itself on error, rather than failing.
+  RenderFrameHostImpl::max_accessibility_resets_ = 99;
+
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -84,10 +96,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   {
     // Hide one of the elements on the page, and wait for an accessibility
     // notification triggered by the hide.
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kLiveRegionChanged);
-    ASSERT_TRUE(ExecuteScript(
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+    ASSERT_TRUE(ExecJs(
         shell(), "document.getElementById('p1').style.display = 'none';"));
     waiter.WaitForNotification();
   }
@@ -101,10 +113,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   frame->set_no_create_browser_accessibility_manager_for_testing(false);
   const ui::AXTree* tree = nullptr;
   {
+    // Because we missed one IPC message, AXTree::Unserialize() will fail.
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
-    ASSERT_TRUE(
-        ExecuteScript(shell(), "document.getElementById('button').focus();"));
+    ASSERT_TRUE(ExecJs(shell(), "document.getElementById('button').focus();"));
     waiter.WaitForNotification();
     tree = &waiter.GetAXTree();
   }
@@ -116,18 +128,18 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   // Use this for debugging if the test fails.
   VLOG(1) << tree->ToString();
 
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   ASSERT_EQ(2u, root->GetUnignoredChildCount());
 
   const ui::AXNode* live_region = root->GetUnignoredChildAtIndex(0);
   ASSERT_EQ(1u, live_region->GetUnignoredChildCount());
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer, live_region->data().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, live_region->GetRole());
 
   const ui::AXNode* para = live_region->GetUnignoredChildAtIndex(0);
-  EXPECT_EQ(ax::mojom::Role::kParagraph, para->data().role);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
 
   const ui::AXNode* button = root->GetUnignoredChildAtIndex(1);
-  EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
 #if defined(OS_ANDROID)
@@ -140,6 +152,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
                        MAYBE_MultipleBadAccessibilityIPCsKillsRenderer) {
+  // We should be able to reset accessibility |max_iterations-1| times
+  // (see render_frame_host_impl.cc - max_accessibility_resets_),
+  // but the subsequent time the renderer should be killed.
+  int max_iterations = RenderFrameHostImpl::max_accessibility_resets_ + 1;
+
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -160,18 +177,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   }
 
   // Construct a bad accessibility message that BrowserAccessibilityManager
-  // will reject.
+  // will reject.  Note that BrowserAccessibilityManager is hosted in a
+  // renderer process - the test verifies that the renderer process will crash
+  // (i.e. the scenario under test does not involve mojo::ReportBadMessage
+  // or content::bad_message::ReceivedBadMessage).
   AXEventNotificationDetails bad_accessibility_event;
   bad_accessibility_event.updates.resize(1);
   bad_accessibility_event.updates[0].root_id = 1;
   bad_accessibility_event.updates[0].nodes.resize(1);
   bad_accessibility_event.updates[0].nodes[0].id = 1;
-  bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(2);
-
-  // We should be able to reset accessibility |max_iterations-1| times
-  // (see render_frame_host_impl.cc - kMaxAccessibilityResets),
-  // but the subsequent time the renderer should be killed.
-  int max_iterations = RenderFrameHostImpl::kMaxAccessibilityResets;
+  bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(999);
 
   for (int iteration = 0; iteration < max_iterations; iteration++) {
     // Make sure the manager has been created.

@@ -16,10 +16,6 @@
 #include "cc/cc_export.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
-namespace base {
-class Value;
-}
-
 namespace cc {
 
 enum WhichTree {
@@ -28,9 +24,7 @@ enum WhichTree {
   ACTIVE_TREE = 0,
   PENDING_TREE = 1,
   LAST_TREE = 1
-  // Be sure to update WhichTreeAsValue when adding new fields.
 };
-std::unique_ptr<base::Value> WhichTreeAsValue(WhichTree tree);
 
 enum TileResolution {
   LOW_RESOLUTION = 0 ,

@@ -26,6 +26,21 @@ google.com.bd certificates from Comodo.
 
   * [487afc8d0d411b2a05561a2a6f35918f4040e5570c4c73ee323cc50583bcfbb7.pem](487afc8d0d411b2a05561a2a6f35918f4040e5570c4c73ee323cc50583bcfbb7.pem)
 
+### Camerfirma
+
+For details, see <https://groups.google.com/g/mozilla.dev.security.policy/c/dSeD3dgnpzk/m/iAUwcFioAQAJ>
+
+As a result of a long-standing pattern of misissuances and incomplete or
+insufficient remediations, trust in TLS server certificates from Camerfirma
+was fully removed.
+
+  * [04f1bec36951bc1454a904ce32890c5da3cde1356b7900f6e62dfa2041ebad51.pem](04f1bec36951bc1454a904ce32890c5da3cde1356b7900f6e62dfa2041ebad51.pem)
+  * [063e4afac491dfd332f3089b8542e94617d893d7fe944e10a7937ee29d9693c0.pem](063e4afac491dfd332f3089b8542e94617d893d7fe944e10a7937ee29d9693c0.pem)
+  * [0c258a12a5674aef25f28ba7dcfaeceea348e541e6f5cc4ee63b71b361606ac3.pem](0c258a12a5674aef25f28ba7dcfaeceea348e541e6f5cc4ee63b71b361606ac3.pem)
+  * [136335439334a7698016a0d324de72284e079d7b5220bb8fbd747816eebebaca.pem](136335439334a7698016a0d324de72284e079d7b5220bb8fbd747816eebebaca.pem)
+  * [c1d80ce474a51128b77e794a98aa2d62a0225da3f419e5c7ed73dfbf660e7109.pem](c1d80ce474a51128b77e794a98aa2d62a0225da3f419e5c7ed73dfbf660e7109.pem)
+  * [ef3cb417fc8ebf6f97876c9e4ece39de1ea5fe649141d1028b7d11c0b2298ced.pem](ef3cb417fc8ebf6f97876c9e4ece39de1ea5fe649141d1028b7d11c0b2298ced.pem)
+
 ### China Internet Network Information Center (CNNIC)
 
 For details, see <https://security.googleblog.com/2015/03/maintaining-digital-certificate-security.html>
@@ -97,6 +112,13 @@ ccTLD namespace.
   * [67ed4b703d15dc555f8c444b3a05a32579cb7599bd19c9babe10c584ea327ae0.pem](67ed4b703d15dc555f8c444b3a05a32579cb7599bd19c9babe10c584ea327ae0.pem)
   * [a8e1dfd9cd8e470aa2f443914f931cfd61c323e94d75827affee985241c35ce5.pem](a8e1dfd9cd8e470aa2f443914f931cfd61c323e94d75827affee985241c35ce5.pem)
   * [e4f9a3235df7330255f36412bc849fb630f8519961ec3538301deb896c953da5.pem](e4f9a3235df7330255f36412bc849fb630f8519961ec3538301deb896c953da5.pem)
+
+### Sri Lanka
+
+google.lk certificate from Sectigo. https://crt.sh/?id=4037732415
+
+  * [91018fcd3e0dc73f48d011a123f604d846d66821c58304474f949d7449dd600a.pem]
+  (91018fcd3e0dc73f48d011a123f604d846d66821c58304474f949d7449dd600a.pem)
 
 ### Thawte
 
@@ -282,10 +304,16 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1423400
 For details, see <https://security.googleblog.com/2019/08/protecting-chrome-users-in-kazakhstan.html>
 
   * [00309c736dd661da6f1eb24173aa849944c168a43a15bffd192eecfdb6f8dbd2.pem](00309c736dd661da6f1eb24173aa849944c168a43a15bffd192eecfdb6f8dbd2.pem)
+  * [61c0fc2e38b5b6f9071b42cee54a9013d858b6697c68b460948551b3249576a1.pem](61c0fc2e38b5b6f9071b42cee54a9013d858b6697c68b460948551b3249576a1.pem)
+  * [1df696f021ab1c3ace9a376b07ed7256a40214cd3396d7934087614924e2d7ef.pem](1df696f021ab1c3ace9a376b07ed7256a40214cd3396d7934087614924e2d7ef.pem)
+  * [0230a604d99220e5612ee7862ab9f7a6e18e4f1ac4c9e27075788cc5220169ab.pem](0230a604d99220e5612ee7862ab9f7a6e18e4f1ac4c9e27075788cc5220169ab.pem)
+  * [06fd20629c143b9eab28d2799caefc5d23fde267d16c631e3f5b8b4bab3f68e6.pem](06fd20629c143b9eab28d2799caefc5d23fde267d16c631e3f5b8b4bab3f68e6.pem)
+  * [0bd39de4793cdc117138f47708aa4d583acf67adb059a0d91f668d1803bf6489.pem](0bd39de4793cdc117138f47708aa4d583acf67adb059a0d91f668d1803bf6489.pem)
+  * [c95c133b68319ee516b5f41e377f589878af1556567cc2834ef03b1d10830fd3.pem](c95c133b68319ee516b5f41e377f589878af1556567cc2834ef03b1d10830fd3.pem)
 
 ### revoked.badssl.com
 
-  * [c6910d0ba9eddf593334149fedfe87385f37b625354bb4395c0ae2c8df48e17c.pem](c6910d0ba9eddf593334149fedfe87385f37b625354bb4395c0ae2c8df48e17c.pem)
+  * [29abf614b2870ed70df11225e9ae2068e3074eb9845ae252c2064e31ce9fe8a1.pem](29abf614b2870ed70df11225e9ae2068e3074eb9845ae252c2064e31ce9fe8a1.pem)
 
 ### blocked-interception.badssl.com
 

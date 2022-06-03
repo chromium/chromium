@@ -14,7 +14,7 @@ FakeHostStatusProvider::~FakeHostStatusProvider() = default;
 
 void FakeHostStatusProvider::SetHostWithStatus(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
   bool should_notify =
       host_status_ != host_status || host_device_ != host_device;
 

@@ -9,61 +9,45 @@
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
 
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!('MojoInterfaceInterceptor' in self)) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
-
-  const prefix = '/gen/services/shape_detection/public/mojom';
-  let chain = Promise.resolve();
-  [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-    '/gen/mojo/public/mojom/base/big_buffer.mojom.js',
-    '/gen/skia/public/mojom/image_info.mojom.js',
-    '/gen/skia/public/mojom/bitmap.mojom.js',
-    '/gen/ui/gfx/geometry/mojom/geometry.mojom.js',
-    `${prefix}/barcodedetection.mojom.js`,
-    `${prefix}/barcodedetection_provider.mojom.js`,
-    `${prefix}/facedetection.mojom.js`,
-    `${prefix}/facedetection_provider.mojom.js`,
-    '/resources/chromium/mock-barcodedetection.js',
-    '/resources/chromium/mock-facedetection.js',
-  ].forEach(path => {
-    // Use importScripts for workers.
-    if (typeof document === 'undefined') {
-      chain = chain.then(() => importScripts(path));
-      return;
-    }
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = () => resolve();
-    }));
-    document.head.appendChild(script);
-  });
-
-  return chain;
-});
+async function loadChromiumResources() {
+  await import('/resources/chromium/mock-barcodedetection.js');
+  await import('/resources/chromium/mock-facedetection.js');
+  await import('/resources/chromium/mock-textdetection.js');
+}
 
 /**
  * @param {String} detectionTestName
  * name of mock shape detection test interface,
- * must be the item of ["FaceDetectionTest", "BarcodeDetectionTest"]
+ * must be the item of ["FaceDetectionTest", "BarcodeDetectionTest",
+ * "TextDetectionTest"]
 */
 async function initialize_detection_tests(detectionTestName) {
   let detectionTest;
-  // Use 'self' for workers.
   if (typeof document === 'undefined') {
+    // Use 'self' for workers.
     if (typeof self[detectionTestName] === 'undefined') {
-      await loadChromiumResources;
+      // test-only-api.js is already loaded in worker.js
+      if (isChromiumBased) {
+        await loadChromiumResources();
+      }
     }
     detectionTest = new self[detectionTestName]();
   } else {
     if (typeof window[detectionTestName] === 'undefined') {
-      await loadChromiumResources;
+      const script = document.createElement('script');
+      script.src = '/resources/test-only-api.js';
+      script.async = false;
+      const p = new Promise((resolve, reject) => {
+        script.onload = () => { resolve(); };
+        script.onerror = e => { reject(e); };
+      })
+      document.head.appendChild(script);
+      await p;
+
+      if (isChromiumBased) {
+        await loadChromiumResources();
+      }
+
     }
     detectionTest = new window[detectionTestName]();
   }
@@ -83,7 +67,7 @@ function detection_test(detectionTestName, func, name, properties) {
 }
 
 function getArrayBufferFromBigBuffer(bigBuffer) {
-  if (bigBuffer.$tag == mojoBase.mojom.BigBuffer.Tags.bytes) {
+  if (bigBuffer.bytes !== undefined) {
     return new Uint8Array(bigBuffer.bytes).buffer;
   }
   return bigBuffer.sharedMemory.bufferHandle.mapBuffer(0,

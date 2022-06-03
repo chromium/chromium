@@ -22,11 +22,8 @@ cast_source_set("base") {
     "coded_frame_provider.h",
     "decoder_buffer_adapter.cc",
     "decoder_buffer_adapter.h",
-    "decoder_buffer_base.h",
     "decoder_config_adapter.cc",
     "decoder_config_adapter.h",
-    "decoder_config_logging.cc",
-    "decoder_config_logging.h",
     "demuxer_stream_adapter.cc",
     "demuxer_stream_adapter.h",
     "media_task_runner.cc",
@@ -36,6 +33,7 @@ cast_source_set("base") {
   ]
 
   public_deps = [
+    "//chromecast/media/common/base",
     "//chromecast/public/media",
   ]
 
@@ -43,6 +41,7 @@ cast_source_set("base") {
     "//base",
     "//chromecast/base",
     "//chromecast/base/metrics",
+    "//chromecast/media/api",
     "//chromecast/media/base:media_codec_support",
     "//media",
     "//media:shared_memory_support",

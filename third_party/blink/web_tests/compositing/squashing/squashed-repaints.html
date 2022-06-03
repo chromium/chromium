@@ -24,14 +24,14 @@ div {
 }
 
 .overlap2 {
-  top: 220px;
-  left: 220px;
+  top: 160px;
+  left: 160px;
   background-color: lime;
 }
 
 .overlap3 {
-  top: 300px;
-  left: 300px;
+  top: 180px;
+  left: 180px;
   background-color: magenta;
 }
 
@@ -64,33 +64,33 @@ div:hover {
     function executeTestCases()
     {
         // Case 1
-        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
 
         // Case 2
         internals.startTrackingRepaints(document);
         document.getElementById("A").style.backgroundColor = "green";
-        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Case 3
         internals.startTrackingRepaints(document);
         document.getElementById("A").style.backgroundColor = "blue";
         document.getElementById("B").style.backgroundColor = "green";
-        document.getElementById('Case3').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case3').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Case 4
         internals.startTrackingRepaints(document);
         document.getElementById("B").style.backgroundColor = "blue";
         document.getElementById("C").style.backgroundColor = "green";
-        document.getElementById('Case4').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case4').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Case 5
         internals.startTrackingRepaints(document);
         document.getElementById("C").style.backgroundColor = "blue";
         document.getElementById("A").style.backgroundColor = "green";
-        document.getElementById('Case5').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case5').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Display the test results only after test is done so that it does not affect repaint rect results.

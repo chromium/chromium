@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#000000'>
+<script>
+'use strict';
+
+promise_test(() => {
+  let colorControl = document.getElementById('color');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
+    const hueSlider = popupDocument.querySelector('hue-slider');
+    const hueSliderRect = hueSlider.getBoundingClientRect();
+    eventSender.mouseMoveTo(hueSliderRect.left, hueSliderRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(hueSliderRect.left + (hueSliderRect.width / 2), hueSliderRect.top);
+    eventSender.mouseUp();
+    assert_equals(colorControl.value, '#000000', 'Hue slider should not have changed value when starting from #000000.');
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, 'Single escape should close popup if hue slider but not color value changed');
+  });
+}, "Color picker: Hue slider change with no color value change doesn't affect escape behavior");
+
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+authenticate_challenge_reply_input {
+  cast_message {
+    protocol_version: CASTV2_1_0
+    source_id: ""
+    destination_id: ""
+    namespace: ""
+    payload_type: BINARY
+  }
+  nonce: ""
+
+  start_case: VALID
+  expiry_case: VALID
+  nonce_ok: false
+  response_certs_ok: false
+  crl_certs_ok: false
+  crl_signatures_ok: false
+
+  auth_message {
+    error {
+      error_type: INTERNAL_ERROR
+    }
+  }
+}

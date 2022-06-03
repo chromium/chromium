@@ -20,6 +20,7 @@ scoped_refptr<gl::GLImage> ImageFactory::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
+    SurfaceHandle surface_handle,
     bool* is_cleared) {
   NOTREACHED();
   return nullptr;

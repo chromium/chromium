@@ -14,8 +14,12 @@
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/video_decode_accelerator.mojom.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/video/video_decode_accelerator.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -37,10 +41,17 @@ class GpuArcVideoDecodeAccelerator
  public:
   GpuArcVideoDecodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager);
+
+  GpuArcVideoDecodeAccelerator(const GpuArcVideoDecodeAccelerator&) = delete;
+  GpuArcVideoDecodeAccelerator& operator=(const GpuArcVideoDecodeAccelerator&) =
+      delete;
+
   ~GpuArcVideoDecodeAccelerator() override;
 
   // Implementation of media::VideoDecodeAccelerator::Client interface.
+  void NotifyInitializationComplete(media::Status status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              media::VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -61,18 +72,18 @@ class GpuArcVideoDecodeAccelerator
 
   // mojom::VideoDecodeAccelerator implementation.
   void Initialize(mojom::VideoDecodeAcceleratorConfigPtr config,
-                  mojom::VideoDecodeClientPtr client,
+                  mojo::PendingRemote<mojom::VideoDecodeClient> client,
                   InitializeCallback callback) override;
   void Decode(mojom::BitstreamBufferPtr bitstream_buffer) override;
   void AssignPictureBuffers(uint32_t count) override;
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
                               mojo::ScopedHandle handle,
-                              std::vector<VideoFramePlane> planes) override;
+                              std::vector<VideoFramePlane> planes,
+                              mojom::BufferModifierPtr modifier) override;
   void ReusePictureBuffer(int32_t picture_buffer_id) override;
   void Flush(FlushCallback callback) override;
   void Reset(ResetCallback callback) override;
-
  private:
   using PendingCallback =
       base::OnceCallback<void(mojom::VideoDecodeAccelerator::Result)>;
@@ -83,10 +94,11 @@ class GpuArcVideoDecodeAccelerator
   using PendingRequest =
       base::OnceCallback<void(PendingCallback, media::VideoDecodeAccelerator*)>;
 
-  // Initialize GpuArcVDA and create VDA. It returns SUCCESS if they are
-  // successful. Otherwise, returns an error status.
-  mojom::VideoDecodeAccelerator::Result InitializeTask(
-      mojom::VideoDecodeAcceleratorConfigPtr config);
+  // Initialize GpuArcVDA and create VDA. OnInitializeDone() will be called with
+  // the result of the initialization.
+  void InitializeTask(mojom::VideoDecodeAcceleratorConfigPtr config);
+  // Called when initialization is done.
+  void OnInitializeDone(mojom::VideoDecodeAccelerator::Result result);
 
   // Execute all pending requests until a VDA::Reset() request is encountered.
   // When that happens, we need to explicitly wait for NotifyResetDone().
@@ -108,11 +120,28 @@ class GpuArcVideoDecodeAccelerator
                      PendingCallback cb,
                      media::VideoDecodeAccelerator* vda);
 
-  // Global counter that keeps track of the number of active clients (i.e., how
-  // many VDAs in use by this class).
+  // Call the ProvidePictureBuffers() to the client.
+  void HandleProvidePictureBuffers(uint32_t requested_num_of_buffers,
+                                   const gfx::Size& dimensions,
+                                   const gfx::Rect& visible_rect);
+  // Call the pending ProvidePictureBuffers() to the client if needed.
+  bool CallPendingProvidePictureBuffers();
+  // Called when the AssignPictureBuffers() is called by the client.
+  void OnAssignPictureBuffersCalled(const gfx::Size& dimensions,
+                                    uint32_t count);
+
+  // Global counter that keeps track of the number of concurrent
+  // GpuArcVideoDecodeAccelerator instances.
   // Since this class only works on the same thread, it's safe to access
-  // |client_count_| without lock.
-  static size_t client_count_;
+  // |instance_count_| without lock.
+  static int instance_count_;
+
+  // Similar to |instance_count_| but only counts the number of concurrent
+  // initialized GpuArcVideoDecodeAccelerator instances (i.e., instances that
+  // have a |vda_|.
+  // Since this class only works on the same thread, it's safe to access
+  // |initialized_instance_count_| without lock.
+  static int initialized_instance_count_;
 
   // |error_state_| is true, if GAVDA gets an error from VDA.
   // All the pending functions are cancelled and the callbacks are
@@ -134,27 +163,35 @@ class GpuArcVideoDecodeAccelerator
   // In |pending_requests_|, PendingRequest is Reset/Flush/DecodeRequest().
   // PendingCallback is null in the case of Decode().
   // Otherwise, it isn't nullptr and will have to be called eventually.
+  InitializeCallback pending_init_callback_;
   std::queue<std::pair<PendingRequest, PendingCallback>> pending_requests_;
   std::queue<FlushCallback> pending_flush_callbacks_;
   ResetCallback pending_reset_callback_;
 
   gpu::GpuPreferences gpu_preferences_;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   std::unique_ptr<media::VideoDecodeAccelerator> vda_;
-  mojom::VideoDecodeClientPtr client_;
+  mojo::Remote<mojom::VideoDecodeClient> client_;
 
   gfx::Size coded_size_;
   gfx::Size pending_coded_size_;
 
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
 
-  size_t protected_input_buffer_count_ = 0;
-
-  bool secure_mode_ = false;
+  absl::optional<bool> secure_mode_ = absl::nullopt;
   size_t output_buffer_count_ = 0;
-  bool assign_picture_buffers_called_ = false;
+
+  // When the client resets VDA during requesting new buffers, then VDA will
+  // request new buffers again. These variables are used to handle multiple
+  // ProvidePictureBuffers() requests.
+  // The pending ProvidePictureBuffers() requests.
+  std::queue<base::OnceClosure> pending_provide_picture_buffers_requests_;
+  // The callback of the current ProvidePictureBuffers() requests.
+  base::OnceCallback<void(uint32_t)> current_provide_picture_buffers_cb_;
+  // Set to true when the last ProvidePictureBuffers() is replied.
+  bool awaiting_first_import_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoDecodeAccelerator);
 };
 
 }  // namespace arc

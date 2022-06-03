@@ -15,10 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_job.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -48,7 +48,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -64,7 +64,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<DownloadItem::ReceivedSlice>& received_slices) = 0;
+      const std::vector<DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) = 0;
 
   virtual DownloadItemImpl* CreateActiveItem(
       DownloadItemImplDelegate* delegate,
@@ -77,7 +78,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const base::FilePath& path,
       const GURL& url,
       const std::string& mime_type,
-      const net::NetworkIsolationKey& network_isolation_key,
       download::DownloadJob::CancelRequestCallback cancel_request_callback) = 0;
 };
 

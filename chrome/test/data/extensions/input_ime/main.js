@@ -87,6 +87,12 @@ APIArgumentIME.prototype.onKeyEvent = function(context, engine, keyData,
   return false;
 };
 
+chrome.input.ime.onAssistiveWindowButtonClicked.addListener(
+    function(details) {
+      chrome.test.sendMessage(
+        `${details.buttonID} button in ${details.windowType} window clicked`);
+    });
+
 /**
  * This class listens the event from chrome.input.ime and forwards it to the
  * activated engine.

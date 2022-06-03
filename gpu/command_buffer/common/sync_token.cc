@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/common/sync_token.h"
 
+#include <sstream>
+
 namespace gpu {
 
 SyncToken::SyncToken()
@@ -20,5 +22,21 @@ SyncToken::SyncToken(CommandBufferNamespace namespace_id,
       release_count_(release_count) {}
 
 SyncToken::SyncToken(const SyncToken& other) = default;
+SyncToken& SyncToken::operator=(const SyncToken& other) = default;
+
+std::string SyncToken::ToDebugString() const {
+  // At the level of the generic command buffer code, the command buffer ID is
+  // an arbitrary 64-bit number. For the debug output, print its upper and lower
+  // 32bit words separately. This ensures more readable output for IDs allocated
+  // by gpu/ipc code which uses these words for channel and route IDs, but it's
+  // still a lossless representation if the IDs don't match this convention.
+  uint64_t id = command_buffer_id().GetUnsafeValue();
+  uint32_t channel_or_high = 0xffffffff & id;
+  uint32_t route_or_low = id >> 32;
+  std::ostringstream stream;
+  stream << static_cast<int>(namespace_id()) << ":" << channel_or_high << ":"
+         << route_or_low << ":" << release_count();
+  return stream.str();
+}
 
 }  // namespace gpu

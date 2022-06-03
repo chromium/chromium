@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View name='Before'
-++android.view.View name='Paragraph'
-++android.view.View name='After'
+++android.widget.TextView name='Before'
+++android.widget.TextView name='Paragraph'
+++android.widget.TextView name='After'

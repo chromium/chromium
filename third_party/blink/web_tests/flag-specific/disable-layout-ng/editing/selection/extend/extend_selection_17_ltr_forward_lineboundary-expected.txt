@@ -1,0 +1,59 @@
+This is a testharness.js-based test.
+FAIL 17-0 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">^‫car| דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">^‫car דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">^‫car
+FAIL 17-1 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫^car| דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫^car דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫^car
+FAIL 17-2 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫c^ar| דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫c^ar דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫c^ar
+FAIL 17-3 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫ca^r| דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫ca^r דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫ca^r
+FAIL 17-4 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car^ דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-5 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| ^דהו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car ^דהו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-6 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| ד^הו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car ד^הו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-7 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דה^ו אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דה^ו אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-8 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו^ אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו^ אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-9 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו ^אבג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו ^אבג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-10 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו א^בג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו א^בג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-11 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו אב^ג.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו אב^ג.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-12 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו אבג^.‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו אבג^.‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+FAIL 17-13 ltr forward lineboundary resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="ltr">‫car| דהו אבג.^‬</div>,
+	 but got  <div contenteditable dir="ltr">‫car דהו אבג.^‬|</div>,
+	 sameupto <div contenteditable dir="ltr">‫car
+Harness: the test ran to completion.
+

@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "url/gurl.h"
@@ -38,21 +36,32 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   explicit ClipboardRecentContentIOS(
       ClipboardRecentContentImplIOS* implementation);
 
+  ClipboardRecentContentIOS(const ClipboardRecentContentIOS&) = delete;
+  ClipboardRecentContentIOS& operator=(const ClipboardRecentContentIOS&) =
+      delete;
+
   ~ClipboardRecentContentIOS() override;
 
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<base::string16> GetRecentTextFromClipboard() override;
-  base::Optional<gfx::Image> GetRecentImageFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
+  void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  bool HasRecentImageFromClipboard() override;
+  void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
+                                     HasDataCallback callback) override;
+  void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;
+  void GetRecentTextFromClipboard(GetRecentTextCallback callback) override;
   base::TimeDelta GetClipboardContentAge() const override;
   void SuppressClipboardContent() override;
   void ClearClipboardContent() override;
 
  private:
-  // The implementation instance.
-  base::scoped_nsobject<ClipboardRecentContentImplIOS> implementation_;
+  absl::optional<gfx::Image> GetRecentImageFromClipboardInternal();
+  void OnGetRecentImageFromClipboard(GetRecentImageCallback callback,
+                                     const SkBitmap& sk_bitmap);
 
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContentIOS);
+  // The implementation instance.
+  __strong ClipboardRecentContentImplIOS* implementation_;
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_

@@ -43,7 +43,9 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
  public:
   enum OverSampleType { kOverSampleNone, kOverSample2x, kOverSample4x };
 
-  WaveShaperProcessor(float sample_rate, unsigned number_of_channels);
+  WaveShaperProcessor(float sample_rate,
+                      unsigned number_of_channels,
+                      unsigned render_quantum_frames);
 
   ~WaveShaperProcessor() override;
 

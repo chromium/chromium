@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 'use strict';
 
@@ -7,7 +8,7 @@
 
 idl_test(
   ['mediacapture-streams'],
-  ['dom', 'html'],
+  ['webidl', 'dom', 'html'],
   async idl_array => {
     const inputDevices = [];
     const outputDevices = [];
@@ -43,6 +44,7 @@ idl_test(
       MediaDeviceInfo: outputDevices,
       MediaStreamTrack: ['track'],
       MediaStreamTrackEvent: ['trackEvent'],
+      OverconstrainedError: ['new OverconstrainedError("constraint")'],
     });
   }
 );

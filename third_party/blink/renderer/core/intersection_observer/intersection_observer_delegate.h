@@ -19,15 +19,16 @@ class IntersectionObserverDelegate
     : public GarbageCollected<IntersectionObserverDelegate>,
       public NameClient {
  public:
-  virtual ~IntersectionObserverDelegate() = default;
+  ~IntersectionObserverDelegate() override = default;
 
+  virtual LocalFrameUkmAggregator::MetricId GetUkmMetricId() const = 0;
   virtual IntersectionObserver::DeliveryBehavior GetDeliveryBehavior()
       const = 0;
 
   virtual void Deliver(const HeapVector<Member<IntersectionObserverEntry>>&,
                        IntersectionObserver&) = 0;
   virtual ExecutionContext* GetExecutionContext() const = 0;
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override {
     return "IntersectionObserverDelegate";
   }

@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/metrics/user_metrics_action.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -22,7 +22,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +33,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
 
 using message_center::Notification;
@@ -46,12 +47,12 @@ display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
 }
 
-base::string16 GetDisplayName(int64_t display_id) {
+std::u16string GetDisplayName(int64_t display_id) {
   return base::UTF8ToUTF16(
       GetDisplayManager()->GetDisplayNameForId(display_id));
 }
 
-base::string16 GetDisplaySize(int64_t display_id) {
+std::u16string GetDisplaySize(int64_t display_id) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
   // We don't show display size for mirrored display. Fallback
@@ -62,7 +63,7 @@ base::string16 GetDisplaySize(int64_t display_id) {
       display_manager->IsInMirrorMode() && base::Contains(id_list, display_id);
   DCHECK(!mirroring);
   if (mirroring)
-    return base::string16();
+    return std::u16string();
 
   const display::Display& display =
       display_manager->GetDisplayForId(display_id);
@@ -71,7 +72,7 @@ base::string16 GetDisplaySize(int64_t display_id) {
 }
 
 // Callback to handle a user selecting the notification view.
-void OnNotificationClicked(base::Optional<int> button_index) {
+void OnNotificationClicked(absl::optional<int> button_index) {
   DCHECK(!button_index);
 
   Shell::Get()->metrics()->RecordUserMetricsAction(
@@ -84,13 +85,13 @@ void OnNotificationClicked(base::Optional<int> button_index) {
         UMA_STATUS_AREA_DISPLAY_NOTIFICATION_SHOW_SETTINGS);
   }
   message_center::MessageCenter::Get()->RemoveNotification(
-      ScreenLayoutObserver::kNotificationId, true /* by_user */);
+      ScreenLayoutObserver::kNotificationId, /*by_user=*/true);
 }
 
 // Returns the name of the currently connected external display whose ID is
 // |external_display_id|. This should not be used when the external display is
 // used for mirroring.
-base::string16 GetExternalDisplayName(int64_t external_display_id) {
+std::u16string GetExternalDisplayName(int64_t external_display_id) {
   DCHECK(!display::Display::IsInternalDisplayId(external_display_id));
 
   display::DisplayManager* display_manager = GetDisplayManager();
@@ -101,7 +102,7 @@ base::string16 GetExternalDisplayName(int64_t external_display_id) {
 
   // The external display name may have an annotation of "(width x height)" in
   // case that the display is rotated or its resolution is changed.
-  base::string16 name = GetDisplayName(external_display_id);
+  std::u16string name = GetDisplayName(external_display_id);
   const display::ManagedDisplayInfo& display_info =
       display_manager->GetDisplayInfo(external_display_id);
   if (display_info.GetActiveRotation() != display::Display::ROTATE_0 ||
@@ -139,14 +140,14 @@ bool IsDockedModeEnabled() {
 
 // Returns the notification message that should be shown when mirror display
 // mode is entered.
-base::string16 GetEnterMirrorModeMessage() {
+std::u16string GetEnterMirrorModeMessage() {
   DCHECK(GetDisplayManager()->IsInMirrorMode());
   if (display::Display::HasInternalDisplay()) {
-    base::string16 display_names;
+    std::u16string display_names;
     for (auto& id :
          GetDisplayManager()->GetMirroringDestinationDisplayIdList()) {
       if (!display_names.empty())
-        display_names.append(base::UTF8ToUTF16(","));
+        display_names.append(u",");
       display_names.append(GetDisplayName(id));
     }
     return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
@@ -159,26 +160,32 @@ base::string16 GetEnterMirrorModeMessage() {
 
 // Returns the notification message that should be shown when unified desktop
 // mode is entered.
-base::string16 GetEnterUnifiedModeMessage() {
+std::u16string GetEnterUnifiedModeMessage() {
   return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_UNIFIED);
 }
 
 // Returns the notification message that should be shown when unified desktop
 // mode is exited.
-base::string16 GetExitUnifiedModeMessage() {
+std::u16string GetExitUnifiedModeMessage() {
   return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_UNIFIED_EXITING);
 }
 
-base::string16 GetDisplayRemovedMessage(
+std::u16string GetDisplayRemovedMessage(
     const display::ManagedDisplayInfo& removed_display_info,
-    base::string16* out_additional_message) {
+    std::u16string* out_additional_message) {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED,
       base::UTF8ToUTF16(removed_display_info.name()));
 }
 
-base::string16 GetDisplayAddedMessage(int64_t added_display_id,
-                                      base::string16* additional_message_out) {
+std::u16string GetDisplayAddedMessage(int64_t added_display_id,
+                                      std::u16string* additional_message_out) {
+  if (features::IsReduceDisplayNotificationsEnabled()) {
+    DCHECK(!display::Display::IsInternalDisplayId(added_display_id));
+    return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_ADDED,
+                                      GetExternalDisplayName(added_display_id));
+  }
+
   if (!display::Display::HasInternalDisplay()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL);
@@ -222,8 +229,8 @@ void ScreenLayoutObserver::UpdateDisplayInfo(
 bool ScreenLayoutObserver::GetDisplayMessageForNotification(
     const ScreenLayoutObserver::DisplayInfoMap& old_info,
     bool should_notify_has_unassociated_display,
-    base::string16* out_message,
-    base::string16* out_additional_message) {
+    std::u16string* out_message,
+    std::u16string* out_additional_message) {
   if (old_display_mode_ != current_display_mode_) {
     // Ensure that user still gets notified of connecting with excessive
     // displays when display mode changes. For example, for the device which is
@@ -281,6 +288,12 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
     for (const auto& iter : display_info_) {
       if (old_info.count(iter.first))
         continue;
+
+      // No notification if the internal display is connected.
+      if (features::IsReduceDisplayNotificationsEnabled() &&
+          display::Display::IsInternalDisplayId(iter.first)) {
+        return false;
+      }
 
       *out_message = GetDisplayAddedMessage(iter.first, out_additional_message);
       return true;
@@ -368,12 +381,12 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
 }
 
 void ScreenLayoutObserver::CreateOrUpdateNotification(
-    const base::string16& message,
-    const base::string16& additional_message) {
+    const std::u16string& message,
+    const std::u16string& additional_message) {
   // Always remove the notification to make sure the notification appears
   // as a popup in any situation.
   message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
-                                                           false /* by_user */);
+                                                           /*by_user=*/false);
 
   if (message.empty() && additional_message.empty())
     return;
@@ -386,10 +399,10 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
     return;
   }
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, message,
       additional_message,
-      base::string16(),  // display_source
+      std::u16string(),  // display_source
       GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierDisplay),
@@ -411,7 +424,7 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
   UpdateDisplayInfo(&old_info);
 
   const bool current_has_unassociated_display =
-      ash::Shell::Get()->display_manager()->HasUnassociatedDisplay();
+      Shell::Get()->display_manager()->HasUnassociatedDisplay();
 
   // Take |has_unassociated_display_| into consideration in order to avoid
   // showing the notification too frequently. For example, user connects three
@@ -441,17 +454,17 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
   if (!show_notifications_for_testing_)
     return;
 
-  base::string16 message;
-  base::string16 additional_message;
+  std::u16string message;
+  std::u16string additional_message;
   if (!GetDisplayMessageForNotification(old_info,
                                         should_notify_has_unassociated_display,
-                                        &message, &additional_message))
+                                        &message, &additional_message)) {
     return;
+  }
 
+  // Alerting user unassociated display are allowed even when suppressed.
   if (features::IsReduceDisplayNotificationsEnabled() &&
       !should_notify_has_unassociated_display) {
-    // If display notifications should be suppressed and the notification is not
-    // to alert the user of an unassociated display, do not show a notification.
     return;
   }
 
@@ -459,8 +472,8 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
 }
 
 bool ScreenLayoutObserver::GetExitMirrorModeMessage(
-    base::string16* out_message,
-    base::string16* out_additional_message) {
+    std::u16string* out_message,
+    std::u16string* out_additional_message) {
   *out_message =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT);
   return true;

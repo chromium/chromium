@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {PaymentRequestMock} from './resources/payment-request-mock.js';
+var details = {
+  total: {
+    label: 'Total',
+    amount: {currency: 'USD', value: '55.00'}, // US$55.00
+  }
+};
+
+var response_data = {
+  methodName: 'basic-card',
+  stringifiedDetails: '{}',
+  payer: {}
+};
+
+const paymentRequestMock = new PaymentRequestMock();
+
+promise_test(async () => {
+  let result = new PaymentRequest([
+      {'supportedMethods': ['basic-card']}
+  ], details).show();
+  gc();
+
+  paymentRequestMock.onPaymentResponse(response_data);
+  let response = await result;
+  let completeResult = response.complete("success");
+
+  response = null;
+  gc();
+
+  paymentRequestMock.onComplete();
+  return completeResult;
+}, 'Promises resolve even without references to request or response.');
+</script>

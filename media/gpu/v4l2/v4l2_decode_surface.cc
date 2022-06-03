@@ -19,13 +19,13 @@ namespace media {
 V4L2DecodeSurface::V4L2DecodeSurface(V4L2WritableBufferRef input_buffer,
                                      V4L2WritableBufferRef output_buffer,
                                      scoped_refptr<VideoFrame> frame)
-    : input_record_(input_buffer.BufferId()),
-      output_record_(output_buffer.BufferId()),
+    : input_buffer_(std::move(input_buffer)),
+      output_buffer_(std::move(output_buffer)),
+      video_frame_(std::move(frame)),
+      input_record_(input_buffer_.BufferId()),
+      output_record_(output_buffer_.BufferId()),
       decoded_(false) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  input_buffer_ = std::move(input_buffer);
-  output_buffer_ = std::move(output_buffer);
-  video_frame_ = std::move(frame);
 }
 
 V4L2DecodeSurface::~V4L2DecodeSurface() {
@@ -79,6 +79,7 @@ void V4L2DecodeSurface::SetDecodeDoneCallback(base::OnceClosure done_cb) {
 
 void V4L2DecodeSurface::SetReleaseCallback(base::OnceClosure release_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!release_cb_);
 
   release_cb_ = std::move(release_cb);
 }
@@ -105,15 +106,6 @@ void V4L2ConfigStoreDecodeSurface::PrepareSetCtrls(
   ctrls->config_store = config_store_;
 }
 
-void V4L2ConfigStoreDecodeSurface::PrepareQueueBuffer(
-    struct v4l2_buffer* buffer) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(buffer, nullptr);
-  DCHECK_GT(config_store_, 0u);
-
-  buffer->config_store = config_store_;
-}
-
 uint64_t V4L2ConfigStoreDecodeSurface::GetReferenceID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -123,45 +115,74 @@ uint64_t V4L2ConfigStoreDecodeSurface::GetReferenceID() const {
 
 bool V4L2ConfigStoreDecodeSurface::Submit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(config_store_, 0u);
 
-  // There is nothing extra to submit when using the config store
-  return true;
+  input_buffer().SetConfigStore(config_store_);
+
+  if (!std::move(input_buffer()).QueueMMap()) {
+    return false;
+  }
+
+  switch (output_buffer().Memory()) {
+    case V4L2_MEMORY_MMAP:
+      return std::move(output_buffer()).QueueMMap();
+    case V4L2_MEMORY_DMABUF:
+      return std::move(output_buffer()).QueueDMABuf(video_frame());
+    default:
+      NOTREACHED() << "We should only use MMAP or DMABUF.";
+  }
+
+  return false;
 }
 
 void V4L2RequestDecodeSurface::PrepareSetCtrls(
     struct v4l2_ext_controls* ctrls) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(ctrls, nullptr);
-  DCHECK(request_ref_.IsValid());
 
-  ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
-  request_ref_.SetCtrls(ctrls);
-}
-
-void V4L2RequestDecodeSurface::PrepareQueueBuffer(
-    struct v4l2_buffer* buffer) const {
-  DCHECK_NE(buffer, nullptr);
-  DCHECK(request_ref_.IsValid());
-
-  request_ref_.SetQueueBuffer(buffer);
-  // Use the output buffer index as the timestamp.
-  // Since the client is supposed to keep the output buffer out of the V4L2
-  // queue for as long as it is used as a reference frame, this ensures that
-  // all the requests we submit have unique IDs at any point in time.
-  DCHECK_EQ(static_cast<int>(buffer->index), input_record());
-  buffer->timestamp.tv_sec = 0;
-  buffer->timestamp.tv_usec = output_record();
+  request_ref_.ApplyCtrls(ctrls);
 }
 
 uint64_t V4L2RequestDecodeSurface::GetReferenceID() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Convert the input buffer ID to what the internal representation of
   // the timestamp we submitted will be (tv_usec * 1000).
   return output_record() * 1000;
 }
 
 bool V4L2RequestDecodeSurface::Submit() {
-  DCHECK(request_ref_.IsValid());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Use the output buffer index as the timestamp.
+  // Since the client is supposed to keep the output buffer out of the V4L2
+  // queue for as long as it is used as a reference frame, this ensures that
+  // all the requests we submit have unique IDs at any point in time.
+  struct timeval timestamp = {
+      .tv_sec = 0,
+      .tv_usec = output_record()
+  };
+  input_buffer().SetTimeStamp(timestamp);
 
-  return std::move(request_ref_).Submit().IsValid();
+  if (!std::move(input_buffer()).QueueMMap(&request_ref_)) {
+    return false;
+  }
+
+  bool result = false;
+  switch (output_buffer().Memory()) {
+    case V4L2_MEMORY_MMAP:
+      result = std::move(output_buffer()).QueueMMap();
+      break;
+    case V4L2_MEMORY_DMABUF:
+      result = std::move(output_buffer()).QueueDMABuf(video_frame());
+      break;
+    default:
+      NOTREACHED() << "We should only use MMAP or DMABUF.";
+  }
+
+  if (!result)
+    return result;
+
+  return std::move(request_ref_).Submit().has_value();
 }
 
 }  // namespace media

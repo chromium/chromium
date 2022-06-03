@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_FEATURE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_FEATURE_SET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_flags.h"
@@ -50,7 +49,12 @@ class CORE_EXPORT RuleFeatureSet {
 
  public:
   RuleFeatureSet();
+  RuleFeatureSet(const RuleFeatureSet&) = delete;
+  RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
   ~RuleFeatureSet();
+
+  bool operator==(const RuleFeatureSet&) const;
+  bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
 
   // Methods for updating the data in this object.
   void Add(const RuleFeatureSet&);
@@ -65,6 +69,7 @@ class CORE_EXPORT RuleFeatureSet {
   bool UsesWindowInactiveSelector() const {
     return metadata_.uses_window_inactive_selector;
   }
+  bool UsesContainerQueries() const { return metadata_.uses_container_queries; }
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return metadata_.needs_full_recalc_for_rule_set_invalidation;
   }
@@ -98,6 +103,10 @@ class CORE_EXPORT RuleFeatureSet {
   }
   MediaQueryResultList& DeviceDependentMediaQueryResults() {
     return device_dependent_media_query_results_;
+  }
+  bool HasMediaQueryResults() const {
+    return !viewport_dependent_media_query_results_.IsEmpty() ||
+           !device_dependent_media_query_results_.IsEmpty();
   }
 
   // Collect descendant and sibling invalidation sets.
@@ -141,6 +150,34 @@ class CORE_EXPORT RuleFeatureSet {
 
   bool IsAlive() const { return is_alive_; }
 
+  // Format the RuleFeatureSet for debugging purposes.
+  //
+  //  [>] Means descendant invalidation set.
+  //  [+] Means sibling invalidation set.
+  //  [>+] Means sibling descendant invalidation set.
+  //
+  // Examples:
+  //
+  //      .a[>] { ... } - Descendant invalidation set class |a|.
+  //      #a[+] { ... } - Sibling invalidation set for id |a|
+  //  [name][>] { ... } - Descendant invalidation set for attribute |name|.
+  //  :hover[>] { ... } - Descendant set for pseudo-class |hover|.
+  //       *[+] { ... } - Universal sibling invalidation set.
+  //    nth[+>] { ... } - Nth sibling descendant invalidation set.
+  //    type[>] { ... } - Type rule invalidation set.
+  //
+  // META flags (omitted if false):
+  //
+  //  F - Uses first line rules.
+  //  W - Uses window inactive selector.
+  //  R - Needs full recalc for ruleset invalidation.
+  //  P - Invalidates parts.
+  //  ~ - Max direct siblings is kDirectAdjacentMax.
+  //  <integer> - Max direct siblings is specified number (omitted if 0).
+  //
+  // See InvalidationSet::ToString for more information.
+  String ToString() const;
+
  protected:
   enum PositionType { kSubject, kAncestor };
   InvalidationSet* InvalidationSetForSimpleSelector(const CSSSelector&,
@@ -164,16 +201,21 @@ class CORE_EXPORT RuleFeatureSet {
     DISALLOW_NEW();
     void Add(const FeatureMetadata& other);
     void Clear();
+    bool operator==(const FeatureMetadata&) const;
+    bool operator!=(const FeatureMetadata& o) const { return !(*this == o); }
 
     bool uses_first_line_rules = false;
     bool uses_window_inactive_selector = false;
+    bool uses_container_queries = false;
     bool needs_full_recalc_for_rule_set_invalidation = false;
     unsigned max_direct_adjacent_selectors = 0;
     bool invalidates_parts = false;
   };
 
-  SelectorPreMatch CollectFeaturesFromSelector(const CSSSelector&,
-                                               FeatureMetadata&);
+  SelectorPreMatch CollectFeaturesFromSelector(
+      const CSSSelector&,
+      FeatureMetadata&,
+      unsigned max_direct_adjacent_selectors);
 
   InvalidationSet& EnsureClassInvalidationSet(const AtomicString& class_name,
                                               InvalidationType,
@@ -233,20 +275,94 @@ class CORE_EXPORT RuleFeatureSet {
       attributes.clear();
       ids.clear();
       tag_names.clear();
+      emitted_tag_names.clear();
     }
     unsigned Size() const {
-      return classes.size() + attributes.size() + ids.size() + tag_names.size();
+      return classes.size() + attributes.size() + ids.size() +
+             tag_names.size() + emitted_tag_names.size();
     }
 
     Vector<AtomicString> classes;
     Vector<AtomicString> attributes;
     Vector<AtomicString> ids;
     Vector<AtomicString> tag_names;
+    Vector<AtomicString> emitted_tag_names;
     unsigned max_direct_adjacent_selectors = 0;
     InvalidationFlags invalidation_flags;
     bool content_pseudo_crossing = false;
     bool has_nth_pseudo = false;
     bool has_features_for_rule_set_invalidation = false;
+  };
+
+  // Siblings which contain nested selectors (e.g. :is) only count as one
+  // sibling on the level where the nesting pseudo appears. To calculate
+  // the max direct adjacent count correctly for each level, we sometimes
+  // need to reset the count at certain boundaries.
+  //
+  // Example: .a + :is(.b + .c, .d + .e) + .f
+  //
+  // When processing the above selector, the InvalidationSetFeatures produced
+  // from '.f' is eventually passed to both '.b + .c' and '.d + .e' as a mutable
+  // reference. Each of those selectors will then increment the max direct
+  // adjacent counter, and without a timely reset, changes would leak from one
+  // sub-selector to another. It would also leak out of the :is() pseudo,
+  // resulting in the wrong count for '.a' as well.
+  class AutoRestoreMaxDirectAdjacentSelectors {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreMaxDirectAdjacentSelectors(
+        InvalidationSetFeatures* features)
+        : features_(features),
+          original_value_(features ? features->max_direct_adjacent_selectors
+                                   : 0) {}
+    ~AutoRestoreMaxDirectAdjacentSelectors() {
+      if (features_)
+        features_->max_direct_adjacent_selectors = original_value_;
+    }
+
+   private:
+    InvalidationSetFeatures* features_;
+    unsigned original_value_ = 0;
+  };
+
+  // For :is(:host(.a), .b) .c, the invalidation set for .a should be marked
+  // as tree-crossing, but the invalidation set for .b should not.
+  class AutoRestoreTreeBoundaryCrossingFlag {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreTreeBoundaryCrossingFlag(
+        InvalidationSetFeatures& features)
+        : features_(features),
+          original_value_(features.invalidation_flags.TreeBoundaryCrossing()) {}
+    ~AutoRestoreTreeBoundaryCrossingFlag() {
+      features_.invalidation_flags.SetTreeBoundaryCrossing(original_value_);
+    }
+
+   private:
+    InvalidationSetFeatures& features_;
+    bool original_value_;
+  };
+
+  // For :is(.a, :host-context(.b), .c) .d, the invalidation set for .c should
+  // not be marked as insertion point crossing.
+  class AutoRestoreInsertionPointCrossingFlag {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreInsertionPointCrossingFlag(
+        InvalidationSetFeatures& features)
+        : features_(features),
+          original_value_(
+              features.invalidation_flags.InsertionPointCrossing()) {}
+    ~AutoRestoreInsertionPointCrossingFlag() {
+      features_.invalidation_flags.SetInsertionPointCrossing(original_value_);
+    }
+
+   private:
+    InvalidationSetFeatures& features_;
+    bool original_value_;
   };
 
   static void ExtractInvalidationSetFeature(const CSSSelector&,
@@ -257,18 +373,38 @@ class CORE_EXPORT RuleFeatureSet {
     kRequiresSubtreeInvalidation
   };
 
+  // Extracts features for the given complex selector, and adds those features
+  // the appropriate invalidation sets.
+  //
+  // The returned InvalidationSetFeatures contain the descendant features,
+  // extracted from the rightmost compound selector.
+  //
+  // The PositionType indicates whether or not the complex selector resides
+  // in the rightmost compound (kSubject), or anything to the left of that
+  // (kAncestor). For example, for ':is(.a .b) :is(.c .d)', the nested
+  // complex selector '.c .d' should be called with kSubject, and the '.a .b'
+  // should be called with kAncestor.
+  //
+  // The PseudoType indicates whether or not we are inside a nested complex
+  // selector. For example, for :is(.a .b), this function is called with
+  // CSSSelector equal to '.a .b', and PseudoType equal to kPseudoIs.
+  // For top-level complex selectors, the PseudoType is kPseudoUnknown.
+  FeatureInvalidationType UpdateInvalidationSetsForComplex(
+      const CSSSelector&,
+      InvalidationSetFeatures&,
+      PositionType,
+      CSSSelector::PseudoType);
+
   void ExtractInvalidationSetFeaturesFromSimpleSelector(
       const CSSSelector&,
       InvalidationSetFeatures&);
   const CSSSelector* ExtractInvalidationSetFeaturesFromCompound(
       const CSSSelector&,
       InvalidationSetFeatures&,
-      PositionType,
-      CSSSelector::PseudoType = CSSSelector::kPseudoUnknown);
-  FeatureInvalidationType ExtractInvalidationSetFeaturesFromSelectorList(
-      const CSSSelector&,
-      InvalidationSetFeatures&,
       PositionType);
+  void ExtractInvalidationSetFeaturesFromSelectorList(const CSSSelector&,
+                                                      InvalidationSetFeatures&,
+                                                      PositionType);
   void UpdateFeaturesFromCombinator(
       const CSSSelector&,
       const CSSSelector* last_compound_selector_in_adjacent_chain,
@@ -343,8 +479,9 @@ class CORE_EXPORT RuleFeatureSet {
   unsigned is_alive_ : 1;
 
   friend class RuleFeatureSetTest;
-  DISALLOW_COPY_AND_ASSIGN(RuleFeatureSet);
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const RuleFeatureSet&);
 
 }  // namespace blink
 

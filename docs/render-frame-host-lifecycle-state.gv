@@ -1,0 +1,13 @@
+// Generated with https://crrev.com/c/2220116 and:
+//   python3 tools/state_transitions/state_graph.py content/browser/renderer_host/render_frame_host_impl.cc LifecycleStateImpl
+//
+// See tools/state_transitions/README.md
+digraph createflow {
+  kSpeculative -> {kActive, kPendingCommit};
+  kPendingCommit -> {kPrerendering, kActive, kReadyToBeDeleted};
+  kPrerendering -> {kActive, kRunningUnloadHandlers, kReadyToBeDeleted};
+  kActive -> {kInBackForwardCache, kRunningUnloadHandlers, kReadyToBeDeleted};
+  kInBackForwardCache -> {kActive, kReadyToBeDeleted};
+  kRunningUnloadHandlers -> {kReadyToBeDeleted};
+  kReadyToBeDeleted -> {};
+}

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace net {
 class CookieStore;
@@ -20,6 +21,10 @@ namespace content {
 class CONTENT_EXPORT SameSiteDataRemoverImpl {
  public:
   explicit SameSiteDataRemoverImpl(BrowserContext* browser_context);
+
+  SameSiteDataRemoverImpl(const SameSiteDataRemoverImpl&) = delete;
+  SameSiteDataRemoverImpl& operator=(const SameSiteDataRemoverImpl&) = delete;
+
   ~SameSiteDataRemoverImpl();
 
   // Returns a set containing domains associated with deleted SameSite=None
@@ -40,6 +45,11 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   // call since it's not needed for the function execution.
   void ClearStoragePartitionData(base::OnceClosure closure);
 
+  // Clears storage for domains in the provided set.
+  void ClearStoragePartitionForOrigins(
+      base::OnceClosure closure,
+      StoragePartition::OriginMatcherFunction origin_matcher);
+
   // For testing purposes only.
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);
 
@@ -47,8 +57,6 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   BrowserContext* browser_context_;
   StoragePartition* storage_partition_;
   std::set<std::string> same_site_none_domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImpl);
 };
 
 }  // namespace content

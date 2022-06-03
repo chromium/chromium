@@ -1,0 +1,37 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+struct ReportBodyElement {
+  string name;
+  string value;
+};
+
+// https://w3c.github.io/reporting/#report-body
+// Here we define ReportingBody as a list of pairs of strings, as that's what
+// we need currently.
+struct ReportBody {
+  array<ReportBodyElement> body;
+};
+
+// https://w3c.github.io/reporting/#concept-reports
+struct Report {
+  string type;
+  url.mojom.Url url;
+  ReportBody? body;
+};
+
+// A ReportingObserver represents a bundle of
+// https://w3c.github.io/reporting/#observers registered to an environment
+// settings object. This interface is typically implemented by blink and
+// used from the browser process.
+interface ReportingObserver {
+  // Notifies |report|. |report| is queued to ReportingObservers registered
+  // to an environment settings object. Note that this message doesn't lead
+  // to https://w3c.github.io/reporting/#send-reports.
+  Notify(Report report);
+};

@@ -1,0 +1,1 @@
+link name='bar' nameFrom=relatedElement

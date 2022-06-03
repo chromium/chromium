@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,25 +22,23 @@
 namespace chrome {
 
 // static
-void DefaultBrowserInfoBarDelegate::Create(InfoBarService* infobar_service,
-                                           Profile* profile) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+void DefaultBrowserInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager,
+    Profile* profile) {
+  infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new DefaultBrowserInfoBarDelegate(profile))));
 }
 
 DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(Profile* profile)
-    : ConfirmInfoBarDelegate(),
-      profile_(profile),
-      should_expire_(false),
-      action_taken_(false) {
+    : profile_(profile) {
   // We want the info-bar to stick-around for few seconds and then be hidden
   // on the next navigation after that.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DefaultBrowserInfoBarDelegate::AllowExpiry,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(8));
+      base::Seconds(8));
 }
 
 DefaultBrowserInfoBarDelegate::~DefaultBrowserInfoBarDelegate() {
@@ -79,7 +79,7 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetMessageText() const {
+std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
 }
 
@@ -87,7 +87,7 @@ int DefaultBrowserInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetButtonLabel(
+std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);
@@ -110,9 +110,8 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   // The worker pointer is reference counted. While it is running, the
   // message loops of the FILE and UI thread will hold references to it
   // and it will be automatically freed once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>(
-      shell_integration::DefaultWebClientWorkerCallback())
-      ->StartSetAsDefault();
+  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+      ->StartSetAsDefault(base::NullCallback());
   return true;
 }
 

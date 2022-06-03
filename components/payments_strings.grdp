@@ -64,9 +64,6 @@
     <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Sentence-cased." formatter_data="android_java">
       Payment
     </message>
-    <message name="IDS_PAYMENT_ACCOUNT_BALANCE" desc="The label for the amount of funds in user's digital wallet. Sentence-cased." formatter_data="android_java">
-      Account balance
-    </message>
     <message name="IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME" desc="The name of the Contact Info section in the Payment Sheet of the Payment Request dialog. Sentence-cased.">
       Contact info
     </message>
@@ -132,9 +129,6 @@
     </message>
     <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Title-Cased.">
       Payment
-    </message>
-    <message name="IDS_PAYMENT_ACCOUNT_BALANCE" desc="The label for the amount of funds in user's digital wallet. Title-Cased." formatter_data="android_java">
-      Account Balance
     </message>
     <message name="IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME" desc="The name of the Contact Info section in the Payment Sheet of the Payment Request dialog. Title-Cased.">
       Contact Info
@@ -208,6 +202,9 @@
     <message name="IDS_PAYMENTS_PAY_BUTTON" desc="The label for the button that finishes the payment process. Sentence-cased." formatter_data="android_java">
       Pay
     </message>
+    <message name="IDS_PAYMENTS_CONTINUE_BUTTON" desc="The label for the button that continues to the payment handler window. Sentence-cased." formatter_data="android_java">
+      Continue
+    </message>
     <message name="IDS_PAYMENTS_ADD_CONTACT" desc="Text on a button that lets a user add new contact details, like the user's full name, an email address or a phone number. Sentence-cased." formatter_data="android_java">
       Add contact info
     </message>
@@ -232,6 +229,9 @@
     <message name="IDS_PAYMENTS_PAY_BUTTON" desc="The label for the button that finishes the payment process. Title-Cased.">
       Pay
     </message>
+    <message name="IDS_PAYMENTS_CONTINUE_BUTTON" desc="The label for the button that continues to the payment handler window. Title-Cased.">
+      Continue
+    </message>
     <message name="IDS_PAYMENTS_ADD_CONTACT" desc="Text on a button that lets a user add new contact details, like the user's full name, an email address or a phone number. Title-Cased.">
       Add Contact Info
     </message>
@@ -251,13 +251,13 @@
 
   <!-- Fields & Editors, sentence-cased -->
   <if expr="not use_titlecase">
-    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Sentence-cased. [CHAR-LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Sentence-cased. [CHAR_LIMIT=32]" meaning="Name of a person" formatter_data="android_java">
       Name
     </message>
-    <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Sentence-cased. [CHAR-LIMIT=32]">
+    <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Sentence-cased. [CHAR_LIMIT=32]">
       Phone number
     </message>
-    <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Sentence-cased. [CHAR-LIMIT=32]">
+    <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Sentence-cased. [CHAR_LIMIT=32]">
       Email
     </message>
     <message name="IDS_PAYMENTS_SAVE_CARD_TO_DEVICE_CHECKBOX" desc="The label for the checkbox that enables the user to save a credit card to their device, for example, on their phone. Sentence-cased." formatter_data="android_java">
@@ -266,31 +266,13 @@
     <message name="IDS_PAYMENTS_ACCEPTED_CARDS_LABEL" desc="The title for the section that displays the card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
       Accepted cards
     </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_CARDS_LABEL" desc="The title for the section that displays the credit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted credit card networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted credit cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_DEBIT_CARDS_LABEL" desc="The title for the section that displays the debit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted debit card networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted debit cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_PREPAID_CARDS_LABEL" desc="The title for the section that displays the prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted prepaid card networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted prepaid cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_DEBIT_CARDS_LABEL" desc="The title for the section that displays the credit and debit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted credit and debit cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_PREPAID_CARDS_LABEL" desc="The title for the section that displays the credit and prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted credit and prepaid cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_DEBIT_PREPAID_CARDS_LABEL" desc="The title for the section that displays the debit and prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Sentence-cased." formatter_data="android_java">
-      Accepted debit and prepaid cards
-    </message>
-    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Sentence-cased. [CHAR-LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Sentence-cased. [CHAR_LIMIT=32]" formatter_data="android_java">
       Expires <ph name="EXPIRATION_MONTH">%1$s<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">%2$s<ex>17</ex></ph>
     </message>
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Sentence-cased." formatter_data="android_java">
       Loading
     </message>
-    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Sentence-cased." formatter_data="android_java">
+    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Sentence-cased.">
       Processing
     </message>
      <message name="IDS_PAYMENTS_CHECKING_OPTION" desc="Text explaining that the option the user selected is being checked and verified. Sentence-cased." formatter_data="android_java">
@@ -299,19 +281,16 @@
     <message name="IDS_PAYMENTS_UPDATED_LABEL" desc="The text that informs the user that the total value of their cart has been updated. Sentence-cased." formatter_data="android_java">
       Updated
     </message>
-    <message name="IDS_PAYMENT_COMPLETE_MESSAGE" desc="A status message that the payment transaction has completed. Sentence-cased." formatter_data="android_java">
-      Payment complete
-    </message>
   </if>  <!-- not use_titlecase -->
   <!-- Fields & Editors, Title-cased -->
   <if expr="use_titlecase">
-    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Title-Cased. [CHAR-LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Title-Cased. [CHAR_LIMIT=32]" meaning="Name of a person" formatter_data="android_java">
       Name
     </message>
-    <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Title-Cased. [CHAR-LIMIT=32]">
+    <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Title-Cased. [CHAR_LIMIT=32]">
       Phone Number
     </message>
-    <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Title-Cased. [CHAR-LIMIT=32]">
+    <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Title-Cased. [CHAR_LIMIT=32]">
       Email
     </message>
     <message name="IDS_PAYMENTS_SAVE_CARD_TO_DEVICE_CHECKBOX" desc="The label for the checkbox that enables the user to save a credit card to their device, for example, on their phone. Title-Cased.">
@@ -323,28 +302,13 @@
     <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_CARDS_LABEL" desc="The title for the section that displays the credit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted credit card networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
       Accepted Credit Cards
     </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_DEBIT_CARDS_LABEL" desc="The title for the section that displays the debit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted debit card networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Debit Cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_PREPAID_CARDS_LABEL" desc="The title for the section that displays the prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted prepaid card networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Prepaid Cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_DEBIT_CARDS_LABEL" desc="The title for the section that displays the credit and debit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Credit and Debit Cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_PREPAID_CARDS_LABEL" desc="The title for the section that displays the credit and prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Credit and Prepaid Cards
-    </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_DEBIT_PREPAID_CARDS_LABEL" desc="The title for the section that displays the debit and prepaid card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Debit and Prepaid Cards
-    </message>
-    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Title-Cased. [CHAR-LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. Title-Cased. [CHAR_LIMIT=32]" formatter_data="android_java">
       Expires <ph name="EXPIRATION_MONTH">%1$s<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">%2$s<ex>17</ex></ph>
     </message>
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Title-Cased.">
       Loading
     </message>
-    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Title-Cased." formatter_data="android_java">
+    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Title-Cased.">
       Processing
     </message>
      <message name="IDS_PAYMENTS_CHECKING_OPTION" desc="Text explaining that the option the user selected is being checked and verified. Title-Cased." formatter_data="android_java">
@@ -353,30 +317,9 @@
     <message name="IDS_PAYMENTS_UPDATED_LABEL" desc="The text that informs the user that the total value of their cart has been updated. Title-Cased." formatter_data="android_java">
       Updated
     </message>
-    <message name="IDS_PAYMENT_COMPLETE_MESSAGE" desc="A status message that the payment transaction has completed. Title-Cased." formatter_data="android_java">
-      Payment Complete
-    </message>
   </if>  <!-- use_titlecase -->
 
   <!-- Fields, descriptive sentences, and other strings which are never title-cased. -->
-  <message name="IDS_PAYMENTS_CREDIT_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's credit cards that the merchant accepts." formatter_data="android_java">
-    Credit cards are accepted.
-  </message>
-  <message name="IDS_PAYMENTS_DEBIT_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's debit cards that the merchant accepts." formatter_data="android_java">
-    Debit cards are accepted.
-  </message>
-  <message name="IDS_PAYMENTS_PREPAID_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's prepaid cards that the merchant accepts." formatter_data="android_java">
-    Prepaid cards are accepted.
-  </message>
-  <message name="IDS_PAYMENTS_CREDIT_DEBIT_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's credit and debit cards that the merchant accepts." formatter_data="android_java">
-    Credit and debit cards are accepted.
-  </message>
-  <message name="IDS_PAYMENTS_CREDIT_PREPAID_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's credit and prepaid cards that the merchant accepts." formatter_data="android_java">
-    Credit and prepaid cards are accepted.
-  </message>
-  <message name="IDS_PAYMENTS_DEBIT_PREPAID_CARDS_ARE_ACCEPTED_LABEL" desc="A message for the section that displays user's debit and prepaid cards that the merchant accepts." formatter_data="android_java">
-    Debit and prepaid cards are accepted.
-  </message>
   <message name="IDS_PAYMENTS_ERROR_MESSAGE" desc="The text that informs the user that there is error in verifying and charging the payment." formatter_data="android_java">
     There was an error processing your order. Please try again.
   </message>
@@ -386,12 +329,6 @@
   <if expr="is_android">
     <message name="IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS_SIGNED_IN" desc="Label of the section containing the origin description and the link to go to the settings page for card and address options. This label is used when the user is signed in." formatter_data="android_java">
       Cards and addresses are from Chrome and your Google Account (<ph name="ACCOUNT_EMAIL">%1$s<ex>johndoe@gmail.com</ex></ph>). You can manage them in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
-    </message>
-    <message name="IDS_PAYMENT_TOUCH_SENSOR_TO_PAY" desc="A prompt for the user to place the finger on the fingerprint scanner, which will confirm payment transaction." formatter_data="android_java">
-      Touch sensor to pay
-    </message>
-    <message name="IDS_PAYMENT_FINGERPRINT_NOT_RECOGNIZED" desc="A status message about user's fingerprint not being recognized after the user has touched the fingerprint scanner, so the payment transaction cannot complete. This is a brief version of the sentence 'Your fingerprint is not recognized.'" formatter_data="android_java">
-      Not recognized
     </message>
   </if>
   <if expr="not is_android">
@@ -597,8 +534,8 @@
     Payment Manifest Parser
   </message>
   <if expr="is_android">
-    <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that incognito mode does not continue into external payment apps." formatter_data="android_java">
-      Leaving incognito mode to pay via an external application. Continue?
+    <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that Incognito mode does not continue into external payment apps." formatter_data="android_java">
+      Leaving Incognito mode to pay via an external application. Continue?
     </message>
   </if>
 
@@ -666,4 +603,63 @@
   <message name="IDS_PAYMENT_HANDLER_SHEET_CLOSED" desc="Accessibility string read when the payment-handler bottom sheet is closed." formatter_data="android_java">
     Payment handler sheet is closed
   </message>
+
+  <!-- Secure Payment Confirmation strings -->
+  <if expr="not is_win and not is_macosx">
+    <!-- Strings that don't refer to specific platform authenticator names -->
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
+        Verify your purchase
+    </message>
+  </if> <!-- not is_win and not is_macosx -->
+  <if expr="is_macosx">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
+        Use Touch ID to verify and complete your purchase?
+    </message>
+  </if> <!-- is_macosx -->
+  <if expr="is_win">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
+        Use Windows Hello to verify and complete your purchase?
+    </message>
+  </if>  <!-- is_win -->
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the store name, e.g. merchant.com." formatter_data="android_java">
+    Store
+  </message>
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the total price, e.g. $20.00 USD." formatter_data="android_java">
+    Total
+  </message>
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
+    Verify
+  </message>
+  <if expr="is_android">
+    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
+        <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+  </if>
+  <if expr="not is_android">
+    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment.">
+        <ph name="URL">$1<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+  </if>
+
+  <!-- Accessibility strings -->
+  <if expr="is_android">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential authentication bottom sheet is opened. It describes where the users can verify their purchase." formatter_data="android_java">
+      Secure payment credential authentication sheet
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_OPENED" desc="Accessibility string read when the payment credential authentication bottom sheet is opened." formatter_data="android_java">
+      Secure payment credential authentication sheet is opened
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_CLOSED" desc="Accessibility string read when the payment credential authentication bottom sheet is closed." formatter_data="android_java">
+      Secure payment credential authentication sheet is closed
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_DESCRIPTION" desc="Accessibility string read when the bottom sheet of no matching payment credential is opened. It describes that additional steps are needed to verify the payment." formatter_data="android_java">
+      Secure payment credential no matching credential sheet
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_OPENED" desc="Accessibility string read when the bottom sheet of no matching payment credential is opened." formatter_data="android_java">
+      Secure payment credential no matching credential sheet is opened
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet of no matching payment credential is closed." formatter_data="android_java">
+      Secure payment credential no matching credential sheet is closed
+    </message>
+  </if>  <!-- is_android -->
 </grit-part>

@@ -21,7 +21,7 @@ const origins = get_host_info();
     "crossOrigin": origins.HTTPS_ORIGIN
   }
 ].forEach(({ origin, crossOrigin }) => {
-  ["subframe", "navigate"].forEach(variant => {
+  ["subframe", "navigate", "popup"].forEach(variant => {
     async_test(t => {
       const id = token();
       const frame = document.createElement("iframe");

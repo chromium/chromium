@@ -52,7 +52,7 @@ void HandleTestFileRequestCallback(
 namespace test {
 
 content::WebUIDataSource::HandleRequestCallback GetTestFilesRequestFilter() {
-  return base::Bind(&HandleTestFileRequestCallback);
+  return base::BindRepeating(&HandleTestFileRequestCallback);
 }
 
 content::WebUIDataSource::ShouldHandleRequestCallback

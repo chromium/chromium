@@ -4,7 +4,7 @@
 <script>
     if (window.testRunner) {
         testRunner.dumpAsText();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
         testRunner.waitUntilDone();
     }
 
@@ -38,13 +38,8 @@
         event.initEvent( 'click', true, true );
         document.getElementById('anchorLink').dispatchEvent(event);
 
-        if (window.testRunner) {
-            testRunner.setCloseRemainingWindowsWhenComplete();
-
-            start = new Date();
-            myInterval = setInterval(checkIfDone, 500);        
-
-        }
+        start = new Date();
+        myInterval = setInterval(checkIfDone, 500);
     }
 </script>
 </head>

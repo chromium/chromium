@@ -42,25 +42,31 @@ void _sanitizer_options_link_helper() { }
 //   detect_stack_use_after_return=1 - use fake stack to delay the reuse of
 //     stack allocations and detect stack-use-after-return errors.
 //   symbolize=1 - enable in-process symbolization.
-#if defined(OS_LINUX)
+//   external_symbolizer_path=... - provides the path to llvm-symbolizer
+//     relative to the main executable
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const char kAsanDefaultOptions[] =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
     "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
-    "symbolize=1 detect_leaks=0 allow_user_segv_handler=1 ";
+    "symbolize=1 detect_leaks=0 allow_user_segv_handler=1 "
+    "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
+    "bin/llvm-symbolizer";
 
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 const char* kAsanDefaultOptions =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
-    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
-    "detect_odr_violation=0 ";
+    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 ";
 
 #elif defined(OS_WIN)
 const char* kAsanDefaultOptions =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=\\..\\..\\ "
-    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 ";
-#endif  // OS_LINUX
+    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
+    "symbolize=1 external_symbolizer_path=%d/../../third_party/"
+    "llvm-build/Release+Asserts/bin/llvm-symbolizer.exe";
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) || \
+    defined(OS_WIN)
 // Allow NaCl to override the default asan options.
 extern const char* kAsanDefaultOptionsNaCl;
 __attribute__((weak)) const char* kAsanDefaultOptionsNaCl = nullptr;
@@ -76,10 +82,11 @@ extern char kASanDefaultSuppressions[];
 SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_suppressions() {
   return kASanDefaultSuppressions;
 }
-#endif  // OS_LINUX || OS_MACOSX || OS_WIN
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) ||
+        // defined(OS_WIN)
 #endif  // ADDRESS_SANITIZER
 
-#if defined(THREAD_SANITIZER) && defined(OS_LINUX)
+#if defined(THREAD_SANITIZER) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
 // Default options for ThreadSanitizer in various configurations:
 //   detect_deadlocks=1 - enable deadlock (lock inversion) detection.
 //   second_deadlock_stack=1 - more verbose deadlock reports.
@@ -92,10 +99,13 @@ SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_suppressions() {
 //     value) to keep more stack traces.
 //   strip_path_prefix=/../../ - prefixes up to and including this
 //     substring will be stripped from source file paths in symbolized reports.
+//   external_symbolizer_path=... - provides the path to llvm-symbolizer
+//     relative to the main executable
 const char kTsanDefaultOptions[] =
     "detect_deadlocks=1 second_deadlock_stack=1 report_signal_unsafe=0 "
     "report_thread_leaks=0 print_suppressions=1 history_size=7 "
-    "strict_memcmp=0 strip_path_prefix=/../../ ";
+    "strip_path_prefix=/../../ external_symbolizer_path=%d/../../third_party/"
+    "llvm-build/Release+Asserts/bin/llvm-symbolizer";
 
 SANITIZER_HOOK_ATTRIBUTE const char *__tsan_default_options() {
   return kTsanDefaultOptions;
@@ -107,16 +117,23 @@ SANITIZER_HOOK_ATTRIBUTE const char *__tsan_default_suppressions() {
   return kTSanDefaultSuppressions;
 }
 
-#endif  // THREAD_SANITIZER && OS_LINUX
+#endif  // defined(THREAD_SANITIZER) && (defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS))
 
 #if defined(MEMORY_SANITIZER)
 // Default options for MemorySanitizer:
-//   intercept_memcmp=0 - do not detect uninitialized memory in memcmp() calls.
-//     Pending cleanup, see http://crbug.com/523428
 //   strip_path_prefix=/../../ - prefixes up to and including this
 //     substring will be stripped from source file paths in symbolized reports.
+//   external_symbolizer_path=... - provides the path to llvm-symbolizer
+//     relative to the main executable
 const char kMsanDefaultOptions[] =
-    "intercept_memcmp=0 strip_path_prefix=/../../ ";
+    "strip_path_prefix=/../../ "
+
+#if !defined(OS_APPLE)
+    "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
+    "bin/llvm-symbolizer"
+#endif
+;
 
 SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
   return kMsanDefaultOptions;
@@ -129,8 +146,25 @@ SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
 //   print_suppressions=1 - print the list of matched suppressions.
 //   strip_path_prefix=/../../ - prefixes up to and including this
 //     substring will be stripped from source file paths in symbolized reports.
+//   external_symbolizer_path=... - provides the path to llvm-symbolizer
+//     relative to the main executable
+//   use_poisoned=1 - Scan poisoned memory. This is useful for Oilpan (C++
+//     garbage collection) which wants to exclude its managed memory from being
+//     reported as leaks (through root regions) and also temporarily poisons
+//     memory regions before calling destructors of objects to avoid destructors
+//     cross-referencing memory in other objects. Main thread termination in
+//     Blink is not graceful and leak checks may be emitted at any time, which
+//     means that the garbage collector may be in a state with poisoned memory,
+//     leading to false-positive reports.
 const char kLsanDefaultOptions[] =
     "print_suppressions=1 strip_path_prefix=/../../ "
+    "use_poisoned=1 "
+
+#if !defined(OS_APPLE)
+    "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
+    "bin/llvm-symbolizer "
+#endif
+
 #if defined(ARCH_CPU_64_BITS)
     // When pointer compression in V8 is enabled the external pointers in the
     // heap are guaranteed to be only 4 bytes aligned. So we need this option
@@ -156,7 +190,13 @@ SANITIZER_HOOK_ATTRIBUTE const char *__lsan_default_suppressions() {
 // Default options for UndefinedBehaviorSanitizer:
 //   print_stacktrace=1 - print the stacktrace when UBSan reports an error.
 const char kUbsanDefaultOptions[] =
-    "print_stacktrace=1 strip_path_prefix=/../../ ";
+    "print_stacktrace=1 strip_path_prefix=/../../ "
+
+#if !defined(OS_APPLE)
+    "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
+    "bin/llvm-symbolizer"
+#endif
+    ;
 
 SANITIZER_HOOK_ATTRIBUTE const char* __ubsan_default_options() {
   return kUbsanDefaultOptions;

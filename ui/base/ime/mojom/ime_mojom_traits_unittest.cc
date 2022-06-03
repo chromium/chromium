@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,6 +21,9 @@ class IMEStructTraitsTest : public testing::Test,
                             public mojom::IMEStructTraitsTest {
  public:
   IMEStructTraitsTest() {}
+
+  IMEStructTraitsTest(const IMEStructTraitsTest&) = delete;
+  IMEStructTraitsTest& operator=(const IMEStructTraitsTest&) = delete;
 
  protected:
   mojo::Remote<mojom::IMEStructTraitsTest> GetTraitsTestRemote() {
@@ -39,8 +42,6 @@ class IMEStructTraitsTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;  // A MessageLoop is needed for
                                                   // Mojo IPC to work.
   mojo::ReceiverSet<mojom::IMEStructTraitsTest> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMEStructTraitsTest);
 };
 
 }  // namespace

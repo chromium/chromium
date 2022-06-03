@@ -28,7 +28,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -108,7 +108,7 @@ class CORE_EXPORT AtomicHTMLToken {
         NOTREACHED();
         break;
       case HTMLToken::DOCTYPE:
-        name_ = AtomicString(token.GetName());
+        name_ = token.GetName().AsAtomicString();
         doctype_data_ = token.ReleaseDoctypeData();
         break;
       case HTMLToken::kEndOfFile:
@@ -120,16 +120,16 @@ class CORE_EXPORT AtomicHTMLToken {
                 lookupHTMLTag(token.GetName().data(), token.GetName().size()))
           name_ = tag_name;
         else
-          name_ = AtomicString(token.GetName());
+          name_ = token.GetName().AsAtomicString();
         InitializeAttributes(token.Attributes());
         break;
       }
       case HTMLToken::kCharacter:
       case HTMLToken::kComment:
         if (token.IsAll8BitData())
-          data_ = String::Make8BitFrom16BitSource(token.Data());
+          data_ = token.Data().AsString8();
         else
-          data_ = String(token.Data());
+          data_ = token.Data().AsString();
         break;
     }
   }
@@ -188,6 +188,9 @@ class CORE_EXPORT AtomicHTMLToken {
     DCHECK(UsesName());
   }
 
+  AtomicHTMLToken(const AtomicHTMLToken&) = delete;
+  AtomicHTMLToken& operator=(const AtomicHTMLToken&) = delete;
+
 #ifndef NDEBUG
   void Show() const;
 #endif
@@ -217,8 +220,6 @@ class CORE_EXPORT AtomicHTMLToken {
   bool duplicate_attribute_ = false;
 
   Vector<Attribute> attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicHTMLToken);
 };
 
 inline void AtomicHTMLToken::InitializeAttributes(
@@ -230,14 +231,14 @@ inline void AtomicHTMLToken::InitializeAttributes(
   attributes_.clear();
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
-    if (attribute.NameAsVector().IsEmpty())
+    if (attribute.NameIsEmpty())
       continue;
 
     attribute.NameRange().CheckValid();
     attribute.ValueRange().CheckValid();
 
-    AtomicString value(attribute.ValueAsVector());
-    // attribute.ValueAsVector.data() is null for attributes with no values, but
+    AtomicString value(attribute.GetValue());
+    // The string pointer in |value| is null for attributes with no values, but
     // the null atom is used to represent absence of attributes; attributes with
     // no values have the value set to an empty atom instead.
     if (value == g_null_atom) {
@@ -255,4 +256,4 @@ inline void AtomicHTMLToken::InitializeAttributes(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_

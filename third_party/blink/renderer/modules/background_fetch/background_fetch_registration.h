@@ -5,15 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_H_
 
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -24,7 +26,6 @@ class ExceptionState;
 class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
-class RequestOrUSVString;
 
 // Represents an individual Background Fetch registration. Gives developers
 // access to its properties, options, and enables them to abort the fetch.
@@ -33,32 +34,13 @@ class BackgroundFetchRegistration final
       public ActiveScriptWrappable<BackgroundFetchRegistration>,
       public blink::mojom::blink::BackgroundFetchRegistrationObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(BackgroundFetchRegistration, Dispose);
-  USING_GARBAGE_COLLECTED_MIXIN(BackgroundFetchRegistration);
 
  public:
-  BackgroundFetchRegistration(
-      const String& developer_id,
-      uint64_t upload_total,
-      uint64_t uploaded,
-      uint64_t download_total,
-      uint64_t downloaded,
-      mojom::BackgroundFetchResult result,
-      mojom::BackgroundFetchFailureReason failure_reason);
-
   BackgroundFetchRegistration(
       ServiceWorkerRegistration* service_worker_registration,
       mojom::blink::BackgroundFetchRegistrationPtr registration);
 
   ~BackgroundFetchRegistration() override;
-
-  // Initializes the BackgroundFetchRegistration to be associated with the given
-  // ServiceWorkerRegistration. It will register itself as an observer for
-  // progress events, powering the `progress` JavaScript event.
-  void Initialize(
-      ServiceWorkerRegistration* registration,
-      mojo::PendingRemote<mojom::blink::BackgroundFetchRegistrationService>
-          registration_service);
 
   // BackgroundFetchRegistrationObserver implementation.
   void OnProgress(uint64_t upload_total,
@@ -78,13 +60,13 @@ class BackgroundFetchRegistration final
   // |developer_id| used elsewhere in the codebase.
   String id() const;
   ScriptPromise match(ScriptState* script_state,
-                      const RequestOrUSVString& request,
+                      const V8RequestInfo* request,
                       const CacheQueryOptions* options,
                       ExceptionState& exception_state);
   ScriptPromise matchAll(ScriptState* scrip_state,
                          ExceptionState& exception_state);
   ScriptPromise matchAll(ScriptState* script_state,
-                         const RequestOrUSVString& request,
+                         const V8RequestInfo* request,
                          const CacheQueryOptions* options,
                          ExceptionState& exception_state);
 
@@ -104,9 +86,7 @@ class BackgroundFetchRegistration final
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  void Dispose();
-
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   // Keeps the object alive until there are non-zero number of |observers_|.
   bool HasPendingActivity() const final;
@@ -122,7 +102,7 @@ class BackgroundFetchRegistration final
                 mojom::blink::BackgroundFetchError error);
   ScriptPromise MatchImpl(
       ScriptState* script_state,
-      base::Optional<RequestOrUSVString> request,
+      const V8RequestInfo* request,
       mojom::blink::CacheQueryOptionsPtr cache_query_options,
       ExceptionState& exception_state,
       bool match_all);
@@ -156,8 +136,9 @@ class BackgroundFetchRegistration final
   mojo::Remote<mojom::blink::BackgroundFetchRegistrationService>
       registration_service_;
 
-  mojo::Receiver<blink::mojom::blink::BackgroundFetchRegistrationObserver>
-      observer_receiver_{this};
+  HeapMojoReceiver<blink::mojom::blink::BackgroundFetchRegistrationObserver,
+                   BackgroundFetchRegistration>
+      observer_receiver_;
 };
 
 }  // namespace blink

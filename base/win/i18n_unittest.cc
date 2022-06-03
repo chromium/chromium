@@ -40,6 +40,24 @@ TEST(I18NTest, GetThreadPreferredUILanguageList) {
   }
 }
 
+// Tests that GetThreadPreferredUILanguageList appends to the given vector
+// rather than replacing it.
+TEST(I18NTest, GetUserPreferredUILanguageListAppends) {
+  std::vector<std::wstring> languages{std::wstring(L"dummylang")};
+  EXPECT_TRUE(GetUserPreferredUILanguageList(&languages));
+  ASSERT_GT(languages.size(), 1U);
+  EXPECT_EQ(languages[0], L"dummylang");
+}
+
+// Tests that GetThreadPreferredUILanguageList appends to the given vector
+// rather than replacing it.
+TEST(I18NTest, GetThreadPreferredUILanguageListAppends) {
+  std::vector<std::wstring> languages{std::wstring(L"dummylang")};
+  EXPECT_TRUE(GetThreadPreferredUILanguageList(&languages));
+  ASSERT_GT(languages.size(), 1U);
+  EXPECT_EQ(languages[0], L"dummylang");
+}
+
 }  // namespace i18n
 }  // namespace win
 }  // namespace base

@@ -37,6 +37,10 @@ web::WebUIIOSDataSource* CreateOmahaUIHTMLSource() {
 class OmahaDOMHandler : public WebUIIOSMessageHandler {
  public:
   OmahaDOMHandler();
+
+  OmahaDOMHandler(const OmahaDOMHandler&) = delete;
+  OmahaDOMHandler& operator=(const OmahaDOMHandler&) = delete;
+
   ~OmahaDOMHandler() override;
 
   // WebUIIOSMessageHandler implementation.
@@ -52,8 +56,6 @@ class OmahaDOMHandler : public WebUIIOSMessageHandler {
   // WeakPtr factory needed because this object might be deleted before
   // receiving the callbacks from the OmahaService.
   base::WeakPtrFactory<OmahaDOMHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmahaDOMHandler);
 };
 
 OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
@@ -61,7 +63,7 @@ OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
 OmahaDOMHandler::~OmahaDOMHandler() {}
 
 void OmahaDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestOmahaDebugInformation",
       base::BindRepeating(&OmahaDOMHandler::HandleRequestDebugInformation,
                           base::Unretained(this)));
@@ -70,8 +72,8 @@ void OmahaDOMHandler::RegisterMessages() {
 void OmahaDOMHandler::HandleRequestDebugInformation(
     const base::ListValue* args) {
   OmahaService::GetDebugInformation(
-      base::Bind(&OmahaDOMHandler::OnDebugInformationAvailable,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OmahaDOMHandler::OnDebugInformationAvailable(
@@ -83,12 +85,12 @@ void OmahaDOMHandler::OnDebugInformationAvailable(
 }  // namespace
 
 // OmahaUI
-OmahaUI::OmahaUI(web::WebUIIOS* web_ui) : WebUIIOSController(web_ui) {
+OmahaUI::OmahaUI(web::WebUIIOS* web_ui, const std::string& host)
+    : WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<OmahaDOMHandler>());
 
   // Set up the chrome://omaha/ source.
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui);
+  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
   web::WebUIIOSDataSource::Add(browser_state, CreateOmahaUIHTMLSource());
 }
 

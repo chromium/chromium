@@ -37,6 +37,12 @@ StyleVariables::StyleVariables(const StyleVariables& other)
     : data_(other.data_),
       values_(MakeGarbageCollected<ValueMap>(*other.values_)) {}
 
+StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
+  data_ = other.data_;
+  values_ = MakeGarbageCollected<ValueMap>(*other.values_);
+  return *this;
+}
+
 bool StyleVariables::operator==(const StyleVariables& other) const {
   if (data_.size() != other.data_.size())
     return false;
@@ -62,7 +68,7 @@ StyleVariables::OptionalData StyleVariables::GetData(
   auto i = data_.find(name);
   if (i != data_.end())
     return i->value.get();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleVariables::GetValue(
@@ -70,7 +76,7 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
   auto i = values_->find(name);
   if (i != values_->end())
     return i->value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StyleVariables::SetData(const AtomicString& name,
@@ -86,11 +92,9 @@ bool StyleVariables::IsEmpty() const {
   return data_.IsEmpty() && values_->IsEmpty();
 }
 
-HashSet<AtomicString> StyleVariables::GetNames() const {
-  HashSet<AtomicString> names;
+void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
   for (const auto& pair : data_)
     names.insert(pair.key);
-  return names;
 }
 
 }  // namespace blink

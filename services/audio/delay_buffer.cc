@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"
 
@@ -62,6 +63,9 @@ void DelayBuffer::Read(FrameTicks from,
     // If attempting to read past the end of the recorded signal, zero-pad the
     // rest of the output and return.
     if (chunks_.empty()) {
+      TRACE_EVENT_INSTANT1("audio", "DelayBuffer::Read underrun",
+                           TRACE_EVENT_SCOPE_THREAD, "frames missing",
+                           frames_remaining);
       output_bus->ZeroFramesPartial(dest_offset, frames_remaining);
       return;
     }
@@ -80,6 +84,9 @@ void DelayBuffer::Read(FrameTicks from,
       const int frames_to_zero_fill = (source_offset + frames_remaining <= 0)
                                           ? frames_remaining
                                           : -source_offset;
+      TRACE_EVENT_INSTANT1("audio", "DelayBuffer::Read gap",
+                           TRACE_EVENT_SCOPE_THREAD, "frames missing",
+                           frames_to_zero_fill);
       output_bus->ZeroFramesPartial(dest_offset, frames_to_zero_fill);
       frames_remaining -= frames_to_zero_fill;
       continue;

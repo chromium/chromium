@@ -6,3 +6,7 @@
     background-image: url("resource.php?type=image&random=1&size=300");
 }
 
+@font-face {
+    font-family: Example;
+    src: url("example.ttf");
+}

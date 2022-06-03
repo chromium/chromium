@@ -1,0 +1,132 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+# This component was split from :cursor to allow Blink to depend on it without
+# bringing all of //ui/base/cursor.
+component("cursor_base") {
+  output_name = "ui_base_cursor_base"
+  sources = [
+    "cursor.cc",
+    "cursor.h",
+    "cursor_factory.cc",
+    "cursor_factory.h",
+    "cursor_size.h",
+    "platform_cursor.h",
+  ]
+  defines = [ "IS_UI_BASE_CURSOR_BASE_IMPL" ]
+  public_deps = [
+    "//base",
+    "//skia",
+    "//ui/base/cursor/mojom:cursor_type",
+    "//ui/gfx/geometry",
+  ]
+  deps = [ "//ui/gfx:gfx_skia" ]
+}
+
+component("theme_manager") {
+  output_name = "ui_base_cursor_theme_manager"
+  sources = [
+    "cursor_theme_manager.cc",
+    "cursor_theme_manager.h",
+    "cursor_theme_manager_observer.h",
+  ]
+  defines = [ "IS_UI_BASE_CURSOR_THEME_MANAGER_IMPL" ]
+  deps = [ "//base" ]
+}
+
+if (use_aura) {
+  component("cursor") {
+    output_name = "ui_base_cursor"
+    sources = [
+      "cursor_loader.cc",
+      "cursor_loader.h",
+      "cursor_lookup.cc",
+      "cursor_lookup.h",
+      "cursor_util.cc",
+      "cursor_util.h",
+      "cursors_aura.cc",
+      "cursors_aura.h",
+    ]
+    defines = [ "IS_UI_BASE_CURSOR_IMPL" ]
+    public_deps = [
+      ":cursor_base",
+      "//base",
+      "//ui/base/cursor/mojom:cursor_type",
+      "//ui/display",
+      "//ui/gfx:native_widget_types",
+    ]
+    deps = [
+      "//skia",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx:gfx_skia",
+      "//ui/gfx/geometry",
+      "//ui/resources:ui_resources_grd",
+    ]
+
+    if (is_win) {
+      sources += [
+        "win/win_cursor.cc",
+        "win/win_cursor.h",
+        "win/win_cursor_factory.cc",
+        "win/win_cursor_factory.h",
+      ]
+      deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
+    }
+
+    if (use_ozone) {
+      sources += [
+        "ozone/bitmap_cursor_factory_ozone.cc",
+        "ozone/bitmap_cursor_factory_ozone.h",
+      ]
+      public_deps += [
+        "//skia",
+        "//ui/gfx/geometry",
+      ]
+      deps += [ "//build:chromeos_buildflags" ]
+    }
+  }
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":cursor_base",
+    "//testing/gtest",
+    "//ui/base/cursor/mojom:cursor_type",
+  ]
+
+  if (!is_ios) {
+    sources += [ "cursor_unittest.cc" ]
+    deps += [
+      "//skia",
+      "//ui/gfx:gfx_skia",
+      "//ui/gfx/geometry",
+    ]
+  }
+
+  if (use_aura) {
+    sources += [
+      "cursor_loader_unittest.cc",
+      "cursor_util_unittest.cc",
+    ]
+    deps += [
+      ":cursor",
+      "//skia",
+      "//ui/gfx/geometry",
+    ]
+  }
+
+  if (use_ozone) {
+    sources += [ "ozone/bitmap_cursor_factory_ozone_unittest.cc" ]
+    deps += [
+      ":cursor",
+      "//base",
+      "//build:chromeos_buildflags",
+    ]
+  }
+}

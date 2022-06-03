@@ -4,6 +4,29 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# Target to test that one target can depend on another.
+mojom("other_test_interfaces1") {
+  testonly = true
+  sources = [ "export_other1.test-mojom" ]
+  use_typescript_sources = true
+}
+
+# Targets that test when a target depends on a target that depends on a third
+# target i.e. "test_interfaces" depends on "other_interfaces3", which in turn
+# depends on "other_interfaces2".
+mojom("other_test_interfaces2") {
+  testonly = true
+  sources = [ "export_other2.test-mojom" ]
+  use_typescript_sources = true
+}
+
+mojom("other_test_interfaces3") {
+  testonly = true
+  sources = [ "export_other3.test-mojom" ]
+  public_deps = [ ":other_test_interfaces2" ]
+  use_typescript_sources = true
+}
+
 # Partial copy of //mojo/public/interfaces/bindings/tests:test_interfaces. Used
 # to incrementally develop Typescript bindings.
 mojom("test_interfaces") {
@@ -11,14 +34,23 @@ mojom("test_interfaces") {
   sources = [
     "constants.test-mojom",
     "enums.test-mojom",
+    "export1.test-mojom",
+    "export2.test-mojom",
+    "export3.test-mojom",
+    "export4.test-mojom",
+    "import.test-mojom",
     "module.test-mojom",
+    "other_dir/other_dir.test-mojom",
+    "structs.test-mojom",
+  ]
+  public_deps = [
+    ":other_test_interfaces1",
+    ":other_test_interfaces3",
   ]
   use_typescript_sources = true
 }
 
 source_set("tests") {
   testonly = true
-  deps = [
-    ":test_interfaces_js",
-  ]
+  deps = [ ":test_interfaces_js" ]
 }

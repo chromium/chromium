@@ -19,9 +19,9 @@
 
 #include "base/bind.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -32,13 +32,10 @@
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_ptrace.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 #include "sandbox/linux/tests/unit_tests.h"
-
-#if !defined(OS_ANDROID)
-#include "third_party/lss/linux_syscall_support.h"  // for MAKE_PROCESS_CPUCLOCK
-#endif
 
 namespace sandbox {
 
@@ -58,8 +55,14 @@ class RestrictClockIdPolicy : public bpf_dsl::Policy {
   ResultExpr EvaluateSyscall(int sysno) const override {
     switch (sysno) {
       case __NR_clock_gettime:
+#if defined(__NR_clock_gettime64)
+      case __NR_clock_gettime64:
+#endif
       case __NR_clock_getres:
       case __NR_clock_nanosleep:
+#if defined(__NR_clock_nanosleep_time64)
+      case __NR_clock_nanosleep_time64:
+#endif
         return RestrictClockID();
       default:
         return Allow();
@@ -208,7 +211,7 @@ BPF_TEST_C(ParameterRestrictions,
   BPF_ASSERT(getparam_thread.Start());
   getparam_thread.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SchedGetParamThread, &thread_run));
-  BPF_ASSERT(thread_run.TimedWait(base::TimeDelta::FromMilliseconds(5000)));
+  BPF_ASSERT(thread_run.TimedWait(base::Milliseconds(5000)));
   getparam_thread.Stop();
 }
 
@@ -340,6 +343,36 @@ BPF_DEATH_TEST_C(
   ptrace(PTRACE_SETREGSET, getpid(), reinterpret_cast<void*>(NT_PRSTATUS),
          &iov);
 }
+
+#if defined(__aarch64__)
+BPF_DEATH_TEST_C(
+    ParameterRestrictions,
+    ptrace_getregs_nt_arm_paca_keys_blocked,
+    DEATH_SEGV_MESSAGE(sandbox::GetPtraceErrorMessageContentForTests()),
+    RestrictPtracePolicy) {
+  user_regs_struct regs{};
+  iovec iov;
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(regs);
+  errno = 0;
+  ptrace(PTRACE_GETREGSET, getpid(), reinterpret_cast<void*>(NT_ARM_PACA_KEYS),
+         &iov);
+}
+
+BPF_DEATH_TEST_C(
+    ParameterRestrictions,
+    ptrace_getregs_nt_arm_pacg_keys_blocked,
+    DEATH_SEGV_MESSAGE(sandbox::GetPtraceErrorMessageContentForTests()),
+    RestrictPtracePolicy) {
+  user_regs_struct regs{};
+  iovec iov;
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(regs);
+  errno = 0;
+  ptrace(PTRACE_GETREGSET, getpid(), reinterpret_cast<void*>(NT_ARM_PACG_KEYS),
+         &iov);
+}
+#endif
 
 }  // namespace
 

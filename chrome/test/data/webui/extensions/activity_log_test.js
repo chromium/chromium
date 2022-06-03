@@ -45,7 +45,7 @@ suite('ExtensionsActivityLogTest', function() {
 
   // Initialize an extension activity log before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     // Give this a large enough height that the tabs will be visible.
     document.body.style.height = '300px';
 
@@ -62,7 +62,8 @@ suite('ExtensionsActivityLogTest', function() {
     proxyDelegate.testActivities = testActivities;
     document.body.appendChild(activityLog);
 
-    activityLog.fire('view-enter-start');
+    activityLog.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, comosed: true}));
 
     // Wait until we have finished making the call to fetch the activity log.
     return proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -76,7 +77,7 @@ suite('ExtensionsActivityLogTest', function() {
   // needed for iron-list as it reuses components but hides them when not in
   // use.
   function getStreamItems() {
-    return activityLog.$$('activity-log-stream')
+    return activityLog.shadowRoot.querySelector('activity-log-stream')
         .shadowRoot.querySelectorAll('activity-log-stream-item:not([hidden])');
   }
 
@@ -88,7 +89,7 @@ suite('ExtensionsActivityLogTest', function() {
       currentPage = newPage;
     });
 
-    activityLog.$$('#closeButton').click();
+    activityLog.shadowRoot.querySelector('#closeButton').click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: EXTENSION_ID});
   });
@@ -105,7 +106,7 @@ suite('ExtensionsActivityLogTest', function() {
           currentPage = newPage;
         });
 
-        activityLog.$$('#closeButton').click();
+        activityLog.shadowRoot.querySelector('#closeButton').click();
         expectDeepEquals(currentPage, {page: Page.LIST});
       });
 
@@ -116,7 +117,7 @@ suite('ExtensionsActivityLogTest', function() {
     boundTestVisible('activity-log-history', true);
 
     // Navigate to the activity log stream.
-    activityLog.$$('cr-tabs').selected = 1;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
     flush();
 
     // One activity is recorded and should appear in the stream.
@@ -127,7 +128,7 @@ suite('ExtensionsActivityLogTest', function() {
     expectEquals(1, getStreamItems().length);
 
     // Navigate back to the activity log history tab.
-    activityLog.$$('cr-tabs').selected = 0;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 0;
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -138,7 +139,7 @@ suite('ExtensionsActivityLogTest', function() {
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    activityLog.$$('cr-tabs').selected = 1;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
     flush();
 
     // The one activity in the stream should have persisted between tab

@@ -9,7 +9,7 @@
  * @typedef {{
  *   tool: string,
  *   size: number,
- *   color: (string|null),
+ *   color: (string|undefined),
  * }}
  */
 let AnnotationTool;

@@ -42,7 +42,7 @@ class CSSFontFeatureValue : public CSSValue {
 
   bool Equals(const CSSFontFeatureValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
   }
 
@@ -62,4 +62,4 @@ struct DowncastTraits<cssvalue::CSSFontFeatureValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUE_H_

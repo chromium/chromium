@@ -22,11 +22,12 @@ chrome.test.runTests([
       var reader = directoryEntry.createReader();
       reader.readEntries(chrome.test.callback(function(entries) {
         // On POSIX systems DIR_HOME is overridden for this test and
-        // [.config] directory may be created there, ignore it
-        // See https://codereview.chromium.org/200473002/
+        // dotfiles may be created there, ignore them
+        // See https://codereview.chromium.org/200473002/ and
+        // https://crrev.com/c/2858114.
         var testEntry;
         entries.forEach(function(entry) {
-          if (entry.name != '.config') {
+          if (!entry.name.startsWith('.')) {
             chrome.test.assertEq(entry.name, 'open_existing.txt');
             testEntry = entry;
           }

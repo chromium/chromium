@@ -31,23 +31,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class Element;
 class LocalFrame;
 class UndoStep;
 
 // |UndoStack| is owned by and always 1:1 to |Editor|. Since |Editor| is 1:1 to
 // |LocalFrame|, |UndoStack| is also 1:1 to |LocalFrame|.
-class UndoStack final : public GarbageCollected<UndoStack> {
-  using UndoStepStack = HeapDeque<Member<UndoStep>>;
+class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
+  using UndoStepStack = HeapVector<Member<UndoStep>>;
 
  public:
   UndoStack();
+  UndoStack(const UndoStack&) = delete;
+  UndoStack& operator=(const UndoStack&) = delete;
 
   void RegisterUndoStep(UndoStep*);
   void RegisterRedoStep(UndoStep*);
@@ -57,7 +59,7 @@ class UndoStack final : public GarbageCollected<UndoStack> {
   void Redo();
   void Clear();
 
-  class UndoStepRange {
+  class CORE_EXPORT UndoStepRange {
     STACK_ALLOCATED();
 
    public:
@@ -71,18 +73,24 @@ class UndoStack final : public GarbageCollected<UndoStack> {
     const UndoStepStack& step_stack_;
   };
 
+  UndoStepRange RedoSteps() const;
   UndoStepRange UndoSteps() const;
 
-  void Trace(Visitor*);
+  // Called when set ending selection inf |undo_step|.
+  void DidSetEndingSelection(UndoStep* step);
+
+  // Called when |element| is removed by |Node::RemovedFrom()|. |element|
+  // should be root editable element and be in undo/redo stack.
+  void ElementRemoved(Element* element);
+
+  void Trace(Visitor*) const;
 
  private:
-  bool in_redo_;
   UndoStepStack undo_stack_;
   UndoStepStack redo_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoStack);
+  bool in_redo_ = false;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_

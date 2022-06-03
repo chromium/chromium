@@ -24,4 +24,7 @@ specific_include_rules = {
     "html_audio_element_capturer_source_unittest.cc" : [
         "+media/audio/null_audio_sink.h",
     ],
+    "canvas_capture_handler.cc": [
+        "+gpu/command_buffer/client/raster_interface.h",
+    ],
 }

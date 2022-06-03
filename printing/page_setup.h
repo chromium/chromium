@@ -5,15 +5,16 @@
 #ifndef PRINTING_PAGE_SETUP_H_
 #define PRINTING_PAGE_SETUP_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace printing {
 
 // Margins for a page setup.
-class PRINTING_EXPORT PageMargins {
+class COMPONENT_EXPORT(PRINTING) PageMargins {
  public:
   PageMargins();
+  PageMargins(int header, int footer, int left, int right, int top, int bottom);
 
   void Clear();
 
@@ -33,9 +34,14 @@ class PRINTING_EXPORT PageMargins {
 
 // Settings that define the size and printable areas of a page. Unit is
 // unspecified.
-class PRINTING_EXPORT PageSetup {
+class COMPONENT_EXPORT(PRINTING) PageSetup {
  public:
   PageSetup();
+  PageSetup(const gfx::Size& physical_size,
+            const gfx::Rect& printable_area,
+            const PageMargins& requested_margins,
+            bool forced_margins,
+            int text_height);
   PageSetup(const PageSetup& other);
   ~PageSetup();
 
@@ -52,10 +58,10 @@ class PRINTING_EXPORT PageSetup {
             const gfx::Rect& printable_area,
             int text_height);
 
-  // Use |requested_margins| as long as they fall inside the printable area.
+  // Use `requested_margins` as long as they fall inside the printable area.
   void SetRequestedMargins(const PageMargins& requested_margins);
 
-  // Ignore the printable area, and set the margins to |requested_margins|.
+  // Ignore the printable area, and set the margins to `requested_margins`.
   void ForceRequestedMargins(const PageMargins& requested_margins);
 
   // Flips the orientation of the page and recalculates all page areas.
@@ -66,14 +72,17 @@ class PRINTING_EXPORT PageSetup {
   const gfx::Rect& content_area() const { return content_area_; }
   const gfx::Rect& printable_area() const { return printable_area_; }
   const PageMargins& effective_margins() const { return effective_margins_; }
+  const PageMargins& requested_margins() const { return requested_margins_; }
+  bool forced_margins() const { return forced_margins_; }
+  int text_height() const { return text_height_; }
 
  private:
-  // Store |requested_margins_| and update page setup values.
+  // Store `requested_margins_` and update page setup values.
   void SetRequestedMarginsAndCalculateSizes(
       const PageMargins& requested_margins);
 
   // Calculate overlay_area_, effective_margins_, and content_area_, based on
-  // a constraint of |bounds| and |text_height|.
+  // a constraint of `bounds` and `text_height`.
   void CalculateSizesWithinRect(const gfx::Rect& bounds, int text_height);
 
   // Physical size of the page, including non-printable margins.
@@ -95,7 +104,7 @@ class PRINTING_EXPORT PageSetup {
   // Requested margins.
   PageMargins requested_margins_;
 
-  // True when |effective_margins_| respects |printable_area_| else false.
+  // True when `effective_margins_` respects `printable_area_` else false.
   bool forced_margins_;
 
   // Space that must be kept free for the overlays.

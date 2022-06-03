@@ -18,9 +18,9 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -42,8 +42,8 @@
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -59,8 +59,7 @@ std::unique_ptr<KeyedService> BuildHistoryService(
   // Delete the file before creating the service.
   base::FilePath history_path(
       profile->GetPath().Append(history::kHistoryFilename));
-  if (!base::DeleteFile(history_path, false) ||
-      base::PathExists(history_path)) {
+  if (!base::DeleteFile(history_path) || base::PathExists(history_path)) {
     ADD_FAILURE() << "failed to delete history db file "
                   << history_path.value();
     return nullptr;
@@ -85,7 +84,7 @@ static const base::FilePath::CharType kBinaryFileName[] =
     FILE_PATH_LITERAL("spam.exe");
 static const base::FilePath::CharType kBinaryFileNameForOtherOS[] =
     FILE_PATH_LITERAL("spam.dmg");
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 static const base::FilePath::CharType kBinaryFileName[] =
     FILE_PATH_LITERAL("spam.dmg");
 static const base::FilePath::CharType kBinaryFileNameForOtherOS[] =
@@ -126,8 +125,8 @@ class LastDownloadFinderTest : public testing::Test {
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     history_service->CreateDownload(
         CreateTestDownloadRow(kBinaryFileName),
-        base::Bind(&LastDownloadFinderTest::OnDownloadCreated,
-                   base::Unretained(this)));
+        base::BindOnce(&LastDownloadFinderTest::OnDownloadCreated,
+                       base::Unretained(this)));
   }
 
   // LastDownloadFinder::LastDownloadCallback implementation that
@@ -136,13 +135,13 @@ class LastDownloadFinderTest : public testing::Test {
       std::unique_ptr<ClientIncidentReport_DownloadDetails>* result,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>*
           non_binary_result,
-      const base::Closure& quit_closure,
+      base::OnceClosure quit_closure,
       std::unique_ptr<ClientIncidentReport_DownloadDetails> download,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
           non_binary_download) {
     *result = std::move(download);
     *non_binary_result = std::move(non_binary_download);
-    quit_closure.Run();
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -159,8 +158,8 @@ class LastDownloadFinderTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
   }
 
@@ -185,7 +184,7 @@ class LastDownloadFinderTest : public testing::Test {
         prefs::kSafeBrowsingEnabled,
         safe_browsing_opt_in == SAFE_BROWSING_ONLY ||
             safe_browsing_opt_in == SAFE_BROWSING_AND_EXTENDED_REPORTING);
-    safe_browsing::SetExtendedReportingPref(
+    safe_browsing::SetExtendedReportingPrefForTests(
         prefs.get(),
         safe_browsing_opt_in == EXTENDED_REPORTING_ONLY ||
             safe_browsing_opt_in == SAFE_BROWSING_AND_EXTENDED_REPORTING);
@@ -201,8 +200,8 @@ class LastDownloadFinderTest : public testing::Test {
   }
 
   LastDownloadFinder::DownloadDetailsGetter GetDownloadDetailsGetter() {
-    return base::Bind(&LastDownloadFinderTest::GetDownloadDetails,
-                      base::Unretained(this));
+    return base::BindRepeating(&LastDownloadFinderTest::GetDownloadDetails,
+                               base::Unretained(this));
   }
 
   void AddDownload(Profile* profile, const history::DownloadRow& download) {
@@ -213,9 +212,8 @@ class LastDownloadFinderTest : public testing::Test {
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     history_service->CreateDownload(
         download,
-        base::Bind(&LastDownloadFinderTest::ContinueOnDownloadCreated,
-                   base::Unretained(this),
-                   run_loop.QuitClosure()));
+        base::BindOnce(&LastDownloadFinderTest::ContinueOnDownloadCreated,
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -229,9 +227,9 @@ class LastDownloadFinderTest : public testing::Test {
 
     std::unique_ptr<LastDownloadFinder> finder(LastDownloadFinder::Create(
         GetDownloadDetailsGetter(),
-        base::Bind(&LastDownloadFinderTest::OnLastDownload,
-                   base::Unretained(this), last_binary_download,
-                   last_non_binary_download, run_loop.QuitClosure())));
+        base::BindOnce(&LastDownloadFinderTest::OnLastDownload,
+                       base::Unretained(this), last_binary_download,
+                       last_non_binary_download, run_loop.QuitClosure())));
 
     if (finder)
       run_loop.Run();
@@ -251,8 +249,8 @@ class LastDownloadFinderTest : public testing::Test {
     row.tab_referrer_url = GURL("http://tab-referrer.example.com/");
     row.mime_type = "application/octet-stream";
     row.original_mime_type = "application/octet-stream";
-    row.start_time = now - base::TimeDelta::FromMinutes(10);
-    row.end_time = now - base::TimeDelta::FromMinutes(9);
+    row.start_time = now - base::Minutes(10);
+    row.end_time = now - base::Minutes(9);
     row.received_bytes = 47;
     row.total_bytes = 47;
     row.state = history::DownloadState::COMPLETE;
@@ -262,7 +260,7 @@ class LastDownloadFinderTest : public testing::Test {
     row.id = download_id_++;
     row.guid = base::GenerateGUID();
     row.opened = false;
-    row.last_access_time = now - base::TimeDelta::FromMinutes(5);
+    row.last_access_time = now - base::Minutes(5);
     row.transient = false;
 
     return row;
@@ -271,9 +269,9 @@ class LastDownloadFinderTest : public testing::Test {
  private:
   // A HistoryService::DownloadCreateCallback that asserts that the download was
   // created and runs |closure|.
-  void ContinueOnDownloadCreated(const base::Closure& closure, bool created) {
+  void ContinueOnDownloadCreated(base::OnceClosure closure, bool created) {
     ASSERT_TRUE(created);
-    closure.Run();
+    std::move(closure).Run();
   }
 
   // A HistoryService::DownloadCreateCallback that asserts that the download was
@@ -282,8 +280,9 @@ class LastDownloadFinderTest : public testing::Test {
 
   void GetDownloadDetails(
       content::BrowserContext* context,
-      const DownloadMetadataManager::GetDownloadDetailsCallback& callback) {
-    callback.Run(std::unique_ptr<ClientIncidentReport_DownloadDetails>());
+      DownloadMetadataManager::GetDownloadDetailsCallback callback) {
+    std::move(callback).Run(
+        std::unique_ptr<ClientIncidentReport_DownloadDetails>());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -371,7 +370,7 @@ TEST_F(LastDownloadFinderTest, NonBinaryOnly) {
   EXPECT_TRUE(last_non_binary_download);
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
 // Tests that nothing happens if the binary is an executable for a different OS.
 TEST_F(LastDownloadFinderTest, DownloadForDifferentOs) {
   // Create a profile with a history service that is opted-in.
@@ -398,9 +397,11 @@ TEST_F(LastDownloadFinderTest, DeleteBeforeResults) {
   AddDownload(profile, CreateTestDownloadRow(kBinaryFileName));
 
   // Start a finder and kill it before the search completes.
-  LastDownloadFinder::Create(GetDownloadDetailsGetter(),
-                             base::Bind(&LastDownloadFinderTest::NeverCalled,
-                                        base::Unretained(this))).reset();
+  LastDownloadFinder::Create(
+      GetDownloadDetailsGetter(),
+      base::BindOnce(&LastDownloadFinderTest::NeverCalled,
+                     base::Unretained(this)))
+      .reset();
 }
 
 // Tests that a download in profile added after the search is begun is found.
@@ -422,9 +423,9 @@ TEST_F(LastDownloadFinderTest, AddProfileAfterStarting) {
   // Create a finder that we expect will find a download in the second profile.
   std::unique_ptr<LastDownloadFinder> finder(LastDownloadFinder::Create(
       GetDownloadDetailsGetter(),
-      base::Bind(&LastDownloadFinderTest::OnLastDownload,
-                 base::Unretained(this), &last_binary_download,
-                 &last_non_binary_download, run_loop.QuitClosure())));
+      base::BindOnce(&LastDownloadFinderTest::OnLastDownload,
+                     base::Unretained(this), &last_binary_download,
+                     &last_non_binary_download, run_loop.QuitClosure())));
 
   run_loop.Run();
 

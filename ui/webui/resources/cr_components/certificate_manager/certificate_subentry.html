@@ -1,17 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="certificate_manager_types.html">
-<link rel="import" href="certificate_shared_css.html">
-<link rel="import" href="certificates_browser_proxy.html">
-
-<dom-module id="certificate-subentry">
-  <template>
     <style include="certificate-shared cr-icons">
       .name {
         flex: auto;
@@ -36,34 +22,31 @@
       <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(model)]]">
       </cr-policy-indicator>
       <cr-icon-button class="icon-more-vert" id="dots"
-          title="[[i18n('moreActions')]]" on-click="onDotsTap_">
+          title="[[i18n('moreActions')]]" on-click="onDotsClick_">
       </cr-icon-button>
       <cr-lazy-render id="menu">
         <template>
           <cr-action-menu role-description="[[i18n('menu')]]">
             <button class="dropdown-item" id="view"
-                on-tap="onViewTap_">
+                on-click="onViewClick_">
               [[i18n('certificateManagerView')]]
             </button>
             <button class="dropdown-item" id="edit"
                 hidden$="[[!canEdit_(model)]]"
-                on-tap="onEditTap_">
+                on-click="onEditClick_">
               [[i18n('edit')]]
             </button>
             <button class="dropdown-item" id="export"
                 hidden$="[[!canExport_(certificateType, model)]]"
-                on-tap="onExportTap_">
+                on-click="onExportClick_">
               [[i18n('certificateManagerExport')]]
             </button>
             <button class="dropdown-item" id="delete"
                 hidden$="[[!canDelete_(model)]]"
-                on-tap="onDeleteTap_">
+                on-click="onDeleteClick_">
               [[i18n('certificateManagerDelete')]]
             </button>
           </cr-action-menu>
         </template>
       </cr-lazy-render>
     <div>
-  </template>
-  <script src="certificate_subentry.js"></script>
-</dom-module>

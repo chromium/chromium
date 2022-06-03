@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// gpu/common/gpu_peak_memory.h
+module gpu.mojom;
+
+// gpu:GpuPeakMemoryAllocationSource
+enum GpuPeakMemoryAllocationSource
+{
+  UNKNOWN,
+  COMMAND_BUFFER,
+  SHARED_CONTEXT_STATE,
+  SHARED_IMAGE_STUB,
+  SKIA,
+};

@@ -1,0 +1,4 @@
+Verifies that redirected CORS preflight failure must be detectable.
+error text for OPTIONS request: net::ERR_INVALID_REDIRECT
+error text for POST request: net::ERR_FAILED
+

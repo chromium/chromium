@@ -34,12 +34,13 @@
 #include <type_traits>
 
 #include "absl/base/optimization.h"
-#include "absl/random/internal/distribution_impl.h"
 #include "absl/random/internal/fast_uniform_bits.h"
 #include "absl/random/internal/iostream_state_saver.h"
 #include "absl/random/internal/traits.h"
+#include "absl/random/internal/wide_multiply.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::uniform_int_distribution<T>
 //
@@ -195,7 +196,7 @@ typename random_internal::make_unsigned_bits<IntType>::type
 uniform_int_distribution<IntType>::Generate(
     URBG& g,  // NOLINT(runtime/references)
     typename random_internal::make_unsigned_bits<IntType>::type R) {
-    random_internal::FastUniformBits<unsigned_type> fast_bits;
+  random_internal::FastUniformBits<unsigned_type> fast_bits;
   unsigned_type bits = fast_bits(g);
   const unsigned_type Lim = R + 1;
   if ((R & Lim) == 0) {
@@ -268,6 +269,7 @@ uniform_int_distribution<IntType>::Generate(
   return helper::hi(product);
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_UNIFORM_INT_DISTRIBUTION_H_

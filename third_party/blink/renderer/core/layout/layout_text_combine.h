@@ -35,20 +35,33 @@ class LayoutTextCombine final : public LayoutText {
  public:
   LayoutTextCombine(Node*, scoped_refptr<StringImpl>);
 
-  bool IsCombined() const { return is_combined_; }
+  bool IsCombined() const {
+    NOT_DESTROYED();
+    return is_combined_;
+  }
   float CombinedTextWidth(const Font& font) const {
+    NOT_DESTROYED();
     return font.GetFontDescription().ComputedSize();
   }
-  const Font& OriginalFont() const { return Parent()->StyleRef().GetFont(); }
+  const Font& OriginalFont() const {
+    NOT_DESTROYED();
+    return Parent()->StyleRef().GetFont();
+  }
   void TransformToInlineCoordinates(GraphicsContext&,
-                                    const LayoutRect& box_rect,
+                                    const PhysicalRect& box_rect,
                                     bool clip = false) const;
   LayoutUnit InlineWidthForLayout() const;
 
-  const char* GetName() const override { return "LayoutTextCombine"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTextCombine";
+  }
 
  private:
-  bool IsCombineText() const override { return true; }
+  bool IsCombineText() const override {
+    NOT_DESTROYED();
+    return true;
+  }
   float Width(unsigned from,
               unsigned length,
               const Font&,
@@ -67,7 +80,12 @@ class LayoutTextCombine final : public LayoutText {
   bool is_combined_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutTextCombine, IsCombineText());
+template <>
+struct DowncastTraits<LayoutTextCombine> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsCombineText();
+  }
+};
 
 inline LayoutUnit LayoutTextCombine::InlineWidthForLayout() const {
   return LayoutUnit::FromFloatCeil(combined_text_width_);

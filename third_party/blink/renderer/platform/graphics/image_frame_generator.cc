@@ -28,33 +28,49 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkYUVASizeInfo.h"
 
 namespace blink {
 
-static bool UpdateYUVComponentSizes(ImageDecoder* decoder,
-                                    SkISize component_sizes[4],
-                                    size_t component_width_bytes[4]) {
-  DCHECK(decoder->CanDecodeToYUV());
-  // Initialize sizes for decoder if not already set.
-  bool size_available = decoder->IsSizeAvailable();
-  DCHECK(size_available);
-
-  for (int yuv_index = 0; yuv_index < 3; ++yuv_index) {
-    IntSize size = decoder->DecodedYUVSize(yuv_index);
-    component_sizes[yuv_index].set(size.Width(), size.Height());
-    component_width_bytes[yuv_index] = decoder->DecodedYUVWidthBytes(yuv_index);
+SkYUVAInfo::Subsampling SubsamplingToSkiaSubsampling(
+    cc::YUVSubsampling subsampling) {
+  switch (subsampling) {
+    case cc::YUVSubsampling::k410:
+      return SkYUVAInfo::Subsampling::k410;
+    case cc::YUVSubsampling::k411:
+      return SkYUVAInfo::Subsampling::k411;
+    case cc::YUVSubsampling::k420:
+      return SkYUVAInfo::Subsampling::k420;
+    case cc::YUVSubsampling::k422:
+      return SkYUVAInfo::Subsampling::k422;
+    case cc::YUVSubsampling::k440:
+      return SkYUVAInfo::Subsampling::k440;
+    case cc::YUVSubsampling::k444:
+      return SkYUVAInfo::Subsampling::k444;
+    case cc::YUVSubsampling::kUnknown:
+      return SkYUVAInfo::Subsampling::kUnknown;
   }
-  // TODO(crbug/910276): Alpha plane is currently unsupported.
-  component_sizes[3] = SkISize::MakeEmpty();
-  component_width_bytes[3] = 0;
+}
 
+static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
+    ImageDecoder* decoder,
+    SkYUVAInfo::Subsampling* subsampling,
+    size_t component_width_bytes[SkYUVAInfo::kMaxPlanes]) {
+  SkYUVAInfo::Subsampling tempSubsampling =
+      SubsamplingToSkiaSubsampling(decoder->GetYUVSubsampling());
+  if (tempSubsampling == SkYUVAInfo::Subsampling::kUnknown) {
+    return false;
+  }
+  *subsampling = tempSubsampling;
+  component_width_bytes[0] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kY);
+  component_width_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
+  component_width_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
+  // TODO(crbug/910276): Alpha plane is currently unsupported.
+  component_width_bytes[3] = 0;
   return true;
 }
 
@@ -85,7 +101,7 @@ ImageFrameGenerator::~ImageFrameGenerator() {
 bool ImageFrameGenerator::DecodeAndScale(
     SegmentReader* data,
     bool all_data_received,
-    size_t index,
+    wtf_size_t index,
     const SkImageInfo& info,
     void* pixels,
     size_t row_bytes,
@@ -98,7 +114,7 @@ bool ImageFrameGenerator::DecodeAndScale(
   }
 
   TRACE_EVENT1("blink", "ImageFrameGenerator::decodeAndScale", "generator",
-               this);
+               static_cast<void*>(this));
 
   // This implementation does not support arbitrary scaling so check the
   // requested size.
@@ -111,7 +127,7 @@ bool ImageFrameGenerator::DecodeAndScale(
     high_bit_depth_decoding_option = ImageDecoder::kHighBitDepthToHalfFloat;
   }
 
-  size_t frame_count = 0u;
+  wtf_size_t frame_count = 0u;
   bool has_alpha = true;
 
   // |decode_failed| indicates a failure due to a corrupt image.
@@ -149,11 +165,13 @@ bool ImageFrameGenerator::DecodeAndScale(
   return true;
 }
 
-bool ImageFrameGenerator::DecodeToYUV(SegmentReader* data,
-                                      size_t index,
-                                      const SkISize component_sizes[3],
-                                      void* planes[3],
-                                      const size_t row_bytes[3]) {
+bool ImageFrameGenerator::DecodeToYUV(
+    SegmentReader* data,
+    wtf_size_t index,
+    SkColorType color_type,
+    const SkISize component_sizes[cc::kNumYUVPlanes],
+    void* planes[cc::kNumYUVPlanes],
+    const wtf_size_t row_bytes[cc::kNumYUVPlanes]) {
   MutexLocker lock(generator_mutex_);
   DCHECK_EQ(index, 0u);
 
@@ -176,7 +194,7 @@ bool ImageFrameGenerator::DecodeToYUV(SegmentReader* data,
   DCHECK(decoder);
 
   std::unique_ptr<ImagePlanes> image_planes =
-      std::make_unique<ImagePlanes>(planes, row_bytes);
+      std::make_unique<ImagePlanes>(planes, row_bytes, color_type);
   // TODO(crbug.com/943519): Don't forget to initialize planes to black or
   // transparent for incremental decoding.
   decoder->SetImagePlanes(std::move(image_planes));
@@ -189,30 +207,36 @@ bool ImageFrameGenerator::DecodeToYUV(SegmentReader* data,
     decoder->DecodeToYUV();
   }
 
-  if (!decoder->Failed()) {
+  // Display a complete scan if available, even if decoding fails.
+  if (decoder->HasDisplayableYUVData()) {
     // TODO(crbug.com/910276): Set this properly for alpha support.
     SetHasAlpha(index, false);
     return true;
   }
 
-  DCHECK(decoder->Failed());
-  yuv_decoding_failed_ = true;
+  // Currently if there is no displayable data, the decoder always fails.
+  // This may not be the case once YUV supports incremental decoding
+  // (crbug.com/943519).
+  if (decoder->Failed()) {
+    yuv_decoding_failed_ = true;
+  }
+
   return false;
 }
 
-void ImageFrameGenerator::SetHasAlpha(size_t index, bool has_alpha) {
+void ImageFrameGenerator::SetHasAlpha(wtf_size_t index, bool has_alpha) {
   generator_mutex_.AssertAcquired();
 
   if (index >= has_alpha_.size()) {
-    const size_t old_size = has_alpha_.size();
+    const wtf_size_t old_size = has_alpha_.size();
     has_alpha_.resize(index + 1);
-    for (size_t i = old_size; i < has_alpha_.size(); ++i)
+    for (wtf_size_t i = old_size; i < has_alpha_.size(); ++i)
       has_alpha_[i] = true;
   }
   has_alpha_[index] = has_alpha;
 }
 
-bool ImageFrameGenerator::HasAlpha(size_t index) {
+bool ImageFrameGenerator::HasAlpha(wtf_size_t index) {
   MutexLocker lock(generator_mutex_);
 
   if (index < has_alpha_.size())
@@ -220,11 +244,11 @@ bool ImageFrameGenerator::HasAlpha(size_t index) {
   return true;
 }
 
-bool ImageFrameGenerator::GetYUVComponentSizes(
+bool ImageFrameGenerator::GetYUVAInfo(
     SegmentReader* data,
-    SkYUVASizeInfo* size_info,
-    SkYUVColorSpace* yuv_color_space) {
-  TRACE_EVENT2("blink", "ImageFrameGenerator::getYUVComponentSizes", "width",
+    const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+    SkYUVAPixmapInfo* info) {
+  TRACE_EVENT2("blink", "ImageFrameGenerator::GetYUVAInfo", "width",
                full_size_.width(), "height", full_size_.height());
 
   MutexLocker lock(generator_mutex_);
@@ -237,10 +261,37 @@ bool ImageFrameGenerator::GetYUVComponentSizes(
   DCHECK(decoder);
 
   DCHECK(decoder->CanDecodeToYUV());
-  *yuv_color_space = decoder->GetYUVColorSpace();
+  SkYUVAInfo::Subsampling subsampling;
+  size_t width_bytes[SkYUVAInfo::kMaxPlanes];
+  if (!UpdateYUVAInfoSubsamplingAndWidthBytes(decoder.get(), &subsampling,
+                                              width_bytes)) {
+    return false;
+  }
+  SkYUVAInfo yuva_info(full_size_, SkYUVAInfo::PlaneConfig::kY_U_V, subsampling,
+                       decoder->GetYUVColorSpace());
+  SkYUVAPixmapInfo::DataType dataType;
+  if (decoder->GetYUVBitDepth() > 8) {
+    if (supported_data_types.supported(SkYUVAInfo::PlaneConfig::kY_U_V,
+                                       SkYUVAPixmapInfo::DataType::kUnorm16)) {
+      dataType = SkYUVAPixmapInfo::DataType::kUnorm16;
+    } else if (supported_data_types.supported(
+                   SkYUVAInfo::PlaneConfig::kY_U_V,
+                   SkYUVAPixmapInfo::DataType::kFloat16)) {
+      dataType = SkYUVAPixmapInfo::DataType::kFloat16;
+    } else {
+      return false;
+    }
+  } else if (supported_data_types.supported(
+                 SkYUVAInfo::PlaneConfig::kY_U_V,
+                 SkYUVAPixmapInfo::DataType::kUnorm8)) {
+    dataType = SkYUVAPixmapInfo::DataType::kUnorm8;
+  } else {
+    return false;
+  }
+  *info = SkYUVAPixmapInfo(yuva_info, dataType, width_bytes);
+  DCHECK(info->isSupported(supported_data_types));
 
-  return UpdateYUVComponentSizes(decoder.get(), size_info->fSizes,
-                                 size_info->fWidthBytes);
+  return true;
 }
 
 SkISize ImageFrameGenerator::GetSupportedDecodeSize(

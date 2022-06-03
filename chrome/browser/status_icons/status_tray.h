@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_STATUS_ICONS_STATUS_TRAY_H_
 
 #include <memory>
+#include <string>
 #include <vector>
-
-#include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class ImageSkia;
@@ -34,13 +32,16 @@ class StatusTray {
   // platform does not support status icons.
   static std::unique_ptr<StatusTray> Create();
 
+  StatusTray(const StatusTray&) = delete;
+  StatusTray& operator=(const StatusTray&) = delete;
+
   virtual ~StatusTray();
 
   // Creates a new StatusIcon. The StatusTray retains ownership of the
   // StatusIcon. Returns NULL if the StatusIcon could not be created.
   StatusIcon* CreateStatusIcon(StatusIconType type,
                                const gfx::ImageSkia& image,
-                               const base::string16& tool_tip);
+                               const std::u16string& tool_tip);
 
   // Removes |icon| from this status tray.
   void RemoveStatusIcon(StatusIcon* icon);
@@ -54,7 +55,7 @@ class StatusTray {
   virtual std::unique_ptr<StatusIcon> CreatePlatformStatusIcon(
       StatusIconType type,
       const gfx::ImageSkia& image,
-      const base::string16& tool_tip) = 0;
+      const std::u16string& tool_tip) = 0;
 
   // Returns the list of active status icons so subclasses can operate on them.
   const StatusIcons& status_icons() const { return status_icons_; }
@@ -63,8 +64,6 @@ class StatusTray {
   // List containing all active StatusIcons. The icons are owned by this
   // StatusTray.
   StatusIcons status_icons_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTray);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_TRAY_H_

@@ -46,24 +46,16 @@ class VideoCaptureFactory {
                     Log.w(TAG, "Missing android.permission.CAMERA permission, "
                                     + "no system camera available.");
                 } else {
-                    if (isLReleaseOrLater()) {
-                        sNumberOfSystemCameras = VideoCaptureCamera2.getNumberOfCameras();
-                    } else {
-                        sNumberOfSystemCameras = VideoCaptureCamera.getNumberOfCameras();
-                    }
+                    sNumberOfSystemCameras = VideoCaptureCamera2.getNumberOfCameras();
                 }
             }
             return sNumberOfSystemCameras;
         }
     }
 
-    private static boolean isLReleaseOrLater() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    }
-
     @CalledByNative
     static boolean isLegacyOrDeprecatedDevice(int id) {
-        return !isLReleaseOrLater() || VideoCaptureCamera2.isLegacyDevice(id);
+        return VideoCaptureCamera2.isLegacyDevice(id);
     }
 
     // Factory methods.
@@ -81,35 +73,51 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static int getCaptureApiType(int id) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return VideoCaptureCamera.getCaptureApiType(id);
+    static int getCaptureApiType(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.getCaptureApiType(index);
         }
-        return VideoCaptureCamera2.getCaptureApiType(id);
+        return VideoCaptureCamera2.getCaptureApiType(index);
     }
 
     @CalledByNative
-    static int getFacingMode(int id) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return VideoCaptureCamera.getFacingMode(id);
+    static boolean isZoomSupported(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.isZoomSupported(index);
         }
-        return VideoCaptureCamera2.getFacingMode(id);
+        return VideoCaptureCamera2.isZoomSupported(index);
     }
 
     @CalledByNative
-    static String getDeviceName(int id) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return VideoCaptureCamera.getName(id);
+    static int getFacingMode(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.getFacingMode(index);
         }
-        return VideoCaptureCamera2.getName(id);
+        return VideoCaptureCamera2.getFacingMode(index);
     }
 
     @CalledByNative
-    static VideoCaptureFormat[] getDeviceSupportedFormats(int id) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return VideoCaptureCamera.getDeviceSupportedFormats(id);
+    static String getDeviceId(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.getDeviceId(index);
         }
-        return VideoCaptureCamera2.getDeviceSupportedFormats(id);
+        return VideoCaptureCamera2.getDeviceId(index);
+    }
+
+    @CalledByNative
+    static String getDeviceName(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.getName(index);
+        }
+        return VideoCaptureCamera2.getName(index);
+    }
+
+    @CalledByNative
+    static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
+        if (isLegacyOrDeprecatedDevice(index)) {
+            return VideoCaptureCamera.getDeviceSupportedFormats(index);
+        }
+        return VideoCaptureCamera2.getDeviceSupportedFormats(index);
     }
 
     @CalledByNative

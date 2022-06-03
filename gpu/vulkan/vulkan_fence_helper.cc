@@ -5,6 +5,7 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -75,31 +76,37 @@ void VulkanFenceHelper::EnqueueCleanupTaskForSubmittedWork(CleanupTask task) {
   tasks_pending_fence_.emplace_back(std::move(task));
 }
 
-void VulkanFenceHelper::ProcessCleanupTasks() {
+void VulkanFenceHelper::ProcessCleanupTasks(uint64_t retired_generation_id) {
   VkDevice device = device_queue_->GetVulkanDevice();
+
+  if (!retired_generation_id)
+    retired_generation_id = current_generation_;
 
   // Iterate over our pending cleanup fences / tasks, advancing
   // |current_generation_| as far as possible.
   for (const auto& tasks_for_fence : cleanup_tasks_) {
-    // If we're already ahead of this task (callback modified |generation_id_|),
-    // continue.
-    if (tasks_for_fence.generation_id <= current_generation_)
-      continue;
-
     // Callback based tasks have no actual fence to wait on, keep checking
     // future fences, as a callback may be delayed.
     if (tasks_for_fence.UsingCallback())
       continue;
 
     VkResult result = vkGetFenceStatus(device, tasks_for_fence.fence);
-    if (result == VK_NOT_READY)
+    if (result == VK_NOT_READY) {
+      retired_generation_id =
+          std::min(retired_generation_id, tasks_for_fence.generation_id - 1);
       break;
-    if (result != VK_SUCCESS) {
-      PerformImmediateCleanup();
-      return;
     }
-    current_generation_ = tasks_for_fence.generation_id;
+    if (result == VK_SUCCESS) {
+      retired_generation_id =
+          std::max(tasks_for_fence.generation_id, retired_generation_id);
+      continue;
+    }
+    DLOG(ERROR) << "vkGetFenceStatus() failed: " << result;
+    PerformImmediateCleanup();
+    return;
   }
+
+  current_generation_ = retired_generation_id;
 
   // Runs any cleanup tasks for generations that have passed. Create a temporary
   // vector of tasks to run to avoid reentrancy issues.
@@ -161,8 +168,7 @@ base::OnceClosure VulkanFenceHelper::CreateExternalCallback() {
         // If |current_generation_| is ahead of the callback's
         // |generation_id|, the callback came late. Ignore it.
         if (generation_id > fence_helper->current_generation_) {
-          fence_helper->current_generation_ = generation_id;
-          fence_helper->ProcessCleanupTasks();
+          fence_helper->ProcessCleanupTasks(generation_id);
         }
       },
       weak_factory_.GetWeakPtr(), generation_id);
@@ -211,19 +217,19 @@ void VulkanFenceHelper::EnqueueImageCleanupForSubmittedWork(
 
 void VulkanFenceHelper::EnqueueBufferCleanupForSubmittedWork(
     VkBuffer buffer,
-    VkDeviceMemory memory) {
-  if (buffer == VK_NULL_HANDLE && memory == VK_NULL_HANDLE)
+    VmaAllocation allocation) {
+  if (buffer == VK_NULL_HANDLE && allocation == VK_NULL_HANDLE)
     return;
 
+  DCHECK(buffer != VK_NULL_HANDLE);
+  DCHECK(allocation != VK_NULL_HANDLE);
+
   EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
-      [](VkBuffer buffer, VkDeviceMemory memory,
+      [](VkBuffer buffer, VmaAllocation allocation,
          VulkanDeviceQueue* device_queue, bool /* is_lost */) {
-        if (buffer != VK_NULL_HANDLE)
-          vkDestroyBuffer(device_queue->GetVulkanDevice(), buffer, nullptr);
-        if (memory != VK_NULL_HANDLE)
-          vkFreeMemory(device_queue->GetVulkanDevice(), memory, nullptr);
+        vma::DestroyBuffer(device_queue->vma_allocator(), buffer, allocation);
       },
-      buffer, memory));
+      buffer, allocation));
 }
 
 void VulkanFenceHelper::PerformImmediateCleanup() {
@@ -241,8 +247,10 @@ void VulkanFenceHelper::PerformImmediateCleanup() {
   // recover from this.
   CHECK(result == VK_SUCCESS || result == VK_ERROR_DEVICE_LOST);
   bool device_lost = result == VK_ERROR_DEVICE_LOST;
-  if (!device_lost)
-    current_generation_ = next_generation_ - 1;
+
+  // We're going to destroy all fences below, so we should consider them as
+  // passed.
+  current_generation_ = next_generation_ - 1;
 
   // Run all cleanup tasks. Create a temporary vector of tasks to run to avoid
   // reentrancy issues.

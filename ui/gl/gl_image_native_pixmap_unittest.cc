@@ -32,12 +32,14 @@ const uint8_t kImageColor[] = {0x30, 0x40, 0x10, 0xFF};
 template <gfx::BufferFormat format>
 class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
  public:
-  base::Optional<GLImplementation> GetPreferedGLImplementation()
+  absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const override {
 #if defined(OS_WIN)
-    return base::Optional<GLImplementation>(kGLImplementationEGLANGLE);
+    return absl::optional<GLImplementationParts>(GLImplementationParts(
+        kGLImplementationEGLANGLE, ANGLEImplementation::kNone));
 #else
-    return base::Optional<GLImplementation>(kGLImplementationEGLGLES2);
+    return absl::optional<GLImplementationParts>(
+        GLImplementationParts(kGLImplementationEGLGLES2));
 #endif
   }
 
@@ -120,7 +122,7 @@ using GLImageTestTypes = testing::Types<
     GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRX_8888>,
     GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRA_8888>,
     GLImageNativePixmapTestDelegate<gfx::BufferFormat::RGBA_1010102>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRX_1010102>>;
+    GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 #if !defined(MEMORY_SANITIZER)
 // Fails under MSAN: crbug.com/886995

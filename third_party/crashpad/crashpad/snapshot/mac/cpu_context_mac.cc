@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 
 namespace crashpad {
 
@@ -431,6 +432,158 @@ void InitializeCPUContextX86_64(CPUContextX86_64* context,
   }
   if (set_flavor != x86_DEBUG_STATE64) {
     InitializeCPUContextX86_64Debug(context, x86_debug_state64);
+  }
+}
+
+}  // namespace internal
+
+#elif defined(ARCH_CPU_ARM64)
+
+namespace {
+
+void InitializeCPUContextARM64Thread(
+    CPUContextARM64* context,
+    const arm_thread_state64_t* arm_thread_state64) {
+  // The first 29 fields of context->regs is laid out identically to
+  // arm_thread_state64->__x.
+  memcpy(
+      context->regs, arm_thread_state64->__x, sizeof(arm_thread_state64->__x));
+
+  context->regs[29] = arm_thread_state64_get_fp(*arm_thread_state64);
+  context->regs[30] = arm_thread_state64_get_lr(*arm_thread_state64);
+  context->sp = arm_thread_state64_get_sp(*arm_thread_state64);
+  context->pc = arm_thread_state64_get_pc(*arm_thread_state64);
+  context->spsr =
+      static_cast<decltype(context->spsr)>(arm_thread_state64->__cpsr);
+}
+
+void InitializeCPUContextARM64Neon(CPUContextARM64* context,
+                                   const arm_neon_state64_t* arm_neon_state64) {
+  static_assert(sizeof(context->fpsimd) == sizeof(arm_neon_state64->__v),
+                "fpsimd context size mismatch");
+  memcpy(context->fpsimd, arm_neon_state64->__v, sizeof(arm_neon_state64->__v));
+  context->fpsr = arm_neon_state64->__fpsr;
+  context->fpcr = arm_neon_state64->__fpcr;
+}
+
+void InitializeCPUContextARM64Debug(
+    CPUContextARM64* context,
+    const arm_debug_state64_t* arm_debug_state64) {
+  // TODO(macos_arm64): Create a spot in CPUContextARM64 to keep this.
+}
+
+thread_state_flavor_t InitializeCPUContextARM64Flavor(
+    CPUContextARM64* context,
+    thread_state_flavor_t flavor,
+    ConstThreadState state,
+    mach_msg_type_number_t state_count) {
+  mach_msg_type_number_t expected_state_count;
+  switch (flavor) {
+    case ARM_UNIFIED_THREAD_STATE:
+      expected_state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
+      break;
+    case ARM_THREAD_STATE64:
+      expected_state_count = ARM_THREAD_STATE64_COUNT;
+      break;
+    case ARM_NEON_STATE64:
+      expected_state_count = ARM_NEON_STATE64_COUNT;
+      break;
+    case ARM_DEBUG_STATE64:
+      expected_state_count = ARM_DEBUG_STATE64_COUNT;
+      break;
+    case THREAD_STATE_NONE: {
+      // This may happen without error when called without exception-style
+      // flavor data, or even from an exception handler when the exception
+      // behavior is EXCEPTION_DEFAULT.
+      return flavor;
+    }
+    default:
+      LOG(WARNING) << "unhandled flavor " << flavor;
+      return THREAD_STATE_NONE;
+  }
+
+  if (state_count < expected_state_count) {
+    LOG(WARNING) << "expected state_count " << expected_state_count
+                 << " for flavor " << flavor << ", observed " << state_count;
+    return THREAD_STATE_NONE;
+  }
+
+  switch (flavor) {
+    case ARM_UNIFIED_THREAD_STATE: {
+      const arm_unified_thread_state_t* arm_thread_state =
+          reinterpret_cast<const arm_unified_thread_state_t*>(state);
+      if (arm_thread_state->ash.flavor != ARM_THREAD_STATE64) {
+        LOG(WARNING) << "expected flavor ARM_THREAD_STATE64, observed "
+                     << arm_thread_state->ash.flavor;
+        return THREAD_STATE_NONE;
+      }
+      return InitializeCPUContextARM64Flavor(
+          context,
+          arm_thread_state->ash.flavor,
+          reinterpret_cast<ConstThreadState>(&arm_thread_state->ts_64),
+          arm_thread_state->ash.count);
+    }
+
+    case ARM_THREAD_STATE64: {
+      const arm_thread_state64_t* arm_thread_state =
+          reinterpret_cast<const arm_thread_state64_t*>(state);
+      InitializeCPUContextARM64Thread(context, arm_thread_state);
+      return ARM_THREAD_STATE64;
+    }
+
+    case ARM_NEON_STATE64: {
+      const arm_neon_state64_t* arm_neon_state =
+          reinterpret_cast<const arm_neon_state64_t*>(state);
+      InitializeCPUContextARM64Neon(context, arm_neon_state);
+      return ARM_NEON_STATE64;
+    }
+
+    case ARM_DEBUG_STATE64: {
+      const arm_debug_state64_t* arm_debug_state =
+          reinterpret_cast<const arm_debug_state64_t*>(state);
+      InitializeCPUContextARM64Debug(context, arm_debug_state);
+      return ARM_DEBUG_STATE64;
+    }
+
+    case THREAD_STATE_NONE: {
+      // This may happen without error when called without exception-style
+      // flavor data, or even from an exception handler when the exception
+      // behavior is EXCEPTION_DEFAULT.
+      return flavor;
+    }
+
+    default: {
+      NOTREACHED();
+      return THREAD_STATE_NONE;
+    }
+  }
+}
+
+}  // namespace
+
+namespace internal {
+
+void InitializeCPUContextARM64(CPUContextARM64* context,
+                               thread_state_flavor_t flavor,
+                               ConstThreadState state,
+                               mach_msg_type_number_t state_count,
+                               const arm_thread_state64_t* arm_thread_state64,
+                               const arm_neon_state64_t* arm_neon_state64,
+                               const arm_debug_state64_t* arm_debug_state64) {
+  thread_state_flavor_t set_flavor = THREAD_STATE_NONE;
+  if (flavor != THREAD_STATE_NONE) {
+    set_flavor =
+        InitializeCPUContextARM64Flavor(context, flavor, state, state_count);
+  }
+
+  if (set_flavor != ARM_THREAD_STATE64) {
+    InitializeCPUContextARM64Thread(context, arm_thread_state64);
+  }
+  if (set_flavor != ARM_NEON_STATE64) {
+    InitializeCPUContextARM64Neon(context, arm_neon_state64);
+  }
+  if (set_flavor != ARM_DEBUG_STATE64) {
+    InitializeCPUContextARM64Debug(context, arm_debug_state64);
   }
 }
 

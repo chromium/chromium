@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_mode/safe_mode_crashing_modules_config.h"
 
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

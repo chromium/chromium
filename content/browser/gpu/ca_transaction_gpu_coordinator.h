@@ -9,8 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 
-#include <memory>
-
 namespace content {
 
 class GpuProcessHost;
@@ -21,6 +19,11 @@ class CATransactionGPUCoordinator
  public:
   static scoped_refptr<CATransactionGPUCoordinator> Create(
       GpuProcessHost* host);
+
+  CATransactionGPUCoordinator(const CATransactionGPUCoordinator&) = delete;
+  CATransactionGPUCoordinator& operator=(const CATransactionGPUCoordinator&) =
+      delete;
+
   void HostWillBeDestroyed();
 
  private:
@@ -36,9 +39,7 @@ class CATransactionGPUCoordinator
   void AddPostCommitObserverOnUIThread();
   void RemovePostCommitObserverOnUIThread();
 
-  void OnActivateForTransactionOnIO();
-  void OnEnterPostCommitOnIO();
-  void OnCommitCompletedOnIO();
+  void OnCommitCompletedOnProcessThread();
   void OnCommitCompletedOnUI();
 
   // The GpuProcessHost to use to initiate GPU-side CATransactions. This is only
@@ -51,8 +52,6 @@ class CATransactionGPUCoordinator
 
   // Egregious state tracking to debug https://crbug.com/871430
   bool registered_as_observer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CATransactionGPUCoordinator);
 };
 
 }  // namespace content

@@ -53,15 +53,13 @@ std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::ListValue* list = NULL;
 
-  if (value && !value->GetAsList(&list))
+  if (value && !value->is_list())
     delete value;
 
-  // We expect to either have successfuly retrieved a list from the value,
-  // or the value to have been NULL.
-  EXPECT_TRUE(list);
-  return std::unique_ptr<base::ListValue>(list);
+  // We expect to have successfully retrieved a list from the value.
+  EXPECT_TRUE(value);
+  return base::ListValue::From(std::unique_ptr<base::Value>(value));
 }
 
 std::string ExtensionApiUnittest::RunFunctionAndReturnError(

@@ -4,18 +4,30 @@
 
 #include "ui/gfx/geometry/point_f.h"
 
+#include <cmath>
+
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 
 namespace gfx {
 
 void PointF::SetToMin(const PointF& other) {
-  x_ = x_ <= other.x_ ? x_ : other.x_;
-  y_ = y_ <= other.y_ ? y_ : other.y_;
+  x_ = std::min(x_, other.x_);
+  y_ = std::min(y_, other.y_);
 }
 
 void PointF::SetToMax(const PointF& other) {
-  x_ = x_ >= other.x_ ? x_ : other.x_;
-  y_ = y_ >= other.y_ ? y_ : other.y_;
+  x_ = std::max(x_, other.x_);
+  y_ = std::max(y_, other.y_);
+}
+
+bool PointF::IsWithinDistance(const PointF& rhs,
+                              const float allowed_distance) const {
+  DCHECK(allowed_distance > 0);
+  float diff_x = x_ - rhs.x();
+  float diff_y = y_ - rhs.y();
+  float distance = std::sqrt(diff_x * diff_x + diff_y * diff_y);
+  return distance < allowed_distance;
 }
 
 std::string PointF::ToString() const {

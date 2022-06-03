@@ -11,69 +11,21 @@
 
 (() => {
   // Load scripts needed by the test API on context creation.
-  if ('MojoInterfaceInterceptor' in self) {
-    let prefix = '/resources/chromium';
-    if ('window' in self) {
-      const pathname = window.location.pathname;
-      if (pathname.includes('/LayoutTests/') || pathname.includes('/web_tests/')) {
-        let root = pathname.match(/.*(?:LayoutTests|web_tests)/);
-        prefix = `${root}/external/wpt/resources/chromium`;
-      }
-    }
-    let scriptPath = `${prefix}/webusb-child-test.js`;
-    if (typeof document == 'undefined') {
-      importScripts(scriptPath);
-    } else {
-      let script = document.createElement('script');
-      script.src = scriptPath;
-      script.async = false;
-      document.head.appendChild(script);
-    }
+  if (isChromiumBased) {
+    loadScript('/resources/chromium/webusb-child-test.js');
   }
 })();
 
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!('MojoInterfaceInterceptor' in self)) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
-
-  let chain = Promise.resolve();
-  [
-    '/resources/chromium/mojo_bindings.js',
-    '/resources/chromium/big_buffer.mojom.js',
-    '/resources/chromium/string16.mojom.js',
-    '/resources/chromium/url.mojom.js',
-    '/resources/chromium/device.mojom.js',
-    '/resources/chromium/device_enumeration_options.mojom.js',
-    '/resources/chromium/device_manager_client.mojom.js',
-    '/resources/chromium/web_usb_service.mojom.js',
-    '/resources/chromium/webusb-test.js',
-  ].forEach(path => {
-    // Use importScripts for workers.
-    if (typeof document === 'undefined') {
-      chain = chain.then(() => importScripts(path));
-      return;
-    }
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = () => resolve();
-    }));
-    document.head.appendChild(script);
-  });
-
-  return chain;
-});
-
 function usb_test(func, name, properties) {
   promise_test(async () => {
+    assert_implements(navigator.usb, 'missing navigator.usb');
     if (navigator.usb.test === undefined) {
       // Try loading a polyfill for the WebUSB Testing API.
-      await loadChromiumResources;
+      if (isChromiumBased) {
+        await loadScript('/resources/chromium/webusb-test.js');
+      }
     }
+    assert_implements(navigator.usb.test, 'missing navigator.usb.test after initialization');
 
     await navigator.usb.test.initialize();
     try {

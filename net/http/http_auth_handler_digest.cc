@@ -92,6 +92,7 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key,
     const GURL& origin,
     CreateReason reason,
     int digest_nonce_count,
@@ -102,15 +103,18 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
   //                 method and only constructing when valid.
   std::unique_ptr<HttpAuthHandler> tmp_handler(
       new HttpAuthHandlerDigest(digest_nonce_count, nonce_generator_.get()));
-  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info, origin,
-                                      net_log))
+  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
+                                      network_isolation_key, origin, net_log)) {
     return ERR_INVALID_RESPONSE;
+  }
   handler->swap(tmp_handler);
   return OK;
 }
 
-bool HttpAuthHandlerDigest::Init(HttpAuthChallengeTokenizer* challenge,
-                                 const SSLInfo& ssl_info) {
+bool HttpAuthHandlerDigest::Init(
+    HttpAuthChallengeTokenizer* challenge,
+    const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key) {
   return ParseChallenge(challenge);
 }
 
@@ -234,13 +238,13 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
     if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm))
       return false;
     realm_ = realm;
-    original_realm_ = value.as_string();
+    original_realm_ = std::string(value);
   } else if (base::LowerCaseEqualsASCII(name, "nonce")) {
-    nonce_ = value.as_string();
+    nonce_ = std::string(value);
   } else if (base::LowerCaseEqualsASCII(name, "domain")) {
-    domain_ = value.as_string();
+    domain_ = std::string(value);
   } else if (base::LowerCaseEqualsASCII(name, "opaque")) {
-    opaque_ = value.as_string();
+    opaque_ = std::string(value);
   } else if (base::LowerCaseEqualsASCII(name, "stale")) {
     // Parse the stale boolean.
     stale_ = base::LowerCaseEqualsASCII(value, "true");
@@ -260,7 +264,7 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
     //
     // TODO(https://crbug.com/820198): Remove this copy when
     // HttpUtil::ValuesIterator can take a StringPiece.
-    std::string value_str = value.as_string();
+    std::string value_str(value);
     HttpUtil::ValuesIterator qop_values(value_str.begin(), value_str.end(),
                                         ',');
     qop_ = QOP_UNSPECIFIED;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_TRANSFORMER_UTIL_H_
-#define ASH_TRANSFORMER_UTIL_H_
+#ifndef ASH_UTILITY_TRANSFORMER_UTIL_H_
+#define ASH_UTILITY_TRANSFORMER_UTIL_H_
 
 #include "ash/ash_export.h"
 #include "ui/display/display.h"
@@ -24,4 +24,4 @@ ASH_EXPORT gfx::Transform CreateRotationTransform(
 
 }  // namespace ash
 
-#endif  // ASH_TRANSFORMER_UTIL_H_
+#endif  // ASH_UTILITY_TRANSFORMER_UTIL_H_

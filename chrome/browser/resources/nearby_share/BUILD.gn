@@ -1,0 +1,191 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+preprocess_src_manifest = "preprocessed_src_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_folder = "preprocessed"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/nearby_share_dialog_resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/nearby_share_dialog_resources.h",
+    "grit/nearby_share_dialog_resources_map.cc",
+    "grit/nearby_share_dialog_resources_map.h",
+    "nearby_share_dialog_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "nearby_share_dialog"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  deps = [
+    ":build_mojo_grdp",
+    ":preprocess_gen",
+    ":preprocess_src",
+    "shared:build_v3_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/nearby_share_mojo_resources.grdp",
+    "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
+  ]
+  input_files = [
+    "nearby_share_progress_bar_dark.json",
+    "nearby_share_progress_bar_light.json",
+    "nearby_share_pulse_animation_dark.json",
+    "nearby_share_pulse_animation_light.json",
+  ]
+  input_files_base_dir = rebase_path("shared", "//")
+  manifest_files = [
+    "$target_gen_dir/$preprocess_src_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+  resource_path_rewrites = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
+  ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "nearby_share_dialog.html",
+    "discovery_manager.js",
+  ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":web_components" ]
+  in_folder = "$target_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "app.js",
+    "nearby_confirmation_page.js",
+    "nearby_discovery_page.js",
+  ]
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/${grd_prefix}_mojo_resources.grdp"
+  deps = [ ":preprocess_mojo" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
+  resource_path_rewrites = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
+  ]
+}
+
+# Mojo files, for generating grdp
+preprocess_if_expr("preprocess_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js__generator",
+    "//chromeos/services/nearby/public/mojom:mojom_js",
+  ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
+  in_files = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js",
+  ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags =
+      default_closure_args + [
+        "js_module_root=../../chrome/browser/resources/nearby_share/",
+        "js_module_root=./gen/chrome/browser/resources/nearby_share/",
+      ]
+  deps = [
+    ":app",
+    ":discovery_manager",
+    ":nearby_confirmation_page",
+    ":nearby_discovery_page",
+  ]
+}
+
+js_library("app") {
+  deps = [
+    ":nearby_confirmation_page",
+    ":nearby_discovery_page",
+    "./shared:nearby_onboarding_page.m",
+    "./shared:nearby_share_settings_behavior.m",
+    "./shared:nearby_visibility_page.m",
+    "./shared:types.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
+  ]
+  extra_deps = [ "./shared:modulize" ]
+}
+
+js_library("discovery_manager") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+  ]
+}
+
+js_library("nearby_confirmation_page") {
+  deps = [
+    "./shared:nearby_preview.m",
+    "./shared:nearby_progress.m",
+    "./shared:types.m",
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("nearby_discovery_page") {
+  deps = [
+    ":discovery_manager",
+    "./shared:nearby_device.m",
+    "./shared:nearby_preview.m",
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "app.js",
+    "nearby_confirmation_page.js",
+    "nearby_discovery_page.js",
+  ]
+}

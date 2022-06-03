@@ -19,7 +19,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_settings.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 
 namespace cc {
 
@@ -55,9 +55,10 @@ class LayerTreeImplTestBase {
   void CalcDrawProps(const gfx::Size& viewport_size);
   void AppendQuadsWithOcclusion(LayerImpl* layer_impl,
                                 const gfx::Rect& occluded);
-  void AppendQuadsForPassWithOcclusion(LayerImpl* layer_impl,
-                                       viz::RenderPass* given_render_pass,
-                                       const gfx::Rect& occluded);
+  void AppendQuadsForPassWithOcclusion(
+      LayerImpl* layer_impl,
+      viz::CompositorRenderPass* given_render_pass,
+      const gfx::Rect& occluded);
   void AppendSurfaceQuadsWithOcclusion(RenderSurfaceImpl* surface_impl,
                                        const gfx::Rect& occluded);
 
@@ -123,7 +124,7 @@ class LayerTreeImplTestBase {
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> host_;
-  std::unique_ptr<viz::RenderPass> render_pass_;
+  std::unique_ptr<viz::CompositorRenderPass> render_pass_;
   scoped_refptr<AnimationTimeline> timeline_;
   scoped_refptr<AnimationTimeline> timeline_impl_;
   int layer_impl_id_;

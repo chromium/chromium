@@ -1,0 +1,14 @@
+Tests that page events are associated with the input
+Before release
+{
+    method : Page.frameRequestedNavigation
+    params : {
+        disposition : currentTab
+        frameId : <string>
+        reason : anchorClick
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    sessionId : <string>
+}
+After release
+

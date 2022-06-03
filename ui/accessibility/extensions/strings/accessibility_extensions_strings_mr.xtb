@@ -17,8 +17,8 @@
 <translation id="2471847333270902538">यासाठी रंग योजना <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">शब्दांनुसार हलविण्‍यासाठी &lt;span class='key'&gt;पर्याय&lt;/span&gt; धरून ठेवा.</translation>
 <translation id="2795227192542594043">हा विस्‍तार तुम्हाला कीबोर्डसह मजकूर निवडण्‍याची अनुमती देणारा, वेबपेजमधील हलणारा कर्सर देतो.</translation>
-<translation id="2808027189040546825">चरण 1: सर्वाधिक अंधुक तारे असलेली पंक्ती निवडा:</translation>
-<translation id="2965611304828530558">&lt;p&gt;तुम्ही दुव्‍यावर किंवा नियंत्रणावर पोहचता तेव्‍हा, ते आपोआप फोकस केले जाते. दुवा किंवा बटण क्लिक करण्यासाठी &lt;span class='key'&gt;Enter&lt;/span&gt; दाबा. &lt;/p&gt; &lt;p&gt; फोकस केलेले नियंत्रण (जसे की, मजकूर बॉक्‍स किंवा सूची बॉक्‍स) बाण की, कॅप्‍चर करतात तेव्‍हा, कॅरेट ब्राउझिंग करणे सुरु ठेवण्‍यासाठी &lt;span class='key'&gt;Esc&lt;/span&gt; त्यानंतर डावा किंवा उजवा बाण दाबा. &lt;/p&gt; &lt;p&gt; वैकल्पिकपणे, पुढील फोकस करण्‍यायोग्य नियंत्रणावर हलविण्‍यासाठी &lt;span class='key'&gt;Tab&lt;/span&gt; दाबा. &lt;/p&gt;</translation>
+<translation id="2808027189040546825">पायरी 1: सर्वाधिक अंधुक तारे असलेली पंक्ती निवडा:</translation>
+<translation id="2965611304828530558">&lt;p&gt;तुम्ही दुव्‍यावर किंवा नियंत्रणावर पोहचता तेव्‍हा, ते आपोआप फोकस केले जाते. दुवा किंवा बटण क्लिक करण्यासाठी &lt;span class='key'&gt;Enter&lt;/span&gt; दाबा. &lt;/p&gt; &lt;p&gt; फोकस केलेले नियंत्रण (जसे की, मजकूर बॉक्‍स किंवा सूची बॉक्‍स) बाण की, कॅप्‍चर करतात तेव्‍हा, कॅरेट ब्राउझिंग करणे सुरू ठेवण्‍यासाठी &lt;span class='key'&gt;Esc&lt;/span&gt; त्यानंतर डावा किंवा उजवा बाण दाबा. &lt;/p&gt; &lt;p&gt; वैकल्पिकपणे, पुढील फोकस करण्‍यायोग्य नियंत्रणावर हलविण्‍यासाठी &lt;span class='key'&gt;Tab&lt;/span&gt; दाबा. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">सेटअप</translation>
 <translation id="3410969471888629217">साइट सानुकूलने विसरा</translation>
 <translation id="3435896845095436175">सुरू करा</translation>
@@ -56,13 +56,13 @@
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="7379645913608427028">प्रमाण</translation>
 <translation id="7384431257964758081">उच्च तीव्रता सक्षम केली आहे</translation>
-<translation id="7586636300921797327">चरण 2: निवडलेल्‍या पंक्तीमध्‍ये सर्व तारे दृश्‍यमान होईपर्यंत स्लायडर समायोजित करा</translation>
+<translation id="7586636300921797327">पायरी 2: निवडलेल्‍या पंक्तीमध्‍ये सर्व तारे दृश्‍यमान होईपर्यंत स्लायडर समायोजित करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="786423340267544509">aria-describedat किंवा longdesc विशेषतांसह घटकांमध्ये सीमा जोडा.</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="8260673944985561857">कॅरेट ब्राउझिंग पर्याय</translation>
 <translation id="8321034316479930120">अ‍ॅनिमेशन धोरण</translation>
 <translation id="8480209185614411573">उच्च तीव्रता</translation>
-<translation id="8609925175482059018">कॅरेट ब्राउझिंग चालू करण्यासाठी &lt;span class='key'&gt;F7&lt;/span&gt; दाबा. ते बंद करण्‍यासाठी ती पुन्‍हा दाबा.</translation>
+<translation id="8609925175482059018">कॅरेट ब्राउझिंग सुरू करण्यासाठी &lt;span class='key'&gt;F7&lt;/span&gt; दाबा. ते बंद करण्‍यासाठी ती पुन्‍हा दाबा.</translation>
 <translation id="894241283505723656">काँटेक्स्ट मेनूमधील दीर्घ वर्णने</translation>
 </translationbundle>

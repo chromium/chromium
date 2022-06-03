@@ -2,37 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-// Allow a function to be provided by tests, which will be called when
-// the page has been populated with site engagement details.
-let whenPageIsPopulatedForTest;
+import {SiteEngagementDetails, SiteEngagementDetailsProvider, SiteEngagementDetailsProviderRemote} from './site_engagement_details.mojom-webui.js';
 
-/** @type {function()} */
-let disableAutoupdateForTests;
-
-/** @type {mojom.SiteEngagementDetailsProviderRemote} */
-let engagementDetailsProvider;
-
-(function() {
 let resolvePageIsPopulated = null;
 const pageIsPopulatedPromise = new Promise((resolve, reject) => {
   resolvePageIsPopulated = resolve;
 });
 
-whenPageIsPopulatedForTest = function() {
+const whenPageIsPopulatedForTest = function() {
   return pageIsPopulatedPromise;
 };
 
 function initialize() {
-  engagementDetailsProvider = mojom.SiteEngagementDetailsProvider.getRemote(
-      /*useBrowserInterfaceBroker=*/ true);
+  const engagementDetailsProvider = SiteEngagementDetailsProvider.getRemote();
 
   /** @type {?HTMLElement} */
   const engagementTableBody = $('engagement-table-body');
   /** @type {?number} */
   let updateInterval = null;
-  /** @type {?Array<!mojom.SiteEngagementDetails>} */
+  /** @type {?Array<!SiteEngagementDetails>} */
   let info = null;
   /** @type {string} */
   let sortKey = 'totalScore';
@@ -65,7 +57,7 @@ function initialize() {
 
   /**
    * Creates a single row in the engagement table.
-   * @param {mojom.SiteEngagementDetails} info The info to create the row from.
+   * @param {SiteEngagementDetails} info The info to create the row from.
    * @return {HTMLElement}
    */
   function createRow(info) {
@@ -115,7 +107,6 @@ function initialize() {
     }
     updateInterval = null;
   }
-  disableAutoupdateForTests = disableAutoupdate;
 
   function enableAutoupdate() {
     if (updateInterval) {
@@ -128,7 +119,7 @@ function initialize() {
    * Sets the base engagement score when a score input is changed.
    * Resets the length of engagement-bar-cell to match the new score.
    * Also resets the update interval.
-   * @param {!url.mojom.Url} origin The origin of the engagement score to set.
+   * @param {!Url} origin The origin of the engagement score to set.
    * @param {Event} e
    */
   function handleBaseScoreChange(origin, e) {
@@ -144,7 +135,7 @@ function initialize() {
    * Remove all rows from the engagement table.
    */
   function clearTable() {
-    engagementTableBody.innerHTML = '';
+    engagementTableBody.innerHTML = trustedTypes.emptyHTML;
   }
 
   /**
@@ -218,7 +209,12 @@ function initialize() {
 
   updateEngagementTable();
   enableAutoupdate();
+
+  // We explicitly set these on the global Window object so test code can use
+  // them.
+  window.whenPageIsPopulatedForTest = whenPageIsPopulatedForTest;
+  window.disableAutoupdateForTests = disableAutoupdate;
+  window.engagementDetailsProvider = engagementDetailsProvider;
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
-})();

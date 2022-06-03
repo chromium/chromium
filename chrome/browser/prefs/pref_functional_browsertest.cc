@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -22,9 +23,11 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/embedder_support/pref_names.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -40,7 +43,7 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
       Browser* browser,
       int num_downloads) {
     DownloadManager* download_manager =
-        BrowserContext::GetDownloadManager(browser->profile());
+        browser->profile()->GetDownloadManager();
 
     content::DownloadTestObserver* downloads_observer =
          new content::DownloadTestObserverTerminal(
@@ -66,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
   // Create a downloads observer.
   std::unique_ptr<content::DownloadTestObserver> downloads_observer(
       CreateWaiter(browser(), 1));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip")));
   // Waits for the download to complete.
   downloads_observer->WaitForFinished();
 
@@ -79,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   bool result = false;
   std::string script =
@@ -103,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
           ->default_value_pref_name(),
       CONTENT_SETTING_BLOCK);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   result = false;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -120,15 +123,15 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
 
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kWebKitJavascriptEnabled));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
-  EXPECT_EQ(base::ASCIIToUTF16("Title from script javascript enabled"),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
+  EXPECT_EQ(u"Title from script javascript enabled",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
                                                false);
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
-  EXPECT_EQ(base::ASCIIToUTF16("This is html title"),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
+  EXPECT_EQ(u"This is html title",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -152,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/settings/image_page.html");
   Browser* incognito_browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito_browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
   bool result = false;
   std::string script =
@@ -220,8 +223,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kAlternateErrorPagesEnabled));
-  prefs->SetBoolean(prefs::kAlternateErrorPagesEnabled, false);
+  EXPECT_TRUE(prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
+  prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
   prefs->SetBoolean(prefs::kSearchSuggestEnabled, false);
@@ -234,13 +237,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestPrivacySecurityPrefs) {
   EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_NEVER,
             prefs->GetInteger(prefs::kNetworkPredictionOptions));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kAlternateErrorPagesEnabled));
+  EXPECT_FALSE(
+      prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
 }
 
 // Verify that we have some Local State prefs.
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHaveLocalStatePrefs) {
-  EXPECT_TRUE(g_browser_process->local_state()
-                  ->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS)
-                  .get());
+  base::Value prefs = g_browser_process->local_state()->GetPreferenceValues(
+      PrefService::INCLUDE_DEFAULTS);
+  EXPECT_TRUE(prefs.is_dict());
 }

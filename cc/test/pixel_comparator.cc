@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -25,8 +26,8 @@ bool ExactPixelComparator::Compare(const SkBitmap& actual_bmp,
   gfx::Rect error_bounding_rect = gfx::Rect();
 
   // Check that bitmaps have identical dimensions.
-  DCHECK(actual_bmp.width() == expected_bmp.width() &&
-         actual_bmp.height() == expected_bmp.height());
+  DCHECK_EQ(actual_bmp.width(), expected_bmp.width());
+  DCHECK_EQ(actual_bmp.height(), expected_bmp.height());
 
   for (int x = 0; x < actual_bmp.width(); ++x) {
     for (int y = 0; y < actual_bmp.height(); ++y) {
@@ -47,6 +48,45 @@ bool ExactPixelComparator::Compare(const SkBitmap& actual_bmp,
     LOG(ERROR) << "Number of pixel with an error: " << error_pixels_count;
     LOG(ERROR) << "Error Bounding Box : " << error_bounding_rect.ToString();
     return false;
+  }
+
+  return true;
+}
+
+ManhattanDistancePixelComparator::ManhattanDistancePixelComparator(
+    int tolerance)
+    : tolerance_(tolerance) {}
+
+bool ManhattanDistancePixelComparator::Compare(
+    const SkBitmap& actual_bmp,
+    const SkBitmap& expected_bmp) const {
+  // Check that bitmaps have identical dimensions.
+  DCHECK_EQ(actual_bmp.width(), expected_bmp.width());
+  DCHECK_EQ(actual_bmp.height(), expected_bmp.height());
+
+  for (int y = 0; y < actual_bmp.height(); ++y) {
+    for (int x = 0; x < actual_bmp.width(); ++x) {
+      SkColor actual_color = actual_bmp.getColor(x, y);
+      SkColor expected_color = expected_bmp.getColor(x, y);
+
+      int pixel_b = SkColorGetB(actual_color);
+      int pixel_g = SkColorGetG(actual_color);
+      int pixel_r = SkColorGetR(actual_color);
+
+      int ref_pixel_b = SkColorGetB(expected_color);
+      int ref_pixel_g = SkColorGetG(expected_color);
+      int ref_pixel_r = SkColorGetR(expected_color);
+
+      int manhattan_distance = std::abs(pixel_b - ref_pixel_b) +
+                               std::abs(pixel_g - ref_pixel_g) +
+                               std::abs(pixel_r - ref_pixel_r);
+
+      if (manhattan_distance > tolerance_) {
+        LOG(ERROR) << "Pixel test failed on (" << x << ", " << y << "). "
+                   << "Manhattan distance: " << manhattan_distance << ".";
+        return false;
+      }
+    }
   }
 
   return true;
@@ -90,11 +130,12 @@ bool FuzzyPixelComparator::Compare(const SkBitmap& actual_bmp,
   gfx::Rect error_bounding_rect = gfx::Rect();
 
   // Check that bitmaps have identical dimensions.
-  DCHECK(actual_bmp.width() == expected_bmp.width() &&
-         actual_bmp.height() == expected_bmp.height());
+  DCHECK_EQ(actual_bmp.width(), expected_bmp.width());
+  DCHECK_EQ(actual_bmp.height(), expected_bmp.height());
 
   // Check that bitmaps are not empty.
-  DCHECK(actual_bmp.width() > 0 && actual_bmp.height() > 0);
+  DCHECK_GT(actual_bmp.width(), 0);
+  DCHECK_GT(actual_bmp.height(), 0);
 
   for (int x = 0; x < actual_bmp.width(); ++x) {
     for (int y = 0; y < actual_bmp.height(); ++y) {

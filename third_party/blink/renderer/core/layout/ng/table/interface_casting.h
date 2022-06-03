@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_INTERFACE_CASTING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_INTERFACE_CASTING_H_
 
+#include "base/notreached.h"
+
 namespace blink {
 
 // These are the helpers for downcasting to mixin classes.
@@ -54,6 +56,8 @@ struct InterfaceDowncastTraits {
   template <typename U>
   static bool AllowFrom(const U&) {
     static_assert(sizeof(U) == 0, "no downcast traits specialization for T");
+    NOTREACHED();
+    return false;
   }
   template <typename U>
   static const T& ConvertFrom(const U&) {

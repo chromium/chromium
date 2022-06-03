@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 81 tests; 64 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 113 tests; 106 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS src set
 PASS src changed
 PASS src removed
@@ -20,16 +20,42 @@ PASS crossorigin anonymous to use-credentials, src absent
 PASS crossorigin use-credentials to absent, src absent
 PASS crossorigin use-credentials to empty, src absent
 PASS crossorigin use-credentials to anonymous, src absent
-FAIL crossorigin absent to empty, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin absent to anonymous, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin absent to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin empty to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin empty to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin anonymous to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin anonymous to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin use-credentials to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin use-credentials to empty, src already set assert_unreached: update the image data didn't run Reached unreachable code
-FAIL crossorigin use-credentials to anonymous, src already set assert_unreached: update the image data didn't run Reached unreachable code
+PASS crossorigin use-credentials to invalid, src absent
+PASS crossorigin absent to empty, src already set
+PASS crossorigin absent to anonymous, src already set
+PASS crossorigin absent to use-credentials, src already set
+PASS crossorigin empty to absent, src already set
+PASS crossorigin empty to use-credentials, src already set
+PASS crossorigin anonymous to absent, src already set
+PASS crossorigin anonymous to use-credentials, src already set
+PASS crossorigin use-credentials to absent, src already set
+PASS crossorigin use-credentials to empty, src already set
+PASS crossorigin use-credentials to anonymous, src already set
+PASS crossorigin use-credentials to invalid, src already set
+PASS referrerpolicy absent to no-referrer-when-downgrade, src absent
+PASS referrerpolicy absent to no-referrer, src absent
+PASS referrerpolicy empty to no-referrer-when-downgrade, src absent
+PASS referrerpolicy empty to no-referrer, src absent
+PASS referrerpolicy no-referrer-when-downgrade to absent, src absent
+PASS referrerpolicy no-referrer-when-downgrade to empty, src absent
+PASS referrerpolicy no-referrer-when-downgrade to no-referrer, src absent
+PASS referrerpolicy no-referrer-when-downgrade to invalid, src absent
+PASS referrerpolicy no-referrer to absent, src absent
+PASS referrerpolicy no-referrer to empty, src absent
+PASS referrerpolicy no-referrer to no-referrer-when-downgrade, src absent
+PASS referrerpolicy no-referrer to invalid, src absent
+PASS referrerpolicy absent to no-referrer-when-downgrade, src already set
+PASS referrerpolicy absent to no-referrer, src already set
+PASS referrerpolicy empty to no-referrer-when-downgrade, src already set
+PASS referrerpolicy empty to no-referrer, src already set
+PASS referrerpolicy no-referrer-when-downgrade to absent, src already set
+PASS referrerpolicy no-referrer-when-downgrade to empty, src already set
+PASS referrerpolicy no-referrer-when-downgrade to no-referrer, src already set
+PASS referrerpolicy no-referrer-when-downgrade to invalid, src already set
+PASS referrerpolicy no-referrer to absent, src already set
+PASS referrerpolicy no-referrer to empty, src already set
+PASS referrerpolicy no-referrer to no-referrer-when-downgrade, src already set
+PASS referrerpolicy no-referrer to invalid, src already set
 FAIL inserted into picture assert_unreached: update the image data didn't run Reached unreachable code
 FAIL removed from picture assert_unreached: update the image data didn't run Reached unreachable code
 PASS parent is picture, previous source inserted
@@ -52,6 +78,12 @@ PASS crossorigin state not changed: absent, removeAttribute
 PASS crossorigin state not changed: empty to anonymous
 PASS crossorigin state not changed: anonymous to foobar
 PASS crossorigin state not changed: use-credentials to USE-CREDENTIALS
+PASS referrerpolicy state not changed: absent, removeAttribute
+PASS referrerpolicy state not changed: empty to empty
+PASS referrerpolicy state not changed: empty to invalid
+PASS referrerpolicy state not changed: absent to invalid
+PASS referrerpolicy state not changed: no-referrer to NO-REFERRER
+PASS referrerpolicy state not changed: invalid to other-invalid
 PASS inserted into picture ancestor
 PASS removed from picture ancestor
 PASS ancestor picture has a source inserted

@@ -27,6 +27,10 @@ class TestStackView : public views::View {
   };
 
   TestStackView() {}
+
+  TestStackView(const TestStackView&) = delete;
+  TestStackView& operator=(const TestStackView&) = delete;
+
   ~TestStackView() override {
     for (auto& observer: observers_) {
       observer.OnViewBeingDeleted();
@@ -39,8 +43,6 @@ class TestStackView : public views::View {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStackView);
 };
 
 class ViewStackTest : public ChromeViewsTestBase {
@@ -49,10 +51,13 @@ class ViewStackTest : public ChromeViewsTestBase {
     view_stack_->SetBounds(0, 0, 10, 10);
     view_stack_->Push(std::make_unique<TestStackView>(), false);
     view_stack_->slide_in_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
     view_stack_->slide_out_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
+
+  ViewStackTest(const ViewStackTest&) = delete;
+  ViewStackTest& operator=(const ViewStackTest&) = delete;
 
   void AssertViewOnTopOfStack(views::View* view) {
     gfx::Rect target = view_stack_->bounds();
@@ -98,8 +103,6 @@ class ViewStackTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<ViewStack> view_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewStackTest);
 };
 
 TEST_F(ViewStackTest, TestInitialStateAddedAsChildView) {
@@ -209,20 +212,20 @@ TEST_F(ViewStackTest, TestLayoutUpdatesAnimations) {
 
 TEST_F(ViewStackTest, TestPopMany) {
   views::View* top = PushViewOnStackAndWait();
-  EXPECT_EQ(2U, view_stack_->size());
+  EXPECT_EQ(2U, view_stack_->GetSize());
 
   PopManyAndWait(1, top);
-  EXPECT_EQ(1U, view_stack_->size());
+  EXPECT_EQ(1U, view_stack_->GetSize());
 
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
-  EXPECT_EQ(4U, view_stack_->size());
+  EXPECT_EQ(4U, view_stack_->GetSize());
 
   PopManyAndWait(3, top);
-  EXPECT_EQ(1U, view_stack_->size());
+  EXPECT_EQ(1U, view_stack_->GetSize());
 
   top = PushViewOnStackAndWait();
   top = PushViewOnStackAndWait();
-  EXPECT_EQ(3U, view_stack_->size());
+  EXPECT_EQ(3U, view_stack_->GetSize());
 }

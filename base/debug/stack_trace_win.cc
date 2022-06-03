@@ -12,10 +12,10 @@
 #include <iostream>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -118,6 +118,28 @@ FilePath GetExePath() {
   return FilePath(system_buffer);
 }
 
+bool SymInitializeCurrentProc() {
+  const HANDLE current_process = GetCurrentProcess();
+  if (SymInitialize(current_process, nullptr, TRUE))
+    return true;
+
+  g_init_error = GetLastError();
+  if (g_init_error != ERROR_INVALID_PARAMETER)
+    return false;
+
+  // SymInitialize() can fail with ERROR_INVALID_PARAMETER when something has
+  // already called SymInitialize() in this process. For example, when absl
+  // support for gtest is enabled, it results in absl calling SymInitialize()
+  // almost immediately after startup. In such a case, try to reinit to see if
+  // that succeeds.
+  SymCleanup(current_process);
+  if (SymInitialize(current_process, nullptr, TRUE))
+    return true;
+
+  g_init_error = GetLastError();
+  return false;
+}
+
 bool InitializeSymbols() {
   if (g_initialized_symbols) {
     // Force a reinitialization. Will ensure any modules loaded after process
@@ -131,10 +153,7 @@ bool InitializeSymbols() {
   SymSetOptions(SYMOPT_DEFERRED_LOADS |
                 SYMOPT_UNDNAME |
                 SYMOPT_LOAD_LINES);
-  if (!SymInitialize(GetCurrentProcess(), NULL, TRUE)) {
-    g_init_error = GetLastError();
-    // TODO(awong): Handle error: SymInitialize can fail with
-    // ERROR_INVALID_PARAMETER.
+  if (!SymInitializeCurrentProc()) {
     // When it fails, we should not call debugbreak since it kills the current
     // process (prevents future tests from running or kills the browser
     // process).
@@ -193,6 +212,9 @@ class SymbolContext {
     return
       Singleton<SymbolContext, LeakySingletonTraits<SymbolContext> >::get();
   }
+
+  SymbolContext(const SymbolContext&) = delete;
+  SymbolContext& operator=(const SymbolContext&) = delete;
 
   // For the given trace, attempts to resolve the symbols, and output a trace
   // to the ostream os.  The format for each line of the backtrace is:
@@ -263,7 +285,6 @@ class SymbolContext {
   }
 
   Lock lock_;
-  DISALLOW_COPY_AND_ASSIGN(SymbolContext);
 };
 
 }  // namespace

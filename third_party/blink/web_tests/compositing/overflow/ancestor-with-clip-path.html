@@ -1,6 +1,10 @@
 <!DOCTYPE HTML>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
+body {
+    margin: 0;
+}
+
 #scroller {
     overflow: scroll;
     height: 300px;
@@ -9,8 +13,8 @@
 }
 
 #outer {
-    height: 800px;
-    width: 250px;
+    height: 550px;
+    width: 300px;
     background-color: blue;
 }
 
@@ -41,7 +45,7 @@ if (window.internals)
 
 onload = function() {
     runAfterLayoutAndPaint(function() {
-        outer.style.clipPath = "polygon(40px 550px,432px 302px,409px 237px,46px 156px)";
+        outer.style.clipPath = "polygon(50px 450px, 400px 450px, 400px 150px, 50px 150px)";
     }, true);
 };
 </script>

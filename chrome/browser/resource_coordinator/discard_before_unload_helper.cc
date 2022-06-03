@@ -33,6 +33,10 @@ class DiscardBeforeUnloadHelper : public content::WebContentsObserver {
   static void HasBeforeUnloadHandler(content::WebContents* contents,
                                      HasBeforeUnloadHandlerCallback&& callback);
 
+  DiscardBeforeUnloadHelper(const DiscardBeforeUnloadHelper&) = delete;
+  DiscardBeforeUnloadHelper& operator=(const DiscardBeforeUnloadHelper&) =
+      delete;
+
   ~DiscardBeforeUnloadHelper() override;
 
  private:
@@ -55,8 +59,6 @@ class DiscardBeforeUnloadHelper : public content::WebContentsObserver {
   std::unique_ptr<DiscardBeforeUnloadHelper> self_;
 
   HasBeforeUnloadHandlerCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardBeforeUnloadHelper);
 };
 
 void DiscardBeforeUnloadHelper::HasBeforeUnloadHandler(
@@ -74,10 +76,10 @@ DiscardBeforeUnloadHelper::DiscardBeforeUnloadHelper(
       self_(this),
       callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
-  // NOTE: Ideally this would call NeedToFireBeforeUnloadOrUnload and entirely
-  // skip on the dispatch if there are no unload handlers installed.
-  // Unfortunately, NeedToFireBeforeUnloadOrUnload doesn't check the main
-  // frame, so this doesn't quite work. See this related bug for more
+  // NOTE: Ideally this would call NeedToFireBeforeUnloadOrUnloadEvents and
+  // entirely skip on the dispatch if there are no unload handlers installed.
+  // Unfortunately, NeedToFireBeforeUnloadOrUnloadEvents doesn't check the
+  // main frame, so this doesn't quite work. See this related bug for more
   // information: crbug.com/869956
   web_contents()->DispatchBeforeUnload(true /* auto_cancel */);
 }

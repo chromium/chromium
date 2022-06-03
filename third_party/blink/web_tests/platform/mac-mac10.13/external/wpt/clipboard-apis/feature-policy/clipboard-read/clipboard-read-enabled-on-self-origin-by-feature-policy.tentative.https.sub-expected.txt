@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Feature-Policy header clipboard-read "self" allows the top-level document. promise_test: Unhandled rejection with value: object "NotAllowedError: Document is not focused."
+PASS Feature-Policy header clipboard-read "self" allows same-origin iframes.
+PASS Feature-Policy header clipboard-read "self" disallows cross-origin iframes.
+Harness: the test ran to completion.
+

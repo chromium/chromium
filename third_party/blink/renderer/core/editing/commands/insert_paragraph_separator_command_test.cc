@@ -69,7 +69,7 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithCaptionBeforeBody) {
 
   // Insert <caption> between head and body
   Element* caption = GetDocument().CreateElementForBinding("caption");
-  caption->SetInnerHTMLFromString("AxBxC");
+  caption->setInnerHTML("AxBxC");
   GetDocument().documentElement()->insertBefore(caption, GetDocument().body());
 
   Selection().SetSelection(

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Offline Application Cache - API_status_UNCACHED Cannot read properties of undefined (reading 'status')
+Harness: the test ran to completion.
+

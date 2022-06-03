@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 
+#include <string>
+
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/md_text_button_with_down_arrow.h"
@@ -18,25 +19,13 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
-
-namespace {
-
-std::unique_ptr<views::View> CreateOtherTransportsButton(
-    views::ButtonListener* listener) {
-  auto other_transports_button =
-      std::make_unique<views::MdTextButtonWithDownArrow>(
-          listener,
-          l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL));
-  return other_transports_button;
-}
-
-}  // namespace
 
 // static
 void ShowAuthenticatorRequestDialog(
@@ -60,26 +49,6 @@ void ShowAuthenticatorRequestDialog(
   new AuthenticatorRequestDialogView(web_contents, std::move(model));
 }
 
-AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
-    content::WebContents* web_contents,
-    std::unique_ptr<AuthenticatorRequestDialogModel> model)
-    : content::WebContentsObserver(web_contents),
-      model_(std::move(model)),
-      sheet_(nullptr),
-      other_transports_button_(
-          DialogDelegate::SetExtraView(CreateOtherTransportsButton(this))),
-      web_contents_hidden_(web_contents->GetVisibility() ==
-                           content::Visibility::HIDDEN) {
-  DCHECK(!model_->should_dialog_be_closed());
-  model_->AddObserver(this);
-
-  // Currently, all sheets have a label on top and controls at the bottom.
-  // Consider moving this to AuthenticatorRequestSheetView if this changes.
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  OnStepTransition();
-}
-
 AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   model_->RemoveObserver(this);
 
@@ -94,13 +63,92 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // ObservableAuthenticatorList is owned by AuthenticatorRequestDialogModel,
   // destroy all view components that might own models observing the list prior
   // to destroying AuthenticatorRequestDialogModel.
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
-gfx::Size AuthenticatorRequestDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
+void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
+    std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
+  DCHECK(new_sheet);
+
+  other_mechanisms_menu_runner_.reset();
+
+  delete sheet_;
+  DCHECK(children().empty());
+
+  sheet_ = new_sheet.get();
+  AddChildView(new_sheet.release());
+
+  UpdateUIForCurrentSheet();
+}
+
+void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
+  DCHECK(sheet_);
+
+  sheet_->ReInitChildViews();
+
+  int buttons = ui::DIALOG_BUTTON_NONE;
+  if (sheet()->model()->IsAcceptButtonVisible())
+    buttons |= ui::DIALOG_BUTTON_OK;
+  if (sheet()->model()->IsCancelButtonVisible())
+    buttons |= ui::DIALOG_BUTTON_CANCEL;
+  SetButtons(buttons);
+  SetDefaultButton((buttons & ui::DIALOG_BUTTON_OK) ? ui::DIALOG_BUTTON_OK
+                                                    : ui::DIALOG_BUTTON_NONE);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, sheet_->model()->GetAcceptButtonLabel());
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 sheet_->model()->GetCancelButtonLabel());
+
+  // Whether to show the `Choose another option` button, or other dialog
+  // configuration is delegated to the |sheet_|, and the new sheet likely wants
+  // to provide a new configuration.
+  ToggleOtherMechanismsButtonVisibility();
+  DialogModelChanged();
+
+  // If the widget is not yet shown or already being torn down, we are done. In
+  // the former case, sizing/layout will happen once the dialog is visible.
+  if (!GetWidget())
+    return;
+
+  // Force re-layout of the entire dialog client view, which includes the sheet
+  // content as well as the button row on the bottom.
+  // TODO(ellyjones): Why is this necessary?
+  GetWidget()->GetRootView()->Layout();
+
+  // The accessibility title is also sourced from the |sheet_|'s step title.
+  GetWidget()->UpdateWindowTitle();
+
+  // TODO(https://crbug.com/849323): Investigate how a web-modal dialog's
+  // lifetime compares to that of the parent WebContents. Take a conservative
+  // approach for now.
+  if (!web_contents())
+    return;
+
+  // The |dialog_manager| might temporarily be unavailable while the tab is
+  // being dragged from one browser window to the other.
+  auto* dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          constrained_window::GetTopLevelWebContents(web_contents()));
+  if (!dialog_manager)
+    return;
+
+  // Update the dialog size and position, as the preferred size of the sheet
+  // might have changed.
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      GetWidget(), dialog_manager->delegate()->GetWebContentsModalDialogHost());
+
+  // Reset focus to the highest priority control on the new/updated sheet.
+  if (GetInitiallyFocusedView())
+    GetInitiallyFocusedView()->RequestFocus();
+}
+
+void AuthenticatorRequestDialogView::ToggleOtherMechanismsButtonVisibility() {
+  other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
+}
+
+bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
+    const {
+  return sheet_->model()->GetOtherMechanismsMenuModel() &&
+         sheet_->model()->GetOtherMechanismsMenuModel()->GetItemCount();
 }
 
 bool AuthenticatorRequestDialogView::Accept() {
@@ -111,47 +159,6 @@ bool AuthenticatorRequestDialogView::Accept() {
 bool AuthenticatorRequestDialogView::Cancel() {
   sheet()->model()->OnCancel();
   return false;
-}
-
-bool AuthenticatorRequestDialogView::Close() {
-  // To keep the UI responsive, always allow immediately closing the dialog when
-  // desired; but still trigger cancelling the AuthenticatorRequest unless it is
-  // already complete.
-  //
-  // Note that on most sheets, cancelling will immediately destroy the request,
-  // so this method will be re-entered like so:
-  //
-  //   AuthenticatorRequestDialogView::Close()
-  //   views::DialogClientView::CanClose()
-  //   views::Widget::Close()
-  //   AuthenticatorRequestDialogView::OnStepTransition()
-  //   AuthenticatorRequestDialogModel::SetCurrentStep()
-  //   AuthenticatorRequestDialogModel::OnRequestComplete()
-  //   ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate()
-  //   content::AuthenticatorImpl::InvokeCallbackAndCleanup()
-  //   content::AuthenticatorImpl::FailWithNotAllowedErrorAndCleanup()
-  //   <<invoke callback>>
-  //   ChromeAuthenticatorRequestDelegate::OnCancelRequest()
-  //   AuthenticatorRequestDialogModel::Cancel()
-  //   AuthenticatorRequestDialogView::Cancel()
-  //   AuthenticatorRequestDialogView::Close()  [initial call]
-  //
-  // This should not be a problem as the native widget will never synchronously
-  // close and hence not synchronously destroy the model while it's iterating
-  // over observers in SetCurrentStep().
-  if (!model_->should_dialog_be_closed())
-    Cancel();
-
-  return true;
-}
-
-int AuthenticatorRequestDialogView::GetDialogButtons() const {
-  int button_mask = 0;
-  if (sheet()->model()->IsAcceptButtonVisible())
-    button_mask |= ui::DIALOG_BUTTON_OK;
-  if (sheet()->model()->IsCancelButtonVisible())
-    button_mask |= ui::DIALOG_BUTTON_CANCEL;
-  return button_mask;
 }
 
 bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
@@ -186,8 +193,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
     return GetOkButton();
   }
 
-  if (ShouldOtherTransportsButtonBeVisible())
-    return other_transports_button_;
+  if (ShouldOtherMechanismsButtonBeVisible())
+    return other_mechanisms_button_;
 
   if (sheet()->model()->IsCancelButtonVisible())
     return GetCancelButton();
@@ -195,23 +202,12 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
   return nullptr;
 }
 
-ui::ModalType AuthenticatorRequestDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-base::string16 AuthenticatorRequestDialogView::GetWindowTitle() const {
+std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
   return sheet()->model()->GetStepTitle();
 }
 
-bool AuthenticatorRequestDialogView::ShouldShowWindowTitle() const {
-  return false;
-}
-
-bool AuthenticatorRequestDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-void AuthenticatorRequestDialogView::OnModelDestroyed() {
+void AuthenticatorRequestDialogView::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
   NOTREACHED();
 }
 
@@ -240,6 +236,56 @@ void AuthenticatorRequestDialogView::OnStepTransition() {
   Show();
 }
 
+void AuthenticatorRequestDialogView::OnSheetModelChanged() {
+  UpdateUIForCurrentSheet();
+}
+
+void AuthenticatorRequestDialogView::OnVisibilityChanged(
+    content::Visibility visibility) {
+  const bool web_contents_was_hidden = web_contents_hidden_;
+  web_contents_hidden_ = visibility == content::Visibility::HIDDEN;
+
+  // Show() does not actually show the dialog while the parent WebContents are
+  // hidden. Instead, show it when the WebContents become visible again.
+  if (web_contents_was_hidden && !web_contents_hidden_ &&
+      !model_->should_dialog_be_hidden() && !GetWidget()->IsVisible()) {
+    GetWidget()->Show();
+  }
+}
+
+AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
+    content::WebContents* web_contents,
+    std::unique_ptr<AuthenticatorRequestDialogModel> model)
+    : content::WebContentsObserver(web_contents),
+      model_(std::move(model)),
+      other_mechanisms_button_(
+          SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
+              base::BindRepeating(
+                  &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+                  base::Unretained(this)),
+              l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL)))),
+      web_contents_hidden_(web_contents->GetVisibility() ==
+                           content::Visibility::HIDDEN) {
+  SetShowTitle(false);
+  DCHECK(!model_->should_dialog_be_closed());
+  model_->AddObserver(this);
+
+  SetCloseCallback(
+      base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,
+                     base::Unretained(this)));
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  // Currently, all sheets have a label on top and controls at the bottom.
+  // Consider moving this to AuthenticatorRequestSheetView if this changes.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  OnStepTransition();
+}
+
 void AuthenticatorRequestDialogView::Show() {
   if (!first_shown_) {
     constrained_window::ShowWebModalDialogViews(this, web_contents());
@@ -259,118 +305,51 @@ void AuthenticatorRequestDialogView::Show() {
   GetWidget()->Show();
 }
 
-void AuthenticatorRequestDialogView::OnSheetModelChanged() {
-  UpdateUIForCurrentSheet();
-}
+void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
+  auto* other_mechanisms_menu_model =
+      sheet_->model()->GetOtherMechanismsMenuModel();
+  DCHECK(other_mechanisms_menu_model);
+  DCHECK_GE(other_mechanisms_menu_model->GetItemCount(), 1);
 
-void AuthenticatorRequestDialogView::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  DCHECK_EQ(sender, other_transports_button_);
+  other_mechanisms_menu_runner_ = std::make_unique<views::MenuRunner>(
+      other_mechanisms_menu_model, views::MenuRunner::COMBOBOX);
 
-  auto* other_transports_menu_model =
-      sheet_->model()->GetOtherTransportsMenuModel();
-  DCHECK(other_transports_menu_model);
-  DCHECK_GE(other_transports_menu_model->GetItemCount(), 1);
-
-  other_transports_menu_runner_ = std::make_unique<views::MenuRunner>(
-      other_transports_menu_model, views::MenuRunner::COMBOBOX);
-
-  gfx::Rect anchor_bounds = other_transports_button_->GetBoundsInScreen();
-  other_transports_menu_runner_->RunMenuAt(
-      other_transports_button_->GetWidget(), nullptr /* MenuButtonController */,
+  gfx::Rect anchor_bounds = other_mechanisms_button_->GetBoundsInScreen();
+  other_mechanisms_menu_runner_->RunMenuAt(
+      other_mechanisms_button_->GetWidget(), nullptr /* MenuButtonController */,
       anchor_bounds, views::MenuAnchorPosition::kTopLeft,
       ui::MENU_SOURCE_MOUSE);
 }
 
-void AuthenticatorRequestDialogView::OnVisibilityChanged(
-    content::Visibility visibility) {
-  const bool web_contents_was_hidden = web_contents_hidden_;
-  web_contents_hidden_ = visibility == content::Visibility::HIDDEN;
-
-  // Show() does not actually show the dialog while the parent WebContents are
-  // hidden. Instead, show it when the WebContents become visible again.
-  if (web_contents_was_hidden && !web_contents_hidden_ &&
-      !model_->should_dialog_be_hidden() && !GetWidget()->IsVisible()) {
-    GetWidget()->Show();
-  }
+void AuthenticatorRequestDialogView::OnDialogClosing() {
+  // To keep the UI responsive, always allow immediately closing the dialog when
+  // desired; but still trigger cancelling the AuthenticatorRequest unless it is
+  // already complete.
+  //
+  // Note that on most sheets, cancelling will immediately destroy the request,
+  // so this method will be re-entered like so:
+  //
+  //   AuthenticatorRequestDialogView::Close()
+  //   views::DialogClientView::CanClose()
+  //   views::Widget::Close()
+  //   AuthenticatorRequestDialogView::OnStepTransition()
+  //   AuthenticatorRequestDialogModel::SetCurrentStep()
+  //   AuthenticatorRequestDialogModel::OnRequestComplete()
+  //   ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate()
+  //   content::AuthenticatorImpl::InvokeCallbackAndCleanup()
+  //   content::AuthenticatorImpl::FailWithNotAllowedErrorAndCleanup()
+  //   <<invoke callback>>
+  //   ChromeAuthenticatorRequestDelegate::OnCancelRequest()
+  //   AuthenticatorRequestDialogModel::Cancel()
+  //   AuthenticatorRequestDialogView::Cancel()
+  //   AuthenticatorRequestDialogView::Close()  [initial call]
+  //
+  // This should not be a problem as the native widget will never synchronously
+  // close and hence not synchronously destroy the model while it's iterating
+  // over observers in SetCurrentStep().
+  if (!model_->should_dialog_be_closed())
+    Cancel();
 }
 
-void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
-    std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
-  DCHECK(new_sheet);
-
-  other_transports_menu_runner_.reset();
-
-  delete sheet_;
-  DCHECK(children().empty());
-
-  sheet_ = new_sheet.get();
-  AddChildView(new_sheet.release());
-
-  UpdateUIForCurrentSheet();
-}
-
-void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
-  DCHECK(sheet_);
-
-  sheet_->ReInitChildViews();
-  DialogDelegate::set_default_button(sheet_->model()->IsAcceptButtonVisible()
-                                         ? ui::DIALOG_BUTTON_OK
-                                         : ui::DIALOG_BUTTON_NONE);
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
-                                   sheet_->model()->GetAcceptButtonLabel());
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
-                                   sheet_->model()->GetCancelButtonLabel());
-
-  // Whether to show the `Choose another option` button, or other dialog
-  // configuration is delegated to the |sheet_|, and the new sheet likely wants
-  // to provide a new configuration.
-  ToggleOtherTransportsButtonVisibility();
-  DialogModelChanged();
-
-  // If the widget is not yet shown or already being torn down, we are done. In
-  // the former case, sizing/layout will happen once the dialog is visible.
-  if (!GetWidget())
-    return;
-
-  // Force re-layout of the entire dialog client view, which includes the sheet
-  // content as well as the button row on the bottom.
-  // TODO(ellyjones): Why is this necessary?
-  GetWidget()->GetRootView()->Layout();
-
-  // The accessibility title is also sourced from the |sheet_|'s step title.
-  GetWidget()->UpdateWindowTitle();
-
-  // TODO(https://crbug.com/849323): Investigate how a web-modal dialog's
-  // lifetime compares to that of the parent WebContents. Take a conservative
-  // approach for now.
-  if (!web_contents())
-    return;
-
-  // The |dialog_manager| might temporarily be unavailable while the tab is being
-  // dragged from one browser window to the other.
-  auto* dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          constrained_window::GetTopLevelWebContents(web_contents()));
-  if (!dialog_manager)
-    return;
-
-  // Update the dialog size and position, as the preferred size of the sheet
-  // might have changed.
-  constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(), dialog_manager->delegate()->GetWebContentsModalDialogHost());
-
-  // Reset focus to the highest priority control on the new/updated sheet.
-  if (GetInitiallyFocusedView())
-    GetInitiallyFocusedView()->RequestFocus();
-}
-
-void AuthenticatorRequestDialogView::ToggleOtherTransportsButtonVisibility() {
-  other_transports_button_->SetVisible(ShouldOtherTransportsButtonBeVisible());
-}
-
-bool AuthenticatorRequestDialogView::ShouldOtherTransportsButtonBeVisible()
-    const {
-  return sheet_->model()->GetOtherTransportsMenuModel() &&
-         sheet_->model()->GetOtherTransportsMenuModel()->GetItemCount();
-}
+BEGIN_METADATA(AuthenticatorRequestDialogView, views::DialogDelegateView)
+END_METADATA

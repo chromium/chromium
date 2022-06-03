@@ -8,22 +8,17 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "media/base/media_content_type.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
-#include "third_party/blink/public/platform/web_size.h"
-#include "third_party/blink/public/web/web_scoped_user_gesture.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/gfx/geometry/size.h"
-
-#if defined(OS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace {
 
@@ -41,12 +36,17 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
       allow_idle_cleanup_(
           content::GetContentClient()->renderer()->IsIdleMediaSuspendEnabled()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  idle_cleanup_interval_ = base::TimeDelta::FromSeconds(5);
-  idle_timeout_ = base::TimeDelta::FromSeconds(15);
+  idle_cleanup_interval_ = base::Seconds(5);
+  idle_timeout_ = base::Seconds(15);
 
   is_low_end_ = base::SysInfo::IsLowEndDevice();
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
+
+  // This corresponds to UMA_HISTOGRAM_COUNTS_1000.
+  peak_player_count_uma_ =
+      base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+          "Media.PeakWebMediaPlayerCount", 0, 1000, 50);
 }
 
 RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
@@ -55,15 +55,16 @@ bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
   if (is_frame_hidden_for_testing_)
     return true;
 
-  return (render_frame() && render_frame()->IsHidden()) || is_frame_closed_;
-}
-
-bool RendererWebMediaPlayerDelegate::IsFrameClosed() {
-  return is_frame_closed_;
+  return (render_frame() && render_frame()->IsHidden());
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
-  return id_map_.Add(observer);
+  const auto result = id_map_.Add(observer);
+  if (id_map_.size() > peak_player_count_) {
+    peak_player_count_ = id_map_.size();
+    peak_player_count_uma_->SetSample(peak_player_count_);
+  }
+  return result;
 }
 
 void RendererWebMediaPlayerDelegate::RemoveObserver(int player_id) {
@@ -71,59 +72,49 @@ void RendererWebMediaPlayerDelegate::RemoveObserver(int player_id) {
   id_map_.Remove(player_id);
   idle_player_map_.erase(player_id);
   stale_players_.erase(player_id);
+  players_with_video_.erase(player_id);
   playing_videos_.erase(player_id);
-
-  Send(
-      new MediaPlayerDelegateHostMsg_OnMediaDestroyed(routing_id(), player_id));
 
   ScheduleUpdateTask();
 }
 
-void RendererWebMediaPlayerDelegate::DidPlay(
+void RendererWebMediaPlayerDelegate::DidMediaMetadataChange(
     int player_id,
-    bool has_video,
     bool has_audio,
+    bool has_video,
     MediaContentType media_content_type) {
   DVLOG(2) << __func__ << "(" << player_id << ", " << has_video << ", "
            << has_audio << ", " << static_cast<int>(media_content_type) << ")";
-  DCHECK(id_map_.Lookup(player_id));
 
-  has_played_media_ = true;
   if (has_video) {
-    if (!playing_videos_.count(player_id)) {
-      playing_videos_.insert(player_id);
-      has_played_video_ = true;
-    }
+    players_with_video_.insert(player_id);
   } else {
+    players_with_video_.erase(player_id);
     playing_videos_.erase(player_id);
   }
-
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPlaying(
-      routing_id(), player_id, has_video, has_audio, false,
-      media_content_type));
 
   ScheduleUpdateTask();
 }
 
-void RendererWebMediaPlayerDelegate::DidPlayerMutedStatusChange(int delegate_id,
-                                                                bool muted) {
-  Send(new MediaPlayerDelegateHostMsg_OnMutedStatusChanged(routing_id(),
-                                                           delegate_id, muted));
-}
-
-void RendererWebMediaPlayerDelegate::DidPlayerMediaPositionStateChange(
-    int delegate_id,
-    const media_session::MediaPosition& position) {
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPositionStateChanged(
-      routing_id(), delegate_id, position));
-}
-
-void RendererWebMediaPlayerDelegate::DidPause(int player_id) {
+void RendererWebMediaPlayerDelegate::DidPlay(int player_id) {
   DVLOG(2) << __func__ << "(" << player_id << ")";
   DCHECK(id_map_.Lookup(player_id));
+
+  has_played_media_ = true;
+  if (players_with_video_.count(player_id) == 1) {
+    playing_videos_.insert(player_id);
+    has_played_video_ = true;
+  }
+
+  ScheduleUpdateTask();
+}
+
+void RendererWebMediaPlayerDelegate::DidPause(int player_id,
+                                              bool reached_end_of_stream) {
+  DVLOG(2) << __func__ << "(" << player_id << ", " << reached_end_of_stream
+           << ")";
+  DCHECK(id_map_.Lookup(player_id));
   playing_videos_.erase(player_id);
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPaused(routing_id(), player_id,
-                                                    false));
 
   // Required to keep background playback statistics up to date.
   ScheduleUpdateTask();
@@ -132,9 +123,8 @@ void RendererWebMediaPlayerDelegate::DidPause(int player_id) {
 void RendererWebMediaPlayerDelegate::PlayerGone(int player_id) {
   DVLOG(2) << __func__ << "(" << player_id << ")";
   DCHECK(id_map_.Lookup(player_id));
+  players_with_video_.erase(player_id);
   playing_videos_.erase(player_id);
-  Send(
-      new MediaPlayerDelegateHostMsg_OnMediaDestroyed(routing_id(), player_id));
 
   // Required to keep background playback statistics up to date.
   ScheduleUpdateTask();
@@ -186,20 +176,6 @@ bool RendererWebMediaPlayerDelegate::IsStale(int player_id) {
   return stale_players_.count(player_id);
 }
 
-void RendererWebMediaPlayerDelegate::SetIsEffectivelyFullscreen(
-    int player_id,
-    blink::WebFullscreenVideoStatus fullscreen_video_status) {
-  Send(new MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged(
-      routing_id(), player_id, fullscreen_video_status));
-}
-
-void RendererWebMediaPlayerDelegate::DidPlayerSizeChange(
-    int delegate_id,
-    const gfx::Size& size) {
-  Send(new MediaPlayerDelegateHostMsg_OnMediaSizeChanged(routing_id(),
-                                                         delegate_id, size));
-}
-
 void RendererWebMediaPlayerDelegate::WasHidden() {
   RecordAction(base::UserMetricsAction("Media.Hidden"));
 
@@ -212,34 +188,12 @@ void RendererWebMediaPlayerDelegate::WasHidden() {
 
 void RendererWebMediaPlayerDelegate::WasShown() {
   RecordAction(base::UserMetricsAction("Media.Shown"));
-  is_frame_closed_ = false;
 
   for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
        it.Advance())
     it.GetCurrentValue()->OnFrameShown();
 
   ScheduleUpdateTask();
-}
-
-bool RendererWebMediaPlayerDelegate::OnMessageReceived(
-    const IPC::Message& msg) {
-  IPC_BEGIN_MESSAGE_MAP(RendererWebMediaPlayerDelegate, msg)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Pause, OnMediaDelegatePause)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Play, OnMediaDelegatePlay)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Muted, OnMediaDelegateMuted)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekForward,
-                        OnMediaDelegateSeekForward)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekBackward,
-                        OnMediaDelegateSeekBackward)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SuspendAllMediaPlayers,
-                        OnMediaDelegateSuspendAllMediaPlayers)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_UpdateVolumeMultiplier,
-                        OnMediaDelegateVolumeMultiplierUpdate)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_BecamePersistentVideo,
-                        OnMediaDelegateBecamePersistentVideo)
-    IPC_MESSAGE_UNHANDLED(return false)
-  IPC_END_MESSAGE_MAP()
-  return true;
 }
 
 void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(
@@ -267,91 +221,6 @@ void RendererWebMediaPlayerDelegate::SetFrameHiddenForTesting(bool is_hidden) {
   ScheduleUpdateTask();
 }
 
-void RendererWebMediaPlayerDelegate::OnMediaDelegatePause(
-    int player_id,
-    bool triggered_by_user) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemotePause"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer) {
-    if (triggered_by_user) {
-      // TODO(avayvod): remove when default play/pause is handled via
-      // the MediaSession code path.
-      std::unique_ptr<blink::WebScopedUserGesture> gesture(
-          render_frame()
-              ? new blink::WebScopedUserGesture(render_frame()->GetWebFrame())
-              : nullptr);
-    }
-    observer->OnPause();
-  }
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegatePlay(int player_id) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemotePlay"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer) {
-    // TODO(avayvod): remove when default play/pause is handled via
-    // the MediaSession code path.
-    std::unique_ptr<blink::WebScopedUserGesture> gesture(
-        render_frame()
-            ? new blink::WebScopedUserGesture(render_frame()->GetWebFrame())
-            : nullptr);
-    observer->OnPlay();
-  }
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateMuted(int player_id,
-                                                          bool muted) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnMuted(muted);
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSeekForward(
-    int player_id,
-    base::TimeDelta seek_time) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemoteSeekForward"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnSeekForward(seek_time.InSecondsF());
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSeekBackward(
-    int player_id,
-    base::TimeDelta seek_time) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemoteSeekBackward"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnSeekBackward(seek_time.InSecondsF());
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSuspendAllMediaPlayers() {
-  is_frame_closed_ = true;
-
-  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-       it.Advance())
-    it.GetCurrentValue()->OnFrameClosed();
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateVolumeMultiplierUpdate(
-    int player_id,
-    double multiplier) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnVolumeMultiplierUpdate(multiplier);
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateBecamePersistentVideo(
-    int player_id,
-    bool value) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnBecamePersistentVideo(value);
-}
-
 void RendererWebMediaPlayerDelegate::ScheduleUpdateTask() {
   if (!pending_update_task_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -370,9 +239,6 @@ void RendererWebMediaPlayerDelegate::UpdateTask() {
   // between posting the task and UpdateTask() executing.
   bool has_played_video_since_last_update_task = has_played_video_;
   has_played_video_ = false;
-
-  // Record UMAs for background video playback.
-  RecordBackgroundVideoPlayback();
 
   if (!allow_idle_cleanup_)
     return;
@@ -403,31 +269,6 @@ void RendererWebMediaPlayerDelegate::UpdateTask() {
         base::BindOnce(&RendererWebMediaPlayerDelegate::UpdateTask,
                        base::Unretained(this)));
   }
-}
-
-void RendererWebMediaPlayerDelegate::RecordBackgroundVideoPlayback() {
-#if defined(OS_ANDROID)
-  // TODO(avayvod): This would be useful to collect on desktop too and express
-  // in actual media watch time vs. just elapsed time.
-  // See https://crbug.com/638726.
-  bool has_playing_background_video =
-      IsFrameHidden() && !IsFrameClosed() && !playing_videos_.empty();
-
-  if (has_playing_background_video != was_playing_background_video_) {
-    was_playing_background_video_ = has_playing_background_video;
-
-    if (has_playing_background_video) {
-      RecordAction(base::UserMetricsAction("Media.Session.BackgroundResume"));
-      background_video_start_time_ = base::TimeTicks::Now();
-    } else {
-      RecordAction(base::UserMetricsAction("Media.Session.BackgroundSuspend"));
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Media.Android.BackgroundVideoTime",
-          base::TimeTicks::Now() - background_video_start_time_,
-          base::TimeDelta::FromSeconds(7), base::TimeDelta::FromHours(10), 50);
-    }
-  }
-#endif  // OS_ANDROID
 }
 
 void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(

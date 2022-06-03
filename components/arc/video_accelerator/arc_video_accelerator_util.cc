@@ -8,6 +8,7 @@
 #include "base/files/platform_file.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
@@ -21,15 +22,12 @@ base::ScopedFD UnwrapFdFromMojoHandle(mojo::ScopedHandle handle) {
     return base::ScopedFD();
   }
 
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(handle), &platform_file);
-  if (mojo_result != MOJO_RESULT_OK) {
+  if (mojo_result != MOJO_RESULT_OK)
     VLOGF(1) << "UnwrapPlatformFile failed: " << mojo_result;
-    return base::ScopedFD();
-  }
-
-  return base::ScopedFD(platform_file);
+  return platform_file;
 }
 
 std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {
@@ -52,8 +50,9 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {
   return fds;
 }
 
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<VideoFramePlane>& planes) {
@@ -67,18 +66,19 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
         base::CheckMul(stride, plane_height);
     if (!current_size.IsValid()) {
       VLOGF(1) << "Invalid stride/height";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     color_planes.emplace_back(stride, offset, current_size.ValueOrDie());
   }
 
-  return CreateGpuMemoryBufferHandle(pixel_format, coded_size,
+  return CreateGpuMemoryBufferHandle(pixel_format, modifier, coded_size,
                                      std::move(scoped_fds), color_planes);
 }
 
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<media::ColorPlaneLayout>& planes) {
@@ -86,26 +86,27 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
   if (planes.size() != num_planes || planes.size() == 0) {
     VLOGF(1) << "Invalid number of dmabuf planes passed: " << planes.size()
              << ", expected: " << num_planes;
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (scoped_fds.size() != num_planes) {
     VLOGF(1) << "Invalid number of fds passed: " << scoped_fds.size()
              << ", expected: " << num_planes;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.native_pixmap_handle.modifier = modifier;
   for (size_t i = 0; i < num_planes; ++i) {
     // NOTE: planes[i].stride and planes[i].offset both are int32_t. stride and
     // offset in NativePixmapPlane are uint32_t and uint64_t, respectively.
     if (!base::IsValueInRangeForNumericType<uint32_t>(planes[i].stride)) {
       VLOGF(1) << "Invalid stride";
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!base::IsValueInRangeForNumericType<uint64_t>(planes[i].offset)) {
       VLOGF(1) << "Invalid offset";
-      return base::nullopt;
+      return absl::nullopt;
     }
     uint32_t stride = base::checked_cast<uint32_t>(planes[i].stride);
     uint64_t offset = base::checked_cast<uint64_t>(planes[i].offset);
@@ -115,7 +116,7 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
   }
 
   if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size, gmb_handle))
-    return base::nullopt;
+    return absl::nullopt;
 
   return gmb_handle;
 }
@@ -136,6 +137,18 @@ base::ScopedFD CreateTempFileForTesting(const std::string& data) {
   }
 
   return base::ScopedFD(file.TakePlatformFile());
+}
+
+bool IsBufferSecure(ProtectedBufferManager* protected_buffer_manager,
+                    const base::ScopedFD& fd) {
+  DCHECK(protected_buffer_manager);
+  // If we can get the corresponding protected buffer from the protected buffer
+  // manager we can consider the buffer as secure.
+  base::ScopedFD dup_fd(HANDLE_EINTR(dup(fd.get())));
+  return dup_fd.is_valid() &&
+         protected_buffer_manager
+             ->GetProtectedSharedMemoryRegionFor(std::move(dup_fd))
+             .IsValid();
 }
 
 }  // namespace arc

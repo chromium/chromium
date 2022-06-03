@@ -5,41 +5,37 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ENCODED_VIDEO_CHUNK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ENCODED_VIDEO_CHUNK_H_
 
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "media/base/decoder_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_video_metadata.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
-
-class ArrayBuffer;
-class DOMArrayBuffer;
+class EncodedVideoChunkInit;
+class ExceptionState;
 
 class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  EncodedVideoChunk(EncodedVideoMetadata metadata,
-                    scoped_refptr<ArrayBuffer> buffer);
+  explicit EncodedVideoChunk(scoped_refptr<media::DecoderBuffer> buffer);
 
-  static EncodedVideoChunk* Create(String type,
-                                   uint64_t timestamp,
-                                   const DOMArrayPiece& data);
-  static EncodedVideoChunk* Create(String type,
-                                   uint64_t timestamp,
-                                   uint64_t duration,
-                                   const DOMArrayPiece& data);
+  static EncodedVideoChunk* Create(EncodedVideoChunkInit* init);
 
   // encoded_video_chunk.idl implementation.
   String type() const;
-  uint64_t timestamp() const;
-  uint64_t duration(bool* is_null) const;
-  uint64_t duration(bool& is_null) const { return duration(&is_null); }
-  DOMArrayBuffer* data() const;
+  int64_t timestamp() const;
+  absl::optional<uint64_t> duration() const;
+  uint64_t byteLength() const;
+  void copyTo(const AllowSharedBufferSource* destination,
+              ExceptionState& exception_state);
+
+  scoped_refptr<media::DecoderBuffer> buffer() const { return buffer_; }
 
  private:
-  EncodedVideoMetadata metadata_;
-  scoped_refptr<ArrayBuffer> buffer_;
+  scoped_refptr<media::DecoderBuffer> buffer_;
 };
 
 }  // namespace blink

@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Media"
+}
+
+team_email: "media-dev@chromium.org"

@@ -19,6 +19,8 @@ class SharedURLLoaderFactory;
 
 namespace password_manager {
 
+class BulkLeakCheck;
+class BulkLeakCheckDelegateInterface;
 class LeakDetectionCheck;
 class LeakDetectionDelegateInterface;
 
@@ -36,13 +38,24 @@ class LeakDetectionCheckFactory {
   LeakDetectionCheckFactory(LeakDetectionCheckFactory&&) = delete;
   LeakDetectionCheckFactory& operator=(LeakDetectionCheckFactory&&) = delete;
 
+  // The leak check is available for all signed-in users. If the feature is
+  // enabled, it is also available for signed-out users.
+  // |delegate| gets the results for the fetch.
+  // |identity_manager| is used to obtain the token for signed in users.
+  // |url_loader_factory| does the actual network request.
+  virtual std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
+      LeakDetectionDelegateInterface* delegate,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      const = 0;
+
   // The leak check is available only for signed-in users and if the feature is
   // available.
   // |delegate| gets the results for the fetch.
   // |identity_manager| is used to obtain the token.
   // |url_loader_factory| does the actual network request.
-  virtual std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
-      LeakDetectionDelegateInterface* delegate,
+  virtual std::unique_ptr<BulkLeakCheck> TryCreateBulkLeakCheck(
+      BulkLeakCheckDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       const = 0;

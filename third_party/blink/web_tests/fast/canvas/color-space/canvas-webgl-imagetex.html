@@ -1,0 +1,110 @@
+<html>
+<head>
+    <body>
+        <p>2D canvas used with getImageData</p>
+        <p><canvas id='canvas-2d' width='64' height='64'></canvas></p>
+        <p>WebGL canvas where an 8-bit ImageData is used as a texture</p>
+        <p><canvas id='canvas-webgl-test0' width='64' height='64'></canvas></p>
+        <p>WebGL canvas where a 32-bit float ImageData is used as a texture</p>
+        <p><canvas id='canvas-webgl-test1' width='64' height='64'></canvas></p>
+      </body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+function compileShader(gl, vertCode, fragCode) {
+  var vertShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertShader, vertCode);
+  gl.compileShader(vertShader);
+
+  var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragShader, fragCode);
+  gl.compileShader(fragShader);
+
+  var shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertShader);
+  gl.attachShader(shaderProgram, fragShader);
+  gl.linkProgram(shaderProgram);
+  return shaderProgram;
+}
+
+function render(gl, imageData) {
+  var attributes = gl.getContextAttributes();
+  // Create a texture X.
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  {
+    // TODO(yiyix): Add test for imagedata with storageFormat uint16.
+    if (imageData.storageFormat == 'uint8') {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 64, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
+    } else if (imageData.storageFormat == 'float32') {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, 64, 64, 0, gl.RGBA, gl.FLOAT, imageData);
+    }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  }
+
+  // Create the program to draw a point sprite.
+  const vs = `attribute vec4 position;
+              void main() {
+                gl_PointSize = 64.0;
+                gl_Position = position;
+              }`;
+
+  const fs = `precision mediump float;
+              uniform sampler2D tex;
+              void main() {
+                gl_FragColor = texture2D(tex, gl_PointCoord);
+              }`;
+  const program = compileShader(gl, vs, fs);
+  gl.useProgram(program);
+
+  const positionLoc = gl.getAttribLocation(program, 'position');
+  gl.vertexAttrib1f(positionLoc, 0);
+
+  const primitiveType = gl.POINTS;
+  const offset = 0;
+  const count = 1;
+  gl.drawArrays(primitiveType, offset, count);
+}
+
+async_test(function(t) {
+  var ctx = document.querySelector('#canvas-2d').getContext('2d');
+  ctx.fillStyle = "#F0C0A0FF";
+  ctx.fillRect(0, 0, 64, 64);
+
+  var canvasGL = document.querySelector('#canvas-webgl-test0');
+  var gl = canvasGL.getContext('webgl2');
+  render(gl, ctx.getImageData(0, 0, 64, 64, {storageFormat:'uint8'}));
+
+  var canvasGL2 = document.querySelector('#canvas-webgl-test1');
+  var gl2 = canvasGL2.getContext('webgl2');
+  render(gl2, ctx.getImageData(0, 0, 64, 64, {storageFormat:'float32'}));
+
+  var pixels = new Uint8Array(4);
+  var pixels2 = new Uint8Array(4);
+  t.step(function() {
+      while (true) {
+        gl.readPixels(0,0,1,1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+        gl2.readPixels(0,0,1,1, gl2.RGBA, gl2.UNSIGNED_BYTE, pixels2);
+        if (pixels[0] != 0 && pixels2[0] != 255) {
+            assert_equals(240, pixels[0]);
+            assert_equals(192, pixels[1]);
+            assert_equals(160, pixels[2]);
+            assert_equals(255, pixels[3]);
+
+            assert_equals(240, pixels2[0]);
+            assert_equals(192, pixels2[1]);
+            assert_equals(160, pixels2[2]);
+            assert_equals(255, pixels2[3]);
+            t.done();
+            break;
+        }
+      }
+    });
+
+}, "Webgl didn't render imagedata with format uint8 and float32 correctly.");
+
+</script>
+</head>
+</html>

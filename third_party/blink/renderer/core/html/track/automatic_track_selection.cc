@@ -23,8 +23,8 @@ class TrackGroup {
         has_src_lang(false) {}
 
   HeapVector<Member<TextTrack>> tracks;
-  Member<TextTrack> visible_track;
-  Member<TextTrack> default_track;
+  TextTrack* visible_track;
+  TextTrack* default_track;
   GroupKind kind;
   bool has_src_lang;
 };

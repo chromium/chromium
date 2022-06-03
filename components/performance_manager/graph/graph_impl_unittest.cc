@@ -10,6 +10,8 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/system_node_impl.h"
+#include "components/performance_manager/public/graph/node_data_describer.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,13 +26,9 @@ TEST_F(GraphImplTest, SafeCasting) {
   EXPECT_EQ(graph(), GraphImpl::FromGraph(graph_base));
 }
 
-TEST_F(GraphImplTest, FindOrCreateSystemNode) {
-  EXPECT_TRUE(graph()->IsEmpty());
-  SystemNodeImpl* system_node = graph()->FindOrCreateSystemNodeImpl();
-  EXPECT_FALSE(graph()->IsEmpty());
-
-  // A second request should return the same instance.
-  EXPECT_EQ(system_node, graph()->FindOrCreateSystemNodeImpl());
+TEST_F(GraphImplTest, GetSystemNodeImpl) {
+  // The SystemNode singleton should be created by default.
+  EXPECT_NE(nullptr, graph()->GetSystemNodeImpl());
 }
 
 TEST_F(GraphImplTest, GetProcessNodeByPid) {
@@ -102,27 +100,6 @@ TEST_F(GraphImplTest, GetAllCUsByType) {
   ASSERT_EQ(2u, pages.size());
   EXPECT_NE(nullptr, pages[0]);
   EXPECT_NE(nullptr, pages[1]);
-}
-
-TEST_F(GraphImplTest, SerializationId) {
-  EXPECT_EQ(0u, NodeBase::GetSerializationId(nullptr));
-
-  TestNodeWrapper<ProcessNodeImpl> process =
-      TestNodeWrapper<ProcessNodeImpl>::Create(graph());
-
-  // The serialization ID should be non-zero, and should be stable for a given
-  // node.
-  auto id = NodeBase::GetSerializationId(process.get());
-  EXPECT_NE(0u, id);
-  EXPECT_EQ(id, NodeBase::GetSerializationId(process.get()));
-
-  SystemNodeImpl* system = graph()->FindOrCreateSystemNodeImpl();
-
-  // Different nodes should be assigned different IDs.
-  EXPECT_NE(id, NodeBase::GetSerializationId(system));
-  EXPECT_NE(0, NodeBase::GetSerializationId(system));
-  EXPECT_EQ(NodeBase::GetSerializationId(system),
-            NodeBase::GetSerializationId(system));
 }
 
 namespace {
@@ -219,6 +196,145 @@ TEST_F(GraphImplTest, GraphOwned) {
   graph->TearDown();
   graph.reset();
   EXPECT_EQ(2, destructor_count);
+}
+
+namespace {
+
+class TestNodeDataDescriber : public NodeDataDescriber {
+ public:
+  explicit TestNodeDataDescriber(base::StringPiece name) : name_(name) {}
+
+  base::Value DescribeFrameNodeData(const FrameNode* node) const override {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(name_);
+    list.Append("FrameNode");
+    return list;
+  }
+
+  base::Value DescribePageNodeData(const PageNode* node) const override {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(name_);
+    list.Append("PageNode");
+    return list;
+  }
+
+  base::Value DescribeProcessNodeData(const ProcessNode* node) const override {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(name_);
+    list.Append("ProcessNode");
+    return list;
+  }
+
+  base::Value DescribeSystemNodeData(const SystemNode* node) const override {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(name_);
+    list.Append("SystemNode");
+    return list;
+  }
+
+  base::Value DescribeWorkerNodeData(const WorkerNode* node) const override {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(name_);
+    list.Append("WorkerNode");
+    return list;
+  }
+
+ private:
+  const std::string name_;
+};
+
+void AssertDictValueContainsListKey(const base::Value& descr,
+                                    const char* key,
+                                    const char* s1,
+                                    const char* s2) {
+  ASSERT_TRUE(descr.is_dict());
+  const base::Value* v = descr.FindListKey(key);
+  ASSERT_NE(nullptr, v);
+
+  const auto list = v->GetList();
+  ASSERT_EQ(2u, list.size());
+  ASSERT_EQ(list[0], base::Value(s1));
+  ASSERT_EQ(list[1], base::Value(s2));
+}
+
+}  // namespace
+
+TEST_F(GraphImplTest, NodeDataDescribers) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  NodeDataDescriberRegistry* registry = graph()->GetNodeDataDescriberRegistry();
+
+  // No describers->no description.
+  base::Value descr = registry->DescribeNodeData(mock_graph.frame.get());
+  EXPECT_EQ(0u, descr.DictSize());
+
+  // Test that the default impl does nothing.
+  NodeDataDescriberDefaultImpl default_impl;
+  registry->RegisterDescriber(&default_impl, "default_impl");
+
+  // Test a single non-default describer for each node type.
+  TestNodeDataDescriber d1("d1");
+  registry->RegisterDescriber(&d1, "d1");
+
+  descr = registry->DescribeNodeData(mock_graph.frame.get());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "FrameNode");
+  EXPECT_EQ(1u, descr.DictSize());
+
+  descr = registry->DescribeNodeData(mock_graph.page.get());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "PageNode");
+  EXPECT_EQ(1u, descr.DictSize());
+
+  descr = registry->DescribeNodeData(mock_graph.process.get());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "ProcessNode");
+  EXPECT_EQ(1u, descr.DictSize());
+
+  descr = registry->DescribeNodeData(graph()->GetSystemNode());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "SystemNode");
+  EXPECT_EQ(1u, descr.DictSize());
+
+  auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
+                                           mock_graph.process.get());
+  descr = registry->DescribeNodeData(worker.get());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "WorkerNode");
+  EXPECT_EQ(1u, descr.DictSize());
+
+  // Unregister the default impl now that it's been verified to say nothing
+  // about all node types.
+  registry->UnregisterDescriber(&default_impl);
+
+  // Register a second describer and test one node type.
+  TestNodeDataDescriber d2("d2");
+  registry->RegisterDescriber(&d2, "d2");
+
+  descr = registry->DescribeNodeData(mock_graph.frame.get());
+  EXPECT_EQ(2u, descr.DictSize());
+  AssertDictValueContainsListKey(descr, "d1", "d1", "FrameNode");
+  AssertDictValueContainsListKey(descr, "d2", "d2", "FrameNode");
+
+  registry->UnregisterDescriber(&d2);
+  registry->UnregisterDescriber(&d1);
+
+  // No describers after unregistration->no description.
+  descr = registry->DescribeNodeData(mock_graph.frame.get());
+  EXPECT_EQ(0u, descr.DictSize());
+}
+
+TEST_F(GraphImplTest, OpenersAndEmbeddersClearedOnTeardown) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto pageA = CreateNode<PageNodeImpl>();
+  auto frameA1 = CreateFrameNodeAutoId(process.get(), pageA.get());
+  auto frameA2 =
+      CreateFrameNodeAutoId(process.get(), pageA.get(), frameA1.get());
+  auto pageB = CreateNode<PageNodeImpl>();
+  auto frameB1 = CreateFrameNodeAutoId(process.get(), pageB.get());
+  auto pageC = CreateNode<PageNodeImpl>();
+  auto frameC1 = CreateFrameNodeAutoId(process.get(), pageC.get());
+
+  // Set up some embedder relationships. These should be gracefully torn down as
+  // the graph cleans up nodes, otherwise the frame and page node destructors
+  // will explode.
+  pageB->SetEmbedderFrameNodeAndEmbeddingType(
+      frameA1.get(), PageNode::EmbeddingType::kGuestView);
+  pageC->SetOpenerFrameNode(frameA2.get());
 }
 
 }  // namespace performance_manager

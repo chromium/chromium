@@ -201,8 +201,8 @@ class CallbackPromiseAdapterInternal {
     explicit CallbackPromiseAdapter(ScriptPromiseResolver* resolver)
         : OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>>(resolver) {}
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CallbackPromiseAdapter);
+    CallbackPromiseAdapter(const CallbackPromiseAdapter&) = delete;
+    CallbackPromiseAdapter& operator=(const CallbackPromiseAdapter&) = delete;
   };
 };
 
@@ -214,4 +214,4 @@ using CallbackPromiseAdapter =
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_CALLBACK_PROMISE_ADAPTER_H_

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
@@ -31,21 +30,9 @@ LayoutWorkletGlobalScope* LayoutWorkletGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
     PendingLayoutRegistry* pending_layout_registry) {
-  // Enable a separate microtask queue for LayoutWorklet.
-  // TODO(yutak): Set agent for all worklets and workers,
-  // not just LayoutWorklet.
-  auto* isolate = ToIsolate(frame);
-  auto microtask_queue =
-      v8::MicrotaskQueue::New(isolate, v8::MicrotasksPolicy::kScoped);
-  auto* agent =
-      MakeGarbageCollected<Agent>(isolate,
-                                  creation_params->agent_cluster_id.is_empty()
-                                      ? base::UnguessableToken::Create()
-                                      : creation_params->agent_cluster_id,
-                                  std::move(microtask_queue));
   auto* global_scope = MakeGarbageCollected<LayoutWorkletGlobalScope>(
       frame, std::move(creation_params), reporting_proxy,
-      pending_layout_registry, agent);
+      pending_layout_registry);
   global_scope->ScriptController()->Initialize(NullURL());
   MainThreadDebugger::Instance()->ContextCreated(
       global_scope->ScriptController()->GetScriptState(),
@@ -57,12 +44,12 @@ LayoutWorkletGlobalScope::LayoutWorkletGlobalScope(
     LocalFrame* frame,
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
-    PendingLayoutRegistry* pending_layout_registry,
-    Agent* agent)
+    PendingLayoutRegistry* pending_layout_registry)
     : WorkletGlobalScope(std::move(creation_params),
                          reporting_proxy,
                          frame,
-                         agent),
+                         // Enable a separate microtask queue for LayoutWorklet.
+                         /*create_microtask_queue=*/true),
       pending_layout_registry_(pending_layout_registry) {}
 
 LayoutWorkletGlobalScope::~LayoutWorkletGlobalScope() = default;
@@ -104,7 +91,8 @@ void LayoutWorkletGlobalScope::registerLayout(
   Vector<AtomicString> custom_invalidation_properties;
 
   if (!V8ObjectParser::ParseCSSPropertyList(
-          current_context, layout_ctor->CallbackObject(), "inputProperties",
+          current_context, GetFrame()->DomWindow(),
+          layout_ctor->CallbackObject(), "inputProperties",
           &native_invalidation_properties, &custom_invalidation_properties,
           &exception_state))
     return;
@@ -113,8 +101,9 @@ void LayoutWorkletGlobalScope::registerLayout(
   Vector<AtomicString> child_custom_invalidation_properties;
 
   if (!V8ObjectParser::ParseCSSPropertyList(
-          current_context, layout_ctor->CallbackObject(),
-          "childInputProperties", &child_native_invalidation_properties,
+          current_context, GetFrame()->DomWindow(),
+          layout_ctor->CallbackObject(), "childInputProperties",
+          &child_native_invalidation_properties,
           &child_custom_invalidation_properties, &exception_state))
     return;
 
@@ -143,8 +132,7 @@ void LayoutWorkletGlobalScope::registerLayout(
       child_custom_invalidation_properties);
   layout_definitions_.Set(name, definition);
 
-  LayoutWorklet* layout_worklet =
-      LayoutWorklet::From(*GetFrame()->GetDocument()->domWindow());
+  LayoutWorklet* layout_worklet = LayoutWorklet::From(*GetFrame()->DomWindow());
   LayoutWorklet::DocumentDefinitionMap* document_definition_map =
       layout_worklet->GetDocumentDefinitionMap();
   if (document_definition_map->Contains(name)) {
@@ -179,7 +167,7 @@ CSSLayoutDefinition* LayoutWorkletGlobalScope::FindDefinition(
   return layout_definitions_.at(name);
 }
 
-void LayoutWorkletGlobalScope::Trace(blink::Visitor* visitor) {
+void LayoutWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(layout_definitions_);
   visitor->Trace(pending_layout_registry_);
   WorkletGlobalScope::Trace(visitor);

@@ -1,9 +1,0 @@
-<p>This tests for a problem where empty table rows after the selection being deleted would be removed incorrectly.  Only the last letter in 'foo' should be removed during this delete.</p>
-<div contenteditable="true"><table border="1"><tr><td id="td">foo</td><td></td></tr><tr><td></td><td></td></tr></table</div>
-
-<script>
-td = document.getElementById("td");
-sel = window.getSelection();
-sel.collapse(td, 1);
-document.execCommand("Delete");
-</script>

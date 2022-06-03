@@ -14,6 +14,7 @@ The Generic Sensors API is implemented in `third_party/blink/renderer/modules/se
 * [AbsoluteOrientationSensor] &rarr; ABSOLUTE_ORIENTATION_QUATERNION
 * [Accelerometer] &rarr; ACCELEROMETER
 * [AmbientLightSensor] &rarr; AMBIENT_LIGHT
+* [GravitySensor] &rarr; GRAVITY
 * [Gyroscope] &rarr; GYROSCOPE
 * [LinearAccelerationSensor] &rarr; LINEAR_ACCELEROMETER
 * [Magnetometer] &rarr; MAGNETOMETER
@@ -22,6 +23,7 @@ The Generic Sensors API is implemented in `third_party/blink/renderer/modules/se
 [AbsoluteOrientationSensor]: ../../../third_party/blink/renderer/modules/sensor/absolute_orientation_sensor.idl
 [Accelerometer]: ../../../third_party/blink/renderer/modules/sensor/accelerometer.idl
 [AmbientLightSensor]: ../../../third_party/blink/renderer/modules/sensor/ambient_light_sensor.idl
+[GravitySensor]: ../../../third_party/blink/renderer/modules/sensor/gravity_sensor.idl
 [Gyroscope]: ../../../third_party/blink/renderer/modules/sensor/gyroscope.idl
 [LinearAccelerationSensor]: ../../../third_party/blink/renderer/modules/sensor/linear_acceleration_sensor.idl
 [Magnetometer]: ../../../third_party/blink/renderer/modules/sensor/magnetometer.idl
@@ -34,6 +36,7 @@ The DeviceOrientation Events API is implemented in `third_party/blink/renderer/m
 * [DeviceMotionEvent]
   * ACCELEROMETER: populates the `accelerationIncludingGravity` field
   * LINEAR_ACCELEROMETER: populates the `acceleration` field
+  * GRAVITY: populates the `gravity` field
   * GYROSCOPE: populates the `rotationRate` field
 * [DeviceOrientationEvent]
   * ABSOLUTE_ORIENTATION_EULER_ANGLES (when a listener for the `'deviceorientationabsolute'` event is added)
@@ -62,12 +65,13 @@ Support for the SensorTypes defined by the Mojo interface is summarized in this
 table. An empty cell indicates that the sensor type is not supported on that
 platform.
 
-| SensorType                        | Android                   | Linux                                 | macOS                                 | Windows                                   |
+| SensorType                        | Android                   | Linux and ChromeOS                    | macOS                                 | Windows                                   |
 | --------------------------------- | ------------------------- | ------------------------------------- | ------------------------------------- | ----------------------------------------- |
 | AMBIENT_LIGHT                     | TYPE_LIGHT                | in_illuminance                        | AppleLMUController                    | Yes                                       |
 | PROXIMITY                         |                           |                                       |                                       |                                           |
 | ACCELEROMETER                     | TYPE_ACCELEROMETER        | in_accel                              | SMCMotionSensor                       | Yes                                       |
 | LINEAR_ACCELEROMETER              | See below                 | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
+| GRAVITY                           | See below                 | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
 | GYROSCOPE                         | TYPE_GYROSCOPE            | in_anglvel                            |                                       | Yes                                       |
 | MAGNETOMETER                      | TYPE_MAGNETIC_FIELD       | in_magn                               |                                       | Yes                                       |
 | PRESSURE                          |                           |                                       |                                       |                                           |
@@ -87,6 +91,10 @@ class. The TYPE_* values in the below descriptions correspond to the integer
 constants from the android.hardware.Sensor used to provide data for a
 SensorType.
 
+For GRAVITY, the following sensor fallback is used:
+1. Use TYPE_GRAVITY directly
+2. ACCELEROMETER, with a low-pass filter to isolate the effect of gravity
+
 For LINEAR_ACCELEROMETER, the following sensor fallback is used:
 1. Use TYPE_LINEAR_ACCELERATION directly
 2. ACCELEROMETER, with a low-pass filter to isolate the effect of gravity
@@ -103,13 +111,15 @@ For ABSOLUTE_ORIENTATION_QUATERNION, the following sensor fallback is used:
 For RELATIVE_ORIENTATION_EULER_ANGLES, converts the data produced by
 RELATIVE_ORIENTATION_QUATERNION to euler angles.
 
-### Linux (and Chrome OS)
+### Linux and Chrome OS
 
-Sensors are implemented by reading values from the IIO subsystem. The values in
-the "Linux" column of the table above are the prefix of the sysfs files Chrome
-searches for to provide data for a SensorType. The
-ABSOLUTE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting the
-value that can be read from the ACCELEROMETER and MAGNETOMETER. The
+On Linux, sensors are implemented by reading values from the IIO subsystem.
+The values in the "Linux" column of the table above are the prefix of the
+sysfs files Chrome searches for to provide data for a SensorType.
+On ChromeOS, sensors are implemented with Mojo connections to IIO Service, a
+CrOS daemon that provides sensors' data to other applications.
+The ABSOLUTE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting
+the value that can be read from the ACCELEROMETER and MAGNETOMETER. The
 ABSOLUTE_ORIENTATION_QUATERNION sensor type is provided by interpreting the
 value that can be read from the ABSOLUTE_ORIENTATION_EULER_ANGLES. The
 RELATIVE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting the

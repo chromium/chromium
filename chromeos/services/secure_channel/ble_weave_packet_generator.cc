@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace chromeos {
 

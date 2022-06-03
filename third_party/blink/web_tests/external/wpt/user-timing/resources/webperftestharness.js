@@ -1,18 +1,5 @@
-/*
-Distributed under both the W3C Test Suite License [1] and the W3C
-3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
-policies and contribution forms [3].
-
-[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
-[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
-[3] http://www.w3.org/2004/10/27-testcases
-
-author: W3C http://www.w3.org/
-help: http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute
- */
-
 //
-// Helper Functions for NavigationTiming W3C tests
+// Helper functions for User Timing tests
 //
 
 var timingAttributes = [
@@ -58,25 +45,25 @@ function test_namespace(child_name, skip_root)
 {
     if (skip_root === undefined) {
         var msg = 'window.performance is defined';
-        wp_test(function () { assert_true(performanceNamespace !== undefined, msg); }, msg);
+        wp_test(function () { assert_not_equals(performanceNamespace, undefined, msg); }, msg);
     }
 
     if (child_name !== undefined) {
         var msg2 = 'window.performance.' + child_name + ' is defined';
-        wp_test(function() { assert_true(performanceNamespace[child_name] !== undefined, msg2); }, msg2);
+        wp_test(function() { assert_not_equals(performanceNamespace[child_name], undefined, msg2); }, msg2);
     }
 }
 
 function test_attribute_exists(parent_name, attribute_name, properties)
 {
     var msg = 'window.performance.' + parent_name + '.' + attribute_name + ' is defined.';
-    wp_test(function() { assert_true(performanceNamespace[parent_name][attribute_name] !== undefined, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(performanceNamespace[parent_name][attribute_name], undefined, msg); }, msg, properties);
 }
 
 function test_enum(parent_name, enum_name, value, properties)
 {
     var msg = 'window.performance.' + parent_name + '.' + enum_name + ' is defined.';
-    wp_test(function() { assert_true(performanceNamespace[parent_name][enum_name] !== undefined, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(performanceNamespace[parent_name][enum_name], undefined, msg); }, msg, properties);
 
     msg = 'window.performance.' + parent_name + '.' + enum_name + ' = ' + value;
     wp_test(function() { assert_equals(performanceNamespace[parent_name][enum_name], value, msg); }, msg, properties);
@@ -133,5 +120,5 @@ function test_greater_or_equals(value, greater_than, msg, properties)
 
 function test_not_equals(value, notequals, msg, properties)
 {
-    wp_test(function() { assert_true(value !== notequals, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(value, notequals, msg); }, msg, properties);
 }

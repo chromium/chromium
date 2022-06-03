@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -71,14 +72,17 @@ def SetupWindowsCrossCompileToolchain(target_arch):
 
   target_env = os.environ
 
+  # Each path is of the form:
+  # "/I../depot_tools/win_toolchain/vs_files/20d5f2553f/Windows Kits/10/Include/10.0.19041.0/winrt"
+  #
+  # Since there's a space in the include path, inputs are quoted in |flags|, we
+  # can helpfully use shlex to split on spaces while preserving quoted strings.
   include_paths = []
-  for cflag in flags['include_flags_imsvc'].split(' '):
+  for include_path in shlex.split(flags['include_flags_I']):
     # Apparently setup_toolchain prefers relative include paths, which
-    # may work for chrome, but it does not work for ffmpeg, so let's make
+    # may work for chrome, but it does not work for dav1d, so let's make
     # them asbolute again.
-    include_path = cflag.strip('"')
-    if include_path.startswith('-imsvc'):
-      include_path = os.path.abspath(os.path.join(cwd, include_path[6:]))
+    include_path = os.path.abspath(os.path.join(cwd, include_path[2:]))
     include_paths.append(include_path)
 
   # TODO(dalecurtis): Why isn't the ucrt path printed?
@@ -97,18 +101,16 @@ def SetupWindowsCrossCompileToolchain(target_arch):
   return target_env
 
 
-def CopyConfigsAndCleanup(config_dir, dest_dir):
+def CopyConfigs(src_dir, dest_dir):
   if not os.path.exists(dest_dir):
     os.makedirs(dest_dir)
 
-  shutil.copy(os.path.join(config_dir, 'config.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'config.h'), dest_dir)
 
   # The .asm file will not be present for all configurations.
-  asm_file = os.path.join(config_dir, 'config.asm')
+  asm_file = os.path.join(src_dir, 'config.asm')
   if os.path.exists(asm_file):
     shutil.copy(asm_file, dest_dir)
-
-  shutil.rmtree(config_dir)
 
 
 def GenerateConfig(config_dir, env, special_args=[]):
@@ -135,13 +137,16 @@ def GenerateConfig(config_dir, env, special_args=[]):
            r'// \1 -- Stack alignment is controlled by Chromium'),
       ])
 
-  if (os.path.exists(os.path.join(config_dir, 'config.asm'))):
+  config_asm_path = os.path.join(temp_dir, 'config.asm')
+  if (os.path.exists(config_asm_path)):
     RewriteFile(
-        os.path.join(temp_dir, 'config.asm'),
+        config_asm_path,
         [(r'(%define STACK_ALIGNMENT \d{1,2})',
           r'; \1 -- Stack alignment is controlled by Chromium')])
 
-  CopyConfigsAndCleanup(temp_dir, config_dir)
+  CopyConfigs(temp_dir, config_dir)
+
+  shutil.rmtree(temp_dir)
 
 
 def GenerateWindowsArm64Config(src_dir):
@@ -157,6 +162,30 @@ def GenerateWindowsArm64Config(src_dir):
       [(r'#define ARCH_X86 1', r'#define ARCH_X86 0'),
        (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0'),
        (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
+
+
+def CopyVersions(src_dir, dest_dir):
+  if not os.path.exists(dest_dir):
+    os.makedirs(dest_dir)
+
+  shutil.copy(os.path.join(src_dir, 'include', 'dav1d', 'version.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'include', 'vcs_version.h'), dest_dir)
+
+
+def GenerateVersion(version_dir, env):
+  temp_dir = tempfile.mkdtemp()
+  PrintAndCheckCall(
+      MESON + DEFAULT_BUILD_ARGS + [temp_dir],
+      cwd='libdav1d',
+      env=env)
+  PrintAndCheckCall(
+      ['ninja', '-C', temp_dir, 'include/vcs_version.h'],
+      cwd='libdav1d',
+      env=env)
+
+  CopyVersions(temp_dir, version_dir)
+
+  shutil.rmtree(temp_dir)
 
 
 def main():
@@ -187,6 +216,8 @@ def main():
   # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
   # Windows arm64 config from the Windows x64 config.
   GenerateWindowsArm64Config(win_x64_dir)
+
+  GenerateVersion('version', linux_env)
 
 
 if __name__ == '__main__':

@@ -11,12 +11,11 @@
 #include <map>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
@@ -77,7 +76,7 @@ class PUPDataTest : public testing::Test {
       const PUPData::StaticDiskFootprint* footprints,
       const PUPData::StaticDiskFootprint& footprint) {
     ASSERT_NE(nullptr, footprints);
-    for (size_t i = 0; footprints[i].path != nullptr; ++i) {
+    for (size_t i = 0; footprints[i].path; ++i) {
       if (footprint.csidl == footprints[i].csidl &&
           base::FilePath::CompareEqualIgnoreCase(footprints[i].path,
                                                  footprint.path)) {
@@ -93,7 +92,7 @@ class PUPDataTest : public testing::Test {
       const PUPData::StaticRegistryFootprint* footprints,
       const PUPData::StaticRegistryFootprint& footprint) {
     ASSERT_NE(nullptr, footprints);
-    for (size_t i = 0; footprints[i].key_path != nullptr; ++i) {
+    for (size_t i = 0; footprints[i].key_path; ++i) {
       if (RegistryFootprintMatch(footprints[i], footprint))
         return;
     }
@@ -163,8 +162,7 @@ class PUPDataTest : public testing::Test {
     if (footprint1.value_name == nullptr || footprint2.value_name == nullptr)
       return false;
     // If one has a nullptr |value_substring|, the other one should too.
-    if ((footprint1.value_substring != nullptr ||
-         footprint2.value_substring != nullptr) &&
+    if ((footprint1.value_substring || footprint2.value_substring) &&
         (footprint1.value_substring == nullptr ||
          footprint2.value_substring == nullptr)) {
       return false;
@@ -190,7 +188,7 @@ class PUPDataTest : public testing::Test {
   // Compute the size of a StaticDiskFootprint C Array.
   size_t DiskFootprintsSize(const PUPData::StaticDiskFootprint* footprints) {
     size_t i = 0;
-    for (; footprints[i].path != nullptr; ++i) {
+    for (; footprints[i].path; ++i) {
     }
     return i;
   }
@@ -199,7 +197,7 @@ class PUPDataTest : public testing::Test {
   size_t RegistryFootprintsSize(
       const PUPData::StaticRegistryFootprint* footprints) {
     size_t i = 0;
-    for (; footprints[i].key_path != nullptr; ++i) {
+    for (; footprints[i].key_path; ++i) {
     }
     return i;
   }
@@ -449,7 +447,7 @@ TEST_F(PUPDataTest, OpenMachineRegistryKey) {
   // Make sure we can read and write.
   EXPECT_EQ(ERROR_SUCCESS,
             reg_key.WriteValue(k24RegistryValueName, k24RegistryValue));
-  base::string16 value;
+  std::wstring value;
   EXPECT_EQ(ERROR_SUCCESS, reg_key.ReadValue(k24RegistryValueName, &value));
   EXPECT_STREQ(k24RegistryValue, value.c_str());
   reg_key.Close();
@@ -466,7 +464,7 @@ TEST_F(PUPDataTest, OpenUsersRegistryKey) {
   const RegKeyPath reg_key_path(HKEY_CURRENT_USER, k42RegistryKeyPath);
   EXPECT_TRUE(reg_key_path.Open(KEY_READ, &reg_key));
   // Make sure we can read the empty default value of the key.
-  base::string16 value;
+  std::wstring value;
   EXPECT_EQ(ERROR_SUCCESS, reg_key.ReadValue(k24RegistryValueName, &value));
   EXPECT_STREQ(k24RegistryValue, value.c_str());
   EXPECT_TRUE(reg_key.Valid());
@@ -489,8 +487,8 @@ TEST_F(PUPDataTest, OpenClassesRegistryKey) {
 }
 
 TEST_F(PUPDataTest, CommonSeparators) {
-  base::string16 delimiters(PUPData::kCommonDelimiters,
-                            PUPData::kCommonDelimitersLength);
+  std::wstring delimiters(PUPData::kCommonDelimiters,
+                          PUPData::kCommonDelimitersLength);
   EXPECT_EQ(3UL, delimiters.size());
   EXPECT_NE(delimiters.find(L','), std::string::npos);
   EXPECT_NE(delimiters.find(L' '), std::string::npos);
@@ -501,8 +499,8 @@ TEST_F(PUPDataTest, CommonSeparators) {
 }
 
 TEST_F(PUPDataTest, CommaSeparators) {
-  base::string16 delimiters(PUPData::kCommaDelimiter,
-                            PUPData::kCommaDelimiterLength);
+  std::wstring delimiters(PUPData::kCommaDelimiter,
+                          PUPData::kCommaDelimiterLength);
   EXPECT_EQ(1UL, delimiters.size());
   EXPECT_NE(delimiters.find(L','), std::string::npos);
   EXPECT_EQ(delimiters.find(L' '), std::string::npos);
@@ -702,7 +700,7 @@ TEST(SanitizePathVsRawPupDataCsidlTest, TestAllCsidlValues) {
         PUPData::GetPUP(pup_id)->signature();
     for (const PUPData::StaticDiskFootprint* disk_footprint =
              signature.disk_footprints;
-         disk_footprint->path != nullptr;
+         disk_footprint->path;
          ++disk_footprint) {
       int csidl = disk_footprint->csidl;
       if (csidl != PUPData::kInvalidCsidl &&

@@ -10,7 +10,7 @@
 #include "third_party/tcmalloc/chromium/src/config_win.h"
 #elif defined(OS_ANDROID)
 #include "third_party/tcmalloc/chromium/src/config_android.h"
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "third_party/tcmalloc/chromium/src/config_linux.h"
 #elif defined(OS_FREEBSD)
 #include "third_party/tcmalloc/chromium/src/config_freebsd.h"

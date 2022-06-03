@@ -4,49 +4,49 @@
 
 #include "components/exo/seat.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/shell.h"
-#endif  // defined(OS_CHROMEOS)
+#include <memory>
 
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_source.h"
 #include "components/exo/drag_drop_operation.h"
 #include "components/exo/mime_utils.h"
 #include "components/exo/seat_observer.h"
+#include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/exo/xkb_tracker.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/geometry/point_f.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace {
 
-Surface* GetEffectiveFocus(aura::Window* window) {
-  if (!window)
-    return nullptr;
-  Surface* const surface = Surface::AsSurface(window);
-  if (surface)
-    return surface;
-  // Fallback to main surface.
-  aura::Window* const top_level_window = window->GetToplevelWindow();
-  if (!top_level_window)
-    return nullptr;
-  return GetShellMainSurface(top_level_window);
-}
-
 }  // namespace
 
-Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
+Seat::Seat(std::unique_ptr<DataExchangeDelegate> delegate)
+    : changing_clipboard_data_to_selection_source_(false),
+      data_exchange_delegate_(std::move(delegate)) {
   WMHelper::GetInstance()->AddFocusObserver(this);
   // Prepend handler as it's critical that we see all events.
   WMHelper::GetInstance()->PrependPreTargetHandler(this);
@@ -55,10 +55,38 @@ Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
   // null. https://crbug.com/856230
   if (ui::PlatformEventSource::GetInstance())
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui_lock_controller_ = std::make_unique<UILockController>(this);
+
+  // Seat needs to be registered as observers before any Keyboard,
+  // because Keyboard expects that the XkbTracker is up-to-date when its
+  // observer method is called.
+  xkb_tracker_ = std::make_unique<XkbTracker>();
+  ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
+  xkb_tracker_->UpdateKeyboardLayout(ime_controller->keyboard_layout_name());
+  ime_controller->AddObserver(this);
+#endif
 }
 
+Seat::Seat() : Seat(nullptr) {}
+
 Seat::~Seat() {
+  Shutdown();
+}
+
+void Seat::SetFocusChangedCallback(FocusChangedCallback callback) {
+  focus_changed_callbacks_.push_back(std::move(callback));
+  OnWindowFocused(WMHelper::GetInstance()->GetActiveWindow(), nullptr);
+}
+
+void Seat::Shutdown() {
+  if (was_shutdown_)
+    return;
+  was_shutdown_ = true;
   DCHECK(!selection_source_) << "DataSource must be released before Seat";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::Shell::Get()->ime_controller()->RemoveObserver(this);
+#endif
   WMHelper::GetInstance()->RemoveFocusObserver(this);
   WMHelper::GetInstance()->RemovePreTargetHandler(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
@@ -66,25 +94,38 @@ Seat::~Seat() {
     ui::PlatformEventSource::GetInstance()->RemovePlatformEventObserver(this);
 }
 
-void Seat::AddObserver(SeatObserver* observer) {
-  observers_.AddObserver(observer);
+void Seat::AddObserver(SeatObserver* observer, int priority) {
+#if DCHECK_IS_ON()
+  for (const auto& observer_list : priority_observer_list_)
+    DCHECK(!observer_list.HasObserver(observer));
+#endif
+  DCHECK(IsValidObserverPriority(priority));
+  priority_observer_list_[priority].AddObserver(observer);
 }
 
 void Seat::RemoveObserver(SeatObserver* observer) {
-  observers_.RemoveObserver(observer);
+  // We assume that the number of priority variations is small enough.
+  for (auto& observer_list : priority_observer_list_)
+    observer_list.RemoveObserver(observer);
 }
 
 Surface* Seat::GetFocusedSurface() {
-  return GetEffectiveFocus(WMHelper::GetInstance()->GetFocusedWindow());
+  return GetTargetSurfaceForKeyboardFocus(
+      WMHelper::GetInstance()->GetFocusedWindow());
 }
 
 void Seat::StartDrag(DataSource* source,
                      Surface* origin,
                      Surface* icon,
-                     ui::DragDropTypes::DragEventSource event_source) {
+                     ui::mojom::DragEventSource event_source) {
   // DragDropOperation manages its own lifetime.
   drag_drop_operation_ =
-      DragDropOperation::Create(source, origin, icon, event_source);
+      DragDropOperation::Create(data_exchange_delegate_.get(), source, origin,
+                                icon, last_pointer_location_, event_source);
+}
+
+void Seat::SetLastPointerLocation(const gfx::PointF& last_pointer_location) {
+  last_pointer_location_ = last_pointer_location;
 }
 
 void Seat::AbortPendingDragOperation() {
@@ -94,8 +135,12 @@ void Seat::AbortPendingDragOperation() {
 
 void Seat::SetSelection(DataSource* source) {
   Surface* focused_surface = GetFocusedSurface();
-  if (!source || !source->CanBeDataSourceForCopy(focused_surface))
+  if (!source || !focused_surface ||
+      !source->CanBeDataSourceForCopy(focused_surface)) {
+    if (source)
+      source->Cancelled();
     return;
+  }
 
   if (selection_source_) {
     if (selection_source_->get() == source)
@@ -103,12 +148,14 @@ void Seat::SetSelection(DataSource* source) {
     selection_source_->get()->Cancelled();
   }
   selection_source_ = std::make_unique<ScopedDataSource>(source, this);
+  ui::EndpointType endpoint_type =
+      data_exchange_delegate_->GetDataTransferEndpointType(
+          focused_surface->window());
   scoped_refptr<RefCountedScopedClipboardWriter> writer =
-      base::MakeRefCounted<RefCountedScopedClipboardWriter>(
-          ui::ClipboardBuffer::kCopyPaste);
+      base::MakeRefCounted<RefCountedScopedClipboardWriter>(endpoint_type);
 
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
-      kMaxClipboardDataTypes,
+      DataSource::kMaxDataTypes,
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
                      writer));
 
@@ -121,13 +168,32 @@ void Seat::SetSelection(DataSource* source) {
                      data_read_callback),
       base::BindOnce(&Seat::OnImageRead, weak_ptr_factory_.GetWeakPtr(), writer,
                      data_read_callback),
+      base::BindOnce(&Seat::OnFilenamesRead, weak_ptr_factory_.GetWeakPtr(),
+                     endpoint_type, writer, data_read_callback),
+      DataSource::ReadFileContentsDataCallback(),
+      base::BindOnce(&Seat::OnWebCustomDataRead, weak_ptr_factory_.GetWeakPtr(),
+                     writer, data_read_callback),
       data_read_callback);
 }
+
+class Seat::RefCountedScopedClipboardWriter
+    : public ui::ScopedClipboardWriter,
+      public base::RefCounted<RefCountedScopedClipboardWriter> {
+ public:
+  explicit RefCountedScopedClipboardWriter(ui::EndpointType type)
+      : ScopedClipboardWriter(
+            ui::ClipboardBuffer::kCopyPaste,
+            std::make_unique<ui::DataTransferEndpoint>(type)) {}
+
+ private:
+  friend class base::RefCounted<RefCountedScopedClipboardWriter>;
+  virtual ~RefCountedScopedClipboardWriter() = default;
+};
 
 void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
-                      base::string16 data) {
+                      std::u16string data) {
   writer->WriteText(std::move(data));
   std::move(callback).Run();
 }
@@ -144,7 +210,7 @@ void Seat::OnRTFRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
 void Seat::OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
-                      base::string16 data) {
+                      std::u16string data) {
   writer->WriteHTML(std::move(data), std::string());
   std::move(callback).Run();
 }
@@ -153,18 +219,18 @@ void Seat::OnImageRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        base::OnceClosure callback,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   data_decoder::DecodeImageIsolated(
-      data, data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data, data_decoder::mojom::ImageCodec::kDefault, false,
       std::numeric_limits<int64_t>::max(), gfx::Size(),
       base::BindOnce(&Seat::OnImageDecoded, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), writer));
 #else
   std::move(callback).Run();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void Seat::OnImageDecoded(base::OnceClosure callback,
                           scoped_refptr<RefCountedScopedClipboardWriter> writer,
                           const SkBitmap& bitmap) {
@@ -172,7 +238,29 @@ void Seat::OnImageDecoded(base::OnceClosure callback,
     writer->WriteImage(bitmap);
   std::move(callback).Run();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void Seat::OnFilenamesRead(
+    ui::EndpointType source,
+    scoped_refptr<RefCountedScopedClipboardWriter> writer,
+    base::OnceClosure callback,
+    const std::string& mime_type,
+    const std::vector<uint8_t>& data) {
+  std::vector<ui::FileInfo> filenames =
+      data_exchange_delegate_->GetFilenames(source, data);
+  writer->WriteFilenames(ui::FileInfosToURIList(filenames));
+  std::move(callback).Run();
+}
+
+void Seat::OnWebCustomDataRead(
+    scoped_refptr<RefCountedScopedClipboardWriter> writer,
+    base::OnceClosure callback,
+    const std::string& mime_type,
+    const std::vector<uint8_t>& data) {
+  NOTREACHED()
+      << "Seat does not support custom data mime types for selections.";
+  std::move(callback).Run();
+}
 
 void Seat::OnAllReadsFinished(
     scoped_refptr<RefCountedScopedClipboardWriter> writer) {
@@ -196,12 +284,18 @@ void Seat::OnAllReadsFinished(
 
 void Seat::OnWindowFocused(aura::Window* gained_focus,
                            aura::Window* lost_focus) {
-  Surface* const surface = GetEffectiveFocus(gained_focus);
-  for (auto& observer : observers_) {
-    observer.OnSurfaceFocusing(surface);
+  Surface* const gaining_focus_surface =
+      GetTargetSurfaceForKeyboardFocus(gained_focus);
+  Surface* const lost_focus_surface =
+      GetTargetSurfaceForKeyboardFocus(lost_focus);
+
+  for (auto& focus_changed_callback : focus_changed_callbacks_) {
+    focus_changed_callback.Run(gaining_focus_surface, lost_focus_surface,
+                               !!gained_focus);
   }
-  for (auto& observer : observers_) {
-    observer.OnSurfaceFocused(surface);
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnSurfaceFocused(gaining_focus_surface);
   }
 }
 
@@ -248,8 +342,9 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
   if (physical_code_for_currently_processing_event_ != ui::DomCode::NONE) {
     switch (event->type()) {
       case ui::ET_KEY_PRESSED:
-        pressed_keys_.insert(
-            {physical_code_for_currently_processing_event_, event->code()});
+        pressed_keys_.emplace(
+            physical_code_for_currently_processing_event_,
+            KeyState{event->code(), /*consumed_by_ime=*/false});
         break;
       case ui::ET_KEY_RELEASED:
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
@@ -259,7 +354,9 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
         break;
     }
   }
-  modifier_flags_ = event->flags();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  xkb_tracker_->UpdateKeyboardModifiers(event->flags());
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -271,6 +368,22 @@ void Seat::OnClipboardDataChanged() {
   selection_source_->get()->Cancelled();
   selection_source_.reset();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+UILockController* Seat::GetUILockControllerForTesting() {
+  return ui_lock_controller_.get();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ash::ImeControllerImpl::Observer overrides:
+
+void Seat::OnCapsLockChanged(bool enabled) {}
+
+void Seat::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
+  xkb_tracker_->UpdateKeyboardLayout(layout_name);
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // DataSourceObserver overrides:

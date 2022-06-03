@@ -34,7 +34,7 @@ class RemoveNodeCommand final : public SimpleEditCommand {
  public:
   explicit RemoveNodeCommand(Node*, ShouldAssumeContentIsAlwaysEditable);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

@@ -59,24 +59,25 @@ OmniboxControllerEmitter* OmniboxControllerEmitter::GetForBrowserContext(
 }
 #endif  // !defined(OS_IOS)
 
-void OmniboxControllerEmitter::AddObserver(Observer* observer) {
+void OmniboxControllerEmitter::AddObserver(
+    AutocompleteController::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void OmniboxControllerEmitter::RemoveObserver(Observer* observer) {
+void OmniboxControllerEmitter::RemoveObserver(
+    AutocompleteController::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void OmniboxControllerEmitter::NotifyOmniboxQuery(
-    AutocompleteController* controller,
-    const AutocompleteInput& input) {
-  for (Observer& observer : observers_)
-    observer.OnOmniboxQuery(controller, input);
+void OmniboxControllerEmitter::OnStart(AutocompleteController* controller,
+                                       const AutocompleteInput& input) {
+  for (auto& observer : observers_)
+    observer.OnStart(controller, input);
 }
 
-void OmniboxControllerEmitter::NotifyOmniboxResultChanged(
-    bool default_match_changed,
-    AutocompleteController* controller) {
-  for (Observer& observer : observers_)
-    observer.OnOmniboxResultChanged(default_match_changed, controller);
+void OmniboxControllerEmitter::OnResultChanged(
+    AutocompleteController* controller,
+    bool default_match_changed) {
+  for (auto& observer : observers_)
+    observer.OnResultChanged(controller, default_match_changed);
 }

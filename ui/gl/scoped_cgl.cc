@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
 #include "ui/gl/scoped_cgl.h"
+
+#include <ostream>
+
+#include "base/check_op.h"
 
 namespace gl {
 

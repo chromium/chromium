@@ -10,16 +10,19 @@ from blinkpy.web_tests.port import platform_options, configuration_options
 
 def main(argv):
     parser = optparse.OptionParser(usage='%prog [path-to-results.json]')
-    parser.add_option('--failures', action='store_true',
-                      help='show failing tests')
-    parser.add_option('--flakes', action='store_true',
-                      help='show flaky tests')
-    parser.add_option('--expected', action='store_true',
-                      help='include expected results along with unexpected')
-    parser.add_option('--passes', action='store_true',
-                      help='show passing tests')
-    parser.add_option('--ignored-failures-path', action='store',
-                      help='ignore failures seen in a previous run')
+    parser.add_option(
+        '--failures', action='store_true', help='show failing tests')
+    parser.add_option('--flakes', action='store_true', help='show flaky tests')
+    parser.add_option(
+        '--expected',
+        action='store_true',
+        help='include expected results along with unexpected')
+    parser.add_option(
+        '--passes', action='store_true', help='show passing tests')
+    parser.add_option(
+        '--ignored-failures-path',
+        action='store',
+        help='ignore failures seen in a previous run')
     parser.add_options(platform_options())
     parser.add_options(configuration_options())
     options, args = parser.parse_args(argv)
@@ -37,8 +40,7 @@ def main(argv):
     else:
         txt = host.filesystem.read_text_file(
             host.filesystem.join(
-                host.port_factory.get(
-                    options=options).artifacts_directory(),
+                host.port_factory.get(options=options).artifacts_directory(),
                 'full_results.json'))
 
     if txt.startswith('ADD_RESULTS(') and txt.endswith(');'):

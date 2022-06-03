@@ -1,4 +1,4 @@
-<style include="iron-flex cr-hidden-style cr-icons action-link
+<style include="iron-flex cr-shared-style cr-hidden-style cr-icons action-link
     shared-style">
   .bounded-text,
   .multiline-clippable-text,
@@ -21,6 +21,10 @@
     flex-shrink: 1;
   }
 
+  cr-tooltip-icon {
+    margin-inline-end: 8px;
+  }
+
   #icon-wrapper {
     align-self: flex-start;
     display: flex;
@@ -34,9 +38,9 @@
   }
 
   #card {
-    @apply --cr-card-elevation;
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
     display: flex;
     flex-direction: column;
     height: var(--extensions-card-height);
@@ -82,19 +86,24 @@
     margin-bottom: 8px;
   }
 
-  #error-icon {
-    --iron-icon-fill-color: var(--error-color);
+  #allowlist-warning {
+    flex: 1;
+    margin-bottom: 8px;
+  }
+
+  .message-icon {
     height: 18px;
     margin-inline-end: 4px;
+    vertical-align: top;
     width: 18px;
   }
 
-  #description,
-  #version,
-  #extension-id,
-  #inspect-views,
-  #button-strip {
-    @apply --cr-secondary-text;
+  #warnings .message-icon {
+    --iron-icon-fill-color: var(--error-color);
+  }
+
+  #allowlist-warning .message-icon {
+    --iron-icon-fill-color: var(--warning-color);
   }
 
   #extension-id {
@@ -148,10 +157,7 @@
   }
 
   paper-tooltip {
-    --paper-tooltip: {
-      @apply --cr-tooltip;
-      min-width: 0;
-    };
+    --paper-tooltip-min-width: 0;
   }
 
   #errors-button {
@@ -175,17 +181,13 @@
   element that's hidden when referenced by an aria label.  Unfortunately,
   this text can be found by Ctrl + F because it isn't hidden. -->
 <div id="a11yAssociation" aria-hidden="true">
-  [[a11yAssociation_(data.name)]]
+  [[a11yAssociation(data.name)]]
 </div>
 <div id="card" class$="[[computeClasses_(data.state, inDevMode)]]">
   <div id="main">
     <div id="icon-wrapper">
       <img id="icon" src="[[data.iconUrl]]"
-          aria-describedby="a11yAssociation"
-          alt$="[[appOrExtension(
-              data.type,
-              '$i18nPolymer{appIcon}',
-              '$i18nPolymer{extensionIcon}')]]">
+          aria-describedby="a11yAssociation" alt="">
       <template is="dom-if"
           if="[[computeSourceIndicatorIcon_(data.*)]]">
         <div id="source-indicator">
@@ -214,19 +216,19 @@
         <div id="name-and-version" class="layout horizontal center">
           <div id="name" role="heading" aria-level="3"
               class="clippable-flex-text">[[data.name]]</div>
-          <span id="version" hidden$="[[!inDevMode]]">
+          <span id="version" class="cr-secondary-text" hidden$="[[!inDevMode]]">
             [[data.version]]
           </span>
         </div>
       </div>
-      <div id="description" class="multiline-clippable-text"
-          hidden$="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+      <div id="description" class="cr-secondary-text multiline-clippable-text"
+          hidden$="[[!showDescription_(data.disableReasons.*, data.*)]]">
         [[data.description]]
       </div>
       <template is="dom-if"
-          if="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+          if="[[hasSevereWarnings_(data.disableReasons.*, data.*)]]">
         <div id="warnings">
-          <iron-icon id="error-icon" icon="cr:error"></iron-icon>
+          <iron-icon class="message-icon" icon="cr:error"></iron-icon>
           <span id="runtime-warnings" aria-describedby="a11yAssociation"
               hidden$="[[!data.runtimeWarnings.length]]">
             <template is="dom-repeat" items="[[data.runtimeWarnings]]">
@@ -249,14 +251,30 @@
          --></span>
         </div>
       </template>
+      <template is="dom-if"
+          if="[[showAllowlistWarning_(data.disableReasons.*, data.*)]]">
+        <div id="allowlist-warning">
+          <iron-icon class="message-icon"
+              icon="extensions-icons:safebrowsing_warning">
+          </iron-icon>
+          <span class="cr-secondary-text" aria-describedby="a11yAssociation">
+            $i18n{itemAllowlistWarning}
+            <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank">
+              $i18n{learnMore}
+            </a>
+          </span>
+        </div>
+      </template>
       <template is="dom-if" if="[[inDevMode]]">
-        <div id="extension-id" class="bounded-text">[[data.id]]</div>
+        <div id="extension-id" class="bounded-text cr-secondary-text">
+          [[data.id]]
+        </div>
         <template is="dom-if"
             if="[[!computeInspectViewsHidden_(data.views)]]">
           <!--Note: We wrap inspect-views in a div so that the outer div
               doesn't shrink (because it's not display: flex).-->
           <div>
-            <div id="inspect-views">
+            <div id="inspect-views" class="cr-secondary-text">
               <span aria-describedby="a11yAssociation">
                 $i18n{itemInspectViews}
               </span>
@@ -276,7 +294,7 @@
       </template>
     </div>
   </div>
-  <div id="button-strip" class="layout horizontal center">
+  <div id="button-strip" class="layout horizontal center cr-secondary-text">
     <div class="layout flex horizontal center">
       <cr-button id="detailsButton" on-click="onDetailsTap_"
           aria-describedby="a11yAssociation">
@@ -284,7 +302,7 @@
       </cr-button>
       <cr-button id="remove-button" on-click="onRemoveTap_"
           aria-describedby="a11yAssociation"
-          hidden="[[isControlled_(data.controlledInfo)]]">
+          hidden="[[data.mustRemainInstalled]]">
         $i18n{remove}
       </cr-button>
       <template is="dom-if" if="[[shouldShowErrorsButton_(data.*)]]">
@@ -299,26 +317,34 @@
           aria-label="$i18n{itemReload}" aria-describedby="a11yAssociation"
           on-click="onReloadTap_"></cr-icon-button>
     </template>
-    <template is="dom-if" if="[[data.disableReasons.corruptInstall]]">
+    <template is="dom-if"
+        if="[[showRepairButton_(data.disableReasons.corruptInstall)]]">
       <cr-button id="repair-button" class="action-button"
           aria-describedby="a11yAssociation" on-click="onRepairTap_">
         $i18n{itemRepair}
       </cr-button>
     </template>
-    <template is="dom-if" if="[[isTerminated_(data.state)]]">
+    <template is="dom-if" if="[[showReloadButton_(data.state)]]">
       <cr-button id="terminated-reload-button" on-click="onReloadTap_"
           aria-describedby="a11yAssociation" class="action-button">
         $i18n{itemReload}
       </cr-button>
     </template>
-    <cr-toggle id="enable-toggle"
+    <cr-tooltip-icon id="parentDisabledPermissionsToolTip"
+        hidden$="[[!data.disableReasons.parentDisabledPermissions]]"
+        tooltip-text="$i18n{parentDisabledPermissions}"
+        icon-class="cr20:kite"
+        icon-aria-label="$i18n{parentDisabledPermissions}">
+    </cr-tooltip-icon>
+    <cr-toggle id="enableToggle"
         aria-label$="[[appOrExtension(
             data.type,
             '$i18nPolymer{appEnabled}',
             '$i18nPolymer{extensionEnabled}')]]"
         aria-describedby="a11yAssociation"
-        checked="[[isEnabled_(data.state)]]" on-change="onEnableChange_"
-        disabled="[[!isEnableToggleEnabled_(data.*)]]"
+        checked="[[isEnabled_(data.state)]]"
+        on-change="onEnableToggleChange_"
+        disabled$="[[!isEnableToggleEnabled_(data.*)]]"
         hidden$="[[!showEnableToggle_(data.*)]]">
     </cr-toggle>
   </div>

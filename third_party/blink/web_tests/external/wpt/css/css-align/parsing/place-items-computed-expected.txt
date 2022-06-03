@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Property place-items value 'normal'
+PASS Property place-items value 'stretch stretch'
+PASS Property place-items value 'first baseline'
+FAIL Property place-items value 'last baseline last baseline' assert_true: 'last baseline last baseline' is a supported value for place-items. expected true got false
+PASS Property place-items value 'center'
+PASS Property place-items value 'end end'
+PASS Property place-items value 'self-start'
+PASS Property place-items value 'flex-end'
+PASS Property place-items value 'unsafe center unsafe center'
+PASS Property place-items value 'safe self-end'
+PASS Property place-items value 'stretch baseline'
+FAIL Property place-items value 'last baseline center' assert_true: 'last baseline center' is a supported value for place-items. expected true got false
+PASS Property place-items value 'safe self-end normal'
+PASS Property place-items value 'normal right'
+PASS Property place-items value 'baseline unsafe left'
+PASS Property place-items value 'flex-end legacy'
+PASS Property place-items value 'stretch legacy left'
+PASS Property place-items value 'first baseline right legacy'
+Harness: the test ran to completion.
+

@@ -13,6 +13,8 @@
     <input id="textfield" type="text" style="width:100%" oninput="finishJavaScriptStep()">
   </body>
   <script>
+    setup({single_test: true});
+
     var numExpectedClicks = 1;
 
     function stepVerifyInitialString(expectedString) {

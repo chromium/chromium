@@ -7,6 +7,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ios/testing/earl_grey/app_launch_configuration.h"
+
 // Base class for all Earl Grey tests.
 // Provides EG1-compatible start-of-test-case hooks for EG2 tests,
 // as well as handling common EG2 app-launching logic.
@@ -24,12 +26,11 @@
 // Invoked upon starting each test method in a test case.
 - (void)setUp NS_REQUIRES_SUPER;
 
-// Responsible for launching the app under test in EG2 tests.
-// By default, will launch the app once per test process launch with
-// default parameters; individual test cases can override this method if they
-// wish to pass different parameters or provide different behavior.
-// Protected method.
-- (void)launchAppForTestMethod;
+// Provides an |AppLaunchConfiguration| for host app used across a TestCase.
+// Subclasses must override this method to change app launching configuration
+// (f.e. features or flags). Default implementation returns default
+// AppLaunchConfiguration object.
+- (AppLaunchConfiguration)appConfigurationForTestCase;
 
 @end
 

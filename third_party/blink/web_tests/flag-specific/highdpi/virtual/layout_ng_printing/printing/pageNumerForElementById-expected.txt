@@ -1,0 +1,14 @@
+Test for internals.pageNumber()
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS: page number of "firstPage" is 0
+FAIL: expected page number of "secondPage" is 1. Was 0
+FAIL: expected page number of "thirdPage" is 2. Was 1
+PASS: page number of "thirdPage2" is 2
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

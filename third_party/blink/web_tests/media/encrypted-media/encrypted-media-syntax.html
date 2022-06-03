@@ -1017,15 +1017,15 @@
                 // spec includes it. http://crbug.com/628437.
 
                 // Invalid MediaKeyMessageType values should throw a TypeError.
-                assert_throws(new TypeError, function() {
+                assert_throws_js(TypeError, function() {
                     new MediaKeyMessageEvent('eventType', { messageType: 'something-else', message: new ArrayBuffer(0) } );
                 });
 
                 // Missing required values should throw a TypeError.
-                assert_throws(new TypeError, function() {
+                assert_throws_js(TypeError, function() {
                     new MediaKeyMessageEvent('eventType', { message: new ArrayBuffer(0) } );
                 });
-                assert_throws(new TypeError, function() {
+                assert_throws_js(TypeError, function() {
                     new MediaKeyMessageEvent('eventType', { messageType: 'license-request' } );
                 });
             }, 'Test MediaKeyMessageEvent.');

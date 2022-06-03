@@ -3,52 +3,62 @@
 <head>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
-  <script src="../../forms/resources/picker-common.js"></script>
-  <script src="resources/calendar-picker-common.js"></script>
+  <script src="../resources/common.js"></script>
+  <script src="../resources/picker-common.js"></script>
+  <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
 </head>
 <body>
 
 <input type="date" id="date1" value="2000-01-02">
 
 <script>
-async_test((t) => {
-    var date1 = document.getElementById('date1');
-    openPicker(date1, () => { eventSender.keyDown('ArrowRight'); });
+promise_test(() => {
+  let date1 = document.getElementById('date1');
 
-    accessibilityController.setNotificationListener(function(axnode, type) {
+  return openPickerWithPromise(date1).then(() => {
+    let markDirtyCounter = 0;
+    let focusCounter = 0;
+
+    let promise = new Promise((resolve, reject) => {
+      accessibilityController.setNotificationListener(function(axnode, type) {
         if (type == 'Focus') {
-            console.log('Focused: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
+          console.log('Received Focus event: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
+          focusCounter++;
+          if (focusCounter == 1) {
+            assert_equals(date1.value, "2000-01-03", "Expected arrow key to change date");
+            console.log('Open the month switcher menu.');
+            setTimeout(() => { clickMonthPopupButton(); }, 0);
+          } else if (focusCounter == 2) {
+            console.log('Highlighting 2000-02 in the month popup');
+            setTimeout(function() { eventSender.keyDown('ArrowRight'); }, 0);
+          } else if (focusCounter == 3) {
+            console.log('Pressing enter to submit month switcher menu selection');
+            setTimeout(function() { eventSender.keyDown('Enter'); }, 0);
+          }
         } else if (type == 'MarkDirty') {
-            if (++markDirtyCounter == 2) {
-                setTimeout(testButtonDescription, 0);
-            } else if (markDirtyCounter == 3) {
-                // Highlight 2000-02 in the month popup.
-                setTimeout(function() { eventSender.keyDown('ArrowRight'); }, 0);
-            } else if (markDirtyCounter == 4) {
-                // Highlight 1999-10 in the month popup.
-                setTimeout(function() { eventSender.keyDown('ArrowUp'); }, 0);
-            } else if (markDirtyCounter == 5) {
-                t.done();
-            }
+          console.log('Received MarkDirty event');
+          markDirtyCounter++;
         }
+
+        if (focusCounter == 5 && markDirtyCounter >= 10) {
+          assert_equals(date1.value, "2000-02-03", "Submitting month switcher should have udpated control value");
+          resolve();
+        }
+      });
+
+      // In case of failure, reject the promise so we get some logs instead of timing out.
+      window.setTimeout(() => {
+        reject(`Didn't receive expected events.  Got ${focusCounter} Focus and ${markDirtyCounter} MarkDirty`);
+      }, 1500);
     });
-    var markDirtyCounter = 0;
 
-    function testButtonDescription() {
-        // Focus on 'next month' button.
-        eventSender.keyDown('\t', ['shiftKey']);
-        // Focus on the today button.
-        eventSender.keyDown('\t', ['shiftKey']);
-        // Focus on 'previous month' button.
-        eventSender.keyDown('\t', ['shiftKey']);
-        // Focus on the month selector button.
-        eventSender.keyDown('\t', ['shiftKey']);
+    eventSender.keyDown('ArrowRight');
 
-        console.log('Open the month popup. This should notify the third MarkDirty.');
-        eventSender.keyDown(' ');
-    }
-}, 'Tests that typing an arrow key dispatches |Focus| and |MarkDirty| a11y events.');
+    return promise;
+  });
+}, 'Tests that typing an arrow key and opening month switcher menu dispatches |Focus| and |MarkDirty| a11y events.');
 
 </script>
 </body>
+
 </html>

@@ -4,6 +4,9 @@
 
 #include "ui/views/controls/menu/menu_delegate.h"
 
+#include "base/callback_helpers.h"
+#include "base/notreached.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/menu/menu_config.h"
 
@@ -15,15 +18,22 @@ bool MenuDelegate::IsItemChecked(int id) const {
   return false;
 }
 
-base::string16 MenuDelegate::GetLabel(int id) const {
-  return base::string16();
+std::u16string MenuDelegate::GetLabel(int id) const {
+  return std::u16string();
 }
 
-void MenuDelegate::GetLabelStyle(int id, LabelStyle* style) const {}
+const gfx::FontList* MenuDelegate::GetLabelFontList(int id) const {
+  return nullptr;
+}
 
-base::string16 MenuDelegate::GetTooltipText(int id,
-                                      const gfx::Point& screen_loc) const {
-  return base::string16();
+absl::optional<SkColor> MenuDelegate::GetLabelColor(int id) const {
+  return absl::nullopt;
+}
+
+std::u16string MenuDelegate::GetTooltipText(
+    int id,
+    const gfx::Point& screen_loc) const {
+  return std::u16string();
 }
 
 bool MenuDelegate::GetAccelerator(int id, ui::Accelerator* accelerator) const {
@@ -49,7 +59,7 @@ bool MenuDelegate::IsCommandVisible(int id) const {
   return true;
 }
 
-bool MenuDelegate::GetContextualLabel(int id, base::string16* out) const {
+bool MenuDelegate::GetContextualLabel(int id, std::u16string* out) const {
   return false;
 }
 
@@ -70,8 +80,8 @@ bool MenuDelegate::IsTriggerableEvent(MenuItemView* source,
                                       const ui::Event& e) {
   return e.type() == ui::ET_GESTURE_TAP ||
          e.type() == ui::ET_GESTURE_TAP_DOWN ||
-         (e.IsMouseEvent() && (e.flags() &
-              (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON)));
+         (e.IsMouseEvent() &&
+          (e.flags() & (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON)));
 }
 
 bool MenuDelegate::CanDrop(MenuItemView* menu, const OSExchangeData& data) {
@@ -89,18 +99,28 @@ bool MenuDelegate::AreDropTypesRequired(MenuItemView* menu) {
   return false;
 }
 
-int MenuDelegate::GetDropOperation(MenuItemView* item,
-                                   const ui::DropTargetEvent& event,
-                                   DropPosition* position) {
+ui::mojom::DragOperation MenuDelegate::GetDropOperation(
+    MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
   NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::DragDropTypes::DRAG_NONE;
+  return ui::mojom::DragOperation::kNone;
 }
 
-int MenuDelegate::OnPerformDrop(MenuItemView* menu,
-                                DropPosition position,
-                                const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation MenuDelegate::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
   NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::DragDropTypes::DRAG_NONE;
+  return ui::mojom::DragOperation::kNone;
+}
+
+views::View::DropCallback MenuDelegate::GetDropCallback(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  NOTREACHED() << "If you override CanDrop, you need to override this too";
+  return base::NullCallback();
 }
 
 bool MenuDelegate::CanDrag(MenuItemView* menu) {
@@ -134,23 +154,9 @@ int MenuDelegate::GetMaxWidthForMenu(MenuItemView* menu) {
   return 800;
 }
 
-void MenuDelegate::WillShowMenu(MenuItemView* menu) {
-}
+void MenuDelegate::WillShowMenu(MenuItemView* menu) {}
 
-void MenuDelegate::WillHideMenu(MenuItemView* menu) {
-}
-
-void MenuDelegate::GetHorizontalIconMargins(int command_id,
-                                            int icon_size,
-                                            int* left_margin,
-                                            int* right_margin) const {
-  *left_margin = 0;
-  *right_margin = 0;
-}
-
-bool MenuDelegate::ShouldReserveSpaceForSubmenuIndicator() const {
-  return true;
-}
+void MenuDelegate::WillHideMenu(MenuItemView* menu) {}
 
 bool MenuDelegate::ShouldTryPositioningBesideAnchor() const {
   return true;

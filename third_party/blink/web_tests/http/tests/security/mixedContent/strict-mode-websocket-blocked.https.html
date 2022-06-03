@@ -8,10 +8,10 @@
 <body>
     <script>
         test(function () {
-            assert_throws("SecurityError",
-                          function () {
-                              new WebSocket("ws://example.test:8880/echo");
-                          });
+            assert_throws_dom("SecurityError",
+                              function () {
+                                  new WebSocket("ws://example.test:8880/echo");
+                              });
         }, "Test that insecure websocket construction throws.");
     </script>
 </body>

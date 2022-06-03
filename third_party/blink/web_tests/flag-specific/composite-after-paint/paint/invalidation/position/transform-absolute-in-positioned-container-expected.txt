@@ -5,17 +5,8 @@
       "bounds": [802, 585],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='box' class='rotated'",
-          "rect": [76, 190, 286, 286],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='box' class='rotated'",
-          "rect": [118, 232, 202, 202],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [76, 190, 286, 286]
       ]
     },
     {

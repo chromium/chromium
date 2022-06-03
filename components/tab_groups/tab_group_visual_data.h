@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace tab_groups {
@@ -18,8 +19,12 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
  public:
   // Construct a TabGroupVisualData with placeholder name and random color.
   TabGroupVisualData();
-
-  TabGroupVisualData(base::string16 title, SkColor color);
+  TabGroupVisualData(std::u16string title,
+                     tab_groups::TabGroupColorId color,
+                     bool is_collapsed = false);
+  TabGroupVisualData(std::u16string title,
+                     uint32_t color_int,
+                     bool is_collapsed = false);
 
   TabGroupVisualData(const TabGroupVisualData& other) = default;
   TabGroupVisualData(TabGroupVisualData&& other) = default;
@@ -27,8 +32,9 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
   TabGroupVisualData& operator=(const TabGroupVisualData& other) = default;
   TabGroupVisualData& operator=(TabGroupVisualData&& other) = default;
 
-  base::string16 title() const { return title_; }
-  SkColor color() const { return color_; }
+  const std::u16string& title() const { return title_; }
+  const tab_groups::TabGroupColorId& color() const { return color_; }
+  bool is_collapsed() const { return is_collapsed_; }
 
   // Checks whether two instances are visually equivalent.
   bool operator==(const TabGroupVisualData& other) const {
@@ -39,8 +45,9 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
   }
 
  private:
-  base::string16 title_;
-  SkColor color_;
+  std::u16string title_;
+  tab_groups::TabGroupColorId color_;
+  bool is_collapsed_;
 };
 
 }  // namespace tab_groups

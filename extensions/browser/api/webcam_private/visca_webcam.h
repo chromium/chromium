@@ -18,7 +18,6 @@
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/common/api/serial.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/serial.mojom.h"
 
 namespace extensions {
 
@@ -26,14 +25,18 @@ class ViscaWebcam : public Webcam {
  public:
   ViscaWebcam();
 
-  using OpenCompleteCallback = base::Callback<void(bool)>;
+  ViscaWebcam(const ViscaWebcam&) = delete;
+  ViscaWebcam& operator=(const ViscaWebcam&) = delete;
+
+  using OpenCompleteCallback = base::RepeatingCallback<void(bool)>;
 
   // Open and initialize the web camera. This is done by the following three
   // steps (in order): 1. Open the serial port; 2. Request address; 3. Clear the
   // command buffer. After these three steps completes, |open_callback| will be
   // called.
   void Open(const std::string& extension_id,
-            mojo::PendingRemote<device::mojom::SerialPort> port,
+            api::SerialPortManager* port_manager,
+            const std::string& path,
             const OpenCompleteCallback& open_callback);
 
  private:
@@ -47,7 +50,7 @@ class ViscaWebcam : public Webcam {
   };
 
   using CommandCompleteCallback =
-      base::Callback<void(bool, const std::vector<char>&)>;
+      base::RepeatingCallback<void(bool, const std::vector<char>&)>;
 
   // Private because WebCam is base::RefCounted.
   ~ViscaWebcam() override;
@@ -118,6 +121,10 @@ class ViscaWebcam : public Webcam {
   void SetFocus(int value, const SetPTZCompleteCallback& callback) override;
   void SetAutofocusState(AutofocusState state,
                          const SetPTZCompleteCallback& callback) override;
+  void RestoreCameraPreset(int preset_number,
+                           const SetPTZCompleteCallback& callback) override;
+  void SetCameraPreset(int preset_number,
+                       const SetPTZCompleteCallback& callback) override;
 
   // Used only in unit tests in place of Open().
   void OpenForTesting(std::unique_ptr<SerialConnection> serial_connection);
@@ -139,8 +146,6 @@ class ViscaWebcam : public Webcam {
   // store the current value of pan and tilt positions.
   int pan_ = 0;
   int tilt_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ViscaWebcam);
 };
 
 }  // namespace extensions

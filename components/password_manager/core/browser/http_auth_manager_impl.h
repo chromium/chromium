@@ -7,10 +7,7 @@
 
 #include <map>
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
@@ -20,6 +17,7 @@ namespace password_manager {
 class PasswordManagerClient;
 class PasswordFormManager;
 class PasswordFormManagerForUI;
+struct PasswordForm;
 
 // Implementation of the HttpAuthManager as used by the PasswordManagerClient.
 class HttpAuthManagerImpl : public HttpAuthManager {
@@ -28,24 +26,23 @@ class HttpAuthManagerImpl : public HttpAuthManager {
 
   HttpAuthManagerImpl(PasswordManagerClient* client,
                       HttpAuthObserver* observer,
-                      const autofill::PasswordForm& observed_form);
+                      const PasswordForm& observed_form);
 
   ~HttpAuthManagerImpl() override;
 
   // HttpAuthManager:
   void SetObserverAndDeliverCredentials(
       HttpAuthObserver* observer,
-      const autofill::PasswordForm& observed_form) override;
+      const PasswordForm& observed_form) override;
   void DetachObserver(HttpAuthObserver* observer) override;
-  void OnPasswordFormSubmitted(
-      const autofill::PasswordForm& password_form) override;
+  void OnPasswordFormSubmitted(const PasswordForm& password_form) override;
   void OnPasswordFormDismissed() override;
 
   // Called by a PasswordManagerClient when it decides that a HTTP auth dialog
   // can be auto-filled. It notifies the observer about new credentials given
   // that the form manged by |form_manager| equals the one observed by the
   // observer that is managed by |form_manager|.
-  void Autofill(const autofill::PasswordForm& preferred_match,
+  void Autofill(const PasswordForm& preferred_match,
                 const PasswordFormManagerForUI* form_manager) const;
 
   // Handles successful navigation to the main frame.
@@ -57,7 +54,7 @@ class HttpAuthManagerImpl : public HttpAuthManager {
 
   // Passes |form| to PasswordFormManager that manages it for using it after
   // detecting submission success for saving.
-  void ProvisionallySaveForm(const autofill::PasswordForm& password_form);
+  void ProvisionallySaveForm(const PasswordForm& password_form);
 
   // Initiates the saving of the password.
   void OnLoginSuccesfull();

@@ -3,11 +3,11 @@
     if (window.testRunner)
         testRunner.dumpAsText();
 </script>
-<body id="body">
+<body>
     
     <!-- this table should not appear as an AXTable because it only has one cell -->
 
-    <table width="90" border="0" bgcolor="a1a5a9">
+    <table id="testTable" width="90" border="0" bgcolor="a1a5a9">
     <tr>
     <td>
     <P><strong>Pick Your Location!</strong><br>Get specific content for your area. <br><a href="http://web.apple.com">http://web.apple.com</a><br>
@@ -22,9 +22,7 @@
         if (window.accessibilityController) {
             var result = document.getElementById("result");
 
-            var body = document.getElementById("body");
-            body.focus();
-            var table = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(0);
+            var table = accessibilityController.accessibleElementById("testTable");
 
             result.innerText += table.allAttributes();
         }

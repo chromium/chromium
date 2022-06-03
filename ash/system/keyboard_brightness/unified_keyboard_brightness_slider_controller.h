@@ -16,11 +16,16 @@ class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
  public:
   explicit UnifiedKeyboardBrightnessSliderController(
       UnifiedSystemTrayModel* model);
+
+  UnifiedKeyboardBrightnessSliderController(
+      const UnifiedKeyboardBrightnessSliderController&) = delete;
+  UnifiedKeyboardBrightnessSliderController& operator=(
+      const UnifiedKeyboardBrightnessSliderController&) = delete;
+
   ~UnifiedKeyboardBrightnessSliderController() override;
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,
@@ -29,8 +34,6 @@ class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
  private:
   UnifiedSystemTrayModel* const model_;
   UnifiedSliderView* slider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedKeyboardBrightnessSliderController);
 };
 
 }  // namespace ash

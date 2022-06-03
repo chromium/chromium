@@ -7,9 +7,13 @@
 namespace chromecast {
 namespace crash_keys {
 
-crash_reporter::CrashKeyString<64> last_app("last_app");
+const char kLastApp[] = "last_app";
 
-crash_reporter::CrashKeyString<64> previous_app("previous_app");
+const char kCurrentApp[] = "current_app";
+
+const char kPreviousApp[] = "previous_app";
+
+const char kStadiaSessionId[] = "stadia_session_id";
 
 }  // namespace crash_keys
 }  // namespace chromecast

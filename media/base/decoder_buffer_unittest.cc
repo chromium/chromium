@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +61,21 @@ TEST(DecoderBufferTest, CopyFrom) {
   EXPECT_EQ(0, memcmp(buffer3->side_data(), kData, kDataSize));
   EXPECT_FALSE(buffer3->end_of_stream());
   EXPECT_FALSE(buffer3->is_key_frame());
+}
+
+TEST(DecoderBufferTest, FromArray) {
+  const uint8_t kData[] = "hello";
+  const size_t kDataSize = base::size(kData);
+  std::unique_ptr<uint8_t[]> ptr(new uint8_t[kDataSize]);
+  memcpy(ptr.get(), kData, kDataSize);
+
+  scoped_refptr<DecoderBuffer> buffer(
+      DecoderBuffer::FromArray(std::move(ptr), kDataSize));
+  ASSERT_TRUE(buffer.get());
+  EXPECT_EQ(buffer->data_size(), kDataSize);
+  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_FALSE(buffer->end_of_stream());
+  EXPECT_FALSE(buffer->is_key_frame());
 }
 
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
@@ -170,35 +185,6 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
 
   ASSERT_FALSE(buffer.get());
 }
-
-#if !defined(OS_ANDROID)
-TEST(DecoderBufferTest, PaddingAlignment) {
-  const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
-  scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
-  ASSERT_TRUE(buffer2.get());
-
-  // Padding data should always be zeroed.
-  for(int i = 0; i < DecoderBuffer::kPaddingSize; i++)
-    EXPECT_EQ((buffer2->data() + kDataSize)[i], 0);
-
-  // If the data is padded correctly we should be able to read and write past
-  // the end of the data by DecoderBuffer::kPaddingSize bytes without crashing
-  // or Valgrind/ASAN throwing errors.
-  const uint8_t kFillChar = 0xFF;
-  memset(
-      buffer2->writable_data() + kDataSize, kFillChar,
-      DecoderBuffer::kPaddingSize);
-  for(int i = 0; i < DecoderBuffer::kPaddingSize; i++)
-    EXPECT_EQ((buffer2->data() + kDataSize)[i], kFillChar);
-
-  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
-      buffer2->data()) & (DecoderBuffer::kAlignmentSize - 1));
-
-  EXPECT_FALSE(buffer2->is_key_frame());
-}
-#endif
 
 TEST(DecoderBufferTest, ReadingWriting) {
   const char kData[] = "hello";

@@ -33,8 +33,8 @@ promise_test(async t => {
     const foo = await caches.open('foo');
     t.add_cleanup(() => caches.delete('foo'));
     await foo.put(request, response);
-    assert_throws(
-        new RangeError(), () => fillStackThenCallPut(foo, request, response),
+    assert_throws_js(
+        RangeError, () => fillStackThenCallPut(foo, request, response),
         'fillStackThenCallPut should throw');
 }, 'stack overflow in IsLocked() should not crash the browser');
 </script>

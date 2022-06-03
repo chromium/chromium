@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<!--
+  Copyright 2020 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<head>
+<!-- Read & verify database created by migration_database_generator.html -->
+<title>IDB test for migration from schema v3</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+const dbName = 'db_migration_test';
+const objectStoreName = 'storeName';
+var testTimes = true;
+
+const objectStoreData = [
+  { id: 0, name: 'Daniel', flagged: true,
+    data: { type: 'blob', size: 9, contentType: '', content: 'testData1' } },
+  { id: 1, name: 'Henry', flagged: false,
+    data: { type: 'blob', size: 9,
+            contentType: 'application/test', content: 'testData2' } },
+  { id: 2, name: 'Sarah', flagged: true,
+    data: { type: 'file', name: "some_text.txt",
+            lastModified: 1579809038000, size: 7, content: 'hello!\n' } },
+  { id: 3, name: 'Dave', flagged: false,
+    data: { type: 'file', name: "empty_file.txt",
+            lastModified: 1579808985000, size: 0, content: '' } },
+  { id: 4, name: 'Courtney', flagged: true,
+    data: { type: 'file', name: "unnamed.gif",
+            lastModified: 1579199256000, size: 584359, content: null } },
+  { id: 5, name: 'Ruthie', flagged: false,
+    data: { type: 'blob', size: 0, contentType: '', content: '' } },
+];
+
+let contentsLeft = 0;
+
+let compareContents = async (blobOrFile, contents, size) => {
+  try {
+    self.text = await blobOrFile.text();
+    self.reference = contents;
+    self.size = size;
+    shouldBe("text", "reference");
+    shouldBe("text.length", "size");
+    contentsLeft -= 1;
+    if (contentsLeft == 0)
+      done('Finished comparisons. Databases match.');
+  } catch(e) {
+    fail("Could not read blob: " + e);
+  }
+}
+
+async function test() {
+  let param = location.hash.substring(1);
+  if (param == 'ignoreTimes')
+    testTimes = false;
+
+  let upgraded = false;
+  let db = await promiseOpenDb('blob_corrupt_db', () => { upgraded = true; });
+  if (upgraded) {
+    fail("Database should already be populated");
+    return;
+  }
+
+  const transaction = db.transaction(objectStoreName, 'readonly');
+  transaction.onabort = unexpectedAbortCallback;
+  transaction.onerror = unexpectedErrorCallback;
+  transaction.oncomplete = () => { debug("Finished reading database."); };
+  const objectStore = transaction.objectStore(objectStoreName);
+
+  for (let rowRef of objectStoreData) {
+    debug('Fetching row ' + rowRef.id);
+    const request = objectStore.get(rowRef.id);
+    request.onerror = unexpectedErrorCallback;
+    request.onsuccess = (event) => {
+      self.value = event.target.result;
+      self.rowRef = rowRef;
+      debug('Received row ' + value.id);
+      shouldBe("value.id", "rowRef.id");
+      shouldBe("value.name", "rowRef.name");
+      shouldBe("value.flagged", "rowRef.flagged");
+      shouldBe("value.data.size", "rowRef.data.size");
+      if (rowRef.data.type == 'blob') {
+        shouldBe("value.data.type", "rowRef.data.contentType");
+      } else if (rowRef.data.type == 'file') {
+        shouldBe("value.data.name", "rowRef.data.name");
+        if (testTimes)
+          shouldBe("rowRef.data.lastModified", "value.data.lastModified");
+      }
+      if (rowRef.data.content != null) {
+        contentsLeft += 1;
+        compareContents(value.data, rowRef.data.content, rowRef.data.size);
+      }
+    }
+  }
+}
+
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

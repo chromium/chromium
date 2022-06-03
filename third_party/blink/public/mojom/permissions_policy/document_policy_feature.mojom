@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These values map to the features which can be controlled by Document Policy.
+enum DocumentPolicyFeature {
+  kDefault = 0,
+  // Controls access to font-display attribute in @font-face CSS rule
+  kFontDisplay = 1,
+  // Takes a parameter, |bpp|, i.e. byte-per-pixel ratio, that images
+  // needs to obey.
+  kLosslessImagesMaxBpp = 2,
+  // Controls whether the browser should allow navigations that cause the page to scroll.
+  kForceLoadAtTop = 3,
+  // Takes a parameter, |bpp|, i.e. byte-per-pixel ratio, that images
+  // needs to obey.
+  kLosslessImagesStrictMaxBpp = 4,
+  kLossyImagesMaxBpp = 5,
+  // Takes a parameter, |scale_ratio|, and restricts source image sizes to be
+  // no more than |scale_ratio| x larger than the image's containing block.
+  kOversizedImages = 6,
+  // Controls the layout size of intrinsically sized images and videos. When
+  // disabled, default size (300 x 150) is used to prevent relayout.
+  kUnsizedMedia = 7,
+  // Restricts the usage of layout-causing animations in a document.
+  kLayoutAnimations = 8,
+  // Controls the ability of the document to use several dynamic markup API
+  // which interfere with document's input stream (document.write(),
+  // document.close(), etc.).
+  kDocumentWrite = 9,
+  // Controls whether synchronous script elements will run.
+  kSyncScript = 10,
+  // Controls whether or not the JS Self-Profiling API is enabled.
+  kJSProfiling = 11,
+  // Controls use of synchronous XMLHTTPRequest API.
+  kSyncXHR = 12,
+  // Controls access to document.domain attribute.
+  kDocumentDomain = 13,
+  // Don't change assigned numbers of any item, and don't reuse removed slots.
+  // Add new features at the end of the enum.
+  // Also, run update_document_policy_enum.py in
+  // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
+};

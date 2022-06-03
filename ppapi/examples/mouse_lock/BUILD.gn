@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("mouse_lock") {
   output_name = "ppapi_example_mouse_lock"
-  sources = [
-    "mouse_lock.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "mouse_lock.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

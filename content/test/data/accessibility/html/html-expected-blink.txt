@@ -1,0 +1,6 @@
+rootWebArea htmlTag='#document' name='HTML element'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body' name='BODY element'
+++++++button htmlTag='button' name='Button element'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'

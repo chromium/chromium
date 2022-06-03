@@ -15,9 +15,7 @@ source_set("keep_alive_registry") {
     "scoped_keep_alive.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   if (is_win) {
     deps += [ "//components/browser_watcher:stability_client" ]
@@ -26,11 +24,10 @@ source_set("keep_alive_registry") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "keep_alive_registry_unittest.cc",
-  ]
+  sources = [ "keep_alive_registry_unittest.cc" ]
   deps = [
     ":keep_alive_registry",
+    "//base",
     "//testing/gtest",
   ]
 }

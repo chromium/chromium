@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -14,6 +15,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 struct MutableNetworkTrafficAnnotationTag;
@@ -53,30 +55,38 @@ namespace android_webview {
 //
 class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
  public:
+  using SecurityOptions =
+      embedder_support::AndroidStreamReaderURLLoader::SecurityOptions;
+
   // Create a factory that will create specialized URLLoaders for Android
   // WebView. If |intercept_only| parameter is true the loader created by
   // this factory will only execute the intercept callback
   // (shouldInterceptRequest), it will not propagate the request to the
   // target factory.
   AwProxyingURLLoaderFactory(
-      int process_id,
+      int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
-      bool intercept_only);
+      bool intercept_only,
+      absl::optional<SecurityOptions> security_options);
+
+  AwProxyingURLLoaderFactory(const AwProxyingURLLoaderFactory&) = delete;
+  AwProxyingURLLoaderFactory& operator=(const AwProxyingURLLoaderFactory&) =
+      delete;
 
   ~AwProxyingURLLoaderFactory() override;
 
   // static
   static void CreateProxy(
-      int process_id,
+      int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          target_factory_remote);
+          target_factory_remote,
+      absl::optional<SecurityOptions> security_options);
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -91,7 +101,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void OnTargetFactoryError();
   void OnProxyBindingError();
 
-  const int process_id_;
+  const int frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 
@@ -100,9 +110,9 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // a response, the loader will abort loading.
   bool intercept_only_;
 
-  base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
+  absl::optional<SecurityOptions> security_options_;
 
-  DISALLOW_COPY_AND_ASSIGN(AwProxyingURLLoaderFactory);
+  base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 };
 
 }  // namespace android_webview

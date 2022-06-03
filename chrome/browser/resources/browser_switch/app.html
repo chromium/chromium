@@ -1,8 +1,9 @@
 <style>
   :host {
-    @apply --cr-card-elevation;
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    color: var(--cr-primary-text-color);
     display: block;
     margin: 16px;
     max-width: 640px;
@@ -11,7 +12,6 @@
   }
 
   h1 {
-    color: var(--cr-primary-text-color);
     font-size: 1rem;
     font-weight: 500;
     margin: 0;
@@ -19,13 +19,22 @@
   }
 
   p {
-    color: var(--cr-primary-text-color);
     /* Should be 13px when html font-size is 16px */
     font-size: 0.8125rem;
     margin: 0;
     max-width: 450px;
   }
+
+  iron-icon {
+    height: 24px;
+    margin-inline-end: 0.5rem;
+    margin-top: -0.4rem;
+    width: 24px;
+  }
 </style>
 
-<h1>[[computeTitle_(error_, secondCounter_)]]</h1>
+<h1>
+  <iron-icon icon="cr:domain"></iron-icon>
+  [[computeTitle_(error_, secondCounter_)]]
+</h1>
 <p inner-h-t-m-l="[[computeDescription_(url_, error_)]]"></p>

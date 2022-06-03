@@ -11,10 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -38,25 +38,14 @@ void IncrementOffset(OVERLAPPED* overlapped, DWORD count) {
 
 }  // namespace
 
-FileStream::Context::Context(const scoped_refptr<base::TaskRunner>& task_runner)
-    : async_in_progress_(false),
-      orphaned_(false),
-      task_runner_(task_runner),
-      async_read_initiated_(false),
-      async_read_completed_(false),
-      io_complete_for_read_received_(false),
-      result_(0) {}
+FileStream::Context::Context(scoped_refptr<base::TaskRunner> task_runner)
+    : Context(base::File(), std::move(task_runner)) {}
 
 FileStream::Context::Context(base::File file,
-                             const scoped_refptr<base::TaskRunner>& task_runner)
-    : file_(std::move(file)),
-      async_in_progress_(false),
-      orphaned_(false),
-      task_runner_(task_runner),
-      async_read_initiated_(false),
-      async_read_completed_(false),
-      io_complete_for_read_received_(false),
-      result_(0) {
+                             scoped_refptr<base::TaskRunner> task_runner)
+    : base::MessagePumpForIO::IOHandler(FROM_HERE),
+      file_(std::move(file)),
+      task_runner_(std::move(task_runner)) {
   if (file_.IsValid()) {
     DCHECK(file_.async());
     OnFileOpened();
@@ -121,7 +110,7 @@ FileStream::Context::IOResult FileStream::Context::SeekFileImpl(
 }
 
 void FileStream::Context::OnFileOpened() {
-  HRESULT hr = base::MessageLoopCurrentForIO::Get()->RegisterIOHandler(
+  HRESULT hr = base::CurrentIOThread::Get()->RegisterIOHandler(
       file_.GetPlatformFile(), this);
   if (!SUCCEEDED(hr))
     file_.Close();

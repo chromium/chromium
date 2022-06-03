@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -33,15 +33,18 @@ TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("aes_ctr.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
-    base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     std::vector<uint8_t> test_key = GetBytesFromHexString(test, "key");
     std::vector<uint8_t> test_counter = GetBytesFromHexString(test, "counter");
-    int counter_length_bits = 0;
-    ASSERT_TRUE(test->GetInteger("length", &counter_length_bits));
+    absl::optional<int> counter_length_bits = test->FindIntKey("length");
+    ASSERT_TRUE(counter_length_bits);
 
     std::vector<uint8_t> test_plain_text =
         GetBytesFromHexString(test, "plain_text");
@@ -58,13 +61,13 @@ TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
 
     // Test encryption.
     EXPECT_EQ(Status::Success(),
-              Encrypt(CreateAesCtrAlgorithm(test_counter, counter_length_bits),
+              Encrypt(CreateAesCtrAlgorithm(test_counter, *counter_length_bits),
                       key, CryptoData(test_plain_text), &output));
     EXPECT_BYTES_EQ(test_cipher_text, output);
 
     // Test decryption.
     EXPECT_EQ(Status::Success(),
-              Decrypt(CreateAesCtrAlgorithm(test_counter, counter_length_bits),
+              Decrypt(CreateAesCtrAlgorithm(test_counter, *counter_length_bits),
                       key, CryptoData(test_cipher_text), &output));
     EXPECT_BYTES_EQ(test_plain_text, output);
   }

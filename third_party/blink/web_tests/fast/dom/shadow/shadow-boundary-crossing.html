@@ -122,7 +122,7 @@ var tests = {
         document.body.appendChild(relatedTarget);
         var target = document.createElement('div');
         target.style.cssText = 'width: 50px; height: 50px';
-        relatedTarget.createShadowRoot().appendChild(target);
+        relatedTarget.attachShadow({mode: 'open'}).appendChild(target);
         moveOverLeftQuarterOf(relatedTarget);
         var countEventDispatch = function()
         {
@@ -144,7 +144,7 @@ var tests = {
         document.body.appendChild(target);
         var relatedTarget = document.createElement('div');
         relatedTarget.style.cssText = 'width: 50px; height: 50px';
-        target.createShadowRoot().appendChild(relatedTarget);
+        target.attachShadow({mode: 'open'}).appendChild(relatedTarget);
         moveOverRightQuarterOf(target);
         var countEventDispatch = function(evt)
         {

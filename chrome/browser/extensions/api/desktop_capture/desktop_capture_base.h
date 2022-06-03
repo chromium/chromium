@@ -10,19 +10,17 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "chrome/common/extensions/api/desktop_capture.h"
+#include "extensions/browser/extension_function.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
-class DesktopCaptureChooseDesktopMediaFunctionBase
-    : public ChromeAsyncExtensionFunction {
+class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
  public:
   // Used to set PickerFactory used to create mock DesktopMediaPicker instances
   // for tests. Calling tests keep ownership of the factory. Can be called with
@@ -40,11 +38,12 @@ class DesktopCaptureChooseDesktopMediaFunctionBase
   // also be used to determine where to show the picker's UI.
   // |origin| is the origin for which the stream is created.
   // |target_name| is the display name of the stream target.
-  bool Execute(const std::vector<
-                   api::desktop_capture::DesktopCaptureSourceType>& sources,
-               content::WebContents* web_contents,
-               const GURL& origin,
-               const base::string16 target_name);
+  ResponseAction Execute(
+      const std::vector<api::desktop_capture::DesktopCaptureSourceType>&
+          sources,
+      content::WebContents* web_contents,
+      const GURL& origin,
+      const std::u16string target_name);
 
   // Returns the calling application name to show in the picker.
   std::string GetCallerDisplayName() const;
@@ -76,6 +75,12 @@ class DesktopCaptureCancelChooseDesktopMediaFunctionBase
 class DesktopCaptureRequestsRegistry {
  public:
   DesktopCaptureRequestsRegistry();
+
+  DesktopCaptureRequestsRegistry(const DesktopCaptureRequestsRegistry&) =
+      delete;
+  DesktopCaptureRequestsRegistry& operator=(
+      const DesktopCaptureRequestsRegistry&) = delete;
+
   ~DesktopCaptureRequestsRegistry();
 
   static DesktopCaptureRequestsRegistry* GetInstance();
@@ -103,8 +108,6 @@ class DesktopCaptureRequestsRegistry {
       std::map<RequestId, DesktopCaptureChooseDesktopMediaFunctionBase*>;
 
   RequestsMap requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureRequestsRegistry);
 };
 
 }  // namespace extensions

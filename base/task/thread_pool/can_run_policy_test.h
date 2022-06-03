@@ -6,12 +6,12 @@
 #define BASE_TASK_THREAD_POOL_CAN_RUN_POLICY_TEST_H_
 
 #include "base/synchronization/atomic_flag.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
-#include "base/task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/test_waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
@@ -29,9 +29,9 @@ void TestCanRunPolicyBasic(Target* target,
                            CreateTaskRunner create_task_runner,
                            TaskTracker* task_tracker) {
   AtomicFlag foreground_can_run;
-  WaitableEvent foreground_did_run;
+  TestWaitableEvent foreground_did_run;
   AtomicFlag best_effort_can_run;
-  WaitableEvent best_effort_did_run;
+  TestWaitableEvent best_effort_did_run;
 
   task_tracker->SetCanRunPolicy(CanRunPolicy::kNone);
   target->DidUpdateCanRunPolicy();
@@ -97,8 +97,8 @@ void TestCanRunPolicyChangedBeforeRun(Target* target,
   for (auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.descriptor);
 
-    WaitableEvent first_task_started;
-    WaitableEvent first_task_blocked;
+    TestWaitableEvent first_task_started;
+    TestWaitableEvent first_task_blocked;
     AtomicFlag second_task_can_run;
 
     task_tracker->SetCanRunPolicy(test_case.allow_policy);
@@ -108,7 +108,7 @@ void TestCanRunPolicyChangedBeforeRun(Target* target,
     task_runner->PostTask(
         FROM_HERE, BindLambdaForTesting([&]() {
           first_task_started.Signal();
-          test::WaitWithoutBlockingObserver(&first_task_blocked);
+          first_task_blocked.Wait();
         }));
     task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
                             EXPECT_TRUE(second_task_can_run.IsSet());

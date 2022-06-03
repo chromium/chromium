@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
-#include "chrome/browser/ui/page_info/page_info_ui.h"
+#include "components/page_info/page_info_ui.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,30 +51,18 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   g_shown_bubble_type = type;
   g_page_info_bubble = this;
 
-  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetShowCloseButton(true);
 
   set_parent_window(parent_window);
   if (!anchor_view)
     SetAnchorRect(anchor_rect);
 }
 
-base::string16 PageInfoBubbleViewBase::GetWindowTitle() const {
-  return window_title_;
-}
-
-bool PageInfoBubbleViewBase::ShouldShowCloseButton() const {
-  return true;
-}
-
 void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
   g_shown_bubble_type = BUBBLE_NONE;
   g_page_info_bubble = nullptr;
-}
-
-PageInfoUI::SecurityDescriptionType
-PageInfoBubbleViewBase::GetSecurityDescriptionType() const {
-  return security_description_type_;
 }
 
 void PageInfoBubbleViewBase::RenderFrameDeleted(
@@ -88,13 +78,18 @@ void PageInfoBubbleViewBase::OnVisibilityChanged(
     GetWidget()->Close();
 }
 
-void PageInfoBubbleViewBase::DidStartNavigation(
-    content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame())
-    GetWidget()->Close();
+void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {
+  GetWidget()->Close();
 }
 
 void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   // Subclasses may update instead, but this the only safe general option.
   GetWidget()->Close();
 }
+
+void PageInfoBubbleViewBase::WebContentsDestroyed() {
+  GetWidget()->Close();
+}
+
+BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
+END_METADATA

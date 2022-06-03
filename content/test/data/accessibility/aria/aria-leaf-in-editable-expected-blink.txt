@@ -1,0 +1,40 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer multiline
+++++++++button name='ARIA leaf content is not removed in editor'
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++checkBox name='ARIA leaf content is not removed in editor' checkedState=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++menuItem name='ARIA leaf content is not removed in editor'
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++menuItemRadio name='ARIA leaf content is not removed in editor' checkedState=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++menuItemCheckBox name='ARIA leaf content is not removed in editor' checkedState=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++listBoxOption name='ARIA leaf content is not removed in editor' selected=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++progressIndicator minValueForRange=0.00 maxValueForRange=100.00
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++radioButton name='ARIA leaf content is not removed in editor' checkedState=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++splitter horizontal
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++slider horizontal minValueForRange=0.00 maxValueForRange=100.00
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++switch name='ARIA leaf content is not removed in editor' checkedState=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++tab name='ARIA leaf content is not removed in editor' selected=false
+++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'

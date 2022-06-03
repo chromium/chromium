@@ -26,6 +26,14 @@ bool UsbDeviceFilterMatches(const mojom::UsbDeviceFilter& filter,
   }
 
   if (filter.has_class_code) {
+    if (device_info.class_code == filter.class_code &&
+        (!filter.has_subclass_code ||
+         (device_info.subclass_code == filter.subclass_code &&
+          (!filter.has_protocol_code ||
+           device_info.protocol_code == filter.protocol_code)))) {
+      return true;
+    }
+
     for (auto& config : device_info.configurations) {
       for (auto& iface : config->interfaces) {
         for (auto& alternate_info : iface->alternates) {

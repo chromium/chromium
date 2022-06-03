@@ -16,7 +16,7 @@ if (current_cpu == "x64") {
     x64_arch = ""
   }
 
-  if ((is_posix && !(is_mac || is_ios)) || is_fuchsia) {
+  if ((is_posix && !is_apple) || is_fuchsia) {
     if (x64_arch == "") {
       x64_arch = "x86-64"
     }

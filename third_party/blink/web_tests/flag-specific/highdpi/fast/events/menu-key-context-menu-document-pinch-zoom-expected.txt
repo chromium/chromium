@@ -1,0 +1,21 @@
+This test checks if contextmenu event target is correct when handled at the document level and in the presence of pinch-zoom. To test manually, first pinch-zoom into the page, scroll away from the origin and then then press the menu key. There are three cases to check: nothing focused (the context menu is expected to appear in the top left of the viewport), click on the orange box to focus it then use the menu key, and select some text in the box and use the menu key. Note: on Mac there is no menu key.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FAIL event.clientX should be 401. Was 267.
+FAIL event.clientY should be 301. Was 200.
+PASS event.screenX is expectedScreenX
+PASS event.screenY is expectedScreenY
+PASS event.clientX is expectedX
+PASS event.clientY is expectedY
+FAIL event.screenX should be 360. Was 627.
+FAIL event.screenY should be 260. Was 460.
+PASS event.clientX is expectedX
+PASS event.clientY is expectedY
+FAIL event.screenX should be 260. Was 527.
+FAIL event.screenY should be 176. Was 378.
+Target

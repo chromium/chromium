@@ -10,7 +10,7 @@
 #include <map>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "remoting/proto/event.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

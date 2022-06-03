@@ -1,0 +1,26 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+
+    subgraph cluster_ax_tree {
+        label = "Accessibility Tree";
+		
+        a [label="Window"];
+        a -> b;
+        b [label="ComboBox 'Cover Flow Control'"];
+	b -> b0;
+	b -> b1;
+	b -> b2;
+	b0 [label="Option 'Album 1'"];
+	b1 [label="Option 'Album 2'"];
+	b2 [label="Option 'Album 3'"];
+    }
+
+    subgraph cluster_ui_tree {
+        label = "Platform UI Object Tree";
+
+        A [label="Window"];
+        A -> B;
+        B [label="Cover Flow Control"];
+    }
+}

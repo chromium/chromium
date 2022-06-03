@@ -17,8 +17,11 @@ class CreditCard;
 NSString* GetCreditCardName(const CreditCard& credit_card,
                             const std::string& locale);
 
-// Returns |credit_card| obfuscated number as an autoreleased NSString.
-NSString* GetCreditCardObfuscatedNumber(const CreditCard& credit_card);
+// Returns |credit_card| card identifier string as an autoreleased NSString.
+NSString* GetCreditCardIdentifierString(const CreditCard& credit_card);
+
+// Returns |credit_card| nickname string as an autoreleased NSString.
+NSString* GetCreditCardNicknameString(const CreditCard& credit_card);
 
 // Returns |credit_card| expiration date as an autoreleased NSDateComponents.
 // Only |year| and |month| fields of the NSDateComponents are valid.

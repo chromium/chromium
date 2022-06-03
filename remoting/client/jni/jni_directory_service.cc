@@ -15,12 +15,13 @@
 #include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/android/jni_headers/DirectoryService_jni.h"
-#include "remoting/base/grpc_support/grpc_async_unary_request.h"
-#include "remoting/base/grpc_support/grpc_authenticated_executor.h"
-#include "remoting/base/grpc_support/grpc_channel.h"
 #include "remoting/base/oauth_token_getter.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
-#include "remoting/proto/remoting/v1/directory_service.grpc.pb.h"
+#include "remoting/base/task_util.h"
+#include "remoting/client/chromoting_client_runtime.h"
+#include "remoting/proto/remoting/v1/directory_messages.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #include "base/logging.h"
 
@@ -28,28 +29,24 @@ namespace remoting {
 
 namespace {
 
-JniDirectoryService::RequestError MapError(grpc::StatusCode status_code) {
+JniDirectoryService::RequestError MapError(
+    ProtobufHttpStatus::Code status_code) {
   switch (status_code) {
-    case grpc::UNAVAILABLE:
+    case ProtobufHttpStatus::Code::UNAVAILABLE:
       return JniDirectoryService::RequestError::SERVICE_UNAVAILABLE;
-      break;
-    case grpc::PERMISSION_DENIED:
-    case grpc::UNAUTHENTICATED:
+    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
+    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       return JniDirectoryService::RequestError::AUTH_FAILED;
-      break;
     default:
       return JniDirectoryService::RequestError::UNKNOWN;
-      break;
   }
 }
 
 }  // namespace
 
 JniDirectoryService::JniDirectoryService()
-    : grpc_executor_(&token_getter_),
-      stub_(apis::v1::RemotingDirectoryService::NewStub(
-          CreateSslChannelForEndpoint(
-              ServiceUrls::GetInstance()->remoting_server_endpoint()))),
+    : client_(ChromotingClientRuntime::GetInstance()
+                  ->CreateDirectoryServiceClient()),
       sequence_(base::SequencedTaskRunnerHandle::Get()) {}
 
 JniDirectoryService::~JniDirectoryService() {
@@ -60,14 +57,11 @@ void JniDirectoryService::RetrieveHostList(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  grpc_executor_.ExecuteRpc(CreateGrpcAsyncUnaryRequest(
-      base::BindOnce(
-          &apis::v1::RemotingDirectoryService::Stub::AsyncGetHostList,
-          base::Unretained(stub_.get())),
-      apis::v1::GetHostListRequest(),
+  PostWithCallback(
+      FROM_HERE, &client_, &DirectoryServiceClient::GetHostList,
       base::BindOnce(&JniDirectoryService::OnHostListRetrieved,
-                     base::Unretained(this),
-                     base::android::ScopedJavaGlobalRef<jobject>(callback))));
+                     weak_factory_.GetWeakPtr(),
+                     base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
 void JniDirectoryService::DeleteHost(
@@ -75,15 +69,12 @@ void JniDirectoryService::DeleteHost(
     const base::android::JavaParamRef<jstring>& host_id,
     const base::android::JavaParamRef<jobject>& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  apis::v1::DeleteHostRequest request;
-  request.set_host_id(base::android::ConvertJavaStringToUTF8(env, host_id));
-  grpc_executor_.ExecuteRpc(CreateGrpcAsyncUnaryRequest(
-      base::BindOnce(&apis::v1::RemotingDirectoryService::Stub::AsyncDeleteHost,
-                     base::Unretained(stub_.get())),
-      request,
+  PostWithCallback(
+      FROM_HERE, &client_, &DirectoryServiceClient::DeleteHost,
       base::BindOnce(&JniDirectoryService::OnHostDeleted,
-                     base::Unretained(this),
-                     base::android::ScopedJavaGlobalRef<jobject>(callback))));
+                     weak_factory_.GetWeakPtr(),
+                     base::android::ScopedJavaGlobalRef<jobject>(callback)),
+      base::android::ConvertJavaStringToUTF8(env, host_id));
 }
 
 void JniDirectoryService::Destroy(JNIEnv* env) {
@@ -96,13 +87,13 @@ void JniDirectoryService::Destroy(JNIEnv* env) {
 
 void JniDirectoryService::OnHostListRetrieved(
     base::android::ScopedJavaGlobalRef<jobject> callback,
-    const grpc::Status& status,
-    const apis::v1::GetHostListResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::GetHostListResponse> response) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (status.ok()) {
     Java_DirectoryService_onHostListRetrieved(
         env, callback,
-        base::android::ToJavaByteArray(env, response.SerializeAsString()));
+        base::android::ToJavaByteArray(env, response->SerializeAsString()));
   } else {
     LOG(ERROR) << "Retrieving host list failed: " << status.error_message();
     Java_DirectoryService_onError(
@@ -112,8 +103,8 @@ void JniDirectoryService::OnHostListRetrieved(
 
 void JniDirectoryService::OnHostDeleted(
     base::android::ScopedJavaGlobalRef<jobject> callback,
-    const grpc::Status& status,
-    const apis::v1::DeleteHostResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::DeleteHostResponse> response) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (status.ok()) {
     Java_DirectoryService_onHostDeleted(env, callback);

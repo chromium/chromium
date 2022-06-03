@@ -13,9 +13,7 @@ static_library("common") {
     "pack_stack_trace.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -32,19 +30,11 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("pack_stack_trace_unpack_fuzzer") {
-  sources = [
-    "pack_stack_trace_unpack_fuzzer.cc",
-  ]
-  deps = [
-    "//components/gwp_asan/common",
-  ]
+  sources = [ "pack_stack_trace_unpack_fuzzer.cc" ]
+  deps = [ "//components/gwp_asan/common" ]
 }
 
 fuzzer_test("pack_stack_trace_differential_fuzzer") {
-  sources = [
-    "pack_stack_trace_differential_fuzzer.cc",
-  ]
-  deps = [
-    "//components/gwp_asan/common",
-  ]
+  sources = [ "pack_stack_trace_differential_fuzzer.cc" ]
+  deps = [ "//components/gwp_asan/common" ]
 }

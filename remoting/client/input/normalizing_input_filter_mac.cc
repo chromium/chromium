@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/proto/event.pb.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 

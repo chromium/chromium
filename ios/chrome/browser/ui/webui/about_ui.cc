@@ -12,8 +12,10 @@
 #include "base/format_macros.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/grit/components_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -34,6 +36,9 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   // Construct a data source for the specified |source_name|.
   explicit AboutUIHTMLSource(const std::string& source_name);
 
+  AboutUIHTMLSource(const AboutUIHTMLSource&) = delete;
+  AboutUIHTMLSource& operator=(const AboutUIHTMLSource&) = delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
@@ -50,8 +55,6 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   ~AboutUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutUIHTMLSource);
 };
 
 void AppendHeader(std::string* output,
@@ -126,8 +129,25 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == kChromeUIHistogramHost) {
     // Note: On other platforms, this is implemented in //content. If there is
     // ever a need for embedders other than //ios/chrome to use
-    // chrome://histograms, this code could likely be moved to //io/web.
-    base::StatisticsRecorder::WriteHTMLGraph("", &response);
+    // chrome://histograms, this code could likely be moved to //ios/web.
+    for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
+             base::StatisticsRecorder::GetHistograms())) {
+      std::string histogram_name = histogram->histogram_name();
+      if (histogram_name.find(path) == std::string::npos) {
+        continue;
+      }
+      base::Value histogram_dict = histogram->ToGraphDict();
+      std::string* header = histogram_dict.FindStringKey("header");
+      std::string* body = histogram_dict.FindStringKey("body");
+
+      response.append("<PRE>");
+      response.append("<h4>");
+      response.append(net::EscapeForHTML(*header));
+      response.append("</h4>");
+      response.append(net::EscapeForHTML(*body));
+      response.append("</PRE>");
+      response.append("<br><hr><br>");
+    }
   }
 
   FinishDataRequest(response, std::move(callback));
@@ -151,10 +171,10 @@ bool AboutUIHTMLSource::ShouldDenyXFrameOptions() const {
   return web::URLDataSourceIOS::ShouldDenyXFrameOptions();
 }
 
-AboutUI::AboutUI(web::WebUIIOS* web_ui, const std::string& name)
-    : web::WebUIIOSController(web_ui) {
-  web::URLDataSourceIOS::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
-                             new AboutUIHTMLSource(name));
+AboutUI::AboutUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
+  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+                             new AboutUIHTMLSource(host));
 }
 
 AboutUI::~AboutUI() {}

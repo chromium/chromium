@@ -24,22 +24,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
 
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 
 namespace blink {
 
-class HTMLInputElement;
-
+// LayoutObject for text-field <input>s.
+//
+// This class inherits from LayoutTextControl and LayoutBlockFlow. If we'd like
+// to change the base class, we need to make sure that
+// ShouldIgnoreOverflowPropertyForInlineBlockBaseline flag works with the new
+// base class.
 class LayoutTextControlSingleLine : public LayoutTextControl {
  public:
-  LayoutTextControlSingleLine(HTMLInputElement*);
+  explicit LayoutTextControlSingleLine(Element*);
   ~LayoutTextControlSingleLine() override;
-
-  void CapsLockStateMayHaveChanged();
-  bool ShouldDrawCapsLockIndicator() const {
-    return should_draw_caps_lock_indicator_;
-  }
 
  protected:
   Element* ContainerElement() const;
@@ -47,10 +45,10 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   HTMLInputElement* InputElement() const;
 
  private:
-  bool HasControlClip() const final;
-  PhysicalRect ControlClipRect(const PhysicalOffset&) const final;
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectTextField || LayoutTextControl::IsOfType(type);
+    NOT_DESTROYED();
+    return type == kLayoutObjectTextControlSingleLine ||
+           LayoutTextControl::IsOfType(type);
   }
 
   void Paint(const PaintInfo&) const override;
@@ -61,53 +59,47 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) final;
 
-  void Autoscroll(const PhysicalOffset&) final;
-
-  // Subclassed to forward to our inner div.
-  LayoutUnit ScrollWidth() const final;
-  LayoutUnit ScrollHeight() const final;
-
   int TextBlockWidth() const;
-  LayoutUnit PreferredContentLogicalWidth(float char_width) const final;
-  LayoutUnit ComputeControlLogicalHeight(
-      LayoutUnit line_height,
-      LayoutUnit non_content_height) const override;
 
   void ComputeVisualOverflow(bool recompute_floats) override;
 
   // If the INPUT content height is smaller than the font height, the
   // inner-editor element overflows the INPUT box intentionally, however it
   // shouldn't affect outside of the INPUT box.  So we ignore child overflow.
-  void AddLayoutOverflowFromChildren() final {}
+  void AddLayoutOverflowFromChildren() final { NOT_DESTROYED(); }
 
-  bool AllowsOverflowClip() const override { return false; }
+  bool AllowsNonVisibleOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   HTMLElement* InnerSpinButtonElement() const;
-
-  bool should_draw_caps_lock_indicator_;
 };
-
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutTextControlSingleLine, IsTextField());
 
 // ----------------------------
 
 class LayoutTextControlInnerEditor : public LayoutBlockFlow {
  public:
-  LayoutTextControlInnerEditor(Element* element) : LayoutBlockFlow(element) {}
-  bool ShouldIgnoreOverflowPropertyForInlineBlockBaseline() const override {
-    return true;
+  LayoutTextControlInnerEditor(Element* element) : LayoutBlockFlow(element) {
+    NOT_DESTROYED();
   }
 
  private:
   bool IsIntrinsicallyScrollable(
       ScrollbarOrientation orientation) const override {
+    NOT_DESTROYED();
     return orientation == kHorizontalScrollbar;
   }
-  bool ScrollsOverflowX() const override { return HasOverflowClip(); }
-  bool ScrollsOverflowY() const override { return false; }
-  bool HasLineIfEmpty() const override { return true; }
+  bool ScrollsOverflowX() const override {
+    NOT_DESTROYED();
+    return IsScrollContainer();
+  }
+  bool ScrollsOverflowY() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_

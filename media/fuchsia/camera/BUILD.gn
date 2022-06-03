@@ -1,0 +1,19 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    "//base",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+    "//ui/gfx/geometry",
+  ]
+  sources = [
+    "fake_fuchsia_camera.cc",
+    "fake_fuchsia_camera.h",
+  ]
+}

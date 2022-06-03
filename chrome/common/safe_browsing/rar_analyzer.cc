@@ -15,8 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
-#include "chrome/common/safe_browsing/file_type_policies.h"
-#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "third_party/unrar/src/unrar_wrapper.h"
 
 namespace safe_browsing {
@@ -52,7 +52,7 @@ void AnalyzeRarFile(base::File rar_file,
   bool timeout = false;
   while (reader.ExtractNextEntry()) {
     if (base::Time::Now() - start_time >
-        base::TimeDelta::FromMilliseconds(kRarAnalysisTimeoutMs)) {
+        base::Milliseconds(kRarAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

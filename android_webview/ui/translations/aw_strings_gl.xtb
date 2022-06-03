@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
-<translation id="6106989379647458772">É posible que a páxina web de <ph name="PAGE" /> estea temporalmente inactiva ou que se trasladase definitivamente a un enderezo web novo.</translation>
-<translation id="6312113039770857350">A páxina web non está dispoñible</translation>
-<translation id="8681531050781943054">A páxina web de <ph name="PAGE" /> non se puido cargar porque:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Suxestións:<ph name="MARKUP_2" />Asegúrate de que tes conexión de datos<ph name="MARKUP_3" />Volve cargar esta páxina web máis tarde<ph name="MARKUP_4" />Comproba o enderezo que introduciches<ph name="MARKUP_5" /></translation>
 </translationbundle>

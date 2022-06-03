@@ -57,6 +57,31 @@ void TracedProcessImpl::OnTracedProcessRequest(
   receiver_.Bind(std::move(receiver));
 }
 
+mojo::Remote<mojom::SystemTracingService>&
+TracedProcessImpl::system_tracing_service() {
+  // |system_tracing_service_| can only be used on the Perfetto task runner.
+  auto task_runner =
+      PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+  DCHECK(task_runner && task_runner->RunsTasksInCurrentSequence());
+  return system_tracing_service_;
+}
+
+void TracedProcessImpl::EnableSystemTracingService(
+    mojo::PendingRemote<mojom::SystemTracingService> remote) {
+  auto task_runner =
+      PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+  if (!task_runner->RunsTasksInCurrentSequence()) {
+    // |system_tracing_service_| is bound on the Perfetto task runner.
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TracedProcessImpl::EnableSystemTracingService,
+                       base::Unretained(this), std::move(remote)));
+    return;
+  }
+
+  system_tracing_service_.Bind(std::move(remote), nullptr);
+}
+
 // SetTaskRunner must be called before we start receiving
 // any OnTracedProcessRequest calls.
 void TracedProcessImpl::SetTaskRunner(
@@ -68,12 +93,13 @@ void TracedProcessImpl::SetTaskRunner(
 
 void TracedProcessImpl::RegisterAgent(BaseAgent* agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  base::AutoLock lock(agents_lock_);
   agents_.insert(agent);
 }
 
 void TracedProcessImpl::UnregisterAgent(BaseAgent* agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(agents_lock_);
   agents_.erase(agent);
 }
 
@@ -95,11 +121,12 @@ void TracedProcessImpl::ConnectToTracingService(
   // Ensure the TraceEventAgent has been created.
   TraceEventAgent::GetInstance();
 
-  PerfettoTracedProcess::Get()->producer_client()->Connect(
+  PerfettoTracedProcess::Get()->ConnectProducer(
       std::move(request->perfetto_service));
 }
 
 void TracedProcessImpl::GetCategories(std::set<std::string>* category_set) {
+  base::AutoLock lock(agents_lock_);
   for (auto* agent : agents_) {
     agent->GetCategories(category_set);
   }

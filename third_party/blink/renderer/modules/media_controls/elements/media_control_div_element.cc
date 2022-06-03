@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
 
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -27,8 +27,8 @@ bool MediaControlDivElement::IsMediaControlElement() const {
   return true;
 }
 
-WebSize MediaControlDivElement::GetSizeOrDefault() const {
-  return MediaControlElementsHelper::GetSizeOrDefault(*this, WebSize(0, 0));
+gfx::Size MediaControlDivElement::GetSizeOrDefault() const {
+  return MediaControlElementsHelper::GetSizeOrDefault(*this, gfx::Size());
 }
 
 bool MediaControlDivElement::IsDisabled() const {
@@ -36,7 +36,7 @@ bool MediaControlDivElement::IsDisabled() const {
   return false;
 }
 
-void MediaControlDivElement::Trace(blink::Visitor* visitor) {
+void MediaControlDivElement::Trace(Visitor* visitor) const {
   HTMLDivElement::Trace(visitor);
   MediaControlElementBase::Trace(visitor);
 }

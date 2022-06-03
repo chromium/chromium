@@ -27,6 +27,10 @@ class NetLogWithSource;
 class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
  public:
   ProxyClientSocket() {}
+
+  ProxyClientSocket(const ProxyClientSocket&) = delete;
+  ProxyClientSocket& operator=(const ProxyClientSocket&) = delete;
+
   ~ProxyClientSocket() override {}
 
   // Returns the HttpResponseInfo (including HTTP Headers) from
@@ -75,13 +79,8 @@ class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
 
   // When a proxy authentication response is received during tunnel
   // construction, this method should be called to strip everything
-  // but the auth header from the redirect response.  If it returns
-  // false, the response should be discarded and tunnel construction should
-  // fail.
-  static bool SanitizeProxyAuth(HttpResponseInfo* response);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyClientSocket);
+  // but the auth header from the redirect response.
+  static void SanitizeProxyAuth(HttpResponseInfo& response);
 };
 
 }  // namespace net

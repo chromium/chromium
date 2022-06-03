@@ -224,7 +224,7 @@
       "vendor_id": "0x8086",
       "driver_version": {
         "op": "<",
-        "value": "10.7"
+        "value": "24.20.100.7000"
       },
       "features": [
         "test_feature_1"
@@ -726,9 +726,9 @@
     {
       "id": 60,
       "description": "GpuControlListEntryTest.GpuSeries",
-      "gpu_series": [
-        "intel_skylake",
-        "intel_kabylake"
+      "intel_gpu_series": [
+        "skylake",
+        "kabylake"
       ],
       "features": [
         "test_feature_0"
@@ -737,8 +737,8 @@
     {
       "id": 61,
       "description": "GpuControlListEntryTest.GpuSeriesActive",
-      "gpu_series": [
-        "intel_kabylake"
+      "intel_gpu_series": [
+        "kabylake"
       ],
       "multi_gpu_category": "active",
       "features": [
@@ -748,8 +748,8 @@
     {
       "id": 62,
       "description": "GpuControlListEntryTest.GpuSeriesAny",
-      "gpu_series": [
-        "intel_kabylake"
+      "intel_gpu_series": [
+        "kabylake"
       ],
       "multi_gpu_category": "any",
       "features": [
@@ -759,8 +759,8 @@
     {
       "id": 63,
       "description": "GpuControlListEntryTest.GpuSeriesPrimary",
-      "gpu_series": [
-        "intel_kabylake"
+      "intel_gpu_series": [
+        "kabylake"
       ],
       "multi_gpu_category": "primary",
       "features": [
@@ -770,8 +770,8 @@
     {
       "id": 64,
       "description": "GpuControlListEntryTest.GpuSeriesSecondary",
-      "gpu_series": [
-        "intel_kabylake"
+      "intel_gpu_series": [
+        "kabylake"
       ],
       "multi_gpu_category": "secondary",
       "features": [
@@ -783,8 +783,8 @@
       "description": "GpuControlListEntryTest.GpuSeriesInException",
       "exceptions": [
         {
-          "gpu_series": [
-            "intel_kabylake"
+          "intel_gpu_series": [
+            "kabylake"
           ]
         }
       ],
@@ -896,6 +896,80 @@
         "type": "chromeos"
       },
       "gl_renderer": "Mali.*",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 75,
+      "description": "GpuControlListEntryTest.IntelDriverVendorEntry",
+      "os": {
+        "type": "win"
+      },
+      "driver_vendor": "Intel.*",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "24.20.100.6000",
+        "value2": "26.20.100.7000"
+      },
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 76,
+      "description": "GpuControlListEntryTest.IntelDriverVersionEntry",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "<=",
+        "value": "24.20.100.7000"
+      },
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 77,
+      "description": "GpuControlListEntryTest.DeviceRevisionEntry",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "exceptions": [
+        {
+          "device_id": ["0x15D8", "0x15DD"],
+          "device_revision": ["0x93", "0x86"],
+          "driver_version": {
+            "op": ">=",
+            "value": "26.20.15023.6032"
+          }
+        },
+        {
+          "device_id": ["0x15D8"],
+          "device_revision": ["0xE1", "0xE2"],
+          "driver_version": {
+            "op": ">=",
+            "value": "26.20.12055.1000"
+          }
+        }
+      ],
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 78,
+      "description": "GpuControlListEntryTest.DeviceRevisionUnspecifiedEntry",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15D8", "0x15DD"],
       "features": [
         "test_feature_0"
       ]

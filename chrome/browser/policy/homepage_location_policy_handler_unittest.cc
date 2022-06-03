@@ -34,13 +34,13 @@ constexpr char kJavascript[] =
 
 class HomepageLocationPolicyHandlerTest : public testing::Test {
  protected:
-  void SetPolicy(std::unique_ptr<base::Value> value) {
+  void SetPolicy(base::Value value) {
     policies_.Set(key::kHomepageLocation, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(value),
                   nullptr);
   }
 
-  bool CheckPolicy(std::unique_ptr<base::Value> value) {
+  bool CheckPolicy(base::Value value) {
     SetPolicy(std::move(value));
     return handler_.CheckPolicySettings(policies_, &errors_);
   }
@@ -59,14 +59,14 @@ TEST_F(HomepageLocationPolicyHandlerTest, NoPolicyDoesntExplode) {
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest, StandardSchemesAreAccepted) {
-  EXPECT_TRUE(CheckPolicy(std::make_unique<base::Value>(kHttpUrl)));
-  EXPECT_TRUE(CheckPolicy(std::make_unique<base::Value>(kHttpsUrl)));
-  EXPECT_TRUE(CheckPolicy(std::make_unique<base::Value>(kFileUrl)));
+  EXPECT_TRUE(CheckPolicy(base::Value(kHttpUrl)));
+  EXPECT_TRUE(CheckPolicy(base::Value(kHttpsUrl)));
+  EXPECT_TRUE(CheckPolicy(base::Value(kFileUrl)));
   EXPECT_EQ(0U, errors_.size());
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest, kUrlWithMissingSchemeIsFixed) {
-  EXPECT_TRUE(CheckPolicy(std::make_unique<base::Value>(kUrlWithNoScheme)));
+  EXPECT_TRUE(CheckPolicy(base::Value(kUrlWithNoScheme)));
   EXPECT_EQ(0U, errors_.size());
 
   ApplyPolicies();
@@ -77,18 +77,18 @@ TEST_F(HomepageLocationPolicyHandlerTest, kUrlWithMissingSchemeIsFixed) {
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest, InvalidSchemeIsRejected) {
-  EXPECT_FALSE(CheckPolicy(std::make_unique<base::Value>(kInvalidSchemeUrl)));
+  EXPECT_FALSE(CheckPolicy(base::Value(kInvalidSchemeUrl)));
   EXPECT_EQ(1U, errors_.size());
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest, JavascriptIsRejected) {
-  EXPECT_FALSE(CheckPolicy(std::make_unique<base::Value>(kJavascript)));
+  EXPECT_FALSE(CheckPolicy(base::Value(kJavascript)));
   EXPECT_EQ(1U, errors_.size());
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest,
        ApplyPolicySettings_SomethingSpecified) {
-  SetPolicy(std::make_unique<base::Value>(kHttpUrl));
+  SetPolicy(base::Value(kHttpUrl));
   ApplyPolicies();
   base::Value* value;
   EXPECT_TRUE(prefs_.GetValue(prefs::kHomePage, &value));

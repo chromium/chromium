@@ -37,7 +37,7 @@ test(function() {
   assert_equals(list.getItem(0).value, 500);
   assert_equals(list.getItem(1).value, 1000);
   assert_equals(list.getItem(2).value, 1500);
-  assert_throws("IndexSizeError", function() { list.getItem(3); });
+  assert_throws_dom("IndexSizeError", function() { list.getItem(3); });
 
   // Spec: If the index is greater than or equal to numberOfItems, then the new item is appended to the end of the list.
   // Insert item 'newLength1' at the end of the list, by using a large index.

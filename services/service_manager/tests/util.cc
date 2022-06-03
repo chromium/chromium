@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
@@ -25,6 +24,7 @@
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace test {
@@ -45,8 +45,9 @@ mojom::ConnectResult LaunchAndConnectToProcess(
     const Identity& target,
     service_manager::Connector* connector,
     base::Process* process) {
+  // The test executable is a data_deps and thus generated test data.
   base::FilePath target_path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &target_path));
+  CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &target_path));
   target_path = target_path.AppendASCII(target_exe_name);
 
   base::CommandLine child_command_line(target_path);
@@ -86,7 +87,7 @@ mojom::ConnectResult LaunchAndConnectToProcess(
   options.handles_to_inherit = handle_passing_info;
 #elif defined(OS_FUCHSIA)
   options.handles_to_transfer = handle_passing_info;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   options.mach_ports_for_rendezvous = handle_passing_info;
 #elif defined(OS_POSIX)
   options.fds_to_remap = handle_passing_info;

@@ -15,9 +15,9 @@ async_test(t => {
     ctx.strokeStyle = "red";
     ctx.strokeRect(0, 0, 50, 50);
     
-    assert_throws(new TypeError(), function() {canvas.toBlob();});
-    assert_throws(new TypeError(), function() {canvas.toBlob(null);});
-    assert_throws(new TypeError(), function() {canvas.toBlob(undefined);});
+    assert_throws_js(TypeError, function() {canvas.toBlob();});
+    assert_throws_js(TypeError, function() {canvas.toBlob(null);});
+    assert_throws_js(TypeError, function() {canvas.toBlob(undefined);});
 
     // Passing the callback argument without blob handle silently fails.
     canvas.toBlob(function() { finishOneAsyncCall(); });

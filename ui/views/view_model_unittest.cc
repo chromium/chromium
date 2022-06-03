@@ -4,6 +4,8 @@
 
 #include "ui/views/view_model.h"
 
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"

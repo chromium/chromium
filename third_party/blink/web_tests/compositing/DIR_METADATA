@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Compositing"
+}
+team_email: "paint-dev@chromium.org"

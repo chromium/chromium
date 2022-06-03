@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -56,7 +56,7 @@ _TEST_RESOURCES_MAP_1 = {
 
 _TEST_NAMESPACES_1 = {'android': 'http://schemas.android.com/apk/res/android'}
 
-_TEST_RESOURCES_WHITELIST_1 = ['low_memory_error', 'structured_text']
+_TEST_RESOURCES_ALLOWLIST_1 = ['low_memory_error', 'structured_text']
 
 # Extracted from one generated Chromium R.txt file, with string resource
 # names shuffled randomly.
@@ -78,10 +78,10 @@ int styleable SnackbarLayout_android_maxWidth 0
 int styleable SnackbarLayout_elevation 2
 '''
 
-# Test whitelist R.txt file. Note that AlternateErrorPagesEnabledTitle is
+# Test allowlist R.txt file. Note that AlternateErrorPagesEnabledTitle is
 # listed as an 'anim' and should thus be skipped. Similarly the string
 # 'ThisStringDoesNotAppear' should not be in the final result.
-_TEST_WHITELIST_R_TXT = r'''int anim AlternateErrorPagesEnabledTitle 0x7f0eeeee
+_TEST_ALLOWLIST_R_TXT = r'''int anim AlternateErrorPagesEnabledTitle 0x7f0eeeee
 int string AllowedDomainsForAppsDesc 0x7f0c0105
 int string AlternateErrorPagesEnabledDesc 0x7f0c0107
 int string ThisStringDoesNotAppear 0x7f0fffff
@@ -119,14 +119,14 @@ class ResourceUtilsTest(unittest.TestCase):
           resource_utils.GetRTxtStringResourceNames(tmp_file),
           _TEST_R_TXT_STRING_RESOURCE_NAMES)
 
-  def test_GenerateStringResourcesWhitelist(self):
+  def test_GenerateStringResourcesAllowList(self):
     with build_utils.TempDir() as tmp_dir:
       tmp_module_rtxt_file = _CreateTestFile(tmp_dir, "test_R.txt", _TEST_R_TXT)
-      tmp_whitelist_rtxt_file = _CreateTestFile(tmp_dir, "test_whitelist_R.txt",
-                                                _TEST_WHITELIST_R_TXT)
+      tmp_allowlist_rtxt_file = _CreateTestFile(tmp_dir, "test_allowlist_R.txt",
+                                                _TEST_ALLOWLIST_R_TXT)
       self.assertDictEqual(
-          resource_utils.GenerateStringResourcesWhitelist(
-              tmp_module_rtxt_file, tmp_whitelist_rtxt_file),
+          resource_utils.GenerateStringResourcesAllowList(
+              tmp_module_rtxt_file, tmp_allowlist_rtxt_file),
           _TEST_R_TEXT_RESOURCES_IDS)
 
   def test_IsAndroidLocaleQualifier(self):
@@ -171,7 +171,7 @@ class ResourceUtilsTest(unittest.TestCase):
         'yi': 'ji'
     }
     for chromium_locale, android_locale in \
-        _TEST_CHROMIUM_TO_ANDROID_LOCALE_MAP.iteritems():
+        _TEST_CHROMIUM_TO_ANDROID_LOCALE_MAP.items():
       result = resource_utils.ToAndroidLocaleName(chromium_locale)
       self.assertEqual(result, android_locale)
 
@@ -179,11 +179,17 @@ class ResourceUtilsTest(unittest.TestCase):
     _TEST_ANDROID_TO_CHROMIUM_LOCALE_MAP = {
         'foo': 'foo',
         'foo-rBAR': 'foo-BAR',
-        'b+foo': 'foo',
-        'b+foo+BAR': 'foo-BAR',
-        'b+foo+BAR+Whatever': 'foo-BAR',
-        'b+foo+Whatever+BAR': 'foo-BAR',
-        'b+foo+Whatever': 'foo',
+        'b+lll': 'lll',
+        'b+ll+Extra': 'll',
+        'b+ll+RR': 'll-RR',
+        'b+lll+RR+Extra': 'lll-RR',
+        'b+ll+RRR+Extra': 'll-RRR',
+        'b+ll+Ssss': 'll-Ssss',
+        'b+ll+Ssss+Extra': 'll-Ssss',
+        'b+ll+Ssss+RR': 'll-Ssss-RR',
+        'b+ll+Ssss+RRR': 'll-Ssss-RRR',
+        'b+ll+Ssss+RRR+Extra': 'll-Ssss-RRR',
+        'b+ll+Whatever': 'll',
         'en': 'en',
         'en-rUS': 'en-US',
         'en-US': None,
@@ -195,6 +201,7 @@ class ResourceUtilsTest(unittest.TestCase):
         'fil': 'fil',
         'iw': 'he',
         'iw-rIL': 'he-IL',
+        'b+iw+IL': 'he-IL',
         'in': 'id',
         'in-rBAR': 'id-BAR',
         'id-rBAR': 'id-BAR',
@@ -202,7 +209,7 @@ class ResourceUtilsTest(unittest.TestCase):
         'no': 'nb',  # http://crbug.com/920960
     }
     for android_locale, chromium_locale in \
-        _TEST_ANDROID_TO_CHROMIUM_LOCALE_MAP.iteritems():
+        _TEST_ANDROID_TO_CHROMIUM_LOCALE_MAP.items():
       result = resource_utils.ToChromiumLocaleName(android_locale)
       self.assertEqual(result, chromium_locale)
 
@@ -233,18 +240,18 @@ class ResourceUtilsTest(unittest.TestCase):
   def test_GenerateAndroidResourceStringsXml(self):
     # Fist, an empty strings map, with no namespaces
     result = resource_utils.GenerateAndroidResourceStringsXml({})
-    self.assertEqual(result, _TEST_XML_OUTPUT_EMPTY)
+    self.assertEqual(result.decode('utf8'), _TEST_XML_OUTPUT_EMPTY)
 
     result = resource_utils.GenerateAndroidResourceStringsXml(
         _TEST_RESOURCES_MAP_1, _TEST_NAMESPACES_1)
-    self.assertEqual(result, _TEST_XML_INPUT_1)
+    self.assertEqual(result.decode('utf8'), _TEST_XML_INPUT_1)
 
   @staticmethod
   def _CreateTestResourceFile(output_dir, locale, string_map, namespaces):
     values_dir = os.path.join(output_dir, 'values-' + locale)
     build_utils.MakeDirectory(values_dir)
     file_path = os.path.join(values_dir, 'strings.xml')
-    with open(file_path, 'w') as f:
+    with open(file_path, 'wb') as f:
       file_data = resource_utils.GenerateAndroidResourceStringsXml(
           string_map, namespaces)
       f.write(file_data)
@@ -260,7 +267,7 @@ class ResourceUtilsTest(unittest.TestCase):
       test_file = self._CreateTestResourceFile(
           tmp_path, 'foo', _TEST_RESOURCES_MAP_1, _TEST_NAMESPACES_1)
       resource_utils.FilterAndroidResourceStringsXml(
-          test_file, lambda x: x in _TEST_RESOURCES_WHITELIST_1)
+          test_file, lambda x: x in _TEST_RESOURCES_ALLOWLIST_1)
       self._CheckTestResourceFile(test_file, _TEST_XML_OUTPUT_2)
 
 

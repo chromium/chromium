@@ -5,11 +5,8 @@
 // Use this file to assert that *_list.h enums that are meant to do the bridge
 // from Blink are valid.
 
-#include "base/macros.h"
-#include "content/public/common/screen_orientation_values.h"
 #include "media/base/mime_util.h"
-#include "third_party/blink/public/common/screen_orientation/web_screen_orientation_lock_type.h"
-#include "third_party/blink/public/platform/web_menu_source_type.h"
+#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -21,26 +18,6 @@ namespace content {
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
-
-// ScreenOrientationValues
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockDefault,
-                   SCREEN_ORIENTATION_VALUES_DEFAULT);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockPortraitPrimary,
-                   SCREEN_ORIENTATION_VALUES_PORTRAIT_PRIMARY);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockPortraitSecondary,
-                   SCREEN_ORIENTATION_VALUES_PORTRAIT_SECONDARY);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockLandscapePrimary,
-                   SCREEN_ORIENTATION_VALUES_LANDSCAPE_PRIMARY);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockLandscapeSecondary,
-                   SCREEN_ORIENTATION_VALUES_LANDSCAPE_SECONDARY);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockAny,
-                   SCREEN_ORIENTATION_VALUES_ANY);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockLandscape,
-                   SCREEN_ORIENTATION_VALUES_LANDSCAPE);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockPortrait,
-                   SCREEN_ORIENTATION_VALUES_PORTRAIT);
-STATIC_ASSERT_ENUM(blink::kWebScreenOrientationLockNatural,
-                   SCREEN_ORIENTATION_VALUES_NATURAL);
 
 // WebTextInputMode
 STATIC_ASSERT_ENUM(blink::kWebTextInputModeDefault,

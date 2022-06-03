@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='child'",
-          "rect": [300, 50, 20, 300],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='child'",
-          "rect": [150, 50, 20, 300],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [300, 50, 20, 300],
+        [150, 50, 20, 300]
       ]
     }
   ]

@@ -2,6 +2,5 @@ Test that browser won't crash if inspector is opened for a page that fails to co
 
 Page reloaded.
 alert-toString-exception.html:2 Uncaught Exception in toString().
-toString @ alert-toString-exception.html:2
 (anonymous) @ alert-toString-exception.html:2
 

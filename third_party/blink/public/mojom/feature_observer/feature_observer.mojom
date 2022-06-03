@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+enum ObservedFeatureType {
+  kWebLock = 0,
+  kIndexedDBConnection,
+};
+
+// An interface tied to the lifetime of a feature's usage.
+interface ObservedFeature {};
+
+// A generic interface for informing some remote that a given feature has
+// begun or ended.  This is for purposes such as tab freezing, which wants to
+// avoid freezing tabs that are using particular features.  This interface
+// is implemented by the browser process so the renderer can inform it about
+// feature usage.
+interface FeatureObserver {
+  // Inform the observer that a particular |feature| is being used, and
+  // when the connection is broken, that instance is no longer in use.
+  Register(pending_receiver<ObservedFeature> feature, ObservedFeatureType type);
+};

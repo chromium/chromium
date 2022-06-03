@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [58, 58, 100, 100],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [33, 33, 50, 50],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [58, 58, 100, 100],
+        [33, 33, 50, 50]
       ]
     }
   ]

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -32,7 +33,8 @@ source_set("lib") {
       "text_detection_impl_mac.h",
       "text_detection_impl_mac.mm",
     ]
-    libs = [ "QuartzCore.framework" ]
+    frameworks = [ "QuartzCore.framework" ]
+    weak_frameworks = [ "Vision.framework" ]
   } else if (is_win) {
     sources += [
       "barcode_detection_provider_impl.cc",
@@ -45,6 +47,16 @@ source_set("lib") {
       "face_detection_provider_win.h",
       "text_detection_impl_win.cc",
       "text_detection_impl_win.h",
+    ]
+  } else if (is_chromeos_ash && is_chrome_branded) {
+    sources += [
+      "barcode_detection_impl_barhopper.cc",
+      "barcode_detection_impl_barhopper.h",
+      "barcode_detection_provider_barhopper.cc",
+      "barcode_detection_provider_barhopper.h",
+      "face_detection_provider_impl.cc",
+      "face_detection_provider_impl.h",
+      "text_detection_impl.cc",
     ]
   } else {
     sources += [
@@ -59,10 +71,16 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos_ash && is_chrome_branded) {
+    deps += [ "//third_party/barhopper:barhopper" ]
+  }
 
   public_deps = [
     "//base",
@@ -83,14 +101,14 @@ if (is_android) {
   }
 
   android_library("shape_detection_java") {
-    java_files = [
+    sources = [
       "android/java/src/org/chromium/shape_detection/BarcodeDetectionImpl.java",
       "android/java/src/org/chromium/shape_detection/BarcodeDetectionProviderImpl.java",
+      "android/java/src/org/chromium/shape_detection/BitmapUtils.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionImpl.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionImplGmsCore.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionProviderImpl.java",
       "android/java/src/org/chromium/shape_detection/InterfaceRegistrar.java",
-      "android/java/src/org/chromium/shape_detection/BitmapUtils.java",
       "android/java/src/org/chromium/shape_detection/TextDetectionImpl.java",
     ]
 
@@ -106,6 +124,7 @@ if (is_android) {
       "//mojo/public/java/system:system_impl_java",
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/android_deps:chromium_play_services_availability_java",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]
   }
@@ -113,20 +132,29 @@ if (is_android) {
 
 source_set("tests") {
   testonly = true
-  sources = [
-    "barcode_detection_impl_mac_unittest.mm",
-    "barcode_detection_provider_mac_unittest.mm",
-    "face_detection_impl_mac_unittest.mm",
-    "face_detection_impl_win_unittest.cc",
-    "text_detection_impl_mac_unittest.mm",
-    "text_detection_impl_win_unittest.cc",
-  ]
+  sources = []
   if (is_mac) {
-    libs = [
+    sources += [
+      "barcode_detection_impl_mac_unittest.mm",
+      "barcode_detection_provider_mac_unittest.mm",
+      "face_detection_impl_mac_unittest.mm",
+      "text_detection_impl_mac_unittest.mm",
+    ]
+    frameworks = [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "QuartzCore.framework",
     ]
+  }
+  if (is_win) {
+    sources += [
+      "face_detection_impl_win_unittest.cc",
+      "text_detection_impl_win_unittest.cc",
+    ]
+  }
+
+  if (is_chromeos_ash && is_chrome_branded) {
+    sources += [ "barcode_detection_impl_barhopper_unittest.cc" ]
   }
 
   deps = [
@@ -141,8 +169,20 @@ source_set("tests") {
     "//ui/gl",
   ]
   data = [
+    "//services/test/data/codabar.png",
+    "//services/test/data/code_39.png",
+    "//services/test/data/code_93.png",
+    "//services/test/data/code_128.png",
+    "//services/test/data/data_matrix.png",
+    "//services/test/data/ean_8.png",
+    "//services/test/data/ean_13.png",
+    "//services/test/data/itf.png",
     "//services/test/data/mona_lisa.jpg",
+    "//services/test/data/pdf417.png",
+    "//services/test/data/qr_code.png",
     "//services/test/data/text_detection.png",
     "//services/test/data/the_beatles.jpg",
+    "//services/test/data/upc_a.png",
+    "//services/test/data/upc_e.png",
   ]
 }

@@ -1,0 +1,35 @@
+Tests that calling Page.navigate while a navigation is running cancels the previous navigation
+{
+    id : <number>
+    result : {
+        errorText : net::ERR_ABORTED
+        frameId : <string>
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        frameId : <string>
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        errorText : net::ERR_ABORTED
+        frameId : <string>
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        frameId : <string>
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+

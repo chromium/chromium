@@ -1,4 +1,4 @@
-SEARCH_TERM | Description | Search site |  | Description_1-default
+UNKNOWN_TYPE | Description | Search site |  | Description_1-default
 EMAIL_ADDRESS | LoginName | Email Address* |  | LoginName_1-default
 EMAIL_ADDRESS | LoginName1 | Confirm Email Address* |  | LoginName_1-default
 UNKNOWN_TYPE | Password | Password* |  | LoginName_1-default
@@ -22,19 +22,19 @@ PHONE_HOME_NUMBER | BDayPhone_tel3 | Last four digits |  | LoginName_1-default
 PHONE_HOME_EXTENSION | BDayPhone_ext1 | Ext |  | LoginName_1-default
 UNKNOWN_TYPE | same | Yes | 1 | LoginName_1-default
 UNKNOWN_TYPE | same | No | 0 | LoginName_1-default
-NAME_FIRST | SFirstName | First Name* |  | SFirstName_1-default
-NAME_MIDDLE_INITIAL | SMI | MI |  | SFirstName_1-default
-NAME_LAST | SLastName | Last Name* |  | SFirstName_1-default
-COMPANY_NAME | SCompanyName | Company Name |  | SFirstName_1-default
-ADDRESS_HOME_LINE1 | SAddress1 | Address* |  | SFirstName_1-default
-ADDRESS_HOME_LINE2 | SAddress2 | Address 2 |  | SFirstName_1-default
-ADDRESS_HOME_CITY | SCity | City* |  | SFirstName_1-default
-ADDRESS_HOME_STATE | SState | State* | AK | SFirstName_1-default
-ADDRESS_HOME_ZIP | SZip | Zip Code* |  | SFirstName_1-default
-PHONE_HOME_CITY_CODE | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_1-default
-PHONE_HOME_NUMBER | ShippingPhone_tel2 |  |  | SFirstName_1-default
-PHONE_HOME_NUMBER | ShippingPhone_tel3 |  |  | SFirstName_1-default
-PHONE_HOME_EXTENSION | ShippingPhone_ext1 | Ext |  | SFirstName_1-default
+NAME_FIRST | SFirstName | First Name* |  | SFirstName_2-default
+NAME_MIDDLE_INITIAL | SMI | MI |  | SFirstName_2-default
+NAME_LAST | SLastName | Last Name* |  | SFirstName_2-default
+COMPANY_NAME | SCompanyName | Company Name |  | SFirstName_2-default
+ADDRESS_HOME_LINE1 | SAddress1 | Address* |  | SFirstName_2-default
+ADDRESS_HOME_LINE2 | SAddress2 | Address 2 |  | SFirstName_2-default
+ADDRESS_HOME_CITY | SCity | City* |  | SFirstName_2-default
+ADDRESS_HOME_STATE | SState | State* | AK | SFirstName_2-default
+ADDRESS_HOME_ZIP | SZip | Zip Code* |  | SFirstName_2-default
+PHONE_HOME_CITY_CODE | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_2-default
+PHONE_HOME_NUMBER | ShippingPhone_tel2 |  |  | SFirstName_2-default
+PHONE_HOME_NUMBER | ShippingPhone_tel3 |  |  | SFirstName_2-default
+PHONE_HOME_EXTENSION | ShippingPhone_ext1 | Ext |  | SFirstName_2-default
 UNKNOWN_TYPE | custtype | Is this purchase for personal or business use? | 200 | LoginName_1-default
 UNKNOWN_TYPE | Age | Age |  | LoginName_1-default
 UNKNOWN_TYPE | income | Income | 0 | LoginName_1-default

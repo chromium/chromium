@@ -1,3 +1,0 @@
-include_rules = [
-    "+services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h",
-]

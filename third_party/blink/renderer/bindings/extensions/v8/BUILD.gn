@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import(
+    "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni")
+import("//third_party/blink/renderer/extensions/extensions.gni")
+
+visibility = [ "//third_party/blink/renderer/*" ]
+
+blink_extensions_chromeos_sources("v8_chromeos") {
+  visibility = []
+  visibility = [ "//third_party/blink/renderer/extensions/chromeos" ]
+
+  sources = generated_namespace_sources_in_extensions_chromeos
+
+  deps = [
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
+}

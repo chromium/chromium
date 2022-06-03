@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

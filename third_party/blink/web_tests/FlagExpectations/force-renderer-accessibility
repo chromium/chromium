@@ -1,0 +1,78 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Expectations for --force-renderer-accessibility
+# crbug.com/1138028 tracks the removal of these failure expectations
+
+# Crashes
+crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ CRASH ]
+crbug.com/1225860 crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ CRASH ]
+crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ CRASH ]
+crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
+
+# Slow
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ TIMEOUT ]
+
+# Intentional failures for focusless spatial navigation.
+# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
+# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
+#   and run without any accessibility, in which case the tests pass.
+#   See https://crrev.com/c/1620345.
+# * On bots with --force-rendferer-accessibiity, the tests will fail because of the check in
+#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
+#   As this is intentional it is good to test as well via --force-renderer-accessibility.
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ FAILURE ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ FAILURE ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ FAILURE ]
+crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ FAILURE ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ FAILURE ]
+
+# Intentional skips for media tests using proprietary codecs.
+# The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
+external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ SKIP ]
+external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ SKIP ]
+external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ SKIP ]
+external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ SKIP ]
+external/wpt/webcodecs/audioDecoder-codec-specific.https.any.html?adts_aac [ SKIP ]
+external/wpt/webcodecs/audioDecoder-codec-specific.https.any.html?mp4_aac [ SKIP ]
+external/wpt/webcodecs/audio-decoder.crossOriginIsolated.https.any.html [ SKIP ]
+external/wpt/webcodecs/audio-decoder.crossOriginIsolated.https.any.worker.html [ SKIP ]
+external/wpt/webcodecs/video-decoder.crossOriginIsolated.https.any.html [ SKIP ]
+external/wpt/webcodecs/video-decoder.crossOriginIsolated.https.any.worker.html [ SKIP ]
+external/wpt/webcodecs/video-encoder-config.https.any.html [ SKIP ]
+external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ SKIP ]
+external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_annexb [ SKIP ]
+external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_avc [ SKIP ]
+external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ SKIP ]
+external/wpt/webrtc/protocol/rtp-demuxing.html [ SKIP ]
+external/wpt/webrtc/protocol/video-codecs.https.html [ SKIP ]
+external/wpt/webrtc/simulcast/h264.https.html [ SKIP ]
+fast/mediarecorder/MediaRecorder-ignores-oversize-frames-h264.html [ SKIP ]
+crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ SKIP ]
+crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-media-auto-play-attribute.html [ SKIP ]
+crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-media-play.html [ SKIP ]
+virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/video-codecs.https.html [ SKIP ]
+virtual/webrtc-wpt-plan-b/external/wpt/webrtc/simulcast/h264.https.html [ SKIP ]
+wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ SKIP ]
+wpt_internal/webcodecs/annexb_decoding.https.any.html [ SKIP ]
+wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ SKIP ]
+wpt_internal/webcodecs/avc_encoder_config.https.any.html [ SKIP ]
+wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ SKIP ]
+wpt_internal/webcodecs/basic_video_encoding.https.any.html [ SKIP ]
+wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ SKIP ]
+wpt_internal/webcodecs/reconfiguring_encoder.https.any.html [ SKIP ]
+wpt_internal/webcodecs/reconfiguring_encoder.https.any.worker.html [ SKIP ]
+crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.https.any.html [ SKIP ]
+crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ SKIP ]
+

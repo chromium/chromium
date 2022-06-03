@@ -19,6 +19,11 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
                                  const gfx::RectF& element_bounds,
                                  base::i18n::TextDirection text_direction);
 
+  AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
+      delete;
+  AutofillPopupControllerImplMac& operator=(
+      const AutofillPopupControllerImplMac&) = delete;
+
   ~AutofillPopupControllerImplMac() override;
 
   // Shows the popup, or updates the existing popup with the given values.
@@ -30,12 +35,12 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // Updates the data list values currently shown with the popup. Calls
   // -invalidateTouchBar from |touchBarController_|.
-  void UpdateDataListValues(const std::vector<base::string16>& values,
-                            const std::vector<base::string16>& labels) override;
+  void UpdateDataListValues(const std::vector<std::u16string>& values,
+                            const std::vector<std::u16string>& labels) override;
 
   // Hides the popup and destroys the controller. This also invalidates
   // |delegate_|.
-  void Hide() override;
+  void Hide(PopupHidingReason reason) override;
 
  private:
   // The controller providing the autofill touch bar.
@@ -43,10 +48,8 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // True if the popup contains credit card items.
   BOOL is_credit_card_popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupControllerImplMac);
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_MAC_H_

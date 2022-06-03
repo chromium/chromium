@@ -24,7 +24,11 @@ class Image;
 // native windows.
 class DesktopMediaListAsh : public DesktopMediaListBase {
  public:
-  explicit DesktopMediaListAsh(content::DesktopMediaID::Type type);
+  explicit DesktopMediaListAsh(DesktopMediaList::Type type);
+
+  DesktopMediaListAsh(const DesktopMediaListAsh&) = delete;
+  DesktopMediaListAsh& operator=(const DesktopMediaListAsh&) = delete;
+
   ~DesktopMediaListAsh() override;
 
  private:
@@ -47,8 +51,6 @@ class DesktopMediaListAsh : public DesktopMediaListBase {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DesktopMediaListAsh> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaListAsh);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_ASH_H_

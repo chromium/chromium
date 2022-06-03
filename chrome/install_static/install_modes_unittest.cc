@@ -9,6 +9,7 @@
 #include <cguid.h>
 #include <ctype.h>
 
+#include "chrome/install_static/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +27,7 @@ namespace install_static {
 namespace {
 
 // A matcher that returns true if |arg| contains a character that is neither
-// alpha-numeric nor a period.
+// alphanumeric nor a period.
 MATCHER(ContainsIllegalProgIdChar, "") {
   const wchar_t* scan = arg;
   wint_t c;
@@ -65,11 +66,13 @@ TEST(InstallModes, VerifyModes) {
     else
       ASSERT_THAT(mode.logo_suffix, StrNe(L""));
 
-    // The modes must have an appguid if Google Update integration is supported.
-    if (kUseGoogleUpdateIntegration)
-      ASSERT_THAT(mode.app_guid, StrNe(L""));
-    else
-      ASSERT_THAT(mode.app_guid, StrEq(L""));
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+    // The modes must have an appguid if Google Update integration is
+    // supported.
+    ASSERT_THAT(mode.app_guid, StrNe(L""));
+#else
+    ASSERT_THAT(mode.app_guid, StrEq(L""));
+#endif
 
     // Every mode must have a base app name.
     ASSERT_THAT(mode.base_app_name, StrNe(L""));
@@ -102,94 +105,47 @@ TEST(InstallModes, VerifyModes) {
     // Every mode must have an elevator IID.
     ASSERT_THAT(mode.elevator_iid, Ne(CLSID_NULL));
 
-    // UNSUPPORTED and kUseGoogleUpdateIntegration are mutually exclusive.
-    if (kUseGoogleUpdateIntegration)
-      ASSERT_THAT(mode.channel_strategy, Ne(ChannelStrategy::UNSUPPORTED));
-    else
-      ASSERT_THAT(mode.channel_strategy, Eq(ChannelStrategy::UNSUPPORTED));
-  }
-}
-
-TEST(InstallModes, VerifyBrand) {
-  if (kUseGoogleUpdateIntegration) {
-    // Binaries were registered via an app guid with Google Update integration.
-    ASSERT_THAT(kBinariesAppGuid, StrNe(L""));
-    ASSERT_THAT(kBinariesPathName, StrEq(L""));
-  } else {
-    // Binaries were registered via a different path name without.
-    ASSERT_THAT(kBinariesAppGuid, StrEq(L""));
-    ASSERT_THAT(kBinariesPathName, StrNe(L""));
+    // UNSUPPORTED and USE_GOOGLE_UPDATE_INTEGRATION are mutually exclusive.
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+    ASSERT_THAT(mode.channel_strategy, Eq(ChannelStrategy::UNSUPPORTED));
+#endif
   }
 }
 
 TEST(InstallModes, GetClientsKeyPath) {
   constexpr wchar_t kAppGuid[] = L"test";
 
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(GetClientsKeyPath(kAppGuid),
-                StrEq(L"Software\\Google\\Update\\Clients\\test"));
-  } else {
-    ASSERT_THAT(GetClientsKeyPath(kAppGuid),
-                StrEq(std::wstring(L"Software\\").append(kProductPathName)));
-  }
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  ASSERT_THAT(GetClientsKeyPath(kAppGuid),
+              StrEq(L"Software\\Google\\Update\\Clients\\test"));
+#else
+  ASSERT_THAT(GetClientsKeyPath(kAppGuid),
+              StrEq(std::wstring(L"Software\\").append(kProductPathName)));
+#endif
 }
 
 TEST(InstallModes, GetClientStateKeyPath) {
   constexpr wchar_t kAppGuid[] = L"test";
 
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(GetClientStateKeyPath(kAppGuid),
-                StrEq(L"Software\\Google\\Update\\ClientState\\test"));
-  } else {
-    ASSERT_THAT(GetClientStateKeyPath(kAppGuid),
-                StrEq(std::wstring(L"Software\\").append(kProductPathName)));
-  }
-}
-
-TEST(InstallModes, GetBinariesClientsKeyPath) {
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(GetBinariesClientsKeyPath(),
-                StrEq(std::wstring(L"Software\\Google\\Update\\Clients\\")
-                          .append(kBinariesAppGuid)));
-  } else {
-    ASSERT_THAT(GetBinariesClientsKeyPath(),
-                StrEq(std::wstring(L"Software\\").append(kBinariesPathName)));
-  }
-}
-
-TEST(InstallModes, GetBinariesClientStateKeyPath) {
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(GetBinariesClientStateKeyPath(),
-                StrEq(std::wstring(L"Software\\Google\\Update\\ClientState\\")
-                          .append(kBinariesAppGuid)));
-  } else {
-    ASSERT_THAT(GetBinariesClientStateKeyPath(),
-                StrEq(std::wstring(L"Software\\").append(kBinariesPathName)));
-  }
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  ASSERT_THAT(GetClientStateKeyPath(kAppGuid),
+              StrEq(L"Software\\Google\\Update\\ClientState\\test"));
+#else
+  ASSERT_THAT(GetClientStateKeyPath(kAppGuid),
+              StrEq(std::wstring(L"Software\\").append(kProductPathName)));
+#endif
 }
 
 TEST(InstallModes, GetClientStateMediumKeyPath) {
   constexpr wchar_t kAppGuid[] = L"test";
 
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(GetClientStateMediumKeyPath(kAppGuid),
-                StrEq(L"Software\\Google\\Update\\ClientStateMedium\\test"));
-  } else {
-    ASSERT_THAT(GetClientStateMediumKeyPath(kAppGuid),
-                StrEq(std::wstring(L"Software\\").append(kProductPathName)));
-  }
-}
-
-TEST(InstallModes, GetBinariesClientStateMediumKeyPath) {
-  if (kUseGoogleUpdateIntegration) {
-    ASSERT_THAT(
-        GetBinariesClientStateMediumKeyPath(),
-        StrEq(std::wstring(L"Software\\Google\\Update\\ClientStateMedium\\")
-                  .append(kBinariesAppGuid)));
-  } else {
-    ASSERT_THAT(GetBinariesClientStateMediumKeyPath(),
-                StrEq(std::wstring(L"Software\\").append(kBinariesPathName)));
-  }
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  ASSERT_THAT(GetClientStateMediumKeyPath(kAppGuid),
+              StrEq(L"Software\\Google\\Update\\ClientStateMedium\\test"));
+#else
+  ASSERT_THAT(GetClientStateMediumKeyPath(kAppGuid),
+              StrEq(std::wstring(L"Software\\").append(kProductPathName)));
+#endif
 }
 
 }  // namespace install_static

@@ -5,10 +5,13 @@
 package org.chromium.android_webview.test.services;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
+import android.os.RemoteException;
 
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
+import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
 import org.chromium.android_webview.services.VariationsSeedServer;
 import org.chromium.base.test.util.CallbackHelper;
 
@@ -19,14 +22,27 @@ import org.chromium.base.test.util.CallbackHelper;
  */
 public class MockVariationsSeedServer extends VariationsSeedServer {
     private static CallbackHelper sOnSeedRequested = new CallbackHelper();
+    private static Bundle sMetricsBundle;
 
     public static CallbackHelper getRequestHelper() {
         return sOnSeedRequested;
     }
 
+    public static void setMetricsBundle(Bundle metricsBundle) {
+        sMetricsBundle = metricsBundle;
+    }
+
     private final IVariationsSeedServer.Stub mMockBinder = new IVariationsSeedServer.Stub() {
         @Override
-        public void getSeed(ParcelFileDescriptor newSeedFile, long oldSeedDate) {
+        public void getSeed(ParcelFileDescriptor newSeedFile, long oldSeedDate,
+                IVariationsSeedServerCallback callback) {
+            if (sMetricsBundle != null) {
+                try {
+                    callback.reportVariationsServiceMetrics(sMetricsBundle);
+                } catch (RemoteException e) {
+                    throw new RuntimeException("Error reporting mock metrics", e);
+                }
+            }
             sOnSeedRequested.notifyCalled();
         }
     };

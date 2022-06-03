@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_TEST_SKEWED_TICK_CLOCK_H_
 #define MEDIA_CAST_TEST_SKEWED_TICK_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
@@ -19,6 +18,10 @@ class SkewedTickClock : public base::TickClock {
  public:
   // Does not take ownership of |clock_|.
   explicit SkewedTickClock(const base::TickClock* clock_);
+
+  SkewedTickClock(const SkewedTickClock&) = delete;
+  SkewedTickClock& operator=(const SkewedTickClock&) = delete;
+
   // |skew| > 1.0 means clock runs faster.
   // |offset| > 0 means clock returns times from the future.
   // Note, |offset| is cumulative.
@@ -34,8 +37,6 @@ class SkewedTickClock : public base::TickClock {
   double skew_;
   base::TimeTicks last_skew_set_time_;
   base::TimeTicks skew_clock_at_last_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkewedTickClock);
 };
 
 }  // namespace test

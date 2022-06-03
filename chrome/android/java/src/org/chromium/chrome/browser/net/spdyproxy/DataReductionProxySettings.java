@@ -13,13 +13,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
+import org.chromium.chrome.browser.datareduction.settings.DataReductionDataUseItem;
+import org.chromium.chrome.browser.datareduction.settings.DataReductionStatsPreference;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.datareduction.DataReductionDataUseItem;
 import org.chromium.chrome.browser.settings.datareduction.DataReductionProxySavingsClearedReason;
-import org.chromium.chrome.browser.settings.datareduction.DataReductionStatsPreference;
-import org.chromium.chrome.browser.util.ConversionUtils;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +94,7 @@ public class DataReductionProxySettings {
         ThreadUtils.assertOnUiThread();
         boolean enabled = getInstance().isDataReductionProxyEnabled();
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DATA_REDUCTION_ENABLED_PREF, enabled);
+                ChromePreferenceKeys.DATA_REDUCTION_ENABLED, enabled);
     }
 
     /**
@@ -159,7 +159,7 @@ public class DataReductionProxySettings {
                     System.currentTimeMillis());
         }
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DATA_REDUCTION_ENABLED_PREF, enabled);
+                ChromePreferenceKeys.DATA_REDUCTION_ENABLED, enabled);
         DataReductionProxySettingsJni.get().setDataReductionProxyEnabled(
                 mNativeDataReductionProxySettings, DataReductionProxySettings.this, enabled);
     }
@@ -267,17 +267,6 @@ public class DataReductionProxySettings {
     }
 
     /**
-     * Returns the header used to request a data reduction proxy pass through. When a request is
-     * sent to the data reduction proxy with this header, it will respond with the original
-     * uncompressed response.
-     * @return The data reduction proxy pass through header.
-     */
-    public String getDataReductionProxyPassThroughHeader() {
-        return DataReductionProxySettingsJni.get().getDataReductionProxyPassThroughHeader(
-                mNativeDataReductionProxySettings, DataReductionProxySettings.this);
-    }
-
-    /**
      * Determines if the data reduction proxy is currently unreachable.
      * @return true if the data reduction proxy is unreachable.
      */
@@ -290,20 +279,6 @@ public class DataReductionProxySettings {
         Map<String, String> map = new HashMap<>();
         map.put(DATA_REDUCTION_PROXY_ENABLED_KEY, String.valueOf(isDataReductionProxyEnabled()));
         return map;
-    }
-
-    /**
-     * If the given URL is a WebLite URL and should be overridden because the Data
-     * Reduction Proxy is on, the user is in the Lo-Fi previews experiment, and the scheme of the
-     * lite_url param is HTTP, returns the URL contained in the lite_url param. Otherwise returns
-     * the given URL.
-     *
-     * @param url The URL to evaluate.
-     * @return The URL to be used. Returns null if the URL param is null.
-     */
-    public String maybeRewriteWebliteUrl(String url) {
-        return DataReductionProxySettingsJni.get().maybeRewriteWebliteUrl(
-                mNativeDataReductionProxySettings, DataReductionProxySettings.this, url);
     }
 
     /**
@@ -337,7 +312,7 @@ public class DataReductionProxySettings {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(DataReductionProxySettings caller);
         boolean isDataReductionProxyPromoAllowed(
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
@@ -361,12 +336,8 @@ public class DataReductionProxySettings {
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
         long[] getDailyReceivedContentLengths(
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
-        String getDataReductionProxyPassThroughHeader(
-                long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
         boolean isDataReductionProxyUnreachable(
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
-        String maybeRewriteWebliteUrl(long nativeDataReductionProxySettingsAndroid,
-                DataReductionProxySettings caller, String url);
         void queryDataUsage(long nativeDataReductionProxySettingsAndroid,
                 DataReductionProxySettings caller, List<DataReductionDataUseItem> items,
                 int numDays);

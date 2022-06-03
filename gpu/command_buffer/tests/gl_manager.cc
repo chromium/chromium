@@ -49,7 +49,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/gl_image_io_surface.h"
 #endif
@@ -127,7 +127,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat format_;
 };
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   IOSurfaceGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
@@ -192,7 +192,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   const gfx::Size size_;
   gfx::BufferFormat format_;
 };
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 class CommandBufferCheckLostContext : public CommandBufferDirect {
  public:
@@ -252,12 +252,12 @@ GLManager::~GLManager() {
 std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (use_iosurface_memory_buffers_) {
     return base::WrapUnique<gfx::GpuMemoryBuffer>(
         new IOSurfaceGpuMemoryBuffer(size, format));
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
   std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
   auto bytes = base::RefCountedBytes::TakeVector(&data);
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
@@ -337,8 +337,13 @@ void GLManager::InitializeWithWorkaroundsImpl(
   attribs.offscreen_framebuffer_size = options.size;
   attribs.buffer_preserved = options.preserve_backbuffer;
   attribs.bind_generates_resource = options.bind_generates_resource;
+
   translator_cache_ =
       std::make_unique<gles2::ShaderTranslatorCache>(gpu_preferences_);
+  discardable_manager_ =
+      std::make_unique<ServiceDiscardableManager>(gpu_preferences_);
+  passthrough_discardable_manager_ =
+      std::make_unique<PassthroughDiscardableManager>(gpu_preferences_);
 
   if (!context_group) {
     GpuFeatureInfo gpu_feature_info;
@@ -351,7 +356,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
         translator_cache_.get(), &completeness_cache_, feature_info,
         options.bind_generates_resource, &image_manager_, options.image_factory,
         nullptr /* progress_reporter */, gpu_feature_info,
-        &discardable_manager_, &passthrough_discardable_manager_,
+        discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);
   }
 
@@ -430,7 +435,7 @@ size_t GLManager::GetSharedMemoryBytesAllocated() const {
 }
 
 void GLManager::SetupBaseContext() {
-  if (use_count_) {
+  if (!use_count_) {
     #if defined(OS_ANDROID)
     base_share_group_ =
         new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
@@ -498,22 +503,23 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
   gfx::Size size(width, height);
   scoped_refptr<gl::GLImage> gl_image;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (use_iosurface_memory_buffers_) {
     IOSurfaceGpuMemoryBuffer* gpu_memory_buffer =
         IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
     unsigned internalformat =
         gl::BufferFormatToGLInternalFormat(gpu_memory_buffer->GetFormat());
+    const uint32_t io_surface_plane = 0;
     scoped_refptr<gl::GLImageIOSurface> image(
         gl::GLImageIOSurface::Create(size, internalformat));
-    if (!image->Initialize(gpu_memory_buffer->iosurface(),
+    if (!image->Initialize(gpu_memory_buffer->iosurface(), io_surface_plane,
                            gfx::GenericSharedMemoryId(1),
                            gfx::BufferFormat::BGRA_8888)) {
       return -1;
     }
     gl_image = image;
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
   if (use_native_pixmap_memory_buffers_) {
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
@@ -522,11 +528,11 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
     if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
       gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
       gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-      gl_image = gpu_memory_buffer_factory_->AsImageFactory()
-                     ->CreateImageForGpuMemoryBuffer(
-                         std::move(handle), size, format,
-                         gpu::kInProcessCommandBufferClientId,
-                         gpu::kNullSurfaceHandle);
+      gl_image =
+          gpu_memory_buffer_factory_->AsImageFactory()
+              ->CreateImageForGpuMemoryBuffer(
+                  std::move(handle), size, format, gfx::BufferPlane::DEFAULT,
+                  gpu::kDisplayCompositorClientId, gpu::kNullSurfaceHandle);
       if (!gl_image)
         return -1;
     }

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
@@ -11,89 +12,51 @@ assert(enable_extensions,
 
 source_set("api") {
   sources = [
-    "api_resource.cc",
-    "api_resource.h",
-    "api_resource_manager.h",
     "async_api_function.cc",
     "async_api_function.h",
-    "device_permissions_manager.cc",
-    "device_permissions_manager.h",
-    "device_permissions_prompt.cc",
-    "device_permissions_prompt.h",
-    "execute_code_function.cc",
-    "execute_code_function.h",
-    "extensions_api_client.cc",
-    "extensions_api_client.h",
-    "guest_view/app_view/app_view_guest_internal_api.cc",
-    "guest_view/app_view/app_view_guest_internal_api.h",
-    "guest_view/guest_view_internal_api.cc",
-    "guest_view/guest_view_internal_api.h",
-    "guest_view/web_view/web_view_internal_api.cc",
-    "guest_view/web_view/web_view_internal_api.h",
-    "web_contents_capture_client.cc",
-    "web_contents_capture_client.h",
+
+    # TODO(crbug.com/1206265): anything under storage/ should be moved out of
+    # this target.
+    "storage/backend_task_runner.cc",
+    "storage/backend_task_runner.h",
+    "storage/local_value_store_cache.cc",
+    "storage/local_value_store_cache.h",
+    "storage/session_storage_manager.cc",
+    "storage/session_storage_manager.h",
+    "storage/settings_namespace.cc",
+    "storage/settings_namespace.h",
+    "storage/settings_observer.h",
+    "storage/settings_storage_quota_enforcer.cc",
+    "storage/settings_storage_quota_enforcer.h",
+    "storage/storage_api.cc",
+    "storage/storage_api.h",
+    "storage/storage_area_namespace.cc",
+    "storage/storage_area_namespace.h",
+    "storage/storage_frontend.cc",
+    "storage/storage_frontend.h",
+    "storage/value_store_cache.cc",
+    "storage/value_store_cache.h",
+    "storage/value_store_util.cc",
+    "storage/value_store_util.h",
+    "storage/weak_unlimited_settings_storage.cc",
+    "storage/weak_unlimited_settings_storage.h",
   ]
 
   public_deps = [
     "//base",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/browser/api/activity_log",
-    "//extensions/browser/api/alarms",
-    "//extensions/browser/api/app_current_window_internal",
-    "//extensions/browser/api/app_runtime",
-    "//extensions/browser/api/app_window",
-    "//extensions/browser/api/audio",
-    "//extensions/browser/api/automation_internal",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/browser/api/bluetooth_low_energy",
-    "//extensions/browser/api/bluetooth_socket",
-    "//extensions/browser/api/cast_channel",
-    "//extensions/browser/api/declarative",
-    "//extensions/browser/api/declarative_content",
-    "//extensions/browser/api/declarative_net_request",
-    "//extensions/browser/api/declarative_webrequest",
-    "//extensions/browser/api/display_source",
-    "//extensions/browser/api/dns",
-    "//extensions/browser/api/document_scan",
-    "//extensions/browser/api/feedback_private",
-    "//extensions/browser/api/file_handlers",
-    "//extensions/browser/api/file_system",
-    "//extensions/browser/api/hid",
-    "//extensions/browser/api/idle",
-    "//extensions/browser/api/management",
-    "//extensions/browser/api/messaging",
-    "//extensions/browser/api/metrics_private",
-    "//extensions/browser/api/mime_handler_private",
-    "//extensions/browser/api/networking_private",
-    "//extensions/browser/api/power",
-    "//extensions/browser/api/printer_provider",
-    "//extensions/browser/api/printer_provider_internal",
-    "//extensions/browser/api/runtime",
-    "//extensions/browser/api/serial",
-    "//extensions/browser/api/socket",
-    "//extensions/browser/api/sockets_tcp",
-    "//extensions/browser/api/sockets_tcp_server",
-    "//extensions/browser/api/sockets_udp",
-    "//extensions/browser/api/storage",
-    "//extensions/browser/api/system_cpu",
-    "//extensions/browser/api/system_display",
-    "//extensions/browser/api/system_info",
-    "//extensions/browser/api/system_memory",
-    "//extensions/browser/api/system_network",
-    "//extensions/browser/api/system_storage",
-    "//extensions/browser/api/test",
-    "//extensions/browser/api/usb",
-    "//extensions/browser/api/virtual_keyboard_private",
-    "//extensions/browser/api/web_request",
     "//extensions/common",
+    "//extensions/common/api",
     "//ipc",
   ]
 
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/keyed_service/content:content",
     "//extensions/browser:browser_sources",
+    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//services/device/public/cpp/hid",
@@ -108,6 +71,18 @@ source_set("api") {
   ]
 
   if (is_chromeos) {
+    sources += [
+      "clipboard/clipboard_api.cc",
+      "clipboard/clipboard_api.h",
+    ]
+    deps += [
+      "//chromeos/dbus/permission_broker",
+      "//components/prefs:prefs",
+      "//ui/base/clipboard",
+    ]
+  }
+
+  if (is_chromeos_ash) {
     sources += [
       "lock_screen_data/data_item.cc",
       "lock_screen_data/data_item.h",
@@ -128,28 +103,69 @@ source_set("api") {
       "media_perception_private/media_perception_private_api.h",
     ]
 
-    public_deps += [
-      "//extensions/browser/api/cec_private",
-      "//extensions/browser/api/clipboard",
-      "//extensions/browser/api/crash_report_private",
-      "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/networking_config",
-      "//extensions/browser/api/system_power_source",
-      "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/vpn_provider",
-      "//extensions/browser/api/webcam_private",
-    ]
-
     deps += [
       "//chromeos",
       "//chromeos/dbus",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
-      "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/upstart",
       "//chromeos/login/login_state",
       "//chromeos/services/media_perception/public/mojom",
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
+    ]
+  }
+
+  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
+}
+
+group("api_implementations") {
+  public_deps = [
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api",
+    "//extensions/browser/api/alarms",
+    "//extensions/browser/api/app_current_window_internal",
+    "//extensions/browser/api/app_runtime",
+    "//extensions/browser/api/app_window",
+    "//extensions/browser/api/audio",
+    "//extensions/browser/api/automation_internal",
+    "//extensions/browser/api/bluetooth",
+    "//extensions/browser/api/bluetooth_low_energy",
+    "//extensions/browser/api/bluetooth_socket",
+    "//extensions/browser/api/dns",
+    "//extensions/browser/api/feedback_private",
+    "//extensions/browser/api/file_handlers",
+    "//extensions/browser/api/file_system",
+    "//extensions/browser/api/idle",
+    "//extensions/browser/api/management",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/browser/api/metrics_private",
+    "//extensions/browser/api/mime_handler_private",
+    "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/power",
+    "//extensions/browser/api/printer_provider",
+    "//extensions/browser/api/runtime",
+    "//extensions/browser/api/serial",
+    "//extensions/browser/api/socket",
+    "//extensions/browser/api/sockets_tcp",
+    "//extensions/browser/api/sockets_tcp_server",
+    "//extensions/browser/api/sockets_udp",
+    "//extensions/browser/api/system_cpu",
+    "//extensions/browser/api/system_info",
+    "//extensions/browser/api/system_memory",
+    "//extensions/browser/api/system_network",
+    "//extensions/browser/api/system_storage",
+    "//extensions/browser/api/test",
+    "//extensions/browser/api/virtual_keyboard_private",
+  ]
+
+  if (is_chromeos_ash) {
+    public_deps += [
+      "//extensions/browser/api/cec_private",
+      "//extensions/browser/api/diagnostics",
+      "//extensions/browser/api/virtual_keyboard",
+      "//extensions/browser/api/vpn_provider",
+      "//extensions/browser/api/webcam_private",
     ]
   }
 }

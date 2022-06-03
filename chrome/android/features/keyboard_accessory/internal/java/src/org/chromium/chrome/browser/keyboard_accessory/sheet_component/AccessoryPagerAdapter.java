@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.ui.modelutil.ListModel;
@@ -25,7 +25,7 @@ import java.util.Map;
  * {@link ViewPager}. It instantiates the tab views based on the layout they provide.
  */
 class AccessoryPagerAdapter extends PagerAdapter
-        implements ListModelChangeProcessor.ViewBinder<ListModel<Tab>, ViewPager> {
+        implements ListModelChangeProcessor.ViewBinder<ListModel<Tab>, ViewPager, Void> {
     private final ListModel<Tab> mTabList;
     private final Map<Tab, ViewGroup> mViews;
 
@@ -100,7 +100,8 @@ class AccessoryPagerAdapter extends PagerAdapter
     }
 
     @Override
-    public void onItemsChanged(ListModel<Tab> model, ViewPager view, int index, int count) {
+    public void onItemsChanged(
+            ListModel<Tab> model, ViewPager view, int index, int count, Void payload) {
         notifyDataSetChanged();
     }
 }

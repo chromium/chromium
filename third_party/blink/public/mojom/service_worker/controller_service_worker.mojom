@@ -7,7 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
-import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
@@ -48,8 +48,13 @@ interface ControllerServiceWorker {
   // Connects a new pipe to this controller instance.
   // |cross_origin_embedder_policy| is the policy for the client which uses the
   // counterpart of |receiver|.
+  // |coep_reporter| is the endpoint to report the error raised by the CORP
+  // validation based on |cross_origin_embedder_policy|. This can be null when
+  // it's not supported yet.
   Clone(pending_receiver<ControllerServiceWorker> receiver,
-        network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy);
+        network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy,
+        pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
+            coep_reporter);
 };
 
 // A convenient struct that packs necessary information for a service worker

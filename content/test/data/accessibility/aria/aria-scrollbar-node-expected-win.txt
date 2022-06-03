@@ -1,0 +1,1 @@
+ROLE_SYSTEM_SCROLLBAR value='55' FOCUSABLE IA2_STATE_HORIZONTAL xml-roles:scrollbar currentValue=55

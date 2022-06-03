@@ -4,30 +4,41 @@
 
 visibility = [ "//ui/ozone/*" ]
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/wayland/features.gni")
 import("//ui/ozone/platform/wayland/wayland.gni")
 
-pkg_config("wayland-egl") {
-  packages = [ "wayland-egl" ]
-}
+assert(is_linux || is_chromeos_lacros)
 
 source_set("wayland") {
   sources = [
     "client_native_pixmap_factory_wayland.cc",
     "client_native_pixmap_factory_wayland.h",
+    "common/wayland.h",
     "common/wayland_object.cc",
     "common/wayland_object.h",
     "common/wayland_util.cc",
     "common/wayland_util.h",
     "gpu/drm_render_node_path_finder.cc",
     "gpu/drm_render_node_path_finder.h",
+    "gpu/gl_surface_egl_readback_wayland.cc",
+    "gpu/gl_surface_egl_readback_wayland.h",
     "gpu/gl_surface_wayland.cc",
     "gpu/gl_surface_wayland.h",
     "gpu/wayland_buffer_manager_gpu.cc",
     "gpu/wayland_buffer_manager_gpu.h",
     "gpu/wayland_canvas_surface.cc",
     "gpu/wayland_canvas_surface.h",
+    "gpu/wayland_gl_egl_utility.cc",
+    "gpu/wayland_gl_egl_utility.h",
+    "gpu/wayland_overlay_candidates.cc",
+    "gpu/wayland_overlay_candidates.h",
+    "gpu/wayland_overlay_manager.cc",
+    "gpu/wayland_overlay_manager.h",
     "gpu/wayland_surface_factory.cc",
     "gpu/wayland_surface_factory.h",
     "gpu/wayland_surface_gpu.h",
@@ -37,20 +48,33 @@ source_set("wayland") {
     "host/gtk_primary_selection_device_manager.h",
     "host/gtk_primary_selection_offer.cc",
     "host/gtk_primary_selection_offer.h",
-    "host/gtk_primary_selection_source.cc",
-    "host/gtk_primary_selection_source.h",
-    "host/internal/wayland_data_device_base.cc",
-    "host/internal/wayland_data_device_base.h",
-    "host/internal/wayland_data_offer_base.cc",
-    "host/internal/wayland_data_offer_base.h",
-    "host/internal/wayland_data_source_base.cc",
-    "host/internal/wayland_data_source_base.h",
+    "host/gtk_shell1.cc",
+    "host/gtk_shell1.h",
+    "host/gtk_surface1.cc",
+    "host/gtk_surface1.h",
+    "host/org_kde_kwin_idle.cc",
+    "host/org_kde_kwin_idle.h",
+    "host/overlay_prioritizer.cc",
+    "host/overlay_prioritizer.h",
     "host/shell_object_factory.cc",
     "host/shell_object_factory.h",
     "host/shell_popup_wrapper.cc",
     "host/shell_popup_wrapper.h",
-    "host/shell_surface_wrapper.cc",
     "host/shell_surface_wrapper.h",
+    "host/shell_toplevel_wrapper.cc",
+    "host/shell_toplevel_wrapper.h",
+    "host/surface_augmenter.cc",
+    "host/surface_augmenter.h",
+    "host/wayland_buffer_backing.cc",
+    "host/wayland_buffer_backing.h",
+    "host/wayland_buffer_backing_dmabuf.cc",
+    "host/wayland_buffer_backing_dmabuf.h",
+    "host/wayland_buffer_backing_shm.cc",
+    "host/wayland_buffer_backing_shm.h",
+    "host/wayland_buffer_backing_solid_color.cc",
+    "host/wayland_buffer_backing_solid_color.h",
+    "host/wayland_buffer_handle.cc",
+    "host/wayland_buffer_handle.h",
     "host/wayland_buffer_manager_connector.cc",
     "host/wayland_buffer_manager_connector.h",
     "host/wayland_buffer_manager_host.cc",
@@ -65,20 +89,34 @@ source_set("wayland") {
     "host/wayland_cursor_position.h",
     "host/wayland_data_device.cc",
     "host/wayland_data_device.h",
+    "host/wayland_data_device_base.cc",
+    "host/wayland_data_device_base.h",
     "host/wayland_data_device_manager.cc",
     "host/wayland_data_device_manager.h",
+    "host/wayland_data_drag_controller.cc",
+    "host/wayland_data_drag_controller.h",
     "host/wayland_data_offer.cc",
     "host/wayland_data_offer.h",
+    "host/wayland_data_offer_base.cc",
+    "host/wayland_data_offer_base.h",
     "host/wayland_data_source.cc",
     "host/wayland_data_source.h",
     "host/wayland_drm.cc",
     "host/wayland_drm.h",
+    "host/wayland_event_source.cc",
+    "host/wayland_event_source.h",
+    "host/wayland_event_watcher.cc",
+    "host/wayland_event_watcher.h",
+    "host/wayland_exchange_data_provider.cc",
+    "host/wayland_exchange_data_provider.h",
     "host/wayland_input_method_context.cc",
     "host/wayland_input_method_context.h",
     "host/wayland_input_method_context_factory.cc",
     "host/wayland_input_method_context_factory.h",
     "host/wayland_keyboard.cc",
     "host/wayland_keyboard.h",
+    "host/wayland_menu_utils.cc",
+    "host/wayland_menu_utils.h",
     "host/wayland_output.cc",
     "host/wayland_output.h",
     "host/wayland_output_manager.cc",
@@ -89,6 +127,8 @@ source_set("wayland") {
     "host/wayland_popup.h",
     "host/wayland_screen.cc",
     "host/wayland_screen.h",
+    "host/wayland_serial_tracker.cc",
+    "host/wayland_serial_tracker.h",
     "host/wayland_shm.cc",
     "host/wayland_shm.h",
     "host/wayland_shm_buffer.cc",
@@ -97,26 +137,62 @@ source_set("wayland") {
     "host/wayland_subsurface.h",
     "host/wayland_surface.cc",
     "host/wayland_surface.h",
+    "host/wayland_toplevel_window.cc",
+    "host/wayland_toplevel_window.h",
     "host/wayland_touch.cc",
     "host/wayland_touch.h",
     "host/wayland_window.cc",
     "host/wayland_window.h",
+    "host/wayland_window_drag_controller.cc",
+    "host/wayland_window_drag_controller.h",
     "host/wayland_window_factory.cc",
     "host/wayland_window_manager.cc",
     "host/wayland_window_manager.h",
     "host/wayland_window_observer.cc",
     "host/wayland_window_observer.h",
+    "host/wayland_zaura_shell.cc",
+    "host/wayland_zaura_shell.h",
+    "host/wayland_zcr_cursor_shapes.cc",
+    "host/wayland_zcr_cursor_shapes.h",
     "host/wayland_zwp_linux_dmabuf.cc",
     "host/wayland_zwp_linux_dmabuf.h",
+    "host/wayland_zwp_pointer_constraints.cc",
+    "host/wayland_zwp_pointer_constraints.h",
+    "host/wayland_zwp_pointer_gestures.cc",
+    "host/wayland_zwp_pointer_gestures.h",
+    "host/wayland_zwp_relative_pointer_manager.cc",
+    "host/wayland_zwp_relative_pointer_manager.h",
+    "host/xdg_foreign_wrapper.cc",
+    "host/xdg_foreign_wrapper.h",
+    "host/xdg_output.cc",
+    "host/xdg_output.h",
     "host/xdg_popup_wrapper_impl.cc",
     "host/xdg_popup_wrapper_impl.h",
     "host/xdg_surface_wrapper_impl.cc",
     "host/xdg_surface_wrapper_impl.h",
+    "host/xdg_toplevel_wrapper_impl.cc",
+    "host/xdg_toplevel_wrapper_impl.h",
+    "host/zwp_idle_inhibit_manager.cc",
+    "host/zwp_idle_inhibit_manager.h",
+    "host/zwp_primary_selection_device.cc",
+    "host/zwp_primary_selection_device.h",
+    "host/zwp_primary_selection_device_manager.cc",
+    "host/zwp_primary_selection_device_manager.h",
+    "host/zwp_primary_selection_offer.cc",
+    "host/zwp_primary_selection_offer.h",
     "host/zwp_text_input_wrapper.h",
     "host/zwp_text_input_wrapper_v1.cc",
     "host/zwp_text_input_wrapper_v1.h",
+    "host/zxdg_popup_v6_wrapper_impl.cc",
+    "host/zxdg_popup_v6_wrapper_impl.h",
+    "host/zxdg_surface_v6_wrapper_impl.cc",
+    "host/zxdg_surface_v6_wrapper_impl.h",
+    "host/zxdg_toplevel_v6_wrapper_impl.cc",
+    "host/zxdg_toplevel_v6_wrapper_impl.h",
     "ozone_platform_wayland.cc",
     "ozone_platform_wayland.h",
+    "wayland_utils.cc",
+    "wayland_utils.h",
   ]
 
   import("//ui/base/ui_features.gni")
@@ -124,27 +200,60 @@ source_set("wayland") {
     configs += [ "//ui/events/ozone/layout:xkbcommon" ]
   }
 
+  defines = [ "OZONE_IMPLEMENTATION" ]
+
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
+    "//components/crash/core/common:crash_key",
+    "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
-    "//third_party/wayland:wayland_client",
+    "//third_party/libsync",
+    "//third_party/wayland:wayland_util",
+    "//third_party/wayland-protocols:alpha_compositing_protocol",
+    "//third_party/wayland-protocols:cursor_shapes_protocol",
+    "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
+    "//third_party/wayland-protocols:gtk_shell_protocol",
+    "//third_party/wayland-protocols:idle_inhibit_protocol",
+    "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
+    "//third_party/wayland-protocols:org_kde_kwin_idle",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
+    "//third_party/wayland-protocols:pointer_gestures_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:primary_selection_protocol",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:wayland_drm_protocol",
+    "//third_party/wayland-protocols:xdg_decoration_protocol",
+    "//third_party/wayland-protocols:xdg_foreign",
+    "//third_party/wayland-protocols:xdg_output_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base",
     "//ui/base:buildflags",
+    "//ui/base:data_exchange",
+    "//ui/base/cursor",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor:theme_manager",
+    "//ui/base/cursor/mojom:cursor_type",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/linux",
+    "//ui/display/util:gpu_info_util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/devices",
     "//ui/events/keycodes:xkb",
     "//ui/events/ozone",
-    "//ui/events/ozone/evdev",
     "//ui/events/ozone/layout",
     "//ui/events/platform",
     "//ui/gfx",
@@ -155,14 +264,52 @@ source_set("wayland") {
     "//ui/ozone/common",
     "//ui/ozone/public/mojom/wayland:wayland_mojom",
     "//ui/platform_window",
-    "//ui/platform_window/platform_window_handler",
+    "//ui/platform_window/common",
+    "//ui/platform_window/wm",
   ]
 
-  if (is_linux && !is_chromeos) {
-    deps += [ "//ui/base/ime/linux" ]
+  if (use_dbus) {
+    sources += [
+      "host/org_gnome_mutter_idle_monitor.cc",
+      "host/org_gnome_mutter_idle_monitor.h",
+    ]
+    deps += [ "//dbus" ]
+    defines += [ "USE_DBUS" ]
   }
 
-  defines = [ "OZONE_IMPLEMENTATION" ]
+  if (use_gtk) {
+    sources += [
+      "host/linux_ui_delegate_wayland.cc",
+      "host/linux_ui_delegate_wayland.h",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "host/wayland_cursor_factory.cc",
+      "host/wayland_cursor_factory.h",
+    ]
+  }
+
+  if (use_system_libwayland) {
+    defines += [ "USE_LIBWAYLAND_STUBS" ]
+    deps += [ "//third_party/wayland:wayland_stubs" ]
+  } else {
+    deps += [
+      "//third_party/wayland:wayland_client",
+      "//third_party/wayland:wayland_cursor",
+      "//third_party/wayland:wayland_egl",
+      "//third_party/wayland:wayland_util",
+    ]
+  }
 
   if (use_wayland_gbm) {
     defines += [ "WAYLAND_GBM" ]
@@ -182,17 +329,34 @@ source_set("wayland") {
     ]
   }
 
-  configs += [
-    ":wayland-egl",
-    "//third_party/khronos:khronos_headers",
+  if (use_bundled_weston) {
+    data_deps = [ "//third_party/weston" ]
+  }
+
+  if (enable_vulkan) {
+    sources += [
+      "gpu/vulkan_implementation_wayland.cc",
+      "gpu/vulkan_implementation_wayland.h",
+    ]
+    deps += [ "//gpu/vulkan" ]
+  }
+
+  # Proxy implementation that is used by input emulation.
+  sources += [
+    "host/proxy/wayland_proxy_impl.cc",
+    "host/proxy/wayland_proxy_impl.h",
   ]
+
+  deps += [ ":wayland_proxy" ]
+
+  configs += [ "//third_party/khronos:khronos_headers" ]
 }
 
 source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/constants.h",
+    "host/wayland_connection_test_api.h",
     "test/global_object.cc",
     "test/global_object.h",
     "test/mock_buffer.cc",
@@ -203,18 +367,28 @@ source_set("test_support") {
     "test/mock_surface.h",
     "test/mock_wp_presentation.cc",
     "test/mock_wp_presentation.h",
-    "test/mock_xdg_popup.cc",
-    "test/mock_xdg_popup.h",
     "test/mock_xdg_shell.cc",
     "test/mock_xdg_shell.h",
     "test/mock_xdg_surface.cc",
     "test/mock_xdg_surface.h",
+    "test/mock_zaura_shell.cc",
+    "test/mock_zaura_shell.h",
+    "test/mock_zcr_extended_text_input.cc",
+    "test/mock_zcr_extended_text_input.h",
     "test/mock_zwp_linux_dmabuf.cc",
     "test/mock_zwp_linux_dmabuf.h",
     "test/mock_zwp_text_input.cc",
     "test/mock_zwp_text_input.h",
+    "test/scoped_wl_array.cc",
+    "test/scoped_wl_array.h",
     "test/server_object.cc",
     "test/server_object.h",
+    "test/test_alpha_blending.cc",
+    "test/test_alpha_blending.h",
+    "test/test_alpha_compositing.cc",
+    "test/test_alpha_compositing.h",
+    "test/test_augmented_surface.cc",
+    "test/test_augmented_surface.h",
     "test/test_compositor.cc",
     "test/test_compositor.h",
     "test/test_data_device.cc",
@@ -225,42 +399,73 @@ source_set("test_support") {
     "test/test_data_offer.h",
     "test/test_data_source.cc",
     "test/test_data_source.h",
+    "test/test_gtk_primary_selection.cc",
+    "test/test_gtk_primary_selection.h",
     "test/test_keyboard.cc",
     "test/test_keyboard.h",
     "test/test_output.cc",
     "test/test_output.h",
+    "test/test_overlay_prioritized_surface.cc",
+    "test/test_overlay_prioritized_surface.h",
+    "test/test_overlay_prioritizer.cc",
+    "test/test_overlay_prioritizer.h",
     "test/test_positioner.cc",
     "test/test_positioner.h",
     "test/test_region.cc",
     "test/test_region.h",
     "test/test_seat.cc",
     "test/test_seat.h",
+    "test/test_selection_device_manager.cc",
+    "test/test_selection_device_manager.h",
     "test/test_subcompositor.cc",
     "test/test_subcompositor.h",
     "test/test_subsurface.cc",
     "test/test_subsurface.h",
+    "test/test_surface_augmenter.cc",
+    "test/test_surface_augmenter.h",
     "test/test_touch.cc",
     "test/test_touch.h",
+    "test/test_viewport.cc",
+    "test/test_viewport.h",
+    "test/test_viewporter.cc",
+    "test/test_viewporter.h",
     "test/test_wayland_server_thread.cc",
     "test/test_wayland_server_thread.h",
+    "test/test_xdg_popup.cc",
+    "test/test_xdg_popup.h",
+    "test/test_zcr_text_input_extension.cc",
+    "test/test_zcr_text_input_extension.h",
     "test/test_zwp_linux_buffer_params.cc",
     "test/test_zwp_linux_buffer_params.h",
+    "test/test_zwp_linux_explicit_synchronization.cc",
+    "test/test_zwp_linux_explicit_synchronization.h",
+    "test/test_zwp_primary_selection.cc",
+    "test/test_zwp_primary_selection.h",
     "test/test_zwp_text_input_manager.cc",
     "test/test_zwp_text_input_manager.h",
   ]
 
   deps = [
+    ":wayland",
     "//base:base",
     "//ui/ozone:platform",
   ]
 
   public_deps = [
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//testing/gmock",
     "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:alpha_compositing_protocol",
+    "//third_party/wayland-protocols:gtk_primary_selection_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:primary_selection_protocol",
+    "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/gfx/geometry:geometry",
   ]
@@ -269,61 +474,85 @@ source_set("test_support") {
 source_set("wayland_unittests") {
   testonly = true
 
-  assert(use_wayland_gbm)
-
   sources = [
-    "gpu/wayland_surface_factory_unittest.cc",
+    "common/wayland_util_unittest.cc",
+    "gpu/wayland_overlay_manager_unittest.cc",
+    "host/wayland_clipboard_unittest.cc",
     "host/wayland_connection_unittest.cc",
-    "host/wayland_data_device_unittest.cc",
+    "host/wayland_data_drag_controller_unittest.cc",
+    "host/wayland_event_source_unittest.cc",
     "host/wayland_input_method_context_unittest.cc",
     "host/wayland_keyboard_unittest.cc",
     "host/wayland_pointer_unittest.cc",
     "host/wayland_screen_unittest.cc",
+    "host/wayland_serial_tracker_unittest.cc",
     "host/wayland_touch_unittest.cc",
+    "host/wayland_window_drag_controller_unittest.cc",
     "host/wayland_window_manager_unittests.cc",
     "host/wayland_window_unittest.cc",
+    "host/wayland_zaura_shell_unittest.cc",
+    "test/wayland_drag_drop_test.cc",
+    "test/wayland_drag_drop_test.h",
     "test/wayland_test.cc",
     "test/wayland_test.h",
-    "wayland_buffer_manager_unittest.cc",
   ]
 
   deps = [
     ":test_support",
     ":wayland",
-    "//build/config/linux/libdrm",
+    "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:cursor_shapes_protocol",
+    "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base",
     "//ui/base:buildflags",
+    "//ui/base/cursor",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/linux",
     "//ui/events/ozone/layout",
-    "//ui/gfx/linux:drm",
-    "//ui/gfx/linux:gbm",
+    "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
-    "//ui/platform_window/platform_window_handler",
+    "//ui/ozone/common",
+    "//ui/ozone/public/mojom/wayland:wayland_mojom",
+    "//ui/platform_window/wm",
   ]
+
+  if (!is_chromeos) {
+    sources += [ "host/wayland_cursor_factory_unittest.cc" ]
+  }
 
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
 
-  defines = [
-    "WL_HIDE_DEPRECATED",
-    "WAYLAND_GBM",
-  ]
+  defines = [ "WL_HIDE_DEPRECATED" ]
+
+  if (use_wayland_gbm) {
+    sources += [
+      "gpu/wayland_surface_factory_unittest.cc",
+      "wayland_buffer_manager_unittest.cc",
+    ]
+    deps += [
+      "//build/config/linux/libdrm",
+      "//ui/gfx/linux:drm",
+      "//ui/gfx/linux:gbm",
+    ]
+    defines += [ "WAYLAND_GBM" ]
+  }
 }
 
 fuzzer_test("wayland_buffer_fuzzer") {
   defines = [ "WL_HIDE_DEPRECATED" ]
-  sources = [
-    "fuzzer/wayland_buffer_fuzzer.cc",
-  ]
+  sources = [ "fuzzer/wayland_buffer_fuzzer.cc" ]
   deps = [
     ":test_support",
     ":wayland",
@@ -333,5 +562,50 @@ fuzzer_test("wayland_buffer_fuzzer") {
     "//mojo/public/cpp/system",
     "//ui/gfx:test_support",
     "//ui/platform_window:platform_window",
+  ]
+}
+
+source_set("ui_test_support") {
+  testonly = true
+  sources = [
+    "emulate/wayland_input_emulate.cc",
+    "emulate/wayland_input_emulate.h",
+    "test/wayland_ozone_ui_controls_test_helper.cc",
+    "test/wayland_ozone_ui_controls_test_helper.h",
+  ]
+
+  deps = [
+    ":wayland_proxy",
+    "//base",
+    "//third_party/wayland-protocols:weston_test",
+    "//ui/base:test_support",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:test_support",
+    "//ui/events/types:headers",
+    "//ui/gfx",
+    "//ui/platform_window/common",
+  ]
+}
+
+component("wayland_proxy") {
+  visibility = []
+  visibility += [
+    ":ui_test_support",
+    ":wayland",
+  ]
+
+  sources = [
+    "host/proxy/wayland_proxy.cc",
+    "host/proxy/wayland_proxy.h",
+  ]
+
+  defines = [ "IS_WAYLAND_PROXY_IMPL" ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/platform_window",
+    "//ui/platform_window/common",
   ]
 }

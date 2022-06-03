@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 
-@protocol ReadingListContextMenuCommands;
+@protocol ReadingListContextMenuDelegate;
 @class ReadingListContextMenuParams;
 
 // Coordinator used for the Reading List context menu.
@@ -15,27 +15,31 @@
 
 // The parameters passed on initialization.
 @property(nonatomic, strong, readonly) ReadingListContextMenuParams* params;
-// The handler for commands originating from the context menu.
-@property(nonatomic, weak) id<ReadingListContextMenuCommands> commandHandler;
+// The delegate to communicate with the context menu.
+@property(nonatomic, weak) id<ReadingListContextMenuDelegate> delegate;
 
 // Designated initializer.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                     params:(ReadingListContextMenuParams*)params
     NS_DESIGNATED_INITIALIZER;
 
 // ReadingListContextMenuCoordinator must be created using
 // ReadingListContextMenuParams.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
                                       rect:(CGRect)rect
                                       view:(UIView*)view NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
                              barButtonItem:(UIBarButtonItem*)barButtonItem
     NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message NS_UNAVAILABLE;
 @end

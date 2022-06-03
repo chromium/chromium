@@ -1,33 +1,20 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    font-size: 24px; 
-    width: 600px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    extendSelectionForwardByLineCommand();    
-    extendSelectionForwardByLineCommand();    
-    extendSelectionBackwardByCharacterCommand();
-    deleteCommand(); 
-}
-
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>^abc</div>',
+            '<div>def|<br>ghi</div>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<div>|<br></div>',
+            '<div>ghi</div>',
+        '</div>',
+    ]);
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body contenteditable id="root">
-<div id="test" class="editing">There is a tide</div>
-<div class="editing">in the affairs of men<br>Which taken at the flood</div>
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

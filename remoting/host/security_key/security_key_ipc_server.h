@@ -31,8 +31,8 @@ class SecurityKeyIpcServer {
       ClientSessionDetails* client_session_details,
       base::TimeDelta initial_connect_timeout,
       const SecurityKeyAuthHandler::SendMessageCallback& message_callback,
-      const base::Closure& connect_callback,
-      const base::Closure& done_callback);
+      base::OnceClosure connect_callback,
+      base::OnceClosure done_callback);
 
   // Used to set a Factory to generate fake/mock SecurityKeyIpcServer
   // instances for testing.
@@ -57,8 +57,8 @@ class SecurityKeyIpcServerFactory {
       ClientSessionDetails* client_session_details,
       base::TimeDelta connect_timeout,
       const SecurityKeyAuthHandler::SendMessageCallback& message_callback,
-      const base::Closure& connect_callback,
-      const base::Closure& done_callback) = 0;
+      base::OnceClosure connect_callback,
+      base::OnceClosure done_callback) = 0;
 };
 
 }  // namespace remoting

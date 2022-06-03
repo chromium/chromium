@@ -4,7 +4,9 @@
 
 #include "ui/platform_window/stub/stub_window.h"
 
-#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
@@ -43,11 +45,11 @@ void StubWindow::SetBounds(const gfx::Rect& bounds) {
   delegate_->OnBoundsChanged(bounds);
 }
 
-gfx::Rect StubWindow::GetBounds() {
+gfx::Rect StubWindow::GetBounds() const {
   return bounds_;
 }
 
-void StubWindow::SetTitle(const base::string16& title) {}
+void StubWindow::SetTitle(const std::u16string& title) {}
 
 void StubWindow::SetCapture() {}
 
@@ -84,7 +86,7 @@ bool StubWindow::ShouldUseNativeFrame() const {
   return false;
 }
 
-void StubWindow::SetCursor(PlatformCursor cursor) {}
+void StubWindow::SetCursor(scoped_refptr<PlatformCursor> cursor) {}
 
 void StubWindow::MoveCursorTo(const gfx::Point& location) {}
 

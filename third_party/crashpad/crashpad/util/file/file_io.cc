@@ -14,8 +14,8 @@
 
 #include "util/file/file_io.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace crashpad {
@@ -26,6 +26,10 @@ class FileIOReadExactly final : public internal::ReadExactlyInternal {
  public:
   explicit FileIOReadExactly(FileHandle file)
       : ReadExactlyInternal(), file_(file) {}
+
+  FileIOReadExactly(const FileIOReadExactly&) = delete;
+  FileIOReadExactly& operator=(const FileIOReadExactly&) = delete;
+
   ~FileIOReadExactly() {}
 
  private:
@@ -40,13 +44,15 @@ class FileIOReadExactly final : public internal::ReadExactlyInternal {
   }
 
   FileHandle file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOReadExactly);
 };
 
 class FileIOWriteAll final : public internal::WriteAllInternal {
  public:
   explicit FileIOWriteAll(FileHandle file) : WriteAllInternal(), file_(file) {}
+
+  FileIOWriteAll(const FileIOWriteAll&) = delete;
+  FileIOWriteAll& operator=(const FileIOWriteAll&) = delete;
+
   ~FileIOWriteAll() {}
 
  private:
@@ -56,8 +62,6 @@ class FileIOWriteAll final : public internal::WriteAllInternal {
   }
 
   FileHandle file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOWriteAll);
 };
 
 }  // namespace
@@ -65,11 +69,12 @@ class FileIOWriteAll final : public internal::WriteAllInternal {
 namespace internal {
 
 bool ReadExactlyInternal::ReadExactly(void* buffer, size_t size, bool can_log) {
-  char* buffer_c = static_cast<char*>(buffer);
+  uintptr_t buffer_int = reinterpret_cast<uintptr_t>(buffer);
   size_t total_bytes = 0;
   size_t remaining = size;
   while (remaining > 0) {
-    FileOperationResult bytes_read = Read(buffer_c, remaining, can_log);
+    FileOperationResult bytes_read =
+        Read(reinterpret_cast<char*>(buffer_int), remaining, can_log);
     if (bytes_read < 0) {
       return false;
     }
@@ -80,7 +85,7 @@ bool ReadExactlyInternal::ReadExactly(void* buffer, size_t size, bool can_log) {
       break;
     }
 
-    buffer_c += bytes_read;
+    buffer_int += bytes_read;
     remaining -= bytes_read;
     total_bytes += bytes_read;
   }
@@ -95,17 +100,18 @@ bool ReadExactlyInternal::ReadExactly(void* buffer, size_t size, bool can_log) {
 }
 
 bool WriteAllInternal::WriteAll(const void* buffer, size_t size) {
-  const char* buffer_c = static_cast<const char*>(buffer);
+  uintptr_t buffer_int = reinterpret_cast<uintptr_t>(buffer);
 
   while (size > 0) {
-    FileOperationResult bytes_written = Write(buffer_c, size);
+    FileOperationResult bytes_written =
+        Write(reinterpret_cast<const char*>(buffer_int), size);
     if (bytes_written < 0) {
       return false;
     }
 
     DCHECK_NE(bytes_written, 0);
 
-    buffer_c += bytes_written;
+    buffer_int += bytes_written;
     size -= bytes_written;
   }
 

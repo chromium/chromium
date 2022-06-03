@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+PASS This test uses interpolation-test.js.
+PASS SMIL: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0) is [10ch]
+PASS SMIL: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0.2) is [20ch]
+PASS SMIL: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0.6) is [40ch]
+PASS SMIL: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (-0.4) is [0ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0) is [10ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0.2) is [20ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (0.6) is [40ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> from replace [10ch] to replace [60ch] at (1.4) is [80ch]
+PASS SMIL: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0) is [10mm]
+PASS SMIL: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0.2) is [20mm]
+PASS SMIL: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0.6) is [40mm]
+PASS SMIL: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (-0.4) is [0mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0) is [10mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0.2) is [20mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (0.6) is [40mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> from replace [10mm] to replace [6cm] at (1.4) is [80mm]
+PASS SMIL: Interpolate attribute <r> from replace [50%] to replace [14em] at (0) is [130]
+PASS SMIL: Interpolate attribute <r> from replace [50%] to replace [14em] at (0.2) is [132]
+PASS SMIL: Interpolate attribute <r> from replace [50%] to replace [14em] at (0.6) is [136]
+PASS SMIL: Interpolate attribute <r> from replace [50%] to replace [14em] at (1) is [140]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (-0.4) is [126]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (0) is [130]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (0.2) is [132]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (0.6) is [136]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (1) is [140]
+PASS Web Animations: Interpolate attribute <r> from replace [50%] to replace [14em] at (1.4) is [144]
+PASS SMIL: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0) is [10pc]
+PASS SMIL: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0.2) is [168]
+PASS SMIL: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0.6) is [184]
+PASS SMIL: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (1) is [20ch]
+FAIL Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (-0.4) is [144] assert_equals: expected "144 " but got "104 "
+PASS Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0) is [10pc]
+FAIL Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0.2) is [168] assert_equals: expected "168 " but got "188 "
+FAIL Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (0.6) is [184] assert_equals: expected "184 " but got "244 "
+PASS Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (1) is [20ch]
+FAIL Web Animations: Interpolate attribute <r> from replace [10pc] to replace [20ch] at (1.4) is [216] assert_equals: expected "216 " but got "356 "
+Harness: the test ran to completion.
+

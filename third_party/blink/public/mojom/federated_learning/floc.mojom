@@ -1,0 +1,29 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct InterestCohort {
+  // The string representation of the interest cohort integer value in decimal.
+  // If empty, it means the access permission is denied, or the algorithm is
+  // unavailable, or the cohort is unassigned or invalidated.
+  string id;
+
+  // The version that identifies the algorithm used to compute the interest
+  // cohort |id|. If empty, it means the access permission is denied, or the
+  // algorithm is unavailable, or the cohort is unassigned or invalidated.
+  // TODO(yaoxia): when it's just that the cohort is unassigned or invalidated,
+  // while all other conditions are met, we still want to expose the version.
+  string version;
+};
+
+// The Floc service provides a method to request the interest cohort. It is
+// a per-frame interface hosted in the browser process.
+// https://github.com/jkarlin/floc
+interface FlocService {
+
+  // Asynchronously get the interest cohort. See the comments in the
+  // InterestCohort mojom struct for more details.
+  GetInterestCohort() => (InterestCohort interest_cohort);
+};

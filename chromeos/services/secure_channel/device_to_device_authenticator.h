@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
@@ -51,18 +50,18 @@ class DeviceToDeviceAuthenticator : public Authenticator,
  public:
   class Factory {
    public:
-    static std::unique_ptr<Authenticator> NewInstance(
+    static std::unique_ptr<Authenticator> Create(
         Connection* connection,
         std::unique_ptr<multidevice::SecureMessageDelegate>
             secure_message_delegate);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<Authenticator> BuildInstance(
+    virtual std::unique_ptr<Authenticator> CreateInstance(
         Connection* connection,
         std::unique_ptr<multidevice::SecureMessageDelegate>
-            secure_message_delegate);
+            secure_message_delegate) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -77,10 +76,14 @@ class DeviceToDeviceAuthenticator : public Authenticator,
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
 
+  DeviceToDeviceAuthenticator(const DeviceToDeviceAuthenticator&) = delete;
+  DeviceToDeviceAuthenticator& operator=(const DeviceToDeviceAuthenticator&) =
+      delete;
+
   ~DeviceToDeviceAuthenticator() override;
 
   // Authenticator:
-  void Authenticate(const AuthenticationCallback& callback) override;
+  void Authenticate(AuthenticationCallback callback) override;
 
  protected:
   // Creates a base::OneShotTimer instance. Exposed for testing.
@@ -172,8 +175,6 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   SessionKeys session_keys_;
 
   base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticator);
 };
 
 }  // namespace secure_channel

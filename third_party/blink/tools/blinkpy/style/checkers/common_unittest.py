@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for common.py."""
 
 import unittest
@@ -36,7 +35,6 @@ from blinkpy.style.checkers.common import TabChecker
 
 
 class CarriageReturnCheckerTest(unittest.TestCase):
-
     """Tests check_no_carriage_return()."""
 
     _category = 'whitespace/carriage_return'
@@ -69,35 +67,29 @@ class CarriageReturnCheckerTest(unittest.TestCase):
         self.assertEqual(self._style_errors, expected_errors)
 
     def test_ends_with_carriage(self):
-        self.assert_carriage_return(['carriage return\r'],
-                                    ['carriage return'],
+        self.assert_carriage_return(['carriage return\r'], ['carriage return'],
                                     [1])
 
     def test_ends_with_nothing(self):
         self.assert_carriage_return(['no carriage return'],
-                                    ['no carriage return'],
-                                    [])
+                                    ['no carriage return'], [])
 
     def test_ends_with_newline(self):
         self.assert_carriage_return(['no carriage return\n'],
-                                    ['no carriage return\n'],
-                                    [])
+                                    ['no carriage return\n'], [])
 
     def test_carriage_in_middle(self):
         # The CarriageReturnChecker checks only the final character
         # of each line.
         self.assert_carriage_return(['carriage\r in a string'],
-                                    ['carriage\r in a string'],
-                                    [])
+                                    ['carriage\r in a string'], [])
 
     def test_multiple_errors(self):
         self.assert_carriage_return(['line1', 'line2\r', 'line3\r'],
-                                    ['line1', 'line2', 'line3'],
-                                    [2, 3])
+                                    ['line1', 'line2', 'line3'], [2, 3])
 
 
 class TabCheckerTest(unittest.TestCase):
-
     """Tests for TabChecker."""
 
     def assert_tab(self, input_lines, error_lines):

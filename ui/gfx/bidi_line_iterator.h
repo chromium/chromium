@@ -5,9 +5,9 @@
 #ifndef UI_GFX_BIDI_LINE_ITERATOR_H_
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
+#include <string>
+
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"
@@ -21,11 +21,15 @@ namespace gfx {
 class GFX_EXPORT BiDiLineIterator {
  public:
   BiDiLineIterator();
+
+  BiDiLineIterator(const BiDiLineIterator&) = delete;
+  BiDiLineIterator& operator=(const BiDiLineIterator&) = delete;
+
   ~BiDiLineIterator();
 
   // Initializes the bidirectional iterator with the specified text.  Returns
   // whether initialization succeeded.
-  bool Open(const base::string16& text, base::i18n::TextDirection direction);
+  bool Open(const std::u16string& text, base::i18n::TextDirection direction);
 
   // Returns the number of visual runs in the text, or zero on error.
   int CountRuns() const;
@@ -38,8 +42,6 @@ class GFX_EXPORT BiDiLineIterator {
 
  private:
   UBiDi* bidi_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIterator);
 };
 
 }  // namespace gfx

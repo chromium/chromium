@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.webapps;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,10 +19,16 @@ import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.ShortcutSource;
-import org.chromium.content_public.common.ScreenOrientationValues;
-import org.chromium.webapk.lib.common.WebApkConstants;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.components.webapk.lib.common.WebApkConstants;
+import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.io.File;
 
@@ -38,7 +43,6 @@ public class WebappDataStorage {
     static final String SHARED_PREFS_FILE_PREFIX = "webapp_";
     static final String KEY_SPLASH_ICON = "splash_icon";
     static final String KEY_LAST_USED = "last_used";
-    static final String KEY_HAS_BEEN_LAUNCHED = "has_been_launched";
     static final String KEY_URL = "url";
     static final String KEY_SCOPE = "scope";
     static final String KEY_ICON = "icon";
@@ -184,7 +188,7 @@ public class WebappDataStorage {
         new AsyncTask<Bitmap>() {
             @Override
             protected final Bitmap doInBackground() {
-                return ShortcutHelper.decodeBitmapFromString(
+                return BitmapHelper.decodeBitmapFromString(
                         mPreferences.getString(KEY_SPLASH_ICON, null));
             }
 
@@ -199,7 +203,7 @@ public class WebappDataStorage {
 
     /**
      * Update the splash screen image associated with the web app with the specified data. The image
-     * must have been encoded using {@link ShortcutHelper#encodeBitmapAsString}.
+     * must have been encoded using {@link BitmapHelper#encodeBitmapAsString}.
      * @param splashScreenImage The image which should be shown on the splash screen of the web app.
      */
     public void updateSplashScreenImage(String splashScreenImage) {
@@ -221,22 +225,23 @@ public class WebappDataStorage {
                 mPreferences.getString(KEY_SCOPE, null), mPreferences.getString(KEY_NAME, null),
                 mPreferences.getString(KEY_SHORT_NAME, null),
                 mPreferences.getString(KEY_ICON, null), version,
-                mPreferences.getInt(KEY_DISPLAY_MODE, WebDisplayMode.STANDALONE),
-                mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationValues.DEFAULT),
-                mPreferences.getLong(
-                        KEY_THEME_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
-                mPreferences.getLong(
-                        KEY_BACKGROUND_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
+                mPreferences.getInt(KEY_DISPLAY_MODE, DisplayMode.STANDALONE),
+                mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationLockType.DEFAULT),
+                mPreferences.getLong(KEY_THEME_COLOR, ColorUtils.INVALID_COLOR),
+                mPreferences.getLong(KEY_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR),
                 mPreferences.getBoolean(KEY_IS_ICON_GENERATED, false),
                 mPreferences.getBoolean(KEY_IS_ICON_ADAPTIVE, false));
     }
 
     /**
-     * Updates the data stored in this object to match that in the supplied {@link WebappInfo}.
+     * Updates the data stored in this object to match that in the supplied
+     * {@link BrowserServicesIntentDataProvider}.
      * @param info The WebappInfo to pull web app data from.
      */
-    public void updateFromWebappInfo(WebappInfo info) {
-        if (info == null) return;
+    public void updateFromWebappIntentDataProvider(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        if (intentDataProvider == null) return;
+        WebappInfo info = WebappInfo.create(intentDataProvider);
 
         SharedPreferences.Editor editor = mPreferences.edit();
         boolean updated = false;
@@ -256,20 +261,19 @@ public class WebappDataStorage {
         }
 
         // For all other fields, assume that if the version key is present and equal to
-        // ShortcutHelper.WEBAPP_SHORTCUT_VERSION, then all fields are present and do not need to be
-        // updated. All fields except for the last used time, scope, and URL are either set or
+        // WebappConstants.WEBAPP_SHORTCUT_VERSION, then all fields are present and do not need to
+        // be updated. All fields except for the last used time, scope, and URL are either set or
         // cleared together.
         if (mPreferences.getInt(KEY_VERSION, VERSION_INVALID)
-                != ShortcutHelper.WEBAPP_SHORTCUT_VERSION) {
-            editor.putInt(KEY_VERSION, ShortcutHelper.WEBAPP_SHORTCUT_VERSION);
+                != WebappConstants.WEBAPP_SHORTCUT_VERSION) {
+            editor.putInt(KEY_VERSION, WebappConstants.WEBAPP_SHORTCUT_VERSION);
 
             if (info.isForWebApk()) {
-                WebApkInfo webApkInfo = (WebApkInfo) info;
-                editor.putString(KEY_WEBAPK_PACKAGE_NAME, webApkInfo.webApkPackageName());
-                editor.putString(KEY_WEBAPK_MANIFEST_URL, webApkInfo.manifestUrl());
-                editor.putInt(KEY_WEBAPK_VERSION_CODE, webApkInfo.webApkVersionCode());
+                editor.putString(KEY_WEBAPK_PACKAGE_NAME, info.webApkPackageName());
+                editor.putString(KEY_WEBAPK_MANIFEST_URL, info.manifestUrl());
+                editor.putInt(KEY_WEBAPK_VERSION_CODE, info.webApkVersionCode());
                 editor.putLong(KEY_WEBAPK_INSTALL_TIMESTAMP,
-                        fetchWebApkInstallTimestamp(webApkInfo.webApkPackageName()));
+                        fetchWebApkInstallTimestamp(info.webApkPackageName()));
             } else {
                 editor.putString(KEY_NAME, info.name());
                 editor.putString(KEY_SHORT_NAME, info.shortName());
@@ -302,7 +306,7 @@ public class WebappDataStorage {
      * Deletes the data for a web app by clearing all the information inside the SharedPreferences
      * file. This does NOT delete the file itself but the file is left empty.
      */
-    void delete() {
+    public void delete() {
         deletePendingUpdateRequestFile();
         mPreferences.edit().clear().apply();
     }
@@ -317,7 +321,6 @@ public class WebappDataStorage {
         SharedPreferences.Editor editor = mPreferences.edit();
 
         editor.remove(KEY_LAST_USED);
-        editor.remove(KEY_HAS_BEEN_LAUNCHED);
         editor.remove(KEY_URL);
         editor.remove(KEY_SCOPE);
         editor.remove(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME);
@@ -394,16 +397,6 @@ public class WebappDataStorage {
         mPreferences.edit().putLong(KEY_LAST_USED, sClock.currentTimeMillis()).apply();
     }
 
-    /** Returns true if the web app has been launched at least once from the home screen. */
-    boolean hasBeenLaunched() {
-        return mPreferences.getBoolean(KEY_HAS_BEEN_LAUNCHED, false);
-    }
-
-    /** Sets whether the web app was launched at least once from the home screen. */
-    void setHasBeenLaunched() {
-        mPreferences.edit().putBoolean(KEY_HAS_BEEN_LAUNCHED, true).apply();
-    }
-
     /**
      * Returns the package name if the data is for a WebAPK, null otherwise.
      */
@@ -464,7 +457,7 @@ public class WebappDataStorage {
      * Returns whether to show the user a privacy disclosure (used for TWAs and unbound WebAPKs).
      * This is not cleared until the user explicitly acknowledges it.
      */
-    boolean shouldShowDisclosure() {
+    public boolean shouldShowDisclosure() {
         return mPreferences.getBoolean(KEY_SHOW_DISCLOSURE, false);
     }
 
@@ -473,7 +466,7 @@ public class WebappDataStorage {
      * disclosure on every resume of the Webapp. This should be called when the user has
      * acknowledged the disclosure.
      */
-    void clearShowDisclosure() {
+    public void clearShowDisclosure() {
         mPreferences.edit().putBoolean(KEY_SHOW_DISCLOSURE, false).apply();
     }
 
@@ -482,7 +475,7 @@ public class WebappDataStorage {
      * This is set the first time an app is opened without storage (either right after install or
      * after Chrome's storage is cleared).
      */
-    void setShowDisclosure() {
+    public void setShowDisclosure() {
         mPreferences.edit().putBoolean(KEY_SHOW_DISCLOSURE, true).apply();
     }
 
@@ -559,7 +552,7 @@ public class WebappDataStorage {
      * Returns file where WebAPK update data should be stored and stores the file name in
      * SharedPreferences.
      */
-    String createAndSetUpdateRequestFilePath(WebApkInfo info) {
+    String createAndSetUpdateRequestFilePath(WebappInfo info) {
         String filePath = WebappDirectoryManager.getWebApkUpdateFilePathForStorage(this).getPath();
         mPreferences.edit().putString(KEY_PENDING_UPDATE_FILE_PATH, filePath).apply();
         return filePath;

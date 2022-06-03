@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
 import("//components/nacl/features.gni")
@@ -19,9 +20,6 @@ source_set("minimal") {
     "nacl_listener.h",
     "nacl_main.cc",
     "nacl_main_platform_delegate.h",
-    "nacl_main_platform_delegate_linux.cc",
-    "nacl_main_platform_delegate_mac.mm",
-    "nacl_main_platform_delegate_win.cc",
     "nacl_trusted_listener.cc",
     "nacl_trusted_listener.h",
     "nacl_validation_db.h",
@@ -44,8 +42,16 @@ source_set("minimal") {
     "//services/service_manager/public/cpp",
   ]
 
-  if (is_linux) {
-    deps += [ "//services/service_manager/zygote" ]
+  if (is_win) {
+    sources += [ "nacl_main_platform_delegate_win.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "nacl_main_platform_delegate_mac.mm" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "nacl_main_platform_delegate_linux.cc" ]
   }
 }
 
@@ -56,21 +62,20 @@ source_set("minimal") {
 source_set("minimal_content_dummy") {
   check_includes = false
   sources = [
-    "//content/public/common/common_sandbox_support_linux.h",
     "//content/public/common/main_function_params.h",
     "//content/public/common/sandbox_init.h",
   ]
 
   # Deps required by the above headers.
-  deps = [
-    "//media:media_buildflags",
-  ]
+  deps = [ "//media:media_buildflags" ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "//content/public/common/zygote/sandbox_support_linux.h" ]
+  }
 }
 
 source_set("loader") {
-  public_deps = [
-    ":minimal",
-  ]
+  public_deps = [ ":minimal" ]
   deps = [
     "//components/nacl/common",
     "//content/public/common",
@@ -114,7 +119,7 @@ test("nacl_loader_unittests") {
   }
 }
 
-if (is_linux) {
+if (is_linux || is_chromeos) {
   executable("nacl_helper") {
     sources = [
       "nacl_helper_linux.cc",
@@ -131,8 +136,7 @@ if (is_linux) {
       "//ipc",
       "//mojo/core/embedder",
       "//sandbox/linux:sandbox_services",
-      "//services/service_manager/sandbox",
-      "//services/service_manager/zygote",
+      "//sandbox/policy",
       "//url/ipc:url_ipc",
     ]
 
@@ -160,33 +164,24 @@ if (is_linux) {
       configs -= [ "//build/config/compiler:export_dynamic" ]
     }
 
-    data_deps = [
-      "//native_client/src/trusted/service_runtime/linux:bootstrap",
-    ]
+    data_deps =
+        [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
   }
 
   # For setting up nacl_helper.
   source_set("nacl_helper_integration") {
-    public = [
-      "nacl_helper_linux.h",
-    ]
-    data_deps = [
-      ":nacl_helper",
-    ]
+    public = [ "nacl_helper_linux.h" ]
+    data_deps = [ ":nacl_helper" ]
   }
 
   if (enable_nacl_nonsfi) {
     test("nacl_helper_nonsfi_unittests") {
-      sources = [
-        "nonsfi/nacl_helper_nonsfi_unittests.cc",
-      ]
+      sources = [ "nonsfi/nacl_helper_nonsfi_unittests.cc" ]
       deps = [
         "//base",
         "//base/test:test_launcher_nacl_nonsfi",
       ]
-      data_deps = [
-        ":nacl_helper_nonsfi_unittests_main_copy(//build/toolchain/nacl:newlib_pnacl_nonsfi)",
-      ]
+      data_deps = [ ":nacl_helper_nonsfi_unittests_main_copy(//build/toolchain/nacl:newlib_pnacl_nonsfi)" ]
     }
 
     group("helper_nonsfi") {
@@ -210,10 +205,11 @@ if (is_win && target_cpu == "x86" && current_cpu == "x64") {
       "//base",
       "//components/nacl/broker",
       "//components/nacl/common:switches",
+      "//content/public/common:static_main_function_params",
       "//content/public/common:static_switches",
       "//mojo/core/embedder",
       "//sandbox",
-      "//services/service_manager/sandbox:sandbox",
+      "//sandbox/policy",
     ]
   }
 }
@@ -221,7 +217,6 @@ if (is_win && target_cpu == "x86" && current_cpu == "x64") {
 if (is_nacl_nonsfi) {
   executable("nacl_helper_nonsfi_nexe") {
     output_name = "nacl_helper_nonsfi"
-    set_sources_assignment_filter([])
     sources = [
       "nacl_helper_linux.cc",
       "nacl_helper_linux.h",
@@ -238,7 +233,6 @@ if (is_nacl_nonsfi) {
       "//components/nacl/common:minimal",
       "//components/nacl/common:mojo_bindings",
       "//components/nacl/common:switches",
-      "//components/tracing",
       "//content",
       "//ipc",
       "//mojo/core/embedder",
@@ -253,14 +247,12 @@ if (is_nacl_nonsfi) {
       "//native_client/src/untrusted/nacl",
       "//ppapi/proxy",
       "//sandbox/linux:sandbox",
+      "//sandbox/policy",
       "//services/service_manager/public/cpp",
-      "//services/service_manager/sandbox",
-      "//services/service_manager/zygote:zygote_util",
     ]
   }
 
   source_set("nacl_helper_nonsfi_sandbox") {
-    set_sources_assignment_filter([])
     sources = [
       "nonsfi/nonsfi_sandbox.cc",
       "nonsfi/nonsfi_sandbox.h",
@@ -278,15 +270,9 @@ if (is_nacl_nonsfi) {
   }
 
   copy("nacl_helper_nonsfi_copy") {
-    sources = [
-      "${root_out_dir}/nacl_helper_nonsfi",
-    ]
-    outputs = [
-      "${root_build_dir}/{{source_file_part}}",
-    ]
-    deps = [
-      ":nacl_helper_nonsfi_nexe",
-    ]
+    sources = [ "${root_out_dir}/nacl_helper_nonsfi" ]
+    outputs = [ "${root_build_dir}/{{source_file_part}}" ]
+    deps = [ ":nacl_helper_nonsfi_nexe" ]
   }
 
   test("nacl_helper_nonsfi_unittests_main") {
@@ -311,14 +297,8 @@ if (is_nacl_nonsfi) {
 
   copy("nacl_helper_nonsfi_unittests_main_copy") {
     testonly = true
-    sources = [
-      "${root_out_dir}/nacl_helper_nonsfi_unittests_main",
-    ]
-    outputs = [
-      "${root_build_dir}/{{source_file_part}}",
-    ]
-    deps = [
-      ":nacl_helper_nonsfi_unittests_main",
-    ]
+    sources = [ "${root_out_dir}/nacl_helper_nonsfi_unittests_main" ]
+    outputs = [ "${root_build_dir}/{{source_file_part}}" ]
+    deps = [ ":nacl_helper_nonsfi_unittests_main" ]
   }
 }

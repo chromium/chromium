@@ -5,8 +5,13 @@
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -14,19 +19,16 @@ namespace blink {
 // <specdef
 // href="https://html.spec.whatwg.org/C/#creating-a-javascript-module-script">
 JSModuleScript* JSModuleScript::Create(
-    const ParkableString& original_source_text,
-    SingleCachedMetadataHandler* cache_handler,
-    ScriptSourceLocationType source_location_type,
+    const ModuleScriptCreationParams& original_params,
     Modulator* modulator,
-    const KURL& source_url,
-    const KURL& base_url,
     const ScriptFetchOptions& options,
     const TextPosition& start_position) {
   // <spec step="1">If scripting is disabled for settings's responsible browsing
   // context, then set source to the empty string.</spec>
-  ParkableString source_text;
-  if (!modulator->IsScriptingDisabled())
-    source_text = original_source_text;
+  const ModuleScriptCreationParams& params =
+      modulator->IsScriptingDisabled()
+          ? original_params.CopyWithClearedSourceText()
+          : original_params;
 
   // <spec step="2">Let script be a new module script that this algorithm will
   // subsequently initialize.</spec>
@@ -46,9 +48,8 @@ JSModuleScript* JSModuleScript::Create(
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result = ModuleRecord::Compile(
-      isolate, source_text.ToString(), source_url, base_url, options,
-      start_position, exception_state, modulator->GetV8CacheOptions(),
-      cache_handler, source_location_type, &produce_cache_data);
+      script_state, params, options, start_position, exception_state,
+      modulator->GetV8CacheOptions(), &produce_cache_data);
 
   // CreateInternal processes Steps 4 and 8-10.
   //
@@ -56,9 +57,9 @@ JSModuleScript* JSModuleScript::Create(
   // Steps 8-13 before Step 6. In a case that compile failed, we will
   // immediately turn the script into errored state. Thus the members will not
   // be used for the speced algorithms, but may be used from inspector.
-  JSModuleScript* script =
-      CreateInternal(source_text.length(), modulator, result, source_url,
-                     base_url, options, start_position, produce_cache_data);
+  JSModuleScript* script = CreateInternal(
+      params.GetSourceText().length(), modulator, result, params.SourceURL(),
+      params.BaseURL(), options, start_position, produce_cache_data);
 
   // <spec step="8">If result is a list of errors, then:</spec>
   if (exception_state.HadException()) {
@@ -76,27 +77,36 @@ JSModuleScript* JSModuleScript::Create(
   // <spec step="9">For each string requested of
   // result.[[RequestedModules]]:</spec>
   for (const auto& requested :
-       modulator->ModuleRequestsFromModuleRecord(result)) {
+       ModuleRecord::ModuleRequests(script_state, result)) {
     // <spec step="9.1">Let url be the result of resolving a module specifier
     // given script's base URL and requested.</spec>
     //
     // <spec step="9.2">If url is failure, then:</spec>
     String failure_reason;
-    if (script->ResolveModuleSpecifier(requested.specifier, &failure_reason)
-            .IsValid())
-      continue;
+    bool module_specifier_is_valid =
+        script->ResolveModuleSpecifier(requested.specifier, &failure_reason)
+            .IsValid();
+    ModuleType module_type = modulator->ModuleTypeFromRequest(requested);
 
-    // <spec step="9.2.1">Let error be a new TypeError exception.</spec>
-    String error_message = "Failed to resolve module specifier \"" +
-                           requested.specifier + "\". " + failure_reason;
-    v8::Local<v8::Value> error =
-        V8ThrowException::CreateTypeError(isolate, error_message);
+    if (!module_specifier_is_valid || module_type == ModuleType::kInvalid) {
+      // <spec step="9.2.1">Let error be a new TypeError exception.</spec>
+      String error_message;
+      if (!module_specifier_is_valid) {
+        error_message = "Failed to resolve module specifier \"" +
+                        requested.specifier + "\". " + failure_reason;
+      } else {
+        error_message = "\"" + requested.GetModuleTypeString() +
+                        "\" is not a valid module type.";
+      }
+      v8::Local<v8::Value> error =
+          V8ThrowException::CreateTypeError(isolate, error_message);
 
-    // <spec step="9.2.2">Set script's parse error to error.</spec>
-    script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
+      // <spec step="9.2.2">Set script's parse error to error.</spec>
+      script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
 
-    // <spec step="9.2.3">Return script.</spec>
-    return script;
+      // <spec step="9.2.3">Return script.</spec>
+      return script;
+    }
   }
 
   // <spec step="11">Return script.</spec>
@@ -168,13 +178,16 @@ void JSModuleScript::ProduceCache() {
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  V8CodeCache::ProduceCache(isolate, produce_cache_data_, source_text_length_,
-                            SourceURL(), StartPosition());
+  ExecutionContext* execution_context =
+      ExecutionContext::From(isolate->GetCurrentContext());
+  V8CodeCache::ProduceCache(
+      isolate, ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      produce_cache_data_, source_text_length_, SourceURL(), StartPosition());
 
   produce_cache_data_ = nullptr;
 }
 
-void JSModuleScript::Trace(Visitor* visitor) {
+void JSModuleScript::Trace(Visitor* visitor) const {
   visitor->Trace(produce_cache_data_);
   ModuleScript::Trace(visitor);
 }

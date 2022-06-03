@@ -33,10 +33,6 @@ AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-AutofillPrivateEventRouterFactory::
-    ~AutofillPrivateEventRouterFactory() {
-}
-
 KeyedService* AutofillPrivateEventRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return AutofillPrivateEventRouter::Create(context);
@@ -51,10 +47,6 @@ AutofillPrivateEventRouterFactory::GetBrowserContextToUse(
 bool AutofillPrivateEventRouterFactory::
     ServiceIsCreatedWithBrowserContext() const {
   return true;
-}
-
-bool AutofillPrivateEventRouterFactory::ServiceIsNULLWhileTesting() const {
-  return false;
 }
 
 }  // namespace extensions

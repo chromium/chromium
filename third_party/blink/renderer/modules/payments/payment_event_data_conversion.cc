@@ -5,36 +5,26 @@
 #include "third_party/blink/renderer/modules/payments/payment_event_data_conversion.h"
 
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/modules/payments/can_make_payment_event_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_currency_amount.h"
-#include "third_party/blink/renderer/modules/payments/payment_details_modifier.h"
-#include "third_party/blink/renderer/modules/payments/payment_item.h"
-#include "third_party/blink/renderer/modules/payments/payment_method_data.h"
-#include "third_party/blink/renderer/modules/payments/payment_options.h"
-#include "third_party/blink/renderer/modules/payments/payment_request_event_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_shipping_option.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_request_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 namespace {
-
-PaymentCurrencyAmount* ToPaymentCurrencyAmount(
-    payments::mojom::blink::PaymentCurrencyAmountPtr data) {
-  PaymentCurrencyAmount* amount = PaymentCurrencyAmount::Create();
-  if (!data)
-    return amount;
-  amount->setCurrency(data->currency);
-  amount->setValue(data->value);
-  return amount;
-}
 
 PaymentItem* ToPaymentItem(payments::mojom::blink::PaymentItemPtr data) {
   PaymentItem* item = PaymentItem::Create();
   if (!data)
     return item;
   item->setLabel(data->label);
-  item->setAmount(ToPaymentCurrencyAmount(std::move(data->amount)));
+  item->setAmount(
+      PaymentEventDataConversion::ToPaymentCurrencyAmount(data->amount));
   item->setPending(data->pending);
   return item;
 }
@@ -74,8 +64,10 @@ PaymentMethodData* ToPaymentMethodData(
   DCHECK(data);
   PaymentMethodData* method_data = PaymentMethodData::Create();
   method_data->setSupportedMethod(data->supported_method);
-  method_data->setData(
-      StringDataToScriptValue(script_state, data->stringified_data));
+  ScriptValue v8_data =
+      StringDataToScriptValue(script_state, data->stringified_data);
+  if (!v8_data.IsEmpty())
+    method_data->setData(std::move(v8_data));
   return method_data;
 }
 
@@ -110,7 +102,7 @@ PaymentShippingOption* ToShippingOption(
   PaymentShippingOption* shipping_option = PaymentShippingOption::Create();
 
   shipping_option->setAmount(
-      ToPaymentCurrencyAmount(std::move(option->amount)));
+      PaymentEventDataConversion::ToPaymentCurrencyAmount(option->amount));
   shipping_option->setLabel(option->label);
   shipping_option->setId(option->id);
   shipping_option->setSelected(option->selected);
@@ -118,6 +110,16 @@ PaymentShippingOption* ToShippingOption(
 }
 
 }  // namespace
+
+PaymentCurrencyAmount* PaymentEventDataConversion::ToPaymentCurrencyAmount(
+    payments::mojom::blink::PaymentCurrencyAmountPtr& input) {
+  PaymentCurrencyAmount* output = PaymentCurrencyAmount::Create();
+  if (!input)
+    return output;
+  output->setCurrency(input->currency);
+  output->setValue(input->value);
+  return output;
+}
 
 PaymentRequestEventInit* PaymentEventDataConversion::ToPaymentRequestEventInit(
     ScriptState* script_state,
@@ -140,7 +142,7 @@ PaymentRequestEventInit* PaymentEventDataConversion::ToPaymentRequestEventInit(
     method_data.push_back(ToPaymentMethodData(script_state, std::move(md)));
   }
   event_init->setMethodData(method_data);
-  event_init->setTotal(ToPaymentCurrencyAmount(std::move(event_data->total)));
+  event_init->setTotal(ToPaymentCurrencyAmount(event_data->total));
   HeapVector<Member<PaymentDetailsModifier>> modifiers;
   for (auto& modifier : event_data->modifiers) {
     modifiers.push_back(

@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Contains filter-related code."""
 
 
@@ -53,7 +52,6 @@ def validate_filter_rules(filter_rules, all_categories):
 
 
 class _CategoryFilter(object):
-
     """Filters whether to check style categories."""
 
     def __init__(self, filter_rules=None):
@@ -74,7 +72,8 @@ class _CategoryFilter(object):
             filter_rules = []
 
         self._filter_rules = filter_rules
-        self._should_check_category = {}  # Cached dictionary of category to True/False
+        # Cached dictionary of category to True/False
+        self._should_check_category = {}
 
     def __str__(self):
         return ','.join(self._filter_rules)
@@ -115,7 +114,6 @@ class _CategoryFilter(object):
 
 
 class FilterConfiguration(object):
-
     """Supports filtering with path-specific and user-specified rules."""
 
     def __init__(self, base_rules=None, path_specific=None, user_rules=None):
@@ -194,7 +192,7 @@ class FilterConfiguration(object):
         if self._path_specific_lower is None:
             self._path_specific_lower = []
             for (sub_paths, path_rules) in self._path_specific:
-                sub_paths = map(str.lower, sub_paths)
+                sub_paths = list(map(str.lower, sub_paths))
                 self._path_specific_lower.append((sub_paths, path_rules))
         return self._path_specific_lower
 

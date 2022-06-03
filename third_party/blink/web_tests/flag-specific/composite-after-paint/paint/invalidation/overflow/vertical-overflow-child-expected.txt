@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV class='container'",
-          "rect": [214, 21, 100, 100],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [214, 21, 100, 100]
       ]
     }
   ]

@@ -1,0 +1,20 @@
+Make patches more descriptive
+=============================
+
+By default hunk headers of a patch will look like this:
+
+    @@ -1227,6 +1227,8 @@ authorization from the authors.
+
+Which is not very usefull as it doesn't give a hint where the change
+happened (except for the line number). To make those hunk headers more
+descriptive, i.e.:
+
+    @@ -1227,6 +1227,8 @@ <struct name="HierarchyChange">
+
+Add these 2 lines to your .git/config file:
+
+    [diff "xcb"]
+        xfuncname = "(<\\b(xcb|enum|event|request|struct|union)\\b.*>)"
+
+For more background on this magic have a look at src/.gitattributes and
+the man page gitattributes(5) chapter "Defining a custom hunk-header".

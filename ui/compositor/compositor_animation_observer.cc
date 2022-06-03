@@ -1,0 +1,61 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/compositor/compositor_animation_observer.h"
+
+#include "base/debug/debugger.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
+
+namespace ui {
+
+// Do not fail on SANITIZER builds as they run slow.
+#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||          \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER)
+#define NOTREACHED_OR_WARN() LOG(WARNING)
+#else
+#define NOTREACHED_OR_WARN() NOTREACHED()
+#endif
+
+// Log animations that took more than 1m.  When DCHECK is enabled, it will fail
+// with DCHECK error.
+constexpr base::TimeDelta kThreshold = base::Minutes(1);
+
+CompositorAnimationObserver::CompositorAnimationObserver(
+    const base::Location& location)
+    : location_(location) {}
+
+CompositorAnimationObserver::~CompositorAnimationObserver() = default;
+
+void CompositorAnimationObserver::Start() {
+  start_.emplace(base::TimeTicks::Now());
+}
+
+void CompositorAnimationObserver::Check() {
+  if (start_ && (base::TimeTicks::Now() - *start_ > kThreshold)) {
+    NotifyFailure();
+    start_.reset();
+  }
+}
+
+void CompositorAnimationObserver::ResetIfActive() {
+  if (start_)
+    start_.emplace(base::TimeTicks::Now());
+}
+
+void CompositorAnimationObserver::NotifyFailure() {
+  if (!base::debug::BeingDebugged() &&
+      !base::subtle::ScopedTimeClockOverrides::overrides_active()) {
+    NOTREACHED_OR_WARN()
+        << "CompositorAnimationObserver is active for too long ("
+        << (base::TimeTicks::Now() - *start_).InSecondsF()
+        << "s) location=" << location_.ToString();
+  }
+}
+
+}  // namespace ui

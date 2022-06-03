@@ -4,6 +4,7 @@
 
 #include "chromeos/components/tether/network_host_scan_cache.h"
 
+#include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/tether_host_response_recorder.h"

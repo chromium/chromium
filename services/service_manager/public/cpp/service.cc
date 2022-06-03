@@ -42,7 +42,7 @@ void Service::CreatePackagedServiceInstance(
     const std::string& service_name,
     mojo::PendingReceiver<mojom::Service> service_receiver,
     CreatePackagedServiceInstanceCallback callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 void Service::OnDisconnected() {

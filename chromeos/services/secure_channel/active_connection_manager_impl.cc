@@ -4,8 +4,7 @@
 
 #include "chromeos/services/secure_channel/active_connection_manager_impl.h"
 
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/multiplexed_channel_impl.h"
 
@@ -18,13 +17,13 @@ ActiveConnectionManagerImpl::Factory*
     ActiveConnectionManagerImpl::Factory::test_factory_ = nullptr;
 
 // static
-ActiveConnectionManagerImpl::Factory*
-ActiveConnectionManagerImpl::Factory::Get() {
+std::unique_ptr<ActiveConnectionManager>
+ActiveConnectionManagerImpl::Factory::Create(
+    ActiveConnectionManager::Delegate* delegate) {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance(delegate);
 
-  static base::NoDestructor<ActiveConnectionManagerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new ActiveConnectionManagerImpl(delegate));
 }
 
 // static
@@ -34,12 +33,6 @@ void ActiveConnectionManagerImpl::Factory::SetFactoryForTesting(
 }
 
 ActiveConnectionManagerImpl::Factory::~Factory() = default;
-
-std::unique_ptr<ActiveConnectionManager>
-ActiveConnectionManagerImpl::Factory::BuildInstance(
-    ActiveConnectionManager::Delegate* delegate) {
-  return base::WrapUnique(new ActiveConnectionManagerImpl(delegate));
-}
 
 ActiveConnectionManagerImpl::ActiveConnectionManagerImpl(
     ActiveConnectionManager::Delegate* delegate)
@@ -68,7 +61,7 @@ void ActiveConnectionManagerImpl::PerformAddActiveConnection(
     std::vector<std::unique_ptr<ClientConnectionParameters>> initial_clients,
     const ConnectionDetails& connection_details) {
   details_to_channel_map_[connection_details] =
-      MultiplexedChannelImpl::Factory::Get()->BuildInstance(
+      MultiplexedChannelImpl::Factory::Create(
           std::move(authenticated_channel), this /* delegate */,
           connection_details, &initial_clients);
 }

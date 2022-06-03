@@ -63,4 +63,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebLabelElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LABEL_ELEMENT_H_

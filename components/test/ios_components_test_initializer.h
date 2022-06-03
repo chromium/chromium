@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace network {
 class TestNetworkConnectionTracker;
 }
@@ -17,13 +15,14 @@ class TestNetworkConnectionTracker;
 class IosComponentsTestInitializer {
  public:
   IosComponentsTestInitializer();
+  IosComponentsTestInitializer(const IosComponentsTestInitializer&) = delete;
+  IosComponentsTestInitializer& operator=(const IosComponentsTestInitializer&) =
+      delete;
   virtual ~IosComponentsTestInitializer();
 
  private:
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(IosComponentsTestInitializer);
 };
 
 #endif  // COMPONENTS_TEST_IOS_COMPONENTS_TEST_INITIALIZER_H_

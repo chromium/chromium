@@ -12,16 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Command-line tool to validate and pretty-print JSON5.
+"""A tool to parse and pretty-print JSON5.
 
-Usage::
+Usage:
 
     $ echo '{foo:"bar"}' | python -m json5.tool
-    { foo: "bar" }
-    $
+    {
+        foo: 'bar',
+    }
+    $ echo '{foo:"bar"}' | python -m json5.tool --as-json
+    {
+        "foo": "bar"
+    }
 """
 
-import os
 import sys
 
 from . import arg_parser
@@ -33,14 +37,35 @@ from .version import VERSION
 def main(argv=None, host=None):
     host = host or Host()
 
-    parser = arg_parser.ArgumentParser(host, prog='json5')
+    parser = arg_parser.ArgumentParser(host, prog='json5', desc=__doc__)
     parser.add_argument('-c', metavar='STR', dest='cmd',
-                        help='inline json5 string')
-    parser.add_argument('--json', dest='as_json', action='store_const',
+                        help='inline json5 string to read instead of '
+                             'reading from a file')
+    parser.add_argument('--as-json', dest='as_json', action='store_const',
                         const=True, default=False,
-                        help='output as json')
-    parser.add_argument('files', nargs='*', default=[],
-                        help=parser.SUPPRESS)
+                        help='output as JSON '
+                             '(same as --quote-keys --no-trailing-commas)')
+    parser.add_argument('--indent', dest='indent', default=4,
+                        help='amount to indent each line '
+                             '(default is 4 spaces)')
+    parser.add_argument('--quote-keys', action='store_true', default=False,
+                        help='quote all object keys')
+    parser.add_argument('--no-quote-keys', action='store_false',
+                        dest='quote_keys',
+                        help="don't quote object keys that are identifiers"
+                             " (this is the default)")
+    parser.add_argument('--trailing-commas', action='store_true',
+                        default=True,
+                        help='add commas after the last item in multi-line '
+                             'objects and arrays (this is the default)')
+    parser.add_argument('--no-trailing-commas', dest='trailing_commas',
+                        action='store_false',
+                        help='do not add commas after the last item in '
+                             'multi-line lists and objects')
+    parser.add_argument('file', metavar='FILE', nargs='?', default='-',
+                        help='optional file to read JSON5 document from; if '
+                             'not specified or "-", will read from stdin '
+                             'instead')
     args = parser.parse_args(argv)
 
     if parser.exit_status is not None:
@@ -52,10 +77,29 @@ def main(argv=None, host=None):
 
     if args.cmd:
         inp = args.cmd
+    elif args.file == '-':
+        inp = host.stdin.read()
     else:
-        inp = ''.join(host.fileinput(args.files))
+        inp = host.read_text_file(args.file)
 
-    host.print_(lib.dumps(lib.loads(inp), compact=True, as_json=args.as_json))
+    if args.indent == 'None':
+        args.indent = None
+    else:
+        try:
+            args.indent = int(args.indent)
+        except ValueError:
+            pass
+
+    if args.as_json:
+        args.quote_keys = True
+        args.trailing_commas = False
+
+    obj = lib.loads(inp)
+    s = lib.dumps(obj,
+                  indent=args.indent,
+                  quote_keys=args.quote_keys,
+                  trailing_commas=args.trailing_commas)
+    host.print_(s)
     return 0
 
 

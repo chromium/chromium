@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/base/mac/audio_latency_mac.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/limits.h"
 
 namespace media {

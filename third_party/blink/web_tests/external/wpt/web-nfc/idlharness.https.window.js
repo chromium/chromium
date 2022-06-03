@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 'use strict';
 
@@ -17,10 +18,9 @@ const message = {
 
 idl_test(
   ['web-nfc'],
-  ['html', 'dom', 'WebIDL'],
+  ['html', 'dom', 'webidl'],
   idl_array => {
     idl_array.add_objects({
-      NDEFWriter: ['new NDEFWriter();'],
       NDEFReader: ['new NDEFReader();'],
       NDEFRecord: [`new NDEFRecord(${JSON.stringify(record)});`],
       NDEFMessage: [`new NDEFMessage(${JSON.stringify(message)});`],

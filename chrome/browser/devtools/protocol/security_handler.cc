@@ -11,11 +11,11 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace {
@@ -34,7 +34,6 @@ const char kRanContentWithCertErrorSecurityStateIssueId[] =
     "ran-content-with-cert-error";
 const char kPkpBypassedSecurityStateIssueId[] = "pkp-bypassed";
 const char kIsErrorPageSecurityStateIssueId[] = "is-error-page";
-const char kInsecureInputEventsSecurityStateIssueId[] = "insecure-input-events";
 const char kCertMissingSubjectAltName[] = "cert-missing-subject-alt-name";
 
 std::string SecurityLevelToProtocolSecurityState(
@@ -43,11 +42,8 @@ std::string SecurityLevelToProtocolSecurityState(
     case security_state::NONE:
       return protocol::Security::SecurityStateEnum::Neutral;
     case security_state::WARNING:
-      if (security_state::ShouldShowDangerTriangleForWarningLevel())
-        return protocol::Security::SecurityStateEnum::Insecure;
-      return protocol::Security::SecurityStateEnum::Neutral;
+      return protocol::Security::SecurityStateEnum::Insecure;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-    case security_state::EV_SECURE:
     case security_state::SECURE:
       return protocol::Security::SecurityStateEnum::Secure;
     case security_state::DANGEROUS:
@@ -175,6 +171,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
       NOTREACHED();
       return nullptr;
 
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       return nullptr;
@@ -194,12 +191,10 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
       security_state::IsSchemeCryptographic(state->url);
   bool malicious_content = state->malicious_content_status !=
                            security_state::MALICIOUS_CONTENT_STATUS_NONE;
-  bool insecure_input_events =
-      state->insecure_input_events.insecure_field_edited;
 
   bool secure_origin = scheme_is_cryptographic;
   if (!scheme_is_cryptographic)
-    secure_origin = content::IsOriginSecure(state->url);
+    secure_origin = network::IsUrlPotentiallyTrustworthy(state->url);
 
   bool cert_missing_subject_alt_name =
       state->certificate &&
@@ -230,9 +225,6 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
     security_state_issue_ids.push_back(kPkpBypassedSecurityStateIssueId);
   if (state->is_error_page)
     security_state_issue_ids.push_back(kIsErrorPageSecurityStateIssueId);
-  if (insecure_input_events)
-    security_state_issue_ids.push_back(
-        kInsecureInputEventsSecurityStateIssueId);
   if (cert_missing_subject_alt_name)
     security_state_issue_ids.push_back(kCertMissingSubjectAltName);
 

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
-
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -28,6 +26,9 @@ class OpenFileHandleContext : public base::RefCounted<OpenFileHandleContext> {
  public:
   OpenFileHandleContext(const base::FilePath& platform_path,
                         QuotaReservationBuffer* reservation_buffer);
+
+  OpenFileHandleContext(const OpenFileHandleContext&) = delete;
+  OpenFileHandleContext& operator=(const OpenFileHandleContext&) = delete;
 
   // Updates the max written offset and returns the amount of growth.
   int64_t UpdateMaxWrittenOffset(int64_t offset);
@@ -51,8 +52,6 @@ class OpenFileHandleContext : public base::RefCounted<OpenFileHandleContext> {
   scoped_refptr<QuotaReservationBuffer> reservation_buffer_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFileHandleContext);
 };
 
 }  // namespace storage

@@ -8,7 +8,6 @@
 #include "chrome/browser/history/chrome_history_client.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/content/browser/content_visit_delegate.h"
 #include "components/history/content/browser/history_database_helper.h"
@@ -18,6 +17,23 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildHistoryService(
+    content::BrowserContext* context) {
+  auto history_service = std::make_unique<history::HistoryService>(
+      std::make_unique<ChromeHistoryClient>(
+          BookmarkModelFactory::GetForBrowserContext(context)),
+      std::make_unique<history::ContentVisitDelegate>(context));
+  if (!history_service->Init(
+          history::HistoryDatabaseParamsForPath(context->GetPath()))) {
+    return nullptr;
+  }
+  return history_service;
+}
+
+}  // namespace
 
 // static
 history::HistoryService* HistoryServiceFactory::GetForProfile(
@@ -65,6 +81,12 @@ void HistoryServiceFactory::ShutdownForProfile(Profile* profile) {
   factory->BrowserContextDestroyed(profile);
 }
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+HistoryServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildHistoryService);
+}
+
 HistoryServiceFactory::HistoryServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "HistoryService",
@@ -77,16 +99,7 @@ HistoryServiceFactory::~HistoryServiceFactory() {
 
 KeyedService* HistoryServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(
-          std::make_unique<ChromeHistoryClient>(
-              BookmarkModelFactory::GetForBrowserContext(context)),
-          std::make_unique<history::ContentVisitDelegate>(context)));
-  if (!history_service->Init(
-          history::HistoryDatabaseParamsForPath(context->GetPath()))) {
-    return nullptr;
-  }
-  return history_service.release();
+  return BuildHistoryService(context).release();
 }
 
 content::BrowserContext* HistoryServiceFactory::GetBrowserContextToUse(

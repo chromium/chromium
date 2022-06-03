@@ -16,9 +16,7 @@ component("properties") {
     "//base",
     "//base:i18n",
   ]
-  public_deps = [
-    "//dbus",
-  ]
+  public_deps = [ "//dbus" ]
 }
 
 source_set("unit_tests") {

@@ -25,9 +25,9 @@
 #include "base/files/scoped_file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -36,9 +36,9 @@
 #include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/cronet_prefs_manager.h"
-#include "components/cronet/histogram_manager.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/cronet/url_request_context_config.h"
+#include "components/metrics/library_support/histogram_manager.h"
 #include "net/base/load_flags.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/net_errors.h"
@@ -265,8 +265,8 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
       jenable_network_quality_estimator,
       jbypass_public_key_pinning_for_local_trust_anchors,
       jnetwork_thread_priority >= -20 && jnetwork_thread_priority <= 19
-          ? base::Optional<double>(jnetwork_thread_priority)
-          : base::Optional<double>()));
+          ? absl::optional<double>(jnetwork_thread_priority)
+          : absl::optional<double>()));
 }
 
 // Add a QUIC hint to a URLRequestContextConfig.
@@ -303,8 +303,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
       new URLRequestContextConfig::Pkp(
           base::android::ConvertJavaStringToUTF8(env, jhost),
           jinclude_subdomains,
-          base::Time::UnixEpoch() +
-              base::TimeDelta::FromMilliseconds(jexpiration_time)));
+          base::Time::UnixEpoch() + base::Milliseconds(jexpiration_time)));
   for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
     static_assert(std::is_pod<net::SHA256HashValue>::value,
                   "net::SHA256HashValue is not POD");
@@ -348,7 +347,7 @@ static jint JNI_CronetUrlRequestContext_SetMinLogLevel(
 static ScopedJavaLocalRef<jbyteArray>
 JNI_CronetUrlRequestContext_GetHistogramDeltas(JNIEnv* env) {
   std::vector<uint8_t> data;
-  if (!HistogramManager::GetInstance()->GetDeltas(&data))
+  if (!metrics::HistogramManager::GetInstance()->GetDeltas(&data))
     return ScopedJavaLocalRef<jbyteArray>();
   return base::android::ToJavaByteArray(env, data.data(), data.size());
 }

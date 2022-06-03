@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,6 +21,9 @@ namespace remoting {
 class FakeGlRendererDelegate : public GlRendererDelegate {
  public:
   FakeGlRendererDelegate() {}
+
+  FakeGlRendererDelegate(const FakeGlRendererDelegate&) = delete;
+  FakeGlRendererDelegate& operator=(const FakeGlRendererDelegate&) = delete;
 
   bool CanRenderFrame() override {
     can_render_frame_call_count_++;
@@ -40,7 +43,7 @@ class FakeGlRendererDelegate : public GlRendererDelegate {
     on_size_changed_call_count_++;
   }
 
-  void SetOnFrameRenderedCallback(const base::Closure& callback) {
+  void SetOnFrameRenderedCallback(const base::RepeatingClosure& callback) {
     on_frame_rendered_callback_ = callback;
   }
 
@@ -68,15 +71,16 @@ class FakeGlRendererDelegate : public GlRendererDelegate {
   int canvas_width_ = 0;
   int canvas_height_ = 0;
 
-  base::Closure on_frame_rendered_callback_;
+  base::RepeatingClosure on_frame_rendered_callback_;
   base::WeakPtrFactory<FakeGlRendererDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGlRendererDelegate);
 };
 
 class FakeDrawable : public Drawable {
  public:
   FakeDrawable() {}
+
+  FakeDrawable(const FakeDrawable&) = delete;
+  FakeDrawable& operator=(const FakeDrawable&) = delete;
 
   void SetId(int id) { id_ = id; }
   int GetId() { return id_; }
@@ -104,8 +108,6 @@ class FakeDrawable : public Drawable {
   int z_index_ = -1;
 
   base::WeakPtrFactory<FakeDrawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDrawable);
 };
 
 class GlRendererTest : public testing::Test {
@@ -134,7 +136,7 @@ class GlRendererTest : public testing::Test {
 };
 
 void GlRendererTest::SetUp() {
-  renderer_.reset(new GlRenderer());
+  renderer_ = std::make_unique<GlRenderer>();
   renderer_->SetDelegate(delegate_.GetWeakPtr());
 }
 
@@ -153,8 +155,8 @@ std::vector<base::WeakPtr<Drawable>> GlRendererTest::GetDrawables() {
 void GlRendererTest::SetDesktopFrameWithSize(const webrtc::DesktopSize& size) {
   renderer_->OnFrameReceived(
       std::make_unique<webrtc::BasicDesktopFrame>(size),
-      base::Bind(&GlRendererTest::OnDesktopFrameProcessed,
-                 base::Unretained(this)));
+      base::BindOnce(&GlRendererTest::OnDesktopFrameProcessed,
+                     base::Unretained(this)));
 }
 
 void GlRendererTest::PostSetDesktopFrameTasks(const webrtc::DesktopSize& size,

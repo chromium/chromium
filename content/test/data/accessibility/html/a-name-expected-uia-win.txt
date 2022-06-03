@@ -1,5 +1,5 @@
-document
-++link Name='named anchor'
-++++description Name='named anchor'
-++link Name='both a named anchor and a link'
-++++description Name='both a named anchor and a link' IsControlElement=false
+Document
+++Group IsControlElement=false
+++++Text Name='named anchor'
+++Hyperlink Name='both a named anchor and a link'
+++++Text Name='both a named anchor and a link' IsControlElement=false

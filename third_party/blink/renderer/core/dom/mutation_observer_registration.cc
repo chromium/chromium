@@ -139,7 +139,7 @@ void MutationObserverRegistration::AddRegistrationNodesToSet(
     nodes.insert(iter->Get());
 }
 
-void MutationObserverRegistration::Trace(Visitor* visitor) {
+void MutationObserverRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(registration_node_);
   visitor->Trace(registration_node_keep_alive_);

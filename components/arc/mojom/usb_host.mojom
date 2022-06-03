@@ -49,7 +49,7 @@ interface UsbHostHost {
 // Next method ID: 3
 interface UsbHostInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(UsbHostHost host_ptr) => ();
+  Init@0(pending_remote<UsbHostHost> host_remote) => ();
 
   // Notifies the instance of a new USB device.
   // Only packages in |event_receiver_packages| will receive broadcast.

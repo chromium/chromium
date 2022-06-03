@@ -22,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       reinterpret_cast<const uint8_t*>(data_hash.data() + 2), serial_len);
 
   net::GetCRLStatusForCert(cert_serial, crl_version,
-                           base::make_optional(input_der));
+                           absl::make_optional(input_der));
 
   return 0;
 }

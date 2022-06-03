@@ -10,10 +10,6 @@ static_library("browser") {
   sources = [
     "bad_message.cc",
     "bad_message.h",
-    "nacl_broker_host_win.cc",
-    "nacl_broker_host_win.h",
-    "nacl_broker_service_win.cc",
-    "nacl_broker_service_win.h",
     "nacl_browser.cc",
     "nacl_browser.h",
     "nacl_file_host.cc",
@@ -33,6 +29,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/nacl/common",
     "//components/nacl/common:buildflags",
     "//components/nacl/common:debug_exception_handler",
@@ -44,7 +41,6 @@ static_library("browser") {
     "//ppapi/host",
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
-    "//services/service_manager/zygote:zygote_buildflags",
   ]
 
   public_deps = [
@@ -54,7 +50,16 @@ static_library("browser") {
 
   data_deps = []
 
-  if (is_linux) {
+  if (is_win) {
+    sources += [
+      "nacl_broker_host_win.cc",
+      "nacl_broker_host_win.h",
+      "nacl_broker_service_win.cc",
+      "nacl_broker_service_win.h",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
     sources += [
       "../zygote/nacl_fork_delegate_linux.cc",
       "../zygote/nacl_fork_delegate_linux.h",
@@ -64,7 +69,6 @@ static_library("browser") {
       "//components/nacl/loader:nacl_helper_integration",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:suid_sandbox_client",
-      "//services/service_manager/zygote",
     ]
 
     if (enable_nacl_nonsfi) {
@@ -97,7 +101,7 @@ source_set("unit_tests") {
     "//net:test_support",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "../zygote/nacl_fork_delegate_linux_unittest.cc" ]
   }
 }

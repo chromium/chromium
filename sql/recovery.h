@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
 
@@ -66,6 +65,8 @@ namespace sql {
 
 class COMPONENT_EXPORT(SQL) Recovery {
  public:
+  Recovery(const Recovery&) = delete;
+  Recovery& operator=(const Recovery&) = delete;
   ~Recovery();
 
   // Begin the recovery process by opening a temporary database handle
@@ -202,8 +203,6 @@ class COMPONENT_EXPORT(SQL) Recovery {
 
   Database* db_;         // Original Database connection.
   Database recover_db_;  // Recovery Database connection.
-
-  DISALLOW_COPY_AND_ASSIGN(Recovery);
 };
 
 }  // namespace sql

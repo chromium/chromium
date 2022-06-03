@@ -7,24 +7,27 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/permissions/crowd_deny_preload_data.h"
-#include "chrome/browser/permissions/permission_request.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
-#include "components/safe_browsing/db/database_manager.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 
 namespace {
 
-using UiToUse = ContextualNotificationPermissionUiSelector::UiToUse;
 using QuietUiReason = ContextualNotificationPermissionUiSelector::QuietUiReason;
+using WarningReason = ContextualNotificationPermissionUiSelector::WarningReason;
+using Decision = ContextualNotificationPermissionUiSelector::Decision;
 
 // Records a histogram sample for NotificationUserExperienceQuality.
 void RecordNotificationUserExperienceQuality(
@@ -39,68 +42,112 @@ void RecordNotificationUserExperienceQuality(
           NotificationUserExperienceQuality_ARRAYSIZE);
 }
 
+// Records a histogram sample for the |warning_only| bit.
+void RecordWarningOnlyState(bool value) {
+  base::UmaHistogramBoolean("Permissions.CrowdDeny.PreloadData.WarningOnly",
+                            value);
+}
+
 // Attempts to decide which UI to use based on preloaded site reputation data,
-// or returns base::nullopt if not possible. |site_reputation| can be nullptr.
-base::Optional<UiToUse> GetUiToUseBasedOnSiteReputation(
+// or returns absl::nullopt if not possible. |site_reputation| can be nullptr.
+absl::optional<Decision> GetDecisionBasedOnSiteReputation(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
+  using Config = QuietNotificationPermissionUiConfig;
   if (!site_reputation) {
     RecordNotificationUserExperienceQuality(
         CrowdDenyPreloadData::SiteReputation::UNKNOWN);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   RecordNotificationUserExperienceQuality(
       site_reputation->notification_ux_quality());
+  RecordWarningOnlyState(site_reputation->warning_only());
+
   switch (site_reputation->notification_ux_quality()) {
-    case CrowdDenyPreloadData::SiteReputation::ACCEPTABLE:
-      return UiToUse::kNormalUi;
-    case CrowdDenyPreloadData::SiteReputation::UNSOLICITED_PROMPTS:
-      return UiToUse::kQuietUi;
-    case CrowdDenyPreloadData::SiteReputation::UNKNOWN:
-      return base::nullopt;
+    case CrowdDenyPreloadData::SiteReputation::ACCEPTABLE: {
+      return Decision::UseNormalUiAndShowNoWarning();
+    }
+    case CrowdDenyPreloadData::SiteReputation::UNSOLICITED_PROMPTS: {
+      if (site_reputation->warning_only())
+        return Decision::UseNormalUiAndShowNoWarning();
+      if (!Config::IsCrowdDenyTriggeringEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredByCrowdDeny,
+                      Decision::ShowNoWarning());
+    }
+    case CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS: {
+      if (site_reputation->warning_only()) {
+        if (!Config::IsAbusiveRequestWarningEnabled())
+          return Decision::UseNormalUiAndShowNoWarning();
+        return Decision(Decision::UseNormalUi(),
+                        WarningReason::kAbusiveRequests);
+      }
+      if (!Config::IsAbusiveRequestBlockingEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                      Decision::ShowNoWarning());
+    }
+    case CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT: {
+      if (site_reputation->warning_only()) {
+        if (!Config::IsAbusiveContentTriggeredRequestWarningEnabled())
+          return Decision::UseNormalUiAndShowNoWarning();
+        return Decision(Decision::UseNormalUi(),
+                        WarningReason::kAbusiveContent);
+      }
+      if (!Config::IsAbusiveContentTriggeredRequestBlockingEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
+                      Decision::ShowNoWarning());
+    }
+    case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
+      return absl::nullopt;
+    }
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-// Decides which UI to use based on the Safe Browsing verdict.
-UiToUse GetUiToUseFromSafeBrowsingVerdict(
-    CrowdDenySafeBrowsingRequest::Verdict verdict) {
-  using Verdict = CrowdDenySafeBrowsingRequest::Verdict;
+// Roll the dice to decide whether to use the normal UI even when the preload
+// data indicates that quiet UI should be used. This creates a control group of
+// normal UI prompt impressions, which facilitates comparing acceptance rates,
+// better calibrating server-side logic, and detecting when the notification
+// experience on the site has improved.
+bool ShouldHoldBackQuietUI(QuietUiReason quiet_ui_reason) {
+  const double kHoldbackChance =
+      QuietNotificationPermissionUiConfig::GetCrowdDenyHoldBackChance();
 
-  switch (verdict) {
-    case Verdict::kAcceptable:
-      return UiToUse::kNormalUi;
-    case Verdict::kKnownToShowUnsolicitedNotificationPermissionRequests:
-      return UiToUse::kQuietUi;
-  }
+  // There is no hold-back when the quiet UI is shown due to abusive permission
+  // request UX, as those verdicts are not calculated based on acceptance rates.
+  if (quiet_ui_reason != QuietUiReason::kTriggeredByCrowdDeny)
+    return false;
 
-  NOTREACHED();
-  return UiToUse::kNormalUi;
+  // Avoid rolling a dice if the chance is 0.
+  const bool result = kHoldbackChance && base::RandDouble() < kHoldbackChance;
+  base::UmaHistogramBoolean("Permissions.CrowdDeny.DidHoldbackQuietUi", result);
+  return result;
 }
 
 }  // namespace
 
 ContextualNotificationPermissionUiSelector::
-    ContextualNotificationPermissionUiSelector(Profile* profile)
-    : profile_(profile) {}
+    ContextualNotificationPermissionUiSelector() = default;
 
 void ContextualNotificationPermissionUiSelector::SelectUiToUse(
-    PermissionRequest* request,
+    permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   callback_ = std::move(callback);
   DCHECK(callback_);
 
   if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts)) {
-    Notify(UiToUse::kNormalUi, base::nullopt);
+    Notify(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
-  // Even if the quiet UI is enabled on all sites, the crowd deny trigger
-  // condition must be evaluated, so that the less prominent UI and the correct
-  // strings are shown on origins with crowd deny activated.
-  EvaluateCrowdDenyTrigger(url::Origin::Create(request->GetOrigin()));
+  // Even if the quiet UI is enabled on all sites, the crowd deny and abuse
+  // trigger conditions must be evaluated first, so that the corresponding,
+  // less prominent UI and the strings are shown on blocklisted origins.
+  EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
 }
 
 void ContextualNotificationPermissionUiSelector::Cancel() {
@@ -109,20 +156,33 @@ void ContextualNotificationPermissionUiSelector::Cancel() {
   safe_browsing_request_.reset();
 }
 
+bool ContextualNotificationPermissionUiSelector::IsPermissionRequestSupported(
+    permissions::RequestType request_type) {
+  return request_type == permissions::RequestType::kNotifications;
+}
+
 ContextualNotificationPermissionUiSelector::
     ~ContextualNotificationPermissionUiSelector() = default;
 
-void ContextualNotificationPermissionUiSelector::EvaluateCrowdDenyTrigger(
-    url::Origin origin) {
-  if (!QuietNotificationPermissionUiConfig::IsCrowdDenyTriggeringEnabled()) {
-    OnCrowdDenyTriggerEvaluated(UiToUse::kNormalUi);
-    return;
-  }
+void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
+    const url::Origin& origin) {
+  CrowdDenyPreloadData::GetInstance()->GetReputationDataForSiteAsync(
+      origin,
+      base::BindOnce(
+          &ContextualNotificationPermissionUiSelector::OnSiteReputationReady,
+          weak_factory_.GetWeakPtr(), origin));
+}
 
-  base::Optional<UiToUse> ui_to_use = GetUiToUseBasedOnSiteReputation(
-      CrowdDenyPreloadData::GetInstance()->GetReputationDataForSite(origin));
-  if (ui_to_use) {
-    OnCrowdDenyTriggerEvaluated(*ui_to_use);
+void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
+    const url::Origin& origin,
+    const CrowdDenyPreloadData::SiteReputation* reputation) {
+  absl::optional<Decision> decision =
+      GetDecisionBasedOnSiteReputation(reputation);
+
+  // If the PreloadData suggests this is an unacceptable site, ping Safe
+  // Browsing to verify; but do not ping if it is not warranted.
+  if (!decision || (!decision->quiet_ui_reason && !decision->warning_reason)) {
+    Notify(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
@@ -136,37 +196,34 @@ void ContextualNotificationPermissionUiSelector::EvaluateCrowdDenyTrigger(
       base::DefaultClock::GetInstance(), origin,
       base::BindOnce(&ContextualNotificationPermissionUiSelector::
                          OnSafeBrowsingVerdictReceived,
-                     base::Unretained(this)));
+                     base::Unretained(this), *decision));
 }
 
 void ContextualNotificationPermissionUiSelector::OnSafeBrowsingVerdictReceived(
+    Decision candidate_decision,
     CrowdDenySafeBrowsingRequest::Verdict verdict) {
   DCHECK(safe_browsing_request_);
   DCHECK(callback_);
+
   safe_browsing_request_.reset();
-  OnCrowdDenyTriggerEvaluated(GetUiToUseFromSafeBrowsingVerdict(verdict));
-}
 
-void ContextualNotificationPermissionUiSelector::OnCrowdDenyTriggerEvaluated(
-    UiToUse ui_to_use) {
-  if (ui_to_use == UiToUse::kQuietUi) {
-    Notify(UiToUse::kQuietUi, QuietUiReason::kTriggeredByCrowdDeny);
-    return;
+  switch (verdict) {
+    case CrowdDenySafeBrowsingRequest::Verdict::kAcceptable:
+      Notify(Decision::UseNormalUiAndShowNoWarning());
+      break;
+    case CrowdDenySafeBrowsingRequest::Verdict::kUnacceptable:
+      if (candidate_decision.quiet_ui_reason &&
+          ShouldHoldBackQuietUI(*(candidate_decision.quiet_ui_reason))) {
+        candidate_decision.quiet_ui_reason.reset();
+      }
+      Notify(candidate_decision);
+      break;
   }
-
-  // Still show the quiet UI if it is enabled for all sites, even if crowd deny
-  // did not trigger showing the quiet UI on this origin.
-  if (QuietNotificationPermissionUiState::IsQuietUiEnabledInPrefs(profile_)) {
-    Notify(UiToUse::kQuietUi, QuietUiReason::kEnabledInPrefs);
-    return;
-  }
-
-  Notify(UiToUse::kNormalUi, base::nullopt);
 }
 
 void ContextualNotificationPermissionUiSelector::Notify(
-    UiToUse ui_to_use,
-    base::Optional<QuietUiReason> quiet_ui_reason) {
-  DCHECK_EQ(ui_to_use == UiToUse::kQuietUi, !!quiet_ui_reason);
-  std::move(callback_).Run(ui_to_use, quiet_ui_reason);
+    const Decision& decision) {
+  std::move(callback_).Run(decision);
 }
+
+// static

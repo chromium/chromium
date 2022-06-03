@@ -25,15 +25,11 @@ class CORE_EXPORT NGPageLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  base::Optional<MinMaxSize> ComputeMinMaxSize(
-      const MinMaxSizeInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:
   NGConstraintSpace CreateConstraintSpaceForPages(
       const LogicalSize& size) const;
-
-  NGBoxStrut border_padding_;
-  NGBoxStrut border_scrollbar_padding_;
 };
 
 }  // namespace blink

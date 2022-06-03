@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_source.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -19,40 +21,40 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
       data_pipe_(std::move(handle)),
       watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       serial_port_(serial_port) {
-  watcher_.Watch(data_pipe_.get(),
-                 MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+  watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                  WTF::BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
                                     WrapWeakPersistent(this)));
 }
 
 ScriptPromise SerialPortUnderlyingSource::pull(ScriptState* script_state) {
+  DCHECK(data_pipe_);
+  ReadDataOrArmWatcher();
+
   // pull() signals that the stream wants more data. By resolving immediately
   // we allow the stream to be canceled before that data is received. pull()
   // will not be called again until a chunk is enqueued or if an error has been
   // signaled to the controller.
-  DCHECK(data_pipe_);
-
-  if (!ReadData())
-    ArmWatcher();
-
   return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise SerialPortUnderlyingSource::Cancel(ScriptState* script_state,
                                                  ScriptValue reason) {
-  // TODO(crbug.com/989653): Rather than calling Close(), cancel() should
-  // trigger a purge of the serial read buffer and wait for the pipe to close to
-  // indicate the purge has been completed.
+  DCHECK(data_pipe_);
+
   Close();
-  ExpectPipeClose();
-  return ScriptPromise::CastUndefined(script_state);
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  serial_port_->Flush(
+      device::mojom::blink::SerialPortFlushMode::kReceive,
+      WTF::Bind(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
-void SerialPortUnderlyingSource::ContextDestroyed(
-    ExecutionContext* execution_context) {
+void SerialPortUnderlyingSource::ContextDestroyed() {
   Close();
-  UnderlyingSourceBase::ContextDestroyed(execution_context);
+  UnderlyingSourceBase::ContextDestroyed();
 }
 
 void SerialPortUnderlyingSource::SignalErrorImmediately(
@@ -72,13 +74,13 @@ void SerialPortUnderlyingSource::SignalErrorOnClose(DOMException* exception) {
   serial_port_->UnderlyingSourceClosed();
 }
 
-void SerialPortUnderlyingSource::Trace(Visitor* visitor) {
+void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(pending_exception_);
   visitor->Trace(serial_port_);
   UnderlyingSourceBase::Trace(visitor);
 }
 
-bool SerialPortUnderlyingSource::ReadData() {
+void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
   const void* buffer = nullptr;
   uint32_t available = 0;
   MojoResult result =
@@ -90,32 +92,17 @@ bool SerialPortUnderlyingSource::ReadData() {
       result = data_pipe_->EndReadData(available);
       DCHECK_EQ(result, MOJO_RESULT_OK);
       Controller()->Enqueue(array);
-      return true;
+      break;
     }
     case MOJO_RESULT_FAILED_PRECONDITION:
       PipeClosed();
-      return true;
+      break;
     case MOJO_RESULT_SHOULD_WAIT:
-      return false;
+      watcher_.ArmOrNotify();
+      break;
     default:
       NOTREACHED();
-      return false;
-  }
-}
-
-void SerialPortUnderlyingSource::ArmWatcher() {
-  MojoResult ready_result;
-  mojo::HandleSignalsState ready_state;
-  MojoResult result = watcher_.Arm(&ready_result, &ready_state);
-  if (result == MOJO_RESULT_OK)
-    return;
-
-  DCHECK_EQ(ready_result, MOJO_RESULT_OK);
-  if (ready_state.readable()) {
-    bool read_result = ReadData();
-    DCHECK(read_result);
-  } else if (ready_state.peer_closed()) {
-    PipeClosed();
+      break;
   }
 }
 
@@ -123,11 +110,9 @@ void SerialPortUnderlyingSource::OnHandleReady(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   switch (result) {
-    case MOJO_RESULT_OK: {
-      bool read_result = ReadData();
-      DCHECK(read_result);
+    case MOJO_RESULT_OK:
+      ReadDataOrArmWatcher();
       break;
-    }
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
       break;
@@ -135,6 +120,11 @@ void SerialPortUnderlyingSource::OnHandleReady(
       PipeClosed();
       break;
   }
+}
+
+void SerialPortUnderlyingSource::OnFlush(ScriptPromiseResolver* resolver) {
+  serial_port_->UnderlyingSourceClosed();
+  resolver->Resolve();
 }
 
 void SerialPortUnderlyingSource::ExpectPipeClose() {

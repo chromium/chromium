@@ -10,6 +10,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,9 +20,6 @@
 namespace base {
 
 namespace {
-
-// forward declare
-HMODULE AddDllDirectory(PCWSTR new_directory);
 
 // This enum is used to back an UMA histogram, and should therefore be treated
 // as append-only.
@@ -61,7 +60,7 @@ bool AreSearchFlagsAvailable() {
   // The LOAD_LIBRARY_SEARCH_* flags are used in the LoadNativeLibraryHelper
   // method.
   static const auto add_dll_dir_func =
-      reinterpret_cast<decltype(AddDllDirectory)*>(
+      reinterpret_cast<decltype(::AddDllDirectory)*>(
           GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory"));
   return !!add_dll_dir_func;
 }
@@ -200,7 +199,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 std::string GetNativeLibraryName(StringPiece name) {
   DCHECK(IsStringASCII(name));
-  return name.as_string() + ".dll";
+  return StrCat({name, ".dll"});
 }
 
 std::string GetLoadableModuleName(StringPiece name) {

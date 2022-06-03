@@ -6,25 +6,19 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/web_state.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
-#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,18 +27,35 @@
 
 namespace ios_web_view {
 
-WebViewTranslateClient::WebViewTranslateClient(web::WebState* web_state)
-    : browser_state_(
-          WebViewBrowserState::FromBrowserState(web_state->GetBrowserState())),
-      translate_manager_(std::make_unique<translate::TranslateManager>(
-          this,
-          WebViewTranslateRankerFactory::GetForBrowserState(browser_state_),
-          WebViewLanguageModelManagerFactory::GetForBrowserState(browser_state_)
-              ->GetPrimaryModel())),
+// static
+std::unique_ptr<WebViewTranslateClient> WebViewTranslateClient::Create(
+    WebViewBrowserState* browser_state,
+    web::WebState* web_state) {
+  return std::make_unique<WebViewTranslateClient>(
+      // Use recording browser state to share user settings in incognito.
+      browser_state->GetRecordingBrowserState()->GetPrefs(),
+      WebViewTranslateRankerFactory::GetForBrowserState(browser_state),
+      WebViewLanguageModelManagerFactory::GetForBrowserState(browser_state)
+          ->GetPrimaryModel(),
+      web_state,
+      WebViewTranslateAcceptLanguagesFactory::GetForBrowserState(
+          browser_state));
+}
+
+WebViewTranslateClient::WebViewTranslateClient(
+    PrefService* pref_service,
+    translate::TranslateRanker* translate_ranker,
+    language::LanguageModel* language_model,
+    web::WebState* web_state,
+    translate::TranslateAcceptLanguages* accept_languages)
+    : pref_service_(pref_service),
+      translate_manager_(this, translate_ranker, language_model),
       translate_driver_(web_state,
                         web_state->GetNavigationManager(),
-                        translate_manager_.get()) {
-  web_state->AddObserver(this);
+                        &translate_manager_),
+      accept_languages_(accept_languages) {
+  DCHECK(pref_service_);
+  DCHECK(accept_languages_);
 }
 
 WebViewTranslateClient::~WebViewTranslateClient() = default;
@@ -52,14 +63,21 @@ WebViewTranslateClient::~WebViewTranslateClient() = default;
 void WebViewTranslateClient::TranslatePage(const std::string& source_lang,
                                            const std::string& target_lang,
                                            bool triggered_from_menu) {
-  DCHECK(translate_manager_);
-  translate_manager_->TranslatePage(source_lang, target_lang,
-                                    triggered_from_menu);
+  translate_manager_.TranslatePage(source_lang, target_lang,
+                                   triggered_from_menu);
 }
 
 void WebViewTranslateClient::RevertTranslation() {
-  DCHECK(translate_manager_);
-  translate_manager_->RevertTranslation();
+  translate_manager_.RevertTranslation();
+}
+
+bool WebViewTranslateClient::RequestTranslationOffer() {
+  if (translate_manager_.CanManuallyTranslate()) {
+    translate_manager_.ShowTranslateUI();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // TranslateClient implementation:
@@ -89,23 +107,17 @@ translate::IOSTranslateDriver* WebViewTranslateClient::GetTranslateDriver() {
 }
 
 PrefService* WebViewTranslateClient::GetPrefs() {
-  // Use recording browser state to share user settings.
-  return browser_state_->GetRecordingBrowserState()->GetPrefs();
+  return pref_service_;
 }
 
 std::unique_ptr<translate::TranslatePrefs>
 WebViewTranslateClient::GetTranslatePrefs() {
-  return std::make_unique<translate::TranslatePrefs>(
-      GetPrefs(), language::prefs::kAcceptLanguages, nullptr);
+  return std::make_unique<translate::TranslatePrefs>(GetPrefs());
 }
 
 translate::TranslateAcceptLanguages*
 WebViewTranslateClient::GetTranslateAcceptLanguages() {
-  translate::TranslateAcceptLanguages* accept_languages =
-      WebViewTranslateAcceptLanguagesFactory::GetForBrowserState(
-          browser_state_);
-  DCHECK(accept_languages);
-  return accept_languages;
+  return accept_languages_;
 }
 
 int WebViewTranslateClient::GetInfobarIconID() const {
@@ -117,21 +129,8 @@ bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {
   return !url.is_empty() && !url.SchemeIs(url::kFtpScheme);
 }
 
-void WebViewTranslateClient::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-  NOTREACHED();
+bool WebViewTranslateClient::IsAutofillAssistantRunning() const {
+  return false;
 }
-
-// web::WebStateObserver implementation
-
-void WebViewTranslateClient::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveObserver(this);
-  // Translation process can be interrupted.
-  // Destroying the TranslateManager now guarantees that it never has to deal
-  // with nullptr WebState.
-  translate_manager_.reset();
-}
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebViewTranslateClient)
 
 }  // namespace ios_web_view

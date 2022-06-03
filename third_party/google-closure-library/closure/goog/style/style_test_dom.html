@@ -1,0 +1,535 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0,
+    maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<style nonce="NONCE">
+
+i {
+  font-family: Times, sans-serif;
+  font-size: 5em;
+}
+
+#testEl5 {
+  display: none;
+}
+
+#styleTest1 {
+  width: 120px;
+  text-decoration: underline;
+}
+
+#bgcolorTest0 {
+  background-color: #f00;
+}
+
+#bgcolorTest1 {
+  background-color: #ff0000;
+}
+
+#bgcolorTest2 {
+  background-color: rgb(255, 0, 0);
+}
+
+#bgcolorTest3 {
+  background-color: rgb(100%, 0%, 0%);
+}
+
+#bgcolorTest5 {
+  background-color: red;
+}
+
+#bgcolorTest6 {
+  background-color: inherit;
+}
+
+#bgcolorTest7 {
+  background-color: transparent;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+#pos-scroll-abs {
+  position: absolute;
+  top: 200px;
+  left: 100px;
+}
+
+#pos-scroll-abs-1 {
+  overflow: scroll;
+  width: 100px;
+  height: 100px;
+}
+
+#pos-scroll-abs-2 {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  width: 500px;
+  background-color: pink;
+}
+
+#abs-upper-left {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#no-text-font-styles {
+  font-family: "Helvetica", Times, serif;
+  font-size: 30px;
+}
+
+.century {
+  font-family: "Comic Sans MS", "Century Schoolbook L", serif;
+}
+
+#size-a,
+#size-e {
+  width: 100px;
+  height: 100px;
+  background: red;
+  padding: 0;
+  border-style: solid;
+  border-color: black;
+  border-width: 0;
+}
+
+#size-b {
+  width: 100px;
+  height: 100px;
+  background: red;
+  border: 10px solid black;
+}
+
+#size-c {
+  width: 100px;
+  height: 100px;
+  background: red;
+  border: 10px solid black;
+  padding: 10px;
+  overflow: auto;
+}
+
+#size-d {
+  width: 10em;
+  height: 2cm;
+  background: red;
+  border: thick solid black;
+  padding: 2mm;
+}
+
+#size-f {
+  border-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#css-position-absolute {
+  position: absolute;
+}
+
+#css-overflow-hidden {
+  overflow: hidden;
+}
+
+#css-z-index-200 {
+  position:relative;
+  z-index: 200;
+}
+
+#css-text-align-center {
+  text-align: center;
+}
+
+#css-cursor-pointer {
+  cursor: pointer;
+}
+
+#test-opacity {
+  opacity: 0.5;
+  -moz-opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+#test-frame-offset {
+  display: block;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 50px;
+  height: 50px;
+}
+
+#test-visible {
+  background: yellow;
+  position: absolute;
+  overflow: hidden;
+}
+
+#test-visible2 {
+  background: #ebebeb;
+  position: absolute;
+  overflow: hidden;
+}
+
+.scrollable-container {
+  border: 8px solid blue;
+  padding: 16px;
+  margin: 32px;
+  width: 100px;
+  height: 100px;
+  overflow: auto;
+  position: absolute;
+  left: 400px;
+  top: 0;
+}
+
+.scrollable-container-item {
+  margin: 1px;
+  border: 2px solid gray;
+  padding: 4px;
+  width: auto;
+  height: 20px;
+}
+
+.svg-container {
+  width: 150px;
+  height: 150px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#translation {
+  position: absolute;
+  z-index: 10;
+  left: 10px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  background-color: blue;
+  -webkit-transform: translate(20px, 30px);
+  -ms-transform: translate(20px, 30px);
+  -o-transform: translate(20px, 30px);
+  -moz-transform: translate(20px, 30px);
+  transform: translate(20px, 30px);
+}
+
+</style>
+</head>
+<body>
+  <div id="testEl">
+    <span>Test Element</span>
+  </div>
+
+  <div id="testEl5">
+    <span>Test Element 5</span>
+  </div>
+
+  <table id="table1">
+    <tr>
+      <td id="td1">td1</td>
+    </tr>
+  </table>
+
+  <span id="span0">span0</span>
+
+  <ul>
+    <li id="li1">li1</li>
+  </ul>
+
+  <span id="span1" class="test1"></span>
+  <span id="span2" class="test1"></span>
+  <span id="span3" class="test2"></span>
+  <span id="span4" class="test3"></span>
+  <span id="span5" class="test1"></span>
+  <span id="span6" class="test1"></span>
+
+  <p id="p1"></p>
+
+  <div id="styleTest1"></div>
+  <div id="styleTest2" style="width:100px;text-decoration:underline"></div>
+  <div id="styleTest3"></div>
+
+  <!-- Paragraph to test element child and sibling -->
+  <p id="p2">
+    <!-- Comment -->
+    a
+    <b id="b1">c</b>
+    d
+    <!-- Comment -->
+    e
+    <b id="b2">f</b>
+    g
+    <!-- Comment -->
+  </p>
+
+  <p style="background-color: #eee">
+    <span id="bgcolorTest0">1</span>
+    <span id="bgcolorTest1">1</span>
+    <span id="bgcolorTest2">2</span>
+    <span id="bgcolorTest3">3</span>
+    <span id="bgcolorTest4" style="background-color:#ff0000">4</span>
+    <span id="bgcolorTest5">5</span>
+    <span id="bgcolorTest6">6</span>
+    <span id="bgcolorTest7">7</span>
+    <span id="bgcolorDest">Dest</span>
+    <span id="installTest0">Styled 0</span>
+    <span id="installTest1">Styled 1</span>
+  </p>
+
+  <div class='rtl-test' dir='ltr' id='rtl1'>
+    <div dir='rtl' id='rtl2'>right to left</div>
+    <div dir='ltr' id='rtl3'>left to right</div>
+    <div id='rtl4'>left to right (inherited)</div>
+    <div id='rtl5' style="direction: rtl">right to left (style)</div>
+    <div id='rtl6' style="direction: ltr">left to right (style)</div>
+    <div id='rtl7' class=rtl>right to left (css)</div>
+    <div id='rtl8' class=ltr>left to right (css)</div>
+    <div class=rtl>
+      <div id='rtl9'>right to left (css)</div>
+    </div>
+    <div class=ltr>
+      <div id='rtl10'>left to right (css)</div>
+    </div>
+  </div>
+
+  <div id="unselectable-gecko" style="-moz-user-select:none">no-select</div>
+  <div id="unselectable-webkit" style="-webkit-user-select:none">no-select</div>
+  <div id="unselectable-ie" unselectable="on">no-select</div>
+
+  <div id="make-unselectable">
+    <p>Can't touch this <aside>(Oh-oh oh oh-oh)</aside></p>
+    <div><em>Stop.</em> Hammer <math><mo>×</mo></math></div>
+  </div>
+
+  <div id="pos-scroll-abs">
+
+    <p>Some text some text some text some text some text some text some text
+    some text some text some text. Some text some text some text some text some
+    text some text some text some text some text some text. Some text some text
+    some text some text some text some text some text some text some text some
+    text. Some text some text some text some text some text some text some text
+    some text some text some text.
+
+    <p>Some text some text some text some text some text some text some text
+    some text some text some text. Some text some text some text some text some
+    text some text some text some text some text some text. Some text some text
+    some text some text some text some text some text some text some text some
+    text. Some text some text some text some text some text some text some text
+    some text some text some text.
+
+    <div id="pos-scroll-abs-1">
+      <p>Some text some text some text some text some text some text some text
+      some text some text some text. Some text some text some text some text
+      some text some text some text some text some text some text. Some text
+      some text some text some text some text some text some text some text some
+      text some text. Some text some text some text some text some text some
+      text some text some text some text some text.
+
+      <p>Some text some text some text some text some text some text some text
+      some text some text some text. Some text some text some text some text
+      some text some text some text some text some text some text. Some text
+      some text some text some text some text some text some text some text some
+      text some text. Some text some text some text some text some text some
+      text some text some text some text some text.
+
+      <div id="pos-scroll-abs-2">
+
+        <p>Some text some text some text some text some text some text some text
+        some text some text some text. Some text some text some text some text
+        some text some text some text some text some text some text. Some text
+        some text some text some text some text some text some text some text
+        some text some text. Some text some text some text some text some text
+        some text some text some text some text some text.
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="abs-upper-left">
+  foo
+  </div>
+
+  <div id="no-text-font-styles">
+    <font size="+1" face="Times,serif" id="font-tag">Times</font>
+    <pre id="pre-font">pre text</pre>
+    <span style="font:inherit" id="inherit-font">inherited</span>
+    <span style="font-family:Times,sans-serif; font-size:3in"
+          id="times-font-family">Times</span>
+    <b id="bold-font">Bolded</b>
+    <i id="css-html-tag-redefinition">Times</i>
+    <span id="small-text" class="century" style="font-size:small">eensy</span>
+    <span id="x-small-text" style="font-size:x-small">weensy</span>
+    <span style="font:50% badFont" id="font-style-badfont">
+      badFont
+      <span style="font:inherit" id="inherit-50pct-font">
+        same size as badFont
+      </span>
+    </span>
+    <span id="icon-font" style="font:icon">Icon Font</span>
+  </div>
+  <span id="no-font-style">plain</span>
+  <span style="font-family:Arial" id="nested-font">Arial<span style="font-family:Times">Times nested inside Arial</span></span>
+  <img id="img-font-test" src=""/>
+
+  <span style="font-size:25px">
+    <span style="font-size:12.5px" id="font-size-12-point-5-px">12.5PX</span>
+    <span style="font-size:0.5em" id="font-size-50-pct-of-25-px">12.5PX</span>
+  </span>
+
+<div id="size-a"></div>
+
+<div id="size-b"></div>
+
+<div id="size-c">xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxxxxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+xxxxxxxxxxxxxxxx</div>
+
+<div id="size-d">xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxxxxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+xxxxxxxx x</div>
+
+<div id="size-e"></div>
+
+<div id="size-f">hello</div>
+
+<div style="font-size: 1px">
+  <div style="font-size: 2em"><span id="em-font-size"></span></div>
+</div>
+
+<div id="no-float"></div>
+
+<div id="float-none" style="float:none"></div>
+
+<div id="float-left" style="float:left"></div>
+
+<div id="float-test"></div>
+
+<div id="position-unset"></div>
+<div id="style-position-relative" style="position:relative"></div>
+<div id="style-position-fixed" style="position:fixed"></div>
+<div id="css-position-absolute"></div>
+
+<div id="box-sizing-unset"></div>
+<div id="box-sizing-border-box" style="box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;"></div>
+
+<div id="style-overflow-scroll" style="overflow:scroll"></div>
+<div id="css-overflow-hidden"></div>
+
+<!-- Getting the computed z-index of an unpositioned element is unspecified. -->
+<div id="style-z-index-200" style="position:relative;z-index:200"></div>
+<div id="css-z-index-200"></div>
+
+<div id="style-text-align-right" style="text-align:right">
+  <div id="style-text-align-right-inner">foo</div>
+</div>
+<div id="css-text-align-center"></div>
+
+<div id="style-cursor-move" style="cursor:move">
+  <span id="style-cursor-move-inner">foo</span>
+</div>
+<div id="css-cursor-pointer"></div>
+
+<div id="height-test" style="display:inline-block;position:relative">
+  <div id="height-test-inner" style="display:inline-block">
+    foo
+  </div>
+</div>
+
+<div id="test-opacity"></div>
+
+<iframe id="test-frame-offset"></iframe>
+
+<iframe id="test-translate-frame-standard" src="style_test_standard.html"
+ style="overflow:auto;position:absolute;left:100px;top:150px;width:200px;height:200px;border:0px;">
+</iframe>
+<iframe id="test-translate-frame-quirk" src="style_test_quirk.html"
+ style="overflow:auto;position:absolute;left:100px;top:350px;width:200px;height:200px;border:0px;margin:0px;">
+</iframe>
+
+<iframe
+    id="test-visible-frame"
+    src="style_test_iframe_standard.html"
+    style="width: 200px; height: 200px; border: 0px;">
+</iframe>
+
+<div id="test-scrollbarwidth" style="background-color: orange; width: 100px; height: 100px; overflow: auto;">
+  <div style='width: 200px; height: 200px; background-color: red'>Test Scroll bar width with scroll</div>
+</div>
+
+<div id="scrollable-container" class="scrollable-container">
+  <!--
+    Workaround for overlapping top padding of the container and top margin of
+    the first item in Internet Explorer 6 and 7.
+    See http://www.quirksmode.org/bugreports/archives/2005/01/IE_nested_boxes_padding_topmargin_top.html#c11285
+  -->
+  <div style="height: 0"><!--  --></div>
+  <div id="item1" class="scrollable-container-item">1</div>
+  <div id="item2" class="scrollable-container-item">2</div>
+  <div id="item3" class="scrollable-container-item">3</div>
+  <div id="item4" class="scrollable-container-item">4</div>
+  <div id="item5" class="scrollable-container-item">5</div>
+  <div id="item6" class="scrollable-container-item">6</div>
+  <div id="item7" class="scrollable-container-item">7</div>
+  <div id="item8" class="scrollable-container-item">8</div>
+</div>
+
+<div id="test-visible">
+Test-visible
+<div id="test-visible-el" style="height:200px;">Test-visible</div>
+Test-visible
+</div>
+
+<div id="test-visible2"></div>
+
+<div id="msFilter" style="-ms-filter:'alpha(opacity=0)'">
+  A div</div>
+<div id="filter" style="filter:alpha(opacity=0)">
+  Another div</div>
+
+<div id="offset-parent" style="position:relative">
+  <div id="offset-child">child</div>
+</div>
+
+<div id="offset-parent-overflow"
+     style="overflow: scroll; width: 50px; height: 50px;">
+  <a id="offset-child-overflow">
+    scrollscrollscrollscrollscrollscrollscrollscroll
+  </a>
+</div>
+
+<div id="test-viewport"></div>
+<div id="translation"></div>
+
+<div id="rotated"></div>
+<div id="scaled"></div>
+
+<div id="svg-container" class="svg-container">
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full"
+      width="100" height="400" viewBox="0 0 100 400">
+    <rect id="svg-item1" width="100" height="100" x="0" y="0" fill="red"/>
+    <rect id="svg-item2" width="100" height="100" x="0" y="100" fill="blue"/>
+    <rect id="svg-item3" width="100" height="100" x="0" y="200" fill="red"/>
+  </svg>
+</div>
+
+<script>
+if (!goog.userAgent.IE || goog.userAgent.isDocumentModeOrHigher(9)) {
+  document.write(
+      '<iframe id="svg-frame" src="style_test_rect.svg"></' + 'iframe>');
+}
+</script>

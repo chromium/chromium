@@ -12,10 +12,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 
@@ -30,11 +29,17 @@ struct TitledUrlMatch;
 // TitledUrlNodes that contain that string in their title or URL.
 class TitledUrlIndex {
  public:
+  using TitledUrlNodeSet = base::flat_set<const TitledUrlNode*>;
+
   // Constructs a TitledUrlIndex. |sorter| is used to construct a sorted list
   // of matches when matches are returned from the index. If null, matches are
   // returned unsorted.
   explicit TitledUrlIndex(
       std::unique_ptr<TitledUrlNodeSorter> sorter = nullptr);
+
+  TitledUrlIndex(const TitledUrlIndex&) = delete;
+  TitledUrlIndex& operator=(const TitledUrlIndex&) = delete;
+
   ~TitledUrlIndex();
 
   void SetNodeSorter(std::unique_ptr<TitledUrlNodeSorter> sorter);
@@ -46,51 +51,77 @@ class TitledUrlIndex {
   void Remove(const TitledUrlNode* node);
 
   // Returns up to |max_count| of matches containing each term from the text
-  // |query| in either the title or the URL.
-  void GetResultsMatching(const base::string16& query,
-                          size_t max_count,
-                          query_parser::MatchingAlgorithm matching_algorithm,
-                          std::vector<TitledUrlMatch>* results);
+  // |query| in either the title, URL, or, if |match_ancestor_titles| is true,
+  // the titles of ancestor nodes. |matching_algorithm| determines the algorithm
+  // used by QueryParser internally to parse |query|.
+  std::vector<TitledUrlMatch> GetResultsMatching(
+      const std::u16string& query,
+      size_t max_count,
+      query_parser::MatchingAlgorithm matching_algorithm,
+      bool match_ancestor_titles);
+
+  // For testing only.
+  TitledUrlNodeSet RetrieveNodesMatchingAllTermsForTesting(
+      const std::vector<std::u16string>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const {
+    return RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+  }
+
+  // For testing only.
+  TitledUrlNodeSet RetrieveNodesMatchingAnyTermsForTesting(
+      const std::vector<std::u16string>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const {
+    return RetrieveNodesMatchingAnyTerms(terms, matching_algorithm);
+  }
 
  private:
   using TitledUrlNodes = std::vector<const TitledUrlNode*>;
-  using TitledUrlNodeSet = base::flat_set<const TitledUrlNode*>;
-  using Index = std::map<base::string16, TitledUrlNodeSet>;
+  using Index = std::map<std::u16string, TitledUrlNodeSet>;
 
   // Constructs |sorted_nodes| by copying the matches in |matches| and sorting
   // them.
   void SortMatches(const TitledUrlNodeSet& matches,
                    TitledUrlNodes* sorted_nodes) const;
 
-  // Add |node| to |results| if the node matches the query.
-  void AddMatchToResults(const TitledUrlNode* node,
-                         query_parser::QueryParser* parser,
-                         const query_parser::QueryNodeVector& query_nodes,
-                         std::vector<TitledUrlMatch>* results);
+  // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
+  // containing |node| and the matches.
+  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+      const TitledUrlNode* node,
+      const query_parser::QueryNodeVector& query_nodes,
+      bool match_ancestor_titles);
 
-  // Populates |matches| for the specified term. If |first_term| is true, this
-  // is the first term in the query. Returns true if there is at least one node
-  // matching the term.
-  bool GetResultsMatchingTerm(
-      const base::string16& term,
-      bool first_term,
-      query_parser::MatchingAlgorithm matching_algorithm,
-      TitledUrlNodeSet* matches);
+  // Return matches for the specified |terms|. This is an intersection of each
+  // term's matches.
+  TitledUrlNodeSet RetrieveNodesMatchingAllTerms(
+      const std::vector<std::u16string>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const;
+
+  TitledUrlNodeSet RetrieveNodesMatchingAnyTerms(
+      const std::vector<std::u16string>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const;
+
+  // Return matches for the specified |term|. May return duplicates.
+  TitledUrlNodes RetrieveNodesMatchingTerm(
+      const std::u16string& term,
+      query_parser::MatchingAlgorithm matching_algorithm) const;
 
   // Returns the set of query words from |query|.
-  std::vector<base::string16> ExtractQueryWords(const base::string16& query);
+  static std::vector<std::u16string> ExtractQueryWords(
+      const std::u16string& query);
+
+  // Return the index terms for |node|.
+  static std::vector<std::u16string> ExtractIndexTerms(
+      const TitledUrlNode* node);
 
   // Adds |node| to |index_|.
-  void RegisterNode(const base::string16& term, const TitledUrlNode* node);
+  void RegisterNode(const std::u16string& term, const TitledUrlNode* node);
 
   // Removes |node| from |index_|.
-  void UnregisterNode(const base::string16& term, const TitledUrlNode* node);
+  void UnregisterNode(const std::u16string& term, const TitledUrlNode* node);
 
   Index index_;
 
   std::unique_ptr<TitledUrlNodeSorter> sorter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitledUrlIndex);
 };
 
 }  // namespace bookmarks

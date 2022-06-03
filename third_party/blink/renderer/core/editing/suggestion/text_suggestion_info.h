@@ -23,4 +23,4 @@ struct TextSuggestionInfo {
 
 }  // namespace blink
 
-#endif  // TextSuggestionList_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SUGGESTION_TEXT_SUGGESTION_INFO_H_

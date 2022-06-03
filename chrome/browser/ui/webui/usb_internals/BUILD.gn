@@ -5,12 +5,12 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "usb_internals.mojom",
-  ]
+  sources = [ "usb_internals.mojom" ]
 
   deps = [
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
   ]
+
+  webui_module_path = "/"
 }

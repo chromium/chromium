@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -55,7 +55,7 @@ class AudioVideoPipelineDeviceTest;
 
 namespace {
 
-const base::TimeDelta kMonitorLoopDelay = base::TimeDelta::FromMilliseconds(20);
+const base::TimeDelta kMonitorLoopDelay = base::Milliseconds(20);
 // Call Start() with an initial PTS of 0.5 seconds, to test the behaviour if
 // we push buffers with a PTS before the start PTS. In this case the backend
 // should report the PTS as no later than the last pushed buffers.
@@ -102,16 +102,20 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
 
 class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
  public:
-  explicit BufferFeeder(const base::Closure& eos_cb);
+  explicit BufferFeeder(base::OnceClosure eos_cb);
+
+  BufferFeeder(const BufferFeeder&) = delete;
+  BufferFeeder& operator=(const BufferFeeder&) = delete;
+
   ~BufferFeeder() override {}
 
   static std::unique_ptr<BufferFeeder> LoadAudio(MediaPipelineBackend* backend,
                                                  const std::string& filename,
-                                                 const base::Closure& eos_cb);
+                                                 base::OnceClosure eos_cb);
   static std::unique_ptr<BufferFeeder> LoadVideo(MediaPipelineBackend* backend,
                                                  const std::string& filename,
                                                  bool raw_h264,
-                                                 const base::Closure& eos_cb);
+                                                 base::OnceClosure eos_cb);
 
   bool eos() const { return eos_; }
   MediaPipelineBackend::Decoder* decoder() const { return decoder_; }
@@ -148,7 +152,7 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   void FeedPcm();
   void TestConfigs();
 
-  base::Closure eos_cb_;
+  base::OnceClosure eos_cb_;
   bool within_push_buffer_call_;
   bool expecting_buffer_complete_;
   bool feeding_completed_;
@@ -166,8 +170,6 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   VideoConfig video_config_;
   int64_t last_pushed_pts_;
   std::unique_ptr<::media::AudioTimestampHelper> timestamp_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferFeeder);
 };
 
 }  // namespace
@@ -184,6 +186,11 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   };
 
   AudioVideoPipelineDeviceTest();
+
+  AudioVideoPipelineDeviceTest(const AudioVideoPipelineDeviceTest&) = delete;
+  AudioVideoPipelineDeviceTest& operator=(const AudioVideoPipelineDeviceTest&) =
+      delete;
+
   ~AudioVideoPipelineDeviceTest() override;
 
   MediaPipelineBackend* backend() const { return backend_.get(); }
@@ -195,8 +202,7 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   }
 
   void SetUp() override {
-    CastMediaShlib::Initialize(
-        base::CommandLine::ForCurrentProcess()->argv());
+    CastMediaShlib::Initialize(base::CommandLine::ForCurrentProcess()->argv());
     VolumeControl::Initialize(base::CommandLine::ForCurrentProcess()->argv());
   }
 
@@ -264,14 +270,12 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   // Pause settings
   std::vector<PauseInfo> pause_pattern_;
   size_t pause_pattern_idx_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineDeviceTest);
 };
 
 namespace {
 
-BufferFeeder::BufferFeeder(const base::Closure& eos_cb)
-    : eos_cb_(eos_cb),
+BufferFeeder::BufferFeeder(base::OnceClosure eos_cb)
+    : eos_cb_(std::move(eos_cb)),
       within_push_buffer_call_(false),
       expecting_buffer_complete_(false),
       feeding_completed_(false),
@@ -328,12 +332,13 @@ void BufferFeeder::ScheduleConfigTest() {
   // now.
   // TODO(almasrymina): re-enable this. b/110961816.
   return;
-#endif
+#else
   if (expecting_buffer_complete_) {
     test_config_after_next_push_ = true;
   } else {
     TestConfigs();
   }
+#endif
 }
 
 void BufferFeeder::FeedBuffer() {
@@ -405,7 +410,7 @@ void BufferFeeder::OnEndOfStream() {
   EXPECT_FALSE(expecting_buffer_complete_)
       << "Got OnEndOfStream() before the EOS buffer completed";
   eos_ = true;
-  eos_cb_.Run();
+  std::move(eos_cb_).Run();
 }
 
 void BufferFeeder::OnPushBufferComplete(BufferStatus status) {
@@ -549,7 +554,7 @@ void BufferFeeder::TestVideoConfigs() {
 std::unique_ptr<BufferFeeder> BufferFeeder::LoadAudio(
     MediaPipelineBackend* backend,
     const std::string& filename,
-    const base::Closure& eos_cb) {
+    base::OnceClosure eos_cb) {
   CHECK(backend);
   base::FilePath file_path = GetTestDataFilePath(filename);
   DemuxResult demux_result = FFmpegDemuxForTest(file_path, true /* audio */);
@@ -562,7 +567,7 @@ std::unique_ptr<BufferFeeder> BufferFeeder::LoadAudio(
   CHECK(success);
 
   LOG(INFO) << "Got " << demux_result.frames.size() << " audio input frames";
-  std::unique_ptr<BufferFeeder> feeder(new BufferFeeder(eos_cb));
+  std::unique_ptr<BufferFeeder> feeder(new BufferFeeder(std::move(eos_cb)));
   feeder->audio_config_ = config;
   feeder->Initialize(backend, decoder, demux_result.frames);
   return feeder;
@@ -573,7 +578,7 @@ std::unique_ptr<BufferFeeder> BufferFeeder::LoadVideo(
     MediaPipelineBackend* backend,
     const std::string& filename,
     bool raw_h264,
-    const base::Closure& eos_cb) {
+    base::OnceClosure eos_cb) {
   CHECK(backend);
 
   VideoConfig video_config;
@@ -581,8 +586,8 @@ std::unique_ptr<BufferFeeder> BufferFeeder::LoadVideo(
   if (raw_h264) {
     base::FilePath file_path = GetTestDataFilePath(filename);
     base::MemoryMappedFile video_stream;
-    CHECK(video_stream.Initialize(file_path)) << "Couldn't open stream file: "
-                                              << file_path.MaybeAsASCII();
+    CHECK(video_stream.Initialize(file_path))
+        << "Couldn't open stream file: " << file_path.MaybeAsASCII();
     buffers = H264SegmenterForTest(video_stream.data(), video_stream.length());
 
     // TODO(erickung): Either pull data from stream or make caller specify value
@@ -605,7 +610,7 @@ std::unique_ptr<BufferFeeder> BufferFeeder::LoadVideo(
   CHECK(success);
 
   LOG(INFO) << "Got " << buffers.size() << " video input frames";
-  std::unique_ptr<BufferFeeder> feeder(new BufferFeeder(eos_cb));
+  std::unique_ptr<BufferFeeder> feeder(new BufferFeeder(std::move(eos_cb)));
   feeder->video_config_ = video_config;
   feeder->Initialize(backend, decoder, buffers);
   return feeder;
@@ -668,7 +673,7 @@ void AudioVideoPipelineDeviceTest::AddEffectsStreams() {
     audio_decoder->SetConfig(DefaultAudioConfig());
 
     std::unique_ptr<BufferFeeder> feeder(
-        new BufferFeeder(base::Bind(&IgnoreEos)));
+        new BufferFeeder(base::BindOnce(&IgnoreEos)));
     feeder->FeedContinuousPcm();
     feeder->Initialize(effects_backend, audio_decoder, BufferList());
     feeder->SetAudioConfig(DefaultAudioConfig());
@@ -688,8 +693,8 @@ void AudioVideoPipelineDeviceTest::ConfigureForAudioOnly(
   Initialize();
   audio_feeder_ = BufferFeeder::LoadAudio(
       backend_.get(), filename,
-      base::Bind(&AudioVideoPipelineDeviceTest::OnEndOfStream,
-                 base::Unretained(this)));
+      base::BindOnce(&AudioVideoPipelineDeviceTest::OnEndOfStream,
+                     base::Unretained(this)));
   ASSERT_TRUE(backend_->Initialize());
 }
 
@@ -699,19 +704,23 @@ void AudioVideoPipelineDeviceTest::ConfigureForVideoOnly(
   Initialize();
   video_feeder_ = BufferFeeder::LoadVideo(
       backend_.get(), filename, raw_h264,
-      base::Bind(&AudioVideoPipelineDeviceTest::OnEndOfStream,
-                 base::Unretained(this)));
+      base::BindOnce(&AudioVideoPipelineDeviceTest::OnEndOfStream,
+                     base::Unretained(this)));
   ASSERT_TRUE(backend_->Initialize());
 }
 
 void AudioVideoPipelineDeviceTest::ConfigureForFile(
     const std::string& filename) {
   Initialize();
-  base::Closure eos_cb = base::Bind(
+  base::OnceClosure eos_video_cb = base::BindOnce(
       &AudioVideoPipelineDeviceTest::OnEndOfStream, base::Unretained(this));
-  video_feeder_ = BufferFeeder::LoadVideo(backend_.get(), filename,
-                                          false /* raw_h264 */, eos_cb);
-  audio_feeder_ = BufferFeeder::LoadAudio(backend_.get(), filename, eos_cb);
+  base::OnceClosure eos_audio_cb = base::BindOnce(
+      &AudioVideoPipelineDeviceTest::OnEndOfStream, base::Unretained(this));
+
+  video_feeder_ = BufferFeeder::LoadVideo(
+      backend_.get(), filename, false /* raw_h264 */, std::move(eos_video_cb));
+  audio_feeder_ = BufferFeeder::LoadAudio(backend_.get(), filename,
+                                          std::move(eos_audio_cb));
   ASSERT_TRUE(backend_->Initialize());
 }
 
@@ -802,19 +811,17 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
   }
 
   int64_t pts = backend_->GetCurrentPts();
-  base::TimeDelta media_time = base::TimeDelta::FromMicroseconds(pts);
+  base::TimeDelta media_time = base::Microseconds(pts);
   if (sync_type_ == MediaPipelineDeviceParams::kModeSyncPts) {
     // Check that the current PTS is no more than 100ms past the last pushed
     // PTS.
-    if (audio_feeder_ &&
-        audio_feeder_->last_pushed_pts() !=
-            std::numeric_limits<int64_t>::min()) {
+    if (audio_feeder_ && audio_feeder_->last_pushed_pts() !=
+                             std::numeric_limits<int64_t>::min()) {
       EXPECT_LE(pts, std::max(kStartPts,
                               audio_feeder_->last_pushed_pts() + 100 * 1000));
     }
-    if (video_feeder_ &&
-        video_feeder_->last_pushed_pts() !=
-            std::numeric_limits<int64_t>::min()) {
+    if (video_feeder_ && video_feeder_->last_pushed_pts() !=
+                             std::numeric_limits<int64_t>::min()) {
       EXPECT_LE(pts, std::max(kStartPts,
                               video_feeder_->last_pushed_pts() + 100 * 1000));
     }
@@ -886,7 +893,7 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
       media_time >= pause_time_ + pause_pattern_[pause_pattern_idx_].delay) {
     // Do Pause
     backend_->Pause();
-    pause_time_ = base::TimeDelta::FromMicroseconds(backend_->GetCurrentPts());
+    pause_time_ = base::Microseconds(backend_->GetCurrentPts());
     RunPlaybackChecks();
 
     LOG(INFO) << "Pausing at " << pause_time_.InMilliseconds() << "ms for "
@@ -912,12 +919,10 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
 
 void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
   // Make sure the media time didn't move during that time.
-  base::TimeDelta media_time =
-      base::TimeDelta::FromMicroseconds(backend_->GetCurrentPts());
+  base::TimeDelta media_time = base::Microseconds(backend_->GetCurrentPts());
 
   // Make sure that the PTS did not advance too much while paused.
-  EXPECT_LT(media_time,
-            pause_time_ + base::TimeDelta::FromMilliseconds(kPausePtsSlackMs));
+  EXPECT_LT(media_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
 
 #if defined(ENABLE_VIDEO_WITH_MIXED_AUDIO)
   // Do AV sync checks.
@@ -932,10 +937,9 @@ void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
       backend_for_mixer->video_decoder() &&
       backend_for_mixer->MonotonicClockNow() > playback_start_time + 50000) {
     // Check the audio time.
-    base::TimeDelta audio_time = base::TimeDelta::FromMicroseconds(
-        backend_for_mixer->audio_decoder()->GetCurrentPts());
-    EXPECT_LT(audio_time, pause_time_ + base::TimeDelta::FromMilliseconds(
-                                            kPausePtsSlackMs));
+    base::TimeDelta audio_time =
+        base::Microseconds(backend_for_mixer->audio_decoder()->GetCurrentPts());
+    EXPECT_LT(audio_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
 
     // Check the video time.
     int64_t timestamp = 0;
@@ -946,10 +950,9 @@ void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
         << backend_for_mixer->MonotonicClockNow()
         << " playback should have started at=" << playback_start_time;
 
-    base::TimeDelta video_time = base::TimeDelta::FromMicroseconds(pts);
+    base::TimeDelta video_time = base::Microseconds(pts);
 
-    EXPECT_LT(video_time, pause_time_ + base::TimeDelta::FromMilliseconds(
-                                            kPausePtsSlackMs));
+    EXPECT_LT(video_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
   }
 #endif
 
@@ -1065,8 +1068,7 @@ TEST_F(AudioVideoPipelineDeviceTest, WebmPlaybackWithPause) {
     return;
   set_sync_type(MediaPipelineDeviceParams::kModeSyncPts);
   // Setup to pause for 100ms every 500ms
-  AddPause(base::TimeDelta::FromMilliseconds(500),
-           base::TimeDelta::FromMilliseconds(100));
+  AddPause(base::Milliseconds(500), base::Milliseconds(100));
 
   ConfigureForVideoOnly("bear-640x360.webm", false /* raw_h264 */);
   Start();
@@ -1103,7 +1105,7 @@ TEST_F(AudioVideoPipelineDeviceTest, AudioBackendStates) {
 
   // Test setting config before Initialize().
   std::unique_ptr<BufferFeeder> feeder(
-      new BufferFeeder(base::Bind(&IgnoreEos)));
+      new BufferFeeder(base::BindOnce(&IgnoreEos)));
   feeder->Initialize(backend(), audio_decoder, BufferList());
   feeder->SetAudioConfig(DefaultAudioConfig());
   feeder->TestAudioConfigs();
@@ -1120,7 +1122,7 @@ TEST_F(AudioVideoPipelineDeviceTest, AudioEffectsBackendStates) {
       backend()->CreateAudioDecoder();
 
   std::unique_ptr<BufferFeeder> feeder(
-      new BufferFeeder(base::Bind(&IgnoreEos)));
+      new BufferFeeder(base::BindOnce(&IgnoreEos)));
   feeder->Initialize(backend(), audio_decoder, BufferList());
   feeder->SetAudioConfig(DefaultAudioConfig());
   ASSERT_TRUE(audio_decoder->SetConfig(DefaultAudioConfig()));
@@ -1136,7 +1138,7 @@ TEST_F(AudioVideoPipelineDeviceTest, VideoBackendStates) {
 
   // Test setting config before Initialize().
   std::unique_ptr<BufferFeeder> feeder(
-      new BufferFeeder(base::Bind(&IgnoreEos)));
+      new BufferFeeder(base::BindOnce(&IgnoreEos)));
   feeder->Initialize(backend(), video_decoder, BufferList());
   feeder->SetVideoConfig(DefaultVideoConfig());
   feeder->TestVideoConfigs();
@@ -1151,8 +1153,8 @@ TEST_F(AudioVideoPipelineDeviceTest, AudioImmediateEos) {
       backend()->CreateAudioDecoder();
 
   std::unique_ptr<BufferFeeder> feeder(new BufferFeeder(
-      base::Bind(&AudioVideoPipelineDeviceTest::EndImmediateEosTest,
-                 base::Unretained(this))));
+      base::BindOnce(&AudioVideoPipelineDeviceTest::EndImmediateEosTest,
+                     base::Unretained(this))));
   feeder->Initialize(backend(), audio_decoder, BufferList());
   feeder->SetAudioConfig(DefaultAudioConfig());
   SetAudioFeeder(std::move(feeder));
@@ -1167,8 +1169,8 @@ TEST_F(AudioVideoPipelineDeviceTest, VideoImmediateEos) {
   MediaPipelineBackend::VideoDecoder* video_decoder =
       backend()->CreateVideoDecoder();
   std::unique_ptr<BufferFeeder> video_feeder(new BufferFeeder(
-      base::Bind(&AudioVideoPipelineDeviceTest::EndImmediateEosTest,
-                 base::Unretained(this))));
+      base::BindOnce(&AudioVideoPipelineDeviceTest::EndImmediateEosTest,
+                     base::Unretained(this))));
   video_feeder->Initialize(backend(), video_decoder, BufferList());
   video_feeder->SetVideoConfig(DefaultVideoConfig());
   SetVideoFeeder(std::move(video_feeder));
@@ -1176,7 +1178,7 @@ TEST_F(AudioVideoPipelineDeviceTest, VideoImmediateEos) {
   MediaPipelineBackend::AudioDecoder* audio_decoder =
       backend()->CreateAudioDecoder();
   std::unique_ptr<BufferFeeder> audio_feeder(
-      new BufferFeeder(base::Bind(&IgnoreEos)));
+      new BufferFeeder(base::BindOnce(&IgnoreEos)));
   audio_feeder->Initialize(backend(), audio_decoder, BufferList());
   audio_feeder->SetAudioConfig(DefaultAudioConfig());
   SetAudioFeeder(std::move(audio_feeder));
@@ -1230,8 +1232,7 @@ TEST_F(AudioVideoPipelineDeviceTest, WebmPlaybackWithPause_WithEffectsStreams) {
     return;
   set_sync_type(MediaPipelineDeviceParams::kModeSyncPts);
   // Setup to pause for 100ms every 500ms
-  AddPause(base::TimeDelta::FromMilliseconds(500),
-           base::TimeDelta::FromMilliseconds(100));
+  AddPause(base::Milliseconds(500), base::Milliseconds(100));
 
   ConfigureForVideoOnly("bear-640x360.webm", false /* raw_h264 */);
   AddEffectsStreams();

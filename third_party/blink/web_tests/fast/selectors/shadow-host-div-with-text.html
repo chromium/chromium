@@ -23,7 +23,7 @@
   <script>
     var host = document.querySelector('#host');
     var template = document.querySelector('template');
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.appendChild(template.content);
     var span = root.querySelector('span');
     

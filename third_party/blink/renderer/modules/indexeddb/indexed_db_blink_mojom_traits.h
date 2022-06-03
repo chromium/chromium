@@ -6,8 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_INDEXED_DB_BLINK_MOJOM_TRAITS_H_
 
 #include <stdint.h>
+#include <memory>
 
+#include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -86,11 +90,11 @@ struct MODULES_EXPORT StructTraits<blink::mojom::IDBIndexMetadataDataView,
 };
 
 template <>
-struct MODULES_EXPORT UnionTraits<blink::mojom::IDBKeyDataDataView,
-                                  std::unique_ptr<blink::IDBKey>> {
-  static blink::mojom::IDBKeyDataDataView::Tag GetTag(
+struct MODULES_EXPORT
+    UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>> {
+  static blink::mojom::IDBKeyDataView::Tag GetTag(
       const std::unique_ptr<blink::IDBKey>& key);
-  static bool Read(blink::mojom::IDBKeyDataDataView data,
+  static bool Read(blink::mojom::IDBKeyDataView data,
                    std::unique_ptr<blink::IDBKey>* out);
   static const Vector<std::unique_ptr<blink::IDBKey>>& key_array(
       const std::unique_ptr<blink::IDBKey>& key);
@@ -116,19 +120,10 @@ struct MODULES_EXPORT UnionTraits<blink::mojom::IDBKeyDataDataView,
 };
 
 template <>
-struct MODULES_EXPORT
-    StructTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>> {
-  static const std::unique_ptr<blink::IDBKey>& data(
-      const std::unique_ptr<blink::IDBKey>& key);
-  static bool Read(blink::mojom::IDBKeyDataView data,
-                   std::unique_ptr<blink::IDBKey>* out);
-};
-
-template <>
 struct MODULES_EXPORT StructTraits<blink::mojom::IDBValueDataView,
                                    std::unique_ptr<blink::IDBValue>> {
   static Vector<uint8_t> bits(const std::unique_ptr<blink::IDBValue>& input);
-  static Vector<blink::mojom::blink::IDBBlobInfoPtr> blob_or_file_info(
+  static Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects(
       const std::unique_ptr<blink::IDBValue>& input);
   static bool Read(blink::mojom::IDBValueDataView data,
                    std::unique_ptr<blink::IDBValue>* out);

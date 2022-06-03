@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,7 +31,7 @@ bool CreateEmptyFile(const base::FilePath& path) {
 }
 
 bool CreateFileInFolder(const base::FilePath& folder,
-                        const base::string16& name) {
+                        const std::wstring& name) {
   DCHECK(!name.empty());
   DCHECK(base::PathExists(folder));
   base::FilePath file_path = folder.Append(name);
@@ -51,6 +53,8 @@ void CreateFileWithRepeatedContent(const base::FilePath& path,
   DCHECK(content);
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid())
+      << base::File::ErrorToString(file.error_details());
   for (size_t i = 0; i < count; ++i)
     ASSERT_EQ(content_length, static_cast<size_t>(file.WriteAtCurrentPos(
                                   content, content_length)));
@@ -58,13 +62,13 @@ void CreateFileWithRepeatedContent(const base::FilePath& path,
 
 base::win::ScopedHandle CreateFileWithContent(
     const std::string& content,
-    const base::string16& file_name,
+    const std::wstring& file_name,
     const base::ScopedTempDir& temp_dir) {
   base::FilePath path(temp_dir.GetPath().Append(file_name));
   EXPECT_NE(base::WriteFile(path, content.c_str(), content.size()), -1);
-  base::string16 utf16_file_path = path.AsUTF16Unsafe();
+  std::wstring wide_file_path = path.value();
   base::win::ScopedHandle file_handle(
-      ::CreateFile(utf16_file_path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
+      ::CreateFile(wide_file_path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
                    OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL));
   EXPECT_TRUE(file_handle.IsValid());
   return file_handle;
@@ -80,7 +84,7 @@ void CreateFileAndGetShortName(const base::FilePath& long_name_path,
       ::GetShortPathName(long_name_path.value().c_str(), nullptr, 0);
   ASSERT_GT(short_name_len, 0UL);
 
-  base::string16 short_name_string;
+  std::wstring short_name_string;
   short_name_len = ::GetShortPathName(
       long_name_path.value().c_str(),
       base::WriteInto(&short_name_string, short_name_len), short_name_len);

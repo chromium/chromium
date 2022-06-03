@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
-#include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_mac.h"
@@ -35,6 +35,28 @@ static base::TestSuite* g_test_suite = NULL;
 static int g_argc;
 static char** g_argv;
 
+namespace {
+void PopulateUIWindow(UIWindow* window) {
+  [window setBackgroundColor:[UIColor whiteColor]];
+  [window makeKeyAndVisible];
+  CGRect bounds = [[UIScreen mainScreen] bounds];
+  // Add a label with the app name.
+  UILabel* label = [[[UILabel alloc] initWithFrame:bounds] autorelease];
+  label.text = [[NSProcessInfo processInfo] processName];
+  label.textAlignment = NSTextAlignmentCenter;
+  [window addSubview:label];
+
+  // An NSInternalInconsistencyException is thrown if the app doesn't have a
+  // root view controller. Set an empty one here.
+  [window setRootViewController:[[[UIViewController alloc] init] autorelease]];
+}
+
+bool IsSceneStartupEnabled() {
+  return [[NSBundle mainBundle].infoDictionary
+      objectForKey:@"UIApplicationSceneManifest"];
+}
+}
+
 @interface UIApplication (Testing)
 - (void)_terminateWithStatus:(int)status;
 @end
@@ -50,10 +72,53 @@ static char** g_argv;
 @end
 #endif  // TARGET_IPHONE_SIMULATOR
 
+// No-op scene delegate for unit tests. Note that this is created along with
+// the application delegate, so they need to be separate objects (the same
+// object can't be both the app and scene delegate, since new scene delegates
+// are created for each scene).
+@interface ChromeUnitTestSceneDelegate : NSObject <UIWindowSceneDelegate> {
+  base::scoped_nsobject<UIWindow> _window;
+}
+
+@end
+
 @interface ChromeUnitTestDelegate : NSObject <GoogleTestRunnerDelegate> {
   base::scoped_nsobject<UIWindow> _window;
 }
 - (void)runTests;
+@end
+
+@implementation ChromeUnitTestSceneDelegate
+
+- (void)scene:(UIScene*)scene
+    willConnectToSession:(UISceneSession*)session
+                 options:(UISceneConnectionOptions*)connectionOptions
+    API_AVAILABLE(ios(13)) {
+  // Unittests do not support multiple scenes.
+  DCHECK(![[UIApplication sharedApplication] supportsMultipleScenes]);
+  // Yes, this is leaked, it's just to make what's running visible.
+  _window.reset([[UIWindow alloc]
+      initWithWindowScene:static_cast<UIWindowScene*>(scene)]);
+  PopulateUIWindow(_window);
+}
+
+- (void)sceneDidDisconnect:(UIScene*)scene API_AVAILABLE(ios(13)) {
+  _window.reset();
+}
+
+- (UIWindow*)window {
+  // Required for backwards compatibility with ScopedKeyWindow.
+  // Note that from iOS 15 the concept of key window is deprecated.
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    if (window.isKeyWindow)
+      return window;
+  }
+  // Returns a weak pointer to _window, ChromeUnitTestSceneDelegate retains
+  // ownership of the object.
+  return _window.get();
+}
+
 @end
 
 @implementation ChromeUnitTestDelegate
@@ -67,25 +132,19 @@ static char** g_argv;
   // calls override this behavior by ensuring that the software keyboard is
   // always shown.
   [[UIKeyboardImpl sharedInstance] setAutomaticMinimizationEnabled:NO];
-  [[UIKeyboardImpl sharedInstance] setSoftwareKeyboardShownByTouch:YES];
+  if (@available(iOS 15, *)) {
+  } else {
+    [[UIKeyboardImpl sharedInstance] setSoftwareKeyboardShownByTouch:YES];
+  }
 #endif  // TARGET_IPHONE_SIMULATOR
 
-  CGRect bounds = [[UIScreen mainScreen] bounds];
+  if (!IsSceneStartupEnabled()) {
+    CGRect bounds = [[UIScreen mainScreen] bounds];
 
-  // Yes, this is leaked, it's just to make what's running visible.
-  _window.reset([[UIWindow alloc] initWithFrame:bounds]);
-  [_window setBackgroundColor:[UIColor whiteColor]];
-  [_window makeKeyAndVisible];
-
-  // Add a label with the app name.
-  UILabel* label = [[[UILabel alloc] initWithFrame:bounds] autorelease];
-  label.text = [[NSProcessInfo processInfo] processName];
-  label.textAlignment = NSTextAlignmentCenter;
-  [_window addSubview:label];
-
-  // An NSInternalInconsistencyException is thrown if the app doesn't have a
-  // root view controller. Set an empty one here.
-  [_window setRootViewController:[[[UIViewController alloc] init] autorelease]];
+    // Yes, this is leaked, it's just to make what's running visible.
+    _window.reset([[UIWindow alloc] initWithFrame:bounds]);
+    PopulateUIWindow(_window);
+  }
 
   if ([self shouldRedirectOutputToFile])
     [self redirectOutput];
@@ -110,8 +169,9 @@ static char** g_argv;
   // test result parser analyzes console output.
   return !base::ShouldRunIOSUnittestsWithXCTest() &&
          !base::debug::BeingDebugged();
-#endif  // TARGET_IPHONE_SIMULATOR
+#else
   return NO;
+#endif  // TARGET_IPHONE_SIMULATOR
 }
 
 // Returns the path to the directory to store gtest output files.

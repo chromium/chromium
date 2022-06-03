@@ -40,11 +40,9 @@ CategoryStatus MockContentSuggestionsProvider::GetCategoryStatus(
 
 CategoryInfo MockContentSuggestionsProvider::GetCategoryInfo(
     Category category) {
-  return CategoryInfo(base::ASCIIToUTF16("Section title"),
-                      ContentSuggestionsCardLayout::FULL_CARD,
+  return CategoryInfo(u"Section title", ContentSuggestionsCardLayout::FULL_CARD,
                       ContentSuggestionsAdditionalAction::FETCH,
-                      /*show_if_empty=*/false,
-                      base::ASCIIToUTF16("No suggestions message"));
+                      /*show_if_empty=*/false, u"No suggestions message");
 }
 
 void MockContentSuggestionsProvider::SetDestructorCallback(

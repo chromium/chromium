@@ -37,6 +37,7 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   static const double kInvalidPosition;
 
   explicit HTMLProgressElement(Document&);
+  ~HTMLProgressElement() override;
 
   double value() const;
   void setValue(double);
@@ -48,11 +49,9 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
 
   bool CanContainRangeEndPoint() const override { return false; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  ~HTMLProgressElement() override;
-
   bool AreAuthorShadowsAllowed() const override { return false; }
   bool ShouldAppearIndeterminate() const override;
   bool IsLabelable() const override { return true; }

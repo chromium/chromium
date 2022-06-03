@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_image.h"
@@ -61,6 +62,8 @@ ContextResult GLInProcessContext::Initialize(
     const SharedMemoryLimits& mem_limits,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     ImageFactory* image_factory,
+    GpuTaskSchedulerHelper* gpu_task_scheduler,
+    DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller_on_gpu,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   // If a surface is provided, we are running in a webview and should not have
   // a task runner. We must have a task runner in all other cases.
@@ -75,11 +78,14 @@ ContextResult GLInProcessContext::Initialize(
   command_buffer_ = std::make_unique<InProcessCommandBuffer>(
       task_executor, GURL("chrome://gpu/GLInProcessContext::Initialize"));
 
-  auto result =
-      command_buffer_->Initialize(surface, is_offscreen, window, attribs,
-                                  gpu_memory_buffer_manager, image_factory,
-                                  /*gpu_channel_manager_delegate=*/nullptr,
-                                  std::move(task_runner), nullptr, nullptr);
+  auto result = command_buffer_->Initialize(
+      surface, is_offscreen, window, attribs, gpu_memory_buffer_manager,
+      image_factory,
+      /*gpu_channel_manager_delegate=*/nullptr, std::move(task_runner),
+      /*task_sequence=*/
+      gpu_task_scheduler ? gpu_task_scheduler->GetTaskSequence() : nullptr,
+      /*display_compositor_memory_and_task_controller_on_gpu=*/
+      display_controller_on_gpu, nullptr, nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
@@ -93,6 +99,8 @@ ContextResult GLInProcessContext::Initialize(
     LOG(ERROR) << "Failed to initialize GLES2CmdHelper";
     return result;
   }
+  if (gpu_task_scheduler)
+    gpu_task_scheduler->Initialize(gles2_helper_.get());
 
   // Create a transfer buffer.
   transfer_buffer_ = std::make_unique<TransferBuffer>(gles2_helper_.get());

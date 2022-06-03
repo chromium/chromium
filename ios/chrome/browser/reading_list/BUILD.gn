@@ -45,17 +45,19 @@ source_set("reading_list") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
+    "//ios/components/webui:url_constants",
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/security",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//ui/base",
     "//url",
   ]
-  public_deps = [
-    "//ios/chrome/browser/dom_distiller",
-  ]
+  public_deps = [ "//ios/chrome/browser/dom_distiller" ]
   allow_circular_includes_from = [ ":reading_list_remover" ]
 }
 
@@ -91,6 +93,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":distilled_bundle_data",
+    ":fakes",
     ":reading_list",
     "//base",
     "//base/test:test_support",
@@ -110,12 +113,23 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("fakes") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fake_reading_list_model.h",
+    "fake_reading_list_model.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/reading_list/core",
+  ]
+}
+
 bundle_data("distilled_bundle_data") {
   testonly = true
 
-  sources = [
-    "data/distilled.html",
-  ]
+  sources = [ "data/distilled.html" ]
   outputs = [
     "{{bundle_resources_dir}}/ios/testing/data/Offline/{{source_file_part}}",
   ]

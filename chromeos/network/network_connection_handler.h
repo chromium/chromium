@@ -11,10 +11,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/values.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
@@ -39,13 +37,16 @@ namespace chromeos {
 
 enum class ConnectCallbackMode { ON_STARTED, ON_COMPLETED };
 
+class CellularConnectionHandler;
 class NetworkStateHandler;
 class NetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandler;
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
  public:
-  // Constants for |error_name| from |error_callback| for Connect.
+  // Constants for |error_name| from |error_callback| for Connect. Whenever a
+  // new error name associated to cellular connections is added,
+  // CellularMetricsLogger should be updated as well.
 
   //  No network matching |service_path| is found (hidden networks must be
   //  configured before connecting).
@@ -108,27 +109,55 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // delegate present.
   static const char kErrorTetherAttemptWithNoDelegate[];
 
+  // Error occurred while trying to use inhibit/uninhibit logic for cellular
+  // operations.
+  static const char kErrorCellularInhibitFailure[];
+
+  // Error occurred when trying to connect to a cellular network that is out of
+  // credits.
+  static const char kErrorCellularOutOfCredits[];
+
+  // Error occurred while trying to perform an operation with an eSIM profile.
+  static const char kErrorESimProfileIssue[];
+
+  // Failed due to a connection attempt to a cellular network with a locked SIM.
+  // The SIM must be unlocked before a connection can succeed.
+  static const char kErrorSimLocked[];
+
+  // Connect failed because cellular device is busy.
+  static const char kErrorCellularDeviceBusy[];
+
+  // Connect failed because connect request timed out.
+  static const char kErrorConnectTimeout[];
+
+  // Connect failed because waiting for connectable timed out.
+  static const char kConnectableCellularTimeout[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
+    using StringErrorCallback =
+        base::OnceCallback<void(const std::string& string_result)>;
+
     // Connects to the Tether network with GUID |tether_network_guid|. On
     // success, invokes |success_callback|, and on failure, invokes
     // |error_callback|, passing the relevant error code declared above.
-    virtual void ConnectToNetwork(
-        const std::string& tether_network_guid,
-        const base::Closure& success_callback,
-        const network_handler::StringResultCallback& error_callback) = 0;
+    virtual void ConnectToNetwork(const std::string& tether_network_guid,
+                                  base::OnceClosure success_callback,
+                                  StringErrorCallback error_callback) = 0;
 
     // Disconnects from the Tether network with GUID |tether_network_guid|. On
     // success, invokes |success_callback|, and on failure, invokes
     // |error_callback|, passing the relevant error code declared above.
-    virtual void DisconnectFromNetwork(
-        const std::string& tether_network_guid,
-        const base::Closure& success_callback,
-        const network_handler::StringResultCallback& error_callback) = 0;
+    virtual void DisconnectFromNetwork(const std::string& tether_network_guid,
+                                       base::OnceClosure success_callback,
+                                       StringErrorCallback error_callback) = 0;
 
    protected:
     virtual ~TetherDelegate() {}
   };
+
+  NetworkConnectionHandler(const NetworkConnectionHandler&) = delete;
+  NetworkConnectionHandler& operator=(const NetworkConnectionHandler&) = delete;
 
   virtual ~NetworkConnectionHandler();
 
@@ -153,12 +182,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   //   completes. Note: This also prevents |error_callback| from being called
   //   if the connection request is successfully sent but the network does not
   //   connect.
-  virtual void ConnectToNetwork(
-      const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback,
-      bool check_error_state,
-      ConnectCallbackMode mode) = 0;
+  virtual void ConnectToNetwork(const std::string& service_path,
+                                base::OnceClosure success_callback,
+                                network_handler::ErrorCallback error_callback,
+                                bool check_error_state,
+                                ConnectCallbackMode mode) = 0;
 
   // DisconnectNetwork() will send a Disconnect request to Shill.
   // On success, |success_callback| will be called.
@@ -169,46 +197,48 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // |error_message| will contain and additional error string for debugging.
   virtual void DisconnectNetwork(
       const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) = 0;
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback) = 0;
 
-  virtual void Init(NetworkStateHandler* network_state_handler,
-                    NetworkConfigurationHandler* network_configuration_handler,
-                    ManagedNetworkConfigurationHandler*
-                        managed_network_configuration_handler) = 0;
+  // Note: |cellular_connection_handler| is null when the associated flag
+  // is disabled.
+  virtual void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularConnectionHandler* cellular_connection_handler) = 0;
 
   // Construct and initialize an instance for testing.
   static std::unique_ptr<NetworkConnectionHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler,
       NetworkConfigurationHandler* network_configuration_handler,
-      ManagedNetworkConfigurationHandler*
-          managed_network_configuration_handler);
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularConnectionHandler* cellular_connection_handler);
 
  protected:
   NetworkConnectionHandler();
 
   // Notify caller and observers that the connect request succeeded.
   void InvokeConnectSuccessCallback(const std::string& service_path,
-                                    const base::Closure& success_callback);
+                                    base::OnceClosure success_callback);
 
   // Notify caller and observers that the connect request failed.
   // |error_name| will be one of the kError* messages defined above.
-  void InvokeConnectErrorCallback(
-      const std::string& service_path,
-      const network_handler::ErrorCallback& error_callback,
-      const std::string& error_name);
+  void InvokeConnectErrorCallback(const std::string& service_path,
+                                  network_handler::ErrorCallback error_callback,
+                                  const std::string& error_name);
 
   // Initiates a connection to a Tether network.
   void InitiateTetherNetworkConnection(
       const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback);
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback);
 
   // Initiates a disconnection from a Tether network.
   void InitiateTetherNetworkDisconnection(
       const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback);
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback);
 
   base::ObserverList<NetworkConnectionObserver, true>::Unchecked observers_;
 
@@ -219,10 +249,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Only to be used by NetworkConnectionHandler implementation (and not by
   // derived classes).
   base::WeakPtrFactory<NetworkConnectionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ConnectCallbackMode;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

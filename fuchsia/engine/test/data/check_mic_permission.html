@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <video></video>
+    <script>
+      window.onload = () => {
+        navigator.permissions.query({name: 'microphone'}).then(r => {
+          document.title = r.state;
+        });
+      }
+    </script>
+  </body>
+</html>

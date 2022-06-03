@@ -171,10 +171,10 @@ bool FileWriter::Open(const base::FilePath& path,
   return true;
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 bool FileWriter::OpenMemfd(const base::FilePath& path) {
   CHECK(!file_.is_valid());
-  file_.reset(LoggingOpenMemFileForWrite(path));
+  file_.reset(LoggingOpenMemoryFileForReadAndWrite(path));
   if (!file_.is_valid()) {
     return false;
   }

@@ -6,41 +6,65 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_GL_SURFACE_H_
 
 #include "base/macros.h"
-#include "ui/gl/gl_surface.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gl/gl_surface_egl.h"
 
 namespace android_webview {
 
 // This surface is used to represent the underlying surface provided by the App
 // inside a hardware draw. Note that offscreen contexts will not be using this
 // GLSurface.
-class AwGLSurface : public gl::GLSurface {
+class AwGLSurface : public gl::GLSurfaceEGL {
  public:
-  AwGLSurface();
+  explicit AwGLSurface(bool is_angle);
+  explicit AwGLSurface(scoped_refptr<gl::GLSurface> surface);
+
+  AwGLSurface(const AwGLSurface&) = delete;
+  AwGLSurface& operator=(const AwGLSurface&) = delete;
 
   // Implement GLSurface.
+  bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
   bool IsOffscreen() override;
   unsigned int GetBackingFramebufferObject() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  bool OnMakeCurrent(gl::GLContext* context) override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
   void* GetDisplay() override;
   gl::GLSurfaceFormat GetFormat() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
-              ColorSpace color_space,
+              const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+  EGLConfig GetConfig() override;
 
   void SetSize(const gfx::Size& size);
-  void MaybeDidPresent(gfx::PresentationFeedback feedback);
+  void MaybeDidPresent(const gfx::PresentationFeedback& feedback);
+
+  virtual void RecalculateClipAndTransform(gfx::Size* viewport,
+                                           gfx::Rect* clip_rect,
+                                           gfx::Transform* transform) {}
+  // Returns true if this GLSurface created fbo to implement stencil clipping.
+  // This doesn't take into account if fbo was created by Android.
+  virtual bool IsDrawingToFBO();
 
  protected:
   ~AwGLSurface() override;
 
  private:
+  const bool is_angle_;
+
+  // This is used when when webview is compositing with vulkan. There are still
+  // random code that expect to a real EGL context to be present to eg run
+  // glGetError. A real EGL context requires a real EGL surface.
+  // Note this is currently mutually exclusive with `is_angle_`.
+  const scoped_refptr<gl::GLSurface> wrapped_surface_;
+
   PresentationCallback pending_presentation_callback_;
-  gfx::Size size_;
-  DISALLOW_COPY_AND_ASSIGN(AwGLSurface);
+  gfx::Size size_{1, 1};
+  EGLSurface surface_ = nullptr;
 };
 
 }  // namespace android_webview

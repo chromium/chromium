@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace chrome_cleaner {
 
@@ -18,8 +17,8 @@ struct FileDigestInfo;
 // This structure holds version information about an executable.
 // (see: base/file_version_info.h)
 struct VersionInformation {
-  base::string16 company_name;
-  base::string16 original_filename;
+  std::wstring company_name;
+  std::wstring original_filename;
 };
 
 // This class is used as a wrapper around the signature matcher calls. The

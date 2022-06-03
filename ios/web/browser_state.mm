@@ -7,22 +7,24 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/task/post_task.h"
 #include "base/token.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
 #include "ios/web/public/init/network_context_owner.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#include "ios/web/public/web_client.h"
+#import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
+#include "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #include "ios/web/webui/url_data_manager_ios_backend.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_context_getter_observer.h"
@@ -70,7 +72,9 @@ scoped_refptr<CertificatePolicyCache> BrowserState::GetCertificatePolicyCache(
   return handle->policy_cache;
 }
 
-BrowserState::BrowserState() : url_data_manager_ios_backend_(nullptr) {
+BrowserState::BrowserState()
+    : url_data_manager_ios_backend_(nullptr),
+      cookie_blocking_mode_(CookieBlockingMode::kAllow) {
   // (Refcounted)?BrowserStateKeyedServiceFactories needs to be able to convert
   // a base::SupportsUserData to a BrowserState. Moreover, since the factories
   // may be passed a content::BrowserContext instead of a BrowserState, attach
@@ -183,6 +187,35 @@ BrowserState* BrowserState::FromSupportsUserData(
     return nullptr;
   }
   return static_cast<BrowserState*>(supports_user_data);
+}
+
+CookieBlockingMode BrowserState::GetCookieBlockingMode() const {
+  return cookie_blocking_mode_;
+}
+
+void BrowserState::SetCookieBlockingMode(
+    CookieBlockingMode cookie_blocking_mode,
+    base::OnceClosure callback) {
+  if (cookie_blocking_mode == cookie_blocking_mode_) {
+    std::move(callback).Run();
+    return;
+  }
+  cookie_blocking_mode_ = cookie_blocking_mode;
+  WKWebViewConfigurationProvider& config_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(this);
+  // Cookie blocking needs the injected Javascript to be updated because the
+  // source of the injected Javascript depends on the current cookie blocking
+  // mode to set up the blocking correctly.
+  config_provider.UpdateScripts();
+
+  config_provider.GetContentRuleListProvider()->UpdateContentRuleLists(
+      base::BindOnce(
+          [](base::OnceClosure callback, bool success) {
+            base::UmaHistogramBoolean(
+                "IOS.ContentRuleListProviderUpdateSuccess", success);
+            std::move(callback).Run();
+          },
+          std::move(callback)));
 }
 
 }  // namespace web

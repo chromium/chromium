@@ -4,7 +4,7 @@
 
 #include "content/browser/compositor/image_transport_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace content {
 namespace {

@@ -12,9 +12,9 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/win_util.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_frame.h"
 
 namespace media {
 
@@ -77,6 +77,12 @@ bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
     resulting_format_.pixel_format = PIXEL_FORMAT_YUY2;
     return true;
   }
+  // This format is added after http:/crbug.com/508413.
+  if (sub_type == MEDIASUBTYPE_UYVY &&
+      pvi->bmiHeader.biCompression == MAKEFOURCC('U', 'Y', 'V', 'Y')) {
+    resulting_format_.pixel_format = PIXEL_FORMAT_UYVY;
+    return true;
+  }
   if (sub_type == MEDIASUBTYPE_MJPG &&
       pvi->bmiHeader.biCompression == MAKEFOURCC('M', 'J', 'P', 'G')) {
     resulting_format_.pixel_format = PIXEL_FORMAT_MJPEG;
@@ -110,7 +116,7 @@ bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
   }
 
   DVLOG(2) << __func__ << " unsupported media type: "
-           << base::win::String16FromGUID(sub_type);
+           << base::win::WStringFromGUID(sub_type);
   return false;
 }
 
@@ -204,7 +210,9 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   const int length = sample->GetActualDataLength();
 
   if (length <= 0 ||
-      static_cast<size_t>(length) < resulting_format_.ImageAllocationSize()) {
+      static_cast<size_t>(length) <
+          media::VideoFrame::AllocationSize(resulting_format_.pixel_format,
+                                            resulting_format_.frame_size)) {
     DLOG(WARNING) << "Wrong media sample length: " << length;
     observer_->FrameDropped(
         VideoCaptureFrameDropReason::kWinDirectShowUnexpectedSampleLength);
@@ -223,7 +231,7 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   base::TimeDelta timestamp = kNoTimestamp;
   if (SUCCEEDED(sample->GetTime(&start_time, &end_time))) {
     DCHECK(start_time <= end_time);
-    timestamp = base::TimeDelta::FromMicroseconds(start_time / 10);
+    timestamp = base::Microseconds(start_time / 10);
   }
 
   observer_->FrameReceived(buffer, length, resulting_format_, timestamp,
@@ -231,7 +239,6 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   return S_OK;
 }
 
-SinkInputPin::~SinkInputPin() {
-}
+SinkInputPin::~SinkInputPin() {}
 
 }  // namespace media

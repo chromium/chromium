@@ -36,7 +36,6 @@ import os
 import signal
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.tool.blink_tool import BlinkTool
 
@@ -49,7 +48,6 @@ from blinkpy.tool.blink_tool import BlinkTool
 
 
 class ForgivingUTF8Writer(codecs.lookup('utf-8')[-1]):
-
     def write(self, obj):
         if isinstance(obj, str):
             # Assume raw strings are utf-8 encoded. If this line
@@ -58,6 +56,7 @@ class ForgivingUTF8Writer(codecs.lookup('utf-8')[-1]):
             # write non-Unicode/UTF-8 data (which we shouldn't).
             obj = obj.decode('utf-8')
         return codecs.StreamWriter.write(self, obj)
+
 
 # By default, sys.stdout assumes ascii encoding.  Since our messages can
 # contain unicode strings (as with some peoples' names) we need to apply

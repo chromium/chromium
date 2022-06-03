@@ -1,0 +1,10 @@
+This test ensures non-fast scrollable areas are calculated correctly when a CSS scale transformation is applied.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [146, 146, 240, 240]. Was [219, 219, 360, 360].
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

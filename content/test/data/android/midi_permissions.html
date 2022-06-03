@@ -1,0 +1,11 @@
+<html>
+<script>
+var error_message = "";
+navigator.requestMIDIAccess({sysex: true}).then(
+  _ => { document.title = "pass" },
+  _ => {
+    document.title = "fail";
+  });
+</script>
+Page that requests midi access.
+</html>

@@ -107,19 +107,12 @@ bool IsValue(const NestedValue* proto_value, const char* value) {
 }
 
 NestedValue GetProtoFromTracedValue(TracedValue* traced_value) {
-  protozero::ScatteredHeapBuffer buffer(100);
-  protozero::ScatteredStreamWriter stream(&buffer);
-  perfetto::protos::pbzero::DebugAnnotation proto;
-  proto.Reset(&stream);
-  buffer.set_writer(&stream);
-
-  PerfettoProtoAppender proto_appender(&proto);
+  protozero::HeapBuffered<perfetto::protos::pbzero::DebugAnnotation> proto;
+  PerfettoProtoAppender proto_appender(proto.get());
   EXPECT_TRUE(traced_value->AppendToProto(&proto_appender));
-  uint32_t size = proto.Finalize();
-  ProtoInputStream proto_stream(&buffer);
 
   DebugAnnotation full_proto;
-  EXPECT_TRUE(full_proto.ParseFromBoundedZeroCopyStream(&proto_stream, size));
+  EXPECT_TRUE(full_proto.ParseFromString(proto.SerializeAsString()));
   EXPECT_TRUE(full_proto.has_nested_value());
 
   return full_proto.nested_value();

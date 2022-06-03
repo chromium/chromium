@@ -57,8 +57,6 @@ enum NetworkQualityObservationSource {
 namespace nqe {
 
 namespace internal {
-// Returns the string equivalent of |source|.
-const char* GetNameForObservationSource(NetworkQualityObservationSource source);
 
 // Different categories to which an observation source can belong to. Each
 // observation source belongs to exactly one category.

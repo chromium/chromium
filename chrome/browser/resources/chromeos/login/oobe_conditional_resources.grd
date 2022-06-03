@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/oobe_conditional_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="oobe_conditional_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <!-- Resources in this section still depend on flattenhtml -->
+      <structure name="IDR_MD_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_OS_INSTALL_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_OS_INSTALL_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_OOBE_JS" file="oobe.js" flattenhtml="true" type="chrome_html" />
+
+      <structure name="IDR_CUSTOM_ELEMENTS_OOBE_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OOBE_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
+
+      <structure name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" flattenhtml="true" type="chrome_html" />
+      <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
+    </structures>
+    <includes>
+      <!-- Resources that are served under fixed paths -->
+      <include name="IDR_OOBE_POLY3_HTML" file="oobe_polymer3.html" type="chrome_html" />
+      <include name="IDR_MD_LOGIN_POLY3_HTML" file="md_login_polymer3.html" type="chrome_html" />
+
+      <part file="oobe_image_resources.grdp" />
+      <part file="oobe_animation_resources.grdp" />
+
+      <!-- Resources that are dynamically chosen to be served in runtime -->
+      <!-- OOBE Custom CSS Variables -->
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/components/oobe_vars/oobe_custom_vars_css.m.js" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/components/oobe_vars/oobe_custom_vars_remora_css.m.js" />
+
+      <!-- OOBE Test API -->
+      <include name="IDR_OOBE_TEST_API_JS" file="test_api\test_api.js" type="chrome_html" />
+      <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api\no_test_api.js" type="chrome_html" />
+    </includes>
+  </release>
+</grit>

@@ -20,9 +20,9 @@ var A = createDiv('A');
 var B = createDiv('B');
 var C = createDiv('C');
 var D = createDiv('D');
-var shadowRootA = A.createShadowRoot();
-var shadowRootB = B.createShadowRoot();
-var shadowRootC = C.createShadowRoot();
+var shadowRootA = A.attachShadow({mode: 'open'});
+var shadowRootB = B.attachShadow({mode: 'open'});
+var shadowRootC = C.attachShadow({mode: 'open'});
 
 shadowRootA.appendChild(B);
 shadowRootB.appendChild(C);

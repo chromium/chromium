@@ -7,11 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
 
 // API tests for chrome.accessibilityFeatures API.
@@ -29,7 +30,7 @@ namespace {
 const char kTestNameKey[] = "testName";
 // Key for list of features enabled when the test is initialized.
 const char kEnabledFeaturesKey[] = "enabled";
-// Key for list fo features disabled when the test is initialized.
+// Key for list of features disabled when the test is initialized.
 const char kDisabledFeaturesKey[] = "disabled";
 
 // A test extension path. The extension has only |accessibilityFeatures.read|
@@ -38,7 +39,7 @@ const char kTestExtensionPathReadPermission[] =
     "accessibility_features/read_permission/";
 // A test extension path. The extension has only |accessibilityFeatures.modify|
 // permission.
-const char kTestExtensionPathMofifyPermission[] =
+const char kTestExtensionPathModifyPermission[] =
     "accessibility_features/modify_permission/";
 
 // Accessibility features API test.
@@ -57,9 +58,9 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
 
   // Returns the path of the extension that should be used in a parameterized
   // test.
-  std::string GetTestExtensionPath() const {
+  const char* GetTestExtensionPath() const {
     if (GetParam())
-      return kTestExtensionPathMofifyPermission;
+      return kTestExtensionPathModifyPermission;
     return kTestExtensionPathReadPermission;
   }
 
@@ -83,11 +84,27 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       return ash::prefs::kAccessibilityAutoclickEnabled;
     if (feature == "virtualKeyboard")
       return ash::prefs::kAccessibilityVirtualKeyboardEnabled;
+    if (feature == "caretHighlight")
+      return ash::prefs::kAccessibilityCaretHighlightEnabled;
+    if (feature == "cursorHighlight")
+      return ash::prefs::kAccessibilityCursorHighlightEnabled;
+    if (feature == "focusHighlight")
+      return ash::prefs::kAccessibilityFocusHighlightEnabled;
+    if (feature == "selectToSpeak")
+      return ash::prefs::kAccessibilitySelectToSpeakEnabled;
+    if (feature == "switchAccess")
+      return ash::prefs::kAccessibilitySwitchAccessEnabled;
+    if (feature == "cursorColor")
+      return ash::prefs::kAccessibilityCursorColorEnabled;
+    if (feature == "dockedMagnifier")
+      return ash::prefs::kDockedMagnifierEnabled;
+    if (feature == "dictation")
+      return ash::prefs::kAccessibilityDictationEnabled;
     return NULL;
   }
 
   // Initializes preferences before running the test extension.
-  // |prefs| Pref service which should be initializzed.
+  // |prefs| Pref service which should be initialized.
   // |enabled_features| List of boolean preference whose value should be set to
   //     true.
   // |disabled_features| List of boolean preferences whose value should be set
@@ -149,54 +166,66 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
     base::DictionaryValue test_arg;
     test_arg.SetString(kTestNameKey, test_name);
 
-    std::unique_ptr<base::ListValue> enabled_list(new base::ListValue);
+    base::ListValue enabled_list;
     for (size_t i = 0; i < enabled_features.size(); ++i)
-      enabled_list->AppendString(enabled_features[i]);
-    test_arg.Set(kEnabledFeaturesKey, std::move(enabled_list));
+      enabled_list.Append(enabled_features[i]);
+    test_arg.SetKey(kEnabledFeaturesKey, std::move(enabled_list));
 
-    std::unique_ptr<base::ListValue> disabled_list(new base::ListValue);
+    base::ListValue disabled_list;
     for (size_t i = 0; i < disabled_features.size(); ++i)
-      disabled_list->AppendString(disabled_features[i]);
-    test_arg.Set(kDisabledFeaturesKey, std::move(disabled_list));
+      disabled_list.Append(disabled_features[i]);
+    test_arg.SetKey(kDisabledFeaturesKey, std::move(disabled_list));
 
     return base::JSONWriter::Write(test_arg, result);
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(AccessibilityFeatureaApiTestInstantiatePermission,
+INSTANTIATE_TEST_SUITE_P(AccessibilityFeaturesApiTestInstantiatePermission,
                          AccessibilityFeaturesApiTest,
                          testing::Bool());
 
 // Tests that an extension with read permission can read accessibility features
 // state, while an extension that doesn't have the permission cannot.
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
-  // WARNING: Make sure that spoken feedback is not among enabled_features
-  // (see |Set| test for the reason).
-  std::vector<std::string> enabled_features;
-  enabled_features.push_back("largeCursor");
-  enabled_features.push_back("stickyKeys");
-  enabled_features.push_back("highContrast");
+  // WARNING: Make sure that features which load Chrome extension are not among
+  // enabled_features (see |Set| test for the reason).
+  std::vector<std::string> enabled_features = {
+      "cursorColor",
+      "cursorHighlight",
+      "highContrast",
+      "largeCursor",
+      "stickyKeys",
+  };
 
-  std::vector<std::string> disabled_features;
-  disabled_features.push_back("spokenFeedback");
-  disabled_features.push_back("screenMagnifier");
-  disabled_features.push_back("autoclick");
-  disabled_features.push_back("virtualKeyboard");
+  std::vector<std::string> disabled_features = {
+      "autoclick",
+      "caretHighlight",
+      "dockedMagnifier",
+      "focusHighlight",
+      "screenMagnifier",
+      "selectToSpeak",
+      "spokenFeedback",
+      "switchAccess",
+      "virtualKeyboard",
+  };
 
   ASSERT_TRUE(
       InitPrefServiceForTest(GetPrefs(), enabled_features, disabled_features));
 
   std::string test_arg;
-  ASSERT_TRUE(GenerateTestArg(
-      "getterTest", enabled_features, disabled_features, &test_arg));
-  EXPECT_TRUE(
-      RunPlatformAppTestWithArg(GetTestExtensionPath(), test_arg.c_str()))
+  ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
+                              &test_arg));
+  EXPECT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
-  EXPECT_FALSE(RunPlatformAppTestWithFlags(GetTestExtensionPath(), "{}",
-                                           kFlagLoadAsComponent))
+  EXPECT_FALSE(
+      RunExtensionTest(GetTestExtensionPath(),
+                       {.custom_arg = "{}", .launch_as_platform_app = true},
+                       {.load_as_component = true}))
       << message_;
 }
 
@@ -205,13 +234,27 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
 // sets up access to accessibility prefs. Otherwise,this is the same as the
 // |Get| test.
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
-  // WARNING: Make sure that spoken feedback is not among enabled_features
-  // (see |AccessibilityFeaturesApiTest.Set| test for the reason).
-  std::vector<std::string> enabled_features = {"largeCursor", "stickyKeys",
-                                               "highContrast"};
+  // WARNING: Make sure that features which load Chrome extension are not among
+  // enabled_features (see |Set| test for the reason).
+  std::vector<std::string> enabled_features = {
+      "cursorHighlight",
+      "dockedMagnifier",
+      "highContrast",
+      "largeCursor",
+      "stickyKeys",
+  };
 
   std::vector<std::string> disabled_features = {
-      "spokenFeedback", "screenMagnifier", "autoclick", "virtualKeyboard"};
+      "autoclick",
+      "caretHighlight",
+      "cursorColor",
+      "focusHighlight",
+      "screenMagnifier",
+      "selectToSpeak",
+      "spokenFeedback",
+      "switchAccess",
+      "virtualKeyboard",
+  };
 
   ASSERT_TRUE(
       InitPrefServiceForTest(GetPrefs(), enabled_features, disabled_features));
@@ -219,42 +262,56 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(
-      GetTestExtensionPath(), test_arg.c_str(), kFlagLoadAsComponent))
+  EXPECT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true},
+      {.load_as_component = true}))
       << message_;
 }
 
 // Tests that an extension with modify permission can modify accessibility
 // features, while an extension that doesn't have the permission can't.
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
-  // WARNING: Make sure that spoken feedback does not get enabled at this point
-  // (before the test app is loaded), as that may break the test:
+  // WARNING: Make sure that features which load Chrome extension are not
+  // enabled at this point (before the test app is loaded), as that may break
+  // the test:
   // |RunPlatformAppTestWithArg| waits for the test extension to load by
   // waiting for EXTENSION_LOADED notification to be observed. It also assumes
   // that there is only one extension being loaded during this time (it finishes
-  // when the first notification is seen). Enabling spoken feedback here would
-  // break this assumption as it would induce loading of ChromeVox extension.
-  std::vector<std::string> enabled_features;
-  enabled_features.push_back("stickyKeys");
-  enabled_features.push_back("virtualKeyboard");
+  // when the first notification is seen). Enabling spoken feedback, select to
+  // speak, autoclick, or switch access here would break this assumption as it
+  // would induce loading of Chrome extension.
+  std::vector<std::string> enabled_features = {
+      "caretHighlight",
+      "cursorColor",
+      "focusHighlight",
+      "stickyKeys",
+  };
 
-  std::vector<std::string> disabled_features;
-  disabled_features.push_back("spokenFeedback");
-  disabled_features.push_back("largeCursor");
-  disabled_features.push_back("highContrast");
-  disabled_features.push_back("screenMagnifier");
-  disabled_features.push_back("autoclick");
+  std::vector<std::string> disabled_features = {
+      "autoclick",
+      "cursorHighlight",
+      "dockedMagnifier",
+      "highContrast",
+      "largeCursor",
+      "screenMagnifier",
+      "selectToSpeak",
+      "spokenFeedback",
+      "switchAccess",
+      "virtualKeyboard",
+  };
 
   ASSERT_TRUE(
       InitPrefServiceForTest(GetPrefs(), enabled_features, disabled_features));
 
   std::string test_arg;
-  ASSERT_TRUE(GenerateTestArg(
-      "setterTest", enabled_features, disabled_features, &test_arg));
+  ASSERT_TRUE(GenerateTestArg("setterTest", enabled_features, disabled_features,
+                              &test_arg));
 
   // The test extension attempts to flip all feature values.
-  ASSERT_TRUE(
-      RunPlatformAppTestWithArg(GetTestExtensionPath(), test_arg.c_str()))
+  ASSERT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 
   // The test tries to flip the feature states.
@@ -268,30 +325,43 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
 // Tests that an extension with read permission is notified when accessibility
 // features change.
 IN_PROC_BROWSER_TEST_F(AccessibilityFeaturesApiTest, ObserveFeatures) {
-  // WARNING: Make sure that spoken feedback is not among enabled_features
-  // (see |Set| test for the reason).
-  std::vector<std::string> enabled_features;
-  enabled_features.push_back("largeCursor");
-  enabled_features.push_back("stickyKeys");
-  enabled_features.push_back("highContrast");
+  // WARNING: Make sure that features which load Chrome extension are not among
+  // enabled_features (see |Set| test for the reason).
+  std::vector<std::string> enabled_features = {
+      "caretHighlight",
+      "cursorColor",
+      "focusHighlight",
+      "stickyKeys",
+  };
 
-  std::vector<std::string> disabled_features;
-  disabled_features.push_back("screenMagnifier");
+  std::vector<std::string> disabled_features = {
+      "autoclick",
+      "cursorHighlight",
+      "dockedMagnifier",
+      "highContrast",
+      "largeCursor",
+      "screenMagnifier",
+      "selectToSpeak",
+      "spokenFeedback",
+      "switchAccess",
+      "virtualKeyboard",
+  };
 
   ASSERT_TRUE(
       InitPrefServiceForTest(GetPrefs(), enabled_features, disabled_features));
 
   std::string test_arg;
-  ASSERT_TRUE(GenerateTestArg(
-      "observerTest", enabled_features, disabled_features, &test_arg));
+  ASSERT_TRUE(GenerateTestArg("observerTest", enabled_features,
+                              disabled_features, &test_arg));
 
-  // The test extension is supposed to report result twice when runnign this
+  // The test extension is supposed to report result twice when running this
   // test. First time when in initializes it's feature listeners, and second
   // time, when gets all expected events. This is done so the extension is
-  // running when the accessibility features are flipped; oterwise, the
+  // running when the accessibility features are flipped; otherwise, the
   // extension may not see events.
-  ASSERT_TRUE(RunPlatformAppTestWithArg(kTestExtensionPathReadPermission,
-                                        test_arg.c_str()))
+  ASSERT_TRUE(RunExtensionTest(
+      kTestExtensionPathReadPermission,
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 
   // This should flip all features.

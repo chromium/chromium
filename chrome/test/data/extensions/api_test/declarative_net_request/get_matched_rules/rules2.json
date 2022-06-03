@@ -1,0 +1,6 @@
+[{
+  "id" : 1,
+  "priority": 3,
+  "action": { "type" : "block" },
+  "condition" : {"urlFilter" : "abcd", "resourceTypes" : ["main_frame"] }
+}]

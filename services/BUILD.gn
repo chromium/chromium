@@ -12,6 +12,8 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 # To add tests for a new service, please define a "tests" source_set in the
 # service subdirectory and add it as a dependency here.
 test("services_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   # The tracing unittests require this for testing unwinding. See
   # stack_unwinder_android_unittest.cc.
   if (is_android && can_unwind_with_cfi_table && is_official_build) {
@@ -21,12 +23,11 @@ test("services_unittests") {
   # If your service does not run on iOS, its tests should go in the !iOS
   # section below. If you are unsure, contact blundell@chromium.org.
   deps = [
-    "//services/content:tests",
-    "//services/identity:tests",
+    "//services/cert_verifier:tests",
+    "//services/cert_verifier/cert_net_url_loader:tests",
     "//services/metrics/public/cpp:tests",
     "//services/network:tests",
     "//services/network/public/cpp:tests",
-    "//services/network/public/cpp/cert_verifier:tests",
     "//services/test:run_all_unittests",
   ]
 
@@ -50,12 +51,15 @@ test("services_unittests") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "//services/proxy_resolver_win:tests" ]
+  }
+
   if (is_android) {
     deps += [
-      "//components/signin/public/identity_manager/android:java",
+      "//components/signin/public/android:java",
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//services/device:java",
-      "//services/identity:java",
       "//services/media_session/public/cpp/android:media_session_java",
       "//services/tracing:tracing_test_helper_java",
 
@@ -81,6 +85,12 @@ test("services_unittests") {
   if (is_fuchsia) {
     # Enable the test HTTP server for use by NetworkServiceTestWithService.*
     use_test_server = true
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    ]
   }
 }
 
@@ -95,21 +105,24 @@ if (!is_ios) {
 }
 
 if (is_android) {
-  junit_binary("service_junit_tests") {
-    java_files = [
+  junit_binary("services_junit_tests") {
+    sources = [
       "device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java",
-      "device/nfc/android/junit/src/org/chromium/device/nfc/NFCTest.java",
       "device/geolocation/android/junit/src/org/chromium/device/geolocation/LocationProviderTest.java",
+      "device/nfc/android/junit/src/org/chromium/device/nfc/NFCTest.java",
+      "device/nfc/android/junit/src/org/chromium/device/nfc/NfcBlocklistTest.java",
       "shape_detection/android/junit/src/org/chromium/shape_detection/BitmapUtilsTest.java",
     ]
     deps = [
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
+      "$google_play_services_package:google_play_services_location_java",
       "$google_play_services_package:google_play_services_vision_common_java",
       "$google_play_services_package:google_play_services_vision_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//mojo/public/java:base_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//services/device/generic_sensor:java",
@@ -121,13 +134,13 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
-  android_library("service_javatests") {
+  android_library("services_javatests") {
     testonly = true
-    java_files = [
+    sources = [
       "shape_detection/android/javatests/src/org/chromium/shape_detection/BarcodeDetectionImplTest.java",
       "shape_detection/android/javatests/src/org/chromium/shape_detection/FaceDetectionImplTest.java",
       "shape_detection/android/javatests/src/org/chromium/shape_detection/TestUtils.java",
@@ -146,14 +159,13 @@ if (is_android) {
       "//services/shape_detection:shape_detection_java",
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
-      "//third_party/android_deps:androidx_test_monitor_java",
-      "//third_party/android_deps:androidx_test_runner_java",
+      "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]
-    data = [
-      "test/data/",
-    ]
+    data = [ "test/data/" ]
   }
 }

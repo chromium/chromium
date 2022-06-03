@@ -6,9 +6,7 @@
 #define CONTENT_CHILD_BROWSER_FONT_RESOURCE_TRUSTED_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "cc/paint/paint_canvas.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_instance.h"
@@ -32,6 +30,10 @@ class BrowserFontResource_Trusted
                               PP_Instance instance,
                               const PP_BrowserFont_Trusted_Description& desc,
                               const ppapi::Preferences& prefs);
+
+  BrowserFontResource_Trusted(const BrowserFontResource_Trusted&) = delete;
+  BrowserFontResource_Trusted& operator=(const BrowserFontResource_Trusted&) =
+      delete;
 
   // Validates the parameters in thee description. Can be called on any thread.
   static bool IsPPFontDescriptionValid(
@@ -68,8 +70,6 @@ class BrowserFontResource_Trusted
 
  private:
   std::unique_ptr<blink::WebFont> font_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFontResource_Trusted);
 };
 
 }  // namespace content

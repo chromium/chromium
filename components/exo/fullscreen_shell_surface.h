@@ -20,10 +20,13 @@ class Surface;
 class FullscreenShellSurface : public SurfaceTreeHost,
                                public SurfaceObserver,
                                public aura::WindowObserver,
-                               public views::WidgetDelegate,
-                               public views::View {
+                               public views::WidgetDelegate {
  public:
   FullscreenShellSurface();
+
+  FullscreenShellSurface(const FullscreenShellSurface&) = delete;
+  FullscreenShellSurface& operator=(const FullscreenShellSurface&) = delete;
+
   ~FullscreenShellSurface() override;
 
   // Set the callback to run when the user wants the shell surface to be closed.
@@ -49,12 +52,10 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   void SetSurface(Surface* surface);
 
   void Maximize();
-
   void Minimize();
-
   void Close();
 
-  // Overridden from SurfaceDelegate:
+  // SurfaceDelegate:
   void OnSurfaceCommit() override;
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
@@ -62,11 +63,10 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   void OnSetStartupId(const char* startup_id) override;
   void OnSetApplicationId(const char* application_id) override;
 
-  // Overridden from SurfaceObserver:
+  // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
 
-  // Overridden from views::WidgetDelegate:
-  bool CanResize() const override;
+  // views::WidgetDelegate:
   bool CanMaximize() const override;
   bool CanMinimize() const override;
   bool ShouldShowWindowTitle() const override;
@@ -77,15 +77,14 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
 
-  // Overridden from aura::WindowObserver:
+  // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // Overridden from ui::View
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id);
+  void SetEnabled(bool enabled);
 
  private:
+  class FullscreenShellView;
   // Keep the bounds in sync with the root surface bounds.
   void UpdateHostWindowBounds() override;
 
@@ -95,15 +94,13 @@ class FullscreenShellSurface : public SurfaceTreeHost,
 
   views::Widget* widget_ = nullptr;
   aura::Window* parent_ = nullptr;
-  base::Optional<std::string> application_id_;
-  base::Optional<std::string> startup_id_;
+  absl::optional<std::string> application_id_;
+  absl::optional<std::string> startup_id_;
   base::RepeatingClosure close_callback_;
   base::OnceClosure surface_destroyed_callback_;
-  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenShellSurface);
+  FullscreenShellView* contents_view_ = nullptr;
 };
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_FULLSCREEN_SHELL_SURFACE_H
+#endif  // COMPONENTS_EXO_FULLSCREEN_SHELL_SURFACE_H_

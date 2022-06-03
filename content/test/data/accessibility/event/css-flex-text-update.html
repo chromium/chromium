@@ -1,0 +1,15 @@
+<div id="app">
+  <div style="display:flex;">
+    <button>Test</button>
+      old
+  </div>
+</div>
+
+<script>
+  function go() {
+    // Get text node with "old" in it.
+    const node = document.getElementById('app').firstElementChild.lastChild;
+    // Change to "new".
+    node.textContent = 'new';
+  }
+</script>

@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace wl {
 

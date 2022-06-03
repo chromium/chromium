@@ -24,6 +24,11 @@ class EmbeddedTestServerAndroid {
   EmbeddedTestServerAndroid(JNIEnv* env,
                             const base::android::JavaRef<jobject>& obj,
                             jboolean jhttps);
+
+  EmbeddedTestServerAndroid(const EmbeddedTestServerAndroid&) = delete;
+  EmbeddedTestServerAndroid& operator=(const EmbeddedTestServerAndroid&) =
+      delete;
+
   ~EmbeddedTestServerAndroid();
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -76,8 +81,11 @@ class EmbeddedTestServerAndroid {
     ConnectionListener(EmbeddedTestServerAndroid* test_server_android);
     ~ConnectionListener() override;
 
-    void AcceptedSocket(const StreamSocket& socket) override;
+    std::unique_ptr<StreamSocket> AcceptedSocket(
+        std::unique_ptr<StreamSocket> socket) override;
     void ReadFromSocket(const StreamSocket& socket, int rv) override;
+    void OnResponseCompletedSuccessfully(
+        std::unique_ptr<StreamSocket> socket) override;
 
    private:
     EmbeddedTestServerAndroid* test_server_android_;
@@ -91,8 +99,6 @@ class EmbeddedTestServerAndroid {
 
   EmbeddedTestServer test_server_;
   ConnectionListener connection_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServerAndroid);
 };
 
 }  // namespace test_server

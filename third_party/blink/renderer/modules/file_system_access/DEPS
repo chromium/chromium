@@ -1,0 +1,9 @@
+include_rules = [
+    "+base/files/file.h",
+    "+base/files/file_error_or.h",
+    "+base/mac/mac_util.h",
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/modules/event_target_modules.h",
+    "+third_party/blink/renderer/modules/modules_export.h",
+    "+third_party/blink/renderer/modules/file_system_access",
+]

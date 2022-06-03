@@ -3,6 +3,8 @@
     <head>
         <title>Pointer Events properties tests</title>
         <meta name="viewport" content="width=device-width">
+        <meta name="variant" content="?mouse">
+        <meta name="variant" content="?pen">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
@@ -12,6 +14,7 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
+            var input = location.search.substring(1);
             var detected_pointertypes = {};
             var detected_eventTypes = {};
             var eventList = ['pointerover', 'pointerenter', 'pointermove', 'pointerdown', 'pointerup', 'pointerout', 'pointerleave'];
@@ -39,24 +42,24 @@
                 // Test button and buttons
                 if (event.type == 'pointerdown') {
                     test(function() {
-                        assert_true(event.button == 0, "Button attribute is 0")
+                        assert_equals(event.button, 0, "Button attribute is 0")
                     }, pointerTestName + "'s button attribute is 0 when left mouse button is pressed.");
                     test(function() {
-                        assert_true(event.buttons == 1, "Buttons attribute is 1")
+                        assert_equals(event.buttons, 1, "Buttons attribute is 1")
                     }, pointerTestName + "'s buttons attribute is 1 when left mouse button is pressed.");
                 } else if (event.type == 'pointerup') {
                     test(function() {
-                        assert_true(event.button == 0, "Button attribute is 0")
+                        assert_equals(event.button, 0, "Button attribute is 0")
                     }, pointerTestName + "'s button attribute is 0 when left mouse button is just released.");
                     test(function() {
-                        assert_true(event.buttons == 0, "Buttons attribute is 0")
+                        assert_equals(event.buttons, 0, "Buttons attribute is 0")
                     }, pointerTestName + "'s buttons attribute is 0 when left mouse button is just released.");
                 } else {
                     test(function() {
-                        assert_true(event.button == -1, "Button attribute is -1")
+                        assert_equals(event.button, -1, "Button attribute is -1")
                     }, pointerTestName + "'s button is -1 when mouse buttons are in released state.");
                     test(function() {
-                        assert_true(event.buttons == 0, "Buttons attribute is 0")
+                        assert_equals(event.buttons, 0, "Buttons attribute is 0")
                     }, pointerTestName + "'s buttons is 0 when mouse buttons are in released state.");
                 }
 
@@ -92,7 +95,7 @@
             }
 
             function run() {
-                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", HOVERABLE_POINTERS);
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", [input]);
                 var square1 = document.getElementById("square1");
                 var rectSquare1 = square1.getBoundingClientRect();
                 var innerFrame = document.getElementById('innerFrame');
@@ -124,23 +127,15 @@
                     });
                 });
 
-                // Inject mouse and pen inputs.
-                actions_promise = clickInTarget("mouse", square1).then(function() {
-                    return moveToDocument("mouse");
+                // Inject mouse or pen inputs.
+                actions_promise = clickInTarget(input, square1).then(function() {
+                    return moveToDocument(input);
                 }).then(function() {
-                    return clickInTarget("mouse", square2);
+                    return clickInTarget(input, square2);
                 }).then(function() {
-                    return moveToDocument("mouse");
+                    return moveToDocument(input);
                 }).then(function() {
                     test_pointerEvent.done();
-                }).then(function() {
-                    return clickInTarget("pen", square1);
-                }).then(function() {
-                    return moveToDocument("pen");
-                }).then(function() {
-                    return clickInTarget("pen", square2);
-                }).then(function() {
-                    return moveToDocument("pen");
                 });
             }
         </script>

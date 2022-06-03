@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_hosts.h"
@@ -35,8 +36,8 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   // Set up a change notifier, owned on a dedicated blockable task runner, with
   // a faked underlying DnsConfigService.
   SystemDnsConfigChangeNotifierTest()
-      : notifier_task_runner_(base::CreateSequencedTaskRunner(
-            {base::ThreadPool(), base::MayBlock()})) {
+      : notifier_task_runner_(
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
     auto test_service = std::make_unique<TestDnsConfigService>();
     notifier_task_runner_->PostTask(
         FROM_HERE,
@@ -54,7 +55,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   // expected sequence.
   class TestObserver : public SystemDnsConfigChangeNotifier::Observer {
    public:
-    void OnSystemDnsConfigChanged(base::Optional<DnsConfig> config) override {
+    void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       configs_received_.push_back(std::move(config));
 
@@ -79,7 +80,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
       EXPECT_TRUE(configs_received_.empty());
     }
 
-    std::vector<base::Optional<DnsConfig>>& configs_received() {
+    std::vector<absl::optional<DnsConfig>>& configs_received() {
       return configs_received_;
     }
 
@@ -87,7 +88,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
     int notifications_remaining_ = 0;
     std::unique_ptr<base::RunLoop> run_loop_ =
         std::make_unique<base::RunLoop>();
-    std::vector<base::Optional<DnsConfig>> configs_received_;
+    std::vector<absl::optional<DnsConfig>> configs_received_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
@@ -245,7 +246,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig) {
   observer.WaitForNotification();
 
   EXPECT_THAT(observer.configs_received(),
-              testing::ElementsAre(testing::Optional(kConfig), base::nullopt));
+              testing::ElementsAre(testing::Optional(kConfig), absl::nullopt));
   observer.ExpectNoMoreNotifications();
 
   notifier_->RemoveObserver(&observer);
@@ -270,7 +271,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig_Multiple) {
   observer.WaitForNotification();  // Only 1 notification expected.
 
   EXPECT_THAT(observer.configs_received(),
-              testing::ElementsAre(testing::Optional(kConfig), base::nullopt));
+              testing::ElementsAre(testing::Optional(kConfig), absl::nullopt));
   observer.ExpectNoMoreNotifications();
 
   notifier_->RemoveObserver(&observer);

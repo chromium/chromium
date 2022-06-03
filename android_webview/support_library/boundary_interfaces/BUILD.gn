@@ -6,12 +6,14 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("boundary_interface_java") {
-  java_files = [
+  sources = [
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProxyControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SafeBrowsingResponseBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/ScriptHandlerBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/ScriptReferenceBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerWebSettingsBoundaryInterface.java",
@@ -41,13 +43,23 @@ android_library("boundary_interface_java") {
   # build when we mirror this into AndroidX. We are only permitted to depend on
   # core Android classes and other AndroidX classes (must be in the androidx.*
   # package name).
-  deps = [
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-  ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
 
-  # This is to verify the boundary interfaces compile and lint correctly against
-  # the minSdkVersion of the webkit support library module. As the minSdkVersion
-  # of the support library increases, so should this value. See
+android_apk("boundary_interface_example_apk") {
+  apk_name = "BoundaryInterfaceExample"
+
+  # Use a dummy android manifest since this code is copied to androidx.
+  android_manifest = "//build/android/AndroidManifest.xml"
+
+  # This is to verify that the boundary interfaces compile and lint correctly
+  # against the minSdkVersion of the webkit support library module. As the
+  # minSdkVersion of the support library increases, so should this value. See
   # http://crbug.com/828184 for more details.
   min_sdk_version = 14
+
+  # Explicitly enable lint for this apk.
+  enable_lint = true
+
+  deps = [ ":boundary_interface_java" ]
 }

@@ -8,14 +8,22 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/dx_diag_node_mojom_traits.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
 
 namespace mojo {
 
 template <>
-struct StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
   static bool Read(gpu::mojom::GpuDeviceDataView data,
                    gpu::GPUInfo::GPUDevice* out);
 
@@ -27,13 +35,18 @@ struct StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
     return input.device_id;
   }
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
+    return input.revision;
+  }
+#endif
 #if defined(OS_WIN)
   static uint32_t sub_sys_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.sub_sys_id;
   }
 
-  static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
-    return input.revision;
+  static const CHROME_LUID luid(const gpu::GPUInfo::GPUDevice& input) {
+    return input.luid;
   }
 #endif  // OS_WIN
 
@@ -68,7 +81,8 @@ struct StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
 };
 
 template <>
-struct EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile> {
+struct GPU_EXPORT
+    EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile> {
   static gpu::mojom::VideoCodecProfile ToMojom(
       gpu::VideoCodecProfile video_codec_profile);
   static bool FromMojom(gpu::mojom::VideoCodecProfile input,
@@ -76,8 +90,9 @@ struct EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile> {
 };
 
 template <>
-struct StructTraits<gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView,
-                    gpu::VideoDecodeAcceleratorSupportedProfile> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView,
+                 gpu::VideoDecodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView data,
       gpu::VideoDecodeAcceleratorSupportedProfile* out);
@@ -104,8 +119,9 @@ struct StructTraits<gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView,
 };
 
 template <>
-struct StructTraits<gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView,
-                    gpu::VideoDecodeAcceleratorCapabilities> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView,
+                 gpu::VideoDecodeAcceleratorCapabilities> {
   static bool Read(gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView data,
                    gpu::VideoDecodeAcceleratorCapabilities* out);
 
@@ -114,14 +130,15 @@ struct StructTraits<gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView,
   }
 
   static std::vector<gpu::VideoDecodeAcceleratorSupportedProfile>
-      supported_profiles(const gpu::VideoDecodeAcceleratorCapabilities& input) {
+  supported_profiles(const gpu::VideoDecodeAcceleratorCapabilities& input) {
     return input.supported_profiles;
   }
 };
 
 template <>
-struct StructTraits<gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
-                    gpu::VideoEncodeAcceleratorSupportedProfile> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
+                 gpu::VideoEncodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       gpu::VideoEncodeAcceleratorSupportedProfile* out);
@@ -153,8 +170,8 @@ struct StructTraits<gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 };
 
 template <>
-struct EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
-                  gpu::ImageDecodeAcceleratorType> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
+                             gpu::ImageDecodeAcceleratorType> {
   static gpu::mojom::ImageDecodeAcceleratorType ToMojom(
       gpu::ImageDecodeAcceleratorType image_type);
   static bool FromMojom(gpu::mojom::ImageDecodeAcceleratorType input,
@@ -162,8 +179,8 @@ struct EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
 };
 
 template <>
-struct EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
-                  gpu::ImageDecodeAcceleratorSubsampling> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
+                             gpu::ImageDecodeAcceleratorSubsampling> {
   static gpu::mojom::ImageDecodeAcceleratorSubsampling ToMojom(
       gpu::ImageDecodeAcceleratorSubsampling subsampling);
   static bool FromMojom(gpu::mojom::ImageDecodeAcceleratorSubsampling input,
@@ -171,8 +188,9 @@ struct EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
 };
 
 template <>
-struct StructTraits<gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
-                    gpu::ImageDecodeAcceleratorSupportedProfile> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
+                 gpu::ImageDecodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView data,
       gpu::ImageDecodeAcceleratorSupportedProfile* out);
@@ -200,38 +218,50 @@ struct StructTraits<gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
 
 #if defined(OS_WIN)
 template <>
-struct EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport> {
   static gpu::mojom::OverlaySupport ToMojom(gpu::OverlaySupport support);
   static bool FromMojom(gpu::mojom::OverlaySupport input,
                         gpu::OverlaySupport* out);
 };
 
 template <>
-struct StructTraits<gpu::mojom::Dx12VulkanVersionInfoDataView,
-                    gpu::Dx12VulkanVersionInfo> {
-  static bool Read(gpu::mojom::Dx12VulkanVersionInfoDataView data,
-                   gpu::Dx12VulkanVersionInfo* out);
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::OverlayInfoDataView, gpu::OverlayInfo> {
+  static bool Read(gpu::mojom::OverlayInfoDataView data, gpu::OverlayInfo* out);
 
-  static bool supports_dx12(const gpu::Dx12VulkanVersionInfo& input) {
-    return input.supports_dx12;
+  static bool direct_composition(const gpu::OverlayInfo& input) {
+    return input.direct_composition;
   }
 
-  static bool supports_vulkan(const gpu::Dx12VulkanVersionInfo& input) {
-    return input.supports_vulkan;
+  static bool supports_overlays(const gpu::OverlayInfo& input) {
+    return input.supports_overlays;
   }
 
-  static uint32_t d3d12_feature_level(const gpu::Dx12VulkanVersionInfo& input) {
-    return input.d3d12_feature_level;
+  static gpu::OverlaySupport yuy2_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.yuy2_overlay_support;
   }
 
-  static uint32_t vulkan_version(const gpu::Dx12VulkanVersionInfo& input) {
-    return input.vulkan_version;
+  static gpu::OverlaySupport nv12_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.nv12_overlay_support;
+  }
+
+  static gpu::OverlaySupport bgra8_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.bgra8_overlay_support;
+  }
+
+  static gpu::OverlaySupport rgb10a2_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.rgb10a2_overlay_support;
   }
 };
+
 #endif
 
 template <>
-struct StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
+struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   static bool Read(gpu::mojom::GpuInfoDataView data, gpu::GPUInfo* out);
 
   static base::TimeDelta initialization_time(const gpu::GPUInfo& input) {
@@ -328,36 +358,38 @@ struct StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.can_support_threaded_texture_mailbox;
   }
 
+#if defined(OS_MAC)
+  static uint32_t macos_specific_texture_target(const gpu::GPUInfo& input) {
+    return input.macos_specific_texture_target;
+  }
+#endif  // OS_MAC
+
 #if defined(OS_WIN)
-  static bool direct_composition(const gpu::GPUInfo& input) {
-    return input.direct_composition;
-  }
-
-  static bool supports_overlays(const gpu::GPUInfo& input) {
-    return input.supports_overlays;
-  }
-
-  static gpu::OverlaySupport yuy2_overlay_support(const gpu::GPUInfo& input) {
-    return input.yuy2_overlay_support;
-  }
-
-  static gpu::OverlaySupport nv12_overlay_support(const gpu::GPUInfo& input) {
-    return input.nv12_overlay_support;
-  }
-
   static const gpu::DxDiagNode& dx_diagnostics(const gpu::GPUInfo& input) {
     return input.dx_diagnostics;
   }
 
-  static const gpu::Dx12VulkanVersionInfo& dx12_vulkan_version_info(
-      const gpu::GPUInfo& input) {
-    return input.dx12_vulkan_version_info;
+  static uint32_t d3d12_feature_level(const gpu::GPUInfo& input) {
+    return input.d3d12_feature_level;
+  }
+
+  static uint32_t vulkan_version(const gpu::GPUInfo& input) {
+    return input.vulkan_version;
+  }
+
+  static const gpu::OverlayInfo& overlay_info(const gpu::GPUInfo& input) {
+    return input.overlay_info;
   }
 #endif
 
   static const gpu::VideoDecodeAcceleratorCapabilities&
   video_decode_accelerator_capabilities(const gpu::GPUInfo& input) {
     return input.video_decode_accelerator_capabilities;
+  }
+
+  static const gpu::VideoDecodeAcceleratorSupportedProfiles&
+  video_decoder_capabilities(const gpu::GPUInfo& input) {
+    return input.video_decoder_capabilities;
   }
 
   static std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>
@@ -374,20 +406,6 @@ struct StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.image_decode_accelerator_supported_profiles;
   }
 
-  static uint64_t system_visual(const gpu::GPUInfo& input) {
-#if defined(USE_X11)
-    return input.system_visual;
-#endif
-    return 0;
-  }
-
-  static uint64_t rgba_visual(const gpu::GPUInfo& input) {
-#if defined(USE_X11)
-    return input.rgba_visual;
-#endif
-    return 0;
-  }
-
   static bool oop_rasterization_supported(const gpu::GPUInfo& input) {
     return input.oop_rasterization_supported;
   }
@@ -396,8 +414,12 @@ struct StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.subpixel_font_rendering;
   }
 
+  static uint32_t visibility_callback_call_count(const gpu::GPUInfo& input) {
+    return input.visibility_callback_call_count;
+  }
+
 #if BUILDFLAG(ENABLE_VULKAN)
-  static const base::Optional<gpu::VulkanInfo> vulkan_info(
+  static const absl::optional<gpu::VulkanInfo> vulkan_info(
       const gpu::GPUInfo& input) {
     return input.vulkan_info;
   }

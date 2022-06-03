@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/animation/test/test_ink_drop.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace views {
 namespace test {
@@ -11,6 +12,8 @@ TestInkDrop::TestInkDrop() = default;
 TestInkDrop::~TestInkDrop() = default;
 
 void TestInkDrop::HostSizeChanged(const gfx::Size& new_size) {}
+
+void TestInkDrop::HostTransformChanged(const gfx::Transform& new_transform) {}
 
 InkDropState TestInkDrop::GetTargetInkDropState() const {
   return state_;

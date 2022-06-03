@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>XR"
+}
+team_email: "xr-dev@chromium.org"

@@ -35,9 +35,7 @@ scoped_refptr<net::HttpResponseHeaders> ResponseProvider::GetResponseHeaders(
   const std::string status_line = base::StringPrintf(
       "HTTP/1.1 %i %s", static_cast<int>(response_code), reason_phrase.c_str());
   result->ReplaceStatusLine(status_line);
-  const std::string content_type_header =
-      base::StringPrintf("Content-type: %s", content_type.c_str());
-  result->AddHeader(content_type_header);
+  result->SetHeader("Content-type", content_type);
   return result;
 }
 
@@ -77,7 +75,7 @@ ResponseProvider::GetRedirectResponseHeaders(
     const net::HttpStatusCode& http_status) {
   scoped_refptr<net::HttpResponseHeaders> headers(
       GetResponseHeaders("text/html", http_status));
-  headers->AddHeader("Location: " + destination);
+  headers->AddHeader("Location", destination);
   return headers;
 }
 

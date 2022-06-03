@@ -43,6 +43,10 @@ class NET_EXPORT TCPSocketPosix {
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
       const NetLogSource& source);
+
+  TCPSocketPosix(const TCPSocketPosix&) = delete;
+  TCPSocketPosix& operator=(const TCPSocketPosix&) = delete;
+
   virtual ~TCPSocketPosix();
 
   // Opens the socket.
@@ -211,8 +215,6 @@ class NET_EXPORT TCPSocketPosix {
   // Current socket tag if |socket_| is valid, otherwise the tag to apply when
   // |socket_| is opened.
   SocketTag tag_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketPosix);
 };
 
 }  // namespace net

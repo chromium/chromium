@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_ACK_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_SHARING_ACK_MESSAGE_HANDLER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingMessageSender;
@@ -18,6 +14,10 @@ class SharingMessageSender;
 class AckMessageHandler : public SharingMessageHandler {
  public:
   explicit AckMessageHandler(SharingMessageSender* sharing_message_sender);
+
+  AckMessageHandler(const AckMessageHandler&) = delete;
+  AckMessageHandler& operator=(const AckMessageHandler&) = delete;
+
   ~AckMessageHandler() override;
 
   // SharingMessageHandler implementation:
@@ -26,8 +26,6 @@ class AckMessageHandler : public SharingMessageHandler {
 
  private:
   SharingMessageSender* sharing_message_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(AckMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_SHARING_ACK_MESSAGE_HANDLER_H_

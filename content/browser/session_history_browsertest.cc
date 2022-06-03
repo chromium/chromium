@@ -8,13 +8,17 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -38,8 +42,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleEchoTitleRequest(
     const std::string& echotitle_path,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(request.relative_url, echotitle_path,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -108,7 +113,7 @@ class SessionHistoryTest : public ContentBrowserTest {
 
   void NavigateAndCheckTitle(const char* filename,
                              const std::string& expected_title) {
-    base::string16 expected_title16(base::ASCIIToUTF16(expected_title));
+    std::u16string expected_title16(base::ASCIIToUTF16(expected_title));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
     EXPECT_TRUE(NavigateToURL(shell(), GetURL(filename)));
     ASSERT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
@@ -302,40 +307,50 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, FrameFormBackForward) {
   EXPECT_EQ(frames, GetTabURL());
 }
 
-// TODO(mpcomplete): enable this when Bug 734372 is fixed:
-// "Doing a session history navigation does not restore newly-created subframe
-// document state"
-// Test that back/forward preserves POST data and document state when navigating
-// across frames (ie, from frame -> nonframe).
-// Hangs, see http://crbug.com/45058.
 IN_PROC_BROWSER_TEST_F(SessionHistoryTest, CrossFrameFormBackForward) {
   ASSERT_FALSE(CanGoBack());
 
   GURL frames(GetURL("frames.html"));
+  // Open a page with "ftop" and  "fbot" iframe.
+  // The title of the main frame follows the title of the "fbot" iframe.
   ASSERT_NO_FATAL_FAILURE(NavigateAndCheckTitle("frames.html", "bot1"));
 
+  // Click link in the "fbot" iframe. This updates the title of the main frame
+  // to "form".
   ClickLink("aform");
   EXPECT_EQ("form", GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
 
+  // Submit form in the "fbot" iframe. This submits to /echotitle which sets the
+  // title to the submission content of the form.
   SubmitForm("isubmit");
   EXPECT_EQ("text=&select=a", GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
 
+  // Go back, navigating the "fbot"  iframe. This updates the title of the main
+  // frame back to "form".
   GoBack();
   EXPECT_EQ("form", GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
 
   // history is [blank, bot1, *form, post]
 
+  // Navigate the main frame.
   ASSERT_NO_FATAL_FAILURE(NavigateAndCheckTitle("bot2.html", "bot2"));
 
   // history is [blank, bot1, form, *bot2]
 
+  // Navigate the main frame back. If back/forward cache is enabled, the page
+  // will be restored as it was before we navigated away from it, with the title
+  // set to "form". If not, the page will be reloaded from scratch, setting the
+  // title to "bot1" again.
   GoBack();
-  EXPECT_EQ("bot1", GetTabTitle());
+  EXPECT_EQ(IsSameSiteBackForwardCacheEnabled() ? "form" : "bot1",
+            GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
 
+  // Submit the form in the "fbot" iframe again . This submits to /echotitle
+  // which sets the title to the submission content of the form.
   SubmitForm("isubmit");
   EXPECT_EQ("text=&select=a", GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
@@ -458,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, JavascriptHistory) {
 IN_PROC_BROWSER_TEST_F(SessionHistoryTest, LocationReplace) {
   // Test that using location.replace doesn't leave the title of the old page
   // visible.
-  base::string16 expected_title16(base::ASCIIToUTF16("bot1"));
+  std::u16string expected_title16(u"bot1");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
   EXPECT_TRUE(NavigateToURL(shell(), GetURL("replace.html?bot1.html"),
                             GetURL("bot1.html") /* expected_commit_url */));
@@ -470,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, LocationChangeInSubframe) {
       "location_redirect.html", "Default Title"));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   TestFrameNavigationObserver observer(root->child_at(0));
   shell()->LoadURL(GURL("javascript:void(frames[0].navigate())"));
   observer.Wait();
@@ -489,8 +504,8 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryScrollAnchorTest,
       NavigateAndCheckTitle("location_redirect.html", "Default Title"));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   TestFrameNavigationObserver observer(root->child_at(0));
   shell()->LoadURL(GURL("javascript:void(frames[0].navigate())"));
   observer.Wait();

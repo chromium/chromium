@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS uppercase property
+PASS uppercase value
+PASS overwriting with invalid value
+PASS use rgb
+PASS cssText order
+PASS another cssText order (non-alphabetical order)
+PASS whitespaces in value
+PASS invalid property does not appear
+FAIL Shorthands aren't serialized if there are other properties with different logical groups in between assert_equals: expected "margin-top: 10px; margin-right: 10px; margin-left: 10px; margin-inline-start: 10px; margin-block: 10px; margin-inline-end: 10px; margin-bottom: 10px;" but got "margin: 10px; margin-inline: 10px; margin-block: 10px;"
+PASS Shorthands _are_ serialized if there are no other properties with different logical groups in between
+PASS cssText on computed style declaration returns the empty string
+Harness: the test ran to completion.
+

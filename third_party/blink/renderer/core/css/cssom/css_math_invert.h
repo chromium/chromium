@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_INVERT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_INVERT_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 
 namespace blink {
@@ -17,7 +17,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
 
  public:
   // The constructor defined in the IDL.
-  static CSSMathInvert* Create(const CSSNumberish& arg) {
+  static CSSMathInvert* Create(V8CSSNumberish* arg) {
     return Create(CSSNumericValue::FromNumberish(arg));
   }
   // Blink-internal constructor
@@ -28,10 +28,12 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
 
   CSSMathInvert(CSSNumericValue* value, const CSSNumericValueType& type)
       : CSSMathValue(type), value_(value) {}
+  CSSMathInvert(const CSSMathInvert&) = delete;
+  CSSMathInvert& operator=(const CSSMathInvert&) = delete;
 
   String getOperator() const final { return "invert"; }
 
-  void value(CSSNumberish& value) { value.SetCSSNumericValue(value_); }
+  V8CSSNumberish* value();
 
   // Blink-internal methods
   const CSSNumericValue& Value() const { return *value_; }
@@ -39,7 +41,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kInvertType; }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(value_);
     CSSMathValue::Trace(visitor);
   }
@@ -53,20 +55,16 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
     return value_->Equals(*other_invert.value_);
   }
 
-  CSSMathExpressionNode* ToCalcExpressionNode() const final {
-    // TODO(crbug.com/782103): Implement.
-    return nullptr;
-  }
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   // From CSSNumericValue
   CSSNumericValue* Invert() final { return value_.Get(); }
-  base::Optional<CSSNumericSumValue> SumValue() const final;
+  absl::optional<CSSNumericSumValue> SumValue() const final;
 
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   Member<CSSNumericValue> value_;
-  DISALLOW_COPY_AND_ASSIGN(CSSMathInvert);
 };
 
 }  // namespace blink

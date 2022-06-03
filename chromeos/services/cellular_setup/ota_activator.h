@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_OTA_ACTIVATOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +21,9 @@ namespace cellular_setup {
 // instance.
 class OtaActivator : public mojom::CarrierPortalHandler {
  public:
+  OtaActivator(const OtaActivator&) = delete;
+  OtaActivator& operator=(const OtaActivator&) = delete;
+
   ~OtaActivator() override;
 
   // Generates a mojo::PendingRemote<> bound to this instance. Only one
@@ -36,8 +38,6 @@ class OtaActivator : public mojom::CarrierPortalHandler {
 
   base::OnceClosure on_finished_callback_;
   mojo::Receiver<mojom::CarrierPortalHandler> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OtaActivator);
 };
 
 }  // namespace cellular_setup

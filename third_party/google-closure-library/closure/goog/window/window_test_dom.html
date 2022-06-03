@@ -1,0 +1,37 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+ .goog-like-link {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+</style>
+<h4>
+ Some links for testing referrer stripping manually.
+</h4>
+<div class="goog-like-link">
+ http://www.google.com/search?q=;
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q=x&amp;lang=en
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q=x;lang=en
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q="
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q='
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q=&lt;
+</div>
+<div class="goog-like-link">
+ http://www.google.com/search?q=&gt;
+</div>

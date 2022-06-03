@@ -54,12 +54,38 @@ class TestEntryResultCompletionCallback
     : public TestEntryResultCompletionCallbackBase {
  public:
   TestEntryResultCompletionCallback();
+
+  TestEntryResultCompletionCallback(const TestEntryResultCompletionCallback&) =
+      delete;
+  TestEntryResultCompletionCallback& operator=(
+      const TestEntryResultCompletionCallback&) = delete;
+
   ~TestEntryResultCompletionCallback() override;
 
   disk_cache::Backend::EntryResultCallback callback();
+};
+
+// Like net::TestCompletionCallback, but for RangeResultCallback.
+struct RangeResultIsPendingHelper {
+  bool operator()(const disk_cache::RangeResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+
+class TestRangeResultCompletionCallback
+    : public net::internal::TestCompletionCallbackTemplate<
+          disk_cache::RangeResult,
+          RangeResultIsPendingHelper> {
+ public:
+  TestRangeResultCompletionCallback();
+  ~TestRangeResultCompletionCallback() override;
+
+  disk_cache::RangeResultCallback callback();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestEntryResultCompletionCallback);
+  // Reference -> Value adapter --- disk_cache wants reference for callback,
+  // base class wants a value.
+  void HelpSetResult(const disk_cache::RangeResult& result);
 };
 
 // -----------------------------------------------------------------------
@@ -68,6 +94,10 @@ class TestEntryResultCompletionCallback
 class MessageLoopHelper {
  public:
   MessageLoopHelper();
+
+  MessageLoopHelper(const MessageLoopHelper&) = delete;
+  MessageLoopHelper& operator=(const MessageLoopHelper&) = delete;
+
   ~MessageLoopHelper();
 
   // Run the message loop and wait for num_callbacks before returning. Returns
@@ -107,8 +137,6 @@ class MessageLoopHelper {
   // True if a callback was called/reused more than expected.
   bool callback_reused_error_;
   int callbacks_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopHelper);
 };
 
 // -----------------------------------------------------------------------
@@ -122,6 +150,10 @@ class CallbackTest {
   // once, or if |reuse| is true and a callback is called more than twice, an
   // error will be reported to |helper|.
   CallbackTest(MessageLoopHelper* helper, bool reuse);
+
+  CallbackTest(const CallbackTest&) = delete;
+  CallbackTest& operator=(const CallbackTest&) = delete;
+
   ~CallbackTest();
 
   void Run(int result);
@@ -137,7 +169,6 @@ class CallbackTest {
   int reuse_;
   int last_result_;
   disk_cache::EntryResult last_entry_result_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackTest);
 };
 
 #endif  // NET_DISK_CACHE_DISK_CACHE_TEST_UTIL_H_

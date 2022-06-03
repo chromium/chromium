@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace gfx {
 class Size;
+class Rect;
 }
 
 // Delegate interface to control layout decisions without having to depend on
@@ -27,7 +29,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // mode.
   virtual bool ShouldShowWindowIcon() const = 0;
   virtual bool ShouldShowWindowTitle() const = 0;
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
 
   // Returns the size of the window icon. This can be platform dependent
   // because of differences in fonts, so its part of the interface.
@@ -47,14 +49,15 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Controls window state.
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
+  virtual bool IsFullscreen() const = 0;
 
   virtual bool IsTabStripVisible() const = 0;
   virtual int GetTabStripHeight() const = 0;
   virtual bool IsToolbarVisible() const = 0;
 
-  // Returns the tabstrips preferred size so the frame layout can work around
+  // Returns the tabstrips minimum size so the frame layout can work around
   // it.
-  virtual gfx::Size GetTabstripPreferredSize() const = 0;
+  virtual gfx::Size GetTabstripMinimumSize() const = 0;
 
   // Computes the height of the top area of the frame.
   virtual int GetTopAreaHeight() const = 0;
@@ -75,8 +78,17 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Indicates the type of the frame buttons.
   virtual FrameButtonStyle GetFrameButtonStyle() const;
 
+  virtual void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const = 0;
+
+  // Returns true if the system compositor supports translucent windows.
+  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
+
+  // Returns true if a client-side shadow should be drawn for restored windows.
+  virtual bool ShouldDrawRestoredFrameShadow() const = 0;
+
  protected:
-  virtual ~OpaqueBrowserFrameViewLayoutDelegate() {}
+  virtual ~OpaqueBrowserFrameViewLayoutDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_

@@ -25,13 +25,6 @@
 
 namespace {
 
-const char kCommandPrefix[] = "searchEngine";
-const char kCommandOpenSearch[] = "searchEngine.openSearch";
-const char kOpenSearchPageUrlKey[] = "pageUrl";
-const char kOpenSearchOsddUrlKey[] = "osddUrl";
-const char kCommandSearchableUrl[] = "searchEngine.searchableUrl";
-const char kSearchableUrlUrlKey[] = "url";
-
 // Returns true if the |item|'s transition type is FORM_SUBMIT.
 bool IsFormSubmit(const web::NavigationItem* item) {
   return ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
@@ -40,12 +33,12 @@ bool IsFormSubmit(const web::NavigationItem* item) {
 
 // Generates a keyword from |item|. This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
-base::string16 GenerateKeywordFromNavigationItem(
+std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
   // Don't autogenerate keywords for pages that are the result of form
   // submissions.
   if (IsFormSubmit(item))
-    return base::string16();
+    return std::u16string();
 
   // The code from Desktop will try NavigationEntry::GetUserTypedURL() first if
   // available since that represents what the user typed to get here, and fall
@@ -54,7 +47,7 @@ base::string16 GenerateKeywordFromNavigationItem(
   // it.
   GURL url = item->GetURL();
   if (!url.is_valid()) {
-    return base::string16();
+    return std::u16string();
   }
 
   // Don't autogenerate keywords for referrers that
@@ -65,7 +58,7 @@ base::string16 GenerateKeywordFromNavigationItem(
   // elements and update AutocompletePopup to look for keywords using the path.
   // See http://b/issue?id=863583.
   if (!url.SchemeIsHTTPOrHTTPS() || url.path().length() > 1) {
-    return base::string16();
+    return std::u16string();
   }
 
   return TemplateURL::GenerateKeyword(url);
@@ -77,19 +70,15 @@ SearchEngineTabHelper::~SearchEngineTabHelper() {}
 SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
-  subscription_ = web_state->AddScriptCommandCallback(
-      base::BindRepeating(&SearchEngineTabHelper::OnJsMessage,
-                          base::Unretained(this)),
-      kCommandPrefix);
   DCHECK(favicon::WebFaviconDriver::FromWebState(web_state));
-  favicon_driver_observer_.Add(
+  favicon_driver_observation_.Observe(
       favicon::WebFaviconDriver::FromWebState(web_state));
 }
 
 void SearchEngineTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
-  favicon_driver_observer_.RemoveAll();
+  favicon_driver_observation_.Reset();
 }
 
 // When favicon is updated, notify TemplateURLService about the change.
@@ -99,8 +88,8 @@ void SearchEngineTabHelper::OnFaviconUpdated(
     const GURL& icon_url,
     bool icon_url_changed,
     const gfx::Image& image) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   TemplateURLService* url_service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
   const GURL potential_search_url = driver->GetActiveURL();
@@ -124,33 +113,8 @@ void SearchEngineTabHelper::DidFinishNavigation(
   }
 }
 
-void SearchEngineTabHelper::OnJsMessage(const base::DictionaryValue& message,
-                                        const GURL& page_url,
-                                        bool user_is_interacting,
-                                        web::WebFrame* sender_frame) {
-  const base::Value* cmd = message.FindKey("command");
-  if (!cmd || !cmd->is_string()) {
-    return;
-  }
-  std::string cmd_str = cmd->GetString();
-  if (cmd_str == kCommandOpenSearch) {
-    const base::Value* document_url = message.FindKey(kOpenSearchPageUrlKey);
-    if (!document_url || !document_url->is_string())
-      return;
-    const base::Value* osdd_url = message.FindKey(kOpenSearchOsddUrlKey);
-    if (!osdd_url || !osdd_url->is_string())
-      return;
-    AddTemplateURLByOSDD(GURL(document_url->GetString()),
-                         GURL(osdd_url->GetString()));
-  } else if (cmd_str == kCommandSearchableUrl) {
-    const base::Value* url = message.FindKey(kSearchableUrlUrlKey);
-    if (!url || !url->is_string())
-      return;
-    // Save |url| to |searchable_url_| when generated from <form> submission,
-    // and create the TemplateURL when the submission did lead to a successful
-    // navigation.
-    searchable_url_ = GURL(url->GetString());
-  }
+void SearchEngineTabHelper::SetSearchableUrl(GURL searchable_url) {
+  searchable_url_ = searchable_url;
 }
 
 // Creates a new TemplateURL by OSDD. The TemplateURL will be added to
@@ -169,8 +133,8 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   if (!osdd_url.is_valid() || !osdd_url.SchemeIsHTTPOrHTTPS())
     return;
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   if ((page_url != web_state_->GetLastCommittedURL()) ||
       (!ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)) ||
       (browser_state->IsOffTheRecord()))
@@ -190,23 +154,20 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
 
   // Autogenerate a keyword for the autodetected case; in the other cases we'll
   // generate a keyword later after fetching the OSDD.
-  base::string16 keyword = GenerateKeywordFromNavigationItem(item);
+  std::u16string keyword = GenerateKeywordFromNavigationItem(item);
   if (keyword.empty())
     return;
 
   // Download the OpenSearch description document. If this is successful, a
-  // new keyword will be created when done. For the last two args:
-  //   1. Used by newwork::ResourceRequest::render_frame_id. We don't use Blink
-  //   so leave it to be the default value defined here:
-  //      https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
-  //   2. Used by network::ResourceRequest::resource_type. It's a design defect:
-  //      https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=100
-  //      Use the same value as the SearchEngineTabHelper for Desktop.
+  // new keyword will be created when done. For |render_frame_id| arg, it's used
+  // by network::ResourceRequest::render_frame_id, we don't use Blink so leave
+  // it to be the default value defined here:
+  //   https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
   ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)
       ->ScheduleDownload(keyword, osdd_url, item->GetFavicon().url,
                          url::Origin::Create(web_state_->GetLastCommittedURL()),
-                         browser_state->GetURLLoaderFactory(), MSG_ROUTING_NONE,
-                         /* content::ResourceType::kSubResource */ 6,
+                         browser_state->GetURLLoaderFactory(),
+                         /* render_frame_id */ MSG_ROUTING_NONE,
                          /* request_id */ 0);
 }
 
@@ -219,8 +180,8 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
     return;
   }
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   // Don't add TemplateURL under incognito mode.
   if (browser_state->IsOffTheRecord())
     return;
@@ -235,7 +196,7 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   const web::NavigationItem* previous_item =
       manager->GetItemAtIndex(last_index - 1);
 
-  base::string16 keyword(GenerateKeywordFromNavigationItem(previous_item));
+  std::u16string keyword(GenerateKeywordFromNavigationItem(previous_item));
   if (keyword.empty())
     return;
 
@@ -249,19 +210,8 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
     return;
   }
 
-  const TemplateURL* existing_url;
-  if (!url_service->CanAddAutogeneratedKeyword(keyword, searchable_url,
-                                               &existing_url)) {
+  if (!url_service->CanAddAutogeneratedKeyword(keyword, searchable_url)) {
     return;
-  }
-
-  if (existing_url) {
-    if (existing_url->originating_url().is_valid()) {
-      // The existing keyword was generated from an OpenSearch description
-      // document, don't regenerate.
-      return;
-    }
-    url_service->Remove(existing_url);
   }
 
   TemplateURLData data;
@@ -282,6 +232,10 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
     data.favicon_url = TemplateURL::GenerateFaviconURL(previous_item->GetURL());
   }
   data.safe_for_autoreplace = true;
+
+  // This Add() call may displace the previously auto-generated TemplateURL.
+  // But it will never displace the Default Search Engine, nor will it displace
+  // any OpenSearch document derived engines, which outrank this one.
   url_service->Add(std::make_unique<TemplateURL>(data));
 }
 

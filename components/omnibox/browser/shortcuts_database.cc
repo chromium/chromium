@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -17,7 +19,6 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "ui/base/page_transition_types.h"
-
 
 // Helpers --------------------------------------------------------------------
 
@@ -36,13 +37,13 @@ void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
   s->BindString16(1, shortcut.text);
   s->BindString16(2, shortcut.match_core.fill_into_edit);
   s->BindString(3, shortcut.match_core.destination_url.spec());
-  s->BindInt(4, shortcut.match_core.document_type);
+  s->BindInt(4, base::checked_cast<int>(shortcut.match_core.document_type));
   s->BindString16(5, shortcut.match_core.contents);
   s->BindString(6, shortcut.match_core.contents_class);
   s->BindString16(7, shortcut.match_core.description);
   s->BindString(8, shortcut.match_core.description_class);
-  s->BindInt(9, shortcut.match_core.transition);
-  s->BindInt(10, shortcut.match_core.type);
+  s->BindInt(9, base::checked_cast<int>(shortcut.match_core.transition));
+  s->BindInt(10, base::checked_cast<int>(shortcut.match_core.type));
   s->BindString16(11, shortcut.match_core.keyword);
   s->BindInt64(12, shortcut.last_access_time.ToInternalValue());
   s->BindInt(13, shortcut.number_of_hits);
@@ -89,16 +90,16 @@ void DatabaseErrorCallback(sql::Database* db,
 // ShortcutsDatabase::Shortcut::MatchCore -------------------------------------
 
 ShortcutsDatabase::Shortcut::MatchCore::MatchCore(
-    const base::string16& fill_into_edit,
+    const std::u16string& fill_into_edit,
     const GURL& destination_url,
-    int document_type,
-    const base::string16& contents,
+    AutocompleteMatch::DocumentType document_type,
+    const std::u16string& contents,
     const std::string& contents_class,
-    const base::string16& description,
+    const std::u16string& description,
     const std::string& description_class,
-    int transition,
-    int type,
-    const base::string16& keyword)
+    ui::PageTransition transition,
+    AutocompleteMatchType::Type type,
+    const std::u16string& keyword)
     : fill_into_edit(fill_into_edit),
       destination_url(destination_url),
       document_type(document_type),
@@ -118,30 +119,31 @@ ShortcutsDatabase::Shortcut::MatchCore::~MatchCore() {
 
 // ShortcutsDatabase::Shortcut ------------------------------------------------
 
-ShortcutsDatabase::Shortcut::Shortcut(
-    const std::string& id,
-    const base::string16& text,
-    const MatchCore& match_core,
-    const base::Time& last_access_time,
-    int number_of_hits)
+ShortcutsDatabase::Shortcut::Shortcut(const std::string& id,
+                                      const std::u16string& text,
+                                      const MatchCore& match_core,
+                                      const base::Time& last_access_time,
+                                      int number_of_hits)
     : id(id),
       text(text),
       match_core(match_core),
       last_access_time(last_access_time),
-      number_of_hits(number_of_hits) {
-}
+      number_of_hits(number_of_hits) {}
 
 ShortcutsDatabase::Shortcut::Shortcut()
-    : match_core(base::string16(),
+    : match_core(std::u16string(),
                  GURL(),
-                 0,
-                 base::string16(),
+                 AutocompleteMatch::DocumentType::NONE,
+                 std::u16string(),
                  std::string(),
-                 base::string16(),
+                 std::u16string(),
                  std::string(),
-                 0,
-                 0,
-                 base::string16()),
+                 ui::PageTransition::PAGE_TRANSITION_FIRST,
+                 // AutocompleteMatchType doesn't have a sentinel or null value,
+                 // so we just use the value equal to 0. This constructor is
+                 // only used by STL anyways, so this is harmless.
+                 AutocompleteMatchType::Type::URL_WHAT_YOU_TYPED,
+                 std::u16string()),
       last_access_time(base::Time::Now()),
       number_of_hits(0) {}
 
@@ -154,8 +156,16 @@ ShortcutsDatabase::Shortcut::~Shortcut() {
 // ShortcutsDatabase ----------------------------------------------------------
 
 ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
-    : database_path_(database_path) {
-}
+    : db_({// Run the database in exclusive mode. Nobody else should be
+           // accessing the database while we're running, and this will give
+           // somewhat improved perf.
+           .exclusive_locking = true,
+           // Set the database page size to something a little larger to give us
+           // better performance (we're typically seek rather than bandwidth
+           // limited). Must be a power of 2 and a max of 65536.
+           .page_size = 4096,
+           .cache_size = 500}),
+      database_path_(database_path) {}
 
 bool ShortcutsDatabase::Init() {
   db_.set_histogram_tag("Shortcuts");
@@ -163,16 +173,6 @@ bool ShortcutsDatabase::Init() {
   // To recover from corruption.
   db_.set_error_callback(
       base::BindRepeating(&DatabaseErrorCallback, &db_, database_path_));
-
-  // Set the database page size to something a little larger to give us
-  // better performance (we're typically seek rather than bandwidth limited).
-  // This only has an effect before any tables have been created, otherwise
-  // this is a NOP. Must be a power of 2 and a max of 8192.
-  db_.set_page_size(4096);
-
-  // Run the database in exclusive mode. Nobody else should be accessing the
-  // database while we're running, and this will give somewhat improved perf.
-  db_.set_exclusive_locking();
 
   // Attach the database to our index file.
   return db_.Open(database_path_) && EnsureTable();
@@ -236,25 +236,42 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
 
   shortcuts->clear();
   while (s.Step()) {
+    // Some users have corrupt data in their SQL database. That causes crashes.
+    // Therefore, validate the integral values first. https://crbug.com/1024114
+    AutocompleteMatch::DocumentType document_type;
+    if (!AutocompleteMatch::DocumentTypeFromInteger(s.ColumnInt(4),
+                                                    &document_type)) {
+      continue;
+    }
+
+    AutocompleteMatchType::Type type;
+    if (!AutocompleteMatchType::FromInteger(s.ColumnInt(10), &type))
+      continue;
+
+    const int page_transition_integer = s.ColumnInt(9);
+    if (!ui::PageTransitionIsValidType(page_transition_integer))
+      continue;
+    ui::PageTransition transition =
+        ui::PageTransitionFromInt(page_transition_integer);
+
     shortcuts->insert(std::make_pair(
         s.ColumnString(0),
         Shortcut(
-            s.ColumnString(0),            // id
-            s.ColumnString16(1),          // text
-            Shortcut::MatchCore(
-                s.ColumnString16(2),      // fill_into_edit
-                GURL(s.ColumnString(3)),  // destination_url
-                s.ColumnInt(4),           // document_type
-                s.ColumnString16(5),      // contents
-                s.ColumnString(6),        // contents_class
-                s.ColumnString16(7),      // description
-                s.ColumnString(8),        // description_class
-                s.ColumnInt(9),           // transition
-                s.ColumnInt(10),          // type
-                s.ColumnString16(11)),    // keyword
+            s.ColumnString(0),                            // id
+            s.ColumnString16(1),                          // text
+            Shortcut::MatchCore(s.ColumnString16(2),      // fill_into_edit
+                                GURL(s.ColumnString(3)),  // destination_url
+                                document_type,            // document_type
+                                s.ColumnString16(5),      // contents
+                                s.ColumnString(6),        // contents_class
+                                s.ColumnString16(7),      // description
+                                s.ColumnString(8),        // description_class
+                                transition,               // transition
+                                type,                     // type
+                                s.ColumnString16(11)),    // keyword
             base::Time::FromInternalValue(s.ColumnInt64(12)),
-                                          // last_access_time
-            s.ColumnInt(13))));           // number_of_hits
+            // last_access_time
+            s.ColumnInt(13))));  // number_of_hits
   }
 }
 

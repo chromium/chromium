@@ -4,7 +4,7 @@
 
 #include "ios/web/public/test/scoped_testing_web_client.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

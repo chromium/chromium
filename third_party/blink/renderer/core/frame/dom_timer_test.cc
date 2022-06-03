@@ -8,11 +8,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 
@@ -45,15 +44,13 @@ class DOMTimerTest : public RenderingTest {
     // Advance timer manually as RenderingTest expects the time to be non-zero.
     platform()->AdvanceClockSeconds(1.);
     RenderingTest::SetUp();
-    auto* window_performance = DOMWindowPerformance::performance(
-        *GetDocument().GetFrame()->DomWindow());
+    auto* window_performance =
+        DOMWindowPerformance::performance(*GetDocument().domWindow());
     auto test_task_runner = platform()->test_task_runner();
     auto* mock_clock = test_task_runner->GetMockClock();
     auto* mock_tick_clock = test_task_runner->GetMockTickClock();
     auto now_ticks = test_task_runner->NowTicks();
-    unified_clock_ = std::make_unique<Performance::UnifiedClock>(
-        mock_clock, mock_tick_clock);
-    window_performance->SetClocksForTesting(unified_clock_.get());
+    window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
@@ -63,11 +60,8 @@ class DOMTimerTest : public RenderingTest {
   }
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
-    return GetDocument()
-        .GetFrame()
-        ->GetScriptController()
-        .ExecuteScriptInMainWorldAndReturnValue(
-            ScriptSourceCode(expr), KURL(), SanitizeScriptErrors::kSanitize);
+    return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(expr))
+        ->RunScriptAndReturnValue(GetDocument().domWindow());
   }
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,
@@ -84,13 +78,10 @@ class DOMTimerTest : public RenderingTest {
 
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
     ScriptSourceCode script(script_text);
-    GetDocument().GetFrame()->GetScriptController().ExecuteScriptInMainWorld(
-        script, KURL(), SanitizeScriptErrors::kSanitize);
+    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
+        GetDocument().domWindow());
     platform()->RunUntilIdle();
   }
-
- private:
-  std::unique_ptr<Performance::UnifiedClock> unified_clock_;
 };
 
 const char* const kSetTimeout0ScriptText =

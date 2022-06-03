@@ -1,0 +1,13 @@
+<body>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+const doc = new DOMParser().parseFromString(`
+    <meta http-equiv="Content-Security-Policy" content="frame-src 'none'">
+    <body>></body>"`, "text/html");
+var i = document.createElement('iframe');
+i.src = "resources/alert-pass.html";
+document.body.appendChild(i);
+</script>
+</body>

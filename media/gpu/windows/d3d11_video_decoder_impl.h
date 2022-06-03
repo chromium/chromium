@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
-#define MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_
+#define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_
 
 #include <d3d11_1.h>
 #include <wrl/client.h>
 
 #include <list>
 #include <memory>
-#include <string>
 #include <tuple>
 
 #include "base/callback.h"
@@ -34,27 +33,32 @@ class D3D11PictureBuffer;
 // TODO(liberato): Rename this class as a follow-on to this refactor.
 class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
  public:
+  // Callback to us to wait for a sync token, then call a closure.
+  using ReleaseMailboxCB =
+      base::RepeatingCallback<void(base::OnceClosure, const gpu::SyncToken&)>;
+
   // May be constructed on any thread.
   explicit D3D11VideoDecoderImpl(
       std::unique_ptr<MediaLog> media_log,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb);
+
+  D3D11VideoDecoderImpl(const D3D11VideoDecoderImpl&) = delete;
+  D3D11VideoDecoderImpl& operator=(const D3D11VideoDecoderImpl&) = delete;
+
   virtual ~D3D11VideoDecoderImpl();
 
-  using InitCB = base::OnceCallback<void(bool success)>;
+  using InitCB = base::OnceCallback<void(bool success, ReleaseMailboxCB)>;
 
   // Returns a picture buffer that's no longer in use by the client.
   using ReturnPictureBufferCB =
       base::RepeatingCallback<void(scoped_refptr<D3D11PictureBuffer>)>;
 
-  // We will call back |init_cb| with the init status.  |try_decoding_cb| should
-  // try to re-start decoding.  We'll call this when we do something that might
-  // allow decoding to make progress, such as reclaim a picture buffer.
-  virtual void Initialize(InitCB init_cb,
-                          ReturnPictureBufferCB return_picture_buffer_cb);
+  // We will call back |init_cb| with the init status.
+  virtual void Initialize(InitCB init_cb);
 
-  // Called when the VideoFrame that uses |buffer| is freed.
-  void OnMailboxReleased(scoped_refptr<D3D11PictureBuffer> buffer,
+  // Called to wait on |sync_token|, and call |wait_complete_cb| when done.
+  void OnMailboxReleased(base::OnceClosure wait_complete_cb,
                          const gpu::SyncToken& sync_token);
 
   // Return a weak ptr, since D3D11VideoDecoder constructs callbacks for us.
@@ -62,12 +66,15 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
   base::WeakPtr<D3D11VideoDecoderImpl> GetWeakPtr();
 
  private:
-  void OnSyncTokenReleased(scoped_refptr<D3D11PictureBuffer> buffer);
+  void OnSyncTokenReleased(base::OnceClosure);
 
   std::unique_ptr<MediaLog> media_log_;
 
+  // Cached copy of the callback to OnMailboxReleased.
+  ReleaseMailboxCB release_mailbox_cb_;
+
   // Called when we get a picture buffer back from the client.
-  ReturnPictureBufferCB return_picture_buffer_cb_;
+  // ReturnPictureBufferCB return_picture_buffer_cb_;
 
   base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb_;
   scoped_refptr<CommandBufferHelper> helper_;
@@ -76,10 +83,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<D3D11VideoDecoderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11VideoDecoderImpl);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_

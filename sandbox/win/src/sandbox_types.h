@@ -108,11 +108,11 @@ enum ResultCode : int {
   // Cannot find the base address of the new process.
   SBOX_ERROR_CANNOT_FIND_BASE_ADDRESS = 43,
   // Cannot create the AppContainer profile.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE = 44,
+  SBOX_ERROR_CREATE_APPCONTAINER = 44,
   // Cannot create the AppContainer as the main executable can't be accessed.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_ACCESS_CHECK = 45,
+  SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK = 45,
   // Cannot create the AppContainer as adding a capability failed.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY = 46,
+  SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY = 46,
   // Cannot initialize a job object.
   SBOX_ERROR_CANNOT_INIT_JOB = 47,
   // Invalid LowBox SID string.
@@ -139,6 +139,12 @@ enum ResultCode : int {
   SBOX_ERROR_INVALID_WRITE_VARIABLE_SIZE = 58,
   // Cannot initialize BrokerServices.
   SBOX_ERROR_CANNOT_INIT_BROKERSERVICES = 59,
+  // Cannot update job active process limit.
+  SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT = 60,
+  // Cannot create an impersonation lowbox token
+  SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN = 61,
+  // Cannot create a sandbox policy for an unsandboxed process.
+  SBOX_ERROR_UNSANDBOXED_PROCESS = 62,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
@@ -172,11 +178,7 @@ struct SandboxInterfaceInfo {
   TargetServices* target_services;
 };
 
-#if SANDBOX_EXPORTS
-#define SANDBOX_INTERCEPT extern "C" __declspec(dllexport)
-#else
 #define SANDBOX_INTERCEPT extern "C"
-#endif
 
 enum InterceptionType {
   INTERCEPTION_INVALID = 0,

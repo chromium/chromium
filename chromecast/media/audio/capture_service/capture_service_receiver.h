@@ -7,12 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/capture_service/constants.h"
-#include "media/audio/audio_io.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -28,24 +26,42 @@ namespace media {
 
 class CaptureServiceReceiver {
  public:
-  // The timeout for a connecting socket to stop waiting and report error.
-  static constexpr base::TimeDelta kConnectTimeout =
-      base::TimeDelta::FromSeconds(1);
+  // Delegate cannot be destroyed before CaptureServiceReceiver. Note methods of
+  // Delegate will always be called from CaptureServiceReceiver's own thread.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
 
-  CaptureServiceReceiver(capture_service::StreamType stream_type,
-                         int sample_rate,
-                         int channels,
-                         int frames_per_buffer);
+    virtual bool OnInitialStreamInfo(
+        const capture_service::StreamInfo& stream_info) = 0;
+
+    // Called when more data are received from socket. Return |true| to continue
+    // reading messages after OnCaptureData() returns.
+    virtual bool OnCaptureData(const char* data, size_t size) = 0;
+
+    // Called when internal error occurs.
+    virtual void OnCaptureError() = 0;
+  };
+
+  // The timeout for a connecting socket to stop waiting and report error.
+  static constexpr base::TimeDelta kConnectTimeout = base::Seconds(1);
+
+  CaptureServiceReceiver(capture_service::StreamInfo request_stream_info,
+                         Delegate* delegate);
+  CaptureServiceReceiver(const CaptureServiceReceiver&) = delete;
+  CaptureServiceReceiver& operator=(const CaptureServiceReceiver&) = delete;
   ~CaptureServiceReceiver();
 
-  void Start(::media::AudioInputStream::AudioInputCallback* input_callback);
+  // Starts capture receiving process. It cannot be called if
+  // CaptureServiceReceiver has been started and not stopped.
+  void Start();
+  // Stops capture receiving process synchronously. It will be no-op if Start()
+  // has not been started or already been stopped.
   void Stop();
 
   // Unit test can call this method rather than the public one to inject mocked
   // stream socket.
-  void StartWithSocket(
-      ::media::AudioInputStream::AudioInputCallback* input_callback,
-      std::unique_ptr<net::StreamSocket> connecting_socket);
+  void StartWithSocket(std::unique_ptr<net::StreamSocket> connecting_socket);
 
   // Unit test can set test task runner so as to run test in sync. Must be
   // called after construction and before any other methods.
@@ -55,17 +71,12 @@ class CaptureServiceReceiver {
  private:
   class Socket;
 
-  void OnConnected(
-      ::media::AudioInputStream::AudioInputCallback* input_callback,
-      int result);
-  void OnConnectTimeout(
-      ::media::AudioInputStream::AudioInputCallback* input_callback);
+  void OnConnected(int result);
+  void OnConnectTimeout();
   void StopOnTaskRunner(base::WaitableEvent* finished);
 
-  const capture_service::StreamType stream_type_;
-  const int sample_rate_;
-  const int channels_;
-  const int frames_per_buffer_;
+  const capture_service::StreamInfo request_stream_info_;
+  Delegate* const delegate_;
 
   // Socket requires IO thread, and low latency input stream requires high
   // thread priority. Therefore, a private thread instead of the IO thread from
@@ -76,8 +87,6 @@ class CaptureServiceReceiver {
 
   std::unique_ptr<net::StreamSocket> connecting_socket_;
   std::unique_ptr<Socket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureServiceReceiver);
 };
 
 }  // namespace media

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/external_loader.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -13,9 +13,7 @@ using content::BrowserThread;
 
 namespace extensions {
 
-ExternalLoader::ExternalLoader()
-    : owner_(NULL) {
-}
+ExternalLoader::ExternalLoader() = default;
 
 void ExternalLoader::Init(ExternalProviderImpl* owner) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -32,17 +30,16 @@ const base::FilePath ExternalLoader::GetBaseCrxFilePath() {
 
 void ExternalLoader::OwnerShutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  owner_ = NULL;
+  owner_ = nullptr;
 }
 
-ExternalLoader::~ExternalLoader() {}
+ExternalLoader::~ExternalLoader() = default;
 
 void ExternalLoader::LoadFinished(
     std::unique_ptr<base::DictionaryValue> prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (owner_) {
+  if (owner_)
     owner_->SetPrefs(std::move(prefs));
-  }
 }
 
 void ExternalLoader::OnUpdated(

@@ -7,19 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/callback_forward.h"
 #include "base/strings/string_util.h"
 
 namespace net {
 class AuthChallengeInfo;
 class URLRequest;
 }  // namespace net
-
-namespace network_client {
-typedef base::Callback<void(bool auth_ok,
-                            const base::string16& username,
-                            const base::string16& password)> AuthCallback;
-}  // namespace network_client
 
 // CRNNetworkClientProtocol provides an interface for delegate classes that
 // receive calls about data loading from the Chromium network stack.

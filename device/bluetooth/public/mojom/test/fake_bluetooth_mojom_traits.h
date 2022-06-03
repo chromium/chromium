@@ -10,7 +10,8 @@
 #include <tuple>
 
 #include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
+#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom-shared.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 

@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_title_source.h"
 #include "url/gurl.h"
@@ -27,7 +25,7 @@ namespace ntp_tiles {
 class PopularSites {
  public:
   struct Site {
-    Site(const base::string16& title,
+    Site(const std::u16string& title,
          const GURL& url,
          const GURL& favicon_url,
          const GURL& large_icon_url,
@@ -35,7 +33,7 @@ class PopularSites {
     Site(const Site& other);
     ~Site();
 
-    base::string16 title;
+    std::u16string title;
     GURL url;
     GURL favicon_url;
     GURL large_icon_url;
@@ -46,7 +44,7 @@ class PopularSites {
   };
 
   using SitesVector = std::vector<Site>;
-  using FinishedCallback = base::Callback<void(bool /* success */)>;
+  using FinishedCallback = base::OnceCallback<void(bool /* success */)>;
 
   virtual ~PopularSites() = default;
 
@@ -63,7 +61,7 @@ class PopularSites {
   //
   // Must be called at most once on a given PopularSites object.
   virtual bool MaybeStartFetch(bool force_download,
-                               const FinishedCallback& callback) = 0;
+                               FinishedCallback callback) = 0;
 
   // Returns the cached list of available sections and their sites.
   virtual const std::map<SectionType, SitesVector>& sections() const = 0;

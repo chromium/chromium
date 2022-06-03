@@ -9,14 +9,14 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -51,7 +51,7 @@ int calcHue(float temp1, float temp2, float hue) {
   else if (hue * 3.0f < 2.0f)
     result = temp1 + (temp2 - temp1) * (2.0f / 3.0f - hue) * 6.0f;
 
-  return static_cast<int>(std::round(result * 255));
+  return base::ClampRound(result * 255);
 }
 
 // Assumes sRGB.
@@ -64,7 +64,139 @@ float Linearize(float eight_bit_component) {
                                  : pow((component + 0.055f) / 1.055f, 2.4f);
 }
 
+constexpr size_t kNumGoogleColors = 10;
+constexpr SkColor kGrey[kNumGoogleColors] = {
+    gfx::kGoogleGrey050, gfx::kGoogleGrey100, gfx::kGoogleGrey200,
+    gfx::kGoogleGrey300, gfx::kGoogleGrey400, gfx::kGoogleGrey500,
+    gfx::kGoogleGrey600, gfx::kGoogleGrey700, gfx::kGoogleGrey800,
+    gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kRed[kNumGoogleColors] = {
+    gfx::kGoogleRed050, gfx::kGoogleRed100, gfx::kGoogleRed200,
+    gfx::kGoogleRed300, gfx::kGoogleRed400, gfx::kGoogleRed500,
+    gfx::kGoogleRed600, gfx::kGoogleRed700, gfx::kGoogleRed800,
+    gfx::kGoogleRed900,
+};
+
+constexpr SkColor kOrange[kNumGoogleColors] = {
+    gfx::kGoogleOrange050, gfx::kGoogleOrange100, gfx::kGoogleOrange200,
+    gfx::kGoogleOrange300, gfx::kGoogleOrange400, gfx::kGoogleOrange500,
+    gfx::kGoogleOrange600, gfx::kGoogleOrange700, gfx::kGoogleOrange800,
+    gfx::kGoogleOrange900,
+};
+
+constexpr SkColor kYellow[kNumGoogleColors] = {
+    gfx::kGoogleYellow050, gfx::kGoogleYellow100, gfx::kGoogleYellow200,
+    gfx::kGoogleYellow300, gfx::kGoogleYellow400, gfx::kGoogleYellow500,
+    gfx::kGoogleYellow600, gfx::kGoogleYellow700, gfx::kGoogleYellow800,
+    gfx::kGoogleYellow900,
+};
+
+constexpr SkColor kGreen[kNumGoogleColors] = {
+    gfx::kGoogleGreen050, gfx::kGoogleGreen100, gfx::kGoogleGreen200,
+    gfx::kGoogleGreen300, gfx::kGoogleGreen400, gfx::kGoogleGreen500,
+    gfx::kGoogleGreen600, gfx::kGoogleGreen700, gfx::kGoogleGreen800,
+    gfx::kGoogleGreen900,
+};
+
+constexpr SkColor kBlue[kNumGoogleColors] = {
+    gfx::kGoogleBlue050, gfx::kGoogleBlue100, gfx::kGoogleBlue200,
+    gfx::kGoogleBlue300, gfx::kGoogleBlue400, gfx::kGoogleBlue500,
+    gfx::kGoogleBlue600, gfx::kGoogleBlue700, gfx::kGoogleBlue800,
+    gfx::kGoogleBlue900,
+};
+
+constexpr SkColor kPurple[kNumGoogleColors] = {
+    gfx::kGooglePurple050, gfx::kGooglePurple100, gfx::kGooglePurple200,
+    gfx::kGooglePurple300, gfx::kGooglePurple400, gfx::kGooglePurple500,
+    gfx::kGooglePurple600, gfx::kGooglePurple700, gfx::kGooglePurple800,
+    gfx::kGooglePurple900,
+};
+
+constexpr SkColor kPink[kNumGoogleColors] = {
+    gfx::kGooglePink050, gfx::kGooglePink100, gfx::kGooglePink200,
+    gfx::kGooglePink300, gfx::kGooglePink400, gfx::kGooglePink500,
+    gfx::kGooglePink600, gfx::kGooglePink700, gfx::kGooglePink800,
+    gfx::kGooglePink900,
+};
+
+SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
+                        SkColor background_color,
+                        float min_contrast) {
+  // For dark backgrounds we start at 500 and go down (toward brighter colors).
+  constexpr size_t kDarkBackgroundStartIndex = 5;
+  static_assert(kBlue[kDarkBackgroundStartIndex] == gfx::kGoogleBlue500,
+                "The start index needs to match kGoogleBlue500");
+  const float background_luminance = GetRelativeLuminance(background_color);
+  if (IsDark(background_color)) {
+    for (size_t i = kDarkBackgroundStartIndex; i > 0; --i) {
+      if (GetContrastRatio(GetRelativeLuminance(colors[i]),
+                           background_luminance) > min_contrast) {
+        return colors[i];
+      }
+    }
+    return colors[0];
+  }
+
+  // For light backgrounds we start at 400 and go up (toward darker colors).
+  constexpr size_t kLightBackgroundStartIndex = 4;
+  static_assert(kBlue[kLightBackgroundStartIndex] == gfx::kGoogleBlue400,
+                "The start index needs to match kGoogleBlue400");
+  for (size_t i = kLightBackgroundStartIndex; i < kNumGoogleColors - 1; ++i) {
+    if (GetContrastRatio(GetRelativeLuminance(colors[i]),
+                         background_luminance) > min_contrast) {
+      return colors[i];
+    }
+  }
+  return colors[kNumGoogleColors - 1];
+}
+
 }  // namespace
+
+SkColor PickGoogleColor(SkColor color,
+                        SkColor background_color,
+                        float min_contrast) {
+  HSL hsl;
+  SkColorToHSL(color, &hsl);
+  if (hsl.s < 0.1) {
+    // Low saturation, let this be a grey.
+    return PickGoogleColor(kGrey, background_color, min_contrast);
+  }
+
+  // Map hue to angles for readability.
+  const float color_angle = hsl.h * 360;
+
+  // Hues in comments below are accent colors from MacOS 11.3.1 light mode as
+  // point of reference.
+  // TODO(pbos): Complement this with more Google colors and verify the hue
+  // ranges, this currently knows about enough colors to pick a corresponding
+  // color correctly from MacOS accent colors.
+  // RED: 357.654
+  if (color_angle < 20)
+    return PickGoogleColor(kRed, background_color, min_contrast);
+  // ORANGE: 28.0687
+  if (color_angle < 40)
+    return PickGoogleColor(kOrange, background_color, min_contrast);
+  // YELLOW: 44.4156
+  if (color_angle < 70)
+    return PickGoogleColor(kYellow, background_color, min_contrast);
+  // GREEN: 105.484
+  if (color_angle < 160)
+    return PickGoogleColor(kGreen, background_color, min_contrast);
+  // BLUE: 214.672
+  if (color_angle < 250)
+    return PickGoogleColor(kBlue, background_color, min_contrast);
+  // PURPLE: 299.362
+  if (color_angle < 310)
+    return PickGoogleColor(kPurple, background_color, min_contrast);
+  // PINK: 331.685
+  if (color_angle < 345)
+    return PickGoogleColor(kPink, background_color, min_contrast);
+
+  // End of hue wheel is red.
+  return PickGoogleColor(kRed, background_color, min_contrast);
+}
 
 float GetContrastRatio(SkColor color_a, SkColor color_b) {
   return GetContrastRatio(GetRelativeLuminance(color_a),
@@ -87,9 +219,9 @@ float GetRelativeLuminance(SkColor color) {
 }
 
 uint8_t GetLuma(SkColor color) {
-  return static_cast<uint8_t>(std::round((0.299f * SkColorGetR(color)) +
-                                         (0.587f * SkColorGetG(color)) +
-                                         (0.114f * SkColorGetB(color))));
+  return base::ClampRound<uint8_t>(0.299f * SkColorGetR(color) +
+                                   0.587f * SkColorGetG(color) +
+                                   0.114f * SkColorGetB(color));
 }
 
 void SkColorToHSL(SkColor c, HSL* hsl) {
@@ -132,8 +264,7 @@ SkColor HSLToSkColor(const HSL& hsl, SkAlpha alpha) {
   // If there's no color, we don't care about hue and can do everything based on
   // brightness.
   if (!saturation) {
-    const uint8_t light =
-        base::saturated_cast<uint8_t>(gfx::ToRoundedInt(lightness * 255));
+    const uint8_t light = base::ClampRound<uint8_t>(lightness * 255);
     return SkColorSetARGB(alpha, light, light, light);
   }
 
@@ -231,32 +362,8 @@ SkColor HSLShift(SkColor color, const HSL& shift) {
     g += (255.0f - g) * ((shift.l - 0.5f) * 2.0f);
     b += (255.0f - b) * ((shift.l - 0.5f) * 2.0f);
   }
-  return SkColorSetARGB(alpha,
-                        static_cast<int>(std::round(r)),
-                        static_cast<int>(std::round(g)),
-                        static_cast<int>(std::round(b)));
-}
-
-void BuildLumaHistogram(const SkBitmap& bitmap, int histogram[256]) {
-  DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
-
-  int pixel_width = bitmap.width();
-  int pixel_height = bitmap.height();
-  for (int y = 0; y < pixel_height; ++y) {
-    for (int x = 0; x < pixel_width; ++x)
-      ++histogram[GetLuma(bitmap.getColor(x, y))];
-  }
-}
-
-double CalculateBoringScore(const SkBitmap& bitmap) {
-  if (bitmap.isNull() || bitmap.empty())
-    return 1.0;
-  int histogram[256] = {0};
-  BuildLumaHistogram(bitmap, histogram);
-
-  int color_count = *std::max_element(histogram, histogram + 256);
-  int pixel_count = bitmap.width() * bitmap.height();
-  return static_cast<double>(color_count) / pixel_count;
+  return SkColorSetARGB(alpha, base::ClampRound<U8CPU>(r),
+                        base::ClampRound<U8CPU>(g), base::ClampRound<U8CPU>(b));
 }
 
 SkColor AlphaBlend(SkColor foreground, SkColor background, SkAlpha alpha) {
@@ -289,13 +396,14 @@ SkColor AlphaBlend(SkColor foreground, SkColor background, float alpha) {
   float b =
       SkColorGetB(foreground) * f_weight + SkColorGetB(background) * b_weight;
 
-  return SkColorSetARGB(gfx::ToRoundedInt(normalizer), gfx::ToRoundedInt(r),
-                        gfx::ToRoundedInt(g), gfx::ToRoundedInt(b));
+  return SkColorSetARGB(base::ClampRound<U8CPU>(normalizer),
+                        base::ClampRound<U8CPU>(r), base::ClampRound<U8CPU>(g),
+                        base::ClampRound<U8CPU>(b));
 }
 
 SkColor GetResultingPaintColor(SkColor foreground, SkColor background) {
   return AlphaBlend(SkColorSetA(foreground, SK_AlphaOPAQUE), background,
-                    SkAlpha{SkColorGetA(foreground)});
+                    static_cast<SkAlpha>(SkColorGetA(foreground)));
 }
 
 bool IsDark(SkColor color) {
@@ -304,6 +412,10 @@ bool IsDark(SkColor color) {
 
 SkColor GetColorWithMaxContrast(SkColor color) {
   return IsDark(color) ? SK_ColorWHITE : g_darkest_color;
+}
+
+SkColor GetEndpointColorWithMinContrast(SkColor color) {
+  return IsDark(color) ? g_darkest_color : SK_ColorWHITE;
 }
 
 SkColor BlendTowardMaxContrast(SkColor color, SkAlpha alpha) {
@@ -327,7 +439,7 @@ SkColor PickContrastingColor(SkColor foreground1,
 BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    base::Optional<SkColor> high_contrast_foreground,
+    absl::optional<SkColor> high_contrast_foreground,
     float contrast_ratio) {
   DCHECK_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
   default_foreground = GetResultingPaintColor(default_foreground, background);
@@ -373,13 +485,6 @@ SkColor GetSysSkColor(int which) {
   return SK_ColorLTGRAY;
 #endif
 }
-
-// OS_WIN implementation lives in sys_color_change_listener.cc
-#if !defined(OS_WIN)
-bool IsInvertedColorScheme() {
-  return false;
-}
-#endif  // !defined(OS_WIN)
 
 SkColor DeriveDefaultIconColor(SkColor text_color) {
   // Lighten dark colors and brighten light colors. The alpha value here (0x4c)

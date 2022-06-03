@@ -1,9 +1,10 @@
 rootWebArea
 ++genericContainer ignored
-++++button name='Conversation with Foo. 0 unread messages.'
-++++++layoutTable
-++++++++layoutTableRow
-++++++++++layoutTableCell name='Conversation with Foo. 0 unread messages.'
-++++++++++++genericContainer name='Conversation with Foo. 0 unread messages.'
-++++++++++++++staticText name='Foo'
-++++++++++++++++inlineTextBox name='Foo'
+++++genericContainer ignored
+++++++button name='Conversation with Foo. 0 unread messages.'
+++++++++layoutTable
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Conversation with Foo. 0 unread messages.'
+++++++++++++++genericContainer name='Conversation with Foo. 0 unread messages.'
+++++++++++++++++staticText name='Foo'
+++++++++++++++++++inlineTextBox name='Foo'

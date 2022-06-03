@@ -10,6 +10,8 @@
 
 namespace blink {
 
+namespace {
+
 template <class StringClass>
 struct StringTraits {
   static const StringClass& FromStringResource(StringResourceBase*);
@@ -85,66 +87,120 @@ AtomicString StringTraits<AtomicString>::FromV8String(
   return AtomicString(string);
 }
 
-template <typename StringType>
-StringType ToBlinkString(v8::Local<v8::String> v8_string,
-                         ExternalMode external) {
-  {
-    // This portion of this function is very hot in certain Dromeao benchmarks.
-    v8::String::Encoding encoding;
-    v8::String::ExternalStringResourceBase* resource =
-        v8_string->GetExternalStringResourceBase(&encoding);
-    if (LIKELY(!!resource)) {
-      // Inheritance:
-      // - V8 side: v8::String::ExternalStringResourceBase
-      //   -> v8::External{One,}ByteStringResource
-      // - Both: StringResource{8,16}Base inherits from the matching v8 class.
-      static_assert(std::is_base_of<v8::String::ExternalOneByteStringResource,
-                                    StringResource8Base>::value,
-                    "");
-      static_assert(std::is_base_of<v8::String::ExternalStringResource,
-                                    StringResource16Base>::value,
-                    "");
-      static_assert(
-          std::is_base_of<StringResourceBase, StringResource8Base>::value, "");
-      static_assert(
-          std::is_base_of<StringResourceBase, StringResource16Base>::value, "");
-      // Then StringResource{8,16}Base allows to go from one ancestry path to
-      // the other one. Even though it's empty, removing it causes UB, see
-      // crbug.com/909796.
-      StringResourceBase* base;
-      if (encoding == v8::String::ONE_BYTE_ENCODING)
-        base = static_cast<StringResource8Base*>(resource);
-      else
-        base = static_cast<StringResource16Base*>(resource);
-      return StringTraits<StringType>::FromStringResource(base);
-    }
+ALWAYS_INLINE bool CanExternalize(v8::Local<v8::String> v8_string,
+                                  ExternalMode mode) {
+  return mode == kExternalize && v8_string->CanMakeExternal();
+}
+
+// Retrieves the StringResourceBase from `v8_string`.
+//
+// Returns a nullptr if there was no previous externalization.
+ALWAYS_INLINE StringResourceBase* GetExternalizedString(
+    v8::Local<v8::String> v8_string) {
+  v8::String::Encoding encoding;
+  v8::String::ExternalStringResourceBase* resource =
+      v8_string->GetExternalStringResourceBase(&encoding);
+  if (LIKELY(!!resource)) {
+    // Inheritance:
+    // - V8 side: v8::String::ExternalStringResourceBase
+    //   -> v8::External{One,}ByteStringResource
+    // - Both: StringResource{8,16}Base inherits from the matching v8 class.
+    static_assert(std::is_base_of<v8::String::ExternalOneByteStringResource,
+                                  StringResource8Base>::value,
+                  "");
+    static_assert(std::is_base_of<v8::String::ExternalStringResource,
+                                  StringResource16Base>::value,
+                  "");
+    static_assert(
+        std::is_base_of<StringResourceBase, StringResource8Base>::value, "");
+    static_assert(
+        std::is_base_of<StringResourceBase, StringResource16Base>::value, "");
+    // Then StringResource{8,16}Base allows to go from one ancestry path to
+    // the other one. Even though it's empty, removing it causes UB, see
+    // crbug.com/909796.
+    StringResourceBase* base;
+    if (encoding == v8::String::ONE_BYTE_ENCODING)
+      base = static_cast<StringResource8Base*>(resource);
+    else
+      base = static_cast<StringResource16Base*>(resource);
+    return base;
   }
 
-  int length = v8_string->Length();
-  if (UNLIKELY(!length))
-    return StringType("");
+  return nullptr;
+}
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+// Converts a `v8_string` to a StringType optionally externalizing if
+// `can_externalize` is true; sets `was_externalized` if on successful
+// externalization.
+//
+// If the string was not successfully externalized, then the calling code
+// may have the only reference to the StringType and must handle retaining
+// it to keep it alive.
+template <typename StringType>
+ALWAYS_INLINE StringType
+ConvertAndExternalizeString(v8::Isolate* isolate,
+                            v8::Local<v8::String> v8_string,
+                            bool can_externalize,
+                            bool* was_externalized) {
+  int length = v8_string->Length();
   bool one_byte = v8_string->ContainsOnlyOneByte();
-  StringType result(
+  StringType result =
       one_byte ? StringTraits<StringType>::template FromV8String<
                      V8StringOneByteTrait>(isolate, v8_string, length)
                : StringTraits<StringType>::template FromV8String<
-                     V8StringTwoBytesTrait>(isolate, v8_string, length));
+                     V8StringTwoBytesTrait>(isolate, v8_string, length);
 
-  if (external != kExternalize || !v8_string->CanMakeExternal())
-    return result;
-
-  if (result.Is8Bit()) {
-    StringResource8* string_resource = new StringResource8(result);
-    if (UNLIKELY(!v8_string->MakeExternal(string_resource)))
-      delete string_resource;
-  } else {
-    StringResource16* string_resource = new StringResource16(result);
-    if (UNLIKELY(!v8_string->MakeExternal(string_resource)))
-      delete string_resource;
+  *was_externalized = false;
+  if (LIKELY(can_externalize)) {
+    if (result.Is8Bit()) {
+      StringResource8* string_resource = new StringResource8(result);
+      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+        delete string_resource;
+      } else {
+        *was_externalized = true;
+      }
+    } else {
+      StringResource16* string_resource = new StringResource16(result);
+      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+        delete string_resource;
+      } else {
+        *was_externalized = true;
+      }
+    }
   }
+
   return result;
+}
+
+}  // namespace
+
+template <typename StringType>
+StringType ToBlinkString(v8::Local<v8::String> v8_string, ExternalMode mode) {
+  // Be very careful in this code to ensure it is RVO friendly. Accidentally
+  // breaking RVO will degrade some of the blink_perf benchmarks by a few
+  // percent. This includes moving the StringTraits<>::FromStringResource() call
+  // into GetExternalizedString() as it becomes impossible for the calling code
+  // to satisfy all RVO constraints.
+
+  // Check for an already externalized string first as this is a very
+  // common case for all platforms with the one exception being super short
+  // strings on for platforms with v8 pointer compression.
+  StringResourceBase* string_resource = GetExternalizedString(v8_string);
+  if (string_resource)
+    return StringTraits<StringType>::FromStringResource(string_resource);
+
+  int length = v8_string->Length();
+  if (UNLIKELY(!length)) {
+    return StringType(g_empty_atom);
+  }
+
+  // It is safe to ignore externalization failures as it just means later
+  // calls will recreate the string.
+  bool was_externalized;
+  // TODO(ajwong): Avoid v8::Isolate::GetCurrent() call.
+  return ConvertAndExternalizeString<StringType>(
+      v8::Isolate::GetCurrent(), v8_string, CanExternalize(v8_string, mode),
+      &was_externalized);
 }
 
 // Explicitly instantiate the above template with the expected
@@ -153,6 +209,110 @@ StringType ToBlinkString(v8::Local<v8::String> v8_string,
 template String ToBlinkString<String>(v8::Local<v8::String>, ExternalMode);
 template AtomicString ToBlinkString<AtomicString>(v8::Local<v8::String>,
                                                   ExternalMode);
+
+StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
+                             StringView::StackBackingStore& backing_store,
+                             ExternalMode mode) {
+  // Be very careful in this code to ensure it is RVO friendly. Accidentally
+  // breaking RVO will degrade some of the blink_perf benchmarks by a few
+  // percent. This includes moving the StringTraits<>::FromStringResource() call
+  // into GetExternalizedString() as it becomes impossible for the calling code
+  // to satisfy all RVO constraints.
+  StringResourceBase* string_resource = GetExternalizedString(v8_string);
+  if (string_resource)
+    return StringTraits<AtomicString>::FromStringResource(string_resource);
+
+  int length = v8_string->Length();
+  if (UNLIKELY(!length))
+    return StringView(g_empty_atom);
+
+  // Note that this code path looks very similar to ToBlinkString(). The
+  // critical difference in ToBlinkStringView(), if `can_externalize` is false,
+  // there is no attempt to create either an AtomicString or an String. This
+  // can very likely avoid a heap allocation and definitely avoids refcount
+  // churn which can be significantly faster in some hot paths.
+  //
+  // TODO(ajwong): Pass in isolate to avoid extra TLS lookups? Especially with
+  // small identifiers on 64-bit platforms, externalizations are less frequent
+  // so this path is hotter.
+  bool can_externalize = CanExternalize(v8_string, mode);
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  if (LIKELY(can_externalize)) {
+    bool was_externalized;
+    // An AtomicString is always used here for externalization. Using a String
+    // would avoid the AtomicStringTable insert however it also means APIs
+    // consuming the returned StringView must do O(l) operations on equality
+    // checking.
+    //
+    // Given that externalization implies reuse of the string, taking the single
+    // O(l) hit to insert into the AtomicStringTable ends up being faster in
+    // most cases.
+    //
+    // If the caller explicitly wants a String, then using ToBlinkString<String>
+    // is the better option.
+    //
+    // If the caller wants a disposable serialization where it knows the
+    // v8::String is unlikely to be re-projected into Blink (seems rare?) then
+    // calling this with kDoNotExternalize and relying on the
+    // StringView::StackBackingStore yields the most efficient code.
+    AtomicString blink_string = ConvertAndExternalizeString<AtomicString>(
+        isolate, v8_string, can_externalize, &was_externalized);
+    if (was_externalized)
+      return StringView(blink_string);
+  }
+
+  // The string has not been externalized. Serialize into `backing_store` and
+  // return.
+  //
+  // Note on platforms with v8 pointer compression, this is the hot path
+  // for short strings like "id" as those are never externalized whereas on
+  // platforms without pointer compression GetExternalizedString() is the hot
+  // path.
+  //
+  // This is particularly important when optimizing for blink_perf.bindings as
+  // x64 vs ARM performance will have very different behavior; x64 has
+  // pointer compression but ARM does not. Since a common string used in the
+  // {get,set}-attribute benchmarks is "id", this means optimizations
+  // that affect the microbenchmark in one architecture likely have no effect
+  // (or even a negative effect due to different expectations in branch
+  // prediction) in the other.
+  //
+  // When pointer compression is on, short strings always cause a
+  // serialization to Blink and thus if there are 1000 runs of an API
+  // asking to convert the same `v8_string` to a Blink string, each run will
+  // behavior similarly.
+  //
+  // When pointer compression is off, the first run will externalize the string
+  // going through this path, but subsequent runs will enter the
+  // GetExternalizedString() path and be much faster as it is just extracting
+  // a pointer.
+  //
+  // Confusingly, the ARM and x64 absolute numbers for the benchmarks look
+  // similar (80-90 runs/s on a pixel2 and a Lenovo P920). This can give the
+  // mistaken belief that they are related numbers even though they are
+  // testing almost entirely completely different codepaths. When optimizing
+  // this code, it is instructive to increase the test attribute name string
+  // length. Using something like something like "abcd1234" will make all
+  // platforms externalize and x64 will likely run much much faster (local
+  // test sees 260 runs/s on a x64 P920).
+  //
+  // TODO(ajwong): Revisit if the length restriction on externalization makes
+  // sense. It's odd that pointer compression changes externalization
+  // behavior.
+  if (v8_string->ContainsOnlyOneByte()) {
+    LChar* lchar = backing_store.Realloc<LChar>(length);
+    v8_string->WriteOneByte(isolate, lchar, 0, length);
+    return StringView(lchar, length);
+  }
+
+  UChar* uchar = backing_store.Realloc<UChar>(length);
+  static_assert(sizeof(UChar) == sizeof(uint16_t),
+                "UChar isn't the same as uint16_t");
+  // reinterpret_cast is needed on windows as UChar is a wchar_t and not
+  // an int64_t.
+  v8_string->Write(isolate, reinterpret_cast<uint16_t*>(uchar), 0, length);
+  return StringView(uchar, length);
+}
 
 // Fast but non thread-safe version.
 static String ToBlinkStringFast(int value) {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+var source = document.createElement("canvas");
+source.width = 300;
+source.height = 150;
+source.getContext("2d").fillStyle = 'green';
+source.getContext("2d").fillRect(0, 0, source.width, source.height);
+
+var target = document.createElement("canvas");
+target.width = source.width;
+target.height = source.height;
+var context = target.getContext("2d")
+document.body.appendChild(target);
+
+function startPerfTest() {
+    context.drawImage(source, 10.5, 10.5, 200, 200);
+    // Drawing to self is just to flush out the content when
+    // accelerated 2D canvas or display list 2D canvas are in use.
+    context.drawImage(target, 0, 0, 1, 1, 0, 0, 1, 1);
+    requestAnimationFrame(startPerfTest);
+}
+
+window.onload = function () {
+    startPerfTest();
+}
+</script>
+</body>
+</html>

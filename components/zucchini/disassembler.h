@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 
@@ -20,7 +19,7 @@ namespace zucchini {
 // A vacuous ReferenceReader that produces no references.
 class EmptyReferenceReader : public ReferenceReader {
  public:
-  base::Optional<Reference> GetNext() override;
+  absl::optional<Reference> GetNext() override;
 };
 
 // A vacuous EmptyReferenceWriter that does not write.
@@ -54,6 +53,8 @@ class Disassembler {
     return disasm;
   }
 
+  Disassembler(const Disassembler&) = delete;
+  const Disassembler& operator=(const Disassembler&) = delete;
   virtual ~Disassembler();
 
   // Returns the type of executable handled by the Disassembler.
@@ -85,8 +86,6 @@ class Disassembler {
   // The number of iterations to run for equivalence map generation. This should
   // roughly be the max length of reference indirection chains.
   int num_equivalence_iterations_;
-
-  DISALLOW_COPY_AND_ASSIGN(Disassembler);
 };
 
 // A ReferenceGroup is associated with a specific |type| and has convenience

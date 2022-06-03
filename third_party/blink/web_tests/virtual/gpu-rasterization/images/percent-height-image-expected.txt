@@ -1,3 +1,0 @@
-Tests that an image with height 100% inside a floated div keeps its intrinsic height.
-See Bug: http://bugs.webkit.org/show_bug.cgi?id=45439
-PASS

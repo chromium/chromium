@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -42,13 +43,15 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
   Java_ContextualSearchManager_setNativeManager(
       env, obj, reinterpret_cast<intptr_t>(this));
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  delegate_.reset(new ContextualSearchDelegate(
+  delegate_ = std::make_unique<ContextualSearchDelegate>(
       profile->GetURLLoaderFactory(),
       TemplateURLServiceFactory::GetForProfile(profile),
-      base::Bind(&ContextualSearchManager::OnSearchTermResolutionResponse,
-                 base::Unretained(this)),
-      base::Bind(&ContextualSearchManager::OnTextSurroundingSelectionAvailable,
-                 base::Unretained(this))));
+      base::BindRepeating(
+          &ContextualSearchManager::OnSearchTermResolutionResponse,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
+          base::Unretained(this)));
 }
 
 ContextualSearchManager::~ContextualSearchManager() {
@@ -124,6 +127,9 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
   base::android::ScopedJavaLocalRef<jstring> j_search_url_preload =
       base::android::ConvertUTF8ToJavaString(
           env, resolved_search_term.search_url_preload);
+  base::android::ScopedJavaLocalRef<jstring> j_related_searches_json =
+      base::android::ConvertUTF8ToJavaString(
+          env, resolved_search_term.related_searches_json);
   Java_ContextualSearchManager_onSearchTermResolutionResponse(
       env, java_manager_, resolved_search_term.is_invalid,
       resolved_search_term.response_code, j_search_term, j_display_text,
@@ -133,12 +139,13 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
       j_thumbnail_url, j_caption, j_quick_action_uri,
       resolved_search_term.quick_action_category,
       resolved_search_term.logged_event_id, j_search_url_full,
-      j_search_url_preload, resolved_search_term.coca_card_tag);
+      j_search_url_preload, resolved_search_term.coca_card_tag,
+      j_related_searches_json);
 }
 
 void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
     const std::string& encoding,
-    const base::string16& surrounding_text,
+    const std::u16string& surrounding_text,
     size_t start_offset,
     size_t end_offset) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -166,7 +173,7 @@ void ContextualSearchManager::EnableContextualSearchJsApiForWebContents(
       overlay_web_contents, this);
 }
 
-void ContextualSearchManager::WhitelistContextualSearchJsApiUrl(
+void ContextualSearchManager::AllowlistContextualSearchJsApiUrl(
     JNIEnv* env,
     jobject obj,
     const base::android::JavaParamRef<jstring>& j_url) {

@@ -22,7 +22,7 @@ void RAROptions::Init()
   Method=3;
   MsgStream=MSG_STDOUT;
   ConvertNames=NAMES_ORIGINALCASE;
-  xmtime=EXTTIME_HIGH3;
+  xmtime=EXTTIME_MAX;
   FileSizeLess=INT64NDF;
   FileSizeMore=INT64NDF;
   HashType=HASH_CRC32;

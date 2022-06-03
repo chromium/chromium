@@ -31,9 +31,7 @@ class Shorthand : public CSSProperty {
   }
 
  protected:
-  constexpr Shorthand(CSSPropertyID id,
-                      uint16_t flags,
-                      char repetition_separator)
+  constexpr Shorthand(CSSPropertyID id, Flags flags, char repetition_separator)
       : CSSProperty(id, flags | kShorthand, repetition_separator) {}
 };
 

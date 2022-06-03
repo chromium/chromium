@@ -47,10 +47,14 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
                             const GpuFeatureInfo& gpu_feature_info,
                             SyncPointManager* sync_point_manager,
                             MailboxManager* mailbox_manager,
-                            scoped_refptr<gl::GLShareGroup> share_group,
                             gl::GLSurfaceFormat share_group_surface_format,
                             SharedImageManager* shared_image_manager,
                             gles2::ProgramCache* program_cache);
+
+  CommandBufferTaskExecutor(const CommandBufferTaskExecutor&) = delete;
+  CommandBufferTaskExecutor& operator=(const CommandBufferTaskExecutor&) =
+      delete;
+
   virtual ~CommandBufferTaskExecutor();
 
   // Always use virtualized GL contexts if this returns true.
@@ -74,6 +78,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
 
   // Returns the shared offscreen context state.
   virtual scoped_refptr<SharedContextState> GetSharedContextState() = 0;
+
+  virtual scoped_refptr<gl::GLShareGroup> GetShareGroup() = 0;
 
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
@@ -100,7 +106,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
   SharedImageManager* shared_image_manager() { return shared_image_manager_; }
 
   // These methods construct accessed fields if not already initialized.
-  scoped_refptr<gl::GLShareGroup> share_group();
   gles2::Outputter* outputter();
   gles2::ProgramCache* program_cache();
 
@@ -110,7 +115,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
   SyncPointManager* sync_point_manager_;
   MailboxManager* mailbox_manager_;
   std::unique_ptr<gles2::Outputter> outputter_;
-  scoped_refptr<gl::GLShareGroup> share_group_;
   gl::GLSurfaceFormat share_group_surface_format_;
   std::unique_ptr<gles2::ProgramCache> owned_program_cache_;
   gles2::ProgramCache* program_cache_;
@@ -123,8 +127,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
 
   // No-op default initialization is used in in-process mode.
   GpuProcessActivityFlags activity_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferTaskExecutor);
 };
 
 }  // namespace gpu

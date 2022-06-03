@@ -6,20 +6,20 @@
 
 #include <array>
 
-#include "ash/public/cpp/ash_features.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace ash {
 
 namespace {
 
-// TODO(afakhry): Consolidate the below lists when we launch Virtual Desks.
+// TODO(minch): Consolidate the below lists when we launch Bento.
 
 // List of IDs of the containers whose windows are actiavated *before* windows
 // in the desks containers.
-constexpr std::array<int, 10> kPreDesksActivatableContainersIds = {
+constexpr std::array<int, 11> kPreDesksActivatableContainersIds = {
     kShellWindowId_OverlayContainer,
     kShellWindowId_LockSystemModalContainer,
+    kShellWindowId_AccessibilityBubbleContainer,
     kShellWindowId_AccessibilityPanelContainer,
     kShellWindowId_SettingBubbleContainer,
     kShellWindowId_PowerMenuContainer,
@@ -32,17 +32,16 @@ constexpr std::array<int, 10> kPreDesksActivatableContainersIds = {
 
 // List of IDs of the containers whose windows are actiavated *after* windows in
 // the desks containers.
-constexpr std::array<int, 6> kPostDesksActivatableContainersIds = {
+constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
     kShellWindowId_HomeScreenContainer,
 
     // Launcher and status are intentionally checked after other containers
     // even though these layers are higher. The user expects their windows
     // to be focused before these elements.
+    kShellWindowId_FloatContainer,
     kShellWindowId_PipContainer,
     kShellWindowId_ShelfContainer,
-    kShellWindowId_ShelfControlContainer,
     kShellWindowId_ShelfBubbleContainer,
-    kShellWindowId_OverviewFocusContainer,
 };
 
 }  // namespace
@@ -54,11 +53,13 @@ std::vector<int> GetActivatableShellWindowIds() {
   // Add the desks containers IDs. Can't use desks_util since we're in
   // ash/public here.
   ids.emplace_back(kShellWindowId_DefaultContainerDeprecated);
-  if (features::IsVirtualDesksEnabled()) {
-    ids.emplace_back(kShellWindowId_DeskContainerB);
-    ids.emplace_back(kShellWindowId_DeskContainerC);
-    ids.emplace_back(kShellWindowId_DeskContainerD);
-  }
+  ids.emplace_back(kShellWindowId_DeskContainerB);
+  ids.emplace_back(kShellWindowId_DeskContainerC);
+  ids.emplace_back(kShellWindowId_DeskContainerD);
+  ids.emplace_back(kShellWindowId_DeskContainerE);
+  ids.emplace_back(kShellWindowId_DeskContainerF);
+  ids.emplace_back(kShellWindowId_DeskContainerG);
+  ids.emplace_back(kShellWindowId_DeskContainerH);
 
   ids.insert(ids.end(), kPostDesksActivatableContainersIds.begin(),
              kPostDesksActivatableContainersIds.end());

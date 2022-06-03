@@ -2,24 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":site_settings_page",
-  ]
-}
-
-js_library("site_settings_page") {
-  deps = [
-    "..:route",
-    "../site_settings:constants",
-    "../site_settings:site_settings_behavior",
-    "../site_settings:site_settings_prefs_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+html_to_js("web_components") {
+  js_files = [
+    "recent_site_permissions.ts",
+    "site_settings_list.ts",
+    "site_settings_page.ts",
   ]
 }

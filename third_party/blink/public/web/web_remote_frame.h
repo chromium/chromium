@@ -5,25 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_REMOTE_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_REMOTE_FRAME_H_
 
-#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
-#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "third_party/blink/public/common/frame/sandbox_flags.h"
-#include "third_party/blink/public/common/frame/user_activation_update_type.h"
-#include "third_party/blink/public/platform/web_content_security_policy.h"
-#include "third_party/blink/public/platform/web_insecure_request_policy.h"
-#include "third_party/blink/public/platform/web_scroll_types.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "ui/events/types/scroll_types.h"
-#include "v8/include/v8.h"
-
-namespace cc {
-class Layer;
-}
 
 namespace blink {
 
-enum class WebTreeScopeType;
+namespace mojom {
+enum class TreeScopeType;
+}
 class AssociatedInterfaceProvider;
 class InterfaceRegistry;
 class WebElement;
@@ -31,35 +26,40 @@ class WebLocalFrameClient;
 class WebRemoteFrameClient;
 class WebString;
 class WebView;
-struct WebIntrinsicSizingInfo;
-struct WebRect;
-struct WebResourceTimingInfo;
-struct WebScrollIntoViewParams;
+struct FramePolicy;
+struct FrameVisualProperties;
+struct WebFrameOwnerProperties;
 
 class WebRemoteFrame : public WebFrame {
  public:
   // Factory methods for creating a WebRemoteFrame. The WebRemoteFrameClient
   // argument must be non-null for all creation methods.
-  BLINK_EXPORT static WebRemoteFrame* Create(WebTreeScopeType,
-                                             WebRemoteFrameClient*,
-                                             InterfaceRegistry*,
-                                             AssociatedInterfaceProvider*);
+  BLINK_EXPORT static WebRemoteFrame* Create(
+      mojom::TreeScopeType,
+      WebRemoteFrameClient*,
+      InterfaceRegistry*,
+      AssociatedInterfaceProvider*,
+      const RemoteFrameToken& frame_token);
 
   BLINK_EXPORT static WebRemoteFrame* CreateMainFrame(
       WebView*,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener);
 
   // Also performs core initialization to associate the created remote frame
-  // with the provided <portal> element.
-  BLINK_EXPORT static WebRemoteFrame* CreateForPortal(
-      WebTreeScopeType,
+  // with the provided <portal> or <fencedframe> element.
+  BLINK_EXPORT static WebRemoteFrame* CreateForPortalOrFencedFrame(
+      mojom::TreeScopeType,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const WebElement& portal_element);
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      const WebElement& frame_owner);
 
   // Specialized factory methods to allow the embedder to replicate the frame
   // tree between processes.
@@ -68,29 +68,28 @@ class WebRemoteFrame : public WebFrame {
   // ensure that it is inserted into the correct location in the list of
   // children. If |previous_sibling| is null, the child is inserted at the
   // beginning.
-  virtual WebLocalFrame* CreateLocalChild(WebTreeScopeType,
-                                          const WebString& name,
-                                          const FramePolicy&,
-                                          WebLocalFrameClient*,
-                                          blink::InterfaceRegistry*,
-                                          WebFrame* previous_sibling,
-                                          const WebFrameOwnerProperties&,
-                                          FrameOwnerElementType,
-                                          WebFrame* opener) = 0;
+  virtual WebLocalFrame* CreateLocalChild(
+      mojom::TreeScopeType,
+      const WebString& name,
+      const FramePolicy&,
+      WebLocalFrameClient*,
+      InterfaceRegistry*,
+      WebFrame* previous_sibling,
+      const WebFrameOwnerProperties&,
+      const LocalFrameToken& frame_token,
+      WebFrame* opener,
+      std::unique_ptr<WebPolicyContainer> policy_container) = 0;
 
-  virtual WebRemoteFrame* CreateRemoteChild(WebTreeScopeType,
-                                            const WebString& name,
-                                            const FramePolicy&,
-                                            FrameOwnerElementType,
-                                            WebRemoteFrameClient*,
-                                            blink::InterfaceRegistry*,
-                                            AssociatedInterfaceProvider*,
-                                            WebFrame* opener) = 0;
-
-  // Layer for the in-process compositor.
-  virtual void SetCcLayer(cc::Layer*,
-                          bool prevent_contents_opaque_changes,
-                          bool is_surface_layer) = 0;
+  virtual WebRemoteFrame* CreateRemoteChild(
+      mojom::TreeScopeType,
+      const WebString& name,
+      const FramePolicy&,
+      WebRemoteFrameClient*,
+      InterfaceRegistry*,
+      AssociatedInterfaceProvider*,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      WebFrame* opener) = 0;
 
   // Set security origin replicated from another process.
   virtual void SetReplicatedOrigin(
@@ -98,82 +97,59 @@ class WebRemoteFrame : public WebFrame {
       bool is_potentially_trustworthy_opaque_origin) = 0;
 
   // Set sandbox flags replicated from another process.
-  virtual void SetReplicatedSandboxFlags(WebSandboxFlags) = 0;
+  virtual void SetReplicatedSandboxFlags(network::mojom::WebSandboxFlags) = 0;
 
-  // Set frame |name| replicated from another process.
-  virtual void SetReplicatedName(const WebString&) = 0;
+  // Set frame |name| and |unique_name| replicated from another process.
+  virtual void SetReplicatedName(const WebString& name,
+                                 const WebString& unique_name) = 0;
 
-  // Sets the FeaturePolicy header and the FeatureState (from opener) for the
-  // main frame. Once a non-empty |opener_feature_state| is set, it can no
-  // longer be modified (due to the fact that the original opener which passed
-  // down the FeatureState cannot be modified either).
-  virtual void SetReplicatedFeaturePolicyHeaderAndOpenerPolicies(
-      const ParsedFeaturePolicy& parsed_header,
-      const FeaturePolicy::FeatureState& opener_feature_state) = 0;
-
-  // Adds |header| to the set of replicated CSP headers.
-  virtual void AddReplicatedContentSecurityPolicyHeader(
-      const WebString& header_value,
-      network::mojom::ContentSecurityPolicyType,
-      network::mojom::ContentSecurityPolicySource) = 0;
-
-  // Resets replicated CSP headers to an empty set.
-  virtual void ResetReplicatedContentSecurityPolicy() = 0;
+  // Sets the Permissions Policy header for the main frame.
+  virtual void SetReplicatedPermissionsPolicyHeader(
+      const ParsedPermissionsPolicy& parsed_header) = 0;
 
   // Set frame enforcement of insecure request policy replicated from another
   // process.
-  virtual void SetReplicatedInsecureRequestPolicy(WebInsecureRequestPolicy) = 0;
+  virtual void SetReplicatedInsecureRequestPolicy(
+      mojom::InsecureRequestPolicy) = 0;
   virtual void SetReplicatedInsecureNavigationsSet(
       const WebVector<unsigned>&) = 0;
 
-  // Reports resource timing info for a navigation in this frame.
-  virtual void ForwardResourceTimingToParent(const WebResourceTimingInfo&) = 0;
-
-  virtual void SetNeedsOcclusionTracking(bool) = 0;
+  virtual void SetReplicatedIsAdSubframe(bool is_ad_subframe) = 0;
 
   virtual void DidStartLoading() = 0;
-  virtual void DidStopLoading() = 0;
-
-  // Returns true if this frame should be ignored during hittesting.
-  virtual bool IsIgnoredForHitTest() const = 0;
 
   // Update the user activation state in appropriate part of this frame's
   // "local" frame tree (ancestors-only vs all-nodes).
-  virtual void UpdateUserActivationState(UserActivationUpdateType) = 0;
-
-  // Transfers user activation state from |source_frame| to this frame, which
-  // must be in the same frame tree as |source_frame|.
-  virtual void TransferUserActivationFrom(
-      blink::WebRemoteFrame* source_frame) = 0;
+  //
+  // The |notification_type| parameter is used for histograms, only for the case
+  // |update_state == kNotifyActivation|.
+  virtual void UpdateUserActivationState(
+      mojom::UserActivationUpdateType update_type,
+      mojom::UserActivationNotificationType notification_type) = 0;
 
   virtual void SetHadStickyUserActivationBeforeNavigation(bool value) = 0;
 
-  // Scrolls the given rectangle into view. This kicks off the recursive scroll
-  // into visible starting from the frame's owner element. The coordinates of
-  // the rect are absolute (transforms removed) with respect to the frame in
-  // OOPIF process. The parameters are sent by the OOPIF local root and can be
-  // used to properly chain the recursive scrolling between the two processes.
-  virtual void ScrollRectToVisible(const WebRect&,
-                                   const WebScrollIntoViewParams&) = 0;
+  // Unique name is an opaque identifier for maintaining association with
+  // session restore state for this frame.
+  virtual WebString UniqueName() const = 0;
 
-  // Continues to bubble logical scroll that reached the local root in the child
-  // frame's process. Scroll bubbling continues from the frame owner element.
-  virtual void BubbleLogicalScroll(
-      WebScrollDirection direction,
-      ui::input_types::ScrollGranularity granularity) = 0;
+  virtual const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
+      const = 0;
 
-  virtual void IntrinsicSizingInfoChanged(const WebIntrinsicSizingInfo&) = 0;
+  RemoteFrameToken GetRemoteFrameToken() const {
+    return GetFrameToken().GetAs<RemoteFrameToken>();
+  }
 
-  virtual WebRect GetCompositingRect() = 0;
+  // Ad Tagging ---------------------------------------------------------
 
-  // When a cross-process navigation or loading fails, the browser notifies the
-  // parent process to render its own fallback content if any. This only occurs
-  // if the owner element is capable of rendering its own fallback (e.g.,
-  // <object>).
-  virtual void RenderFallbackContent() const = 0;
+  // True if the frame is thought (heuristically) to be created for
+  // advertising purposes.
+  bool IsAdSubframe() const override = 0;
 
  protected:
-  explicit WebRemoteFrame(WebTreeScopeType scope) : WebFrame(scope) {}
+  explicit WebRemoteFrame(mojom::TreeScopeType scope,
+                          const RemoteFrameToken& frame_token)
+      : WebFrame(scope, frame_token) {}
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense
   // to call these on a WebRemoteFrame.

@@ -5,10 +5,10 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -26,6 +26,11 @@
 class TestingDownloadCoreService : public DownloadCoreService {
  public:
   TestingDownloadCoreService() : download_count_(0) {}
+
+  TestingDownloadCoreService(const TestingDownloadCoreService&) = delete;
+  TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =
+      delete;
+
   ~TestingDownloadCoreService() override {}
 
   // All methods that aren't expected to be called in the execution of
@@ -74,8 +79,6 @@ class TestingDownloadCoreService : public DownloadCoreService {
 
  private:
   int download_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingDownloadCoreService);
 };
 
 static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
@@ -123,7 +126,8 @@ class BrowserCloseTest : public testing::Test {
   Profile* CreateIncognitoProfile(Profile* profile,
                                   int windows,
                                   int downloads) {
-    Profile* otr_profile = profile->GetOffTheRecordProfile();
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
     ConfigureCreatedProfile(otr_profile, windows, downloads);
 
@@ -132,10 +136,11 @@ class BrowserCloseTest : public testing::Test {
 
   Profile* CreateGuestProfile(int windows, int downloads) {
     TestingProfile* profile = profile_manager_.CreateGuestProfile();
-    Profile* incognito_profile = profile->GetOffTheRecordProfile();
-    ConfigureCreatedProfile(incognito_profile, windows, downloads);
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    ConfigureCreatedProfile(otr_profile, windows, downloads);
 
-    return incognito_profile;
+    return otr_profile;
   }
 
   Browser* GetProfileBrowser(Profile* profile, int index) {
@@ -167,7 +172,7 @@ class BrowserCloseTest : public testing::Test {
       Browser::CreateParams params(profile, true);
       params.type = Browser::TYPE_NORMAL;
       params.window = window;
-      Browser* browser = new Browser(params);
+      Browser* browser = Browser::Create(params);
 
       windows.push_back(window);
       browsers.push_back(browser);
@@ -269,7 +274,7 @@ TEST_F(BrowserCloseTest, LastRegular) {
   EXPECT_EQ(Browser::DownloadCloseType::kBrowserShutdown,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
-#if defined(OS_MACOSX) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(true, browser->CanCloseWithInProgressDownloads());
 #else
   EXPECT_EQ(false, browser->CanCloseWithInProgressDownloads());

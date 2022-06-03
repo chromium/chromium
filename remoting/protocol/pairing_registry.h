@@ -72,10 +72,10 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   typedef std::map<std::string, Pairing> PairedClients;
 
   // Delegate callbacks.
-  typedef base::Callback<void(bool success)> DoneCallback;
-  typedef base::Callback<void(std::unique_ptr<base::ListValue> pairings)>
+  typedef base::OnceCallback<void(bool success)> DoneCallback;
+  typedef base::OnceCallback<void(std::unique_ptr<base::ListValue> pairings)>
       GetAllPairingsCallback;
-  typedef base::Callback<void(Pairing pairing)> GetPairingCallback;
+  typedef base::OnceCallback<void(Pairing pairing)> GetPairingCallback;
 
   static const char kCreatedTimeKey[];
   static const char kClientIdKey[];
@@ -107,6 +107,9 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
       scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner,
       std::unique_ptr<Delegate> delegate);
 
+  PairingRegistry(const PairingRegistry&) = delete;
+  PairingRegistry& operator=(const PairingRegistry&) = delete;
+
   // Creates a pairing for a new client and saves it to disk.
   //
   // TODO(jamiewalch): Plumb the Save callback into the RequestPairing flow
@@ -117,20 +120,18 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   // Gets the pairing for the specified client id. See the corresponding
   // Delegate method for details. If none is found, the callback is invoked
   // with an invalid Pairing.
-  void GetPairing(const std::string& client_id,
-                  const GetPairingCallback& callback);
+  void GetPairing(const std::string& client_id, GetPairingCallback callback);
 
   // Gets all pairings with the shared secrets removed as a base::ListValue.
-  void GetAllPairings(const GetAllPairingsCallback& callback);
+  void GetAllPairings(GetAllPairingsCallback callback);
 
   // Delete a pairing, identified by its client ID. |callback| is called with
   // the result of saving the new config, which occurs even if the client ID
   // did not match any pairing.
-  void DeletePairing(const std::string& client_id,
-                     const DoneCallback& callback);
+  void DeletePairing(const std::string& client_id, DoneCallback callback);
 
   // Clear all pairings from the registry.
-  void ClearAllPairings(const DoneCallback& callback);
+  void ClearAllPairings(DoneCallback callback);
 
  protected:
   friend class base::RefCountedThreadSafe<PairingRegistry>;
@@ -140,7 +141,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   virtual void PostTask(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       const base::Location& from_here,
-      const base::Closure& task);
+      base::OnceClosure task);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PairingRegistryTest, AddPairing);
@@ -150,36 +151,27 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   void AddPairing(const Pairing& pairing);
 
   // Blocking helper methods used to call the delegate.
-  void DoLoadAll(
-      const protocol::PairingRegistry::GetAllPairingsCallback& callback);
-  void DoDeleteAll(
-      const protocol::PairingRegistry::DoneCallback& callback);
-  void DoLoad(
-      const std::string& client_id,
-      const protocol::PairingRegistry::GetPairingCallback& callback);
-  void DoSave(
-      const protocol::PairingRegistry::Pairing& pairing,
-      const protocol::PairingRegistry::DoneCallback& callback);
-  void DoDelete(
-      const std::string& client_id,
-      const protocol::PairingRegistry::DoneCallback& callback);
+  void DoLoadAll(GetAllPairingsCallback callback);
+  void DoDeleteAll(DoneCallback callback);
+  void DoLoad(const std::string& client_id, GetPairingCallback callback);
+  void DoSave(const Pairing& pairing, DoneCallback callback);
+  void DoDelete(const std::string& client_id, DoneCallback callback);
 
   // "Trampoline" callbacks that schedule the next pending request and then
   // invoke the original caller-supplied callback.
-  void InvokeDoneCallbackAndScheduleNext(
-      const DoneCallback& callback, bool success);
-  void InvokeGetPairingCallbackAndScheduleNext(
-      const GetPairingCallback& callback, Pairing pairing);
+  void InvokeDoneCallbackAndScheduleNext(DoneCallback callback, bool success);
+  void InvokeGetPairingCallbackAndScheduleNext(GetPairingCallback callback,
+                                               Pairing pairing);
   void InvokeGetAllPairingsCallbackAndScheduleNext(
-      const GetAllPairingsCallback& callback,
+      GetAllPairingsCallback callback,
       std::unique_ptr<base::ListValue> pairings);
 
   // Sanitize |pairings| by parsing each entry and removing the secret from it.
-  void SanitizePairings(const GetAllPairingsCallback& callback,
+  void SanitizePairings(GetAllPairingsCallback callback,
                         std::unique_ptr<base::ListValue> pairings);
 
   // Queue management methods.
-  void ServiceOrQueueRequest(const base::Closure& request);
+  void ServiceOrQueueRequest(base::OnceClosure request);
   void ServiceNextRequest();
 
   // Task runner on which all public methods of this class should be called.
@@ -192,9 +184,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
 
   std::unique_ptr<Delegate> delegate_;
 
-  base::queue<base::Closure> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingRegistry);
+  base::queue<base::OnceClosure> pending_requests_;
 };
 
 }  // namespace protocol

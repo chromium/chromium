@@ -32,7 +32,7 @@ ws.onclose = function(event)
     debug("Closed");
     closeEvent = event;
     shouldBeUndefined("receivedMessage");
-    shouldBeEqualToString("closeEvent.reason", "close_frame[:2]='\\x88\\x80'");
+    shouldBeEqualToString("closeEvent.reason", "close_frame[:2]='88 80'");
     shouldBeTrue("closeEvent.wasClean");
     finishJSTest();
 };

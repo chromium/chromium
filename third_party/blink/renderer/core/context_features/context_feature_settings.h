@@ -19,8 +19,6 @@ class ExecutionContext;
 class CORE_EXPORT ContextFeatureSettings final
     : public GarbageCollected<ContextFeatureSettings>,
       public Supplement<ExecutionContext> {
-  USING_GARBAGE_COLLECTED_MIXIN(ContextFeatureSettings);
-
  public:
   static const char kSupplementName[];
 
@@ -36,7 +34,7 @@ class CORE_EXPORT ContextFeatureSettings final
   void enableMojoJS(bool enable) { enable_mojo_js_ = enable; }
   bool isMojoJSEnabled() const { return enable_mojo_js_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool enable_mojo_js_ = false;

@@ -28,11 +28,12 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
-#include "third_party/blink/renderer/platform/audio/multi_channel_resampler.h"
+#include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -49,7 +50,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
       HTMLMediaElement&);
   ~MediaElementAudioSourceHandler() override;
 
-  HTMLMediaElement* MediaElement() const;
+  CrossThreadPersistent<HTMLMediaElement> MediaElement() const;
 
   // AudioHandler
   void Dispose() override;
@@ -86,6 +87,9 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   // zeroes.
   void PrintCorsMessage(const String& message);
 
+  // Provide input to the resampler (if used).
+  void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
+
   // The HTMLMediaElement is held alive by MediaElementAudioSourceNode which is
   // an AudioNode. AudioNode uses pre-finalizers to dispose the handler, so
   // holding a weak reference is ok here and will not interfer with garbage
@@ -99,7 +103,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   unsigned source_number_of_channels_;
   double source_sample_rate_;
 
-  std::unique_ptr<MultiChannelResampler> multi_channel_resampler_;
+  std::unique_ptr<MediaMultiChannelResampler> multi_channel_resampler_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -110,10 +114,13 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   bool is_origin_tainted_;
 };
 
-class MediaElementAudioSourceNode final : public AudioNode,
-                                          public AudioSourceProviderClient {
+// -----------------------------------------------------------------------------
+
+class MediaElementAudioSourceNode final
+    : public AudioNode,
+      public AudioSourceProviderClient,
+      public ActiveScriptWrappable<MediaElementAudioSourceNode> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(MediaElementAudioSourceNode);
 
  public:
   static MediaElementAudioSourceNode* Create(AudioContext&,
@@ -124,7 +131,6 @@ class MediaElementAudioSourceNode final : public AudioNode,
 
   MediaElementAudioSourceNode(AudioContext&, HTMLMediaElement&);
 
-  void Trace(blink::Visitor*) override;
   MediaElementAudioSourceHandler& GetMediaElementAudioSourceHandler() const;
 
   HTMLMediaElement* mediaElement() const;
@@ -139,6 +145,10 @@ class MediaElementAudioSourceNode final : public AudioNode,
   // InspectorHelperMixin
   void ReportDidCreate() final;
   void ReportWillBeDestroyed() final;
+
+  // GC
+  bool HasPendingActivity() const final;
+  void Trace(Visitor*) const override;
 
  private:
   Member<HTMLMediaElement> media_element_;

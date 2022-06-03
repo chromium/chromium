@@ -18,7 +18,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/logging.h"
 #include "gtest/gtest.h"
 #include "test/linux/fake_ptrace_connection.h"
 #include "util/misc/time.h"

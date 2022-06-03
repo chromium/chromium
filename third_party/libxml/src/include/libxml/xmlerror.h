@@ -837,7 +837,7 @@ typedef enum {
  * xmlGenericErrorFunc:
  * @ctx:  a parsing context
  * @msg:  the message
- * @...:  the extra arguments of the varags to format the message
+ * @...:  the extra arguments of the varargs to format the message
  *
  * Signature of the function to use when there is an error and
  * no parsing or validity context available .

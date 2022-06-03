@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_ROUNDED_RECT_H_
 
 #include <iosfwd>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -40,6 +41,12 @@ namespace blink {
 
 class FloatQuad;
 
+// Represents a rect with rounded corners.
+// We don't use gfx::RRect in blink because gfx::RRect is based on SkRRect
+// which always keeps the radii constrained within the size of the rect, but
+// in blink sometimes we need to keep the unconstrained status of a rounded
+// rect. See ConstrainRadii(). This class also provides functions that are
+// uniquely needed by blink.
 class PLATFORM_EXPORT FloatRoundedRect {
   DISALLOW_NEW();
 
@@ -57,12 +64,15 @@ class PLATFORM_EXPORT FloatRoundedRect {
           top_right_(top_right),
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
+    explicit constexpr Radii(float radius) : Radii(radius, radius) {}
+    constexpr Radii(float radius_x, float radius_y)
+        : Radii(FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y)) {}
 
-    constexpr Radii(const FloatRoundedRect::Radii& int_radii)
-        : top_left_(int_radii.TopLeft()),
-          top_right_(int_radii.TopRight()),
-          bottom_left_(int_radii.BottomLeft()),
-          bottom_right_(int_radii.BottomRight()) {}
+    constexpr Radii(const Radii&) = default;
+    constexpr Radii& operator=(const Radii&) = default;
 
     void SetTopLeft(const FloatSize& size) { top_left_ = size; }
     void SetTopRight(const FloatSize& size) { top_right_ = size; }
@@ -73,15 +83,15 @@ class PLATFORM_EXPORT FloatRoundedRect {
     constexpr const FloatSize& BottomLeft() const { return bottom_left_; }
     constexpr const FloatSize& BottomRight() const { return bottom_right_; }
 
+    void SetMinimumRadius(float);
+    absl::optional<float> UniformRadius() const;
+
     constexpr bool IsZero() const {
       return top_left_.IsZero() && top_right_.IsZero() &&
              bottom_left_.IsZero() && bottom_right_.IsZero();
     }
 
     void Scale(float factor);
-    // Multiply all radii by |factor| and floor the result to the nearest
-    // integer.
-    void ScaleAndFloor(float factor);
 
     void Expand(float top_width,
                 float bottom_width,
@@ -95,11 +105,6 @@ class PLATFORM_EXPORT FloatRoundedRect {
                 float right_width);
     void Shrink(float size) { Shrink(size, size, size, size); }
 
-    void IncludeLogicalEdges(const Radii& edges,
-                             bool is_horizontal,
-                             bool include_logical_left_edge,
-                             bool include_logical_right_edge);
-
     String ToString() const;
 
    private:
@@ -110,6 +115,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
   };
 
   constexpr FloatRoundedRect() = default;
+  explicit FloatRoundedRect(const gfx::RectF& rect,
+                            const Radii& radii = Radii())
+      : FloatRoundedRect(FloatRect(rect), radii) {}
   explicit FloatRoundedRect(const FloatRect&, const Radii& = Radii());
   explicit FloatRoundedRect(const IntRect&, const Radii& = Radii());
   FloatRoundedRect(float x, float y, float width, float height);
@@ -118,6 +126,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
                    const FloatSize& top_right,
                    const FloatSize& bottom_left,
                    const FloatSize& bottom_right);
+  FloatRoundedRect(const FloatRect& r, float radius)
+      : FloatRoundedRect(r, Radii(radius)) {}
+  FloatRoundedRect(const FloatRect& r, float radius_x, float radius_y)
+      : FloatRoundedRect(r, Radii(radius_x, radius_y)) {}
 
   constexpr const FloatRect& Rect() const { return rect_; }
   constexpr const Radii& GetRadii() const { return radii_; }
@@ -127,9 +139,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void SetRect(const FloatRect& rect) { rect_ = rect; }
   void SetRadii(const Radii& radii) { radii_ = radii; }
 
-  void Move(const FloatSize& size) { rect_.Move(size); }
+  void Move(const FloatSize& size) { rect_.Offset(size); }
   void InflateWithRadii(int size);
-  void Inflate(float size) { rect_.Inflate(size); }
+  void Inflate(float size) { rect_.Outset(size); }
 
   // expandRadii() does not have any effect on corner radii which have zero
   // width or height. This is because the process of expanding the radius of a
@@ -142,32 +154,27 @@ class PLATFORM_EXPORT FloatRoundedRect {
   FloatRect RadiusCenterRect() const;
 
   constexpr FloatRect TopLeftCorner() const {
-    return FloatRect(rect_.X(), rect_.Y(), radii_.TopLeft().Width(),
-                     radii_.TopLeft().Height());
+    return FloatRect(rect_.x(), rect_.y(), radii_.TopLeft().width(),
+                     radii_.TopLeft().height());
   }
   constexpr FloatRect TopRightCorner() const {
-    return FloatRect(rect_.MaxX() - radii_.TopRight().Width(), rect_.Y(),
-                     radii_.TopRight().Width(), radii_.TopRight().Height());
+    return FloatRect(rect_.right() - radii_.TopRight().width(), rect_.y(),
+                     radii_.TopRight().width(), radii_.TopRight().height());
   }
   constexpr FloatRect BottomLeftCorner() const {
-    return FloatRect(rect_.X(), rect_.MaxY() - radii_.BottomLeft().Height(),
-                     radii_.BottomLeft().Width(), radii_.BottomLeft().Height());
+    return FloatRect(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
+                     radii_.BottomLeft().width(), radii_.BottomLeft().height());
   }
   constexpr FloatRect BottomRightCorner() const {
-    return FloatRect(rect_.MaxX() - radii_.BottomRight().Width(),
-                     rect_.MaxY() - radii_.BottomRight().Height(),
-                     radii_.BottomRight().Width(),
-                     radii_.BottomRight().Height());
+    return FloatRect(rect_.right() - radii_.BottomRight().width(),
+                     rect_.bottom() - radii_.BottomRight().height(),
+                     radii_.BottomRight().width(),
+                     radii_.BottomRight().height());
   }
 
   bool XInterceptsAtY(float y,
                       float& min_x_intercept,
                       float& max_x_intercept) const;
-
-  void IncludeLogicalEdges(const Radii& edges,
-                           bool is_horizontal,
-                           bool include_logical_left_edge,
-                           bool include_logical_right_edge);
 
   // Tests whether the quad intersects any part of this rounded rectangle.
   // This only works for convex quads.
@@ -175,16 +182,14 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // intersecting area is empty (i.e., the intersection is a line or a point).
   bool IntersectsQuad(const FloatQuad&) const;
 
-  void AdjustRadii();
+  // Whether the radii are constrained in the size of rect().
   bool IsRenderable() const;
 
-  // Constrains the radii to be no more than the size of rect(); radii outside
-  // of this range are not defined.  In addition, the radii of the corners are
-  // floored to the nearest integer.
-  // FIXME: the flooring should not be necessary. At the moment it causes
-  // background bleed in some cases.
-  // FIXME: this code is almost the same as adjustRadii()/isRenderable(). Get
-  // rid of one of them.
+  // Constrains the radii to be no bigger than the size of rect().
+  // This is not called automatically in this class because sometimes we want
+  // to keep the !IsRenderable() status, e.g. for a rounded inner border edge
+  // that is shrunk from a rounded outer border edge to keep uniform width of
+  // the rounded border.
   void ConstrainRadii();
 
   operator SkRRect() const;
@@ -201,14 +206,14 @@ inline FloatRoundedRect::operator SkRRect() const {
 
   if (IsRounded()) {
     SkVector radii[4];
-    radii[SkRRect::kUpperLeft_Corner].set(TopLeftCorner().Width(),
-                                          TopLeftCorner().Height());
-    radii[SkRRect::kUpperRight_Corner].set(TopRightCorner().Width(),
-                                           TopRightCorner().Height());
-    radii[SkRRect::kLowerRight_Corner].set(BottomRightCorner().Width(),
-                                           BottomRightCorner().Height());
-    radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().Width(),
-                                          BottomLeftCorner().Height());
+    radii[SkRRect::kUpperLeft_Corner].set(TopLeftCorner().width(),
+                                          TopLeftCorner().height());
+    radii[SkRRect::kUpperRight_Corner].set(TopRightCorner().width(),
+                                           TopRightCorner().height());
+    radii[SkRRect::kLowerRight_Corner].set(BottomRightCorner().width(),
+                                           BottomRightCorner().height());
+    radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().width(),
+                                          BottomLeftCorner().height());
 
     rrect.setRectRadii(Rect(), radii);
   } else {

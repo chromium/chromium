@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 
 #include <ostream>  // NOLINT
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -27,7 +28,7 @@ EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
     const PositionTemplate<Strategy>& start,
     const PositionTemplate<Strategy>& end)
     : start_position_(start),
-      end_position_(end)
+      end_position_(start.IsEquivalent(end) ? start : end)
 #if DCHECK_IS_ON()
       ,
       dom_tree_version_(start.IsNull() ? 0
@@ -56,6 +57,14 @@ template <typename Strategy>
 EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
     const PositionTemplate<Strategy>& position)
     : EphemeralRangeTemplate(position, position) {}
+
+template <typename Strategy>
+EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
+    const AbstractRange* range)
+    : EphemeralRangeTemplate(PositionTemplate<Strategy>(range->startContainer(),
+                                                        range->startOffset()),
+                             PositionTemplate<Strategy>(range->endContainer(),
+                                                        range->endOffset())) {}
 
 template <typename Strategy>
 EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(const Range* range) {
@@ -217,8 +226,6 @@ EphemeralRangeInFlatTree ToEphemeralRangeInFlatTree(
   if (start.IsNull() || end.IsNull() ||
       start.GetDocument() != end.GetDocument())
     return EphemeralRangeInFlatTree();
-  start.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
-  end.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
   if (!start.IsValidFor(*start.GetDocument()) ||
       !end.IsValidFor(*end.GetDocument()))
     return EphemeralRangeInFlatTree();

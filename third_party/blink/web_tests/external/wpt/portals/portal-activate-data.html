@@ -12,8 +12,9 @@ function nextMessage(target) {
   });
 }
 
-async function openPortalAndActivate(logic, activateOptions) {
-  const w = await openBlankPortalHost();
+async function openPortalAndActivate(logic, activateOptions, testWindow) {
+  assert_implements("HTMLPortalElement" in self);
+  const w = testWindow || await openBlankPortalHost();
   try {
     const portal = w.document.createElement('portal');
     portal.src = new URL('resources/portal-activate-data-portal.html?logic=' + encodeURIComponent(logic), location.href);
@@ -70,21 +71,24 @@ promise_test(async () => {
 }, "A message port can be passed through activate data.");
 
 promise_test(async t => {
-await promise_rejects(
-    t, 'DataCloneError',
-    openPortalAndActivate('', {data: new SharedArrayBuffer}));
+  const w = await openBlankPortalHost();
+  await promise_rejects_dom(
+      t, 'DataCloneError', w.DOMException,
+      // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
+      openPortalAndActivate('', {data: new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer}, w));
 }, "A SharedArrayBuffer cannot be passed through activate data.");
 
 promise_test(async t => {
-  await promise_rejects(
-      t, new Error,
+  await promise_rejects_js(
+      t, Error,
       openPortalAndActivate('', {data: {get a() { throw new Error; }}}));
 }, "Uncloneable data has its exception propagated.");
 
 promise_test(async t => {
-  await promise_rejects(
-      t, new TypeError,
-      openPortalAndActivate('', {data: null, transfer: [null]}));
+  const w = await openBlankPortalHost();
+  await promise_rejects_js(
+      t, w.TypeError,
+      openPortalAndActivate('', {data: null, transfer: [null]}, w));
 }, "Errors during transfer list processing are propagated.");
 </script>
 </body>

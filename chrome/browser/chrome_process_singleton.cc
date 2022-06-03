@@ -28,7 +28,7 @@ void ChromeProcessSingleton::Cleanup() {
 }
 
 void ChromeProcessSingleton::SetModalDialogNotificationHandler(
-    base::Closure notification_handler) {
+    base::RepeatingClosure notification_handler) {
   modal_dialog_lock_.SetModalDialogNotificationHandler(
       std::move(notification_handler));
 }

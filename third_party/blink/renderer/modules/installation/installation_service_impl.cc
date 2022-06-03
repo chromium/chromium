@@ -7,35 +7,56 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 
-InstallationServiceImpl::InstallationServiceImpl(LocalFrame& frame)
-    : frame_(frame) {}
+// static
+const char InstallationServiceImpl::kSupplementName[] =
+    "InstallationServiceImpl";
 
 // static
-void InstallationServiceImpl::Create(
+InstallationServiceImpl* InstallationServiceImpl::From(LocalDOMWindow& window) {
+  return Supplement<LocalDOMWindow>::From<InstallationServiceImpl>(window);
+}
+
+// static
+void InstallationServiceImpl::BindReceiver(
     LocalFrame* frame,
     mojo::PendingReceiver<mojom::blink::InstallationService> receiver) {
+  DCHECK(frame && frame->DomWindow());
+  auto* service = InstallationServiceImpl::From(*frame->DomWindow());
+  if (!service) {
+    service = MakeGarbageCollected<InstallationServiceImpl>(
+        base::PassKey<InstallationServiceImpl>(), *frame);
+    Supplement<LocalDOMWindow>::ProvideTo(*frame->DomWindow(), service);
+  }
+  service->Bind(std::move(receiver));
+}
+
+InstallationServiceImpl::InstallationServiceImpl(
+    base::PassKey<InstallationServiceImpl>,
+    LocalFrame& frame)
+    : Supplement<LocalDOMWindow>(*frame.DomWindow()),
+      receivers_(this, frame.DomWindow()) {}
+
+void InstallationServiceImpl::Bind(
+    mojo::PendingReceiver<mojom::blink::InstallationService> receiver) {
   // See https://bit.ly/2S0zRAS for task types.
-  mojo::MakeSelfOwnedReceiver(std::make_unique<InstallationServiceImpl>(*frame),
-                              std::move(receiver),
-                              frame->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  receivers_.Add(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
+}
+
+void InstallationServiceImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(receivers_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 void InstallationServiceImpl::OnInstall() {
-  if (!frame_)
-    return;
-
-  LocalDOMWindow* dom_window = frame_->DomWindow();
-  if (!dom_window)
-    return;
-
-  dom_window->DispatchEvent(*Event::Create(event_type_names::kAppinstalled));
+  GetSupplementable()->DispatchEvent(
+      *Event::Create(event_type_names::kAppinstalled));
 }
 
 }  // namespace blink

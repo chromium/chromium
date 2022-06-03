@@ -1,0 +1,83 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {DefaultBrowserInfo} from '../shared/nux_types.js';
+
+const NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME =
+    'FirstRun.NewUserExperience.SetAsDefaultInteraction';
+
+enum NuxSetAsDefaultInteractions {
+  PageShown = 0,
+  NavigatedAway,
+  Skip,
+  ClickSetDefault,
+  SuccessfullySetDefault,
+  NavigatedAwayThroughBrowserHistory,
+}
+
+const NUX_SET_AS_DEFAULT_INTERACTIONS_COUNT =
+    Object.keys(NuxSetAsDefaultInteractions).length;
+
+export interface NuxSetAsDefaultProxy {
+  requestDefaultBrowserState(): Promise<DefaultBrowserInfo>;
+  setAsDefault(): void;
+  recordPageShown(): void;
+  recordNavigatedAway(): void;
+  recordNavigatedAwayThroughBrowserHistory(): void;
+  recordSkip(): void;
+  recordBeginSetDefault(): void;
+  recordSuccessfullySetDefault(): void;
+}
+
+export class NuxSetAsDefaultProxyImpl implements NuxSetAsDefaultProxy {
+  requestDefaultBrowserState() {
+    return sendWithPromise('requestDefaultBrowserState');
+  }
+
+  setAsDefault() {
+    chrome.send('setAsDefaultBrowser');
+  }
+
+  recordPageShown() {
+    this.recordInteraction_(NuxSetAsDefaultInteractions.PageShown);
+  }
+
+  recordNavigatedAway() {
+    this.recordInteraction_(NuxSetAsDefaultInteractions.NavigatedAway);
+  }
+
+  recordNavigatedAwayThroughBrowserHistory() {
+    this.recordInteraction_(
+        NuxSetAsDefaultInteractions.NavigatedAwayThroughBrowserHistory);
+  }
+
+  recordSkip() {
+    this.recordInteraction_(NuxSetAsDefaultInteractions.Skip);
+  }
+
+  recordBeginSetDefault() {
+    this.recordInteraction_(NuxSetAsDefaultInteractions.ClickSetDefault);
+  }
+
+  recordSuccessfullySetDefault() {
+    this.recordInteraction_(NuxSetAsDefaultInteractions.SuccessfullySetDefault);
+  }
+
+  private recordInteraction_(interaction: number): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME, interaction,
+        NUX_SET_AS_DEFAULT_INTERACTIONS_COUNT);
+  }
+
+  static getInstance(): NuxSetAsDefaultProxy {
+    return instance || (instance = new NuxSetAsDefaultProxyImpl());
+  }
+
+  static setInstance(obj: NuxSetAsDefaultProxy) {
+    instance = obj;
+  }
+}
+
+let instance: NuxSetAsDefaultProxy|null = null;

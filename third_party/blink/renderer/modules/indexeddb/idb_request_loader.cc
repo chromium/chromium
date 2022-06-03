@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_loader.h"
 
+#include <algorithm>
+
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -13,7 +16,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -129,11 +131,8 @@ void IDBRequestLoader::DidFail(FileErrorCode) {
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram,
-                                  idb_request_loader_read_errors_histogram,
-                                  ("Storage.Blob.IDBRequestLoader.ReadError"));
-  idb_request_loader_read_errors_histogram.Sample(
-      std::max(0, -loader_->GetNetError()));
+  base::UmaHistogramSparse("Storage.Blob.IDBRequestLoader.ReadError",
+                           std::max(0, -loader_->GetNetError()));
 
   ReportError();
 }

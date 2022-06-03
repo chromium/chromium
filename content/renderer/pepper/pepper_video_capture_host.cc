@@ -4,7 +4,9 @@
 
 #include "content/renderer/pepper/pepper_video_capture_host.h"
 
-#include "base/numerics/ranges.h"
+#include <memory>
+
+#include "base/cxx17_backports.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_platform_video_capture.h"
@@ -13,6 +15,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/host_dispatcher.h"
@@ -21,6 +24,7 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_buffer_api.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 
 using ppapi::HostResource;
 using ppapi::TrackedCallback;
@@ -121,24 +125,25 @@ void PepperVideoCaptureHost::PostErrorReply() {
           static_cast<uint32_t>(PP_ERROR_FAILED)));
 }
 
-void PepperVideoCaptureHost::OnFrameReady(const media::VideoFrame& frame) {
-  if (alloc_size_ != frame.visible_rect().size() || buffers_.empty()) {
-    alloc_size_ = frame.visible_rect().size();
-    double frame_rate;
+void PepperVideoCaptureHost::OnFrameReady(
+    scoped_refptr<media::VideoFrame> frame) {
+  if (alloc_size_ != frame->visible_rect().size() || buffers_.empty()) {
+    alloc_size_ = frame->visible_rect().size();
     int rounded_frame_rate;
-    if (frame.metadata()->GetDouble(media::VideoFrameMetadata::FRAME_RATE,
-                                    &frame_rate))
-      rounded_frame_rate = static_cast<int>(frame_rate + 0.5 /* round */);
-    else
+    if (frame->metadata().frame_rate.has_value()) {
+      rounded_frame_rate =
+          static_cast<int>(*frame->metadata().frame_rate + 0.5 /* round */);
+    } else {
       rounded_frame_rate = blink::MediaStreamVideoSource::kUnknownFrameRate;
+    }
     AllocBuffers(alloc_size_, rounded_frame_rate);
   }
 
   for (uint32_t i = 0; i < buffers_.size(); ++i) {
     if (!buffers_[i].in_use) {
-      DCHECK_EQ(frame.format(), media::PIXEL_FORMAT_I420);
       if (buffers_[i].buffer->size() <
-          media::VideoFrame::AllocationSize(frame.format(), alloc_size_)) {
+          media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
+                                            alloc_size_)) {
         // TODO(ihf): handle size mismatches gracefully here.
         return;
       }
@@ -146,17 +151,36 @@ void PepperVideoCaptureHost::OnFrameReady(const media::VideoFrame& frame) {
       static_assert(media::VideoFrame::kYPlane == 0, "y plane should be 0");
       static_assert(media::VideoFrame::kUPlane == 1, "u plane should be 1");
       static_assert(media::VideoFrame::kVPlane == 2, "v plane should be 2");
-      for (size_t j = 0; j < media::VideoFrame::NumPlanes(frame.format());
-           ++j) {
-        const uint8_t* src = frame.visible_data(j);
-        const size_t row_bytes = frame.row_bytes(j);
-        const size_t src_stride = frame.stride(j);
-        for (int k = 0; k < frame.rows(j); ++k) {
-          memcpy(dst, src, row_bytes);
-          dst += row_bytes;
-          src += src_stride;
+
+      if (frame->storage_type() ==
+          media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+        // NV12 is the only supported GMB pixel format at the moment.
+        DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
+        scoped_refptr<media::VideoFrame> mapped_frame =
+            media::ConvertToMemoryMappedFrame(frame);
+        scoped_refptr<media::VideoFrame> dst_frame =
+            media::VideoFrame::WrapExternalData(
+                media::PIXEL_FORMAT_I420, frame->natural_size(),
+                gfx::Rect(frame->natural_size()), frame->natural_size(), dst,
+                buffers_[i].buffer->size(), frame->timestamp());
+        int uv_size = mapped_frame->coded_size().GetArea() / 2;
+        std::vector<uint8_t> temp_uv_buffer(uv_size);
+        media::Status status = media::ConvertAndScaleFrame(
+            *mapped_frame, *dst_frame, temp_uv_buffer);
+        if (!status.is_ok())
+          return;
+      } else {
+        DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_I420);
+        size_t num_planes = media::VideoFrame::NumPlanes(frame->format());
+        for (size_t plane = 0; plane < num_planes; ++plane) {
+          const uint8_t* src = frame->visible_data(plane);
+          int row_bytes = frame->row_bytes(plane);
+          int src_stride = frame->stride(plane);
+          int rows = frame->rows(plane);
+          libyuv::CopyPlane(src, src_stride, dst, row_bytes, row_bytes, rows);
         }
       }
+
       buffers_[i].in_use = true;
       host()->SendUnsolicitedReply(
           pp_resource(), PpapiPluginMsg_VideoCapture_OnBufferReady(i));
@@ -255,11 +279,10 @@ int32_t PepperVideoCaptureHost::OnOpen(
   if (!document_url.is_valid())
     return PP_ERROR_FAILED;
 
-  platform_video_capture_.reset(new PepperPlatformVideoCapture(
-      renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance())->
-          GetRoutingID(),
-      device_id,
-      this));
+  platform_video_capture_ = std::make_unique<PepperPlatformVideoCapture>(
+      renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance())
+          ->GetRoutingID(),
+      device_id, this);
 
   open_reply_context_ = context->MakeReplyMessageContext();
 
@@ -340,11 +363,11 @@ void PepperVideoCaptureHost::SetRequestedInfo(
     const PP_VideoCaptureDeviceInfo_Dev& device_info,
     uint32_t buffer_count) {
   // Clamp the buffer count to between 1 and |kMaxBuffers|.
-  buffer_count_hint_ = base::ClampToRange(buffer_count, 1U, kMaxBuffers);
+  buffer_count_hint_ = base::clamp(buffer_count, 1U, kMaxBuffers);
   // Clamp the frame rate to between 1 and |kMaxFramesPerSecond - 1|.
   int frames_per_second =
-      base::ClampToRange(device_info.frames_per_second, 1U,
-                         uint32_t{media::limits::kMaxFramesPerSecond - 1});
+      base::clamp(device_info.frames_per_second, 1U,
+                  uint32_t{media::limits::kMaxFramesPerSecond - 1});
 
   video_capture_params_.requested_format = media::VideoCaptureFormat(
       gfx::Size(device_info.width, device_info.height), frames_per_second,

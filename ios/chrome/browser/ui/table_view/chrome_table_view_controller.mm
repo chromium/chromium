@@ -4,57 +4,50 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
-#import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/ui/table_view/chrome_empty_table_view_background.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_empty_view.h"
+#import "ios/chrome/browser/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_loading_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 const CGFloat kTableViewSeparatorInset = 16;
-const CGFloat kTableViewSeparatorInsetWithIcon = 56;
+const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 
 @interface ChromeTableViewController ()
 // The loading displayed by [self startLoadingIndicatorWithLoadingMessage:].
 @property(nonatomic, strong) TableViewLoadingView* loadingView;
-// The view displayed by [self addEmptyTableViewWithMessage:].
-@property(nonatomic, strong) TableViewEmptyView* emptyView;
+// The view displayed by [self addEmptyTableViewWith...:].
+@property(nonatomic, strong) UIView<ChromeEmptyTableViewBackground>* emptyView;
 @end
 
 @implementation ChromeTableViewController
-@synthesize appBarViewController = _appBarViewController;
 @synthesize emptyView = _emptyView;
 @synthesize loadingView = _loadingView;
 @synthesize styler = _styler;
 @synthesize tableViewModel = _tableViewModel;
 
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle {
+- (instancetype)initWithStyle:(UITableViewStyle)style {
   if ((self = [super initWithStyle:style])) {
     _styler = [[ChromeTableViewStyler alloc] init];
-
-    if (appBarStyle == ChromeTableViewControllerStyleWithAppBar) {
-      _appBarViewController = [[ChromeAppBarViewController alloc] init];
-    }
   }
   return self;
 }
 
 - (instancetype)init {
-  return [self initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  return [self initWithStyle:UITableViewStylePlain];
 }
 
 #pragma mark - UIViewController
@@ -67,21 +60,6 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewSeparatorInsetWithIcon, 0,
                                          0)];
-
-  // Configure the app bar if needed.
-  if (_appBarViewController) {
-    ConfigureAppBarViewControllerWithCardStyle(self.appBarViewController);
-    self.appBarViewController.headerView.trackingScrollView = self.tableView;
-    // Add the AppBar's views after all other views have been registered.
-    [self addChildViewController:_appBarViewController];
-    CGRect frame = self.appBarViewController.view.frame;
-    frame.origin.x = 0;
-    frame.size.width =
-        self.appBarViewController.parentViewController.view.bounds.size.width;
-    self.appBarViewController.view.frame = frame;
-    [self.view addSubview:self.appBarViewController.view];
-    [self.appBarViewController didMoveToParentViewController:self];
-  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -93,6 +71,14 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
     return nil;
   }
   return indexPath;
+}
+
+// TODO(crbug.com/1254652): Large titles appear collapsed in some case when
+// opening a tableView. e.g when opening History screen without entry. Remove
+// this method when the issue is fixed.
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self.navigationController.navigationBar sizeToFit];
 }
 
 #pragma mark - Accessors
@@ -168,8 +154,18 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
   self.emptyView.tintColor = [UIColor colorNamed:kPlaceholderImageTintColor];
 }
 
-- (void)updateEmptyTableViewMessageAccessibilityLabel:(NSString*)newLabel {
-  self.emptyView.messageAccessibilityLabel = newLabel;
+- (void)addEmptyTableViewWithImage:(UIImage*)image
+                             title:(NSString*)title
+                          subtitle:(NSString*)subtitle {
+  self.emptyView =
+      [[TableViewIllustratedEmptyView alloc] initWithFrame:self.view.bounds
+                                                     image:image
+                                                     title:title
+                                                  subtitle:subtitle];
+}
+
+- (void)updateEmptyTableViewAccessibilityLabel:(NSString*)newLabel {
+  self.emptyView.viewAccessibilityLabel = newLabel;
 }
 
 - (void)removeEmptyTableView {
@@ -299,41 +295,6 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
       dequeueReusableHeaderFooterViewWithIdentifier:reuseIdentifier];
   [item configureHeaderFooterView:view withStyler:self.styler];
   return view;
-}
-
-#pragma mark - MDCAppBarViewController support
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidScroll];
-  }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidEndDecelerating];
-  }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidEndDraggingWillDecelerate:decelerate];
-  }
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView
-        trackingScrollViewWillEndDraggingWithVelocity:velocity
-                                  targetContentOffset:targetContentOffset];
-  }
 }
 
 @end

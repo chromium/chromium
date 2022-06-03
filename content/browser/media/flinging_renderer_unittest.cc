@@ -4,7 +4,7 @@
 
 #include "content/browser/media/flinging_renderer.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -68,7 +68,7 @@ class FlingingRendererTest : public testing::Test {
 };
 
 TEST_F(FlingingRendererTest, StartPlayingFromTime) {
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time = base::Seconds(10);
   EXPECT_CALL(*media_controller_, Seek(seek_time));
 
   renderer_->StartPlayingFrom(seek_time);

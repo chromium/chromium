@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_backing_ozone.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gfx/native_pixmap.h"
@@ -33,6 +34,11 @@ class SharedImageRepresentationDawnOzone
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
+  SharedImageRepresentationDawnOzone(
+      const SharedImageRepresentationDawnOzone&) = delete;
+  SharedImageRepresentationDawnOzone& operator=(
+      const SharedImageRepresentationDawnOzone&) = delete;
+
   ~SharedImageRepresentationDawnOzone() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
@@ -40,13 +46,16 @@ class SharedImageRepresentationDawnOzone
   void EndAccess() override;
 
  private:
+  // TODO(andrescj): move other shared image representations into
+  // SharedImageBackingOzone.
+  SharedImageBackingOzone* ozone_backing() {
+    return static_cast<SharedImageBackingOzone*>(backing());
+  }
   const WGPUDevice device_;
   const WGPUTextureFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   WGPUTexture texture_ = nullptr;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationDawnOzone);
 };
 
 }  // namespace gpu

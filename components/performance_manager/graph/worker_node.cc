@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/public/graph/worker_node.h"
 
-#include "base/logging.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 
 namespace performance_manager {

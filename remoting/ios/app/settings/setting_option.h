@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_IOS_APP_REMOTING_SETTINGS_SETTING_OPTION_H_
-#define REMOTING_IOS_APP_REMOTING_SETTINGS_SETTING_OPTION_H_
+#ifndef REMOTING_IOS_APP_SETTINGS_SETTING_OPTION_H_
+#define REMOTING_IOS_APP_SETTINGS_SETTING_OPTION_H_
 
 #import <Foundation/Foundation.h>
 
@@ -23,4 +23,4 @@ typedef NS_ENUM(NSInteger, SettingOptionType) {
 
 @end
 
-#endif  //  REMOTING_IOS_APP_REMOTING_SETTINGS_SETTING_OPTION_H_
+#endif  // REMOTING_IOS_APP_SETTINGS_SETTING_OPTION_H_

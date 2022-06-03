@@ -18,18 +18,18 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/storage_monitor/media_storage_util.h"
@@ -82,6 +82,12 @@ std::string MakeDeviceUniqueId(struct udev_device* device) {
 class ScopedGetDeviceInfoResultRecorder {
  public:
   ScopedGetDeviceInfoResultRecorder() = default;
+
+  ScopedGetDeviceInfoResultRecorder(const ScopedGetDeviceInfoResultRecorder&) =
+      delete;
+  ScopedGetDeviceInfoResultRecorder& operator=(
+      const ScopedGetDeviceInfoResultRecorder&) = delete;
+
   ~ScopedGetDeviceInfoResultRecorder() {
     UMA_HISTOGRAM_BOOLEAN("MediaDeviceNotification.UdevRequestSuccess",
                           result_);
@@ -93,8 +99,6 @@ class ScopedGetDeviceInfoResultRecorder {
 
  private:
   bool result_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGetDeviceInfoResultRecorder);
 };
 
 // Returns the storage partition size of the device specified by |device_path|.
@@ -146,11 +150,11 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
   if (!device.get())
     return storage_info;
 
-  base::string16 volume_label = base::UTF8ToUTF16(
+  std::u16string volume_label = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kLabel));
-  base::string16 vendor_name = base::UTF8ToUTF16(
+  std::u16string vendor_name = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kVendor));
-  base::string16 model_name = base::UTF8ToUTF16(
+  std::u16string model_name = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kModel));
 
   std::string unique_id = MakeDeviceUniqueId(device.get());
@@ -219,7 +223,7 @@ StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
   if (!process.IsValid())
     return StorageMonitor::EJECT_FAILURE;
 
-  static constexpr auto kEjectTimeout = base::TimeDelta::FromSeconds(3);
+  static constexpr auto kEjectTimeout = base::Seconds(3);
   int exit_code = -1;
   if (!process.WaitForExitWithTimeout(kEjectTimeout, &exit_code)) {
     process.Terminate(-1, false);
@@ -243,9 +247,8 @@ StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
 StorageMonitorLinux::StorageMonitorLinux(const base::FilePath& path)
     : mtab_path_(path),
       get_device_info_callback_(base::BindRepeating(&GetDeviceInfo)),
-      mtab_watcher_task_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::BEST_EFFORT})) {}
+      mtab_watcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 
 StorageMonitorLinux::~StorageMonitorLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -325,9 +328,8 @@ void StorageMonitorLinux::EjectDevice(
 
   receiver()->ProcessDetach(device_id);
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&EjectPathOnBlockingTaskRunner, path, device),
       std::move(callback));
 }
@@ -401,8 +403,8 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
 
   // Check new mtab entries against existing ones.
   scoped_refptr<base::SequencedTaskRunner> mounting_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                       base::TaskPriority::BEST_EFFORT});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   for (auto new_iter = new_mtab.begin(); new_iter != new_mtab.end();
        ++new_iter) {
     const base::FilePath& mount_point = new_iter->first;

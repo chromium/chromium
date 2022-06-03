@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,6 +49,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   // mojom::HostResolver pipe, eg because it is handling ResolveHost requests
   // made directly on NetworkContext.
   HostResolver(net::HostResolver* internal_resolver, net::NetLog* net_log);
+
+  HostResolver(const HostResolver&) = delete;
+  HostResolver& operator=(const HostResolver&) = delete;
+
   ~HostResolver() override;
 
   void ResolveHost(
@@ -68,11 +73,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   static void SetResolveHostCallbackForTesting(ResolveHostCallback callback);
 
  private:
+  void AsyncSetUp();
   void OnResolveHostComplete(ResolveHostRequest* request, int error);
   void OnMdnsListenerCancelled(HostResolverMdnsListener* listener);
   void OnConnectionError();
 
   mojo::Receiver<mojom::HostResolver> receiver_;
+  mojo::PendingReceiver<mojom::HostResolver> pending_receiver_;
   ConnectionShutdownCallback connection_shutdown_callback_;
   std::set<std::unique_ptr<ResolveHostRequest>, base::UniquePtrComparator>
       requests_;
@@ -82,7 +89,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   net::HostResolver* const internal_resolver_;
   net::NetLog* const net_log_;
 
-  DISALLOW_COPY_AND_ASSIGN(HostResolver);
+  base::WeakPtrFactory<HostResolver> weak_factory_{this};
 };
 
 }  // namespace network

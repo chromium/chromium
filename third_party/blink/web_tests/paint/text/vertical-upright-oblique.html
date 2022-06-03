@@ -1,0 +1,45 @@
+<!doctype html>
+<style>
+.o { font-style: oblique -15deg; }
+
+.s {
+    transform: skew(0deg, -15deg);
+    writing-mode: vertical-rl;
+}
+
+.u { text-orientation: upright; }
+
+.v { writing-mode: vertical-rl; }
+
+table {
+  font-size: 30px;
+  margin: 10px;
+}
+
+td {
+  border: solid 1px red;
+  padding: 5px;
+}
+</style>
+<table lang="ja"><tr>
+<td>
+<div style="writing-mode: vertical-rl">
+<div class="v o" id="target">これは斜体です。■□</div>
+<div class="v">これは直体です。■□</div>
+<div class="v o">oblique</div>
+<div class="v">normal.</div>
+<div class="v o u">upright+oblique</div>
+<div class="v u">upright.</div>
+</div>
+</td>
+<td>
+<div xstyle="writing-mode: vertical-rl">
+<span class="s">これは斜体です。■□ CSS</span>
+</div>
+</td>
+</tr></table>
+<script>
+const selection = window.getSelection();
+selection.collapse(target.firstChild, 1);
+selection.extend(target.firstChild, 3);
+</script>

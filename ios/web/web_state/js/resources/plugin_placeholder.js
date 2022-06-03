@@ -313,8 +313,8 @@ var addPluginPlaceholders = function(message, plugins) {
 // Add placeholders for plugin content.
 var plugins = findPluginNodesWithoutFallback();
 if (plugins.length > 0) {
-  // web::GetDocumentEndScriptForAllFrames replaces
-  // $(PLUGIN_NOT_SUPPORTED_TEXT) with approproate string upon injection.
+  // $(PLUGIN_NOT_SUPPORTED_TEXT) is replaced with the appropriate string prior
+  // to injection.
   addPluginPlaceholders('$(PLUGIN_NOT_SUPPORTED_TEXT)', plugins);
 }
 

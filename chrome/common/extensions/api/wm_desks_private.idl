@@ -1,0 +1,55 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Private API for trusted extensions/apps to do desk related operations.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"]
+namespace wmDesksPrivate {
+  dictionary DeskTemplate {
+    // The unique id for a desk template. Used internally to identify a desk
+    // template.
+    DOMString templateUuid;
+    DOMString templateName;
+  };
+
+  callback CaptureDeskAndSaveTemplateCallback =
+      void (DeskTemplate deskTemplate);
+  callback GetSavedDeskTemplatesCallback =
+      void (DeskTemplate[] deskTemplates);
+  callback DeskTemplateVoidCallback = void ();
+
+  interface Functions {
+    // Captures the current active desk as a template and then returns the
+    // template representation. Note this call will result in saving the desk
+    // template to the local storage automatically.
+    static void captureActiveDeskAndSaveTemplate(
+        CaptureDeskAndSaveTemplateCallback callback);
+
+    // Updates the existing saved |deskTemplate|. The |deskTemplate.templateId|
+    // should have already existed, so the call should end up updating the
+    // existing desk template's name from |deskTemplate| and saving the updated
+    // template to the local storage. If no such existing desk template can be
+    // found or the file operation has failed, an error will be returned.
+    static void updateDeskTemplate(DeskTemplate deskTemplate,
+                                   DeskTemplateVoidCallback callback);
+
+    // Returns all available previously-saved desk templates.
+    static void getSavedDeskTemplates(
+        GetSavedDeskTemplatesCallback callback);
+
+    // Deletes the previously-saved desk template with id |templateUuid|. Note if
+    // no such existing desk template can be found, this will still be regarded
+    // as a successful operation. If the file operation has failed, an error
+    // will be returned.
+    static void deleteDeskTemplate(DOMString templateUuid,
+                                   DeskTemplateVoidCallback callback);
+
+    // Launches the desk template with |templateUuid| as a new desk.
+    // |templateId| should be the unique id for an existing desk template. If
+    // no such id can be found or a new desk can’t be created, an error will be
+    // returned.
+    static void launchDeskTemplate(DOMString templateUuid,
+                                   DeskTemplateVoidCallback callback);
+  };
+};

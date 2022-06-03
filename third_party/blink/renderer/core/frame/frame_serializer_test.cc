@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -70,7 +69,7 @@ class FrameSerializerTest : public testing::Test,
   }
 
   void TearDown() override {
-    platform_->GetURLLoaderMockFactory()
+    WebURLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -99,8 +98,8 @@ class FrameSerializerTest : public testing::Test,
     response.SetMimeType("text/html");
     response.SetHttpStatusCode(status_code);
 
-    platform_->GetURLLoaderMockFactory()->RegisterErrorURL(
-        KURL(base_url_, file), response, error);
+    WebURLLoaderMockFactory::GetSingletonInstance()->RegisterErrorURL(
+        KURL(base_url_, file), response, WebURLError(error));
   }
 
   void RegisterRewriteURL(const char* from_url, const char* to_url) {

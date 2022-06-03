@@ -14,12 +14,10 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/gfx/image/image_skia.h"
-
-class FastShowPickler;
 
 namespace ash {
 enum class AppListConfigType;
@@ -36,10 +34,30 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   using AppListItemMetadata = ash::AppListItemMetadata;
 
   explicit AppListItem(const std::string& id);
+
+  AppListItem(const AppListItem&) = delete;
+  AppListItem& operator=(const AppListItem&) = delete;
+
   virtual ~AppListItem();
 
-  void SetIcon(ash::AppListConfigType config_type, const gfx::ImageSkia& icon);
-  const gfx::ImageSkia& GetIcon(ash::AppListConfigType config_type) const;
+  void SetIcon(AppListConfigType config_type, const gfx::ImageSkia& icon);
+  const gfx::ImageSkia& GetIcon(AppListConfigType config_type) const;
+
+  // Setter and getter for the default app list item icon. Used as a base to
+  // generate appropriate app list item icon for an app list config if an icon
+  // for the config has not been set using `SetIcon()`.
+  void SetDefaultIcon(const gfx::ImageSkia& icon);
+  const gfx::ImageSkia& GetDefaultIcon() const;
+
+  // Sets an number to represent the current icon version. It is used so that
+  // the data provider side (AppService) only marks an icon change without
+  // actually loading the icon. When AppLIteItem is added to UI, UI code
+  // observes this icon version number and calls back into data provider to
+  // perform the actual icon loading. When the icon is loaded, SetIcon is called
+  // and UI would be updated since it also observe ItemIconChanged.
+  void SetIconVersion(int icon_version);
+
+  void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {
     return short_name_.empty() ? name() : short_name_;
@@ -48,12 +66,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   const std::string& name() const { return metadata_->name; }
   // Should only be used in tests; otherwise use GetDisplayName().
   const std::string& short_name() const { return short_name_; }
-
-  void SetIsInstalling(bool is_installing);
-  bool is_installing() const { return is_installing_; }
-
-  void SetPercentDownloaded(int percent_downloaded);
-  int percent_downloaded() const { return percent_downloaded_; }
 
   bool IsInFolder() const { return !folder_id().empty(); }
 
@@ -83,6 +95,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Returns the number of child items if it has any (e.g. is a folder) or 0.
   virtual size_t ChildItemCount() const;
 
+  // Returns whether the item is a folder with max allowed children.
+  bool IsFolderFull() const;
+
   std::string ToDebugString() const;
 
   bool is_folder() const { return metadata_->is_folder; }
@@ -92,12 +107,25 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   }
   bool is_page_break() const { return metadata_->is_page_break; }
 
+  bool has_notification_badge() const { return has_notification_badge_; }
+
+  SkColor notification_badge_color() const { return metadata_->badge_color; }
+
+  void UpdateNotificationBadgeForTesting(bool has_badge) {
+    UpdateNotificationBadge(has_badge);
+  }
+
+  AppStatus app_status() const { return metadata_->app_status; }
+
+  void UpdateAppStatusForTesting(AppStatus app_status) {
+    metadata_->app_status = app_status;
+  }
+
  protected:
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
-  friend class ::FastShowPickler;
-  friend class ash::AppListControllerImpl;
+  friend class AppListControllerImpl;
   friend class AppListItemList;
   friend class AppListItemListTest;
   friend class AppListModel;
@@ -112,6 +140,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // if the full name is too long to fit in a view).
   void SetNameAndShortName(const std::string& name,
                            const std::string& short_name);
+
+  // Updates whether the notification badge is shown on the view.
+  void UpdateNotificationBadge(bool has_badge);
 
   void set_position(const syncer::StringOrdinal& new_position) {
     DCHECK(new_position.IsValid());
@@ -132,18 +163,16 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Contains icons for AppListConfigTypes different than kShared. For kShared
   // config type, the item will always use the icon provided by |metadata_|.
   // This is currently used for folder icons only (which are all generated in
-  // ash), when app_list_features::kScalableAppList feature is enabled.
-  std::map<ash::AppListConfigType, gfx::ImageSkia> per_config_icons_;
+  // ash).
+  std::map<AppListConfigType, gfx::ImageSkia> per_config_icons_;
 
   // A shortened name for the item, used for display.
   std::string short_name_;
 
-  bool is_installing_;
-  int percent_downloaded_;
+  // Whether this item currently has a notification badge that should be shown.
+  bool has_notification_badge_ = false;
 
-  base::ObserverList<AppListItemObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItem);
+  base::ObserverList<AppListItemObserver> observers_;
 };
 
 }  // namespace ash

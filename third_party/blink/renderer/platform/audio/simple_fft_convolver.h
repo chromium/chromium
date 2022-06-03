@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -25,8 +24,10 @@ class PLATFORM_EXPORT SimpleFFTConvolver {
 
  public:
   SimpleFFTConvolver(
-      size_t input_block_size,
+      unsigned input_block_size,
       const std::unique_ptr<AudioFloatArray>& convolution_kernel);
+  SimpleFFTConvolver(const SimpleFFTConvolver&) = delete;
+  SimpleFFTConvolver& operator=(const SimpleFFTConvolver&) = delete;
 
   void Process(const float* source_p,
                float* dest_p,
@@ -34,12 +35,12 @@ class PLATFORM_EXPORT SimpleFFTConvolver {
 
   void Reset();
 
-  size_t ConvolutionKernelSize() const { return convolution_kernel_size_; }
+  uint32_t ConvolutionKernelSize() const { return convolution_kernel_size_; }
 
  private:
-  size_t FftSize() const { return frame_.FftSize(); }
+  unsigned FftSize() const { return frame_.FftSize(); }
 
-  size_t convolution_kernel_size_;
+  uint32_t convolution_kernel_size_;
   FFTFrame fft_kernel_;
   FFTFrame frame_;
 
@@ -52,8 +53,6 @@ class PLATFORM_EXPORT SimpleFFTConvolver {
   // Saves the 2nd half of the FFT buffer, so we can do an overlap-add with the
   // 1st half of the next one
   AudioFloatArray last_overlap_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleFFTConvolver);
 };
 
 }  // namespace blink

@@ -10,9 +10,7 @@
 
 #include "base/callback.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 namespace sessions {
 class SerializedNavigationEntry;
@@ -28,7 +26,7 @@ namespace session_util {
 // Create a WebState initialized with |browser_state| and serialized navigation.
 // The returned WebState has web usage enabled.
 std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
-    ios::ChromeBrowserState* browser_state,
+    ChromeBrowserState* browser_state,
     int last_committed_item_index,
     const std::vector<sessions::SerializedNavigationEntry>& navigations);
 

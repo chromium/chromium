@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -23,6 +22,10 @@ class AppIconWebUIHandler : public content::WebUIMessageHandler,
                             public ExtensionIconManager::Observer {
  public:
   AppIconWebUIHandler();
+
+  AppIconWebUIHandler(const AppIconWebUIHandler&) = delete;
+  AppIconWebUIHandler& operator=(const AppIconWebUIHandler&) = delete;
+
   ~AppIconWebUIHandler() override;
 
   // WebUIMessageHandler
@@ -39,8 +42,6 @@ class AppIconWebUIHandler : public content::WebUIMessageHandler,
 
   // Manage retrieval of icons from apps.
   ExtensionIconManager extension_icon_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppIconWebUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_APP_ICON_WEBUI_HANDLER_H_

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript">
+      let params = new URLSearchParams(window.location.search.substring(1));
+      let failedUrl = params.get('url');
+      let load = () => {
+        window.location.replace(failedUrl);
+      };
+      if (params.get('dontLoad')) {
+        // The first time the page is shown, the onpageshow event is fired. The page should be reloaded when this event is fired as it is the mechanism that allow to try to restore the URL of the page. However, we prevent this from happening the first time the page is shown to avoid having a double navigation to the same page.
+        params.delete('dontLoad');
+        let url = window.location.pathname + '?' + params.toString();
+        window.history.replaceState(null, document.title, url);
+        window.addEventListener('pageshow', function(event) {
+          window.onpageshow = load;
+        }, {once: true});
+      } else {
+        load();
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

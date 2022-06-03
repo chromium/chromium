@@ -14,19 +14,20 @@ namespace em = enterprise_management;
 namespace policy {
 
 MockCloudPolicyClient::MockCloudPolicyClient()
-    : MockCloudPolicyClient(nullptr) {}
+    : MockCloudPolicyClient(nullptr, nullptr) {}
 
 MockCloudPolicyClient::MockCloudPolicyClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : CloudPolicyClient(std::string() /* machine_id */,
-                        std::string() /* machine_model */,
-                        std::string() /* brand_code */,
-                        std::string() /* ethernet_mac_address */,
-                        std::string() /* dock_mac_address */,
-                        std::string() /* manufacture_date */,
-                        nullptr /* service */,
+    : MockCloudPolicyClient(url_loader_factory, nullptr) {}
+
+MockCloudPolicyClient::MockCloudPolicyClient(DeviceManagementService* service)
+    : MockCloudPolicyClient(nullptr, service) {}
+
+MockCloudPolicyClient::MockCloudPolicyClient(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    DeviceManagementService* service)
+    : CloudPolicyClient(service,
                         std::move(url_loader_factory),
-                        nullptr /* signing_service */,
                         CloudPolicyClient::DeviceDMTokenCallback()) {}
 
 MockCloudPolicyClient::~MockCloudPolicyClient() {}
@@ -38,8 +39,7 @@ void MockCloudPolicyClient::SetDMToken(const std::string& token) {
 void MockCloudPolicyClient::SetPolicy(const std::string& policy_type,
                                       const std::string& settings_entity_id,
                                       const em::PolicyFetchResponse& policy) {
-  responses_[std::make_pair(policy_type, settings_entity_id)] =
-      std::make_unique<enterprise_management::PolicyFetchResponse>(policy);
+  responses_[std::make_pair(policy_type, settings_entity_id)] = policy;
 }
 
 void MockCloudPolicyClient::SetFetchedInvalidationVersion(
@@ -51,8 +51,8 @@ void MockCloudPolicyClient::SetStatus(DeviceManagementStatus status) {
   status_ = status;
 }
 
-MockCloudPolicyClientObserver::MockCloudPolicyClientObserver() {}
+MockCloudPolicyClientObserver::MockCloudPolicyClientObserver() = default;
 
-MockCloudPolicyClientObserver::~MockCloudPolicyClientObserver() {}
+MockCloudPolicyClientObserver::~MockCloudPolicyClientObserver() = default;
 
 }  // namespace policy

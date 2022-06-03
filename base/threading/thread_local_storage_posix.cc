@@ -4,7 +4,7 @@
 
 #include "base/threading/thread_local_storage.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 

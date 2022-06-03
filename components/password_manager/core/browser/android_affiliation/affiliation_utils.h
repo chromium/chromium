@@ -49,7 +49,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -136,7 +136,7 @@ class FacetURI {
   FacetURI(const std::string& canonical_spec, bool is_valid);
 
   // Whether |canonical_spec_| contains a valid facet URI in canonical form.
-  bool is_valid_;
+  bool is_valid_ = false;
 
   // The text of the encapsulated canonical URI, valid if and only if
   // |is_valid_| is true.
@@ -171,10 +171,14 @@ struct FacetBrandingInfo {
 struct Facet {
   FacetURI uri;
   FacetBrandingInfo branding_info;
+  GURL change_password_url;
 };
 
 // A collection of facets affiliated with each other, i.e. an equivalence class.
-typedef std::vector<Facet> AffiliatedFacets;
+using AffiliatedFacets = std::vector<Facet>;
+
+// A collection of grouped facets.
+using GroupedFacets = std::vector<Facet>;
 
 // A collection of facets affiliated with each other, i.e. an equivalence class,
 // plus a timestamp that indicates the last time the data was updated from an
@@ -182,6 +186,11 @@ typedef std::vector<Facet> AffiliatedFacets;
 struct AffiliatedFacetsWithUpdateTime {
   AffiliatedFacetsWithUpdateTime();
   AffiliatedFacetsWithUpdateTime(const AffiliatedFacetsWithUpdateTime& other);
+  AffiliatedFacetsWithUpdateTime(AffiliatedFacetsWithUpdateTime&& other);
+  AffiliatedFacetsWithUpdateTime& operator=(
+      const AffiliatedFacetsWithUpdateTime& other);
+  AffiliatedFacetsWithUpdateTime& operator=(
+      AffiliatedFacetsWithUpdateTime&& other);
   ~AffiliatedFacetsWithUpdateTime();
 
   AffiliatedFacets facets;

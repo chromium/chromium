@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([function testWeakReferencesDoNotAffectRetainedSize(next) {
@@ -52,24 +52,24 @@
     }
 
     function step3(row) {
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(3310, row._retainedSize);
-      TestRunner.assertEquals(10, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(3310, row.retainedSize);
+      TestRunner.assertEquals(10, row.shallowSize);
       HeapProfilerTestRunner.expandRow(row.children[0], step4);
     }
 
     function step4(arrayInstanceRow) {
-      TestRunner.assertEquals(2, arrayInstanceRow._distance);
-      TestRunner.assertEquals(3310, arrayInstanceRow._retainedSize);
-      TestRunner.assertEquals(10, arrayInstanceRow._shallowSize);
+      TestRunner.assertEquals(2, arrayInstanceRow.distance);
+      TestRunner.assertEquals(3310, arrayInstanceRow.retainedSize);
+      TestRunner.assertEquals(10, arrayInstanceRow.shallowSize);
 
       var children = arrayInstanceRow.children;
       TestRunner.assertEquals(3, children.length);
 
       for (var i = 0; i < children.length; i++) {
-        TestRunner.assertEquals('Uint8Array', children[i]._name);
-        TestRunner.assertEquals(100, children[i]._shallowSize);
-        TestRunner.assertEquals(1100, children[i]._retainedSize);
+        TestRunner.assertEquals('Uint8Array', children[i].name);
+        TestRunner.assertEquals(100, children[i].shallowSize);
+        TestRunner.assertEquals(1100, children[i].retainedSize);
       }
       setTimeout(next, 0);
     }

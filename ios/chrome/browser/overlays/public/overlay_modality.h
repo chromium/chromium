@@ -9,6 +9,8 @@
 // level of modality.  Additional values should be added for each desired level
 // of modality (e.g. Browser-level modality, etc.).
 enum class OverlayModality {
+  // Modality used for testing.
+  kTesting,
   // Used to schedule overlay UI to be displayed modally over a WebState's
   // content area (i.e. present UI requested by script execution on a page).
   kWebContentArea,

@@ -6,10 +6,16 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
+#endif
+
+#if defined(OS_MAC)
+#include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
 #endif
 
 namespace media {
@@ -19,14 +25,26 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
     VideoCaptureBufferType buffer_type) {
   switch (buffer_type) {
     case VideoCaptureBufferType::kGpuMemoryBuffer:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       return std::make_unique<GpuMemoryBufferTracker>();
+#elif defined(OS_MAC)
+      return std::make_unique<GpuMemoryBufferTrackerMac>();
 #else
       return nullptr;
 #endif
     default:
       return std::make_unique<SharedMemoryBufferTracker>();
   }
+}
+
+std::unique_ptr<VideoCaptureBufferTracker>
+VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
+    const gfx::GpuMemoryBufferHandle& handle) {
+#if defined(OS_MAC)
+  return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace media

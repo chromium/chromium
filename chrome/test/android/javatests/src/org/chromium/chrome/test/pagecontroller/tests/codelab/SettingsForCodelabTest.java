@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.pagecontroller.tests.codelab;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;

@@ -1,0 +1,41 @@
+<!--
+Tests that AR hit test returns results when a plane is present.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      setup({single_test: true});
+
+      let gotResult = false;
+      let hitTestSource = null;
+
+      function stepStartHitTesting() {
+        let sessionInfo = sessionInfos[sessionTypes.AR];
+        sessionInfo.currentSession.requestHitTestSource({
+          space: sessionInfo.currentRefSpace,
+          offsetRay: new XRRay()
+        }).then((hts) => {
+          hitTestSource = hts;
+        });
+
+        onARFrameCallback = (session, frame) => {
+          if (!hitTestSource) return;
+          if (gotResult) return;
+          let results = frame.getHitTestResults(hitTestSource);
+          if (results.length) {
+            gotResult = true;
+            done();
+          }
+        };
+      }
+    </script>
+  </body>
+</html>

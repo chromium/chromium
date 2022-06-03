@@ -4,11 +4,16 @@
 
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 
+#include <utility>
+
 #include "base/containers/span.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace viz {
 namespace {
@@ -82,6 +87,35 @@ TEST_F(ServerSharedBitmapManagerTest, TestCreate) {
 
   EXPECT_TRUE(std::equal(span.begin(), span.end(), shared_bitmap->pixels()));
   shared_bitmap.reset();
+}
+
+TEST_F(ServerSharedBitmapManagerTest, TestLocalCreate) {
+  constexpr gfx::Size bitmap_size(100, 100);
+  SharedBitmapId id = SharedBitmap::GenerateId();
+  void* pixels = nullptr;
+
+  {
+    // Allocate a local bitmap and fill it with red.
+    SkImageInfo info =
+        SkImageInfo::MakeN32Premul(bitmap_size.width(), bitmap_size.height());
+    SkBitmap bitmap;
+    bitmap.allocPixels(info);
+    bitmap.eraseColor(SK_ColorRED);
+
+    pixels = bitmap.getPixels();
+    EXPECT_TRUE(pixels);
+
+    manager()->LocalAllocatedSharedBitmap(std::move(bitmap), id);
+  }
+
+  std::unique_ptr<SharedBitmap> returned_bitmap =
+      manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id);
+
+  // Check the shared bitmap returns the address of pixmap allocated earlier.
+  ASSERT_TRUE(returned_bitmap);
+  EXPECT_EQ(pixels, returned_bitmap->pixels());
+
+  manager()->ChildDeletedSharedBitmap(id);
 }
 
 TEST_F(ServerSharedBitmapManagerTest, AddDuplicate) {

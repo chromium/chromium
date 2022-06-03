@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -35,21 +35,28 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
  public:
   // Create and initialize a VEA. Returns nullptr if either part fails.
   using CreateAndInitializeVideoEncodeAcceleratorCallback =
-      base::Callback<std::unique_ptr<::media::VideoEncodeAccelerator>(
+      base::OnceCallback<std::unique_ptr<::media::VideoEncodeAccelerator>(
           const ::media::VideoEncodeAccelerator::Config& config,
           Client* client,
-          const gpu::GpuPreferences& gpu_preferences)>;
+          const gpu::GpuPreferences& gpu_preferences,
+          const gpu::GpuDriverBugWorkarounds& gpu_workarounds)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
-      const CreateAndInitializeVideoEncodeAcceleratorCallback&
-          create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   MojoVideoEncodeAcceleratorService(
-      const CreateAndInitializeVideoEncodeAcceleratorCallback&
-          create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  MojoVideoEncodeAcceleratorService(const MojoVideoEncodeAcceleratorService&) =
+      delete;
+  MojoVideoEncodeAcceleratorService& operator=(
+      const MojoVideoEncodeAcceleratorService&) = delete;
+
   ~MojoVideoEncodeAcceleratorService() override;
 
   // mojom::VideoEncodeAccelerator impl.
@@ -62,9 +69,14 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
               EncodeCallback callback) override;
   void UseOutputBitstreamBuffer(int32_t bitstream_buffer_id,
                                 mojo::ScopedSharedBufferHandle buffer) override;
-  void RequestEncodingParametersChange(
+  void RequestEncodingParametersChangeWithBitrate(
+      const media::Bitrate& bitrate_allocation,
+      uint32_t framerate) override;
+  void RequestEncodingParametersChangeWithLayers(
       const media::VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate) override;
+  void IsFlushSupported(IsFlushSupportedCallback callback) override;
+  void Flush(FlushCallback callback) override;
 
  private:
   friend class MojoVideoEncodeAcceleratorIntegrationTest;
@@ -78,9 +90,11 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
   void NotifyError(::media::VideoEncodeAccelerator::Error error) override;
+  void NotifyEncoderInfoChange(const ::media::VideoEncoderInfo& info) override;
 
-  const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
+  CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences& gpu_preferences_;
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;
@@ -94,8 +108,6 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MojoVideoEncodeAcceleratorService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorService);
 };
 
 }  // namespace media

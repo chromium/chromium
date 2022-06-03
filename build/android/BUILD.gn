@@ -2,64 +2,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/build_vars.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 
 if (enable_java_templates) {
-  sun_tools_jar_path = "$root_gen_dir/sun_tools_jar/tools.jar"
-
   # Create or update the API versions cache if necessary by running a
   # functionally empty lint task. This prevents racy creation of the
   # cache while linting java targets in android_lint.
   android_lint("prepare_android_lint_cache") {
-    android_manifest = "//build/android/AndroidManifest.xml"
     create_cache = true
   }
 
-  action("find_sun_tools_jar") {
-    script = "//build/android/gyp/find_sun_tools_jar.py"
-    depfile = "$target_gen_dir/$target_name.d"
-    outputs = [
-      sun_tools_jar_path,
-    ]
-    args = [
-      "--depfile",
-      rebase_path(depfile, root_build_dir),
-      "--output",
-      rebase_path(sun_tools_jar_path, root_build_dir),
-    ]
+  if (enable_jdk_library_desugaring) {
+    dex_jdk_libs("all_jdk_libs") {
+      output = "$target_out_dir/$target_name.l8.dex"
+      min_sdk_version = default_min_sdk_version
+    }
   }
 
-  java_prebuilt("sun_tools_java") {
-    jar_path = sun_tools_jar_path
-    deps = [
-      ":find_sun_tools_jar",
-    ]
+  generate_build_config_srcjar("build_config_gen") {
+    use_final_fields = false
   }
 
-  # Write to a file some GN vars that are useful to scripts that use the output
-  # directory. Format is chosen as easliy importable by both python and bash.
-  _lines = [
-    "android_sdk_build_tools=" +
-        rebase_path(android_sdk_build_tools, root_build_dir),
-    "android_sdk_build_tools_version=$android_sdk_build_tools_version",
-    "android_sdk_tools_version_suffix=$android_sdk_tools_version_suffix",
-    "android_sdk_root=" + rebase_path(android_sdk_root, root_build_dir),
-    "android_sdk_version=$android_sdk_version",
-    "android_ndk_root=" + rebase_path(android_ndk_root, root_build_dir),
-    "android_tool_prefix=" + rebase_path(android_tool_prefix, root_build_dir),
-    "android_configuration_failure_dir=" +
-        rebase_path(android_configuration_failure_dir, root_build_dir),
-  ]
-  if (defined(android_secondary_abi_cpu)) {
-    _secondary_label_info =
-        get_label_info(":foo($android_secondary_abi_toolchain)", "root_out_dir")
-    _lines += [ "android_secondary_abi_toolchain=" +
-                rebase_path(_secondary_label_info, root_build_dir) ]
+  java_library("build_config_java") {
+    supports_android = true
+    srcjar_deps = [ ":build_config_gen" ]
+    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
   }
-  write_file(android_build_vars, _lines)
+
+  write_native_libraries_java("native_libraries_gen") {
+    use_final_fields = false
+  }
+
+  android_library("native_libraries_java") {
+    srcjar_deps = [ ":native_libraries_gen" ]
+
+    # New version of NativeLibraries.java (with the actual correct values) will
+    # be created when creating an apk.
+    jar_excluded_patterns = [ "*/NativeLibraries.class" ]
+  }
 }
 
 python_library("devil_chromium_py") {
@@ -69,7 +53,28 @@ python_library("devil_chromium_py") {
     "devil_chromium.json",
     "//third_party/catapult/third_party/gsutil/",
     "//third_party/catapult/devil/devil/devil_dependencies.json",
+
+    # Read by gn_helpers.BuildWithChromium()
+    "//build/config/gclient_args.gni",
   ]
+}
+
+# Contains runtime deps for installing apks.
+# E.g. from test_runner.py or from apk_operations.py.
+group("apk_installer_data") {
+  # Other //build users let devil library fetch these from Google Storage.
+  if (build_with_chromium) {
+    data_deps = [
+      "//build/android/pylib/device/commands",
+      "//tools/android/md5sum",
+    ]
+    data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
+  }
+}
+
+python_library("apk_operations_py") {
+  pydeps_file = "apk_operations.pydeps"
+  deps = [ ":apk_installer_data" ]
 }
 
 python_library("test_runner_py") {
@@ -84,17 +89,19 @@ python_library("test_runner_py") {
     "${android_sdk_build_tools}/lib64/libc++.so",
     "${android_sdk_build_tools}/split-select",
     "${android_sdk_root}/platform-tools/adb",
+    "//third_party/requests/",
   ]
   data_deps = [
+    ":apk_installer_data",
     ":devil_chromium_py",
+    ":logdog_wrapper_py",
+    ":stack_tools",
   ]
+
+  # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    data += [
-      "//third_party/android_build_tools/bundletool/bundletool-all-0.11.0.jar",
-      "//tools/android/avd/proto/",
-    ]
-    data_deps +=
-        [ "//third_party/android_platform/development/scripts:stack_py" ]
+    data_deps += [ "//tools/android/forwarder2" ]
+    data += [ "//tools/android/avd/proto/" ]
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }
@@ -102,9 +109,7 @@ python_library("test_runner_py") {
 
   # Proguard is needed only when using apks (rather than native executables).
   if (enable_java_templates) {
-    deps = [
-      "//third_party/proguard:proguard603_java",
-    ]
+    deps = [ "//build/android/stacktrace:java_deobfuscate" ]
   }
 }
 
@@ -118,15 +123,45 @@ python_library("resource_sizes_py") {
     ":devil_chromium_py",
     "//third_party/catapult/tracing:convert_chart_json",
   ]
+
   data = [
-    android_build_vars,
+    build_vars_file,
     android_readelf,
+    rebase_path("$android_ndk_library_path/libc++.so.1", root_build_dir),
   ]
 }
 
-python_library("bundle_wrapper_script_py") {
-  pydeps_file = "gyp/create_bundle_wrapper_script.pydeps"
-  data = [
-    "//third_party/android_build_tools/bundletool/bundletool-all-0.11.0.jar",
-  ]
+# Tools necessary for symbolizing tombstones or stack traces that are output to
+# logcat.
+# Hidden behind build_with_chromium because some third party repos that use
+# //build don't pull in //third_party/android_platform.
+# TODO(crbug.com/1120190): Move stack script into //build/third_party
+#     and enable unconditionally.
+group("stack_tools") {
+  if (build_with_chromium) {
+    data = [
+      "tombstones.py",
+      "pylib/symbols/",
+      "stacktrace/",
+    ]
+
+    data_deps =
+        [ "//third_party/android_platform/development/scripts:stack_py" ]
+  }
 }
+
+# GN evaluates each .gn file once per toolchain, so restricting to default
+# toolchain will ensure write_file() is called only once.
+assert(current_toolchain == default_toolchain)
+
+# NOTE: If other platforms would benefit from exporting variables, we should
+# move this to a more top-level place.
+# It is currently here (instead of //BUILD.gn) to ensure that the file is
+# written even for non-chromium embedders of //build.
+_build_vars_json = {
+  # Underscore prefix so that it appears at the top.
+  _HEADER = "Generated during 'gn gen' by //build/android/BUILD.gn."
+  forward_variables_from(android_build_vars_json, "*")
+}
+
+write_file(build_vars_file, _build_vars_json, "json")

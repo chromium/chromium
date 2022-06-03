@@ -5,11 +5,13 @@ Items for foo.js:
 
 Line 1, Column 1
 
+
 foo.js:16
 Coverage: n/a
 Items for test.js:
 
 Line 1, Column 1
+
 
 foo.js:13
 Coverage: n/a

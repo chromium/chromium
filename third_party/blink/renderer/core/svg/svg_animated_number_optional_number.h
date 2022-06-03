@@ -46,8 +46,6 @@ namespace blink {
 class SVGAnimatedNumberOptionalNumber
     : public GarbageCollected<SVGAnimatedNumberOptionalNumber>,
       public SVGAnimatedPropertyCommon<SVGNumberOptionalNumber> {
-  USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedNumberOptionalNumber);
-
  public:
   SVGAnimatedNumberOptionalNumber(SVGElement* context_element,
                                   const QualifiedName& attribute_name,
@@ -60,7 +58,7 @@ class SVGAnimatedNumberOptionalNumber
   SVGAnimatedNumber* FirstNumber() { return first_number_.Get(); }
   SVGAnimatedNumber* SecondNumber() { return second_number_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<SVGAnimatedNumber> first_number_;

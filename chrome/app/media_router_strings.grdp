@@ -35,9 +35,6 @@
   <message name="IDS_MEDIA_ROUTER_ABOUT" desc="Title of a menu item which, on click, opens a page with product information about Chromecast.">
     About
   </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_TOGGLE" desc="Title of a menu item which, on click, toggles the preference to opt in or out of cloud services.">
-    Enable cloud services
-  </message>
   <message name="IDS_MEDIA_ROUTER_HELP" desc="Title of a menu item which, on click, opens a page to the Chromecast help center.">
     Help
   </message>
@@ -76,8 +73,13 @@
   <message name="IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting a tab, but only its visual content can be cast and not its audio output.">
     Casting tab audio is not supported on this device.
   </message>
+  <if expr="is_macosx">
+    <message name="IDS_MEDIA_ROUTER_ISSUE_MAC_SCREEN_CAPTURE_PERMISSION_ERROR" desc="Message shown when a macOS user attempts to cast their screen, but the Screen Recording system permission has not been granted.">
+      Unable to cast your screen. Check the Screen Recording permission in System Preferences.
+    </message>
+  </if>
 
-  <!-- Sink List -->
+<!-- Sink List -->
   <message name="IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES" desc="Status text temporarily shown while searching for Cast devices but none have been found.">
     Looking for devices
   </message>
@@ -104,6 +106,18 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED" desc="Text shown as the status of a Cast device that is not compatible with the selected Cast source (contents).">
     Source not supported
+  </message>
+  <message name="IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES" desc="Text shown as the status of a Cast device that is not compatible with the selected website but is compatible with other video websites.">
+    Available for specific video sites
+  </message>
+  <message name="IDS_MEDIA_ROUTER_CASTING_DESKTOP" desc="The status text of a Cast device to which we are mirroring the contents of the user's entire screen.">
+    Casting desktop
+  </message>
+  <message name="IDS_MEDIA_ROUTER_CASTING_TAB" desc="The status text of a Cast device to which we are mirroring the contents of a browser tab.">
+    Casting tab
+  </message>
+  <message name="IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
+    Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
   </message>
 
   <!-- File Dialog -->
@@ -132,25 +146,217 @@ video files, instead of all files.">
     No Thanks
   </message>
 
-  <!-- Cloud Services Dialog -->
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_TITLE" desc="Title of the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services (Google Hangouts, Google Meet, Cast for Education extension).">
-    Enable cloud services for Cast?
+  <!-- Cast-to-meeting deprecation/removal -->
+  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog will no longer work, and using meet.google.com will be the only option.">
+    Soon this option will no longer be supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
   </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_BODY" desc="Body text of the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services (Google Hangouts, Google Meet, Cast for Education extension).">
-    Use of Hangouts and Cast for Education is governed by the Google Privacy Policy.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_ENABLE" desc="Label for a button in the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services. When this button is clicked, the preference to enable the feature gets saved.">
-    Enable
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_CANCEL" desc="Label for a button in the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services. No changes are made when this button is clicked.">
-    Cancel
+  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog is not longer supported, and using meet.google.com is the only option.">
+    This option is no longer supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
   </message>
 
   <!-- Wired Display Media Route Provider -->
-  <message name="IDS_MEDIA_ROUTER_WIRED_DISPLAY_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
-    Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
-  </message>
   <message name="IDS_MEDIA_ROUTER_WIRED_DISPLAY_SINK_NAME" desc="Name shown for a wired display that can be used as a Cast destination.">
     Display <ph name="DISPLAY_ID">$1<ex>1</ex></ph>
   </message>
+
+  <!-- Cast feedback dialog (chrome://cast-feedback) -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TITLE" desc="Title of the tab opened by selecting '''Report an issue' from the Cast menu.">
+    Google Cast Feedback
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NA" desc="Label used for subjective quality ratings where the user expresses no opinion.">
+    N/A
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_FORM_DESCRIPTION" desc="Text to describe the feedback form.">
+    Your feedback helps us to improve Google Cast and is appreciated.
+    For help troubleshooting issues with cast, please refer to the
+    <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>
+    help center<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_HEADER" desc="Header of the Media Router feedback page.">
+  Tell us what's happening with Google Cast.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_YOUR_ANSWER" desc="Placeholder text for inputs in the feedback form.">
+    Your answer
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_REQUIRED" desc="Text in a legend to indicate required field.">
+    Required
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_QUESTION" desc="Text for the feedback type question.">
+    What kind of feedback are you providing?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_PROMPT" desc="Text for the feedback input box in the feedback form.">
+    Please enter your feedback here:
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_MIRRORING_QUALITY_SUBHEADING" desc="Text for audio quality question.">
+    Mirroring Quality Details
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_SMOOTHNESS" desc="Text for video smoothness question.">
+    Video Smoothness
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_QUALITY" desc="Text for video quality question.">
+    Video Quality
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_QUALITY" desc="Text for audio quality question.">
+    Audio Quality
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_CONTENT_QUESTION" desc="Text for the question about content being cast.">
+    What content/URL were you casting?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS" desc="Text for field in feedback form for other comments.">
+    Additional comments:
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD" desc="Text for the email field in the feedback form.">
+    Email (optional):
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_BUTTON" desc="Text for the send feedback button.">
+    Send Feedback
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_DISCARD_CONFIRMATION" desc="Text in the confirmation that the user does not want to submit feedback.">
+    Do you want to discard the feedback?
+  </message>
+
+  <!-- Cast feedback dialog: feedback types -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_BUG_OR_ERROR" desc="The label of the feedback type for Bug or Error.">
+    Bug or Error
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_FEATURE_REQUEST" desc="The label of the feedback type for a Feature Request.">
+    Feature Request
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_PROJECTION_QUALITY" desc="The label of the feedback type for a Projection Quality report.">
+    Tab/Desktop Projection Quality
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_DISCOVERY" desc="The label of the feedback type for a Device Discovery report.">
+    Device Discovery
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_OTHER" desc="The label of the feedback type for a 'Other' report.">
+    Other
+  </message>
+
+  <!-- Cast feedback dialog: video smoothness -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_FREEZES" desc="The label of the subjective video smoothness rating of 'Freezes.'">
+    Freezes
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_JERKY" desc="The label of the subjective video smoothness rating of 'Jerky.'">
+    Jerky
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_STUTTER" desc="The label of the subjective video smoothness rating of 'Occasional Stutter.'">
+    Occasional Stutter
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_SMOOTH" desc="The label of the subjective video smoothness rating of 'Smooth.'">
+    Smooth
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_PERFECT" desc="The label of the subjective video smoothness rating of 'Perfect.'">
+    Perfect
+  </message>
+
+  <!-- Cast feedback dialog: video quality -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_UNWATCHABLE" desc="The label of the subjective video quality rating of 'Unwatchable.'">
+    Unwatchable
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_POOR" desc="The label of the subjective video quality rating of 'Poor.'">
+    Poor
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_ACCEPTABLE" desc="The label of the subjective video quality rating of 'Acceptable.'">
+    Acceptable
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_GOOD" desc="The label of the subjective video quality rating of 'Good', comparable to DVD video.">
+    Good - DVD
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_GREAT" desc="The label of the subjective video quality rating of 'Great', compable to HD/BluRay video.">
+    Great - HD
+  </message>
+
+  <!-- Cast feedback dialog: audio quality -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_UNINTELLIGIBLE" desc="The label of the subjective audio quality rating of 'Unintelligible.'">
+    Unintelligible
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_POOR" desc="The label of the subjective audio quality rating of 'Poor.'">
+    Poor
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_ACCEPTABLE" desc="The label of the subjective audio quality rating of 'Acceptable', comparable to FM radio.">
+    Acceptable - FM
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_GOOD" desc="The label of the subjective audio quality rating of 'Good.'">
+    Good
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_PERFECT" desc="The label of the subjective audio quality rating of 'Perfect.'">
+    Perfect
+  </message>
+
+  <!-- Cast feedback dialog: steps of sending feedback -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SENDING" desc="Shown while we're attempting to send feedback.">
+    Sending feedback...
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_FAIL" desc="Shown when the attempt to submit feedback fails.">
+    Unable to send feedback. Please try again later.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_SUCCESS" desc="Shown when the attempt to submit feedback succeeds.">
+    Thank you for sending feedback.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_RESENDING" desc="Shown while retrying to send feedback.">
+    Failed to send feedback. Retrying...
+  </message>
+
+  <!-- Cast feedback dialog: logs -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_LOGS_HEADER" desc="Header for dialog that shows logs.">
+    Cast and Device Logs
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_FINE_LOGS_WARNING" desc="Shown as a privacy/data warning when fine logs are enabled.">
+    Warning - Detailed logging is enabled; logs below may include URLs or other sensitive information. Please review and ensure that you are comfortable submitting this information.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_LOGS_HTML" desc="Text for the send logs checkbox option.">
+    Send <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>
+    debug logs<ph name="END_LINK">&lt;/a&gt;</ph> (recommended)
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_LOGS" desc="Text for log attachment checkbox.">
+    Send debug logs (recommended)
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_PRIVACY_DATA_USAGE" desc="Text with details about data usage of details submitted in the feedback page.">
+    Your Chrome version, operating system version, Cast settings,
+    mirroring performance stats, and communication channel diagnostic
+    logs will be submitted in addition to any information you choose
+    to include above. This feedback is used to diagnose problems and
+    help improve the feature. Any personal information you submit,
+    whether explicitly or incidentally, will be protected in
+    accordance with our privacy policies. By submitting this feedback,
+    you agree that Google may use feedback that you provide to improve
+    any Google product or service.
+  </message>
+
+  <!-- Cast feedback dialog: discovery -->
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SETUP_VISIBILITY_QUESTION" desc="Text for the question about device visibility through setup flow">
+    Are you able to see your Chromecast in the
+    <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>
+    Google Home app<ph name="END_LINK">&lt;/a&gt;</ph>?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_YES" desc="Label for yes option.">
+    Yes
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NO" desc="Label for no option.">
+    No
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_DID_NOT_TRY" desc="Label for 'did not try' option.">
+    Did not try
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_SOFTWARE_QUESTION" desc="Text for the question about installed software.">
+    Do you have any special VPN, proxy, firewall, or NAS software
+    installed?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_UNKNOWN" desc="Label for not sure option.">
+    Not sure
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_QUESTION" desc="Text for the question describing the network.">
+    Which of the following best describes your network?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_SAME_WIFI" desc="Option for describing the network with PC and chromecast on the same Wi-Fi network.">
+    PC and Chromecast on the same Wi-Fi network
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_DIFFERENT_WIFI" desc="Option for describing the network with PC and chromecast on different Wi-Fi networks.">
+    PC and Chromecast on different Wi-Fi networks (e.g. 2.4GHz
+    vs. 5GHz)
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC" desc="Option for describing the network with a wired PC.">
+    PC is wired and Chromecast is on Wi-Fi
+  </message> 
+
 </grit-part>

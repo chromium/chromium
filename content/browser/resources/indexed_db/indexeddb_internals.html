@@ -47,8 +47,6 @@
                        jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path">Force close</a>
                     <a href="#" class="download"
                        jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path">Download</a>
-                    <a href="#" class="force-schema-downgrade"
-                       jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path">Force schema downgrade</a>
                     <a href="https://crbug.com/829141"
                        target="_blank">?</a>
                     <span class="download-status" style="display: none">Loading...</span>
@@ -168,9 +166,6 @@
     <div class="content">
         <div id="indexeddb-list">
     </div>
-    <script src="chrome://resources/js/util.js"></script>
-    <script src="chrome://resources/js/cr.js"></script>
-    <script src="indexeddb_internals.js"></script>
-    <script src="chrome://resources/js/jstemplate_compiled.js"></script>
+    <script type="module" src="indexeddb_internals.js"></script>
 </body>
 </html>

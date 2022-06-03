@@ -1,7 +1,11 @@
 include_rules = [
   "+chrome/elevation_service",
-  "+media/cdm/cdm_proxy.h",
-  "+media/cdm/supported_cdm_versions.h",
+  "+chrome/browser/share",
+  "+components/cdm/common",
+  "+components/live_caption",
+  "+components/soda",
+  "+media/cdm",
   "+ppapi/thunk",
-  "+third_party/widevine"
+  "+third_party/widevine",
+  "+third_party/zxcvbn-cpp"
 ]

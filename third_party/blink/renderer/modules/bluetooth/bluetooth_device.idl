@@ -5,15 +5,26 @@
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothdevice
 
 [
+    ActiveScriptWrappable,
     Exposed=Window,
     RuntimeEnabled=WebBluetooth,
     SecureContext
 ] interface BluetoothDevice : EventTarget {
-    readonly    attribute DOMString id;
-    readonly    attribute DOMString?                 name;
-    readonly    attribute BluetoothRemoteGATTServer  gatt;
+  [
+    RuntimeEnabled=WebBluetoothWatchAdvertisements,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=WebBluetoothWatchAdvertisements
+  ] Promise<void> watchAdvertisements(
+      optional WatchAdvertisementsOptions options = {});
 
-    attribute EventHandler ongattserverdisconnected;
+  readonly attribute DOMString id;
+  [HighEntropy=Direct, MeasureAs=BluetoothDeviceName] readonly attribute DOMString? name;
+  readonly attribute BluetoothRemoteGATTServer gatt;
+  [RuntimeEnabled=WebBluetoothWatchAdvertisements] readonly attribute boolean watchingAdvertisements;
+
+  [RuntimeEnabled=WebBluetoothWatchAdvertisements] attribute EventHandler onadvertisementreceived;
+  attribute EventHandler ongattserverdisconnected;
 };
 
 // TODO: Include ServiceEventHandlers mixin (https://crbug.com/421670)

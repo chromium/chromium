@@ -1,0 +1,63 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// Tetsts for Copy & Paste of anchor text as link instead of plain text.
+// Note: Blink used to be copy and paste anchor text as plain text.
+selection_test(
+    [
+        '<div>',
+            'abc ',
+            '<a href="http://www.google.com/">^XYZ|</a>',
+            'def',
+        '</div>',
+        '<div contenteditable id="paste"><br></div>',
+    ],
+    selection => {
+        if (!window.testRunner)
+            throw 'This test requires testRunner.';
+        selection.document.execCommand('copy');
+        selection.document.getElementById('paste').focus();
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div>',
+            'abc ',
+            '<a href="http://www.google.com/">XYZ</a>',
+            'def',
+        '</div>',
+        '<div contenteditable id="paste">',
+            '<a href="http://www.google.com/">XYZ|</a>',
+        '</div>',
+    ],
+    'Copy & Paste fully selected anchor text');
+
+selection_test(
+    [
+        '<div>',
+            'abc ',
+            '<a href="http://www.google.com/">X^Y|Z</a>',
+            'def',
+        '</div>',
+        '<div contenteditable id="paste"><br></div>',
+    ],
+    selection => {
+        if (!window.testRunner)
+            throw 'This test requires testRunner.';
+        selection.document.execCommand('copy');
+        selection.document.getElementById('paste').focus();
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div>',
+            'abc ',
+            '<a href="http://www.google.com/">XYZ</a>',
+            'def',
+        '</div>',
+        '<div contenteditable id="paste">',
+            '<a href="http://www.google.com/">Y|</a>',
+        '</div>',
+    ],
+    'Copy & Paste partially selected anchor text');
+</script>

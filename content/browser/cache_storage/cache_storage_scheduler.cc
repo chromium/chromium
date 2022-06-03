@@ -7,16 +7,15 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_operation.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -25,17 +24,10 @@ namespace {
 // Maximum parallel shared operations.  This constant was selected via
 // experimentation.  We tried 4, 16, and 64 for the limit.  16 was clearly
 // better than 4, but 64 was did not provide significant further benefit.
-// TODO(crbug/1007994): Enable parallel shared operations on android after
-//                      performance regressions are addressed.
-#if defined(OS_ANDROID)
-constexpr int kDefaultMaxSharedOps = 1;
-#else
 constexpr int kDefaultMaxSharedOps = 16;
-#endif
 
 const base::FeatureParam<int> kCacheStorageMaxSharedOps{
-    &features::kCacheStorageParallelOps, "max_shared_ops",
-    kDefaultMaxSharedOps};
+    &kCacheStorageParallelOps, "max_shared_ops", kDefaultMaxSharedOps};
 
 bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
                        const std::unique_ptr<CacheStorageOperation>& right) {
@@ -57,6 +49,11 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 }
 
 }  // namespace
+
+// Enables support for parallel cache_storage operations via the
+// "max_shared_ops" fieldtrial parameter.
+const base::Feature kCacheStorageParallelOps{"CacheStorageParallelOps",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 CacheStorageScheduler::CacheStorageScheduler(
     CacheStorageSchedulerClient client_type,
@@ -105,11 +102,6 @@ void CacheStorageScheduler::CompleteOperationAndRunNext(
     DCHECK_EQ(num_running_exclusive_, 0);
     DCHECK_GT(num_running_shared_, 0);
     num_running_shared_ -= 1;
-    if (num_running_shared_ == 0) {
-      UMA_HISTOGRAM_COUNTS_100("ServiceWorkerCache.PeakParallelSharedOps2",
-                               peak_parallel_shared_);
-      peak_parallel_shared_ = 0;
-    }
   } else {
     DCHECK_EQ(num_running_shared_, 0);
     DCHECK_EQ(num_running_exclusive_, 1);
@@ -176,8 +168,6 @@ void CacheStorageScheduler::MaybeRunOperation() {
   if (next_operation->mode() == CacheStorageSchedulerMode::kShared) {
     DCHECK_EQ(num_running_exclusive_, 0);
     num_running_shared_ += 1;
-    peak_parallel_shared_ =
-        std::max(num_running_shared_, peak_parallel_shared_);
   } else {
     DCHECK_EQ(num_running_exclusive_, 0);
     DCHECK_EQ(num_running_shared_, 0);

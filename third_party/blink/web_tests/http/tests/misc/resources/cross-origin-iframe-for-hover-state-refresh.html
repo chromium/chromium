@@ -1,0 +1,48 @@
+<html>
+  <script src='/js-test-resources/gesture-util.js'></script>
+  <style>
+  .cursor_holder {
+    cursor: pointer;
+    height: 150px;
+    width: 150px;
+    background-color: green;
+  }
+  </style>
+
+  <body onclick="changeCursor()">
+  <div class="cursor_holder" id="cursor_holder" style="margin-left: 0px;">
+  I am iframe
+  </div>
+  <script>
+  var element = document.getElementById("cursor_holder");
+  var port;
+  element.addEventListener('mouseover', function (e) {
+    if (port) {
+      port.postMessage("mouseover", "*");
+    } else{
+      parent.postMessage("mouseover", "*");
+    }
+  });
+  element.addEventListener('mouseout', function (e) {
+    if (port) {
+      port.postMessage("mouseout", "*");
+    } else{
+      parent.postMessage("mouseout", "*");
+    }
+  });
+  function changeCursor() {
+    document.getElementById("cursor_holder").style.marginLeft = "200px";
+  }
+
+  window.addEventListener("message", async (event) => {
+    port = event.source;
+    if (event.data == "clickiframe") {
+      await mouseMoveTo(30, 30);
+      await mouseClickOn(30, 30);
+    }
+  });
+  </script>
+
+ 
+  </body>
+</html>

@@ -7,26 +7,23 @@
 #include <stddef.h>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/screens/network_screen.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
-#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/screens/network_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 
 constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
 
-NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container,
-                                           CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
+NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container)
+    : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.NetworkScreen.userActed");
-  DCHECK(core_oobe_view_);
 }
 
 NetworkScreenHandler::~NetworkScreenHandler() {
@@ -71,18 +68,13 @@ void NetworkScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
-void NetworkScreenHandler::ShowError(const base::string16& message) {
-  CallJS("login.NetworkScreen.showError", message);
+void NetworkScreenHandler::ShowError(const std::u16string& message) {
+  CallJS("login.NetworkScreen.setError", message);
 }
 
 void NetworkScreenHandler::ClearErrors() {
-  if (page_is_ready())
-    core_oobe_view_->ClearErrors();
+  CallJS("login.NetworkScreen.setError", std::string());
 }
-
-void NetworkScreenHandler::ShowConnectingStatus(
-    bool connecting,
-    const base::string16& network_id) {}
 
 void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
   CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);
@@ -97,11 +89,13 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
   builder->Add("offlineDemoSetupListItemName",
                IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  network_element::AddLocalizedValuesToBuilder(builder);
+  ui::network_element::AddLocalizedValuesToBuilder(builder);
+  cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 
 void NetworkScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
+  cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 
 void NetworkScreenHandler::Initialize() {

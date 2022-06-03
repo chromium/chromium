@@ -9,7 +9,5 @@ mojom("mojom") {
     "heap_profiling_client.mojom",
     "heap_profiling_service.mojom",
   ]
-  deps = [
-    "//mojo/public/mojom/base",
-  ]
+  deps = [ "//mojo/public/mojom/base" ]
 }

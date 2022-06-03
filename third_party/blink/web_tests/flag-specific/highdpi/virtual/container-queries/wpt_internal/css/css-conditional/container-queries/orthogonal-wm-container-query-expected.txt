@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Initial non-orthogonal width
+PASS Orthogonal width
+Harness: the test ran to completion.
+

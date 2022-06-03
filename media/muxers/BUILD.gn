@@ -11,6 +11,10 @@ source_set("muxers") {
   visibility = [ "//media" ]
 
   sources = [
+    "file_webm_muxer_delegate.cc",
+    "file_webm_muxer_delegate.h",
+    "live_webm_muxer_delegate.cc",
+    "live_webm_muxer_delegate.h",
     "webm_muxer.cc",
     "webm_muxer.h",
   ]
@@ -28,9 +32,7 @@ source_set("muxers") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "webm_muxer_unittest.cc",
-  ]
+  sources = [ "webm_muxer_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",
@@ -38,10 +40,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libwebm",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 }

@@ -41,4 +41,9 @@ interface LearningTaskController {
   // so that the observation will be cancelled if the controller is destroyed.
   UpdateDefaultTarget(mojo_base.mojom.UnguessableToken id,
           TargetValue? default_target);
+
+  // Asynchronously predicts distribution for given |features|. |callback| will
+  // receive a absl::nullopt prediction when model is not available.
+  PredictDistribution(array<FeatureValue> features)
+      => (TargetHistogram? predicted);
 };

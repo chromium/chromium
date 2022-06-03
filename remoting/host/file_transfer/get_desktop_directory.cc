@@ -4,6 +4,7 @@
 
 #include "remoting/host/file_transfer/get_desktop_directory.h"
 
+#include "base/logging.h"
 #include "base/path_service.h"
 
 namespace remoting {

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_RANKER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_RANKER_WINDOW_FEATURES_H_
 
-#include <string>
-
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "components/sessions/core/session_id.h"
 

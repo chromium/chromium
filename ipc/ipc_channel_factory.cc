@@ -23,6 +23,9 @@ class PlatformChannelFactory : public ChannelFactory {
         ipc_task_runner_(ipc_task_runner),
         quota_checker_(mojo::internal::MessageQuotaChecker::MaybeCreate()) {}
 
+  PlatformChannelFactory(const PlatformChannelFactory&) = delete;
+  PlatformChannelFactory& operator=(const PlatformChannelFactory&) = delete;
+
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
 #if defined(OS_NACL_SFI)
     return Channel::Create(handle_, mode_, listener);
@@ -48,8 +51,6 @@ class PlatformChannelFactory : public ChannelFactory {
   Channel::Mode mode_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
   scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformChannelFactory);
 };
 
 } // namespace

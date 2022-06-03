@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 
@@ -147,7 +147,7 @@ Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                             blink::WebCryptoKey* key);
 
 // Parses a vector of JSON into a dictionary.
-base::Optional<base::DictionaryValue> GetJwkDictionary(
+absl::optional<base::DictionaryValue> GetJwkDictionary(
     const std::vector<uint8_t>& json);
 
 // Verifies the input dictionary contains the expected values. Exact matches are

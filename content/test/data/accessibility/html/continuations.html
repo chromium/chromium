@@ -1,0 +1,51 @@
+<!--
+@BLINK-ALLOW:display*
+@BLINK-ALLOW:isLineBreakingObject*
+-->
+<!--
+Continuations in Blink are described here:
+https://webkit.org/blog/115/webcore-rendering-ii-blocks-and-inlines/
+-->
+<div role="group" aria-label="Group 1">
+  <b>
+  <i>
+    <div>
+      <button id="before">Before</button>
+    </div></i><div id="after">After</div></b>
+</div>
+
+<div role="group" aria-label="Group 2">
+  <foo>
+    <bar>
+      <div id="before">Before</div>
+    </bar><div id="after">After</div>
+  </foo>
+</div>
+
+<div role="group" aria-label="Group 3">
+  <span>
+    <a name="a">
+      <div id="before">Before</div>
+      <div id="ever">
+        Ever
+        <a href="#" id="after">After</a>
+      </div>
+    </a>
+  </span>
+</div>
+
+<div role="group" aria-label="Group 4">
+  <div id="before">Before</div>
+  <div><span><p id="after">After</p></span></div>
+</div>
+
+<div role="group" aria-label="Group 5">
+  <i>Italic only <b>italic and bold
+  <div>
+  Wow, a block!
+  </div>
+  <div>
+  Wow, another block!
+  </div>
+  More italic and bold text</b> More italic text</i>
+</div>

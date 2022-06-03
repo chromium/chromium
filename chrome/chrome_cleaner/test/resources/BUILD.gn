@@ -21,13 +21,9 @@ action("compute_sample_dll_digest") {
     "//third_party/protobuf:py_proto",
   ]
 
-  inputs = [
-    sample_dll_file,
-  ]
+  inputs = [ sample_dll_file ]
 
-  outputs = [
-    sample_dll_digest_pb_file,
-  ]
+  outputs = [ sample_dll_digest_pb_file ]
 
   args = [
     "--output",
@@ -40,9 +36,6 @@ grit("test_resources") {
   source = "test_resources.grd"
   resource_ids = "resource_ids"
 
-  # The .grd contains references to generated files.
-  source_is_generated = true
-
   outputs = [
     "grit/test_resources.h",
     "test_resources.rc",
@@ -53,17 +46,11 @@ grit("test_resources") {
     "generated_resources_dir=" + rebase_path(target_gen_dir, root_build_dir),
   ]
 
-  deps = [
-    ":compute_sample_dll_digest",
-  ]
+  deps = [ ":compute_sample_dll_digest" ]
 }
 
 copy("signed_empty_dll") {
-  sources = [
-    "signed_dll/signed_empty_dll.dll",
-  ]
+  sources = [ "signed_dll/signed_empty_dll.dll" ]
 
-  outputs = [
-    "$root_out_dir/signed_empty_dll.dll",
-  ]
+  outputs = [ "$root_out_dir/signed_empty_dll.dll" ]
 }

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when a request is made on a Geolocation object after its frame has been disconnected, no callbacks are made and no crash occurs.");
+
+const iframe = document.createElement('iframe');
+let iframeGeolocation;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+iframe.src = 'resources/disconnected-frame-already-inner1.html';
+document.body.appendChild(iframe);
+
+window.onFirstIframeLoaded = function() {
+    iframeGeolocation = iframe.contentWindow.navigator.geolocation;
+    iframe.src = 'resources/disconnected-frame-already-inner2.html';
+}
+
+window.onSecondIframeLoaded = function() {
+    iframeGeolocation.getCurrentPosition(function () {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    });
+    setTimeout(finishTest, 1000);
+}
+
+function finishTest() {
+    finishJSTest();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("login_screen") {
+  sources = [
+    "login_state/login_state_api.cc",
+    "login_state/login_state_api.h",
+    "login_state/session_state_changed_event_dispatcher.cc",
+    "login_state/session_state_changed_event_dispatcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "login_state/login_state_apitest.cc" ]
+
+  deps = [
+    ":login_screen",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "login_screen_i18n_apitest.cc",
+      "login_state/session_state_changed_event_dispatcher_ash_apitest.cc",
+      "storage_apitest.cc",
+    ]
+
+    deps += [
+      "//base",
+      "//components/policy/core/common:test_support",
+      "//components/session_manager/core",
+      "//components/version_info",
+      "//dbus",
+      "//extensions:test_support",
+      "//extensions/browser/api/test",
+      "//skia",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "login_state/login_state_api_unittest.cc" ]
+
+  deps = [
+    ":login_screen",
+    "//base",
+    "//chrome/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common:common",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    sources +=
+        [ "login_state/session_state_changed_event_dispatcher_ash_unittest.cc" ]
+
+    deps += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/common:non_code_constants",
+      "//chrome/common/extensions/api",
+      "//chromeos/crosapi/mojom",
+      "//components/session_manager/core",
+      "//content/test:test_support",
+      "//dbus",
+      "//extensions/browser",
+      "//extensions/browser:test_support",
+      "//skia",
+      "//testing/gmock",
+    ]
+  }
+}

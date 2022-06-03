@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/android/contextualsearch/contextual_search_ranker_logger_impl.h>
+#include "chrome/browser/android/contextualsearch/contextual_search_ranker_logger_impl.h"
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchRankerLoggerImpl_jni.h"
-#include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/assist_ranker/assist_ranker_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/assist_ranker/assist_ranker_service_impl.h"
 #include "components/assist_ranker/binary_classifier_predictor.h"
 #include "components/assist_ranker/predictor_config_definitions.h"

@@ -19,20 +19,17 @@ image_capture_test(async (t, imageCaptureTest) => {
 
   let mockCapabilities = imageCaptureTest.mockImageCapture().state();
   let capturer = new ImageCapture(stream.getVideoTracks()[0]);
-  assert_true(typeof capturer.getPhotoCapabilities == 'function');
+  assert_equals(typeof capturer.getPhotoCapabilities, 'function');
 
   let capabilities = await capturer.getPhotoCapabilities();
-  assert_true(capabilities instanceof PhotoCapabilities);
 
   assert_equals(capabilities.redEyeReduction, 'controllable',
                 'redEyeReduction');
 
-  assert_true(capabilities.imageHeight instanceof MediaSettingsRange);
   assert_equals(capabilities.imageHeight.max, mockCapabilities.height.max);
   assert_equals(capabilities.imageHeight.min, mockCapabilities.height.min);
   assert_equals(capabilities.imageHeight.step, mockCapabilities.height.step);
 
-  assert_true(capabilities.imageWidth instanceof MediaSettingsRange);
   assert_equals(capabilities.imageWidth.max, mockCapabilities.width.max);
   assert_equals(capabilities.imageWidth.min, mockCapabilities.width.min);
   assert_equals(capabilities.imageWidth.step, mockCapabilities.width.step);
@@ -54,7 +51,7 @@ promise_test(t => {
   let capturer = new ImageCapture(videoTrack);
   assert_equals(videoTrack.readyState, 'ended');
 
-  return promise_rejects(t, 'InvalidStateError', capturer.getPhotoCapabilities())
+  return promise_rejects_dom(t, 'InvalidStateError', capturer.getPhotoCapabilities())
 
 }, 'getPhotoCapabilities() of an ended Track should throw "InvalidStateError"');
 

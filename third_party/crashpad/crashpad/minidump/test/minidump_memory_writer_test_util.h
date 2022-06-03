@@ -24,7 +24,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/test/test_memory_snapshot.h"
 #include "util/file/file_writer.h"
 
@@ -38,18 +37,20 @@ namespace test {
 class TestMinidumpMemoryWriter final : public SnapshotMinidumpMemoryWriter {
  public:
   TestMinidumpMemoryWriter(uint64_t base_address, size_t size, uint8_t value);
+
+  TestMinidumpMemoryWriter(const TestMinidumpMemoryWriter&) = delete;
+  TestMinidumpMemoryWriter& operator=(const TestMinidumpMemoryWriter&) = delete;
+
   ~TestMinidumpMemoryWriter();
 
   void SetShouldFailRead(bool should_fail);
 
  private:
   TestMemorySnapshot test_snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMinidumpMemoryWriter);
 };
 
-//! \brief Verifies, via gtest assertions, that a MINIDUMP_MEMORY_DESCRIPTOR
-//!     structure contains expected values.
+//! \brief Verifies, via Google Test assertions, that a
+//!     MINIDUMP_MEMORY_DESCRIPTOR structure contains expected values.
 //!
 //! In \a expected and \a observed,
 //! MINIDUMP_MEMORY_DESCRIPTOR::StartOfMemoryRange and
@@ -64,10 +65,10 @@ class TestMinidumpMemoryWriter final : public SnapshotMinidumpMemoryWriter {
 void ExpectMinidumpMemoryDescriptor(const MINIDUMP_MEMORY_DESCRIPTOR* expected,
                                     const MINIDUMP_MEMORY_DESCRIPTOR* observed);
 
-//! \brief Verifies, via gtest assertions, that a MINIDUMP_MEMORY_DESCRIPTOR
-//!     structure contains expected values, and that the memory region it points
-//!     to contains expected values assuming it was written by a
-//!     TestMinidumpMemoryWriter object.
+//! \brief Verifies, via Google Test assertions, that a
+//!     MINIDUMP_MEMORY_DESCRIPTOR structure contains expected values, and that
+//!     the memory region it points to contains expected values assuming it was
+//!     written by a TestMinidumpMemoryWriter object.
 //!
 //! \a expected and \a observed are compared by
 //! ExpectMinidumpMemoryDescriptor().

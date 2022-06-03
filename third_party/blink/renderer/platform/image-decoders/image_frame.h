@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -149,7 +148,7 @@ class PLATFORM_EXPORT ImageFrame final {
   // Returns true if the pixels changed, but the bitmap has not yet been
   // notified.
   bool PixelsChanged() const { return pixels_changed_; }
-  size_t RequiredPreviousFrameIndex() const {
+  wtf_size_t RequiredPreviousFrameIndex() const {
     return required_previous_frame_index_;
   }
   void SetHasAlpha(bool alpha);
@@ -175,7 +174,7 @@ class PLATFORM_EXPORT ImageFrame final {
   void SetPixelsChanged(bool pixels_changed) {
     pixels_changed_ = pixels_changed;
   }
-  void SetRequiredPreviousFrameIndex(size_t previous_frame_index) {
+  void SetRequiredPreviousFrameIndex(wtf_size_t previous_frame_index) {
     required_previous_frame_index_ = previous_frame_index;
   }
 
@@ -324,9 +323,9 @@ class PLATFORM_EXPORT ImageFrame final {
   // WTF::kNotFound if this frame doesn't require any previous frame.
   // This is used by ImageDecoder::ClearCacheExceptFrame(), and will never
   // be read for image formats that do not have multiple frames.
-  size_t required_previous_frame_index_;
+  wtf_size_t required_previous_frame_index_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_

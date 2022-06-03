@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {importer} from '../../common/js/importer_common.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+
 /**
  * A class that controls the visibility of the import status in the main table
  * UI.
  */
-class ColumnVisibilityController {
+export class ColumnVisibilityController {
   /**
    * @param {!FileManagerUI} ui
    * @param {!DirectoryModel} directoryModel
@@ -37,7 +44,7 @@ class ColumnVisibilityController {
     // TODO(kenobi): Once import status is exposed as part of the metadata
     // system, remove this and have the underlying UI determine its own status
     // using metadata.
-    const isImportEligible =
+    const isImportEligible = !window.isSWA &&
         importer.isBeneathMediaDir(event.newDirEntry, this.volumeManager_) &&
         !!this.volumeManager_.getCurrentProfileVolumeInfo(
             VolumeManagerCommon.VolumeType.DRIVE);

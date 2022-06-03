@@ -18,12 +18,12 @@ const int kBitsPerByte = 8;
 
 }  // namespace
 
-HidReportDescriptor::HidReportDescriptor(const std::vector<uint8_t>& bytes) {
+HidReportDescriptor::HidReportDescriptor(base::span<const uint8_t> bytes) {
   size_t header_index = 0;
   HidReportDescriptorItem* item = nullptr;
   while (header_index < bytes.size()) {
-    items_.push_back(HidReportDescriptorItem::Create(
-        &bytes[header_index], bytes.size() - header_index, item));
+    items_.push_back(
+        HidReportDescriptorItem::Create(bytes.subspan(header_index), item));
     header_index += items_.back()->GetSize();
   }
   collections_ = HidCollection::BuildCollections(items_);

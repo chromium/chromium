@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/audio_bus.h"
 
 using testing::_;
@@ -19,7 +19,7 @@ MockRedirectedAudioOutput::MockRedirectedAudioOutput(
     : config_(config),
       connection_(config_, this),
       last_output_timestamp_(INT64_MIN) {
-  ON_CALL(*this, OnRedirectedAudio(_, _, _, _))
+  ON_CALL(*this, OnRedirectedAudio(_, _, _))
       .WillByDefault(testing::Invoke(
           this, &MockRedirectedAudioOutput::HandleRedirectedAudio));
   connection_.Connect();
@@ -33,7 +33,6 @@ void MockRedirectedAudioOutput::SetStreamMatchPatterns(
 }
 
 void MockRedirectedAudioOutput::HandleRedirectedAudio(int64_t timestamp,
-                                                      int sample_rate,
                                                       float* data,
                                                       int frames) {
   CHECK(data);

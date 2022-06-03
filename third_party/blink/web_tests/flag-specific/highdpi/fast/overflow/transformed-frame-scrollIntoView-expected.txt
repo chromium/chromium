@@ -1,0 +1,18 @@
+layer at (0,0) size 1200x900 scrollY 300.00 scrollHeight 3024
+  LayoutView at (0,0) size 1200x900
+layer at (0,-300) size 1200x3024 backgroundClip at (0,0) size 1200x900 clip at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x3024
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x3000
+      LayoutNGBlockFlow {DIV} at (0,0) size 1176x3000
+layer at (0,300) size 450x300
+  LayoutIFrame (positioned) {IFRAME} at (0,600) size 450x300
+    layer at (0,0) size 450x300 scrollY 75.00 scrollHeight 1524
+      LayoutView at (0,0) size 450x300
+    layer at (0,-75) size 450x1524 backgroundClip at (0,0) size 450x300 clip at (0,0) size 450x300
+      LayoutNGBlockFlow {HTML} at (0,0) size 450x1524
+        LayoutNGBlockFlow {BODY} at (12,12) size 426x1500
+          LayoutNGBlockFlow {DIV} at (0,0) size 426x1500
+    layer at (0,150) size 150x150
+      LayoutNGBlockFlow (positioned) {DIV} at (0,225) size 150x150 [bgcolor=#008000]
+scrolled to 0,300
+frame '<!--framePath //<!--frame0-->-->' scrolled to 0,75

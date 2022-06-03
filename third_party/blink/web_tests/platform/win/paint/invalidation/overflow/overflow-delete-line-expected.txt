@@ -1,21 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='dv'",
-          "rect": [8, 74, 80, 19],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "InlineTextBox 'Lorem ipsu'",
-          "rect": [8, 74, 68, 19],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [8, 74, 79, 19]
       ]
     }
   ]

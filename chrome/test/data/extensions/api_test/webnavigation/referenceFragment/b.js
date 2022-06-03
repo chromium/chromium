@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 document.getElementById('btn').addEventListener('click', function() {
-  location.assign(location.href);
+  location.replace(location.href);
 });
 
 onload = function() {

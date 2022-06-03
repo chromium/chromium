@@ -16,6 +16,10 @@ namespace chrome_cleaner {
 class ZipArchiverTestFile {
  public:
   ZipArchiverTestFile();
+
+  ZipArchiverTestFile(const ZipArchiverTestFile&) = delete;
+  ZipArchiverTestFile& operator=(const ZipArchiverTestFile&) = delete;
+
   ~ZipArchiverTestFile();
 
   void Initialize();
@@ -30,8 +34,6 @@ class ZipArchiverTestFile {
   bool initialized_;
   base::ScopedTempDir temp_dir_;
   base::FilePath src_file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipArchiverTestFile);
 };
 
 }  // namespace chrome_cleaner

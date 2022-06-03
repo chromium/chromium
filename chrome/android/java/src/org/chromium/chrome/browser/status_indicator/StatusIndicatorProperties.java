@@ -18,14 +18,38 @@ class StatusIndicatorProperties {
     static final PropertyModel.WritableObjectPropertyKey<Drawable> STATUS_ICON =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** Whether the Android view version of the status indicator is visible. */
-    static final PropertyModel.WritableBooleanPropertyKey ANDROID_VIEW_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
+    /** Visibility of the status indicator's Android view. */
+    static final PropertyModel.WritableIntPropertyKey ANDROID_VIEW_VISIBILITY =
+            new PropertyModel.WritableIntPropertyKey();
 
     /** Whether the composited version of the status indicator is visible. */
     static final PropertyModel.WritableBooleanPropertyKey COMPOSITED_VIEW_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            STATUS_TEXT, STATUS_ICON, ANDROID_VIEW_VISIBLE, COMPOSITED_VIEW_VISIBLE};
+    /** Color of the widget's background. */
+    static final PropertyModel.WritableIntPropertyKey BACKGROUND_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+
+    /** Alpha of the text, including the icon. */
+    static final PropertyModel.WritableFloatPropertyKey TEXT_ALPHA =
+            new PropertyModel.WritableFloatPropertyKey();
+
+    /** Color of the status text. */
+    static final PropertyModel.WritableIntPropertyKey TEXT_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+
+    /** Tint of the status icon. */
+    static final PropertyModel.WritableIntPropertyKey ICON_TINT =
+            new PropertyModel.WritableIntPropertyKey();
+
+    /**
+     * Current visible height of the Android view. This is used when there is a Java height
+     * animation running rather than a native one.
+     */
+    static final PropertyModel.WritableIntPropertyKey CURRENT_VISIBLE_HEIGHT =
+            new PropertyModel.WritableIntPropertyKey();
+
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {STATUS_TEXT, STATUS_ICON,
+            ANDROID_VIEW_VISIBILITY, COMPOSITED_VIEW_VISIBLE, BACKGROUND_COLOR, TEXT_ALPHA,
+            TEXT_COLOR, ICON_TINT, CURRENT_VISIBLE_HEIGHT};
 }

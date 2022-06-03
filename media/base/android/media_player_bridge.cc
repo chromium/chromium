@@ -11,9 +11,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_common_android.h"
@@ -64,20 +65,24 @@ void RecordWatchTimeUMA(bool is_hls, bool has_video) {
 
 }  // namespace
 
-MediaPlayerBridge::MediaPlayerBridge(const GURL& url,
-                                     const GURL& site_for_cookies,
-                                     const url::Origin& top_frame_origin,
-                                     const std::string& user_agent,
-                                     bool hide_url_log,
-                                     Client* client,
-                                     bool allow_credentials,
-                                     bool is_hls)
+MediaPlayerBridge::MediaPlayerBridge(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    const std::string& user_agent,
+    bool hide_url_log,
+    Client* client,
+    bool allow_credentials,
+    bool is_hls)
     : prepared_(false),
+      playback_completed_(false),
       pending_play_(false),
       should_seek_on_prepare_(false),
       url_(url),
       site_for_cookies_(site_for_cookies),
       top_frame_origin_(top_frame_origin),
+      pending_retrieve_cookies_(false),
+      should_prepare_on_retrieved_cookies_(false),
       user_agent_(user_agent),
       hide_url_log_(hide_url_log),
       width_(0),
@@ -121,10 +126,11 @@ void MediaPlayerBridge::Initialize() {
     return;
   }
 
-  if (allow_credentials_) {
+  if (allow_credentials_ && !url_.SchemeIsFile()) {
     media::MediaResourceGetter* resource_getter =
         client_->GetMediaResourceGetter();
 
+    pending_retrieve_cookies_ = true;
     resource_getter->GetCookies(
         url_, site_for_cookies_, top_frame_origin_,
         base::BindOnce(&MediaPlayerBridge::OnCookiesRetrieved,
@@ -160,6 +166,17 @@ void MediaPlayerBridge::SetVideoSurface(gl::ScopedJavaSurface surface) {
 
   Java_MediaPlayerBridge_setSurface(env, j_media_player_bridge_,
                                     surface_.j_surface());
+}
+
+void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
+  if (j_media_player_bridge_.is_null())
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  CHECK(env);
+
+  Java_MediaPlayerBridge_setPlaybackRate(env, j_media_player_bridge_,
+                                         playback_rate);
 }
 
 void MediaPlayerBridge::Prepare() {
@@ -198,31 +215,52 @@ void MediaPlayerBridge::SetDataSource(const std::string& url) {
       OnMediaError(MEDIA_ERROR_FORMAT);
       return;
     }
-  } else {
-    // Create a Java String for the URL.
-    ScopedJavaLocalRef<jstring> j_url_string =
-        ConvertUTF8ToJavaString(env, url);
 
-    const std::string data_uri_prefix("data:");
-    if (base::StartsWith(url, data_uri_prefix, base::CompareCase::SENSITIVE)) {
-      if (!Java_MediaPlayerBridge_setDataUriDataSource(
-              env, j_media_player_bridge_, j_url_string)) {
-        OnMediaError(MEDIA_ERROR_FORMAT);
-      }
-      return;
-    }
-
-    ScopedJavaLocalRef<jstring> j_cookies = ConvertUTF8ToJavaString(
-        env, cookies_);
-    ScopedJavaLocalRef<jstring> j_user_agent = ConvertUTF8ToJavaString(
-        env, user_agent_);
-
-    if (!Java_MediaPlayerBridge_setDataSource(env, j_media_player_bridge_,
-                                              j_url_string, j_cookies,
-                                              j_user_agent, hide_url_log_)) {
+    if (!Java_MediaPlayerBridge_prepareAsync(env, j_media_player_bridge_))
       OnMediaError(MEDIA_ERROR_FORMAT);
-      return;
+
+    return;
+  }
+
+  // Create a Java String for the URL.
+  ScopedJavaLocalRef<jstring> j_url_string = ConvertUTF8ToJavaString(env, url);
+
+  const std::string data_uri_prefix("data:");
+  if (base::StartsWith(url, data_uri_prefix, base::CompareCase::SENSITIVE)) {
+    if (!Java_MediaPlayerBridge_setDataUriDataSource(
+            env, j_media_player_bridge_, j_url_string)) {
+      OnMediaError(MEDIA_ERROR_FORMAT);
     }
+    return;
+  }
+
+  // Cookies may not have been retrieved yet, delay prepare until they are
+  // retrieved.
+  if (pending_retrieve_cookies_) {
+    should_prepare_on_retrieved_cookies_ = true;
+    return;
+  }
+  SetDataSourceInternal();
+}
+
+void MediaPlayerBridge::SetDataSourceInternal() {
+  DCHECK(!pending_retrieve_cookies_);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  CHECK(env);
+
+  ScopedJavaLocalRef<jstring> j_cookies =
+      ConvertUTF8ToJavaString(env, cookies_);
+  ScopedJavaLocalRef<jstring> j_user_agent =
+      ConvertUTF8ToJavaString(env, user_agent_);
+  ScopedJavaLocalRef<jstring> j_url_string =
+      ConvertUTF8ToJavaString(env, url_.spec());
+
+  if (!Java_MediaPlayerBridge_setDataSource(env, j_media_player_bridge_,
+                                            j_url_string, j_cookies,
+                                            j_user_agent, hide_url_log_)) {
+    OnMediaError(MEDIA_ERROR_FORMAT);
+    return;
   }
 
   if (!Java_MediaPlayerBridge_prepareAsync(env, j_media_player_bridge_))
@@ -265,14 +303,20 @@ void MediaPlayerBridge::OnDidSetDataUriDataSource(
 
 void MediaPlayerBridge::OnCookiesRetrieved(const std::string& cookies) {
   cookies_ = cookies;
+  pending_retrieve_cookies_ = false;
   client_->GetMediaResourceGetter()->GetAuthCredentials(
       url_, base::BindOnce(&MediaPlayerBridge::OnAuthCredentialsRetrieved,
                            weak_factory_.GetWeakPtr()));
+
+  if (should_prepare_on_retrieved_cookies_) {
+    SetDataSourceInternal();
+    should_prepare_on_retrieved_cookies_ = false;
+  }
 }
 
 void MediaPlayerBridge::OnAuthCredentialsRetrieved(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   GURL::ReplacementsW replacements;
   if (!username.empty()) {
     replacements.SetUsernameStr(username);
@@ -340,7 +384,7 @@ base::TimeDelta MediaPlayerBridge::GetCurrentTime() {
   if (!prepared_)
     return pending_seek_;
   JNIEnv* env = base::android::AttachCurrentThread();
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       Java_MediaPlayerBridge_getCurrentPosition(env, j_media_player_bridge_));
 }
 
@@ -351,7 +395,7 @@ base::TimeDelta MediaPlayerBridge::GetDuration() {
   const int duration_ms =
       Java_MediaPlayerBridge_getDuration(env, j_media_player_bridge_);
   return duration_ms < 0 ? media::kInfiniteDuration
-                         : base::TimeDelta::FromMilliseconds(duration_ms);
+                         : base::Milliseconds(duration_ms);
 }
 
 void MediaPlayerBridge::Release() {
@@ -376,7 +420,7 @@ void MediaPlayerBridge::Release() {
 }
 
 void MediaPlayerBridge::SetVolume(double volume) {
-  volume_ = base::ClampToRange(volume, 0.0, 1.0);
+  volume_ = base::clamp(volume, 0.0, 1.0);
   UpdateVolumeInternal();
 }
 
@@ -414,7 +458,10 @@ void MediaPlayerBridge::OnMediaError(int error_type) {
 }
 
 void MediaPlayerBridge::OnPlaybackComplete() {
-  client_->OnPlaybackComplete();
+  if (!playback_completed_) {
+    playback_completed_ = true;
+    client_->OnPlaybackComplete();
+  }
 }
 
 void MediaPlayerBridge::OnMediaPrepared() {
@@ -430,7 +477,7 @@ void MediaPlayerBridge::OnMediaPrepared() {
   // events.
   if (should_seek_on_prepare_) {
     SeekInternal(pending_seek_);
-    pending_seek_ = base::TimeDelta::FromMilliseconds(0);
+    pending_seek_ = base::Milliseconds(0);
     should_seek_on_prepare_ = false;
   }
 
@@ -503,10 +550,12 @@ void MediaPlayerBridge::SeekInternal(base::TimeDelta time) {
 
   // Seeking to an invalid position may cause media player to stuck in an
   // error state.
-  if (time < base::TimeDelta()) {
+  if (time.is_negative()) {
     DCHECK_EQ(-1.0, time.InMillisecondsF());
     return;
   }
+
+  playback_completed_ = false;
 
   // Note: we do not want to count changes in media time due to seeks as watch
   // time, but tracking pending seeks is not completely trivial. Instead seeks
@@ -522,7 +571,7 @@ GURL MediaPlayerBridge::GetUrl() {
   return url_;
 }
 
-GURL MediaPlayerBridge::GetSiteForCookies() {
+const net::SiteForCookies& MediaPlayerBridge::GetSiteForCookies() {
   return site_for_cookies_;
 }
 

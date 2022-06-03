@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -69,6 +69,10 @@ class AudioInputDevice::AudioThreadCallback
                       bool enable_uma,
                       CaptureCallback* capture_callback,
                       base::RepeatingClosure got_data_callback);
+
+  AudioThreadCallback(const AudioThreadCallback&) = delete;
+  AudioThreadCallback& operator=(const AudioThreadCallback&) = delete;
+
   ~AudioThreadCallback() override;
 
   void MapSharedMemory() override;
@@ -81,7 +85,6 @@ class AudioInputDevice::AudioThreadCallback
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
   base::ReadOnlySharedMemoryMapping shared_memory_mapping_;
   const base::TimeTicks start_time_;
-  bool no_callbacks_received_;
   size_t current_segment_id_;
   uint32_t last_buffer_id_;
   std::vector<std::unique_ptr<const media::AudioBus>> audio_buses_;
@@ -94,18 +97,18 @@ class AudioInputDevice::AudioThreadCallback
   const int got_data_callback_interval_in_frames_;
   int frames_since_last_got_data_callback_;
   base::RepeatingClosure got_data_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadCallback);
 };
 
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
-                                   Purpose purpose)
+                                   Purpose purpose,
+                                   DeadStreamDetection detect_dead_stream)
     : thread_priority_(ThreadPriorityFromPurpose(purpose)),
       enable_uma_(purpose == AudioInputDevice::Purpose::kUserInput),
       callback_(nullptr),
       ipc_(std::move(ipc)),
       state_(IDLE),
-      agc_is_enabled_(false) {
+      agc_is_enabled_(false),
+      detect_dead_stream_(detect_dead_stream) {
   CHECK(ipc_);
 
   // The correctness of the code depends on the relative values assigned in the
@@ -143,9 +146,11 @@ void AudioInputDevice::Stop() {
   TRACE_EVENT0("audio", "AudioInputDevice::Stop");
 
   if (enable_uma_) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Media.Audio.Capture.DetectedMissingCallbacks",
-        alive_checker_ ? alive_checker_->DetectedDead() : false);
+    if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Media.Audio.Capture.DetectedMissingCallbacks",
+          alive_checker_ ? alive_checker_->DetectedDead() : false);
+    }
 
     UMA_HISTOGRAM_ENUMERATION("Media.Audio.Capture.StreamCallbackError2",
                               had_error_);
@@ -212,15 +217,15 @@ void AudioInputDevice::SetOutputDeviceForAec(
 
 void AudioInputDevice::OnStreamCreated(
     base::ReadOnlySharedMemoryRegion shared_memory_region,
-    base::SyncSocket::Handle socket_handle,
+    base::SyncSocket::ScopedHandle socket_handle,
     bool initially_muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnStreamCreated");
   DCHECK(shared_memory_region.IsValid());
 #if defined(OS_WIN)
-  DCHECK(socket_handle);
+  DCHECK(socket_handle.IsValid());
 #else
-  DCHECK_GE(socket_handle, 0);
+  DCHECK(socket_handle.is_valid());
 #endif
   DCHECK_GT(shared_memory_region.GetSize(), 0u);
 
@@ -248,44 +253,51 @@ void AudioInputDevice::OnStreamCreated(
 // also a risk of false positives if we are suspending when starting the stream
 // here. See comments in AliveChecker and PowerObserverHelper for details and
 // todos.
-#if defined(OS_LINUX)
-  const bool stop_at_first_alive_notification = true;
-  const bool pause_check_during_suspend = false;
+  if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+    const bool stop_at_first_alive_notification = true;
+    const bool pause_check_during_suspend = false;
 #else
   const bool stop_at_first_alive_notification = false;
   const bool pause_check_during_suspend = true;
 #endif
-  alive_checker_ = std::make_unique<AliveChecker>(
-      base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
-      base::TimeDelta::FromSeconds(kCheckMissingCallbacksIntervalSeconds),
-      base::TimeDelta::FromSeconds(kMissingCallbacksTimeBeforeErrorSeconds),
-      stop_at_first_alive_notification, pause_check_during_suspend);
+    alive_checker_ = std::make_unique<AliveChecker>(
+        base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
+        base::Seconds(kCheckMissingCallbacksIntervalSeconds),
+        base::Seconds(kMissingCallbacksTimeBeforeErrorSeconds),
+        stop_at_first_alive_notification, pause_check_during_suspend);
+  }
 
   // Unretained is safe since |alive_checker_| outlives |audio_callback_|.
+  base::RepeatingClosure notify_alive_closure =
+      alive_checker_
+          ? base::BindRepeating(&AliveChecker::NotifyAlive,
+                                base::Unretained(alive_checker_.get()))
+          : base::DoNothing();
+
   audio_callback_ = std::make_unique<AudioInputDevice::AudioThreadCallback>(
       audio_parameters_, std::move(shared_memory_region),
       kRequestedSharedMemoryCount, enable_uma_, callback_,
-      base::BindRepeating(&AliveChecker::NotifyAlive,
-                          base::Unretained(alive_checker_.get())));
-  audio_thread_ =
-      std::make_unique<AudioDeviceThread>(audio_callback_.get(), socket_handle,
-                                          "AudioInputDevice", thread_priority_);
+      notify_alive_closure);
+  audio_thread_ = std::make_unique<AudioDeviceThread>(
+      audio_callback_.get(), std::move(socket_handle), "AudioInputDevice",
+      thread_priority_);
 
   state_ = RECORDING;
   ipc_->RecordStream();
 
   // Start detecting missing audio data.
-  alive_checker_->Start();
+  if (alive_checker_)
+    alive_checker_->Start();
 }
 
-void AudioInputDevice::OnError() {
+void AudioInputDevice::OnError(AudioCapturerSource::ErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnError");
 
   // Do nothing if the stream has been closed.
   if (state_ < CREATING_STREAM)
     return;
-
 
   if (state_ == CREATING_STREAM) {
     // At this point, we haven't attempted to start the audio thread.
@@ -296,7 +308,10 @@ void AudioInputDevice::OnError() {
     // a local audio source).
     had_error_ = kErrorDuringCreation;
     callback_->OnCaptureError(
-        "Maximum allowed input device limit reached or OS failure.");
+        code, code == AudioCapturerSource::ErrorCode::kSystemPermissions
+                  ? "Unable to open due to failing an OS Permissions check."
+                  : "Maximum allowed input device limit reached or an OS "
+                    "failure occured.");
   } else {
     // Don't dereference the callback object if the audio thread
     // is stopped or stopping.  That could mean that the callback
@@ -306,7 +321,7 @@ void AudioInputDevice::OnError() {
     // a callback object via Start() and clear it in Stop().
     had_error_ = kErrorDuringCapture;
     if (audio_thread_)
-      callback_->OnCaptureError("IPC delegate state error.");
+      callback_->OnCaptureError(code, "IPC delegate state error.");
   }
 }
 
@@ -339,7 +354,8 @@ AudioInputDevice::~AudioInputDevice() {
 }
 
 void AudioInputDevice::DetectedDeadInputStream() {
-  callback_->OnCaptureError("No audio received from audio capture device.");
+  callback_->OnCaptureError(media::AudioCapturerSource::ErrorCode::kUnknown,
+                            "No audio received from audio capture device.");
 }
 
 // AudioInputDevice::AudioThreadCallback
@@ -357,7 +373,6 @@ AudioInputDevice::AudioThreadCallback::AudioThreadCallback(
       enable_uma_(enable_uma),
       shared_memory_region_(std::move(shared_memory_region)),
       start_time_(base::TimeTicks::Now()),
-      no_callbacks_received_(true),
       current_segment_id_(0u),
       last_buffer_id_(UINT32_MAX),
       capture_callback_(capture_callback),
@@ -400,15 +415,6 @@ void AudioInputDevice::AudioThreadCallback::MapSharedMemory() {
 
 void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   TRACE_EVENT_BEGIN0("audio", "AudioInputDevice::AudioThreadCallback::Process");
-
-  if (no_callbacks_received_) {
-    if (enable_uma_) {
-      UMA_HISTOGRAM_TIMES("Media.Audio.Render.InputDeviceStartTime",
-                          base::TimeTicks::Now() - start_time_);
-    }
-    no_callbacks_received_ = false;
-  }
-
   // The shared memory represents parameters, size of the data buffer and the
   // actual data buffer containing audio data. Map the memory into this
   // structure and parse out parameters and the data area.
@@ -429,14 +435,16 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
         "Incorrect buffer sequence. Expected = %u. Actual = %u.",
         last_buffer_id_ + 1, buffer->params.id);
     LOG(ERROR) << message;
-    capture_callback_->OnCaptureError(message);
+    capture_callback_->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown, message);
   }
   if (current_segment_id_ != pending_data) {
     std::string message = base::StringPrintf(
         "Segment id not matching. Remote = %u. Local = %" PRIuS ".",
         pending_data, current_segment_id_);
     LOG(ERROR) << message;
-    capture_callback_->OnCaptureError(message);
+    capture_callback_->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown, message);
   }
   last_buffer_id_ = buffer->params.id;
 
@@ -455,8 +463,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   // the audio delay measurement.
   // TODO(olka, tommi): Take advantage of |capture_time| in the renderer.
   const base::TimeTicks capture_time =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(buffer->params.capture_time_us);
+      base::TimeTicks() + base::Microseconds(buffer->params.capture_time_us);
   const base::TimeTicks now_time = base::TimeTicks::Now();
   DCHECK_GE(now_time, capture_time);
 

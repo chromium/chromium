@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -21,6 +22,8 @@ CurrentLocaleView::CurrentLocaleView(Shelf* shelf) : TrayItemView(shelf) {
   SetVisible(false);
   CreateLabel();
   SetupLabelForTray(label());
+  SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
+                                     kUnifiedTrayTextRightPadding));
 
   Shell::Get()->system_tray_model()->locale()->AddObserver(this);
 }
@@ -40,7 +43,7 @@ void CurrentLocaleView::OnLocaleListSet() {
   const std::vector<LocaleInfo>& locales = locale_model->locale_list();
   for (auto& entry : locales) {
     if (entry.iso_code == locale_model->current_locale_iso_code()) {
-      const base::string16 description = l10n_util::GetStringFUTF16(
+      const std::u16string description = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_INDICATOR_LOCALE_TOOLTIP, entry.display_name);
       label()->SetTooltipText(description);
       label()->SetCustomAccessibleName(description);
@@ -52,6 +55,11 @@ void CurrentLocaleView::OnLocaleListSet() {
 
 const char* CurrentLocaleView::GetClassName() const {
   return "CurrentLocaleView";
+}
+
+void CurrentLocaleView::HandleLocaleChange() {
+  // Nothing to do here, when this view is used, the locale will be updated
+  // using locale_model.
 }
 
 }  // namespace ash

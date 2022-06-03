@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace notifications {
 
@@ -42,10 +41,9 @@ class CollectionStore {
   virtual void Delete(const std::string& key, UpdateCallback callback) = 0;
 
   CollectionStore() = default;
+  CollectionStore(const CollectionStore&) = delete;
+  CollectionStore& operator=(const CollectionStore&) = delete;
   virtual ~CollectionStore() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CollectionStore);
 };
 
 }  // namespace notifications

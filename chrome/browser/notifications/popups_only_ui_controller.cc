@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/popups_only_ui_controller.h"
 
-#include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 
@@ -42,8 +41,8 @@ void PopupsOnlyUiController::OnNotificationUpdated(
 
 void PopupsOnlyUiController::OnNotificationClicked(
     const std::string& notification_id,
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (popups_visible_)
     ShowOrHidePopupBubbles();
 }
@@ -57,7 +56,7 @@ void PopupsOnlyUiController::ShowOrHidePopupBubbles() {
   if (popups_visible_ && !message_center_->HasPopupNotifications()) {
     popups_visible_ = false;
   } else if (!popups_visible_ && message_center_->HasPopupNotifications()) {
-    popup_collection_->StartObserving(display::Screen::GetScreen());
+    popup_collection_->StartObserving();
     popups_visible_ = true;
   }
 }

@@ -5,19 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_TEST_WEB_STATE_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_TEST_WEB_STATE_H_
 
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 
-class ToolbarTestWebState : public web::TestWebState {
+class ToolbarTestWebState : public web::FakeWebState {
  public:
   ToolbarTestWebState();
+
+  ToolbarTestWebState(const ToolbarTestWebState&) = delete;
+  ToolbarTestWebState& operator=(const ToolbarTestWebState&) = delete;
 
   double GetLoadingProgress() const override;
   void set_loading_progress(double loading_progress);
 
  private:
   double loading_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarTestWebState);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_TEST_WEB_STATE_H_

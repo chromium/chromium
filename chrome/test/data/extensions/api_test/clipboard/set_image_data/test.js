@@ -52,7 +52,7 @@ function testSaveJpegImageToClipboard(baseUrl) {
 
 function testSaveBadImageData(baseUrl) {
   testSetImageDataClipboard(
-      baseUrl + '/redirect_target.gif', 'jpeg', 'Image data decoding failed.');
+      baseUrl + '/test_file.txt', 'jpeg', 'Image data decoding failed.');
 }
 
 function testSavePngImageWithAdditionalDataToClipboard(baseUrl) {

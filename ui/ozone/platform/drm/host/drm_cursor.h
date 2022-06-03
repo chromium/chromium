@@ -8,11 +8,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace ui {
 class BitmapCursorOzone;
@@ -25,11 +29,11 @@ class DrmCursorProxy {
  public:
   virtual ~DrmCursorProxy() {}
 
-  // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay_ms|.
+  // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay|.
   virtual void CursorSet(gfx::AcceleratedWidget window,
                          const std::vector<SkBitmap>& bitmaps,
                          const gfx::Point& point,
-                         int frame_delay_ms) = 0;
+                         base::TimeDelta frame_delay) = 0;
   // Moves the cursor in |window| to |point|.
   virtual void Move(gfx::AcceleratedWidget window, const gfx::Point& point) = 0;
 
@@ -41,6 +45,10 @@ class DrmCursorProxy {
 class DrmCursor : public CursorDelegateEvdev {
  public:
   explicit DrmCursor(DrmWindowHostManager* window_manager);
+
+  DrmCursor(const DrmCursor&) = delete;
+  DrmCursor& operator=(const DrmCursor&) = delete;
+
   ~DrmCursor() override;
 
   // Sets or the DrmProxy |proxy|. If |proxy| is set, the DrmCursor uses
@@ -49,8 +57,9 @@ class DrmCursor : public CursorDelegateEvdev {
   void SetDrmCursorProxy(std::unique_ptr<DrmCursorProxy> proxy);
   void ResetDrmCursorProxy();
 
-  // Change the cursor over the specifed window.
-  void SetCursor(gfx::AcceleratedWidget window, PlatformCursor platform_cursor);
+  // Change the cursor over the specified window.
+  void SetCursor(gfx::AcceleratedWidget window,
+                 scoped_refptr<BitmapCursorOzone> platform_cursor);
 
   // Handle window lifecycle.
   void OnWindowAdded(gfx::AcceleratedWidget window,
@@ -83,7 +92,7 @@ class DrmCursor : public CursorDelegateEvdev {
   void CursorSetLockTested(gfx::AcceleratedWidget window,
                            const std::vector<SkBitmap>& bitmaps,
                            const gfx::Point& point,
-                           int frame_delay_ms);
+                           base::TimeDelta frame_delay);
   void MoveLockTested(gfx::AcceleratedWidget window, const gfx::Point& point);
 
   // The mutex synchronizing this object.
@@ -97,7 +106,7 @@ class DrmCursor : public CursorDelegateEvdev {
   gfx::Point GetBitmapLocationLocked();
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> bitmap_;
+  scoped_refptr<BitmapCursorOzone> cursor_;
 
   // The window under the cursor.
   gfx::AcceleratedWidget window_;
@@ -114,8 +123,6 @@ class DrmCursor : public CursorDelegateEvdev {
   DrmWindowHostManager* const window_manager_;  // Not owned.
 
   std::unique_ptr<DrmCursorProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmCursor);
 };
 
 }  // namespace ui

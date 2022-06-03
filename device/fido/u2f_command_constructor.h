@@ -11,9 +11,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -26,6 +26,13 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 bool IsConvertibleToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request);
 
+// ShouldPreferCTAP2 returns true if the given request should be routed over
+// CTAP2, if the authenticator supports it, even if we might want to route it
+// over U2F to avoid a PIN prompt to create the credential.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool ShouldPreferCTAP2EvenIfItNeedsAPIN(
+    const CtapMakeCredentialRequest& request);
+
 // Checks whether user verification is not required and that allow list is
 // not empty.
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#using-the-ctap2-authenticatorgetassertion-command-with-ctap1-u2f-authenticators
@@ -34,19 +41,19 @@ bool IsConvertibleToU2fSignCommand(const CtapGetAssertionRequest& request);
 
 // Extracts APDU encoded U2F register command from CtapMakeCredentialRequest.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
+absl::optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request);
 
 // Turns a CtapMakeCredentialRequest into an APDU encoded U2F sign command
 // for the same RP and key handle, but a bogus challenge.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
+absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
     const CtapMakeCredentialRequest& request,
     base::span<const uint8_t> key_handle);
 
 // Extracts APDU encoded U2F sign command from CtapGetAssertionRequest.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
+absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
     const CtapGetAssertionRequest& request,
     ApplicationParameterType application_parameter_type,
     base::span<const uint8_t> key_handle);
@@ -62,7 +69,7 @@ std::vector<uint8_t> ConstructU2fRegisterCommand(
 // TODO(hongjunchoi): Move this logic inside ConvertToU2fSignCommand() once
 // U2fSign is deleted.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> ConstructU2fSignCommand(
+absl::optional<std::vector<uint8_t>> ConstructU2fSignCommand(
     base::span<const uint8_t, kU2fApplicationParamLength> application_parameter,
     base::span<const uint8_t, kU2fChallengeParamLength> challenge_parameter,
     base::span<const uint8_t> key_handle);

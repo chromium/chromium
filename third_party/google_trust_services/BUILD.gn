@@ -5,7 +5,10 @@
 static_library("google_trust_services") {
   # This is currently only used by remoting. Changes to visibility require a
   # security review.
-  visibility = [ "//remoting/*" ]
+  visibility = [
+    "//chrome/services/speech/*",
+    "//remoting/*",
+  ]
   sources = [
     "src/roots.cc",
     "src/roots.h",

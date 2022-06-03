@@ -6,30 +6,26 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_CLIENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class LayoutSVGResourceContainer;
-
-typedef unsigned InvalidationModeMask;
+class QualifiedName;
+class SVGFilterPrimitiveStandardAttributes;
+class SVGResource;
 
 class CORE_EXPORT SVGResourceClient : public GarbageCollectedMixin {
  public:
   virtual ~SVGResourceClient() = default;
 
-  // When adding modes, make sure we don't overflow
-  // |LayoutSVGResourceContainer::completed_invalidation_mask_|.
-  enum InvalidationMode {
-    kLayoutInvalidation = 1 << 0,
-    kBoundariesInvalidation = 1 << 1,
-    kPaintInvalidation = 1 << 2,
-    kParentOnlyInvalidation = 1 << 3,
-    kSkipAncestorInvalidation = 1 << 4,
-  };
-  virtual void ResourceContentChanged(InvalidationModeMask) = 0;
-  virtual void ResourceElementChanged() = 0;
-  virtual void ResourceDestroyed(LayoutSVGResourceContainer*) {}
+  virtual void ResourceContentChanged(SVGResource*) = 0;
+
+  virtual void FilterPrimitiveChanged(
+      SVGResource* resource,
+      SVGFilterPrimitiveStandardAttributes& primitive,
+      const QualifiedName& attribute) {
+    ResourceContentChanged(resource);
+  }
 
  protected:
   SVGResourceClient() = default;

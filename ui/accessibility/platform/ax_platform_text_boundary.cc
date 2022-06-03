@@ -4,85 +4,92 @@
 
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 
+#include "ui/accessibility/ax_enums.mojom.h"
+
 namespace ui {
 
 #if BUILDFLAG(USE_ATK)
-AXTextBoundary FromAtkTextBoundary(AtkTextBoundary boundary) {
+ax::mojom::TextBoundary FromAtkTextBoundary(AtkTextBoundary boundary) {
   // These are listed in order of their definition in the ATK header.
   switch (boundary) {
     case ATK_TEXT_BOUNDARY_CHAR:
-      return AXTextBoundary::kCharacter;
+      return ax::mojom::TextBoundary::kCharacter;
     case ATK_TEXT_BOUNDARY_WORD_START:
-      return AXTextBoundary::kWordStart;
+      return ax::mojom::TextBoundary::kWordStart;
     case ATK_TEXT_BOUNDARY_WORD_END:
-      return AXTextBoundary::kWordEnd;
+      return ax::mojom::TextBoundary::kWordEnd;
     case ATK_TEXT_BOUNDARY_SENTENCE_START:
-      return AXTextBoundary::kSentenceStart;
+      return ax::mojom::TextBoundary::kSentenceStart;
     case ATK_TEXT_BOUNDARY_SENTENCE_END:
-      return AXTextBoundary::kSentenceEnd;
+      return ax::mojom::TextBoundary::kSentenceEnd;
     case ATK_TEXT_BOUNDARY_LINE_START:
-      return AXTextBoundary::kLineStart;
+      return ax::mojom::TextBoundary::kLineStart;
     case ATK_TEXT_BOUNDARY_LINE_END:
-      return AXTextBoundary::kLineEnd;
+      return ax::mojom::TextBoundary::kLineEnd;
   }
 }
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-AXTextBoundary FromAtkTextGranularity(AtkTextGranularity granularity) {
+ax::mojom::TextBoundary FromAtkTextGranularity(AtkTextGranularity granularity) {
   // These are listed in order of their definition in the ATK header.
   switch (granularity) {
     case ATK_TEXT_GRANULARITY_CHAR:
-      return AXTextBoundary::kCharacter;
+      return ax::mojom::TextBoundary::kCharacter;
     case ATK_TEXT_GRANULARITY_WORD:
-      return AXTextBoundary::kWordStart;
+      return ax::mojom::TextBoundary::kWordStart;
     case ATK_TEXT_GRANULARITY_SENTENCE:
-      return AXTextBoundary::kSentenceStart;
+      return ax::mojom::TextBoundary::kSentenceStart;
     case ATK_TEXT_GRANULARITY_LINE:
-      return AXTextBoundary::kLineStart;
+      return ax::mojom::TextBoundary::kLineStart;
     case ATK_TEXT_GRANULARITY_PARAGRAPH:
-      return AXTextBoundary::kParagraphStart;
+      return ax::mojom::TextBoundary::kParagraphStart;
   }
 }
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
 
 #ifdef OS_WIN
-AXTextBoundary FromIA2TextBoundary(IA2TextBoundaryType boundary) {
+ax::mojom::TextBoundary FromIA2TextBoundary(IA2TextBoundaryType boundary) {
   switch (boundary) {
     case IA2_TEXT_BOUNDARY_CHAR:
-      return AXTextBoundary::kCharacter;
+      return ax::mojom::TextBoundary::kCharacter;
     case IA2_TEXT_BOUNDARY_WORD:
-      return AXTextBoundary::kWordStart;
+      return ax::mojom::TextBoundary::kWordStart;
     case IA2_TEXT_BOUNDARY_LINE:
-      return AXTextBoundary::kLineStart;
+      return ax::mojom::TextBoundary::kLineStart;
     case IA2_TEXT_BOUNDARY_SENTENCE:
-      return AXTextBoundary::kSentenceStart;
+      return ax::mojom::TextBoundary::kSentenceStart;
     case IA2_TEXT_BOUNDARY_PARAGRAPH:
-      return AXTextBoundary::kParagraphStart;
+      return ax::mojom::TextBoundary::kParagraphStart;
     case IA2_TEXT_BOUNDARY_ALL:
-      return AXTextBoundary::kObject;
+      return ax::mojom::TextBoundary::kObject;
   }
 }
 
-AXTextBoundary FromUIATextUnit(TextUnit unit) {
+ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit) {
   // These are listed in order of their definition in the Microsoft
   // documentation.
   switch (unit) {
     case TextUnit_Character:
-      return AXTextBoundary::kCharacter;
+      return ax::mojom::TextBoundary::kCharacter;
     case TextUnit_Format:
-      return AXTextBoundary::kFormatChange;
+      return ax::mojom::TextBoundary::kFormatStart;
     case TextUnit_Word:
-      return AXTextBoundary::kWordStart;
+      return ax::mojom::TextBoundary::kWordStart;
     case TextUnit_Line:
-      return AXTextBoundary::kLineStart;
+      return ax::mojom::TextBoundary::kLineStart;
     case TextUnit_Paragraph:
-      return AXTextBoundary::kParagraphStart;
+      // According to MSDN, a paragraph in UI Automation should include any
+      // trailing whitespace after the paragraph. In essence this means that
+      // when finding the next or previous paragraph start position, we should
+      // skip any empty paragraphs, i.e. paragraphs with only whitespace in
+      // them.
+      return ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs;
     case TextUnit_Page:
       // UI Automation's TextUnit_Page cannot be reliably supported in a Web
       // document. We return kWebPage which is the next best thing.
     case TextUnit_Document:
-      return AXTextBoundary::kWebPage;
+      return ax::mojom::TextBoundary::kWebPage;
   }
 }
 #endif  // OS_WIN

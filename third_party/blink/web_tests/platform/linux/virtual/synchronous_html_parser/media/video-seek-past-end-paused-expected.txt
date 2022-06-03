@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that seeking a paused video past its end sets currentTime to duration and leaves the video paused. assert_true: expected true got false
+Harness: the test ran to completion.
+

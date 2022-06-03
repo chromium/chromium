@@ -19,6 +19,8 @@ PSRC = $(PIEX)/src/piex.cc \
 INCS = -I $(PIEX)
 WASM = -s WASM=1 -fno-exceptions -Wall -fsanitize=cfi -flto -fvisibility=hidden
 WOPT = -Os --llvm-opts 3 \
+  -s MODULARIZE=1 \
+  -s EXPORT_NAME=createPiexModule \
   -s STRICT=1 \
   -s ALLOW_MEMORY_GROWTH=1 \
   -s ENVIRONMENT='web' \

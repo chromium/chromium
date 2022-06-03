@@ -26,11 +26,11 @@ class LineLayoutSVGInline : public LineLayoutInline {
 
  private:
   LayoutSVGInline* ToSVGInline() {
-    return ToLayoutSVGInline(GetLayoutObject());
+    return To<LayoutSVGInline>(GetLayoutObject());
   }
 
   const LayoutSVGInline* ToSVGInline() const {
-    return ToLayoutSVGInline(GetLayoutObject());
+    return To<LayoutSVGInline>(GetLayoutObject());
   }
 };
 

@@ -13,16 +13,16 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if !defined(OS_ANDROID)
-#include "components/crash/content/app/breakpad_linux_impl.h"
+#include "components/crash/core/app/breakpad_linux_impl.h"
 #endif
 
 namespace base {
@@ -43,13 +43,16 @@ struct BreakpadInfo;
 // Processes signal that they need to be dumped by sending a datagram over a
 // UNIX domain socket. All processes of the same type share the client end of
 // this socket which is installed in their descriptor table before exec.
-class CrashHandlerHostLinux
-    : public base::MessagePumpForIO::FdWatcher,
-      public base::MessageLoopCurrent::DestructionObserver {
+class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
+                              public base::CurrentThread::DestructionObserver {
  public:
   CrashHandlerHostLinux(const std::string& process_type,
                         const base::FilePath& dumps_path,
                         bool upload);
+
+  CrashHandlerHostLinux(const CrashHandlerHostLinux&) = delete;
+  CrashHandlerHostLinux& operator=(const CrashHandlerHostLinux&) = delete;
+
   ~CrashHandlerHostLinux() override;
 
   // Starts the uploader thread. Must be called immediately after creating the
@@ -66,7 +69,7 @@ class CrashHandlerHostLinux
   void OnFileCanWriteWithoutBlocking(int fd) override;
   void OnFileCanReadWithoutBlocking(int fd) override;
 
-  // MessageLoopCurrent::DestructionObserver impl:
+  // CurrentThread::DestructionObserver impl:
   void WillDestroyCurrentMessageLoop() override;
 
   // Whether we are shutting down or not.
@@ -112,20 +115,18 @@ class CrashHandlerHostLinux
   base::AtomicFlag shutting_down_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHostLinux);
 };
 
 }  // namespace breakpad
 
 #endif  // !defined(OS_ANDROID)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace crashpad {
 
 class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
-                         public base::MessageLoopCurrent::DestructionObserver {
+                         public base::CurrentThread::DestructionObserver {
  public:
   // An interface for observers to be notified when a child process is crashing.
   class Observer {
@@ -145,6 +146,9 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   // by the first call to this method.
   static CrashHandlerHost* Get();
 
+  CrashHandlerHost(const CrashHandlerHost&) = delete;
+  CrashHandlerHost& operator=(const CrashHandlerHost&) = delete;
+
   // Get the file descriptor which processes should be given in order to signal
   // crashes to the browser.
   int GetDeathSignalSocket();
@@ -156,14 +160,16 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   CrashHandlerHost();
 
   void Init();
-  bool ReceiveClientMessage(int client_fd, base::ScopedFD* handler_fd);
+  bool ReceiveClientMessage(int client_fd,
+                            base::ScopedFD* handler_fd,
+                            bool* write_minidump_to_database);
   void NotifyCrashSignalObservers(base::ProcessId pid, int signo);
 
   // MessagePumbLibevent::Watcher impl:
   void OnFileCanWriteWithoutBlocking(int fd) override;
   void OnFileCanReadWithoutBlocking(int fd) override;
 
-  // MessageLoopCurrent::DestructionObserver impl:
+  // CurrentThread::DestructionObserver impl:
   void WillDestroyCurrentMessageLoop() override;
 
   base::Lock observers_lock_;
@@ -171,12 +177,10 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   base::MessagePumpForIO::FdWatchController fd_watch_controller_;
   base::ScopedFD process_socket_;
   base::ScopedFD browser_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHost);
 };
 
 }  // namespace crashpad
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_CRASH_HANDLER_HOST_LINUX_H_

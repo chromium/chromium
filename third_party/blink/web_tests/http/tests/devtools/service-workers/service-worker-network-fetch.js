@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests fetch in Service Workers.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.showPanel('network');
 
@@ -22,7 +22,7 @@
   function fetchCallback(result) {
     TestRunner.addResult('Fetch in worker result: ' + result);
 
-    var requests = NetworkTestRunner.networkRequests();
+    const requests = NetworkTestRunner.networkRequests();
     requests.forEach((request) => {
       TestRunner.addResult(request.url());
       TestRunner.addResult('resource.type: ' + request.resourceType());

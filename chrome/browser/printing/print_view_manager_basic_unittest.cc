@@ -12,8 +12,8 @@
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/printing/printing_init.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/render_process_host.h"
+#include "printing/mojom/print.mojom.h"
 
 namespace printing {
 
@@ -56,15 +56,14 @@ TEST_F(PrintViewManagerBasicTest, CancelJobDuringDestruction) {
   auto query = queue->CreatePrinterQuery(main_rfh()->GetProcess()->GetID(),
                                          main_rfh()->GetRoutingID());
   base::RunLoop runloop;
-  query->SetSettings(GetPrintTicket(printing::kLocalPrinter),
+  query->SetSettings(GetPrintTicket(mojom::PrinterType::kLocal),
                      runloop.QuitClosure());
   runloop.Run();
   auto cookie = query->cookie();
   queue->QueuePrinterQuery(std::move(query));
 
-  // Fake GetPrintedPagesCount message to cause print_job to be created
-  content::RenderFrameHostTester::TestOnMessageReceived(
-      main_rfh(), PrintHostMsg_DidGetPrintedPagesCount(0, cookie, 1));
+  // Fake DidGetPrintedPagesCount() call to cause print_job to be created
+  print_view_manager->DidGetPrintedPagesCount(cookie, 1);
 
   DeleteContents();
 }

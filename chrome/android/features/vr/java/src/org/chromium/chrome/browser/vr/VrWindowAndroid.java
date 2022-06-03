@@ -6,20 +6,22 @@ package org.chromium.chrome.browser.vr;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Process;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -30,12 +32,16 @@ import java.util.Arrays;
  */
 public class VrWindowAndroid
         extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
-    public VrWindowAndroid(Context context, DisplayAndroid display) {
-        super(context, display);
-        Activity activity = ContextUtils.activityFromContext(context);
-        if (activity == null) {
-            throw new IllegalArgumentException("Context is not and does not wrap an Activity");
-        }
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    /**
+     * @param activity The current application {@link Activity}.
+     * @param display The application {@link DisplayAndroid}.
+     * @param modalDialogManagerSupplier Supplies the current {@link ModalDialogManager}.
+     */
+    public VrWindowAndroid(Activity activity, DisplayAndroid display,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        super(activity, display);
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         ApplicationStatus.registerStateListenerForActivity(this, activity);
         setAndroidPermissionDelegate(new ActivityAndroidPermissionDelegate());
     }
@@ -49,12 +55,6 @@ public class VrWindowAndroid
 
     @Override
     public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
-        return START_INTENT_FAILURE;
-    }
-
-    @Override
-    public int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, Integer errorId) {
         return START_INTENT_FAILURE;
     }
 
@@ -73,6 +73,11 @@ public class VrWindowAndroid
         } else if (newState == ActivityState.STARTED) {
             onActivityStarted();
         }
+    }
+
+    @Override
+    public @Nullable ModalDialogManager getModalDialogManager() {
+        return mModalDialogManagerSupplier.get();
     }
 
     // We can't request permissions inside of VR without getting kicked out of VR.

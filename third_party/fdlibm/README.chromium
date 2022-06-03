@@ -1,0 +1,27 @@
+Name: V8 fork of fdlibm
+URL: source.chromium.org/chromium/chromium/src/+/master:v8/src/base/ieee754.cc
+Revision: c512d6173f33c6b8301d3fba9384edc9fc1f9e45
+Version: 0
+Security Critical: yes
+License: fdlibm license
+License Android Compatible: yes
+
+Description:
+The V8 project has a math library implementation, v8/src/base/ieee754.cc,
+derived from significant Google, Inc. changes to the NetBSD version of fdlibm.
+This library is a copy of that V8 library intended for use in Chromium.
+
+This library may be useful when mathematical consistency across OS platforms is
+desired.
+
+The initial commit is not a pristine import -- the patch in the chromium/
+subdirectory documents the changes made to the original sources. This patch was
+produced via `git format-patch` and can be applied using `git am`.
+
+Changes from V8 upstream:
+- Changed namespace to fdlibm.
+- Alter //v8/src/base usage to use Chromium //base equivalents.
+- Implement 32-bit float functions (sinf(), etc.) by calling the 64-bit
+  versions.
+- Format the code.
+- Remove MSVC code, which is not supported by Chromium anymore.

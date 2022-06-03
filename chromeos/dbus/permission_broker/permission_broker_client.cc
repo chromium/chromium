@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "dbus/bus.h"
@@ -17,6 +17,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using permission_broker::kCheckPathAccess;
+using permission_broker::kClaimDevicePath;
 using permission_broker::kOpenPath;
 using permission_broker::kPermissionBrokerInterface;
 using permission_broker::kPermissionBrokerServiceName;
@@ -43,6 +44,11 @@ PermissionBrokerClient* g_instance = nullptr;
 class PermissionBrokerClientImpl : public PermissionBrokerClient {
  public:
   PermissionBrokerClientImpl() = default;
+
+  PermissionBrokerClientImpl(const PermissionBrokerClientImpl&) = delete;
+  PermissionBrokerClientImpl& operator=(const PermissionBrokerClientImpl&) =
+      delete;
+
   ~PermissionBrokerClientImpl() override = default;
 
   void CheckPathAccess(const std::string& path,
@@ -62,6 +68,25 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     dbus::MethodCall method_call(kPermissionBrokerInterface, kOpenPath);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(path);
+    proxy_->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&PermissionBrokerClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  void ClaimDevicePath(const std::string& path,
+                       uint32_t allowed_interfaces_mask,
+                       int lifeline_fd,
+                       OpenPathCallback callback,
+                       ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(kPermissionBrokerInterface, kClaimDevicePath);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(allowed_interfaces_mask);
+    writer.AppendFileDescriptor(lifeline_fd);
     proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,
@@ -247,8 +272,6 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
   // first, invalidating its weak pointers, before the other members are
   // destroyed.
   base::WeakPtrFactory<PermissionBrokerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionBrokerClientImpl);
 };
 
 PermissionBrokerClient::PermissionBrokerClient() {

@@ -1,0 +1,19 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_resize_observer = [
+  "resize_observation.cc",
+  "resize_observation.h",
+  "resize_observer.cc",
+  "resize_observer.h",
+  "resize_observer_box_options.h",
+  "resize_observer_controller.cc",
+  "resize_observer_controller.h",
+  "resize_observer_entry.cc",
+  "resize_observer_entry.h",
+  "resize_observer_size.cc",
+  "resize_observer_size.h",
+  "resize_observer_utilities.cc",
+  "resize_observer_utilities.h",
+]

@@ -54,7 +54,7 @@ void MediaControlsTextTrackManager::DisableShowingTextTracks() {
   }
 }
 
-void MediaControlsTextTrackManager::Trace(Visitor* visitor) {
+void MediaControlsTextTrackManager::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
 }
 

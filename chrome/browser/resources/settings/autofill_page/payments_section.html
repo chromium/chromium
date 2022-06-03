@@ -1,24 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../people_page/sync_browser_proxy.html">
-<link rel="import" href="credit_card_edit_dialog.html">
-<link rel="import" href="credit_card_list.html">
-<link rel="import" href="passwords_shared_css.html">
-
-<dom-module id="settings-payments-section">
-  <template>
-    <style include="settings-shared passwords-shared">
+    <style include="cr-shared-style settings-shared iron-flex passwords-shared">
       .expiration-column {
         align-items: center;
         display: flex;
@@ -35,18 +15,22 @@
       }
     </style>
     <settings-toggle-button id="autofillCreditCardToggle"
-        class="settings-box first"
         aria-label="$i18n{creditCards}" no-extension-indicator
         label="$i18n{enableCreditCardsLabel}"
         sub-label="$i18n{enableCreditCardsSublabel}"
         pref="{{prefs.autofill.credit_card_enabled}}">
+    </settings-toggle-button>
+    <settings-toggle-button id="canMakePaymentToggle"
+        aria-label="$i18n{canMakePaymentToggleLabel}"
+        label="$i18n{canMakePaymentToggleLabel}"
+        pref="{{prefs.payments.can_make_payment_enabled}}"
+        on-settings-boolean-control-change="onCanMakePaymentChange_">
     </settings-toggle-button>
     <template is="dom-if"
         if="[[shouldShowFidoToggle_(
             prefs.autofill.credit_card_enabled.value,
             userIsFidoVerifiable_)]]">
       <settings-toggle-button
-          class="settings-box first"
           id="autofillCreditCardFIDOAuthToggle"
           aria-label="$i18n{creditCards}" no-extension-indicator
           label="$i18n{enableCreditCardFIDOAuthLabel}"
@@ -57,8 +41,8 @@
     </template>
     <template is="dom-if"
         if="[[prefs.autofill.credit_card_enabled.extensionId]]">
-      <div class="settings-box continuation">
-        <extension-controlled-indicator class="start"
+      <div class="cr-row continuation">
+        <extension-controlled-indicator class="flex"
             id="autofillExtensionIndicator"
             extension-id="[[prefs.autofill.credit_card_enabled.extensionId]]"
             extension-name="[[
@@ -69,13 +53,13 @@
       </div>
     </template>
 
-    <div id="manageLink" class="settings-box first">
-      <!-- This span lays out the URL correctly, relative to the label. -->
-      <span>$i18nRaw{manageCreditCardsLabel}</span>
+    <div id="manageLink" class="cr-row first">
+      <!-- This span lays out the link correctly, relative to the text. -->
+      <div class="cr-padded-text">$i18nRaw{manageCreditCardsLabel}</div>
     </div>
 
-    <div class="settings-box continuation">
-      <h2 class="start">$i18n{creditCards}</h2>
+    <div class="cr-row continuation">
+      <h2 class="flex">$i18n{creditCards}</h2>
       <cr-button id="addCreditCard" class="header-aligned-button"
           on-click="onAddCreditCardTap_"
           hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
@@ -88,27 +72,24 @@
         on-click="onMigrateCreditCardsClick_"
         label="$i18n{migrateCreditCardsLabel}"
         sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
-    <settings-credit-card-list id="creditCardList" class="list-frame"
-        credit-cards="[[creditCards]]">
-    </settings-credit-card-list>
+    <settings-payments-list id="paymentsList" class="list-frame"
+        credit-cards="[[creditCards]]" upi-ids="[[upiIds]]">
+    </settings-payments-list>
 
     <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditCreditCard" class="dropdown-item"
           on-click="onMenuEditCreditCardTap_">$i18n{edit}</button>
       <button id="menuRemoveCreditCard" class="dropdown-item"
-          hidden$="[[!activeCreditCard.metadata.isLocal]]"
+          hidden$="[[!activeCreditCard_.metadata.isLocal]]"
           on-click="onMenuRemoveCreditCardTap_">$i18n{removeCreditCard}</button>
       <button id="menuClearCreditCard" class="dropdown-item"
           on-click="onMenuClearCreditCardTap_"
-          hidden$="[[!activeCreditCard.metadata.isCached]]">
+          hidden$="[[!activeCreditCard_.metadata.isCached]]">
         $i18n{clearCreditCard}
       </button>
     </cr-action-menu>
     <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
-      <settings-credit-card-edit-dialog credit-card="[[activeCreditCard]]"
+      <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
           on-close="onCreditCardDialogClose_">
       </settings-credit-card-edit-dialog>
     </template>
-  </template>
-  <script src="payments_section.js"></script>
-</dom-module>

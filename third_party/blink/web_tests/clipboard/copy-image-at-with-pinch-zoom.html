@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <body>
 <canvas style="position:absolute; top:40px; left:40px" width="200" height="200"></canvas>
@@ -14,7 +14,7 @@ requestAnimationFrame(test.step_func(() => {
   internals.setPageScaleFactor(2);
   internals.setVisualViewportOffset(200, 200);
   requestAnimationFrame(test.step_func(() => {
-    testRunner.copyImageAtAndCapturePixelsAsyncThen(0, 0, test.step_func_done((width, height, snapshot) => {
+    testRunner.copyImageThen(0, 0, test.step_func_done((width, height, snapshot) => {
       try {
         assert_equals(width, 200, "The copied image must be 200x200");
         assert_equals(height, 200, "The copied image must be 200x200");

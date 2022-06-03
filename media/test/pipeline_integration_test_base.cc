@@ -9,9 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -25,11 +26,6 @@
 #include "media/renderers/renderer_impl.h"
 #include "media/test/fake_encrypted_media.h"
 #include "media/test/test_media_source.h"
-#include "third_party/libaom/libaom_buildflags.h"
-
-#if BUILDFLAG(ENABLE_LIBAOM_DECODER)
-#include "media/filters/aom_video_decoder.h"
-#endif
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
 #include "media/filters/dav1d_video_decoder.h"
@@ -46,6 +42,10 @@
 
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "media/filters/vpx_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
+#include "media/filters/gav1_video_decoder.h"
 #endif
 
 using ::testing::_;
@@ -74,12 +74,18 @@ static std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
   video_decoders.push_back(std::make_unique<OffloadingVpxVideoDecoder>());
 #endif
 
+#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
+  if (base::FeatureList::IsEnabled(kGav1VideoDecoder)) {
+    video_decoders.push_back(
+        std::make_unique<OffloadingGav1VideoDecoder>(media_log));
+  } else
+#endif  // BUILDFLAG(ENABLE_LIBGAV1_DECODER)
+  {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-  video_decoders.push_back(
-      std::make_unique<OffloadingDav1dVideoDecoder>(media_log));
-#elif BUILDFLAG(ENABLE_LIBAOM_DECODER)
-  video_decoders.push_back(std::make_unique<AomVideoDecoder>(media_log));
+    video_decoders.push_back(
+        std::make_unique<OffloadingDav1dVideoDecoder>(media_log));
 #endif
+  }
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   video_decoders.push_back(std::make_unique<FFmpegVideoDecoder>(media_log));
@@ -108,29 +114,12 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
 const char kNullVideoHash[] = "d41d8cd98f00b204e9800998ecf8427e";
 const char kNullAudioHash[] = "0.00,0.00,0.00,0.00,0.00,0.00,";
 
-class RendererFactoryImpl final : public PipelineTestRendererFactory {
- public:
-  explicit RendererFactoryImpl(PipelineIntegrationTestBase* integration_test)
-      : integration_test_(integration_test) {}
-  ~RendererFactoryImpl() override = default;
-
-  // PipelineTestRendererFactory implementation.
-  std::unique_ptr<Renderer> CreateRenderer() override {
-    return integration_test_->CreateRenderer(base::nullopt);
-  }
-
- private:
-  PipelineIntegrationTestBase* integration_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFactoryImpl);
-};
-
 PipelineIntegrationTestBase::PipelineIntegrationTestBase()
     :
 // Use a UI type message loop on macOS, because it doesn't seem to schedule
 // callbacks with enough precision to drive our fake audio output. See
 // https://crbug.com/1014646 for more details.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
 #endif
       hashing_enabled_(false),
@@ -141,8 +130,7 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
       ended_(false),
       pipeline_status_(PIPELINE_OK),
       last_video_frame_format_(PIXEL_FORMAT_UNKNOWN),
-      current_duration_(kInfiniteDuration),
-      renderer_factory_(new RendererFactoryImpl(this)) {
+      current_duration_(kInfiniteDuration) {
   pipeline_ = std::make_unique<PipelineImpl>(
       task_environment_.GetMainThreadTaskRunner(),
       task_environment_.GetMainThreadTaskRunner(),
@@ -185,7 +173,7 @@ void PipelineIntegrationTestBase::OnSeeked(base::TimeDelta seek_time,
 }
 
 void PipelineIntegrationTestBase::OnStatusCallback(
-    const base::Closure& quit_run_loop_closure,
+    const base::RepeatingClosure& quit_run_loop_closure,
     PipelineStatus status) {
   pipeline_status_ = status;
 
@@ -250,6 +238,11 @@ void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
     std::move(on_error_closure_).Run();
 }
 
+void PipelineIntegrationTestBase::SetCreateRendererCB(
+    CreateRendererCB create_renderer_cb) {
+  create_renderer_cb_ = std::move(create_renderer_cb);
+}
+
 PipelineStatus PipelineIntegrationTestBase::StartInternal(
     std::unique_ptr<DataSource> data_source,
     CdmContext* cdm_context,
@@ -283,15 +276,17 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
   }
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).WillRepeatedly(Return());
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
   CreateDemuxer(std::move(data_source));
 
   if (cdm_context) {
     EXPECT_CALL(*this, DecryptorAttached(true));
     pipeline_->SetCdm(
-        cdm_context, base::Bind(&PipelineIntegrationTestBase::DecryptorAttached,
-                                base::Unretained(this)));
+        cdm_context,
+        base::BindOnce(&PipelineIntegrationTestBase::DecryptorAttached,
+                       base::Unretained(this)));
   }
 
   // Should never be called as the required decryption keys for the encrypted
@@ -305,9 +300,10 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
   EXPECT_CALL(*this, OnVideoConfigChange(_)).Times(AnyNumber());
 
   base::RunLoop run_loop;
-  pipeline_->Start(Pipeline::StartType::kNormal, demuxer_.get(), this,
-                   base::Bind(&PipelineIntegrationTestBase::OnStatusCallback,
-                              base::Unretained(this), run_loop.QuitClosure()));
+  pipeline_->Start(
+      Pipeline::StartType::kNormal, demuxer_.get(), this,
+      base::BindOnce(&PipelineIntegrationTestBase::OnStatusCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
   RunUntilQuitOrEndedOrError(&run_loop);
   return pipeline_status_;
 }
@@ -374,17 +370,18 @@ bool PipelineIntegrationTestBase::Seek(base::TimeDelta seek_time) {
   // playback may cause any number of underflow/preroll events.
   EXPECT_CALL(*this, OnBufferingStateChange(_, _)).Times(AnyNumber());
 
-  pipeline_->Seek(seek_time, base::Bind(&PipelineIntegrationTestBase::OnSeeked,
-                                        base::Unretained(this), seek_time));
+  pipeline_->Seek(seek_time,
+                  base::BindOnce(&PipelineIntegrationTestBase::OnSeeked,
+                                 base::Unretained(this), seek_time));
   RunUntilQuitOrError(&run_loop);
   return (pipeline_status_ == PIPELINE_OK);
 }
 
 bool PipelineIntegrationTestBase::Suspend() {
   base::RunLoop run_loop;
-  pipeline_->Suspend(base::Bind(&PipelineIntegrationTestBase::OnStatusCallback,
-                                base::Unretained(this),
-                                run_loop.QuitClosure()));
+  pipeline_->Suspend(
+      base::BindOnce(&PipelineIntegrationTestBase::OnStatusCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
   RunUntilQuitOrError(&run_loop);
   return (pipeline_status_ == PIPELINE_OK);
 }
@@ -396,8 +393,8 @@ bool PipelineIntegrationTestBase::Resume(base::TimeDelta seek_time) {
   EXPECT_CALL(*this, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   pipeline_->Resume(seek_time,
-                    base::Bind(&PipelineIntegrationTestBase::OnSeeked,
-                               base::Unretained(this), seek_time));
+                    base::BindOnce(&PipelineIntegrationTestBase::OnSeeked,
+                                   base::Unretained(this), seek_time));
   RunUntilQuitOrError(&run_loop);
   return (pipeline_status_ == PIPELINE_OK);
 }
@@ -427,7 +424,7 @@ void PipelineIntegrationTestBase::QuitAfterCurrentTimeTask(
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), quit_time,
                      std::move(quit_closure)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 }
 
 bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
@@ -441,7 +438,7 @@ bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
       FROM_HERE,
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), wait_time, run_loop.QuitClosure()),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
   RunUntilQuitOrEndedOrError(&run_loop);
 
@@ -458,26 +455,40 @@ void PipelineIntegrationTestBase::CreateDemuxer(
       base::BindRepeating(
           &PipelineIntegrationTestBase::DemuxerEncryptedMediaInitDataCB,
           base::Unretained(this)),
-      base::Bind(&PipelineIntegrationTestBase::DemuxerMediaTracksUpdatedCB,
-                 base::Unretained(this)),
+      base::BindRepeating(
+          &PipelineIntegrationTestBase::DemuxerMediaTracksUpdatedCB,
+          base::Unretained(this)),
       &media_log_, true));
 #endif
 }
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
-    base::Optional<RendererFactoryType> /* factory_type */) {
+    absl::optional<RendererType> renderer_type) {
+  if (create_renderer_cb_)
+    return create_renderer_cb_.Run(renderer_type);
+
+  return CreateDefaultRenderer(renderer_type);
+}
+
+std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
+    absl::optional<RendererType> renderer_type) {
+  if (renderer_type && *renderer_type != RendererType::kDefault) {
+    DVLOG(1) << __func__ << ": renderer_type not supported";
+    return nullptr;
+  }
+
   // Simulate a 60Hz rendering sink.
-  video_sink_.reset(new NullVideoSink(
-      clockless_playback_, base::TimeDelta::FromSecondsD(1.0 / 60),
-      base::Bind(&PipelineIntegrationTestBase::OnVideoFramePaint,
-                 base::Unretained(this)),
-      task_environment_.GetMainThreadTaskRunner()));
+  video_sink_ = std::make_unique<NullVideoSink>(
+      clockless_playback_, base::Seconds(1.0 / 60),
+      base::BindRepeating(&PipelineIntegrationTestBase::OnVideoFramePaint,
+                          base::Unretained(this)),
+      task_environment_.GetMainThreadTaskRunner());
 
   // Disable frame dropping if hashing is enabled.
   std::unique_ptr<VideoRenderer> video_renderer(new VideoRendererImpl(
       task_environment_.GetMainThreadTaskRunner(), video_sink_.get(),
-      base::Bind(&CreateVideoDecodersForTest, &media_log_,
-                 prepend_video_decoders_cb_),
+      base::BindRepeating(&CreateVideoDecodersForTest, &media_log_,
+                          prepend_video_decoders_cb_),
       false, &media_log_, nullptr));
 
   if (!clockless_playback_) {
@@ -508,10 +519,10 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
       (clockless_playback_)
           ? static_cast<AudioRendererSink*>(clockless_audio_sink_.get())
           : audio_sink_.get(),
-      base::Bind(&CreateAudioDecodersForTest, &media_log_,
-                 task_environment_.GetMainThreadTaskRunner(),
-                 prepend_audio_decoders_cb_),
-      &media_log_));
+      base::BindRepeating(&CreateAudioDecodersForTest, &media_log_,
+                          task_environment_.GetMainThreadTaskRunner(),
+                          prepend_audio_decoders_cb_),
+      &media_log_, nullptr));
   if (hashing_enabled_) {
     if (clockless_playback_)
       clockless_audio_sink_->StartAudioHashForTesting();
@@ -533,7 +544,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
   if (clockless_playback_)
     renderer_impl->EnableClocklessVideoPlaybackForTesting();
 
-  return std::move(renderer_impl);
+  return renderer_impl;
 }
 
 void PipelineIntegrationTestBase::OnVideoFramePaint(
@@ -615,14 +626,15 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
   EXPECT_CALL(*this, OnDurationChange()).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).Times(AtMost(1));
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
 
   base::RunLoop run_loop;
 
   source->set_demuxer_failure_cb(
-      base::Bind(&PipelineIntegrationTestBase::OnStatusCallback,
-                 base::Unretained(this), run_loop.QuitClosure()));
+      base::BindRepeating(&PipelineIntegrationTestBase::OnStatusCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
   demuxer_ = source->GetDemuxer();
 
   // DemuxerStreams may signal config changes.
@@ -639,21 +651,22 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
     EXPECT_CALL(*this, OnWaiting(WaitingReason::kNoDecryptionKey)).Times(0);
     pipeline_->SetCdm(
         encrypted_media->GetCdmContext(),
-        base::Bind(&PipelineIntegrationTestBase::DecryptorAttached,
-                   base::Unretained(this)));
+        base::BindOnce(&PipelineIntegrationTestBase::DecryptorAttached,
+                       base::Unretained(this)));
   } else {
     // Encrypted content not used, so this is never called.
     EXPECT_CALL(*this, OnWaiting(WaitingReason::kNoDecryptionKey)).Times(0);
   }
 
-  pipeline_->Start(Pipeline::StartType::kNormal, demuxer_.get(), this,
-                   base::Bind(&PipelineIntegrationTestBase::OnStatusCallback,
-                              base::Unretained(this), run_loop.QuitClosure()));
+  pipeline_->Start(
+      Pipeline::StartType::kNormal, demuxer_.get(), this,
+      base::BindOnce(&PipelineIntegrationTestBase::OnStatusCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
 
   if (encrypted_media) {
     source->set_encrypted_media_init_data_cb(
-        base::Bind(&FakeEncryptedMedia::OnEncryptedMediaInitData,
-                   base::Unretained(encrypted_media)));
+        base::BindRepeating(&FakeEncryptedMedia::OnEncryptedMediaInitData,
+                            base::Unretained(encrypted_media)));
   }
 
   RunUntilQuitOrEndedOrError(&run_loop);

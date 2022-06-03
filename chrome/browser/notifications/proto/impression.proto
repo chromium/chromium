@@ -64,6 +64,6 @@ message Impression {
   // Custom data associated with a notification.
   repeated CustomData custom_data = 7;
 
-  // Custom suppresion duration in ms.
-  optional int64 custom_suppression_duration_ms = 8;
+  // Duration to mark NO_FEEDBACK notification as IGNORE.
+  optional int64 ignore_timeout_duration = 8;
 }

@@ -8,29 +8,26 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "components/performance_manager/process_node_source.h"
-#include "components/performance_manager/tab_helper_frame_node_source.h"
 
 class Profile;
 
 namespace content {
-class LockObserver;
+class FeatureObserverClient;
 }
 
 namespace performance_manager {
 class BrowserChildProcessWatcher;
-class GraphImpl;
+class Graph;
 class PageLiveStateDecoratorHelper;
-class PerformanceManagerImpl;
-class PerformanceManagerRegistry;
-class SharedWorkerWatcher;
+class PageLoadMetricsObserver;
+class PageLoadTrackerDecoratorHelper;
+class PerformanceManagerFeatureObserverClient;
+class PerformanceManagerLifetime;
 }  // namespace performance_manager
 
 // Handles the initialization of the performance manager and a few dependent
@@ -41,21 +38,26 @@ class ChromeBrowserMainExtraPartsPerformanceManager
       public ProfileObserver {
  public:
   ChromeBrowserMainExtraPartsPerformanceManager();
+
+  ChromeBrowserMainExtraPartsPerformanceManager(
+      const ChromeBrowserMainExtraPartsPerformanceManager&) = delete;
+  ChromeBrowserMainExtraPartsPerformanceManager& operator=(
+      const ChromeBrowserMainExtraPartsPerformanceManager&) = delete;
+
   ~ChromeBrowserMainExtraPartsPerformanceManager() override;
 
   // Returns the only instance of this class.
   static ChromeBrowserMainExtraPartsPerformanceManager* GetInstance();
 
-  static void CreateDefaultPoliciesAndDecorators(
-      performance_manager::GraphImpl* graph);
-
-  // Returns the LockObserver that should be exposed to //content to allow the
-  // performance manager to track usage of locks in frames. Valid to call from
-  // any thread, but external synchronization is needed to make sure that the
-  // performance manager is available.
-  content::LockObserver* GetLockObserver();
+  // Returns the FeatureObserverClient that should be exposed to //content to
+  // allow the performance manager to track usage of features in frames. Valid
+  // to call from any thread, but external synchronization is needed to make
+  // sure that the performance manager is available.
+  content::FeatureObserverClient* GetFeatureObserverClient();
 
  private:
+  static void CreatePoliciesAndDecorators(performance_manager::Graph* graph);
+
   // ChromeBrowserMainExtraParts overrides.
   void PostCreateThreads() override;
   void PostMainMessageLoopRun() override;
@@ -67,35 +69,32 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  std::unique_ptr<performance_manager::PerformanceManagerImpl>
-      performance_manager_;
-  std::unique_ptr<performance_manager::PerformanceManagerRegistry> registry_;
+  // Manages the lifetime of the PerformanceManager graph and registry for the
+  // browser process.
+  std::unique_ptr<performance_manager::PerformanceManagerLifetime>
+      performance_manager_lifetime_;
 
-  // This must be alive at least until the end of base::ThreadPool shutdown,
-  // because it can be accessed by IndexedDB which runs on a base::ThreadPool
-  // sequence.
-  const std::unique_ptr<content::LockObserver> lock_observer_;
+  const std::unique_ptr<
+      performance_manager::PerformanceManagerFeatureObserverClient>
+      feature_observer_client_;
 
   std::unique_ptr<performance_manager::BrowserChildProcessWatcher>
       browser_child_process_watcher_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observations_{this};
 
-  // Needed by the worker watchers to access existing process nodes and frame
-  // nodes.
-  performance_manager::ProcessNodeSource process_node_source_;
-  performance_manager::TabHelperFrameNodeSource frame_node_source_;
+  // Needed to record "Pageloads" metrics.
+  std::unique_ptr<performance_manager::PageLoadMetricsObserver>
+      page_load_metrics_observer_;
 
-  // Observes the lifetime of shared workers.
-  base::flat_map<Profile*,
-                 std::unique_ptr<performance_manager::SharedWorkerWatcher>>
-      shared_worker_watchers_;
-
-  // Needed to properly maintain some of the PageLiveStateDecorator' properties.
+  // Needed to maintain some of the PageLiveStateDecorator' properties.
   std::unique_ptr<performance_manager::PageLiveStateDecoratorHelper>
       page_live_state_data_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsPerformanceManager);
+  // Needed to maintain the PageNode::IsLoading() property.
+  std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
+      page_load_tracker_decorator_helper_;
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_

@@ -10,16 +10,12 @@ static_library("common") {
     "thumbnail_score.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "thumbnail_score_unittest.cc",
-  ]
+  sources = [ "thumbnail_score_unittest.cc" ]
   deps = [
     ":common",
     "//testing/gtest",

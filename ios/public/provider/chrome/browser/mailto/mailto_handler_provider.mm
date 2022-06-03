@@ -13,7 +13,7 @@ MailtoHandlerProvider::MailtoHandlerProvider() {}
 MailtoHandlerProvider::~MailtoHandlerProvider() {}
 
 void MailtoHandlerProvider::PrepareMailtoHandling(
-    ios::ChromeBrowserState* browser_state) {}
+    ChromeBrowserState* browser_state) {}
 
 void MailtoHandlerProvider::RemoveMailtoHandling() {}
 

@@ -7,27 +7,40 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # This target does NOT depend on skia. One can depend on this target to avoid
 # picking up a dependency on skia.
 mojom("mojom") {
-  sources = [
-    "range.mojom",
-  ]
+  generate_java = true
+  sources = [ "range.mojom" ]
+
+  shared_cpp_typemap = {
+    types = [
+      {
+        mojom = "gfx.mojom.Range"
+        cpp = "::gfx::Range"
+      },
+      {
+        mojom = "gfx.mojom.RangeF"
+        cpp = "::gfx::RangeF"
+      },
+    ]
+
+    traits_headers = [ "range_mojom_traits.h" ]
+    traits_public_deps = [ ":mojom_traits" ]
+  }
+  cpp_typemaps = [ shared_cpp_typemap ]
+  blink_cpp_typemaps = [ shared_cpp_typemap ]
+
+  webui_module_path = "chrome://resources/mojo/ui/gfx/range/mojom"
 }
 
 mojom("test_interfaces") {
-  sources = [
-    "range_traits_test_service.mojom",
-  ]
+  sources = [ "range_traits_test_service.mojom" ]
 
-  public_deps = [
-    ":mojom",
-  ]
+  public_deps = [ ":mojom" ]
 }
 
 source_set("unit_test") {
   testonly = true
 
-  sources = [
-    "range_mojom_traits_unittest.cc",
-  ]
+  sources = [ "range_mojom_traits_unittest.cc" ]
 
   deps = [
     ":test_interfaces",
@@ -35,6 +48,14 @@ source_set("unit_test") {
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+    "//ui/gfx/range",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [ "range_mojom_traits.h" ]
+  public_deps = [
+    ":mojom_shared",
     "//ui/gfx/range",
   ]
 }

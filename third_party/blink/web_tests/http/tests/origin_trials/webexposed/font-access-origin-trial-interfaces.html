@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 FontAccess --expire-timestamp=2000000000 --version 3
+-->
+<meta http-equiv="origin-trial" content="A/rcNz8v348b5wPno7mt9LencYF1fzEf+5oz0bbBCOBk1+8/A1KYPR5sKAWM3aPzuVrlRfdgPfRY+AxJ6sbbXA0AAABSeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRm9udEFjY2VzcyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<title>Font Access API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script src="/serviceworker/resources/test-helpers.js"></script>
+<script>
+'use strict'
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+     'Navigator': ['fonts'],
+  });
+}, 'Font Access API interfaces and properties in Origin-Trial enabled document.');
+test(t => {
+  assert_true('fonts' in navigator, 'fonts object exists on navigator scope');
+  assert_not_equals(navigator.fonts, undefined, 'fonts manager can be accessed on navigator');
+}, 'Font Access API entry point in Origin-Trial enabled document.');
+</script>
+

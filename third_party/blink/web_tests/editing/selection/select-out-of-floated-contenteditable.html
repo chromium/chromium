@@ -1,18 +1,36 @@
 <!DOCTYPE html>
-Some text before the floats.
-<div contenteditable=true id="floatedEditable" style="float: left;">
-  Drag from the middle.
-</div>
-<div style="width: 100%; float: left;">
-  Some floated text in a div.
-</div>
-Some text after the floats.
-<p style="padding-top: 1em;">
-To test manually, drag from the middle of the editable div to the
-right, into the non-floated text. The selection should go to the end
-of the input element and not jump to the beginning.
-</p>
-<p id="result"></p>
-<pre id="console"></pre>
-<script src="resources/select-out-of-floated-editable.js"></script>
-
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// To test manually, drag from the middle of the editable div to the
+// right, into the non-floated text. The selection should go to the end
+// of the editable element and not jump to the beginning.
+selection_test(
+    [
+        'abc',
+        '<div contenteditable id="target" style="float: left;">XYZ</div>',
+        '<div style="float: left; width: 100%;">def</div>',
+        'ghi',
+    ],
+    selection => {
+        if (!window.eventSender)
+          throw 'This test requires eventSender.';
+        const target = selection.document.getElementById('target');
+        eventSender.mouseMoveTo(
+            selection.computeLeft(target) + target.offsetWidth / 2,
+            selection.computeTop(target) + target.offsetHeight / 2);
+        eventSender.mouseDown();
+        eventSender.mouseMoveTo(
+            selection.computeLeft(target) + target.offsetWidth + 5,
+            selection.computeTop(target) + target.offsetHeight / 2);
+        eventSender.leapForward(250);
+        eventSender.mouseUp();
+    },
+    [
+        'abc',
+        '<div contenteditable id="target" style="float: left;">X^YZ|</div>',
+        '<div style="float: left; width: 100%;">def</div>',
+        'ghi',
+    ]);
+</script>

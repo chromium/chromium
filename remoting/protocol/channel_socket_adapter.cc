@@ -29,13 +29,13 @@ TransportChannelSocketAdapter::TransportChannelSocketAdapter(
 
 TransportChannelSocketAdapter::~TransportChannelSocketAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!destruction_callback_.is_null())
-    destruction_callback_.Run();
+  if (destruction_callback_)
+    std::move(destruction_callback_).Run();
 }
 
 void TransportChannelSocketAdapter::SetOnDestroyedCallback(
-    const base::Closure& callback) {
-  destruction_callback_ = callback;
+    base::OnceClosure callback) {
+  destruction_callback_ = std::move(callback);
 }
 
 int TransportChannelSocketAdapter::Recv(
@@ -107,7 +107,7 @@ void TransportChannelSocketAdapter::Close(int error_code) {
   closed_error_code_ = error_code;
   channel_->SignalReadPacket.disconnect(this);
   channel_->SignalDestroyed.disconnect(this);
-  channel_ = NULL;
+  channel_ = nullptr;
 
   if (!read_callback_.is_null()) {
     net::CompletionRepeatingCallback callback = read_callback_;

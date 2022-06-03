@@ -8,31 +8,25 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
 namespace net {
 
-FileStream::Context::Context(const scoped_refptr<base::TaskRunner>& task_runner)
-    : async_in_progress_(false),
-      orphaned_(false),
-      task_runner_(task_runner) {
-}
+FileStream::Context::Context(scoped_refptr<base::TaskRunner> task_runner)
+    : Context(base::File(), std::move(task_runner)) {}
 
 FileStream::Context::Context(base::File file,
-                             const scoped_refptr<base::TaskRunner>& task_runner)
-    : file_(std::move(file)),
-      async_in_progress_(false),
-      orphaned_(false),
-      task_runner_(task_runner) {}
+                             scoped_refptr<base::TaskRunner> task_runner)
+    : file_(std::move(file)), task_runner_(std::move(task_runner)) {}
 
 FileStream::Context::~Context() = default;
 

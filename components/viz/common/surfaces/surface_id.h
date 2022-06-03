@@ -28,6 +28,7 @@ class VIZ_COMMON_EXPORT SurfaceId {
   constexpr SurfaceId() = default;
 
   constexpr SurfaceId(const SurfaceId& other) = default;
+  constexpr SurfaceId& operator=(const SurfaceId& other) = default;
 
   // A SurfaceId consists of two components: FrameSinkId and LocalSurfaceId.
   // A |frame_sink_id| consists of two components; one is allocated by the

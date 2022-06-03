@@ -18,6 +18,9 @@ class HostStatusMonitor;
 
 class HostEventLogger {
  public:
+  HostEventLogger(const HostEventLogger&) = delete;
+  HostEventLogger& operator=(const HostEventLogger&) = delete;
+
   virtual ~HostEventLogger() {}
 
   // Creates an event-logger that monitors host status changes and logs
@@ -28,9 +31,6 @@ class HostEventLogger {
 
  protected:
   HostEventLogger() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostEventLogger);
 };
 
 }

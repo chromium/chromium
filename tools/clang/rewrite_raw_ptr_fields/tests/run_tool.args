@@ -1,0 +1,2 @@
+--tool-arg=--exclude-fields=fields-to-ignore.txt
+--tool-arg=--exclude-paths=paths-to-ignore.txt

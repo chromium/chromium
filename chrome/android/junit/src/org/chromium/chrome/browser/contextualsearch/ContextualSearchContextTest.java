@@ -10,6 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -63,12 +66,12 @@ public class ContextualSearchContextTest {
     private void setupLongpressOfBarack() {
         int barackStartOffset = "Now ".length();
         int barackEndOffset = "Now Barack".length() - barackStartOffset;
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, barackStartOffset, barackEndOffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, barackStartOffset, barackEndOffset);
     }
 
     private void setupTapInBarack() {
         int barackBeforeROffset = "Now Ba".length();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, barackBeforeROffset, barackBeforeROffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, barackBeforeROffset, barackBeforeROffset);
     }
 
     private void simulateSelectWordAroundCaret(int startAdjust, int endAdjust) {
@@ -81,13 +84,13 @@ public class ContextualSearchContextTest {
 
     private void setupResolvingTapInBarak() {
         setupTapInBarack();
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0);
+        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
     }
 
     private void setupResolvingTapInObama() {
         int obamaBeforeMOffset = "Now Barack Oba".length();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, obamaBeforeMOffset, obamaBeforeMOffset);
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0);
+        mContext.setSurroundingText(SAMPLE_TEXT, obamaBeforeMOffset, obamaBeforeMOffset);
+        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
     }
 
     @Test
@@ -187,7 +190,7 @@ public class ContextualSearchContextTest {
     @Feature({"ContextualSearch", "Context"})
     public void testAnalysisAtStartOfText() {
         int startOffset = 0;
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, startOffset, startOffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, startOffset, startOffset);
         assertNull(mContext.getWordPreviousToTap());
         // We can't recognize the first word because we need a space before it to do so.
         assertNull(mContext.getWordTapped());
@@ -198,7 +201,7 @@ public class ContextualSearchContextTest {
     @Feature({"ContextualSearch", "Context"})
     public void testAnalysisAtSecondWordOfText() {
         int secondWordOffset = "Now ".length();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, secondWordOffset, secondWordOffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, secondWordOffset, secondWordOffset);
         assertNull(mContext.getWordPreviousToTap());
         assertEquals("Barack", mContext.getWordTapped());
         assertEquals("Obama", mContext.getWordFollowingTap());
@@ -208,7 +211,7 @@ public class ContextualSearchContextTest {
     @Feature({"ContextualSearch", "Context"})
     public void testAnalysisAtEndOfText() {
         int endOffset = SAMPLE_TEXT.length();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, endOffset, endOffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, endOffset, endOffset);
         assertNull(mContext.getWordPreviousToTap());
         assertNull(mContext.getWordTapped());
         assertNull(mContext.getWordFollowingTap());
@@ -218,9 +221,35 @@ public class ContextualSearchContextTest {
     @Feature({"ContextualSearch", "Context"})
     public void testAnalysisAtWordBeforeEndOfText() {
         int wordBeforeEndOffset = SAMPLE_TEXT.length() - "s ambiguous.".length();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, wordBeforeEndOffset, wordBeforeEndOffset);
+        mContext.setSurroundingText(SAMPLE_TEXT, wordBeforeEndOffset, wordBeforeEndOffset);
         assertEquals("Clinton", mContext.getWordPreviousToTap());
         assertEquals("is", mContext.getWordTapped());
         assertEquals("ambiguous", mContext.getWordFollowingTap());
+    }
+
+    @Test
+    @Feature({"ContextualSearch", "Context"})
+    public void testRedundantLanguages() {
+        // Most common to least common
+        doNothing()
+                .when(mContextJniMock)
+                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+        mContext.setTranslationLanguages("en", "en", "en");
+        doNothing()
+                .when(mContextJniMock)
+                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+        mContext.setTranslationLanguages("", "en", "en");
+        doNothing()
+                .when(mContextJniMock)
+                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq(""));
+        mContext.setTranslationLanguages("en", "de", "de");
+        doNothing()
+                .when(mContextJniMock)
+                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq("de,en"));
+        mContext.setTranslationLanguages("en", "de", "de,en");
+        doNothing()
+                .when(mContextJniMock)
+                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq("de,en"));
+        mContext.setTranslationLanguages("de", "de", "de,en");
     }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/renderer/threat_dom_details.h"
+#include "components/safe_browsing/content/renderer/threat_dom_details.h"
 
 #include <memory>
 #include "base/strings/string_split.h"
@@ -10,8 +10,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_test.h"
-#include "components/safe_browsing/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/renderer/render_view.h"
 #include "net/base/escape.h"
@@ -47,7 +47,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
   std::unique_ptr<base::test::ScopedFeatureList> feature_list =
       SetupTagAndAttributeFeature();
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   // Lower kMaxNodes and kMaxAttributes for the test. Loading 500 subframes in a
   // debug build takes a while.
@@ -292,7 +292,7 @@ TEST_F(ThreatDOMDetailsTest, DefaultTagAndAttributesList) {
   feature_list->InitAndDisableFeature(
       safe_browsing::kThreatDomDetailsTagAndAttributeFeature);
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   const char kUrlPrefix[] = "data:text/html;charset=utf-8,";
 
@@ -376,20 +376,17 @@ TEST_F(ThreatDOMDetailsTest, DefaultTagAndAttributesList) {
 }
 
 TEST_F(ThreatDOMDetailsTest, CheckTagAndAttributeListIsSorted) {
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_list(
-      new base::test::ScopedFeatureList);
-  scoped_list->InitAndEnableFeature(
-      safe_browsing::kCaptureInlineJavascriptForGoogleAds);
-
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   std::vector<safe_browsing::TagAndAttributesItem> tag_and_attr_list =
       details->GetTagAndAttributesListForTest();
   bool is_sorted;
   std::vector<std::string> tag_names;
+  EXPECT_TRUE(!tag_and_attr_list.empty());
   for (auto item : tag_and_attr_list) {
     tag_names.push_back(item.tag_name);
+    EXPECT_TRUE(!item.attributes.empty());
     // Check that list of attributes is sorted.
     is_sorted = std::is_sorted(item.attributes.begin(), item.attributes.end());
     EXPECT_TRUE(is_sorted);
@@ -399,63 +396,3 @@ TEST_F(ThreatDOMDetailsTest, CheckTagAndAttributeListIsSorted) {
   EXPECT_TRUE(is_sorted);
 }
 
-TEST_F(ThreatDOMDetailsTest, CaptureInnerHtmlContent) {
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_list(
-      new base::test::ScopedFeatureList);
-  scoped_list->InitAndEnableFeature(
-      safe_browsing::kCaptureInlineJavascriptForGoogleAds);
-  std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
-                                              registry_.get()));
-
-  const char kUrlPrefix[] = "data:text/html;charset=utf-8,";
-  {
-    // A page with a html element without an onclick element, html element with
-    // an onclick element, an internal script. Html elements without onclick
-    // elements should not be recorded in ThreatDomDetails.
-    std::string html =
-        "<html><head><a></a><a onclick=\"var y = 2;\"></a><img onclick=\"var z "
-        "= 3;\"></img><script>var x = 1;</script></head></html>";
-    LoadHTML(html.c_str());
-    base::HistogramTester histograms;
-    std::vector<safe_browsing::mojom::ThreatDOMDetailsNodePtr> params;
-
-    details->ExtractResources(&params);
-    ASSERT_EQ(4u, params.size());
-    auto* param = params[0].get();
-    EXPECT_EQ(GURL(), param->url);
-    EXPECT_EQ("A", param->tag_name);
-    EXPECT_EQ(1, param->node_id);
-    EXPECT_EQ(0, param->parent_node_id);
-    EXPECT_TRUE(param->child_node_ids.empty());
-    EXPECT_EQ(1u, param->attributes.size());
-    EXPECT_EQ("onclick", param->attributes[0]->name);
-    EXPECT_EQ("var y = 2;", param->attributes[0]->value);
-
-    param = params[1].get();
-    EXPECT_EQ(GURL(), param->url);
-    EXPECT_EQ("IMG", param->tag_name);
-    EXPECT_EQ(2, param->node_id);
-    EXPECT_EQ(0, param->parent_node_id);
-    EXPECT_TRUE(param->child_node_ids.empty());
-    EXPECT_TRUE(param->child_node_ids.empty());
-    EXPECT_EQ(1u, param->attributes.size());
-    EXPECT_EQ("onclick", param->attributes[0]->name);
-    EXPECT_EQ("var z = 3;", param->attributes[0]->value);
-
-    param = params[2].get();
-    EXPECT_EQ(GURL(), param->url);
-    EXPECT_EQ("SCRIPT", param->tag_name);
-    EXPECT_EQ(3, param->node_id);
-    EXPECT_EQ(0, param->parent_node_id);
-    EXPECT_TRUE(param->child_node_ids.empty());
-    EXPECT_EQ("var x = 1;", param->inner_html);
-
-    param = params[3].get();
-    EXPECT_EQ(GURL(kUrlPrefix + net::EscapeQueryParamValue(html, false)),
-              param->url);
-    EXPECT_EQ(0, param->node_id);
-    EXPECT_EQ(0, param->parent_node_id);
-    EXPECT_TRUE(param->child_node_ids.empty());
-  }
-}

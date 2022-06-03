@@ -11,32 +11,9 @@ namespace switches {
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const char kDataReductionPingbackURL[];
-extern const char kDataReductionProxy[];
-extern const char kDataReductionProxyConfigURL[];
-extern const char kDataReductionProxyExperiment[];
-extern const char kDataReductionProxyFallback[];
-extern const char kDataReductionProxyHttpProxies[];
-extern const char kDataReductionProxyKey[];
-extern const char kDataReductionProxySecureProxyCheckURL[];
-extern const char kDataReductionProxyServerExperimentsDisabled[];
-extern const char kDataReductionProxyServerAlternative1[];
-extern const char kDataReductionProxyServerAlternative2[];
-extern const char kDataReductionProxyServerAlternative3[];
-extern const char kDataReductionProxyServerAlternative4[];
-extern const char kDataReductionProxyServerAlternative5[];
-extern const char kDataReductionProxyServerAlternative6[];
-extern const char kDataReductionProxyServerAlternative7[];
-extern const char kDataReductionProxyServerAlternative8[];
-extern const char kDataReductionProxyServerAlternative9[];
-extern const char kDataReductionProxyServerAlternative10[];
-extern const char kDataReductionProxyServerClientConfig[];
 extern const char kEnableDataReductionProxy[];
-extern const char kEnableDataReductionProxyBypassWarning[];
-extern const char kEnableDataReductionProxyForcePingback[];
 extern const char kEnableDataReductionProxySavingsPromo[];
-extern const char kDisableDataReductionProxyWarmupURLFetch[];
-extern const char kDisableDataReductionProxyWarmupURLFetchCallback[];
+extern const char kOverrideHttpsImageCompressionInfobar[];
 
 }  // namespace switches
 }  // namespace data_reduction_proxy

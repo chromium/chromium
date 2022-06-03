@@ -4,50 +4,73 @@
 
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 
-constexpr int kFirstCommandIndex =
-    TabStripModel::ContextMenuCommand::CommandLast + 1;
+ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
+    ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabStripModel* model,
+    int context_index)
+    : ExistingBaseSubMenuModel(parent_delegate,
+                               model,
+                               context_index,
+                               kMinExistingTabGroupCommandId) {
+  const auto& tp = ThemeService::GetThemeProviderForProfile(model->profile());
+  constexpr int kIconSize = 14;
+  std::vector<MenuItemInfo> menu_item_infos;
 
-ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(TabStripModel* model,
-                                                           int context_index)
-    : SimpleMenuModel(this) {
-  model_ = model;
-  context_index_ = context_index;
-  Build();
-}
-
-void ExistingTabGroupSubMenuModel::Build() {
-  // Start command ids after the parent menu's ids to avoid collisions.
-  int group_index = kFirstCommandIndex;
-  for (tab_groups::TabGroupId group : model_->group_model()->ListTabGroups()) {
-    if (ShouldShowGroup(model_, context_index_, group))
-      AddItem(group_index,
-              model_->group_model()->GetTabGroup(group)->GetDisplayedTitle());
-    group_index++;
+  std::vector<tab_groups::TabGroupId> ordered_tab_groups =
+      GetOrderedTabGroupsInSubMenu();
+  for (size_t i = 0; i < ordered_tab_groups.size(); ++i) {
+    tab_groups::TabGroupId group = ordered_tab_groups[i];
+    const TabGroup* tab_group = model->group_model()->GetTabGroup(group);
+    const std::u16string group_title = tab_group->visual_data()->title();
+    const std::u16string displayed_title =
+        group_title.empty() ? tab_group->GetContentString() : group_title;
+    const int color_id =
+        GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
+    // TODO (kylixrd): Investigate passing in color_id in order to color the
+    // icon using the ColorProvider.
+    ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+        kTabGroupIcon, tp.GetColor(color_id), kIconSize);
+    menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
+    menu_item_infos.back().may_have_mnemonics = false;
+    menu_item_infos.back().target_index = static_cast<int>(i);
   }
+  Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
 
-bool ExistingTabGroupSubMenuModel::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ExistingTabGroupSubMenuModel::IsCommandIdEnabled(int command_id) const {
-  return true;
-}
-
-void ExistingTabGroupSubMenuModel::ExecuteCommand(int command_id,
-                                                  int event_flags) {
-  const int group_index = command_id - kFirstCommandIndex;
-  // TODO(https://crbug.com/922736): If a group has been deleted, |group_index|
-  // may refer to a different group than it did when the menu was created.
-  DCHECK_LT(size_t{group_index}, model_->group_model()->ListTabGroups().size());
-  model_->ExecuteAddToExistingGroupCommand(
-      context_index_, model_->group_model()->ListTabGroups()[group_index]);
+std::vector<tab_groups::TabGroupId>
+ExistingTabGroupSubMenuModel::GetOrderedTabGroupsInSubMenu() {
+  std::vector<tab_groups::TabGroupId> ordered_groups;
+  absl::optional<tab_groups::TabGroupId> current_group = absl::nullopt;
+  for (int i = 0; i < model()->count(); ++i) {
+    absl::optional<tab_groups::TabGroupId> new_group =
+        model()->GetTabGroupForTab(i);
+    if (new_group.has_value() && new_group != current_group &&
+        ShouldShowGroup(model(), GetContextIndex(), new_group.value())) {
+      ordered_groups.push_back(new_group.value());
+    }
+    current_group = new_group;
+  }
+  return ordered_groups;
 }
 
 // static
@@ -59,6 +82,23 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
     }
   }
   return false;
+}
+
+void ExistingTabGroupSubMenuModel::ExecuteNewCommand(int event_flags) {
+  parent_delegate()->ExecuteCommand(TabStripModel::CommandAddToNewGroup,
+                                    event_flags);
+}
+
+void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
+  base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
+
+  if (static_cast<size_t>(target_index) >=
+      model()->group_model()->ListTabGroups().size())
+    return;
+  if (!model()->ContainsIndex(GetContextIndex()))
+    return;
+  model()->ExecuteAddToExistingGroupCommand(
+      GetContextIndex(), GetOrderedTabGroupsInSubMenu()[target_index]);
 }
 
 // static

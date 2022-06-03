@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule works after switching nodes.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>
@@ -54,15 +54,15 @@
     }
   }
 
-  function step4() {
+  async function step4() {
     TestRunner.addResult('After adding new rule (inspected):');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true, true);
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step5);
   }
 
-  function step5() {
+  async function step5() {
     TestRunner.addResult('After adding new rule (other):');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
     ElementsTestRunner.waitForStylesForClass('my-class', onStylesReceived);
     ElementsTestRunner.nodeWithClass('my-class', onNodeFound);
@@ -75,8 +75,8 @@
     }
   }
 
-  function step6() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  async function step6() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
     ElementsTestRunner.waitForStylesForClass('class-1', onStylesReceived);
     ElementsTestRunner.nodeWithClass('class-1', onNodeFound);
@@ -85,8 +85,8 @@
     }
 
     function onStylesReceived() {
-      ElementsTestRunner.addNewRule(null, function() {
-        ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+      ElementsTestRunner.addNewRule(null, async function() {
+        await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
         testFinished = true;
         maybeCompleteTest();
       });

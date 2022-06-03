@@ -11,12 +11,11 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/web_int_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/url_canon.h"
@@ -41,8 +40,7 @@ namespace {
 //   and is removed once a button is tapped.  Verifying that the onload text is
 //   visible after tapping a button is equivalent to checking that a load has
 //   occurred as the result of the button tap.
-const char kHistoryStateOperationsTestUrl[] =
-    "http://ios/testing/data/http_server_files/state_operations.html";
+const char kHistoryStateOperationsTestUrl[] = "/state_operations.html";
 
 // Button IDs used in the window.location test page.
 const char kPushStateId[] = "push-state";
@@ -51,8 +49,8 @@ const char kReplaceStateId[] = "replace-state";
 // JavaScript functions on the history state test page.
 NSString* const kUpdateStateParamsScriptFormat =
     @"updateStateParams('%s', '%s', '%s')";
-NSString* const kOnLoadCheckScript = @"isOnLoadPlaceholderTextVisible()";
-NSString* const kNoOpCheckScript = @"isNoOpPlaceholderTextVisible()";
+const char kOnLoadCheckScript[] = "isOnLoadPlaceholderTextVisible()";
+const char kNoOpCheckScript[] = "isNoOpPlaceholderTextVisible()";
 
 // Wait timeout for state updates.
 const NSTimeInterval kWaitForStateUpdateTimeout = 5.0;
@@ -66,12 +64,14 @@ class HistoryStateOperationsTest : public web::WebIntTest {
   void SetUp() override {
     web::WebIntTest::SetUp();
 
-    // History state tests use file-based test pages.
-    web::test::SetUpFileBasedHttpServer();
-
     // Load the history state test page.
+    test_server_ = std::make_unique<net::EmbeddedTestServer>();
+    test_server_->ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/"));
+    ASSERT_TRUE(test_server_->Start());
+
     state_operations_url_ =
-        web::test::HttpServer::MakeUrl(kHistoryStateOperationsTestUrl);
+        test_server_->GetURL(kHistoryStateOperationsTestUrl);
     ASSERT_TRUE(LoadUrl(state_operations_url()));
   }
 
@@ -83,7 +83,7 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     return ExecuteBlockAndWaitForLoad(GetLastCommittedItem()->GetURL(), ^{
       // TODO(crbug.com/677364): Use NavigationManager::Reload() once it no
       // longer requires a web delegate.
-      web_state()->ExecuteJavaScript(ASCIIToUTF16("window.location.reload()"));
+      web_state()->ExecuteJavaScript(u"window.location.reload()");
     });
   }
 
@@ -99,22 +99,26 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     NSString* set_params_script = [NSString
         stringWithFormat:kUpdateStateParamsScriptFormat, state_object.c_str(),
                          title.c_str(), url_spec.c_str()];
-    ExecuteJavaScript(set_params_script);
+    web::test::ExecuteJavaScript(web_state(),
+                                 base::SysNSStringToUTF8(set_params_script));
   }
 
   // Returns the state object returned by JavaScript.
   std::string GetJavaScriptState() {
-    return base::SysNSStringToUTF8(ExecuteJavaScript(@"window.history.state"));
+    return web::test::ExecuteJavaScript(web_state(), "window.history.state")
+        ->GetString();
   }
 
   // Executes JavaScript to check whether the onload text is visible.
   bool IsOnLoadTextVisible() {
-    return [ExecuteJavaScript(kOnLoadCheckScript) boolValue];
+    return web::test::ExecuteJavaScript(web_state(), kOnLoadCheckScript)
+        ->GetBool();
   }
 
   // Executes JavaScript to check whether the no-op text is visible.
   bool IsNoOpTextVisible() {
-    return [ExecuteJavaScript(kNoOpCheckScript) boolValue];
+    return web::test::ExecuteJavaScript(web_state(), kNoOpCheckScript)
+        ->GetBool();
   }
 
   // Waits for the NoOp text to be visible.
@@ -125,6 +129,8 @@ class HistoryStateOperationsTest : public web::WebIntTest {
         });
     EXPECT_TRUE(completed) << "NoOp text failed to be visible.";
   }
+
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
 
  private:
   GURL state_operations_url_;
@@ -201,8 +207,7 @@ TEST_F(HistoryStateOperationsTest, NoOpPushDifferentOrigin) {
   // occurred as the result of the pushState() call.
   std::string empty_state;
   std::string empty_title;
-  std::string new_port_string = base::NumberToString(
-      web::test::HttpServer::GetSharedInstance().GetPort() + 1);
+  std::string new_port_string = base::NumberToString(test_server_->port() + 1);
   url::Replacements<char> port_replacement;
   port_replacement.SetPort(new_port_string.c_str(),
                            url::Component(0, new_port_string.length()));
@@ -223,8 +228,7 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   // occurred as the result of the pushState() call.
   std::string empty_state;
   std::string empty_title;
-  std::string new_port_string = base::NumberToString(
-      web::test::HttpServer::GetSharedInstance().GetPort() + 1);
+  std::string new_port_string = base::NumberToString(test_server_->port() + 1);
   url::Replacements<char> port_replacement;
   port_replacement.SetPort(new_port_string.c_str(),
                            url::Component(0, new_port_string.length()));
@@ -364,7 +368,7 @@ TEST_F(HistoryStateOperationsTest, StateReplacementBackForward) {
     navigation_manager()->GoBack();
   }));
 
-  // WebKit doesn't trigger onload on back. WKBasedNavigationManager inherits
+  // WebKit doesn't trigger onload on back. NavigationManagerImpl inherits
   // this behavior.
   WaitForNoOpText();
 
@@ -454,12 +458,9 @@ TEST_F(HistoryStateOperationsTest, ReplaceStateNoHashChangeEvent) {
 
 // Regression test for crbug.com/788464.
 TEST_F(HistoryStateOperationsTest, ReplaceStateThenReload) {
-  GURL url = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/"
-      "onload_replacestate_reload.html");
+  GURL url = test_server_->GetURL("/onload_replacestate_reload.html");
   ASSERT_TRUE(LoadUrl(url));
-  GURL new_url = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  GURL new_url = test_server_->GetURL("/pony.html");
   BOOL completed = base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForStateUpdateTimeout, ^{
         return GetLastCommittedItem()->GetURL() == new_url;

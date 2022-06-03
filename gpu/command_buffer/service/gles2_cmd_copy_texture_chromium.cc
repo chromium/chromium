@@ -36,6 +36,7 @@ enum {
   S_FORMAT_LUMINANCE,
   S_FORMAT_LUMINANCE_ALPHA,
   S_FORMAT_RED,
+  S_FORMAT_RG,
   S_FORMAT_RGB,
   S_FORMAT_RGBA,
   S_FORMAT_RGB8,
@@ -156,10 +157,14 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
     case GL_R16_EXT:
       sourceFormatIndex = S_FORMAT_RED;
       break;
+    case GL_RG16_EXT:
+      sourceFormatIndex = S_FORMAT_RG;
+      break;
     case GL_RGB:
       sourceFormatIndex = S_FORMAT_RGB;
       break;
     case GL_RGBA:
+    case GL_RGBA16_EXT:
       sourceFormatIndex = S_FORMAT_RGBA;
       break;
     case GL_RGB8:
@@ -459,12 +464,9 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
   // Main shader source.
   source +=
       "uniform SamplerType u_sampler;\n"
-      "uniform mat4 u_tex_coord_transform;\n"
       "VARYING TexCoordPrecision vec2 v_uv;\n"
       "void main(void) {\n"
-      "  TexCoordPrecision vec4 uv =\n"
-      "      u_tex_coord_transform * vec4(v_uv, 0, 1);\n"
-      "  vec4 color = TextureLookup(u_sampler, uv.st);\n";
+      "  vec4 color = TextureLookup(u_sampler, v_uv);\n";
 
   // Premultiply or un-premultiply alpha. Must always do this, even
   // if the destination format doesn't have an alpha channel.
@@ -922,59 +924,12 @@ class CopyTextureResourceManagerImpl
       bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) override;
-  void DoCopySubTextureWithTransform(
-      DecoderContext* decoder,
-      GLenum source_target,
-      GLuint source_id,
-      GLint source_level,
-      GLenum source_internal_format,
-      GLenum dest_target,
-      GLuint dest_id,
-      GLint dest_level,
-      GLenum dest_internal_format,
-      GLint xoffset,
-      GLint yoffset,
-      GLint x,
-      GLint y,
-      GLsizei width,
-      GLsizei height,
-      GLsizei dest_width,
-      GLsizei dest_height,
-      GLsizei source_width,
-      GLsizei source_height,
-      bool flip_y,
-      bool premultiply_alpha,
-      bool unpremultiply_alpha,
-      bool dither,
-      const GLfloat transform_matrix[16],
-      CopyTexImageResourceManager* luma_emulation_blitter) override;
-  void DoCopyTextureWithTransform(
-      DecoderContext* decoder,
-      GLenum source_target,
-      GLuint source_id,
-      GLint source_level,
-      GLenum source_format,
-      GLenum dest_target,
-      GLuint dest_id,
-      GLint dest_level,
-      GLenum dest_format,
-      GLsizei width,
-      GLsizei height,
-      bool flip_y,
-      bool premultiply_alpha,
-      bool unpremultiply_alpha,
-      bool dither,
-      const GLfloat transform_matrix[16],
-      CopyTextureMethod method,
-      CopyTexImageResourceManager* luma_emulation_blitter) override;
-
  private:
   struct ProgramInfo {
     ProgramInfo()
         : program(0u),
           vertex_source_mult_handle(0u),
           vertex_source_add_handle(0u),
-          tex_coord_transform_handle(0u),
           sampler_handle(0u) {}
 
     GLuint program;
@@ -984,7 +939,6 @@ class CopyTextureResourceManagerImpl
     GLuint vertex_source_mult_handle;
     GLuint vertex_source_add_handle;
 
-    GLuint tex_coord_transform_handle;
     GLuint sampler_handle;
   };
 
@@ -1012,7 +966,6 @@ class CopyTextureResourceManagerImpl
       bool premultiply_alpha,
       bool unpremultiply_alpha,
       bool dither,
-      const GLfloat transform_matrix[16],
       CopyTexImageResourceManager* luma_emulation_blitter);
 
   bool initialized_;
@@ -1112,32 +1065,6 @@ void CopyTextureResourceManagerImpl::Destroy() {
   buffer_id_ = 0;
 }
 
-void CopyTextureResourceManagerImpl::DoCopyTexture(
-    DecoderContext* decoder,
-    GLenum source_target,
-    GLuint source_id,
-    GLint source_level,
-    GLenum source_internal_format,
-    GLenum dest_target,
-    GLuint dest_id,
-    GLint dest_level,
-    GLenum dest_internal_format,
-    GLsizei width,
-    GLsizei height,
-    bool flip_y,
-    bool premultiply_alpha,
-    bool unpremultiply_alpha,
-    bool dither,
-    CopyTextureMethod method,
-    gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
-  // Use kIdentityMatrix if no transform passed in.
-  DoCopyTextureWithTransform(
-      decoder, source_target, source_id, source_level, source_internal_format,
-      dest_target, dest_id, dest_level, dest_internal_format, width, height,
-      flip_y, premultiply_alpha, unpremultiply_alpha, dither, kIdentityMatrix,
-      method, luma_emulation_blitter);
-}
-
 void CopyTextureResourceManagerImpl::DoCopySubTexture(
     DecoderContext* decoder,
     GLenum source_target,
@@ -1205,12 +1132,12 @@ void CopyTextureResourceManagerImpl::DoCopySubTexture(
     dest_height = height;
   }
 
-  DoCopySubTextureWithTransform(
+  DoCopyTextureInternal(
       decoder, source_target, source_id, source_level, source_internal_format,
       dest_target, dest_texture, dest_level, dest_internal_format, dest_xoffset,
       dest_yoffset, x, y, width, height, dest_width, dest_height, source_width,
       source_height, flip_y, premultiply_alpha, unpremultiply_alpha, dither,
-      kIdentityMatrix, luma_emulation_blitter);
+      luma_emulation_blitter);
 
   if (method == CopyTextureMethod::DRAW_AND_COPY ||
       method == CopyTextureMethod::DRAW_AND_READBACK) {
@@ -1232,41 +1159,7 @@ void CopyTextureResourceManagerImpl::DoCopySubTexture(
   }
 }
 
-void CopyTextureResourceManagerImpl::DoCopySubTextureWithTransform(
-    DecoderContext* decoder,
-    GLenum source_target,
-    GLuint source_id,
-    GLint source_level,
-    GLenum source_internal_format,
-    GLenum dest_target,
-    GLuint dest_id,
-    GLint dest_level,
-    GLenum dest_internal_format,
-    GLint xoffset,
-    GLint yoffset,
-    GLint x,
-    GLint y,
-    GLsizei width,
-    GLsizei height,
-    GLsizei dest_width,
-    GLsizei dest_height,
-    GLsizei source_width,
-    GLsizei source_height,
-    bool flip_y,
-    bool premultiply_alpha,
-    bool unpremultiply_alpha,
-    bool dither,
-    const GLfloat transform_matrix[16],
-    gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
-  DoCopyTextureInternal(
-      decoder, source_target, source_id, source_level, source_internal_format,
-      dest_target, dest_id, dest_level, dest_internal_format, xoffset, yoffset,
-      x, y, width, height, dest_width, dest_height, source_width, source_height,
-      flip_y, premultiply_alpha, unpremultiply_alpha, dither, transform_matrix,
-      luma_emulation_blitter);
-}
-
-void CopyTextureResourceManagerImpl::DoCopyTextureWithTransform(
+void CopyTextureResourceManagerImpl::DoCopyTexture(
     DecoderContext* decoder,
     GLenum source_target,
     GLuint source_id,
@@ -1282,7 +1175,6 @@ void CopyTextureResourceManagerImpl::DoCopyTextureWithTransform(
     bool premultiply_alpha,
     bool unpremultiply_alpha,
     bool dither,
-    const GLfloat transform_matrix[16],
     CopyTextureMethod method,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   GLsizei dest_width = width;
@@ -1321,12 +1213,11 @@ void CopyTextureResourceManagerImpl::DoCopyTextureWithTransform(
     dest_internal_format = adjusted_internal_format;
   }
 
-  DoCopyTextureInternal(decoder, source_target, source_id, source_level,
-                        source_internal_format, dest_target, dest_texture,
-                        dest_level, dest_internal_format, 0, 0, 0, 0, width,
-                        height, dest_width, dest_height, width, height, flip_y,
-                        premultiply_alpha, unpremultiply_alpha, dither,
-                        transform_matrix, luma_emulation_blitter);
+  DoCopyTextureInternal(
+      decoder, source_target, source_id, source_level, source_internal_format,
+      dest_target, dest_texture, dest_level, dest_internal_format, 0, 0, 0, 0,
+      width, height, dest_width, dest_height, width, height, flip_y,
+      premultiply_alpha, unpremultiply_alpha, dither, luma_emulation_blitter);
 
   if (method == CopyTextureMethod::DRAW_AND_COPY ||
       method == CopyTextureMethod::DRAW_AND_READBACK) {
@@ -1370,7 +1261,6 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     bool premultiply_alpha,
     bool unpremultiply_alpha,
     bool dither,
-    const GLfloat transform_matrix[16],
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   DCHECK(source_target == GL_TEXTURE_2D ||
          source_target == GL_TEXTURE_RECTANGLE_ARB ||
@@ -1460,14 +1350,9 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     info->vertex_source_add_handle =
         glGetUniformLocation(info->program, "u_vertex_source_add");
 
-    info->tex_coord_transform_handle =
-        glGetUniformLocation(info->program, "u_tex_coord_transform");
     info->sampler_handle = glGetUniformLocation(info->program, "u_sampler");
   }
   glUseProgram(info->program);
-
-  glUniformMatrix4fv(info->tex_coord_transform_handle, 1, GL_FALSE,
-                     transform_matrix);
 
   // Note: For simplicity, the calculations in this comment block use a single
   // dimension. All calculations trivially extend to the x-y plane.

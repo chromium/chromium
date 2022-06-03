@@ -1,0 +1,12 @@
+<html>
+<body>
+<iframe src="/slow?100" id="iframe"></iframe>
+<script>
+  // slow takes 100 seconds to load, plenty of time to overwrite the
+  // provisional load.
+  iframe = document.getElementById("iframe");
+  iframe.parentElement.removeChild(iframe);
+  document.title = "done";
+</script>
+</body>
+</html>

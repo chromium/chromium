@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import itertools
 import optparse
 import re
@@ -16,7 +17,7 @@ def EscapeName(name):
   return name
 
 def ParseTable(input_path):
-  input_file = open(input_path, "r")
+  input_file = io.open(input_path, "r", encoding="ascii", errors="ignore")
   input = input_file.read().split("\n")
   input_file.close()
 
@@ -69,7 +70,7 @@ def GenerateVendorDefinitions(table):
   for vendor_id in sorted(table.keys()):
     vendor = table[vendor_id]
 
-    product_table = "NULL"
+    product_table = "nullptr"
     if len(vendor["products"]) != 0:
       product_table = "vendor_%.4x_products" % (vendor["id"])
     output += "  {\"%s\", %s, 0x%.4x, %d},\n" % (EscapeName(vendor["name"]),

@@ -43,7 +43,6 @@
       testRunner.dumpAsText();
       testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
       testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      internals.settings.setScrollAnimatorEnabled(false);
       testRunner.waitUntilDone();
     }
 
@@ -68,8 +67,10 @@
       shouldBeTrue(String(document.scrollingElement.scrollTop != 0));
 
       // Then it scrolls down to the end of the page ...
-      if (window.eventSender)
+      if (window.eventSender) {
+        internals.settings.setScrollAnimatorEnabled(false);
         eventSender.keyDown("End");
+      }
 
       // And 'resultMap2' re-tries to move focus down.
       initTest(resultMap2, step2Completed);

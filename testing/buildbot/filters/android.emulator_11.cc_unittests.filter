@@ -1,0 +1,13 @@
+# https://crbug.com/1189284
+# Not applicable to emulator due to not supporting VK_KHR_external_memory_fd
+-OopImagePixelTest.*
+-OopPixelTest.*
+-P/OopClearPixelTest.*
+-P/OopImagePixelTest.*
+-P/OopPathPixelTest.*
+-P/OopTextBlobPixelTest.*
+-TransferCacheTest.Basic
+-TransferCacheTest.CountEviction
+-TransferCacheTest.MemoryEviction
+-TransferCacheTest.RawMemoryTransferLarge
+-TransferCacheTest.RawMemoryTransferSmall

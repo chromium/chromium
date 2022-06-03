@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+ <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/navigation_popup_default_padding"
+    android:paddingEnd="@dimen/navigation_popup_default_padding"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackground">
+
+    <FrameLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent">
+        <View
+          android:id="@+id/favicon_bg"
+          android:layout_width="@dimen/navigation_popup_favicon_bg_size"
+          android:layout_height="@dimen/navigation_popup_favicon_bg_size"
+          android:layout_gravity="center"
+          android:background="@drawable/tile_view_icon_background_modern" />
+        <ImageView
+          android:id="@+id/favicon_img"
+          android:layout_width="@dimen/default_favicon_size"
+          android:layout_height="@dimen/default_favicon_size"
+          android:layout_gravity="center"
+          tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/entry_title"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/navigation_popup_default_padding"
+        android:minHeight="@dimen/navigation_popup_item_height"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:singleLine="true"/>
+</LinearLayout>

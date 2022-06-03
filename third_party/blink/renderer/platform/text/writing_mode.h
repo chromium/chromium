@@ -31,13 +31,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_H_
 
+#include <cstdint>
+#include <iosfwd>
+#include "third_party/blink/renderer/platform/platform_export.h"
+
 namespace blink {
 
 // These values are named to match the CSS keywords they correspond to: namely
 // horizontal-tb, vertical-rl and vertical-lr.
 // Since these names aren't very self-explanatory, where possible use the
 // inline utility functions below.
-enum class WritingMode : unsigned {
+enum class WritingMode : uint8_t {
   kHorizontalTb = 0,
   kVerticalRl = 1,
   kVerticalLr = 2,
@@ -77,6 +81,8 @@ inline bool IsFlippedBlocksWritingMode(WritingMode writing_mode) {
 inline bool IsParallelWritingMode(WritingMode a, WritingMode b) {
   return (a == WritingMode::kHorizontalTb) == (b == WritingMode::kHorizontalTb);
 }
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, WritingMode);
 
 }  // namespace blink
 

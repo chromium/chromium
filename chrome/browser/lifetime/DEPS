@@ -1,7 +1,9 @@
 specific_include_rules = {
-  # TODO(mash): When mash becomes the default, this reference (and the code
-  # block which uses this header) can be straight out deleted. crbug.com/723876
   "application_lifetime_aura\.cc": [
     "+ash/shell.h",
-  ]
+  ],
+  "application_lifetime\.cc": [
+    "+chromeos/crosapi/mojom/crosapi.mojom.h",
+    "+chromeos/lacros/lacros_service.h",
+  ],
 }

@@ -12,7 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key_with_timeout.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -30,8 +31,8 @@ class SamlChallengeKeyHandler final {
   SamlChallengeKeyHandler& operator=(const SamlChallengeKeyHandler&) = delete;
   ~SamlChallengeKeyHandler();
 
-  // Checks that provided |url| is whitelisted and tries to calculate response
-  // for the |challenge|.
+  // Checks that provided `url` is allowlisted and tries to calculate response
+  // for the `challenge`.
   void Run(Profile* profile,
            CallbackType callback,
            const GURL& url,
@@ -40,13 +41,13 @@ class SamlChallengeKeyHandler final {
   void SetTpmResponseTimeoutForTesting(base::TimeDelta timeout);
 
  private:
-  // Checks if it is allowed for provided |url| to perform device attestation.
-  void BuildResponseForWhitelistedUrl(const GURL& url);
+  // Checks if it is allowed for provided `url` to perform device attestation.
+  void BuildResponseForAllowlistedUrl(const GURL& url);
   // Starts flow that acutally builds a response.
   void BuildChallengeResponse();
-  // Returns current timeout for |tpm_key_challenger_| to response.
+  // Returns current timeout for `tpm_key_challenger_` to response.
   base::TimeDelta GetTpmResponseTimeout() const;
-  // Single return point from all checks, |tpm_key_challenger_| and timeout
+  // Single return point from all checks, `tpm_key_challenger_` and timeout
   // task.
   void ReturnResult(const attestation::TpmChallengeKeyResult& result);
 
@@ -55,10 +56,9 @@ class SamlChallengeKeyHandler final {
   // Callback to return a result of ChallengeKey.
   CallbackType callback_;
 
-  // Timeout for |tpm_key_challenger_| to response.
-  const base::TimeDelta default_tpm_response_timeout_ =
-      base::TimeDelta::FromSeconds(15);
-  base::Optional<base::TimeDelta> tpm_response_timeout_for_testing_;
+  // Timeout for `tpm_key_challenger_` to response.
+  const base::TimeDelta default_tpm_response_timeout_ = base::Seconds(15);
+  absl::optional<base::TimeDelta> tpm_response_timeout_for_testing_;
 
   // Performs attestation flow.
   std::unique_ptr<attestation::TpmChallengeKeyWithTimeout> tpm_key_challenger_;
@@ -67,5 +67,12 @@ class SamlChallengeKeyHandler final {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::kSamlChallengeKeyHandlerResultMetric;
+using ::chromeos::SamlChallengeKeyHandler;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SAML_CHALLENGE_KEY_HANDLER_H_

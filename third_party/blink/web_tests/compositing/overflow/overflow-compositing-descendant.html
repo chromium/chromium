@@ -12,22 +12,22 @@
         background-color: white;
         border: 1px solid black;
     }
-    
+
     video {
         background-color: black;
     }
-    
+
     .box {
       width: 100px;
       height: 100px;
     }
-    
+
     .test {
         position: relative;
         margin-top: -100px;
         background-color: green;
     }
-    
+
     .indicator {
         background-color: red;
     }
@@ -38,7 +38,7 @@
   </script>
 </head>
 <body>
-    
+
     <p>You should see a green box under the video. If you see red, the test failed.</p>
     <div class="movie content">
         <video height="100" width="100"></video>
@@ -48,12 +48,9 @@
 
     <script type="text/javascript" charset="utf-8">
       var video = document.getElementsByTagName('video')[0];
+      video.requestVideoFrameCallback( _ => { testRunner.notifyDone(); });
       video.src = '../resources/video.' + (video.canPlayType('video/ogg') ? 'ogv' : 'mp4');
-      video.addEventListener('canplaythrough', function() {
-        if (window.testRunner)
-          testRunner.notifyDone();
-      }, false);
     </script>
-    
+
 </body>
 </html>

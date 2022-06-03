@@ -4,13 +4,9 @@
 
 #include "chromecast/ui/aura_components.h"
 
-#include "chromecast/ui/media_overlay_impl.h"
-
 namespace chromecast {
 
-AuraComponents::AuraComponents(CastWindowManager* cast_window_manager)
-    : media_overlay_(std::make_unique<MediaOverlayImpl>(cast_window_manager)) {}
-
+AuraComponents::AuraComponents() = default;
 AuraComponents::~AuraComponents() = default;
 
 }  // namespace chromecast

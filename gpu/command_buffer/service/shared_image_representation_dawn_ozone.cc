@@ -7,6 +7,7 @@
 #include <dawn_native/VulkanBackend.h>
 
 #include <vulkan/vulkan.h>
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -50,24 +51,37 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   if (texture_) {
     return nullptr;
   }
+  if (!ozone_backing()->VaSync()) {
+    return nullptr;
+  }
   DCHECK(pixmap_->GetNumberOfPlanes() == 1)
       << "Multi-plane formats are not supported.";
-  // TODO(hob): Synchronize access to the dma-buf by waiting on all semaphores
-  // tracked by SharedImageBackingOzone.
+
+  std::vector<gfx::GpuFenceHandle> fences;
+  ozone_backing()->BeginAccess(&fences);
+
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};
-  texture_descriptor.nextInChain = nullptr;
   texture_descriptor.format = format_;
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
-  texture_descriptor.size = {pixmap_size.width(), pixmap_size.height(), 1};
-  texture_descriptor.arrayLayerCount = 1;
+  texture_descriptor.size = {static_cast<uint32_t>(pixmap_size.width()),
+                             static_cast<uint32_t>(pixmap_size.height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
+  // We need to have an internal usage of CopySrc in order to use
+  // CopyTextureToTextureInternal.
+  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
+  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  texture_descriptor.nextInChain =
+      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
+
   dawn_native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;
-  descriptor.isCleared = IsCleared();
+  descriptor.isInitialized = IsCleared();
+
   // Import the dma-buf into Dawn via the Vulkan backend. As per the Vulkan
   // documentation, importing memory from a file descriptor transfers
   // ownership of the fd from the application to the Vulkan implementation.
@@ -79,20 +93,14 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};
 
-  texture_ = dawn_native::vulkan::WrapVulkanImage(device_, &descriptor);
-  if (texture_) {
-    // Keep a reference to the texture so that it stays valid (its content
-    // might be destroyed).
-    dawn_procs_->data.textureReference(texture_);
+  if (ozone_backing()->NeedsSynchronization()) {
+    for (auto& fence : fences) {
+      descriptor.waitFDs.push_back(fence.owned_fd.release());
+    }
+  }
 
-    // Assume that the user of this representation will write to the texture
-    // so set the cleared flag so that other representations don't overwrite
-    // the result.
-    // TODO(cwallez@chromium.org): This is incorrect and allows reading
-    // uninitialized data. When !IsCleared we should tell dawn_native to
-    // consider the texture lazy-cleared.
-    SetCleared();
-  } else {
+  texture_ = dawn_native::vulkan::WrapVulkanImage(device_, &descriptor);
+  if (!texture_) {
     close(fd);
   }
 
@@ -104,8 +112,22 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
     return;
   }
 
-  // TODO(hob): Synchronize access to the dma-buf by exporting the VkSemaphore
-  // from the WebGPU texture.
+  // Grab the signal semaphore from dawn
+  dawn_native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
+  if (!dawn_native::vulkan::ExportVulkanImage(
+          texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
+    DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
+  } else {
+    if (export_info.isInitialized) {
+      SetCleared();
+    }
+
+    // TODO(hob): Handle waiting on multiple semaphores from dawn.
+    DCHECK(export_info.semaphoreHandles.size() == 1);
+    gfx::GpuFenceHandle fence;
+    fence.owned_fd = base::ScopedFD(export_info.semaphoreHandles[0]);
+    ozone_backing()->EndAccess(false /* readonly */, std::move(fence));
+  }
   dawn_procs_->data.textureDestroy(texture_);
   dawn_procs_->data.textureRelease(texture_);
   texture_ = nullptr;

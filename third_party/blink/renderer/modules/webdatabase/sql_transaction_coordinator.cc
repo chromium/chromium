@@ -45,7 +45,7 @@ static String GetDatabaseIdentifier(SQLTransactionBackend* transaction) {
 SQLTransactionCoordinator::SQLTransactionCoordinator()
     : is_shutting_down_(false) {}
 
-void SQLTransactionCoordinator::Trace(blink::Visitor* visitor) {}
+void SQLTransactionCoordinator::Trace(Visitor* visitor) const {}
 
 void SQLTransactionCoordinator::ProcessPendingTransactions(
     CoordinationInfo& info) {

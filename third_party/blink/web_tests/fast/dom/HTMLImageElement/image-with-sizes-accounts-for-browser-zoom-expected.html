@@ -11,13 +11,13 @@
     }
   </style>
   <script>
-    if (window.eventSender) {
+    if (window.testRunner) {
       addEventListener('load', function() {
         // Zoom in three times. Ensure the image scales just as a div with
         // an explicit vw size would.
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
       });
     }
   </script>

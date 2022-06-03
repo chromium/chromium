@@ -34,20 +34,21 @@ SecureContext::ProtocolVersion FakeSecureContext::GetProtocolVersion() const {
 }
 
 void FakeSecureContext::Encode(const std::string& message,
-                               const MessageCallback& callback) {
-  callback.Run(message + kFakeEncodingSuffix);
+                               MessageCallback callback) {
+  std::move(callback).Run(message + kFakeEncodingSuffix);
 }
 
 void FakeSecureContext::Decode(const std::string& encoded_message,
-                               const MessageCallback& callback) {
+                               MessageCallback callback) {
   if (!EndsWith(encoded_message, kFakeEncodingSuffix,
                 base::CompareCase::SENSITIVE)) {
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
+    return;
   }
 
   std::string decoded_message = encoded_message;
   decoded_message.erase(decoded_message.size() - kFakeEncodingSuffixLen);
-  callback.Run(decoded_message);
+  std::move(callback).Run(decoded_message);
 }
 
 }  // namespace secure_channel

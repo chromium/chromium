@@ -5,9 +5,7 @@
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "platform_handle_unittest.cc",
-  ]
+  sources = [ "platform_handle_unittest.cc" ]
 
   deps = [
     "//base",

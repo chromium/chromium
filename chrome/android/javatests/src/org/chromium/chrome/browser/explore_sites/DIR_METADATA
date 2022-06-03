@@ -1,0 +1,4 @@
+mixins: "//chrome/browser/android/explore_sites/COMMON_METADATA"
+monorail {
+  component: "UI>Browser>NewTabPage>ExploreSites"
+}

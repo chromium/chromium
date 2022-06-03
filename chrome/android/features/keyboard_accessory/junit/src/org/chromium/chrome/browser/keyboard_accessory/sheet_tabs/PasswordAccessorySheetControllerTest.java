@@ -8,13 +8,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
@@ -23,11 +28,13 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.getType;
 
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,18 +47,22 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
 
-import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Controller tests for the password accessory sheet.
@@ -59,9 +70,12 @@ import java.util.HashMap;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class PasswordAccessorySheetControllerTest {
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private RecyclerView mMockView;
     @Mock
@@ -131,12 +145,12 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     public void testSplitsTabDataToList() {
-        setAutofillFeature(false);
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords for this site", "");
-        testData.getUserInfoList().add(new UserInfo("www.example.com", false));
+        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
         testData.getUserInfoList().get(0).addField(
                 new UserInfoField("Name", "Name", "", false, null));
         testData.getUserInfoList().get(0).addField(
@@ -156,8 +170,8 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     public void testUsesTabTitleOnlyForEmptyListsForModernDesign() {
-        setAutofillFeature(true);
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.PASSWORDS, "No passwords for this", "");
@@ -173,7 +187,7 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No passwords for this")));
 
         // As soon UserInfo is available, discard the title.
-        testData.getUserInfoList().add(new UserInfo("www.example.com", false));
+        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
         testData.getUserInfoList().get(0).addField(
                 new UserInfoField("Name", "Name", "", false, null));
         testData.getUserInfoList().get(0).addField(
@@ -183,6 +197,61 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(2));
         assertThat(getType(mSheetDataPieces.get(0)), is(PASSWORD_INFO));
         assertThat(getType(mSheetDataPieces.get(1)), is(FOOTER_COMMAND));
+    }
+
+    @Test
+    public void testOptionToggleCompoundCallback() {
+        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final AccessorySheetData testData =
+                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+        AtomicReference<Boolean> toggleEnabled = new AtomicReference<>();
+        testData.setOptionToggle(new OptionToggle("Save passwords for this site", false,
+                AccessoryAction.TOGGLE_SAVE_PASSWORDS, toggleEnabled::set));
+        mCoordinator.registerDataProvider(testProvider);
+
+        testProvider.notifyObservers(testData);
+
+        // Invoke the callback on the option toggle that was stored in the model. This is not the
+        // same as the OptionToggle passed above, because the mediator repackages it to include an
+        // additional method call in the callback.
+        OptionToggle repackagedToggle = (OptionToggle) mSheetDataPieces.get(0).getDataPiece();
+
+        // Pretend to enable the toggle like a click would do.
+        repackagedToggle.getCallback().onResult(true);
+
+        // Check that the original callback was called and that the model was updated with an
+        // enabled toggle.
+        assertTrue(toggleEnabled.get());
+        assertTrue(((OptionToggle) mSheetDataPieces.get(0).getDataPiece()).isEnabled());
+    }
+
+    @Test
+    public void testToggleChangeDelegateIsCalledWhenToggleIsAdded() {
+        Provider.Observer<Drawable> mMockObserver = mock(Provider.Observer.class);
+        mCoordinator.getTab().addIconObserver(mMockObserver);
+
+        addToggleToSheet(false);
+        verify(mMockObserver).onItemAvailable(eq(Provider.Observer.DEFAULT_TYPE), any());
+    }
+
+    @Test
+    public void testToggleChangeDelegateIsCalledWhenToggleIsChanged() {
+        Provider.Observer<Drawable> mMockIconObserver = mock(Provider.Observer.class);
+        mCoordinator.getTab().addIconObserver(mMockIconObserver);
+
+        addToggleToSheet(false);
+
+        // Invoke the callback on the option toggle that was stored in the model. This is not the
+        // same as the OptionToggle passed above, because the mediator repackages it to include an
+        // additional method call in the callback.
+        OptionToggle repackagedToggle = (OptionToggle) mSheetDataPieces.get(0).getDataPiece();
+
+        // Pretend to enable the toggle like a click would do.
+        repackagedToggle.getCallback().onResult(true);
+
+        // Note that the icon observer is called once for initialization and once for the change.
+        verify(mMockIconObserver, times(2))
+                .onItemAvailable(eq(Provider.Observer.DEFAULT_TYPE), any());
     }
 
     @Test
@@ -217,15 +286,15 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(1));
 
         // If the tab is shown with X interactive item, record "X" samples.
-        UserInfo userInfo1 = new UserInfo("www.example.com", false);
+        UserInfo userInfo1 = new UserInfo("www.example.com", true);
         userInfo1.addField(new UserInfoField("Interactive 1", "", "", false, (v) -> {}));
         userInfo1.addField(new UserInfoField("Non-Interactive 1", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo1);
-        UserInfo userInfo2 = new UserInfo("www.example.com", false);
+        UserInfo userInfo2 = new UserInfo("www.example.com", true);
         userInfo2.addField(new UserInfoField("Interactive 2", "", "", false, (v) -> {}));
         userInfo2.addField(new UserInfoField("Non-Interactive 2", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo2);
-        UserInfo userInfo3 = new UserInfo("other.origin.eg", true);
+        UserInfo userInfo3 = new UserInfo("other.origin.eg", false);
         userInfo3.addField(new UserInfoField("Interactive 3", "", "", false, (v) -> {}));
         userInfo3.addField(new UserInfoField("Non-Interactive 3", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo3);
@@ -234,6 +303,74 @@ public class PasswordAccessorySheetControllerTest {
 
         assertThat(getSuggestionsImpressions(AccessoryTabType.PASSWORDS, 3), is(1));
         assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 3), is(1));
+    }
+
+    @Test
+    public void testRecordsToggleOnImpressionsWhenShown() {
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+
+        addToggleToSheet(true);
+        mCoordinator.onTabShown();
+
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(1));
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+    }
+
+    @Test
+    public void testRecordsToggleOffImpressionsWhenShown() {
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+
+        addToggleToSheet(false);
+        mCoordinator.onTabShown();
+
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(1));
+    }
+
+    @Test
+    public void testRecordsToggleOnClicked() {
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+
+        addToggleToSheet(true);
+
+        // Invoke the callback on the option toggle that was stored in the model. This is not the
+        // same as the OptionToggle passed above, because the mediator repackages it to include an
+        // additional method call in the callback.
+        OptionToggle repackagedToggle = (OptionToggle) mSheetDataPieces.get(0).getDataPiece();
+        repackagedToggle.getCallback().onResult(false);
+
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(1));
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+    }
+
+    @Test
+    public void testRecordsToggleOffClicked() {
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
+
+        addToggleToSheet(false);
+
+        // Invoke the callback on the option toggle that was stored in the model. This is not the
+        // same as the OptionToggle passed above, because the mediator repackages it to include an
+        // additional method call in the callback.
+        OptionToggle repackagedToggle = (OptionToggle) mSheetDataPieces.get(0).getDataPiece();
+        repackagedToggle.getCallback().onResult(true);
+
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
+        assertThat(getToggleClicks(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(1));
+    }
+
+    private void addToggleToSheet(boolean toggleEnabled) {
+        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final AccessorySheetData testData =
+                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+        testData.setOptionToggle(new OptionToggle("Save passwords for this site", toggleEnabled,
+                AccessoryAction.TOGGLE_SAVE_PASSWORDS, (Boolean enabled) -> {}));
+        mCoordinator.registerDataProvider(testProvider);
+        testProvider.notifyObservers(testData);
     }
 
     private int getActionImpressions(@AccessoryAction int bucket) {
@@ -246,9 +383,13 @@ public class PasswordAccessorySheetControllerTest {
                 getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS, type), sample);
     }
 
-    private void setAutofillFeature(boolean enabled) {
-        HashMap<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, enabled);
-        ChromeFeatureList.setTestFeatures(features);
+    private int getToggleImpressions(@AccessoryToggleType int bucket) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION, bucket);
+    }
+
+    private int getToggleClicks(@AccessoryToggleType int bucket) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED, bucket);
     }
 }

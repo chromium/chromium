@@ -1,0 +1,47 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("arc") {
+  output_name = "chromeos_dbus_arc"
+  defines = [ "IS_CHROMEOS_DBUS_ARC_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "arc_appfuse_provider_client.cc",
+    "arc_appfuse_provider_client.h",
+    "arc_camera_client.cc",
+    "arc_camera_client.h",
+    "arc_data_snapshotd_client.cc",
+    "arc_data_snapshotd_client.h",
+    "arc_keymaster_client.cc",
+    "arc_keymaster_client.h",
+    "arc_midis_client.cc",
+    "arc_midis_client.h",
+    "arc_obb_mounter_client.cc",
+    "arc_obb_mounter_client.h",
+    "arc_sensor_service_client.cc",
+    "arc_sensor_service_client.h",
+    "fake_arc_appfuse_provider_client.cc",
+    "fake_arc_appfuse_provider_client.h",
+    "fake_arc_camera_client.cc",
+    "fake_arc_camera_client.h",
+    "fake_arc_data_snapshotd_client.cc",
+    "fake_arc_data_snapshotd_client.h",
+    "fake_arc_keymaster_client.cc",
+    "fake_arc_keymaster_client.h",
+    "fake_arc_midis_client.cc",
+    "fake_arc_midis_client.h",
+    "fake_arc_obb_mounter_client.cc",
+    "fake_arc_obb_mounter_client.h",
+    "fake_arc_sensor_service_client.cc",
+    "fake_arc_sensor_service_client.h",
+  ]
+}

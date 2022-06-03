@@ -28,6 +28,11 @@ namespace remoting {
 class NormalizingInputFilterCros : public protocol::InputFilter {
  public:
   explicit NormalizingInputFilterCros(protocol::InputStub* input_stub);
+
+  NormalizingInputFilterCros(const NormalizingInputFilterCros&) = delete;
+  NormalizingInputFilterCros& operator=(const NormalizingInputFilterCros&) =
+      delete;
+
   ~NormalizingInputFilterCros() override;
 
   // InputFilter overrides.
@@ -61,8 +66,6 @@ class NormalizingInputFilterCros : public protocol::InputFilter {
   // Previous mouse coordinates.
   int previous_mouse_x_;
   int previous_mouse_y_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizingInputFilterCros);
 };
 
 }  // namespace remoting

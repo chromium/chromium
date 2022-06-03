@@ -1,7 +1,0 @@
-per-file payment_response_helper*=sebsg@chromium.org
-
-per-file payment_manifest_web_data_service*=gogerald@chromium.org
-per-file payment_method_manifest_table*=gogerald@chromium.org
-per-file web_app_manifest_section_table*=gogerald@chromium.org
-
-# COMPONENT: UI>Browser>Payments

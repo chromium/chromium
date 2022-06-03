@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel updates dom tree structure upon shadow root creation.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container"><div id="child"></div></div>
@@ -15,7 +15,7 @@
       function createShadowRoot(id)
       {
           var container = document.getElementById("container");
-          var root = container.createShadowRoot();
+          var root = container.attachShadow({mode: 'open'});
           root.innerHTML = "<div id='" + id + "'></div>";
       }
 

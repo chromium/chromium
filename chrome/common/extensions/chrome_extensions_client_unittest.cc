@@ -21,7 +21,7 @@ namespace extensions {
 class ChromeExtensionsClientTest : public testing::Test {
  public:
   void SetUp() override {
-    extensions_client_.reset(new ChromeExtensionsClient());
+    extensions_client_ = std::make_unique<ChromeExtensionsClient>();
     ExtensionsClient::Set(extensions_client_.get());
   }
 
@@ -39,8 +39,9 @@ TEST_F(ChromeExtensionsClientTest, GetBrowserImagePaths) {
                     .AppendASCII("basics");
 
   std::string error;
-  scoped_refptr<Extension> extension(file_util::LoadExtension(
-      install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
 
   // The extension contains one icon.
@@ -62,11 +63,12 @@ TEST_F(ChromeExtensionsClientTest, CheckZeroLengthActionIconFiles) {
                                .AppendASCII("gggggggggggggggggggggggggggggggg");
 
   std::string error;
-  scoped_refptr<Extension> extension2(file_util::LoadExtension(
-      ext_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension2(
+      file_util::LoadExtension(ext_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
   EXPECT_FALSE(extension2.get());
-  EXPECT_STREQ("Could not load icon 'icon.png' for browser action.",
-               error.c_str());
+  EXPECT_EQ("Could not load icon 'icon.png' specified in 'browser_action'.",
+            error);
 
   // Try to install an extension with a zero-length page action icon file.
   ext_dir = install_dir.AppendASCII("extensions")
@@ -74,11 +76,12 @@ TEST_F(ChromeExtensionsClientTest, CheckZeroLengthActionIconFiles) {
                 .AppendASCII("Extensions")
                 .AppendASCII("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 
-  scoped_refptr<Extension> extension3(file_util::LoadExtension(
-      ext_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension3(
+      file_util::LoadExtension(ext_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
   EXPECT_FALSE(extension3.get());
-  EXPECT_STREQ("Could not load icon 'icon.png' for page action.",
-               error.c_str());
+  EXPECT_EQ("Could not load icon 'icon.png' specified in 'page_action'.",
+            error);
 }
 
 // Test that the ManifestHandlerRegistry handler map hasn't overflowed.

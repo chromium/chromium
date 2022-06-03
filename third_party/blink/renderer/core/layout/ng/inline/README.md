@@ -62,11 +62,22 @@ as in the following.
 
 Inline layout is performed in the following phases:
 
-1. **Pre-layout** converts LayoutObject tree to a concatenated string
+1. **[Pre-layout]** converts LayoutObject tree to a concatenated string
    and a list of [NGInlineItem].
-2. **Line breaking** breaks it into lines and
+2. **[Line breaking]** breaks it into lines and
    produces a list of [NGInlineItemResult] for each line.
-3. **Line box construction** produces a fragment tree.
+3. **[Line box construction]** orders and positions items on a line.
+4. **[Generate fragments]** generates physical fragments.
+
+| Phase | Input | Output |
+|---|---|---|
+| Pre-layout | LayoutObject | [NGInlineItem] |
+| Line Breaking | [NGInlineItem] | [NGInlineItemResult] |
+| Line box construction | [NGInlineItemResult] | [NGLogicalLineItem] |
+| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [NGFragmentItem] |
+
+Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
+to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
 
 This is similar to [CSS Text Processing Order of Operations],
 but not exactly the same,
@@ -74,8 +85,8 @@ because the spec prioritizes the simple description than being accurate.
 
 [CSS Text Processing Order of Operations]: https://drafts.csswg.org/css-text-3/#order
 
-### Pre-layout ###
-[Pre-layout]: #pre-layout
+### <a name="pre-layout">Pre-layout</a> ###
+[pre-layout]: #pre-layout
 
 For inline layout there is a pre-layout pass that prepares the internal data
 structures needed to perform line layout.
@@ -104,7 +115,8 @@ three separate steps or stages that are executed in order:
 
 [text-transform]: https://drafts.csswg.org/css-text-3/#propdef-text-transform
 
-### Line Breaking ###
+### <a name="line-breaking">Line Breaking</a> ###
+[line breaking]: #line-breaking
 
 [NGLineBreaker] takes a list of [NGInlineItem],
 measure them, break into lines, and
@@ -134,53 +146,48 @@ This phase:
 
 [CSS Calculating widths and margins]: https://drafts.csswg.org/css2/visudet.html#Computing_widths_and_margins
 
-### Line Box Construction ###
+### <a name="create-line">Line Box Construction</a> ###
+[line Box Construction]: #create-line
 
 `NGInlineLayoutAlgorithm::CreateLine()` takes a list of [NGInlineItemResult] and
-produces [NGPhysicalLineBoxFragment] for each line.
-
-Lines are then wrapped in an anonymous [NGPhysicalBoxFragment]
-so that one [NGInlineNode] has one corresponding fragment.
+produces a list of [NGLogicalLineItem].
 
 This phase consists of following sub-phases:
 
-1. Bidirectional reordering:
-   Reorder the list of [NGInlineItemResult]
-   according to [UAX#9 Reordering Resolved Levels].
-   See [Bidirectional text] below.
-
-   After this point forward, the list of [NGInlineItemResult] is
-   in _visual order_; which is from [line-left] to [line-right].
-   The block direction is still logical,
-   but the inline direction is physical.
-
-2. Create a [NGPhysicalFragment] for each [NGInlineItemResult]
-   in visual ([line-left] to [line-right]) order,
-   and place them into [NGPhysicalLineBoxFragment].
-
-   1. A text item produces a [NGPhysicalTextFragment].
-   2. An open-tag item pushes a new stack entry of [NGInlineBoxState],
-      and a close-tag item pops a stack entry.
-      Performs operations that require the size of the inline box,
-      or ancestor boxes.
-      See [Inline Box Tree] below.
+1. Create a [NGLogicalLineItem] for each [NGInlineItemResult]
+   and determine the positions.
 
    The inline size of each item was already determined by [NGLineBreaker],
    but the inline position is recomputed
-   because BiDi reordering may have changed it.
+   because [BiDi reordering](#bidi) may change them.
 
-   In block direction, [NGPhysicalFragment] is placed
-   as if the baseline is at 0.
-   This is adjusted later, possibly multiple times.
-   See [Inline Box Tree] and the post-process below.
+   In block direction,
+   [NGLogicalLineItem] is placed as if the baseline is at 0.
+   This is adjusted later, possibly multiple times,
+   for [vertical-align] and the block offset of the parent inline box.
 
-3. Post-process the constructed line box.
-   This includes:
-   1. Process all pending operations in [Inline Box Tree].
-   2. Moves the baseline to the correct position
-      based on the height of the line box.
-   3. Applies the CSS [text-align] property.
+   An open-tag item pushes a new stack entry of [NGInlineBoxState],
+   and a close-tag item pops a stack entry.
+   This stack is used to determine the size of the inline box,
+   for [vertical-align], and for a few other purposes.
+   Please see [Inline Box Tree] below.
 
+2. Process all pending operations in [Inline Box Tree].
+3. [Bidirectional reordering](#bidi):
+   Reorder the list of [NGLogicalLineItem]
+   according to [UAX#9 Reordering Resolved Levels].
+   See [Bidirectional text] below.
+
+   After this point forward, the list of [NGLogicalLineItem] is
+   in _visual order_; which is from [line-left] to [line-right].
+   The block direction is still logical,
+   but the inline direction is physical.
+4. Applies [ellipsizing] if needed.
+5. Applies the CSS [text-align] property.
+6. Moves the baseline to the correct position
+   based on the height of the line box.
+
+[ellipsizing]: https://drafts.csswg.org/css-ui-3/#overflow-ellipsis
 [line-left]: https://drafts.csswg.org/css-writing-modes-3/#line-left
 [line-right]: https://drafts.csswg.org/css-writing-modes-3/#line-right
 [text-align]: https://drafts.csswg.org/css-text-3/#propdef-text-align
@@ -240,6 +247,20 @@ Once all children and their positions and sizes are finalized,
 `NGInlineLayoutStateStack::CreateBoxFragments()`
 creates [NGPhysicalBoxFragment] and add children to it.
 
+### <a name="generate-fragments">Generate Fragments</a> ###
+[generate fragments]: #generate-fragments
+
+When all [NGLogicalLineItem]s are ordered and positioned,
+they are converted to fragments.
+
+Without [NGFragmentItem] enabled,
+each [NGLogicalLineItem] produces a [NGPhysicalFragment],
+added to the [NGPhysicalLineBoxFragment].
+
+With [NGFragmentItem] enabled,
+each [NGLogicalLineItem] produces a [NGFragmentItem],
+added to the [NGFragmentItems] in the containing block of the inline formatting context.
+
 ## Miscellaneous topics ##
 
 ### Baseline ###
@@ -279,6 +300,38 @@ responsible for computing different baseline types from font metrics.
 [dominant-baseline]: https://drafts.csswg.org/css-inline/#dominant-baseline-property
 [writing-mode]: https://drafts.csswg.org/css-writing-modes-3/#propdef-writing-mode
 
+### <a name="culled"></a>Culled Inline ###
+[Culled inline]: #culled
+
+For performance and memory consumption,
+Blink ignores some inline-boxes during inline layout
+because they don't impact layout nor they are needed for paint purposes.
+An example of this is
+```html
+<span style="border: 1px solid blue"><b>Text</b></span>
+```
+The `<b>` has the same size as the inner text-node
+so it can be ignored for layout purpose,
+while the `<span>` has borders, which impacts paint,
+so it produces a box fragment.
+This optimization is called "culled inline" in the code.
+
+LayoutNG uses similar criteria as legacy engine
+on whether to generate a fragment or not,
+but LayoutNG generates fragments in a little more cases than legacy
+in order to improve the accuracy of hit-testing and bounding rects.
+This is determined by `ShouldCreateBoxFragment()`,
+which is primarily computed during style recalc,
+but layout may also turn it on when the need is discovered during layout.
+
+One downside of this optimization is that we have extra work to do when
+querying post-layout information; e.g., hit-testing or asking for bounding rects.
+
+Another downside is making a culled inline box not to be culled requires re-layout
+even if the change does not affect layout; e.g., adding background.
+To mitigate multiple layouts by like hover highlighting,
+`ShouldCreateBoxFragment()` will not be reset once it's set.
+
 ### <a name="bidi"></a>Bidirectional Text ###
 [Bidirectional Text]: #bidi
 
@@ -303,6 +356,8 @@ In a bird's‐eye view, it consists of two parts:
 
    This is part of the Line Box Construction phase above.
 
+Initial design doc: [Using ICU BiDi in LayoutNG](https://docs.google.com/document/d/182H1Sj_FCEHcl6eC69J4KcIc5m3ohSzgo297KYB0S_c/edit?usp=sharing)
+
 ### Interface for Editing ###
 
 [NGOffsetMapping] provides functions for converting between offsets in the text
@@ -323,6 +378,8 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
+[NGFragmentItem]: ng_fragment_item.h
+[NGFragmentItems]: ng_fragment_items.h
 [NGInlineBoxState]: ng_inline_box_state.h
 [NGInlineItem]: ng_inline_item.h
 [NGInlineItemResult]: ng_inline_item_result.h
@@ -330,6 +387,8 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGInlineLayoutAlgorithm]: ng_inline_layout_algorithm.h
 [NGLayoutInputNode]: ../ng_layout_input_node.h
 [NGLineBreaker]: ng_line_breaker.h
+[NGLogicalLineItem]: ng_logical_line_item.h
+[NGLogicalLineItems]: ng_logical_line_items.h
 [NGOffsetMapping]: ng_offset_mapping.h
 [NGPhysicalBoxFragment]: ../ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng_physical_fragment.h

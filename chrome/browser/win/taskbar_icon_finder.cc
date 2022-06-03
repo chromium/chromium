@@ -16,10 +16,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_variant.h"
@@ -40,6 +40,9 @@ class TaskbarIconFinder {
   // Constructs a new finder and immediately starts running it on a dedicated
   // automation task in a multi-threaded COM apartment.
   explicit TaskbarIconFinder(TaskbarIconFinderResultCallback result_callback);
+
+  TaskbarIconFinder(const TaskbarIconFinder&) = delete;
+  TaskbarIconFinder& operator=(const TaskbarIconFinder&) = delete;
 
  private:
   // Receives the result computed on the automation task, passes the results to
@@ -74,8 +77,6 @@ class TaskbarIconFinder {
 
   // The caller's callback.
   TaskbarIconFinderResultCallback result_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskbarIconFinder);
 };
 
 TaskbarIconFinder::TaskbarIconFinder(
@@ -83,13 +84,13 @@ TaskbarIconFinder::TaskbarIconFinder(
     : result_callback_(std::move(result_callback)) {
   DCHECK(result_callback_);
 
-  // Since all threads servicing the worker pool backing post_task.h initialize
-  // COM into the MTA and only one task is needed for this job, it is sufficient
-  // to post a simple task here. Should automation event handlers be needed or
-  // more than one task, care must be taken to follow proper threading rules as
-  // required for automation clients.
-  base::PostTask(FROM_HERE,
-                 base::BindOnce(&TaskbarIconFinder::RunOnComTask,
+  // Since all threads servicing the base::ThreadPool initialize COM into the
+  // MTA and only one task is needed for this job, it is sufficient to post a
+  // simple task here. Should automation event handlers be needed or more than
+  // one task, care must be taken to follow proper threading rules as required
+  // for automation clients.
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce(&TaskbarIconFinder::RunOnComTask,
                                 base::SequencedTaskRunnerHandle::Get(),
                                 base::Unretained(this)));
 }
@@ -162,11 +163,11 @@ void TaskbarIconFinder::FindRectOnPrimaryMonitor(
 
   // Find each icon's nearest ancestor with an HWND.
   Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
-  HRESULT result = automation->get_RawViewWalker(tree_walker.GetAddressOf());
+  HRESULT result = automation->get_RawViewWalker(&tree_walker);
   if (FAILED(result) || !tree_walker)
     return;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request;
-  result = automation->CreateCacheRequest(cache_request.GetAddressOf());
+  result = automation->CreateCacheRequest(&cache_request);
   if (FAILED(result) || !cache_request)
     return;
   cache_request->AddProperty(UIA_NativeWindowHandlePropertyId);
@@ -174,14 +175,14 @@ void TaskbarIconFinder::FindRectOnPrimaryMonitor(
   Microsoft::WRL::ComPtr<IUIAutomationElement> icon;
   HWND hwnd = 0;
   for (int i = 0; i < length; ++i) {
-    icons->GetElement(i, icon.GetAddressOf());
+    icons->GetElement(i, &icon);
 
     // Walk up the tree to find the icon's first parent with an HWND.
     Microsoft::WRL::ComPtr<IUIAutomationElement> search = icon;
     while (true) {
       Microsoft::WRL::ComPtr<IUIAutomationElement> parent;
       result = tree_walker->GetParentElementBuildCache(
-          search.Get(), cache_request.Get(), parent.GetAddressOf());
+          search.Get(), cache_request.Get(), &parent);
       if (FAILED(result) || !parent)
         break;
       base::win::ScopedVariant var;
@@ -238,40 +239,38 @@ HRESULT TaskbarIconFinder::DoOnComTask(gfx::Rect* rect) {
   base::win::ScopedVariant app_user_model_id(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()).c_str());
   Microsoft::WRL::ComPtr<IUIAutomationCondition> id_condition;
-  result = automation->CreatePropertyCondition(UIA_AutomationIdPropertyId,
-                                               app_user_model_id,
-                                               id_condition.GetAddressOf());
+  result = automation->CreatePropertyCondition(
+      UIA_AutomationIdPropertyId, app_user_model_id, &id_condition);
   if (FAILED(result) || !id_condition)
     return result;
 
   base::win::ScopedVariant button_type(UIA_ButtonControlTypeId);
   Microsoft::WRL::ComPtr<IUIAutomationCondition> type_condition;
-  result = automation->CreatePropertyCondition(
-      UIA_ControlTypePropertyId, button_type, type_condition.GetAddressOf());
+  result = automation->CreatePropertyCondition(UIA_ControlTypePropertyId,
+                                               button_type, &type_condition);
   if (FAILED(result) || !type_condition)
     return result;
 
   Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
-  result = automation->CreateAndCondition(
-      id_condition.Get(), type_condition.Get(), condition.GetAddressOf());
+  result = automation->CreateAndCondition(id_condition.Get(),
+                                          type_condition.Get(), &condition);
 
   // Cache the bounding rectangle of all found items.
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request;
-  result = automation->CreateCacheRequest(cache_request.GetAddressOf());
+  result = automation->CreateCacheRequest(&cache_request);
   if (FAILED(result) || !cache_request)
     return result;
   cache_request->AddProperty(UIA_BoundingRectanglePropertyId);
 
   // Search the desktop to find all buttons with the correct automation id.
   Microsoft::WRL::ComPtr<IUIAutomationElement> desktop;
-  result = automation->GetRootElement(desktop.GetAddressOf());
+  result = automation->GetRootElement(&desktop);
   if (FAILED(result) || !desktop)
     return result;
 
   Microsoft::WRL::ComPtr<IUIAutomationElementArray> icons;
-  result =
-      desktop->FindAllBuildCache(TreeScope_Subtree, condition.Get(),
-                                 cache_request.Get(), icons.GetAddressOf());
+  result = desktop->FindAllBuildCache(TreeScope_Subtree, condition.Get(),
+                                      cache_request.Get(), &icons);
   if (FAILED(result) || !icons)
     return result;
 

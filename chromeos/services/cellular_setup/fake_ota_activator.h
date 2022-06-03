@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_FAKE_OTA_ACTIVATOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/ota_activator.h"
 #include "chromeos/services/cellular_setup/public/cpp/fake_carrier_portal_handler.h"
 
@@ -18,6 +17,10 @@ namespace cellular_setup {
 class FakeOtaActivator : public OtaActivator {
  public:
   explicit FakeOtaActivator(base::OnceClosure on_finished_callback);
+
+  FakeOtaActivator(const FakeOtaActivator&) = delete;
+  FakeOtaActivator& operator=(const FakeOtaActivator&) = delete;
+
   ~FakeOtaActivator() override;
 
   using OtaActivator::InvokeOnFinishedCallback;
@@ -31,8 +34,6 @@ class FakeOtaActivator : public OtaActivator {
   void OnCarrierPortalStatusChange(mojom::CarrierPortalStatus status) override;
 
   FakeCarrierPortalHandler fake_carrier_portal_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOtaActivator);
 };
 
 }  // namespace cellular_setup

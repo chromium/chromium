@@ -28,7 +28,7 @@ class BluetoothServiceDataMapIterationSource final
     return true;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
     PairIterable<String, Member<DOMDataView>>::IterationSource::Trace(visitor);
   }

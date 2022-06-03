@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -18,6 +17,9 @@ class InstallTracker;
 
 class InstallTrackerFactory : public BrowserContextKeyedServiceFactory {
  public:
+  InstallTrackerFactory(const InstallTrackerFactory&) = delete;
+  InstallTrackerFactory& operator=(const InstallTrackerFactory&) = delete;
+
   static InstallTracker* GetForBrowserContext(content::BrowserContext* context);
   static InstallTrackerFactory* GetInstance();
 
@@ -32,8 +34,6 @@ class InstallTrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallTrackerFactory);
 };
 
 }  // namespace extensions

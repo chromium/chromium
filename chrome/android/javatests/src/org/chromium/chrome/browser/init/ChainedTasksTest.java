@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.init;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link ChainedTasks}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ChainedTasksTest {
     private static final long TIMEOUT_MS = 1000;
 
@@ -193,18 +196,5 @@ public class ChainedTasksTest {
         tasks.start(false);
         Assert.assertFalse(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(expectedMessages, messages);
-    }
-
-    @Test
-    @SmallTest
-    public void testThreadRestrictions() {
-        ChainedTasks tasks = new ChainedTasks();
-        tasks.start(false);
-        try {
-            tasks.cancel();
-            Assert.fail("Cancel should not be callable from a non-UI thread");
-        } catch (IllegalStateException e) {
-            // Expected.
-        }
     }
 }

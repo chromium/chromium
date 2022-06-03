@@ -1,9 +1,9 @@
 AXWebArea
-++AXGroup AXDescription='This test is for aria-atomic="false"' AXARIAAtomic='0'
-++++AXStaticText AXValue='This test is for aria-atomic="false"' AXARIAAtomic='0'
-++AXGroup AXDescription='This test is for aria-atomic="true"' AXARIAAtomic='1'
-++++AXStaticText AXValue='This test is for aria-atomic="true"' AXARIAAtomic='0'
-++AXGroup AXDescription='This test is for alert.' AXARIAAtomic='1'
-++++AXStaticText AXValue='This test is for alert.' AXARIAAtomic='0'
-++AXGroup AXDescription='This test is for status.' AXARIAAtomic='1'
-++++AXStaticText AXValue='This test is for status.' AXARIAAtomic='0'
+++AXGroup AXARIAAtomic=0
+++++AXStaticText AXARIAAtomic=0 AXValue='This test is for aria-atomic="false"'
+++AXGroup AXARIAAtomic=1
+++++AXStaticText AXARIAAtomic=0 AXValue='This test is for aria-atomic="true"'
+++AXGroup AXARIAAtomic=1
+++++AXStaticText AXARIAAtomic=0 AXValue='This test is for alert.'
+++AXGroup AXARIAAtomic=1
+++++AXStaticText AXARIAAtomic=0 AXValue='This test is for status.'

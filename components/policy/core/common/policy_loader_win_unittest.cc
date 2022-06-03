@@ -12,28 +12,26 @@
 #include <algorithm>
 #include <cstring>
 #include <functional>
-#include <iterator>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -41,8 +39,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::UTF8ToUTF16;
-using base::UTF16ToUTF8;
 using base::win::RegKey;
 
 namespace policy {
@@ -63,8 +59,8 @@ const wchar_t kTestPolicyKey[] = L"chrome.policy.key";
 // is written.
 bool InstallValue(const base::Value& value,
                   HKEY hive,
-                  const base::string16& path,
-                  const base::string16& name) {
+                  const std::wstring& path,
+                  const std::wstring& name) {
   // KEY_ALL_ACCESS causes the ctor to create the key if it does not exist yet.
   RegKey key(hive, path.c_str(), KEY_ALL_ACCESS);
   EXPECT_TRUE(key.Valid());
@@ -73,42 +69,37 @@ bool InstallValue(const base::Value& value,
       return key.WriteValue(name.c_str(), L"") == ERROR_SUCCESS;
 
     case base::Value::Type::BOOLEAN: {
-      bool bool_value;
-      if (!value.GetAsBoolean(&bool_value))
+      if (!value.is_bool())
         return false;
-      return key.WriteValue(name.c_str(), bool_value ? 1 : 0) == ERROR_SUCCESS;
+      return key.WriteValue(name.c_str(), value.GetBool() ? 1 : 0) ==
+             ERROR_SUCCESS;
     }
 
     case base::Value::Type::INTEGER: {
-      int int_value;
-      if (!value.GetAsInteger(&int_value))
+      if (!value.is_int())
         return false;
-      return key.WriteValue(name.c_str(), int_value) == ERROR_SUCCESS;
+      return key.WriteValue(name.c_str(), value.GetInt()) == ERROR_SUCCESS;
     }
 
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      if (!value.GetAsDouble(&double_value))
-        return false;
-      base::string16 str_value = base::NumberToString16(double_value);
+      std::wstring str_value = base::NumberToWString(value.GetDouble());
       return key.WriteValue(name.c_str(), str_value.c_str()) == ERROR_SUCCESS;
     }
 
     case base::Value::Type::STRING: {
-      base::string16 str_value;
+      std::u16string str_value;
       if (!value.GetAsString(&str_value))
         return false;
-      return key.WriteValue(name.c_str(), str_value.c_str()) == ERROR_SUCCESS;
+      return key.WriteValue(name.c_str(), base::as_wcstr(str_value)) ==
+             ERROR_SUCCESS;
     }
 
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* sub_dict = nullptr;
-      if (!value.GetAsDictionary(&sub_dict))
+      if (!value.is_dict())
         return false;
-      for (base::DictionaryValue::Iterator it(*sub_dict);
-           !it.IsAtEnd(); it.Advance()) {
-        if (!InstallValue(it.value(), hive, path + kPathSep + name,
-                          UTF8ToUTF16(it.key()))) {
+      for (auto key_value : value.DictItems()) {
+        if (!InstallValue(key_value.second, hive, path + kPathSep + name,
+                          base::UTF8ToWide(key_value.first))) {
           return false;
         }
       }
@@ -116,15 +107,12 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::LIST: {
-      const base::ListValue* list = nullptr;
-      if (!value.GetAsList(&list))
+      if (!value.is_list())
         return false;
-      for (size_t i = 0; i < list->GetSize(); ++i) {
-        const base::Value* item;
-        if (!list->Get(i, &item))
-          return false;
-        if (!InstallValue(*item, hive, path + kPathSep + name,
-                          base::NumberToString16(i + 1))) {
+      const base::Value::ConstListView& list_view = value.GetList();
+      for (size_t i = 0; i < list_view.size(); ++i) {
+        if (!InstallValue(list_view[i], hive, path + kPathSep + name,
+                          base::NumberToWString(i + 1))) {
           return false;
         }
       }
@@ -133,14 +121,8 @@ bool InstallValue(const base::Value& value,
 
     case base::Value::Type::BINARY:
       return false;
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
-      CHECK(false);
-      return false;
   }
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return false;
 }
 
@@ -153,6 +135,10 @@ bool InstallValue(const base::Value& value,
 class ScopedGroupPolicyRegistrySandbox {
  public:
   ScopedGroupPolicyRegistrySandbox();
+  ScopedGroupPolicyRegistrySandbox(const ScopedGroupPolicyRegistrySandbox&) =
+      delete;
+  ScopedGroupPolicyRegistrySandbox& operator=(
+      const ScopedGroupPolicyRegistrySandbox&) = delete;
   ~ScopedGroupPolicyRegistrySandbox();
 
   // Activates the registry keys overrides. This must be called before doing any
@@ -166,20 +152,20 @@ class ScopedGroupPolicyRegistrySandbox {
   // Deletes the sandbox keys.
   void DeleteKeys();
 
-  base::string16 key_name_;
+  std::wstring key_name_;
 
   // Keys are created for the lifetime of a test to contain
   // the sandboxed HKCU and HKLM hives, respectively.
   RegKey temp_hkcu_hive_key_;
   RegKey temp_hklm_hive_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGroupPolicyRegistrySandbox);
 };
 
 // A test harness that feeds policy via the Chrome GPO registry subtree.
 class RegistryTestHarness : public PolicyProviderTestHarness {
  public:
   RegistryTestHarness(HKEY hive, PolicyScope scope);
+  RegistryTestHarness(const RegistryTestHarness&) = delete;
+  RegistryTestHarness& operator=(const RegistryTestHarness&) = delete;
   ~RegistryTestHarness() override;
 
   // PolicyProviderTestHarness:
@@ -198,9 +184,8 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
   void Install3rdPartyPolicy(const base::DictionaryValue* policies) override;
 
   // Creates a harness instance that will install policy in HKCU or HKLM,
@@ -212,8 +197,7 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   HKEY hive_;
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryTestHarness);
+  PlatformManagementService platform_management_service_;
 };
 
 ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() {}
@@ -227,7 +211,7 @@ void ScopedGroupPolicyRegistrySandbox::ActivateOverrides() {
   // Generate a unique registry key for the override for each test. This
   // makes sure that tests executing in parallel won't delete each other's
   // key, at DeleteKeys().
-  key_name_ = base::ASCIIToUTF16(base::StringPrintf(
+  key_name_ = base::ASCIIToWide(base::StringPrintf(
       "SOFTWARE\\chromium unittest %" CrPRIdPid, base::GetCurrentProcId()));
   std::wstring hklm_key_name = key_name_ + L"\\HKLM";
   std::wstring hkcu_key_name = key_name_ + L"\\HKCU";
@@ -294,8 +278,8 @@ ConfigurationPolicyProvider* RegistryTestHarness::CreateProvider(
     SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::win::ScopedDomainStateForTesting scoped_domain(true);
-  std::unique_ptr<AsyncPolicyLoader> loader(
-      new PolicyLoaderWin(task_runner, kTestPolicyKey));
+  std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderWin(
+      task_runner, &platform_management_service_, kTestPolicyKey));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -306,8 +290,9 @@ void RegistryTestHarness::InstallStringPolicy(
     const std::string& policy_value) {
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
-  ASSERT_HRESULT_SUCCEEDED(key.WriteValue(UTF8ToUTF16(policy_name).c_str(),
-                                          UTF8ToUTF16(policy_value).c_str()));
+  ASSERT_HRESULT_SUCCEEDED(
+      key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
+                     base::UTF8ToWide(policy_value).c_str()));
 }
 
 void RegistryTestHarness::InstallIntegerPolicy(
@@ -315,7 +300,7 @@ void RegistryTestHarness::InstallIntegerPolicy(
     int policy_value) {
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
-  key.WriteValue(UTF8ToUTF16(policy_name).c_str(),
+  key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
                  static_cast<DWORD>(policy_value));
 }
 
@@ -324,60 +309,57 @@ void RegistryTestHarness::InstallBooleanPolicy(
     bool policy_value) {
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
-  key.WriteValue(UTF8ToUTF16(policy_name).c_str(),
+  key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
                  static_cast<DWORD>(policy_value));
 }
 
 void RegistryTestHarness::InstallStringListPolicy(
     const std::string& policy_name,
     const base::ListValue* policy_value) {
-  RegKey key(hive_,
-             (base::string16(kTestPolicyKey) + base::ASCIIToUTF16("\\") +
-              UTF8ToUTF16(policy_name)).c_str(),
-             KEY_ALL_ACCESS);
+  RegKey key(
+      hive_,
+      (std::wstring(kTestPolicyKey) + L"\\" + base::UTF8ToWide(policy_name))
+          .c_str(),
+      KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   int index = 1;
-  for (base::ListValue::const_iterator element(policy_value->begin());
-       element != policy_value->end();
-       ++element) {
-    std::string element_value;
-    if (!element->GetAsString(&element_value))
+  for (const auto& element : policy_value->GetList()) {
+    if (!element.is_string())
       continue;
+
     std::string name(base::NumberToString(index++));
-    key.WriteValue(UTF8ToUTF16(name).c_str(),
-                   UTF8ToUTF16(element_value).c_str());
+    key.WriteValue(base::UTF8ToWide(name).c_str(),
+                   base::UTF8ToWide(element.GetString()).c_str());
   }
 }
 
 void RegistryTestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+    const base::Value* policy_value) {
   std::string json;
   base::JSONWriter::Write(*policy_value, &json);
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
-  key.WriteValue(UTF8ToUTF16(policy_name).c_str(),
-                 UTF8ToUTF16(json).c_str());
+  key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
+                 base::UTF8ToWide(json).c_str());
 }
 
 void RegistryTestHarness::Install3rdPartyPolicy(
     const base::DictionaryValue* policies) {
   // The first level entries are domains, and the second level entries map
   // components to their policy.
-  const base::string16 kPathPrefix =
-      base::string16(kTestPolicyKey) + kPathSep + kThirdParty + kPathSep;
-  for (base::DictionaryValue::Iterator domain(*policies);
-       !domain.IsAtEnd(); domain.Advance()) {
-    const base::DictionaryValue* components = nullptr;
-    if (!domain.value().GetAsDictionary(&components)) {
+  const std::wstring kPathPrefix =
+      std::wstring(kTestPolicyKey) + kPathSep + kThirdParty + kPathSep;
+  for (auto domain : policies->DictItems()) {
+    const base::Value& components = domain.second;
+    if (!components.is_dict()) {
       ADD_FAILURE();
       continue;
     }
-    for (base::DictionaryValue::Iterator component(*components);
-         !component.IsAtEnd(); component.Advance()) {
-      const base::string16 path = kPathPrefix +
-          UTF8ToUTF16(domain.key()) + kPathSep + UTF8ToUTF16(component.key());
-      InstallValue(component.value(), hive_, path, kMandatory);
+    for (auto component : components.DictItems()) {
+      const std::wstring path = kPathPrefix + base::UTF8ToWide(domain.first) +
+                                kPathSep + base::UTF8ToWide(component.first);
+      InstallValue(component.second, hive_, path, kMandatory);
     }
   }
 }
@@ -411,7 +393,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
  protected:
   // The policy key this tests places data under. This must match the data
   // files in chrome/test/data/policy/gpo.
-  static const base::char16 kTestPolicyKey[];
+  static const wchar_t kTestPolicyKey[];
 
   PolicyLoaderWinTest() : scoped_domain_(false) {}
   ~PolicyLoaderWinTest() override {}
@@ -427,7 +409,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   bool Matches(const PolicyBundle& expected) {
     PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
-                           kTestPolicyKey);
+                           &platform_management_service_, kTestPolicyKey);
     std::unique_ptr<PolicyBundle> loaded(
         loader.InitialLoad(schema_registry_.schema_map()));
     return loaded->Equals(expected);
@@ -435,33 +417,34 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
   base::win::ScopedDomainStateForTesting scoped_domain_;
+  PlatformManagementService platform_management_service_;
 };
 
-const base::char16 PolicyLoaderWinTest::kTestPolicyKey[] =
+const wchar_t PolicyLoaderWinTest::kTestPolicyKey[] =
     L"SOFTWARE\\Policies\\Chromium";
 
 TEST_F(PolicyLoaderWinTest, HKLMOverHKCU) {
   RegKey hklm_key(HKEY_LOCAL_MACHINE, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(hklm_key.Valid());
-  hklm_key.WriteValue(UTF8ToUTF16(test_keys::kKeyString).c_str(),
-                      UTF8ToUTF16("hklm").c_str());
+  hklm_key.WriteValue(base::UTF8ToWide(test_keys::kKeyString).c_str(),
+                      base::UTF8ToWide("hklm").c_str());
   RegKey hkcu_key(HKEY_CURRENT_USER, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(hkcu_key.Valid());
-  hkcu_key.WriteValue(UTF8ToUTF16(test_keys::kKeyString).c_str(),
-                      UTF8ToUTF16("hkcu").c_str());
+  hkcu_key.WriteValue(base::UTF8ToWide(test_keys::kKeyString).c_str(),
+                      base::UTF8ToWide("hkcu").c_str());
 
   PolicyBundle expected;
   expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(test_keys::kKeyString, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-           POLICY_SOURCE_PLATFORM, std::make_unique<base::Value>("hklm"),
-           nullptr);
+           POLICY_SOURCE_PLATFORM, base::Value("hklm"), nullptr);
   expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .GetMutable(test_keys::kKeyString)
-      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
 
   PolicyMap::Entry conflict(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                            POLICY_SOURCE_PLATFORM,
-                            std::make_unique<base::Value>("hkcu"), nullptr);
+                            POLICY_SOURCE_PLATFORM, base::Value("hkcu"),
+                            nullptr);
   expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .GetMutable(test_keys::kKeyString)
       ->AddConflictingPolicy(std::move(conflict));
@@ -484,8 +467,8 @@ TEST_F(PolicyLoaderWinTest, Merge3rdPartyPolicies) {
       "  }"
       "}"));
 
-  const base::string16 kPathSuffix =
-      kTestPolicyKey + base::ASCIIToUTF16("\\3rdparty\\extensions\\merge");
+  const std::wstring kPathSuffix =
+      kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\merge");
 
   const char kUserMandatory[] = "user-mandatory";
   const char kUserRecommended[] = "user-recommended";
@@ -514,22 +497,25 @@ TEST_F(PolicyLoaderWinTest, Merge3rdPartyPolicies) {
 
   PolicyBundle expected;
   PolicyMap& expected_policy = expected.Get(ns);
-  expected_policy.Set(
-      "a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kMachineMandatory), nullptr);
-  expected_policy.GetMutable("a")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
-  expected_policy.GetMutable("a")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
-  expected_policy.GetMutable("a")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected_policy.Set("a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_PLATFORM, base::Value(kMachineMandatory),
+                      nullptr);
+  expected_policy.GetMutable("a")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected_policy.GetMutable("a")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected_policy.GetMutable("a")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
 
-  PolicyMap::Entry a_conflict_1(
-      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kMachineRecommended), nullptr);
-  PolicyMap::Entry a_conflict_2(
-      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kUserMandatory), nullptr);
-  PolicyMap::Entry a_conflict_3(
-      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kUserRecommended), nullptr);
+  PolicyMap::Entry a_conflict_1(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kMachineRecommended), nullptr);
+  PolicyMap::Entry a_conflict_2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kUserMandatory), nullptr);
+  PolicyMap::Entry a_conflict_3(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kUserRecommended), nullptr);
   expected_policy.GetMutable("a")->AddConflictingPolicy(
       std::move(a_conflict_1));
   expected_policy.GetMutable("a")->AddConflictingPolicy(
@@ -538,37 +524,39 @@ TEST_F(PolicyLoaderWinTest, Merge3rdPartyPolicies) {
       std::move(a_conflict_3));
 
   expected_policy.Set("b", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM,
-                      std::make_unique<base::Value>(kUserMandatory), nullptr);
-  expected_policy.GetMutable("b")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
-  expected_policy.GetMutable("b")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+                      POLICY_SOURCE_PLATFORM, base::Value(kUserMandatory),
+                      nullptr);
+  expected_policy.GetMutable("b")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected_policy.GetMutable("b")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
 
-  PolicyMap::Entry b_conflict_1(
-      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kMachineRecommended), nullptr);
-  PolicyMap::Entry b_conflict_2(
-      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kUserRecommended), nullptr);
+  PolicyMap::Entry b_conflict_1(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kMachineRecommended), nullptr);
+  PolicyMap::Entry b_conflict_2(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kUserRecommended), nullptr);
   expected_policy.GetMutable("b")->AddConflictingPolicy(
       std::move(b_conflict_1));
   expected_policy.GetMutable("b")->AddConflictingPolicy(
       std::move(b_conflict_2));
 
   expected_policy.Set("c", POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM,
-                      std::make_unique<base::Value>(kMachineRecommended),
+                      POLICY_SOURCE_PLATFORM, base::Value(kMachineRecommended),
                       nullptr);
-  expected_policy.GetMutable("c")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected_policy.GetMutable("c")->AddMessage(PolicyMap::MessageType::kWarning,
+                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
 
-  PolicyMap::Entry c_conflict_1(
-      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
-      std::make_unique<base::Value>(kUserRecommended), nullptr);
+  PolicyMap::Entry c_conflict_1(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
+                                POLICY_SOURCE_PLATFORM,
+                                base::Value(kUserRecommended), nullptr);
   expected_policy.GetMutable("c")->AddConflictingPolicy(
       std::move(c_conflict_1));
 
   expected_policy.Set("d", POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM,
-                      std::make_unique<base::Value>(kUserRecommended), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(kUserRecommended),
+                      nullptr);
   EXPECT_TRUE(Matches(expected));
 }
 
@@ -615,8 +603,8 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
   encoded_policy.SetString("list", encoded_list);
   encoded_policy.SetString("dict", encoded_dict);
 
-  const base::string16 kPathSuffix =
-      kTestPolicyKey + base::ASCIIToUTF16("\\3rdparty\\extensions\\string");
+  const std::wstring kPathSuffix =
+      kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\string");
   EXPECT_TRUE(
       InstallValue(encoded_policy, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
@@ -644,8 +632,8 @@ TEST_F(PolicyLoaderWinTest, LoadIntegerEncodedValues) {
   encoded_policy.SetInteger("int", 123);
   encoded_policy.SetInteger("double", 456);
 
-  const base::string16 kPathSuffix =
-      kTestPolicyKey + base::ASCIIToUTF16("\\3rdparty\\extensions\\int");
+  const std::wstring kPathSuffix =
+      kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\int");
   EXPECT_TRUE(
       InstallValue(encoded_policy, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
@@ -692,8 +680,8 @@ TEST_F(PolicyLoaderWinTest, DefaultPropertySchemaType) {
   base::DictionaryValue all_policies;
   all_policies.SetKey("policy", policy.Clone());
 
-  const base::string16 kPathSuffix =
-      kTestPolicyKey + base::ASCIIToUTF16("\\3rdparty\\extensions\\test");
+  const std::wstring kPathSuffix =
+      kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\test");
   EXPECT_TRUE(
       InstallValue(all_policies, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
@@ -739,16 +727,14 @@ TEST_F(PolicyLoaderWinTest, AlternativePropertySchemaType) {
   expected.Get(ns_b).LoadFrom(&expected_b, POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM);
 
-  const base::string16 kPathSuffix =
+  const std::wstring kPathSuffix =
       kTestPolicyKey +
-      base::ASCIIToUTF16(
-          "\\3rdparty\\extensions\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      std::wstring(L"\\3rdparty\\extensions\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   EXPECT_TRUE(
       InstallValue(expected_a, HKEY_LOCAL_MACHINE, kPathSuffix, kMandatory));
-  const base::string16 kPathSuffix2 =
+  const std::wstring kPathSuffix2 =
       kTestPolicyKey +
-      base::ASCIIToUTF16(
-          "\\3rdparty\\extensions\\bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+      std::wstring(L"\\3rdparty\\extensions\\bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
   EXPECT_TRUE(
       InstallValue(expected_b, HKEY_LOCAL_MACHINE, kPathSuffix2, kMandatory));
 

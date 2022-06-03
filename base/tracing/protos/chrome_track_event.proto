@@ -1,0 +1,691 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+import public "protos/perfetto/trace/track_event/track_event.proto";
+
+package perfetto.protos;
+
+enum ChromeAppState {
+  APP_STATE_FOREGROUND = 1;
+  APP_STATE_BACKGROUND = 2;
+}
+
+enum MemoryPressureLevel {
+  MEMORY_PRESSURE_LEVEL_NONE = 0;
+  MEMORY_PRESSURE_LEVEL_MODERATE = 1;
+  MEMORY_PRESSURE_LEVEL_CRITICAL = 2;
+}
+
+message ChromeMemoryPressureNotification {
+  optional MemoryPressureLevel level = 1;
+
+  // ID of interned source location where MemoryPressureListener was created
+  optional uint64 creation_location_iid = 2;
+}
+
+message ChromeTaskAnnotator {
+  optional uint32 ipc_hash = 1;
+  // The delay in microseconds that was specified, if any, when this task was
+  // posted. This is only valid for delayed tasks.
+  optional uint64 task_delay_us = 2;
+}
+
+message ChromeBrowserContext {
+  reserved 1;
+  optional string id = 2;
+}
+
+message ChromeProfileDestroyer {
+  optional fixed64 profile_ptr = 1;
+  optional bool is_off_the_record = 2;
+  optional string otr_profile_id = 3;
+  optional uint32 host_count_at_creation = 4;
+  optional uint32 host_count_at_destruction = 5;
+  optional fixed64 render_process_host_ptr = 6;
+}
+
+message ChromeTaskPostedToDisabledQueue {
+  optional string task_queue_name = 1;
+  optional uint64 time_since_disabled_ms = 2;
+  optional uint32 ipc_hash = 3;
+  optional uint64 source_location_iid = 4;
+}
+
+message ChromeRasterTask {
+  optional int64 source_frame_number = 1;
+}
+
+message ChromeMessagePumpForUI {
+  // The MSG defined in winuser.h.
+  optional uint32 message_id = 1;
+}
+
+// An enumeration specifying the reason of the RenderFrame deletion.
+// This is copied from content/common/frame.mojom.
+enum FrameDeleteIntention {
+  // The frame being deleted isn't a (speculative) main frame.
+  FRAME_DELETE_INTENTION_NOT_MAIN_FRAME = 0;
+
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted as part of the shutdown for that WebContents. The entire RenderView
+  // etc will be destroyed by a separate IPC sent later.
+  FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_SHUTDOWN = 1;
+
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted because the speculative navigation was cancelled. This is not part
+  // of shutdown.
+  FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED = 2;
+}
+
+message RenderFrameImplDeletion {
+  // The intent for the deletion.
+  optional FrameDeleteIntention intent = 1;
+
+  // Whether the frame that's about to be deleted has a pending navigation
+  // commit.
+  optional bool has_pending_commit = 2;
+
+  // Whether the frame that's about to be deleted has a pending cross-document
+  // navigation commit.
+  optional bool has_pending_cross_document_commit = 3;
+
+  // The FrameTreeNode ID of the frame that's about to be deleted.
+  optional uint64 frame_tree_node_id = 4;
+}
+
+// Matches content::ShouldSwapBrowsingInstance.
+enum ShouldSwapBrowsingInstance {
+  // Was used for all "no BrowsingInstance swap" scenarios, now broken down in
+  // separate reasons.
+  SHOULD_SWAP_BROWSING_INSTANCE_NO = 0;
+
+  // Forced BrowsingInstance swap.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_FORCE_SWAP = 1;
+
+  // Proactive BrowsingInstance swap for cross-site navigation.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_CROSS_SITE_PROACTIVE_SWAP = 2;
+
+  // Proactive BrowsingInstance swap for same-site navigation.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_SAME_SITE_PROACTIVE_SWAP = 3;
+
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_PROACTIVE_SWAP_DISABLED = 4;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_MAIN_FRAME = 5;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_RELATED_ACTIVE_CONTENTS = 6;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_DOES_NOT_HAVE_SITE = 7;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_SOURCE_URL_SCHEME_NOT_HTTP_OR_HTTPS = 8;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_DESTINATION_URL_SCHEME_NOT_HTTP_OR_HTTPS = 9;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_SITE_NAVIGATION = 10;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_RELOADING_ERROR_PAGE = 11;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_ALREADY_HAS_MATCHING_BROWSING_INSTANCE = 12;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_RENDERER_DEBUG_URL = 13;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_NEEDED_FOR_BACK_FORWARD_CACHE = 14;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_DOCUMENT_NAVIGATION = 15;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_URL_NAVIGATION = 16;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_WILL_REPLACE_ENTRY = 17;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_RELOAD = 18;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_GUEST = 19;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_NOT_COMMITTED_ANY_NAVIGATION = 20;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION =
+      21;
+}
+
+message ShouldSwapBrowsingInstancesResult {
+  // The FrameTreeNode ID.
+  optional uint64 frame_tree_node_id = 1;
+
+  // Whether a navigation will do a BrowsingInstance swap or not.
+  optional ShouldSwapBrowsingInstance result = 2;
+}
+
+message FrameTreeNodeInfo {
+  // The FrameTreeNode ID.
+  optional uint64 frame_tree_node_id = 1;
+
+  // Whether the frame is a main frame or not.
+  optional bool is_main_frame = 2;
+
+  // Whether there's a speculative RenderFrameHost or not.
+  optional bool has_speculative_render_frame_host = 3;
+}
+
+message ChromeHashedPerformanceMark {
+  optional uint32 site_hash = 1;
+  optional string site = 2;
+  optional uint32 mark_hash = 3;
+  optional string mark = 4;
+
+  // A randomly generated unique identifier for a given ExecutionContext
+  // (document, worker, etc). Used to be able to correlate events in a process
+  // where there are multiple execution contexts from the same site.
+  optional uint32 execution_context_id = 5;
+
+  // Indicates the sequence number of this particular mark being emitted from
+  // a particular site in the scope of a single ExecutionContext. Typical
+  // sites emit batches of events that are correlated in time (a thing started,
+  // a thing reached a given milestone, a thing completed). When these events
+  // are intermixed it is useful to know which ones are semantically related.
+  // The value is generated by the content itself, but shifted by a fixed
+  // random offset at runtime so as to limit usage as a side channel.
+  optional uint32 sequence_number = 6;
+}
+
+message ChromeWebAppBadNavigate {
+  optional bool is_kiosk = 1;
+  optional bool has_hosted_app_controller = 2;
+  optional string app_name = 3;
+  optional uint32 system_app_type = 4;
+  optional bool web_app_provider_registry_ready = 5;
+  optional bool system_web_app_manager_synchronized = 6;
+}
+
+// These IDs are generated at compile time and differ for each chrome version.
+// IDs are stable on for a given chrome version but are changing when resources
+// are added or removed to chrome.
+message ResourceBundle {
+  optional uint32 resource_id = 1;
+}
+
+// Information about RenderProcessHost.
+message RenderProcessHost {
+  // Unique Id to identify the RenderProcessHost. This is the browser-side,
+  // persistent id for this RenderProcessHost that stays constant even across OS
+  // layer processes managed by this RenderProcessHost.
+  optional uint32 id = 1;
+  // See ProcessLock::ToString().
+  optional string process_lock = 2;
+  // The PID of the child process.
+  optional int32 child_process_id = 3;
+
+  // Details about the associated browser context.
+  optional ChromeBrowserContext browser_context = 4;
+}
+
+message RenderProcessHostListener {
+  // Routing ID of the listener to the RenderProcessHost, recorded when a new ID
+  // is added or when an ID is removed.
+  optional uint32 routing_id = 1;
+}
+
+message RenderProcessHostCleanup {
+  // Number of IPC listeners registered to the host when Cleanup() was called.
+  optional uint32 listener_count = 1;
+  // Number of "keep alive" references active in the RenderProcessHost, recorded
+  // when Cleanup() was called.
+  optional uint32 keep_alive_ref_count = 2;
+  // Number of "shutdown delay" references active in the RenderProcessHost,
+  // recorded when Cleanup() was called.
+  optional uint32 shutdown_delay_ref_count = 3;
+  // Number of "worker delay" references active in the RenderProcessHost,
+  // recorded when Cleanup() was called.
+  optional uint32 worker_ref_count = 4;
+}
+
+message ChildProcessLauncherPriority {
+  // True if the new priority set to background.
+  optional bool is_backgrounded = 1;
+  // True if the renderer proecss has pending views.
+  optional bool has_pending_views = 2;
+
+  // Importance of the child process in Android.
+  enum Importance {
+    IMPORTANCE_NORMAL = 1;
+    IMPORTANCE_MODERATE = 2;
+    IMPORTANCE_IMPORTANT = 3;
+  }
+  optional Importance importance = 3;
+}
+
+// Information that identifies a Chrome Extension.
+message ChromeExtensionId {
+  // Unique id that identifies a Chrome Extension.
+  optional string extension_id = 1;
+
+  // Pseudonymized `extension_id` field (see also
+  // content::PseudonymizationUtil::PseudonymizeString method).
+  optional uint32 pseudonymized_extension_id = 2;
+}
+
+message SiteInstance {
+  // The ID of the SiteInstance.
+  optional int32 site_instance_id = 1;
+
+  // The ID of the BrowsingInstance that the SiteInstance belongs to.
+  optional int32 browsing_instance_id = 2;
+
+  // Whether the SiteInstance is the "default SiteInstance" or not. Non-isolated
+  // sites on Android are not assigned to their own specific per-site process,
+  // and shares SiteInstances with each other (the default SiteInstance).
+  optional bool is_default = 3;
+
+  // Whether this SiteInstance has a running process associated with it.
+  optional bool has_process = 4;
+
+  // Returns the total active WebContents count for this SiteInstance and all
+  // related SiteInstances in the same BrowsingInstance.
+  optional int32 related_active_contents_count = 5;
+
+  // The number of active RenderFrameHosts which belong to this SiteInstance.
+  optional int32 active_rfh_count = 6;
+}
+
+message RenderViewHost {
+  // The RenderViewHostMapId for the RenderViewHost.
+  optional int32 rvh_map_id = 1;
+
+  // The routing ID for the RenderViewHost.
+  optional int32 routing_id = 2;
+
+  // The process ID of the RenderViewHost.
+  optional int32 process_id = 3;
+
+  // Whether the RenderViewHost is in back/forward cache or not.
+  optional bool is_in_back_forward_cache = 4;
+
+  // Whether the renderer-side RenderView is created.
+  optional bool renderer_view_created = 5;
+}
+
+message RenderFrameProxyHost {
+  // The routing ID for the RenderFrameProxyHost.
+  optional int32 routing_id = 1;
+
+  // The process ID of the RenderFrameProxyHost.
+  optional int32 process_id = 2;
+
+  // The RenderViewHostMapId of the RenderViewHost associated with the
+  // RenderFrameProxyHost.
+  optional int32 rvh_map_id = 3;
+
+  // The SiteInstanceId of the SiteInstance associated with the
+  // RenderFrameProxyHost.
+  optional int32 site_instance_id = 4;
+
+  // Whether the renderer-side RenderFrameProxy is live or not.
+  optional bool is_render_frame_proxy_live = 5;
+}
+
+message AndroidView {
+  optional int32 id = 1;
+  optional int32 parent_id = 2;
+  optional bool is_shown = 3;
+  optional bool is_dirty = 4;
+  optional string class_name = 5;
+  optional string resource_name = 6;
+}
+
+message AndroidActivity {
+  optional string name = 1;
+  repeated AndroidView view = 2;
+}
+
+message AndroidViewDump {
+  repeated AndroidActivity activity = 1;
+}
+
+message ParkableStringCompressInBackground {
+  // The size of the string that is being compressed, in bytes.
+  optional int32 size_bytes = 1;
+}
+
+message ParkableStringUnpark {
+  // The size of the string that is being unparked, in bytes.
+  optional int32 size_bytes = 1;
+
+  // The elapsed time since the string was written to disk (in seconds), or -1
+  // if it hadn't yet been written to disk.
+  optional int32 time_since_last_disk_write_sec = 2;
+}
+
+message ChromeSamplingProfilerSampleCollected {
+  optional int32 frame_count = 1;
+
+  enum WriteStatus {
+    WRITE_STATUS_NONE = 0;
+    WRITE_STATUS_BUFFERING_SAMPLE = 1;
+    WRITE_STATUS_WRITING_BUFFERED = 2;
+    WRITE_STATUS_WRITING_TO_TRACE = 3;
+  }
+  optional WriteStatus write_status = 2;
+
+  optional int32 sampled_thread_id = 3;
+}
+
+// Reports the latency caused by each breakdown in the
+// SendBeginMainFrameToCommit stage of the PipelineReporter.
+message SendBeginMainFrameToCommitBreakdown {
+  // Handle input events breakdown
+  optional uint64 handle_input_events_us = 1;
+
+  // Animate breakdown
+  optional uint64 animate_us = 2;
+
+  // Style update breakdown
+  optional uint64 style_update_us = 3;
+
+  // Layout update breakdown
+  optional uint64 layout_update_us = 4;
+
+  // Prepaint breakdown
+  optional uint64 prepaint_us = 5;
+
+  // Compositing inputs breakdown
+  optional uint64 compositing_inputs_us = 6;
+
+  // Compositing assignments breakdown
+  optional uint64 compositing_assignments_us = 7;
+
+  // Paint breakdown
+  optional uint64 paint_us = 8;
+
+  // Composite commit breakdown
+  optional uint64 composite_commit_us = 9;
+
+  // Update layers breakdown
+  optional uint64 update_layers_us = 10;
+
+  // Beginmainsenttostarted breakdown
+  optional uint64 begin_main_sent_to_started_us = 11;
+}
+
+message GlobalRenderFrameHostId {
+  optional int32 routing_id = 1;
+  optional int32 process_id = 2;
+}
+
+message RenderFrameHost {
+  optional RenderProcessHost process = 1;
+  optional GlobalRenderFrameHostId render_frame_host_id = 2;
+
+  // NOTE: this proto must be kept consistent with
+  // RenderFrameHostImpl::LifecycleStateImpl.
+  enum LifecycleState {
+    UNSPECIFIED = 0;
+    SPECULATIVE = 1;
+    PENDING_COMMIT = 2;
+    PRERENDERING = 3;
+    ACTIVE = 4;
+    IN_BACK_FORWARD_CACHE = 5;
+    RUNNING_UNLOAD_HANDLERS = 6;
+    READY_TO_BE_DELETED = 7;
+  }
+
+  optional LifecycleState lifecycle_state = 3;
+  optional string origin = 4;
+  optional string url = 5;
+  optional uint64 frame_tree_node_id = 6;
+  optional SiteInstance site_instance = 7;
+  optional RenderFrameHost parent = 8;
+  optional RenderFrameHost outer_document = 9;
+  optional RenderFrameHost embedder = 10;
+}
+
+message ChromeThreadPoolTask {
+  enum Priority {
+    PRIORITY_UNSPECIFIED = 0;
+    PRIORITY_BEST_EFFORT = 1;
+    PRIORITY_USER_VISIBLE = 2;
+    PRIORITY_USER_BLOCKING = 3;
+  }
+
+  enum ExecutionMode {
+    EXECTUION_MODE_UNSPECIFIED = 0;
+    EXECUTION_MODE_PARALLEL = 1;
+    EXECUTION_MODE_SEQUENCED = 2;
+    EXECUTION_MODE_SINGLE_THREAD = 3;
+    EXECUTION_MODE_JOB = 4;
+  }
+
+  enum ShutdownBehavior {
+    SHUTDOWN_BEHAVIOR_UNSPECIFIED = 0;
+    SHUTDOWN_BEHAVIOR_CONTINUE_ON_SHUTDOWN = 1;
+    SHUTDOWN_BEHAVIOR_SKIP_ON_SHUTDOWN = 2;
+    SHUTDOWN_BEHAVIOR_BLOCK_SHUTDOWN = 3;
+  }
+
+  optional Priority task_priority = 1;
+  optional ExecutionMode execution_mode = 2;
+  optional int64 sequence_token = 3;
+  optional ShutdownBehavior shutdown_behavior = 4;
+}
+
+// TODO(crbug.com/1258495): Add more information.
+message BackForwardCacheCanStoreDocumentResult {
+  enum BackForwardCacheNotRestoredReason {
+    NOT_MAIN_FRAME = 1;
+    // BackForwardCache is disabled due to low memory device, base::Feature or
+    // command line. Note that the more specific NotRestoredReasons
+    // BACK_FORWARD_CACHE_DISABLED_BY_LOW_MEMORY and
+    // BACK_FORWARD_CACHE_DISABLED_BY_COMMAND_LINE will also be set as other
+    // reasons along with this when appropriate.
+    BACK_FORWARD_CACHE_DISABLED = 2;
+    RELATED_ACTIVE_CONTENTS_EXIST = 3;
+    HTTP_STATUS_NOT_OK = 4;
+    SCHEME_NOT_HTTP_OR_HTTPS = 5;
+    LOADING = 6;
+    WAS_GRANTED_MEDIA_ACCESS = 7;
+    BLOCKLISTED_FEATURES = 8;
+    DISABLE_FOR_RENDER_FRAME_HOST_CALLED = 9;
+    DOMAIN_NOT_ALLOWED = 10;
+    HTTP_METHOD_NOT_GET = 11;
+    SUBFRAME_IS_NAVIGATING = 12;
+    TIMEOUT = 13;
+    CACHE_LIMIT = 14;
+    JAVASCRIPT_EXECUTION = 15;
+    RENDERER_PROCESS_KILLED = 16;
+    RENDERER_PROCESS_CRASHED = 17;
+    GRANTED_MEDIA_STREAM_ACCESS = 19;
+    SCHEDULER_TRACKED_FEATURE_USED = 20;
+    CONFLICTING_BROWSING_INSTANCE = 21;
+    CACHE_FLUSHED = 22;
+    SERVICE_WORKER_VERSION_ACTIVATION = 23;
+    SESSION_RESTORED = 24;
+    UNKNOWN = 25;
+    SERVICE_WORKER_POST_MESSAGE = 26;
+    ENTERED_BACK_FORWARD_CACHE_BEFORE_SERVICE_WORKER_HOST_ADDED = 27;
+    NOT_MOST_RECENT_NAVIGATION_ENTRY = 28;
+    SERVICE_WORKER_CLAIM = 29;
+    IGNORE_EVENT_AND_EVICT = 30;
+    HAVE_INNER_CONTENTS = 31;
+    TIMEOUT_PUTTING_IN_CACHE = 32;
+    // BackForwardCache is disabled due to low memory device.
+    BACK_FORWARD_CACHE_DISABLED_BY_LOW_MEMORY = 33;
+    // BackForwardCache is disabled due to command-line switch (may include
+    // cases where the embedder disabled it due to, e.g., enterprise policy).
+    BACK_FORWARD_CACHE_DISABLED_BY_COMMAND_LINE = 34;
+    NETWORK_REQUEST_REDIRECTED = 35;
+    NETWORK_REQUEST_TIMEOUT = 36;
+    NETWORK_EXCEEDS_BUFFER_LIMIT = 37;
+    NAVIGATION_CANCELLED_WHILE_RESTORING = 38;
+    BACK_FORWARD_CACHE_DISABLED_FOR_PRERENDER = 39;
+    USER_AGENT_OVERRIDE_DIFFERS = 40;
+    NETWORK_REQUEST_DATAPIPE_DRAINED_AS_BYTES_CONSUMER = 41;
+    FOREGROUND_CACHE_LIMIT = 42;
+    BROWSING_INSTANCE_NOT_SWAPPED = 43;
+    BACK_FORWARD_CACHE_DISABLED_FOR_DELEGATE = 44;
+    OPT_IN_UNLOAD_HEADER_NOT_PRESENT = 45;
+    UNLOAD_HANDLER_EXISTS_IN_MAIN_FRAME = 46;
+    UNLOAD_HANDLER_EXISTS_IN_SUBFRAME = 47;
+    SERVICE_WORKER_UNREGISTRATION = 48;
+    CACHE_CONTROL_NO_STORE = 49;
+    CACHE_CONTROL_NO_STORE_COOKIE_MODIFIED = 50;
+    CACHE_CONTROL_NO_STORE_HTTP_ONLY_COOKIE_MODIFIED = 51;
+    NO_RESPONSE_HEAD = 52;
+    ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857 = 53;
+  }
+
+  optional BackForwardCacheNotRestoredReason
+      back_forward_cache_not_restored_reason = 1;
+}
+
+message RendererMainThreadTaskExecution {
+  enum TaskType {
+    TASK_TYPE_UNKNOWN = 0;
+    TASK_TYPE_DOM_MANIPULATION = 1;
+    TASK_TYPE_USER_INTERACTION = 2;
+    TASK_TYPE_NETWORKING = 3;
+    TASK_TYPE_NETWORKING_CONTROL = 4;
+    TASK_TYPE_HISTORY_TRAVERSAL = 5;
+    TASK_TYPE_EMBED = 6;
+    TASK_TYPE_MEDIA_ELEMENT_EVENT = 7;
+    TASK_TYPE_CANVAS_BLOB_SERIALIZATION = 8;
+    TASK_TYPE_MICROTASK = 9;
+    TASK_TYPE_JAVASCRIPT_TIMER_DELAYED_HIGH_NESTING = 10;
+    TASK_TYPE_REMOTE_EVENT = 11;
+    TASK_TYPE_WEB_SOCKET = 12;
+    TASK_TYPE_POSTED_MESSAGE = 13;
+    TASK_TYPE_UNSHIPPED_PORT_MESSAGE = 14;
+    TASK_TYPE_FILE_READING = 15;
+    TASK_TYPE_DATABASE_ACCESS = 16;
+    TASK_TYPE_PRESENTATION = 17;
+    TASK_TYPE_SENSOR = 18;
+    TASK_TYPE_PERFORMANCE_TIMELINE = 19;
+    TASK_TYPE_WEB_GL = 20;
+    TASK_TYPE_IDLE_TASK = 21;
+    TASK_TYPE_MISC_PLATFORM_API = 22;
+    TASK_TYPE_INTERNAL_DEFAULT = 23;
+    TASK_TYPE_INTERNAL_LOADING = 24;
+
+    TASK_TYPE_INTERNAL_TEST = 26;
+    TASK_TYPE_INTERNAL_WEB_CRYPTO = 27;
+
+    TASK_TYPE_INTERNAL_MEDIA = 29;
+    TASK_TYPE_INTERNAL_MEDIA_REALTIME = 30;
+
+    TASK_TYPE_INTERNAL_USER_INTERACTION = 32;
+    TASK_TYPE_INTERNAL_INSPECTOR = 33;
+
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8 = 37;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_COMPOSITOR = 38;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_DEFAULT = 39;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_INPUT = 40;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_IDLE = 41;
+
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_CONTROL = 43;
+    TASK_TYPE_INTERNAL_INTERSECTION_OBSERVER = 44;
+    TASK_TYPE_COMPOSITOR_THREAD_TASK_QUEUE_DEFAULT = 45;
+    TASK_TYPE_WORKER_THREAD_TASK_QUEUE_DEFAULT = 46;
+    TASK_TYPE_WORKER_THREAD_TASK_QUEUE_V8 = 47;
+    TASK_TYPE_WORKER_THREAD_TASK_QUEUE_COMPOSITOR = 48;
+    TASK_TYPE_COMPOSITOR_THREAD_TASK_QUEUE_INPUT = 49;
+    TASK_TYPE_NETWORKING_WITH_URL_LOADER_ANNOTATION = 50;
+    TASK_TYPE_WORKER_ANIMATION = 51;
+
+    TASK_TYPE_INTERNAL_TRANSLATION = 55;
+    TASK_TYPE_FONT_LOADING = 56;
+    TASK_TYPE_APPLICATION_LIFECYCLE = 57;
+    TASK_TYPE_BACKGROUND_FETCH = 58;
+    TASK_TYPE_PERMISSION = 59;
+    TASK_TYPE_SERVICE_WORKER_CLIENT_MESSAGE = 60;
+    TASK_TYPE_INTERNAL_CONTENT_CAPTURE = 61;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_MEMORY_PURGE = 62;
+    TASK_TYPE_INTERNAL_NAVIGATION_ASSOCIATED = 63;
+    TASK_TYPE_INTERNAL_NAVIGATION_ASSOCIATED_UNFREEZABLE = 64;
+    TASK_TYPE_INTERNAL_CONTINUE_SCRIPT_LOADING = 65;
+    TASK_TYPE_WEB_LOCKS = 66;
+    TASK_TYPE_WEB_SCHEDULING_POSTED_TASK = 67;
+    TASK_TYPE_INTERNAL_FRAME_LIFE_CYCLE_CONTROL = 68;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_NON_WAKING = 69;
+    TASK_TYPE_INTERNAL_FIND_IN_PAGE = 70;
+    TASK_TYPE_INTERNAL_HIGH_PRIORITY_LOCAL_FRAME = 71;
+    TASK_TYPE_JAVASCRIPT_TIMER_IMMEDIATE = 72;
+    TASK_TYPE_JAVASCRIPT_TIMER_DELAYED_LOW_NESTING = 73;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_IPC_TRACKING = 74;
+    TASK_TYPE_NETWORKING_UNFREEZABLE = 75;
+    TASK_TYPE_WAKE_LOCK = 76;
+    TASK_TYPE_INTERNAL_INPUT_BLOCKING = 77;
+    TASK_TYPE_WEB_GPU = 78;
+    TASK_TYPE_INTERNAL_POST_MESSAGE_FORWARDING = 79;
+  }
+
+  enum FrameType {
+    FRAME_TYPE_UNSPECIFIED = 0;
+    FRAME_TYPE_MAIN_FRAME = 1;
+    FRAME_TYPE_SAME_ORIGIN_SUBFRAME = 2;
+    FRAME_TYPE_CROSS_ORIGIN_SUBFRAME = 3;
+  }
+
+  optional TaskType task_type = 1;
+
+  // FrameScheduler related data
+  optional bool frame_visible = 2;
+  optional bool page_visible = 3;
+  optional FrameType frame_type = 4;
+}
+
+message ChromeTrackEvent {
+  // Extension range for Chrome: 1000-1999
+  // Next ID: 1032
+  extend TrackEvent {
+    optional ChromeAppState chrome_app_state = 1000;
+
+    optional ChromeMemoryPressureNotification
+        chrome_memory_pressure_notification = 1001;
+
+    optional ChromeTaskAnnotator chrome_task_annotator = 1002;
+
+    optional ChromeBrowserContext chrome_browser_context = 1003;
+
+    optional ChromeProfileDestroyer chrome_profile_destroyer = 1004;
+
+    optional ChromeTaskPostedToDisabledQueue
+        chrome_task_posted_to_disabled_queue = 1005;
+
+    optional ChromeRasterTask chrome_raster_task = 1006;
+
+    optional ChromeMessagePumpForUI chrome_message_pump_for_ui = 1007;
+
+    optional RenderFrameImplDeletion render_frame_impl_deletion = 1008;
+
+    optional ShouldSwapBrowsingInstancesResult
+        should_swap_browsing_instances_result = 1009;
+
+    optional FrameTreeNodeInfo frame_tree_node_info = 1010;
+
+    optional ChromeHashedPerformanceMark chrome_hashed_performance_mark = 1011;
+
+    optional RenderProcessHost render_process_host = 1012;
+    optional RenderProcessHostCleanup render_process_host_cleanup = 1013;
+    optional RenderProcessHostListener render_process_host_listener_changed =
+        1014;
+    optional ChildProcessLauncherPriority child_process_launcher_priority =
+        1015;
+
+    optional ResourceBundle resource_bundle = 1016;
+
+    optional ChromeWebAppBadNavigate chrome_web_app_bad_navigate = 1017;
+
+    optional ChromeExtensionId chrome_extension_id = 1018;
+
+    optional SiteInstance site_instance = 1019;
+
+    optional RenderViewHost render_view_host = 1020;
+
+    optional RenderFrameProxyHost render_frame_proxy_host = 1021;
+
+    optional AndroidViewDump android_view_dump = 1022;
+
+    optional ParkableStringCompressInBackground
+        parkable_string_compress_in_background = 1023;
+    optional ParkableStringUnpark parkable_string_unpark = 1024;
+
+    optional ChromeSamplingProfilerSampleCollected
+        chrome_sampling_profiler_sample_completed = 1025;
+    optional SendBeginMainFrameToCommitBreakdown
+        send_begin_mainframe_to_commit_breakdown = 1026;
+
+    optional GlobalRenderFrameHostId global_render_frame_host_id = 1027;
+
+    optional RenderFrameHost render_frame_host = 1028;
+
+    optional ChromeThreadPoolTask thread_pool_task = 1029;
+
+    optional BackForwardCacheCanStoreDocumentResult
+        back_forward_cache_can_store_document_result = 1030;
+
+    optional RendererMainThreadTaskExecution
+        renderer_main_thread_task_execution = 1031;
+  }
+}

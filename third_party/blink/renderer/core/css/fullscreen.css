@@ -65,10 +65,3 @@ iframe:fullscreen {
   background-color: black !important;
   z-index: 2147483647 !important;
 }
-
-/* WebXR DOM Overlay for handheld AR needs a transparent background for both the
-   fullscreened element and its backdrop. */
-:-internal-xr-immersive-dom-overlay :fullscreen,
-:-internal-xr-immersive-dom-overlay :fullscreen::backdrop {
-  background-color: rgba(0,0,0,0) !important;
-}

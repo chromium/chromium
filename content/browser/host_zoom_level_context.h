@@ -7,52 +7,39 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "content/browser/host_zoom_map_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/zoom_level_delegate.h"
 
 namespace content {
-struct HostZoomLevelContextDeleter;
 
 // This class manages a HostZoomMap and associates it with a ZoomLevelDelegate,
 // if one is provided. It also serves to keep the zoom level machinery details
-// separate from the owning StoragePartitionImpl.
-class HostZoomLevelContext
-    : public base::RefCountedThreadSafe<HostZoomLevelContext,
-                                        HostZoomLevelContextDeleter> {
+// separate from the owning StoragePartitionImpl. It must be destroyed on the
+// UI thread.
+class HostZoomLevelContext {
  public:
   explicit HostZoomLevelContext(
       std::unique_ptr<ZoomLevelDelegate> zoom_level_delegate);
+
+  HostZoomLevelContext(const HostZoomLevelContext&) = delete;
+  HostZoomLevelContext& operator=(const HostZoomLevelContext&) = delete;
 
   HostZoomMap* GetHostZoomMap() const { return host_zoom_map_impl_.get(); }
   ZoomLevelDelegate* GetZoomLevelDelegate() const {
     return zoom_level_delegate_.get();
   }
 
- protected:
-  virtual ~HostZoomLevelContext();
-
  private:
+  friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
   friend class base::DeleteHelper<HostZoomLevelContext>;
-  friend class base::RefCountedThreadSafe<HostZoomLevelContext,
-                                          HostZoomLevelContextDeleter>;
-  friend struct HostZoomLevelContextDeleter;
 
-  void DeleteOnCorrectThread() const;
+  ~HostZoomLevelContext();
 
   std::unique_ptr<HostZoomMapImpl> host_zoom_map_impl_;
   // Release the delegate before the HostZoomMap, in case it is carrying
   // any HostZoomMap::Subscription pointers.
   std::unique_ptr<ZoomLevelDelegate> zoom_level_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostZoomLevelContext);
-};
-
-struct HostZoomLevelContextDeleter {
-  static void Destruct(const HostZoomLevelContext* context) {
-    context->DeleteOnCorrectThread();
-  }
 };
 
 }  // namespace content

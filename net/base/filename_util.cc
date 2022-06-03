@@ -24,39 +24,34 @@
 namespace net {
 
 // Prefix to prepend to get a file URL.
-static const base::FilePath::CharType kFileURLPrefix[] =
-    FILE_PATH_LITERAL("file:///");
+static const char kFileURLPrefix[] = "file:///";
 
 GURL FilePathToFileURL(const base::FilePath& path) {
   // Produce a URL like "file:///C:/foo" for a regular file, or
   // "file://///server/path" for UNC. The URL canonicalizer will fix up the
   // latter case to be the canonical UNC form: "file://server/path"
-  base::FilePath::StringType url_string(kFileURLPrefix);
-  url_string.append(path.value());
+  std::string url_string(kFileURLPrefix);
 
-  // Now do replacement of some characters. Since we assume the input is a
-  // literal filename, anything the URL parser might consider special should
-  // be escaped here.
+  // GURL() strips some whitespace and trailing control chars which are valid
+  // in file paths. It also interprets chars such as `%;#?` and maybe `\`, so we
+  // must percent encode these first. Reserve max possible length up front.
+  std::string utf8_path = path.AsUTF8Unsafe();
+  url_string.reserve(url_string.size() + (3 * utf8_path.size()));
 
-  // must be the first substitution since others will introduce percents as the
-  // escape character
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("%"), FILE_PATH_LITERAL("%25"));
-
-  // semicolon is supposed to be some kind of separator according to RFC 2396
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL(";"), FILE_PATH_LITERAL("%3B"));
-
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("#"), FILE_PATH_LITERAL("%23"));
-
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("?"), FILE_PATH_LITERAL("%3F"));
-
+  for (auto c : utf8_path) {
+    if (c == '%' || c == ';' || c == '#' || c == '?' ||
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("\\"), FILE_PATH_LITERAL("%5C"));
+        c == '\\' ||
 #endif
+        c <= ' ') {
+      static const char kHexChars[] = "0123456789ABCDEF";
+      url_string += '%';
+      url_string += kHexChars[(c >> 4) & 0xf];
+      url_string += kHexChars[c & 0xf];
+    } else {
+      url_string += c;
+    }
+  }
 
   return GURL(url_string);
 }
@@ -122,17 +117,17 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   illegal_encoded_bytes.insert('\\');
 #endif
 
-  if (ContainsEncodedBytes(path, illegal_encoded_bytes))
+  if (base::ContainsEncodedBytes(path, illegal_encoded_bytes))
     return false;
 
   // Unescape all percent-encoded sequences, including blocked-for-display
   // characters, control characters and invalid UTF-8 byte sequences.
   // Percent-encoded bytes are not meaningful in a file system.
-  path = UnescapeBinaryURLComponent(path);
+  path = base::UnescapeBinaryURLComponent(path);
 
 #if defined(OS_WIN)
   if (base::IsStringUTF8(path)) {
-    file_path_str.assign(base::UTF8ToUTF16(path));
+    file_path_str.assign(base::UTF8ToWide(path));
     // We used to try too hard and see if |path| made up entirely of
     // the 1st 256 characters in the Unicode was a zero-extended UTF-16.
     // If so, we converted it to 'Latin-1' and checked if the result was UTF-8.
@@ -144,7 +139,7 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
     // are giving the conversion function a nonempty string, and it may fail if
     // the given string is not in the current encoding and give us an empty
     // string back. We detect this and report failure.
-    file_path_str = base::WideToUTF16(base::SysNativeMBToWide(path));
+    file_path_str = base::SysNativeMBToWide(path);
   }
 #else  // defined(OS_WIN)
   // Collapse multiple path slashes into a single path slash.
@@ -193,7 +188,7 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
       "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2",  "lpt3",
       "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "clock$"};
 #if defined(OS_WIN)
-  std::string filename_lower = base::ToLowerASCII(base::UTF16ToUTF8(filename));
+  std::string filename_lower = base::ToLowerASCII(base::WideToUTF8(filename));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   std::string filename_lower = base::ToLowerASCII(filename);
 #endif

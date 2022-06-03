@@ -3,7 +3,6 @@ include_rules = [
   "-content",
   "-components/invalidation",
   "+components/prefs",
-  "+google/cacheinvalidation",
   "+google_apis/gaia",
   "+mojo/public",
 ]

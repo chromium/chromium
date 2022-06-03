@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -18,6 +17,9 @@ class SyncAppHelper {
  public:
   // Singleton implementation.
   static SyncAppHelper* GetInstance();
+
+  SyncAppHelper(const SyncAppHelper&) = delete;
+  SyncAppHelper& operator=(const SyncAppHelper&) = delete;
 
   // Initializes the profiles in |test| and registers them with
   // internal data structures.
@@ -59,8 +61,6 @@ class SyncAppHelper {
   ~SyncAppHelper();
 
   bool setup_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncAppHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_APP_HELPER_H_

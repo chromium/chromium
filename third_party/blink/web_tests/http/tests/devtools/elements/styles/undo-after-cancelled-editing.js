@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that cancelling property value editing doesn't affect undo stack.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -32,9 +32,9 @@
       newProperty.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
 
-    function editProperty(next) {
+    async function editProperty(next) {
       treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
       treeElement.startEditing();
       treeElement.nameElement.textContent = 'color';
       treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
@@ -49,14 +49,14 @@
       ElementsTestRunner.waitForStyleApplied(next);
     },
 
-    function undoStyles(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function undoStyles(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
       SDK.domModelUndoStack.undo();
       ElementsTestRunner.waitForStyles('inspected', next, true);
     },
 
-    function onUndoedProperty(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function onUndoedProperty(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
       next();
     }
   ]);

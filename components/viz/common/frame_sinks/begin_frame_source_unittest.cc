@@ -23,7 +23,7 @@ namespace {
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 // BeginFrameSource testing ----------------------------------------------------
@@ -41,8 +41,11 @@ class TestTaskRunner : public base::TestMockTimeTaskRunner {
   TestTaskRunner()
       : base::TestMockTimeTaskRunner(
             base::TestMockTimeTaskRunner::Type::kStandalone) {
-    AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(1000));
+    AdvanceMockTickClock(base::Microseconds(1000));
   }
+
+  TestTaskRunner(const TestTaskRunner&) = delete;
+  TestTaskRunner& operator=(const TestTaskRunner&) = delete;
 
   void FastForwardTo(base::TimeTicks end_time) {
     base::TimeDelta offset = end_time - NowTicks();
@@ -52,7 +55,6 @@ class TestTaskRunner : public base::TestMockTimeTaskRunner {
 
  private:
   ~TestTaskRunner() override = default;  // Ref-counted.
-  DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
 };
 
 // BackToBackBeginFrameSource testing
@@ -69,7 +71,8 @@ class BackToBackBeginFrameSourceTest : public ::testing::Test {
             task_runner_->GetMockTickClock(), task_runner_.get());
 
     delay_based_time_source_ = time_source.get();
-    source_.reset(new BackToBackBeginFrameSource(std::move(time_source)));
+    source_ =
+        std::make_unique<BackToBackBeginFrameSource>(std::move(time_source));
     obs_ = std::make_unique<::testing::NiceMock<MockBeginFrameObserver>>();
   }
 
@@ -97,7 +100,7 @@ TEST_F(BackToBackBeginFrameSourceTest, AddObserverSendsBeginFrame) {
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
                           1100 + kDeadline, kInterval);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
   task_runner_->RunUntilIdle();
 }
@@ -128,7 +131,7 @@ TEST_F(BackToBackBeginFrameSourceTest,
                           1000 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
   source_->RemoveObserver(obs_.get());
 
@@ -144,17 +147,17 @@ TEST_F(BackToBackBeginFrameSourceTest,
                           1000 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->RemoveObserver(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
   source_->AddObserver(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   source_->DidFinishFrame(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   // The begin frame is posted at the time when the observer was added,
   // so it ignores changes to "now" afterward.
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1110,
@@ -171,17 +174,17 @@ TEST_F(BackToBackBeginFrameSourceTest,
                           1000 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   source_->RemoveObserver(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
   source_->AddObserver(obs_.get());
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10));
   // Ticks at the time at which the observer was added, ignoring the
   // last change to "now".
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1120,
@@ -206,7 +209,7 @@ TEST_F(BackToBackBeginFrameSourceTest, DidFinishFrameMultipleCallsIdempotent) {
                           1000 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
   source_->DidFinishFrame(obs_.get());
   source_->DidFinishFrame(obs_.get());
@@ -214,7 +217,7 @@ TEST_F(BackToBackBeginFrameSourceTest, DidFinishFrameMultipleCallsIdempotent) {
                           1100 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
   source_->DidFinishFrame(obs_.get());
   source_->DidFinishFrame(obs_.get());
@@ -230,9 +233,9 @@ TEST_F(BackToBackBeginFrameSourceTest, DelayInPostedTaskProducesCorrectFrame) {
                           1000 + kDeadline, kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(obs_.get());
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(50));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(50));
   // Ticks at the time the last frame finished, so ignores the last change to
   // "now".
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
@@ -256,7 +259,7 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversSynchronized) {
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs1);
   source_->DidFinishFrame(&obs2);
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 2, 1100, 1100 + kDeadline,
@@ -265,7 +268,7 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversSynchronized) {
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs1);
   source_->DidFinishFrame(&obs2);
   EXPECT_TRUE(task_runner_->HasPendingTask());
@@ -283,14 +286,14 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversInterleaved) {
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs2, false);
   source_->AddObserver(&obs2);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 2, 1100, 1100 + kDeadline,
                           kInterval);
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs1);
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 3, 1200, 1200 + kDeadline,
                           kInterval);
@@ -304,7 +307,7 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversInterleaved) {
   // aborted since |obs1| is removed. Clear that from the task runner.
   task_runner_->RunUntilIdle();
 
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs2);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 4, 1300, 1300 + kDeadline,
                           kInterval);
@@ -328,11 +331,11 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversAtOnce) {
   task_runner_->RunUntilIdle();
 
   // |obs1| finishes first.
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs1);
 
   // |obs2| finishes also, before getting to the newly posted begin frame.
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(100));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
   source_->DidFinishFrame(&obs2);
 
   // Because the begin frame source already ticked when |obs1| finished,
@@ -359,11 +362,11 @@ class DelayBasedBeginFrameSourceTest : public ::testing::Test {
         std::make_unique<FakeDelayBasedTimeSource>(
             task_runner_->GetMockTickClock(), task_runner_.get());
 
-    time_source->SetTimebaseAndInterval(
-        base::TimeTicks(), base::TimeDelta::FromMicroseconds(10000));
+    time_source->SetTimebaseAndInterval(base::TimeTicks(),
+                                        base::Microseconds(10000));
     source_ = std::make_unique<DelayBasedBeginFrameSource>(
         std::move(time_source), BeginFrameSource::kNotRestartableId);
-    obs_.reset(new MockBeginFrameObserver);
+    obs_ = std::make_unique<MockBeginFrameObserver>();
   }
 
   void TearDown() override { obs_.reset(); }
@@ -375,7 +378,7 @@ class DelayBasedBeginFrameSourceTest : public ::testing::Test {
 
 TEST_F(DelayBasedBeginFrameSourceTest,
        AddObserverCallsOnBeginFrameWithMissedTick) {
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(9010));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(9010));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
   EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 10000, 20000,
                                  10000);
@@ -392,7 +395,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, AddObserverCallsCausesOnBeginFrame) {
             task_runner_->NowTicks() + task_runner_->NextPendingTaskDelay());
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(9010));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(9010));
   task_runner_->RunUntilIdle();
 }
 
@@ -424,7 +427,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChanges) {
 
   // Update the vsync information
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(27500),
-                                   base::TimeDelta::FromMicroseconds(10001));
+                                   base::Microseconds(10001));
 
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 5, 40000, 47502, 10001);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 6, 47502, 57503, 10001);
@@ -448,7 +451,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBeforeLastTick) {
   // tick (i.e. next_tick -> 40000, following_tick -> 41000)
   // Begin frame won't be used at 41000 because this is a double-tick.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(26000),
-                                   base::TimeDelta::FromMicroseconds(5000));
+                                   base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 5, 40000, 41000, 5000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 7, 46000, 51000, 5000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(46000));
@@ -457,7 +460,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBeforeLastTick) {
   // and next tick happens exactly one interval before the following tick
   // tick (i.e. next_tick -> 51000, following_tick -> 60000)
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(42000),
-                                   base::TimeDelta::FromMicroseconds(9000));
+                                   base::Microseconds(9000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 8, 51000, 60000, 9000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 9, 60000, 69000, 9000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 10, 69000, 78000, 9000);
@@ -479,7 +482,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
   // and next tick happens within less than one interval of the new timebase
   // Begin frame won't be used at 41000 because this is a double-tick.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(41000),
-                                   base::TimeDelta::FromMicroseconds(5000));
+                                   base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 5, 40000, 41000, 5000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 7, 46000, 51000, 5000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(46000));
@@ -487,7 +490,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
   // Update the vsync information such that timebase is after next tick time,
   // and next tick happens exactly one interval before the new timebase
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(60000),
-                                   base::TimeDelta::FromMicroseconds(9000));
+                                   base::Microseconds(9000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 8, 51000, 60000, 9000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 9, 60000, 69000, 9000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 10, 69000, 78000, 9000);
@@ -497,7 +500,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseAfterNextTick) {
   // and next tick happens more than one interval before the new timebase
   // Begin frame won't be used at 80000 because this is a double-tick.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(100000),
-                                   base::TimeDelta::FromMicroseconds(5000));
+                                   base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 11, 78000, 80000, 5000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 13, 85000, 90000, 5000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(85000));
@@ -518,13 +521,13 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
   // and last tick time.
   // Begin frame won't be used at 41000 because this is a double-tick.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(35000),
-                                   base::TimeDelta::FromMicroseconds(6000));
+                                   base::Microseconds(6000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 5, 40000, 41000, 6000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 7, 47000, 53000, 6000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(47000));
 
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(49000),
-                                   base::TimeDelta::FromMicroseconds(10000));
+                                   base::Microseconds(10000));
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 8, 53000, 59000, 10000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 9, 59000, 69000, 10000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 10, 69000, 79000, 10000);
@@ -535,7 +538,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
   NiceMock<MockBeginFrameObserver> obs1, obs2;
 
   // Mock tick clock starts off at 1000.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMicroseconds(9010));
+  task_runner_->FastForwardBy(base::Microseconds(9010));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs1, false);
   EXPECT_BEGIN_FRAME_USED_MISSED(obs1, source_->source_id(), 1, 10000, 20000,
                                  10000);
@@ -543,7 +546,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
   // No tasks should need to be run for this to occur.
 
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 2, 20000, 30000, 10000);
-  task_runner_->FastForwardBy(base::TimeDelta::FromMicroseconds(10000));
+  task_runner_->FastForwardBy(base::Microseconds(10000));
 
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs2, false);
   // Sequence number unchanged for missed frame with time of last normal frame.
@@ -554,12 +557,12 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
 
   EXPECT_BEGIN_FRAME_USED(obs1, source_->source_id(), 3, 30000, 40000, 10000);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 3, 30000, 40000, 10000);
-  task_runner_->FastForwardBy(base::TimeDelta::FromMicroseconds(10000));
+  task_runner_->FastForwardBy(base::Microseconds(10000));
 
   source_->RemoveObserver(&obs1);
 
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 4, 40000, 50000, 10000);
-  task_runner_->FastForwardBy(base::TimeDelta::FromMicroseconds(10000));
+  task_runner_->FastForwardBy(base::Microseconds(10000));
 
   source_->RemoveObserver(&obs2);
   task_runner_->FastForwardTo(TicksFromMicroseconds(50000));
@@ -574,16 +577,16 @@ TEST_F(DelayBasedBeginFrameSourceTest, DoubleTick) {
   source_->AddObserver(&obs);
 
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(5000),
-                                   base::TimeDelta::FromMicroseconds(10000));
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(4000));
+                                   base::Microseconds(10000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(4000));
 
   // No begin frame received.
   task_runner_->RunUntilIdle();
 
   // Begin frame received.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(10000),
-                                   base::TimeDelta::FromMicroseconds(10000));
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(5000));
+                                   base::Microseconds(10000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 20000, 10000);
   task_runner_->RunUntilIdle();
 }
@@ -597,8 +600,8 @@ TEST_F(DelayBasedBeginFrameSourceTest, DoubleTickMissedFrame) {
   source_->RemoveObserver(&obs);
 
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(5000),
-                                   base::TimeDelta::FromMicroseconds(10000));
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(4000));
+                                   base::Microseconds(10000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(4000));
 
   // No missed frame received.
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
@@ -609,8 +612,8 @@ TEST_F(DelayBasedBeginFrameSourceTest, DoubleTickMissedFrame) {
 
   // Missed frame received.
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(10000),
-                                   base::TimeDelta::FromMicroseconds(10000));
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(5000));
+                                   base::Microseconds(10000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
   // Sequence number is incremented again, because sufficient time has passed.
   EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 2, 10000, 20000,
@@ -629,7 +632,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
   task_runner_->RunUntilIdle();
 
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 20000, 10000);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(9000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(9000));
   task_runner_->RunUntilIdle();
 
   // Sequence number should stay the same within same interval.
@@ -639,7 +642,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, MultipleArgsInSameInterval) {
 
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 30000, 10000);
   EXPECT_BEGIN_FRAME_USED(obs2, source_->source_id(), 3, 20000, 30000, 10000);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(10000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(10000));
   task_runner_->RunUntilIdle();
 }
 
@@ -652,7 +655,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   task_runner_->RunUntilIdle();
 
   EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 20000, 10000);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(9000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(9000));
   task_runner_->RunUntilIdle();
   source_->RemoveObserver(&obs);
 
@@ -661,7 +664,7 @@ TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
   EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 10, 90000, 100000,
                                  10000);
-  task_runner_->AdvanceMockTickClock(base::TimeDelta::FromMicroseconds(80000));
+  task_runner_->AdvanceMockTickClock(base::Microseconds(80000));
   source_->AddObserver(&obs);
 }
 

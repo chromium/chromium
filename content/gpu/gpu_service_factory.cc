@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
@@ -15,9 +16,6 @@
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "base/bind.h"
 #include "media/mojo/services/media_service_factory.h"  // nogncheck
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-#include "content/public/gpu/content_gpu_client.h"
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 #endif  // BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 
 namespace content {
@@ -45,13 +43,6 @@ GpuServiceFactory::~GpuServiceFactory() {}
 void GpuServiceFactory::RunMediaService(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-  media::CdmProxyFactoryCB cdm_proxy_factory_cb;
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  cdm_proxy_factory_cb =
-      base::BindRepeating(&ContentGpuClient::CreateCdmProxy,
-                          base::Unretained(GetContentClient()->gpu()));
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
-
   // This service will host audio/video decoders, and if these decoding
   // operations are blocked, user may hear audio glitch or see video freezing,
   // hence "user blocking".
@@ -61,17 +52,17 @@ void GpuServiceFactory::RunMediaService(
   task_runner = task_runner_;
 #else
   // TODO(crbug.com/786169): Check whether this needs to be single threaded.
-  task_runner = base::CreateSingleThreadTaskRunner(
-      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING});
+  task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING});
 #endif  // defined(OS_WIN)
 
   using FactoryCallback =
       base::OnceCallback<std::unique_ptr<media::MediaService>()>;
-  FactoryCallback factory = base::BindOnce(
-      &media::CreateGpuMediaService, std::move(receiver), gpu_preferences_,
-      gpu_workarounds_, gpu_feature_info_, task_runner_,
-      media_gpu_channel_manager_, gpu_memory_buffer_factory_,
-      android_overlay_factory_cb_, std::move(cdm_proxy_factory_cb));
+  FactoryCallback factory =
+      base::BindOnce(&media::CreateGpuMediaService, std::move(receiver),
+                     gpu_preferences_, gpu_workarounds_, gpu_feature_info_,
+                     task_runner_, media_gpu_channel_manager_,
+                     gpu_memory_buffer_factory_, android_overlay_factory_cb_);
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(

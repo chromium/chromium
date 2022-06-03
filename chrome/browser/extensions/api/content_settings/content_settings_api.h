@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_API_H_
 
+#include <vector>
+
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
+#include "extensions/browser/extension_function.h"
+#include "ppapi/buildflags/buildflags.h"
 
 namespace content {
 struct WebPluginInfo;
@@ -48,7 +51,7 @@ class ContentSettingsContentSettingSetFunction : public ExtensionFunction {
 };
 
 class ContentSettingsContentSettingGetResourceIdentifiersFunction
-    : public ChromeAsyncExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contentSettings.getResourceIdentifiers",
                              CONTENTSETTINGS_GETRESOURCEIDENTIFIERS)
@@ -57,15 +60,17 @@ class ContentSettingsContentSettingGetResourceIdentifiersFunction
   ~ContentSettingsContentSettingGetResourceIdentifiersFunction() override {}
 
   // ExtensionFunction:
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionApiTest,
                            ContentSettingsGetResourceIdentifiers);
 
+#if BUILDFLAG(ENABLE_PLUGINS)
   // Callback method that gets executed when |plugins|
   // are asynchronously fetched.
   void OnGotPlugins(const std::vector<content::WebPluginInfo>& plugins);
+#endif
 };
 
 }  // namespace extensions

@@ -20,11 +20,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_gaussian_blur.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
 
 namespace blink {
 
@@ -50,11 +50,11 @@ FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
   offset_rect.MoveBy(offset);
   FloatRect blurred_rect =
       FEGaussianBlur::MapEffect(std_deviation, offset_rect);
-  return UnionRect(blurred_rect, rect);
+  return UnionRects(blurred_rect, rect);
 }
 
 FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {
-  const Filter* filter = this->GetFilter();
+  const Filter* filter = GetFilter();
   DCHECK(filter);
   FloatPoint offset(filter->ApplyHorizontalScale(dx_),
                     filter->ApplyVerticalScale(dy_));
@@ -72,12 +72,12 @@ sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
   float std_y = GetFilter()->ApplyVerticalScale(std_y_);
   Color color = AdaptColorToOperatingInterpolationSpace(
       shadow_color_.CombineWithAlpha(shadow_opacity_));
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<DropShadowPaintFilter>(
       SkFloatToScalar(dx), SkFloatToScalar(dy), SkFloatToScalar(std_x),
       SkFloatToScalar(std_y), color.Rgb(),
-      SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode,
-      std::move(input), &crop_rect);
+      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
+      std::move(input), base::OptionalOrNullptr(crop_rect));
 }
 
 WTF::TextStream& FEDropShadow::ExternalRepresentation(WTF::TextStream& ts,

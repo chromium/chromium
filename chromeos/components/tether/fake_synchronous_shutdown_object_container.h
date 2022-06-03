@@ -6,9 +6,8 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "chromeos/components/tether/synchronous_shutdown_object_container.h"
 
 namespace chromeos {
@@ -21,7 +20,13 @@ class FakeSynchronousShutdownObjectContainer
  public:
   // |deletion_callback| will be invoked when the object is deleted.
   FakeSynchronousShutdownObjectContainer(
-      const base::Closure& deletion_callback = base::DoNothing());
+      base::OnceClosure deletion_callback = base::DoNothing());
+
+  FakeSynchronousShutdownObjectContainer(
+      const FakeSynchronousShutdownObjectContainer&) = delete;
+  FakeSynchronousShutdownObjectContainer& operator=(
+      const FakeSynchronousShutdownObjectContainer&) = delete;
+
   ~FakeSynchronousShutdownObjectContainer() override;
 
   void set_active_host(ActiveHost* active_host) { active_host_ = active_host; }
@@ -45,14 +50,12 @@ class FakeSynchronousShutdownObjectContainer
   TetherDisconnector* tether_disconnector() override;
 
  private:
-  base::Closure deletion_callback_;
+  base::OnceClosure deletion_callback_;
 
   ActiveHost* active_host_ = nullptr;
   HostScanCache* host_scan_cache_ = nullptr;
   HostScanScheduler* host_scan_scheduler_ = nullptr;
   TetherDisconnector* tether_disconnector_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSynchronousShutdownObjectContainer);
 };
 
 }  // namespace tether

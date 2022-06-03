@@ -6,6 +6,8 @@
  * @fileoverview Framework for running async JS tests for cr.js utility methods.
  */
 
+GEN('#include "content/public/test/browser_test.h"');
+
 /** @const {string} Name of the chrome.send() message to be used in tests. */
 var CHROME_SEND_NAME = 'echoMessage';
 
@@ -35,20 +37,21 @@ WebUIResourceAsyncTest.prototype = {
 };
 
 TEST_F('WebUIResourceAsyncTest', 'SendWithPromise', function() {
-  /**
-   * TODO(dpapad): Move this helper method in test_api.js.
-   * @param {string} name chrome.send message name.
-   * @return {!Promise} Fires when chrome.send is called with the given message
-   *     name.
-   */
-  function whenChromeSendCalled(name) {
-    return new Promise(function(resolve, reject) {
-      registerMessageCallback(name, null, resolve);
-    });
-  }
-
   suite('SendWithPromise', function() {
+    const originalChromeSend = chrome.send;
     var rejectPromises = false;
+
+    /**
+     * @param {string} name chrome.send message name.
+     * @return {!Promise} Fires when chrome.send is called with the given
+     *     message name.
+     */
+    function whenChromeSendCalled(name) {
+      assertEquals(originalChromeSend, chrome.send);
+      return new Promise(function(resolve, reject) {
+        chrome.send = (_, args) => resolve(args);
+      });
+    }
 
     setup(function() {
       // Simulate a WebUI handler that echoes back all parameters passed to it.
@@ -59,8 +62,13 @@ TEST_F('WebUIResourceAsyncTest', 'SendWithPromise', function() {
             null, [callbackId, !rejectPromises].concat(args.slice(1)));
       });
     });
+
     teardown(function() {
       rejectPromises = false;
+
+      // Restore original chrome.send(), as it is necessary for the testing
+      // framework to signal test completion.
+      chrome.send = originalChromeSend;
     });
 
     test('sendWithPromise_ResponseObject', function() {

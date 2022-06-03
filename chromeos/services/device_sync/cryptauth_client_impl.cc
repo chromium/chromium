@@ -14,6 +14,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
 #include "chromeos/services/device_sync/switches.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -122,19 +123,20 @@ CryptAuthClientImpl::~CryptAuthClientImpl() {}
 
 void CryptAuthClientImpl::GetMyDevices(
     const cryptauth::GetMyDevicesRequest& request,
-    const GetMyDevicesCallback& callback,
-    const ErrorCallback& error_callback,
+    GetMyDevicesCallback callback,
+    ErrorCallback error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   MakeApiCall(CreateV1RequestUrl(kGetMyDevicesPath), RequestType::kPost,
               RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FindEligibleUnlockDevices(
     const cryptauth::FindEligibleUnlockDevicesRequest& request,
-    const FindEligibleUnlockDevicesCallback& callback,
-    const ErrorCallback& error_callback) {
+    FindEligibleUnlockDevicesCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_find_eligible_unlock_devices", "oauth2_api_call_flow",
@@ -160,17 +162,17 @@ void CryptAuthClientImpl::FindEligibleUnlockDevices(
           }
         }
       })");
-  MakeApiCall(CreateV1RequestUrl(kFindEligibleUnlockDevicesPath),
-              RequestType::kPost,
-              RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+  MakeApiCall(
+      CreateV1RequestUrl(kFindEligibleUnlockDevicesPath), RequestType::kPost,
+      RequestWithDeviceClassifierSet(request).SerializeAsString(),
+      absl::nullopt /* request_as_query_parameters */, std::move(callback),
+      std::move(error_callback), partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FindEligibleForPromotion(
     const cryptauth::FindEligibleForPromotionRequest& request,
-    const FindEligibleForPromotionCallback& callback,
-    const ErrorCallback& error_callback) {
+    FindEligibleForPromotionCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_find_eligible_for_promotion", "oauth2_api_call_flow",
@@ -193,28 +195,29 @@ void CryptAuthClientImpl::FindEligibleForPromotion(
           }
         }
       })");
-  MakeApiCall(CreateV1RequestUrl(kFindEligibleForPromotionPath),
-              RequestType::kPost,
-              RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+  MakeApiCall(
+      CreateV1RequestUrl(kFindEligibleForPromotionPath), RequestType::kPost,
+      RequestWithDeviceClassifierSet(request).SerializeAsString(),
+      absl::nullopt /* request_as_query_parameters */, std::move(callback),
+      std::move(error_callback), partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SendDeviceSyncTickle(
     const cryptauth::SendDeviceSyncTickleRequest& request,
-    const SendDeviceSyncTickleCallback& callback,
-    const ErrorCallback& error_callback,
+    SendDeviceSyncTickleCallback callback,
+    ErrorCallback error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   MakeApiCall(CreateV1RequestUrl(kSendDeviceSyncTicklePath), RequestType::kPost,
               RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::ToggleEasyUnlock(
     const cryptauth::ToggleEasyUnlockRequest& request,
-    const ToggleEasyUnlockCallback& callback,
-    const ErrorCallback& error_callback) {
+    ToggleEasyUnlockCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation("cryptauth_toggle_easyunlock",
                                                  "oauth2_api_call_flow", R"(
@@ -240,14 +243,15 @@ void CryptAuthClientImpl::ToggleEasyUnlock(
       })");
   MakeApiCall(CreateV1RequestUrl(kToggleEasyUnlockPath), RequestType::kPost,
               RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SetupEnrollment(
     const cryptauth::SetupEnrollmentRequest& request,
-    const SetupEnrollmentCallback& callback,
-    const ErrorCallback& error_callback) {
+    SetupEnrollmentCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_enrollment_flow_setup", "oauth2_api_call_flow", R"(
@@ -276,14 +280,15 @@ void CryptAuthClientImpl::SetupEnrollment(
       })");
   MakeApiCall(CreateV1RequestUrl(kSetupEnrollmentPath), RequestType::kPost,
               RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FinishEnrollment(
     const cryptauth::FinishEnrollmentRequest& request,
-    const FinishEnrollmentCallback& callback,
-    const ErrorCallback& error_callback) {
+    FinishEnrollmentCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_enrollment_flow_finish", "oauth2_api_call_flow", R"(
@@ -309,13 +314,14 @@ void CryptAuthClientImpl::FinishEnrollment(
       })");
   MakeApiCall(CreateV1RequestUrl(kFinishEnrollmentPath), RequestType::kPost,
               RequestWithDeviceClassifierSet(request).SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SyncKeys(const cryptauthv2::SyncKeysRequest& request,
-                                   const SyncKeysCallback& callback,
-                                   const ErrorCallback& error_callback) {
+                                   SyncKeysCallback callback,
+                                   ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_enrollment_flow_sync_keys", "oauth2_api_call_flow", R"(
@@ -345,14 +351,15 @@ void CryptAuthClientImpl::SyncKeys(const cryptauthv2::SyncKeysRequest& request,
       })");
   MakeApiCall(CreateV2EnrollmentRequestUrl(kSyncKeysPath), RequestType::kPost,
               request.SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::EnrollKeys(
     const cryptauthv2::EnrollKeysRequest& request,
-    const EnrollKeysCallback& callback,
-    const ErrorCallback& error_callback) {
+    EnrollKeysCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_enrollment_flow_enroll_keys", "oauth2_api_call_flow",
@@ -381,14 +388,15 @@ void CryptAuthClientImpl::EnrollKeys(
       })");
   MakeApiCall(CreateV2EnrollmentRequestUrl(kEnrollKeysPath), RequestType::kPost,
               request.SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SyncMetadata(
     const cryptauthv2::SyncMetadataRequest& request,
-    const SyncMetadataCallback& callback,
-    const ErrorCallback& error_callback) {
+    SyncMetadataCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_sync_metadata", "oauth2_api_call_flow",
@@ -422,14 +430,15 @@ void CryptAuthClientImpl::SyncMetadata(
       })");
   MakeApiCall(CreateV2DeviceSyncRequestUrl(kSyncMetadataPath),
               RequestType::kPost, request.SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::ShareGroupPrivateKey(
     const cryptauthv2::ShareGroupPrivateKeyRequest& request,
-    const ShareGroupPrivateKeyCallback& callback,
-    const ErrorCallback& error_callback) {
+    ShareGroupPrivateKeyCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_share_group_private_key",
@@ -461,27 +470,30 @@ void CryptAuthClientImpl::ShareGroupPrivateKey(
       })");
   MakeApiCall(CreateV2DeviceSyncRequestUrl(kShareGroupPrivateKeyPath),
               RequestType::kPost, request.SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
-// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
-// when method is used in codebase.
 void CryptAuthClientImpl::BatchNotifyGroupDevices(
     const cryptauthv2::BatchNotifyGroupDevicesRequest& request,
-    const BatchNotifyGroupDevicesCallback& callback,
-    const ErrorCallback& error_callback) {
+    BatchNotifyGroupDevicesCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_batch_notify_group_devices",
           "oauth2_api_call_flow",
           R"(
       semantics {
-        sender: "TBD"
+        sender: "CryptAuth Device Notifier"
         description:
           "The client sends a list of the user's devices that it wants to "
           "tickle via a GCM message."
-        trigger: "TBD"
+        trigger:
+          "The DeviceSync service has a NotifyDevices() method that triggers "
+          "this API call. Currently, that method is only used by the "
+          "multi-device host verifier to alert the current multi-device host "
+          "that it needs to enable its individual multi-device features."
         data:
           "The list of device IDs to notify as well as a specification of the "
           "the CryptAuth service (Enrollment or DeviceSync) and feature "
@@ -500,15 +512,16 @@ void CryptAuthClientImpl::BatchNotifyGroupDevices(
       })");
   MakeApiCall(
       CreateV2DeviceSyncRequestUrl(kBatchNotifyGroupDevicesPath),
-      RequestType::kGet, base::nullopt /* serialized_request */,
+      RequestType::kGet, absl::nullopt /* serialized_request */,
       cryptauthv2::BatchNotifyGroupDevicesRequestToQueryParameters(request),
-      callback, error_callback, partial_traffic_annotation);
+      std::move(callback), std::move(error_callback),
+      partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::BatchGetFeatureStatuses(
     const cryptauthv2::BatchGetFeatureStatusesRequest& request,
-    const BatchGetFeatureStatusesCallback& callback,
-    const ErrorCallback& error_callback) {
+    BatchGetFeatureStatusesCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_batch_get_feature_statuses",
@@ -537,28 +550,31 @@ void CryptAuthClientImpl::BatchGetFeatureStatuses(
       })");
   MakeApiCall(
       CreateV2DeviceSyncRequestUrl(kBatchGetFeatureStatusesPath),
-      RequestType::kGet, base::nullopt /* serialized_request */,
+      RequestType::kGet, absl::nullopt /* serialized_request */,
       cryptauthv2::BatchGetFeatureStatusesRequestToQueryParameters(request),
-      callback, error_callback, partial_traffic_annotation);
+      std::move(callback), std::move(error_callback),
+      partial_traffic_annotation);
 }
 
-// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
-// when method is used in codebase.
 void CryptAuthClientImpl::BatchSetFeatureStatuses(
     const cryptauthv2::BatchSetFeatureStatusesRequest& request,
-    const BatchSetFeatureStatusesCallback& callback,
-    const ErrorCallback& error_callback) {
+    BatchSetFeatureStatusesCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_batch_set_feature_statuses",
           "oauth2_api_call_flow",
           R"(
       semantics {
-        sender: "TBD"
+        sender: "CryptAuth Feature Status Setter"
         description:
           "The client requests CryptAuth to set the state of various features "
           "for the user's devices."
-        trigger: "TBD"
+        trigger:
+          "The DeviceSync service has a SetFeatureStatus() method that "
+          "triggers this API call. Currently, that method is only used by the "
+          "multi-device host backend delegate to enable (disable) the "
+          "kBetterTogetherHost bit for the desired (current) multi-device host."
         data: "User device IDs and feature state specifications."
         destination: GOOGLE_OWNED_SERVICE
       }
@@ -574,27 +590,30 @@ void CryptAuthClientImpl::BatchSetFeatureStatuses(
       })");
   MakeApiCall(CreateV2DeviceSyncRequestUrl(kBatchSetFeatureStatusesPath),
               RequestType::kPost, request.SerializeAsString(),
-              base::nullopt /* request_as_query_parameters */, callback,
-              error_callback, partial_traffic_annotation);
+              absl::nullopt /* request_as_query_parameters */,
+              std::move(callback), std::move(error_callback),
+              partial_traffic_annotation);
 }
 
-// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
-// when method is used in codebase.
 void CryptAuthClientImpl::GetDevicesActivityStatus(
     const cryptauthv2::GetDevicesActivityStatusRequest& request,
-    const GetDevicesActivityStatusCallback& callback,
-    const ErrorCallback& error_callback) {
+    GetDevicesActivityStatusCallback callback,
+    ErrorCallback error_callback) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "cryptauth_v2_devicesync_get_devices_activity_status",
           "oauth2_api_call_flow",
           R"(
       semantics {
-        sender: "TBD"
+        sender: "CryptAuth Device Activity Getter"
         description:
-          "The client queries CryptAuth for the activity of status of the"
+          "The client queries CryptAuth for the activity of status of the "
           "user's devices."
-        trigger: "TBD"
+        trigger:
+          "The DeviceSync service has a GetDevicesActivityStatus() method that "
+          "triggers this API call. Currently, that method is only used by the "
+          "eligible-host-devices provider in order to better organize the "
+          "drop-down list used for multi-device setup."
         data: "User device ID."
         destination: GOOGLE_OWNED_SERVICE
       }
@@ -610,9 +629,10 @@ void CryptAuthClientImpl::GetDevicesActivityStatus(
       })");
   MakeApiCall(
       CreateV2DeviceSyncRequestUrl(kGetDevicesActivityStatusPath),
-      RequestType::kGet, base::nullopt /* serialized_request */,
+      RequestType::kGet, absl::nullopt /* serialized_request */,
       cryptauthv2::GetDevicesActivityStatusRequestToQueryParameters(request),
-      callback, error_callback, partial_traffic_annotation);
+      std::move(callback), std::move(error_callback),
+      partial_traffic_annotation);
 }
 
 std::string CryptAuthClientImpl::GetAccessTokenUsed() {
@@ -623,11 +643,11 @@ template <class ResponseProto>
 void CryptAuthClientImpl::MakeApiCall(
     const GURL& request_url,
     RequestType request_type,
-    const base::Optional<std::string>& serialized_request,
-    const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+    const absl::optional<std::string>& serialized_request,
+    const absl::optional<std::vector<std::pair<std::string, std::string>>>&
         request_as_query_parameters,
-    const base::Callback<void(const ResponseProto&)>& response_callback,
-    const ErrorCallback& error_callback,
+    base::OnceCallback<void(const ResponseProto&)> response_callback,
+    ErrorCallback error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   if (has_call_started_) {
     PA_LOG(ERROR) << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
@@ -641,7 +661,7 @@ void CryptAuthClientImpl::MakeApiCall(
       partial_traffic_annotation);
 
   request_url_ = request_url;
-  error_callback_ = error_callback;
+  error_callback_ = std::move(error_callback);
 
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(kCryptAuthOAuth2Scope);
@@ -652,17 +672,18 @@ void CryptAuthClientImpl::MakeApiCall(
           base::BindOnce(
               &CryptAuthClientImpl::OnAccessTokenFetched<ResponseProto>,
               weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,
-              request_as_query_parameters, response_callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+              request_as_query_parameters, std::move(response_callback)),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          signin::ConsentLevel::kSignin);
 }
 
 template <class ResponseProto>
 void CryptAuthClientImpl::OnAccessTokenFetched(
     RequestType request_type,
-    const base::Optional<std::string>& serialized_request,
-    const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+    const absl::optional<std::string>& serialized_request,
+    const absl::optional<std::vector<std::pair<std::string, std::string>>>&
         request_as_query_parameters,
-    const base::Callback<void(const ResponseProto&)>& response_callback,
+    base::OnceCallback<void(const ResponseProto&)> response_callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
@@ -679,38 +700,40 @@ void CryptAuthClientImpl::OnAccessTokenFetched(
       api_call_flow_->StartGetRequest(
           request_url_, *request_as_query_parameters, url_loader_factory_,
           access_token_used_,
-          base::Bind(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
-                     weak_ptr_factory_.GetWeakPtr(), response_callback),
-          base::Bind(&CryptAuthClientImpl::OnApiCallFailed,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(response_callback)),
+          base::BindOnce(&CryptAuthClientImpl::OnApiCallFailed,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     case RequestType::kPost:
       DCHECK(serialized_request && !request_as_query_parameters);
       api_call_flow_->StartPostRequest(
           request_url_, *serialized_request, url_loader_factory_,
           access_token_used_,
-          base::Bind(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
-                     weak_ptr_factory_.GetWeakPtr(), response_callback),
-          base::Bind(&CryptAuthClientImpl::OnApiCallFailed,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(response_callback)),
+          base::BindOnce(&CryptAuthClientImpl::OnApiCallFailed,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
   }
 }
 
 template <class ResponseProto>
 void CryptAuthClientImpl::OnFlowSuccess(
-    const base::Callback<void(const ResponseProto&)>& result_callback,
+    base::OnceCallback<void(const ResponseProto&)> result_callback,
     const std::string& serialized_response) {
   ResponseProto response;
   if (!response.ParseFromString(serialized_response)) {
     OnApiCallFailed(NetworkRequestError::kResponseMalformed);
     return;
   }
-  result_callback.Run(response);
+  std::move(result_callback).Run(response);
 }
 
 void CryptAuthClientImpl::OnApiCallFailed(NetworkRequestError error) {
-  error_callback_.Run(error);
+  std::move(error_callback_).Run(error);
 }
 
 template <class RequestProto>

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.m.js';
-// clang-format on
+import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
 suite('cr-splitter', function() {
+  /** @type {!CrSplitterElement} */
   let crSplitter;
 
   setup(function() {
-    PolymerTest.clearBody();
-
     document.body.innerHTML = `
       <div id="previous"></div>
       <cr-splitter id="splitter"></cr-splitter>
       <div id="next"></div>`;
 
-    crSplitter = document.querySelector('#splitter');
+    crSplitter =
+        /** @type {!CrSplitterElement} */ (document.querySelector('#splitter'));
   });
 
   test('ignores right mouse', function() {

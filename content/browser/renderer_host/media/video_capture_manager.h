@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -59,6 +59,9 @@ class CONTENT_EXPORT VideoCaptureManager
       std::unique_ptr<VideoCaptureProvider> video_capture_provider,
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
       ScreenlockMonitor* monitor = nullptr);
+
+  VideoCaptureManager(const VideoCaptureManager&) = delete;
+  VideoCaptureManager& operator=(const VideoCaptureManager&) = delete;
 
   // AddVideoCaptureObserver() can be called only before any devices are opened.
   // RemoveAllVideoCaptureObservers() can be called only after all devices
@@ -150,10 +153,10 @@ class CONTENT_EXPORT VideoCaptureManager
   bool GetDeviceFormatsInUse(
       const media::VideoCaptureSessionId& capture_session_id,
       media::VideoCaptureFormats* formats_in_use);
-  // Retrieves the format currently in use.  Returns base::nullopt if the
+  // Retrieves the format currently in use.  Returns absl::nullopt if the
   // |stream_type|, |device_id| pair is not found. Returns in-use format of the
   // device otherwise.
-  base::Optional<media::VideoCaptureFormat> GetDeviceFormatInUse(
+  absl::optional<media::VideoCaptureFormat> GetDeviceFormatInUse(
       blink::mojom::MediaStreamType stream_type,
       const std::string& device_id);
 
@@ -190,6 +193,13 @@ class CONTENT_EXPORT VideoCaptureManager
   void OnDeviceLaunchAborted() override;
   void OnDeviceConnectionLost(VideoCaptureController* controller) override;
 
+  bool is_idle_close_timer_running_for_testing() const {
+    return idle_close_timer_.IsRunning();
+  }
+  void set_idle_close_timeout_for_testing(base::TimeDelta timeout) {
+    idle_close_timeout_ = timeout;
+  }
+
  private:
   class CaptureDeviceStartRequest;
 
@@ -202,7 +212,7 @@ class CONTENT_EXPORT VideoCaptureManager
   ~VideoCaptureManager() override;
 
   void OnDeviceInfosReceived(
-      base::ElapsedTimer* timer,
+      base::ElapsedTimer timer,
       EnumerationCallback client_callback,
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
 
@@ -257,10 +267,10 @@ class CONTENT_EXPORT VideoCaptureManager
   void MaybePostDesktopCaptureWindowId(
       const media::VideoCaptureSessionId& session_id);
 
-#if defined(OS_ANDROID)
   void ReleaseDevices();
   void ResumeDevices();
 
+#if defined(OS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   bool application_state_has_running_activities_;
@@ -268,8 +278,11 @@ class CONTENT_EXPORT VideoCaptureManager
 
   // ScreenlockObserver implementation:
   void OnScreenLocked() override;
+  void OnScreenUnlocked() override;
 
   void EmitLogMessage(const std::string& message, int verbose_log_level);
+
+  void RecordDeviceSessionLockDuration();
 
   // Only accessed on Browser::IO thread.
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
@@ -279,6 +292,10 @@ class CONTENT_EXPORT VideoCaptureManager
   // determine which device to use when ConnectClient() occurs. Used
   // only on the IO thread.
   SessionMap sessions_;
+
+  // A set of sessions that have encountered screen lock.
+  base::flat_set<media::VideoCaptureSessionId> locked_sessions_;
+  base::TimeTicks lock_time_;
 
   // Currently opened VideoCaptureController instances. The device may or may
   // not be started. This member is only accessed on IO thread.
@@ -308,7 +325,10 @@ class CONTENT_EXPORT VideoCaptureManager
   std::map<media::VideoCaptureSessionId, gfx::NativeViewId>
       notification_window_ids_;
 
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManager);
+  // Closes video device capture sessions after a timeout. Idle timeout value
+  // chosen based on UMA metrics. See https://crbug.com/1163105#c28
+  base::TimeDelta idle_close_timeout_ = base::Seconds(15);
+  base::OneShotTimer idle_close_timer_;
 };
 
 }  // namespace content

@@ -53,9 +53,6 @@ LEVELDB_EXPORT bool ParseFileName(const std::string& filename,
                                   uint64_t* number,
                                   leveldb::FileType* type);
 
-// Report leveldb UMA values.
-LEVELDB_EXPORT void UpdateHistograms();
-
 // Corrupt a closed database for testing purposes. After calling this function
 // leveldb::OpenDB(...) will return a status where IsCorruption() returns true.
 // Returns true if the database was successfully corrupted, false if not.

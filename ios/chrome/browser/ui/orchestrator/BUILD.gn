@@ -16,5 +16,5 @@ source_set("orchestrator") {
     "//base",
     "//ios/chrome/common:timing",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

@@ -5,8 +5,6 @@
 #ifndef MEDIA_LEARNING_IMPL_FISHER_IRIS_DATASET_H_
 #define MEDIA_LEARNING_IMPL_FISHER_IRIS_DATASET_H_
 
-#include <vector>
-
 #include "base/memory/ref_counted.h"
 #include "media/learning/common/labelled_example.h"
 

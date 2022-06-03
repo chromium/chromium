@@ -4,7 +4,7 @@ This layer should be composited.
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 618],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -22,10 +22,9 @@ This layer should be composited.
       "transform": 4
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

@@ -58,7 +58,7 @@ class CSSBasicShapeCircleValue final : public CSSValue {
   void SetCenterY(CSSValue* center_y) { center_y_ = center_y; }
   void SetRadius(CSSValue* radius) { radius_ = radius; }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSValue> center_x_;
@@ -84,7 +84,7 @@ class CSSBasicShapeEllipseValue final : public CSSValue {
   void SetRadiusX(CSSValue* radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(CSSValue* radius_y) { radius_y_ = radius_y; }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSValue> center_x_;
@@ -116,7 +116,7 @@ class CSSBasicShapePolygonValue final : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapePolygonValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   HeapVector<Member<CSSPrimitiveValue>> values_;
@@ -180,7 +180,7 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapeInsetValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSPrimitiveValue> top_;

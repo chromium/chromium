@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/accelerometer/#accelerometer-interface
 
 [
     SecureContext,
-    MeasureAs=AccelerometerConstructor,
     Exposed=Window
 ] interface Accelerometer : Sensor {
-    [CallWith=ExecutionContext, RaisesException] constructor(optional SpatialSensorOptions sensorOptions);
+    [CallWith=ExecutionContext, RaisesException, MeasureAs=AccelerometerConstructor] constructor(optional SpatialSensorOptions sensorOptions = {});
     readonly attribute unrestricted double? x;
     readonly attribute unrestricted double? y;
     readonly attribute unrestricted double? z;

@@ -16,6 +16,7 @@ namespace content {
 struct CONTENT_EXPORT BackgroundSyncParameters {
   BackgroundSyncParameters();
   BackgroundSyncParameters(const BackgroundSyncParameters& other);
+  BackgroundSyncParameters& operator=(const BackgroundSyncParameters& other);
   bool operator==(const BackgroundSyncParameters& other) const;
 
   // True if the manager should be disabled and registration attempts should

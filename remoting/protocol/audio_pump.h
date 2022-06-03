@@ -40,6 +40,10 @@ class AudioPump : public AudioStream {
             std::unique_ptr<AudioSource> audio_source,
             std::unique_ptr<AudioEncoder> audio_encoder,
             AudioStub* audio_stub);
+
+  AudioPump(const AudioPump&) = delete;
+  AudioPump& operator=(const AudioPump&) = delete;
+
   ~AudioPump() override;
 
   // AudioStream interface.
@@ -62,8 +66,6 @@ class AudioPump : public AudioStream {
   std::unique_ptr<Core> core_;
 
   base::WeakPtrFactory<AudioPump> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPump);
 };
 
 }  // namespace protocol

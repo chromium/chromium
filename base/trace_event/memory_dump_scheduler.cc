@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -20,7 +20,7 @@ MemoryDumpScheduler* MemoryDumpScheduler::GetInstance() {
   return instance;
 }
 
-MemoryDumpScheduler::MemoryDumpScheduler() : period_ms_(0), generation_(0) {}
+MemoryDumpScheduler::MemoryDumpScheduler() = default;
 MemoryDumpScheduler::~MemoryDumpScheduler() {
   // Hit only in tests. Check that tests don't leave without stopping.
   DCHECK(!is_enabled_for_testing());
@@ -80,7 +80,7 @@ void MemoryDumpScheduler::StartInternal(MemoryDumpScheduler::Config config) {
   SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this), ++generation_),
-      TimeDelta::FromMilliseconds(200));
+      Milliseconds(200));
 }
 
 void MemoryDumpScheduler::StopInternal() {
@@ -106,7 +106,7 @@ void MemoryDumpScheduler::Tick(uint32_t expected_generation) {
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this),
                expected_generation),
-      TimeDelta::FromMilliseconds(period_ms_));
+      Milliseconds(period_ms_));
 }
 
 MemoryDumpScheduler::Config::Config() = default;

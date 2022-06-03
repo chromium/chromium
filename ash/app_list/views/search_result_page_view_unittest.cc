@@ -8,10 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_util.h"
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/test/app_list_test_view_delegate.h"
-#include "ash/app_list/test/test_search_result.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
@@ -19,77 +18,41 @@
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/macros.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace {
-
-enum class AnswerCardState {
-  ANSWER_CARD_OFF,
-  ANSWER_CARD_ON_WITH_RESULT,
-  ANSWER_CARD_ON_WITHOUT_RESULT,
-};
-
-}  // namespace
-
 namespace ash {
 namespace test {
 
-class SearchResultPageViewTest
-    : public views::ViewsTestBase,
-      public testing::WithParamInterface<AnswerCardState> {
+class SearchResultPageViewTest : public views::ViewsTestBase {
  public:
   SearchResultPageViewTest() = default;
+
+  SearchResultPageViewTest(const SearchResultPageViewTest&) = delete;
+  SearchResultPageViewTest& operator=(const SearchResultPageViewTest&) = delete;
+
   ~SearchResultPageViewTest() override = default;
 
   // Overridden from testing::Test:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    // Reading test parameters.
-    bool test_with_answer_card = true;
-    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-      const AnswerCardState answer_card_state = GetParam();
-      test_with_answer_card =
-          answer_card_state != AnswerCardState::ANSWER_CARD_OFF;
-    }
-
-    // Setting up the feature set.
-    // Zero State will affect the UI behavior significantly. This test works
-    // if zero state feature is disabled.
-    // TODO(crbug.com/925195): Add different test suites for zero state.
-    if (test_with_answer_card) {
-      scoped_feature_list_.InitWithFeatures(
-          {app_list_features::kEnableAnswerCard},
-          {app_list_features::kEnableZeroStateSuggestions});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {app_list_features::kEnableAnswerCard,
-               app_list_features::kEnableZeroStateSuggestions});
-    }
-
-    ASSERT_FALSE(app_list_features::IsZeroStateSuggestionsEnabled());
-    ASSERT_EQ(test_with_answer_card, app_list_features::IsAnswerCardEnabled());
-
     // Setting up views.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
-    app_list_view_->InitView(
-        /*is_tablet_mode=*/false, GetContext(),
-        base::BindRepeating(&UpdateActivationForAppListView, app_list_view_,
-                            /*is_tablet_mode=*/false));
-    app_list_view_->Show(false /*is_side_shelf*/, false /*is_tablet_mode*/);
+    app_list_view_->InitView(GetContext());
+    app_list_view_->Show(AppListViewState::kPeeking, false /*is_side_shelf*/);
 
     ContentsView* contents_view =
         app_list_view_->app_list_main_view()->contents_view();
-    view_ = contents_view->search_results_page_view();
-    tile_list_view_ =
-        contents_view->search_result_tile_item_list_view_for_test();
-    list_view_ = contents_view->search_result_list_view_for_test();
+    view_ = contents_view->search_result_page_view();
+    tile_list_view_ = contents_view->search_result_page_view()
+                          ->GetSearchResultTileItemListViewForTest();
+    list_view_ = contents_view->search_result_page_view()
+                     ->GetSearchResultListViewForTest();
   }
   void TearDown() override {
     app_list_view_->GetWidget()->Close();
@@ -105,31 +68,20 @@ class SearchResultPageViewTest
   SearchResultListView* list_view() const { return list_view_; }
 
   SearchModel::SearchResults* GetResults() const {
-    return delegate_->GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   SearchResultPageView* view_ = nullptr;  // Owned by views hierarchy.
   SearchResultTileItemListView* tile_list_view_ =
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
 };
 
-// Instantiate the Boolean which is used to toggle answer cards in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SearchResultPageViewTest,
-    ::testing::Values(AnswerCardState::ANSWER_CARD_OFF,
-                      AnswerCardState::ANSWER_CARD_ON_WITHOUT_RESULT,
-                      AnswerCardState::ANSWER_CARD_ON_WITH_RESULT));
-
-TEST_P(SearchResultPageViewTest, ResultsSorted) {
+TEST_F(SearchResultPageViewTest, ResultsSorted) {
   SearchModel::SearchResults* results = GetResults();
 
   // Add 3 results and expect the tile list view to be the first result
@@ -154,20 +106,61 @@ TEST_P(SearchResultPageViewTest, ResultsSorted) {
   // Adding results will schedule Update().
   RunPendingMessages();
 
-  EXPECT_EQ(tile_list_view(), view()->result_container_views()[0]);
-  EXPECT_EQ(list_view(), view()->result_container_views()[1]);
+  ASSERT_GE(view()->result_container_views().size(), 3u);
+  // Privacy container is hidden.
+  EXPECT_FALSE(view()->result_container_views()[0]->GetVisible());
+  EXPECT_TRUE(tile_list_view()->GetVisible());
+  EXPECT_EQ(tile_list_view(), view()->result_container_views()[1]);
+  EXPECT_TRUE(list_view()->GetVisible());
+  EXPECT_EQ(list_view(), view()->result_container_views()[2]);
 
-  // Change the relevance of the tile result and expect the list results to be
-  // displayed first.
-  // TODO(warx): fullscreen launcher should always have tile list view to be
-  // displayed first over list view.
+  // Change the relevance of the tile result to be lower than list results. The
+  // tile container should still be displayed first.
   tile_result->set_display_score(0.4);
 
   results->NotifyItemsChanged(0, 1);
   RunPendingMessages();
 
-  EXPECT_EQ(list_view(), view()->result_container_views()[0]);
+  // Privacy container is hidden.
+  EXPECT_FALSE(view()->result_container_views()[0]->GetVisible());
   EXPECT_EQ(tile_list_view(), view()->result_container_views()[1]);
+  EXPECT_TRUE(tile_list_view()->GetVisible());
+  EXPECT_EQ(list_view(), view()->result_container_views()[2]);
+  EXPECT_TRUE(list_view()->GetVisible());
+}
+
+TEST_F(SearchResultPageViewTest, EmptyResultListNotVisible) {
+  SearchModel::SearchResults* results = GetResults();
+
+  // Add a tile result with 0 score and leave the list results empty - list
+  // result container should be hidden.
+  auto tile_result = std::make_unique<TestSearchResult>();
+  tile_result->set_display_type(ash::SearchResultDisplayType::kTile);
+  tile_result->set_display_score(0.0);
+  results->Add(std::move(tile_result));
+
+  // Adding results will schedule Update().
+  RunPendingMessages();
+
+  EXPECT_TRUE(tile_list_view()->GetVisible());
+  EXPECT_FALSE(list_view()->GetVisible());
+}
+
+TEST_F(SearchResultPageViewTest, EmptyTileItemListResultsContainerHidden) {
+  SearchModel::SearchResults* results = GetResults();
+
+  // Add a list result with 0 score and leave the tile results empty - the tile
+  // item list container should be hidden.
+  auto list_result = std::make_unique<TestSearchResult>();
+  list_result->set_display_type(ash::SearchResultDisplayType::kList);
+  list_result->set_display_score(0.0);
+  results->Add(std::move(list_result));
+
+  // Adding results will schedule Update().
+  RunPendingMessages();
+
+  EXPECT_TRUE(list_view()->GetVisible());
+  EXPECT_FALSE(tile_list_view()->GetVisible());
 }
 
 }  // namespace test

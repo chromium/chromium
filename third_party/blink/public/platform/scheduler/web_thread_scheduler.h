@@ -6,16 +6,16 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_THREAD_SCHEDULER_H_
 
 #include <memory>
-#include "base/macros.h"
+
 #include "base/message_loop/message_pump.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 
 namespace base {
@@ -26,6 +26,7 @@ class BlameContext;
 
 namespace blink {
 class Thread;
+class WebInputEventAttribution;
 }  // namespace blink
 
 namespace viz {
@@ -40,6 +41,8 @@ class WebWidgetScheduler;
 
 class BLINK_PLATFORM_EXPORT WebThreadScheduler {
  public:
+  WebThreadScheduler(const WebThreadScheduler&) = delete;
+  WebThreadScheduler& operator=(const WebThreadScheduler&) = delete;
   virtual ~WebThreadScheduler();
 
   // ==== Functions for any scheduler =========================================
@@ -59,12 +62,8 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
 
   // If |message_pump| is null caller must have registered one using
   // base::MessageLoop.
-  // If |initial_virtual_time| is specified then the
-  // scheduler will be created with virtual time enabled and paused, and
-  // base::Time will be overridden to start at |initial_virtual_time|.
   static std::unique_ptr<WebThreadScheduler> CreateMainThreadScheduler(
-      std::unique_ptr<base::MessagePump> message_pump = nullptr,
-      base::Optional<base::Time> initial_virtual_time = base::nullopt);
+      std::unique_ptr<base::MessagePump> message_pump = nullptr);
 
   // Returns compositor thread scheduler for the compositor thread
   // of the current process.
@@ -76,13 +75,12 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Returns the default task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
 
+  // Returns a task runner for input-blocking tasks on the compositor thread.
+  // (For input tasks on the main thread, use WebWidgetScheduler instead.)
+  virtual scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner();
+
   // Returns the compositor task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
-
-  virtual scoped_refptr<base::SingleThreadTaskRunner> IPCTaskRunner();
-
-  // Returns the cleanup task runner, which is for cleaning up.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner();
 
   // Returns a default task runner. This is basically same as the default task
   // runner, but is explicitly allowed to run JavaScript. For the detail, see
@@ -93,9 +91,24 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Creates a WebThread implementation for the renderer main thread.
   virtual std::unique_ptr<Thread> CreateMainThread();
 
+  // Creates a WebAgentGroupScheduler implementation. Must be called from the
+  // main thread.
+  virtual std::unique_ptr<WebAgentGroupScheduler>
+  CreateAgentGroupScheduler() = 0;
+
   // Creates a WebWidgetScheduler implementation. Must be called from the main
   // thread.
   virtual std::unique_ptr<WebWidgetScheduler> CreateWidgetScheduler();
+
+  // Return the current active AgentGroupScheduler.
+  // When a task which belongs to a specific AgentGroupScheduler is going to be
+  // run, this AgentGroupScheduler becomes the current active
+  // AgentGroupScheduler. And when the task is finished, the current active
+  // AgentGroupScheduler becomes nullptr. So if there is no active
+  // AgentGroupScheduler, this function returns nullptr. This behaviour is
+  // implemented by MainThreadSchedulerImpl’s OnTaskStarted and OnTaskCompleted
+  // hook points. So you can’t use this functionality in task observers.
+  virtual WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() = 0;
 
   // Returns a new WebRenderWidgetSchedulingState.  The signals from this will
   // be used to make scheduling decisions.
@@ -140,12 +153,14 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // posted to the main thread. Must be followed later by a call to
   // WillHandleInputEventOnMainThread. Called by the compositor thread.
   virtual void WillPostInputEventToMainThread(
-      WebInputEvent::Type web_input_event_type);
+      WebInputEvent::Type web_input_event_type,
+      const WebInputEventAttribution& web_input_event_attribution);
 
   // Tells the scheduler the input event of the given type is about to be
   // handled. Called on the main thread.
   virtual void WillHandleInputEventOnMainThread(
-      WebInputEvent::Type web_input_event_type);
+      WebInputEvent::Type web_input_event_type,
+      const WebInputEventAttribution& web_input_event_attribution);
 
   // Tells the scheduler that the system processed an input event. Must be
   // called from the main thread.
@@ -179,11 +194,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // constructed. Must be called on the main thread.
   virtual void SetRendererBackgrounded(bool backgrounded);
 
-  // Tells the scheduler about "keep-alive" state which can be due to:
-  // service workers, shared workers, or fetch keep-alive.
-  // If set to true, then the scheduler should not freeze the renderer.
-  virtual void SetSchedulerKeepActive(bool keep_active);
-
   // Tells the scheduler when a begin main frame is requested due to input
   // handling.
   virtual void OnMainFrameRequestedForInput();
@@ -206,10 +216,9 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   class BLINK_PLATFORM_EXPORT RendererPauseHandle {
    public:
     RendererPauseHandle() = default;
+    RendererPauseHandle(const RendererPauseHandle&) = delete;
+    RendererPauseHandle& operator=(const RendererPauseHandle&) = delete;
     virtual ~RendererPauseHandle() = default;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RendererPauseHandle);
   };
 
   // Tells the scheduler that the renderer process should be paused.
@@ -238,7 +247,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
 
  protected:
   WebThreadScheduler() = default;
-  DISALLOW_COPY_AND_ASSIGN(WebThreadScheduler);
 };
 
 }  // namespace scheduler

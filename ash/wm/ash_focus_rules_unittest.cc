@@ -11,13 +11,13 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
+#include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -38,6 +38,12 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
     InitializeAndSetClient();
     CreatePredefinedUserSessions(1);
   }
+
+  LockScreenSessionControllerClient(const LockScreenSessionControllerClient&) =
+      delete;
+  LockScreenSessionControllerClient& operator=(
+      const LockScreenSessionControllerClient&) = delete;
+
   ~LockScreenSessionControllerClient() override = default;
 
   // TestSessionControllerClient:
@@ -59,8 +65,8 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
 
  private:
   void CreateLockScreen() {
-    views::View* lock_view = new views::View;
-    lock_screen_widget_.reset(new views::Widget);
+    auto lock_view = std::make_unique<views::View>();
+    lock_screen_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     gfx::Size ps = lock_view->GetPreferredSize();
@@ -73,15 +79,13 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
                                         kShellWindowId_LockScreenContainer);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     lock_screen_widget_->Init(std::move(params));
-    lock_screen_widget_->SetContentsView(lock_view);
+    lock_screen_widget_->SetContentsView(std::move(lock_view));
     lock_screen_widget_->Show();
     lock_screen_widget_->GetNativeView()->SetName("LockView");
     lock_screen_widget_->GetNativeView()->Focus();
   }
 
   std::unique_ptr<views::Widget> lock_screen_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenSessionControllerClient);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +95,11 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
 class LockScreenAshFocusRulesTest : public AshTestBase {
  public:
   LockScreenAshFocusRulesTest() = default;
+
+  LockScreenAshFocusRulesTest(const LockScreenAshFocusRulesTest&) = delete;
+  LockScreenAshFocusRulesTest& operator=(const LockScreenAshFocusRulesTest&) =
+      delete;
+
   ~LockScreenAshFocusRulesTest() override = default;
 
   void SetUp() override {
@@ -143,8 +152,8 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   aura::Window* CreateWindowInContainer(int container_id) {
     aura::Window* root_window = Shell::GetPrimaryRootWindow();
     aura::Window* container = Shell::GetContainer(root_window, container_id);
-    aura::Window* window = window_factory::NewWindow().release();
-    window->set_id(0);
+    aura::Window* window = new aura::Window(nullptr);
+    window->SetId(0);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     window->Show();
@@ -157,8 +166,6 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   }
 
   std::unique_ptr<LockScreenSessionControllerClient> session_controller_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAshFocusRulesTest);
 };
 
 }  // namespace
@@ -213,7 +220,7 @@ TEST_F(LockScreenAshFocusRulesTest, PreventFocusChangeWithLockScreenPresent) {
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 
-  views::test::TestInitialFocusWidgetDelegate delegate(CurrentContext());
+  views::test::TestInitialFocusWidgetDelegate delegate(GetContext());
   EXPECT_FALSE(delegate.view()->HasFocus());
   delegate.GetWidget()->Show();
   EXPECT_FALSE(delegate.GetWidget()->IsActive());

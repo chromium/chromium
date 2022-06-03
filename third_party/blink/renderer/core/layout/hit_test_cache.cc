@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -13,9 +12,7 @@ bool HitTestCache::LookupCachedResult(const HitTestLocation& location,
                                       HitTestResult& hit_result,
                                       uint64_t dom_tree_version) {
   bool result = false;
-  HitHistogramMetric metric = HitHistogramMetric::MISS;
   if (hit_result.GetHitTestRequest().AvoidCache()) {
-    metric = HitHistogramMetric::MISS_EXPLICIT_AVOID;
     // For now we don't support rect based hit results.
   } else if (dom_tree_version == dom_tree_version_ &&
              !location.IsRectBasedTest()) {
@@ -23,24 +20,17 @@ bool HitTestCache::LookupCachedResult(const HitTestLocation& location,
       if (cached_item.location.Point() == location.Point()) {
         if (hit_result.GetHitTestRequest().EqualForCacheability(
                 cached_item.result.GetHitTestRequest())) {
-          metric = HitHistogramMetric::HIT_EXACT_MATCH;
           result = true;
           hit_result = cached_item.result;
           break;
         }
-        metric = HitHistogramMetric::MISS_VALIDITY_RECT_MATCHES;
       }
     }
   }
-  DEFINE_STATIC_LOCAL(
-      EnumerationHistogram, hit_test_histogram,
-      ("Event.HitTest",
-       static_cast<int32_t>(HitHistogramMetric::MAX_HIT_METRIC)));
-  hit_test_histogram.Count(static_cast<int32_t>(metric));
   return result;
 }
 
-void HitTestCacheEntry::Trace(blink::Visitor* visitor) {
+void HitTestCacheEntry::Trace(Visitor* visitor) const {
   visitor->Trace(result);
 }
 
@@ -85,7 +75,7 @@ void HitTestCache::Clear() {
   items_.clear();
 }
 
-void HitTestCache::Trace(blink::Visitor* visitor) {
+void HitTestCache::Trace(Visitor* visitor) const {
   visitor->Trace(items_);
 }
 

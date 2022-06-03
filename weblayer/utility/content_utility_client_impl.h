@@ -5,8 +5,6 @@
 #ifndef WEBLAYER_UTILITY_CONTENT_UTILITY_CLIENT_IMPL_H_
 #define WEBLAYER_UTILITY_CONTENT_UTILITY_CLIENT_IMPL_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "content/public/utility/content_utility_client.h"
 
@@ -21,14 +19,15 @@ class ContentUtilityClientImpl : public content::ContentUtilityClient {
       NetworkBinderCreationCallback callback);
 
   ContentUtilityClientImpl();
+
+  ContentUtilityClientImpl(const ContentUtilityClientImpl&) = delete;
+  ContentUtilityClientImpl& operator=(const ContentUtilityClientImpl&) = delete;
+
   ~ContentUtilityClientImpl() override;
 
   // content::ContentUtilityClient:
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentUtilityClientImpl);
 };
 
 }  // namespace weblayer

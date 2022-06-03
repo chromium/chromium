@@ -7,9 +7,7 @@
 
 #include <memory>
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 namespace ntp_tiles {
 class PopularSites;
@@ -18,7 +16,7 @@ class PopularSites;
 class IOSPopularSitesFactory {
  public:
   static std::unique_ptr<ntp_tiles::PopularSites> NewForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_TILES_IOS_POPULAR_SITES_FACTORY_H_

@@ -4,8 +4,8 @@
 
 #include "ppapi/proxy/resource_reply_thread_registrar.h"
 
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/proxy/resource_message_params.h"
 #include "ppapi/shared_impl/proxy_lock.h"

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -17,10 +17,13 @@
 
 namespace {
 
-class FakeNavigationManager : public web::TestNavigationManager {
+class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   explicit FakeNavigationManager(int last_committed_item_index)
       : last_committed_item_index_(last_committed_item_index) {}
+
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
 
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
@@ -29,8 +32,6 @@ class FakeNavigationManager : public web::TestNavigationManager {
 
  private:
   int last_committed_item_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -39,15 +40,15 @@ class WebStateOpenerTest : public PlatformTest {
  public:
   WebStateOpenerTest() = default;
 
-  std::unique_ptr<web::WebState> CreateWebState(int last_committed_item_index) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
-    test_web_state->SetNavigationManager(
-        std::make_unique<FakeNavigationManager>(last_committed_item_index));
-    return test_web_state;
-  }
+  WebStateOpenerTest(const WebStateOpenerTest&) = delete;
+  WebStateOpenerTest& operator=(const WebStateOpenerTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateOpenerTest);
+  std::unique_ptr<web::WebState> CreateWebState(int last_committed_item_index) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetNavigationManager(
+        std::make_unique<FakeNavigationManager>(last_committed_item_index));
+    return web_state;
+  }
 };
 
 TEST_F(WebStateOpenerTest, NullWebState) {

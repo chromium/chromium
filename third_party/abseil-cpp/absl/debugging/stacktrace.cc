@@ -49,14 +49,17 @@
 
 # include "absl/debugging/internal/stacktrace_aarch64-inl.inc"
 # include "absl/debugging/internal/stacktrace_arm-inl.inc"
+# include "absl/debugging/internal/stacktrace_emscripten-inl.inc"
 # include "absl/debugging/internal/stacktrace_generic-inl.inc"
 # include "absl/debugging/internal/stacktrace_powerpc-inl.inc"
+# include "absl/debugging/internal/stacktrace_riscv-inl.inc"
 # include "absl/debugging/internal/stacktrace_unimplemented-inl.inc"
 # include "absl/debugging/internal/stacktrace_win32-inl.inc"
 # include "absl/debugging/internal/stacktrace_x86-inl.inc"
 #endif
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace {
 
 typedef int (*Unwinder)(void**, int*, int, int, const void*, int*);
@@ -135,4 +138,5 @@ int DefaultStackUnwinder(void** pcs, int* sizes, int depth, int skip,
   return n;
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl

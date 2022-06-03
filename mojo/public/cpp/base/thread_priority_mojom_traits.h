@@ -11,7 +11,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::ThreadPriority, base::ThreadPriority> {
   static mojo_base::mojom::ThreadPriority ToMojom(
       base::ThreadPriority thread_priority);

@@ -5,35 +5,40 @@
     <link rel="help" href="https://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-nested">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <!-- Common global functions for referrer-policy tests. -->
-    <script src="/common/security-features/resources/common.sub.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <script src="resources/make-html-script.js"></script>
     <meta name="referrer" content="origin">
   </head>
-  <body onload="runTest()">
+  <body>
     <h1>Referrer Policy: iframes srcdoc correctly inherit the ancestor's referrer policy</h1>
     <script>
-      var test = async_test("iframes srcdoc correctly inherit the ancestor's referrer policy");
-      window.addEventListener("message", test.step_func((msg) => {
-        assert_equals(msg.data.referrer, document.location.origin + "/");
-        test.done();
-      }));
+      let reportedReferrer = () => {
+        return new Promise(resolve => {
+          window.addEventListener("message", msg => resolve(msg.data.referrer));
+        });
+      };
 
-      function runTest() {
-        var iframe = document.createElement("iframe");
-        iframe.srcdoc =
-            `<script src = "/common/security-features/resources/common.sub.js"></` + `script>
-            <script>
-              var urlPath = "/common/security-features/subresource/xhr.py";
-              var url = "${location.protocol}//www1.${location.hostname}:${location.port}" + urlPath;
-              requestViaXhr(url).then((msg) => {
-                  parent.postMessage({referrer: msg.referrer}, "*")})
-                .catch((e) => {
-                    parent.postMessage({referrer: "FAILURE"}, "*");
-                  });
-            </` + "script>";
+      const iframe = document.createElement("iframe");
 
+      promise_test(async t => {
+        let referrer = reportedReferrer();
+        iframe.srcdoc = createScriptString(get_host_info().REMOTE_ORIGIN,
+                                           location.origin + "/custom");
         document.body.appendChild(iframe);
-      }
+        assert_equals(await referrer, self.origin + "/",
+                      "Referrer policy should be inherited from parent.");
+
+        let meta = document.createElement('meta');
+        meta.name = "referrer";
+        meta.content = "unsafe-url";
+        document.head.appendChild(meta);
+        iframe.contentWindow.postMessage('checkReferrer');
+        assert_equals(
+          await reportedReferrer(), self.origin + "/",
+          "Changing parent's referrer policy has no effect on the child.");
+
+      }, "Srcdoc iframe inherits referrer policy from parent on creation.");
+
     </script>
     <div id="log"></div>
   </body>

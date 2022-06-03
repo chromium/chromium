@@ -11,9 +11,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ui.widget.displaystyle.UiConfig;
-import org.chromium.chrome.browser.util.AccessibilityUtil;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,19 +39,9 @@ public final class SuggestionsConfig {
      * It must be kept in sync with //components/ntp_suggestions/features.cc
      */
     private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
-            "https://www.googleapis.com/auth/chrome-content-suggestions";
+            "https://www.google.com/";
 
     private SuggestionsConfig() {}
-
-    /**
-     * @return Whether scrolling to the bottom of suggestions triggers a load.
-     */
-    public static boolean scrollToLoad() {
-        // The scroll to load feature does not work well for users who require accessibility mode.
-        if (AccessibilityUtil.isAccessibilityEnabled()) return false;
-
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTENT_SUGGESTIONS_SCROLL_TO_LOAD);
-    }
 
     /**
      * @param resources The resources to fetch the color from.
@@ -83,8 +72,8 @@ public final class SuggestionsConfig {
      * @return The value of referrer URL to use with content suggestions.
      */
     public static String getReferrerUrl(String featureName) {
-        assert ChromeFeatureList.NTP_ARTICLE_SUGGESTIONS.equals(featureName)
-                || ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS.equals(featureName);
+        assert ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS.equals(featureName)
+                || ChromeFeatureList.INTEREST_FEED_V2.equals(featureName);
 
         return getReferrerUrlParamOrDefault(featureName, DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL);
     }

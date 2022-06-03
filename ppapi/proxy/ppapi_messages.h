@@ -22,7 +22,6 @@
 
 #include "base/files/file_path.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -31,11 +30,11 @@
 #include "gpu/ipc/common/gpu_command_buffer_traits.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/dev/pp_video_capture_dev.h"
 #include "ppapi/c/dev/pp_video_dev.h"
-#include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/c/pp_bool.h"
@@ -56,19 +55,16 @@
 #include "ppapi/c/ppb_video_encoder.h"
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/c/private/pp_video_capture_format.h"
-#include "ppapi/c/private/ppb_flash.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/c/private/ppb_pdf.h"
-#include "ppapi/c/private/ppp_flash_browser_operations.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/network_list_resource.h"
 #include "ppapi/proxy/ppapi_param_traits.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/proxy/resource_message_params.h"
-#include "ppapi/proxy/serialized_flash_menu.h"
 #include "ppapi/proxy/serialized_handle.h"
 #include "ppapi/proxy/serialized_structs.h"
 #include "ppapi/proxy/serialized_var.h"
@@ -85,7 +81,6 @@
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/ppb_tcp_socket_shared.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
-#include "ppapi/shared_impl/ppp_flash_browser_operations_shared.h"
 #include "ppapi/shared_impl/private/ppb_x509_certificate_private_shared.h"
 #include "ppapi/shared_impl/socket_option_data.h"
 #include "ppapi/shared_impl/url_request_info_data.h"
@@ -102,13 +97,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(PP_AudioSampleRate, PP_AUDIOSAMPLERATE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_DeviceType_Dev, PP_DEVICETYPE_DEV_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_FileSystemType, PP_FILESYSTEMTYPE_ISOLATED)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_FileType, PP_FILETYPE_OTHER)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_Flash_BrowserOperations_Permission,
-                          PP_FLASH_BROWSEROPERATIONS_PERMISSION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_Flash_BrowserOperations_SettingType,
-                          PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_FlashSetting,
-                              PP_FLASHSETTING_FIRST,
-                              PP_FLASHSETTING_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_ImageDataFormat, PP_IMAGEDATAFORMAT_LAST)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_MouseButton,
                               PP_INPUTEVENT_MOUSEBUTTON_FIRST,
@@ -117,7 +105,7 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_Type,
                               PP_INPUTEVENT_TYPE_FIRST,
                               PP_INPUTEVENT_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_IsolatedFileSystemType_Private,
-                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE)
+                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetAddressFamily_Private,
                           PP_NETADDRESSFAMILY_PRIVATE_IPV6)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetworkList_State, PP_NETWORKLIST_STATE_UP)
@@ -131,14 +119,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFontCharset, PP_PRIVATEFONTCHARSET_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TCPSocket_Option,
                           PP_TCPSOCKET_OPTION_RECV_BUFFER_SIZE)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TextInput_Type, PP_TEXTINPUT_TYPE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontFamily_Dev, PP_TRUETYPEFONTFAMILY_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontStyle_Dev, PP_TRUETYPEFONTSTYLE_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_TrueTypeFontWeight_Dev,
-                              PP_TRUETYPEFONTWEIGHT_FIRST,
-                              PP_TRUETYPEFONTWEIGHT_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontWidth_Dev, PP_TRUETYPEFONTWIDTH_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontCharset_Dev,
-                          PP_TRUETYPEFONTCHARSET_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_UDPSocket_Option,
                           PP_UDPSOCKET_OPTION_MULTICAST_TTL)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecodeError_Dev,
@@ -149,16 +129,22 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecoder_Profile,
                               PP_VIDEODECODER_PROFILE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoFrame_Format, PP_VIDEOFRAME_FORMAT_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_HardwareAcceleration, PP_HARDWAREACCELERATION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_AudioProfile, PP_AUDIOPROFILE_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoProfile, PP_VIDEOPROFILE_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateDirection, PP_PRIVATEDIRECTION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TextRenderingMode, PP_TEXTRENDERINGMODE_LAST)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_TextRenderingMode,
+                              PP_TEXTRENDERINGMODE_FIRST,
+                              PP_TEXTRENDERINGMODE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAction,
                           PP_PDF_ACCESSIBILITYACTION_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityScrollAlignment,
                           PP_PDF_ACCESSIBILITYSCROLLALIGNMENT_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAnnotationType,
                           PP_PDF_ACCESSIBILITY_ANNOTATIONTYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateChoiceFieldType, PP_PRIVATECHOICEFIELD_LAST)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_PrivateButtonType,
+                              PP_PRIVATEBUTTON_FIRST,
+                              PP_PRIVATEBUTTON_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFocusObjectType, PP_PRIVATEFOCUSOBJECT_LAST)
 
 IPC_STRUCT_TRAITS_BEGIN(PP_Point)
   IPC_STRUCT_TRAITS_MEMBER(x)
@@ -243,6 +229,13 @@ IPC_STRUCT_TRAITS_BEGIN(PP_PdfAccessibilityActionData)
   IPC_STRUCT_TRAITS_MEMBER(page_index)
   IPC_STRUCT_TRAITS_MEMBER(horizontal_scroll_alignment)
   IPC_STRUCT_TRAITS_MEMBER(vertical_scroll_alignment)
+  IPC_STRUCT_TRAITS_MEMBER(selection_start_index)
+  IPC_STRUCT_TRAITS_MEMBER(selection_end_index)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(PP_PdfPageCharacterIndex)
+  IPC_STRUCT_TRAITS_MEMBER(page_index)
+  IPC_STRUCT_TRAITS_MEMBER(char_index)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintPresetOptions_Dev)
@@ -258,6 +251,12 @@ IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintSettings_Dev)
   IPC_STRUCT_TRAITS_MEMBER(scale_factor)
 IPC_STRUCT_TRAITS_END()
 
+IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityFocusInfo)
+  IPC_STRUCT_TRAITS_MEMBER(focused_object_type)
+  IPC_STRUCT_TRAITS_MEMBER(focused_object_page_index)
+  IPC_STRUCT_TRAITS_MEMBER(focused_annotation_index_in_page)
+IPC_STRUCT_TRAITS_END()
+
 IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityViewportInfo)
   IPC_STRUCT_TRAITS_MEMBER(zoom)
   IPC_STRUCT_TRAITS_MEMBER(scale)
@@ -267,6 +266,7 @@ IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityViewportInfo)
   IPC_STRUCT_TRAITS_MEMBER(selection_start_char_index)
   IPC_STRUCT_TRAITS_MEMBER(selection_end_page_index)
   IPC_STRUCT_TRAITS_MEMBER(selection_end_char_index)
+  IPC_STRUCT_TRAITS_MEMBER(focus_info)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityDocInfo)
@@ -325,12 +325,62 @@ IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityHighlightInfo)
   IPC_STRUCT_TRAITS_MEMBER(text_run_index)
   IPC_STRUCT_TRAITS_MEMBER(text_run_count)
   IPC_STRUCT_TRAITS_MEMBER(bounds)
+  IPC_STRUCT_TRAITS_MEMBER(color)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextFieldInfo)
+  IPC_STRUCT_TRAITS_MEMBER(name)
+  IPC_STRUCT_TRAITS_MEMBER(value)
+  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
+  IPC_STRUCT_TRAITS_MEMBER(is_required)
+  IPC_STRUCT_TRAITS_MEMBER(is_password)
+  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
+  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
+  IPC_STRUCT_TRAITS_MEMBER(bounds)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldOptionInfo)
+  IPC_STRUCT_TRAITS_MEMBER(name)
+  IPC_STRUCT_TRAITS_MEMBER(is_selected)
+  IPC_STRUCT_TRAITS_MEMBER(bounds)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldInfo)
+  IPC_STRUCT_TRAITS_MEMBER(name)
+  IPC_STRUCT_TRAITS_MEMBER(options)
+  IPC_STRUCT_TRAITS_MEMBER(type)
+  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
+  IPC_STRUCT_TRAITS_MEMBER(is_multi_select)
+  IPC_STRUCT_TRAITS_MEMBER(has_editable_text_box)
+  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
+  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
+  IPC_STRUCT_TRAITS_MEMBER(bounds)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityButtonInfo)
+  IPC_STRUCT_TRAITS_MEMBER(name)
+  IPC_STRUCT_TRAITS_MEMBER(value)
+  IPC_STRUCT_TRAITS_MEMBER(type)
+  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
+  IPC_STRUCT_TRAITS_MEMBER(is_checked)
+  IPC_STRUCT_TRAITS_MEMBER(control_count)
+  IPC_STRUCT_TRAITS_MEMBER(control_index)
+  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
+  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
+  IPC_STRUCT_TRAITS_MEMBER(bounds)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityFormFieldInfo)
+  IPC_STRUCT_TRAITS_MEMBER(text_fields)
+  IPC_STRUCT_TRAITS_MEMBER(choice_fields)
+  IPC_STRUCT_TRAITS_MEMBER(buttons)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityPageObjects)
   IPC_STRUCT_TRAITS_MEMBER(links)
   IPC_STRUCT_TRAITS_MEMBER(images)
   IPC_STRUCT_TRAITS_MEMBER(highlights)
+  IPC_STRUCT_TRAITS_MEMBER(form_fields)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(PP_URLComponent_Dev)
@@ -386,11 +436,6 @@ IPC_STRUCT_TRAITS_BEGIN(ppapi::FileRefCreateInfo)
   IPC_STRUCT_TRAITS_MEMBER(browser_pending_host_resource_id)
   IPC_STRUCT_TRAITS_MEMBER(renderer_pending_host_resource_id)
   IPC_STRUCT_TRAITS_MEMBER(file_system_plugin_resource)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::FlashSiteSetting)
-  IPC_STRUCT_TRAITS_MEMBER(site)
-  IPC_STRUCT_TRAITS_MEMBER(permission)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(ppapi::MediaStreamAudioTrackShared::Attributes)
@@ -527,29 +572,12 @@ IPC_STRUCT_TRAITS_BEGIN(ppapi::PpapiNaClPluginArgs)
   IPC_STRUCT_TRAITS_MEMBER(switch_values)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(PP_AudioProfileDescription)
-  IPC_STRUCT_TRAITS_MEMBER(profile)
-  IPC_STRUCT_TRAITS_MEMBER(max_channels)
-  IPC_STRUCT_TRAITS_MEMBER(sample_size)
-  IPC_STRUCT_TRAITS_MEMBER(sample_rate)
-  IPC_STRUCT_TRAITS_MEMBER(hardware_accelerated)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(PP_VideoProfileDescription)
 IPC_STRUCT_TRAITS_MEMBER(profile)
 IPC_STRUCT_TRAITS_MEMBER(max_resolution)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_numerator)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_denominator)
 IPC_STRUCT_TRAITS_MEMBER(hardware_accelerated)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::proxy::PPB_AudioEncodeParameters)
-  IPC_STRUCT_TRAITS_MEMBER(channels)
-  IPC_STRUCT_TRAITS_MEMBER(input_sample_rate)
-  IPC_STRUCT_TRAITS_MEMBER(input_sample_size)
-  IPC_STRUCT_TRAITS_MEMBER(output_profile)
-  IPC_STRUCT_TRAITS_MEMBER(initial_bitrate)
-  IPC_STRUCT_TRAITS_MEMBER(acceleration)
 IPC_STRUCT_TRAITS_END()
 
 // These are from the browser to the plugin.
@@ -570,12 +598,6 @@ IPC_MESSAGE_CONTROL3(PpapiMsg_CreateChannel,
 // Initializes the IPC dispatchers in the NaCl plugin.
 IPC_MESSAGE_CONTROL1(PpapiMsg_InitializeNaClDispatcher,
                      ppapi::PpapiNaClPluginArgs /* args */)
-
-// Instructs the plugin process to crash.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Crash)
-
-// Instructs the plugin process to hang.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Hang)
 
 // Each plugin may be referenced by multiple renderers. We need the instance
 // IDs to be unique within a plugin, despite coming from different renderers,
@@ -605,80 +627,12 @@ IPC_SYNC_MESSAGE_CONTROL1_1(PpapiMsg_SupportsInterface,
                             std::string /* interface_name */,
                             bool /* result */)
 
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_LogInterfaceUsage,
-                     int /* interface_hash */)
-
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
 // Network state notification from the browser for implementing
 // PPP_NetworkState_Dev.
 IPC_MESSAGE_CONTROL1(PpapiMsg_SetNetworkState,
                      bool /* online */)
 
-// Requests a list of sites that have data stored from the plugin. The plugin
-// process will respond with PpapiHostMsg_GetSitesWithDataResult. This is used
-// for Flash.
-IPC_MESSAGE_CONTROL2(PpapiMsg_GetSitesWithData,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_GetSitesWithDataResult,
-                     uint32_t /* request_id */,
-                     std::vector<std::string> /* sites */)
-
-// Instructs the plugin to clear data for the given site & time. The plugin
-// process will respond with PpapiHostMsg_ClearSiteDataResult. This is used
-// for Flash.
-IPC_MESSAGE_CONTROL5(PpapiMsg_ClearSiteData,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     std::string /* site */,
-                     uint64_t /* flags */,
-                     uint64_t /* max_age */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_ClearSiteDataResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL2(PpapiMsg_DeauthorizeContentLicenses,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_DeauthorizeContentLicensesResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL3(PpapiMsg_GetPermissionSettings,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */)
-IPC_MESSAGE_CONTROL4(
-    PpapiHostMsg_GetPermissionSettingsResult,
-    uint32_t /* request_id */,
-    bool /* success */,
-    PP_Flash_BrowserOperations_Permission /* default_permission */,
-    ppapi::FlashSiteSettings /* sites */)
-
-IPC_MESSAGE_CONTROL5(PpapiMsg_SetDefaultPermission,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */,
-                     PP_Flash_BrowserOperations_Permission /* permission */,
-                     bool /* clear_site_specific */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_SetDefaultPermissionResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL4(PpapiMsg_SetSitePermission,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */,
-                     ppapi::FlashSiteSettings /* sites */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_SetSitePermissionResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-// Broker Process.
-IPC_SYNC_MESSAGE_CONTROL2_1(PpapiMsg_ConnectToPlugin,
-                            PP_Instance /* instance */,
-                            IPC::PlatformFileForTransit /* handle */,
-                            int32_t /* result */)
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Audio.
@@ -839,6 +793,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_HasEditableText,
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_ReplaceSelection,
                     PP_Instance /* instance */,
                     std::string /* text */)
+IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_SelectAll, PP_Instance /* instance */)
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanUndo,
                            PP_Instance /* instance */,
                            PP_Bool /* result */)
@@ -903,13 +858,6 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPTextInput_RequestSurroundingText,
                    uint32_t /* desired_number_of_characters */)
 
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
-// PPB_Broker.
-IPC_MESSAGE_ROUTED3(
-    PpapiMsg_PPBBroker_ConnectComplete,
-    ppapi::HostResource /* broker */,
-    IPC::PlatformFileForTransit /* handle */,
-    int32_t /* result */)
-
 // PPP_Instance_Private.
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPInstancePrivate_GetInstanceObject,
                            PP_Instance /* instance */,
@@ -1017,32 +965,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBAudio_Create,
 IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBAudio_StartOrStop,
                     ppapi::HostResource /* audio_id */,
                     bool /* play */)
-
-// PPB_AudioEncoder
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_Create)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_GetSupportedProfiles)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_GetSupportedProfilesReply,
-                     std::vector<PP_AudioProfileDescription> /* results */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_Initialize,
-                     ppapi::proxy::PPB_AudioEncodeParameters /* parameters */)
-IPC_MESSAGE_CONTROL5(PpapiPluginMsg_AudioEncoder_InitializeReply,
-                     int32_t /* number_of_samples */,
-                     int32_t /* audio_buffer_count */,
-                     int32_t /* audio_buffer_size */,
-                     int32_t /* bitstream_buffer_count */,
-                     int32_t /* bitstream_buffer_size */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_Encode, int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_EncodeReply,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_BitstreamBufferReady,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_RecycleBitstreamBuffer,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_RequestBitrateChange,
-                     uint32_t /* bitrate */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_NotifyError,
-                     int32_t /* error */)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_Close)
 
 // PPB_Core.
 IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBCore_AddRefResource,
@@ -1267,13 +1189,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBVar_CreateObjectDeprecated,
                            ppapi::proxy::SerializedVar /* result */)
 
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
-// PPB_Broker.
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiHostMsg_PPBBroker_Create,
-                           PP_Instance /* instance */,
-                           ppapi::HostResource /* result_resource */)
-IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBBroker_Connect,
-                    ppapi::HostResource /* broker */)
-
 // PPB_Buffer.
 IPC_SYNC_MESSAGE_ROUTED2_2(
     PpapiHostMsg_PPBBuffer_Create,
@@ -1294,11 +1209,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiHostMsg_PPBTesting_GetLiveObjectsForInstance,
                            PP_Instance /* instance */,
                            uint32_t /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_0(PpapiHostMsg_PPBTesting_PostPowerSaverStatus,
-                           PP_Instance /* instance */)
-IPC_SYNC_MESSAGE_ROUTED1_0(
-    PpapiHostMsg_PPBTesting_SubscribeToPowerSaverNotifications,
-    PP_Instance /* instance */)
 IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBTesting_SimulateInputEvent,
                     PP_Instance /* instance */,
                     ppapi::InputEventData /* input_event */)
@@ -1362,12 +1272,6 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPVideoDecoder_NotifyError,
                     ppapi::HostResource /* video_decoder */,
                     PP_VideoDecodeError_Dev /* error */)
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
-
-// PPB_X509Certificate_Private
-IPC_SYNC_MESSAGE_CONTROL1_2(PpapiHostMsg_PPBX509Certificate_ParseDER,
-                            std::vector<char> /* der */,
-                            bool /* succeeded */,
-                            ppapi::PPB_X509Certificate_Fields /* result */)
 
 //-----------------------------------------------------------------------------
 // Resource call/reply messages.
@@ -1458,14 +1362,6 @@ IPC_MESSAGE_ROUTED2(
 
 //-----------------------------------------------------------------------------
 // Messages for resources using call/reply above.
-
-// Broker ----------------------------------------------------------------------
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Broker_Create)
-
-// Queries whether the plugin has permission to connect to the Pepper broker.
-// The response is contained in the error value of the
-// ResourceMessageReplyParams in the reply message.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Broker_IsAllowed)
 
 // UMA
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_UMA_Create)
@@ -1712,32 +1608,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_NetworkProxy_GetProxyForURL,
 // Reply message for GetProxyForURL containing the proxy server.
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_NetworkProxy_GetProxyForURLReply,
                      std::string /* proxy */)
-
-// TrueTypeFont.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFontSingleton_Create)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFontSingleton_GetFontFamilies)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFontSingleton_GetFontFamiliesReply,
-                     std::vector<std::string> /* font_families */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_TrueTypeFontSingleton_GetFontsInFamily,
-                     std::string /* family */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFontSingleton_GetFontsInFamilyReply,
-                     std::vector<ppapi::proxy::SerializedTrueTypeFontDesc>
-                         /* fonts */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_TrueTypeFont_Create,
-                     ppapi::proxy::SerializedTrueTypeFontDesc /* desc */)
-// Unsolicited reply to return the actual font's desc to the plugin.
-IPC_MESSAGE_CONTROL2(PpapiPluginMsg_TrueTypeFont_CreateReply,
-                     ppapi::proxy::SerializedTrueTypeFontDesc /* desc */,
-                     int32_t /* result */)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFont_GetTableTags)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFont_GetTableTagsReply,
-                     std::vector<uint32_t> /* tags */)
-IPC_MESSAGE_CONTROL3(PpapiHostMsg_TrueTypeFont_GetTable,
-                     uint32_t /* table */,
-                     int32_t /* offset */,
-                     int32_t /* max_data_length */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFont_GetTableReply,
-                     std::string /* data */)
 
 // Host Resolver ---------------------------------------------------------------
 // Creates a PPB_HostResolver resource.
@@ -2159,64 +2029,6 @@ IPC_MESSAGE_CONTROL0(PpapiHostMsg_BrowserFontSingleton_GetFontFamilies)
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_BrowserFontSingleton_GetFontFamiliesReply,
                      std::string /* families */)
 
-// Flash -----------------------------------------------------------------------
-
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Flash_Create)
-
-// Message to notify the browser to register an update in system activity.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Flash_UpdateActivity)
-
-// Query the browser for the proxy server to use for the given URL.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_Flash_GetProxyForURL, std::string /* url */)
-// Reply message for GetProxyForURL containing the proxy server.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_Flash_GetProxyForURLReply,
-                     std::string /* proxy */)
-
-// Queries the browser for the local time zone offset for a given time.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_Flash_GetLocalTimeZoneOffset,
-                     base::Time /* time */)
-// Reply to GetLocalTimeZoneOffset containing the time zone offset as a double.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_Flash_GetLocalTimeZoneOffsetReply,
-                     double /* offset */)
-
-// Query the browser for the restrictions on storing Flash LSOs.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Flash_GetLocalDataRestrictions)
-// Reply message for GetLocalDataRestrictions containing the restrictions to
-// use. These are PP_FlashLSORestrictions cast to an int32_t.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_Flash_GetLocalDataRestrictionsReply,
-                     int32_t /* restrictions */)
-
-// Notifies the renderer whether the Flash instance is in windowed mode. No
-// reply is sent.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_Flash_SetInstanceAlwaysOnTop,
-                     bool /* on_top */)
-
-// Notifies the renderer to draw text to the given PP_ImageData resource. All
-// parmeters for drawing (including the resource to draw to) are contianed in
-// the PPBFlash_DrawGlyphs_Params structure. An error code is sent in a reply
-// message indicating success.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_Flash_DrawGlyphs,
-                     ppapi::proxy::PPBFlash_DrawGlyphs_Params /* params */)
-
-// Notifies the renderer to navigate to the given URL contained in the
-// URLRequestInfoData. An error code is sent in a reply message indicating
-// success.
-IPC_MESSAGE_CONTROL3(PpapiHostMsg_Flash_Navigate,
-                     ppapi::URLRequestInfoData /* data */,
-                     std::string /* target */,
-                     bool /* from_user_action */)
-
-// Queries the renderer on whether the plugin instance is the topmost element
-// in the area of the instance specified by the given PP_Rect. PP_OK is sent as
-// the error code in a reply message if the rect is topmost otherwise
-// PP_ERROR_FAILED is sent.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_Flash_IsRectTopmost,
-                     PP_Rect /* rect */)
-
-// Notifies the renderer to invoke printing for the given plugin instance. No
-// reply is sent.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Flash_InvokePrinting)
-
 // DeviceEnumeration -----------------------------------------------------------
 // Device enumeration messages used by audio input and video capture.
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_DeviceEnumeration_EnumerateDevices)
@@ -2228,84 +2040,6 @@ IPC_MESSAGE_CONTROL0(PpapiHostMsg_DeviceEnumeration_StopMonitoringDeviceChange)
 IPC_MESSAGE_CONTROL2(PpapiPluginMsg_DeviceEnumeration_NotifyDeviceChange,
                      uint32_t /* callback_id */,
                      std::vector<ppapi::DeviceRefData> /* devices */)
-
-// Flash clipboard.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashClipboard_Create)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashClipboard_RegisterCustomFormat,
-                     std::string /* format_name */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashClipboard_RegisterCustomFormatReply,
-                     uint32_t /* format */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashClipboard_IsFormatAvailable,
-                     uint32_t /* clipboard_type */,
-                     uint32_t /* format */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashClipboard_ReadData,
-                     uint32_t /* clipboard_type */,
-                     uint32_t /* format */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashClipboard_ReadDataReply,
-                     std::string /* result */)
-IPC_MESSAGE_CONTROL3(PpapiHostMsg_FlashClipboard_WriteData,
-                     uint32_t /* clipboard_type */,
-                     std::vector<uint32_t> /* formats */,
-                     std::vector<std::string> /* data */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashClipboard_GetSequenceNumber,
-                     uint32_t /* clipboard_type */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashClipboard_GetSequenceNumberReply,
-                     uint64_t /* sequence_number */)
-
-// Flash DRM.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashDRM_Create)
-
-// Requests the device ID.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashDRM_GetDeviceID)
-// Reply for GetDeviceID which includes the device ID as a string.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashDRM_GetDeviceIDReply,
-                     std::string /* id */)
-
-// Requests the HMONITOR corresponding to the monitor on which the instance is
-// displayed.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashDRM_GetHmonitor)
-// Reply message for GetHmonitor which contains the HMONITOR as an int64_t.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashDRM_GetHmonitorReply,
-                     int64_t /* hmonitor */)
-
-// Requests the voucher file which is used to verify the integrity of the Flash
-// module. A PPB_FileRef resource will be created.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashDRM_GetVoucherFile)
-// Reply message for GetVoucherFile which contains the CreateInfo for a
-// PPB_FileRef which points to the voucher file.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashDRM_GetVoucherFileReply,
-                     ppapi::FileRefCreateInfo /* file_info */)
-
-// Requests a value indicating whether the monitor on which the instance is
-// displayed is external.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashDRM_MonitorIsExternal)
-// Reply message for MonitorIsExternal which contains the value indicating if
-// the monitor is external.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashDRM_MonitorIsExternalReply,
-                     PP_Bool /* is_external */)
-
-// Flash file.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFile_Create)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFile_OpenFile,
-                     ppapi::PepperFilePath /* path */,
-                     int /* pp_open_flags */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFile_RenameFile,
-                     ppapi::PepperFilePath /* from_path */,
-                     ppapi::PepperFilePath /* to_path */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFile_DeleteFileOrDir,
-                     ppapi::PepperFilePath /* path */,
-                     bool /* recursive */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFile_CreateDir,
-                     ppapi::PepperFilePath /* path */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFile_QueryFile,
-                     ppapi::PepperFilePath /* path */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFile_QueryFileReply,
-                     base::File::Info /* file_info */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFile_GetDirContents,
-                     ppapi::PepperFilePath /* path */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFile_GetDirContentsReply,
-                     ppapi::DirContents /* entries */)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFile_CreateTemporaryFile)
 
 // Flash font file.
 IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFontFile_Create,
@@ -2320,31 +2054,6 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFullscreen_Create)
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFullscreen_SetFullscreen,
                      bool /* fullscreen */)
-
-// FlashMenu.
-
-// Creates the flash menu with the given data.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashMenu_Create,
-                     ppapi::proxy::SerializedFlashMenu /* menu_data */)
-
-// Shows the menu at the given location relative to the plugin instance.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashMenu_Show,
-                     PP_Point /* location */)
-
-// Reply to a show command. If the resource reply is PP_OK, the selected_id
-// will be the menu item ID chosen by the user.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashMenu_ShowReply,
-                     int32_t /* selected_id */)
-
-// PPB_Flash_MessageLoop.
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiHostMsg_PPBFlashMessageLoop_Create,
-                           PP_Instance /* instance */,
-                           ppapi::HostResource /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiHostMsg_PPBFlashMessageLoop_Run,
-                           ppapi::HostResource /* flash_message_loop */,
-                           int32_t /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_0(PpapiHostMsg_PPBFlashMessageLoop_Quit,
-                           ppapi::HostResource /* flash_message_loop */)
 
 // PDF ------------------------------------------------------------------------
 
@@ -2397,7 +2106,7 @@ IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_SaveAs)
 
 // Called by the plugin when its selection changes.
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetSelectedText,
-                     base::string16 /* selected_text */)
+                     std::u16string /* selected_text */)
 
 // Called by the plugin to set the link under the cursor.
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetLinkUnderCursor,

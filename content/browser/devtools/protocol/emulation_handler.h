@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/emulation.h"
-#include "third_party/blink/public/web/web_device_emulation_params.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/common/widget/device_emulation_params.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -18,6 +18,7 @@ namespace content {
 
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
+class RenderWidgetHostImpl;
 class WebContentsImpl;
 
 namespace protocol {
@@ -26,6 +27,10 @@ class EmulationHandler : public DevToolsDomainHandler,
                          public Emulation::Backend {
  public:
   EmulationHandler();
+
+  EmulationHandler(const EmulationHandler&) = delete;
+  EmulationHandler& operator=(const EmulationHandler&) = delete;
+
   ~EmulationHandler() override;
 
   static std::vector<EmulationHandler*> ForAgentHost(
@@ -37,6 +42,10 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   Response Disable() override;
 
+  Response SetIdleOverride(bool is_user_active,
+                           bool is_screen_unlocked) override;
+  Response ClearIdleOverride() override;
+
   Response SetGeolocationOverride(Maybe<double> latitude,
                                   Maybe<double> longitude,
                                   Maybe<double> accuracy) override;
@@ -46,9 +55,11 @@ class EmulationHandler : public DevToolsDomainHandler,
       bool enabled,
       Maybe<std::string> configuration) override;
 
-  Response SetUserAgentOverride(const std::string& user_agent,
-                                Maybe<std::string> accept_language,
-                                Maybe<std::string> platform) override;
+  Response SetUserAgentOverride(
+      const std::string& user_agent,
+      Maybe<std::string> accept_language,
+      Maybe<std::string> platform,
+      Maybe<Emulation::UserAgentMetadata> ua_metadata_override) override;
 
   Response CanEmulate(bool* result) override;
   Response SetDeviceMetricsOverride(
@@ -63,34 +74,50 @@ class EmulationHandler : public DevToolsDomainHandler,
       Maybe<int> position_y,
       Maybe<bool> dont_set_visible_size,
       Maybe<Emulation::ScreenOrientation> screen_orientation,
-      Maybe<protocol::Page::Viewport> viewport) override;
+      Maybe<protocol::Page::Viewport> viewport,
+      Maybe<protocol::Emulation::DisplayFeature> displayFeature) override;
   Response ClearDeviceMetricsOverride() override;
 
   Response SetVisibleSize(int width, int height) override;
 
-  blink::WebDeviceEmulationParams GetDeviceEmulationParams();
-  void SetDeviceEmulationParams(const blink::WebDeviceEmulationParams& params);
+  Response SetFocusEmulationEnabled(bool) override;
+
+  blink::DeviceEmulationParams GetDeviceEmulationParams();
+  void SetDeviceEmulationParams(const blink::DeviceEmulationParams& params);
 
   bool device_emulation_enabled() { return device_emulation_enabled_; }
 
-  void ApplyOverrides(net::HttpRequestHeaders* headers);
+  // Applies the network request header overrides on `headers`.  If the
+  // User-Agent header was overridden, `user_agent_overridden` is set to true;
+  // otherwise, it's set to false.
+  void ApplyOverrides(net::HttpRequestHeaders* headers,
+                      bool* user_agent_overridden);
+  bool ApplyUserAgentMetadataOverrides(
+      absl::optional<blink::UserAgentMetadata>* override_out);
 
  private:
   WebContentsImpl* GetWebContents();
   void UpdateTouchEventEmulationState();
   void UpdateDeviceEmulationState();
+  void UpdateDeviceEmulationStateForHost(
+      RenderWidgetHostImpl* render_widget_host);
 
   bool touch_emulation_enabled_;
   std::string touch_emulation_configuration_;
-
   bool device_emulation_enabled_;
-  blink::WebDeviceEmulationParams device_emulation_params_;
+  bool focus_emulation_enabled_;
+  blink::DeviceEmulationParams device_emulation_params_;
   std::string user_agent_;
+
+  // |user_agent_metadata_| is meaningful if |user_agent_| is non-empty.
+  // In that case nullopt will disable sending of client hints, and a
+  // non-nullopt value will be sent.
+  absl::optional<blink::UserAgentMetadata> user_agent_metadata_;
   std::string accept_language_;
 
   RenderFrameHostImpl* host_;
 
-  DISALLOW_COPY_AND_ASSIGN(EmulationHandler);
+  base::ScopedClosureRunner capture_handle_;
 };
 
 }  // namespace protocol

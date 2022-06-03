@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -67,19 +66,17 @@ ServiceWorkerGlobalScopeProxy::~ServiceWorkerGlobalScopeProxy() {
 }
 
 void ServiceWorkerGlobalScopeProxy::BindServiceWorker(
-    mojo::ScopedMessagePipeHandle receiver_pipe) {
+    CrossVariantMojoReceiver<mojom::blink::ServiceWorkerInterfaceBase>
+        receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  WorkerGlobalScope()->BindServiceWorker(
-      mojo::PendingReceiver<mojom::blink::ServiceWorker>(
-          std::move(receiver_pipe)));
+  WorkerGlobalScope()->BindServiceWorker(std::move(receiver));
 }
 
 void ServiceWorkerGlobalScopeProxy::BindControllerServiceWorker(
-    mojo::ScopedMessagePipeHandle receiver_pipe) {
+    CrossVariantMojoReceiver<mojom::blink::ControllerServiceWorkerInterfaceBase>
+        receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  WorkerGlobalScope()->BindControllerServiceWorker(
-      mojo::PendingReceiver<mojom::blink::ControllerServiceWorker>(
-          std::move(receiver_pipe)));
+  WorkerGlobalScope()->BindControllerServiceWorker(std::move(receiver));
 }
 
 void ServiceWorkerGlobalScopeProxy::OnNavigationPreloadResponse(
@@ -114,14 +111,6 @@ void ServiceWorkerGlobalScopeProxy::OnNavigationPreloadComplete(
 void ServiceWorkerGlobalScopeProxy::CountFeature(WebFeature feature) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   Client().CountFeature(feature);
-}
-
-void ServiceWorkerGlobalScopeProxy::CountDeprecation(WebFeature feature) {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  // Go through the same code path with countFeature() because a deprecation
-  // message is already shown on the worker console and a remaining work is
-  // just to record an API use.
-  CountFeature(feature);
 }
 
 void ServiceWorkerGlobalScopeProxy::ReportException(
@@ -184,14 +173,11 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript(
     size_t script_size,
     size_t cached_metadata_size) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  TRACE_EVENT_ASYNC_BEGIN0(
-      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateClassicScript",
-      this);
-  // TODO(asamidoi): Remove CountWorkerScript which is called for recording
-  // metrics if the metrics are no longer referenced, and then merge
-  // WillEvaluateClassicScript and WillEvaluateModuleScript for cleanup.
-  worker_global_scope_->CountWorkerScript(script_size, cached_metadata_size);
-
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
+      TRACE_ID_LOCAL(this));
+  // TODO(https://crbug.com/1253218): Merge WillEvaluateClassicScript and
+  // WillEvaluateModuleScript for cleanup.
   ScriptState::Scope scope(
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
@@ -202,30 +188,27 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateImportedClassicScript(
     size_t script_size,
     size_t cached_metadata_size) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  worker_global_scope_->CountImportedScript(script_size, cached_metadata_size);
+  // TODO(https://crbug.com/1253218): Remove this empty function.
 }
 
 void ServiceWorkerGlobalScopeProxy::WillEvaluateModuleScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
+      TRACE_ID_LOCAL(this));
   ScriptState::Scope scope(
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
       WorkerGlobalScope()->ScriptController()->GetContext());
 }
 
-void ServiceWorkerGlobalScopeProxy::DidEvaluateClassicScript(bool success) {
+void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   WorkerGlobalScope()->DidEvaluateScript();
   Client().DidEvaluateScript(success);
-  TRACE_EVENT_ASYNC_END1("ServiceWorker",
-                         "ServiceWorkerGlobalScopeProxy::EvaluateClassicScript",
-                         this, "success", success);
-}
-
-void ServiceWorkerGlobalScopeProxy::DidEvaluateModuleScript(bool success) {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  WorkerGlobalScope()->DidEvaluateScript();
-  Client().DidEvaluateScript(success);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
+      TRACE_ID_LOCAL(this), "success", success);
 }
 
 void ServiceWorkerGlobalScopeProxy::DidCloseWorkerGlobalScope() {
@@ -271,14 +254,11 @@ bool ServiceWorkerGlobalScopeProxy::IsServiceWorkerGlobalScopeProxy() const {
 void ServiceWorkerGlobalScopeProxy::SetupNavigationPreload(
     int fetch_event_id,
     const KURL& url,
-    mojom::blink::FetchEventPreloadHandlePtr preload_handle) {
+    mojo::PendingReceiver<network::mojom::blink::URLLoaderClient>
+        preload_url_loader_client_receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  auto web_preload_handle = std::make_unique<WebFetchEventPreloadHandle>();
-  web_preload_handle->url_loader = preload_handle->url_loader.PassPipe();
-  web_preload_handle->url_loader_client_receiver =
-      preload_handle->url_loader_client_receiver.PassPipe();
-  Client().SetupNavigationPreload(fetch_event_id, url,
-                                  std::move(web_preload_handle));
+  Client().SetupNavigationPreload(
+      fetch_event_id, url, std::move(preload_url_loader_client_receiver));
 }
 
 void ServiceWorkerGlobalScopeProxy::RequestTermination(
@@ -322,6 +302,10 @@ void ServiceWorkerGlobalScopeProxy::PauseEvaluation() {
 
 void ServiceWorkerGlobalScopeProxy::ResumeEvaluation() {
   WorkerGlobalScope()->ResumeEvaluation();
+}
+
+bool ServiceWorkerGlobalScopeProxy::HasFetchHandler() {
+  return WorkerGlobalScope()->HasEventListeners(event_type_names::kFetch);
 }
 
 WebServiceWorkerContextClient& ServiceWorkerGlobalScopeProxy::Client() const {

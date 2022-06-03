@@ -9,10 +9,14 @@ import android.graphics.Rect;
 import android.util.JsonReader;
 import android.view.View;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.WebContents;
@@ -102,17 +106,15 @@ public class DOMUtils {
      * @param id The element's id to check.
      */
     public static void waitForMediaPlay(final WebContents webContents, final String id) {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                try {
-                    // Playback can't be reliably detected until current time moves forward.
-                    return !DOMUtils.isMediaPaused(webContents, id)
-                            && DOMUtils.getCurrentTime(webContents, id) > 0;
-                } catch (TimeoutException e) {
-                    // Intentionally do nothing
-                    return false;
-                }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                // Playback can't be reliably detected until current time moves forward.
+                Criteria.checkThat(DOMUtils.isMediaPaused(webContents, id), Matchers.is(false));
+                Criteria.checkThat(
+                        DOMUtils.getCurrentTime(webContents, id), Matchers.greaterThan(0d));
+            } catch (TimeoutException e) {
+                // Intentionally do nothing
+                throw new CriteriaNotSatisfiedException(e);
             }
         }, MEDIA_TIMEOUT_MILLISECONDS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
@@ -123,16 +125,13 @@ public class DOMUtils {
      * @param id The element's id to check.
      */
     public static void waitForMediaPauseBeforeEnd(final WebContents webContents, final String id) {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                try {
-                    return DOMUtils.isMediaPaused(webContents, id)
-                            && !DOMUtils.isMediaEnded(webContents, id);
-                } catch (TimeoutException e) {
-                    // Intentionally do nothing
-                    return false;
-                }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(DOMUtils.isMediaPaused(webContents, id), Matchers.is(true));
+                Criteria.checkThat(DOMUtils.isMediaEnded(webContents, id), Matchers.is(false));
+            } catch (TimeoutException e) {
+                // Intentionally do nothing
+                throw new CriteriaNotSatisfiedException(e);
             }
         });
     }
@@ -464,15 +463,13 @@ public class DOMUtils {
      */
     public static void waitForNonZeroNodeBounds(
             final WebContents webContents, final String nodeId) {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                try {
-                    return !DOMUtils.getNodeBounds(webContents, nodeId).isEmpty();
-                } catch (TimeoutException e) {
-                    // Intentionally do nothing
-                    return false;
-                }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(
+                        DOMUtils.getNodeBounds(webContents, nodeId).isEmpty(), Matchers.is(false));
+            } catch (TimeoutException e) {
+                // Intentionally do nothing
+                throw new CriteriaNotSatisfiedException(e);
             }
         });
     }

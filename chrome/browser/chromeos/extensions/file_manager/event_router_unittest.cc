@@ -4,28 +4,54 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "base/values.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace file_manager {
 
-TEST(EventRouterTest, PopulateCrostiniUnshareEvent) {
-  extensions::api::file_manager_private::CrostiniEvent event;
-  EventRouter::PopulateCrostiniUnshareEvent(event, "vmname", "extensionid",
-                                            "mountname", "filesystemname",
-                                            "/full/path");
+TEST(EventRouterTest, PopulateCrostiniEvent) {
+  extensions::api::file_manager_private::CrostiniEvent ext_event;
+  url::Origin ext_origin = url::Origin::Create(
+      extensions::Extension::GetBaseURLFromExtensionId("extensionid"));
+  EventRouter::PopulateCrostiniEvent(
+      ext_event,
+      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE,
+      "vmname", ext_origin, "mountname", "filesystemname", "/full/path");
 
-  EXPECT_EQ(event.event_type,
+  EXPECT_EQ(ext_event.event_type,
             extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE);
-  EXPECT_EQ(event.vm_name, "vmname");
-  EXPECT_EQ(event.entries.size(), 1u);
-  base::DictionaryValue props;
-  props.SetString(
+  EXPECT_EQ(ext_event.vm_name, "vmname");
+  EXPECT_EQ(ext_event.entries.size(), 1u);
+  base::DictionaryValue ext_props;
+  ext_props.SetString(
       "fileSystemRoot",
       "filesystem:chrome-extension://extensionid/external/mountname/");
-  props.SetString("fileSystemName", "filesystemname");
-  props.SetString("fileFullPath", "/full/path");
-  props.SetBoolean("fileIsDirectory", true);
-  EXPECT_EQ(event.entries[0].additional_properties, props);
+  ext_props.SetString("fileSystemName", "filesystemname");
+  ext_props.SetString("fileFullPath", "/full/path");
+  ext_props.SetBoolean("fileIsDirectory", true);
+  EXPECT_EQ(ext_event.entries[0].additional_properties, ext_props);
+
+  extensions::api::file_manager_private::CrostiniEvent swa_event;
+  url::Origin swa_origin = url::Origin::Create(
+      GURL("chrome://file-manager/this-part-should-not-be-in?the=event"));
+  EventRouter::PopulateCrostiniEvent(
+      swa_event,
+      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_SHARE,
+      "vmname", swa_origin, "mountname", "filesystemname", "/full/path");
+
+  EXPECT_EQ(swa_event.event_type,
+            extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_SHARE);
+  EXPECT_EQ(swa_event.vm_name, "vmname");
+  EXPECT_EQ(swa_event.entries.size(), 1u);
+  base::DictionaryValue swa_props;
+  swa_props.SetString("fileSystemRoot",
+                      "filesystem:chrome://file-manager/external/mountname/");
+  swa_props.SetString("fileSystemName", "filesystemname");
+  swa_props.SetString("fileFullPath", "/full/path");
+  swa_props.SetBoolean("fileIsDirectory", true);
+  EXPECT_EQ(swa_event.entries[0].additional_properties, swa_props);
 }
 
 }  // namespace file_manager

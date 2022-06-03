@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_STUB_STUB_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -21,6 +20,10 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   explicit StubWindow(PlatformWindowDelegate* delegate,
                       bool use_default_accelerated_widget = true,
                       const gfx::Rect& bounds = gfx::Rect());
+
+  StubWindow(const StubWindow&) = delete;
+  StubWindow& operator=(const StubWindow&) = delete;
+
   ~StubWindow() override;
 
  protected:
@@ -34,8 +37,8 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
-  gfx::Rect GetBounds() override;
-  void SetTitle(const base::string16& title) override;
+  gfx::Rect GetBounds() const override;
+  void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;
   void ToggleFullscreen() override;
@@ -48,7 +51,7 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   void Deactivate() override;
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
-  void SetCursor(PlatformCursor cursor) override;
+  void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
@@ -59,8 +62,6 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
 
   PlatformWindowDelegate* delegate_;
   gfx::Rect bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubWindow);
 };
 
 }  // namespace ui

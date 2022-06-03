@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 
 namespace base {
 

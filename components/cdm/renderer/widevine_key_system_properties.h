@@ -6,7 +6,6 @@
 #define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_PROPERTIES_H_
 
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "media/base/key_system_properties.h"
@@ -36,7 +35,6 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
       Robustness max_audio_robustness,
       Robustness max_video_robustness,
       media::EmeSessionTypeSupport persistent_license_support,
-      media::EmeSessionTypeSupport persistent_release_message_support,
       media::EmeFeatureSupport persistent_state_support,
       media::EmeFeatureSupport distinctive_identifier_support);
   ~WidevineKeySystemProperties() override;
@@ -50,10 +48,9 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
   media::SupportedCodecs GetSupportedHwSecureCodecs() const override;
   media::EmeConfigRule GetRobustnessConfigRule(
       media::EmeMediaType media_type,
-      const std::string& requested_robustness) const override;
+      const std::string& requested_robustness,
+      const bool* hw_secure_requirement) const override;
   media::EmeSessionTypeSupport GetPersistentLicenseSessionSupport()
-      const override;
-  media::EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
       const override;
   media::EmeFeatureSupport GetPersistentStateSupport() const override;
   media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override;
@@ -66,7 +63,6 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
   const Robustness max_audio_robustness_;
   const Robustness max_video_robustness_;
   const media::EmeSessionTypeSupport persistent_license_support_;
-  const media::EmeSessionTypeSupport persistent_release_message_support_;
   const media::EmeFeatureSupport persistent_state_support_;
   const media::EmeFeatureSupport distinctive_identifier_support_;
 };

@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests query string parsing.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function checkQuery(query) {
     var url = 'http://webkit.org?' + query;
-    var request = new SDK.NetworkRequest(url, url, '', '', '');
+    var request = SDK.NetworkRequest.create(url, url, '', '', '');
     TestRunner.addResult('Query: ' + request.queryString());
     var params = request.queryParameters;
     TestRunner.addResult('Parameters: ');

@@ -13,6 +13,10 @@ namespace sandbox {
 class SandboxTestRunner {
  public:
   SandboxTestRunner();
+
+  SandboxTestRunner(const SandboxTestRunner&) = delete;
+  SandboxTestRunner& operator=(const SandboxTestRunner&) = delete;
+
   virtual ~SandboxTestRunner();
 
   virtual void Run() = 0;
@@ -20,9 +24,6 @@ class SandboxTestRunner {
   // Override to decide whether or not to check for leaks with LSAN
   // (if built with LSAN and LSAN is enabled).
   virtual bool ShouldCheckForLeaks() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SandboxTestRunner);
 };
 
 }  // namespace sandbox

@@ -6,6 +6,8 @@ source_set("cpp") {
   sources = [
     "receiver_media_to_mojo_adapter.cc",
     "receiver_media_to_mojo_adapter.h",
+    "video_frame_access_handler.cc",
+    "video_frame_access_handler.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -17,9 +19,7 @@ source_set("cpp") {
     "//services/video_capture/public/mojom",
   ]
 
-  deps = [
-    "//mojo/public/cpp/bindings:bindings",
-  ]
+  deps = [ "//mojo/public/cpp/bindings:bindings" ]
 }
 
 source_set("mocks") {
@@ -46,4 +46,6 @@ source_set("mocks") {
     "//services/video_capture/public/mojom",
     "//testing/gmock",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }

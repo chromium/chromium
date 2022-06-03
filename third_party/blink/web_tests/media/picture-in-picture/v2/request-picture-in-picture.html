@@ -12,7 +12,7 @@ promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, 'NotAllowedError', element.requestPictureInPicture({ aspectRatio: 1 }));
+  return promise_rejects_dom(t, 'NotAllowedError', element.requestPictureInPicture({ aspectRatio: 1 }));
 }, 'request Picture-in-Picture requires a user gesture');
 
 promise_test(async t => {
@@ -54,56 +54,56 @@ promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ height: 1 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ height: 1 }));
 }, 'request Picture-in-Picture requires width option if height present');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 1 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: 1 }));
 }, 'request Picture-in-Picture requires height option if width present');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: -10, height: -10 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: -10, height: -10 }));
 }, 'request Picture-in-Picture requires width/height to be positive (both negative)');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 10, height: -10 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: 10, height: -10 }));
 }, 'request Picture-in-Picture requires width/height to be positive (negative width)');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: -10, height: 10 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: -10, height: 10 }));
 }, 'request Picture-in-Picture requires width/height to be positive (negative height)');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 0, height: 0 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: 0, height: 0 }));
 }, 'request Picture-in-Picture requires width/height to not be zero (both zero)');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 10, height: 0 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: 10, height: 0 }));
 }, 'request Picture-in-Picture requires width/height to not be zero (width zero)');
 
 promise_test(async t => {
   enablePictureInPictureV2ForTest(t);
 
   const element = document.getElementById('example');
-  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 0, height: 10 }));
+  return promise_rejects_js(t, TypeError, element.requestPictureInPicture({ width: 0, height: 10 }));
 }, 'request Picture-in-Picture requires width/height to not be zero (height zero)');
 
 promise_test(async t => {

@@ -2,9 +2,7 @@ This XML file does not appear to have any style information associated with it. 
 
 <!--  If you can see this, this test has failed.  -->
 <test xmlns="http://still-unknown.example.org/">
-<header>
-This tests that xml viewer is not used when there is an attribute XLink namespace.
-</header>
+<header>This tests that xml viewer is not used when there is an attribute XLink namespace.</header>
 <FAIL/>
 <xlink xmlns:l="http://www.w3.org/1999/xlink" l:type="simple" l:href="xlink.xml">SUCCESS</xlink>
 </test>

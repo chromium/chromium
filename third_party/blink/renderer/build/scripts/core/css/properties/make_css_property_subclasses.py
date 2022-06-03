@@ -28,7 +28,8 @@ class CSSPropertiesWriter(json5_generator.Writer):
         property_methods = json5_generator.Json5File.load_from_files(
             [json5_file_paths[3]])
         for property_method in property_methods.name_dictionaries:
-            self._property_methods[property_method['name'].original] = property_method
+            self._property_methods[property_method['name'].
+                                   original] = property_method
 
         all_properties = self._css_properties.properties_including_aliases
 
@@ -85,6 +86,7 @@ class CSSPropertiesWriter(json5_generator.Writer):
             'properties': self._css_properties.shorthands_including_aliases,
             'is_longhand': False,
         }
+
 
 if __name__ == '__main__':
     json5_generator.Maker(CSSPropertiesWriter).main()

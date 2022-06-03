@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_STICKY_SETTINGS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "printing/print_job_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -43,10 +44,15 @@ class PrintPreviewStickySettings {
   // the rank the more recent the printer was used.
   base::flat_map<std::string, int> GetPrinterRecentlyUsedRanks();
 
+  // Parses serialized printing sticky settings state and extracts the list of
+  // recently used printers. The list is ordered from most recently used to
+  // least recently used.
+  std::vector<std::string> GetRecentlyUsedPrinters();
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  base::Optional<std::string> printer_app_state_;
+  absl::optional<std::string> printer_app_state_;
 };
 
 }  // namespace printing

@@ -4,20 +4,24 @@
 
 #include "components/policy/core/common/policy_loader_win.h"
 
+// Must be included before lm.h
+#include <windows.h>
+
 #include <lm.h>       // For NetGetJoinInformation
 // <security.h> needs this.
 #define SECURITY_WIN32 1
 #include <security.h>  // For GetUserNameEx()
 #include <stddef.h>
+#include <userenv.h>
 
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -29,16 +33,16 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/values.h"
 #include "base/win/shlwapi.h"  // For PathIsUNC()
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
+#include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
@@ -54,32 +58,6 @@ const char kKeyMandatory[] = "policy";
 const char kKeyRecommended[] = "recommended";
 const char kKeyThirdParty[] = "3rdparty";
 
-// The web store url that is the only trusted source for extensions.
-const char kExpectedWebStoreUrl[] =
-    ";https://clients2.google.com/service/update2/crx";
-// String to be prepended to each blocked entry.
-const char kBlockedExtensionPrefix[] = "[BLOCKED]";
-
-// List of policies that are considered only if the user is part of a AD domain.
-// Please document any new additions in policy_templates.json!
-const char* kInsecurePolicies[] = {
-    key::kChromeCleanupEnabled,
-    key::kChromeCleanupReportingEnabled,
-    key::kCommandLineFlagSecurityWarningsEnabled,
-    key::kDefaultSearchProviderEnabled,
-    key::kHomepageIsNewTabPage,
-    key::kHomepageLocation,
-    key::kMetricsReportingEnabled,
-    key::kNewTabPageLocation,
-    key::kPasswordProtectionChangePasswordURL,
-    key::kPasswordProtectionLoginURLs,
-    key::kRestoreOnStartup,
-    key::kRestoreOnStartupURLs,
-    key::kSafeBrowsingForTrustedSourcesEnabled,
-    key::kSafeBrowsingEnabled,
-    key::kSafeBrowsingWhitelistDomains,
-};
-
 // The list of possible errors that can occur while collecting information about
 // the current enterprise environment.
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -92,72 +70,6 @@ enum DomainCheckErrors {
   DOMAIN_CHECK_ERROR_DS_BIND = 1,
   DOMAIN_CHECK_ERROR_SIZE,  // Not a DomainCheckError.  Must be last.
 };
-
-// Encapculates logic to determine if enterprise policies should be honored.
-// This is used in various places below.
-bool ShouldHonorPolicies() {
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  return base::win::IsEnrolledToDomain() ||
-         (base::win::IsDeviceRegisteredWithManagement() &&
-          is_enterprise_version);
-}
-
-// Verifies that untrusted policies contain only safe values. Modifies the
-// |policy| in place.
-void FilterUntrustedPolicy(PolicyMap* policy) {
-  if (ShouldHonorPolicies())
-    return;
-
-  int invalid_policies = 0;
-  const PolicyMap::Entry* map_entry =
-      policy->Get(key::kExtensionInstallForcelist);
-  if (map_entry && map_entry->value) {
-    const base::ListValue* policy_list_value = nullptr;
-    if (!map_entry->value->GetAsList(&policy_list_value))
-      return;
-
-    std::unique_ptr<base::ListValue> filtered_values(new base::ListValue);
-    for (const auto& list_entry : *policy_list_value) {
-      std::string entry;
-      if (!list_entry.GetAsString(&entry))
-        continue;
-      size_t pos = entry.find(';');
-      if (pos == std::string::npos)
-        continue;
-      // Only allow custom update urls in enterprise environments.
-      if (!base::LowerCaseEqualsASCII(entry.substr(pos),
-                                      kExpectedWebStoreUrl)) {
-        entry = kBlockedExtensionPrefix + entry;
-        invalid_policies++;
-      }
-
-      filtered_values->AppendString(entry);
-    }
-    if (invalid_policies) {
-      PolicyMap::Entry filtered_entry = map_entry->DeepCopy();
-      filtered_entry.value = std::move(filtered_values);
-      policy->Set(key::kExtensionInstallForcelist, std::move(filtered_entry));
-
-      const PolicyDetails* details =
-          GetChromePolicyDetails(key::kExtensionInstallForcelist);
-      base::UmaHistogramSparse("EnterpriseCheck.InvalidPolicies", details->id);
-    }
-  }
-
-  for (size_t i = 0; i < base::size(kInsecurePolicies); ++i) {
-    if (policy->Get(kInsecurePolicies[i])) {
-      policy->GetMutable(kInsecurePolicies[i])->SetBlocked();
-      invalid_policies++;
-      const PolicyDetails* details =
-          GetChromePolicyDetails(kInsecurePolicies[i]);
-      base::UmaHistogramSparse("EnterpriseCheck.InvalidPolicies", details->id);
-    }
-  }
-
-  UMA_HISTOGRAM_COUNTS_1M("EnterpriseCheck.InvalidPoliciesDetected",
-                          invalid_policies);
-}
 
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
@@ -182,8 +94,8 @@ void ParsePolicy(const RegistryDict* gpo_dict,
 // Returns a name, using the |get_name| callback, which may refuse the call if
 // the name is longer than _MAX_PATH. So this helper function takes care of the
 // retry with the required size.
-bool GetName(const base::Callback<BOOL(LPWSTR, LPDWORD)>& get_name,
-             base::string16* name) {
+bool GetName(const base::RepeatingCallback<BOOL(LPWSTR, LPDWORD)>& get_name,
+             std::wstring* name) {
   DCHECK(name);
   DWORD size = _MAX_PATH;
   if (!get_name.Run(base::WriteInto(name, size), &size)) {
@@ -215,6 +127,10 @@ bool IsDomainJoined() {
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   base::FilePath path;
   if (base::PathService::Get(base::DIR_SYSTEM, &path)) {
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+
     HINSTANCE net_api_library = ::LoadLibraryEx(
         path.Append(FILE_PATH_LITERAL("netapi32.dll")).value().c_str(), nullptr,
         LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -261,16 +177,17 @@ void CollectEnterpriseUMAs() {
   base::UmaHistogramBoolean("EnterpriseCheck.IsDomainJoined", IsDomainJoined());
   base::UmaHistogramBoolean("EnterpriseCheck.InDomain",
                             base::win::IsEnrolledToDomain());
-  base::UmaHistogramBoolean("EnterpriseCheck.IsManaged",
+  base::UmaHistogramBoolean("EnterpriseCheck.IsManaged2",
                             base::win::IsDeviceRegisteredWithManagement());
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
                             base::IsMachineExternallyManaged());
 
-  base::string16 machine_name;
-  if (GetName(base::Bind(&::GetComputerNameEx, ::ComputerNameDnsHostname),
-              &machine_name)) {
-    base::string16 user_name;
-    if (GetName(base::Bind(&GetUserNameExBool, ::NameSamCompatible),
+  std::wstring machine_name;
+  if (GetName(
+          base::BindRepeating(&::GetComputerNameEx, ::ComputerNameDnsHostname),
+          &machine_name)) {
+    std::wstring user_name;
+    if (GetName(base::BindRepeating(&GetUserNameExBool, ::NameSamCompatible),
                 &user_name)) {
       // A local user has the machine name in its sam compatible name, e.g.,
       // 'MACHINE_NAME\username', otherwise it is perfixed with the domain name
@@ -282,10 +199,10 @@ void CollectEnterpriseUMAs() {
               user_name[machine_name.size()] == L'\\');
     }
 
-    base::string16 full_machine_name;
-    if (GetName(
-            base::Bind(&::GetComputerNameEx, ::ComputerNameDnsFullyQualified),
-            &full_machine_name)) {
+    std::wstring full_machine_name;
+    if (GetName(base::BindRepeating(&::GetComputerNameEx,
+                                    ::ComputerNameDnsFullyQualified),
+                &full_machine_name)) {
       // ComputerNameDnsFullyQualified is the same as the
       // ComputerNameDnsHostname when not domain joined, otherwise it has a
       // suffix.
@@ -300,8 +217,11 @@ void CollectEnterpriseUMAs() {
 
 PolicyLoaderWin::PolicyLoaderWin(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::string16& chrome_policy_key)
-    : AsyncPolicyLoader(task_runner),
+    ManagementService* management_service,
+    const std::wstring& chrome_policy_key)
+    : AsyncPolicyLoader(task_runner,
+                        management_service,
+                        /*periodic_updates=*/true),
       is_initialized_(false),
       chrome_policy_key_(chrome_policy_key),
       user_policy_changed_event_(
@@ -323,6 +243,13 @@ PolicyLoaderWin::PolicyLoaderWin(
 }
 
 PolicyLoaderWin::~PolicyLoaderWin() {
+  // Mitigate the issues caused by loading DLLs or lazily resolving symbols on a
+  // background thread (http://crbug/973868) which can hold the process wide
+  // LoaderLock and cause contention on Foreground threads. This issue is solved
+  // on Windows version after Win7. This code can be removed when Win7 is no
+  // longer supported.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   if (!user_policy_watcher_failed_) {
     ::UnregisterGPNotification(user_policy_changed_event_.handle());
     user_policy_watcher_.StopWatching();
@@ -336,8 +263,10 @@ PolicyLoaderWin::~PolicyLoaderWin() {
 // static
 std::unique_ptr<PolicyLoaderWin> PolicyLoaderWin::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::string16& chrome_policy_key) {
-  return std::make_unique<PolicyLoaderWin>(task_runner, chrome_policy_key);
+    ManagementService* management_service,
+    const std::wstring& chrome_policy_key) {
+  return std::make_unique<PolicyLoaderWin>(task_runner, management_service,
+                                           chrome_policy_key);
 }
 
 void PolicyLoaderWin::InitOnBackgroundThread() {
@@ -399,7 +328,8 @@ void PolicyLoaderWin::LoadChromePolicy(const RegistryDict* gpo_dict,
   const Schema* chrome_schema =
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   ParsePolicy(gpo_dict, level, scope, *chrome_schema, &policy);
-  FilterUntrustedPolicy(&policy);
+  if (ShouldFilterSensitivePolicies())
+    FilterSensitivePolicies(&policy);
   chrome_policy_map->MergeFrom(policy);
 }
 

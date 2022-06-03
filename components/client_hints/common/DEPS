@@ -1,0 +1,4 @@
+include_rules = [
+  "+services/network/public/cpp/is_potentially_trustworthy.h",
+  "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
+]

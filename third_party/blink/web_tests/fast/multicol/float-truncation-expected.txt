@@ -1,2 +1,1 @@
-CONSOLE WARNING: line 78: 'Range.expand()' is deprecated. Please use 'Selection.modify()' instead.
 PASS

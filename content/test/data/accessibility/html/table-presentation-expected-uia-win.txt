@@ -1,9 +1,9 @@
-document Name='Table with role=presentation'
-++group IsControlElement=false
-++++description Name='1'
-++group IsControlElement=false
-++++description Name='2'
-++group IsControlElement=false
-++++description Name='4'
-++group IsControlElement=false
-++++description Name='5'
+Document Name='Table with role=presentation'
+++Group IsControlElement=false
+++++Text Name='1'
+++Group IsControlElement=false
+++++Text Name='2'
+++Group IsControlElement=false
+++++Text Name='4'
+++Group IsControlElement=false
+++++Text Name='5'

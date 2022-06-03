@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_BUTTON_STICKER_SHEET_H_
 #define UI_VIEWS_EXAMPLES_BUTTON_STICKER_SHEET_H_
 
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -16,20 +14,17 @@ namespace examples {
 // design button styles. This example only looks right with `--secondary-ui-md`.
 // It is designed to be as visually similar to the UI Harmony spec's sticker
 // sheet for buttons as possible.
-class VIEWS_EXAMPLES_EXPORT ButtonStickerSheet : public ExampleBase,
-                                                 public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT ButtonStickerSheet : public ExampleBase {
  public:
   ButtonStickerSheet();
+
+  ButtonStickerSheet(const ButtonStickerSheet&) = delete;
+  ButtonStickerSheet& operator=(const ButtonStickerSheet&) = delete;
+
   ~ButtonStickerSheet() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonStickerSheet);
 };
 
 }  // namespace examples

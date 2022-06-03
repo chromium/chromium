@@ -122,6 +122,7 @@
           "pluginData": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for Flash has been removed. This data type will be ignored.",
             "description": "Plugins' data."
           },
           "serviceWorkers": {
@@ -142,31 +143,29 @@
         "name": "settings",
         "description": "Reports which types of data are currently selected in the 'Clear browsing data' settings UI.  Note: some of the data types included in this API are not available in the settings UI, and some UI settings control more than one data type listed here.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "object",
-                "properties": {
-                  "options": {
-                    "$ref": "RemovalOptions"
-                  },
-                  "dataToRemove": {
-                    "$ref": "DataTypeSet",
-                    "description": "All of the types will be present in the result, with values of <code>true</code> if they are both selected to be removed and permitted to be removed, otherwise <code>false</code>."
-                  },
-                  "dataRemovalPermitted": {
-                    "$ref": "DataTypeSet",
-                    "description": "All of the types will be present in the result, with values of <code>true</code> if they are permitted to be removed (e.g., by enterprise policy) and <code>false</code> if not."
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "object",
+              "properties": {
+                "options": {
+                  "$ref": "RemovalOptions"
+                },
+                "dataToRemove": {
+                  "$ref": "DataTypeSet",
+                  "description": "All of the types will be present in the result, with values of <code>true</code> if they are both selected to be removed and permitted to be removed, otherwise <code>false</code>."
+                },
+                "dataRemovalPermitted": {
+                  "$ref": "DataTypeSet",
+                  "description": "All of the types will be present in the result, with values of <code>true</code> if they are permitted to be removed (e.g., by enterprise policy) and <code>false</code> if not."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "remove",
@@ -181,15 +180,14 @@
             "name": "dataToRemove",
             "$ref": "DataTypeSet",
             "description": "The set of data types to remove."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when deletion has completed.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when deletion has completed.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeAppcache",
@@ -199,15 +197,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' appcache data has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' appcache data has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeCache",
@@ -217,15 +214,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's cache has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's cache has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeCacheStorage",
@@ -235,15 +231,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' cache storage has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' cache storage has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeCookies",
@@ -253,15 +248,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's cookies and server-bound certificates have been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's cookies and server-bound certificates have been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeDownloads",
@@ -271,15 +265,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's list of downloaded files has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's list of downloaded files has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeFileSystems",
@@ -289,15 +282,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' file systems have been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' file systems have been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeFormData",
@@ -307,15 +299,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's form data has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's form data has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeHistory",
@@ -325,15 +316,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's history has cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's history has cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeIndexedDB",
@@ -343,15 +333,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' IndexedDB data has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' IndexedDB data has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeLocalStorage",
@@ -361,33 +350,32 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' local storage has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' local storage has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removePluginData",
         "description": "Clears plugins' data.",
+        "deprecated": "Support for Flash has been removed. This function has no effect.",
         "type": "function",
         "parameters": [
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when plugins' data has been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when plugins' data has been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removePasswords",
@@ -397,15 +385,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the browser's passwords have been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the browser's passwords have been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeServiceWorkers",
@@ -415,15 +402,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' service workers have been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' service workers have been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "removeWebSQL",
@@ -433,15 +419,14 @@
           {
             "$ref": "RemovalOptions",
             "name": "options"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when websites' WebSQL databases have been cleared.",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when websites' WebSQL databases have been cleared.",
+          "optional": true,
+          "parameters": []
+        }
       }
     ]
   }

@@ -3,14 +3,94 @@
 # found in the LICENSE file.
 
 source_set("infobar_banner") {
-  public = [
-    "infobar_banner_supported_overlay_coordinator_classes.h",
+  public = [ "infobar_banner_supported_overlay_coordinator_classes.h" ]
+  sources = [ "infobar_banner_supported_overlay_coordinator_classes.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/translate:coordinators",
   ]
+}
+
+source_set("feature_flags") {
   sources = [
-    "infobar_banner_supported_overlay_coordinator_classes.mm",
+    "infobar_banner_features.h",
+    "infobar_banner_features.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = []
+  deps = [ "//base" ]
+}
+
+source_set("coordinators") {
+  sources = [
+    "infobar_banner_overlay_coordinator.h",
+    "infobar_banner_overlay_coordinator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":feature_flags",
+    ":mediators",
+    "//base",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/presentation",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays:util",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/confirm",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/passwords",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/reading_list",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
+    "//ios/chrome/browser/ui/util",
+  ]
+}
+
+source_set("mediators") {
+  sources = [
+    "infobar_banner_overlay_mediator+consumer_support.h",
+    "infobar_banner_overlay_mediator.h",
+    "infobar_banner_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "infobar_banner_overlay_mediator_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":mediators",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
 }

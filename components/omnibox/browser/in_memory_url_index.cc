@@ -8,11 +8,15 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -20,26 +24,24 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_features.h"
 
-using in_memory_url_index::InMemoryURLIndexCacheItem;
-
-// Initializes a whitelist of URL schemes.
-void InitializeSchemeWhitelist(
-    SchemeSet* whitelist,
-    const SchemeSet& client_schemes_to_whitelist) {
-  DCHECK(whitelist);
-  if (!whitelist->empty())
+// Initializes a allowlist of URL schemes.
+void InitializeSchemeAllowlist(SchemeSet* allowlist,
+                               const SchemeSet& client_schemes_to_allowlist) {
+  DCHECK(allowlist);
+  if (!allowlist->empty())
     return;  // Nothing to do, already initialized.
 
-  whitelist->insert(client_schemes_to_whitelist.begin(),
-                    client_schemes_to_whitelist.end());
+  allowlist->insert(client_schemes_to_allowlist.begin(),
+                    client_schemes_to_allowlist.end());
 
-  whitelist->insert(std::string(url::kAboutScheme));
-  whitelist->insert(std::string(url::kFileScheme));
-  whitelist->insert(std::string(url::kFtpScheme));
-  whitelist->insert(std::string(url::kHttpScheme));
-  whitelist->insert(std::string(url::kHttpsScheme));
-  whitelist->insert(std::string(url::kMailToScheme));
+  allowlist->insert(std::string(url::kAboutScheme));
+  allowlist->insert(std::string(url::kFileScheme));
+  allowlist->insert(std::string(url::kFtpScheme));
+  allowlist->insert(std::string(url::kHttpScheme));
+  allowlist->insert(std::string(url::kHttpsScheme));
+  allowlist->insert(std::string(url::kMailToScheme));
 }
 
 // Restore/SaveCacheObserver ---------------------------------------------------
@@ -53,18 +55,17 @@ InMemoryURLIndex::SaveCacheObserver::~SaveCacheObserver() {
 // RebuildPrivateDataFromHistoryDBTask -----------------------------------------
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
-    RebuildPrivateDataFromHistoryDBTask(
-        InMemoryURLIndex* index,
-        const SchemeSet& scheme_whitelist)
+    RebuildPrivateDataFromHistoryDBTask(InMemoryURLIndex* index,
+                                        const SchemeSet& scheme_allowlist)
     : index_(index),
-      scheme_whitelist_(scheme_whitelist),
-      succeeded_(false) {
-}
+      scheme_allowlist_(scheme_allowlist),
+      succeeded_(false),
+      task_creation_time_(base::TimeTicks::Now()) {}
 
 bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
     history::HistoryBackend* backend,
     history::HistoryDatabase* db) {
-  data_ = URLIndexPrivateData::RebuildFromHistory(db, scheme_whitelist_);
+  data_ = URLIndexPrivateData::RebuildFromHistory(db, scheme_allowlist_);
   succeeded_ = data_.get() && !data_->Empty();
   if (!succeeded_ && data_.get())
     data_->Clear();
@@ -73,7 +74,9 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
-  index_->DoneRebuidingPrivateDataFromHistoryDB(succeeded_, data_);
+  index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
+  UMA_HISTOGRAM_TIMES("History.InMemoryURLIndexingTime.RoundTripTime",
+                      base::TimeTicks::Now() - task_creation_time_);
 }
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
@@ -86,7 +89,7 @@ InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
                                    history::HistoryService* history_service,
                                    TemplateURLService* template_url_service,
                                    const base::FilePath& history_dir,
-                                   const SchemeSet& client_schemes_to_whitelist)
+                                   const SchemeSet& client_schemes_to_allowlist)
     : bookmark_model_(bookmark_model),
       history_service_(history_service),
       template_url_service_(template_url_service),
@@ -94,17 +97,16 @@ InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
       private_data_(new URLIndexPrivateData),
       restore_cache_observer_(nullptr),
       save_cache_observer_(nullptr),
-      task_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::BEST_EFFORT})),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       shutdown_(false),
       restored_(false),
       needs_to_be_cached_(false),
       listen_to_history_service_loaded_(false) {
-  InitializeSchemeWhitelist(&scheme_whitelist_, client_schemes_to_whitelist);
+  InitializeSchemeAllowlist(&scheme_allowlist_, client_schemes_to_allowlist);
   // TODO(mrossetti): Register for language change notifications.
   if (history_service_)
-    history_service_->AddObserver(this);
+    history_service_observation_.Observe(history_service_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "InMemoryURLIndex", base::ThreadTaskRunnerHandle::Get());
@@ -139,7 +141,7 @@ bool InMemoryURLIndex::GetCacheFilePath(base::FilePath* file_path) {
 // Querying --------------------------------------------------------------------
 
 ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
-    const base::string16& term_string,
+    const std::u16string& term_string,
     size_t cursor_position,
     size_t max_matches) {
   return private_data_->HistoryItemsForTerms(
@@ -159,20 +161,16 @@ void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
                                     const history::RedirectList& redirects,
                                     base::Time visit_time) {
   DCHECK_EQ(history_service_, history_service);
-  needs_to_be_cached_ |= private_data_->UpdateURL(history_service_,
-                                                  row,
-                                                  scheme_whitelist_,
-                                                  &private_data_tracker_);
+  needs_to_be_cached_ |= private_data_->UpdateURL(
+      history_service_, row, scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
                                       const history::URLRows& changed_urls) {
   DCHECK_EQ(history_service_, history_service);
   for (const auto& row : changed_urls) {
-    needs_to_be_cached_ |= private_data_->UpdateURL(history_service_,
-                                                    row,
-                                                    scheme_whitelist_,
-                                                    &private_data_tracker_);
+    needs_to_be_cached_ |= private_data_->UpdateURL(
+        history_service_, row, scheme_allowlist_, &private_data_tracker_);
   }
 }
 
@@ -202,9 +200,8 @@ void InMemoryURLIndex::OnURLsDeleted(
   // would be odd and confusing.  It's better to force a rebuild.
   base::FilePath path;
   if (needs_to_be_cached_ && GetCacheFilePath(&path))
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(base::DeleteFile), path, false));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(base::GetDeleteFileCallback(), path));
 }
 
 void InMemoryURLIndex::OnHistoryServiceLoaded(
@@ -219,7 +216,7 @@ bool InMemoryURLIndex::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
   size_t res = 0;
 
-  res += base::trace_event::EstimateMemoryUsage(scheme_whitelist_);
+  res += base::trace_event::EstimateMemoryUsage(scheme_allowlist_);
 
   // TODO(dyaroshev): Add support for scoped_refptr in
   //                  base::trace_event::EstimateMemoryUsage.
@@ -238,7 +235,14 @@ bool InMemoryURLIndex::OnMemoryDump(
 
 void InMemoryURLIndex::PostRestoreFromCacheFileTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  TRACE_EVENT0("browser", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
+  TRACE_EVENT0("omnibox", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    // To short circuit the cache, pretend we've failed to load it.
+    OnCacheLoadDone(nullptr);
+    return;
+  }
 
   base::FilePath path;
   if (!GetCacheFilePath(&path) || shutdown_) {
@@ -269,9 +273,8 @@ void InMemoryURLIndex::OnCacheLoadDone(
     base::FilePath path;
     if (!GetCacheFilePath(&path) || shutdown_)
       return;
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(base::DeleteFile), path, false));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(base::GetDeleteFileCallback(), path));
     if (history_service_->backend_loaded()) {
       ScheduleRebuildFromHistory();
     } else {
@@ -284,7 +287,7 @@ void InMemoryURLIndex::OnCacheLoadDone(
 
 void InMemoryURLIndex::Shutdown() {
   if (history_service_) {
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
     history_service_ = nullptr;
   }
   cache_reader_tracker_.TryCancelAll();
@@ -293,29 +296,49 @@ void InMemoryURLIndex::Shutdown() {
   if (!GetCacheFilePath(&path))
     return;
   private_data_tracker_.TryCancelAll();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(
-                         &URLIndexPrivateData::WritePrivateDataToCacheFileTask),
-                     private_data_, path));
+
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(
+                &URLIndexPrivateData::WritePrivateDataToCacheFileTask),
+            private_data_, path));
+  }
+#ifndef LEAK_SANITIZER
+  // Intentionally create and then leak a scoped_refptr to private_data_. This
+  // permanently raises the reference count so that the URLIndexPrivateData
+  // destructor won't run during browser shutdown. This saves having to walk the
+  // maps to free their memory, which saves time and avoids shutdown hangs,
+  // especially if some of the memory has been paged out.
+  base::NoDestructor<scoped_refptr<URLIndexPrivateData>> leak_reference(
+      private_data_);
+#endif
   needs_to_be_cached_ = false;
 }
 
 // Restoring from the History DB -----------------------------------------------
 
 void InMemoryURLIndex::ScheduleRebuildFromHistory() {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
+      TRACE_ID_LOCAL(this));
   DCHECK(history_service_);
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::unique_ptr<history::HistoryDBTask>(
           new InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask(
-              this, scheme_whitelist_)),
+              this, scheme_allowlist_)),
       &cache_reader_tracker_);
 }
 
-void InMemoryURLIndex::DoneRebuidingPrivateDataFromHistoryDB(
+void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
+      TRACE_ID_LOCAL(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();
@@ -334,13 +357,18 @@ void InMemoryURLIndex::DoneRebuidingPrivateDataFromHistoryDB(
 void InMemoryURLIndex::RebuildFromHistory(
     history::HistoryDatabase* history_db) {
   private_data_tracker_.TryCancelAll();
-  private_data_ = URLIndexPrivateData::RebuildFromHistory(history_db,
-                                                          scheme_whitelist_);
+  private_data_ =
+      URLIndexPrivateData::RebuildFromHistory(history_db, scheme_allowlist_);
 }
 
 // Saving to Cache -------------------------------------------------------------
 
 void InMemoryURLIndex::PostSaveToCacheFileTask() {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    return;
+  }
+
   base::FilePath path;
   if (!GetCacheFilePath(&path))
     return;
@@ -358,9 +386,8 @@ void InMemoryURLIndex::PostSaveToCacheFileTask() {
         base::BindOnce(&InMemoryURLIndex::OnCacheSaveDone, AsWeakPtr()));
   } else {
     // If there is no data in our index then delete any existing cache file.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(base::DeleteFile), path, false));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(base::GetDeleteFileCallback(), path));
   }
 }
 

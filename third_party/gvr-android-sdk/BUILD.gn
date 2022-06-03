@@ -14,10 +14,17 @@ android_aar_prebuilt("controller_test_api_java") {
   proguard_configs = [ "test-libraries/proguard.txt" ]
 
   # Jar includes conflicting copies of Desugar-runtime.jar classes.
-  jar_excluded_patterns = [ "*ThrowableExtension*.class" ]
+  # Includes conflicting copy from j2objc/annotations.
+  # Errorprone annotations conflicts with doubledown!material_design.
+  jar_excluded_patterns = [
+    "*ThrowableExtension*.class",
+    "*j2objc/annotations*",
+    "com/google/errorprone/annotations*",
+  ]
+
   deps = [
     ":gvr_common_java",
-    "//third_party/guava:guava_android_java",
+    "//third_party/android_deps:guava_android_java",
   ]
 }
 
@@ -28,16 +35,12 @@ android_aar_prebuilt("gvr_common_java") {
     "proguard-gvr-chromium.txt",
   ]
   ignore_native_libraries = true
-  deps = [
-    "//third_party/android_protobuf:protobuf_nano_javalib",
-  ]
+  deps = [ "//third_party/android_protobuf:protobuf_nano_javalib" ]
 }
 
 android_aar_prebuilt("gvr_controller_java") {
   aar_path = "src/libraries/sdk-controller-1.130.0.aar"
-  deps = [
-    ":gvr_common_java",
-  ]
+  deps = [ ":gvr_common_java" ]
 }
 
 config("libgvr_config") {
@@ -50,11 +53,9 @@ component("gvr_shim") {
     "log",
   ]
   if (enable_chrome_android_internal && !is_official_build) {
-    deps = [
-      "//clank/third_party/gvr_shim",
-    ]
+    deps = [ "//clank/third_party/gvr_shim" ]
   } else {
-    if (is_component_build) {
+    if (libcxx_is_shared) {
       cxx_abi_version = "Cr"
     } else {
       cxx_abi_version = "1"
@@ -62,7 +63,7 @@ component("gvr_shim") {
     library = "//third_party/gvr-android-sdk/libgvr_shim_static_${current_cpu}_${cxx_abi_version}.a"
     libs += [ library ]
 
-    if (is_component_build) {
+    if (libcxx_is_shared) {
       ldflags = [
         "-Wl,--whole-archive",
         rebase_path(library, root_build_dir),

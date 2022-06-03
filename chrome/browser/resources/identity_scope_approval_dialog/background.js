@@ -9,8 +9,9 @@
  * @param {string} url A URL that will be loaded in the webview.
  * @param {string} mode 'interactive' or 'silent'. The window will be displayed
  *     if the mode is 'interactive'.
+ * @param {string} partition A name used for the webview partition.
  */
-function showAuthDialog(key, url, mode) {
+function showAuthDialog(key, url, mode, partition) {
   const options =
       {frame: 'none', id: key, minWidth: 1024, minHeight: 768, hidden: true};
   chrome.app.window.create(
@@ -20,7 +21,8 @@ function showAuthDialog(key, url, mode) {
           if (mode == 'interactive') {
             windowParam = win;
           }
-          win.contentWindow.loadAuthUrlAndShowWindow(url, windowParam);
+          win.contentWindow.loadAuthUrlAndShowWindow(
+              url, windowParam, partition);
         });
       });
 }

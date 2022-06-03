@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chrome/installer/util/callback_work_item.h"
 #include "chrome/installer/util/conditional_work_item_list.h"
 #include "chrome/installer/util/copy_tree_work_item.h"
@@ -16,7 +16,6 @@
 #include "chrome/installer/util/delete_reg_value_work_item.h"
 #include "chrome/installer/util/delete_tree_work_item.h"
 #include "chrome/installer/util/move_tree_work_item.h"
-#include "chrome/installer/util/self_reg_work_item.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/work_item_list.h"
 
@@ -24,17 +23,18 @@ WorkItem::WorkItem() = default;
 WorkItem::~WorkItem() = default;
 
 CallbackWorkItem* WorkItem::CreateCallbackWorkItem(
-    base::Callback<bool(const CallbackWorkItem&)> callback) {
-  return new CallbackWorkItem(callback);
+    base::OnceCallback<bool(const CallbackWorkItem&)> do_action,
+    base::OnceCallback<void(const CallbackWorkItem&)> rollback_action) {
+  return new CallbackWorkItem(std::move(do_action), std::move(rollback_action));
 }
 
 CopyTreeWorkItem* WorkItem::CreateCopyTreeWorkItem(
     const base::FilePath& source_path,
     const base::FilePath& dest_path,
-    const base::FilePath& temp_dir,
+    const base::FilePath& temp_path,
     CopyOverWriteOption overwrite_option,
     const base::FilePath& alternative_path) {
-  return new CopyTreeWorkItem(source_path, dest_path, temp_dir,
+  return new CopyTreeWorkItem(source_path, dest_path, temp_path,
                               overwrite_option, alternative_path);
 }
 
@@ -62,8 +62,8 @@ DeleteRegValueWorkItem* WorkItem::CreateDeleteRegValueWorkItem(
     const std::wstring& key_path,
     REGSAM wow64_access,
     const std::wstring& value_name) {
-  return new DeleteRegValueWorkItem(
-      predefined_root, key_path, wow64_access, value_name);
+  return new DeleteRegValueWorkItem(predefined_root, key_path, wow64_access,
+                                    value_name);
 }
 
 DeleteTreeWorkItem* WorkItem::CreateDeleteTreeWorkItem(
@@ -75,11 +75,9 @@ DeleteTreeWorkItem* WorkItem::CreateDeleteTreeWorkItem(
 MoveTreeWorkItem* WorkItem::CreateMoveTreeWorkItem(
     const base::FilePath& source_path,
     const base::FilePath& dest_path,
-    const base::FilePath& temp_dir,
+    const base::FilePath& temp_path,
     MoveTreeOption duplicate_option) {
-  return new MoveTreeWorkItem(source_path,
-                              dest_path,
-                              temp_dir,
+  return new MoveTreeWorkItem(source_path, dest_path, temp_path,
                               duplicate_option);
 }
 
@@ -90,12 +88,8 @@ SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
     const std::wstring& value_name,
     const std::wstring& value_data,
     bool overwrite) {
-  return new SetRegValueWorkItem(predefined_root,
-                                 key_path,
-                                 wow64_access,
-                                 value_name,
-                                 value_data,
-                                 overwrite);
+  return new SetRegValueWorkItem(predefined_root, key_path, wow64_access,
+                                 value_name, value_data, overwrite);
 }
 
 SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
@@ -105,12 +99,8 @@ SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
     const std::wstring& value_name,
     DWORD value_data,
     bool overwrite) {
-  return new SetRegValueWorkItem(predefined_root,
-                                 key_path,
-                                 wow64_access,
-                                 value_name,
-                                 value_data,
-                                 overwrite);
+  return new SetRegValueWorkItem(predefined_root, key_path, wow64_access,
+                                 value_name, value_data, overwrite);
 }
 
 SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
@@ -120,12 +110,8 @@ SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
     const std::wstring& value_name,
     int64_t value_data,
     bool overwrite) {
-  return new SetRegValueWorkItem(predefined_root,
-                                 key_path,
-                                 wow64_access,
-                                 value_name,
-                                 value_data,
-                                 overwrite);
+  return new SetRegValueWorkItem(predefined_root, key_path, wow64_access,
+                                 value_name, value_data, overwrite);
 }
 
 SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
@@ -133,18 +119,9 @@ SetRegValueWorkItem* WorkItem::CreateSetRegValueWorkItem(
     const std::wstring& key_path,
     REGSAM wow64_access,
     const std::wstring& value_name,
-    const GetValueFromExistingCallback& get_value_callback) {
-  return new SetRegValueWorkItem(predefined_root,
-                                 key_path,
-                                 wow64_access,
-                                 value_name,
-                                 get_value_callback);
-}
-
-SelfRegWorkItem* WorkItem::CreateSelfRegWorkItem(const std::wstring& dll_path,
-                                                 bool do_register,
-                                                 bool user_level_registration) {
-  return new SelfRegWorkItem(dll_path, do_register, user_level_registration);
+    GetValueFromExistingCallback get_value_callback) {
+  return new SetRegValueWorkItem(predefined_root, key_path, wow64_access,
+                                 value_name, std::move(get_value_callback));
 }
 
 WorkItemList* WorkItem::CreateWorkItemList() {

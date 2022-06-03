@@ -16,14 +16,14 @@ namespace blink {
 // https://html.spec.whatwg.org/C/#dom-tr-rowindex
 
 TEST(HTMLTableRowElementTest, rowIndex_notInTable) {
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* row = MakeGarbageCollected<HTMLTableRowElement>(*document);
   EXPECT_EQ(-1, row->rowIndex())
       << "rows not in tables should have row index -1";
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* table = MakeGarbageCollected<HTMLTableElement>(*document);
   auto* row = MakeGarbageCollected<HTMLTableRowElement>(*document);
   table->AppendChild(row);
@@ -32,7 +32,7 @@ TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_inUnrelatedElementInTable) {
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* table = MakeGarbageCollected<HTMLTableElement>(*document);
   // Almost any element will do; what's pertinent is that this is not
   // THEAD, TBODY or TFOOT.

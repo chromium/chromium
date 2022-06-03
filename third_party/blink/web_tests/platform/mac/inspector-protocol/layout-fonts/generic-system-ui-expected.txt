@@ -1,9 +1,9 @@
 This text should use the system font.
 #system-ui:
-".SF NS Text" : 37
+".SF NS" : 37
 
 This text should use the system font.
 #system-ui-20pt:
-".SF NS Display" : 37
+".SF NS" : 37
 
 

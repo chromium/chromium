@@ -1,0 +1,4 @@
+include_rules = [
+  "+testing/gmock",
+  "+testing/gtest",
+]

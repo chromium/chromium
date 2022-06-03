@@ -20,19 +20,39 @@ class LayerTreeOwner;
 }
 
 // This is only for animations specific to Ash. For window animations shared
-// with desktop Chrome, see ui/views/corewm/window_animations.h.
+// with desktop Chrome, see ui/wm/core/window_animations.h.
 namespace ash {
 
-// Amount of time for the cross fade animation.
-constexpr base::TimeDelta kCrossFadeDuration =
-    base::TimeDelta::FromMilliseconds(200);
+// Direction for ash-specific window animations used in workspaces and
+// lock/unlock animations.
+enum LayerScaleAnimationDirection {
+  LAYER_SCALE_ANIMATION_ABOVE,
+  LAYER_SCALE_ANIMATION_BELOW,
+};
+
+// Applies scale related to the specified LayerScaleAnimationDirection.
+ASH_EXPORT void SetTransformForScaleAnimation(
+    ui::Layer* layer,
+    LayerScaleAnimationDirection type);
 
 // Implementation of cross fading. Window is the window being cross faded. It
 // should be at the target bounds. |old_layer_owner| contains the previous layer
 // from |window|.
-ASH_EXPORT base::TimeDelta CrossFadeAnimation(
+ASH_EXPORT void CrossFadeAnimation(
     aura::Window* window,
     std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
+
+// Implementation of cross fading which only animates the new layer. The old
+// layer will be owned by an observer which will update the transform as the new
+// layer's transform and bounds change. This is used by the
+// WorkspaceWindowResizer which needs to animate a window which has its bounds
+// updated throughout the course of the animation.
+ASH_EXPORT void CrossFadeAnimationAnimateNewLayerOnly(
+    aura::Window* window,
+    const gfx::Rect& target_bounds,
+    base::TimeDelta duration,
+    gfx::Tween::Type tween_type,
+    const std::string& histogram_name);
 
 ASH_EXPORT bool AnimateOnChildWindowVisibilityChanged(aura::Window* window,
                                                       bool visible);

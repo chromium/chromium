@@ -1,0 +1,25 @@
+<script>
+  // This test is based on this clusterfuzz report: https://clusterfuzz.com/testcase?key=5195085559955456
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
+  function moveIframe(svgDoc) {
+    const iframe = document.createElement('iframe');
+    svgDoc.documentElement.appendChild(iframe);
+    iframe.contentWindow.onunload = () => {
+      // This unload handler will be called when the XML parser encounters a
+      // parsing error on the <element> tag to replace the frame with an error page.
+      // The logic to create the error page didn't perfectly account for the opening
+      // and closing of the original document here.
+      document.write();
+      document.close();
+      document.body.appendChild(document.createTextNode('PASS'));
+      if (window.testRunner)
+        testRunner.notifyDone();
+    }
+  }
+  const iframe = document.createElement('iframe');
+  iframe.src = 'resources/xml-parse-error.xml';
+  document.documentElement.appendChild(iframe);
+</script>

@@ -2,12 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "viz_main.mojom",
-  ]
+  sources = [ "viz_main.mojom" ]
+
+  enabled_features = []
+  if (use_viz_debugger) {
+    enabled_features += [ "use_viz_debugger" ]
+  }
 
   public_deps = [
     "//components/discardable_memory/public/mojom",
@@ -22,9 +26,7 @@ mojom("mojom") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "mojom_traits_unittest.cc",
-  ]
+  sources = [ "mojom_traits_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",

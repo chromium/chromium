@@ -41,22 +41,21 @@ namespace blink {
 
 class CalculationExpressionNode;
 
-// TODO(xiaochengh): Make |CalculationValue| immutable, namely, accessible only
-// via const pointers and references.
 class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   USING_FAST_MALLOC(CalculationValue);
 
  public:
-  static scoped_refptr<CalculationValue> Create(PixelsAndPercent value,
-                                                ValueRange range) {
+  static scoped_refptr<const CalculationValue> Create(
+      PixelsAndPercent value,
+      Length::ValueRange range) {
     return base::AdoptRef(new CalculationValue(value, range));
   }
 
   // If |expression| simply wraps a |PixelsAndPercent| value, this function
   // takes that value directly and discards |expression|.
-  static scoped_refptr<CalculationValue> CreateSimplified(
+  static scoped_refptr<const CalculationValue> CreateSimplified(
       scoped_refptr<const CalculationExpressionNode> expression,
-      ValueRange range);
+      Length::ValueRange range);
 
   ~CalculationValue();
 
@@ -64,8 +63,9 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   bool operator==(const CalculationValue& o) const;
   bool IsExpression() const { return is_expression_; }
   bool IsNonNegative() const { return is_non_negative_; }
-  ValueRange GetValueRange() const {
-    return is_non_negative_ ? kValueRangeNonNegative : kValueRangeAll;
+  Length::ValueRange GetValueRange() const {
+    return is_non_negative_ ? Length::ValueRange::kNonNegative
+                            : Length::ValueRange::kAll;
   }
 
   float Pixels() const {
@@ -85,20 +85,20 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   // creates one from the underlying |PixelsAndPercent| value.
   scoped_refptr<const CalculationExpressionNode> GetOrCreateExpression() const;
 
-  scoped_refptr<CalculationValue> Blend(const CalculationValue& from,
-                                        double progress,
-                                        ValueRange) const;
-  scoped_refptr<CalculationValue> SubtractFromOneHundredPercent() const;
-  scoped_refptr<CalculationValue> Zoom(double factor) const;
+  scoped_refptr<const CalculationValue> Blend(const CalculationValue& from,
+                                              double progress,
+                                              Length::ValueRange) const;
+  scoped_refptr<const CalculationValue> SubtractFromOneHundredPercent() const;
+  scoped_refptr<const CalculationValue> Zoom(double factor) const;
 
  private:
-  CalculationValue(PixelsAndPercent value, ValueRange range)
+  CalculationValue(PixelsAndPercent value, Length::ValueRange range)
       : data_(value),
         is_expression_(false),
-        is_non_negative_(range == kValueRangeNonNegative) {}
+        is_non_negative_(range == Length::ValueRange::kNonNegative) {}
 
   CalculationValue(scoped_refptr<const CalculationExpressionNode> expression,
-                   ValueRange range);
+                   Length::ValueRange range);
 
   union DataUnion {
     explicit DataUnion(PixelsAndPercent value) : value(value) {}

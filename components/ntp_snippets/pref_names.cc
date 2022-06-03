@@ -7,10 +7,6 @@
 namespace ntp_snippets {
 namespace prefs {
 
-const char kEnableSnippets[] = "ntp_snippets.enable";
-
-const char kArticlesListVisible[] = "ntp_snippets.list_visible";
-
 const char kRemoteSuggestionCategories[] = "ntp_snippets.remote_categories";
 
 const char kSnippetLastFetchAttemptTime[] = "ntp_snippets.last_fetch_attempt";

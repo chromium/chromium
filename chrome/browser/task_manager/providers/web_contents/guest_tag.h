@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_GUEST_TAG_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_GUEST_TAG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/guest_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 
@@ -15,17 +14,18 @@ namespace task_manager {
 // which represents browser <*view> tag plugin guests.
 class GuestTag : public WebContentsTag {
  public:
+  GuestTag(const GuestTag&) = delete;
+  GuestTag& operator=(const GuestTag&) = delete;
   ~GuestTag() override;
 
   // task_manager::WebContentsTag:
-  GuestTask* CreateTask() const override;
+  std::unique_ptr<RendererTask> CreateTask(
+      WebContentsTaskProvider*) const override;
 
  private:
   friend class WebContentsTags;
 
   explicit GuestTag(content::WebContents* web_contents);
-
-  DISALLOW_COPY_AND_ASSIGN(GuestTag);
 };
 
 }  // namespace task_manager

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Check scrollWidth before and after transform chage
+PASS Check scrollHeight before and after transform chage
+PASS Check scrollWidth and scrollHeight before and after transform chage
+Harness: the test ran to completion.
+

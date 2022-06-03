@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/webplugininfo.h"
@@ -27,11 +27,11 @@ const char PluginMetadata::kGoogleTalkGroupName[] = "Google Talk";
 const char PluginMetadata::kGoogleEarthGroupName[] = "Google Earth";
 
 PluginMetadata::PluginMetadata(const std::string& identifier,
-                               const base::string16& name,
+                               const std::u16string& name,
                                bool url_for_display,
                                const GURL& plugin_url,
                                const GURL& help_url,
-                               const base::string16& group_name_matcher,
+                               const std::u16string& group_name_matcher,
                                const std::string& language,
                                bool plugin_is_deprecated)
     : identifier_(identifier),
@@ -100,11 +100,8 @@ bool PluginMetadata::ParseSecurityStatus(
 
 PluginMetadata::SecurityStatus PluginMetadata::GetSecurityStatus(
     const content::WebPluginInfo& plugin) const {
-  // Deprecated plugins should be treated as out-of-date by the renderer.
-  // The browser will show an infobar explaining that it is deprecated without
-  // the ability to update.
   if (plugin_is_deprecated())
-    return SECURITY_STATUS_OUT_OF_DATE;
+    return SECURITY_STATUS_DEPRECATED;
 
   if (versions_.empty()) {
     // Unknown plugins require authorization.

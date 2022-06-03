@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_component("stub") {
+component("stub") {
   output_name = "stub_window"
 
   deps = [
     "//base",
+    "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/platform_window",

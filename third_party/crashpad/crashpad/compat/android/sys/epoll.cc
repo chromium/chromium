@@ -19,13 +19,14 @@
 #include <unistd.h>
 
 #include "dlfcn_internal.h"
+#include "util/misc/no_cfi_icall.h"
 
 #if __ANDROID_API__ < 21
 
 extern "C" {
 
 int epoll_create1(int flags) {
-  static const auto epoll_create1_p = reinterpret_cast<int (*)(int)>(
+  static const crashpad::NoCfiIcall<decltype(epoll_create1)*> epoll_create1_p(
       crashpad::internal::Dlsym(RTLD_DEFAULT, "epoll_create1"));
   return epoll_create1_p ? epoll_create1_p(flags)
                          : syscall(SYS_epoll_create1, flags);

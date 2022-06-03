@@ -8,13 +8,11 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/post_task.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -23,7 +21,9 @@
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -55,25 +56,29 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 class PerfTestTimeDomain : public MockTimeDomain {
  public:
   PerfTestTimeDomain() : MockTimeDomain(TimeTicks::Now()) {}
+  PerfTestTimeDomain(const PerfTestTimeDomain&) = delete;
+  PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    Optional<TimeTicks> run_time = NextScheduledRunTime();
-    if (!run_time)
-      return nullopt;
-    SetNowTicks(*run_time);
-    // Makes SequenceManager to continue immediately.
-    return TimeDelta();
+  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
+                                         LazyNow* lazy_now) const override {
+    // Check if we have a task that should be running now.
+    if (next_wake_up.time <= NowTicks())
+      return base::TimeTicks();
+
+    // Rely on MaybeFastForwardToWakeUp to be called to advance
+    // time.
+    return base::TimeTicks::Max();
   }
 
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override {
-    // De-dupe DoWorks.
-    if (NumberOfScheduledWakeUps() == 1u)
-      RequestDoWork();
+  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+                                bool quit_when_idle_requested) override {
+    if (wake_up) {
+      SetNowTicks(wake_up->time);
+      return true;
+    }
+    return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PerfTestTimeDomain);
 };
 
 enum class PerfTestType {
@@ -120,13 +125,13 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
     scoped_refptr<TestTaskQueue> task_queue =
         manager_->CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec("test").SetTimeDomain(time_domain_.get()));
+            TaskQueue::Spec("test"));
     owned_task_queues_.push_back(task_queue);
     return task_queue->task_runner();
   }
 
   void WaitUntilDone() override {
-    run_loop_.reset(new RunLoop());
+    run_loop_ = std::make_unique<RunLoop>();
     run_loop_->Run();
   }
 
@@ -137,12 +142,12 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   void SetSequenceManager(std::unique_ptr<SequenceManager> manager) {
     manager_ = std::move(manager);
     time_domain_ = std::make_unique<PerfTestTimeDomain>();
-    manager_->RegisterTimeDomain(time_domain_.get());
+    manager_->SetTimeDomain(time_domain_.get());
   }
 
   void ShutDown() {
     owned_task_queues_.clear();
-    manager_->UnregisterTimeDomain(time_domain_.get());
+    manager_->ResetTimeDomain();
     manager_.reset();
   }
 
@@ -151,27 +156,6 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   std::unique_ptr<TimeDomain> time_domain_;
   std::unique_ptr<RunLoop> run_loop_;
   std::vector<scoped_refptr<TestTaskQueue>> owned_task_queues_;
-};
-
-template <class MessageLoopType>
-class SequenceManagerWithMessageLoopPerfTestDelegate
-    : public BaseSequenceManagerPerfTestDelegate {
- public:
-  explicit SequenceManagerWithMessageLoopPerfTestDelegate(const char* name)
-      : name_(name), message_loop_(new MessageLoopType()) {
-    SetSequenceManager(CreateSequenceManagerOnCurrentThread(
-        SequenceManager::Settings::Builder()
-            .SetRandomisedSamplingEnabled(false)
-            .Build()));
-  }
-
-  ~SequenceManagerWithMessageLoopPerfTestDelegate() override { ShutDown(); }
-
-  const char* GetName() const override { return name_; }
-
- private:
-  const char* const name_;
-  std::unique_ptr<MessageLoop> message_loop_;
 };
 
 class SequenceManagerWithMessagePumpPerfTestDelegate
@@ -207,37 +191,6 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
   const char* const name_;
 };
 
-class MessageLoopPerfTestDelegate : public PerfTestDelegate {
- public:
-  MessageLoopPerfTestDelegate(const char* name,
-                              std::unique_ptr<MessageLoop> message_loop)
-      : name_(name), message_loop_(std::move(message_loop)) {}
-
-  ~MessageLoopPerfTestDelegate() override = default;
-
-  const char* GetName() const override { return name_; }
-
-  bool VirtualTimeIsSupported() const override { return false; }
-
-  bool MultipleQueuesSupported() const override { return false; }
-
-  scoped_refptr<TaskRunner> CreateTaskRunner() override {
-    return message_loop_->task_runner();
-  }
-
-  void WaitUntilDone() override {
-    run_loop_.reset(new RunLoop());
-    run_loop_->Run();
-  }
-
-  void SignalDone() override { run_loop_->Quit(); }
-
- private:
-  const char* const name_;
-  std::unique_ptr<MessageLoop> message_loop_;
-  std::unique_ptr<RunLoop> run_loop_;
-};
-
 class SingleThreadInThreadPoolPerfTestDelegate : public PerfTestDelegate {
  public:
   SingleThreadInThreadPoolPerfTestDelegate() : done_cond_(&done_lock_) {
@@ -260,8 +213,8 @@ class SingleThreadInThreadPoolPerfTestDelegate : public PerfTestDelegate {
   bool MultipleQueuesSupported() const override { return false; }
 
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
-    return CreateSingleThreadTaskRunner(
-        {ThreadPool(), TaskPriority::USER_BLOCKING});
+    return ThreadPool::CreateSingleThreadTaskRunner(
+        {TaskPriority::USER_BLOCKING});
   }
 
   void WaitUntilDone() override {
@@ -486,7 +439,7 @@ class SingleThreadDelayedTestCase : public TestCase {
       unsigned int delay =
           num_tasks_to_post_ % 2 ? 1 : (10 + num_tasks_to_post_ % 10);
       task_runners_[queue]->PostDelayedTask(FROM_HERE, task_closure_,
-                                            TimeDelta::FromMilliseconds(delay));
+                                            Milliseconds(delay));
     }
 
     void SignalDone() override { delegate_->SignalDone(); }

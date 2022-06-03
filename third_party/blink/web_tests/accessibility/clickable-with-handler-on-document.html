@@ -1,0 +1,17 @@
+S<!DOCTYPE HTML>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="x" role="button">abc</div>
+<script>
+document.addEventListener('click', () => { console.log('hi'); });
+
+test(function(t) {
+    assert_true(accessibilityController.accessibleElementById('x').isClickable);
+}, "An ARIA widget descendant of a clickable document is clickable.");
+</script>
+
+</body>
+</html>

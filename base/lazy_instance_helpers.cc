@@ -36,10 +36,10 @@ bool NeedsLazyInstance(subtle::AtomicWord* state) {
       // responsiveness. After that spin with Sleep(1ms) so that we don't burn
       // excessive CPU time - this also avoids infinite loops due to priority
       // inversions (https://crbug.com/797129).
-      if (elapsed < TimeDelta::FromMilliseconds(1))
+      if (elapsed < Milliseconds(1))
         PlatformThread::YieldCurrentThread();
       else
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+        PlatformThread::Sleep(Milliseconds(1));
     } while (subtle::Acquire_Load(state) == kLazyInstanceStateCreating);
   }
   // Someone else created the instance.

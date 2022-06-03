@@ -20,7 +20,7 @@ function runTest() {
     plugin.style.width = '100%';
     plugin.style.height = '100%';
 
-    var shadowRoot = div.createShadowRoot();
+    var shadowRoot = div.attachShadow({mode: 'open'});
     shadowRoot.appendChild(plugin);
 
     // Start logging once plugin sees a mousedown.

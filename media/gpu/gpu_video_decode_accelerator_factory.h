@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -37,6 +38,12 @@ class MediaLog;
 
 class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
  public:
+  GpuVideoDecodeAcceleratorFactory() = delete;
+  GpuVideoDecodeAcceleratorFactory(const GpuVideoDecodeAcceleratorFactory&) =
+      delete;
+  GpuVideoDecodeAcceleratorFactory& operator=(
+      const GpuVideoDecodeAcceleratorFactory&) = delete;
+
   ~GpuVideoDecodeAcceleratorFactory();
 
   // Return current GLContext.
@@ -61,20 +68,7 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       base::RepeatingCallback<gpu::gles2::ContextGroup*(void)>;
 
   static std::unique_ptr<GpuVideoDecodeAcceleratorFactory> Create(
-      const GetGLContextCallback& get_gl_context_cb,
-      const MakeGLContextCurrentCallback& make_context_current_cb,
-      const BindGLImageCallback& bind_image_cb);
-
-  static std::unique_ptr<GpuVideoDecodeAcceleratorFactory>
-  CreateWithGLES2Decoder(
-      const GetGLContextCallback& get_gl_context_cb,
-      const MakeGLContextCurrentCallback& make_context_current_cb,
-      const BindGLImageCallback& bind_image_cb,
-      const GetContextGroupCallback& get_context_group_cb,
-      const AndroidOverlayMojoFactoryCB& overlay_factory_cb,
-      const CreateAbstractTextureCallback& create_abstract_texture_cb);
-
-  static std::unique_ptr<GpuVideoDecodeAcceleratorFactory> CreateWithNoGL();
+      const GpuVideoDecodeGLClient& gl_client);
 
   static gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilities(
       const gpu::GpuPreferences& gpu_preferences,
@@ -88,13 +82,7 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       MediaLog* media_log = nullptr);
 
  private:
-  GpuVideoDecodeAcceleratorFactory(
-      const GetGLContextCallback& get_gl_context_cb,
-      const MakeGLContextCurrentCallback& make_context_current_cb,
-      const BindGLImageCallback& bind_image_cb,
-      const GetContextGroupCallback& get_context_group_cb,
-      const AndroidOverlayMojoFactoryCB& overlay_factory_cb,
-      const CreateAbstractTextureCallback& create_abstract_texture_cb);
+  GpuVideoDecodeAcceleratorFactory(const GpuVideoDecodeGLClient& gl_client);
 
 #if defined(OS_WIN)
   std::unique_ptr<VideoDecodeAccelerator> CreateD3D11VDA(
@@ -106,23 +94,22 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       const gpu::GpuPreferences& gpu_preferences,
       MediaLog* media_log) const;
 #endif
-#if BUILDFLAG(USE_V4L2_CODEC)
-  std::unique_ptr<VideoDecodeAccelerator> CreateV4L2VDA(
-      const gpu::GpuDriverBugWorkarounds& workarounds,
-      const gpu::GpuPreferences& gpu_preferences,
-      MediaLog* media_log) const;
-  std::unique_ptr<VideoDecodeAccelerator> CreateV4L2SVDA(
-      const gpu::GpuDriverBugWorkarounds& workarounds,
-      const gpu::GpuPreferences& gpu_preferences,
-      MediaLog* media_log) const;
-#endif
 #if BUILDFLAG(USE_VAAPI)
   std::unique_ptr<VideoDecodeAccelerator> CreateVaapiVDA(
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const gpu::GpuPreferences& gpu_preferences,
       MediaLog* media_log) const;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  std::unique_ptr<VideoDecodeAccelerator> CreateV4L2VDA(
+      const gpu::GpuDriverBugWorkarounds& workarounds,
+      const gpu::GpuPreferences& gpu_preferences,
+      MediaLog* media_log) const;
+  std::unique_ptr<VideoDecodeAccelerator> CreateV4L2SliceVDA(
+      const gpu::GpuDriverBugWorkarounds& workarounds,
+      const gpu::GpuPreferences& gpu_preferences,
+      MediaLog* media_log) const;
 #endif
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::unique_ptr<VideoDecodeAccelerator> CreateVTVDA(
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const gpu::GpuPreferences& gpu_preferences,
@@ -135,16 +122,9 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       MediaLog* media_log) const;
 #endif
 
-  const GetGLContextCallback get_gl_context_cb_;
-  const MakeGLContextCurrentCallback make_context_current_cb_;
-  const BindGLImageCallback bind_image_cb_;
-  const GetContextGroupCallback get_context_group_cb_;
+  const GpuVideoDecodeGLClient gl_client_;
   const AndroidOverlayMojoFactoryCB overlay_factory_cb_;
-  const CreateAbstractTextureCallback create_abstract_texture_cb_;
-
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoDecodeAcceleratorFactory);
 };
 
 }  // namespace media

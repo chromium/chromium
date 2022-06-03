@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../resources/picker-common.js"></script>
+<input type=date id=date min="2019-06-02" value="2019-06-11" max="2019-06-23">
+<script>
+openPickerAppearanceOnly(document.getElementById('date'), () => testRunner.notifyDone());
+</script>

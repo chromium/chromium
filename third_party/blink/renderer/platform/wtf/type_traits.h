@@ -28,6 +28,7 @@
 #include "base/compiler_specific.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
+#include "v8/include/cppgc/type-traits.h"  // nogncheck
 
 namespace WTF {
 
@@ -36,24 +37,6 @@ template <typename T>
 inline const char* GetStringWithTypeName() {
   return PRETTY_FUNCTION;
 }
-
-// Specifies whether a type should be treated weakly by the memory management
-// system. Only supported by the garbage collector and not by PartitionAlloc.
-// Requires garbage collection support, so it is only safe to  override in sync
-// with changing garbage collection semantics.
-template <typename T>
-struct IsWeak : std::false_type {};
-
-enum WeakHandlingFlag {
-  kNoWeakHandling,
-  kWeakHandling,
-};
-
-template <typename T>
-struct WeakHandlingTrait
-    : std::integral_constant<WeakHandlingFlag,
-                             IsWeak<T>::value ? kWeakHandling
-                                              : kNoWeakHandling> {};
 
 template <typename T, typename U>
 struct IsSubclass {
@@ -122,27 +105,28 @@ struct IsSubclassOfTemplateTypenameSizeTypename {
   static const bool value = sizeof(SubclassCheck(t_)) == sizeof(YesType);
 };
 
-}  // namespace WTF
-
-namespace blink {
-
-class Visitor;
-
-}  // namespace blink
-
-namespace WTF {
-
-template <typename T, typename = void>
-struct IsTraceable : std::false_type {
-  // Fail on incomplete types.
-  static_assert(sizeof(T), "incomplete type T");
-};
-
-// Note: This also checks if a superclass of T has a trace method.
 template <typename T>
-struct IsTraceable<T,
-                   base::void_t<decltype(std::declval<T>().Trace(
-                       std::declval<blink::Visitor*>()))>> : std::true_type {};
+struct IsTraceable : cppgc::internal::IsTraceable<T> {};
+
+template <typename T>
+struct IsGarbageCollectedType
+    : cppgc::internal::IsGarbageCollectedOrMixinType<T> {};
+
+template <typename T>
+struct IsWeak : cppgc::internal::IsWeak<T> {};
+
+template <typename T>
+struct IsMemberType : std::integral_constant<bool, cppgc::IsMemberTypeV<T>> {};
+
+template <typename T>
+struct IsWeakMemberType
+    : std::integral_constant<bool, cppgc::IsWeakMemberTypeV<T>> {};
+
+template <typename T>
+struct IsMemberOrWeakMemberType
+    : std::integral_constant<bool,
+                             cppgc::IsMemberTypeV<T> ||
+                                 cppgc::IsWeakMemberTypeV<T>> {};
 
 template <typename T, typename U>
 struct IsTraceable<std::pair<T, U>>
@@ -156,6 +140,17 @@ struct IsTraceableInCollectionTrait
     : std::integral_constant<
           bool,
           Traits::template IsTraceableInCollection<>::value> {};
+
+enum WeakHandlingFlag {
+  kNoWeakHandling,
+  kWeakHandling,
+};
+
+template <typename T>
+struct WeakHandlingTrait
+    : std::integral_constant<WeakHandlingFlag,
+                             IsWeak<T>::value ? kWeakHandling
+                                              : kNoWeakHandling> {};
 
 // This is used to check that DISALLOW_NEW objects are not
 // stored in off-heap Vectors, HashTables etc.
@@ -174,47 +169,6 @@ struct IsDisallowNew {
 
  public:
   static const bool value = sizeof(CheckMarker<T>(nullptr)) == sizeof(YesType);
-};
-
-template <typename T>
-class IsGarbageCollectedTypeInternal {
-  typedef char YesType;
-  typedef struct NoType { char padding[8]; } NoType;
-
-  using NonConstType = typename std::remove_const<T>::type;
-  template <typename U>
-  static YesType CheckGarbageCollectedType(
-      typename U::IsGarbageCollectedTypeMarker*);
-  template <typename U>
-  static NoType CheckGarbageCollectedType(...);
-
-  // Separately check for GarbageCollectedMixin, which declares a different
-  // marker typedef, to avoid resolution ambiguity for cases like
-  // IsGarbageCollectedType<B> over:
-  //
-  //    class A : public GarbageCollected<A>, public GarbageCollectedMixin {
-  //        USING_GARBAGE_COLLECTED_MIXIN(A);
-  //        ...
-  //    };
-  //    class B : public A, public GarbageCollectedMixin { ... };
-  //
-  template <typename U>
-  static YesType CheckGarbageCollectedMixinType(
-      typename U::IsGarbageCollectedMixinMarker*);
-  template <typename U>
-  static NoType CheckGarbageCollectedMixinType(...);
-
- public:
-  static const bool value =
-      (sizeof(YesType) ==
-       sizeof(CheckGarbageCollectedType<NonConstType>(nullptr))) ||
-      (sizeof(YesType) ==
-       sizeof(CheckGarbageCollectedMixinType<NonConstType>(nullptr)));
-};
-
-template <typename T>
-class IsGarbageCollectedType : public IsGarbageCollectedTypeInternal<T> {
-  static_assert(sizeof(T), "T must be fully defined");
 };
 
 template <>

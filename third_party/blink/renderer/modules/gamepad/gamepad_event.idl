@@ -4,7 +4,9 @@
 
 // https://w3c.github.io/gamepad/#gamepadevent-interface
 
-interface GamepadEvent : Event {
-    constructor(DOMString type, optional GamepadEventInit eventInitDict);
+[
+    Exposed=Window
+] interface GamepadEvent : Event {
+    constructor(DOMString type, optional GamepadEventInit eventInitDict = {});
     [ImplementedAs=getGamepad] readonly attribute Gamepad gamepad;
 };

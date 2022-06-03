@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.locale;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -40,11 +40,13 @@ public class LocaleManagerReferralTest {
         mDefaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("ru", "RU"));
 
-        LocaleManager.setInstanceForTest(new LocaleManager() {
-            @Override
-            protected String getYandexReferralId() {
-                return mYandexReferralId;
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                @Override
+                public String getYandexReferralId() {
+                    return mYandexReferralId;
+                }
+            });
         });
 
         TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {

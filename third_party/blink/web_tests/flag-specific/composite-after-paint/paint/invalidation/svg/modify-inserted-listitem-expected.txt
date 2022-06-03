@@ -5,27 +5,10 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect id='move'",
-          "rect": [28, 38, 10, 10],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='move'",
-          "rect": [28, 18, 10, 10],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect id='move'",
-          "rect": [28, 18, 10, 10],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='move'",
-          "rect": [18, 18, 10, 10],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [28, 38, 10, 10],
+        [28, 18, 10, 10],
+        [18, 18, 10, 10]
       ]
     }
   ]

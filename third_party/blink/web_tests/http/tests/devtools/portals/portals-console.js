@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the console works correctly with portals`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.navigatePromise('resources/append-predecessor-host.html');
@@ -25,6 +25,15 @@
           '!!window.portalHost');
       await ConsoleTestRunner.evaluateInConsoleAndDumpPromise(
           'window.location.pathname');
+      next();
+    },
+
+    async function testContextSelector(next) {
+      const selector = Console.ConsoleView.instance().consoleContextSelector;
+      TestRunner.assertEquals(selector.items.length, 2);
+      const executionContext = selector.items.at(1);
+      TestRunner.assertEquals(selector.titleFor(executionContext), 'append-predecessor.html');
+      TestRunner.assertEquals(selector.depthFor(executionContext), 1);
       next();
     },
 

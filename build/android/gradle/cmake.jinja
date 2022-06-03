@@ -15,12 +15,11 @@ include_directories(
 )
 {% endif %}
 
-{% for name, target in native.targets.iteritems() %}
-{% if target.sources is defined %}
-add_library("{{ name }}"
-{% for path in target.sources %}
+# Android studio will index faster when adding all sources into one library.
+{% if native.sources is defined %}
+add_library("chromium"
+{% for path in native.sources %}
     {{ path }}
 {% endfor %}
 )
 {% endif %}
-{% endfor %}

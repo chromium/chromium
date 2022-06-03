@@ -35,6 +35,10 @@ class TaskManager {
   };
 
   TaskManager() = default;
+
+  TaskManager(const TaskManager&) = delete;
+  TaskManager& operator=(const TaskManager&) = delete;
+
   virtual ~TaskManager() = default;
 
   // Called to schedule a new task. Overwrites the params if a task of the same
@@ -57,16 +61,15 @@ class TaskManager {
   virtual void OnStopScheduledTask(DownloadTaskType task_type) = 0;
 
   // Should be called once the task is complete. The callback passed through
-  // OnStartScheduledTask() will be run in order to notify that the task is done
-  // and the system should reschedule the task with the original params if
-  // |needs_reschedule| is true. If there are pending params for a new task, a
-  // new task will be scheduled immediately and reschedule logic will not be
-  // run.
+  // OnStartScheduledTask() will be run in order to notify that the task is
+  // done. If there are pending params for a new task, a new task will be
+  // scheduled immediately.
+  //
+  // Most caller should set |needs_reschedule| to false. The OS will reschedule
+  // the task with the original params but with a OS controlled back off time if
+  // |needs_reschedule| is true.
   virtual void NotifyTaskFinished(DownloadTaskType task_type,
                                   bool needs_reschedule) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManager);
 };
 
 }  // namespace download

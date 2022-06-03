@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
-<translation id="6106989379647458772">Можливо, веб-сторінка <ph name="PAGE" /> тимчасово недоступна або її назавжди переміщено на нову веб-адресу.</translation>
-<translation id="6312113039770857350">Веб-сторінка недоступна</translation>
-<translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Пропозиції.<ph name="MARKUP_2" />Переконайтеся, що пристрій під’єднано до мобільного Інтернету.<ph name="MARKUP_3" />Оновіть цю веб-сторінку пізніше<ph name="MARKUP_4" />Перевірне адресу, яку ви ввели<ph name="MARKUP_5" /></translation>
 </translationbundle>

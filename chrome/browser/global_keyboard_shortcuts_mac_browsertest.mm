@@ -19,6 +19,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/event_constants.h"
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
   // The second typed letter just appends.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_B,
                                /*flags=*/0));
-  ASSERT_EQ(omnibox_view->GetText(), base::ASCIIToUTF16("ab"));
+  ASSERT_EQ(omnibox_view->GetText(), u"ab");
 
   // Cmd+A selects the contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_A,
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
                                /*flags=*/0));
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_D,
                                /*flags=*/0));
-  ASSERT_EQ(omnibox_view->GetText(), base::ASCIIToUTF16("cd"));
+  ASSERT_EQ(omnibox_view->GetText(), u"cd");
 
   // Cmd + left arrow moves to the beginning. It should not perform history
   // navigation because the firstResponder is not a WebContents..
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
   // Cmd+V pastes the contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_V,
                                NSCommandKeyMask));
-  EXPECT_EQ(omnibox_view->GetText(), base::ASCIIToUTF16("abcd"));
+  EXPECT_EQ(omnibox_view->GetText(), u"abcd");
 }
 
 // Tests that the shortcut to reopen a previous tab works.

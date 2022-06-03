@@ -1,4 +1,5 @@
 Test navigator.requestMIDIAccess API in WebView
+Web MIDI will ask a permission to use even if the sysex is not specified in the MIDIOptions since around M82, around May 2020. See https://www.chromestatus.com/feature/5138066234671104 for more details.
 PASS: access.sysexEnabled is false
 PASS: requestMIDIAccess without option succeeded.
 TEST FINISHED

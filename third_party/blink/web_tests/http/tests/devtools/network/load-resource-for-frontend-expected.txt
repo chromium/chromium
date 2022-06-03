@@ -3,31 +3,31 @@ Test loading resource for frontend.
 
 Running: testNetworkResourceNonCached
 Loading resource from http://localhost:8080/devtools/network/resources/resource.php
-Success: 200
+Success: true
 Logged headers: cache-control, expires, pragma
 Content: "Hello world"
 
 Running: testNetworkResourceCached
 Loading resource from http://localhost:8080/devtools/network/resources/resource.php?cached=1
-Success: 200
+Success: true
 Logged headers: cache-control, expires, last-modified
 Content: "Hello world"
 
 Running: testNetworkResourceIfModifiedSince
 Loading resource from http://localhost:8080/devtools/network/resources/resource.php?cached=1
-Success: 304
+Success: false
 Logged headers: 
 Content: ""
 
 Running: testResourceFromIncorrectURL
 Loading resource from resource.php
-Success: 404
+Success: false
 Logged headers: 
 Content: ""
 
 Running: testResourceWithCookie
 Loading resource from http://127.0.0.1:8000/devtools/network/resources/print-cookie.php
-Success: 200
+Success: true
 Logged headers: cache-control, expires, pragma
 Content: "Cookie value: TestCookieValue."
 

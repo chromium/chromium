@@ -17,7 +17,7 @@ class SharedURLLoaderFactory;
 }
 
 // Similar to net::ReportSender but uses network::SimpleURLLoader under the
-// hood.
+// hood. Reports sent with this function do not save or send credentials.
 void SendReport(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     net::NetworkTrafficAnnotationTag traffic_annotation,

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
@@ -15,11 +17,12 @@ class WebUIIOS;
 // The WebUI controller for chrome://translate-internals.
 class TranslateInternalsUI : public web::WebUIIOSController {
  public:
-  explicit TranslateInternalsUI(web::WebUIIOS* web_ui);
-  ~TranslateInternalsUI() override;
+  explicit TranslateInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateInternalsUI);
+  TranslateInternalsUI(const TranslateInternalsUI&) = delete;
+  TranslateInternalsUI& operator=(const TranslateInternalsUI&) = delete;
+
+  ~TranslateInternalsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_

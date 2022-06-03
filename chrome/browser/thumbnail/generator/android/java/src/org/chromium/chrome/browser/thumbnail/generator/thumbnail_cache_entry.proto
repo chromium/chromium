@@ -1,0 +1,30 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Protocol buffer definition for a thumbnail entry on disk, used for storing
+// thumbnail and its related data for caching.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.thumbnail.generator;
+
+option java_package = "org.chromium.chrome.browser.thumbnail.generator";
+
+// TODO(jkrcal): Remove when protobuf 4.0 is out, https://crbug.com/800281.
+option optimize_for = LITE_RUNTIME;
+
+message ContentId {
+  // Required.
+  optional string id = 1;
+}
+
+message ThumbnailEntry {
+  // Required.
+  optional ContentId content_id = 1;
+  // Requested size (maximum required dimension (pixel) of the smaller side)
+  // of the thumbnail.
+  // Required.
+  optional int32 size_px = 2;
+  optional bytes compressed_png = 3;
+}

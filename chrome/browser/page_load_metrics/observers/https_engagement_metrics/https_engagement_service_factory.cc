@@ -41,7 +41,3 @@ content::BrowserContext* HttpsEngagementServiceFactory::GetBrowserContextToUse(
 bool HttpsEngagementServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
-
-bool HttpsEngagementServiceFactory::ServiceIsNULLWhileTesting() const {
-  return false;
-}

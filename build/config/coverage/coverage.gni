@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/toolchain.gni")
+if (is_fuchsia) {
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+}
 
 # There are two ways to enable code coverage instrumentation:
 # 1. When |use_clang_coverage| or |use_jacoco_coverage| is true and
@@ -14,7 +17,11 @@ import("//build/toolchain/toolchain.gni")
 #    input file or Java class files related to source files are instrumented.
 declare_args() {
   # Enable Clang's Source-based Code Coverage.
-  use_clang_coverage = false
+  if (is_fuchsia) {
+    use_clang_coverage = fuchsia_code_coverage
+  } else {
+    use_clang_coverage = false
+  }
 
   # Enables JaCoCo Java code coverage.
   use_jacoco_coverage = false

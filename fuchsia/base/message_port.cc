@@ -4,153 +4,126 @@
 
 #include "fuchsia/base/message_port.h"
 
+#include <fuchsia/mem/cpp/fidl.h>
+#include <lib/fidl/cpp/binding.h>
+#include <lib/fit/function.h>
+#include <lib/fpromise/result.h>
 #include <stdint.h>
 
-#include <lib/fit/function.h>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/containers/circular_deque.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/macros.h"
-#include "fuchsia/base/mem_buffer_util.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/public/common/messaging/string_message_codec.h"
-#include "third_party/blink/public/common/messaging/transferable_message_mojom_traits.h"
-#include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
+#include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace cr_fuchsia {
 namespace {
 
-base::Optional<fuchsia::web::FrameError> MojoMessageFromFidl(
+using BlinkMessage = blink::WebMessagePort::Message;
+
+// Converts a fuchsia::web::WebMessage to a BlinkMessage.
+// An empty result indicates that conversion was successful.
+// Data validation errors are returned as a FrameError.
+absl::optional<fuchsia::web::FrameError> BlinkMessageFromFidl(
     fuchsia::web::WebMessage fidl_message,
-    mojo::Message* mojo_message) {
+    BlinkMessage* blink_message) {
   if (!fidl_message.has_data()) {
     return fuchsia::web::FrameError::NO_DATA_IN_MESSAGE;
   }
 
-  base::string16 data_utf16;
-  if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(fidl_message.data(), &data_utf16)) {
+  absl::optional<std::u16string> data_utf16 =
+      base::ReadUTF8FromVMOAsUTF16(fidl_message.data());
+  if (!data_utf16) {
     return fuchsia::web::FrameError::BUFFER_NOT_UTF8;
   }
+  blink_message->data = std::move(*data_utf16);
 
-  blink::TransferableMessage transferable_message;
+  if (fidl_message.has_outgoing_transfer() &&
+      fidl_message.has_incoming_transfer()) {
+    DLOG(WARNING) << "WebMessage may only have incoming or outgoing transfer.";
+    return fuchsia::web::FrameError::INTERNAL_ERROR;
+  }
   if (fidl_message.has_outgoing_transfer()) {
-    for (fuchsia::web::OutgoingTransferable& outgoing :
+    for (fuchsia::web::OutgoingTransferable& transferrable :
          *fidl_message.mutable_outgoing_transfer()) {
-      transferable_message.ports.emplace_back(
-          MessagePortFromFidl(std::move(outgoing.message_port())));
+      if (!transferrable.is_message_port())
+        return fuchsia::web::FrameError::INTERNAL_ERROR;
+      blink_message->ports.push_back(
+          BlinkMessagePortFromFidl(std::move(transferrable.message_port())));
+    }
+  } else if (fidl_message.has_incoming_transfer()) {
+    for (fuchsia::web::IncomingTransferable& transferrable :
+         *fidl_message.mutable_incoming_transfer()) {
+      if (!transferrable.is_message_port())
+        return fuchsia::web::FrameError::INTERNAL_ERROR;
+      blink_message->ports.push_back(
+          BlinkMessagePortFromFidl(std::move(transferrable.message_port())));
     }
   }
 
-  transferable_message.owned_encoded_message =
-      blink::EncodeStringMessage(data_utf16);
-  transferable_message.encoded_message =
-      transferable_message.owned_encoded_message;
-  *mojo_message = blink::mojom::TransferableMessage::SerializeAsMessage(
-      &transferable_message);
-
-  return {};
+  return absl::nullopt;
 }
 
-base::Optional<fuchsia::web::WebMessage> FidlWebMessageFromMojo(
-    mojo::Message mojo_message) {
-  blink::TransferableMessage transferable_message;
-  if (!blink::mojom::TransferableMessage::DeserializeFromMessage(
-          std::move(mojo_message), &transferable_message)) {
-    return {};
-  }
-
-  fuchsia::web::WebMessage fidl_message;
-  if (!transferable_message.ports.empty()) {
-    std::vector<fuchsia::web::IncomingTransferable> transferables;
-    for (const blink::MessagePortChannel& port : transferable_message.ports) {
-      fuchsia::web::IncomingTransferable incoming;
-      incoming.set_message_port(MessagePortFromMojo(port.ReleaseHandle()));
-      transferables.emplace_back(std::move(incoming));
-    }
-    fidl_message.set_incoming_transfer(std::move(transferables));
-  }
-
-  base::string16 data_utf16;
-  if (!blink::DecodeStringMessage(transferable_message.encoded_message,
-                                  &data_utf16)) {
-    return {};
-  }
-
-  std::string data_utf8;
-  if (!base::UTF16ToUTF8(data_utf16.data(), data_utf16.size(), &data_utf8))
-    return {};
-
-  base::STLClearObject(&data_utf16);
-
-  fuchsia::mem::Buffer data =
-      cr_fuchsia::MemBufferFromString(data_utf8, "cr-web-message-from-mojo");
-  if (!data.vmo)
-    return {};
-
-  fidl_message.set_data(std::move(data));
-  return fidl_message;
-}
-
-// Defines the implementation of a MessagePort which routes messages from
-// FIDL clients to web content, or vice versa. Every MessagePort has a FIDL
-// port and a Mojo port.
+// Defines a MessagePortAdapter, which translates and routes messages between a
+// FIDL MessagePort and a blink::WebMessagePort. Every MessagePortAdapter has
+// exactly one FIDL MessagePort and one blink::WebMessagePort.
 //
-// MessagePort instances are self-managed; they destroy themselves when
-// the connection is terminated from either the Mojo or FIDL side.
-class MessagePort : public mojo::MessageReceiver {
+// MessagePortAdapter instances are self-managed; they destroy themselves when
+// the connection is terminated from either the Blink or FIDL side.
+class MessagePortAdapter : public blink::WebMessagePort::MessageReceiver {
+ public:
+  MessagePortAdapter(const MessagePortAdapter&) = delete;
+  MessagePortAdapter& operator=(const MessagePortAdapter&) = delete;
+
  protected:
-  explicit MessagePort(mojo::ScopedMessagePipeHandle mojo_port) {
-    mojo_port_ = std::make_unique<mojo::Connector>(
-        std::move(mojo_port), mojo::Connector::SINGLE_THREADED_SEND,
-        base::ThreadTaskRunnerHandle::Get());
-    mojo_port_->set_incoming_receiver(this);
-    mojo_port_->set_connection_error_handler(
-        base::BindOnce(&MessagePort::Destroy, base::Unretained(this)));
+  explicit MessagePortAdapter(blink::WebMessagePort blink_port)
+      : blink_port_(std::move(blink_port)) {
+    blink_port_.SetReceiver(this, base::ThreadTaskRunnerHandle::Get());
   }
 
-  ~MessagePort() override = default;
+  ~MessagePortAdapter() override = default;
 
-  // Deletes |this|, implicitly disconnecting the FIDL and Mojo ports.
-  void Destroy() {
-    // |mojo_port_| and |binding_| are implicitly unbound.
-    delete this;
+  // Deletes |this|, implicitly disconnecting the FIDL and Blink ports.
+  void Destroy() { delete this; }
+
+  // Sends a message to |blink_port_|.
+  void SendBlinkMessage(BlinkMessage message) {
+    CHECK(blink_port_.PostMessage(std::move(message)));
   }
 
-  // Sends a message to |mojo_port_|.
-  void SendMojoMessage(mojo::Message* message) {
-    CHECK(mojo_port_->Accept(message));
-  }
-
-  // Called by |mojo_port_| when a Mojo message was received.
+  // Called when a Blink message was received through |blink_port_|.
   virtual void DeliverMessageToFidl() = 0;
 
-  // Returns the next messagefrom Mojo, or an empty value if there
+  // Returns the next messagefrom Blink, or an empty value if there
   // are no more messages in the incoming queue.
-  base::Optional<fuchsia::web::WebMessage> GetNextMojoMessage() {
+  absl::optional<fuchsia::web::WebMessage> GetNextBlinkMessage() {
     if (message_queue_.empty())
-      return {};
+      return absl::nullopt;
 
     return std::move(message_queue_.front());
   }
 
   void OnDeliverMessageToFidlComplete() {
     DCHECK(!message_queue_.empty());
-
     message_queue_.pop_front();
   }
 
  private:
-  // mojo::MessageReceiver implementation.
-  bool Accept(mojo::Message* message) override {
-    base::Optional<fuchsia::web::WebMessage> message_converted =
-        FidlWebMessageFromMojo(std::move(*message));
+  // blink::WebMessagePort::MessageReceiver implementation:
+  bool OnMessage(BlinkMessage message) override {
+    absl::optional<fuchsia::web::WebMessage> message_converted =
+        FidlWebMessageFromBlink(std::move(message),
+                                TransferableHostType::kLocal);
     if (!message_converted) {
-      DLOG(ERROR) << "Couldn't decode MessageChannel from Mojo pipe.";
+      DLOG(ERROR) << "Couldn't decode WebMessage from blink::WebMessagePort.";
       Destroy();
       return false;
     }
@@ -163,19 +136,20 @@ class MessagePort : public mojo::MessageReceiver {
     return true;
   }
 
-  base::circular_deque<fuchsia::web::WebMessage> message_queue_;
-  std::unique_ptr<mojo::Connector> mojo_port_;
+  // blink::WebMessagePort::MessageReceiver implementation:
+  void OnPipeError() override { Destroy(); }
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePort);
+  base::circular_deque<fuchsia::web::WebMessage> message_queue_;
+  blink::WebMessagePort blink_port_;
 };
 
-// Binds a handle to a remote MessagePort to a Mojo MessagePipe.
-class FidlMessagePortClient : public MessagePort {
+// Binds a handle to a remote MessagePort to a blink::WebMessagePort.
+class FidlMessagePortClientAdapter : public MessagePortAdapter {
  public:
-  FidlMessagePortClient(
-      mojo::ScopedMessagePipeHandle mojo_port,
+  FidlMessagePortClientAdapter(
+      blink::WebMessagePort blink_port,
       fidl::InterfaceHandle<fuchsia::web::MessagePort> fidl_port)
-      : MessagePort(std::move(mojo_port)), port_(fidl_port.Bind()) {
+      : MessagePortAdapter(std::move(blink_port)), port_(fidl_port.Bind()) {
     ReadMessageFromFidl();
 
     port_.set_error_handler([this](zx_status_t status) {
@@ -187,18 +161,26 @@ class FidlMessagePortClient : public MessagePort {
     });
   }
 
+  FidlMessagePortClientAdapter(const FidlMessagePortClientAdapter&) = delete;
+  FidlMessagePortClientAdapter& operator=(const FidlMessagePortClientAdapter&) =
+      delete;
+
+  fidl::InterfaceRequest<fuchsia::web::MessagePort> NewRequest() {
+    return port_.NewRequest();
+  }
+
  private:
-  ~FidlMessagePortClient() override = default;
+  ~FidlMessagePortClientAdapter() override = default;
 
   void ReadMessageFromFidl() {
-    port_->ReceiveMessage(
-        fit::bind_member(this, &FidlMessagePortClient::OnMessageReceived));
+    port_->ReceiveMessage(fit::bind_member(
+        this, &FidlMessagePortClientAdapter::OnMessageReceived));
   }
 
   void OnMessageReceived(fuchsia::web::WebMessage message) {
-    mojo::Message mojo_message;
-    base::Optional<fuchsia::web::FrameError> result =
-        MojoMessageFromFidl(std::move(message), &mojo_message);
+    BlinkMessage blink_message;
+    absl::optional<fuchsia::web::FrameError> result =
+        BlinkMessageFromFidl(std::move(message), &blink_message);
     if (result) {
       LOG(WARNING) << "Received bad message, error: "
                    << static_cast<int32_t>(*result);
@@ -206,7 +188,7 @@ class FidlMessagePortClient : public MessagePort {
       return;
     }
 
-    SendMojoMessage(&mojo_message);
+    SendBlinkMessage(std::move(blink_message));
 
     ReadMessageFromFidl();
   }
@@ -222,30 +204,28 @@ class FidlMessagePortClient : public MessagePort {
     DeliverMessageToFidl();
   }
 
-  // cr_fuchsia::MessagePort implementation.
+  // cr_fuchsia::MessagePortAdapter implementation.
   void DeliverMessageToFidl() override {
-    base::Optional<fuchsia::web::WebMessage> message = GetNextMojoMessage();
+    absl::optional<fuchsia::web::WebMessage> message = GetNextBlinkMessage();
     if (!message)
       return;
 
     port_->PostMessage(
         std::move(*message),
-        fit::bind_member(this, &FidlMessagePortClient::OnMessagePosted));
+        fit::bind_member(this, &FidlMessagePortClientAdapter::OnMessagePosted));
 
     OnDeliverMessageToFidlComplete();
   }
 
   fuchsia::web::MessagePortPtr port_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidlMessagePortClient);
 };
 
-// Binds a MessagePort FIDL service from a Mojo MessagePipe.
-class FidlMessagePortServer : public fuchsia::web::MessagePort,
-                              public MessagePort {
+// Binds a MessagePort FIDL service from a blink::WebMessagePort.
+class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
+                                     public MessagePortAdapter {
  public:
-  explicit FidlMessagePortServer(mojo::ScopedMessagePipeHandle mojo_port)
-      : cr_fuchsia::MessagePort(std::move(mojo_port)), binding_(this) {
+  explicit FidlMessagePortServerAdapter(blink::WebMessagePort blink_port)
+      : cr_fuchsia::MessagePortAdapter(std::move(blink_port)), binding_(this) {
     binding_.set_error_handler([this](zx_status_t status) {
       ZX_LOG_IF(ERROR,
                 status != ZX_ERR_PEER_CLOSED && status != ZX_ERR_CANCELED,
@@ -255,28 +235,32 @@ class FidlMessagePortServer : public fuchsia::web::MessagePort,
     });
   }
 
-  FidlMessagePortServer(
-      mojo::ScopedMessagePipeHandle mojo_port,
+  FidlMessagePortServerAdapter(
+      blink::WebMessagePort blink_port,
       fidl::InterfaceRequest<fuchsia::web::MessagePort> request)
-      : FidlMessagePortServer(std::move(mojo_port)) {
+      : FidlMessagePortServerAdapter(std::move(blink_port)) {
     binding_.Bind(std::move(request));
   }
+
+  FidlMessagePortServerAdapter(const FidlMessagePortServerAdapter&) = delete;
+  FidlMessagePortServerAdapter& operator=(const FidlMessagePortServerAdapter&) =
+      delete;
 
   fidl::InterfaceHandle<fuchsia::web::MessagePort> NewBinding() {
     return binding_.NewBinding();
   }
 
  private:
-  ~FidlMessagePortServer() override = default;
+  ~FidlMessagePortServerAdapter() override = default;
 
-  // MessagePort implementation.
+  // cr_fuchsia::MessagePortAdapter implementation.
   void DeliverMessageToFidl() override {
     // Do nothing if the client hasn't requested a read, or if there's nothing
     // to read.
     if (!pending_receive_message_callback_)
       return;
 
-    base::Optional<fuchsia::web::WebMessage> message = GetNextMojoMessage();
+    absl::optional<fuchsia::web::WebMessage> message = GetNextBlinkMessage();
     if (!message)
       return;
 
@@ -288,9 +272,9 @@ class FidlMessagePortServer : public fuchsia::web::MessagePort,
   // fuchsia::web::MessagePort implementation.
   void PostMessage(fuchsia::web::WebMessage message,
                    PostMessageCallback callback) override {
-    mojo::Message mojo_message;
-    base::Optional<fuchsia::web::FrameError> status =
-        MojoMessageFromFidl(std::move(message), &mojo_message);
+    BlinkMessage blink_message;
+    absl::optional<fuchsia::web::FrameError> status =
+        BlinkMessageFromFidl(std::move(message), &blink_message);
 
     if (status) {
       LOG(ERROR) << "Error when reading message from FIDL: "
@@ -299,10 +283,8 @@ class FidlMessagePortServer : public fuchsia::web::MessagePort,
       return;
     }
 
-    SendMojoMessage(&mojo_message);
-    fuchsia::web::MessagePort_PostMessage_Result result;
-    result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
-    callback(std::move(result));
+    SendBlinkMessage(std::move(blink_message));
+    callback(fpromise::ok());
   }
 
   void ReceiveMessage(ReceiveMessageCallback callback) override {
@@ -319,37 +301,88 @@ class FidlMessagePortServer : public fuchsia::web::MessagePort,
   PostMessageCallback post_message_ack_;
   ReceiveMessageCallback pending_receive_message_callback_;
   fidl::Binding<fuchsia::web::MessagePort> binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidlMessagePortServer);
 };
+
+fidl::InterfaceRequest<fuchsia::web::MessagePort>
+RemoteFidlMessagePortFromBlink(blink::WebMessagePort blink_port) {
+  fidl::InterfaceHandle<fuchsia::web::MessagePort> fidl_handle;
+  auto request = fidl_handle.NewRequest();
+  new FidlMessagePortClientAdapter(std::move(blink_port),
+                                   std::move(fidl_handle));
+  return request;
+}
 
 }  // namespace
 
-mojo::ScopedMessagePipeHandle MessagePortFromFidl(
-    fidl::InterfaceRequest<fuchsia::web::MessagePort> port) {
-  mojo::ScopedMessagePipeHandle client_port;
-  mojo::ScopedMessagePipeHandle content_port;
-  mojo::CreateMessagePipe(0, &content_port, &client_port);
+// Methods for constructing MessagePortAdapters for various port types and
+// origins. The adapters manage their own lifetimes and will self-delete when
+// either endpoint of their channels are disconnected.
 
-  new FidlMessagePortServer(std::move(client_port), std::move(port));
-
-  return content_port;
+blink::WebMessagePort BlinkMessagePortFromFidl(
+    fidl::InterfaceRequest<fuchsia::web::MessagePort> fidl_port) {
+  auto port_pair = blink::WebMessagePort::CreatePair();
+  new FidlMessagePortServerAdapter(std::move(port_pair.first),
+                                   std::move(fidl_port));
+  return std::move(port_pair.second);
 }
 
-mojo::ScopedMessagePipeHandle MessagePortFromFidl(
-    fidl::InterfaceHandle<fuchsia::web::MessagePort> port) {
-  mojo::ScopedMessagePipeHandle client_port;
-  mojo::ScopedMessagePipeHandle content_port;
-  mojo::CreateMessagePipe(0, &content_port, &client_port);
-
-  new FidlMessagePortClient(std::move(content_port), std::move(port));
-
-  return client_port;
+blink::WebMessagePort BlinkMessagePortFromFidl(
+    fidl::InterfaceHandle<fuchsia::web::MessagePort> fidl_port) {
+  auto port_pair = blink::WebMessagePort::CreatePair();
+  new FidlMessagePortClientAdapter(std::move(port_pair.first),
+                                   std::move(fidl_port));
+  return std::move(port_pair.second);
 }
 
-fidl::InterfaceHandle<fuchsia::web::MessagePort> MessagePortFromMojo(
-    mojo::ScopedMessagePipeHandle port) {
-  return (new FidlMessagePortServer(std::move(port)))->NewBinding();
+fidl::InterfaceHandle<fuchsia::web::MessagePort> FidlMessagePortFromBlink(
+    blink::WebMessagePort blink_port) {
+  auto* adapter = new FidlMessagePortServerAdapter(std::move(blink_port));
+  return adapter->NewBinding();
+}
+
+absl::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
+    BlinkMessage blink_message,
+    TransferableHostType port_type) {
+  fuchsia::web::WebMessage fidl_message;
+
+  if (!blink_message.ports.empty()) {
+    switch (port_type) {
+      case TransferableHostType::kLocal:
+        for (blink::WebMessagePort& port : blink_message.ports) {
+          fuchsia::web::IncomingTransferable incoming;
+          incoming.set_message_port(FidlMessagePortFromBlink(std::move(port)));
+          fidl_message.mutable_incoming_transfer()->push_back(
+              std::move(incoming));
+        }
+        break;
+      case TransferableHostType::kRemote:
+        for (blink::WebMessagePort& port : blink_message.ports) {
+          fuchsia::web::OutgoingTransferable outgoing;
+          outgoing.set_message_port(
+              RemoteFidlMessagePortFromBlink(std::move(port)));
+          fidl_message.mutable_outgoing_transfer()->push_back(
+              std::move(outgoing));
+        }
+        break;
+    }
+    blink_message.ports.clear();
+  }
+
+  std::u16string data_utf16 = std::move(blink_message.data);
+  std::string data_utf8;
+  if (!base::UTF16ToUTF8(data_utf16.data(), data_utf16.size(), &data_utf8))
+    return absl::nullopt;
+
+  base::STLClearObject(&data_utf16);
+
+  constexpr char kBufferVmoName[] = "cr-web-message-from-blink";
+  fuchsia::mem::Buffer data_buffer =
+      base::MemBufferFromString(data_utf8, kBufferVmoName);
+  if (!data_buffer.vmo)
+    return absl::nullopt;
+
+  fidl_message.set_data(std::move(data_buffer));
+  return fidl_message;
 }
 
 }  // namespace cr_fuchsia

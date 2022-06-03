@@ -30,6 +30,9 @@ extern const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize;
 // Lock main program text segments fully.
 CHROMEOS_EXPORT void LockMainProgramText();
 
+// It should be called when some memory configuration is changed.
+CHROMEOS_EXPORT void UpdateMemoryParameters();
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_MEMORY_MEMORY_H_

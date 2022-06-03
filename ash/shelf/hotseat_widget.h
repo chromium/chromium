@@ -5,9 +5,15 @@
 #ifndef ASH_SHELF_HOTSEAT_WIDGET_H_
 #define ASH_SHELF_HOTSEAT_WIDGET_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/hotseat_transition_animator.h"
+#include "ash/shelf/shelf_component.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -19,34 +25,74 @@ class FocusCycler;
 class ScrollableShelfView;
 class Shelf;
 class ShelfView;
+class HotseatTransitionAnimator;
 
 // The hotseat widget is part of the shelf and hosts app shortcuts.
-class ASH_EXPORT HotseatWidget : public views::Widget,
-                                 public ShelfConfig::Observer {
+class ASH_EXPORT HotseatWidget : public ShelfComponent,
+                                 public ShelfConfig::Observer,
+                                 public views::Widget {
  public:
+  // Defines the hotseat transition types.
+  enum class StateTransition {
+    // Hotseat state transits between kShownHomeLauncher and kExtended.
+    kHomeLauncherAndExtended,
+
+    // Hotseat state transits between kShownHomeLauncher and kHidden.
+    kHomeLauncherAndHidden,
+
+    // Hotseat state transits between kHidden and kExtended.
+    kHiddenAndExtended,
+
+    kOther
+  };
+
+  // Scoped class to notify HotseatWidget of hotseat state transition in
+  // progress. We should not calculate the state transition simply in
+  // HotseatWidget::SetState(). Otherwise it is hard to reset when the
+  // transition completes.
+  class ScopedInStateTransition {
+   public:
+    ScopedInStateTransition(HotseatWidget* hotseat_widget,
+                            HotseatState old_state,
+                            HotseatState target_state);
+    ~ScopedInStateTransition();
+
+    ScopedInStateTransition(const ScopedInStateTransition& rhs) = delete;
+    ScopedInStateTransition& operator=(const ScopedInStateTransition& rhs) =
+        delete;
+
+   private:
+    HotseatWidget* hotseat_widget_ = nullptr;
+  };
+
   HotseatWidget();
+
+  HotseatWidget(const HotseatWidget&) = delete;
+  HotseatWidget& operator=(const HotseatWidget&) = delete;
+
   ~HotseatWidget() override;
+
+  // Returns whether the hotseat background should be shown.
+  static bool ShouldShowHotseatBackground();
 
   // Initializes the widget, sets its contents view and basic properties.
   void Initialize(aura::Window* container, Shelf* shelf);
+
+  // Initializes the animation metrics reporter responsible for recording
+  // animation performance during hotseat state changes, and attaches
+  // |delegate_view_| as an observer.
+  void OnHotseatTransitionAnimatorCreated(HotseatTransitionAnimator* animator);
 
   // views::Widget:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnNativeWidgetActivationChanged(bool active) override;
 
-  // ShelfConfig::Observer
+  // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
-
-  // Whether the overflow menu/bubble is currently being shown.
-  bool IsShowingOverflowBubble() const;
 
   // Whether the widget is in the extended position.
   bool IsExtended() const;
-
-  // Focuses the first or the last app shortcut inside the overflow shelf.
-  // Does nothing if the overflow shelf is not currently shown.
-  void FocusOverflowShelf(bool last_element);
 
   // Finds the first or last focusable app shortcut and focuses it.
   void FocusFirstOrLastFocusableChild(bool last);
@@ -54,24 +100,63 @@ class ASH_EXPORT HotseatWidget : public views::Widget,
   // Notifies children of tablet mode state changes.
   void OnTabletModeChanged();
 
-  // Returns the target opacity (between 0 and 1) given current conditions.
-  float CalculateOpacity();
+  // Returns the target opacity for the shelf view given current conditions.
+  float CalculateShelfViewOpacity() const;
 
-  // Updates the opaque background which functions as the hotseat background.
-  void UpdateOpaqueBackground();
+  // Updates the bounds of the translucent background which functions as the
+  // hotseat background.
+  void UpdateTranslucentBackground();
 
-  // Updates this widget's layout according to current conditions.
-  void UpdateLayout(bool animate);
+  // Calculates the hotseat y position for |hotseat_target_state| in screen
+  // coordinates.
+  int CalculateHotseatYInScreen(HotseatState hotseat_target_state) const;
 
-  gfx::Size GetOpaqueBackgroundSize() const;
+  // Calculates the hotseat target bounds's size for the given target state.
+  gfx::Size CalculateTargetBoundsSize(HotseatState hotseat_target_state) const;
+
+  // ShelfComponent:
+  void CalculateTargetBounds() override;
+  gfx::Rect GetTargetBounds() const override;
+  void UpdateLayout(bool animate) override;
+  void UpdateTargetBoundsForGesture(int shelf_position) override;
+
+  // TODO(manucornet): Remove this method once all the hotseat layout
+  // code has moved to this class.
+  void set_target_bounds(gfx::Rect target_bounds) {
+    target_bounds_ = target_bounds;
+  }
+
+  gfx::Size GetTranslucentBackgroundSize() const;
 
   // Sets the focus cycler and adds the hotseat to the cycle.
   void SetFocusCycler(FocusCycler* focus_cycler);
 
   bool IsShowingShelfMenu() const;
 
+  // Whether the event is located in the hotseat area containing shelf apps.
+  bool EventTargetsShelfView(const ui::LocatedEvent& event) const;
+
   ShelfView* GetShelfView();
   const ShelfView* GetShelfView() const;
+
+  // Returns the hotseat height (or width for side shelf).
+  int GetHotseatSize() const;
+
+  // Returns the drag distance required to fully show the hotseat widget from
+  // the hidden state.
+  int GetHotseatFullDragAmount() const;
+
+  // Updates the target hotseat density, if needed. Returns whether
+  // |target_hotseat_density_| has changed after calling this method.
+  bool UpdateTargetHotseatDensityIfNeeded();
+
+  // Returns the background blur of the |translucent_background_|, for tests.
+  int GetHotseatBackgroundBlurForTest() const;
+
+  // Returns whether the translucent background is visible, for tests.
+  bool GetIsTranslucentBackgroundVisibleForTest() const;
+
+  metrics_util::ReportCallback GetTranslucentBackgroundReportCallback();
 
   void SetState(HotseatState state);
   HotseatState state() const { return state_; }
@@ -92,14 +177,71 @@ class ASH_EXPORT HotseatWidget : public views::Widget,
 
   void set_manually_extended(bool value) { is_manually_extended_ = value; }
 
+  HotseatDensity target_hotseat_density() const {
+    return target_hotseat_density_;
+  }
+
+  // The layer that should be used to animate hotseat bounds while showing the
+  // home to overview contextual nudge.
+  ui::Layer* GetLayerForNudgeAnimation();
+
  private:
   class DelegateView;
 
-  HotseatState state_ = HotseatState::kShown;
+  struct LayoutInputs {
+    gfx::Rect bounds;
+    float shelf_view_opacity = 0.0f;
+    bool is_active_session_state = false;
+
+    bool operator==(const LayoutInputs& other) const {
+      return bounds == other.bounds &&
+             shelf_view_opacity == other.shelf_view_opacity &&
+             is_active_session_state == other.is_active_session_state;
+    }
+  };
+
+  // Collects the inputs for layout.
+  LayoutInputs GetLayoutInputs() const;
+
+  // May update the hotseat widget's target in account of app scaling.
+  void MaybeAdjustTargetBoundsForAppScaling(HotseatState hotseat_target_state);
+
+  // Calculates the target hotseat density.
+  HotseatDensity CalculateTargetHotseatDensity() const;
+
+  // Animates the hotseat to the target opacity/bounds.
+  void LayoutHotseatByAnimation(double target_opacity,
+                                const gfx::Rect& target_bounds);
+
+  // Start the animation designed specifically for |state_transition|.
+  void StartHotseatTransitionAnimation(StateTransition state_transition,
+                                       double target_opacity,
+                                       const gfx::Rect& target_bounds);
+
+  // Starts the default bounds/opacity animation.
+  void StartNormalBoundsAnimation(double target_opacity,
+                                  const gfx::Rect& target_bounds);
+
+  // The set of inputs that impact this widget's layout. The assumption is that
+  // this widget needs a relayout if, and only if, one or more of these has
+  // changed.
+  absl::optional<LayoutInputs> layout_inputs_;
+
+  gfx::Rect target_bounds_;
+
+  // The size that |target_bounds_| would have in kShownHomeLauncher state.
+  // Used to calculate hotseat density state.
+  gfx::Size target_size_for_shown_state_;
+
+  HotseatState state_ = HotseatState::kNone;
+
+  // Indicates the type of the hotseat state transition in progress.
+  absl::optional<StateTransition> state_transition_in_progress_;
+
+  Shelf* shelf_ = nullptr;
 
   // View containing the shelf items within an active user session. Owned by
   // the views hierarchy.
-  ShelfView* shelf_view_ = nullptr;
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
 
   // The contents view of this widget. Contains |shelf_view_| and the background
@@ -110,12 +252,15 @@ class ASH_EXPORT HotseatWidget : public views::Widget,
   // dragged it. This will be reset with any visible shelf configuration change.
   bool is_manually_extended_ = false;
 
+  // Indicates the target hotseat density. When app scaling feature is enabled,
+  // hotseat may become denser if there is insufficient view space to
+  // accommodate all app icons without scrolling.
+  HotseatDensity target_hotseat_density_ = HotseatDensity::kNormal;
+
   // The window targeter installed on the hotseat. Filters out events which land
   // on the non visible portion of the hotseat, or events that reach the hotseat
   // during an animation.
   std::unique_ptr<aura::ScopedWindowTargeter> hotseat_window_targeter_;
-
-  DISALLOW_COPY_AND_ASSIGN(HotseatWidget);
 };
 
 }  // namespace ash

@@ -18,7 +18,6 @@ const char kKeyUserType[] = "user_type";
 const char kUserTypeChild[] = "child";
 const char kUserTypeGuest[] = "guest";
 const char kUserTypeManaged[] = "managed";
-const char kUserTypeSupervised[] = "supervised";
 const char kUserTypeUnmanaged[] = "unmanaged";
 
 std::string DetermineUserType(Profile* profile) {
@@ -28,8 +27,6 @@ std::string DetermineUserType(Profile* profile) {
     return kUserTypeGuest;
   if (profile->IsChild())
     return kUserTypeChild;
-  if (profile->IsLegacySupervised())
-    return kUserTypeSupervised;
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return kUserTypeManaged;
   }

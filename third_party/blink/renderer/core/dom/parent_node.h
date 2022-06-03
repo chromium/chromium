@@ -63,16 +63,25 @@ class ParentNode {
     return count;
   }
 
-  static void prepend(Node& node,
-                      const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-                      ExceptionState& exception_state) {
+  static void prepend(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
     return node.Prepend(nodes, exception_state);
   }
 
-  static void append(Node& node,
-                     const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-                     ExceptionState& exception_state) {
+  static void append(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
     return node.Append(nodes, exception_state);
+  }
+
+  static void replaceChildren(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
+    return node.ReplaceChildren(nodes, exception_state);
   }
 
   static Element* querySelector(ContainerNode& node,

@@ -26,9 +26,9 @@ DeviceInfoQueryWin::~DeviceInfoQueryWin() {
   }
 }
 
-bool DeviceInfoQueryWin::AddDevice(const std::string& device_path) {
-  return SetupDiOpenDeviceInterfaceA(device_info_list_, device_path.c_str(), 0,
-                                     nullptr) != FALSE;
+bool DeviceInfoQueryWin::AddDevice(const std::wstring& device_path) {
+  return SetupDiOpenDeviceInterface(device_info_list_, device_path.c_str(), 0,
+                                    nullptr) != FALSE;
 }
 
 bool DeviceInfoQueryWin::GetDeviceInfo() {
@@ -53,15 +53,15 @@ bool DeviceInfoQueryWin::GetDeviceStringProperty(const DEVPROPKEY& property,
     return false;
   }
 
-  base::string16 buffer16;
+  std::u16string buffer;
   if (!SetupDiGetDeviceProperty(
           device_info_list_, &device_info_data_, &property, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&buffer16, required_size)),
+          reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
     return false;
   }
 
-  *property_buffer = base::UTF16ToUTF8(buffer16);
+  *property_buffer = base::UTF16ToUTF8(buffer);
   return true;
 }
 

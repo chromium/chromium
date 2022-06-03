@@ -9,16 +9,13 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
-#include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/token.h"
-#include "components/sessions/core/base_session_service.h"
+#include "components/sessions/core/command_storage_manager.h"
+#include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 namespace sessions {
@@ -27,7 +24,6 @@ class SessionCommand;
 
 // The following functions create sequentialized change commands which are
 // used to reconstruct the current/previous session state.
-// It is up to the caller to delete the returned SessionCommand* object.
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateSetSelectedTabInWindowCommand(const SessionID& window_id, int index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(
@@ -50,7 +46,7 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     SessionWindow::WindowType type);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     const SessionID& tab_id,
-    base::Optional<tab_groups::TabGroupId> group);
+    absl::optional<tab_groups::TabGroupId> group);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
@@ -76,11 +72,15 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateSetTabExtensionAppIDCommand(const SessionID& tab_id,
                                   const std::string& extension_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetTabUserAgentOverrideCommand(const SessionID& tab_id,
-                                     const std::string& user_agent_override);
+CreateSetTabUserAgentOverrideCommand(
+    const SessionID& tab_id,
+    const SerializedUserAgentOverride& user_agent_override);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
     const SessionID& window_id,
     const std::string& app_name);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    const SessionID& window_id,
+    const std::string& user_title);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     const SessionID& tab_id,
     base::TimeTicks last_active_time);
@@ -89,12 +89,24 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
     const SessionID& window_id,
     const std::string& workspace);
 
-// Searches for a pending command using |base_session_service| that can be
+SESSIONS_EXPORT std::unique_ptr<SessionCommand>
+CreateSetWindowVisibleOnAllWorkspacesCommand(const SessionID& window_id,
+                                             bool visible_on_all_workspaces);
+
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
+    const SessionID& tab_id,
+    const std::string& guid);
+
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
+    const SessionID& tab_id,
+    const std::map<std::string, std::string>& data);
+
+// Searches for a pending command using |command_storage_manager| that can be
 // replaced with |command|. If one is found, pending command is removed, the
 // command is added to the pending commands (taken ownership) and true is
 // returned.
 SESSIONS_EXPORT bool ReplacePendingCommand(
-    BaseSessionService* base_session_service,
+    CommandStorageManager* command_storage_manager,
     std::unique_ptr<SessionCommand>* command);
 
 // Returns true if provided |command| either closes a window or a tab.

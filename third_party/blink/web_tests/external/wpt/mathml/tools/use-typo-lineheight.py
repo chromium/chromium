@@ -1,7 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-from __future__ import print_function
-from utils.misc import MathMLAssociationCopyright
 import fontforge
 
 font = fontforge.font()
@@ -12,7 +10,7 @@ name = "font-lineheight%d-typolineheight%d" % (winHeight, typoLineHeight)
 font.fontname = name
 font.familyname = name
 font.fullname = name
-font.copyright = MathMLAssociationCopyright
+font.copyright = "Copyright (c) 2016 MathML Association"
 
 glyph = font.createChar(ord(" "), "space")
 glyph.width = 1000
@@ -31,15 +29,15 @@ font.os2_typodescent = -200
 font.os2_typolinegap = typoLineHeight - \
                        (font.os2_typoascent - font.os2_typodescent)
 
-font.hhea_ascent = winHeight / 2
+font.hhea_ascent = winHeight // 2
 font.hhea_ascent_add = False
-font.hhea_descent = -winHeight / 2
+font.hhea_descent = -winHeight // 2
 font.hhea_descent_add = False
 font.hhea_linegap = 0
 
-font.os2_winascent = winHeight / 2
+font.os2_winascent = winHeight // 2
 font.os2_winascent_add = False
-font.os2_windescent = winHeight / 2
+font.os2_windescent = winHeight // 2
 font.os2_windescent_add = False
 
 font.os2_use_typo_metrics = True

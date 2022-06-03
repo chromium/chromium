@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/unified_system_tray_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
@@ -13,7 +12,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -35,16 +34,19 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
                                         public views::ViewObserver {
  public:
   UnifiedSystemTrayControllerTest() = default;
+
+  UnifiedSystemTrayControllerTest(const UnifiedSystemTrayControllerTest&) =
+      delete;
+  UnifiedSystemTrayControllerTest& operator=(
+      const UnifiedSystemTrayControllerTest&) = delete;
+
   ~UnifiedSystemTrayControllerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    chromeos::shill_clients::InitializeFakes();
-    // Initializing NetworkHandler before ash is more like production.
-    chromeos::NetworkHandler::Initialize();
+    network_config_helper_ = std::make_unique<
+        chromeos::network_config::CrosNetworkConfigTestHelper>();
     AshTestBase::SetUp();
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
-                                                            &local_state_);
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
 
@@ -61,11 +63,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
     controller_.reset();
     model_.reset();
 
-    // This roughly matches production shutdown order.
-    chromeos::NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::shill_clients::Shutdown();
   }
 
   // views::ViewObserver:
@@ -99,16 +97,13 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   UnifiedSystemTrayView* view() { return view_.get(); }
 
  private:
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      network_config_helper_;
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemTrayView> view_;
 
-  TestingPrefServiceSimple profile_prefs_;
-  TestingPrefServiceSimple local_state_;
-
   int preferred_size_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayControllerTest);
 };
 
 TEST_F(UnifiedSystemTrayControllerTest, ToggleExpanded) {

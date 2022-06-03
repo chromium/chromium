@@ -4,10 +4,10 @@
     margin: 0;
   }
   .container {
-      height: 250px;
-      width: 250px;
-      margin-top: 50px;
-      display: block;
+    height: 250px;
+    width: 250px;
+    margin-top: 50px;
+    display: block;
   }
   .container > div {
     height: 200px;
@@ -26,7 +26,12 @@
     border: none;
   }
 </style>
-
+<script>
+  // Prefer non-composited scrolling because this is a test of non-composited
+  // scrollers.
+  if (window.internals)
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+</script>
 <section id='div' style="display:none;">
   <div class="to-show container">
   </div>
@@ -41,7 +46,7 @@
   <div class="to-show container">
   </div>
   <div class="to-hide container">
-    <iframe src="data:text/html;charset=utf-8,<div style='height:1000px; width:1000px; background: linear-gradient(to bottom, red, white);'>">
+    <iframe src="resources/large-div-background-gradient.html">
       This should not be visible.
     </iframe>
   </div>
@@ -145,7 +150,7 @@
       break;
     case 'iframe':
       window.nextStep = nextStep;
-      inner = '<iframe id="iframe" onload="runAfterLayoutAndPaint(window.nextStep)" src="data:text/html;charset=utf-8,<div style=\'height:1000px; width:1000px; background: linear-gradient(to bottom, red, white);\'>This should be covered by a green overlay.</div>"></iframe>';
+      inner = '<iframe id="iframe" onload="runAfterLayoutAndPaint(window.nextStep)" src="resources/large-div-background-gradient.html"></iframe>';
       break;
     }
     container.innerHTML = inner;

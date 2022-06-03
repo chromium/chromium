@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that certain user actions in scripts panel reveal execution line.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/reveal-not-skipped.html');
 
@@ -21,7 +21,7 @@
       function step2() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         TestRunner.addResult('Throwing exception...');
         TestRunner.evaluateInPage('setTimeout(throwAnException, 0)');
         TestRunner.addSniffer(
@@ -31,7 +31,7 @@
       function step3() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         TestRunner.addResult('Reloading page...');
         TestRunner.reloadPage(step4);
       }
@@ -44,7 +44,7 @@
       function step5() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         TestRunner.addResult('Throwing exception...');
         TestRunner.evaluateInPage('setTimeout(throwAnException, 0)');
         TestRunner.addSniffer(
@@ -54,7 +54,7 @@
       function step6() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         next();
       }
     },
@@ -70,20 +70,20 @@
       function step3() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         TestRunner.addResult('Formatting...');
         SourcesTestRunner.scriptFormatter().then(function(scriptFormatter) {
           TestRunner.addSniffer(
-              Sources.ScriptFormatterEditorAction.prototype, '_updateButton',
+              Sources.ScriptFormatterEditorAction.prototype, 'updateButton',
               uiSourceCodeScriptFormatted);
-          scriptFormatter._toggleFormatScriptSource();
+          scriptFormatter.toggleFormatScriptSource();
         });
       }
 
       function uiSourceCodeScriptFormatted() {
         TestRunner.addResult(
             'Script source was shown for \'' +
-            panel.visibleView._uiSourceCode.name() + '\'.');
+            panel.visibleView.uiSourceCode().name() + '\'.');
         next();
       }
     }

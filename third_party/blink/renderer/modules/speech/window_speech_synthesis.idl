@@ -24,8 +24,8 @@
  */
 
 [
-    ImplementedAs=DOMWindowSpeechSynthesis,
+    ImplementedAs=SpeechSynthesis,
     RuntimeEnabled=ScriptedSpeechSynthesis
 ] partial interface Window {
-    [Measure, CallWith=ScriptState] readonly attribute SpeechSynthesis speechSynthesis;
+    [Measure] readonly attribute SpeechSynthesis speechSynthesis;
 };

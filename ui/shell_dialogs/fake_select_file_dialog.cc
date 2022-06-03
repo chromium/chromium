@@ -4,7 +4,6 @@
 
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
-#include "base/logging.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace ui {
@@ -55,7 +54,7 @@ bool FakeSelectFileDialog::IsRunning(gfx::NativeWindow owning_window) const {
 
 void FakeSelectFileDialog::SelectFileImpl(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,

@@ -1,0 +1,54 @@
+<style include="settings-shared">
+  .toggle-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+</style>
+<div class="settings-box first">
+  <div class="settings-box-text">
+    [[getDescriptionText_()]]
+    <div class="secondary" id="secondaryText">
+      $i18n{guestOsSharedUsbDevicesExtraDescription}
+    </div>
+  </div>
+</div>
+<div class="settings-box secondary continuation"
+    hidden="[[sharedUsbDevices_.length]]">
+   $i18n{guestOsSharedUsbDevicesListEmptyMessage}
+</div>
+<template is="dom-if" if="[[sharedUsbDevices_.length]]" restamp>
+  <div class="list-frame vertical-list">
+    <template is="dom-repeat" items="[[sharedUsbDevices_]]">
+      <div class="list-item toggle-container">
+        <div class="label">[[item.device.label]]</div>
+        <cr-toggle class="toggle" checked="[[item.shared]]"
+            on-change="onDeviceSharedChange_"
+            aria-label$="[[item.device.label]]">
+        </cr-toggle>
+      </div>
+    </template>
+  </div>
+</template>
+<template is="dom-if" if="[[reassignDevice_]]" restamp>
+  <cr-dialog id="reassignDialog" close-text="$i18n{close}"
+      on-cancel="onReassignCancel_" show-on-attach>
+    <div slot="title">
+      $i18n{guestOsSharedUsbDevicesInUse}
+    </div>
+    <div slot="body">
+      [[getReassignDialogText_(reassignDevice_)]]
+    </div>
+    <div slot="button-container">
+      <cr-button id="cancel" class="cancel-button"
+          on-click="onReassignCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="continue" class="action-button"
+          on-click="onReassignContinueClick_">
+        $i18n{continue}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

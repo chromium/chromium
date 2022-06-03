@@ -20,42 +20,43 @@ namespace {
 
 using extensions::APIPermission;
 using extensions::APIPermissionInfo;
+using extensions::mojom::APIPermissionID;
 
 // WARNING: If you are modifying a permission message in this list, be sure to
 // add the corresponding permission message rule to
 // CastPermissionMessageProvider::GetPermissionMessages as well.
 APIPermissionInfo::InitInfo permissions_to_register[] = {
     // Register permissions for all extension types.
-    {APIPermission::kIdentity, "identity"},
-    {APIPermission::kExperimental, "experimental",
+    {APIPermissionID::kIdentity, "identity"},
+    {APIPermissionID::kExperimental, "experimental",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kNotifications, "notifications"},
+    {APIPermissionID::kNotifications, "notifications"},
 
     // Register extension permissions.
-    {APIPermission::kAccessibilityFeaturesModify,
+    {APIPermissionID::kAccessibilityFeaturesModify,
      "accessibilityFeatures.modify"},
-    {APIPermission::kAccessibilityFeaturesRead, "accessibilityFeatures.read"},
-    {APIPermission::kAccessibilityPrivate, "accessibilityPrivate",
+    {APIPermissionID::kAccessibilityFeaturesRead, "accessibilityFeatures.read"},
+    {APIPermissionID::kAccessibilityPrivate, "accessibilityPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kBookmark, "bookmarks"},
-    {APIPermission::kBrailleDisplayPrivate, "brailleDisplayPrivate",
+    {APIPermissionID::kBookmark, "bookmarks"},
+    {APIPermissionID::kBrailleDisplayPrivate, "brailleDisplayPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kHistory, "history"},
-    {APIPermission::kTab, "tabs"},
-    {APIPermission::kTts, "tts", APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kTtsEngine, "ttsEngine",
+    {APIPermissionID::kHistory, "history"},
+    {APIPermissionID::kTab, "tabs"},
+    {APIPermissionID::kTts, "tts", APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kTtsEngine, "ttsEngine",
      APIPermissionInfo::kFlagCannotBeOptional},
 
     // Register private permissions.
-    {APIPermission::kCommandsAccessibility, "commands.accessibility",
+    {APIPermissionID::kCommandsAccessibility, "commands.accessibility",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kCommandLinePrivate, "commandLinePrivate",
+    {APIPermissionID::kCommandLinePrivate, "commandLinePrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kIdentityPrivate, "identityPrivate",
+    {APIPermissionID::kIdentityPrivate, "identityPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kVirtualKeyboardPrivate, "virtualKeyboardPrivate",
+    {APIPermissionID::kVirtualKeyboardPrivate, "virtualKeyboardPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kSettingsPrivate, "settingsPrivate",
+    {APIPermissionID::kSettingsPrivate, "settingsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
 };
 

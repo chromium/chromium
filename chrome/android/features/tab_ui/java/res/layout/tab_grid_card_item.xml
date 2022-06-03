@@ -2,15 +2,16 @@
 <!-- Copyright 2019 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<!-- TODO(crbug/928388): Handle elevation for KitKat.-->
+<!-- This layout is depending on theme overlays to inflate correctly. See
+     {@link TabManagementDelegate#applyThemeOverlays} -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/background_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/hovered_tab_grid_card_background"
-        android:layout_margin="8dp"
+        android:background="?attr/tabGridBackground"
+        android:layout_margin="?attr/tabGridMargin"
         android:visibility="gone"/>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/selected_view_below_lollipop"
@@ -28,30 +29,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@drawable/popup_bg_tinted"
-            android:layout_margin="2dp">
+            android:background="?attr/tabGridBackground"
+            android:layout_margin="?attr/tabGridMargin">
             <ImageView
                 android:id="@+id/tab_favicon"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/tab_grid_favicon_size"
-                android:minWidth="8dp"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_omnibox_page"/>
+                app:srcCompat="@drawable/ic_globe_24dp"
+                style="?attr/tabGridFaviconStyle"/>
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tab_favicon"
-                android:layout_marginEnd="32dp"
                 android:gravity="center_vertical"
-                android:minHeight="32dp"
-                android:requiresFadingEdge="horizontal"
-                android:fadingEdgeLength="24dp"
                 android:ellipsize="none"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlackTitle2"/>
-            <org.chromium.chrome.browser.ui.widget.RoundedCornerImageView
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                style="?attr/tabGridTitleStyle"/>
+            <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
                 android:id="@+id/tab_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,13 +57,28 @@
                 android:scaleType="fitCenter"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
-                app:cornerRadiusBottomStart="@dimen/tab_list_card_radius"
-                app:cornerRadiusBottomEnd="@dimen/tab_list_card_radius"/>
+                style="?attr/tabGridThumbnailStyle"/>
+            <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
+                android:id="@+id/price_info_box_outer"
+                android:layout_below="@id/tab_title"
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:visibility="gone"/>
+            <!-- TODO(crbug/1198288): Make decision on duplication of PriceCardView code.-->
+            <org.chromium.chrome.browser.tasks.tab_management.StoreHoursCardView
+                android:id="@+id/store_hours_box_outer"
+                android:layout_below="@id/tab_title"
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:visibility="gone"/>
             <View
                 android:id="@+id/divider_view"
                 style="@style/HorizontalDivider"
                 android:layout_below="@id/tab_title"
-                android:background="@color/divider_bg_color"/>
+                android:visibility="?attr/tabGridDividerVisible"
+                android:background="@color/divider_line_bg_color"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
                 android:layout_width="wrap_content"
@@ -79,13 +90,23 @@
                 android:text="@string/tabswitcher_create_group"
                 android:visibility="gone"
                 style="@style/FilledButton"/>
+            <org.chromium.ui.widget.ChipView
+                android:id="@+id/page_info_button"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="8dp"
+                android:elevation="4dp"
+                android:visibility="gone"
+                style="@style/SearchShortcutChip" />
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@color/default_icon_color"/>
+            android:tint="?attr/default_icon_color"
+            style="?attr/tabGridActionButtonStyle"/>
     </FrameLayout>
 </merge>

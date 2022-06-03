@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+var colorControl = document.getElementById('color');
+openPickerAppearanceOnly(colorControl, openPickerCallback);
+
+function openPickerCallback() {
+  colorControl.value = '#7EFFC9';
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

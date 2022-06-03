@@ -4,13 +4,13 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console.memory returns fresh instance/samples.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('console.memory === console.memory', step1);
 
-  function step1() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

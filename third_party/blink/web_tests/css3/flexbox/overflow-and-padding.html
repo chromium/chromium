@@ -1,31 +1,45 @@
 <!DOCTYPE html>
+<html>
+<title>CSS Flexbox: padding on a flexbox with overflowing content.</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-3/#overflow-properties">
+<link rel="help" href="https://drafts.csswg.org/css-flexbox/#item-margins">
+<link rel="help" href="https://codereview.chromium.org/134603002">
+<meta name="assert" content="This test checks that all paddings but padding-right work on a flexbox in the face of overflowing content, matching the Blink/WebKit behavior for 'display:block'." />
+
+<style>
+#scrollable {
+  overflow: scroll;
+  background: pink;
+  height: 300px;
+  width: 300px;
+  box-sizing: border-box;
+  display: flex;
+  padding: 100px;
+}
+
+#item {
+  width: 300px;
+  height: 300px;
+  background: salmon;
+  flex-shrink: 0;
+}
+</style>
+
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/check-layout-th.js"></script>
-<style>
-#scrollable {
-    overflow: scroll;
-    background: pink;
-    height: 300px;
-    width: 300px;
-    box-sizing: border-box;
-    display: flex;
-    padding: 100px;
-}
-#item {
-    width: 300px;
-    height: 300px;
-    background: salmon;
-    flex-shrink: 0;
-}
-</style>
+
+<body onload="checkLayout('#scrollable')">
+
 <div id=log></div>
-Tests that padding bottom on a flexbox works in the face of overflowing content.
+
+<p>Tests that padding bottom on a flexbox works in the face of overflowing content.
 Padding-right does not work. This matches the Blink/WebKit display:block behavior.
-Unfortunately, IE and Gecko both lose the padding bottom and the padding right.
+Unfortunately, IE and Gecko both lose the padding bottom and the padding right.</p>
+
 <div id="scrollable" data-expected-scroll-height=500 data-expected-scroll-width=400>
-    <div id="item"></div>
+  <div id="item"></div>
 </div>
-<script>
-checkLayout('#scrollable');
-</script>
+
+</body>
+</html>

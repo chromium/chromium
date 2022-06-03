@@ -1,0 +1,16 @@
+{
+  "name": "test extension",
+  "manifest_version": 2,
+  "version": "1.0.0.0",
+  "app": {
+    "launch": {
+      "web_url": "https://chromium.org/"
+    }
+  },
+  "web_app_shortcut_icons": {
+    "0": {
+      "-64": "shortcut_icons/0/64.png",
+      "640": "shortcut_icons/0/640.png"
+    }
+  }
+}

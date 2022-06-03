@@ -86,6 +86,10 @@ class HeapProfileTable {
   // interface ---------------------------
 
   HeapProfileTable(Allocator alloc, DeAllocator dealloc, bool profile_mmap);
+
+  HeapProfileTable(const HeapProfileTable&) = delete;
+  HeapProfileTable& operator=(const HeapProfileTable&) = delete;
+
   ~HeapProfileTable();
 
   // Collect the stack trace for the function that asked to do the
@@ -340,8 +344,6 @@ class HeapProfileTable {
 
   // Map of all currently allocated objects and mapped regions we know about.
   AllocationMap* address_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeapProfileTable);
 };
 
 class HeapProfileTable::Snapshot {

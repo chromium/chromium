@@ -15,7 +15,7 @@ class _LoadingBaseClusterTelemetry(loading._LoadingBase):
 
   options = {'upload_results': True}
 
-  _ALL_NET_CONFIGS = traffic_setting.NETWORK_CONFIGS.keys()
+  _ALL_NET_CONFIGS = list(traffic_setting.NETWORK_CONFIGS.keys())
   _ALL_CACHE_TEMPERATURES = cache_temperature_module.ALL_CACHE_TEMPERATURES
 
   @classmethod

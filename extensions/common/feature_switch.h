@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -30,11 +30,8 @@ class FeatureSwitch {
  public:
   static FeatureSwitch* force_dev_mode_highlighting();
   static FeatureSwitch* prompt_for_external_extensions();
-  static FeatureSwitch* error_console();
-  static FeatureSwitch* enable_override_bookmarks_ui();
   static FeatureSwitch* embedded_extension_options();
   static FeatureSwitch* trace_app_source();
-  static FeatureSwitch* load_media_router_component_extension();
 
   enum DefaultValue {
     DEFAULT_ENABLED,
@@ -51,11 +48,14 @@ class FeatureSwitch {
   class ScopedOverride {
    public:
     ScopedOverride(FeatureSwitch* feature, bool override_value);
+
+    ScopedOverride(const ScopedOverride&) = delete;
+    ScopedOverride& operator=(const ScopedOverride&) = delete;
+
     ~ScopedOverride();
    private:
     FeatureSwitch* feature_;
     FeatureSwitch::OverrideValue previous_value_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedOverride);
   };
 
   // |switch_name| can be null, in which case the feature is controlled solely
@@ -65,6 +65,9 @@ class FeatureSwitch {
   FeatureSwitch(const base::CommandLine* command_line,
                 const char* switch_name,
                 DefaultValue default_value);
+
+  FeatureSwitch(const FeatureSwitch&) = delete;
+  FeatureSwitch& operator=(const FeatureSwitch&) = delete;
 
   // Consider using ScopedOverride instead.
   void SetOverrideValue(OverrideValue value);
@@ -82,9 +85,7 @@ class FeatureSwitch {
   const char* switch_name_;
   bool default_value_;
   OverrideValue override_value_;
-  mutable base::Optional<bool> cached_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureSwitch);
+  mutable absl::optional<bool> cached_value_;
 };
 
 }  // namespace extensions

@@ -81,6 +81,15 @@ void MojoAndroidOverlay::OnDestroyed() {
   // signal that we should do that, since it still might be in use.
 }
 
+void MojoAndroidOverlay::OnSynchronouslyDestroyed(
+    OnSynchronouslyDestroyedCallback done_cb) {
+  // Do what we normally do, but do so synchronously.
+  OnDestroyed();
+  // On completion of RunSurfaceDestroyedCallbacks, the surface must be no
+  // longer in use.
+  std::move(done_cb).Run();
+}
+
 void MojoAndroidOverlay::OnPowerEfficientState(bool is_power_efficient) {
   if (config_.power_cb)
     config_.power_cb.Run(this, is_power_efficient);

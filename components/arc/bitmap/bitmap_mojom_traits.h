@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
-#include "components/arc/mojom/bitmap.mojom.h"
+#include "components/arc/mojom/bitmap.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {

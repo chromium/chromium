@@ -5,27 +5,84 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_
 
+#include <map>
+
+#include "base/callback_helpers.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
 // Implementation of DesktopMediaList that shows tab/WebContents.
 class TabDesktopMediaList : public DesktopMediaListBase {
  public:
-  TabDesktopMediaList();
+  TabDesktopMediaList(
+      DesktopMediaList::WebContentsFilter includable_web_contents_filter,
+      bool include_chrome_app_windows);
+
+  TabDesktopMediaList(const TabDesktopMediaList&) = delete;
+  TabDesktopMediaList& operator=(const TabDesktopMediaList&) = delete;
+
   ~TabDesktopMediaList() override;
 
+  void SetPreviewedSource(
+      const absl::optional<content::DesktopMediaID>& id) override;
+
  private:
+  class RefreshCompleter {
+   public:
+    explicit RefreshCompleter(const base::WeakPtr<TabDesktopMediaList> list);
+    ~RefreshCompleter();
+
+   private:
+    base::WeakPtr<TabDesktopMediaList> list_;
+  };
+
   typedef std::map<content::DesktopMediaID, uint32_t> ImageHashesMap;
 
   void Refresh(bool update_thumnails) override;
 
-  ImageHashesMap favicon_hashes_;
+  // TODO(crbug.com/1224342): Combine the below logic for screenshotting with
+  // the very similar behaviour in current_tab_desktop_media_list.h
 
-  // Task runner used for the |worker_|.
-  scoped_refptr<base::SequencedTaskRunner> thumbnail_task_runner_;
+  // Called on the UI thread after the captured image is handled. If the
+  // image was new, it's rescaled to the desired size and sent back in |image|.
+  // Otherwise, an empty Optional is sent back. In either case, |new_hash| is
+  // the hash value of the frame that was handled.
+  void OnPreviewCaptureHandled(
+      const content::DesktopMediaID& media_id,
+      std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
+      uint32_t new_hash,
+      const gfx::ImageSkia& image);
+
+  void StartPreviewUpdate();
+  void TriggerScreenshot(
+      int remaining_retries,
+      std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer);
+  void ScreenshotReceived(
+      int remaining_retries,
+      const content::DesktopMediaID& id,
+      std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
+      const SkBitmap& bitmap);
+  void CompleteRefreshAfterThumbnailProcessing();
+
+  // The hash of the last captured preview frame. Used to detect identical
+  // frames and prevent needless rescaling.
+  absl::optional<uint32_t> last_hash_;
+
+  ImageHashesMap favicon_hashes_;
+  const DesktopMediaList::WebContentsFilter includable_web_contents_filter_;
+  const bool include_chrome_app_windows_;
+
+  // Task runner used for resizing thumbnail and preview images.
+  scoped_refptr<base::SequencedTaskRunner> image_resize_task_runner_;
+
+  absl::optional<content::DesktopMediaID> previewed_source_;
+
+  // Handle returned when incrementing the visible capturer count on the
+  // WebContents instance being previewed, if there is one. Allowing this to go
+  // out of scope, either when switching previewed sources or on destruction,
+  // allows the source to stop painting when not visible etc.
+  base::ScopedClosureRunner previewed_source_visible_keepalive_;
 
   base::WeakPtrFactory<TabDesktopMediaList> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_

@@ -40,26 +40,26 @@ void ShowSingletonTabRespectRef(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams params) {
+void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams* params) {
   DCHECK(browser);
-  DCHECK_EQ(params.disposition, WindowOpenDisposition::SINGLETON_TAB);
+  DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::kChromeUINewTabURL ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
-      int tab_index = GetIndexOfExistingTab(browser, params);
+      int tab_index = GetIndexOfExistingTab(browser, *params);
       if (tab_index < 0) {
-        params.disposition = WindowOpenDisposition::CURRENT_TAB;
+        params->disposition = WindowOpenDisposition::CURRENT_TAB;
       } else {
-        params.switch_to_singleton_tab =
+        params->switch_to_singleton_tab =
             browser->tab_strip_model()->GetWebContentsAt(tab_index);
       }
     }
   }
 
-  Navigate(&params);
+  Navigate(params);
 }
 
 NavigateParams GetSingletonTabNavigateParams(Browser* browser,
@@ -83,9 +83,8 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
   // that we do not open another URL that will get redirected to the rewritten
   // URL.
   GURL rewritten_url(params.url);
-  bool reverse_on_redirect = false;
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
-      &rewritten_url, browser->profile(), &reverse_on_redirect);
+      &rewritten_url, browser->profile());
 
   ChromeAutocompleteProviderClient client(browser->profile());
   // If there are several matches: prefer the active tab by starting there.
@@ -105,7 +104,7 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
 
     GURL rewritten_tab_url = tab_url;
     content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
-        &rewritten_tab_url, browser->profile(), &reverse_on_redirect);
+        &rewritten_tab_url, browser->profile());
 
     url::Replacements<char> replacements;
     replacements.ClearRef();
@@ -128,12 +127,14 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
 std::pair<Browser*, int> GetIndexAndBrowserOfExistingTab(
     Profile* profile,
     const NavigateParams& params) {
-  for (auto browser_it = BrowserList::GetInstance()->begin_last_active();
-       browser_it != BrowserList::GetInstance()->end_last_active();
+  for (auto browser_it =
+           BrowserList::GetInstance()->begin_browsers_ordered_by_activation();
+       browser_it !=
+       BrowserList::GetInstance()->end_browsers_ordered_by_activation();
        ++browser_it) {
     Browser* browser = *browser_it;
     // When tab switching, only look at same profile and anonymity level.
-    if (browser->profile()->IsSameProfileAndType(profile)) {
+    if (profile == browser->profile()) {
       int index = GetIndexOfExistingTab(browser, params);
       if (index >= 0)
         return {browser, index};

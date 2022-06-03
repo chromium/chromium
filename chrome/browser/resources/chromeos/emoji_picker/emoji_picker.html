@@ -1,0 +1,241 @@
+<style>
+  :host {
+    /* Values overriden in Javascript from constants.js. */
+    --emoji-group-button-size: 0;
+    --emoji-picker-height: 0;
+    --emoji-picker-side-padding: 0;
+    --emoji-picker-top-padding: 0;
+    --emoji-picker-width: 0;
+    --emoji-size: 0;
+    --emoji-spacing: 0;
+    --emoji-per-row: 0;
+    /* Values set in css only. */
+    --emoji-group-tabs-left: 0;
+    --emoji-picker-bottom-padding: 14px;
+    --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
+            + var(--emoji-size) * (var(--emoji-per-row) - 1)
+            + var(--emoji-spacing) * (var(--emoji-per-row) - 1));
+    --emoji-picker-group-highlight-bar-width: 24px;
+    /* Actual properties of the emoji picker */
+    display: flex;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
+    height: calc(var(--emoji-picker-height) - var(--emoji-picker-top-padding));
+    margin-top: 0;
+    padding-top: var(--emoji-picker-top-padding);
+    width: var(--emoji-picker-width);
+    background-color: var(--cros-bg-color);
+  }
+
+  .side-padding {
+    flex-grow: 1;
+    flex-shrink: 0;
+    max-height: 100%;
+    overflow-y: scroll;
+    padding-inline-end: var(--emoji-picker-side-padding);
+    padding-inline-start: var(--emoji-picker-side-padding);
+  }
+
+  #search-container,
+  #list-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: clip;
+    width: 100%;
+  }
+
+  #tabs {
+    display: grid;
+    grid-gap: var(--emoji-spacing);
+    grid-template-columns: repeat(18,1fr);
+    left: var(--emoji-group-tabs-left);
+    overflow-x: scroll;
+    padding-bottom: 10px;
+    padding-top: 10px; /* Search field also has some padding below which adds to this. */
+    scroll-behavior: smooth;
+    scroll-padding: var(--emoji-size);
+    scroll-snap-type: x mandatory;
+    width: 100%;
+  }
+
+  /* Mark the first and 10th group as scroll targets to get the correct scroll
+   * snapping behavior. */
+  #tabs :nth-child(2) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  #tabs :nth-child(14) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  #tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  #tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  #groups {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: scroll;
+    padding-bottom: var(--emoji-picker-bottom-padding);
+  }
+
+  .chevron {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 28px;
+    background-color: var(--cros-bg-color);
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: var(--emoji-size);
+    z-index: 2;
+  }
+
+  #right-chevron {
+    left: var(--emoji-picker-last-emoji-left);
+    /* Icons may become visible to the right of this during scrolling without
+     * the additional padding.
+     */
+    padding-inline-end: var(--emoji-picker-side-padding);
+  }
+
+  #left-chevron {
+    display: none;
+    left: var(--emoji-picker-side-padding);
+  }
+
+  .divider {
+    border-top: 1px solid var(--cros-separator-color);
+    width: var(--emoji-picker-width);
+  }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    z-index: -2;
+  }
+
+  #bar {
+    background-color: var(--cros-icon-color-prominent);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    /* This gets made visible after we determine the correct location by loading
+     * history.
+     */
+    display: none;
+    flex-shrink: 0;
+    height: 2px;
+    /* Left needed so that transition end fires when it changes for the first
+     * time.
+     */
+    left: 0;
+    padding-inline-end: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
+    padding-inline-start: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
+    position: relative;
+    width: var(--emoji-picker-group-highlight-bar-width);
+  }
+
+  .fake {
+    flex-shrink: 0;
+    width: var(--emoji-size);
+  }
+
+  .sr-only {
+    user-select: none;
+  }
+</style>
+
+<div class="sr-only" aria-live="polite">
+  Insert emoji by activating them. Close with escape.
+  Some emoji have variants which can be opened with context menu.
+  Use the emoji group buttons or headings to jump to emoji groups.
+</div>
+
+<div id="message" class="sr-only" aria-live="polite"></div>
+  <emoji-search
+    class="side-padding"
+    id="search-container"
+    emoji-data="[[emojiData]]"
+    search="{{search}}"
+    on-scroll="onSearchScroll">
+  </emoji-search>
+
+<div id="list-container">
+  <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
+  <div class="side-padding">
+    <div id="tabs" on-scroll="onGroupsScroll">
+      <cr-icon-button id="left-chevron" class="chevron"
+        on-click="onLeftChevronClick"
+        iron-icon="emoji_picker:keyboard_arrow_left">
+      </cr-icon-button>
+      <template is="dom-repeat" items="[[emojiGroupTabs]]">
+        <emoji-group-button data-group$="[[item.groupId]]"
+          group-id="[[item.groupId]]"
+          active="[[item.active]]"
+          disabled="[[item.disabled]]"
+          icon="[[item.icon]]" name="[[item.name]]">
+        </emoji-group-button>
+      </template>
+      <!--Fake group button to increase maximum scrolling, need an icon to
+        render as invisible-->
+      <div class="fake"
+        tabindex="-1">
+      </div>
+      <div class="fake"
+        tabindex="-1">
+      </div>
+      <div class="fake"
+        tabindex="-1">
+      </div>
+      <div class="fake"
+        tabindex="-1">
+      </div>
+      <div class="fake"
+        tabindex="-1">
+      </div>
+      <div class="fake" id="RightChevronScrollTarget"
+        tabindex="-1">
+      </div>
+      <cr-icon-button id="right-chevron" class="chevron"
+        on-click="onRightChevronClick"
+        iron-icon="emoji_picker:keyboard_arrow_right">
+      </cr-icon-button>
+    </div>
+  </div>
+  <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
+  <div class="side-padding">
+    <div id="bar"
+      on-transitionend="onBarTransitionEnd"
+      on-transitionstart="onBarTransitionStart"></div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="side-padding" id="groups" on-scroll="onEmojiScroll">
+    <!--
+      history is the "recently used" group and is populated in code,
+      whereas the other groups are created from the emoji metadata.
+    -->
+    <div data-group="history">
+      <template is="dom-if" if="[[history.emoji.length]]">
+        <emoji-group data="[[history]]" preferred="{}" clearable>
+        </emoji-group>
+      </template>
+    </div>
+    <template is="dom-repeat" items="[[emojiData]]">
+      <div data-group$="[[index]]">
+        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]">
+        </emoji-group>
+      </div>
+    </template>
+  </div>
+
+</div>

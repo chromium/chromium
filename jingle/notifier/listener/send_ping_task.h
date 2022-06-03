@@ -29,6 +29,10 @@ class SendPingTask : public jingle_xmpp::XmppTask {
   };
 
   SendPingTask(jingle_xmpp::XmppTaskParentInterface* parent, Delegate* delegate);
+
+  SendPingTask(const SendPingTask&) = delete;
+  SendPingTask& operator=(const SendPingTask&) = delete;
+
   ~SendPingTask() override;
 
   // Overridden from jingle_xmpp::XmppTask.
@@ -43,8 +47,6 @@ class SendPingTask : public jingle_xmpp::XmppTask {
 
   std::string ping_task_id_;
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendPingTask);
 };
 
 typedef SendPingTask::Delegate SendPingTaskDelegate;

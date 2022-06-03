@@ -1,0 +1,47 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+  }
+
+  :host(:not([is-valid])) {
+    background-color: LightGray;
+  }
+
+  :host([is-valid]) {
+    background-color: LightGreen;
+   }
+
+  #faviconSelector {
+    align-items: normal;
+  }
+</style>
+
+<div class="column">
+  <cr-input value="{{url_}}" id="urlInput" auto-validate required label="URL: "
+      error-message="This row is invalid">
+  </cr-input>
+</div>
+<div class="column">
+  <cr-input value="{{title_}}" label="Title:" auto-validate required
+      error-message="This row is invalid">
+  </cr-input>
+</div>
+<div class="column">
+  <cr-input value="{{lastAccessedTimeStamp_}}" label="Last Accessed (ms):"
+      id="lastAccessedTimeStampInput" type="number" min="0"
+      on-change="onLastAccessTimeStampChanged_"
+      auto-validate error-message="Must be greater than 0" required>
+  </cr-input>
+</div>
+<div class="column" id="faviconSelector">
+  <label>Favicon Image Type</label>
+  <select id="faviconList" class="md-select"
+      on-change="onFaviconSelected_">
+    <template is="dom-repeat" items="[[faviconList_]]">
+      <option selected="[[isEqual_(item, favicon_)]]">
+        [[getImageTypeName_(item)]]
+      </option>
+    </template>
+  </select>
+</div>

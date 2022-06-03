@@ -5,12 +5,19 @@
 #ifndef BASE_THREADING_THREAD_CHECKER_H_
 #define BASE_THREADING_THREAD_CHECKER_H_
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
+#include "base/strings/string_piece.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker_impl.h"
 
+#if DCHECK_IS_ON()
+#include "base/debug/stack_trace.h"
+#endif
+
 // ThreadChecker is a helper class used to help verify that some methods of a
-// class are called from the same thread (for thread-affinity).
+// class are called from the same thread (for thread-affinity).  It supports
+// thread safety annotations (see base/thread_annotations.h).
 //
 // Use the macros below instead of the ThreadChecker directly so that the unused
 // member doesn't result in an extra byte (four when padded) per instance in
@@ -30,6 +37,12 @@
 // what would need to change to turn that SingleThreadTaskRunner into a
 // SequencedTaskRunner for ease of scheduling as well as minimizes side-effects
 // if that change is made.
+//
+// Debugging:
+//   If ThreadChecker::EnableStackLogging() is called beforehand, then when
+//   ThreadChecker fails, in addition to crashing with a stack trace of where
+//   the violation occurred, it will also dump a stack trace of where the
+//   checker was bound to a thread.
 //
 // Usage:
 //   class MyClass {
@@ -56,17 +69,32 @@
 //       ... (do stuff) ...
 //     }
 //
+//     void MyOtherMethod()
+//         VALID_CONTEXT_REQUIRED(thread_checker_) {
+//       foo_ = 42;
+//     }
+//
 //    private:
+//     int foo_ GUARDED_BY_CONTEXT(thread_checker_);
+//
 //     THREAD_CHECKER(thread_checker_);
 //   }
 
+#define THREAD_CHECKER_INTERNAL_CONCAT2(a, b) a##b
+#define THREAD_CHECKER_INTERNAL_CONCAT(a, b) \
+  THREAD_CHECKER_INTERNAL_CONCAT2(a, b)
+#define THREAD_CHECKER_INTERNAL_UID(prefix) \
+  THREAD_CHECKER_INTERNAL_CONCAT(prefix, __LINE__)
+
 #if DCHECK_IS_ON()
 #define THREAD_CHECKER(name) base::ThreadChecker name
-#define DCHECK_CALLED_ON_VALID_THREAD(name) DCHECK((name).CalledOnValidThread())
+#define DCHECK_CALLED_ON_VALID_THREAD(name, ...)                 \
+  base::ScopedValidateThreadChecker THREAD_CHECKER_INTERNAL_UID( \
+      scoped_validate_thread_checker_)(name, ##__VA_ARGS__);
 #define DETACH_FROM_THREAD(name) (name).DetachFromThread()
 #else  // DCHECK_IS_ON()
 #define THREAD_CHECKER(name) static_assert(true, "")
-#define DCHECK_CALLED_ON_VALID_THREAD(name) EAT_STREAM_PARAMETERS
+#define DCHECK_CALLED_ON_VALID_THREAD(name, ...) EAT_CHECK_STREAM_PARAMS()
 #define DETACH_FROM_THREAD(name)
 #endif  // DCHECK_IS_ON()
 
@@ -76,20 +104,27 @@ namespace base {
 //
 // Note: You should almost always use the ThreadChecker class (through the above
 // macros) to get the right version for your build configuration.
-class ThreadCheckerDoNothing {
+// Note: This is only a check, not a "lock". It is marked "LOCKABLE" only in
+// order to support thread_annotations.h.
+class LOCKABLE ThreadCheckerDoNothing {
  public:
+  static void EnableStackLogging() {}
+
   ThreadCheckerDoNothing() = default;
+
+  ThreadCheckerDoNothing(const ThreadCheckerDoNothing&) = delete;
+  ThreadCheckerDoNothing& operator=(const ThreadCheckerDoNothing&) = delete;
 
   // Moving between matching threads is allowed to help classes with
   // ThreadCheckers that want a default move-construct/assign.
   ThreadCheckerDoNothing(ThreadCheckerDoNothing&& other) = default;
   ThreadCheckerDoNothing& operator=(ThreadCheckerDoNothing&& other) = default;
 
-  bool CalledOnValidThread() const WARN_UNUSED_RESULT { return true; }
+  bool CalledOnValidThread(std::unique_ptr<void*> = nullptr) const
+      WARN_UNUSED_RESULT {
+    return true;
+  }
   void DetachFromThread() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerDoNothing);
 };
 
 // Note that ThreadCheckerImpl::CalledOnValidThread() returns false when called
@@ -103,6 +138,35 @@ class ThreadChecker : public ThreadCheckerImpl {
 class ThreadChecker : public ThreadCheckerDoNothing {
 };
 #endif  // DCHECK_IS_ON()
+
+#if DCHECK_IS_ON()
+class SCOPED_LOCKABLE ScopedValidateThreadChecker {
+ public:
+  explicit ScopedValidateThreadChecker(const ThreadChecker& checker)
+      EXCLUSIVE_LOCK_FUNCTION(checker) {
+    std::unique_ptr<debug::StackTrace> bound_at;
+    DCHECK(checker.CalledOnValidThread(&bound_at))
+        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
+                     : "");
+  }
+
+  explicit ScopedValidateThreadChecker(const ThreadChecker& checker,
+                                       const StringPiece& msg)
+      EXCLUSIVE_LOCK_FUNCTION(checker) {
+    std::unique_ptr<debug::StackTrace> bound_at;
+    DCHECK(checker.CalledOnValidThread(&bound_at))
+        << msg
+        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
+                     : "");
+  }
+
+  ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;
+  ScopedValidateThreadChecker& operator=(const ScopedValidateThreadChecker&) =
+      delete;
+
+  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
+};
+#endif
 
 }  // namespace base
 

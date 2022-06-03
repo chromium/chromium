@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>SVG"
+}
+team_email: "paint-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

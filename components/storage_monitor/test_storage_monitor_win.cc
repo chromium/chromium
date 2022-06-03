@@ -6,17 +6,20 @@
 
 #include "components/storage_monitor/test_storage_monitor_win.h"
 
+#include <utility>
+
 #include "components/storage_monitor/test_portable_device_watcher_win.h"
 #include "components/storage_monitor/test_volume_mount_watcher_win.h"
 
 namespace storage_monitor {
 
 TestStorageMonitorWin::TestStorageMonitorWin(
-    TestVolumeMountWatcherWin* volume_mount_watcher,
-    TestPortableDeviceWatcherWin* portable_device_watcher)
-    : StorageMonitorWin(volume_mount_watcher, portable_device_watcher) {
+    std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher,
+    std::unique_ptr<TestPortableDeviceWatcherWin> portable_device_watcher)
+    : StorageMonitorWin(std::move(volume_mount_watcher),
+                        std::move(portable_device_watcher)) {
   DCHECK(volume_mount_watcher_);
-  DCHECK(portable_device_watcher);
+  DCHECK(portable_device_watcher_);
 }
 
 TestStorageMonitorWin::~TestStorageMonitorWin() {

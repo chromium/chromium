@@ -24,11 +24,11 @@
       <property name="severity" value="error"/>
     </module>
     <module name="RedundantImport">
-      <message key="import.redundant" value="Redundant import: {0}. Use :JavaImportOrganize (ECLIM) or Ctrl+Shift+O (Eclipse) to sort imports"/>
+      <message key="import.redundant" value="Redundant import: {0}."/>
       <property name="severity" value="error"/>
     </module>
     <module name="UnusedImports">
-      <message key="import.unused" value="Unused import: {0}. Use :JavaImportOrganize (ECLIM) or Ctrl+Shift+O (Eclipse) to sort imports"/>
+      <message key="import.unused" value="Unused import: {0}."/>
       <property name="severity" value="error"/>
       <property name="processJavadoc" value="true"/>
     </module>
@@ -82,7 +82,7 @@
     <module name="MethodName">
         <property name="id" value="MethodNameCheck"/>
         <property name="severity" value="error"/>
-        <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+        <property name="format" value="^(([a-z][a-zA-Z0-9_]*)|(__constructor__))$"/>
         <message key="name.invalidPattern" value="Method names should start with a lower case letter (e.g. getWidth())"/>
     </module>
     <module name="ParameterName">
@@ -158,6 +158,20 @@
       <property name="format" value="System\.exit\("/>
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Throw an exception instead of calling System#exit (crbug.com/1000651)."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="AndroidButtonWidgetCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="extends\ Button|extends\ AppCompatButton"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use org.chromium.ui.widget.ButtonCompat instead of Button and AppCompatButton if possible; ButtonCompat is a Material-styled button with a customizable background color. On L devices, this is a true Material button. On earlier devices, the button is similar but lacks ripples and a shadow. (crbug.com/775198)"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="SetTextColorAndSetTextSizeCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\.setTextColor\(|\.setTextSize\("/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="If possible, please use #setTextAppearance to set one of the pre-defined text appearance styles in src/ui/android/java/res/values-v17/styles.xml, instead of using #setTextColor or #setTextSize. This will ensure that your programmatically set text styles stay in-sync with text styles used in the rest of Chrome. (crbug.com/775198)"/>
     </module>
   </module>
 </module>

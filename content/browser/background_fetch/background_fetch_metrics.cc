@@ -5,12 +5,13 @@
 #include "content/browser/background_fetch/background_fetch_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -24,27 +25,25 @@ void RecordRegistrationsOnStartup(int num_registrations) {
 }
 
 void RecordBackgroundFetchUkmEvent(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     int requests_size,
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
-    int frame_tree_node_id,
+    RenderFrameHostImpl* rfh,
     BackgroundFetchPermission permission) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Only record UKM data if there's a frame associated.
-  auto* web_contents = WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
+  // Only record UKM data if there's an active RenderFrameHost associated.
+  if (!rfh || !rfh->IsActive())
     return;
 
-  // Only record UKM data if the origin of the page currently being displayed
-  // is the same as the one the background fetch was started with.
-  auto displayed_origin = web_contents->GetLastCommittedURL().GetOrigin();
-  if (!origin.IsSameOriginWith(url::Origin::Create(displayed_origin)))
+  // Only record UKM data if the origin of the last committed page is the same
+  // as the one the background fetch was started with.
+  auto last_committed_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+  if (!storage_key.origin().IsSameOriginWith(last_committed_origin))
     return;
-  ukm::SourceId source_id = static_cast<WebContentsImpl*>(web_contents)
-                                ->GetUkmSourceIdForLastCommittedSource();
+  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
   ukm::builders::BackgroundFetch(source_id)
       .SetHasTitle(!options->title.empty())

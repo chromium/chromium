@@ -1,10 +1,11 @@
 rootWebArea
-++genericContainer
-++++staticText name='Some LTR text'
-++++++inlineTextBox name='Some LTR text'
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++staticText name='Some RTL text '
-++++++inlineTextBox name='Some RTL text '
-++++staticText name='with some LTR text embedded'
-++++++inlineTextBox name='with some LTR text embedded'
+++genericContainer ignored
+++++genericContainer
+++++++staticText name='Some LTR text'
+++++++++inlineTextBox name='Some LTR text'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++staticText name='Some RTL text '
+++++++++inlineTextBox name='Some RTL text '
+++++++staticText name='with some LTR text embedded'
+++++++++inlineTextBox name='with some LTR text embedded'

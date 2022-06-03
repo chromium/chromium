@@ -1,0 +1,9 @@
+{
+  "name": "Host permissions with invalid scheme",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Extension with a pattern with an invalid scheme in host_permissions",
+  "host_permissions": [
+    "chrome://extensions/"
+  ]
+}

@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_infobar_edit_address_profile_modal_consumer.h",
+    "fake_infobar_edit_address_profile_modal_consumer.mm",
+    "fake_infobar_password_modal_consumer.h",
+    "fake_infobar_password_modal_consumer.mm",
+    "fake_infobar_save_address_profile_modal_consumer.h",
+    "fake_infobar_save_address_profile_modal_consumer.mm",
+    "fake_infobar_translate_modal_consumer.h",
+    "fake_infobar_translate_modal_consumer.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
+  ]
+}

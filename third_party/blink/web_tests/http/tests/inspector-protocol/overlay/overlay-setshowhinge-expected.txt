@@ -1,0 +1,22 @@
+Tests the new Overlay.setShowHinge method.
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Invalid hinge rectangle.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+

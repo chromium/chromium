@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sqlite_proto;
+
+// TestProto is a simple protocol buffer type to provide to
+// KeyValueTable and KeyValueData in their tests.
+message TestProto {
+  optional int32 value = 1;
+}

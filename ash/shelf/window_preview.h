@@ -5,7 +5,6 @@
 #ifndef ASH_SHELF_WINDOW_PREVIEW_H_
 #define ASH_SHELF_WINDOW_PREVIEW_H_
 
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -26,7 +25,7 @@ class WindowPreviewView;
 // The view is also contains a button which closes the window if clicked. Other
 // click events will activate the window and dismiss the bubble which holds this
 // view.
-class WindowPreview : public views::View, public views::ButtonListener {
+class WindowPreview : public views::View {
  public:
   class Delegate {
    public:
@@ -43,9 +42,11 @@ class WindowPreview : public views::View, public views::ButtonListener {
     virtual ~Delegate() {}
   };
 
-  WindowPreview(aura::Window* window,
-                Delegate* delegate,
-                const ui::NativeTheme* theme);
+  WindowPreview(aura::Window* window, Delegate* delegate);
+
+  WindowPreview(const WindowPreview&) = delete;
+  WindowPreview& operator=(const WindowPreview&) = delete;
+
   ~WindowPreview() override;
 
   // views::View:
@@ -53,17 +54,15 @@ class WindowPreview : public views::View, public views::ButtonListener {
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   const char* GetClassName() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void OnThemeChanged() override;
 
   const WindowPreviewView* preview_view() const { return preview_view_; }
 
  private:
-  void SetStyling(const ui::NativeTheme* theme);
-
   // All the preview containers have the same size.
   gfx::Size GetPreviewContainerSize() const;
+
+  void CloseButtonPressed();
 
   // Child views.
   views::ImageButton* close_button_ = nullptr;
@@ -73,8 +72,6 @@ class WindowPreview : public views::View, public views::ButtonListener {
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPreview);
 };
 
 }  // namespace ash

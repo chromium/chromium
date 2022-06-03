@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "services/device/public/cpp/hid/hid_item_state_table.h"
 
 namespace device {
@@ -135,7 +134,8 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
       case HidReportDescriptorItem::kTagDelimiter:
         // Update the value associated with a local or global item in the item
         // state table.
-        state.SetItemValue(current_item->tag(), current_item->GetShortData());
+        state.SetItemValue(current_item->tag(), current_item->GetShortData(),
+                           current_item->payload_size());
         break;
       default:
         break;
@@ -250,7 +250,7 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
       }
       DCHECK_LE(report_bits, kMaxReasonableReportLengthBits);
       entry.max_report_bits =
-          std::max(entry.max_report_bits, size_t{report_bits});
+          std::max(entry.max_report_bits, static_cast<size_t>(report_bits));
     }
   }
 }

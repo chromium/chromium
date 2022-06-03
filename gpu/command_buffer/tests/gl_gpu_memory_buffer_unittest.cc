@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -28,7 +29,7 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/test/gl_image_test_support.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
 #endif
@@ -71,26 +72,25 @@ class GpuMemoryBufferTest : public testing::TestWithParam<gfx::BufferFormat> {
   GLManager gl_;
 };
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 class GpuMemoryBufferTestEGL : public testing::Test,
                                public gpu::GpuCommandBufferTestEGL {
  public:
   GpuMemoryBufferTestEGL()
-      : egl_gles2_initialized_(false),
-        native_pixmap_factory_(gfx::CreateClientNativePixmapFactoryDmabuf()) {}
+      : native_pixmap_factory_(gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 
  protected:
   void SetUp() override {
-    egl_gles2_initialized_ = InitializeEGLGLES2(kImageWidth, kImageHeight);
+    egl_initialized_ = InitializeEGL(kImageWidth, kImageHeight);
     gl_.set_use_native_pixmap_memory_buffers(true);
   }
 
   void TearDown() override { RestoreGLDefault(); }
 
-  bool egl_gles2_initialized_;
+  bool egl_initialized_{false};
   std::unique_ptr<gfx::ClientNativePixmapFactory> native_pixmap_factory_;
 };
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 namespace {
 
@@ -126,6 +126,8 @@ GLenum InternalFormat(gfx::BufferFormat format) {
       return GL_R16_EXT;
     case gfx::BufferFormat::RG_88:
       return GL_RG;
+    case gfx::BufferFormat::RG_1616:
+      return GL_RG16_EXT;
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_1010102:
       return GL_RGB;
@@ -133,7 +135,7 @@ GLenum InternalFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBA_8888:
       return GL_RGBA;
     case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_1010102:
+    case gfx::BufferFormat::BGRA_1010102:
       return GL_BGRA_EXT;
     case gfx::BufferFormat::RGBA_F16:
       return GL_RGBA;
@@ -162,7 +164,7 @@ uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
       return libyuv::FOURCC_ARGB;
     case gfx::BufferFormat::RGBA_1010102:
       return libyuv::FOURCC_AB30;
-    case gfx::BufferFormat::BGRX_1010102:
+    case gfx::BufferFormat::BGRA_1010102:
       return libyuv::FOURCC_AR30;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return libyuv::FOURCC_NV12;
@@ -171,6 +173,7 @@ uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::RGBA_F16:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBX_8888:
@@ -247,6 +250,14 @@ TEST_P(GpuMemoryBufferTest, MapUnmap) {
 
 // An end to end test that tests the whole GpuMemoryBuffer lifecycle.
 TEST_P(GpuMemoryBufferTest, Lifecycle) {
+  // TODO(jonahr): Test fails on Mac with ANGLE/passthrough
+  // (crbug.com/1100970)
+  gpu::GPUTestBotConfig bot_config;
+  if (bot_config.LoadCurrentConfig(nullptr) &&
+      bot_config.Matches("mac passthrough")) {
+    return;
+  }
+
   const gfx::BufferFormat buffer_format = GetParam();
 
   if (buffer_format == gfx::BufferFormat::R_8 &&
@@ -267,9 +278,9 @@ TEST_P(GpuMemoryBufferTest, Lifecycle) {
     return;
   }
 
-  if (buffer_format == gfx::BufferFormat::BGRX_1010102 &&
-      !gl_.GetCapabilities().image_xr30) {
-    LOG(WARNING) << "image_xr30 not supported. Skipping test.";
+  if (buffer_format == gfx::BufferFormat::BGRA_1010102 &&
+      !gl_.GetCapabilities().image_ar30) {
+    LOG(WARNING) << "image_ar30 not supported. Skipping test.";
     return;
   }
 
@@ -353,14 +364,14 @@ TEST_P(GpuMemoryBufferTest, Lifecycle) {
   glDeleteTextures(1, &texture_id);
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Test glCreateImageCHROMIUM with gfx::NATIVE_PIXMAP. Basically the test
 // reproduces the situation where some dmabuf fds are available outside the
 // gpu process and the user wants to import them using glCreateImageCHROMIUM.
 // It can be the case when vaapi is setup in a media service hosted in a
 // dedicated process, i.e. not the gpu process.
 TEST_F(GpuMemoryBufferTestEGL, GLCreateImageCHROMIUMFromNativePixmap) {
-  SKIP_TEST_IF(!egl_gles2_initialized_);
+  SKIP_TEST_IF(!egl_initialized_);
 
   // This extension is required for glCreateImageCHROMIUM on Linux.
   SKIP_TEST_IF(!HasEGLExtension("EGL_EXT_image_dma_buf_import"));
@@ -467,7 +478,7 @@ TEST_F(GpuMemoryBufferTestEGL, GLCreateImageCHROMIUMFromNativePixmap) {
   glDestroyImageCHROMIUM(image_id);
   glDeleteTextures(1, &texture_id);
 }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     GpuMemoryBufferTests,
@@ -477,7 +488,7 @@ INSTANTIATE_TEST_SUITE_P(
                       gfx::BufferFormat::RGBA_4444,
                       gfx::BufferFormat::RGBA_8888,
                       gfx::BufferFormat::RGBA_1010102,
-                      gfx::BufferFormat::BGRX_1010102,
+                      gfx::BufferFormat::BGRA_1010102,
                       gfx::BufferFormat::BGRA_8888,
                       gfx::BufferFormat::RGBA_F16,
                       gfx::BufferFormat::YVU_420,

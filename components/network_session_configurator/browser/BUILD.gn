@@ -14,16 +14,12 @@ static_library("browser") {
     "//net",
   ]
 
-  deps = [
-    "//components/variations",
-  ]
+  deps = [ "//components/variations" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "network_session_configurator_unittest.cc",
-  ]
+  sources = [ "network_session_configurator_unittest.cc" ]
   deps = [
     ":browser",
     "//base/test:test_support",

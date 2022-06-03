@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
+#include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/vulkan/buildflags.h"
 
 namespace gpu {
@@ -21,25 +22,24 @@ class VulkanImplementation;
 struct GpuPreferences;
 }  // namespace gpu
 
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
-
 namespace viz {
 class GpuServiceImpl;
 
 // Starts GPU Main and IO threads, and creates a GpuServiceImpl that can be used
 // to create a SkiaOutputSurfaceImpl. This isn't a full GPU service
 // implementation and should only be used in tests.
-class TestGpuServiceHolder {
+class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
  public:
+  class ScopedResetter {
+   public:
+    ~ScopedResetter() { TestGpuServiceHolder::ResetInstance(); }
+  };
   // Exposes a singleton to allow easy sharing of the GpuServiceImpl by
   // different clients (e.g. to share SharedImages via a common
   // SharedImageManager).
   //
   // The instance will parse GpuPreferences from the command line when it is
-  // first created (e.g. to allow entire test suite with --enable-vulkan).
+  // first created (e.g. to allow entire test suite with --use-vulkan).
   //
   // If specific feature flags or GpuPreferences are needed for a specific test,
   // a separate instance of this class can be created.
@@ -58,7 +58,11 @@ class TestGpuServiceHolder {
   static void DoNotResetOnTestExit();
 
   explicit TestGpuServiceHolder(const gpu::GpuPreferences& preferences);
-  ~TestGpuServiceHolder();
+
+  TestGpuServiceHolder(const TestGpuServiceHolder&) = delete;
+  TestGpuServiceHolder& operator=(const TestGpuServiceHolder&) = delete;
+
+  ~TestGpuServiceHolder() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner() {
     return gpu_thread_.task_runner();
@@ -82,12 +86,23 @@ class TestGpuServiceHolder {
 #endif
   }
 
- private:
-  friend struct base::DefaultSingletonTraits<TestGpuServiceHolder>;
+  // gpu::GpuInProcessThreadServiceDelegate implementation:
+  scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
+  scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
+ private:
   void InitializeOnGpuThread(const gpu::GpuPreferences& preferences,
                              base::WaitableEvent* completion);
   void DeleteOnGpuThread();
+
+#if !defined(OS_CHROMEOS)
+  // TODO(crbug.com/1241161): This is equally applicable to Chrome OS there are
+  // just a number of tests that already override the feature list after it's no
+  // longer safe that need to be fixed first.
+  base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides{
+      "FeatureList overrides must happen before the GPU service thread has "
+      "been started."};
+#endif
 
   base::Thread gpu_thread_;
   base::Thread io_thread_;
@@ -100,8 +115,6 @@ class TestGpuServiceHolder {
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuServiceHolder);
 };
 
 }  // namespace viz

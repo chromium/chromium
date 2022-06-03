@@ -3,193 +3,208 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("../optimize_webui.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("../tools/optimize_webui.gni")
+
+preprocess_folder = "preprocessed"
 
 if (optimize_webui) {
-  history_pak_file = "history_resources.pak"
-  unpak_folder = "history_resources.unpak"
+  build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "history"
-    html_in_files = [
-      "app.html",
-      "lazy_load.html",
+    js_module_in_files = [
+      "history.js",
+      "lazy_load.js",
     ]
-    html_out_files = [
-      "app.vulcanized.html",
-      "lazy_load.vulcanized.html",
-    ]
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     js_out_files = [
-      "app.crisper.js",
-      "lazy_load.crisper.js",
+      "history.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
     ]
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
-      ":unpak",
+      ":build_ts",
+      "//ui/webui/resources:preprocess",
     ]
     excludes = [
-      "chrome://resources/html/util.html",
-      "constants.html",
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
   }
+}
 
-  unpak("unpak") {
-    pak_file = history_pak_file
-    out_folder = unpak_folder
+generate_grd("build_grd") {
+  grd_prefix = "history"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "history.html",
+    "images/journeys.svg",
+    "images/list.svg",
+    "images/sign_in_promo_dark.svg",
+    "images/sign_in_promo.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
 
-    deps = [
-      ":flattened_resources",
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "history.rollup.js|history.js",
+      "lazy_load.rollup.js|lazy_load.js",
     ]
-  }
-
-  grit("flattened_resources") {
-    source = "history_resources.grd"
-
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/history_resources.h",
-      "grit/history_resources_map.cc",
-      "grit/history_resources_map.h",
-      history_pak_file,
-    ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/history"
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
-js_type_check("closure_compile") {
-  deps = [
-    ":app",
-    ":browser_service",
-    ":constants",
-    ":externs",
-    ":history_item",
-    ":history_list",
-    ":history_toolbar",
-    ":query_manager",
-    ":router",
-    ":side_bar",
-    ":synced_device_card",
-    ":synced_device_manager",
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "browser_service.ts",
+    "constants.ts",
+    "externs.ts",
+    "history_clusters/browser_proxy.ts",
+    "history_clusters/metrics_proxy.ts",
+    "history_clusters/open_window_proxy.ts",
+    "history.ts",
+    "lazy_load.ts",
+    "query_manager.ts",
+    "searched_label.ts",
   ]
 }
 
-js_library("constants") {
-}
-
-js_library("browser_service") {
-  deps = [
-    ":externs",
-    "//ui/webui/resources/js:cr",
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "app.ts",
+    "history_clusters/cluster.ts",
+    "history_clusters/clusters.ts",
+    "history_clusters/page_favicon.ts",
+    "history_clusters/search_query.ts",
+    "history_clusters/shared_style.ts",
+    "history_clusters/shared_vars.ts",
+    "history_clusters/top_visit.ts",
+    "history_clusters/url_visit.ts",
+    "history_item.ts",
+    "history_list.ts",
+    "history_toolbar.ts",
+    "router.ts",
+    "shared_icons.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "side_bar.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.ts",
   ]
 }
 
-js_library("externs") {
-  deps = [
-    ":constants",
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/history_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/history_resources.h",
+    "grit/history_resources_map.cc",
+    "grit/history_resources_map.h",
+    "history_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "app.ts",
+    "history_item.ts",
+    "history_list.ts",
+    "history_toolbar.ts",
+    "router.ts",
+    "shared_icons.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "side_bar.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.ts",
   ]
 }
 
-js_library("history_item") {
-  deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
+group("web_components") {
+  public_deps = [
+    ":web_components_local",
+    "history_clusters:web_components",
   ]
 }
 
-js_library("history_list") {
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "app.ts",
+    "browser_service.ts",
+    "constants.ts",
+    "externs.ts",
+    "history_clusters/browser_proxy.ts",
+    "history_clusters/cluster.ts",
+    "history_clusters/clusters.ts",
+    "history_clusters/history_clusters.mojom-webui.js",
+    "history_clusters/metrics_proxy.ts",
+    "history_clusters/open_window_proxy.ts",
+    "history_clusters/page_favicon.ts",
+    "history_clusters/search_query.ts",
+    "history_clusters/shared_style.ts",
+    "history_clusters/shared_vars.ts",
+    "history_clusters/top_visit.ts",
+    "history_clusters/url_visit.ts",
+    "history_item.ts",
+    "history_list.ts",
+    "history_toolbar.ts",
+    "history.ts",
+    "lazy_load.ts",
+    "query_manager.ts",
+    "router.ts",
+    "searched_label.ts",
+    "shared_icons.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "side_bar.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.ts",
+  ]
   deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    ":history_item",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-scroll-threshold:iron-scroll-threshold-extracted",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  extra_deps = [
+    ":copy_history_clusters_mojom",
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }
 
-js_library("history_toolbar") {
-  deps = [
-    ":constants",
-    ":externs",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_selection_overlay",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
+copy("copy_history_clusters_mojom") {
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
+  outputs = [
+    "$target_gen_dir/$preprocess_folder/history_clusters/{{source_file_part}}",
   ]
-}
-
-js_library("app") {
-  deps = [
-    ":constants",
-    ":externs",
-    ":history_list",
-    ":history_toolbar",
-    ":side_bar",
-    ":synced_device_card",
-    ":synced_device_manager",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
-    "//ui/webui/resources/js:find_shortcut_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("query_manager") {
-  deps = [
-    ":browser_service",
-    ":externs",
-    ":router",
-  ]
-}
-
-js_library("router") {
-  deps = [
-    ":constants",
-    ":externs",
-  ]
-}
-
-js_library("side_bar") {
-  deps = [
-    ":browser_service",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-selector:iron-selector-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-ripple:paper-ripple-extracted",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("synced_device_card") {
-  deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:focus_row",
-  ]
-}
-
-js_library("synced_device_manager") {
-  deps = [
-    ":browser_service",
-    ":synced_device_card",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js/cr/ui:focus_grid",
-  ]
+  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
 }

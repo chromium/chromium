@@ -1,0 +1,44 @@
+Verifies that mixed content issue is created from mixed content script.
+
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/script.js
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-js.html
+                request : {
+                    requestId : <string>
+                    url : http://devtools.test:8000/inspector-protocol/resources/script.js
+                }
+                resolutionStatus : MixedContentBlocked
+                resourceType : Script
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/script.js
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-js.html
+                request : {
+                    requestId : <string>
+                    url : http://devtools.test:8000/inspector-protocol/resources/script.js
+                }
+                resolutionStatus : MixedContentBlocked
+                resourceType : Script
+            }
+        }
+    }
+}
+requestIds and frameIds match: true
+

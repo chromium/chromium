@@ -4,9 +4,9 @@
 
 #include "ui/base/cursor/cursor_util.h"
 
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ui {
 namespace {

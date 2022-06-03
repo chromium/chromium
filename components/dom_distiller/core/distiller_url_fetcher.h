@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -22,7 +21,7 @@ class DistillerURLFetcher;
 // Class for creating a DistillerURLFetcher.
 class DistillerURLFetcherFactory {
  public:
-  DistillerURLFetcherFactory(
+  explicit DistillerURLFetcherFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   virtual ~DistillerURLFetcherFactory();
   virtual DistillerURLFetcher* CreateDistillerURLFetcher() const;
@@ -41,11 +40,13 @@ class DistillerURLFetcher {
   virtual ~DistillerURLFetcher();
 
   // Indicates when a fetch is done.
-  typedef base::Callback<void(const std::string& data)> URLFetcherCallback;
+  using URLFetcherCallback = base::OnceCallback<void(const std::string& data)>;
 
   // Fetches a |url|. Notifies when the fetch is done via |callback|.
-  virtual void FetchURL(const std::string& url,
-                        const URLFetcherCallback& callback);
+  virtual void FetchURL(const std::string& url, URLFetcherCallback callback);
+
+  DistillerURLFetcher(const DistillerURLFetcher&) = delete;
+  DistillerURLFetcher& operator=(const DistillerURLFetcher&) = delete;
 
  protected:
   virtual std::unique_ptr<network::SimpleURLLoader> CreateURLFetcher(
@@ -57,7 +58,6 @@ class DistillerURLFetcher {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   URLFetcherCallback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  DISALLOW_COPY_AND_ASSIGN(DistillerURLFetcher);
 };
 
 }  //  namespace dom_distiller

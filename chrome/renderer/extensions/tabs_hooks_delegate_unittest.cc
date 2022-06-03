@@ -44,6 +44,10 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
   TabsHooksDelegateTest() {}
+
+  TabsHooksDelegateTest(const TabsHooksDelegateTest&) = delete;
+  TabsHooksDelegateTest& operator=(const TabsHooksDelegateTest&) = delete;
+
   ~TabsHooksDelegateTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -90,8 +94,6 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsHooksDelegateTest);
 };
 
 TEST_F(TabsHooksDelegateTest, Connect) {
@@ -100,24 +102,17 @@ TEST_F(TabsHooksDelegateTest, Connect) {
 
   SendMessageTester tester(ipc_message_sender(), script_context(), 0, "tabs");
 
-  const bool kExpectIncludeTlsChannelId = false;
   tester.TestConnect("1", "",
-                     MessageTarget::ForTab(1, messaging_util::kNoFrameId),
-                     kExpectIncludeTlsChannelId);
+                     MessageTarget::ForTab(1, messaging_util::kNoFrameId));
   tester.TestConnect("-0", "",
-                     MessageTarget::ForTab(0, messaging_util::kNoFrameId),
-                     kExpectIncludeTlsChannelId);
+                     MessageTarget::ForTab(0, messaging_util::kNoFrameId));
   tester.TestConnect("4, {name: 'channel'}", "channel",
-                     MessageTarget::ForTab(4, messaging_util::kNoFrameId),
-                     kExpectIncludeTlsChannelId);
+                     MessageTarget::ForTab(4, messaging_util::kNoFrameId));
   tester.TestConnect("9, {frameId: null}", "",
-                     MessageTarget::ForTab(9, messaging_util::kNoFrameId),
-                     kExpectIncludeTlsChannelId);
-  tester.TestConnect("9, {frameId: 16}", "", MessageTarget::ForTab(9, 16),
-                     kExpectIncludeTlsChannelId);
+                     MessageTarget::ForTab(9, messaging_util::kNoFrameId));
+  tester.TestConnect("9, {frameId: 16}", "", MessageTarget::ForTab(9, 16));
   tester.TestConnect("25, {}", "",
-                     MessageTarget::ForTab(25, messaging_util::kNoFrameId),
-                     kExpectIncludeTlsChannelId);
+                     MessageTarget::ForTab(25, messaging_util::kNoFrameId));
 
   CallAPIAndExpectError(context, "connect", "36, {includeTlsChannelId: true}");
 }
@@ -126,34 +121,32 @@ TEST_F(TabsHooksDelegateTest, SendMessage) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  const bool kExpectIncludeTlsChannelId = false;
-
   SendMessageTester tester(ipc_message_sender(), script_context(), 0, "tabs");
 
   tester.TestSendMessage("1, ''", R"("")",
                          MessageTarget::ForTab(1, messaging_util::kNoFrameId),
-                         kExpectIncludeTlsChannelId, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
 
   constexpr char kStandardMessage[] = R"({"data":"hello"})";
   tester.TestSendMessage("1, {data: 'hello'}", kStandardMessage,
                          MessageTarget::ForTab(1, messaging_util::kNoFrameId),
-                         kExpectIncludeTlsChannelId, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
   tester.TestSendMessage("-0, {data: 'hello'}", kStandardMessage,
                          MessageTarget::ForTab(0, messaging_util::kNoFrameId),
-                         kExpectIncludeTlsChannelId, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
   tester.TestSendMessage("1, {data: 'hello'}, function() {}", kStandardMessage,
                          MessageTarget::ForTab(1, messaging_util::kNoFrameId),
-                         kExpectIncludeTlsChannelId, SendMessageTester::OPEN);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage("1, {data: 'hello'}, {frameId: null}",
                          kStandardMessage,
                          MessageTarget::ForTab(1, messaging_util::kNoFrameId),
-                         kExpectIncludeTlsChannelId, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
   tester.TestSendMessage("1, {data: 'hello'}, {frameId: 10}", kStandardMessage,
                          MessageTarget::ForTab(1, 10),
-                         kExpectIncludeTlsChannelId, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
   tester.TestSendMessage("1, {data: 'hello'}, {frameId: 10}, function() {}",
                          kStandardMessage, MessageTarget::ForTab(1, 10),
-                         kExpectIncludeTlsChannelId, SendMessageTester::OPEN);
+                         SendMessageTester::OPEN);
 
   CallAPIAndExpectError(context, "sendMessage",
                         "1, 'hello', {includeTlsChannelId: true}");

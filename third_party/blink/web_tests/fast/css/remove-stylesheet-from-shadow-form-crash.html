@@ -7,7 +7,7 @@
         testRunner.dumpAsText();
 
     var div = document.getElementById("div");
-    var shadowRoot = div.createShadowRoot();
+    var shadowRoot = div.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = "<form><input></input></form>";
 
     // Force a style recalc.

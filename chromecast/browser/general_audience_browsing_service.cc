@@ -4,12 +4,11 @@
 
 #include "chromecast/browser/general_audience_browsing_service.h"
 
-#include "base/logging.h"
+#include "chromecast/browser/system_connector.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
-#include "content/public/browser/system_connector.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -56,12 +55,12 @@ net::NetworkTrafficAnnotationTag CreateNetworkTrafficAnnotationTag() {
 }  // namespace
 
 GeneralAudienceBrowsingService::GeneralAudienceBrowsingService(
+    external_service_support::ExternalConnector* connector,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : shared_url_loader_factory_(shared_url_loader_factory) {
-  content::GetSystemConnector()->Connect(
-      mojom::kChromecastServiceName,
-      general_audience_browsing_api_key_subject_remote_
-          .BindNewPipeAndPassReceiver());
+  connector->BindInterface(mojom::kChromecastServiceName,
+                           general_audience_browsing_api_key_subject_remote_
+                               .BindNewPipeAndPassReceiver());
   general_audience_browsing_api_key_subject_remote_
       ->AddGeneralAudienceBrowsingAPIKeyObserver(
           general_audience_browsing_api_key_observer_receiver_
@@ -104,7 +103,7 @@ GeneralAudienceBrowsingService::CreateSafeSearchURLChecker() {
   return std::make_unique<safe_search_api::URLChecker>(
       std::make_unique<safe_search_api::SafeSearchURLCheckerClient>(
           shared_url_loader_factory_, CreateNetworkTrafficAnnotationTag(),
-          std::string(), api_key_),
+          api_key_),
       /* cache size */ 1000);
 }
 

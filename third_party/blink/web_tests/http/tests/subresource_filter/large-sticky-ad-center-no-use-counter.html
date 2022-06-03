@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+iframe {
+  position: fixed;
+  margin-left: 5vw;
+  margin-top: 30vh;
+  width: 90vw;
+  height: 40vh;
+  border: 0px;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+p {
+  position: fixed;
+}
+</style>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/large-sticky-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+<script>
+promise_test(async function(t) {
+  // Create the large-sticky-ad.
+  appendAdFrameTo(document.body);
+
+  // After 1500ms, force a layout update.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
+
+  // Scroll down to 5000px.
+  window.scrollTo(0, 5000);
+
+  // After 1500ms, force a layout update. At this point the scrolling
+  // position has changed by a distance greater than the candidate's height.
+  // We expect no kLargeStickyAd use counter.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
+}, "Test a large-sticky-ad at the center. In this case, we expect no use counter for kLargeStickyAd.");
+</script>
+</body>
+</html>

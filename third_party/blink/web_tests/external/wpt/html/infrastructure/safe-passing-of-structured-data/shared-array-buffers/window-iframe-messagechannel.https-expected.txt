@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS postMessaging to a same-origin iframe via MessageChannel allows them to see each others' modifications
+PASS postMessaging to a same-site iframe via MessageChannel should fail
+PASS postMessaging to a cross-site iframe via MessageChannel should fail
+FAIL postMessaging with a MessageChannel that's been cross-site should succeed assert_true: expected true got false
+Harness: the test ran to completion.
+

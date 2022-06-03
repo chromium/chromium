@@ -13,8 +13,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
@@ -77,7 +77,7 @@ struct StagingBuffer {
   uint64_t content_id = 0;
 };
 
-class CC_EXPORT StagingBufferPool
+class CC_EXPORT StagingBufferPool final
     : public base::trace_event::MemoryDumpProvider {
  public:
   StagingBufferPool(scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -103,15 +103,20 @@ class CC_EXPORT StagingBufferPool
 
  private:
   void AddStagingBuffer(const StagingBuffer* staging_buffer,
-                        viz::ResourceFormat format);
-  void RemoveStagingBuffer(const StagingBuffer* staging_buffer);
-  void MarkStagingBufferAsFree(const StagingBuffer* staging_buffer);
-  void MarkStagingBufferAsBusy(const StagingBuffer* staging_buffer);
+                        viz::ResourceFormat format)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void RemoveStagingBuffer(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MarkStagingBufferAsFree(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MarkStagingBufferAsBusy(const StagingBuffer* staging_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  base::TimeTicks GetUsageTimeForLRUBuffer();
-  void ScheduleReduceMemoryUsage();
+  base::TimeTicks GetUsageTimeForLRUBuffer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ScheduleReduceMemoryUsage() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReduceMemoryUsage();
-  void ReleaseBuffersNotUsedSince(base::TimeTicks time);
+  void ReleaseBuffersNotUsedSince(base::TimeTicks time)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
@@ -131,14 +136,14 @@ class CC_EXPORT StagingBufferPool
   StagingBufferSet buffers_;
   using StagingBufferDeque =
       base::circular_deque<std::unique_ptr<StagingBuffer>>;
-  StagingBufferDeque free_buffers_;
-  StagingBufferDeque busy_buffers_;
-  const int max_staging_buffer_usage_in_bytes_;
-  int staging_buffer_usage_in_bytes_;
-  int free_staging_buffer_usage_in_bytes_;
-  const base::TimeDelta staging_buffer_expiration_delay_;
-  bool reduce_memory_usage_pending_;
-  base::RepeatingClosure reduce_memory_usage_callback_;
+  StagingBufferDeque free_buffers_ GUARDED_BY(lock_);
+  StagingBufferDeque busy_buffers_ GUARDED_BY(lock_);
+  const int max_staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  int staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  int free_staging_buffer_usage_in_bytes_ GUARDED_BY(lock_);
+  const base::TimeDelta staging_buffer_expiration_delay_ GUARDED_BY(lock_);
+  bool reduce_memory_usage_pending_ GUARDED_BY(lock_);
+  base::RepeatingClosure reduce_memory_usage_callback_ GUARDED_BY(lock_);
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

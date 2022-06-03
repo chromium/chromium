@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos, "Demo Mode App is Chrome OS only")
+assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
+
+mojom("mojom") {
+  sources = [ "demo_mode_app_ui.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/ash/webui/demo_mode_app_ui/mojom/"
+}

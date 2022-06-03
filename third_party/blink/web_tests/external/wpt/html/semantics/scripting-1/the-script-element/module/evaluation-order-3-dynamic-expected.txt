@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test evaluation order of modules assert_array_equals: lengths differ, expected array ["step-3.1-1", "step-3.1-2", "step-3.1-3", "microtask-3.1", "script-load", "step-3.2-1", "step-3.2-2", "microtask-3.2", "import-catch", "error"] length 10, got ["step-3.1-1", "step-3.1-2", "step-3.1-3", "microtask-3.1", "script-load", "global-load", "step-3.2-1", "step-3.2-2", "microtask-3.2", "import-catch", "error"] length 11
+Harness: the test ran to completion.
+

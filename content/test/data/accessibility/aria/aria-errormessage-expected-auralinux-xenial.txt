@@ -1,0 +1,11 @@
+[document web]
+++[section]
+++++[entry] name='Invalid is true'
+++++[entry] name='Invalid is false'
+++++[entry] name='Invalid is not set'
+++[paragraph]
+++++[static] name='Error for invalid input'
+++[paragraph]
+++++[static] name='Error for input which is not invalid'
+++[paragraph]
+++++[static] name='Error for input with invalid not set'

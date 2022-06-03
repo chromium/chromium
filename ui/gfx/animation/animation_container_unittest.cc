@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +25,11 @@ class FakeAnimationContainerObserver : public AnimationContainerObserver {
         empty_(false) {
   }
 
+  FakeAnimationContainerObserver(const FakeAnimationContainerObserver&) =
+      delete;
+  FakeAnimationContainerObserver& operator=(
+      const FakeAnimationContainerObserver&) = delete;
+
   int progressed_count() const { return progressed_count_; }
   bool empty() const { return empty_; }
 
@@ -43,21 +47,19 @@ class FakeAnimationContainerObserver : public AnimationContainerObserver {
 
   int progressed_count_;
   bool empty_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAnimationContainerObserver);
 };
 
 class TestAnimation : public LinearAnimation {
  public:
   explicit TestAnimation(AnimationDelegate* delegate)
-      : LinearAnimation(base::TimeDelta::FromMilliseconds(20), 20, delegate) {}
+      : LinearAnimation(base::Milliseconds(20), 20, delegate) {}
+
+  TestAnimation(const TestAnimation&) = delete;
+  TestAnimation& operator=(const TestAnimation&) = delete;
 
   void AnimateToState(double state) override {}
 
   using LinearAnimation::duration;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAnimation);
 };
 
 }  // namespace

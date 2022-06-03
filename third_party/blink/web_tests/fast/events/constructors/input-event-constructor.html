@@ -5,9 +5,9 @@
 <div id="log"></div>
 <script>
 test(function() {
-    assert_throws({name: 'TypeError'},
-                  function() { new InputEvent(); },
-                  "Construct InputEvent with no argument.");
+    assert_throws_js(TypeError,
+                     function() { new InputEvent(); },
+                     "Construct InputEvent with no argument.");
 }, "Checks for InputEvent constructor with not enough argument");
 
 test(function() {

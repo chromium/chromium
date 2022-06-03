@@ -1,0 +1,55 @@
+<!--
+@ANDROID-ALLOW:expand*
+@ANDROID-ALLOW:collapse*
+@ANDROID-ALLOW:action_*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:collapsed*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:COLLAPSED*
+@BLINK-ALLOW:collapsed*
+@BLINK-ALLOW:expanded*
+@MAC-ALLOW:AXExpanded
+-->
+<html>
+<body>
+  <!--Section #1-->
+  <h3>
+    <button id="header1control" aria-controls="section1" aria-expanded="true">
+      <p>Accordion Section #1</p>
+    </button>
+  </h3>
+  <div role="region" id="section1" aria-labelledby="header1control">
+    <p>Content for first section of accordion element.</p>
+  </div>
+
+  <!--Section #2-->
+  <h3>
+    <button id="header2control" aria-controls="section2" aria-expanded="false">
+      <p>Accordion Section #2</p>
+    </button>
+  </h3>
+  <div role="region" id="section2" aria-labelledby="header2control" hidden>
+    <p>Content for second section of accordion element.</p>
+  </div>
+
+  <!--Section #3-->
+  <h3>
+    <button id="header3control" aria-controls="section3" aria-expanded="false">
+      <p>Accordion Section #3</p>
+    </button>
+  </h3>
+  <div role="region" id="section3" aria-labelledby="header3control" hidden>
+    <p>Content for third section of accordion element.</p>
+  </div>
+
+  <!--Section #4-->
+  <h3>
+    <button id="header4control" aria-controls="section4" aria-expanded="true" aria-disabled="true">
+      <p>Accordion Section #4</p>
+    </button>
+  </h3>
+  <div role="region" id="section3" aria-labelledby="header4control">
+    <p>Content for forth section of accordion element. This section will always be visible but disabled.</p>
+  </div>
+</body>
+</html>

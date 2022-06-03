@@ -30,16 +30,23 @@ void MockExtensionDownloaderDelegate::Quit() {
 
 void MockExtensionDownloaderDelegate::DelegateTo(
     ExtensionDownloaderDelegate* delegate) {
-  ON_CALL(*this, OnExtensionDownloadFailed(_, _, _, _))
+  ON_CALL(*this, OnExtensionDownloadFailed(_, _, _, _, _))
       .WillByDefault(Invoke(
           delegate, &ExtensionDownloaderDelegate::OnExtensionDownloadFailed));
   ON_CALL(*this, OnExtensionDownloadStageChanged(_, _))
       .WillByDefault(Invoke(
           delegate,
           &ExtensionDownloaderDelegate::OnExtensionDownloadStageChanged));
-  ON_CALL(*this, OnExtensionDownloadFinished(_, _, _, _, _, _, _))
+  ON_CALL(*this, OnExtensionDownloadFinished_(_, _, _, _, _, _))
       .WillByDefault(Invoke(
-          delegate, &ExtensionDownloaderDelegate::OnExtensionDownloadFinished));
+          [delegate](const CRXFileInfo& file, bool file_ownership_passed,
+                     const GURL& download_url, const PingResult& ping_result,
+                     const std::set<int>& request_ids,
+                     InstallCallback& callback) {
+            delegate->OnExtensionDownloadFinished(
+                file, file_ownership_passed, download_url, ping_result,
+                request_ids, std::move(callback));
+          }));
   ON_CALL(*this, OnExtensionDownloadRetryForTests())
       .WillByDefault(Invoke(
           delegate,
@@ -47,9 +54,6 @@ void MockExtensionDownloaderDelegate::DelegateTo(
   ON_CALL(*this, GetPingDataForExtension(_, _))
       .WillByDefault(Invoke(
           delegate, &ExtensionDownloaderDelegate::GetPingDataForExtension));
-  ON_CALL(*this, GetUpdateUrlData(_))
-      .WillByDefault(
-          Invoke(delegate, &ExtensionDownloaderDelegate::GetUpdateUrlData));
   ON_CALL(*this, IsExtensionPending(_))
       .WillByDefault(
           Invoke(delegate, &ExtensionDownloaderDelegate::IsExtensionPending));

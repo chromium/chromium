@@ -129,17 +129,15 @@ Object.defineProperty(ColorSuggestionPicker, 'SwatchesPerRow', {
 
 Object.defineProperty(ColorSuggestionPicker, 'SwatchesMaxRow', {
   get: function() {
-    return global.params.isFormControlsRefreshEnabled ? 3 : 4;
+    return 3;
   }
 });
 
 Object.defineProperty(ColorSuggestionPicker, 'ScrollbarWidth', {
   get: function() {
-    return !global.params.isFormControlsRefreshEnabled ?
-        getScrollbarWidth() :
-        Number(window.getComputedStyle(document.body)
-                   .getPropertyValue('--scrollbar-width')
-                   .replace('px', ''));
+    return Number(window.getComputedStyle(document.body)
+                      .getPropertyValue('--scrollbar-width')
+                      .replace('px', ''));
   }
 });
 
@@ -178,19 +176,15 @@ ColorSuggestionPicker.prototype._layout = function() {
 };
 
 ColorSuggestionPicker.prototype._onOtherButtonClick = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    var main = $('main');
-    main.innerHTML = '';
-    main.classList.remove('color-suggestion-picker-main');
-    main.classList.add('color-picker-main');
-    // Replace document.body with a deep clone to drop all event listeners.
-    var oldBody = document.body;
-    var newBody = oldBody.cloneNode(true);
-    oldBody.parentElement.replaceChild(newBody, oldBody);
-    initializeColorPicker();
-  } else {
-    this.chooseOtherColor();
-  }
+  var main = $('main');
+  main.innerHTML = '';
+  main.classList.remove('color-suggestion-picker-main');
+  main.classList.add('color-picker-main');
+  // Replace document.body with a deep clone to drop all event listeners.
+  var oldBody = document.body;
+  var newBody = oldBody.cloneNode(true);
+  oldBody.parentElement.replaceChild(newBody, oldBody);
+  initializeColorPicker();
 };
 
 ColorSuggestionPicker.prototype.selectColorAtIndex = function(index) {

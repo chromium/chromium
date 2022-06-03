@@ -14,6 +14,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * Whether error state should be shown.
      * @type {boolean}
@@ -55,10 +58,13 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @return {?string}
    * @private
    */
-  getPageTitle_: function() {
+  getPageTitle_() {
+    if (!this.delegate.shouldShowPageTitle()) {
+      return null;
+    }
     if (this.showError) {
       return this.i18n('provisioningPageErrorTitle', this.carrierName_);
     }
@@ -69,21 +75,21 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @return {?string}
    * @private
    */
-  getPageMessage_: function() {
+  getPageMessage_() {
     if (this.showError) {
       return this.i18n('provisioningPageErrorMessage', this.carrierName_);
     }
-    return '';
+    return null;
   },
 
   /**
    * @return {boolean}
    * @private
    */
-  shouldShowSpinner_: function() {
+  shouldShowSpinner_() {
     return !this.showError && !this.hasCarrierPortalLoaded_;
   },
 
@@ -91,7 +97,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowPortal_: function() {
+  shouldShowPortal_() {
     return !this.showError && this.hasCarrierPortalLoaded_;
   },
 
@@ -99,12 +105,12 @@ Polymer({
    * @return {?WebView}
    * @private
    */
-  getPortalWebview: function() {
+  getPortalWebview() {
     return /** @type {?WebView} */ (this.$$('webview'));
   },
 
   /** @private */
-  onCellularMetadataChanged_: function() {
+  onCellularMetadataChanged_() {
     // Once |cellularMetadata| has been set, load the carrier provisioning page.
     if (this.cellularMetadata) {
       this.carrierName_ = this.cellularMetadata.carrier;
@@ -118,7 +124,7 @@ Polymer({
   },
 
   /** @private */
-  loadPortal_: function() {
+  loadPortal_() {
     assert(!!this.cellularMetadata);
     assert(!this.getPortalWebview());
 
@@ -147,7 +153,7 @@ Polymer({
   },
 
   /** @private */
-  resetPage_: function() {
+  resetPage_() {
     this.hasCarrierPortalLoaded_ = false;
 
     // Remove the portal from the DOM if it exists.
@@ -158,12 +164,12 @@ Polymer({
   },
 
   /** @private */
-  onPortalLoadAbort_: function(event) {
+  onPortalLoadAbort_(event) {
     this.showError = true;
   },
 
   /** @private */
-  onPortalLoadStop_: function() {
+  onPortalLoadStop_() {
     if (this.hasCarrierPortalLoaded_) {
       return;
     }
@@ -181,13 +187,13 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onMessageReceived_: function(event) {
+  onMessageReceived_(event) {
     const messageType = /** @type {string} */ (event.data.type);
     const status = /** @type {string} */ (event.data.status);
 
     // The <webview> requested information about this device. Reply by posting a
     // message back to it.
-    if (messageType == 'requestDeviceInfoMsg') {
+    if (messageType === 'requestDeviceInfoMsg') {
       this.getPortalWebview().contentWindow.postMessage(
           {
             carrier: this.cellularMetadata.carrier,
@@ -200,8 +206,8 @@ Polymer({
     }
 
     // The <webview> provided an update on the status of the activation attempt.
-    if (messageType == 'reportTransactionStatusMsg') {
-      const success = status == 'ok';
+    if (messageType === 'reportTransactionStatusMsg') {
+      const success = status === 'ok';
       this.fire('on-carrier-portal-result', success);
       return;
     }

@@ -119,8 +119,8 @@ TEST_F(RemovableStorageProviderChromeOsUnitTest, GetAllDevices) {
   CreateDisk("/dev/OnBootDevice", chromeos::DEVICE_TYPE_USB, true, true, true);
 
   RemovableStorageProvider::GetAllDevices(
-      base::Bind(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,
-                 base::Unretained(this)));
+      base::BindOnce(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,
+                     base::Unretained(this)));
 
   task_environment_.RunUntilIdle();
 
@@ -140,8 +140,8 @@ TEST_F(RemovableStorageProviderChromeOsUnitTest, EmptyProductAndModel) {
       kDevicePathSD, "", "", chromeos::DEVICE_TYPE_SD, true, true, false);
 
   RemovableStorageProvider::GetAllDevices(
-      base::Bind(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,
-                 base::Unretained(this)));
+      base::BindOnce(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,
+                     base::Unretained(this)));
 
   task_environment_.RunUntilIdle();
 

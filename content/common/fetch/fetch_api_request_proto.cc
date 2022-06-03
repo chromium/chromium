@@ -23,8 +23,6 @@ std::string SerializeFetchRequestToString(
   request_proto.set_is_reload(request.is_reload);
   request_proto.set_mode(static_cast<int>(request.mode));
   request_proto.set_is_main_resource_load(request.is_main_resource_load);
-  request_proto.set_request_context_type(
-      static_cast<int>(request.request_context_type));
   request_proto.set_credentials_mode(
       static_cast<int>(request.credentials_mode));
   request_proto.set_cache_mode(static_cast<int>(request.cache_mode));
@@ -47,14 +45,11 @@ blink::mojom::FetchAPIRequestPtr DeserializeFetchRequestFromString(
   request_ptr->mode =
       static_cast<network::mojom::RequestMode>(request_proto.mode());
   request_ptr->is_main_resource_load = request_proto.is_main_resource_load();
-  request_ptr->request_context_type =
-      static_cast<blink::mojom::RequestContextType>(
-          request_proto.request_context_type());
-  request_ptr->frame_type = network::mojom::RequestContextFrameType::kNone;
+  request_ptr->frame_type = blink::mojom::RequestContextFrameType::kNone;
   request_ptr->url = GURL(request_proto.url());
   request_ptr->method = request_proto.method();
-  request_ptr->headers = {request_proto.headers().begin(),
-                          request_proto.headers().end()};
+  request_ptr->headers = blink::FetchAPIRequestHeadersMap(
+      request_proto.headers().begin(), request_proto.headers().end());
   request_ptr->referrer = blink::mojom::Referrer::New(
       GURL(request_proto.referrer().url()),
 

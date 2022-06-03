@@ -76,14 +76,13 @@
                 "description": "The generic font family for which the font should be cleared."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getFont",
@@ -103,29 +102,28 @@
                 "description": "The generic font family for which the font should be retrieved."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "details",
-                "type": "object",
-                "properties": {
-                  "fontId": {
-                    "type": "string",
-                    "description": "The font ID. Rather than the literal font ID preference value, this may be the ID of the font that the system resolves the preference value to. So, <var>fontId</var> can differ from the font passed to <code>setFont</code>, if, for example, the font is not available on the system. The empty string signifies fallback to the global script font setting."
-                  },
-                  "levelOfControl": {
-                    "$ref": "LevelOfControl",
-                    "description": "The level of control this extension has over the setting."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "details",
+              "type": "object",
+              "properties": {
+                "fontId": {
+                  "type": "string",
+                  "description": "The font ID. Rather than the literal font ID preference value, this may be the ID of the font that the system resolves the preference value to. So, <var>fontId</var> can differ from the font passed to <code>setFont</code>, if, for example, the font is not available on the system. The empty string signifies fallback to the global script font setting."
+                },
+                "levelOfControl": {
+                  "$ref": "LevelOfControl",
+                  "description": "The level of control this extension has over the setting."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "setFont",
@@ -149,31 +147,28 @@
                 "description": "The font ID. The empty string means to fallback to the global script font setting."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getFontList",
         "description": "Gets a list of fonts on the system.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "results",
-                "type": "array",
-                "items": { "$ref": "FontName" }
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "results",
+              "type": "array",
+              "items": { "$ref": "FontName" }
+            }
+          ]
+        }
       },
       {
         "name": "clearDefaultFontSize",
@@ -185,14 +180,13 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getDefaultFontSize",
@@ -204,29 +198,28 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "details",
-                "type": "object",
-                "properties": {
-                  "pixelSize": {
-                    "type": "integer",
-                    "description": "The font size in pixels."
-                  },
-                  "levelOfControl": {
-                    "$ref": "LevelOfControl",
-                    "description": "The level of control this extension has over the setting."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "details",
+              "type": "object",
+              "properties": {
+                "pixelSize": {
+                  "type": "integer",
+                  "description": "The font size in pixels."
+                },
+                "levelOfControl": {
+                  "$ref": "LevelOfControl",
+                  "description": "The level of control this extension has over the setting."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "setDefaultFontSize",
@@ -241,14 +234,13 @@
                 "description": "The font size in pixels."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "clearDefaultFixedFontSize",
@@ -260,14 +252,13 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getDefaultFixedFontSize",
@@ -279,29 +270,28 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "details",
-                "type": "object",
-                "properties": {
-                  "pixelSize": {
-                    "type": "integer",
-                    "description": "The font size in pixels."
-                  },
-                  "levelOfControl": {
-                    "$ref": "LevelOfControl",
-                    "description": "The level of control this extension has over the setting."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "details",
+              "type": "object",
+              "properties": {
+                "pixelSize": {
+                  "type": "integer",
+                  "description": "The font size in pixels."
+                },
+                "levelOfControl": {
+                  "$ref": "LevelOfControl",
+                  "description": "The level of control this extension has over the setting."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "setDefaultFixedFontSize",
@@ -316,14 +306,13 @@
                 "description": "The font size in pixels."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "clearMinimumFontSize",
@@ -335,14 +324,13 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getMinimumFontSize",
@@ -354,29 +342,28 @@
             "optional": true,
             "description": "This parameter is currently unused.",
             "properties": {}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "details",
-                "type": "object",
-                "properties": {
-                  "pixelSize": {
-                    "type": "integer",
-                    "description": "The font size in pixels."
-                  },
-                  "levelOfControl": {
-                    "$ref": "LevelOfControl",
-                    "description": "The level of control this extension has over the setting."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "details",
+              "type": "object",
+              "properties": {
+                "pixelSize": {
+                  "type": "integer",
+                  "description": "The font size in pixels."
+                },
+                "levelOfControl": {
+                  "$ref": "LevelOfControl",
+                  "description": "The level of control this extension has over the setting."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "setMinimumFontSize",
@@ -391,14 +378,13 @@
                 "description": "The font size in pixels."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [

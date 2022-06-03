@@ -59,11 +59,13 @@
 .text
 
 
+.hidden	OPENSSL_armcap_P
 .globl	sha512_block_data_order
 .hidden	sha512_block_data_order
 .type	sha512_block_data_order,%function
 .align	6
 sha512_block_data_order:
+	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
 
@@ -1024,6 +1026,7 @@ sha512_block_data_order:
 	ldp	x25,x26,[x29,#64]
 	ldp	x27,x28,[x29,#80]
 	ldp	x29,x30,[sp],#128
+	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 .size	sha512_block_data_order,.-sha512_block_data_order
 
@@ -1076,10 +1079,6 @@ sha512_block_data_order:
 .byte	83,72,65,53,49,50,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
-#ifndef	__KERNEL__
-.comm	OPENSSL_armcap_P,4,4
-.hidden	OPENSSL_armcap_P
-#endif
 #endif
 #endif  // !OPENSSL_NO_ASM
 .section	.note.GNU-stack,"",%progbits

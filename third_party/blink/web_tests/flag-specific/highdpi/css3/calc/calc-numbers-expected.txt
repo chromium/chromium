@@ -1,0 +1,11 @@
+PASS getComputedValue(".int", "tabSize") is "8"
+PASS getComputedValue(".int-non-neg-invalid", "tabSize") is "12345"
+PASS Number(getComputedValue(".float", "opacity")) is within 0.0001 of 0.5
+PASS getComputedValue(".float-to-rounded-int", "zIndex") is "1"
+PASS Number(getComputedValue(".px-invalid", "opacity")) is within 0.0001 of 0.9
+PASS getComputedValue(".num-length-invalid", "tabSize") is "12345"
+FAIL getComputedValue(".px-valid", "tabSize") should be 10px. Was 15px.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

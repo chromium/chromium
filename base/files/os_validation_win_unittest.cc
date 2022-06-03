@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
@@ -68,6 +67,8 @@ class OpenFileTest : public OsValidationTest,
                                     std::tuple<DWORD, DWORD, DWORD>>> {
  protected:
   OpenFileTest() = default;
+  OpenFileTest(const OpenFileTest&) = delete;
+  OpenFileTest& operator=(const OpenFileTest&) = delete;
 
   // Returns a dwDesiredAccess bitmask for use with CreateFileW containing the
   // test's access right bits.
@@ -207,8 +208,8 @@ class OpenFileTest : public OsValidationTest,
     file_handle_.Close();
 
     // Manually delete the temp files since the temp dir is reused across tests.
-    ASSERT_TRUE(DeleteFile(temp_file_path_, false));
-    ASSERT_TRUE(DeleteFile(temp_file_dest_path_, false));
+    ASSERT_TRUE(DeleteFile(temp_file_path_));
+    ASSERT_TRUE(DeleteFile(temp_file_dest_path_));
   }
 
   DWORD access() const { return access_; }
@@ -234,7 +235,7 @@ class OpenFileTest : public OsValidationTest,
       if (bitfield & bit_name.bit) {
         if (!result->empty())
           result->append(" | ");
-        bit_name.name.AppendToString(result);
+        result->append(bit_name.name.data(), bit_name.name.size());
         bitfield &= ~bit_name.bit;
       }
       ++bits_begin;
@@ -248,8 +249,6 @@ class OpenFileTest : public OsValidationTest,
   FilePath temp_file_path_;
   FilePath temp_file_dest_path_;
   win::ScopedHandle file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFileTest);
 };
 
 // Tests that an opened but not mapped file can be deleted as expected.
@@ -356,7 +355,7 @@ TEST_P(OpenFileTest, MapThenDelete) {
 //
 // base_unittests.exe --single-process-tests --gtest_also_run_disabled_tests \
 //     --gtest_filter=*OpenFileTest*
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     DISABLED_Test,
     OpenFileTest,
     ::testing::Combine(

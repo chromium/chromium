@@ -4,18 +4,21 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
+#include <string>
+
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "ui/events/test/cocoa_test_event_utils.h"
 
 @interface TextInputFlagChangeWaiter : NSObject
 @end
@@ -47,9 +50,7 @@
   _run_loop = std::make_unique<base::RunLoop>();
 }
 
-- (void)waitWithTimeout:(NSTimeInterval)timeout {
-  base::RunLoop::ScopedRunTimeoutForTest run_timeout(
-      base::TimeDelta::FromSecondsD(timeout), _run_loop->QuitClosure());
+- (void)wait {
   _run_loop->Run();
 
   [self reset];
@@ -71,20 +72,39 @@ class TextCallbackWaiter {
  public:
   TextCallbackWaiter() {}
 
+  TextCallbackWaiter(const TextCallbackWaiter&) = delete;
+  TextCallbackWaiter& operator=(const TextCallbackWaiter&) = delete;
+
   void Wait() { run_loop_.Run(); }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
-  void GetText(const base::string16& text) {
+  void GetText(const std::u16string& text) {
     text_ = text;
     run_loop_.Quit();
   }
 
  private:
-  base::string16 text_;
+  std::u16string text_;
   base::RunLoop run_loop_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TextCallbackWaiter);
+class TextSelectionWaiter : public TextInputManager::Observer {
+ public:
+  TextSelectionWaiter(RenderWidgetHostViewMac* rwhv) {
+    rwhv->GetTextInputManager()->AddObserver(this);
+  }
+
+  void OnTextSelectionChanged(TextInputManager* text_input_manager,
+                              RenderWidgetHostViewBase* updated_view) override {
+    text_input_manager->RemoveObserver(this);
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -108,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
       base::BindOnce(&TextCallbackWaiter::GetText, base::Unretained(&waiter)));
   waiter.Wait();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Hello\nWorld"), waiter.text());
+  EXPECT_EQ(u"Hello\nWorld", waiter.text());
 }
 
 // Test that -firstRectForCharacterRange:actualRange: works when the range
@@ -117,6 +137,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
                        GetFirstRectForCharacterRangeUncached) {
   GURL url("data:text/html,Hello");
   EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  auto* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto* root = web_contents_impl->GetPrimaryFrameTree().root();
+  web_contents_impl->GetPrimaryFrameTree().SetFocusedFrame(
+      root, root->current_frame_host()->GetSiteInstance());
 
   RenderWidgetHostView* rwhv =
       shell()->web_contents()->GetMainFrame()->GetView();
@@ -147,16 +173,53 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
           initWithRenderWidgetHostViewCocoa:rwhv_cocoa]);
 
   EXPECT_TRUE(ExecJs(shell(), "ta.focus();"));
-  [flag_change_waiter waitWithTimeout:5];
+  [flag_change_waiter wait];
   EXPECT_FALSE(rwhv_cocoa.textInputFlags &
                blink::kWebTextInputFlagAutocorrectOff);
 
   EXPECT_TRUE(ExecJs(
       shell(),
       "ta.setAttribute('autocorrect', 'off'); console.log(ta.outerHTML);"));
-  [flag_change_waiter waitWithTimeout:5];
+  [flag_change_waiter wait];
   EXPECT_TRUE(rwhv_cocoa.textInputFlags &
               blink::kWebTextInputFlagAutocorrectOff);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       InputTextPreventedSyncsCursorLocation) {
+  class InputMethodObserver {};
+
+  GURL url("data:text/html,<!doctype html><textarea id=ta></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      "ta.addEventListener('keypress', (evt) => {evt.preventDefault();}); "
+      "ta.focus();"));
+
+  // Before typing anything, we're at position 0.
+  EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
+
+  TextSelectionWaiter waiter(rwhv_mac);
+  NSEvent* key_a =
+      cocoa_test_event_utils::KeyEventWithKeyCode('a', 'a', NSKeyDown, 0);
+  [rwhv_cocoa keyEvent:key_a];
+
+  // After typing 'a', the browser process assumes that the text was entered and
+  // we are at position 1.
+  EXPECT_EQ(1lu, [rwhv_cocoa selectedRange].location);
+
+  // Wait for the renderer to sync the selection to the browser.
+  waiter.Wait();
+
+  // The synced selection updates the selected position back to 0.
+  EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
 }
 
 }  // namespace content

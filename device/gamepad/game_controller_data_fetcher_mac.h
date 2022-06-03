@@ -5,14 +5,7 @@
 #ifndef DEVICE_GAMEPAD_GAME_CONTROLLER_DATA_FETCHER_MAC_H_
 #define DEVICE_GAMEPAD_GAME_CONTROLLER_DATA_FETCHER_MAC_H_
 
-#include "base/macros.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
-
-#if defined(__OBJC__)
-@class NSArray;
-#else
-class NSArray;
-#endif
 
 namespace device {
 
@@ -23,20 +16,21 @@ class GameControllerDataFetcherMac : public GamepadDataFetcher {
       Factory;
 
   GameControllerDataFetcherMac();
+  GameControllerDataFetcherMac(const GameControllerDataFetcherMac&) = delete;
+  GameControllerDataFetcherMac& operator=(const GameControllerDataFetcherMac&) =
+      delete;
   ~GameControllerDataFetcherMac() override;
 
+  // GamepadDataFetcher implementation.
   GamepadSource source() override;
-
   void GetGamepadData(bool devices_changed_hint) override;
 
  private:
   int NextUnusedPlayerIndex();
-
-  DISALLOW_COPY_AND_ASSIGN(GameControllerDataFetcherMac);
 
   bool connected_[Gamepads::kItemsLengthCap];
 };
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_MAC_H_
+#endif  // DEVICE_GAMEPAD_GAME_CONTROLLER_DATA_FETCHER_MAC_H_

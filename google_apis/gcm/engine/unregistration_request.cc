@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace gcm {
 
@@ -105,13 +106,13 @@ UnregistrationRequest::UnregistrationRequest(
     const RequestInfo& request_info,
     std::unique_ptr<CustomRequestHandler> custom_request_handler,
     const net::BackoffEntry::Policy& backoff_policy,
-    const UnregistrationCallback& callback,
+    UnregistrationCallback callback,
     int max_retry_count,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder,
     const std::string& source_to_record)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       request_info_(request_info),
       custom_request_handler_(std::move(custom_request_handler)),
       registration_url_(registration_url),
@@ -291,7 +292,7 @@ void UnregistrationRequest::OnURLLoadComplete(
     custom_request_handler_->ReportUMAs(status);
   }
 
-  callback_.Run(status);
+  std::move(callback_).Run(status);
 }
 
 }  // namespace gcm

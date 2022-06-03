@@ -6,9 +6,11 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "net/dns/mock_host_resolver.h"
@@ -17,10 +19,17 @@
 class SignedExchangePageLoadMetricsBrowserTest
     : public CertVerifierBrowserTest {
  public:
-  SignedExchangePageLoadMetricsBrowserTest() {
+  SignedExchangePageLoadMetricsBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
         {ukm::kUkmFeature, features::kSignedHTTPExchange}, {});
   }
+
+  SignedExchangePageLoadMetricsBrowserTest(
+      const SignedExchangePageLoadMetricsBrowserTest&) = delete;
+  SignedExchangePageLoadMetricsBrowserTest& operator=(
+      const SignedExchangePageLoadMetricsBrowserTest&) = delete;
+
   ~SignedExchangePageLoadMetricsBrowserTest() override {}
 
  protected:
@@ -37,7 +46,8 @@ class SignedExchangePageLoadMetricsBrowserTest
   // and only use NavigateToUntrackedUrl for cases where the waiter isn't
   // sufficient.
   void NavigateToUntrackedUrl() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void InstallUrlInterceptor(const GURL& url, const std::string& data_path) {
@@ -56,49 +66,82 @@ class SignedExchangePageLoadMetricsBrowserTest
     return *test_ukm_recorder_;
   }
 
+  void RunUkmSignedExchangeMetricTest(const std::string& hostname,
+                                      bool expected_served_from_google_cache) {
+    https_server_.ServeFilesFromSourceDirectory("content/test/data");
+    ASSERT_TRUE(https_server_.Start());
+
+    const GURL inner_url("https://test.example.org/test/");
+    const GURL url =
+        https_server_.GetURL(hostname, "/sxg/test.example.org_test.sxg");
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    // Force navigation to another page, which should force logging of
+    // histograms persisted at the end of the page load lifetime.
+    NavigateToUntrackedUrl();
+
+    using PageLoad_SignedExchange = ukm::builders::PageLoad_SignedExchange;
+    const auto entries = test_ukm_recorder().GetMergedEntriesByName(
+        PageLoad_SignedExchange::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    for (const auto& kv : entries) {
+      auto* const entry = kv.second.get();
+      test_ukm_recorder().ExpectEntrySourceHasUrl(entry, inner_url);
+
+      EXPECT_EQ(
+          expected_served_from_google_cache,
+          test_ukm_recorder().EntryHasMetric(
+              entry, PageLoad_SignedExchange::kServedFromGoogleCacheName));
+    }
+  }
+
  private:
   void SetUp() override {
     // Somehow tests actually run inside InProcessBrowserTest::SetUp(),
     // so setup helper before InProcessBrowserTest::SetUp().
     sxg_test_helper_.SetUp();
 
-    InProcessBrowserTest::SetUp();
+    CertVerifierBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This is necessary to use https with arbitrary hostnames.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+
+    CertVerifierBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    // This is necessary to use arbitrary hostnames.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    CertVerifierBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     sxg_test_helper_.TearDownOnMainThread();
+
+    CertVerifierBrowserTest::TearDownOnMainThread();
   }
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePageLoadMetricsBrowserTest);
+  net::EmbeddedTestServer https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangePageLoadMetricsBrowserTest,
                        UkmSignedExchangeMetric) {
-  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-  ASSERT_TRUE(embedded_test_server()->Start());
+  RunUkmSignedExchangeMetricTest("localhost", false);
+}
 
-  const GURL inner_url("https://test.example.org/test/");
-  const GURL url =
-      embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
-  ui_test_utils::NavigateToURL(browser(), url);
+IN_PROC_BROWSER_TEST_F(SignedExchangePageLoadMetricsBrowserTest,
+                       UkmSignedExchangeFromAmpProjectCdn) {
+  RunUkmSignedExchangeMetricTest("foo.cdn.ampproject.org", true);
+}
 
-  // Force navigation to another page, which should force logging of histograms
-  // persisted at the end of the page load lifetime.
-  NavigateToUntrackedUrl();
-
-  using PageLoad = ukm::builders::PageLoad;
-  const auto entries =
-      test_ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    auto* const entry = kv.second.get();
-    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, inner_url);
-
-    EXPECT_TRUE(test_ukm_recorder().EntryHasMetric(
-        entry, PageLoad::kIsSignedExchangeInnerResponseName));
-  }
+IN_PROC_BROWSER_TEST_F(SignedExchangePageLoadMetricsBrowserTest,
+                       UkmSignedExchangeFromWebPkgCache) {
+  RunUkmSignedExchangeMetricTest("bar.webpkgcache.com", true);
 }

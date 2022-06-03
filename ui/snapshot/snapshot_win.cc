@@ -14,6 +14,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/snapshot/snapshot_aura.h"
@@ -65,7 +66,7 @@ bool GrabHwndSnapshot(HWND window_handle,
                      snapshot_bounds_in_window.y());
 
   // Clear the region of the bitmap outside the clip rect to white.
-  SkCanvas image_canvas(bitmap);
+  SkCanvas image_canvas(bitmap, SkSurfaceProps{});
   SkPaint paint;
   paint.setColor(SK_ColorWHITE);
 

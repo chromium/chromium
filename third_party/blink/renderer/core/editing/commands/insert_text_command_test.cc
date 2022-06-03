@@ -13,6 +13,23 @@ namespace blink {
 
 class InsertTextCommandTest : public EditingTestBase {};
 
+class ParameterizedInsertTextCommandTest
+    : public testing::WithParamInterface<bool>,
+      private ScopedLayoutNGForTest,
+      public InsertTextCommandTest {
+ public:
+  ParameterizedInsertTextCommandTest() : ScopedLayoutNGForTest(GetParam()) {}
+
+ protected:
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedInsertTextCommandTest,
+                         testing::Bool());
+
 // http://crbug.com/714311
 TEST_F(InsertTextCommandTest, WithTypingStyle) {
   SetBodyContent("<div contenteditable=true><option id=sample></option></div>");
@@ -29,7 +46,7 @@ TEST_F(InsertTextCommandTest, WithTypingStyle) {
 
   EXPECT_EQ(
       "<div contenteditable=\"true\"><option id=\"sample\">x</option></div>",
-      GetDocument().body()->InnerHTMLAsString())
+      GetDocument().body()->innerHTML())
       << "Content of OPTION is distributed into shadow node as text"
          "without applying typing style.";
 }
@@ -282,7 +299,7 @@ TEST_F(InsertTextCommandTest, AnchorElementWithBlockCrash) {
   Element* iElement = GetDocument().CreateRawElement(html_names::kITag);
 
   nested_anchor->setAttribute("href", "www");
-  iElement->SetInnerHTMLFromString("home");
+  iElement->setInnerHTML("home");
 
   anchor->AppendChild(nested_anchor);
   nested_anchor->AppendChild(iElement);
@@ -297,10 +314,23 @@ TEST_F(InsertTextCommandTest, AnchorElementWithBlockCrash) {
   // Crash happens here with when '\n' is inserted.
   GetDocument().execCommand("inserttext", false, "a\n", ASSERT_NO_EXCEPTION);
   EXPECT_EQ(
-      "<i style=\"display: block;\">"
-      "<a href=\"www\" style=\"display: block;\">a</a>"
-      "</i>|",
+      "<a href=\"www\" style=\"display:block\"><i>a</i></a><a href=\"www\" "
+      "style=\"display:block\"><i>|<br></i></a>",
       GetSelectionTextFromBody());
+}
+
+// http://crbug.com/1197977
+TEST_P(ParameterizedInsertTextCommandTest, MultilineSelectionCrash) {
+  // Force line break between A and B.
+  InsertStyleElement("body { width: 1px; }");
+  Selection().SetSelection(SetSelectionTextToBody("A^<span> B|</span>"),
+                           SetSelectionOptions());
+  GetDocument().setDesignMode("on");
+
+  // Shouldn't crash inside.
+  GetDocument().execCommand("InsertText", false, "x", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(LayoutNGEnabled() ? "A<span>x|</span>" : "A<span> x|</span>",
+            GetSelectionTextFromBody());
 }
 
 }  // namespace blink

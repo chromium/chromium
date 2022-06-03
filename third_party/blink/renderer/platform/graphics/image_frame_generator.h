@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -44,7 +43,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTypes.h"
-#include "third_party/skia/include/core/SkYUVASizeInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
 
@@ -55,11 +55,10 @@ class PLATFORM_EXPORT ImageDecoderFactory {
 
  public:
   ImageDecoderFactory() = default;
+  ImageDecoderFactory(const ImageDecoderFactory&) = delete;
+  ImageDecoderFactory& operator=(const ImageDecoderFactory&) = delete;
   virtual ~ImageDecoderFactory() = default;
   virtual std::unique_ptr<ImageDecoder> Create() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderFactory);
 };
 
 class PLATFORM_EXPORT ImageFrameGenerator final
@@ -74,6 +73,8 @@ class PLATFORM_EXPORT ImageFrameGenerator final
         full_size, is_multi_frame, color_behavior, std::move(supported_sizes)));
   }
 
+  ImageFrameGenerator(const ImageFrameGenerator&) = delete;
+  ImageFrameGenerator& operator=(const ImageFrameGenerator&) = delete;
   ~ImageFrameGenerator();
 
   // Decodes and scales the specified frame at |index|. The dimensions and
@@ -82,7 +83,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // successful.
   bool DecodeAndScale(SegmentReader*,
                       bool all_data_received,
-                      size_t index,
+                      wtf_size_t index,
                       const SkImageInfo&,
                       void* pixels,
                       size_t row_bytes,
@@ -90,15 +91,16 @@ class PLATFORM_EXPORT ImageFrameGenerator final
                       cc::PaintImage::GeneratorClientId);
 
   // Decodes YUV components directly into the provided memory planes. Must not
-  // be called unless GetYUVComponentSizes has been called and returned true.
+  // be called unless GetYUVAInfo has been called and returned true.
   // TODO(crbug.com/943519): In order to support incremental YUV decoding,
   // ImageDecoder needs something analogous to its ImageFrame cache to hold
   // partial planes, and the GPU code needs to handle them.
   bool DecodeToYUV(SegmentReader*,
-                   size_t index,
-                   const SkISize component_sizes[3],
-                   void* planes[3],
-                   const size_t row_bytes[3]);
+                   wtf_size_t index,
+                   SkColorType color_type,
+                   const SkISize component_sizes[cc::kNumYUVPlanes],
+                   void* planes[cc::kNumYUVPlanes],
+                   const wtf_size_t row_bytes[cc::kNumYUVPlanes]);
 
   const SkISize& GetFullSize() const { return full_size_; }
 
@@ -110,10 +112,13 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     return decode_failed_;
   }
 
-  bool HasAlpha(size_t index);
+  bool HasAlpha(wtf_size_t index);
 
   // TODO(crbug.com/943519): Do not call unless the SkROBuffer has all the data.
-  bool GetYUVComponentSizes(SegmentReader*, SkYUVASizeInfo*, SkYUVColorSpace*);
+  bool GetYUVAInfo(
+      SegmentReader*,
+      const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+      SkYUVAPixmapInfo* info);
 
  private:
   class ClientMutexLocker {
@@ -143,7 +148,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     image_decoder_factory_ = std::move(factory);
   }
 
-  void SetHasAlpha(size_t index, bool has_alpha);
+  void SetHasAlpha(wtf_size_t index, bool has_alpha);
 
   const SkISize full_size_;
   // Parameters used to create internal ImageDecoder objects.
@@ -154,7 +159,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   mutable Mutex generator_mutex_;
   bool decode_failed_ GUARDED_BY(generator_mutex_) = false;
   bool yuv_decoding_failed_ GUARDED_BY(generator_mutex_) = false;
-  size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
+  wtf_size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
   Vector<bool> has_alpha_ GUARDED_BY(generator_mutex_);
 
   struct ClientMutex {
@@ -172,8 +177,6 @@ class PLATFORM_EXPORT ImageFrameGenerator final
       mutex_map_ GUARDED_BY(generator_mutex_);
 
   std::unique_ptr<ImageDecoderFactory> image_decoder_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFrameGenerator);
 };
 
 }  // namespace blink

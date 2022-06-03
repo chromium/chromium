@@ -14,7 +14,7 @@
 
 #include "test/main_arguments.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace crashpad {
 namespace test {

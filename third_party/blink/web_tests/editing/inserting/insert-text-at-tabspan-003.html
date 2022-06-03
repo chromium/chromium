@@ -1,35 +1,19 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    for (i = 0; i < 4; i++)
-	    moveSelectionForwardByCharacterCommand();
-    typeCharacterCommand();
-}
-
+selection_test(
+    [
+        '<div contenteditable>',
+            'a<span style="white-space:pre">\t\t\t|</span>z',
+        '</div>',
+    ],
+    'insertText X',
+    [
+        '<div contenteditable>',
+            'a<span style="white-space:pre">\t\t\t</span>X|z',
+        '</div>',
+    ],
+    'Insert text at tab span');
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body style="word-wrap: break-word; -khtml-nbsp-mode: space; -khtml-line-break: after-white-space; ">
-<div contenteditable id="root" class="editing">
-<span id="test">a<span style="white-space:pre">			</span>z</span>
-</div>
-
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

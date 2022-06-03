@@ -26,14 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VERSION_CHANGE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VERSION_CHANGE_EVENT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_version_change_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event_init.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -54,25 +54,25 @@ class IDBVersionChangeEvent final : public Event {
   IDBVersionChangeEvent();
   IDBVersionChangeEvent(const AtomicString& event_type,
                         uint64_t old_version,
-                        const base::Optional<uint64_t>& new_version,
+                        const absl::optional<uint64_t>& new_version,
                         mojom::IDBDataLoss data_loss = mojom::IDBDataLoss::None,
                         const String& data_loss_message = String());
   IDBVersionChangeEvent(const AtomicString& event_type,
                         const IDBVersionChangeEventInit*);
 
   uint64_t oldVersion() const { return old_version_; }
-  uint64_t newVersion(bool& is_null) const;
+  absl::optional<uint64_t> newVersion() const { return new_version_; }
 
   const AtomicString& dataLoss() const;
   const String& dataLossMessage() const { return data_loss_message_; }
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   uint64_t old_version_;
-  base::Optional<uint64_t> new_version_;
+  absl::optional<uint64_t> new_version_;
   mojom::IDBDataLoss data_loss_;
   String data_loss_message_;
 };

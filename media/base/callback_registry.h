@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/bind_to_current_loop.h"
@@ -24,10 +23,11 @@ namespace media {
 class CallbackRegistration {
  public:
   CallbackRegistration() = default;
-  virtual ~CallbackRegistration() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CallbackRegistration);
+  CallbackRegistration(const CallbackRegistration&) = delete;
+  CallbackRegistration& operator=(const CallbackRegistration&) = delete;
+
+  virtual ~CallbackRegistration() = default;
 };
 
 template <typename Sig>
@@ -37,14 +37,18 @@ class CallbackRegistry;
 // callbacks. This class is thread safe: all methods can be called on any
 // thread. The CallbackRegistry must outlive all CallbackRegistrations returned
 // by Register().
-// TODO(xhwang): This class is similar to base::CallbackList, but is simpler,
-// and provides thread safty. Consider merging these two.
+// TODO(xhwang): This class is similar to base::RepeatingCallbackList, but is
+// simpler, and provides thread safety. Consider merging these two.
 template <typename... Args>
 class CallbackRegistry<void(Args...)> {
  public:
   using CallbackType = base::RepeatingCallback<void(Args...)>;
 
   CallbackRegistry() = default;
+
+  CallbackRegistry(const CallbackRegistry&) = delete;
+  CallbackRegistry& operator=(const CallbackRegistry&) = delete;
+
   ~CallbackRegistry() = default;
 
   std::unique_ptr<CallbackRegistration> Register(CallbackType cb)
@@ -76,13 +80,14 @@ class CallbackRegistry<void(Args...)> {
                      uint32_t registration_id)
         : registry_(registry), registration_id_(registration_id) {}
 
+    RegistrationImpl(const RegistrationImpl&) = delete;
+    RegistrationImpl& operator=(const RegistrationImpl&) = delete;
+
     ~RegistrationImpl() override { registry_->Unregister(registration_id_); }
 
    private:
     CallbackRegistry<void(Args...)>* registry_ = nullptr;
     uint32_t registration_id_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(RegistrationImpl);
   };
 
   void Unregister(uint32_t registration_id) {
@@ -95,8 +100,6 @@ class CallbackRegistry<void(Args...)> {
   base::Lock lock_;
   uint32_t next_registration_id_ GUARDED_BY(lock_) = 0;
   std::map<uint32_t, CallbackType> callbacks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackRegistry);
 };
 
 using ClosureRegistry = CallbackRegistry<void()>;

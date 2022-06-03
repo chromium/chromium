@@ -42,7 +42,7 @@ class Element;
 class CORE_EXPORT DateTimeChooserClient : public GarbageCollectedMixin {
  public:
   virtual ~DateTimeChooserClient();
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
   virtual Element& OwnerElement() const = 0;
   // Called when user picked a value.

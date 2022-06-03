@@ -31,6 +31,7 @@ namespace device {
 
 const char* udev_device_get_action(udev_device* udev_device);
 const char* udev_device_get_devnode(udev_device* udev_device);
+const char* udev_device_get_devtype(udev_device* udev_device);
 udev_device* udev_device_get_parent(udev_device* udev_device);
 udev_device* udev_device_get_parent_with_subsystem_devtype(
     udev_device* udev_device,
@@ -83,6 +84,11 @@ std::string UdevDeviceGetPropertyValue(udev_device* udev_device,
 // the empty string.
 std::string UdevDeviceGetSysattrValue(udev_device* udev_device,
                                       const char* key);
+
+// Walks up the chain of parent devices calling udev_device_get_sysattr_value()
+// until a value is found. If no value is found, an empty string is returned.
+std::string UdevDeviceRecursiveGetSysattrValue(udev_device* udev_device,
+                                               const char* key);
 
 // Decodes udev-encoded string. Useful for decoding "*_ENC" udev properties.
 std::string UdevDecodeString(const std::string& encoded);

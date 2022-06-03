@@ -1,0 +1,29 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+
+# Contains useful GN variables that may be used by scripts that take
+# --output-directory as an arg.
+build_vars_file = "$root_build_dir/build_vars.json"
+
+android_build_vars_json = {
+  if (enable_java_templates) {
+    android_ndk_root = rebase_path(android_ndk_root, root_build_dir)
+    android_sdk_build_tools =
+        rebase_path(android_sdk_build_tools, root_build_dir)
+    android_sdk_build_tools_version = android_sdk_build_tools_version
+    android_sdk_root = rebase_path(android_sdk_root, root_build_dir)
+    android_sdk_version = android_sdk_version
+    android_tool_prefix = rebase_path(android_tool_prefix, root_build_dir)
+    final_android_sdk = final_android_sdk
+
+    if (defined(android_secondary_abi_cpu)) {
+      android_secondary_abi_toolchain =
+          rebase_path(get_label_info(":foo($android_secondary_abi_toolchain)",
+                                     "root_out_dir"),
+                      root_build_dir)
+    }
+  }
+}

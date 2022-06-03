@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
+#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
@@ -50,9 +51,31 @@ FrameOverlay::FrameOverlay(LocalFrame* local_frame,
                            std::unique_ptr<FrameOverlay::Delegate> delegate)
     : frame_(local_frame), delegate_(std::move(delegate)) {
   DCHECK(frame_);
+  frame_->View()->SetVisualViewportOrOverlayNeedsRepaint();
+}
+
+FrameOverlay::~FrameOverlay() {
+#if DCHECK_IS_ON()
+  DCHECK(is_destroyed_);
+#endif
+}
+
+void FrameOverlay::Destroy() {
+  frame_->View()->SetVisualViewportOrOverlayNeedsRepaint();
+
+  delegate_.reset();
+  if (layer_)
+    layer_.Release()->Destroy();
+
+#if DCHECK_IS_ON()
+  is_destroyed_ = true;
+#endif
 }
 
 void FrameOverlay::UpdatePrePaint() {
+  // Invalidate DisplayItemClient.
+  Invalidate();
+
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     delegate_->Invalidate();
     return;
@@ -69,17 +92,18 @@ void FrameOverlay::UpdatePrePaint() {
   }
 
   if (!layer_) {
-    layer_ = std::make_unique<GraphicsLayer>(*this);
+    layer_ = MakeGarbageCollected<GraphicsLayer>(*this);
     layer_->SetDrawsContent(true);
     layer_->SetHitTestable(false);
   }
 
   DCHECK(parent_layer);
-  if (layer_->Parent() != parent_layer)
-    parent_layer->AddChild(layer_.get());
-  layer_->SetLayerState(DefaultPropertyTreeState(), IntPoint());
-  layer_->SetSize(gfx::Size(Size()));
-  layer_->SetNeedsDisplay();
+  if (layer_->Parent() != parent_layer ||
+      // Keep the layer the last child of parent to make it topmost.
+      parent_layer->Children().back() != layer_)
+    parent_layer->AddChild(layer_);
+  layer_->SetLayerState(DefaultPropertyTreeState(), gfx::Vector2d());
+  layer_->SetSize(ToGfxSize(Size()));
 }
 
 IntSize FrameOverlay::Size() const {
@@ -89,14 +113,18 @@ IntSize FrameOverlay::Size() const {
       frame_->View()->Size());
 }
 
-IntRect FrameOverlay::VisualRect() const {
-  return IntRect(IntPoint(), Size());
-}
-
 IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
                                           const IntRect&) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  return IntRect(IntPoint(), Size());
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+  return IntRect(gfx::Point(), Size());
+}
+
+IntRect FrameOverlay::PaintableRegion(
+    const GraphicsLayer* graphics_layer) const {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
+  return IntRect(gfx::Point(), Size());
 }
 
 void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
@@ -104,13 +132,17 @@ void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
                                  GraphicsLayerPaintingPhase phase,
                                  const IntRect& interest_rect) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK_EQ(graphics_layer, layer_.get());
+  DCHECK_EQ(graphics_layer, layer_);
   DCHECK_EQ(DefaultPropertyTreeState(), layer_->GetPropertyTreeState());
   Paint(context);
 }
 
 void FrameOverlay::GraphicsLayersDidChange() {
-  frame_->View()->SetForeignLayerListNeedsUpdate();
+  frame_->View()->SetPaintArtifactCompositorNeedsUpdate();
+}
+
+PaintArtifactCompositor* FrameOverlay::GetPaintArtifactCompositor() {
+  return frame_->View()->GetPaintArtifactCompositor();
 }
 
 void FrameOverlay::ServiceScriptedAnimations(
@@ -121,6 +153,13 @@ void FrameOverlay::ServiceScriptedAnimations(
 String FrameOverlay::DebugName(const GraphicsLayer*) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   return "Frame Overlay Content Layer";
+}
+
+void FrameOverlay::Trace(Visitor* visitor) const {
+  visitor->Trace(frame_);
+  visitor->Trace(layer_);
+  GraphicsLayerClient::Trace(visitor);
+  DisplayItemClient::Trace(visitor);
 }
 
 void FrameOverlay::Paint(GraphicsContext& context) const {

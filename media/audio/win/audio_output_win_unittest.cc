@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -116,7 +117,7 @@ class TestSourceLaggy : public TestSourceBasic {
 class ReadOnlyMappedFile {
  public:
   explicit ReadOnlyMappedFile(const wchar_t* file_name)
-      : fmap_(NULL), start_(NULL), size_(0) {
+      : fmap_(NULL), start_(nullptr), size_(0) {
     HANDLE file = ::CreateFileW(file_name, GENERIC_READ, FILE_SHARE_READ, NULL,
                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == file)
@@ -433,8 +434,8 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
   NiceMock<MockAudioSourceCallback> source;
   EXPECT_TRUE(oas->Open());
 
-  const base::TimeDelta delay_100_ms = base::TimeDelta::FromMilliseconds(100);
-  const base::TimeDelta delay_200_ms = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta delay_100_ms = base::Milliseconds(100);
+  const base::TimeDelta delay_200_ms = base::Milliseconds(200);
 
   // Audio output stream has either a double or triple buffer scheme. We expect
   // the delay to reach up to 200 ms depending on the number of buffers used.
@@ -472,8 +473,12 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
 // from a potentially remote thread.
 class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
  public:
-  SyncSocketSource(base::SyncSocket* socket, const AudioParameters& params)
-      : socket_(socket), params_(params) {
+  SyncSocketSource(base::SyncSocket* socket,
+                   const AudioParameters& params,
+                   int expected_packet_count)
+      : socket_(socket),
+        params_(params),
+        expected_packet_count_(expected_packet_count) {
     // Setup AudioBus wrapping data we'll receive over the sync socket.
     packet_size_ = AudioBus::CalculateMemorySize(params);
     data_.reset(static_cast<float*>(
@@ -488,18 +493,28 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
                  base::TimeTicks delay_timestamp,
                  int /* prior_frames_skipped */,
                  AudioBus* dest) override {
-    uint32_t control_signal = 0;
-    socket_->Send(&control_signal, sizeof(control_signal));
-    output_buffer()->params.delay_us = delay.InMicroseconds();
-    output_buffer()->params.delay_timestamp_us =
-        (delay_timestamp - base::TimeTicks()).InMicroseconds();
-    uint32_t size = socket_->Receive(data_.get(), packet_size_);
+    // If we ask for more data once the producer has shutdown, we will hang
+    // on |socket_->Receive()|.
+    if (current_packet_count_ < expected_packet_count_) {
+      uint32_t control_signal = 0;
+      socket_->Send(&control_signal, sizeof(control_signal));
+      output_buffer()->params.delay_us = delay.InMicroseconds();
+      output_buffer()->params.delay_timestamp_us =
+          (delay_timestamp - base::TimeTicks()).InMicroseconds();
+      uint32_t size = socket_->Receive(data_.get(), packet_size_);
+      ++current_packet_count_;
 
-    DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)), 0U);
-    audio_bus_->CopyTo(dest);
-    return audio_bus_->frames();
+      DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
+                0U);
+      audio_bus_->CopyTo(dest);
+      return audio_bus_->frames();
+    }
+
+    return 0;
   }
+
   int packet_size() const { return packet_size_; }
+
   AudioOutputBuffer* output_buffer() const {
     return reinterpret_cast<AudioOutputBuffer*>(data_.get());
   }
@@ -513,6 +528,11 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
   int packet_size_;
   std::unique_ptr<float, base::AlignedFreeDeleter> data_;
   std::unique_ptr<AudioBus> audio_bus_;
+
+  // This test produces a fixed number of packets, we need these so we know
+  // when to stop listening.
+  const int expected_packet_count_;
+  int current_packet_count_ = 0;
 };
 
 struct SyncThreadContext {
@@ -523,6 +543,7 @@ struct SyncThreadContext {
   double sine_freq;
   uint32_t packet_size_bytes;
   AudioOutputBuffer* buffer;
+  int total_packets;
 };
 
 // This thread provides the data that the SyncSocketSource above needs
@@ -541,18 +562,20 @@ DWORD __stdcall SyncSocketThread(void* context) {
       AudioBus::WrapMemory(ctx.channels, ctx.frames, data.get());
 
   SineWaveAudioSource sine(1, ctx.sine_freq, ctx.sample_rate);
-  const int kTwoSecFrames = ctx.sample_rate * 2;
 
   uint32_t control_signal = 0;
-  for (int ix = 0; ix < kTwoSecFrames; ix += ctx.frames) {
+  for (int ix = 0; ix < ctx.total_packets; ++ix) {
+    // Listen for a signal from the Audio Stream that it wants data. This is a
+    // blocking call and will not proceed until we receive the signal.
     if (ctx.socket->Receive(&control_signal, sizeof(control_signal)) == 0)
       break;
-    base::TimeDelta delay =
-        base::TimeDelta::FromMicroseconds(ctx.buffer->params.delay_us);
+    base::TimeDelta delay = base::Microseconds(ctx.buffer->params.delay_us);
     base::TimeTicks delay_timestamp =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                ctx.buffer->params.delay_timestamp_us);
+        base::TimeTicks() +
+        base::Microseconds(ctx.buffer->params.delay_timestamp_us);
     sine.OnMoreData(delay, delay_timestamp, 0, audio_bus.get());
+
+    // Send the audio data to the Audio Stream.
     ctx.socket->Send(data.get(), ctx.packet_size_bytes);
   }
 
@@ -572,6 +595,9 @@ TEST_F(WinAudioTest, SyncSocketBasic) {
 
   static const int sample_rate = AudioParameters::kAudioCDSampleRate;
   static const uint32_t kSamples20ms = sample_rate / 50;
+  // We want 2 seconds of audio, which means we need 100 packets as each packet
+  // contains 20ms worth of audio samples.
+  static const int kPackets2s = 100;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
                          sample_rate, kSamples20ms);
 
@@ -581,11 +607,20 @@ TEST_F(WinAudioTest, SyncSocketBasic) {
 
   ASSERT_TRUE(oas->Open());
 
+  // Create two sockets and connect them with a named pipe.
   base::SyncSocket sockets[2];
   ASSERT_TRUE(base::SyncSocket::CreatePair(&sockets[0], &sockets[1]));
 
-  SyncSocketSource source(&sockets[0], params);
+  // Give one socket to the source, which receives requests from the
+  // AudioOutputStream for more data. On such a request, it will send a control
+  // signal to the SyncThreadContext, then it will receive
+  // an audio packet back which it will give to the AudioOutputStream.
+  SyncSocketSource source(&sockets[0], params, kPackets2s);
 
+  // Give the other socket to the thread. This thread runs a loop that will
+  // generate enough audio packets for 2 seconds worth of audio. It will listen
+  // for a control signal and when it gets one it will write one audio packet
+  // to the pipe that connects the two sockets.
   SyncThreadContext thread_context;
   thread_context.sample_rate = params.sample_rate();
   thread_context.sine_freq = 200.0;
@@ -594,15 +629,22 @@ TEST_F(WinAudioTest, SyncSocketBasic) {
   thread_context.channels = params.channels();
   thread_context.socket = &sockets[1];
   thread_context.buffer = source.output_buffer();
+  thread_context.total_packets = kPackets2s;
 
   HANDLE thread = ::CreateThread(NULL, 0, SyncSocketThread,
                                  &thread_context, 0, NULL);
 
+  // Start the AudioOutputStream, which will request data via
+  // SyncSocketSource::OnMoreData until the SyncThreadContext has run out of
+  // data to give.
   oas->Start(&source);
 
+  // Wait for the SyncThreadContext to finish its loop, should take 2 seconds.
+  // During this time it is providing audio data as described above.
   ::WaitForSingleObject(thread, INFINITE);
   ::CloseHandle(thread);
 
+  // Once no more data is being sent, we can stop and close the stream.
   oas->Stop();
   oas->Close();
 }

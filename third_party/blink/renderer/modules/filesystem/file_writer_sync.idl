@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-writer-api-20120417/#idl-def-FileWriterSync
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface FileWriterSync {
     // synchronous write/modify methods
     [RaisesException] void write(Blob data);

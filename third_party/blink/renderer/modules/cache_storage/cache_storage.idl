@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See https://w3c.github.io/ServiceWorker/#cachestorage-interface
+// https://w3c.github.io/ServiceWorker/#cachestorage-interface
 [
     ActiveScriptWrappable,
     SecureContext,
@@ -10,7 +10,7 @@
 ] interface CacheStorage {
   [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
   Promise<any> match(RequestInfo request,
-                     optional MultiCacheQueryOptions options);
+                     optional MultiCacheQueryOptions options = {});
 
   [CallWith=ScriptState, MeasureAs=CacheStorageRead]
   Promise<boolean> has(DOMString cacheName);

@@ -6,6 +6,7 @@
 #define COMPONENTS_SESSIONS_CORE_LIVE_TAB_H_
 
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
 
@@ -33,7 +34,7 @@ class SESSIONS_EXPORT LiveTab {
   virtual std::unique_ptr<PlatformSpecificTabData> GetPlatformSpecificTabData();
 
   // Returns the user agent override, if any.
-  virtual const std::string& GetUserAgentOverride() = 0;
+  virtual SerializedUserAgentOverride GetUserAgentOverride() = 0;
 };
 
 }  // namespace sessions

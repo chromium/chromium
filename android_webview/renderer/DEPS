@@ -4,24 +4,25 @@ include_rules = [
   "+android_webview/renderer",
   "+android_webview/grit",
 
+  "+components/android_system_error_page",
   "+components/autofill/content/renderer",
   "+components/cdm/renderer",
   "+components/page_load_metrics/renderer",
+  "+components/grit",
   "+components/printing/common",
   "+components/printing/renderer",
-  "+components/safe_browsing/common",
-  "+components/safe_browsing/features.h",
-  "+components/safe_browsing/renderer",
+  "+components/safe_browsing/content/common",
+  "+components/safe_browsing/core/common",
+  "+components/safe_browsing/content/renderer",
   "+components/security_interstitials/core",
   "+components/security_interstitials/content/renderer",
   "+components/spellcheck/renderer",
+  "+components/strings",
   "+components/visitedlink/renderer",
 
   "+content/public/child",
   "+content/public/common",
   "+content/public/renderer",
-
-  "+gin",
 
   "+media/base",
 
@@ -36,6 +37,4 @@ include_rules = [
 
   "+ui/gfx",
   "+ui/gl/gpu_memory_buffer.h",
-
-  "+v8/include/v8.h",
 ]

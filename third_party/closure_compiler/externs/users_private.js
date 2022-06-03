@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: usersPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.usersPrivate = {};
 
 /**
@@ -22,7 +20,6 @@ chrome.usersPrivate = {};
  *   displayEmail: string,
  *   name: string,
  *   isOwner: boolean,
- *   isSupervised: boolean,
  *   isChild: boolean
  * }}
  */
@@ -37,51 +34,51 @@ chrome.usersPrivate.User;
 chrome.usersPrivate.LoginStatusDict;
 
 /**
- * Gets a list of the currently whitelisted users.
- * @param {function(!Array<!chrome.usersPrivate.User>):void} callback
+ * Gets a list of known users.
+ * @param {function(!Array<!chrome.usersPrivate.User>): void} callback
  */
-chrome.usersPrivate.getWhitelistedUsers = function(callback) {};
+chrome.usersPrivate.getUsers = function(callback) {};
 
 /**
- * Checks to see if the user is already present as a whitelisted user.
+ * Checks to see if the user is already present in the user list.
  * @param {string} email
- * @param {function(boolean):void} callback
+ * @param {function(boolean): void} callback
  */
-chrome.usersPrivate.isWhitelistedUser = function(email, callback) {};
+chrome.usersPrivate.isUserInList = function(email, callback) {};
 
 /**
- * Adds a new user with the given email to the whitelist. The callback is called
+ * Adds a new user with the given email to the user list. The callback is called
  * with true if the user was added succesfully, or with false if not (e.g.
  * because the user was already present, or the current user isn't the owner).
  * @param {string} email
- * @param {function(boolean):void} callback
+ * @param {function(boolean): void} callback
  */
-chrome.usersPrivate.addWhitelistedUser = function(email, callback) {};
+chrome.usersPrivate.addUser = function(email, callback) {};
 
 /**
- * Removes the user with the given email from the whitelist. The callback is
+ * Removes the user with the given email from the user list. The callback is
  * called with true if the user was removed succesfully, or with false if not
  * (e.g. because the user was not already present, or the current user isn't the
  * owner).
  * @param {string} email
- * @param {function(boolean):void} callback
+ * @param {function(boolean): void} callback
  */
-chrome.usersPrivate.removeWhitelistedUser = function(email, callback) {};
+chrome.usersPrivate.removeUser = function(email, callback) {};
 
 /**
- * Whether the whitelist is managed by enterprise.
- * @param {function(boolean):void} callback
+ * Whether the user list is managed by enterprise.
+ * @param {function(boolean): void} callback
  */
-chrome.usersPrivate.isWhitelistManaged = function(callback) {};
+chrome.usersPrivate.isUserListManaged = function(callback) {};
 
 /**
  * Returns the current user.
- * @param {function(!chrome.usersPrivate.User):void} callback
+ * @param {function(!chrome.usersPrivate.User): void} callback
  */
 chrome.usersPrivate.getCurrentUser = function(callback) {};
 
 /**
  * Get login status.
- * @param {function(!chrome.usersPrivate.LoginStatusDict):void} callback
+ * @param {function(!chrome.usersPrivate.LoginStatusDict): void} callback
  */
 chrome.usersPrivate.getLoginStatus = function(callback) {};

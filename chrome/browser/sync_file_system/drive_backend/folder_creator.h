@@ -8,10 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -20,7 +19,7 @@ class DriveServiceInterface;
 namespace google_apis {
 class FileList;
 class FileResource;
-}
+}  // namespace google_apis
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -29,25 +28,29 @@ class MetadataDatabase;
 
 class FolderCreator {
  public:
-  typedef base::Callback<void(const std::string& file_id,
-                              SyncStatusCode status)> FileIDCallback;
+  using FileIDCallback = base::OnceCallback<void(const std::string& file_id,
+                                                 SyncStatusCode status)>;
 
   FolderCreator(drive::DriveServiceInterface* drive_service,
                 MetadataDatabase* metadata_database,
                 const std::string& parent_folder_id,
                 const std::string& title);
+
+  FolderCreator(const FolderCreator&) = delete;
+  FolderCreator& operator=(const FolderCreator&) = delete;
+
   ~FolderCreator();
 
-  void Run(const FileIDCallback& callback);
+  void Run(FileIDCallback callback);
 
  private:
-  void DidCreateFolder(const FileIDCallback& callback,
-                       google_apis::DriveApiErrorCode error,
+  void DidCreateFolder(FileIDCallback callback,
+                       google_apis::ApiErrorCode error,
                        std::unique_ptr<google_apis::FileResource> entry);
   void DidListFolders(
-      const FileIDCallback& callback,
+      FileIDCallback callback,
       std::vector<std::unique_ptr<google_apis::FileResource>> candidates,
-      google_apis::DriveApiErrorCode error,
+      google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::FileList> file_list);
 
   drive::DriveServiceInterface* drive_service_;
@@ -57,8 +60,6 @@ class FolderCreator {
   const std::string title_;
 
   base::WeakPtrFactory<FolderCreator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FolderCreator);
 };
 
 }  // namespace drive_backend

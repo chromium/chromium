@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Tests that correct number of iteration events is fired.</title>
+<style>
+  #box {
+    position: relative;
+    left: 100px;
+    top: 10px;
+    height: 100px;
+    width: 100px;
+    animation-duration: 0.1s;
+    animation-name: anim;
+    background-color: #999;
+    animation-iteration-count: 2;
+  }
+  @keyframes anim {
+      from { left: 200px; }
+      to   { left: 300px; }
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+var count = 0;
+async_test(t => {
+  window.addEventListener("load", t.step_func(() => {
+    document.addEventListener('animationiteration', t.step_func(() => {
+      ++count;
+    }));
+
+    document.addEventListener('animationend', t.step_func_done(() => {
+      assert_equals(count, 1, 'Got correct number of animationCount events');
+    }));
+
+    // Animation begins once we append the DOM node to the document.
+    var boxNode = document.createElement('div');
+    boxNode.id = 'box';
+    document.body.appendChild(boxNode);
+  }));
+}, "Tests that correct number of iteration events is fired");
+</script>

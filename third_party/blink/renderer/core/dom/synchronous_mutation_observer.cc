@@ -5,24 +5,28 @@
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_notifier.h"
 
 namespace blink {
 
-SynchronousMutationObserver::SynchronousMutationObserver()
-    : LifecycleObserver(nullptr) {}
+void SynchronousMutationObserver::ObserverSetWillBeCleared() {
+  document_ = nullptr;
+}
 
-void SynchronousMutationObserver::DidChangeChildren(const ContainerNode&) {}
-void SynchronousMutationObserver::DidMergeTextNodes(const Text&,
-                                                    const NodeWithIndex&,
-                                                    unsigned) {}
-void SynchronousMutationObserver::DidMoveTreeToNewDocument(const Node&) {}
-void SynchronousMutationObserver::DidSplitTextNode(const Text&) {}
-void SynchronousMutationObserver::DidUpdateCharacterData(CharacterData*,
-                                                         unsigned,
-                                                         unsigned,
-                                                         unsigned) {}
-void SynchronousMutationObserver::NodeChildrenWillBeRemoved(ContainerNode&) {}
-void SynchronousMutationObserver::NodeWillBeRemoved(Node&) {}
+void SynchronousMutationObserver::SetDocument(Document* document) {
+  if (document == document_)
+    return;
+
+  if (document_)
+    document_->SynchronousMutationObserverSet().RemoveObserver(this);
+
+  document_ = document;
+
+  if (document_)
+    document_->SynchronousMutationObserverSet().AddObserver(this);
+}
+
+void SynchronousMutationObserver::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
+}
 
 }  // namespace blink

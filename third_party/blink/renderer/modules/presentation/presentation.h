@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_H_
 
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class LocalFrame;
+class Navigator;
 class PresentationReceiver;
 class PresentationRequest;
 
@@ -20,16 +20,16 @@ class PresentationRequest;
 // Presentation.idl
 // See https://w3c.github.io/presentation-api/#navigatorpresentation for
 // details.
-class Presentation final : public ScriptWrappable, public ContextClient {
-  USING_GARBAGE_COLLECTED_MIXIN(Presentation);
+class Presentation final : public ScriptWrappable,
+                           public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Presentation* Create(LocalFrame*);
+  static const char kSupplementName[];
+  static Presentation* presentation(Navigator&);
+  explicit Presentation(Navigator&);
 
-  explicit Presentation(LocalFrame*);
-
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   PresentationRequest* defaultRequest() const;
   void setDefaultRequest(PresentationRequest*);
@@ -37,6 +37,8 @@ class Presentation final : public ScriptWrappable, public ContextClient {
   PresentationReceiver* receiver();
 
  private:
+  void MaybeInitReceiver();
+
   // Default PresentationRequest used by the embedder.
   Member<PresentationRequest> default_request_;
 

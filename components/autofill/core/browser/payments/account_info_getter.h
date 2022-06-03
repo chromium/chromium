@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_ACCOUNT_INFO_GETTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_ACCOUNT_INFO_GETTER_H_
 
-#include <string>
-
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {

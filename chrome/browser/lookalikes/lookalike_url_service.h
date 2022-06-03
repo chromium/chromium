@@ -5,58 +5,23 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_H_
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/url_formatter/url_formatter.h"
-#include "url/gurl.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
 
-class GURL;
 class Profile;
 
 namespace base {
 class Clock;
 }
-
-// Returns eTLD+1 of |hostname|. This excludes private registries, and returns
-// "blogspot.com" for "test.blogspot.com" (blogspot.com is listed as a private
-// registry). We do this to be consistent with url_formatter's top domain list
-// which doesn't have a notion of private registries.
-std::string GetETLDPlusOne(const std::string& hostname);
-
-struct DomainInfo {
-  // eTLD+1, used for skeleton and edit distance comparison. Must be ASCII.
-  // Empty for non-unique domains, localhost or sites whose eTLD+1 is empty.
-  const std::string domain_and_registry;
-  // eTLD+1 without the registry part, and with a trailing period. For
-  // "www.google.com", this will be "google.". Used for edit distance
-  // comparisons. Empty for non-unique domains, localhost or sites whose eTLD+1
-  // is empty.
-  const std::string domain_without_registry;
-
-  // Result of IDN conversion of domain_and_registry field.
-  const url_formatter::IDNConversionResult idn_result;
-  // Skeletons of domain_and_registry field.
-  const url_formatter::Skeletons skeletons;
-
-  DomainInfo(const std::string& arg_domain_and_registry,
-             const std::string& arg_domain_without_registry,
-             const url_formatter::IDNConversionResult& arg_idn_result,
-             const url_formatter::Skeletons& arg_skeletons);
-  ~DomainInfo();
-  DomainInfo(const DomainInfo& other);
-};
-
-// Returns a DomainInfo instance computed from |url|. Will return empty fields
-// for non-unique hostnames (e.g. site.test), localhost or sites whose eTLD+1 is
-// empty.
-DomainInfo GetDomainInfo(const GURL& url);
 
 // A service that handles operations on lookalike URLs. It can fetch the list of
 // engaged sites in a background thread and cache the results until the next
@@ -65,6 +30,10 @@ DomainInfo GetDomainInfo(const GURL& url);
 class LookalikeUrlService : public KeyedService {
  public:
   explicit LookalikeUrlService(Profile* profile);
+
+  LookalikeUrlService(const LookalikeUrlService&) = delete;
+  LookalikeUrlService& operator=(const LookalikeUrlService&) = delete;
+
   ~LookalikeUrlService() override;
 
   using EngagedSitesCallback =
@@ -72,11 +41,12 @@ class LookalikeUrlService : public KeyedService {
 
   static LookalikeUrlService* Get(Profile* profile);
 
-  // Returns whether the engaged site list is recently updated.
-  bool EngagedSitesNeedUpdating();
+  // Returns whether the engaged site list is recently updated. Returns true
+  // even when an update has already been queued or is in progress.
+  bool EngagedSitesNeedUpdating() const;
 
-  // Triggers an update to the engaged sites list and calls |callback| with the
-  // new list once available.
+  // Triggers an update to the engaged site list if one is not already inflight,
+  // then schedules |callback| to be called with the new list once available.
   void ForceUpdateEngagedSites(EngagedSitesCallback callback);
 
   // Returns the _current_ list of engaged sites, without updating them if
@@ -84,18 +54,26 @@ class LookalikeUrlService : public KeyedService {
   const std::vector<DomainInfo> GetLatestEngagedSites() const;
 
   void SetClockForTesting(base::Clock* clock);
+  base::Clock* clock() const { return clock_; }
+
+  static const base::FeatureParam<base::TimeDelta> kManifestFetchDelay;
 
  private:
-  void OnFetchEngagedSites(EngagedSitesCallback callback,
-                           std::vector<mojom::SiteEngagementDetails> details);
+  void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
   Profile* profile_;
   base::Clock* clock_;
   base::Time last_engagement_fetch_time_;
-  std::vector<DomainInfo> engaged_sites_;
-  base::WeakPtrFactory<LookalikeUrlService> weak_factory_{this};
+  std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlService);
+  // Indicates that an update to the engaged sites list has been queued. Serves
+  // to prevent enqueuing excessive updates.
+  bool update_in_progress_ = false;
+  std::vector<EngagedSitesCallback> pending_update_complete_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<LookalikeUrlService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_H_

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/shared_impl/ppb_flash_font_file_shared.h"

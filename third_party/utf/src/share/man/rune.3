@@ -1,0 +1,150 @@
+.Dd $Mdocdate$
+.Dt RUNE 3
+.Os
+.Sh NAME
+.Nm runetochar, chartorune, charntorune, runelen, runenlen, fullrune, utfecpy, \
+    utflen, utfnlen, utfrune, utfrrune, utfutf
+.Nd UTF-8 rune conversion
+.Sh SYNOPSIS
+.In utf.h
+.Fn "int runetochar" "char *s" "Rune *p"
+.Fn "int chartorune" "Rune *p" "char *s"
+.Fn "int charntorune" "Rune *p" "char *s" "size_t len"
+.Fn "int runelen" "Rune r"
+.Fn "int runenlen" "Rune *p" "size_t len"
+.Fn "int fullrune" "char *s" "size_t len"
+.Fn "char *utfecpy" "char *to" "char *end" "char *from"
+.Fn "size_t utflen" "char *s"
+.Fn "size_t utfnlen" "char *s" "size_t len"
+.Fn "char *utfrune" "char *s" "Rune r"
+.Fn "char *utfrrune" "char *s" "Rune r"
+.Fn "char *utfutf" "char *s" "char *t"
+.Sh DESCRIPTION
+The following functions convert to and from a UTF-8 byte stream and Unicode runes.
+.Pp
+.Fn runetochar
+converts one rune at
+.Fa p
+to at most
+.Dv UTFmax
+bytes starting at
+.Fa s ,
+and returns the number of bytes copied.
+.Dv UTFmax
+is the maximum number of bytes required to represent a rune.
+If the rune is illegal,
+.Fn runetochar
+will return 0.
+.Pp
+.Fn chartorune
+converts at most
+.Dv UTFmax
+bytes starting at
+.Fa s
+to one rune at
+.Fa p ,
+and returns the number of bytes copied.
+If the input is invalid UTF-8,
+.Fn chartorune
+will convert the sequence to
+.Dv Runeerror
+(0xFFFD) and return the number of bytes in the invalid sequence.
+.Pp
+.Fn charntorune
+converts at most
+.Fa len
+bytes starting at
+.Fa s
+to one rune at
+.Fa p ,
+and returns the number of bytes copied.
+If the next sequence is longer than
+.Fa len
+bytes,
+.Fn charntorune
+will return 0.
+.Pp
+.Fn runelen
+returns the number of bytes required to convert the rune
+.Fa r
+into UTF-8.
+If the rune is illegal,
+.Fn runelen
+will return 0.
+.Pp
+.Fn runenlen
+returns the number of bytes required to convert the
+.Fa len
+runes pointed to by
+.Fa p
+into UTF-8.
+.Pp
+.Fn fullrune
+returns 1 if the first
+.Fa len
+bytes of the UTF-8 string
+.Fa s
+form a complete rune, and 0 otherwise.
+.Pp
+The following functions are analogous to the corresponding string routines, with
+`utf' substituted for `str', and `rune' for `chr'.
+.Pp
+.Fn utfecpy
+copies UTF-8 sequences until a nul byte has been copied, but writes no sequences
+beyond
+.Fa end .
+If any sequences are copied,
+.Fa to
+is terminated with a nul byte and a pointer to that byte is returned.
+Otherwise the original
+.Fa to
+is returned.
+.Pp
+.Fn utflen
+returns the number of runes represented by the UTF-8 string
+.Fa s .
+.Pp
+.Fn utfnlen
+returns the number of runes represented by the first
+.Fa len
+bytes of the UTF-8 string
+.Fa s .
+If the final sequence is incomplete it will not be counted.
+.Pp
+.Fn utfrune
+.Pq Fn utfrrune
+returns a pointer to the first
+.Pq last
+occurrence of the rune
+.Fa r
+in the UTF-8 string
+.Fa s ,
+or
+.Dv NULL
+if there is none.
+The terminating nul byte is considered a part of the string
+.Fa s .
+.Pp
+.Fn utfutf
+returns a pointer to the first occurrence of the UTF-8 string
+.Fa t
+as a UTF-8 substring of
+.Fa s ,
+or
+.Dv NULL
+if there is none.
+If
+.Fa t
+is the null string,
+.Fn utfutf
+returns
+.Fa s .
+.Sh CONFORMING TO
+These functions are compatible with those defined in the Plan 9 C library, with
+the exception of
+.Fn charntorune ,
+which is an extension.
+However, these functions are much stricter about UTF-8 validity than their Plan
+9 counterparts.
+.Sh SEE ALSO
+.Xr isalpharune 3

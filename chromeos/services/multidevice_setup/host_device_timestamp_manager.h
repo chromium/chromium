@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -16,6 +16,10 @@ namespace multidevice_setup {
 // on this device.
 class HostDeviceTimestampManager {
  public:
+  HostDeviceTimestampManager(const HostDeviceTimestampManager&) = delete;
+  HostDeviceTimestampManager& operator=(const HostDeviceTimestampManager&) =
+      delete;
+
   virtual ~HostDeviceTimestampManager() = default;
 
   // Returns true when there is a host set (not necessarily verified) for the
@@ -25,20 +29,17 @@ class HostDeviceTimestampManager {
   // If the logged in GAIA account has completed the MultiDevice setup flow on
   // this device, this returns the time at which the flow was completed. If the
   // flow was completed more than once, it records the most recent time of
-  // completion. Otherwise it returns base::nullopt.
-  virtual base::Optional<base::Time>
+  // completion. Otherwise it returns absl::nullopt.
+  virtual absl::optional<base::Time>
   GetLatestSetupFlowCompletionTimestamp() = 0;
 
   // If the logged in GAIA account has ever received a host status update that
   // a host was verified, this returns the time at which the last such update
-  // was received. Otherwise it returns base::nullopt.
-  virtual base::Optional<base::Time> GetLatestVerificationTimestamp() = 0;
+  // was received. Otherwise it returns absl::nullopt.
+  virtual absl::optional<base::Time> GetLatestVerificationTimestamp() = 0;
 
  protected:
   HostDeviceTimestampManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManager);
 };
 
 }  // namespace multidevice_setup

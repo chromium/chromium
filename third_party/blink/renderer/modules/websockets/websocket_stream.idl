@@ -7,12 +7,11 @@
 [
     Exposed=(Window,Worker),
     RuntimeEnabled=WebSocketStream,
-    ActiveScriptWrappable,
-    MeasureAs=WebSocketStreamConstructor
+    ActiveScriptWrappable
 ] interface WebSocketStream {
-  [CallWith=ScriptState, RaisesException] constructor(USVString url, optional WebSocketStreamOptions options);
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebSocketStreamConstructor] constructor(USVString url, optional WebSocketStreamOptions options = {});
   readonly attribute USVString url;
   [CallWith=ScriptState] readonly attribute Promise<WebSocketConnection> connection;
   [CallWith=ScriptState] readonly attribute Promise<WebSocketCloseInfo> closed;
-  [RaisesException] void close(optional WebSocketCloseInfo closeInfo);
+  [RaisesException] void close(optional WebSocketCloseInfo closeInfo = {});
 };

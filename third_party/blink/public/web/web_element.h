@@ -31,19 +31,30 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ELEMENT_H_
 
+#include <vector>
+
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "v8/include/v8-forward.h"
+
+namespace gfx {
+class Rect;
+class Size;
+}
 
 namespace blink {
 
 class Element;
-struct WebRect;
+class Image;
 
 // Provides access to some properties of a DOM element node.
 class BLINK_EXPORT WebElement : public WebNode {
  public:
   WebElement() : WebNode() {}
   WebElement(const WebElement& e) = default;
+
+  // Returns the empty WebElement if the argument doesn't represent an Element.
+  static WebElement FromV8Value(v8::Local<v8::Value>);
 
   WebElement& operator=(const WebElement& e) {
     WebNode::Assign(e);
@@ -57,6 +68,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   bool IsEditable() const;
   // Returns the qualified name, which may contain a prefix and a colon.
   WebString TagName() const;
+  // Returns the id attribute.
+  WebString GetIdAttribute() const;
   // Check if this element has the specified local tag name, and the HTML
   // namespace. Tag name matching is case-insensitive.
   bool HasHTMLTagName(const WebString&) const;
@@ -69,34 +82,60 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString AttributeValue(unsigned index) const;
   unsigned AttributeCount() const;
 
-  // Returns true if this is an autonomous custom element, regardless of
-  // Custom Elements V0 or V1.
+  // Returns true if this is an autonomous custom element.
   bool IsAutonomousCustomElement() const;
 
+  // Returns the owning shadow host for this element, if there is one.
+  WebElement OwnerShadowHost() const;
+
   // Returns an author ShadowRoot attached to this element, regardless
-  // of V0, V1 open, or V1 closed.  This returns null WebNode if this
+  // of open or closed.  This returns null WebNode if this
   // element has no ShadowRoot or has a UA ShadowRoot.
   WebNode ShadowRoot() const;
+
+  // Returns the open shadow root or the closed shadow root.
+  WebNode OpenOrClosedShadowRoot();
 
   // Returns the bounds of the element in Visual Viewport. The bounds
   // have been adjusted to include any transformations, including page scale.
   // This function will update the layout if required.
-  WebRect BoundsInViewport() const;
+  gfx::Rect BoundsInViewport() const;
 
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.
   SkBitmap ImageContents();
-  void RequestFullscreen();
+
+  // Returns a copy of original image data of this element or an empty vector
+  // if there isn't any.
+  std::vector<uint8_t> CopyOfImageData();
+
+  // Returns the original image file extension.
+  std::string ImageExtension();
+
+  // Returns the original image size.
+  gfx::Size GetImageSize();
+
+  // ComputedStyle property values. The following exposure is of CSS property
+  // values are part of the ComputedStyle set which is usually exposed through
+  // the Window object in WebIDL as window.getComputedStyle(element). Exposing
+  // ComputedStyle requires all of CSSComputedStyleDeclaration which is a pretty
+  // large interfaces. For now the we are exposing computed property values as
+  // strings directly to WebElement and enable public component usage through
+  // /public/web interfaces.
+  WebString GetComputedValue(const WebString& property_name);
 
 #if INSIDE_BLINK
   WebElement(Element*);
   WebElement& operator=(Element*);
   operator Element*() const;
 #endif
+
+ private:
+  Image* GetImage();
 };
 
 DECLARE_WEB_NODE_TYPE_CASTS(WebElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ELEMENT_H_

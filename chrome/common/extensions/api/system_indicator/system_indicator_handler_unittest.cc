@@ -4,21 +4,29 @@
 
 #include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
-#include "components/version_info/channel.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_icon_set.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
+namespace {
+
+// The manifest permissions for system_indicator have an allowlist. This is the
+// test key.
+constexpr char kKey[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9fDu8apG3Dz72XTT3Ym1SfGt06tdowTlYQ+"
+    "3lGlCbVpfnMOmewgRgYxzUtUPso9aQERZcmI2+7UtbWjtk6/usl9Hr7a1JBQwfaUoUygEe56aj"
+    "UeZhe/ErkH5CXT84U0pokfPr5vMvc7RVPduU+UBiF0DnGb/hSpzz/1UhJ5H9AwIDAQAB";
+
+}  // anonymous namespace
+
 using SystemIndicatorHandlerTest = ManifestTest;
 
 TEST_F(SystemIndicatorHandlerTest, BasicTests) {
-  ScopedCurrentChannel current_channel(version_info::Channel::DEV);
-
   // Simple icon path.
   {
     constexpr char kManifest[] =
@@ -26,10 +34,12 @@ TEST_F(SystemIndicatorHandlerTest, BasicTests) {
              "name": "System Indicator",
              "manifest_version": 2,
              "version": "0.1",
+             "key": "%s",
              "system_indicator": { "default_icon": "icon.png" }
            })";
     scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
-        ManifestData(base::test::ParseJson(kManifest), "icon"));
+        ManifestData(base::test::ParseJson(base::StringPrintf(kManifest, kKey)),
+                     "icon"));
     ASSERT_TRUE(extension);
     const ExtensionIconSet* icon =
         SystemIndicatorHandler::GetSystemIndicatorIcon(*extension);
@@ -49,6 +59,7 @@ TEST_F(SystemIndicatorHandlerTest, BasicTests) {
              "name": "System Indicator",
              "manifest_version": 2,
              "version": "0.1",
+             "key": "%s",
              "system_indicator": {
                "default_icon": {
                  "24": "icon24.png",
@@ -58,7 +69,8 @@ TEST_F(SystemIndicatorHandlerTest, BasicTests) {
              }
            })";
     scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
-        ManifestData(base::test::ParseJson(kManifest), "icon"));
+        ManifestData(base::test::ParseJson(base::StringPrintf(kManifest, kKey)),
+                     "icon"));
     ASSERT_TRUE(extension);
     const ExtensionIconSet* icon =
         SystemIndicatorHandler::GetSystemIndicatorIcon(*extension);
@@ -79,10 +91,12 @@ TEST_F(SystemIndicatorHandlerTest, BasicTests) {
              "name": "System Indicator",
              "manifest_version": 2,
              "version": "0.1",
+             "key": "%s",
              "system_indicator": {}
            })";
     scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
-        ManifestData(base::test::ParseJson(kManifest), "icon"));
+        ManifestData(base::test::ParseJson(base::StringPrintf(kManifest, kKey)),
+                     "icon"));
     ASSERT_TRUE(extension);
     const ExtensionIconSet* icon =
         SystemIndicatorHandler::GetSystemIndicatorIcon(*extension);

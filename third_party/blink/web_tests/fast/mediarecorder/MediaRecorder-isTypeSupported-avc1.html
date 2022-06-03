@@ -17,6 +17,11 @@ test(function() {
   assert_true(MediaRecorder.isTypeSupported("video/webm;codecs=h264,vp9,opus"));
   // https://matroska.org/technical/specs/notes.html#MIME
   assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1"));
+  assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1.42000c"));
+  assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1.4d000c"));
+  assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1.64000c"));
+  assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1.640029"));
+  assert_true(MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1.640034"));
 }, 'check MediaRecorder.isTypeSupported() with valid video MIME types');
 
 </script>

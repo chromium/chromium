@@ -36,7 +36,7 @@ namespace content {
 namespace {
 
 struct FontExpectation {
-  const char font_name[64];
+  const char* font_name;
   uint16_t ttc_index;
 };
 
@@ -126,22 +126,22 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFamilyCount) {
 
 TEST_F(DWriteFontProxyImplUnitTest, FindFamily) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(L"Arial", &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
   EXPECT_NE(UINT_MAX, arial_index);
 
   UINT32 times_index = 0;
-  dwrite_font_proxy().FindFamily(L"Times New Roman", &times_index);
+  dwrite_font_proxy().FindFamily(u"Times New Roman", &times_index);
   EXPECT_NE(UINT_MAX, times_index);
   EXPECT_NE(arial_index, times_index);
 
   UINT32 unknown_index = 0;
-  dwrite_font_proxy().FindFamily(L"Not a font family", &unknown_index);
+  dwrite_font_proxy().FindFamily(u"Not a font family", &unknown_index);
   EXPECT_EQ(UINT_MAX, unknown_index);
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, GetFamilyNames) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(L"Arial", &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<blink::mojom::DWriteStringPairPtr> names;
   dwrite_font_proxy().GetFamilyNames(arial_index, &names);
@@ -163,7 +163,7 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFamilyNamesIndexOutOfBounds) {
 
 TEST_F(DWriteFontProxyImplUnitTest, GetFontFiles) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(L"Arial", &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<base::FilePath> files;
   std::vector<base::File> handles;
@@ -190,14 +190,15 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      L"abc",
+      u"abc",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      L"", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, L"", &result);
+      std::u16string(), DWRITE_READING_DIRECTION_LEFT_TO_RIGHT,
+      std::u16string(), &result);
 
   EXPECT_NE(UINT32_MAX, result->family_index);
-  EXPECT_STRNE(L"", result->family_name.c_str());
+  EXPECT_NE(std::u16string(), result->family_name);
   EXPECT_EQ(3u, result->mapped_length);
   EXPECT_NE(0.0, result->scale);
   EXPECT_NE(0, result->font_style->font_weight);
@@ -211,14 +212,15 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidCharacter) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      L"\ufffe\uffffabc",
+      u"\ufffe\uffffabc",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      L"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, L"", &result);
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, std::u16string(),
+      &result);
 
   EXPECT_EQ(UINT32_MAX, result->family_index);
-  EXPECT_STREQ(L"", result->family_name.c_str());
+  EXPECT_EQ(std::u16string(), result->family_name);
   EXPECT_EQ(2u, result->mapped_length);
 }
 
@@ -228,14 +230,15 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      L"abc\ufffe\uffff",
+      u"abc\ufffe\uffff",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      L"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, L"", &result);
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, std::u16string(),
+      &result);
 
   EXPECT_NE(UINT32_MAX, result->family_index);
-  EXPECT_STRNE(L"", result->family_name.c_str());
+  EXPECT_NE(std::u16string(), result->family_name);
   EXPECT_EQ(3u, result->mapped_length);
   EXPECT_NE(0.0, result->scale);
   EXPECT_NE(0, result->font_style->font_weight);
@@ -245,10 +248,10 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
 
 TEST_F(DWriteFontProxyImplUnitTest, TestCustomFontFiles) {
   // Override windows fonts path to force the custom font file codepath.
-  impl_.SetWindowsFontsPathForTesting(L"X:\\NotWindowsFonts");
+  impl_.SetWindowsFontsPathForTesting(u"X:\\NotWindowsFonts");
 
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(L"Arial", &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<base::FilePath> files;
   std::vector<base::File> handles;
@@ -303,7 +306,7 @@ void TestWhenLookupTableReady(
     base::ReadOnlySharedMemoryRegion font_table_memory) {
   blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
   for (auto& test_font_name_index : kExpectedTestFonts) {
-    base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+    absl::optional<blink::FontTableMatcher::MatchResult> match_result =
         font_table_matcher.MatchName(test_font_name_index.font_name);
     ASSERT_TRUE(match_result)
         << "No font matched for font name: " << test_font_name_index.font_name;
@@ -351,10 +354,10 @@ TEST_F(DWriteFontProxyLocalMatchingTest, TestSingleLookupUnavailable) {
     return;
   base::FilePath result_path;
   uint32_t ttc_index;
-  std::string unavailable_font_name =
-      "Unavailable_Font_Name_56E7EA7E-2C69-4E23-99DC-750BC19B250E";
-  dwrite_font_proxy().MatchUniqueFont(base::UTF8ToUTF16(unavailable_font_name),
-                                      &result_path, &ttc_index);
+  std::u16string unavailable_font_name =
+      u"Unavailable_Font_Name_56E7EA7E-2C69-4E23-99DC-750BC19B250E";
+  dwrite_font_proxy().MatchUniqueFont(unavailable_font_name, &result_path,
+                                      &ttc_index);
   ASSERT_EQ(result_path.value().size(), 0u);
   ASSERT_EQ(ttc_index, 0u);
 }
@@ -365,7 +368,7 @@ TEST_F(DWriteFontProxyLocalMatchingTest, TestLookupMode) {
           base::FilePath(FILE_PATH_LITERAL("DWrite.dll")));
 
   std::string dwrite_version =
-      base::WideToUTF8(dwrite_version_info->product_version());
+      base::UTF16ToUTF8(dwrite_version_info->product_version());
 
   int dwrite_major_version_number =
       std::stoi(dwrite_version.substr(0, dwrite_version.find(".")));

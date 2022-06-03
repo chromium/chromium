@@ -59,16 +59,17 @@
 
 #include "net/android/network_change_notifier_android.h"
 
+#include <string>
 #include <unordered_set>
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "net/base/address_tracker_linux.h"
 
@@ -90,11 +91,14 @@ enum NetId {
 class NetworkChangeNotifierAndroid::BlockingThreadObjects {
  public:
   BlockingThreadObjects()
-      : address_tracker_(base::DoNothing(),
-                         base::DoNothing(),
-                         // We're only interested in tunnel interface changes.
-                         base::Bind(NotifyNetworkChangeNotifierObservers),
-                         std::unordered_set<std::string>()) {}
+      : address_tracker_(
+            base::DoNothing(),
+            base::DoNothing(),
+            // We're only interested in tunnel interface changes.
+            base::BindRepeating(NotifyNetworkChangeNotifierObservers),
+            std::unordered_set<std::string>()) {}
+  BlockingThreadObjects(const BlockingThreadObjects&) = delete;
+  BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
   void Init() {
     address_tracker_.Init();
@@ -108,13 +112,11 @@ class NetworkChangeNotifierAndroid::BlockingThreadObjects {
  private:
   // Used to detect tunnel state changes.
   internal::AddressTrackerLinux address_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingThreadObjects);
 };
 
 NetworkChangeNotifierAndroid::~NetworkChangeNotifierAndroid() {
   ClearGlobalPointer();
-  delegate_->RemoveObserver(this);
+  delegate_->UnregisterObserver(this);
 }
 
 NetworkChangeNotifier::ConnectionType
@@ -144,7 +146,6 @@ bool NetworkChangeNotifierAndroid::AreNetworkHandlesCurrentlySupported() const {
   return force_network_handles_supported_for_testing_ ||
          (base::android::BuildInfo::GetInstance()->sdk_int() >=
               base::android::SDK_VERSION_LOLLIPOP &&
-          !delegate_->IsProcessBoundToNetwork() &&
           !delegate_->RegisterNetworkCallbackFailed());
 }
 
@@ -177,49 +178,57 @@ void NetworkChangeNotifierAndroid::OnMaxBandwidthChanged(
 
 void NetworkChangeNotifierAndroid::OnNetworkConnected(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::CONNECTED, network);
+      NetworkChangeType::kConnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkSoonToDisconnect(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::SOON_TO_DISCONNECT, network);
+      NetworkChangeType::kSoonToDisconnect, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkDisconnected(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::DISCONNECTED, network);
+      NetworkChangeType::kDisconnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkMadeDefault(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::MADE_DEFAULT, network);
+      NetworkChangeType::kMadeDefault, network);
 }
 
 NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(
     NetworkChangeNotifierDelegateAndroid* delegate)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsAndroid()),
       delegate_(delegate),
-      blocking_thread_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})),
-      blocking_thread_objects_(
-          new BlockingThreadObjects(),
-          // Ensure |blocking_thread_objects_| lives on
-          // |blocking_thread_runner_| to prevent races where
-          // NetworkChangeNotifierAndroid outlives
-          // TaskEnvironment. https://crbug.com/938126
-          base::OnTaskRunnerDeleter(blocking_thread_runner_)),
+      blocking_thread_objects_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       force_network_handles_supported_for_testing_(false) {
   CHECK_EQ(NetId::INVALID, NetworkChangeNotifier::kInvalidNetworkHandle)
       << "kInvalidNetworkHandle doesn't match NetId::INVALID";
-  delegate_->AddObserver(this);
-  blocking_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingThreadObjects::Init,
-                     // The Unretained pointer is safe here because it's
-                     // posted before the deleter can post.
-                     base::Unretained(blocking_thread_objects_.get())));
+  delegate_->RegisterObserver(this);
+  // Since Android P, ConnectivityManager's signals include VPNs so we don't
+  // need to use AddressTrackerLinux.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
+    // |blocking_thread_objects_| will live on this runner.
+    scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner =
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+    blocking_thread_objects_ =
+        std::unique_ptr<BlockingThreadObjects, base::OnTaskRunnerDeleter>(
+            new BlockingThreadObjects(),
+            // Ensure |blocking_thread_objects_| lives on
+            // |blocking_thread_runner| to prevent races where
+            // NetworkChangeNotifierAndroid outlives
+            // TaskEnvironment. https://crbug.com/938126
+            base::OnTaskRunnerDeleter(blocking_thread_runner));
+    blocking_thread_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BlockingThreadObjects::Init,
+                       // The Unretained pointer is safe here because it's
+                       // posted before the deleter can post.
+                       base::Unretained(blocking_thread_objects_.get())));
+  }
 }
 
 // static
@@ -229,10 +238,10 @@ NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid() {
   // IPAddressChanged is produced immediately prior to ConnectionTypeChanged
   // so delay IPAddressChanged so they get merged with the following
   // ConnectionTypeChanged signal.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromSeconds(1);
-  params.ip_address_online_delay_ = base::TimeDelta::FromSeconds(1);
-  params.connection_type_offline_delay_ = base::TimeDelta::FromSeconds(0);
-  params.connection_type_online_delay_ = base::TimeDelta::FromSeconds(0);
+  params.ip_address_offline_delay_ = base::Seconds(1);
+  params.ip_address_online_delay_ = base::Seconds(1);
+  params.connection_type_offline_delay_ = base::Seconds(0);
+  params.connection_type_online_delay_ = base::Seconds(0);
   return params;
 }
 

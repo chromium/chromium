@@ -4,7 +4,7 @@
 
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace cronet {
 
@@ -24,10 +24,11 @@ IOBufferWithByteBuffer::IOBufferWithByteBuffer(
 
 IOBufferWithByteBuffer::~IOBufferWithByteBuffer() {}
 
-ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(JNIEnv* env,
-                                               net::IOBuffer* io_buffer,
-                                               int io_buffer_len)
-    : io_buffer_(io_buffer), io_buffer_len_(io_buffer_len) {
+ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(
+    JNIEnv* env,
+    scoped_refptr<net::IOBuffer> io_buffer,
+    int io_buffer_len)
+    : io_buffer_(std::move(io_buffer)), io_buffer_len_(io_buffer_len) {
   // An intermediate ScopedJavaLocalRef is needed here to release the local
   // reference created by env->NewDirectByteBuffer().
   base::android::ScopedJavaLocalRef<jobject> java_buffer(

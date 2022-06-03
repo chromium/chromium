@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -63,8 +63,9 @@ def main(args):
 
   # Depfile used only by dist_jar().
   if options.depfile:
-    build_utils.WriteDepfile(
-        options.depfile, options.output, inputs=depfile_deps, add_pydeps=False)
+    build_utils.WriteDepfile(options.depfile,
+                             options.output,
+                             inputs=depfile_deps)
 
 
 if __name__ == '__main__':

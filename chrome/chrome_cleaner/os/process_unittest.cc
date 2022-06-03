@@ -22,10 +22,10 @@ namespace chrome_cleaner {
 namespace {
 
 bool PathIsInSet(const base::FilePath& path,
-                 const std::set<base::string16>& path_set) {
-  const base::string16 lower_case_path = base::ToLowerASCII(path.value());
+                 const std::set<std::wstring>& path_set) {
+  const std::wstring lower_case_path = base::ToLowerASCII(path.value());
   return std::find_if(path_set.begin(), path_set.end(),
-                      [&lower_case_path](const base::string16& name) {
+                      [&lower_case_path](const std::wstring& name) {
                         return lower_case_path == base::ToLowerASCII(name);
                       }) != path_set.end();
 }
@@ -33,7 +33,7 @@ bool PathIsInSet(const base::FilePath& path,
 }  // namespace
 
 TEST(ProcessTest, LoadedModules_Self) {
-  std::set<base::string16> names;
+  std::set<std::wstring> names;
   ASSERT_TRUE(
       GetLoadedModuleFileNames(base::GetCurrentProcessHandle(), &names));
 
@@ -44,7 +44,7 @@ TEST(ProcessTest, LoadedModules_Self) {
 }
 
 TEST(ProcessTest, LoadedModules_InvalidProcess) {
-  std::set<base::string16> names;
+  std::set<std::wstring> names;
   // INVALID_HANDLE_VALUE is actually -1, the same as the pseudo-handle that
   // represents the current process, so in this context it's not invalid. Test
   // null instead. Windows, everyone!
@@ -52,7 +52,7 @@ TEST(ProcessTest, LoadedModules_InvalidProcess) {
 }
 
 TEST(ProcessTest, ProcessExecutablePath_Self) {
-  base::string16 path;
+  std::wstring path;
   ASSERT_TRUE(GetProcessExecutablePath(base::GetCurrentProcessHandle(), &path));
 
   const base::FilePath self_exe_path =
@@ -62,7 +62,7 @@ TEST(ProcessTest, ProcessExecutablePath_Self) {
 }
 
 TEST(ProcessTest, ProcessExecutablePath_InvalidProcess) {
-  base::string16 path;
+  std::wstring path;
   EXPECT_FALSE(GetProcessExecutablePath(nullptr, &path));
 }
 

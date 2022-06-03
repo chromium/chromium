@@ -72,7 +72,6 @@ using ::showcase_utils::Close;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the InfobarBanner is dismissed correctly when is swiped up.
 - (void)testInfobarBannerDismissSwipe {
   // Check Banner was presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -88,7 +87,6 @@ using ::showcase_utils::Close;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the InfobarModal is not presented when the Banner is swiped down.
 - (void)testInfobarBannerCantSwipeDown {
   // Check Banner was presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -112,7 +110,6 @@ using ::showcase_utils::Close;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the InfobarModal is not presented when the Banner is tapped.
 - (void)testInfobarBannerTapped {
   // Check Banner was presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -136,8 +133,6 @@ using ::showcase_utils::Close;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the InfobarModal is presented when the Open Modal button is
-// tapped.
 - (void)testInfobarBannerGearTapped {
   // Check Banner was presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

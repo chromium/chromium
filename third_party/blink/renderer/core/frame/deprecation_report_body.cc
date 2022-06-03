@@ -18,7 +18,7 @@ ScriptValue DeprecationReportBody::anticipatedRemoval(
   return ScriptValue(isolate, ToV8(*anticipated_removal_, script_state));
 }
 
-base::Optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
+absl::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
   return anticipated_removal_;
 }
 

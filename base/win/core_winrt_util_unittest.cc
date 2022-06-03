@@ -19,16 +19,5 @@ TEST(CoreWinrtUtilTest, PreloadFunctions) {
     EXPECT_TRUE(ResolveCoreWinRTDelayload());
 }
 
-TEST(CoreWinrtUtilTest, RoInitializeAndUninitialize) {
-  if (GetVersion() < Version::WIN8)
-    return;
-
-  ASSERT_TRUE(ResolveCoreWinRTDelayload());
-  ASSERT_HRESULT_SUCCEEDED(base::win::RoInitialize(RO_INIT_MULTITHREADED));
-  AssertComApartmentType(ComApartmentType::MTA);
-  base::win::RoUninitialize();
-  AssertComApartmentType(ComApartmentType::NONE);
-}
-
 }  // namespace win
 }  // namespace base

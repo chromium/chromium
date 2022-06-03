@@ -20,6 +20,10 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
                                      public EventSink {
  public:
   EventProcessor();
+
+  EventProcessor(const EventProcessor&) = delete;
+  EventProcessor& operator=(const EventProcessor&) = delete;
+
   ~EventProcessor() override;
 
   // EventSink overrides:
@@ -50,7 +54,6 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
 
  private:
   base::WeakPtrFactory<EventProcessor> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(EventProcessor);
 };
 
 }  // namespace ui

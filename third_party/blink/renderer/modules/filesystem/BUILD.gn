@@ -66,6 +66,7 @@ blink_modules_sources("filesystem") {
 
   deps = [
     "//components/services/filesystem/public/mojom:mojom_blink",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/renderer/platform",
   ]
 }

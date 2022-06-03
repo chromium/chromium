@@ -47,26 +47,6 @@ public interface SafeBrowsingApiHandler {
     public boolean init(Observer result);
 
     /**
-     * Verifies that SafeBrowsingApiHandler can operate and initializes if feasible.
-     * Should be called on the same sequence as |startUriLookup|.
-     *
-     * @param observer The object on which to call the callback functions when URL checking
-     * is complete.
-     * @param enableLocalBlacklists specifies if the feature to use local blacklists is enabled.
-     *
-     * @return whether Safe Browsing is supported for this installation.
-     */
-    public boolean init(Observer result, boolean enableLocalBlacklists);
-
-    /**
-     * Returns the Safety Net ID of the device. Checks to make sure that the feature to report
-     * telemetry for APK downloads is enabled. This should not be called for AW.
-     *
-     * @return the Safety Net ID of the device.
-     */
-    public String getSafetyNetId();
-
-    /**
      * Start a URI-lookup to determine if it matches one of the specified threats.
      * This is called on every URL resource Chrome loads, on the same sequence as |init|.
      */

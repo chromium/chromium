@@ -1,14 +1,4 @@
-gayane@chromium.org
-hansberry@chromium.org
-jeffreycohen@chromium.org
-kmilka@chromium.org
-kristipark@chromium.org
-ramyan@chromium.org
-sebsg@chromium.org
-skare@chromium.org
-tgupta@chromium.org
+file://chrome/browser/share/OWNERS
 
 # target_device_info is used by multiple sharing teams.
 per-file target_device_info.*=file://chrome/browser/sharing/OWNERS
-
-# COMPONENT: UI>Browser>Sharing

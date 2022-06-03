@@ -4,7 +4,6 @@
 
 #include "components/viz/client/frame_evictor.h"
 
-#include "base/logging.h"
 
 namespace viz {
 

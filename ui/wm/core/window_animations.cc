@@ -9,19 +9,20 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -58,6 +59,12 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       : window_(window) {
     window_->AddObserver(this);
   }
+
+  HidingWindowAnimationObserverBase(const HidingWindowAnimationObserverBase&) =
+      delete;
+  HidingWindowAnimationObserverBase& operator=(
+      const HidingWindowAnimationObserverBase&) = delete;
+
   ~HidingWindowAnimationObserverBase() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -88,7 +95,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       auto iter = std::find(window_->parent()->children().begin(),
                             window_->parent()->children().end(), window_);
       DCHECK(iter != window_->parent()->children().end());
-      aura::Window* topmost_transient_child = NULL;
+      aura::Window* topmost_transient_child = nullptr;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {
         if (base::Contains(transient_children, *iter))
           topmost_transient_child = *iter;
@@ -126,32 +133,33 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     layer_owner_->root()->SuppressPaint();
 
     window_->RemoveObserver(this);
-    window_ = NULL;
+    window_ = nullptr;
   }
 
   aura::Window* window_;
 
   // The owner of detached layers.
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidingWindowAnimationObserverBase);
 };
 
-class HidingWindowMetricsReporter : public ui::AnimationMetricsReporter {
- public:
-  HidingWindowMetricsReporter() = default;
-  ~HidingWindowMetricsReporter() override = default;
+// TODO(crbug.com/1021774): Find a better home and merge with
+//     ash::metris_util::ForSmoothness.
+using SmoothnessCallback = base::RepeatingCallback<void(int smoothness)>;
+ui::AnimationThroughputReporter::ReportCallback ForSmoothness(
+    SmoothnessCallback callback) {
+  return base::BindRepeating(
+      [](SmoothnessCallback callback,
+         const cc::FrameSequenceMetrics::CustomReportData& data) {
+        const int smoothness =
+            std::floor(100.0f * data.frames_produced / data.frames_expected);
+        callback.Run(smoothness);
+      },
+      std::move(callback));
+}
 
-  void Report(int value) override {
-    UMA_HISTOGRAM_PERCENTAGE("Ash.Window.AnimationSmoothness.Hide", value);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HidingWindowMetricsReporter);
-};
-
-base::LazyInstance<HidingWindowMetricsReporter>::Leaky g_reporter_hide =
-    LAZY_INSTANCE_INITIALIZER;
+void ReportHideSmoothness(int smoothness) {
+  UMA_HISTOGRAM_PERCENTAGE("Ash.Window.AnimationSmoothness.Hide", smoothness);
+}
 
 }  // namespace
 
@@ -164,13 +172,16 @@ class ImplicitHidingWindowAnimationObserver
   ImplicitHidingWindowAnimationObserver(
       aura::Window* window,
       ui::ScopedLayerAnimationSettings* settings);
+
+  ImplicitHidingWindowAnimationObserver(
+      const ImplicitHidingWindowAnimationObserver&) = delete;
+  ImplicitHidingWindowAnimationObserver& operator=(
+      const ImplicitHidingWindowAnimationObserver&) = delete;
+
   ~ImplicitHidingWindowAnimationObserver() override {}
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImplicitHidingWindowAnimationObserver);
 };
 
 namespace {
@@ -197,9 +208,9 @@ base::TimeDelta GetWindowVisibilityAnimationDuration(
     const aura::Window& window) {
   base::TimeDelta duration =
       window.GetProperty(kWindowVisibilityAnimationDurationKey);
-  if (duration.is_zero() && window.type() == aura::client::WINDOW_TYPE_MENU) {
-    return base::TimeDelta::FromMilliseconds(
-        kDefaultAnimationDurationForMenuMS);
+  if (duration.is_zero() &&
+      window.GetType() == aura::client::WINDOW_TYPE_MENU) {
+    return base::Milliseconds(kDefaultAnimationDurationForMenuMS);
   }
   return duration;
 }
@@ -209,8 +220,8 @@ base::TimeDelta GetWindowVisibilityAnimationDuration(
 int GetWindowVisibilityAnimationType(aura::Window* window) {
   int type = window->GetProperty(kWindowVisibilityAnimationTypeKey);
   if (type == WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT) {
-    return (window->type() == aura::client::WINDOW_TYPE_MENU ||
-            window->type() == aura::client::WINDOW_TYPE_TOOLTIP)
+    return (window->GetType() == aura::client::WINDOW_TYPE_MENU ||
+            window->GetType() == aura::client::WINDOW_TYPE_TOOLTIP)
                ? WINDOW_VISIBILITY_ANIMATION_TYPE_FADE
                : WINDOW_VISIBILITY_ANIMATION_TYPE_DROP;
   }
@@ -282,7 +293,7 @@ void AnimateShowWindowCommon(aura::Window* window,
     // Property sets within this scope will be implicitly animated.
     ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
     base::TimeDelta duration = GetWindowVisibilityAnimationDuration(*window);
-    if (duration > base::TimeDelta())
+    if (duration.is_positive())
       settings.SetTransitionDuration(duration);
 
     window->layer()->SetTransform(end_transform);
@@ -298,14 +309,18 @@ void AnimateHideWindowCommon(aura::Window* window,
 
   // Property sets within this scope will be implicitly animated.
   ScopedHidingAnimationSettings hiding_settings(window);
-  hiding_settings.layer_animation_settings()->SetAnimationMetricsReporter(
-      g_reporter_hide.Pointer());
+
+  // Report animation smoothness for animations created within this scope.
+  ui::AnimationThroughputReporter reporter(
+      hiding_settings.layer_animation_settings()->GetAnimator(),
+      ForSmoothness(base::BindRepeating(&ReportHideSmoothness)));
+
   // Render surface caching may not provide a benefit when animating the opacity
   // of a single layer.
   if (!window->layer()->children().empty())
     hiding_settings.layer_animation_settings()->CacheRenderSurface();
   base::TimeDelta duration = GetWindowVisibilityAnimationDuration(*window);
-  if (duration > base::TimeDelta())
+  if (duration.is_positive())
     hiding_settings.layer_animation_settings()->SetTransitionDuration(duration);
 
   window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
@@ -372,9 +387,9 @@ std::unique_ptr<ui::LayerAnimationElement> CreateGrowShrinkElement(
   std::unique_ptr<ui::LayerAnimationElement> transition =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
           std::move(scale_about_pivot),
-          base::TimeDelta::FromMilliseconds(
-              kWindowAnimation_Bounce_DurationMS *
-              kWindowAnimation_Bounce_GrowShrinkDurationPercent / 100));
+          base::Milliseconds(kWindowAnimation_Bounce_DurationMS *
+                             kWindowAnimation_Bounce_GrowShrinkDurationPercent /
+                             100));
   transition->set_tween_type(grow ? gfx::Tween::EASE_OUT : gfx::Tween::EASE_IN);
   return transition;
 }
@@ -389,10 +404,10 @@ void AnimateBounce(aura::Window* window) {
   sequence->AddElement(CreateGrowShrinkElement(window, true));
   sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
       ui::LayerAnimationElement::BOUNDS,
-      base::TimeDelta::FromMilliseconds(
-        kWindowAnimation_Bounce_DurationMS *
-            (100 - 2 * kWindowAnimation_Bounce_GrowShrinkDurationPercent) /
-            100)));
+      base::Milliseconds(
+          kWindowAnimation_Bounce_DurationMS *
+          (100 - 2 * kWindowAnimation_Bounce_GrowShrinkDurationPercent) /
+          100)));
   sequence->AddElement(CreateGrowShrinkElement(window, false));
   window->layer()->GetAnimator()->StartAnimation(sequence.release());
 }
@@ -405,10 +420,16 @@ class RotateHidingWindowAnimationObserver
  public:
   explicit RotateHidingWindowAnimationObserver(aura::Window* window)
       : HidingWindowAnimationObserverBase(window) {}
+
+  RotateHidingWindowAnimationObserver(
+      const RotateHidingWindowAnimationObserver&) = delete;
+  RotateHidingWindowAnimationObserver& operator=(
+      const RotateHidingWindowAnimationObserver&) = delete;
+
   ~RotateHidingWindowAnimationObserver() override {}
 
   // Destroys itself after |last_sequence| ends or is aborted. Does not take
-  // ownership of |last_sequence|, which should not be NULL.
+  // ownership of |last_sequence|, which should not be nullptr.
   void SetLastSequence(ui::LayerAnimationSequence* last_sequence) {
     last_sequence->AddObserver(this);
   }
@@ -422,22 +443,16 @@ class RotateHidingWindowAnimationObserver
   }
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RotateHidingWindowAnimationObserver);
 };
 
 void AddLayerAnimationsForRotate(aura::Window* window, bool show) {
   if (show)
     window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
 
-  base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-      kWindowAnimation_Rotate_DurationMS);
-
-  RotateHidingWindowAnimationObserver* observer = NULL;
+  base::TimeDelta duration =
+      base::Milliseconds(kWindowAnimation_Rotate_DurationMS);
 
   if (!show) {
-    observer = new RotateHidingWindowAnimationObserver(window);
     window->layer()->GetAnimator()->SchedulePauseForProperties(
         duration * (100 - kWindowAnimation_Rotate_OpacityDurationPercent) / 100,
         ui::LayerAnimationElement::OPACITY);
@@ -485,10 +500,17 @@ void AddLayerAnimationsForRotate(aura::Window* window, bool show) {
           std::move(rotation), duration);
   ui::LayerAnimationSequence* last_sequence =
       new ui::LayerAnimationSequence(std::move(transition));
+  auto weak_last_sequence = last_sequence->AsWeakPtr();
   window->layer()->GetAnimator()->ScheduleAnimation(last_sequence);
+  // If the animation is immediate, then |last_sequence| will have been
+  // deleted.
+  last_sequence = nullptr;
 
-  if (observer) {
-    observer->SetLastSequence(last_sequence);
+  if (!show && weak_last_sequence) {
+    // RotateHidingWindowAnimationObserver deletes itself when no longer
+    // needed.
+    auto* observer = new RotateHidingWindowAnimationObserver(window);
+    observer->SetLastSequence(weak_last_sequence.get());
     observer->DetachAndRecreateLayers();
   }
 
@@ -654,6 +676,15 @@ bool AnimateWindow(aura::Window* window, WindowAnimationType type) {
 }
 
 bool WindowAnimationsDisabled(aura::Window* window) {
+  // WARNING: this function is called from VisibilityController to determine
+  // if an animation should happen when the Window's visibility changes.
+  // Returning false results in VisibilityController applying default
+  // handling of the transition. This can result in dramatically different
+  // results than if an animation occurs. For example, VisibilityController
+  // doesn't change the opacity, yet many of the animations do. Similarly,
+  // ash's animations may change the bounds, which VisibilityController won't
+  // do. Take care when adding a new path that returns false.
+
   // Individual windows can choose to skip animations.
   if (window && window->GetProperty(aura::client::kAnimationsDisabledKey))
     return true;
@@ -665,7 +696,7 @@ bool WindowAnimationsDisabled(aura::Window* window) {
 
   // Tests of animations themselves should still run even if the machine is
   // being accessed via Remote Desktop.
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION)
     return false;
 

@@ -52,5 +52,12 @@ TEST_F(ChromeAutocompleteSchemeClassifierTest, BlockedScheme) {
             metrics::OmniboxInputType::QUERY);
 }
 
+TEST_F(ChromeAutocompleteSchemeClassifierTest, DevToolsUrl) {
+  GURL url("devtools://foo");
+  // An internal scheme should also be recognized as a URL.
+  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.scheme()),
+            metrics::OmniboxInputType::URL);
+}
+
 // Can't test registered apps handling with mocking of shell_integration
 // because shell_integration is implemented via namespace shell_integration.

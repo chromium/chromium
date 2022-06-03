@@ -18,6 +18,33 @@ std::unique_ptr<LayerImpl> SolidColorScrollbarLayer::CreateLayerImpl(
       is_left_side_vertical_scrollbar());
 }
 
+scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
+    scoped_refptr<Scrollbar> scrollbar,
+    SolidColorScrollbarLayer* existing_layer) {
+  DCHECK(scrollbar->IsOverlay());
+  bool is_horizontal =
+      scrollbar->Orientation() == ScrollbarOrientation::HORIZONTAL;
+  gfx::Rect thumb_rect = scrollbar->ThumbRect();
+  int thumb_thickness =
+      is_horizontal ? thumb_rect.height() : thumb_rect.width();
+  gfx::Rect track_rect = scrollbar->TrackRect();
+  int track_start = is_horizontal ? track_rect.x() : track_rect.y();
+
+  if (existing_layer &&
+      // We don't support change of these fields in a layer.
+      existing_layer->thumb_thickness() == thumb_thickness &&
+      existing_layer->track_start() == track_start) {
+    // These fields have been checked in ScrollbarLayerBase::CreateOrReuse().
+    DCHECK_EQ(scrollbar->Orientation(), existing_layer->orientation());
+    DCHECK_EQ(scrollbar->IsLeftSideVerticalScrollbar(),
+              existing_layer->is_left_side_vertical_scrollbar());
+    return existing_layer;
+  }
+
+  return Create(scrollbar->Orientation(), thumb_thickness, track_start,
+                scrollbar->IsLeftSideVerticalScrollbar());
+}
+
 scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::Create(
     ScrollbarOrientation orientation,
     int thumb_thickness,
@@ -48,6 +75,7 @@ void SolidColorScrollbarLayer::SetOpacity(float opacity) {
 }
 
 void SolidColorScrollbarLayer::SetNeedsDisplayRect(const gfx::Rect& rect) {
+  DCHECK(IsMutationAllowed());
   // Never needs repaint.
 }
 
@@ -59,6 +87,11 @@ bool SolidColorScrollbarLayer::HitTestable() const {
   // Android scrollbars can't be interacted with by user input. They should
   // avoid hit testing so we don't enter any scrollbar scrolling code paths.
   return false;
+}
+
+ScrollbarLayerBase::ScrollbarLayerType
+SolidColorScrollbarLayer::GetScrollbarLayerType() const {
+  return kSolidColor;
 }
 
 }  // namespace cc

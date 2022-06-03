@@ -48,6 +48,7 @@ struct TwoValues {
 
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace {
 
@@ -276,11 +277,11 @@ TEST(CompressedTupleTest, Nested) {
 
 TEST(CompressedTupleTest, Reference) {
   int i = 7;
-  std::string s = "Very long std::string that goes in the heap";
+  std::string s = "Very long string that goes in the heap";
   CompressedTuple<int, int&, std::string, std::string&> x(i, i, s, s);
 
   // Sanity check. We should have not moved from `s`
-  EXPECT_EQ(s, "Very long std::string that goes in the heap");
+  EXPECT_EQ(s, "Very long string that goes in the heap");
 
   EXPECT_EQ(x.get<0>(), x.get<1>());
   EXPECT_NE(&x.get<0>(), &x.get<1>());
@@ -332,10 +333,6 @@ TEST(CompressedTupleTest, AnyElements) {
 
   a = 0.5f;
   EXPECT_EQ(absl::any_cast<float>(x.get<1>()), 0.5);
-
-  // Ensure copy construction work in the face of a type with a universal
-  // implicit constructor;
-  CompressedTuple<absl::any> c{}, d(c);  // NOLINT
 }
 
 TEST(CompressedTupleTest, Constexpr) {
@@ -408,4 +405,5 @@ TEST(CompressedTupleTest, EmptyFinalClass) {
 
 }  // namespace
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

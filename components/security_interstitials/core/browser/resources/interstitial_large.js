@@ -17,9 +17,9 @@ function handleKeypress(e) {
   // other approaches are both safer and have fewer side-effects.
   // See https://goo.gl/ZcZixP for more details.
   const BYPASS_SEQUENCE = window.atob('dGhpc2lzdW5zYWZl');
-  if (BYPASS_SEQUENCE.charCodeAt(keyPressState) == e.keyCode) {
+  if (BYPASS_SEQUENCE.charCodeAt(keyPressState) === e.keyCode) {
     keyPressState++;
-    if (keyPressState == BYPASS_SEQUENCE.length) {
+    if (keyPressState === BYPASS_SEQUENCE.length) {
       sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
       keyPressState = 0;
     }
@@ -59,47 +59,56 @@ function appendDebuggingField(title, value, fixedWidth) {
 }
 
 function toggleDebuggingInfo() {
-  $('error-debugging-info').classList.toggle(HIDDEN_CLASS);
+  const hiddenDebug = $('error-debugging-info').classList.toggle(HIDDEN_CLASS);
+  $('error-code').setAttribute('aria-expanded', !hiddenDebug);
 }
 
 function setupEvents() {
   const overridable = loadTimeData.getBoolean('overridable');
   const interstitialType = loadTimeData.getString('type');
-  const ssl = interstitialType == 'SSL';
-  const captivePortal = interstitialType == 'CAPTIVE_PORTAL';
+  const ssl = interstitialType === 'SSL';
+  const captivePortal = interstitialType === 'CAPTIVE_PORTAL';
   const badClock = ssl && loadTimeData.getBoolean('bad_clock');
-  const lookalike = interstitialType == 'LOOKALIKE';
-  const billing = interstitialType == 'SAFEBROWSING' &&
-                    loadTimeData.getBoolean('billing');
-  const originPolicy = interstitialType == "ORIGIN_POLICY";
-  const blockedInterception = interstitialType == "BLOCKED_INTERCEPTION";
+  const lookalike = interstitialType === 'LOOKALIKE';
+  const billing =
+      interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
+  const originPolicy = interstitialType === 'ORIGIN_POLICY';
+  const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
+  const legacyTls = interstitialType == 'LEGACY_TLS';
+  const insecureForm = interstitialType == 'INSECURE_FORM';
+  const httpsOnly = interstitialType == 'HTTPS_ONLY';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
 
-  if (loadTimeData.valueExists('darkModeAvailable') &&
-      loadTimeData.getBoolean('darkModeAvailable')) {
-    $('body').classList.add('dark-mode-available');
-  }
-
-  if (ssl || originPolicy || blockedInterception) {
+  if (ssl || originPolicy || blockedInterception || legacyTls) {
     $('body').classList.add(badClock ? 'bad-clock' : 'ssl');
-    $('error-code').textContent = loadTimeData.getString('errorCode');
-    $('error-code').classList.remove(HIDDEN_CLASS);
+    if (loadTimeData.valueExists('errorCode')) {
+      $('error-code').textContent = loadTimeData.getString('errorCode');
+      $('error-code').classList.remove(HIDDEN_CLASS);
+    }
   } else if (captivePortal) {
     $('body').classList.add('captive-portal');
   } else if (billing) {
     $('body').classList.add('safe-browsing-billing');
   } else if (lookalike) {
     $('body').classList.add('lookalike-url');
+  } else if (insecureForm) {
+    $('body').classList.add('insecure-form');
+  } else if (httpsOnly) {
+    $('body').classList.add('https-only');
   } else {
     $('body').classList.add('safe-browsing');
     // Override the default theme color.
     document.querySelector('meta[name=theme-color]').setAttribute('content',
-      'rgb(206, 52, 38)');
+      'rgb(217, 48, 37)');
   }
 
   $('icon').classList.add('icon');
+
+  if (legacyTls) {
+    $('icon').classList.add('legacy-tls');
+  }
 
   if (hidePrimaryButton) {
     $('primary-button').classList.add(HIDDEN_CLASS);
@@ -111,6 +120,7 @@ function setupEvents() {
           break;
 
         case 'SSL':
+        case 'LEGACY_TLS':
           if (badClock) {
             sendCommand(SecurityInterstitialCommandId.CMD_OPEN_DATE_SETTINGS);
           } else if (overridable) {
@@ -124,7 +134,8 @@ function setupEvents() {
         case 'ORIGIN_POLICY':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
-
+        case 'HTTPS_ONLY':
+        case 'INSECURE_FORM':
         case 'LOOKALIKE':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
@@ -135,20 +146,24 @@ function setupEvents() {
     });
   }
 
-  if (lookalike) {
+  if (lookalike || insecureForm || httpsOnly) {
     const proceedButton = 'proceed-button';
-    const dontProceedLink = 'dont-proceed-link';
     $(proceedButton).classList.remove(HIDDEN_CLASS);
-
     $(proceedButton).textContent = loadTimeData.getString('proceedButtonText');
-
     $(proceedButton).addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
     });
-
-    $(dontProceedLink).addEventListener('click', function(event) {
-      sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
-    });
+  }
+  if (lookalike) {
+    // Lookalike interstitials with a suggested URL have a link in the title:
+    // "Did you mean <link>example.com</link>?". Handle those clicks. Lookalike
+    // interstitails without a suggested URL don't have this link.
+    const dontProceedLink = 'dont-proceed-link';
+    if ($(dontProceedLink)) {
+      $(dontProceedLink).addEventListener('click', function(event) {
+        sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
+      });
+    }
   }
 
   if (overridable) {
@@ -188,12 +203,17 @@ function setupEvents() {
     });
   }
 
-  if (captivePortal || billing || lookalike) {
-    // Captive portal, billing and lookalike pages don't have details buttons.
+  if (captivePortal || billing || lookalike || insecureForm || httpsOnly) {
+    // Captive portal, billing, lookalike pages, insecure form, and
+    // HTTPS only mode interstitials don't have details buttons.
     $('details-button').classList.add('hidden');
   } else {
+    $('details-button')
+        .setAttribute(
+            'aria-expanded', !$('details').classList.contains(HIDDEN_CLASS));
     $('details-button').addEventListener('click', function(event) {
       const hiddenDetails = $('details').classList.toggle(HIDDEN_CLASS);
+      $('details-button').setAttribute('aria-expanded', !hiddenDetails);
 
       if (mobileNav) {
         // Details appear over the main content on small screens.
@@ -219,8 +239,18 @@ function setupEvents() {
     });
   }
 
+  if (lookalike) {
+    console.log(
+        'Chrome has determined that ' +
+        loadTimeData.getString('lookalikeRequestHostname') +
+        ' could be fake or fraudulent.\n\n' +
+        'If you believe this is shown in error please visit ' +
+        'https://g.co/chrome/lookalike-warnings');
+  }
+
   preventDefaultOnPoundLinkClicks();
   setupExtendedReportingCheckbox();
+  setupEnhancedProtectionMessage();
   setupSSLDebuggingInfo();
   document.addEventListener('keypress', handleKeypress);
 }

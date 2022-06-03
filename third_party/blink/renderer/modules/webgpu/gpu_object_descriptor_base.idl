@@ -5,5 +5,5 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUObjectDescriptorBase {
-    DOMString? label;
+    USVString? label;
 };

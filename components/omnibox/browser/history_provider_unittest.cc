@@ -16,13 +16,13 @@ class TestHistoryProvider : public HistoryProvider {
  public:
   explicit TestHistoryProvider(AutocompleteProviderClient* client)
       : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_QUICK, client) {}
+  TestHistoryProvider(const TestHistoryProvider&) = delete;
+  TestHistoryProvider& operator=(const TestHistoryProvider&) = delete;
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
 
  private:
   ~TestHistoryProvider() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHistoryProvider);
 };
 
 void TestHistoryProvider::Start(const AutocompleteInput& input,
@@ -33,6 +33,8 @@ TestHistoryProvider::~TestHistoryProvider() {}
 class HistoryProviderTest : public testing::Test {
  public:
   HistoryProviderTest() = default;
+  HistoryProviderTest(const HistoryProviderTest&) = delete;
+  HistoryProviderTest& operator=(const HistoryProviderTest&) = delete;
 
  protected:
   void SetUp() override;
@@ -45,8 +47,6 @@ class HistoryProviderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<TestHistoryProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryProviderTest);
 };
 
 void HistoryProviderTest::SetUp() {

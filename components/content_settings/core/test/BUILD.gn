@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
     "content_settings_mock_provider.cc",
@@ -13,9 +11,7 @@ jumbo_static_library("test_support") {
     "content_settings_test_utils.h",
   ]
 
-  public_deps = [
-    "//components/content_settings/core/browser",
-  ]
+  public_deps = [ "//components/content_settings/core/browser" ]
   deps = [
     "//base",
     "//components/content_settings/core/common",

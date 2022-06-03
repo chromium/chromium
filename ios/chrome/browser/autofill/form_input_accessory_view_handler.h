@@ -7,13 +7,15 @@
 
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 
-@class JsSuggestionManager;
+namespace web {
+class WebState;
+}  // namespace web
 
 // This handles user actions in the default keyboard accessory view buttons.
 @interface FormInputAccessoryViewHandler : NSObject <FormInputNavigator>
 
-// The JS manager for interacting with the underlying form.
-@property(nonatomic, weak) JsSuggestionManager* JSSuggestionManager;
+// The WebState for interacting with the underlying form.
+@property(nonatomic) web::WebState* webState;
 
 // Resets the metrics logger of the instance.
 - (void)reset;

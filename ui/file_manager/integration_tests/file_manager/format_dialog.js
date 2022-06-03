@@ -1,12 +1,16 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {isSinglePartitionFormat, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Lanuches file manager and stubs out the formatVolume private api.
  *
- * @return {string} Files app window ID.
+ * @return {!Promise<string>} Files app window ID.
  */
 async function setupFormatDialogTest() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -21,6 +25,11 @@ async function setupFormatDialogTest() {
  * @param {string} usbLabel Label of usb to format.
  */
 async function openFormatDialog(appId, usbLabel) {
+  if (await isSinglePartitionFormat(appId)) {
+    await openFormatDialogWithSinglePartitionFormat(appId, usbLabel, 'FAKEUSB');
+    return;
+  }
+
   // Focus the directory tree.
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil(
@@ -37,6 +46,44 @@ async function openFormatDialog(appId, usbLabel) {
 
   // Click on the format menu item.
   const formatItemQuery = '#roots-context-menu:not([hidden])' +
+      ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
+  await remoteCall.waitAndClickElement(appId, formatItemQuery);
+
+  // Check the dialog is open.
+  await remoteCall.waitForElement(
+      appId, ['files-format-dialog', 'cr-dialog[open]']);
+}
+
+/**
+ * Opens a format dialog for the USB with label |usbLabel| and device with
+ * label |deviceLabel|.
+ *
+ * @param {string} appId Files app window ID.
+ * @param {string} usbLabel Label of usb to format.
+ * @param {string} deviceLabel Label of the parent device of usb.
+ */
+async function openFormatDialogWithSinglePartitionFormat(
+    appId, usbLabel, deviceLabel) {
+  // Focus the directory tree.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'focus', appId, ['#directory-tree']),
+      'focus failed: #directory-tree');
+
+  // Expand device tree entry to access partition entry.
+  await remoteCall.expandTreeItemInDirectoryTree(
+      appId, `#directory-tree [entry-label="${deviceLabel}"]`);
+
+  // Right click on the USB's directory tree entry.
+  const treeQuery = `#directory-tree [entry-label="${usbLabel}"]`;
+  await remoteCall.waitForElement(appId, treeQuery);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, [treeQuery]),
+      'fakeMouseRightClick failed');
+
+  // Click on the format menu item.
+  const formatItemQuery = '#directory-tree-context-menu:not([hidden])' +
       ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
   await remoteCall.waitAndClickElement(appId, formatItemQuery);
 
@@ -69,6 +116,30 @@ testcase.formatDialog = async () => {
   // Check the dialog is closed.
   await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog:not([open])']);
+};
+
+/**
+ * Tests the format dialog is a modal dialog.
+ */
+testcase.formatDialogIsModal = async () => {
+  await sendTestMessage({name: 'mountFakeUsb'});
+  const appId = await setupFormatDialogTest();
+
+  // Open the format dialog on fake-usb.
+  await openFormatDialog(appId, 'fake-usb');
+
+  // Focus the <cr-input> inner <input> element.
+  const driveNameQuery = ['files-format-dialog', 'cr-input#label', 'input'];
+  await remoteCall.simulateUiClick(appId, driveNameQuery);
+
+  // Send a select-all keyboard event to the <input> element.
+  const ctrlA = [driveNameQuery, 'a', true, false, false];
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
+
+  // Check: the file-list should have nothing selected.
+  const selectedRows = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  chrome.test.assertEq(0, selectedRows.length);
 };
 
 /**
@@ -126,13 +197,11 @@ testcase.formatDialogCancel = async () => {
 async function checkError(appId, label, format, errorMessage) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveNameQuery, label]);
+  await remoteCall.inputText(appId, driveNameQuery, label);
 
   // Select a format.
   const driveFormatQuery = ['files-format-dialog', '#disk-format select'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveFormatQuery, format]);
+  await remoteCall.inputText(appId, driveFormatQuery, format);
 
   // Check error message is not there.
   let driveNameElement = await remoteCall.waitForElement(
@@ -162,16 +231,14 @@ async function checkError(appId, label, format, errorMessage) {
 async function checkSuccess(appId, label, format) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveNameQuery, label]);
+  await remoteCall.inputText(appId, driveNameQuery, label);
 
   // Select a format.
   const driveFormatQuery = ['files-format-dialog', '#disk-format select'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveFormatQuery, format]);
+  await remoteCall.inputText(appId, driveFormatQuery, format);
 
   // Check error message is not there.
-  let driveNameElement = await remoteCall.waitForElement(
+  const driveNameElement = await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog[open] cr-input#label']);
   chrome.test.assertFalse(
       driveNameElement.attributes.hasOwnProperty('invalid'));
@@ -261,8 +328,12 @@ testcase.formatDialogGearMenu = async () => {
           'focus', appId, ['#directory-tree']),
       'focus failed: #directory-tree');
 
+  let usbNavigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    usbNavigationPath = '/FAKEUSB/fake-usb';
+  }
   // Navigate to the USB via the directory tree.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
+  await navigateWithDirectoryTree(appId, usbNavigationPath);
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');

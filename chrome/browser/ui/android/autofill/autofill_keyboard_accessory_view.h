@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
@@ -27,15 +26,19 @@ class AutofillKeyboardAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
   explicit AutofillKeyboardAccessoryView(AutofillPopupController* controller);
+
+  AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
+  AutofillKeyboardAccessoryView& operator=(
+      const AutofillKeyboardAccessoryView&) = delete;
+
   ~AutofillKeyboardAccessoryView() override;
 
   // Implementation of AutofillKeyboardAccessoryAdapter::AccessoryView.
-  void Initialize(unsigned int animation_duration_millis,
-                  bool limit_label_width) override;
+  bool Initialize() override;
   void Hide() override;
   void Show() override;
-  void ConfirmDeletion(const base::string16& confirmation_title,
-                       const base::string16& confirmation_body,
+  void ConfirmDeletion(const std::u16string& confirmation_title,
+                       const std::u16string& confirmation_body,
                        base::OnceClosure confirm_deletion) override;
 
   // --------------------------------------------------------------------------
@@ -69,8 +72,6 @@ class AutofillKeyboardAccessoryView
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillKeyboardAccessoryView);
 };
 
 }  // namespace autofill

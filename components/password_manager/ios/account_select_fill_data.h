@@ -10,8 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -21,7 +20,7 @@ struct PasswordFormFillData;
 namespace password_manager {
 
 struct UsernameAndRealm {
-  base::string16 username;
+  std::u16string username;
   std::string realm;
 };
 
@@ -31,33 +30,34 @@ struct FormInfo {
   ~FormInfo();
   FormInfo(const FormInfo&);
   GURL origin;
-  GURL action;
-  base::string16 name;
-  base::string16 username_element;
-  base::string16 password_element;
+  autofill::FormRendererId form_id;
+  autofill::FieldRendererId username_element_id;
+  autofill::FieldRendererId password_element_id;
 };
 
 struct Credential {
-  Credential(const base::string16& username,
-             const base::string16& password,
+  Credential(const std::u16string& username,
+             const std::u16string& password,
              const std::string& realm);
   ~Credential();
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
   std::string realm;
 };
 
 // Contains all information whis is required for filling the password form.
+// TODO(crbug.com/1075444): Remove form name and field identifiers once
+// unique IDs are used in filling.
 struct FillData {
   FillData();
   ~FillData();
 
   GURL origin;
-  GURL action;
-  base::string16 username_element;
-  base::string16 username_value;
-  base::string16 password_element;
-  base::string16 password_value;
+  autofill::FormRendererId form_id;
+  autofill::FieldRendererId username_element_id;
+  std::u16string username_value;
+  autofill::FieldRendererId password_element_id;
+  std::u16string password_value;
 };
 
 // Handles data and logic for filling on account select. This class stores 2
@@ -68,6 +68,10 @@ struct FillData {
 class AccountSelectFillData {
  public:
   AccountSelectFillData();
+
+  AccountSelectFillData(const AccountSelectFillData&) = delete;
+  AccountSelectFillData& operator=(const AccountSelectFillData&) = delete;
+
   ~AccountSelectFillData();
 
   // Adds form structure from |form_data| to internal lists of known forms and
@@ -77,29 +81,29 @@ class AccountSelectFillData {
   void Reset();
   bool Empty() const;
 
-  // Returns whether suggestions are available for field with name
-  // |field_name| which is in the form with name |form_name|.
-  bool IsSuggestionsAvailable(const base::string16& form_name,
-                              const base::string16& field_identifier,
+  // Returns whether suggestions are available for field with id
+  // |field_identifier| which is in the form with id |form_identifier|.
+  bool IsSuggestionsAvailable(autofill::FormRendererId form_identifier,
+                              autofill::FieldRendererId field_identifier,
                               bool is_password_field) const;
 
-  // Returns suggestions for field with name |field_name| which is in the form
-  // with name |form_name|.
+  // Returns suggestions for field with id |field_identifier| which is in the
+  // form with id |form_identifier|.
   std::vector<UsernameAndRealm> RetrieveSuggestions(
-      const base::string16& form_name,
-      const base::string16& field_identifier,
-      bool is_password_field) const;
+      autofill::FormRendererId form_identifier,
+      autofill::FieldRendererId field_identifier,
+      bool is_password_field);
 
   // Returns data for password form filling based on |username| chosen by the
   // user.
   // RetrieveSuggestions should be called before in order to specify on which
   // field the user clicked.
-  std::unique_ptr<FillData> GetFillData(const base::string16& username) const;
+  std::unique_ptr<FillData> GetFillData(const std::u16string& username) const;
 
  private:
-  // Keeps data about all known forms. The key is the pair (form_name, username
+  // Keeps data about all known forms. The key is the pair (form_id, username
   // field_name).
-  std::map<base::string16, FormInfo> forms_;
+  std::map<autofill::FormRendererId, FormInfo> forms_;
 
   // Keeps all known credentials.
   std::vector<Credential> credentials_;
@@ -111,18 +115,16 @@ class AccountSelectFillData {
   mutable const FormInfo* last_requested_form_ = nullptr;
   // Keeps id of the last requested field if it was password otherwise the empty
   // string.
-  mutable base::string16 last_requested_password_field_;
+  autofill::FieldRendererId last_requested_password_field_id_;
 
-  // Returns form information from |forms_| that has form name |form_name|.
+  // Returns form information from |forms_| that has id |form_identifier|.
   // If |is_password_field| == false and |field_identifier| is not equal to
   // form username_element null is returned. If |is_password_field| == true then
   // |field_identifier| is ignored. That corresponds to the logic, that
   // suggestions should be shown on any password fields.
-  const FormInfo* GetFormInfo(const base::string16& form_name,
-                              const base::string16& field_identifier,
+  const FormInfo* GetFormInfo(autofill::FormRendererId form_identifier,
+                              autofill::FieldRendererId field_identifier,
                               bool is_password_field) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountSelectFillData);
 };
 
 }  // namespace  password_manager

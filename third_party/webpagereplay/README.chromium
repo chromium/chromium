@@ -1,0 +1,17 @@
+Name: webpagereplay
+URL: https://github.com/catapult-project/catapult/blob/master/web_page_replay_go/README.md
+Version: 2ee6438f0cb2f657860e3e40b7788f1448e5da3c
+License: 2020 The Chromium Authors
+License File: NOT_SHIPPED
+Security Critical: no
+License Android Compatible: no
+Description:
+- Web Page Replay (WprGo) is a performance testing tool written in Golang for
+  recording and replaying web pages.
+Local Modifications:
+- Make binaries to be in CIPD repository so that 'gclient sync' could download them.
+How To Update:
+- Run //third_party/catapult/telemetry/bin/update_wpr_go_binary to update new
+  binaries to GCS.
+- Run //third_party/catapult/telemetry/bin/update_wpr_go_cipd to upload new
+  binaries to CIPD.

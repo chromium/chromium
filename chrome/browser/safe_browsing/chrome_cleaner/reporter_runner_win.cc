@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -29,8 +28,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner_util.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_client_info_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/pref_names.h"
@@ -49,46 +51,14 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 
+// Needed for QueryUnbiasedInterruptTime and other Windows functions.
+#include <windows.h>
+
 using content::BrowserThread;
 
 namespace safe_browsing {
 
 namespace {
-
-// Used to send UMA information about missing start and end time registry
-// values for the reporter. Replicated in the histograms.xml file, so the order
-// MUST NOT CHANGE.
-enum SwReporterRunningTimeRegistryError {
-  REPORTER_RUNNING_TIME_ERROR_NO_ERROR = 0,
-  REPORTER_RUNNING_TIME_ERROR_REGISTRY_KEY_INVALID = 1,
-  REPORTER_RUNNING_TIME_ERROR_MISSING_START_TIME = 2,
-  REPORTER_RUNNING_TIME_ERROR_MISSING_END_TIME = 3,
-  REPORTER_RUNNING_TIME_ERROR_MISSING_BOTH_TIMES = 4,
-  REPORTER_RUNNING_TIME_ERROR_MAX,
-};
-
-// Used to send UMA information about the progress of the SwReporter launch and
-// prompt sequence. Replicated in the histograms.xml file, so the order MUST
-// NOT CHANGE.
-enum SwReporterUmaValue {
-  DEPRECATED_SW_REPORTER_EXPLICIT_REQUEST = 0,
-  DEPRECATED_SW_REPORTER_STARTUP_RETRY = 1,
-  DEPRECATED_SW_REPORTER_RETRIED_TOO_MANY_TIMES = 2,
-  SW_REPORTER_START_EXECUTION = 3,
-  SW_REPORTER_FAILED_TO_START = 4,
-  DEPRECATED_SW_REPORTER_REGISTRY_EXIT_CODE = 5,
-  DEPRECATED_SW_REPORTER_RESET_RETRIES = 6,
-  DEPRECATED_SW_REPORTER_DOWNLOAD_START = 7,
-  SW_REPORTER_NO_BROWSER = 8,
-  DEPRECATED_SW_REPORTER_NO_LOCAL_STATE = 9,
-  SW_REPORTER_NO_PROMPT_NEEDED = 10,
-  SW_REPORTER_NO_PROMPT_FIELD_TRIAL = 11,
-  SW_REPORTER_ALREADY_PROMPTED = 12,
-  DEPRECATED_SW_REPORTER_RAN_DAILY = 13,
-  DEPRECATED_SW_REPORTER_ADDED_TO_MENU = 14,
-
-  SW_REPORTER_MAX,
-};
 
 // Used to send UMA information showing whether uploading of Software Reporter
 // logs is enabled, or the reason why not.
@@ -114,17 +84,12 @@ enum SwReporterLogsUploadResultRegistryError {
   REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX,
 };
 
-const char kRunningTimeErrorMetricName[] =
-    "SoftwareReporter.RunningTimeRegistryError";
-
 internal::SwReporterTestingDelegate* g_testing_delegate_ = nullptr;
 
 const char kFoundUwsMetricName[] = "SoftwareReporter.FoundUwS";
 const char kFoundUwsReadErrorMetricName[] =
     "SoftwareReporter.FoundUwSReadError";
-const char kScanTimesMetricName[] = "SoftwareReporter.UwSScanTimes";
 const char kMemoryUsedMetricName[] = "SoftwareReporter.MemoryUsed";
-const char kStepMetricName[] = "SoftwareReporter.Step";
 const char kLogsUploadEnabledMetricName[] =
     "SoftwareReporter.LogsUploadEnabled";
 const char kLogsUploadResultMetricName[] = "SoftwareReporter.LogsUploadResult";
@@ -139,7 +104,7 @@ const char kEngineErrorCodeMetricName[] = "SoftwareReporter.EngineErrorCode";
 // SoftwareReporterLogsUploadResult enum defined in the histograms.xml file.
 const int kSwReporterLogsUploadResultMax = 30;
 
-// Reports metrics about the software reporter via UMA (and sometimes Rappor).
+// Reports metrics about the software reporter via UMA.
 class UMAHistogramReporter {
  public:
   UMAHistogramReporter() : UMAHistogramReporter(std::string()) {}
@@ -212,10 +177,10 @@ class UMAHistogramReporter {
     reporter_key.DeleteValue(chrome_cleaner::kEngineErrorCodeValueName);
   }
 
-  // Reports UwS found by the software reporter tool via UMA and RAPPOR.
+  // Reports UwS found by the software reporter tool via UMA.
   void ReportFoundUwS() const {
     base::win::RegKey reporter_key;
-    std::vector<base::string16> found_uws_strings;
+    std::vector<std::wstring> found_uws_strings;
     if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
                           KEY_QUERY_VALUE | KEY_SET_VALUE) != ERROR_SUCCESS ||
         reporter_key.ReadValues(chrome_cleaner::kFoundUwsValueName,
@@ -224,7 +189,7 @@ class UMAHistogramReporter {
     }
 
     bool parse_error = false;
-    for (const base::string16& uws_string : found_uws_strings) {
+    for (const auto& uws_string : found_uws_strings) {
       // All UwS ids are expected to be integers.
       uint32_t uws_id = 0;
       if (base::StringToUint(uws_string, &uws_id)) {
@@ -256,105 +221,23 @@ class UMAHistogramReporter {
 
   // Reports the SwReporter run time with UMA both as reported by the tool via
   // the registry and as measured by |ReporterRunner|.
-  void ReportRuntime(const base::TimeDelta& reporter_running_time) const {
+  void ReportRuntime(const base::TimeDelta& reporter_running_time,
+                     const base::TimeDelta& running_time_without_sleep) const {
     RecordLongTimesHistogram("SoftwareReporter.RunningTimeAccordingToChrome",
                              reporter_running_time);
+    RecordLongTimesHistogram("SoftwareReporter.RunningTimeWithoutSleep",
+                             running_time_without_sleep);
 
     // TODO(b/641081): This should only have KEY_QUERY_VALUE and KEY_SET_VALUE.
     base::win::RegKey reporter_key;
     if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
                           KEY_ALL_ACCESS) != ERROR_SUCCESS) {
-      RecordEnumerationHistogram(
-          kRunningTimeErrorMetricName,
-          REPORTER_RUNNING_TIME_ERROR_REGISTRY_KEY_INVALID,
-          REPORTER_RUNNING_TIME_ERROR_MAX);
       return;
     }
 
-    bool has_start_time = false;
-    int64_t start_time_value = 0;
-    if (reporter_key.HasValue(chrome_cleaner::kStartTimeValueName) &&
-        reporter_key.ReadInt64(chrome_cleaner::kStartTimeValueName,
-                               &start_time_value) == ERROR_SUCCESS) {
-      has_start_time = true;
-      reporter_key.DeleteValue(chrome_cleaner::kStartTimeValueName);
-    }
-
-    bool has_end_time = false;
-    int64_t end_time_value = 0;
-    if (reporter_key.HasValue(chrome_cleaner::kEndTimeValueName) &&
-        reporter_key.ReadInt64(chrome_cleaner::kEndTimeValueName,
-                               &end_time_value) == ERROR_SUCCESS) {
-      has_end_time = true;
-      reporter_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
-    }
-
-    if (has_start_time && has_end_time) {
-      base::TimeDelta registry_run_time =
-          base::Time::FromInternalValue(end_time_value) -
-          base::Time::FromInternalValue(start_time_value);
-      RecordLongTimesHistogram("SoftwareReporter.RunningTime",
-                               registry_run_time);
-      RecordEnumerationHistogram(kRunningTimeErrorMetricName,
-                                 REPORTER_RUNNING_TIME_ERROR_NO_ERROR,
-                                 REPORTER_RUNNING_TIME_ERROR_MAX);
-    } else if (!has_start_time && !has_end_time) {
-      RecordEnumerationHistogram(kRunningTimeErrorMetricName,
-                                 REPORTER_RUNNING_TIME_ERROR_MISSING_BOTH_TIMES,
-                                 REPORTER_RUNNING_TIME_ERROR_MAX);
-    } else if (!has_start_time) {
-      RecordEnumerationHistogram(kRunningTimeErrorMetricName,
-                                 REPORTER_RUNNING_TIME_ERROR_MISSING_START_TIME,
-                                 REPORTER_RUNNING_TIME_ERROR_MAX);
-    } else {
-      DCHECK(!has_end_time);
-      RecordEnumerationHistogram(kRunningTimeErrorMetricName,
-                                 REPORTER_RUNNING_TIME_ERROR_MISSING_END_TIME,
-                                 REPORTER_RUNNING_TIME_ERROR_MAX);
-    }
-  }
-
-  // Reports the UwS scan times of the software reporter tool via UMA.
-  void ReportScanTimes() const {
-    base::string16 scan_times_key_path = base::StringPrintf(
-        L"%ls\\%ls", registry_key_.c_str(), chrome_cleaner::kScanTimesSubKey);
-    // TODO(b/641081): This should only have KEY_QUERY_VALUE and KEY_SET_VALUE.
-    base::win::RegKey scan_times_key;
-    if (scan_times_key.Open(HKEY_CURRENT_USER, scan_times_key_path.c_str(),
-                            KEY_ALL_ACCESS) != ERROR_SUCCESS) {
-      return;
-    }
-
-    base::string16 value_name;
-    int uws_id = 0;
-    int64_t raw_scan_time = 0;
-    int num_scan_times = scan_times_key.GetValueCount();
-    for (int i = 0; i < num_scan_times; ++i) {
-      if (scan_times_key.GetValueNameAt(i, &value_name) == ERROR_SUCCESS &&
-          base::StringToInt(value_name, &uws_id) &&
-          scan_times_key.ReadInt64(value_name.c_str(), &raw_scan_time) ==
-              ERROR_SUCCESS) {
-        base::TimeDelta scan_time =
-            base::TimeDelta::FromInternalValue(raw_scan_time);
-        // We report the number of seconds plus one because it can take less
-        // than one second to scan some UwS and the count passed to |AddCount|
-        // must be at least one.
-        RecordSparseHistogramCount(kScanTimesMetricName, uws_id,
-                                   scan_time.InSeconds() + 1);
-      }
-    }
-    // Clean up by deleting the scan times key, which is a subkey of the main
-    // reporter key.
-    scan_times_key.Close();
-    base::win::RegKey reporter_key;
-    if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
-                          KEY_ENUMERATE_SUB_KEYS) == ERROR_SUCCESS) {
-      reporter_key.DeleteKey(chrome_cleaner::kScanTimesSubKey);
-    }
-  }
-
-  void RecordReporterStep(SwReporterUmaValue value) {
-    RecordEnumerationHistogram(kStepMetricName, value, SW_REPORTER_MAX);
+    // Clean up obsolete registry values, if necessary.
+    reporter_key.DeleteValue(chrome_cleaner::kStartTimeValueName);
+    reporter_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
   }
 
   void RecordLogsUploadEnabled(SwReporterLogsUploadsEnabled value) {
@@ -436,9 +319,9 @@ class UMAHistogramReporter {
   void RecordLongTimesHistogram(const std::string& name,
                                 const base::TimeDelta& sample) const {
     // See UMA_HISTOGRAM_LONG_TIMES for the parameters to |FactoryTimeGet|.
-    auto* histogram = base::Histogram::FactoryTimeGet(
-        FullName(name), base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromHours(1), 100, kUmaHistogramFlag);
+    auto* histogram =
+        base::Histogram::FactoryTimeGet(FullName(name), base::Milliseconds(1),
+                                        base::Hours(1), 100, kUmaHistogramFlag);
     if (histogram)
       histogram->AddTime(sample);
   }
@@ -458,25 +341,9 @@ class UMAHistogramReporter {
       histogram->Add(sample);
   }
 
-  void RecordSparseHistogramCount(const std::string& name,
-                                  Sample sample,
-                                  int count) const {
-    auto* histogram =
-        base::SparseHistogram::FactoryGet(FullName(name), kUmaHistogramFlag);
-    if (histogram)
-      histogram->AddCount(sample, count);
-  }
-
   const std::string suffix_;
   const std::wstring registry_key_;
 };
-
-// Records the reporter step without a suffix. (For steps that are never run by
-// the experimental reporter.)
-void RecordReporterStepHistogram(SwReporterUmaValue value) {
-  UMAHistogramReporter uma;
-  uma.RecordReporterStep(value);
-}
 
 ChromeCleanerController* GetCleanerController() {
   return g_testing_delegate_ ? g_testing_delegate_->GetCleanerController()
@@ -522,7 +389,6 @@ void CreateChromeCleanerDialogController() {
 bool ShouldShowPromptForPeriodicRun() {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
-    RecordReporterStepHistogram(SW_REPORTER_NO_BROWSER);
     return false;
   }
 
@@ -537,7 +403,6 @@ bool ShouldShowPromptForPeriodicRun() {
   const std::string incoming_seed = GetIncomingSRTSeed();
   const std::string old_seed = prefs->GetString(prefs::kSwReporterPromptSeed);
   if (!incoming_seed.empty() && incoming_seed == old_seed) {
-    RecordReporterStepHistogram(SW_REPORTER_ALREADY_PROMPTED);
     RecordPromptNotShownWithReasonHistogram(NO_PROMPT_REASON_ALREADY_PROMPTED);
     return false;
   }
@@ -609,6 +474,10 @@ class ReporterRunner {
   }
 
  private:
+  // The type returned by QueryUnbiasedInterruptTime, which does not include
+  // time spent in sleep or hibernation.
+  using TimestampWithoutSleep = ULONGLONG;
+
   // Keeps track of last and upcoming reporter runs and logs uploading.
   //
   // Periodic runs are allowed to start if the last time the reporter ran was
@@ -630,12 +499,11 @@ class ReporterRunner {
       base::Time now = Now();
       if (local_state->HasPrefPath(prefs::kSwReporterLastTimeTriggered)) {
         base::Time last_time_triggered =
-            base::Time() +
-            base::TimeDelta::FromMicroseconds(
-                local_state->GetInt64(prefs::kSwReporterLastTimeTriggered));
+            base::Time() + base::Microseconds(local_state->GetInt64(
+                               prefs::kSwReporterLastTimeTriggered));
         base::Time next_trigger =
             last_time_triggered +
-            base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns);
+            base::Days(kDaysBetweenSuccessfulSwReporterRuns);
         should_run_ = next_trigger <= now || last_time_triggered > now;
       } else {
         should_run_ = true;
@@ -643,12 +511,10 @@ class ReporterRunner {
 
       if (local_state->HasPrefPath(prefs::kSwReporterLastTimeSentReport)) {
         base::Time last_time_sent_logs =
-            base::Time() +
-            base::TimeDelta::FromMicroseconds(
-                local_state->GetInt64(prefs::kSwReporterLastTimeSentReport));
+            base::Time() + base::Microseconds(local_state->GetInt64(
+                               prefs::kSwReporterLastTimeSentReport));
         base::Time next_time_send_logs =
-            last_time_sent_logs +
-            base::TimeDelta::FromDays(kDaysBetweenReporterLogsSent);
+            last_time_sent_logs + base::Days(kDaysBetweenReporterLogsSent);
         in_logs_upload_period_ =
             next_time_send_logs <= now || last_time_sent_logs > now;
       } else {
@@ -674,6 +540,9 @@ class ReporterRunner {
                            base::Unretained(GetCleanerController()))),
         time_info_(std::move(time_info)) {}
 
+  ReporterRunner(const ReporterRunner&) = delete;
+  ReporterRunner& operator=(const ReporterRunner&) = delete;
+
   ~ReporterRunner() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_EQ(instance_, this);
@@ -695,10 +564,15 @@ class ReporterRunner {
     base::TaskRunner* task_runner =
         g_testing_delegate_ ? g_testing_delegate_->BlockingTaskRunner()
                             : blocking_task_runner_.get();
-    auto launch_and_wait = base::Bind(&LaunchAndWaitForExit, next_invocation);
+
+    TimestampWithoutSleep now_without_sleep;
+    ::QueryUnbiasedInterruptTime(&now_without_sleep);
+
+    auto launch_and_wait =
+        base::BindOnce(&LaunchAndWaitForExit, next_invocation);
     auto reporter_done =
-        base::Bind(&ReporterRunner::ReporterDone, base::Unretained(this), Now(),
-                   next_invocation);
+        base::BindOnce(&ReporterRunner::ReporterDone, base::Unretained(this),
+                       Now(), now_without_sleep, next_invocation);
     base::PostTaskAndReplyWithResult(task_runner, FROM_HERE,
                                      std::move(launch_and_wait),
                                      std::move(reporter_done));
@@ -708,6 +582,7 @@ class ReporterRunner {
   // has completed. This is run as a task posted from an interruptible worker
   // thread so should be resilient to unexpected shutdown.
   void ReporterDone(const base::Time& reporter_start_time,
+                    TimestampWithoutSleep start_time_without_sleep,
                     SwReporterInvocation finished_invocation,
                     int exit_code) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -720,18 +595,26 @@ class ReporterRunner {
         &ReporterRunner::SendResultAndDeleteSelf, base::Unretained(this),
         ExitCodeToInvocationResult(exit_code)));
 
+    UMAHistogramReporter uma(finished_invocation.suffix());
+
     // Don't continue the current queue of reporters if one failed to launch.
-    // If the reporter failed to launch, do not process the results. (The exit
-    // code itself doesn't need to be logged in this case because
-    // SW_REPORTER_FAILED_TO_START is logged in
-    // |LaunchAndWaitForExit|.)
+    // If the reporter failed to launch, do not process the results.
     if (exit_code == kReporterNotLaunchedExitCode) {
+      uma.ReportExitCode(exit_code);
       NotifySequenceDone(SwReporterInvocationResult::kProcessFailedToLaunch);
       return;
     }
 
+    TimestampWithoutSleep now_without_sleep;
+    ::QueryUnbiasedInterruptTime(&now_without_sleep);
+
     base::Time now = Now();
     base::TimeDelta reporter_running_time = now - reporter_start_time;
+
+    // QueryUnbiasedInterruptTime returns units of 100 nanoseconds. See
+    // https://docs.microsoft.com/en-us/windows/win32/api/realtimeapiset/nf-realtimeapiset-queryunbiasedinterrupttime
+    base::TimeDelta running_time_without_sleep =
+        base::Nanoseconds(100 * (now_without_sleep - start_time_without_sleep));
 
     // Tries to run the next invocation in the queue.
     if (!invocations_.container().empty()) {
@@ -742,7 +625,6 @@ class ReporterRunner {
       PostNextInvocation();
     }
 
-    UMAHistogramReporter uma(finished_invocation.suffix());
     uma.ReportVersion(invocations_.version());
     uma.ReportExitCode(exit_code);
     uma.ReportEngineErrorCode();
@@ -757,8 +639,7 @@ class ReporterRunner {
       local_state->SetInt64(prefs::kSwReporterLastTimeTriggered,
                             now.ToInternalValue());
     }
-    uma.ReportRuntime(reporter_running_time);
-    uma.ReportScanTimes();
+    uma.ReportRuntime(reporter_running_time, running_time_without_sleep);
     uma.ReportMemoryUsage();
     if (finished_invocation.reporter_logs_upload_enabled())
       uma.RecordLogsUploadResult();
@@ -773,7 +654,6 @@ class ReporterRunner {
     if (!IsUserInitiated(invocation_type_) && !IsSRTPromptFeatureEnabled()) {
       // Knowing about disabled field trial is more important than reporter not
       // finding anything to remove, so check this case first.
-      RecordReporterStepHistogram(SW_REPORTER_NO_PROMPT_FIELD_TRIAL);
       RecordPromptNotShownWithReasonHistogram(
           NO_PROMPT_REASON_FEATURE_NOT_ENABLED);
       return;
@@ -782,7 +662,6 @@ class ReporterRunner {
     // Do not accept reboot required or post-reboot exit codes, since they
     // should not be sent out by the reporter.
     if (exit_code != chrome_cleaner::kSwReporterCleanupNeeded) {
-      RecordReporterStepHistogram(SW_REPORTER_NO_PROMPT_NEEDED);
       RecordPromptNotShownWithReasonHistogram(NO_PROMPT_REASON_NOTHING_FOUND);
       return;
     }
@@ -927,7 +806,7 @@ class ReporterRunner {
         chrome_cleaner::kChromeVersionSwitch, version_info::GetVersionNumber());
     invocation->mutable_command_line().AppendSwitchNative(
         chrome_cleaner::kChromeChannelSwitch,
-        base::NumberToString16(ChannelAsInt()));
+        base::NumberToWString(ChannelAsInt()));
   }
 
   void SendResultAndDeleteSelf(SwReporterInvocationResult result) {
@@ -950,10 +829,10 @@ class ReporterRunner {
   static ReporterRunner* instance_;
 
   scoped_refptr<base::TaskRunner> blocking_task_runner_ =
-      base::CreateTaskRunner(
+      base::ThreadPool::CreateTaskRunner(
           // LaunchAndWaitForExit creates (MayBlock()) and joins
           // (WithBaseSyncPrimitives()) a process.
-          {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives(),
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
@@ -970,8 +849,6 @@ class ReporterRunner {
   ReporterRunTimeInfo time_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunner);
 };
 
 // static
@@ -1005,7 +882,6 @@ int LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
 
   base::FilePath tmpdir;
   if (!base::GetTempDir(&tmpdir)) {
-    uma.RecordReporterStep(SW_REPORTER_FAILED_TO_START);
     return exit_code;
   }
 
@@ -1036,11 +912,8 @@ int LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
           : base::LaunchProcess(invocation.command_line(), launch_options);
 
   if (!reporter_process.IsValid()) {
-    uma.RecordReporterStep(SW_REPORTER_FAILED_TO_START);
     return exit_code;
   }
-
-  uma.RecordReporterStep(SW_REPORTER_START_EXECUTION);
 
   if (g_testing_delegate_) {
     exit_code = g_testing_delegate_->WaitForReporterExit(reporter_process);

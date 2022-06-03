@@ -1,0 +1,19 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
+
+// This struct holds permissions policy allowlist data that needs to be replicated
+// between a RenderFrame and any of its associated RenderFrameProxies. A list of
+// these form a ParsedPermissionsPolicy.
+// NOTE: These types are used for replication frame state between processes.
+struct ParsedPermissionsPolicyDeclaration {
+  PermissionsPolicyFeature feature;
+  array<url.mojom.Origin> allowed_origins;
+  bool matches_all_origins;
+  bool matches_opaque_src;
+};

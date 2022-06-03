@@ -15,16 +15,12 @@
 #import "ios/chrome/browser/autofill/automation/automation_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#if defined(CHROME_EARL_GREY_2)
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(AutomationAppInterface)
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -50,7 +46,7 @@ std::string ReadRecipeJsonFromPath(const base::FilePath& path) {
 
 // Parses recipe std::string into base::Value.
 base::Value RecipeJsonToValue(const std::string& recipe_json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(recipe_json);
+  absl::optional<base::Value> value = base::JSONReader::Read(recipe_json);
   GREYAssert(value.has_value(), @"Unable to parse JSON string.");
   GREYAssert(value.value().is_dict(),
              @"Expecting a dictionary in the recipe JSON string.");
@@ -92,12 +88,11 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   return path;
 }
 
-- (void)launchAppForTestMethod {
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:
-          {autofill::features::kAutofillShowTypePredictions}
-                                  disabled:{}
-                            relaunchPolicy:NoForceRelaunchAndResetState];
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillShowTypePredictions);
+  return config;
 }
 
 - (void)setUp {

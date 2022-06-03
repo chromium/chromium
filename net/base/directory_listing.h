@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "net/base/net_export.h"
 
 namespace base {
@@ -19,7 +18,7 @@ namespace net {
 
 // Call these functions to get the html snippet for a directory listing.
 // The return values of these functions are in UTF-8.
-NET_EXPORT std::string GetDirectoryListingHeader(const base::string16& title);
+NET_EXPORT std::string GetDirectoryListingHeader(const std::u16string& title);
 
 // Given the name of a file in a directory (ftp or local) and
 // other information (is_dir, size, modification time), it returns
@@ -33,7 +32,7 @@ NET_EXPORT std::string GetDirectoryListingHeader(const base::string16& title);
 // will be used.
 //
 // Both |name| and |raw_bytes| are escaped internally.
-NET_EXPORT std::string GetDirectoryListingEntry(const base::string16& name,
+NET_EXPORT std::string GetDirectoryListingEntry(const std::u16string& name,
                                                 const std::string& raw_bytes,
                                                 bool is_dir,
                                                 int64_t size,

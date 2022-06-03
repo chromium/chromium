@@ -24,33 +24,23 @@ group("android_tools") {
 }
 
 group("fincore") {
-  deps = [
-    "//tools/android/fincore",
-  ]
+  deps = [ "//tools/android/fincore" ]
 }
 
 group("memdump") {
-  deps = [
-    "//tools/android/memdump",
-  ]
+  deps = [ "//tools/android/memdump" ]
 }
 
 group("memconsumer") {
-  deps = [
-    "//tools/android/memconsumer:memconsumer_apk",
-  ]
+  deps = [ "//tools/android/memconsumer:memconsumer_apk" ]
 }
 
 group("memtrack_helper") {
-  deps = [
-    "//tools/android/memtrack_helper",
-  ]
+  deps = [ "//tools/android/memtrack_helper" ]
 }
 
 group("ps_ext") {
-  deps = [
-    "//tools/android/ps_ext",
-  ]
+  deps = [ "//tools/android/ps_ext" ]
 }
 
 group("spnego_authenticator") {
@@ -61,28 +51,21 @@ group("spnego_authenticator") {
 }
 
 group("customtabs_benchmark") {
-  deps = [
-    "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
-  ]
+  deps = [ "//tools/android/customtabs_benchmark:customtabs_benchmark_apk" ]
 }
 
 group("audio_focus_grabber") {
   testonly = true
-  deps = [
-    "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
-  ]
+  deps = [ "//tools/android/audio_focus_grabber:audio_focus_grabber_apk" ]
 }
 
 group("push_apps_to_background") {
   testonly = true
-  deps = [
-    "//tools/android/push_apps_to_background:push_apps_to_background_apk",
-  ]
+  deps =
+      [ "//tools/android/push_apps_to_background:push_apps_to_background_apk" ]
 }
 
 group("io_benchmark") {
-  deps = [
-    "//tools/android/io_benchmark",
-  ]
+  deps = [ "//tools/android/io_benchmark" ]
   testonly = true
 }

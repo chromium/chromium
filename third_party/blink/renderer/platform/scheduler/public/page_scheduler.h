@@ -18,6 +18,10 @@
 
 namespace blink {
 
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
+
 class PLATFORM_EXPORT PageScheduler {
  public:
   class PLATFORM_EXPORT Delegate {
@@ -30,7 +34,7 @@ class PLATFORM_EXPORT PageScheduler {
     // Returns true if the request has been succcessfully relayed to the
     // compositor.
     virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
-    virtual void SetLifecycleState(PageLifecycleState) = 0;
+    virtual void OnSetPageFrozen(bool is_frozen) = 0;
     // Returns true iff the network is idle for the local main frame.
     // Always returns false if the main frame is remote.
     virtual bool LocalMainFrameNetworkIsAlmostIdle() const { return true; }
@@ -38,20 +42,23 @@ class PLATFORM_EXPORT PageScheduler {
 
   virtual ~PageScheduler() = default;
 
+  // Signals that communications with the user took place via either a title
+  // updates or a change to the favicon.
+  virtual void OnTitleOrFaviconUpdated() = 0;
   // The scheduler may throttle tasks associated with background pages.
   virtual void SetPageVisible(bool) = 0;
   // The scheduler transitions app to and from FROZEN state in background.
   virtual void SetPageFrozen(bool) = 0;
-  // Tells the scheduler about "keep-alive" state which can be due to:
-  // service workers, shared workers, or fetch keep-alive.
-  // If true, then the scheduler should not freeze relevant task queues.
-  virtual void SetKeepActive(bool) = 0;
+  // Handles operations required for storing the page in the back-forward cache.
+  virtual void SetPageBackForwardCached(bool) = 0;
   // Whether the main frame of this page is local or not (remote).
   virtual bool IsMainFrameLocal() const = 0;
   virtual void SetIsMainFrameLocal(bool) = 0;
   // Invoked when the local main frame's network becomes almost idle.
   // Never invoked if the main frame is remote.
   virtual void OnLocalMainFrameNetworkAlmostIdle() = 0;
+  // Whether the main frame of this page is in BackForwardCache or not.
+  virtual bool IsInBackForwardCache() const = 0;
 
   // Creates a new FrameScheduler. The caller is responsible for deleting
   // it. All tasks executed by the frame scheduler will be attributed to
@@ -106,10 +113,6 @@ class PLATFORM_EXPORT PageScheduler {
   // This is used to set initial Date.now() while in virtual time mode.
   virtual void SetInitialVirtualTime(base::Time time) = 0;
 
-  // This is used for cross origin navigations to account for virtual time
-  // advancing in the previous renderer.
-  virtual void SetInitialVirtualTimeOffset(base::TimeDelta offset) = 0;
-
   // Sets the virtual time policy, which is applied imemdiatly to all child
   // FrameSchedulers.
   virtual void SetVirtualTimePolicy(VirtualTimePolicy) = 0;
@@ -151,6 +154,9 @@ class PLATFORM_EXPORT PageScheduler {
   virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
+
+  // Returns WebAgentGroupScheduler
+  virtual scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() = 0;
 };
 
 }  // namespace blink

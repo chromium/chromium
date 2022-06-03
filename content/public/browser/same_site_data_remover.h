@@ -7,15 +7,23 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace content {
 class BrowserContext;
 
 // Clears cookies available in third-party contexts where SameSite=None.
-// Also removes associated storage if |clear_storage| is set to true.
+// Also removes storage for domains with a SameSite=None cookie.
 CONTENT_EXPORT void ClearSameSiteNoneData(base::OnceClosure closure,
-                                          BrowserContext* context,
-                                          bool clear_storage);
+                                          BrowserContext* context);
+
+// Clears cookies available in third-party contexts where SameSite=None.
+// Also removes storage for origins that match the clear_storage_origin_matcher
+// predicate.
+CONTENT_EXPORT void ClearSameSiteNoneCookiesAndStorageForOrigins(
+    base::OnceClosure closure,
+    BrowserContext* context,
+    StoragePartition::OriginMatcherFunction clear_storage_origin_matcher);
 
 }  // namespace content
 

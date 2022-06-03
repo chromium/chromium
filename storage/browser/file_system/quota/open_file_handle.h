@@ -27,6 +27,9 @@ class QuotaReservationBuffer;
 // deleted when the plugin closes the file.
 class COMPONENT_EXPORT(STORAGE_BROWSER) OpenFileHandle {
  public:
+  OpenFileHandle(const OpenFileHandle&) = delete;
+  OpenFileHandle& operator=(const OpenFileHandle&) = delete;
+
   ~OpenFileHandle();
 
   // Updates cached file size and consumes quota for that.
@@ -62,8 +65,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OpenFileHandle {
   scoped_refptr<OpenFileHandleContext> context_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFileHandle);
 };
 
 }  // namespace storage

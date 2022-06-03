@@ -10,7 +10,7 @@ import android.net.Uri;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.NoSuchElementException;
 

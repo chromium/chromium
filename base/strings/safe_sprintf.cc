@@ -35,7 +35,7 @@
 //        errno = 13 (Access denied)
 //      In most of the anticipated use cases, that's probably the preferred
 //      behavior.
-#include "base/logging.h"
+#include "base/check.h"
 #define DEBUG_CHECK RAW_CHECK
 #else
 #define DEBUG_CHECK(x) do { if (x) { } } while (0)
@@ -126,6 +126,9 @@ class Buffer {
     DEBUG_CHECK(size <= kSSizeMax);
   }
 
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer() {
     // The code calling the constructor guaranteed that there was enough space
     // to store a trailing NUL -- and in debug builds, we are actually
@@ -174,7 +177,7 @@ class Buffer {
   // |count_| will also be incremented by the number of bytes that were meant
   // to be emitted. The |pad| character is typically either a ' ' space
   // or a '0' zero, but other non-NUL values are legal.
-  // Returns "false", iff the the |buffer_| filled up (i.e. |count_|
+  // Returns "false", iff the |buffer_| filled up (i.e. |count_|
   // overflowed |size_|) at any time during padding.
   inline bool Pad(char pad, size_t padding, size_t len) {
     DEBUG_CHECK(pad);
@@ -270,8 +273,6 @@ class Buffer {
   // was sufficiently big. This number always excludes the trailing NUL byte
   // and it is guaranteed to never grow bigger than kSSizeMax-1.
   size_t count_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 
@@ -490,7 +491,6 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt, const Arg* args,
             goto format_character_found;
           }
         }
-        break;
       case 'c': {  // Output an ASCII character.
         // Check that there are arguments left to be inserted.
         if (cur_arg >= max_args) {

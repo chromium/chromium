@@ -37,10 +37,8 @@ def main():
   try:
     # Combine everything to a single JS bundle file.
     bundled_js = os.path.join(tmp_out_dir, 'polymer_bundled.js')
-    path_to_rollup = os.path.join('node_modules', 'rollup', 'bin', 'rollup');
-
     node.RunNode([
-        path_to_rollup,
+        node_modules.PathToRollup(),
         # See https://github.com/rollup/rollup/issues/1955
         '--silent',
         '--format', 'esm',
@@ -51,9 +49,11 @@ def main():
     # Minify the JS bundle.
     minified_js = os.path.join(tmp_out_dir, 'polymer_bundled.min.js')
     node.RunNode([
-        node_modules.PathToUglify(), bundled_js,
-        # TODO(dpapad): Figure out a way to deduplicate LICENSE headers.
-        #'--comments', '"/Copyright|license|LICENSE/"',
+        node_modules.PathToTerser(), bundled_js,
+        # TODO(dpapad): Figure out a way to deduplicate LICENSE headers. In the
+        # meantime exclude such comments to reduce file size.
+        '--comments', 'false',
+        #'--comments', '/Copyright|license|LICENSE/',
         '--output', minified_js])
 
     # Copy generated JS bundle back to the original location.

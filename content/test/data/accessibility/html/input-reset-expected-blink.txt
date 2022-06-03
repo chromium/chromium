@@ -1,7 +1,8 @@
 rootWebArea
-++genericContainer
-++++textField inputType='text'
-++++++genericContainer
-++++button inputType='reset' name='Reset'
-++++++staticText name='Reset'
-++++++++inlineTextBox name='Reset'
+++genericContainer ignored
+++++genericContainer
+++++++textField inputType='text'
+++++++++genericContainer
+++++++button inputType='reset' name='Reset'
+++++++++staticText name='Reset'
+++++++++++inlineTextBox name='Reset'

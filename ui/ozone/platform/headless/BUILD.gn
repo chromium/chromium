@@ -26,6 +26,8 @@ source_set("headless") {
     "//base",
     "//skia",
     "//ui/base",
+    "//ui/base/cursor",
+    "//ui/base/cursor:cursor_base",
     "//ui/base/ime",
     "//ui/events",
     "//ui/events/ozone/layout",

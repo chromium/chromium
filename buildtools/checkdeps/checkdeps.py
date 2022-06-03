@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,6 +11,8 @@ Any source file including something not permitted by the DEPS files will fail.
 
 See README.md for a detailed description of the DEPS format.
 """
+
+
 
 import os
 import optparse
@@ -30,7 +32,7 @@ def _IsTestFile(filename):
   """Does a rudimentary check to try to skip test files; this could be
   improved but is good enough for now.
   """
-  return re.match('(test|mock|dummy)_.*|.*_[a-z]*test\.(cc|mm|java)', filename)
+  return re.match(r'(test|mock|dummy)_.*|.*_[a-z]*test\.(cc|mm|java)', filename)
 
 
 class DepsChecker(DepsBuilder):
@@ -51,7 +53,8 @@ class DepsChecker(DepsBuilder):
     Args:
       base_directory: OS-compatible path to root of checkout, e.g. C:\chr\src.
       verbose: Set to true for debug output.
-      being_tested: Set to true to ignore the DEPS file at tools/checkdeps/DEPS.
+      being_tested: Set to true to ignore the DEPS file at
+                    buildtools/checkdeps/DEPS.
       ignore_temp_rules: Ignore rules that start with Rule.TEMP_ALLOW ("!").
     """
     DepsBuilder.__init__(
@@ -67,7 +70,7 @@ class DepsChecker(DepsBuilder):
     if self.results_formatter.GetResults():
       self.results_formatter.PrintResults()
       return 1
-    print '\nSUCCESS\n'
+    print('\nSUCCESS\n')
     return 0
 
   def CheckDirectory(self, start_dir):
@@ -148,14 +151,16 @@ class DepsChecker(DepsBuilder):
     return self.CheckIncludesAndImports(
         added_includes, cpp_checker.CppChecker(self.verbose))
 
-  def CheckAddedJavaImports(self, added_imports, allow_multiple_definitions=None):
+  def CheckAddedJavaImports(self, added_imports,
+                            allow_multiple_definitions=None):
     """This is used from PRESUBMIT.py to check new import statements added in
     the change being presubmit checked.
 
     Args:
       added_imports: ((file_path, (import_line, import_line, ...), ...)
-      allow_multiple_definitions: [file_name, file_name, ...]. List of java file
-                                  names allowing multipe definition in presubmit check.
+      allow_multiple_definitions: [file_name, file_name, ...]. List of java
+                                  file names allowing multiple definitions in
+                                  presubmit check.
 
     Return:
       A list of tuples, (bad_file_path, rule_type, rule_description)
@@ -184,11 +189,11 @@ class DepsChecker(DepsBuilder):
             verbose=self.verbose, root_dir=self.base_directory))
 
 def PrintUsage():
-  print """Usage: python checkdeps.py [--root <root>] [tocheck]
+  print("""Usage: python checkdeps.py [--root <root>] [tocheck]
 
   --root ROOT Specifies the repository root. This defaults to "../../.."
               relative to the script file. This will be correct given the
-              normal location of the script in "<root>/tools/checkdeps".
+              normal location of the script in "<root>/buildtools/checkdeps".
 
   --(others)  There are a few lesser-used options; run with --help to show them.
 
@@ -197,7 +202,7 @@ def PrintUsage():
 
 Examples:
   python checkdeps.py
-  python checkdeps.py --root c:\\source chrome"""
+  python checkdeps.py --root c:\\source chrome""")
 
 
 def main():
@@ -265,12 +270,12 @@ def main():
     return 1
 
   if not start_dir.startswith(deps_checker.base_directory):
-    print 'Directory to check must be a subdirectory of the base directory,'
-    print 'but %s is not a subdirectory of %s' % (start_dir, base_directory)
+    print('Directory to check must be a subdirectory of the base directory,')
+    print('but %s is not a subdirectory of %s' % (start_dir, base_directory))
     return 1
 
-  print 'Using base directory:', base_directory
-  print 'Checking:', start_dir
+  print('Using base directory:', base_directory)
+  print('Checking:', start_dir)
 
   if options.generate_temp_rules:
     deps_checker.results_formatter = results.TemporaryRulesFormatter()

@@ -138,7 +138,9 @@ install:	install-unrar
 uninstall:	uninstall-unrar
 
 clean:
-	@rm -f *.o *.bak *~
+	@rm -f *.bak *~
+	@rm -f $(OBJECTS) $(UNRAR_OBJ) $(LIB_OBJ)
+	@rm -f unrar libunrar.*
 
 unrar:	clean $(OBJECTS) $(UNRAR_OBJ)
 	@rm -f unrar
@@ -154,8 +156,7 @@ sfx:	clean $(OBJECTS)
 lib:	WHAT=RARDLL
 lib:	CXXFLAGS+=$(LIBFLAGS)
 lib:	clean $(OBJECTS) $(LIB_OBJ)
-	@rm -f libunrar.so
-	@rm -f libunrar.a
+	@rm -f libunrar.*
 	$(LINK) -shared -o libunrar.so $(LDFLAGS) $(OBJECTS) $(LIB_OBJ)
 	$(AR) rcs libunrar.a $(OBJECTS) $(LIB_OBJ)
 

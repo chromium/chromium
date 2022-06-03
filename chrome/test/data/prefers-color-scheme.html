@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>FAIL</title>
+<script>
+  if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+    document.title = "light";
+  } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.title = "dark";
+  } else if (window.matchMedia("(prefers-color-scheme: no-preference)").matches) {
+    document.title = "no-preference";
+  }
+</script>

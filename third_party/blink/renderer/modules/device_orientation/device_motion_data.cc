@@ -24,8 +24,8 @@
  */
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_device_motion_event_init.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_motion_event_init.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
 
 namespace blink {
@@ -70,7 +70,7 @@ DeviceMotionData::DeviceMotionData(
       rotation_rate_(rotation_rate),
       interval_(interval) {}
 
-void DeviceMotionData::Trace(blink::Visitor* visitor) {
+void DeviceMotionData::Trace(Visitor* visitor) const {
   visitor->Trace(acceleration_);
   visitor->Trace(acceleration_including_gravity_);
   visitor->Trace(rotation_rate_);

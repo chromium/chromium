@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_PAINTED_LAYER_DELEGATES_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_PAINTED_LAYER_DELEGATES_H_
 
-#include "base/macros.h"
+#include <vector>
+
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -20,6 +21,9 @@ namespace views {
 // specific color.
 class VIEWS_EXPORT BasePaintedLayerDelegate : public ui::LayerDelegate {
  public:
+  BasePaintedLayerDelegate(const BasePaintedLayerDelegate&) = delete;
+  BasePaintedLayerDelegate& operator=(const BasePaintedLayerDelegate&) = delete;
+
   ~BasePaintedLayerDelegate() override;
 
   // Defines the bounds of the layer that the delegate will paint into.
@@ -33,16 +37,15 @@ class VIEWS_EXPORT BasePaintedLayerDelegate : public ui::LayerDelegate {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
+  SkColor color() const { return color_; }
+  void set_color(SkColor color) { color_ = color; }
+
  protected:
   explicit BasePaintedLayerDelegate(SkColor color);
-
-  SkColor color() const { return color_; }
 
  private:
   // The color to paint.
   SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePaintedLayerDelegate);
 };
 
 // A BasePaintedLayerDelegate that paints a circle of a specified color and
@@ -50,6 +53,10 @@ class VIEWS_EXPORT BasePaintedLayerDelegate : public ui::LayerDelegate {
 class VIEWS_EXPORT CircleLayerDelegate : public BasePaintedLayerDelegate {
  public:
   CircleLayerDelegate(SkColor color, int radius);
+
+  CircleLayerDelegate(const CircleLayerDelegate&) = delete;
+  CircleLayerDelegate& operator=(const CircleLayerDelegate&) = delete;
+
   ~CircleLayerDelegate() override;
 
   int radius() const { return radius_; }
@@ -61,8 +68,6 @@ class VIEWS_EXPORT CircleLayerDelegate : public BasePaintedLayerDelegate {
  private:
   // The radius of the circle.
   int radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(CircleLayerDelegate);
 };
 
 // A BasePaintedLayerDelegate that paints a rectangle of a specified color and
@@ -70,6 +75,10 @@ class VIEWS_EXPORT CircleLayerDelegate : public BasePaintedLayerDelegate {
 class VIEWS_EXPORT RectangleLayerDelegate : public BasePaintedLayerDelegate {
  public:
   RectangleLayerDelegate(SkColor color, gfx::SizeF size);
+
+  RectangleLayerDelegate(const RectangleLayerDelegate&) = delete;
+  RectangleLayerDelegate& operator=(const RectangleLayerDelegate&) = delete;
+
   ~RectangleLayerDelegate() override;
 
   const gfx::SizeF& size() const { return size_; }
@@ -81,8 +90,6 @@ class VIEWS_EXPORT RectangleLayerDelegate : public BasePaintedLayerDelegate {
  private:
   // The size of the rectangle.
   gfx::SizeF size_;
-
-  DISALLOW_COPY_AND_ASSIGN(RectangleLayerDelegate);
 };
 
 // A BasePaintedLayerDelegate that paints a rounded rectangle of a specified
@@ -93,6 +100,11 @@ class VIEWS_EXPORT RoundedRectangleLayerDelegate
   RoundedRectangleLayerDelegate(SkColor color,
                                 const gfx::SizeF& size,
                                 int corner_radius);
+
+  RoundedRectangleLayerDelegate(const RoundedRectangleLayerDelegate&) = delete;
+  RoundedRectangleLayerDelegate& operator=(
+      const RoundedRectangleLayerDelegate&) = delete;
+
   ~RoundedRectangleLayerDelegate() override;
 
   const gfx::SizeF& size() const { return size_; }
@@ -107,8 +119,6 @@ class VIEWS_EXPORT RoundedRectangleLayerDelegate
 
   // The radius of the corners.
   int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedRectangleLayerDelegate);
 };
 
 // A BasePaintedLayerDelegate that paints a shadow around the outside of a
@@ -119,6 +129,11 @@ class VIEWS_EXPORT BorderShadowLayerDelegate : public BasePaintedLayerDelegate {
                             const gfx::Rect& shadowed_area_bounds,
                             SkColor fill_color,
                             int corner_radius);
+
+  BorderShadowLayerDelegate(const BorderShadowLayerDelegate&) = delete;
+  BorderShadowLayerDelegate& operator=(const BorderShadowLayerDelegate&) =
+      delete;
+
   ~BorderShadowLayerDelegate() override;
 
   // BasePaintedLayerDelegate:
@@ -137,8 +152,6 @@ class VIEWS_EXPORT BorderShadowLayerDelegate : public BasePaintedLayerDelegate {
   const SkColor fill_color_;
 
   const int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BorderShadowLayerDelegate);
 };
 
 }  // namespace views

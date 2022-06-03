@@ -39,8 +39,11 @@ void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
       params, StringPrintf(
                   "prod=%s",
                   update_client::UpdateQueryParams::GetProdIdString(prod_id))));
-  EXPECT_TRUE(Contains(params, StringPrintf("prodchannel=%s",
-                                            chrome::GetChannelName().c_str())));
+  EXPECT_TRUE(Contains(
+      params,
+      StringPrintf(
+          "prodchannel=%s",
+          chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str())));
   EXPECT_TRUE(
       Contains(params, StringPrintf("prodversion=%s",
                                     version_info::GetVersionNumber().c_str())));

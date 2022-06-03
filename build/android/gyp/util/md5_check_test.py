@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -47,13 +47,21 @@ class TestMd5Check(unittest.TestCase):
                            outputs_missing=False,
                            expected_changes=None,
                            added_or_modified_only=None,
-                           track_subentries=False):
+                           track_subentries=False,
+                           output_newer_than_record=False):
       output_paths = None
       if outputs_specified:
         output_file1 = tempfile.NamedTemporaryFile()
         if outputs_missing:
           output_file1.close()  # Gets deleted on close().
         output_paths = [output_file1.name]
+      if output_newer_than_record:
+        output_mtime = os.path.getmtime(output_file1.name)
+        os.utime(record_path.name, (output_mtime - 1, output_mtime - 1))
+      else:
+        # touch the record file so it doesn't look like it's older that
+        # the output we've just created
+        os.utime(record_path.name, None)
 
       self.called = False
       self.changes = None
@@ -73,7 +81,7 @@ class TestMd5Check(unittest.TestCase):
           output_paths=output_paths,
           force=force,
           pass_changes=(expected_changes or added_or_modified_only) is not None,
-          track_subpaths_whitelist=zip_paths if track_subentries else None)
+          track_subpaths_allowlist=zip_paths if track_subentries else None)
       self.assertEqual(should_call, self.called, message)
       if expected_changes:
         description = self.changes.DescribeDifference()
@@ -97,11 +105,18 @@ class TestMd5Check(unittest.TestCase):
                        outputs_specified=True, outputs_missing=True,
                        expected_changes='Outputs do not exist:*',
                        added_or_modified_only=False)
+    CheckCallAndRecord(True,
+                       'should call when output is newer than record',
+                       expected_changes='Outputs newer than stamp file:*',
+                       outputs_specified=True,
+                       outputs_missing=False,
+                       added_or_modified_only=False,
+                       output_newer_than_record=True)
     CheckCallAndRecord(True, force=True, message='should call when forced',
                        expected_changes='force=True',
                        added_or_modified_only=False)
 
-    input_file1.write('some more input')
+    input_file1.write(b'some more input')
     input_file1.flush()
     CheckCallAndRecord(True, 'changed input file should trigger call',
                        expected_changes='*Modified: %s' % input_file1.name,

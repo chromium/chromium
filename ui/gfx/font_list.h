@@ -83,6 +83,10 @@ class GFX_EXPORT FontList {
   //
   // ui::ResourceBundle may call this function more than once when UI language
   // is changed.
+  //
+  // Unit Tests should use ScopedDefaultFontDescription instead of calling this
+  // directly, to avoid leaving the default font description in an unexpected
+  // state for tests that run in the same process.
   static void SetDefaultFontDescription(const std::string& font_description);
 
   // Returns a new FontList with the same font names but resized and the given

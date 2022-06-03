@@ -26,6 +26,6 @@
 // https://www.khronos.org/registry/webgl/extensions/EXT_frag_depth/
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface EXTFragDepth {
 };

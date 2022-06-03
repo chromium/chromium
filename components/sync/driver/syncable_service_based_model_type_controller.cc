@@ -7,8 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/model_impl/syncable_service_based_bridge.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/syncable_service_based_bridge.h"
 
 namespace syncer {
 
@@ -22,8 +23,7 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
                      OnceModelTypeStoreFactory store_factory,
                      base::WeakPtr<SyncableService> syncable_service,
                      const base::RepeatingClosure& dump_stack)
-      : type_(type),
-        dump_stack_(dump_stack) {
+      : type_(type), dump_stack_(dump_stack) {
     DCHECK(store_factory);
 
     // The |syncable_service| can be null in tests.
@@ -36,7 +36,10 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     }
   }
 
-  ~ControllerDelegate() override {}
+  ControllerDelegate(const ControllerDelegate&) = delete;
+  ControllerDelegate& operator=(const ControllerDelegate&) = delete;
+
+  ~ControllerDelegate() override = default;
 
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override {
@@ -51,8 +54,10 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->GetAllNodesForDebugging(std::move(callback));
   }
 
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override {
-    GetBridgeDelegate()->GetStatusCountersForDebugging(std::move(callback));
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback)
+      const override {
+    GetBridgeDelegate()->GetTypeEntitiesCountForDebugging(std::move(callback));
   }
 
   void RecordMemoryUsageAndCountsHistograms() override {
@@ -60,7 +65,7 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
   }
 
  private:
-  ModelTypeControllerDelegate* GetBridgeDelegate() {
+  ModelTypeControllerDelegate* GetBridgeDelegate() const {
     DCHECK(bridge_);
     return bridge_->change_processor()->GetControllerDelegate().get();
   }
@@ -68,8 +73,6 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
   const ModelType type_;
   const base::RepeatingClosure dump_stack_;
   std::unique_ptr<ModelTypeSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerDelegate);
 };
 
 }  // namespace
@@ -79,15 +82,33 @@ SyncableServiceBasedModelTypeController::
         ModelType type,
         OnceModelTypeStoreFactory store_factory,
         base::WeakPtr<SyncableService> syncable_service,
-        const base::RepeatingClosure& dump_stack)
-    : ModelTypeController(
-          type,
-          std::make_unique<ControllerDelegate>(type,
-                                               std::move(store_factory),
-                                               syncable_service,
-                                               dump_stack)) {}
+        const base::RepeatingClosure& dump_stack,
+        DelegateMode delegate_mode)
+    : ModelTypeController(type),
+      delegate_(std::make_unique<ControllerDelegate>(type,
+                                                     std::move(store_factory),
+                                                     syncable_service,
+                                                     dump_stack)) {
+  // Delegate for full sync is always created.
+  auto full_sync_delegate =
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          delegate_.get());
+
+  // Delegate for transport is only created if requested and left null
+  // otherwise.
+  std::unique_ptr<syncer::ForwardingModelTypeControllerDelegate>
+      transport_delegate;
+  if (delegate_mode == DelegateMode::kTransportModeWithSingleModel) {
+    transport_delegate =
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate_.get());
+  }
+
+  InitModelTypeController(std::move(full_sync_delegate),
+                          std::move(transport_delegate));
+}
 
 SyncableServiceBasedModelTypeController::
-    ~SyncableServiceBasedModelTypeController() {}
+    ~SyncableServiceBasedModelTypeController() = default;
 
 }  // namespace syncer

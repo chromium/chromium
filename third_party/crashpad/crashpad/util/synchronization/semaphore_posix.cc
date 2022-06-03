@@ -20,6 +20,7 @@
 
 #include <chrono>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "util/misc/time.h"
@@ -62,7 +63,7 @@ void Semaphore::Signal() {
   cv_.notify_one();
 }
 
-#elif !defined(OS_MACOSX)
+#elif !defined(OS_APPLE)
 
 Semaphore::Semaphore(int value) {
   PCHECK(sem_init(&semaphore_, 0, value) == 0) << "sem_init";

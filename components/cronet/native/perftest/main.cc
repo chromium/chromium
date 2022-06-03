@@ -4,7 +4,9 @@
 
 #include "components/cronet/native/perftest/perf_test.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
 
 // When invoked, passes first and only argument to native performance test.
 int main(int argc, char* argv[]) {

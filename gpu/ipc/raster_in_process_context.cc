@@ -9,7 +9,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/run_loop.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
@@ -34,7 +35,7 @@ RasterInProcessContext::~RasterInProcessContext() {
   // and service threads. Then execute any pending tasks.
   if (raster_implementation_) {
     raster_implementation_->Finish();
-    client_task_runner_->RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
     raster_implementation_.reset();
   }
   transfer_buffer_.reset();
@@ -60,14 +61,15 @@ ContextResult RasterInProcessContext::Initialize(
     return ContextResult::kFatalFailure;
   }
 
-  client_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
   auto result = command_buffer_->Initialize(
       nullptr /* surface */, true /* is_offscreen */, kNullSurfaceHandle,
       attribs, gpu_memory_buffer_manager, image_factory,
-      gpu_channel_manager_delegate, client_task_runner_, gr_shader_cache,
-      activity_flags);
+      gpu_channel_manager_delegate, base::ThreadTaskRunnerHandle::Get(),
+      nullptr /* task_sequence */,
+      nullptr /*display_compositor_memory_and_task_controller_on_gpu */,
+      gr_shader_cache, activity_flags);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
@@ -76,11 +78,6 @@ ContextResult RasterInProcessContext::Initialize(
   // Check for consistency.
   DCHECK(!attribs.bind_generates_resource);
   constexpr bool bind_generates_resource = false;
-
-  // TODO(https://crbug.com/829469): Remove check once we fuzz RasterDecoder.
-  // enable_oop_rasterization is currently necessary to create RasterDecoder
-  // in InProcessCommandBuffer.
-  DCHECK(attribs.enable_oop_rasterization);
 
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =

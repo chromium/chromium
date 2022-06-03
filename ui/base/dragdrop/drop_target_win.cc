@@ -6,7 +6,7 @@
 
 #include <shlobj.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace ui {
 

@@ -1,0 +1,22 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 1110x53
+          text run at (0,0) width 1110: "This tests to see if Find will get stuck when searching for a word that is currently selected, and was selected with a"
+          text run at (0,27) width 126: "double click."
+      LayoutNGBlockFlow {DIV} at (0,78) size 1176x27
+        LayoutText {#text} at (0,0) size 38x26
+          text run at (0,0) width 38: "foo "
+        LayoutInline {SPAN} at (38,0) size 31x26
+          LayoutText {#text} at (38,0) size 31x26
+            text run at (38,0) width 31: "bar"
+        LayoutText {#text} at (69,0) size 155x26
+          text run at (69,0) width 155: " baz foo bar baz"
+selection start: position 9 of child 2 {#text} of child 2 {DIV} of body
+selection end:   position 12 of child 2 {#text} of child 2 {DIV} of body

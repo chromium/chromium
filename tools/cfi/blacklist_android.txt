@@ -1,4 +1,0 @@
-# The Android port links against a prebuilt libc++.a from the NDK, and also
-# links a prebuilt .a from third_party/gvr-android-sdk that uses libc++, so we
-# cannot apply CFI to the standard library yet.
-type:std::*

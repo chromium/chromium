@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_suggestion_chip_view.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -19,6 +18,11 @@ class ContentsView;
 class SuggestionChipContainerView : public SearchResultContainerView {
  public:
   explicit SuggestionChipContainerView(ContentsView* contents_view);
+
+  SuggestionChipContainerView(const SuggestionChipContainerView&) = delete;
+  SuggestionChipContainerView& operator=(const SuggestionChipContainerView&) =
+      delete;
+
   ~SuggestionChipContainerView() override;
 
   // SearchResultContainerView:
@@ -54,8 +58,6 @@ class SuggestionChipContainerView : public SearchResultContainerView {
   bool blur_disabled_ = false;
 
   std::vector<SearchResultSuggestionChipView*> suggestion_chip_views_;  // Owned
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipContainerView);
 };
 
 }  // namespace ash

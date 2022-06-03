@@ -51,11 +51,10 @@ std::string DurationLogMessage(const char* prefix,
                                const base::TimeTicks& tick,
                                const base::TimeTicks& tock,
                                int size) {
-  double delta_us = (tock - tick).InMicrosecondsF();
-  double mb_per_second = (static_cast<double>(size) / 1e6) / (delta_us / 1e6);
-  std::string message = base::StringPrintf("%s %d = %.0fus (%.02fMB/s)", prefix,
-                                           size, delta_us, mb_per_second);
-  return message;
+  const base::TimeDelta delta = tock - tick;
+  const double mb_per_second = size * delta.ToHz() / 1'000'000;
+  return base::StringPrintf("%s %d = %.0fus (%.02fMB/s)", prefix, size,
+                            delta.InMicrosecondsF(), mb_per_second);
 }
 
 // Returns {write_us, read_us}.
@@ -97,7 +96,7 @@ std::pair<int64_t, int64_t> WriteReadData(int size,
     // Sleeping, as posix_fadvise() is asynchronous. On the other hand, we
     // don't need to sleep for too long, as all the pages are already clean
     // after the fsync() above, so no writeback is required here.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   // Read.
@@ -114,7 +113,7 @@ std::pair<int64_t, int64_t> WriteReadData(int size,
     read_us = (tock - tick).InMicroseconds();
   }
 
-  CHECK(base::DeleteFile(path, false));
+  CHECK(base::DeleteFile(path));
   return {write_us, read_us};
 }
 
@@ -169,7 +168,7 @@ void RandomlyReadWrite(std::atomic<bool>* should_stop,
   }
 
   LOG(INFO) << "Noisy neighbor " << i << ": Finishing";
-  base::DeleteFile(path, false);
+  base::DeleteFile(path);
 }
 
 }  // namespace
@@ -199,7 +198,7 @@ int main(int argc, char** argv) {
     std::string path = base::StringPrintf("%s-noisy_neighbor-%d", filename, i);
     noisy_neighbors.emplace_back(
         [=]() { RandomlyReadWrite(should_stop_ptr, path, i); });
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+    base::PlatformThread::Sleep(base::Seconds(2));
   }
 
   for (int i = 0; i < 12; i++) {  // Max 1 << 11 pages = 8MiB.

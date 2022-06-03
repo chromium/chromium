@@ -7,14 +7,42 @@ class ExternsChecker(object):
  src/ $ python tools/json_schema_compiler/compiler.py\
  %s --root=. --generator=externs > %s"""
 
-  def __init__(self, input_api, output_api, api_pairs):
+  def __init__(self, input_api, output_api, api_pairs=None, api_root=None):
+    if api_pairs is None:
+      api_pairs = self.ParseApiFileList(input_api, api_root=api_root)
+
     self._input_api = input_api
     self._output_api = output_api
     self._api_pairs = api_pairs
 
-    for path in api_pairs.keys() + api_pairs.values():
+    for path in list(api_pairs.keys()) + list(api_pairs.values()):
       if not input_api.os_path.exists(path):
         raise OSError('Path Not Found: %s' % path)
+
+  @staticmethod
+  def ParseApiFileList(input_api, api_root=None):
+    """Extract the API pairs from the registered list."""
+    if api_root is None:
+      api_root = input_api.PresubmitLocalPath()
+    externs_root = input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'third_party', 'closure_compiler',
+        'externs')
+
+    ret = {}
+    listing = input_api.os_path.join(api_root, 'generated_externs_list.txt')
+    for line in input_api.ReadFile(listing).splitlines():
+      # Skip blank & comment lines.
+      if not line.split('#', 1)[0].strip():
+        continue
+
+      source = input_api.os_path.join(api_root, line)
+      api_name, ext = line.rsplit('.', 1)
+      assert ext == 'json' or ext == 'idl'
+      externs = input_api.os_path.join(externs_root, api_name + '.js')
+      ret[source] = externs
+
+    assert ret
+    return ret
 
   def RunChecks(self):
     bad_files = []

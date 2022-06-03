@@ -26,8 +26,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const GURL kTestUrl("https://test.com");
-const base::TimeDelta kCacheRevalidateAfter(base::TimeDelta::FromDays(1));
+
+const base::TimeDelta kCacheRevalidateAfter = base::Days(1);
+
 }  // namespace
 
 class TestDelegate : public AvailabilityProber::Delegate {
@@ -126,12 +127,12 @@ class AvailabilityProberTest : public testing::Test {
     std::unique_ptr<TestAvailabilityProber> prober =
         std::make_unique<TestAvailabilityProber>(
             delegate, test_shared_loader_factory_, &test_prefs_,
-            AvailabilityProber::ClientName::kLitepages, kTestUrl,
-            AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-            timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
+            AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck,
+            kTestUrl, AvailabilityProber::HttpMethod::kGet, headers,
+            retry_policy, timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
             kCacheRevalidateAfter, task_environment_.GetMockTickClock(),
             task_environment_.GetMockClock());
-    prober->SetOnCompleteCallback(base::BindRepeating(
+    prober->SetOnCompleteCallback(base::BindOnce(
         &AvailabilityProberTest::OnProbeComplete, base::Unretained(this)));
     return prober;
   }
@@ -194,7 +195,7 @@ class AvailabilityProberTest : public testing::Test {
 
   void OnProbeComplete(bool success) { callback_result_ = success; }
 
-  base::Optional<bool> callback_result() { return callback_result_; }
+  absl::optional<bool> callback_result() { return callback_result_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -202,13 +203,14 @@ class AvailabilityProberTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestDelegate test_delegate_;
   TestingPrefServiceSimple test_prefs_;
-  base::Optional<bool> callback_result_;
+  absl::optional<bool> callback_result_;
+  const GURL kTestUrl{"https://test.com"};
 };
 
 TEST_F(AvailabilityProberTest, OK) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -218,21 +220,25 @@ TEST_F(AvailabilityProberTest, OK) {
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", true, 1);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", true, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.NumAttemptsBeforeSuccess.Litepages", 1, 1);
+      "Availability.Prober.NumAttemptsBeforeSuccess."
+      "IsolatedPrerenderOriginCheck",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.ResponseCode.Litepages", net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::OK), 1);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck",
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::OK), 1);
 }
 
 TEST_F(AvailabilityProberTest, OK_Callback) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -245,18 +251,20 @@ TEST_F(AvailabilityProberTest, OK_Callback) {
   EXPECT_TRUE(callback_result().value());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", true, 1);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", true, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.ResponseCode.Litepages", net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::OK), 1);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck",
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::OK), 1);
 }
 
 TEST_F(AvailabilityProberTest, MultipleStart) {
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   // Calling |SendNowIfInactive| many times should result in only one url
   // request, which is verified in |VerifyRequest|.
@@ -268,7 +276,7 @@ TEST_F(AvailabilityProberTest, MultipleStart) {
 
 TEST_F(AvailabilityProberTest, NetworkChangeStartsProber) {
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
@@ -284,7 +292,7 @@ TEST_F(AvailabilityProberTest, NetworkConnectionShardsCache) {
   RunUntilIdle();
 
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -307,7 +315,7 @@ TEST_F(AvailabilityProberTest, NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   RunUntilIdle();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 }
 
 TEST_F(AvailabilityProberTest, CacheMaxSize) {
@@ -316,7 +324,7 @@ TEST_F(AvailabilityProberTest, CacheMaxSize) {
   RunUntilIdle();
 
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -325,21 +333,21 @@ TEST_F(AvailabilityProberTest, CacheMaxSize) {
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
-  FastForward(base::TimeDelta::FromSeconds(1));
+  FastForward(base::Seconds(1));
 
   // Change the connection type and report a new probe result.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   RunUntilIdle();
 
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::OK);
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
 
-  FastForward(base::TimeDelta::FromSeconds(1));
+  FastForward(base::Seconds(1));
 
   // Then, flip back to the original connection type. The old probe status
   // should not be persisted since the max cache size for testing is 1.
@@ -347,12 +355,12 @@ TEST_F(AvailabilityProberTest, CacheMaxSize) {
       network::mojom::ConnectionType::CONNECTION_3G);
   RunUntilIdle();
 
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 }
 
 TEST_F(AvailabilityProberTest, CacheAutoRevalidation) {
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -362,12 +370,12 @@ TEST_F(AvailabilityProberTest, CacheAutoRevalidation) {
   EXPECT_FALSE(prober->is_active());
 
   // Fast forward until just before revalidation time.
-  FastForward(kCacheRevalidateAfter - base::TimeDelta::FromSeconds(1));
+  FastForward(kCacheRevalidateAfter - base::Seconds(1));
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   // Fast forward the rest of the way and check the prober is active again.
-  FastForward(base::TimeDelta::FromSeconds(1));
+  FastForward(base::Seconds(1));
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 }
@@ -375,7 +383,7 @@ TEST_F(AvailabilityProberTest, CacheAutoRevalidation) {
 TEST_F(AvailabilityProberTest, PersistentCache) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -396,19 +404,21 @@ TEST_F(AvailabilityProberTest, PersistentCache) {
   EXPECT_TRUE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", true, 1);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", true, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.ResponseCode.Litepages", net::HTTP_OK, 1);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::OK), 1);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck",
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::OK), 1);
 }
 
 #if defined(OS_ANDROID)
 TEST_F(AvailabilityProberTest, StartInForeground) {
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
 
   prober->SendNowIfInactive(true);
@@ -417,7 +427,7 @@ TEST_F(AvailabilityProberTest, StartInForeground) {
 
 TEST_F(AvailabilityProberTest, DoesntCallSendInForegroundIfInactive) {
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
 
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
@@ -429,7 +439,7 @@ TEST_F(AvailabilityProberTest, DoesntCallSendInForegroundIfInactive) {
 TEST_F(AvailabilityProberTest, NetError) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -439,19 +449,20 @@ TEST_F(AvailabilityProberTest, NetError) {
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 4);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 4);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", false, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_FAILED), 4);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_FAILED), 4);
 }
 
 TEST_F(AvailabilityProberTest, NetError_Callback) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -464,19 +475,20 @@ TEST_F(AvailabilityProberTest, NetError_Callback) {
   EXPECT_FALSE(callback_result().value());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 4);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 4);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", false, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_FAILED), 4);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_FAILED), 4);
 }
 
 TEST_F(AvailabilityProberTest, HttpError) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -486,33 +498,36 @@ TEST_F(AvailabilityProberTest, HttpError) {
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 4);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 4);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", false, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.ResponseCode.Litepages", net::HTTP_NOT_FOUND, 4);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::OK), 4);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck",
+      net::HTTP_NOT_FOUND, 4);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::OK), 4);
 }
 
 TEST_F(AvailabilityProberTest, TimeUntilSuccess) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
 
-  FastForward(base::TimeDelta::FromMilliseconds(11000));
+  FastForward(base::Milliseconds(11000));
 
   MakeResponseAndWait(net::HTTP_OK, net::OK);
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.TimeUntilFailure2.Litepages", 0);
+      "Availability.Prober.TimeUntilFailure2.IsolatedPrerenderOriginCheck", 0);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.TimeUntilSuccess2.Litepages", 11000, 1);
+      "Availability.Prober.TimeUntilSuccess2.IsolatedPrerenderOriginCheck",
+      11000, 1);
 }
 
 TEST_F(AvailabilityProberTest, TimeUntilFailure) {
@@ -523,21 +538,22 @@ TEST_F(AvailabilityProberTest, TimeUntilFailure) {
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithRetryPolicy(retry_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
 
-  FastForward(base::TimeDelta::FromMilliseconds(11000));
+  FastForward(base::Milliseconds(11000));
 
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.TimeUntilSuccess2.Litepages", 0);
+      "Availability.Prober.TimeUntilSuccess2.IsolatedPrerenderOriginCheck", 0);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.TimeUntilFailure2.Litepages", 11000, 1);
+      "Availability.Prober.TimeUntilFailure2.IsolatedPrerenderOriginCheck",
+      11000, 1);
 }
 
 TEST_F(AvailabilityProberTest, RandomGUID) {
@@ -547,7 +563,7 @@ TEST_F(AvailabilityProberTest, RandomGUID) {
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithRetryPolicy(retry_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest(true /* expect_random_guid */);
@@ -562,11 +578,11 @@ TEST_F(AvailabilityProberTest, RetryLinear) {
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 2;
   retry_policy.backoff = AvailabilityProber::Backoff::kLinear;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(1000);
+  retry_policy.base_interval = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithRetryPolicy(retry_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -575,43 +591,46 @@ TEST_F(AvailabilityProberTest, RetryLinear) {
   EXPECT_TRUE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 1);
-  histogram_tester.ExpectTotalCount("Availability.Prober.FinalState.Litepages",
-                                    0);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", 0);
 
   // First retry.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 2);
-  histogram_tester.ExpectTotalCount("Availability.Prober.FinalState.Litepages",
-                                    0);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 2);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", 0);
 
   // Second retry should be another 1000ms later and be the final one.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 3);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 3);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", false, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_FAILED), 3);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_FAILED), 3);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.NumAttemptsBeforeSuccess.Litepages", 0);
+      "Availability.Prober.NumAttemptsBeforeSuccess."
+      "IsolatedPrerenderOriginCheck",
+      0);
 }
 
 TEST_F(AvailabilityProberTest, RetryThenSucceed) {
@@ -619,11 +638,11 @@ TEST_F(AvailabilityProberTest, RetryThenSucceed) {
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 2;
   retry_policy.backoff = AvailabilityProber::Backoff::kLinear;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(1000);
+  retry_policy.base_interval = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithRetryPolicy(retry_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -632,49 +651,54 @@ TEST_F(AvailabilityProberTest, RetryThenSucceed) {
   EXPECT_TRUE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 1);
-  histogram_tester.ExpectTotalCount("Availability.Prober.FinalState.Litepages",
-                                    0);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", 0);
 
   // First retry.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 2);
-  histogram_tester.ExpectTotalCount("Availability.Prober.FinalState.Litepages",
-                                    0);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 2);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", 0);
 
   // Second retry should be another 1000ms later and be the final one.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::OK);
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     false, 2);
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 2);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.FinalState.Litepages", true, 1);
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.NumAttemptsBeforeSuccess.Litepages", 3, 1);
+      "Availability.Prober.NumAttemptsBeforeSuccess."
+      "IsolatedPrerenderOriginCheck",
+      3, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.ResponseCode.Litepages", net::HTTP_OK, 1);
-  histogram_tester.ExpectBucketCount("Availability.Prober.NetError.Litepages",
-                                     std::abs(net::ERR_FAILED), 2);
-  histogram_tester.ExpectBucketCount("Availability.Prober.NetError.Litepages",
-                                     std::abs(net::OK), 1);
-  histogram_tester.ExpectTotalCount("Availability.Prober.NetError.Litepages",
-                                    3);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck",
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_FAILED), 2);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::OK), 1);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck", 3);
 }
 
 TEST_F(AvailabilityProberTest, RetryExponential) {
@@ -682,11 +706,11 @@ TEST_F(AvailabilityProberTest, RetryExponential) {
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 2;
   retry_policy.backoff = AvailabilityProber::Backoff::kExponential;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(1000);
+  retry_policy.base_interval = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithRetryPolicy(retry_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -695,117 +719,120 @@ TEST_F(AvailabilityProberTest, RetryExponential) {
   EXPECT_TRUE(prober->is_active());
 
   // First retry.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 
   // Second retry should be another 2000ms later and be the final one.
-  FastForward(base::TimeDelta::FromMilliseconds(1999));
+  FastForward(base::Milliseconds(1999));
   VerifyNoRequests();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED);
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 3);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 3);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_FAILED), 3);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_FAILED), 3);
 }
 
 TEST_F(AvailabilityProberTest, TimeoutLinear) {
   base::HistogramTester histogram_tester;
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 1;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(10);
+  retry_policy.base_interval = base::Milliseconds(10);
 
   AvailabilityProber::TimeoutPolicy timeout_policy;
   timeout_policy.backoff = AvailabilityProber::Backoff::kLinear;
-  timeout_policy.base_timeout = base::TimeDelta::FromMilliseconds(1000);
+  timeout_policy.base_timeout = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithPolicies(retry_policy, timeout_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   // First attempt.
   prober->SendNowIfInactive(false);
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyNoRequests();
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 
   // Fast forward to the start of the next attempt.
-  FastForward(base::TimeDelta::FromMilliseconds(10));
+  FastForward(base::Milliseconds(10));
 
   // Second attempt should have the same timeout.
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyNoRequests();
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 2);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 2);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_TIMED_OUT), 2);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_TIMED_OUT), 2);
 }
 
 TEST_F(AvailabilityProberTest, TimeoutExponential) {
   base::HistogramTester histogram_tester;
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 1;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(10);
+  retry_policy.base_interval = base::Milliseconds(10);
 
   AvailabilityProber::TimeoutPolicy timeout_policy;
   timeout_policy.backoff = AvailabilityProber::Backoff::kExponential;
-  timeout_policy.base_timeout = base::TimeDelta::FromMilliseconds(1000);
+  timeout_policy.base_timeout = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober =
       NewProberWithPolicies(retry_policy, timeout_policy);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   // First attempt.
   prober->SendNowIfInactive(false);
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyNoRequests();
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_TRUE(prober->is_active());
 
   // Fast forward to the start of the next attempt.
-  FastForward(base::TimeDelta::FromMilliseconds(10));
+  FastForward(base::Milliseconds(10));
 
   // Second attempt should have a 2s timeout.
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(1999));
+  FastForward(base::Milliseconds(1999));
   VerifyRequest();
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
   VerifyNoRequests();
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.Litepages", false, 2);
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 2);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.ResponseCode.Litepages", 0);
-  histogram_tester.ExpectUniqueSample("Availability.Prober.NetError.Litepages",
-                                      std::abs(net::ERR_TIMED_OUT), 2);
+      "Availability.Prober.ResponseCode.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Availability.Prober.NetError.IsolatedPrerenderOriginCheck",
+      std::abs(net::ERR_TIMED_OUT), 2);
 }
 
 TEST_F(AvailabilityProberTest, DelegateStopsFirstProbe) {
@@ -816,21 +843,21 @@ TEST_F(AvailabilityProberTest, DelegateStopsFirstProbe) {
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 2;
   retry_policy.backoff = AvailabilityProber::Backoff::kLinear;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(1000);
+  retry_policy.base_interval = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober = NewProberWithPoliciesAndDelegate(
       &delegate, retry_policy, AvailabilityProber::TimeoutPolicy());
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
   VerifyNoRequests();
 
-  histogram_tester.ExpectTotalCount("Availability.Prober.DidSucceed.Litepages",
-                                    0);
-  histogram_tester.ExpectTotalCount("Availability.Prober.FinalState.Litepages",
-                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", 0);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderOriginCheck", 0);
 }
 
 TEST_F(AvailabilityProberTest, DelegateStopsRetries) {
@@ -839,11 +866,11 @@ TEST_F(AvailabilityProberTest, DelegateStopsRetries) {
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 2;
   retry_policy.backoff = AvailabilityProber::Backoff::kLinear;
-  retry_policy.base_interval = base::TimeDelta::FromMilliseconds(1000);
+  retry_policy.base_interval = base::Milliseconds(1000);
 
   std::unique_ptr<AvailabilityProber> prober = NewProberWithPoliciesAndDelegate(
       &delegate, retry_policy, AvailabilityProber::TimeoutPolicy());
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -852,10 +879,10 @@ TEST_F(AvailabilityProberTest, DelegateStopsRetries) {
   EXPECT_TRUE(prober->is_active());
 
   // First retry.
-  FastForward(base::TimeDelta::FromMilliseconds(999));
+  FastForward(base::Milliseconds(999));
   VerifyNoRequests();
   delegate.set_should_send_next_probe(false);
-  FastForward(base::TimeDelta::FromMilliseconds(1));
+  FastForward(base::Milliseconds(1));
 
   EXPECT_FALSE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
@@ -866,7 +893,7 @@ TEST_F(AvailabilityProberTest, CacheEntryAge) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
   prober->SendNowIfInactive(false);
   VerifyRequest();
@@ -875,32 +902,32 @@ TEST_F(AvailabilityProberTest, CacheEntryAge) {
   EXPECT_FALSE(prober->is_active());
 
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.CacheEntryAge.Litepages", 0, 1);
+      "Availability.Prober.CacheEntryAge.IsolatedPrerenderOriginCheck", 0, 1);
 
-  FastForward(base::TimeDelta::FromHours(24));
+  FastForward(base::Hours(24));
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
 
   histogram_tester.ExpectBucketCount(
-      "Availability.Prober.CacheEntryAge.Litepages", 0, 1);
+      "Availability.Prober.CacheEntryAge.IsolatedPrerenderOriginCheck", 0, 1);
   histogram_tester.ExpectBucketCount(
-      "Availability.Prober.CacheEntryAge.Litepages", 24, 1);
+      "Availability.Prober.CacheEntryAge.IsolatedPrerenderOriginCheck", 24, 1);
   histogram_tester.ExpectTotalCount(
-      "Availability.Prober.CacheEntryAge.Litepages", 2);
+      "Availability.Prober.CacheEntryAge.IsolatedPrerenderOriginCheck", 2);
 }
 
 TEST_F(AvailabilityProberTest, Repeating) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
 
-  prober->RepeatedlyProbe(base::TimeDelta::FromSeconds(1), false);
+  prober->RepeatedlyProbe(base::Seconds(1), false);
   VerifyRequest();
   MakeResponseAndWait(net::HTTP_OK, net::OK);
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
-  FastForward(base::TimeDelta::FromSeconds(1));
+  FastForward(base::Seconds(1));
   EXPECT_TRUE(prober->is_active());
 
   VerifyRequest();
@@ -912,7 +939,7 @@ TEST_F(AvailabilityProberTest, Repeating) {
 TEST_F(AvailabilityProberTest, ReportExternalFailure_WhileIdle) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
 
   prober->ReportExternalFailureAndRetry();
@@ -924,22 +951,24 @@ TEST_F(AvailabilityProberTest, ReportExternalFailure_WhileIdle) {
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     true, 1);
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.AfterReportedFailure.Litepages", true, 1);
+      "Availability.Prober.DidSucceed.AfterReportedFailure."
+      "IsolatedPrerenderOriginCheck",
+      true, 1);
 }
 
 TEST_F(AvailabilityProberTest, ReportExternalFailure_WhileActive) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<AvailabilityProber> prober = NewProber();
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_FALSE(prober->is_active());
 
   prober->SendNowIfInactive(false);
-  EXPECT_EQ(prober->LastProbeWasSuccessful(), base::nullopt);
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
   EXPECT_TRUE(prober->is_active());
   VerifyRequest();
 
@@ -952,10 +981,21 @@ TEST_F(AvailabilityProberTest, ReportExternalFailure_WhileActive) {
   EXPECT_TRUE(prober->LastProbeWasSuccessful().value());
   EXPECT_FALSE(prober->is_active());
 
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     true, 1);
-  histogram_tester.ExpectBucketCount("Availability.Prober.DidSucceed.Litepages",
-                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Availability.Prober.DidSucceed.IsolatedPrerenderOriginCheck", false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Availability.Prober.DidSucceed.AfterReportedFailure.Litepages", true, 1);
+      "Availability.Prober.DidSucceed.AfterReportedFailure."
+      "IsolatedPrerenderOriginCheck",
+      true, 1);
+}
+
+TEST_F(AvailabilityProberTest, GenerateCacheEntryHistogram) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<AvailabilityProber> prober = NewProber();
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.GenerateCacheKey.IsolatedPrerenderOriginCheck", 1);
 }

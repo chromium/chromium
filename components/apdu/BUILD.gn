@@ -14,16 +14,12 @@ component("apdu") {
 
   defines = [ "IS_APDU_IMPL" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "apdu_unittest.cc",
-  ]
+  sources = [ "apdu_unittest.cc" ]
 
   deps = [
     ":apdu",
@@ -34,9 +30,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("apdu_fuzzer") {
-  sources = [
-    "apdu_fuzzer.cc",
-  ]
+  sources = [ "apdu_fuzzer.cc" ]
   deps = [
     ":apdu",
     "//base",

@@ -10,6 +10,7 @@ import unittest
 
 import mock
 
+from telemetry import decorators
 from telemetry.testing import test_stories
 from telemetry.web_perf import timeline_based_measurement
 from tracing.value.diagnostics import all_diagnostics
@@ -56,6 +57,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     self.options = testing.GetRunOptions(
         output_dir=tempfile.mkdtemp())
     self.options.output_formats = ['histograms']
+    results_processor.ProcessOptions(self.options)
 
   def tearDown(self):
     shutil.rmtree(self.options.output_dir)
@@ -83,7 +85,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     run_return_code = benchmark_class().Run(self.options)
     self.assertEqual(run_return_code, 0)
 
-    process_return_code = results_processor.ProcessResults(self.options)
+    process_return_code = results_processor.ProcessResults(self.options,
+                                                           is_unittest=True)
     self.assertEqual(process_return_code, 0)
 
     histograms_file = os.path.join(self.options.output_dir, 'histograms.json')
@@ -95,6 +98,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     histograms.ImportDicts(dicts)
     return histograms
 
+  # TODO(https://crbug.com/1098412): Fix the test.
+  @decorators.Disabled('chromeos')
   def testTimelineBasedEndToEnd(self):
     class TestTimelineBasedBenchmark(perf_benchmark.PerfBenchmark):
       """A dummy benchmark that records a trace and runs sampleMetric on it."""

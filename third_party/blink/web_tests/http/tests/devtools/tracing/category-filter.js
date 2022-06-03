@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test the set of visible records is correctly update when category filter changes\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '4.20';
@@ -78,7 +78,7 @@
       'tid': mainThread,
       'pid': pid,
       'cat': 'disabled-by-default-devtools.timeline',
-      'args': {'endData': {'root': [0, 0, 1570, 0, 1570, 243, 0, 243], 'rootNode': 1}}
+      'args': {'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': [[0, 0, 1570, 0, 1570, 243, 0, 243]]}]}}
     },
     {
       'name': 'FunctionCall',
@@ -97,25 +97,25 @@
   view.setModel(model, PerformanceTestRunner.mainTrack());
   view.updateContents(Timeline.TimelineSelection.fromRange(
       model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
-  const filtersControl = view._filtersControl;
+  const filtersControl = view.filtersControl;
 
   TestRunner.addResult('Original records');
-  filtersControl._notifyFiltersChanged();
-  dumpVisibleRecords();
+  filtersControl.notifyFiltersChanged();
+  await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'loading' is disabled`);
   Timeline.TimelineUIUtils.categories().loading.hidden = true;
-  filtersControl._notifyFiltersChanged();
-  dumpVisibleRecords();
+  filtersControl.notifyFiltersChanged();
+  await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'scripting' is disabled`);
   Timeline.TimelineUIUtils.categories().scripting.hidden = true;
-  filtersControl._notifyFiltersChanged();
-  dumpVisibleRecords();
+  filtersControl.notifyFiltersChanged();
+  await dumpVisibleRecords();
 
   TestRunner.completeTest();
 
-  function dumpVisibleRecords() {
-    PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view._currentTree);
+  async function dumpVisibleRecords() {
+    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view.currentTree);
   }
 })();

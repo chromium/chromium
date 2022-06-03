@@ -31,12 +31,8 @@ function runWithDocument(docString, callback) {
     active: true,
     url: url
   };
-  chrome.tabs.create(createParams, function(tab) {
-    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
-      if (tabId == tab.id && changeInfo.status == 'complete') {
-        chrome.automation.getTree(tab.id, callback);
-      }
-    });
+  createTabAndWaitUntilLoaded(url, function(tab) {
+    chrome.automation.getTree(tab.id, callback);
   });
 }
 
@@ -58,7 +54,7 @@ function setUpAndRunTests(allTests) {
 function setUpAndRunTestsInPage(allTests, opt_path) {
   var path = opt_path || 'index.html';
   getUrlFromConfig(path, function(url) {
-    createTab(url, function(unused_tab) {
+    createTabAndWaitUntilLoaded(url, function(unused_tab) {
       chrome.automation.getTree(function (returnedRootNode) {
         rootNode = returnedRootNode;
         if (rootNode.docLoaded) {
@@ -82,8 +78,12 @@ function getUrlFromConfig(path, callback) {
   });
 }
 
-function createTab(url, callback) {
+function createTabAndWaitUntilLoaded(url, callback) {
   chrome.tabs.create({"url": url}, function(tab) {
-    callback(tab);
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+      if (tabId == tab.id && changeInfo.status == 'complete') {
+        callback(tab);
+      }
+    });
   });
 }

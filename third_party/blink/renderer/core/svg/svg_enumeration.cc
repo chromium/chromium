@@ -34,18 +34,13 @@
 
 namespace blink {
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGEnumerationBase);
-
-SVGEnumerationBase::~SVGEnumerationBase() = default;
-
-SVGPropertyBase* SVGEnumerationBase::CloneForAnimation(
-    const String& value) const {
-  SVGEnumerationBase* svg_enumeration = Clone();
+SVGPropertyBase* SVGEnumeration::CloneForAnimation(const String& value) const {
+  SVGEnumeration* svg_enumeration = Clone();
   svg_enumeration->SetValueAsString(value);
   return svg_enumeration;
 }
 
-String SVGEnumerationBase::ValueAsString() const {
+String SVGEnumeration::ValueAsString() const {
   if (const char* enum_name = map_.NameFromValue(value_))
     return String(enum_name);
 
@@ -53,48 +48,48 @@ String SVGEnumerationBase::ValueAsString() const {
   return g_empty_string;
 }
 
-void SVGEnumerationBase::SetValue(uint16_t value) {
+void SVGEnumeration::SetValue(uint16_t value) {
   value_ = value;
   NotifyChange();
 }
 
-SVGParsingError SVGEnumerationBase::SetValueAsString(const String& string) {
+SVGParsingError SVGEnumeration::SetValueAsString(const String& string) {
   uint16_t value = map_.ValueFromName(string);
   if (value) {
-    value_ = value;
-    NotifyChange();
+    SetValue(value);
     return SVGParseStatus::kNoError;
   }
   NotifyChange();
   return SVGParseStatus::kExpectedEnumeration;
 }
 
-void SVGEnumerationBase::Add(SVGPropertyBase*, SVGElement*) {
-  NOTREACHED();
-}
-
-void SVGEnumerationBase::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
-    float percentage,
-    unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase*,
-    SVGElement*) {
-  NOTREACHED();
-}
-
-float SVGEnumerationBase::CalculateDistance(SVGPropertyBase*, SVGElement*) {
-  // No paced animations for boolean.
-  return -1;
-}
-
-uint16_t SVGEnumerationBase::MaxExposedEnumValue() const {
+uint16_t SVGEnumeration::MaxExposedEnumValue() const {
   return map_.MaxExposedValue();
 }
 
-uint16_t SVGEnumerationBase::MaxInternalEnumValue() const {
+uint16_t SVGEnumeration::MaxInternalEnumValue() const {
   return map_.ValueOfLast();
+}
+
+void SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {
+  NOTREACHED();
+}
+
+void SVGEnumeration::CalculateAnimatedValue(
+    const SMILAnimationEffectParameters&,
+    float percentage,
+    unsigned repeat_count,
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase*,
+    const SVGElement*) {
+  NOTREACHED();
+}
+
+float SVGEnumeration::CalculateDistance(const SVGPropertyBase*,
+                                        const SVGElement*) const {
+  // No paced animations for enumerations.
+  return -1;
 }
 
 }  // namespace blink

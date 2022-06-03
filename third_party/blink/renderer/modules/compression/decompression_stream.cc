@@ -27,7 +27,7 @@ WritableStream* DecompressionStream::writable() const {
   return transform_->Writable();
 }
 
-void DecompressionStream::Trace(Visitor* visitor) {
+void DecompressionStream::Trace(Visitor* visitor) const {
   visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
 }

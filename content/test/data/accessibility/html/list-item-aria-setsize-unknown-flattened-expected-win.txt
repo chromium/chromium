@@ -1,0 +1,32 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=1 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=1 similar_items_in_group=-1 position_in_group=1
+++++++ROLE_SYSTEM_STATICTEXT name='Level 1, item 1 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=1 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=2 similar_items_in_group=-1 position_in_group=1
+++++++ROLE_SYSTEM_STATICTEXT name='++Level 2, item 1 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=2 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=2 similar_items_in_group=-1 position_in_group=2
+++++++ROLE_SYSTEM_STATICTEXT name='++Level 2, item 2 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=3 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=2 similar_items_in_group=-1 position_in_group=3
+++++++ROLE_SYSTEM_STATICTEXT name='++Level 2, item 3 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=1 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=3 similar_items_in_group=-1 position_in_group=1
+++++++ROLE_SYSTEM_STATICTEXT name='++++Level 3, item 1 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=2 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=3 similar_items_in_group=-1 position_in_group=2
+++++++ROLE_SYSTEM_STATICTEXT name='++++Level 3, item 2 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=2 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=1 similar_items_in_group=-1 position_in_group=2
+++++++ROLE_SYSTEM_STATICTEXT name='Level 1, item 2 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=3 position_in_group=0
+++++ROLE_SYSTEM_LISTITEM READONLY group_level=1 similar_items_in_group=-1 position_in_group=3
+++++++ROLE_SYSTEM_STATICTEXT name='Level 1, item 3 of set size unknown'
+++ROLE_SYSTEM_LIST READONLY
+++++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=4 position_in_group=0
+++++++ROLE_SYSTEM_LISTITEM READONLY group_level=2 similar_items_in_group=4 position_in_group=4
+++++++++ROLE_SYSTEM_STATICTEXT name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++ROLE_SYSTEM_LIST READONLY group_level=0 similar_items_in_group=5 position_in_group=0
+++++++ROLE_SYSTEM_LISTITEM READONLY group_level=2 similar_items_in_group=5 position_in_group=5
+++++++++ROLE_SYSTEM_STATICTEXT name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'

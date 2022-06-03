@@ -1,21 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-scroll-threshold/iron-scroll-threshold.html">
-<link rel="import" href="browser_service.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="history_item.html">
-<link rel="import" href="shared_style.html">
-
-<!-- Lazy loaded: cr-dialog, cr-action-menu, cr-button. -->
-
-<dom-module id="history-list">
-  <template>
     <style include="shared-style cr-shared-style">
       :host {
         box-sizing: border-box;
@@ -23,9 +5,8 @@
         overflow: auto;
       }
 
-      iron-list {
-        @apply --card-sizing;
-        margin-top: var(--first-card-padding-top);
+      .history-cards {
+        margin-block-start: var(--first-card-padding-top);
       }
 
       dialog [slot=body] {
@@ -37,7 +18,8 @@
       [[noResultsMessage_(searchedTerm)]]
     </div>
 
-    <iron-list items="[[historyData_]]" as="item" id="infinite-list"
+    <iron-list class="history-cards"
+        items="[[historyData_]]" as="item" id="infinite-list"
         role="grid" aria-rowcount$="[[historyData_.length]]"
         hidden$="[[!hasResults_(historyData_.length)]]" preserve-focus>
       <template>
@@ -96,6 +78,3 @@
         </cr-action-menu>
       </template>
     </cr-lazy-render>
-  </template>
-  <script src="history_list.js"></script>
-</dom-module>

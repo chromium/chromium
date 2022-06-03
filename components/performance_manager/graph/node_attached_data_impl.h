@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 
@@ -108,7 +108,7 @@ namespace performance_manager {
 // -- user_of_foo.cc --
 // Foo* foo = Foo::GetOrCreate(page_node);
 // foo->DoSomething();
-// DHCECK_EQ(foo, Foo::Get(page_node));
+// DCHECK_EQ(foo, Foo::Get(page_node));
 // DCHECK(Foo::Destroy(page_node));
 // -- user_of_foo.cc --
 
@@ -181,6 +181,9 @@ class NodeAttachedDataImpl : public NodeAttachedData {
     static DataType* Get(const NodeType* node);
     static bool Destroy(const NodeType* node);
   };
+
+  NodeAttachedDataImpl() = default;
+  ~NodeAttachedDataImpl() override = default;
 
   static const void* UserDataKey() { return &DataType::kUserDataKey; }
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<script>
+promise_test(async function(t) {
+  // Create the overlay pop-up ad.
+  let ad_frame = appendAdFrameTo(document.body);
+
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint and the prestitial.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  // Ensure the detection is triggered at least once after the first
+  // meaningful paint is seen.
+  await forceLayoutUpdate();
+
+  // Hide the pop-up.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect no kOverlayPopupAd UseCounter as the candidate is considered to
+  // be 'prestitial' instead of 'pop-up'.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test overlay-prestitial-ad when the frame itself has a fixed position. In this case we expect no use counter for kOverlayPopupAd.");
+
+</script>
+</body>
+</html>

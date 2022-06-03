@@ -2,21 +2,28 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#fff">
   <meta name="viewport"
       content="initial-scale=1, minimum-scale=1, width=device-width">
+  <meta http-equiv="Content-Security-Policy"
+      content="require-trusted-types-for 'script'; trusted-types;">
   <title>$i18n{tabTitle}</title>
   <link rel="stylesheet" href="../../common/resources/interstitial_core.css">
   <link rel="stylesheet" href="../../common/resources/interstitial_common.css">
   <link rel="stylesheet" href="interstitial_badclock.css">
   <link rel="stylesheet" href="interstitial_captiveportal.css">
+  <link rel="stylesheet" href="interstitial_httpsonly.css">
+  <link rel="stylesheet" href="interstitial_insecureform.css">
   <link rel="stylesheet" href="interstitial_lookalikeurl.css">
   <link rel="stylesheet" href="interstitial_safebrowsing.css">
   <link rel="stylesheet" href="interstitial_ssl.css">
+  <script src="../../../../../ui/webui/resources/js/assert.js"></script>
   <script src="../../../../../ui/webui/resources/js/util.js"></script>
   <script src="captive_portal.js"></script>
   <script src="ssl.js"></script>
   <script src="extended_reporting.js"></script>
+  <script src="enhanced_protection_message.js"></script>
   <script src="../../common/resources/interstitial_mobile_nav.js"></script>
   <script src="../../common/resources/interstitial_common.js"></script>
   <script src="interstitial_large.js"></script>
@@ -42,7 +49,13 @@
             <input type="checkbox" id="opt-in-checkbox">
             <span class="checkbox"></span>
           </div>
-          <span id="opt-in-label"></span>
+          <span id="opt-in-label">$i18nRaw{optInLink}</span>
+        </label>
+      </div>
+      <div id="enhanced-protection-message" class="hidden">
+        <label>
+          <div class="icon"></div>
+          <div>$i18nRaw{enhancedProtectionMessage}</div>
         </label>
       </div>
     </div>

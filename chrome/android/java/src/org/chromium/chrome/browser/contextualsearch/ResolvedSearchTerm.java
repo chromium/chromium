@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates the results of a server Resolve request into a single immutable object.
+ * Encapsulates the response from the server to a Resolve request (as a single immutable object).
  */
 public class ResolvedSearchTerm {
     @IntDef({CardTag.CT_NONE, CardTag.CT_OTHER, CardTag.CT_HAS_ENTITY, CardTag.CT_BUSINESS,
@@ -51,14 +51,15 @@ public class ResolvedSearchTerm {
     private final String mContextLanguage;
     private final String mThumbnailUrl;
     private final String mCaption;
-    @QuickActionCategory
     private final String mQuickActionUri;
+    @QuickActionCategory
     private final int mQuickActionCategory;
     private final long mLoggedEventId;
     private final String mSearchUrlFull;
     private final String mSearchUrlPreload;
     @CardTag
     private final int mCardTagEnum;
+    private final String mRelatedSearchesJson;
 
     /**
      * Called in response to the
@@ -86,15 +87,18 @@ public class ResolvedSearchTerm {
      *        to the server along with user action results in a subsequent request.
      * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
-     * @param cardTag The primary internal Coca card tag for the resolution, or {@code 0} if none.
+     * @param cardTagEnum A {@link CardTag} enumeration indicating what kind of card was returned,
+     *        or {@code 0} if no card was returned.
+     * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config data.
      */
-    ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
-            final String displayText, final String alternateTerm, final String mid,
-            boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
-            final String contextLanguage, final String thumbnailUrl, final String caption,
-            final String quickActionUri, @QuickActionCategory final int quickActionCategory,
-            final long loggedEventId, final String searchUrlFull, final String searchUrlPreload,
-            final int cardTag) {
+    private ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode,
+            final String searchTerm, final String displayText, final String alternateTerm,
+            final String mid, boolean doPreventPreload, int selectionStartAdjust,
+            int selectionEndAdjust, final String contextLanguage, final String thumbnailUrl,
+            final String caption, final String quickActionUri,
+            @QuickActionCategory final int quickActionCategory, final long loggedEventId,
+            final String searchUrlFull, final String searchUrlPreload,
+            @CardTag final int cardTagEnum, final String relatedSearchesJson) {
         mIsNetworkUnavailable = isNetworkUnavailable;
         mResponseCode = responseCode;
         mSearchTerm = searchTerm;
@@ -112,25 +116,8 @@ public class ResolvedSearchTerm {
         mLoggedEventId = loggedEventId;
         mSearchUrlFull = searchUrlFull;
         mSearchUrlPreload = searchUrlPreload;
-        mCardTagEnum = fromCocaCardTag(cardTag);
-    }
-
-    /**
-     * Called in response to the
-     * {@link ContextualSearchManager#nativeStartSearchTermResolutionRequest} method.
-     * @param isNetworkUnavailable Indicates if the network is unavailable, in which case all other
-     *        parameters should be ignored.
-     * @param responseCode The HTTP response code. If the code is not OK, the query should be
-     *        ignored.
-     * @param searchTerm The term to use in our subsequent search.
-     * @param displayText The text to display in our UX.
-     * @param alternateTerm The alternate term to display on the results page.
-     * @param doPreventPreload Whether we should prevent preloading on this search.
-     */
-    ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
-            final String displayText, final String alternateTerm, boolean doPreventPreload) {
-        this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
-                doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, 0L, "", "", 0);
+        mCardTagEnum = cardTagEnum;
+        mRelatedSearchesJson = relatedSearchesJson;
     }
 
     public boolean isNetworkUnavailable() {
@@ -234,6 +221,10 @@ public class ResolvedSearchTerm {
         }
     }
 
+    public String relatedSearchesJson() {
+        return mRelatedSearchesJson;
+    }
+
     @Override
     public String toString() {
         List<String> sections = buildTextSections();
@@ -246,12 +237,15 @@ public class ResolvedSearchTerm {
             sections.add("Network unavailable!");
         } else if (mResponseCode != HttpURLConnection.HTTP_OK) {
             sections.add("ResponseCode:" + mResponseCode);
+        } else if (!relatedSearchesJson().isEmpty()) {
+            sections.add("Related Searches JSON: " + mRelatedSearchesJson);
         } else {
             if (mDoPreventPreload) sections.add("Preventing preload!");
             if (!TextUtils.isEmpty(mSearchTerm)) sections.add("Search for '" + mSearchTerm + "'");
-            if (!TextUtils.isEmpty(mDisplayText))
+            if (!TextUtils.isEmpty(mDisplayText)) {
                 sections.add("displayed as '" + mDisplayText + "'");
-            if (!TextUtils.isEmpty(mMid)) sections.add("MID:'" + mMid);
+            }
+            if (!TextUtils.isEmpty(mMid)) sections.add("MID:'" + mMid + "'");
             if (mSelectionStartAdjust != 0 || mSelectionEndAdjust != 0) {
                 sections.add(
                         "selection adjust:" + mSelectionStartAdjust + "," + mSelectionEndAdjust);
@@ -262,15 +256,307 @@ public class ResolvedSearchTerm {
             if (!TextUtils.isEmpty(mThumbnailUrl)) sections.add("has thumbnail URL");
             if (!TextUtils.isEmpty(mCaption)) sections.add("caption:'" + mCaption + "'");
             if (!TextUtils.isEmpty(mQuickActionUri)) sections.add("has Quick Action URI");
-            if (!TextUtils.isEmpty(mQuickActionUri))
+            if (!TextUtils.isEmpty(mQuickActionUri)) {
                 sections.add("quick Action Category:" + mQuickActionCategory);
+            }
             if (mLoggedEventId != 0L) sections.add("has loggedEventId");
-            if (!TextUtils.isEmpty(mSearchUrlFull))
+            if (!TextUtils.isEmpty(mSearchUrlFull)) {
                 sections.add("search Url full:'" + mSearchUrlFull + "'");
-            if (!TextUtils.isEmpty(mSearchUrlPreload))
+            }
+            if (!TextUtils.isEmpty(mSearchUrlPreload)) {
                 sections.add("search Url preload:'" + mSearchUrlPreload + "'");
+            }
             if (mCardTagEnum != CardTag.CT_NONE) sections.add("Card-Tag:" + mCardTagEnum);
         }
         return sections;
+    }
+
+    /** The builder for {@link ResolvedSearchTerm} objects. */
+    public static class Builder {
+        private boolean mIsNetworkUnavailable;
+        private int mResponseCode;
+        private String mSearchTerm;
+        private String mDisplayText;
+        private String mAlternateTerm;
+        private String mMid;
+        private boolean mDoPreventPreload;
+        private int mSelectionStartAdjust;
+        private int mSelectionEndAdjust;
+        private String mContextLanguage;
+        private String mThumbnailUrl;
+        private String mCaption;
+        private String mQuickActionUri;
+        @QuickActionCategory
+        private int mQuickActionCategory;
+        private long mLoggedEventId;
+        private String mSearchUrlFull;
+        private String mSearchUrlPreload;
+        @CardTag
+        private int mCardTagEnum;
+        private String mRelatedSearchesJson;
+
+        /** Starts building using the given {@link ResolvedSearchTerm}. */
+        public Builder(ResolvedSearchTerm resolvedSearchTerm) {
+            mIsNetworkUnavailable = resolvedSearchTerm.mIsNetworkUnavailable;
+            mResponseCode = resolvedSearchTerm.mResponseCode;
+            mSearchTerm = resolvedSearchTerm.mSearchTerm;
+            mDisplayText = resolvedSearchTerm.mDisplayText;
+            mAlternateTerm = resolvedSearchTerm.mAlternateTerm;
+            mMid = resolvedSearchTerm.mMid;
+            mDoPreventPreload = resolvedSearchTerm.mDoPreventPreload;
+            mSelectionStartAdjust = resolvedSearchTerm.mSelectionStartAdjust;
+            mSelectionEndAdjust = resolvedSearchTerm.mSelectionEndAdjust;
+            mContextLanguage = resolvedSearchTerm.mContextLanguage;
+            mThumbnailUrl = resolvedSearchTerm.mThumbnailUrl;
+            mCaption = resolvedSearchTerm.mCaption;
+            mQuickActionUri = resolvedSearchTerm.mQuickActionUri;
+            mQuickActionCategory = resolvedSearchTerm.mQuickActionCategory;
+            mLoggedEventId = resolvedSearchTerm.mLoggedEventId;
+            mSearchUrlFull = resolvedSearchTerm.mSearchUrlFull;
+            mSearchUrlPreload = resolvedSearchTerm.mSearchUrlPreload;
+            mCardTagEnum = resolvedSearchTerm.mCardTagEnum;
+            mRelatedSearchesJson = resolvedSearchTerm.mRelatedSearchesJson;
+        }
+
+        /**
+         * Builds a response to the
+         * {@link ContextualSearchManager#nativeStartSearchTermResolutionRequest} method.
+         * @param isNetworkUnavailable Indicates if the network is unavailable, in which case all
+         *        other parameters should be ignored.
+         * @param responseCode The HTTP response code. If the code is not OK, the query should be
+         *        ignored.
+         * @param searchTerm The term to use in our subsequent search.
+         * @param displayText The text to display in our UX.
+         */
+        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
+                final String displayText) {
+            this(isNetworkUnavailable, responseCode, searchTerm, displayText, "", false);
+        }
+
+        /**
+         * Builds a response to the
+         * {@link ContextualSearchManager#nativeStartSearchTermResolutionRequest} method.
+         * @param isNetworkUnavailable Indicates if the network is unavailable, in which case all
+         *        other parameters should be ignored.
+         * @param responseCode The HTTP response code. If the code is not OK, the query should be
+         *        ignored.
+         * @param searchTerm The term to use in our subsequent search.
+         * @param displayText The text to display in our UX.
+         * @param alternateTerm The alternate term to display on the results page.
+         * @param doPreventPreload Whether we should prevent preloading on this search.
+         */
+        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
+                final String displayText, final String alternateTerm, boolean doPreventPreload) {
+            this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
+                    doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, 0L, "", "",
+                    CardTag.CT_NONE, "");
+        }
+
+        /**
+         * Builds a response to the
+         * {@link ContextualSearchManager#nativeStartSearchTermResolutionRequest} method.
+         * @param isNetworkUnavailable Indicates if the network is unavailable, in which case all
+         *        other parameters should be ignored.
+         * @param responseCode The HTTP response code. If the code is not OK, the query should be
+         *        ignored.
+         * @param searchTerm The term to use in our subsequent search.
+         * @param displayText The text to display in our UX.
+         * @param alternateTerm The alternate term to display on the results page.
+         * @param mid the MID for an entity to use to trigger a Knowledge Panel, or an empty string.
+         *        A MID is a unique identifier for an entity in the Search Knowledge Graph.
+         * @param doPreventPreload Whether we should prevent preloading on this search.
+         * @param selectionStartAdjust A positive number of characters that the start of the
+         *        existing selection should be expanded by.
+         * @param selectionEndAdjust A positive number of characters that the end of the existing
+         *        selection should be expanded by.
+         * @param contextLanguage The language of the original search term, or an empty string.
+         * @param thumbnailUrl The URL of the thumbnail to display in our UX.
+         * @param caption The caption to display.
+         * @param quickActionUri The URI for the intent associated with the quick action.
+         * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
+         * @param loggedEventId The EventID logged by the server, which should be recorded and sent
+         *        back to the server along with user action results in a subsequent request.
+         * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
+         * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
+         * @param cardTag The primary internal Coca card tag for the resolution, or {@code 0} if
+         *         none.
+         * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config
+         *         data.
+         */
+        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
+                final String displayText, final String alternateTerm, final String mid,
+                boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
+                final String contextLanguage, final String thumbnailUrl, final String caption,
+                final String quickActionUri, @QuickActionCategory final int quickActionCategory,
+                final long loggedEventId, final String searchUrlFull, final String searchUrlPreload,
+                @CardTag final int cardTag, final String relatedSearchesJson) {
+            mIsNetworkUnavailable = isNetworkUnavailable;
+            mResponseCode = responseCode;
+            mSearchTerm = searchTerm;
+            mDisplayText = displayText;
+            mAlternateTerm = alternateTerm;
+            mMid = mid;
+            mDoPreventPreload = doPreventPreload;
+            mSelectionStartAdjust = selectionStartAdjust;
+            mSelectionEndAdjust = selectionEndAdjust;
+            mContextLanguage = contextLanguage;
+            mThumbnailUrl = thumbnailUrl;
+            mCaption = caption;
+            mQuickActionUri = quickActionUri;
+            mQuickActionCategory = quickActionCategory;
+            mLoggedEventId = loggedEventId;
+            mSearchUrlFull = searchUrlFull;
+            mSearchUrlPreload = searchUrlPreload;
+            mCardTagEnum = fromCocaCardTag(cardTag);
+            mRelatedSearchesJson = relatedSearchesJson;
+        }
+
+        /**
+         * @param isNetworkUnavailable Indicates if the network is unavailable, in which case all
+         *        other parameters should be ignored.
+         */
+        public Builder setIsNetworkUnavailable(boolean isNetworkUnavailable) {
+            mIsNetworkUnavailable = isNetworkUnavailable;
+            return this;
+        }
+
+        /**
+         * @param responseCode The HTTP response code. If the code is not OK, the query should be
+         *        ignored.
+         */
+        public Builder setResponseCode(int responseCode) {
+            mResponseCode = responseCode;
+            return this;
+        }
+
+        /** @param searchTerm The term to use in our subsequent search. */
+        public Builder setSearchTerm(String searchTerm) {
+            mSearchTerm = searchTerm;
+            return this;
+        }
+
+        /** @param displayText The text to display in our UX. */
+        public Builder setDisplayText(String displayText) {
+            mDisplayText = displayText;
+            return this;
+        }
+
+        /** @param alternateTerm The alternate term to display on the results page. */
+        public Builder setAlternateTerm(String alternateTerm) {
+            mAlternateTerm = alternateTerm;
+            return this;
+        }
+
+        /**
+         * @param mid the MID for an entity to use to trigger a Knowledge Panel, or an empty string.
+         *        A MID is a unique identifier for an entity in the Search Knowledge Graph.
+         */
+        public Builder setMid(String mid) {
+            mMid = mid;
+            return this;
+        }
+
+        /** @param doPreventPreload Whether we should prevent preloading on this search. */
+        public Builder setDoPreventPreload(boolean doPreventPreload) {
+            mDoPreventPreload = doPreventPreload;
+            return this;
+        }
+
+        /**
+         * @param selectionStartAdjust A positive number of characters that the start of the
+         *         existing selection should be expanded by.
+         */
+        public Builder setSelectionStartAdjust(int selectionStartAdjust) {
+            mSelectionStartAdjust = selectionStartAdjust;
+            return this;
+        }
+
+        /**
+         * @param selectionEndAdjust A positive number of characters that the end of the existing
+         *        selection should be expanded by.
+         */
+        public Builder setSelectionEndAdjust(int selectionEndAdjust) {
+            mSelectionEndAdjust = selectionEndAdjust;
+            return this;
+        }
+
+        /** @param contextLanguage The language of the original search term, or an empty string. */
+        public Builder setContextLanguage(String contextLanguage) {
+            mContextLanguage = contextLanguage;
+            return this;
+        }
+
+        /** @param thumbnailUrl The URL of the thumbnail to display in our UX. */
+        public Builder setThumbnailUrl(String thumbnailUrl) {
+            mThumbnailUrl = thumbnailUrl;
+            return this;
+        }
+
+        /** @param caption The caption to display. */
+        public Builder setCaption(String caption) {
+            mCaption = caption;
+            return this;
+        }
+
+        /** @param quickActionUri The URI for the intent associated with the quick action. */
+        public Builder setQuickActionUri(String quickActionUri) {
+            mQuickActionUri = quickActionUri;
+            return this;
+        }
+
+        /** @param quickActionCategory The {@link QuickActionCategory} for the quick action. */
+        public Builder setQuickActionCategory(@QuickActionCategory int quickActionCategory) {
+            mQuickActionCategory = quickActionCategory;
+            return this;
+        }
+
+        public Builder setLoggedEventId(long loggedEventId) {
+            mLoggedEventId = loggedEventId;
+            return this;
+        }
+
+        /** @param searchUrlFull The URL for the full search to present in the overlay, or empty. */
+        public Builder setSearchUrlFull(String searchUrlFull) {
+            mSearchUrlFull = searchUrlFull;
+            return this;
+        }
+
+        /** @param searchUrlPreload The URL for the search to preload into the overlay, or empty. */
+        public Builder setSearchUrlPreload(String searchUrlPreload) {
+            mSearchUrlPreload = searchUrlPreload;
+            return this;
+        }
+
+        /**
+         * @param cardTagEnum The primary internal Coca card tag for the resolution, or {@code 0} if
+         *         none.
+         */
+        public Builder setCardTagEnum(@CardTag int cardTagEnum) {
+            mCardTagEnum = cardTagEnum;
+            return this;
+        }
+
+        /**
+         * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config
+         *         data.
+         */
+        public Builder setRelatedSearchesJson(String relatedSearchesJson) {
+            mRelatedSearchesJson = relatedSearchesJson;
+            return this;
+        }
+
+        /**
+         * Builds the {@link ResolvedSearchTerm} based on the params passed into the constructor
+         * of this builder, plus whatever settings have been established.
+         * @return The {@link ResolvedSearchTerm}, which represents all the results sent back by
+         *         the server for the Resolve request.
+         */
+        public ResolvedSearchTerm build() {
+            return new ResolvedSearchTerm(mIsNetworkUnavailable, mResponseCode, mSearchTerm,
+                    mDisplayText, mAlternateTerm, mMid, mDoPreventPreload, mSelectionStartAdjust,
+                    mSelectionEndAdjust, mContextLanguage, mThumbnailUrl, mCaption, mQuickActionUri,
+                    mQuickActionCategory, mLoggedEventId, mSearchUrlFull, mSearchUrlPreload,
+                    mCardTagEnum, mRelatedSearchesJson);
+        }
     }
 }

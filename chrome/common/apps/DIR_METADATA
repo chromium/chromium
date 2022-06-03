@@ -1,0 +1,4 @@
+mixins: "//apps/COMMON_METADATA"
+monorail: {
+  component: "Platform>Extensions"
+}

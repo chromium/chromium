@@ -16,6 +16,10 @@ namespace test {
 class TestDeviceStatusListener : public DeviceStatusListener {
  public:
   TestDeviceStatusListener();
+
+  TestDeviceStatusListener(const TestDeviceStatusListener&) = delete;
+  TestDeviceStatusListener& operator=(const TestDeviceStatusListener&) = delete;
+
   ~TestDeviceStatusListener() override;
 
   // Notifies observer with current device status.
@@ -33,8 +37,6 @@ class TestDeviceStatusListener : public DeviceStatusListener {
   void StartAfterDelay();
 
   base::WeakPtrFactory<TestDeviceStatusListener> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDeviceStatusListener);
 };
 
 }  // namespace test

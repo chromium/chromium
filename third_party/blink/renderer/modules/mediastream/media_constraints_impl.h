@@ -31,34 +31,39 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_CONSTRAINTS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_CONSTRAINTS_IMPL_H_
 
-#include "third_party/blink/public/platform/web_media_constraints.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 
 namespace blink {
 
 class Dictionary;
 class ExecutionContext;
+class MediaErrorState;
 class MediaTrackConstraints;
 
 namespace media_constraints_impl {
 
-WebMediaConstraints Create();
-WebMediaConstraints Create(ExecutionContext*,
-                           const Dictionary&,
-                           MediaErrorState&);
-WebMediaConstraints Create(ExecutionContext*,
-                           const MediaTrackConstraints*,
-                           MediaErrorState&);
+// Max lengths of individual strings and string sequences provided as
+// constraints, as a safety check. Currently deviceId and grouId are both 64
+// char strings, so this should provide plenty of headroom while still avoiding
+// abuse.
+const size_t kMaxConstraintStringLength = 500;
+const size_t kMaxConstraintStringSeqLength = 100;
+
+MediaConstraints Create();
+MediaConstraints Create(ExecutionContext*, const Dictionary&, MediaErrorState&);
+MediaConstraints Create(ExecutionContext*,
+                        const MediaTrackConstraints*,
+                        MediaErrorState&);
 
 // Exported with MODULES_EXPORT for testing
 MODULES_EXPORT MediaTrackConstraints* ConvertConstraints(
-    const WebMediaConstraints& input);
+    const MediaConstraints& input);
 
 // Exported for testing only.
-MODULES_EXPORT WebMediaConstraints
-ConvertConstraintsToWeb(const MediaTrackConstraints*);
+MODULES_EXPORT MediaConstraints
+ConvertTrackConstraintsToMediaConstraints(const MediaTrackConstraints*,
+                                          MediaErrorState& error_state);
 }
 
 }  // namespace blink

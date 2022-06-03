@@ -36,8 +36,7 @@ DesktopBrowserFrameAura::DesktopBrowserFrameAura(
 ///////////////////////////////////////////////////////////////////////////////
 // DesktopBrowserFrameAura, protected:
 
-DesktopBrowserFrameAura::~DesktopBrowserFrameAura() {
-}
+DesktopBrowserFrameAura::~DesktopBrowserFrameAura() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DesktopBrowserFrameAura, views::DesktopNativeWidgetAura overrides:
@@ -113,4 +112,8 @@ DesktopBrowserFrameAura::PreHandleKeyboardEvent(
 bool DesktopBrowserFrameAura::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   return false;
+}
+
+bool DesktopBrowserFrameAura::ShouldRestorePreviousBrowserWidgetState() const {
+  return true;
 }

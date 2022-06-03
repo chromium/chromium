@@ -4,11 +4,14 @@
 
 #include "chrome/browser/profiles/incognito_mode_policy_handler.h"
 
-#include "base/logging.h"
+#include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -26,18 +29,17 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   const base::Value* availability =
       policies.GetValue(key::kIncognitoModeAvailability);
   if (availability) {
-    int int_value = IncognitoModePrefs::ENABLED;
-    if (!availability->GetAsInteger(&int_value)) {
+    if (!availability->is_int()) {
       errors->AddError(key::kIncognitoModeAvailability, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::INTEGER));
       return false;
     }
     IncognitoModePrefs::Availability availability_enum_value;
-    if (!IncognitoModePrefs::IntToAvailability(int_value,
+    if (!IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                                &availability_enum_value)) {
       errors->AddError(key::kIncognitoModeAvailability,
                        IDS_POLICY_OUT_OF_RANGE_ERROR,
-                       base::NumberToString(int_value));
+                       base::NumberToString(availability->GetInt()));
       return false;
     }
     return true;
@@ -55,29 +57,40 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
+#if defined(OS_WIN)
+  // When browser starts with GCPW sign-in flag, it runs in incognito mode and
+  // gaia login page is loaded. With this flag, user can't use Chrome normally.
+  // However GCPW can't work in non-incognito mode and policy setting prevents
+  // Chrome from launching in incognito mode.To make this work, we should ignore
+  // setting inconito mode policy if GCPW sign-in flag is present.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::credential_provider::kGcpwSigninSwitch))
+    return;
+#endif
+
   const base::Value* availability =
       policies.GetValue(key::kIncognitoModeAvailability);
   const base::Value* deprecated_enabled =
       policies.GetValue(key::kIncognitoEnabled);
   if (availability) {
-    int int_value = IncognitoModePrefs::ENABLED;
     IncognitoModePrefs::Availability availability_enum_value;
-    if (availability->GetAsInteger(&int_value) &&
-        IncognitoModePrefs::IntToAvailability(int_value,
+    if (availability->is_int() &&
+        IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                               &availability_enum_value)) {
       prefs->SetInteger(prefs::kIncognitoModeAvailability,
-                        availability_enum_value);
+                        static_cast<int>(availability_enum_value));
     } else {
       NOTREACHED();
     }
   } else if (deprecated_enabled) {
     // If kIncognitoModeAvailability is not specified, check the obsolete
     // kIncognitoEnabled.
-    bool enabled = true;
-    if (deprecated_enabled->GetAsBoolean(&enabled)) {
+    if (deprecated_enabled->is_bool()) {
       prefs->SetInteger(
           prefs::kIncognitoModeAvailability,
-          enabled ? IncognitoModePrefs::ENABLED : IncognitoModePrefs::DISABLED);
+          static_cast<int>(deprecated_enabled->GetBool()
+                               ? IncognitoModePrefs::Availability::kEnabled
+                               : IncognitoModePrefs::Availability::kDisabled));
     } else {
       NOTREACHED();
     }

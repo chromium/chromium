@@ -53,9 +53,6 @@ const char kCrossOriginWebAppManifestNotAllowed[] =
 const char kDetailedInvalidSslCertificateMessageFormat[] =
     "SSL certificate is not valid. Security level: $.";
 
-const char kHttpHeadRequestFailed[] =
-    "Unable to make a HEAD request to \"$1\" for payment method manifest.";
-
 const char kHttpStatusCodeNotAllowed[] =
     "HTTP status code $1 \"$2\" not allowed for payment method manifest "
     "\"$3\".";
@@ -63,6 +60,9 @@ const char kHttpStatusCodeNotAllowed[] =
 const char kInstallingMultipleDefaultAppsNotSupported[] =
     "Installing multiple payment handlers from a single payment method "
     "manifest is not supported.";
+
+const char kInvalidInitiatorFrame[] =
+    "Cannot initialize PaymentRequest in an invalid frame.";
 
 const char kInvalidManifestUrl[] =
     "\"$1\" is not a valid payment manifest URL with HTTPS scheme (or HTTP "
@@ -76,21 +76,12 @@ const char kInvalidServiceWorkerUrl[] =
 
 const char kInvalidSslCertificate[] = "SSL certificate is not valid.";
 
-const char kMethodDataRequired[] = "Method data required.";
-
-const char kMethodNameRequired[] = "Method name required.";
-
-const char kMissingDetailsFromPaymentApp[] =
-    "Payment app returned invalid response. Missing field \"details\".";
-
-const char kMissingMethodNameFromPaymentApp[] =
-    "Payment app returned invalid response. Missing field \"methodName\".";
+const char kInvalidWebAppIcon[] =
+    "Failed to download or decode a non-empty icon for payment app with \"$1\" "
+    "manifest.";
 
 const char kMultiplePaymentMethodsNotSupportedFormat[] =
     "The payment methods $ are not supported.";
-
-const char kNoLinkRelPaymentMethodManifestHttpHeader[] =
-    "No \"Link: rel=payment-method-manifest\" HTTP header found at \"$1\".";
 
 const char kNoResponseToPaymentEvent[] =
     "Payment handler did not respond to \"paymentrequest\" event.";
@@ -98,15 +89,6 @@ const char kNoResponseToPaymentEvent[] =
 const char kNotInitialized[] = "Not initialized.";
 
 const char kNotShown[] = "Not shown.";
-
-const char kPayerEmailEmpty[] =
-    "Payment app returned invalid response. Missing field \"payerEmail\".";
-
-const char kPayerNameEmpty[] =
-    "Payment app returned invalid response. Missing field \"payerName\".";
-
-const char kPayerPhoneEmpty[] =
-    "Payment app returned invalid response. Missing field \"payerPhone\".";
 
 const char kPaymentManifestCrossSiteRedirectNotAllowed[] =
     "Cross-site redirect from \"$1\" to \"$2\" not allowed for payment "
@@ -152,16 +134,97 @@ const char kPaymentHandlerInsecureNavigation[] =
     "The payment handler navigated to a page with insecure context, invalid "
     "certificate state, or malicious content.";
 
+const char kPaymentHandlerInstallFailed[] =
+    "Failed to install the payment handler.";
+
+const char kPaymentHandlerActivityDied[] =
+    "The payment handler is closed because the Android activity is destroyed.";
+
+const char kPaymentHandlerFailToLoadMainFrame[] =
+    "The payment handler fails to load the page.";
+
 const char kSinglePaymentMethodNotSupportedFormat[] =
     "The payment method $ is not supported.";
 
-const char kShippingOptionIdRequired[] = "Shipping option identifier required.";
+const char kCanMakePaymentEventRejected[] =
+    "Payment handler rejected the promise passed into "
+    "CanMakePaymentEvent.respondWith().";
 
-const char kShippingAddressInvalid[] =
-    "Payment app returned invalid shipping address in response.";
+const char kCanMakePaymentEventTimeout[] =
+    "The \"canmakepayment\" event timed out.";
 
-const char kShippingOptionEmpty[] =
-    "Payment app returned invalid response. Missing field \"shipping option\".";
+const char kCanMakePaymentEventNoResponse[] =
+    "Payment handler did not respond to \"canmakepayment\" event.";
+
+const char kCanMakePaymentEventBooleanConversionError[] =
+    "Unable to convert the value of \"canmakepayment\" response to a boolean.";
+
+const char kCanMakePaymentEventBrowserError[] =
+    "Browser encountered an error when firing the \"canmakepayment\" event in "
+    "the payment handler.";
+
+const char kCanMakePaymentEventInternalError[] =
+    "Payment handler encountered an error (e.g., threw a JavaScript exception) "
+    "while responding to \"canmakepayment\" event.";
+
+const char kCanMakePaymentEventNoUrlBasedPaymentMethods[] =
+    "Browser did not fire \"canmakepayment\" event because the payment handler "
+    "does not support any URL-based payment methods.";
+
+const char kCanMakePaymentEventNotInstalled[] =
+    "Browser did not fire \"canmakepayment\" event because the payment handler "
+    "is not yet installed. It will be installed on demand when the user "
+    "selects it.";
+
+const char kCanMakePaymentEventNoExplicitlyVerifiedMethods[] =
+    "Browser did not fire \"canmakepayment\" event because the payment handler "
+    "does not support any explicitly verified payment methods.";
+
+const char kGenericPaymentMethodNotSupportedMessage[] =
+    "Payment method not supported.";
+
+const char kNoContentAndNoLinkHeader[] =
+    "No content and no \"Link: rel=payment-method-manifest\" HTTP header found "
+    "at \"$1\".";
+
+const char kNoContentInPaymentManifest[] =
+    "No content found in payment manifest \"$1\".";
+
+const char kUnableToInvokeAndroidPaymentApps[] =
+    "Unable to invoke Android apps.";
+
+const char kUserClosedPaymentApp[] = "User closed the payment app.";
+
+const char kMoreThanOneService[] =
+    "Found more than one IS_READY_TO_PAY service, but at most one service is "
+    "supported.";
+
+const char kCredentialIdsRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty "
+    "\"credentialIds\" array of non-empty arrays.";
+
+const char kTimeoutTooLong[] =
+    "The \"secure-payment-confirmation\" method requires at most 1 hour "
+    "\"timeout\" field.";
+
+const char kChallengeRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty "
+    "\"challenge\" field.";
+
+const char kInstrumentRequired[] =
+    "The \"secure-payment-confirmation\" method requires a "
+    "\"instrument\" field.";
+
+const char kInstrumentDisplayNameRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty "
+    "\"instrument.displayName\" field.";
+
+const char kValidInstrumentIconRequired[] =
+    "The \"secure-payment-confirmation\" method requires a valid URL in the "
+    "\"instrument.icon\" field.";
+
+const char kInvalidIcon[] =
+    "The \"instrument.icon\" either could not be downloaded or decoded.";
 
 }  // namespace errors
 }  // namespace payments

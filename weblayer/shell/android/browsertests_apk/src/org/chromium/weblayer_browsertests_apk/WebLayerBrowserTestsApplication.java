@@ -6,9 +6,10 @@ package org.chromium.weblayer_browsertests_apk;
 
 import android.content.Context;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.native_test.NativeBrowserTestApplication;
-import org.chromium.ui.base.ResourceBundle;
 
 /**
  * A basic weblayer_public.browser.tests {@link android.app.Application}.
@@ -23,7 +24,6 @@ public class WebLayerBrowserTestsApplication extends NativeBrowserTestApplicatio
         if (isBrowserProcess()) {
             // Test-only stuff, see also NativeUnitTest.java.
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
-            ResourceBundle.setNoAvailableLocalePaks();
         }
     }
 
@@ -31,5 +31,8 @@ public class WebLayerBrowserTestsApplication extends NativeBrowserTestApplicatio
     protected void setLibraryProcessType() {}
 
     @Override
-    protected void initApplicationContext() {}
+    protected void initApplicationContext() {
+        // Matches the initApplicationContext call in WebLayerImpl.minimalInitForContext.
+        ContextUtils.initApplicationContext(ClassLoaderContextWrapperFactory.get(this));
+    }
 }

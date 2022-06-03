@@ -60,7 +60,10 @@
   const testCommands = [
       `document.location.href = 'http://bar.com/'`,
       `document.getElementById('frame_b').src = '/e/'`,
+      // This should fail the navigation as there's no forward entry yet.
+      `history.forward()`,
       `history.back()`,
+      // This should result in a successful navigation.
       `history.forward()`,
       `history.go(-1)`];
 

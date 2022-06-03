@@ -1,4 +1,4 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
 
 test(() => {
   const thisValues = [
@@ -23,12 +23,13 @@ test(() => {
   assert_equals(typeof setter, "function");
 
   for (const thisValue of thisValues) {
-    assert_throws(new TypeError(), () => getter.call(thisValue), `getter with this=${format_value(thisValue)}`);
-    assert_throws(new TypeError(), () => setter.call(thisValue, 1), `setter with this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => getter.call(thisValue), `getter with this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => setter.call(thisValue, 1), `setter with this=${format_value(thisValue)}`);
   }
 }, "Branding");
 
-for (const type of ["i32", "f32", "f64"]) {
+for (const type of ["i32", "i64", "f32", "f64"]) {
+  const [initial, value, invalid] = type === "i64" ? [0n, 1n, 2] : [0, 1, 2n];
   const immutableOptions = [
     [{}, "missing"],
     [{ "mutable": undefined }, "undefined"],
@@ -41,29 +42,29 @@ for (const type of ["i32", "f32", "f64"]) {
     test(() => {
       opts.value = type;
       const global = new WebAssembly.Global(opts);
-      assert_equals(global.value, 0, "initial value");
-      assert_equals(global.valueOf(), 0, "initial valueOf");
+      assert_equals(global.value, initial, "initial value");
+      assert_equals(global.valueOf(), initial, "initial valueOf");
 
-      assert_throws(new TypeError(), () => global.value = 1);
+      assert_throws_js(TypeError, () => global.value = value);
 
-      assert_equals(global.value, 0, "post-set value");
-      assert_equals(global.valueOf(), 0, "post-set valueOf");
+      assert_equals(global.value, initial, "post-set value");
+      assert_equals(global.valueOf(), initial, "post-set valueOf");
     }, `Immutable ${type} (${name})`);
 
     test(t => {
       opts.value = type;
       const global = new WebAssembly.Global(opts);
-      assert_equals(global.value, 0, "initial value");
-      assert_equals(global.valueOf(), 0, "initial valueOf");
+      assert_equals(global.value, initial, "initial value");
+      assert_equals(global.valueOf(), initial, "initial valueOf");
 
       const value = {
         valueOf: t.unreached_func("should not call valueOf"),
         toString: t.unreached_func("should not call toString"),
       };
-      assert_throws(new TypeError(), () => global.value = value);
+      assert_throws_js(TypeError, () => global.value = value);
 
-      assert_equals(global.value, 0, "post-set value");
-      assert_equals(global.valueOf(), 0, "post-set valueOf");
+      assert_equals(global.value, initial, "post-set value");
+      assert_equals(global.valueOf(), initial, "post-set valueOf");
     }, `Immutable ${type} with ToNumber side-effects (${name})`);
   }
 
@@ -77,13 +78,15 @@ for (const type of ["i32", "f32", "f64"]) {
     test(() => {
       opts.value = type;
       const global = new WebAssembly.Global(opts);
-      assert_equals(global.value, 0, "initial value");
-      assert_equals(global.valueOf(), 0, "initial valueOf");
+      assert_equals(global.value, initial, "initial value");
+      assert_equals(global.valueOf(), initial, "initial valueOf");
 
-      global.value = 1;
+      global.value = value;
 
-      assert_equals(global.value, 1, "post-set value");
-      assert_equals(global.valueOf(), 1, "post-set valueOf");
+      assert_throws_js(TypeError, () => global.value = invalid);
+
+      assert_equals(global.value, value, "post-set value");
+      assert_equals(global.valueOf(), value, "post-set valueOf");
     }, `Mutable ${type} (${name})`);
   }
 }
@@ -91,20 +94,33 @@ for (const type of ["i32", "f32", "f64"]) {
 test(() => {
   const argument = { "value": "i64", "mutable": true };
   const global = new WebAssembly.Global(argument);
-  assert_throws(new TypeError(), () => global.value);
-  assert_throws(new TypeError(), () => global.value = 0);
-  assert_throws(new TypeError(), () => global.valueOf());
-}, "i64 with default");
 
-test(t => {
-  const argument = { "value": "i64", "mutable": true };
-  const global = new WebAssembly.Global(argument);
-  const value = {
-    valueOf: t.unreached_func("should not call valueOf"),
-    toString: t.unreached_func("should not call toString"),
-  };
-  assert_throws(new TypeError(), () => global.value = value);
-}, "i64 with ToNumber side-effects");
+  assert_equals(global.value, 0n, "initial value using ToJSValue");
+
+  const valid = [
+    [123n, 123n],
+    [2n ** 63n, - (2n ** 63n)],
+    [true, 1n],
+    [false, 0n],
+    ["456", 456n],
+  ];
+  for (const [input, output] of valid) {
+    global.value = input;
+    assert_equals(global.valueOf(), output, "post-set valueOf");
+  }
+
+  const invalid = [
+    undefined,
+    null,
+    0,
+    1,
+    4.2,
+    Symbol(),
+  ];
+  for (const input of invalid) {
+    assert_throws_js(TypeError, () => global.value = input);
+  }
+}, "i64 mutability");
 
 test(() => {
   const argument = { "value": "i32", "mutable": true };
@@ -115,7 +131,7 @@ test(() => {
   const setter = desc.set;
   assert_equals(typeof setter, "function");
 
-  assert_throws(new TypeError(), () => setter.call(global));
+  assert_throws_js(TypeError, () => setter.call(global));
 }, "Calling setter without argument");
 
 test(() => {

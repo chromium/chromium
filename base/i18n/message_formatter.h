@@ -12,7 +12,6 @@
 
 #include "base/i18n/base_i18n_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
@@ -35,11 +34,15 @@ class BASE_I18N_EXPORT MessageArg {
   MessageArg(const char* s);
   MessageArg(StringPiece s);
   MessageArg(const std::string& s);
-  MessageArg(const string16& s);
+  MessageArg(const std::u16string& s);
   MessageArg(int i);
   MessageArg(int64_t i);
   MessageArg(double d);
   MessageArg(const Time& t);
+
+  MessageArg(const MessageArg&) = delete;
+  MessageArg& operator=(const MessageArg&) = delete;
+
   ~MessageArg();
 
  private:
@@ -48,7 +51,6 @@ class BASE_I18N_EXPORT MessageArg {
   // Tests if this argument has a value, and if so increments *count.
   bool has_value(int* count) const;
   std::unique_ptr<icu::Formattable> formattable;
-  DISALLOW_COPY_AND_ASSIGN(MessageArg);
 };
 
 }  // namespace internal
@@ -90,7 +92,11 @@ class BASE_I18N_EXPORT MessageArg {
 
 class BASE_I18N_EXPORT MessageFormatter {
  public:
-  static string16 FormatWithNamedArgs(
+  MessageFormatter() = delete;
+  MessageFormatter(const MessageFormatter&) = delete;
+  MessageFormatter& operator=(const MessageFormatter&) = delete;
+
+  static std::u16string FormatWithNamedArgs(
       StringPiece16 msg,
       StringPiece name0 = StringPiece(),
       const internal::MessageArg& arg0 = internal::MessageArg(),
@@ -107,7 +113,7 @@ class BASE_I18N_EXPORT MessageFormatter {
       StringPiece name6 = StringPiece(),
       const internal::MessageArg& arg6 = internal::MessageArg());
 
-  static string16 FormatWithNumberedArgs(
+  static std::u16string FormatWithNumberedArgs(
       StringPiece16 msg,
       const internal::MessageArg& arg0 = internal::MessageArg(),
       const internal::MessageArg& arg1 = internal::MessageArg(),
@@ -116,10 +122,6 @@ class BASE_I18N_EXPORT MessageFormatter {
       const internal::MessageArg& arg4 = internal::MessageArg(),
       const internal::MessageArg& arg5 = internal::MessageArg(),
       const internal::MessageArg& arg6 = internal::MessageArg());
-
- private:
-  MessageFormatter() = delete;
-  DISALLOW_COPY_AND_ASSIGN(MessageFormatter);
 };
 
 }  // namespace i18n

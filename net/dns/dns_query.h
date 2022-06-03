@@ -59,6 +59,10 @@ class NET_EXPORT_PRIVATE DnsQuery {
   // populate the empty query.
   explicit DnsQuery(scoped_refptr<IOBufferWithSize> buffer);
 
+  // Copies are constructed with an independent cloned, not mirrored, buffer.
+  DnsQuery(const DnsQuery& query);
+  DnsQuery& operator=(const DnsQuery& query);
+
   ~DnsQuery();
 
   // Clones |this| verbatim, with ID field of the header set to |id|.
@@ -95,6 +99,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
  private:
   DnsQuery(const DnsQuery& orig, uint16_t id);
+  void CopyFrom(const DnsQuery& orig);
 
   bool ReadHeader(base::BigEndianReader* reader, dns_protocol::Header* out);
   // After read, |out| is in the DNS format, e.g.
@@ -111,8 +116,6 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
   // Pointer to the dns header section.
   dns_protocol::Header* header_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsQuery);
 };
 
 }  // namespace net

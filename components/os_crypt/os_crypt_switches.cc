@@ -8,11 +8,11 @@
 namespace os_crypt {
 namespace switches {
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 
 const char kUseMockKeychain[] = "use-mock-keychain";
 
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 }  // namespace switches
 }  // namespace os_crypt

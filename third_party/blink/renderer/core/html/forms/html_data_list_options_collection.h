@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -28,11 +29,12 @@ class HTMLDataListOptionsCollection : public HTMLCollection {
   bool ElementMatches(const HTMLElement&) const;
 };
 
-DEFINE_TYPE_CASTS(HTMLDataListOptionsCollection,
-                  LiveNodeListBase,
-                  collection,
-                  collection->GetType() == kDataListOptions,
-                  collection.GetType() == kDataListOptions);
+template <>
+struct DowncastTraits<HTMLDataListOptionsCollection> {
+  static bool AllowFrom(const LiveNodeListBase& collection) {
+    return collection.GetType() == kDataListOptions;
+  }
+};
 
 inline bool HTMLDataListOptionsCollection::ElementMatches(
     const HTMLElement& element) const {

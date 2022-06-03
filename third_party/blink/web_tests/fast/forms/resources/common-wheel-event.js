@@ -1,12 +1,15 @@
-function dispatchWheelEvent(element, deltaX, deltaY)
+jsTestIsAsync = true;
+
+// Positive deltaX or deltaY means scroll right or down.
+async function dispatchWheelEvent(element, deltaX, deltaY)
 {
-    var rect = element.getClientRects()[0]
-    eventSender.mouseMoveTo(rect.left, rect.top);
-    eventSender.mouseScrollBy(deltaX, deltaY);
+    element_center = elementCenter(element);
+    await wheelTick(deltaX, deltaY, element_center);
+    await waitForCompositorCommit();
 }
 
 var input;
-function testWheelEvent(parameters)
+async function testWheelEvent(parameters)
 {
     var inputType = parameters['inputType'];
     var initialValue = parameters['initialValue'];
@@ -20,37 +23,40 @@ function testWheelEvent(parameters)
     input.focus();
 
     debug('Initial value is ' + initialValue + '. We\'ll wheel up by 1:');
-    dispatchWheelEvent(input, 0, 1);
+    await dispatchWheelEvent(input, 0, -1);
     shouldBeEqualToString('input.value', stepUpValue1);
 
-    debug('Wheel up by 100:');
-    dispatchWheelEvent(input, 0, 100);
+    // We change the selected value in ScrollBegin and the three wheel ticks
+    // are treated as a single stream with one ScrollBegin, so we increase or
+    // decrease by one value even though there is more than one wheel tick.
+    debug('Wheel up by 3:');
+    await dispatchWheelEvent(input, 0, -3);
     shouldBeEqualToString('input.value', stepUpValue2);
 
     debug('Wheel down by 1:');
-    dispatchWheelEvent(input, 0, -1);
+    await dispatchWheelEvent(input, 0, 1);
     shouldBeEqualToString('input.value', stepUpValue1);
 
-    debug('Wheel down by 256:');
-    dispatchWheelEvent(input, 0, -256);
+    debug('Wheel down by 3:');
+    await dispatchWheelEvent(input, 0, 3);
     shouldBeEqualToString('input.value', initialValue);
 
     debug('Disabled input element:');
     input.disabled = true;
-    dispatchWheelEvent(input, 0, 1);
+    await dispatchWheelEvent(input, 0, -1);
     shouldBeEqualToString('input.value', initialValue);
     input.removeAttribute('disabled');
 
 
     debug('Read-only input element:');
     input.readOnly = true;
-    dispatchWheelEvent(input, 0, 1);
+    await dispatchWheelEvent(input, 0, -1);
     shouldBeEqualToString('input.value', initialValue);
     input.readOnly = false;
 
     debug('No focus:');
     document.getElementById('another').focus();
-    dispatchWheelEvent(input, 0, 1);
+    await dispatchWheelEvent(input, 0, -1);
     shouldBeEqualToString('input.value', initialValue);
 
     parent.parentNode.removeChild(parent);

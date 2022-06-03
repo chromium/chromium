@@ -5,9 +5,9 @@
 // https://html.spec.whatwg.org/C/#the-errorevent-interface
 
 dictionary ErrorEventInit : EventInit {
-    DOMString message;
-    DOMString filename;
-    unsigned long lineno;
-    unsigned long colno;
-    any error;
+    DOMString message = "";
+    DOMString filename = "";
+    unsigned long lineno = 0;
+    unsigned long colno = 0;
+    any error = null;
 };

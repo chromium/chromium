@@ -101,7 +101,7 @@ struct DownloadRow {
   std::string hash;
 
   // The id of the download in the database. Is not changed by UpdateDownload().
-  // Note: This field should be considered deprecated in favor of |guid| below.
+  // Note: This field should be considered deprecated in favor of `guid` below.
   // See http://crbug.com/593020.
   DownloadId id = kInvalidDownloadId;
 
@@ -125,6 +125,9 @@ struct DownloadRow {
   // Data slices that have been downloaded so far. The slices must be ordered
   // by their offset.
   std::vector<DownloadSliceInfo> download_slice_info;
+
+  // The serialized string of the download's |reroute_info| proto.
+  std::string reroute_info_serialized;
 };
 
 }  // namespace history

@@ -4,8 +4,9 @@
 
 #include "ash/display/output_protection_delegate.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/shell.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_configurator.h"
@@ -18,6 +19,12 @@ namespace {
 
 display::ContentProtectionManager* manager() {
   return Shell::Get()->display_configurator()->content_protection_manager();
+}
+
+void MaybeSetCaptureModeWindowProtection(aura::Window* window,
+                                         uint32_t protection_mask) {
+  CaptureModeController::Get()->SetWindowProtectionMask(window,
+                                                        protection_mask);
 }
 
 }  // namespace
@@ -39,15 +46,15 @@ OutputProtectionDelegate::OutputProtectionDelegate(aura::Window* window)
     return;
 
   window_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OutputProtectionDelegate::~OutputProtectionDelegate() {
   if (!window_)
     return;
 
-  display::Screen::GetScreen()->RemoveObserver(this);
   window_->RemoveObserver(this);
+  MaybeSetCaptureModeWindowProtection(window_,
+                                      display::CONTENT_PROTECTION_METHOD_NONE);
 }
 
 void OutputProtectionDelegate::OnDisplayMetricsChanged(
@@ -74,8 +81,10 @@ void OutputProtectionDelegate::OnWindowHierarchyChanged(
 
 void OutputProtectionDelegate::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window, window_);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   window_->RemoveObserver(this);
+  MaybeSetCaptureModeWindowProtection(window_,
+                                      display::CONTENT_PROTECTION_METHOD_NONE);
   window_ = nullptr;
 }
 
@@ -93,6 +102,13 @@ void OutputProtectionDelegate::QueryStatus(QueryStatusCallback callback) {
 
 void OutputProtectionDelegate::SetProtection(uint32_t protection_mask,
                                              SetProtectionCallback callback) {
+  protection_mask_ = protection_mask;
+
+  // Capture mode screen recording doesn't rely on display protection, and hence
+  // must be informed with the new window's protection.
+  if (window_)
+    MaybeSetCaptureModeWindowProtection(window_, protection_mask);
+
   if (!RegisterClientIfNecessary()) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -100,7 +116,6 @@ void OutputProtectionDelegate::SetProtection(uint32_t protection_mask,
 
   manager()->ApplyContentProtection(client_->id, display_id_, protection_mask,
                                     std::move(callback));
-  protection_mask_ = protection_mask;
 }
 
 void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
@@ -118,6 +133,10 @@ void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
     manager()->ApplyContentProtection(client_->id, display_id_,
                                       display::CONTENT_PROTECTION_METHOD_NONE,
                                       base::DoNothing());
+
+    // The window may have moved to a display that is currently being recorded,
+    // so we need to refresh Capture Mode's content protection.
+    CaptureModeController::Get()->RefreshContentProtection();
   }
   display_id_ = new_display_id;
 }

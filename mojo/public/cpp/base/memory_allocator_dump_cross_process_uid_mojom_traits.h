@@ -12,7 +12,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::MemoryAllocatorDumpCrossProcessUidDataView,
                  base::trace_event::MemoryAllocatorDumpGuid> {
   static uint64_t value(const base::trace_event::MemoryAllocatorDumpGuid& id) {

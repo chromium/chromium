@@ -12,7 +12,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "content/public/browser/browser_context.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromeos {
 

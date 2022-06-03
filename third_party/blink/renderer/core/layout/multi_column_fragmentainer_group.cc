@@ -21,19 +21,19 @@ static const int kMulticolMaxClipPixels = 1000000;
 
 MultiColumnFragmentainerGroup::MultiColumnFragmentainerGroup(
     const LayoutMultiColumnSet& column_set)
-    : column_set_(column_set) {}
+    : column_set_(&column_set) {}
 
 bool MultiColumnFragmentainerGroup::IsFirstGroup() const {
-  return &column_set_.FirstFragmentainerGroup() == this;
+  return &column_set_->FirstFragmentainerGroup() == this;
 }
 
 bool MultiColumnFragmentainerGroup::IsLastGroup() const {
-  return &column_set_.LastFragmentainerGroup() == this;
+  return &column_set_->LastFragmentainerGroup() == this;
 }
 
 LayoutSize MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
   LayoutSize offset(LayoutUnit(), LogicalTop());
-  if (!column_set_.FlowThread()->IsHorizontalWritingMode())
+  if (!column_set_->FlowThread()->IsHorizontalWritingMode())
     return offset.TransposedSize();
   return offset;
 }
@@ -41,8 +41,8 @@ LayoutSize MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
 LayoutUnit
 MultiColumnFragmentainerGroup::BlockOffsetInEnclosingFragmentationContext()
     const {
-  return LogicalTop() + column_set_.LogicalTopFromMulticolContentEdge() +
-         column_set_.MultiColumnFlowThread()
+  return LogicalTop() + column_set_->LogicalTopFromMulticolContentEdge() +
+         column_set_->MultiColumnFlowThread()
              ->BlockOffsetInEnclosingFragmentationContext();
 }
 
@@ -74,8 +74,8 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
   max_logical_height_ = CalculateMaxColumnHeight();
 
   LayoutMultiColumnFlowThread* flow_thread =
-      column_set_.MultiColumnFlowThread();
-  if (column_set_.HeightIsAuto()) {
+      column_set_->MultiColumnFlowThread();
+  if (column_set_->HeightIsAuto()) {
     FragmentationContext* enclosing_fragmentation_context =
         flow_thread->EnclosingFragmentationContext();
     if (enclosing_fragmentation_context &&
@@ -157,7 +157,7 @@ LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
     LayoutBox::PageBoundaryRule rule,
     CoordinateSpaceConversion mode) const {
   LayoutMultiColumnFlowThread* flow_thread =
-      column_set_.MultiColumnFlowThread();
+      column_set_->MultiColumnFlowThread();
 
   // A column out of range doesn't have a flow thread portion, so we need to
   // clamp to make sure that we stay within the actual columns. This means that
@@ -174,8 +174,8 @@ LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
 
   LayoutRect column_rect(ColumnRectAt(column_index));
   column_rect.Move(OffsetFromColumnSet());
-  column_set_.DeprecatedFlipForWritingMode(column_rect);
-  column_rect.MoveBy(column_set_.PhysicalLocation().ToLayoutPoint());
+  column_set_->DeprecatedFlipForWritingMode(column_rect);
+  column_rect.MoveBy(column_set_->PhysicalLocation().ToLayoutPoint());
 
   LayoutSize translation_relative_to_flow_thread =
       column_rect.Location() - portion_rect.Location();
@@ -231,9 +231,9 @@ LayoutPoint MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
   LayoutRect column_rect = ColumnRectAt(column_index);
   LayoutPoint local_point(visual_point);
   local_point.MoveBy(-column_rect.Location());
-  if (!column_set_.IsHorizontalWritingMode()) {
+  if (!column_set_->IsHorizontalWritingMode()) {
     if (snap == kSnapToColumn) {
-      LayoutUnit column_start = column_set_.StyleRef().IsLeftToRightDirection()
+      LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
                                     ? LayoutUnit()
                                     : column_rect.Height();
       if (local_point.X() < 0)
@@ -245,7 +245,7 @@ LayoutPoint MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
                        local_point.Y());
   }
   if (snap == kSnapToColumn) {
-    LayoutUnit column_start = column_set_.StyleRef().IsLeftToRightDirection()
+    LayoutUnit column_start = column_set_->StyleRef().IsLeftToRightDirection()
                                   ? LayoutUnit()
                                   : column_rect.Width();
     if (local_point.Y() < 0)
@@ -261,10 +261,10 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
     const LayoutRect& bounding_box_in_flow_thread) const {
   // Find the start and end column intersected by the bounding box.
   LayoutRect flipped_bounding_box_in_flow_thread(bounding_box_in_flow_thread);
-  LayoutFlowThread* flow_thread = column_set_.FlowThread();
+  LayoutFlowThread* flow_thread = column_set_->FlowThread();
   flow_thread->DeprecatedFlipForWritingMode(
       flipped_bounding_box_in_flow_thread);
-  bool is_horizontal_writing_mode = column_set_.IsHorizontalWritingMode();
+  bool is_horizontal_writing_mode = column_set_->IsHorizontalWritingMode();
   LayoutUnit bounding_box_logical_top =
       is_horizontal_writing_mode ? flipped_bounding_box_in_flow_thread.Y()
                                  : flipped_bounding_box_in_flow_thread.X();
@@ -327,21 +327,38 @@ unsigned MultiColumnFragmentainerGroup::ActualColumnCount() const {
   return count;
 }
 
-void MultiColumnFragmentainerGroup::UpdateFromNG(LayoutUnit logical_height) {
-  logical_height_ = logical_height;
+void MultiColumnFragmentainerGroup::SetColumnBlockSizeFromNG(
+    LayoutUnit block_size) {
+  // We clamp the fragmentainer block size up to 1 for legacy write-back if
+  // there is content that overflows the less-than-1px-height (or even
+  // zero-height) fragmentainer. However, if one fragmentainer contains no
+  // overflow, while others fragmentainers do, the known height may be different
+  // than the |block_size| passed in. Don't override the stored height if this
+  // is the case.
+  DCHECK(!is_logical_height_known_ || logical_height_ == block_size ||
+         block_size <= LayoutUnit(1));
+  if (is_logical_height_known_)
+    return;
+  logical_height_ = block_size;
   is_logical_height_known_ = true;
+}
+
+void MultiColumnFragmentainerGroup::ExtendColumnBlockSizeFromNG(
+    LayoutUnit block_size) {
+  DCHECK(is_logical_height_known_);
+  logical_height_ += block_size;
 }
 
 LayoutUnit MultiColumnFragmentainerGroup::HeightAdjustedForRowOffset(
     LayoutUnit height) const {
   LayoutUnit adjusted_height =
-      height - LogicalTop() - column_set_.LogicalTopFromMulticolContentEdge();
+      height - LogicalTop() - column_set_->LogicalTopFromMulticolContentEdge();
   return adjusted_height.ClampNegativeToZero();
 }
 
 LayoutUnit MultiColumnFragmentainerGroup::CalculateMaxColumnHeight() const {
   LayoutMultiColumnFlowThread* flow_thread =
-      column_set_.MultiColumnFlowThread();
+      column_set_->MultiColumnFlowThread();
   LayoutUnit max_column_height = flow_thread->MaxColumnLogicalHeight();
   LayoutUnit max_height = HeightAdjustedForRowOffset(max_column_height);
   if (FragmentationContext* enclosing_fragmentation_context =
@@ -368,7 +385,7 @@ void MultiColumnFragmentainerGroup::SetAndConstrainColumnHeight(
 
 LayoutUnit MultiColumnFragmentainerGroup::RebalanceColumnHeightIfNeeded()
     const {
-  if (ActualColumnCount() <= column_set_.UsedColumnCount()) {
+  if (ActualColumnCount() <= column_set_->UsedColumnCount()) {
     // With the current column height, the content fits without creating
     // overflowing columns. We're done.
     return logical_height_;
@@ -386,7 +403,7 @@ LayoutUnit MultiColumnFragmentainerGroup::RebalanceColumnHeightIfNeeded()
       ColumnSet(), LogicalTopInFlowThread(), LogicalBottomInFlowThread());
 
   if (shortage_finder.ForcedBreaksCount() + 1 >=
-      column_set_.UsedColumnCount()) {
+      column_set_->UsedColumnCount()) {
     // Too many forced breaks to allow any implicit breaks. Initial balancing
     // should already have set a good height. There's nothing more we should do.
     return logical_height_;
@@ -410,23 +427,23 @@ LayoutUnit MultiColumnFragmentainerGroup::RebalanceColumnHeightIfNeeded()
 
 LayoutRect MultiColumnFragmentainerGroup::ColumnRectAt(
     unsigned column_index) const {
-  LayoutUnit column_logical_width = column_set_.PageLogicalWidth();
+  LayoutUnit column_logical_width = column_set_->PageLogicalWidth();
   LayoutUnit column_logical_height = LogicalHeightInFlowThreadAt(column_index);
   LayoutUnit column_logical_top;
   LayoutUnit column_logical_left;
-  LayoutUnit column_gap = column_set_.ColumnGap();
+  LayoutUnit column_gap = column_set_->ColumnGap();
 
-  if (column_set_.StyleRef().IsLeftToRightDirection()) {
+  if (column_set_->StyleRef().IsLeftToRightDirection()) {
     column_logical_left += column_index * (column_logical_width + column_gap);
   } else {
-    column_logical_left += column_set_.ContentLogicalWidth() -
+    column_logical_left += column_set_->ContentLogicalWidth() -
                            column_logical_width -
                            column_index * (column_logical_width + column_gap);
   }
 
   LayoutRect column_rect(column_logical_left, column_logical_top,
                          column_logical_width, column_logical_height);
-  if (!column_set_.IsHorizontalWritingMode())
+  if (!column_set_->IsHorizontalWritingMode())
     return column_rect.TransposedRect();
   return column_rect;
 }
@@ -435,11 +452,12 @@ LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionRectAt(
     unsigned column_index) const {
   LayoutUnit logical_top = LogicalTopInFlowThreadAt(column_index);
   LayoutUnit portion_logical_height = LogicalHeightInFlowThreadAt(column_index);
-  if (column_set_.IsHorizontalWritingMode())
-    return LayoutRect(LayoutUnit(), logical_top, column_set_.PageLogicalWidth(),
-                      portion_logical_height);
+  if (column_set_->IsHorizontalWritingMode()) {
+    return LayoutRect(LayoutUnit(), logical_top,
+                      column_set_->PageLogicalWidth(), portion_logical_height);
+  }
   return LayoutRect(logical_top, LayoutUnit(), portion_logical_height,
-                    column_set_.PageLogicalWidth());
+                    column_set_->PageLogicalWidth());
 }
 
 LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionOverflowRectAt(
@@ -460,11 +478,11 @@ LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionOverflowRectAt(
   LayoutRect portion_rect = FlowThreadPortionRectAt(column_index);
   bool is_first_column_in_multicol_container =
       is_first_column_in_row &&
-      this == &column_set_.FirstFragmentainerGroup() &&
-      !column_set_.PreviousSiblingMultiColumnSet();
+      this == &column_set_->FirstFragmentainerGroup() &&
+      !column_set_->PreviousSiblingMultiColumnSet();
   bool is_last_column_in_multicol_container =
-      is_last_column_in_row && this == &column_set_.LastFragmentainerGroup() &&
-      !column_set_.NextSiblingMultiColumnSet();
+      is_last_column_in_row && this == &column_set_->LastFragmentainerGroup() &&
+      !column_set_->NextSiblingMultiColumnSet();
   // Calculate the overflow rectangle. It will be clipped at the logical top
   // and bottom of the column box, unless it's the first or last column in the
   // multicol container, in which case it should allow overflow. It will also
@@ -473,7 +491,7 @@ LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionOverflowRectAt(
   LayoutRect overflow_rect(
       IntRect(-kMulticolMaxClipPixels, -kMulticolMaxClipPixels,
               2 * kMulticolMaxClipPixels, 2 * kMulticolMaxClipPixels));
-  if (column_set_.IsHorizontalWritingMode()) {
+  if (column_set_->IsHorizontalWritingMode()) {
     if (!is_first_column_in_multicol_container)
       overflow_rect.ShiftYEdgeTo(portion_rect.Y());
     if (!is_last_column_in_multicol_container)
@@ -520,15 +538,15 @@ unsigned MultiColumnFragmentainerGroup::ConstrainedColumnIndexAtOffset(
 
 unsigned MultiColumnFragmentainerGroup::ColumnIndexAtVisualPoint(
     const LayoutPoint& visual_point) const {
-  LayoutUnit column_length = column_set_.PageLogicalWidth();
+  LayoutUnit column_length = column_set_->PageLogicalWidth();
   LayoutUnit offset_in_column_progression_direction =
-      column_set_.IsHorizontalWritingMode() ? visual_point.X()
-                                            : visual_point.Y();
-  if (!column_set_.StyleRef().IsLeftToRightDirection()) {
+      column_set_->IsHorizontalWritingMode() ? visual_point.X()
+                                             : visual_point.Y();
+  if (!column_set_->StyleRef().IsLeftToRightDirection()) {
     offset_in_column_progression_direction =
-        column_set_.LogicalWidth() - offset_in_column_progression_direction;
+        column_set_->LogicalWidth() - offset_in_column_progression_direction;
   }
-  LayoutUnit column_gap = column_set_.ColumnGap();
+  LayoutUnit column_gap = column_set_->ColumnGap();
   if (column_length + column_gap <= 0)
     return 0;
   // Column boundaries are in the middle of the column gap.
@@ -567,8 +585,8 @@ void MultiColumnFragmentainerGroup::ColumnIntervalForVisualRect(
     const LayoutRect& rect,
     unsigned& first_column,
     unsigned& last_column) const {
-  bool is_column_ltr = column_set_.StyleRef().IsLeftToRightDirection();
-  if (column_set_.IsHorizontalWritingMode()) {
+  bool is_column_ltr = column_set_->StyleRef().IsLeftToRightDirection();
+  if (column_set_->IsHorizontalWritingMode()) {
     if (is_column_ltr) {
       first_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
       last_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
@@ -610,10 +628,14 @@ unsigned MultiColumnFragmentainerGroup::UnclampedActualColumnCount() const {
   return count;
 }
 
+void MultiColumnFragmentainerGroup::Trace(Visitor* visitor) const {
+  visitor->Trace(column_set_);
+}
+
 MultiColumnFragmentainerGroupList::MultiColumnFragmentainerGroupList(
     LayoutMultiColumnSet& column_set)
-    : column_set_(column_set) {
-  Append(MultiColumnFragmentainerGroup(column_set_));
+    : column_set_(&column_set) {
+  Append(MultiColumnFragmentainerGroup(*column_set_));
 }
 
 // An explicit empty destructor of MultiColumnFragmentainerGroupList should be
@@ -628,12 +650,17 @@ MultiColumnFragmentainerGroupList::~MultiColumnFragmentainerGroupList() =
 
 MultiColumnFragmentainerGroup&
 MultiColumnFragmentainerGroupList::AddExtraGroup() {
-  Append(MultiColumnFragmentainerGroup(column_set_));
+  Append(MultiColumnFragmentainerGroup(*column_set_));
   return Last();
 }
 
 void MultiColumnFragmentainerGroupList::DeleteExtraGroups() {
   Shrink(1);
+}
+
+void MultiColumnFragmentainerGroupList::Trace(Visitor* visitor) const {
+  visitor->Trace(column_set_);
+  visitor->Trace(groups_);
 }
 
 }  // namespace blink

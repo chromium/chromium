@@ -11,11 +11,15 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
+#include "storage/browser/blob/blob_url_loader.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
 
 namespace storage {
@@ -25,6 +29,9 @@ class ReaderDelegate : public MojoBlobReader::Delegate {
  public:
   ReaderDelegate(mojo::PendingRemote<blink::mojom::BlobReaderClient> client)
       : client_(std::move(client)) {}
+
+  ReaderDelegate(const ReaderDelegate&) = delete;
+  ReaderDelegate& operator=(const ReaderDelegate&) = delete;
 
   MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
       uint64_t total_size,
@@ -41,8 +48,6 @@ class ReaderDelegate : public MojoBlobReader::Delegate {
 
  private:
   mojo::Remote<blink::mojom::BlobReaderClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderDelegate);
 };
 
 class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
@@ -50,6 +55,10 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
   DataPipeGetterReaderDelegate(
       network::mojom::DataPipeGetter::ReadCallback callback)
       : callback_(std::move(callback)) {}
+
+  DataPipeGetterReaderDelegate(const DataPipeGetterReaderDelegate&) = delete;
+  DataPipeGetterReaderDelegate& operator=(const DataPipeGetterReaderDelegate&) =
+      delete;
 
   MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
       uint64_t total_size,
@@ -74,8 +83,6 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
 
  private:
   network::mojom::DataPipeGetter::ReadCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeGetterReaderDelegate);
 };
 
 }  // namespace
@@ -123,12 +130,23 @@ void BlobImpl::ReadAll(
                          std::move(handle));
 }
 
+void BlobImpl::Load(
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
+    const std::string& method,
+    const net::HttpRequestHeaders& headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  BlobURLLoader::CreateAndStart(std::move(loader), method, headers,
+                                std::move(client),
+                                std::make_unique<BlobDataHandle>(*handle_));
+}
+
 void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
   handle_->RunOnConstructionComplete(base::BindOnce(
       [](BlobDataHandle handle, ReadSideDataCallback callback,
          BlobStatus status) {
         if (status != BlobStatus::DONE) {
-          std::move(callback).Run(base::nullopt);
+          DCHECK(BlobStatusIsError(status));
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
@@ -136,26 +154,26 @@ void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
         // Currently side data is supported only for blobs with a single entry.
         const auto& items = snapshot->items();
         if (items.size() != 1) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
         const auto& item = items[0];
         if (item->type() != BlobDataItem::Type::kReadableDataHandle) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
         int32_t body_size = item->data_handle()->GetSideDataSize();
         if (body_size == 0) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
         item->data_handle()->ReadSideData(base::BindOnce(
             [](ReadSideDataCallback callback, int result,
                mojo_base::BigBuffer buffer) {
               if (result < 0) {
-                std::move(callback).Run(base::nullopt);
+                std::move(callback).Run(absl::nullopt);
                 return;
               }
               std::move(callback).Run(std::move(buffer));
@@ -163,6 +181,71 @@ void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
             std::move(callback)));
       },
       *handle_, std::move(callback)));
+}
+
+void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
+  handle_->RunOnConstructionComplete(base::BindOnce(
+      [](base::WeakPtr<BlobImpl> blob_impl, CaptureSnapshotCallback callback,
+         BlobStatus status) {
+        if (!blob_impl) {
+          // No need to call callback, since blob_impl is only destroyed if the
+          // mojo pipe is disconnected.
+          return;
+        }
+
+        auto* handle = blob_impl->handle_.get();
+
+        if (status != BlobStatus::DONE) {
+          DCHECK(BlobStatusIsError(status));
+          std::move(callback).Run(0, absl::nullopt);
+          return;
+        }
+
+        auto snapshot = handle->CreateSnapshot();
+        // Only blobs consisting of a single file can have a modification
+        // time.
+        const auto& items = snapshot->items();
+        if (items.size() != 1) {
+          std::move(callback).Run(handle->size(), absl::nullopt);
+          return;
+        }
+
+        const auto& item = items[0];
+        if (item->type() != BlobDataItem::Type::kFile) {
+          std::move(callback).Run(handle->size(), absl::nullopt);
+          return;
+        }
+
+        base::Time modification_time = item->expected_modification_time();
+        if (!modification_time.is_null() &&
+            handle->size() != BlobDataHandle::kUnknownSize) {
+          std::move(callback).Run(handle->size(), modification_time);
+          return;
+        }
+
+        struct SizeAndTime {
+          uint64_t size;
+          absl::optional<base::Time> time;
+        };
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+            base::BindOnce(
+                [](const base::FilePath& path) {
+                  base::File::Info info;
+                  if (!base::GetFileInfo(path, &info))
+                    return SizeAndTime{0, absl::nullopt};
+                  return SizeAndTime{static_cast<uint64_t>(info.size),
+                                     info.last_modified};
+                },
+                item->path()),
+            base::BindOnce(
+                [](CaptureSnapshotCallback callback,
+                   const SizeAndTime& result) {
+                  std::move(callback).Run(result.size, result.time);
+                },
+                std::move(callback)));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BlobImpl::GetInternalUUID(GetInternalUUIDCallback callback) {

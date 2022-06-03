@@ -1,0 +1,4 @@
+This directory contains shared code used for the Lookalike URL blocking page.
+
+The lookalike interstitial is triggered when a user visits a domain that is
+similar to that of a domain of a popular site.

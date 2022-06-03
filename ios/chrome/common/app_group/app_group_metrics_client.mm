@@ -4,7 +4,6 @@
 
 #include "ios/chrome/common/app_group/app_group_metrics_client.h"
 
-#include "base/logging.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 

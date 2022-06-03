@@ -11,7 +11,8 @@
 /**
  * @typedef {{
  *   origin: string,
- *   tabId: (number|undefined)
+ *   tabId: number,
+ *   frameId: number,
  * }}
  */
 var WebRequestSender;
@@ -31,6 +32,14 @@ function createSenderFromMessageSender(messageSender) {
   var sender = {origin: origin};
   if (messageSender.tab) {
     sender.tabId = messageSender.tab.id;
+    sender.frameId = messageSender.frameId;
+  } else {
+    // The MessageSender tab and frameId properties are unset if the
+    // `chrome.tabs` API is unavailable because the request was not sent from a
+    // tab. This is the case for requests made on the Chrome OS sign-in screen
+    // during SAML SSO device login.
+    sender.tabId = chrome.tabs.TAB_ID_NONE;
+    sender.frameId = -1;
   }
   return sender;
 }

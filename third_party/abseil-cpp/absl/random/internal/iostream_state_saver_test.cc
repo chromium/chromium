@@ -14,6 +14,9 @@
 
 #include "absl/random/internal/iostream_state_saver.h"
 
+#include <errno.h>
+#include <stdio.h>
+
 #include <sstream>
 #include <string>
 
@@ -196,8 +199,8 @@ TEST(IOStreamStateSaver, RoundTripFloats) {
     EXPECT_EQ(-d, StreamRoundTrip<double>(-d));
 
     // Avoid undefined behavior (overflow/underflow).
-    if (d <= std::numeric_limits<int64_t>::max() &&
-        d >= std::numeric_limits<int64_t>::lowest()) {
+    if (f <= static_cast<float>(std::numeric_limits<int64_t>::max()) &&
+        f >= static_cast<float>(std::numeric_limits<int64_t>::lowest())) {
       int64_t x = static_cast<int64_t>(f);
       EXPECT_EQ(x, StreamRoundTrip<int64_t>(x));
     }
@@ -264,8 +267,8 @@ TEST(IOStreamStateSaver, RoundTripDoubles) {
     }
 
     // Avoid undefined behavior (overflow/underflow).
-    if (d <= std::numeric_limits<int64_t>::max() &&
-        d >= std::numeric_limits<int64_t>::lowest()) {
+    if (d <= static_cast<double>(std::numeric_limits<int64_t>::max()) &&
+        d >= static_cast<double>(std::numeric_limits<int64_t>::lowest())) {
       int64_t x = static_cast<int64_t>(d);
       EXPECT_EQ(x, StreamRoundTrip<int64_t>(x));
     }

@@ -15,12 +15,22 @@
 #include <limits>
 #include <string>
 
+#include "build/build_config.h"
+
+#if defined(ARCH_CPU_X86_64)
 #define ABORT()                                                                \
   {                                                                            \
     asm volatile(                                                              \
         "int3; ud2; push %0;" ::"i"(static_cast<unsigned char>(__COUNTER__))); \
     __builtin_unreachable();                                                   \
   }
+#elif defined(ARCH_CPU_ARM64)
+#define ABORT()                                                             \
+  {                                                                         \
+    asm volatile("udf %0;" ::"i"(static_cast<unsigned char>(__COUNTER__))); \
+    __builtin_unreachable();                                                \
+  }
+#endif
 
 extern "C" {
 void abort_report_np(const char*, ...);
@@ -94,10 +104,8 @@ void SendAslLog(Level level, const char* message) {
   asl_set(asl_message.get(), ASL_KEY_MSG, message);
   asl_send(asl_client.get(), asl_message.get());
 
-  if (__builtin_available(macOS 10.11, *)) {
-    if (level == Level::FATAL) {
-      abort_report_np(message);
-    }
+  if (level == Level::FATAL) {
+    abort_report_np(message);
   }
 }
 

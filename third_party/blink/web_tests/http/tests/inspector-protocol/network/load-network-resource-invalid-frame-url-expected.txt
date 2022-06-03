@@ -1,0 +1,34 @@
+Tests basic error validation for Network.loadNetworkResource
+Response for invalid target and invalid url: {
+    error : {
+        code : -32602
+        message : The url must be valid and have scheme http or https
+    }
+    id : <number>
+    sessionId : <string>
+}
+Response for invalid target and valid url: {
+    error : {
+        code : -32602
+        message : Frame not found
+    }
+    id : <number>
+    sessionId : <string>
+}
+Response for omitted frameId: {
+    error : {
+        code : -32602
+        message : Parameter frameId must be provided for frame targets
+    }
+    id : <number>
+    sessionId : <string>
+}
+Response for valid target and invalid url: {
+    error : {
+        code : -32602
+        message : The url must be valid and have scheme http or https
+    }
+    id : <number>
+    sessionId : <string>
+}
+

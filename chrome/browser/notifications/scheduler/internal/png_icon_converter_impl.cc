@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_entry.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -60,9 +61,8 @@ PngIconConverterImpl::~PngIconConverterImpl() = default;
 void PngIconConverterImpl::ConvertIconToString(std::vector<SkBitmap> images,
                                                EncodeCallback callback) {
   DCHECK(callback);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ConvertIconToStringInternal, std::move(images)),
       std::move(callback));
 }
@@ -71,9 +71,8 @@ void PngIconConverterImpl::ConvertStringToIcon(
     std::vector<std::string> encoded_data,
     DecodeCallback callback) {
   DCHECK(callback);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ConvertStringToIconInternal, std::move(encoded_data)),
       std::move(callback));
 }

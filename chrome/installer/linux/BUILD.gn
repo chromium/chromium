@@ -4,14 +4,18 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
+import("//build/linux/strip_binary.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//components/nacl/features.gni")
+import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+import("//ui/gl/features.gni")
 
 if (bundle_widevine_cdm) {
   import("//media/cdm/library_cdm/cdm_paths.gni")
@@ -21,14 +25,17 @@ declare_args() {
   # Enables checks that ensure the packages are installable on all supported
   # distributions.
   enable_distro_version_check = true
+
+  # Enable building snap packages
+  enable_snap_package = false
 }
 
-assert(is_linux)
+assert(is_linux || is_chromeos)
 
 packaging_files_executables = [
   "$root_out_dir/chrome",
+  "$root_out_dir/chrome_crashpad_handler",
   "$root_out_dir/chrome_sandbox",
-  "$root_out_dir/crashpad_handler",
 ]
 packaging_files_shlibs = []
 
@@ -54,11 +61,42 @@ if (bundle_widevine_cdm) {
       [ "$root_out_dir/$widevine_cdm_path/libwidevinecdm.so" ]
 }
 
+if (use_egl) {
+  packaging_files_shlibs += [
+    "$root_out_dir/libEGL.so",
+    "$root_out_dir/libGLESv2.so",
+  ]
+  if (angle_shared_libvulkan && !is_chromeos) {
+    packaging_files_shlibs += [ "$root_out_dir/libvulkan.so.1" ]
+  }
+}
+
+if (enable_swiftshader) {
+  packaging_files_shlibs += [
+    "$root_out_dir/swiftshader_libEGL.so",
+    "$root_out_dir/swiftshader_libGLESv2.so",
+    "$root_out_dir/libvk_swiftshader.so",
+  ]
+}
+
 packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
+
+copy("swiftshader_libs") {
+  sources = [
+    "$root_out_dir/swiftshader/libEGL.so",
+    "$root_out_dir/swiftshader/libGLESv2.so",
+  ]
+  outputs = [ "$root_out_dir/swiftshader_{{source_file_part}}" ]
+  public_deps = [
+    "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",
+    "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
+  ]
+}
 
 # TODO(mmoss) Any convenient way to get all the relevant build files?
 # (e.g. all locales, resources, etc.)
 packaging_files = packaging_files_binaries + [
+                    "$root_out_dir/vk_swiftshader_icd.json",
                     "$root_out_dir/xdg-mime",
                     "$root_out_dir/xdg-settings",
                     "$root_out_dir/locales/en-US.pak",
@@ -67,34 +105,30 @@ packaging_files = packaging_files_binaries + [
                   ]
 
 action_foreach("calculate_deb_dependencies") {
-  deps = [
-    ":installer_deps",
-  ]
+  deps = [ ":installer_deps" ]
   script = "debian/calculate_package_deps.py"
   sources = packaging_files_binaries
   inputs = [
     "debian/deb_version.py",
     "debian/dist_package_versions.json",
     "debian/package_version_interval.py",
+    "//third_party/dpkg-shlibdeps/dpkg-shlibdeps.pl",
   ]
-  outputs = [
-    "$root_out_dir/deb_{{source_name_part}}.deps",
-  ]
+  outputs = [ "$root_out_dir/deb_{{source_name_part}}.deps" ]
   args = [
     "{{source}}",
     rebase_path(sysroot, root_build_dir),
     target_cpu,
     "deb_{{source_name_part}}.deps",
   ]
-  if (is_desktop_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
+      enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
 
 action("merge_deb_dependencies") {
-  deps = [
-    ":calculate_deb_dependencies",
-  ]
+  deps = [ ":calculate_deb_dependencies" ]
   script = "debian/merge_package_versions.py"
   additional_deps = "debian/additional_deps"
   inputs = [
@@ -102,9 +136,7 @@ action("merge_deb_dependencies") {
     "debian/deb_version.py",
     "debian/package_version_interval.py",
   ]
-  outputs = [
-    "$root_out_dir/deb_common.deps",
-  ]
+  outputs = [ "$root_out_dir/deb_common.deps" ]
   args = [
     "deb_common.deps",
     rebase_path(additional_deps, root_build_dir),
@@ -114,39 +146,28 @@ action("merge_deb_dependencies") {
 }
 
 action_foreach("calculate_rpm_dependencies") {
-  deps = [
-    ":installer_deps",
-  ]
+  deps = [ ":installer_deps" ]
   script = "rpm/calculate_package_deps.py"
   sources = packaging_files_binaries
-  inputs = [
-    "rpm/dist_package_provides.json",
-  ]
-  outputs = [
-    "$root_out_dir/rpm_{{source_name_part}}.deps",
-  ]
+  inputs = [ "rpm/dist_package_provides.json" ]
+  outputs = [ "$root_out_dir/rpm_{{source_name_part}}.deps" ]
   args = [
     "{{source}}",
     "rpm_{{source_name_part}}.deps",
   ]
   args += rebase_path(packaging_files_shlibs, root_build_dir)
-  if (is_desktop_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
+      enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
 
 action("merge_rpm_dependencies") {
-  deps = [
-    ":calculate_rpm_dependencies",
-  ]
+  deps = [ ":calculate_rpm_dependencies" ]
   script = "rpm/merge_package_deps.py"
   additional_deps = "rpm/additional_deps"
-  inputs = [
-    additional_deps,
-  ]
-  outputs = [
-    "$root_out_dir/rpm_common.deps",
-  ]
+  inputs = [ additional_deps ]
+  outputs = [ "$root_out_dir/rpm_common.deps" ]
   args = [
     "rpm_common.deps",
     rebase_path(additional_deps, root_build_dir),
@@ -155,58 +176,15 @@ action("merge_rpm_dependencies") {
                       root_build_dir)
 }
 
-action("strip_chrome_binary") {
-  prog_name = "$root_out_dir/chrome"
-  debug_file = prog_name + ".debug"
-  stripped_file = prog_name + ".stripped"
-  deps = [
-    "//chrome",
-  ]
-  script = "//build/gn_run_binary.py"
-  sources = [
-    "//buildtools/third_party/eu-strip/bin/eu-strip",
-    prog_name,
-  ]
-  outputs = [
-    debug_file,
-    stripped_file,
-  ]
-  args = [
-    rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
-                root_build_dir),
-    "-o",
-    rebase_path(stripped_file, root_build_dir),
-    "-f",
-    rebase_path(debug_file, root_build_dir),
-    rebase_path(prog_name, root_build_dir),
-  ]
+strip_binary("strip_chrome_binary") {
+  binary_input = "$root_out_dir/chrome"
+  symbol_output = "$root_out_dir/chrome.debug"
+  stripped_binary_output = "$root_out_dir/chrome.stripped"
+  deps = [ "//chrome" ]
 }
 
-# This target builds all "normal" Linux installers.
-#
-# The bot setup is to build stable, unstable, and beta packages for the current
-# build. Then a later step picks up the package corresponding to what the
-# current build is supposed to be. This is wasteful since one build will only
-# be one of these.
-#
-# TODO it would be much nicer to have a build variable so the bot can tell us
-# what the current build should be, so we only have to make one .deb/.rpm pair.
-#
-#
-# TO BUILD LINUX INSTALLER PACKAGES
-#
-# The packages list the exact versions of each library used. The versions used
-# on the bots are likely different than those on your workstation, so you'll
-# get a stream of errors like:
-#   < libasound2 (>= 1.0.23)
-#   ---
-#   > libasound2 (>= 1.0.16)
-#
-# To avoid these warnings for testing purposes, do:
-#
-#   export IGNORE_DEPS_CHANGES=1
-#
-# before you build.
+# This target builds all "normal" Linux installers.  You must set
+# is_component_build=false before building this target.
 group("linux") {
   deps = [
     ":beta",
@@ -252,9 +230,7 @@ copy("common_packaging_files") {
 
   sources += [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
 
-  outputs = [
-    "$root_out_dir/installer/common/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/installer/common/{{source_file_part}}" ]
 }
 
 copy("deb_packaging_files") {
@@ -269,9 +245,7 @@ copy("deb_packaging_files") {
     "debian/postrm",
     "debian/prerm",
   ]
-  outputs = [
-    "$root_out_dir/installer/debian/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/installer/debian/{{source_file_part}}" ]
 }
 
 copy("theme_files") {
@@ -307,21 +281,17 @@ copy("theme_files") {
       "$branding_dir_100/product_logo_32_dev.png",
     ]
   }
-  outputs = [
-    "$root_out_dir/installer/theme/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/installer/theme/{{source_file_part}}" ]
 }
 
-if (!is_chromeos) {
+if (!is_chromeos_ash) {
   copy("rpm_packaging_files") {
     visibility = [ ":*" ]
     sources = [
       "rpm/build.sh",
       "rpm/chrome.spec.template",
     ]
-    outputs = [
-      "$root_out_dir/installer/rpm/{{source_file_part}}",
-    ]
+    outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
   }
 }
 
@@ -352,8 +322,8 @@ group("installer_deps") {
     "//chrome",
     "//chrome:packed_resources",
     "//chrome/browser/resources/media/mei_preload:component",
+    "//components/crash/core/app:chrome_crashpad_handler",
     "//sandbox/linux:chrome_sandbox",
-    "//third_party/crashpad/crashpad/handler:crashpad_handler",
   ]
   if (enable_nacl) {
     public_deps += [
@@ -368,7 +338,23 @@ group("installer_deps") {
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
   }
-  if (!is_chromeos) {
+  if (use_egl) {
+    public_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      public_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
+  }
+  if (enable_swiftshader) {
+    public_deps += [
+      ":swiftshader_libs",
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+    ]
+  }
+  if (!is_chromeos_ash) {
     public_deps += [ ":rpm_packaging_files" ]
   }
 }
@@ -381,11 +367,10 @@ template("linux_package") {
   assert(defined(invoker.channel))
   channel = invoker.channel
 
-  if (current_cpu == "x86") {
-    # The shell scripts use "ia32" instead of "x86".
-    build_script_arch = "ia32"
+  if (is_chrome_branded) {
+    package = "google-chrome"
   } else {
-    build_script_arch = current_cpu
+    package = "chromium-browser"
   }
 
   deb_target_name = "${target_name}_deb"
@@ -398,7 +383,7 @@ template("linux_package") {
     } else if (current_cpu == "x64") {
       deb_arch = "amd64"
     } else if (current_cpu == "arm") {
-      deb_arch = "arm"
+      deb_arch = "armhf"
     } else if (current_cpu == "arm64") {
       deb_arch = "arm64"
     } else if (current_cpu == "mipsel") {
@@ -410,21 +395,12 @@ template("linux_package") {
     }
 
     inputs = packaging_files
-    if (is_chrome_branded) {
-      package = "google-chrome"
-    } else {
-      package = "chromium-browser"
-    }
-    outputs = [
-      "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb",
-    ]
+    outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
 
     args = [
       rebase_path("$root_out_dir/installer/debian/build.sh", root_build_dir),
       "-a",
-      build_script_arch,
-      "-b",
-      rebase_path(root_out_dir, root_build_dir),
+      deb_arch,
       "-c",
       invoker.channel,
       "-d",
@@ -445,7 +421,7 @@ template("linux_package") {
     ]
   }
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     rpm_target_name = "${target_name}_rpm"
     action(rpm_target_name) {
       visibility = [ ":*" ]
@@ -456,9 +432,9 @@ template("linux_package") {
       } else if (current_cpu == "x64") {
         rpm_arch = "x86_64"
       } else if (current_cpu == "arm") {
-        rpm_arch = "arm"
+        rpm_arch = "armhf"
       } else if (current_cpu == "arm64") {
-        rpm_arch = "arm64"
+        rpm_arch = "aarch64"
       } else if (current_cpu == "mipsel") {
         rpm_arch = "mipsel"
       } else if (current_cpu == "mips64el") {
@@ -468,21 +444,12 @@ template("linux_package") {
       }
 
       inputs = packaging_files
-      if (is_chrome_branded) {
-        package = "google-chrome"
-      } else {
-        package = "chromium-browser"
-      }
-      outputs = [
-        "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm",
-      ]
+      outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
 
       args = [
         rebase_path("$root_out_dir/installer/rpm/build.sh", root_build_dir),
         "-a",
-        build_script_arch,
-        "-b",
-        rebase_path(root_out_dir, root_build_dir),
+        rpm_arch,
         "-c",
         invoker.channel,
         "-d",
@@ -500,14 +467,54 @@ template("linux_package") {
         ":merge_rpm_dependencies",
       ]
     }
+
+    if (enable_snap_package) {
+      snap_target_name = "${target_name}_snap"
+      action(snap_target_name) {
+        visibility = [ ":*" ]
+        deps = [
+          ":installer_deps",
+          ":save_build_info",
+        ]
+        script = "//build/gn_run_binary.py"
+        sources = [
+          "snap/chrome.launcher.in",
+          "snap/snapcraft.yaml.in",
+        ]
+        if (!is_chrome_branded) {
+          package = "chromium"
+        }
+        if (current_cpu == "x86") {
+          snap_arch = "i386"
+        } else if (current_cpu == "x64") {
+          snap_arch = "amd64"
+        } else if (current_cpu == "arm") {
+          snap_arch = "armhf"
+        } else if (current_cpu == "arm64") {
+          snap_arch = "arm64"
+        } else {
+          assert(false, "Linux installer not configured for this architecture.")
+        }
+        args = [
+          rebase_path("snap/build.sh", root_build_dir),
+          package,
+          channel,
+          chrome_version_full,
+          snap_arch,
+          target_os,
+        ]
+        outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}_${snap_arch}.snap" ]
+      }
+    }
   }
 
   group(target_name) {
-    deps = [
-      ":$deb_target_name",
-    ]
-    if (!is_chromeos) {
+    deps = [ ":$deb_target_name" ]
+    if (!is_chromeos_ash) {
       deps += [ ":$rpm_target_name" ]
+      if (enable_snap_package) {
+        deps += [ ":$snap_target_name" ]
+      }
     }
   }
 }

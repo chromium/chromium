@@ -5,7 +5,7 @@
 #include "chrome/browser/offline_pages/android/evaluation/evaluation_test_scheduler.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,7 +41,8 @@ void GetAllRequestsDone(
     Profile* profile = ProfileManager::GetLastUsedProfile();
     RequestCoordinator* coordinator =
         RequestCoordinatorFactory::GetInstance()->GetForBrowserContext(profile);
-    coordinator->StartImmediateProcessing(base::Bind(&ProcessingDoneCallback));
+    coordinator->StartImmediateProcessing(
+        base::BindRepeating(&ProcessingDoneCallback));
   }
 }
 
@@ -50,14 +51,13 @@ void StartProcessing() {
   if (net::NetworkChangeNotifier::GetConnectionType() ==
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&StartProcessing),
-        base::TimeDelta::FromSeconds(2));
+        FROM_HERE, base::BindOnce(&StartProcessing), base::Seconds(2));
     return;
   }
   Profile* profile = ProfileManager::GetLastUsedProfile();
   RequestCoordinator* coordinator =
       RequestCoordinatorFactory::GetInstance()->GetForBrowserContext(profile);
-  coordinator->GetAllRequests(base::Bind(&GetAllRequestsDone));
+  coordinator->GetAllRequests(base::BindOnce(&GetAllRequestsDone));
 }
 
 }  // namespace

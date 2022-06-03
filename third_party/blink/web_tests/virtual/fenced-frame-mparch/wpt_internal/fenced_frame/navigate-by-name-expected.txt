@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS setup
+PASS navigate top-level fenced frame by name
+PASS navigate iframe nested in a fenced frame by name
+PASS navigate nested fenced frame by name
+Harness: the test ran to completion.
+

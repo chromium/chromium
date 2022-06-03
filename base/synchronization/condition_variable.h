@@ -62,15 +62,15 @@
 #ifndef BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 
+#include "build/build_config.h"
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
 
 #include "base/base_export.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
@@ -85,13 +85,16 @@ class BASE_EXPORT ConditionVariable {
   // Construct a cv for use with ONLY one user lock.
   explicit ConditionVariable(Lock* user_lock);
 
+  ConditionVariable(const ConditionVariable&) = delete;
+  ConditionVariable& operator=(const ConditionVariable&) = delete;
+
   ~ConditionVariable();
 
   // Wait() releases the caller's critical section atomically as it starts to
   // sleep, and the reacquires it when it is signaled. The wait functions are
   // susceptible to spurious wakeups. (See usage note 1 for more details.)
-  void Wait();
-  void TimedWait(const TimeDelta& max_time);
+  void NOT_TAIL_CALLED Wait();
+  void NOT_TAIL_CALLED TimedWait(const TimeDelta& max_time);
 
   // Broadcast() revives all waiting threads. (See usage note 2 for more
   // details.)
@@ -109,7 +112,6 @@ class BASE_EXPORT ConditionVariable {
   void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
 
  private:
-
 #if defined(OS_WIN)
   CHROME_CONDITION_VARIABLE cv_;
   CHROME_SRWLOCK* const srwlock_;
@@ -126,8 +128,6 @@ class BASE_EXPORT ConditionVariable {
   // considered blocked as opposed to idle (and potentially replaced if part of
   // a pool).
   bool waiting_is_blocking_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionVariable);
 };
 
 }  // namespace base

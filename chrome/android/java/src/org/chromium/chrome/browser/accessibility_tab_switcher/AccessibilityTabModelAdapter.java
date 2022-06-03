@@ -121,8 +121,10 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return mUndoneTabModel != null ? mUndoneTabModel.getTabAt(position).getId()
-                                       : Tab.INVALID_TAB_ID;
+        if (mUndoneTabModel != null && mUndoneTabModel.getTabAt(position) != null) {
+            return mUndoneTabModel.getTabAt(position).getId();
+        }
+        return Tab.INVALID_TAB_ID;
     }
 
     @Override
@@ -139,7 +141,8 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
         }
 
         listItem.setTab(TabModelUtils.getTabById(mUndoneTabModel, tabId),
-                mActualTabModel.supportsPendingClosures());
+                mActualTabModel.supportsPendingClosures(),
+                TabModelUtils.getCurrentTab(mUndoneTabModel).getId() == tabId);
         listItem.setListeners(mInternalListener, mCanScrollListener);
         listItem.resetState();
 

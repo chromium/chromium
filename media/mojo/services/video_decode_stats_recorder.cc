@@ -5,7 +5,6 @@
 #include "media/mojo/services/video_decode_stats_recorder.h"
 
 #include "base/memory/ptr_util.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 
 #include "base/logging.h"
 

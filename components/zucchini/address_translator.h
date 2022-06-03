@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/image_utils.h"
 
@@ -114,14 +113,14 @@ class AddressTranslator {
     // Embeds |translator| for use. Now object lifetime is tied to |translator|
     // lifetime.
     explicit OffsetToRvaCache(const AddressTranslator& translator);
+    OffsetToRvaCache(const OffsetToRvaCache&) = delete;
+    const OffsetToRvaCache& operator=(const OffsetToRvaCache&) = delete;
 
     rva_t Convert(offset_t offset) const;
 
    private:
     const AddressTranslator& translator_;
     mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(OffsetToRvaCache);
   };
 
   // An adaptor for AddressTranslator::RvaToOffset() that caches the last Unit
@@ -131,6 +130,8 @@ class AddressTranslator {
     // Embeds |translator| for use. Now object lifetime is tied to |translator|
     // lifetime.
     explicit RvaToOffsetCache(const AddressTranslator& translator);
+    RvaToOffsetCache(const RvaToOffsetCache&) = delete;
+    const RvaToOffsetCache& operator=(const RvaToOffsetCache&) = delete;
 
     bool IsValid(rva_t rva) const;
 
@@ -139,8 +140,6 @@ class AddressTranslator {
    private:
     const AddressTranslator& translator_;
     mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(RvaToOffsetCache);
   };
 
   enum Status {
@@ -152,6 +151,9 @@ class AddressTranslator {
   };
 
   AddressTranslator();
+  AddressTranslator(AddressTranslator&&);
+  AddressTranslator(const AddressTranslator&) = delete;
+  const AddressTranslator& operator=(const AddressTranslator&) = delete;
   ~AddressTranslator();
 
   // Consumes |units| to populate data in this class. Performs consistency
@@ -190,8 +192,6 @@ class AddressTranslator {
 
   // Conversion factor to translate between dangling RVAs and fake offsets.
   offset_t fake_offset_begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressTranslator);
 };
 
 }  // namespace zucchini

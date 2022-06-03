@@ -1,0 +1,15 @@
+<style>
+  body {
+    margin: 0;
+  }
+</style>
+<img src="images/blue96x96.png" />
+<script>
+  new PerformanceObserver(e => {
+    const entries = e.getEntries();
+    const entry = entries[entries.length - 1];
+    window.parent.postMessage({
+      startTime: entry.startTime, timeOrigin: performance.timeOrigin
+    }, '*');
+  }).observe({ type: 'largest-contentful-paint', buffered: true });
+</script>

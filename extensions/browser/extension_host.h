@@ -11,8 +11,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/media_stream_request.h"
@@ -21,8 +21,8 @@
 #include "extensions/browser/deferred_start_render_host.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
-#include "extensions/common/view_type.h"
 
 namespace content {
 class BrowserContext;
@@ -36,7 +36,7 @@ class ExtensionHostDelegate;
 class ExtensionHostObserver;
 class ExtensionHostQueue;
 
-// This class is the browser component of an extension component's RenderView.
+// This class is the browser component of an extension component's page.
 // It handles setting up the renderer process, if needed, with special
 // privileges available to extensions.  It may have a view to be shown in the
 // browser UI, or it may be hidden.
@@ -51,7 +51,12 @@ class ExtensionHost : public DeferredStartRenderHost,
  public:
   ExtensionHost(const Extension* extension,
                 content::SiteInstance* site_instance,
-                const GURL& url, ViewType host_type);
+                const GURL& url,
+                mojom::ViewType host_type);
+
+  ExtensionHost(const ExtensionHost&) = delete;
+  ExtensionHost& operator=(const ExtensionHost&) = delete;
+
   ~ExtensionHost() override;
 
   // This may be null if the extension has been or is being unloaded.
@@ -59,7 +64,7 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   const std::string& extension_id() const { return extension_id_; }
   content::WebContents* host_contents() const { return host_contents_.get(); }
-  content::RenderViewHost* render_view_host() const;
+  content::RenderFrameHost* main_frame_host() const { return main_frame_host_; }
   content::RenderProcessHost* render_process_host() const;
   bool has_loaded_once() const { return has_loaded_once_; }
   const GURL& initial_url() const { return initial_url_; }
@@ -69,16 +74,18 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   content::BrowserContext* browser_context() { return browser_context_; }
 
-  ViewType extension_host_type() const { return extension_host_type_; }
-  const GURL& GetURL() const;
+  mojom::ViewType extension_host_type() const { return extension_host_type_; }
 
-  // Returns true if the render view is initialized and didn't crash.
-  bool IsRenderViewLive() const;
+  // Returns the last committed URL of the associated WebContents.
+  const GURL& GetLastCommittedURL() const;
 
-  // Prepares to initializes our RenderViewHost by creating its RenderView and
-  // navigating to this host's url. Uses host_view for the RenderViewHost's view
-  // (can be NULL). This happens delayed to avoid locking the UI.
-  void CreateRenderViewSoon();
+  // Returns true if the renderer main frame exists.
+  bool IsRendererLive() const;
+
+  // Prepares to initializes our RenderFrameHost by creating the main frame and
+  // navigating `host_contents_` to the initial url. This happens delayed to
+  // avoid locking the UI.
+  void CreateRendererSoon();
 
   // Closes this host (results in [possibly asynchronous] deletion).
   void Close();
@@ -102,11 +109,12 @@ class ExtensionHost : public DeferredStartRenderHost,
   // content::WebContentsObserver:
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* host) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewDeleted(content::RenderViewHost* render_view_host) override;
-  void RenderViewReady() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
-  void DocumentAvailableInMainFrame() override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void DidStopLoading() override;
 
   // content::WebContentsDelegate:
@@ -114,6 +122,7 @@ class ExtensionHost : public DeferredStartRenderHost,
       content::WebContents* source) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
@@ -126,12 +135,14 @@ class ExtensionHost : public DeferredStartRenderHost,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  bool IsNeverVisible(content::WebContents* web_contents) override;
+  bool IsNeverComposited(content::WebContents* web_contents) override;
   content::PictureInPictureResult EnterPictureInPicture(
       content::WebContents* web_contents,
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionReady(content::BrowserContext* browser_context,
@@ -153,12 +164,14 @@ class ExtensionHost : public DeferredStartRenderHost,
 
  private:
   // DeferredStartRenderHost:
-  void CreateRenderViewNow() override;
+  void CreateRendererNow() override;
 
   // Message handlers.
   void OnEventAck(int event_id);
   void OnIncrementLazyKeepaliveCount();
   void OnDecrementLazyKeepaliveCount();
+
+  void NotifyRenderProcessReady();
 
   // Records UMA for load events.
   void RecordStopLoadingUMA();
@@ -178,21 +191,28 @@ class ExtensionHost : public DeferredStartRenderHost,
   // The host for our HTML content.
   std::unique_ptr<content::WebContents> host_contents_;
 
-  // A weak pointer to the current or pending RenderViewHost. We don't access
-  // this through the host_contents because we want to deal with the pending
-  // host, so we can send messages to it before it finishes loading.
-  content::RenderViewHost* render_view_host_;
+  // A pointer to the current or speculative main frame in `host_contents_`. We
+  // can't access this frame through the `host_contents_` directly as it does
+  // not expose the speculative main frame. While navigating to a still-loading
+  // speculative main frame, we want to send messages to it rather than the
+  // current frame.
+  content::RenderFrameHost* main_frame_host_;
 
-  // Whether CreateRenderViewNow was called before the extension was ready.
-  bool is_render_view_creation_pending_;
+  // Whether CreateRendererNow was called before the extension was ready.
+  bool is_renderer_creation_pending_ = false;
+
+  // Whether ExtensionHostCreated() event has been fired, since
+  // RenderFrameCreated is triggered by every main frame that is created,
+  // including during a cross-site navigation which uses a new main frame.
+  bool has_creation_notification_already_fired_ = false;
 
   // Whether the ExtensionHost has finished loading some content at least once.
   // There may be subsequent loads - such as reloads and navigations - and this
   // will not affect its value (it will remain true).
-  bool has_loaded_once_;
+  bool has_loaded_once_ = false;
 
   // True if the main frame has finished parsing.
-  bool document_element_available_;
+  bool document_element_available_ = false;
 
   // The original URL of the page being hosted.
   GURL initial_url_;
@@ -202,7 +222,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   std::unordered_map<int, std::string> unacked_messages_;
 
   // The type of view being hosted.
-  ViewType extension_host_type_;
+  mojom::ViewType extension_host_type_;
 
   // Measures how long since the ExtensionHost object was created. This can be
   // used to measure the responsiveness of UI. For example, it's important to
@@ -217,7 +237,7 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   base::ObserverList<ExtensionHostObserver>::Unchecked observer_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHost);
+  base::WeakPtrFactory<ExtensionHost> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

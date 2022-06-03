@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -16,9 +16,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "ui/base/material_design/material_design_controller.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 
 TabletModePageBehavior::TabletModePageBehavior() {
   ash::TabletMode::Get()->AddObserver(this);
@@ -32,7 +30,7 @@ TabletModePageBehavior::~TabletModePageBehavior() {
 
 void TabletModePageBehavior::OnTabletModeToggled(bool enabled) {
   SetMobileLikeBehaviorEnabled(enabled);
-  ui::MaterialDesignController::OnTabletModeToggled(enabled);
+  ui::TouchUiController::Get()->OnTabletModeToggled(enabled);
 }
 
 void TabletModePageBehavior::OnTabletModeStarting() {
@@ -77,8 +75,7 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
     // On calling Init() of the |tab_strip_tracker_|, we will get a call to
     // TabInsertedAt() for all the existing webcontents, upon which we will
     // trigger a refresh of their WebKit preferences.
-    tab_strip_tracker_ =
-        std::make_unique<BrowserTabStripTracker>(this, this, nullptr);
+    tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
     tab_strip_tracker_->Init();
   } else {
     // Manually trigger a refresh for the existing webcontents' preferences.

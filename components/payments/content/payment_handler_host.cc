@@ -23,11 +23,15 @@ namespace payments {
 namespace {
 
 content::DevToolsBackgroundServicesContext* GetDevTools(
-    content::BrowserContext* browser_context,
+    content::WebContents* web_contents,
     const url::Origin& sw_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      browser_context, sw_origin.GetURL(), /*can_create=*/true);
+  if (!web_contents)
+    return nullptr;
+
+  auto* storage_partition =
+      web_contents->GetBrowserContext()->GetStoragePartitionForUrl(
+          sw_origin.GetURL(), /*can_create=*/true);
   if (!storage_partition)
     return nullptr;
 
@@ -51,10 +55,11 @@ void RunCallbackWithError(const std::string& error,
 }  // namespace
 
 PaymentHandlerHost::PaymentHandlerHost(content::WebContents* web_contents,
-                                       Delegate* delegate)
-    : web_contents_(web_contents), delegate_(delegate) {
-  DCHECK(web_contents_);
+                                       base::WeakPtr<Delegate> delegate)
+    : delegate_(delegate) {
+  DCHECK(web_contents);
   DCHECK(delegate_);
+  web_contents_ = web_contents->GetWeakPtr();
 }
 
 PaymentHandlerHost::~PaymentHandlerHost() {}
@@ -76,8 +81,7 @@ void PaymentHandlerHost::UpdateWith(
   if (!change_payment_request_details_callback_)
     return;
 
-  auto* dev_tools =
-      GetDevTools(web_contents_->GetBrowserContext(), sw_origin_for_logs_);
+  auto* dev_tools = GetDevTools(web_contents_.get(), sw_origin_for_logs_);
   if (dev_tools) {
     std::map<std::string, std::string> data = {{"Error", response->error}};
 
@@ -124,7 +128,7 @@ void PaymentHandlerHost::UpdateWith(
         data.emplace(prefix + " Method Name",
                      modifier->method_data->method_name);
         data.emplace(prefix + " Method Data",
-                     modifier->method_data->stringified_data);
+                     modifier->method_data->stringified_data.value_or("{}"));
         if (!modifier->total)
           continue;
         data.emplace(prefix + " Total Currency", modifier->total->currency);
@@ -187,14 +191,15 @@ void PaymentHandlerHost::ChangePaymentMethod(
     return;
   }
 
+  const std::string stringified_data =
+      method_data->stringified_data.value_or("{}");
   if (!delegate_->ChangePaymentMethod(method_data->method_name,
-                                      method_data->stringified_data)) {
+                                      stringified_data)) {
     RunCallbackWithError(errors::kInvalidState, std::move(callback));
     return;
   }
 
-  auto* dev_tools =
-      GetDevTools(web_contents_->GetBrowserContext(), sw_origin_for_logs_);
+  auto* dev_tools = GetDevTools(web_contents_.get(), sw_origin_for_logs_);
   if (dev_tools) {
     dev_tools->LogBackgroundServiceEvent(
         registration_id_for_logs_, sw_origin_for_logs_,
@@ -202,7 +207,7 @@ void PaymentHandlerHost::ChangePaymentMethod(
         "Change payment method",
         /*instance_id=*/payment_request_id_for_logs_,
         {{"Method Name", method_data->method_name},
-         {"Method Data", method_data->stringified_data}});
+         {"Method Data", stringified_data}});
   }
 
   change_payment_request_details_callback_ = std::move(callback);
@@ -224,8 +229,7 @@ void PaymentHandlerHost::ChangeShippingOption(
     return;
   }
 
-  auto* dev_tools =
-      GetDevTools(web_contents_->GetBrowserContext(), sw_origin_for_logs_);
+  auto* dev_tools = GetDevTools(web_contents_.get(), sw_origin_for_logs_);
   if (dev_tools) {
     dev_tools->LogBackgroundServiceEvent(
         registration_id_for_logs_, sw_origin_for_logs_,
@@ -254,8 +258,7 @@ void PaymentHandlerHost::ChangeShippingAddress(
     return;
   }
 
-  auto* dev_tools =
-      GetDevTools(web_contents_->GetBrowserContext(), sw_origin_for_logs_);
+  auto* dev_tools = GetDevTools(web_contents_.get(), sw_origin_for_logs_);
   if (dev_tools) {
     std::map<std::string, std::string> shipping_address_map;
     shipping_address_map.emplace("Country", shipping_address->country);

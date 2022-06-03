@@ -4,7 +4,7 @@
 <script>
 
 function verifyOffscreenCanvasTaintedThenDone(offscreen, t) {
-  assert_throws("SecurityError", function() {
+  assert_throws_dom("SecurityError", function() {
     offscreen.getContext("2d").getImageData(0, 0, 1, 1);
   }, "Check getImageData blocked.");
   offscreen.convertToBlob().then(

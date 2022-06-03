@@ -13,7 +13,7 @@
 // Encoding          unspecified*     UTF-16
 // Separator         /                \, tolerant of /
 // Drive letters     no               case-insensitive A-Z followed by :
-// Alternate root    // (surprise!)   \\, for UNC paths
+// Alternate root    // (surprise!)   \\ (2 Separators), for UNC paths
 //
 // * The encoding need not be specified on POSIX systems, although some
 //   POSIX-compliant systems do specify an encoding.  Mac OS X uses UTF-8.
@@ -111,9 +111,8 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
 // Windows-style drive letter support and pathname separator characters can be
@@ -143,6 +142,7 @@
 
 namespace base {
 
+class SafeBaseName;
 class Pickle;
 class PickleIterator;
 
@@ -161,8 +161,8 @@ class BASE_EXPORT FilePath {
   typedef std::string StringType;
 #endif  // OS_WIN
 
-  typedef BasicStringPiece<StringType> StringPieceType;
   typedef StringType::value_type CharType;
+  typedef BasicStringPiece<CharType> StringPieceType;
 
   // Null-terminated array of separators used to separate components in
   // hierarchical paths.  Each character in this array is a valid separator,
@@ -193,7 +193,7 @@ class BASE_EXPORT FilePath {
   FilePath(FilePath&& that) noexcept;
   // Replaces the contents with those of |that|, which is left in valid but
   // unspecified state.
-  FilePath& operator=(FilePath&& that);
+  FilePath& operator=(FilePath&& that) noexcept;
 
   bool operator==(const FilePath& that) const;
 
@@ -257,14 +257,31 @@ class BASE_EXPORT FilePath {
   // this is the only situation in which BaseName will return an absolute path.
   FilePath BaseName() const WARN_UNUSED_RESULT;
 
-  // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if
-  // the file has no extension.  If non-empty, Extension() will always start
-  // with precisely one ".".  The following code should always work regardless
-  // of the value of path.  For common double-extensions like .tar.gz and
-  // .user.js, this method returns the combined extension.  For a single
-  // component, use FinalExtension().
-  // new_path = path.RemoveExtension().value().append(path.Extension());
-  // ASSERT(new_path == path.value());
+  // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if the file
+  // has no extension.  If non-empty, Extension() will always start with
+  // precisely one ".".
+  //
+  // For common double-extensions like ".tar.gz" and ".user.js", this method
+  // returns the combined extension.  For a single component, use
+  // FinalExtension().
+  //
+  // Common means that detecting double-extensions is based on a hard-coded
+  // allow-list (including but not limited to ".*.gz" and ".user.js") and isn't
+  // solely dependent on the number of dots.  Specifically, even if somebody
+  // invents a new Blah compression algorithm:
+  //   - calling this function with "foo.tar.bz2" will return ".tar.bz2", but
+  //   - calling this function with "foo.tar.blah" will return just ".blah"
+  //     until ".*.blah" is added to the hard-coded allow-list.
+  //
+  // That hard-coded allow-list is case-insensitive: ".GZ" and ".gz" are
+  // equivalent. However, the StringType returned is not canonicalized for
+  // case: "foo.TAR.bz2" input will produce ".TAR.bz2", not ".tar.bz2", and
+  // "bar.EXT", which is not a double-extension, will produce ".EXT".
+  //
+  // The following code should always work regardless of the value of path.
+  //   new_path = path.RemoveExtension().value().append(path.Extension());
+  //   ASSERT(new_path == path.value());
+  //
   // NOTE: this is different from the original file_util implementation which
   // returned the extension without a leading "." ("jpg" instead of ".jpg")
   StringType Extension() const WARN_UNUSED_RESULT;
@@ -325,6 +342,7 @@ class BASE_EXPORT FilePath {
   // it is an error to pass an absolute path.
   FilePath Append(StringPieceType component) const WARN_UNUSED_RESULT;
   FilePath Append(const FilePath& component) const WARN_UNUSED_RESULT;
+  FilePath Append(const SafeBaseName& component) const WARN_UNUSED_RESULT;
 
   // Although Windows StringType is std::wstring, since the encoding it uses for
   // paths is well defined, it can handle ASCII path components as well.
@@ -339,6 +357,10 @@ class BASE_EXPORT FilePath {
   // a separator character, or with two separator characters.  On POSIX
   // platforms, an absolute path begins with a separator character.
   bool IsAbsolute() const;
+
+  // Returns true if this FilePath is a network path which starts with 2 path
+  // separators. See class documentation for 'Alternate root'.
+  bool IsNetwork() const;
 
   // Returns true if the patch ends with a path separator character.
   bool EndsWithSeparator() const WARN_UNUSED_RESULT;
@@ -358,8 +380,8 @@ class BASE_EXPORT FilePath {
   // Return a Unicode human-readable version of this path.
   // Warning: you can *not*, in general, go from a display name back to a real
   // path.  Only use this when displaying paths to users, not just when you
-  // want to stuff a string16 into some other API.
-  string16 LossyDisplayName() const;
+  // want to stuff a std::u16string into some other API.
+  std::u16string LossyDisplayName() const;
 
   // Return the path as ASCII, or the empty string if the path is not ASCII.
   // This should only be used for cases where the FilePath is representing a
@@ -382,7 +404,10 @@ class BASE_EXPORT FilePath {
   std::string AsUTF8Unsafe() const;
 
   // Similar to AsUTF8Unsafe, but returns UTF-16 instead.
-  string16 AsUTF16Unsafe() const;
+  std::u16string AsUTF16Unsafe() const;
+
+  // Returns a FilePath object from a path name in ASCII.
+  static FilePath FromASCII(StringPiece ascii);
 
   // Returns a FilePath object from a path name in UTF-8. This function
   // should only be used for cases where you are sure that the input
@@ -427,7 +452,10 @@ class BASE_EXPORT FilePath {
     return CompareIgnoreCase(string1, string2) < 0;
   }
 
-#if defined(OS_MACOSX)
+  // Serialise this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
+#if defined(OS_APPLE)
   // Returns the string in the special canonical decomposed form as defined for
   // HFS, which is close to, but not quite, decomposition form D. See
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties

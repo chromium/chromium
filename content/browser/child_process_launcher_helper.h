@@ -8,18 +8,17 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "services/service_manager/zygote/common/zygote_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -35,16 +34,16 @@
 #include "content/public/browser/posix_file_descriptor_info.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
 #if defined(OS_FUCHSIA)
-#include "services/service_manager/sandbox/fuchsia/sandbox_policy_fuchsia.h"
+#include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
 #endif
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-#include "services/service_manager/zygote/common/zygote_handle.h"  // nogncheck
+#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif
 
 namespace base {
@@ -88,7 +87,7 @@ class ChildProcessLauncherHelper :
     base::Process process;
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-    service_manager::ZygoteHandle zygote = nullptr;
+    ZygoteHandle zygote = nullptr;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
   };
 
@@ -115,9 +114,9 @@ class ChildProcessLauncherHelper :
 
 #if !defined(OS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
-  // specific. Returns |base::nullopt| if the helper should initialize
+  // specific. Returns |absl::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
-  base::Optional<mojo::NamedPlatformChannel>
+  absl::optional<mojo::NamedPlatformChannel>
   CreateNamedPlatformChannelOnClientThread();
 #endif
 
@@ -192,6 +191,8 @@ class ChildProcessLauncherHelper :
   void DumpProcessStack(const base::Process& process);
 #endif  // OS_ANDROID
 
+  std::string GetProcessType();
+
  private:
   friend class base::RefCountedThreadSafe<ChildProcessLauncherHelper>;
 
@@ -201,8 +202,6 @@ class ChildProcessLauncherHelper :
 
   base::CommandLine* command_line() { return command_line_.get(); }
   int child_process_id() const { return child_process_id_; }
-
-  std::string GetProcessType();
 
   static void ForceNormalProcessTerminationSync(
       ChildProcessLauncherHelper::Process process);
@@ -224,13 +223,13 @@ class ChildProcessLauncherHelper :
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
   // |CreateNamedPlatformChannelOnClientThread()|.
-  base::Optional<mojo::PlatformChannel> mojo_channel_;
+  absl::optional<mojo::PlatformChannel> mojo_channel_;
 
 #if !defined(OS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
   // |CreateNamedPlatformChannelOnClientThread()|.
-  base::Optional<mojo::NamedPlatformChannel> mojo_named_channel_;
+  absl::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
 #endif
 
   bool terminate_on_shutdown_;
@@ -238,9 +237,9 @@ class ChildProcessLauncherHelper :
   const mojo::ProcessErrorCallback process_error_callback_;
   const std::map<std::string, base::FilePath> files_to_preload_;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_peer_;
@@ -250,7 +249,7 @@ class ChildProcessLauncherHelper :
 #endif
 
 #if defined(OS_FUCHSIA)
-  service_manager::SandboxPolicyFuchsia sandbox_policy_;
+  std::unique_ptr<sandbox::policy::SandboxPolicyFuchsia> sandbox_policy_;
 #endif
 };
 

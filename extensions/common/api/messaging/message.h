@@ -5,19 +5,32 @@
 #ifndef EXTENSIONS_COMMON_API_MESSAGING_MESSAGE_H_
 #define EXTENSIONS_COMMON_API_MESSAGING_MESSAGE_H_
 
+#include "extensions/common/api/messaging/serialization_format.h"
+
 namespace extensions {
 
 // A message consists of both the data itself as well as a user gesture state.
 struct Message {
   std::string data;
-  bool user_gesture;
+  SerializationFormat format = SerializationFormat::kJson;
+  bool user_gesture = false;
+  bool from_privileged_context = false;
 
-  Message() : data(), user_gesture(false) {}
-  Message(const std::string& data, bool user_gesture)
-      : data(data), user_gesture(user_gesture) {}
+  Message() = default;
+  Message(const std::string& data,
+          SerializationFormat format,
+          bool user_gesture,
+          bool from_privileged_context = false)
+      : data(data),
+        format(format),
+        user_gesture(user_gesture),
+        from_privileged_context(from_privileged_context) {}
 
   bool operator==(const Message& other) const {
-    return data == other.data && user_gesture == other.user_gesture;
+    // Skipping the equality check for |from_privileged_context| here
+    // because this field is used only for histograms.
+    return data == other.data && user_gesture == other.user_gesture &&
+           format == other.format;
   }
 };
 

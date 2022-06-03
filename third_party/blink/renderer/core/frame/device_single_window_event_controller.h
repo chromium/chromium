@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class Document;
 class Event;
 
 class CORE_EXPORT DeviceSingleWindowEventController
@@ -24,7 +23,7 @@ class CORE_EXPORT DeviceSingleWindowEventController
 
   // Inherited from PlatformEventController.
   void DidUpdateData() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Inherited from LocalDOMWindow::EventListenerObserver.
   void DidAddEventListener(LocalDOMWindow*, const AtomicString&) override;
@@ -32,12 +31,11 @@ class CORE_EXPORT DeviceSingleWindowEventController
   void DidRemoveAllEventListeners(LocalDOMWindow*) override;
 
  protected:
-  explicit DeviceSingleWindowEventController(Document&);
+  explicit DeviceSingleWindowEventController(LocalDOMWindow&);
 
-  Document& GetDocument() const { return *document_; }
   bool IsSameSecurityOriginAsMainFrame() const;
   bool CheckPolicyFeatures(
-      const Vector<mojom::FeaturePolicyFeature>& features) const;
+      const Vector<mojom::blink::PermissionsPolicyFeature>& features) const;
 
   void DispatchDeviceEvent(Event*);
 
@@ -47,7 +45,6 @@ class CORE_EXPORT DeviceSingleWindowEventController
 
  private:
   bool needs_checking_null_events_;
-  Member<Document> document_;
 };
 
 }  // namespace blink

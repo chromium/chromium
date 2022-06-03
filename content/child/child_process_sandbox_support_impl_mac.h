@@ -7,6 +7,7 @@
 
 #include <CoreText/CoreText.h>
 
+#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "content/common/sandbox_support_mac.mojom.h"
@@ -21,19 +22,24 @@ namespace content {
 class WebSandboxSupportMac : public blink::WebSandboxSupport {
  public:
   WebSandboxSupportMac();
+
+  WebSandboxSupportMac(const WebSandboxSupportMac&) = delete;
+  WebSandboxSupportMac& operator=(const WebSandboxSupportMac&) = delete;
+
   ~WebSandboxSupportMac() override;
 
   // blink::WebSandboxSupport:
-  bool LoadFont(CTFontRef font, CGFontRef* out, uint32_t* font_id) override;
-  SkColor GetSystemColor(blink::MacSystemColorID color_id) override;
+  bool LoadFont(CTFontRef font,
+                base::ScopedCFTypeRef<CTFontDescriptorRef>* out_descriptor,
+                uint32_t* font_id) override;
+  SkColor GetSystemColor(blink::MacSystemColorID color_id,
+                         blink::mojom::ColorScheme color_scheme) override;
 
  private:
   void OnGotSystemColors(base::ReadOnlySharedMemoryRegion region);
 
   mojo::Remote<mojom::SandboxSupportMac> sandbox_support_;
   base::ReadOnlySharedMemoryMapping color_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSandboxSupportMac);
 };
 
 }  // namespace content

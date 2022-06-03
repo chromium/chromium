@@ -5,27 +5,11 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [6, 186, 158, 58],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [6, 126, 158, 58],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [6, 66, 158, 58],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [6, 6, 158, 58],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [6, 186, 158, 58],
+        [6, 126, 158, 58],
+        [6, 66, 158, 58],
+        [6, 6, 158, 58]
       ]
     }
   ]

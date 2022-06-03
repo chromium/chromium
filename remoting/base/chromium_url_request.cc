@@ -9,8 +9,10 @@
 
 #include "base/bind.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace remoting {
 
@@ -49,11 +51,11 @@ void ChromiumUrlRequest::SetPostData(const std::string& content_type,
   post_data_ = data;
 }
 
-void ChromiumUrlRequest::Start(const OnResultCallback& on_result_callback) {
+void ChromiumUrlRequest::Start(OnResultCallback on_result_callback) {
   DCHECK(!on_result_callback.is_null());
   DCHECK(on_result_callback_.is_null());
 
-  on_result_callback_ = on_result_callback;
+  on_result_callback_ = std::move(on_result_callback);
 
   std::string method = resource_request_->method;
 

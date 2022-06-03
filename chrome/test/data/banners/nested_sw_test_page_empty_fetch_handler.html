@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>Web app banner test page</title>
+    <script src="main.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "manifest.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+    <script>
+      // Register page scoped service worker.
+      navigator.serviceWorker.register('service_worker_with_no_fetch_handler.js',
+        { scope: 'nested_sw_test_page_empty_fetch_handler.html' });
+
+      // Register app scoped service worker.
+      navigator.serviceWorker.register('service_worker_empty_fetch_handler.js');
+    </script>
+  </head>
+  <body onload="initialize()">
+    Service worker returns a response object, so the page works well offline.
+  </body>
+</html>

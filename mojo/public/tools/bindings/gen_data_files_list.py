@@ -18,13 +18,14 @@ import os
 import re
 import sys
 
-from cStringIO import StringIO
 from optparse import OptionParser
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "pylib"))
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"))
 
-from mojom.generate.generator import  WriteFile
+from mojom.generate.generator import WriteFile
 
 
 def main():
@@ -39,12 +40,9 @@ def main():
   pattern = re.compile(options.pattern)
   files = [f for f in os.listdir(options.directory) if pattern.match(f)]
 
-  stream = StringIO()
-  for f in files:
-    print(f, file=stream)
+  contents = '\n'.join(f for f in files) + '\n'
+  WriteFile(contents, options.output)
 
-  WriteFile(stream.getvalue(), options.output)
-  stream.close()
 
 if __name__ == '__main__':
   sys.exit(main())

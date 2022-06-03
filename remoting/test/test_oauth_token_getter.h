@@ -24,7 +24,7 @@ class TestTokenStorage;
 
 // An OAuthTokenGetter implementation for testing that runs the authentication
 // flow on the console.
-// If the account is whitelisted to use 1P scope with consent page then it will
+// If the account is allowlisted to use 1P scope with consent page then it will
 // store the refresh token, otherwise it will just cache the access token, which
 // will expire in ~1h.
 class TestOAuthTokenGetter final : public OAuthTokenGetter {
@@ -35,6 +35,10 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
 
   // |token_storage| must outlive |this|.
   explicit TestOAuthTokenGetter(TestTokenStorage* token_storage);
+
+  TestOAuthTokenGetter(const TestOAuthTokenGetter&) = delete;
+  TestOAuthTokenGetter& operator=(const TestOAuthTokenGetter&) = delete;
+
   ~TestOAuthTokenGetter() override;
 
   // Initializes the token getter and runs the authentication flow on the
@@ -77,7 +81,6 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
   base::queue<base::OnceClosure> on_authentication_done_;
 
   base::WeakPtrFactory<TestOAuthTokenGetter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TestOAuthTokenGetter);
 };
 
 }  // namespace test

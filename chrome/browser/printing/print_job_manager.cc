@@ -13,6 +13,11 @@
 #include "content/public/browser/notification_service.h"
 #include "printing/printed_document.h"
 
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
+
 namespace printing {
 
 PrintQueriesQueue::PrintQueriesQueue() {
@@ -62,7 +67,8 @@ void PrintQueriesQueue::Shutdown() {
   // corresponding PrintJob, so any pending preview requests are not covered
   // by PrintJobManager::StopJobs and should be stopped explicitly.
   for (auto& query : queries_to_stop) {
-    query->PostTask(
+    PrinterQuery* const query_ptr = query.get();
+    query_ptr->PostTask(
         FROM_HERE, base::BindOnce(&PrinterQuery::StopWorker, std::move(query)));
   }
 }
@@ -109,7 +115,7 @@ void PrintJobManager::StopJobs(bool wait_for_finish) {
   for (auto job = to_stop.begin(); job != to_stop.end(); ++job) {
     // Wait for two minutes for the print job to be spooled.
     if (wait_for_finish)
-      (*job)->FlushJob(base::TimeDelta::FromMinutes(2));
+      (*job)->FlushJob(base::Minutes(2));
     (*job)->Stop();
   }
 }
@@ -139,25 +145,11 @@ void PrintJobManager::OnPrintJobEvent(
       DCHECK_EQ(1U, erased);
       break;
     }
-    case JobEventDetails::FAILED: {
+    case JobEventDetails::FAILED:
       current_jobs_.erase(print_job);
       break;
-    }
-    case JobEventDetails::USER_INIT_DONE:
-    case JobEventDetails::USER_INIT_CANCELED:
-    case JobEventDetails::DEFAULT_INIT_DONE:
-#if defined(OS_WIN)
-    case JobEventDetails::PAGE_DONE:
-#endif
-    case JobEventDetails::DOC_DONE:
-    case JobEventDetails::ALL_PAGES_REQUESTED: {
-      // Don't care.
+    default:
       break;
-    }
-    default: {
-      NOTREACHED();
-      break;
-    }
   }
 }
 

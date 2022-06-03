@@ -12,9 +12,7 @@ namespace extensions {
 class AppShellTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
   int RunTestSuite(int argc, char** argv) override;
-  bool AdjustChildProcessCommandLine(
-      base::CommandLine* command_line,
-      const base::FilePath& temp_data_dir) override;
+  std::string GetUserDataDirectoryCommandLineSwitch() override;
   content::ContentMainDelegate* CreateContentMainDelegate() override;
 };
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASH_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_ASH_UTIL_H_
 
-#include <memory>
-
 #include "ui/views/widget/widget.h"
 
 namespace aura {

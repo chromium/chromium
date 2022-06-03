@@ -4,15 +4,16 @@
 
 #include "ui/views_content_client/views_content_client_main_parts_aura.h"
 
+#include "build/chromeos_buildflags.h"
 #include "ui/wm/core/wm_state.h"
 
 namespace ui {
 
 ViewsContentClientMainPartsAura::ViewsContentClientMainPartsAura(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainParts(content_params, views_content_client) {
-}
+    : ViewsContentClientMainParts(std::move(content_params),
+                                  views_content_client) {}
 
 ViewsContentClientMainPartsAura::~ViewsContentClientMainPartsAura() {
 }
@@ -20,7 +21,9 @@ ViewsContentClientMainPartsAura::~ViewsContentClientMainPartsAura() {
 void ViewsContentClientMainPartsAura::ToolkitInitialized() {
   ViewsContentClientMainParts::ToolkitInitialized();
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   wm_state_ = std::make_unique<::wm::WMState>();
+#endif
 }
 
 void ViewsContentClientMainPartsAura::PostMainMessageLoopRun() {

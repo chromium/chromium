@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/accelerators/accelerator_history.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/accelerator_delegate.h"
 
@@ -18,12 +17,8 @@ namespace wm {
 // AcceleratorFilter, public:
 
 AcceleratorFilter::AcceleratorFilter(
-    std::unique_ptr<AcceleratorDelegate> delegate,
-    ui::AcceleratorHistory* accelerator_history)
-    : delegate_(std::move(delegate)),
-      accelerator_history_(accelerator_history) {
-  DCHECK(accelerator_history);
-}
+    std::unique_ptr<AcceleratorDelegate> delegate)
+    : delegate_(std::move(delegate)) {}
 
 AcceleratorFilter::~AcceleratorFilter() {
 }
@@ -53,17 +48,8 @@ void AcceleratorFilter::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   ui::Accelerator accelerator(*event);
-  accelerator_history_->StoreCurrentAccelerator(accelerator);
-
   if (delegate_->ProcessAccelerator(*event, accelerator))
     event->StopPropagation();
-}
-
-void AcceleratorFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED ||
-      event->type() == ui::ET_MOUSE_RELEASED) {
-    accelerator_history_->InterruptCurrentAccelerator();
-  }
 }
 
 }  // namespace wm

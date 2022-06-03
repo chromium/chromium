@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">‏اوه! ایجاد کلید خصوصی RSA تصادفی ناموفق بود.</translation>
 <translation id="1445572445564823378">این برنامهٔ افزودنی سرعت <ph name="PRODUCT_NAME" /> را پایین می‌آورد. شما باید برای بازیابی عملکرد <ph name="PRODUCT_NAME" /> این برنامه را غیرفعال کنید.</translation>
 <translation id="1468038450257740950">‏WebGL پشتیبانی نمی‌شود.</translation>
-<translation id="149347756975725155">بارکردن نماد پسوند "<ph name="ICON" />" ممکن نیست.</translation>
 <translation id="1803557475693955505">بارگیری صفحه پس‌زمینه "<ph name="BACKGROUND_PAGE" />" ممکن نیست.</translation>
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">‏بومی سازی استفاده شده است، اما default_locale در اظهارنامه مشخص نشده است.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">خواندن کلید خصوصی ناموفق بود.</translation>
 <translation id="6391538222494443604">دایرکتوری ورودی باید بسته شود.</translation>
 <translation id="641087317769093025">برنامه افزودنی از حالت زیپ خارج نشد</translation>
-<translation id="6413453408918378296">نماد «<ph name="ICON" />» به‌اندازه کافی نمایان نیست.</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» درخواست دسترسی به یک یا چند دستگاه شما را دارد:</translation>
 <translation id="657064425229075395">بارگیری اسکریپت پس‌زمینه "<ph name="BACKGROUND_SCRIPT" />" ممکن نیست.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> از <ph name="VENDOR_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>

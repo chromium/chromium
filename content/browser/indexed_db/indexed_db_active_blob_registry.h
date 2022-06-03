@@ -12,11 +12,8 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "content/browser/indexed_db/indexed_db_blob_info.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -37,6 +34,11 @@ class CONTENT_EXPORT IndexedDBActiveBlobRegistry {
   explicit IndexedDBActiveBlobRegistry(
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       ReportUnusedBlobCallback report_unused_blob);
+
+  IndexedDBActiveBlobRegistry(const IndexedDBActiveBlobRegistry&) = delete;
+  IndexedDBActiveBlobRegistry& operator=(const IndexedDBActiveBlobRegistry&) =
+      delete;
+
   ~IndexedDBActiveBlobRegistry();
 
   // Most methods of this class, and the closure returned by
@@ -93,8 +95,6 @@ class CONTENT_EXPORT IndexedDBActiveBlobRegistry {
   ReportOutstandingBlobsCallback report_outstanding_blobs_;
   ReportUnusedBlobCallback report_unused_blob_;
   base::WeakPtrFactory<IndexedDBActiveBlobRegistry> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBActiveBlobRegistry);
 };
 
 }  // namespace content

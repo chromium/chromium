@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 87: Uncaught TypeError: element.createShadowRoot is not a function
-:focus and shadow host without delegatesFocus for crbug/479050
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-
-

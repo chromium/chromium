@@ -14,6 +14,7 @@
 
 #include "util/win/scoped_set_event.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 
 namespace crashpad {

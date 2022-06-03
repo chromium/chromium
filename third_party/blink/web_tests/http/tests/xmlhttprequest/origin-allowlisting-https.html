@@ -1,0 +1,57 @@
+<p>Tests that origin allowlisting for https does not match http URLs.</p>
+
+<pre id="console"></pre>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+testRunner.addOriginAccessAllowListEntry("http://127.0.0.1:8000", "https", "localhost", false);
+
+function log(message)
+{
+    document.getElementById('console').appendChild(document.createTextNode(message + '\n'));
+}
+
+function test(url, expectSuccess)
+{
+    log("Testing: " + url + " (sync)");
+    var req = new XMLHttpRequest();
+    req.open("GET", url + "?sync", false);
+    try {
+        req.send(null);
+        log((expectSuccess ? "PASS: " : "FAIL: ") + req.responseText);
+    } catch (e) {
+        log((expectSuccess ? "FAIL: " : "PASS: ") + e);
+    }
+
+    log("Testing: " + url + " (async)");
+    req = new XMLHttpRequest();
+    req.open("GET", url + "?async", true);
+    req.onload = function() {
+        log((expectSuccess ? "PASS: " : "FAIL: ") + req.responseText);
+        nextTest();
+    };
+    req.onerror = function() {
+        log((expectSuccess ? "FAIL: " : "PASS: ") + req.status);
+        nextTest();
+    };
+    req.send(null);
+}
+
+var tests = [
+    ["http://localhost:8000/xmlhttprequest/resources/get.txt", false]
+    // FIXME: Is it possible to setup the following tests?
+    // ["https://localhost:8000/xmlhttprequest/resources/get.txt", true]
+];
+
+var currentTest = 0;
+
+function nextTest()
+{
+    if (currentTest < tests.length)
+        test.apply(null, tests[currentTest++]);
+    else
+        testRunner.notifyDone();
+}
+
+nextTest();
+</script>

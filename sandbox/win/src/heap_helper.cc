@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/windows_version.h"
 

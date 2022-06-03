@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+
+<!-- The span surrounding "Apple" is ignored in the accessibility tree.
+    The same occurs with both the span surrounding "Banana" and the paragraph
+    surrounding that span. -->
+
+<div id="textbox" tabindex="0" role="textbox" aria-multiline="true"
+    contenteditable="true">
+  <div>
+    <span id="line1">&nbsp;</span>
+  </div>
+  <p>
+    <span id="line2">Apple</span>
+  </p>
+  <ul>
+    <li>
+      <p role="presentation">
+        <span id="line3">Banana</span>
+      </p>
+    </li>
+  </ul>
+</div>
+
+<script>
+'use strict';
+
+function verifySelection(anchorObject, anchorOffset, focusObject, focusOffset,
+    selectionString) {
+  const axTextBox = accessibilityController.accessibleElementById('textbox');
+  assert_equals(axTextBox.selectionAnchorObject, anchorObject, 'anchorObject');
+  assert_equals(axTextBox.selectionAnchorOffset, anchorOffset, 'anchorOffset');
+  assert_equals(axTextBox.selectionFocusObject, focusObject, 'focusObject');
+  assert_equals(axTextBox.selectionFocusOffset, focusOffset, 'focusOffset');
+  assert_equals(getSelection().toString(), selectionString,
+      'getSelection.toString()');
+}
+
+async_test((t) => {
+  const axTextBox = accessibilityController.accessibleElementById('textbox');
+  assert_not_equals(undefined, axTextBox);
+
+  // The &nbsp; on line one is found in the first text child of the first span.
+  const axLine1 = accessibilityController.accessibleElementById('line1').childAtIndex(0);
+  assert_not_equals(undefined, axLine1);
+
+  // Line two starts at the paragraph that contains 'Apple'.
+  const axLine2 = accessibilityController.accessibleElementById('line2').parentElement();
+  assert_not_equals(undefined, axLine2);
+
+  // Line three starts at the presentational paragraph that contains 'Apple'.
+  const axLine3 = accessibilityController.accessibleElementById('line3').parentElement();
+  assert_not_equals(undefined, axLine3);
+  const axLine3Text = accessibilityController.accessibleElementById('line3').childAtIndex(0);
+  assert_not_equals(undefined, axLine3Text);
+
+  let selectedTextChangedCount = 0;
+  const expectedSelection = [];
+  const expectedIntents = [];
+  const testSteps = [];
+
+  axTextBox.setNotificationListener(t.step_func((notification, intents) => {
+    if (notification == "SelectedTextChanged") {
+      verifySelection(expectedSelection[selectedTextChangedCount].anchorObject,
+          expectedSelection[selectedTextChangedCount].anchorOffset,
+          expectedSelection[selectedTextChangedCount].focusObject,
+          expectedSelection[selectedTextChangedCount].focusOffset,
+          expectedSelection[selectedTextChangedCount].selectedText);
+      assert_array_equals(intents, [expectedIntents[selectedTextChangedCount]]);
+      ++selectedTextChangedCount;
+      t.step(testSteps[selectedTextChangedCount]);
+    }
+  }));
+
+  testSteps.push((t) => {
+    expectedSelection.push({
+      anchorObject: axTextBox,
+      anchorOffset: 0,
+      focusObject: axTextBox,
+      focusOffset: 0,
+      selectedText: ''});
+    expectedIntents.push('AXEventIntent(setSelection,none,character,forward)');
+
+    const textBox = document.getElementById('textbox');
+    textBox.focus();
+  });
+
+  testSteps.push(() => {
+    expectedSelection.push({
+      anchorObject: axLine1,
+      anchorOffset: 0,
+      focusObject: axLine2,
+      focusOffset: 0,
+      selectedText: '\xA0\n'});  // '\xA0' == &nbsp;
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
+
+    eventSender.keyDown('ArrowDown', ['shiftKey']);
+  });
+
+  testSteps.push(() => {
+    expectedSelection.push({
+      anchorObject: axLine1,
+      anchorOffset: 0,
+      focusObject: axLine3,
+      // The `focusOffset` should be 1 because Shift+Down selects to the
+      // position after the list bullet.
+      // This is how Blink editing code currently works.
+      focusOffset: 1,
+      selectedText: '\xA0\nApple\n\n'});
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
+
+    eventSender.keyDown('ArrowDown', ['shiftKey']);
+  });
+
+  testSteps.push(() => {
+    expectedSelection.push({
+      anchorObject: axLine1,
+      anchorOffset: 0,
+      focusObject: axLine3Text,
+      focusOffset: 6,
+      selectedText: '\xA0\nApple\n\nBanana'});
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
+
+    eventSender.keyDown('ArrowDown', ['shiftKey']);
+  });
+
+  testSteps.push(() => {
+    t.done();
+  });
+
+  runAfterLayoutAndPaint(testSteps[0]);
+}, 'Selecting by line works properly when there are ignored objects at the beginning of the line.');
+
+</script>

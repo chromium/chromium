@@ -4,35 +4,23 @@
 
 #include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 
+#include <string>
+#include <utility>
+
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
+#include "fuchsia/engine/common/cors_exempt_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace {
 
-class TestCachedRulesProvider
-    : public WebEngineURLLoaderThrottle::CachedRulesProvider {
- public:
-  TestCachedRulesProvider() = default;
-  ~TestCachedRulesProvider() override = default;
-
-  void SetCachedRules(
-      scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-          cached_rules) {
-    cached_rules_ = cached_rules;
-  }
-
-  // WebEngineURLLoaderThrottle::CachedRulesProvider implementation.
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-  GetCachedRules() override {
-    return cached_rules_;
-  }
-
- private:
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-      cached_rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCachedRulesProvider);
-};
+constexpr char kMixedCaseCorsExemptHeader[] = "CoRs-ExEmPt";
+constexpr char kUpperCaseCorsExemptHeader[] = "CORS-EXEMPT";
+constexpr char kMixedCaseCorsExemptHeader2[] = "Another-CoRs-ExEmPt-2";
+constexpr char kUpperCaseCorsExemptHeader2[] = "ANOTHER-CORS-EXEMPT-2";
+constexpr char kRequiresCorsHeader[] = "requires-cors";
 
 }  // namespace
 
@@ -42,6 +30,8 @@ class WebEngineURLLoaderThrottleTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
   ~WebEngineURLLoaderThrottleTest() override = default;
 
+  void SetUp() override { SetCorsExemptHeaders({}); }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -50,24 +40,21 @@ class WebEngineURLLoaderThrottleTest : public testing::Test {
 TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.SetHeader("Header", "Value");
-  mojom::UrlRequestRewritePtr rewrite =
-      mojom::UrlRequestRewrite::NewAddHeaders(std::move(add_headers));
-  std::vector<mojom::UrlRequestRewritePtr> rewrites;
-  rewrites.push_back(std::move(rewrite));
-  mojom::UrlRequestRewriteRulePtr rule = mojom::UrlRequestRewriteRule::New();
-  rule->hosts_filter = base::Optional<std::vector<std::string>>({"*.test.net"});
-  rule->rewrites = std::move(rewrites);
+  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
+  mojom::UrlRequestActionPtr rewrite =
+      mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
+  std::vector<mojom::UrlRequestActionPtr> actions;
+  actions.push_back(std::move(rewrite));
+  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->actions = std::move(actions);
 
-  std::vector<mojom::UrlRequestRewriteRulePtr> rules;
-  rules.push_back(std::move(rule));
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
 
-  TestCachedRulesProvider provider;
-  provider.SetCachedRules(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+  WebEngineURLLoaderThrottle throttle(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
-
-  WebEngineURLLoaderThrottle throttle(&provider);
   bool defer = false;
 
   network::ResourceRequest request1;
@@ -91,6 +78,61 @@ TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   EXPECT_FALSE(request4.headers.HasHeader("Header"));
 }
 
+// Verifies that injected headers are correctly exempted from CORS checks if
+// their names are registered as CORS exempt.
+TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
+  // Use the mixed case form for CORS exempt header #1, and the uppercased form
+  // of header #2.
+  SetCorsExemptHeaders(
+      {kMixedCaseCorsExemptHeader, kUpperCaseCorsExemptHeader2});
+
+  mojom::UrlRequestRewriteAddHeadersPtr add_headers =
+      mojom::UrlRequestRewriteAddHeaders::New();
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kRequiresCorsHeader, "Value"));
+
+  // Inject the uppercased form for CORS exempt header #1, and the mixed case
+  // form of header #2.
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kUpperCaseCorsExemptHeader, "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kMixedCaseCorsExemptHeader2, "Value"));
+
+  mojom::UrlRequestActionPtr rewrite =
+      mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
+  std::vector<mojom::UrlRequestActionPtr> actions;
+  actions.push_back(std::move(rewrite));
+  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->actions = std::move(actions);
+
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
+
+  WebEngineURLLoaderThrottle throttle(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
+          std::move(rules)));
+
+  network::ResourceRequest request;
+  request.url = GURL("http://test.net");
+  bool defer = false;
+  throttle.WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
+
+  // Verify that the cors-exempt and cors-required headers were partitioned into
+  // the "cors_exempt_headers" and "headers" arrays, respectively.
+  EXPECT_TRUE(
+      request.cors_exempt_headers.HasHeader(kUpperCaseCorsExemptHeader));
+  EXPECT_TRUE(
+      request.cors_exempt_headers.HasHeader(kMixedCaseCorsExemptHeader2));
+  EXPECT_TRUE(request.headers.HasHeader(kRequiresCorsHeader));
+
+  // Verify that the headers were not also placed in the other array.
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader(kRequiresCorsHeader));
+  EXPECT_FALSE(request.headers.HasHeader(kUpperCaseCorsExemptHeader));
+  EXPECT_FALSE(request.headers.HasHeader(kMixedCaseCorsExemptHeader2));
+}
+
 // Tests URL replacement rules that replace to a data URL do not append query or
 // ref from the original URL.
 TEST_F(WebEngineURLLoaderThrottleTest, DataReplacementUrl) {
@@ -100,27 +142,92 @@ TEST_F(WebEngineURLLoaderThrottleTest, DataReplacementUrl) {
       mojom::UrlRequestRewriteReplaceUrl::New();
   replace_url->url_ends_with = ".css";
   replace_url->new_url = GURL(kCssDataURI);
-  mojom::UrlRequestRewritePtr rewrite =
-      mojom::UrlRequestRewrite::NewReplaceUrl(std::move(replace_url));
-  std::vector<mojom::UrlRequestRewritePtr> rewrites;
-  rewrites.push_back(std::move(rewrite));
-  mojom::UrlRequestRewriteRulePtr rule = mojom::UrlRequestRewriteRule::New();
-  rule->hosts_filter = base::Optional<std::vector<std::string>>({"*.test.net"});
-  rule->rewrites = std::move(rewrites);
+  mojom::UrlRequestActionPtr rewrite =
+      mojom::UrlRequestAction::NewReplaceUrl(std::move(replace_url));
+  std::vector<mojom::UrlRequestActionPtr> actions;
+  actions.push_back(std::move(rewrite));
+  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->actions = std::move(actions);
 
-  std::vector<mojom::UrlRequestRewriteRulePtr> rules;
-  rules.push_back(std::move(rule));
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
 
-  TestCachedRulesProvider provider;
-  provider.SetCachedRules(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+  WebEngineURLLoaderThrottle throttle(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
-
-  WebEngineURLLoaderThrottle throttle(&provider);
   bool defer = false;
 
   network::ResourceRequest request;
   request.url = GURL("http://test.net/style.css?query#ref");
   throttle.WillStartRequest(&request, &defer);
   EXPECT_EQ(request.url, base::StringPiece(kCssDataURI));
+}
+
+class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
+ public:
+  TestThrottleDelegate() = default;
+  ~TestThrottleDelegate() override = default;
+
+  bool canceled() const { return canceled_; }
+  base::StringPiece cancel_reason() const { return cancel_reason_; }
+
+  void Reset() {
+    canceled_ = false;
+    cancel_reason_.clear();
+  }
+
+  // URLLoaderThrottle::Delegate implementation.
+  void CancelWithError(int error_code,
+                       base::StringPiece custom_reason) override {
+    canceled_ = true;
+    cancel_reason_ = std::string(custom_reason);
+  }
+  void Resume() override {}
+
+ private:
+  bool canceled_ = false;
+  std::string cancel_reason_;
+};
+
+// Tests that resource loads can be allowed or blocked based on the
+// UrlRequestAction policy.
+TEST_F(WebEngineURLLoaderThrottleTest, AllowAndDeny) {
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+
+  {
+    mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+    rule->hosts_filter = absl::optional<std::vector<std::string>>({"test.net"});
+    rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
+        mojom::UrlRequestAccessPolicy::kAllow));
+    rules->rules.push_back(std::move(rule));
+  }
+  {
+    mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+    rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
+        mojom::UrlRequestAccessPolicy::kDeny));
+    rules->rules.push_back(std::move(rule));
+  }
+
+  WebEngineURLLoaderThrottle throttle(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
+          std::move(rules)));
+  bool defer = false;
+
+  TestThrottleDelegate delegate;
+  throttle.set_delegate(&delegate);
+
+  network::ResourceRequest request1;
+  request1.url = GURL("http://test.net");
+  throttle.WillStartRequest(&request1, &defer);
+  EXPECT_FALSE(delegate.canceled());
+
+  delegate.Reset();
+
+  network::ResourceRequest request2;
+  request2.url = GURL("http://blocked.net");
+  throttle.WillStartRequest(&request2, &defer);
+  EXPECT_TRUE(delegate.canceled());
+  EXPECT_EQ(delegate.cancel_reason(),
+            "Resource load blocked by embedder policy.");
 }

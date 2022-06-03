@@ -1,7 +1,7 @@
-a.changeset-link {
+a.changelog-reference {
 	visibility: hidden;
 }
 
-li:hover a.changeset-link {
+li:hover a.changelog-reference {
    visibility: visible;
 }

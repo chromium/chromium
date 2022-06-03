@@ -1,0 +1,54 @@
+Tests emulation of the user agent.
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Cannot specify a display feature with zero width and height
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Negative display feature parameters
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Invalid display feature orientation type
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Display feature window segments outside screen width
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Display feature window segments outside screen height
+    }
+    id : <number>
+    sessionId : <string>
+}
+

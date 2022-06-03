@@ -29,13 +29,14 @@ def add_debug_file_directory(dir):
 
 
 def load_libcxx_pretty_printers(src_dir):
-  libcxx_pretty_printers = os.path.join(src_dir, 'third_party',
-                                        'libcxx-pretty-printers')
+  libcxx_pretty_printers = os.path.join(src_dir, 'buildtools', 'third_party',
+                                        'libc++', 'trunk', 'utils', 'gdb',
+                                        'libcxx')
   if not os.path.isdir(libcxx_pretty_printers):
     return
   sys.path.insert(1, libcxx_pretty_printers)
-  from printers import register_libcxx_printers
-  register_libcxx_printers(None)
+  from printers import register_libcxx_printer_loader
+  register_libcxx_printer_loader()
 
 
 def load_gdb_chrome(src_dir):
@@ -99,7 +100,7 @@ gdb.execute("set environment CHROMIUM_GDBINIT_SOURCED=1")
 # use try..except to avoid displaying errors in earlier GDB versions.
 try:
   # unlimited means "number of cores"
-  gdb.execute("maint set worket-threads unlimited")
+  gdb.execute("maint set worker-threads unlimited")
 except:
   pass
 

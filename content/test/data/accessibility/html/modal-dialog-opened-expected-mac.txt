@@ -1,6 +1,5 @@
 AXWebArea
-++AXGroup
 ++AXGroup AXSubrole=AXApplicationDialog
 ++++AXStaticText AXValue='The dialog subtree should be the only text content in the accessibility tree. '
-++++AXLink AXTitle='Link inside the dialog.'
+++++AXLink AXDescription='Link inside the dialog.'
 ++++++AXStaticText AXValue='Link inside the dialog.'

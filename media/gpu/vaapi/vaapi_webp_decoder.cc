@@ -110,24 +110,37 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
   if (!scoped_va_context_and_surface_ ||
       new_visible_size != scoped_va_context_and_surface_->size()) {
     scoped_va_context_and_surface_.reset();
-    scoped_va_context_and_surface_ = ScopedVAContextAndSurface(
-        vaapi_wrapper_
-            ->CreateContextAndScopedVASurface(kWebPVARtFormat, new_visible_size)
-            .release());
-    if (!scoped_va_context_and_surface_) {
+    auto scoped_va_surfaces = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
+        kWebPVARtFormat, new_visible_size,
+        {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
+        /*visible_size=*/absl::nullopt);
+    if (scoped_va_surfaces.empty()) {
       VLOGF(1) << "CreateContextAndScopedVASurface() failed";
       return VaapiImageDecodeStatus::kSurfaceCreationFailed;
     }
+
+    scoped_va_context_and_surface_ =
+        ScopedVAContextAndSurface(scoped_va_surfaces[0].release());
     DCHECK(scoped_va_context_and_surface_->IsValid());
   }
+  DCHECK_NE(scoped_va_context_and_surface_->id(), VA_INVALID_SURFACE);
 
-  if (!FillVP8DataStructures(vaapi_wrapper_,
-                             scoped_va_context_and_surface_->id(),
-                             *parse_result, Vp8ReferenceFrameVector())) {
-    return VaapiImageDecodeStatus::kSubmitVABuffersFailed;
-  }
+  VAIQMatrixBufferVP8 iq_matrix_buf{};
+  VAProbabilityDataBufferVP8 prob_buf{};
+  VAPictureParameterBufferVP8 pic_param{};
+  VASliceParameterBufferVP8 slice_param{};
+  FillVP8DataStructures(*parse_result, Vp8ReferenceFrameVector(),
+                        &iq_matrix_buf, &prob_buf, &pic_param, &slice_param);
 
-  return VaapiImageDecodeStatus::kSuccess;
+  const bool success = vaapi_wrapper_->SubmitBuffers(
+      {{VAIQMatrixBufferType, sizeof(iq_matrix_buf), &iq_matrix_buf},
+       {VAProbabilityBufferType, sizeof(prob_buf), &prob_buf},
+       {VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
+       {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+       {VASliceDataBufferType, parse_result->frame_size, parse_result->data}});
+
+  return success ? VaapiImageDecodeStatus::kSuccess
+                 : VaapiImageDecodeStatus::kSubmitVABuffersFailed;
 }
 
 }  // namespace media

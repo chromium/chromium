@@ -57,7 +57,7 @@ void RunVerification(quic::ProofVerifier* verifier,
                      const uint16_t port,
                      const string& server_config,
                      quic::QuicTransportVersion quic_version,
-                     quiche::QuicheStringPiece chlo_hash,
+                     absl::string_view chlo_hash,
                      const std::vector<string>& certs,
                      const string& proof,
                      bool expected_ok) {
@@ -147,6 +147,7 @@ TEST_P(ProofTest, Verify) {
   string error_details;
   quic::QuicCryptoProof proof, first_proof;
   quic::QuicSocketAddress server_addr;
+  quic::QuicSocketAddress client_addr;
 
   std::unique_ptr<quic::ProofSource::Callback> cb(
       new TestCallback(&called, &ok, &chain, &proof));
@@ -155,10 +156,10 @@ TEST_P(ProofTest, Verify) {
 
   // GetProof here expects the async method to invoke the callback
   // synchronously.
-  source->GetProof(server_addr, hostname, server_config, quic_version,
-                   first_chlo_hash, std::move(first_cb));
-  source->GetProof(server_addr, hostname, server_config, quic_version,
-                   second_chlo_hash, std::move(cb));
+  source->GetProof(server_addr, client_addr, hostname, server_config,
+                   quic_version, first_chlo_hash, std::move(first_cb));
+  source->GetProof(server_addr, client_addr, hostname, server_config,
+                   quic_version, second_chlo_hash, std::move(cb));
   ASSERT_TRUE(called);
   ASSERT_TRUE(first_called);
   ASSERT_TRUE(ok);
@@ -199,7 +200,9 @@ class TestingSignatureCallback : public quic::ProofSource::SignatureCallback {
   TestingSignatureCallback(bool* ok_out, std::string* signature_out)
       : ok_out_(ok_out), signature_out_(signature_out) {}
 
-  void Run(bool ok, std::string signature) override {
+  void Run(bool ok,
+           std::string signature,
+           std::unique_ptr<quic::ProofSource::Details> /*details*/) override {
     *ok_out_ = ok;
     *signature_out_ = std::move(signature);
   }
@@ -218,8 +221,12 @@ TEST_P(ProofTest, TlsSignature) {
   quic::QuicSocketAddress server_address;
   const string hostname = "test.example.com";
 
+  quic::QuicSocketAddress client_address;
+
+  bool cert_matched_sni;
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain =
-      source->GetCertChain(server_address, hostname);
+      source->GetCertChain(server_address, client_address, hostname,
+                           &cert_matched_sni);
   ASSERT_GT(chain->certs.size(), 0ul);
 
   // Generate a value to be signed similar to the example in TLS 1.3 section
@@ -236,8 +243,9 @@ TEST_P(ProofTest, TlsSignature) {
   bool success;
   std::unique_ptr<TestingSignatureCallback> callback =
       std::make_unique<TestingSignatureCallback>(&success, &sig);
-  source->ComputeTlsSignature(server_address, hostname, SSL_SIGN_RSA_PSS_SHA256,
-                              to_be_signed, std::move(callback));
+  source->ComputeTlsSignature(server_address, client_address, hostname,
+                              SSL_SIGN_RSA_PSS_SHA256, to_be_signed,
+                              std::move(callback));
   EXPECT_TRUE(success);
 
   // Verify that the signature from ComputeTlsSignature can be verified with the
@@ -278,12 +286,13 @@ TEST_P(ProofTest, UseAfterFree) {
   string error_details;
   quic::QuicCryptoProof proof;
   quic::QuicSocketAddress server_addr;
+  quic::QuicSocketAddress client_addr;
   std::unique_ptr<quic::ProofSource::Callback> cb(
       new TestCallback(&called, &ok, &chain, &proof));
 
   // GetProof here expects the async method to invoke the callback
   // synchronously.
-  source->GetProof(server_addr, hostname, server_config,
+  source->GetProof(server_addr, client_addr, hostname, server_config,
                    GetParam().transport_version, chlo_hash, std::move(cb));
   ASSERT_TRUE(called);
   ASSERT_TRUE(ok);

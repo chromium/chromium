@@ -13,6 +13,14 @@ namespace media {
 
 namespace {
 const gfx::Size kCodedSize(321, 243);
+
+MATCHER(UnexpectedStereoMode, "") {
+  return CONTAINS_STRING(arg, "Unexpected value for StereoMode: 0x");
+}
+
+MATCHER(UnexpectedMultipleValues, "") {
+  return CONTAINS_STRING(arg, "Multiple values for id");
+}
 }
 
 static const struct CodecTestParams {
@@ -41,16 +49,21 @@ class WebMVideoClientTest : public testing::TestWithParam<CodecTestParams> {
     webm_video_client_.OnUInt(kWebMIdPixelHeight, kCodedSize.height());
   }
 
+  WebMVideoClientTest(const WebMVideoClientTest&) = delete;
+  WebMVideoClientTest& operator=(const WebMVideoClientTest&) = delete;
+
   WebMParserClient* OnListStart(int id) {
     return webm_video_client_.OnListStart(id);
   }
 
   void OnListEnd(int id) { webm_video_client_.OnListEnd(id); }
 
+  bool OnUInt(int id, int64_t val) {
+    return webm_video_client_.OnUInt(id, val);
+  }
+
   testing::StrictMock<MockMediaLog> media_log_;
   WebMVideoClient webm_video_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMVideoClientTest);
 };
 
 TEST_P(WebMVideoClientTest, AutodetectVp9Profile2NoDetection) {
@@ -94,9 +107,9 @@ TEST_P(WebMVideoClientTest, AutodetectVp9Profile2HDRMetaData) {
   const bool has_valid_codec_private = GetParam().codec_private.size() > 3;
 
   auto* color_parser = OnListStart(kWebMIdColour);
-  auto* metadata_parser = color_parser->OnListStart(kWebMIdMasteringMetadata);
+  auto* metadata_parser = color_parser->OnListStart(kWebMIdColorVolumeMetadata);
   metadata_parser->OnFloat(kWebMIdPrimaryRChromaticityX, 1.0);
-  color_parser->OnListEnd(kWebMIdMasteringMetadata);
+  color_parser->OnListEnd(kWebMIdColorVolumeMetadata);
   OnListEnd(kWebMIdColour);
 
   VideoDecoderConfig config;
@@ -138,7 +151,7 @@ TEST_P(WebMVideoClientTest, InitializeConfigVP9Profiles) {
                                                   EncryptionScheme(), &config));
 
   VideoDecoderConfig expected_config(
-      kCodecVP9, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoCodec::kVP9, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
       VideoColorSpace::REC709(), kNoTransformation, kCodedSize,
       gfx::Rect(kCodedSize), kCodedSize, codec_private,
       EncryptionScheme::kUnencrypted);
@@ -147,6 +160,17 @@ TEST_P(WebMVideoClientTest, InitializeConfigVP9Profiles) {
       << "Config (" << config.AsHumanReadableString()
       << ") does not match expected ("
       << expected_config.AsHumanReadableString() << ")";
+}
+
+TEST_F(WebMVideoClientTest, InvalidStereoMode) {
+  EXPECT_MEDIA_LOG(UnexpectedStereoMode());
+  OnUInt(kWebMIdStereoMode, 15);
+}
+
+TEST_F(WebMVideoClientTest, MultipleStereoMode) {
+  OnUInt(kWebMIdStereoMode, 1);
+  EXPECT_MEDIA_LOG(UnexpectedMultipleValues());
+  OnUInt(kWebMIdStereoMode, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -51,7 +50,6 @@ LayoutTreeBuilderForElement::LayoutTreeBuilderForElement(
     const ComputedStyle* style,
     LegacyLayout legacy)
     : LayoutTreeBuilder(element, context, style), legacy_(legacy) {
-  DCHECK(element.CanParticipateInFlatTree());
   DCHECK(style_);
   DCHECK(!style_->IsEnsuredInDisplayNone());
 }
@@ -102,6 +100,8 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   LayoutObject* next_layout_object = NextLayoutObject();
   // SetStyle() can depend on LayoutObject() already being set.
   node_->SetLayoutObject(new_layout_object);
+
+  DCHECK(!new_layout_object->Style());
   new_layout_object->SetStyle(style_);
 
   // Note: Adding new_layout_object instead of LayoutObject(). LayoutObject()
@@ -109,16 +109,23 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   parent_layout_object->AddChild(new_layout_object, next_layout_object);
 }
 
-LayoutObject*
-LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
+scoped_refptr<ComputedStyle>
+LayoutTreeBuilderForText::CreateInlineWrapperStyleForDisplayContentsIfNeeded()
+    const {
   // If the parent element is not a display:contents element, the style and the
   // parent style will be the same ComputedStyle object. Early out here.
   if (style_ == context_.parent->Style())
     return nullptr;
 
-  scoped_refptr<ComputedStyle> wrapper_style =
-      ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
-          *style_, context_.parent->StyleRef());
+  return node_->GetDocument()
+      .GetStyleResolver()
+      .CreateInheritedDisplayContentsStyleIfNeeded(*style_,
+                                                   context_.parent->StyleRef());
+}
+
+LayoutObject*
+LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded(
+    ComputedStyle* wrapper_style) const {
   if (!wrapper_style)
     return nullptr;
 
@@ -138,20 +145,27 @@ LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
 }
 
 void LayoutTreeBuilderForText::CreateLayoutObject() {
-  const ComputedStyle& style = *style_;
+  const ComputedStyle* style = style_.get();
   LayoutObject* layout_object_parent = context_.parent;
   LayoutObject* next_layout_object = NextLayoutObject();
-  if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded()) {
+  scoped_refptr<ComputedStyle> nullable_wrapper_style =
+      CreateInlineWrapperStyleForDisplayContentsIfNeeded();
+  if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded(
+          nullable_wrapper_style.get())) {
     layout_object_parent = wrapper;
     next_layout_object = nullptr;
   }
+  // SVG <text> doesn't accept anonymous LayoutInlines. But the Text should have
+  // the adjusted ComputedStyle.
+  if (nullable_wrapper_style)
+    style = nullable_wrapper_style.get();
 
   LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()
                                    ? LegacyLayout::kForce
                                    : LegacyLayout::kAuto;
   LayoutText* new_layout_object =
-      node_->CreateTextLayoutObject(style, legacy_layout);
-  if (!layout_object_parent->IsChildAllowed(new_layout_object, style)) {
+      node_->CreateTextLayoutObject(*style, legacy_layout);
+  if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {
     new_layout_object->Destroy();
     return;
   }
@@ -164,7 +178,9 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
       context_.parent->IsInsideFlowThread());
 
   node_->SetLayoutObject(new_layout_object);
-  new_layout_object->SetStyle(&style);
+  DCHECK(!new_layout_object->Style());
+  new_layout_object->SetStyle(style);
+
   layout_object_parent->AddChild(new_layout_object, next_layout_object);
 }
 

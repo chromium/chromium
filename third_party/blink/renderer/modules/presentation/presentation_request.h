@@ -8,23 +8,22 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class ExceptionState;
 
 // Implements the PresentationRequest interface from the Presentation API from
 // which websites can start or join presentation connections.
 class MODULES_EXPORT PresentationRequest final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<PresentationRequest>,
-      public ContextClient {
-  USING_GARBAGE_COLLECTED_MIXIN(PresentationRequest);
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -45,15 +44,15 @@ class MODULES_EXPORT PresentationRequest final
   // ScriptWrappable implementation.
   bool HasPendingActivity() const final;
 
-  ScriptPromise start(ScriptState*);
-  ScriptPromise reconnect(ScriptState*, const String& id);
-  ScriptPromise getAvailability(ScriptState*);
+  ScriptPromise start(ScriptState*, ExceptionState&);
+  ScriptPromise reconnect(ScriptState*, const String& id, ExceptionState&);
+  ScriptPromise getAvailability(ScriptState*, ExceptionState&);
 
   const Vector<KURL>& Urls() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connectionavailable, kConnectionavailable)
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   // EventTarget implementation.

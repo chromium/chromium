@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -46,7 +47,7 @@ ExtensionMessageBubbleController::Delegate::Delegate(Profile* profile)
 
 ExtensionMessageBubbleController::Delegate::~Delegate() {}
 
-base::string16 ExtensionMessageBubbleController::Delegate::GetLearnMoreLabel()
+std::u16string ExtensionMessageBubbleController::Delegate::GetLearnMoreLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
@@ -98,9 +99,9 @@ ExtensionMessageBubbleController::ExtensionMessageBubbleController(
       user_action_(ACTION_BOUNDARY),
       delegate_(delegate),
       initialized_(false),
-      is_highlighting_(false),
       is_active_bubble_(false) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_->profile()));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_->profile()));
   BrowserList::AddObserver(this);
 }
 
@@ -108,8 +109,6 @@ ExtensionMessageBubbleController::~ExtensionMessageBubbleController() {
   BrowserList::RemoveObserver(this);
   if (is_active_bubble_)
     model_->set_has_active_bubble(false);
-  if (is_highlighting_)
-    model_->StopHighlighting();
 }
 
 Profile* ExtensionMessageBubbleController::profile() {
@@ -126,14 +125,14 @@ bool ExtensionMessageBubbleController::ShouldShow() {
          delegate_->ShouldShow(GetExtensionIdList());
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ExtensionMessageBubbleController::GetExtensionList() {
   ExtensionIdList* list = GetOrCreateExtensionList();
   if (list->empty())
-    return std::vector<base::string16>();
+    return std::vector<std::u16string>();
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  std::vector<base::string16> return_value;
+  std::vector<std::u16string> return_value;
   for (const std::string& id : *list) {
     const Extension* extension =
         registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
@@ -142,11 +141,11 @@ ExtensionMessageBubbleController::GetExtensionList() {
   return return_value;
 }
 
-base::string16 ExtensionMessageBubbleController::GetExtensionListForDisplay() {
+std::u16string ExtensionMessageBubbleController::GetExtensionListForDisplay() {
   if (!delegate_->ShouldShowExtensionList())
-    return base::string16();
+    return std::u16string();
 
-  std::vector<base::string16> extension_list = GetExtensionList();
+  std::vector<std::u16string> extension_list = GetExtensionList();
   if (extension_list.size() > kMaxExtensionsToShow) {
     int old_size = extension_list.size();
     extension_list.erase(extension_list.begin() + kMaxExtensionsToShow,
@@ -154,11 +153,9 @@ base::string16 ExtensionMessageBubbleController::GetExtensionListForDisplay() {
     extension_list.push_back(delegate_->GetOverflowText(
         base::NumberToString16(old_size - kMaxExtensionsToShow)));
   }
-  const base::char16 bullet_point = 0x2022;
-  base::string16 prefix = bullet_point + base::ASCIIToUTF16(" ");
-  for (base::string16& str : extension_list)
-    str.insert(0, prefix);
-  return base::JoinString(extension_list, base::ASCIIToUTF16("\n"));
+  for (std::u16string& str : extension_list)
+    str.insert(0, u"• ");
+  return base::JoinString(extension_list, u"\n");
 }
 
 const ExtensionIdList& ExtensionMessageBubbleController::GetExtensionIdList() {
@@ -185,26 +182,15 @@ bool ExtensionMessageBubbleController::CloseOnDeactivate() {
   return delegate_->ShouldCloseOnDeactivate();
 }
 
-void ExtensionMessageBubbleController::HighlightExtensionsIfNecessary() {
-  DCHECK(is_active_bubble_);
-  if (delegate_->ShouldHighlightExtensions() && !is_highlighting_) {
-    is_highlighting_ = true;
-    const ExtensionIdList& extension_ids = GetExtensionIdList();
-    DCHECK(!extension_ids.empty());
-    model_->HighlightActions(extension_ids,
-                             ToolbarActionsModel::HIGHLIGHT_WARNING);
-  }
-}
-
 void ExtensionMessageBubbleController::OnShown(
-    const base::Closure& close_bubble_callback) {
-  close_bubble_callback_ = close_bubble_callback;
+    base::OnceClosure close_bubble_callback) {
+  close_bubble_callback_ = std::move(close_bubble_callback);
   DCHECK(is_active_bubble_);
   delegate_->OnShown(GetExtensionIdList());
 
-  if (!extension_registry_observer_.IsObserving(
+  if (!extension_registry_observation_.IsObservingSource(
           ExtensionRegistry::Get(browser_->profile()))) {
-    extension_registry_observer_.Add(
+    extension_registry_observation_.Observe(
         ExtensionRegistry::Get(browser_->profile()));
   }
 }
@@ -216,11 +202,10 @@ void ExtensionMessageBubbleController::OnBubbleAction() {
   // registry observer is removed. Note, we do not remove the extension registry
   // observer in the cases of OnBubbleDismiss() and OnLinkedClicked() since they
   // do not result in extensions being unloaded.
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_EXECUTE;
 
-  delegate_->LogAction(ACTION_EXECUTE);
   delegate_->PerformAction(*GetOrCreateExtensionList());
 
   OnClose();
@@ -240,8 +225,6 @@ void ExtensionMessageBubbleController::OnBubbleDismiss(
   user_action_ = closed_by_deactivation ? ACTION_DISMISS_DEACTIVATION
                                         : ACTION_DISMISS_USER_ACTION;
 
-  delegate_->LogAction(user_action_);
-
   OnClose();
 }
 
@@ -249,7 +232,6 @@ void ExtensionMessageBubbleController::OnLinkClicked() {
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_LEARN_MORE;
 
-  delegate_->LogAction(ACTION_LEARN_MORE);
   // Opening a new tab for the learn more link can cause the bubble to close, so
   // perform our cleanup here before opening the new tab.
   OnClose();
@@ -305,20 +287,15 @@ void ExtensionMessageBubbleController::OnShutdown(ExtensionRegistry* registry) {
   // It is possible that the extension registry is destroyed before the
   // controller. In such case, the controller should no longer observe the
   // registry.
-  extension_registry_observer_.Remove(registry);
+  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  extension_registry_observation_.Reset();
 }
 
 void ExtensionMessageBubbleController::OnBrowserRemoved(Browser* browser) {
-  extension_registry_observer_.RemoveAll();
-  if (browser == browser_) {
-    if (is_highlighting_) {
-      model_->StopHighlighting();
-      is_highlighting_ = false;
-    }
-    if (is_active_bubble_) {
-      model_->set_has_active_bubble(false);
-      is_active_bubble_ = false;
-    }
+  extension_registry_observation_.Reset();
+  if (browser == browser_ && is_active_bubble_) {
+    model_->set_has_active_bubble(false);
+    is_active_bubble_ = false;
   }
 }
 
@@ -343,7 +320,6 @@ ExtensionIdList* ExtensionMessageBubbleController::GetOrCreateExtensionList() {
         extension_list_.push_back(extension->id());
     }
 
-    delegate_->LogExtensionCount(extension_list_.size());
     initialized_ = true;
   }
 
@@ -355,13 +331,12 @@ void ExtensionMessageBubbleController::OnClose() {
   // If the bubble was closed due to deactivation, don't treat it as
   // acknowledgment so that the user will see the bubble again (until they
   // explicitly take an action).
-  if (user_action_ != ACTION_DISMISS_DEACTIVATION ||
-      delegate_->ShouldAcknowledgeOnDeactivate()) {
+  if (user_action_ != ACTION_DISMISS_DEACTIVATION) {
     AcknowledgeExtensions();
     delegate_->OnAction();
   }
 
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
 }
 
 }  // namespace extensions

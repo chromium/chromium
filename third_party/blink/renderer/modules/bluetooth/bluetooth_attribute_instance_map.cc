@@ -20,17 +20,14 @@ BluetoothAttributeInstanceMap::GetOrCreateRemoteGATTService(
     mojom::blink::WebBluetoothRemoteGATTServicePtr remote_gatt_service,
     bool is_primary,
     const String& device_instance_id) {
-  String service_instance_id = remote_gatt_service->instance_id;
-  BluetoothRemoteGATTService* service =
-      service_id_to_object_.at(service_instance_id);
-
+  auto& service =
+      service_id_to_object_.insert(remote_gatt_service->instance_id, nullptr)
+          .stored_value->value;
   if (!service) {
     service = MakeGarbageCollected<BluetoothRemoteGATTService>(
         std::move(remote_gatt_service), is_primary, device_instance_id,
         device_);
-    service_id_to_object_.insert(service_instance_id, service);
   }
-
   return service;
 }
 
@@ -45,16 +42,14 @@ BluetoothAttributeInstanceMap::GetOrCreateRemoteGATTCharacteristic(
     mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr
         remote_gatt_characteristic,
     BluetoothRemoteGATTService* service) {
-  String instance_id = remote_gatt_characteristic->instance_id;
-  BluetoothRemoteGATTCharacteristic* characteristic =
-      characteristic_id_to_object_.at(instance_id);
-
+  auto& characteristic =
+      characteristic_id_to_object_
+          .insert(remote_gatt_characteristic->instance_id, nullptr)
+          .stored_value->value;
   if (!characteristic) {
     characteristic = MakeGarbageCollected<BluetoothRemoteGATTCharacteristic>(
         context, std::move(remote_gatt_characteristic), service, device_);
-    characteristic_id_to_object_.insert(instance_id, characteristic);
   }
-
   return characteristic;
 }
 
@@ -65,19 +60,16 @@ bool BluetoothAttributeInstanceMap::ContainsCharacteristic(
 
 BluetoothRemoteGATTDescriptor*
 BluetoothAttributeInstanceMap::GetOrCreateBluetoothRemoteGATTDescriptor(
-    mojom::blink::WebBluetoothRemoteGATTDescriptorPtr descriptor,
+    mojom::blink::WebBluetoothRemoteGATTDescriptorPtr remote_gatt_descriptor,
     BluetoothRemoteGATTCharacteristic* characteristic) {
-  String instance_id = descriptor->instance_id;
-  BluetoothRemoteGATTDescriptor* result =
-      descriptor_id_to_object_.at(instance_id);
-
-  if (result)
-    return result;
-
-  result = MakeGarbageCollected<BluetoothRemoteGATTDescriptor>(
-      std::move(descriptor), characteristic);
-  descriptor_id_to_object_.insert(instance_id, result);
-  return result;
+  auto& descriptor = descriptor_id_to_object_
+                         .insert(remote_gatt_descriptor->instance_id, nullptr)
+                         .stored_value->value;
+  if (!descriptor) {
+    descriptor = MakeGarbageCollected<BluetoothRemoteGATTDescriptor>(
+        std::move(remote_gatt_descriptor), characteristic);
+  }
+  return descriptor;
 }
 
 bool BluetoothAttributeInstanceMap::ContainsDescriptor(
@@ -91,7 +83,7 @@ void BluetoothAttributeInstanceMap::Clear() {
   descriptor_id_to_object_.clear();
 }
 
-void BluetoothAttributeInstanceMap::Trace(blink::Visitor* visitor) {
+void BluetoothAttributeInstanceMap::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(service_id_to_object_);
   visitor->Trace(characteristic_id_to_object_);

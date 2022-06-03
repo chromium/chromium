@@ -1,7 +1,7 @@
 Test that permissions could be granted
 - Granted: ["geolocation"]
 - Granted: ["audioCapture"]
-- Granted: ["geolocation","audioCapture"]
+- Granted: ["geolocation","audioCapture","videoCapturePanTiltZoom"]
 - Failed to grant: ["eee"]  error: Unknown permission type: eee
 - Resetting all permissions
 [
@@ -12,12 +12,16 @@ Test that permissions could be granted
     [4] : CHANGED 'geolocation': denied
 ]
 [
-    [0] : geolocation: granted
-    [1] : geolocation: denied
-    [2] : microphone: granted
-    [3] : geolocation: granted
-    [4] : microphone: granted
-    [5] : geolocation: denied
-    [6] : microphone: denied
+    [0] : {"name":"geolocation"}: granted
+    [1] : {"name":"geolocation"}: denied
+    [2] : {"name":"microphone"}: granted
+    [3] : {"name":"geolocation"}: granted
+    [4] : {"name":"microphone"}: granted
+    [5] : {"name":"camera","panTiltZoom":true}: granted
+    [6] : {"name":"geolocation"}: denied
+    [7] : {"name":"microphone"}: denied
+    [8] : {"name":"camera","panTiltZoom":true}: denied
+    [9] : {"name":"camera","panTiltZoom":false}: denied
+    [10] : {"name":"camera"}: denied
 ]
 

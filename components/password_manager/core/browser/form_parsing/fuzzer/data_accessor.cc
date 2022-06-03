@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <bitset>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace password_manager {
 
@@ -74,12 +74,11 @@ void DataAccessor::ConsumeBytesToBuffer(size_t length, uint8_t* string_buffer) {
   }
 
   size_t non_padded_length = std::min(length, size_);
-  std::memcpy(string_buffer, data_, non_padded_length);
+  memcpy(string_buffer, data_, non_padded_length);
 
   if (non_padded_length != length) {
     // Pad with zeroes as needed.
-    std::memset(string_buffer + non_padded_length, 0,
-                length - non_padded_length);
+    memset(string_buffer + non_padded_length, 0, length - non_padded_length);
     // The rest of the input string was not enough, so now it's certainly
     // depleted.
     size_ = 0;
@@ -100,13 +99,13 @@ std::string DataAccessor::ConsumeString(size_t length) {
   return std::string(reinterpret_cast<const char*>(string_buffer), length);
 }
 
-base::string16 DataAccessor::ConsumeString16(size_t length) {
+std::u16string DataAccessor::ConsumeString16(size_t length) {
   CHECK_LE(2 * length, kMaxStringBytes);
 
   uint8_t string_buffer[kMaxStringBytes];
   ConsumeBytesToBuffer(2 * length, string_buffer);
-  return base::string16(
-      reinterpret_cast<base::string16::value_type*>(string_buffer), length);
+  return std::u16string(
+      reinterpret_cast<std::u16string::value_type*>(string_buffer), length);
 }
 
 }  // namespace password_manager

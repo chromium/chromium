@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,14 +16,16 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.webapps.WebApkInfoBuilder;
+import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -73,13 +75,16 @@ public class WebApkUpdateDataFetcherTest {
         private boolean mIsPrimaryIconMaskable;
 
         @Override
-        public void onGotManifestData(
-                WebApkInfo fetchedInfo, String primaryIconUrl, String badgeIconUrl) {
+        public void onGotManifestData(BrowserServicesIntentDataProvider fetchedInfo,
+                String primaryIconUrl, String splashIconUrl) {
             Assert.assertNull(mName);
             mWebApkCompatible = true;
-            mName = fetchedInfo.name();
-            mPrimaryIconMurmur2Hash = fetchedInfo.iconUrlToMurmur2HashMap().get(primaryIconUrl);
-            mIsPrimaryIconMaskable = fetchedInfo.isIconAdaptive();
+
+            WebappExtras fetchedWebappExtras = fetchedInfo.getWebappExtras();
+            mName = fetchedWebappExtras.name;
+            mPrimaryIconMurmur2Hash =
+                    fetchedInfo.getWebApkExtras().iconUrlToMurmur2HashMap.get(primaryIconUrl);
+            mIsPrimaryIconMaskable = fetchedWebappExtras.isIconAdaptive;
             notifyCalled();
         }
 
@@ -111,11 +116,11 @@ public class WebApkUpdateDataFetcherTest {
             final String manifestUrl, final WebApkUpdateDataFetcher.Observer observer) {
         final WebApkUpdateDataFetcher fetcher = new WebApkUpdateDataFetcher();
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            WebApkInfoBuilder oldWebApkInfoBuilder =
-                    new WebApkInfoBuilder("random.package", "" /* url */);
-            oldWebApkInfoBuilder.setScope(scopeUrl);
-            oldWebApkInfoBuilder.setManifestUrl(manifestUrl);
-            fetcher.start(mTab, oldWebApkInfoBuilder.build(), observer);
+            WebApkIntentDataProviderBuilder oldIntentDataProviderBuilder =
+                    new WebApkIntentDataProviderBuilder("random.package", "" /* url */);
+            oldIntentDataProviderBuilder.setScope(scopeUrl);
+            oldIntentDataProviderBuilder.setManifestUrl(manifestUrl);
+            fetcher.start(mTab, WebappInfo.create(oldIntentDataProviderBuilder.build()), observer);
         });
     }
 
@@ -157,7 +162,7 @@ public class WebApkUpdateDataFetcherTest {
         waiter.waitForCallback(0);
 
         Assert.assertEquals(
-                ShortcutHelper.doesAndroidSupportMaskableIcons(), waiter.isPrimaryIconMaskable());
+                WebappsIconUtils.doesAndroidSupportMaskableIcons(), waiter.isPrimaryIconMaskable());
     }
 
     /**
@@ -168,7 +173,6 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @RetryOnFailure
     public void testLaunchWithDifferentManifestUrl() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);

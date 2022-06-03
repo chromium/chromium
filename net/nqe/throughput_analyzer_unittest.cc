@@ -13,14 +13,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/logging.h"
+#include "base/location.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -28,10 +27,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/isolation_info.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/log/test_net_log.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
@@ -42,7 +42,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -59,13 +58,16 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
             network_quality_estimator,
             params,
             base::ThreadTaskRunnerHandle::Get(),
-            base::Bind(
+            base::BindRepeating(
                 &TestThroughputAnalyzer::OnNewThroughputObservationAvailable,
                 base::Unretained(this)),
             tick_clock,
-            std::make_unique<RecordingBoundTestNetLog>()->bound()),
+            NetLogWithSource::Make(NetLogSourceType::NONE)),
         throughput_observations_received_(0),
         bits_received_(0) {}
+
+  TestThroughputAnalyzer(const TestThroughputAnalyzer&) = delete;
+  TestThroughputAnalyzer& operator=(const TestThroughputAnalyzer&) = delete;
 
   ~TestThroughputAnalyzer() override = default;
 
@@ -86,17 +88,15 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   // Uses a mock resolver to force example.com to resolve to a public IP
   // address.
   void AddIPAddressResolution(TestURLRequestContext* context) {
-    scoped_refptr<net::RuleBasedHostResolverProc> rules =
-        base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
+    mock_host_resolver_.rules()->ClearRules();
     // example.com resolves to a public IP address.
-    rules->AddRule("example.com", "27.0.0.3");
+    mock_host_resolver_.rules()->AddRule("example.com", "27.0.0.3");
     // local.com resolves to a private IP address.
-    rules->AddRule("local.com", "127.0.0.1");
-    mock_host_resolver_.set_rules(rules.get());
+    mock_host_resolver_.rules()->AddRule("local.com", "127.0.0.1");
     mock_host_resolver_.LoadIntoCache(HostPortPair("example.com", 80),
-                                      NetworkIsolationKey(), base::nullopt);
+                                      NetworkIsolationKey(), absl::nullopt);
     mock_host_resolver_.LoadIntoCache(HostPortPair("local.com", 80),
-                                      NetworkIsolationKey(), base::nullopt);
+                                      NetworkIsolationKey(), absl::nullopt);
     context->set_host_resolver(&mock_host_resolver_);
   }
 
@@ -112,13 +112,18 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   int64_t bits_received_;
 
   MockCachingHostResolver mock_host_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThroughputAnalyzer);
 };
 
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;
 
-TEST_F(ThroughputAnalyzerTest, MaximumRequests) {
+#if defined(OS_IOS) || defined(OS_ANDROID)
+// Flaky on iOS: crbug.com/672917.
+// Flaky on Android: crbug.com/1223950.
+#define MAYBE_MaximumRequests DISABLED_MaximumRequests
+#else
+#define MAYBE_MaximumRequests MaximumRequests
+#endif
+TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
   const struct TestCase {
     GURL url;
     bool is_local;
@@ -164,11 +169,19 @@ TEST_F(ThroughputAnalyzerTest, MaximumRequests) {
   }
 }
 
+#if defined(OS_IOS)
+// Flaky on iOS: crbug.com/672917.
+#define MAYBE_MaximumRequestsWithNetworkIsolationKey \
+  DISABLED_MaximumRequestsWithNetworkIsolationKey
+#else
+#define MAYBE_MaximumRequestsWithNetworkIsolationKey \
+  MaximumRequestsWithNetworkIsolationKey
+#endif
 // Make sure that the NetworkIsolationKey is respected when resolving a host
 // from the cache.
-TEST_F(ThroughputAnalyzerTest, MaximumRequestsWithNetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
+  const SchemefulSite kSite(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl = GURL("http://foo.test/test.html");
 
   base::test::ScopedFeatureList feature_list;
@@ -190,20 +203,16 @@ TEST_F(ThroughputAnalyzerTest, MaximumRequestsWithNetworkIsolationKey) {
 
     // Add an entry to the host cache mapping kUrl to non-local IP when using an
     // empty NetworkIsolationKey.
-    scoped_refptr<net::RuleBasedHostResolverProc> rules =
-        base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
-    rules->AddRule(kUrl.host(), "1.2.3.4");
-    mock_host_resolver.set_rules(rules.get());
+    mock_host_resolver.rules()->AddRule(kUrl.host(), "1.2.3.4");
     mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                     NetworkIsolationKey(), base::nullopt);
+                                     NetworkIsolationKey(), absl::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
     // kNetworkIsolationKey.
-    rules = base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
-    rules->AddRule(kUrl.host(), "127.0.0.1");
-    mock_host_resolver.set_rules(rules.get());
+    mock_host_resolver.rules()->ClearRules();
+    mock_host_resolver.rules()->AddRule(kUrl.host(), "127.0.0.1");
     mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                     kNetworkIsolationKey, base::nullopt);
+                                     kNetworkIsolationKey, absl::nullopt);
 
     ASSERT_FALSE(
         throughput_analyzer.disable_throughput_measurements_for_testing());
@@ -221,7 +230,8 @@ TEST_F(ThroughputAnalyzerTest, MaximumRequestsWithNetworkIsolationKey) {
           context.CreateRequest(kUrl, DEFAULT_PRIORITY, &test_delegate,
                                 TRAFFIC_ANNOTATION_FOR_TESTS));
       if (use_network_isolation_key)
-        request->set_network_isolation_key(kNetworkIsolationKey);
+        request->set_isolation_info(IsolationInfo::CreatePartial(
+            IsolationInfo::RequestType::kOther, kNetworkIsolationKey));
       throughput_analyzer.NotifyStartTransaction(*(request.get()));
       requests.push_back(std::move(request));
     }
@@ -243,8 +253,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
   // Set HTTP RTT to a large value so that the throughput observation window
   // is not detected as hanging. In practice, this would be provided by
   // |network_quality_estimator| based on the recent observations.
-  network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromSeconds(100));
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
   for (size_t num_requests = 1;
        num_requests <= params.throughput_min_requests_in_flight() + 1;
@@ -302,38 +311,50 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
       {
           // |requests_hang_duration| is less than 5 times the HTTP RTT.
           // Requests should not be marked as hanging.
-          5, base::TimeDelta::FromMilliseconds(1000),
-          base::TimeDelta::FromMilliseconds(3000), true,
+          5,
+          base::Milliseconds(1000),
+          base::Milliseconds(3000),
+          true,
       },
       {
           // |requests_hang_duration| is more than 5 times the HTTP RTT.
           // Requests should be marked as hanging.
-          5, base::TimeDelta::FromMilliseconds(200),
-          base::TimeDelta::FromMilliseconds(3000), false,
+          5,
+          base::Milliseconds(200),
+          base::Milliseconds(3000),
+          false,
       },
       {
           // |requests_hang_duration| is less than
           // |hanging_request_min_duration_msec|. Requests should not be marked
           // as hanging.
-          1, base::TimeDelta::FromMilliseconds(100),
-          base::TimeDelta::FromMilliseconds(100), true,
+          1,
+          base::Milliseconds(100),
+          base::Milliseconds(100),
+          true,
       },
       {
           // |requests_hang_duration| is more than
           // |hanging_request_min_duration_msec|. Requests should be marked as
           // hanging.
-          1, base::TimeDelta::FromMilliseconds(2000),
-          base::TimeDelta::FromMilliseconds(3100), false,
+          1,
+          base::Milliseconds(2000),
+          base::Milliseconds(3100),
+          false,
       },
       {
           // |requests_hang_duration| is less than 5 times the HTTP RTT.
           // Requests should not be marked as hanging.
-          5, base::TimeDelta::FromSeconds(2), base::TimeDelta::FromSeconds(1),
+          5,
+          base::Seconds(2),
+          base::Seconds(1),
           true,
       },
       {
           // HTTP RTT is unavailable. Requests should not be marked as hanging.
-          5, base::TimeDelta::FromSeconds(-1), base::TimeDelta::FromSeconds(-1),
+          5,
+          base::Seconds(-1),
+          base::Seconds(-1),
           true,
       },
   };
@@ -418,8 +439,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
   base::SimpleTestTickClock tick_clock;
 
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromSeconds(1));
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(1));
   std::map<std::string, std::string> variation_params;
   variation_params["hanging_request_duration_http_rtt_multiplier"] = "5";
   variation_params["hanging_request_min_duration_msec"] = "2000";
@@ -451,17 +471,17 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
   // request would be marked as hanging at t=6, and the second request at t=7
   // seconds.
   for (size_t i = 0; i < 2; ++i) {
-    tick_clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+    tick_clock.Advance(base::Milliseconds(1000));
     throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i));
   }
 
   EXPECT_EQ(2u, throughput_analyzer.CountActiveInFlightRequests());
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(3500));
+  tick_clock.Advance(base::Milliseconds(3500));
   // Current time is t = 5.5 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(2u, throughput_analyzer.CountActiveInFlightRequests());
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(1000));
+  tick_clock.Advance(base::Milliseconds(1000));
   // Current time is t = 6.5 seconds.  One request should be marked as hanging.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
@@ -471,14 +491,14 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(600));
+  tick_clock.Advance(base::Milliseconds(600));
   // Current time is t = 7.1 seconds. Calling NotifyBytesRead again should not
   // run the hanging request checker since the last check was at t=6.5 seconds
   // (less than 1 second ago).
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(400));
+  tick_clock.Advance(base::Milliseconds(400));
   // Current time is t = 7.5 seconds. Calling NotifyBytesRead again should run
   // the hanging request checker since the last check was at t=6.5 seconds (at
   // least 1 second ago).
@@ -492,8 +512,7 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
   base::SimpleTestTickClock tick_clock;
 
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromSeconds(1));
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(1));
   std::map<std::string, std::string> variation_params;
   variation_params["hanging_request_duration_http_rtt_multiplier"] = "5";
   variation_params["hanging_request_min_duration_msec"] = "2000";
@@ -521,7 +540,7 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
   // hanging at t=5 seconds.
   throughput_analyzer.NotifyStartTransaction(*request_not_local);
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(4000));
+  tick_clock.Advance(base::Milliseconds(4000));
   // Current time is t=4.0 seconds.
 
   throughput_analyzer.EraseHangingRequests(*some_other_request);
@@ -529,12 +548,12 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
 
   //  The request will be marked as hanging at t=9 seconds.
   throughput_analyzer.NotifyBytesRead(*request_not_local);
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(4000));
+  tick_clock.Advance(base::Milliseconds(4000));
   // Current time is t=8 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(2000));
+  tick_clock.Advance(base::Milliseconds(2000));
   // Current time is t=10 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
   EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
@@ -547,8 +566,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   base::SimpleTestTickClock tick_clock;
 
   TestNetworkQualityEstimator network_quality_estimator;
-  network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromSeconds(1));
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(1));
   std::map<std::string, std::string> variation_params;
   variation_params["hanging_request_duration_http_rtt_multiplier"] = "2";
   NetworkQualityEstimatorParams params(variation_params);
@@ -572,7 +590,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   throughput_analyzer.NotifyStartTransaction(*request_not_local);
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(2900));
+  tick_clock.Advance(base::Milliseconds(2900));
   // Current time is t=2.9 seconds.
 
   throughput_analyzer.EraseHangingRequests(*request_not_local);
@@ -580,14 +598,23 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
 
   // |request_not_local| should be deleted since it has been idle for 2.4
   // seconds.
-  tick_clock.Advance(base::TimeDelta::FromMilliseconds(500));
+  tick_clock.Advance(base::Milliseconds(500));
   throughput_analyzer.NotifyBytesRead(*request_not_local);
   EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
+#if defined(OS_IOS)
+// Flaky on iOS: crbug.com/672917.
+#define MAYBE_TestThroughputWithMultipleRequestsOverlap \
+  DISABLED_TestThroughputWithMultipleRequestsOverlap
+#else
+#define MAYBE_TestThroughputWithMultipleRequestsOverlap \
+  TestThroughputWithMultipleRequestsOverlap
+#endif
 // Tests if the throughput observation is taken correctly when local and network
 // requests overlap.
-TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleRequestsOverlap) {
+TEST_F(ThroughputAnalyzerTest,
+       MAYBE_TestThroughputWithMultipleRequestsOverlap) {
   static const struct {
     bool start_local_request;
     bool local_request_completes_first;
@@ -724,8 +751,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
     // Set HTTP RTT to a large value so that the throughput observation window
     // is not detected as hanging. In practice, this would be provided by
     // |network_quality_estimator| based on the recent observations.
-    network_quality_estimator.SetStartTimeNullHttpRtt(
-        base::TimeDelta::FromSeconds(100));
+    network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                                &params, tick_clock);
@@ -780,9 +806,8 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
 // of network requests overlap, and the minimum number of in flight requests
 // when taking an observation is more than 1.
 TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
-  const base::RunLoop::ScopedRunTimeoutForTest increased_run_timeout(
-      TestTimeouts::action_max_timeout(),
-      base::MakeExpectedNotRunClosure(FROM_HERE, "RunLoop::Run() timed out."));
+  const base::test::ScopedRunLoopTimeout increased_run_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
 
   const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance();
   TestNetworkQualityEstimator network_quality_estimator;
@@ -793,8 +818,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   // Set HTTP RTT to a large value so that the throughput observation window
   // is not detected as hanging. In practice, this would be provided by
   // |network_quality_estimator| based on the recent observations.
-  network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromSeconds(100));
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
 
   TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                              &params, tick_clock);
@@ -870,7 +894,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingWindow) {
   TestNetworkQualityEstimator network_quality_estimator;
   int64_t http_rtt_msec = 1000;
   network_quality_estimator.SetStartTimeNullHttpRtt(
-      base::TimeDelta::FromMilliseconds(http_rtt_msec));
+      base::Milliseconds(http_rtt_msec));
   std::map<std::string, std::string> variation_params;
   variation_params["throughput_hanging_requests_cwnd_size_multiplier"] = "1";
   NetworkQualityEstimatorParams params(variation_params);
@@ -883,19 +907,13 @@ TEST_F(ThroughputAnalyzerTest, TestHangingWindow) {
     base::TimeDelta window_duration;
     bool expected_hanging;
   } tests[] = {
-      {100, base::TimeDelta::FromMilliseconds(http_rtt_msec), true},
-      {kCwndSizeBits - 1, base::TimeDelta::FromMilliseconds(http_rtt_msec),
-       true},
-      {kCwndSizeBits + 1, base::TimeDelta::FromMilliseconds(http_rtt_msec),
-       false},
-      {2 * (kCwndSizeBits - 1),
-       base::TimeDelta::FromMilliseconds(http_rtt_msec * 2), true},
-      {2 * (kCwndSizeBits + 1),
-       base::TimeDelta::FromMilliseconds(http_rtt_msec * 2), false},
-      {kCwndSizeBits / 2 - 1,
-       base::TimeDelta::FromMilliseconds(http_rtt_msec / 2), true},
-      {kCwndSizeBits / 2 + 1,
-       base::TimeDelta::FromMilliseconds(http_rtt_msec / 2), false},
+      {100, base::Milliseconds(http_rtt_msec), true},
+      {kCwndSizeBits - 1, base::Milliseconds(http_rtt_msec), true},
+      {kCwndSizeBits + 1, base::Milliseconds(http_rtt_msec), false},
+      {2 * (kCwndSizeBits - 1), base::Milliseconds(http_rtt_msec * 2), true},
+      {2 * (kCwndSizeBits + 1), base::Milliseconds(http_rtt_msec * 2), false},
+      {kCwndSizeBits / 2 - 1, base::Milliseconds(http_rtt_msec / 2), true},
+      {kCwndSizeBits / 2 + 1, base::Milliseconds(http_rtt_msec / 2), false},
   };
 
   for (const auto& test : tests) {

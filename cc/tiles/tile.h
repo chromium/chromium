@@ -8,6 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include "base/memory/ref_counted.h"
 #include "cc/paint/draw_image.h"
 #include "cc/raster/tile_task.h"
@@ -23,27 +27,14 @@ class TileManager;
 
 class CC_EXPORT Tile {
  public:
-  class CC_EXPORT CreateInfo {
-   public:
-    const PictureLayerTiling* tiling;
-    int tiling_i_index;
-    int tiling_j_index;
+  struct CreateInfo {
+    const PictureLayerTiling* tiling = nullptr;
+    int tiling_i_index = 0;
+    int tiling_j_index = 0;
     gfx::Rect enclosing_layer_rect;
     gfx::Rect content_rect;
     gfx::AxisTransform2d raster_transform;
-
-    CreateInfo(const PictureLayerTiling* tiling,
-               int tiling_i_index,
-               int tiling_j_index,
-               const gfx::Rect& enclosing_layer_rect,
-               const gfx::Rect& content_rect,
-               const gfx::AxisTransform2d& raster_transform)
-        : tiling(tiling),
-          tiling_i_index(tiling_i_index),
-          tiling_j_index(tiling_j_index),
-          enclosing_layer_rect(enclosing_layer_rect),
-          content_rect(content_rect),
-          raster_transform(raster_transform) {}
+    bool can_use_lcd_text = false;
   };
 
   enum TileRasterFlags { USE_PICTURE_ANALYSIS = 1 << 0, IS_OPAQUE = 1 << 1 };
@@ -84,7 +75,10 @@ class CC_EXPORT Tile {
   const TileDrawInfo& draw_info() const { return draw_info_; }
   TileDrawInfo& draw_info() { return draw_info_; }
 
-  float contents_scale_key() const { return raster_transform_.scale(); }
+  float contents_scale_key() const {
+    const gfx::Vector2dF& scale = raster_transform_.scale();
+    return std::max(scale.x(), scale.y());
+  }
   const gfx::AxisTransform2d& raster_transform() const {
     return raster_transform_;
   }
@@ -147,8 +141,7 @@ class CC_EXPORT Tile {
        const CreateInfo& info,
        int layer_id,
        int source_frame_number,
-       int flags,
-       bool can_use_lcd_text);
+       int flags);
 
   TileManager* const tile_manager_;
   const PictureLayerTiling* tiling_;
@@ -163,24 +156,32 @@ class CC_EXPORT Tile {
   const int flags_;
   const int tiling_i_index_;
   const int tiling_j_index_;
+
+  // The |id_| of the Tile that was invalidated and replaced by this tile.
+  Id invalidated_id_ = 0;
+
+  unsigned scheduled_priority_ = 0;
+
   bool required_for_activation_ : 1;
   bool required_for_draw_ : 1;
   bool is_solid_color_analysis_performed_ : 1;
   const bool can_use_lcd_text_ : 1;
 
+  // Set to true if there is a raster task scheduled for this tile that will
+  // rasterize a resource with checker images.
+  bool raster_task_scheduled_with_checker_images_ : 1;
+
   Id id_;
+
+  // List of Rect-Transform pairs, representing unoccluded parts of the
+  // tile, to support raster culling. See Bug: 1071932
+  std::vector<std::pair<const gfx::Rect, const gfx::AxisTransform2d>>
+      raster_rects_;
 
   // The rect bounding the changes in this Tile vs the previous tile it
   // replaced.
   gfx::Rect invalidated_content_rect_;
-  // The |id_| of the Tile that was invalidated and replaced by this tile.
-  Id invalidated_id_;
 
-  unsigned scheduled_priority_;
-
-  // Set to true if there is a raster task scheduled for this tile that will
-  // rasterize a resource with checker images.
-  bool raster_task_scheduled_with_checker_images_ = false;
   scoped_refptr<TileTask> raster_task_;
 };
 

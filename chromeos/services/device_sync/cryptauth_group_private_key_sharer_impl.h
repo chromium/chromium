@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -35,17 +34,26 @@ class CryptAuthGroupPrivateKeySharerImpl
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthGroupPrivateKeySharer> BuildInstance(
+    static std::unique_ptr<CryptAuthGroupPrivateKeySharer> Create(
         CryptAuthClientFactory* client_factory,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthGroupPrivateKeySharer> CreateInstance(
+        CryptAuthClientFactory* client_factory,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthGroupPrivateKeySharerImpl(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
+  CryptAuthGroupPrivateKeySharerImpl& operator=(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
 
   ~CryptAuthGroupPrivateKeySharerImpl() override;
 
@@ -59,8 +67,8 @@ class CryptAuthGroupPrivateKeySharerImpl
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
-  static base::Optional<CryptAuthDeviceSyncResult::ResultCode>
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<CryptAuthDeviceSyncResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   CryptAuthGroupPrivateKeySharerImpl(CryptAuthClientFactory* client_factory,
@@ -99,8 +107,6 @@ class CryptAuthGroupPrivateKeySharerImpl
   State state_ = State::kNotStarted;
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGroupPrivateKeySharerImpl);
 };
 
 }  // namespace device_sync

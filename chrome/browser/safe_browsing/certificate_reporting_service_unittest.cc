@@ -9,10 +9,9 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -27,12 +26,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,13 +61,12 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
   std::string cert_der;
   if (!net::x509_util::CreateKeyAndSelfSignedCert(
           "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::TimeDelta::FromMinutes(5),
-          base::Time::Now() + base::TimeDelta::FromMinutes(5), &unused_key,
-          &cert_der)) {
+          base::Time::Now() - base::Minutes(5),
+          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
     return nullptr;
   }
-  return net::X509Certificate::CreateFromBytes(cert_der.data(),
-                                               cert_der.size());
+  return net::X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(cert_der)));
 }
 
 std::string MakeReport(const std::string& hostname) {
@@ -126,7 +125,7 @@ TEST(CertificateReportingServiceReportListTest, BoundedReportList) {
 
   // Add a ten minute old report.
   list.Add(CertificateReportingService::Report(
-      1, base::Time::Now() - base::TimeDelta::FromMinutes(10),
+      1, base::Time::Now() - base::Minutes(10),
       std::string("report1_ten_minutes_old")));
   EXPECT_EQ(1u, list.items().size());
   EXPECT_EQ("report1_ten_minutes_old", list.items()[0].serialized_report);
@@ -134,7 +133,7 @@ TEST(CertificateReportingServiceReportListTest, BoundedReportList) {
   // Add another report. Items are ordered from newest to oldest report by
   // creation time. Oldest is at the end.
   list.Add(CertificateReportingService::Report(
-      2, base::Time::Now() - base::TimeDelta::FromMinutes(5),
+      2, base::Time::Now() - base::Minutes(5),
       std::string("report2_five_minutes_old")));
   EXPECT_EQ(2u, list.items().size());
   EXPECT_EQ("report2_five_minutes_old", list.items()[0].serialized_report);
@@ -150,7 +149,7 @@ TEST(CertificateReportingServiceReportListTest, BoundedReportList) {
   // Adding a report older than the oldest report in the list (report2) is
   // a no-op.
   list.Add(CertificateReportingService::Report(
-      0, base::Time::Now() - base::TimeDelta::FromMinutes(10),
+      0, base::Time::Now() - base::Minutes(10),
       std::string("report0_ten_minutes_old")));
   EXPECT_EQ(2u, list.items().size());
   EXPECT_EQ("report3_zero_minutes_old", list.items()[0].serialized_report);
@@ -168,7 +167,7 @@ class CertificateReportingServiceReporterOnIOThreadTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    event_histogram_tester_.reset(new EventHistogramTester());
+    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
   }
 
   void TearDown() override {
@@ -232,8 +231,7 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   CertificateReportingService::Reporter reporter(
       std::unique_ptr<CertificateErrorReporter>(certificate_error_reporter),
       std::unique_ptr<CertificateReportingService::BoundedReportList>(list),
-      clock.get(), base::TimeDelta::FromSeconds(100),
-      true /* retries_enabled */);
+      clock.get(), base::Seconds(100), true /* retries_enabled */);
   EXPECT_EQ(0u, list->items().size());
   EXPECT_EQ(0u, reporter.inflight_report_count_for_testing());
 
@@ -247,45 +245,45 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   CheckReport(list->items()[0], "report1", false, reference_time);
 
   // Sending a second failed report will also put it in the retry list.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   reporter.Send(MakeReport("report2"));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, list->items().size());
   CheckReport(list->items()[0], "report2", false,
-              reference_time + base::TimeDelta::FromSeconds(10));
+              reference_time + base::Seconds(10));
   CheckReport(list->items()[1], "report1", false, reference_time);
 
   // Sending a third report should remove the first report from the retry list.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   reporter.Send(MakeReport("report3"));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, list->items().size());
   CheckReport(list->items()[0], "report3", false,
-              reference_time + base::TimeDelta::FromSeconds(20));
+              reference_time + base::Seconds(20));
   CheckReport(list->items()[1], "report2", false,
-              reference_time + base::TimeDelta::FromSeconds(10));
+              reference_time + base::Seconds(10));
 
   // Retry sending all pending reports. All should fail and get added to the
   // retry list again. Report creation time doesn't change for retried reports.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   reporter.SendPending();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, list->items().size());
   CheckReport(list->items()[0], "report3", true,
-              reference_time + base::TimeDelta::FromSeconds(20));
+              reference_time + base::Seconds(20));
   CheckReport(list->items()[1], "report2", true,
-              reference_time + base::TimeDelta::FromSeconds(10));
+              reference_time + base::Seconds(10));
 
   // Advance the clock to 115 seconds. This makes report3 95 seconds old, and
   // report2 105 seconds old. report2 should be dropped because it's older than
   // max age (100 seconds).
-  clock->SetNow(reference_time + base::TimeDelta::FromSeconds(115));
+  clock->SetNow(reference_time + base::Seconds(115));
   reporter.SendPending();
   EXPECT_EQ(1u, reporter.inflight_report_count_for_testing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, list->items().size());
   CheckReport(list->items()[0], "report3", true,
-              reference_time + base::TimeDelta::FromSeconds(20));
+              reference_time + base::Seconds(20));
 
   // Send pending reports again, this time successfully. There should be no
   // pending reports left.
@@ -294,7 +292,7 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   test_url_loader_factory()->AddResponse(kSuccessURL.spec(), "dummy data");
 
   certificate_error_reporter->set_upload_url_for_testing(kSuccessURL);
-  clock->Advance(base::TimeDelta::FromSeconds(1));
+  clock->Advance(base::Seconds(1));
   reporter.SendPending();
   EXPECT_EQ(1u, reporter.inflight_report_count_for_testing());
   base::RunLoop().RunUntilIdle();
@@ -332,8 +330,7 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   CertificateReportingService::Reporter reporter(
       std::unique_ptr<CertificateErrorReporter>(certificate_error_reporter),
       std::unique_ptr<CertificateReportingService::BoundedReportList>(list),
-      clock.get(), base::TimeDelta::FromSeconds(100),
-      false /* retries_enabled */);
+      clock.get(), base::Seconds(100), false /* retries_enabled */);
   EXPECT_EQ(0u, list->items().size());
   EXPECT_EQ(0u, reporter.inflight_report_count_for_testing());
 
@@ -346,13 +343,13 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
   ASSERT_EQ(0u, list->items().size());
 
   // Sending a second failed report will also not put it in the retry list.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   reporter.Send("report2");
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(0u, list->items().size());
 
   // Send pending reports. Nothing should be sent.
-  clock->Advance(base::TimeDelta::FromSeconds(10));
+  clock->Advance(base::Seconds(10));
   reporter.SendPending();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(0u, list->items().size());
@@ -366,8 +363,7 @@ class CertificateReportingServiceTest : public ::testing::Test {
  public:
   CertificateReportingServiceTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        io_task_runner_(
-            base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})) {}
+        io_task_runner_(content::GetIOThreadTaskRunner({})) {}
 
   ~CertificateReportingServiceTest() override {}
 
@@ -380,17 +376,18 @@ class CertificateReportingServiceTest : public ::testing::Test {
     test_helper_ =
         base::MakeRefCounted<CertificateReportingServiceTestHelper>();
 
-    clock_.reset(new base::SimpleTestClock());
-    service_.reset(new CertificateReportingService(
+    clock_ = std::make_unique<base::SimpleTestClock>();
+    service_ = std::make_unique<CertificateReportingService>(
         sb_service_.get(), test_helper_, &profile_,
         test_helper_->server_public_key(),
         test_helper_->server_public_key_version(), kMaxReportCountInQueue,
-        base::TimeDelta::FromHours(24), clock_.get(),
-        base::Bind(&CertificateReportingServiceObserver::OnServiceReset,
-                   base::Unretained(&service_observer_))));
+        base::Hours(24), clock_.get(),
+        base::BindRepeating(
+            &CertificateReportingServiceObserver::OnServiceReset,
+            base::Unretained(&service_observer_)));
     service_observer_.WaitForReset();
 
-    event_histogram_tester_.reset(new EventHistogramTester());
+    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
   }
 
   void TearDown() override {
@@ -398,6 +395,7 @@ class CertificateReportingServiceTest : public ::testing::Test {
 
     service_->Shutdown();
     service_.reset(nullptr);
+    safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 
     histogram_test_helper_.CheckHistogram();
     event_histogram_tester_.reset();
@@ -594,7 +592,7 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
 
   // Send a report, then advance the clock and send another report.
   service()->Send(MakeReport("report0"));
-  AdvanceClock(base::TimeDelta::FromHours(5));
+  AdvanceClock(base::Hours(5));
   service()->Send(MakeReport("report1"));
   test_helper()->WaitForRequestsDestroyed(
       ReportExpectation::Failed({{"report0", RetryStatus::NOT_RETRIED},
@@ -603,7 +601,7 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
   // Advance the clock to 20 hours, putting it 25 hours ahead of the reference
   // time. This makes the report0 older than max age (24 hours). The report1 is
   // now 20 hours old.
-  AdvanceClock(base::TimeDelta::FromHours(20));
+  AdvanceClock(base::Hours(20));
 
   // Need this to ensure the pending reports are queued.
   WaitForNoReports();
@@ -620,7 +618,7 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
       ReportExpectation::Failed({{"report2", RetryStatus::NOT_RETRIED}}));
 
   // Advance the clock 5 hours. The report1 will now be 25 hours old.
-  AdvanceClock(base::TimeDelta::FromHours(5));
+  AdvanceClock(base::Hours(5));
 
   // Need this to ensure the pending reports are queued.
   WaitForNoReports();
@@ -633,7 +631,7 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
 
   // Advance the clock 20 hours again so that report2 is 25 hours old and is
   // older than max age (24 hours)
-  AdvanceClock(base::TimeDelta::FromHours(20));
+  AdvanceClock(base::Hours(20));
 
   // Need this to ensure the pending reports are queued.
   WaitForNoReports();
@@ -666,13 +664,13 @@ TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
   // report3 is 15 hours after reference time (0 hours old).
   service()->Send(MakeReport("report0"));
 
-  AdvanceClock(base::TimeDelta::FromHours(5));
+  AdvanceClock(base::Hours(5));
   service()->Send(MakeReport("report1"));
 
-  AdvanceClock(base::TimeDelta::FromHours(5));
+  AdvanceClock(base::Hours(5));
   service()->Send(MakeReport("report2"));
 
-  AdvanceClock(base::TimeDelta::FromHours(5));
+  AdvanceClock(base::Hours(5));
   service()->Send(MakeReport("report3"));
   test_helper()->WaitForRequestsDestroyed(
       ReportExpectation::Failed({{"report0", RetryStatus::NOT_RETRIED},
@@ -701,7 +699,7 @@ TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
   // report1 is 25 hours old.
   // report2 is 20 hours old.
   // report3 is 15 hours old.
-  AdvanceClock(base::TimeDelta::FromHours(15));
+  AdvanceClock(base::Hours(15));
 
   // Need this to ensure the pending reports are queued.
   WaitForNoReports();

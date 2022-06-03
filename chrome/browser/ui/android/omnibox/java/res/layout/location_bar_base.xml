@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Layout for the control group representing Chrome's URL bar on small devices.
+     This file is used for different LocationBarLayout subclasses and should remain generic.
+-->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <include layout="@layout/location_status" />
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginStart="@dimen/location_bar_icon_width"
+        android:layout_gravity="center_vertical"
+        android:nextFocusForward="@+id/tab_switcher_button"
+        layout="@layout/url_bar" />
+
+    <include layout="@layout/url_action_container" />
+
+</merge>

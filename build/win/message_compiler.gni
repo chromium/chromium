@@ -81,9 +81,7 @@ template("message_compiler") {
     source_set(source_set_name) {
       forward_variables_from(invoker, [ "visibility" ])
       sources = get_target_outputs(":$action_name")
-      deps = [
-        ":$action_name",
-      ]
+      deps = [ ":$action_name" ]
     }
   }
 }

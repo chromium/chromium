@@ -8,12 +8,11 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,6 +35,12 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   explicit PendingURLLoaderFactoryForIOThread(
       scoped_refptr<URLLoaderFactoryGetter> factory_getter)
       : factory_getter_(std::move(factory_getter)) {}
+
+  PendingURLLoaderFactoryForIOThread(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+  PendingURLLoaderFactoryForIOThread& operator=(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+
   ~PendingURLLoaderFactoryForIOThread() override = default;
 
   scoped_refptr<URLLoaderFactoryGetter>& url_loader_factory_getter() {
@@ -47,8 +52,6 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingURLLoaderFactoryForIOThread);
 };
 
 class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
@@ -70,10 +73,13 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
   }
 
+  URLLoaderFactoryForIOThread(const URLLoaderFactoryForIOThread&) = delete;
+  URLLoaderFactoryForIOThread& operator=(const URLLoaderFactoryForIOThread&) =
+      delete;
+
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -84,8 +90,8 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     if (!factory_getter_)
       return;
     factory_getter_->GetURLLoaderFactory(is_corb_enabled_)
-        ->CreateLoaderAndStart(std::move(receiver), routing_id, request_id,
-                               options, url_request, std::move(client),
+        ->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                               url_request, std::move(client),
                                traffic_annotation);
   }
 
@@ -110,8 +116,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
   bool is_corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForIOThread);
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -140,8 +144,8 @@ void URLLoaderFactoryGetter::Initialize(StoragePartitionImpl* partition) {
   HandleNetworkFactoryRequestOnUIThread(
       network_factory.InitWithNewPipeAndPassReceiver(), false);
 
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&URLLoaderFactoryGetter::InitializeOnIOThread,
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&URLLoaderFactoryGetter::InitializeOnIOThread,
                                 this, std::move(network_factory)));
 }
 
@@ -182,8 +186,8 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryGetter::GetURLLoaderFactory(
       is_corb_enabled ? &network_factory_corb_enabled_ : &network_factory_;
   if (!factory->is_bound() || !factory->is_connected()) {
     mojo::Remote<network::mojom::URLLoaderFactory> network_factory;
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(
             &URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread,
             this, network_factory.BindNewPipeAndPassReceiver(),
@@ -235,8 +239,8 @@ void URLLoaderFactoryGetter::SetGetNetworkFactoryCallbackForTesting(
 void URLLoaderFactoryGetter::FlushNetworkInterfaceOnIOThreadForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::RunLoop run_loop;
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting,
                      this, run_loop.QuitClosure()));
   run_loop.Run();
@@ -293,6 +297,7 @@ void URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread(
   // The browser process is considered trusted.
   params->is_trusted = true;
   params->process_id = network::mojom::kBrowserProcessId;
+  params->automatically_assign_isolation_info = true;
   params->is_corb_enabled = is_corb_enabled;
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(

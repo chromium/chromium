@@ -1,3 +1,27 @@
 include_rules = [
     "+media/base",
+    "+media/capture/video/video_capture_feedback.h",
 ]
+
+specific_include_rules = {
+    "webrtc_video_frame_adapter\.cc": [
+        "+base/dcheck_is_on.h",
+        "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
+        "+gpu/command_buffer/client/raster_interface.h",
+        "+gpu/command_buffer/client/shared_image_interface.h",
+        "+media/renderers/video_frame_rgba_to_yuva_converter.h",
+    ],
+    "webrtc_video_frame_adapter\.h": [
+        "+components/viz/common/gpu/raster_context_provider.h",
+        "+media/video/gpu_video_accelerator_factories.h",
+        "+media/video/renderable_gpu_memory_buffer_video_frame_pool.h",
+    ],
+    "legacy_webrtc_video_frame_adapter\.cc": [
+        "+media/video/gpu_video_accelerator_factories.h",
+        "+gpu/command_buffer/client/raster_interface.h",
+    ],
+    "legacy_webrtc_video_frame_adapter\.h": [
+        "+components/viz/common/gpu/raster_context_provider.h",
+        "+media/video/gpu_video_accelerator_factories.h",
+    ],
+}

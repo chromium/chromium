@@ -1,0 +1,87 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: WebTransport (https://w3c.github.io/webtransport/)
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportDatagramDuplexStream {
+  readonly attribute ReadableStream readable;
+  readonly attribute WritableStream writable;
+
+  readonly attribute unsigned long maxDatagramSize;
+  attribute double? incomingMaxAge;
+  attribute double? outgoingMaxAge;
+  attribute long incomingHighWaterMark;
+  attribute long outgoingHighWaterMark;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransport {
+  constructor(USVString url, optional WebTransportOptions options = {});
+
+  Promise<WebTransportStats> getStats();
+  readonly attribute Promise<undefined> ready;
+  readonly attribute Promise<WebTransportCloseInfo> closed;
+  undefined close(optional WebTransportCloseInfo closeInfo = {});
+
+  readonly attribute WebTransportDatagramDuplexStream datagrams;
+
+  Promise<WebTransportBidirectionalStream> createBidirectionalStream();
+  /* a ReadableStream of WebTransportBidirectionalStream objects */
+  readonly attribute ReadableStream incomingBidirectionalStreams;
+
+  Promise<WritableStream> createUnidirectionalStream();
+  /* a ReadableStream of ReceiveStreams */
+  readonly attribute ReadableStream incomingUnidirectionalStreams;
+};
+
+dictionary WebTransportHash {
+  DOMString algorithm;
+  BufferSource value;
+};
+
+dictionary WebTransportOptions {
+  boolean allowPooling;
+  sequence<WebTransportHash> serverCertificateHashes;
+};
+
+dictionary WebTransportCloseInfo {
+  unsigned long closeCode;
+  DOMString reason;
+};
+
+dictionary WebTransportStats {
+  DOMHighResTimeStamp timestamp;
+  unsigned long long bytesSent;
+  unsigned long long packetsSent;
+  unsigned long numOutgoingStreamsCreated;
+  unsigned long numIncomingStreamsCreated;
+  unsigned long long bytesReceived;
+  unsigned long long packetsReceived;
+  DOMHighResTimeStamp minRtt;
+  unsigned long numReceivedDatagramsDropped;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportBidirectionalStream {
+  readonly attribute ReadableStream readable;
+  readonly attribute WritableStream writable;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportError : DOMException {
+  constructor(optional WebTransportErrorInit init = {});
+
+  readonly attribute WebTransportErrorSource source;
+  readonly attribute octet? streamErrorCode;
+};
+
+dictionary WebTransportErrorInit {
+  [Clamp] octet streamErrorCode;
+  DOMString message;
+};
+
+enum WebTransportErrorSource {
+  "stream",
+  "session",
+};

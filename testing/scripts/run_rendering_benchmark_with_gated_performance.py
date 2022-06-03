@@ -34,7 +34,10 @@ AVG_ERROR_MARGIN = 1.1
 # CI stands for confidence intervals. "ci_095"s recorded in the data is the
 # recorded range between upper and lower CIs. CI_ERROR_MARGIN is the maximum
 # acceptable ratio of calculated ci_095 to the recorded ones.
+# TODO(behdadb) crbug.com/1052054
 CI_ERROR_MARGIN = 1.5
+
+METRIC_NAME = 'frame_times'
 
 class ResultRecorder(object):
   def __init__(self):
@@ -44,35 +47,56 @@ class ResultRecorder(object):
     self.output = {}
     self.return_code = 0
     self._failed_stories = set()
+    self._noisy_control_stories = set()
+    # Set of _noisy_control_stories keeps track of control tests which failed
+    # because of high noise values.
 
   def set_tests(self, output):
     self.output = output
-    self.fails = 0
-    if 'FAIL' in output['num_failures_by_type']:
-      self.fails = output['num_failures_by_type']['FAIL']
-    self.tests = self.fails + output['num_failures_by_type']['PASS']
+    self.fails = output['num_failures_by_type'].get('FAIL', 0)
+    self.tests = self.fails + output['num_failures_by_type'].get('PASS', 0)
 
-  def add_failure(self, name, benchmark):
+  def add_failure(self, name, benchmark, is_control=False):
     self.output['tests'][benchmark][name]['actual'] = 'FAIL'
     self.output['tests'][benchmark][name]['is_unexpected'] = True
     self._failed_stories.add(name)
     self.fails += 1
+    if is_control:
+      self._noisy_control_stories.add(name)
 
-  def remove_failure(self, name, benchmark):
+  def remove_failure(self, name, benchmark, is_control=False,
+                      invalidation_reason=None):
     self.output['tests'][benchmark][name]['actual'] = 'PASS'
     self.output['tests'][benchmark][name]['is_unexpected'] = False
     self._failed_stories.remove(name)
     self.fails -= 1
+    if is_control:
+      self._noisy_control_stories.remove(name)
+    if invalidation_reason:
+      self.add_invalidation_reason(name, benchmark, invalidation_reason)
+
+  def invalidate_failures(self, benchmark):
+    # The method is for invalidating the failures in case of noisy control test
+    for story in self._failed_stories.copy():
+      print(story + ' [Invalidated Failure]: The story failed but was ' +
+        'invalidated as a result of noisy control test.')
+      self.remove_failure(story, benchmark, False, 'Noisy control test')
+
+  def add_invalidation_reason(self, name, benchmark, reason):
+    self.output['tests'][benchmark][name]['invalidation_reason'] = reason
 
   @property
   def failed_stories(self):
     return self._failed_stories
 
+  @property
+  def is_control_stories_noisy(self):
+    return len(self._noisy_control_stories) > 0
+
   def get_output(self, return_code):
     self.output['seconds_since_epoch'] = time.time() - self.start_time
     self.output['num_failures_by_type']['PASS'] = self.tests - self.fails
-    if self.fails > 0:
-      self.output['num_failures_by_type']['FAIL'] = self.fails
+    self.output['num_failures_by_type']['FAIL'] = self.fails
     if return_code == 1:
       self.output['interrupted'] = True
 
@@ -86,77 +110,246 @@ class ResultRecorder(object):
 
     return (self.output, self.return_code)
 
-def interpret_run_benchmark_results(upper_limit_data,
-    isolated_script_test_output, benchmark):
-  out_dir_path = os.path.dirname(isolated_script_test_output)
-  output_path = os.path.join(out_dir_path, benchmark, 'test_results.json')
-  result_recorder = ResultRecorder()
+class RenderingRepresentativePerfTest(object):
+  def __init__(self, initialization_for_tests=False):
+    self.return_code = 0
+    # result_recorder for rerun, and non rerun
+    self.result_recorder = {
+      True: ResultRecorder(),
+      False: ResultRecorder()
+    }
 
-  with open(output_path, 'r+') as resultsFile:
-    initialOut = json.load(resultsFile)
-    result_recorder.set_tests(initialOut)
+    if initialization_for_tests is True:
+      return
 
-    results_path = os.path.join(out_dir_path, benchmark, 'perf_results.csv')
+    self.options = parse_arguments()
+    print (self.options)
+
+    self.benchmark = self.options.benchmarks
+    out_dir_path = os.path.dirname(self.options.isolated_script_test_output)
+    re_run_output_dir = os.path.join(out_dir_path, 're_run_failures')
+
+    self.output_path = {
+      True: os.path.join(
+        re_run_output_dir, self.benchmark, 'test_results.json'),
+      False: os.path.join(out_dir_path, self.benchmark, 'test_results.json')
+    }
+    self.results_path = {
+      True: os.path.join(
+        re_run_output_dir, self.benchmark, 'perf_results.csv'),
+      False: os.path.join(out_dir_path, self.benchmark, 'perf_results.csv')
+    }
+
+    re_run_test_output = os.path.join(re_run_output_dir,
+      os.path.basename(self.options.isolated_script_test_output))
+
+    self.set_platform_specific_attributes()
+
+    # The values used as the upper limit are the 99th percentile of the
+    # avg and ci_095 frame_times recorded by dashboard in the past 200
+    # revisions. If the value measured here would be higher than this value at
+    # least by 10 [AVG_ERROR_MARGIN] percent of upper limit, that would be
+    # considered a failure. crbug.com/953895
+    with open(
+      os.path.join(os.path.dirname(__file__),
+      'representative_perf_test_data',
+      'representatives_frame_times_upper_limit.json')
+    ) as bound_data:
+      self.upper_limit_data = json.load(bound_data)[self.platform]
+
+    self.args = list(sys.argv)
+    # The first run uses all stories in the representative story tag, but for
+    # rerun we use only the failed stories.
+    self.args.extend(['--story-tag-filter', self.story_tag])
+
+    self.re_run_args = replace_arg_values(list(sys.argv), [
+      ('--isolated-script-test-output', re_run_test_output)])
+
+  def parse_csv_results(self, csv_obj):
+    """ Parses the raw CSV data
+    Convers the csv_obj into an array of valid values for averages and
+    confidence intervals based on the described upper_limits.
+
+    Args:
+      csv_obj: An array of rows (dict) describing the CSV results
+
+    Raturns:
+      A dictionary which has the stories as keys and an array of confidence
+      intervals and valid averages as data.
+    """
     values_per_story = {}
+    for row in csv_obj:
+      # For now only frame_times is used for testing representatives'
+      # performance and cpu_wall_time_ratio is used for validation.
+      if row['name'] != METRIC_NAME and row['name'] != 'cpu_wall_time_ratio':
+        continue
+      story_name = row['stories']
+      if (story_name not in self.upper_limit_data):
+        continue
+      if story_name not in values_per_story:
+        values_per_story[story_name] = {
+          'averages': [],
+          'ci_095': [],
+          'cpu_wall_time_ratio': []
+        }
 
-    with open(results_path) as csv_file:
-      reader = csv.DictReader(csv_file)
-      for row in reader:
-        # For now only frame_times is used for testing representatives'
-        # performance.
-        if row['name'] != 'frame_times':
-          continue
-        story_name = row['stories']
-        if (story_name not in upper_limit_data):
-          continue
-        if story_name not in values_per_story:
-          values_per_story[story_name] = {
-            'averages': [],
-            'ci_095': []
-          }
-
-        if (row['avg'] == '' or row['count'] == 0):
-          continue
+      if row['name'] == METRIC_NAME and row['avg'] != '' and row['count'] != 0:
         values_per_story[story_name]['ci_095'].append(float(row['ci_095']))
+        values_per_story[story_name]['averages'].append(float(row['avg']))
+      elif row['name'] == 'cpu_wall_time_ratio' and row['avg'] != '':
+        values_per_story[story_name]['cpu_wall_time_ratio'].append(
+          float(row['avg']))
 
-        upper_limit_ci = upper_limit_data[story_name]['ci_095']
-        # Only average values which are not noisy will be used
-        if (float(row['ci_095']) <= upper_limit_ci * CI_ERROR_MARGIN):
-          values_per_story[story_name]['averages'].append(float(row['avg']))
+    return values_per_story
 
-    # Clearing the result of run_benchmark and write the gated perf results
-    resultsFile.seek(0)
-    resultsFile.truncate(0)
+  def compare_values(self, values_per_story, rerun=False):
+    """ Parses the raw CSV data
+    Compares the values in values_per_story with the upper_limit_data and
+    determines if the story passes or fails and updates the ResultRecorder.
 
-  for story_name in values_per_story:
-    if len(values_per_story[story_name]['ci_095']) == 0:
-      print(('[  FAILED  ] {}/{} has no valid values for frame_times. Check ' +
-        'run_benchmark logs for more information.').format(
-          benchmark, story_name))
-      result_recorder.add_failure(story_name, benchmark)
-      continue
+    Args:
+      values_per_story: An array of rows (dict) descriving the CSV results
+      rerun: Is this a rerun or initial run
+    """
+    for story_name in values_per_story:
+      # The experimental stories will not be considered for failing the tests
+      if (self.is_experimental_story(story_name)):
+        continue
+      if len(values_per_story[story_name]['ci_095']) == 0:
+        print(('[  FAILED  ] {}/{} has no valid values for {}. Check ' +
+          'run_benchmark logs for more information.').format(
+            self.benchmark, story_name, METRIC_NAME))
+        self.result_recorder[rerun].add_failure(story_name, self.benchmark)
+        continue
 
-    upper_limit_avg = upper_limit_data[story_name]['avg']
-    upper_limit_ci = upper_limit_data[story_name]['ci_095']
-    measured_avg = np.mean(np.array(values_per_story[story_name]['averages']))
-    measured_ci = np.mean(np.array(values_per_story[story_name]['ci_095']))
+      upper_limits = self.upper_limit_data
+      upper_limit_avg = upper_limits[story_name]['avg']
+      upper_limit_ci = upper_limits[story_name]['ci_095']
+      lower_limit_cpu_ratio = upper_limits[story_name]['cpu_wall_time_ratio']
+      measured_avg = np.mean(np.array(values_per_story[story_name]['averages']))
+      measured_ci = np.mean(np.array(values_per_story[story_name]['ci_095']))
+      measured_cpu_ratio = np.mean(np.array(
+        values_per_story[story_name]['cpu_wall_time_ratio']))
 
-    if (measured_ci > upper_limit_ci * CI_ERROR_MARGIN):
-      print(('[  FAILED  ] {}/{} frame_times has higher noise ({:.3f}) ' +
-        'compared to upper limit ({:.3f})').format(
-          benchmark, story_name, measured_ci,upper_limit_ci))
-      result_recorder.add_failure(story_name, benchmark)
-    elif (measured_avg > upper_limit_avg * AVG_ERROR_MARGIN):
-      print(('[  FAILED  ] {}/{} higher average frame_times({:.3f}) compared' +
-        ' to upper limit ({:.3f})').format(
-          benchmark, story_name, measured_avg, upper_limit_avg))
-      result_recorder.add_failure(story_name, benchmark)
+      if (measured_ci > upper_limit_ci * CI_ERROR_MARGIN and
+        self.is_control_story(story_name)):
+        print(('[  FAILED  ] {}/{} {} has higher noise ({:.3f}) ' +
+          'compared to upper limit ({:.3f})').format(
+            self.benchmark, story_name, METRIC_NAME, measured_ci,
+          upper_limit_ci))
+        self.result_recorder[rerun].add_failure(
+          story_name, self.benchmark, True)
+      elif (measured_avg > upper_limit_avg * AVG_ERROR_MARGIN):
+        if (measured_cpu_ratio >= lower_limit_cpu_ratio):
+          print(('[  FAILED  ] {}/{} higher average {}({:.3f}) compared' +
+            ' to upper limit ({:.3f})').format(self.benchmark, story_name,
+            METRIC_NAME, measured_avg, upper_limit_avg))
+          self.result_recorder[rerun].add_failure(story_name, self.benchmark)
+        else:
+          print(('[       OK ] {}/{} higher average {}({:.3f}) compared ' +
+            'to upper limit({:.3f}). Invalidated for low cpu_wall_time_ratio'
+            ).format(self.benchmark, story_name, METRIC_NAME, measured_avg,
+                      upper_limit_avg))
+          self.result_recorder[rerun].add_invalidation_reason(
+            story_name, self.benchmark, 'Low cpu_wall_time_ratio')
+      else:
+        print(('[       OK ] {}/{} lower average {}({:.3f}) compared ' +
+          'to upper limit({:.3f}).').format(self.benchmark, story_name,
+          METRIC_NAME, measured_avg, upper_limit_avg))
+
+  def interpret_run_benchmark_results(self, rerun=False):
+    with open(self.output_path[rerun], 'r+') as resultsFile:
+      initialOut = json.load(resultsFile)
+      self.result_recorder[rerun].set_tests(initialOut)
+
+      with open(self.results_path[rerun]) as csv_file:
+        csv_obj = csv.DictReader(csv_file)
+        values_per_story = self.parse_csv_results(csv_obj)
+
+      if not rerun:
+        # Clearing the result of run_benchmark and write the gated perf results
+        resultsFile.seek(0)
+        resultsFile.truncate(0)
+
+    self.compare_values(values_per_story, rerun)
+
+  def run_perf_tests(self):
+    self.return_code |= run_performance_tests.main(self.args)
+    self.interpret_run_benchmark_results(False)
+
+    if len(self.result_recorder[False].failed_stories) > 0:
+      # For failed stories we run_tests again to make sure it's not a false
+      # positive.
+      print('============ Re_run the failed tests ============')
+      all_failed_stories = '('+'|'.join(
+        self.result_recorder[False].failed_stories)+')'
+      # TODO(crbug.com/1055893): Remove the extra chrome categories after
+      # investigation of flakes in representative perf tests.
+      self.re_run_args.extend(
+        ['--story-filter', all_failed_stories, '--pageset-repeat=3',
+         '--extra-chrome-categories=blink,blink_gc,gpu,v8,viz'])
+      self.return_code |= run_performance_tests.main(self.re_run_args)
+      self.interpret_run_benchmark_results(True)
+
+      for story_name in self.result_recorder[False].failed_stories.copy():
+        if story_name not in self.result_recorder[True].failed_stories:
+          self.result_recorder[False].remove_failure(story_name,
+            self.benchmark, self.is_control_story(story_name))
+
+    if self.result_recorder[False].is_control_stories_noisy:
+      # In this case all failures are reported as expected, and the number of
+      # Failed stories in output.json will be zero.
+      self.result_recorder[False].invalidate_failures(self.benchmark)
+
+    (
+      finalOut,
+      self.return_code
+    ) = self.result_recorder[False].get_output(self.return_code)
+
+    with open(self.output_path[False], 'r+') as resultsFile:
+      json.dump(finalOut, resultsFile, indent=4)
+    with open(self.options.isolated_script_test_output, 'w') as outputFile:
+      json.dump(finalOut, outputFile, indent=4)
+
+    if self.result_recorder[False].is_control_stories_noisy:
+      assert self.return_code == 0
+      print('Control story has high noise. These runs are not reliable!')
+
+    return self.return_code
+
+  def is_control_story(self, story_name):
+    # The story tagged as control story in upper_limit_data, will be used to
+    # identify possible flake and invalidates the results.
+    return self.story_has_attribute_enabled(story_name, 'control')
+
+  def is_experimental_story(self, story_name):
+    # The story tagged as experimental story in upper_limit_data, will be used
+    # to gather the performance results, but the test would not be failed as
+    # a result of.
+    return self.story_has_attribute_enabled(story_name, 'experimental')
+
+  def story_has_attribute_enabled(self, story_name, attribute):
+    return (attribute in self.upper_limit_data[story_name] and
+      self.upper_limit_data[story_name][attribute] == True)
+
+
+  def set_platform_specific_attributes(self):
+    if self.benchmark == 'rendering.desktop':
+      # Linux does not have it's own specific representatives
+      # and uses the representatives chosen for windows.
+      if sys.platform == 'win32' or sys.platform.startswith('linux'):
+        self.platform = 'win'
+        self.story_tag = 'representative_win_desktop'
+      elif sys.platform == 'darwin':
+        self.platform = 'mac'
+        self.story_tag = 'representative_mac_desktop'
+      else:
+        self.return_code = 1
+    elif self.benchmark == 'rendering.mobile':
+      self.platform = 'android'
+      self.story_tag = 'representative_mobile'
     else:
-      print(('[       OK ] {}/{} lower average frame_times({:.3f}) compared ' +
-        'to upper limit({:.3f}).').format(
-          benchmark, story_name, measured_avg, upper_limit_avg))
-
-  return result_recorder
+      self.return_code = 1
 
 def replace_arg_values(args, key_value_pairs):
   for index in range(0, len(args)):
@@ -169,96 +362,11 @@ def replace_arg_values(args, key_value_pairs):
   return args
 
 def main():
-  overall_return_code = 0
-  options = parse_arguments()
-
-  print (options)
-
-  if options.benchmarks == 'rendering.desktop':
-    # Linux does not have it's own specific representatives
-    # and uses the representatives chosen for windows.
-    if sys.platform == 'win32' or sys.platform.startswith('linux'):
-      platform = 'win'
-      story_tag = 'representative_win_desktop'
-    elif sys.platform == 'darwin':
-      platform = 'mac'
-      story_tag = 'representative_mac_desktop'
-    else:
-      return 1
-  elif options.benchmarks == 'rendering.mobile':
-    platform = 'android'
-    story_tag = 'representative_mobile'
-  else:
+  test_runner = RenderingRepresentativePerfTest()
+  if test_runner.return_code == 1:
     return 1
 
-  benchmark = options.benchmarks
-  args = sys.argv
-  re_run_args = sys.argv
-  args.extend(['--story-tag-filter', story_tag])
-
-  overall_return_code = run_performance_tests.main(args)
-
-  # The values used as the upper limit are the 99th percentile of the
-  # avg and ci_095 frame_times recorded by dashboard in the past 200 revisions.
-  # If the value measured here would be higher than this value at least by
-  # 10 [AVG_ERROR_MARGIN] percent of upper limit, that would be considered a
-  # failure. crbug.com/953895
-  with open(
-    os.path.join(os.path.dirname(__file__),
-    'representative_perf_test_data',
-    'representatives_frame_times_upper_limit.json')
-  ) as bound_data:
-    upper_limit_data = json.load(bound_data)
-
-  out_dir_path = os.path.dirname(options.isolated_script_test_output)
-  output_path = os.path.join(out_dir_path, benchmark, 'test_results.json')
-  result_recorder = interpret_run_benchmark_results(upper_limit_data[platform],
-      options.isolated_script_test_output, benchmark)
-
-  with open(output_path, 'r+') as resultsFile:
-    if len(result_recorder.failed_stories) > 0:
-      # For failed stories we run_tests again to make sure it's not a false
-      # positive.
-      print('============ Re_run the failed tests ============')
-      all_failed_stories = '('+'|'.join(result_recorder.failed_stories)+')'
-      re_run_args.extend(
-        ['--story-filter', all_failed_stories, '--pageset-repeat=3'])
-
-      re_run_isolated_script_test_dir = os.path.join(out_dir_path,
-        're_run_failures')
-      re_run_isolated_script_test_output = os.path.join(
-        re_run_isolated_script_test_dir,
-        os.path.basename(options.isolated_script_test_output))
-      re_run_isolated_script_test_perf_output = os.path.join(
-        re_run_isolated_script_test_dir,
-        os.path.basename(options.isolated_script_test_perf_output))
-
-      re_run_args = replace_arg_values(re_run_args, [
-        ('--isolated-script-test-output', re_run_isolated_script_test_output),
-        ('--isolated-script-test-perf-output',
-          re_run_isolated_script_test_perf_output)
-      ])
-
-      overall_return_code |= run_performance_tests.main(re_run_args)
-      re_run_result_recorder = interpret_run_benchmark_results(
-          upper_limit_data[platform], re_run_isolated_script_test_output,
-          benchmark)
-
-      for story_name in result_recorder.failed_stories.copy():
-        if story_name not in re_run_result_recorder.failed_stories:
-          result_recorder.remove_failure(story_name, benchmark)
-
-    (
-      finalOut,
-      overall_return_code
-    ) = result_recorder.get_output(overall_return_code)
-
-    json.dump(finalOut, resultsFile, indent=4)
-
-    with open(options.isolated_script_test_output, 'w') as outputFile:
-      json.dump(finalOut, outputFile, indent=4)
-
-  return overall_return_code
+  return test_runner.run_perf_tests()
 
 def parse_arguments():
   parser = argparse.ArgumentParser()

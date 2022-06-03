@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_SYNC_BASE_PASSPHRASE_ENUMS_H_
 #define COMPONENTS_SYNC_BASE_PASSPHRASE_ENUMS_H_
 
-#include "base/optional.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -17,6 +17,8 @@ namespace syncer {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 enum class PassphraseType {
   // GAIA-based passphrase (deprecated).
+  // TODO(crbug.com/1201684): Some codepaths use this value as a synonym for
+  // an unknown passphrase type. Rename to reflect this or use absl::optional<>.
   kImplicitPassphrase = 0,
   // Keystore passphrase.
   kKeystorePassphrase = 1,
@@ -40,11 +42,11 @@ bool IsExplicitPassphrase(PassphraseType type);
 sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
     ::google::protobuf::int32 type);
 
-// Returns base::nullopt if |type| represents an unknown value, likely coming
+// Returns absl::nullopt if |type| represents an unknown value, likely coming
 // from a future version of the browser. Note however that if the field is not
 // populated, it defaults to IMPLICIT_PASSPHRASE for backwards compatibility
 // reasons.
-base::Optional<PassphraseType> ProtoPassphraseInt32ToEnum(
+absl::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
     ::google::protobuf::int32 type);
 
 sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(

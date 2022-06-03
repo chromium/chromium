@@ -4,10 +4,10 @@
 
 package org.chromium.components.omnibox;
 
-import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
 

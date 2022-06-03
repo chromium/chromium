@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -73,6 +73,11 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
       : should_notify_updated_rtt_(should_notify_updated_rtt),
         connection_changed_count_(0u),
         rtt_notification_count_(0u) {}
+
+  TestSocketPerformanceWatcher(const TestSocketPerformanceWatcher&) = delete;
+  TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
+      delete;
+
   ~TestSocketPerformanceWatcher() override = default;
 
   bool ShouldNotifyUpdatedRTT() const override {
@@ -93,8 +98,6 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   const bool should_notify_updated_rtt_;
   size_t connection_changed_count_;
   size_t rtt_notification_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcher);
 };
 
 const int kListenBacklog = 5;
@@ -135,7 +138,7 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     TestCompletionCallback connect_callback;
     TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                      NetLogSource());
+                                      nullptr, NetLogSource());
     int connect_result = connecting_socket.Connect(connect_callback.callback());
     EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 
@@ -147,7 +150,7 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     EXPECT_EQ(accepted_address.address(), local_address_.address());
   }
 
-#if defined(TCP_INFO) || defined(OS_LINUX)
+#if defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Tests that notifications to Socket Performance Watcher (SPW) are delivered
   // correctly. |should_notify_updated_rtt| is true if the SPW is interested in
   // receiving RTT notifications. |num_messages| is the number of messages that
@@ -218,7 +221,7 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     EXPECT_EQ(expect_rtt_notification_count,
               watcher_ptr->rtt_notification_count());
   }
-#endif  // defined(TCP_INFO) || defined(OS_LINUX)
+#endif  // defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   AddressList local_address_list() const {
     return AddressList(local_address_);
@@ -236,7 +239,7 @@ TEST_F(TCPSocketTest, Accept) {
   // TODO(yzshen): Switch to use TCPSocket when it supports client socket
   // operations.
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
@@ -273,7 +276,7 @@ TEST_F(TCPSocketTest, AdoptConnectedSocket) {
   // TODO(yzshen): Switch to use TCPSocket when it supports client socket
   // operations.
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
@@ -329,12 +332,12 @@ TEST_F(TCPSocketTest, Accept2Connections) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback connect_callback2;
   TCPClientSocket connecting_socket2(local_address_list(), nullptr, nullptr,
-                                     NetLogSource());
+                                     nullptr, NetLogSource());
   int connect_result2 =
       connecting_socket2.Connect(connect_callback2.callback());
 
@@ -368,7 +371,7 @@ TEST_F(TCPSocketTest, AcceptIPv6) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
@@ -523,9 +526,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
   memset(write_buffer->data(), '1', write_buffer->size());
   TestCompletionCallback write_callback;
   while (true) {
-    int result = connecting_socket->Write(
-        write_buffer.get(), write_buffer->size(), write_callback.callback(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    result = connecting_socket->Write(write_buffer.get(), write_buffer->size(),
+                                      write_callback.callback(),
+                                      TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result == ERR_IO_PENDING)
       break;
     ASSERT_LT(0, result);
@@ -610,7 +613,7 @@ TEST_F(TCPSocketTest, IsConnected) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
 
   // Immediately after creation, the socket should not be connected.
   EXPECT_FALSE(connecting_socket.IsConnected());
@@ -689,7 +692,7 @@ TEST_F(TCPSocketTest, BeforeConnectCallback) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
 
   connecting_socket.SetBeforeConnectCallback(base::BindLambdaForTesting([&] {
     EXPECT_FALSE(connecting_socket.IsConnected());
@@ -710,12 +713,12 @@ TEST_F(TCPSocketTest, BeforeConnectCallback) {
   ASSERT_EQ(0, os_result);
 // Linux platforms generally allocate twice as much buffer size is requested to
 // account for internal kernel data structures.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   EXPECT_EQ(2 * kReceiveBufferSize, actual_size);
 // Unfortunately, Apple platform behavior doesn't seem to be documented, and
 // doesn't match behavior on any other platforms.
 // Fuchsia doesn't currently implement SO_RCVBUF.
-#elif !defined(OS_IOS) && !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
+#elif !defined(OS_APPLE) && !defined(OS_FUCHSIA)
   EXPECT_EQ(kReceiveBufferSize, actual_size);
 #endif
 }
@@ -734,7 +737,7 @@ TEST_F(TCPSocketTest, BeforeConnectCallbackFails) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
 
   // Set a callback that returns a nonsensical error, and make sure it's
   // returned.
@@ -750,9 +753,70 @@ TEST_F(TCPSocketTest, BeforeConnectCallbackFails) {
   EXPECT_FALSE(accept_callback.have_result());
 }
 
+TEST_F(TCPSocketTest, SetKeepAlive) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+
+  TestCompletionCallback accept_callback;
+  std::unique_ptr<TCPSocket> accepted_socket;
+  IPEndPoint accepted_address;
+  EXPECT_THAT(socket_.Accept(&accepted_socket, &accepted_address,
+                             accept_callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback connect_callback;
+  TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
+                                    nullptr, NetLogSource());
+
+  // Non-connected sockets should not be able to set KeepAlive.
+  ASSERT_FALSE(connecting_socket.IsConnected());
+  EXPECT_FALSE(
+      connecting_socket.SetKeepAlive(true /* enable */, 14 /* delay */));
+
+  // Connect.
+  int connect_result = connecting_socket.Connect(connect_callback.callback());
+  EXPECT_THAT(accept_callback.WaitForResult(), IsOk());
+  EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+
+  // Connected sockets should be able to enable and disable KeepAlive.
+  ASSERT_TRUE(connecting_socket.IsConnected());
+  EXPECT_TRUE(
+      connecting_socket.SetKeepAlive(true /* enable */, 22 /* delay */));
+  EXPECT_TRUE(
+      connecting_socket.SetKeepAlive(false /* enable */, 3 /* delay */));
+}
+
+TEST_F(TCPSocketTest, SetNoDelay) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+
+  TestCompletionCallback accept_callback;
+  std::unique_ptr<TCPSocket> accepted_socket;
+  IPEndPoint accepted_address;
+  EXPECT_THAT(socket_.Accept(&accepted_socket, &accepted_address,
+                             accept_callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback connect_callback;
+  TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
+                                    nullptr, NetLogSource());
+
+  // Non-connected sockets should not be able to set NoDelay.
+  ASSERT_FALSE(connecting_socket.IsConnected());
+  EXPECT_FALSE(connecting_socket.SetNoDelay(true /* no_delay */));
+
+  // Connect.
+  int connect_result = connecting_socket.Connect(connect_callback.callback());
+  EXPECT_THAT(accept_callback.WaitForResult(), IsOk());
+  EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+
+  // Connected sockets should be able to enable and disable NoDelay.
+  ASSERT_TRUE(connecting_socket.IsConnected());
+  EXPECT_TRUE(connecting_socket.SetNoDelay(true /* no_delay */));
+  EXPECT_TRUE(connecting_socket.SetNoDelay(false /* no_delay */));
+}
+
 // These tests require kernel support for tcp_info struct, and so they are
 // enabled only on certain platforms.
-#if defined(TCP_INFO) || defined(OS_LINUX)
+#if defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // If SocketPerformanceWatcher::ShouldNotifyUpdatedRTT always returns false,
 // then the wtatcher should not receive any notifications.
 TEST_F(TCPSocketTest, SPWNotInterested) {
@@ -764,7 +828,7 @@ TEST_F(TCPSocketTest, SPWNotInterested) {
 TEST_F(TCPSocketTest, SPWNoAdvance) {
   TestSPWNotifications(true, 2u, 0u, 3u);
 }
-#endif  // defined(TCP_INFO) || defined(OS_LINUX)
+#endif  // defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // On Android, where socket tagging is supported, verify that TCPSocket::Tag
 // works as expected.

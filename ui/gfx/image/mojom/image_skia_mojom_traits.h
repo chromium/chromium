@@ -19,13 +19,8 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::ImageSkiaRepDataView, gfx::ImageSkiaRep> {
-  static SkBitmap bitmap(const gfx::ImageSkiaRep& input) {
-    return input.GetBitmap();
-  }
+  static SkBitmap bitmap(const gfx::ImageSkiaRep& input);
   static float scale(const gfx::ImageSkiaRep& input);
-
-  static bool IsNull(const gfx::ImageSkiaRep& input) { return input.is_null(); }
-  static void SetToNull(gfx::ImageSkiaRep* out) { *out = gfx::ImageSkiaRep(); }
 
   static bool Read(gfx::mojom::ImageSkiaRepDataView data,
                    gfx::ImageSkiaRep* out);

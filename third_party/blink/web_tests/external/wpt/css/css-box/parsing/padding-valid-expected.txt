@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS e.style['padding'] = "10px" should set the property value
+PASS e.style['padding'] = "10px 20px 30px 40px" should set the property value
+PASS e.style['padding'] = "calc(2em + 3ex)" should set the property value
+PASS e.style['padding-top'] = "10px" should set the property value
+PASS e.style['padding-right'] = "20px" should set the property value
+PASS e.style['padding-bottom'] = "30px" should set the property value
+PASS e.style['padding-left'] = "40px" should set the property value
+PASS e.style['padding'] = "20%" should set the property value
+PASS e.style['padding'] = "10px 20% 30% 40px" should set the property value
+PASS e.style['padding-right'] = "20%" should set the property value
+FAIL e.style['padding-right'] = "calc(2em + 3%)" should set the property value assert_equals: serialization should be canonical expected "calc(3% + 2em)" but got "calc(2em + 3%)"
+Harness: the test ran to completion.
+

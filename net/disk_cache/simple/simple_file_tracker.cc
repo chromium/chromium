@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"

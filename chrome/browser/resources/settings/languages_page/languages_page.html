@@ -1,49 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="add_languages_dialog.html">
-<link rel="import" href="languages.html">
-<link rel="import" href="../controls/controlled_radio_button.html">
-<link rel="import" href="../controls/settings_radio_group.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../lifetime_browser_proxy.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-
-<if expr="not is_macosx">
-<link rel="import" href="edit_dictionary_page.html">
-</if>
-
-<if expr="chromeos">
-<link rel="import" href="manage_input_methods_page.html">
-</if>
-
-<dom-module id="settings-languages-page">
-  <template>
-    <style include="settings-shared action-link">
+    <style include="cr-shared-style settings-shared action-link iron-flex">
       #languagesCollapse .list-item.selected {
         min-height: var(--settings-row-two-line-min-height);
       }
@@ -51,35 +6,12 @@
       .explain-selected {
         color: var(--google-green-refresh-700);
         font-weight: initial;
-        margin-top: 4px;
       }
 
       @media (prefers-color-scheme: dark) {
         .explain-selected {
           color: var(--google-green-refresh-300);
         }
-      }
-
-      cr-action-menu.complex .dropdown-item {
-        min-height: 36px;
-      }
-
-      cr-action-menu:not(.complex) hr {
-        display: none;
-      }
-
-      cr-action-menu.complex hr {
-        /* Override user-agent border and margin. */
-        border: none;
-        /* TODO(michaelpg): Update to whatever variable is used for the darker,
-         * full-width separators: crbug.com/649547. */
-        border-top: var(--cr-separator-line);
-        margin: 6px 0 0 0;
-      }
-
-      cr-checkbox.dropdown-item {
-        --cr-action-menu-disabled-item-opacity: 0.38;
-        margin-inline-start: 0;
       }
 
       .icon-external {
@@ -119,17 +51,14 @@
       }
 
       iron-icon[icon='cr:error'] {
-        @apply --cr-icon-height-width;
         --iron-icon-fill-color: var(--settings-error-color);
+        height: var(--cr-icon-size);
         margin-inline-end: 8px;
+        width: var(--cr-icon-size);
       }
 
       .name-with-error-list[disabled] {
         pointer-events: none;
-      }
-
-      iron-icon.policy {
-        margin-inline-start: 10px;
       }
 
       cr-policy-pref-indicator {
@@ -137,7 +66,7 @@
       }
 
       .spell-check-radio-group {
-        padding-bottom: var(--cr-section-vertical-padding);
+        padding-block-end: var(--cr-section-vertical-padding);
       }
 
       .spell-check-radio-button {
@@ -160,17 +89,6 @@
         border-bottom: var(--cr-separator-line);
       }
 
-      div.list-item.non-target .target-info {
-        display: none;
-      }
-
-      /* Any .target.target-info following another .target element needs to
-      be hidden. We only want to show the _first_ .target-info of the list.
-      This is a way to do a :first-of-class selector. */
-      div.list-item.target ~  div.list-item.target .target-info {
-        display: none;
-      }
-
       #restartButton {
         margin-inline-start: var(--settings-controlled-by-spacing);
       }
@@ -185,128 +103,36 @@
     <settings-animated-pages id="pages" section="languages"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <cr-expand-button
-            alt="$i18n{languagesExpandA11yLabel}"
-            class$="settings-box first [[getLanguageListTwoLine_()]]"
-            expanded="{{languagesOpened_}}">
-          <div>$i18n{languagesListTitle}</div>
-<if expr="chromeos or is_win">
-          <div class="secondary">
-            [[getProspectiveUILanguageName_(languages.prospectiveUILanguage)]]
-          </div>
-</if>
-        </cr-expand-button>
-        <iron-collapse id="languagesCollapse" opened="[[languagesOpened_]]">
-          <span class="settings-box first"
-              hidden="[[isHelpTextHidden_(languages.enabled.*)]]">
-            <span>$i18n{orderLanguagesInstructions}</span>
-<if expr="chromeos">
-            <a href="$i18n{languagesLearnMoreURL}" target="_blank">
-              $i18n{learnMore}
-            </a>
-</if>
-          </span>
-          <div class="list-frame vertical-list">
-            <template is="dom-repeat" items="[[languages.enabled]]">
-              <div class$="list-item [[getLanguageItemClass_(
-                  item.language.code, language.prospectiveUILanguage)]]
-                  [[isTranslationTarget_(item.language.code,
-                  languages.translateTarget)]]">
-                <div class="start">
-                  <div title="[[item.language.nativeDisplayName]]">
-                    [[item.language.displayName]]
-                  </div>
-                  <div class="target-info secondary">
-                    $i18n{translateTargetLabel}
-                  </div>
-<if expr="chromeos or is_win">
-                  <div class="explain-selected"
-                      hidden="[[!isProspectiveUILanguage_(
-                          item.language.code,
-                          languages.prospectiveUILanguage)]]">
-                    $i18n{isDisplayedInThisLanguage}
-                  </div>
-</if> <!-- chromeos or is_win -->
-                </div>
-<if expr="chromeos or is_win">
-                <template is="dom-if" if="[[isRestartRequired_(
-                    item.language.code, languages.prospectiveUILanguage)]]"
-                    restamp>
-                  <cr-button id="restartButton" on-click="onRestartTap_">
-                    $i18n{restart}
-                  </cr-button>
-                </template>
-</if> <!-- chromeos or is_win -->
-                <cr-icon-button class="icon-more-vert"
-                    title="$i18n{moreActions}" id="more-[[item.language.code]]"
-                    on-click="onDotsTap_"></cr-icon-button>
-              </div>
-            </template>
-            <div class="list-item">
-              <a is="action-link" class="list-button" id="addLanguages"
-                  disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
-                  on-click="onAddLanguagesTap_">
-                $i18n{addLanguages}
-              </a>
+        <template is="dom-if" if="[[enableDesktopRestructuredLanguageSettings_]]">
+          <cr-link-row on-click="onLanguagesSubpageClick_"
+              id="languagesSubpageTrigger"
+              label="$i18n{languagesListTitle}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[!enableDesktopRestructuredLanguageSettings_]]">
+          <cr-expand-button
+              aria-label="$i18n{languagesExpandA11yLabel}"
+              class="cr-row first"
+              expanded="{{languagesOpened_}}">
+            <div>$i18n{languagesListTitle}</div>
+<if expr="is_win">
+            <div class="secondary" id="languageSectionSecondaryText">
+              [[getProspectiveUILanguageName_(languages.prospectiveUILanguage)]]
             </div>
-          </div>
-          <settings-toggle-button id="offerTranslateOtherLanguages"
-              class="first" pref="{{prefs.translate.enabled}}"
-              label="$i18n{offerToEnableTranslate}">
-          </settings-toggle-button>
-        </iron-collapse>
-<if expr="chromeos">
-        <cr-expand-button
-            hidden="[[!pageVisibility.inputMethodsList]]"
-            alt="$i18n{inputMethodsExpandA11yLabel}"
-            class="settings-box two-line"
-            expanded="{{inputMethodsOpened_}}"
-            id="manageInputMethodsSubpageTrigger">
-          <div>$i18n{inputMethodsListTitle}</div>
-          <div class="secondary">
-            [[getInputMethodName_(languages.inputMethods.currentId)]]
-          </div>
-        </cr-expand-button>
-        <iron-collapse id="inputMethodsCollapse"
-            hidden="[[!pageVisibility.inputMethodsList]]"
-            opened="[[inputMethodsOpened_]]">
-          <div class="list-frame vertical-list">
-            <template is="dom-repeat"
-                items="[[languages.inputMethods.enabled]]">
-              <div class$="list-item [[getInputMethodItemClass_(
-                      item.id, languages.inputMethods.currentId)]]"
-                  on-click="onInputMethodTap_" on-keypress="onInputMethodTap_"
-                  actionable tabindex="0">
-                <div class="start">
-                  <div>[[item.displayName]]</div>
-                  <div class="explain-selected"
-                      hidden="[[!isCurrentInputMethod_(
-                          item.id, languages.inputMethods.currentId)]]">
-                    $i18n{inputMethodEnabled}
-                  </div>
-                </div>
-                <div class="external-wrapper" hidden="[[!item.hasOptionsPage]]">
-                  <div class="separator"></div>
-                  <cr-icon-button class="icon-external"
-                      on-click="onInputMethodOptionsTap_"></cr-icon-button>
-                </div>
-              </div>
-            </template>
-            <cr-link-row class="hr list-item" id="manageInputMethods"
-                on-click="onManageInputMethodsTap_"
-                label="$i18n{manageInputMethods}"
-                role-description="$i18n{subpageArrowRoleDescription}">
-            </cr-link-row>
-          </div>
-          <settings-toggle-button
-              pref="{{prefs.settings.language.ime_menu_activated}}"
-              label="$i18n{showImeMenu}">
-          </settings-toggle-button>
-        </iron-collapse>
 </if>
-
+          </cr-expand-button>
+          <iron-collapse id="languagesCollapse" opened="[[languagesOpened_]]">
+            <settings-languages-subpage
+                languages="{{languages}}"
+                prefs="{{prefs}}"
+                language-helper="{{languageHelper}}">
+            </settings-languages-subpage>
+          </iron-collapse>
+        </template>
         <settings-toggle-button
             id="enableSpellcheckingToggle"
+            class="hr"
             label="$i18n{spellCheckTitle}"
             sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
             pref="{{prefs.browser.enable_spellchecking}}"
@@ -316,8 +142,8 @@
         <iron-collapse id="spellCheckCollapse"
             opened="[[prefs.browser.enable_spellchecking.value]]">
 <if expr="_google_chrome">
-          <div class="settings-box continuation spell-check-radio-group">
-            <settings-radio-group
+          <div class="cr-row continuation spell-check-radio-group">
+            <settings-radio-group class="flex"
                 pref="{{prefs.spellcheck.use_spelling_service}}">
               <controlled-radio-button
                   class="spell-check-radio-button"
@@ -342,7 +168,7 @@
 <if expr="not is_macosx">
           <div id="spellCheckLanguagesList"
               hidden="[[hideSpellCheckLanguages_]]">
-            <div class="settings-box continuation">
+            <div class="cr-row continuation">
               $i18n{spellCheckLanguagesListTitle}
             </div>
             <div class="list-frame vertical-list spell-check-languages">
@@ -403,81 +229,10 @@
 </if> <!-- not is_macosx -->
         </iron-collapse>
 </if> <!-- _google_chrome or not is_macosx -->
-        <cr-lazy-render id="menu">
-          <template>
-            <cr-action-menu role-description="$i18n{menu}"
-<if expr="chromeos or is_win">
-                on-close="onCloseMenu_"
-</if>
-                class$="[[getMenuClass_(prefs.translate.enabled.value)]]">
-<if expr="chromeos or is_win">
-              <cr-checkbox id="uiLanguageItem"
-                  class="dropdown-item"
-                  checked="[[isProspectiveUILanguage_(
-                      detailLanguage_.language.code,
-                      languages.prospectiveUILanguage)]]"
-                  on-change="onUILanguageChange_"
-                  disabled="[[disableUILanguageCheckbox_(
-                      detailLanguage_, languages.prospectiveUILanguage)]]">
-                <span>$i18n{displayInThisLanguage}</span>
-                <iron-icon class="policy" icon="cr20:domain" hidden$="[[
-                    !detailLanguage_.language.isProhibitedLanguage]]">
-                </iron-icon>
-              </cr-checkbox>
-</if> <!-- chromeos or is_win -->
-              <cr-checkbox id="offerTranslations"
-                  class="dropdown-item"
-                  checked="[[detailLanguage_.translateEnabled]]"
-                  on-change="onTranslateCheckboxChange_"
-                  hidden="[[!prefs.translate.enabled.value]]"
-                  disabled="[[disableTranslateCheckbox_(
-                      detailLanguage_, languages.translateTarget)]]">
-                $i18n{offerToTranslateInThisLanguage}
-              </cr-checkbox>
-              <hr hidden="[[!shouldShowDialogSeparator_(languages.enabled.*)]]">
-              <button class="dropdown-item" role="menuitem"
-                  on-click="onMoveToTopTap_"
-                  hidden="[[isNthLanguage_(
-                      0, detailLanguage_, languages.enabled.*)]]">
-                $i18n{moveToTop}
-              </button>
-              <button class="dropdown-item" role="menuitem"
-                  on-click="onMoveUpTap_"
-                  hidden="[[!showMoveUp_(detailLanguage_,
-                      languages.enabled.*)]]">
-                $i18n{moveUp}
-              </button>
-              <button class="dropdown-item" role="menuitem"
-                  on-click="onMoveDownTap_"
-                  hidden="[[!showMoveDown_(
-                      detailLanguage_, languages.enabled.*)]]">
-                $i18n{moveDown}
-              </button>
-              <button class="dropdown-item" role="menuitem"
-                  on-click="onRemoveLanguageTap_"
-                  hidden="[[!detailLanguage_.removable]]">
-                $i18n{removeLanguage}
-              </button>
-            </cr-action-menu>
-          </template>
-        </cr-lazy-render>
       </div>
-<if expr="chromeos">
-      <template is="dom-if" route-path="/inputMethods">
-        <settings-subpage
-            hidden="[[!pageVisibility.manageInputMethods]]"
-            associated-control="[[$$('#manageInputMethodsSubpageTrigger')]]"
-            page-title="$i18n{manageInputMethodsPageTitle}">
-          <settings-manage-input-methods-page languages="{{languages}}"
-              language-helper="[[languageHelper]]"
-              prefs="{{prefs}}">
-          </settings-manage-input-methods-page>
-        </settings-subpage>
-      </template>
-</if>
 <if expr="not is_macosx">
       <template is="dom-if" route-path="/editDictionary"
-           no-search="[[!prefs.browser.enable_spellchecking.value]]">
+            no-search="[[!prefs.browser.enable_spellchecking.value]]">
         <settings-subpage
             associated-control="[[$$('#spellCheckSubpageTrigger')]]"
             page-title="$i18n{editDictionaryPageTitle}"
@@ -485,14 +240,18 @@
           <settings-edit-dictionary-page></settings-edit-dictionary-page>
         </settings-subpage>
       </template>
-</if>
+</if> <!-- not is_macosx -->
+      <template is="dom-if" route-path="/languageSettings"
+          no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
+        <settings-subpage
+            associated-control="[[$$('#languagesSubpageTrigger')]]"
+            page-title="$i18n{languagesListTitle}"
+            no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
+          <settings-languages-subpage
+              languages="{{languages}}"
+              prefs="{{prefs}}"
+              language-helper="{{languageHelper}}">
+          </settings-languages-subpage>
+        </settings-subpage>
+      </template>
     </settings-animated-pages>
-    <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
-      <settings-add-languages-dialog languages="{{languages}}"
-          language-helper="[[languageHelper]]"
-          on-close="onAddLanguagesDialogClose_">
-      </settings-add-languages-dialog>
-    </template>
-  </template>
-  <script src="languages_page.js"></script>
-</dom-module>

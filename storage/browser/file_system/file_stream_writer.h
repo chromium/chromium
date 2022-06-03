@@ -23,15 +23,15 @@ class IOBuffer;
 }
 
 namespace storage {
-class ObfuscatedFileUtilMemoryDelegate;
-}
-
-namespace storage {
 
 // A generic interface for writing to a file-like object.
 class FileStreamWriter {
  public:
-  enum OpenOrCreate { OPEN_EXISTING_FILE, CREATE_NEW_FILE };
+  enum OpenOrCreate {
+    OPEN_EXISTING_FILE,
+    CREATE_NEW_FILE,
+    CREATE_NEW_FILE_ALWAYS
+  };
 
   // Creates a writer for the existing file in the path |file_path| starting
   // from |initial_offset|. Uses |task_runner| for async file operations.
@@ -42,18 +42,11 @@ class FileStreamWriter {
       int64_t initial_offset,
       OpenOrCreate open_or_create);
 
-  // Creates a writer for the existing memory file in the path |file_path|
-  // starting from |initial_offset|.
-  COMPONENT_EXPORT(STORAGE_BROWSER)
-  static std::unique_ptr<FileStreamWriter> CreateForMemoryFile(
-      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-      const base::FilePath& file_path,
-      int64_t initial_offset,
-      OpenOrCreate open_or_create);
-
+  FileStreamWriter(const FileStreamWriter&) = delete;
+  FileStreamWriter& operator=(const FileStreamWriter&) = delete;
   // Closes the file. If there's an in-flight operation, it is canceled (i.e.,
   // the callback function associated with the operation is not called).
-  virtual ~FileStreamWriter() {}
+  virtual ~FileStreamWriter() = default;
 
   // Writes to the current cursor position asynchronously.
   //
@@ -103,6 +96,9 @@ class FileStreamWriter {
   //
   // It is invalid to call Flush while there is an in-flight async operation.
   virtual int Flush(net::CompletionOnceCallback callback) = 0;
+
+ protected:
+  FileStreamWriter() = default;
 };
 
 }  // namespace storage

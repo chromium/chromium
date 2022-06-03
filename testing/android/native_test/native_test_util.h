@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTING_ANDROID_NATIVE_TEST_UTIL_
-#define TESTING_ANDROID_NATIVE_TEST_UTIL_
+#ifndef TESTING_ANDROID_NATIVE_TEST_NATIVE_TEST_UTIL_H_
+#define TESTING_ANDROID_NATIVE_TEST_NATIVE_TEST_UTIL_H_
 
 #include <stdio.h>
 #include <string>
@@ -36,4 +36,4 @@ int ArgsToArgv(const std::vector<std::string>& args, std::vector<char*>* argv);
 }  // namespace android
 }  // namespace testing
 
-#endif  // TESTING_ANDROID_NATIVE_TEST_UTIL_
+#endif  // TESTING_ANDROID_NATIVE_TEST_NATIVE_TEST_UTIL_H_

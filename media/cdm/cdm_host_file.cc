@@ -8,7 +8,9 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
 
@@ -35,6 +37,9 @@ std::unique_ptr<CdmHostFile> CdmHostFile::Create(
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
   DVLOG(1) << "  " << sig_file.IsValid() << ": "
            << sig_file_path.MaybeAsASCII();
+
+  // Preread file at |file_path| for better performance.
+  ignore_result(PreReadFile(file_path, /*is_executable=*/false));
 
   return std::unique_ptr<CdmHostFile>(
       new CdmHostFile(file_path, std::move(file), std::move(sig_file)));

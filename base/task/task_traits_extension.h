@@ -197,10 +197,8 @@ struct TaskTraitsExtension {
 
 // Tests that that a trait extension accepts all |ArgsTypes...|.
 template <class... ArgTypes>
-struct AreValidTraitsForExtension
-    : std::integral_constant<
-          bool,
-          std::is_constructible<TaskTraitsExtension, ArgTypes...>::value> {};
+using AreValidTraitsForExtension =
+    std::is_constructible<TaskTraitsExtension, ArgTypes...>;
 
 // Helper function that returns the TaskTraitsExtensionStorage of a
 // serialized extension created with |args...| if there are arguments that are

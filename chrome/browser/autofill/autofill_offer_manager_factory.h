@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_OFFER_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_AUTOFILL_AUTOFILL_OFFER_MANAGER_FACTORY_H_
+
+#include "base/compiler_specific.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
+
+namespace base {
+template <typename T>
+struct DefaultSingletonTraits;
+}
+
+namespace autofill {
+
+class AutofillOfferManager;
+
+// Singleton that owns all AutofillOfferManager and associates them with
+// Profiles.
+class AutofillOfferManagerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  AutofillOfferManagerFactory(const AutofillOfferManagerFactory&) = delete;
+  AutofillOfferManagerFactory& operator=(const AutofillOfferManagerFactory&) =
+      delete;
+
+  static AutofillOfferManager* GetForBrowserContext(
+      content::BrowserContext* context);
+
+  static AutofillOfferManagerFactory* GetInstance();
+
+ private:
+  friend struct base::DefaultSingletonTraits<AutofillOfferManagerFactory>;
+
+  AutofillOfferManagerFactory();
+  ~AutofillOfferManagerFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* profile) const override;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_OFFER_MANAGER_FACTORY_H_

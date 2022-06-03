@@ -8,17 +8,11 @@
 #ifndef CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 
-#include <string>
-#include <vector>
-
-#include "base/strings/string16.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_url_row.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_message_macros.h"

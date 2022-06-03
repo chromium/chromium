@@ -4,6 +4,7 @@
 
 #include "ui/events/event_source.h"
 
+#include "base/logging.h"
 #include "ui/events/event_rewriter_continuation.h"
 #include "ui/events/event_sink.h"
 
@@ -43,6 +44,11 @@ class EventSource::EventRewriterContinuationImpl
       : source_(source),
         rewriter_(rewriter),
         self_(source->rewriter_list_.end()) {}
+
+  EventRewriterContinuationImpl(const EventRewriterContinuationImpl&) = delete;
+  EventRewriterContinuationImpl& operator=(
+      const EventRewriterContinuationImpl&) = delete;
+
   ~EventRewriterContinuationImpl() override {}
 
   EventRewriter* rewriter() const { return rewriter_; }
@@ -76,7 +82,6 @@ class EventSource::EventRewriterContinuationImpl
   EventRewriterList::iterator self_;
 
   base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterContinuationImpl);
 };
 
 EventSource::EventSource() {}

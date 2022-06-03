@@ -6,50 +6,121 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cursor/cursors_aura.h"
+#include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace ui {
 
 namespace {
 
-BitmapCursorOzone* ToBitmapCursorOzone(PlatformCursor cursor) {
-  return static_cast<BitmapCursorOzone*>(cursor);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns true if ozone should use the default cursor for |type|, instead of
+// loading and storing bitmaps for it. Used on Lacros to skip client-side bitmap
+// loading for server-side cursors.
+bool UseDefaultCursorForType(mojom::CursorType type) {
+  using mojom::CursorType;
+  switch (type) {
+    case CursorType::kNull:
+    case CursorType::kPointer:
+    case CursorType::kCross:
+    case CursorType::kHand:
+    case CursorType::kIBeam:
+    case CursorType::kWait:
+    case CursorType::kHelp:
+    case CursorType::kEastResize:
+    case CursorType::kNorthResize:
+    case CursorType::kNorthEastResize:
+    case CursorType::kNorthWestResize:
+    case CursorType::kSouthResize:
+    case CursorType::kSouthEastResize:
+    case CursorType::kSouthWestResize:
+    case CursorType::kWestResize:
+    case CursorType::kNorthSouthResize:
+    case CursorType::kEastWestResize:
+    case CursorType::kNorthEastSouthWestResize:
+    case CursorType::kNorthWestSouthEastResize:
+    case CursorType::kColumnResize:
+    case CursorType::kRowResize:
+    case CursorType::kMiddlePanning:
+    case CursorType::kEastPanning:
+    case CursorType::kNorthPanning:
+    case CursorType::kNorthEastPanning:
+    case CursorType::kNorthWestPanning:
+    case CursorType::kSouthPanning:
+    case CursorType::kSouthEastPanning:
+    case CursorType::kSouthWestPanning:
+    case CursorType::kWestPanning:
+    case CursorType::kMove:
+    case CursorType::kVerticalText:
+    case CursorType::kCell:
+    case CursorType::kContextMenu:
+    case CursorType::kAlias:
+    case CursorType::kProgress:
+    case CursorType::kNoDrop:
+    case CursorType::kCopy:
+    case CursorType::kNotAllowed:
+    case CursorType::kZoomIn:
+    case CursorType::kZoomOut:
+    case CursorType::kGrab:
+    case CursorType::kGrabbing:
+    case CursorType::kDndNone:
+    case CursorType::kDndMove:
+    case CursorType::kDndCopy:
+    case CursorType::kDndLink:
+      return true;
+    case CursorType::kNone:
+    case CursorType::kMiddlePanningVertical:
+    case CursorType::kMiddlePanningHorizontal:
+    case CursorType::kCustom:
+    case CursorType::kEastWestNoResize:
+    case CursorType::kNorthEastSouthWestNoResize:
+    case CursorType::kNorthSouthNoResize:
+    case CursorType::kNorthWestSouthEastNoResize:
+      return false;
+  }
 }
-
-PlatformCursor ToPlatformCursor(BitmapCursorOzone* cursor) {
-  return static_cast<PlatformCursor>(cursor);
-}
-
-scoped_refptr<BitmapCursorOzone> CreateDefaultBitmapCursor(CursorType type) {
-  Cursor cursor(type);
-  // Ozone must honor the lowest possible scale value, which is 1.0f. Otherwise,
-  // it can happen that cursor chooses wrong hotspots if max scaling value is
-  // set to 200p, for example.
-  cursor.set_device_scale_factor(1.0f);
-  SkBitmap bitmap = cursor.GetBitmap();
-  gfx::Point hotspot = cursor.GetHotspot();
-  if (!bitmap.isNull())
-    return new BitmapCursorOzone(bitmap, hotspot);
-  return nullptr;
-}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
-BitmapCursorOzone::BitmapCursorOzone(const SkBitmap& bitmap,
-                                     const gfx::Point& hotspot)
-    : hotspot_(hotspot), frame_delay_ms_(0) {
+// static
+scoped_refptr<BitmapCursorOzone> BitmapCursorOzone::FromPlatformCursor(
+    scoped_refptr<PlatformCursor> platform_cursor) {
+  return base::WrapRefCounted(
+      static_cast<BitmapCursorOzone*>(platform_cursor.get()));
+}
+
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
+                                     float cursor_image_scale_factor)
+    : type_(type), cursor_image_scale_factor_(cursor_image_scale_factor) {}
+
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
+                                     const SkBitmap& bitmap,
+                                     const gfx::Point& hotspot,
+                                     float cursor_image_scale_factor)
+    : type_(type),
+      hotspot_(hotspot),
+      cursor_image_scale_factor_(cursor_image_scale_factor) {
   if (!bitmap.isNull())
     bitmaps_.push_back(bitmap);
 }
 
-BitmapCursorOzone::BitmapCursorOzone(const std::vector<SkBitmap>& bitmaps,
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
+                                     const std::vector<SkBitmap>& bitmaps,
                                      const gfx::Point& hotspot,
-                                     int frame_delay_ms)
-    : bitmaps_(bitmaps), hotspot_(hotspot), frame_delay_ms_(frame_delay_ms) {
+                                     base::TimeDelta frame_delay,
+                                     float cursor_image_scale_factor)
+    : type_(type),
+      bitmaps_(bitmaps),
+      hotspot_(hotspot),
+      frame_delay_(frame_delay),
+      cursor_image_scale_factor_(cursor_image_scale_factor) {
   DCHECK_LT(0U, bitmaps.size());
-  DCHECK_LE(0, frame_delay_ms);
+  DCHECK_LE(base::TimeDelta(), frame_delay);
   // No null bitmap should be in the list. Blank cursors should just be an empty
   // vector.
   DCHECK(std::find_if(bitmaps_.begin(), bitmaps_.end(),
@@ -57,8 +128,14 @@ BitmapCursorOzone::BitmapCursorOzone(const std::vector<SkBitmap>& bitmaps,
          bitmaps_.end());
 }
 
-BitmapCursorOzone::~BitmapCursorOzone() {
-}
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
+                                     void* platform_data,
+                                     float cursor_image_scale_factor)
+    : type_(type),
+      platform_data_(platform_data),
+      cursor_image_scale_factor_(cursor_image_scale_factor) {}
+
+BitmapCursorOzone::~BitmapCursorOzone() = default;
 
 const gfx::Point& BitmapCursorOzone::hotspot() {
   return hotspot_;
@@ -72,70 +149,56 @@ const std::vector<SkBitmap>& BitmapCursorOzone::bitmaps() {
   return bitmaps_;
 }
 
-int BitmapCursorOzone::frame_delay_ms() {
-  return frame_delay_ms_;
+base::TimeDelta BitmapCursorOzone::frame_delay() {
+  return frame_delay_;
 }
 
 BitmapCursorFactoryOzone::BitmapCursorFactoryOzone() {}
 
 BitmapCursorFactoryOzone::~BitmapCursorFactoryOzone() {}
 
-// static
-scoped_refptr<BitmapCursorOzone> BitmapCursorFactoryOzone::GetBitmapCursor(
-    PlatformCursor platform_cursor) {
-  return base::WrapRefCounted(ToBitmapCursorOzone(platform_cursor));
-}
-
-PlatformCursor BitmapCursorFactoryOzone::GetDefaultCursor(CursorType type) {
-  return GetDefaultCursorInternal(type).get();
-}
-
-PlatformCursor BitmapCursorFactoryOzone::CreateImageCursor(
-    const SkBitmap& bitmap,
-    const gfx::Point& hotspot,
-    float bitmap_dpi) {
-  BitmapCursorOzone* cursor = new BitmapCursorOzone(bitmap, hotspot);
-  cursor->AddRef();  // Balanced by UnrefImageCursor.
-  return ToPlatformCursor(cursor);
-}
-
-PlatformCursor BitmapCursorFactoryOzone::CreateAnimatedCursor(
-    const std::vector<SkBitmap>& bitmaps,
-    const gfx::Point& hotspot,
-    int frame_delay_ms,
-    float bitmap_dpi) {
-  DCHECK_LT(0U, bitmaps.size());
-  BitmapCursorOzone* cursor =
-      new BitmapCursorOzone(bitmaps, hotspot, frame_delay_ms);
-  cursor->AddRef();  // Balanced by UnrefImageCursor.
-  return ToPlatformCursor(cursor);
-}
-
-void BitmapCursorFactoryOzone::RefImageCursor(PlatformCursor cursor) {
-  ToBitmapCursorOzone(cursor)->AddRef();
-}
-
-void BitmapCursorFactoryOzone::UnrefImageCursor(PlatformCursor cursor) {
-  ToBitmapCursorOzone(cursor)->Release();
-}
-
-scoped_refptr<BitmapCursorOzone>
-BitmapCursorFactoryOzone::GetDefaultCursorInternal(CursorType type) {
-  if (type == CursorType::kNone)
-    return nullptr;  // Null is used for hidden cursor.
-
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::GetDefaultCursor(
+    mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
-    // Create new image cursor from default aura bitmap for this type. We hold a
-    // ref forever because clients do not do refcounting for default cursors.
-    scoped_refptr<BitmapCursorOzone> cursor = CreateDefaultBitmapCursor(type);
-    if (!cursor.get() && type != CursorType::kPointer)
-      cursor = GetDefaultCursorInternal(CursorType::kPointer);
-    DCHECK(cursor.get()) << "Failed to load default cursor bitmap";
-    default_cursors_[type] = cursor;
+    if (type == mojom::CursorType::kNone
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        || UseDefaultCursorForType(type)
+#endif
+    ) {
+      // Lacros uses server-side cursors for most types. These cursors don't
+      // need to load bitmap images on the client.
+      // Similarly, the hidden cursor doesn't use any bitmap.
+      default_cursors_[type] =
+          base::MakeRefCounted<BitmapCursorOzone>(type, cursor_scale_factor_);
+    } else {
+      return nullptr;
+    }
   }
 
-  // Returned owned default cursor for this type.
   return default_cursors_[type];
+}
+
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::CreateImageCursor(
+    mojom::CursorType type,
+    const SkBitmap& bitmap,
+    const gfx::Point& hotspot) {
+  return base::MakeRefCounted<BitmapCursorOzone>(type, bitmap, hotspot,
+                                                 cursor_scale_factor_);
+}
+
+scoped_refptr<PlatformCursor> BitmapCursorFactoryOzone::CreateAnimatedCursor(
+    mojom::CursorType type,
+    const std::vector<SkBitmap>& bitmaps,
+    const gfx::Point& hotspot,
+    base::TimeDelta frame_delay) {
+  DCHECK_LT(0U, bitmaps.size());
+  return base::MakeRefCounted<BitmapCursorOzone>(
+      type, bitmaps, hotspot, frame_delay, cursor_scale_factor_);
+}
+
+void BitmapCursorFactoryOzone::SetDeviceScaleFactor(float scale) {
+  DCHECK_GT(scale, 0.f);
+  cursor_scale_factor_ = scale;
 }
 
 }  // namespace ui

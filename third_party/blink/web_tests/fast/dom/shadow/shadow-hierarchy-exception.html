@@ -9,7 +9,7 @@
 description('Appending an ancestor to a shadow tree should throw an exception');
 var container = document.getElementById('container');
 var span = container.querySelector('span');
-var shadow = span.createShadowRoot();
+var shadow = span.attachShadow({mode: 'open'});
 var shadowDiv = shadow.appendChild(document.createElement('div'));
 shouldThrow('shadowDiv.appendChild(container)');
 </script>

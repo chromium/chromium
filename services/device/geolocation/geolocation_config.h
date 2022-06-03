@@ -16,15 +16,16 @@ namespace device {
 class GeolocationConfig : public mojom::GeolocationConfig {
  public:
   GeolocationConfig();
+
+  GeolocationConfig(const GeolocationConfig&) = delete;
+  GeolocationConfig& operator=(const GeolocationConfig&) = delete;
+
   ~GeolocationConfig() override;
 
   static void Create(mojo::PendingReceiver<mojom::GeolocationConfig> receiver);
 
   void IsHighAccuracyLocationBeingCaptured(
       IsHighAccuracyLocationBeingCapturedCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeolocationConfig);
 };
 
 }  // namespace device

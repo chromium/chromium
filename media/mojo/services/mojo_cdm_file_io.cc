@@ -45,8 +45,10 @@ const char* ConvertFileStatus(FileStatus status) {
 
 MojoCdmFileIO::MojoCdmFileIO(Delegate* delegate,
                              cdm::FileIOClient* client,
-                             mojom::CdmStorage* cdm_storage)
-    : delegate_(delegate), client_(client), cdm_storage_(cdm_storage) {
+                             mojo::Remote<mojom::CdmStorage> cdm_storage)
+    : delegate_(delegate),
+      client_(client),
+      cdm_storage_(std::move(cdm_storage)) {
   DVLOG(1) << __func__;
   DCHECK(delegate_);
   DCHECK(client_);

@@ -14,6 +14,8 @@
 
 #include "snapshot/win/pe_image_reader.h"
 
+#include <versionhelpers.h>
+
 #ifndef PSAPI_VERSION
 #define PSAPI_VERSION 2
 #endif
@@ -62,14 +64,14 @@ TEST(PEImageReader, DebugDirectory) {
       &process_reader,
       FromPointerCast<WinVMAddress>(module_handle.get()),
       module_info.SizeOfImage,
-      base::UTF16ToUTF8(module_basename.value())));
+      base::WideToUTF8(module_basename.value())));
 
   UUID uuid;
   DWORD age;
   std::string pdbname;
   ASSERT_TRUE(pe_image_reader.DebugDirectoryInformation(&uuid, &age, &pdbname));
   std::string module_name =
-      base::UTF16ToUTF8(module_basename.RemoveFinalExtension().value());
+      base::WideToUTF8(module_basename.RemoveFinalExtension().value());
   EXPECT_NE(pdbname.find(module_name), std::string::npos);
   const std::string suffix(".pdb");
   EXPECT_EQ(
@@ -84,7 +86,7 @@ void TestVSFixedFileInfo(ProcessReaderWin* process_reader,
   ASSERT_TRUE(pe_image_reader.Initialize(process_reader,
                                          module.dll_base,
                                          module.size,
-                                         base::UTF16ToUTF8(module.name)));
+                                         base::WideToUTF8(module.name)));
 
   VS_FIXEDFILEINFO observed;
   const bool observed_rv = pe_image_reader.VSFixedFileInfo(&observed);
@@ -115,12 +117,7 @@ void TestVSFixedFileInfo(ProcessReaderWin* process_reader,
 
   base::FilePath module_path(module.name);
 
-  const DWORD version = GetVersion();
-  const int major_version = LOBYTE(LOWORD(version));
-  const int minor_version = HIBYTE(LOWORD(version));
-  if (major_version > 6 || (major_version == 6 && minor_version >= 2)) {
-    // Windows 8 or later.
-    //
+  if (IsWindows8OrGreater()) {
     // Use BaseName() to ensure that GetModuleVersionAndType() finds the
     // already-loaded module with the specified name. Otherwise, dwFileVersionMS
     // may not match. This appears to be related to the changes made in Windows
@@ -183,7 +180,7 @@ TEST(PEImageReader, VSFixedFileInfo_AllModules) {
   EXPECT_GT(modules.size(), 2u);
 
   for (const auto& module : modules) {
-    SCOPED_TRACE(base::UTF16ToUTF8(module.name));
+    SCOPED_TRACE(base::WideToUTF8(module.name));
     TestVSFixedFileInfo(&process_reader, module, false);
   }
 }

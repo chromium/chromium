@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
@@ -31,6 +30,10 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
                          bool monitor_default_input = false,
                          bool monitor_addition_removal = false,
                          bool monitor_sources = false);
+
+  AudioDeviceListenerMac(const AudioDeviceListenerMac&) = delete;
+  AudioDeviceListenerMac& operator=(const AudioDeviceListenerMac&) = delete;
+
   ~AudioDeviceListenerMac();
 
  private:
@@ -67,8 +70,6 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioDeviceListenerMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerMac);
 };
 
 }  // namespace media

@@ -9,25 +9,26 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/test_payment_manifest_downloader.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -63,6 +64,11 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  ServiceWorkerPaymentAppFinderBrowserTest(
+      const ServiceWorkerPaymentAppFinderBrowserTest&) = delete;
+  ServiceWorkerPaymentAppFinderBrowserTest& operator=(
+      const ServiceWorkerPaymentAppFinderBrowserTest&) = delete;
+
   ~ServiceWorkerPaymentAppFinderBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -72,8 +78,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  PermissionRequestManager* GetPermissionRequestManager() {
-    return PermissionRequestManager::FromWebContents(
+  permissions::PermissionRequestManager* GetPermissionRequestManager() {
+    return permissions::PermissionRequestManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
@@ -96,7 +102,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(StartTestServer("larry.example.com", &larry_example_));
 
     GetPermissionRequestManager()->set_auto_response_for_test(
-        PermissionRequestManager::ACCEPT_ALL);
+        permissions::PermissionRequestManager::ACCEPT_ALL);
   }
 
   // Invokes the JavaScript function install(|method_name|) in
@@ -111,8 +117,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // back via domAutomationController.
   void InstallPaymentAppInScopeForMethod(const std::string& scope,
                                          const std::string& method_name) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 alicepay_.GetURL("alicepay.com", scope));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), alicepay_.GetURL("alicepay.com", scope)));
     std::string contents;
     std::string script = "install('" + method_name + "');";
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -135,7 +141,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
     auto downloader = std::make_unique<TestDownloader>(
-        content::BrowserContext::GetDefaultStoragePartition(context)
+        context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://alicepay.com/",
                                  alicepay_.GetURL("alicepay.com", "/"));
@@ -173,9 +179,14 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     downloader->AddTestServerURL(
         "https://larry.example.com/",
         larry_example_.GetURL("larry.example.com", "/"));
-    ServiceWorkerPaymentAppFinder::GetInstance()
-        ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-            std::move(downloader));
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), alicepay_.GetURL("chromium.org", "/")));
+
+    auto* finder = ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
+        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    finder->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
+        std::move(downloader));
 
     std::vector<mojom::PaymentMethodDataPtr> method_data;
     for (const auto& identifier : payment_method_identifiers) {
@@ -184,12 +195,12 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     }
 
     base::RunLoop run_loop;
-    ServiceWorkerPaymentAppFinder::GetInstance()->GetAllPaymentApps(
-        web_contents,
-        WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-            Profile::FromBrowserContext(context),
-            ServiceAccessType::EXPLICIT_ACCESS),
-        method_data,
+    finder->GetAllPaymentApps(
+        url::Origin::Create(GURL("https://chromium.org")),
+        webdata_services::WebDataServiceWrapperFactory::
+            GetPaymentManifestWebDataServiceForBrowserContext(
+                context, ServiceAccessType::EXPLICIT_ACCESS),
+        std::move(method_data),
         /*may_crawl_for_installable_payment_apps=*/true,
         base::BindOnce(
             &ServiceWorkerPaymentAppFinderBrowserTest::OnGotAllPaymentApps,
@@ -200,7 +211,9 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
 
   // Returns the installed apps that have been found in
   // GetAllPaymentAppsForMethods().
-  const content::PaymentAppProvider::PaymentApps& apps() const { return apps_; }
+  const content::InstalledPaymentAppsFinder::PaymentApps& apps() const {
+    return apps_;
+  }
 
   // Returns the installable apps that have been found in
   // GetAllPaymentAppsForMethods().
@@ -260,7 +273,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // Called by the factory upon completed app lookup. These |apps| have only
   // valid payment methods.
   void OnGotAllPaymentApps(
-      content::PaymentAppProvider::PaymentApps apps,
+      content::InstalledPaymentAppsFinder::PaymentApps apps,
       ServiceWorkerPaymentAppFinder::InstallablePaymentApps installable_apps,
       const std::string& error_message) {
     apps_ = std::move(apps);
@@ -340,7 +353,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
 
   // The installed apps that have been found by the factory in
   // GetAllPaymentAppsForMethods() method.
-  content::PaymentAppProvider::PaymentApps apps_;
+  content::InstalledPaymentAppsFinder::PaymentApps apps_;
 
   // The installable apps that have been found by the factory in
   // GetAllPaymentAppsForMethods() method.
@@ -350,8 +363,6 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   std::string error_message_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppFinderBrowserTest);
 };
 
 // A payment app has to be installed first.
@@ -399,32 +410,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 
     EXPECT_TRUE(installable_apps().empty());
     EXPECT_TRUE(apps().empty());
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-}
-
-// A payment app can use "basic-card" payment method.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest, BasicCard) {
-  InstallPaymentAppForMethod("basic-card");
-
-  {
-    GetAllPaymentAppsForMethods({"basic-card", "https://alicepay.com/webpay",
-                                 "https://bobpay.com/webpay"});
-
-    EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("basic-card");
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-
-  // Repeat lookups should have identical results.
-  {
-    GetAllPaymentAppsForMethods({"basic-card", "https://alicepay.com/webpay",
-                                 "https://bobpay.com/webpay"});
-
-    EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("basic-card");
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
@@ -482,19 +467,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
   }
 }
 
-// A payment app from https://alicepay.com can use the payment method
+// A payment app from https://alicepay.com can not use the payment method
 // https://frankpay.com/webpay, because https://frankpay.com/payment-method.json
-// specifies "supported_origins": "*" (all origins supported).
+// invalid "supported_origins": "*".
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
-                       AllOringsSupported) {
+                       OriginWildcardNotSupportedInPaymentMethodManifest) {
   InstallPaymentAppForMethod("https://frankpay.com/webpay");
 
   {
     GetAllPaymentAppsForMethods({"https://frankpay.com/webpay"});
 
     EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("https://frankpay.com/webpay");
+    ASSERT_EQ(0U, apps().size());
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
@@ -503,8 +487,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
     GetAllPaymentAppsForMethods({"https://frankpay.com/webpay"});
 
     EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("https://frankpay.com/webpay");
+    ASSERT_EQ(0U, apps().size());
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
@@ -572,12 +555,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
   }
 }
 
-// Multiple payment apps from https://alicepay.com can use either
-// https://georgepay.com/webpay or https://frankepay.com/webpay payment method,
-// because https://frankpay.com/payment-method.json specifies
-// "supported_origins": "*" (all origins supported) and
+// A Payment app from https://alicepay.com can use only the payment method
+// https://georgepay.com/webpay. Because
 // https://georgepay.com/payment-method.json explicitly includes
-// "https://alicepay.com" as on of the "supported_origins".
+// "https://alicepay.com" as on of the "supported_origins". Also
+// https://frankpay.com/payment-method.json does not explicitly authorize any
+// payment app.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        TwoAppsDifferentMethods) {
   InstallPaymentAppInScopeForMethod("/app1/", "https://georgepay.com/webpay");
@@ -588,11 +571,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
         {"https://georgepay.com/webpay", "https://frankpay.com/webpay"});
 
     EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(2U, apps().size());
+    ASSERT_EQ(1U, apps().size());
     ExpectPaymentAppFromScopeWithMethod("/app1/",
                                         "https://georgepay.com/webpay");
-    ExpectPaymentAppFromScopeWithMethod("/app2/",
-                                        "https://frankpay.com/webpay");
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
@@ -602,11 +583,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
         {"https://georgepay.com/webpay", "https://frankpay.com/webpay"});
 
     EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(2U, apps().size());
+    ASSERT_EQ(1U, apps().size());
     ExpectPaymentAppFromScopeWithMethod("/app1/",
                                         "https://georgepay.com/webpay");
-    ExpectPaymentAppFromScopeWithMethod("/app2/",
-                                        "https://frankpay.com/webpay");
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }

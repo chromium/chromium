@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_INFOBAR_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_INFOBAR_CONSTANTS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 extern const int kInfobarBackgroundColor;
 

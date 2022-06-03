@@ -1559,7 +1559,7 @@
         "test": "net_junit_tests"
       },
       {
-        "test": "service_junit_tests"
+        "test": "services_junit_tests"
       },
       {
         "test": "ui_junit_tests"
@@ -3115,7 +3115,7 @@
         "test": "net_junit_tests"
       },
       {
-        "test": "service_junit_tests"
+        "test": "services_junit_tests"
       },
       {
         "test": "ui_junit_tests"
@@ -4133,15 +4133,15 @@
         }
       },
       {
-        "isolate_name": "devtools_lint_check",
-        "name": "devtools_lint_check",
+        "isolate_name": "devtools_closure_compile",
+        "name": "devtools_closure_compile",
         "swarming": {
           "can_use_on_swarming_builders": true
         }
       },
       {
-        "isolate_name": "devtools_type_check",
-        "name": "devtools_type_check",
+        "isolate_name": "devtools_eslint",
+        "name": "devtools_eslint",
         "swarming": {
           "can_use_on_swarming_builders": true
         }

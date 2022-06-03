@@ -1,0 +1,94 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+blink_modules_sources("sanitizer_api") {
+  sources = [
+    "element_sanitizer.cc",
+    "element_sanitizer.h",
+    "sanitizer.cc",
+    "sanitizer.h",
+    "sanitizer_config_impl.cc",
+    "sanitizer_config_impl.h",
+  ]
+}
+
+if (use_libfuzzer) {
+  corpus_out_dir = "$target_gen_dir/corpus"
+
+  # For our seed corpus, we have several .html files and several proto config
+  # files. We'll assemble a list of all N x M combinations for the corpus.
+
+  corpus_source_config = [  # These match source files: corpus/*.txt
+    "config1",
+    "config2",
+    "config3",
+    "default",
+  ]
+  corpus_source_html = [  # These match source files: corpus/*.html
+    "simple1",
+    "simple2",
+    "simple3",
+    "simple4",
+    "medium1",
+    "medium2",
+    "medium3",
+  ]
+  corpus_sources = []
+  corpus_outputs = []
+  foreach(f, corpus_source_config) {
+    corpus_sources += [ "corpus/$f.txt" ]
+  }
+  foreach(f, corpus_source_html) {
+    corpus_sources += [ "corpus/$f.html" ]
+  }
+  foreach(conf, corpus_source_config) {
+    foreach(html, corpus_source_html) {
+      corpus_outputs += [ "$corpus_out_dir/$html-$conf.txt" ]
+    }
+  }
+
+  # The build_corpus.py script assembles our corpus files.
+  # The $corpus_sources/$corpus_outputs match what the script requires.
+  # It additionally builds a dictionary (of all "words" it finds in the html
+  # inputs.
+  action("generate_sanitizer_fuzzer_corpus") {
+    script = "build_corpus.py"
+    sources = corpus_sources
+    outputs = [ "$target_gen_dir/sanitizer_api.dict" ] + corpus_outputs
+    args = rebase_path(sources, root_build_dir) + [
+             "--outdir",
+             rebase_path("$corpus_out_dir", root_build_dir),
+             "--dict",
+             rebase_path("$target_gen_dir/sanitizer_api.dict", root_build_dir),
+           ]
+  }
+
+  fuzzable_proto_library("sanitizer_config_proto") {
+    sources = [ "sanitizer_config.proto" ]
+  }
+
+  fuzzer_test("sanitizer_api_fuzzer") {
+    sources = [ "sanitizer_api_fuzzer.cc" ]
+    deps = [
+      ":generate_sanitizer_fuzzer_corpus",
+      ":sanitizer_config_proto",
+      "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules:modules",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+
+    # The fuzzer_test rule accepts dependencies for seed_corpus
+    # (in seed_corpus_deps), but not for dict. Hence, we just copy that file.
+    dict = "sanitizer_api.dict"
+    seed_corpus = "$corpus_out_dir"
+    seed_corpus_deps = [ ":generate_sanitizer_fuzzer_corpus" ]
+  }
+}

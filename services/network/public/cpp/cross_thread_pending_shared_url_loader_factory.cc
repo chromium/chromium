@@ -8,7 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -38,7 +39,6 @@ class CrossThreadPendingSharedURLLoaderFactory::State
   // Delegation for mojom::URLLoaderFactory API.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const ResourceRequest& request,
@@ -82,7 +82,6 @@ class CrossThreadSharedURLLoaderFactory : public SharedURLLoaderFactory {
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> loader,
-                            int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& request,
@@ -115,7 +114,6 @@ CrossThreadSharedURLLoaderFactory::~CrossThreadSharedURLLoaderFactory() {
 
 void CrossThreadSharedURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
@@ -125,14 +123,14 @@ void CrossThreadSharedURLLoaderFactory::CreateLoaderAndStart(
   base::SequencedTaskRunner* runner = state_->task_runner();
   if (runner->RunsTasksInCurrentSequence()) {
     state_->base_factory()->CreateLoaderAndStart(
-        std::move(loader), routing_id, request_id, options, request,
-        std::move(client), traffic_annotation);
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
   } else {
     state_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&State::CreateLoaderAndStart, state_, std::move(loader),
-                       routing_id, request_id, options, request,
-                       std::move(client), traffic_annotation));
+                       request_id, options, request, std::move(client),
+                       traffic_annotation));
   }
 }
 
@@ -191,15 +189,14 @@ void CrossThreadPendingSharedURLLoaderFactory::State::DeleteOnCorrectThread()
 
 void CrossThreadPendingSharedURLLoaderFactory::State::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base_factory_->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
-                                      options, request, std::move(client),
+  base_factory_->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                      request, std::move(client),
                                       traffic_annotation);
 }
 

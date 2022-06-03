@@ -36,44 +36,4 @@ void CustomCountHistogram::CountMicroseconds(base::TimeDelta delta) {
       delta.InMicroseconds()));
 }
 
-void CustomCountHistogram::CountMilliseconds(base::TimeDelta delta) {
-  Count(base::saturated_cast<base::HistogramBase::Sample>(
-      delta.InMilliseconds()));
-}
-
-BooleanHistogram::BooleanHistogram(const char* name)
-    : CustomCountHistogram(base::BooleanHistogram::FactoryGet(
-          name,
-          base::HistogramBase::kUmaTargetedHistogramFlag)) {}
-
-EnumerationHistogram::EnumerationHistogram(
-    const char* name,
-    base::HistogramBase::Sample boundary_value)
-    : CustomCountHistogram(base::LinearHistogram::FactoryGet(
-          name,
-          1,
-          boundary_value,
-          boundary_value + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag)) {}
-
-SparseHistogram::SparseHistogram(const char* name) {
-  histogram_ = base::SparseHistogram::FactoryGet(
-      name, base::HistogramBase::kUmaTargetedHistogramFlag);
-}
-
-void SparseHistogram::Sample(base::HistogramBase::Sample sample) {
-  histogram_->Add(sample);
-}
-
-LinearHistogram::LinearHistogram(const char* name,
-                                 base::HistogramBase::Sample min,
-                                 base::HistogramBase::Sample max,
-                                 int32_t bucket_count)
-    : CustomCountHistogram(base::LinearHistogram::FactoryGet(
-          name,
-          min,
-          max,
-          bucket_count,
-          base::HistogramBase::kUmaTargetedHistogramFlag)) {}
-
 }  // namespace blink

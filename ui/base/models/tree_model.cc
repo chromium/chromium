@@ -4,12 +4,11 @@
 
 #include "ui/base/models/tree_model.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ui {
 
-void TreeModel::SetTitle(TreeModelNode* node,
-                         const base::string16& title) {
+void TreeModel::SetTitle(TreeModelNode* node, const std::u16string& title) {
   NOTREACHED();
 }
 

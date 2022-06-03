@@ -16,6 +16,12 @@ namespace ash {
 class SessionLimitNotificationControllerTest : public AshTestBase {
  public:
   SessionLimitNotificationControllerTest() = default;
+
+  SessionLimitNotificationControllerTest(
+      const SessionLimitNotificationControllerTest&) = delete;
+  SessionLimitNotificationControllerTest& operator=(
+      const SessionLimitNotificationControllerTest&) = delete;
+
   ~SessionLimitNotificationControllerTest() override = default;
 
  protected:
@@ -23,7 +29,7 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
 
   void UpdateSessionLengthLimitInMin(int mins) {
     Shell::Get()->session_controller()->SetSessionLengthLimit(
-        base::TimeDelta::FromMinutes(mins), base::TimeTicks::Now());
+        base::Minutes(mins), base::Time::Now());
   }
 
   message_center::Notification* GetNotification() {
@@ -39,8 +45,8 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
   }
 
   void ClearSessionLengthLimit() {
-    Shell::Get()->session_controller()->SetSessionLengthLimit(
-        base::TimeDelta(), base::TimeTicks());
+    Shell::Get()->session_controller()->SetSessionLengthLimit(base::TimeDelta(),
+                                                              base::Time());
   }
 
   void RemoveNotification() {
@@ -48,9 +54,6 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
         SessionLimitNotificationController::kNotificationId,
         false /* by_user */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerTest);
 };
 
 TEST_F(SessionLimitNotificationControllerTest, Notification) {
@@ -61,8 +64,7 @@ TEST_F(SessionLimitNotificationControllerTest, Notification) {
   UpdateSessionLengthLimitInMin(15);
   message_center::Notification* notification = GetNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
-  base::string16 first_title = notification->title();
+  std::u16string first_title = notification->title();
   // Should read the content.
   EXPECT_TRUE(notification->rich_notification_data()
                   .should_make_spoken_feedback_for_popup_updates);
@@ -71,7 +73,6 @@ TEST_F(SessionLimitNotificationControllerTest, Notification) {
   UpdateSessionLengthLimitInMin(10);
   notification = GetNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
   // The title should be updated.
   EXPECT_NE(first_title, notification->title());
   // Should NOT read, because just update the remaining time.
@@ -82,7 +83,6 @@ TEST_F(SessionLimitNotificationControllerTest, Notification) {
   UpdateSessionLengthLimitInMin(3);
   notification = GetNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
   // Should read the content again because the state has changed.
   EXPECT_TRUE(notification->rich_notification_data()
                   .should_make_spoken_feedback_for_popup_updates);
@@ -91,7 +91,6 @@ TEST_F(SessionLimitNotificationControllerTest, Notification) {
   UpdateSessionLengthLimitInMin(15);
   notification = GetNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
   // Should read again because an increase of the remaining time is noteworthy.
   EXPECT_TRUE(notification->rich_notification_data()
                   .should_make_spoken_feedback_for_popup_updates);
@@ -170,8 +169,10 @@ class SessionLimitNotificationControllerLoginTest
  public:
   SessionLimitNotificationControllerLoginTest() { set_start_session(false); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerLoginTest);
+  SessionLimitNotificationControllerLoginTest(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
+  SessionLimitNotificationControllerLoginTest& operator=(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
 };
 
 TEST_F(SessionLimitNotificationControllerLoginTest,

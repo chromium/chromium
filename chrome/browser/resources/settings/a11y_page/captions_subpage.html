@@ -1,33 +1,38 @@
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="../appearance_page/fonts_browser_proxy.html">
-<link rel="import" href="../controls/settings_dropdown_menu.html">
-<link rel="import" href="../controls/settings_slider.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-captions">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared">
+      .cr-row-no-top-gap {
+        margin-bottom: var(--cr-section-vertical-margin);
+        min-height: auto;
+      }
       .preview-box {
+        all: initial;
         align-items: center;
         background-image:
           url(chrome://theme/IDR_ACCESSIBILITY_CAPTIONS_PREVIEW_BACKGROUND);
         background-position: center;
         background-size: cover;
         display: flex;
-        height: 112px;
         justify-content: center;
-        margin: 0 var(--cr-section-padding) var(--cr-section-padding);
+        margin: var(--cr-section-padding);
+        margin-inline-start: var(--cr-section-indent-padding);
+        min-height: 112px;
+        padding: 20px;
         text-align: center;
       }
     </style>
-    <div class="settings-box first">
-      <h2 class="start">$i18n{captionsPreview}</h2>
+    <template is="dom-if" if="[[enableLiveCaption_]]">
+      <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+    </template>
+    <div class="cr-row">
+      <h2 class="start">$i18n{captionsPreferencesTitle}</h2>
+    </div>
+    <div class="cr-row first cr-row-no-top-gap">
+      <div class="start">$i18n{captionsPreferencesSubtitle}</div>
     </div>
     <div class="preview-box">
       <span style="
           font-size:[[prefs.accessibility.captions.text_size.value]];
-          font-family:[[prefs.accessibility.captions.text_font.value]];
+          font-family:[[getFontFamily_(
+              prefs.accessibility.captions.text_font.value)]];
           background-color: [[computeBackgroundColor_(
               prefs.accessibility.captions.background_opacity.value,
               prefs.accessibility.captions.background_color.value)]];
@@ -40,12 +45,9 @@
         $i18n{quickBrownFox}
       </span>
     </div>
-    <div class="settings-box continuation">
-      <h2 class="start">$i18n{captionsSettings}</h2>
-    </div>
     <div class="list-frame">
       <div class="list-item underbar first">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsTextSize}
         </div>
         <settings-dropdown-menu id="captionsTextSize"
@@ -55,7 +57,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item underbar">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsTextFont}
         </div>
         <settings-dropdown-menu id="captionsTextFont"
@@ -65,7 +67,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item underbar">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsTextColor}
         </div>
         <settings-dropdown-menu id="captionsTextColor"
@@ -75,7 +77,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item underbar">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsTextOpacity}
         </div>
         <settings-dropdown-menu id="captionsTextOpacity"
@@ -85,7 +87,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item underbar">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsTextShadow}
         </div>
         <settings-dropdown-menu id="captionsTextShadow"
@@ -95,7 +97,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item underbar">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsBackgroundColor}
         </div>
         <settings-dropdown-menu id="captionsBackgroundColor"
@@ -105,7 +107,7 @@
         </settings-dropdown-menu>
       </div>
       <div class="list-item">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start cr-padded-text" aria-hidden="true">
           $i18n{captionsBackgroundOpacity}
         </div>
         <settings-dropdown-menu id="captionsBackgroundOpacity"
@@ -115,6 +117,3 @@
         </settings-dropdown-menu>
       </div>
     </div>
-  </template>
-  <script src="captions_subpage.js"></script>
-</dom-module>

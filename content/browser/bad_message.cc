@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,9 +21,11 @@ namespace bad_message {
 namespace {
 
 void LogBadMessage(BadMessageReason reason) {
-  static auto* bad_message_reason = base::debug::AllocateCrashKeyString(
-      "bad_message_reason", base::debug::CrashKeySize::Size32);
+  static auto* const bad_message_reason = base::debug::AllocateCrashKeyString(
+      "bad_message_reason", base::debug::CrashKeySize::Size64);
 
+  TRACE_EVENT_INSTANT1("ipc,security", "content::ReceivedBadMessage",
+                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   LOG(ERROR) << "Terminating renderer for bad IPC message, reason " << reason;
   base::UmaHistogramSparse("Stability.BadMessageTerminated.Content", reason);
   base::debug::SetCrashKeyString(bad_message_reason,
@@ -57,8 +59,8 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
   base::debug::DumpWithoutCrashing();
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&ReceivedBadMessageOnUIThread,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ReceivedBadMessageOnUIThread,
                                   render_process_id, reason));
     return;
   }
@@ -70,15 +72,9 @@ void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason) {
   filter->ShutdownForBadMessage();
 }
 
-base::debug::CrashKeyString* GetMojoErrorCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "mojo-message-error", base::debug::CrashKeySize::Size256);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetRequestedSiteURLKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "requested_site_url", base::debug::CrashKeySize::Size64);
+base::debug::CrashKeyString* GetRequestedSiteInfoKey() {
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "requested_site_info", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 

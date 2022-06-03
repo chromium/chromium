@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../resources/common.js"></script>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<body>
+
+<!-- no style for reference -->
+<select multiple autofocus size=5>
+  <optgroup label="unstyled">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected selected id="hoverTarget">2nd selected (hovered)</option>
+  </optgroup>
+</select> <br>
+
+<!-- disabled select -->
+<select multiple disabled size=5>
+  <optgroup label="disabled select">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+<div style="background: black; display:inline-block">
+<select multiple disabled size=5>
+  <optgroup label="disabled select black-bg">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+</div>
+
+<!-- disabled option -->
+<select multiple>
+  <optgroup label="disabled option">
+    <option selected>first selected option</option>
+    <option disabled>disabled unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+
+<!-- disabled selected option -->
+<select multiple>
+    <optgroup label="disabled selected option">
+      <option disabled selected>disabled first selected option</option>
+      <option>unselected option</option>
+      <option selected>second selected option</option>
+    </optgroup>
+  </select> <br>
+
+
+<!-- border -->
+<select multiple style="border: 3px solid lime;">
+  <optgroup label="thick lime border">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+<select multiple style="border-radius: 6px;">
+  <optgroup label="border-radius: 6px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+
+<!-- rtl -->
+<select dir="rtl" multiple>
+  <optgroup label="right-to-left">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select> <br>
+
+<!-- background -->
+<select multiple style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);">
+  <optgroup label="gradient background">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+
+<select multiple style="background-color: blue;">
+  <optgroup label="background-color: blue">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+
+<select multiple style="background-color: blue;">
+  <option selected>selected option</option>
+  <option>unselected option</option>
+  <option>unselected option</option>
+</select> <br>
+
+<!-- shadow -->
+<select multiple style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);">
+  <optgroup label="box-shadow">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+
+<!-- size -->
+<select multiple style="width: 8px; height: 8px;">
+  <optgroup label="size: 8px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+<select multiple style="width: 16px; height: 16px;">
+  <optgroup label="size: 16px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup></select>
+<select multiple style="width: 24px; height: 24px;">
+  <optgroup label="size: 24px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+<select multiple style="width: 26px; height: 20px;">
+  <optgroup label="width: 26px; height: 20px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select>
+<select multiple style="width: 60px; height: 60px;">
+  <optgroup label="size: 60px">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select> <br>
+
+<!-- zoom -->
+<select multiple style="zoom: 1.5;">
+  <optgroup label="zoom: 1.5">
+    <option selected>first selected option</option>
+    <option>unselected option</option>
+    <option selected>second selected option</option>
+  </optgroup>
+</select><br>
+
+<script>
+  runAfterLayoutAndPaint(function () {
+    let hoverTarget = document.getElementById('hoverTarget');
+    hoverOverElement(hoverTarget);
+  }, true);
+</script>
+</body>

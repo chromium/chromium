@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_MANAGED_UI_H_
 #define CHROME_BROWSER_UI_MANAGED_UI_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -23,18 +27,34 @@ namespace chrome {
 // users.
 bool ShouldDisplayManagedUi(Profile* profile);
 
+#if !defined(OS_ANDROID)
 // The label for the App Menu item for Managed UI.
-base::string16 GetManagedUiMenuItemLabel(Profile* profile);
+std::u16string GetManagedUiMenuItemLabel(Profile* profile);
 
 // The label for the WebUI footnote for Managed UI indicating that the browser
 // is managed. These strings contain HTML for an <a> element.
-base::string16 GetManagedUiWebUILabel(Profile* profile);
+std::u16string GetManagedUiWebUILabel(Profile* profile);
+#endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The label for the WebUI footnote for Managed UI indicating that the device
 // is mananged. These strings contain HTML for an <a> element.
-base::string16 GetDeviceManagedUiWebUILabel(Profile* profile);
+std::u16string GetDeviceManagedUiWebUILabel();
 #endif
+
+// Returns nullopt if the device is not managed, the UTF8-encoded string
+// representation of the manager identity if available and an empty string if
+// the device is managed but the manager is not known.
+absl::optional<std::string> GetDeviceManagerIdentity();
+
+// Returns the UTF8-encoded string representation of the the entity that manages
+// `profile` or nullopt if unmanaged. For standard dasher domains, this will be
+// a domain name (ie foo.com). For FlexOrgs, this will be the email address of
+// the admin of the FlexOrg (ie user@foo.com). If DMServer does not provide this
+// information, this function defaults to the domain of the account.
+// TODO(crbug.com/1081272): Refactor localization hints for all strings that
+// depend on this function.
+absl::optional<std::string> GetAccountManagerIdentity(Profile* profile);
 
 }  // namespace chrome
 

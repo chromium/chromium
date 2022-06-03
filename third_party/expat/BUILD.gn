@@ -9,7 +9,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 # let's not pull it in twice.
 # Chromecast doesn't ship expat as a system library.
 # Libfuzzer and AFL need to build library from sources.
-if (is_linux && !is_chromecast && !use_fuzzing_engine) {
+if ((is_linux || is_chromeos) && !is_chromecast && !use_fuzzing_engine) {
   config("expat_config") {
     libs = [ "expat" ]
   }
@@ -18,12 +18,22 @@ if (is_linux && !is_chromecast && !use_fuzzing_engine) {
     public_configs = [ ":expat_config" ]
   }
 } else {
-  config("expat_config") {
+  config("expat_public_config") {
     include_dirs = [
       "src/expat/lib",
       "include/expat_config",
     ]
     defines = [ "XML_STATIC" ]
+  }
+  config("expat_internal_config") {
+    cflags = [
+      # xmlparse.c has some |if (0 && ...)| statements.
+      "-Wno-unreachable-code",
+
+      # Various files have fallthrough annotated with comments instead of
+      # attributes, and switching to attributes is difficult.
+      "-Wno-implicit-fallthrough",
+    ]
   }
 
   static_library("expat") {
@@ -34,12 +44,8 @@ if (is_linux && !is_chromecast && !use_fuzzing_engine) {
       "src/expat/lib/xmltok.c",
     ]
 
-    public_configs = [ ":expat_config" ]
-
-    # TODO(thakis): Remove this once clang no longer crashes when building
-    # libexpat with -Oz.
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_max" ]
+    public_configs = [ ":expat_public_config" ]
+    configs += [ ":expat_internal_config" ]
 
     defines = [ "_LIB" ]
     if (is_win) {
@@ -53,12 +59,8 @@ if (is_linux && !is_chromecast && !use_fuzzing_engine) {
 }
 
 fuzzer_test("expat_xml_parse_fuzzer") {
-  sources = [
-    "fuzz/expat_xml_parse_fuzzer.cc",
-  ]
-  deps = [
-    ":expat",
-  ]
+  sources = [ "fuzz/expat_xml_parse_fuzzer.cc" ]
+  deps = [ ":expat" ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
 }

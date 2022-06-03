@@ -2,85 +2,90 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /** @fileoverview A helper object used for Internet page. */
-cr.exportPath('settings');
-
-cr.define('settings', function() {
   /** @interface */
-  class InternetPageBrowserProxy {
-    /**
-     * Shows the Cellular activation UI.
-     * @param {string} guid
-     */
-    showCellularSetupUI(guid) {}
-
-    /**
-     * Shows configuration for external VPNs. Includes ThirdParty (extension
-     * configured) VPNs, and Arc VPNs.
-     * @param {string} guid
-     */
-    configureThirdPartyVpn(guid) {}
-
-    /**
-     * Sends an add VPN request to the external VPN provider (ThirdParty VPN
-     * extension or Arc VPN provider app).
-     * @param {string} appId
-     */
-    addThirdPartyVpn(appId) {}
-
-    /**
-     * Requests that Chrome send the list of devices whose "Google Play
-     * Services" notifications are disabled (these notifications must be enabled
-     * to utilize Instant Tethering). The names will be provided via
-     * setGmsCoreNotificationsDisabledDeviceNamesCallback().
-     */
-    requestGmsCoreNotificationsDisabledDeviceNames() {}
-
-    /**
-     * Sets the callback to be used to receive the list of devices whose "Google
-     * Play Services" notifications are disabled. |callback| is invoked with an
-     * array of the names of these devices; note that if no devices have this
-     * property, the provided list of device names is empty.
-     * @param {function(!Array<string>):void} callback
-     */
-    setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
-  }
+export class InternetPageBrowserProxy {
+  /**
+   * Shows the account details page of a cellular network.
+   * @param {string} guid
+   */
+  showCarrierAccountDetail(guid) {}
 
   /**
-   * @implements {settings.InternetPageBrowserProxy}
+   * Shows the Cellular activation UI.
+   * @param {string} guid
    */
-  class InternetPageBrowserProxyImpl {
-    /** @override */
-    showCellularSetupUI(guid) {
-      chrome.send('showCellularSetupUI', [guid]);
-    }
+  showCellularSetupUI(guid) {}
 
-    /** @override */
-    configureThirdPartyVpn(guid) {
-      chrome.send('configureThirdPartyVpn', [guid]);
-    }
+  /**
+   * Shows configuration for external VPNs. Includes ThirdParty (extension
+   * configured) VPNs, and Arc VPNs.
+   * @param {string} guid
+   */
+  configureThirdPartyVpn(guid) {}
 
-    /** @override */
-    addThirdPartyVpn(appId) {
-      chrome.send('addThirdPartyVpn', [appId]);
-    }
+  /**
+   * Sends an add VPN request to the external VPN provider (ThirdParty VPN
+   * extension or Arc VPN provider app).
+   * @param {string} appId
+   */
+  addThirdPartyVpn(appId) {}
 
-    /** @override */
-    requestGmsCoreNotificationsDisabledDeviceNames() {
-      chrome.send('requestGmsCoreNotificationsDisabledDeviceNames');
-    }
+  /**
+   * Requests that Chrome send the list of devices whose "Google Play
+   * Services" notifications are disabled (these notifications must be enabled
+   * to utilize Instant Tethering). The names will be provided via
+   * setGmsCoreNotificationsDisabledDeviceNamesCallback().
+   */
+  requestGmsCoreNotificationsDisabledDeviceNames() {}
 
-    /** @override */
-    setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {
-      cr.addWebUIListener(
-          'sendGmsCoreNotificationsDisabledDeviceNames', callback);
-    }
+  /**
+   * Sets the callback to be used to receive the list of devices whose "Google
+   * Play Services" notifications are disabled. |callback| is invoked with an
+   * array of the names of these devices; note that if no devices have this
+   * property, the provided list of device names is empty.
+   * @param {function(!Array<string>):void} callback
+   */
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
+}
+
+/**
+ * @implements {InternetPageBrowserProxy}
+ */
+export class InternetPageBrowserProxyImpl {
+  /** @override */
+  showCarrierAccountDetail(guid) {
+    chrome.send('showCarrierAccountDetail', [guid]);
   }
 
-  cr.addSingletonGetter(InternetPageBrowserProxyImpl);
+  /** @override */
+  showCellularSetupUI(guid) {
+    chrome.send('showCellularSetupUI', [guid]);
+  }
 
-  return {
-    InternetPageBrowserProxy: InternetPageBrowserProxy,
-    InternetPageBrowserProxyImpl: InternetPageBrowserProxyImpl,
-  };
-});
+  /** @override */
+  configureThirdPartyVpn(guid) {
+    chrome.send('configureThirdPartyVpn', [guid]);
+  }
+
+  /** @override */
+  addThirdPartyVpn(appId) {
+    chrome.send('addThirdPartyVpn', [appId]);
+  }
+
+  /** @override */
+  requestGmsCoreNotificationsDisabledDeviceNames() {
+    chrome.send('requestGmsCoreNotificationsDisabledDeviceNames');
+  }
+
+  /** @override */
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {
+    addWebUIListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
+  }
+}
+
+addSingletonGetter(InternetPageBrowserProxyImpl);

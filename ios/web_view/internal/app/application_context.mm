@@ -15,11 +15,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#include "ios/web_view/cwv_web_view_buildflags.h"
 #include "ios/web_view/internal/app/web_view_io_thread.h"
 #import "ios/web_view/internal/cwv_flags_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,10 +30,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-
-#if BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
-#include "components/signin/public/identity_manager/identity_manager.h"
-#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,9 +98,7 @@ PrefService* ApplicationContext::GetLocalState() {
     scoped_refptr<PrefRegistrySimple> pref_registry(new PrefRegistrySimple);
     flags_ui::PrefServiceFlagsStorage::RegisterPrefs(pref_registry.get());
     PrefProxyConfigTrackerImpl::RegisterPrefs(pref_registry.get());
-#if BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
     signin::IdentityManager::RegisterLocalStatePrefs(pref_registry.get());
-#endif  // BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
 
     base::FilePath local_state_path;
     base::PathService::Get(base::DIR_APP_DATA, &local_state_path);

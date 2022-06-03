@@ -16,6 +16,7 @@
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
+#include "base/notreached.h"
 
 namespace crashpad {
 
@@ -48,6 +49,7 @@ ExceptionPorts::ExceptionPorts(TargetType target_type, mach_port_t target_port)
     case kTargetTypeHost:
       get_exception_ports_ = host_get_exception_ports;
       set_exception_ports_ = host_set_exception_ports;
+      swap_exception_ports_ = host_swap_exception_ports;
       target_name_ = "host";
       if (target_port_ == HOST_NULL) {
         target_port_ = mach_host_self();
@@ -58,6 +60,7 @@ ExceptionPorts::ExceptionPorts(TargetType target_type, mach_port_t target_port)
     case kTargetTypeTask:
       get_exception_ports_ = task_get_exception_ports;
       set_exception_ports_ = task_set_exception_ports;
+      swap_exception_ports_ = task_swap_exception_ports;
       target_name_ = "task";
       if (target_port_ == TASK_NULL) {
         target_port_ = mach_task_self();
@@ -68,6 +71,7 @@ ExceptionPorts::ExceptionPorts(TargetType target_type, mach_port_t target_port)
     case kTargetTypeThread:
       get_exception_ports_ = thread_get_exception_ports;
       set_exception_ports_ = thread_set_exception_ports;
+      swap_exception_ports_ = thread_swap_exception_ports;
       target_name_ = "thread";
       if (target_port_ == THREAD_NULL) {
         target_port_ = mach_thread_self();
@@ -143,6 +147,60 @@ bool ExceptionPorts::SetExceptionPort(exception_mask_t mask,
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << TargetTypeName() << "_set_exception_ports";
     return false;
+  }
+
+  return true;
+}
+
+bool ExceptionPorts::SwapExceptionPorts(
+    exception_mask_t mask,
+    exception_handler_t new_port,
+    exception_behavior_t new_behavior,
+    thread_state_flavor_t new_flavor,
+    ExceptionHandlerVector* old_handlers) const {
+  // <mach/mach_types.defs> says that these arrays have room for 32 elements,
+  // despite EXC_TYPES_COUNT only being as low as 11 (in the 10.6 SDK), and
+  // later operating system versions have defined more exception types. The
+  // generated task_swap_exception_ports() in taskUser.c expects there to be
+  // room for 32.
+  constexpr int kMaxPorts = 32;
+
+  // task_swap_exception_ports() doesn’t actually use the initial value of
+  // handler_count, but 10.15.1
+  // xnu-6153.41.3/osfmk/man/task_get_exception_ports.html says it does. Humor
+  // the documentation.
+  mach_msg_type_number_t old_handler_count = kMaxPorts;
+
+  exception_mask_t old_masks[kMaxPorts];
+  exception_handler_t old_ports[kMaxPorts];
+  exception_behavior_t old_behaviors[kMaxPorts];
+  thread_state_flavor_t old_flavors[kMaxPorts];
+
+  kern_return_t kr = swap_exception_ports_(target_port_,
+                                           mask,
+                                           new_port,
+                                           new_behavior,
+                                           new_flavor,
+                                           old_masks,
+                                           &old_handler_count,
+                                           old_ports,
+                                           old_behaviors,
+                                           old_flavors);
+  if (kr != KERN_SUCCESS) {
+    MACH_LOG(ERROR, kr) << TargetTypeName() << "_swap_exception_ports";
+    return false;
+  }
+
+  old_handlers->clear();
+  for (mach_msg_type_number_t index = 0; index < old_handler_count; ++index) {
+    if (old_ports[index] != MACH_PORT_NULL) {
+      ExceptionHandler old_handler;
+      old_handler.mask = old_masks[index];
+      old_handler.port = old_ports[index];
+      old_handler.behavior = old_behaviors[index];
+      old_handler.flavor = old_flavors[index];
+      old_handlers->push_back(old_handler);
+    }
   }
 
   return true;

@@ -11,6 +11,7 @@ source_set("bluetooth") {
   deps = [
     "//base",
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp:cpp",
     "//device/bluetooth/strings",
     "//services/device/public/mojom",
     "//ui/base",
@@ -20,9 +21,7 @@ source_set("bluetooth") {
 source_set("bluetooth_tests") {
   testonly = true
 
-  sources = [
-    "bluetooth_utils_unittest.cc",
-  ]
+  sources = [ "bluetooth_utils_unittest.cc" ]
 
   deps = [
     ":bluetooth",

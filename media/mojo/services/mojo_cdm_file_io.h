@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -39,7 +39,9 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   // management.
   MojoCdmFileIO(Delegate* delegate,
                 cdm::FileIOClient* client,
-                mojom::CdmStorage* cdm_storage);
+                mojo::Remote<mojom::CdmStorage> cdm_storage);
+  MojoCdmFileIO(const MojoCdmFileIO&) = delete;
+  MojoCdmFileIO operator=(const MojoCdmFileIO&) = delete;
   ~MojoCdmFileIO() override;
 
   // cdm::FileIO implementation.
@@ -93,7 +95,7 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   // Results of cdm::FileIO operations are sent asynchronously via |client_|.
   cdm::FileIOClient* client_ = nullptr;
 
-  mojom::CdmStorage* cdm_storage_ = nullptr;
+  mojo::Remote<mojom::CdmStorage> cdm_storage_;
 
   // Keep track of the file being used. As this class can only be used for
   // accessing a single file, once |file_name_| is set it shouldn't be changed.
@@ -110,8 +112,6 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MojoCdmFileIO> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmFileIO);
 };
 
 }  // namespace media

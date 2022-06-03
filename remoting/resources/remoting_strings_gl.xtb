@@ -3,315 +3,174 @@
 <translationbundle lang="gl">
 <translation id="1002108253973310084">Detectouse unha versión de protocolo incompatible. Asegúrate de que tes instalada a versión máis recente do software en ambos ordenadores e téntao de novo.</translation>
 <translation id="1008557486741366299">Agora non</translation>
-<translation id="1050693411695664090">Mala</translation>
-<translation id="1152528166145813711">Seleccionar...</translation>
-<translation id="1199593201721843963">Desactivar conexións remotas</translation>
 <translation id="1201402288615127009">Seguinte</translation>
-<translation id="1291443878853470558">Debes activar as conexións remotas se queres utilizar Chromoting para acceder a este ordenador.</translation>
 <translation id="1297009705180977556">Produciuse un erro ao conectarse a <ph name="HOSTNAME" /></translation>
-<translation id="1324095856329524885">(esta función aínda non está dispoñible no teu ordenador)</translation>
-<translation id="1342297293546459414">Permite ver e controlar un ordenador compartido.</translation>
-<translation id="1389790901665088353">Descargar instalador do host do escritorio remoto de Chrome</translation>
 <translation id="1450760146488584666">O obxecto solicitado non existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
 <translation id="1520828917794284345">Redimensionar o escritorio para axustalo</translation>
-<translation id="154040539590487450">Erro ao iniciar o servizo de acceso remoto.</translation>
 <translation id="1546934824884762070">Produciuse un erro inesperado. Informa sobre el aos programadores.</translation>
-<translation id="1624185583382384493">O Escritorio remoto de Chrome xa está dispoñible na Web. Proba a nosa <ph name="LINK_BEGIN" />aplicación web<ph name="LINK_END" />: é rápida, gratuíta e conta con aínda máis funcións, como a compatibilidade mellorada co uso de varios monitores.</translation>
-<translation id="1643640058022401035">Se abandonas esta páxina finalizarás a túa sesión de Chromoting.</translation>
-<translation id="1654128982815600832">Activando conexións remotas para este ordenador...</translation>
 <translation id="1697532407822776718">Listo!</translation>
-<translation id="170207782578677537">Non se puido rexistrar este ordenador.</translation>
-<translation id="174018511426417793">Non tes ningún ordenador rexistrado. Para permitir as conexións remotas a un ordenador, instala o Escritorio remoto de Chrome e fai clic en "<ph name="BUTTON_NAME" />".</translation>
 <translation id="1742469581923031760">Conectando...</translation>
-<translation id="1770394049404108959">Non podo abrir a aplicación.</translation>
+<translation id="177040763384871009">Para que se abran no navegador do cliente as ligazóns nas que se faga clic no dispositivo remoto, debes cambiar o navegador web do sistema a "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP de canle de cliente: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
-<translation id="1779766957982586368">Pechar ventá</translation>
-<translation id="1841799852846221389">Desactivando conexións remotas para este ordenador...</translation>
 <translation id="1897488610212723051">Eliminar</translation>
-<translation id="195619862187186579">Deseños de teclado</translation>
-<translation id="1996161829609978754">Chrome está descargando o instalador do host de Chromoting. Unha vez completada a descarga, executa o instalador antes de continuar.</translation>
 <translation id="2009755455353575666">Erro de conexión</translation>
-<translation id="2013884659108657024">Chrome está descargando o instalador do host de escritorio remoto de Chrome. Unha vez completada a descarga, executa o instalador antes de continuar.</translation>
-<translation id="2013996867038862849">Elimináronse todos os clientes sincronizados.</translation>
 <translation id="2038229918502634450">Estase reiniciando o host para ter en conta un cambio de política.</translation>
-<translation id="2046651113449445291">Sincronizáronse os seguintes clientes con este ordenador e poden conectarse sen utilizar un PIN. Podes revogar este permiso cando queiras, de forma individual ou para todos os clientes.</translation>
 <translation id="2078880767960296260">Proceso de host</translation>
 <translation id="20876857123010370">Modo panel táctil</translation>
-<translation id="2089514346391228378">Activáronse as conexións remotas para este ordenador.</translation>
 <translation id="2198363917176605566">Se queres utilizar <ph name="PRODUCT_NAME" />, tes que conceder o permiso Gravación de pantalla para que os contidos da pantalla deste Mac se poidan enviar ao equipo remoto.
 
 Para conceder este permiso, fai clic no botón <ph name="BUTTON_NAME" />, situado abaixo, e abrirase o panel de preferencias Gravación de pantalla. Despois, marca a caixa situada xunto a <ph name="SERVICE_SCRIPT_NAME" />.
 
 Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está seleccionada, desmárcaa e márcaa de novo.</translation>
-<translation id="2208514473086078157">A configuración da política non permite compartir este ordenador como un servidor do escritorio remoto de Chrome. Ponte en contacto co administrador do sistema para obter asistencia.</translation>
-<translation id="2220529011494928058">Informar dun problema</translation>
-<translation id="2221097377466213233">Usar a tecla Ctrl da dereita para acceder á tecla de Windows (⌘ en Mac)</translation>
-<translation id="2235518894410572517">Comparte este ordenador para que outro usuario poida velo e controlalo.</translation>
-<translation id="2246783206985865117">Esta configuración está xestionada pola política do teu dominio.</translation>
-<translation id="2256115617011615191">Reiniciar agora</translation>
 <translation id="225614027745146050">Dámosche a benvida</translation>
-<translation id="228809120910082333">Confirma a túa conta e PIN a continuación para permitir o acceso a través de Chromoting.</translation>
-<translation id="2314101195544969792">A túa sesión de <ph name="APPLICATION_NAME" /> estivo inactiva durante un tempo e desconectarase en breve.</translation>
-<translation id="2317666076142640974">Bota unha ollada á nova <ph name="LINK_BEGIN" />aplicación web Escritorio remoto de Chrome<ph name="LINK_END" />. Gustaríanos saber a túa opinión.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
-<translation id="2353140552984634198">Podes acceder a este ordenador de forma segura mediante Chromoting.</translation>
+<translation id="2329392777730037872">Non se puido abrir <ph name="URL" /> no cliente.</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Reservados todos os dereitos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Non se pode conectar co host. A causa é probablemente á configuración da rede que estás usando.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Última conexión en liña <ph name="RELATIVE_TIMESTAMP" />.</translation>
-<translation id="2405928220797050937">Esta aplicación xa non é compatible. Para asegurarte de dispoñer das funcións e actualizacións de seguranza máis recentes, utiliza a <ph name="LINK_BEGIN" />aplicación web Escritorio remoto de Chrome<ph name="LINK_END" />.</translation>
-<translation id="2499160551253595098">Axúdanos a mellorar a aplicación Escritorio remoto de Chrome permitíndonos recompilar estatísticas de uso e informes de erros.</translation>
 <translation id="2504109125669302160">Concede o permiso Accesibilidade a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
-<translation id="2512228156274966424">NOTA: Para garantir que todos os atallos do teclado estean dispoñibles, podes configurar o escritorio remoto de Chrome en "Abrir como unha ventá".</translation>
 <translation id="2540992418118313681">Queres compartir este ordenador para que outro usuario poida acceder a el e controlalo?</translation>
 <translation id="2579271889603567289">O host fallou ou non puido iniciarse.</translation>
 <translation id="2599300881200251572">Este servizo permite conexións entrantes de clientes do escritorio remoto de Chrome.</translation>
 <translation id="2647232381348739934">Servizo de Chromoting</translation>
 <translation id="2676780859508944670">En proceso...</translation>
 <translation id="2699970397166997657">Chromoting</translation>
-<translation id="2747641796667576127">As actualizacións de software adoitan realizarse automaticamente, pero poden fallar nalgúns casos pouco frecuentes. A actualización do software non debe levar máis duns cantos minutos e pode realizarse mentres estás conectado ao ordenador de forma remota.</translation>
 <translation id="2758123043070977469">Produciuse un erro na autenticación. Inicia sesión de novo.</translation>
 <translation id="2803375539583399270">Introduce o PIN</translation>
-<translation id="2841013758207633010">Hora</translation>
-<translation id="2851754573186462851">Emisión da aplicación de Chromium</translation>
-<translation id="2888969873284818612">Produciuse un erro na rede. Reiniciaremos a aplicación cando o dispositivo estea en liña de novo.</translation>
-<translation id="2891243864890517178">Para Mac (OS X Yosemite 10.10 e versións superiores)</translation>
-<translation id="2894654864775534701">Este ordenador compártese actualmente nunha conta diferente.</translation>
 <translation id="2919669478609886916">Actualmente estás compartindo este equipo con outro usuario. Queres continuar compartíndoo?</translation>
-<translation id="2921543551052660690">Anteriormente iniciaches sesión como <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Para acceder aos teus ordenadores nesa conta, <ph name="LINK_BEGIN" />inicia sesión en Chromium<ph name="LINK_END" /> con esa conta e volve instalar Chromoting.</translation>
-<translation id="2926340305933667314">Non se puido desactivar o acceso remoto a este ordenador. Téntao de novo máis tarde.</translation>
-<translation id="2930135165929238380">Faltan algúns compoñentes obrigatorios. Accede a chrome://plugins e asegúrate de que Cliente nativo estea activado.</translation>
 <translation id="2939145106548231838">Autenticar en host</translation>
-<translation id="3020807351229499221">Non se puido actualizar o PIN. Téntao de novo máis tarde.</translation>
-<translation id="3025388528294795783">Para axudarnos a resolver a cuestión, indícanos cal é o problema:</translation>
 <translation id="3027681561976217984">Modo táctil</translation>
 <translation id="3106379468611574572">O ordenador remoto non responde a solicitudes de conexión. Comproba que estea en liña e téntao de novo.</translation>
-<translation id="310979712355504754">Eliminar todo</translation>
 <translation id="3150823315463303127">O host non puido ler a política.</translation>
 <translation id="3171922709365450819">Este dispositivo require autenticación de terceiros, polo que non é compatible con este cliente.</translation>
 <translation id="3197730452537982411">Escritorio remoto</translation>
 <translation id="324272851072175193">Enviar por correo electrónico estas instrucións</translation>
-<translation id="3258789396564295715">Podes acceder de forma segura a este ordenador co escritorio remoto de Chrome.</translation>
-<translation id="3286521253923406898">Controlador do host de Chromoting</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> quere facer cambios.</translation>
-<translation id="332624996707057614">Editar o nome do ordenador</translation>
 <translation id="3339299787263251426">Accede ao teu ordenador de forma segura a través de Internet</translation>
-<translation id="3360306038446926262">Ventás</translation>
-<translation id="3362124771485993931">Volve escribir o PIN</translation>
-<translation id="337167041784729019">Mostrar estatísticas</translation>
 <translation id="3385242214819933234">Propietario do host non válido.</translation>
-<translation id="3403830762023901068">A configuración da política non permite compartir este ordenador como host de Chromoting. Ponte en contacto co administrador do teu sistema para obter asistencia.</translation>
 <translation id="3423542133075182604">Proceso remoto da clave de seguranza</translation>
 <translation id="3581045510967524389">Non se puido conectar coa rede. Comproba que o dispositivo estea conectado.</translation>
 <translation id="3596628256176442606">Este servizo permite conexións entrantes de clientes de Chromoting.</translation>
-<translation id="3606997049964069799">Non iniciaches sesión en Chromium. Inicia sesión e téntao de novo.</translation>
-<translation id="3649256019230929621">Minimizar ventá</translation>
 <translation id="369442766917958684">Sen conexión.</translation>
 <translation id="3695446226812920698">Máis información</translation>
-<translation id="3718805989288361841">Hai un erro na configuración da política para o Escritorio remoto de Chrome. Contacta co administrador do sistema para obter asistencia.</translation>
 <translation id="3776024066357219166">Finalizou a túa sesión de escritorio remoto de Chrome.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
-<translation id="3884839335308961732">Confirma a túa conta e PIN a continuación para permitirlle o acceso á aplicación Escritorio remoto de Chrome.</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3905196214175737742">O dominio do propietario do host non é válido.</translation>
-<translation id="3908017899227008678">Reducir para axustar</translation>
 <translation id="3931191050278863510">Detívose o host.</translation>
-<translation id="3933246213702324812">Chromoting de <ph name="HOSTNAME" /> está obsoleto e precisa actualizarse.</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
-<translation id="3989511127559254552">Para continuar, primeiro debes conceder permisos de acceso ampliados ao teu ordenador. Só tes que realizar esta acción unha vez.</translation>
-<translation id="4006787130661126000">Debes activar as conexións remotas se queres utilizar o escritorio remoto de Chrome para acceder a este ordenador.</translation>
 <translation id="405887016757208221">Produciuse un erro ao inicializar a sesión no ordenador remoto. Se o problema persiste, proba a configurar de novo o host.</translation>
 <translation id="4060747889721220580">Descargar ficheiro</translation>
-<translation id="4068946408131579958">Todas as conexións</translation>
-<translation id="409800995205263688">NOTA: A configuración da política só permite conexións entre ordenadores situados na túa rede.</translation>
 <translation id="4126409073460786861">Tras completar a configuración, actualiza esta páxina. Despois, para acceder ao ordenador só terás que escoller o dispositivo e introducir o PIN</translation>
 <translation id="4145029455188493639">Iniciaches sesión como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Faltan algúns compoñentes obrigatorios. Asegúrate de ter instalada a versión máis recente do software e téntao de novo.</translation>
-<translation id="4156740505453712750">Debes seleccionar un PIN de <ph name="BOLD_START" /> polo menos seis díxitos<ph name="BOLD_END" /> para protexer o acceso a este ordenador. Solicitarase ese PIN cada vez que se estableza conexión con ese ordenador desde outra localización.</translation>
-<translation id="4169432154993690151">Para escoller unha foto do perfil, permite que o Escritorio remoto de Chrome acceda á cámara</translation>
 <translation id="4176825807642096119">Código de acceso</translation>
-<translation id="4207623512727273241">Executa o instalador antes de continuar.</translation>
 <translation id="4227991223508142681">Utilidade de abastecemento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host de Chromoting</translation>
-<translation id="4277463233460010382">Este ordenador está configurado para permitir que un ou máis clientes se conecten sen necesidade de inserir un PIN.</translation>
+<translation id="4257751272692708833">Aplicación de envío de URL de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">O código de acceso non é válido. Téntao de novo.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
-<translation id="4361728918881830843">Para permitir as conexións remotas a un ordenador diferente, instala o escritorio remoto de Chrome nel e fai clic en “<ph name="BUTTON_NAME" />”.</translation>
-<translation id="4394049700291259645">Desactivar</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
-<translation id="4430435636878359009">Desactívanse as conexións remotas a este ordenador</translation>
-<translation id="4430915108080446161">Xerando código de acceso...</translation>
 <translation id="443560535555262820">Abrir preferencias de accesibilidade</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
-<translation id="4472575034687746823">Comezar</translation>
-<translation id="4481276415609939789">Non tes ningún ordenador rexistrado. Para permitir as conexións remotas a un ordenador, instala Chromoting nel e fai clic en “<ph name="BUTTON_NAME" />”.</translation>
+<translation id="4512952200932940229">Copyright 2021, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
-<translation id="4517233780764084060">NOTA: Para garantir que todos os atallos do teclado estean dispoñibles, podes configurar Chromoting en "Abrir como ventá".</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4572065712096155137">Acceso</translation>
-<translation id="4592037108270173918">Pódense aplicar tarifas de datos ao conectarse a un dispositivo a través dunha rede de telefonía móbil. Queres continuar?</translation>
-<translation id="4619978527973181021">Aceptar e instalar</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non se configurou correctamente. Escolle un navegador web predeterminado distinto e, despois, activa o reenvío de URL de novo.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
-<translation id="4703302905453407178">Un compoñente obrigatorio deixou de funcionar. Informa deste problema aos programadores.</translation>
 <translation id="4703799847237267011">A túa sesión de Chromoting finalizou.</translation>
-<translation id="4736223761657662401">Historial de conexións</translation>
 <translation id="4741792197137897469">Non se puido efectuar a autenticación. Volve iniciar sesión en Chrome.</translation>
-<translation id="477305884757156764">A aplicación é demasiado lenta.</translation>
 <translation id="4784508858340177375">Produciuse un erro no servidor X ou fallou ao iniciarse.</translation>
-<translation id="4795786176190567663">Non tes permiso para realizar esa acción.</translation>
 <translation id="4798680868612952294">Opcións do rato</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4808503597364150972">Insire o PIN de <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Enviar Imp Pant</translation>
-<translation id="4913529628896049296">á espera da conexión...</translation>
-<translation id="4918086044614829423">Aceptar</translation>
-<translation id="492843737083352574">Estou tendo problemas co meu teclado ou rato.</translation>
-<translation id="4973800994433240357">Ao descargar o instalador do host de Chromoting, aceptas as <ph name="LINK_BEGIN" />Condicións de servizo<ph name="LINK_END" /> de Google.</translation>
 <translation id="4974476491460646149">Pechouse a conexión con <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Primeiro debes configurar o teu ordenador para o acceso remoto</translation>
+<translation id="4987330545941822761">Escritorio remoto de Chrome non puido determinar o navegador para abrir os URL localmente. Escólleo na lista que aparece debaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (sen conexión)</translation>
-<translation id="5070121137485264635">O servidor remoto require a túa autenticación nun sitio web de terceiros. Para continuar, debes conceder ao escritorio remoto de Chrome permisos adicionais para acceder ao seguinte enderezo:</translation>
-<translation id="507204348399810022">Estás seguro de que queres desactivar as conexións remotas a <ph name="HOSTNAME" />?</translation>
-<translation id="5081343395220691640">Produciuse un erro ao conectar co servidor: <ph name="ERROR" /></translation>
-<translation id="5156271271724754543">Introduce o mesmo PIN nas dúas caixas.</translation>
+<translation id="507204348399810022">Seguro que queres desactivar as conexións remotas a <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">O ID de host non é válido.</translation>
-<translation id="518094545883702183">Esta información só se utilizará para diagnosticar o problema sobre o que estás informando, só estará dispoñible para as persoas que investiguen o teu informe e só se conservará durante 30 días como máximo.</translation>
 <translation id="5204575267916639804">Preguntas frecuentes</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
-<translation id="5254120496627797685">Se deixas esta páxina finalizarás a túa sesión do Escritorio remoto de Chrome.</translation>
 <translation id="5308380583665731573">Conectar</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="533625276787323658">Non hai ningún ordenador ao que conectarse</translation>
-<translation id="5363265567587775042">Solicita ao usuario a cuxo ordenador queres acceder que faga clic en "<ph name="SHARE" />" e que che indique o código de acceso.</translation>
-<translation id="5379087427956679853">A aplicación Escritorio remoto de Chrome permíteche compartir de forma segura o teu ordenador a través da web. Os dous usuarios deben executar a aplicación Escritorio remoto de Chrome, que se está dispoñible en <ph name="URL" />.</translation>
 <translation id="5397086374758643919">Desinstalador do host de escritorio remoto de Chrome</translation>
-<translation id="5419185025274123272">Non se puido restablecer a aplicación. Aínda podes enviar un informe de erros.</translation>
 <translation id="5419418238395129586">Última conexión: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Desactivouse o host.</translation>
-<translation id="5510035215749041527">Desconectar agora</translation>
-<translation id="5593560073513909978">O servizo non está dispoñible temporalmente. Téntao de novo máis tarde.</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5619148062500147964">Con este ordenador</translation>
-<translation id="5625493749705183369">Accede a outros ordenadores ou permite a outro usuario acceder ao teu ordenador de forma segura a través de Internet.</translation>
-<translation id="5702987232842159181">Conectado:</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">O teu escritorio compártese actualmente con <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Iniciaches sesión como <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="5773590752998175013">Data de sincronización</translation>
 <translation id="579702532610384533">Volver conectar</translation>
 <translation id="5810269635982033450">A pantalla actúa como un panel táctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acceso para ver a túa pantalla e controlar o teclado e o rato. Preme <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> se non esperabas recibir esta solicitude. En caso contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir a conexión unha vez estea todo listo.</translation>
 <translation id="5823658491130719298">No ordenador ao que queres acceder de forma remota, abre Chrome e visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcións de visualización</translation>
-<translation id="5843054235973879827">Por que é segura a operación?</translation>
-<translation id="5859141382851488196">Nova ventá...</translation>
-<translation id="6011539954251327702">Chromoting permíteche compartir de forma segura o teu ordenador a través da web. Os dous usuarios deberán executar a aplicación Chromoting, que está dispoñible en <ph name="URL" />.</translation>
 <translation id="6033507038939587647">Opcións do teclado</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6062854958530969723">Produciuse un erro ao iniciar o host.</translation>
-<translation id="6091564239975589852">Enviar teclas</translation>
 <translation id="6099500228377758828">Servizo de escritorio remoto de Chrome</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6167788864044230298">Emisión da aplicación de Chrome</translation>
-<translation id="6173536234069435147">Non podo abrir os meus ficheiros de Google Drive.</translation>
 <translation id="6178645564515549384">Host de mensaxaría nativa para asistencia remota</translation>
 <translation id="618120821413932081">Actualiza a resolución remota para que coincida coa ventá</translation>
-<translation id="6193698048504518729">Conectar a <ph name="HOSTNAME" /></translation>
-<translation id="6198252989419008588">Cambiar PIN</translation>
-<translation id="6204583485351780592"><ph name="HOSTNAME" /> (caducado)</translation>
-<translation id="6221358653751391898">Non iniciaches sesión en Chrome. Inicia sesión e téntao de novo.</translation>
 <translation id="6223301979382383752">Abrir panel de preferencias Gravación de pantalla</translation>
-<translation id="6227369581881558336">O Escritorio remoto de Chrome está dispoñible na Web e conta con funcións novas, como a transferencia de ficheiros. Proba a nosa <ph name="LINK_BEGIN" />aplicación web<ph name="LINK_END" />.</translation>
 <translation id="6284412385303060032">Pechouse o host que se executa na pantalla de inicio de sesión da consola para admitir o modo cortina e cambiouse a un host que se executa nunha sesión específica do usuario.</translation>
-<translation id="629730747756840877">Conta</translation>
-<translation id="6304318647555713317">Cliente</translation>
-<translation id="6381670701864002291">Outra categoría.</translation>
-<translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
-<translation id="6411861157501911556">Se queres utilizar <ph name="PRODUCT_NAME" />, tes que conceder o permiso Accesibilidade para que este Mac poida recibir a entrada do equipo remoto.
-
-Para conceder este permiso, fai clic no botón <ph name="BUTTON_NAME" />, situado abaixo, para abrir o panel de preferencias Accesibilidade. Despois, marca a caixa situada xunto a <ph name="SERVICE_SCRIPT_NAME" />.
-
-Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está seleccionada, desmárcaa e márcaa de novo.</translation>
-<translation id="6441316101718669559">A integración co escritorio non é compatible con esta plataforma. Podes seguir utilizando a aplicación, pero a experiencia do usuario será de calidade inferior.</translation>
-<translation id="652218476070540101">Estase actualizando o PIN deste ordenador...</translation>
-<translation id="6527303717912515753">Compartir</translation>
-<translation id="6541219117979389420">É posible que os rexistros da aplicación conteñan información privada, incluída a túa identidade (enderezo de correo electrónico) e os nomes e as propiedades dos ficheiros e dos cartafoles de Google Drive.</translation>
 <translation id="6542902059648396432">Informar dun problema...</translation>
-<translation id="6550675742724504774">Opcións</translation>
-<translation id="6570205395680337606">Restablece a aplicación. Perderás os traballos que non teñas gardados.</translation>
 <translation id="6583902294974160967">Asistencia</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
 <translation id="6654753848497929428">Compartir</translation>
-<translation id="6668065415969892472">Actualizouse o teu PIN.</translation>
-<translation id="6681800064886881394">Copyright 2013 Google Inc. Reservados todos os dereitos.</translation>
-<translation id="6705482892455291412">Cando se introduza o código, pediráseche que aceptes a conexión e iniciarase a sesión de uso compartido.</translation>
-<translation id="6746493157771801606">Borrar o historial</translation>
-<translation id="6748108480210050150">De</translation>
 <translation id="677755392401385740">Host iniciado para o usuario: <ph name="HOST_USERNAME" />.</translation>
-<translation id="6865175692670882333">Ver/editar</translation>
-<translation id="6913710942997637770">Para escoller unha foto do perfil, permite que o Escritorio remoto de Chrome acceda ás fotos</translation>
-<translation id="6930242544192836755">Duración</translation>
+<translation id="6902524959760471898">Aplicación de asistencia para abrir os URL no cliente de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado.</translation>
-<translation id="6944854424004126054">Restaurar ventá</translation>
-<translation id="6948905685698011662">O Escritorio remoto de Chrome xa está dispoñible na web. Proba a nosa <ph name="LINK_BEGIN" />aplicación web gratuíta<ph name="LINK_END" />.</translation>
 <translation id="6963936880795878952">As conexións co ordenador remoto bloqueáronse temporalmente debido a que alguén estaba tentando conectarse a el cun PIN non válido. Téntao de novo máis tarde.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
-<translation id="6985691951107243942">Estás seguro de que queres desactivar as conexións remotas con <ph name="HOSTNAME" />? Se cambias de opinión, necesitarás acceder a ese ordenador para volver activar as conexións.</translation>
-<translation id="6998989275928107238">Para</translation>
+<translation id="6985691951107243942">Seguro que queres desactivar as conexións remotas con <ph name="HOSTNAME" />? Se cambias de opinión, necesitarás acceder a ese ordenador para volver activar as conexións.</translation>
 <translation id="7019153418965365059">Erro do host non recoñecido: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Asistencia remota</translation>
 <translation id="7026930240735156896">Sigue as instrucións e configura o ordenador para o acceso remoto</translation>
-<translation id="7038683108611689168">Axúdanos a mellorar Chromoting permitíndonos recompilar estatísticas de uso e informes de erros.</translation>
 <translation id="7067321367069083429">A pantalla actúa como unha pantalla táctil</translation>
 <translation id="7116737094673640201">Dámosche a benvida ao Escritorio remoto de Chrome</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
-<translation id="7149517134817561223">Aplicación para emitir comandos para o host do Escritorio remoto de Chrome.</translation>
-<translation id="7215059001581613786">Introduce un PIN composto por seis ou máis díxitos.</translation>
 <translation id="7312846573060934304">O host non ten conexión.</translation>
 <translation id="7319983568955948908">Deixar de compartir</translation>
+<translation id="7359298090707901886">Non se pode usar o navegador escollido para abrir URL no equipo local.</translation>
 <translation id="7401733114166276557">Escritorio remoto de Chrome</translation>
 <translation id="7434397035092923453">Acceso denegado para o cliente: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Cliente conectado: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Cambiar de conta</translation>
-<translation id="7606912958770842224">Activar conexións remotas</translation>
+<translation id="7535110896613603182">Abrir configuración de aplicacións predeterminadas</translation>
 <translation id="7628469622942688817">Lembrar o meu PIN neste dispositivo.</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
-<translation id="7672203038394118626">Desactiváronse as conexións remotas para este ordenador.</translation>
 <translation id="7678209621226490279">Ancorar á esquerda</translation>
 <translation id="7693372326588366043">Actualizar a lista de host</translation>
 <translation id="7714222945760997814">Informar deste fallo</translation>
-<translation id="7782471917492991422">Comproba a configuración de xestión de enerxía do ordenador e asegúrate de que non estea configurada para acceder ao modo de suspensión cando queda inactivo.</translation>
-<translation id="7810127880729796595">Mostrar estatísticas (conexión: <ph name="QUALITY" />)</translation>
-<translation id="7836926030608666805">Faltan algúns compoñentes obrigatorios. Asegúrate de ter instalada a versión máis recente de Chrome e téntao de novo.</translation>
 <translation id="7868137160098754906">Introduce o teu PIN para o ordenador remoto.</translation>
-<translation id="7869445566579231750">Non tes permiso para executar esta aplicación.</translation>
 <translation id="7895403300744144251">As políticas de seguranza do ordenador remoto non permiten conexións desde a túa conta.</translation>
 <translation id="7936528439960309876">Ancorar á dereita</translation>
-<translation id="7948001860594368197">Opcións de pantalla</translation>
 <translation id="7970576581263377361">Non se puido efectuar a autenticación. Volve iniciar sesión en Chromium.</translation>
 <translation id="7981525049612125370">A sesión remota caducou.</translation>
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
-<translation id="8041721485428375115">Ao descargar o instalador do host do escritorio remoto de Chrome, aceptas as <ph name="LINK_BEGIN" />Condicións de servizo<ph name="LINK_END" /> de Google.</translation>
 <translation id="8060029310790625334">Centro de Axuda</translation>
 <translation id="806699900641041263">Conectando con <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Para usar a aplicación Escritorio remoto de Chrome, terás que engadir unha conta de Google ao teu dispositivo.</translation>
-<translation id="80739703311984697">O servidor remoto require que te autentiques nun sitio web de terceiros. Para continuar, debes concederlle a Chromoting permisos adicionais para acceder a este enderezo:</translation>
 <translation id="809687642899217504">Os meus ordenadores</translation>
-<translation id="811307782653349804">Accede ao teu propio ordenador desde calquera lugar.</translation>
 <translation id="8116630183974937060">Produciuse un erro na rede. Comproba que o teu dispositivo estea en liña e téntao de novo.</translation>
-<translation id="8178433417677596899">Uso compartido de pantalla entre usuarios; opción perfecta para a asistencia técnica remota.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. Reservados todos os dereitos.</translation>
-<translation id="8196755618196986400">O teu enderezo de correo electrónico incluirase en todos os comentarios que envíes para que poidamos escribirvos e fornecervos máis información.</translation>
-<translation id="8244400547700556338">Máis información</translation>
-<translation id="8261506727792406068">Eliminar</translation>
-<translation id="8355326866731426344">Este código de acceso caducará en <ph name="TIMEOUT" /></translation>
-<translation id="8355485110405946777">Inclúe os rexistros da aplicación para axudarnos a resolver o teu problema (é posible que os rexistros conteñan información privada).</translation>
-<translation id="837021510621780684">Deste ordenador</translation>
+<translation id="8295077433896346116">Se queres utilizar <ph name="PRODUCT_NAME" />, tes que conceder o permiso Accesibilidade para que este Mac poida recibir a entrada do equipo remoto.
+
+Para conceder este permiso, fai clic no botón <ph name="BUTTON_NAME" />, situado abaixo. No panel de preferencias Accesibilidade, marca a caixa situada xunto a <ph name="SERVICE_SCRIPT_NAME" />.
+
+Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está seleccionada, desmárcaa e márcaa de novo.</translation>
+<translation id="8305209735512572429">Proceso remoto de Web Authentication</translation>
 <translation id="8383794970363966105">Para usar Chromoting, precisarás engadir unha conta de Google ao teu dispositivo.</translation>
 <translation id="8386846956409881180">O host está configurado con credenciais de OAuth non válidas.</translation>
 <translation id="8397385476380433240">Conceder permiso ao <ph name="PRODUCT_NAME" /></translation>
@@ -321,32 +180,16 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="8509907436388546015">Proceso de integración no escritorio</translation>
 <translation id="8513093439376855948">Host de mensaxaría nativo para a xestión de host de forma remota</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
-<translation id="8548209692293300397">Anteriormente iniciaches sesión como <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Para acceder aos teus ordenadores nesa conta, <ph name="LINK_BEGIN" />inicia sesión en Google Chrome<ph name="LINK_END" /> con esa conta e volve instalar o Escritorio remoto de Chrome.</translation>
 <translation id="858006550102277544">Comentario</translation>
-<translation id="8642984861538780905">Aceptable</translation>
-<translation id="8712909229180978490">Non podo ver os meus ficheiros gardados en liña en Google Drive.</translation>
 <translation id="8743328882720071828">Gustaríache permitir que <ph name="CLIENT_USERNAME" /> consulte e controle o teu ordenador?</translation>
 <translation id="8747048596626351634">A sesión fallou ou non puido comezar. Se hai unha secuencia de comandos ~/.chrome-remote-desktop-session no ordenador remoto, asegúrate de que inicie un proceso de longa duración en primeiro plano, como un administrador de ventás ou un contorno de escritorio.</translation>
-<translation id="8759753423332885148">Máis información</translation>
-<translation id="8791202241915690908">Descargar instalador do host de Chromoting</translation>
 <translation id="8804164990146287819">Política de privacidade</translation>
-<translation id="894763922177556086">Boa</translation>
-<translation id="895780780740011433">Para Windows 7 e versións superiores</translation>
-<translation id="897805526397249209">Para permitir as conexións remotas a un ordenador diferente, instala Chromoting nel e fai clic en “<ph name="BUTTON_NAME" />”.</translation>
-<translation id="8998327464021325874">Controlador do servidor do escritorio remoto de Chrome</translation>
-<translation id="9016232822027372900">Conectar igualmente</translation>
-<translation id="906458777597946297">Maximizar ventá</translation>
+<translation id="8906511416443321782">É necesario acceder ao micrófono para capturar audio e transmitirllo en tempo real ao cliente do Escritorio remoto de Chrome.</translation>
 <translation id="9111855907838866522">Tes conexión co dispositivo remoto. Para abrir o menú, toca a pantalla cos dedos.</translation>
 <translation id="9126115402994542723">Non volver solicitar un PIN cando te conectes a este host desde este dispositivo.</translation>
-<translation id="9149580767411232853">Mantén visible todo o escritorio remoto</translation>
-<translation id="9149992051684092333">Para comezar a compartir o teu escritorio, fornece o código de acceso seguinte á persoa que te vai axudar.</translation>
 <translation id="916856682307586697">Inicia a XSession predeterminada</translation>
 <translation id="9187628920394877737">Concede o permiso Gravación de pantalla a <ph name="PRODUCT_NAME" /></translation>
-<translation id="9188433529406846933">Autorizar</translation>
 <translation id="9213184081240281106">A configuración do host non é válida.</translation>
-<translation id="951991426597076286">Rexeitar</translation>
-<translation id="962733587145768554">Selecciona "<ph name="SHARE" />" no cadro de diálogo de conexión para completar o proceso.</translation>
-<translation id="979100198331752041">O escritorio remoto de Chrome de <ph name="HOSTNAME" /> está obsoleto e precisa actualizarse.</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (última conexión: <ph name="DATE_OR_TIME" />)</translation>

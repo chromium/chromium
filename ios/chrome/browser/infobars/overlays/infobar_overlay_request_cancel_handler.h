@@ -5,34 +5,32 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 
-class InfobarOverlayRequestInserter;
+class InfoBarIOS;
 
 // OverlayRequestCancelHandler that cancels its OverlayRequest when its InfoBar
 // is removed from its InfoBarManager.
 class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
  public:
-  InfobarOverlayRequestCancelHandler(
-      OverlayRequest* request,
-      OverlayRequestQueue* queue,
-      InfobarOverlayType type,
-      const InfobarOverlayRequestInserter* inserter);
+  InfobarOverlayRequestCancelHandler(OverlayRequest* request,
+                                     OverlayRequestQueue* queue,
+                                     InfoBarIOS* infobar);
   ~InfobarOverlayRequestCancelHandler() override;
 
- private:
+ protected:
   // Returns the InfoBar that the corresponding request was configured with.
-  infobars::InfoBar* infobar() const { return infobar_; }
+  InfoBarIOS* infobar() const { return infobar_; }
 
-  // Cancels the request for InfoBar removal.
-  void Cancel();
+  // Called when the infobar triggering |request| was replaced in its manager.
+  // Default implementation does nothing.
+  virtual void HandleReplacement(InfoBarIOS* replacement);
 
-  // Inserts an OverlayRequest for |replacement| behind the cancel handler's
-  // request.
-  void InsertReplacementRequest(infobars::InfoBar* replacement);
+ private:
+  // Cancels the request when an InfoBar is removed from its InfoBarManager.
+  void CancelForInfobarRemoval();
 
   // Helper object that triggers cancellation when its InfoBar is removed from
   // its InfoBarManager.
@@ -50,13 +48,12 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
 
    private:
     InfobarOverlayRequestCancelHandler* cancel_handler_ = nullptr;
-    ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-        scoped_observer_;
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        scoped_observation_{this};
   };
 
-  InfobarOverlayType type_;
-  const InfobarOverlayRequestInserter* inserter_ = nullptr;
-  infobars::InfoBar* infobar_ = nullptr;
+  InfoBarIOS* infobar_ = nullptr;
   RemovalObserver removal_observer_;
 };
 

@@ -9,27 +9,30 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/offline_pages/core/prefetch/test_download_client.h"
 
 namespace offline_pages {
 
-// Implementation of DownloadService used for testing.
-class TestDownloadService : public download::DownloadService {
+// Implementation of BackgroundDownloadService used for testing.
+class TestDownloadService : public download::BackgroundDownloadService {
  public:
   TestDownloadService();
+
+  TestDownloadService(const TestDownloadService&) = delete;
+  TestDownloadService& operator=(const TestDownloadService&) = delete;
+
   ~TestDownloadService() override;
 
-  // DownloadService implementation.
+  // BackgroundDownloadService implementation.
   const download::ServiceConfig& GetConfig() override;
   void OnStartScheduledTask(download::DownloadTaskType task_type,
                             download::TaskFinishedCallback callback) override;
   bool OnStopScheduledTask(download::DownloadTaskType task_type) override;
-  DownloadService::ServiceStatus GetStatus() override;
-  void StartDownload(const download::DownloadParams& download_params) override;
+  BackgroundDownloadService::ServiceStatus GetStatus() override;
+  void StartDownload(download::DownloadParams download_params) override;
   void PauseDownload(const std::string& guid) override;
   void ResumeDownload(const std::string& guid) override;
   void CancelDownload(const std::string& guid) override;
@@ -49,7 +52,6 @@ class TestDownloadService : public download::DownloadService {
   TestDownloadClient* client_ = nullptr;
   int next_file_id_ = 0;
   std::string test_file_data_;
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadService);
 };
 
 }  // namespace offline_pages

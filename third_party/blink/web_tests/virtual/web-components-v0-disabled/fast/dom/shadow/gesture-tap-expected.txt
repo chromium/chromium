@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 87: Uncaught TypeError: element.createShadowRoot is not a function
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-
-

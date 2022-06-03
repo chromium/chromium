@@ -47,7 +47,7 @@ class CollectionItemsCache : public CollectionIndexCache<Collection, NodeType> {
   CollectionItemsCache();
   ~CollectionItemsCache();
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(cached_list_);
     Base::Trace(visitor);
   }

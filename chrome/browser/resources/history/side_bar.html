@@ -1,24 +1,7 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_components/managed_footnote/managed_footnote.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-selector/iron-selector.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/typography.html">
-<link rel="import" href="browser_service.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="history-side-bar">
-  <template>
-    <style include="shared-style cr-icons">
+    <style include="shared-style cr-icons cr-nav-menu-item-style">
       :host {
         display: flex;
+        flex-direction: column;
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
@@ -110,41 +93,85 @@
         /* At large font sizes, prevents the text from wrapping weirdly. */
         overflow-x: hidden;
       }
+
+      iron-icon {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) iron-icon {
+        display: block;
+      }
+
+      :host-context([enable-branding-update]) #clear-browsing-data {
+        justify-content: normal;
+      }
+
+      :host-context([enable-branding-update]) #clear-browsing-data .cr-icon {
+        margin-inline-end: 0;
+        margin-inline-start: 9px;
+      }
+
+      :host-context([enable-branding-update]) #syncedTabs + .separator {
+        display: none;
+      }
     </style>
 
-    <iron-selector id="menu" selected="{{selectedPage}}"
-        selectable=".page-item" attr-for-selected="path"
-        on-iron-activate="onSelectorActivate_">
-      <a href="/" class="page-item" path="history" on-click="onItemClick_">
-        $i18n{historyMenuItem}
-        <paper-ripple></paper-ripple>
-      </a>
-      <a href="/syncedTabs" class="page-item" path="syncedTabs"
-          on-click="onItemClick_">
-        $i18n{openTabsMenuItem}
-        <paper-ripple></paper-ripple>
-      </a>
-      <div class="separator"></div>
-      <a id="clear-browsing-data"
-          href="chrome://settings/clearBrowserData"
-          on-click="onClearBrowsingDataTap_"
-          disabled$="[[guestSession_]]"
-          tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
-        $i18n{clearBrowsingData}
-        <div class="cr-icon icon-external"></div>
-        <paper-ripple id="cbd-ripple"></paper-ripple>
-      </a>
-      <div id="spacer"></div>
-      <div id="footer" hidden="[[!showFooter_]]">
+    <cr-menu-selector>
+      <iron-selector id="menu" selected="{{selectedPage}}"
+          selectable=".page-item" attr-for-selected="path"
+          on-iron-activate="onSelectorActivate_" selected-attribute="selected">
+        <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
+            href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
+            path="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
+            on-click="onItemClick_">
+          <iron-icon icon="cr:schedule"></iron-icon>
+          $i18n{historyMenuItem}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a id="syncedTabs" role="menuitem" href="/syncedTabs"
+            class="page-item cr-nav-menu-item"
+            path="syncedTabs" on-click="onItemClick_">
+          <iron-icon icon="cr:phonelink"></iron-icon>
+          $i18n{openTabsMenuItem}
+          <paper-ripple></paper-ripple>
+        </a>
         <div class="separator"></div>
-        <managed-footnote></managed-footnote>
-        <div id="google-account-footer"
-             hidden="[[!footerInfo.otherFormsOfHistory]]">
-          <iron-icon icon="cr:info-outline"></iron-icon>
-          <div>$i18nRaw{sidebarFooter}</div>
-        </div>
+        <a role="menuitem" id="clear-browsing-data"
+            class="cr-nav-menu-item"
+            href="chrome://settings/clearBrowserData"
+            on-click="onClearBrowsingDataTap_"
+            disabled$="[[guestSession_]]"
+            tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
+          <iron-icon icon="cr:delete"></iron-icon>
+          $i18n{clearBrowsingData}
+          <div class="cr-icon icon-external"></div>
+          <paper-ripple id="cbd-ripple"></paper-ripple>
+        </a>
+        <!-- tabindex is needed below because <a> without href attribute is not
+             focusable in sequential keyboard navigation by default. -->
+        <a role="menuitem" id="toggle-history-clusters"
+            class="cr-nav-menu-item"
+            tabindex="0"
+            on-click="onToggleHistoryClustersClick_"
+            on-keydown="onToggleHistoryClustersKeydown_"
+            on-mousedown="onToggleHistoryClustersMousedown_"
+            hidden="[[!showToggleHistoryClusters_]]">
+          <iron-icon icon="[[getToggleHistoryClustersItemIcon_(
+              historyClustersVisible)]]">
+          </iron-icon>
+          [[getToggleHistoryClustersItemLabel_(historyClustersVisible)]]
+          <paper-ripple id="thc-ripple"></paper-ripple>
+        </a>
+      </iron-selector>
+    </cr-menu-selector>
+
+    <div id="spacer"></div>
+    <div id="footer" hidden="[[!showFooter_]]">
+      <div class="separator"></div>
+      <managed-footnote></managed-footnote>
+      <div id="google-account-footer"
+          hidden="[[!footerInfo.otherFormsOfHistory]]">
+        <iron-icon icon="cr:info-outline"></iron-icon>
+        <div>$i18nRaw{sidebarFooter}</div>
       </div>
-    </iron-selector>
-  </template>
-  <script src="side_bar.js"></script>
-</dom-module>
+    </div>

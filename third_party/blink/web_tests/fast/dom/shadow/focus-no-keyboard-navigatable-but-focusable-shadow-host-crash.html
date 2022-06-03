@@ -7,7 +7,7 @@
 <div>This test passes if it does not crash.</div>
 <div id="host" tabindex="-1"></div>
 <script>
-var shadow = host.createShadowRoot();
+var shadow = host.attachShadow({mode: 'open'});
 host.focus();
 if (window.eventSender)
     eventSender.keyDown('\t');

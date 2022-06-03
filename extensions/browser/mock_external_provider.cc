@@ -13,7 +13,7 @@
 namespace extensions {
 
 MockExternalProvider::MockExternalProvider(VisitorInterface* visitor,
-                                           Manifest::Location location)
+                                           mojom::ManifestLocation location)
     : location_(location), visitor_(visitor), visit_count_(0) {}
 
 MockExternalProvider::~MockExternalProvider() {}
@@ -56,6 +56,14 @@ void MockExternalProvider::VisitRegisteredExtension() {
   visitor_->OnExternalProviderReady(this);
 }
 
+void MockExternalProvider::TriggerOnExternalExtensionFound() {
+  for (const auto& extension_kv : file_extension_map_)
+    visitor_->OnExternalExtensionFileFound(*extension_kv.second);
+  for (const auto& extension_kv : url_extension_map_)
+    visitor_->OnExternalExtensionUpdateUrlFound(*extension_kv.second,
+                                                false /* is_initial_load */);
+}
+
 bool MockExternalProvider::HasExtension(const std::string& id) const {
   return file_extension_map_.find(id) != file_extension_map_.end() ||
          url_extension_map_.find(id) != url_extension_map_.end();
@@ -63,7 +71,7 @@ bool MockExternalProvider::HasExtension(const std::string& id) const {
 
 bool MockExternalProvider::GetExtensionDetails(
     const std::string& id,
-    Manifest::Location* location,
+    mojom::ManifestLocation* location,
     std::unique_ptr<base::Version>* version) const {
   auto it1 = file_extension_map_.find(id);
   auto it2 = url_extension_map_.find(id);
@@ -74,7 +82,7 @@ bool MockExternalProvider::GetExtensionDetails(
 
   // Only ExternalInstallInfoFile has version.
   if (version && it1 != file_extension_map_.end())
-    version->reset(new base::Version(it1->second->version));
+    *version = std::make_unique<base::Version>(it1->second->version);
 
   if (location)
     *location = location_;

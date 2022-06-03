@@ -54,9 +54,9 @@ the backend BookmarkModel in C++.
 a read-only state tree for the entire page (`store.data`).
 
 Any Polymer UI element which wants to be able to data-bind values from the
-global state should add the behavior `bookmarks.StoreClient` (in
-`store_client.js`). This behavior allows elements to `watch` particular values
-in the store, and be automatically updated when they change.
+global state should add the mixin `bookmarks.StoreClient` (in
+`store_client_mixin.ts`). This mixin allows elements to `watch` particular
+values in the store, and be automatically updated when they change.
 
 ### Actions
 

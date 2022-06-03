@@ -2,33 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Make sure stdint.h includes SIZE_MAX. (See C89, p259, footnote 221.)
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS 1
-#endif
-
 #include "components/domain_reliability/config.h"
 
-#include <stdint.h>
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/strings/pattern.h"
-#include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 
 namespace {
 
 bool ConvertURL(const base::Value* value, GURL* url) {
-  std::string url_string;
-  if (!value->GetAsString(&url_string))
+  if (!value->is_string())
     return false;
-  *url = GURL(url_string);
+  *url = GURL(value->GetString());
   return url->is_valid();
 }
 
 bool ConvertOrigin(const base::Value* value, GURL* url) {
   return ConvertURL(value, url) && !url->has_username() &&
-         !url->has_password() && url->SchemeIs("https") &&
+         !url->has_password() && url->SchemeIs(url::kHttpsScheme) &&
          url->path_piece() == "/" && !url->has_query() && !url->has_ref();
 }
 
@@ -50,15 +43,18 @@ DomainReliabilityConfig::~DomainReliabilityConfig() {}
 // static
 std::unique_ptr<const DomainReliabilityConfig>
 DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  if (!value)
+    return nullptr;
+
   base::JSONValueConverter<DomainReliabilityConfig> converter;
-  std::unique_ptr<DomainReliabilityConfig> config(
-      new DomainReliabilityConfig());
+  auto config = std::make_unique<DomainReliabilityConfig>();
 
   // If we can parse and convert the JSON into a valid config, return that.
-  if (value && converter.Convert(*value, config.get()) && config->IsValid())
-    return std::move(config);
-  return std::unique_ptr<const DomainReliabilityConfig>();
+  if (converter.Convert(*value, config.get()) && config->IsValid())
+    return config;
+
+  return nullptr;
 }
 
 bool DomainReliabilityConfig::IsValid() const {
@@ -69,30 +65,9 @@ bool DomainReliabilityConfig::IsValid() const {
   }
 
   for (const auto& url : collectors) {
-    if (!url->is_valid())
+    if (!url->SchemeIs(url::kHttpsScheme) || !url->is_valid())
       return false;
   }
-
-  return true;
-}
-
-bool DomainReliabilityConfig::Equals(const DomainReliabilityConfig& other)
-    const {
-  if (include_subdomains != other.include_subdomains ||
-      collectors.size() != other.collectors.size() ||
-      success_sample_rate != other.success_sample_rate ||
-      failure_sample_rate != other.failure_sample_rate ||
-      path_prefixes.size() != other.path_prefixes.size()) {
-    return false;
-  }
-
-  for (size_t i = 0; i < collectors.size(); ++i)
-    if (*collectors[i] != *other.collectors[i])
-      return false;
-
-  for (size_t i = 0; i < path_prefixes.size(); ++i)
-    if (*path_prefixes[i] != *other.path_prefixes[i])
-      return false;
 
   return true;
 }

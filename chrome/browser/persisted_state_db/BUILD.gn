@@ -1,0 +1,46 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("persisted_state_db") {
+  sources = [
+    "profile_proto_db.h",
+    "profile_proto_db_factory.cc",
+    "profile_proto_db_factory.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "persisted_state_db.cc",
+      "persisted_state_db.h",
+    ]
+  }
+
+  deps = [
+    ":persisted_state_db_content_proto",
+    "//base:base",
+    "//components/keyed_service/content",
+    "//components/leveldb_proto",
+    "//content/public/browser:browser",
+    "//third_party/leveldatabase",
+  ]
+  if (is_android) {
+    deps += [
+      "//chrome/browser/commerce/merchant_viewer:merchant_signal_db_content_proto",
+      "//chrome/browser/commerce/subscriptions:commerce_subscription_db_content_proto",
+      "//chrome/browser/tab:jni_headers",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser:cart_db_content_proto",
+      "//chrome/browser:coupon_db_content_proto",
+    ]
+  }
+}
+
+proto_library("persisted_state_db_content_proto") {
+  sources = [ "persisted_state_db_content.proto" ]
+}

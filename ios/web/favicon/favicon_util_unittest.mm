@@ -36,12 +36,10 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
   favicons->Append(std::move(favicon3));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result =
-      web::ExtractFaviconURL(&dictionnary, GURL("http://chromium.org"), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(),
+                                       GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(3U, urls.size());
@@ -77,11 +75,9 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
   favicons->Append(std::move(favicon3));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(&dictionnary, GURL(), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -105,11 +101,9 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
   favicons->Append(std::move(favicon3));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(&dictionnary, GURL(), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -132,11 +126,9 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
   favicons->Append(std::move(favicon3));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(&dictionnary, GURL(), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -149,12 +141,10 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
   std::unique_ptr<base::ListValue> favicons =
       std::make_unique<base::ListValue>();
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result =
-      web::ExtractFaviconURL(&dictionnary, GURL("http://chromium.org"), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(),
+                                       GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(1U, urls.size());
@@ -178,11 +168,9 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
       std::make_unique<base::ListValue>();
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(&dictionnary, GURL(), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());
@@ -216,11 +204,9 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesPartiallyCorrect) {
       std::make_unique<base::ListValue>();
   favicons->Append(std::move(favicon));
   favicons->Append(std::move(favicon2));
-  base::DictionaryValue dictionnary;
-  dictionnary.Set({"favicons"}, std::move(favicons));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(&dictionnary, GURL(), &urls);
+  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());

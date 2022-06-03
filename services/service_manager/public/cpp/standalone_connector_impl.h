@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) StandaloneConnectorImpl
   };
 
   explicit StandaloneConnectorImpl(Delegate* delegate);
+
+  StandaloneConnectorImpl(const StandaloneConnectorImpl&) = delete;
+  StandaloneConnectorImpl& operator=(const StandaloneConnectorImpl&) = delete;
+
   ~StandaloneConnectorImpl() override;
 
   // Produces a new remote Connector endpoint whose connection requests are
@@ -70,8 +74,6 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) StandaloneConnectorImpl
   Delegate* const delegate_;
 
   mojo::ReceiverSet<mojom::Connector> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StandaloneConnectorImpl);
 };
 
 }  // namespace service_manager

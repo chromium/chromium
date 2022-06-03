@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+
+class PrefRegistrySimple;
 
 namespace base {
 class TickClock;
@@ -37,7 +38,14 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   enum class Source { kShelfExitButton, kCloseAllWindows };
 
   LogoutConfirmationController();
+
+  LogoutConfirmationController(const LogoutConfirmationController&) = delete;
+  LogoutConfirmationController& operator=(const LogoutConfirmationController&) =
+      delete;
+
   ~LogoutConfirmationController() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   const base::TickClock* clock() const { return clock_; }
 
@@ -82,8 +90,6 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   base::OneShotTimer logout_timer_;
 
   int confirm_logout_count_for_test_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationController);
 };
 
 }  // namespace ash

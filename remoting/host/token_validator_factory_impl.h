@@ -30,6 +30,10 @@ class TokenValidatorFactoryImpl : public protocol::TokenValidatorFactory {
       scoped_refptr<RsaKeyPair> key_pair,
       scoped_refptr<net::URLRequestContextGetter> request_context_getter);
 
+  TokenValidatorFactoryImpl(const TokenValidatorFactoryImpl&) = delete;
+  TokenValidatorFactoryImpl& operator=(const TokenValidatorFactoryImpl&) =
+      delete;
+
   // TokenValidatorFactory interface.
   std::unique_ptr<protocol::TokenValidator> CreateTokenValidator(
       const std::string& local_jid,
@@ -41,10 +45,8 @@ class TokenValidatorFactoryImpl : public protocol::TokenValidatorFactory {
   ThirdPartyAuthConfig third_party_auth_config_;
   scoped_refptr<RsaKeyPair> key_pair_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenValidatorFactoryImpl);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_URL_FETCHER_TOKEN_VALIDATOR_FACTORY_H_
+#endif  // REMOTING_HOST_TOKEN_VALIDATOR_FACTORY_IMPL_H_

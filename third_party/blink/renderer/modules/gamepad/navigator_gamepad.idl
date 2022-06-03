@@ -20,5 +20,5 @@
 [
     ImplementedAs=NavigatorGamepad
 ] partial interface Navigator {
-    [MeasureAs=GetGamepads] GamepadList getGamepads();
+    [MeasureAs=GetGamepads, RaisesException] GamepadList getGamepads();
 };

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
 

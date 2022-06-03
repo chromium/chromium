@@ -20,12 +20,11 @@
             android:layout_height="@dimen/custom_tabs_control_container_height" />
         <ImageView
             android:id="@+id/toolbar_shadow"
-            android:src="@drawable/toolbar_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/custom_tabs_control_container_height"
             android:scaleType="fitXY"
-            tools:ignore="ContentDescription" />
+            android:importantForAccessibility="no" />
         <ViewStub
             android:id="@+id/find_toolbar_stub"
             android:inflatedId="@+id/find_toolbar"

@@ -1,0 +1,13 @@
+{
+    "GUID": "guid",
+    "IPAddressConfigType":"DHCP",
+    "Name": "third-party VPN",
+    "NameServersConfigType":"DHCP",
+    "Type": "VPN",
+    "VPN": {
+        "Type": "ThirdPartyVPN",
+        "ThirdPartyVPN": {
+            "ExtensionID": "deadbeefdeadbeefdeadbeefdeadbeef",
+        }
+    }
+}

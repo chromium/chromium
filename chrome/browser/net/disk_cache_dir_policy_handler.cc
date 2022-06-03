@@ -5,7 +5,9 @@
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
@@ -23,12 +25,22 @@ DiskCacheDirPolicyHandler::~DiskCacheDirPolicyHandler() {}
 void DiskCacheDirPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  base::FilePath::StringType string_value;
-  if (value && value->GetAsString(&string_value)) {
-    base::FilePath::StringType expanded_value =
-        policy::path_parser::ExpandPathVariables(string_value);
-    prefs->SetValue(prefs::kDiskCacheDir, base::Value(expanded_value));
-  }
+  if (!value)
+    return;
+
+  const std::string* string_value = value->GetIfString();
+  if (!string_value)
+    return;
+
+  base::FilePath::StringType expanded_value =
+#if defined(OS_WIN)
+      policy::path_parser::ExpandPathVariables(base::UTF8ToWide(*string_value));
+#else
+      policy::path_parser::ExpandPathVariables(*string_value);
+#endif
+  base::FilePath expanded_path(expanded_value);
+  prefs->SetValue(prefs::kDiskCacheDir,
+                  base::Value(expanded_path.AsUTF8Unsafe()));
 }
 
 }  // namespace policy

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Auto-expand a details within a cross-origin iframe.
+FAIL Auto-expand a details around a cross-origin iframe. assert_true: Details element should be opened. expected true got false
+PASS Auto-expand a hidden=until-found within a cross-origin iframe.
+FAIL Auto-expand a hidden=until-found around a cross-origin iframe. assert_false: hidden=until-found element should be revealed. expected false got true
+PASS Auto-expand a details within a same-origin iframe.
+PASS Auto-expand a details around a same-origin iframe.
+PASS Auto-expand a hidden=until-found within a same-origin iframe.
+PASS Auto-expand a hidden=until-found around a same-origin iframe.
+Harness: the test ran to completion.
+

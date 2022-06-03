@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 
 #include <stddef.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -39,9 +40,9 @@ const char kDoneCommand[] = "DONE";
 const int kAdbFailure = 1;
 const int kAdbSuccess = 0;
 
-typedef base::Callback<void(int, const std::string&)> CommandCallback;
-typedef base::Callback<void(int, net::StreamSocket*)> SocketCallback;
-typedef base::Callback<void(const std::string&)> ParserCallback;
+typedef base::RepeatingCallback<void(int, const std::string&)> CommandCallback;
+typedef base::RepeatingCallback<void(int, net::StreamSocket*)> SocketCallback;
+typedef base::RepeatingCallback<void(const std::string&)> ParserCallback;
 
 std::string EncodeMessage(const std::string& message) {
   static const char kHexChars[] = "0123456789ABCDEF";
@@ -79,8 +80,8 @@ class AdbTransportSocket : public AdbClientSocket {
       return;
     SendCommand(base::StringPrintf(kHostTransportCommand, serial_.c_str()),
                 false, true,
-                base::Bind(&AdbTransportSocket::SendLocalAbstract,
-                           base::Unretained(this)));
+                base::BindRepeating(&AdbTransportSocket::SendLocalAbstract,
+                                    base::Unretained(this)));
   }
 
   void SendLocalAbstract(int result, const std::string& response) {
@@ -88,8 +89,8 @@ class AdbTransportSocket : public AdbClientSocket {
       return;
     SendCommand(base::StringPrintf(kLocalAbstractCommand, socket_name_.c_str()),
                 false, true,
-                base::Bind(&AdbTransportSocket::OnSocketAvailable,
-                           base::Unretained(this)));
+                base::BindRepeating(&AdbTransportSocket::OnSocketAvailable,
+                                    base::Unretained(this)));
   }
 
   void OnSocketAvailable(int result, const std::string& response) {
@@ -145,8 +146,8 @@ class HttpOverAdbSocket {
                const std::string& socket_name) {
     AdbClientSocket::TransportQuery(
         port, serial, socket_name,
-        base::Bind(&HttpOverAdbSocket::OnSocketAvailable,
-                   base::Unretained(this)));
+        base::BindRepeating(&HttpOverAdbSocket::OnSocketAvailable,
+                            base::Unretained(this)));
   }
 
   void OnSocketAvailable(int result,
@@ -287,9 +288,9 @@ class AdbQuerySocket : AdbClientSocket {
     // doesn't include a length at the beginning of the data stream.
     bool has_length =
         !base::StartsWith(query, "shell:", base::CompareCase::SENSITIVE);
-    SendCommand(
-        query, has_output, has_length,
-        base::Bind(&AdbQuerySocket::OnResponse, base::Unretained(this)));
+    SendCommand(query, has_output, has_length,
+                base::BindRepeating(&AdbQuerySocket::OnResponse,
+                                    base::Unretained(this)));
   }
 
   void OnResponse(int result, const std::string& response) {
@@ -347,17 +348,18 @@ class AdbSendFileSocket : AdbClientSocket {
   void SendTransport(int result) {
     if (!CheckNetResultOrDie(result))
       return;
-    SendCommand(
-        base::StringPrintf(kHostTransportCommand, serial_.c_str()), false, true,
-        base::Bind(&AdbSendFileSocket::SendSync, base::Unretained(this)));
+    SendCommand(base::StringPrintf(kHostTransportCommand, serial_.c_str()),
+                false, true,
+                base::BindRepeating(&AdbSendFileSocket::SendSync,
+                                    base::Unretained(this)));
   }
 
   void SendSync(int result, const std::string& response) {
     if (!CheckNetResultOrDie(result))
       return;
-    SendCommand(
-        kSyncCommand, false, true,
-        base::Bind(&AdbSendFileSocket::SendSend, base::Unretained(this)));
+    SendCommand(kSyncCommand, false, true,
+                base::BindRepeating(&AdbSendFileSocket::SendSend,
+                                    base::Unretained(this)));
   }
 
   void SendSend(int result, const std::string& response) {
@@ -418,13 +420,12 @@ class AdbSendFileSocket : AdbClientSocket {
     scoped_refptr<net::StringIOBuffer> request_buffer =
         base::MakeRefCounted<net::StringIOBuffer>(buffer);
 
-    net::CompletionRepeatingCallback copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
-    int result =
-        socket_->Write(request_buffer.get(), request_buffer->size(),
-                       copyable_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
+    int result = socket_->Write(request_buffer.get(), request_buffer->size(),
+                                std::move(split_callback.first),
+                                TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result != net::ERR_IO_PENDING)
-      copyable_callback.Run(result);
+      std::move(split_callback.second).Run(result);
   }
 
   bool CheckNetResultOrDie(int result) {
@@ -460,35 +461,11 @@ void AdbClientSocket::SendFile(int port,
   new AdbSendFileSocket(port, serial, filename, content, callback);
 }
 
-#if BUILDFLAG(DEBUG_DEVTOOLS)
-static void UseTransportQueryForDesktop(const SocketCallback& callback,
-                                        net::StreamSocket* socket,
-                                        int result) {
-  callback.Run(result, socket);
-}
-#endif  // BUILDFLAG(DEBUG_DEVTOOLS)
-
 // static
 void AdbClientSocket::TransportQuery(int port,
                                      const std::string& serial,
                                      const std::string& socket_name,
                                      const SocketCallback& callback) {
-#if BUILDFLAG(DEBUG_DEVTOOLS)
-  if (serial.empty()) {
-    // Use plain socket for remote debugging on Desktop (debugging purposes).
-    int tcp_port = 0;
-    if (!base::StringToInt(socket_name, &tcp_port))
-      tcp_port = 9222;
-
-    net::AddressList address_list = net::AddressList::CreateFromIPAddress(
-        net::IPAddress::IPv4Localhost(), tcp_port);
-    net::TCPClientSocket* socket = new net::TCPClientSocket(
-        address_list, nullptr, nullptr, net::NetLogSource());
-    socket->Connect(
-        base::BindOnce(&UseTransportQueryForDesktop, callback, socket));
-    return;
-  }
-#endif  // BUILDFLAG(DEBUG_DEVTOOLS)
   new AdbTransportSocket(port, serial, socket_name, callback);
 }
 
@@ -523,19 +500,19 @@ void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
   // on IPv4. So just try IPv4 first, then fall back to IPv6.
   net::IPAddressList list = {net::IPAddress::IPv4Localhost(),
                              net::IPAddress::IPv6Localhost()};
-  net::AddressList ip_list = net::AddressList::CreateFromIPAddressList(
-      list, "localhost");
+  std::vector<std::string> aliases({"localhost"});
+  net::AddressList ip_list =
+      net::AddressList::CreateFromIPAddressList(list, std::move(aliases));
   net::AddressList address_list = net::AddressList::CopyWithPort(
       ip_list, port_);
 
-  socket_.reset(new net::TCPClientSocket(address_list, NULL, NULL,
-                                         net::NetLogSource()));
+  socket_ = std::make_unique<net::TCPClientSocket>(
+      address_list, nullptr, nullptr, nullptr, net::NetLogSource());
 
-  net::CompletionRepeatingCallback copyable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  int result = socket_->Connect(copyable_callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int result = socket_->Connect(std::move(split_callback.first));
   if (result != net::ERR_IO_PENDING)
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
 }
 
 void AdbClientSocket::SendCommand(const std::string& command,
@@ -565,7 +542,7 @@ void AdbClientSocket::ReadResponse(const CommandCallback& response_callback,
       base::MakeRefCounted<net::GrowableIOBuffer>();
   socket_buffer->SetCapacity(kBufferSize);
   if (has_output) {
-    const ParserCallback& parse_output_callback = base::Bind(
+    const ParserCallback& parse_output_callback = base::BindRepeating(
         &AdbClientSocket::ParseOutput, has_length, response_callback);
     int socket_result = socket_->Read(
         socket_buffer.get(), kBufferSize,

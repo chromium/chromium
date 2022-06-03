@@ -5,21 +5,19 @@ This can cause a crash.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 Before:
-AXRole: AXWebArea
+AXRole: AXGenericContainer
     AXRole: AXGenericContainer
+    AXRole: AXGenericContainer
+    AXRole: AXLink
         AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-        AXRole: AXLink
-            AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-            AXRole: AXStaticText "End of test"
+    AXRole: AXGenericContainer
+        AXRole: AXStaticText "End of test"
 After:
-AXRole: AXWebArea
+AXRole: AXGenericContainer
     AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-            AXRole: AXStaticText "End of test"
+    AXRole: AXGenericContainer
+    AXRole: AXGenericContainer
+        AXRole: AXStaticText "End of test"
 
 PASS successfullyParsed is true
 

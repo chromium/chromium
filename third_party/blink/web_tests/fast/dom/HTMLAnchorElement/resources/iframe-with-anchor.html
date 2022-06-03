@@ -10,8 +10,8 @@ if (window.testRunner) {
 function run() {
 if (window.eventSender) {
     var anchor = document.getElementById("start");
-    var x = window.frameElement.offsetLeft + anchor.offsetLeft + 2;
-    var y = window.frameElement.offsetTop + anchor.offsetTop + 2;
+    var x = anchor.offsetLeft + 2;
+    var y = anchor.offsetTop + 2;
     eventSender.mouseMoveTo(x, y);
     eventSender.mouseDown();
     eventSender.mouseUp();

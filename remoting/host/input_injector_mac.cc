@@ -14,13 +14,16 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/i18n/break_iterator.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/proto/internal.pb.h"
@@ -37,16 +40,53 @@ void SetOrClearBit(uint64_t &value, uint64_t bit, bool set_bit) {
   value = set_bit ? (value | bit) : (value & ~bit);
 }
 
+// Must be called on UI thread.
 void CreateAndPostKeyEvent(int keycode,
                            bool pressed,
                            uint64_t flags,
-                           const base::string16& unicode) {
+                           const std::u16string& unicode) {
   base::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
     CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
     if (!unicode.empty())
-      CGEventKeyboardSetUnicodeString(eventRef, unicode.size(), &(unicode[0]));
+      CGEventKeyboardSetUnicodeString(
+          eventRef, unicode.size(),
+          reinterpret_cast<const UniChar*>(unicode.data()));
+    CGEventPost(kCGSessionEventTap, eventRef);
+  }
+}
+
+// Must be called on UI thread.
+void PostMouseEvent(int32_t x,
+                    int32_t y,
+                    bool left_down,
+                    bool right_down,
+                    bool middle_down) {
+  // We use the deprecated CGPostMouseEvent API because we receive low-level
+  // mouse events, whereas CGEventCreateMouseEvent is for injecting higher-level
+  // events. For example, the deprecated APIs will detect double-clicks or drags
+  // in a way that is consistent with how they would be generated using a local
+  // mouse, whereas the new APIs expect us to inject these higher-level events
+  // directly.
+  //
+  // See crbug.com/677857 for more details.
+  CGPoint position = CGPointMake(x, y);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  CGError error =
+      CGPostMouseEvent(position, true, 3, left_down, right_down, middle_down);
+#pragma clang diagnostic pop
+  if (error != kCGErrorSuccess)
+    LOG(WARNING) << "CGPostMouseEvent error " << error;
+}
+
+// Must be called on UI thread.
+void CreateAndPostScrollWheelEvent(int32_t delta_x, int32_t delta_y) {
+  base::ScopedCFTypeRef<CGEventRef> eventRef(CGEventCreateScrollWheelEvent(
+      nullptr, kCGScrollEventUnitPixel, 2, delta_y, delta_x));
+  if (eventRef) {
     CGEventPost(kCGSessionEventTap, eventRef);
   }
 }
@@ -70,7 +110,12 @@ using protocol::TouchEvent;
 class InputInjectorMac : public InputInjector {
  public:
   explicit InputInjectorMac(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
+
+  InputInjectorMac(const InputInjectorMac&) = delete;
+  InputInjectorMac& operator=(const InputInjectorMac&) = delete;
+
   ~InputInjectorMac() override;
 
   // ClipboardStub interface.
@@ -90,7 +135,12 @@ class InputInjectorMac : public InputInjector {
   // The actual implementation resides in InputInjectorMac::Core class.
   class Core : public base::RefCountedThreadSafe<Core> {
    public:
-    explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+    explicit Core(
+        scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
+        scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     // Mirrors the ClipboardStub interface.
     void InjectClipboardEvent(const ClipboardEvent& event);
@@ -111,25 +161,23 @@ class InputInjectorMac : public InputInjector {
 
     void WakeUpDisplay();
 
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner_;
+    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
     webrtc::DesktopVector mouse_pos_;
     uint32_t mouse_button_state_;
     std::unique_ptr<Clipboard> clipboard_;
     uint64_t left_modifiers_;
     uint64_t right_modifiers_;
     base::TimeTicks last_time_display_woken_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorMac);
 };
 
 InputInjectorMac::InputInjectorMac(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  core_ = new Core(task_runner);
+    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner) {
+  core_ = new Core(input_thread_task_runner, ui_thread_task_runner);
 }
 
 InputInjectorMac::~InputInjectorMac() {
@@ -162,8 +210,10 @@ void InputInjectorMac::Start(
 }
 
 InputInjectorMac::Core::Core(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(task_runner),
+    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
+    : input_thread_task_runner_(input_thread_task_runner),
+      ui_thread_task_runner_(ui_thread_task_runner),
       mouse_button_state_(0),
       clipboard_(Clipboard::Create()),
       left_modifiers_(0),
@@ -183,8 +233,8 @@ InputInjectorMac::Core::Core(
 }
 
 void InputInjectorMac::Core::InjectClipboardEvent(const ClipboardEvent& event) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
+  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
+    input_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&Core::InjectClipboardEvent, this, event));
     return;
   }
@@ -239,7 +289,9 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
     flags |= kCGEventFlagMaskAlphaShift;
   }
 
-  CreateAndPostKeyEvent(keycode, event.pressed(), flags, base::string16());
+  ui_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, keycode, event.pressed(),
+                                flags, std::u16string()));
 }
 
 void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
@@ -247,51 +299,51 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
 
   WakeUpDisplay();
 
-  base::string16 text = base::UTF8ToUTF16(event.text());
+  std::u16string text = base::UTF8ToUTF16(event.text());
 
-  // Applications that ignore UnicodeString field will see the text event as
-  // Space key.
-  CreateAndPostKeyEvent(kVK_Space, /*pressed=*/true, 0, text);
-  CreateAndPostKeyEvent(kVK_Space, /*pressed=*/false, 0, text);
+  // CGEventKeyboardSetUnicodeString appears to only process up to 20 code
+  // units (and key presses are generally expected to generate a single
+  // character), so split the input text into graphemes.
+  base::i18n::BreakIterator grapheme_iterator(
+      text, base::i18n::BreakIterator::BREAK_CHARACTER);
+
+  if (!grapheme_iterator.Init()) {
+    LOG(ERROR) << "Failed to init grapheme iterator.";
+    return;
+  }
+
+  while (grapheme_iterator.Advance()) {
+    base::StringPiece16 grapheme = grapheme_iterator.GetStringPiece();
+
+    if (grapheme.length() == 1 && grapheme[0] == '\n') {
+      // On Mac, the return key sends "\r" rather than "\n", so handle it
+      // specially.
+      ui_thread_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
+                                    /*pressed=*/true, 0, std::u16string()));
+      ui_thread_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
+                                    /*pressed=*/false, 0, std::u16string()));
+    } else {
+      // Applications that ignore UnicodeString field will see the text event as
+      // Space key.
+      ui_thread_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
+                         /*pressed=*/true, 0, std::u16string(grapheme)));
+      ui_thread_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
+                         /*pressed=*/false, 0, std::u16string(grapheme)));
+    }
+  }
 }
 
 void InputInjectorMac::Core::InjectMouseEvent(const MouseEvent& event) {
   WakeUpDisplay();
 
   if (event.has_x() && event.has_y()) {
-    // On multi-monitor systems (0,0) refers to the top-left of the "main"
-    // display, whereas our coordinate scheme places (0,0) at the top-left of
-    // the bounding rectangle around all the displays, so we need to translate
-    // accordingly.
-
-    // Set the mouse position assuming single-monitor.
     mouse_pos_.set(event.x(), event.y());
-
-    // Fetch the desktop configuration.
-    // TODO(wez): Optimize this out, or at least only enumerate displays in
-    // response to display-changed events. VideoFrameCapturer's VideoFrames
-    // could be augmented to include native cursor coordinates for use by
-    // MouseClampingFilter, removing the need for translation here.
-    webrtc::MacDesktopConfiguration desktop_config =
-        webrtc::MacDesktopConfiguration::GetCurrent(
-            webrtc::MacDesktopConfiguration::TopLeftOrigin);
-
-    // Translate the mouse position into desktop coordinates.
-    mouse_pos_ = mouse_pos_.add(
-        webrtc::DesktopVector(desktop_config.pixel_bounds.left(),
-                              desktop_config.pixel_bounds.top()));
-
-    // Constrain the mouse position to the desktop coordinates.
-    mouse_pos_.set(
-       std::max(desktop_config.pixel_bounds.left(),
-           std::min(desktop_config.pixel_bounds.right(), mouse_pos_.x())),
-       std::max(desktop_config.pixel_bounds.top(),
-           std::min(desktop_config.pixel_bounds.bottom(), mouse_pos_.y())));
-
-    // Convert from pixel to Density Independent Pixel coordinates.
-    mouse_pos_.set(mouse_pos_.x() / desktop_config.dip_to_pixel_scale,
-                   mouse_pos_.y() / desktop_config.dip_to_pixel_scale);
-
     VLOG(3) << "Moving mouse to " << mouse_pos_.x() << "," << mouse_pos_.y();
   }
   if (event.has_button() && event.has_button_down()) {
@@ -307,44 +359,29 @@ void InputInjectorMac::Core::InjectMouseEvent(const MouseEvent& event) {
       VLOG(1) << "Unknown mouse button: " << event.button();
     }
   }
-  // We use the deprecated CGPostMouseEvent API because we receive low-level
-  // mouse events, whereas CGEventCreateMouseEvent is for injecting higher-level
-  // events. For example, the deprecated APIs will detect double-clicks or drags
-  // in a way that is consistent with how they would be generated using a local
-  // mouse, whereas the new APIs expect us to inject these higher-level events
-  // directly.
-  //
-  // See crbug.com/677857 for more details.
-  CGPoint position = CGPointMake(mouse_pos_.x(), mouse_pos_.y());
   enum {
     LeftBit = 1 << (MouseEvent::BUTTON_LEFT - 1),
     MiddleBit = 1 << (MouseEvent::BUTTON_MIDDLE - 1),
     RightBit = 1 << (MouseEvent::BUTTON_RIGHT - 1)
   };
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  CGError error = CGPostMouseEvent(position, true, 3,
-                                   (mouse_button_state_ & LeftBit) != 0,
-                                   (mouse_button_state_ & RightBit) != 0,
-                                   (mouse_button_state_ & MiddleBit) != 0);
-#pragma clang diagnostic pop
-  if (error != kCGErrorSuccess)
-    LOG(WARNING) << "CGPostMouseEvent error " << error;
+  ui_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(PostMouseEvent, mouse_pos_.x(), mouse_pos_.y(),
+                                (mouse_button_state_ & LeftBit) != 0,
+                                (mouse_button_state_ & RightBit) != 0,
+                                (mouse_button_state_ & MiddleBit) != 0));
 
   if (event.has_wheel_delta_x() && event.has_wheel_delta_y()) {
-    int delta_x = static_cast<int>(event.wheel_delta_x());
-    int delta_y = static_cast<int>(event.wheel_delta_y());
-    base::ScopedCFTypeRef<CGEventRef> event(CGEventCreateScrollWheelEvent(
-        nullptr, kCGScrollEventUnitPixel, 2, delta_y, delta_x));
-    if (event)
-      CGEventPost(kCGSessionEventTap, event);
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(CreateAndPostScrollWheelEvent, event.wheel_delta_x(),
+                       event.wheel_delta_y()));
   }
 }
 
 void InputInjectorMac::Core::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
+  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
+    input_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&Core::Start, this, std::move(client_clipboard)));
     return;
@@ -354,8 +391,9 @@ void InputInjectorMac::Core::Start(
 }
 
 void InputInjectorMac::Core::Stop() {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(&Core::Stop, this));
+  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
+    input_thread_task_runner_->PostTask(FROM_HERE,
+                                        base::BindOnce(&Core::Stop, this));
     return;
   }
 
@@ -365,7 +403,7 @@ void InputInjectorMac::Core::Stop() {
 void InputInjectorMac::Core::WakeUpDisplay() {
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_time_display_woken_ <
-      base::TimeDelta::FromMilliseconds(kWakeUpDisplayIntervalMs)) {
+      base::Milliseconds(kWakeUpDisplayIntervalMs)) {
     return;
   }
 
@@ -396,9 +434,10 @@ InputInjectorMac::Core::~Core() {}
 
 // static
 std::unique_ptr<InputInjector> InputInjector::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  return base::WrapUnique(new InputInjectorMac(main_task_runner));
+    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner) {
+  return base::WrapUnique(
+      new InputInjectorMac(input_thread_task_runner, ui_thread_task_runner));
 }
 
 // static

@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='chip'",
-          "rect": [408, 108, 20, 20],
-          "reason": "background"
-        }
+      "invalidations": [
+        [408, 108, 20, 20]
       ]
     }
   ]

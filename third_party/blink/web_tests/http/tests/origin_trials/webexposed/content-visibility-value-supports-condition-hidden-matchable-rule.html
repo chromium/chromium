@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 BeforeMatchEvent --expire-timestamp=2000000000 --version 3
+-->
+
+<meta http-equiv="origin-trial" content="A6qG2zhYsapjwU1J8SBwg56JXGIaUKzBXWy2hJ8V1U2fX/ZRPCwdajgTdBT/BFdDTmst9Dl2uFqsxc/3LPqmFgQAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQmVmb3JlTWF0Y2hFdmVudCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(t => {
+  assert_equals(document.body.onbeforematch, null,
+    'onbeforematch should be null instead of undefined when the feature is enabled.');
+
+  assert_true(CSS.supports('content-visibility: hidden-matchable'),
+    'CSS.supports() should show that hidden-matchable rule is enabled when the feature is enabled.');
+
+}, 'Tests feature detection for the BeforeMatchEvent origin trial');
+</script>

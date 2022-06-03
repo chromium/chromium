@@ -16,7 +16,7 @@ class CORE_EXPORT SetCharacterDataCommand final : public SimpleEditCommand {
                           unsigned count,
                           const String& text);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // EditCommand implementation

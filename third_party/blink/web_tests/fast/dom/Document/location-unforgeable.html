@@ -9,7 +9,7 @@ test(function() {
     assert_true(document.hasOwnProperty("location"), "property exist on the object itself");
     var descriptor = Object.getOwnPropertyDescriptor(document, "location");
     assert_false(descriptor.configurable, "property is not configurable");
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
         Object.defineProperty(document, "location", {get: function () {}});
     }, "attempting to modify property throws TypeError");
 });

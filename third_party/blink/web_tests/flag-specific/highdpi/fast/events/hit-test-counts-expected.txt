@@ -1,0 +1,77 @@
+Count how many hit tests are required for various event scenarios. Hit tests can be expensive and it's often tempting to add more. These values should only ever be changed to go down, not up.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Event on a simple div
+---------------------
+Initial: 0+0
+MouseMove: 1+0
+MouseDown: 2+1
+MouseUp: 1+0
+TouchStart: 2+0
+TouchMove: 0+0
+TouchEnd: 0+0
+GestureTapDown: 0+1
+GestureShowPress: 0+1
+GestureTap: 1+2
+GestureTapCancel: 0+1
+DoubleFingerTouch: 3+0
+TouchScroll: 1+0
+MouseWheelScroll: 1+1
+
+Event entirely over one iframe nested in another
+---------------------
+Initial: 0+0 0+0 0+0
+MouseMove: 1+0 1+0 1+0
+MouseDown: 1+1 1+1 1+2
+MouseUp: 0+0 0+0 0+1
+TouchStart: 2+0 2+0 1+1
+TouchMove: 0+0 0+0 0+0
+TouchEnd: 0+0 0+0 0+0
+GestureTapDown: 1+0 1+0 0+1
+GestureShowPress: 1+0 1+0 0+1
+GestureTap: 1+0 1+0 1+2
+GestureTapCancel: 1+0 1+0 0+1
+DoubleFingerTouch: 3+0 3+0 3+0
+TouchScroll: 0+0 0+0 0+0
+MouseWheelScroll: 0+2 0+2 2+0
+
+Event near boundary of two iframes
+---------------------
+Initial: 0+0 0+0 0+0
+MouseMove: 1+0 1+0 0+0
+MouseDown: 1+1 2+1 0+0
+MouseUp: 0+0 1+0 0+0
+TouchStart: 2+0 2+0 1+0
+TouchMove: 0+0 0+0 0+0
+TouchEnd: 0+0 0+0 0+0
+GestureTapDown: 1+0 0+1 0+0
+GestureShowPress: 1+0 0+1 0+0
+GestureTap: 1+0 1+2 0+0
+GestureTapCancel: 1+0 0+1 0+0
+DoubleFingerTouch: 3+0 3+0 2+0
+TouchScroll: 0+0 0+0 0+0
+MouseWheelScroll: 1+1 2+0 0+0
+
+Event on a simple div (desktop viewport)
+---------------------
+Initial: 0+0
+MouseMove: 1+0
+MouseDown: 2+1
+MouseUp: 1+0
+TouchStart: 2+0
+TouchMove: 0+0
+TouchEnd: 0+0
+GestureTapDown: 0+1
+GestureShowPress: 0+1
+GestureTap: 1+2
+GestureTapCancel: 0+1
+DoubleFingerTouch: 3+0
+TouchScroll: 0+0
+MouseWheelScroll: 2+0
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+

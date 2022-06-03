@@ -33,53 +33,55 @@
 
 #include "third_party/blink/renderer/core/svg/properties/svg_property_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_string_list.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
-class SVGStringListTearOff : public SVGPropertyTearOff<SVGStringListBase> {
+class SVGStringListTearOff final : public SVGPropertyTearOffBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SVGStringListTearOff(SVGStringListBase*,
-                       SVGAnimatedPropertyBase* binding,
-                       PropertyIsAnimValType);
+  SVGStringListTearOff(SVGStringListBase*, SVGAnimatedPropertyBase* binding);
 
   // SVGStringList DOM interface:
 
   // WebIDL requires "unsigned long" type which is uint32_t.
-  uint32_t length() { return Target()->length(); }
+  uint32_t length() const { return list_->length(); }
 
   void clear(ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
-      return;
-    }
-    Target()->clear();
+    DCHECK(!IsImmutable());
+    list_->Clear();
     CommitChange();
   }
 
   String initialize(const String& item, ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
-      return String();
-    }
-    Target()->Initialize(item);
+    DCHECK(!IsImmutable());
+    list_->Clear();
+    list_->Append(item);
     CommitChange();
     return item;
   }
 
-  String getItem(uint32_t index, ExceptionState& exception_state) {
-    return Target()->GetItem(index, exception_state);
+  String getItem(uint32_t index, ExceptionState& exception_state) const {
+    if (index >= list_->length()) {
+      ThrowIndexSize(exception_state, index, list_->length());
+      return String();
+    }
+    return list_->Values()[index];
   }
 
   String insertItemBefore(const String& item,
                           uint32_t index,
                           ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
-      return String();
-    }
-    Target()->InsertItemBefore(item, index);
+    DCHECK(!IsImmutable());
+    // Spec: If the index is greater than or equal to numberOfItems, then the
+    // new item is appended to the end of the list.
+    index = std::min(index, list_->length());
+    // Spec: Inserts a new item into the list at the specified position. The
+    // index of the item before which the new item is to be inserted. The first
+    // item is number 0. If the index is equal to 0, then the new item is
+    // inserted at the front of the list.
+    list_->Insert(index, item);
     CommitChange();
     return item;
   }
@@ -87,41 +89,52 @@ class SVGStringListTearOff : public SVGPropertyTearOff<SVGStringListBase> {
   String replaceItem(const String& item,
                      uint32_t index,
                      ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
+    DCHECK(!IsImmutable());
+    if (index >= list_->length()) {
+      ThrowIndexSize(exception_state, index, list_->length());
       return String();
     }
-    Target()->ReplaceItem(item, index, exception_state);
+    list_->Replace(index, item);
     CommitChange();
     return item;
   }
 
-  bool AnonymousIndexedSetter(uint32_t index,
-                              const String& item,
-                              ExceptionState& exception_state) {
+  IndexedPropertySetterResult AnonymousIndexedSetter(
+      uint32_t index,
+      const String& item,
+      ExceptionState& exception_state) {
     replaceItem(item, index, exception_state);
-    return true;
+    return IndexedPropertySetterResult::kIntercepted;
   }
 
   String removeItem(uint32_t index, ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
+    DCHECK(!IsImmutable());
+    if (index >= list_->length()) {
+      ThrowIndexSize(exception_state, index, list_->length());
       return String();
     }
-    String removed_item = Target()->RemoveItem(index, exception_state);
+    String removed_item = list_->Values()[index];
+    list_->Remove(index);
     CommitChange();
     return removed_item;
   }
 
   String appendItem(const String& item, ExceptionState& exception_state) {
-    if (IsImmutable()) {
-      ThrowReadOnly(exception_state);
-      return String();
-    }
-    Target()->AppendItem(item);
+    DCHECK(!IsImmutable());
+    list_->Append(item);
     CommitChange();
     return item;
   }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(list_);
+    SVGPropertyTearOffBase::Trace(visitor);
+  }
+
+  const Vector<String>& Values() const { return list_->Values(); }
+
+ private:
+  const Member<SVGStringListBase> list_;
 };
 
 }  // namespace blink

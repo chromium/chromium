@@ -5,12 +5,8 @@
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV",
-          "rect": [0, 125, 20, 20],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 125, 20, 20]
       ]
     }
   ]
@@ -32,22 +28,9 @@
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 250, 400, 350],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV",
-          "rect": [0, 300, 20, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV",
-          "rect": [0, 125, 20, 20],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 250, 400, 350],
+        [0, 125, 20, 20]
       ]
     }
   ]
@@ -59,12 +42,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [400, 0, 400, 600]
       ]
     }
   ]

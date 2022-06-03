@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS touch coalesced events attributes in pointerevents
+PASS touch pointercancel should not have any coalesced events
+PASS touch pointerover should not have any coalesced events
+PASS touch pointerenter should not have any coalesced events
+PASS touch pointerdown should not have any coalesced events
+PASS touch pointermove should have >2 coalesced events as main thread is busy.
+PASS touch pointermove coalesced events should all be marked as trusted.
+PASS touch time stamps of coalesced events must be ascending.
+PASS touch pointermove coalesced events should all bubbles and cancelable as false.
+PASS touch pointerup should not have any coalesced events
+PASS touch pointerout should not have any coalesced events
+PASS touch pointerleave should not have any coalesced events
+Harness: the test ran to completion.
+

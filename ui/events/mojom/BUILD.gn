@@ -18,4 +18,64 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
     "//ui/latency/mojom",
   ]
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ui.mojom.EventPointerType"
+          cpp = "::ui::EventPointerType"
+        },
+        {
+          mojom = "ui.mojom.ScrollGranularity"
+          cpp = "::ui::ScrollGranularity"
+        },
+      ]
+      traits_headers = [ "//ui/events/ipc/ui_events_param_traits_macros.h" ]
+      traits_public_deps = [ "//ui/events/ipc" ]
+    },
+  ]
+
+  cpp_typemaps = shared_cpp_typemaps
+  cpp_typemaps += [
+    {
+      types = [
+        # TODO(crbug.com/617167): Map directly to ui::Event.
+        {
+          mojom = "ui.mojom.Event"
+          cpp = "::std::unique_ptr<::ui::Event>"
+          move_only = true
+        },
+        {
+          mojom = "ui.mojom.EventMomentumPhase"
+          cpp = "::ui::EventMomentumPhase"
+        },
+        {
+          mojom = "ui.mojom.PointerDetails"
+          cpp = "::ui::PointerDetails"
+        },
+        {
+          mojom = "ui.mojom.ScrollEventPhase"
+          cpp = "::ui::ScrollEventPhase"
+        },
+        {
+          mojom = "ui.mojom.GestureDeviceType"
+          cpp = "::ui::GestureDeviceType"
+        },
+      ]
+
+      traits_sources = [ "event_mojom_traits.cc" ]
+      traits_headers = [ "//ui/events/event.h" ]
+      traits_private_headers = [ "event_mojom_traits.h" ]
+      traits_public_deps = [
+        "//ui/events",
+        "//ui/events:dom_keycode_converter",
+        "//ui/gfx/geometry/mojom",
+        "//ui/latency/mojom",
+      ]
+      traits_deps = [ "//ipc:param_traits" ]
+    },
+  ]
+
+  blink_cpp_typemaps = shared_cpp_typemaps
 }

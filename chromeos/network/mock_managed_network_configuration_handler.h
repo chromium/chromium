@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,58 +18,57 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
     : public ManagedNetworkConfigurationHandler {
  public:
   MockManagedNetworkConfigurationHandler();
+
+  MockManagedNetworkConfigurationHandler(
+      const MockManagedNetworkConfigurationHandler&) = delete;
+  MockManagedNetworkConfigurationHandler& operator=(
+      const MockManagedNetworkConfigurationHandler&) = delete;
+
   virtual ~MockManagedNetworkConfigurationHandler();
 
   // ManagedNetworkConfigurationHandler overrides
   MOCK_METHOD1(AddObserver, void(NetworkPolicyObserver* observer));
   MOCK_METHOD1(RemoveObserver, void(NetworkPolicyObserver* observer));
-  MOCK_METHOD4(GetProperties,
+  MOCK_METHOD3(GetProperties,
                void(const std::string& userhash,
                     const std::string& service_path,
-                    const network_handler::DictionaryResultCallback& callback,
-                    const network_handler::ErrorCallback& error_callback));
-  MOCK_METHOD4(GetManagedProperties,
+                    network_handler::PropertiesCallback callback));
+  MOCK_METHOD3(GetManagedProperties,
                void(const std::string& userhash,
                     const std::string& service_path,
-                    const network_handler::DictionaryResultCallback& callback,
-                    const network_handler::ErrorCallback& error_callback));
+                    network_handler::PropertiesCallback callback));
   MOCK_METHOD4(SetProperties,
                void(const std::string& service_path,
                     const base::DictionaryValue& user_settings,
-                    const base::Closure& callback,
-                    const network_handler::ErrorCallback& error_callback));
-  MOCK_METHOD4(SetManagerProperty,
-               void(const std::string& property_name,
-                    const base::Value& value,
-                    const base::Closure& callback,
-                    const network_handler::ErrorCallback& error_callback));
-  MOCK_CONST_METHOD4(
-      CreateConfiguration,
-      void(const std::string& userhash,
-           const base::DictionaryValue& properties,
-           const network_handler::ServiceResultCallback& callback,
-           const network_handler::ErrorCallback& error_callback));
-  MOCK_CONST_METHOD3(
-      RemoveConfiguration,
-      void(const std::string& service_path,
-           const base::Closure& callback,
-           const network_handler::ErrorCallback& error_callback));
-  MOCK_CONST_METHOD3(
-      RemoveConfigurationFromCurrentProfile,
-      void(const std::string& service_path,
-           const base::Closure& callback,
-           const network_handler::ErrorCallback& error_callback));
+                    base::OnceClosure callback,
+                    network_handler::ErrorCallback error_callback));
+  MOCK_CONST_METHOD4(CreateConfiguration,
+                     void(const std::string& userhash,
+                          const base::DictionaryValue& properties,
+                          network_handler::ServiceResultCallback callback,
+                          network_handler::ErrorCallback error_callback));
+  MOCK_CONST_METHOD2(ConfigurePolicyNetwork,
+                     void(const base::Value& shill_properties,
+                          base::OnceClosure callback));
+  MOCK_CONST_METHOD3(RemoveConfiguration,
+                     void(const std::string& service_path,
+                          base::OnceClosure callback,
+                          network_handler::ErrorCallback error_callback));
+  MOCK_CONST_METHOD3(RemoveConfigurationFromCurrentProfile,
+                     void(const std::string& service_path,
+                          base::OnceClosure callback,
+                          network_handler::ErrorCallback error_callback));
   MOCK_METHOD4(SetPolicy,
                void(::onc::ONCSource onc_source,
                     const std::string& userhash,
-                    const base::ListValue& network_configs_onc,
-                    const base::DictionaryValue& global_network_config));
+                    const base::Value& network_configs_onc,
+                    const base::Value& global_network_config));
   MOCK_CONST_METHOD0(IsAnyPolicyApplicationRunning, bool());
-  MOCK_CONST_METHOD3(FindPolicyByGUID,
-                     const base::DictionaryValue*(
-                         const std::string userhash,
-                         const std::string& guid,
-                         ::onc::ONCSource* onc_source));
+  MOCK_CONST_METHOD3(
+      FindPolicyByGUID,
+      const base::DictionaryValue*(const std::string userhash,
+                                   const std::string& guid,
+                                   ::onc::ONCSource* onc_source));
   MOCK_CONST_METHOD1(GetNetworkConfigsFromPolicy,
                      const GuidToPolicyMap*(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
@@ -80,13 +78,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
       const base::DictionaryValue*(const std::string& guid,
                                    const std::string& profile_path,
                                    ::onc::ONCSource* onc_source));
-  MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToConnect, bool());
-  MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToConnectIfAvailable, bool());
+  MOCK_CONST_METHOD2(IsNetworkConfiguredByPolicy,
+                     bool(const std::string& guid,
+                          const std::string& profile_path));
+  MOCK_CONST_METHOD2(CanRemoveNetworkConfig,
+                     bool(const std::string& guid,
+                          const std::string& profile_path));
+  MOCK_CONST_METHOD1(NotifyPolicyAppliedToNetwork,
+                     void(const std::string& service_path));
+  MOCK_METHOD1(OnCellularPoliciesApplied, void(const NetworkProfile& profile));
+  MOCK_CONST_METHOD0(AllowOnlyPolicyCellularNetworks, bool());
+  MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnect, bool());
+  MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnectIfAvailable, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToAutoconnect, bool());
-  MOCK_CONST_METHOD0(GetBlacklistedHexSSIDs, std::vector<std::string>());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManagedNetworkConfigurationHandler);
+  MOCK_CONST_METHOD0(GetBlockedHexSSIDs, std::vector<std::string>());
 };
 
 }  // namespace chromeos

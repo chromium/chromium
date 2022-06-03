@@ -2,59 +2,130 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromecast/chromecast.gni")
+
 source_set("external_service") {
-  sources = [
+  public = [
     "external_connector.h",
-    "external_connector_impl.cc",
     "external_connector_impl.h",
-    "external_service.cc",
     "external_service.h",
   ]
-  deps = [
+  sources = [
+    "external_connector_impl.cc",
+    "external_service.cc",
+  ]
+  public_deps = [
     "//base",
     "//chromecast/external_mojo/public/mojom",
-    "//mojo/core/embedder",
+    "//chromecast/mojo",
     "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+  ]
+  deps = [
+    "//chromecast/external_mojo/broker_service",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/platform",
+    "//services/service_manager/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_external_connector.cc",
+    "fake_external_connector.h",
+  ]
+
+  deps = [
+    ":external_service",
+    "//base",
+    "//chromecast/external_mojo/public/mojom:test_support",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
 source_set("process_setup") {
   sources = [
-    "crash_reporter_client.cc",
-    "crash_reporter_client.h",
     "process_setup.cc",
     "process_setup.h",
   ]
   deps = [
     "//base",
     "//base:base_static",
-    "//chromecast/crash",
-    "//components/crash/content/app",
+    "//chromecast:chromecast_buildflags",
   ]
+
+  if (!is_fuchsia) {
+    sources += [ "crash_reporter_client.h" ]
+
+    if (use_system_crash_handler) {
+      sources += [ "crash_reporter_system.cc" ]
+      deps += [ "//third_party/crashpad/crashpad/client" ]
+    } else {
+      sources += [ "crash_reporter_builtin.cc" ]
+      deps += [
+        "//chromecast/crash",
+        "//components/crash/core/app",
+      ]
+    }
+  }
 }
 
-source_set("service_process") {
-  sources = [
-    "service_process.h",
-  ]
+source_set("tracing_client_hdr") {
+  sources = [ "tracing_client.h" ]
 }
 
-source_set("standalone_service_main") {
+source_set("tracing_client_dummy") {
   sources = [
-    "standalone_service_main.cc",
+    "tracing_client_dummy.cc",
+    "tracing_client_dummy.h",
+  ]
+  deps = [ ":tracing_client_hdr" ]
+}
+
+source_set("tracing_client_impl") {
+  sources = [
+    "tracing_client_impl.cc",
+    "tracing_client_impl.h",
   ]
   deps = [
     ":external_service",
+    ":tracing_client_hdr",
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//mojo/public/cpp/bindings",
+    "//services/tracing:lib",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp:traced_process",
+    "//services/tracing/public/mojom",
+  ]
+}
+
+group("tracing_client") {
+  public_deps = [ ":tracing_client_hdr" ]
+  if (enable_external_mojo_tracing) {
+    public_deps += [ ":tracing_client_impl" ]
+  } else {
+    public_deps += [ ":tracing_client_dummy" ]
+  }
+}
+
+source_set("service_process") {
+  sources = [ "service_process.h" ]
+}
+
+source_set("standalone_service_main") {
+  sources = [ "standalone_service_main.cc" ]
+  deps = [
+    ":external_service",
     ":process_setup",
+    ":tracing_client",
     "//base",
     "//chromecast/external_mojo/public/cpp:common",
     "//mojo/core/embedder",
   ]
-  public_deps = [
-    ":service_process",
-  ]
+  public_deps = [ ":service_process" ]
 }
 
 source_set("chromium_service") {
@@ -73,11 +144,11 @@ source_set("chromium_service") {
 }
 
 executable("standalone_mojo_broker") {
-  sources = [
-    "standalone_mojo_broker.cc",
-  ]
+  sources = [ "standalone_mojo_broker.cc" ]
   deps = [
+    ":external_service",
     ":process_setup",
+    ":tracing_client",
     "//base",
     "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/external_mojo/public/cpp:external_mojo_broker",

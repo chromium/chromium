@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/ozone.gni")
 import("//gpu/vulkan/features.gni")
-import("//ui/ozone/ozone.gni")
 
 visibility = [ "//ui/ozone/*" ]
 
@@ -17,17 +19,15 @@ declare_args() {
 
 source_set("gbm") {
   sources = [
-    "client_native_pixmap_factory_gbm.cc",
-    "client_native_pixmap_factory_gbm.h",
+    "client_native_pixmap_factory_drm.cc",
+    "client_native_pixmap_factory_drm.h",
     "common/display_types.h",
-    "common/drm_overlay_candidates.cc",
-    "common/drm_overlay_candidates.h",
-    "common/drm_overlay_manager.cc",
-    "common/drm_overlay_manager.h",
     "common/drm_util.cc",
     "common/drm_util.h",
     "common/scoped_drm_types.cc",
     "common/scoped_drm_types.h",
+    "gpu/crtc_commit_request.cc",
+    "gpu/crtc_commit_request.h",
     "gpu/crtc_controller.cc",
     "gpu/crtc_controller.h",
     "gpu/drm_device.cc",
@@ -46,6 +46,10 @@ source_set("gbm") {
     "gpu/drm_gpu_display_manager.h",
     "gpu/drm_gpu_util.cc",
     "gpu/drm_gpu_util.h",
+    "gpu/drm_overlay_candidates.cc",
+    "gpu/drm_overlay_candidates.h",
+    "gpu/drm_overlay_manager.cc",
+    "gpu/drm_overlay_manager.h",
     "gpu/drm_overlay_manager_gpu.cc",
     "gpu/drm_overlay_manager_gpu.h",
     "gpu/drm_overlay_plane.cc",
@@ -54,8 +58,6 @@ source_set("gbm") {
     "gpu/drm_overlay_validator.h",
     "gpu/drm_thread.cc",
     "gpu/drm_thread.h",
-    "gpu/drm_thread_message_proxy.cc",
-    "gpu/drm_thread_message_proxy.h",
     "gpu/drm_thread_proxy.cc",
     "gpu/drm_thread_proxy.h",
     "gpu/drm_window.cc",
@@ -76,8 +78,6 @@ source_set("gbm") {
     "gpu/hardware_display_plane.h",
     "gpu/hardware_display_plane_atomic.cc",
     "gpu/hardware_display_plane_atomic.h",
-    "gpu/hardware_display_plane_dummy.cc",
-    "gpu/hardware_display_plane_dummy.h",
     "gpu/hardware_display_plane_manager.cc",
     "gpu/hardware_display_plane_manager.h",
     "gpu/hardware_display_plane_manager_atomic.cc",
@@ -102,8 +102,6 @@ source_set("gbm") {
     "host/drm_display_host.h",
     "host/drm_display_host_manager.cc",
     "host/drm_display_host_manager.h",
-    "host/drm_gpu_platform_support_host.cc",
-    "host/drm_gpu_platform_support_host.h",
     "host/drm_native_display_delegate.cc",
     "host/drm_native_display_delegate.h",
     "host/drm_window_host.cc",
@@ -116,21 +114,26 @@ source_set("gbm") {
     "host/host_cursor_proxy.h",
     "host/host_drm_device.cc",
     "host/host_drm_device.h",
-    "ozone_platform_gbm.cc",
-    "ozone_platform_gbm.h",
+    "ozone_platform_drm.cc",
+    "ozone_platform_drm.h",
   ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/vulkan:buildflags",
     "//ipc",
+    "//media:media_buildflags",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
+    "//ui/base/cursor",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/display",
     "//ui/display/types",
@@ -152,8 +155,15 @@ source_set("gbm") {
     "//ui/platform_window",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//ui/base/ime/chromeos" ]
+  if (!is_chromecast) {
+    data_deps = [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ui/base/ime/ash" ]
   }
 
   if (enable_vulkan) {
@@ -176,8 +186,9 @@ source_set("gbm") {
 source_set("gbm_unittests") {
   testonly = true
   sources = [
-    "common/drm_overlay_manager_unittest.cc",
     "common/drm_util_unittest.cc",
+    "gpu/drm_display_unittest.cc",
+    "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
     "gpu/drm_thread_unittest.cc",
     "gpu/drm_window_unittest.cc",
@@ -185,8 +196,6 @@ source_set("gbm_unittests") {
     "gpu/hardware_display_plane_manager_unittest.cc",
     "gpu/mock_drm_device.cc",
     "gpu/mock_drm_device.h",
-    "gpu/mock_gbm_device.cc",
-    "gpu/mock_gbm_device.h",
     "gpu/proxy_helpers_unittest.cc",
     "gpu/screen_manager_unittest.cc",
   ]
@@ -201,6 +210,7 @@ source_set("gbm_unittests") {
     "//ui/gfx",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
+    "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]

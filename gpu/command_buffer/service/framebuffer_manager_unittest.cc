@@ -5,7 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include <memory>
+
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -17,6 +19,7 @@
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_mock.h"
 
@@ -44,15 +47,14 @@ class FramebufferManagerTest : public GpuServiceTest {
  public:
   FramebufferManagerTest()
       : manager_(1, 1, nullptr),
-        feature_info_(new FeatureInfo()) {
-    texture_manager_.reset(new TextureManager(
+        feature_info_(new FeatureInfo()),
+        discardable_manager_(GpuPreferences()) {
+    texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_));
-    renderbuffer_manager_.reset(new RenderbufferManager(nullptr,
-                                                        kMaxRenderbufferSize,
-                                                        kMaxSamples,
-                                                        feature_info_.get()));
+        kUseDefaultTextures, nullptr, &discardable_manager_);
+    renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
+        nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
   ~FramebufferManagerTest() override {
     manager_.Destroy(false);
@@ -123,15 +125,14 @@ class FramebufferInfoTestBase : public GpuServiceTest {
         manager_(kMaxDrawBuffers,
                  kMaxColorAttachments,
                  &framebuffer_completeness_cache_),
-        feature_info_(new FeatureInfo()) {
-    texture_manager_.reset(new TextureManager(
+        feature_info_(new FeatureInfo()),
+        discardable_manager_(GpuPreferences()) {
+    texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_));
-    renderbuffer_manager_.reset(new RenderbufferManager(nullptr,
-                                                        kMaxRenderbufferSize,
-                                                        kMaxSamples,
-                                                        feature_info_.get()));
+        kUseDefaultTextures, nullptr, &discardable_manager_);
+    renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
+        nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
   ~FramebufferInfoTestBase() override {
     manager_.Destroy(false);
@@ -154,10 +155,11 @@ class FramebufferInfoTestBase : public GpuServiceTest {
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(gl_.get(),
         extensions, "", gl_version, context_type_);
     feature_info_->InitializeForTesting(context_type_);
-    decoder_.reset(
-        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
+    decoder_ = std::make_unique<MockGLES2Decoder>(
+        &client_, &command_buffer_service_, &outputter_);
     manager_.CreateFramebuffer(kClient1Id, kService1Id);
-    error_state_.reset(new ::testing::StrictMock<gles2::MockErrorState>());
+    error_state_ =
+        std::make_unique<::testing::StrictMock<gles2::MockErrorState>>();
     framebuffer_ = manager_.GetFramebuffer(kClient1Id);
     ASSERT_TRUE(framebuffer_ != nullptr);
   }

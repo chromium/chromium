@@ -7,7 +7,6 @@
 #include <ostream>  // NOLINT
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -49,7 +48,7 @@ bool SelectionTemplate<Strategy>::operator!=(
 }
 
 template <typename Strategy>
-void SelectionTemplate<Strategy>::Trace(Visitor* visitor) {
+void SelectionTemplate<Strategy>::Trace(Visitor* visitor) const {
   visitor->Trace(base_);
   visitor->Trace(extent_);
 }
@@ -186,15 +185,6 @@ void SelectionTemplate<Strategy>::ResetDirectionCache() const {
 }
 
 template <typename Strategy>
-SelectionType SelectionTemplate<Strategy>::Type() const {
-  if (base_.IsNull())
-    return kNoSelection;
-  if (base_ == extent_)
-    return kCaretSelection;
-  return kRangeSelection;
-}
-
-template <typename Strategy>
 void SelectionTemplate<Strategy>::PrintTo(std::ostream* ostream,
                                           const char* type) const {
   if (IsNone()) {
@@ -282,6 +272,8 @@ SelectionTemplate<Strategy>::Builder::Extend(
   DCHECK_EQ(selection_.GetDocument(), position.GetDocument());
   DCHECK(selection_.Base().IsConnected()) << selection_.Base();
   DCHECK(selection_.AssertValid());
+  if (selection_.extent_.IsEquivalent(position))
+    return *this;
   selection_.extent_ = position;
   selection_.direction_ = Direction::kNotComputed;
   return *this;
@@ -415,16 +407,22 @@ SelectionInDOMTree ConvertToSelectionInDOMTree(
 
 SelectionInFlatTree ConvertToSelectionInFlatTree(
     const SelectionInDOMTree& selection) {
-  return SelectionInFlatTree::Builder()
-      .SetAffinity(selection.Affinity())
-      .SetBaseAndExtent(ToPositionInFlatTree(selection.Base()),
-                        ToPositionInFlatTree(selection.Extent()))
-      .Build();
+  SelectionInFlatTree::Builder builder;
+  const PositionInFlatTree& base = ToPositionInFlatTree(selection.Base());
+  const PositionInFlatTree& extent = ToPositionInFlatTree(selection.Extent());
+  if (base.IsConnected() && extent.IsConnected())
+    builder.SetBaseAndExtent(base, extent);
+  else if (base.IsConnected())
+    builder.Collapse(base);
+  else if (extent.IsConnected())
+    builder.Collapse(extent);
+  builder.SetAffinity(selection.Affinity());
+  return builder.Build();
 }
 
 template <typename Strategy>
 void SelectionTemplate<Strategy>::InvalidSelectionResetter::Trace(
-    blink::Visitor* visitor) {
+    blink::Visitor* visitor) const {
   visitor->Trace(document_);
 }
 

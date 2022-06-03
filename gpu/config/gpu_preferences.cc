@@ -5,7 +5,7 @@
 #include "gpu/config/gpu_preferences.h"
 
 #include "base/base64.h"
-#include "gpu/ipc/common/gpu_preferences_mojom_traits.h"
+#include "gpu/ipc/common/gpu_preferences.mojom.h"
 
 namespace gpu {
 

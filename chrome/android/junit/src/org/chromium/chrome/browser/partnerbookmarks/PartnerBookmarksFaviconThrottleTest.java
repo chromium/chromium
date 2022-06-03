@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
@@ -25,8 +23,6 @@ public class PartnerBookmarksFaviconThrottleTest {
 
     private PartnerBookmarksFaviconThrottle mFaviconThrottle;
 
-    @Rule
-    public DisableHistogramsRule mDisableHistogramsRule = new DisableHistogramsRule();
 
     @Before
     public void setUp() {

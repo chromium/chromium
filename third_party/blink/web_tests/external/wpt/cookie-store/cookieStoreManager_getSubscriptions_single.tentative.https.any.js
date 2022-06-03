@@ -1,5 +1,5 @@
 // META: title=Cookie Store API: ServiceWorker with one cookie change subscription
-// META: global=!default,serviceworker,window
+// META: global=window,serviceworker
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 
 'use strict';
@@ -30,18 +30,21 @@ promise_test(async testCase => {
   }
 
   {
-    const subscriptions = [
-      { name: 'cookie-name', matchType: 'equals', url: `${scope}/path` }
-    ];
+    const subscriptions = [{ name: 'cookie-name', url: `${scope}/path` }];
     await registration.cookies.subscribe(subscriptions);
-    testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
+    testCase.add_cleanup(() => {
+      // For non-ServiceWorker environments, registration.unregister() cleans up
+      // cookie subscriptions.
+      if (self.GLOBAL.isWorker()) {
+        return registration.cookies.unsubscribe(subscriptions);
+      }
+    });
   }
 
   const subscriptions = await registration.cookies.getSubscriptions();
   assert_equals(subscriptions.length, 1);
 
   assert_equals(subscriptions[0].name, 'cookie-name');
-  assert_equals(subscriptions[0].matchType, 'equals');
   assert_equals(subscriptions[0].url,
                 (new URL(`${scope}/path`, self.location.href)).href);
 }, 'getSubscriptions returns a subscription passed to subscribe');

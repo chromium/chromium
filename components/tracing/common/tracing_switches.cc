@@ -18,14 +18,25 @@ const char kTraceConfigFile[]               = "trace-config-file";
 // specify the specific trace categories to include (e.g.
 // --trace-startup=base,net) otherwise, all events are recorded. Setting this
 // flag results in the first call to BeginTracing() to receive all trace events
-// since startup. In Chrome, you may find --trace-startup-file and
+// since startup.
+//
+// Historically, --trace-startup was used for browser startup profiling and
+// --enable-tracing was used for browsertest tracing. Now they are share the
+// same implementation, but both are still supported to avoid disrupting
+// existing workflows. The only difference between them is the default duration
+// (5 seconds for trace-startup, unlimited for enable-tracing). If both are
+// specified, 'trace-startup' takes precedence.
+//
+// In Chrome, you may find --trace-startup-file and
 // --trace-startup-duration to control the auto-saving of the trace (not
 // supported in the base-only TraceLog component).
-const char kTraceStartup[]                  = "trace-startup";
+const char kTraceStartup[] = "trace-startup";
+const char kEnableTracing[] = "enable-tracing";
 
-// Sets the time in seconds until startup tracing ends. If omitted a default of
-// 5 seconds is used. Has no effect without --trace-startup, or if
-// --startup-trace-file=none was supplied.
+// Sets the time in seconds until startup tracing ends. If omitted:
+// - if --trace-startup is specified, a default of 5 seconds is used.
+// - if --enable-tracing is specified, tracing lasts until the browser is
+// closed. Has no effect otherwise.
 const char kTraceStartupDuration[]          = "trace-startup-duration";
 
 // If supplied, sets the file which startup tracing will be stored into, if
@@ -35,7 +46,25 @@ const char kTraceStartupDuration[]          = "trace-startup-duration";
 // As a special case, can be set to 'none' - this disables automatically saving
 // the result to a file and the first manually recorded trace will then receive
 // all events since startup.
-const char kTraceStartupFile[]              = "trace-startup-file";
+const char kTraceStartupFile[] = "trace-startup-file";
+
+// Similar to the flag above, with the following differences:
+// - A more detailed basename will be generated.
+// - If the value is empty or ends with path separator, the provided directory
+// will be used (with empty standing for current directory) and a detailed
+// basename file will be generated.
+//
+// It is ignored if --trace-startup-file is specified.
+const char kEnableTracingOutput[] = "enable-tracing-output";
+
+// Sets the output format for the trace, valid values are "json" and "proto".
+// If not set, the current default is "json".
+// "proto", unlike json, supports writing the trace into the output file
+// incrementally and is more likely to retain more data if the browser process
+// unexpectedly terminates.
+// Ignored if "trace-startup-owner" is not "controller".
+const char kTraceStartupFormat[] = "trace-startup-format";
+const char kEnableTracingFormat[] = "enable-tracing-format";
 
 // If supplied, sets the tracing record mode and options; otherwise, the default
 // "record-until-full" mode will be used.
@@ -66,17 +95,16 @@ const char kTraceStartupEnablePrivacyFiltering[] =
 // Repeat internable data for each TraceEvent in the perfetto proto format.
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
 
-// If supplied, will enable Perfetto startup tracing and stream the
-// output to the given file. On Android, if no file is provided, automatically
-// generate a file to write the output to.
-// TODO(oysteine): Remove once Perfetto starts early enough after
-// process startup to be able to replace the legacy startup tracing.
-const char kPerfettoOutputFile[] = "perfetto-output-file";
-
 // Sends a pretty-printed version of tracing info to the console.
-const char kTraceToConsole[]                = "trace-to-console";
+const char kTraceToConsole[] = "trace-to-console";
 
-// Sets the target URL for uploading tracing data.
-const char kTraceUploadURL[]                = "trace-upload-url";
+// Sets a local file destination for tracing data. This is only used if
+// kEnableBackgroundTracing is also specified.
+const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";
+
+// Configures the size of the shared memory buffer used for tracing. Value is
+// provided in kB. Defaults to 4096. Should be a multiple of the SMB page size
+// (currently 32kB on Desktop or 4kB on Android).
+const char kTraceSmbSize[] = "trace-smb-size";
 
 }  // namespace switches

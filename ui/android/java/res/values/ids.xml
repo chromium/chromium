@@ -7,4 +7,7 @@
     <item type="id" name="view_model" />
     <item type="id" name="view_type" />
     <item type="id" name="view_mcp" />
+
+    <!-- Widgets -->
+    <item type="id" name="chip_cancel_btn" />
 </resources>

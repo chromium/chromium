@@ -6,6 +6,8 @@
 
 #include "net/android/network_change_notifier_android.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -161,8 +163,9 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
   ~BaseNetworkChangeNotifierAndroidTest() override {}
 
   void RunTest(
-      const base::Callback<int(void)>& notifications_count_getter,
-      const base::Callback<ConnectionType(void)>&  connection_type_getter) {
+      const base::RepeatingCallback<int(void)>& notifications_count_getter,
+      const base::RepeatingCallback<ConnectionType(void)>&
+          connection_type_getter) {
     EXPECT_EQ(0, notifications_count_getter.Run());
     EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
               connection_type_getter.Run());
@@ -187,17 +190,21 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
               connection_type_getter.Run());
   }
 
-  void SetOnline() {
+  void SetOnline(bool drain_run_loop = true) {
     delegate_.SetOnline();
-    // Note that this is needed because base::ObserverListThreadSafe uses
-    // PostTask().
-    base::RunLoop().RunUntilIdle();
+    if (drain_run_loop) {
+      // Note that this is needed because base::ObserverListThreadSafe uses
+      // PostTask().
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
-  void SetOffline() {
+  void SetOffline(bool drain_run_loop = true) {
     delegate_.SetOffline();
-    // See comment above.
-    base::RunLoop().RunUntilIdle();
+    if (drain_run_loop) {
+      // See comment above.
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void FakeConnectionSubtypeChange(ConnectionSubtype subtype) {
@@ -261,7 +268,7 @@ TEST_F(BaseNetworkChangeNotifierAndroidTest,
   SetOnline();
   ASSERT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
             delegate_.GetCurrentConnectionType());
-  other_delegate.reset(new NetworkChangeNotifierDelegateAndroid());
+  other_delegate = std::make_unique<NetworkChangeNotifierDelegateAndroid>();
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
             other_delegate->GetCurrentConnectionType());
 }
@@ -289,39 +296,30 @@ class NetworkChangeNotifierAndroidTest
 };
 
 class NetworkChangeNotifierDelegateAndroidTest
-    : public NetworkChangeNotifierAndroidTest {
+    : public BaseNetworkChangeNotifierAndroidTest {
  protected:
   NetworkChangeNotifierDelegateAndroidTest() {
-    delegate_.AddObserver(&delegate_observer_);
-    delegate_.AddObserver(&other_delegate_observer_);
+    delegate_.RegisterObserver(&delegate_observer_);
   }
 
   ~NetworkChangeNotifierDelegateAndroidTest() override {
-    delegate_.RemoveObserver(&delegate_observer_);
-    delegate_.RemoveObserver(&other_delegate_observer_);
+    delegate_.UnregisterObserver(&delegate_observer_);
   }
 
   NetworkChangeNotifierDelegateAndroidObserver delegate_observer_;
-  NetworkChangeNotifierDelegateAndroidObserver other_delegate_observer_;
 };
 
-// Tests that the NetworkChangeNotifierDelegateAndroid's observers are notified.
+// Tests that the NetworkChangeNotifierDelegateAndroid's observer is notified.
 // A testing-only observer is used here for testing. In production the
 // delegate's observers are instances of NetworkChangeNotifierAndroid.
 TEST_F(NetworkChangeNotifierDelegateAndroidTest, DelegateObserverNotified) {
-  // Test the logic with a single observer.
-  RunTest(base::Bind(&NetworkChangeNotifierDelegateAndroidObserver::
-                         type_notifications_count,
-                     base::Unretained(&delegate_observer_)),
-          base::Bind(
+  RunTest(base::BindRepeating(&NetworkChangeNotifierDelegateAndroidObserver::
+                                  type_notifications_count,
+                              base::Unretained(&delegate_observer_)),
+          base::BindRepeating(
               &NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionType,
               base::Unretained(&delegate_)));
-  // Check that *all* the observers are notified. Both observers should have the
-  // same state.
-  EXPECT_EQ(delegate_observer_.type_notifications_count(),
-            other_delegate_observer_.type_notifications_count());
 }
-
 
 // When a NetworkChangeNotifierAndroid is observing a
 // NetworkChangeNotifierDelegateAndroid for network state changes, and the
@@ -329,10 +327,12 @@ TEST_F(NetworkChangeNotifierDelegateAndroidTest, DelegateObserverNotified) {
 // NetworkChangeNotifierAndroid should reflect that state.
 TEST_F(NetworkChangeNotifierAndroidTest,
        NotificationsSentToNetworkChangeNotifierAndroid) {
-  RunTest(base::Bind(&NetworkChangeNotifierObserver::notifications_count,
-                     base::Unretained(&connection_type_observer_)),
-          base::Bind(&NetworkChangeNotifierAndroid::GetCurrentConnectionType,
-                     base::Unretained(&notifier_)));
+  RunTest(
+      base::BindRepeating(&NetworkChangeNotifierObserver::notifications_count,
+                          base::Unretained(&connection_type_observer_)),
+      base::BindRepeating(
+          &NetworkChangeNotifierAndroid::GetCurrentConnectionType,
+          base::Unretained(&notifier_)));
 }
 
 // When a NetworkChangeNotifierAndroid's connection state changes, it should
@@ -340,10 +340,9 @@ TEST_F(NetworkChangeNotifierAndroidTest,
 TEST_F(NetworkChangeNotifierAndroidTest,
        NotificationsSentToClientsOfNetworkChangeNotifier) {
   RunTest(
-      base::Bind(
-          &NetworkChangeNotifierObserver::notifications_count,
-          base::Unretained(&connection_type_observer_)),
-      base::Bind(&NetworkChangeNotifier::GetConnectionType));
+      base::BindRepeating(&NetworkChangeNotifierObserver::notifications_count,
+                          base::Unretained(&connection_type_observer_)),
+      base::BindRepeating(&NetworkChangeNotifier::GetConnectionType));
   // Check that *all* the observers are notified.
   EXPECT_EQ(connection_type_observer_.notifications_count(),
             other_connection_type_observer_.notifications_count());
@@ -365,19 +364,16 @@ TEST_F(NetworkChangeNotifierAndroidTest, MaxBandwidth) {
   EXPECT_EQ(0.0, max_bandwidth_mbps);
 }
 
-TEST_F(NetworkChangeNotifierDelegateAndroidTest, MaxBandwidthCallbackNotifier) {
+TEST_F(NetworkChangeNotifierAndroidTest, MaxBandwidthCallbackNotifier) {
   // The bandwidth notification should always be forwarded, even if the value
   // doesn't change (because the type might have changed).
   FakeConnectionSubtypeChange(ConnectionSubtype::SUBTYPE_CDMA);
-  EXPECT_EQ(1, delegate_observer_.bandwidth_notifications_count());
   EXPECT_EQ(1, max_bandwidth_observer_.notifications_count());
 
   FakeConnectionSubtypeChange(ConnectionSubtype::SUBTYPE_CDMA);
-  EXPECT_EQ(2, delegate_observer_.bandwidth_notifications_count());
   EXPECT_EQ(2, max_bandwidth_observer_.notifications_count());
 
   FakeConnectionSubtypeChange(ConnectionSubtype::SUBTYPE_LTE);
-  EXPECT_EQ(3, delegate_observer_.bandwidth_notifications_count());
   EXPECT_EQ(3, max_bandwidth_observer_.notifications_count());
 }
 
@@ -487,6 +483,17 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
             NetworkChangeNotifier::GetDefaultNetwork());
 
   NetworkChangeNotifier::RemoveNetworkObserver(&network_observer);
+}
+
+// Tests that network type changes happen synchronously. Otherwise the type
+// "change" at browser startup leaves tasks on the queue that will later
+// invalidate any network requests that have been started.
+TEST_F(NetworkChangeNotifierDelegateAndroidTest, TypeChangeIsSynchronous) {
+  const int initial_value = delegate_observer_.type_notifications_count();
+  SetOffline(/*drain_run_loop=*/false);
+  // Note that there's no call to |base::RunLoop::RunUntilIdle| here. The
+  // update must happen synchronously.
+  EXPECT_EQ(initial_value + 1, delegate_observer_.type_notifications_count());
 }
 
 }  // namespace net

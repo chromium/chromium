@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_OVERSCROLL_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/overscroll_event_init.h"
 
 namespace blink {
+
+class OverscrollEventInit;
 
 class OverscrollEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -38,7 +39,7 @@ class OverscrollEvent final : public Event {
   double deltaX() const { return delta_x_; }
   double deltaY() const { return delta_y_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   double delta_x_ = 0;

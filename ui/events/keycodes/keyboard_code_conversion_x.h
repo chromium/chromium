@@ -7,29 +7,28 @@
 
 #include <stdint.h>
 
-#include "base/strings/string16.h"
+
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/keycodes/keycodes_x_export.h"
-
-typedef union _XEvent XEvent;
-typedef struct _XDisplay XDisplay;
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 
 namespace ui {
 
 enum class DomCode;
 
-KEYCODES_X_EXPORT KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev);
+KEYCODES_X_EXPORT KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev);
 
 KEYCODES_X_EXPORT KeyboardCode KeyboardCodeFromXKeysym(unsigned int keysym);
 
-KEYCODES_X_EXPORT DomCode CodeFromXEvent(const XEvent* xev);
+KEYCODES_X_EXPORT DomCode CodeFromXEvent(const x11::Event& xev);
 
 // Returns a character on a standard US PC keyboard from an XEvent.
-KEYCODES_X_EXPORT uint16_t GetCharacterFromXEvent(const XEvent* xev);
+KEYCODES_X_EXPORT uint16_t GetCharacterFromXEvent(const x11::Event& xev);
 
 // Returns DomKey and character from an XEvent.
-KEYCODES_X_EXPORT DomKey GetDomKeyFromXEvent(const XEvent* xev);
+KEYCODES_X_EXPORT DomKey GetDomKeyFromXEvent(const x11::Event& xev);
 
 // Converts a KeyboardCode into an X KeySym.
 KEYCODES_X_EXPORT int XKeysymForWindowsKeyCode(KeyboardCode keycode,
@@ -39,17 +38,14 @@ KEYCODES_X_EXPORT int XKeysymForWindowsKeyCode(KeyboardCode keycode,
 // are usually not injective, so inverse mapping should be avoided when
 // practical. A round-trip keycode -> KeyboardCode -> keycode will not
 // necessarily return the original keycode.
-KEYCODES_X_EXPORT unsigned int XKeyCodeForWindowsKeyCode(KeyboardCode key_code,
-                                                         int flags,
-                                                         XDisplay* display);
+KEYCODES_X_EXPORT unsigned int XKeyCodeForWindowsKeyCode(
+    KeyboardCode key_code,
+    int flags,
+    x11::Connection* connection);
 
 // Converts an X keycode into ui::KeyboardCode.
 KEYCODES_X_EXPORT KeyboardCode
 DefaultKeyboardCodeFromHardwareKeycode(unsigned int hardware_code);
-
-// Initializes a core XKeyEvent from an XI2 key event.
-KEYCODES_X_EXPORT void InitXKeyEventFromXIDeviceEvent(const XEvent& src,
-                                                      XEvent* dst);
 
 }  // namespace ui
 

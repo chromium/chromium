@@ -5,39 +5,39 @@
 (async function() {
   TestRunner.addResult(
       `Tests that distributed nodes and their updates are correctly shown in different shadow host display modes.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <template id="youngestShadowRootTemplate">
     <div class="youngestShadowMain">
         <shadow></shadow>
-        <content select=".distributeMeToYoungest"><div id="fallbackYoungest"></div></content>
+        <slot name=".distributeMeToYoungest"><div id="fallbackYoungest"></div></slot>
         <div class="innerShadowHost">
-            <content in-youngest-shadow-root="" select=".distributeMeToInner"></content>
+            <slot in-youngest-shadow-root="" name=".distributeMeToInner"></slot>
         </div>
     </div>
 </template>
 <template id="oldestShadowRootTemplate">
     <div class="oldestShadowMain">
-        <content select=".distributeMeToOldest"><div id="fallbackOldest"></div></content>
+        <slot name=".distributeMeToOldest"><div id="fallbackOldest"></div></slot>
     </div>
 </template>
 <template id="innerShadowRootTemplate">
     <div class="innerShadowMain">
-        <content in-inner-shadow-root="" select=".distributeMeToInner"></content>
+        <slot in-inner-shadow-root="" name=".distributeMeToInner"></slot>
     </div>
 </template>
 <div id="shadowHost">
-    <div class="distributeMeToYoungest original">
+    <div slot="distributeMeToYoungest">
         youngest distributed text
     </div>
-    <div class="distributeMeToOldest original">
+    <div slot="distributeMeToOldest">
         oldest distributed text
     </div>
-    <div class="distributeMeToInner original">
+    <div slot="distributeMeToInner">
         oldest distributed text
     </div>
-    <div class="distributeMeToInner original2">
+    <div slot="distributeMeToInner">
         oldest distributed text
     </div>
 </div>
@@ -46,10 +46,9 @@
       function createShadowRootFromTemplate(root, selector, templateId)
       {
           var shadowHost = root.querySelector(selector);
-          var shadowRoot = shadowHost.createShadowRoot();
+          var shadowRoot = shadowHost.attachShadow({mode: "open"});
           var template = document.querySelector(templateId);
-          var clone = document.importNode(template.content, true);
-          shadowRoot.appendChild(clone);
+          shadowRoot.appendChild(template.content.cloneNode(true));
           return shadowHost;
       }
 
@@ -75,8 +74,8 @@
       function addDistributedNode(oldest)
       {
           var node = document.createElement("div");
-          node.classList.add(oldest ? "distributeMeToOldest" : "distributeMeToYoungest");
-          node.classList.add("distributeMeAsWell_" + (++lastDistributedNodeId));
+          node.slot = oldest ? "distributeMeToOldest" : "distributeMeToYoungest";
+          node.slot = "distributeMeAsWell_" + (++lastDistributedNodeId);
           var shadowHost = document.querySelector("#shadowHost");
           shadowHost.appendChild(node);
       }
@@ -125,7 +124,7 @@
   }
 
   function waitForModifiedNodesUpdate(title, next) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateModifiedNodes', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
 
     function callback() {
       expandAndDumpShadowHostNode('========= ' + title + ' ========', next);

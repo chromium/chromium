@@ -4,6 +4,8 @@
 
 #include "ui/events/android/gesture_event_android.h"
 
+#include <memory>
+
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -39,10 +41,10 @@ std::unique_ptr<GestureEventAndroid> GestureEventAndroid::CreateFor(
     const gfx::PointF& new_location) const {
   auto offset = new_location - location_;
   gfx::PointF new_screen_location = screen_location_ + offset;
-  return std::unique_ptr<GestureEventAndroid>(new GestureEventAndroid(
+  return std::make_unique<GestureEventAndroid>(
       type_, new_location, new_screen_location, time_ms_, scale_, delta_x_,
       delta_y_, velocity_x_, velocity_y_, target_viewport_, synthetic_scroll_,
-      prevent_boosting_));
+      prevent_boosting_);
 }
 
 }  // namespace ui

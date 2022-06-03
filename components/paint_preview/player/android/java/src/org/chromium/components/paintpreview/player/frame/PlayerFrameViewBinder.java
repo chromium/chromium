@@ -16,11 +16,17 @@ class PlayerFrameViewBinder {
     static void bind(PropertyModel model, PlayerFrameView view, PropertyKey key) {
         if (key.equals(PlayerFrameProperties.BITMAP_MATRIX)) {
             view.updateBitmapMatrix(model.get(PlayerFrameProperties.BITMAP_MATRIX));
+        } else if (key.equals(PlayerFrameProperties.TILE_DIMENSIONS)) {
+            view.updateTileDimensions(model.get(PlayerFrameProperties.TILE_DIMENSIONS));
         } else if (key.equals(PlayerFrameProperties.VIEWPORT)) {
             Rect viewPort = model.get(PlayerFrameProperties.VIEWPORT);
             view.updateViewPort(viewPort.left, viewPort.top, viewPort.right, viewPort.bottom);
         } else if (key.equals(PlayerFrameProperties.SUBFRAME_VIEWS)) {
-            view.updateSubFrames(model.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+            view.updateSubFrameViews(model.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+        } else if (key.equals(PlayerFrameProperties.SUBFRAME_RECTS)) {
+            view.updateSubFrameRects(model.get(PlayerFrameProperties.SUBFRAME_RECTS));
+        } else if (key.equals(PlayerFrameProperties.SCALE_MATRIX)) {
+            view.updateScaleMatrix(model.get(PlayerFrameProperties.SCALE_MATRIX));
         }
     }
 }

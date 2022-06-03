@@ -2,7 +2,8 @@
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <meta http-equiv="Content-Security-Policy" content="trusted-types * 'allow-duplicates'">
+  <meta http-equiv="Content-Security-Policy"
+        content="trusted-types policy default 'allow-duplicates'; require-trusted-types-for 'script'">
 </head>
 <body>
 <script>
@@ -35,8 +36,8 @@ function doc_test(doc_type, test_fn, description) {
 
 for (let doc_type in doc_types) {
   doc_test(doc_type, doc => {
-    assert_throws(new TypeError(),
-                  _ => { doc.createElement("script").textContent = "2+2"; });
+    assert_throws_js(TypeError,
+                     _ => { doc.createElement("script").textContent = "2+2"; });
   }, "Trusted Type assignment is blocked." );
 
   doc_test(doc_type, doc => {
@@ -44,8 +45,8 @@ for (let doc_type in doc_types) {
     const value = policy.createHTML("hello");
     doc.body.innerHTML = value;
     assert_equals(doc.body.textContent, "hello");
-    assert_throws(new TypeError(),
-                  _ => { doc.body.innerHTML = "world"; });
+    assert_throws_js(TypeError,
+                     _ => { doc.body.innerHTML = "world"; });
   }, "Trusted Type instances created in the main doc can be used.");
 }
 

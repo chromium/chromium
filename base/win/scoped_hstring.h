@@ -7,6 +7,7 @@
 
 #include <hstring.h>
 
+#include "base/compiler_specific.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_piece_forward.h"
 
@@ -61,7 +62,7 @@ class BASE_EXPORT ScopedHString
   static ScopedHString Create(StringPiece str);
 
   // Loads all required HSTRING functions, available from Win8 and onwards.
-  static bool ResolveCoreWinRTStringDelayload();
+  static bool ResolveCoreWinRTStringDelayload() WARN_UNUSED_RESULT;
 
   // Returns a view into the memory buffer managed by the instance. The returned
   // StringPiece is only valid during the lifetime of this ScopedHString

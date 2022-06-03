@@ -13,6 +13,9 @@
 // Returns the indexPath for the currently focused text field when in edit mode.
 - (NSIndexPath*)indexPathForCurrentTextField;
 
+// Returns whether cell at indexPath is editCell.
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_EDIT_TABLE_VIEW_CONTROLLER_PROTECTED_H_

@@ -1,3 +1,4 @@
+importScripts('/resources/get-host-info.js?pipe=sub');
 importScripts('fetch-test-options.js');
 importScripts('thorough-util.js');
 

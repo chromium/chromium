@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sharesheet specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <!-- Common strings -->
+  <message name="IDS_SHARESHEET_TITLE_LABEL" desc="The label to be shown as the title of the sharesheet bubble when a user clicks on the share button.">
+    Share
+  </message>
+  <message name="IDS_SHARESHEET_APPS_LIST_LABEL" desc="The label to be shown before the list of apps.">
+    Apps list
+  </message>
+  <message name="IDS_SHARESHEET_MORE_APPS_LABEL" desc="The label for the button at the bottom of the sharesheet which clicks into the expanded sharesheet.">
+    More apps
+  </message>
+  <message name="IDS_SHARESHEET_FEWER_APPS_LABEL" desc="The label for the button at the bottom of the sharesheet which clicks into the default sharesheet.">
+    Fewer apps
+  </message>
+  <message name="IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL" desc="The label shown to inform users that the sharesheet is empty.">
+    No apps available for this content
+  </message>
+  <message name="IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL" desc="The label informing users where to download apps.">
+    Visit the Play Store to find more apps
+  </message>
+  <message name="IDS_SHARESHEET_FILES_LABEL" desc="The label for the enumeration of the number of files a user is trying to share.">
+    {COUNT, plural,
+      =1 {{COUNT} file}
+      other {{COUNT} files}}
+  </message>
+  <message name="IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL" desc="The label for the button in the sharesheet that copies the data the user has selected to the clipboard.">
+    Copy to clipboard
+  </message>
+</grit-part>

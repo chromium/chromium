@@ -31,11 +31,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-class FloatRect;
 class Image;
 
 enum SourceImageStatus {
@@ -47,11 +48,22 @@ enum SourceImageStatus {
   kInvalidSourceImageStatus,
 };
 
+// This is the helper function to get the canvas image with a
+// specific alpha op requirements.
+// This function will be a no op if the image is opaque, or if the image was
+// already in the preferred state (if it was premultiplied and it is requested
+// to be premultiplied or if it was unpremultiplied and it is requested to be
+// unpremultiplied).
+scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
+    scoped_refptr<StaticBitmapImage>&&,
+    const AlphaDisposition);
+
 class CORE_EXPORT CanvasImageSource {
  public:
-  virtual scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                                       AccelerationHint,
-                                                       const FloatSize&) = 0;
+  virtual scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
   // already tainted because this function may be used to determine whether
@@ -66,17 +78,24 @@ class CORE_EXPORT CanvasImageSource {
   virtual bool IsSVGSource() const { return false; }
   virtual bool IsImageBitmap() const { return false; }
   virtual bool IsOffscreenCanvas() const { return false; }
+  virtual bool IsVideoFrame() const { return false; }
 
-  // Adjusts the source and destination rectangles for cases where the actual
-  // source image is a subregion of the image returned by
-  // getSourceImageForCanvas.
-  virtual void AdjustDrawRects(FloatRect* src_rect, FloatRect* dst_rect) const {
-  }
+  // TODO(crbug.com/dawn/1197369): Implement check
+  // the usability of the image argument.
+  // Ref the spec here:
+  //  https://html.spec.whatwg.org/multipage/canvas.html#check-the-usability-of-the-image-argument
+  virtual bool IsNeutered() const { return false; }
 
-  virtual FloatSize ElementSize(const FloatSize& default_object_size) const = 0;
+  // Spec about placeholder context:
+  // https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas-placeholder
+  virtual bool IsPlaceholder() const { return false; }
+
+  virtual FloatSize ElementSize(const FloatSize& default_object_size,
+                                const RespectImageOrientationEnum) const = 0;
   virtual FloatSize DefaultDestinationSize(
-      const FloatSize& default_object_size) const {
-    return ElementSize(default_object_size);
+      const FloatSize& default_object_size,
+      const RespectImageOrientationEnum respect_orientation) const {
+    return ElementSize(default_object_size, respect_orientation);
   }
   virtual const KURL& SourceURL() const { return BlankURL(); }
   virtual bool IsOpaque() const { return false; }
@@ -88,4 +107,4 @@ class CORE_EXPORT CanvasImageSource {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_IMAGE_SOURCE_H_

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" jetway-hooks="{}">
+    <title>ic_timer-3</title>
+    <g jetway-hook-id="F918D1D1-9AC8-4F48-9FCF-D6CEE6B9A229" id="ic_timer-3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g jetway-hook-id="BB682FD6-032E-4A60-A614-68C8DFF13491" id="Timer-On" transform="translate(2.500000, 1.000000)" fill="#E8EAED" fill-rule="nonzero">
+            <path d="M13.4142136,2.58578644 L14.8284271,4 L13.2017107,5.62736216 C14.3228895,6.93806572 15,8.63995905 15,10.5 C15,14.6421356 11.6421356,18 7.5,18 C3.35786438,18 0,14.6421356 0,10.5 C0,6.35786438 3.35786438,3 7.5,3 C9.06008715,3 10.5089204,3.47633472 11.7089962,4.29150074 L13.4142136,2.58578644 Z M7.5,5 C4.46243388,5 2,7.46243388 2,10.5 C2,13.5375661 4.46243388,16 7.5,16 C10.5375661,16 13,13.5375661 13,10.5 C13,7.46243388 10.5375661,5 7.5,5 Z M10.5,0 L10.5,2 L4.5,2 L4.5,0 L10.5,0 Z" jetway-hook-id="5CD36442-76F5-4E77-954C-F064CB697065" id="Combined-Shape"></path>
+        </g>
+        <g jetway-hook-id="CACF4E7D-D2C4-41F9-AC43-7DBDA6045ABE" id="Group" transform="translate(7.500000, 8.000000)" fill="#E8EAED">
+            <path d="M0.5,7 L0.5,5.25 L3.83333333,5.25 L3.83333333,4.375 L0.5,4.375 L0.5,2.625 L3.83333333,2.625 L3.83333333,1.75 L0.5,1.75 L0.5,0 L4,0 C4.82842712,-1.52179594e-16 5.5,0.671572875 5.5,1.5 L5.5,2 C5.5,2.82842712 4.82842712,3.5 4,3.5 C4.82842712,3.5 5.5,4.17157288 5.5,5 L5.5,5.5 C5.5,6.32842712 4.82842712,7 4,7 L0.5,7 Z" jetway-hook-id="D1C8F32A-FF3C-4C0E-9520-9058D5F87123" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>

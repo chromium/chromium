@@ -5,9 +5,11 @@
 // Note: there is intentionally no header file associated with this library so
 // we don't risk implicitly demand loading it by accessing a symbol.
 
-#if defined(WIN32)
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
 #define BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT __declspec(dllexport)
-#else  // defined(WIN32)
+#else  // defined(OS_WIN)
 #define BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT __attribute__((visibility("default")))
 #endif
 
@@ -23,6 +25,7 @@ BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT void InvokeCallbackFunction(
   // Prevent tail call.
   volatile int i = 0;
   i = 1;
+  (void)i;
 }
 
 }  // extern "C"

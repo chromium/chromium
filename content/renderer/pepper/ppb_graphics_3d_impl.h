@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
@@ -37,6 +36,9 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
       gpu::Capabilities* capabilities,
       const base::UnsafeSharedMemoryRegion** shared_state_region,
       gpu::CommandBufferId* command_buffer_id);
+
+  PPB_Graphics3D_Impl(const PPB_Graphics3D_Impl&) = delete;
+  PPB_Graphics3D_Impl& operator=(const PPB_Graphics3D_Impl&) = delete;
 
   // PPB_Graphics3D_API trusted implementation.
   PP_Bool SetGetBuffer(int32_t transfer_buffer_id) override;
@@ -91,7 +93,8 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* msg, int id) final;
   void OnGpuControlSwapBuffersCompleted(
-      const gpu::SwapBuffersCompleteParams& params) final;
+      const gpu::SwapBuffersCompleteParams& params,
+      gfx::GpuFenceHandle release_fence) final;
   void OnSwapBufferPresented(uint64_t swap_id,
                              const gfx::PresentationFeedback& feedback) final {}
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
@@ -125,8 +128,6 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   std::unique_ptr<gpu::CommandBufferProxyImpl> command_buffer_;
 
   base::WeakPtrFactory<PPB_Graphics3D_Impl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Graphics3D_Impl);
 };
 
 }  // namespace content

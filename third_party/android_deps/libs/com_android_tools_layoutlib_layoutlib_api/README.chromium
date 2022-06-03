@@ -1,0 +1,13 @@
+Name: com.android.tools.layoutlib.layoutlib-api
+Short Name: layoutlib-api
+URL: http://tools.android.com/
+Version: 30.0.0-alpha10
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Library to use the rendering library for Android layouts: layoutlib
+
+Local Modifications:
+No modifications.

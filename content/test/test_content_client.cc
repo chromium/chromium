@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -59,7 +59,7 @@ TestContentClient::~TestContentClient() {
 
 base::StringPiece TestContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }

@@ -17,8 +17,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/current_module.h"
@@ -33,13 +31,12 @@
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_module.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reauth_credential.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
-#include "components/crash/content/app/crash_switches.h"
-#include "components/crash/content/app/run_as_crashpad_handler_win.h"
+#include "components/crash/core/app/crash_switches.h"
+#include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
 
 using credential_provider::putHR;
@@ -61,26 +58,34 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstance,
 // Used to determine whether the DLL can be unloaded by OLE.
 STDAPI DllCanUnloadNow(void) {
   HRESULT hr = _AtlModule.DllCanUnloadNow();
-  LOGFN(INFO) << "hr=" << putHR(hr);
+  LOGFN(VERBOSE) << "hr=" << putHR(hr);
   return hr;
 }
 
 // Returns a class factory to create an object of the requested type.
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
+  // This is performed in here to avoid from doing substantial work in DLLMain.
+  _AtlModule.LogProcessDetails();
+
   // Check to see if the credential provider has crashed too much recently.
   // If it has then do not allow it to create any credential providers.
-  if (!credential_provider::VerifyStartupSentinel()) {
+  if (!credential_provider::WriteToStartupSentinel()) {
     LOGFN(ERROR) << "Disabled due to previous unsuccessful starts";
     return E_NOTIMPL;
   }
 
+  _AtlModule.InitializeCrashReporting();
+
   HRESULT hr = _AtlModule.DllGetClassObject(rclsid, riid, ppv);
 
-  // Start refreshing token handle validity as soon as possible so that when
-  // their validity is requested later on by the credential providers they may
-  // already be available and no wait is needed.
-  if (SUCCEEDED(hr))
+  if (SUCCEEDED(hr)) {
+    // Start refreshing token handle validity as soon as possible so that when
+    // their validity is requested later on by the credential providers they may
+    // already be available and no wait is needed.
     _AtlModule.RefreshTokenHandleValidity();
+
+    _AtlModule.CheckGCPWExtension();
+  }
 
   return hr;
 }
@@ -88,14 +93,14 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
 // DllRegisterServer - Adds entries to the system registry.
 STDAPI DllRegisterServer(void) {
   HRESULT hr = credential_provider::CGaiaCredentialBase::OnDllRegisterServer();
-  LOGFN(INFO) << "CGaiaCredential::OnDllRegisterServer hr=" << putHR(hr);
+  LOGFN(VERBOSE) << "CGaiaCredential::OnDllRegisterServer hr=" << putHR(hr);
 
   if (SUCCEEDED(hr)) {
     // Registers object.  FALSE means don't register typelib.  The default
     // behaviour is assume the typelib has ID 1.  But in this case grit can't
     // be forced to use an ID of 1 when writing the rc file.
     hr = _AtlModule.DllRegisterServer(FALSE);
-    LOGFN(INFO) << "_AtlModule.DllRegisterServer hr=" << putHR(hr);
+    LOGFN(VERBOSE) << "_AtlModule.DllRegisterServer hr=" << putHR(hr);
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -137,26 +142,29 @@ STDAPI DllUnregisterServer(void) {
 
   HRESULT hr =
       credential_provider::CGaiaCredentialBase::OnDllUnregisterServer();
-  LOGFN(INFO) << "CGaiaCredential::OnDllUnregisterServer hr=" << putHR(hr);
+  LOGFN(VERBOSE) << "CGaiaCredential::OnDllUnregisterServer hr=" << putHR(hr);
   all_succeeded &= SUCCEEDED(hr);
 
   hr = _AtlModule.DllUnregisterServer(FALSE);
-  LOGFN(INFO) << "_AtlModule.DllUnregisterServer hr=" << putHR(hr);
+  LOGFN(VERBOSE) << "_AtlModule.DllUnregisterServer hr=" << putHR(hr);
   all_succeeded &= SUCCEEDED(hr);
 
   return all_succeeded ? S_OK : E_FAIL;
 }
 
 // This entry point is called via rundll32.  See
-// CGaiaCredential::ForkSaveAccountInfoStub() for details.
-void CALLBACK SaveAccountInfoW(HWND /*hwnd*/,
-                               HINSTANCE /*hinst*/,
-                               wchar_t* /*pszCmdLine*/,
-                               int /*show*/) {
-  LOGFN(INFO);
+// CGaiaCredential::ForkPerformPostSigninActionsStub() for details.
+void CALLBACK PerformPostSigninActionsW(HWND /*hwnd*/,
+                                        HINSTANCE /*hinst*/,
+                                        wchar_t* /*pszCmdLine*/,
+                                        int /*show*/) {
+  LOGFN(VERBOSE);
+
+  _AtlModule.InitializeCrashReporting();
+
   HANDLE hStdin = ::GetStdHandle(STD_INPUT_HANDLE);  // No need to close.
   if (hStdin == INVALID_HANDLE_VALUE) {
-    LOGFN(INFO) << "No stdin";
+    LOGFN(VERBOSE) << "No stdin";
     return;
   }
 
@@ -187,7 +195,7 @@ void CALLBACK SaveAccountInfoW(HWND /*hwnd*/,
   // Don't log |buffer| since it contains sensitive info like password.
 
   HRESULT hr = S_OK;
-  base::Optional<base::Value> properties =
+  absl::optional<base::Value> properties =
       base::JSONReader::Read(buffer.data(), base::JSON_ALLOW_TRAILING_COMMAS);
 
   credential_provider::SecurelyClearBuffer(buffer.data(), buffer.size());
@@ -197,30 +205,23 @@ void CALLBACK SaveAccountInfoW(HWND /*hwnd*/,
     return;
   }
 
-  hr = credential_provider::CGaiaCredentialBase::SaveAccountInfo(*properties);
-  if (FAILED(hr))
-    LOGFN(ERROR) << "SaveAccountInfoW hr=" << putHR(hr);
-
   // Make sure COM is initialized in this thread. This thread must be
   // initialized as an MTA or the call to enroll with MDM causes a crash in COM.
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedCOMInitializer failed hr=" << putHR(hr);
-  } else {
-    // Try to enroll the machine to MDM here. MDM requires a user to be signed
-    // on to an interactive session to succeed and when we call this function
-    // the user should have been successfully signed on at that point and able
-    // to finish the enrollment.
-    HRESULT hr = credential_provider::EnrollToGoogleMdmIfNeeded(*properties);
-    if (FAILED(hr))
-      LOGFN(ERROR) << "EnrollToGoogleMdmIfNeeded hr=" << putHR(hr);
   }
+
+  hr = credential_provider::CGaiaCredentialBase::PerformPostSigninActions(
+      *properties, com_initializer.Succeeded());
+  if (FAILED(hr))
+    LOGFN(ERROR) << "PerformPostSigninActions hr=" << putHR(hr);
 
   credential_provider::SecurelyClearDictionaryValue(&properties);
 
-  LOGFN(INFO) << "Done";
+  LOGFN(VERBOSE) << "Done";
 }
 
 void CALLBACK RunAsCrashpadHandlerW(HWND /*hwnd*/,
@@ -234,7 +235,7 @@ void CALLBACK RunAsCrashpadHandlerW(HWND /*hwnd*/,
   DCHECK_EQ(cmd_line->GetSwitchValueASCII(switches::kProcessType),
             crash_reporter::switches::kCrashpadHandler);
 
-  base::string16 entrypoint_arg;
+  std::wstring entrypoint_arg;
   credential_provider::GetEntryPointArgumentForRunDll(
       CURRENT_MODULE(), credential_provider::kRunAsCrashpadHandlerEntryPoint,
       &entrypoint_arg);

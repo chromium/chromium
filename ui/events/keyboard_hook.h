@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
-#include "ui/events/events_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -20,7 +20,7 @@ class KeyEvent;
 
 // Intercepts keyboard events typically handled by the OS or browser.
 // Destroying the instance will unregister and clean up the keyboard hook.
-class EVENTS_EXPORT KeyboardHook {
+class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHook {
  public:
   using KeyEventCallback = base::RepeatingCallback<void(KeyEvent* event)>;
 
@@ -33,7 +33,7 @@ class EVENTS_EXPORT KeyboardHook {
   // Returns a valid instance if the hook was created and successfully
   // registered otherwise nullptr.
   static std::unique_ptr<KeyboardHook> CreateModifierKeyboardHook(
-      base::Optional<base::flat_set<DomCode>> dom_codes,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget,
       KeyEventCallback callback);
 

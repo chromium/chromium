@@ -1,0 +1,45 @@
+Name: Weston - reference Wayland compositor
+Short Name: Weston
+URL: https://gitlab.freedesktop.org/wayland/weston
+Version: 9.0.0
+License: MIT
+License File: LICENSE
+Security Critical: no
+Source: https://gitlab.freedesktop.org/wayland/weston
+
+--[ DESCRIPTION ] ------------------
+This contains the source to the reference Wayland compositor called Weston.
+The LICENSE file is copied from src/COPYING
+This code is only for running tests of Chromium for Wayland and is not compiled
+into Chrome
+
+--[ UPDATING ] -----------------
+Chromium infrastructure has a mirror of the Weston's official gitlab
+repository, but the mirror is set up in such a way that it is possible to
+maintain branches of Weston with additional patches applied (which
+should be submitted into upstream).
+
+Thus, before updating DEPS, one has to request one of the maintainers of
+//third_party/weston to create a branch out of a new remote branch
+(for example, if the remote has a new tag 10.0.0 that is created out of
+10.0 branch, a new 10.0 branch needs to be created) and ask to rebase
+patches for that new branch. Once the changes are pushed, change the commit
+hash with the hash pointing to the submitted patches inside the DEPS file.
+You need to have clang (//third_party/llvm-build/Release+Asserts/bin),
+and meson (https://github.com/mesonbuild/meson/releases) in your path.
+Then do gclient sync which will align your local Weston folder with the most
+recent one as mentioned in the hash. Then run the generate_configs.py script
+to generate and update necessary config files. To compile weston, pass the
+following GN arguments while generating build files, since gn gen is meant
+to generate ninja files not gn ones.
+use_ozone = true use_bundled_weston = true
+
+Finally, compile-test the Weston target.
+Steps to be followed:
+gclient sync
+python3 third_party/weston/generate_configs.py
+autoninja out/build_dir weston
+
+To update the weston to the version present upstream, change the commit hash
+inside url in the 'src/third_party/weston/src' field with the most recent one in
+DEPS file. Then follow the above steps to compile the updated weston.

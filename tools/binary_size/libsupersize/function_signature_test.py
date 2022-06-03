@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -51,6 +51,23 @@ class AnalyzeTest(unittest.TestCase):
     self.assertEqual('ClassName#mField', actual[2])
     self.assertEqual('org.ClassName#mField', actual[1])
     self.assertEqual('org.ClassName#mField: some.Type', actual[0])
+    self.assertEqual(actual, function_signature.ParseJava(actual[0]))
+
+    # Class merging: Method
+    SIG = 'org.NewClass int org.OldClass.readShort(int,int)'
+    actual = function_signature.ParseJava(SIG)
+    self.assertEqual('OldClass#readShort', actual[2])
+    self.assertEqual('org.OldClass#readShort', actual[1])
+    self.assertEqual('org.NewClass#org.OldClass.readShort(int,int): int',
+                     actual[0])
+    self.assertEqual(actual, function_signature.ParseJava(actual[0]))
+
+    # Class merging: Field
+    SIG = 'org.NewClass some.Type org.OldClass.mField'
+    actual = function_signature.ParseJava(SIG)
+    self.assertEqual('OldClass#mField', actual[2])
+    self.assertEqual('org.OldClass#mField', actual[1])
+    self.assertEqual('org.NewClass#org.OldClass.mField: some.Type', actual[0])
     self.assertEqual(actual, function_signature.ParseJava(actual[0]))
 
   def testParseFunctionSignature(self):

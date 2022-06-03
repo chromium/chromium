@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 

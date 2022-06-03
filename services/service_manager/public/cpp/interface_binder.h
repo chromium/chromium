@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -31,8 +30,8 @@ class InterfaceBinder {
   virtual ~InterfaceBinder() {}
 
   // Asks the InterfaceBinder to bind an implementation of the specified
-  // interface to the request passed via |handle|. If the InterfaceBinder binds
-  // an implementation it must take ownership of the request handle.
+  // interface to the receiver passed via |handle|. If the InterfaceBinder binds
+  // an implementation it must take ownership of the receiver handle.
   virtual void BindInterface(const std::string& interface_name,
                              mojo::ScopedMessagePipeHandle handle,
                              BinderArgs... args) = 0;
@@ -42,18 +41,16 @@ template <typename Interface, typename... BinderArgs>
 class CallbackBinder : public InterfaceBinder<BinderArgs...> {
  public:
   using BindCallback =
-      base::RepeatingCallback<void(mojo::InterfaceRequest<Interface>,
+      base::RepeatingCallback<void(mojo::PendingReceiver<Interface>,
                                    BinderArgs...)>;
 
   CallbackBinder(const BindCallback& callback,
                  const scoped_refptr<base::SequencedTaskRunner>& task_runner)
       : callback_(callback), task_runner_(task_runner) {}
-  CallbackBinder(
-      const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>,
-                                         BinderArgs...)>& callback,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-      : CallbackBinder(base::BindRepeating(&RunBindReceiverCallback, callback),
-                       task_runner) {}
+
+  CallbackBinder(const CallbackBinder&) = delete;
+  CallbackBinder& operator=(const CallbackBinder&) = delete;
+
   ~CallbackBinder() override = default;
 
  private:
@@ -61,33 +58,32 @@ class CallbackBinder : public InterfaceBinder<BinderArgs...> {
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle handle,
                      BinderArgs... args) override {
-    mojo::InterfaceRequest<Interface> request(std::move(handle));
+    mojo::PendingReceiver<Interface> receiver(std::move(handle));
     if (task_runner_) {
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&CallbackBinder::RunCallback, callback_,
-                                    std::move(request), args...));
+                                    std::move(receiver), args...));
     } else {
-      RunCallback(callback_, std::move(request), args...);
+      RunCallback(callback_, std::move(receiver), args...);
     }
   }
 
   static void RunCallback(const BindCallback& callback,
-                          mojo::InterfaceRequest<Interface> request,
+                          mojo::PendingReceiver<Interface> receiver,
                           BinderArgs... args) {
-    callback.Run(std::move(request), args...);
+    callback.Run(std::move(receiver), args...);
   }
 
   static void RunBindReceiverCallback(
       const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>,
                                          BinderArgs...)>& callback,
-      mojo::InterfaceRequest<Interface> request,
+      mojo::PendingReceiver<Interface> receiver,
       BinderArgs... args) {
-    callback.Run(std::move(request), args...);
+    callback.Run(std::move(receiver), args...);
   }
 
   const BindCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackBinder);
 };
 
 template <typename... BinderArgs>
@@ -107,6 +103,10 @@ class GenericCallbackBinder : public InterfaceBinder<BinderArgs...> {
       : callback_(
             base::BindRepeating(&BindCallbackAdapter<BinderArgs...>, callback)),
         task_runner_(task_runner) {}
+
+  GenericCallbackBinder(const GenericCallbackBinder&) = delete;
+  GenericCallbackBinder& operator=(const GenericCallbackBinder&) = delete;
+
   ~GenericCallbackBinder() override {}
 
  private:
@@ -133,7 +133,6 @@ class GenericCallbackBinder : public InterfaceBinder<BinderArgs...> {
 
   const BindCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(GenericCallbackBinder);
 };
 
 }  // namespace service_manager

@@ -8,6 +8,7 @@
 #include <credentialprovider.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
@@ -29,7 +30,39 @@ namespace credential_provider {
 
 namespace testing {
 
-class GcpCredentialProviderTest : public GlsRunnerTestBase {};
+class GcpCredentialProviderTest : public GlsRunnerTestBase {
+ protected:
+  void CreateDefaultCloudPoliciesForUser(const std::wstring& sid);
+  void SetCloudPoliciesForUser(const std::wstring& sid,
+                               const UserPolicies policies);
+
+ private:
+  std::unique_ptr<FakeUserPoliciesManager> fake_user_policies_manager_;
+  std::unique_ptr<FakeTokenGenerator> fake_token_generator_;
+};
+
+void GcpCredentialProviderTest::CreateDefaultCloudPoliciesForUser(
+    const std::wstring& sid) {
+  UserPolicies policies;
+  SetCloudPoliciesForUser(sid, policies);
+}
+
+void GcpCredentialProviderTest::SetCloudPoliciesForUser(
+    const std::wstring& sid,
+    const UserPolicies policies) {
+  if (!fake_user_policies_manager_)
+    fake_user_policies_manager_ = std::make_unique<FakeUserPoliciesManager>();
+  if (!fake_token_generator_)
+    fake_token_generator_ = std::make_unique<FakeTokenGenerator>();
+
+  // Ensure user has policies and valid GCPW token.
+  fake_user_policies_manager_->SetUserPolicies(sid, policies);
+  fake_user_policies_manager_->SetUserPolicyStaleOrMissing(sid, false);
+
+  std::string dm_token = "test-gcpw-dm-token";
+  fake_token_generator_->SetTokensForTesting({dm_token});
+  EXPECT_EQ(S_OK, GenerateGCPWDmToken(sid));
+}
 
 TEST_F(GcpCredentialProviderTest, Basic) {
   Microsoft::WRL::ComPtr<IGaiaCredentialProvider> provider;
@@ -277,6 +310,8 @@ TEST_F(GcpCredentialProviderTest, AutoLogonBeforeUserRefresh) {
 }
 
 TEST_F(GcpCredentialProviderTest, AddPersonAfterUserRemove) {
+  GoogleUploadDeviceDetailsNeededForTesting upload_device_details_needed(false);
+
   // Set up such that multi-users is not enabled, and a user already
   // exists.
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmSupportsMultiUser, 0));
@@ -287,6 +322,8 @@ TEST_F(GcpCredentialProviderTest, AddPersonAfterUserRemove) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDummyUsername, kDummyPassword, L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &sid));
+
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
 
   {
     Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -371,24 +408,27 @@ TEST_P(GcpCredentialProviderSetSerializationTest, CheckAutoLogon) {
   const CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus = std::get<1>(GetParam());
 
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmSupportsMultiUser, 0));
+  GoogleUploadDeviceDetailsNeededForTesting upload_device_details_needed(false);
 
   CComBSTR first_sid;
   constexpr wchar_t first_username[] = L"username";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       first_username, L"password", L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &first_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)first_sid);
 
   CComBSTR second_sid;
   constexpr wchar_t second_username[] = L"username2";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       second_username, L"password", L"Full Name", L"Comment",
                       L"gaia-id2", L"foo2@gmail.com", &second_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)second_sid);
 
   // Build a dummy authentication buffer that can be passed to SetSerialization.
   CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION cpcs;
-  base::string16 local_domain = OSUserManager::GetLocalDomain();
-  base::string16 serialization_username = second_username;
-  base::string16 serialization_password = L"password";
+  std::wstring local_domain = OSUserManager::GetLocalDomain();
+  std::wstring serialization_username = second_username;
+  std::wstring serialization_password = L"password";
   std::vector<wchar_t> dummy_domain(
       local_domain.c_str(), local_domain.c_str() + local_domain.size() + 1);
   std::vector<wchar_t> dummy_username(
@@ -443,18 +483,22 @@ INSTANTIATE_TEST_SUITE_P(
 // 3. bool - is internet available.
 // 4. bool - is active directory user.
 // 5. bool - is internet not available but validity expired.
-
+// 6. int - 0. Both GaiaID and Email are available.
+//          1. Gaia ID is not available
+//          2. Email is not available
+//          3. Both are unavailable.
+// 7. int - number of times device details upload failed.
 class GcpCredentialProviderWithGaiaUsersTest
     : public GcpCredentialProviderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, bool, bool, bool>> {
+          std::tuple<bool, bool, bool, bool, bool, int, int>> {
  protected:
   void SetUp() override;
 };
 
 void GcpCredentialProviderWithGaiaUsersTest::SetUp() {
   GcpCredentialProviderTest::SetUp();
-  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"enable_ad_association", 0));
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"enable_cloud_association", 0));
 }
 
 TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
@@ -466,11 +510,15 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
       has_internet ? FakeInternetAvailabilityChecker::kHicForceYes
                    : FakeInternetAvailabilityChecker::kHicForceNo);
   const bool is_offline_validity_expired = std::get<4>(GetParam());
+  const int user_property_status = std::get<5>(GetParam());
+  const int num_upload_device_details_failures = std::get<6>(GetParam());
+  const bool is_upload_device_details_failed =
+      num_upload_device_details_failures > 0;
 
   CComBSTR sid;
   if (is_ad_user) {
     // Add an AD user. Note that this covers the scenario where
-    // enable_ad_association is set to false.
+    // enable_cloud_association is set to false.
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         L"username", L"password", L"full name", L"comment",
                         L"gaia-id", L"foo@gmail.com", L"domain", &sid));
@@ -482,21 +530,37 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
                         L"gaia-id", L"foo@gmail.com", &sid));
   }
 
-  ASSERT_EQ(S_OK,
-            SetUserProperty(
-                OLE2CW(sid),
-                base::UTF8ToUTF16(kKeyLastSuccessfulOnlineLoginMillis), L"0"));
+  if (user_property_status & 1) {
+    // Gaia id is not available.
+    SetUserProperty((BSTR)sid, kUserId, L"");
+  }
+  if (user_property_status & 2) {
+    // Email is not available.
+    SetUserProperty((BSTR)sid, kUserEmail, L"");
+  }
+
+  ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid),
+                                  base::UTF8ToWide(kKeyLastTokenValid), L"0"));
+
+  UserPolicies policies;
   if (is_offline_validity_expired) {
     // Setting validity period to zero enforces gcpw login irrespective of
     // whether internet is available or not.
-    ASSERT_EQ(S_OK, SetGlobalFlagForTesting(
-                        base::UTF8ToUTF16(kKeyValidityPeriodInDays), 0));
+    policies.validity_period_days = 0;
   }
+
+  // Ensure user has policies and valid GCPW token.
+  SetCloudPoliciesForUser((BSTR)sid, policies);
 
   if (!has_token_handle)
     ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kUserTokenHandle, L""));
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  // Set upload device details status and failure count.
+  ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
+                                  is_upload_device_details_failed ? 0 : 1));
+  ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadFailures,
+                                  num_upload_device_details_failures));
+
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle
@@ -504,9 +568,23 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
                                     : kDefaultInvalidTokenHandleResponse);
   ASSERT_EQ(S_OK, InitializeProviderWithCredentials(&count, &provider));
 
+  // should_reauth_user will be false if one of the following holds:
+  // - the user properties don't contain email and gaia id
+  // - no internet with offline validity hasn't expired
+  // - with internet and when all of the following is satisfied:
+  //   - device details upload succeeded or failed more than the max number of
+  //     times failure is allowed.
+  //   - has token handle
+  //   - token handle is valid
+  // In all other cases, reauth must be added, thus should_reauth_user is set to
+  // true.
   bool should_reauth_user =
-      is_offline_validity_expired ||
-      (has_internet && (!has_token_handle || !valid_token_handle));
+      (user_property_status != 3) &&
+      ((!has_internet && is_offline_validity_expired) ||
+       (has_internet && ((is_upload_device_details_failed &&
+                          num_upload_device_details_failures <=
+                              kMaxNumConsecutiveUploadDeviceFailures) ||
+                         !has_token_handle || !valid_token_handle)));
 
   // Check if there is a IReauthCredential depending on the state of the token
   // handle.
@@ -520,13 +598,17 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GcpCredentialProviderWithGaiaUsersTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
-                                            ::testing::Bool(),
-                                            ::testing::Bool(),
-                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpCredentialProviderWithGaiaUsersTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Values(0, 1, 2, 3),
+        ::testing::Range(0, 2 * kMaxNumConsecutiveUploadDeviceFailures)));
 
 // Check that reauth credentials only exists when either user is an AD user or
 // the token handle for the associated user is no longer valid when internet is
@@ -538,17 +620,18 @@ INSTANTIATE_TEST_SUITE_P(All,
 // 3. bool - is the fake user an AD user.
 // 4. bool - is internet available.
 // 5. bool - is offline validity expired.
+// 6. bool - is device details upload failed.
 class GcpCredentialProviderWithADUsersTest
     : public GcpCredentialProviderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, bool, bool, bool>> {
+          std::tuple<bool, bool, bool, bool, bool, bool>> {
  protected:
   void SetUp() override;
 };
 
 void GcpCredentialProviderWithADUsersTest::SetUp() {
   GcpCredentialProviderTest::SetUp();
-  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"enable_ad_association", 1));
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"enable_cloud_association", 1));
 }
 
 TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
@@ -557,27 +640,15 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
   const bool is_ad_user = std::get<2>(GetParam());
   const bool has_internet = std::get<3>(GetParam());
   const bool is_offline_validity_expired = std::get<4>(GetParam());
-
-  if (!has_user_id && !is_ad_user) {
-    // This is not a valid test scenario as the token handle wouldn't
-    // exist when user id mapping is not available in the registry.
-    return;
-  }
+  const bool is_upload_device_details_failed = std::get<5>(GetParam());
 
   fake_internet_checker()->SetHasInternetConnection(
       has_internet ? FakeInternetAvailabilityChecker::kHicForceYes
                    : FakeInternetAvailabilityChecker::kHicForceNo);
 
-  CComBSTR local_user_sid;
-  // Always create local user to make sure that the co-existence scenarios
-  // work fine.
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      L"username-local", L"password", L"full name", L"comment",
-                      L"gaia-id", L"foolocal@gmail.com", &local_user_sid));
-
   CComBSTR sid;
   DWORD error;
-  base::string16 domain;
+  std::wstring domain;
   if (is_ad_user) {
     // Add an AD user.
     ASSERT_EQ(S_OK, fake_os_user_manager()->AddUser(
@@ -590,29 +661,29 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
                                                     true, &sid, &error));
   }
 
+  UserPolicies policies;
   if (has_user_id) {
-    base::string16 test_user_id(L"12345");
+    std::wstring test_user_id(L"12345");
     ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserId, test_user_id));
     // Set token handle to a non-empty value in registry.
-    ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kUserTokenHandle,
+    ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserTokenHandle,
                                     L"non-empty-token-handle"));
-    ASSERT_EQ(S_OK, SetUserProperty(
-                        OLE2CW(sid),
-                        base::UTF8ToUTF16(kKeyLastSuccessfulOnlineLoginMillis),
-                        L"0"));
-    ASSERT_EQ(S_OK, SetUserProperty(
-                        OLE2CW(local_user_sid),
-                        base::UTF8ToUTF16(kKeyLastSuccessfulOnlineLoginMillis),
-                        L"0"));
+    ASSERT_EQ(S_OK,
+              SetUserProperty(OLE2CW(sid), base::UTF8ToWide(kKeyLastTokenValid),
+                              L"0"));
     if (is_offline_validity_expired) {
       // Setting validity period to zero enforces gcpw login irrespective of
       // whether internet is available or not.
-      ASSERT_EQ(S_OK, SetGlobalFlagForTesting(
-                          base::UTF8ToUTF16(kKeyValidityPeriodInDays), 0));
+      policies.validity_period_days = 0;
     }
+
+    ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
+                                    is_upload_device_details_failed ? 0 : 1));
   }
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  // Ensure user has policies and valid GCPW token.
+  SetCloudPoliciesForUser((BSTR)sid, policies);
+
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle
@@ -621,41 +692,18 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
   ASSERT_EQ(S_OK, InitializeProviderWithCredentials(&count, &provider));
 
   bool should_reauth_user =
-      (is_offline_validity_expired && has_user_id) ||
-      (has_internet && ((!has_user_id && is_ad_user) || !valid_token_handle));
+      (!has_internet && is_offline_validity_expired && has_user_id) ||
+      (has_internet &&
+       ((!has_user_id && is_ad_user) || (has_user_id && !valid_token_handle) ||
+        (has_user_id && is_upload_device_details_failed)));
 
-  // Check if there is a IReauthCredential depending on the state of the token
-  // handle.
-  if (valid_token_handle) {
-    if (is_offline_validity_expired && has_user_id) {
-      // We expect two reauth credentials
-      // (i.e 1 for local user and 1 for AD/Local user) and one anonymous
-      // credential.
-      ASSERT_EQ(should_reauth_user ? 3u : 1u, count);
-    } else {
-      // We expect one reauth credential for local user
-      // and one anonymous credential.
-      ASSERT_EQ(should_reauth_user ? 2u : 1u, count);
-    }
-  } else {
-    // We expect two reauth credentials
-    // (i.e 1 for local user and 1 for AD/Local user) and one anonymous
-    // credential.
-    ASSERT_EQ(should_reauth_user ? 3u : 1u, count);
-  }
+  // We expect one reauth credential for AD/Local user
+  // and one anonymous credential.
+  ASSERT_EQ(should_reauth_user ? 2u : 1u, count);
 
   if (should_reauth_user) {
     Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
     ASSERT_EQ(S_OK, provider->GetCredentialAt(1, &cred));
-    Microsoft::WRL::ComPtr<IReauthCredential> reauth;
-    EXPECT_EQ(S_OK, cred.As(&reauth));
-  }
-
-  // When there are two reauth credentials, validate that the second one
-  // is also a reauth credential.
-  if (should_reauth_user && !valid_token_handle) {
-    Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
-    ASSERT_EQ(S_OK, provider->GetCredentialAt(2, &cred));
     Microsoft::WRL::ComPtr<IReauthCredential> reauth;
     EXPECT_EQ(S_OK, cred.As(&reauth));
   }
@@ -664,6 +712,7 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
 INSTANTIATE_TEST_SUITE_P(All,
                          GcpCredentialProviderWithADUsersTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool(),
@@ -705,6 +754,7 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
   const bool second_user_locking_system = std::get<4>(GetParam());
 
   GoogleMdmEnrolledStatusForTesting forced_status(enrolled_to_mdm);
+  GoogleUploadDeviceDetailsNeededForTesting upload_device_details_needed(false);
 
   if (other_user_tile_available)
     fake_user_array()->SetAccountOptions(CPAO_EMPTY_LOCAL);
@@ -714,12 +764,14 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       first_username, L"password", L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &first_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)first_sid);
 
   CComBSTR second_sid;
   constexpr wchar_t second_username[] = L"username2";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       second_username, L"password", L"Full Name", L"Comment",
                       L"gaia-id2", L"foo2@gmail.com", &second_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)second_sid);
 
   // Set the user locking the system.
   SetSidLockingWorkstation(second_user_locking_system ? OLE2CW(second_sid)
@@ -800,14 +852,13 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
 
     // In the case that a real CReauthCredential is created, we expect that this
     // credential will set the default credential provider for the user tile.
-    auto guid_string =
-        base::win::String16FromGUID(CLSID_GaiaCredentialProvider);
+    auto guid_string = base::win::WStringFromGUID(CLSID_GaiaCredentialProvider);
 
     wchar_t guid_in_registry[64];
     ULONG length = base::size(guid_in_registry);
     EXPECT_EQ(S_OK, GetMachineRegString(kLogonUiUserTileRegKey, sid,
                                         guid_in_registry, &length));
-    EXPECT_EQ(guid_string, base::string16(guid_in_registry));
+    EXPECT_EQ(guid_string, std::wstring(guid_in_registry));
     ::CoTaskMemFree(sid);
   }
 }
@@ -820,6 +871,91 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool()));
+
+// Test creation of new users when multi user mode is enabled/disabled through
+// either registry or by cloud policy of existing user.
+// Parameters are:
+// 1. bool : Whether multi user mode is enabled in the registry.
+// 2. bool : Whether cloud policies feature is enabled.
+// 3. bool : Whether multi user policy is enabled for the existing user through
+//           cloud polcies.
+class GcpGaiaCredentialBaseMultiUserCloudPolicyTest
+    : public GcpCredentialProviderTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override;
+};
+
+void GcpGaiaCredentialBaseMultiUserCloudPolicyTest::SetUp() {
+  GcpCredentialProviderTest::SetUp();
+
+  FakesForTesting fakes;
+  fakes.fake_win_http_url_fetcher_creator =
+      fake_http_url_fetcher_factory()->GetCreatorCallback();
+  fakes.os_user_manager_for_testing = fake_os_user_manager();
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
+}
+
+TEST_P(GcpGaiaCredentialBaseMultiUserCloudPolicyTest, CanCreateNewUsers) {
+  USES_CONVERSION;
+  bool reg_multi_user_enabled = std::get<0>(GetParam());
+  bool cloud_policies_enabled = std::get<1>(GetParam());
+  bool cloud_multi_user_enabled = std::get<2>(GetParam());
+
+  GoogleMdmEnrolledStatusForTesting force_success(true);
+  FakeUserPoliciesManager fake_user_policies_manager(cloud_policies_enabled);
+
+  // Create a fake user that is already associated so when the user tries to
+  // sign on and create a new user, it fails if multi user mode is disabled.
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmAllowConsumerAccounts, 1));
+  CComBSTR sid;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo_registered", L"password", L"name", L"comment",
+                      L"gaia-id-registered", std::wstring(), &sid));
+
+  // Set multi user mode in registry.
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmSupportsMultiUser,
+                                          reg_multi_user_enabled ? 1 : 0));
+
+  // Set multi user mode with cloud policy for the existing user.
+  if (cloud_policies_enabled) {
+    UserPolicies user_policies;
+    user_policies.enable_multi_user_login = cloud_multi_user_enabled;
+    fake_user_policies_manager.SetUserPolicies((BSTR)sid, user_policies);
+  }
+
+  // Populate the associated users list. The created user's token handle
+  // should be valid so that no reauth credential is created.
+  fake_associated_user_validator()->StartRefreshingTokenHandleValidity();
+
+  // Set the other user tile so that we can get the anonymous credential
+  // that may try to sign in a user.
+  fake_user_array()->SetAccountOptions(CPAO_EMPTY_LOCAL);
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  if ((cloud_policies_enabled ? cloud_multi_user_enabled
+                              : reg_multi_user_enabled)) {
+    // Sign in should succeed for the new user.
+    ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+  } else {
+    // Sign in should fail with an error stating that no new users can be
+    // created.
+    ASSERT_EQ(S_OK,
+              FinishLogonProcess(false, false, IDS_ADD_USER_DISALLOWED_BASE));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GcpGaiaCredentialBaseMultiUserCloudPolicyTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace testing
 

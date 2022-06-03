@@ -1,0 +1,11 @@
+{
+  "name" : "Preference API Test Extension (Safe Browsing - True)",
+  "version" : "1.0",
+  "manifest_version": 2,
+  "description" : "Tests the behavior of the Safe Browsing API.",
+  "permissions": [ "privacy" ],
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  }
+}

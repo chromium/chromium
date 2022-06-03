@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -14,7 +14,8 @@ import org.chromium.chrome.browser.tab.Tab;
  * Handles logging of results seen and activation.
  */
 public class BarOverlapTapSuppression extends ContextualSearchHeuristic {
-    private final ChromeActivity mActivity;
+    private final Supplier<Tab> mTabSupplier;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsConditionSatisfied;
     private final boolean mIsEnabled;
     private final float mPxToDp;
@@ -30,7 +31,8 @@ public class BarOverlapTapSuppression extends ContextualSearchHeuristic {
         // and ask it to determine overlap.  E.g. isCoordinateInsidePeekingBarArea(x, y) modeled
         // after isCoordinateInsideBar(x, y).
         mPxToDp = selectionController.getPxToDp();
-        mActivity = selectionController.getActivity();
+        mTabSupplier = selectionController.getTabSupplier();
+        mBrowserControlsStateProvider = selectionController.getBrowserControlsStateProvider();
         mIsEnabled = ContextualSearchFieldTrial.getSwitch(
                 ContextualSearchSwitch.IS_BAR_OVERLAP_SUPPRESSION_ENABLED);
         mIsConditionSatisfied = doesBarOverlap(y);
@@ -88,14 +90,13 @@ public class BarOverlapTapSuppression extends ContextualSearchHeuristic {
      *         Height cannot be reliably obtained.
      */
     private float getContentHeightPx() {
-        Tab currentTab = mActivity.getActivityTab();
-        ChromeFullscreenManager fullscreenManager = mActivity.getFullscreenManager();
+        Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return 0.f;
 
-        float topControlsOffset = fullscreenManager.getTopControlOffset();
-        float topControlsHeight = fullscreenManager.getTopControlsHeight();
-        float bottomControlsOffset = fullscreenManager.getBottomControlOffset();
-        float bottomControlsHeight = fullscreenManager.getBottomControlsHeight();
+        float topControlsOffset = mBrowserControlsStateProvider.getTopControlOffset();
+        float topControlsHeight = mBrowserControlsStateProvider.getTopControlsHeight();
+        float bottomControlsOffset = mBrowserControlsStateProvider.getBottomControlOffset();
+        float bottomControlsHeight = mBrowserControlsStateProvider.getBottomControlsHeight();
 
         float tabHeight = currentTab.getView().getHeight();
         return (tabHeight - (topControlsHeight + topControlsOffset))

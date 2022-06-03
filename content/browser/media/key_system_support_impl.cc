@@ -10,18 +10,28 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+#if defined(OS_WIN)
+#include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/media/key_system_support_win.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
+#endif
 
 namespace content {
 
@@ -34,73 +44,104 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
                             available);
 }
 
-template <typename T>
-std::vector<T> SetToVector(const base::flat_set<T>& s) {
-  return std::vector<T>(s.begin(), s.end());
-}
-
-// Returns whether hardware secure codecs are enabled from command line. If
-// true, |video_codecs| are filled with codecs specified on command line, which
-// could be empty if no codecs are specified. If false, |video_codecs| will not
-// be modified.
-bool IsHardwareSecureCodecsOverriddenFromCommandLine(
-    std::vector<media::VideoCodec>* video_codecs,
-    std::vector<media::EncryptionScheme>* encryption_schemes) {
-  DCHECK(video_codecs->empty());
-  DCHECK(encryption_schemes->empty());
-
+// Returns a CdmCapability with codecs specified on command line. Returns null
+// if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
+// codecs specified.
+absl::optional<media::CdmCapability>
+GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line || !command_line->HasSwitch(
                            switches::kOverrideHardwareSecureCodecsForTesting)) {
-    return false;
+    return absl::nullopt;
   }
 
-  auto codecs_string = command_line->GetSwitchValueASCII(
+  auto overridden_codecs_string = command_line->GetSwitchValueASCII(
       switches::kOverrideHardwareSecureCodecsForTesting);
-  const auto supported_codecs = base::SplitStringPiece(
-      codecs_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const auto overridden_codecs =
+      base::SplitStringPiece(overridden_codecs_string, ",",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  for (const auto& codec : supported_codecs) {
+  // As the command line switch does not include profiles, specify {} to
+  // indicate that all relevant profiles should be considered supported.
+  std::vector<media::AudioCodec> audio_codecs;
+  media::CdmCapability::VideoCodecMap video_codecs;
+  for (const auto& codec : overridden_codecs) {
     if (codec == "vp8")
-      video_codecs->push_back(media::VideoCodec::kCodecVP8);
+      video_codecs[media::VideoCodec::kVP8] = {};
     else if (codec == "vp9")
-      video_codecs->push_back(media::VideoCodec::kCodecVP9);
+      video_codecs[media::VideoCodec::kVP9] = {};
     else if (codec == "avc1")
-      video_codecs->push_back(media::VideoCodec::kCodecH264);
+      video_codecs[media::VideoCodec::kH264] = {};
+    else if (codec == "hevc")
+      video_codecs[media::VideoCodec::kHEVC] = {};
+    else if (codec == "mp4a")
+      audio_codecs.push_back(media::AudioCodec::kAAC);
+    else if (codec == "vorbis")
+      audio_codecs.push_back(media::AudioCodec::kVorbis);
     else
       DVLOG(1) << "Unsupported codec specified on command line: " << codec;
   }
 
-  // Codecs enabled from command line assumes CENC support.
-  if (!video_codecs->empty())
-    encryption_schemes->push_back(media::EncryptionScheme::kCenc);
+  if (video_codecs.empty()) {
+    DVLOG(1) << "No codec codec specified on command line";
+    return absl::nullopt;
+  }
 
-  return true;
+  // Overridden codecs assume CENC and temporary session support.
+  // The EncryptedMediaSupportedTypesWidevineHwSecureTest tests depend
+  // on 'cbcs' not being supported.
+  return media::CdmCapability(std::move(audio_codecs), std::move(video_codecs),
+                              {media::EncryptionScheme::kCenc},
+                              {media::CdmSessionType::kTemporary});
 }
 
-void GetHardwareSecureDecryptionCaps(
-    const std::string& key_system,
-    const base::flat_set<media::CdmProxy::Protocol>& cdm_proxy_protocols,
-    std::vector<media::VideoCodec>* video_codecs,
-    std::vector<media::EncryptionScheme>* encryption_schemes) {
-  DCHECK(video_codecs->empty());
-  DCHECK(encryption_schemes->empty());
+// Software secure capability can be obtained synchronously in all supported
+// cases. If needed, this can be easily converted to an asynchronous call.
+absl::optional<media::CdmCapability> GetSoftwareSecureCapability(
+    const std::string& key_system) {
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kSoftwareSecure);
+  if (!cdm_info) {
+    SendCdmAvailableUMA(key_system, false);
+    return absl::nullopt;
+  }
 
+  SendCdmAvailableUMA(key_system, true);
+
+  if (!cdm_info->capability) {
+    DVLOG(1) << "Lazy initialization of SoftwareSecure CdmCapability not "
+                "supported!";
+    return absl::nullopt;
+  }
+
+  return cdm_info->capability;
+}
+
+// Trying to get hardware secure capability synchronously. If lazy
+// initialization is needed, set `lazy_initialize` to true.
+absl::optional<media::CdmCapability> GetHardwareSecureCapability(
+    const std::string& key_system,
+    bool* lazy_initialize) {
+  *lazy_initialize = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia)) {
+    return absl::nullopt;
+  }
+#elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
-    return;
+    return absl::nullopt;
   }
+#endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   // Secure codecs override takes precedence over other checks.
-  if (IsHardwareSecureCodecsOverriddenFromCommandLine(video_codecs,
-                                                      encryption_schemes)) {
+  auto overridden_capability =
+      GetHardwareSecureCapabilityOverriddenFromCommandLine();
+  if (overridden_capability) {
     DVLOG(1) << "Hardware secure codecs overridden from command line";
-    return;
-  }
-
-  if (cdm_proxy_protocols.empty()) {
-    DVLOG(1) << "CDM does not support any CdmProxy protocols";
-    return;
+    return overridden_capability;
   }
 
   // Hardware secure video codecs need hardware video decoder support.
@@ -112,24 +153,37 @@ void GetHardwareSecureDecryptionCaps(
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
     DVLOG(1) << "Hardware secure codecs not supported because accelerated "
                 "video decode disabled";
-    return;
+    return absl::nullopt;
   }
 
-#if !BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-  DVLOG(1) << "Hardware secure codecs not supported because mojo video "
-              "decode was disabled at buildtime";
-  return;
-#endif
+#if defined(OS_WIN)
+  DCHECK(GpuDataManagerImpl::GetInstance()->IsGpuFeatureInfoAvailable());
+  if (GpuDataManagerImpl::GetInstance()
+          ->GetGpuFeatureInfo()
+          .IsWorkaroundEnabled(
+              gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY)) {
+    DVLOG(1) << "Disable Media Foundation Hardware security due to GPU "
+                "workarounds";
 
-  base::flat_set<media::VideoCodec> video_codec_set;
-  base::flat_set<media::EncryptionScheme> encryption_scheme_set;
+    return absl::nullopt;
+  }
+#endif  // defined(OS_WIN)
 
-  GetContentClient()->browser()->GetHardwareSecureDecryptionCaps(
-      key_system, cdm_proxy_protocols, &video_codec_set,
-      &encryption_scheme_set);
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kHardwareSecure);
+  if (!cdm_info) {
+    DVLOG(1) << "No Hardware secure decryption CDM registered";
+    return absl::nullopt;
+  }
 
-  *video_codecs = SetToVector(video_codec_set);
-  *encryption_schemes = SetToVector(encryption_scheme_set);
+  if (cdm_info->capability) {
+    DVLOG(1) << "Hardware secure decryption CDM registered";
+    return cdm_info->capability;
+  }
+
+  DVLOG(1) << "Lazy initialization of CdmCapability";
+  *lazy_initialize = true;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -143,21 +197,6 @@ void KeySystemSupportImpl::Create(
                               std::move(receiver));
 }
 
-// static
-std::unique_ptr<CdmInfo> KeySystemSupportImpl::GetCdmInfoForKeySystem(
-    const std::string& key_system) {
-  DVLOG(2) << __func__ << ": key_system = " << key_system;
-  for (const auto& cdm : CdmRegistry::GetInstance()->GetAllRegisteredCdms()) {
-    if (cdm.supported_key_system == key_system ||
-        (cdm.supports_sub_key_systems &&
-         media::IsChildKeySystemOf(key_system, cdm.supported_key_system))) {
-      return std::make_unique<CdmInfo>(cdm);
-    }
-  }
-
-  return nullptr;
-}
-
 KeySystemSupportImpl::KeySystemSupportImpl() = default;
 
 KeySystemSupportImpl::~KeySystemSupportImpl() = default;
@@ -165,31 +204,80 @@ KeySystemSupportImpl::~KeySystemSupportImpl() = default;
 void KeySystemSupportImpl::IsKeySystemSupported(
     const std::string& key_system,
     IsKeySystemSupportedCallback callback) {
-  DVLOG(3) << __func__ << ": key_system = " << key_system;
+  DVLOG(3) << __func__ << ": key_system=" << key_system;
 
-  auto cdm_info = GetCdmInfoForKeySystem(key_system);
-  if (!cdm_info) {
-    SendCdmAvailableUMA(key_system, false);
-    std::move(callback).Run(false, nullptr);
+  bool lazy_initialize = false;
+  auto hw_secure_capability =
+      GetHardwareSecureCapability(key_system, &lazy_initialize);
+
+  if (lazy_initialize) {
+    LazyInitializeHardwareSecureCapability(
+        key_system,
+        base::BindOnce(&KeySystemSupportImpl::OnHardwareSecureCapability,
+                       weak_ptr_factory_.GetWeakPtr(), key_system,
+                       std::move(callback), /*lazy_initialize=*/true));
     return;
   }
 
-  SendCdmAvailableUMA(key_system, true);
+  OnHardwareSecureCapability(key_system, std::move(callback),
+                             /*lazy_initialize=*/false, hw_secure_capability);
+}
 
-  // Supported codecs and encryption schemes.
+// It's possible this is called multiple times for the same key system when
+// there are parallel `IsKeySystemSupported()` calls from different renderer
+// processes. Since the query is typically fast, the chance for this to happen
+// is low and it won't cause any collision. So we choose not to handle this
+// case explicitly for simplicity.
+// TODO(xhwang): Find a way to register this as callbacks so we don't have to
+// hardcode platform-specific logic here.
+// TODO(jrummell): Support Android query.
+void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
+    const std::string& key_system,
+    CdmCapabilityCB cdm_capability_cb) {
+  if (hw_secure_capability_cb_for_testing_) {
+    hw_secure_capability_cb_for_testing_.Run(key_system,
+                                             std::move(cdm_capability_cb));
+    return;
+  }
+
+#if defined(OS_WIN)
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kHardwareSecure);
+  DCHECK(cdm_info && !cdm_info->capability);
+  GetMediaFoundationServiceHardwareSecureCdmCapability(
+      key_system, cdm_info->path, std::move(cdm_capability_cb));
+#else
+  std::move(cdm_capability_cb).Run(absl::nullopt);
+#endif  // defined(OS_WIN)
+}
+
+void KeySystemSupportImpl::SetHardwareSecureCapabilityCBForTesting(
+    HardwareSecureCapabilityCB cb) {
+  hw_secure_capability_cb_for_testing_ = std::move(cb);
+}
+
+void KeySystemSupportImpl::OnHardwareSecureCapability(
+    const std::string& key_system,
+    IsKeySystemSupportedCallback callback,
+    bool lazy_initialize,
+    absl::optional<media::CdmCapability> hw_secure_capability) {
+  // See comment above. This could be called multiple times when we have
+  // parallel `IsKeySystemSupported()` calls from different renderer processes.
+  // This is okay and won't cause collision or corruption of data.
+  if (lazy_initialize) {
+    ignore_result(CdmRegistryImpl::GetInstance()->FinalizeCdmCapability(
+        key_system, CdmInfo::Robustness::kHardwareSecure,
+        hw_secure_capability));
+  }
+
   auto capability = media::mojom::KeySystemCapability::New();
-  capability->video_codecs = cdm_info->capability.video_codecs;
-  capability->supports_vp9_profile2 =
-      cdm_info->capability.supports_vp9_profile2;
-  capability->encryption_schemes =
-      SetToVector(cdm_info->capability.encryption_schemes);
+  capability->sw_secure_capability = GetSoftwareSecureCapability(key_system);
+  capability->hw_secure_capability = hw_secure_capability;
 
-  GetHardwareSecureDecryptionCaps(key_system,
-                                  cdm_info->capability.cdm_proxy_protocols,
-                                  &capability->hw_secure_video_codecs,
-                                  &capability->hw_secure_encryption_schemes);
-
-  capability->session_types = SetToVector(cdm_info->capability.session_types);
+  if (!capability->sw_secure_capability && !capability->hw_secure_capability) {
+    std::move(callback).Run(false, nullptr);
+    return;
+  }
 
   std::move(callback).Run(true, std::move(capability));
 }

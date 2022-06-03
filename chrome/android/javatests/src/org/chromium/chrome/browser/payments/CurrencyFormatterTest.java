@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;

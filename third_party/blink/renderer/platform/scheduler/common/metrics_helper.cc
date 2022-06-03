@@ -14,8 +14,7 @@ namespace {
 // Threshold for discarding ultra-long tasks. It is assumed that ultra-long
 // tasks are reporting glitches (e.g. system falling asleep on the middle of the
 // task).
-constexpr base::TimeDelta kLongTaskDiscardingThreshold =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kLongTaskDiscardingThreshold = base::Seconds(30);
 
 scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
   switch (thread_type) {
@@ -28,7 +27,6 @@ scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
     case ThreadType::kServiceWorkerThread:
       return scheduling_metrics::ThreadType::kRendererServiceWorkerThread;
     case ThreadType::kAnimationAndPaintWorkletThread:
-    case ThreadType::kAudioWorkletThread:
     case ThreadType::kDatabaseThread:
     case ThreadType::kFileThread:
     case ThreadType::kHRTFDatabaseLoaderThread:
@@ -39,10 +37,10 @@ scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
     case ThreadType::kTestThread:
     case ThreadType::kAudioEncoderThread:
     case ThreadType::kVideoEncoderThread:
+    case ThreadType::kOfflineAudioWorkletThread:
+    case ThreadType::kRealtimeAudioWorkletThread:
+    case ThreadType::kSemiRealtimeAudioWorkletThread:
       return scheduling_metrics::ThreadType::kRendererOtherBlinkThread;
-    case ThreadType::kCount:
-      NOTREACHED();
-      return scheduling_metrics::ThreadType::kCount;
   }
 }
 
@@ -69,7 +67,6 @@ MetricsHelper::MetricsHelper(ThreadType thread_type,
 MetricsHelper::~MetricsHelper() {}
 
 bool MetricsHelper::ShouldDiscardTask(
-    base::sequence_manager::TaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   // TODO(altimin): Investigate the relationship between thread time and
@@ -80,10 +77,9 @@ bool MetricsHelper::ShouldDiscardTask(
 }
 
 void MetricsHelper::RecordCommonTaskMetrics(
-    base::sequence_manager::TaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  thread_metrics_.RecordTaskMetrics(queue, task, task_timing);
+  thread_metrics_.RecordTaskMetrics(task, task_timing);
 
   thread_task_duration_reporter_.RecordTask(thread_type_,
                                             task_timing.wall_duration());

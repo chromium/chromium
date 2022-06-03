@@ -19,7 +19,7 @@ test_with_window((w) => {
     'a.b-c'
   ];
   valid_custom_element_names.forEach((val) => {
-    assert_throws_dom_exception(w, 'NotSupportedError', () => {
+    assert_throws_dom('NotSupportedError', w.DOMException, () => {
       w.customElements.define('a-a', A, { extends: val });
     }, `having valid custon element name element interface (${val}) ` +
        'for extends should throw a NotSupportedError')
@@ -38,7 +38,7 @@ test_with_window((w) => {
     42
   ]
   HTMLUnknownElement_names.forEach((val) => {
-    assert_throws_dom_exception(w, 'NotSupportedError', () => {
+    assert_throws_dom('NotSupportedError', w.DOMException, () => {
       w.customElements.define('a-a', A, { extends: val });
     }, `having element interface for extends (${val}) undefined in specs` +
        ' should throw a NotSupportedError');

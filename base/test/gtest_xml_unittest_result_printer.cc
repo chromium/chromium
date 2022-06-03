@@ -5,10 +5,12 @@
 #include "base/test/gtest_xml_unittest_result_printer.h"
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -19,17 +21,62 @@ const int kDefaultTestPartResultsLimit = 10;
 const char kTestPartLesultsLimitExceeded[] =
     "Test part results limit exceeded. Use --test-launcher-test-part-limit to "
     "increase or disable limit.";
+
+std::string EscapeUrl(const std::string& url) {
+  std::string escaped_url;
+  ReplaceChars(url, "&", "&amp;", &escaped_url);
+  ReplaceChars(escaped_url, "<", "&lt;", &escaped_url);
+  ReplaceChars(escaped_url, ">", "&gt;", &escaped_url);
+  ReplaceChars(escaped_url, "'", "&apos;", &escaped_url);
+  ReplaceChars(escaped_url, "\"", "&quot;", &escaped_url);
+  return escaped_url;
+}
+
 }  // namespace
 
-XmlUnitTestResultPrinter::XmlUnitTestResultPrinter()
-    : output_file_(nullptr), open_failed_(false) {}
+XmlUnitTestResultPrinter* XmlUnitTestResultPrinter::instance_ = nullptr;
+
+XmlUnitTestResultPrinter::XmlUnitTestResultPrinter() {
+  DCHECK_EQ(instance_, nullptr);
+  instance_ = this;
+}
 
 XmlUnitTestResultPrinter::~XmlUnitTestResultPrinter() {
+  DCHECK_EQ(instance_, this);
+  instance_ = nullptr;
   if (output_file_ && !open_failed_) {
     fprintf(output_file_, "</testsuites>\n");
     fflush(output_file_);
     CloseFile(output_file_);
   }
+}
+
+XmlUnitTestResultPrinter* XmlUnitTestResultPrinter::Get() {
+  DCHECK(instance_);
+  DCHECK(instance_->thread_checker_.CalledOnValidThread());
+  return instance_;
+}
+
+void XmlUnitTestResultPrinter::AddLink(const std::string& name,
+                                       const std::string& url) {
+  DCHECK(output_file_);
+  DCHECK(!open_failed_);
+  // Escape the url so it's safe to save in xml file.
+  const std::string escaped_url = EscapeUrl(url);
+  const testing::TestInfo* info =
+      testing::UnitTest::GetInstance()->current_test_info();
+  // When this function is not called from a gtest test body, it will
+  // return null. E.g. call from Chromium itself or from test launcher.
+  // But when that happens, the previous two DCHECK won't pass. So in
+  // theory it should not be possible to reach here and the info is null.
+  DCHECK(info);
+
+  fprintf(output_file_,
+          "    <link name=\"%s\" classname=\"%s\" "
+          "link_name=\"%s\">%s</link>\n",
+          info->name(), info->test_case_name(), name.c_str(),
+          escaped_url.c_str());
+  fflush(output_file_);
 }
 
 bool XmlUnitTestResultPrinter::Initialize(const FilePath& output_file_path) {

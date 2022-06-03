@@ -1,0 +1,1 @@
+Test CompositingOptimizations code paths.

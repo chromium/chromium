@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "printing/metafile.h"
 
 namespace base {
@@ -29,7 +29,7 @@ class Size;
 namespace printing {
 
 // Simple wrapper class that manage an EMF data stream and its virtual HDC.
-class PRINTING_EXPORT Emf : public Metafile {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
  public:
   class Record;
   class Enumerator;
@@ -38,34 +38,38 @@ class PRINTING_EXPORT Emf : public Metafile {
   // Generates a virtual HDC that will record every GDI commands and compile
   // it in a EMF data stream.
   Emf();
+  Emf(const Emf&) = delete;
+  Emf& operator=(const Emf&) = delete;
   ~Emf() override;
 
   // Closes metafile.
   void Close();
 
   // Generates a new metafile that will record every GDI command, and will
-  // be saved to |metafile_path|.
+  // be saved to `metafile_path`.
   bool InitToFile(const base::FilePath& metafile_path);
 
-  // Initializes the Emf with the data in |metafile_path|.
+  // Initializes the Emf with the data in `metafile_path`.
   bool InitFromFile(const base::FilePath& metafile_path);
 
   // Metafile methods.
   bool Init() override;
-  bool InitFromData(const void* src_buffer, size_t src_buffer_size) override;
+  bool InitFromData(base::span<const uint8_t> data) override;
 
   // Inserts a custom GDICOMMENT records indicating StartPage/EndPage calls
   // (since StartPage and EndPage do not work in a metafile DC). Only valid
-  // when hdc_ is non-NULL. |page_size|, |content_area|, and |scale_factor| are
+  // when hdc_ is non-NULL. `page_size`, `content_area`, and `scale_factor` are
   // ignored.
   void StartPage(const gfx::Size& page_size,
                  const gfx::Rect& content_area,
-                 const float& scale_factor) override;
+                 float scale_factor,
+                 mojom::PageOrientation page_orientation) override;
   bool FinishPage() override;
   bool FinishDocument() override;
 
   uint32_t GetDataSize() const override;
   bool GetData(void* buffer, uint32_t size) const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   // Should be passed to Playback to keep the exact same size.
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
@@ -94,8 +98,6 @@ class PRINTING_EXPORT Emf : public Metafile {
 
   // Valid when generating EMF data through a virtual HDC.
   HDC hdc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Emf);
 };
 
 struct Emf::EnumerationContext {
@@ -110,7 +112,7 @@ struct Emf::EnumerationContext {
 
 // One EMF record. It keeps pointers to the EMF buffer held by Emf::emf_.
 // The entries become invalid once Emf::CloseEmf() is called.
-class PRINTING_EXPORT Emf::Record {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Emf::Record {
  public:
   // Plays the record.
   bool Play(EnumerationContext* context) const;
@@ -134,16 +136,17 @@ class PRINTING_EXPORT Emf::Record {
 // Retrieves individual records out of a Emf buffer. The main use is to skip
 // over records that are unsupported on a specific printer or to play back
 // only a part of an EMF buffer.
-class PRINTING_EXPORT Emf::Enumerator {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Emf::Enumerator {
  public:
   // Iterator type used for iterating the records.
   typedef std::vector<Record>::const_iterator const_iterator;
 
-  // Enumerates the records at construction time. |hdc| and |rect| are
+  // Enumerates the records at construction time. `hdc` and `rect` are
   // both optional at the same time or must both be valid.
-  // Warning: |emf| must be kept valid for the time this object is alive.
+  // Warning: `emf` must be kept valid for the time this object is alive.
   Enumerator(const Emf& emf, HDC hdc, const RECT* rect);
-
+  Enumerator(const Enumerator&) = delete;
+  Enumerator& operator=(const Enumerator&) = delete;
   ~Enumerator();
 
   // Retrieves the first Record.
@@ -168,8 +171,6 @@ class PRINTING_EXPORT Emf::Enumerator {
   std::vector<Record> items_;
 
   EnumerationContext context_;
-
-  DISALLOW_COPY_AND_ASSIGN(Enumerator);
 };
 
 }  // namespace printing

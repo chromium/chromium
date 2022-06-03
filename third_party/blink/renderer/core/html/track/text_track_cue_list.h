@@ -32,7 +32,7 @@
 
 namespace blink {
 
-class TextTrackCueList final : public ScriptWrappable {
+class CORE_EXPORT TextTrackCueList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -55,7 +55,7 @@ class TextTrackCueList final : public ScriptWrappable {
   }
   void ValidateCueIndexes();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   wtf_size_t FindInsertionIndex(const TextTrackCue*) const;

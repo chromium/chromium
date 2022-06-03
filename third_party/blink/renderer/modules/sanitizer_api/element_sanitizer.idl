@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/sanitizer-api
+
+[
+  RuntimeEnabled=SanitizerAPI
+] dictionary ElementSetHTMLOptions {
+  Sanitizer sanitizer;
+};
+
+[
+  RuntimeEnabled=SanitizerAPI,
+  ImplementedAs=ElementSanitizer
+] partial interface Element {
+    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void setHTML(DOMString markup, optional ElementSetHTMLOptions options = {});
+
+};
+

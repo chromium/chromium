@@ -23,14 +23,7 @@ class CAPTURE_EXPORT FileVideoCaptureDeviceFactory
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
-  void GetDeviceDescriptors(
-      VideoCaptureDeviceDescriptors* device_descriptors) override;
-  void GetSupportedFormats(
-      const VideoCaptureDeviceDescriptor& device_descriptor,
-      VideoCaptureFormats* supported_formats) override;
-  void GetCameraLocationsAsync(
-      std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
-      DeviceDescriptorsCallback result_callback) override;
+  void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 };
 
 }  // namespace media

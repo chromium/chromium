@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_CMA_PIPELINE_MEDIA_PIPELINE_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -14,7 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromecast/media/cma/backend/cma_backend.h"
+#include "base/unguessable_token.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/pipeline/load_type.h"
 #include "chromecast/media/cma/pipeline/media_pipeline_client.h"
 #include "media/base/time_delta_interpolator.h"
@@ -37,6 +37,10 @@ struct VideoPipelineClient;
 class MediaPipelineImpl {
  public:
   MediaPipelineImpl();
+
+  MediaPipelineImpl(const MediaPipelineImpl&) = delete;
+  MediaPipelineImpl& operator=(const MediaPipelineImpl&) = delete;
+
   ~MediaPipelineImpl();
 
   // Initialize the media pipeline: the pipeline is configured based on
@@ -44,16 +48,16 @@ class MediaPipelineImpl {
   void Initialize(LoadType load_type,
                   std::unique_ptr<CmaBackend> media_pipeline_backend);
 
-  void SetClient(const MediaPipelineClient& client);
-  void SetCdm(int cdm_id);
+  void SetClient(MediaPipelineClient client);
+  void SetCdm(const base::UnguessableToken* cdm_id);
 
   ::media::PipelineStatus InitializeAudio(
       const ::media::AudioDecoderConfig& config,
-      const AvPipelineClient& client,
+      AvPipelineClient client,
       std::unique_ptr<CodedFrameProvider> frame_provider);
   ::media::PipelineStatus InitializeVideo(
       const std::vector<::media::VideoDecoderConfig>& configs,
-      const VideoPipelineClient& client,
+      VideoPipelineClient client,
       std::unique_ptr<CodedFrameProvider> frame_provider);
   void StartPlayingFrom(base::TimeDelta time);
   void Flush(base::OnceClosure flush_cb);
@@ -132,8 +136,6 @@ class MediaPipelineImpl {
 
   base::WeakPtr<MediaPipelineImpl> weak_this_;
   base::WeakPtrFactory<MediaPipelineImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineImpl);
 };
 
 }  // namespace media

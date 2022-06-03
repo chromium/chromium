@@ -26,9 +26,9 @@ android_envsetup_main() {
   export ANDROID_HOME="$ANDROID_SDK_ROOT"
 
   # Set up PATH to point to SDK-provided (and other) tools, such as 'adb'.
-  export PATH=$PATH:${ANDROID_SDK_ROOT}/platform-tools
-  export PATH=$PATH:${ANDROID_SDK_ROOT}/tools/
-  export PATH=$PATH:${CHROME_SRC}/build/android
+  export PATH=${CHROME_SRC}/build/android:$PATH
+  export PATH=${ANDROID_SDK_ROOT}/tools/:$PATH
+  export PATH=${ANDROID_SDK_ROOT}/platform-tools:$PATH
 }
 # In zsh, $0 is the name of the file being sourced.
 android_envsetup_main "${BASH_SOURCE:-$0}"

@@ -8,10 +8,10 @@
 #import <Foundation/Foundation.h>
 #include <Security/Authorization.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_authorizationref.h"
-#include "base/stl_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,6 +32,14 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   switch (purpose) {
     case password_manager::ReauthPurpose::VIEW_PASSWORD:
       prompt = l10n_util::GetNSString(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+      break;
+    case password_manager::ReauthPurpose::COPY_PASSWORD:
+      prompt =
+          l10n_util::GetNSString(IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
+      break;
+    case password_manager::ReauthPurpose::EDIT_PASSWORD:
+      prompt =
+          l10n_util::GetNSString(IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
       break;
     case password_manager::ReauthPurpose::EXPORT:
       prompt = l10n_util::GetNSString(

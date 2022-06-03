@@ -1,0 +1,87 @@
+Before:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, -1.5, 1]
+      ]
+    }
+  ]
+}
+
+After:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited rotated-3d'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top left')",
+      "position": [-150, -150],
+      "bounds": [450, 450],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [0.707106781186548, 0.707106781186548, 0, 0],
+        [-0.707106781186548, 0.707106781186548, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, -1.5, 1]
+      ],
+      "origin": [75, 75]
+    }
+  ]
+}
+

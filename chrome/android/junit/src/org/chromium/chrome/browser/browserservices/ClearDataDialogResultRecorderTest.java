@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -101,9 +102,10 @@ public class ClearDataDialogResultRecorderTest {
     }
 
     private void restartApp() {
-        when(mBrowserInitializer.hasNativeInitializationCompleted()).thenReturn(false);
-        doNothing().when(mBrowserInitializer).runNowOrAfterNativeInitialization(
-                mTaskOnNativeInitCaptor.capture());
+        when(mBrowserInitializer.isFullBrowserInitialized()).thenReturn(false);
+        doNothing()
+                .when(mBrowserInitializer)
+                .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
         mRecorder = new ClearDataDialogResultRecorder(() -> mPrefsManager, mBrowserInitializer,
                 mUmaRecorder);
     }
@@ -112,9 +114,10 @@ public class ClearDataDialogResultRecorderTest {
         for (Runnable task : mTaskOnNativeInitCaptor.getAllValues()) {
             task.run();
         }
-        when(mBrowserInitializer.hasNativeInitializationCompleted()).thenReturn(true);
-        doAnswer(answerVoid(Runnable::run)).when(mBrowserInitializer)
-                .runNowOrAfterNativeInitialization(any());
+        when(mBrowserInitializer.isFullBrowserInitialized()).thenReturn(true);
+        doAnswer(answerVoid(Runnable::run))
+                .when(mBrowserInitializer)
+                .runNowOrAfterFullBrowserStarted(any());
     }
 
 }

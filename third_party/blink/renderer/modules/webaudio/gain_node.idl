@@ -23,12 +23,11 @@
  * DAMAGE.
  */
 
-// See https://webaudio.github.io/web-audio-api/#gainnode
+// https://webaudio.github.io/web-audio-api/#gainnode
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface GainNode : AudioNode {
-    [RaisesException] constructor(BaseAudioContext context, optional GainOptions options);
+    [RaisesException, Measure] constructor(BaseAudioContext context, optional GainOptions options = {});
     // FIXME: eventually it will be interesting to remove the readonly restriction, but need to properly deal with thread safety here.
     readonly attribute AudioParam gain;
 };

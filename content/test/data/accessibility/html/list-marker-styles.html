@@ -2,6 +2,9 @@
 @BLINK-ALLOW:listStyle*
 -->
 <html>
+  <style>
+    ::marker { content: var(--marker) }
+  </style>
   <body>
     <ul style="list-style-type: none">
       <li>none</li>
@@ -29,6 +32,27 @@
     </ul>
     <ul style="list-style-type: lower-alpha">
       <li>lower-alpha</li>
+    </ul>
+    <ul style="list-style-type: 'foo'">
+      <li>'foo'</li>
+    </ul>
+    <ul style="list-style-type: circle; --marker: none">
+      <li>content: none</li>
+    </ul>
+    <ul style="list-style-type: 'foo'; --marker: 'bar'">
+      <li>content: 'bar'</li>
+    </ul>
+    <ul style="list-style-image: url('bullet.png'); --marker: 'baz'">
+      <li>content: 'baz'</li>
+    </ul>
+    <ul style="list-style-type: decimal; --marker: url('bullet.png')">
+      <li>content: url('bullet.png')</li>
+    </ul>
+    <ul style="list-style-type: lower-roman; --marker: counter(c)">
+      <li>content: counter(c)</li>
+    </ul>
+    <ul style="list-style-type: none; --marker: 'foo' url('bullet.png') counter(c)">
+      <li>content: 'foo' url('bullet.png') counter(c)</li>
     </ul>
   </body>
 </html>

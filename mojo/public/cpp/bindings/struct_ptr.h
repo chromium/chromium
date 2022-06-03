@@ -10,11 +10,12 @@
 #include <memory>
 #include <new>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "base/template_util.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 namespace internal {
@@ -35,8 +36,15 @@ class StructPtr {
  public:
   using Struct = S;
 
+  // Exposing StructPtr<S>::element_type allows gmock's Pointee matcher to
+  // dereference StructPtr's.
+  using element_type = S;
+
   StructPtr() = default;
   StructPtr(std::nullptr_t) {}
+
+  StructPtr(const StructPtr&) = delete;
+  StructPtr& operator=(const StructPtr&) = delete;
 
   ~StructPtr() = default;
 
@@ -56,8 +64,13 @@ class StructPtr {
       : ptr_(new Struct(std::forward<Args>(args)...)) {}
 
   template <typename U>
-  U To() const {
+  U To() const& {
     return TypeConverter<U, StructPtr>::Convert(*this);
+  }
+
+  template <typename U>
+  U To() && {
+    return TypeConverter<U, StructPtr>::Convert(std::move(*this));
   }
 
   void reset() { ptr_.reset(); }
@@ -99,6 +112,13 @@ class StructPtr {
 
   explicit operator bool() const { return !is_null(); }
 
+  // If T is serialisable into trace, StructPtr<T> is also serialisable.
+  template <class U = S>
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), ptr_);
+  }
+
  private:
   friend class internal::StructPtrWTFHelper<Struct>;
   void Take(StructPtr* other) {
@@ -107,8 +127,6 @@ class StructPtr {
   }
 
   std::unique_ptr<Struct> ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructPtr);
 };
 
 // Designed to be used when Struct is small and copyable.
@@ -117,8 +135,15 @@ class InlinedStructPtr {
  public:
   using Struct = S;
 
+  // Exposing InlinedStructPtr<S>::element_type allows gmock's Pointee matcher
+  // to dereference InlinedStructPtr's.
+  using element_type = S;
+
   InlinedStructPtr() = default;
   InlinedStructPtr(std::nullptr_t) {}
+
+  InlinedStructPtr(const InlinedStructPtr&) = delete;
+  InlinedStructPtr& operator=(const InlinedStructPtr&) = delete;
 
   ~InlinedStructPtr() = default;
 
@@ -158,7 +183,11 @@ class InlinedStructPtr {
     DCHECK(state_ == VALID);
     return &value_;
   }
-  Struct* get() const { return &value_; }
+  Struct* get() const {
+    if (state_ == NIL)
+      return nullptr;
+    return &value_;
+  }
 
   void Swap(InlinedStructPtr* other) {
     std::swap(value_, other->value_);
@@ -185,6 +214,13 @@ class InlinedStructPtr {
 
   explicit operator bool() const { return !is_null(); }
 
+  // If T is serialisable into trace, StructPtr<T> is also serialisable.
+  template <class U = S>
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), get());
+  }
+
  private:
   friend class internal::InlinedStructPtrWTFHelper<Struct>;
   void Take(InlinedStructPtr* other) {
@@ -200,8 +236,6 @@ class InlinedStructPtr {
 
   mutable Struct value_;
   State state_ = NIL;
-
-  DISALLOW_COPY_AND_ASSIGN(InlinedStructPtr);
 };
 
 namespace internal {

@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -22,6 +21,9 @@ namespace {
 class ClientChangeVerifier {
  public:
   ClientChangeVerifier() = default;
+
+  ClientChangeVerifier(const ClientChangeVerifier&) = delete;
+  ClientChangeVerifier& operator=(const ClientChangeVerifier&) = delete;
 
   // Expects that focused text input client will not be changed.
   void ExpectClientDoesNotChange() {
@@ -105,8 +107,6 @@ class ClientChangeVerifier {
   bool on_will_change_focused_client_called_ = false;
   bool on_did_change_focused_client_called_ = false;
   bool on_text_input_state_changed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientChangeVerifier);
 };
 
 class InputMethodBaseTest : public testing::Test {
@@ -119,6 +119,10 @@ class MockInputMethodBase : public InputMethodBase {
  public:
   explicit MockInputMethodBase(ClientChangeVerifier* verifier)
       : InputMethodBase(nullptr), verifier_(verifier) {}
+
+  MockInputMethodBase(const MockInputMethodBase&) = delete;
+  MockInputMethodBase& operator=(const MockInputMethodBase&) = delete;
+
   ~MockInputMethodBase() override = default;
 
  private:
@@ -128,8 +132,6 @@ class MockInputMethodBase : public InputMethodBase {
   }
   void OnCaretBoundsChanged(const TextInputClient* client) override {}
   void CancelComposition(const TextInputClient* client) override {}
-  void OnInputLocaleChanged() override {}
-  bool IsInputLocaleCJK() const override { return false; }
   bool IsCandidatePopupOpen() const override { return false; }
 
   // InputMethodBase:
@@ -147,7 +149,6 @@ class MockInputMethodBase : public InputMethodBase {
   ClientChangeVerifier* const verifier_;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodBaseTest, CandidateWindowEvents);
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodBase);
 };
 
 class MockInputMethodObserver : public InputMethodObserver {
@@ -155,6 +156,10 @@ class MockInputMethodObserver : public InputMethodObserver {
   explicit MockInputMethodObserver(ClientChangeVerifier* verifier)
       : verifier_(verifier) {
   }
+
+  MockInputMethodObserver(const MockInputMethodObserver&) = delete;
+  MockInputMethodObserver& operator=(const MockInputMethodObserver&) = delete;
+
   ~MockInputMethodObserver() override = default;
 
  private:
@@ -169,11 +174,10 @@ class MockInputMethodObserver : public InputMethodObserver {
 
   // Not owned.
   ClientChangeVerifier* const verifier_;
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodObserver);
 };
 
-typedef ScopedObserver<InputMethod, InputMethodObserver>
-    InputMethodScopedObserver;
+typedef base::ScopedObservation<InputMethod, InputMethodObserver>
+    InputMethodScopedObservation;
 
 void SetFocusedTextInputClient(InputMethod* input_method,
                                TextInputClient* text_input_client) {
@@ -187,8 +191,8 @@ TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
   MockInputMethodObserver input_method_observer(&verifier);
-  InputMethodScopedObserver scoped_observer(&input_method_observer);
-  scoped_observer.Add(&input_method);
+  InputMethodScopedObservation scoped_observation(&input_method_observer);
+  scoped_observation.Observe(&input_method);
 
   // Assume that the top-level-widget gains focus.
   input_method.OnFocus();
@@ -246,8 +250,8 @@ TEST_F(InputMethodBaseTest, DetachTextInputClient) {
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
   MockInputMethodObserver input_method_observer(&verifier);
-  InputMethodScopedObserver scoped_observer(&input_method_observer);
-  scoped_observer.Add(&input_method);
+  InputMethodScopedObservation scoped_observation(&input_method_observer);
+  scoped_observation.Observe(&input_method);
 
   // Assume that the top-level-widget gains focus.
   input_method.OnFocus();

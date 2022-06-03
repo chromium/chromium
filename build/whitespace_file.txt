@@ -177,3 +177,19 @@ SECRET ENDING: IT WAS _____ ALL ALONG!
 testing trailing line.
 
 So many books, so little time.
+
+Hi there, it's my first commit.
+!false isn't funny because it's true.
+
+Lalala
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Vestibulum rhoncus neque sodales nibh lobortis, non fringilla odio aliquet.
+Praesent ultrices quam eu pretium ultrices.
+Quisque et consequat ex. Curabitur sed nunc neque.
+foo
+
+And if you go chasing rabbits
+And you know you're going to fall
+Tell 'em a hookah-smoking caterpillar
+

@@ -9,13 +9,25 @@
 
 #include <string>
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/signin/signin_promo.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#endif
+
+namespace signin {
+enum class ConsentLevel;
+}  // namespace signin
 
 class Browser;
 class Profile;
@@ -33,7 +45,7 @@ enum HelpSource {
   // WebUI (the "About" page).
   HELP_SOURCE_WEBUI,
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // WebUI (the OS "About" page).
   HELP_SOURCE_WEBUI_CHROME_OS,
 #endif
@@ -55,6 +67,18 @@ enum FeedbackSource {
   kFeedbackSourceSupervisedUserInterstitial,
   kFeedbackSourceAssistant,
   kFeedbackSourceDesktopTabGroups,
+  kFeedbackSourceMediaApp,
+  kFeedbackSourceHelpApp,
+  kFeedbackSourceKaleidoscope,
+  kFeedbackSourceNetworkHealthPage,
+  kFeedbackSourceTabSearch,
+  kFeedbackSourceCameraApp,
+  kFeedbackSourceCaptureMode,
+  kFeedbackSourceChromeLabs,
+  kFeedbackSourceBentoBar,
+  kFeedbackSourceQuickAnswers,
+  kFeedbackSourceWhatsNew,
+  kFeedbackSourceConnectivityDiagnostics,
 
   // Must be last.
   kFeedbackSourceCount,
@@ -87,7 +111,11 @@ void ShowFeedbackPage(const GURL& page_url,
 
 void ShowHelp(Browser* browser, HelpSource source);
 void ShowHelpForProfile(Profile* profile, HelpSource source);
-void LaunchReleaseNotes(Profile* profile);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void ShowChromeTips(Browser* browser);
+void ShowChromeWhatsNew(Browser* browser);
+#endif
+void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source);
 void ShowBetaForum(Browser* browser);
 void ShowPolicy(Browser* browser);
 void ShowSlow(Browser* browser);
@@ -115,30 +143,43 @@ void ShowContentSettingsExceptionsForProfile(
 void ShowSiteSettings(Profile* profile, const GURL& url);
 void ShowSiteSettings(Browser* browser, const GURL& url);
 
-void ShowAppManagementPage(Profile* profile, const std::string& app_id);
-
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type);
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
                                         const std::string& sub_page);
 void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(Browser* browser);
+void ShowPasswordCheck(Browser* browser);
+void ShowSafeBrowsingEnhancedProtection(Browser* browser);
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
 
 // Constructs an OS settings GURL for the specified |sub_page|.
 GURL GetOSSettingsUrl(const std::string& sub_page);
+
+void ShowAppManagementPage(Profile* profile,
+                           const std::string& app_id,
+                           AppManagementEntryPoint entry_point);
+
+void ShowPrintManagementApp(Profile* profile);
+
+void ShowConnectivityDiagnosticsApp(Profile* profile);
+
+void ShowScanningApp(Profile* profile);
+
+void ShowDiagnosticsApp(Profile* profile);
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Initiates signin in a new browser tab.
 void ShowBrowserSignin(Browser* browser,
-                       signin_metrics::AccessPoint access_point);
+                       signin_metrics::AccessPoint access_point,
+                       signin::ConsentLevel consent_level);
 
 // If the user is already signed in, shows the "Signin" portion of Settings,
 // otherwise initiates signin in a new browser tab.

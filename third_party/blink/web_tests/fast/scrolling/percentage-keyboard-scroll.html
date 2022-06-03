@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<div id="outerScroller" style="width: 400px; height: 400px; overflow: scroll;">
+  <!-- Set tabindex so the scroller is focusable even if layout hasn't yet run -->
+  <div id="innerScroller" tabindex=1 style="width: 200px; height: 200px; overflow: scroll;">
+    <div style="width: 1000px; height:1000px;"></div>
+  </div>
+  <div style="width: 1000px; height:1000px;"></div>
+</div>
+<script>
+  "use strict";
+
+  function runTest() {
+    if (window.eventSender && window.internals) {
+      internals.settings.setScrollAnimatorEnabled(false);
+      internals.settings.setHideScrollbars(true);
+      internals.runtimeFlags.percentBasedScrollingEnabled = true;
+
+      test(() => {
+        const scrollStepsPerViewport = 8;
+        const innerScroller = document.getElementById("innerScroller");
+        const outerScroller = document.getElementById("outerScroller");
+
+        innerScroller.focus();
+        assert_equals(document.activeElement.id, "innerScroller");
+        eventSender.keyDown("ArrowDown");
+        eventSender.keyDown("ArrowRight");
+
+        outerScroller.focus();
+        assert_equals(document.activeElement.id, "outerScroller");
+        eventSender.keyDown("ArrowDown");
+        eventSender.keyDown("ArrowRight");
+
+        assert_equals(innerScroller.scrollTop,  innerScroller.clientHeight / scrollStepsPerViewport);
+        assert_equals(innerScroller.scrollLeft, innerScroller.clientWidth  / scrollStepsPerViewport);
+        assert_equals(outerScroller.scrollTop,  outerScroller.clientHeight / scrollStepsPerViewport);
+        assert_equals(outerScroller.scrollLeft, outerScroller.clientWidth  / scrollStepsPerViewport);
+      }, "Scrolls a percentage of the viewport when using the keyboard arrow keys to scroll.");
+    }
+  }
+  addEventListener('load', runTest);
+</script>
+

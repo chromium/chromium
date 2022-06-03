@@ -1,0 +1,23 @@
+diff --git a/configure.ac b/configure.ac
+index d7142ff2..8a7112a9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -709,13 +709,16 @@ tests/exslt/sets/Makefile
+ tests/exslt/strings/Makefile
+ tests/exslt/date/Makefile
+ tests/exslt/dynamic/Makefile
+-tests/exslt/crypto/Makefile
+ tests/plugins/Makefile
+ tests/fuzz/Makefile
+ doc/Makefile
+ xslt-config
+ libxslt.spec
+ ])
++if test "$CRYPTO_TESTDIR" != ""
++then
++  AC_CONFIG_FILES(["tests/exslt/$CRYPTO_TESTDIR/Makefile"])
++fi
+ AC_CONFIG_LINKS([tests/fuzz/xpath.xml:tests/fuzz/xpath.xml])
+ AC_CONFIG_LINKS([tests/fuzz/xslt.xml:tests/fuzz/xslt.xml])
+ 
+

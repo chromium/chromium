@@ -10,11 +10,9 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/values.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-
-namespace base {
-class DictionaryValue;
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_handler {
@@ -26,22 +24,28 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kErrorDetail[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDbusErrorName[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDbusErrorMessage[];
 
+// On success, |result| contains the result. On failure, |result| is nullopt.
+using ResultCallback =
+    base::OnceCallback<void(const std::string& service_path,
+                            absl::optional<base::Value> result)>;
+
+// On success, |properties| contains the resulting properties and |error| is
+// nullopt. On failure, |result| is nullopt and |error| may contain an error
+// identifier.
+using PropertiesCallback =
+    base::OnceCallback<void(const std::string& service_path,
+                            absl::optional<base::Value> properties,
+                            absl::optional<std::string> error)>;
+
 // An error callback used by both the configuration handler and the state
 // handler to receive error results from the API.
-typedef base::Callback<void(const std::string& error_name,
-                            std::unique_ptr<base::DictionaryValue> error_data)>
-    ErrorCallback;
+using ErrorCallback =
+    base::OnceCallback<void(const std::string& error_name,
+                            std::unique_ptr<base::DictionaryValue> error_data)>;
 
-typedef base::Callback<
-  void(const std::string& service_path,
-       const base::DictionaryValue& dictionary)> DictionaryResultCallback;
-
-typedef base::Callback<void(const std::string& string_result)>
-    StringResultCallback;
-
-typedef base::Callback<void(const std::string& service_path,
-                            const std::string& guid)>
-    ServiceResultCallback;
+using ServiceResultCallback =
+    base::OnceCallback<void(const std::string& service_path,
+                            const std::string& guid)>;
 
 // Create a DictionaryValue for passing to ErrorCallback.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -52,13 +56,13 @@ base::DictionaryValue* CreateErrorData(const std::string& path,
 // If not NULL, runs |error_callback| with an ErrorData dictionary created from
 // the other arguments.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void RunErrorCallback(const ErrorCallback& error_callback,
+void RunErrorCallback(ErrorCallback error_callback,
                       const std::string& path,
                       const std::string& error_name,
                       const std::string& error_detail);
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::DictionaryValue* CreateDBusErrorData(
+std::unique_ptr<base::DictionaryValue> CreateDBusErrorData(
     const std::string& path,
     const std::string& error_name,
     const std::string& error_detail,
@@ -73,22 +77,16 @@ base::DictionaryValue* CreateDBusErrorData(
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void ShillErrorCallbackFunction(const std::string& error_name,
                                 const std::string& path,
-                                const ErrorCallback& error_callback,
+                                ErrorCallback error_callback,
                                 const std::string& dbus_error_name,
                                 const std::string& dbus_error_message);
 
-// Callback for property getters used by NetworkConfigurationHandler
-// (for Network Services) and by NetworkDeviceHandler. Used to translate
-// the DBus Dictionary callback into one that calls the error callback
-// if |call_status| != DBUS_METHOD_CALL_SUCCESS.
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void GetPropertiesCallback(const DictionaryResultCallback& callback,
-                           const ErrorCallback& error_callback,
-                           const std::string& path,
-                           DBusMethodCallStatus call_status,
-                           const base::DictionaryValue& value);
-
 }  // namespace network_handler
 }  // namespace chromeos
+
+namespace ash {
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace network_handler = ::chromeos::network_handler;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_HANDLER_CALLBACKS_H_

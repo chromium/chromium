@@ -40,7 +40,6 @@
 "plugin-types"
 "report-to"
 "report-uri"
-"require-sri-for"
 "sandbox"
 "script-src"
 "style-src"

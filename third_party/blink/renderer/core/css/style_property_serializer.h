@@ -30,6 +30,7 @@
 
 namespace blink {
 
+class CSSPropertyName;
 class CSSPropertyValueSet;
 class StylePropertyShorthand;
 
@@ -55,13 +56,17 @@ class StylePropertySerializer {
   String PageBreakPropertyValue(const StylePropertyShorthand&) const;
   String GetShorthandValue(const StylePropertyShorthand&,
                            String separator = " ") const;
+  String ContainerValue() const;
   String FontValue() const;
+  String FontSynthesisValue() const;
   String FontVariantValue() const;
   bool AppendFontLonghandValueIfNotNormal(const CSSProperty&,
                                           StringBuilder& result) const;
   String OffsetValue() const;
+  String TextDecorationValue() const;
   String BackgroundRepeatPropertyValue() const;
-  String GetPropertyText(const CSSProperty&,
+  String ContainIntrinsicSizeValue() const;
+  String GetPropertyText(const CSSPropertyName&,
                          const String& value,
                          bool is_important,
                          bool is_not_first_decl) const;
@@ -86,31 +91,25 @@ class StylePropertySerializer {
    public:
     explicit PropertyValueForSerializer(
         CSSPropertyValueSet::PropertyReference property)
-        : value_(property.Value()),
-          property_(property.Property()),
-          is_important_(property.IsImportant()),
-          is_inherited_(property.IsInherited()) {}
+        : value_(&property.Value()),
+          name_(property.Name()),
+          is_important_(property.IsImportant()) {}
 
     // TODO(sashab): Make this take a const CSSValue&.
-    PropertyValueForSerializer(const CSSProperty& property,
+    PropertyValueForSerializer(const CSSPropertyName& name,
                                const CSSValue* value,
                                bool is_important)
-        : value_(value),
-          property_(property),
-          is_important_(is_important),
-          is_inherited_(value->IsInheritedValue()) {}
+        : value_(value), name_(name), is_important_(is_important) {}
 
-    const CSSProperty& Property() const { return property_; }
+    const CSSPropertyName& Name() const { return name_; }
     const CSSValue* Value() const { return value_; }
     bool IsImportant() const { return is_important_; }
-    bool IsInherited() const { return is_inherited_; }
     bool IsValid() const { return value_; }
 
    private:
-    Member<const CSSValue> value_;
-    const CSSProperty& property_;
+    const CSSValue* value_;
+    CSSPropertyName name_;
     bool is_important_;
-    bool is_inherited_;
   };
 
   String GetCustomPropertyText(const PropertyValueForSerializer&,
@@ -129,7 +128,7 @@ class StylePropertySerializer {
     const CSSValue* GetPropertyCSSValue(const CSSProperty&) const;
     bool IsDescriptorContext() const;
 
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
    private:
     bool HasExpandedAllProperty() const {
@@ -139,7 +138,7 @@ class StylePropertySerializer {
 
     Member<const CSSPropertyValueSet> property_set_;
     int all_index_;
-    std::bitset<numCSSProperties> longhand_property_used_;
+    std::bitset<kNumCSSProperties> longhand_property_used_;
     bool need_to_expand_all_;
   };
 

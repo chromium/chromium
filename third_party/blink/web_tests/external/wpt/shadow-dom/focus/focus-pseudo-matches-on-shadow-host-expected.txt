@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS :focus must not match a shadow host with open mode shadow root that does not contain the focused element
+FAIL :focus must match a shadow host with open mode shadow root that contains the focused element assert_true: expected true got false
+PASS :focus must not match a shadow host with open mode shadow root contains the focused element assigned to a slot
+PASS :focus must not match a shadow host with closed mode shadow root that does not contain the focused element
+FAIL :focus must match a shadow host with closed mode shadow root that contains the focused element assert_true: expected true got false
+PASS :focus must not match a shadow host with closed mode shadow root contains the focused element assigned to a slot
+Harness: the test ran to completion.
+

@@ -4,7 +4,7 @@
 
 #include "components/viz/service/surfaces/referenced_surface_tracker.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace viz {
 

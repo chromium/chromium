@@ -1,0 +1,13 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+package: chromium/third_party/android_sdk/public/cmdline-tools
+description: Android SDK "cmdline-tools" package
+root: ../public/
+data:
+  - dir: cmdline-tools
+# Some tools inspect their argv0 and don't handle CIPD's symlink structure
+# correctly. Install in copy mode so that they can find the other directories
+# relative to themselves.
+install_mode: copy

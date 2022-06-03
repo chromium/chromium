@@ -15,15 +15,14 @@ namespace supervised_user_error_page {
 enum FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
-  BLACKLIST = 2,
+  DENYLIST = 2,
   MANUAL = 3,
-  WHITELIST = 4,
+  ALLOWLIST = 4,
   NOT_SIGNED_IN = 5,
 };
 
 int GetBlockMessageID(
     supervised_user_error_page::FilteringBehaviorReason reason,
-    bool is_child_account,
     bool single_parent);
 
 std::string BuildHtml(bool allow_access_requests,
@@ -33,10 +32,10 @@ std::string BuildHtml(bool allow_access_requests,
                       const std::string& custodian_email,
                       const std::string& second_custodian,
                       const std::string& second_custodian_email,
-                      bool is_child_account,
-                      bool is_deprecated,
                       FilteringBehaviorReason reason,
-                      const std::string& app_locale);
+                      const std::string& app_locale,
+                      bool already_sent_remote_request,
+                      bool is_main_frame);
 
 }  //  namespace supervised_user_error_page
 

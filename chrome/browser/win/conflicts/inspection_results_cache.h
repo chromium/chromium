@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "chrome/browser/win/conflicts/module_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -59,9 +59,9 @@ void AddInspectionResultToCache(
 
 // Helper function to retrieve a ModuleInspectionResult from an existing cache.
 // Also updates the time stamp of the element found to base::Time::Now().
-// Returns base::nullopt if the cache does not contains an entry for
+// Returns absl::nullopt if the cache does not contains an entry for
 // |module_key|.
-base::Optional<ModuleInspectionResult> GetInspectionResultFromCache(
+absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache);
 

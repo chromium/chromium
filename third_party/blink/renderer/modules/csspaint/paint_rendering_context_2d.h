@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_paint_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
-#include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d_settings.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -29,16 +30,20 @@ class Color;
 class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
                                                public BaseRenderingContext2D {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(PaintRenderingContext2D);
 
  public:
   PaintRenderingContext2D(const IntSize& container_size,
                           const PaintRenderingContext2DSettings*,
                           float zoom,
-                          float device_scale_factor);
+                          float device_scale_factor,
+                          PaintWorkletGlobalScope* global_scope = nullptr);
 
-  void Trace(blink::Visitor* visitor) override {
+  PaintRenderingContext2D(const PaintRenderingContext2D&) = delete;
+  PaintRenderingContext2D& operator=(const PaintRenderingContext2D&) = delete;
+
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(context_settings_);
+    visitor->Trace(global_scope_);
     ScriptWrappable::Trace(visitor);
     BaseRenderingContext2D::Trace(visitor);
   }
@@ -54,10 +59,11 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   bool ParseColorOrCurrentColor(Color&, const String& color_string) const final;
 
-  cc::PaintCanvas* DrawingCanvas() const final;
-  cc::PaintCanvas* ExistingDrawingCanvas() const final;
-
-  void DidDraw(const SkIRect&) final;
+  cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
+  cc::PaintCanvas* GetPaintCanvas() const final;
+  cc::PaintCanvas* GetPaintCanvasForDraw(
+      const SkIRect&,
+      CanvasPerformanceMonitor::DrawType) final;
 
   double shadowOffsetX() const final;
   void setShadowOffsetX(double) final;
@@ -68,11 +74,10 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   double shadowBlur() const final;
   void setShadowBlur(double) final;
 
-  bool StateHasFilter() final;
   sk_sp<PaintFilter> StateGetFilter() final;
   void SnapshotStateForFilter() final {}
 
-  void ValidateStateStack() const final;
+  void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;
 
   bool HasAlpha() const final { return context_settings_->alpha(); }
 
@@ -84,23 +89,30 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   bool CanCreateCanvas2dResourceProvider() const final { return false; }
   bool IsAccelerated() const final { return false; }
 
-  void setTransform(double m11,
-                    double m12,
-                    double m21,
-                    double m22,
-                    double dx,
-                    double dy) final;
-  void setTransform(DOMMatrix2DInit*, ExceptionState&) final;
+  // CSS Paint doesn't have any notion of image orientation.
+  RespectImageOrientationEnum RespectImageOrientation() const final {
+    return kRespectImageOrientation;
+  }
+
+  DOMMatrix* getTransform() final;
+  void resetTransform() final;
+
+  void FlushCanvas() final {}
 
   sk_sp<PaintRecord> GetRecord();
+  cc::PaintCanvas* GetDrawingPaintCanvas();
+
+  ExecutionContext* GetTopExecutionContext() const override {
+    return global_scope_.Get();
+  }
 
  protected:
+  CanvasColorParams GetCanvas2DColorParams() const override;
   bool IsPaint2D() const override { return true; }
   void WillOverwriteCanvas() override;
 
  private:
   void InitializePaintRecorder();
-  cc::PaintCanvas* Canvas() const;
 
   std::unique_ptr<PaintRecorder> paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
@@ -112,12 +124,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   // paint worklet canvas needs to handle device scale factor and browser zoom,
   // and this is designed for that purpose.
   const float effective_zoom_;
-  // On platforms where zoom_for_dsf is enabled, the |effective_zoom_|
-  // accounts for the device scale factor. For platforms where the feature is
-  // not enabled (currently Mac only), we need this extra variable.
-  const float device_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintRenderingContext2D);
+  WeakMember<PaintWorkletGlobalScope> global_scope_;
 };
 
 }  // namespace blink

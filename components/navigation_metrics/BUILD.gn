@@ -20,9 +20,7 @@ static_library("navigation_metrics") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "navigation_metrics_unittest.cc",
-  ]
+  sources = [ "navigation_metrics_unittest.cc" ]
   deps = [
     ":navigation_metrics",
     "//base/test:test_support",

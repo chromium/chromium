@@ -27,9 +27,13 @@ input.oninput = function() {
     debug("input event dispatched - value is:  " + input.value);
 };
 
-eventSender.mouseMoveTo(10, 10);
-eventSender.mouseDown();
-eventSender.mouseUp();
+function openColorChooser() {
+  eventSender.mouseMoveTo(10, 10);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+openColorChooser();
 
 // Test that incorrect element arguments are (not) handled.
 shouldThrow("internals.selectColorInColorChooser({}, '#ff0000');");
@@ -45,6 +49,7 @@ function step1() {
 
 function step2() {
     debug("change event dispatched - value changed to " + input.value);
+    openColorChooser();
     // input.onchange should not be called
     input.onchange = () => {
         testFailed("Change event should not be dispatched.");
@@ -57,6 +62,7 @@ function step2() {
 
 function step3() {
     debug('Change event is only dispatched, when color chooser is closed');
+    openColorChooser();
     input.onchange = step4;
     internals.selectColorInColorChooser(input, '#ff0002');
     internals.endColorChooser(input);

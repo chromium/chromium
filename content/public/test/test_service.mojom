@@ -4,6 +4,8 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
+
 interface TestService {
   // Doesn't actually do anything, just responds.
   DoSomething() => ();
@@ -22,7 +24,24 @@ interface TestService {
   // Retrieve the requestor name as seen by the test app providing this service.
   GetRequestorName() => (string name);
 
-  // Requests that a new shared buffer be created and returned. If successful,
-  // |buffer| is non-null and its contents match |message|'s bytes exactly.
-  CreateSharedBuffer(string message) => (handle<shared_buffer>? buffer);
+  // Requests that a new read-only shared memory region be created and
+  // returned. On success, |region| is valid and its contents match |message|'s
+  // bytes exactly.
+  CreateReadOnlySharedMemoryRegion(string message)
+      => (mojo_base.mojom.ReadOnlySharedMemoryRegion? region);
+
+  // Requests that a new writable shared memory region be created and
+  // returned. On success, |region| is valid and its contents match |message|'s
+  // bytes exactly.
+  CreateWritableSharedMemoryRegion(string message)
+      => (mojo_base.mojom.WritableSharedMemoryRegion? region);
+
+  // Requests that a new unsafe shared memory region be created and returned.
+  // On success, |region| is valid and its contents match |message|'s bytes
+  // exactly.
+  CreateUnsafeSharedMemoryRegion(string message)
+      => (mojo_base.mojom.UnsafeSharedMemoryRegion? region);
+
+  // Returns the result of sandbox::policy::Sandbox::IsProcessSandboxed().
+  IsProcessSandboxed() => (bool is_sandboxed);
 };

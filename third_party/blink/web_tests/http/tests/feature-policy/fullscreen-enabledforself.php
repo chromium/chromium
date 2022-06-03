@@ -31,10 +31,9 @@ function loadFrame(iframe, src) {
         resolve(e.data);
       }, { once: true });
     }).then(function(data) {
-      // fullscreen is enabled if:
-      //     a. same origin; or
-      //     b. enabled by allowfullscreen.
-      if (src === srcs[0] || allowfullscreen) {
+      // fullscreen is enabled if same origin, and blocked if not, regardless of
+      // the allowfullscreen attribute.
+      if (src === srcs[0]) {
         assert_true(data.enabled, 'Document.fullscreenEnabled:');
         assert_equals(data.type, 'change', 'Document.requestFullscreen():');
       } else {

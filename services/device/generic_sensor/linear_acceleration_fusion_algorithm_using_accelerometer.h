@@ -12,11 +12,17 @@ namespace device {
 
 // Algotithm that obtains linear acceleration values from data provided by
 // accelerometer sensor. Simple low-pass filter is used to isolate gravity
-// and substract it from accelerometer data to get linear acceleration.
+// and subtract it from accelerometer data to get linear acceleration.
 class LinearAccelerationFusionAlgorithmUsingAccelerometer final
     : public PlatformSensorFusionAlgorithm {
  public:
   LinearAccelerationFusionAlgorithmUsingAccelerometer();
+
+  LinearAccelerationFusionAlgorithmUsingAccelerometer(
+      const LinearAccelerationFusionAlgorithmUsingAccelerometer&) = delete;
+  LinearAccelerationFusionAlgorithmUsingAccelerometer& operator=(
+      const LinearAccelerationFusionAlgorithmUsingAccelerometer&) = delete;
+
   ~LinearAccelerationFusionAlgorithmUsingAccelerometer() override;
 
   void SetFrequency(double frequency) override;
@@ -34,8 +40,6 @@ class LinearAccelerationFusionAlgorithmUsingAccelerometer final
   double gravity_x_;
   double gravity_y_;
   double gravity_z_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearAccelerationFusionAlgorithmUsingAccelerometer);
 };
 
 }  // namespace device

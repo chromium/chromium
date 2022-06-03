@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace arc {
 
@@ -40,8 +40,19 @@ void FakeArcSession::OnShutdown() {
   StopWithReason(ArcStopReason::SHUTDOWN);
 }
 
-void FakeArcSession::SetUserInfo(const std::string& hash,
-                                 const std::string& serial_number) {}
+void FakeArcSession::SetUserInfo(
+    const cryptohome::Identification& cryptohome_id,
+    const std::string& hash,
+    const std::string& serial_number) {}
+
+void FakeArcSession::SetDemoModeDelegate(
+    ArcClientAdapter::DemoModeDelegate* delegate) {}
+
+void FakeArcSession::TrimVmMemory(TrimVmMemoryCallback callback) {
+  std::move(callback).Run(true, std::string());
+}
+
+void FakeArcSession::SetDefaultDeviceScaleFactor(float scale_factor) {}
 
 void FakeArcSession::StopWithReason(ArcStopReason reason) {
   bool was_mojo_connected = running_;

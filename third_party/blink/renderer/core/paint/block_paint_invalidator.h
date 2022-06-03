@@ -19,7 +19,6 @@ class BlockPaintInvalidator {
  public:
   BlockPaintInvalidator(const LayoutBlock& block) : block_(block) {}
 
-  void ClearPreviousVisualRects();
   void InvalidatePaint(const PaintInvalidatorContext&);
 
  private:
@@ -28,4 +27,4 @@ class BlockPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BLOCK_PAINT_INVALIDATOR_H_

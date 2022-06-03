@@ -23,9 +23,9 @@
 #include "chromeos/components/tether/gms_core_notifications_state_tracker_impl.h"
 #include "chromeos/components/tether/host_scan_device_prioritizer.h"
 #include "chromeos/components/tether/host_scanner.h"
-#include "chromeos/components/tether/master_host_scan_cache.h"
 #include "chromeos/components/tether/mock_tether_host_response_recorder.h"
 #include "chromeos/components/tether/proto_test_util.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
@@ -91,7 +91,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
   FakeHostScannerOperationFactory(
       const multidevice::RemoteDeviceRefList& test_devices)
       : expected_devices_(test_devices) {}
-  virtual ~FakeHostScannerOperationFactory() = default;
+  ~FakeHostScannerOperationFactory() override = default;
 
   std::vector<FakeHostScannerOperation*>& created_operations() {
     return created_operations_;
@@ -99,7 +99,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
 
  protected:
   // HostScannerOperation::Factory:
-  std::unique_ptr<HostScannerOperation> BuildInstance(
+  std::unique_ptr<HostScannerOperation> CreateInstance(
       const multidevice::RemoteDeviceRefList& devices_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
@@ -191,6 +191,10 @@ CreateFakeScannedDeviceInfos(
 }  // namespace
 
 class HostScannerImplTest : public testing::Test {
+ public:
+  HostScannerImplTest(const HostScannerImplTest&) = delete;
+  HostScannerImplTest& operator=(const HostScannerImplTest&) = delete;
+
  protected:
   HostScannerImplTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(4)),
@@ -221,7 +225,7 @@ class HostScannerImplTest : public testing::Test {
 
     fake_host_scanner_operation_factory_ =
         base::WrapUnique(new FakeHostScannerOperationFactory(test_devices_));
-    HostScannerOperation::Factory::SetInstanceForTesting(
+    HostScannerOperation::Factory::SetFactoryForTesting(
         fake_host_scanner_operation_factory_.get());
 
     fake_connection_preserver_ = std::make_unique<FakeConnectionPreserver>();
@@ -245,7 +249,7 @@ class HostScannerImplTest : public testing::Test {
 
   void TearDown() override {
     host_scanner_->RemoveObserver(test_observer_.get());
-    HostScannerOperation::Factory::SetInstanceForTesting(nullptr);
+    HostScannerOperation::Factory::SetFactoryForTesting(nullptr);
   }
 
   // Causes |fake_operation| to receive the scan result in
@@ -430,9 +434,6 @@ class HostScannerImplTest : public testing::Test {
   std::unique_ptr<HostScanner> host_scanner_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScannerImplTest);
 };
 
 TEST_F(HostScannerImplTest, DISABLED_TestScan_ConnectingToExistingNetwork) {

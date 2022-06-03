@@ -1,27 +1,36 @@
-<p>
-    Test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=14347">http://bugs.webkit.org/show_bug.cgi?id=14347</a>
-    REGRESSION (r21291): Initiating a drag near the edge of a selection deselects it</i>.
-</p>
-<p>
-    Drag the selected letter W into the yellow rectangle.
-</p>
-<div id="source" style="font-size: 72px">W</div>
-<div contenteditable="true" id="destination" style="font-size: 72px; background: #ffc;"></div>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-    var source = document.getElementById("source");
-    var destination = document.getElementById("destination");
+// Test for http://bugs.webkit.org/show_bug.cgi?id=14347
+// REGRESSION (r21291): Initiating a drag near the edge of a selection deselects
+// it.
+selection_test(
+    [
+        '<div id="src">^W|</div>',
+        '<div contenteditable id="dst"></div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+          throw 'This test requires eventSender.';
 
-    getSelection().setBaseAndExtent(source, 0, source, 1);
+        // Drag the selected letter W into the yellow rectangle.
+        const source = selection.document.getElementById('src');
+        const destination = selection.document.getElementById('dst');
 
-    var x = document.body.offsetLeft + source.offsetLeft + 1;
-    var srcY = document.body.offsetTop + source.offsetTop + source.offsetHeight / 2;
-    var dstY = document.body.offsetTop + destination.offsetTop + source.offsetHeight / 2;
+        const x = selection.computeLeft(source) + 1;
+        const srcY = selection.computeTop(source) + source.offsetHeight / 2;
+        const dstY = selection.computeTop(destination) + source.offsetHeight / 2;
 
-    if (window.eventSender) {
         eventSender.mouseMoveTo(x, srcY);
         eventSender.mouseDown();
         eventSender.leapForward(1000);
         eventSender.mouseMoveTo(x, dstY);
         eventSender.mouseUp();
-    }
+    },
+    [
+        '<div id="src">W</div>',
+        '<div contenteditable id="dst">^W|</div>',
+    ]);
 </script>

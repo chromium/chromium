@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_TRANSLATE_LANGUAGE_SELECTION_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_TRANSLATE_LANGUAGE_SELECTION_CONSUMER_H_
 
+#import <Foundation/Foundation.h>
+
 @class TableViewTextItem;
 
-@protocol InfobarTranslateLanguageSelectionConsumer <NSObject>
+@protocol InfobarTranslateLanguageSelectionConsumer
 
 // Tells the consumer about the language |items| to be displayed.
 - (void)setTranslateLanguageItems:(NSArray<TableViewTextItem*>*)items;

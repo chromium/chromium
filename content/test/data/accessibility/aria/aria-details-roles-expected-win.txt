@@ -1,0 +1,29 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION details-roles:comment description='comment'
+++IA2_ROLE_SECTION details-roles:comment description='comment-group'
+++IA2_ROLE_SECTION details-roles:* description='comment-region'
+++IA2_ROLE_SECTION details-roles:* description='comment-section'
+++IA2_ROLE_SECTION details-roles:definition description='definition'
+++IA2_ROLE_SECTION details-roles:doc-endnote description='doc-endnote'
+++IA2_ROLE_SECTION details-roles:doc-footnote description='doc-footnote'
+++IA2_ROLE_SECTION details-roles:comment definition doc-footnote description='many'
+++IA2_ROLE_COMMENT
+++++ROLE_SYSTEM_STATICTEXT name='x'
+++ROLE_SYSTEM_GROUPING
+++++IA2_ROLE_HEADING name='heading'
+++++++ROLE_SYSTEM_STATICTEXT name='heading'
+++++ROLE_SYSTEM_GROUPING
+++++++IA2_ROLE_COMMENT
+++++++++ROLE_SYSTEM_STATICTEXT name='x'
+++IA2_ROLE_SECTION
+++++IA2_ROLE_COMMENT
+++++++ROLE_SYSTEM_STATICTEXT name='x'
+++IA2_ROLE_SECTION
+++++IA2_ROLE_COMMENT
+++++++ROLE_SYSTEM_STATICTEXT name='x'
+++IA2_ROLE_PARAGRAPH READONLY
+++++ROLE_SYSTEM_STATICTEXT name='x'
+++ROLE_SYSTEM_LISTITEM
+++++ROLE_SYSTEM_STATICTEXT name='x'
+++IA2_ROLE_FOOTNOTE
+++++ROLE_SYSTEM_STATICTEXT name='x'

@@ -1,6 +1,7 @@
 include_rules = [
   "+components/history/core/common",
   "+components/variations",
+  "+crypto",
   "+ui/base",
   "+ui/gfx",
 ]

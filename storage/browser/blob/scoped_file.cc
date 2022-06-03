@@ -8,7 +8,8 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/task_runner.h"
+#include "base/logging.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace storage {
@@ -69,8 +70,7 @@ void ScopedFile::Reset() {
 
   if (scope_out_policy_ == DELETE_ON_SCOPE_OUT) {
     file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile), path_,
-                                  false /* recursive */));
+        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), path_));
   }
 
   // Clear all fields.

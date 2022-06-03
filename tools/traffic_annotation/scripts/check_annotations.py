@@ -21,12 +21,16 @@ from annotation_tools import NetworkTrafficAnnotationTools
 # //tools/traffic_annotation/OWNERS.
 TEST_IS_ENABLED = True
 
+# If this test starts failing due to a critical bug in auditor.py, please set
+# USE_PYTHON_AUDITOR to "False" and file a bug (see comment above).
+USE_PYTHON_AUDITOR = True
+
 # Threshold for the change list size to trigger full test.
 CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
 
 class NetworkTrafficAnnotationChecker():
-  EXTENSIONS = ['.cc', '.mm',]
+  EXTENSIONS = ['.cc', '.mm', '.java']
   ANNOTATIONS_FILE = 'annotations.xml'
 
   def __init__(self, build_path=None):
@@ -80,19 +84,21 @@ class NetworkTrafficAnnotationChecker():
 
     return file_paths
 
-  def CheckFiles(self, complete_run, limit):
+  def CheckFiles(self, complete_run, limit, use_python_auditor):
     """Passes all given files to traffic_annotation_auditor to be checked for
     possible violations of network traffic annotation rules.
 
     Args:
       complete_run: bool Flag requesting to run test on all relevant files.
+      use_python_auditor: bool If True, test auditor.py instead of
+        t_a_auditor.exe.
       limit: int The upper threshold for number of errors and warnings. Use 0
           for unlimited.
 
     Returns:
       int Exit code of the network traffic annotation auditor.
     """
-    if not self.tools.CanRunAuditor():
+    if not self.tools.CanRunAuditor(use_python_auditor):
       print("Network traffic annotation presubmit check was not performed. A "
             "compiled build directory and traffic_annotation_auditor binary "
             "are required to do it.")
@@ -105,12 +111,22 @@ class NetworkTrafficAnnotationChecker():
     args = ["--test-only", "--limit=%i" % limit, "--error-resilient"] + \
            file_paths
 
-    stdout_text, stderr_text, return_code = self.tools.RunAuditor(args)
+    stdout_text, stderr_text, return_code = self.tools.RunAuditor(
+        args, use_python_auditor)
 
     if stdout_text:
       print(stdout_text)
     if stderr_text:
       print("\n[Runtime Messages]:\n%s" % stderr_text)
+
+    if self.tools.GetCurrentPlatform() == "android":
+      # For now, always mark the android bot as green. This acts as a sort of
+      # "FYI" mode.
+      #
+      # TODO(crbug.com/1254719): Once the Android presubmit bot is stable, turn
+      # this into a CQ-blocking failure.
+      return 0
+
     return return_code
 
 
@@ -136,7 +152,11 @@ def main():
 
   args = parser.parse_args()
   checker = NetworkTrafficAnnotationChecker(args.build_path)
-  return checker.CheckFiles(args.complete, args.limit)
+  exit_code = checker.CheckFiles(args.complete,
+                                 args.limit,
+                                 use_python_auditor=USE_PYTHON_AUDITOR)
+
+  return exit_code
 
 
 if '__main__' == __name__:

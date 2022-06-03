@@ -4,15 +4,14 @@
 
 package org.chromium.weblayer.test;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
@@ -26,7 +25,7 @@ import java.util.List;
 /**
  * Tests that NewTabCallback methods are invoked as expected.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(WebLayerJUnit4ClassRunner.class)
 public class TabListCallbackTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
@@ -40,6 +39,7 @@ public class TabListCallbackTest {
         public static final String ADDED = "added";
         public static final String ACTIVE = "active";
         public static final String REMOVED = "removed";
+        public static final String WILL_DESTROY = "willdestroy";
 
         private List<String> mObservedValues =
                 Collections.synchronizedList(new ArrayList<String>());
@@ -59,6 +59,11 @@ public class TabListCallbackTest {
             recordValue(REMOVED);
         }
 
+        @Override
+        public void onWillDestroyBrowserAndAllTabs() {
+            recordValue(WILL_DESTROY);
+        }
+
         private void recordValue(String parameter) {
             mObservedValues.add(parameter);
         }
@@ -68,9 +73,8 @@ public class TabListCallbackTest {
         }
     }
 
-    @Before
-    public void setUp() {
-        String url = mActivityTestRule.getTestDataURL("new_browser.html");
+    protected void initialize(String testDataFile) {
+        String url = mActivityTestRule.getTestDataURL(testDataFile);
         mActivity = mActivityTestRule.launchShellWithUrl(url);
         Assert.assertNotNull(mActivity);
         NewTabCallbackImpl callback = new NewTabCallbackImpl();
@@ -92,6 +96,8 @@ public class TabListCallbackTest {
     @Test
     @SmallTest
     public void testActiveTabChanged() {
+        initialize("new_browser.html");
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabListCallbackImpl callback = new TabListCallbackImpl();
             mActivity.getBrowser().registerTabListCallback(callback);
@@ -103,6 +109,8 @@ public class TabListCallbackTest {
     @Test
     @SmallTest
     public void testMoveToDifferentFragment() {
+        initialize("new_browser.html");
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Browser browser2 = Browser.fromFragment(mActivity.createBrowserFragment(0));
             Browser browser1 = mActivity.getBrowser();
@@ -136,14 +144,77 @@ public class TabListCallbackTest {
 
     @Test
     @SmallTest
-    public void testDispose() {
+    public void testDestroyTab() {
+        initialize("new_browser.html");
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabListCallbackImpl callback = new TabListCallbackImpl();
             Browser browser = mActivity.getBrowser();
             browser.registerTabListCallback(callback);
             browser.destroyTab(mActivity.getBrowser().getActiveTab());
             Assert.assertTrue(callback.getObservedValues().contains(TabListCallbackImpl.ACTIVE));
+            Assert.assertTrue(callback.getObservedValues().contains(TabListCallbackImpl.REMOVED));
             Assert.assertEquals(1, browser.getTabs().size());
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testCallbackInvokedWhenTabClosedViaWebContents() {
+        initialize("new_tab_then_close.html");
+
+        OnTabRemovedTabListCallbackImpl closeTabCallback = new OnTabRemovedTabListCallbackImpl();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getBrowser().registerTabListCallback(closeTabCallback);
+            // Switch to the first tab so clicking closes |secondTab|.
+            mSecondTab.getBrowser().setActiveTab(mFirstTab);
+        });
+
+        // Clicking on the tab again to callback to close the tab.
+        EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
+        closeTabCallback.waitForCloseTab();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnTabRemoved() throws Exception {
+        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Browser browser = mActivity.getBrowser();
+            browser.registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onTabRemoved(Tab tab) {
+                    // |tab| should not be destroyed at this point. getGuid() is a good proxy
+                    // for verifying the tab hasn't been destroyed.
+                    tab.getGuid();
+                    callbackHelper.notifyCalled();
+                }
+            });
+            mActivity.getBrowser().destroyTab(mActivity.getBrowser().createTab());
+        });
+        callbackHelper.waitForFirst();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnWillDestroyBrowserAndAllTabs() throws Exception {
+        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
+        TabListCallbackImpl tabListCallback = new TabListCallbackImpl();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getBrowser().registerTabListCallback(tabListCallback);
+            mActivity.getBrowser().registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onWillDestroyBrowserAndAllTabs() {
+                    callbackHelper.notifyCalled();
+                }
+            });
+            mActivity.destroyFragment();
+        });
+        callbackHelper.waitForFirst();
+        Assert.assertEquals(1, tabListCallback.getObservedValues().size());
+        Assert.assertTrue(
+                tabListCallback.getObservedValues().contains(TabListCallbackImpl.WILL_DESTROY));
     }
 }

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/memory/aligned_memory.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,14 +17,14 @@ namespace base {
 
 namespace {
 
-class Dummy : public base::RefCounted<Dummy> {
+class Dummy : public RefCounted<Dummy> {
  public:
   explicit Dummy(int* alive) : alive_(alive) {
     ++*alive_;
   }
 
  private:
-  friend class base::RefCounted<Dummy>;
+  friend class RefCounted<Dummy>;
 
   ~Dummy() {
     --*alive_;
@@ -110,31 +111,28 @@ class AlignedData {
   alignas(alignment) char data_[alignment];
 };
 
-}  // anonymous namespace
-
-#define EXPECT_ALIGNED(ptr, align) \
-    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & (align - 1))
+}  // namespace
 
 TEST(StackContainer, BufferAlignment) {
   StackVector<wchar_t, 16> text;
   text->push_back(L'A');
-  EXPECT_ALIGNED(&text[0], alignof(wchar_t));
+  EXPECT_TRUE(IsAligned(&text[0], alignof(wchar_t)));
 
   StackVector<double, 1> doubles;
   doubles->push_back(0.0);
-  EXPECT_ALIGNED(&doubles[0], alignof(double));
+  EXPECT_TRUE(IsAligned(&doubles[0], alignof(double)));
 
   StackVector<AlignedData<16>, 1> aligned16;
   aligned16->push_back(AlignedData<16>());
-  EXPECT_ALIGNED(&aligned16[0], 16);
+  EXPECT_TRUE(IsAligned(&aligned16[0], 16));
 
 #if !defined(__GNUC__) || defined(ARCH_CPU_X86_FAMILY)
   // It seems that non-X86 gcc doesn't respect greater than 16 byte alignment.
   // See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33721 for details.
-  // TODO(sbc):re-enable this if GCC starts respecting higher alignments.
+  // TODO(sbc): Re-enable this if GCC starts respecting higher alignments.
   StackVector<AlignedData<256>, 1> aligned256;
   aligned256->push_back(AlignedData<256>());
-  EXPECT_ALIGNED(&aligned256[0], 256);
+  EXPECT_TRUE(IsAligned(&aligned256[0], 256));
 #endif
 }
 

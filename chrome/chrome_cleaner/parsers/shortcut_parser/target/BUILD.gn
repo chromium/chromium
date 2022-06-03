@@ -19,9 +19,7 @@ static_library("lnk_parser") {
 }
 
 fuzzer_test("lnk_parser_fuzzer") {
-  sources = [
-    "lnk_parser_fuzzer.cc",
-  ]
+  sources = [ "lnk_parser_fuzzer.cc" ]
 
   deps = [
     ":lnk_parser",
@@ -35,9 +33,7 @@ fuzzer_test("lnk_parser_fuzzer") {
 source_set("unittest_sources") {
   testonly = true
 
-  sources = [
-    "lnk_parser_unittest.cc",
-  ]
+  sources = [ "lnk_parser_unittest.cc" ]
 
   deps = [
     ":lnk_parser",

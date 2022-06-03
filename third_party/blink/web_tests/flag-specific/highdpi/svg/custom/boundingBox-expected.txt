@@ -1,0 +1,3 @@
+Test that -[DOMNode boundingBox] returns reasonable results for SVG elements.
+
+FAIL: boundingBox: 300 x 300 @ (87, 387), boundingClientRect: 200 x 200 @ (58, 258)

@@ -1,0 +1,55 @@
+Tests non-integer TouchEvent co-ordinates and radii
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+  
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Testing simple fractional touch
+PASS eventCount is 1
+PASS lastEvent.type is "touchstart"
+FAIL lastEvent.changedTouches[0].screenX should be within 0.00001 of 30.33. Was 45.494998931884766.
+FAIL lastEvent.changedTouches[0].screenY should be within 0.00001 of 4.5. Was 6.75.
+PASS lastEvent.changedTouches[0].clientX is within 0.00001 of 30.33
+PASS lastEvent.changedTouches[0].clientY is within 0.00001 of 4.5
+PASS lastEvent.changedTouches[0].pageX is within 0.00001 of 33.33
+PASS lastEvent.changedTouches[0].pageY is within 0.00001 of 14.5
+FAIL lastEvent.changedTouches[0].radiusX should be within 0.00001 of 5.2. Was 3.4666666984558105.
+FAIL lastEvent.changedTouches[0].radiusY should be within 0.00001 of 6.3. Was 4.200000286102295.
+
+
+Testing fractional touch inside simple iframe
+PASS eventCount is 1
+PASS lastEvent.type is "touchstart"
+FAIL lastEvent.changedTouches[0].screenX should be within 0.00001 of 11.5. Was 17.25.
+FAIL lastEvent.changedTouches[0].screenY should be within 0.00001 of 92.2. Was 138.29998779296875.
+PASS lastEvent.changedTouches[0].clientX is within 0.00001 of 4.5
+PASS lastEvent.changedTouches[0].clientY is within 0.00001 of 2.2
+PASS lastEvent.changedTouches[0].pageX is within 0.00001 of 4.5
+PASS lastEvent.changedTouches[0].pageY is within 0.00001 of 2.2
+
+
+Testing fractional touch inside rotated iframe
+PASS eventCount is 1
+PASS lastEvent.type is "touchstart"
+FAIL lastEvent.changedTouches[0].screenX should be within 0.00001 of 115.5. Was 173.25.
+FAIL lastEvent.changedTouches[0].screenY should be within 0.00001 of 92.2. Was 138.29998779296875.
+PASS lastEvent.changedTouches[0].clientX is within 0.00001 of 95.5
+FAIL lastEvent.changedTouches[0].clientY should be within 0.00001 of 97.8. Was 97.80001068115234.
+PASS lastEvent.changedTouches[0].pageX is within 0.00001 of 95.5
+FAIL lastEvent.changedTouches[0].pageY should be within 0.00001 of 97.8. Was 97.80001068115234.
+
+
+Testing fractional touch inside scaled iframe
+PASS eventCount is 1
+PASS lastEvent.type is "touchstart"
+FAIL lastEvent.changedTouches[0].screenX should be within 0.00001 of 244.5. Was 366.75.
+FAIL lastEvent.changedTouches[0].screenY should be within 0.00001 of 97.2. Was 145.79998779296875.
+PASS lastEvent.changedTouches[0].clientX is within 0.00001 of 2.25
+PASS lastEvent.changedTouches[0].clientY is within 0.00001 of 1.1
+PASS lastEvent.changedTouches[0].pageX is within 0.00001 of 2.25
+PASS lastEvent.changedTouches[0].pageY is within 0.00001 of 1.1
+
+

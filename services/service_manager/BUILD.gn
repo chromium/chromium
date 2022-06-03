@@ -6,9 +6,7 @@ import("//testing/test.gni")
 
 group("all") {
   testonly = true
-  deps = [
-    ":service_manager",
-  ]
+  deps = [ ":service_manager" ]
 
   if (!is_ios) {
     deps += [
@@ -42,17 +40,19 @@ source_set("service_manager") {
 
   deps = [
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/services/filesystem:lib",
     "//components/services/filesystem/public/mojom",
+    "//sandbox/policy",
     "//ui/base",
   ]
 
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
+    "//sandbox/policy/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
-    "//services/service_manager/sandbox",
   ]
 
   if (!is_ios) {
@@ -67,7 +67,7 @@ source_set("service_manager") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//sandbox/linux:sandbox_services" ]
   }
 }

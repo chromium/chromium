@@ -42,8 +42,9 @@ CORE_EXPORT String
 PlainText(const EphemeralRange&,
           const TextIteratorBehavior& = TextIteratorBehavior());
 
-String PlainText(const EphemeralRangeInFlatTree&,
-                 const TextIteratorBehavior& = TextIteratorBehavior());
+CORE_EXPORT String
+PlainText(const EphemeralRangeInFlatTree&,
+          const TextIteratorBehavior& = TextIteratorBehavior());
 
 // Iterates through the DOM range, returning all the text, and 0-length
 // boundaries at points where replaced elements break up the text flow.  The
@@ -87,8 +88,7 @@ class TextIteratorAlgorithm {
   // Returns the position after |char16_offset| in current text run.
   PositionTemplate<Strategy> GetPositionAfter(int char16_offset) const;
 
-  // TODO(xiaochengh): Rename to |GetTextState()|.
-  const TextIteratorTextState& GetText() const { return text_state_; }
+  const TextIteratorTextState& GetTextState() const { return text_state_; }
   int length() const { return text_state_.length(); }
   UChar CharacterAt(unsigned index) const {
     return text_state_.CharacterAt(index);
@@ -190,26 +190,24 @@ class TextIteratorAlgorithm {
     return behavior_.SkipsUnselectableContent();
   }
 
-  bool ForInnerText() const { return behavior_.ForInnerText(); }
-
   bool IsBetweenSurrogatePair(unsigned position) const;
 
   // Ensure container node of current text run for computing position.
   void EnsurePositionContainer() const;
 
   // The range.
-  const Member<const Node> start_container_;
+  const Node* const start_container_;
   const unsigned start_offset_;
-  const Member<const Node> end_container_;
+  const Node* const end_container_;
   const unsigned end_offset_;
   // |end_node_| stores |Strategy::ChildAt(*end_container_, end_offfset_ - 1)|,
   // if it exists, or |nullptr| otherwise.
-  const Member<const Node> end_node_;
-  const Member<const Node> past_end_node_;
+  const Node* const end_node_;
+  const Node* const past_end_node_;
 
   // Current position, not necessarily of the text being returned, but position
   // as we walk through the DOM tree.
-  Member<const Node> node_;
+  const Node* node_;
   IterationProgress iteration_progress_;
   FullyClippedStateStackAlgorithm<Strategy> fully_clipped_stack_;
   unsigned shadow_depth_;
@@ -219,7 +217,7 @@ class TextIteratorAlgorithm {
   bool needs_another_newline_ = false;
   bool needs_handle_replaced_element_ = false;
 
-  Member<const Text> last_text_node_;
+  const Text* last_text_node_ = nullptr;
 
   const TextIteratorBehavior behavior_;
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
+#include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -14,30 +16,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-
-// TODO(crbug.com/932818): Clean this and the same code in ukm_browsertest.
-// Maybe move them to InProcessBrowserTest.
-namespace {
-
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-
-Profile* CreateGuestProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath new_path = profile_manager->GetGuestProfilePath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(new_path);
-}
-
-}  // namespace
+#include "content/public/test/browser_test.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 
 // The param is whether to use the highlight in the container.
 class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
@@ -65,6 +46,7 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
         container->page_action_icon_controller()->GetIconView(
             PageActionIconType::kSaveCard);
     save_card_icon->SetVisible(true);
+    container->Layout();
 
     EXPECT_EQ(container->uses_highlight(), expect_highlight);
     EXPECT_FALSE(IsHighlighted(container));
@@ -77,14 +59,15 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsHighlighted(ToolbarAccountIconContainerView* container) {
-    if (container->highlight_animation_.IsClosing())
-      return false;
-    return container->highlight_animation_.IsShowing() ||
-           container->highlight_animation_.GetCurrentValue() == 1.0f;
+    return container->border_.layer()->GetTargetOpacity() == 1;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
@@ -98,9 +81,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
                        ShouldUpdateHighlightInGuestWindow) {
-  Profile* guest_profile = CreateGuestProfile();
-  Browser* guest_browser = CreateIncognitoBrowser(guest_profile);
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  Browser* guest_browser = InProcessBrowserTest::CreateGuestBrowser();
   ToolbarAccountIconContainerView* container_view =
       BrowserView::GetBrowserViewForBrowser(guest_browser)
           ->toolbar()

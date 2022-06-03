@@ -78,6 +78,10 @@ function otherStatementsCallback(tx)
     // Rename the column back to its original name.
     executeStatement(tx, "ALTER TABLE Test RENAME COLUMN Bar TO Foo;", "SQLITE_ALTER_TABLE");
 
+    executeStatement(tx, "ALTER TABLE Test ADD COLUMN Bla int;", "SQLITE_ADD_COLUMN");
+    // Dropping the just added column, this is supposed to fail.
+    executeStatement(tx, "ALTER TABLE Test DROP COLUMN Bla;", "SQLITE_DROP_COLUMN");
+
     executeStatement(tx, "BEGIN TRANSACTION;", "SQLITE_TRANSACTION");
     executeStatement(tx, "ATTACH main AS TestMain;", "SQLITE_ATTACH");
     executeStatement(tx, "DETACH TestMain;", "SQLITE_DETACH");

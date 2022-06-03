@@ -5,9 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  deps = [
-    ":feed_internals",
-  ]
+  deps = [ ":feed_internals" ]
 }
 
 js_library("feed_internals") {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- QR code camera preview overlay dimensions -->
+    <dimen name="overlay_rect_size">250dp</dimen>
+    <dimen name="overlay_corner_size">25dp</dimen>
+    <dimen name="overlay_corner_width">4dp</dimen>
+    <dimen name="overlay_text_top_padding">14dp</dimen>
+
+    <!-- URL formatting in QR code bitmap -->
+    <dimen name="url_box_top_padding">70dp</dimen>
+    <dimen name="url_box_bottom_padding">25dp</dimen>
+    <dimen name="side_padding">50dp</dimen>
+    <dimen name="qrcode_size">200dp</dimen>
+
+    <!-- Toast for Link to Text -->
+    <dimen name="y_offset_full_sharesheet">345dp</dimen>
+
+    <!-- IPH for Link Toggle -->
+    <dimen name="toggle_iph_y_inset">8dp</dimen>
+</resources>

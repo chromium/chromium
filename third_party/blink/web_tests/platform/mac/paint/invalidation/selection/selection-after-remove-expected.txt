@@ -1,91 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='test'",
-          "rect": [38, 74, 152, 110],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'hello world hello'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'hello world hello'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'world hello world'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'world hello world'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'world hello'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'world hello'",
-          "rect": [39, 75, 123, 108],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' world'",
-          "rect": [112, 165, 42, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'world'",
-          "rect": [74, 75, 39, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'hello '",
-          "rect": [39, 75, 36, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'hello '",
-          "rect": [39, 75, 36, 18],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [38, 74, 152, 110]
       ]
     }
   ]

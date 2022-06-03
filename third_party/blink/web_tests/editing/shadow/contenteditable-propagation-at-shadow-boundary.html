@@ -18,7 +18,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 function prepareNodeInShadowRoot(host) {
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var nodeInShadow = document.createElement('div');
     nodeInShadow.setAttribute('id', 'node-in-shadow-root');
     nodeInShadow.appendChild(document.createTextNode('In Shadow'));

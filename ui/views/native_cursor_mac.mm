@@ -6,6 +6,8 @@
 
 #include <Cocoa/Cocoa.h>
 
+#include "base/notreached.h"
+
 namespace views {
 
 gfx::NativeCursor GetNativeIBeamCursor() {

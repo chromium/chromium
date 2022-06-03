@@ -16,9 +16,13 @@ blink_modules_sources("manifest") {
     "manifest_manager.h",
     "manifest_parser.cc",
     "manifest_parser.h",
-    "manifest_type_converters.cc",
-    "manifest_type_converters.h",
     "manifest_uma_util.cc",
     "manifest_uma_util.h",
+  ]
+
+  deps = [
+    "//net",
+    "//third_party/blink/renderer/modules/navigatorcontentutils:navigatorcontentutils",
+    "//url",
   ]
 }

@@ -1,0 +1,4 @@
+# TODO: whether the marker should or should not be included is not defined.
+# Chrome has traditionally excluded it so we are keeping this behavior. See:
+# https://github.com/w3c/accname/issues/76
+textField name='List item' nameFrom=relatedElement

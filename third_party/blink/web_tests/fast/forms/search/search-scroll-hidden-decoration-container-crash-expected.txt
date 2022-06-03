@@ -1,2 +1,0 @@
-Move the mouse over the input element and scroll using the mouse wheel. If this does not crash, the test passed.
- PASS

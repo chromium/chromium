@@ -14,15 +14,14 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/installation_state.h"
-#include "chrome/installer/util/master_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -33,7 +32,7 @@ namespace {
 constexpr char kInstallDirSwitch[] = "install-dir";
 constexpr base::FilePath::CharType kSentinelFileName[] =
     FILE_PATH_LITERAL("sentinel.txt");
-constexpr base::char16 kTestProcessReadyEventName[] =
+constexpr wchar_t kTestProcessReadyEventName[] =
     L"Local\\ChromeSetupSingletonTestProcessReady";
 
 enum ErrorCode {
@@ -47,8 +46,8 @@ base::CommandLine GetDummyCommandLine() {
   return base::CommandLine(base::FilePath(FILE_PATH_LITERAL("dummy.exe")));
 }
 
-base::string16 HashFilePath(const base::FilePath& path) {
-  return base::NumberToString16(
+std::wstring HashFilePath(const base::FilePath& path) {
+  return base::NumberToWString(
       std::hash<base::FilePath::StringType>()(path.value()));
 }
 
@@ -78,7 +77,7 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestExclusiveAccessProcessMain) {
 
   // Acquire the exclusive right to modify the Chrome installation.
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   if (!setup_singleton)
     return SETUP_SINGLETON_ACQUISITION_FAILED;
@@ -101,7 +100,7 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestWaitForInterruptProcessMain) {
 
   // Acquire the exclusive right to modify the Chrome installation.
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   if (!setup_singleton)
     return SETUP_SINGLETON_ACQUISITION_FAILED;
@@ -128,6 +127,9 @@ class SetupSingletonTest : public base::MultiProcessTest {
  public:
   SetupSingletonTest() = default;
 
+  SetupSingletonTest(const SetupSingletonTest&) = delete;
+  SetupSingletonTest& operator=(const SetupSingletonTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(install_dir_.CreateUniqueTempDir()); }
 
   base::CommandLine MakeCmdLine(const std::string& procname) override {
@@ -149,8 +151,6 @@ class SetupSingletonTest : public base::MultiProcessTest {
 
  private:
   base::ScopedTempDir install_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetupSingletonTest);
 };
 
 }  // namespace
@@ -179,7 +179,7 @@ TEST_F(SetupSingletonTest, WaitForInterruptNoInterrupt) {
   InstallerState installer_state;
   installer_state.set_target_path_for_testing(install_dir_path());
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   ASSERT_TRUE(setup_singleton);
 
@@ -204,7 +204,7 @@ TEST_F(SetupSingletonTest, WaitForInterruptWithInterrupt) {
   InstallerState installer_state;
   installer_state.set_target_path_for_testing(install_dir_path());
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   ASSERT_TRUE(setup_singleton);
 

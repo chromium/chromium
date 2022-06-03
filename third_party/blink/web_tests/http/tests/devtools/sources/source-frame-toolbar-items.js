@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Checks tool bar items for scripts');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();
@@ -18,20 +18,23 @@
     }
     //# sourceURL=foo.js`);
 
-  SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
+  await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
   await TestRunner.addSnifferPromise(
             Sources.ScriptOriginPlugin.prototype, 'rightToolbarItems');
 
   TestRunner.addResult('Items for foo.js:');
-  dumpToolbarItems(Sources.SourcesPanel.instance().visibleView);
+  await dumpToolbarItems(Sources.SourcesPanel.instance().visibleView);
   TestRunner.addResult('Items for test.js:');
-  dumpToolbarItems(await SourcesTestRunner.showScriptSourcePromise('test.js'));
+  await dumpToolbarItems(await SourcesTestRunner.showScriptSourcePromise('test.js'));
 
   SourcesTestRunner.completeDebuggerTest();
 
-  function dumpToolbarItems(sourceFrame) {
-    const items = sourceFrame.syncToolbarItems();
-    for (let item of items)
+  async function dumpToolbarItems(sourceFrame) {
+    const items = await sourceFrame.toolbarItems();
+    // Toolbar items have live locations.
+    await TestRunner.waitForPendingLiveLocationUpdates();
+    for (let item of items) {
       TestRunner.addResult(item.element.deepTextContent());
+    }
   }
 })();

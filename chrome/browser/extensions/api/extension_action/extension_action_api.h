@@ -7,14 +7,13 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace base {
@@ -29,6 +28,7 @@ class WebContents;
 class Browser;
 
 namespace extensions {
+class ExtensionHost;
 class ExtensionPrefs;
 
 class ExtensionActionAPI : public BrowserContextKeyedAPI {
@@ -55,6 +55,10 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   };
 
   explicit ExtensionActionAPI(content::BrowserContext* context);
+
+  ExtensionActionAPI(const ExtensionActionAPI&) = delete;
+  ExtensionActionAPI& operator=(const ExtensionActionAPI&) = delete;
+
   ~ExtensionActionAPI() override;
 
   // Convenience method to get the instance for a profile.
@@ -68,12 +72,8 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   void RemoveObserver(Observer* observer);
 
   // Opens the popup for the given |extension| in the given |browser|'s window.
-  // If |grant_active_tab_permissions| is true, this grants the extension
-  // activeTab (so this should only be done if this is through a direct user
-  // action).
-  bool ShowExtensionActionPopup(const Extension* extension,
-                                Browser* browser,
-                                bool grant_active_tab_permissions);
+  bool ShowExtensionActionPopupForAPICall(const Extension* extension,
+                                          Browser* browser);
 
   // Notifies that there has been a change in the given |extension_action|.
   void NotifyChange(ExtensionAction* extension_action,
@@ -116,8 +116,6 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   content::BrowserContext* browser_context_;
 
   ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionAPI);
 };
 
 // Implementation of the browserAction and pageAction APIs.
@@ -342,6 +340,21 @@ class ActionDisableFunction : public ExtensionActionHideFunction {
   ~ActionDisableFunction() override {}
 };
 
+class ActionGetUserSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.getUserSettings", ACTION_GETUSERSETTINGS)
+
+  ActionGetUserSettingsFunction();
+  ActionGetUserSettingsFunction(const ActionGetUserSettingsFunction&) = delete;
+  ActionGetUserSettingsFunction& operator=(
+      const ActionGetUserSettingsFunction&) = delete;
+
+  ResponseAction Run() override;
+
+ protected:
+  ~ActionGetUserSettingsFunction() override;
+};
+
 //
 // browserAction.* aliases for supported browserAction APIs.
 //
@@ -443,26 +456,34 @@ class BrowserActionDisableFunction : public ExtensionActionHideFunction {
 };
 
 class BrowserActionOpenPopupFunction : public ExtensionFunction,
-                                       public content::NotificationObserver {
+                                       public ExtensionHostRegistry::Observer {
  public:
   DECLARE_EXTENSION_FUNCTION("browserAction.openPopup",
                              BROWSERACTION_OPEN_POPUP)
   BrowserActionOpenPopupFunction();
 
+  BrowserActionOpenPopupFunction(const BrowserActionOpenPopupFunction&) =
+      delete;
+  BrowserActionOpenPopupFunction& operator=(
+      const BrowserActionOpenPopupFunction&) = delete;
+
  private:
-  ~BrowserActionOpenPopupFunction() override {}
+  ~BrowserActionOpenPopupFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
+  void OnBrowserContextShutdown() override;
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
+
   void OpenPopupTimedOut();
 
-  content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionOpenPopupFunction);
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 };
 
 }  // namespace extensions

@@ -39,7 +39,6 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"  // FunctionThreadAffinity
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -48,28 +47,54 @@
 namespace base {
 template <typename, typename>
 class RefCountedThreadSafe;
+template <typename>
+class FileErrorOr;
 class TimeDelta;
 class TimeTicks;
 class Time;
 class UnguessableToken;
 }  // namespace base
 
+struct SkISize;
 class SkRefCnt;
 template <typename T>
 class sk_sp;
 
+namespace blink {
+// TODO(https://crbug.com/1247393): Move this and others to
+// blink/public/platform.
+class WebTimeRanges;
+}  // namespace blink
+
 namespace gfx {
+class ColorSpace;
 class Size;
-}
+}  // namespace gfx
 
 namespace gpu {
 struct SyncToken;
 }
 
+namespace media {
+class VideoFrame;
+struct VideoCaptureFeedback;
+struct VideoTransformation;
+}  // namespace media
+
 namespace mojo {
 template <typename Interface>
 class PendingReceiver;
-}
+template <typename Interface>
+class PendingRemote;
+template <typename Interface>
+class PendingAssociatedRemote;
+template <typename Interface>
+class PendingAssociatedReceiver;
+template <typename Interface>
+class ScopedHandleBase;
+class DataPipeProducerHandle;
+typedef ScopedHandleBase<DataPipeProducerHandle> ScopedDataPipeProducerHandle;
+}  // namespace mojo
 
 namespace WTF {
 
@@ -78,6 +103,15 @@ struct CrossThreadCopierPassThrough {
   STATIC_ONLY(CrossThreadCopierPassThrough);
   typedef T Type;
   static Type Copy(const T& parameter) { return parameter; }
+};
+
+template <typename T>
+struct CrossThreadCopierByValuePassThrough {
+  STATIC_ONLY(CrossThreadCopierByValuePassThrough);
+  typedef T Type;
+  static Type Copy(T receiver) {
+    return receiver;  // This is in fact a move.
+  }
 };
 
 template <typename T, bool isArithmeticOrEnum>
@@ -122,6 +156,12 @@ struct CrossThreadCopier<sk_sp<T>>
   STATIC_ONLY(CrossThreadCopier);
   static_assert(std::is_base_of<SkRefCnt, T>::value,
                 "sk_sp<T> can be passed across threads only if T is SkRefCnt.");
+};
+
+template <typename T>
+struct CrossThreadCopier<base::FileErrorOr<T>>
+    : public CrossThreadCopierPassThrough<base::FileErrorOr<T>> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>
@@ -242,15 +282,6 @@ struct CrossThreadCopier<base::WeakPtr<T>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-template <typename T>
-struct CrossThreadCopier<PassedWrapper<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = PassedWrapper<typename CrossThreadCopier<T>::Type>;
-  static Type Copy(PassedWrapper<T>&& value) {
-    return WTF::Passed(CrossThreadCopier<T>::Copy(value.MoveOut()));
-  }
-};
-
 template <typename Signature>
 struct CrossThreadCopier<CrossThreadFunction<Signature>> {
   STATIC_ONLY(CrossThreadCopier);
@@ -273,12 +304,38 @@ struct CrossThreadCopier<String> {
 };
 
 template <typename Interface>
-struct CrossThreadCopier<mojo::PendingReceiver<Interface>> {
+struct CrossThreadCopier<mojo::PendingReceiver<Interface>>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::PendingReceiver<Interface>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = mojo::PendingReceiver<Interface>;
-  static Type Copy(Type receiver) {
-    return receiver;  // This is in fact a move.
-  }
+};
+
+template <typename Interface>
+struct CrossThreadCopier<mojo::PendingRemote<Interface>>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::PendingRemote<Interface>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <typename Interface>
+struct CrossThreadCopier<mojo::PendingAssociatedRemote<Interface>>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::PendingAssociatedRemote<Interface>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <typename Interface>
+struct CrossThreadCopier<mojo::PendingAssociatedReceiver<Interface>>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::PendingAssociatedReceiver<Interface>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<mojo::ScopedDataPipeProducerHandle>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::ScopedDataPipeProducerHandle> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>
@@ -301,8 +358,45 @@ struct CrossThreadCopier<
 };
 
 template <>
+struct CrossThreadCopier<SkISize>
+    : public CrossThreadCopierPassThrough<SkISize> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<gfx::Size>
     : public CrossThreadCopierPassThrough<gfx::Size> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<gfx::ColorSpace>
+    : public CrossThreadCopierPassThrough<gfx::ColorSpace> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::VideoCaptureFeedback>
+    : public CrossThreadCopierPassThrough<media::VideoCaptureFeedback> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
+    : public CrossThreadCopierPassThrough<
+          std::vector<scoped_refptr<media::VideoFrame>>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::VideoTransformation>
+    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<blink::WebTimeRanges>
+    : public CrossThreadCopierByValuePassThrough<blink::WebTimeRanges> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

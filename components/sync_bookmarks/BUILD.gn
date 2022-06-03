@@ -20,6 +20,8 @@ static_library("sync_bookmarks") {
     "bookmark_specifics_conversions.h",
     "bookmark_sync_service.cc",
     "bookmark_sync_service.h",
+    "switches.cc",
+    "switches.h",
     "synced_bookmark_tracker.cc",
     "synced_bookmark_tracker.h",
   ]
@@ -60,7 +62,9 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/undo",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
   ]
 }

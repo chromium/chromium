@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#include "ios/chrome/common/ui_util/constraints_ui_util.h"
+#include "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -87,7 +87,10 @@ NSTimeInterval kAnimationDuration = 0.2;
     [self.baseViewController.view layoutIfNeeded];
   };
   auto completion = ^(BOOL finished) {
-    [self.delegate containedPresenterDidPresent:self];
+    if ([self.delegate
+            respondsToSelector:@selector(containedPresenterDidPresent:)]) {
+      [self.delegate containedPresenterDidPresent:self];
+    }
   };
 
   if (animated) {
@@ -116,7 +119,10 @@ NSTimeInterval kAnimationDuration = 0.2;
   };
   auto completion = ^(BOOL finished) {
     [self cleanUpAfterDismissal];
-    [self.delegate containedPresenterDidDismiss:self];
+    if ([self.delegate
+            respondsToSelector:@selector(containedPresenterDidDismiss:)]) {
+      [self.delegate containedPresenterDidDismiss:self];
+    }
   };
 
   if (animated) {

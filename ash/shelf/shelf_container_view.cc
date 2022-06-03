@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_container_view.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 
@@ -14,17 +15,25 @@ ShelfContainerView::ShelfContainerView(ShelfView* shelf_view)
 ShelfContainerView::~ShelfContainerView() = default;
 
 void ShelfContainerView::Initialize() {
-  SetPaintToLayer();
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
 
-  shelf_view_->SetPaintToLayer();
+  shelf_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   shelf_view_->layer()->SetFillsBoundsOpaquely(false);
   AddChildView(shelf_view_);
 }
 
+gfx::Size ShelfContainerView::CalculateIdealSize(int button_size) const {
+  const int button_strip_size = ShelfView::GetSizeOfAppButtons(
+      shelf_view_->number_of_visible_apps(), button_size);
+  return shelf_view_->shelf()->IsHorizontalAlignment()
+             ? gfx::Size(button_strip_size, button_size)
+             : gfx::Size(button_size, button_strip_size);
+}
+
 gfx::Size ShelfContainerView::CalculatePreferredSize() const {
-  return CalculateIdealSize();
+  return CalculateIdealSize(shelf_view_->GetButtonSize());
 }
 
 void ShelfContainerView::ChildPreferredSizeChanged(views::View* child) {
@@ -50,17 +59,6 @@ void ShelfContainerView::TranslateShelfView(const gfx::Vector2dF& offset) {
   shelf_view_->SetTransform(transform_matrix);
   shelf_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                         true);
-}
-
-gfx::Size ShelfContainerView::CalculateIdealSize() const {
-  const int width =
-      ShelfView::GetSizeOfAppIcons(shelf_view_->last_visible_index() -
-                                       shelf_view_->first_visible_index() + 1,
-                                   false);
-  const int height = ShelfConfig::Get()->button_size();
-  return shelf_view_->shelf()->IsHorizontalAlignment()
-             ? gfx::Size(width, height)
-             : gfx::Size(height, width);
 }
 
 }  // namespace ash

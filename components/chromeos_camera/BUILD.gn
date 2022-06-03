@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 source_set("jpeg_encode_accelerator") {
   sources = [
@@ -14,9 +15,7 @@ source_set("jpeg_encode_accelerator") {
     "jpeg_encode_accelerator.h",
   ]
 
-  deps = [
-    "//media",
-  ]
+  deps = [ "//media" ]
 }
 
 source_set("mjpeg_decode_accelerator") {
@@ -25,9 +24,7 @@ source_set("mjpeg_decode_accelerator") {
     "mjpeg_decode_accelerator.h",
   ]
 
-  deps = [
-    "//media",
-  ]
+  deps = [ "//media" ]
 }
 
 source_set("mojo_mjpeg_decode_accelerator") {
@@ -61,9 +58,7 @@ source_set("utils") {
     "//ui/gfx/geometry",
   ]
 
-  deps = [
-    "//mojo/public/cpp/system",
-  ]
+  deps = [ "//mojo/public/cpp/system" ]
 }
 
 # TODO(crbug.com/960243): Don't compile these codes for build without vaapi/v4l2
@@ -141,9 +136,7 @@ source_set("mjpeg_decode_accelerator_service") {
 source_set("mjpeg_decode_accelerator_service_unittest") {
   testonly = true
 
-  sources = [
-    "mojo_mjpeg_decode_accelerator_service_unittest.cc",
-  ]
+  sources = [ "mojo_mjpeg_decode_accelerator_service_unittest.cc" ]
 
   deps = [
     ":mjpeg_decode_accelerator_service",
@@ -167,6 +160,7 @@ if (use_v4l2_codec || use_vaapi) {
       "//media/gpu/chromeos:video_frame_mapper",
       "//media/gpu/test:helpers",
       "//media/gpu/test:local_gpu_memory_buffer_manager",
+      "//media/gpu/test:test_helpers",
       "//media/parsers",
       "//mojo/core/embedder",
       "//testing/gtest",
@@ -180,34 +174,15 @@ if (use_v4l2_codec || use_vaapi) {
       "//ui/gl:test_support",
     ]
     configs += [ "//third_party/libyuv:libyuv_config" ]
-    sources = [
-      "jpeg_encode_accelerator_unittest.cc",
-    ]
+    sources = [ "jpeg_encode_accelerator_unittest.cc" ]
     if (use_vaapi) {
-      deps += [ "//media/gpu/vaapi" ]
+      deps += [ "//media/gpu/vaapi:common" ]
     }
 
-    # TODO(crbug.com/1029942): consider removing use_x11 support here. This is
-    # no longer needed.
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-    }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
   }
-}
-
-source_set("camera_app_helper") {
-  sources = [
-    "camera_app_helper_impl.cc",
-    "camera_app_helper_impl.h",
-  ]
-
-  deps = [
-    "common:camera_app_helper",
-    "//ash/public/cpp",
-  ]
 }
 
 test("jpeg_decode_accelerator_unittest") {
@@ -220,6 +195,7 @@ test("jpeg_decode_accelerator_unittest") {
     "//media/gpu:buildflags",
     "//media/gpu/test:helpers",
     "//media/gpu/test:local_gpu_memory_buffer_manager",
+    "//media/gpu/test:test_helpers",
     "//media/parsers",
     "//mojo/core/embedder",
     "//testing/gtest",
@@ -232,21 +208,12 @@ test("jpeg_decode_accelerator_unittest") {
     "//ui/gl:test_support",
   ]
   configs += [ "//third_party/libyuv:libyuv_config" ]
-  sources = [
-    "mjpeg_decode_accelerator_unittest.cc",
-  ]
-  data = [
-    "//media/test/data/peach_pi-1280x720.jpg",
-  ]
+  sources = [ "mjpeg_decode_accelerator_unittest.cc" ]
+  data = [ "//media/test/data/peach_pi-1280x720.jpg" ]
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
+    deps += [ "//media/gpu/vaapi:common" ]
   }
 
-  # TODO(crbug.com/1029942): consider removing use_x11 support here. This is no
-  # longer needed.
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

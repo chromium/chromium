@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
 namespace blink {
 
@@ -12,8 +14,21 @@ class PerformanceResourceTimingTest : public testing::Test {
  protected:
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) {
-    return PerformanceResourceTiming::GetNextHopProtocol(
-        alpn_negotiated_protocol, connection_info);
+    mojom::blink::ResourceTimingInfo info;
+    info.allow_timing_details = true;
+    std::unique_ptr<DummyPageHolder> dummy_page_holder =
+        std::make_unique<DummyPageHolder>();
+    PerformanceResourceTiming* timing =
+        MakeGarbageCollected<PerformanceResourceTiming>(
+            info, base::TimeTicks(),
+            dummy_page_holder->GetDocument()
+                .GetExecutionContext()
+                ->CrossOriginIsolatedCapability(),
+            /*initiator_type=*/"",
+            mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>(),
+            dummy_page_holder->GetDocument().GetExecutionContext());
+    return timing->GetNextHopProtocol(alpn_negotiated_protocol,
+                                      connection_info);
   }
 };
 

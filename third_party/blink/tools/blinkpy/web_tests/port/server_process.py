@@ -25,13 +25,13 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Package that implements the ServerProcess wrapper class"""
 
 import errno
 import logging
 import re
 import signal
+import six
 import sys
 import time
 
@@ -53,11 +53,9 @@ else:
     import select
     _quote_cmd = lambda cmdline: ' '.join(pipes.quote(arg) for arg in cmdline)
 
-
 _log = logging.getLogger(__name__)
 
-
-_trailing_spaces_re = re.compile('(.*[^ ])?( +)$')
+_trailing_spaces_re = re.compile('(.*?)( +)$')
 
 
 def quote_data(data):
@@ -79,7 +77,12 @@ class ServerProcess(object):
     as necessary to keep issuing commands.
     """
 
-    def __init__(self, port_obj, name, cmd, env=None, treat_no_data_as_crash=False,
+    def __init__(self,
+                 port_obj,
+                 name,
+                 cmd,
+                 env=None,
+                 treat_no_data_as_crash=False,
                  more_logging=False):
         self._port = port_obj
         self._name = name  # Should be the command name (e.g. content_shell, image_diff)
@@ -101,6 +104,9 @@ class ServerProcess(object):
     def pid(self):
         return self._pid
 
+    def cmd(self):
+        return self._cmd[:]
+
     def _reset(self):
         if getattr(self, '_proc', None):
             if self._proc.stdin:
@@ -114,8 +120,14 @@ class ServerProcess(object):
                 self._proc.stderr = None
 
         self._proc = None
-        self._output = str()  # bytesarray() once we require Python 2.6
-        self._error = str()  # bytesarray() once we require Python 2.6
+        # TODO(crbug/1197331): Keeping output in PY2 as str() for now as
+        # diffing modules(unified_diff.py and html_diff.py) need to be looked
+        # into for PY3.
+        if six.PY2:
+            self._output = str()
+        else:
+            self._output = bytearray()
+        self._error = bytearray()
         self._crashed = False
         self.timed_out = False
 
@@ -131,13 +143,16 @@ class ServerProcess(object):
         if self._logging:
             env_str = ''
             if self._env:
-                env_str += '\n'.join('%s=%s' % (k, v) for k, v in self._env.items()) + '\n'
+                env_str += '\n'.join('%s=%s' % (k, v)
+                                     for k, v in self._env.items()) + '\n'
             _log.info('CMD: \n%s%s\n', env_str, _quote_cmd(self._cmd))
-        proc = self._host.executive.popen(self._cmd, stdin=self._host.executive.PIPE,
-                                          stdout=self._host.executive.PIPE,
-                                          stderr=self._host.executive.PIPE,
-                                          close_fds=close_fds,
-                                          env=self._env)
+        proc = self._host.executive.popen(
+            self._cmd,
+            stdin=self._host.executive.PIPE,
+            stdout=self._host.executive.PIPE,
+            stderr=self._host.executive.PIPE,
+            close_fds=close_fds,
+            env=self._env)
         self._set_proc(proc)
 
     def _set_proc(self, proc):
@@ -182,19 +197,23 @@ class ServerProcess(object):
         try:
             self._log_data(' IN', bytes)
             self._proc.stdin.write(bytes)
+            # TODO(crbug/)In PY3 select.select to get the stdout/stderr
+            # file-descriptors times out without this flush.
+            # Revisit to see if this can be avoided.
+            self._proc.stdin.flush()
         except IOError:
             self.stop(0.0)
             # stop() calls _reset(), so we have to set crashed to True after calling stop().
             self._crashed = True
 
     def _pop_stdout_line_if_ready(self):
-        index_after_newline = self._output.find('\n') + 1
+        index_after_newline = self._output.find(b'\n') + 1
         if index_after_newline > 0:
             return self._pop_output_bytes(index_after_newline)
         return None
 
     def _pop_stderr_line_if_ready(self):
-        index_after_newline = self._error.find('\n') + 1
+        index_after_newline = self._error.find(b'\n') + 1
         if index_after_newline > 0:
             return self._pop_error_bytes(index_after_newline)
         return None
@@ -227,7 +246,9 @@ class ServerProcess(object):
 
     def read_stdout(self, deadline, size):
         if size <= 0:
-            raise ValueError('ServerProcess.read() called with a non-positive size: %d ' % size)
+            raise ValueError(
+                'ServerProcess.read() called with a non-positive size: %d ' %
+                size)
 
         def retrieve_bytes_from_stdout_buffer():
             if len(self._output) >= size:
@@ -255,14 +276,18 @@ class ServerProcess(object):
         return string[:index], string[index:]
 
     def _pop_output_bytes(self, bytes_count):
-        output, self._output = self._split_string_after_index(self._output, bytes_count)
+        output, self._output = self._split_string_after_index(
+            self._output, bytes_count)
         return output
 
     def _pop_error_bytes(self, bytes_count):
-        output, self._error = self._split_string_after_index(self._error, bytes_count)
+        output, self._error = self._split_string_after_index(
+            self._error, bytes_count)
         return output
 
-    def _wait_for_data_and_update_buffers_using_select(self, deadline, stopping=False):
+    def _wait_for_data_and_update_buffers_using_select(self,
+                                                       deadline,
+                                                       stopping=False):
         if self._proc.stdout.closed or self._proc.stderr.closed:
             # If the process crashed and is using FIFOs, like Chromium Android, the
             # stdout and stderr pipes will be closed.
@@ -272,7 +297,8 @@ class ServerProcess(object):
         err_fd = self._proc.stderr.fileno()
         select_fds = (out_fd, err_fd)
         try:
-            read_fds, _, _ = select.select(select_fds, [], select_fds, max(deadline - time.time(), 0))
+            read_fds, _, _ = select.select(select_fds, [], select_fds,
+                                           max(deadline - time.time(), 0))
         except select.error as error:
             # We can ignore EINVAL since it's likely the process just crashed and we'll
             # figure that out the next time through the loop in _read().
@@ -288,14 +314,16 @@ class ServerProcess(object):
             # Linux because it's relatively harmless either way.
             if out_fd in read_fds:
                 data = self._proc.stdout.read()
-                if not data and not stopping and (self._treat_no_data_as_crash or self._proc.poll()):
+                if not data and not stopping and (self._treat_no_data_as_crash
+                                                  or self._proc.poll()):
                     self._crashed = True
                 self._log_data('OUT', data)
                 self._output += data
 
             if err_fd in read_fds:
                 data = self._proc.stderr.read()
-                if not data and not stopping and (self._treat_no_data_as_crash or self._proc.poll()):
+                if not data and not stopping and (self._treat_no_data_as_crash
+                                                  or self._proc.poll()):
                     self._crashed = True
                 self._log_data('ERR', data)
                 self._error += data
@@ -333,7 +361,8 @@ class ServerProcess(object):
                 _, buf = win32file.ReadFile(handle, avail, None)
                 return buf
         except Exception as error:  # pylint: disable=broad-except
-            if error[0] not in (109, errno.ESHUTDOWN):  # 109 == win32 ERROR_BROKEN_PIPE
+            # 109 == win32 ERROR_BROKEN_PIPE
+            if error[0] not in (109, errno.ESHUTDOWN):
                 raise
         return None
 
@@ -360,7 +389,8 @@ class ServerProcess(object):
                 return bytes
 
             if self._use_win32_apis:
-                self._wait_for_data_and_update_buffers_using_win32_apis(deadline)
+                self._wait_for_data_and_update_buffers_using_win32_apis(
+                    deadline)
             else:
                 self._wait_for_data_and_update_buffers_using_select(deadline)
 
@@ -376,7 +406,13 @@ class ServerProcess(object):
         if self._proc.stdin:
             if self._logging:
                 _log.info(' IN: ^D')
-            self._proc.stdin.close()
+            try:
+                # When we get here because of an IOError, close()
+                # may throw BrokenPipeError sometimes.
+                # Occasionally seen on mac11.
+                self._proc.stdin.close()
+            except BrokenPipeError:
+                pass
             self._proc.stdin = None
         killed = False
         if timeout_secs:
@@ -384,7 +420,8 @@ class ServerProcess(object):
             while self._proc.poll() is None and time.time() < deadline:
                 time.sleep(0.01)
             if self._proc.poll() is None:
-                _log.warning('stopping %s(pid %d) timed out, killing it', self._name, self._proc.pid)
+                _log.warning('stopping %s(pid %d) timed out, killing it',
+                             self._name, self._proc.pid)
 
         if self._proc.poll() is None:
             self._kill(kill_tree)
@@ -396,7 +433,8 @@ class ServerProcess(object):
             if self._use_win32_apis:
                 self._wait_for_data_and_update_buffers_using_win32_apis(now)
             else:
-                self._wait_for_data_and_update_buffers_using_select(now, stopping=True)
+                self._wait_for_data_and_update_buffers_using_select(
+                    now, stopping=True)
         out, err = self._output, self._error
         self._reset()
         return (out, err)

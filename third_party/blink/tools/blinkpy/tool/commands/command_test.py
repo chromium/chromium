@@ -34,10 +34,15 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 
 
 class CommandsTest(unittest.TestCase):
-
-    def assert_execute_outputs(
-            self, command, args=None, expected_stdout='', expected_stderr='',
-            expected_exception=None, expected_logs=None, options=optparse.Values(), tool=MockBlinkTool()):
+    def assert_execute_outputs(self,
+                               command,
+                               args=None,
+                               expected_stdout='',
+                               expected_stderr='',
+                               expected_exception=None,
+                               expected_logs=None,
+                               options=optparse.Values(),
+                               tool=MockBlinkTool()):
         args = args or []
         options.blocks = None
         options.cc = 'MOCK cc'
@@ -52,5 +57,9 @@ class CommandsTest(unittest.TestCase):
         options.quiet = True
         options.reviewer = 'MOCK reviewer'
         OutputCapture().assert_outputs(
-            self, command.execute, [options, args, tool], expected_stdout=expected_stdout,
-            expected_stderr=expected_stderr, expected_exception=expected_exception, expected_logs=expected_logs)
+            self,
+            command.execute, [options, args, tool],
+            expected_stdout=expected_stdout,
+            expected_stderr=expected_stderr,
+            expected_exception=expected_exception,
+            expected_logs=expected_logs)

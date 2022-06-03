@@ -7,11 +7,10 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -44,17 +44,18 @@ class TemplateURLServiceLoader {
 
     scoped_refptr<content::MessageLoopRunner> message_loop_runner =
         new content::MessageLoopRunner;
-    std::unique_ptr<TemplateURLService::Subscription> subscription =
+    base::CallbackListSubscription subscription =
         model_->RegisterOnLoadedCallback(
             base::BindLambdaForTesting([&]() { message_loop_runner->Quit(); }));
     model_->Load();
     message_loop_runner->Run();
   }
 
+  TemplateURLServiceLoader(const TemplateURLServiceLoader&) = delete;
+  TemplateURLServiceLoader& operator=(const TemplateURLServiceLoader&) = delete;
+
  private:
   TemplateURLService* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceLoader);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SendResponse(
@@ -75,7 +76,8 @@ std::unique_ptr<net::test_server::HttpResponse> SendResponse(
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
-  embedded_test_server()->RegisterRequestHandler(base::Bind(&SendResponse));
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&SendResponse));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TemplateURLService* template_urls =
@@ -98,10 +100,9 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), GURL("http://www.foo.com:" + port + "/"), 1);
 
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
-  ASSERT_EQ(base::ASCIIToUTF16("Submit handler TemplateURL scraping test"),
-            title);
+  ASSERT_EQ(u"Submit handler TemplateURL scraping test", title);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.share.ShareParams;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.ui.base.WindowAndroid;
 

@@ -1,0 +1,8 @@
+Tests that calls to methods of Fetch domain return proper error if the domain has not been enabled
+fulfillRequest: code: -32000 message: Fetch domain is not enabled
+failRequest: code: -32000 message: Fetch domain is not enabled
+continueRequest: code: -32000 message: Fetch domain is not enabled
+continueWithAuth: code: -32000 message: Fetch domain is not enabled
+getResponseBody: code: -32000 message: Fetch domain is not enabled
+takeResponseBodyAsStream: code: -32000 message: Fetch domain is not enabled
+

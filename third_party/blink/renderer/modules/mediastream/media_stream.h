@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -49,15 +49,14 @@ class MODULES_EXPORT MediaStreamObserver : public GarbageCollectedMixin {
   // Invoked when |MediaStream::removeTrack| is called.
   virtual void OnStreamRemoveTrack(MediaStream*, MediaStreamTrack*) = 0;
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 };
 
 class MODULES_EXPORT MediaStream final
     : public EventTargetWithInlineData,
-      public ContextClient,
+      public ExecutionContextClient,
       public ActiveScriptWrappable<MediaStream>,
       public MediaStreamDescriptorClient {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaStream);
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -67,6 +66,12 @@ class MODULES_EXPORT MediaStream final
   // Creates a MediaStream matching the MediaStreamDescriptor. MediaStreamTracks
   // are created for any MediaStreamComponents attached to the descriptor.
   static MediaStream* Create(ExecutionContext*, MediaStreamDescriptor*);
+  // Creates a MediaStream matching the MediaStreamDescriptor. MediaStreamTracks
+  // are created for any MediaStreamComponents attached to the descriptor. It
+  // returns the stream via callback.
+  static void Create(ExecutionContext*,
+                     MediaStreamDescriptor*,
+                     base::OnceCallback<void(MediaStream*)> callback);
   // Creates a MediaStream with the specified MediaStreamDescriptor and
   // MediaStreamTracks. The tracks must match the MediaStreamComponents attached
   // to the descriptor (or else a DCHECK fails). This allows you to create
@@ -81,7 +86,9 @@ class MODULES_EXPORT MediaStream final
                              const MediaStreamTrackVector& audio_tracks,
                              const MediaStreamTrackVector& video_tracks);
 
-  MediaStream(ExecutionContext*, MediaStreamDescriptor*);
+  MediaStream(ExecutionContext*,
+              MediaStreamDescriptor*,
+              base::OnceCallback<void(MediaStream*)> callback);
   MediaStream(ExecutionContext*,
               MediaStreamDescriptor*,
               const MediaStreamTrackVector& audio_tracks,
@@ -119,13 +126,15 @@ class MODULES_EXPORT MediaStream final
 
   // MediaStreamDescriptorClient implementation
   void StreamEnded() override;
-  void AddTrackByComponentAndFireEvents(MediaStreamComponent*) override;
-  void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*) override;
+  void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
+                                        DispatchEventTiming) override;
+  void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,
+                                           DispatchEventTiming) override;
 
   // Adds the track and, unlike JavaScript-invoked addTrack(), fires related
-  // events like "onaddtrack".
-  void AddTrackAndFireEvents(MediaStreamTrack*);
-  void RemoveTrackAndFireEvents(MediaStreamTrack*);
+  // events like "onaddtrack" either synchronously or in a scheduled event.
+  void AddTrackAndFireEvents(MediaStreamTrack*, DispatchEventTiming);
+  void RemoveTrackAndFireEvents(MediaStreamTrack*, DispatchEventTiming);
 
   void AddRemoteTrack(MediaStreamTrack*);
   void RemoveRemoteTrack(MediaStreamTrack*);
@@ -135,13 +144,13 @@ class MODULES_EXPORT MediaStream final
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override {
-    return ContextClient::GetExecutionContext();
+    return ExecutionContextClient::GetExecutionContext();
   }
 
   // ActiveScriptWrappable
   bool HasPendingActivity() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   bool AddEventListenerInternal(
@@ -156,14 +165,22 @@ class MODULES_EXPORT MediaStream final
   void ScheduleDispatchEvent(Event*);
   void ScheduledEventTimerFired(TimerBase*);
 
+  void OnMediaStreamTrackInitialized();
+
   MediaStreamTrackVector audio_tracks_;
   MediaStreamTrackVector video_tracks_;
   Member<MediaStreamDescriptor> descriptor_;
   // Observers are informed when |addTrack| and |removeTrack| are called.
   HeapHashSet<WeakMember<MediaStreamObserver>> observers_;
 
-  TaskRunnerTimer<MediaStream> scheduled_event_timer_;
+  // The callback to be called when the media stream is fully initialized,
+  // including image capture for video tracks.
+  base::OnceCallback<void(MediaStream*)> media_stream_initialized_callback_;
+
+  HeapTaskRunnerTimer<MediaStream> scheduled_event_timer_;
   HeapVector<Member<Event>> scheduled_events_;
+
+  uint32_t number_of_video_tracks_initialized_ = 0;
 };
 
 using MediaStreamVector = HeapVector<Member<MediaStream>>;

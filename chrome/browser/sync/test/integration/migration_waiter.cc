@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/migration_waiter.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/sync/test/integration/migration_watcher.h"
 
 MigrationWaiter::MigrationWaiter(syncer::ModelTypeSet expected_types,

@@ -24,9 +24,8 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -197,25 +196,13 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   }
 
   // Requests an associated interface from the remote endpoint.
-  void GetGenericRemoteAssociatedInterface(
-      const std::string& name,
-      mojo::ScopedInterfaceEndpointHandle handle);
-
-  // Template helper to request associated interfaces from the remote endpoint.
-  // Remove this after done with migrating all AsscoiatedInterfacePtr to
-  // AsscoiatedRemote.
-  template <typename Interface>
   void GetRemoteAssociatedInterface(
-      mojo::AssociatedInterfacePtr<Interface>* proxy) {
-    auto request = mojo::MakeRequest(proxy);
-    GetGenericRemoteAssociatedInterface(Interface::Name_, request.PassHandle());
-  }
+      mojo::GenericPendingAssociatedReceiver receiver);
 
   // Template helper to receive associated interfaces from the remote endpoint.
   template <typename Interface>
   void GetRemoteAssociatedInterface(mojo::AssociatedRemote<Interface>* proxy) {
-    GetGenericRemoteAssociatedInterface(
-        Interface::Name_, proxy->BindNewEndpointAndPassReceiver().PassHandle());
+    GetRemoteAssociatedInterface(proxy->BindNewEndpointAndPassReceiver());
   }
 
 #if defined(ENABLE_IPC_FUZZER)

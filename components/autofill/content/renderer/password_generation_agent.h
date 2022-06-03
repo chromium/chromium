@@ -10,12 +10,11 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -26,7 +25,6 @@
 
 namespace autofill {
 
-struct PasswordForm;
 class PasswordAutofillAgent;
 
 // This class is responsible for controlling communication for password
@@ -47,6 +45,10 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   PasswordGenerationAgent(content::RenderFrame* render_frame,
                           PasswordAutofillAgent* password_agent,
                           blink::AssociatedInterfaceRegistry* registry);
+
+  PasswordGenerationAgent(const PasswordGenerationAgent&) = delete;
+  PasswordGenerationAgent& operator=(const PasswordGenerationAgent&) = delete;
+
   ~PasswordGenerationAgent() override;
 
   void BindPendingReceiver(
@@ -54,13 +56,13 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
           pending_receiver);
 
   // mojom::PasswordGenerationAgent:
-  void GeneratedPasswordAccepted(const base::string16& password) override;
+  void GeneratedPasswordAccepted(const std::u16string& password) override;
   void FoundFormEligibleForGeneration(
       const PasswordFormGenerationData& form) override;
   // Sets |generation_element_| to the focused password field and responds back
   // if the generation was triggered successfully.
-  void UserTriggeredGeneratePassword(
-      UserTriggeredGeneratePasswordCallback callback) override;
+  void TriggeredGeneratePassword(
+      TriggeredGeneratePasswordCallback callback) override;
 
   // Returns true if the field being changed is one where a generated password
   // is being offered. Updates the state of the popup if necessary.
@@ -91,27 +93,29 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   }
 #endif
 
+  bool IsPrerendering() const;
+
  private:
+  class DeferringPasswordGenerationDriver;
+
   // Contains information about generation status for an element for the
   // lifetime of the possible interaction.
   struct GenerationItemInfo;
 
   // RenderFrameObserver:
-  void DidCommitProvisionalLoad(bool is_same_document_navigation,
-                                ui::PageTransition transition) override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidChangeScrollOffset() override;
   void OnDestruct() override;
 
-  const mojo::AssociatedRemote<mojom::PasswordManagerDriver>&
-  GetPasswordManagerDriver();
+  mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
-  const mojo::AssociatedRemote<mojom::PasswordGenerationDriver>&
-  GetPasswordGenerationDriver();
+  // Callers should not store the returned value longer than a function scope.
+  mojom::PasswordGenerationDriver& GetPasswordGenerationDriver();
 
   // Helper function which takes care of the form processing and collecting the
   // information which is required to show the generation popup. Returns true if
   // all required information is collected.
-  bool SetUpUserTriggeredGeneration();
+  bool SetUpTriggeredGeneration();
 
   // This is called whenever automatic generation could be offered.
   // If manual generation was already requested, automatic generation will
@@ -139,17 +143,16 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // created for |element| it is not recreated.
   void MaybeCreateCurrentGenerationItem(
       blink::WebInputElement element,
-      uint32_t confirmation_password_renderer_id);
+      FieldRendererId confirmation_password_renderer_id);
 
   void LogMessage(autofill::SavePasswordProgressLogger::StringID message_id);
   void LogBoolean(autofill::SavePasswordProgressLogger::StringID message_id,
                   bool truth_value);
 
-  // Creates a password form to presave a generated password. It copies behavior
-  // of CreatePasswordFormFromWebForm/FromUnownedInputElements, but takes
-  // |password_value| from |generation_element_| and empties |username_value|.
-  // If a form creating is failed, returns an empty unique_ptr.
-  std::unique_ptr<PasswordForm> CreatePasswordFormToPresave();
+  // Creates a FormData to presave a generated password. It copies behavior
+  // of CreateFromDataFromWebForm/FromUnownedInputElements. If a form
+  // creating is failed, returns an empty unique_ptr.
+  std::unique_ptr<FormData> CreateFormDataToPresave();
 
   // Contains the current element where generation is offered at the moment. It
   // can be either automatic or manual password generation.
@@ -162,7 +165,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Contains correspondence between generation enabled element and data for
   // generation.
-  std::map<uint32_t, PasswordFormGenerationData> generation_enabled_fields_;
+  std::map<FieldRendererId, PasswordFormGenerationData>
+      generation_enabled_fields_;
 
   // True iff the generation element should be marked with special HTML
   // attribute (only for experimental purposes).
@@ -175,9 +179,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   mojo::AssociatedRemote<mojom::PasswordGenerationDriver>
       password_generation_client_;
 
-  mojo::AssociatedReceiver<mojom::PasswordGenerationAgent> receiver_{this};
+  // Used for deferring messages while prerendering.
+  std::unique_ptr<DeferringPasswordGenerationDriver>
+      deferring_password_generation_driver_;
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationAgent);
+  mojo::AssociatedReceiver<mojom::PasswordGenerationAgent> receiver_{this};
 };
 
 }  // namespace autofill

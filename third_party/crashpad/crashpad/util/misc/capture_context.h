@@ -17,27 +17,30 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach/mach.h>
 #elif defined(OS_WIN)
 #include <windows.h>
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <ucontext.h>
 #elif defined(OS_FUCHSIA)
 #include <signal.h>
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 namespace crashpad {
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #if defined(ARCH_CPU_X86_FAMILY)
 using NativeCPUContext = x86_thread_state;
+#elif defined(ARCH_CPU_ARM64)
+using NativeCPUContext = arm_unified_thread_state;
 #endif
 #elif defined(OS_WIN)
 using NativeCPUContext = CONTEXT;
-#elif defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
 using NativeCPUContext = ucontext_t;
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 //! \brief Saves the CPU context.
 //!

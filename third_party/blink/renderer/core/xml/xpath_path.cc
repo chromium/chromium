@@ -46,7 +46,7 @@ Filter::Filter(Expression* expr, HeapVector<Member<Predicate>>& predicates)
 
 Filter::~Filter() = default;
 
-void Filter::Trace(blink::Visitor* visitor) {
+void Filter::Trace(Visitor* visitor) const {
   visitor->Trace(expr_);
   visitor->Trace(predicates_);
   Expression::Trace(visitor);
@@ -82,7 +82,7 @@ LocationPath::LocationPath() : absolute_(false) {
 
 LocationPath::~LocationPath() = default;
 
-void LocationPath::Trace(blink::Visitor* visitor) {
+void LocationPath::Trace(Visitor* visitor) const {
   visitor->Trace(steps_);
   Expression::Trace(visitor);
 }
@@ -99,7 +99,7 @@ Value LocationPath::Evaluate(EvaluationContext& evaluation_context) const {
   // the spec and treat / as the root node of the detached tree.
   // This is for compatibility with Firefox, and also seems like a more
   // logical treatment of where you would expect the "root" to be.
-  Node* context = evaluation_context.node.Get();
+  Node* context = evaluation_context.node;
   if (absolute_ && context->getNodeType() != Node::kDocumentNode) {
     if (context->isConnected())
       context = context->ownerDocument();
@@ -183,7 +183,7 @@ Path::Path(Expression* filter, LocationPath* path)
 
 Path::~Path() = default;
 
-void Path::Trace(blink::Visitor* visitor) {
+void Path::Trace(Visitor* visitor) const {
   visitor->Trace(filter_);
   visitor->Trace(path_);
   Expression::Trace(visitor);

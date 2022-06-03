@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<style>
+fieldset {
+  height: 200px;
+  overflow: scroll;
+  padding: 0;
+}
+
+.content {
+  height: 400px;
+}
+</style>
+
+<fieldset id="fs1">
+  <legend>Legend</legend>
+  <div class="content"></div>
+</fieldset>
+
+<fieldset id="fs2">
+  <legend>Legend</legend>
+  <div class="content"></div>
+</fieldset>
+
+<script>
+function eventPromise(target, type) {
+  return new Promise((resolve, reject) => {
+    target.addEventListener(type, resolve);
+  });
+}
+
+promise_test(async () => {
+  const fieldset = document.querySelector('#fs1');
+  assert_equals(fieldset.scrollHeight, 400);
+  await test_driver.click(fieldset);
+  assert_equals(fieldset.scrollTop, 0);
+  await test_driver.send_keys(fieldset, ' ');
+  await eventPromise(fieldset, 'scroll');
+  assert_greater_than(fieldset.scrollTop, 0);
+}, 'Pressing the space bar should scroll up');
+
+promise_test(async () => {
+  const fieldset = document.querySelector('#fs2');
+  assert_equals(fieldset.scrollHeight, 400);
+  assert_equals(fieldset.scrollTop, 0);
+  await wheelTick(0, 10, elementCenter(fieldset));
+  assert_greater_than(fieldset.scrollTop, 0);
+}, 'Wheel scroll should work');
+</script>

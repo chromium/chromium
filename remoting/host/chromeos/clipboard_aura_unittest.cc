@@ -4,13 +4,15 @@
 
 #include "remoting/host/chromeos/clipboard_aura.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "remoting/base/constants.h"
@@ -30,17 +32,17 @@ namespace remoting {
 
 namespace {
 
-const base::TimeDelta kTestOverridePollingInterval =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kTestOverridePollingInterval = base::Milliseconds(1);
 
 class ClientClipboard : public protocol::ClipboardStub {
  public:
   ClientClipboard();
+
+  ClientClipboard(const ClientClipboard&) = delete;
+  ClientClipboard& operator=(const ClientClipboard&) = delete;
+
   MOCK_METHOD1(InjectClipboardEvent,
                void(const protocol::ClipboardEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientClipboard);
 };
 
 ClientClipboard::ClientClipboard() = default;
@@ -71,7 +73,7 @@ void ClipboardAuraTest::SetUp() {
 
   // Setup the clipboard.
   client_clipboard_ = new ClientClipboard();
-  clipboard_.reset(new ClipboardAura());
+  clipboard_ = std::make_unique<ClipboardAura>();
 
   EXPECT_GT(TestTimeouts::tiny_timeout(), kTestOverridePollingInterval * 10)
       << "The test timeout should be greater than the polling interval";
@@ -100,7 +102,7 @@ TEST_F(ClipboardAuraTest, WriteToClipboard) {
   std::string clipboard_data;
   ui::Clipboard* aura_clipboard = ui::Clipboard::GetForCurrentThread();
   aura_clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste,
-                                &clipboard_data);
+                                /* data_dst = */ nullptr, &clipboard_data);
 
   EXPECT_EQ(clipboard_data, "Test data.")
       << "InjectClipboardEvent should write to aura clipboard";
@@ -112,7 +114,7 @@ TEST_F(ClipboardAuraTest, MonitorClipboardChanges) {
   {
     // |clipboard_writer| will write to the clipboard when it goes out of scope.
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(base::UTF8ToUTF16("Test data."));
+    clipboard_writer.WriteText(u"Test data.");
   }
 
   EXPECT_CALL(*client_clipboard_,

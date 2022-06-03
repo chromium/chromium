@@ -5,9 +5,10 @@
 #ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_H_
 #define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_H_
 
+#include <os/availability.h>
+
 #include <vector>
 
-#include "base/mac/availability.h"
 #include "base/mac/scoped_nsobject.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
@@ -17,10 +18,14 @@
 
 namespace shape_detection {
 
-class API_AVAILABLE(macosx(10.10)) BarcodeDetectionImplMac
+class BarcodeDetectionImplMac
     : public shape_detection::mojom::BarcodeDetection {
  public:
   BarcodeDetectionImplMac();
+
+  BarcodeDetectionImplMac(const BarcodeDetectionImplMac&) = delete;
+  BarcodeDetectionImplMac& operator=(const BarcodeDetectionImplMac&) = delete;
+
   ~BarcodeDetectionImplMac() override;
 
   void Detect(const SkBitmap& bitmap,
@@ -32,8 +37,6 @@ class API_AVAILABLE(macosx(10.10)) BarcodeDetectionImplMac
 
  private:
   base::scoped_nsobject<CIDetector> detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(BarcodeDetectionImplMac);
 };
 
 }  // namespace shape_detection

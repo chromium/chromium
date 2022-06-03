@@ -30,14 +30,14 @@
 [
     Exposed=(Window,Worker,AudioWorklet)
 ] interface MessageEvent : Event {
-    [RaisesException] constructor(DOMString type, optional MessageEventInit eventInitDict);
+    [RaisesException] constructor(DOMString type, optional MessageEventInit eventInitDict = {});
     [CachedAttribute=IsDataDirty, CallWith=ScriptState] readonly attribute any data;
     readonly attribute DOMString origin;
     readonly attribute DOMString lastEventId;
     // TODO(bashi): |source| should be of type MessageEventSource.
     readonly attribute EventTarget? source;
     [CachedAttribute=isPortsDirty] readonly attribute FrozenArray<MessagePort> ports;
-    [RuntimeEnabled=UserActivationAPI] readonly attribute UserActivation? userActivation;
+    readonly attribute UserActivation? userActivation;
 
     // TODO(foolip): |source| should be of type MessageEventSource.
     [MeasureAs=InitMessageEvent] void initMessageEvent(

@@ -4,10 +4,12 @@
 
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_agent_group_scheduler_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/web_fake_widget_scheduler.h"
 
 namespace blink {
@@ -28,17 +30,22 @@ WebFakeThreadScheduler::DefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 WebFakeThreadScheduler::CompositorTaskRunner() {
-  return nullptr;
+  return base::ThreadTaskRunnerHandle::Get();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-WebFakeThreadScheduler::IPCTaskRunner() {
-  return nullptr;
+std::unique_ptr<WebAgentGroupScheduler>
+WebFakeThreadScheduler::CreateAgentGroupScheduler() {
+  return std::make_unique<FakeAgentGroupScheduler>(*this);
 }
 
 std::unique_ptr<WebWidgetScheduler>
 WebFakeThreadScheduler::CreateWidgetScheduler() {
   return std::make_unique<WebFakeWidgetScheduler>();
+}
+
+WebAgentGroupScheduler*
+WebFakeThreadScheduler::GetCurrentAgentGroupScheduler() {
+  return nullptr;
 }
 
 std::unique_ptr<WebRenderWidgetSchedulingState>
@@ -60,10 +67,12 @@ void WebFakeThreadScheduler::DidHandleInputEventOnCompositorThread(
     InputEventState event_state) {}
 
 void WebFakeThreadScheduler::WillPostInputEventToMainThread(
-    WebInputEvent::Type web_input_event_type) {}
+    WebInputEvent::Type web_input_event_type,
+    const WebInputEventAttribution& attribution) {}
 
 void WebFakeThreadScheduler::WillHandleInputEventOnMainThread(
-    WebInputEvent::Type web_input_event_type) {}
+    WebInputEvent::Type web_input_event_type,
+    const WebInputEventAttribution& attribution) {}
 
 void WebFakeThreadScheduler::DidHandleInputEventOnMainThread(
     const blink::WebInputEvent& web_input_event,
@@ -81,8 +90,6 @@ bool WebFakeThreadScheduler::IsHighPriorityWorkAnticipated() {
 void WebFakeThreadScheduler::SetRendererHidden(bool hidden) {}
 
 void WebFakeThreadScheduler::SetRendererBackgrounded(bool backgrounded) {}
-
-void WebFakeThreadScheduler::SetSchedulerKeepActive(bool keep_active) {}
 
 std::unique_ptr<WebFakeThreadScheduler::RendererPauseHandle>
 WebFakeThreadScheduler::PauseRenderer() {

@@ -17,7 +17,7 @@
             // Exclude repaint in the vertical scrollbar layer which always happens on scroll.
             if (layer.name == "Vertical Scrollbar Layer")
                 continue;
-            if (layer.paintInvalidations)
+            if (layer.invalidations)
                 return true;
         }
         return false;
@@ -45,7 +45,7 @@
         await rAF();
 
         if (window.internals) {
-            var layer_tree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+            var layer_tree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
             var repainted = hasRepaint(layer_tree);
             var repaintedMessage = repainted ? "repainted" : "did not repaint";
             var expectedMessage = expectsRepaint ? " when expected" : " when unexpected";

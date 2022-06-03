@@ -25,6 +25,10 @@ class FuzzedSourceStream : public SourceStream {
   // |data_provider| is used to determine behavior of the FuzzedSourceStream.
   // It must remain valid until after the FuzzedSocket is destroyed.
   explicit FuzzedSourceStream(FuzzedDataProvider* data_provider);
+
+  FuzzedSourceStream(const FuzzedSourceStream&) = delete;
+  FuzzedSourceStream& operator=(const FuzzedSourceStream&) = delete;
+
   ~FuzzedSourceStream() override;
 
   // SourceStream implementation
@@ -47,8 +51,6 @@ class FuzzedSourceStream : public SourceStream {
 
   // Last result returned by Read() is an error or 0.
   bool end_returned_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedSourceStream);
 };
 
 }  // namespace net

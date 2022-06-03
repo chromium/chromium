@@ -6,9 +6,6 @@
 @font-face {
     --invalid-var: 1;
 }
-@viewport {
-    --invalid-var: 2;
-}
 @keyframes foo {
     --invalid-var: 3;
     0% { --valid-var: 4; }
@@ -19,9 +16,7 @@
 <script>
 test(() => assert_equals(document.styleSheets[0].cssRules[0].cssText, "@font-face { }"),
         "Custom properties are not allowed in @font-face rules");
-test(() => assert_equals(document.styleSheets[0].cssRules[1].cssText, "@viewport { }"),
-        "Custom properties are not allowed in @viewport rules");
-test(() => assert_equals(document.styleSheets[0].cssRules[2].cssText,
+test(() => assert_equals(document.styleSheets[0].cssRules[1].cssText,
 `@keyframes foo {
   0% { --valid-var: 4; }
   100% { left: 10px; }

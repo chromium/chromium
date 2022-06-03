@@ -9,8 +9,7 @@
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows(true);
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 
     window.onload = function() {

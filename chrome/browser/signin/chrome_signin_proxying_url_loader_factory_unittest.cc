@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
@@ -18,6 +17,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,11 +32,14 @@ namespace {
 
 class MockDelegate : public HeaderModificationDelegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
 
-  MOCK_METHOD1(ShouldInterceptNavigation,
-               bool(content::NavigationUIData* navigation_ui_data));
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD1(ShouldInterceptNavigation, bool(content::WebContents* contents));
   MOCK_METHOD2(ProcessRequest,
                void(ChromeRequestAdapter* request_adapter,
                     const GURL& redirect_url));
@@ -49,8 +53,6 @@ class MockDelegate : public HeaderModificationDelegate {
 
  private:
   base::WeakPtrFactory<MockDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 content::WebContents::Getter NullWebContentsGetter() {
@@ -63,6 +65,12 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
  public:
   ChromeSigninProxyingURLLoaderFactoryTest()
       : test_factory_receiver_(&test_factory_) {}
+
+  ChromeSigninProxyingURLLoaderFactoryTest(
+      const ChromeSigninProxyingURLLoaderFactoryTest&) = delete;
+  ChromeSigninProxyingURLLoaderFactoryTest& operator=(
+      const ChromeSigninProxyingURLLoaderFactoryTest&) = delete;
+
   ~ChromeSigninProxyingURLLoaderFactoryTest() override {}
 
   base::WeakPtr<MockDelegate> StartRequest(
@@ -113,8 +121,6 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
   network::TestURLLoaderFactory test_factory_;
   mojo::Receiver<network::mojom::URLLoaderFactory> test_factory_receiver_;
   std::unique_ptr<std::string> response_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSigninProxyingURLLoaderFactoryTest);
 };
 
 TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, NoModification) {
@@ -139,7 +145,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kTestURL;
   request->referrer = kTestReferrer;
-  request->resource_type = static_cast<int>(content::ResourceType::kMainFrame);
+  request->destination = network::mojom::RequestDestination::kDocument;
   request->is_main_frame = true;
   request->headers.SetHeader("X-Request-1", "Foo");
 
@@ -158,8 +164,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(content::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
             EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
@@ -175,8 +181,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
           }))
       .WillOnce(
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(content::ResourceType::kMainFrame,
-                      adapter->GetResourceType());
+            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                      adapter->GetRequestDestination());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
@@ -253,13 +259,13 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
 
     auto redirect_head = network::mojom::URLResponseHead::New();
     redirect_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    redirect_head->headers->AddHeader("X-Response-1: Foo");
-    redirect_head->headers->AddHeader("X-Response-2: Bar");
+    redirect_head->headers->SetHeader("X-Response-1", "Foo");
+    redirect_head->headers->SetHeader("X-Response-2", "Bar");
 
     auto response_head = network::mojom::URLResponseHead::New();
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    response_head->headers->AddHeader("X-Response-3: Foo");
-    response_head->headers->AddHeader("X-Response-4: Bar");
+    response_head->headers->SetHeader("X-Response-3", "Foo");
+    response_head->headers->SetHeader("X-Response-4", "Bar");
     std::string body("Hello.");
     network::URLLoaderCompletionStatus status;
     status.decoded_body_length = body.size();

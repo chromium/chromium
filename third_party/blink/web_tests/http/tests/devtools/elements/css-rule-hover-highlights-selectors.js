@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -35,7 +35,7 @@
       }
 
       var host = document.querySelector("body");
-      var root = host.createShadowRoot();
+      var root = host.attachShadow({mode: 'open'});
       var template = document.querySelector("#dom-template");
       var clone = document.importNode(template.content, true);
       root.appendChild(clone);
@@ -97,12 +97,15 @@
 
   function drawHighlightProxy() {
     window._highlightsForTest = [];
-    var oldDrawHighlight = drawHighlight;
-    drawHighlight = proxy;
+    var oldDispatch = dispatch;
+    dispatch = proxy;
 
-    function proxy(highlight, context) {
-      window._highlightsForTest.push(highlight);
-      oldDrawHighlight(highlight, context);
+    function proxy(message) {
+      const functionName = message[0];
+      if (functionName === 'drawHighlight') {
+        window._highlightsForTest.push(message[1]);
+      }
+      oldDispatch(message);
     }
   }
 

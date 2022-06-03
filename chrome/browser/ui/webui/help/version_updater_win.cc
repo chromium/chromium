@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/upgrade_util.h"
@@ -25,53 +26,53 @@ VersionUpdaterWin::VersionUpdaterWin(gfx::AcceleratedWidget owner_widget)
 VersionUpdaterWin::~VersionUpdaterWin() {
 }
 
-void VersionUpdaterWin::CheckForUpdate(const StatusCallback& callback,
-                                       const PromoteCallback&) {
+void VersionUpdaterWin::CheckForUpdate(StatusCallback callback,
+                                       PromoteCallback) {
   // There is no supported integration with Google Update for Chromium.
-  callback_ = callback;
+  callback_ = std::move(callback);
 
-  callback_.Run(CHECKING, 0, false, std::string(), 0, base::string16());
+  callback_.Run(CHECKING, 0, false, false, std::string(), 0, std::u16string());
   DoBeginUpdateCheck(false /* !install_update_if_possible */);
 }
 
 void VersionUpdaterWin::OnUpdateCheckComplete(
-    const base::string16& new_version) {
+    const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (new_version.empty()) {
     // Google Update says that no new version is available. Check to see if a
     // restart is needed for a previously-applied update to take effect.
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskPriority::USER_VISIBLE},
-        base::Bind(&upgrade_util::IsUpdatePendingRestart),
-        base::Bind(&VersionUpdaterWin::OnPendingRestartCheck,
-                   weak_factory_.GetWeakPtr()));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&upgrade_util::IsUpdatePendingRestart),
+        base::BindOnce(&VersionUpdaterWin::OnPendingRestartCheck,
+                       weak_factory_.GetWeakPtr()));
     // Early exit since callback_ will be Run in OnPendingRestartCheck.
     return;
   }
 
   // Notify the caller that the update is now beginning and initiate it.
   DoBeginUpdateCheck(true /* install_update_if_possible */);
-  callback_.Run(UPDATING, 0, false, std::string(), 0, base::string16());
+  callback_.Run(UPDATING, 0, false, false, std::string(), 0, std::u16string());
 }
 
 void VersionUpdaterWin::OnUpgradeProgress(int progress,
-                                          const base::string16& new_version) {
+                                          const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  callback_.Run(UPDATING, progress, false, std::string(), 0, base::string16());
+  callback_.Run(UPDATING, progress, false, false, std::string(), 0,
+                std::u16string());
 }
 
-void VersionUpdaterWin::OnUpgradeComplete(const base::string16& new_version) {
+void VersionUpdaterWin::OnUpgradeComplete(const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  callback_.Run(NEARLY_UPDATED, 0, false, std::string(), 0, base::string16());
+  callback_.Run(NEARLY_UPDATED, 0, false, false, std::string(), 0,
+                std::u16string());
 }
 
 void VersionUpdaterWin::OnError(GoogleUpdateErrorCode error_code,
-                                const base::string16& html_error_message,
-                                const base::string16& new_version) {
+                                const std::u16string& html_error_message,
+                                const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::string16 message;
+  std::u16string message;
   Status status = FAILED;
 
   switch (error_code) {
@@ -95,7 +96,7 @@ void VersionUpdaterWin::OnError(GoogleUpdateErrorCode error_code,
       }
       break;
   }
-  callback_.Run(status, 0, false, std::string(), 0, message);
+  callback_.Run(status, 0, false, false, std::string(), 0, message);
 }
 
 void VersionUpdaterWin::DoBeginUpdateCheck(bool install_update_if_possible) {
@@ -108,7 +109,7 @@ void VersionUpdaterWin::DoBeginUpdateCheck(bool install_update_if_possible) {
 
 void VersionUpdaterWin::OnPendingRestartCheck(bool is_update_pending_restart) {
   callback_.Run(is_update_pending_restart ? NEARLY_UPDATED : UPDATED, 0, false,
-                std::string(), 0, base::string16());
+                false, std::string(), 0, std::u16string());
 }
 
 VersionUpdater* VersionUpdater::Create(content::WebContents* web_contents) {

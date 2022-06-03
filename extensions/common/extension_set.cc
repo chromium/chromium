@@ -11,9 +11,8 @@
 
 namespace extensions {
 
-namespace {
-
-ExtensionId GetExtensionIdByURL(const GURL& url) {
+// static
+ExtensionId ExtensionSet::GetExtensionIdByURL(const GURL& url) {
   if (url.SchemeIs(kExtensionScheme))
     return url.host();
 
@@ -26,8 +25,6 @@ ExtensionId GetExtensionIdByURL(const GURL& url) {
 
   return ExtensionId();
 }
-
-}  // namespace
 
 ExtensionSet::const_iterator::const_iterator() {}
 
@@ -160,7 +157,7 @@ bool ExtensionSet::ExtensionBindingsAllowed(const GURL& url) const {
     return true;
 
   for (auto it = extensions_.cbegin(); it != extensions_.cend(); ++it) {
-    if (it->second->location() == Manifest::COMPONENT &&
+    if (it->second->location() == mojom::ManifestLocation::kComponent &&
         it->second->web_extent().MatchesURL(url))
       return true;
   }

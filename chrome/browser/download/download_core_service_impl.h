@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -35,6 +33,10 @@ class ExtensionDownloadsEventRouter;
 class DownloadCoreServiceImpl : public DownloadCoreService {
  public:
   explicit DownloadCoreServiceImpl(Profile* profile);
+
+  DownloadCoreServiceImpl(const DownloadCoreServiceImpl&) = delete;
+  DownloadCoreServiceImpl& operator=(const DownloadCoreServiceImpl&) = delete;
+
   ~DownloadCoreServiceImpl() override;
 
   // DownloadCoreService
@@ -91,8 +93,6 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   std::unique_ptr<extensions::ExtensionDownloadsEventRouter>
       extension_event_router_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCoreServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_IMPL_H_

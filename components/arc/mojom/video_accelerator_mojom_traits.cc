@@ -4,9 +4,6 @@
 
 #include "components/arc/mojom/video_accelerator_mojom_traits.h"
 
-#include "base/files/platform_file.h"
-#include "mojo/public/cpp/system/platform_handle.h"
-
 namespace mojo {
 
 // Make sure values in arc::mojom::VideoCodecProfile match to the values in
@@ -173,48 +170,6 @@ bool EnumTraits<arc::mojom::VideoPixelFormat, media::VideoPixelFormat>::
   return false;
 }
 
-// Make sure values in arc::mojom::DecodeStatus match to the values in
-// media::DecodeStatus.
-#define CHECK_DECODE_STATUS_ENUM(value)                              \
-  static_assert(static_cast<int>(arc::mojom::DecodeStatus::value) == \
-                    static_cast<int>(media::DecodeStatus::value),    \
-                "enum ##value mismatch")
-
-CHECK_DECODE_STATUS_ENUM(OK);
-CHECK_DECODE_STATUS_ENUM(ABORTED);
-CHECK_DECODE_STATUS_ENUM(DECODE_ERROR);
-
-#undef CHECK_DECODE_STATUS_ENUM
-
-// static
-arc::mojom::DecodeStatus
-EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::ToMojom(
-    media::DecodeStatus input) {
-  switch (input) {
-    case media::DecodeStatus::OK:
-    case media::DecodeStatus::ABORTED:
-    case media::DecodeStatus::DECODE_ERROR:
-      return static_cast<arc::mojom::DecodeStatus>(input);
-  }
-  NOTREACHED() << "unknown status: " << static_cast<int>(input);
-  return arc::mojom::DecodeStatus::DECODE_ERROR;
-}
-
-// static
-bool EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::FromMojom(
-    arc::mojom::DecodeStatus input,
-    media::DecodeStatus* output) {
-  switch (input) {
-    case arc::mojom::DecodeStatus::OK:
-    case arc::mojom::DecodeStatus::ABORTED:
-    case arc::mojom::DecodeStatus::DECODE_ERROR:
-      *output = static_cast<media::DecodeStatus>(input);
-      return true;
-  }
-  NOTREACHED() << "unknown status: " << static_cast<int>(input);
-  return false;
-}
-
 // static
 bool StructTraits<arc::mojom::VideoFramePlaneDataView, arc::VideoFramePlane>::
     Read(arc::mojom::VideoFramePlaneDataView data, arc::VideoFramePlane* out) {
@@ -261,7 +216,7 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
     return false;
   }
 
-  base::Optional<media::VideoFrameLayout> layout =
+  absl::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes), data.buffer_addr_align(),
           data.modifier());
@@ -269,51 +224,6 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
     return false;
 
   *out = std::make_unique<media::VideoFrameLayout>(*layout);
-  return true;
-}
-
-// static
-bool StructTraits<arc::mojom::VideoFrameDataView,
-                  scoped_refptr<media::VideoFrame>>::
-    Read(arc::mojom::VideoFrameDataView data,
-         scoped_refptr<media::VideoFrame>* out) {
-  gfx::Rect visible_rect;
-  if (data.id() == 0 || !data.ReadVisibleRect(&visible_rect)) {
-    return false;
-  }
-
-  // We store id at the first 8 byte of the mailbox.
-  const uint64_t id = data.id();
-  static_assert(GL_MAILBOX_SIZE_CHROMIUM >= sizeof(id),
-                "Size of Mailbox is too small to store id.");
-  gpu::Mailbox mailbox;
-  memcpy(mailbox.name, &id, sizeof(id));
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-  mailbox_holders[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0);
-
-  // We don't store pixel format and coded_size in Mojo struct. Use dummy value.
-  *out = media::VideoFrame::WrapNativeTextures(
-      media::PIXEL_FORMAT_I420, mailbox_holders,
-      media::VideoFrame::ReleaseMailboxCB(), visible_rect.size(), visible_rect,
-      visible_rect.size(), base::TimeDelta::FromMilliseconds(data.timestamp()));
-  return true;
-}
-
-// static
-bool StructTraits<arc::mojom::DecoderBufferDataView, arc::DecoderBuffer>::Read(
-    arc::mojom::DecoderBufferDataView data,
-    arc::DecoderBuffer* out) {
-  base::PlatformFile platform_file = base::kInvalidPlatformFile;
-  if (mojo::UnwrapPlatformFile(data.TakeHandleFd(), &platform_file) !=
-      MOJO_RESULT_OK) {
-    return false;
-  }
-
-  out->handle_fd = base::ScopedFD(platform_file);
-  out->offset = data.offset();
-  out->payload_size = data.payload_size();
-  out->end_of_stream = data.end_of_stream();
-  out->timestamp = base::TimeDelta::FromMilliseconds(data.timestamp());
   return true;
 }
 

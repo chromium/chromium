@@ -48,4 +48,4 @@ class PointerEventsHitRules {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_POINTER_EVENTS_HIT_RULES_H_

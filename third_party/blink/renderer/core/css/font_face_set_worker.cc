@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -75,19 +76,14 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
-  auto* parsed_style =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(parsed_style, CSSPropertyID::kFont, font_string, true,
-                        GetExecutionContext()->GetSecureContextMode());
-  if (parsed_style->IsEmpty())
-    return false;
-
-  String font_value = parsed_style->GetPropertyValue(CSSPropertyID::kFont);
-  if (font_value == "inherit" || font_value == "initial")
+  auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
+  if (!parsed_style)
     return false;
 
   FontFamily font_family;
-  font_family.SetFamily(FontFaceSet::kDefaultFontFamily);
+  font_family.SetFamily(
+      FontFaceSet::kDefaultFontFamily,
+      FontFamily::InferredTypeFor(FontFaceSet::kDefaultFontFamily));
 
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);
@@ -97,8 +93,7 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
   FontDescription description = FontStyleResolver::ComputeFont(
       *parsed_style, GetWorker()->GetFontSelector());
 
-  font = Font(description);
-  font.Update(GetWorker()->GetFontSelector());
+  font = Font(description, GetWorker()->GetFontSelector());
 
   return true;
 }
@@ -114,7 +109,7 @@ FontFaceSetWorker* FontFaceSetWorker::From(WorkerGlobalScope& worker) {
   return fonts;
 }
 
-void FontFaceSetWorker::Trace(Visitor* visitor) {
+void FontFaceSetWorker::Trace(Visitor* visitor) const {
   Supplement<WorkerGlobalScope>::Trace(visitor);
   FontFaceSet::Trace(visitor);
 }

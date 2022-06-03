@@ -8,9 +8,8 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/browser/browser_thread.h"
 #import "ui/base/cocoa/find_pasteboard.h"
@@ -25,7 +24,7 @@ static constexpr size_t kMaxFindPboardStringLength = 4096;
 
 }  // namespace
 
-void ClipboardHostImpl::WriteStringToFindPboard(const base::string16& text) {
+void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
   if (text.length() <= kMaxFindPboardStringLength) {
     NSString* nsText = base::SysUTF16ToNSString(text);
     if (nsText) {

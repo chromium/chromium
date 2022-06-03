@@ -5,23 +5,25 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 class ChromeContentBrowserClientTabStripPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientTabStripPart();
+
+  ChromeContentBrowserClientTabStripPart(
+      const ChromeContentBrowserClientTabStripPart&) = delete;
+  ChromeContentBrowserClientTabStripPart& operator=(
+      const ChromeContentBrowserClientTabStripPart&) = delete;
+
   ~ChromeContentBrowserClientTabStripPart() override;
 
   // ChromeContentBrowserClientParts:
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientTabStripPart);
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
+                           blink::web_pref::WebPreferences* web_prefs) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_

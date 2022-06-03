@@ -11,8 +11,11 @@
 
 // Protocol for an object which acts as a delegate for a contained presenter,
 // and which is informed about dismissal events.
-@protocol ContainedPresenterDelegate
+@protocol ContainedPresenterDelegate <NSObject>
 
+@optional
+
+// Tells the delegate that |presenter| has finished presenting.
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter;
 
 // Tells the delegate that |presenter| has finished dismissing.

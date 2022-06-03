@@ -5,8 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_NET_HELPERS_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_NET_HELPERS_H_
 
-#include <memory>
-
 class GURL;
 
 namespace android_webview {

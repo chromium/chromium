@@ -28,7 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -81,7 +81,7 @@ class XSLStyleSheet final : public StyleSheet {
   KURL BaseURL() const override { return final_url_; }
   bool IsLoading() const override { return false; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void LoadChildSheets();
@@ -105,11 +105,12 @@ class XSLStyleSheet final : public StyleSheet {
   Member<Document> owner_document_;
 };
 
-DEFINE_TYPE_CASTS(XSLStyleSheet,
-                  StyleSheet,
-                  sheet,
-                  !sheet->IsCSSStyleSheet(),
-                  !sheet.IsCSSStyleSheet());
+template <>
+struct DowncastTraits<XSLStyleSheet> {
+  static bool AllowFrom(const StyleSheet& sheet) {
+    return !sheet.IsCSSStyleSheet();
+  }
+};
 
 }  // namespace blink
 

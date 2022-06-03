@@ -22,9 +22,15 @@ class UserEventModelTypeController : public syncer::ModelTypeController,
   UserEventModelTypeController(
       SyncService* sync_service,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode);
+
+  UserEventModelTypeController(const UserEventModelTypeController&) = delete;
+  UserEventModelTypeController& operator=(const UserEventModelTypeController&) =
+      delete;
+
   ~UserEventModelTypeController() override;
 
   // syncer::DataTypeController implementation.
+  void Stop(ShutdownReason shutdown_reason, StopCallback callback) override;
   PreconditionState GetPreconditionState() const override;
 
   // syncer::SyncServiceObserver implementation.
@@ -32,8 +38,6 @@ class UserEventModelTypeController : public syncer::ModelTypeController,
 
  private:
   SyncService* sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventModelTypeController);
 };
 
 }  // namespace syncer

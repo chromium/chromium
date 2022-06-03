@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * The methods to expose to the client.
- */
-const METHOD_LIST = [
-  'logOut', 'getInstalledArcApps', 'requestClose', 'notifySupervisionEnabled',
-  'setCloseOnEscape'
-];
+import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
 /**
  * Class that implements the server side of the AddSupervision postMessage
@@ -16,7 +10,7 @@ const METHOD_LIST = [
  * the remote website that calls the API  is the client.  This is the opposite
  * of the normal browser/web-server client/server relationship.
  */
-class AddSupervisionAPIServer extends PostMessageAPIServer {
+export class AddSupervisionAPIServer extends PostMessageAPIServer {
   /*
    * @constructor
    * @param {!Element} webviewElement  The <webview> element to listen to as a
@@ -27,11 +21,10 @@ class AddSupervisionAPIServer extends PostMessageAPIServer {
    *     messages via the postMessage API.
    */
   constructor(webviewElement, targetURL, originURLPrefix) {
-    super(webviewElement, METHOD_LIST, targetURL, originURLPrefix);
+    super(webviewElement, targetURL, originURLPrefix);
 
     this.addSupervisionHandler_ =
-        addSupervision.mojom.AddSupervisionHandler.getRemote(
-            /*useBrowserInterfaceBroker=*/ true);
+        addSupervision.mojom.AddSupervisionHandler.getRemote();
 
     this.registerMethod('logOut', this.logOut.bind(this));
     this.registerMethod(
@@ -40,6 +33,11 @@ class AddSupervisionAPIServer extends PostMessageAPIServer {
     this.registerMethod(
         'notifySupervisionEnabled', this.notifySupervisionEnabled.bind(this));
     this.registerMethod('setCloseOnEscape', this.setCloseOnEscape.bind(this));
+  }
+
+  /** @override */
+  onInitializationError(origin) {
+    // TODO(): Trigger an error page to be shown in this case.
   }
 
   /**

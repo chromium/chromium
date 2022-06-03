@@ -10,7 +10,7 @@ namespace api {
 
 // Ensures the existence of any BrowserContextKeyedServiceFactory provided by
 // the Chrome Apps API code.
-void EnsureAPIBrowserContextKeyedServiceFactoriesBuilt();
+void EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
 }  // namespace api
 }  // namespace chrome_apps

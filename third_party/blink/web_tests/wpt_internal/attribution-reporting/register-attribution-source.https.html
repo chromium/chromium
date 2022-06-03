@@ -1,0 +1,57 @@
+<!doctype html>
+<title>window.attributionReporting.registerAttributionSource</title>
+<link rel="help" href="https://github.com/WICG/conversion-measurement-api/blob/main/event_attribution_reporting.md#registering-attribution-sources-with-javascript">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+promise_test(t => {
+  return window.attributionReporting.registerAttributionSource({
+    attributionSourceEventId: '1',
+    attributionDestination: 'https://a.example',
+    attributionReportTo: 'https://b.example',
+  });
+}, 'valid params');
+
+promise_test(t => {
+ return promise_rejects_js(t, TypeError,
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '!',
+      attributionDestination: 'https://a.example',
+    }));
+}, 'invalid attributionSourceEventId');
+
+promise_test(t => {
+ return promise_rejects_js(t, TypeError,
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '1',
+      attributionDestination: 'http://a.example',
+    }));
+}, 'insecure attributionDestination');
+
+promise_test(t => {
+ return promise_rejects_js(t, TypeError,
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '1',
+      attributionDestination: 'https://a.example',
+      attributionReportTo: 'http://b.example',
+    }));
+}, 'insecure attributionReportTo');
+
+promise_test(t => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const frameWindow = iframe.contentWindow;
+  const frameDOMException = frameWindow.DOMException;
+  iframe.remove();
+
+  return promise_rejects_dom(t, 'NotAllowedError', frameDOMException,
+    frameWindow.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '1',
+      attributionDestination: 'https://a.example',
+    }));
+}, 'window has no frame');
+
+</script>

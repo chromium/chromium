@@ -32,6 +32,12 @@
    as defined in core/html/resources/quirks.css. So far we have used this
    file exclusively for making our form elements match Firefox's. */
 
+/* This sheet is appended to html.css before parsing which means the selectors
+   below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
 textarea {
   /* Matches IE's text offsets in quirksmode (causes text to wrap the same as IE). */
   padding: 2px 0 0 2px;

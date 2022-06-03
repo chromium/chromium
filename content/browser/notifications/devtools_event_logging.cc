@@ -32,8 +32,7 @@ using DevToolsCallback =
 DevToolsBackgroundServicesContext* GetDevToolsContext(
     BrowserContext* browser_context,
     const GURL& origin) {
-  auto* storage_partition =
-      BrowserContext::GetStoragePartitionForSite(browser_context, origin);
+  auto* storage_partition = browser_context->GetStoragePartitionForUrl(origin);
   if (!storage_partition)
     return nullptr;
 
@@ -66,7 +65,6 @@ DevToolsCallback GetDevToolsCallback(BrowserContext* browser_context,
       url::Origin::Create(data.origin),
       DevToolsBackgroundService::kNotifications);
 
-  // TODO(knollr): Reorder parameters of LogBackgroundServiceEvent instead.
   return base::BindOnce(
       [](DevToolsBaseCallback callback, const std::string& notification_id,
          const std::string& event_name, const EventMetadata& metadata) {
@@ -124,8 +122,8 @@ void LogNotificationScheduledEventToDevTools(
 void LogNotificationClickedEventToDevTools(
     BrowserContext* browser_context,
     const NotificationDatabaseData& data,
-    const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply) {
   DevToolsCallback callback = GetDevToolsCallback(browser_context, data);
   if (!callback)
     return;

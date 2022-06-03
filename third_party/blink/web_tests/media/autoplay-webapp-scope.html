@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<title>Test for autoplay of urls in webapp scopes</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="media-controls.js"></script>
+<body>
+<script>
+
+test(function() {
+  assert_true(!!window.internals
+      && !!internals.settings,
+              "This test only works when run as a layout test!");
+}, "Prerequisites to running the rest of the tests");
+
+internals.settings.setAutoplayPolicy('user-gesture-required');
+internals.settings.setWebAppScope(
+    document.URL.substring(0, document.URL.lastIndexOf('/') + 1)
+    );
+
+function createMediaElement(type) {
+  var e = document.createElement(type);
+  e.src = type == 'audio' ? 'content/test.oga' : 'content/test.ogv';
+  return e;
+}
+
+function createVideoElement() {
+  return createMediaElement('video');
+}
+
+function createAudioElement() {
+  return createMediaElement('audio');
+}
+
+async_test(function(t) {
+  var e = createVideoElement();
+  e.autoplay = true;
+  document.body.appendChild(e);
+
+  var expectedEvents = [ 'canplay', 'play', 'playing'];
+  var eventWatcher = new EventWatcher(t, e, expectedEvents);
+  eventWatcher.wait_for(expectedEvents).then(
+      t.step_func_done(function() {
+        assert_false(e.paused);
+      }));
+}, "Test that a video with an autoplay attribute autoplays when in webapp scope.");
+
+promise_test(function() {
+  return createVideoElement().play();
+}, "Test that play() on a video succeeds without gesture when in webapp scope.");
+
+async_test(function(t) {
+  var e = createAudioElement();
+  e.autoplay = true;
+  document.body.appendChild(e);
+
+  var expectedEvents = [ 'canplay', 'play', 'playing'];
+  var eventWatcher = new EventWatcher(t, e, expectedEvents);
+  eventWatcher.wait_for(expectedEvents).then(
+      t.step_func_done(function() {
+        assert_false(e.paused);
+      }));
+}, "Test that an audio with an autoplay attribute autoplays when in webapp scope.");
+
+promise_test(function() {
+  return createAudioElement().play();
+}, "Test that play() on an audio succeeds without gesture when in webapp scope.");
+
+</script>
+</body>

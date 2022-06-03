@@ -9,11 +9,12 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/url_formatter/elide_url.h"
@@ -38,7 +39,7 @@ std::string SplitByDotAndReverse(base::StringPiece host) {
 }
 
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
-    const autofill::PasswordForm& password_form) {
+    const PasswordForm& password_form) {
   std::string shown_origin;
   GURL link_url;
 
@@ -50,16 +51,16 @@ std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
                        : password_form.app_display_name;
     link_url = GURL(kPlayStoreAppPrefix + facet_uri.android_package_name());
   } else {
-    shown_origin = GetShownOrigin(password_form.origin);
-    link_url = password_form.origin;
+    shown_origin = GetShownOrigin(url::Origin::Create(password_form.url));
+    link_url = password_form.url;
   }
 
   return {std::move(shown_origin), std::move(link_url)};
 }
 
-std::string GetShownOrigin(const GURL& origin) {
+std::string GetShownOrigin(const url::Origin& origin) {
   std::string original =
-      base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+      base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   base::StringPiece result = original;
   for (base::StringPiece prefix : kRemovedPrefixes) {
@@ -70,13 +71,13 @@ std::string GetShownOrigin(const GURL& origin) {
     }
   }
 
-  return result.find('.') != base::StringPiece::npos ? result.as_string()
+  return result.find('.') != base::StringPiece::npos ? std::string(result)
                                                      : original;
 }
 
 void UpdatePasswordFormUsernameAndPassword(
-    const base::string16& username,
-    const base::string16& password,
+    const std::u16string& username,
+    const std::u16string& password,
     PasswordFormManagerForUI* form_manager) {
   const auto& pending_credentials = form_manager->GetPendingCredentials();
   bool username_edited = pending_credentials.username_value != username;

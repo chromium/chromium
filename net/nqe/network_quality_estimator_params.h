@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -35,6 +35,10 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   // NetworkQualityEstimator field trial.
   explicit NetworkQualityEstimatorParams(
       const std::map<std::string, std::string>& params);
+
+  NetworkQualityEstimatorParams(const NetworkQualityEstimatorParams&) = delete;
+  NetworkQualityEstimatorParams& operator=(
+      const NetworkQualityEstimatorParams&) = delete;
 
   ~NetworkQualityEstimatorParams();
 
@@ -68,19 +72,12 @@ class NET_EXPORT NetworkQualityEstimatorParams {
     return weight_multiplier_per_second_;
   }
 
-  // Returns the factor by which the weight of an observation reduces for every
-  // signal strength level difference between the current signal strength, and
-  // the signal strength at the time when the observation was taken.
-  double weight_multiplier_per_signal_strength_level() const {
-    return weight_multiplier_per_signal_strength_level_;
-  }
-
   // Returns an unset value if the effective connection type has not been forced
   // via the |params| provided to this class. Otherwise, returns a value set to
   // the effective connection type that has been forced. Forced ECT can be
   // forced based on |connection_type| (e.g. Slow-2G on cellular, and default on
   // other connection type).
-  base::Optional<EffectiveConnectionType> GetForcedEffectiveConnectionType(
+  absl::optional<EffectiveConnectionType> GetForcedEffectiveConnectionType(
       NetworkChangeNotifier::ConnectionType connection_type);
 
   void SetForcedEffectiveConnectionType(
@@ -240,12 +237,6 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   // quality estimate.
   bool use_end_to_end_rtt() const { return use_end_to_end_rtt_; }
 
-  // Return true if ECT value should be capped based on the current signal
-  // strength.
-  bool cap_ect_based_on_signal_strength() const {
-    return cap_ect_based_on_signal_strength_;
-  }
-
   // Returns a multiplier which is used to clamp Kbps on slow connections. For
   // a given ECT, the upper bound on Kbps is computed based on this returned
   // multiplier and the typical Kbps for the given ECT. If
@@ -255,8 +246,15 @@ class NET_EXPORT NetworkQualityEstimatorParams {
     return upper_bound_typical_kbps_multiplier_;
   }
 
-  // Returns true if the signal strength should be queried on WiFi connections.
-  bool get_wifi_signal_strength() const { return get_wifi_signal_strength_; }
+  // Returns true if RTTs should be adjusted based on RTT counts.
+  // If there are not enough transport RTT samples, end-to-end RTT samples and
+  // the cached estimates are unavailble/too stale, then the computed value of
+  // HTTP RTT can't be trusted due to hanging GETs. In that case, NQE returns
+  // the typical HTTP RTT for a fast connection if
+  // adjust_rtt_based_on_rtt_counts() returns true.
+  bool adjust_rtt_based_on_rtt_counts() const {
+    return adjust_rtt_based_on_rtt_counts_;
+  }
 
   // Sets the forced effective connection type as |type|.
   void SetForcedEffectiveConnectionTypeForTesting(EffectiveConnectionType type);
@@ -270,8 +268,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const int throughput_min_transfer_size_kilobytes_;
   const double throughput_hanging_requests_cwnd_size_multiplier_;
   const double weight_multiplier_per_second_;
-  const double weight_multiplier_per_signal_strength_level_;
-  base::Optional<EffectiveConnectionType> forced_effective_connection_type_;
+  absl::optional<EffectiveConnectionType> forced_effective_connection_type_;
   const bool forced_effective_connection_type_on_cellular_only_;
   bool persistent_cache_reading_enabled_;
   const base::TimeDelta min_socket_watcher_notification_interval_;
@@ -289,9 +286,8 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const bool add_default_platform_observations_;
   const base::TimeDelta socket_watchers_min_notification_interval_;
   const bool use_end_to_end_rtt_;
-  const bool cap_ect_based_on_signal_strength_;
   const double upper_bound_typical_kbps_multiplier_;
-  const bool get_wifi_signal_strength_;
+  const bool adjust_rtt_based_on_rtt_counts_;
 
   bool use_small_responses_;
 
@@ -311,8 +307,6 @@ class NET_EXPORT NetworkQualityEstimatorParams {
       [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorParams);
 };
 
 }  // namespace net

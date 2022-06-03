@@ -9,6 +9,7 @@
 #include "base/win/windows_version.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/views/widget/widget.h"
@@ -20,9 +21,6 @@ namespace {
 const int kResizeAreaCornerSize = 16;
 
 }  // namespace
-
-const char GlassAppWindowFrameViewWin::kViewClassName[] =
-    "ui/views/apps/GlassAppWindowFrameViewWin";
 
 GlassAppWindowFrameViewWin::GlassAppWindowFrameViewWin(views::Widget* widget)
     : widget_(widget) {}
@@ -108,13 +106,9 @@ int GlassAppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // fullscreen, as it can't be resized in those states.
   int resize_border =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
-  int frame_component =
-      GetHTComponentForFrame(point,
-                             resize_border,
-                             resize_border,
-                             kResizeAreaCornerSize - resize_border,
-                             kResizeAreaCornerSize - resize_border,
-                             can_ever_resize);
+  int frame_component = GetHTComponentForFrame(
+      point, gfx::Insets(resize_border), kResizeAreaCornerSize - resize_border,
+      kResizeAreaCornerSize - resize_border, can_ever_resize);
   if (frame_component != HTNOWHERE)
     return frame_component;
 
@@ -139,10 +133,6 @@ gfx::Size GlassAppWindowFrameViewWin::CalculatePreferredSize() const {
       .size();
 }
 
-const char* GlassAppWindowFrameViewWin::GetClassName() const {
-  return kViewClassName;
-}
-
 gfx::Size GlassAppWindowFrameViewWin::GetMinimumSize() const {
   gfx::Size min_size = widget_->client_view()->GetMinimumSize();
 
@@ -164,3 +154,6 @@ gfx::Size GlassAppWindowFrameViewWin::GetMaximumSize() const {
 
   return max_size;
 }
+
+BEGIN_METADATA(GlassAppWindowFrameViewWin, views::NonClientFrameView)
+END_METADATA

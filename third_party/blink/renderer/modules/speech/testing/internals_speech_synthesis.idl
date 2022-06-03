@@ -31,5 +31,5 @@
 [
     ImplementedAs=InternalsSpeechSynthesis
 ] partial interface Internals {
-    [CallWith=ScriptState] void enableMockSpeechSynthesizer(Window window);
+    void enableMockSpeechSynthesizer(Window window);
 };

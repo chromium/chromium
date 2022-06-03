@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/compositor/compositor.h"
 
 namespace content {
@@ -30,7 +31,11 @@ void FlingSchedulerAndroid::ScheduleFlingProgress(
     // WebView), we'll never receive an OnAnimate call. In this case fall back
     // to BeginFrames coming from the host.
     if (!window || !window->GetCompositor()) {
-      host_->SetNeedsBeginFrameForFlingProgress();
+      auto* view = host_->GetView();
+      if (view && !view->IsRenderWidgetHostViewChildFrame()) {
+        static_cast<RenderWidgetHostViewAndroid*>(view)
+            ->SetNeedsBeginFrameForFlingProgress();
+      }
       return;
     }
     window->AddObserver(this);

@@ -1,0 +1,27 @@
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x864
+      LayoutNGBlockFlow {P} at (0,0) size 1176x27
+        LayoutText {#text} at (0,0) size 518x26
+          text run at (0,0) width 518: "This tests Range.selectNode() of a text node and a br."
+      LayoutNGBlockFlow {DIV} at (0,51) size 1176x27
+        LayoutText {#text} at (0,0) size 35x26
+          text run at (0,0) width 35: "one"
+      LayoutNGBlockFlow {DIV} at (0,78) size 1176x54
+        LayoutText {#text} at (0,0) size 36x26
+          text run at (0,0) width 36: "two"
+        LayoutBR {BR} at (36,0) size 0x26
+        LayoutText {#text} at (0,27) size 49x26
+          text run at (0,27) width 49: "three"
+      LayoutNGBlockFlow {DIV} at (0,132) size 1176x27
+        LayoutText {#text} at (0,0) size 40x26
+          text run at (0,0) width 40: "four"
+      LayoutNGBlockFlow {UL} at (0,183) size 1176x27
+        LayoutNGListItem {LI} at (60,0) size 1116x27
+          LayoutNGOutsideListMarker {::marker} at (-22,0) size 9x27
+            LayoutText (anonymous) at (0,0) size 9x26
+              text run at (0,0) width 9: "\x{2022} "
+          LayoutText {#text} at (0,0) size 82x26
+            text run at (0,0) width 82: "Success."

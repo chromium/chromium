@@ -49,9 +49,9 @@ public class ResponseParserTest {
      * @param updateStatus Status to use for the <updatecheck> element.
      * @return The completed XML.
      */
-    private static String createTestXML(String xmlProtocol, String elapsedSeconds,
-            String appStatus, boolean addInstall, boolean addPing, String updateStatus,
-            String updateUrl) {
+    private static String createTestXML(String xmlProtocol, String elapsedDays,
+            String elapsedSeconds, String appStatus, boolean addInstall, boolean addPing,
+            String updateStatus, String updateUrl) {
         StringWriter writer = new StringWriter();
         try {
             XmlSerializer serializer = Xml.newSerializer();
@@ -66,9 +66,14 @@ public class ResponseParserTest {
             }
 
             // Create <daystart> element.
-            if (elapsedSeconds != null) {
+            if (elapsedSeconds != null || elapsedDays != null) {
                 serializer.startTag(null, "daystart");
-                serializer.attribute(null, "elapsed_seconds", elapsedSeconds);
+                if (elapsedDays != null) {
+                    serializer.attribute(null, "elapsed_days", elapsedDays);
+                }
+                if (elapsedSeconds != null) {
+                    serializer.attribute(null, "elapsed_seconds", elapsedSeconds);
+                }
                 serializer.endTag(null, "daystart");
             }
 
@@ -190,13 +195,14 @@ public class ResponseParserTest {
      */
     private static void runSuccessTest(String appStatus, boolean addInstall, boolean addPing,
             String updateStatus) throws RequestFailureException {
-        String xml =
-                createTestXML("3.0", "12345", appStatus, addInstall, addPing, updateStatus, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", appStatus, addInstall, addPing, updateStatus, URL);
         ResponseParser parser =
                 new ResponseParser(true, "{APP_ID}", addInstall, addPing, updateStatus != null);
         OmahaBase.VersionConfig versionConfig = parser.parseResponse(xml);
 
         Assert.assertEquals("elapsed_seconds doesn't match.", 12345, parser.getDaystartSeconds());
+        Assert.assertEquals("elapsed_days doesn't match.", 4088, parser.getDaystartDays());
         Assert.assertEquals("<app> status doesn't match.", appStatus, parser.getAppStatus());
         Assert.assertEquals(
                 "<updatecheck> status doesn't match.", updateStatus, parser.getUpdateStatus());
@@ -297,64 +303,79 @@ public class ResponseParserTest {
     @Test
     @Feature({"Omaha"})
     public void testBadResponseProtocol() {
-        String xml =
-                createTestXML("2.0", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "2.0", "4088", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_RESPONSE, false, false, false);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testFailMissingDaystart() {
-        String xml =
-                createTestXML("3.0", null, APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", null, null, APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        runFailureTest(xml, RequestFailureException.ERROR_PARSE_DAYSTART, false, false, true);
+    }
+
+    @Test
+    @Feature({"Omaha"})
+    public void testFailMissingDaystartSeconds() {
+        String xml = createTestXML(
+                "3.0", "4088", null, APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        runFailureTest(xml, RequestFailureException.ERROR_PARSE_DAYSTART, false, false, true);
+    }
+
+    @Test
+    @Feature({"Omaha"})
+    public void testFailMissingDaystartDays() {
+        String xml = createTestXML(
+                "3.0", null, "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_DAYSTART, false, false, true);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagMissingUpdatecheck() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, true, false, null, URL);
+        String xml = createTestXML("3.0", "4088", "12345", APP_STATUS_OK, true, false, null, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_UPDATECHECK, true, false, true);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagUnexpectedUpdatecheck() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, true, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", APP_STATUS_OK, true, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_UPDATECHECK, true, false, false);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagMissingPing() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_PING, false, true, true);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagUnexpectedPing() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, false, true, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", APP_STATUS_OK, false, true, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_PING, false, false, true);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagMissingInstall() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_EVENT, true, false, true);
     }
 
     @Test
     @Feature({"Omaha"})
     public void testAppTagUnexpectedInstall() {
-        String xml =
-                createTestXML("3.0", "12345", APP_STATUS_OK, true, false, UPDATE_STATUS_OK, URL);
+        String xml = createTestXML(
+                "3.0", "4088", "12345", APP_STATUS_OK, true, false, UPDATE_STATUS_OK, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_EVENT, false, false, true);
     }
 
@@ -362,7 +383,7 @@ public class ResponseParserTest {
     @Feature({"Omaha"})
     public void testAppTagStatusError() {
         String xml =
-                createTestXML("3.0", "12345", APP_STATUS_ERROR, false, false, null, URL);
+                createTestXML("3.0", "4088", "12345", APP_STATUS_ERROR, false, false, null, URL);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_APP, false, false, false);
     }
 
@@ -370,7 +391,7 @@ public class ResponseParserTest {
     @Feature({"Omaha"})
     public void testUpdatecheckMissingUrl() {
         String xml = createTestXML(
-                "3.0", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, null);
+                "3.0", "4088", "12345", APP_STATUS_OK, false, false, UPDATE_STATUS_OK, null);
         runFailureTest(xml, RequestFailureException.ERROR_PARSE_URLS, false, false, true);
     }
 }

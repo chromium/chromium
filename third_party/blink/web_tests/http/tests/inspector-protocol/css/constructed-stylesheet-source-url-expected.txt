@@ -1,0 +1,6 @@
+Check sourceURL of constructed stylesheets, from `new` and from CSS module import
+isConstructed: true
+sourceURL: ''
+isConstructed: true
+sourceURL: 'css-module.php?url=css-module.css'
+

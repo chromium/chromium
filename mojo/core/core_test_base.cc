@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/configuration.h"
@@ -31,6 +31,9 @@ class MockDispatcher : public Dispatcher {
       CoreTestBase::MockHandleInfo* info) {
     return base::WrapRefCounted(new MockDispatcher(info));
   }
+
+  MockDispatcher(const MockDispatcher&) = delete;
+  MockDispatcher& operator=(const MockDispatcher&) = delete;
 
   // Dispatcher:
   Type GetType() const override { return Type::UNKNOWN; }
@@ -97,17 +100,15 @@ class MockDispatcher : public Dispatcher {
   ~MockDispatcher() override { info_->IncrementDtorCallCount(); }
 
   CoreTestBase::MockHandleInfo* const info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDispatcher);
 };
 
 }  // namespace
 
 // CoreTestBase ----------------------------------------------------------------
 
-CoreTestBase::CoreTestBase() {}
+CoreTestBase::CoreTestBase() = default;
 
-CoreTestBase::~CoreTestBase() {}
+CoreTestBase::~CoreTestBase() = default;
 
 MojoHandle CoreTestBase::CreateMockHandle(CoreTestBase::MockHandleInfo* info) {
   scoped_refptr<MockDispatcher> dispatcher = MockDispatcher::Create(info);
@@ -133,7 +134,7 @@ CoreTestBase_MockHandleInfo::CoreTestBase_MockHandleInfo()
       begin_read_data_call_count_(0),
       end_read_data_call_count_(0) {}
 
-CoreTestBase_MockHandleInfo::~CoreTestBase_MockHandleInfo() {}
+CoreTestBase_MockHandleInfo::~CoreTestBase_MockHandleInfo() = default;
 
 unsigned CoreTestBase_MockHandleInfo::GetCtorCallCount() const {
   base::AutoLock locker(lock_);

@@ -4,16 +4,16 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 generateKey() without length...
-error is: TypeError: AesKeyGenParams: length: Missing required property
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': AesKeyGenParams: length: Missing required property
 
 generateKey() with a length of 70000...
-error is: TypeError: AesKeyGenParams: length: Outside of numeric range
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': AesKeyGenParams: length: Outside of numeric range
 
 generateKey() with a length of -3...
-error is: TypeError: AesKeyGenParams: length: Outside of numeric range
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': AesKeyGenParams: length: Outside of numeric range
 
 generateKey() with length that is minus Infinity...
-error is: TypeError: AesKeyGenParams: length: Outside of numeric range
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': AesKeyGenParams: length: Outside of numeric range
 PASS successfullyParsed is true
 
 TEST COMPLETE

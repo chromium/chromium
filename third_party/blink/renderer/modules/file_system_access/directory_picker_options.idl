@@ -1,0 +1,10 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/file-system-access/#dictdef-directorypickeroptions
+dictionary DirectoryPickerOptions {
+  DOMString id;
+  (WellKnownDirectory or FileSystemHandle) startIn;
+  [RuntimeEnabled=FileSystemAccessAPIExperimental] FileSystemPermissionMode mode = "read";
+};

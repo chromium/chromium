@@ -8,15 +8,19 @@
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ash {
 
-SearchResultBaseView::SearchResultBaseView() : Button(this) {
+SearchResultBaseView::SearchResultBaseView() {
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetInstallFocusRingOnFocus(false);
 }
 
-SearchResultBaseView::~SearchResultBaseView() = default;
+SearchResultBaseView::~SearchResultBaseView() {
+  if (result_)
+    result_->RemoveObserver(this);
+  result_ = nullptr;
+}
 
 bool SearchResultBaseView::SkipDefaultKeyEventProcessing(
     const ui::KeyEvent& event) {
@@ -30,26 +34,22 @@ const char* SearchResultBaseView::GetClassName() const {
 }
 
 void SearchResultBaseView::SetSelected(bool selected,
-                                       base::Optional<bool> reverse_tab_order) {
+                                       absl::optional<bool> reverse_tab_order) {
   if (selected_ == selected)
     return;
 
   selected_ = selected;
 
-  if (app_list_features::IsSearchBoxSelectionEnabled()) {
-    if (selected) {
-      SelectInitialResultAction(reverse_tab_order.value_or(false));
-    } else {
-      ClearSelectedResultAction();
-    }
+  if (selected) {
+    SelectInitialResultAction(reverse_tab_order.value_or(false));
+  } else {
+    ClearSelectedResultAction();
   }
 
   SchedulePaint();
 }
 
 bool SearchResultBaseView::SelectNextResultAction(bool reverse_tab_order) {
-  DCHECK(app_list_features::IsSearchBoxSelectionEnabled());
-
   if (!selected() || !actions_view_)
     return false;
 
@@ -60,12 +60,10 @@ bool SearchResultBaseView::SelectNextResultAction(bool reverse_tab_order) {
   return true;
 }
 
-void SearchResultBaseView::NotifyA11yResultSelected() {
-  if (actions_view_ && actions_view_->HasSelectedAction()) {
-    actions_view_->NotifyA11yResultSelected();
-    return;
-  }
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+views::View* SearchResultBaseView::GetSelectedView() {
+  if (actions_view_ && actions_view_->HasSelectedAction())
+    return actions_view_->GetSelectedView();
+  return this;
 }
 
 void SearchResultBaseView::SetResult(SearchResult* result) {
@@ -83,16 +81,13 @@ void SearchResultBaseView::OnResultDestroying() {
   SetResult(nullptr);
 }
 
-base::string16 SearchResultBaseView::ComputeAccessibleName() const {
+std::u16string SearchResultBaseView::ComputeAccessibleName() const {
   if (!result())
-    return base::string16();
+    return std::u16string();
 
-  if (!result()->accessible_name().empty())
-    return result()->accessible_name();
-
-  base::string16 accessible_name = result()->title();
+  std::u16string accessible_name = result()->title();
   if (!result()->title().empty() && !result()->details().empty())
-    accessible_name += base::ASCIIToUTF16(", ");
+    accessible_name += u", ";
   accessible_name += result()->details();
 
   return accessible_name;
@@ -105,22 +100,16 @@ void SearchResultBaseView::UpdateAccessibleName() {
 void SearchResultBaseView::ClearResult() {
   if (result_)
     result_->RemoveObserver(this);
-  SetSelected(false, base::nullopt);
+  SetSelected(false, absl::nullopt);
   result_ = nullptr;
 }
 
 void SearchResultBaseView::SelectInitialResultAction(bool reverse_tab_order) {
-  DCHECK(app_list_features::IsSearchBoxSelectionEnabled());
-
-  if (actions_view_ && actions_view_->SelectInitialAction(reverse_tab_order))
-    return;
-
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  if (actions_view_)
+    actions_view_->SelectInitialAction(reverse_tab_order);
 }
 
 void SearchResultBaseView::ClearSelectedResultAction() {
-  DCHECK(app_list_features::IsSearchBoxSelectionEnabled());
-
   if (actions_view_)
     actions_view_->ClearSelectedAction();
 }

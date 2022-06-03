@@ -1,0 +1,29 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  #chartName {
+    @apply --diagnostics-chart-title-font;
+    display: inline-block;
+    font-family: Roboto;
+    font-size: 13px;
+    height: 20px;
+    line-height: 20px;
+  }
+
+  paper-progress {
+    border-radius: 5px;
+    display: inline-block;
+    width: 95%;
+    --paper-progress-active-color: var(--google-blue-500);
+    --paper-progress-container-color: var(--google-blue-100);
+    --paper-progress-height: 4px;
+  }
+</style>
+<div id="barChartContainer">
+  <div class="body">
+    <paper-progress id="barChart"
+        value="[[getAdjustedValue_(value, max)]]" max="[[max]]">
+    </paper-progress>
+  </div>
+  <label id="chartName">
+    [[header]]
+  </label>
+</div>

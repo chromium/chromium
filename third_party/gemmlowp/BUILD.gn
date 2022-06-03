@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("gemmlowp_include") {
+  include_dirs = [ "src" ]
+  if (target_os == "win" && target_cpu == "arm64") {
+    # https://crbug.com/1182242 - Neon extensions are temporarily disabled
+    # for this component on Windows on Arm due to compilation errors.
+    defines = [ "GEMMLOWP_ALLOW_INLINE_ASM" ]
+  }
+}
+source_set("gemmlowp") {
+  public = [
+    "src/fixedpoint/fixedpoint.h",
+    "src/public/bit_depth.h",
+    "src/public/gemmlowp.h",
+    "src/public/map.h",
+    "src/public/output_stages.h",
+  ]
+  public_configs = [ ":gemmlowp_include" ]
+}

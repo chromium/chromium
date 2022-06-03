@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -28,9 +28,9 @@ namespace blink {
 // invalid at computed-value time [1] as such.
 //
 // If StyleVariables does not contain an entry at all for a given property,
-// base::nullopt is returned. This allows us to differentiate between the case
+// absl::nullopt is returned. This allows us to differentiate between the case
 // where we want to try to find the variable elsewhere (e.g. StyleInitialData,
-// in the case of base::nullopt), or return nullptr without looking further.
+// in the case of absl::nullopt), or return nullptr without looking further.
 //
 // Due to the subtleties introduced by the root-bucket optimization in
 // StyleInheritedVariables, there is deliberately no way to erase an entry
@@ -47,14 +47,15 @@ class CORE_EXPORT StyleVariables {
 
   StyleVariables();
   StyleVariables(const StyleVariables&);
+  StyleVariables& operator=(const StyleVariables&);
 
   bool operator==(const StyleVariables& other) const;
   bool operator!=(const StyleVariables& other) const {
     return !(*this == other);
   }
 
-  using OptionalData = base::Optional<CSSVariableData*>;
-  using OptionalValue = base::Optional<Member<const CSSValue>>;
+  using OptionalData = absl::optional<CSSVariableData*>;
+  using OptionalValue = absl::optional<Member<const CSSValue>>;
 
   OptionalValue GetValue(const AtomicString&) const;
   OptionalData GetData(const AtomicString&) const;
@@ -62,7 +63,7 @@ class CORE_EXPORT StyleVariables {
   void SetValue(const AtomicString&, const CSSValue*);
 
   bool IsEmpty() const;
-  HashSet<AtomicString> GetNames() const;
+  void CollectNames(HashSet<AtomicString>&) const;
 
   const DataMap& Data() const { return data_; }
   const ValueMap& Values() const { return *values_; }

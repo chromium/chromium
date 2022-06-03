@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_UPDATER_NULL_EXTENSION_CACHE_H_
 #define EXTENSIONS_BROWSER_UPDATER_NULL_EXTENSION_CACHE_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "extensions/browser/updater/extension_cache.h"
 
@@ -14,11 +16,15 @@ namespace extensions {
 class NullExtensionCache : public ExtensionCache {
  public:
   NullExtensionCache();
+
+  NullExtensionCache(const NullExtensionCache&) = delete;
+  NullExtensionCache& operator=(const NullExtensionCache&) = delete;
+
   ~NullExtensionCache() override;
 
   // ExtensionCache implementation.
-  void Start(const base::Closure& callback) override;
-  void Shutdown(const base::Closure& callback) override;
+  void Start(base::OnceClosure callback) override;
+  void Shutdown(base::OnceClosure callback) override;
   void AllowCaching(const std::string& id) override;
   bool GetExtension(const std::string& id,
                     const std::string& expected_hash,
@@ -28,10 +34,7 @@ class NullExtensionCache : public ExtensionCache {
                     const std::string& expected_hash,
                     const base::FilePath& file_path,
                     const std::string& version,
-                    const PutExtensionCallback& callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullExtensionCache);
+                    PutExtensionCallback callback) override;
 };
 
 }  // namespace extensions

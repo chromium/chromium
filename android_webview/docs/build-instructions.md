@@ -76,16 +76,6 @@ device:
 adb shell getprop ro.build.version.sdk
 ```
 
-Then you can build one of the following targets:
-
-```shell
-# For L-M (21-23) devices (also works for N+, see "Important Notes for N-P")
-autoninja -C out/Default system_webview_apk
-
-# For N-P (24-28) devices (not including TV/car devices)
-autoninja -C out/Default monochrome_public_apk
-```
-
 *** promo
 **Tip:** you can convert the API level integer to the release's dessert
 codename with [this
@@ -93,35 +83,61 @@ table](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html
 This developer guide uses API integers and release letters interchangeably.
 ***
 
+Then you can build one of the following targets:
+
+```shell
+# For L+ (21+) devices (if on N-P, see "Important Notes for N-P")
+autoninja -C out/Default system_webview_apk
+
+# For N-P (24-28) devices (not including TV/car devices)
+autoninja -C out/Default monochrome_public_apk
+
+# For Q+ (29+) devices
+autoninja -C out/Default trichrome_webview_apk
+```
+
+<!--
+  TODO(https://crbug.com/956315): merge this and the other "Tip" when we
+  document the Trichrome target in detail.
+-->
+*** promo
+**Tip:** building `trichrome_webview_apk` will automatically build its
+dependencies (i.e., `trichrome_library_apk`).
+***
+
 ### Changing package name
 
 Unlike most Android apps, WebView is part of the Android framework. One of the
 consequences of this is that the WebView implementation on the device can only
-be provided by a predetermined set of package names. Depending on the chosen
-build target, you may need to change the package name to match one of the
-following:
+be provided by a predetermined set of package names (see
+[details](webview-providers.md#Package-name)). Depending on the chosen build
+target, you may need to change the package name to match one of the following:
 
+<!-- Keep this table in sync with webview-providers.md -->
 | API level            | Has GMS vs. AOSP? | Allowed package names |
 | -------------------- | ----------------- | --------------------- |
-| L-M                  | AOSP    | `com.android.webview`           |
-| L-M                  | Has GMS | `com.google.android.webview`    |
-| N-P                  | AOSP    | `com.android.webview`           |
-| N-P (TV/car devices) | Has GMS | `com.google.android.webview`    |
-| N-P (other devices)  | Has GMS | `com.android.chrome`<br>`com.chrome.beta`<br>`com.chrome.dev`<br>`com.chrome.canary`<br>`com.google.android.apps.chrome`<br>`com.google.android.webview` (see [Important notes for N-P](#important-notes-for-n_p)) |
+| L-M                  | AOSP    | `com.android.webview` **(default, preinstalled)** |
+| L-M                  | Has GMS | `com.google.android.webview` **(default, preinstalled)** |
+| N-P                  | AOSP    | `com.android.webview` **(default, preinstalled)** |
+| N-P (TV/car devices) | Has GMS | `com.google.android.webview` **(default, preinstalled)** |
+| N-P (other devices)  | Has GMS | `com.android.chrome` **(default, preinstalled)**<br>`com.chrome.beta`<br>`com.chrome.dev`<br>`com.chrome.canary`<br>`com.google.android.apps.chrome` **(only userdebug/eng)**<br>`com.google.android.webview` **(preinstalled)** (see [Important notes for N-P](build-instructions.md#Important-notes-for-N-P)) |
+| >= Q                 | AOSP    | `com.android.webview` **(default, preinstalled)** |
+| >= Q                 | Has GMS | `com.google.android.webview` **(default, preinstalled)**<br>`com.google.android.webview.beta`<br>`com.google.android.webview.dev`<br>`com.google.android.webview.canary`<br>`com.google.android.webview.debug` **(only userdebug/eng)**<br>`com.android.webview` **(only userdebug/eng)** |
 
-`system_webview_apk`'s package name defaults to `com.android.webview`. If your
-device allows this package name, continue to the [next
-section](#removing-preinstalled-webview). Otherwise, you can change the package
-name as necessary by setting the `system_webview_package_name` GN arg (ex.
-`system_webview_package_name = "com.google.android.webview"`).
+`system_webview_apk` and `trichrome_webview_apk` use `com.android.webview` as
+their package name by default. If your device allows this package name, continue
+to the [next section](#removing-preinstalled-webview). Otherwise, you can change
+the package name for either target by setting the `system_webview_package_name`
+GN arg (ex. `system_webview_package_name = "com.google.android.webview"`).
 
-`monochrome_public_apk`'s package name defaults to `org.chromium.chrome`, so
-you need to modify the package name or choose `system_webview_apk` instead. We
-don't have a GN arg for this, but you can [ask the team][2] for help modifying
-build files for local development.
+`monochrome_public_apk`'s package name defaults to `org.chromium.chrome`.
+Because this not accepted by any build of the OS, you'll want to change this
+with the GN arg `chrome_public_manifest_package =
+"com.google.android.apps.chrome"`, or choose `system_webview_apk` instead.
 
 See [internal instructions][1] for the Google-internal variants of the build
-targets (`system_webview_google_apk`, `monochrome_apk`).
+targets (`system_webview_google_apk`, `monochrome_apk`,
+`trichrome_webview_google_apk`).
 
 *** note
 **Note:** TV/car devices have a bug where the release key signed WebView is
@@ -138,9 +154,10 @@ system image, you'll also need to remove the preinstalled APK (otherwise, you'll
 see signature mismatches when installing). **You can skip this step** if
 either of the following is true:
 
-* You have an N+ device (and chose a package name **other than**
-  `com.android.chrome`, `com.android.webview`, `com.google.android.webview`), **or**
-* You're a Googler using signing keys per [internal instructions][1]
+* You [chose a package name](#Changing-package-name) which is not marked as
+  "(preinstalled)", **or**
+* You have an L-M device with GMS and you're a Googler using the signing keys
+  per [internal instructions][1].
 
 Otherwise, you can remove the preinstalled WebView like so:
 
@@ -148,7 +165,18 @@ Otherwise, you can remove the preinstalled WebView like so:
 android_webview/tools/remove_preinstalled_webview.py
 ```
 
+*** note
+If you're using an emulator, make sure to [start it with
+`-writable-system`](/docs/android_emulator.md#writable-system-partition)
+**before** removing the preinstalled WebView.
+***
+
+If the script doesn't work, see the [manual steps](removing-system-apps.md).
+
 ### Important notes for N-P
+
+_This functionality was added in N and removed in Q, so you should skip this if
+your device is L-M or >= Q._
 
 If you have an Android build from N-P (and, it uses the Google WebView
 configuration), then the `com.google.android.webview` package will be disabled
@@ -178,6 +206,16 @@ out/Default/bin/system_webview_apk install
 out/Default/bin/system_webview_apk set-webview-provider
 ```
 
+<!--
+  TODO(https://crbug.com/956315): merge this and the other "Tip" when we
+  document the Trichrome target in detail.
+-->
+*** promo
+**Tip:** `out/Default/bin/trichrome_webview_apk install` will handle installing
+all its dependencies (i.e., `trichrome_library_apk`), so you can interact with
+this target the same as you would interact with any other WebView build target.
+***
+
 ## Start running an app
 
 See [Start running an app](quick-start.md#start-running-an-app) from the quick
@@ -191,5 +229,5 @@ quick start.
 _TODO(ntfschr): document cases here which could arise generally, but wouldn't
 for the quick start._
 
-[1]: http://go/clank-webview/building-webview/android_webview-tests
+[1]: http://go/clank-webview/build_instructions.md
 [2]: https://groups.google.com/a/chromium.org/forum/#!forum/android-webview-dev

@@ -11,7 +11,7 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
-#include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/pulse/pulse_input.h"
 #include "media/audio/pulse/pulse_output.h"
@@ -104,22 +104,27 @@ void AudioManagerPulse::GetAudioOutputDeviceNames(
 
 AudioParameters AudioManagerPulse::GetInputStreamParameters(
     const std::string& device_id) {
-  int user_buffer_size = GetUserBufferSize();
-  int buffer_size =
-      user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
-
   UpdateNativeAudioHardwareInfo();
-  auto* operation = pa_context_get_source_info_by_name(
-      input_context_, default_source_name_.c_str(), DefaultSourceInfoCallback,
-      this);
-  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+
+  {
+    AutoPulseLock auto_lock(input_mainloop_);
+    auto* operation = pa_context_get_source_info_by_name(
+        input_context_, default_source_name_.c_str(), DefaultSourceInfoCallback,
+        this);
+    WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+  }
 
   // We don't want to accidentally open a monitor device, so return invalid
-  // parameters for those.
+  // parameters for those. Note: The value of |default_source_is_monitor_|
+  // depends on the the call to pa_context_get_source_info_by_name() above.
   if (device_id == AudioDeviceDescription::kDefaultDeviceId &&
       default_source_is_monitor_) {
     return AudioParameters();
   }
+
+  const int user_buffer_size = GetUserBufferSize();
+  const int buffer_size =
+      user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          CHANNEL_LAYOUT_STEREO,
                          native_input_sample_rate_ ? native_input_sample_rate_
@@ -135,7 +140,8 @@ AudioOutputStream* AudioManagerPulse::MakeLinearOutputStream(
     const AudioParameters& params,
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
-  return MakeOutputStream(params, AudioDeviceDescription::kDefaultDeviceId);
+  return MakeOutputStream(params, AudioDeviceDescription::kDefaultDeviceId,
+                          log_callback);
 }
 
 AudioOutputStream* AudioManagerPulse::MakeLowLatencyOutputStream(
@@ -143,9 +149,10 @@ AudioOutputStream* AudioManagerPulse::MakeLowLatencyOutputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
-  return MakeOutputStream(params, device_id.empty()
-                                      ? AudioDeviceDescription::kDefaultDeviceId
-                                      : device_id);
+  return MakeOutputStream(
+      params,
+      device_id.empty() ? AudioDeviceDescription::kDefaultDeviceId : device_id,
+      log_callback);
 }
 
 AudioInputStream* AudioManagerPulse::MakeLinearInputStream(
@@ -153,7 +160,7 @@ AudioInputStream* AudioManagerPulse::MakeLinearInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
-  return MakeInputStream(params, device_id);
+  return MakeInputStream(params, device_id, log_callback);
 }
 
 AudioInputStream* AudioManagerPulse::MakeLowLatencyInputStream(
@@ -161,7 +168,7 @@ AudioInputStream* AudioManagerPulse::MakeLowLatencyInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
-  return MakeInputStream(params, device_id);
+  return MakeInputStream(params, device_id, log_callback);
 }
 
 std::string AudioManagerPulse::GetDefaultInputDeviceID() {
@@ -182,7 +189,7 @@ std::string AudioManagerPulse::GetDefaultOutputDeviceID() {
 
 std::string AudioManagerPulse::GetAssociatedOutputDeviceID(
     const std::string& input_device_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return AudioManagerBase::GetAssociatedOutputDeviceID(input_device_id);
 #else
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
@@ -238,15 +245,19 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
 
 AudioOutputStream* AudioManagerPulse::MakeOutputStream(
     const AudioParameters& params,
-    const std::string& device_id) {
+    const std::string& device_id,
+    LogCallback log_callback) {
   DCHECK(!device_id.empty());
-  return new PulseAudioOutputStream(params, device_id, this);
+  return new PulseAudioOutputStream(params, device_id, this,
+                                    std::move(log_callback));
 }
 
 AudioInputStream* AudioManagerPulse::MakeInputStream(
-    const AudioParameters& params, const std::string& device_id) {
-  return new PulseAudioInputStream(this, device_id, params,
-                                   input_mainloop_, input_context_);
+    const AudioParameters& params,
+    const std::string& device_id,
+    LogCallback log_callback) {
+  return new PulseAudioInputStream(this, device_id, params, input_mainloop_,
+                                   input_context_, std::move(log_callback));
 }
 
 void AudioManagerPulse::UpdateNativeAudioHardwareInfo() {

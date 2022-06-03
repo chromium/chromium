@@ -4,9 +4,8 @@
 
 #include "ui/aura/window_occlusion_change_builder.h"
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "components/viz/client/frame_eviction_manager.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window_tracker.h"
@@ -18,6 +17,12 @@ class DefaultWindowOcclusionChangeBuilder
     : public WindowOcclusionChangeBuilder {
  public:
   DefaultWindowOcclusionChangeBuilder() = default;
+
+  DefaultWindowOcclusionChangeBuilder(
+      const DefaultWindowOcclusionChangeBuilder&) = delete;
+  DefaultWindowOcclusionChangeBuilder& operator=(
+      const DefaultWindowOcclusionChangeBuilder&) = delete;
+
   ~DefaultWindowOcclusionChangeBuilder() override {
     // No frame eviction until all occlusion state changes are applied.
     viz::FrameEvictionManager::ScopedPause scoped_frame_eviction_pause;
@@ -27,7 +32,6 @@ class DefaultWindowOcclusionChangeBuilder
       auto it = changes_.find(window);
       if (it == changes_.end())
         continue;
-
       window->SetOcclusionInfo(it->second.occlusion_state,
                                it->second.occluded_region);
     }
@@ -58,8 +62,6 @@ class DefaultWindowOcclusionChangeBuilder
 
   // Stores the accumulated occlusion changes.
   base::flat_map<Window*, OcclusionData> changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultWindowOcclusionChangeBuilder);
 };
 
 // static

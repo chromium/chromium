@@ -52,7 +52,7 @@ CSSSkewX* CSSSkewX::FromCSSValue(const CSSFunctionValue& value) {
 }
 
 DOMMatrix* CSSSkewX::toMatrix(ExceptionState&) const {
-  CSSUnitValue* ax = ax_->to(CSSPrimitiveValue::UnitType::kRadians);
+  CSSUnitValue* ax = ax_->to(CSSPrimitiveValue::UnitType::kDegrees);
   DCHECK(ax);
   DOMMatrix* result = DOMMatrix::Create();
   result->skewXSelf(ax->value());

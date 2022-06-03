@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 #
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -98,15 +98,15 @@ def _AllocateDexShards(dex_files):
   return shards
 
 
-def _CreateDexFiles(shards, dex_staging_dir, use_concurrency):
+def _CreateDexFiles(shards, dex_staging_dir, min_api, use_concurrency):
   """Creates dex files within |dex_staging_dir| defined by |shards|."""
   tasks = []
-  for name, src_paths in shards.iteritems():
+  for name, src_paths in shards.items():
     dest_path = os.path.join(dex_staging_dir, name)
     if _IsStale(src_paths, dest_path):
       tasks.append(
           functools.partial(dex.MergeDexForIncrementalInstall, _R8_PATH,
-                            src_paths, dest_path))
+                            src_paths, dest_path, min_api))
 
   # TODO(agrieve): It would be more performant to write a custom d8.jar
   #     wrapper in java that would process these in bulk, rather than spinning
@@ -144,16 +144,13 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     enable_device_cache: Whether to enable on-device caching of checksums.
     use_concurrency: Whether to speed things up using multiple threads.
     permissions: A list of the permissions to grant, or None to grant all
-                 non-blacklisted permissions in the manifest.
+                 non-denylisted permissions in the manifest.
   """
-  if isinstance(install_json, basestring):
+  if isinstance(install_json, str):
     with open(install_json) as f:
       install_dict = json.load(f)
   else:
     install_dict = install_json
-
-  if install_dict.get('dont_even_try'):
-    raise Exception(install_dict['dont_even_try'])
 
   main_timer = time_profile.TimeProfile()
   install_timer = time_profile.TimeProfile()
@@ -217,7 +214,8 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
       merge_dex_timer.Start()
       shards = _AllocateDexShards(dex_files)
       build_utils.MakeDirectory(dex_staging_dir)
-      _CreateDexFiles(shards, dex_staging_dir, use_concurrency)
+      _CreateDexFiles(shards, dex_staging_dir, apk.GetMinSdkVersion(),
+                      use_concurrency)
       merge_dex_timer.Stop(log=False)
 
     def do_push_dex():
@@ -230,23 +228,35 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     do_push_dex()
 
   def check_device_configured():
-    target_sdk_version = int(apk.GetTargetSdkVersion())
-    # Beta Q builds apply whitelist to targetSdk=28 as well.
-    if target_sdk_version >= 28 and device.build_version_sdk >= 29:
+    if apk.GetTargetSdkVersion().isalpha():
+      # Assume pre-release SDK is always really new.
+      target_sdk_version = 99
+    else:
+      target_sdk_version = int(apk.GetTargetSdkVersion())
+    # Beta Q builds apply allowlist to targetSdk=28 as well.
+    if target_sdk_version >= 28 and device.build_version_sdk >= 28:
+      # In P, there are two settings:
+      #  * hidden_api_policy_p_apps
+      #  * hidden_api_policy_pre_p_apps
+      # In Q, there is just one:
+      #  * hidden_api_policy
+      if device.build_version_sdk == 28:
+        setting_name = 'hidden_api_policy_p_apps'
+      else:
+        setting_name = 'hidden_api_policy'
       apis_allowed = ''.join(
-          device.RunShellCommand(
-              ['settings', 'get', 'global', 'hidden_api_policy'],
-              check_return=True))
+          device.RunShellCommand(['settings', 'get', 'global', setting_name],
+                                 check_return=True))
       if apis_allowed.strip() not in '01':
         msg = """\
-Cannot use incremental installs on Android Q+ without first enabling access to
+Cannot use incremental installs on Android P+ without first enabling access to
 non-SDK interfaces (https://developer.android.com/preview/non-sdk-q).
 
 To enable access:
-   adb -s {0} shell settings put global hidden_api_policy 0
+   adb -s {0} shell settings put global {1} 0
 To restore back to default:
-   adb -s {0} shell settings delete global hidden_api_policy"""
-        raise Exception(msg.format(device.serial))
+   adb -s {0} shell settings delete global {1}"""
+        raise Exception(msg.format(device.serial, setting_name))
 
   cache_path = _DeviceCachePath(device)
   def restore_cache():

@@ -7,8 +7,10 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/a11y/accessibility_test.js',
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
+
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 /**
  * Test fixture for Accessibility of Chrome Extensions.
@@ -39,6 +41,12 @@ var CrExtensionsA11yTest = class extends PolymerTest {
         'skip-link': {enabled: false},
         // TODO(crbug.com/761461): enable after addressing flaky tests.
         'color-contrast': {enabled: false},
+        // TODO(crbug.com/1226013): Fails when the device is managed (due to
+        // violations in <managed-footnote>, happens on some Win bots.
+        'region': {enabled: false},
+        // TODO(crbug.com/1226013): Fails when the device is managed (due to
+        // violations in <managed-footnote>, happens on some Win bots.
+        'link-in-text-block': {enabled: false},
       },
     };
   }
@@ -62,7 +70,7 @@ var CrExtensionsA11yTest = class extends PolymerTest {
         // Ignore the <button> residing within cr-toggle, which has tabindex -1
         // anyway.
         return parentNode && parentNode.host &&
-            parentNode.host.tagName == 'CR-TOGGLE';
+            parentNode.host.tagName === 'CR-TOGGLE';
       },
 
       // TODO(crbug.com/1002620): this filter can be removed after
@@ -93,7 +101,7 @@ class="clippable-flex-text">My extension 1</div>';
       return false;
     }
 
-    return (node.parentElement.tagName.toLocaleLowerCase() == type) ||
+    return (node.parentElement.tagName.toLocaleLowerCase() === type) ||
         CrExtensionsA11yTest.hasAncestor_(node.parentElement, type);
   }
 };
@@ -103,13 +111,7 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
   name: 'NoExtensions',
 
   /** @override */
-  // TODO(crbug.com/1002627): when bug is addressed, this should be replaced
-  // with axeOptions: CrExtensionsA11yTest.axeOptions,
-  axeOptions: Object.assign({}, CrExtensionsA11yTest.axeOptions, {
-    'rules': Object.assign({}, CrExtensionsA11yTest.axeOptions.rules, {
-      'link-in-text-block': {enabled: false},
-    })
-  }),
+  axeOptions: CrExtensionsA11yTest.axeOptions,
 
   /** @override */
   violationFilter: CrExtensionsA11yTest.violationFilter,
@@ -117,7 +119,8 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
   /** @override */
   tests: {
     'Accessible with No Extensions': function() {
-      let list = document.querySelector('extensions-manager').$$('#items-list');
+      let list = document.querySelector('extensions-manager')
+                     .shadowRoot.querySelector('#items-list');
       assertEquals(list.extensions.length, 0);
       assertEquals(list.apps.length, 0);
     }
@@ -147,7 +150,8 @@ AccessibilityTest.define('CrExtensionsA11yTestWithMultipleExensions', {
   /** @override */
   tests: {
     'Accessible with Extensions and Apps': function() {
-      let list = document.querySelector('extensions-manager').$$('#items-list');
+      let list = document.querySelector('extensions-manager')
+                     .shadowRoot.querySelector('#items-list');
       assertEquals(list.extensions.length, 1);
       assertEquals(list.apps.length, 3);
     },
@@ -176,7 +180,7 @@ AccessibilityTest.define('CrExtensionsShortcutA11yTestWithNoExtensions', {
   tests: {
     'Accessible with No Extensions or Apps': function() {
       let list = document.querySelector('extensions-manager')
-                     .$$('extensions-keyboard-shortcuts');
+                     .shadowRoot.querySelector('extensions-keyboard-shortcuts');
       assertEquals(list.items.length, 0);
     },
   },
@@ -204,7 +208,7 @@ AccessibilityTest.define('CrExtensionsShortcutA11yTestWithExtensions', {
   tests: {
     'Accessible with Extensions': function() {
       let list = document.querySelector('extensions-manager')
-                     .$$('extensions-keyboard-shortcuts');
+                     .shadowRoot.querySelector('extensions-keyboard-shortcuts');
       assertEquals(list.items.length, 1);
     },
   },
@@ -219,8 +223,11 @@ CrExtensionsErrorConsoleA11yTest =
 
   /** @override */
   testGenPreamble() {
+    // (crbug.com/1199580): Disabled tests from Mac and Win failures
+    GEN('#if defined(OS_MAC) || defined(OS_WIN)');
+    GEN('#define DISABLED_All');
+    GEN('#endif');
     GEN('  SetDevModeEnabled(true);');
-    GEN('  EnableErrorConsole();');
     GEN('  InstallErrorsExtension();');
   }
 
@@ -244,8 +251,8 @@ AccessibilityTest.define('CrExtensionsErrorConsoleA11yTest', {
   tests: {
     'Accessible Error Console': function() {
       assertTrue(!!document.querySelector('extensions-manager')
-                       .$$('extensions-error-page')
-                       .$$('#errorsList'));
+                       .shadowRoot.querySelector('extensions-error-page')
+                       .shadowRoot.querySelector('#errorsList'));
     },
   },
 });

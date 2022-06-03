@@ -15,16 +15,16 @@ class MODULES_EXPORT DeviceOrientationAbsoluteController final
  public:
   static const char kSupplementName[];
 
-  explicit DeviceOrientationAbsoluteController(Document&);
+  explicit DeviceOrientationAbsoluteController(LocalDOMWindow&);
   ~DeviceOrientationAbsoluteController() override;
 
-  static DeviceOrientationAbsoluteController& From(Document&);
+  static DeviceOrientationAbsoluteController& From(LocalDOMWindow&);
 
   // Inherited from DeviceSingleWindowEventController.
   void DidAddEventListener(LocalDOMWindow*,
                            const AtomicString& event_type) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Inherited from PlatformEventController.

@@ -30,6 +30,8 @@ void DeskSwitchAnimationWaiter::OnDeskAdded(const Desk* desk) {}
 
 void DeskSwitchAnimationWaiter::OnDeskRemoved(const Desk* desk) {}
 
+void DeskSwitchAnimationWaiter::OnDeskReordered(int old_index, int new_index) {}
+
 void DeskSwitchAnimationWaiter::OnDeskActivationChanged(
     const Desk* activated,
     const Desk* deactivated) {}
@@ -40,11 +42,16 @@ void DeskSwitchAnimationWaiter::OnDeskSwitchAnimationFinished() {
   run_loop_.Quit();
 }
 
+void DeskSwitchAnimationWaiter::OnDeskNameChanged(
+    const Desk* desk,
+    const std::u16string& new_name) {}
+
 void ActivateDesk(const Desk* desk) {
   ASSERT_FALSE(desk->is_active());
   DeskSwitchAnimationWaiter waiter;
-  DesksController::Get()->ActivateDesk(desk,
-                                       DesksSwitchSource::kMiniViewButton);
+  auto* desks_controller = DesksController::Get();
+  desks_controller->ActivateDesk(desk, DesksSwitchSource::kMiniViewButton);
+  EXPECT_EQ(desk, desks_controller->GetTargetActiveDesk());
   waiter.Wait();
   ASSERT_TRUE(desk->is_active());
 }

@@ -5,13 +5,17 @@
 #include "ui/gl/angle_platform_impl.h"
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/angle/include/platform/Platform.h"
+#include "third_party/angle/include/platform/PlatformMethods.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace angle {
@@ -57,8 +61,7 @@ TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
     const unsigned char* arg_types,
     const unsigned long long* arg_values,
     unsigned char flags) {
-  base::TimeTicks timestamp_tt =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp);
+  base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
   base::trace_event::TraceArguments args(num_args, arg_names, arg_types,
                                          arg_values);
   base::trace_event::TraceEventHandle handle =
@@ -120,6 +123,20 @@ void ANGLEPlatformImpl_histogramBoolean(PlatformMethods* platform,
   ANGLEPlatformImpl_histogramEnumeration(platform, name, sample ? 1 : 0, 2);
 }
 
+NO_SANITIZE("cfi-icall")
+void AnglePlatformImpl_runWorkerTask(PostWorkerTaskCallback callback, void* user_data) {
+  TRACE_EVENT0("toplevel", "ANGLEPlatformImpl::RunWorkerTask");
+  callback(user_data);
+}
+
+void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
+                                      PostWorkerTaskCallback callback,
+                                      void* user_data) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
+}
+
 }  // anonymous namespace
 
 NO_SANITIZE("cfi-icall")
@@ -138,9 +155,9 @@ bool InitializePlatform(EGLDisplay display) {
   if (!angle_get_platform(static_cast<EGLDisplayType>(display),
                           g_PlatformMethodNames, g_NumPlatformMethods, nullptr,
                           &platformMethods))
-    platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
-  platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
+    return false;
   platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
+  platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
   platformMethods->getTraceCategoryEnabledFlag =
       ANGLEPlatformImpl_getTraceCategoryEnabledFlag;
   platformMethods->histogramBoolean = ANGLEPlatformImpl_histogramBoolean;
@@ -155,6 +172,11 @@ bool InitializePlatform(EGLDisplay display) {
       ANGLEPlatformImpl_monotonicallyIncreasingTime;
   platformMethods->updateTraceEventDuration =
       ANGLEPlatformImpl_updateTraceEventDuration;
+
+  // Initialize the delegate to allow posting tasks in the Chromium thread pool.
+  // The thread pool is not available in some unittests.
+  if (base::ThreadPoolInstance::Get())
+    platformMethods->postWorkerTask = ANGLEPlatformImpl_postWorkerTask;
   return true;
 }
 

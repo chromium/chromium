@@ -26,16 +26,12 @@ WebUsbChooser::~WebUsbChooser() {}
 void WebUsbChooser::GetPermission(
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host_);
-  url::Origin requesting_origin = render_frame_host_->GetLastCommittedOrigin();
-  url::Origin embedding_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
   auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host_->GetBrowserContext());
   auto* context = UsbChooserContextFactory::GetForProfile(profile);
-  if (!context->CanRequestObjectPermission(requesting_origin,
-                                           embedding_origin)) {
+  if (!context->CanRequestObjectPermission(origin)) {
     std::move(callback).Run(nullptr);
     return;
   }

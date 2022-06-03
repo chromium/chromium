@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Default assert_equals: offsetX expected 100 but got 100.00000298023224
+PASS Zoomed
+FAIL Scrolled assert_equals: offsetX expected 150 but got 150.00000447034836
+PASS Zoomed and scrolled
+Harness: the test ran to completion.
+

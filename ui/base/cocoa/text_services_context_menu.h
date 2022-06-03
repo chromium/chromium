@@ -5,23 +5,39 @@
 #ifndef UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 #define UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 
+#include <string>
+
+#include "base/component_export.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
 // This class is used to append and handle the Speech and BiDi submenu for the
 // context menu.
-class UI_BASE_EXPORT TextServicesContextMenu
+class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
     : public SimpleMenuModel::Delegate {
  public:
-  class UI_BASE_EXPORT Delegate {
+  enum MenuCommands {
+    // These must not overlap with the command IDs used by other menus that
+    // incorporate text services.
+    // TODO(ellyjones): This is an ugly global dependency, especially on
+    // //ui/views. What can we do about this? Can we get rid of the global
+    // implicit namespace of command IDs?
+    kSpeechMenu = 100,
+    kSpeechStartSpeaking,
+    kSpeechStopSpeaking,
+
+    kWritingDirectionMenu,
+    kWritingDirectionDefault,
+    kWritingDirectionLtr,
+    kWritingDirectionRtl,
+  };
+
+  class COMPONENT_EXPORT(UI_BASE) Delegate {
    public:
     // Returns the selected text.
-    virtual base::string16 GetSelectedText() const = 0;
+    virtual std::u16string GetSelectedText() const = 0;
 
     // Returns true if |direction| should be enabled in the BiDi submenu.
     virtual bool IsTextDirectionEnabled(
@@ -37,8 +53,11 @@ class UI_BASE_EXPORT TextServicesContextMenu
 
   explicit TextServicesContextMenu(Delegate* delegate);
 
+  TextServicesContextMenu(const TextServicesContextMenu&) = delete;
+  TextServicesContextMenu& operator=(const TextServicesContextMenu&) = delete;
+
   // Methods for speaking.
-  static void SpeakText(const base::string16& text);
+  static void SpeakText(const std::u16string& text);
   static void StopSpeaking();
   static bool IsSpeaking();
 
@@ -66,8 +85,6 @@ class UI_BASE_EXPORT TextServicesContextMenu
   ui::SimpleMenuModel bidi_submenu_model_;
 
   Delegate* delegate_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(TextServicesContextMenu);
 };
 
 }  // namespace ui

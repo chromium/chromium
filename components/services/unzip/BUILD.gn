@@ -48,18 +48,14 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/unzip_service/bad_archive.zip",
     "//components/test/data/unzip_service/good_archive.zip",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "public/cpp/unzip_unittest.cc",
-  ]
+  sources = [ "public/cpp/unzip_unittest.cc" ]
 
   deps = [
     ":lib",

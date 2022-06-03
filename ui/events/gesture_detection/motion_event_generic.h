@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
-#define UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
+#ifndef UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
+#define UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,6 +19,7 @@ struct GESTURE_DETECTION_EXPORT PointerProperties {
   PointerProperties(float x, float y, float touch_major);
   PointerProperties(const MotionEvent& event, size_t pointer_index);
   PointerProperties(const PointerProperties& other);
+  PointerProperties& operator=(const PointerProperties& other);
 
   // Sets |touch_major|, |touch_minor|, and |orientation| from the given radius
   // and rotation angle (in degrees).
@@ -137,4 +138,4 @@ class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_UI_MOTION_EVENT_GENERIC_H_
+#endif  // UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_

@@ -4,10 +4,16 @@
 
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
@@ -40,7 +46,7 @@ OverlayScrollBar::Thumb::Thumb(OverlayScrollBar* scroll_bar)
 OverlayScrollBar::Thumb::~Thumb() = default;
 
 void OverlayScrollBar::Thumb::Init() {
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   // Animate all changes to the layer except the first one.
@@ -58,10 +64,12 @@ gfx::Size OverlayScrollBar::Thumb::CalculatePreferredSize() const {
 }
 
 void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
+  const bool hovered = GetState() != Button::STATE_NORMAL;
   cc::PaintFlags fill_flags;
   fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-  fill_flags.setColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_OverlayScrollbarThumbBackground));
+  fill_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarFillHovered
+              : ui::kColorOverlayScrollbarFill));
   gfx::RectF fill_bounds(GetLocalBounds());
   fill_bounds.Inset(gfx::InsetsF(IsHorizontal() ? kThumbHoverOffset : 0,
                                  IsHorizontal() ? 0 : kThumbHoverOffset, 0, 0));
@@ -72,8 +80,9 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags stroke_flags;
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  stroke_flags.setColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_OverlayScrollbarThumbForeground));
+  stroke_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarStrokeHovered
+              : ui::kColorOverlayScrollbarStroke));
   stroke_flags.setStrokeWidth(kThumbStrokeVisualSize);
   stroke_flags.setStrokeCap(cc::PaintFlags::kSquare_Cap);
 
@@ -114,18 +123,17 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
         gfx::Vector2d(IsHorizontal() ? 0 : direction * kThumbHoverOffset,
                       IsHorizontal() ? kThumbHoverOffset : 0));
     layer()->SetTransform(translation);
-    layer()->SetOpacity(ui::kOverlayScrollbarThumbNormalAlpha);
 
     if (GetWidget())
       scroll_bar_->StartHideCountdown();
   } else {
     layer()->SetTransform(gfx::Transform());
-    layer()->SetOpacity(ui::kOverlayScrollbarThumbHoverAlpha);
   }
+  SchedulePaint();
 }
 
 OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
   layer()->SetFillsBoundsOpaquely(false);
@@ -185,8 +193,7 @@ void OverlayScrollBar::StartHideCountdown() {
       base::BindOnce(&OverlayScrollBar::Hide, base::Unretained(this)));
 }
 
-BEGIN_METADATA(OverlayScrollBar)
-METADATA_PARENT_CLASS(ScrollBar)
-END_METADATA()
+BEGIN_METADATA(OverlayScrollBar, ScrollBar)
+END_METADATA
 
 }  // namespace views

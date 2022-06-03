@@ -7,6 +7,7 @@
 
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
+#include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
 
@@ -21,28 +22,21 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
  public:
   explicit WaylandBufferManagerConnector(
       WaylandBufferManagerHost* buffer_manager_host);
+
+  WaylandBufferManagerConnector(const WaylandBufferManagerConnector&) = delete;
+  WaylandBufferManagerConnector& operator=(
+      const WaylandBufferManagerConnector&) = delete;
+
   ~WaylandBufferManagerConnector() override;
 
   // GpuPlatformSupportHost:
-  void OnGpuProcessLaunched(
-      int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> send_runner,
-      base::RepeatingCallback<void(IPC::Message*)> send_callback) override;
   void OnChannelDestroyed(int host_id) override;
-  void OnMessageReceived(const IPC::Message& message) override;
   void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 
  private:
-  void OnBufferManagerHostPtrBinded(
-      mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost>
-          buffer_manager_host) const;
-
   void OnTerminateGpuProcess(std::string message);
 
   // Non-owned pointer, which is used to bind a mojo pointer to the
@@ -52,9 +46,10 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
   GpuHostBindInterfaceCallback binder_;
   GpuHostTerminateCallback terminate_callback_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
+  // Owned by the ui thread.
+  int host_id_ = -1;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandBufferManagerConnector);
+  THREAD_CHECKER(ui_thread_checker_);
 };
 
 }  // namespace ui

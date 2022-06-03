@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -195,27 +194,23 @@ TEST(CommandLineTest, GetArgumentsString) {
   static const char kSecondArgName[] = "arg2";
   static const char kThirdArgName[] = "arg with space";
   static const char kFourthArgName[] = "nospace";
-  static const char kFifthArgName[] = "%1";
 
   CommandLine cl(CommandLine::NO_PROGRAM);
   cl.AppendSwitchPath(kFirstArgName, FilePath(kPath1));
   cl.AppendSwitchPath(kSecondArgName, FilePath(kPath2));
   cl.AppendArg(kThirdArgName);
   cl.AppendArg(kFourthArgName);
-  cl.AppendArg(kFifthArgName);
 
 #if defined(OS_WIN)
   CommandLine::StringType expected_first_arg(UTF8ToWide(kFirstArgName));
   CommandLine::StringType expected_second_arg(UTF8ToWide(kSecondArgName));
   CommandLine::StringType expected_third_arg(UTF8ToWide(kThirdArgName));
   CommandLine::StringType expected_fourth_arg(UTF8ToWide(kFourthArgName));
-  CommandLine::StringType expected_fifth_arg(UTF8ToWide(kFifthArgName));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   CommandLine::StringType expected_first_arg(kFirstArgName);
   CommandLine::StringType expected_second_arg(kSecondArgName);
   CommandLine::StringType expected_third_arg(kThirdArgName);
   CommandLine::StringType expected_fourth_arg(kFourthArgName);
-  CommandLine::StringType expected_fifth_arg(kFifthArgName);
 #endif
 
 #if defined(OS_WIN)
@@ -226,38 +221,25 @@ TEST(CommandLineTest, GetArgumentsString) {
 
   CommandLine::StringType expected_str;
   expected_str.append(FILE_PATH_LITERAL("--"))
-              .append(expected_first_arg)
-              .append(FILE_PATH_LITERAL("="))
-              .append(QUOTE_ON_WIN)
-              .append(kPath1)
-              .append(QUOTE_ON_WIN)
-              .append(FILE_PATH_LITERAL(" "))
-              .append(FILE_PATH_LITERAL("--"))
-              .append(expected_second_arg)
-              .append(FILE_PATH_LITERAL("="))
-              .append(QUOTE_ON_WIN)
-              .append(kPath2)
-              .append(QUOTE_ON_WIN)
-              .append(FILE_PATH_LITERAL(" "))
-              .append(QUOTE_ON_WIN)
-              .append(expected_third_arg)
-              .append(QUOTE_ON_WIN)
-              .append(FILE_PATH_LITERAL(" "))
-              .append(expected_fourth_arg)
-              .append(FILE_PATH_LITERAL(" "));
-
-  CommandLine::StringType expected_str_no_quote_placeholders(expected_str);
-  expected_str_no_quote_placeholders.append(expected_fifth_arg);
-  EXPECT_EQ(expected_str_no_quote_placeholders, cl.GetArgumentsString());
-
-#if defined(OS_WIN)
-  CommandLine::StringType expected_str_quote_placeholders(expected_str);
-  expected_str_quote_placeholders.append(QUOTE_ON_WIN)
-                                 .append(expected_fifth_arg)
-                                 .append(QUOTE_ON_WIN);
-  EXPECT_EQ(expected_str_quote_placeholders,
-            cl.GetArgumentsStringWithPlaceholders());
-#endif
+      .append(expected_first_arg)
+      .append(FILE_PATH_LITERAL("="))
+      .append(QUOTE_ON_WIN)
+      .append(kPath1)
+      .append(QUOTE_ON_WIN)
+      .append(FILE_PATH_LITERAL(" "))
+      .append(FILE_PATH_LITERAL("--"))
+      .append(expected_second_arg)
+      .append(FILE_PATH_LITERAL("="))
+      .append(QUOTE_ON_WIN)
+      .append(kPath2)
+      .append(QUOTE_ON_WIN)
+      .append(FILE_PATH_LITERAL(" "))
+      .append(QUOTE_ON_WIN)
+      .append(expected_third_arg)
+      .append(QUOTE_ON_WIN)
+      .append(FILE_PATH_LITERAL(" "))
+      .append(expected_fourth_arg);
+  EXPECT_EQ(expected_str, cl.GetArgumentsString());
 }
 
 // Test methods for appending switches to a command line.
@@ -329,6 +311,25 @@ TEST(CommandLineTest, AppendSwitchesDashDash) {
  EXPECT_EQ(FILE_PATH_LITERAL("--arg2"), cl_argv[5]);
 }
 
+#if defined(OS_WIN)
+TEST(CommandLineTest, GetCommandLineStringForShell) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("program --switch /switch2 --"));
+  EXPECT_EQ(
+      cl.GetCommandLineStringForShell(),
+      FILE_PATH_LITERAL("program --switch /switch2 -- --single-argument %1"));
+}
+
+TEST(CommandLineTest, GetCommandLineStringWithUnsafeInsertSequences) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("program")));
+  cl.AppendSwitchASCII("switch", "%1");
+  cl.AppendSwitch("%2");
+  cl.AppendArg("%3");
+  EXPECT_EQ(FILE_PATH_LITERAL("program --switch=%1 --%2 %3"),
+            cl.GetCommandLineStringWithUnsafeInsertSequences());
+}
+#endif  // defined(OS_WIN)
+
 // Tests that when AppendArguments is called that the program is set correctly
 // on the target CommandLine object and the switches from the source
 // CommandLine are added to the target.
@@ -373,12 +374,6 @@ TEST(CommandLineTest, ProgramQuotes) {
   // Check that quotes are added to command line string paths containing spaces.
   CommandLine::StringType cmd_string(cl_program_path.GetCommandLineString());
   EXPECT_EQ(L"\"Program Path\"", cmd_string);
-
-  // Check the optional quoting of placeholders in programs.
-  CommandLine cl_quote_placeholder(FilePath(L"%1"));
-  EXPECT_EQ(L"%1", cl_quote_placeholder.GetCommandLineString());
-  EXPECT_EQ(L"\"%1\"",
-            cl_quote_placeholder.GetCommandLineStringWithPlaceholders());
 }
 #endif
 
@@ -576,5 +571,78 @@ TEST(CommandLineTest, MultipleSameSwitch) {
 
   EXPECT_EQ("two", cl.GetSwitchValueASCII("foo"));
 }
+
+// Helper class for the next test case
+class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
+ public:
+  ~MergeDuplicateFoosSemicolon() override;
+
+  void ResolveDuplicate(base::StringPiece key,
+                        CommandLine::StringPieceType new_value,
+                        CommandLine::StringType& out_value) override;
+};
+
+MergeDuplicateFoosSemicolon::~MergeDuplicateFoosSemicolon() = default;
+
+void MergeDuplicateFoosSemicolon::ResolveDuplicate(
+    base::StringPiece key,
+    CommandLine::StringPieceType new_value,
+    CommandLine::StringType& out_value) {
+  if (key != "mergeable-foo") {
+    out_value = CommandLine::StringType(new_value);
+    return;
+  }
+  if (!out_value.empty()) {
+#if defined(OS_WIN)
+    StrAppend(&out_value, {L";"});
+#else
+    StrAppend(&out_value, {";"});
+#endif
+  }
+  StrAppend(&out_value, {new_value});
+}
+
+// This flag is an exception to the rule that the second duplicate flag wins
+// Not thread safe
+TEST(CommandLineTest, MultipleFilterFileSwitch) {
+  const CommandLine::CharType* const argv[] = {
+      FILE_PATH_LITERAL("program"),
+      FILE_PATH_LITERAL("--mergeable-foo=one"),  // --first time
+      FILE_PATH_LITERAL("-baz"),
+      FILE_PATH_LITERAL("--mergeable-foo=two")  // --second time
+  };
+  CommandLine::SetDuplicateSwitchHandler(
+      std::make_unique<MergeDuplicateFoosSemicolon>());
+
+  CommandLine cl(size(argv), argv);
+
+  EXPECT_TRUE(cl.HasSwitch("mergeable-foo"));
+  EXPECT_TRUE(cl.HasSwitch("baz"));
+
+  EXPECT_EQ("one;two", cl.GetSwitchValueASCII("mergeable-foo"));
+  CommandLine::SetDuplicateSwitchHandler(nullptr);
+}
+
+#if defined(OS_WIN)
+TEST(CommandLineTest, ParseAsSingleArgument) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("program --switch_before arg_before "
+                        "--single-argument arg with spaces \"and quotes\" \""));
+
+  EXPECT_FALSE(cl.GetCommandLineString().empty());
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program")), cl.GetProgram());
+  EXPECT_TRUE(cl.HasSwitch("switch_before"));
+  EXPECT_EQ(cl.GetArgs(), CommandLine::StringVector({FILE_PATH_LITERAL(
+                              "arg with spaces \"and quotes\" \"")}));
+
+  CommandLine cl_without_arg =
+      CommandLine::FromString(FILE_PATH_LITERAL("program --single-argument "));
+
+  EXPECT_FALSE(cl_without_arg.GetCommandLineString().empty());
+  EXPECT_EQ(FilePath(FILE_PATH_LITERAL("program")),
+            cl_without_arg.GetProgram());
+  EXPECT_TRUE(cl_without_arg.GetArgs().empty());
+}
+#endif  // defined(OS_WIN)
 
 } // namespace base

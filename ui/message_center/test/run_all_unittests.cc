@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -21,6 +20,9 @@ namespace {
 class MessageCenterTestSuite : public base::TestSuite {
  public:
   MessageCenterTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  MessageCenterTestSuite(const MessageCenterTestSuite&) = delete;
+  MessageCenterTestSuite& operator=(const MessageCenterTestSuite&) = delete;
 
  protected:
   void Initialize() override {
@@ -43,8 +45,6 @@ class MessageCenterTestSuite : public base::TestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterTestSuite);
 };
 
 }  // namespace

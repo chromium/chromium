@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -36,7 +35,7 @@ namespace {{namespace}} {
 {% set is_alias = property.alias_for %}
 // {{property.name}}
 
-  {% if property.is_internal or property.runtime_flag %}
+  {% if property.is_internal or property.runtime_flag and not property.in_origin_trial%}
 CSSExposure {{class_name}}::Exposure() const {
     {% if property.runtime_flag %}
   if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled())
@@ -50,7 +49,7 @@ CSSExposure {{class_name}}::Exposure() const {
 }
   {% endif %}
 
-  {% if property.origin_trial %}
+  {% if property.in_origin_trial %}
 CSSExposure {{class_name}}::Exposure(const ExecutionContext* execution_context) const {
   if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled(execution_context))
     return CSSExposure::kNone;
@@ -81,22 +80,40 @@ const CSSProperty* {{class_name}}::GetUnvisitedProperty() const {
   return &Get{{property.unvisited_property.property_id}}();
 }
   {% endif %}
-  {% if property.ua_property %}
-const CSSProperty* {{class_name}}::GetUAProperty() const {
-  return &Get{{property.ua_property.property_id}}();
+
+  {% if property.surrogate_for %}
+const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
+    blink::WritingMode writing_mode) const {
+  return &GetCSSProperty{{property.surrogate_for.name.to_upper_camel_case()}}();
 }
   {% endif %}
+  {% if property.logical_property_group %}
+    {% set group = property.logical_property_group %}
+    {% set group_name = group.name.to_upper_camel_case() %}
+    {% set resolver_name = group.resolver_name.to_upper_camel_case() %}
+    {% if group.is_logical %}
+const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
+    blink::WritingMode writing_mode) const {
+  return &ResolveDirectionAwareProperty(direction, writing_mode);
+}
 
-  {% if property.direction_aware_options %}
-    {% set options = property.direction_aware_options %}
-    {% set resolver_name = options.resolver_name.to_upper_camel_case() %}
-    {% set physical_group_name = options.physical_group_name.to_upper_camel_case() %}
 const CSSProperty& {{class_name}}::ResolveDirectionAwareProperty(
     TextDirection direction,
     blink::WritingMode writing_mode) const {
   return CSSDirectionAwareResolver::Resolve{{resolver_name}}(direction, writing_mode,
-      CSSDirectionAwareResolver::{{physical_group_name}}Group());
+      CSSDirectionAwareResolver::Physical{{group_name}}Mapping());
 }
+
+bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+    CSSPropertyID id) const {
+  return CSSDirectionAwareResolver::Physical{{group_name}}Mapping().Contains(id);
+}
+    {% else %}
+bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+    CSSPropertyID id) const {
+  return CSSDirectionAwareResolver::Logical{{group_name}}Mapping().Contains(id);
+}
+    {% endif %}
   {% endif %}
 
 {{style_builder_functions(property)}}

@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_RECT_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -21,7 +21,6 @@ class TextStream;
 namespace blink {
 
 class ComputedStyle;
-struct LogicalRect;
 struct NGPhysicalBoxStrut;
 
 // PhysicalRect is the position and size of a rect (typically a fragment)
@@ -43,20 +42,11 @@ struct CORE_EXPORT PhysicalRect {
                          LayoutUnit height)
       : offset(left, top), size(width, height) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline PhysicalRect(int left, int top, int width, int height);
 
   PhysicalOffset offset;
   PhysicalSize size;
-
-  // Converts a physical offset to a logical offset. See:
-  // https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
-  // @param outer_size the size of the rect (typically a fragment).
-  // @param inner_size the size of the inner rect (typically a child fragment).
-  LogicalRect ConvertToLogical(WritingMode,
-                               TextDirection,
-                               PhysicalSize outer_size,
-                               PhysicalSize inner_size) const;
 
   constexpr bool IsEmpty() const { return size.IsEmpty(); }
 
@@ -88,6 +78,14 @@ struct CORE_EXPORT PhysicalRect {
   }
   bool operator!=(const PhysicalRect& other) const { return !(*this == other); }
 
+  // Returns the distance to |target| in horizontal and vertical directions.
+  // Each distance is zero if |this| contains |target| in that direction.
+  PhysicalSize DistanceAsSize(PhysicalOffset target) const;
+
+  // Returns square of the distance from |point| to the closest edge of |this|.
+  // This function returns 0 if |this| contains |point|.
+  LayoutUnit SquaredDistanceTo(const PhysicalOffset& point) const;
+
   bool Contains(const PhysicalRect&) const;
   bool Contains(LayoutUnit px, LayoutUnit py) const {
     return px >= offset.left && px < Right() && py >= offset.top &&
@@ -97,8 +95,8 @@ struct CORE_EXPORT PhysicalRect {
     return Contains(point.left, point.top);
   }
 
-  bool Intersects(const PhysicalRect&) const;
-  bool IntersectsInclusively(const PhysicalRect&) const;
+  WARN_UNUSED_RESULT bool Intersects(const PhysicalRect&) const;
+  WARN_UNUSED_RESULT bool IntersectsInclusively(const PhysicalRect&) const;
 
   // Whether all edges of the rect are at full-pixel boundaries.
   // i.e.: EnclosingIntRect(this)) == this
@@ -160,7 +158,7 @@ struct CORE_EXPORT PhysicalRect {
 
   // TODO(crbug.com/962299): These functions should upgraded to force correct
   // pixel snapping in a type-safe way.
-  IntPoint PixelSnappedOffset() const { return RoundedIntPoint(offset); }
+  gfx::Point PixelSnappedOffset() const { return ToRoundedPoint(offset); }
   int PixelSnappedWidth() const {
     return SnapSizeToPixel(size.width, offset.left);
   }
@@ -185,15 +183,21 @@ struct CORE_EXPORT PhysicalRect {
   LayoutRect ToLayoutFlippedRect(const ComputedStyle&,
                                  const PhysicalSize&) const;
 
+  constexpr explicit operator gfx::RectF() const {
+    return gfx::RectF(offset.left, offset.top, size.width, size.height);
+  }
   constexpr explicit operator FloatRect() const {
     return FloatRect(offset.left, offset.top, size.width, size.height);
   }
 
   static PhysicalRect EnclosingRect(const FloatRect& rect) {
-    PhysicalOffset offset(LayoutUnit::FromFloatFloor(rect.X()),
-                          LayoutUnit::FromFloatFloor(rect.Y()));
-    PhysicalSize size(LayoutUnit::FromFloatCeil(rect.MaxX()) - offset.left,
-                      LayoutUnit::FromFloatCeil(rect.MaxY()) - offset.top);
+    return EnclosingRect(ToGfxRectF(rect));
+  }
+  static PhysicalRect EnclosingRect(const gfx::RectF& rect) {
+    PhysicalOffset offset(LayoutUnit::FromFloatFloor(rect.x()),
+                          LayoutUnit::FromFloatFloor(rect.y()));
+    PhysicalSize size(LayoutUnit::FromFloatCeil(rect.right()) - offset.left,
+                      LayoutUnit::FromFloatCeil(rect.bottom()) - offset.top);
     return PhysicalRect(offset, size);
   }
 
@@ -201,12 +205,17 @@ struct CORE_EXPORT PhysicalRect {
   // prefer performance to accuracy and haven't observed problems caused by the
   // tiny error (< LayoutUnit::Epsilon()).
   static PhysicalRect FastAndLossyFromFloatRect(const FloatRect& rect) {
-    return PhysicalRect(LayoutUnit(rect.X()), LayoutUnit(rect.Y()),
-                        LayoutUnit(rect.Width()), LayoutUnit(rect.Height()));
+    return PhysicalRect(LayoutUnit(rect.x()), LayoutUnit(rect.y()),
+                        LayoutUnit(rect.width()), LayoutUnit(rect.height()));
+  }
+  static PhysicalRect FastAndLossyFromRectF(const gfx::RectF& rect) {
+    return PhysicalRect(LayoutUnit(rect.x()), LayoutUnit(rect.y()),
+                        LayoutUnit(rect.width()), LayoutUnit(rect.height()));
   }
 
   explicit PhysicalRect(const IntRect& r)
-      : offset(r.Location()), size(r.Size()) {}
+      : offset(r.origin()), size(r.size()) {}
+  explicit PhysicalRect(const gfx::Rect& r) : PhysicalRect(IntRect(r)) {}
 
   static IntRect InfiniteIntRect() { return LayoutRect::InfiniteIntRect(); }
 
@@ -228,9 +237,9 @@ inline PhysicalRect Intersection(const PhysicalRect& a, const PhysicalRect& b) {
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 inline IntRect EnclosingIntRect(const PhysicalRect& r) {
-  IntPoint location = FlooredIntPoint(r.offset);
-  IntPoint max_point = CeiledIntPoint(r.MaxXMaxYCorner());
-  return IntRect(location, max_point - location);
+  gfx::Point location = ToFlooredPoint(r.offset);
+  gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());
+  return IntRect(location, IntSize(max_point - location));
 }
 inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
   return {r.PixelSnappedOffset(), r.PixelSnappedSize()};

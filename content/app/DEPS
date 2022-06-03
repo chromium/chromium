@@ -1,6 +1,7 @@
 include_rules = [
   "+components/discardable_memory",
   "+components/download",
+  "+components/tracing/common",
   "+content",
   "+device/bluetooth",
   "+device/gamepad",
@@ -10,7 +11,5 @@ include_rules = [
   "+gin/v8_initializer.h",
   "+services/network/public/cpp/features.h",
   "+services/resource_coordinator/public",
-  "+services/service_manager/embedder",
-  "+services/service_manager/sandbox/sandbox_type.h",
   "+services/tracing/public/cpp",
 ]

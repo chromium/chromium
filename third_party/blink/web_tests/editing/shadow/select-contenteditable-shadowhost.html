@@ -16,7 +16,7 @@
 
 <script>
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = "SHADOW DOM";
 
 var selection = shadowRoot.getSelection();

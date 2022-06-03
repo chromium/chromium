@@ -4,6 +4,7 @@ if (self.importScripts) {
   importScripts('/fetch/resources/thorough-util.js');
 }
 
+var {BASE_URL} = get_thorough_test_options();
 var TEST_TARGETS = [
   // Test mode=same-origin.
   [BASE_URL + 'mode=same-origin&method=GET',

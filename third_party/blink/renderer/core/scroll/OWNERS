@@ -1,0 +1,5 @@
+bokan@chromium.org
+flackr@chromium.org
+
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

@@ -4,24 +4,26 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "content/browser/sms/sms_provider.h"
+#include "content/public/common/content_switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #if defined(OS_ANDROID)
-#include "content/browser/sms/sms_provider_android.h"
+#include "content/browser/sms/sms_provider_gms.h"
 #endif
 
 namespace content {
 
 SmsProvider::SmsProvider() = default;
-
 SmsProvider::~SmsProvider() = default;
 
 // static
 std::unique_ptr<SmsProvider> SmsProvider::Create() {
 #if defined(OS_ANDROID)
-  return std::make_unique<SmsProviderAndroid>();
+  return std::make_unique<SmsProviderGms>();
 #else
   return nullptr;
 #endif
@@ -35,25 +37,62 @@ void SmsProvider::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SmsProvider::NotifyReceive(const std::string& sms) {
-  base::Optional<SmsParser::Result> result = SmsParser::Parse(sms);
-  if (result)
-    NotifyReceive(result->origin, result->one_time_code, sms);
+void SmsProvider::NotifyReceive(const std::string& sms,
+                                UserConsent consent_requirement) {
+  SmsParser::Result result = SmsParser::Parse(sms);
+  if (result.IsValid())
+    NotifyReceive(result.GetOriginList(), result.one_time_code,
+                  consent_requirement);
+  RecordParsingStatus(result.parsing_status);
 }
 
-void SmsProvider::NotifyReceive(const url::Origin& origin,
+void SmsProvider::NotifyReceive(const OriginList& origin_list,
                                 const std::string& one_time_code,
-                                const std::string& sms) {
+                                UserConsent consent_requirement) {
   for (Observer& obs : observers_) {
-    bool handled = obs.OnReceive(origin, one_time_code, sms);
+    bool handled =
+        obs.OnReceive(origin_list, one_time_code, consent_requirement);
     if (handled) {
       break;
     }
   }
 }
 
+void SmsProvider::NotifyReceiveForTesting(const std::string& sms,
+                                          UserConsent requirement) {
+  NotifyReceive(sms, requirement);
+}
+
+void SmsProvider::NotifyFailure(FailureType failure_type) {
+  for (Observer& obs : observers_) {
+    bool handled = obs.OnFailure(failure_type);
+    if (handled)
+      break;
+  }
+}
+
+void SmsProvider::RecordParsingStatus(SmsParsingStatus status) {
+  if (status == SmsParsingStatus::kParsed)
+    return;
+
+  switch (status) {
+    case SmsParsingStatus::kOTPFormatRegexNotMatch:
+      NotifyFailure(FailureType::kSmsNotParsed_OTPFormatRegexNotMatch);
+      break;
+    case SmsParsingStatus::kHostAndPortNotParsed:
+      NotifyFailure(FailureType::kSmsNotParsed_HostAndPortNotParsed);
+      break;
+    case SmsParsingStatus::kGURLNotValid:
+      NotifyFailure(FailureType::kSmsNotParsed_kGURLNotValid);
+      break;
+    case SmsParsingStatus::kParsed:
+      NOTREACHED();
+      break;
+  }
+}
+
 bool SmsProvider::HasObservers() {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 }  // namespace content

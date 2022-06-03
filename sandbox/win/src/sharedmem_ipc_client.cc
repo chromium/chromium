@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/sandbox.h"

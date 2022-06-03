@@ -7,11 +7,11 @@
 
 namespace media {
 
-base::string16 FakeLocalizedStringProvider(MessageId message_id) {
+std::u16string FakeLocalizedStringProvider(MessageId message_id) {
   if (message_id == DEFAULT_AUDIO_DEVICE_NAME)
-    return base::ASCIIToUTF16("Default");
+    return u"Default";
 
-  return base::ASCIIToUTF16("FakeString");
+  return u"FakeString";
 }
 
 void SetUpFakeLocalizedStrings() {

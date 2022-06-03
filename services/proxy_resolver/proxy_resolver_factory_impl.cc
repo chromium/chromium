@@ -26,6 +26,10 @@ class ProxyResolverFactoryImpl::Job {
       ProxyResolverV8TracingFactory* proxy_resolver_factory,
       mojo::PendingReceiver<mojom::ProxyResolver> receiver,
       mojo::PendingRemote<mojom::ProxyResolverFactoryRequestClient> client);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
  private:
@@ -38,8 +42,6 @@ class ProxyResolverFactoryImpl::Job {
   ProxyResolverV8TracingFactory* factory_;
   std::unique_ptr<net::ProxyResolverFactory::Request> request_;
   mojo::Remote<mojom::ProxyResolverFactoryRequestClient> remote_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverFactoryImpl::Job::Job(

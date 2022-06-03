@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Config.h"
 #include "RecordInfo.h"
+
+#include <string>
+
+#include "Config.h"
 #include "clang/Sema/Sema.h"
 
 using namespace clang;
@@ -81,7 +84,7 @@ bool RecordInfo::HasOptionalFinalizer() {
     return false;
   // Heap collections may have a finalizer but it is optional (i.e. may be
   // delayed until FinalizeGarbageCollectedObject() gets called), unless there
-  // is an inline buffer. Vector, Deque, and ListHashSet can have an inline
+  // is an inline buffer. Vector and Deque can have an inline
   // buffer.
   if (name_ != "Vector" && name_ != "Deque" && name_ != "HeapVector" &&
       name_ != "HeapDeque")
@@ -140,8 +143,7 @@ bool RecordInfo::IsGCDirectlyDerived() {
     if (!base)
       continue;
 
-    const std::string& name = base->getName();
-    if (Config::IsGCSimpleBase(name)) {
+    if (Config::IsGCSimpleBase(base->getName())) {
       directly_derived_gc_base_ = &it;
       break;
     }
@@ -160,7 +162,18 @@ CXXRecordDecl* RecordInfo::GetDependentTemplatedDecl(const Type& type) {
   if (!tmpl_decl)
     return 0;
 
-  return dyn_cast_or_null<CXXRecordDecl>(tmpl_decl->getTemplatedDecl());
+  if (CXXRecordDecl* record_decl =
+          dyn_cast_or_null<CXXRecordDecl>(tmpl_decl->getTemplatedDecl()))
+    return record_decl;
+
+  // Type is an alias.
+  TypeAliasDecl* alias_decl =
+      dyn_cast<TypeAliasDecl>(tmpl_decl->getTemplatedDecl());
+  assert(alias_decl);
+  const Type* alias_type = alias_decl->getUnderlyingType().getTypePtr();
+  if (CXXRecordDecl* record_decl = alias_type->getAsCXXRecordDecl())
+    return record_decl;
+  return GetDependentTemplatedDecl(*alias_type);
 }
 
 void RecordInfo::walkBases() {
@@ -184,9 +197,9 @@ void RecordInfo::walkBases() {
       if (!base)
         continue;
 
-      const std::string& name = base->getName();
+      llvm::StringRef name = base->getName();
       if (Config::IsGCBase(name)) {
-        gc_base_names_.push_back(name);
+        gc_base_names_.push_back(std::string(name));
         is_gc_derived_ = true;
       }
     }
@@ -231,9 +244,24 @@ RecordInfo* RecordCache::Lookup(CXXRecordDecl* record) {
               .first->second;
 }
 
+bool RecordInfo::HasTypeAlias(std::string marker_name) const {
+  for (Decl* decl : record_->decls()) {
+    TypeAliasDecl* alias = dyn_cast<TypeAliasDecl>(decl);
+    if (!alias)
+      continue;
+    if (alias->getName() == marker_name)
+      return true;
+  }
+  return false;
+}
+
 bool RecordInfo::IsStackAllocated() {
   if (is_stack_allocated_ == kNotComputed) {
     is_stack_allocated_ = kFalse;
+    if (HasTypeAlias("IsStackAllocatedTypeMarker")) {
+      is_stack_allocated_ = kTrue;
+      return is_stack_allocated_;
+    }
     for (Bases::iterator it = GetBases().begin();
          it != GetBases().end();
          ++it) {
@@ -308,11 +336,17 @@ CXXMethodDecl* RecordInfo::DeclaresNewOperator() {
 bool RecordInfo::RequiresTraceMethod() {
   if (IsStackAllocated())
     return false;
+  if (GetTraceMethod())
+    return true;
   unsigned bases_with_trace = 0;
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.NeedsTracing().IsNeeded())
       ++bases_with_trace;
   }
+  // If a single base has a Trace method, this type can inherit the Trace
+  // method from that base. If more than a single base has a Trace method,
+  // this type needs it's own Trace method which will delegate to each of
+  // the bases' Trace methods.
   if (bases_with_trace > 1)
     return true;
   GetFields();
@@ -576,6 +610,8 @@ bool RecordInfo::NeedsFinalization() {
 
 // A class needs tracing if:
 // - it is allocated on the managed heap,
+// - it has a Trace method (i.e. the plugin assumes such a method was added for
+//                          a reason).
 // - it is derived from a class that needs tracing, or
 // - it contains fields that need tracing.
 //
@@ -585,6 +621,9 @@ TracingStatus RecordInfo::NeedsTracing(Edge::NeedsTracingOption option) {
 
   if (IsStackAllocated())
     return TracingStatus::Unneeded();
+
+  if (GetTraceMethod())
+    return TracingStatus::Needed();
 
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.info()->NeedsTracing(option).IsNeeded())
@@ -626,15 +665,12 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
       cache_->Lookup(elaboratedType->getQualifier()->getAsType());
 
   bool on_heap = false;
-  bool is_unsafe = false;
   // Silently handle unknown types; the on-heap collection types will
   // have to be in scope for the declaration to compile, though.
   if (info) {
-    is_unsafe = Config::IsGCCollectionWithUnsafeIterator(info->name());
-    // Don't mark iterator as being on the heap if it is not supported.
-    on_heap = !is_unsafe && Config::IsGCCollection(info->name());
+    on_heap = Config::IsGCCollection(info->name());
   }
-  return new Iterator(info, on_heap, is_unsafe);
+  return new Iterator(info, on_heap);
 }
 
 Edge* RecordInfo::CreateEdge(const Type* type) {
@@ -657,9 +693,10 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
 
   TemplateArgs args;
 
-  if (Config::IsRefPtr(info->name()) && info->GetTemplateArgs(1, &args)) {
+  if (Config::IsRefOrWeakPtr(info->name()) && info->GetTemplateArgs(1, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
-      return new RefPtr(ptr);
+      return new RefPtr(
+          ptr, Config::IsRefPtr(info->name()) ? Edge::kStrong : Edge::kWeak);
     return 0;
   }
 
@@ -675,28 +712,32 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return 0;
   }
 
-  if (Config::IsMember(info->name()) && info->GetTemplateArgs(1, &args)) {
-    if (Edge* ptr = CreateEdge(args[0]))
+  // Find top-level namespace.
+  NamespaceDecl* ns = dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
+  if (ns) {
+    while (NamespaceDecl* outer_ns =
+               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
+      ns = outer_ns;
+    }
+  }
+  auto ns_name = ns ? ns->getName() : "";
+
+  if (Config::IsMember(info->name(), ns_name, info, &args)) {
+    if (Edge* ptr = CreateEdge(args[0])) {
       return new Member(ptr);
+    }
     return 0;
   }
 
-  if (Config::IsWeakMember(info->name()) && info->GetTemplateArgs(1, &args)) {
+  if (Config::IsWeakMember(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new WeakMember(ptr);
     return 0;
   }
 
-  bool is_persistent = Config::IsPersistent(info->name());
-  if (is_persistent || Config::IsCrossThreadPersistent(info->name())) {
-    // Persistent might refer to v8::Persistent, so check the name space.
-    // TODO: Consider using a more canonical identification than names.
-    NamespaceDecl* ns =
-        dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
-    if (!ns || ns->getName() != "blink")
-      return 0;
-    if (!info->GetTemplateArgs(1, &args))
-      return 0;
+  bool is_persistent = Config::IsPersistent(info->name(), ns_name, info, &args);
+  if (is_persistent ||
+      Config::IsCrossThreadPersistent(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0])) {
       if (is_persistent)
         return new Persistent(ptr);
@@ -723,8 +764,7 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return edge;
   }
 
-  if (Config::IsTraceWrapperV8Reference(info->name()) &&
-      info->GetTemplateArgs(1, &args)) {
+  if (Config::IsTraceWrapperV8Reference(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new TraceWrapperV8Reference(ptr);
     return 0;

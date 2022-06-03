@@ -6,9 +6,7 @@
 #define CONTENT_PUBLIC_TEST_UNITTEST_TEST_SUITE_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -28,6 +26,10 @@ class UnitTestTestSuite {
  public:
   // Takes ownership of |test_suite|.
   explicit UnitTestTestSuite(base::TestSuite* test_suite);
+
+  UnitTestTestSuite(const UnitTestTestSuite&) = delete;
+  UnitTestTestSuite& operator=(const UnitTestTestSuite&) = delete;
+
   ~UnitTestTestSuite();
 
   int Run();
@@ -38,8 +40,6 @@ class UnitTestTestSuite {
   std::unique_ptr<TestBlinkWebUnitTestSupport> blink_test_support_;
 
   std::unique_ptr<TestHostResolver> test_host_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnitTestTestSuite);
 };
 
 }  // namespace content

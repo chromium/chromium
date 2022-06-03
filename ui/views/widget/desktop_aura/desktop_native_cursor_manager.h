@@ -9,16 +9,13 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "ui/base/cursor/cursor_loader.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/views/views_export.h"
 #include "ui/wm/core/native_cursor_manager.h"
 
 namespace aura {
 class WindowTreeHost;
-}
-
-namespace ui {
-class CursorLoader;
 }
 
 namespace wm {
@@ -30,15 +27,15 @@ namespace views {
 // A NativeCursorManager that performs the desktop-specific setting of cursor
 // state. Similar to NativeCursorManagerAsh, it also communicates these changes
 // to all root windows.
-class VIEWS_EXPORT DesktopNativeCursorManager
-    : public wm::NativeCursorManager {
+class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
  public:
   DesktopNativeCursorManager();
-  ~DesktopNativeCursorManager() override;
 
-  // Builds a cursor and sets the internal platform representation. The return
-  // value should not be cached.
-  gfx::NativeCursor GetInitializedCursor(ui::CursorType type);
+  DesktopNativeCursorManager(const DesktopNativeCursorManager&) = delete;
+  DesktopNativeCursorManager& operator=(const DesktopNativeCursorManager&) =
+      delete;
+
+  ~DesktopNativeCursorManager() override;
 
   // Adds |host| to the set |hosts_|.
   void AddHost(aura::WindowTreeHost* host);
@@ -64,9 +61,7 @@ class VIEWS_EXPORT DesktopNativeCursorManager
   using Hosts = std::set<aura::WindowTreeHost*>;
   Hosts hosts_;
 
-  std::unique_ptr<ui::CursorLoader> cursor_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNativeCursorManager);
+  ui::CursorLoader cursor_loader_;
 };
 
 }  // namespace views

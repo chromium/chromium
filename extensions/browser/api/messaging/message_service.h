@@ -65,6 +65,10 @@ class MessageService : public BrowserContextKeyedAPI,
   struct MessageChannel;
 
   explicit MessageService(content::BrowserContext* context);
+
+  MessageService(const MessageService&) = delete;
+  MessageService& operator=(const MessageService&) = delete;
+
   ~MessageService() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -116,6 +120,9 @@ class MessageService : public BrowserContextKeyedAPI,
                  int process_id,
                  const PortContext& port_context,
                  bool force_close);
+
+  // Returns the number of open channels for test.
+  size_t GetChannelCountForTest() { return channels_.size(); }
 
   base::WeakPtr<MessagePort::ChannelDelegate> GetChannelDelegate() {
     return weak_factory_.GetWeakPtr();
@@ -249,8 +256,6 @@ class MessageService : public BrowserContextKeyedAPI,
   PendingLazyContextChannelMap pending_lazy_context_channels_;
 
   base::WeakPtrFactory<MessageService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageService);
 };
 
 }  // namespace extensions

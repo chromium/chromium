@@ -5,7 +5,6 @@
 package org.chromium.ui.shadows;
 
 import android.content.Context;
-import android.support.v4.view.AsyncLayoutInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;

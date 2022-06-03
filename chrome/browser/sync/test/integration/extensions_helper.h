@@ -92,6 +92,10 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
                                public content::NotificationObserver {
  public:
   ExtensionsMatchChecker();
+
+  ExtensionsMatchChecker(const ExtensionsMatchChecker&) = delete;
+  ExtensionsMatchChecker& operator=(const ExtensionsMatchChecker&) = delete;
+
   ~ExtensionsMatchChecker() override;
 
   // StatusChangeChecker implementation.
@@ -120,8 +124,6 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
   std::vector<std::unique_ptr<SyncedExtensionInstaller>>
       synced_extension_installers_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMatchChecker);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_EXTENSIONS_HELPER_H_

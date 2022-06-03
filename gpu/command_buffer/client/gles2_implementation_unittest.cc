@@ -18,7 +18,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
@@ -621,8 +621,6 @@ void GLES3ImplementationTest::SetUp() {
   ASSERT_TRUE(Initialize(init_options));
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const uint8_t GLES2ImplementationTest::kInitialValue;
 const int32_t GLES2ImplementationTest::kNumCommandEntries;
 const int32_t GLES2ImplementationTest::kCommandBufferSizeBytes;
@@ -649,7 +647,6 @@ const GLuint GLES2ImplementationTest::kTexturesStartId;
 const GLuint GLES2ImplementationTest::kTransformFeedbacksStartId;
 const GLuint GLES2ImplementationTest::kQueriesStartId;
 const GLuint GLES2ImplementationTest::kVertexArraysStartId;
-#endif
 
 TEST_F(GLES2ImplementationTest, Basic) {
   EXPECT_TRUE(gl_->share_group());

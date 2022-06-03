@@ -7,4 +7,4 @@
 
 #include <string.h>
 
-#endif
+#endif  // LIBRARIES_NACL_IO_INCLUDE_MEMORY_H_

@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_message_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
@@ -46,25 +46,46 @@ static inline bool IsValidSource(EventTarget* source) {
          IsA<HTMLPortalElement>(source->ToNode());
 }
 
-MessageEvent::V8GCAwareString::V8GCAwareString(const String& value)
-    : string_(value) {
-  const int64_t size = string_.length();
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(size);
+size_t MessageEvent::SizeOfExternalMemoryInBytes() {
+  switch (data_type_) {
+    case kDataTypeNull:
+      return 0;
+    case kDataTypeScriptValue:
+      // This is not external memory.
+      return 0;
+    case kDataTypeSerializedScriptValue: {
+      size_t result = 0;
+      for (auto const& array_buffer :
+           data_as_serialized_script_value_->ArrayBuffers()) {
+        result += array_buffer->ByteLength();
+      }
+
+      return result;
+    }
+    case kDataTypeString:
+      return data_as_string_.length();
+    case kDataTypeBlob:
+      return static_cast<size_t>(data_as_blob_->size());
+    case kDataTypeArrayBuffer:
+      return data_as_array_buffer_->ByteLength();
+  }
 }
 
-MessageEvent::V8GCAwareString::~V8GCAwareString() {
-  const int64_t size = string_.length();
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-size);
+void MessageEvent::RegisterAmountOfExternallyAllocatedMemory() {
+  CHECK_EQ(amount_of_external_memory_, 0u);
+  size_t size = SizeOfExternalMemoryInBytes();
+
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      static_cast<int64_t>(size));
+  amount_of_external_memory_ = size;
 }
 
-MessageEvent::V8GCAwareString& MessageEvent::V8GCAwareString::operator=(
-    const String& other) {
-  const int64_t old_size = string_.length();
-  const int64_t new_size = other.length();
-  string_ = other;
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(new_size -
-                                                                   old_size);
-  return *this;
+void MessageEvent::UnregisterAmountOfExternallyAllocatedMemory() {
+  if (amount_of_external_memory_ > 0) {
+    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+        -static_cast<int64_t>(amount_of_external_memory_));
+    amount_of_external_memory_ = 0;
+  }
 }
 
 MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {}
@@ -74,9 +95,19 @@ MessageEvent::MessageEvent(const AtomicString& type,
     : Event(type, initializer),
       data_type_(kDataTypeScriptValue),
       source_(nullptr) {
+  // TODO(crbug.com/1070964): Remove this existence check.  There is a bug that
+  // the current code generator does not initialize a ScriptValue with the
+  // v8::Null value despite that the dictionary member has the default value of
+  // IDL null.  |hasData| guard is necessary here.
   if (initializer->hasData()) {
-    data_as_v8_value_.Set(initializer->data().GetIsolate(),
-                          initializer->data().V8Value());
+    v8::Local<v8::Value> data = initializer->data().V8Value();
+    // TODO(crbug.com/1070871): Remove the following IsNullOrUndefined() check.
+    // This null/undefined check fills the gap between the new and old bindings
+    // code.  The new behavior is preferred in a long term, and we'll switch to
+    // the new behavior once the migration to the new bindings gets settled.
+    if (!data->IsNullOrUndefined()) {
+      data_as_v8_value_.Set(initializer->data().GetIsolate(), data);
+    }
   }
   if (initializer->hasOrigin())
     origin_ = initializer->origin();
@@ -120,6 +151,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       ports_(ports),
       user_activation_(user_activation) {
   DCHECK(IsValidSource(source_.Get()));
+  RegisterAmountOfExternallyAllocatedMemory();
 }
 
 MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
@@ -128,8 +160,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
                            EventTarget* source,
                            Vector<MessagePortChannel> channels,
                            UserActivation* user_activation,
-                           bool transfer_user_activation,
-                           bool allow_autoplay)
+                           bool delegate_payment_request)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
       data_as_serialized_script_value_(
@@ -139,9 +170,9 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       source_(source),
       channels_(std::move(channels)),
       user_activation_(user_activation),
-      transfer_user_activation_(transfer_user_activation),
-      allow_autoplay_(allow_autoplay) {
+      delegate_payment_request_(delegate_payment_request) {
   DCHECK(IsValidSource(source_.Get()));
+  RegisterAmountOfExternallyAllocatedMemory();
 }
 
 MessageEvent::MessageEvent(const String& origin, EventTarget* source)
@@ -156,21 +187,29 @@ MessageEvent::MessageEvent(const String& data, const String& origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeString),
       data_as_string_(data),
-      origin_(origin) {}
+      origin_(origin) {
+  RegisterAmountOfExternallyAllocatedMemory();
+}
 
 MessageEvent::MessageEvent(Blob* data, const String& origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeBlob),
       data_as_blob_(data),
-      origin_(origin) {}
+      origin_(origin) {
+  RegisterAmountOfExternallyAllocatedMemory();
+}
 
 MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeArrayBuffer),
       data_as_array_buffer_(data),
-      origin_(origin) {}
+      origin_(origin) {
+  RegisterAmountOfExternallyAllocatedMemory();
+}
 
-MessageEvent::~MessageEvent() = default;
+MessageEvent::~MessageEvent() {
+  UnregisterAmountOfExternallyAllocatedMemory();
+}
 
 MessageEvent* MessageEvent::Create(const AtomicString& type,
                                    const MessageEventInit* initializer,
@@ -220,8 +259,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
                                     EventTarget* source,
                                     MessagePortArray* ports,
                                     UserActivation* user_activation,
-                                    bool transfer_user_activation,
-                                    bool allow_autoplay) {
+                                    bool delegate_payment_request) {
   if (IsBeingDispatched())
     return;
 
@@ -237,8 +275,8 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   ports_ = ports;
   is_ports_dirty_ = true;
   user_activation_ = user_activation;
-  transfer_user_activation_ = transfer_user_activation;
-  allow_autoplay_ = allow_autoplay;
+  delegate_payment_request_ = delegate_payment_request;
+  RegisterAmountOfExternallyAllocatedMemory();
 }
 
 void MessageEvent::initMessageEvent(const AtomicString& type,
@@ -262,6 +300,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   source_ = source;
   ports_ = ports;
   is_ports_dirty_ = true;
+  RegisterAmountOfExternallyAllocatedMemory();
 }
 
 ScriptValue MessageEvent::data(ScriptState* script_state) {
@@ -283,6 +322,10 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
 
     case MessageEvent::kDataTypeSerializedScriptValue:
       if (data_as_serialized_script_value_) {
+        // The data is put on the V8 GC heap here, and therefore the V8 GC does
+        // the accounting from here on. We unregister the registered memory to
+        // avoid double accounting.
+        UnregisterAmountOfExternallyAllocatedMemory();
         MessagePortArray message_ports = ports();
         SerializedScriptValue::DeserializeOptions options;
         options.message_ports = &message_ports;
@@ -293,7 +336,7 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeString:
-      value = V8String(isolate, data_as_string_.data());
+      value = V8String(isolate, data_as_string_);
       break;
 
     case MessageEvent::kDataTypeBlob:
@@ -329,6 +372,8 @@ bool MessageEvent::IsOriginCheckRequiredToAccessData() const {
 }
 
 bool MessageEvent::IsLockedToAgentCluster() const {
+  if (locked_to_agent_cluster_)
+    return true;
   if (data_type_ != kDataTypeSerializedScriptValue) {
     return false;
   }
@@ -340,7 +385,7 @@ void MessageEvent::EntangleMessagePorts(ExecutionContext* context) {
   is_ports_dirty_ = true;
 }
 
-void MessageEvent::Trace(blink::Visitor* visitor) {
+void MessageEvent::Trace(Visitor* visitor) const {
   visitor->Trace(data_as_v8_value_);
   visitor->Trace(data_as_serialized_script_value_);
   visitor->Trace(data_as_blob_);
@@ -349,6 +394,10 @@ void MessageEvent::Trace(blink::Visitor* visitor) {
   visitor->Trace(ports_);
   visitor->Trace(user_activation_);
   Event::Trace(visitor);
+}
+
+void MessageEvent::LockToAgentCluster() {
+  locked_to_agent_cluster_ = true;
 }
 
 v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
@@ -369,7 +418,7 @@ v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
     case kDataTypeString:
       V8PrivateProperty::GetSymbol(isolate,
                                    kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, V8String(isolate, data_as_string_.data()));
+          .Set(wrapper, V8String(isolate, data_as_string_));
       break;
     case kDataTypeBlob:
       break;

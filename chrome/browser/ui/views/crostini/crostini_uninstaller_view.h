@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_
 
+#include "base/callback_helpers.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -22,6 +24,8 @@ class Profile;
 // uninstalls Crostinin if the user chooses to do so.
 class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CrostiniUninstallerView);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class UninstallResult {
@@ -31,17 +35,19 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
     kCount
   };
 
+  CrostiniUninstallerView(const CrostiniUninstallerView&) = delete;
+  CrostiniUninstallerView& operator=(const CrostiniUninstallerView&) = delete;
+
   static void Show(Profile* profile);
 
   // views::DialogDelegateView:
-  int GetDialogButtons() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   static CrostiniUninstallerView* GetActiveViewForTesting();
+  void set_destructor_callback_for_testing(base::OnceClosure callback) {
+    destructor_callback_for_testing_.ReplaceClosure(std::move(callback));
+  }
 
  private:
   enum class State {
@@ -53,7 +59,7 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   explicit CrostiniUninstallerView(Profile* profile);
   ~CrostiniUninstallerView() override;
 
-  void HandleError(const base::string16& error_message);
+  void HandleError(const std::u16string& error_message);
   void UninstallCrostiniFinished(crostini::CrostiniResult result);
   void RecordUninstallResultHistogram(UninstallResult result);
 
@@ -64,9 +70,9 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   bool has_logged_result_ = false;
   Profile* profile_;
 
-  base::WeakPtrFactory<CrostiniUninstallerView> weak_ptr_factory_{this};
+  base::ScopedClosureRunner destructor_callback_for_testing_;
 
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstallerView);
+  base::WeakPtrFactory<CrostiniUninstallerView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_

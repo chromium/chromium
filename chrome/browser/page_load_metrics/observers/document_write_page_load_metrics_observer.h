@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace internal {
@@ -22,6 +21,11 @@ class DocumentWritePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   DocumentWritePageLoadMetricsObserver() = default;
+
+  DocumentWritePageLoadMetricsObserver(
+      const DocumentWritePageLoadMetricsObserver&) = delete;
+  DocumentWritePageLoadMetricsObserver& operator=(
+      const DocumentWritePageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
   void OnFirstContentfulPaintInPage(
@@ -59,8 +63,6 @@ class DocumentWritePageLoadMetricsObserver
   bool doc_write_same_site_diff_scheme_ = false;
   bool doc_write_block_observed_ = false;
   bool doc_write_block_reload_observed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentWritePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -1,0 +1,13 @@
+<histogram-configuration>
+
+<histogram_suffixes_list>
+
+<histogram_suffixes name="Test.EnumHistogramSuffixes" separator="."
+    ordering="prefix,2">
+  <suffix name="TestEnumSuffix" label="The enum histogram_suffixes"/>
+  <affected-histogram name="Test.EnumHistogram"/>
+</histogram_suffixes>
+
+</histogram_suffixes_list>
+
+</histogram-configuration>

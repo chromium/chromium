@@ -45,29 +45,29 @@ TEST(PostRebootRegistrationTests, RegisterRunOnceOnRestart) {
   command_line.SetProgram(exe_path);
 
   std::string switch_str(kPostRebootSwitchesInOtherRegistryKeySwitch);
-  EXPECT_TRUE(RunOnceCommandLineContains(
-      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToUTF16(switch_str).c_str()));
-  EXPECT_TRUE(RunOnceCommandLineContains(
-      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToUTF16(cleanup_id).c_str()));
+  EXPECT_TRUE(RunOnceCommandLineContains(TEST_PRODUCT_SHORTNAME_STRING,
+                                         base::UTF8ToWide(switch_str).c_str()));
+  EXPECT_TRUE(RunOnceCommandLineContains(TEST_PRODUCT_SHORTNAME_STRING,
+                                         base::UTF8ToWide(cleanup_id).c_str()));
   EXPECT_FALSE(RunOnceCommandLineContains(TEST_PRODUCT_SHORTNAME_STRING,
-                                          base::UTF8ToUTF16(kSwitch1).c_str()));
+                                          base::UTF8ToWide(kSwitch1).c_str()));
   EXPECT_FALSE(RunOnceCommandLineContains(TEST_PRODUCT_SHORTNAME_STRING,
-                                          base::UTF8ToUTF16(kSwitch2).c_str()));
+                                          base::UTF8ToWide(kSwitch2).c_str()));
   EXPECT_TRUE(RunOnceOverrideCommandLineContains(
-      cleanup_id, base::UTF8ToUTF16(kSwitch1).c_str()));
+      cleanup_id, base::UTF8ToWide(kSwitch1).c_str()));
   EXPECT_TRUE(RunOnceOverrideCommandLineContains(
-      cleanup_id, base::UTF8ToUTF16(kSwitch2).c_str()));
+      cleanup_id, base::UTF8ToWide(kSwitch2).c_str()));
 
   // And then test that the function to delete the RunOnce entry also works.
   post_reboot.UnregisterRunOnceOnRestart();
   EXPECT_FALSE(RunOnceCommandLineContains(
-      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToUTF16(cleanup_id).c_str()));
+      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToWide(cleanup_id).c_str()));
 
   // Attempt to unregister RunOnce again to make sure that nothing weird happens
   // if the key doesn't exist.
   post_reboot.UnregisterRunOnceOnRestart();
   EXPECT_FALSE(RunOnceCommandLineContains(
-      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToUTF16(cleanup_id).c_str()));
+      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToWide(cleanup_id).c_str()));
 }
 
 TEST(PostRebootRegistrationTests, ReadRunOncePostRebootCommandLine) {
@@ -99,7 +99,7 @@ TEST(PostRebootRegistrationTests, ReadRunOncePostRebootCommandLine) {
   EXPECT_FALSE(
       post_reboot.ReadRunOncePostRebootCommandLine(cleanup_id, &tmp_cmd));
   EXPECT_FALSE(RunOnceOverrideCommandLineContains(
-      cleanup_id, base::UTF8ToUTF16(kSwitch1).c_str()));
+      cleanup_id, base::UTF8ToWide(kSwitch1).c_str()));
 
   // Check that command lines that are too long will not be registered.
   constexpr int max_command_line_length = 260;

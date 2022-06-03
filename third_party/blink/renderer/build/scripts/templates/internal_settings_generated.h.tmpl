@@ -27,7 +27,7 @@ class InternalSettingsGenerated : public ScriptWrappable {
   void set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name}});
   {% endfor %}
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Page> page_;

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,8 +26,11 @@ namespace {
 // This method and its dependencies must remain constant time, thus not branch
 // based on the value of |buffer| while encoding, assuming a known length.
 String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
-  String value = WTF::Base64URLEncode(static_cast<const char*>(buffer->Data()),
-                                      buffer->DeprecatedByteLengthAsUnsigned());
+  String value = WTF::Base64URLEncode(
+      static_cast<const char*>(buffer->Data()),
+      // The size of {buffer} should always fit into into {wtf_size_t}, because
+      // the buffer content itself origins from a WTF::Vector.
+      base::checked_cast<wtf_size_t>(buffer->ByteLength()));
   DCHECK_GT(value.length(), 0u);
 
   unsigned padding_to_remove = 0;
@@ -46,6 +48,19 @@ String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
   return value;
 }
 
+// Converts a {absl::optional<base::Time>} into a
+// {absl::optional<base::DOMTimeStamp>} object.
+// base::Time is in milliseconds from Windows epoch (1601-01-01 00:00:00 UTC)
+// while blink::DOMTimeStamp is in milliseconds from UNIX epoch (1970-01-01
+// 00:00:00 UTC)
+absl::optional<blink::DOMTimeStamp> ToDOMTimeStamp(
+    const absl::optional<base::Time>& time) {
+  if (time)
+    return ConvertSecondsToDOMTimeStamp(time->ToDoubleT());
+
+  return absl::nullopt;
+}
+
 }  // namespace
 
 // static
@@ -55,7 +70,8 @@ PushSubscription* PushSubscription::Create(
   return MakeGarbageCollected<PushSubscription>(
       subscription->endpoint, subscription->options->user_visible_only,
       subscription->options->application_server_key, subscription->p256dh,
-      subscription->auth, service_worker_registration);
+      subscription->auth, ToDOMTimeStamp(subscription->expirationTime),
+      service_worker_registration);
 }
 
 PushSubscription::PushSubscription(
@@ -64,6 +80,7 @@ PushSubscription::PushSubscription(
     const WTF::Vector<uint8_t>& application_server_key,
     const WTF::Vector<unsigned char>& p256dh,
     const WTF::Vector<unsigned char>& auth,
+    const absl::optional<DOMTimeStamp>& expiration_time,
     ServiceWorkerRegistration* service_worker_registration)
     : endpoint_(endpoint),
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
@@ -73,17 +90,16 @@ PushSubscription::PushSubscription(
                                      SafeCast<unsigned>(p256dh.size()))),
       auth_(
           DOMArrayBuffer::Create(auth.data(), SafeCast<unsigned>(auth.size()))),
+      expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 
 PushSubscription::~PushSubscription() = default;
 
-DOMTimeStamp PushSubscription::expirationTime(bool& out_is_null) const {
+absl::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
   // This attribute reflects the time at which the subscription will expire,
   // which is not relevant to this implementation yet as subscription refreshes
   // are not supported.
-  out_is_null = true;
-
-  return 0;
+  return expiration_time_;
 }
 
 DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
@@ -112,7 +128,12 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
 
   V8ObjectBuilder result(script_state);
   result.AddString("endpoint", endpoint());
-  result.AddNull("expirationTime");
+
+  if (expiration_time_) {
+    result.AddNumber("expirationTime", *expiration_time_);
+  } else {
+    result.AddNull("expirationTime");
+  }
 
   V8ObjectBuilder keys(script_state);
   keys.Add("p256dh", ToBase64URLWithoutPadding(p256dh_));
@@ -123,7 +144,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
   return result.GetScriptValue();
 }
 
-void PushSubscription::Trace(blink::Visitor* visitor) {
+void PushSubscription::Trace(Visitor* visitor) const {
   visitor->Trace(options_);
   visitor->Trace(p256dh_);
   visitor->Trace(auth_);

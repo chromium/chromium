@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webcrypto/#JsonWebKey-dictionary
+
+dictionary JsonWebKey {
+  DOMString kty;
+  DOMString use;
+  sequence<DOMString> key_ops;
+  DOMString alg;
+
+  boolean ext;
+
+  DOMString crv;
+  DOMString x;
+  DOMString y;
+  DOMString d;
+  DOMString n;
+  DOMString e;
+  DOMString p;
+  DOMString q;
+  DOMString dp;
+  DOMString dq;
+  DOMString qi;
+  sequence<RsaOtherPrimesInfo> oth;
+  DOMString k;
+};

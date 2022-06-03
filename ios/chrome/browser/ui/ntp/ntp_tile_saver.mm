@@ -6,15 +6,17 @@
 
 #include "base/bind.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
-#import "ios/chrome/common/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -127,9 +129,8 @@ void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
   }
   UpdateTileList(most_visited_data);
 
-  base::PostTaskAndReply(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ClearOutdatedIcons, most_visited_data,
                      favicons_directory),
       base::BindOnce(
@@ -208,10 +209,9 @@ void UpdateSingleFavicon(const GURL& site_url,
             [imageData writeToURL:fileURL atomically:YES];
           });
 
-          base::PostTask(FROM_HERE,
-                         {base::ThreadPool(), base::MayBlock(),
-                          base::TaskPriority::BEST_EFFORT},
-                         std::move(writeImage));
+          base::ThreadPool::PostTask(
+              FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+              std::move(writeImage));
         } else {
           NSDictionary* tiles = ReadSavedMostVisited();
           NTPTile* tile = [tiles objectForKey:siteNSURL];
@@ -234,10 +234,9 @@ void UpdateSingleFavicon(const GURL& site_url,
             [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
           });
 
-          base::PostTask(FROM_HERE,
-                         {base::ThreadPool(), base::MayBlock(),
-                          base::TaskPriority::BEST_EFFORT},
-                         std::move(removeImage));
+          base::ThreadPool::PostTask(
+              FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+              std::move(removeImage));
         }
       };
 

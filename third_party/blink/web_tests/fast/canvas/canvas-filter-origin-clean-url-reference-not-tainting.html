@@ -1,0 +1,41 @@
+<!doctype html>
+<title>CSS url() reference filters may taint the canvas: not tainting</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg style="display: block; width: 0; height: 0">
+  <defs>
+    <filter id="merge-clean">
+      <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1" />
+      <feMerge>
+        <feMergeNode></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+        <feMergeNode in="SourceAlpha"></feMergeNode>
+        <feMergeNode in="FillPaint"></feMergeNode>
+        <feMergeNode in="StrokePaint"></feMergeNode>
+      </feMerge>
+    </filter>
+    <circle id="circle" r="100" fill="blue" />
+  </defs>
+</svg>
+<script>
+function assert_not_tainted(performCommands, description) {
+  let ctx = document.createElement('canvas').getContext('2d');
+  performCommands(ctx);
+  assert_not_equals(ctx.getImageData(0, 0, 1, 1), null, description);
+}
+
+// SVG reference filters taint the canvas according to
+// https://drafts.fxtf.org/filter-effects/#tainted-filter-primitives
+
+test(function() {
+  assert_not_tainted(ctx => {
+    ctx.filter = 'url(#merge-clean)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'url(#merge-clean)');
+
+  assert_not_tainted(ctx => {
+    ctx.filter = 'blur(5px) url(#merge-clean) blur(5px)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'blur(5px) url(#merge-clean) blur(5px)');
+});
+</script>

@@ -12,10 +12,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -30,12 +28,9 @@ class ExternalProcessImporterHost;
 struct ImportedBookmarkEntry;
 class InProcessImporterBridge;
 
-namespace autofill {
-struct PasswordForm;
-}
-
 namespace importer {
 struct ImporterAutofillFormDataEntry;
+struct ImportedPasswordForm;
 struct SearchEngineInfo;
 }
 
@@ -51,6 +46,10 @@ class ExternalProcessImporterClient
       const importer::SourceProfile& source_profile,
       uint16_t items,
       InProcessImporterBridge* bridge);
+
+  ExternalProcessImporterClient(const ExternalProcessImporterClient&) = delete;
+  ExternalProcessImporterClient& operator=(
+      const ExternalProcessImporterClient&) = delete;
 
   // Launches the task to start the external process.
   void Start();
@@ -68,19 +67,18 @@ class ExternalProcessImporterClient
       const std::vector<ImporterURLRow>& history_rows_group,
       int visit_source) override;
   void OnHomePageImportReady(const GURL& home_page) override;
-  void OnBookmarksImportStart(const base::string16& first_folder_name,
+  void OnBookmarksImportStart(const std::u16string& first_folder_name,
                               uint32_t total_bookmarks_count) override;
   void OnBookmarksImportGroup(
       const std::vector<ImportedBookmarkEntry>& bookmarks_group) override;
   void OnFaviconsImportStart(uint32_t total_favicons_count) override;
   void OnFaviconsImportGroup(
       const favicon_base::FaviconUsageDataList& favicons_group) override;
-  void OnPasswordFormImportReady(const autofill::PasswordForm& form) override;
+  void OnPasswordFormImportReady(
+      const importer::ImportedPasswordForm& form) override;
   void OnKeywordsImportReady(
       const std::vector<importer::SearchEngineInfo>& search_engines,
       bool unique_on_host_and_path) override;
-  void OnFirefoxSearchEngineDataReceived(
-      const std::vector<std::string>& search_engine_data) override;
   void OnAutofillFormDataImportStart(
       uint32_t total_autofill_form_data_entry_count) override;
   void OnAutofillFormDataImportGroup(
@@ -113,7 +111,7 @@ class ExternalProcessImporterClient
 
   // Usually some variation on IDS_BOOKMARK_GROUP_...; the name of the folder
   // under which imported bookmarks will be placed.
-  base::string16 bookmarks_first_folder_name_;
+  std::u16string bookmarks_first_folder_name_;
 
   // Total number of bookmarks to import.
   size_t total_bookmarks_count_;
@@ -151,8 +149,6 @@ class ExternalProcessImporterClient
 
   // Used to receive progress updates from the importer.
   mojo::Receiver<chrome::mojom::ProfileImportObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterClient);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_EXTERNAL_PROCESS_IMPORTER_CLIENT_H_

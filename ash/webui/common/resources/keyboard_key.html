@@ -1,0 +1,98 @@
+<style>
+  :root {
+    --background-color-pressed: hsl(214deg 82% 51%);
+    --background-color-unpressed: hsl(218deg 92% 95%);
+    --border-color: hsl(214deg 82% 51%);
+    --border-radius:
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-bottom-right-radius, 3px)
+        3px;
+    --glyph-alignment: var(--keyboard-key-glyph-alignment, center);
+    --travel: var(--keyboard-key-travel, 3px);
+    --foreground-color-unpressed: hsl(214deg 82% 51%);
+    --foreground-color-pressed: hsl(213deg 23% 91%);
+  }
+
+  :host {
+    position: relative;
+  }
+
+  #foreground {
+    align-items: center;
+    background-color: var(--background-color-unpressed);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    border-top-width: var(--keyboard-key-border-top-width, 1px);
+    bottom: var(--travel);
+    color: var(--foreground-color-unpressed);
+    display: flex;
+    font-family: sans-serif;
+    justify-content: var(--glyph-alignment);
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: all 150ms ease-in-out;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-unpressed);
+    --iron-icon-height: 100%;
+    --iron-icon-width: 100%;
+  }
+
+  #text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #text:not(:empty) {
+    padding: 0 5px;
+  }
+
+  /*
+   * TODO(crbug.com/1207678): Apply this styling when the key is pressed,
+   * instead of on hover.
+   */
+  :host(:hover) #foreground {
+    background-color: var(--background-color-pressed);
+    bottom: 0;
+    color: var(--foreground-color-pressed);
+    top: var(--travel);
+  }
+
+  :host(:hover) iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-pressed);
+  }
+
+  #background {
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: var(--travel);
+  }
+
+  :host(.disabled) #foreground {
+    background-color: var(--google-grey-200);
+    border-color: var(--google-grey-700);
+    color: var(--google-grey-600);
+  }
+
+  :host(.disabled) #background {
+    background-color: hsl(0deg 0% 59%);
+  }
+</style>
+<div id="background"></div>
+<div id="foreground">
+  <template is="dom-if" if="[[icon]]">
+    <iron-icon icon="[[icon]]"></iron-icon>
+  </template>
+  <template is="dom-if" if="[[mainGlyph]]">
+    <span id="text">[[mainGlyph]]</span>
+  </template>
+</div>

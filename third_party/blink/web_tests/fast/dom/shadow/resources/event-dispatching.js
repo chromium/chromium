@@ -46,15 +46,6 @@ function dragMouse(node)
     eventSender.mouseMoveTo(x, y);
 }
 
-function scrollMouseWheel(node)
-{
-    var rect = node.getBoundingClientRect();
-    var x = rect.left + 5;
-    var y = rect.top + defaultPaddingSize + 5;
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseScrollBy(0, 120);
-}
-
 var eventRecords = {};
 
 function clearEventRecords()

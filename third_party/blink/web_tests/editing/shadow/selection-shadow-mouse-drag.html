@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <style>* { font-family: monospace; }</style>
-<div id="host">[<span id="one">One</span> <span id="two">Two</span>]</div>
+<div id="host">[<span id="one" slot="one">One</span> <span id="two" slot="two">Two</span>]</div>
 <script>
 function doDrag(start, end) {
     if (!window.eventSender)
@@ -11,8 +11,8 @@ function doDrag(start, end) {
     eventSender.mouseUp();
 }
 var host = document.querySelector('#host');
-var shadowRoot = host.createShadowRoot();
-shadowRoot.innerHTML = '[<content select="#two"></content> <content select="#one"></content>]';
+var shadowRoot = host.attachShadow({mode: 'open'});
+shadowRoot.innerHTML = '[<slot name="two"></slot> <slot name="one"></slot>]';
 var one = document.querySelector('#one');
 var two = document.querySelector('#two');
 doDrag(two, one);

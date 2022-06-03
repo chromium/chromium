@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<script>	
+<script>
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 }
 
@@ -16,23 +16,23 @@ function zoomPage()
 {
     var el = document.getElementById('test');
 
-    if (window.eventSender) {
-	var count=0;
-	while(count <10) {
-	    eventSender.zoomPageIn();
-	    var num = parseFloat(document.defaultView.getComputedStyle(el, null).getPropertyValue('line-height'));
-	    log("Line height at zoom level" + (count) + " : " + num.toFixed(2));
-	    ++count;
+    if (window.testRunner) {
+        var count=0;
+        while(count <10) {
+            testRunner.zoomPageIn();
+            var num = parseFloat(document.defaultView.getComputedStyle(el, null).getPropertyValue('line-height'));
+            log("Line height at zoom level" + (count) + " : " + num.toFixed(2));
+            ++count;
             if (count == 10)
                 testRunner.notifyDone();
         }
     } else {
         var num = parseFloat(document.defaultView.getComputedStyle(el, null).getPropertyValue('line-height'));
-	log("Line height is" + " : " + num.toFixed(2));
+        log("Line height is" + " : " + num.toFixed(2));
     }
 }
 
-</script>	
+</script>
 <head>
 <style type="text/css">
 p {

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/public/web/web_view.h"
 
 using blink::WebView;

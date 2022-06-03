@@ -18,8 +18,15 @@
 
 #include "build/build_config.h"
 #include "client/crashpad_info.h"
-#include "util/linux/traits.h"
 #include "util/misc/as_underlying_type.h"
+
+#if defined(OS_WIN)
+#include "util/win/traits.h"
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include "util/linux/traits.h"
+#elif defined(OS_FUCHSIA)
+#include "util/fuchsia/traits.h"
+#endif
 
 namespace crashpad {
 

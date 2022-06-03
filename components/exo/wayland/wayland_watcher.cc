@@ -4,7 +4,7 @@
 
 #include "components/exo/wayland/wayland_watcher.h"
 
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 #include "components/exo/wayland/server.h"
 
 namespace exo {
@@ -12,13 +12,15 @@ namespace wayland {
 
 WaylandWatcher::WaylandWatcher(wayland::Server* server)
     : controller_(FROM_HERE), server_(server) {
-  base::MessageLoopCurrentForUI::Get()->WatchFileDescriptor(
+  base::CurrentUIThread::Get()->WatchFileDescriptor(
       server_->GetFileDescriptor(),
       true,  // persistent
       base::MessagePumpForUI::WATCH_READ, &controller_, this);
 }
 
-WaylandWatcher::~WaylandWatcher() {}
+WaylandWatcher::~WaylandWatcher() {
+  controller_.StopWatchingFileDescriptor();
+}
 
 void WaylandWatcher::OnFileCanReadWithoutBlocking(int fd) {
   server_->Dispatch(base::TimeDelta());

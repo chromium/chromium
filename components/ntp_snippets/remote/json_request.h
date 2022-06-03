@@ -11,13 +11,13 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/status.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -70,6 +70,8 @@ class JsonRequest {
     Builder();
     Builder(Builder&&);
     ~Builder();
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
 
     // Builds a Request object that contains all data to fetch new snippets.
     std::unique_ptr<JsonRequest> Build() const;
@@ -129,21 +131,21 @@ class JsonRequest {
     std::string user_class_;
     std::string display_capability_;
     const language::UrlLanguageHistogram* language_histogram_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
-  JsonRequest(base::Optional<Category> exclusive_category,
+  JsonRequest(absl::optional<Category> exclusive_category,
               const base::Clock* clock,
               const ParseJSONCallback& callback);
   JsonRequest(JsonRequest&&);
+  JsonRequest(const JsonRequest&) = delete;
+  JsonRequest& operator=(const JsonRequest&) = delete;
   ~JsonRequest();
 
   void Start(CompletedCallback callback);
 
   static int Get5xxRetryCount(bool interactive_request);
 
-  const base::Optional<Category>& exclusive_category() const {
+  const absl::optional<Category>& exclusive_category() const {
     return exclusive_category_;
   }
 
@@ -165,7 +167,7 @@ class JsonRequest {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // If set, only return results for this category.
-  base::Optional<Category> exclusive_category_;
+  absl::optional<Category> exclusive_category_;
 
   // Use the Clock from the Fetcher to measure the fetch time. It will be
   // used on creation and after the fetch returned. It has to be alive until the
@@ -184,8 +186,6 @@ class JsonRequest {
   std::string last_response_string_;
 
   base::WeakPtrFactory<JsonRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonRequest);
 };
 
 }  // namespace internal

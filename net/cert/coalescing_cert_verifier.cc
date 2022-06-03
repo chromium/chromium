@@ -70,37 +70,17 @@ namespace net {
 
 namespace {
 
-base::Value CertVerifyResultParams(const CertVerifyResult& verify_result) {
-  base::DictionaryValue results;
-  results.SetBoolean("has_md5", verify_result.has_md5);
-  results.SetBoolean("has_md2", verify_result.has_md2);
-  results.SetBoolean("has_md4", verify_result.has_md4);
-  results.SetBoolean("is_issued_by_known_root",
-                     verify_result.is_issued_by_known_root);
-  results.SetBoolean("is_issued_by_additional_trust_anchor",
-                     verify_result.is_issued_by_additional_trust_anchor);
-  results.SetInteger("cert_status", verify_result.cert_status);
-  results.SetKey("verified_cert", NetLogX509CertificateParams(
-                                      verify_result.verified_cert.get()));
-
-  std::unique_ptr<base::ListValue> hashes(new base::ListValue());
-  for (auto it = verify_result.public_key_hashes.begin();
-       it != verify_result.public_key_hashes.end(); ++it) {
-    hashes->AppendString(it->ToString());
-  }
-  results.Set("public_key_hashes", std::move(hashes));
-
-  return std::move(results);
-}
-
 base::Value CertVerifierParams(const CertVerifier::RequestParams& params) {
-  base::Value dict(NetLogX509CertificateParams(params.certificate().get()));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("certificates",
+              NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {
-    dict.SetStringPath("ocsp_response",
-                       PEMEncode(params.ocsp_response(), "OCSP RESPONSE"));
+    dict.SetStringPath("ocsp_response", PEMEncode(params.ocsp_response(),
+                                                  "NETLOG OCSP RESPONSE"));
   }
   if (!params.sct_list().empty()) {
-    dict.SetStringPath("sct_list", PEMEncode(params.sct_list(), "SCT LIST"));
+    dict.SetStringPath("sct_list",
+                       PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
   }
   dict.SetPath("host", NetLogStringValue(params.hostname()));
   dict.SetIntPath("verifier_flags", params.flags());
@@ -277,13 +257,13 @@ int CoalescingCertVerifier::Job::Start(CertVerifier* underlying_verifier) {
       params_, &verify_result_,
       // Safe, because |verify_request_| is self-owned and guarantees the
       // callback won't be called if |this| is deleted.
-      base::Bind(&CoalescingCertVerifier::Job::OnVerifyComplete,
-                 base::Unretained(this)),
+      base::BindOnce(&CoalescingCertVerifier::Job::OnVerifyComplete,
+                     base::Unretained(this)),
       &pending_request_, net_log_);
   if (result != ERR_IO_PENDING) {
     LogMetrics();
     net_log_.EndEvent(NetLogEventType::CERT_VERIFIER_JOB,
-                      [&] { return CertVerifyResultParams(verify_result_); });
+                      [&] { return verify_result_.NetLogParams(result); });
   }
 
   return result;
@@ -294,7 +274,7 @@ void CoalescingCertVerifier::Job::OnVerifyComplete(int result) {
 
   pending_request_.reset();  // Reset to signal clean completion.
   net_log_.EndEvent(NetLogEventType::CERT_VERIFIER_JOB,
-                    [&] { return CertVerifyResultParams(verify_result_); });
+                    [&] { return verify_result_.NetLogParams(result); });
 
   // It's possible that during the process of invoking a callback for a
   // Request, |this| may get deleted (along with the associated parent). If
@@ -339,12 +319,10 @@ void CoalescingCertVerifier::Job::OnVerifyComplete(int result) {
 void CoalescingCertVerifier::Job::LogMetrics() {
   base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_Job_Latency", latency,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             base::Milliseconds(1), base::Minutes(10), 100);
   if (is_first_job_) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier_First_Job_Latency", latency,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               base::Milliseconds(1), base::Minutes(10), 100);
   }
 }
 

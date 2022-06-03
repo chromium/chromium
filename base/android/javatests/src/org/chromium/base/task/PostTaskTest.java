@@ -8,7 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertNotNull;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +65,6 @@ public class PostTaskTest {
         // A SingleThreadTaskRunner with default traits will run in the native thread pool
         // and tasks posted won't run until after the native library has loaded.
         assertNotNull(taskQueue);
-        taskQueue.destroy();
     }
 
     @Test
@@ -73,14 +72,10 @@ public class PostTaskTest {
     public void testCreateSequencedTaskRunner() {
         TaskRunner taskQueue = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
         List<Integer> orderList = new ArrayList<>();
-        try {
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 1);
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 2);
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 3);
-            SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
-        } finally {
-            taskQueue.destroy();
-        }
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 1);
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 2);
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 3);
+        SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
 
         assertThat(orderList, contains(1, 2, 3));
     }
@@ -91,11 +86,7 @@ public class PostTaskTest {
         TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
 
         // This should not timeout.
-        try {
-            SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
-        } finally {
-            taskQueue.destroy();
-        }
+        SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
     }
 
     @Test

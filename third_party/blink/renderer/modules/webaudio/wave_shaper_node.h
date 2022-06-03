@@ -71,7 +71,7 @@ class WaveShaperNode final : public AudioNode {
 
  private:
   void SetCurveImpl(const float* curve_data,
-                    unsigned curve_length,
+                    size_t curve_length,
                     ExceptionState&);
   WaveShaperProcessor* GetWaveShaperProcessor() const;
 };

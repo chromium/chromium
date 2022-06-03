@@ -350,7 +350,7 @@ message Paint {
   enum Style {
     kFill_Style = 0;
     kStroke_Style = 1;
-    kStrokeAndFill_Style = 2;
+    kStrokeAndFill_Style = 2;  // no longer needed/used
   }
 
   enum StrokeCap {

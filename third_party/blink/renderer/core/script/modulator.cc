@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/document_modulator_impl.h"
+#include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/worker_modulator_impl.h"
 #include "third_party/blink/renderer/core/script/worklet_modulator_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -35,12 +36,11 @@ Modulator* Modulator::From(ScriptState* script_state) {
   if (modulator)
     return modulator;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (auto* document = DynamicTo<Document>(execution_context)) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     modulator = MakeGarbageCollected<DocumentModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in LocalDOMWindow::modulator_ for this workaround.
-    LocalDOMWindow* window = document->ExecutingWindow();
     window->SetModulator(modulator);
   } else if (auto* worklet_scope =
                  DynamicTo<WorkletGlobalScope>(execution_context)) {
@@ -78,6 +78,10 @@ void Modulator::ClearModulator(ScriptState* script_state) {
   V8PerContextData* per_context_data = script_state->PerContextData();
   DCHECK(per_context_data);
   per_context_data->ClearData(kPerContextDataKey);
+}
+
+void Modulator::Trace(Visitor* visitor) const {
+  visitor->Trace(import_map_);
 }
 
 }  // namespace blink

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
@@ -27,20 +30,23 @@ namespace {
 class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
  public:
   TestingTemplateURLServiceClient(history::HistoryService* history_service,
-                                  base::string16* search_term)
+                                  std::u16string* search_term)
       : ChromeTemplateURLServiceClient(history_service),
         search_term_(search_term) {}
 
+  TestingTemplateURLServiceClient(const TestingTemplateURLServiceClient&) =
+      delete;
+  TestingTemplateURLServiceClient& operator=(
+      const TestingTemplateURLServiceClient&) = delete;
+
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    TemplateURLID id,
-                                   const base::string16& term) override {
+                                   const std::u16string& term) override {
     *search_term_ = term;
   }
 
  private:
-  base::string16* search_term_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingTemplateURLServiceClient);
+  std::u16string* search_term_;
 };
 
 }  // namespace
@@ -61,13 +67,44 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 }
 
-TemplateURLServiceTestUtil::TemplateURLServiceTestUtil() : changed_count_(0) {
-  // Make unique temp directory.
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-  profile_.reset(new TestingProfile(temp_dir_.GetPath()));
+std::unique_ptr<TemplateURL> CreateTestTemplateURL(
+    const std::u16string& keyword,
+    const std::string& url,
+    const std::string& guid,
+    base::Time last_modified,
+    bool safe_for_autoreplace,
+    bool created_by_policy,
+    int prepopulate_id) {
+  DCHECK(!base::StartsWith(guid, "key"))
+      << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "
+         "for clarity.";
+
+  TemplateURLData data;
+  data.SetShortName(u"unittest");
+  data.SetKeyword(keyword);
+  data.SetURL(url);
+  data.favicon_url = GURL("http://favicon.url");
+  data.safe_for_autoreplace = safe_for_autoreplace;
+  data.date_created = base::Time::FromTimeT(100);
+  data.last_modified = last_modified;
+  data.created_by_policy = created_by_policy;
+  data.prepopulate_id = prepopulate_id;
+  if (!guid.empty())
+    data.sync_guid = guid;
+  return std::make_unique<TemplateURL>(data);
+}
+
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
+    : TemplateURLServiceTestUtil(TestingProfile::TestingFactories()) {}
+
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
+    const TestingProfile::TestingFactories& testing_factories) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactories(testing_factories);
+  profile_ = profile_builder.Build();
 
   scoped_refptr<WebDatabaseService> web_database_service =
-      new WebDatabaseService(temp_dir_.GetPath().AppendASCII("webdata"),
+      new WebDatabaseService(profile_->GetPath().AppendASCII("webdata"),
                              base::ThreadTaskRunnerHandle::Get(),
                              base::ThreadTaskRunnerHandle::Get());
   web_database_service->AddTable(
@@ -127,7 +164,7 @@ void TemplateURLServiceTestUtil::ClearModel() {
 void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
-  model_.reset(new TemplateURLService(
+  model_ = std::make_unique<TemplateURLService>(
       profile()->GetPrefs(),
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
@@ -136,15 +173,15 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      base::Closure()));
+      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load)
     VerifyLoad();
 }
 
-base::string16 TemplateURLServiceTestUtil::GetAndClearSearchTerm() {
-  base::string16 search_term;
+std::u16string TemplateURLServiceTestUtil::GetAndClearSearchTerm() {
+  std::u16string search_term;
   search_term.swap(search_term_);
   return search_term;
 }

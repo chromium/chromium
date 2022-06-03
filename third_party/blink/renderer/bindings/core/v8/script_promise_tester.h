@@ -7,13 +7,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ScriptState;
 class ScriptPromise;
-class Visitor;
 
 // Utility for writing unit tests involving promises.
 // Typical usage:
@@ -26,6 +26,9 @@ class ScriptPromiseTester final {
 
  public:
   ScriptPromiseTester(ScriptState*, ScriptPromise);
+
+  ScriptPromiseTester(const ScriptPromiseTester&) = delete;
+  ScriptPromiseTester& operator=(const ScriptPromiseTester&) = delete;
 
   // Run microtasks and tasks until the promise is either fulfilled or rejected.
   // If the promise never settles this will busy loop until the test times out.
@@ -40,7 +43,7 @@ class ScriptPromiseTester final {
   // The value the promise fulfilled or rejected with.
   ScriptValue Value() const;
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   class ThenFunction;
@@ -52,8 +55,6 @@ class ScriptPromiseTester final {
   ScriptValue value_;
 
   base::WeakPtrFactory<ScriptPromiseTester> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseTester);
 };
 
 }  // namespace blink

@@ -11,16 +11,16 @@ import androidx.annotation.IntDef;
 import org.junit.Assert;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -61,6 +61,11 @@ public abstract class XrTestFramework {
     public static final int POLL_TIMEOUT_SHORT_MS = 1000;
     public static final int POLL_TIMEOUT_LONG_MS = 10000;
     public static final boolean DEBUG_LOGS = false;
+
+    // We need to make sure the port is constant, otherwise the URL changes between test runs, which
+    // is really bad for image diff tests. There's nothing special about this port other than that
+    // it shouldn't be in use by anything.
+    public static final int SERVER_PORT = 39558;
 
     // The "3" corresponds to the "Mobile Bookmarks" folder - omitting a particular folder
     // automatically redirects to that folder, and not having it in the URL causes issues with the
@@ -158,7 +163,10 @@ public abstract class XrTestFramework {
      */
     public static boolean pollJavaScriptBoolean(
             final String boolExpression, int timeoutMs, final WebContents webContents) {
-        if (DEBUG_LOGS) Log.i(TAG, "pollJavaScriptBoolean " + boolExpression);
+        if (DEBUG_LOGS) {
+            Log.i(TAG, "pollJavaScriptBoolean " + boolExpression + ", timeoutMs=" + timeoutMs);
+        }
+
         try {
             CriteriaHelper.pollInstrumentationThread(() -> {
                 String result = "false";
@@ -245,11 +253,23 @@ public abstract class XrTestFramework {
      * @param webContents The WebContents for the tab the JavaScript is in.
      */
     public static void executeStepAndWait(String stepFunction, WebContents webContents) {
+        executeStepAndWait(stepFunction, webContents, POLL_TIMEOUT_LONG_MS);
+    }
+
+    /**
+     * Executes a JavaScript step function using the given WebContents.
+     *
+     * @param stepFunction The JavaScript step function to call.
+     * @param webContents The WebContents for the tab the JavaScript is in.
+     * @param timeoutMs Timeout (in milliseconds) to wait for the JavaScript step.
+     */
+    public static void executeStepAndWait(
+            String stepFunction, WebContents webContents, int timeoutMs) {
         // Run the step and block
         if (DEBUG_LOGS) Log.i(TAG, "executeStepAndWait " + stepFunction);
         JavaScriptUtils.executeJavaScript(webContents, stepFunction);
         if (DEBUG_LOGS) Log.i(TAG, "executeStepAndWait ...wait");
-        waitOnJavaScriptStep(webContents);
+        waitOnJavaScriptStep(webContents, timeoutMs);
         if (DEBUG_LOGS) Log.i(TAG, "executeStepAndWait ...done");
     }
 
@@ -260,7 +280,18 @@ public abstract class XrTestFramework {
      * @param webContents The WebContents for the tab the JavaScript step is in.
      */
     public static void waitOnJavaScriptStep(WebContents webContents) {
-        if (DEBUG_LOGS) Log.i(TAG, "waitOnJavaScriptStep");
+        waitOnJavaScriptStep(webContents, POLL_TIMEOUT_LONG_MS);
+    }
+
+    /**
+     * Waits for a JavaScript step to finish, asserting that the step finished instead of timing
+     * out.
+     *
+     * @param webContents The WebContents for the tab the JavaScript step is in.
+     * @param timeoutMs Timeout (in milliseconds) to wait for the JavaScript step.
+     */
+    public static void waitOnJavaScriptStep(WebContents webContents, int timeoutMs) {
+        if (DEBUG_LOGS) Log.i(TAG, "waitOnJavaScriptStep, timeoutMs=" + timeoutMs);
         // Make sure we aren't trying to wait on a JavaScript test step without the code to do so.
         Assert.assertTrue("Attempted to wait on a JavaScript step without the code to do so. You "
                         + "either forgot to import webxr_e2e.js or are incorrectly using a "
@@ -269,8 +300,7 @@ public abstract class XrTestFramework {
                         POLL_TIMEOUT_SHORT_MS, webContents)));
 
         // Actually wait for the step to finish
-        boolean success =
-                pollJavaScriptBoolean("javascriptDone", POLL_TIMEOUT_LONG_MS, webContents);
+        boolean success = pollJavaScriptBoolean("javascriptDone", timeoutMs, webContents);
 
         // Check what state we're in to make sure javascriptDone wasn't called because the test
         // failed.
@@ -392,27 +422,36 @@ public abstract class XrTestFramework {
      */
     public XrTestFramework(ChromeActivityTestRule rule) {
         mRule = rule;
+
+        // WebXr requires HTTPS, so configure the server to by default use it.
+        mRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
+        // Tests that use RenderTestRule need a static port, as the port shows up in the URL. It
+        // doesn't hurt to use the same port in non-RenderTests, so set here.
+        mRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
     }
 
     /**
-     * Gets the URL that loads the given test file from the embedded test server.
+     * Gets the URL that loads the given test file from the embedded test server
+     * Note that because sessions may cause permissions prompts to appear, this
+     * uses the embedded server, as granting permissions to file:// URLs results
+     * in DCHECKs.
      *
      * @param testName The name of the test whose file will be retrieved.
      */
-    public String getEmbeddedServerUrlForHtmlTestFile(String testName) {
+    public String getUrlForFile(String testName) {
         return mRule.getTestServer().getURL("/" + TEST_DIR + "/html/" + testName + ".html");
     }
 
     /**
-     * Loads the given URL with the given timeout then waits for JavaScript to
-     * signal that it's ready for testing.
+     * Loads the given file on an embedded server with the given timeout then
+     * waits for JavaScript to signal that it's ready for testing.
      *
-     * @param url The URL of the page to load.
+     * @param file The name of the page to load.
      * @param timeoutSec The timeout of the page load in seconds.
      * @return The return value of ChromeActivityTestRule.loadUrl().
      */
-    public int loadUrlAndAwaitInitialization(String url, int timeoutSec) {
-        int result = mRule.loadUrl(url, timeoutSec);
+    public int loadFileAndAwaitInitialization(String url, int timeoutSec) {
+        int result = mRule.loadUrl(getUrlForFile(url), timeoutSec);
         Assert.assertTrue("Timed out waiting for JavaScript test initialization",
                 pollJavaScriptBoolean("isInitializationComplete()", POLL_TIMEOUT_LONG_MS,
                         mRule.getWebContents()));
@@ -499,7 +538,17 @@ public abstract class XrTestFramework {
      * @param stepFunction The JavaScript step function to call.
      */
     public void executeStepAndWait(String stepFunction) {
-        executeStepAndWait(stepFunction, getCurrentWebContents());
+        executeStepAndWait(stepFunction, POLL_TIMEOUT_LONG_MS);
+    }
+
+    /**
+     * Helper function to run executeStepAndWait using the current tab's WebContents.
+     *
+     * @param stepFunction The JavaScript step function to call.
+     * @param timeoutMs Timeout (in milliseconds) to wait for the JavaScript step.
+     */
+    public void executeStepAndWait(String stepFunction, int timeoutMs) {
+        executeStepAndWait(stepFunction, getCurrentWebContents(), timeoutMs);
     }
 
     /**

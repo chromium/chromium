@@ -4,9 +4,9 @@
   }
 
   .shortcut-card {
-    @apply --cr-card-elevation;
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
     color: var(--cr-primary-text-color);
     margin: 0 auto 16px auto;
     padding-bottom: 8px;
@@ -70,11 +70,7 @@
   <template is="dom-repeat" items="[[calculateShownItems_(items.*)]]">
     <div class="shortcut-card">
       <div class="card-title cr-title-text">
-        <img class="icon" src="[[item.iconUrl]]"
-            alt$="[[appOrExtension(
-                item.type,
-                '$i18nPolymer{appIcon}',
-                '$i18nPolymer{extensionIcon}')]]">
+        <img class="icon" src="[[item.iconUrl]]" alt="">
         <span role="heading" aria-level="2">[[item.name]]</span>
       </div>
       <div class="card-controls">

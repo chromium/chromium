@@ -14,7 +14,9 @@
 
 #include <unistd.h>
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "build/build_config.h"
 
 namespace crashpad {
@@ -23,7 +25,7 @@ void DropPrivileges() {
   gid_t gid = getgid();
   uid_t uid = getuid();
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Based on the POSIX.1-2008 2013 edition documentation for setreuid() and
   // setregid(), setreuid() and setregid() alone should be sufficient to drop
   // privileges. The standard specifies that the saved ID should be set to the
@@ -71,7 +73,7 @@ void DropPrivileges() {
       CHECK_EQ(setegid(egid), -1);
     }
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   PCHECK(setresgid(gid, gid, gid) == 0) << "setresgid";
   PCHECK(setresuid(uid, uid, uid) == 0) << "setresuid";
 

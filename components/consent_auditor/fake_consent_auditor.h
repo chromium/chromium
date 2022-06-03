@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,6 +18,10 @@ namespace consent_auditor {
 class FakeConsentAuditor : public ConsentAuditor {
  public:
   FakeConsentAuditor();
+
+  FakeConsentAuditor(const FakeConsentAuditor&) = delete;
+  FakeConsentAuditor& operator=(const FakeConsentAuditor&) = delete;
+
   ~FakeConsentAuditor() override;
 
   // ConsentAuditor implementation.
@@ -40,6 +43,10 @@ class FakeConsentAuditor : public ConsentAuditor {
   void RecordAssistantActivityControlConsent(
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
+      override;
+  void RecordAccountPasswordsConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
 
   void RecordLocalConsent(const std::string& feature,
@@ -91,8 +98,6 @@ class FakeConsentAuditor : public ConsentAuditor {
   std::vector<int> recorded_confirmation_ids_;
   std::vector<Feature> recorded_features_;
   std::vector<ConsentStatus> recorded_statuses_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConsentAuditor);
 };
 
 MATCHER_P(ArcPlayConsentEq, expected_consent, "") {
@@ -103,7 +108,7 @@ MATCHER_P(ArcPlayConsentEq, expected_consent, "") {
       expected_consent.SerializeAsString())
     return true;
 
-  LOG(ERROR) << "ERROR: actual proto does not match the expected proto";
+  *result_listener << "ERROR: actual proto does not match the expected proto";
   return false;
 }
 
@@ -115,7 +120,7 @@ MATCHER_P(ArcGoogleLocationServiceConsentEq, expected_consent, "") {
       expected_consent.SerializeAsString())
     return true;
 
-  LOG(ERROR) << "ERROR: actual proto does not match the expected proto";
+  *result_listener << "ERROR: actual proto does not match the expected proto";
   return false;
 }
 
@@ -123,7 +128,7 @@ MATCHER_P(ArcBackupAndRestoreConsentEq, expected_consent, "") {
   if (arg.SerializeAsString() == expected_consent.SerializeAsString())
     return true;
 
-  LOG(ERROR) << "ERROR: actual proto does not match the expected proto";
+  *result_listener << "ERROR: actual proto does not match the expected proto";
   return false;
 }
 

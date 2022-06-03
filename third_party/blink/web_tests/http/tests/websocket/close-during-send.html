@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<script src = "/resources/testharness.js"></script>
+<script src = "/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+// Reproduce an issue where the renderer would crash if the remote server
+// closed the connection in the middle of sending a large message. The test
+// passes if it doesn't crash.
+
+async_test(t => {
+  const ws = new WebSocket('ws://127.0.0.1:8880/close-on-frame');
+  ws.onopen = () => {
+    // Experimentally determined to be large enough to reliably trigger the
+    // issue.
+    const ab = new ArrayBuffer(8 << 20);
+    ws.send(ab);
+  };
+  ws.onerror = t.unreached_func('onerror should not be fired');
+  ws.onmessage = t.unreached_func('onmessage should not be fired');
+  ws.onclose = evt => t.done();
+}, 'Renderer shouldn\'t crash if connection is closed during message send');
+</script>
+</html>

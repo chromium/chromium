@@ -151,7 +151,8 @@ TEST_F(CSSStyleSheetResourceTest,
   contents->CheckLoaded();
   EXPECT_TRUE(contents->IsCacheableForResource());
 
-  contents->EnsureRuleSet(MediaQueryEvaluator(), kRuleHasNoSpecialState);
+  contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
+                          kRuleHasNoSpecialState);
   EXPECT_TRUE(contents->HasRuleSet());
 
   css_resource->SaveParsedStyleSheet(contents);

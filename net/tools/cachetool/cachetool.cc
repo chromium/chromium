@@ -8,13 +8,13 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -26,6 +26,7 @@
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
 
 using disk_cache::Backend;
@@ -46,7 +47,7 @@ constexpr int kResponseContentIndex = 1;
 const char* const kCommandNames[] = {
     "stop",          "get_size",   "list_keys",          "get_stream",
     "delete_stream", "delete_key", "update_raw_headers", "list_dups",
-};
+    "set_header"};
 
 // Prints the command line help.
 void PrintHelp() {
@@ -69,6 +70,8 @@ void PrintHelp() {
   std::cout << "  list_dups: List all resources with duplicate bodies in the "
             << "cache." << std::endl;
   std::cout << "  update_raw_headers <key>: Update stdin as the key's raw "
+            << "response headers." << std::endl;
+  std::cout << "  set_header <key> <name> <value>: Set one of key's raw "
             << "response headers." << std::endl;
   std::cout << "  stop: Verify that the cache can be opened and return, "
             << "confirming the cache exists and is of the right type."
@@ -173,7 +176,7 @@ class ProgramArgumentCommandMarshal final : public CommandMarshal {
     if (args_id_ < command_line_args_.size())
       return command_line_args_[args_id_++];
     if (!has_failed())
-      ReturnFailure("Command line arguments to short.");
+      ReturnFailure("Command line arguments too short.");
     return "";
   }
 
@@ -405,6 +408,31 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
   return "";
 }
 
+void PersistResponseInfo(CommandMarshal* command_marshal,
+                         const std::string& key,
+                         const net::HttpResponseInfo& response_info) {
+  scoped_refptr<net::PickledIOBuffer> data =
+      base::MakeRefCounted<net::PickledIOBuffer>();
+  response_info.Persist(data->pickle(), false, false);
+  data->Done();
+
+  TestEntryResultCompletionCallback cb_open;
+  EntryResult result = command_marshal->cache_backend()->OpenEntry(
+      key, net::HIGHEST, cb_open.callback());
+  result = cb_open.GetResult(std::move(result));
+  CHECK_EQ(result.net_error(), net::OK);
+  Entry* cache_entry = result.ReleaseEntry();
+
+  int data_len = data->pickle()->size();
+  net::TestCompletionCallback cb;
+  int rv = cache_entry->WriteData(kResponseInfoIndex, 0, data.get(), data_len,
+                                  cb.callback(), true);
+  if (cb.GetResult(rv) != data_len)
+    return command_marshal->ReturnFailure("Couldn't write headers.");
+  command_marshal->ReturnSuccess();
+  cache_entry->Close();
+}
+
 void ListDups(CommandMarshal* command_marshal) {
   std::unique_ptr<Backend::Iterator> entry_iterator =
       command_marshal->cache_backend()->CreateIterator();
@@ -578,26 +606,40 @@ void UpdateRawResponseHeaders(CommandMarshal* command_marshal) {
     std::cerr << "WARNING: Truncated HTTP response." << std::endl;
 
   response_info.headers = new net::HttpResponseHeaders(raw_headers);
-  scoped_refptr<net::PickledIOBuffer> data =
-      base::MakeRefCounted<net::PickledIOBuffer>();
-  response_info.Persist(data->pickle(), false, false);
-  data->Done();
+  PersistResponseInfo(command_marshal, key, response_info);
+}
 
-  TestEntryResultCompletionCallback cb_open;
-  EntryResult result = command_marshal->cache_backend()->OpenEntry(
-      key, net::HIGHEST, cb_open.callback());
-  result = cb_open.GetResult(std::move(result));
-  CHECK_EQ(result.net_error(), net::OK);
-  Entry* cache_entry = result.ReleaseEntry();
+// Sets a response header for a key.
+void SetHeader(CommandMarshal* command_marshal) {
+  std::string key = command_marshal->ReadString();
+  std::string header_name = command_marshal->ReadString();
+  std::string header_value = command_marshal->ReadString();
+  if (command_marshal->has_failed())
+    return;
 
-  int data_len = data->pickle()->size();
-  net::TestCompletionCallback cb;
-  int rv = cache_entry->WriteData(kResponseInfoIndex, 0, data.get(), data_len,
-                                  cb.callback(), true);
-  if (cb.GetResult(rv) != data_len)
-    return command_marshal->ReturnFailure("Couldn't write headers.");
-  command_marshal->ReturnSuccess();
-  cache_entry->Close();
+  // Open the existing entry.
+  scoped_refptr<net::GrowableIOBuffer> buffer(
+      GetStreamForKeyBuffer(command_marshal, key, kResponseInfoIndex));
+  if (command_marshal->has_failed())
+    return;
+
+  // Read the entry into |response_info|.
+  net::HttpResponseInfo response_info;
+  bool truncated_response_info = false;
+  if (!net::HttpCache::ParseResponseInfo(buffer->StartOfBuffer(),
+                                         buffer->offset(), &response_info,
+                                         &truncated_response_info)) {
+    command_marshal->ReturnFailure("Couldn't read response info");
+    return;
+  }
+  if (truncated_response_info)
+    std::cerr << "WARNING: Truncated HTTP response." << std::endl;
+
+  // Update the header.
+  response_info.headers->SetHeader(header_name, header_value);
+
+  // Write the entry.
+  PersistResponseInfo(command_marshal, key, response_info);
 }
 
 // Deletes a specified key stream from the cache.
@@ -665,6 +707,8 @@ bool ExecuteCommands(CommandMarshal* command_marshal) {
       ListKeys(command_marshal);
     } else if (subcommand == "update_raw_headers") {
       UpdateRawResponseHeaders(command_marshal);
+    } else if (subcommand == "set_header") {
+      SetHeader(command_marshal);
     } else if (subcommand == "list_dups") {
       ListDups(command_marshal);
     } else {

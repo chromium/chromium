@@ -18,14 +18,15 @@
 <img id="drag" src="resources/greenbox30.png" draggable>
 
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/gesture-util.js"></script>
 <script>
-
+jsTestIsAsync = true;
 const L = 'leftButton';
 const R = 'rightButton';
 const M = 'middleButton';
 
-var seqNo = 0;
-var testSet = [
+let seqNo = 0;
+let testSet = [
   { initialButtons: [],        action: doubleClickAction },
   { initialButtons: [R],       action: clickAction },
   { initialButtons: [M, R],    action: clickAction },
@@ -73,10 +74,25 @@ function doubleClickAction()
   eventSender.mouseUp(0);
 }
 
-function wheelAction()
+async function wheelAction(initialButtons)
 {
-  moveAction();
-  eventSender.mouseScrollBy(0, 120, false, true);
+  let targetDiv = document.getElementById('target');  
+  let buttons = []; 
+  initialButtons.forEach(function(item) {
+    if (item == L)
+      buttons.push(Buttons.LEFT);
+    else if (item == R)
+      buttons.push(Buttons.RIGHT);
+    else if (item == M)
+      buttons.push(Buttons.Middle);
+  })
+  let scroller_target = elementCenter(targetDiv);
+  await smoothScrollWithXY(0, 1, scroller_target.x, scroller_target.y,
+                           GestureSourceType.MOUSE_INPUT, SPEED_INSTANT,
+                           true /* precise_scrolling_deltas */,
+                           false /* scroll_by_page */, true /* cursor_visible */,
+                           false /* scroll_by_percentage */,
+                           "" /* modifier_keys */, buttons.join(','));
 }
 
 function tapAction()
@@ -113,7 +129,7 @@ function dragDropAction()
 
 function printTestInfo(testItem)
 {
-  var showContextMenuOnMouseUp = "";
+  let showContextMenuOnMouseUp = "";
   if (testItem.showContextMenuOnMouseUp != undefined)
     showContextMenuOnMouseUp = "and showContextMenuOnMouseUp=" +
         testItem.showContextMenuOnMouseUp + " ";
@@ -123,9 +139,9 @@ function printTestInfo(testItem)
 }
 
 function init() {
-  var targetDiv = document.getElementById('target');
-  var dragImg = document.getElementById('drag');
-  var eventList = ['dblclick', 'click', 'mousedown', 'mouseup', 'mousemove', 'mouseenter', 'mouseleave', 'mouseover', 'mouseout', 'mousewheel', 'dragstart', 'dragend', 'dragenter', 'dragleave', 'dragover', 'drag', 'contextmenu'];
+  let targetDiv = document.getElementById('target');
+  let dragImg = document.getElementById('drag');
+  let eventList = ['dblclick', 'click', 'mousedown', 'mouseup', 'mousemove', 'mouseenter', 'mouseleave', 'mouseover', 'mouseout', 'mousewheel', 'dragstart', 'dragend', 'dragenter', 'dragleave', 'dragover', 'drag', 'contextmenu'];
   eventList.forEach(function(eventName) {
     targetDiv.addEventListener(eventName, function(event) {
       debug(++seqNo + ". targetDiv received " + event.type + " buttons: " + event.buttons);
@@ -136,29 +152,27 @@ function init() {
   });
 }
 
-window.onload=function() {
+window.onload=async function() {
   init();
-  if(window.eventSender) {
-    for (var i = 0; i < testSet.length; i++) {
-      printTestInfo(testSet[i]);
 
-      // Reset the state for the new test
-      seqNo = 0;
-      eventSender.setMouseButtonState(-1, testSet[i].initialButtons);
-      internals.settings.setShowContextMenuOnMouseUp(testSet[i].showContextMenuOnMouseUp);
+  for (let i = 0; i < testSet.length; i++) {
+    printTestInfo(testSet[i]);
 
-      testSet[i].action();
+    // Reset the state for the new test
+    seqNo = 0;
+    eventSender.setMouseButtonState(-1, testSet[i].initialButtons);
+    internals.settings.setShowContextMenuOnMouseUp(testSet[i].showContextMenuOnMouseUp);
 
-      // Reset the mouse position
+    await testSet[i].action(testSet[i].initialButtons);
+
+    // Reset the mouse position
+    if(window.eventSender)
       eventSender.mouseMoveTo(-1, -1);
 
-      debug('');
-    }
+    debug('');
   }
-}
 
-if (!window.eventSender) {
-  debug("This test requires eventSender");
+  finishJSTest();
 }
 
 </script>

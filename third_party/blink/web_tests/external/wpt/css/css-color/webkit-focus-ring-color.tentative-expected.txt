@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL -webkit-focus-ring-color is supported for compat assert_true: expected true got false
+Harness: the test ran to completion.
+

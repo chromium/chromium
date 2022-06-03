@@ -14,7 +14,7 @@
 
 #include "client/annotation_list.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "client/crashpad_info.h"
 
 namespace crashpad {

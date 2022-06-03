@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -26,17 +24,19 @@ struct ExploreSitesSite {
                    int category_id,
                    GURL url,
                    std::string title,
-                   bool is_blacklisted);
+                   bool is_blocked);
+  ExploreSitesSite(const ExploreSitesSite&) = delete;
+  ExploreSitesSite& operator=(const ExploreSitesSite&) = delete;
+
   ExploreSitesSite(ExploreSitesSite&& other);
+
   virtual ~ExploreSitesSite();
 
   int site_id;
   int category_id;
   GURL url;
   std::string title;
-  bool is_blacklisted;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesSite);
+  bool is_blocked;
 };
 
 // The in-memory representation of a category in the ExploreSitesStore.
@@ -50,7 +50,12 @@ struct ExploreSitesCategory {
                        std::string label,
                        int ntp_shown_count,
                        int interaction_count);
+
+  ExploreSitesCategory(const ExploreSitesCategory&) = delete;
+  ExploreSitesCategory& operator=(const ExploreSitesCategory&) = delete;
+
   ExploreSitesCategory(ExploreSitesCategory&& other);
+
   virtual ~ExploreSitesCategory();
 
   int category_id;
@@ -62,8 +67,6 @@ struct ExploreSitesCategory {
   int interaction_count;
 
   std::vector<ExploreSitesSite> sites;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesCategory);
 };
 
 enum class GetCatalogStatus { kFailed, kNoCatalog, kSuccess };
@@ -89,7 +92,7 @@ enum class ExploreSitesRequestStatus {
   // Request failed with error indicating that the request can not be serviced
   // by the server.
   kShouldSuspendBadRequest = 2,
-  // The request was blocked by a URL blacklist configured by the domain
+  // The request was blocked by a URL blocklist configured by the domain
   // administrator.
   kShouldSuspendBlockedByAdministrator = 3,
   // kMaxValue should always be the last type.

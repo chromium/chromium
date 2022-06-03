@@ -10,7 +10,6 @@ from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
 
 
 class _FakeOptimizer(BaselineOptimizer):
-
     def read_results_by_directory(self, baseline_name):
         if baseline_name.endswith('txt'):
             return {'web_tests/passes/text.html': '123456'}
@@ -23,27 +22,26 @@ class TestAnalyzeBaselines(BaseTestCase):
     def setUp(self):
         super(TestAnalyzeBaselines, self).setUp()
         self.port = self.tool.port_factory.get('test')
-        self.tool.port_factory.get = (lambda port_name=None, options=None: self.port)
+        self.tool.port_factory.get = (
+            lambda port_name=None, options=None: self.port)
         self.lines = []
         self.command._optimizer_class = _FakeOptimizer
         self.command._write = (lambda msg: self.lines.append(msg))
 
     def test_default(self):
-        self.command.execute(optparse.Values(dict(suffixes='txt', missing=False, platform=None)), ['passes/text.html'], self.tool)
+        self.command.execute(
+            optparse.Values(
+                dict(suffixes='txt', missing=False, platform=None)),
+            ['passes/text.html'], self.tool)
         self.assertEqual(self.lines,
-                         ['passes/text-expected.txt:',
-                          '  (generic): 123456'])
+                         ['passes/text-expected.txt:', '  (generic): 123456'])
 
     def test_missing_baselines(self):
         self.command.execute(
             optparse.Values(
-                dict(
-                    suffixes='png,txt',
-                    missing=True,
-                    platform=None)),
-            ['passes/text.html'],
-            self.tool)
-        self.assertEqual(self.lines,
-                         ['passes/text-expected.png: (no baselines found)',
-                          'passes/text-expected.txt:',
-                          '  (generic): 123456'])
+                dict(suffixes='png,txt', missing=True, platform=None)),
+            ['passes/text.html'], self.tool)
+        self.assertEqual(self.lines, [
+            'passes/text-expected.png: (no baselines found)',
+            'passes/text-expected.txt:', '  (generic): 123456'
+        ])

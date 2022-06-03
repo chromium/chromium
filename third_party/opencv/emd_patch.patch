@@ -1,0 +1,232 @@
+diff --git a/third_party/opencv/src/emd.cpp b/third_party/opencv/src/emd.cpp
+index 20ab6feafbc8..d7b29707a90b 100644
+--- a/third_party/opencv/src/emd.cpp
++++ b/third_party/opencv/src/emd.cpp
+@@ -56,12 +56,36 @@
+     E-Mail: rubner@cs.stanford.edu   URL: http://vision.stanford.edu/~rubner
+     ==========================================================================
+ */
++#ifdef CHROMIUM_OPENCV
++#include "emd_wrapper.h"
++
++#include <algorithm>
++#include <vector>
++#include <cassert>
++#include <cstring>
++
++#include "base/numerics/checked_math.h"
++#else
+ #include "precomp.hpp"
++#endif
+ 
+ #define MAX_ITERATIONS 500
+ #define CV_EMD_INF   ((float)1e20)
+ #define CV_EMD_EPS   ((float)1e-5)
+ 
++#ifdef CHROMIUM_OPENCV
++namespace cv {
++template <typename T>
++using AutoBuffer = std::vector<T>;
++}
++typedef void CvArr;
++typedef float (* CvDistanceFunction)( const float* a, const float* b, void* user_param );
++
++#define cvSqrt(value)  ((float)sqrt(value))
++#define CV_Error(code, msg) do { (void)(msg); abort(); } while (0)
++#define CV_Assert(expr) do { if (!(expr)) abort(); } while (0)
++#endif
++
+ /* CvNode1D is used for lists, representing 1D sparse array */
+ typedef struct CvNode1D
+ {
+@@ -144,8 +168,25 @@ static float icvDistL2( const float *x, const float *y, void *user_param );
+ static float icvDistL1( const float *x, const float *y, void *user_param );
+ static float icvDistC( const float *x, const float *y, void *user_param );
+ 
++#ifdef CHROMIUM_OPENCV
++std::vector<float> GetDataFromPointDistribution(const opencv::PointDistribution& distribution) {
++  std::vector<float> data;
++  data.reserve((distribution.dimensions + 1) * distribution.positions.size());
++  for (size_t i = 0; i < distribution.positions.size(); i++) {
++    data.push_back(distribution.weights[i]);
++    data.insert(data.end(), distribution.positions[i].begin(),
++                distribution.positions[i].end());
++  }
++
++  return data;
++}
++#endif
++
+ /* The main function */
+-CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
++#ifndef CHROMIUM_OPENCV
++CV_IMPL 
++#endif
++float cvCalcEMD2( const CvArr* signature_arr1,
+             const CvArr* signature_arr2,
+             int dist_type,
+             CvDistanceFunction dist_func,
+@@ -164,6 +205,23 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
+     int result = 0;
+     float eps, min_delta;
+     CvNode2D *xp = 0;
++#ifdef CHROMIUM_OPENCV
++    opencv::PointDistribution* signature1 =
++        (opencv::PointDistribution*)signature_arr1;
++    opencv::PointDistribution* signature2 =
++        (opencv::PointDistribution*)signature_arr2;
++
++    int dims = signature1->dimensions;
++    int size1 = signature1->positions.size();
++    int size2 = signature2->positions.size();
++    dist_func = icvDistL1;
++
++    std::vector<float> signature1_data =
++        GetDataFromPointDistribution(*signature1);
++    std::vector<float> signature2_data =
++        GetDataFromPointDistribution(*signature2);
++    user_param = (void*)(size_t)dims;
++#else
+     CvMat sign_stub1, *signature1 = (CvMat*)signature_arr1;
+     CvMat sign_stub2, *signature2 = (CvMat*)signature_arr2;
+     CvMat cost_stub, *cost = &cost_stub;
+@@ -245,12 +303,19 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
+             CV_Error( CV_StsBadFlag, "Bad or unsupported metric type" );
+         }
+     }
++#endif
+ 
++#ifdef CHROMIUM_OPENCV
++    result = icvInitEMD(signature1_data.data(), size1, signature2_data.data(),
++                        size2, dims, icvDistL2, user_param, nullptr, 0, &state,
++                        lower_bound, local_buf);
++#else
+     result = icvInitEMD( signature1->data.fl, size1,
+                         signature2->data.fl, size2,
+                         dims, dist_func, user_param,
+                         cost->data.fl, cost->step,
+                         &state, lower_bound, local_buf );
++#endif
+ 
+     if( result > 0 && lower_bound )
+     {
+@@ -307,8 +372,10 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
+         if( ci >= 0 && cj >= 0 )
+         {
+             total_cost += (double)val * state.cost[i][j];
++#ifndef CHROMIUM_OPENCV
+             if( flow )
+                 ((float*)(flow->data.ptr + flow->step*ci))[cj] = val;
++#endif
+         }
+     }
+ 
+@@ -357,7 +424,11 @@ static int icvInitEMD( const float* signature1, int size1,
+     }
+ 
+     /* allocate buffers */
++#ifdef CHROMIUM_OPENCV
++    _buffer.resize(buffer_size);
++#else
+     _buffer.allocate(buffer_size);
++#endif
+ 
+     state->buffer = buffer = _buffer.data();
+     buffer_end = buffer + buffer_size;
+@@ -1146,7 +1217,89 @@ icvDistC( const float *x, const float *y, void *user_param )
+     return (float)s;
+ }
+ 
++#ifdef CHROMIUM_OPENCV
++namespace opencv {
++
++namespace {
++
++bool ValidatePointDistribution(const PointDistribution& distribution) {
++  if (distribution.positions.size() != distribution.weights.size()) {
++    return false;
++  }
++
++  if (distribution.weights.empty()) {
++    return false;
++  }
++
++  for (const float f : distribution.weights) {
++    if (f < 0) {
++      return false;
++    }
++  }
++
++  if (std::all_of(distribution.weights.begin(), distribution.weights.end(),
++                  [](float f) { return f == 0; })) {
++    return false;
++  }
++
++  for (const std::vector<float>& point : distribution.positions) {
++    if (point.size() != distribution.dimensions) {
++      return false;
++    }
++  }
++
++  return true;
++}
++
++// Makes sure the buffers allocated during the EMD computation don't overflow
++// in size.
++bool ValidateSize(const PointDistribution& distribution1,
++                  const PointDistribution& distribution2) {
++  base::CheckedNumeric<size_t> size1(distribution1.positions.size());
++  size1 *= distribution1.dimensions + 1;
++
++  base::CheckedNumeric<size_t> size2(distribution2.positions.size());
++  size2 *= distribution2.dimensions + 1;
++
++  // This computation should always match the buffer allocation in icvInitEMD
++  base::CheckedNumeric<size_t> total_size =
++      (size1 + 1) * (size2 + 1) *
++          (sizeof(float) + sizeof(char) + sizeof(float)) +
++      (size1 + size2 + 2) *
++          (sizeof(CvNode2D) + sizeof(CvNode2D*) + sizeof(CvNode1D) +
++           sizeof(float) + sizeof(int) + sizeof(CvNode2D*)) +
++      (size1 + 1) * (sizeof(float*) + sizeof(char*) + sizeof(float*)) + 256;
++
++  return total_size.IsValid();
++}
++
++}  // namespace
++
++absl::optional<double> EMD(const PointDistribution& distribution1,
++                           const PointDistribution& distribution2) {
++  if (!ValidatePointDistribution(distribution1) ||
++      !ValidatePointDistribution(distribution2)) {
++    return absl::nullopt;
++  }
++
++  if (distribution1.dimensions != distribution2.dimensions) {
++    return absl::nullopt;
++  }
++
++  if (distribution1.dimensions == 0) {
++    return absl::nullopt;
++  }
++
++  if (!ValidateSize(distribution1,distribution2)) {
++    return absl::nullopt;
++  }
++
++  return cvCalcEMD2(&distribution1, &distribution2, 0, 0, nullptr, nullptr,
++                    nullptr, nullptr);
++}
+ 
++}  // namespace opencv
++#else
+ float cv::EMD( InputArray _signature1, InputArray _signature2,
+                int distType, InputArray _cost,
+                float* lowerBound, OutputArray _flow )
+@@ -1177,5 +1330,6 @@ float cv::wrapperEMD(InputArray _signature1, InputArray _signature2,
+ {
+     return EMD(_signature1, _signature2, distType, _cost, lowerBound.get(), _flow);
+ }
++#endif
+ 
+ /* End of file. */

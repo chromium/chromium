@@ -1,4 +1,4 @@
 include_rules = [
   "+cc/layers",
-  "+chrome/browser/android/thin_webview",
+  "+components/thin_webview",
 ]

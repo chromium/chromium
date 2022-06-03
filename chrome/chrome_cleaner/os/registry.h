@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
-
 namespace base {
 namespace win {
 class RegKey;
@@ -22,7 +20,7 @@ class RegKey;
 namespace chrome_cleaner {
 
 bool GetNativeKeyPath(const base::win::RegKey& key,
-                      base::string16* native_key_path);
+                      std::wstring* native_key_path);
 
 // Returns true for predefined handles, such as NULL, INVALID_HANDLE_VALUE, and
 // for predefined registry root keys, such as HKEY_CLASSES_ROOT.
@@ -37,14 +35,14 @@ bool IsPredefinedRegistryHandle(HANDLE key);
 class RegKeyPath {
  public:
   RegKeyPath();
-  RegKeyPath(HKEY rootkey, const base::string16& subkey);
+  RegKeyPath(HKEY rootkey, const std::wstring& subkey);
 
   // Create a path with an explicit wow64 view. Permissible values are
   // KEY_WOW64_32KEY, KEY_WOW64_64KEY and 0 (default based target architecture).
-  RegKeyPath(HKEY rootkey, const base::string16& subkey, REGSAM wow64access);
+  RegKeyPath(HKEY rootkey, const std::wstring& subkey, REGSAM wow64access);
 
   HKEY rootkey() const { return rootkey_; }
-  const base::string16& subkey() const { return subkey_; }
+  const std::wstring& subkey() const { return subkey_; }
   REGSAM wow64access() const { return wow64access_; }
 
   // Return whether the key exists (without creating it).
@@ -60,10 +58,10 @@ class RegKeyPath {
   bool Create(REGSAM access, base::win::RegKey* key) const;
 
   // Return the full path as a string. Intended for logging purposes only.
-  base::string16 FullPath() const;
+  std::wstring FullPath() const;
 
   // Return the native full path as a string.
-  bool GetNativeFullPath(base::string16* native_path) const;
+  bool GetNativeFullPath(std::wstring* native_path) const;
 
   // Test whether two paths are exactly identical. This returns false if the
   // same key is addressed with different Wow64 access bits. Behaviour is
@@ -87,7 +85,7 @@ class RegKeyPath {
 
  private:
   HKEY rootkey_;
-  base::string16 subkey_;
+  std::wstring subkey_;
   REGSAM wow64access_;
 };
 

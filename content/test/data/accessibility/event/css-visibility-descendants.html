@@ -1,0 +1,35 @@
+<!--
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+-->
+<html>
+<head>
+<style>
+  .a { visibility: visible; }
+  .b { visibility: hidden; }
+  body.flip .a { visibility: hidden; }
+  body.flip .b { visibility: visible; }
+</style>
+</head>
+<body>
+<!-- Show/hide events only need to occur on the root of what's shown/hidden,
+     not for each descendant -->
+<div role="toolbar">
+  <div id="heading-root" role="heading" aria-label="Heading" class="a">
+    <div id="heading-child">
+      <div id="heading-grandchild"></div>
+    </div>
+  </div>
+  <div id="banner-root" role="banner" aria-label="Banner" class="b">
+    <div id="banner-child">
+      <div id="banner-grandchild"></div>
+    </div>
+  </div>
+</div>
+<script>
+  function go() {
+    document.body.className = 'flip';
+  }
+</script>
+</body>
+</html>

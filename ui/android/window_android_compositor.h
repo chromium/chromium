@@ -12,10 +12,6 @@
 #include "ui/android/ui_android_export.h"
 #include "ui/compositor/compositor_lock.h"
 
-namespace cc {
-class Layer;
-}
-
 namespace ui {
 
 class ResourceManager;
@@ -25,7 +21,19 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
  public:
   virtual ~WindowAndroidCompositor() {}
 
-  virtual void AttachLayerForReadback(scoped_refptr<cc::Layer> layer) = 0;
+  // Ref must be destroyed on same thread as WindowAndroidCompositor.
+  class ReadbackRef {
+   public:
+    virtual ~ReadbackRef() = default;
+
+   protected:
+    ReadbackRef() = default;
+  };
+
+  // While there are outstanding ReadbackRefs, Compositor will attempt to
+  // ensure any pending viz::CopyOutputRequest in any part of the compositor
+  // surface tree are fulfilled in a timely manner.
+  virtual std::unique_ptr<ReadbackRef> TakeReadbackRef() = 0;
   virtual void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) = 0;
   virtual void SetNeedsAnimate() = 0;

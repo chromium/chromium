@@ -13,12 +13,12 @@
 
 <script>
 window.addEventListener("load", function(){
-    if (!window.eventSender) {
+    if (!window.testRunner) {
         document.write("Zoom in manually.");
         return;
     }
     for (var i = 0; i < 5; ++i)
-        eventSender.zoomPageIn();
+        testRunner.zoomPageIn();
 
     shouldBeCloseTo('document.getElementById("bla").offsetWidth', 10, 1/64);
 }, true);

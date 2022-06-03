@@ -16,7 +16,7 @@ using InstallTimeUtilTest = PlatformTest;
 TEST_F(InstallTimeUtilTest, ComputeInstallationTime) {
   const base::Time null_time = base::Time();
   const base::Time now = base::Time::Now();
-  const base::Time one_month_ago = now - base::TimeDelta::FromDays(30);
+  const base::Time one_month_ago = now - base::Days(30);
   const base::Time sentinel =
       base::Time::FromTimeT(install_time_util::kUnknownInstallDate);
 

@@ -7,7 +7,7 @@ if (window.testRunner)
 
 function runTest() {
     var host = document.getElementById('host');
-    var sr = host.createShadowRoot();
+    var sr = host.attachShadow({mode: 'open'});
     // Test the case: two styles are in shadow dom subtree and they are not
     // direct chilren of the shadow root.
     sr.innerHTML = '<div><style>div { color: blue; }</style>Hello</div><div><style>span { color: red }</style><span>World</span></div>';

@@ -6,8 +6,8 @@
 
 namespace password_manager {
 
-PasswordReuseDetectorConsumer::PasswordReuseDetectorConsumer() {}
+PasswordReuseDetectorConsumer::PasswordReuseDetectorConsumer() = default;
 
-PasswordReuseDetectorConsumer::~PasswordReuseDetectorConsumer() {}
+PasswordReuseDetectorConsumer::~PasswordReuseDetectorConsumer() = default;
 
 }  // namespace password_manager

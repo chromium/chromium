@@ -44,7 +44,8 @@ namespace views {
 //
 //   auto* animating_layout = button_container->SetLayoutManager(
 //       std::make_unique<AnimatingLayoutManager>());
-//   animating_layout->SetShouldAnimateBounds(true);
+//   animating_layout->SetBoundsAnimationMode(
+//       AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis);
 //   auto* flex_layout = animating_layout->SetTargetLayoutManager(
 //       std::make_unique<FlexLayout>());
 //   flex_layout->SetOrientation(LayoutOrientation::kHorizontal)
@@ -71,6 +72,26 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
                                             bool is_animating) = 0;
   };
 
+  // Describes if and how the bounds of the host view can be animated as part of
+  // layout animations, if the preferred size of the layout changes.
+  enum class BoundsAnimationMode {
+    // Default behavior: the host view will always take the space given to it by
+    // its parent view and child views will animate within those bounds. Useful
+    // for cases where the layout is in a fixed-size container or dialog, but
+    // we want child views to be able to animate.
+    kUseHostBounds,
+    // The host view will request more or less space within the available space
+    // offered by its parent view, allowing its main axis size to animate, but
+    // will use exactly the cross-axis space provided, as it would with
+    // kUseHostBounds. Useful if the host view is in a toolbar or a dialog with
+    // fixed width but variable height or vice-versa.
+    kAnimateMainAxis,
+    // The host view will request more space or less space in both axes within
+    // the available space offered by its parent view. Useful if the host view
+    // is in e.g. a dialog that can vary in size.
+    kAnimateBothAxes
+  };
+
   // Describes how a view which is appearing or disappearing during an animation
   // behaves. Child views which are removed from the parent view always simply
   // disappear; use one of the Fade methods below to cause a view to fade out.
@@ -93,15 +114,18 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
     kSlideFromTrailingEdge,
   };
 
-  // Call QueueDelayedAction() to queue up an action to be performed when the
-  // current animation ends.
-  using DelayedAction = base::OnceCallback<void()>;
-
   AnimatingLayoutManager();
+
+  AnimatingLayoutManager(const AnimatingLayoutManager&) = delete;
+  AnimatingLayoutManager& operator=(const AnimatingLayoutManager&) = delete;
+
   ~AnimatingLayoutManager() override;
 
-  bool should_animate_bounds() const { return should_animate_bounds_; }
-  AnimatingLayoutManager& SetShouldAnimateBounds(bool should_animate_bounds);
+  BoundsAnimationMode bounds_animation_mode() const {
+    return bounds_animation_mode_;
+  }
+  AnimatingLayoutManager& SetBoundsAnimationMode(
+      BoundsAnimationMode bounds_animation_mode);
 
   base::TimeDelta animation_duration() const { return animation_duration_; }
   AnimatingLayoutManager& SetAnimationDuration(
@@ -158,16 +182,15 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   gfx::Size GetMinimumSize(const View* host) const override;
   int GetPreferredHeightForWidth(const View* host, int width) const override;
   std::vector<View*> GetChildViewsInPaintOrder(const View* host) const override;
+  bool OnViewRemoved(View* host, View* view) override;
 
   // Queues an action to take place after the current animation completes.
-  // Must be called during an animation. If |delayed_action| needs access to
-  // external resources, views, etc. then it must check that those resources are
-  // still available and valid when it is run.
-  void QueueDelayedAction(DelayedAction delayed_action);
-
-  // Identical to QueueDelayedAction() except that if the layout is not
-  // animating the action is run immediately.
-  void RunOrQueueAction(DelayedAction action);
+  // If |action| needs access to external resources, views, etc. then it must
+  // check that those resources are still available and valid when it is run. If
+  // the layout is not animating the action is posted immediately.
+  // There is no guarantee that this action runs as the AnimatingLayoutManager
+  // may get torn down before the task runs.
+  void PostOrQueueAction(base::OnceClosure action);
 
   // Returns a flex rule for the host view that will work in the vast majority
   // of cases where the host view is embedded in a FlexLayout.
@@ -183,11 +206,20 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // widget).
   void EnableAnimationForTesting();
 
+  const ProposedLayout& starting_layout_for_testing() const {
+    return starting_layout_;
+  }
+
+  const ProposedLayout& target_layout_for_testing() const {
+    return target_layout_;
+  }
+
  protected:
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
   void OnInstalled(View* host) override;
+  bool OnViewAdded(View* host, View* view) override;
   void OnLayoutChanged() override;
   void LayoutImpl() override;
 
@@ -196,9 +228,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   class AnimationDelegate;
   friend class AnimationDelegate;
 
-  // Cleans up after an animation, runs delayed actions, and sends
-  // notifications.
-  void OnAnimationEnded();
+  // Cleans up after an animation and readies actions to be posted.
+  void EndAnimation();
 
   // Equivalent to calling ResetLayoutToSize(GetAvailableTargetLayoutSize()).
   // Convenience method.
@@ -217,8 +248,12 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // Notifies all observers that the animation state has changed.
   void NotifyIsAnimatingChanged();
 
-  // Runs all delayed actions. See QueueDelayedAction() for more information.
-  void RunDelayedActions();
+  // Runs actions from earlier PostTask() calls.
+  void RunQueuedActions();
+
+  // Moves actions from |queued_actions_| to |actions_to_run_| and posts to
+  // RunDelayedTasks.
+  void PostQueuedActions();
 
   // Updates the current layout to |percent| interpolated between the starting
   // and target layouts.
@@ -228,24 +263,21 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // current animation.
   void CalculateFadeInfos();
 
+  // Called when resetting the layout; resolves any in-progress fades so that a
+  // view that should be rendered invisible actually is.
+  void ResolveFades();
+
   // Calculates a kScaleFrom[Minimum|Zero] fade and returns the resulting child
   // layout info.
   ChildLayout CalculateScaleFade(const LayoutFadeInfo& fade_info,
-                                 base::Optional<size_t> prev_index,
-                                 base::Optional<size_t> next_index,
                                  double scale_percent,
                                  bool scale_from_zero) const;
 
   // Calculates a kSlideFrom[Leading|Trailing]Edge fade and returns the
   // resulting child layout info.
   ChildLayout CalculateSlideFade(const LayoutFadeInfo& fade_info,
-                                 base::Optional<size_t> prev_index,
-                                 base::Optional<size_t> next_index,
                                  double scale_percent,
                                  bool slide_from_leading) const;
-
-  // Returns the size available to the host view from its parent.
-  SizeBounds GetAvailableHostSize() const;
 
   // Returns the space in which to calculate the target layout.
   gfx::Size GetAvailableTargetLayoutSize();
@@ -257,15 +289,14 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
       const View* view,
       const SizeBounds& size_bounds);
 
-  // Whether or not to animate the bounds of the host view when the preferred
-  // size of the layout changes. If false, the size will have to be set
-  // explicitly by the host view's owner. Bounds animation is done by changing
-  // the preferred size and invalidating the layout.
-  bool should_animate_bounds_ = false;
+  // How to animate bounds of the host view when the preferred size of the
+  // layout changes.
+  BoundsAnimationMode bounds_animation_mode_ =
+      BoundsAnimationMode::kUseHostBounds;
 
   // How long each animation takes. Depending on how far along an animation is,
   // a new target layout will either cause the animation to restart or redirect.
-  base::TimeDelta animation_duration_ = base::TimeDelta::FromMilliseconds(250);
+  base::TimeDelta animation_duration_ = base::Milliseconds(250);
 
   // The motion curve of the animation to perform.
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_IN_OUT;
@@ -286,7 +317,13 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   double current_offset_ = 1.0;
 
   // The restrictions on the layout's size the last time we recalculated our
-  // target layout.
+  // target layout. If they have changed, we may need to recalculate the target
+  // of the current animation.
+  //
+  // Contrast with LayoutManagerBase::cached_available_size_, which tracks
+  // changes from one layout application to the next and affects re-layout of
+  // children; this value tracks changes from one layout *calculation* to
+  // the next and affects recalculation of *this* layout.
   SizeBounds last_available_host_size_;
 
   // The layout being animated away from.
@@ -305,9 +342,29 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   std::unique_ptr<AnimationDelegate> animation_delegate_;
   base::ObserverList<Observer, true> observers_;
-  std::vector<DelayedAction> delayed_actions_;
 
-  DISALLOW_COPY_AND_ASSIGN(AnimatingLayoutManager);
+  // Actions to be run as animations finish. This is split between queued
+  // actions and queued actions to be run as a result of a pending PostTask().
+  // This prevents a race condition where PostTask() would pick up queued
+  // actions from future delayed actions during animations that were added after
+  // PostTask() ran, even if the layout is animating.
+  // For example: PostTask() due to finished layout -> start layout animation ->
+  // queue action -> the posted task runs while still animating.
+  // Without this division of actions + actions to run PostTask would pick up
+  // the queued task even though it belonged to a later animation that hasn't
+  // yet finished.
+  std::vector<base::OnceClosure> queued_actions_;
+  std::vector<base::OnceClosure> queued_actions_to_run_;
+
+  // Signal that we want to post queued actions at the end of the next layout
+  // cycle.
+  bool hold_queued_actions_for_layout_ = false;
+
+  // True when there's a pending PostTask() to RunQueuedActions(). Used to avoid
+  // scheduling redundant tasks.
+  bool run_queued_actions_is_pending_ = false;
+
+  base::WeakPtrFactory<AnimatingLayoutManager> weak_ptr_factory_{this};
 };
 
 }  // namespace views

@@ -5,15 +5,15 @@
 #ifndef BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 #define BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 
+#include <functional>
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
-#include "base/task/thread_pool/sequence_sort_key.h"
 #include "base/task/thread_pool/task_source.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 
 namespace base {
 namespace internal {
@@ -23,18 +23,21 @@ namespace internal {
 class BASE_EXPORT PriorityQueue {
  public:
   PriorityQueue();
+  PriorityQueue(const PriorityQueue&) = delete;
+  PriorityQueue& operator=(const PriorityQueue&) = delete;
   ~PriorityQueue();
 
   PriorityQueue& operator=(PriorityQueue&& other);
 
-  // Inserts |task_source| in the PriorityQueue with |sequence_sort_key|.
-  void Push(TransactionWithRegisteredTaskSource transaction_with_task_source);
+  // Inserts |task_source| in the PriorityQueue with |task_source_sort_key|.
+  void Push(RegisteredTaskSource task_source,
+            TaskSourceSortKey task_source_sort_key);
 
-  // Returns a reference to the SequenceSortKey representing the priority of
+  // Returns a reference to the TaskSourceSortKey representing the priority of
   // the highest pending task in this PriorityQueue. The reference becomes
   // invalid the next time that this PriorityQueue is modified.
   // Cannot be called on an empty PriorityQueue.
-  const SequenceSortKey& PeekSortKey() const;
+  const TaskSourceSortKey& PeekSortKey() const;
 
   // Returns a reference to the highest priority TaskSource in this
   // PriorityQueue. Cannot be called on an empty PriorityQueue. The returned
@@ -51,10 +54,10 @@ class BASE_EXPORT PriorityQueue {
   // empty.
   RegisteredTaskSource RemoveTaskSource(const TaskSource& task_source);
 
-  // Updates the sort key of the TaskSource in |transaction| to
-  // match its current traits. No-ops if the TaskSource is not in the
-  // PriorityQueue or the PriorityQueue is empty.
-  void UpdateSortKey(TaskSource::Transaction transaction);
+  // Updates the sort key of |task_source| to |sort_key|, reordering
+  // |task_source| in the queue if necessary. No-ops if the TaskSource is not in
+  // the PriorityQueue or the PriorityQueue is empty.
+  void UpdateSortKey(const TaskSource& task_source, TaskSourceSortKey sort_key);
 
   // Returns true if the PriorityQueue is empty.
   bool IsEmpty() const;
@@ -73,8 +76,8 @@ class BASE_EXPORT PriorityQueue {
   void EnableFlushTaskSourcesOnDestroyForTesting();
 
  private:
-  // A class combining a TaskSource and the SequenceSortKey that determines its
-  // position in a PriorityQueue.
+  // A class combining a TaskSource and the TaskSourceSortKey that determines
+  // its position in a PriorityQueue.
   class TaskSourceAndSortKey;
 
   using ContainerType = IntrusiveHeap<TaskSourceAndSortKey>;
@@ -89,8 +92,6 @@ class BASE_EXPORT PriorityQueue {
 
   // Should only be enabled by EnableFlushTaskSourcesOnDestroyForTesting().
   bool is_flush_task_sources_on_destroy_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PriorityQueue);
 };
 
 }  // namespace internal

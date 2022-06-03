@@ -1,0 +1,384 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <meta http-equiv="origin-trial" content="As0BE09FBB6viNVrwWICektFyN2QlX8TMaTNjvpcGH4Jf7cmI3J4UYvtZQZvScykvRwtGkO4cacWZ3EvIiRUbgUAAABaeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSRGVwdGgiLCJleHBpcnkiOjE2MTE3NzIwMTl9">
+
+    <title>AR Depth API</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+    <style>
+      #text-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: large;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>AR Depth API - GPU access</summary>
+        <p>
+          This sample demonstrates use of a depth API in immersive-ar session.
+          The data will be uploaded to the GPU & accessed from a shader.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+      </details>
+    </header>
+    <div id="text-overlay">
+      <div id="text-info"></div>
+    </div>
+    <script id="vertexShader" type="x-shader/x-vertex">
+      precision mediump float;
+
+      attribute vec2 aVertexPosition;
+      attribute vec2 aTexCoord;
+
+      varying vec2 vTexCoord;
+
+      void main(void) {
+        gl_Position = vec4(aVertexPosition, 0.0, 1.0);
+        vTexCoord = aTexCoord;
+      }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment" src="../shaders/depth-api-gpu.frag"></script>
+    <script id="turboFragment" type="x-shader/x-fragment" src="../shaders/turbo.glsl"></script>
+    <script type="module">
+      import {mat4, vec3, mat3, vec2} from '../js/cottontail/src/math/gl-matrix.js';
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let shaderProgram = null;
+      let programInfo = null;
+      let vertexBuffer = null;
+      let depthTexture = null;
+
+      // shader code
+      let vertexShaderSource = null;
+      let fragmentShaderSource = null;
+
+      const textOverlayElement = document.querySelector("#text-overlay");
+      if(!textOverlayElement) {
+        console.error("#text-overlay element not found!");
+        throw new Error("#text-overlay element not found!");
+      }
+
+      const textInfoElement = document.querySelector("#text-info");
+      if(!textInfoElement) {
+        console.error("#text-info element not found!");
+        throw new Error("#text-info element not found!");
+      }
+
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+          supportedSessionTypes: ['immersive-ar']
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      function onRequestSession() {
+        // Requests an immersive session with environment integration.
+
+        let options = {
+          requiredFeatures: ['depth-sensing', 'dom-overlay'],
+          domOverlay: { root: textOverlayElement },
+          depthSensing: {
+            usagePreference: ["cpu-optimized"],
+            dataFormatPreference: ["luminance-alpha"],
+          }
+        };
+
+        navigator.xr.requestSession('immersive-ar', options).then((session) => {
+            session.mode = 'immersive-ar';
+            xrButton.setSession(session);
+
+            fetchShaders().then(() => {
+              onSessionStarted(session);
+            });
+        });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+
+        let canvas = document.createElement('canvas');
+        gl = canvas.getContext('webgl', {
+            xrCompatible: true
+        });
+
+        initializeGL();
+
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+        session.requestReferenceSpace('local').then((refSpace) => {
+          xrRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+
+        if(session.depthUsage != "cpu-optimized") {
+          throw new Error("Unsupported depth API usage!");
+        }
+
+        if(session.depthDataFormat != "luminance-alpha") {
+          throw new Error("Unsupported depth data format!");
+        }
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        xrButton.setSession(null);
+      }
+
+      // Helper, fetches shader source code based on the passed in ID of the <script> element.
+      // Will inspect src attribute value and issue fetch API call to obtain the script body.
+      async function fetchShader(id) {
+        const element = document.getElementById(id);
+        const url = element.src;
+
+        const response = await fetch(url);
+        const text = await response.text();
+
+        return text;
+      }
+
+      async function fetchShaders() {
+        vertexShaderSource = document.getElementById('vertexShader').textContent;
+        fragmentShaderSource = await fetchShader("fragmentShader") + "\n"
+                             + await fetchShader("turboFragment");
+
+      }
+
+      // Creates new GL buffer and uploads contents of |vertices| to it:
+      function uploadVertexData(vertices) {
+        const result = gl.createBuffer();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, result);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        return result;
+      }
+
+      function initializeGL() {
+        shaderProgram = initShaderProgram(vertexShaderSource, fragmentShaderSource);
+
+        programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+              vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+              texCoord: gl.getAttribLocation(shaderProgram, 'aTexCoord'),
+            },
+            uniformLocations: {
+              depthTexture: gl.getUniformLocation(shaderProgram, 'uDepthTexture'),
+              uvTransform: gl.getUniformLocation(shaderProgram, 'uUvTransform'),
+              rawValueToMeters: gl.getUniformLocation(shaderProgram, 'uRawValueToMeters'),
+              alpha: gl.getUniformLocation(shaderProgram, 'uAlpha'),
+            },
+        };
+
+        // clip space coordinates + texture space coordinates
+        // our depth buffer has an origin in top-left corner of the screen -
+        // we need to adjust the texture coordinates to account for that
+        const vertices_data = [
+          -1, -1,    0, 1,  // bottom left
+           1, -1,    1, 1,  // bottom right
+          -1,  1,    0, 0,  // top left
+           1,  1,    1, 0,  // top right
+        ];
+
+        vertexBuffer = uploadVertexData(vertices_data);
+
+        depthTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+
+        // depth texture will likely not be power-of-2-sized, set parameters
+        // that would still make it work, see
+        // https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+      }
+
+      function initShaderProgram(vsSource, fsSource) {
+        const vertexShader = loadShader(gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = loadShader(gl.FRAGMENT_SHADER, fsSource);
+
+        // Create the shader program
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        // If creating the shader program failed, alert
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+          alert("Unable to initialize the shader program: " +
+              gl.getProgramInfoLog(shaderProgram)
+          );
+          return null;
+        }
+
+        return shaderProgram;
+      }
+
+      function loadShader(type, source) {
+        const shader = gl.createShader(type);
+
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          alert(
+            "An error occurred compiling the shaders: " +
+              gl.getShaderInfoLog(shader)
+          );
+          gl.deleteShader(shader);
+          return null;
+        }
+
+        return shader;
+      }
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      function onXRFrame(t, frame) {
+        const session = frame.session;
+        session.requestAnimationFrame(onXRFrame);
+
+        const baseLayer = session.renderState.baseLayer;
+
+        const pose = frame.getViewerPose(xrRefSpace);
+
+        if (pose) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+          // Clear the framebuffer
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+          for (const view of pose.views) {
+            const viewport = baseLayer.getViewport(view);
+            gl.viewport(viewport.x, viewport.y,
+                        viewport.width, viewport.height);
+
+            const depthData = frame.getDepthInformation(view);
+            if (depthData) {
+              textInfoElement.innerHTML = "";
+
+              renderDepthInformationGPU(depthData, view, viewport);
+            } else {
+              textInfoElement.innerHTML = "Depth data unavailable in the current frame!";
+            }
+          }
+        } else {
+          textInfoElement.innerHTML = "Pose unavailable in the current frame!";
+        }
+      }
+
+      function renderDepthInformationGPU(depthData, view, viewport) {
+        const depth_width = depthData.width;
+        const depth_height = depthData.height;
+
+        gl.useProgram(programInfo.program);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+        gl.vertexAttribPointer(
+          programInfo.attribLocations.vertexPosition,
+          2,      // 2 components
+          gl.FLOAT,
+          false,  // don't normalize
+          16,     // stride = 4 floats * 4 bytes
+          0       // start at offset 0 of the buffer
+        );
+        gl.enableVertexAttribArray(
+          programInfo.attribLocations.vertexPosition
+        );
+
+        gl.vertexAttribPointer(
+          programInfo.attribLocations.texCoord,
+          2,      // 2 components
+          gl.FLOAT,
+          false,  // don't normalize
+          16,     // stride = 4 floats * 4 bytes
+          8       // start at offset of 2 floats * 4 bytes of the buffer
+        );
+        gl.enableVertexAttribArray(
+          programInfo.attribLocations.texCoord
+        );
+
+        gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+
+        // Supply the data buffer after converting it to Uint8Array - the
+        // gl.texImage2D expects Uint8Array when using gl.UNSIGNED_BYTE type.
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE_ALPHA, depthData.width,
+                      depthData.height, 0, gl.LUMINANCE_ALPHA, gl.UNSIGNED_BYTE,
+                      new Uint8Array(depthData.data));
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.uniform1i(programInfo.uniformLocations.depthTexture, 0);
+
+        gl.uniformMatrix4fv(programInfo.uniformLocations.uvTransform, false,
+                            depthData.normDepthBufferFromNormView.matrix);
+
+        gl.uniform1f(programInfo.uniformLocations.rawValueToMeters,
+                     depthData.rawValueToMeters);
+
+        gl.uniform1f(programInfo.uniformLocations.alpha,
+                     0.75);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

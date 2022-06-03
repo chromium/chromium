@@ -7,5 +7,5 @@ console-log-short-hand-method.js:24 {foo: ƒ, boo: ƒ, gen: ƒ}
     gen: ƒ* gen()
     get baz: ƒ baz()
     set baz: ƒ baz(x)
-    __proto__: Object
+    [[Prototype]]: Object
 

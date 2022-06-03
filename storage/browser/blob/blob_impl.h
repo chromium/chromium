@@ -24,6 +24,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobImpl
       std::unique_ptr<BlobDataHandle> handle,
       mojo::PendingReceiver<blink::mojom::Blob> receiver);
 
+  BlobImpl(const BlobImpl&) = delete;
+  BlobImpl& operator=(const BlobImpl&) = delete;
+
   // Can be used to update the BlobDataHandle this BlobImpl refers to, for
   // example to update it from one that doesn't have a valid size (when the
   // BlobImpl was created) to one that has a valid size (after construction of
@@ -42,7 +45,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobImpl
   void ReadAll(
       mojo::ScopedDataPipeProducerHandle handle,
       mojo::PendingRemote<blink::mojom::BlobReaderClient> client) override;
+  void Load(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      const std::string& method,
+      const net::HttpRequestHeaders& headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
   void ReadSideData(ReadSideDataCallback callback) override;
+  void CaptureSnapshot(CaptureSnapshotCallback callback) override;
   void GetInternalUUID(GetInternalUUIDCallback callback) override;
 
   // network::mojom::DataPipeGetter:
@@ -65,8 +74,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobImpl
   mojo::ReceiverSet<network::mojom::DataPipeGetter> data_pipe_getter_receivers_;
 
   base::WeakPtrFactory<BlobImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobImpl);
 };
 
 }  // namespace storage

@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 #define IPC_MESSAGE_START GuestViewMsgStart
 
@@ -18,27 +19,7 @@
 IPC_MESSAGE_CONTROL1(GuestViewMsg_AttachToEmbedderFrame_ACK,
                      int /* element_instance_id */)
 
-// Once a RenderView proxy has been created for the guest in the embedder render
-// process, this IPC informs the embedder of the proxy's routing ID.
-IPC_MESSAGE_CONTROL2(GuestViewMsg_GuestAttached,
-                     int /* element_instance_id */,
-                     int /* source_routing_id */)
-
-// This IPC tells the browser process to detach the provided
-// |element_instance_id| from a GuestViewBase if it is attached to one.
-// In other words, routing of input and graphics will no longer flow through
-// the container associated with the provided ID.
-IPC_MESSAGE_CONTROL1(GuestViewMsg_GuestDetached,
-                     int /* element_instance_id*/)
-
 // Messages sent from the renderer to the browser.
-
-// Sent by the renderer to set initialization parameters of a Browser Plugin
-// that is identified by |element_instance_id|.
-IPC_MESSAGE_CONTROL3(GuestViewHostMsg_AttachGuest,
-                     int /* element_instance_id */,
-                     int /* guest_instance_id */,
-                     base::DictionaryValue /* attach_params */)
 
 // We have a RenderFrame with routing id of |embedder_local_frame_routing_id|.
 // We want this local frame to be replaced with a remote frame that points

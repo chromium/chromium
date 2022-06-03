@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include "base/atomic_sequence_num.h"
+#include "base/check_op.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"

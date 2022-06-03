@@ -4,7 +4,7 @@
 
 #include "content/browser/browser_plugin/browser_plugin_popup_menu_helper_mac.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/browser/render_widget_host.h"
 
@@ -12,8 +12,10 @@ namespace content {
 
 BrowserPluginPopupMenuHelper::BrowserPluginPopupMenuHelper(
     RenderFrameHostImpl* embedder_rfh,
-    RenderFrameHost* guest_rfh)
-    : PopupMenuHelper(this, guest_rfh), embedder_rfh_(embedder_rfh) {}
+    RenderFrameHost* guest_rfh,
+    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client)
+    : PopupMenuHelper(this, guest_rfh, std::move(popup_client)),
+      embedder_rfh_(embedder_rfh) {}
 
 RenderWidgetHostViewMac*
     BrowserPluginPopupMenuHelper::GetRenderWidgetHostView() const {

@@ -16,6 +16,11 @@ class LazyBackgroundTaskQueue;
 class LazyBackgroundTaskQueueFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  LazyBackgroundTaskQueueFactory(const LazyBackgroundTaskQueueFactory&) =
+      delete;
+  LazyBackgroundTaskQueueFactory& operator=(
+      const LazyBackgroundTaskQueueFactory&) = delete;
+
   static LazyBackgroundTaskQueue* GetForBrowserContext(
       content::BrowserContext* context);
   static LazyBackgroundTaskQueueFactory* GetInstance();
@@ -31,8 +36,6 @@ class LazyBackgroundTaskQueueFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LazyBackgroundTaskQueueFactory);
 };
 
 }  // namespace extensions

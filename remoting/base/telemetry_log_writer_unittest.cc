@@ -4,234 +4,196 @@
 
 #include "remoting/base/telemetry_log_writer.h"
 
+#include <array>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/timer/timer.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/url_request.h"
+#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/protobuf_http_test_responder.h"
+#include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
 namespace {
 
-constexpr char kFakeAccessToken[] = "access_token";
-constexpr char kAuthorizationHeaderPrefix[] = "Authorization:Bearer ";
-
-class FakeUrlRequest : public UrlRequest {
- public:
-  FakeUrlRequest(const std::string& expected_post,
-                 const UrlRequest::Result& returned_result)
-      : expected_post_(expected_post), returned_result_(returned_result) {}
-
-  void Respond() {
-    on_result_callback_.Run(returned_result_);
-
-    // Responding to current request will trigger sending pending events. Call
-    // RunUntilIdle() to allow the new request to be created. See LogFakeEvent()
-    // below.
-    base::RunLoop().RunUntilIdle();
+MATCHER_P(HasDurations, durations, "") {
+  apis::v1::CreateEventRequest request;
+  EXPECT_TRUE(ProtobufHttpTestResponder::ParseRequestMessage(arg, &request));
+  if (!request.has_payload() ||
+      static_cast<std::size_t>(request.payload().events_size()) !=
+          durations.size()) {
+    return false;
   }
-
-  // UrlRequest overrides.
-  void SetPostData(const std::string& content_type,
-                   const std::string& post_data) override {
-    EXPECT_EQ(content_type, "application/json");
-    EXPECT_EQ(post_data, expected_post_);
-  }
-
-  void AddHeader(const std::string& value) override {
-    if (value.find(kAuthorizationHeaderPrefix) == 0) {
-      EXPECT_EQ(std::string(kAuthorizationHeaderPrefix) + kFakeAccessToken,
-                value);
+  for (std::size_t i = 0; i < durations.size(); ++i) {
+    auto event = request.payload().events(i);
+    if (!event.has_session_duration() ||
+        event.session_duration() != durations[i]) {
+      return false;
     }
   }
+  return true;
+}
 
-  void Start(const OnResultCallback& on_result_callback) override {
-    on_result_callback_ = on_result_callback;
-  }
+template <typename... Args>
+std::array<int, sizeof...(Args)> MakeIntArray(Args&&... args) {
+  return {std::forward<Args>(args)...};
+}
 
- private:
-  std::string expected_post_;
-  UrlRequest::Result returned_result_;
-  OnResultCallback on_result_callback_;
+// Sets expectation for call to CreateEvent with the set of events specified,
+// identified by their session_duration field. (Session duration is incremented
+// after each call to LogFakeEvent.)
+//
+// responder: The ProtobufHttpTestResponder on which to set the expectation.
+// durations: The durations of the expected events, grouped with parentheses.
+//     E.g., (0) or (1, 2).
+//
+// Example usage:
+//     EXPECT_EVENTS(test_responder_, (1, 2))
+//         .WillOnce(DoSucceed(&test_responder_));
+#define EXPECT_EVENTS(responder, durations)     \
+  EXPECT_CALL((responder.GetMockInterceptor()), \
+              Run(HasDurations(MakeIntArray durations)))
 
-  DISALLOW_COPY_AND_ASSIGN(FakeUrlRequest);
-};
+// Creates a success action to be passed to WillOnce and friends.
+decltype(auto) DoSucceed(ProtobufHttpTestResponder* responder) {
+  return [responder](const network::ResourceRequest& request) {
+    return responder->AddResponse(request.url.spec(),
+                                  apis::v1::CreateEventResponse());
+  };
+}
 
-class FakeUrlRequestFactory : public UrlRequestFactory {
- public:
-  ~FakeUrlRequestFactory() override { EXPECT_TRUE(expected_requests_.empty()); }
-
-  // Returns a respond closure. Run this closure to respond to the URL request.
-  base::Closure AddExpectedRequest(const std::string& exp_post,
-                                   const UrlRequest::Result& ret_result) {
-    FakeUrlRequest* fakeRequest = new FakeUrlRequest(exp_post, ret_result);
-    base::Closure closure =
-        base::Bind(&FakeUrlRequest::Respond, base::Unretained(fakeRequest));
-    expected_requests_.push_back(std::unique_ptr<UrlRequest>(fakeRequest));
-    return closure;
-  }
-
-  // request_factory_ override.
-  std::unique_ptr<UrlRequest> CreateUrlRequest(
-      UrlRequest::Type type,
-      const std::string& url,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    EXPECT_FALSE(expected_requests_.empty());
-    if (expected_requests_.empty()) {
-      return std::unique_ptr<UrlRequest>(nullptr);
-    }
-    EXPECT_EQ(type, UrlRequest::Type::POST);
-    std::unique_ptr<UrlRequest> request(std::move(expected_requests_.front()));
-    expected_requests_.pop_front();
-    return request;
-  }
-
- private:
-  base::circular_deque<std::unique_ptr<UrlRequest>> expected_requests_;
-};
+// Creates a failure action to be passed to WillOnce and friends.
+decltype(auto) DoFail(ProtobufHttpTestResponder* responder) {
+  return [responder](const network::ResourceRequest& request) {
+    return responder->AddError(
+        request.url.spec(),
+        ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
+                           "The service is unavailable."));
+  };
+}
 
 }  // namespace
 
 class TelemetryLogWriterTest : public testing::Test {
  public:
-  TelemetryLogWriterTest()
-      : log_writer_(
-            "",
-            std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
-                                                   "email",
-                                                   kFakeAccessToken)) {
-    auto request_factory = std::make_unique<FakeUrlRequestFactory>();
-    request_factory_ = request_factory.get();
-    log_writer_.Init(std::move(request_factory));
-    success_result_.success = true;
-    success_result_.status = 200;
-    success_result_.response_body = "{}";
+  TelemetryLogWriterTest() {
+    log_writer_.Init(test_responder_.GetUrlLoaderFactory());
+  }
 
-    unauth_result_.success = false;
-    unauth_result_.status = net::HTTP_UNAUTHORIZED;
-    unauth_result_.response_body = "{}";
+  ~TelemetryLogWriterTest() override {
+    // It's an async process to create request to send all pending events.
+    RunUntilIdle();
   }
 
  protected:
   void LogFakeEvent() {
     ChromotingEvent entry;
-    entry.SetInteger("id", id_);
-    id_++;
+    entry.SetInteger(ChromotingEvent::kSessionDurationKey, duration_);
+    duration_++;
     log_writer_.Log(entry);
-
-    // It's an async process to create request to send all pending events.
-    base::RunLoop().RunUntilIdle();
   }
 
-  UrlRequest::Result success_result_;
-  UrlRequest::Result unauth_result_;
+  // Waits until TelemetryLog is idle.
+  void RunUntilIdle() {
+    // gRPC has its own event loop, which means sometimes the task queue will
+    // be empty while gRPC is working. Thus, TaskEnvironment::RunUntilIdle can't
+    // be used, as it would return early. Instead, TelemetryLogWriter is polled
+    // to determine when it has finished.
+    base::RunLoop run_loop;
+    base::RepeatingTimer timer;
+    // Mock clock will auto-fast-forward, so the delay here is somewhat
+    // arbitrary.
+    timer.Start(
+        FROM_HERE, base::Seconds(1),
+        base::BindRepeating(
+            [](TelemetryLogWriter* log_writer,
+               base::RepeatingClosure quit_closure) {
+              if (log_writer->IsIdleForTesting()) {
+                quit_closure.Run();
+              }
+            },
+            base::Unretained(&log_writer_), run_loop.QuitWhenIdleClosure()));
+    run_loop.Run();
+  }
 
-  FakeUrlRequestFactory* request_factory_;  // No ownership.
-  TelemetryLogWriter log_writer_;
+  ProtobufHttpTestResponder test_responder_;
+  TelemetryLogWriter log_writer_{
+      std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
+                                             "dummy",
+                                             "dummy")};
 
  private:
-  int id_ = 0;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // Incremented for each event to allow them to be distinguished.
+  int duration_ = 0;
+  // MOCK_TIME will fast forward through back-off delays.
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-// Test workflow: add request -> log event -> respond request.
-// Test fails if req is incorrect or creates more/less reqs than expected
 TEST_F(TelemetryLogWriterTest, PostOneLogImmediately) {
-  auto respond = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", success_result_);
+  EXPECT_EVENTS(test_responder_, (0)).WillOnce(DoSucceed(&test_responder_));
   LogFakeEvent();
-  respond.Run();
 }
 
 TEST_F(TelemetryLogWriterTest, PostOneLogAndHaveTwoPendingLogs) {
-  auto respond1 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", success_result_);
-  LogFakeEvent();
+  ::testing::InSequence sequence;
 
-  auto respond2 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":1},{\"id\":2}]}", success_result_);
+  // First one is sent right away. Second two are batched and sent once the
+  // first request has completed.
+  EXPECT_EVENTS(test_responder_, (0)).WillOnce(DoSucceed(&test_responder_));
+  EXPECT_EVENTS(test_responder_, (1, 2)).WillOnce(DoSucceed(&test_responder_));
   LogFakeEvent();
   LogFakeEvent();
-  respond1.Run();
-  respond2.Run();
+  LogFakeEvent();
 }
 
 TEST_F(TelemetryLogWriterTest, PostLogFailedAndRetry) {
-  // kMaxTries = 5
-  auto respond1 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-  auto respond2 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-  auto respond3 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-  auto respond4 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-  auto respond5 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-
+  EXPECT_EVENTS(test_responder_, (0))
+      .Times(5)
+      .WillRepeatedly(DoFail(&test_responder_));
   LogFakeEvent();
-
-  respond1.Run();
-  respond2.Run();
-  respond3.Run();
-  respond4.Run();
-  respond5.Run();
 }
 
 TEST_F(TelemetryLogWriterTest, PostOneLogFailedResendWithTwoPendingLogs) {
-  auto respond1 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
-  LogFakeEvent();
-
-  auto respond2 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0},{\"id\":1},{\"id\":2}]}", success_result_);
+  EXPECT_EVENTS(test_responder_, (0)).WillOnce(DoFail(&test_responder_));
+  EXPECT_EVENTS(test_responder_, (0, 1, 2))
+      .WillOnce(DoSucceed(&test_responder_));
   LogFakeEvent();
   LogFakeEvent();
-
-  respond1.Run();
-  respond2.Run();
+  LogFakeEvent();
 }
 
 TEST_F(TelemetryLogWriterTest, PostThreeLogsFailedAndResendWithOnePending) {
   // This tests the ordering of the resent log.
-  auto respond1 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", UrlRequest::Result::Failed());
+  EXPECT_EVENTS(test_responder_, (0)).WillOnce(DoFail(&test_responder_));
+  EXPECT_EVENTS(test_responder_, (0, 1, 2))
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs([this]() { LogFakeEvent(); }),
+          DoFail(&test_responder_)));
+  EXPECT_EVENTS(test_responder_, (0, 1, 2, 3))
+      .WillOnce(DoSucceed(&test_responder_));
   LogFakeEvent();
-
-  auto respond2 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0},{\"id\":1},{\"id\":2}]}",
-      UrlRequest::Result::Failed());
   LogFakeEvent();
   LogFakeEvent();
-
-  respond1.Run();
-
-  auto respond3 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0},{\"id\":1},{\"id\":2},{\"id\":3}]}",
-      success_result_);
-  LogFakeEvent();
-
-  respond2.Run();
-  respond3.Run();
 }
 
-TEST_F(TelemetryLogWriterTest, PostOneUnauthorizedCallClosureAndRetry) {
-  auto respond1 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", unauth_result_);
+TEST_F(TelemetryLogWriterTest, PostOneFailedThenSucceed) {
+  EXPECT_EVENTS(test_responder_, (0))
+      .WillOnce(DoFail(&test_responder_))
+      .WillOnce(DoSucceed(&test_responder_));
   LogFakeEvent();
-
-  auto respond2 = request_factory_->AddExpectedRequest(
-      "{\"event\":[{\"id\":0}]}", success_result_);
-  respond1.Run();
-  respond2.Run();
 }
 
 }  // namespace remoting

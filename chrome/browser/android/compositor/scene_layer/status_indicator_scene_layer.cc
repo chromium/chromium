@@ -33,7 +33,8 @@ void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& object,
     const base::android::JavaParamRef<jobject>& jresource_manager,
-    jint view_resource_id) {
+    jint view_resource_id,
+    jint y_offset) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* resource = resource_manager->GetResource(
@@ -50,7 +51,9 @@ void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
 
   // The view's layer should be the same size as the texture.
   view_layer_->SetBounds(resource->size());
-  view_layer_->SetPosition(gfx::PointF(0, 0));
+  // Position the layer at the bottom of the offset.
+  view_layer_->SetPosition(
+      gfx::PointF(0, y_offset - resource->size().height()));
 }
 
 void StatusIndicatorSceneLayer::SetContentTree(

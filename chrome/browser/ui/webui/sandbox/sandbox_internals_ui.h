@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 // This WebUI page displays the status of the renderer sandbox on Linux and
@@ -21,11 +20,11 @@ class SandboxInternalsUI : public content::WebUIController {
  public:
   explicit SandboxInternalsUI(content::WebUI* web_ui);
   ~SandboxInternalsUI() override;
+  SandboxInternalsUI(const SandboxInternalsUI&) = delete;
+  SandboxInternalsUI& operator=(const SandboxInternalsUI&) = delete;
 
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SandboxInternalsUI);
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_INTERNALS_UI_H_

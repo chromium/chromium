@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {

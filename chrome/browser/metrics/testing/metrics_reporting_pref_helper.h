@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_METRICS_TESTING_METRICS_REPORTING_PREF_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
-#include "base/values.h"
 
 namespace metrics {
 

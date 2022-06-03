@@ -264,22 +264,4 @@ TEST(FloatRectTest, EnclosedIntRect) {
             EnclosedIntRect(max_rect));
 }
 
-TEST(FloatRectTest, InclusiveIntersect) {
-  FloatRect rect(11, 12, 0, 0);
-  EXPECT_TRUE(rect.InclusiveIntersect(FloatRect(11, 12, 13, 14)));
-  EXPECT_EQ(EnclosingIntRect(rect), IntRect(11, 12, 0, 0));
-
-  rect = FloatRect(11, 12, 13, 14);
-  EXPECT_TRUE(rect.InclusiveIntersect(FloatRect(24, 8, 0, 7)));
-  EXPECT_EQ(EnclosingIntRect(rect), IntRect(24, 12, 0, 3));
-
-  rect = FloatRect(11, 12, 13, 14);
-  EXPECT_TRUE(rect.InclusiveIntersect(FloatRect(9, 15, 4, 0)));
-  EXPECT_EQ(EnclosingIntRect(rect), IntRect(11, 15, 2, 0));
-
-  rect = FloatRect(11, 12, 0, 14);
-  EXPECT_FALSE(rect.InclusiveIntersect(FloatRect(12, 13, 15, 16)));
-  EXPECT_EQ(EnclosingIntRect(rect), IntRect());
-}
-
 }  // namespace blink

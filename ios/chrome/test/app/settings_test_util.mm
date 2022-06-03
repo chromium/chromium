@@ -15,7 +15,7 @@
 namespace chrome_test_util {
 
 void SetContentSettingsBlockPopups(ContentSetting setting) {
-  ios::ChromeBrowserState* browser_state = GetOriginalBrowserState();
+  ChromeBrowserState* browser_state = GetOriginalBrowserState();
   HostContentSettingsMap* settings_map =
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
   settings_map->SetDefaultContentSetting(ContentSettingsType::POPUPS, setting);

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "components/autofill/core/common/password_form.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -16,6 +15,9 @@ class IdentityManager;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
+
 namespace sync_util {
 
 // Returns the sync username received from |identity_manager| (if not null).
@@ -30,7 +32,7 @@ std::string GetSyncUsernameIfSyncingPasswords(
 // Returns true if |form| corresponds to the account specified by
 // GetSyncUsernameIfSyncingPasswords. Returns false if
 // GetSyncUsernameIfSyncingPasswords does not specify any account.
-bool IsSyncAccountCredential(const autofill::PasswordForm& form,
+bool IsSyncAccountCredential(const PasswordForm& form,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager);
 
@@ -43,10 +45,11 @@ bool IsGaiaCredentialPage(const std::string& signon_realm);
 
 // If |form|'s origin matches enterprise login URL or enterprise change password
 // URL.
-bool ShouldSaveEnterprisePasswordHash(const autofill::PasswordForm& form,
+bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
 }  // namespace sync_util
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SYNC_UTIL_H_

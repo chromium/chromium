@@ -19,10 +19,6 @@ NSString* const kContentInsetKey = @"contentInset";
 NSString* const kMinZoomKey = @"minZoom";
 NSString* const kMaxZoomKey = @"maxZoom";
 NSString* const kZoomKey = @"zoom";
-// Deprecated serialization keys.
-// TODO(crbug.com/926041): Remove these keys.
-NSString* const kDeprecatedXOffsetKey = @"scrollX";
-NSString* const kDeprecatedYOffsetKey = @"scrollY";
 // Invalid consts.
 const CGPoint kInvalidContentOffset = {NAN, NAN};
 const UIEdgeInsets kInvalidContentInset = {NAN, NAN, NAN, NAN};
@@ -62,10 +58,7 @@ inline CGPoint GetContentOffset(NSDictionary* serialization) {
   NSValue* value = serialization[kContentOffsetKey];
   if (value)
     return [value CGPointValue];
-  // TODO(crbug.com/926041): Return kInvalidContentOffset when legacy keys are
-  // removed.
-  return CGPointMake(GetFloatValue(kDeprecatedXOffsetKey, serialization),
-                     GetFloatValue(kDeprecatedYOffsetKey, serialization));
+  return kInvalidContentOffset;
 }
 // Returns the contentInset stored in |serialization|, or a NAN inset if it is
 // not set.
@@ -73,14 +66,6 @@ inline UIEdgeInsets GetContentInset(NSDictionary* serialization) {
   NSValue* value = serialization[kContentInsetKey];
   if (value)
     return [value UIEdgeInsetsValue];
-  if (serialization[kDeprecatedXOffsetKey] &&
-      serialization[kDeprecatedYOffsetKey]) {
-    // When restoring PageScrollStates created using the deprecated
-    // serialization keyes, use UIEdgeInsetsZero as default.
-    // TODO(crbug.com/926041): Just return kInvalidContentInset when legacy keys
-    // are removed.
-    return UIEdgeInsetsZero;
-  }
   // Return an invalid inset if neither the new nor legacy keys were contained.
   return kInvalidContentInset;
 }

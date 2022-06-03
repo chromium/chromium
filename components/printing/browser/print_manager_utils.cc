@@ -5,8 +5,9 @@
 #include "components/printing/browser/print_manager_utils.h"
 
 #include "components/printing/browser/print_composite_client.h"
-#include "components/printing/common/print_messages.h"
-#include "content/public/browser/site_isolation_policy.h"
+#include "components/printing/common/print.mojom.h"
+#include "components/site_isolation/site_isolation_policy.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 
 namespace printing {
@@ -35,7 +36,8 @@ void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
   // where OOPIF is used such as isolate-extensions, but should be good for
   // feature testing purpose. Eventually, we will remove this check and use pdf
   // compositor service by default for printing.
-  if (content::SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs()) {
+  if (site_isolation::SiteIsolationPolicy::
+          ShouldPdfCompositorBeEnabledForOopifs()) {
     PrintCompositeClient::CreateForWebContents(web_contents);
     PrintCompositeClient::FromWebContents(web_contents)
         ->SetUserAgent(user_agent);
@@ -44,7 +46,7 @@ void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
 }
 
 void RenderParamsFromPrintSettings(const PrintSettings& settings,
-                                   PrintMsg_Print_Params* params) {
+                                   mojom::PrintParams* params) {
   params->page_size = settings.page_setup_device_units().physical_size();
   params->content_size.SetSize(
       settings.page_setup_device_units().content_area().width(),
@@ -59,6 +61,7 @@ void RenderParamsFromPrintSettings(const PrintSettings& settings,
   params->dpi = settings.dpi_size();
   params->scale_factor = settings.scale_factor();
   params->rasterize_pdf = settings.rasterize_pdf();
+  params->rasterize_pdf_dpi = settings.rasterize_pdf_dpi();
   // Always use an invalid cookie.
   params->document_cookie = 0;
   params->selection_only = settings.selection_only();
@@ -68,8 +71,8 @@ void RenderParamsFromPrintSettings(const PrintSettings& settings,
   params->title = settings.title();
   params->url = settings.url();
   params->printed_doc_type = IsOopifEnabled() && settings.is_modifiable()
-                                 ? SkiaDocumentType::MSKP
-                                 : SkiaDocumentType::PDF;
+                                 ? mojom::SkiaDocumentType::kMSKP
+                                 : mojom::SkiaDocumentType::kPDF;
   params->pages_per_sheet = settings.pages_per_sheet();
 }
 

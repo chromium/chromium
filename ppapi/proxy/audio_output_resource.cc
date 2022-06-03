@@ -4,8 +4,10 @@
 
 #include "ppapi/proxy/audio_output_resource.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "ipc/ipc_platform_file.h"
 #include "media/base/audio_bus.h"
@@ -167,7 +169,7 @@ void AudioOutputResource::OnPluginMsgOpenReply(
 void AudioOutputResource::SetStreamInfo(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::Handle socket_handle) {
-  socket_.reset(new base::CancelableSyncSocket(socket_handle));
+  socket_ = std::make_unique<base::CancelableSyncSocket>(socket_handle);
 
   // Ensure that the allocated memory is enough for the audio bus and buffer
   // parameters. Note that there might be slightly more allocated memory as
@@ -209,8 +211,8 @@ void AudioOutputResource::StartThread() {
   memset(client_buffer_.get(), 0, client_buffer_size_bytes_);
 
   DCHECK(!audio_output_thread_.get());
-  audio_output_thread_.reset(
-      new base::DelegateSimpleThread(this, "plugin_audio_output_thread"));
+  audio_output_thread_ = std::make_unique<base::DelegateSimpleThread>(
+      this, "plugin_audio_output_thread");
   audio_output_thread_->Start();
 }
 
@@ -245,8 +247,7 @@ void AudioOutputResource::Run() {
       break;
 
     {
-      base::TimeDelta delay =
-          base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+      base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
       audio_output_callback_(client_buffer_.get(), client_buffer_size_bytes_,
                              delay.InSecondsF(), user_data_);
@@ -313,8 +314,8 @@ int32_t AudioOutputResource::CommonOpen(
       enter_config.object()->GetSampleFrameCount());
   Call<PpapiPluginMsg_AudioOutput_OpenReply>(
       RENDERER, msg,
-      base::Bind(&AudioOutputResource::OnPluginMsgOpenReply,
-                 base::Unretained(this)));
+      base::BindOnce(&AudioOutputResource::OnPluginMsgOpenReply,
+                     base::Unretained(this)));
   return PP_OK_COMPLETIONPENDING;
 }
 }  // namespace proxy

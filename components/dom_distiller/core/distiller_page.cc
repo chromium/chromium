@@ -13,9 +13,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/grit/components_resources.h"
@@ -41,10 +41,10 @@ std::string GetDistillerScriptWithOptions(
     return "";
   }
 
-  std::unique_ptr<base::Value> options_value(
-      dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options));
+  base::Value options_value =
+      dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options);
   std::string options_json;
-  if (!base::JSONWriter::Write(*options_value, &options_json)) {
+  if (!base::JSONWriter::Write(options_value, &options_json)) {
     NOTREACHED();
   }
   size_t options_offset = script.find(kOptionsPlaceholder);
@@ -67,21 +67,21 @@ std::string GetDistillerScriptWithOptions(
 
 }  // namespace
 
-DistillerPageFactory::~DistillerPageFactory() {}
+DistillerPageFactory::~DistillerPageFactory() = default;
 
 DistillerPage::DistillerPage() : ready_(true) {}
 
-DistillerPage::~DistillerPage() {}
+DistillerPage::~DistillerPage() = default;
 
 void DistillerPage::DistillPage(
     const GURL& gurl,
     const dom_distiller::proto::DomDistillerOptions options,
-    const DistillerPageCallback& callback) {
+    DistillerPageCallback callback) {
   DCHECK(ready_);
   // It is only possible to distill one page at a time. |ready_| is reset when
   // the callback to OnDistillationDone happens.
   ready_ = false;
-  distiller_page_callback_ = callback;
+  distiller_page_callback_ = std::move(callback);
   distillation_start_ = base::TimeTicks::Now();
   DistillPageImpl(gurl,
                   GetDistillerScriptWithOptions(options, StringifyOutput()));
@@ -100,7 +100,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   } else {
     found_content =
         dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
-            value, distiller_result.get());
+            *value, distiller_result.get());
     if (!found_content) {
       DVLOG(1) << "Unable to parse DomDistillerResult.";
     } else {
@@ -113,31 +113,28 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
         const dom_distiller::proto::TimingInfo& timing =
             distiller_result->timing_info();
         if (timing.has_markup_parsing_time()) {
-          UMA_HISTOGRAM_TIMES(
-              "DomDistiller.Time.MarkupParsing",
-              base::TimeDelta::FromMillisecondsD(timing.markup_parsing_time()));
+          UMA_HISTOGRAM_TIMES("DomDistiller.Time.MarkupParsing",
+                              base::Milliseconds(timing.markup_parsing_time()));
         }
         if (timing.has_document_construction_time()) {
-          UMA_HISTOGRAM_TIMES("DomDistiller.Time.DocumentConstruction",
-                              base::TimeDelta::FromMillisecondsD(
-                                  timing.document_construction_time()));
+          UMA_HISTOGRAM_TIMES(
+              "DomDistiller.Time.DocumentConstruction",
+              base::Milliseconds(timing.document_construction_time()));
         }
         if (timing.has_article_processing_time()) {
-          UMA_HISTOGRAM_TIMES("DomDistiller.Time.ArticleProcessing",
-                              base::TimeDelta::FromMillisecondsD(
-                                  timing.article_processing_time()));
+          UMA_HISTOGRAM_TIMES(
+              "DomDistiller.Time.ArticleProcessing",
+              base::Milliseconds(timing.article_processing_time()));
         }
         if (timing.has_formatting_time()) {
-          UMA_HISTOGRAM_TIMES(
-              "DomDistiller.Time.Formatting",
-              base::TimeDelta::FromMillisecondsD(timing.formatting_time()));
+          UMA_HISTOGRAM_TIMES("DomDistiller.Time.Formatting",
+                              base::Milliseconds(timing.formatting_time()));
         }
         if (timing.has_total_time()) {
-          UMA_HISTOGRAM_TIMES(
-              "DomDistiller.Time.DistillationTotal",
-              base::TimeDelta::FromMillisecondsD(timing.total_time()));
+          UMA_HISTOGRAM_TIMES("DomDistiller.Time.DistillationTotal",
+                              base::Milliseconds(timing.total_time()));
           VLOG(1) << "DomDistiller.Time.DistillationTotal = "
-                  << base::TimeDelta::FromMillisecondsD(timing.total_time());
+                  << base::Milliseconds(timing.total_time());
         }
       }
       if (distiller_result->has_statistics_info()) {
@@ -152,7 +149,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(distiller_page_callback_,
+      FROM_HERE, base::BindOnce(std::move(distiller_page_callback_),
                                 std::move(distiller_result), found_content));
 }
 

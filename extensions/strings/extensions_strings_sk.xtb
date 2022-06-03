@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Generovanie náhodného súkromného kľúča RSA žiaľ zlyhalo.</translation>
 <translation id="1445572445564823378">Toto rozšírenie spomaľuje prehliadač <ph name="PRODUCT_NAME" />. Ak chcete obnoviť výkonnosť prehliadača <ph name="PRODUCT_NAME" />, zakážte ho.</translation>
 <translation id="1468038450257740950">Rozhranie WebGL nie je podporované.</translation>
-<translation id="149347756975725155">Nepodarilo sa načítať ikonu rozšírenia „<ph name="ICON" />“.</translation>
 <translation id="1803557475693955505">Nepodarilo sa načítať stránku na pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Nepodarilo sa dekódovať obrázok: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalizácia sa použila, parameter default_locale však nebol v manifeste určený.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Prečítanie súkromného kľúča zlyhalo.</translation>
 <translation id="6391538222494443604">Vstupný adresár musí existovať.</translation>
 <translation id="641087317769093025">Rozšírenie sa nepodarilo rozbaliť</translation>
-<translation id="6413453408918378296">Ikona <ph name="ICON" /> nie je dostatočne viditeľná.</translation>
 <translation id="6542618148162044354">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému alebo viacerým vašim zariadeniam:</translation>
 <translation id="657064425229075395">Nepodarilo sa načítať skript na pozadí „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>

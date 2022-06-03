@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
@@ -14,6 +15,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
 namespace blink {
+
+class ScriptCacheConsumer;
 
 // PendingScript for a classic script
 // https://html.spec.whatwg.org/C/#classic-script.
@@ -25,9 +28,8 @@ namespace blink {
 // guarantee that the data buffer will not be purged.
 class CORE_EXPORT ClassicPendingScript final : public PendingScript,
                                                public ResourceClient,
+                                               public ScriptCacheConsumerClient,
                                                public MemoryPressureListener {
-  USING_GARBAGE_COLLECTED_MIXIN(ClassicPendingScript);
-
  public:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   //
@@ -58,41 +60,41 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
                        bool is_external);
   ~ClassicPendingScript() override;
 
-  // ScriptStreamer callbacks.
-  void SetStreamer(ScriptStreamer*);
-  void StreamingFinished();
+  void Trace(Visitor*) const override;
 
-  void Trace(Visitor*) override;
-
-  mojom::ScriptType GetScriptType() const override {
-    return mojom::ScriptType::kClassic;
+  mojom::blink::ScriptType GetScriptType() const override {
+    return mojom::blink::ScriptType::kClassic;
   }
-
-  void WatchForLoad(PendingScriptClient*) override;
 
   ClassicScript* GetSource(const KURL& document_url) const override;
   bool IsReady() const override;
   bool IsExternal() const override { return is_external_; }
   bool WasCanceled() const override;
-  void StartStreamingIfPossible() override;
   KURL UrlForTracing() const override;
   void DisposeInternal() override;
+
+  void NotifyCacheConsumeFinished() override;
 
   void SetNotStreamingReasonForTest(ScriptStreamer::NotStreamingReason reason) {
     not_streamed_reason_ = reason;
   }
 
+  bool IsEligibleForDelay() const override;
+
  private:
   // See AdvanceReadyState implementation for valid state transitions.
   enum ReadyState {
-    // This state is considered "not ready".
+    // These states are considered "not ready".
     kWaitingForResource,
+    kWaitingForCacheConsumer,
     // These states are considered "ready".
     kReady,
     kErrorOccurred,
   };
 
   ClassicPendingScript() = delete;
+
+  static bool StateIsReady(ReadyState);
 
   // Advances the current state of the script, reporting to the client if
   // appropriate.
@@ -104,10 +106,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   void NotifyFinished(Resource*) override;
   String DebugName() const override { return "PendingScript"; }
 
-  static void RecordStreamingHistogram(
-      ScriptSchedulingType type,
-      bool can_use_streamer,
-      ScriptStreamer::NotStreamingReason reason);
+  void RecordThirdPartyRequestWithCookieIfNeeded(const ResourceResponse&) const;
 
   // MemoryPressureListener
   void OnPurgeMemory() override;
@@ -136,8 +135,10 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   // Specifies the reason that script was never streamed.
   ScriptStreamer::NotStreamingReason not_streamed_reason_;
+
+  Member<ScriptCacheConsumer> cache_consumer_;
 };
 
 }  // namespace blink
 
-#endif  // PendingScript_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_

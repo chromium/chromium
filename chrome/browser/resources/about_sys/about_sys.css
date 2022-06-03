@@ -2,10 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#anchor {
-  display: none;
-}
-
 body {
   font-size: 84%;
   margin: 0;
@@ -147,9 +143,30 @@ tr > *:nth-child(2) {
   background-repeat: no-repeat;
 }
 
+a.anchor {
+  text-decoration: none;
+}
+
+a.anchor::before {
+  content: '🔗';
+}
+
+a.anchor:hover {
+  text-decoration: underline;
+}
+
 .stat-value {
   text-overflow: ellipsis;
   white-space: pre-wrap;
+}
+
+a.stat-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.stat-name-link:hover {
+  text-decoration: underline;
 }
 
 html[dir='rtl'] #details .name {

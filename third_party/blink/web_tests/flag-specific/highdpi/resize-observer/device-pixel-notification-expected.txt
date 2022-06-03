@@ -1,0 +1,6 @@
+CONSOLE ERROR: ResizeObserver loop limit exceeded
+This is a testharness.js-based test.
+FAIL An observation is fired when device-pixel-content-box is being observed and sub pixel values are used assert_equals: target device-pixel-content-box inline size expected 56 but got 83
+PASS Resize observer callback triggers layout without style change
+Harness: the test ran to completion.
+

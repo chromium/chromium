@@ -10,14 +10,15 @@ testonly = true
 
 android_apk("push_apps_to_background_apk") {
   apk_name = "PushAppsToBackground"
-  java_files = [ "src/org/chromium/push_apps_to_background/PushAppsToBackgroundActivity.java" ]
+  sources = [ "src/org/chromium/push_apps_to_background/PushAppsToBackgroundActivity.java" ]
   android_manifest = "AndroidManifest.xml"
-  deps = [
-    ":push_apps_to_background_apk_resources",
-  ]
+  deps = [ ":push_apps_to_background_apk_resources" ]
 }
 
 android_resources("push_apps_to_background_apk_resources") {
-  resource_dirs = [ "res" ]
-  custom_package = "org.chromium.push_apps_to_background"
+  sources = [
+    "res/drawable-mdpi/ic_launcher.png",
+    "res/layout/activity_push_apps_to_background.xml",
+    "res/values/strings.xml",
+  ]
 }

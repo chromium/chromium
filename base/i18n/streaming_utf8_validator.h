@@ -34,6 +34,12 @@ class BASE_I18N_EXPORT StreamingUtf8Validator {
   };
 
   StreamingUtf8Validator() : state_(0u) {}
+
+  // This type could be made copyable but there is currently no use-case for
+  // it.
+  StreamingUtf8Validator(const StreamingUtf8Validator&) = delete;
+  StreamingUtf8Validator& operator=(const StreamingUtf8Validator&) = delete;
+
   // Trivial destructor intentionally omitted.
 
   // Validate |size| bytes starting at |data|. If the concatenation of all calls
@@ -55,10 +61,6 @@ class BASE_I18N_EXPORT StreamingUtf8Validator {
   // The state is stored as an offset into |kUtf8ValidatorTables|. The special
   // state |kUtf8InvalidState| is invalid.
   uint8_t state_;
-
-  // This type could be made copyable but there is currently no use-case for
-  // it.
-  DISALLOW_COPY_AND_ASSIGN(StreamingUtf8Validator);
 };
 
 }  // namespace base

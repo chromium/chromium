@@ -5,6 +5,7 @@
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/dbus/kerberos/fake_kerberos_client.h"
@@ -28,9 +29,6 @@ FakeUpstartClient::~FakeUpstartClient() {
   g_instance = nullptr;
 }
 
-void FakeUpstartClient::AddObserver(Observer* observer) {}
-void FakeUpstartClient::RemoveObserver(Observer* observer) {}
-
 // static
 FakeUpstartClient* FakeUpstartClient::Get() {
   return g_instance;
@@ -39,15 +37,18 @@ FakeUpstartClient* FakeUpstartClient::Get() {
 void FakeUpstartClient::StartJob(const std::string& job,
                                  const std::vector<std::string>& upstart_env,
                                  VoidDBusMethodCallback callback) {
+  const bool result =
+      start_job_cb_ ? start_job_cb_.Run(job, upstart_env) : true;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), start_job_result_));
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void FakeUpstartClient::StopJob(const std::string& job,
                                 const std::vector<std::string>& upstart_env,
                                 VoidDBusMethodCallback callback) {
+  const bool result = stop_job_cb_ ? stop_job_cb_.Run(job, upstart_env) : true;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), stop_job_result_));
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void FakeUpstartClient::StartAuthPolicyService() {
@@ -59,6 +60,9 @@ void FakeUpstartClient::RestartAuthPolicyService() {
       << "Trying to restart authpolicyd which is not started";
   FakeAuthPolicyClient::Get()->SetStarted(true);
 }
+
+void FakeUpstartClient::StartLacrosChrome(
+    const std::vector<std::string>& upstart_env) {}
 
 void FakeUpstartClient::StartMediaAnalytics(
     const std::vector<std::string>& /* upstart_env */,
@@ -96,6 +100,18 @@ void FakeUpstartClient::StartWilcoDtcService(VoidDBusMethodCallback callback) {
 }
 
 void FakeUpstartClient::StopWilcoDtcService(VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeUpstartClient::StartArcDataSnapshotd(
+    const std::vector<std::string>& upstart_env,
+    VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeUpstartClient::StopArcDataSnapshotd(VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

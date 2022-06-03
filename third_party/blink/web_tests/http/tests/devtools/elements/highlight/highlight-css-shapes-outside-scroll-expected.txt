@@ -5,16 +5,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        8,
-        "Q",
-        121,
-        8,
-        145,
-        31,
-        "Q",
-        168,
-        55,
         168,
         88,
         "Q",
@@ -47,6 +37,16 @@ circle{
         8,
         88,
         8,
+        "Q",
+        121,
+        8,
+        145,
+        31,
+        "Q",
+        168,
+        55,
+        168,
+        88,
         "Z"
       ],
       "fillColor": "rgba(0, 0, 0, 0)"
@@ -54,16 +54,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        -24,
-        "Q",
-        134,
-        -24,
-        167,
-        9,
-        "Q",
-        200,
-        42,
         200,
         88,
         "Q",
@@ -96,6 +86,16 @@ circle{
         -24,
         88,
         -24,
+        "Q",
+        134,
+        -24,
+        167,
+        9,
+        "Q",
+        200,
+        42,
+        200,
+        88,
         "Z"
       ],
       "fillColor": "rgba(128, 128, 128, 0)"
@@ -180,12 +180,19 @@ circle{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "circle",
     "className": ".float.circle",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 circle{
@@ -193,16 +200,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        8,
-        "Q",
-        121,
-        8,
-        145,
-        31,
-        "Q",
-        168,
-        55,
         168,
         88,
         "Q",
@@ -235,6 +232,16 @@ circle{
         8,
         88,
         8,
+        "Q",
+        121,
+        8,
+        145,
+        31,
+        "Q",
+        168,
+        55,
+        168,
+        88,
         "Z"
       ],
       "fillColor": "rgba(0, 0, 0, 0)"
@@ -242,16 +249,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        -24,
-        "Q",
-        134,
-        -24,
-        167,
-        9,
-        "Q",
-        200,
-        42,
         200,
         88,
         "Q",
@@ -284,6 +281,16 @@ circle{
         -24,
         88,
         -24,
+        "Q",
+        134,
+        -24,
+        167,
+        9,
+        "Q",
+        200,
+        42,
+        200,
+        88,
         "Z"
       ],
       "fillColor": "rgba(128, 128, 128, 0)"
@@ -368,12 +375,19 @@ circle{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "circle",
     "className": ".float.circle",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 

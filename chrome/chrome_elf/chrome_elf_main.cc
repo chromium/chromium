@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <windows.h>
 
+#include "chrome/chrome_elf/chrome_elf_security.h"
 #include "chrome/chrome_elf/crash/crash_helper.h"
 #include "chrome/chrome_elf/third_party_dlls/beacon.h"
 #include "chrome/chrome_elf/third_party_dlls/main.h"
@@ -15,9 +16,10 @@
 #include "chrome/install_static/product_install_details.h"
 #include "chrome/install_static/user_data_dir.h"
 
-// This function is a temporary workaround for https://crbug.com/655788. We
-// need to come up with a better way to initialize crash reporting that can
-// happen inside DllMain().
+// This function is exported from the DLL so that it can be called by WinMain
+// after startup has completed in the browser process. For non-browser processes
+// it will be called inside the DLL loader lock so it should do as little as
+// possible to prevent deadlocks.
 void SignalInitializeCrashReporting() {
   if (!elf_crash::InitializeCrashReporting()) {
 #ifdef _DEBUG
@@ -59,24 +61,26 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
 BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
   if (reason == DLL_PROCESS_ATTACH) {
     install_static::InitializeProductDetailsForPrimaryModule();
-
-    // CRT on initialization installs an exception filter which calls
-    // TerminateProcess. We need to hook CRT's attempt to set an exception.
-    elf_crash::DisableSetUnhandledExceptionFilter();
-
     install_static::InitializeProcessType();
 
-    // If this is not the browser process, all done.
-    if (install_static::IsNonBrowserProcess())
-      return TRUE;
+    if (install_static::IsBrowserProcess()) {
+      __try {
+        // Disable third party extension points.
+        elf_security::EarlyBrowserSecurity();
 
-    __try {
-      // Initialize the blocking of third-party DLLs if the initialization of
-      // the safety beacon succeeds.
-      if (third_party_dlls::LeaveSetupBeacon())
-        third_party_dlls::Init();
-    } __except (elf_crash::GenerateCrashDump(GetExceptionInformation())) {
+        // Initialize the blocking of third-party DLLs if the initialization of
+        // the safety beacon succeeds.
+        if (third_party_dlls::LeaveSetupBeacon())
+          third_party_dlls::Init();
+      } __except (elf_crash::GenerateCrashDump(GetExceptionInformation())) {
+      }
+    } else if (!install_static::IsCrashpadHandlerProcess()) {
+      SignalInitializeCrashReporting();
+      // CRT on initialization installs an exception filter which calls
+      // TerminateProcess. We need to hook CRT's attempt to set an exception.
+      elf_crash::DisableSetUnhandledExceptionFilter();
     }
+
   } else if (reason == DLL_PROCESS_DETACH) {
     elf_crash::ShutdownCrashReporting();
   }
@@ -89,4 +93,8 @@ void DumpProcessWithoutCrash() {
 
 void SetMetricsClientId(const char* client_id) {
   elf_crash::SetMetricsClientIdImpl(client_id);
+}
+
+bool IsBrowserProcess() {
+  return install_static::IsBrowserProcess();
 }

@@ -1,78 +1,36 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1650],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
     },
     {
-      "name": "LayoutIFrame IFRAME",
-      "bounds": [284, 204],
-      "transform": 2
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [280, 200],
-      "transform": 3
-    },
-    {
-      "name": "LayoutIFrame IFRAME",
-      "bounds": [252, 172],
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [210, 210],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 4
     },
     {
-      "name": "LayoutView #document",
-      "bounds": [250, 170],
-      "backgroundColor": "#C0C0C0",
-      "transform": 5
-    },
-    {
       "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 6
-    },
-    {
-      "name": "LayoutIFrame IFRAME",
-      "bounds": [284, 204],
       "transform": 7
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [280, 200],
-      "transform": 8
-    },
-    {
-      "name": "LayoutIFrame IFRAME",
-      "bounds": [252, 172],
-      "transform": 9
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [250, 170],
-      "backgroundColor": "#C0C0C0",
-      "transform": 10
-    },
-    {
-      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
-      "bounds": [210, 210],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 11
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='banner'",
       "bounds": [785, 120],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#00000080"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -92,7 +50,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [20, 150, 0, 1]
+        [22, 152, 0, 1]
       ]
     },
     {
@@ -102,7 +60,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [2, 2, 0, 1]
+        [9, 9, 0, 1]
       ]
     },
     {
@@ -112,17 +70,17 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [18, 10, 0, 1]
       ]
     },
     {
       "id": 5,
-      "parent": 4,
+      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [1, 1, 0, 1]
+        [22, 376, 0, 1]
       ]
     },
     {
@@ -132,52 +90,12 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [18, 10, 0, 1]
+        [9, 9, 0, 1]
       ]
     },
     {
       "id": 7,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [20, 374, 0, 1]
-      ]
-    },
-    {
-      "id": 8,
-      "parent": 7,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [2, 2, 0, 1]
-      ]
-    },
-    {
-      "id": 9,
-      "parent": 8,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 10,
-      "parent": 9,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [1, 1, 0, 1]
-      ]
-    },
-    {
-      "id": 11,
-      "parent": 10,
+      "parent": 6,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

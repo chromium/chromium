@@ -17,5 +17,4 @@
 ../../../catapult/devil/devil/constants/exit_codes.py
 stack.py
 stack_core.py
-stack_libs.py
 symbol.py

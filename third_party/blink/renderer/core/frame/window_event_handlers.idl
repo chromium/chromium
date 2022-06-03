@@ -34,8 +34,7 @@
 ] interface mixin WindowEventHandlers {
     attribute EventHandler onafterprint;
     attribute EventHandler onbeforeprint;
-    // FIXME: onbeforeunload should be an OnBeforeUnloadEventHandler.
-    attribute EventHandler onbeforeunload;
+    attribute OnBeforeUnloadEventHandler onbeforeunload;
     attribute EventHandler onhashchange;
     attribute EventHandler onlanguagechange;
     attribute EventHandler onmessage;
@@ -48,6 +47,7 @@
     [RuntimeEnabled=Portals] attribute EventHandler onportalactivate;
     attribute EventHandler onrejectionhandled;
     attribute EventHandler onstorage;
+    [RuntimeEnabled=TimeZoneChangeEvent] attribute EventHandler ontimezonechange;
     attribute EventHandler onunhandledrejection;
     attribute EventHandler onunload;
 };

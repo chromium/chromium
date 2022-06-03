@@ -6,7 +6,9 @@
 #define EXTENSIONS_BROWSER_EXTENSION_UTIL_H_
 
 #include <string>
+#include <vector>
 
+#include "base/callback.h"
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
@@ -17,6 +19,7 @@ class FilePath;
 namespace content {
 class BrowserContext;
 class StoragePartition;
+class StoragePartitionConfig;
 }
 
 namespace extensions {
@@ -41,14 +44,16 @@ bool IsIncognitoEnabled(const std::string& extension_id,
 bool CanCrossIncognito(const extensions::Extension* extension,
                        content::BrowserContext* context);
 
-// Returns the site of the |extension_id|, given the associated |context|.
-// Suitable for use with BrowserContext::GetStoragePartitionForSite().
-GURL GetSiteForExtensionId(const std::string& extension_id,
-                           content::BrowserContext* context);
-
 // Returns the StoragePartition domain for |extension|.
 // Note: The reference returned has the same lifetime as |extension|.
 const std::string& GetPartitionDomainForExtension(const Extension* extension);
+
+// Returns an extension specific StoragePartitionConfig if the extension
+// associated with |extension_id| has isolated storage.
+// Otherwise, return the default StoragePartitionConfig.
+content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
+    const std::string& extension_id,
+    content::BrowserContext* browser_context);
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
     const std::string& extension_id,
@@ -69,9 +74,32 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 // Returns true if the browser can potentially withhold permissions from the
 // extension.
 bool CanWithholdPermissionsFromExtension(const Extension& extension);
-bool CanWithholdPermissionsFromExtension(const std::string& extension_id,
-                                         const Manifest::Type type,
-                                         const Manifest::Location location);
+bool CanWithholdPermissionsFromExtension(
+    const std::string& extension_id,
+    const Manifest::Type type,
+    const mojom::ManifestLocation location);
+
+// Returns a unique int id for each context.
+int GetBrowserContextId(content::BrowserContext* context);
+
+// Calculates the allowlist and blocklist for |extension| and forwards the
+// request to |browser_contexts|.
+void SetCorsOriginAccessListForExtension(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    base::OnceClosure closure);
+
+// Resets the allowlist and blocklist for |extension| to empty lists for
+// |browser_context| and for all related regular+incognito contexts.
+void ResetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension);
+
+// Returns whether the |extension| should be loaded in the given
+// |browser_context|.
+bool IsExtensionVisibleToContext(const Extension& extension,
+                                 content::BrowserContext* browser_context);
+
 }  // namespace util
 }  // namespace extensions
 

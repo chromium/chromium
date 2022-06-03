@@ -4,7 +4,8 @@
   "name": "user_gesture test",
   "description": "Test user gesture passing within executeScript",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://b.com/"]
 }

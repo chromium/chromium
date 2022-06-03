@@ -10,7 +10,13 @@ function do_test(obj, expected, name) {
     });
     client.open('POST', 'resources/content.py')
     if (expected.exception) {
-      assert_throws(expected.exception, function(){client.send(obj)})
+      if (expected.exception.identity) {
+        assert_throws_exactly(expected.exception.identity,
+                              function(){client.send(obj)})
+      } else {
+        assert_throws_js(expected.exception.ctor,
+                         function(){client.send(obj)})
+      }
       test.done()
     } else {
       client.send(obj)
@@ -21,6 +27,7 @@ function do_test(obj, expected, name) {
 do_test({}, '[object Object]', 'sending a plain empty object')
 do_test(Math, '[object Math]', 'sending the ES Math object')
 do_test(new XMLHttpRequest, '[object XMLHttpRequest]', 'sending a new XHR instance')
+do_test(new ReadableStream, '[object ReadableStream]', 'sending a new ReadableStream instance')
 do_test({toString:function(){}}, 'undefined', 'sending object that stringifies to undefined')
 do_test({toString:function(){return null}}, 'null', 'sending object that stringifies to null')
 var ancestor = {toString: function(){
@@ -43,8 +50,9 @@ var myFakeDoc1 = {valueOf:function(){return document}}
 do_test(myFakeDoc1, '[object Object]', 'object whose valueOf() returns a document - ignore valueOf(), stringify')
 
 var myFakeDoc2 = {toString:function(){return document}}
-var expectedError = self.GLOBAL.isWorker() ? new ReferenceError() : new TypeError();
-do_test(myFakeDoc2, {exception:expectedError}, 'object whose toString() returns a document, expected to throw')
+var expectedError = self.GLOBAL.isWorker() ? ReferenceError : TypeError;
+do_test(myFakeDoc2, {exception: { ctor: expectedError } }, 'object whose toString() returns a document, expected to throw')
 
-var myThrower = {toString:function(){throw {name:'FooError', message:'bar'}}}
-do_test(myThrower, {exception:{name:'FooError'}}, 'object whose toString() throws, expected to throw')
+var err = {name:'FooError', message:'bar'};
+var myThrower = {toString:function(){throw err;}};
+do_test(myThrower, {exception: { identity: err }}, 'object whose toString() throws, expected to throw')

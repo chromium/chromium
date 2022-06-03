@@ -12,15 +12,16 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
@@ -47,7 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_store.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -77,7 +78,7 @@
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"
 #if BUILDFLAG(ENABLE_RLZ)
-#include "rlz/lib/machine_id.h"
+#include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif  // BUILDFLAG(ENABLE_RLZ)
 #endif  // defined(OS_WIN)
 
@@ -176,12 +177,14 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {30, prefs::kModuleBlacklistCacheMD5Digest,
+    {30, prefs::kModuleBlocklistCacheMD5Digest,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
 #endif
 #if defined(OS_WIN)
     {31, prefs::kSwReporterReportingEnabled, EnforcementLevel::ENFORCE_ON_LOAD,
+     PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
+    {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif  // defined(OS_WIN)
 
@@ -222,50 +225,14 @@ SettingsEnforcementGroup GetSettingsEnforcementGroup() {
   }
 #endif
 
-  struct {
-    const char* group_name;
-    SettingsEnforcementGroup group;
-  } static const kEnforcementLevelMap[] = {
-    { chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement,
-      GROUP_NO_ENFORCEMENT },
-    { chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlways,
-      GROUP_ENFORCE_ALWAYS },
-    { chrome_prefs::internals::
-          kSettingsEnforcementGroupEnforceAlwaysWithDSE,
-      GROUP_ENFORCE_ALWAYS_WITH_DSE },
-    { chrome_prefs::internals::
-          kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE,
-      GROUP_ENFORCE_ALWAYS_WITH_EXTENSIONS_AND_DSE },
-  };
-
-  // Use the strongest enforcement setting in the absence of a field trial
-  // config on Windows and MacOS. Remember to update the OFFICIAL_BUILD section
-  // of extension_startup_browsertest.cc and pref_hash_browsertest.cc when
-  // updating the default value below.
-  // TODO(gab): Enforce this on all platforms.
-  SettingsEnforcementGroup enforcement_group =
-#if defined(OS_WIN) || defined(OS_MACOSX)
-      GROUP_ENFORCE_DEFAULT;
+  // Use the strongest enforcement setting on Windows and MacOS. Remember to
+  // update the OFFICIAL_BUILD section of extension_startup_browsertest.cc and
+  // pref_hash_browsertest.cc when updating the default value below.
+#if defined(OS_WIN) || defined(OS_MAC)
+  return GROUP_ENFORCE_DEFAULT;
 #else
-      GROUP_NO_ENFORCEMENT;
+  return GROUP_NO_ENFORCEMENT;
 #endif
-  bool group_determined_from_trial = false;
-  base::FieldTrial* trial =
-      base::FieldTrialList::Find(
-          chrome_prefs::internals::kSettingsEnforcementTrialName);
-  if (trial) {
-    const std::string& group_name = trial->group_name();
-    for (size_t i = 0; i < base::size(kEnforcementLevelMap); ++i) {
-      if (kEnforcementLevelMap[i].group_name == group_name) {
-        enforcement_group = kEnforcementLevelMap[i].group;
-        group_determined_from_trial = true;
-        break;
-      }
-    }
-  }
-  UMA_HISTOGRAM_BOOLEAN("Settings.EnforcementGroupDeterminedFromTrial",
-                        group_determined_from_trial);
-  return enforcement_group;
 }
 
 // Returns the effective preference tracking configuration.
@@ -319,9 +286,8 @@ std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
   std::string seed;
   CHECK(ui::ResourceBundle::HasSharedInstance());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  seed = ui::ResourceBundle::GetSharedInstance()
-             .GetRawDataResource(IDR_PREF_HASH_SEED_BIN)
-             .as_string();
+  seed = std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+      IDR_PREF_HASH_SEED_BIN));
 #endif
   return std::make_unique<ProfilePrefStoreManager>(profile_path, seed,
                                                    legacy_device_id);
@@ -364,6 +330,9 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
   explicit ResetOnLoadObserverImpl(const base::FilePath& profile_path)
       : profile_path_(profile_path) {}
 
+  ResetOnLoadObserverImpl(const ResetOnLoadObserverImpl&) = delete;
+  ResetOnLoadObserverImpl& operator=(const ResetOnLoadObserverImpl&) = delete;
+
   void OnResetOnLoad() override {
     // A StartSyncFlare used to kick sync early in case of a reset event. This
     // is done since sync may bring back the user's server value post-reset
@@ -377,8 +346,6 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
 
  private:
   const base::FilePath profile_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetOnLoadObserverImpl);
 };
 
 }  // namespace
@@ -488,7 +455,7 @@ void HandlePersistentPrefStoreReadError(
                             PersistentPrefStore::PREF_READ_ERROR_MAX_ENUM);
 
   if (error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Failing to load prefs on startup is a bad thing(TM). See bug 38352 for
     // an example problem that this can cause.
     // Do some diagnosis and try to avoid losing data.

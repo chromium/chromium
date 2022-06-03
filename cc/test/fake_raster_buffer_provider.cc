@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_raster_buffer_provider.h"
 
+#include <utility>
+
 #include "cc/resources/resource_pool.h"
 
 namespace cc {
@@ -63,9 +65,5 @@ uint64_t FakeRasterBufferProviderImpl::SetReadyToDrawCallback(
 }
 
 void FakeRasterBufferProviderImpl::Shutdown() {}
-
-bool FakeRasterBufferProviderImpl::CheckRasterFinishedQueries() {
-  return false;
-}
 
 }  // namespace cc

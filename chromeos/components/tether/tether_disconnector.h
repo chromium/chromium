@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/components/tether/tether_session_completion_logger.h"
-#include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_connection_handler.h"
 
 namespace chromeos {
 
@@ -21,7 +20,14 @@ namespace tether {
 // Disconnects from an active Tether connection.
 class TetherDisconnector {
  public:
+  using StringErrorCallback =
+      NetworkConnectionHandler::TetherDelegate::StringErrorCallback;
+
   TetherDisconnector() {}
+
+  TetherDisconnector(const TetherDisconnector&) = delete;
+  TetherDisconnector& operator=(const TetherDisconnector&) = delete;
+
   virtual ~TetherDisconnector() {}
 
   // Disconnects from the network with GUID |tether_network_guid|. This GUID
@@ -30,13 +36,10 @@ class TetherDisconnector {
   // NetworkConnectionHandler error value.
   virtual void DisconnectFromNetwork(
       const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback,
+      base::OnceClosure success_callback,
+      StringErrorCallback error_callback,
       const TetherSessionCompletionLogger::SessionCompletionReason&
           session_completion_reason) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherDisconnector);
 };
 
 }  // namespace tether

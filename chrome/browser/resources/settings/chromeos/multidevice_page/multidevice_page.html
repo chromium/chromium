@@ -1,0 +1,246 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
+<link rel="import" href="../../controls/password_prompt_dialog.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../prefs_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../nearby_share_page/nearby_share_subpage.html">
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
+<link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="multidevice_browser_proxy.html">
+<link rel="import" href="multidevice_constants.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_toggle.html">
+<link rel="import" href="multidevice_notification_access_setup_dialog.html">
+<link rel="import" href="multidevice_permissions_setup_dialog.html">
+<link rel="import" href="multidevice_smartlock_subpage.html">
+<link rel="import" href="multidevice_subpage.html">
+
+<dom-module id="settings-multidevice-page">
+  <template>
+    <style include="settings-shared">
+      cr-policy-indicator {
+        padding: 0 var(--cr-controlled-by-spacing);
+      }
+    </style>
+    <settings-animated-pages id="pages" section="multidevice"
+        focus-config="[[focusConfig_]]">
+      <div route-path="default">
+        <div id="multidevice-item"
+            class="settings-box first two-line no-padding">
+          <div class="link-wrapper" id="suiteLinkWrapper"
+              actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
+              on-click="handleItemClick_">
+            <iron-icon icon=
+                "[[getIconName(MultiDeviceFeature.BETTER_TOGETHER_SUITE)]]"
+                id="betterTogetherSuiteIcon">
+            </iron-icon>
+            <div class="middle settings-box-text"
+                aria-hidden$="[[getTextAriaHidden_(pageContentData)]]">
+              <div id="multidevice-label">
+                [[getLabelText_(pageContentData)]]
+              </div>
+              <localized-link id="multideviceSubLabel"
+                  class="secondary"
+                  localized-string="[[getSubLabelInnerHtml_(pageContentData)]]">
+              </localized-link>
+            </div>
+            <template is="dom-if"
+                      if="[[doesClickOpenSubpage_(pageContentData)]]"
+                      restamp>
+              <cr-icon-button class="subpage-arrow"
+                  aria-labelledby="multidevice-label"
+                  aria-describedby="multideviceSubLabel"
+                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
+              </cr-icon-button>
+            </template>
+          </div>
+          <template is="dom-if"
+                    if="[[!isSuiteAllowedByPolicy(pageContentData)]]"
+                    restamp>
+            <cr-policy-indicator id="suitePolicyIndicator"
+                                 indicator-type="userPolicy">
+            </cr-policy-indicator>
+            <settings-multidevice-feature-toggle
+                class="margin-matches-padding"
+                toggle-aria-label="$i18n{multideviceSuiteToggleA11yLabel}"
+                feature="[[MultiDeviceFeature.BETTER_TOGETHER_SUITE]]"
+                page-content-data="[[pageContentData]]"
+                deep-link-focus-id$="[[Setting.kMultiDeviceOnOff]]">
+            </settings-multidevice-feature-toggle>
+          </template>
+          <template is="dom-if"
+              if="[[shouldShowSeparatorAndSubpageArrow_(pageContentData)]]"
+              restamp>
+            <div class="separator"></div>
+          </template>
+          <template is="dom-if"
+              if="[[shouldShowButton_(pageContentData)]]"
+              restamp>
+            <cr-button class="margin-matches-padding"
+                on-click="handleButtonClick_"
+                aria-describedby="multideviceSubLabel"
+                deep-link-focus-id$="[[Setting.kSetUpMultiDevice]]
+                    [[Setting.kVerifyMultiDeviceSetup]]">
+              [[getButtonText_(pageContentData)]]
+            </cr-button>
+          </template>
+          <template is="dom-if"
+              if="[[shouldShowToggle_(pageContentData)]]"
+              restamp>
+            <settings-multidevice-feature-toggle
+                class="margin-matches-padding"
+                toggle-aria-label="$i18n{multideviceSuiteToggleA11yLabel}"
+                feature="[[MultiDeviceFeature.BETTER_TOGETHER_SUITE]]"
+                page-content-data="[[pageContentData]]"
+                deep-link-focus-id$="[[Setting.kMultiDeviceOnOff]]">
+            </settings-multidevice-feature-toggle>
+          </template>
+        </div>
+        <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
+          <div id="nearbyshare-item" class="settings-box two-line no-padding">
+            <div class="link-wrapper" id="nearbyLinkWrapper"
+                actionable$=
+                    "[[!isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                on-click="nearbyShareClick_">
+              <iron-icon icon="os-settings:nearby-share">
+              </iron-icon>
+              <div id="nearbyShareLabel" class="middle settings-box-text"
+                  aria-hidden="true">
+                $i18n{nearbyShareTitle}
+                <template is="dom-if" if="[[showNearbyShareOnOffString_(
+                          prefs.nearby_sharing.onboarding_complete.value,
+                          pageContentData)]]" restamp>
+                  <div class="secondary" id="nearbyShareSecondary">
+                    [[getOnOffString_(prefs.nearby_sharing.enabled.value,
+                      '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
+                  </div>
+                </template>
+                <template is="dom-if" if="[[showNearbyShareDescription_(
+                          prefs.nearby_sharing.onboarding_complete.value,
+                          pageContentData)]]" restamp>
+                  <div class="secondary" id="nearbyShareSecondary">
+                    <localized-link
+                        localized-string="$i18n{nearbyShareDescription}"
+                        link-url="$i18n{nearbyShareLearnMoreLink}">
+                    </localized-link>
+                  </div>
+                </template>
+              </div>
+              <template is="dom-if" if="[[shouldShowNearbyShareSubpageArrow_(
+                  prefs.nearby_sharing.enabled.value,
+                  shouldEnableNearbyShareBackgroundScanningRevamp_,
+                  pageContentData)]]" restamp>
+                <cr-icon-button id="nearbyShareSubpageArrow"
+                    class="subpage-arrow"
+                    aria-labelledby="nearbyShareLabel"
+                    aria-describedby="nearbyShareSecondary"
+                    aria-roledescription="$i18n{subpageArrowRoleDescription}">
+                </cr-icon-button>
+              </template>
+            </div>
+            <template is="dom-if"
+                if="[[isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                restamp>
+              <cr-policy-indicator id="nearbyPolicyIndicator"
+                                   indicator-type="userPolicy">
+              </cr-policy-indicator>
+            </template>
+            <template is="dom-if"
+                if="[[!isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                restamp>
+              <div class="separator"></div>
+            </template>
+            <template is="dom-if" if="[[showNearbyShareToggle_(
+                      prefs.nearby_sharing.onboarding_complete.value,
+                      pageContentData)]]" restamp>
+              <cr-toggle id="nearbySharingToggleButton"
+                  class="margin-matches-padding"
+                  aria-label="$i18n{nearbyShareTitle}"
+                  checked="{{prefs.nearby_sharing.enabled.value}}"
+                  disabled=
+                      "[[isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                  deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
+              </cr-toggle>
+            </template>
+            <template is="dom-if" if="[[showNearbyShareSetupButton_(
+                      prefs.nearby_sharing.onboarding_complete.value,
+                      pageContentData)]]" restamp>
+              <cr-button class="margin-matches-padding"
+                  id="nearbySetUp"
+                  on-click="handleNearbySetUpClick_"
+                  disabled=
+                      "[[isNearbyShareDisallowedByPolicy_(pageContentData)]]">
+                $i18n{nearbyShareSetUpButtonTitle}
+              </cr-button>
+            </template>
+          </div>
+        </template>
+      </div>
+      <template is="dom-if" route-path="/multidevice/features" restamp>
+        <settings-subpage page-title="[[getLabelText_(pageContentData)]]">
+          <settings-multidevice-subpage
+              page-content-data="[[pageContentData]]">
+          </settings-multidevice-subpage>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/multidevice/features/smartLock"
+          restamp>
+        <settings-subpage page-title="$i18n{easyUnlockSectionTitle}">
+          <settings-multidevice-smartlock-subpage
+              prefs="{{prefs}}"
+              page-content-data="[[pageContentData]]">
+          </settings-multidevice-smartlock-subpage>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
+        <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
+          <settings-subpage page-title="$i18n{nearbyShareTitle}">
+            <settings-nearby-share-subpage settings="{{settings}}"
+                prefs="{{prefs}}"
+                is-settings-retreived="[[isSettingsRetreived]]">
+            </settings-nearby-share-subpage>
+          </settings-subpage>
+        </template>
+      </template>
+    </settings-animated-pages>
+    <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
+      <settings-password-prompt-dialog id="multidevicePasswordPrompt"
+          on-token-obtained="onTokenObtained_">
+      </settings-password-prompt-dialog>
+    </template>
+    <template is="dom-if" if="[[showPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
+      <settings-multidevice-notification-access-setup-dialog
+          is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+          on-close="onHidePhonePermissionsSetupDialog_">
+      </settings-multidevice-notification-access-setup-dialog>
+    </template>
+    <template is="dom-if"
+        if="[[showNewPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
+      <settings-multidevice-permissions-setup-dialog
+          is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+          on-close="onHidePhonePermissionsSetupDialog_">
+      </settings-multidevice-permissions-setup-dialog>
+    </template>
+  </template>
+  <script src="multidevice_page.js"></script>
+</dom-module>

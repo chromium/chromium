@@ -6,13 +6,11 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_MOCK_TRANSLATE_RANKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/translate/core/browser/translate_ranker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 
 namespace metrics {
 class TranslateEventProto;
@@ -25,6 +23,10 @@ namespace testing {
 class MockTranslateRanker : public TranslateRanker {
  public:
   MockTranslateRanker();
+
+  MockTranslateRanker(const MockTranslateRanker&) = delete;
+  MockTranslateRanker& operator=(const MockTranslateRanker&) = delete;
+
   ~MockTranslateRanker() override;
 
   void set_is_logging_enabled(bool val) { is_logging_enabled_ = val; }
@@ -44,16 +46,16 @@ class MockTranslateRanker : public TranslateRanker {
     is_logging_enabled_ = logging_enabled;
   }
   bool ShouldOfferTranslation(
-      metrics::TranslateEventProto* translate_events) override;
+      metrics::TranslateEventProto* translate_events,
+      TranslateMetricsLogger* translate_metrics_logger) override;
   void FlushTranslateEvents(
       std::vector<metrics::TranslateEventProto>* events) override;
   MOCK_METHOD3(RecordTranslateEvent,
                void(int event_type,
                     ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
-  MOCK_METHOD3(ShouldOverrideDecision,
-               bool(int event_type,
-                    ukm::SourceId ukm_source_id,
+  MOCK_METHOD2(ShouldOverrideMatchesPreviousLanguageDecision,
+               bool(ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
 
  private:
@@ -65,8 +67,6 @@ class MockTranslateRanker : public TranslateRanker {
   bool is_decision_override_enabled_ = false;
   bool model_version_ = 0;
   bool should_offer_translation_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTranslateRanker);
 };
 
 }  // namespace testing

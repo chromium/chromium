@@ -1,6 +1,0 @@
-Tests that console message arguments will be cleared and all arguments will be converted into a string when iframe where the messages were created is removed.
-
-Message: "A message with first argument string Second argument which should not be discarded", arguments: [string]
-Message: "2011 A message with first argument integer", arguments: [string]
-Message: "[object Window] A message with first argument window", arguments: [string]
-

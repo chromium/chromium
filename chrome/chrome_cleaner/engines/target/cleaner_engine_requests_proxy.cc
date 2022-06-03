@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/chrome_cleaner/engines/target/engine_commands_impl.h"
-#include "chrome/chrome_cleaner/strings/string16_embedded_nulls.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 
 namespace chrome_cleaner {
 
@@ -62,7 +62,7 @@ bool CleanerEngineRequestsProxy::DeleteFilePostReboot(
 }
 
 bool CleanerEngineRequestsProxy::NtDeleteRegistryKey(
-    const String16EmbeddedNulls& key) {
+    const WStringEmbeddedNulls& key) {
   bool result = false;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -76,8 +76,8 @@ bool CleanerEngineRequestsProxy::NtDeleteRegistryKey(
 }
 
 bool CleanerEngineRequestsProxy::NtDeleteRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name) {
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name) {
   bool result = false;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -91,9 +91,9 @@ bool CleanerEngineRequestsProxy::NtDeleteRegistryValue(
 }
 
 bool CleanerEngineRequestsProxy::NtChangeRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
-    const String16EmbeddedNulls& new_value) {
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& new_value) {
   bool result = false;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -106,7 +106,7 @@ bool CleanerEngineRequestsProxy::NtChangeRegistryValue(
   return result;
 }
 
-bool CleanerEngineRequestsProxy::DeleteService(const base::string16& name) {
+bool CleanerEngineRequestsProxy::DeleteService(const std::wstring& name) {
   bool result = false;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -119,7 +119,7 @@ bool CleanerEngineRequestsProxy::DeleteService(const base::string16& name) {
   return result;
 }
 
-bool CleanerEngineRequestsProxy::DeleteTask(const base::string16& name) {
+bool CleanerEngineRequestsProxy::DeleteTask(const std::wstring& name) {
   bool result = false;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -175,7 +175,7 @@ MojoCallStatus CleanerEngineRequestsProxy::SandboxDeleteFilePostReboot(
 }
 
 MojoCallStatus CleanerEngineRequestsProxy::SandboxNtDeleteRegistryKey(
-    const String16EmbeddedNulls& key,
+    const WStringEmbeddedNulls& key,
     mojom::CleanerEngineRequests::SandboxNtDeleteRegistryKeyCallback
         result_callback) {
   if (!requests_.is_bound()) {
@@ -188,8 +188,8 @@ MojoCallStatus CleanerEngineRequestsProxy::SandboxNtDeleteRegistryKey(
 }
 
 MojoCallStatus CleanerEngineRequestsProxy::SandboxNtDeleteRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
     mojom::CleanerEngineRequests::SandboxNtDeleteRegistryValueCallback
         result_callback) {
   if (!requests_.is_bound()) {
@@ -203,9 +203,9 @@ MojoCallStatus CleanerEngineRequestsProxy::SandboxNtDeleteRegistryValue(
 }
 
 MojoCallStatus CleanerEngineRequestsProxy::SandboxNtChangeRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
-    const String16EmbeddedNulls& new_value,
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& new_value,
     mojom::CleanerEngineRequests::SandboxNtChangeRegistryValueCallback
         result_callback) {
   if (!requests_.is_bound()) {
@@ -220,7 +220,7 @@ MojoCallStatus CleanerEngineRequestsProxy::SandboxNtChangeRegistryValue(
 }
 
 MojoCallStatus CleanerEngineRequestsProxy::SandboxDeleteService(
-    const base::string16& name,
+    const std::wstring& name,
     mojom::CleanerEngineRequests::SandboxDeleteServiceCallback
         result_callback) {
   if (!requests_.is_bound()) {
@@ -233,7 +233,7 @@ MojoCallStatus CleanerEngineRequestsProxy::SandboxDeleteService(
 }
 
 MojoCallStatus CleanerEngineRequestsProxy::SandboxDeleteTask(
-    const base::string16& name,
+    const std::wstring& name,
     mojom::CleanerEngineRequests::SandboxDeleteTaskCallback result_callback) {
   if (!requests_.is_bound()) {
     LOG(ERROR) << "SandboxDeleteTask called without bound remote";

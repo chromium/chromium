@@ -7,6 +7,8 @@ Tests that permissions granted in 2D Chrome persist in the VR Browser.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
+      setup({single_test: true});
+
       function stepRequestPermission() {
         navigator.getUserMedia(
           {audio: true, video: true},

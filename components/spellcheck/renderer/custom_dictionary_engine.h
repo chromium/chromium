@@ -8,15 +8,16 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-
 // Custom spellcheck dictionary. Words in this dictionary are always correctly
 // spelled. Words that are not in this dictionary may or may not be correctly
 // spelled.
 class CustomDictionaryEngine {
  public:
   CustomDictionaryEngine();
+
+  CustomDictionaryEngine(const CustomDictionaryEngine&) = delete;
+  CustomDictionaryEngine& operator=(const CustomDictionaryEngine&) = delete;
+
   ~CustomDictionaryEngine();
 
   // Initialize the custom dictionary engine.
@@ -25,7 +26,7 @@ class CustomDictionaryEngine {
   // Spellcheck |text|. Assumes that another spelling engine has set
   // |misspelling_start| and |misspelling_len| to indicate a misspelling.
   // Returns true if there are no misspellings, otherwise returns false.
-  bool SpellCheckWord(const base::string16& text,
+  bool SpellCheckWord(const std::u16string& text,
                       size_t misspelling_start,
                       size_t misspelling_len);
 
@@ -35,9 +36,7 @@ class CustomDictionaryEngine {
 
  private:
   // Correctly spelled words.
-  std::set<base::string16> dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomDictionaryEngine);
+  std::set<std::u16string> dictionary_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_CUSTOM_DICTIONARY_ENGINE_H_

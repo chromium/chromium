@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -17,7 +18,6 @@ class ScriptPromise;
 class ScriptState;
 class ScriptValue;
 class StreamPromiseResolver;
-class Visitor;
 class WritableStream;
 class WritableStream;
 
@@ -51,18 +51,18 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   // Methods
 
   // https://streams.spec.whatwg.org/#default-writer-abort
-  ScriptPromise abort(ScriptState*);
-  ScriptPromise abort(ScriptState*, ScriptValue reason);
+  ScriptPromise abort(ScriptState*, ExceptionState&);
+  ScriptPromise abort(ScriptState*, ScriptValue reason, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-close
-  ScriptPromise close(ScriptState*);
+  ScriptPromise close(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-release-lock
   void releaseLock(ScriptState*);
 
   // https://streams.spec.whatwg.org/#default-writer-write
-  ScriptPromise write(ScriptState*);
-  ScriptPromise write(ScriptState*, ScriptValue chunk);
+  ScriptPromise write(ScriptState*, ExceptionState&);
+  ScriptPromise write(ScriptState*, ScriptValue chunk, ExceptionState&);
 
   //
   // Methods used by WritableStream
@@ -100,13 +100,13 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   WritableStream* OwnerWritableStream() { return owner_writable_stream_; }
 
   // This is a variant of GetDesiredSize() that doesn't create an intermediate
-  // JavaScript object. Instead it returns base::nullopt where the JavaScript
+  // JavaScript object. Instead it returns absl::nullopt where the JavaScript
   // version would return null.
-  base::Optional<double> GetDesiredSizeInternal() const;
+  absl::optional<double> GetDesiredSizeInternal() const;
 
   void SetReadyPromise(StreamPromiseResolver*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-abort

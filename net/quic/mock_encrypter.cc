@@ -10,7 +10,6 @@
 using quic::DiversificationNonce;
 using quic::Perspective;
 using quic::QuicPacketNumber;
-using quiche::QuicheStringPiece;
 
 namespace net {
 
@@ -22,21 +21,21 @@ const size_t kPaddingSize = 12;
 
 MockEncrypter::MockEncrypter(Perspective perspective) {}
 
-bool MockEncrypter::SetKey(quiche::QuicheStringPiece key) {
+bool MockEncrypter::SetKey(absl::string_view key) {
   return key.empty();
 }
 
-bool MockEncrypter::SetNoncePrefix(quiche::QuicheStringPiece nonce_prefix) {
+bool MockEncrypter::SetNoncePrefix(absl::string_view nonce_prefix) {
   return nonce_prefix.empty();
 }
 
-bool MockEncrypter::SetIV(quiche::QuicheStringPiece iv) {
+bool MockEncrypter::SetIV(absl::string_view iv) {
   return iv.empty();
 }
 
 bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
-                                  quiche::QuicheStringPiece associated_data,
-                                  quiche::QuicheStringPiece plaintext,
+                                  absl::string_view associated_data,
+                                  absl::string_view plaintext,
                                   char* output,
                                   size_t* output_length,
                                   size_t max_output_length) {
@@ -49,12 +48,12 @@ bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
   return true;
 }
 
-bool MockEncrypter::SetHeaderProtectionKey(quiche::QuicheStringPiece key) {
+bool MockEncrypter::SetHeaderProtectionKey(absl::string_view key) {
   return key.empty();
 }
 
 std::string MockEncrypter::GenerateHeaderProtectionMask(
-    quiche::QuicheStringPiece sample) {
+    absl::string_view sample) {
   return std::string(5, 0);
 }
 
@@ -78,12 +77,16 @@ size_t MockEncrypter::GetCiphertextSize(size_t plaintext_size) const {
   return plaintext_size + kPaddingSize;
 }
 
-quiche::QuicheStringPiece MockEncrypter::GetKey() const {
-  return quiche::QuicheStringPiece();
+quic::QuicPacketCount MockEncrypter::GetConfidentialityLimit() const {
+  return std::numeric_limits<quic::QuicPacketCount>::max();
 }
 
-quiche::QuicheStringPiece MockEncrypter::GetNoncePrefix() const {
-  return quiche::QuicheStringPiece();
+absl::string_view MockEncrypter::GetKey() const {
+  return absl::string_view();
+}
+
+absl::string_view MockEncrypter::GetNoncePrefix() const {
+  return absl::string_view();
 }
 
 }  // namespace net

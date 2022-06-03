@@ -6,13 +6,14 @@
 
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/devtools_event_util.h"
 
 namespace ui_devtools {
 
 WidgetElement::WidgetElement(views::Widget* widget,
                              UIElementDelegate* ui_element_delegate,
                              UIElement* parent)
-    : UIElement(UIElementType::WIDGET, ui_element_delegate, parent),
+    : UIElementWithMetaData(UIElementType::WIDGET, ui_element_delegate, parent),
       widget_(widget) {
   widget_->AddRemovalsObserver(this);
   widget_->AddObserver(this);
@@ -23,6 +24,7 @@ WidgetElement::~WidgetElement() {
     widget_->RemoveRemovalsObserver(this);
     widget_->RemoveObserver(this);
   }
+  CHECK(!IsInObserverList());
 }
 
 void WidgetElement::OnWillRemoveView(views::Widget* widget, views::View* view) {
@@ -42,7 +44,10 @@ void WidgetElement::OnWidgetBoundsChanged(views::Widget* widget,
 
 void WidgetElement::OnWidgetDestroyed(views::Widget* widget) {
   DCHECK_EQ(widget, widget_);
-  delegate()->OnUIElementRemoved(this);
+  if (parent())
+    parent()->RemoveChild(this);
+  else
+    delegate()->OnUIElementRemoved(this);
   widget_ = nullptr;
 }
 
@@ -84,10 +89,6 @@ views::Widget* WidgetElement::From(const UIElement* element) {
   return static_cast<const WidgetElement*>(element)->widget_;
 }
 
-void WidgetElement::InitSources() {
-  AddSource("ui/views/widget/widget.h", 0);
-}
-
 template <>
 int UIElement::FindUIElementIdForBackendElement<views::Widget>(
     views::Widget* element) const {
@@ -102,6 +103,24 @@ int UIElement::FindUIElementIdForBackendElement<views::Widget>(
       return ui_element_id;
   }
   return 0;
+}
+
+bool WidgetElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
+  widget_->OnKeyEvent(&key_event);
+  return true;
+}
+
+ui::metadata::ClassMetaData* WidgetElement::GetClassMetaData() const {
+  return widget_->GetClassMetaData();
+}
+
+void* WidgetElement::GetClassInstance() const {
+  return widget_;
+}
+
+ui::Layer* WidgetElement::GetLayer() const {
+  return widget_->GetLayer();
 }
 
 }  // namespace ui_devtools

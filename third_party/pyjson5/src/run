@@ -3,16 +3,11 @@
 from __future__ import print_function
 
 import argparse
-import os
 import subprocess
 import sys
 
 
-is_python3 = bool(sys.version_info.major == 3)
-has_python34 = False
 verbose = False
-repo_dir = os.path.abspath(os.path.dirname(__file__))
-path_to_cov = os.path.join(repo_dir, 'tools', 'cov.py')
 
 
 def call(*args, **kwargs):
@@ -25,8 +20,6 @@ def call(*args, **kwargs):
 
 def main(argv):
     parser = argparse.ArgumentParser(prog='run')
-    parser.add_argument('--no3', action='store_true',
-                        help='Do not run the tests under Python 3.')
     parser.add_argument('-v', '--verbose', action='store_true')
     subps = parser.add_subparsers()
 
@@ -37,15 +30,8 @@ def main(argv):
     subp.set_defaults(func=run_clean)
 
     subp = subps.add_parser('coverage',
-                            help='Run the tests and report code coverage.')
+                            help='Run tests and report code coverage.')
     subp.set_defaults(func=run_coverage)
-
-    subp = subps.add_parser('develop',
-                             help='Install a symlinked package locally.')
-    subp.set_defaults(func=run_develop)
-    subp.add_argument('--system', action='store_true',
-                      help=('Install to the system site-package dir '
-                            'rather than the user\'s (requires root).'))
 
     subp = subps.add_parser('format',
                             help='Reformat the source code.')
@@ -77,34 +63,31 @@ def main(argv):
     global verbose
     if args.verbose:
         verbose = True
-    global has_python34
-    if not args.no3:
-        try:
-            ver = subprocess.check_output(['python3', '--version'])
-            has_python34 = ver.split()[1] >= '3.4'
-        except:
-            pass
     args.func(args)
 
 
 def run_build(args):
+    del args
     call([sys.executable, 'setup.py', 'build', '--quiet'])
 
 
 def run_clean(args):
+    del args
     call(['git', 'clean', '-fxd'])
 
 
 def run_coverage(args):
-    call(['typ', '-c', 'json5'])
-
-
-def run_develop(args):
-    call([sys.executable, 'setup.py', 'develop'])
+    del args
+    call(['python', '-m', 'coverage', 'run', '-m', 'unittest',
+          'discover', '-p', '*_test.py'])
+    call(['python3', '-m', 'coverage', 'run', '--append', '-m', 'unittest',
+          'discover', '-p', '*_test.py'])
+    call([sys.executable, '-m', 'coverage', 'report', '--show-missing'])
 
 
 def run_format(args):
-    call('autopep8 --in-place *.py */*.py */*/*.py', shell=True)
+    del args
+    call('autopep8 --in-place *.py */*.py', shell=True)
 
 
 def run_help(args):
@@ -122,12 +105,14 @@ def run_install(args):
 
 
 def run_lint(args):
-    call('pylint --rcfile=pylintrc */*.py */*/*.py', shell=True)
-    call('pep8 *.py */*.py */*/*.py', shell=True)
+    del args
+    call('pylint --rcfile=pylintrc */*.py', shell=True)
 
 
 def run_tests(args):
-    call(['typ', 'json5'])
+    del args
+    call([sys.executable, '-m', 'unittest', 'discover',
+          '-p', '*_test.py'])
 
 
 if __name__ == '__main__':

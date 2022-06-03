@@ -35,11 +35,3 @@ imageset("clear_browsing_data_history") {
     "clear_browsing_data_history.imageset/clear_browsing_data_history@3x.png",
   ]
 }
-
-imageset("clear_browsing_data_passwords") {
-  sources = [
-    "clear_browsing_data_passwords.imageset/Contents.json",
-    "clear_browsing_data_passwords.imageset/clear_browsing_data_passwords@2x.png",
-    "clear_browsing_data_passwords.imageset/clear_browsing_data_passwords@3x.png",
-  ]
-}

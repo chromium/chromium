@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   TestRunner.addResult("Test frontend's side-effect support check for compatibility.\n");
 
   const executionContext = UI.context.flavor(SDK.ExecutionContext);
@@ -18,7 +18,7 @@
   let supports = executionContext.runtimeModel.hasSideEffectSupport();
   TestRunner.addResult(`Does the runtime support side effect checks? ${supports}`);
   TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel._hasSideEffectSupport = null;
+  executionContext.runtimeModel.hasSideEffectSupportInternal = null;
 
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`
@@ -27,6 +27,7 @@
           debugger;
       }
   `);
+  await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();

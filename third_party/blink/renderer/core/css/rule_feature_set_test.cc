@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -26,16 +27,29 @@ class RuleFeatureSetTest : public testing::Test {
   RuleFeatureSetTest() = default;
 
   void SetUp() override {
-    document_ = MakeGarbageCollected<HTMLDocument>();
+    document_ = HTMLDocument::CreateForTest();
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_);
     html->AppendChild(MakeGarbageCollected<HTMLBodyElement>(*document_));
     document_->AppendChild(html);
 
-    document_->body()->SetInnerHTMLFromString("<b><i></i></b>");
+    document_->body()->setInnerHTML("<b><i></i></b>");
+  }
+
+  Vector<MediaQueryExp> ExpressionsFrom(const MediaQuery& query) {
+    Vector<MediaQueryExp> expressions;
+    if (query.ExpNode())
+      query.ExpNode()->CollectExpressions(expressions);
+    return expressions;
   }
 
   RuleFeatureSet::SelectorPreMatch CollectFeatures(
       const String& selector_text) {
+    return CollectFeaturesTo(selector_text, rule_feature_set_);
+  }
+
+  static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
+      const String& selector_text,
+      RuleFeatureSet& set) {
     CSSSelectorList selector_list = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
         selector_text);
@@ -53,10 +67,11 @@ class RuleFeatureSetTest : public testing::Test {
     RuleFeatureSet::SelectorPreMatch result =
         RuleFeatureSet::SelectorPreMatch::kSelectorNeverMatches;
     for (unsigned i = 0; i < indices.size(); ++i) {
-      RuleData* rule_data = RuleData::MaybeCreate(style_rule, indices[i], 0,
-                                                  kRuleHasNoSpecialState);
+      RuleData* rule_data = RuleData::MaybeCreate(
+          style_rule, indices[i], 0, kRuleHasNoSpecialState,
+          nullptr /* container_query */);
       DCHECK(rule_data);
-      if (rule_feature_set_.CollectFeaturesFromRuleData(rule_data))
+      if (set.CollectFeaturesFromRuleData(rule_data))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
     return result;
@@ -591,22 +606,6 @@ TEST_F(RuleFeatureSetTest, tagName) {
   ExpectTagNameInvalidation("e", invalidation_lists.descendants);
 }
 
-TEST_F(RuleFeatureSetTest, contentPseudo) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(".a ::content .b"));
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".a .c"));
-
-  InvalidationLists invalidation_lists;
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectClassInvalidation("c", invalidation_lists.descendants);
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".a .b"));
-
-  invalidation_lists.descendants.clear();
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectClassInvalidation("b", "c", invalidation_lists.descendants);
-}
-
 TEST_F(RuleFeatureSetTest, nonMatchingHost) {
   EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches, CollectFeatures(".a:host"));
   EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
@@ -726,28 +725,6 @@ TEST_F(RuleFeatureSetTest, nonUniversalSiblingInvalidationNot) {
   CollectUniversalSiblingInvalidationSet(invalidation_lists);
 
   ExpectNoInvalidation(invalidation_lists.siblings);
-}
-
-TEST_F(RuleFeatureSetTest, universalSiblingInvalidationAny) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(.a) + .b"));
-
-  InvalidationLists invalidation_lists;
-  CollectUniversalSiblingInvalidationSet(invalidation_lists);
-
-  ExpectSiblingClassInvalidation(1, "b", invalidation_lists.siblings);
-  ExpectSelfInvalidation(invalidation_lists.siblings);
-}
-
-TEST_F(RuleFeatureSetTest, universalSiblingIdInvalidationAny) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(.a) + #b"));
-
-  InvalidationLists invalidation_lists;
-  CollectUniversalSiblingInvalidationSet(invalidation_lists);
-
-  ExpectSiblingIdInvalidation(1, "b", invalidation_lists.siblings);
-  ExpectSelfInvalidation(invalidation_lists.siblings);
 }
 
 TEST_F(RuleFeatureSetTest, nonUniversalSiblingInvalidationAny) {
@@ -1256,23 +1233,6 @@ TEST_F(RuleFeatureSetTest, pseudoIsNested) {
   ExpectNoInvalidation(invalidation_lists.siblings);
 }
 
-TEST_F(RuleFeatureSetTest, pseudoIsTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
-            CollectFeatures(":is(.a#a, .b#b, .c#c, .d#d) + "
-                            ":is(.e#e, .f#f, .g#g, .h#h) + "
-                            ":is(.i#i, .j#j, .k#k, .l#l) + "
-                            ":is(.m#m, .n#n, .o#o, .p#p) + "
-                            ":is(.q#q, .r#r, .s#s, .t#t) + "
-                            ":is(.u#u, .v#v, .w#w, .x#x)"));
-
-  InvalidationLists invalidation_lists;
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectNoInvalidation(invalidation_lists.descendants);
-  ExpectNoInvalidation(invalidation_lists.siblings);
-}
-
 TEST_F(RuleFeatureSetTest, pseudoWhere) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
             CollectFeatures(":where(.w, .x)"));
@@ -1372,23 +1332,6 @@ TEST_F(RuleFeatureSetTest, pseudoWhereNested) {
   ExpectNoInvalidation(invalidation_lists.siblings);
 }
 
-TEST_F(RuleFeatureSetTest, pseudoWhereTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
-            CollectFeatures(":where(.a#a, .b#b, .c#c, .d#d) + "
-                            ":where(.e#e, .f#f, .g#g, .h#h) + "
-                            ":where(.i#i, .j#j, .k#k, .l#l) + "
-                            ":where(.m#m, .n#n, .o#o, .p#p) + "
-                            ":where(.q#q, .r#r, .s#s, .t#t) + "
-                            ":where(.u#u, .v#v, .w#w, .x#x)"));
-
-  InvalidationLists invalidation_lists;
-  CollectInvalidationSetsForClass(invalidation_lists, "a");
-  ExpectNoInvalidation(invalidation_lists.descendants);
-  ExpectNoInvalidation(invalidation_lists.siblings);
-}
-
 TEST_F(RuleFeatureSetTest, invalidatesParts) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
             CollectFeatures(".a .b::part(partname)"));
@@ -1420,6 +1363,329 @@ TEST_F(RuleFeatureSetTest, invalidatesParts) {
     EXPECT_TRUE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
     EXPECT_TRUE(invalidation_lists.descendants[0]->InvalidatesParts());
   }
+}
+
+TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
+  scoped_refptr<MediaQuerySet> min_width1 =
+      MediaQueryParser::ParseMediaQuerySet("(min-width: 1000px)", nullptr);
+  scoped_refptr<MediaQuerySet> min_width2 =
+      MediaQueryParser::ParseMediaQuerySet("(min-width: 2000px)", nullptr);
+  scoped_refptr<MediaQuerySet> min_resolution1 =
+      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 72dpi)", nullptr);
+  scoped_refptr<MediaQuerySet> min_resolution2 =
+      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 300dpi)", nullptr);
+
+  {
+    RuleFeatureSet set1;
+    RuleFeatureSet set2;
+    RuleFeatureSet set3;
+    for (const auto& query : min_width1->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set2.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set3.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, false));
+      }
+    }
+    EXPECT_EQ(set1, set2);
+    EXPECT_NE(set1, set3);
+    EXPECT_NE(set3, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    for (const auto& query : min_width1->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    RuleFeatureSet set2;
+    for (const auto& query : min_width2->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    EXPECT_NE(set1, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    RuleFeatureSet set2;
+    RuleFeatureSet set3;
+    for (const auto& query : min_resolution1->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set1.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set2.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set3.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, false));
+      }
+    }
+    EXPECT_EQ(set1, set2);
+    EXPECT_NE(set1, set3);
+    EXPECT_NE(set3, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    for (const auto& query : min_resolution1->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set1.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    RuleFeatureSet set2;
+    for (const auto& query : min_resolution2->QueryVector()) {
+      for (const auto& expresssion : ExpressionsFrom(*query)) {
+        set2.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    EXPECT_NE(set1, set2);
+  }
+}
+
+struct RefTestData {
+  const char* main;
+  const char* ref;
+};
+
+// The test passes if |main| produces the same RuleFeatureSet as |ref|.
+RefTestData ref_equal_test_data[] = {
+    // clang-format off
+    {".a", ".a"},
+
+    // :is
+    {":is(.a)", ".a"},
+    {":is(.a .b)", ".a .b"},
+    {".a :is(.b .c)", ".a .c, .b .c"},
+    {".a + :is(.b .c)", ".a + .c, .b .c"},
+    {".a + :is(.b .c)", ".a + .c, .b .c"},
+    {"div + :is(.b .c)", "div + .c, .b .c"},
+    {":is(.a :is(.b + .c))", ".a .c, .b + .c"},
+    {".a + :is(.b) :is(.c)", ".a + .b .c"},
+    {":is(#a:nth-child(1))", "#a:nth-child(1)"},
+    {":is(#a:nth-child(1), #b:nth-child(1))",
+     "#a:nth-child(1), #b:nth-child(1)"},
+    {":is(#a, #b):nth-child(1)", "#a:nth-child(1), #b:nth-child(1)"},
+    {":is(:nth-child(1))", ":nth-child(1)"},
+    {".a :is(.b, .c):nth-child(1)", ".a .b:nth-child(1), .a .c:nth-child(1)"},
+    // TODO(andruud): We currently add _all_ rightmost features to the nth-
+    // sibling set, so .b is added here, since nth-child is present _somewhere_
+    // in the rightmost compound. Hence the unexpected '.b:nth-child(1)'
+    // selector in the ref.
+    {".a :is(.b, .c:nth-child(1))",
+     ".a .b, .a .c:nth-child(1), .b:nth-child(1)"},
+    {":is(.a) .b", ".a .b"},
+    {":is(.a, .b) .c", ".a .c, .b .c"},
+    {":is(.a .b, .c .d) .e", ".a .b .e, .c .d .e"},
+    {":is(:is(.a .b, .c) :is(.d, .e .f), .g) .h",
+     ".a .b .h, .c .h, .d .h, .e .f .h, .g .h"},
+    {":is(.a, .b) :is(.c, .d)", ".a .c, .a .d, .b .c, .b .d"},
+    {":is(.a .b, .c .d) :is(.e .f, .g .h)",
+     ".a .b .f, .a .b .h, .c .d .f, .c .d .h, .e .f, .g .h"},
+    {":is(.a + .b)", ".a + .b"},
+    {":is(.a + .b, .c + .d) .e", ".a + .b .e, .c + .d .e"},
+    {":is(.a ~ .b, .c + .e + .f) :is(.c .d, .e)",
+     ".a ~ .b .d, .a ~ .b .e, .c + .e + .f .d, .c + .e + .f .e, .c .d"},
+    {":is(.a) + .b", ".a + .b"},
+    {":is(.a, .b) + .c", ".a + .c, .b + .c"},
+    {":is(.a + .b, .c + .d) + .e", ".a + .b + .e, .c + .d + .e"},
+    {":is(.a + .b, .c + .d) + :is(.e + .f, .g + .h)",
+     ".a + .b + .f, .a + .b + .h, .c + .d + .f, .c + .d + .h,"
+     ".e + .f, .g + .h"},
+    {":is(div)", "div"},
+    {":is(div, span)", "div, span"},
+    {":is(.a, div)", ".a, div"},
+    {":is(.a, :is(div, span))", ".a, div, span"},
+    {":is(.a, span) :is(div, .b)", ".a div, .a .b, span div, span .b"},
+    {":is(.a, span) + :is(div, .b)",
+     ".a + div, .a + .b, span + div, span + .b"},
+    {":is(.a, .b)::slotted(.c)", ".a::slotted(.c), .b::slotted(.c)"},
+    {".a :is(.b, .c)::slotted(.d)", ".a .b::slotted(.d), .a .c::slotted(.d)"},
+    {".a + :is(.b, .c)::slotted(.d)",
+     ".a + .b::slotted(.d), .a + .c::slotted(.d)"},
+    {".a::slotted(:is(.b, .c))", ".a::slotted(.b), .a::slotted(.c)"},
+    {":is(.a, .b)::cue(i)", ".a::cue(i), .b::cue(i)"},
+    {".a :is(.b, .c)::cue(i)", ".a .b::cue(i), .a .c::cue(i)"},
+    {".a + :is(.b, .c)::cue(i)", ".a + .b::cue(i), .a + .c::cue(i)"},
+    {".a::cue(:is(.b, .c))", ".a::cue(.b), .a::cue(.c)"},
+    {":is(.a, :host + .b, .c) .d", ".a .d, :host + .b .d, .c .d"},
+    {":is(.a, :host(.b) .c, .d) div", ".a div, :host(.b) .c div, .d div"},
+    {".a::host(:is(.b, .c))", ".a::host(.b), .a::host(.c)"},
+    {".a :is(.b, .c)::part(foo)", ".a .b::part(foo), .a .c::part(foo)"},
+    {":is(.a, .b)::part(foo)", ".a::part(foo), .b::part(foo)"},
+    {":is(.a, .b) :is(.c, .d)::part(foo)",
+     ".a .c::part(foo), .a .d ::part(foo),"
+     ".b .c::part(foo), .b .d ::part(foo)"},
+    {":is(.a, .b)::first-letter", ".a::first-letter, .b::first-letter"},
+    {":is(.a, .b .c)::first-line", ".a::first-line, .b .c::first-line"},
+    // TODO(andruud): Here we would normally expect a ref:
+    // '.a::first-line, .b + .c::first-line', however the latter selector
+    // currently marks the sibling invalidation set for .b as whole subtree
+    // invalid, whereas the :is() version does not. This could be improved.
+    {":is(.a, .b + .c)::first-line", ".a::first-line, .b + .c, .b + .c *"},
+    {":is(.a, .b ~ .c > .d)::first-line",
+     ".a::first-line, .b ~ .c > .d::first-line"},
+    {":is(.a, :host-context(.b), .c)", ".a, :host-context(.b), .c"},
+    {":is(.a, :host-context(.b), .c) .d", ".a .d, :host-context(.b) .d, .c .d"},
+    {":is(.a, :host-context(.b), .c) + .d",
+     ".a + .d, :host-context(.b) + .d, .c + .d"},
+    {":host-context(.a) :is(.b, .c)",
+     ":host-context(.a) .b, :host-context(.a) .c"},
+    {":host-context(:is(.a))", ":host-context(.a)"},
+    {":host-context(:is(.a, .b))", ":host-context(.a), :host-context(.b)"},
+    {":is(.a, .b + .c).d", ".a.d, .b + .c.d"},
+    {".a :is(.b .c .d).e", ".a .d.e, .b .c .d.e"},
+    {":is(*)", "*"},
+    {".a :is(*)", ".a *"},
+    {":is(*) .a", "* .a"},
+    {".a + :is(*)", ".a + *"},
+    {":is(*) + .a", "* + .a"},
+    {".a + :is(.b, *)", ".a + .b, .a + *"},
+    {":is(.a, *) + .b", ".a + .b, * + .b"},
+    {".a :is(.b, *)", ".a .b, .a *"},
+    {":is(.a, *) .b", ".a .b, * .b"},
+    {":is(.a + .b, .c) *", ".a + .b *, .c *"},
+    {":is(.a + *, .c) *", ".a + * *, .c *"},
+    {".a + .b + .c:is(*)", ".a + .b + .c"},
+    {".a :not(.b)", ".a *, .b"},
+    {".a :not(.b, .c)", ".a *, .b, .c"},
+    {".a :not(.b, .c .d)", ".a *, .b, .c .d"},
+    {".a :not(.b, .c + .d)", ".a *, .b, .c + .d"},
+    {".a + :not(.b, .c + .d)", ".a + *, .b, .c + .d"},
+    {":not(.a .b) .c", ".a .c, .b .c"},
+    {":not(.a .b, .c) + .d", "* + .d, .a .b + .d, .c + .d"},
+    {":not(.a .b, .c .d) :not(.e + .f, .g + .h)",
+     ".a .b *, .c .d *, :not(.e + .f), :not(.g + .h)"},
+    {":not(.a, .b)", ":not(.a), :not(.b)"},
+    {":not(.a .b, .c)", ":not(.a .b), :not(.c)"},
+    {":not(.a :not(.b + .c), :not(div))", ":not(.a :not(.b + .c)), :not(div)"},
+    {":not(:is(.a))", ":not(.a)"},
+    {":not(:is(.a, .b))", ":not(.a), :not(.b)"},
+    {":not(:is(.a .b))", ":not(.a .b)"},
+    {":not(:is(.a .b, .c + .d))", ":not(.a .b, .c + .d)"},
+    {".a :not(:is(.b .c))", ".a :not(.b .c)"},
+    {":not(:is(.a)) .b", ":not(.a) .b"},
+    {":not(:is(.a .b, .c)) :not(:is(.d + .e, .f))",
+     ":not(.a .b, .c) :not(.d + .e, .f)"},
+    // We don't have any special support for nested :not(): it's treated
+    // as a single :not() level in terms of invalidation:
+    {":not(:not(.a))", ":not(.a)"},
+    {":not(:not(:not(.a)))", ":not(.a)"},
+    {".a :not(:is(:not(.b), .c))", ".a :not(.b), .a :not(.c)"},
+    {":not(:is(:not(.a), .b)) .c", ":not(.a) .c, :not(.b) .c"},
+    {".a :is(:hover)", ".a :hover"},
+    {":is(:hover) .a", ":hover .a"},
+    {"button:is(:hover, :focus)", "button:hover, button:focus"},
+    {".a :is(.b, :hover)", ".a .b, .a :hover"},
+    {".a + :is(:hover) + .c", ".a + :hover + .c"},
+    {".a + :is(.b, :hover) + .c", ".a + .b + .c, .a + :hover + .c"},
+    {":is(ol, li)::before", "ol::before, li::before"},
+    {":is(.a + .b, .c)::before", ".a + .b::before, .c::before"},
+    {":is(ol, li)::-internal-input-suggested",
+     "ol::-internal-input-suggested, li::-internal-input-suggested"},
+    {":is([foo], [bar])", "[foo], [bar]"},
+    {".a :is([foo], [bar])", ".a [foo], .a [bar]"},
+    {":is([foo], [bar]) .a", "[foo] .a, [bar] .a"},
+    {":is([a], [b]) :is([c], [d])", "[a] [c], [a] [d], [b] [c], [b] [d]"},
+
+    // clang-format on
+};
+
+// The test passes if |main| does not produce the same RuleFeatureSet as |ref|.
+RefTestData ref_not_equal_test_data[] = {
+    // clang-format off
+    {"", ".a"},
+    {"", "#a"},
+    {"", "div"},
+    {"", ":hover"},
+    {"", "::before"},
+    {"", ":host"},
+    {"", ":host(.a)"},
+    {"", ":host-context(.a)"},
+    {"", "*"},
+    {"", ":not(.a)"},
+    {".a", ".b"},
+    {".a", ".a, .b"},
+    {"#a", "#b"},
+    {"ol", "ul"},
+    {"[foo]", "[bar]"},
+    {":link", ":visited"},
+    {".a::before", ".b::after"},
+    {"::cue(a)", "::cue(b)"},
+    {".a .b", ".a .c"},
+    {".a + .b", ".a + .c"},
+    {".a + .b .c", ".a + .b .d"},
+    {"div + .a", "div + .b"},
+    {".a:nth-child(1)", ".b:nth-child(1)"},
+    {"div", "span"},
+    // clang-format on
+};
+
+class RuleFeatureSetRefTest : public RuleFeatureSetTest {
+ public:
+
+  void Run(const RefTestData& data) {
+    RuleFeatureSet main_set;
+    RuleFeatureSet ref_set;
+
+    SCOPED_TRACE(testing::Message() << "Ref: " << data.ref);
+    SCOPED_TRACE(testing::Message() << "Main: " << data.main);
+    SCOPED_TRACE("Please see RuleFeatureSet::ToString for documentation");
+
+    CollectFeaturesTo(data.main, main_set);
+    CollectFeaturesTo(data.ref, ref_set);
+
+    Compare(main_set, ref_set);
+  }
+
+  virtual void Compare(const RuleFeatureSet&, const RuleFeatureSet&) const = 0;
+};
+
+class RuleFeatureSetRefEqualTest
+    : public RuleFeatureSetRefTest,
+      public testing::WithParamInterface<RefTestData> {
+ public:
+  void Compare(const RuleFeatureSet& main,
+               const RuleFeatureSet& ref) const override {
+    EXPECT_EQ(main, ref);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RuleFeatureSetTest,
+                         RuleFeatureSetRefEqualTest,
+                         testing::ValuesIn(ref_equal_test_data));
+
+TEST_P(RuleFeatureSetRefEqualTest, All) {
+  Run(GetParam());
+}
+
+class RuleFeatureSetRefNotEqualTest
+    : public RuleFeatureSetRefTest,
+      public testing::WithParamInterface<RefTestData> {
+ public:
+  void Compare(const RuleFeatureSet& main,
+               const RuleFeatureSet& ref) const override {
+    EXPECT_NE(main, ref);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RuleFeatureSetTest,
+                         RuleFeatureSetRefNotEqualTest,
+                         testing::ValuesIn(ref_not_equal_test_data));
+
+TEST_P(RuleFeatureSetRefNotEqualTest, All) {
+  Run(GetParam());
 }
 
 TEST_F(RuleFeatureSetTest, CopyOnWrite) {

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 #define COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -28,44 +27,38 @@ class SpellCheckerSessionBridge;
 class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
  public:
   SpellCheckHostImpl();
+
+  SpellCheckHostImpl(const SpellCheckHostImpl&) = delete;
+  SpellCheckHostImpl& operator=(const SpellCheckHostImpl&) = delete;
+
   ~SpellCheckHostImpl() override;
 
  protected:
   // spellcheck::mojom::SpellCheckHost:
   void RequestDictionary() override;
-  void NotifyChecked(const base::string16& word, bool misspelled) override;
+  void NotifyChecked(const std::u16string& word, bool misspelled) override;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
-  void CallSpellingService(const base::string16& text,
+  void CallSpellingService(const std::u16string& text,
                            CallSpellingServiceCallback callback) override;
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
-  void RequestTextCheck(const base::string16& text,
+  void RequestTextCheck(const std::u16string& text,
                         int route_id,
                         RequestTextCheckCallback callback) override;
 
-#if BUILDFLAG(USE_WIN_HYBRID_SPELLCHECKER)
-  void RequestPartialTextCheck(
-      const base::string16& text,
-      int route_id,
-      const std::vector<SpellCheckResult>& partial_results,
-      bool fill_suggestions,
-      RequestPartialTextCheckCallback callback) override;
-#endif  // BUILDFLAG(USE_WIN_HYBRID_SPELLCHECKER)
-
-  void CheckSpelling(const base::string16& word,
+  void CheckSpelling(const std::u16string& word,
                      int route_id,
                      CheckSpellingCallback callback) override;
-  void FillSuggestionList(const base::string16& word,
+  void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
-#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-#if BUILDFLAG(USE_WIN_HYBRID_SPELLCHECKER)
-  void GetPerLanguageSuggestions(
-      const base::string16& word,
-      GetPerLanguageSuggestionsCallback callback) override;
-#endif  // BUILDFLAG(USE_WIN_HYBRID_SPELLCHECKER)
+#if defined(OS_WIN)
+  void InitializeDictionaries(InitializeDictionariesCallback callback) override;
+#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
+        // !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
 #if defined(OS_ANDROID)
   // spellcheck::mojom::SpellCheckHost:
@@ -77,8 +70,6 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   // Android-specific object used to query the Android spellchecker.
   SpellCheckerSessionBridge session_bridge_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckHostImpl);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_

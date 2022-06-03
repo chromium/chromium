@@ -3,7 +3,7 @@
 <script src="../media-controls.js"></script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<video>
+<video autoplay>
     <track src="captions-webvtt/captions-gaps.vtt" kind="captions" default >
 </video>
 <script>
@@ -11,7 +11,7 @@ async_test(function(t) {
     var video = document.querySelector("video");
     var testTrack = document.querySelector("track");
 
-    video.oncanplaythrough = t.step_func(testMutability);
+    video.onplaying = t.step_func(testMutability);
     testTrack.onload = t.step_func(testMutability);
 
     var eventCount = 0;

@@ -12,17 +12,15 @@
 namespace blink {
 
 class ExecutionContext;
-class ScriptWrappable;
 
 // Derived by wrappable objects which need to remain alive due to ongoing
 // asynchronous activity, even if they are not referenced in the JavaScript or
 // Blink heap.
 //
-// A ScriptWrappable ordinarily is held alive only if it has some such
-// reference, usually via a wrapper object held by script. However, some
-// objects, such as XMLHttpRequest, have pending activity that may be visible
-// (e.g. firing event listeners or resolving promises), and so should not be
-// collected, even if no references remain.
+// This is useful for ScriptWrappable objects that are not held alive by regular
+// references from the object graph. E.g., XMLHttpRequest may have a pending
+// activity that may be visible (e.g. firing event listeners or resolving
+// promises) and should thus not be collected.
 //
 // Such objects should derive from ActiveScriptWrappable<T>, and override
 // ScriptWrappable::HasPendingActivity:
@@ -30,17 +28,16 @@ class ScriptWrappable;
 // which returns true if there may be pending activity which requires the
 // wrappable remain alive.
 //
-// During wrapper tracing, ActiveScriptWrappables which belong to a
-// non-destroyed execution context and have pending activity are treated as
-// roots for the purposes of marking and so will keep themselves and objects
-// they reference alive.
-//
-// Since this pending activity will not keep the wrappable alive after the
-// context is destroyed, it is common for ActiveScriptWrappable objects to also
-// derive from ContextLifecycleObserver to abort the activity at that time.
+// To avoid leaking objects after the context is destroyed, users of
+// ActiveScriptWrappable<T> also have to provide a GetExecutionContext() method
+// that returns the ExecutionContext or nullptr. A nullptr or already destroyed
+// context results in ignoring HasPendingActivity().
 template <typename T>
 class ActiveScriptWrappable : public ActiveScriptWrappableBase {
  public:
+  ActiveScriptWrappable(const ActiveScriptWrappable&) = delete;
+  ActiveScriptWrappable& operator=(const ActiveScriptWrappable&) = delete;
+
   ~ActiveScriptWrappable() override = default;
 
  protected:
@@ -54,10 +51,6 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   bool DispatchHasPendingActivity() const final {
     return static_cast<const T*>(this)->HasPendingActivity();
   }
-  ScriptWrappable* ToScriptWrappable() final { return static_cast<T*>(this); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveScriptWrappable);
 };
 
 // Helper for ActiveScriptWrappable<T>::IsContextDestroyed();

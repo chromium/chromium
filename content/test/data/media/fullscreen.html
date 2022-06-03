@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fullscreen Video Detection Test</title>
+  <meta name=viewport content="width=device-width initial-scale=1.0">
+  <style>
+    .big {
+      /* More than the threshold for "effectively fullscreen" detection. */
+      width: 99vw;
+      height: 99vh;
+    }
+    .small {
+      /* Less than the threshold for "effectively fullscreen" detection. */
+      width: 70vw;
+      height: 70vh;
+    }
+    .portrait {
+      width: 18vw;
+      height: 99vh;
+    }
+    .hide {
+       display: none;
+    }
+  </style>
+</head>
+<body>
+    <div id="big_div" class="big">
+        <video controls id="big_video" class="big" src="bear.webm"></video>
+    </div>
+    <div id="small_div" class="small">
+      <video controls id="small_video" class="small" src="bear.webm"></video>
+    </div>
+</body>
+<script>
+    function makeFullscreen(id) {
+      if (!document.fullscreenElement) {
+        document.getElementById(id).requestFullscreen();
+      }
+    }
+    function exitFullscreen() {
+      document.exitFullscreen();
+    }
+    function makeBig(id) {
+      document.getElementById(id).className = "big";
+    }
+    function makeSmall(id) {
+      document.getElementById(id).className = "small";
+    }
+    function makePortrait(id) {
+      document.getElementById(id).className = "portrait";
+    }
+    function hide(id) {
+      document.getElementById(id).className = "hide";
+    }
+    function detach(id) {
+      let e = document.getElementById(id);
+      e.parentNode.removeChild(e);
+      window._detached_element = e;
+    }
+    function attach_to(id) {
+      let parent = document.getElementById(id);
+      parent.appendChild(window._detached_element);
+    }
+  </script>
+</html>

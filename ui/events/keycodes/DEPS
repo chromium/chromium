@@ -7,8 +7,8 @@ include_rules = [
   "-third_party",
   "-ui",
 
+  "+third_party/abseil-cpp/absl",
   "+ui/base/buildflags.h",  # Doesn't bring in all of UI.
-  "+ui/gfx/x/x11.h",         # Wrapper on <X11/*>.
-  "+ui/gfx/x/x11_types.h",   # <X11/*> replacement.
+  "+ui/gfx/x",
   "+ui/events",
 ]

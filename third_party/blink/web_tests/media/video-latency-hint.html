@@ -64,13 +64,13 @@ test(function(t) {
 
   // Non-finite values are caught earlier by IDL definition. They will have
   // no effect on either attribute type.
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     video.latencyHint = Infinity;
   }, 'latencyHint should throw for non-finite values');
   assert_equals(video.latencyHint, 0);
   assert_equals(video.getAttribute('latencyhint'), '0');
 
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     video.latencyHint = NaN;
   }, 'latencyHint should throw for non-finite values');
   assert_equals(video.latencyHint, 0);

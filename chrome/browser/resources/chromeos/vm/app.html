@@ -1,0 +1,93 @@
+<style>
+  table {
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+
+  thead {
+    background-color: rgb(240, 240, 240);
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  th:first-child,
+  td:first-child {
+    border-inline-end: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  th,
+  td {
+    padding: 12px;
+    text-align: start;
+  }
+
+  th:nth-child(2) {
+    min-width: 100px;
+  }
+
+  th:nth-child(3) {
+    min-width: 500px;
+  }
+
+  tbody tr:hover {
+    background-color: rgb(250, 250, 250);
+  }
+
+  td.pass {
+    color: green;
+  }
+
+  td.fail {
+    color: red;
+  }
+
+</style>
+
+<div>
+  <h1 id="title">[[title_]]</h1>
+
+  <template is="dom-if" if="[[showContentsPage_]]">
+    <ul>
+      <li><a href="/parallels">[[getTitle("pluginVmAppName")]]</a></li>
+    </ul>
+  </template>
+
+  <template is="dom-if" if="[[!showContentsPage_]]">
+    <template is="dom-if" if="[[diagnostics_.topError]]">
+      <div id="top-error">
+        [[formatTopErrorMessage(diagnostics_.topError.message)]]
+        <a href$="[[diagnostics_.topError.learnMoreLink.url]]"
+            hidden$="[[!diagnostics_.topError.learnMoreLink]]">
+          $i18n{learnMoreLabel}
+        </a>
+      </div>
+    </template>
+    <table>
+      <thead>
+        <tr>
+          <th>$i18n{requirementLabel}</th>
+          <th>$i18n{statusLabel}</th>
+          <th>$i18n{explanationLabel}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="[[diagnostics_.entries]]">
+          <tr>
+            <td>[[item.requirement]]</td>
+            <td class$="[[statusToClass(item.status)]]">
+              [[statusToString(item.status)]]
+            </td>
+            <td>
+              <template is="dom-if" if="[[item.explanation]]">
+                [[item.explanation.message]]
+                <a href$="[[item.explanation.learnMoreLink.url]]"
+                   hidden$="[[!item.explanation.learnMoreLink]]">
+                  $i18n{learnMoreLabel}
+                </a>
+              </template>
+            </td>
+          </tr>
+        </dom-repeat>
+      </tbody>
+    </table>
+  </template>
+</div>

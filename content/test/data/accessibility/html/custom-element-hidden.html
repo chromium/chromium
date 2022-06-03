@@ -1,0 +1,42 @@
+<!--
+@BLINK-ALLOW:htmlTag=*
+@WAIT-FOR:Done
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <template id="template">
+    <div><slot name="my-slot"></slot></div>
+  </template>
+
+  <div hidden>
+    <my-element>
+      <span slot="my-slot">Slot contents</span>
+    </my-element>
+  </div>
+
+  <button id="status"></button>
+
+  <script>
+    // After a delay, make "my-element" into a custom element using
+    // the template defined above. That will cause the template to be
+    // rendered inside <my-element>, and the slot contents to be reparented
+    // to the <slot> element.
+    window.setTimeout(() => {
+        customElements.define(
+            'my-element',
+            class extends HTMLElement {
+                constructor() {
+                    super();
+                    let template = document.getElementById('template');
+                    let templateContent = template.content;
+
+                    const shadowRoot = this.attachShadow({mode: 'open'})
+                          .appendChild(templateContent.cloneNode(true));
+                }
+            }
+        );
+        document.getElementById('status').setAttribute('aria-label', 'Done');
+    }, 500);
+  </script>
+</body>

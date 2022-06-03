@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 12
+// Next MinVersion: 17
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -11,6 +11,8 @@
 //  - VPN RPCs for integrating Always-on-VPNs and ARC as a VPN provider.
 
 module arc.mojom;
+
+import "url/mojom/url.mojom";
 
 // Indicates if a request send by ARC to the host has successfully completed.
 [Extensible]
@@ -80,6 +82,147 @@ struct ConfiguredNetworkDetails {
   bool autoconnect;
 };
 
+// Passpoint credentials used to connect to matching passpoint networks.
+// This struct should be mirroring 1-to-1 the "passpoint properties" names and
+// types defined in src/platform2/dbus/shill/dbus-constants.h.
+struct PasspointCredentials {
+  // All home service provider fully qualified domain name(s).
+  array<string> domains@0;
+
+  // The realm associated with this credential. It will be used to determine
+  // if this credential can be used to authenticate with a given hotspot by
+  // comparing the realm specified in that hotspot's Access Network Query
+  // Protocol (ANQP) element.
+  string realm@1;
+
+  // List of Home Organization Identifiers (OIs) used for determining if this
+  // credentials match a given Hotspot provider. Matching of any OIs in this
+  // list with an OI in the Roaming Consortium advertised by a Hotspot means
+  // that successful authentication with such Hotspot is possible.
+  array<uint64> home_ois@2;
+
+  // List of Home Organization Identifiers (OIs) used for determining if a
+  // provider is a member of a given Hotspot provider. Every OIs in this list
+  // are required to match an OI in the the Roaming Consortium advertised by a
+  // Hotspot in order to support authentication with this credentials.
+  array<uint64> required_home_ois@3;
+
+  // Roaming consortium Organization Identifiers (OIs) used to determine which
+  // access points support authentication with this credentials.
+  array<uint64> roaming_consortium_ois@4;
+
+  // Set of EAP credentials (TLS or TTLS only) used to connect to a network
+  // that matched these credentials.
+  EapCredentials eap@5;
+
+  // True if the user or App specified any network provisioned
+  // with these credentials should be considered as metered.
+  bool metered@6;
+
+  // Package name of the App that provided these credentials.
+  string package_name@7;
+};
+
+// The EAP method that will be used when connecting to a 802.1x WiFi network or
+// Passpoint WiFi network.
+[Extensible]
+enum EapMethod {
+  kNone = 0,
+  kLeap = 1,
+  kPeap = 2,
+  kTls = 3,
+  kTtls = 4,
+};
+
+// The authentication methods that will be on the inside of a PEAP or EAP-TTLS
+// tunnel.
+[Extensible]
+enum EapPhase2Method {
+  kNone = 0,
+  kPap = 1,
+  kMschap = 2,
+  kMschapv2 = 3,
+};
+
+// Recognized key management schemes.
+[Extensible]
+enum KeyManagement {
+  kNone = 0,
+  kIeee8021X = 1,
+  kFtEap = 2,
+  kFtPsk = 3,
+  kFtSae = 4,
+  kWpaEap = 5,
+  kWpaEapSha256 = 6,
+  kWpaPsk = 7,
+  kSae = 8,
+};
+
+// EAP credential used to connect to a 802.1x WiFi network or Passpoint WiFi
+// network that matched the credentials.
+// This struct should be mirroring 1-to-1 the "EAP properties" names and types
+// defined in src/platform2/system_api/dbus/shill/dbus-constants.h.
+// ARC is responsible for filling / hardcoding any field that the Android APIs
+// do not provide directly, so that ArcNetHostImpl can be a dumb data transfer
+// layer with no other logic.
+struct EapCredentials {
+  // The outer or only EAP authentication type.
+  EapMethod method@0;
+
+  // The inner EAP authentication type.
+  EapPhase2Method phase2_method@1;
+
+  // When there is an inner EAP type, use this identity for the outer.
+  string? anonymous_identity@2;
+
+  // Who we identify ourselves as to the EAP authenticator.
+  string? identity@3;
+
+  // Password to use for EAP methods which require one.
+  string? password@4;
+
+  // Key management algorithm to use after EAP succeeds.
+  KeyManagement key_management@5;
+
+  // PEM formatted contents of the CA certificate(s).
+  array<string>? ca_certificate_pem@6;
+
+  // PEM formatted contents of the client certificate(s).
+  array<string>? client_certificate_pem@7;
+
+  // PEM formatted contents of the client private key.
+  string? client_certificate_key@8;
+
+  // If non-empty, string to match remote subject against before connecting.
+  string? subject_match@9;
+
+  // A list of serialized subject alternative names (SANs) to be matched against
+  // the alternative subject name of the authentication server certificate. When
+  // multiple match strings are specified, a match with any one of the values is
+  // considered a sufficient match for the server certificate.
+  array<string>? subject_alternative_name_match_list@10;
+
+  // A list of constraints for the server domain name. If set, the entries will
+  // be used as suffix match requirements against the DNS name element(s) of the
+  // alternative subject name of an authentication server. When multiple match
+  // strings are specified, a match with any one of the values is considered a
+  // sufficient match for the server certificate.
+  array<string>? domain_suffix_match_list@11;
+
+  // The highest TLS version supplicant is allowed to negotiate.
+  string? tls_version_max@12;
+
+  // If true, use the system-wide certificate authority database to authenticate
+  // the remote.
+  bool use_system_cas@13;
+
+  // If true, use per network proactive key caching.
+  bool use_proactive_key_caching@14;
+
+  // If true, use the user's stored login password as the password.
+  bool use_login_password@15;
+};
+
 union NetworkDetails {
   VisibleNetworkDetails visible;
   ConfiguredNetworkDetails configured;
@@ -92,7 +235,8 @@ enum IPAddressType {
   IPV6,
 };
 
-// Layer 3 and proxy configuration information for an IP network.
+// Deprecated. Individual fields added to NetworkConfiguration in version 13 of
+// this file should be used instead.
 struct IPConfiguration {
 
   // Literal representation of the IP address of the ARC gateway.
@@ -126,7 +270,8 @@ enum SecurityType {
   WPA_EAP,
 };
 
-// Tethering state of a |NetworkConfiguration| as a client.
+// Deprecated enum. |is_metered| in NetworkConfiguration should be
+// used instead.
 [Extensible]
 enum TetheringClientState {
   // Tethering state is detected and confirmed.
@@ -162,6 +307,12 @@ struct WiFi {
   // ARC for connected WiFi networks and should be considered precise only for
   // scanning results.
   int32 signal_strength;
+
+  // True if the network represents a Passpoint network.
+  [MinVersion=16] bool is_passpoint;
+
+  // Fully qualified domain name (FQDN) of a Passpoint configuration.
+  [MinVersion=16] string? fqdn;
 };
 
 // The physical network types exposed to ARC by the host,
@@ -189,11 +340,12 @@ struct NetworkConfiguration {
   // A string token that uniquely identifies this network service.
   string guid;
 
-  // IP configuration for the network service inside ARC.
-  array<IPConfiguration>? ip_configs;
+  // Deprecated. Individual fields added to NetworkConfiguration in version 13
+  // of this file should be used instead.
+  array<IPConfiguration>? deprecated_ip_configs;
 
-  // MAC address of the network interface inside the ARC.
-  string? mac_address;
+  // Deprecated field unused from ARC P and later.
+  string? deprecated_mac_address;
 
   // The type of the underlying physical network.
   NetworkType type;
@@ -201,15 +353,74 @@ struct NetworkConfiguration {
   // Additional WiFi properties for WiFi network services.
   WiFi? wifi;
 
-  // Indicates if the physical network is known to have upstream Internet
-  // access through tethering on a metered network.
-  [MinVersion=8] TetheringClientState tethering_client_state;
+  // Deprecated field. Uses |is_metered| instead.
+  [MinVersion=8] TetheringClientState deprecated_tethering_client_state;
 
-  // The network interface associated with this network service.
+  // The name of the network interface on the host.
   [MinVersion=10] string? network_interface;
 
   // True if this network is the host default network.
   [MinVersion=11] bool is_default_network;
+
+  // The name of the shill service associated with this network connection.
+  [MinVersion=12] string? service_name;
+
+  // This is the network MTU value (device kIpConfigsProperty) or the
+  // native VPN MTU value (service property), or 0 if undefined.
+  [MinVersion=13] uint32 host_mtu;
+
+  // Prefix length of the host IPv4 subnet, or 0 for an IPv6 only network.
+  [MinVersion=13] uint32 host_ipv4_prefix_length;
+
+  // IPv4 address assigned to the host, or empty for an IPv6 only network.
+  [MinVersion=13] string? host_ipv4_address;
+
+  // IPv4 address of the local gateway, or empty for an IPv6 only network.
+  [MinVersion=13] string? host_ipv4_gateway;
+
+  // Prefix length of the host IPv6 subnet, or 0 for an IPv4 only network.
+  [MinVersion=13] uint32 host_ipv6_prefix_length;
+
+  // Global unicast IPv6 addresses assigned to the host, or empty for an IPv4
+  // only network. The link local address and unique local addresses are
+  // ignored.
+  [MinVersion=13] array<string>? host_ipv6_global_addresses;
+
+  // IPv6 address of the local gateway, or empty for an IPv4 only network.
+  [MinVersion=13] string? host_ipv6_gateway;
+
+  // All IPv4 and IPv6 addresses of name servers for the network,
+  // either obtained by DHCPv4, by IPv6 RA RDNSS, or set statically.
+  [MinVersion=13] array<string>? host_dns_addresses;
+
+  // All search domains set for the host for the network, either obtained by
+  // DHCPv4, by IPv6 RA DNSSL, or set statically. Search domains are set as an
+  // explicit array of strings instead of a comma separated list embedded into
+  // a single string.
+  [MinVersion=13] array<string>? host_search_domains;
+
+  // The following four fields specify the static IPv4 configuration for the
+  // virtual network exposed inside ARC environment by arc-networkd, and
+  // attached to this host network. These values are defined even if the
+  // host network is an IPv6 only network.
+
+  // Prefix length of the IPv4 subnet assigned to the ARC virtual network.
+  [MinVersion=13] uint32 arc_ipv4_prefix_length;
+
+  // IPv4 address assigned to the ARC guest.
+  [MinVersion=13] string? arc_ipv4_address;
+
+  // IPv4 address of the gateway for the ARC virtual network.
+  [MinVersion=13] string? arc_ipv4_gateway;
+
+  // The name of the network interface matching the virtual interface exposed
+  // to ARC and associated with the network service. This can be different
+  // from the name of the real physical interface managed by shill.
+  [MinVersion=13] string? arc_network_interface;
+
+  // True if the network has been autodetected by the platform as a metered
+  // network or if the user explicitly marked the network as metered in the UI.
+  [MinVersion=14] bool is_metered;
 };
 
 // Describes a Wifi network configuration that ARC has requested the host to
@@ -236,6 +447,10 @@ struct WifiConfiguration {
 
   // Deprecated. |hexssid| will be used, going forward.
   string ssid@0;
+
+  // Set of EAP credentials used to connect to a network that matched these
+  // credentials.
+  [MinVersion=16] EapCredentials? eap@8;
 };
 
 // Response object sent back to ARC when it queries existing networks on
@@ -279,8 +494,47 @@ struct AndroidVpnConfiguration {
   array<string> domains@8;
 };
 
-// Next Method ID: 14
-// ID 3 is missing as it belonged to a deprecated method.
+// Result object that is returned to the caller of the ARC DNS
+// Resolution test. Contains information regarding the test result.
+struct ArcDnsResolutionTestResult {
+  // True if the test passed successfully.
+  bool is_successful;
+
+  // RCODE of the DNS response as defined by rfc2929#section-2.3.
+  int32 response_code;
+
+  // Time elapsed for the DNS resolution (milliseconds).
+  int64 duration_ms;
+};
+
+// Result object that is returned to the caller of the ARC HTTP
+// test. Contains information regarding the test result.
+struct ArcHttpTestResult {
+  // True if the HTTP request completed successfully.
+  bool is_successful;
+
+  // Status code of the HTTP response header.
+  int32 status_code;
+
+  // HTTP response header fields.
+  map<string, string> response_header_fields;
+
+  // Time elapsed for the HTTP request and response (milliseconds).
+  int64 duration_ms;
+};
+
+// Result object that is returned to the caller of the ARC
+// Ping test. Contains information regarding the test result.
+struct ArcPingTestResult {
+  // True if the test passed successfully.
+  bool is_successful;
+
+  // Time elapsed for the ping (milliseconds).
+  int64 duration_ms;
+};
+
+// Next Method ID: 16
+// IDs 3 and 9 are missing as they belonged to deprecated methods.
 interface NetHost {
   // Sends a request to get enabled / disabled status of WiFi.
   GetWifiEnabledState@1() => (bool is_enabled);
@@ -307,11 +561,6 @@ interface NetHost {
 
   // Disconnects from network |guid|.
   [MinVersion=4] StartDisconnect@8(string guid) => (NetworkResult status);
-
-  // Retrieve details (IP, SSID, etc.) about the current network connection.
-  [MinVersion=5] GetDefaultNetwork@9() => (
-      NetworkConfiguration? logical_default,
-      NetworkConfiguration? physical_default);
 
   // Sends a request to get the subset of network services existing on Chrome OS
   // that match the kind specified with GetNetworksRequestType. This call
@@ -342,23 +591,28 @@ interface NetHost {
   // unless the lockdown is dictated via policy.
   // Call with empty string as |vpnPackage| to lift the restriction.
   [MinVersion=9] SetAlwaysOnVpn@13(string vpnPackage, bool lockdown);
+
+  // Adds a PasspointCredentials block provided by an Android App onto the host
+  // platform.
+  [MinVersion=16] AddPasspointCredentials@14(PasspointCredentials credentials);
+
+  // Removes all PasspointCredentials blocks provided by an Android App.
+  // Calling this will also revoke all associated WiFi Services provisioned
+  // with the credentials blocks.
+  [MinVersion=16] RemovePasspointCredentials@15(string package_name);
 };
 
-// Next Method ID: 8
+// Next Method ID: 11
+// ID 2 is missing as it belonged to deprecated method.
 interface NetInstance {
   // DEPRECATED: Please use Init@6 instead.
-  InitDeprecated@0(NetHost host_ptr);
+  InitDeprecated@0(pending_remote<NetHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=8] Init@6(NetHost host_ptr) => ();
+  [MinVersion=8] Init@6(pending_remote<NetHost> host_remote) => ();
 
   // Notifies the instance of a WiFI AP scan being completed.
   [MinVersion=1] ScanCompleted@1();
-
-  // Notifies the instance of a change in the host default network service.
-  [MinVersion=2] DefaultNetworkChanged@2(
-      NetworkConfiguration? logical_default,
-      NetworkConfiguration? physical_default);
 
   // Notifies the instance of a change in the state of WiFi on the host.
   [MinVersion=3] WifiEnabledStateChanged@3(bool is_enabled);
@@ -377,4 +631,25 @@ interface NetInstance {
   // properties and data visible in NetworkConfiguration, and not for all shill
   // property updates.
   [MinVersion=10] ActiveNetworksChanged@7(array<NetworkConfiguration> network);
+
+  // Does a DNS query from within ARC and returns result.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] DnsResolutionTest@8(string transport_name,
+      string host_name) => (ArcDnsResolutionTestResult result);
+
+  // Does an HTTP GET request from within ARC and returns result.
+  // Only HTTP and HTTPS are supported and the connection does not use any
+  // caches/cookie jars/etc. that might exist on the Android side.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] HttpTest@9(string transport_name, url.mojom.Url url)
+      => (ArcHttpTestResult result);
+
+  // Sends an ICMP echo request from within ARC to the given IP address and
+  // returns result.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] PingTest@10(string transport_name, string ip_address)
+      => (ArcPingTestResult result);
 };

@@ -34,6 +34,7 @@ UsbDeviceHandleAndroid::UsbDeviceHandleAndroid(
     const base::android::JavaRef<jobject>& wrapper)
     : UsbDeviceHandleUsbfs(device,
                            std::move(fd),
+                           base::ScopedFD(),
                            UsbService::CreateBlockingTaskRunner()),
       j_object_(wrapper) {}
 

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Test that offscreenCanvas's size is correct after being transferred to a worker.
+FAIL Test that transfer an OffscreenCanvas that has a context throws exception. assert_throws_dom: function "function() {
+            worker.postMessage({offscreenCanvas}, [offscreenCanvas]);
+        }" threw object "DataCloneError: Failed to execute 'postMessage' on 'Worker': An OffscreenCanvas could not be cloned because it had a rendering context." that is not a DOMException InvalidStateError: property "code" is equal to 25, expected 11
+FAIL Test that transfer an OffscreenCanvas twice throws exception. assert_throws_dom: function "function() {
+        worker.postMessage({offscreenCanvas}, [offscreenCanvas]);
+    }" threw object "DataCloneError: Failed to execute 'postMessage' on 'Worker': An OffscreenCanvas could not be cloned because it was detached." that is not a DOMException InvalidStateError: property "code" is equal to 25, expected 11
+PASS Test that calling getContext('2d') on a detached OffscreenCanvas throws exception.
+PASS Test that calling getContext('webgl') on a detached OffscreenCanvas throws exception.
+Harness: the test ran to completion.
+

@@ -56,6 +56,12 @@ class PLATFORM_EXPORT FontDescription {
   USING_FAST_MALLOC(FontDescription);
 
  public:
+  enum HashCategory {
+    kHashEmptyValue = 0,
+    kHashDeletedValue,
+    kHashRegularValue
+  };
+
   enum GenericFamilyType {
     kNoFamily,
     kStandardFamily,
@@ -63,13 +69,9 @@ class PLATFORM_EXPORT FontDescription {
     kSansSerifFamily,
     kMonospaceFamily,
     kCursiveFamily,
-    kFantasyFamily,
-    kPictographFamily
+    kFantasyFamily
   };
   static String ToString(GenericFamilyType);
-
-  enum Kerning { kAutoKerning, kNormalKerning, kNoneKerning };
-  static String ToString(Kerning);
 
   enum LigaturesState {
     kNormalLigaturesState,
@@ -77,6 +79,11 @@ class PLATFORM_EXPORT FontDescription {
     kEnabledLigaturesState
   };
   static String ToString(LigaturesState);
+
+  enum Kerning { kAutoKerning, kNormalKerning, kNoneKerning };
+  static String ToString(Kerning);
+
+  static String ToString(FontSelectionValue);
 
   enum FontVariantCaps {
     kCapsNormal,
@@ -88,9 +95,28 @@ class PLATFORM_EXPORT FontDescription {
     kTitlingCaps
   };
   static String ToString(FontVariantCaps);
+  static String ToStringForIdl(FontVariantCaps);
+
+  enum FontSynthesisWeight {
+    kAutoFontSynthesisWeight,
+    kNoneFontSynthesisWeight
+  };
+  static String ToString(FontSynthesisWeight);
+
+  enum FontSynthesisStyle { kAutoFontSynthesisStyle, kNoneFontSynthesisStyle };
+  static String ToString(FontSynthesisStyle);
+
+  enum FontSynthesisSmallCaps {
+    kAutoFontSynthesisSmallCaps,
+    kNoneFontSynthesisSmallCaps
+  };
+  static String ToString(FontSynthesisSmallCaps);
 
   FontDescription();
   FontDescription(const FontDescription&);
+
+  static FontDescription CreateHashTableEmptyValue();
+  explicit FontDescription(WTF::HashTableDeletedValueType);
 
   FontDescription& operator=(const FontDescription&);
 
@@ -152,14 +178,30 @@ class PLATFORM_EXPORT FontDescription {
     return FamilyDescription(GenericFamily(), Family());
   }
   FontFamily& FirstFamily() { return family_list_; }
+  const FontFamily& FirstFamily() const { return family_list_; }
   Size GetSize() const {
     return Size(KeywordSize(), SpecifiedSize(), IsAbsoluteSize());
   }
   float SpecifiedSize() const { return specified_size_; }
   float ComputedSize() const { return computed_size_; }
-  float AdjustedSize() const { return adjusted_size_; }
+
+  // TODO(xiaochengh): The functions and members for size-adjust descriptor and
+  // font-size-adjust property have similar names and are very confusing. Rename
+  // them for better clarity.
+
+  // For CSS font-size-adjust property
   float SizeAdjust() const { return size_adjust_; }
   bool HasSizeAdjust() const { return size_adjust_ != kFontSizeAdjustNone; }
+
+  // Return a copy with the size-adjust descriptor applied.
+  // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
+  FontDescription SizeAdjustedFontDescription(float size_adjust) const;
+
+  // The used value of font-size applying font-size-adjust or size-adjust.
+  // TODO(crbug.com/451346): Make font-size-adjust and size-adjust work
+  // together.
+  float AdjustedSize() const { return adjusted_size_; }
+
   int ComputedPixelSize() const { return int(computed_size_ + 0.5f); }
   FontVariantCaps VariantCaps() const {
     return static_cast<FontVariantCaps>(fields_.variant_caps_);
@@ -180,7 +222,7 @@ class PLATFORM_EXPORT FontDescription {
   // family is "monospace"
   bool IsMonospace() const {
     return GenericFamily() == kMonospaceFamily && !Family().Next() &&
-           Family().Family() == font_family_names::kWebkitMonospace;
+           Family().FamilyName() == font_family_names::kMonospace;
   }
   Kerning GetKerning() const { return static_cast<Kerning>(fields_.kerning_); }
   FontVariantEastAsian VariantEastAsian() const {
@@ -220,8 +262,25 @@ class PLATFORM_EXPORT FontDescription {
   UScriptCode GetScript() const { return LocaleOrDefault().GetScript(); }
   bool IsSyntheticBold() const { return fields_.synthetic_bold_; }
   bool IsSyntheticItalic() const { return fields_.synthetic_italic_; }
+  bool IsSyntheticOblique() const { return fields_.synthetic_oblique_; }
   bool UseSubpixelPositioning() const {
     return fields_.subpixel_text_position_;
+  }
+  FontSynthesisWeight GetFontSynthesisWeight() const {
+    return static_cast<FontSynthesisWeight>(fields_.font_synthesis_weight_);
+  }
+  bool SyntheticBoldAllowed() const {
+    return fields_.font_synthesis_weight_ == kAutoFontSynthesisWeight;
+  }
+  FontSynthesisStyle GetFontSynthesisStyle() const {
+    return static_cast<FontSynthesisStyle>(fields_.font_synthesis_style_);
+  }
+  bool SyntheticItalicAllowed() const {
+    return fields_.font_synthesis_style_ == kAutoFontSynthesisStyle;
+  }
+  FontSynthesisSmallCaps GetFontSynthesisSmallCaps() const {
+    return static_cast<FontSynthesisSmallCaps>(
+        fields_.font_synthesis_small_caps_);
   }
 
   FontSelectionRequest GetFontSelectionRequest() const;
@@ -254,18 +313,16 @@ class PLATFORM_EXPORT FontDescription {
 
   float EffectiveFontSize()
       const;  // Returns either the computedSize or the computedPixelSize
-  FontCacheKey CacheKey(
-      const FontFaceCreationParams&,
-      bool is_unique_match,
-      const FontSelectionRequest& = FontSelectionRequest()) const;
+  FontCacheKey CacheKey(const FontFaceCreationParams&,
+                        bool is_unique_match) const;
 
   void SetFamily(const FontFamily& family) { family_list_ = family; }
-  void SetComputedSize(float s) { computed_size_ = clampTo<float>(s); }
-  void SetSpecifiedSize(float s) { specified_size_ = clampTo<float>(s); }
-  void SetAdjustedSize(float s) { adjusted_size_ = clampTo<float>(s); }
-  void SetSizeAdjust(float aspect) { size_adjust_ = clampTo<float>(aspect); }
+  void SetComputedSize(float s) { computed_size_ = ClampTo<float>(s); }
+  void SetSpecifiedSize(float s) { specified_size_ = ClampTo<float>(s); }
+  void SetAdjustedSize(float s) { adjusted_size_ = ClampTo<float>(s); }
+  void SetSizeAdjust(float aspect) { size_adjust_ = ClampTo<float>(aspect); }
 
-  void SetStyle(FontSelectionValue i) { font_selection_request_.slope = i; }
+  void SetStyle(FontSelectionValue i);
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }
   void SetStretch(FontSelectionValue s) { font_selection_request_.width = s; }
 
@@ -293,9 +350,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.text_rendering_ = rendering;
     UpdateTypesettingFeatures();
   }
-  void SetOrientation(FontOrientation orientation) {
-    fields_.orientation_ = static_cast<unsigned>(orientation);
-  }
+  void SetOrientation(FontOrientation orientation);
   void SetWidthVariant(FontWidthVariant width_variant) {
     fields_.width_variant_ = width_variant;
   }
@@ -307,6 +362,16 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetSyntheticItalic(bool synthetic_italic) {
     fields_.synthetic_italic_ = synthetic_italic;
+  }
+  void SetFontSynthesisWeight(FontSynthesisWeight font_synthesis_weight) {
+    fields_.font_synthesis_weight_ = font_synthesis_weight;
+  }
+  void SetFontSynthesisStyle(FontSynthesisStyle font_synthesis_style) {
+    fields_.font_synthesis_style_ = font_synthesis_style;
+  }
+  void SetFontSynthesisSmallCaps(
+      FontSynthesisSmallCaps font_synthesis_small_caps) {
+    fields_.font_synthesis_small_caps_ = font_synthesis_small_caps;
   }
   void SetFeatureSettings(scoped_refptr<FontFeatureSettings> settings) {
     feature_settings_ = std::move(settings);
@@ -329,7 +394,7 @@ class PLATFORM_EXPORT FontDescription {
   }
   static bool SubpixelPositioning() { return use_subpixel_text_positioning_; }
 
-  void SetSubpixelAscentDescent(bool sp) const {
+  void SetSubpixelAscentDescent(bool sp) {
     fields_.subpixel_ascent_descent_ = sp;
   }
 
@@ -337,10 +402,28 @@ class PLATFORM_EXPORT FontDescription {
     return fields_.subpixel_ascent_descent_;
   }
 
+  void SetHashCategory(HashCategory category) {
+    fields_.hash_category_ = category;
+  }
+
+  HashCategory GetHashCategory() const {
+    return static_cast<HashCategory>(fields_.hash_category_);
+  }
+
+  bool IsHashTableEmptyValue() const {
+    return GetHashCategory() == kHashEmptyValue;
+  }
+
+  bool IsHashTableDeletedValue() const {
+    return GetHashCategory() == kHashDeletedValue;
+  }
+
   static void SetDefaultTypesettingFeatures(TypesettingFeatures);
   static TypesettingFeatures DefaultTypesettingFeatures();
 
   unsigned StyleHashWithoutFamilyList() const;
+  unsigned GetHash() const;
+
   // TODO(drott): We should not expose internal structure here, but rather
   // introduce a hash function here.
   unsigned BitmapFields() const { return fields_as_unsigned_.parts[0]; }
@@ -357,6 +440,8 @@ class PLATFORM_EXPORT FontDescription {
   String ToString() const;
 
  private:
+  void UpdateSyntheticOblique();
+
   FontFamily family_list_;  // The list of font families to be used.
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
@@ -383,6 +468,7 @@ class PLATFORM_EXPORT FontDescription {
 
   // Covers stretch, style, weight.
   FontSelectionRequest font_selection_request_;
+  FontSelectionValue original_slope;
 
   struct BitFields {
     DISALLOW_NEW();
@@ -417,12 +503,19 @@ class PLATFORM_EXPORT FontDescription {
     unsigned text_rendering_ : 2;  // TextRenderingMode
     unsigned synthetic_bold_ : 1;
     unsigned synthetic_italic_ : 1;
+    unsigned synthetic_oblique_ : 1;
+    unsigned font_synthesis_weight_ : 1;
+    unsigned font_synthesis_style_ : 1;
+    unsigned font_synthesis_small_caps_ : 1;
     unsigned subpixel_text_position_ : 1;
     unsigned typesetting_features_ : 3;
     unsigned variant_numeric_ : 8;
     unsigned variant_east_asian_ : 6;
-    mutable unsigned subpixel_ascent_descent_ : 1;
+    unsigned subpixel_ascent_descent_ : 1;
     unsigned font_optical_sizing_ : 1;
+    unsigned has_size_adjust_descriptor_ : 1;
+
+    unsigned hash_category_ : 2;  // HashCategory
   };
 
   static_assert(sizeof(BitFields) == sizeof(FieldsAsUnsignedType),
@@ -437,6 +530,45 @@ class PLATFORM_EXPORT FontDescription {
   static bool use_subpixel_text_positioning_;
 };
 
+struct FontDescriptionHash {
+  STATIC_ONLY(FontDescriptionHash);
+
+  static unsigned GetHash(const FontDescription& description) {
+    return description.GetHash();
+  }
+
+  static bool Equal(const FontDescription& a, const FontDescription& b) {
+    return a == b;
+  }
+
+  // Empty and deleted FontDescriptions have different HashCategory flag values
+  // from all regular FontDescriptions.
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
 }  // namespace blink
 
-#endif
+namespace WTF {
+
+template <typename T>
+struct DefaultHash;
+template <>
+struct DefaultHash<blink::FontDescription> {
+  using Hash = blink::FontDescriptionHash;
+};
+
+template <typename T>
+struct HashTraits;
+template <>
+struct HashTraits<blink::FontDescription>
+    : SimpleClassHashTraits<blink::FontDescription> {
+  // FontDescription default constructor creates a regular value instead of the
+  // empty value.
+  static blink::FontDescription EmptyValue() {
+    return blink::FontDescription::CreateHashTableEmptyValue();
+  }
+};
+
+}  // namespace WTF
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DESCRIPTION_H_

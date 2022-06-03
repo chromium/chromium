@@ -1,12 +1,14 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h",
+  "+components/keyed_service/core/keyed_service_shutdown_notifier.h",
   "+components/zoom",
   "+content/public/browser",
   "+content/public/common",
   "+ipc",
   "+third_party/blink/public/common/page/page_zoom.h",
-  "+third_party/blink/public/platform/web_gesture_event.h",
-  "+third_party/blink/public/platform/web_input_event.h",
+  "+third_party/blink/public/common/input/web_gesture_event.h",
+  "+third_party/blink/public/common/input/web_input_event.h",
 ]
 
 specific_include_rules = {

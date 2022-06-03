@@ -58,7 +58,7 @@ def _GenerateLeafFunction(out, name, line_count, indent=0):
   indent = '  ' * indent
   rand = _CreateRandomGeneratorForKey(name)
   print(indent + 'function %s(value) {' % name, file=out)
-  for _ in xrange(line_count):
+  for _ in range(line_count):
     print(indent + '  %s;' % rand.choice(operations), file=out)
   print(indent + '  return value;', file=out)
   print(indent + '}\n', file=out)
@@ -74,9 +74,9 @@ def _TopLevelClosureEntryPoint(closure_index):
 
 def _GenerateTopLevelClosures(
     out, count, inner_function_count, inner_function_line_count):
-  for closure_index in xrange(count):
+  for closure_index in range(count):
     print('(function() {  // closure %d' % closure_index, file=out)
-    for inner_index in xrange(inner_function_count):
+    for inner_index in range(inner_function_count):
       _GenerateLeafFunction(
           out,
           _ClosureInnerFunctionName(closure_index, inner_index),
@@ -85,7 +85,7 @@ def _GenerateTopLevelClosures(
 
     print('window.%s = function(value) {' %
         _TopLevelClosureEntryPoint(closure_index), file=out)
-    for inner_index in xrange(inner_function_count):
+    for inner_index in range(inner_function_count):
       print('  value = %s(value);' %
           _ClosureInnerFunctionName(closure_index, inner_index), file=out)
     print('  return value;', file=out)
@@ -103,8 +103,8 @@ def _TopLevelFunctionEntryPoint(function_index):
 
 def _GenerateTopLevelFunctions(
     out, count, inner_function_count, inner_function_line_count):
-  for function_index in xrange(count):
-    for inner_index in xrange(inner_function_count / 2):
+  for function_index in range(count):
+    for inner_index in range(inner_function_count / 2):
       _GenerateLeafFunction(
           out,
           _FunctionInnerFunctionName(function_index, inner_index),
@@ -113,14 +113,14 @@ def _GenerateTopLevelFunctions(
     print('function %s(value) {' %
         _TopLevelFunctionEntryPoint(function_index), file=out)
 
-    for inner_index in xrange(inner_function_count / 2, inner_function_count):
+    for inner_index in range(inner_function_count / 2, inner_function_count):
       _GenerateLeafFunction(
           out,
           _FunctionInnerFunctionName(function_index, inner_index),
           inner_function_line_count,
           indent=1)
 
-    for inner_index in xrange(inner_function_count):
+    for inner_index in range(inner_function_count):
       print('  value = %s(value);' %
           _FunctionInnerFunctionName(function_index, inner_index), file=out)
     print('  return value;', file=out)
@@ -129,10 +129,10 @@ def _GenerateTopLevelFunctions(
 
 def _GenerateMain(out, loop_count, closure_call_count, function_call_count):
   print('function main(value) {', file=out)
-  for _ in xrange(loop_count):
-    for i in xrange(closure_call_count):
+  for _ in range(loop_count):
+    for i in range(closure_call_count):
       print('  value = %s(value);' % _TopLevelClosureEntryPoint(i), file=out)
-    for i in xrange(function_call_count):
+    for i in range(function_call_count):
       print('  value = %s(value);' % _TopLevelFunctionEntryPoint(i), file=out)
 
   print('  return value;', file=out)

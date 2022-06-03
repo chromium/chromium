@@ -6,6 +6,8 @@ import("//cc/cc.gni")
 cc_component("debug") {
   output_name = "cc_debug"
   sources = [
+    # For enum LCDTextDisallowedReason used in debug_colors.*.
+    "../raster/lcd_text_disallowed_reason.h",
     "debug_colors.cc",
     "debug_colors.h",
     "debug_export.h",

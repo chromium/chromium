@@ -5,74 +5,36 @@
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_win) {
-  proto_library("stability_report_proto") {
-    sources = [
-      "stability_report.proto",
-    ]
-  }
-
-  static_library("browser_watcher") {
-    # This is a separate lib to minimize the dependencies for its
-    # hosting binary "chrome_watcher.dll".
-    sources = [
-      "endsession_watcher_window_win.cc",
-      "endsession_watcher_window_win.h",
-      "exit_code_watcher_win.cc",
-      "exit_code_watcher_win.h",
-      "window_hang_monitor_win.cc",
-      "window_hang_monitor_win.h",
-    ]
-    deps = [
-      "//base",
-    ]
+  proto_library("activity_report_proto") {
+    sources = [ "activity_report.proto" ]
   }
 
   static_library("browser_watcher_client") {
     sources = [
-      "watcher_client_win.cc",
-      "watcher_client_win.h",
-      "watcher_metrics_provider_win.cc",
-      "watcher_metrics_provider_win.h",
+      "exit_code_watcher_win.cc",
+      "exit_code_watcher_win.h",
     ]
     deps = [
-      ":postmortem_stability",
+      ":activity_report_proto",
       ":stability_client",
+      ":stability_common",
       "//base",
       "//components/metrics",
       "//third_party/crashpad/crashpad/client",
     ]
   }
 
-  static_library("postmortem_stability") {
+  # This target links into the crashpad handler which lives in chrome_elf.dll
+  # on Windows.
+  static_library("activity_report") {
     sources = [
-      "postmortem_minidump_writer.h",
-      "postmortem_minidump_writer_win.cc",
-      "postmortem_report_collector.cc",
-      "postmortem_report_collector.h",
+      "activity_report_user_stream_data_source.cc",
+      "activity_report_user_stream_data_source.h",
     ]
     deps = [
+      ":activity_report_proto",
       ":stability_client",
       ":stability_common",
-      ":stability_report_proto",
-      "//base",
-      "//components/metrics:metrics",
-      "//components/variations",
-      "//third_party/crashpad/crashpad/client",
-      "//third_party/crashpad/crashpad/minidump",
-      "//third_party/crashpad/crashpad/util",
-    ]
-    ldflags = [ "/DELAYLOAD:wevtapi.dll" ]  # Only used after unclean shutdowns.
-  }
-
-  static_library("crash_stability") {
-    sources = [
-      "stability_report_user_stream_data_source.cc",
-      "stability_report_user_stream_data_source.h",
-    ]
-    deps = [
-      ":stability_client",
-      ":stability_common",
-      ":stability_report_proto",
       "//base",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/compat",
@@ -84,62 +46,60 @@ if (is_win) {
 
   static_library("stability_common") {
     sources = [
+      "activity_report_extractor.cc",
+      "activity_report_extractor.h",
       "minidump_user_streams.h",
-      "stability_report_extractor.cc",
-      "stability_report_extractor.h",
     ]
     deps = [
+      ":activity_report_proto",
       ":stability_client",
-      ":stability_report_proto",
       "//base",
       "//components/variations",
+      "//third_party/crashpad/crashpad/client:client",
       "//third_party/crashpad/crashpad/util",
     ]
   }
 
   static_library("stability_client") {
     sources = [
+      "activity_data_names.cc",
+      "activity_data_names.h",
+      "activity_tracker_annotation.cc",
+      "activity_tracker_annotation.h",
+      "extended_crash_reporting.cc",
+      "extended_crash_reporting.h",
+      "extended_crash_reporting_metrics.cc",
+      "extended_crash_reporting_metrics.h",
       "features.cc",
       "features.h",
-      "stability_data_names.cc",
-      "stability_data_names.h",
-      "stability_debugging.cc",
-      "stability_debugging.h",
-      "stability_metrics.cc",
-      "stability_metrics.h",
-      "stability_paths.cc",
-      "stability_paths.h",
     ]
     deps = [
+      ":activity_report_proto",
       "//base",
+      "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/util",
     ]
+
+    # This needs to be a public dep because of base::win::PEImage.
+    public_deps = [ "//base:base_static" ]
   }
 
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "endsession_watcher_window_win_unittest.cc",
+      "activity_report_extractor_unittest.cc",
+      "activity_tracker_annotation_unittest.cc",
       "exit_code_watcher_win_unittest.cc",
-      "postmortem_minidump_writer_win_unittest.cc",
-      "postmortem_report_collector_unittest.cc",
-      "stability_debugging_win_unittest.cc",
-      "stability_paths_unittest.cc",
-      "stability_report_extractor_unittest.cc",
-      "watcher_client_win_unittest.cc",
-      "watcher_metrics_provider_win_unittest.cc",
-      "window_hang_monitor_win_unittest.cc",
+      "extended_crash_reporting_win_unittest.cc",
     ]
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
     deps = [
-      ":browser_watcher",
+      ":activity_report_proto",
       ":browser_watcher_client",
-      ":postmortem_stability",
       ":stability_client",
       ":stability_common",
-      ":stability_report_proto",
       "//base",
       "//base/test:test_support",
+      "//components/crash/core/common:crash_key_lib",
       "//components/metrics:metrics",
       "//testing/gmock",
       "//testing/gtest",
@@ -153,21 +113,19 @@ if (is_win) {
   }
 
   executable("dump_stability") {
-    sources = [
-      "dump_stability_report_main_win.cc",
-    ]
+    sources = [ "dump_stability_report_main_win.cc" ]
     deps = [
-      ":stability_report_proto",
+      ":activity_report_proto",
       "//base",
     ]
   }
 
   executable("fetch_system_session_events") {
-    sources = [
-      "fetch_system_session_events_main_win.cc",
-    ]
+    sources = [ "fetch_system_session_events_main_win.cc" ]
     deps = [
-      ":postmortem_stability",
+      ":activity_report_proto",
+      ":stability_client",
+      ":stability_common",
       "//base",
       "//components/metrics:metrics",
     ]

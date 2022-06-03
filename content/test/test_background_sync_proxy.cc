@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <content/test/test_background_sync_proxy.h>
+#include "content/test/test_background_sync_proxy.h"
 
 namespace content {
 

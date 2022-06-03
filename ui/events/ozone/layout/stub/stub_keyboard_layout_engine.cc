@@ -4,7 +4,8 @@
 
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -45,6 +46,11 @@ bool StubKeyboardLayoutEngine::Lookup(DomCode dom_code,
                                       DomKey* out_dom_key,
                                       KeyboardCode* out_key_code) const {
   return DomCodeToUsLayoutDomKey(dom_code, flags, out_dom_key, out_key_code);
+}
+
+void StubKeyboardLayoutEngine::SetInitCallbackForTest(
+    base::OnceClosure closure) {
+  std::move(closure).Run();
 }
 
 }  // namespace ui

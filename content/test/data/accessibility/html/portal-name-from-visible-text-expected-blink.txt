@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++portal
+++++++++rootWebArea name='visible text'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored

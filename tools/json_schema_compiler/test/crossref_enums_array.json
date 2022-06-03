@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "crossref_enums_array",
+    "description": "The crossref API with only cross ref enums",
+    "dependencies": ["simple_api"],
+    "types": [
+      {
+        "id": "CrossrefType",
+        "type": "object",
+        "properties": {
+          "testEnumArray": {
+            "type": "array",
+            "items": { "$ref": "simple_api.TestEnum" }
+          }
+        }
+      }
+    ]
+  }
+]

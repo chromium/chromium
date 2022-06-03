@@ -27,7 +27,7 @@
             android:minHeight="24dp"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.BlackTitle1" />
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <TextView
             android:id="@+id/time_label"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:ellipsize="end"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.BlackHint2" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
     <ImageView

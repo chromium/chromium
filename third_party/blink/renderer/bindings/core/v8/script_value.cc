@@ -41,7 +41,7 @@ v8::Local<v8::Value> ScriptValue::V8Value() const {
     return v8::Local<v8::Value>();
 
   DCHECK(GetIsolate()->InContext());
-  return value_->Get(ScriptState::From(isolate_->GetCurrentContext()));
+  return value_.Get(ScriptState::From(isolate_->GetCurrentContext()));
 }
 
 v8::Local<v8::Value> ScriptValue::V8ValueFor(
@@ -49,7 +49,7 @@ v8::Local<v8::Value> ScriptValue::V8ValueFor(
   if (IsEmpty())
     return v8::Local<v8::Value>();
 
-  return value_->GetAcrossWorld(target_script_state);
+  return value_.GetAcrossWorld(target_script_state);
 }
 
 bool ScriptValue::ToString(String& result) const {

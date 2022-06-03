@@ -4,9 +4,9 @@
 
 #include "components/payments/core/payment_request_data_util.h"
 
-#include <memory>
+#include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +68,7 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
 
 std::unique_ptr<BasicCardResponse> GetBasicCardResponseFromAutofillCreditCard(
     const autofill::CreditCard& card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const autofill::AutofillProfile& billing_profile,
     const std::string& app_locale) {
   std::unique_ptr<BasicCardResponse> response =
@@ -146,37 +146,8 @@ void ParseSupportedMethods(
   }
 }
 
-void ParseSupportedCardTypes(
-    const std::vector<PaymentMethodData>& method_data,
-    std::set<autofill::CreditCard::CardType>* out_supported_card_types_set) {
-  DCHECK(out_supported_card_types_set->empty());
-
-  for (const PaymentMethodData& method_data_entry : method_data) {
-    // Ignore |supported_types| if |supported_method| is not "basic-card".
-    if (method_data_entry.supported_method != methods::kBasicCard)
-      continue;
-
-    for (const autofill::CreditCard::CardType& card_type :
-         method_data_entry.supported_types) {
-      out_supported_card_types_set->insert(card_type);
-    }
-  }
-
-  // Omitting the card types means all 3 card types are supported.
-  if (out_supported_card_types_set->empty()) {
-    out_supported_card_types_set->insert(
-        autofill::CreditCard::CARD_TYPE_CREDIT);
-    out_supported_card_types_set->insert(autofill::CreditCard::CARD_TYPE_DEBIT);
-    out_supported_card_types_set->insert(
-        autofill::CreditCard::CARD_TYPE_PREPAID);
-  }
-
-  // Let the user decide whether an unknown card type should be used.
-  out_supported_card_types_set->insert(autofill::CreditCard::CARD_TYPE_UNKNOWN);
-}
-
-base::string16 FormatCardNumberForDisplay(const base::string16& card_number) {
-  base::string16 number = autofill::CreditCard::StripSeparators(card_number);
+std::u16string FormatCardNumberForDisplay(const std::u16string& card_number) {
+  std::u16string number = autofill::CreditCard::StripSeparators(card_number);
   if (number.empty() || !base::IsAsciiDigit(number[0]))
     return card_number;
 
@@ -186,13 +157,27 @@ base::string16 FormatCardNumberForDisplay(const base::string16& card_number) {
     positions = {4U, 11U};
   }
 
-  static const base::char16 kSeparator = base::ASCIIToUTF16(" ")[0];
+  static constexpr char16_t kSeparator = u' ';
   for (size_t i : positions) {
     if (number.size() > i)
       number.insert(i, 1U, kSeparator);
   }
 
   return number;
+}
+
+std::unique_ptr<std::map<std::string, std::set<std::string>>>
+FilterStringifiedMethodData(
+    const std::map<std::string, std::set<std::string>>& stringified_method_data,
+    const std::set<std::string>& supported_payment_method_names) {
+  auto result =
+      std::make_unique<std::map<std::string, std::set<std::string>>>();
+  for (const auto& pair : stringified_method_data) {
+    if (base::Contains(supported_payment_method_names, pair.first)) {
+      result->insert({pair.first, pair.second});
+    }
+  }
+  return result;
 }
 
 }  // namespace data_util

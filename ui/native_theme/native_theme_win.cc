@@ -11,9 +11,11 @@
 #include <vssym32.h>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -23,6 +25,7 @@
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -38,7 +41,7 @@
 #include "ui/gfx/gdi_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/common_theme.h"
 
 // This was removed from Winvers.h but is still used.
@@ -78,7 +81,7 @@ void SetCheckerboardShader(SkPaint* paint, const RECT& align_rect) {
   local_matrix.setTranslate(SkIntToScalar(align_rect.left),
                             SkIntToScalar(align_rect.top));
   paint->setShader(bitmap.makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat,
-                                     &local_matrix));
+                                     SkSamplingOptions(), &local_matrix));
 }
 
 //    <-a->
@@ -109,6 +112,9 @@ class ScopedCreateDCWithBitmap {
   explicit ScopedCreateDCWithBitmap(base::win::ScopedCreateDC::Handle hdc)
       : dc_(hdc) {}
 
+  ScopedCreateDCWithBitmap(const ScopedCreateDCWithBitmap&) = delete;
+  ScopedCreateDCWithBitmap& operator=(const ScopedCreateDCWithBitmap&) = delete;
+
   ~ScopedCreateDCWithBitmap() {
     // Delete DC before the bitmap, since objects should not be deleted while
     // selected into a DC.
@@ -132,9 +138,16 @@ class ScopedCreateDCWithBitmap {
  private:
   base::win::ScopedCreateDC dc_;
   base::win::ScopedBitmap bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCreateDCWithBitmap);
 };
+
+base::win::RegKey OpenThemeRegKey(REGSAM access) {
+  base::win::RegKey hkcu_themes_regkey;
+  hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
+                          L"Software\\Microsoft\\Windows\\CurrentVersion\\"
+                          L"Themes\\Personalize",
+                          access);
+  return hkcu_themes_regkey;
+}
 
 }  // namespace
 
@@ -168,18 +181,26 @@ NativeTheme::SystemThemeColor SysColorToSystemThemeColor(int system_color) {
 }
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  return NativeThemeWin::instance();
+  static base::NoDestructor<NativeThemeWin> s_native_theme(true, false);
+  return s_native_theme.get();
+}
+
+NativeTheme* NativeTheme::GetInstanceForDarkUI() {
+  static base::NoDestructor<NativeThemeWin> s_dark_native_theme(false, true);
+  return s_dark_native_theme.get();
+}
+
+// static
+bool NativeTheme::SystemDarkModeSupported() {
+  static bool system_supports_dark_mode =
+      ([]() { return OpenThemeRegKey(KEY_READ).Valid(); })();
+  return system_supports_dark_mode;
 }
 
 // static
 void NativeThemeWin::CloseHandles() {
-  instance()->CloseHandlesInternal();
-}
-
-// static
-NativeThemeWin* NativeThemeWin::instance() {
-  static base::NoDestructor<NativeThemeWin> s_native_theme;
-  return s_native_theme.get();
+  static_cast<NativeThemeWin*>(NativeTheme::GetInstanceForNativeUi())
+      ->CloseHandlesInternal();
 }
 
 gfx::Size NativeThemeWin::GetPartSize(Part part,
@@ -227,7 +248,8 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            State state,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
-                           ColorScheme color_scheme) const {
+                           ColorScheme color_scheme,
+                           const absl::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 
@@ -251,49 +273,72 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
   }
 }
 
-NativeThemeWin::NativeThemeWin() : color_change_listener_(this) {
+NativeThemeWin::NativeThemeWin(bool configure_web_instance,
+                               bool should_only_use_dark_colors)
+    : NativeTheme(should_only_use_dark_colors), color_change_listener_(this) {
   // If there's no sequenced task runner handle, we can't be called back for
   // dark mode changes. This generally happens in tests. As a result, ignore
   // dark mode in this case.
-  if (!IsForcedDarkMode() && !IsForcedHighContrast() &&
-      base::SequencedTaskRunnerHandle::IsSet()) {
-    // Add the web native theme as an observer to stay in sync with dark mode,
-    // high contrast, and preferred color scheme changes.
-    color_scheme_observer_ =
-        std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
-            NativeTheme::GetInstanceForWeb());
-    AddObserver(color_scheme_observer_.get());
-
+  if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
+      !IsForcedHighContrast() && base::SequencedTaskRunnerHandle::IsSet()) {
     // Dark Mode currently targets UWP apps, which means Win32 apps need to use
     // alternate, less reliable means of detecting the state. The following
     // can break in future Windows versions.
-    bool key_open_succeeded =
-        hkcu_themes_regkey_.Open(
-            HKEY_CURRENT_USER,
-            L"Software\\Microsoft\\Windows\\CurrentVersion\\"
-            L"Themes\\Personalize",
-            KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS;
-    if (key_open_succeeded) {
+    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+    if (hkcu_themes_regkey_.Valid()) {
       UpdateDarkModeStatus();
       RegisterThemeRegkeyObserver();
     }
   }
   if (!IsForcedHighContrast()) {
-    set_high_contrast(IsUsingHighContrastThemeInternal());
+    set_forced_colors(IsUsingHighContrastThemeInternal());
   }
+  // Initialize the cached system colors.
+  UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
+  set_preferred_contrast(CalculatePreferredContrast());
 
   memset(theme_handles_, 0, sizeof(theme_handles_));
 
-  // Initialize the cached system colors.
-  UpdateSystemColors();
+  if (configure_web_instance)
+    ConfigureWebInstance();
+}
+
+void NativeThemeWin::ConfigureWebInstance() {
+  if (!IsForcedDarkMode() && !IsForcedHighContrast() &&
+      base::SequencedTaskRunnerHandle::IsSet()) {
+    // Add the web native theme as an observer to stay in sync with color scheme
+    // changes.
+    color_scheme_observer_ =
+        std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
+            NativeTheme::GetInstanceForWeb());
+    AddObserver(color_scheme_observer_.get());
+  }
 
   // Initialize the native theme web instance with the system color info.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(ShouldUseDarkColors());
-  web_instance->set_high_contrast(UsesHighContrastColors());
+  web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
+  web_instance->set_preferred_contrast(GetPreferredContrast());
   web_instance->set_system_colors(GetSystemColors());
+}
+
+bool NativeThemeWin::AllowColorPipelineRedirection(
+    ColorScheme color_scheme) const {
+  return true;
+}
+
+SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
+                                                 ColorScheme color_scheme,
+                                                 bool apply_processing) const {
+  absl::optional<SkColor> color;
+  if (color_scheme == ColorScheme::kPlatformHighContrast &&
+      (color = GetPlatformHighContrastColor(color_id))) {
+    return color.value();
+  }
+  return NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
+                                               apply_processing);
 }
 
 NativeThemeWin::~NativeThemeWin() {
@@ -321,9 +366,10 @@ void NativeThemeWin::CloseHandlesInternal() {
 void NativeThemeWin::OnSysColorChange() {
   UpdateSystemColors();
   if (!IsForcedHighContrast())
-    set_high_contrast(IsUsingHighContrastThemeInternal());
+    set_forced_colors(IsUsingHighContrastThemeInternal());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  NotifyObservers();
+  set_preferred_contrast(CalculatePreferredContrast());
+  NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeWin::UpdateSystemColors() {
@@ -563,112 +609,36 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
   }
 }
 
-SkColor NativeThemeWin::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
-  if (color_scheme == ColorScheme::kDefault)
-    color_scheme = GetDefaultSystemColorScheme();
-
-  return (color_scheme == ColorScheme::kPlatformHighContrast)
-             ? GetPlatformHighContrastColor(color_id)
-             : GetAuraColor(color_id, this, color_scheme);
-}
-
-SkColor NativeThemeWin::GetPlatformHighContrastColor(ColorId color_id) const {
+absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
+    ColorId color_id) const {
   switch (color_id) {
-    // Window Background
     case kColorId_WindowBackground:
-    case kColorId_DialogBackground:
-    case kColorId_BubbleBackground:
-    case kColorId_BubbleFooterBackground:
-    case kColorId_TreeBackground:
-    case kColorId_TableHeaderBackground:
-    case kColorId_TableBackground:
-    case kColorId_TooltipBackground:
-    case kColorId_ProminentButtonDisabledColor:
       return system_colors_[SystemThemeColor::kWindow];
 
-    // Window Text
-    case kColorId_DefaultIconColor:
-    case kColorId_DialogForeground:
-    case kColorId_LabelEnabledColor:
-    case kColorId_LabelSecondaryColor:
-    case kColorId_TreeText:
-    case kColorId_TableText:
-    case kColorId_TableHeaderText:
-    case kColorId_TableGroupingIndicatorColor:
-    case kColorId_TableHeaderSeparator:
-    case kColorId_TooltipText:
+    case kColorId_MenuIconColor:
     case kColorId_ThrobberSpinningColor:
-    case kColorId_ThrobberLightColor:
-    case kColorId_AlertSeverityLow:
-    case kColorId_AlertSeverityMedium:
-    case kColorId_AlertSeverityHigh:
+    case kColorId_DefaultIconColor:
       return system_colors_[SystemThemeColor::kWindowText];
 
-    // Hyperlinks
-    case kColorId_LinkEnabled:
-    case kColorId_LinkPressed:
-    case kColorId_HighlightedMenuItemForegroundColor:
-      return system_colors_[SystemThemeColor::kHotlight];
-
-    // Gray/Disabled Text
-    case kColorId_DisabledMenuItemForegroundColor:
-    case kColorId_LinkDisabled:
-    case kColorId_LabelDisabledColor:
-    case kColorId_ButtonDisabledColor:
     case kColorId_ThrobberWaitingColor:
       return system_colors_[SystemThemeColor::kGrayText];
 
-    // Button Background
     case kColorId_MenuBackgroundColor:
-    case kColorId_HighlightedMenuItemBackgroundColor:
-    case kColorId_TextfieldDefaultBackground:
-    case kColorId_TextfieldReadOnlyBackground:
-    case kColorId_ButtonPressedShade:
       return system_colors_[SystemThemeColor::kButtonFace];
 
-    // Button Text Foreground
-    case kColorId_EnabledMenuItemForegroundColor:
-    case kColorId_MenuItemMinorTextColor:
-    case kColorId_MenuBorderColor:
     case kColorId_MenuSeparatorColor:
-    case kColorId_SeparatorColor:
-    case kColorId_TextfieldDefaultColor:
-    case kColorId_ButtonEnabledColor:
-    case kColorId_UnfocusedBorderColor:
-    case kColorId_TextfieldReadOnlyColor:
     case kColorId_FocusedBorderColor:
-    case kColorId_TabTitleColorActive:
-    case kColorId_TabTitleColorInactive:
-    case kColorId_TabBottomBorder:
       return system_colors_[SystemThemeColor::kButtonText];
 
-    // Highlight/Selected Background
     case kColorId_ProminentButtonColor:
-    case kColorId_ProminentButtonFocusedColor:
-    case kColorId_ButtonBorderColor:
     case kColorId_FocusedMenuItemBackgroundColor:
-    case kColorId_LabelTextSelectionBackgroundFocused:
-    case kColorId_TextfieldSelectionBackgroundFocused:
-    case kColorId_TreeSelectionBackgroundFocused:
-    case kColorId_TreeSelectionBackgroundUnfocused:
-    case kColorId_TableSelectionBackgroundFocused:
-    case kColorId_TableSelectionBackgroundUnfocused:
       return system_colors_[SystemThemeColor::kHighlight];
 
-    // Highlight/Selected Text Foreground
     case kColorId_TextOnProminentButtonColor:
-    case kColorId_SelectedMenuItemForegroundColor:
-    case kColorId_TextfieldSelectionColor:
-    case kColorId_LabelTextSelectionColor:
-    case kColorId_TreeSelectedText:
-    case kColorId_TreeSelectedTextUnfocused:
-    case kColorId_TableSelectedText:
-    case kColorId_TableSelectedTextUnfocused:
       return system_colors_[SystemThemeColor::kHighlightText];
 
     default:
-      return gfx::kPlaceholderColor;
+      return absl::nullopt;
   }
 }
 
@@ -692,36 +662,70 @@ bool NativeThemeWin::ShouldUseDarkColors() const {
   // Windows high contrast modes are entirely different themes,
   // so let them take priority over dark mode.
   // ...unless --force-dark-mode was specified in which case caveat emptor.
-  if (UsesHighContrastColors() && !IsForcedDarkMode())
+  if (InForcedColorsMode() && !IsForcedDarkMode())
     return false;
   return NativeTheme::ShouldUseDarkColors();
 }
 
-bool NativeThemeWin::SystemDarkModeSupported() const {
-  return hkcu_themes_regkey_.Valid();
-}
-
 NativeTheme::PreferredColorScheme
 NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (!UsesHighContrastColors())
+  if (!InForcedColorsMode())
     return NativeTheme::CalculatePreferredColorScheme();
 
-  // The Windows SystemParametersInfo API will return the high contrast theme
-  // as a string. However, this string is language dependent. Instead, to
-  // account for non-English systems, sniff out the system colors to
-  // determine the high contrast color scheme.
-  SkColor fg_color = system_colors_[SystemThemeColor::kWindowText];
+  // According to the spec, the preferred color scheme for web content is 'dark'
+  // if 'Canvas' has L<33% and 'light' if L>67%. On Windows, the 'Canvas'
+  // keyword is mapped to the 'Window' system color. As such, we use the
+  // luminance of 'Window' to calculate the corresponding luminance of 'Canvas'.
+  // https://www.w3.org/TR/css-color-adjust-1/#forced
   SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
-  if (bg_color == SK_ColorWHITE && fg_color == SK_ColorBLACK)
-    return NativeTheme::PreferredColorScheme::kLight;
-  if (bg_color == SK_ColorBLACK && fg_color == SK_ColorWHITE)
+  float luminance = color_utils::GetRelativeLuminance(bg_color);
+  if (luminance < 0.33)
     return NativeTheme::PreferredColorScheme::kDark;
-  return NativeTheme::PreferredColorScheme::kNoPreference;
+  return NativeTheme::PreferredColorScheme::kLight;
+}
+
+NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
+    const {
+  if (!InForcedColorsMode())
+    return NativeTheme::CalculatePreferredContrast();
+
+  // TODO(sartang@microsoft.com): Update the spec page at
+  // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
+  // mention the relation between forced-colors-active and prefers-contrast.
+  //
+  // According to spec [1], "in addition to forced-colors: active, the user
+  // agent must also match one of prefers-contrast: more or
+  // prefers-contrast: less if it can determine that the forced color
+  // palette chosen by the user has a particularly high or low contrast,
+  // and must make prefers-contrast: custom match otherwise".
+  //
+  // Using WCAG definitions [2], we have decided to match 'more' in Forced
+  // Colors Mode if the contrast ratio between the foreground and background
+  // color is 7:1 or greater.
+  //
+  // "A contrast ratio of 3:1 is the minimum level recommended by [[ISO-9241-3]]
+  // and [[ANSI-HFES-100-1988]] for standard text and vision"[2]. Given this,
+  // we will start by matching to 'less' in Forced Colors Mode if the contrast
+  // ratio between the foreground and background color is 2.5:1 or less.
+  //
+  // These ratios will act as an experimental baseline that we can adjust based
+  // on user feedback.
+  //
+  // [1]
+  // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
+  // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
+  SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
+  SkColor fg_color = system_colors_[SystemThemeColor::kWindowText];
+  float contrast_ratio = color_utils::GetContrastRatio(bg_color, fg_color);
+  if (contrast_ratio >= 7)
+    return NativeTheme::PreferredContrast::kMore;
+  return contrast_ratio <= 2.5 ? NativeTheme::PreferredContrast::kLess
+                               : NativeTheme::PreferredContrast::kCustom;
 }
 
 NativeTheme::ColorScheme NativeThemeWin::GetDefaultSystemColorScheme() const {
-  return UsesHighContrastColors() ? ColorScheme::kPlatformHighContrast
-                                  : NativeTheme::GetDefaultSystemColorScheme();
+  return InForcedColorsMode() ? ColorScheme::kPlatformHighContrast
+                              : NativeTheme::GetDefaultSystemColorScheme();
 }
 
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
@@ -753,10 +757,10 @@ void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
     return;
   }
 
-  if (!offscreen_hdc.SelectBitmap(skia::CreateHBitmap(
-          rect.width(), rect.height(), false, nullptr, nullptr))) {
+  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapXRGB8888(
+      rect.width(), rect.height(), nullptr, nullptr);
+  if (!offscreen_hdc.SelectBitmap(hbitmap.release()))
     return;
-  }
 
   // Will be NULL if lower-level Windows calls fail, or if the backing
   // allocated is 0 pixels in size (which should never happen according to
@@ -1454,13 +1458,17 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kInnerSpinButton:
       switch (state) {
         case kDisabled:
-          return extra.inner_spin.spin_up ? UPS_DISABLED : DNS_DISABLED;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_DISABLED)
+                                          : static_cast<int>(DNS_DISABLED);
         case kHovered:
-          return extra.inner_spin.spin_up ? UPS_HOT : DNS_HOT;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_HOT)
+                                          : static_cast<int>(DNS_HOT);
         case kNormal:
-          return extra.inner_spin.spin_up ? UPS_NORMAL : DNS_NORMAL;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_NORMAL)
+                                          : static_cast<int>(DNS_NORMAL);
         case kPressed:
-          return extra.inner_spin.spin_up ? UPS_PRESSED : DNS_PRESSED;
+          return extra.inner_spin.spin_up ? static_cast<int>(UPS_PRESSED)
+                                          : static_cast<int>(DNS_PRESSED);
         case kNumStates:
           NOTREACHED();
           return 0;
@@ -1620,7 +1628,7 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  NotifyObservers();
+  NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace ui

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_SYNC_SYNC_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_SYNC_SYNC_EVENT_H_
 
-#include "third_party/blink/renderer/modules/background_sync/sync_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -13,6 +12,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class SyncEventInit;
 
 class MODULES_EXPORT SyncEvent final : public ExtendableEvent {
   DEFINE_WRAPPERTYPEINFO();

@@ -8,6 +8,7 @@
 
 #include "base/win/scoped_safearray.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
@@ -56,8 +57,7 @@ void AXPlatformNodeTextProviderWin::CreateIUnknown(AXPlatformNodeWin* owner,
 // ITextProvider methods.
 //
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::GetSelection(
-    SAFEARRAY** selection) {
+HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GETSELECTION);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
 
@@ -76,23 +76,14 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::GetSelection(
   auto start_offset = unignored_selection.anchor_offset;
   auto end_offset = unignored_selection.focus_offset;
 
-  // If there's no selected object, or if the selected object is on a single
-  // node that's not editable, return success and don't fill the SAFEARRAY.
-  //
-  // According to UIA's documentation, we should only fill the SAFEARRAY with a
-  // degenerate range if the degenerate range is on an editable node. Otherwise,
-  // the expectations are that the SAFEARRAY is set to nullptr. Here, we are
-  // explicitly not allocating an empty SAFEARRAY.
-  if (!anchor_object || !focus_object ||
-      (anchor_object == focus_object && start_offset == end_offset &&
-       !anchor_object->GetDelegate()->HasVisibleCaretOrSelection())) {
+  // If there's no selected object, return success and don't fill the SAFEARRAY.
+  if (!anchor_object || !focus_object)
     return S_OK;
-  }
 
   AXNodePosition::AXPositionInstance start =
-      anchor_object->GetDelegate()->CreateTextPositionAt(start_offset);
+      anchor_object->GetDelegate()->CreatePositionAt(start_offset);
   AXNodePosition::AXPositionInstance end =
-      focus_object->GetDelegate()->CreateTextPositionAt(end_offset);
+      focus_object->GetDelegate()->CreatePositionAt(end_offset);
 
   DCHECK(!start->IsNullPosition());
   DCHECK(!end->IsNullPosition());
@@ -131,7 +122,7 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::GetSelection(
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::GetVisibleRanges(
+HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     SAFEARRAY** visible_ranges) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GETVISIBLERANGES);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
@@ -202,7 +193,7 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::GetVisibleRanges(
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::RangeFromChild(
+HRESULT AXPlatformNodeTextProviderWin::RangeFromChild(
     IRawElementProviderSimple* child,
     ITextRangeProvider** range) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_RANGEFROMCHILD);
@@ -222,28 +213,26 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::RangeFromChild(
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::RangeFromPoint(
+HRESULT AXPlatformNodeTextProviderWin::RangeFromPoint(
     UiaPoint uia_point,
     ITextRangeProvider** range) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_RANGEFROMPOINT);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXT_RANGEFROMPOINT);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
   *range = nullptr;
 
-  // Retrieve the closest accessibility node via hit testing the point. No
-  // coordinate unit conversion is needed, hit testing input is also in screen
-  // coordinates.
-  gfx::NativeViewAccessible nearest_native_view_accessible =
-      owner()->GetDelegate()->HitTestSync(uia_point.x, uia_point.y);
-  DCHECK(nearest_native_view_accessible);
+  gfx::Point point(uia_point.x, uia_point.y);
+  // Retrieve the closest accessibility node. No coordinate unit conversion is
+  // needed, hit testing input is also in screen coordinates.
 
-  AXPlatformNodeWin* nearest_node = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNode::FromNativeViewAccessible(nearest_native_view_accessible));
+  AXPlatformNodeWin* nearest_node =
+      static_cast<AXPlatformNodeWin*>(owner()->NearestLeafToPoint(point));
   DCHECK(nearest_node);
+  DCHECK(nearest_node->IsLeaf());
 
   AXNodePosition::AXPositionInstance start, end;
   start = nearest_node->GetDelegate()->CreateTextPositionAt(
-      nearest_node->NearestTextIndexToPoint(
-          gfx::Point(uia_point.x, uia_point.y)));
+      nearest_node->NearestTextIndexToPoint(point));
   DCHECK(!start->IsNullPosition());
   end = start->Clone();
 
@@ -252,52 +241,19 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::RangeFromPoint(
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::get_DocumentRange(
+HRESULT AXPlatformNodeTextProviderWin::get_DocumentRange(
     ITextRangeProvider** range) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GET_DOCUMENTRANGE);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
 
-  // Start and end should be leaf text positions that span the beginning
-  // and end of text content within a node for get_DocumentRange. The start
-  // position should be the directly first child and the end position should
-  // be the deepest last child node.
-  AXNodePosition::AXPositionInstance start =
-      owner()->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
-
-  AXNodePosition::AXPositionInstance end;
-  if (ui::IsDocument(owner()->GetData().role)) {
-    // Fast path for getting the range of the web root.
-    end = start->CreatePositionAtEndOfDocument();
-  } else if (owner()->GetChildCount() == 0) {
-    end = owner()
-              ->GetDelegate()
-              ->CreateTextPositionAt(0)
-              ->CreatePositionAtEndOfAnchor()
-              ->AsLeafTextPosition();
-  } else {
-    AXPlatformNode* deepest_last_child =
-        AXPlatformNode::FromNativeViewAccessible(
-            owner()->ChildAtIndex(owner()->GetChildCount() - 1));
-
-    while (deepest_last_child &&
-           deepest_last_child->GetDelegate()->GetChildCount() > 0) {
-      deepest_last_child = AXPlatformNode::FromNativeViewAccessible(
-          deepest_last_child->GetDelegate()->ChildAtIndex(
-              deepest_last_child->GetDelegate()->GetChildCount() - 1));
-    }
-    end = deepest_last_child->GetDelegate()
-              ->CreateTextPositionAt(0)
-              ->CreatePositionAtEndOfAnchor()
-              ->AsLeafTextPosition();
-  }
-
-  *range = AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-      owner_.Get(), std::move(start), std::move(end));
+  // Get range from child, where child is the current node. In other words,
+  // getting the text range of the current owner AxPlatformNodeWin node.
+  *range = GetRangeFromChild(owner(), owner());
 
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::get_SupportedTextSelection(
+HRESULT AXPlatformNodeTextProviderWin::get_SupportedTextSelection(
     enum SupportedTextSelection* text_selection) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GET_SUPPORTEDTEXTSELECTION);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
@@ -310,7 +266,7 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::get_SupportedTextSelection(
 // ITextEditProvider methods.
 //
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::GetActiveComposition(
+HRESULT AXPlatformNodeTextProviderWin::GetActiveComposition(
     ITextRangeProvider** range) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTEDIT_GETACTIVECOMPOSITION);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
@@ -319,7 +275,7 @@ STDMETHODIMP AXPlatformNodeTextProviderWin::GetActiveComposition(
   return GetTextRangeProviderFromActiveComposition(range);
 }
 
-STDMETHODIMP AXPlatformNodeTextProviderWin::GetConversionTarget(
+HRESULT AXPlatformNodeTextProviderWin::GetConversionTarget(
     ITextRangeProvider** range) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTEDIT_GETCONVERSIONTARGET);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
@@ -337,18 +293,53 @@ ITextRangeProvider* AXPlatformNodeTextProviderWin::GetRangeFromChild(
   DCHECK(descendant->GetDelegate());
   DCHECK(ancestor->IsDescendant(descendant));
 
-  // Start and end should be leaf text positions.
+  // Start and end should be leaf text positions that span the beginning and end
+  // of text content within a node. The start position should be the directly
+  // first child and the end position should be the deepest last child node.
   AXNodePosition::AXPositionInstance start =
       descendant->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
 
-  AXNodePosition::AXPositionInstance end =
-      descendant->GetDelegate()
-          ->CreateTextPositionAt(start->MaxTextOffset())
-          ->AsLeafTextPosition()
-          ->CreatePositionAtEndOfAnchor();
+  AXNodePosition::AXPositionInstance end;
+  if (descendant->IsPlatformDocument()) {
+    // Fast path for getting the range of the web or PDF root.
+    // If the last position is ignored, we need to get an unignored position
+    // otherwise future comparisons can end up with null positions (which in
+    // turn might collapse the range). Note that we move backwards, since there
+    // is no position after the end-of-content position (i.e. moving forward
+    // results in a null position).
+    end = start->CreatePositionAtEndOfContent()->AsUnignoredPosition(
+        AXPositionAdjustmentBehavior::kMoveBackward);
+  } else if (descendant->GetChildCount() == 0) {
+    end = descendant->GetDelegate()
+              ->CreateTextPositionAt(0)
+              ->CreatePositionAtEndOfAnchor()
+              ->AsLeafTextPosition();
+  } else {
+    AXPlatformNodeBase* deepest_last_child = descendant->GetLastChild();
+    while (deepest_last_child && deepest_last_child->GetChildCount() > 0)
+      deepest_last_child = deepest_last_child->GetLastChild();
+
+    end = deepest_last_child->GetDelegate()
+              ->CreateTextPositionAt(0)
+              ->CreatePositionAtEndOfAnchor()
+              ->AsLeafTextPosition();
+  }
 
   return AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
       ancestor, std::move(start), std::move(end));
+}
+
+ITextRangeProvider* AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+    ui::AXPlatformNodeWin* node) {
+  DCHECK(node);
+  DCHECK(node->GetDelegate());
+
+  // Create a degenerate range positioned at the node's start.
+  AXNodePosition::AXPositionInstance start, end;
+  start = node->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
+  end = start->Clone();
+  return AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      node, std::move(start), std::move(end));
 }
 
 ui::AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {

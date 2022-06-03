@@ -33,7 +33,7 @@ class MODULES_EXPORT MediaControlPanelElement final
   // Node override;
   void RemovedFrom(ContainerNode&) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   friend class MediaControlPanelElementTest;

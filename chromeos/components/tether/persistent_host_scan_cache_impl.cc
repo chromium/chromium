@@ -7,7 +7,8 @@
 #include <memory>
 #include <unordered_set>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "chromeos/components/tether/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

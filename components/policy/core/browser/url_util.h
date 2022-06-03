@@ -23,6 +23,9 @@ POLICY_EXPORT GURL Normalize(const GURL& url);
 // a known format.
 POLICY_EXPORT GURL GetEmbeddedURL(const GURL& url);
 
+// Gets maximum filters per policy.
+POLICY_EXPORT size_t GetMaxFiltersPerPolicy();
+
 struct FilterComponents {
   FilterComponents();
   FilterComponents(const FilterComponents&) = delete;
@@ -32,8 +35,8 @@ struct FilterComponents {
 
   ~FilterComponents();
 
-  // Returns true if |this| represents the "*" filter in the blacklist.
-  bool IsBlacklistWildcard() const;
+  // Returns true if |this| represents the "*" filter in the blocklist.
+  bool IsBlocklistWildcard() const;
 
   std::string scheme;
   std::string host;
@@ -47,8 +50,8 @@ struct FilterComponents {
 
 // Creates a condition set that can be used with the |url_matcher|. |id| needs
 // to be a unique number that will be returned by the |url_matcher| if the URL
-// matches that condition set. |allow| indicates if it is a white-list (true)
-// or black-list (false) filter.
+// matches that condition set. |allow| indicates if it is an allow-list (true)
+// or block-list (false) filter.
 POLICY_EXPORT scoped_refptr<url_matcher::URLMatcherConditionSet>
 CreateConditionSet(url_matcher::URLMatcher* url_matcher,
                    url_matcher::URLMatcherConditionSet::ID id,

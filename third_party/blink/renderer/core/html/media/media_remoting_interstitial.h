@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_REMOTING_INTERSTITIAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_REMOTING_INTERSTITIAL_H_
 
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -48,7 +47,7 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
 
   HTMLVideoElement& GetVideoElement() const { return *video_element_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Node override.
@@ -66,7 +65,7 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
   };
   State state_ = HIDDEN;
 
-  TaskRunnerTimer<MediaRemotingInterstitial> toggle_interstitial_timer_;
+  HeapTaskRunnerTimer<MediaRemotingInterstitial> toggle_interstitial_timer_;
   Member<HTMLVideoElement> video_element_;
   Member<HTMLImageElement> background_image_;
   Member<HTMLDivElement> cast_icon_;

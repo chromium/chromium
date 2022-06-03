@@ -133,7 +133,13 @@ public class ResourceManager implements ResourceLoaderCallback {
     public void onResourceLoaded(@AndroidResourceType int resType, int resId, Resource resource) {
         if (resource == null) return;
         Bitmap bitmap = resource.getBitmap();
-        if (bitmap == null) return;
+        if (bitmap == null) {
+            if (resource.shouldRemoveResourceOnNullBitmap() && mNativeResourceManagerPtr != 0) {
+                ResourceManagerJni.get().removeResource(
+                        mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+            }
+            return;
+        }
 
         saveMetadataForLoadedResource(resType, resId, resource);
 

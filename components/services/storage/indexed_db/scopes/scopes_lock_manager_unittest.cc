@@ -4,10 +4,9 @@
 
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
 
-#include <vector>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

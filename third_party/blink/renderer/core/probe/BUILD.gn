@@ -31,13 +31,13 @@ action("instrumentation_probes") {
 }
 
 source_set("generated") {
-  deps = [
-    ":instrumentation_probes",
-  ]
+  deps = [ ":instrumentation_probes" ]
 }
 
 # Compiles the sources generated above.
 blink_core_sources("probe") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "async_task_id.h",
     "core_probes.cc",
@@ -48,7 +48,7 @@ blink_core_sources("probe") {
   deps = [
     ":instrumentation_probes",
     "//skia",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
+    "//third_party/blink/renderer/bindings/core/v8:generated",
     "//third_party/blink/renderer/core:all_generators",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/wtf",

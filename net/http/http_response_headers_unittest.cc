@@ -14,11 +14,13 @@
 
 #include "base/pickle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace net {
 
@@ -1766,59 +1768,74 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
   EXPECT_FALSE(parsed->GetNormalizedHeader("f", &value));
 }
 
-struct AddHeaderTestData {
-  const char* orig_headers;
-  const char* new_header;
-  const char* expected_headers;
-};
+TEST(HttpResponseHeadersTest, AddHeader) {
+  scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n");
+  ASSERT_TRUE(headers);
 
-class AddHeaderTest
-    : public HttpResponseHeadersTest,
-      public ::testing::WithParamInterface<AddHeaderTestData> {
-};
+  headers->AddHeader("Content-Length", "450");
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n"
+      "Content-Length: 450\n",
+      ToSimpleString(headers));
 
-TEST_P(AddHeaderTest, AddHeader) {
-  const AddHeaderTestData test = GetParam();
-
-  std::string orig_headers(test.orig_headers);
-  HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
-
-  std::string new_header(test.new_header);
-  parsed->AddHeader(new_header);
-
-  EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
+  // Add a second Content-Length header with extra spaces in the value. It
+  // should be added to the end, and the extra spaces removed.
+  headers->AddHeader("Content-Length", "   42    ");
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n"
+      "Content-Length: 450\n"
+      "Content-Length: 42\n",
+      ToSimpleString(headers));
 }
 
-const AddHeaderTestData add_header_tests[] = {
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n",
+TEST(HttpResponseHeadersTest, SetHeader) {
+  scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n");
+  ASSERT_TRUE(headers);
 
-    "Content-Length: 450",
+  headers->SetHeader("Content-Length", "450");
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n"
+      "Content-Length: 450\n",
+      ToSimpleString(headers));
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000    \n",
+  headers->SetHeader("Content-Length", "   42    ");
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n"
+      "Cache-control: max-age=10000\n"
+      "Content-Length: 42\n",
+      ToSimpleString(headers));
 
-    "Content-Length: 450  ",
+  headers->SetHeader("connection", "close");
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "Cache-control: max-age=10000\n"
+      "Content-Length: 42\n"
+      "connection: close\n",
+      ToSimpleString(headers));
+}
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n"
-  },
-};
+TEST(HttpResponseHeadersTest, TracingSupport) {
+  scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n");
+  ASSERT_TRUE(headers);
 
-INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
-                         AddHeaderTest,
-                         testing::ValuesIn(add_header_tests));
+  EXPECT_EQ(perfetto::TracedValueToString(headers),
+            "{response_code:200,headers:[{name:connection,value:keep-alive}]}");
+}
 
 struct RemoveHeaderTestData {
   const char* orig_headers;
@@ -2179,32 +2196,55 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithSpaceParameterRejected) {
   EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
 }
 
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithInterimSpaceIsRejected) {
+  InitializeHeadersWithCacheControl("max-age=1 2");
+  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+}
+
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithMinusSignIsRejected) {
+  InitializeHeadersWithCacheControl("max-age=-7");
+  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+}
+
 TEST_F(HttpResponseHeadersCacheControlTest,
        MaxAgeWithSpaceBeforeEqualsIsRejected) {
   InitializeHeadersWithCacheControl("max-age = 7");
   EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
 }
 
+TEST_F(HttpResponseHeadersCacheControlTest,
+       MaxAgeWithLeadingandTrailingSpaces) {
+  InitializeHeadersWithCacheControl("max-age= 7  ");
+  EXPECT_EQ(base::Seconds(7), GetMaxAgeValue());
+}
+
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeFirstMatchUsed) {
   InitializeHeadersWithCacheControl("max-age=10, max-age=20");
-  EXPECT_EQ(TimeDelta::FromSeconds(10), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(10), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeBogusFirstMatchUsed) {
-  // "max-age10" isn't parsed as "max-age"; "max-age=now" is parsed as
-  // "max-age=0" and so "max-age=20" is not used.
-  InitializeHeadersWithCacheControl("max-age10, max-age=now, max-age=20");
-  EXPECT_EQ(TimeDelta::FromSeconds(0), GetMaxAgeValue());
+  // "max-age10" isn't parsed as "max-age"; "max-age=now" is bogus and
+  // ignored and so "max-age=20" is used.
+  InitializeHeadersWithCacheControl(
+      "max-age10, max-age=now, max-age=20, max-age=30");
+  EXPECT_EQ(base::Seconds(20), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeCaseInsensitive) {
   InitializeHeadersWithCacheControl("Max-aGe=15");
-  EXPECT_EQ(TimeDelta::FromSeconds(15), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(15), GetMaxAgeValue());
+}
+
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeOverflow) {
+  InitializeHeadersWithCacheControl("max-age=99999999999999999999");
+  EXPECT_EQ(base::TimeDelta::FiniteMax().InSeconds(),
+            GetMaxAgeValue().InSeconds());
 }
 
 struct MaxAgeTestData {
   const char* max_age_string;
-  const int64_t expected_seconds;
+  const absl::optional<int64_t> expected_seconds;
 };
 
 class MaxAgeEdgeCasesTest
@@ -2218,27 +2258,31 @@ TEST_P(MaxAgeEdgeCasesTest, MaxAgeEdgeCases) {
   std::string max_age = "max-age=";
   InitializeHeadersWithCacheControl(
       (max_age + test.max_age_string).c_str());
-  EXPECT_EQ(test.expected_seconds, GetMaxAgeValue().InSeconds())
-      << " for max-age=" << test.max_age_string;
+  if (test.expected_seconds.has_value()) {
+    EXPECT_EQ(test.expected_seconds.value(), GetMaxAgeValue().InSeconds())
+        << " for max-age=" << test.max_age_string;
+  } else {
+    EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  }
 }
 
 const MaxAgeTestData max_age_tests[] = {
     {" 1 ", 1},  // Spaces are ignored.
-    {"-1", -1},  // Negative numbers are passed through.
-    {"--1", 0},  // Leading junk gives 0.
-    {"2s", 2},   // Trailing junk is ignored.
-    {"3 days", 3},
-    {"'4'", 0},    // Single quotes don't work.
-    {"\"5\"", 0},  // Double quotes don't work.
-    {"0x6", 0},    // Hex not parsed as hex.
-    {"7F", 7},     // Hex without 0x still not parsed as hex.
-    {"010", 10},   // Octal not parsed as octal.
+    {"-1", absl::nullopt},
+    {"--1", absl::nullopt},
+    {"2s", absl::nullopt},
+    {"3 days", absl::nullopt},
+    {"'4'", absl::nullopt},
+    {"\"5\"", absl::nullopt},
+    {"0x6", absl::nullopt},  // Hex not parsed as hex.
+    {"7F", absl::nullopt},   // Hex without 0x still not parsed as hex.
+    {"010", 10},             // Octal not parsed as octal.
+    {"9223372036853", 9223372036853},
     {"9223372036854", 9223372036854},
-    //  {"9223372036855", -9223372036854},  // Undefined behaviour.
-    //  {"9223372036854775806", -2},        // Undefined behaviour.
-    {"9223372036854775807", 9223372036854775807},
-    {"20000000000000000000",
-     std::numeric_limits<int64_t>::max()},  // Overflow int64_t.
+    {"9223372036855", 9223372036854},
+    {"9223372036854775806", 9223372036854},
+    {"9223372036854775807", 9223372036854},
+    {"20000000000000000000", 9223372036854},  // Overflow int64_t.
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeadersCacheControl,
@@ -2258,21 +2302,21 @@ TEST_F(HttpResponseHeadersCacheControlTest,
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
-       StaleWhileRevalidateWithInvalidValueTreatedAsZero) {
+       StaleWhileRevalidateWithInvalidValueIgnored) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=true");
-  EXPECT_EQ(TimeDelta(), GetStaleWhileRevalidateValue());
+  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue(TimeDeltaPointer()));
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, StaleWhileRevalidateValueReturned) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=7200");
-  EXPECT_EQ(TimeDelta::FromSeconds(7200), GetStaleWhileRevalidateValue());
+  EXPECT_EQ(base::Seconds(7200), GetStaleWhileRevalidateValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        FirstStaleWhileRevalidateValueUsed) {
   InitializeHeadersWithCacheControl(
       "stale-while-revalidate=1,stale-while-revalidate=7200");
-  EXPECT_EQ(TimeDelta::FromSeconds(1), GetStaleWhileRevalidateValue());
+  EXPECT_EQ(base::Seconds(1), GetStaleWhileRevalidateValue());
 }
 
 struct GetCurrentAgeTestData {

@@ -7,28 +7,12 @@
 
 #include "content/common/content_export.h"
 
-namespace gfx {
-class Point;
-class Rect;
-class Size;
-}  // namespace gfx
-
 namespace content {
 class RenderWidgetHostView;
 
 // This is the same as view->GetDeviceScaleFactor(), but will return a best
 // guess when |view| is nullptr.
 CONTENT_EXPORT float GetScaleFactorForView(RenderWidgetHostView* view);
-
-// Utility functions that convert point/size/rect between DIP and pixel
-// coordinate system.
-CONTENT_EXPORT gfx::Point ConvertViewPointToDIP(
-    RenderWidgetHostView* view,
-    const gfx::Point& point_in_pixel);
-CONTENT_EXPORT gfx::Size ConvertViewSizeToPixel(RenderWidgetHostView* view,
-                                                const gfx::Size& size_in_dip);
-CONTENT_EXPORT gfx::Rect ConvertViewRectToPixel(RenderWidgetHostView* view,
-                                                const gfx::Rect& rect_in_dip);
 
 }  // namespace content
 

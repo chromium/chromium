@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Verify that console does not hide autocomplete during typing.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('text_editor');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       window.foobar = "foobar";
@@ -23,7 +24,7 @@
   var testSuite = [
     function testSummonSuggestBox(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsShownForTest', onSuggestionsShown);
+          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsShownForTest', onSuggestionsShown);
       SourcesTestRunner.typeIn(consoleEditor, 'f');
 
       function onSuggestionsShown() {
@@ -34,9 +35,9 @@
 
     function testTypeText(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsHiddenForTest', onSuggestionsHidden);
+          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsHiddenForTest', onSuggestionsHidden);
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, '_onCursorActivityHandledForTest',
+          TextEditor.TextEditorAutocompleteController.prototype, 'onCursorActivityHandledForTest',
           onCursorActivityHandled);
       SourcesTestRunner.typeIn(consoleEditor, 'o');
 

@@ -28,20 +28,29 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_VISIBILITY_OBSERVER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
-class CORE_EXPORT PageVisibilityObserver
-    : public LifecycleObserver<Page, PageVisibilityObserver> {
- public:
-  virtual void PageVisibilityChanged() {}
+class Page;
 
-  Page* GetPage() const { return LifecycleContext(); }
+class CORE_EXPORT PageVisibilityObserver : public GarbageCollectedMixin {
+ public:
+  virtual void PageVisibilityChanged() = 0;
+
+  // Call before clearing an observer list.
+  void ObserverSetWillBeCleared();
+
+  Page* GetPage() const { return page_; }
+  void SetPage(Page*);
+
+  void Trace(Visitor* visitor) const override;
 
  protected:
-  explicit PageVisibilityObserver(Page* page) : LifecycleObserver(page) {}
+  explicit PageVisibilityObserver(Page*);
+
+ private:
+  WeakMember<Page> page_;
 };
 
 }  // namespace blink

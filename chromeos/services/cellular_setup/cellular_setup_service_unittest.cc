@@ -6,8 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/optional.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/cellular_setup/cellular_setup_impl.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -39,6 +39,10 @@ const char kTestMdn[] = "testMdn";
 }  // namespace
 
 class CellularSetupServiceTest : public testing::Test {
+ public:
+  CellularSetupServiceTest(const CellularSetupServiceTest&) = delete;
+  CellularSetupServiceTest& operator=(const CellularSetupServiceTest&) = delete;
+
  protected:
   CellularSetupServiceTest() = default;
   ~CellularSetupServiceTest() override = default;
@@ -167,8 +171,6 @@ class CellularSetupServiceTest : public testing::Test {
   mojo::Remote<mojom::CarrierPortalHandler> last_carrier_portal_observer_;
 
   mojo::Remote<mojom::CellularSetup> cellular_setup_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularSetupServiceTest);
 };
 
 TEST_F(CellularSetupServiceTest, StartActivation_Success) {

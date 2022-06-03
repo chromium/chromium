@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/search_engines/template_url_service.h"
 
 // This class provides an extension on top of BrowserWithTestWindowTest, and
@@ -23,6 +24,8 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
 
   void SetUp() override;
   void TearDown() override;
+
+  ntp_tiles::MostVisitedSites* most_visited_sites();
 
   // Adds and sets the default search provider using the base_url.
   // The base_url should have the http[s]:// prefix and a trailing / after the

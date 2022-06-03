@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.Version5
+-- unit_tests --gtest_filter=FaviconDatabaseTest.Version5
 --
 -- .dump of a version 5 Favicons database.
 BEGIN TRANSACTION;

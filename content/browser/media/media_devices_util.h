@@ -13,12 +13,14 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "url/origin.h"
 
+using blink::mojom::MediaDeviceType;
+
 namespace content {
 
 // Returns the ID of the user-default device ID via |callback|.
 // If no such device ID can be found, |callback| receives an empty string.
 CONTENT_EXPORT void GetDefaultMediaDeviceID(
-    blink::MediaDeviceType device_type,
+    MediaDeviceType device_type,
     int render_process_id,
     int render_frame_id,
     base::OnceCallback<void(const std::string&)> callback);
@@ -27,11 +29,17 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   MediaDeviceSaltAndOrigin();
   MediaDeviceSaltAndOrigin(std::string device_id_salt,
                            std::string group_id_salt,
-                           url::Origin origin);
+                           url::Origin origin,
+                           bool has_focus,
+                           bool is_background);
+  MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
+  ~MediaDeviceSaltAndOrigin() = default;
 
   std::string device_id_salt;
   std::string group_id_salt;
   url::Origin origin;
+  bool has_focus;
+  bool is_background;
 };
 
 // Returns the current media device ID salt and security origin for the given

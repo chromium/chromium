@@ -1,31 +1,34 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Find-in-page 'findme', then click here)'",
-          "rect": [18, 128, 256, 36],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'To be changed: findme (Manual testing:'",
-          "rect": [18, 128, 256, 36],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'After change'",
-          "rect": [18, 128, 84, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "VerticalScrollbar",
-          "rect": [295, 102, 15, 400],
-          "reason": "scroll control"
-        }
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [285, 0],
+      "bounds": [15, 400],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [285, 1052],
+      "invalidations": [
+        [8, 26, 256, 36]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 102, 0, 1]
       ]
     }
   ]

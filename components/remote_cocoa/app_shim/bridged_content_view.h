@@ -7,7 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"
 #import "ui/base/cocoa/tracking_area.h"
@@ -47,7 +48,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
   BOOL _wantsKeyHandledForInsert;
 
   // The last tooltip text, used to limit updates.
-  base::string16 _lastTooltipText;
+  std::u16string _lastTooltipText;
 }
 
 @property(readonly, nonatomic) remote_cocoa::NativeWidgetNSWindowBridge* bridge;
@@ -73,6 +74,11 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Notifies the associated FocusManager whether full keyboard access is enabled
 // or not.
 - (void)updateFullKeyboardAccess;
+
+// Update the cursor tracking area in response to the parent window's level
+// changing.
+// https://crbug.com/1214013
+- (void)updateCursorTrackingArea;
 
 // The TextInputClient of the currently focused views::View.
 // TODO(ccameron): This cannot be relied on across processes.

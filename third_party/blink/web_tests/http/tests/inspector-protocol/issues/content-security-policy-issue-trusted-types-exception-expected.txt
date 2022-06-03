@@ -1,0 +1,4 @@
+Verify that Trusted Types sink violation issue is generated.
+
+Issue id on issue matches id on exception: true
+

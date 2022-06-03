@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 #include <stdio.h>
-#if defined(OS_POSIX)
-#include <unistd.h>
-#elif defined(OS_WIN)
-#include <windows.h>
-#endif
 
 #define TELEMETRY 1
 
@@ -26,9 +21,14 @@
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "content/public/common/content_switches.h"
-#include "services/service_manager/sandbox/switches.h"
+#include "content/public/test/browser_test.h"
+#include "sandbox/policy/switches.h"
 
-#if defined(OS_WIN)
+#if defined(OS_POSIX)
+#include <unistd.h>
+#elif defined(OS_WIN)
+#include <windows.h>
+
 #include "base/win/windows_version.h"
 #endif
 
@@ -58,7 +58,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus0, {
       "pm_exit_status_test.html?trigger=exit0&expected_exit=0"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus254, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_ExitStatus254 DISABLED_ExitStatus254
+#else
+#define MAYBE_ExitStatus254 ExitStatus254
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_ExitStatus254, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pm_exit_status_test.html?trigger=exit254&expected_exit=254"));
 })
@@ -68,7 +74,8 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatusNeg2, {
       "pm_exit_status_test.html?trigger=exitneg2&expected_exit=254"));
 })
 
-#if defined(ADDRESS_SANITIZER)
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(ADDRESS_SANITIZER) || (defined(OS_WIN) && defined(ARCH_CPU_32_BITS))
 #define Maybe_PPAPICore DISABLED_PPAPICore
 #else
 #define Maybe_PPAPICore PPAPICore
@@ -77,15 +84,33 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, Maybe_PPAPICore, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppb_core.html"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, PPAPIPPBInstance, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_PPAPIPPBInstance DISABLED_PPAPIPPBInstance
+#else
+#define MAYBE_PPAPIPPBInstance PPAPIPPBInstance
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPBInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppb_instance.html"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, PPAPIPPPInstance, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_PPAPIPPPInstance DISABLED_PPAPIPPPInstance
+#else
+#define MAYBE_PPAPIPPPInstance PPAPIPPPInstance
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPPInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppp_instance.html"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, ProgressEvents, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_ProgressEvents DISABLED_ProgressEvents
+#else
+#define MAYBE_ProgressEvents ProgressEvents
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_ProgressEvents, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_progress_events.html"));
 })
 
@@ -118,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, BadNative) {
 #  define MAYBE_CrashInCallback DISABLED_CrashInCallback
 #  define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
 #  define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 // crbug.com/425570
 #  define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
 #  define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
@@ -157,7 +182,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_CrashPPAPIOffMainThread, {
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, IrtManifestFile) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("irt_manifest_file_test.html"));
 }
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // http://crbug.com/579804
 #define MAYBE_IrtManifestFile DISABLED_IrtManifestFile
 #else
@@ -176,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclNonSfi, MAYBE_IrtManifestFile) {
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, MAYBE_IrtException) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("irt_exception_test.html"));
 }
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // http://crbug.com/579804
 #define MAYBE_IrtException2 DISABLED_IrtException
 #else
@@ -274,7 +299,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     // On windows, the debug stub requires --no-sandbox:
     // crbug.com/265624
 #if defined(OS_WIN)
-    command_line->AppendSwitch(service_manager::switches::kNoSandbox);
+    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
 #endif
   }
 
@@ -284,8 +309,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     // is used, the required 1GB sandbox address space is not reserved.
     // (see note in chrome/browser/nacl_host/test/nacl_gdb_browsertest.cc)
 #if defined(OS_WIN)
-    if (base::win::OSInfo::GetInstance()->wow64_status() ==
-            base::win::OSInfo::WOW64_DISABLED &&
+    if (base::win::OSInfo::GetInstance()->IsWowDisabled() &&
         base::win::OSInfo::GetArchitecture() ==
             base::win::OSInfo::X86_ARCHITECTURE) {
       return true;
@@ -313,8 +337,8 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     base::Process test_script;
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     nacl::NaClBrowser::SetGdbDebugStubPortListenerForTest(
-        base::Bind(&NaClBrowserTestPnaclDebug::StartTestScript,
-                   base::Unretained(this), &test_script));
+        base::BindRepeating(&NaClBrowserTestPnaclDebug::StartTestScript,
+                            base::Unretained(this), &test_script));
     // Turn on debug stub logging.
     env->SetVar("NACLVERBOSITY", "1");
     RunLoadTest(test_url);
@@ -361,8 +385,13 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclDebug,
       "pnacl_debug_url.html?nmf_file=pnacl_no_debug.nmf"));
 }
 
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
-                       MAYBE_PNACL(PnaclDebugURLFlagOff)) {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_PnaclDebugURLFlagOff DISABLED_PnaclDebugURLFlagOff
+#else
+#define MAYBE_PnaclDebugURLFlagOff MAYBE_PNACL(PnaclDebugURLFlagOff)
+#endif
+IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl, MAYBE_PnaclDebugURLFlagOff) {
   RunLoadTest(FILE_PATH_LITERAL(
       "pnacl_debug_url.html?nmf_file=pnacl_has_debug_flag_off.nmf"));
 }
@@ -379,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclDebugMasked,
 
 // NaClBrowserTestPnacl.PnaclErrorHandling is flaky on Win, Mac, and Linux.
 // http://crbug.com/704980, http://crbug.com/870309
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
 #define MAYBE_PnaclErrorHandling DISABLED_PnaclErrorHandling
 #else
 #define MAYBE_PnaclErrorHandling PnaclErrorHandling
@@ -396,15 +426,27 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, MAYBE_PnaclErrorHandling) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("pnacl_error_handling.html"));
 }
 
+#if defined(OS_WIN)
+// TODO(crbug.com/1046044) Test is flaky on Win 7.
+#define MAYBE_PnaclNMFOptionsO0 DISABLED_PnaclNMFOptionsO0
+#else
+#define MAYBE_PnaclNMFOptionsO0 PnaclNMFOptionsO0
+#endif
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
-                       MAYBE_PNACL(PnaclNMFOptionsO0)) {
+                       MAYBE_PNACL(MAYBE_PnaclNMFOptionsO0)) {
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_0"));
 }
 
 // Test Subzero. Subzero is triggered by the O0 option so reuse
 // test harnesses that use "optlevel": 0.
+#if defined(OS_WIN)
+// TODO(crbug.com/1046044) Test is flaky on Win 7.
+#define MAYBE_SubZeroPnaclNMFOptionsO0 DISABLED_SubZeroPnaclNMFOptionsO0
+#else
+#define MAYBE_SubZeroPnaclNMFOptionsO0 PnaclNMFOptionsO0
+#endif
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero,
-                       MAYBE_PNACL(PnaclNMFOptionsO0)) {
+                       MAYBE_PNACL(MAYBE_SubZeroPnaclNMFOptionsO0)) {
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_0"));
 }
 
@@ -413,26 +455,38 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_2"));
 }
 
+#if defined(OS_WIN)
+// TODO(https://crbug.com/1046033): Flaky on Windows 7.
+#define MAYBE_PnaclNMFOptionsOlarge DISABLED_PnaclNMFOptionsOlarge
+#else
+#define MAYBE_PnaclNMFOptionsOlarge PnaclNMFOptionsOlarge
+#endif
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
-                       MAYBE_PNACL(PnaclNMFOptionsOlarge)) {
+                       MAYBE_PNACL(MAYBE_PnaclNMFOptionsOlarge)) {
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_large"));
 }
 
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_PnaclDyncodeSyscallDisabled DISABLED_PnaclDyncodeSyscallDisabled
+#else
+#define MAYBE_PnaclDyncodeSyscallDisabled \
+  MAYBE_PNACL(PnaclDyncodeSyscallDisabled)
+#endif
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
-                       MAYBE_PNACL(PnaclDyncodeSyscallDisabled)) {
+                       MAYBE_PnaclDyncodeSyscallDisabled) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pnacl_dyncode_syscall_disabled.html"));
 }
 
+// TODO(1059468): Flaky on Win7 (32).
+#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
                        MAYBE_PNACL(PnaclExceptionHandlingDisabled)) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pnacl_hw_eh_disabled.html"));
 }
-
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl, PnaclMimeType) {
-  RunLoadTest(FILE_PATH_LITERAL("pnacl_mime_type.html"));
-}
+#endif
 
 // TODO(ncbray) support glibc and PNaCl
 // flaky: crbug.com/375894

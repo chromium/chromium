@@ -5,10 +5,10 @@
 #include "components/metrics/metrics_service_accessor.h"
 
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 
@@ -26,6 +26,11 @@ bool IsMetricsReportingEnabledForOfficialBuild(PrefService* pref_service) {
 // static
 bool MetricsServiceAccessor::IsMetricsReportingEnabled(
     PrefService* pref_service) {
+  if (IsMetricsReportingForceEnabled()) {
+    LOG(WARNING) << "Metrics Reporting is force enabled, data will be sent to "
+                    "servers. Should not be used for tests.";
+    return true;
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return IsMetricsReportingEnabledForOfficialBuild(pref_service);
 #else
@@ -44,29 +49,6 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
   return RegisterSyntheticFieldTrialWithNameAndGroupHash(
       metrics_service, variations::HashName(trial_name),
       variations::HashName(group_name));
-}
-
-// static
-bool MetricsServiceAccessor::RegisterSyntheticMultiGroupFieldTrial(
-    MetricsService* metrics_service,
-    base::StringPiece trial_name,
-    const std::vector<uint32_t>& group_name_hashes) {
-  if (!metrics_service)
-    return false;
-
-  metrics_service->synthetic_trial_registry()
-      ->RegisterSyntheticMultiGroupFieldTrial(variations::HashName(trial_name),
-                                              group_name_hashes);
-  return true;
-}
-
-// static
-bool MetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameHash(
-    MetricsService* metrics_service,
-    uint32_t trial_name_hash,
-    base::StringPiece group_name) {
-  return RegisterSyntheticFieldTrialWithNameAndGroupHash(
-      metrics_service, trial_name_hash, variations::HashName(group_name));
 }
 
 // static

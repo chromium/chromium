@@ -6,7 +6,6 @@
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -132,6 +131,7 @@ bool StructTraits<media_session::mojom::MediaPositionDataView,
     return false;
 
   out->playback_rate_ = data.playback_rate();
+  out->end_of_media_ = data.end_of_media();
 
   return true;
 }

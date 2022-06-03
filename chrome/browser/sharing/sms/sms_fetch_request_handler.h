@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_SHARING_SMS_SMS_FETCH_REQUEST_HANDLER_H_
 #define CHROME_BROWSER_SHARING_SMS_SMS_FETCH_REQUEST_HANDLER_H_
 
+#include <string>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -18,18 +21,40 @@ namespace content {
 class SmsFetcher;
 }
 
+class SharingDeviceSource;
+
 // Handles incoming messages for the sms fetcher feature.
 class SmsFetchRequestHandler : public SharingMessageHandler {
  public:
-  explicit SmsFetchRequestHandler(content::SmsFetcher* fetcher);
+  using FailureType = content::SmsFetchFailureType;
+
+  SmsFetchRequestHandler(SharingDeviceSource* device_source,
+                         content::SmsFetcher* fetcher);
+
+  SmsFetchRequestHandler(const SmsFetchRequestHandler&) = delete;
+  SmsFetchRequestHandler& operator=(const SmsFetchRequestHandler&) = delete;
+
   ~SmsFetchRequestHandler() override;
 
   // SharingMessageHandler
   void OnMessage(chrome_browser_sharing::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
+  virtual void AskUserPermission(const content::OriginList&,
+                                 const std::string& one_time_code,
+                                 const std::string& client_name);
+  virtual void OnConfirm(JNIEnv*, jstring top_origin, jstring embedded_origin);
+  virtual void OnDismiss(JNIEnv*, jstring top_origin, jstring embedded_origin);
 
  private:
-  // Request represents an incoming request from a remote SmsService.
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, OutOfOrder);
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest,
+                           SendSuccessMessageOnConfirm);
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest,
+                           SendFailureMessageOnDismiss);
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, DefaultDeviceName);
+  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, EmptyDeviceName);
+  // Request represents an incoming request from a remote WebOTPService.
   // It manages subscribing and unsubscribing for SMSes in SmsFetcher and
   // responding to the callback.
   // It also lets SmsFetchRequestHandler know when the request is fulfilled
@@ -38,31 +63,48 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
    public:
     Request(SmsFetchRequestHandler* handler,
             content::SmsFetcher* fetcher,
-            const url::Origin& origin,
+            const std::vector<url::Origin>& origin_list,
+            const std::string& client_name,
             SharingMessageHandler::DoneCallback respond_callback);
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request() override;
 
-    void OnReceive(const std::string& one_time_code,
-                   const std::string& sms) override;
+    void OnReceive(const content::OriginList&,
+                   const std::string& one_time_code,
+                   content::SmsFetcher::UserConsent) override;
+    void OnFailure(FailureType failure_type) override;
+    const content::OriginList& origin_list() const { return origin_list_; }
+    // OnReceive stashes the response and asks users for permission to send it
+    // to remote. Based on user's interaction, we send different responses back.
+    void SendSuccessMessage();
+    void SendFailureMessage(FailureType);
 
    private:
     SmsFetchRequestHandler* handler_;
     content::SmsFetcher* fetcher_;
-    const url::Origin& origin_;
+    const content::OriginList origin_list_;
+    std::string one_time_code_;
+    std::string client_name_;
     SharingMessageHandler::DoneCallback respond_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   void RemoveRequest(Request* Request);
+  Request* GetRequest(const std::vector<std::u16string>& origins);
 
+  base::WeakPtr<SmsFetchRequestHandler> GetWeakPtr();
+
+  // |device_source_| is owned by |SharingService| which also transitively owns
+  // this class via |SharingHandlerRegistry|.
+  SharingDeviceSource* device_source_;
   // |fetcher_| is safe because it is owned by BrowserContext, which also
   // owns (transitively, via SharingService) this class.
   content::SmsFetcher* fetcher_;
   base::flat_set<std::unique_ptr<Request>, base::UniquePtrComparator> requests_;
-  base::WeakPtrFactory<SmsFetchRequestHandler> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(SmsFetchRequestHandler);
+  base::WeakPtrFactory<SmsFetchRequestHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_FETCH_REQUEST_HANDLER_H_

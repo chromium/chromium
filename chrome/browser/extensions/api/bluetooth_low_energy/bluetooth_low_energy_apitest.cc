@@ -10,6 +10,7 @@
 
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/test/browser_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
@@ -24,29 +25,31 @@
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using device::BluetoothUUID;
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
-using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothGattConnection;
+using device::BluetoothGattNotifySession;
+using device::BluetoothGattService;
+using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothRemoteGattDescriptor;
 using device::BluetoothRemoteGattService;
-using device::BluetoothGattNotifySession;
+using device::BluetoothUUID;
 using device::MockBluetoothAdapter;
 using device::MockBluetoothDevice;
 using device::MockBluetoothGattCharacteristic;
 using device::MockBluetoothGattConnection;
 using device::MockBluetoothGattDescriptor;
-using device::MockBluetoothGattService;
 using device::MockBluetoothGattNotifySession;
+using device::MockBluetoothGattService;
 using extensions::BluetoothLowEnergyEventRouter;
 using extensions::ResultCatcher;
+using testing::_;
+using testing::DoAll;
 using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 using testing::ReturnRefOfCopy;
 using testing::SaveArg;
-using testing::_;
 
 namespace {
 
@@ -122,80 +125,67 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
 
     event_router()->SetAdapterForTesting(mock_adapter_);
 
-    device0_.reset(
-        new testing::NiceMock<MockBluetoothDevice>(mock_adapter_,
-                                                   0,
-                                                   kTestLeDeviceName0,
-                                                   kTestLeDeviceAddress0,
-                                                   false /* paired */,
-                                                   true /* connected */));
+    device0_ = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
+        mock_adapter_, 0, kTestLeDeviceName0, kTestLeDeviceAddress0,
+        /*paired=*/false, /*connected=*/true);
 
-    device1_.reset(
-        new testing::NiceMock<MockBluetoothDevice>(mock_adapter_,
-                                                   0,
-                                                   kTestLeDeviceName1,
-                                                   kTestLeDeviceAddress1,
-                                                   false /* paired */,
-                                                   false /* connected */));
+    device1_ = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
+        mock_adapter_, 0, kTestLeDeviceName1, kTestLeDeviceAddress1,
+        /*paired=*/false, /*connected=*/true);
 
-    service0_.reset(new testing::NiceMock<MockBluetoothGattService>(
-        device0_.get(),
-        kTestServiceId0,
-        BluetoothUUID(kTestServiceUuid0),
-        true /* is_primary */,
-        false /* is_local */));
+    service0_ = std::make_unique<testing::NiceMock<MockBluetoothGattService>>(
+        device0_.get(), kTestServiceId0, BluetoothUUID(kTestServiceUuid0),
+        /*is_primary=*/true);
 
-    service1_.reset(new testing::NiceMock<MockBluetoothGattService>(
-        device0_.get(),
-        kTestServiceId1,
-        BluetoothUUID(kTestServiceUuid1),
-        false /* is_primary */,
-        false /* is_local */));
+    service1_ = std::make_unique<testing::NiceMock<MockBluetoothGattService>>(
+        device0_.get(), kTestServiceId1, BluetoothUUID(kTestServiceUuid1),
+        /*is_primary=*/false);
 
     // Assign characteristics some random properties and permissions. They don't
     // need to reflect what the characteristic is actually capable of, since
     // the JS API just passes values through from
     // device::BluetoothRemoteGattCharacteristic.
     std::vector<uint8_t> default_value;
-    chrc0_.reset(new testing::NiceMock<MockBluetoothGattCharacteristic>(
-        service0_.get(), kTestCharacteristicId0,
-        BluetoothUUID(kTestCharacteristicUuid0), false /* is_local */,
-        kTestCharacteristicProperties0,
-        BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+    chrc0_ =
+        std::make_unique<testing::NiceMock<MockBluetoothGattCharacteristic>>(
+            service0_.get(), kTestCharacteristicId0,
+            BluetoothUUID(kTestCharacteristicUuid0),
+            kTestCharacteristicProperties0,
+            BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
     default_value.assign(kTestCharacteristicDefaultValue0,
                          (kTestCharacteristicDefaultValue0 +
                           sizeof(kTestCharacteristicDefaultValue0)));
     ON_CALL(*chrc0_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
-    chrc1_.reset(new testing::NiceMock<MockBluetoothGattCharacteristic>(
-        service0_.get(), kTestCharacteristicId1,
-        BluetoothUUID(kTestCharacteristicUuid1), false /* is_local */,
-        kTestCharacteristicProperties1,
-        BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+    chrc1_ =
+        std::make_unique<testing::NiceMock<MockBluetoothGattCharacteristic>>(
+            service0_.get(), kTestCharacteristicId1,
+            BluetoothUUID(kTestCharacteristicUuid1),
+            kTestCharacteristicProperties1,
+            BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
     default_value.assign(kTestCharacteristicDefaultValue1,
                          (kTestCharacteristicDefaultValue1 +
                           sizeof(kTestCharacteristicDefaultValue1)));
     ON_CALL(*chrc1_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
-    chrc2_.reset(new testing::NiceMock<MockBluetoothGattCharacteristic>(
-        service1_.get(), kTestCharacteristicId2,
-        BluetoothUUID(kTestCharacteristicUuid2), false /* is_local */,
-        kTestCharacteristicProperties2,
-        BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+    chrc2_ =
+        std::make_unique<testing::NiceMock<MockBluetoothGattCharacteristic>>(
+            service1_.get(), kTestCharacteristicId2,
+            BluetoothUUID(kTestCharacteristicUuid2),
+            kTestCharacteristicProperties2,
+            BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
 
-    desc0_.reset(new testing::NiceMock<MockBluetoothGattDescriptor>(
+    desc0_ = std::make_unique<testing::NiceMock<MockBluetoothGattDescriptor>>(
         chrc0_.get(), kTestDescriptorId0, BluetoothUUID(kTestDescriptorUuid0),
-        false /* is_local */,
-        BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+        BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
     default_value.assign(
         kTestDescriptorDefaultValue0,
         (kTestDescriptorDefaultValue0 + sizeof(kTestDescriptorDefaultValue0)));
     ON_CALL(*desc0_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
-    desc1_.reset(new testing::NiceMock<MockBluetoothGattDescriptor>(
+    desc1_ = std::make_unique<testing::NiceMock<MockBluetoothGattDescriptor>>(
         chrc0_.get(), kTestDescriptorId1, BluetoothUUID(kTestDescriptorUuid1),
-        false /* is_local */,
-        BluetoothRemoteGattCharacteristic::PERMISSION_NONE));
+        BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
     default_value.assign(
         kTestDescriptorDefaultValue1,
         (kTestDescriptorDefaultValue1 + sizeof(kTestDescriptorDefaultValue1)));
@@ -235,10 +225,22 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   std::move(std::get<k>(args)).Run(p0);
 }
 
+ACTION_TEMPLATE(InvokeCallbackArgument,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_2_VALUE_PARAMS(p0, p1)) {
+  std::move(std::get<k>(args)).Run(p0, p1);
+}
+
 ACTION_TEMPLATE(InvokeCallbackWithScopedPtrArg,
                 HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
                 AND_1_VALUE_PARAMS(p0)) {
   std::move(std::get<k>(args)).Run(std::unique_ptr<T>(p0));
+}
+
+ACTION_TEMPLATE(InvokeCallbackWithScopedPtrArg,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_2_VALUE_PARAMS(p0, p1)) {
+  std::move(std::get<k>(args)).Run(std::unique_ptr<T>(p0), p1);
 }
 
 BluetoothGattConnection* CreateGattConnection(
@@ -714,11 +716,12 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadCharacteristicValue) {
       .WillRepeatedly(Return(chrc0_.get()));
 
   std::vector<uint8_t> value;
-  EXPECT_CALL(*chrc0_, ReadRemoteCharacteristic_(_, _))
+  EXPECT_CALL(*chrc0_, ReadRemoteCharacteristic_(_))
       .Times(2)
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_FAILED))
-      .WillOnce(InvokeCallbackArgument<0>(value));
+      .WillOnce(
+          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_FAILED,
+                                    /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(absl::nullopt, value));
 
   ExtensionTestMessageListener listener("ready", true);
   listener.set_failure_message("fail");
@@ -756,10 +759,10 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteCharacteristicValue) {
       .WillRepeatedly(Return(chrc0_.get()));
 
   std::vector<uint8_t> write_value;
-  EXPECT_CALL(*chrc0_, WriteRemoteCharacteristic_(_, _, _))
+  EXPECT_CALL(*chrc0_, DeprecatedWriteRemoteCharacteristic_(_, _, _))
       .Times(2)
-      .WillOnce(InvokeCallbackArgument<2>(
-          BluetoothRemoteGattService::GATT_ERROR_FAILED))
+      .WillOnce(
+          InvokeCallbackArgument<2>(BluetoothGattService::GATT_ERROR_FAILED))
       .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*chrc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
@@ -979,23 +982,30 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadDescriptorValue) {
       .WillRepeatedly(Return(desc0_.get()));
 
   std::vector<uint8_t> value;
-  EXPECT_CALL(*desc0_, ReadRemoteDescriptor_(_, _))
+  EXPECT_CALL(*desc0_, ReadRemoteDescriptor_(_))
       .Times(8)
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_FAILED))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_NOT_AUTHORIZED))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_NOT_PAIRED))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED))
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS))
-      .WillOnce(InvokeCallbackArgument<0>(value));
+      .WillOnce(
+          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_FAILED,
+                                    /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(
+          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_NOT_PAIRED,
+                                    /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GATT_ERROR_IN_PROGRESS,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(/*error_code=*/absl::nullopt, value));
 
   ExtensionTestMessageListener listener("ready", true);
   listener.set_failure_message("fail");
@@ -1041,8 +1051,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteDescriptorValue) {
   std::vector<uint8_t> write_value;
   EXPECT_CALL(*desc0_, WriteRemoteDescriptor_(_, _, _))
       .Times(2)
-      .WillOnce(InvokeCallbackArgument<2>(
-          BluetoothRemoteGattService::GATT_ERROR_FAILED))
+      .WillOnce(
+          InvokeCallbackArgument<2>(BluetoothGattService::GATT_ERROR_FAILED))
       .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*desc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
@@ -1149,27 +1159,36 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
   static_assert(
       BluetoothDevice::NUM_CONNECT_ERROR_CODES == 8,
       "Update required if the number of BluetoothDevice enums changes.");
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(9)
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_FAILED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_INPROGRESS))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_FAILED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_REJECTED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_CANCELED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_TIMEOUT))
-      .WillOnce(
-          InvokeCallbackArgument<1>(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_FAILED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_INPROGRESS))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_FAILED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_REJECTED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_CANCELED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_TIMEOUT))
+      .WillOnce(InvokeCallbackArgument<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_UNSUPPORTED_DEVICE))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               true /* expect_disconnect */)))
+                               true /* expect_disconnect */),
+          /*error_code=*/absl::nullopt))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               false /* expect_disconnect */)));
-  EXPECT_CALL(*device1_, CreateGattConnection_(_, _))
+                               false /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
+  EXPECT_CALL(*device1_, CreateGattConnection_(_))
       .Times(1)
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress1,
-                               true /* expect_disconnect */)));
+                               true /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
 
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("bluetooth_low_energy/gatt_connection")));
@@ -1191,13 +1210,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReconnectAfterDisconnected) {
       .WillOnce(Return(true))
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(2)
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
-          first_conn))
+          first_conn, /*error_code=*/absl::nullopt))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               false /* expect_disconnect */)));
+                               false /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "bluetooth_low_energy/reconnect_after_disconnected")));
@@ -1219,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ConnectInProgress) {
   std::unique_ptr<BluetoothGattConnection> conn_ptr(conn);
   EXPECT_CALL(*conn, Disconnect()).Times(1);
 
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(1)
       .WillOnce(MoveArg<0>(&connect_callback));
 
@@ -1233,7 +1253,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ConnectInProgress) {
       << listener.message();
   listener.Reset();
 
-  std::move(connect_callback).Run(std::move(conn_ptr));
+  std::move(connect_callback)
+      .Run(std::move(conn_ptr), /*error_code=*/absl::nullopt);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ("After 2nd call to disconnect.", listener.message())
       << listener.message();
@@ -1282,8 +1303,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, StartStopNotifications) {
 
   EXPECT_CALL(*chrc0_, StartNotifySession_(_, _))
       .Times(2)
-      .WillOnce(InvokeCallbackArgument<1>(
-          BluetoothRemoteGattService::GATT_ERROR_FAILED))
+      .WillOnce(
+          InvokeCallbackArgument<1>(BluetoothGattService::GATT_ERROR_FAILED))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattNotifySession>(
           session0));
   EXPECT_CALL(*chrc1_, StartNotifySession_(_, _))

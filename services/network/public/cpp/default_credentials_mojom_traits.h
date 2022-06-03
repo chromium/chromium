@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_DEFAULT_CREDENTIALS_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_DEFAULT_CREDENTIALS_MOJOM_TRAITS_H_
 
-#include "ipc/ipc_message_utils.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/http/http_auth_preferences.h"
 #include "services/network/public/mojom/default_credentials.mojom.h"

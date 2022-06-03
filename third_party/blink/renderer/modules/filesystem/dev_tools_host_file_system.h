@@ -27,4 +27,4 @@ class DevToolsHostFileSystem {
 
 }  // namespace blink
 
-#endif  // !defined(DevToolsHostFileSystem_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DEV_TOOLS_HOST_FILE_SYSTEM_H_

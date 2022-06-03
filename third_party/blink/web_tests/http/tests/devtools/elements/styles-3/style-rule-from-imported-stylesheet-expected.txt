@@ -13,11 +13,6 @@ element.style { ()
 div { (user agent stylesheet)
 /-- overloaded --/     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 Rules after toggling:
 [expanded] 
 element.style { ()
@@ -30,10 +25,5 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
 /-- overloaded --/     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

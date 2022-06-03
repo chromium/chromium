@@ -13,10 +13,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-using jingle_xmpp::XmlElement;
 using jingle_xmpp::QName;
+using jingle_xmpp::XmlElement;
 using testing::_;
 using testing::DeleteArg;
+using testing::DoAll;
 using testing::InSequence;
 using testing::Return;
 

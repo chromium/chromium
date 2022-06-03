@@ -32,10 +32,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -48,6 +48,8 @@ class DateTimeStringBuilder : private DateTimeFormat::TokenHandler {
  public:
   // The argument objects must be alive until this object dies.
   DateTimeStringBuilder(Locale&, const DateComponents&);
+  DateTimeStringBuilder(const DateTimeStringBuilder&) = delete;
+  DateTimeStringBuilder& operator=(const DateTimeStringBuilder&) = delete;
 
   bool Build(const String&);
   String ToString();
@@ -63,8 +65,6 @@ class DateTimeStringBuilder : private DateTimeFormat::TokenHandler {
   StringBuilder builder_;
   Locale& localizer_;
   const DateComponents& date_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeStringBuilder);
 };
 
 DateTimeStringBuilder::DateTimeStringBuilder(Locale& localizer,
@@ -287,6 +287,23 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
   builder.Append(negative_prefix_);
   builder.Append(negative_suffix_);
   acceptable_number_characters_ = builder.ToString();
+
+  // Check if we can use single character filtering. We can if all symbols are
+  // 1 character and there's no suffix. Since plus sign is optional, allow
+  // zero length positive prefix.
+  uses_single_char_number_filtering_ = false;
+  if (decimal_symbols_[kDecimalSeparatorIndex].length() == 1 &&
+      positive_prefix_.length() <= 1 && negative_prefix_.length() == 1 &&
+      positive_suffix_.length() == 0 && negative_suffix_.length() == 0 &&
+      !IsRTL()) {
+    uses_single_char_number_filtering_ = true;
+    for (wtf_size_t i = 0; i <= 9; ++i) {
+      if (decimal_symbols_[i].length() != 1) {
+        uses_single_char_number_filtering_ = false;
+        break;
+      }
+    }
+  }
 }
 
 String Locale::ConvertToLocalizedNumber(const String& input) {
@@ -414,21 +431,27 @@ String Locale::ConvertFromLocalizedNumber(const String& localized) {
   builder.ReserveCapacity(input.length());
   if (is_negative)
     builder.Append('-');
+  unsigned num_decimal_separators = 0;
   for (unsigned i = start_index; i < end_index;) {
     unsigned symbol_index = MatchedDecimalSymbolIndex(input, i);
     if (symbol_index >= kDecimalSymbolsSize)
       return input;
-    if (symbol_index == kDecimalSeparatorIndex)
+    if (symbol_index == kDecimalSeparatorIndex) {
+      num_decimal_separators++;
       builder.Append('.');
-    else if (symbol_index == kGroupSeparatorIndex)
+    } else if (symbol_index == kGroupSeparatorIndex) {
       return input;
-    else
+    } else {
       builder.Append(static_cast<UChar>('0' + symbol_index));
+    }
   }
   String converted = builder.ToString();
   // Ignore trailing '.', but will reject '.'-only string later.
-  if (converted.length() >= 2 && converted[converted.length() - 1] == '.')
-    converted = converted.Left(converted.length() - 1);
+  if (converted.length() >= 2 && converted[converted.length() - 1] == '.') {
+    // Leave it if there are two decimal separators since that's invalid.
+    if (num_decimal_separators < 2)
+      converted = converted.Left(converted.length() - 1);
+  }
   return converted;
 }
 
@@ -450,6 +473,73 @@ String Locale::StripInvalidNumberCharacters(const String& input,
 String Locale::LocalizedDecimalSeparator() {
   InitializeLocaleData();
   return decimal_symbols_[kDecimalSeparatorIndex];
+}
+
+bool Locale::UsesSingleCharNumberFiltering() {
+  return uses_single_char_number_filtering_;
+}
+
+static bool IsE(UChar ch) {
+  return ch == 'e' || ch == 'E';
+}
+
+bool Locale::IsSignPrefix(UChar ch) {
+  if (ch == '+' || ch == '-')
+    return true;
+  if (negative_prefix_.length() == 1 && ch == negative_prefix_[0])
+    return true;
+  if (positive_prefix_.length() == 1 && ch == positive_prefix_[0])
+    return true;
+
+  return false;
+}
+
+bool Locale::HasTwoSignChars(const String& str) {
+  // Unretained is safe because callback executes synchronously in Find().
+  auto pos = str.Find(
+      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
+  if (pos == kNotFound)
+    return false;
+  // Unretained is safe because callback executes synchronously in Find().
+  return str.Find(
+             WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)),
+             pos + 1) != kNotFound;
+}
+
+bool Locale::HasSignNotAfterE(const String& str) {
+  // Unretained is safe because callback executes synchronously in Find().
+  auto pos = str.Find(
+      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
+  if (pos == kNotFound)
+    return false;
+  return pos == 0 || !IsE(str[pos - 1]);
+}
+
+bool Locale::IsDigit(UChar ch) {
+  // Alwoays allow 0 - 9
+  if (ch >= '0' && ch <= '9')
+    return true;
+  // Check each digit otherwise
+  String ch_str(&ch, 1u);
+  return (ch_str == decimal_symbols_[0] || ch_str == decimal_symbols_[1] ||
+          ch_str == decimal_symbols_[2] || ch_str == decimal_symbols_[3] ||
+          ch_str == decimal_symbols_[4] || ch_str == decimal_symbols_[5] ||
+          ch_str == decimal_symbols_[6] || ch_str == decimal_symbols_[7] ||
+          ch_str == decimal_symbols_[8] || ch_str == decimal_symbols_[9]);
+}
+
+// Is the character a decimal separator?
+bool Locale::IsDecimalSeparator(UChar ch) {
+  if (ch == '.')
+    return true;
+  return LocalizedDecimalSeparator() == String(&ch, 1u);
+}
+
+// Is there a decimal separator in a string?
+bool Locale::HasDecimalSeparator(const String& str) {
+  // Unretained is safe because callback executes synchronously in Find().
+  return str.Find(WTF::BindRepeating(&Locale::IsDecimalSeparator,
+                                     WTF::Unretained(this))) != kNotFound;
 }
 
 String Locale::FormatDateTime(const DateComponents& date,

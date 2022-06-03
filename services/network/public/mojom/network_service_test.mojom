@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -13,15 +14,21 @@ import "services/network/public/mojom/network_types.mojom";
 enum ResolverType {
   kResolverTypeFail,
   kResolverTypeFailTimeout,
+  kResolverTypeFailHTTPSServiceFormRecord,
   kResolverTypeSystem,
   kResolverTypeIPLiteral,
   kResolverTypeDirectLookup,
 };
 
+// `dns_aliases` is a list of aliases read from DNS records, e.g. CNAME
+// aliases, and is intended to preserve the alias chain in reverse, from
+// canonical name (i.e. address record name) through to query name.
 struct Rule {
   ResolverType resolver_type;
   string host_pattern;
   string replacement;
+  int32 host_resolver_flags;
+  array<string> dns_aliases;
 };
 
 // Testing interface to the network service.
@@ -58,14 +65,13 @@ interface NetworkServiceTest {
       int32 rv) => ();
 
   // Toggles requiring CT for testing
-  enum ShouldRequireCT {
-    RESET = 0,
+  enum RequireCT {
+    DEFAULT = 0,
     REQUIRE = 1,
-    DONT_REQUIRE = 2,
   };
 
   [Sync]
-  SetShouldRequireCT(ShouldRequireCT required) => ();
+  SetRequireCT(RequireCT required) => ();
 
   // Set the global transport security state preloaded static data source to
   // the unittest_default source, with the reporting URIs rewritten to use
@@ -73,6 +79,12 @@ interface NetworkServiceTest {
   // the default.
   [Sync]
   SetTransportSecurityStateSource(uint16 reporting_port) => ();
+
+  // Allow host resolutions to reach the network. Since going to the network
+  // can be a source of flakiness, this should only be called in tests that
+  // can tolerate this, such as those run manually or on an FYI bot.
+  [Sync]
+  SetAllowNetworkAccessToHostResolutions() => ();
 
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);
@@ -105,4 +117,15 @@ interface NetworkServiceTest {
   // Activates the specified field trial. Intended for use verifying that the
   // network service informs the main process when a field trial is activated.
   ActivateFieldTrial(string field_trial_name);
+
+  // Gets the current count of entries in the First-Party sets mapping. Note
+  // that each entry is a registered domain mapped to its owner.
+  [Sync]
+  GetFirstPartySetEntriesCount() => (int64 entries);
+
+  // Set how long of an initial delay should be used for exponential backoff in
+  // SCT auditing retries. Setting the delay to nullopt will reset to the
+  // default.
+  [Sync]
+  SetSCTAuditingRetryDelay(mojo_base.mojom.TimeDelta? delay) => ();
 };

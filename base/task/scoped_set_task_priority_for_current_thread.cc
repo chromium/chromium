@@ -4,8 +4,8 @@
 
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 
+#include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/threading/thread_local.h"
 
 namespace base {

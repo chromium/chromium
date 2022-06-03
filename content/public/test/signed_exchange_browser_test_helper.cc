@@ -35,14 +35,13 @@ SignedExchangeBrowserTestHelper::~SignedExchangeBrowserTestHelper() = default;
 
 void SignedExchangeBrowserTestHelper::SetUp() {
   signed_exchange_utils::SetVerificationTimeForTesting(
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(kSignatureHeaderDate));
+      base::Time::UnixEpoch() + base::Seconds(kSignatureHeaderDate));
 }
 
 void SignedExchangeBrowserTestHelper::TearDownOnMainThread() {
   interceptor_.reset();
   signed_exchange_utils::SetVerificationTimeForTesting(
-      base::Optional<base::Time>());
+      absl::optional<base::Time>());
 }
 
 scoped_refptr<net::X509Certificate>

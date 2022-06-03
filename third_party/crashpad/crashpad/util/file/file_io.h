@@ -96,6 +96,28 @@ enum class FileLocking : bool {
   kExclusive,
 };
 
+//! \brief Determines if LoggingLockFile will block.
+enum class FileLockingBlocking : bool {
+  //! \brief Block until the lock is acquired
+  kBlocking = false,
+
+  //! \brief Do not block when attempting to acquire a lock.
+  kNonBlocking = true,
+};
+
+//! \brief The return value for LoggingLockFile.
+enum class FileLockingResult : int {
+  //! \brief The lock was acquired successfully.
+  kSuccess,
+
+  //! \brief In non-blocking mode only, the file was already locked. Locking
+  //!     would block, so the lock was not acquired.
+  kWouldBlock,
+
+  //! \brief The lock was not acquired.
+  kFailure,
+};
+
 //! \brief Determines the FileHandle that StdioFileHandle() returns.
 enum class StdioStream {
   //! \brief Standard input, or `stdin`.
@@ -142,6 +164,9 @@ constexpr char kNativeWriteFunctionName[] = "WriteFile";
 //! FileReaderInterface::ReadExactly() instead.
 class ReadExactlyInternal {
  public:
+  ReadExactlyInternal(const ReadExactlyInternal&) = delete;
+  ReadExactlyInternal& operator=(const ReadExactlyInternal&) = delete;
+
   //! \brief Calls Read(), retrying following a short read, ensuring that
   //!     exactly \a size bytes are read.
   //!
@@ -160,8 +185,6 @@ class ReadExactlyInternal {
   //! \return The number of bytes read and placed into \a buffer, or `-1` on
   //!     error. When returning `-1`, if \a can_log is `true`, logs a message.
   virtual FileOperationResult Read(void* buffer, size_t size, bool can_log) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadExactlyInternal);
 };
 
 //! \brief The internal implementation of WriteFile() and its wrappers.
@@ -172,6 +195,9 @@ class ReadExactlyInternal {
 //! FileWriterInterface::Write() instead.
 class WriteAllInternal {
  public:
+  WriteAllInternal(const WriteAllInternal&) = delete;
+  WriteAllInternal& operator=(const WriteAllInternal&) = delete;
+
   //! \brief Calls Write(), retrying following a short write, ensuring that
   //!     exactly \a size bytes are written.
   //!
@@ -188,8 +214,6 @@ class WriteAllInternal {
   //!
   //! \return The number of bytes written from \a buffer, or `-1` on error.
   virtual FileOperationResult Write(const void* buffer, size_t size) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteAllInternal);
 };
 
 //! \brief Writes to a file, retrying when interrupted on POSIX.
@@ -398,18 +422,29 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
                                    FileWriteMode mode,
                                    FilePermissions permissions);
 
-#if defined(OS_LINUX)
-//! \brief Wraps memfd_create(), logging an error if the operation fails.
-//!     Unlike other file open operations, this doesn't set `O_CLOEXEC`.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+//! \brief Opens an in-memory file for input and output.
 //!
-//! \return The newly opened FileHandle, or an invalid FileHandle on failure.
+//! This function first attempts to open the file with `memfd_create()`. If
+//! `memfd_create()` isn't supported by the kernel, this function next attempts
+//! to open a file using `O_TMPFILE`. If `O_TMPFILE` isn't supported, this
+//! function finally falls back to creating a file with a randomized name in
+//! `/tmp` and immediately `unlink()`ing it.
+//!
+//! Unlike other file open operations, this function doesn't set `O_CLOEXEC`.
+//!
+//! \param name A name associated with the file. This name does not indicate any
+//!     exact path and may not be used at all, depending on the strategy used to
+//!     create the file. The name should not contain any '/' characters.
+//! \return The newly opened FileHandle, or an invalid FileHandle on failure,
+//!     with a message logged.
 //!
 //! \sa ScopedFileHandle
 //! \sa LoggingOpenFileForRead
 //! \sa LoggingOpenFileForWrite
 //! \sa LoggingOpenFileForReadAndWrite
-FileHandle LoggingOpenMemFileForWrite(const base::FilePath& path);
-#endif  // OS_LINUX
+FileHandle LoggingOpenMemoryFileForReadAndWrite(const base::FilePath& name);
+#endif  // OS_LINUX || OS_CHROMEOS
 
 //! \brief Wraps OpenFileForReadAndWrite(), logging an error if the operation
 //!     fails.
@@ -432,8 +467,9 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
 //!     Windows.
 //!
 //! It is an error to attempt to lock a file in a different mode when it is
-//! already locked. This call will block until the lock is acquired. The
-//! entire file is locked.
+//! already locked. This call will block until the lock is acquired unless
+//! \a blocking is FileLockingBlocking::kNonBlocking. The entire file is
+//! locked.
 //!
 //! If \a locking is FileLocking::kShared, \a file must have been opened for
 //! reading, and if it's FileLocking::kExclusive, \a file must have been opened
@@ -442,9 +478,16 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
 //! \param[in] file The open file handle to be locked.
 //! \param[in] locking Controls whether the lock is a shared reader lock, or an
 //!     exclusive writer lock.
+//! \param[in] blocking Controls whether a locked file will result in blocking
+//!     or an immediate return.
 //!
-//! \return `true` on success, or `false` and a message will be logged.
-bool LoggingLockFile(FileHandle file, FileLocking locking);
+//! \return kSuccess if a lock is acquired. If a lock could not be acquired
+//!     because \a blocking is FileLockingBlocking::kNonBlocking and acquiring
+//!     the lock would block, returns kWouldBlock. If a lock fails for any other
+//!     reason, returns kFailure and a message will be logged.
+FileLockingResult LoggingLockFile(FileHandle file,
+                                  FileLocking locking,
+                                  FileLockingBlocking blocking);
 
 //! \brief Unlocks a file previously locked with LoggingLockFile().
 //!

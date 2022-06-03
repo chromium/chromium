@@ -6,6 +6,9 @@
 
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -88,8 +91,24 @@ gfx::Size MenuSeparator::CalculatePreferredSize() const {
                    height);
 }
 
-BEGIN_METADATA(MenuSeparator)
-METADATA_PARENT_CLASS(View)
-END_METADATA()
+ui::MenuSeparatorType MenuSeparator::GetType() const {
+  return type_;
+}
+
+void MenuSeparator::SetType(ui::MenuSeparatorType type) {
+  if (type_ == type)
+    return;
+
+  type_ = type;
+  OnPropertyChanged(&type_, kPropertyEffectsPreferredSizeChanged);
+}
+
+void MenuSeparator::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kSplitter;
+}
+
+BEGIN_METADATA(MenuSeparator, View)
+ADD_PROPERTY_METADATA(ui::MenuSeparatorType, Type)
+END_METADATA
 
 }  // namespace views

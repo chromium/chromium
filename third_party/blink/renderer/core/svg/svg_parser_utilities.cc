@@ -24,6 +24,7 @@
 
 #include <limits>
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -195,34 +196,22 @@ bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag) {
   return GenericParseArcFlag(ptr, end, flag);
 }
 
-template <typename CharType>
-static bool GenericParseNumberOptionalNumber(const CharType*& ptr,
-                                             const CharType* end,
-                                             float& x,
-                                             float& y) {
-  if (!ParseNumber(ptr, end, x))
-    return false;
-
-  if (ptr == end)
-    y = x;
-  else if (!ParseNumber(ptr, end, y, kAllowLeadingAndTrailingWhitespace))
-    return false;
-
-  return ptr == end;
-}
-
 bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
   if (string.IsEmpty())
     return false;
 
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return GenericParseNumberOptionalNumber(ptr, end, x, y);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return GenericParseNumberOptionalNumber(ptr, end, x, y);
+  return WTF::VisitCharacters(string, [&](const auto* ptr, unsigned length) {
+    const auto* end = ptr + length;
+    if (!ParseNumber(ptr, end, x))
+      return false;
+
+    if (ptr == end)
+      y = x;
+    else if (!ParseNumber(ptr, end, y, kAllowLeadingAndTrailingWhitespace))
+      return false;
+
+    return ptr == end;
+  });
 }
 
 }  // namespace blink

@@ -90,10 +90,12 @@ class MessageNode(base.ContentNode):
     return isinstance(child, (PhNode))
 
   def _IsValidAttribute(self, name, value):
-    if name not in ['name', 'offset', 'translateable', 'desc', 'meaning',
-                    'internal_comment', 'shortcut_groups', 'custom_type',
-                    'validation_expr', 'use_name_for_id', 'sub_variable',
-                    'formatter_data']:
+    if name not in [
+        'name', 'offset', 'translateable', 'desc', 'meaning',
+        'internal_comment', 'shortcut_groups', 'custom_type', 'validation_expr',
+        'use_name_for_id', 'sub_variable', 'formatter_data',
+        'is_accessibility_with_no_ui'
+    ]:
       return False
     if (name in ('translateable', 'sub_variable') and
         value not in ['true', 'false']):
@@ -110,16 +112,17 @@ class MessageNode(base.ContentNode):
 
   def DefaultAttributes(self):
     return {
-      'custom_type' : '',
-      'desc' : '',
-      'formatter_data' : '',
-      'internal_comment' : '',
-      'meaning' : '',
-      'shortcut_groups' : '',
-      'sub_variable' : 'false',
-      'translateable' : 'true',
-      'use_name_for_id' : 'false',
-      'validation_expr' : '',
+        'custom_type': '',
+        'desc': '',
+        'formatter_data': '',
+        'internal_comment': '',
+        'is_accessibility_with_no_ui': 'false',
+        'meaning': '',
+        'shortcut_groups': '',
+        'sub_variable': 'false',
+        'translateable': 'true',
+        'use_name_for_id': 'false',
+        'validation_expr': '',
     }
 
   def HandleAttribute(self, attrib, value):
@@ -268,6 +271,8 @@ class MessageNode(base.ContentNode):
                                          ).GetRealContent()
     if self._replace_ellipsis:
       msg = _ELLIPSIS_PATTERN.sub(_ELLIPSIS_SYMBOL, msg)
+    # Always remove all byte order marks (\uFEFF) https://crbug.com/1033305
+    msg = msg.replace(u'\uFEFF','')
     return msg.replace('[GRITLANGCODE]', lang)
 
   def NameOrOffset(self):

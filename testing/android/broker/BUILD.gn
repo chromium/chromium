@@ -7,6 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("broker_java") {
   chromium_code = true
 
-  java_files =
+  sources =
       [ "java/src/org/chromium/test/broker/OnDeviceInstrumentationBroker.java" ]
 }

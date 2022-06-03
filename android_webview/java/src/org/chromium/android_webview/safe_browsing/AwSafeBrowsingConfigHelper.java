@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.android_webview.AwSwitches;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -29,13 +29,12 @@ public class AwSafeBrowsingConfigHelper {
     private static final String TAG = "AwSafeBrowsingConfi-";
 
     private static final String OPT_IN_META_DATA_STR = "android.webkit.WebView.EnableSafeBrowsing";
-    private static final boolean DEFAULT_USER_OPT_IN = false;
 
     private static volatile boolean sSafeBrowsingUserOptIn;
     private static volatile boolean sEnabledByManifest;
 
     // Used to record the UMA histogram SafeBrowsing.WebView.AppOptIn. Since these values are
-    // persisted to logs, they should never be renumbered nor reused.
+    // persisted to logs, they should never be renumbered or reused.
     @IntDef({AppOptIn.NO_PREFERENCE, AppOptIn.OPT_IN, AppOptIn.OPT_OUT})
     @interface AppOptIn {
         int NO_PREFERENCE = 0;
@@ -45,25 +44,9 @@ public class AwSafeBrowsingConfigHelper {
         int COUNT = 3;
     }
 
-    // Used to record the UMA histogram SafeBrowsing.WebView.UserOptIn. Since these values are
-    // persisted to logs, they should never be renumbered nor reused.
-    @IntDef({UserOptIn.UNABLE_TO_DETERMINE, UserOptIn.OPT_IN, UserOptIn.OPT_OUT})
-    @interface UserOptIn {
-        int OPT_OUT = 0;
-        int OPT_IN = 1;
-        int UNABLE_TO_DETERMINE = 2;
-
-        int COUNT = 3;
-    }
-
     private static void recordAppOptIn(@AppOptIn int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 "SafeBrowsing.WebView.AppOptIn", value, AppOptIn.COUNT);
-    }
-
-    private static void recordUserOptIn(@UserOptIn int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "SafeBrowsing.WebView.UserOptIn", value, UserOptIn.COUNT);
     }
 
     public static void setSafeBrowsingEnabledByManifest(boolean enabled) {
@@ -92,18 +75,8 @@ public class AwSafeBrowsingConfigHelper {
             setSafeBrowsingEnabledByManifest(
                     appOptIn == null ? !isDisabledByCommandLine() : appOptIn);
 
-            Callback<Boolean> cb = verifyAppsValue -> {
-                setSafeBrowsingUserOptIn(
-                        verifyAppsValue == null ? DEFAULT_USER_OPT_IN : verifyAppsValue);
-
-                if (verifyAppsValue == null) {
-                    recordUserOptIn(UserOptIn.UNABLE_TO_DETERMINE);
-                } else if (verifyAppsValue) {
-                    recordUserOptIn(UserOptIn.OPT_IN);
-                } else {
-                    recordUserOptIn(UserOptIn.OPT_OUT);
-                }
-            };
+            Callback<Boolean> cb = verifyAppsValue
+                    -> setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
             PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
     }

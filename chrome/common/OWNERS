@@ -20,14 +20,8 @@ per-file *_messages.cc=file://ipc/SECURITY_OWNERS
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
 
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
-
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
-
-per-file *.typemap=set noparent
-per-file *.typemap=file://ipc/SECURITY_OWNERS
 
 # Changes to Mojo interfaces require a security review to avoid
 # introducing new sandbox escapes.
@@ -39,9 +33,6 @@ per-file chrome_content_client.cc=*
 per-file chrome_content_client_constants.h=*
 per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
-
-# Content settings
-per-file content_settings*=markusheintz@chromium.org
 
 # Pepper files.
 per-file pepper_*=bbudge@chromium.org
@@ -60,5 +51,5 @@ per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
 # Thread profiling
 per-file thread_profiler*=wittman@chromium.org
 
-# Heap profiler
-per-file heap_profiler*=alph@chromium.org
+# Web Applications
+per-file web_application_info.*=file://chrome/browser/web_applications/OWNERS

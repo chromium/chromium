@@ -16,9 +16,10 @@ class ClosureTask : public Task {
  public:
   ClosureTask(base::OnceClosure closure);
   ~ClosureTask() override;
-  void Run() override;
 
  private:
+  void Run() override;
+
   base::OnceClosure closure_;
 };
 

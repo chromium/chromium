@@ -8,8 +8,6 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("facade") {
   sources = [
-    "directory_client.cc",
-    "directory_client.h",
     "host_list_service.h",
     "host_list_service.mm",
     "ios_client_runtime_delegate.h",
@@ -25,18 +23,18 @@ source_set("facade") {
 
   deps = [
     "//base",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
+    "//ios/third_party/material_components_ios",
     "//remoting/base:authorization",
     "//remoting/client",
     "//remoting/ios/domain",
     "//remoting/ios/persistence",
-    "//remoting/proto/remoting/v1:directory_grpc_library",
     "//remoting/resources",
     "//remoting/signaling",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 
-  libs = [ "CoreFoundation.framework" ]
+  frameworks = [ "CoreFoundation.framework" ]
 
   public_deps = [
     "//remoting/base",
@@ -48,16 +46,16 @@ source_set("facade") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "host_list_service_unittest.mm",
-  ]
+  sources = [ "host_list_service_unittest.mm" ]
   deps = [
     ":facade",
-    "//remoting/base/grpc_test_support",
-    "//remoting/proto/remoting/v1:directory_grpc_library",
+    "//base/test:test_support",
+    "//remoting/base:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests console output from AnimationWorklet.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function importWorklet()
@@ -16,8 +16,8 @@
   ConsoleTestRunner.waitForConsoleMessages(4, finish);
   TestRunner.evaluateInPage('importWorklet();');
 
-  function finish() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function finish() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

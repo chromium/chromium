@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<table style="height:100%; width:100%;">
+ <tr>
+  <td><select multiple class="test" style="display:block; height:100%; width:100%; padding:0; border:none;"></select></td>
+ </tr>
+</table>
+<table style="height:100%; width:100%;">
+ <tr>
+  <td><textarea class="test" style="display:block; height:100%; width:100%; padding:0; border:none;">text</textarea></td>
+ </tr>
+</table>
+<script>
+test(() => {
+  for (let control of document.querySelectorAll('.test')) {
+    assert_not_equals(control.offsetHeight, 0, `${control.type}'s height`);
+  }
+}, 'Percentage-height scrollable form controls should have intrinsic heights');
+</script>

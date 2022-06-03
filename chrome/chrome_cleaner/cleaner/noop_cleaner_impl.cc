@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 
 namespace chrome_cleaner {

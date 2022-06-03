@@ -5,9 +5,12 @@
 import("//build/config/android/rules.gni")
 
 android_java_prebuilt("accessibility_test_framework_java") {
-  # Uses wrong version of proto (not protolite).
-  enable_bytecode_checks = false
   testonly = true
+
+  # Uses wrong version of proto (not protolite).
+  # Disable these to avoid build warnings.
+  enable_bytecode_checks = false
+
   jar_path = "lib/accessibility-test-framework.jar"
   deps = [
     "//third_party/android_deps:android_support_v4_java",

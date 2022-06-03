@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <memory>
+
+#include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -68,7 +70,7 @@ class FIFOClient {
           *client_thread_->GetTaskRunner(), FROM_HERE,
           CrossThreadBindOnce(&FIFOClient::RunTaskOnOwnThread,
                               CrossThreadUnretained(this)),
-          base::TimeDelta::FromMillisecondsD(interval_with_jitter));
+          base::Milliseconds(interval_with_jitter));
     } else {
       Stop(counter_);
       done_event_->Signal();

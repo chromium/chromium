@@ -4,7 +4,7 @@
 
 #include "remoting/protocol/input_event_tracker.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {

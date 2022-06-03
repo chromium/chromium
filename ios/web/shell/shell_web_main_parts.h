@@ -21,7 +21,6 @@ class ShellWebMainParts : public WebMainParts {
   ShellBrowserState* browser_state() const { return browser_state_.get(); }
 
   // WebMainParts implementation.
-  void PreMainMessageLoopStart() override;
   void PreMainMessageLoopRun() override;
 
  private:

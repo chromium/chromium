@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_PROXY_RESOLVING_SOCKET_FACTORY_MOJO_H_
 #define SERVICES_NETWORK_PROXY_RESOLVING_SOCKET_FACTORY_MOJO_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -19,6 +17,7 @@
 #include "services/network/tls_socket_factory.h"
 
 namespace net {
+class NetworkIsolationKey;
 class URLRequestContext;
 }  // namespace net
 
@@ -28,11 +27,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketFactoryMojo
     : public mojom::ProxyResolvingSocketFactory {
  public:
   ProxyResolvingSocketFactoryMojo(net::URLRequestContext* request_context);
+
+  ProxyResolvingSocketFactoryMojo(const ProxyResolvingSocketFactoryMojo&) =
+      delete;
+  ProxyResolvingSocketFactoryMojo& operator=(
+      const ProxyResolvingSocketFactoryMojo&) = delete;
+
   ~ProxyResolvingSocketFactoryMojo() override;
 
   // mojom::ProxyResolvingSocketFactory implementation.
   void CreateProxyResolvingSocket(
       const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
       mojom::ProxyResolvingSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
@@ -44,8 +50,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketFactoryMojo
   TLSSocketFactory tls_socket_factory_;
   mojo::UniqueReceiverSet<mojom::ProxyResolvingSocket>
       proxy_resolving_socket_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketFactoryMojo);
 };
 
 }  // namespace network

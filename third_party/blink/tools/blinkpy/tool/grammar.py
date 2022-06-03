@@ -44,11 +44,15 @@ def pluralize(noun, count):
     return '%d %s' % (count, noun)
 
 
-def join_with_separators(list_of_strings, separator=', ', only_two_separator=' and ', last_separator=', and '):
+def join_with_separators(list_of_strings,
+                         separator=', ',
+                         only_two_separator=' and ',
+                         last_separator=', and '):
     if not list_of_strings:
         return ''
     if len(list_of_strings) == 1:
         return list_of_strings[0]
     if len(list_of_strings) == 2:
         return only_two_separator.join(list_of_strings)
-    return '%s%s%s' % (separator.join(list_of_strings[:-1]), last_separator, list_of_strings[-1])
+    return '%s%s%s' % (separator.join(list_of_strings[:-1]), last_separator,
+                       list_of_strings[-1])

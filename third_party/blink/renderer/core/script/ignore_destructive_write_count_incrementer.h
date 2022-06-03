@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IGNORE_DESTRUCTIVE_WRITE_COUNT_INCREMENTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IGNORE_DESTRUCTIVE_WRITE_COUNT_INCREMENTER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -36,6 +35,10 @@ class IgnoreDestructiveWriteCountIncrementer {
   STACK_ALLOCATED();
 
  public:
+  IgnoreDestructiveWriteCountIncrementer(
+      const IgnoreDestructiveWriteCountIncrementer&) = delete;
+  IgnoreDestructiveWriteCountIncrementer& operator=(
+      const IgnoreDestructiveWriteCountIncrementer&) = delete;
   explicit IgnoreDestructiveWriteCountIncrementer(Document* document)
       : count_(document ? &document->ignore_destructive_write_count_
                         : nullptr) {
@@ -52,9 +55,8 @@ class IgnoreDestructiveWriteCountIncrementer {
 
  private:
   unsigned* count_;
-  DISALLOW_COPY_AND_ASSIGN(IgnoreDestructiveWriteCountIncrementer);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IGNORE_DESTRUCTIVE_WRITE_COUNT_INCREMENTER_H_

@@ -14,7 +14,7 @@ class SkPath;
 namespace gfx {
 class Point;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 class GestureEvent;
@@ -23,7 +23,7 @@ class Layer;
 class MouseEvent;
 class PaintContext;
 class ScrollEvent;
-}
+}  // namespace ui
 
 namespace views {
 class Widget;
@@ -49,9 +49,6 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // Returns true if the window can be activated.
   virtual bool CanActivate() const = 0;
 
-  // Returns true if the window should paint as active.
-  virtual bool ShouldPaintAsActive() const = 0;
-
   // Returns true if the native widget has been initialized.
   virtual bool IsNativeWidgetInitialized() const = 0;
 
@@ -62,9 +59,6 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // Called when native focus moves from one native view to another.
   virtual void OnNativeFocus() = 0;
   virtual void OnNativeBlur() = 0;
-
-  // Called when the window is about to be shown/hidden.
-  virtual void OnNativeWidgetVisibilityChanging(bool visible) = 0;
 
   // Called when the window is shown/hidden.
   virtual void OnNativeWidgetVisibilityChanged(bool visible) = 0;
@@ -93,7 +87,8 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // e.g. maximize.
   virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) = 0;
 
-  // Called when NativeWidget changed workspaces.
+  // Called when NativeWidget changed workspaces or its visible on all
+  // workspaces state changes.
   virtual void OnNativeWidgetWorkspaceChanged() = 0;
 
   // Called when the NativeWidget changes its window state.

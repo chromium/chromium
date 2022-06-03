@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
@@ -23,7 +24,6 @@ source_set("main") {
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/ui_devtools",
-    "//components/ui_devtools/viz",
     "//components/viz/service",
     "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/common",
@@ -33,20 +33,19 @@ source_set("main") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/mojom",
     "//services/service_manager/public/cpp",
+    "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gl/init",
   ]
 
-  public_deps = [
-    "//services/network/public/mojom",
-  ]
+  public_deps = [ "//services/network/public/mojom" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone:ozone" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//media/gpu" ]
   }
 

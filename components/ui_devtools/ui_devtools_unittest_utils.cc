@@ -30,22 +30,14 @@ int FakeFrontendChannel::CountProtocolNotificationMessage(
                     protocol_notification_messages_.end(), message);
 }
 
-namespace {
-std::string SerializeToJSON(std::unique_ptr<protocol::Serializable> message) {
-  std::vector<uint8_t> cbor = std::move(*message).TakeSerialized();
-  std::string json;
-  crdtp::Status status =
-      crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(cbor), &json);
-  DCHECK(status.ok()) << status.ToASCIIString();
-  return json;
-}
-}  // namespace
-
-void FakeFrontendChannel::sendProtocolNotification(
+void FakeFrontendChannel::SendProtocolNotification(
     std::unique_ptr<protocol::Serializable> message) {
   EXPECT_TRUE(allow_notifications_);
-  protocol_notification_messages_.push_back(
-      SerializeToJSON(std::move(message)));
+  std::string json;
+  crdtp::Status status = crdtp::json::ConvertCBORToJSON(
+      crdtp::SpanFrom(message->Serialize()), &json);
+  DCHECK(status.ok()) << status.ToASCIIString();
+  protocol_notification_messages_.push_back(std::move(json));
 }
 
 }  // namespace ui_devtools

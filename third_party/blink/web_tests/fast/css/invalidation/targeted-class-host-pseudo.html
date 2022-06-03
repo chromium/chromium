@@ -10,16 +10,16 @@ description("Check that targeted class invalidation works with the :host pseudo 
 // Create shadow trees
 
 var host1 = document.getElementById("host1");
-host1.createShadowRoot().innerHTML = "<style>:host(.c1) { background-color: green }</style><div></div><div></div><div></div><div></div><div></div>";
+host1.attachShadow({mode: 'open'}).innerHTML = "<style>:host(.c1) { background-color: green }</style><div></div><div></div><div></div><div></div><div></div>";
 
 var host2 = document.getElementById("host2");
-host2.createShadowRoot().innerHTML = '<style>:host(.c2) .inner { background-color: green }</style><div></div><div></div><div></div><div><span id="inner" class="inner"></span></div>';
+host2.attachShadow({mode: 'open'}).innerHTML = '<style>:host(.c2) .inner { background-color: green }</style><div></div><div></div><div></div><div><span id="inner" class="inner"></span></div>';
 
 var host3 = document.getElementById("host3");
-host3.createShadowRoot().innerHTML = "<style>:host(#host3:not(.c3)) { background-color: green }</style><div></div><div></div><div></div><div></div>";
+host3.attachShadow({mode: 'open'}).innerHTML = "<style>:host(#host3:not(.c3)) { background-color: green }</style><div></div><div></div><div></div><div></div>";
 
 var host4 = document.getElementById("host4");
-host4.createShadowRoot().innerHTML = "<style>:host(.nomatch, .c4) { background-color: green }</style><div></div><div></div><div></div><div></div>";
+host4.attachShadow({mode: 'open'}).innerHTML = "<style>:host(:is(.nomatch, .c4)) { background-color: green }</style><div></div><div></div><div></div><div></div>";
 
 var transparent = "rgba(0, 0, 0, 0)";
 var green = "rgb(0, 128, 0)";

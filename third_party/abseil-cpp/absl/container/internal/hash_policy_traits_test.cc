@@ -22,6 +22,7 @@
 #include "gtest/gtest.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace {
 
@@ -139,4 +140,5 @@ TEST_F(Test, with_transfer) {
 
 }  // namespace
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

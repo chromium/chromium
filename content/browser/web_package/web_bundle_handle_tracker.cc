@@ -49,7 +49,7 @@ WebBundleHandleTracker::MaybeCreateWebBundleHandle(const GURL& url,
       break;
     case WebBundleSource::Type::kNetwork:
       if (reader_->HasEntry(url) &&
-          reader_->source().IsNavigationPathRestrictionSatisfied(url)) {
+          reader_->source().IsPathRestrictionSatisfied(url)) {
         return WebBundleHandle::CreateForTrackedNavigation(reader_,
                                                            frame_tree_node_id);
       }

@@ -4,7 +4,11 @@
 
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 
-bool LocationBarModelDelegate::ShouldPreventElision() const {
+bool LocationBarModelDelegate::ShouldPreventElision() {
+  return false;
+}
+
+bool LocationBarModelDelegate::ShouldTrimDisplayUrlAfterHostName() const {
   return false;
 }
 
@@ -12,9 +16,18 @@ bool LocationBarModelDelegate::ShouldDisplayURL() const {
   return true;
 }
 
+bool LocationBarModelDelegate::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return false;
+}
+
 security_state::SecurityLevel LocationBarModelDelegate::GetSecurityLevel()
     const {
   return security_state::NONE;
+}
+
+net::CertStatus LocationBarModelDelegate::GetCertStatus() const {
+  return 0;
 }
 
 std::unique_ptr<security_state::VisibleSecurityState>
@@ -35,15 +48,19 @@ bool LocationBarModelDelegate::IsOfflinePage() const {
   return false;
 }
 
-bool LocationBarModelDelegate::IsInstantNTP() const {
+bool LocationBarModelDelegate::IsNewTabPage() const {
   return false;
 }
 
-bool LocationBarModelDelegate::IsNewTabPage(const GURL& url) const {
+bool LocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
   return false;
 }
 
 bool LocationBarModelDelegate::IsHomePage(const GURL& url) const {
+  return false;
+}
+
+bool LocationBarModelDelegate::IsShowingAccuracyTip() const {
   return false;
 }
 

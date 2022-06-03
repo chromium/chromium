@@ -6,68 +6,56 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 
 namespace offline_pages {
+class TaskQueue;
 
-// Task interface for consumers of the TaskQueue. Implements a mechanism for
-// task completion.
-//
-// To create your own Task:
-// * Derive your new task from offline_pages::Task.
-// * Implement your task with as many async operations on the controlled
-//   resource as is required. (In general the smaller the task the better.)
-// * Whenever the task is terminated, call |Task::TaskComplete|. This step is
-//   mandatory to ensure |TaskQueue| can pick another task. It should be called
-//   once, but in every situation when task is exited.
-// * To schedule task for execution call |TaskQueue::AddTask|.
-//
-// If there is a chance that a task callback will come after the task is
-// destroyed, it is up to the task to actually implement mechanism to deal with
-// that, such as using a |base::WeakPtrFactory|.
+// A task which may run asynchronous steps. Its primary purpose is to implement
+// operations to be inserted into a |TaskQueue|, however, tasks can also be run
+// outside of a |TaskQueue|.
 class Task {
  public:
-  // Signature of the method to be called by a task, when its work is done.
-  typedef base::OnceCallback<void(Task*)> TaskCompletionCallback;
-
   Task();
   virtual ~Task();
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
 
-  // Entry point to the task. This is used by the queue to start the task, and
-  // first step of the task should be implemented by overloading this method.
-  // The task should define an additional method for every asynchronous step,
-  // with each step setting up the next step as a callback.
-  virtual void Run() = 0;
-
-  // Sets the callback normally used by |TaskQueue| for testing. See
-  // |SetTaskCompletionCallback| for details.
-  void SetTaskCompletionCallbackForTesting(
-      TaskCompletionCallback task_completion_callback);
+  void Execute(base::OnceClosure complete_callback);
 
  protected:
-  // Tasks must call |TaskComplete| as their last step. This will cause
-  // |TaskQueue| to schedule the task's destruction and start another task if
-  // one is available.
+  friend TaskQueue;
+  // Entry point to the task. Called by |Execute()| to perform the task.
+  // Must call |TaskComplete()| as the final step.
+  virtual void Run() = 0;
+
+  // These functions are intended to be called by the implementor of Task:
+
+  // Tasks must call |TaskComplete()| as their last step.
   void TaskComplete();
+  // Suspends task execution, and allows execution of other tasks in the queue.
+  // Afterward, either `Resume()` or `TaskComplete()` should eventually be
+  // called on this task, or it will remain alive until the owning `TaskQueue`
+  // is destroyed. Must be called on the TaskQueue's sequence.
+  void Suspend();
+  // Request continuation of task execution after a prior `Suspend()` call.
+  // `on_resume` is invoked when the task can being executing again. Resumed
+  // tasks are given priority above other tasks. Must be called on the
+  // TaskQueue's sequence.
+  void Resume(base::OnceClosure on_resume);
 
  private:
-  friend class TaskQueue;
-
-  // Allows |TaskQueue| to set the |task_completion_callback| that will be used
-  // to inform it when the task is done. If the task is run outside of the
-  // |TaskQueue| and completion callback is not set, it will also work.
-  //
-  // Note: The callback implementation is responsible for scheduling work with
-  // the appropriate task runner and not to cause side effects to the |Task|
-  // calling into |TaskComplete|.
-  void SetTaskCompletionCallback(
-      TaskCompletionCallback task_completion_callback);
-
-  // Completion callback for this task set by |SetTaskCompletionCallback|.
-  TaskCompletionCallback task_completion_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Task);
+  enum class TaskState {
+    kWaiting,
+    kRunning,
+    kSuspended,
+    kCompleted,
+  };
+  // TaskQueue outlives and owns this task. Non-null only when this task is
+  // owned by a task queue.
+  TaskQueue* task_queue_ = nullptr;
+  // Reports completion or suspension to the caller.
+  base::OnceClosure task_completion_callback_;
+  TaskState state_ = TaskState::kWaiting;
 };
 
 }  // namespace offline_pages

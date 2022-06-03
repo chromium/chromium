@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
-#define UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
+#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_
+#define UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_
 
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_plane.h"
 #include "ui/ozone/public/overlay_surface.h"
@@ -22,6 +21,10 @@ struct DrmOverlayPlane;
 class GbmOverlaySurface : public OverlaySurface {
  public:
   GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window);
+
+  GbmOverlaySurface(const GbmOverlaySurface&) = delete;
+  GbmOverlaySurface& operator=(const GbmOverlaySurface&) = delete;
+
   ~GbmOverlaySurface() override;
 
   // OverlaySurface:
@@ -45,8 +48,7 @@ class GbmOverlaySurface : public OverlaySurface {
 
   void SubmitFrame();
 
-  void OnSubmission(gfx::SwapResult result,
-                    std::unique_ptr<gfx::GpuFence> out_fence);
+  void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& presentation_feedback);
 
   const std::unique_ptr<DrmWindowProxy> window_;
@@ -57,10 +59,8 @@ class GbmOverlaySurface : public OverlaySurface {
   bool page_flip_pending_ = false;
 
   base::WeakPtrFactory<GbmOverlaySurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GbmOverlaySurface);
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_GBM_OVERLAY_SURFACE_H_
+#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_OVERLAY_SURFACE_H_

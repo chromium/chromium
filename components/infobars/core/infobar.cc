@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/infobars/core/infobar_manager.h"

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -21,7 +20,6 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-class UnguessableToken;
 }
 
 namespace media {
@@ -30,12 +28,14 @@ class AudioDebugRecordingManager;
 class AudioInputStream;
 class AudioManager;
 class AudioOutputStream;
-class AudioSourceDiverter;
 
 // Manages all audio resources.  Provides some convenience functions that avoid
 // the need to provide iterators over the existing streams.
 class MEDIA_EXPORT AudioManager {
  public:
+  AudioManager(const AudioManager&) = delete;
+  AudioManager& operator=(const AudioManager&) = delete;
+
   virtual ~AudioManager();
 
   // Construct the audio manager; only one instance is allowed.
@@ -44,7 +44,7 @@ class MEDIA_EXPORT AudioManager {
   // AudioLogFactory; as such |audio_log_factory| must outlive the AudioManager.
   //
   // The manager will use |audio_thread->GetTaskRunner()| for audio IO.
-  // On OS_MACOSX, CoreAudio requires that |audio_thread->GetTaskRunner()|
+  // On OS_MAC, CoreAudio requires that |audio_thread->GetTaskRunner()|
   // must belong to the main thread of the process, which in our case is sadly
   // the browser UI thread. Failure to execute calls on the right thread leads
   // to crashes and odd behavior. See http://crbug.com/158170.
@@ -60,14 +60,11 @@ class MEDIA_EXPORT AudioManager {
   static std::unique_ptr<AudioManager> CreateForTesting(
       std::unique_ptr<AudioThread> audio_thread);
 
-#if defined(OS_LINUX)
-  // Sets the name of the audio source as seen by external apps. Only actually
-  // used with PulseAudio as of this writing.
+  // Sets the name of the audio source as seen by external apps.
   static void SetGlobalAppName(const std::string& app_name);
 
   // Returns the app name or an empty string if it is not set.
   static const std::string& GetGlobalAppName();
-#endif
 
   // Returns the pointer to the last created instance, or NULL if not yet
   // created. This is a utility method for the code outside of media directory,
@@ -175,26 +172,10 @@ class MEDIA_EXPORT AudioManager {
   // Limits the number of streams that can be created for testing purposes.
   virtual void SetMaxStreamCountForTesting(int max_input, int max_output);
 
-  // TODO(crbug/824019): The following are temporary, as a middle-ground step
-  // necessary to resolve a chicken-and-egg problem as we migrate audio
-  // mirroring into the new AudioService. Add/RemoveDiverter() allow
-  // AudioOutputController to (de)register itself as an AudioSourceDiverter,
-  // while SetDiverterCallbacks() allows the entity that is interested in such
-  // notifications to receive them.
-  using AddDiverterCallback =
-      base::RepeatingCallback<void(const base::UnguessableToken&,
-                                   media::AudioSourceDiverter*)>;
-  using RemoveDiverterCallback =
-      base::RepeatingCallback<void(media::AudioSourceDiverter*)>;
-  virtual void SetDiverterCallbacks(AddDiverterCallback add_callback,
-                                    RemoveDiverterCallback remove_callback);
-  virtual void AddDiverter(const base::UnguessableToken& group_id,
-                           media::AudioSourceDiverter* diverter);
-  virtual void RemoveDiverter(media::AudioSourceDiverter* diverter);
-
  protected:
   FRIEND_TEST_ALL_PREFIXES(AudioManagerTest, AudioDebugRecording);
   friend class AudioDeviceInfoAccessorForTests;
+  friend class AudioManagerPowerUser;
 
   explicit AudioManager(std::unique_ptr<AudioThread> audio_thread);
 
@@ -273,11 +254,7 @@ class MEDIA_EXPORT AudioManager {
   std::unique_ptr<AudioThread> audio_thread_;
   bool shutdown_ = false;  // True after |this| has been shutdown.
 
-  AddDiverterCallback add_diverter_callback_;
-  RemoveDiverterCallback remove_diverter_callback_;
-
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AudioManager);
 };
 
 }  // namespace media

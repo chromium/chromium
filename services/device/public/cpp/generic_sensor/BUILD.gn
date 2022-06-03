@@ -29,7 +29,5 @@ source_set("sensor_configuration") {
     "platform_sensor_configuration.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

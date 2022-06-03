@@ -52,6 +52,11 @@ Polymer({
   is: 'cr-input',
 
   properties: {
+    /** @type {string|undefined} */
+    ariaDescription: {
+      type: String,
+    },
+
     ariaLabel: {
       type: String,
       value: '',
@@ -75,7 +80,13 @@ Polymer({
     errorMessage: {
       type: String,
       value: '',
-      observer: 'errorMessageChanged_',
+      observer: 'onInvalidOrErrorMessageChanged_',
+    },
+
+    /** @private */
+    displayErrorMessage_: {
+      type: String,
+      value: '',
     },
 
     /**
@@ -94,6 +105,7 @@ Polymer({
       value: false,
       notify: true,
       reflectToAttribute: true,
+      observer: 'onInvalidOrErrorMessageChanged_',
     },
 
     max: {
@@ -121,11 +133,14 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    inputmode: String,
+
     label: {
       type: String,
       value: '',
     },
 
+    /** @type {?string} */
     placeholder: {
       type: String,
       value: null,
@@ -176,7 +191,7 @@ Polymer({
   originalTabIndex_: null,
 
   /** @override */
-  attached: function() {
+  attached() {
     // Run this for the first time in attached instead of in disabledChanged_
     // since this.tabindex might not be set yet then.
     if (this.disabled) {
@@ -185,7 +200,7 @@ Polymer({
   },
 
   /** @private */
-  onTypeChanged_: function() {
+  onTypeChanged_() {
     // Check that the 'type' is one of the supported types.
     assert(SUPPORTED_INPUT_TYPES.has(this.type));
   },
@@ -200,7 +215,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getAriaLabel_: function(ariaLabel, label, placeholder) {
+  getAriaLabel_(ariaLabel, label, placeholder) {
     return ariaLabel || label || placeholder;
   },
 
@@ -209,12 +224,12 @@ Polymer({
    * @return {string}
    * @private
    */
-  getAriaInvalid_: function(invalid) {
+  getAriaInvalid_(invalid) {
     return invalid ? 'true' : 'false';
   },
 
   /** @private */
-  disabledChanged_: function(current, previous) {
+  disabledChanged_(current, previous) {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     // In case input was focused when disabled changes.
     this.focused_ = false;
@@ -226,13 +241,22 @@ Polymer({
     }
   },
 
-  /**
-   * Uses IronA11yAnnouncer to notify screen readers that an error is set.
-   * @private
-   */
-  errorMessageChanged_: function() {
-    Polymer.IronA11yAnnouncer.requestAvailability();
-    this.fire('iron-announce', {text: this.errorMessage});
+  /** @private */
+  onInvalidOrErrorMessageChanged_() {
+    this.displayErrorMessage_ = this.invalid ? this.errorMessage : '';
+
+    // On VoiceOver role="alert" is not consistently announced when its content
+    // changes. Adding and removing the |role| attribute every time there
+    // is an error, triggers VoiceOver to consistently announce.
+    const ERROR_ID = 'error';
+    const errorElement = this.$$(`#${ERROR_ID}`);
+    if (this.invalid) {
+      errorElement.setAttribute('role', 'alert');
+      this.inputElement.setAttribute('aria-errormessage', ERROR_ID);
+    } else {
+      errorElement.removeAttribute('role');
+      this.inputElement.removeAttribute('aria-errormessage');
+    }
   },
 
   /**
@@ -242,7 +266,7 @@ Polymer({
    * to it's previous value.
    * @private
    */
-  reconcileTabindex_: function() {
+  reconcileTabindex_() {
     if (this.disabled) {
       this.recordAndUnsetTabIndex_();
     } else {
@@ -256,8 +280,8 @@ Polymer({
    * would show "null" as placeholder.
    * @private
    */
-  placeholderChanged_: function() {
-    if (this.placeholder || this.placeholder == '') {
+  placeholderChanged_() {
+    if (this.placeholder || this.placeholder === '') {
       this.inputElement.setAttribute('placeholder', this.placeholder);
     } else {
       this.inputElement.removeAttribute('placeholder');
@@ -265,7 +289,7 @@ Polymer({
   },
 
   /** @private */
-  onFocus_: function() {
+  onFocus_() {
     if (!this.focusInput()) {
       return;
     }
@@ -281,8 +305,8 @@ Polymer({
    * selection issue described in onFocus_().
    * @return {boolean} Whether the <input> element was focused.
    */
-  focusInput: function() {
-    if (this.shadowRoot.activeElement == this.inputElement) {
+  focusInput() {
+    if (this.shadowRoot.activeElement === this.inputElement) {
       return false;
     }
     this.inputElement.focus();
@@ -290,7 +314,7 @@ Polymer({
   },
 
   /** @private */
-  recordAndUnsetTabIndex_: function() {
+  recordAndUnsetTabIndex_() {
     // Don't change originalTabIndex_ if it just got changed.
     if (this.originalTabIndex_ === null) {
       this.originalTabIndex_ = this.tabindex;
@@ -300,7 +324,7 @@ Polymer({
   },
 
   /** @private */
-  restoreTabIndex_: function() {
+  restoreTabIndex_() {
     this.tabindex = this.originalTabIndex_;
     this.originalTabIndex_ = null;
   },
@@ -311,7 +335,7 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onPointerDown_: function(e) {
+  onPointerDown_(e) {
     // Don't need to manipulate tabindex if cr-input is already disabled.
     if (this.disabled) {
       return;
@@ -338,7 +362,7 @@ Polymer({
    *    correctly obey non-zero tabindex ordering of the containing document.
    * @private
    */
-  onInputKeydown_: function(e) {
+  onInputKeydown_(e) {
     if (e.shiftKey && e.key === 'Tab') {
       this.focus();
     }
@@ -349,7 +373,7 @@ Polymer({
    * @param {string} oldValue
    * @private
    */
-  onValueChanged_: function(newValue, oldValue) {
+  onValueChanged_(newValue, oldValue) {
     if (!newValue && !oldValue) {
       return;
     }
@@ -365,17 +389,17 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onInputChange_: function(e) {
+  onInputChange_(e) {
     this.fire('change', {sourceEvent: e});
   },
 
   /** @private */
-  onInputFocus_: function() {
+  onInputFocus_() {
     this.focused_ = true;
   },
 
   /** @private */
-  onInputBlur_: function() {
+  onInputBlur_() {
     this.focused_ = false;
   },
 
@@ -388,7 +412,7 @@ Polymer({
    * @param {number=} start
    * @param {number=} end
    */
-  select: function(start, end) {
+  select(start, end) {
     this.focusInput();
     if (start !== undefined && end !== undefined) {
       this.inputElement.setSelectionRange(start, end);
@@ -400,9 +424,10 @@ Polymer({
   },
 
   /** @return {boolean} */
-  validate: function() {
+  validate() {
     this.invalid = !this.inputElement.checkValidity();
     return !this.invalid;
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
 })();

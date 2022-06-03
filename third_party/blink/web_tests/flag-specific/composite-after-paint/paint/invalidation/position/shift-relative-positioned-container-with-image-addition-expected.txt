@@ -5,27 +5,11 @@
       "bounds": [785, 836],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 742, 785, 94],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 92, 732, 94],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutImage IMG",
-          "rect": [58, 236, 489, 537],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutImage IMG",
-          "rect": [58, 142, 489, 537],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 742, 785, 94],
+        [8, 92, 732, 94],
+        [58, 236, 489, 537],
+        [58, 142, 489, 537]
       ]
     },
     {

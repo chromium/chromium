@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

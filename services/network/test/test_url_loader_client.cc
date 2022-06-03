@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,6 +15,15 @@ namespace network {
 
 TestURLLoaderClient::TestURLLoaderClient() = default;
 TestURLLoaderClient::~TestURLLoaderClient() = default;
+
+void TestURLLoaderClient::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  EXPECT_FALSE(has_received_response_);
+  EXPECT_FALSE(has_received_cached_metadata_);
+  EXPECT_FALSE(has_received_completion_);
+  has_received_early_hints_ = true;
+  early_hints_.push_back(std::move(early_hints));
+}
 
 void TestURLLoaderClient::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head) {

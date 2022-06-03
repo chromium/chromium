@@ -1,3 +1,3 @@
-document
-++group IsControlElement=false
-++++textbox Value.Value='Selection'
+Document
+++Group IsControlElement=false
+++++Edit Value.Value='Selection'

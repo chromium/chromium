@@ -8,17 +8,28 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector.h"
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input_connection.h"
 #include "chromecast/media/cma/backend/mixer/mixer_loopback_connection.h"
+#include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 
 namespace chromecast {
 namespace media {
+
+namespace {
+
+enum MessageTypes : int {
+  kStreamCounts = 1,
+  kPostProcessorList,
+};
+
+}  // namespace
 
 class MixerServiceReceiver::ControlConnection
     : public mixer_service::MixerSocket::Delegate {
@@ -34,6 +45,9 @@ class MixerServiceReceiver::ControlConnection
     socket_->SetDelegate(this);
   }
 
+  ControlConnection(const ControlConnection&) = delete;
+  ControlConnection& operator=(const ControlConnection&) = delete;
+
   ~ControlConnection() override = default;
 
   void OnStreamCountChanged() {
@@ -44,7 +58,7 @@ class MixerServiceReceiver::ControlConnection
     auto* counts = message.mutable_stream_count();
     counts->set_primary(receiver_->primary_stream_count_);
     counts->set_sfx(receiver_->sfx_stream_count_);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamCounts, message);
   }
 
  private:
@@ -54,19 +68,22 @@ class MixerServiceReceiver::ControlConnection
   bool HandleMetadata(const mixer_service::Generic& message) override {
     if (message.has_set_volume_limit()) {
       mixer_->SetOutputLimit(
-          mixer_service::ConvertContentType(
+          audio_service::ConvertContentType(
               message.set_volume_limit().content_type()),
           message.set_volume_limit().max_volume_multiplier());
     }
     if (message.has_set_device_muted()) {
-      mixer_->SetMuted(mixer_service::ConvertContentType(
+      mixer_->SetMuted(audio_service::ConvertContentType(
                            message.set_device_muted().content_type()),
                        message.set_device_muted().muted());
     }
     if (message.has_set_device_volume()) {
-      mixer_->SetVolume(mixer_service::ConvertContentType(
+      mixer_->SetVolume(audio_service::ConvertContentType(
                             message.set_device_volume().content_type()),
                         message.set_device_volume().volume_multiplier());
+    }
+    if (message.has_list_postprocessors()) {
+      OnListPostprocessors();
     }
     if (message.has_configure_postprocessor()) {
       mixer_->SetPostProcessorConfig(
@@ -88,15 +105,24 @@ class MixerServiceReceiver::ControlConnection
     return true;
   }
 
-  bool HandleAudioData(char* data, int size, int64_t timestamp) override {
+  bool HandleAudioData(char* data, size_t size, int64_t timestamp) override {
     return true;
   }
 
   bool HandleAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
                          char* data,
-                         int size,
+                         size_t size,
                          int64_t timestamp) override {
     return true;
+  }
+
+  void OnListPostprocessors() {
+    mixer_service::Generic message;
+    auto* postprocessor_list = message.mutable_postprocessor_list();
+    for (const auto& library_pair : PostProcessorRegistry::Get()->Libraries()) {
+      postprocessor_list->add_postprocessors(library_pair.first);
+    }
+    socket_->SendProto(kPostProcessorList, message);
   }
 
   void OnConnectionError() override {
@@ -108,8 +134,6 @@ class MixerServiceReceiver::ControlConnection
   const std::unique_ptr<mixer_service::MixerSocket> socket_;
 
   bool send_stream_count_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlConnection);
 };
 
 MixerServiceReceiver::MixerServiceReceiver(StreamMixer* mixer,

@@ -4,9 +4,10 @@
 
 #include "content/browser/renderer_host/input/touchpad_pinch_event_queue.h"
 
+#include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/latency/latency_info.h"
@@ -19,9 +20,11 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
     const blink::WebGestureEvent& pinch_event,
     blink::WebMouseWheelEvent::Phase phase,
     bool cancelable) {
-  DCHECK(pinch_event.GetType() == blink::WebInputEvent::kGesturePinchUpdate ||
-         pinch_event.GetType() == blink::WebInputEvent::kGesturePinchEnd ||
-         pinch_event.GetType() == blink::WebInputEvent::kGestureDoubleTap);
+  DCHECK(
+      pinch_event.GetType() ==
+          blink::WebInputEvent::Type::kGesturePinchUpdate ||
+      pinch_event.GetType() == blink::WebInputEvent::Type::kGesturePinchEnd ||
+      pinch_event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap);
   float delta_y = 0.0f;
   float wheel_ticks_y = 0.0f;
 
@@ -35,7 +38,8 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
   //  - a formula that's relatively easy to use from JavaScript
   // Note that 'wheel' event deltaY values have their sign inverted.  So to
   // convert a wheel deltaY back to a scale use Math.exp(-deltaY/100).
-  if (pinch_event.GetType() == blink::WebInputEvent::kGesturePinchUpdate) {
+  if (pinch_event.GetType() ==
+      blink::WebInputEvent::Type::kGesturePinchUpdate) {
     DCHECK_GT(pinch_event.data.pinch_update.scale, 0);
     delta_y = 100.0f * log(pinch_event.data.pinch_update.scale);
     wheel_ticks_y = pinch_event.data.pinch_update.scale > 1 ? 1 : -1;
@@ -46,13 +50,12 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
   // modifier set when we see trackpad pinch gestures.  Ideally we'd someday get
   // a platform 'pinch' event and send that instead.
   blink::WebMouseWheelEvent wheel_event(
-      blink::WebInputEvent::kMouseWheel,
+      blink::WebInputEvent::Type::kMouseWheel,
       pinch_event.GetModifiers() | blink::WebInputEvent::kControlKey,
       pinch_event.TimeStamp());
   wheel_event.SetPositionInWidget(pinch_event.PositionInWidget());
   wheel_event.SetPositionInScreen(pinch_event.PositionInScreen());
-  wheel_event.delta_units =
-      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+  wheel_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
   wheel_event.delta_x = 0;
   wheel_event.delta_y = delta_y;
 
@@ -61,9 +64,10 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
   wheel_event.wheel_ticks_y = wheel_ticks_y;
 
   if (cancelable)
-    wheel_event.dispatch_type = blink::WebInputEvent::kBlocking;
+    wheel_event.dispatch_type = blink::WebInputEvent::DispatchType::kBlocking;
   else
-    wheel_event.dispatch_type = blink::WebInputEvent::kEventNonBlocking;
+    wheel_event.dispatch_type =
+        blink::WebInputEvent::DispatchType::kEventNonBlocking;
 
   return wheel_event;
 }
@@ -79,13 +83,13 @@ class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
                              this);
   }
 
+  QueuedTouchpadPinchEvent(const QueuedTouchpadPinchEvent&) = delete;
+  QueuedTouchpadPinchEvent& operator=(const QueuedTouchpadPinchEvent&) = delete;
+
   ~QueuedTouchpadPinchEvent() {
     TRACE_EVENT_ASYNC_END0("input", "TouchpadPinchEventQueue::QueueEvent",
                            this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedTouchpadPinchEvent);
 };
 
 TouchpadPinchEventQueue::TouchpadPinchEventQueue(
@@ -109,7 +113,7 @@ void TouchpadPinchEventQueue::QueueEvent(
       event.latency.Terminate();
 
       last_event->CoalesceWith(event);
-      DCHECK_EQ(blink::WebInputEvent::kGesturePinchUpdate,
+      DCHECK_EQ(blink::WebInputEvent::Type::kGesturePinchUpdate,
                 last_event->event.GetType());
       TRACE_EVENT_INSTANT1("input",
                            "TouchpadPinchEventQueue::CoalescedPinchEvent",
@@ -124,32 +128,24 @@ void TouchpadPinchEventQueue::QueueEvent(
 }
 
 void TouchpadPinchEventQueue::ProcessMouseWheelAck(
-    InputEventAckSource ack_source,
-    InputEventAckState ack_result,
-    const MouseWheelEventWithLatencyInfo& ack_event) {
+    const MouseWheelEventWithLatencyInfo& ack_event,
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::ProcessMouseWheelAck");
   if (!pinch_event_awaiting_ack_)
     return;
 
-  // |ack_event.event| should be the same as the wheel_event_awaiting_ack_. If
-  // they aren't, then don't continue processing the ack. The two events can
-  // potentially be different because MouseWheelEventQueue also dispatches wheel
-  // events, and any wheel event ack that is received is sent to both
-  // *EventQueue::ProcessMouseWheelAck methods.
-  if (wheel_event_awaiting_ack_ != ack_event.event)
-    return;
-
   if (pinch_event_awaiting_ack_->event.GetType() ==
-          blink::WebInputEvent::kGesturePinchUpdate &&
+          blink::WebInputEvent::Type::kGesturePinchUpdate &&
       !first_event_prevented_.has_value())
-    first_event_prevented_ = (ack_result == INPUT_EVENT_ACK_STATE_CONSUMED);
+    first_event_prevented_ =
+        (ack_result == blink::mojom::InputEventResultState::kConsumed);
 
   pinch_event_awaiting_ack_->latency.AddNewLatencyFrom(ack_event.latency);
   client_->OnGestureEventForPinchAck(*pinch_event_awaiting_ack_, ack_source,
                                      ack_result);
 
   pinch_event_awaiting_ack_.reset();
-  wheel_event_awaiting_ack_.reset();
   TryForwardNextEventToRenderer();
 }
 
@@ -164,10 +160,11 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   pinch_queue_.pop_front();
 
   if (pinch_event_awaiting_ack_->event.GetType() ==
-      blink::WebInputEvent::kGesturePinchBegin) {
-    client_->OnGestureEventForPinchAck(*pinch_event_awaiting_ack_,
-                                       InputEventAckSource::BROWSER,
-                                       INPUT_EVENT_ACK_STATE_IGNORED);
+      blink::WebInputEvent::Type::kGesturePinchBegin) {
+    client_->OnGestureEventForPinchAck(
+        *pinch_event_awaiting_ack_,
+        blink::mojom::InputEventResultSource::kBrowser,
+        blink::mojom::InputEventResultState::kIgnored);
     pinch_event_awaiting_ack_.reset();
     TryForwardNextEventToRenderer();
     return;
@@ -178,17 +175,17 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   bool cancelable = true;
 
   if (pinch_event_awaiting_ack_->event.GetType() ==
-      blink::WebInputEvent::kGesturePinchEnd) {
+      blink::WebInputEvent::Type::kGesturePinchEnd) {
     first_event_prevented_.reset();
     phase = blink::WebMouseWheelEvent::kPhaseEnded;
     cancelable = false;
   } else if (pinch_event_awaiting_ack_->event.GetType() ==
-             blink::WebInputEvent::kGestureDoubleTap) {
+             blink::WebInputEvent::Type::kGestureDoubleTap) {
     phase = blink::WebMouseWheelEvent::kPhaseNone;
     cancelable = true;
   } else {
     DCHECK_EQ(pinch_event_awaiting_ack_->event.GetType(),
-              blink::WebInputEvent::kGesturePinchUpdate);
+              blink::WebInputEvent::Type::kGesturePinchUpdate);
     // The first pinch update event should send a synthetic wheel with phase
     // began.
     if (!first_event_prevented_.has_value()) {
@@ -201,12 +198,16 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
     }
   }
 
-  wheel_event_awaiting_ack_ = CreateSyntheticWheelFromTouchpadPinchEvent(
-      pinch_event_awaiting_ack_->event, phase, cancelable);
+  blink::WebMouseWheelEvent wheel_event_awaiting_ack =
+      CreateSyntheticWheelFromTouchpadPinchEvent(
+          pinch_event_awaiting_ack_->event, phase, cancelable);
   const MouseWheelEventWithLatencyInfo synthetic_wheel(
-      wheel_event_awaiting_ack_.value(), pinch_event_awaiting_ack_->latency);
+      wheel_event_awaiting_ack, pinch_event_awaiting_ack_->latency);
 
-  client_->SendMouseWheelEventForPinchImmediately(synthetic_wheel);
+  client_->SendMouseWheelEventForPinchImmediately(
+      synthetic_wheel,
+      base::BindOnce(&TouchpadPinchEventQueue::ProcessMouseWheelAck,
+                     base::Unretained(this)));
 }
 
 bool TouchpadPinchEventQueue::has_pending() const {

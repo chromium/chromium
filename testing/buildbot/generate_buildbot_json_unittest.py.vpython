@@ -1,0 +1,6 @@
+python_version: "2.7"
+
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py2_py3"
+  version: "version:3.7.2"
+>

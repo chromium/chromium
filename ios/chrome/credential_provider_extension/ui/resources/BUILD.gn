@@ -1,0 +1,71 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
+
+group("resources") {
+  deps = [
+    ":consent_illustration",
+    ":consent_view_controller",
+    ":empty_credentials_illustration",
+    ":info_icon",
+    ":password_hide_icon",
+    ":password_reveal_icon",
+  ]
+}
+
+imageset("consent_illustration") {
+  sources = [
+    "consent_illustration.imageset/Contents.json",
+    "consent_illustration.imageset/illustration_dark@2x.png",
+    "consent_illustration.imageset/illustration_dark@3x.png",
+    "consent_illustration.imageset/illustration_light@2x.png",
+    "consent_illustration.imageset/illustration_light@3x.png",
+  ]
+}
+
+imageset("consent_view_controller") {
+  sources = [
+    "consent_view_controller.imageset/Contents.json",
+    "consent_view_controller.imageset/promo-passwords_in_other_apps-dark@2x.png",
+    "consent_view_controller.imageset/promo-passwords_in_other_apps-dark@3x.png",
+    "consent_view_controller.imageset/promo-passwords_in_other_apps-light@2x.png",
+    "consent_view_controller.imageset/promo-passwords_in_other_apps-light@3x.png",
+  ]
+}
+
+imageset("empty_credentials_illustration") {
+  sources = [
+    "empty_credentials_illustration.imageset/Contents.json",
+    "empty_credentials_illustration.imageset/illustration_dark@2x.png",
+    "empty_credentials_illustration.imageset/illustration_dark@3x.png",
+    "empty_credentials_illustration.imageset/illustration_light@2x.png",
+    "empty_credentials_illustration.imageset/illustration_light@3x.png",
+  ]
+}
+
+imageset("password_reveal_icon") {
+  sources = [
+    "password_reveal_icon.imageset/Contents.json",
+    "password_reveal_icon.imageset/password_reveal_icon@2x.png",
+    "password_reveal_icon.imageset/password_reveal_icon@3x.png",
+  ]
+}
+
+imageset("password_hide_icon") {
+  sources = [
+    "password_hide_icon.imageset/Contents.json",
+    "password_hide_icon.imageset/password_hide_icon@2x.png",
+    "password_hide_icon.imageset/password_hide_icon@3x.png",
+  ]
+}
+
+imageset("info_icon") {
+  sources = [
+    "info_icon.imageset/Contents.json",
+    "info_icon.imageset/info_icon@2x.png",
+    "info_icon.imageset/info_icon@3x.png",
+  ]
+}

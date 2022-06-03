@@ -19,6 +19,11 @@ class CONTENT_EXPORT DesktopStreamsRegistryImpl
     : public DesktopStreamsRegistry {
  public:
   DesktopStreamsRegistryImpl();
+
+  DesktopStreamsRegistryImpl(const DesktopStreamsRegistryImpl&) = delete;
+  DesktopStreamsRegistryImpl& operator=(const DesktopStreamsRegistryImpl&) =
+      delete;
+
   ~DesktopStreamsRegistryImpl() override;
 
   // Returns the DesktopStreamRegistryImpl singleton.
@@ -57,8 +62,6 @@ class CONTENT_EXPORT DesktopStreamsRegistryImpl
   void CleanupStream(const std::string& id);
 
   StreamsMap approved_streams_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopStreamsRegistryImpl);
 };
 
 }  // namespace content

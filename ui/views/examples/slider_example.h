@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_SLIDER_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_SLIDER_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/examples/example_base.h"
 
@@ -18,6 +17,10 @@ class VIEWS_EXAMPLES_EXPORT SliderExample : public ExampleBase,
                                             public SliderListener {
  public:
   SliderExample();
+
+  SliderExample(const SliderExample&) = delete;
+  SliderExample& operator=(const SliderExample&) = delete;
+
   ~SliderExample() override;
 
   // ExampleBase:
@@ -30,10 +33,10 @@ class VIEWS_EXAMPLES_EXPORT SliderExample : public ExampleBase,
                           float old_value,
                           SliderChangeReason reason) override;
 
-  Slider* slider_ = nullptr;
-  Label* label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SliderExample);
+  Slider* slider_default_ = nullptr;
+  Slider* slider_minimal_ = nullptr;
+  Label* label_default_ = nullptr;
+  Label* label_minimal_ = nullptr;
 };
 
 }  // namespace examples

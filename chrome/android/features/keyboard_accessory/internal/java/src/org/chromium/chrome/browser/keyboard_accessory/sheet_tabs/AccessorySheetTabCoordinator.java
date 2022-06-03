@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
@@ -15,6 +13,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;

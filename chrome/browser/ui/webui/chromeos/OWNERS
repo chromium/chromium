@@ -2,8 +2,8 @@ achuith@chromium.org
 khorimoto@chromium.org
 michaelpg@chromium.org
 satorux@chromium.org
-stevenjb@chromium.org
 xiyuan@chromium.org
 
-per-file *net*=file://chromeos/network/OWNERS
+per-file *bluetooth*=file://ui/webui/resources/cr_components/chromeos/bluetooth/OWNERS
+per-file *net*=file://ui/webui/resources/cr_components/chromeos/network/OWNERS
 per-file drive_internals_ui.*=file://ui/file_manager/OWNERS

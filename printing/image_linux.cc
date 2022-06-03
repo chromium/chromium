@@ -4,6 +4,8 @@
 
 #include "printing/image.h"
 
+#include "base/notreached.h"
+
 namespace printing {
 
 bool Image::LoadMetafile(const Metafile& metafile) {

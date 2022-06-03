@@ -2,25 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":settings_ui",
-  ]
-}
-
-js_library("settings_ui") {
-  deps = [
-    "..:global_scroll_target_behavior",
-    "..:page_visibility",
-    "../prefs",
-    "../settings_main:settings_main",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/js:find_shortcut_behavior",
-  ]
+html_to_js("web_components") {
+  js_files = [ "settings_ui.ts" ]
 }

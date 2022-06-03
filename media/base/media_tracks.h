@@ -7,10 +7,8 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/media_track.h"
 
@@ -24,6 +22,10 @@ class MEDIA_EXPORT MediaTracks {
   using MediaTracksCollection = std::vector<std::unique_ptr<MediaTrack>>;
 
   MediaTracks();
+
+  MediaTracks(const MediaTracks&) = delete;
+  MediaTracks& operator=(const MediaTracks&) = delete;
+
   ~MediaTracks();
 
   // Adds a new audio track. The |bytestreamTrackId| must uniquely identify the
@@ -52,8 +54,6 @@ class MEDIA_EXPORT MediaTracks {
   MediaTracksCollection tracks_;
   std::map<StreamParser::TrackId, AudioDecoderConfig> audio_configs_;
   std::map<StreamParser::TrackId, VideoDecoderConfig> video_configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaTracks);
 };
 
 }  // namespace media

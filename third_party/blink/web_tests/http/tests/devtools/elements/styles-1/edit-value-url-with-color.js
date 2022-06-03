@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that colors are not re-formatted inside url(...) when editing property values.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="background: white">&quot;white&quot; background</div>
@@ -23,7 +23,7 @@
   var maxIndex = 11;
   var idIndex = 1;
 
-  Common.Color.detectColorFormat = function() {
+  Common.Color.detectColorFormat = Common.Settings.detectColorFormat = function() {
     return Common.Color.Format.RGB;
   };
 

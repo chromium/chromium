@@ -7,9 +7,11 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 cast_source_set("common") {
-  sources = [
-    "constants.h",
-  ]
+  sources = [ "constants.h" ]
+}
+
+cast_source_set("packet_header") {
+  sources = [ "packet_header.h" ]
 }
 
 cast_source_set("utils") {
@@ -18,11 +20,10 @@ cast_source_set("utils") {
     "message_parsing_utils.h",
   ]
 
-  public_deps = [
-    ":common",
-  ]
+  public_deps = [ ":common" ]
 
   deps = [
+    ":packet_header",
     "//base",
     "//media",
     "//net",
@@ -35,15 +36,13 @@ cast_source_set("receiver") {
     "capture_service_receiver.h",
   ]
 
-  public_deps = [
-    ":common",
-  ]
+  public_deps = [ ":common" ]
 
   deps = [
     ":utils",
     "//base",
     "//chromecast/base",
-    "//chromecast/media/audio/mixer_service:audio_socket_service",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//chromecast/net:small_message_socket",
     "//media",
     "//net",
@@ -58,6 +57,7 @@ cast_source_set("unittests") {
   ]
 
   deps = [
+    ":packet_header",
     ":receiver",
     ":utils",
     "//base",
@@ -70,9 +70,7 @@ cast_source_set("unittests") {
 }
 
 fuzzer_test("message_parsing_fuzzer") {
-  sources = [
-    "message_parsing_fuzzer.cc",
-  ]
+  sources = [ "message_parsing_fuzzer.cc" ]
   deps = [
     ":utils",
     "//base",

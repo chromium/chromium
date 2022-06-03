@@ -5,13 +5,14 @@
 #ifndef CONTENT_BROWSER_THEME_HELPER_MAC_H_
 #define CONTENT_BROWSER_THEME_HELPER_MAC_H_
 
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if __OBJC__
 @class SystemThemeObserver;
@@ -30,6 +31,9 @@ class ThemeHelperMac : public NotificationObserver {
   // if none.
   static ThemeHelperMac* GetInstance();
 
+  ThemeHelperMac(const ThemeHelperMac&) = delete;
+  ThemeHelperMac& operator=(const ThemeHelperMac&) = delete;
+
   // Duplicates a handle to the read-only copy of the system color table,
   // which can be shared to sandboxed child processes.
   base::ReadOnlySharedMemoryRegion DuplicateReadOnlyColorMapRegion();
@@ -39,8 +43,15 @@ class ThemeHelperMac : public NotificationObserver {
   ~ThemeHelperMac() override;
 
   // Looks up the blink::MacSystemColorID corresponding to the NSColor
-  // selector and stores them in the |writable_color_map_| table.
+  // selector and stores them in the |writable_color_map_| table. Looks up
+  // colors for both light and dark appearances.
   void LoadSystemColors();
+
+  // Looks up system colors for the current appearance, either a light or
+  // dark appearance and stores them in values. The values parameter is the part
+  // of writable_color_map_ where the colors for the current appearance should
+  // be stored.
+  void LoadSystemColorsForCurrentAppearance(base::span<SkColor> values);
 
   // Overridden from NotificationObserver:
   void Observe(int type,
@@ -50,7 +61,9 @@ class ThemeHelperMac : public NotificationObserver {
   // ObjC object that observes notifications from the system.
   SystemThemeObserver* theme_observer_;  // strong
 
-  // Writable and mapped array of SkColor values, indexed by MacSystemColorID.
+  // Writable and mapped array of SkColor values, indexed by MacSystemColorID
+  // for a light appearance. Colors for a dark appearance in indexed by
+  // MacSystemColorID starting at index MacSystemColorID::kCount.
   base::WritableSharedMemoryMapping writable_color_map_;
 
   // Read-only handle to the |writable_color_map_| that can be duplicated for
@@ -58,8 +71,6 @@ class ThemeHelperMac : public NotificationObserver {
   base::ReadOnlySharedMemoryRegion read_only_color_map_;
 
   NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHelperMac);
 };
 
 }  // namespace content

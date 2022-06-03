@@ -60,7 +60,9 @@ class MakeQualifiedNamesWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
         super(MakeQualifiedNamesWriter, self).__init__(None, output_dir)
         self._input_files = copy.copy(json5_file_paths)
-        assert len(json5_file_paths) <= 3, 'MakeQualifiedNamesWriter requires at most 3 in files, got %d.' % len(json5_file_paths)
+        assert len(json5_file_paths) <= 3, \
+            'MakeQualifiedNamesWriter requires at most 3 in files, got %d.' % \
+            len(json5_file_paths)
 
         # Input files are in a strict order with more optional files *first*:
         # 1) ARIA properties
@@ -75,52 +77,75 @@ class MakeQualifiedNamesWriter(json5_generator.Writer):
 
         if len(json5_file_paths) >= 2:
             tags_json5_filename = json5_file_paths.pop(0)
-            self.tags_json5_file = Json5File.load_from_files([tags_json5_filename], self.default_metadata, self.default_parameters)
+            self.tags_json5_file = Json5File.load_from_files(
+                [tags_json5_filename], self.default_metadata,
+                self.default_parameters)
         else:
             self.tags_json5_file = None
 
-        self.attrs_json5_file = Json5File.load_from_files([json5_file_paths.pop()], self.default_metadata, self.default_parameters)
+        self.attrs_json5_file = Json5File.load_from_files(
+            [json5_file_paths.pop()], self.default_metadata,
+            self.default_parameters)
 
         if self.aria_reader is not None:
-            self.attrs_json5_file.merge_from(self.aria_reader.attributes_list())
+            self.attrs_json5_file.merge_from(
+                self.aria_reader.attributes_list())
 
         self.namespace = self._metadata('namespace')
         cpp_namespace = self.namespace.lower() + '_names'
         namespace_prefix = self._metadata('namespacePrefix') or 'k'
 
         namespace_uri = self._metadata('namespaceURI')
-        use_namespace_for_attrs = self.attrs_json5_file.metadata['attrsNullNamespace'] is None
+        use_namespace_for_attrs = self.attrs_json5_file.metadata[
+            'attrsNullNamespace'] is None
 
         self._outputs = {
             (self.namespace.lower() + "_names.h"): self.generate_header,
-            (self.namespace.lower() + "_names.cc"): self.generate_implementation,
+            (self.namespace.lower() + "_names.cc"):
+            self.generate_implementation,
         }
-        qualified_header = self._relative_output_dir + self.namespace.lower() + '_names.h'
+        qualified_header = self._relative_output_dir + self.namespace.lower(
+        ) + '_names.h'
         self._template_context = {
-            'attrs': self.attrs_json5_file.name_dictionaries,
-            'cpp_namespace': cpp_namespace,
-            'export': self._metadata('export'),
-            'header_guard': self.make_header_guard(qualified_header),
-            'input_files': self._input_files,
-            'namespace': self.namespace,
-            'namespace_prefix': namespace_prefix,
-            'namespace_uri': namespace_uri,
-            'tags': self.tags_json5_file.name_dictionaries if self.tags_json5_file else [],
-            'this_include_path': qualified_header,
-            'use_namespace_for_attrs': use_namespace_for_attrs,
+            'attrs':
+            self.attrs_json5_file.name_dictionaries,
+            'cpp_namespace':
+            cpp_namespace,
+            'export':
+            self._metadata('export'),
+            'header_guard':
+            self.make_header_guard(qualified_header),
+            'input_files':
+            self._input_files,
+            'namespace':
+            self.namespace,
+            'namespace_prefix':
+            namespace_prefix,
+            'namespace_uri':
+            namespace_uri,
+            'tags':
+            self.tags_json5_file.name_dictionaries
+            if self.tags_json5_file else [],
+            'this_include_path':
+            qualified_header,
+            'use_namespace_for_attrs':
+            use_namespace_for_attrs,
         }
 
     def _metadata(self, name):
         metadata = self.attrs_json5_file.metadata[name].strip('"')
         if self.tags_json5_file:
-            assert metadata == self.tags_json5_file.metadata[name].strip('"'), 'Both files must have the same %s.' % name
+            assert metadata == self.tags_json5_file.metadata[name].strip(
+                '"'), 'Both files must have the same %s.' % name
         return metadata
 
-    @template_expander.use_jinja('templates/make_qualified_names.h.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/make_qualified_names.h.tmpl', filters=filters)
     def generate_header(self):
         return self._template_context
 
-    @template_expander.use_jinja('templates/make_qualified_names.cc.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/make_qualified_names.cc.tmpl', filters=filters)
     def generate_implementation(self):
         return self._template_context
 

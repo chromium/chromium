@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_ENUMS_H_
 #define GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_ENUMS_H_
 
+#include <stdint.h>
+
 namespace gpu {
 namespace webgpu {
 
@@ -20,6 +22,11 @@ enum class DawnReturnDataType : uint32_t {
   kRequestedDawnAdapterProperties,
   kRequestedDeviceReturnInfo,
   kNumDawnReturnDataType
+};
+
+enum MailboxFlags : uint32_t {
+  WEBGPU_MAILBOX_NONE = 0,
+  WEBGPU_MAILBOX_DISCARD = 1 << 0,
 };
 
 }  // namespace webgpu

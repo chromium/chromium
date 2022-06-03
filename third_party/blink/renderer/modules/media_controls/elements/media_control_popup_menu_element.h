@@ -25,7 +25,7 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
   bool KeepEventInNode(const Event&) const override;
   void RemovedFrom(ContainerNode&) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // When clicking the scroll bar, chrome will find its first focusable parent
   // and focus on it. In order to prevent popup menu from losing focus (which
@@ -56,6 +56,9 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
   void CloseFromKeyboard();
 
   Member<EventListener> event_listener_;
+  // |last_focused_element_| is used to return focus to the proper element
+  // within the media controls popup menu, after the user finishes interacting
+  // with the popup's scrollbar.
   Member<Element> last_focused_element_;
 };
 

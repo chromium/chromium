@@ -14,14 +14,11 @@
 namespace ash {
 
 // The type of icon the sink is associated with. These values match
-// media_router::SinkIconType.
+// media_router::SinkIconType and media_router::mojom::SinkIconType.
 enum class SinkIconType {
   kCast = 0,
   kCastAudioGroup = 1,
   kCastAudio = 2,
-  kMeeting = 3,
-  kHangout = 4,
-  kEducation = 5,
   kWiredDisplay = 6,
   kGeneric = 7,
 };
@@ -97,7 +94,7 @@ class ASH_PUBLIC_EXPORT CastConfigController {
   // registered observers will get called.
   virtual void RequestDeviceRefresh() = 0;
 
-  virtual const std::vector<ash::SinkAndRoute>& GetSinksAndRoutes() = 0;
+  virtual const std::vector<SinkAndRoute>& GetSinksAndRoutes() = 0;
 
   // Initiate a casting session to the sink identified by |sink_id|.
   virtual void CastToSink(const std::string& sink_id) = 0;

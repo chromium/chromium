@@ -5,10 +5,7 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_BLOB_TO_DISK_CACHE_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_BLOB_TO_DISK_CACHE_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/cache_storage/scoped_writable_entry.h"
@@ -16,7 +13,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+
+namespace storage {
+class QuotaManagerProxy;
+}
 
 namespace content {
 
@@ -30,7 +32,14 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   // The buffer size used for reading from blobs and writing to disk cache.
   static const int kBufferSize;
 
-  CacheStorageBlobToDiskCache();
+  CacheStorageBlobToDiskCache(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+      const blink::StorageKey& storage_key);
+
+  CacheStorageBlobToDiskCache(const CacheStorageBlobToDiskCache&) = delete;
+  CacheStorageBlobToDiskCache& operator=(const CacheStorageBlobToDiskCache&) =
+      delete;
+
   ~CacheStorageBlobToDiskCache() override;
 
   // Writes the body of |blob_remote| to |entry| with index
@@ -50,9 +59,10 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
  protected:
   // Virtual for testing.
   virtual void ReadFromBlob();
+  void DidWriteDataToEntry(int expected_bytes, int rv);
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
  private:
-  void DidWriteDataToEntry(int expected_bytes, int rv);
   void RunCallback(bool success);
 
   void OnDataPipeReadable(MojoResult result);
@@ -72,9 +82,10 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   uint64_t expected_total_size_ = 0;
   bool data_pipe_closed_ = false;
 
-  base::WeakPtrFactory<CacheStorageBlobToDiskCache> weak_ptr_factory_{this};
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+  const blink::StorageKey storage_key_;
 
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageBlobToDiskCache);
+  base::WeakPtrFactory<CacheStorageBlobToDiskCache> weak_ptr_factory_{this};
 };
 
 }  // namespace content

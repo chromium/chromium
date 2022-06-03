@@ -34,16 +34,16 @@ std::unique_ptr<AudioDecoder> AndroidMojoMediaClient::CreateAudioDecoder(
 }
 
 std::unique_ptr<CdmFactory> AndroidMojoMediaClient::CreateCdmFactory(
-    service_manager::mojom::InterfaceProvider* host_interfaces) {
-  if (!host_interfaces) {
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+  if (!frame_interfaces) {
     NOTREACHED() << "Host interfaces should be provided when using CDM with "
                  << "AndroidMojoMediaClient";
     return nullptr;
   }
 
   return std::make_unique<AndroidCdmFactory>(
-      base::Bind(&CreateProvisionFetcher, host_interfaces),
-      base::Bind(&CreateMediaDrmStorage, host_interfaces));
+      base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
+      base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
 }
 
 }  // namespace media

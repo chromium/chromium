@@ -1,5 +1,4 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
-
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +9,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/unguessable_token.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
-#include "third_party/blink/public/platform/code_cache_loader.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -24,13 +27,19 @@ namespace base {
 class WaitableEvent;
 }  // namespace base
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace blink {
 
+class CodeCacheHost;
 class WebURLRequest;
 class WebDocumentSubresourceFilter;
 
-// Helper class allowing WebWorkerFetchContextImpl to notify blink upon an
-// accept languages update. This class will be extended by WorkerNavigator.
+// Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
+// upon an accept languages update. This class will be extended by
+// WorkerNavigator.
 class AcceptLanguagesWatcher {
  public:
   virtual void NotifyUpdate() = 0;
@@ -71,12 +80,18 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // Returns a new WebURLLoaderFactory that wraps the given
   // network::mojom::URLLoaderFactory.
   virtual std::unique_ptr<WebURLLoaderFactory> WrapURLLoaderFactory(
-      mojo::ScopedMessagePipeHandle url_loader_factory_handle) = 0;
+      CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
+          url_loader_factory) = 0;
 
-  // Returns a CodeCacheLoader that fetches data from code caches. If
+  // Returns a WebCodeCacheLoader that fetches data from code caches. If
   // a nullptr is returned then data would not be fetched from the code
   // cache.
-  virtual std::unique_ptr<CodeCacheLoader> CreateCodeCacheLoader() {
+  // TODO(mythria): Currently, code_cache_host can be a nullptr when fetching
+  // cached code from worklets. For these cases we use a per-process mojo
+  // interface. Update worklets to use context specific interface and check that
+  // code_cache_host is not a nullptr.
+  virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
+      CodeCacheHost* code_cache_host) {
     return nullptr;
   }
 
@@ -99,25 +114,16 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   virtual void SetIsOnSubframe(bool) {}
   virtual bool IsOnSubframe() const { return false; }
 
-  // The URL that should be consulted for the third-party cookie blocking
-  // policy, as defined in Section 2.1.1 and 2.1.2 of
+  // Will be consulted for the third-party cookie blocking policy, as defined in
+  // Section 2.1.1 and 2.1.2 of
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site.
   // See content::URLRequest::site_for_cookies() for details.
-  virtual WebURL SiteForCookies() const = 0;
+  virtual net::SiteForCookies SiteForCookies() const = 0;
 
   // The top-frame-origin for the worker. For a dedicated worker this is the
   // top-frame origin of the page that created the worker. For a shared worker
   // or a service worker this is unset.
-  virtual base::Optional<WebSecurityOrigin> TopFrameOrigin() const = 0;
-
-  // Reports the certificate error to the browser process.
-  virtual void DidRunContentWithCertificateErrors() {}
-  virtual void DidDisplayContentWithCertificateErrors() {}
-
-  // Reports that the security origin has run active content from an insecure
-  // source.
-  virtual void DidRunInsecureContent(const WebSecurityOrigin&,
-                                     const WebURL& insecure_url) {}
+  virtual absl::optional<WebSecurityOrigin> TopFrameOrigin() const = 0;
 
   // Sets the builder object of WebDocumentSubresourceFilter on the main thread
   // which will be used in TakeSubresourceFilter() to create a
@@ -142,14 +148,29 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
     return nullptr;
   }
 
-  // Returns the current list of user prefered languages.
+  // Returns the current list of user preferred languages.
   virtual blink::WebString GetAcceptLanguages() const = 0;
 
-  // Returns mojo::PendingReceiver<blink::mojom::blink::WorkerTimingContainer>
-  // for the blink::ResourceResponse with the given |request_id|. Null if the
+  // Returns the blink::mojom::WorkerTimingContainer receiver for the
+  // blink::ResourceResponse with the given |request_id|. Null if the
   // request has not been intercepted by a service worker.
-  virtual mojo::ScopedMessagePipeHandle TakePendingWorkerTimingReceiver(
-      int request_id) = 0;
+  virtual CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
+  TakePendingWorkerTimingReceiver(int request_id) = 0;
+
+  // This flag is set to disallow all network accesses in the context. Used for
+  // offline capability detection in service workers.
+  virtual void SetIsOfflineMode(bool is_offline_mode) = 0;
+
+  // Creates a notifier used to notify loading stats for workers.
+  virtual std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+  CreateResourceLoadInfoNotifierWrapper() {
+    return std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+        /*resource_load_info_notifier=*/nullptr);
+  }
+
+  virtual bool IsDedicatedWorkerOrSharedWorkerFetchContext() const {
+    return false;
+  }
 };
 
 }  // namespace blink

@@ -1,6 +1,6 @@
 -IndexedDBBrowserTest.NegativeDBDataVersion
 -IndexedDBBrowserTest.NegativeDBSchemaVersion
--SitePerProcessBrowserTest.UnloadHandlerSubframes
--SitePerProcessBrowserTest.UnloadNestedPendingDeletion
+-All/SitePerProcessBrowserTest.UnloadHandlerSubframes/*
+-All/SitePerProcessBrowserTest.UnloadNestedPendingDeletion/*
 -TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap/1
 -TouchpadPinchBrowserTest.WheelListenerPreventingPinch/1

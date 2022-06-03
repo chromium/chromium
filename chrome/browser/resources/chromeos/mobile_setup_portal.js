@@ -31,7 +31,7 @@ cr.define('mobile', function() {
   cr.addSingletonGetter(PortalImpl);
 
   PortalImpl.prototype = {
-    initialize: function() {
+    initialize() {
       // Get network device info for which portal should be opened.
       // For LTE networks, this will also start observing network connection
       // state and raise |updatePortalReachability| messages when the portal
@@ -39,12 +39,12 @@ cr.define('mobile', function() {
       chrome.send('getDeviceInfo');
     },
 
-    updateDeviceInfo: function(deviceInfo) {
+    updateDeviceInfo(deviceInfo) {
       this.deviceInfo_ = deviceInfo;
       this.updateState_();
     },
 
-    updateNetworkState: function(networkState) {
+    updateNetworkState(networkState) {
       if (this.networkState_ == networkState)
         return;
       this.networkState_ = networkState;
@@ -55,7 +55,7 @@ cr.define('mobile', function() {
         this.updateState_();
     },
 
-    updateState_: function() {
+    updateState_() {
       if (!this.deviceInfo_ || this.networkState_ == NetworkState.UNKNOWN)
         return;
 
@@ -89,7 +89,7 @@ cr.define('mobile', function() {
      * @param {CarrierPageType} type The requested carrier page type.
      * @private
      */
-    setCarrierPage_: function(type) {
+    setCarrierPage_(type) {
       // The page is already set, nothing to do.
       if (type == this.carrierPageType_)
         return;
@@ -129,7 +129,7 @@ cr.define('mobile', function() {
      *     network's payment URL and POST request data).
      * @private
      */
-    setPortalFrameIfNeeded_: function(deviceInfo) {
+    setPortalFrameIfNeeded_(deviceInfo) {
       // The portal should be set only once.
       if (this.portalFrameSet_)
         return;
@@ -140,18 +140,18 @@ cr.define('mobile', function() {
       this.portalFrameSet_ = true;
     },
 
-    isDeviceInfoValid_: function() {
+    isDeviceInfoValid_() {
       // Device info is valid if it has mdn which doesn't contain only '0's.
       return this.deviceInfo_ && this.deviceInfo_.MDN &&
           this.deviceInfo_.MDN.match('[^0]');
     },
 
-    startSpinner_: function() {
+    startSpinner_() {
       this.stopSpinner_();
       this.spinnerInt_ = setInterval(this.drawProgress_.bind(this), 100);
     },
 
-    stopSpinner_: function() {
+    stopSpinner_() {
       if (this.spinnerInt_ != -1) {
         clearInterval(this.spinnerInt_);
         this.spinnerInt_ = -1;
@@ -161,7 +161,7 @@ cr.define('mobile', function() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     },
 
-    drawProgress_: function() {
+    drawProgress_() {
       var ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 

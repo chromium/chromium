@@ -5,8 +5,11 @@
 #include "third_party/blink/public/common/loader/mime_sniffing_url_loader.h"
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/mime_sniffer.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 
@@ -23,7 +26,7 @@ MimeSniffingURLLoader::CreateLoader(
     base::WeakPtr<MimeSniffingThrottle> throttle,
     const GURL& response_url,
     network::mojom::URLResponseHeadPtr response_head,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   mojo::PendingRemote<network::mojom::URLLoader> url_loader;
   mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -46,7 +49,7 @@ MimeSniffingURLLoader::MimeSniffingURLLoader(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::PendingRemote<network::mojom::URLLoaderClient>
         destination_url_loader_client,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : throttle_(throttle),
       destination_url_loader_client_(std::move(destination_url_loader_client)),
       response_url_(response_url),
@@ -68,6 +71,13 @@ void MimeSniffingURLLoader::Start(
   source_url_loader_.Bind(std::move(source_url_loader_remote));
   source_url_client_receiver_.Bind(std::move(source_url_client_receiver),
                                    task_runner_);
+}
+
+void MimeSniffingURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // OnReceiveEarlyHints() shouldn't be called. See the comment in
+  // OnReceiveResponse().
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::OnReceiveResponse(
@@ -150,7 +160,8 @@ void MimeSniffingURLLoader::OnComplete(
 void MimeSniffingURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const base::Optional<GURL>& new_url) {
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
   // MimeSniffingURLLoader starts handling the request after
   // OnReceivedResponse(). A redirect response is not expected.
   NOTREACHED();
@@ -209,10 +220,10 @@ void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
   DCHECK_EQ(MOJO_RESULT_OK, result);
   buffered_body_.resize(start_size + read_bytes);
   std::string new_type;
-  bool made_final_decision =
-      net::SniffMimeType(buffered_body_.data(), buffered_body_.size(),
-                         response_url_, response_head_->mime_type,
-                         net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
+  bool made_final_decision = net::SniffMimeType(
+      base::StringPiece(buffered_body_.data(), buffered_body_.size()),
+      response_url_, response_head_->mime_type,
+      net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
   response_head_->mime_type = new_type;
   response_head_->did_mime_sniff = true;
   if (made_final_decision) {
@@ -248,7 +259,7 @@ void MimeSniffingURLLoader::CompleteSniffing() {
   throttle_->ResumeWithNewResponseHead(std::move(response_head_));
   mojo::ScopedDataPipeConsumerHandle body_to_send;
   MojoResult result =
-      mojo::CreateDataPipe(nullptr, &body_producer_handle_, &body_to_send);
+      mojo::CreateDataPipe(nullptr, body_producer_handle_, body_to_send);
   if (result != MOJO_RESULT_OK) {
     Abort();
     return;

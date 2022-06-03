@@ -8,12 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/worker_thread.h"

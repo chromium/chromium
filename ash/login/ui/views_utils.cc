@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -24,6 +27,10 @@ class ContainerView : public NonAccessibleView,
   ContainerView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
+
+  ContainerView(const ContainerView&) = delete;
+  ContainerView& operator=(const ContainerView&) = delete;
+
   ~ContainerView() override = default;
 
   // views::ViewTargeterDelegate:
@@ -38,9 +45,6 @@ class ContainerView : public NonAccessibleView,
     };
     return std::any_of(children.cbegin(), children.cend(), hits_child);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
 };
 
 }  // namespace
@@ -95,17 +99,27 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
-views::Label* CreateBubbleLabel(const base::string16& message, SkColor color) {
-  views::Label* label = new views::Label(message, views::style::CONTEXT_LABEL,
-                                         views::style::STYLE_PRIMARY);
-  label->SetLineHeight(20);
+views::Label* CreateBubbleLabel(const std::u16string& message,
+                                views::View* view_defining_max_width,
+                                SkColor color,
+                                const gfx::FontList& font_list,
+                                int line_height) {
+  views::Label* label =
+      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(color);
   label->SetSubpixelRenderingEnabled(false);
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-  label->SetFontList(base_font_list.Derive(0, gfx::Font::FontStyle::NORMAL,
-                                           gfx::Font::Weight::NORMAL));
+  label->SetFontList(font_list);
+  label->SetLineHeight(line_height);
+  if (view_defining_max_width != nullptr) {
+    label->SetMultiLine(true);
+    label->SetAllowCharacterBreak(true);
+    // Make sure to set a maximum label width, otherwise text wrapping will
+    // significantly increase width and layout may not work correctly if
+    // the input string is very long.
+    label->SetMaximumWidth(view_defining_max_width->GetPreferredSize().width());
+  }
   return label;
 }
 
@@ -133,13 +147,13 @@ views::View* GetBubbleContainer(views::View* view) {
   return container;
 }
 
-gfx::Point CalculateBubblePositionLeftRightStrategy(gfx::Rect anchor,
-                                                    gfx::Size bubble,
-                                                    gfx::Rect bounds) {
+gfx::Point CalculateBubblePositionBeforeAfterStrategy(gfx::Rect anchor,
+                                                      gfx::Size bubble,
+                                                      gfx::Rect bounds) {
   gfx::Rect result(anchor.x() - bubble.width(), anchor.y(), bubble.width(),
                    bubble.height());
-  // Trying to show on the left side.
-  // If there is not enough space show on the right side.
+  // Trying to show before (on the left side in LTR).
+  // If there is not enough space show after (on the right side in LTR).
   if (result.x() < bounds.x()) {
     result.Offset(anchor.width() + result.width(), 0);
   }
@@ -147,18 +161,34 @@ gfx::Point CalculateBubblePositionLeftRightStrategy(gfx::Rect anchor,
   return result.origin();
 }
 
-gfx::Point CalculateBubblePositionRightLeftStrategy(gfx::Rect anchor,
-                                                    gfx::Size bubble,
-                                                    gfx::Rect bounds) {
+gfx::Point CalculateBubblePositionAfterBeforeStrategy(gfx::Rect anchor,
+                                                      gfx::Size bubble,
+                                                      gfx::Rect bounds) {
   gfx::Rect result(anchor.x() + anchor.width(), anchor.y(), bubble.width(),
                    bubble.height());
-  // Trying to show on the right side.
-  // If there is not enough space show on the left side.
+  // Trying to show after (on the right side in LTR).
+  // If there is not enough space show before (on the left side in LTR).
   if (result.right() > bounds.right()) {
     result.Offset(-anchor.width() - result.width(), 0);
   }
   result.AdjustToFit(bounds);
   return result.origin();
+}
+
+void ConfigureRectFocusRingCircleInkDrop(views::View* view,
+                                         views::FocusRing* focus_ring,
+                                         absl::optional<int> radius) {
+  DCHECK(view);
+  DCHECK(focus_ring);
+  focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::RectHighlightPathGenerator>());
+
+  if (radius) {
+    views::InstallFixedSizeCircleHighlightPathGenerator(view, *radius);
+  } else {
+    views::InstallCircleHighlightPathGenerator(view);
+  }
 }
 
 }  // namespace login_views_utils

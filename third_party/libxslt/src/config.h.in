@@ -199,6 +199,9 @@
 /* Define if debugging support is enabled */
 #undef WITH_DEBUGGER
 
+/* Define if profiling support is enabled */
+#undef WITH_PROFILER
+
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 

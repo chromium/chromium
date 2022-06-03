@@ -4,7 +4,7 @@
 
 #include "components/country_codes/country_codes.h"
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 #include <locale.h>
 #endif
 
@@ -16,7 +16,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #undef IN  // On Windows, windef.h defines this, which screws up "India" cases.
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 #include "base/mac/scoped_cftyperef.h"
 #endif
 
@@ -112,15 +112,11 @@ int GeoIDToCountryID(GEOID geo_id) {
 
 const char kCountryIDAtInstall[] = "countryid_at_install";
 
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
-
 int CountryStringToCountryID(const std::string& country) {
   return (country.length() == 2)
              ? CountryCharsToCountryIDWithUpdate(country[0], country[1])
              : kCountryIDUnknown;
 }
-
-#endif
 
 int GetCountryIDFromPrefs(PrefService* prefs) {
   if (!prefs)
@@ -148,7 +144,7 @@ int GetCurrentCountryID() {
   return GeoIDToCountryID(GetUserGeoID(GEOCLASS_NATION));
 }
 
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 
 int GetCurrentCountryID() {
   base::ScopedCFTypeRef<CFLocaleRef> locale(CFLocaleCopyCurrent());

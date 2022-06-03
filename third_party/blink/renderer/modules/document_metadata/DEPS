@@ -1,4 +1,3 @@
 include_rules = [
-    "+mojo/public/cpp/bindings/binding.h",
-    "+mojo/public/cpp/bindings/strong_binding.h",
+    "+components/schema_org/common",
 ]

@@ -17,6 +17,10 @@ namespace ash {
 class LoginKeyboardTestBase : public LoginTestBase {
  public:
   LoginKeyboardTestBase();
+
+  LoginKeyboardTestBase(const LoginKeyboardTestBase&) = delete;
+  LoginKeyboardTestBase& operator=(const LoginKeyboardTestBase&) = delete;
+
   ~LoginKeyboardTestBase() override;
 
   // Shows keyboard with the height of half of the window height. Asserts that
@@ -36,8 +40,6 @@ class LoginKeyboardTestBase : public LoginTestBase {
 
  private:
   std::vector<LoginUserInfo> users_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginKeyboardTestBase);
 };
 
 }  // namespace ash

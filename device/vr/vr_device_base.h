@@ -5,41 +5,41 @@
 #ifndef DEVICE_VR_VR_DEVICE_BASE_H_
 #define DEVICE_VR_VR_DEVICE_BASE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/macros.h"
+#include "build/build_config.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
-#include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/display/display.h"
+
+struct CHROME_LUID;
 
 namespace device {
 
 // Represents one of the platform's VR devices. Owned by the respective
 // VRDeviceProvider.
-// TODO(mthiesse, crbug.com/769373): Remove DEVICE_VR_EXPORT.
-class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
+class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
  public:
   explicit VRDeviceBase(mojom::XRDeviceId id);
+
+  VRDeviceBase(const VRDeviceBase&) = delete;
+  VRDeviceBase& operator=(const VRDeviceBase&) = delete;
+
   ~VRDeviceBase() override;
 
   // XRRuntime implementation
   void ListenToDeviceChanges(
       mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener> listener,
       mojom::XRRuntime::ListenToDeviceChangesCallback callback) final;
-  void SetInlinePosesEnabled(bool enable) override;
   void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
-  virtual void RequestHitTest(
-      mojom::XRRayPtr ray,
-      mojom::XREnvironmentIntegrationProvider::RequestHitTestCallback callback);
   device::mojom::XRDeviceId GetId() const;
+  device::mojom::XRDeviceDataPtr GetDeviceData() const;
 
   bool HasExclusiveSession();
 
@@ -66,22 +66,25 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
   bool IsPresenting() { return presenting_; }  // Exposed for test.
   void SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info);
   void OnVisibilityStateChanged(mojom::XRVisibilityState visibility_state);
+  void SetArBlendModeSupported(bool is_ar_blend_mode_supported);
+  void SetSupportedFeatures(
+      const std::vector<mojom::XRSessionFeature>& features);
+#if defined(OS_WIN)
+  void SetLuid(const CHROME_LUID& luid);
+#endif
 
   mojom::VRDisplayInfoPtr display_info_;
 
-  bool inline_poses_enabled_ = true;
-
  private:
-
   mojo::AssociatedRemote<mojom::XRRuntimeEventListener> listener_;
 
   bool presenting_ = false;
 
   device::mojom::XRDeviceId id_;
 
-  mojo::Receiver<mojom::XRRuntime> runtime_receiver_{this};
+  device::mojom::XRDeviceData device_data_;
 
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceBase);
+  mojo::Receiver<mojom::XRRuntime> runtime_receiver_{this};
 };
 
 }  // namespace device

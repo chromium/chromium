@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/safe_browsing/core",
+  "+components/security_state/core",
+  "+third_party/re2",
+  "+url",
+
+  # This code is shared with ios, so content/ dependencies
+  # should not be introduced.
+  "-content",
+  "-ios/web",
+]

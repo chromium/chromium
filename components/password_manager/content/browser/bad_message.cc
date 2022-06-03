@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,13 +30,13 @@ void ReceivedBadMessage(content::RenderProcessHost* host,
       content::RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
 }
 
+}  // namespace
+
 bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
-                                           const GURL& url,
+                                           const GURL& form_url,
                                            BadMessageReason reason) {
-  // Renderer-side logic should prevent any password manager usage for
-  // about:blank frames as well as data URLs.  If that's not the case, kill the
-  // renderer, as it might be exploited.
-  if (url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kDataScheme)) {
+  if (form_url.SchemeIs(url::kAboutScheme) ||
+      form_url.SchemeIs(url::kDataScheme)) {
     SYSLOG(WARNING) << "Killing renderer: illegal password access from about: "
                     << "or data: URL. Reason: " << static_cast<int>(reason);
     bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
@@ -45,7 +45,8 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->CanAccessDataForOrigin(frame->GetProcess()->GetID(), url)) {
+  if (!policy->CanAccessDataForOrigin(frame->GetProcess()->GetID(),
+                                      url::Origin::Create(form_url))) {
     SYSLOG(WARNING) << "Killing renderer: illegal password access. Reason: "
                     << static_cast<int>(reason);
     bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
@@ -55,13 +56,10 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
   return true;
 }
 
-}  // namespace
-
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const autofill::PasswordForm& password_form,
-    BadMessageReason reason) {
-  return CheckChildProcessSecurityPolicyForURL(frame, password_form.origin,
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const PasswordForm& password_form,
+                                     BadMessageReason reason) {
+  return CheckChildProcessSecurityPolicyForURL(frame, password_form.url,
                                                reason) &&
          CheckChildProcessSecurityPolicyForURL(
              frame, GURL(password_form.signon_realm), reason) &&
@@ -69,13 +67,35 @@ bool CheckChildProcessSecurityPolicy(
              frame, password_form.form_data.url, reason);
 }
 
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::PasswordForm>& forms,
-    BadMessageReason reason) {
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const std::vector<PasswordForm>& forms,
+                                     BadMessageReason reason) {
   for (const auto& form : forms) {
     if (!bad_message::CheckChildProcessSecurityPolicy(frame, form, reason))
       return false;
+  }
+  return true;
+}
+
+bool CheckChildProcessSecurityPolicy(
+    content::RenderFrameHost* frame,
+    const std::vector<autofill::FormData>& forms_data,
+    BadMessageReason reason) {
+  for (const auto& form_data : forms_data) {
+    if (!bad_message::CheckChildProcessSecurityPolicyForURL(
+            frame, form_data.url, reason)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
+  if (frame->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    bad_message::ReceivedBadMessage(
+        frame->GetProcess(), BadMessageReason::CPMD_BAD_ORIGIN_PRERENDERING);
+    return false;
   }
   return true;
 }

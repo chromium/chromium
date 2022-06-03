@@ -21,17 +21,17 @@ TouchscreenTapSuppressionController::~TouchscreenTapSuppressionController() {}
 bool TouchscreenTapSuppressionController::FilterTapEvent(
     const GestureEventWithLatencyInfo& event) {
   switch (event.event.GetType()) {
-    case WebInputEvent::kGestureTapDown:
+    case WebInputEvent::Type::kGestureTapDown:
       return ShouldSuppressTapDown();
 
-    case WebInputEvent::kGestureShowPress:
-    case WebInputEvent::kGestureLongPress:
-    case WebInputEvent::kGestureTapUnconfirmed:
-    case WebInputEvent::kGestureTapCancel:
-    case WebInputEvent::kGestureTap:
-    case WebInputEvent::kGestureDoubleTap:
-    case WebInputEvent::kGestureLongTap:
-    case WebInputEvent::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureShowPress:
+    case WebInputEvent::Type::kGestureLongPress:
+    case WebInputEvent::Type::kGestureTapUnconfirmed:
+    case WebInputEvent::Type::kGestureTapCancel:
+    case WebInputEvent::Type::kGestureTap:
+    case WebInputEvent::Type::kGestureDoubleTap:
+    case WebInputEvent::Type::kGestureLongTap:
+    case WebInputEvent::Type::kGestureTwoFingerTap:
       return ShouldSuppressTapEnd();
 
     default:

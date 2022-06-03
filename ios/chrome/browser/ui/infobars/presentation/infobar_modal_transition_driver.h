@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, InfobarModalTransition) {
 @property(nonatomic, assign, readonly) InfobarModalTransition transitionMode;
 
 // Delegate used to position the ModalInfobar.
-@property(nonatomic, assign) id<InfobarModalPositioner> modalPositioner;
+@property(nonatomic, weak) id<InfobarModalPositioner> modalPositioner;
 
 @end
 

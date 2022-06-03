@@ -37,6 +37,9 @@ class HTMLFrameSetElement final : public HTMLElement {
  public:
   explicit HTMLFrameSetElement(Document&);
 
+  // HTMLElement override
+  bool IsHTMLFrameSetElement() const override { return true; }
+
   bool HasFrameBorder() const { return frameborder_; }
   bool NoResize() const { return noresize_; }
 

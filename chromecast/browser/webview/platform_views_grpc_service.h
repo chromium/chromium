@@ -5,9 +5,7 @@
 #ifndef CHROMECAST_BROWSER_WEBVIEW_PLATFORM_VIEWS_GRPC_SERVICE_H_
 #define CHROMECAST_BROWSER_WEBVIEW_PLATFORM_VIEWS_GRPC_SERVICE_H_
 
-#include <string>
-
-#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"
@@ -15,7 +13,9 @@
 #include "third_party/grpc/src/include/grpcpp/server.h"
 
 namespace chromecast {
+
 class WebContentsProvider;
+
 // This is a service that provides a GRPC interface to create and control
 // webviews, as well as control cast apps. See the proto file for commands.
 class PlatformViewsAsyncService : public base::PlatformThread::Delegate {
@@ -24,7 +24,13 @@ class PlatformViewsAsyncService : public base::PlatformThread::Delegate {
       std::unique_ptr<webview::PlatformViewsService::AsyncService> service,
       std::unique_ptr<grpc::ServerCompletionQueue> cq,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      WebContentsProvider* web_contents_provider);
+      base::WeakPtr<WebContentsProvider> web_contents_provider,
+      bool enabled_for_dev);
+
+  PlatformViewsAsyncService(const PlatformViewsAsyncService&) = delete;
+  PlatformViewsAsyncService& operator=(const PlatformViewsAsyncService&) =
+      delete;
+
   ~PlatformViewsAsyncService() override;
 
  private:
@@ -41,9 +47,8 @@ class PlatformViewsAsyncService : public base::PlatformThread::Delegate {
   std::unique_ptr<webview::PlatformViewsService::AsyncService> service_;
 
   WebviewWindowManager window_manager_;
-  WebContentsProvider* web_contents_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformViewsAsyncService);
+  base::WeakPtr<WebContentsProvider> web_contents_provider_;
+  bool enabled_for_dev_;
 };
 
 }  // namespace chromecast

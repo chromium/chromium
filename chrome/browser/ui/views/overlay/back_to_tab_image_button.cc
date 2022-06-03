@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
@@ -15,27 +16,27 @@ namespace {
 
 const int kBackToTabImageSize = 14;
 
-constexpr SkColor kBackToTabIconColor = SK_ColorWHITE;
-
 }  // namespace
 
 namespace views {
 
-BackToTabImageButton::BackToTabImageButton(ButtonListener* listener)
-    : ImageButton(listener) {
+BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(views::kLaunchIcon, kBackToTabImageSize,
-                                 kBackToTabIconColor));
+                                 kPipWindowIconColor));
 
   // Accessibility.
-  SetFocusForPlatform();
-  const base::string16 back_to_tab_button_label(l10n_util::GetStringUTF16(
+  const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetAccessibleName(back_to_tab_button_label);
   SetTooltipText(back_to_tab_button_label);
   SetInstallFocusRingOnFocus(true);
 }
+
+BEGIN_METADATA(BackToTabImageButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

@@ -9,11 +9,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
@@ -75,12 +77,21 @@ void FakePermissionBrokerClient::CheckPathAccess(const std::string& path,
 void FakePermissionBrokerClient::OpenPath(const std::string& path,
                                           OpenPathCallback callback,
                                           ErrorCallback error_callback) {
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::MayBlock(),
-                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                 base::BindOnce(&chromeos::OpenPath, path, std::move(callback),
-                                std::move(error_callback),
-                                base::ThreadTaskRunnerHandle::Get()));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&chromeos::OpenPath, path, std::move(callback),
+                     std::move(error_callback),
+                     base::ThreadTaskRunnerHandle::Get()));
+}
+
+void FakePermissionBrokerClient::ClaimDevicePath(
+    const std::string& path,
+    uint32_t allowed_interfaces_mask,
+    int lifeline_fd,
+    OpenPathCallback callback,
+    ErrorCallback error_callback) {
+  OpenPath(path, std::move(callback), std::move(error_callback));
 }
 
 void FakePermissionBrokerClient::RequestTcpPortAccess(
@@ -135,6 +146,20 @@ bool FakePermissionBrokerClient::HasUdpHole(uint16_t port,
   return udp_hole_set_.find(rule) != udp_hole_set_.end();
 }
 
+bool FakePermissionBrokerClient::HasTcpPortForward(
+    uint16_t port,
+    const std::string& interface) {
+  auto rule = std::make_pair(port, interface);
+  return tcp_forwarding_set_.find(rule) != tcp_forwarding_set_.end();
+}
+
+bool FakePermissionBrokerClient::HasUdpPortForward(
+    uint16_t port,
+    const std::string& interface) {
+  auto rule = std::make_pair(port, interface);
+  return udp_forwarding_set_.find(rule) != udp_forwarding_set_.end();
+}
+
 void FakePermissionBrokerClient::RequestTcpPortForward(
     uint16_t in_port,
     const std::string& in_interface,
@@ -142,7 +167,10 @@ void FakePermissionBrokerClient::RequestTcpPortForward(
     uint16_t dst_port,
     int lifeline_fd,
     ResultCallback callback) {
-  std::move(callback).Run(false);
+  // TODO(matterchen): Increase logic for adding duplicate ports.
+  auto rule = std::make_pair(in_port, in_interface);
+  tcp_forwarding_set_.insert(rule);
+  std::move(callback).Run(true);
 }
 
 void FakePermissionBrokerClient::RequestUdpPortForward(
@@ -152,21 +180,27 @@ void FakePermissionBrokerClient::RequestUdpPortForward(
     uint16_t dst_port,
     int lifeline_fd,
     ResultCallback callback) {
-  std::move(callback).Run(false);
+  auto rule = std::make_pair(in_port, in_interface);
+  udp_forwarding_set_.insert(rule);
+  std::move(callback).Run(true);
 }
 
 void FakePermissionBrokerClient::ReleaseTcpPortForward(
     uint16_t in_port,
     const std::string& in_interface,
     ResultCallback callback) {
-  std::move(callback).Run(false);
+  auto rule = std::make_pair(in_port, in_interface);
+  tcp_forwarding_set_.erase(rule);
+  std::move(callback).Run(true);
 }
 
 void FakePermissionBrokerClient::ReleaseUdpPortForward(
     uint16_t in_port,
     const std::string& in_interface,
     ResultCallback callback) {
-  std::move(callback).Run(false);
+  auto rule = std::make_pair(in_port, in_interface);
+  udp_forwarding_set_.erase(rule);
+  std::move(callback).Run(true);
 }
 
 bool FakePermissionBrokerClient::RequestPortImpl(uint16_t port,

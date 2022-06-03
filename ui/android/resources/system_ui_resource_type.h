@@ -10,9 +10,7 @@ namespace ui {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.resources
 enum SystemUIResourceType {
-  OVERSCROLL_EDGE,
   OVERSCROLL_GLOW,
-  OVERSCROLL_GLOW_L,
 };
 
 }  // namespace ui

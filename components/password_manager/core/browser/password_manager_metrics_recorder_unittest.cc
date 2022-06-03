@@ -21,14 +21,12 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kTestUrl[] = "https://www.example.com/";
 constexpr ukm::SourceId kTestSourceId = 0x1234;
 
 using UkmEntry = ukm::builders::PageWithPassword;
 
-// Creates a PasswordManagerMetricsRecorder that reports metrics for kTestUrl.
 PasswordManagerMetricsRecorder CreateMetricsRecorder() {
-  return PasswordManagerMetricsRecorder(kTestSourceId, GURL(kTestUrl));
+  return PasswordManagerMetricsRecorder(kTestSourceId, nullptr);
 }
 
 }  // namespace

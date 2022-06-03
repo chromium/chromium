@@ -9,12 +9,11 @@
 #include "base/guid.h"
 
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
 #include "media/mojo/services/mojo_media_client.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
 #include "media/mojo/services/mojo_audio_decoder_service.h"
@@ -24,28 +23,24 @@
 #include "media/mojo/services/mojo_video_decoder_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 
-#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER)
-#include "base/bind_helpers.h"
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    defined(OS_WIN)
+#include "base/callback_helpers.h"
 #include "media/base/renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"
-#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER)
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/base/cdm_factory.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-#include "media/mojo/services/mojo_cdm_proxy_service.h"
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
-
 namespace media {
 
 InterfaceFactoryImpl::InterfaceFactoryImpl(
-    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-        host_interfaces,
+    mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces,
     MojoMediaClient* mojo_media_client)
-    : host_interfaces_(std::move(host_interfaces)),
+    : frame_interfaces_(std::move(frame_interfaces)),
       mojo_media_client_(mojo_media_client) {
   DVLOG(1) << __func__;
   DCHECK(mojo_media_client_);
@@ -96,27 +91,14 @@ void InterfaceFactoryImpl::CreateDefaultRenderer(
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
   auto renderer = mojo_media_client_->CreateRenderer(
-      host_interfaces_.get(), base::ThreadTaskRunnerHandle::Get(), &media_log_,
+      frame_interfaces_.get(), base::ThreadTaskRunnerHandle::Get(), &media_log_,
       audio_device_id);
   if (!renderer) {
     DLOG(ERROR) << "Renderer creation failed.";
     return;
   }
 
-  std::unique_ptr<MojoRendererService> mojo_renderer_service =
-      std::make_unique<MojoRendererService>(&cdm_service_context_,
-                                            std::move(renderer));
-
-  MojoRendererService* mojo_renderer_service_ptr = mojo_renderer_service.get();
-
-  mojo::ReceiverId receiver_id = renderer_receivers_.Add(
-      std::move(mojo_renderer_service), std::move(receiver));
-
-  // base::Unretained() is safe because the callback will be fired by
-  // |mojo_renderer_service|, which is owned by |renderer_receivers_|.
-  mojo_renderer_service_ptr->set_bad_message_cb(base::Bind(
-      base::IgnoreResult(&mojo::UniqueReceiverSet<mojom::Renderer>::Remove),
-      base::Unretained(&renderer_receivers_), receiver_id));
+  AddRenderer(std::move(renderer), std::move(receiver));
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 }
 
@@ -126,27 +108,14 @@ void InterfaceFactoryImpl::CreateCastRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {
   DVLOG(2) << __func__;
   auto renderer = mojo_media_client_->CreateCastRenderer(
-      host_interfaces_.get(), base::ThreadTaskRunnerHandle::Get(), &media_log_,
+      frame_interfaces_.get(), base::ThreadTaskRunnerHandle::Get(), &media_log_,
       overlay_plane_id);
   if (!renderer) {
     DLOG(ERROR) << "Renderer creation failed.";
     return;
   }
 
-  std::unique_ptr<MojoRendererService> mojo_renderer_service =
-      std::make_unique<MojoRendererService>(&cdm_service_context_,
-                                            std::move(renderer));
-
-  MojoRendererService* mojo_renderer_service_ptr = mojo_renderer_service.get();
-
-  mojo::ReceiverId receiver_id = renderer_receivers_.Add(
-      std::move(mojo_renderer_service), std::move(receiver));
-
-  // base::Unretained() is safe because the callback will be fired by
-  // |mojo_renderer_service|, which is owned by |renderer_receivers_|.
-  mojo_renderer_service_ptr->set_bad_message_cb(base::BindRepeating(
-      base::IgnoreResult(&mojo::UniqueReceiverSet<mojom::Renderer>::Remove),
-      base::Unretained(&renderer_receivers_), receiver_id));
+  AddRenderer(std::move(renderer), std::move(receiver));
 }
 #endif
 
@@ -169,51 +138,53 @@ void InterfaceFactoryImpl::CreateFlingingRenderer(
 }
 #endif  // defined(OS_ANDROID)
 
-void InterfaceFactoryImpl::CreateCdm(
-    const std::string& /* key_system */,
-    mojo::PendingReceiver<mojom::ContentDecryptionModule> receiver) {
+#if defined(OS_WIN)
+void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  DVLOG(2) << __func__;
+  auto renderer = mojo_media_client_->CreateMediaFoundationRenderer(
+      base::ThreadTaskRunnerHandle::Get(), frame_interfaces_.get(),
+      std::move(media_log_remote), std::move(renderer_extension_receiver));
+  if (!renderer) {
+    DLOG(ERROR) << "MediaFoundationRenderer creation failed.";
+    return;
+  }
+
+  AddRenderer(std::move(renderer), std::move(receiver));
+}
+#endif  // defined (OS_WIN)
+
+void InterfaceFactoryImpl::CreateCdm(const std::string& key_system,
+                                     const CdmConfig& cdm_config,
+                                     CreateCdmCallback callback) {
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   CdmFactory* cdm_factory = GetCdmFactory();
-  if (!cdm_factory)
-    return;
-
-  cdm_receivers_.Add(
-      std::make_unique<MojoCdmService>(cdm_factory, &cdm_service_context_),
-      std::move(receiver));
-#endif  // BUILDFLAG(ENABLE_MOJO_CDM)
-}
-
-void InterfaceFactoryImpl::CreateDecryptor(
-    int cdm_id,
-    mojo::PendingReceiver<mojom::Decryptor> receiver) {
-  DVLOG(2) << __func__;
-  auto mojo_decryptor_service =
-      MojoDecryptorService::Create(cdm_id, &cdm_service_context_);
-  if (!mojo_decryptor_service) {
-    DLOG(ERROR) << "MojoDecryptorService creation failed.";
+  if (!cdm_factory) {
+    std::move(callback).Run(mojo::NullRemote(), nullptr,
+                            "CDM Factory creation failed");
     return;
   }
 
-  decryptor_receivers_.Add(std::move(mojo_decryptor_service),
-                           std::move(receiver));
+  auto mojo_cdm_service =
+      std::make_unique<MojoCdmService>(&cdm_service_context_);
+  auto* raw_mojo_cdm_service = mojo_cdm_service.get();
+  DCHECK(!pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+  pending_mojo_cdm_services_[raw_mojo_cdm_service] =
+      std::move(mojo_cdm_service);
+  raw_mojo_cdm_service->Initialize(
+      cdm_factory, key_system, cdm_config,
+      base::BindOnce(&InterfaceFactoryImpl::OnCdmServiceInitialized,
+                     weak_ptr_factory_.GetWeakPtr(), raw_mojo_cdm_service,
+                     std::move(callback)));
+#else  // BUILDFLAG(ENABLE_MOJO_CDM)
+  std::move(callback).Run(mojo::NullRemote(), nullptr,
+                          "Mojo CDM not supported");
+#endif
 }
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-void InterfaceFactoryImpl::CreateCdmProxy(
-    const base::Token& cdm_guid,
-    mojo::PendingReceiver<mojom::CdmProxy> receiver) {
-  DVLOG(2) << __func__;
-  auto cdm_proxy = mojo_media_client_->CreateCdmProxy(cdm_guid);
-  if (!cdm_proxy) {
-    DLOG(ERROR) << "CdmProxy creation failed.";
-    return;
-  }
-
-  cdm_proxy_receivers_.Add(std::make_unique<MojoCdmProxyService>(
-                               std::move(cdm_proxy), &cdm_service_context_),
-                           std::move(receiver));
-}
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 void InterfaceFactoryImpl::OnDestroyPending(base::OnceClosure destroy_cb) {
   DVLOG(1) << __func__;
@@ -244,11 +215,6 @@ bool InterfaceFactoryImpl::IsEmpty() {
     return false;
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  if (!cdm_proxy_receivers_.empty())
-    return false;
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
-
   if (!decryptor_receivers_.empty())
     return false;
 
@@ -278,10 +244,6 @@ void InterfaceFactoryImpl::SetReceiverDisconnectHandler() {
   cdm_receivers_.set_disconnect_handler(disconnect_cb);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  cdm_proxy_receivers_.set_disconnect_handler(disconnect_cb);
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
-
   decryptor_receivers_.set_disconnect_handler(disconnect_cb);
 }
 
@@ -291,14 +253,52 @@ void InterfaceFactoryImpl::OnReceiverDisconnect() {
     std::move(destroy_cb_).Run();
 }
 
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    defined(OS_WIN)
+void InterfaceFactoryImpl::AddRenderer(
+    std::unique_ptr<media::Renderer> renderer,
+    mojo::PendingReceiver<mojom::Renderer> receiver) {
+  auto mojo_renderer_service = std::make_unique<MojoRendererService>(
+      &cdm_service_context_, std::move(renderer));
+  renderer_receivers_.Add(std::move(mojo_renderer_service),
+                          std::move(receiver));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 CdmFactory* InterfaceFactoryImpl::GetCdmFactory() {
   if (!cdm_factory_) {
-    cdm_factory_ = mojo_media_client_->CreateCdmFactory(host_interfaces_.get());
+    cdm_factory_ =
+        mojo_media_client_->CreateCdmFactory(frame_interfaces_.get());
     LOG_IF(ERROR, !cdm_factory_) << "CdmFactory not available.";
   }
   return cdm_factory_.get();
 }
+
+void InterfaceFactoryImpl::OnCdmServiceInitialized(
+    MojoCdmService* raw_mojo_cdm_service,
+    CreateCdmCallback callback,
+    mojom::CdmContextPtr cdm_context,
+    const std::string& error_message) {
+  DCHECK(raw_mojo_cdm_service);
+
+  // Remove pending MojoCdmService from the mapping in all cases.
+  DCHECK(pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+  auto mojo_cdm_service =
+      std::move(pending_mojo_cdm_services_[raw_mojo_cdm_service]);
+  pending_mojo_cdm_services_.erase(raw_mojo_cdm_service);
+
+  if (!cdm_context) {
+    std::move(callback).Run(mojo::NullRemote(), nullptr, error_message);
+    return;
+  }
+
+  mojo::PendingRemote<mojom::ContentDecryptionModule> remote;
+  cdm_receivers_.Add(std::move(mojo_cdm_service),
+                     remote.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(remote), std::move(cdm_context), "");
+}
+
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
 }  // namespace media

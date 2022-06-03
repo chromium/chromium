@@ -6,13 +6,12 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
 
 android_library("module_installer_java") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/components/module_installer/builder/Module.java",
     "java/src/org/chromium/components/module_installer/builder/ModuleDescriptor.java",
     "java/src/org/chromium/components/module_installer/builder/ModuleEngine.java",
     "java/src/org/chromium/components/module_installer/engine/ApkEngine.java",
     "java/src/org/chromium/components/module_installer/engine/EngineFactory.java",
-    "java/src/org/chromium/components/module_installer/engine/FakeEngine.java",
     "java/src/org/chromium/components/module_installer/engine/InstallEngine.java",
     "java/src/org/chromium/components/module_installer/engine/InstallListener.java",
     "java/src/org/chromium/components/module_installer/engine/SplitCompatEngine.java",
@@ -25,6 +24,7 @@ android_library("module_installer_java") {
     "java/src/org/chromium/components/module_installer/observer/ActivityObserver.java",
     "java/src/org/chromium/components/module_installer/observer/ActivityObserverFacade.java",
     "java/src/org/chromium/components/module_installer/observer/InstallerObserver.java",
+    "java/src/org/chromium/components/module_installer/util/ActivityObserverUtil.java",
     "java/src/org/chromium/components/module_installer/util/CrashKeyRecorder.java",
     "java/src/org/chromium/components/module_installer/util/ModuleUtil.java",
     "java/src/org/chromium/components/module_installer/util/SplitCompatInitializer.java",
@@ -33,16 +33,16 @@ android_library("module_installer_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/crash/android:java",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 junit_binary("module_installer_junit_tests") {
-  java_files = [
+  sources = [
     "junit/src/org/chromium/components/module_installer/builder/ModuleEngineTest.java",
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
     "junit/src/org/chromium/components/module_installer/engine/ApkEngineTest.java",
@@ -58,16 +58,18 @@ junit_binary("module_installer_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//third_party/android_deps:com_google_android_play_core_java",
+    "//third_party/hamcrest:hamcrest_java",
   ]
 }
 
 java_library("module_interface_java") {
   supports_android = true
-  java_files = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterface.java" ]
+  sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterface.java" ]
 }
 
 java_annotation_processor("module_interface_processor") {
-  java_files = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
+  sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
   main_class = "org.chromium.components.module_installer.builder.ModuleInterfaceProcessor"
   annotation_processor_deps =
       [ "//third_party/android_deps:auto_service_processor" ]
@@ -81,9 +83,7 @@ java_annotation_processor("module_interface_processor") {
 }
 
 source_set("native") {
-  sources = [
-    "module.cc",
-  ]
+  sources = [ "module.cc" ]
   deps = [
     ":jni_headers",
     "//base",

@@ -1,3 +1,3 @@
-CONSOLE WARNING: line 15: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
+CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
 This test ensures WebKit does not crash when replacing contents in a document whose the only content is a nested iframes.
 PASS.

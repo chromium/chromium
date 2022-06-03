@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getInstance, MarginsType, NativeLayer, PluginProxy, ScalingType} from 'chrome://print/print_preview.js';
+import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {PDFPluginStub} from 'chrome://test/print_preview/plugin_stub.js';
-import {getCddTemplate, getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
+
+// <if expr="chromeos or lacros">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
+
 
 window.restore_state_test = {};
 restore_state_test.suiteName = 'RestoreStateTest';
@@ -27,8 +33,11 @@ suite(restore_state_test.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayer.setInstance(nativeLayer);
-    PolymerTest.clearBody();
+    NativeLayerImpl.setInstance(nativeLayer);
+    // <if expr="chromeos or lacros">
+    setNativeLayerCrosInstance();
+    // </if>
+    document.body.innerHTML = '';
   });
 
   /**
@@ -71,116 +80,118 @@ suite(restore_state_test.suiteName, function() {
   }
 
   /**
+   * Performs initialization and verifies settings.
    * @param {!SerializedSettings} stickySettings
-   * @return {!Promise} Promise that resolves when initialization is done and
-   *     settings have been verified.
    */
-  function testInitializeWithStickySettings(stickySettings) {
+  async function testInitializeWithStickySettings(stickySettings) {
     initialSettings.serializedAppStateStr = JSON.stringify(stickySettings);
 
     nativeLayer.setInitialSettings(initialSettings);
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplateWithAdvancedSettings(2, initialSettings.printerName));
-    const pluginProxy = new PDFPluginStub();
-    PluginProxy.setInstance(pluginProxy);
+    const pluginProxy = new TestPluginProxy();
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea = page.$.previewArea;
 
-    return nativeLayer.whenCalled('getInitialSettings')
-        .then(function() {
-          return nativeLayer.whenCalled('getPrinterCapabilities');
-        })
-        .then(function() {
-          verifyStickySettingsApplied(stickySettings);
-        });
+    await Promise.all([
+      nativeLayer.whenCalled('getInitialSettings'),
+      nativeLayer.whenCalled('getPrinterCapabilities')
+    ]);
+    verifyStickySettingsApplied(stickySettings);
   }
 
   /**
    * Tests state restoration with all boolean settings set to true, scaling =
    * 90, dpi = 100, custom square paper, and custom margins.
    */
-  test(assert(restore_state_test.TestNames.RestoreTrueValues), function() {
-    const stickySettings = {
-      version: 2,
-      recentDestinations: [],
-      dpi: {horizontal_dpi: 100, vertical_dpi: 100},
-      mediaSize: {
-        name: 'CUSTOM_SQUARE',
-        width_microns: 215900,
-        height_microns: 215900,
-        custom_display_name: 'CUSTOM_SQUARE'
-      },
-      customMargins: {top: 74, right: 74, bottom: 74, left: 74},
-      vendorOptions: {
-        paperType: 1,
-        printArea: 6,
-      },
-      marginsType: 3, /* custom */
-      scaling: '90',
-      scalingType: ScalingType.CUSTOM,
-      scalingTypePdf: ScalingType.FIT_TO_PAGE,
-      isHeaderFooterEnabled: true,
-      isCssBackgroundEnabled: true,
-      isCollateEnabled: true,
-      isDuplexEnabled: true,
-      isDuplexShortEdge: true,
-      isLandscapeEnabled: true,
-      isColorEnabled: true,
-    };
-    if (isChromeOS) {
-      stickySettings.pin = true;
-      stickySettings.pinValue = '0000';
-    }
-    return testInitializeWithStickySettings(stickySettings);
-  });
+  test(
+      assert(restore_state_test.TestNames.RestoreTrueValues), async function() {
+        const stickySettings = {
+          version: 2,
+          recentDestinations: [],
+          dpi: {horizontal_dpi: 100, vertical_dpi: 100},
+          mediaSize: {
+            name: 'CUSTOM',
+            width_microns: 215900,
+            height_microns: 215900,
+            custom_display_name: 'CUSTOM_SQUARE'
+          },
+          customMargins: {top: 74, right: 74, bottom: 74, left: 74},
+          vendorOptions: {
+            paperType: 1,
+            printArea: 6,
+          },
+          marginsType: 3, /* custom */
+          scaling: '90',
+          scalingType: ScalingType.CUSTOM,
+          scalingTypePdf: ScalingType.FIT_TO_PAGE,
+          isHeaderFooterEnabled: true,
+          isCssBackgroundEnabled: true,
+          isCollateEnabled: true,
+          isDuplexEnabled: true,
+          isDuplexShortEdge: true,
+          isLandscapeEnabled: true,
+          isColorEnabled: true,
+        };
+        if (isChromeOS || isLacros) {
+          stickySettings.pin = true;
+          stickySettings.pinValue = '0000';
+        }
+        await testInitializeWithStickySettings(stickySettings);
+      });
 
   /**
    * Tests state restoration with all boolean settings set to false, scaling =
    * 120, dpi = 200, letter paper and default margins.
    */
-  test(assert(restore_state_test.TestNames.RestoreFalseValues), function() {
-    const stickySettings = {
-      version: 2,
-      recentDestinations: [],
-      dpi: {horizontal_dpi: 200, vertical_dpi: 200},
-      mediaSize: {
-        name: 'NA_LETTER',
-        width_microns: 215900,
-        height_microns: 279400,
-        is_default: true,
-        custom_display_name: 'Letter'
-      },
-      customMargins: {},
-      vendorOptions: {
-        paperType: 0,
-        printArea: 4,
-      },
-      marginsType: 0, /* default */
-      scaling: '120',
-      scalingType: ScalingType.DEFAULT,
-      scalingTypePdf: ScalingType.DEFAULT,
-      isHeaderFooterEnabled: false,
-      isCssBackgroundEnabled: false,
-      isCollateEnabled: false,
-      isDuplexEnabled: false,
-      isDuplexShortEdge: false,
-      isLandscapeEnabled: false,
-      isColorEnabled: false,
-    };
-    if (isChromeOS) {
-      stickySettings.pin = false;
-      stickySettings.pinValue = '';
-    }
-    return testInitializeWithStickySettings(stickySettings);
-  });
+  test(
+      assert(restore_state_test.TestNames.RestoreFalseValues),
+      async function() {
+        const stickySettings = {
+          version: 2,
+          recentDestinations: [],
+          dpi: {horizontal_dpi: 200, vertical_dpi: 200},
+          mediaSize: {
+            name: 'NA_LETTER',
+            width_microns: 215900,
+            height_microns: 279400,
+            is_default: true,
+            custom_display_name: 'Letter'
+          },
+          customMargins: {},
+          vendorOptions: {
+            paperType: 0,
+            printArea: 4,
+          },
+          marginsType: 0, /* default */
+          scaling: '120',
+          scalingType: ScalingType.DEFAULT,
+          scalingTypePdf: ScalingType.DEFAULT,
+          isHeaderFooterEnabled: false,
+          isCssBackgroundEnabled: false,
+          isCollateEnabled: false,
+          isDuplexEnabled: false,
+          isDuplexShortEdge: false,
+          isLandscapeEnabled: false,
+          isColorEnabled: false,
+        };
+        if (isChromeOS || isLacros) {
+          stickySettings.pin = false;
+          stickySettings.pinValue = '';
+        }
+        await testInitializeWithStickySettings(stickySettings);
+      });
 
   /**
    * Tests that setting the settings values results in the correct serialized
    * values being sent to the native layer.
    */
-  test(assert(restore_state_test.TestNames.SaveValues), function() {
+  test(assert(restore_state_test.TestNames.SaveValues), async function() {
     /**
      * Array of section names, setting names, keys for serialized state, and
      * values for testing.
@@ -213,7 +224,7 @@ suite(restore_state_test.suiteName, function() {
         settingName: 'mediaSize',
         key: 'mediaSize',
         value: {
-          name: 'CUSTOM_SQUARE',
+          name: 'CUSTOM',
           width_microns: 215900,
           height_microns: 215900,
           custom_display_name: 'CUSTOM_SQUARE',
@@ -283,7 +294,7 @@ suite(restore_state_test.suiteName, function() {
         },
       }
     ];
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       testData.push(
           {
             section: 'print-preview-pin-settings',
@@ -301,44 +312,42 @@ suite(restore_state_test.suiteName, function() {
 
     // Setup
     nativeLayer.setInitialSettings(initialSettings);
-    nativeLayer.setLocalDestinationCapabilities(
-        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
 
+    const pluginProxy = new TestPluginProxy();
+    PluginProxyImpl.setInstance(pluginProxy);
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
-    const previewArea = page.$$('print-preview-preview-area');
-    previewArea.plugin_ =
-        new PDFPluginStub(previewArea.onPluginLoad_.bind(previewArea));
+    const previewArea =
+        page.shadowRoot.querySelector('print-preview-preview-area');
 
-    return nativeLayer.whenCalled('getInitialSettings')
-        .then(function() {
-          return nativeLayer.whenCalled('getPrinterCapabilities');
-        })
-        .then(function() {
-          // Set all the settings sections.
-          testData.forEach((testValue, index) => {
-            if (index == testData.length - 1) {
-              nativeLayer.resetResolver('saveAppState');
-            }
-            // Since advanced options settings doesn't set this setting in
-            // production, just use the model instead of creating the dialog.
-            const element = testValue.settingName === 'vendorItems' ?
-                getInstance() :
-                page.$$('print-preview-sidebar').$$(testValue.section);
-            element.setSetting(testValue.settingName, testValue.value);
-          });
-          // Wait on only the last call to saveAppState, which should
-          // contain all the update settings values.
-          return nativeLayer.whenCalled('saveAppState');
-        })
-        .then(function(serializedSettingsStr) {
-          const serializedSettings = JSON.parse(serializedSettingsStr);
-          // Validate serialized state.
-          testData.forEach(testValue => {
-            expectEquals(
-                JSON.stringify(testValue.value),
-                JSON.stringify(serializedSettings[testValue.key]));
-          });
-        });
+    await Promise.all([
+      nativeLayer.whenCalled('getInitialSettings'),
+      nativeLayer.whenCalled('getPrinterCapabilities')
+    ]);
+    // Set all the settings sections.
+    testData.forEach((testValue, index) => {
+      if (index === testData.length - 1) {
+        nativeLayer.resetResolver('saveAppState');
+      }
+      // Since advanced options settings doesn't set this setting in
+      // production, just use the model instead of creating the dialog.
+      const element = testValue.settingName === 'vendorItems' ?
+          getInstance() :
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector(testValue.section);
+      element.setSetting(testValue.settingName, testValue.value);
+    });
+    // Wait on only the last call to saveAppState, which should
+    // contain all the update settings values.
+    const serializedSettingsStr = await nativeLayer.whenCalled('saveAppState');
+    const serializedSettings = JSON.parse(serializedSettingsStr);
+    // Validate serialized state.
+    testData.forEach(testValue => {
+      expectEquals(
+          JSON.stringify(testValue.value),
+          JSON.stringify(serializedSettings[testValue.key]));
+    });
   });
 });

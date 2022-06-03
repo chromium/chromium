@@ -63,13 +63,20 @@ INSTANTIATE_TEST_SUITE_P(
                        "shill_l2tpipsec_clientcert.json"),
         std::make_pair("valid_openvpn_with_cert_pems.onc",
                        "shill_openvpn.json"),
+        std::make_pair("valid_wireguard.onc", "shill_wireguard.json"),
         std::make_pair("openvpn_clientcert_with_cert_pems.onc",
                        "shill_openvpn_clientcert.json"),
         std::make_pair("openvpn_clientcert_pkcs11.onc",
                        "shill_openvpn_clientcert_pkcs11.json"),
+        std::make_pair("openvpn_compression_algorithm_lzo.onc",
+                       "shill_openvpn_compression_algorithm_lzo.json"),
+        std::make_pair("openvpn_compression_algorithm_none.onc",
+                       "shill_openvpn_compression_algorithm_none.json"),
         std::make_pair("vpn_ipsec_clientcert_pkcs11.onc",
                        "shill_vpn_ipsec_clientcert_pkcs11.json"),
         std::make_pair("cellular.onc", "shill_cellular.json"),
+        std::make_pair("cellular.per_network_roaming.onc",
+                       "shill_cellular.per_network_roaming.json"),
         // WiMAX is deprecated, but we need to ensure older ONC configurations
         // are handled gracefully.
         std::make_pair("wimax.onc", "shill_wimax.json"),
@@ -124,12 +131,17 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_wep_8021x_clientcert.onc"),
         std::make_pair("shill_output_l2tpipsec.json",
                        "translation_of_shill_l2tpipsec.onc"),
+        std::make_pair("shill_output_wireguard.json",
+                       "translation_of_shill_wireguard.onc"),
         std::make_pair("shill_output_openvpn.json",
                        "translation_of_shill_openvpn.onc"),
         std::make_pair("shill_output_openvpn_with_errors.json",
                        "translation_of_shill_openvpn_with_errors.onc"),
         std::make_pair("shill_output_openvpn_clientcert.json",
                        "translation_of_shill_openvpn_clientcert.onc"),
+        std::make_pair(
+            "shill_output_openvpn_compression_algorithm_lz4_v2.json",
+            "translation_of_shill_openvpn_compression_algorithm_lz4_v2.onc"),
         std::make_pair("shill_output_vpn_ipsec.json",
                        "translation_of_shill_vpn_ipsec.onc"),
         std::make_pair("shill_tether.json", "tether.onc"),
@@ -145,14 +157,23 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_proxy_pac.onc"),
         std::make_pair("shill_cellular_with_state.json",
                        "translation_of_shill_cellular_with_state.onc"),
+        std::make_pair(
+            "shill_cellular_with_state.per_network_roaming.json",
+            "translation_of_shill_cellular_with_state.per_network_roaming.onc"),
         std::make_pair("shill_output_third_party_vpn.json",
-                       "third_party_vpn.onc"),
+                       "translation_of_shill_output_third_party_vpn.onc"),
         std::make_pair(
             "shill_wifi_eap_ttls_with_password_variable.json",
             "translation_of_shill_wifi_eap_ttls_with_password_variable.onc"),
         std::make_pair(
             "shill_wifi_eap_ttls_with_hardcoded_password.json",
-            "translation_of_shill_wifi_eap_ttls_with_hardcoded_password.onc")));
+            "translation_of_shill_wifi_eap_ttls_with_hardcoded_password.onc"),
+        std::make_pair("shill_cellular_with_roaming_required_and_active.json",
+                       "translation_of_shill_cellular_with_roaming_required_"
+                       "and_active.onc"),
+        std::make_pair("shill_cellular_with_roaming_required_and_inactive.json",
+                       "translation_of_shill_cellular_with_roaming_required_"
+                       "and_inactive.onc")));
 
 }  // namespace onc
 }  // namespace chromeos

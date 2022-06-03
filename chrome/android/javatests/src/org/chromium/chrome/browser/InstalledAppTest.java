@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -17,10 +18,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Test suite for navigator.getInstalledRelatedApps functionality. */
@@ -31,8 +34,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 })
 public class InstalledAppTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TEST_FILE = "/content/test/data/android/installedapp.html";
 
@@ -77,12 +79,12 @@ public class InstalledAppTest {
 
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new InstalledAppUpdateWaiter();
-        mTab.addObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
     }
 
     @After
     public void tearDown() {
-        mTab.removeObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         mTestServer.stopAndDestroyServer();
     }
 

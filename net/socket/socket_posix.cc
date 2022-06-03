@@ -7,14 +7,16 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -178,7 +180,7 @@ int SocketPosix::Accept(std::unique_ptr<SocketPosix>* socket,
   if (rv != ERR_IO_PENDING)
     return rv;
 
-  if (!base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+  if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           socket_fd_, true, base::MessagePumpForIO::WATCH_READ,
           &accept_socket_watcher_, this)) {
     PLOG(ERROR) << "WatchFileDescriptor failed on accept";
@@ -203,7 +205,7 @@ int SocketPosix::Connect(const SockaddrStorage& address,
   if (rv != ERR_IO_PENDING)
     return rv;
 
-  if (!base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+  if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           socket_fd_, true, base::MessagePumpForIO::WATCH_WRITE,
           &write_socket_watcher_, this)) {
     PLOG(ERROR) << "WatchFileDescriptor failed on connect";
@@ -299,7 +301,7 @@ int SocketPosix::ReadIfReady(IOBuffer* buf,
   if (rv != ERR_IO_PENDING)
     return rv;
 
-  if (!base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+  if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           socket_fd_, true, base::MessagePumpForIO::WATCH_READ,
           &read_socket_watcher_, this)) {
     PLOG(ERROR) << "WatchFileDescriptor failed on read";
@@ -349,7 +351,7 @@ int SocketPosix::WaitForWrite(IOBuffer* buf,
   DCHECK(!callback.is_null());
   DCHECK_LT(0, buf_len);
 
-  if (!base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+  if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           socket_fd_, true, base::MessagePumpForIO::WATCH_WRITE,
           &write_socket_watcher_, this)) {
     PLOG(ERROR) << "WatchFileDescriptor failed on write";
@@ -384,7 +386,7 @@ int SocketPosix::GetPeerAddress(SockaddrStorage* address) const {
 
 void SocketPosix::SetPeerAddress(const SockaddrStorage& address) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // |peer_address_| will be non-NULL if Connect() has been called. Unless
+  // |peer_address_| will be non-nullptr if Connect() has been called. Unless
   // Close() is called to reset the internal state, a second call to Connect()
   // is not allowed.
   // Please note that we don't allow a second Connect() even if the previous
@@ -392,12 +394,12 @@ void SocketPosix::SetPeerAddress(const SockaddrStorage& address) {
   // connection attempt failed results in unspecified behavior according to
   // POSIX.
   DCHECK(!peer_address_);
-  peer_address_.reset(new SockaddrStorage(address));
+  peer_address_ = std::make_unique<SockaddrStorage>(address);
 }
 
 bool SocketPosix::HasPeerAddress() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return peer_address_ != NULL;
+  return peer_address_ != nullptr;
 }
 
 void SocketPosix::Close() {
@@ -455,7 +457,7 @@ void SocketPosix::AcceptCompleted() {
 
   bool ok = accept_socket_watcher_.StopWatchingFileDescriptor();
   DCHECK(ok);
-  accept_socket_ = NULL;
+  accept_socket_ = nullptr;
   std::move(accept_callback_).Run(rv);
 }
 
@@ -517,7 +519,7 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // Disable SIGPIPE for this write. Although Chromium globally disables
   // SIGPIPE, the net stack may be used in other consumers which do not do
   // this. MSG_NOSIGNAL is a Linux-only API. On OS X, this is a setsockopt on
@@ -560,7 +562,7 @@ void SocketPosix::StopWatchingAndCleanUp(bool close_socket) {
   }
 
   if (!accept_callback_.is_null()) {
-    accept_socket_ = NULL;
+    accept_socket_ = nullptr;
     accept_callback_.Reset();
   }
 

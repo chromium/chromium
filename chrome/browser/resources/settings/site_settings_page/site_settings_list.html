@@ -1,0 +1,17 @@
+    <style include="settings-shared">
+      cr-link-row {
+        --cr-icon-button-margin-start: 20px;
+      }
+
+      /* Remove border-top added by .hr for the 1st cr-link-row. */
+      cr-link-row:first-of-type {
+        border-top: none;
+      }
+    </style>
+    <template is="dom-repeat" items="[[categoryList]]">
+      <cr-link-row class="hr two-line" data-route$="[[item.route]]"
+          id="[[item.id]]" label="[[i18n(item.label)]]"
+          on-click="onClick_" start-icon="[[item.icon]]"
+          sub-label="[[item.subLabel]]"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    </template>

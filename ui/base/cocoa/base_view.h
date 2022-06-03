@@ -7,17 +7,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 #import "ui/base/cocoa/tracking_area.h"
-#include "ui/base/ui_base_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 // A view that provides common functionality that many views will need:
 // - Automatic registration for mouse-moved events.
 // - Funneling of mouse and key events to two methods
 // - Coordinate conversion utilities
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface BaseView : NSView {
  @public
   enum EventHandled {
@@ -58,7 +57,7 @@ UI_BASE_EXPORT
 // The name is |kViewDidBecomeFirstResponder|, the object is the view, and the
 // NSSelectionDirection is wrapped in an NSNumber under the key
 // |kSelectionDirection|.
-UI_BASE_EXPORT extern NSString* kViewDidBecomeFirstResponder;
-UI_BASE_EXPORT extern NSString* kSelectionDirection;
+COMPONENT_EXPORT(UI_BASE) extern NSString* kViewDidBecomeFirstResponder;
+COMPONENT_EXPORT(UI_BASE) extern NSString* kSelectionDirection;
 
 #endif  // UI_BASE_COCOA_BASE_VIEW_H_

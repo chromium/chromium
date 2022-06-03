@@ -4,7 +4,7 @@ include_rules = [
   "+chrome/browser/ui/cocoa",
   "+chrome/grit/generated_resources.h",
   "+chrome/installer/launcher_support",
-  "+components/crash/content/app",
+  "+components/crash/core/app",
   "+components/remote_cocoa",
   "+content/public/browser",
   "+mojo/core/embedder",

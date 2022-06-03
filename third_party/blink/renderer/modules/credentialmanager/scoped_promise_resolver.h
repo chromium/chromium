@@ -18,6 +18,9 @@ class ScopedPromiseResolver {
  public:
   explicit ScopedPromiseResolver(ScriptPromiseResolver* resolver);
 
+  ScopedPromiseResolver(const ScopedPromiseResolver&) = delete;
+  ScopedPromiseResolver& operator=(const ScopedPromiseResolver&) = delete;
+
   ~ScopedPromiseResolver();
 
   // Releases the owned |resolver_|. This is to be called by the Mojo response
@@ -32,8 +35,6 @@ class ScopedPromiseResolver {
   void OnConnectionError();
 
   Persistent<ScriptPromiseResolver> resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPromiseResolver);
 };
 
 }  // namespace blink

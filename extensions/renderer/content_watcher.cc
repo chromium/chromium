@@ -8,12 +8,14 @@
 
 #include <set>
 
+#include "base/strings/string_piece.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_view.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -29,6 +31,10 @@ class FrameContentWatcher
  public:
   FrameContentWatcher(content::RenderFrame* render_frame,
                       const blink::WebVector<blink::WebString>& css_selectors);
+
+  FrameContentWatcher(const FrameContentWatcher&) = delete;
+  FrameContentWatcher& operator=(const FrameContentWatcher&) = delete;
+
   ~FrameContentWatcher() override;
 
   // content::RenderFrameObserver:
@@ -57,8 +63,6 @@ class FrameContentWatcher
   blink::WebVector<blink::WebString> css_selectors_;
   std::set<std::string> matching_selectors_;
   bool document_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameContentWatcher);
 };
 
 FrameContentWatcher::FrameContentWatcher(
@@ -128,13 +132,11 @@ void FrameContentWatcher::NotifyBrowserOfChange() {
 
   std::vector<std::string> selector_strings;
   for (const base::StringPiece& selector : transitive_selectors)
-    selector_strings.push_back(selector.as_string());
+    selector_strings.push_back(std::string(selector));
 
-  // TODO(devlin): Frame-ify this message.
-  content::RenderView* view =
-      content::RenderView::FromWebView(top_frame->View());
-  view->Send(new ExtensionHostMsg_OnWatchedPageChange(view->GetRoutingID(),
-                                                      selector_strings));
+  ExtensionFrameHelper::Get(render_frame())
+      ->GetLocalFrameHost()
+      ->WatchedPageChange(selector_strings);
 }
 
 }  // namespace

@@ -1,0 +1,113 @@
+<style>
+  :host {
+    --dialog-top-border-size: 35px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .signin-frame {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .container,
+  #addAccount.active {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+<if expr="chromeos">
+  #addAccount {
+    /* Content of the webview already has 64px border, add negative margin to
+     * make distance to the top 64px. */
+    margin-top: calc(-1 * var(--dialog-top-border-size));
+    /* margin-bottom = padding below button + button height
+     *                 + padding above button. */
+    margin-bottom: calc(3 * 32px);
+  }
+  /* Make distance to the top 64px. */
+  #welcome {
+    margin-top: calc(64px - var(--dialog-top-border-size));
+  }
+</if>
+
+  .signin-frame {
+    background-color: white;
+    overflow: hidden;
+  }
+
+  .buttons {
+    display: flex;
+    padding: 0 32px 32px;
+  }
+
+  .action-buttons,
+  .next-button {
+    margin-inline-start: auto;
+  }
+
+  paper-spinner-lite {
+    --spinner-size: 24px;
+    display: none;
+    height: var(--spinner-size);
+    width: var(--spinner-size);
+  }
+
+  paper-spinner-lite[active] {
+    display: inline-block;
+  }
+</style>
+
+<div class="container">
+  <cr-view-manager id="viewManager">
+    <!-- Show welcome screen on Chrome OS to clarify that account will be
+         available in ARC. -->
+    <if expr="chromeos">
+      <div id="[[View.welcome]]" slot="view">
+        <welcome-page-app on-opened-new-window="closeDialog_">
+        </welcome-page-app>
+      </div>
+    </if>
+
+    <div id="[[View.addAccount]]" slot="view">
+      <paper-spinner-lite active="[[loading_]]">
+      </paper-spinner-lite>
+
+      <webview id="signinFrame" name="signin-frame" class="signin-frame"
+        hidden$="[[loading_]]" allowscaling>
+      </webview>
+    </div>
+  </cr-view-manager>
+</div>
+
+<if expr="chromeos">
+  <div class="buttons" hidden$="[[loading_]]">
+    <cr-button class="back-button"
+        aria-label="$i18n{accessibleBackButtonLabel}"
+        on-click="handleGoBack_"
+        hidden$="[[!shouldShowBackButton_(currentView_)]]">
+      <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
+      $i18n{accessibleBackButtonLabel}
+    </cr-button>
+
+    <div class="action-buttons"
+        hidden$="[[!shouldShowGaiaButtons_(enableGaiaActionButtons_,
+                                           currentView_)]]">
+      <gaia-action-buttons authenticator="[[authExtHost_]]"
+          on-set-focus-to-webview="setFocusToWebview_">
+      </gaia-action-buttons>
+    </div>
+
+    <cr-button class="next-button action-button"
+        aria-label="$i18n{ok}"
+        on-tap="onOkButtonClick_"
+        hidden$="[[!shouldShowOkButton_(currentView_)]]">
+      $i18n{ok}
+    </cr-button>
+  </div>
+</if>

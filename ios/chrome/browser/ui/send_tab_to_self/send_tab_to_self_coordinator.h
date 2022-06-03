@@ -7,15 +7,10 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@protocol BrowserCommands;
-
 // Displays the send tab to self UI for all device form factors. Will show a
 // modal dialog popup on both platforms. Once this coordinator is stopped, the
 // underlying dialog is dismissed.
 @interface SendTabToSelfCoordinator : ChromeCoordinator
-
-// Dispatcher
-@property(nonatomic, weak) id<BrowserCommands> dispatcher;
 
 @end
 

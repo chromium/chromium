@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "smbfs_mounter_unittest\.cc": [
-    "+mojo/core/embedder",
-  ],
-}

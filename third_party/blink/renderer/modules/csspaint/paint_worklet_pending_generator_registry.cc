@@ -10,8 +10,9 @@ namespace blink {
 
 void PaintWorkletPendingGeneratorRegistry::NotifyGeneratorReady(
     const String& name) {
-  GeneratorHashSet* set = pending_generators_.at(name);
-  if (set) {
+  auto it = pending_generators_.find(name);
+  if (it != pending_generators_.end()) {
+    GeneratorHashSet* set = it->value;
     for (const auto& generator : *set) {
       if (generator)
         generator->NotifyGeneratorReady();
@@ -30,7 +31,7 @@ void PaintWorkletPendingGeneratorRegistry::AddPendingGenerator(
   set->insert(generator);
 }
 
-void PaintWorkletPendingGeneratorRegistry::Trace(blink::Visitor* visitor) {
+void PaintWorkletPendingGeneratorRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(pending_generators_);
 }
 

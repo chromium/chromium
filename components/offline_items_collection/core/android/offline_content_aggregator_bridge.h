@@ -34,12 +34,18 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   static base::android::ScopedJavaLocalRef<jobject>
   GetBridgeForOfflineContentAggregator(OfflineContentAggregator* aggregator);
 
+  OfflineContentAggregatorBridge(const OfflineContentAggregatorBridge&) =
+      delete;
+  OfflineContentAggregatorBridge& operator=(
+      const OfflineContentAggregatorBridge&) = delete;
+
   ~OfflineContentAggregatorBridge() override;
 
   // Methods called from Java via JNI.
   void OpenItem(JNIEnv* env,
                 const base::android::JavaParamRef<jobject>& jobj,
                 jint launch_location,
+                jboolean j_open_in_incognito,
                 const base::android::JavaParamRef<jstring>& j_namespace,
                 const base::android::JavaParamRef<jstring>& j_id);
   void RemoveItem(JNIEnv* env,
@@ -86,6 +92,13 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
                   const base::android::JavaParamRef<jstring>& j_name,
                   const base::android::JavaParamRef<jobject>& j_callback);
 
+  void ChangeSchedule(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& jobj,
+                      const base::android::JavaParamRef<jstring>& j_namespace,
+                      const base::android::JavaParamRef<jstring>& j_id,
+                      jboolean j_only_on_wifi,
+                      jlong j_start_time_ms);
+
  private:
   OfflineContentAggregatorBridge(OfflineContentAggregator* aggregator);
 
@@ -94,15 +107,14 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
       const OfflineContentProvider::OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
+  void OnContentProviderGoingDown() override;
 
   // A reference to the Java counterpart of this class.  See
   // OfflineContentAggregatorBridge.java.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   std::unique_ptr<ThrottledOfflineContentProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregatorBridge);
 };
 
 }  // namespace android

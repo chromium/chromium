@@ -6,7 +6,7 @@
 test(() => {
   let span = document.createElement('span');
   document.body.appendChild(span);
-  let selectionInShadow = span.createShadowRoot().getSelection(); 
+  let selectionInShadow = span.attachShadow({mode: 'open'}).getSelection(); 
   getSelection().addRange(document.caretRangeFromPoint()); 
   assert_equals(selectionInShadow.rangeCount, 0);
 }, 'rangeCount in ShadowRoot should be 0 if the selection can\'t be represented in the ShadowRoot.');

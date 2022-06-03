@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """A class to help start/stop the PyWebSocket server as used by the web tests."""
 
 import os
@@ -35,40 +34,56 @@ import time
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.servers import server_base
 
-
 _WS_LOG_PREFIX = 'pywebsocket.ws.log-'
 
 _DEFAULT_WS_PORT = 8880
 
 
 class PyWebSocket(server_base.ServerBase):
-
-    def __init__(self, port_obj, output_dir):
+    def __init__(self, port_obj, output_dir, python_executable=sys.executable):
         super(PyWebSocket, self).__init__(port_obj, output_dir)
         self._name = 'pywebsocket'
-        self._log_prefixes = (_WS_LOG_PREFIX,)
+        self._log_prefixes = (_WS_LOG_PREFIX, )
         self._mappings = [{'port': _DEFAULT_WS_PORT, 'scheme': 'ws'}]
-        self._pid_file = self._filesystem.join(self._runtime_path, '%s.pid' % self._name)
+        self._pid_file = self._filesystem.join(self._runtime_path,
+                                               '%s.pid' % self._name)
 
         self._port = _DEFAULT_WS_PORT
         self._web_tests = self._port_obj.web_tests_dir()
-        self._web_socket_tests = self._filesystem.join(self._web_tests, 'http', 'tests', 'websocket')
+        self._web_socket_tests = self._filesystem.join(self._web_tests, 'http',
+                                                       'tests', 'websocket')
         time_str = time.strftime('%d%b%Y-%H%M%S')
         log_file_name = _WS_LOG_PREFIX + time_str
-        self._error_log = self._filesystem.join(self._output_dir, log_file_name + '-err.txt')
-        pywebsocket_base = PathFinder(self._filesystem).path_from_chromium_base('third_party', 'pywebsocket', 'src')
-        pywebsocket_script = self._filesystem.join(pywebsocket_base, 'mod_pywebsocket', 'standalone.py')
+        self._error_log = self._filesystem.join(self._output_dir,
+                                                log_file_name + '-err.txt')
+        pywebsocket_base = PathFinder(
+            self._filesystem).path_from_chromium_base('third_party',
+                                                      'pywebsocket3', 'src')
+        pywebsocket_script = self._filesystem.join(
+            pywebsocket_base, 'mod_pywebsocket', 'standalone.py')
 
         self._start_cmd = [
-            sys.executable, '-u', pywebsocket_script,
-            '--server-host', 'localhost',
-            '--port', str(self._port),
-            '--document-root', self._web_socket_tests,
-            '--scan-dir', self._web_socket_tests,
-            '--cgi-paths', '/',
-            '--log-file', self._error_log,
-            '--websock-handlers-map-file', self._filesystem.join(self._web_socket_tests, 'handler_map.txt'),
+            python_executable,
+            '-u',
+            pywebsocket_script,
+            '--server-host',
+            'localhost',
+            '--port',
+            str(self._port),
+            '--document-root',
+            self._web_socket_tests,
+            '--scan-dir',
+            self._web_socket_tests,
+            '--cgi-paths',
+            '/',
+            '--log-file',
+            self._error_log,
+            '--websock-handlers-map-file',
+            self._filesystem.join(self._web_socket_tests, 'handler_map.txt'),
+            '--handler-encoding',
+            'utf-8',
         ]
         # TODO(burnik): Check if this is really needed (and why). If not, just set PYTHONPATH.
         self._env = self._port_obj.setup_environ_for_server()
-        self._env['PYTHONPATH'] = (pywebsocket_base + os.pathsep + self._env.get('PYTHONPATH', ''))
+        self._env['PYTHONPATH'] = (
+            pywebsocket_base + os.pathsep + self._env.get('PYTHONPATH', ''))

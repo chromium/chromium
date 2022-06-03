@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FIRST_LETTER_PSEUDO_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FIRST_LETTER_PSEUDO_ELEMENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -40,7 +39,10 @@ class LayoutTextFragment;
 class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
  public:
   explicit FirstLetterPseudoElement(Element*);
+  FirstLetterPseudoElement(const FirstLetterPseudoElement&) = delete;
+  FirstLetterPseudoElement& operator=(const FirstLetterPseudoElement&) = delete;
   ~FirstLetterPseudoElement() override;
+  void Trace(Visitor*) const override;
 
   static LayoutText* FirstLetterTextLayoutObject(const Element&);
   static unsigned FirstLetterLength(const String&);
@@ -57,12 +59,12 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
   Node* InnerNodeForHitTesting() const override;
 
  private:
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() override;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
 
   void AttachFirstLetterTextLayoutObjects(LayoutText* first_letter_text);
 
-  LayoutTextFragment* remaining_text_layout_object_;
-  DISALLOW_COPY_AND_ASSIGN(FirstLetterPseudoElement);
+  Member<LayoutTextFragment> remaining_text_layout_object_;
 };
 
 template <>

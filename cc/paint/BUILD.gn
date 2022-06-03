@@ -3,11 +3,14 @@
 # found in the LICENSE file.
 
 import("//cc/cc.gni")
+import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 cc_component("paint") {
   output_name = "cc_paint"
   sources = [
+    "clear_for_opaque_raster.cc",
+    "clear_for_opaque_raster.h",
     "decode_stashing_image_provider.cc",
     "decode_stashing_image_provider.h",
     "decoded_draw_image.cc",
@@ -79,10 +82,15 @@ cc_component("paint") {
     "skia_paint_canvas.h",
     "skia_paint_image_generator.cc",
     "skia_paint_image_generator.h",
-    "skottie_wrapper.cc",
+    "skottie_frame_data.h",
+    "skottie_resource_metadata.cc",
+    "skottie_resource_metadata.h",
+    "skottie_transfer_cache_entry.cc",
+    "skottie_transfer_cache_entry.h",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",
     "solid_color_analyzer.h",
+    "texture_backing.h",
     "transfer_cache_deserialize_helper.h",
     "transfer_cache_entry.cc",
     "transfer_cache_entry.h",
@@ -99,22 +107,39 @@ cc_component("paint") {
     "//cc/base",
     "//cc/debug",
     "//skia",
+    "//skia:skcms",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
+    "//gpu/command_buffer/common:mailbox",
     "//ui/gfx/animation",
     "//ui/gfx/ipc/color",
   ]
+
+  if (skia_support_skottie) {
+    # All source files that depend on the actual Skottie module within Skia
+    # should go here. If a source file is Skottie-related but depends only on
+    # Chromium and/or "common" Skia dependencies, it is fine to include that
+    # in the main "sources" list. Note that ultimately, all dependencies on
+    # the Skottie library should be contained in some way/shape/form within
+    # skottie_wrapper_impl.cc
+    sources += [
+      "skottie_mru_resource_provider.cc",
+      "skottie_mru_resource_provider.h",
+      "skottie_wrapper_impl.cc",
+    ]
+  } else {
+    sources += [ "skottie_wrapper_stub.cc" ]
+  }
 }
 
 fuzzer_test("paint_op_buffer_fuzzer") {
-  sources = [
-    "paint_op_buffer_fuzzer.cc",
-  ]
+  sources = [ "paint_op_buffer_fuzzer.cc" ]
 
   libfuzzer_options = [ "max_len=4096" ]
 
@@ -128,9 +153,7 @@ fuzzer_test("paint_op_buffer_fuzzer") {
 }
 
 fuzzer_test("transfer_cache_fuzzer") {
-  sources = [
-    "transfer_cache_fuzzer.cc",
-  ]
+  sources = [ "transfer_cache_fuzzer.cc" ]
 
   libfuzzer_options = [ "max_len=4096" ]
 

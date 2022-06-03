@@ -21,7 +21,7 @@
               sourceBuffer.appendBuffer(mediaData);
               test.waitForExpectedEvents(function()
               {
-                  assert_throws({name: "QuotaExceededError"},
+                  assert_throws_dom("QuotaExceededError",
                       function() { mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE); },
                       "addSourceBuffer must throw an exception if the MediaSource has already received init segments for all sourcebuffers added at the time");
                   test.done();
@@ -51,7 +51,7 @@
               {
                   // MediaSource is fully initialized now, so adding new SourceBuffers is no longer possible.
                   assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_METADATA);
-                  assert_throws({name: "QuotaExceededError"},
+                  assert_throws_dom("QuotaExceededError",
                       function() { mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE); },
                       "addSourceBuffer must throw an exception if the media element has already reached HAVE_METADATA");
                   test.done();

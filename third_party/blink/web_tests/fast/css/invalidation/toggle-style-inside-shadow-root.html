@@ -2,7 +2,7 @@
 <div></div>
 <script>
     var div = document.querySelector('div');
-    var root = div.createShadowRoot();
+    var root = div.attachShadow({mode: 'open'});
     root.innerHTML = '<style> .red { background: red; }</style><div>tap to toggle red</div>';
     var rootDiv = root.querySelector('div');
     rootDiv.offsetHeight;

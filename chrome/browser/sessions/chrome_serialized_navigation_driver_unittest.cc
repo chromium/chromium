@@ -5,14 +5,20 @@
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
-#include "content/public/common/page_state.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/page_transition_types.h"
 
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
  public:
   ChromeSerializedNavigationDriverTest() {}
+
+  ChromeSerializedNavigationDriverTest(
+      const ChromeSerializedNavigationDriverTest&) = delete;
+  ChromeSerializedNavigationDriverTest& operator=(
+      const ChromeSerializedNavigationDriverTest&) = delete;
+
   ~ChromeSerializedNavigationDriverTest() override {}
 
   void SetUp() override {
@@ -23,9 +29,6 @@ class ChromeSerializedNavigationDriverTest : public ::testing::Test {
   void TearDown() override {
     sessions::ContentSerializedNavigationDriver::SetInstance(nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSerializedNavigationDriverTest);
 };
 
 // Tests that the input data is left unsanitized when the referrer policy is
@@ -37,32 +40,33 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyAlways) {
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
       static_cast<int>(network::mojom::ReferrerPolicy::kAlways), &navigation);
-
-  content::PageState page_state =
-      content::PageState::CreateFromURL(sessions::test_data::kVirtualURL);
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(GURL("http://www.virtual-url.com"));
   sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
       page_state.ToEncodedData(), &navigation);
-
   driver->Sanitize(&navigation);
-  EXPECT_EQ(sessions::test_data::kIndex, navigation.index());
-  EXPECT_EQ(sessions::test_data::kUniqueID, navigation.unique_id());
-  EXPECT_EQ(sessions::test_data::kReferrerURL, navigation.referrer_url());
+
+  sessions::SerializedNavigationEntry reference_navigation =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  EXPECT_EQ(reference_navigation.index(), navigation.index());
+  EXPECT_EQ(reference_navigation.unique_id(), navigation.unique_id());
+  EXPECT_EQ(reference_navigation.referrer_url(), navigation.referrer_url());
   EXPECT_EQ(static_cast<int>(network::mojom::ReferrerPolicy::kAlways),
             navigation.referrer_policy());
-  EXPECT_EQ(sessions::test_data::kVirtualURL, navigation.virtual_url());
-  EXPECT_EQ(sessions::test_data::kTitle, navigation.title());
+  EXPECT_EQ(reference_navigation.virtual_url(), navigation.virtual_url());
+  EXPECT_EQ(reference_navigation.title(), navigation.title());
   EXPECT_EQ(page_state.ToEncodedData(), navigation.encoded_page_state());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-      navigation.transition_type(), sessions::test_data::kTransitionType));
-  EXPECT_EQ(sessions::test_data::kHasPostData, navigation.has_post_data());
-  EXPECT_EQ(sessions::test_data::kPostID, navigation.post_id());
-  EXPECT_EQ(sessions::test_data::kOriginalRequestURL,
+      navigation.transition_type(), reference_navigation.transition_type()));
+  EXPECT_EQ(reference_navigation.has_post_data(), navigation.has_post_data());
+  EXPECT_EQ(reference_navigation.post_id(), navigation.post_id());
+  EXPECT_EQ(reference_navigation.original_request_url(),
             navigation.original_request_url());
-  EXPECT_EQ(sessions::test_data::kIsOverridingUserAgent,
+  EXPECT_EQ(reference_navigation.is_overriding_user_agent(),
             navigation.is_overriding_user_agent());
-  EXPECT_EQ(sessions::test_data::kTimestamp, navigation.timestamp());
-  EXPECT_EQ(sessions::test_data::kFaviconURL, navigation.favicon_url());
-  EXPECT_EQ(sessions::test_data::kHttpStatusCode,
+  EXPECT_EQ(reference_navigation.timestamp(), navigation.timestamp());
+  EXPECT_EQ(reference_navigation.favicon_url(), navigation.favicon_url());
+  EXPECT_EQ(reference_navigation.http_status_code(),
             navigation.http_status_code());
 }
 
@@ -76,29 +80,31 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
       static_cast<int>(network::mojom::ReferrerPolicy::kNever), &navigation);
 
-  content::PageState page_state =
-      content::PageState::CreateFromURL(sessions::test_data::kVirtualURL);
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(GURL("http://www.virtual-url.com"));
   sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
       page_state.ToEncodedData(), &navigation);
 
   driver->Sanitize(&navigation);
 
   // Fields that should remain untouched.
-  EXPECT_EQ(sessions::test_data::kIndex, navigation.index());
-  EXPECT_EQ(sessions::test_data::kUniqueID, navigation.unique_id());
-  EXPECT_EQ(sessions::test_data::kVirtualURL, navigation.virtual_url());
-  EXPECT_EQ(sessions::test_data::kTitle, navigation.title());
+  sessions::SerializedNavigationEntry reference_navigation =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  EXPECT_EQ(reference_navigation.index(), navigation.index());
+  EXPECT_EQ(reference_navigation.unique_id(), navigation.unique_id());
+  EXPECT_EQ(reference_navigation.virtual_url(), navigation.virtual_url());
+  EXPECT_EQ(reference_navigation.title(), navigation.title());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-      navigation.transition_type(), sessions::test_data::kTransitionType));
-  EXPECT_EQ(sessions::test_data::kHasPostData, navigation.has_post_data());
-  EXPECT_EQ(sessions::test_data::kPostID, navigation.post_id());
-  EXPECT_EQ(sessions::test_data::kOriginalRequestURL,
+      navigation.transition_type(), reference_navigation.transition_type()));
+  EXPECT_EQ(reference_navigation.has_post_data(), navigation.has_post_data());
+  EXPECT_EQ(reference_navigation.post_id(), navigation.post_id());
+  EXPECT_EQ(reference_navigation.original_request_url(),
             navigation.original_request_url());
-  EXPECT_EQ(sessions::test_data::kIsOverridingUserAgent,
+  EXPECT_EQ(reference_navigation.is_overriding_user_agent(),
             navigation.is_overriding_user_agent());
-  EXPECT_EQ(sessions::test_data::kTimestamp, navigation.timestamp());
-  EXPECT_EQ(sessions::test_data::kFaviconURL, navigation.favicon_url());
-  EXPECT_EQ(sessions::test_data::kHttpStatusCode,
+  EXPECT_EQ(reference_navigation.timestamp(), navigation.timestamp());
+  EXPECT_EQ(reference_navigation.favicon_url(), navigation.favicon_url());
+  EXPECT_EQ(reference_navigation.http_status_code(),
             navigation.http_status_code());
 
   // Fields that were sanitized.

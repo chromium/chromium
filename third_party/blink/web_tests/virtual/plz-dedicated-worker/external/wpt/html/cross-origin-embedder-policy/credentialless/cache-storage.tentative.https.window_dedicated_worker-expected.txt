@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS [dedicated_worker] unsafe-none => unsafe-none
+PASS [dedicated_worker] unsafe-none => credentialless
+PASS [dedicated_worker] unsafe-none => credentialless (omit)
+PASS [dedicated_worker] unsafe-none => credentialless + CORP
+PASS [dedicated_worker] unsafe-none => require-corp
+PASS [dedicated_worker] unsafe-none => require-corp (omit)
+PASS [dedicated_worker] unsafe-none => require-corp + CORP
+PASS [dedicated_worker] credentialless => unsafe-none
+PASS [dedicated_worker] credentialless => credentialless
+PASS [dedicated_worker] credentialless => require-corp
+PASS [dedicated_worker] credentialless => require-corp + CORP
+PASS [dedicated_worker] require_corp => unsafe-none
+PASS [dedicated_worker] require_corp => credentialless
+PASS [dedicated_worker] require_corp => require-corp
+Harness: the test ran to completion.
+

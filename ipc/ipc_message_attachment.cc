@@ -6,15 +6,18 @@
 
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <unistd.h>
+
 #include "base/posix/eintr_wrapper.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "ipc/mach_port_attachment_mac.h"
 #endif
 
@@ -60,11 +63,11 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
         DPLOG(WARNING) << "Failed to dup FD to transmit.";
         return mojo::ScopedHandle();
       }
-      return mojo::WrapPlatformFile(file.release());
+      return mojo::WrapPlatformFile(std::move(file));
     }
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
     case Type::MACH_PORT: {
       auto* attachment = static_cast<internal::MachPortAttachmentMac*>(this);
       MojoPlatformHandle platform_handle = {
@@ -93,8 +96,8 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
     }
 #elif defined(OS_WIN)
     case Type::WIN_HANDLE:
-      return mojo::WrapPlatformFile(
-          static_cast<internal::HandleAttachmentWin*>(this)->Take());
+      return mojo::WrapPlatformFile(base::win::ScopedHandle(
+          static_cast<internal::HandleAttachmentWin*>(this)->Take()));
 #endif
     default:
       break;
@@ -125,7 +128,7 @@ scoped_refptr<MessageAttachment> MessageAttachment::CreateFromMojoHandle(
   }
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   if (type == Type::MACH_PORT) {
     mach_port_t mach_port = MACH_PORT_NULL;
     if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT)
@@ -135,18 +138,20 @@ scoped_refptr<MessageAttachment> MessageAttachment::CreateFromMojoHandle(
   }
 #elif defined(OS_FUCHSIA)
   if (type == Type::FUCHSIA_HANDLE) {
-    zx::handle handle;
+    zx::handle zx_handle;
     if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
-      handle.reset(static_cast<zx_handle_t>(platform_handle.value));
-    return new internal::HandleAttachmentFuchsia(std::move(handle));
+      zx_handle.reset(static_cast<zx_handle_t>(platform_handle.value));
+    return new internal::HandleAttachmentFuchsia(std::move(zx_handle));
   }
 #elif defined(OS_WIN)
   if (type == Type::WIN_HANDLE) {
-    base::PlatformFile handle = base::kInvalidPlatformFile;
-    if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE)
-      handle = reinterpret_cast<base::PlatformFile>(platform_handle.value);
+    base::PlatformFile platform_file = base::kInvalidPlatformFile;
+    if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE) {
+      platform_file =
+          reinterpret_cast<base::PlatformFile>(platform_handle.value);
+    }
     return new internal::HandleAttachmentWin(
-        handle, internal::HandleAttachmentWin::FROM_WIRE);
+        platform_file, internal::HandleAttachmentWin::FROM_WIRE);
   }
 #endif
   NOTREACHED();

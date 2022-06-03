@@ -7,9 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "components/omnibox/browser/autocomplete_controller_delegate.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/favicon_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AutocompleteController;
@@ -20,26 +22,31 @@ namespace app_list {
 
 // OmniboxProvider wraps AutocompleteController to provide omnibox results.
 class OmniboxProvider : public SearchProvider,
-                        public AutocompleteControllerDelegate {
+                        public AutocompleteController::Observer {
  public:
   explicit OmniboxProvider(Profile* profile,
                            AppListControllerDelegate* list_controller);
+
+  OmniboxProvider(const OmniboxProvider&) = delete;
+  OmniboxProvider& operator=(const OmniboxProvider&) = delete;
+
   ~OmniboxProvider() override;
 
   // SearchProvider overrides:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
+  ash::AppListSearchResultType ResultType() override;
 
  private:
   // Populates result list from AutocompleteResult.
   void PopulateFromACResult(const AutocompleteResult& result);
 
-  // AutocompleteControllerDelegate overrides:
-  void OnResultChanged(bool default_match_changed) override;
+  // AutocompleteController::Observer overrides:
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override;
 
   void RecordQueryLatencyHistogram();
 
   Profile* profile_;
-  bool is_zero_state_enabled_ = false;
   // True if the input is empty for zero state suggestion.
   bool is_zero_state_input_ = false;
   AppListControllerDelegate* list_controller_;
@@ -49,7 +56,10 @@ class OmniboxProvider : public SearchProvider,
   // eliminates the results as they come in.
   std::unique_ptr<AutocompleteController> controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(OmniboxProvider);
+  FaviconCache favicon_cache_;
+
+  // Score normalizer for Finch experiment. Nullopt if experiment disabled.
+  absl::optional<ScoreNormalizer> normalizer_;
 };
 
 }  // namespace app_list

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -282,11 +281,11 @@ class OpcodeFactory {
     memory_bottom_ = &memory_top_[memory_size];
   }
 
+  OpcodeFactory(const OpcodeFactory&) = delete;
+  OpcodeFactory& operator=(const OpcodeFactory&) = delete;
+
   // Returns the available memory to make opcodes.
-  size_t memory_size() const {
-    DCHECK_GE(memory_bottom_, memory_top_);
-    return memory_bottom_ - memory_top_;
-  }
+  size_t memory_size() const;
 
   // Creates an OpAlwaysFalse opcode.
   PolicyOpcode* MakeOpAlwaysFalse(uint32_t options);
@@ -370,8 +369,6 @@ class OpcodeFactory {
   // used to make the opcodes. This pointer decrements as opcode strings are
   // allocated.
   char* memory_bottom_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpcodeFactory);
 };
 
 }  // namespace sandbox

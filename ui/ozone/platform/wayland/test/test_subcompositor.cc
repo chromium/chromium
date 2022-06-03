@@ -6,7 +6,7 @@
 
 #include <wayland-server-core.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"

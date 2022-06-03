@@ -1,0 +1,6 @@
+Tests that if an image is cached and the server responds with 304, the image MIME type is shown correctly.
+
+http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&cached=1 200 image/png
+Page reloaded.
+http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&cached=1 304 image/png
+

@@ -17,16 +17,9 @@ class FontList;
 namespace ash {
 
 // Appearance.
-constexpr int kCornerRadiusDip = 20;
-constexpr int kMiniUiCornerRadiusDip = 24;
-constexpr int kMaxHeightDip = 640;
-constexpr int kMaxHeightEmbeddedDip = 440;
-constexpr int kMinHeightEmbeddedDip = 180;
-constexpr int kPaddingDip = 14;
 constexpr int kPreferredWidthDip = 640;
 constexpr int kSpacingDip = 8;
 constexpr int kMarginDip = 8;
-constexpr int kUiElementHorizontalMarginDip = 32;
 
 // Typography.
 constexpr SkColor kTextColorPrimary = gfx::kGoogleGrey900;
@@ -46,7 +39,16 @@ extern const aura::WindowProperty<bool>* const kOnlyAllowMouseClickEvents;
 COMPONENT_EXPORT(ASSISTANT_UI_CONSTANTS)
 const gfx::FontList& GetDefaultFontList();
 
-constexpr int kWarmerWelcomesMaxTimesTriggered = 3;
+// The maximum number of user sessions in which to show Assistant onboarding.
+constexpr int kOnboardingMaxSessionsShown = 3;
+
+// Returns the horizontal margin in DIPs.
+COMPONENT_EXPORT(ASSISTANT_UI_CONSTANTS)
+int GetHorizontalMargin();
+
+// Returns the horizontal padding in DIPs.
+COMPONENT_EXPORT(ASSISTANT_UI_CONSTANTS)
+int GetHorizontalPadding();
 
 }  // namespace ui
 }  // namespace assistant

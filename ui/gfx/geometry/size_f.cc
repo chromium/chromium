@@ -17,13 +17,13 @@ void SizeF::Enlarge(float grow_width, float grow_height) {
 }
 
 void SizeF::SetToMin(const SizeF& other) {
-  width_ = width() <= other.width() ? width() : other.width();
-  height_ = height() <= other.height() ? height() : other.height();
+  width_ = std::min(width_, other.width_);
+  height_ = std::min(height_, other.height_);
 }
 
 void SizeF::SetToMax(const SizeF& other) {
-  width_ = width() >= other.width() ? width() : other.width();
-  height_ = height() >= other.height() ? height() : other.height();
+  width_ = std::max(width_, other.width_);
+  height_ = std::max(height_, other.height_);
 }
 
 std::string SizeF::ToString() const {

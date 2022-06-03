@@ -12,9 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/buildflags.h"
@@ -58,11 +56,11 @@ class AvatarMenu :
     bool active;
 
     // The name of this profile.
-    base::string16 name;
+    std::u16string name;
 
     // A string representing the username of the profile, if signed in.  Empty
     // when not signed in.
-    base::string16 username;
+    std::u16string username;
 
     // Whether or not the current profile is signed in. If true, |sync_state| is
     // expected to be the email of the signed in user.
@@ -70,10 +68,6 @@ class AvatarMenu :
 
     // Whether or not the current profile requires sign-in before use.
     bool signin_required;
-
-    // Whether or not the current profile is a legacy supervised user profile
-    // (see SupervisedUserService).
-    bool legacy_supervised;
 
     // Whether or not the profile is associated with a child account
     // (see SupervisedUserService).
@@ -87,8 +81,7 @@ class AvatarMenu :
     base::FilePath profile_path;
   };
 
-  // The load status of an avatar image. This is used to back an UMA histogram,
-  // and should therefore be treated as append-only.
+  // The load status of an avatar image.
   enum class ImageLoadStatus {
     // If there is a Gaia image used by the user, it is loaded. Otherwise, a
     // default avatar image is loaded.
@@ -100,8 +93,8 @@ class AvatarMenu :
     MISSING,
     // Nothing is loaded as the profile has been deleted.
     PROFILE_DELETED,
-    // This is always the last one.
-    MAX = PROFILE_DELETED
+    // The image could not be loaded because the browser is shutting down.
+    BROWSER_SHUTTING_DOWN,
   };
 
   // Constructor. |observer| can be NULL. |browser| can be NULL and a new one
@@ -109,21 +102,23 @@ class AvatarMenu :
   AvatarMenu(ProfileAttributesStorage* profile_storage,
              AvatarMenuObserver* observer,
              Browser* browser);
+
+  AvatarMenu(const AvatarMenu&) = delete;
+  AvatarMenu& operator=(const AvatarMenu&) = delete;
+
   ~AvatarMenu() override;
 
   // Sets |image| to the avatar corresponding to the profile at |profile_path|.
-  // For built-in profile avatars, returns the non-high res version. Returns the
-  // image load status.
+  // Returns the image load status.
   static ImageLoadStatus GetImageForMenuButton(
       const base::FilePath& profile_path,
-      gfx::Image* image);
+      gfx::Image* image,
+      int preferred_size);
 
   // Opens a Browser with the specified profile in response to the user
   // selecting an item. If |always_create| is true then a new window is created
   // even if a window for that profile already exists.
-  void SwitchToProfile(size_t index,
-                       bool always_create,
-                       ProfileMetrics::ProfileOpen metric);
+  void SwitchToProfile(size_t index, bool always_create);
 
   // Creates a new profile.
   void AddNewProfile(ProfileMetrics::ProfileAdd type);
@@ -152,7 +147,7 @@ class AvatarMenu :
   // Returns information about a supervised user which will be displayed in the
   // avatar menu. If the profile does not belong to a supervised user, an empty
   // string will be returned.
-  base::string16 GetSupervisedUserInformation() const;
+  std::u16string GetSupervisedUserInformation() const;
 
   // This menu is also used for the always-present Mac and Linux system menubar.
   // If the last active browser changes, the menu will need to reference that
@@ -169,9 +164,9 @@ class AvatarMenu :
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
-      const base::string16& profile_name) override;
+                           const std::u16string& profile_name) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
-      const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAuthInfoChanged(const base::FilePath& profile_path) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileHighResAvatarLoaded(
@@ -196,8 +191,8 @@ class AvatarMenu :
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Observes changes to a supervised user's custodian info.
-  ScopedObserver<SupervisedUserService, SupervisedUserServiceObserver>
-      supervised_user_observer_{this};
+  base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
+      supervised_user_observation_{this};
 #endif
 
   // The storage that provides the profile attributes.
@@ -208,8 +203,6 @@ class AvatarMenu :
 
   // Browser in which this avatar menu resides. Weak.
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarMenu);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_H_

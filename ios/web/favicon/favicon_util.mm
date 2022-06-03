@@ -7,8 +7,10 @@
 #include <CoreFoundation/CoreFoundation.h>
 #import <WebKit/WebKit.h>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,16 +19,11 @@
 
 namespace web {
 
-bool ExtractFaviconURL(const base::DictionaryValue* favicon_url_message,
+bool ExtractFaviconURL(const base::ListValue* favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
-  const base::Value* favicons_value = favicon_url_message->FindKey("favicons");
-  if (!favicons_value || !favicons_value->is_list()) {
-    DLOG(WARNING) << "JS message parameter not found: favicons";
-    return false;
-  }
   BOOL has_favicon = NO;
-  for (const base::Value& favicon : favicons_value->GetList()) {
+  for (const base::Value& favicon : favicons->GetList()) {
     if (!favicon.is_dict())
       return false;
 

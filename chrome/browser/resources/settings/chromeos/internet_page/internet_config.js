@@ -6,7 +6,21 @@
  * @fileoverview
  * 'internet-config' is a Settings dialog wrapper for network-config.
  */
+import '//resources/cr_components/chromeos/network/network_config.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './internet_shared_css.js';
+
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'internet-config',
 
   behaviors: [I18nBehavior],
@@ -15,7 +29,7 @@ Polymer({
     /** @private */
     shareAllowEnable_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('shareNetworkAllowEnable');
       }
     },
@@ -23,7 +37,7 @@ Polymer({
     /** @private */
     shareDefault_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('shareNetworkDefault');
       }
     },
@@ -32,7 +46,10 @@ Polymer({
      * The GUID when an existing network is being configured. This will be
      * empty when configuring a new network.
      */
-    guid: String,
+    guid: {
+      type: String,
+      value: '',
+    },
 
     /**
      * The type of network to be configured as a string. May be set initially or
@@ -67,7 +84,7 @@ Polymer({
     },
   },
 
-  open: function() {
+  open() {
     const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
     if (!dialog.open) {
       dialog.showModal();
@@ -76,7 +93,7 @@ Polymer({
     this.$.networkConfig.init();
   },
 
-  close: function() {
+  close() {
     const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
     if (dialog.open) {
       dialog.close();
@@ -87,7 +104,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onClose_: function(event) {
+  onClose_(event) {
     this.close();
   },
 
@@ -95,7 +112,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getDialogTitle_: function() {
+  getDialogTitle_() {
     if (this.name && !this.showConnect) {
       return this.i18n('internetConfigName', HTMLEscape(this.name));
     }
@@ -107,7 +124,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getError_: function() {
+  getError_() {
     if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
     }
@@ -115,17 +132,42 @@ Polymer({
   },
 
   /** @private */
-  onCancelTap_: function() {
+  onCancelTap_() {
     this.close();
   },
 
-  /** @private */
-  onSaveTap_: function() {
-    this.$.networkConfig.save();
+  /**
+   * Note that onSaveTap_ will only be called if the user explicitly clicks
+   * on the 'Save' button.
+   * @private
+   */
+  onSaveTap_() {
+    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).save();
   },
 
-  /** @private */
-  onConnectTap_: function() {
-    this.$.networkConfig.connect();
+  /**
+   * Note that onConnectTap_ will only be called if the user explicitly clicks
+   * on the 'Connect' button.
+   * @private
+   */
+  onConnectTap_() {
+    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).connect();
+  },
+
+  /**
+   * A connect or save may be initiated within the NetworkConfigElement instead
+   * of onConnectTap_() or onSaveTap_() (e.g on an enter event).
+   * @private
+   */
+  onPropertiesSet_() {
+    if (this.type ===
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kWiFi)) {
+      recordSettingChange(
+          chromeos.settings.mojom.Setting.kWifiAddNetwork,
+          {stringValue: this.guid});
+    } else {
+      recordSettingChange();
+    }
   },
 });

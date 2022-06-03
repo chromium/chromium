@@ -27,8 +27,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       current_ = option;
       return;
     }
-    if (IsA<HTMLOptGroupElement>(current) &&
-        current->parentNode() == select_.Get()) {
+    if (IsA<HTMLOptGroupElement>(current) && current->parentNode() == select_) {
       if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current)))
         return;
     }

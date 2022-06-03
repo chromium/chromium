@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
-#include "services/service_manager/public/cpp/binder_map.h"
 
 namespace content {
 
@@ -21,6 +20,10 @@ namespace content {
 class AudioServiceTestHelper {
  public:
   AudioServiceTestHelper();
+
+  AudioServiceTestHelper(const AudioServiceTestHelper&) = delete;
+  AudioServiceTestHelper& operator=(const AudioServiceTestHelper&) = delete;
+
   ~AudioServiceTestHelper();
 
  private:
@@ -30,8 +33,6 @@ class AudioServiceTestHelper {
       mojo::PendingReceiver<audio::mojom::TestingApi> receiver);
 
   std::unique_ptr<TestingApi> testing_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceTestHelper);
 };
 
 }  // namespace content

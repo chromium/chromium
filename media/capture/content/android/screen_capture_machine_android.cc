@@ -47,7 +47,7 @@ void ScreenCaptureMachineAndroid::OnRGBAFrameAvailable(
   const uint64_t absolute_micro =
       timestamp / base::Time::kNanosecondsPerMicrosecond;
   const base::TimeTicks start_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(absolute_micro);
+      base::TimeTicks() + base::Microseconds(absolute_micro);
   scoped_refptr<VideoFrame> frame;
   ThreadSafeCaptureOracle::CaptureFrameCallback capture_frame_cb;
 
@@ -122,7 +122,7 @@ void ScreenCaptureMachineAndroid::OnI420FrameAvailable(
   const uint64_t absolute_micro =
       timestamp / base::Time::kNanosecondsPerMicrosecond;
   const base::TimeTicks start_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(absolute_micro);
+      base::TimeTicks() + base::Microseconds(absolute_micro);
   scoped_refptr<VideoFrame> frame;
   ThreadSafeCaptureOracle::CaptureFrameCallback capture_frame_cb;
 
@@ -251,8 +251,6 @@ bool ScreenCaptureMachineAndroid::Start(
   }
 
   DCHECK(params.requested_format.frame_size.GetArea());
-  DCHECK(!(params.requested_format.frame_size.width() % 2));
-  DCHECK(!(params.requested_format.frame_size.height() % 2));
 
   jboolean ret =
       Java_ScreenCapture_allocate(AttachCurrentThread(), j_capture_,

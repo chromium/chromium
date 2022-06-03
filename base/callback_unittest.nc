@@ -49,6 +49,96 @@ void WontCompile() {
   cb_a = cb_b;
 }
 
+#elif defined(NCTEST_ONCE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+' \"\|then\| callback's parameter must be constructible from return type of \|this\|\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `int*` to `float*`.
+void WontCompile() {
+  OnceCallback<int*()> original;
+  OnceCallback<void(float*)> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback cannot accept parameters if \|this\| has a void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `void` to `float`.
+void WontCompile() {
+  OnceCallback<void()> original;
+  OnceCallback<void(float)> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `int` to `void`.
+void WontCompile() {
+  OnceCallback<int()> original;
+  OnceCallback<void()> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+' \"\|then\| callback's parameter must be constructible from return type of \|this\|\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type.  Here we would pass `int*` to `float*`.
+void WontCompile() {
+  RepeatingCallback<int*()> original;
+  RepeatingCallback<void(float*)> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback cannot accept parameters if \|this\| has a void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `void` to `float`.
+void WontCompile() {
+  RepeatingCallback<void()> original;
+  RepeatingCallback<void(float)> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `int` to `void`.
+void WontCompile() {
+  RepeatingCallback<int()> original;
+  RepeatingCallback<void()> then;
+  std::move(original).Then(std::move(then));
+}
+
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+' \"\|then\| callback's parameter must be constructible from return type of \|this\|\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type.  Here we would pass `int*` to `float*`.
+void WontCompile() {
+  RepeatingCallback<int*()> original;
+  RepeatingCallback<void(float*)> then;
+  original.Then(then);
+}
+
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback cannot accept parameters if \|this\| has a void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `void` to `float`.
+void WontCompile() {
+  RepeatingCallback<void()> original;
+  RepeatingCallback<void(float)> then;
+  original.Then(then);
+}
+
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+' \"\|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\.\""]
+
+// Calling Then() with a callback that can't receive the original
+// callback's return type. Here we would pass `int` to `void`.
+void WontCompile() {
+  RepeatingCallback<int()> original;
+  RepeatingCallback<void()> then;
+  original.Then(then);
+}
+
 #endif
 
 }  // namespace base

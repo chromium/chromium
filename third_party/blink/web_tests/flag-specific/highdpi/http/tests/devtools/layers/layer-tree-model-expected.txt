@@ -1,0 +1,38 @@
+Tests general layer tree model functionality
+Initial layer tree
+<invalid node id> 0x0 (0)
+    #document (1)
+    #document (1)
+    #document (1)
+    div#subframe1 120x120 (1)
+    div#a (1)
+    div#b1 (1)
+    div#b2 (1)
+    div#c 135x150 (1)
+    div#b3 (1)
+    <invalid node id> (1)
+Updated layer tree
+<invalid node id> 0x0 (0)
+    #document (1)
+    #document (1)
+    #document (1)
+    div#subframe1 120x120 (1)
+    div#a (1)
+    div#b2 (1)
+    div#c 135x150 (1)
+    div#b1
+    div#b4 132x116
+    <invalid node id> (1)
+Updated layer geometry
+<invalid node id> 0x0 (0)
+    #document (1)
+    #document (1)
+    #document (1)
+    div#subframe1 120x120 (1)
+    div#a (1)
+    div#b2 (1)
+    div#c 135x120 (1)
+    div#b1
+    div#b4 132x116
+    <invalid node id> (1)
+

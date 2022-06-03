@@ -25,8 +25,7 @@ const char kNotifierSessionLengthTimeout[] = "ash.session-length-timeout";
 // A notification is shown to the user only if the remaining session time falls
 // under this threshold. e.g. If the user has several days left in their
 // session, there is no use displaying a notification right now.
-constexpr base::TimeDelta kNotificationThreshold =
-    base::TimeDelta::FromMinutes(60);
+constexpr base::TimeDelta kNotificationThreshold = base::Minutes(60);
 
 }  // namespace
 
@@ -87,18 +86,18 @@ void SessionLimitNotificationController::UpdateNotification() {
   data.should_make_spoken_feedback_for_popup_updates =
       (model_->limit_state() != last_limit_state_);
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           ComposeNotificationTitle(),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_MESSAGE),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierSessionLengthTimeout),
           data, nullptr /* delegate */, kNotificationTimerIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->SetSystemPriority();
+          message_center::SystemNotificationWarningLevel::WARNING);
+  notification->set_pinned(true);
   if (message_center->FindVisibleNotificationById(kNotificationId)) {
     message_center->UpdateNotification(kNotificationId,
                                        std::move(notification));
@@ -108,7 +107,7 @@ void SessionLimitNotificationController::UpdateNotification() {
   has_notification_been_shown_ = true;
 }
 
-base::string16 SessionLimitNotificationController::ComposeNotificationTitle()
+std::u16string SessionLimitNotificationController::ComposeNotificationTitle()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_TITLE,

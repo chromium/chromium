@@ -1,0 +1,46 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+source_set("libavif") {
+  sources = [
+    "src/include/avif/avif.h",
+    "src/include/avif/internal.h",
+    "src/src/alpha.c",
+    "src/src/avif.c",
+    "src/src/colr.c",
+    "src/src/diag.c",
+    "src/src/io.c",
+    "src/src/mem.c",
+    "src/src/obu.c",
+    "src/src/rawdata.c",
+    "src/src/read.c",
+    "src/src/reformat.c",
+    "src/src/reformat_libyuv.c",
+    "src/src/scale.c",
+    "src/src/stream.c",
+    "src/src/utils.c",
+  ]
+
+  # configs -= [ "//build/config/compiler:chromium_code" ]
+  # configs += [ "//build/config/compiler:no_chromium_code" ]
+  include_dirs = [ "src/include/" ]
+  defines = [ "AVIF_LIBYUV_ENABLED" ]
+
+  deps = [ "//third_party/libyuv" ]
+
+  if (enable_dav1d_decoder) {
+    sources += [ "src/src/codec_dav1d.c" ]
+    include_dirs += [ "../dav1d/libdav1d/include/" ]
+    defines += [ "AVIF_CODEC_DAV1D" ]
+    deps += [ "//third_party/dav1d" ]
+  }
+
+  if (enable_libgav1_decoder) {
+    sources += [ "src/src/codec_libgav1.c" ]
+    defines += [ "AVIF_CODEC_LIBGAV1" ]
+    deps += [ "//third_party/libgav1" ]
+  }
+}

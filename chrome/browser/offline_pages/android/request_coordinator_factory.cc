@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
-#include "chrome/browser/offline_pages/android/cct_request_observer.h"
 #include "chrome/browser/offline_pages/android/load_termination_listener_impl.h"
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -41,9 +41,7 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   ~ActiveTabInfo() override {}
   bool DoesActiveTabMatch(const GURL& url) override {
     // Loop through to find the active tab and report whether the URL matches.
-    for (auto iter = TabModelList::begin(); iter != TabModelList::end();
-         ++iter) {
-      TabModel* model = *iter;
+    for (const TabModel* model : TabModelList::models()) {
       if (model->GetProfile() == profile_) {
         content::WebContents* contents = model->GetActiveWebContents();
         // Check visibility to make sure Chrome is in the foreground.
@@ -91,12 +89,12 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<LoadTerminationListenerImpl> load_termination_listener =
       std::make_unique<LoadTerminationListenerImpl>();
-  offliner.reset(new BackgroundLoaderOffliner(
-      context, policy.get(), model, std::move(load_termination_listener)));
+  offliner = std::make_unique<BackgroundLoaderOffliner>(
+      context, policy.get(), model, std::move(load_termination_listener));
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                       base::TaskPriority::BEST_EFFORT});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   Profile* profile = Profile::FromBrowserContext(context);
   base::FilePath queue_store_path =
       profile->GetPath().Append(chrome::kOfflinePageRequestQueueDirname);
@@ -112,8 +110,6 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
       std::move(policy), std::move(offliner), std::move(queue),
       std::move(scheduler), network_quality_tracker,
       std::make_unique<ActiveTabInfo>(profile));
-
-  CCTRequestObserver::AttachToRequestCoordinator(request_coordinator);
 
   return request_coordinator;
 }

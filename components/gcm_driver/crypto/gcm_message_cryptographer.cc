@@ -11,8 +11,9 @@
 #include <sstream>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "crypto/hkdf.h"
@@ -46,6 +47,10 @@ class WebPushEncryptionDraft03
     : public GCMMessageCryptographer::EncryptionScheme {
  public:
   WebPushEncryptionDraft03() = default;
+
+  WebPushEncryptionDraft03(const WebPushEncryptionDraft03&) = delete;
+  WebPushEncryptionDraft03& operator=(const WebPushEncryptionDraft03&) = delete;
+
   ~WebPushEncryptionDraft03() override = default;
 
   // GCMMessageCryptographer::EncryptionScheme implementation.
@@ -116,8 +121,7 @@ class WebPushEncryptionDraft03
     std::string record;
     record.reserve(sizeof(uint16_t) + plaintext.size());
     record.append(sizeof(uint16_t), '\x00');
-
-    plaintext.AppendToString(&record);
+    record.append(plaintext.data(), plaintext.size());
     return record;
   }
 
@@ -163,9 +167,6 @@ class WebPushEncryptionDraft03
     record.remove_prefix(padding_length);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebPushEncryptionDraft03);
 };
 
 // Implementation of draft 08 of the Web Push Encryption standard:
@@ -175,6 +176,10 @@ class WebPushEncryptionDraft08
     : public GCMMessageCryptographer::EncryptionScheme {
  public:
   WebPushEncryptionDraft08() = default;
+
+  WebPushEncryptionDraft08(const WebPushEncryptionDraft08&) = delete;
+  WebPushEncryptionDraft08& operator=(const WebPushEncryptionDraft08&) = delete;
+
   ~WebPushEncryptionDraft08() override = default;
 
   // GCMMessageCryptographer::EncryptionScheme implementation.
@@ -188,14 +193,9 @@ class WebPushEncryptionDraft08
 
     const char kInfo[] = "WebPush: info";
 
-    std::string info;
-    info.reserve(sizeof(kInfo) + 65 + 65);
-
     // This deliberately copies over the NUL terminus.
-    info.append(kInfo, sizeof(kInfo));
-
-    recipient_public_key.AppendToString(&info);
-    sender_public_key.AppendToString(&info);
+    std::string info = base::StrCat({base::StringPiece(kInfo, sizeof(kInfo)),
+                                     recipient_public_key, sender_public_key});
 
     return crypto::HkdfSha256(ecdh_shared_secret, auth_secret, info, 32);
   }
@@ -232,8 +232,7 @@ class WebPushEncryptionDraft08
   std::string CreateRecord(const base::StringPiece& plaintext) override {
     std::string record;
     record.reserve(plaintext.size() + sizeof(uint8_t));
-    plaintext.AppendToString(&record);
-
+    record.append(plaintext.data(), plaintext.size());
     record.append(sizeof(uint8_t), '\x02');
     return record;
   }
@@ -271,9 +270,6 @@ class WebPushEncryptionDraft08
     record.remove_suffix(padding_length);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebPushEncryptionDraft08);
 };
 
 }  // namespace
@@ -353,8 +349,10 @@ bool GCMMessageCryptographer::Decrypt(
   DCHECK_EQ(salt.size(), 16u);
   DCHECK(plaintext);
 
-  if (record_size <= 1)
+  if (record_size <= 1) {
+    LOG(ERROR) << "Invalid record size passed.";
     return false;
+  }
 
   std::string prk = encryption_scheme_->DerivePseudoRandomKey(
       recipient_public_key, sender_public_key, ecdh_shared_secret, auth_secret);
@@ -367,22 +365,26 @@ bool GCMMessageCryptographer::Decrypt(
 
   if (!encryption_scheme_->ValidateCiphertextSize(ciphertext.size(),
                                                   record_size)) {
+    LOG(ERROR) << "Invalid ciphertext size passed.";
     return false;
   }
 
   std::string decrypted_record_string;
   if (!TransformRecord(Direction::DECRYPT, ciphertext, content_encryption_key,
                        nonce, &decrypted_record_string)) {
+    LOG(ERROR) << "Unable to transform the record.";
     return false;
   }
 
   DCHECK(!decrypted_record_string.empty());
 
   base::StringPiece decrypted_record(decrypted_record_string);
-  if (!encryption_scheme_->ValidateAndRemovePadding(decrypted_record))
+  if (!encryption_scheme_->ValidateAndRemovePadding(decrypted_record)) {
+    LOG(ERROR) << "Padding could not be validated or removed.";
     return false;
+  }
 
-  decrypted_record.CopyToString(plaintext);
+  plaintext->assign(decrypted_record.data(), decrypted_record.size());
   return true;
 }
 

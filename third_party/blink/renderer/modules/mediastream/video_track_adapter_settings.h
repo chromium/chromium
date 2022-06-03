@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -26,7 +27,7 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   // Creates a VideoTrackAdapterSettings with the specified resolution, frame
   // rate and resolution constraints. If |target_size| is null, it means that
   // no video processing is desired.
-  VideoTrackAdapterSettings(base::Optional<gfx::Size> target_size,
+  VideoTrackAdapterSettings(absl::optional<gfx::Size> target_size,
                             double min_aspect_ratio,
                             double max_aspect_ratio,
                             double max_frame_rate);
@@ -34,7 +35,7 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   VideoTrackAdapterSettings& operator=(const VideoTrackAdapterSettings& other);
   bool operator==(const VideoTrackAdapterSettings& other) const;
 
-  const base::Optional<gfx::Size>& target_size() const { return target_size_; }
+  const absl::optional<gfx::Size>& target_size() const { return target_size_; }
   int target_width() const {
     DCHECK(target_size_);
     return target_size_->width();
@@ -51,12 +52,12 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   }
 
  private:
-  base::Optional<gfx::Size> target_size_;
+  absl::optional<gfx::Size> target_size_;
   double min_aspect_ratio_;
   double max_aspect_ratio_;
   // A |max_frame_rate| of zero is used to signal that no frame-rate
   // adjustment is necessary.
-  // TODO(guidou): Change this to base::Optional. https://crbug.com/734528
+  // TODO(guidou): Change this to absl::optional. https://crbug.com/734528
   double max_frame_rate_;
 };
 

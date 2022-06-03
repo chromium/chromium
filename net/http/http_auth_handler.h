@@ -15,6 +15,7 @@
 
 namespace net {
 
+class NetworkIsolationKey;
 class HttpAuthChallengeTokenizer;
 struct HttpRequestInfo;
 class SSLInfo;
@@ -33,6 +34,10 @@ class SSLInfo;
 class NET_EXPORT_PRIVATE HttpAuthHandler {
  public:
   HttpAuthHandler();
+
+  HttpAuthHandler(const HttpAuthHandler&) = delete;
+  HttpAuthHandler& operator=(const HttpAuthHandler&) = delete;
+
   virtual ~HttpAuthHandler();
 
   // Initializes the handler using a challenge issued by a server.
@@ -43,10 +48,13 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
   // |target| and |origin| are both stored for later use, and are not part of
   //      the initial challenge.
   // |ssl_info| must be valid if the underlying connection used a certificate.
+  // |network_isolation_key| the NetworkIsolationKey associated with the
+  //      challenge. Used for host resolutions, if any are needed.
   // |net_log| to be used for logging.
   bool InitFromChallenge(HttpAuthChallengeTokenizer* challenge,
                          HttpAuth::Target target,
                          const SSLInfo& ssl_info,
+                         const NetworkIsolationKey& network_isolation_key,
                          const GURL& origin,
                          const NetLogWithSource& net_log);
 
@@ -178,10 +186,13 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
   // If the request was sent over an encrypted connection, |ssl_info| is valid
   // and describes the connection.
   //
+  // NetworkIsolationKey is the NetworkIsolationKey associated with the request.
+  //
   // Implementations are expected to initialize the following members:
   // scheme_, realm_, score_, properties_
   virtual bool Init(HttpAuthChallengeTokenizer* challenge,
-                    const SSLInfo& ssl_info) = 0;
+                    const SSLInfo& ssl_info,
+                    const NetworkIsolationKey& network_isolation_key) = 0;
 
   // |GenerateAuthTokenImpl()} is the auth-scheme specific implementation
   // of generating the next auth token. Callers should use |GenerateAuthToken()|
@@ -229,8 +240,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
   NetLogWithSource net_log_;
 
   CompletionOnceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandler);
 };
 
 }  // namespace net

@@ -28,7 +28,7 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
@@ -44,7 +44,7 @@
 
 namespace blink {
 
-void SQLTransaction::OnProcessV8Impl::Trace(blink::Visitor* visitor) {
+void SQLTransaction::OnProcessV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   OnProcessCallback::Trace(visitor);
 }
@@ -58,7 +58,7 @@ bool SQLTransaction::OnProcessV8Impl::OnProcess(SQLTransaction* transaction) {
   return callback_->handleEvent(nullptr, transaction).IsJust();
 }
 
-void SQLTransaction::OnSuccessV8Impl::Trace(blink::Visitor* visitor) {
+void SQLTransaction::OnSuccessV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   OnSuccessCallback::Trace(visitor);
 }
@@ -67,7 +67,7 @@ void SQLTransaction::OnSuccessV8Impl::OnSuccess() {
   callback_->InvokeAndReportException(nullptr);
 }
 
-void SQLTransaction::OnErrorV8Impl::Trace(blink::Visitor* visitor) {
+void SQLTransaction::OnErrorV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   OnErrorCallback::Trace(visitor);
 }
@@ -109,7 +109,7 @@ SQLTransaction::SQLTransaction(Database* db,
 
 SQLTransaction::~SQLTransaction() = default;
 
-void SQLTransaction::Trace(blink::Visitor* visitor) {
+void SQLTransaction::Trace(Visitor* visitor) const {
   visitor->Trace(database_);
   visitor->Trace(backend_);
   visitor->Trace(callback_);
@@ -347,7 +347,7 @@ void SQLTransaction::executeSql(ScriptState* script_state,
 void SQLTransaction::executeSql(
     ScriptState* script_state,
     const String& sql_statement,
-    const base::Optional<HeapVector<ScriptValue>>& arguments,
+    const absl::optional<HeapVector<ScriptValue>>& arguments,
     V8SQLStatementCallback* callback,
     V8SQLStatementErrorCallback* callback_error,
     ExceptionState& exception_state) {

@@ -4,13 +4,14 @@
 
 #include "components/gcm_driver/crypto/gcm_key_store.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
@@ -75,21 +76,21 @@ class GCMKeyStoreTest : public ::testing::Test {
   // Creates the GCM Key Store instance. May be called from within a test's body
   // to re-create the key store, causing the database to re-open.
   void CreateKeyStore() {
-    gcm_key_store_.reset(
-        new GCMKeyStore(scoped_temp_dir_.GetPath(),
-                        task_environment_.GetMainThreadTaskRunner()));
+    gcm_key_store_ = std::make_unique<GCMKeyStore>(
+        scoped_temp_dir_.GetPath(),
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   // Callback to use with GCMKeyStore::{GetKeys, CreateKeys} calls.
   void GotKeys(ECPrivateKeyUniquePtr* key_out,
                std::string* auth_secret_out,
-               const base::Closure& quit_closure,
+               base::OnceClosure quit_closure,
                ECPrivateKeyUniquePtr key,
                const std::string& auth_secret) {
     *key_out = std::move(key);
     *auth_secret_out = auth_secret;
     if (quit_closure)
-      quit_closure.Run();
+      std::move(quit_closure).Run();
   }
 
   void AddOldFormatEncryptionDataToKeyStoreDatabase(
@@ -139,10 +140,10 @@ class GCMKeyStoreTest : public ::testing::Test {
   GCMKeyStore* gcm_key_store() { return gcm_key_store_.get(); }
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
-  void UpdatedEntries(const base::Closure& quit_closure, bool success) {
+  void UpdatedEntries(base::OnceClosure quit_closure, bool success) {
     EXPECT_TRUE(success);
     if (quit_closure)
-      quit_closure.Run();
+      std::move(quit_closure).Run();
   }
 
  private:
@@ -424,7 +425,7 @@ TEST_F(GCMKeyStoreTest, CreateGetAndRemoveKeysSynchronously) {
   gcm_key_store()->CreateKeys(
       kFakeAppId, kFakeAuthorizedEntity,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this), &key,
-                     &auth_secret, base::Closure()));
+                     &auth_secret, base::OnceClosure()));
 
   // Continue synchronously, without running RunUntilIdle first.
   ECPrivateKeyUniquePtr key_after_create;
@@ -434,7 +435,7 @@ TEST_F(GCMKeyStoreTest, CreateGetAndRemoveKeysSynchronously) {
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
                      &key_after_create, &auth_secret_after_create,
-                     base::Closure()));
+                     base::OnceClosure()));
 
   // Continue synchronously, without running RunUntilIdle first.
   gcm_key_store()->RemoveKeys(kFakeAppId, kFakeAuthorizedEntity,
@@ -448,7 +449,7 @@ TEST_F(GCMKeyStoreTest, CreateGetAndRemoveKeysSynchronously) {
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
                      &key_after_remove, &auth_secret_after_remove,
-                     base::Closure()));
+                     base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -462,7 +463,7 @@ TEST_F(GCMKeyStoreTest, CreateGetAndRemoveKeysSynchronously) {
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
                      &key_after_idle, &auth_secret_after_idle,
-                     base::Closure()));
+                     base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -488,15 +489,15 @@ TEST_F(GCMKeyStoreTest, RemoveKeysWildcardAuthorizedEntity) {
   gcm_key_store()->CreateKeys(
       kFakeAppId, kFakeAuthorizedEntity,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this), &key1,
-                     &auth_secret1, base::Closure()));
+                     &auth_secret1, base::OnceClosure()));
   gcm_key_store()->CreateKeys(
       kFakeAppId, kSecondFakeAuthorizedEntity,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this), &key2,
-                     &auth_secret2, base::Closure()));
+                     &auth_secret2, base::OnceClosure()));
   gcm_key_store()->CreateKeys(
       kSecondFakeAppId, kFakeAuthorizedEntity,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this), &key3,
-                     &auth_secret3, base::Closure()));
+                     &auth_secret3, base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -510,17 +511,17 @@ TEST_F(GCMKeyStoreTest, RemoveKeysWildcardAuthorizedEntity) {
       kFakeAppId, kFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key1, &read_auth_secret1, base::Closure()));
+                     &read_key1, &read_auth_secret1, base::OnceClosure()));
   gcm_key_store()->GetKeys(
       kFakeAppId, kSecondFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key2, &read_auth_secret2, base::Closure()));
+                     &read_key2, &read_auth_secret2, base::OnceClosure()));
   gcm_key_store()->GetKeys(
       kSecondFakeAppId, kFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key3, &read_auth_secret3, base::Closure()));
+                     &read_key3, &read_auth_secret3, base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -540,17 +541,17 @@ TEST_F(GCMKeyStoreTest, RemoveKeysWildcardAuthorizedEntity) {
       kFakeAppId, kFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key1, &read_auth_secret1, base::Closure()));
+                     &read_key1, &read_auth_secret1, base::OnceClosure()));
   gcm_key_store()->GetKeys(
       kFakeAppId, kSecondFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key2, &read_auth_secret2, base::Closure()));
+                     &read_key2, &read_auth_secret2, base::OnceClosure()));
   gcm_key_store()->GetKeys(
       kSecondFakeAppId, kFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key3, &read_auth_secret3, base::Closure()));
+                     &read_key3, &read_auth_secret3, base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -608,7 +609,7 @@ TEST_F(GCMKeyStoreTest, SuccessiveCallsBeforeInitialization) {
   gcm_key_store()->CreateKeys(
       kFakeAppId, kFakeAuthorizedEntity,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this), &key,
-                     &auth_secret, base::Closure()));
+                     &auth_secret, base::OnceClosure()));
 
   // Deliberately do not run the message loop, so that the callback has not
   // been resolved yet. The following EXPECT() ensures this.
@@ -620,7 +621,7 @@ TEST_F(GCMKeyStoreTest, SuccessiveCallsBeforeInitialization) {
       kFakeAppId, kFakeAuthorizedEntity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMKeyStoreTest::GotKeys, base::Unretained(this),
-                     &read_key, &read_auth_secret, base::Closure()));
+                     &read_key, &read_auth_secret, base::OnceClosure()));
 
   EXPECT_FALSE(read_key);
 

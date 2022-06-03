@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_IOS_APP_HOST_COLLECTION_VIEW_CONTOLLER_H_
-#define REMOTING_IOS_APP_HOST_COLLECTION_VIEW_CONTOLLER_H_
+#ifndef REMOTING_IOS_APP_HOST_COLLECTION_VIEW_CONTROLLER_H_
+#define REMOTING_IOS_APP_HOST_COLLECTION_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/third_party/material_components_ios/src/components/Collections/src/MaterialCollections.h"
+#import <MaterialComponents/MaterialCollections.h>
+
 #import "remoting/ios/app/host_collection_view_cell.h"
 #import "remoting/ios/domain/host_info.h"
 
@@ -38,4 +39,4 @@
 
 @end
 
-#endif  // REMOTING_IOS_APP_HOST_LIST_VIEW_CONTOLLER_H_
+#endif  // REMOTING_IOS_APP_HOST_COLLECTION_VIEW_CONTROLLER_H_

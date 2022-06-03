@@ -4,8 +4,9 @@
 
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_suite.h"
 #else
 #include "components/exo/test/exo_test_suite_aura.h"
@@ -16,7 +17,7 @@
 #endif
 
 int main(int argc, char** argv) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestSuite test_suite(argc, argv);
 #else
   exo::test::ExoTestSuiteAura test_suite(argc, argv);

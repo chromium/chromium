@@ -15,14 +15,18 @@ class WebViewGuest;
 class JavaScriptDialogHelper : public content::JavaScriptDialogManager {
  public:
   explicit JavaScriptDialogHelper(WebViewGuest* guest);
+
+  JavaScriptDialogHelper(const JavaScriptDialogHelper&) = delete;
+  JavaScriptDialogHelper& operator=(const JavaScriptDialogHelper&) = delete;
+
   ~JavaScriptDialogHelper() override;
 
   // JavaScriptDialogManager implementation.
   void RunJavaScriptDialog(content::WebContents* web_contents,
                            content::RenderFrameHost* render_frame_host,
                            content::JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override;
   void RunBeforeUnloadDialog(content::WebContents* web_contents,
@@ -31,7 +35,7 @@ class JavaScriptDialogHelper : public content::JavaScriptDialogManager {
                              DialogClosedCallback callback) override;
   bool HandleJavaScriptDialog(content::WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override;
+                              const std::u16string* prompt_override) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
 
@@ -42,8 +46,6 @@ class JavaScriptDialogHelper : public content::JavaScriptDialogManager {
 
   // Pointer to the webview that is being helped.
   WebViewGuest* const web_view_guest_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogHelper);
 };
 
 }  // namespace extensions

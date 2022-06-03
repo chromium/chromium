@@ -136,6 +136,16 @@ if (window.testRunner) {
         finish();
     }
 
+    PerfTestRunner.assert_true = function (cond,text) {
+      if (cond)
+        return;
+      PerfTestRunner.logFatalError(text);
+    }
+
+    PerfTestRunner.assert_false = function (cond,text) {
+      PerfTestRunner.assert_true(!cond,text);
+    }
+
     PerfTestRunner.formatException = function (text, exception) {
         return "Got an exception while " + text +
             " with name=" + exception.name +
@@ -177,7 +187,12 @@ if (window.testRunner) {
         if (test.warmUpCount && test.warmUpCount > 0)
             completedIterations = -test.warmUpCount;
         logLines = PerfTestRunner.bufferedLog || window.testRunner ? [] : null;
-        PerfTestRunner.log("Running " + iterationCount + " times");
+
+        // Tests that run in workers are not impacted by the iteration control.
+        if (!currentTest.runInWorker) {
+            PerfTestRunner.log("Running " + iterationCount + " times");
+        }
+
         if (test.doNotIgnoreInitialRun)
             completedIterations++;
 
@@ -245,7 +260,8 @@ if (window.testRunner) {
 
     function ignoreWarmUpAndLog(measuredValue) {
         var labeledResult = measuredValue + " " + PerfTestRunner.unit;
-        if (completedIterations <= 0)
+        // Tests that run in workers are not impacted by the iteration control.
+        if (!currentTest.runInWorker && completedIterations <= 0)
             PerfTestRunner.log("Ignoring warm-up run (" + labeledResult + ")");
         else {
             results.push(measuredValue);
@@ -258,7 +274,9 @@ if (window.testRunner) {
 
     function finish() {
         try {
-            console.timeEnd("blink_perf");
+            // The blink_perf timer is only started for non-worker test.
+            if (!currentTest.runInWorker)
+                console.timeEnd("blink_perf");
             if (currentTest.description)
                 PerfTestRunner.log("Description: " + currentTest.description);
             PerfTestRunner.logStatistics(results, PerfTestRunner.unit, "Time:");
@@ -336,6 +354,17 @@ if (window.testRunner) {
         start(test, requestAnimationFrame, measureFrameTimeOnce);
     }
 
+    PerfTestRunner.measureInnerRAFTime = function (test) {
+        PerfTestRunner.unit = "ms";
+        PerfTestRunner.bufferedLog = true;
+        test.warmUpCount = test.warmUpCount || 5;
+        test.iterationCount = test.iterationCount || 10;
+        // Force gc before starting the test to avoid the measured time from
+        // being affected by gc performance. See crbug.com/667811#c16.
+        PerfTestRunner.gc();
+        start(test, requestAnimationFrame, measureTimeOnce);
+    }
+
     var lastFrameTime = -1;
     function measureFrameTimeOnce() {
         if (lastFrameTime != -1)
@@ -358,6 +387,11 @@ if (window.testRunner) {
     PerfTestRunner.measureTime = function (test) {
         PerfTestRunner.unit = "ms";
         PerfTestRunner.bufferedLog = true;
+        start(test, zeroTimeoutScheduler, measureTimeOnce);
+    }
+
+    PerfTestRunner.measureValue = function (test) {
+        PerfTestRunner.unit = test.unit;
         start(test, zeroTimeoutScheduler, measureTimeOnce);
     }
 
@@ -452,6 +486,43 @@ if (window.testRunner) {
         };
 
         PerfTestRunner.measureTime(test);
+    }
+
+    // Used for tests that run in workers.
+    // 1. Call this method to trigger the test. It should be used together
+    //    with |WorkerTestHelper.measureRunsPerSecond()| which is defined in
+    //    src/third_party/blink/perf_tests/resources/worker-test-helper.js.
+    // 2. The iteration control parameters (test.iterationCount,
+    //    test.doNotIgnoreInitialRun, and test.warmUpCount) are ignored.
+    //    Use parameters of |measureRunsPerSecond()| to control iteration.
+    // 3. Test result should be sent to the page where the test is triggered.
+    //    Then the result should be recorded by |recordResultFromWorker()| to
+    //    finish the test.
+    PerfTestRunner.startMeasureValuesInWorker = function (test) {
+        PerfTestRunner.unit = test.unit;
+        test.runInWorker = true;
+        start(test, undefined, function() { test.run(); });
+    }
+
+    // Used for tests that run in workers.
+    // This method records the result posted from worker thread and finishes the test.
+    PerfTestRunner.recordResultFromWorker = function(result) {
+        if (result.error) {
+            PerfTestRunner.logFatalError(result.error);
+            return;
+        }
+
+        PerfTestRunner.log("Running " + result.values.length + " times");
+        try {
+            result.values.forEach((value) => {
+                ignoreWarmUpAndLog(value);
+            });
+        } catch (exception) {
+            PerfTestRunner.logFatalError("Got an exception while logging the result with name=" + exception.name + ", message=" + exception.message);
+            return;
+        }
+
+        finish();
     }
 
     window.PerfTestRunner = PerfTestRunner;

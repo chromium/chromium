@@ -17,6 +17,10 @@ namespace forwarder2 {
 class PipeNotifier {
  public:
   PipeNotifier();
+
+  PipeNotifier(const PipeNotifier&) = delete;
+  PipeNotifier& operator=(const PipeNotifier&) = delete;
+
   ~PipeNotifier();
 
   bool Notify();
@@ -28,8 +32,6 @@ class PipeNotifier {
  private:
   int sender_fd_;
   int receiver_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeNotifier);
 };
 
 }  // namespace forwarder

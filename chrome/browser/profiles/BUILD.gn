@@ -1,0 +1,71 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+# This target should be the default place for adding public interface things
+# (ie, non-factory, non-impl). There will likely need to be a :factory or :impl
+# target (maybe both) for those eventually.
+source_set("profiles") {
+  sources = [
+    "incognito_helpers.cc",
+    "incognito_helpers.h",
+  ]
+
+  # Cannot depend on //chrome/browser:browser.
+  deps = [ ":profile" ]
+}
+
+# This target should be very minimal, likely no new sources should be added
+# here. It should not depend on anything besides flags/constants in
+# //chrome/browser/* because almost everything else depends on it.
+source_set("profile") {
+  sources = [
+    "profile.cc",
+    "profile.h",
+    "profile_observer.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  # Cannot depend on //chrome/browser:browser.
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/keyed_service/content",
+    "//components/language/core/browser",
+    "//components/live_caption:constants",
+    "//components/media_router/common",
+    "//components/pref_registry",
+    "//components/profile_metrics",
+    "//components/sync/driver",
+    "//components/variations",
+    "//content/public/browser",
+    "//extensions/buildflags",
+  ]
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+  if (is_android) {
+    deps += [ "//chrome/browser/profiles/android:jni_headers" ]
+  }
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("profile_metrics_enum_java") {
+    sources = [ "profile_metrics.h" ]
+  }
+}

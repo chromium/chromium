@@ -12,4 +12,7 @@ extern NSString* const kInfobarModalViewIdentifier;
 // Accessibility identifier of the Modal Cancel Button.
 extern NSString* const kInfobarModalCancelButton;
 
+// UserAction keys.
+extern const char kInfobarModalCancelButtonTapped[];
+
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_MODAL_CONSTANTS_H_

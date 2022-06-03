@@ -1,5 +1,5 @@
-document
-++description Name='this text is not ignored'
-++group IsControlElement=false
-++++description Name='after selection'
-++description Name='Done'
+Document
+++Text Name='this text is not ignored'
+++Group IsControlElement=false
+++++Text Name='after selection'
+++Text Name='Done'

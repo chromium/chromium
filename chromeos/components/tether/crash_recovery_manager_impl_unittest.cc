@@ -43,6 +43,11 @@ std::string CreateConfigurationJsonString(bool is_connected) {
 }  // namespace
 
 class CrashRecoveryManagerImplTest : public testing::Test {
+ public:
+  CrashRecoveryManagerImplTest(const CrashRecoveryManagerImplTest&) = delete;
+  CrashRecoveryManagerImplTest& operator=(const CrashRecoveryManagerImplTest&) =
+      delete;
+
  protected:
   CrashRecoveryManagerImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1u)[0]) {}
@@ -57,7 +62,7 @@ class CrashRecoveryManagerImplTest : public testing::Test {
     fake_active_host_ = std::make_unique<FakeActiveHost>();
     fake_host_scan_cache_ = std::make_unique<FakeHostScanCache>();
 
-    crash_recovery_manager_ = CrashRecoveryManagerImpl::Factory::NewInstance(
+    crash_recovery_manager_ = CrashRecoveryManagerImpl::Factory::Create(
         helper_.network_state_handler(), fake_active_host_.get(),
         fake_host_scan_cache_.get());
 
@@ -101,8 +106,8 @@ class CrashRecoveryManagerImplTest : public testing::Test {
 
   void StartRestoration() {
     crash_recovery_manager_->RestorePreCrashStateIfNecessary(
-        base::Bind(&CrashRecoveryManagerImplTest::OnRestorationFinished,
-                   base::Unretained(this)));
+        base::BindOnce(&CrashRecoveryManagerImplTest::OnRestorationFinished,
+                       base::Unretained(this)));
   }
 
   void OnRestorationFinished() { is_restoration_finished_ = true; }
@@ -127,9 +132,6 @@ class CrashRecoveryManagerImplTest : public testing::Test {
   bool is_restoration_finished_;
 
   std::unique_ptr<CrashRecoveryManager> crash_recovery_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManagerImplTest);
 };
 
 TEST_F(CrashRecoveryManagerImplTest, ActiveHostDisconnected) {

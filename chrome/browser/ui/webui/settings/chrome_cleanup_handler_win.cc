@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chrome_cleanup_handler_win.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -14,14 +15,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,8 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using safe_browsing::ChromeCleanerController;
@@ -46,8 +43,9 @@ std::unique_ptr<base::ListValue> GetFilesAsListStorage(
   auto value = std::make_unique<base::ListValue>();
   for (const base::FilePath& path : files) {
     auto item = std::make_unique<base::DictionaryValue>();
-    item->SetString("dirname", path.DirName().AsEndingWithSeparator().value());
-    item->SetString("basename", path.BaseName().value());
+    item->SetString("dirname",
+                    path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
+    item->SetString("basename", path.BaseName().AsUTF8Unsafe());
     value->Append(std::move(item));
   }
   return value;
@@ -55,10 +53,10 @@ std::unique_ptr<base::ListValue> GetFilesAsListStorage(
 
 // Returns a ListValue containing a copy of the strings stored in |string_set|.
 std::unique_ptr<base::ListValue> GetStringSetAsListStorage(
-    const std::set<base::string16>& string_set) {
+    const std::set<std::wstring>& string_set) {
   auto value = std::make_unique<base::ListValue>();
-  for (const base::string16& string : string_set)
-    value->AppendString(string);
+  for (const std::wstring& string : string_set)
+    value->Append(base::AsString16(string));
 
   return value;
 }
@@ -71,10 +69,6 @@ base::DictionaryValue GetScannerResultsAsDictionary(
                 GetFilesAsListStorage(scanner_results.files_to_delete()));
   value.SetList("registryKeys",
                 GetStringSetAsListStorage(scanner_results.registry_keys()));
-  std::set<base::string16> extensions;
-  ChromeCleanupHandler::GetExtensionNamesFromIds(
-      profile, scanner_results.extension_ids(), &extensions);
-  value.SetList("extensions", GetStringSetAsListStorage(extensions));
   return value;
 }
 
@@ -115,60 +109,38 @@ ChromeCleanupHandler::~ChromeCleanupHandler() {
   controller_->RemoveObserver(this);
 }
 
-// static
-void ChromeCleanupHandler::GetExtensionNamesFromIds(
-    Profile* profile,
-    const std::set<base::string16>& extension_ids,
-    std::set<base::string16>* extension_names) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  for (const base::string16& extension_id : extension_ids) {
-    const extensions::Extension* extension =
-        extension_registry->GetInstalledExtension(
-            base::UTF16ToUTF8(extension_id));
-    if (extension) {
-      extension_names->insert(base::UTF8ToUTF16(extension->name()));
-    } else {
-      extension_names->insert(l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSION_UNKNOWN, extension_id));
-    }
-  }
-#endif
-}
-
 void ChromeCleanupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerChromeCleanerObserver",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleRegisterChromeCleanerObserver,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startScanning",
       base::BindRepeating(&ChromeCleanupHandler::HandleStartScanning,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "restartComputer",
       base::BindRepeating(&ChromeCleanupHandler::HandleRestartComputer,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startCleanup",
       base::BindRepeating(&ChromeCleanupHandler::HandleStartCleanup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyShowDetails",
       base::BindRepeating(&ChromeCleanupHandler::HandleNotifyShowDetails,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyChromeCleanupLearnMoreClicked",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getMoreItemsPluralString",
       base::BindRepeating(&ChromeCleanupHandler::HandleGetMoreItemsPluralString,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getItemsToRemovePluralString",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleGetItemsToRemovePluralString,
@@ -219,9 +191,8 @@ void ChromeCleanupHandler::OnRebootRequired() {
 
 void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.CleanupCard", true);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_Shown"));
   AllowJavascript();
@@ -231,9 +202,10 @@ void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
 }
 
 void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args->GetList()[0].is_bool())
+    allow_logs_upload = args->GetList()[0].GetBool();
 
   // If this operation is not allowed the UI should be disabled.
   CHECK(controller_->IsAllowedByPolicy());
@@ -248,7 +220,7 @@ void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
 }
 
 void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_RestartComputer"));
@@ -257,9 +229,10 @@ void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
 }
 
 void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args->GetList()[0].is_bool())
+    allow_logs_upload = args->GetList()[0].GetBool();
 
   // The state is propagated to all open tabs and should be consistent.
   DCHECK_EQ(controller_->logs_enabled(profile_), allow_logs_upload);
@@ -269,11 +242,8 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartCleanup"));
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-
   controller_->ReplyWithUserResponse(
-      profile_, extension_service,
+      profile_,
       allow_logs_upload
           ? ChromeCleanerController::UserResponse::kAcceptedWithLogs
           : ChromeCleanerController::UserResponse::kAcceptedWithoutLogs);
@@ -281,9 +251,10 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
 
 void ChromeCleanupHandler::HandleNotifyShowDetails(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   bool details_section_visible = false;
-  args->GetBoolean(0, &details_section_visible);
+  if (args->GetList()[0].is_bool())
+    details_section_visible = args->GetList()[0].GetBool();
 
   if (details_section_visible) {
     base::RecordAction(
@@ -296,7 +267,7 @@ void ChromeCleanupHandler::HandleNotifyShowDetails(
 
 void ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked(
     const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_LearnMore"));
@@ -318,17 +289,16 @@ void ChromeCleanupHandler::HandleGetItemsToRemovePluralString(
 
 void ChromeCleanupHandler::GetPluralString(int id,
                                            const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
 
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  std::string callback_id = list[0].GetString();
 
-  int num_items = 0;
-  args->GetInteger(1, &num_items);
+  int num_items = list[1].GetIfInt().value_or(0);
 
-  const base::string16 plural_string =
+  const std::u16string plural_string =
       num_items > 0 ? l10n_util::GetPluralStringFUTF16(id, num_items)
-                    : base::string16();
+                    : std::u16string();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(plural_string));
 }

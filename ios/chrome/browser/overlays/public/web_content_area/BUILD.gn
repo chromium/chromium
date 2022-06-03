@@ -4,26 +4,54 @@
 
 source_set("web_content_area") {
   sources = [
-    "app_launcher_alert_overlay.h",
-    "app_launcher_alert_overlay.mm",
+    "alert_overlay.h",
+    "alert_overlay.mm",
+    "app_launcher_overlay.h",
+    "app_launcher_overlay.mm",
     "http_auth_overlay.h",
     "http_auth_overlay.mm",
-    "java_script_alert_overlay.h",
-    "java_script_alert_overlay.mm",
-    "java_script_confirmation_overlay.h",
-    "java_script_confirmation_overlay.mm",
-    "java_script_dialog_source.h",
-    "java_script_dialog_source.mm",
-    "java_script_prompt_overlay.h",
-    "java_script_prompt_overlay.mm",
+    "java_script_dialog_overlay.h",
+    "java_script_dialog_overlay.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/ui/dialogs",
+    "//ios/chrome/browser/ui/dialogs:constants",
+    "//ios/chrome/browser/ui/elements",
     "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "app_launcher_overlay_unittest.mm",
+    "http_auth_overlay_unittest.mm",
+    "java_script_dialog_overlay_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":web_content_area",
+    "//base",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/ui/dialogs",
+    "//ios/chrome/browser/ui/dialogs:constants",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
 }

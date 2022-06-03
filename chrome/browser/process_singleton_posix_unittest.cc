@@ -24,10 +24,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/thread_test_helper.h"
@@ -40,8 +39,6 @@
 #include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using content::BrowserThread;
-
 namespace {
 
 class ProcessSingletonPosixTest : public testing::Test {
@@ -50,10 +47,10 @@ class ProcessSingletonPosixTest : public testing::Test {
   class TestableProcessSingleton : public ProcessSingleton {
    public:
     explicit TestableProcessSingleton(const base::FilePath& user_data_dir)
-        : ProcessSingleton(
-            user_data_dir,
-            base::Bind(&TestableProcessSingleton::NotificationCallback,
-                       base::Unretained(this))) {}
+        : ProcessSingleton(user_data_dir,
+                           base::BindRepeating(
+                               &TestableProcessSingleton::NotificationCallback,
+                               base::Unretained(this))) {}
 
     std::vector<base::CommandLine::StringVector> callback_command_lines_;
 
@@ -77,7 +74,7 @@ class ProcessSingletonPosixTest : public testing::Test {
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
         signal_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
-        process_singleton_on_thread_(NULL) {}
+        process_singleton_on_thread_(nullptr) {}
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -100,8 +97,8 @@ class ProcessSingletonPosixTest : public testing::Test {
   }
 
   void TearDown() override {
-    scoped_refptr<base::ThreadTestHelper> io_helper(new base::ThreadTestHelper(
-        base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get()));
+    scoped_refptr<base::ThreadTestHelper> io_helper(
+        new base::ThreadTestHelper(content::GetIOThreadTaskRunner({}).get()));
     ASSERT_TRUE(io_helper->Run());
 
     // Destruct the ProcessSingleton object before the IO thread so that its
@@ -121,8 +118,8 @@ class ProcessSingletonPosixTest : public testing::Test {
   }
 
   void CreateProcessSingletonOnThread() {
-    ASSERT_EQ(NULL, worker_thread_.get());
-    worker_thread_.reset(new base::Thread("BlockingThread"));
+    ASSERT_FALSE(worker_thread_.get());
+    worker_thread_ = std::make_unique<base::Thread>("BlockingThread");
     worker_thread_->Start();
 
     worker_thread_->task_runner()->PostTask(
@@ -178,9 +175,8 @@ class ProcessSingletonPosixTest : public testing::Test {
     if (override_kill) {
       process_singleton->OverrideCurrentPidForTesting(
           base::GetCurrentProcId() + 1);
-      process_singleton->OverrideKillCallbackForTesting(
-          base::Bind(&ProcessSingletonPosixTest::KillCallback,
-                     base::Unretained(this)));
+      process_singleton->OverrideKillCallbackForTesting(base::BindRepeating(
+          &ProcessSingletonPosixTest::KillCallback, base::Unretained(this)));
     }
 
     return process_singleton->NotifyOtherProcessWithTimeout(
@@ -200,7 +196,7 @@ class ProcessSingletonPosixTest : public testing::Test {
   }
 
   void CheckNotified() {
-    ASSERT_TRUE(process_singleton_on_thread_ != NULL);
+    ASSERT_TRUE(process_singleton_on_thread_);
     ASSERT_EQ(1u, process_singleton_on_thread_->callback_command_lines_.size());
     bool found = false;
     for (size_t i = 0;
@@ -503,7 +499,7 @@ TEST_F(ProcessSingletonPosixTest, IgnoreSocketSymlinkWithTooLongTarget) {
       ProcessSingleton::ORPHANED_LOCK_FILE, 1u);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Test that if there is an existing lock file, and we could not flock()
 // it, then exit.
 TEST_F(ProcessSingletonPosixTest, CreateRespectsOldMacLock) {
@@ -528,4 +524,4 @@ TEST_F(ProcessSingletonPosixTest, CreateReplacesOldMacLock) {
   EXPECT_TRUE(process_singleton->Create());
   VerifyFiles();
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)

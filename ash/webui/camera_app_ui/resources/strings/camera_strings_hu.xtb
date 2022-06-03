@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hu">
+<translation id="1113173431709655881">Kamera mód</translation>
+<translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Forgatás 90 fokkal az óramutató járásával megegyezően</translation>
+<translation id="1276998909102132017">Galériaképek</translation>
+<translation id="1300209025925956156">Dokumentum beolvasása</translation>
+<translation id="1303487788671416818">Teljes méretű videó-pillanatkép engedélyezése</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Megtekintésükhöz nyomja le a Keresés + Balra nyíl billentyűparancsot.</translation>
+<translation id="1430915738399379752">Nyomtatás</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
+<translation id="1473110567575736769">Három másodperces időzítő</translation>
+<translation id="1545749641540134597">QR-kód beolvasása</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normál</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1627744224761163218">4 × 4</translation>
+<translation id="1664224225747386870">A kamera semmit sem rögzített</translation>
+<translation id="1838104802459806957">Billentés felfelé</translation>
+<translation id="1851169887664797861">Újabb kameravezérlők állnak rendelkezésre</translation>
+<translation id="1851616744363735765">SZÜNETEL</translation>
+<translation id="1862930711583847113">Nem lehet exportálni: <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Fotó felbontása</translation>
+<translation id="2022953316617983419">QR-kód</translation>
+<translation id="2036868001356139588">Időzítés hossza</translation>
+<translation id="2050339315714019657">Álló</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> aktív</translation>
+<translation id="2144806332417375165">Egyedi videóparaméterek</translation>
+<translation id="2175927920773552910">QR-kód</translation>
+<translation id="229579744168541441">Exportálás lemezre</translation>
+<translation id="2320741269052147773">Pásztázás balra</translation>
+<translation id="2501278716633472235">Visszalépés</translation>
+<translation id="2501853267655415902">A felvétel leállt</translation>
+<translation id="2501953888035679275">Fotókat és videókat készíthet a kamerával.</translation>
+<translation id="2517472476991765520">Keresés</translation>
+<translation id="2549985041256363841">Felvétel megkezdése</translation>
+<translation id="2599796128805996109">Hátsó kamera</translation>
+<translation id="2759905922487820242"><ph name="MAXIMAL" />/<ph name="CURRENT" /> mp</translation>
+<translation id="2761536921376153655">Keresés típusa</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> csatlakoztatva.</translation>
+<translation id="2968794441791257519">A kamerával készített fotók és videók a Letöltések mappába kerülnek. A Fájlok alkalmazásban férhet hozzájuk.
+
+        A tárhelyengedéllyel rendelkező alkalmazások hozzáférhetnek a fotókhoz és a videókhoz.</translation>
+<translation id="3067436040345934772">Pásztázás jobbra</translation>
+<translation id="3081586908890909590">Váltás videófelvételre</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Rács típusa</translation>
+<translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3240426699337459095">Link másolva</translation>
+<translation id="3259149966178251584">Kamera felbontása</translation>
+<translation id="3260401663013584785">Nem észlelhető dokumentum</translation>
+<translation id="3305962767867348165">Rögzítés</translation>
+<translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
+<translation id="346539236881580388">Új kép készítése</translation>
+<translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
+<translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Váltás a beolvasási módra</translation>
+<translation id="3789724198583203151">Forgatás 90 fokkal az óramutató járásával ellentétesen</translation>
+<translation id="3810838688059735925">Videó</translation>
+<translation id="3838931309141338733">Vonalkód beolvasása</translation>
+<translation id="3892148308691398805">Szöveg másolása</translation>
+<translation id="4118525110028899586">Felvétel szüneteltetése</translation>
+<translation id="4121305183798804752">Dokumentum észlelve</translation>
+<translation id="4269820728363426813">Link másolása</translation>
+<translation id="4279490309300973883">Tükrözés</translation>
+<translation id="4329152592498422850">Váltás négyzet alakú fotó készítésére</translation>
+<translation id="4383571725254449280">Teljesítménynaplók nyomtatása</translation>
+<translation id="4445542136948522167">Fotókészítés leállítása</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="4570032796877367747">Elülső kamera</translation>
+<translation id="4628948037717959914">Fénykép</translation>
+<translation id="4649291346448517080">Nem sikerült menteni a fájlt</translation>
+<translation id="4890010094662541459">3 × 3</translation>
+<translation id="491895758387112773">Multi-stream videó rögzítése</translation>
+<translation id="5057360777601936059">A kamera jelenleg nem használható.
+        Ellenőrizze, hogy a kamera megfelelően van-e csatlakoztatva.</translation>
+<translation id="5152121255775685072">Ugrás a galériába</translation>
+<translation id="520537883758714667">A dokumentumbeolvasás már használható</translation>
+<translation id="5317780077021120954">Mentés</translation>
+<translation id="5444515100983837161">A dokumentum összes szélének a kereten belül kell lennie. A beolvasás akkor működik a legjobban, ha a dokumentum és a háttér színei különbözőek.</translation>
+<translation id="5671277269877808209">Négyzet</translation>
+<translation id="5746169159649715125">Mentés PDF-ként</translation>
+<translation id="5753488212459587150">Szakértői mód bekapcsolása</translation>
+<translation id="5759254179196327752">Dokumentum beolvasása</translation>
+<translation id="5775960006311140197">Szakértői mód</translation>
+<translation id="5869546221129391014">Rács</translation>
+<translation id="5975083100439434680">Kicsinyítés</translation>
+<translation id="6073451960410192870">Felvétel leállítása</translation>
+<translation id="6197807149213783179">Metaadatok mentése</translation>
+<translation id="6233780560267770709">Háromszor hármas</translation>
+<translation id="6243827288366940320">Aranymetszés</translation>
+<translation id="6248749904681914629">Külső kamera</translation>
+<translation id="6353688143752491039">Köszönjük a Kamera alkalmazással kapcsolatban küldött visszajelzését.
+
+Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mellékeljen valamilyen mintafotót vagy -videót, és ismertesse a problémát. (Például túl sötét a fotó, vagy a kép tárgya nincs fókuszban.)</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="6527303717912515753">Megosztás</translation>
+<translation id="667999046851023355">Dokumentum</translation>
+<translation id="6681668084120808868">Fényképkészítés</translation>
+<translation id="6778482348691154169">Nem sikerült elkészíteni a fotót</translation>
+<translation id="695140971690006676">Az összes visszaállítása</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 másodperc</translation>
+<translation id="712848772518857951">Biztosan eltávolít <ph name="COUNT" /> elemet?</translation>
+<translation id="7134221860976209830">Tíz másodperces időzítő</translation>
+<translation id="7191890674911603392">Rögzítés típusa</translation>
+<translation id="7243947652761655814">Videó felbontása</translation>
+<translation id="7337660886763914220">Fájlrendszerbeli hibák.</translation>
+<translation id="7450541714075000668">Szöveg vágólapra másolva</translation>
+<translation id="7476762461674917065">GIF-rögzítési lehetőség megjelenítése</translation>
+<translation id="7488619942230388918">GIF-videó rögzítése</translation>
+<translation id="7557677699350329807">Váltás a következő kamerára</translation>
+<translation id="7607002721634913082">Szünet</translation>
+<translation id="7608223098072244877">Négyszer négyes</translation>
+<translation id="7649070708921625228">Súgó</translation>
+<translation id="7658239707568436148">Mégse</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Normál videó rögzítése</translation>
+<translation id="7983668134180549431">Szöveg észlelve.</translation>
+<translation id="8067883171444229417">Videó lejátszása</translation>
+<translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>
+<translation id="8131740175452115882">Megerősítés</translation>
+<translation id="8145038249676204903">Váltás fotókészítésre</translation>
+<translation id="8167081290930651932">Mentés fotóként</translation>
+<translation id="8239780215768881278">Pillanatkép készítése a videóból</translation>
+<translation id="8261506727792406068">Törlés</translation>
+<translation id="8425673304802773841">Billentés lefelé</translation>
+<translation id="8428213095426709021">Beállítások</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> × <ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Sikerült</translation>
+<translation id="8730621377337864115">Kész</translation>
+<translation id="8732462232047530626">Metaadatok előnézete</translation>
+<translation id="8815966864175525708">Váltás álló fotó készítésére</translation>
+<translation id="8828441885228359828">Felvétel folytatása</translation>
+<translation id="8870695351537079478">Nem sikerült elindítani a felvételt.</translation>
+<translation id="8903921497873541725">Nagyítás</translation>
+<translation id="9045010116236796332">A dokumentum összes szélének a kereten belül kell lennie</translation>
+<translation id="9045155556724273246">10 másodperc</translation>
+<translation id="906331135292332864">Kép feldolgozása…</translation>
+<translation id="945522503751344254">Visszajelzés küldése</translation>
+</translationbundle>

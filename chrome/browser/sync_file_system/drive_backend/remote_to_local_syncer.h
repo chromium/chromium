@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
@@ -17,7 +16,7 @@
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace drive {
@@ -27,7 +26,7 @@ class DriveServiceInterface;
 namespace google_apis {
 class FileList;
 class FileResource;
-}
+}  // namespace google_apis
 
 namespace storage {
 class ScopedFile;
@@ -46,6 +45,10 @@ class RemoteToLocalSyncer : public SyncTask {
   // Conflicting trackers will have low priority for RemoteToLocalSyncer so that
   // it should be resolved by LocatToRemoteSyncer.
   explicit RemoteToLocalSyncer(SyncEngineContext* sync_context);
+
+  RemoteToLocalSyncer(const RemoteToLocalSyncer&) = delete;
+  RemoteToLocalSyncer& operator=(const RemoteToLocalSyncer&) = delete;
+
   ~RemoteToLocalSyncer() override;
 
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
@@ -106,8 +109,8 @@ class RemoteToLocalSyncer : public SyncTask {
   void ResolveRemoteChange(std::unique_ptr<SyncTaskToken> token);
 
   void MoveToBackground(std::unique_ptr<SyncTaskToken> token,
-                        const Continuation& continuation);
-  void ContinueAsBackgroundTask(const Continuation& continuation,
+                        Continuation continuation);
+  void ContinueAsBackgroundTask(Continuation continuation,
                                 std::unique_ptr<SyncTaskToken> token);
 
   // Handles missing remote metadata case.
@@ -116,7 +119,7 @@ class RemoteToLocalSyncer : public SyncTask {
   // Note: if the file is not found, it should be handled as if deleted.
   void HandleMissingRemoteMetadata(std::unique_ptr<SyncTaskToken> token);
   void DidGetRemoteMetadata(std::unique_ptr<SyncTaskToken> token,
-                            google_apis::DriveApiErrorCode error,
+                            google_apis::ApiErrorCode error,
                             std::unique_ptr<google_apis::FileResource> entry);
 
   // This implements the body of the HandleNewFile and HandleContentUpdate.
@@ -164,7 +167,7 @@ class RemoteToLocalSyncer : public SyncTask {
   void ListFolderContent(std::unique_ptr<SyncTaskToken> token);
   void DidListFolderContent(std::unique_ptr<SyncTaskToken> token,
                             std::unique_ptr<FileIDList> children,
-                            google_apis::DriveApiErrorCode error,
+                            google_apis::ApiErrorCode error,
                             std::unique_ptr<google_apis::FileList> file_list);
 
   void SyncCompleted(std::unique_ptr<SyncTaskToken> token,
@@ -172,8 +175,8 @@ class RemoteToLocalSyncer : public SyncTask {
   void FinalizeSync(std::unique_ptr<SyncTaskToken> token,
                     SyncStatusCode status);
 
-  void Prepare(const SyncStatusCallback& callback);
-  void DidPrepare(const SyncStatusCallback& callback,
+  void Prepare(SyncStatusCallback callback);
+  void DidPrepare(SyncStatusCallback callback,
                   SyncStatusCode status,
                   const SyncFileMetadata& metadata,
                   const FileChangeList& changes);
@@ -182,7 +185,7 @@ class RemoteToLocalSyncer : public SyncTask {
   void DownloadFile(std::unique_ptr<SyncTaskToken> token);
   void DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
                        storage::ScopedFile file,
-                       google_apis::DriveApiErrorCode error,
+                       google_apis::ApiErrorCode error,
                        const base::FilePath&);
   void DidApplyDownload(std::unique_ptr<SyncTaskToken> token,
                         storage::ScopedFile,
@@ -215,8 +218,6 @@ class RemoteToLocalSyncer : public SyncTask {
   std::unique_ptr<FileChangeList> local_changes_;
 
   base::WeakPtrFactory<RemoteToLocalSyncer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteToLocalSyncer);
 };
 
 }  // namespace drive_backend

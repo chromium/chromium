@@ -1,0 +1,4 @@
+monorail: {
+  component: "Blink>MemoryAllocator"
+}
+team_email: "catan-team@chromium.org"

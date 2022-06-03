@@ -141,7 +141,7 @@ class Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     if path.startswith('/chromium/src/+/master'):
       path = path[len('/chromium/src/+/master'):]
 
-    full_path = os.path.realpath(os.path.join(self.server.top_level, path[1:]))
+    full_path = os.path.normpath(os.path.join(self.server.top_level, path[1:]))
 
     if not full_path.startswith(self.server.top_level):
       self._DoUnknown()

@@ -1,0 +1,19 @@
+<!doctype html>
+<div id=target></div>
+<script>
+// This is a regression test for crbug.com/1063652, the test pass as long as it
+// doesn't crash.
+CSS.registerProperty({
+  name: '--c',
+  syntax: '<number> | initial-value',
+  initialValue: 'initial-value',
+  inherits: false,
+});
+let animation = target.animate({
+  '--c': [, '300' ],
+}, {
+  duration: 1,
+});
+if (window.testRunner)
+  testRunner.dumpAsText();
+</script>

@@ -31,33 +31,29 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ICON_URL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ICON_URL_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
-enum IconType {
-  kInvalidIcon = 0,
-  kFavicon = 1,
-  kTouchIcon = 1 << 1,
-  kTouchPrecomposedIcon = 1 << 2,
-};
-
 struct IconURL {
   DISALLOW_NEW();
-  IconType icon_type_;
-  Vector<IntSize> sizes_;
+  mojom::blink::FaviconIconType icon_type_;
+  Vector<gfx::Size> sizes_;
   String mime_type_;
   KURL icon_url_;
   bool is_default_icon_;
 
-  IconURL() : icon_type_(kInvalidIcon), is_default_icon_(false) {}
+  IconURL()
+      : icon_type_(mojom::blink::FaviconIconType::kInvalid),
+        is_default_icon_(false) {}
 
   IconURL(const KURL& url,
-          const Vector<IntSize>& sizes,
+          const Vector<gfx::Size>& sizes,
           const String& mime_type,
-          IconType type)
+          mojom::blink::FaviconIconType type)
       : icon_type_(type),
         sizes_(sizes),
         mime_type_(mime_type),

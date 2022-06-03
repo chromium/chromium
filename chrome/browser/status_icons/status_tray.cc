@@ -11,7 +11,7 @@ StatusTray::~StatusTray() {
 
 StatusIcon* StatusTray::CreateStatusIcon(StatusIconType type,
                                          const gfx::ImageSkia& image,
-                                         const base::string16& tool_tip) {
+                                         const std::u16string& tool_tip) {
   auto icon = CreatePlatformStatusIcon(type, image, tool_tip);
   if (!icon)
     return nullptr;

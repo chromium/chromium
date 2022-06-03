@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -44,8 +45,9 @@ Attr* NamedNodeMap::getNamedItemNS(const AtomicString& namespace_uri,
 
 Attr* NamedNodeMap::removeNamedItem(const AtomicString& name,
                                     ExceptionState& exception_state) {
-  wtf_size_t index =
-      element_->Attributes().FindIndex(element_->LowercaseIfNecessary(name));
+  WTF::AtomicStringTable::WeakResult hint =
+      element_->WeakLowercaseIfNecessary(name);
+  wtf_size_t index = element_->Attributes().FindIndexHinted(name, hint);
   if (index == kNotFound) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
@@ -105,7 +107,7 @@ void NamedNodeMap::NamedPropertyEnumerator(Vector<String>& names,
   // 3. Return names.
   const AttributeCollection attributes = element_->Attributes();
   names.ReserveInitialCapacity(attributes.size());
-  if (element_->IsHTMLElement() && element_->GetDocument().IsHTMLDocument()) {
+  if (element_->IsHTMLElement() && IsA<HTMLDocument>(element_->GetDocument())) {
     for (const Attribute& attribute : attributes) {
       if ((attribute.Prefix() == attribute.Prefix().LowerASCII()) &&
           (attribute.LocalName() == attribute.LocalName().LowerASCII())) {
@@ -126,7 +128,7 @@ bool NamedNodeMap::NamedPropertyQuery(const AtomicString& name,
   return properties.Contains(name);
 }
 
-void NamedNodeMap::Trace(Visitor* visitor) {
+void NamedNodeMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
 }

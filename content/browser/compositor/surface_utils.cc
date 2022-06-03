@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
 #if defined(OS_ANDROID)
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
@@ -22,7 +21,7 @@ viz::FrameSinkId AllocateFrameSinkId() {
   return CompositorDependenciesAndroid::Get().AllocateFrameSinkId();
 #else
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
-  return factory->GetContextFactoryPrivate()->AllocateFrameSinkId();
+  return factory->GetContextFactory()->AllocateFrameSinkId();
 #endif
 }
 
@@ -33,21 +32,8 @@ viz::HostFrameSinkManager* GetHostFrameSinkManager() {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   if (!factory)
     return nullptr;
-  return factory->GetContextFactoryPrivate()->GetHostFrameSinkManager();
+  return factory->GetContextFactory()->GetHostFrameSinkManager();
 #endif
 }
-
-namespace surface_utils {
-
-void ConnectWithLocalFrameSinkManager(
-    viz::HostFrameSinkManager* host_frame_sink_manager,
-    viz::FrameSinkManagerImpl* frame_sink_manager_impl,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  host_frame_sink_manager->SetLocalManager(frame_sink_manager_impl);
-  frame_sink_manager_impl->SetLocalClient(host_frame_sink_manager,
-                                          ui_task_runner);
-}
-
-}  // namespace surface_utils
 
 }  // namespace content

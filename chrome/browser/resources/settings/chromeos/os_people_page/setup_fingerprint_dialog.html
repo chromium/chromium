@@ -1,0 +1,89 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="fingerprint_browser_proxy.html">
+<link rel="import" href="../../i18n_setup.html">
+
+<dom-module id="settings-setup-fingerprint-dialog">
+  <template>
+    <style include="settings-shared">
+      #dialog::part(dialog) {
+        min-width: 500px;
+        width: 500px;
+      }
+
+      #scannerLocation {
+        display: block;
+        height: 205px;
+        margin: auto;
+        padding: 10px 0;
+      }
+
+      #scannerLocationLottie {
+        height: 220px;
+        padding: 10px 0;
+      }
+
+      #messageDiv {
+        height: 20px;
+      }
+
+      /* Use this instead of hidden so that the dialog does not resize when the
+         message appears or disappears. */
+      #messageDiv[invisible] {
+        visibility: hidden;
+      }
+
+      #closeButton {
+        margin-inline-start: 5px;
+      }
+    </style>
+    <cr-dialog id="dialog" on-close="close"
+        close-text="$i18n{close}">
+      <div slot="title">$i18n{configureFingerprintTitle}</div>
+      <div slot="body">
+        <div id="messageDiv"
+            invisible$="[[!getInstructionMessage_(step_, problemMessage_)]]"
+            aria-live="polite">
+          <span>[[getInstructionMessage_(step_, problemMessage_)]]</span>
+        </div>
+        <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
+          <div id="scannerLocationLottie"
+            hidden="[[!showScannerLocation_(step_)]]" aria-live="polite"
+            aria-label="$i18n{configureFingerprintScannerStepAriaLabel}">
+            <cr-lottie animation-url="fingerprint_scanner_animation.json" autoplay>
+            </cr-lottie>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
+          <img id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
+            aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
+            aria-live="polite"
+            src="fingerprint_scanner_illustration.svg">
+        </template>
+        <cr-fingerprint-progress-arc id="arc" circle-radius="100" autoplay
+            hidden="[[!showArc_(step_)]]">
+        </cr-fingerprint-progress-arc>
+      </div>
+      <div slot="button-container">
+        <cr-button id="addAnotherButton" on-click="onAddAnotherFingerprint_"
+            hidden$="[[hideAddAnother_(step_, allowAddAnotherFinger)]]">
+          $i18n{configureFingerprintAddAnotherButton}
+        </cr-button>
+        <cr-button id="closeButton"
+            class$="[[getCloseButtonClass_(step_)]]" on-click="onClose_">
+          [[getCloseButtonText_(step_)]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="setup_fingerprint_dialog.js"></script>
+</dom-module>

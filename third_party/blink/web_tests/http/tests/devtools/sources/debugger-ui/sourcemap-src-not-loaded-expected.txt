@@ -1,6 +1,6 @@
 Tests that an error loading a source-map-referred file will display an error message in the source panel.
 
-error: Could not load content for http://127.0.0.1:8000/devtools/sources/debugger-ui/resources/sourcemap-src-not-loaded.ts (HTTP status code: 404, net error code 0)
+error: Could not load content for http://127.0.0.1:8000/devtools/sources/debugger-ui/resources/sourcemap-src-not-loaded.ts (HTTP error: status code 404, net::ERR_HTTP_RESPONSE_CODE_FAILURE)
 JavaScript source file:
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -30,7 +30,7 @@ var AssertionError = /** @class */ (function (_super) {
 assert(2 + 2 === 4, 'The laws of mathematics have been violated.');
 //# sourceMappingURL=sourcemap-src-not-loaded.js.map
 TypeScript source file:
-undefined
+null
 TypeScript resolution error:
-Could not load content for http://127.0.0.1:8000/devtools/sources/debugger-ui/resources/sourcemap-src-not-loaded.ts (HTTP status code: 404, net error code 0)
+Could not load content for http://127.0.0.1:8000/devtools/sources/debugger-ui/resources/sourcemap-src-not-loaded.ts (HTTP error: status code 404, net::ERR_HTTP_RESPONSE_CODE_FAILURE)
 

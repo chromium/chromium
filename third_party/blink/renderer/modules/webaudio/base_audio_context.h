@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_success_callback.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -92,10 +93,10 @@ class WorkerThread;
 class MODULES_EXPORT BaseAudioContext
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<BaseAudioContext>,
-      public ContextLifecycleStateObserver,
+      public ExecutionContextLifecycleStateObserver,
       public InspectorHelperMixin {
-  USING_GARBAGE_COLLECTED_MIXIN(BaseAudioContext);
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(BaseAudioContext, Dispose);
 
  public:
   // The state of an audio context.  On creation, the state is Suspended. The
@@ -107,7 +108,7 @@ class MODULES_EXPORT BaseAudioContext
 
   ~BaseAudioContext() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Is the destination node initialized and ready to handle audio?
   bool IsDestinationInitialized() const {
@@ -115,12 +116,14 @@ class MODULES_EXPORT BaseAudioContext
     return dest ? dest->GetAudioDestinationHandler().IsInitialized() : false;
   }
 
+  void Dispose();
+
   // Document notification
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
   bool HasPendingActivity() const override;
 
-  // Cannnot be called from the audio thread.
+  // Cannot be called from the audio thread.
   AudioDestinationNode* destination() const;
 
   size_t CurrentSampleFrame() const {
@@ -282,14 +285,14 @@ class MODULES_EXPORT BaseAudioContext
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
 
-  void StartRendering();
+  virtual void StartRendering();
 
   void NotifyStateChange();
 
   // A context is considered closed if:
   //  - closeContext() has been called.
   //  - it has been stopped by its execution context.
-  virtual bool IsContextClosed() const { return is_cleared_; }
+  virtual bool IsContextCleared() const { return is_cleared_; }
 
   // Get the security origin for this audio context.
   const SecurityOrigin* GetSecurityOrigin() const;
@@ -328,7 +331,10 @@ class MODULES_EXPORT BaseAudioContext
   void ReportDidCreate() final;
   void ReportWillBeDestroyed() final;
 
-  Mutex& GetTearDownMutex() const { return tear_down_mutex_; }
+  // TODO(crbug.com/1055983): Remove this when the execution context validity
+  // check is not required in the AudioNode factory methods. Returns false
+  // if the execution context does not exist.
+  bool CheckExecutionContextAndThrowIfNecessary(ExceptionState&);
 
  protected:
   enum ContextType { kRealtimeContext, kOfflineContext };
@@ -431,12 +437,6 @@ class MODULES_EXPORT BaseAudioContext
   // This cannot be nullptr once it is assigned from AudioWorkletThread until
   // the BaseAudioContext goes away.
   WorkerThread* audio_worklet_thread_ = nullptr;
-
-  // Due to the multi-threading architecture of WebAudio, it is possible that
-  // object allocated by the main thread still can be accessed by the audio
-  // rendering thread while this context is torn down (GCed) by
-  // |Uninitialize()|.
-  mutable Mutex tear_down_mutex_;
 };
 
 }  // namespace blink

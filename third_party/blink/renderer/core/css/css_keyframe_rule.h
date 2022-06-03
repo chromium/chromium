@@ -52,10 +52,10 @@ class CSSKeyframeRule final : public CSSRule {
 
   CSSStyleDeclaration* style() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kKeyframeRule; }
+  CSSRule::Type GetType() const override { return kKeyframeRule; }
 
   Member<StyleRuleKeyframe> keyframe_;
   mutable Member<KeyframeStyleRuleCSSStyleDeclaration>
@@ -67,7 +67,7 @@ class CSSKeyframeRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSKeyframeRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kKeyframeRule;
+    return rule.GetType() == CSSRule::kKeyframeRule;
   }
 };
 

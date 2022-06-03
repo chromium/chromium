@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_TYPED_COUNT_SORTER_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_TYPED_COUNT_SORTER_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 
 namespace bookmarks {
@@ -18,6 +17,10 @@ class BookmarkClient;
 class TypedCountSorter : public TitledUrlNodeSorter {
  public:
   explicit TypedCountSorter(BookmarkClient* client);
+
+  TypedCountSorter(const TypedCountSorter&) = delete;
+  TypedCountSorter& operator=(const TypedCountSorter&) = delete;
+
   ~TypedCountSorter() override;
 
   // TitledUrlNodeSorter
@@ -26,8 +29,6 @@ class TypedCountSorter : public TitledUrlNodeSorter {
 
  private:
   BookmarkClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedCountSorter);
 };
 
 }

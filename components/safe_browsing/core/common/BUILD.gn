@@ -1,0 +1,120 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("safe_browsing_prefs") {
+  sources = [
+    "safe_browsing_prefs.cc",
+    "safe_browsing_prefs.h",
+  ]
+
+  deps = [
+    ":common",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//net:net",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("safe_browsing_policy_handler") {
+  sources = [
+    "safe_browsing_policy_handler.cc",
+    "safe_browsing_policy_handler.h",
+  ]
+
+  deps = [
+    ":safe_browsing_prefs",
+    "//base:base",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "features_unittest.cc",
+    "safe_browsing_policy_handler_unittest.cc",
+    "safe_browsing_prefs_unittest.cc",
+    "utils_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":safe_browsing_policy_handler",
+    ":safe_browsing_prefs",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/policy/core/browser:browser",
+    "//components/policy/core/browser:test_support",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+    "//url:url",
+  ]
+
+  if (safe_browsing_mode == 1) {
+    sources += [ "visual_utils_unittest.cc" ]
+    deps += [
+      ":common",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}
+
+source_set("common") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "safebrowsing_constants.cc",
+    "safebrowsing_constants.h",
+    "safebrowsing_switches.cc",
+    "safebrowsing_switches.h",
+    "utils.cc",
+    "utils.h",
+    "web_ui_constants.cc",
+    "web_ui_constants.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/policy/core/browser:browser",
+    "//components/prefs:prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/variations",
+    "//crypto:crypto",
+    "//ipc",
+    "//net",
+    "//services/network/public/mojom",
+    "//url/ipc:url_ipc",
+  ]
+
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
+    sources += [
+      "visual_utils.cc",
+      "visual_utils.h",
+    ]
+    deps += [
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//third_party/opencv:emd",
+      "//ui/gfx:color_utils",
+    ]
+  }
+
+  public_deps = [ ":interfaces" ]
+}
+
+mojom("interfaces") {
+  sources = [ "safe_browsing_url_checker.mojom" ]
+
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}

@@ -8,19 +8,21 @@
 #include <mach/mach.h>
 #include <sys/event.h>
 
+#include <memory>
+
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_dispatch_object.h"
-#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -48,7 +50,8 @@ void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }
 
-void WaitableEvent::Signal() {
+// NO_THREAD_SAFETY_ANALYSIS: Runtime dependent locking.
+void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
   // If using the slow watch-list, copy the watchers to a local. After
   // mach_msg(), the event object may be deleted by an awoken thread.
   const bool use_slow_path = UseSlowWatchList(policy_);
@@ -67,7 +70,7 @@ void WaitableEvent::Signal() {
     slow_watch_list->lock.Acquire();
 
     if (!slow_watch_list->list.empty()) {
-      watch_list.reset(new std::list<OnceClosure>());
+      watch_list = std::make_unique<std::list<OnceClosure>>();
       std::swap(*watch_list, slow_watch_list->list);
     }
   }
@@ -116,8 +119,8 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider blocked for scheduling purposes. Ignore this for non-blocking
   // WaitableEvents.
-  Optional<debug::ScopedEventWaitActivity> event_activity;
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<debug::ScopedEventWaitActivity> event_activity;
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_) {
     event_activity.emplace(this);

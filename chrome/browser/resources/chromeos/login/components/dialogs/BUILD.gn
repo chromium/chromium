@@ -1,0 +1,144 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../../oobe_auto_imports.gni")
+
+group("polymer3_elements") {
+  public_deps = [
+    ":oobe_adaptive_dialog_module",
+    ":oobe_content_dialog_module",
+    ":oobe_loading_dialog_module",
+    ":oobe_modal_dialog_module",
+  ]
+}
+
+js_type_check("closure_compile") {
+  uses_legacy_modules = true
+  deps = [
+    ":oobe_adaptive_dialog",
+    ":oobe_content_dialog",
+    ":oobe_loading_dialog",
+    ":oobe_modal_dialog",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":oobe_adaptive_dialog.m",
+    ":oobe_content_dialog.m",
+    ":oobe_loading_dialog.m",
+    ":oobe_modal_dialog.m",
+  ]
+}
+
+js_library("oobe_adaptive_dialog") {
+  deps = [ "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render" ]
+  externs_list = [ "$externs_path/pending.js" ]
+}
+
+js_library("oobe_content_dialog") {
+  deps = [
+    "../behaviors:oobe_focus_behavior",
+    "../behaviors:oobe_scrollable_behavior",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
+  ]
+}
+
+js_library("oobe_loading_dialog") {
+  deps = [
+    ":oobe_content_dialog",
+    "../behaviors:oobe_dialog_host_behavior",
+    "../behaviors:oobe_i18n_behavior",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
+  ]
+}
+
+js_library("oobe_modal_dialog") {
+  deps = [
+    "../behaviors:oobe_i18n_behavior",
+    "../buttons:oobe_text_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+#### Polymer3 / JS Modules libraries
+
+js_library("oobe_adaptive_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_adaptive_dialog.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":oobe_adaptive_dialog_module" ]
+}
+
+js_library("oobe_content_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.m.js" ]
+  deps = [
+    "../behaviors:oobe_focus_behavior.m",
+    "../behaviors:oobe_scrollable_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":oobe_content_dialog_module" ]
+}
+
+js_library("oobe_loading_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_loading_dialog.m.js" ]
+  deps = [
+    ":oobe_adaptive_dialog.m",
+    ":oobe_content_dialog.m",
+    "../behaviors:oobe_dialog_host_behavior.m",
+    "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":oobe_loading_dialog_module" ]
+}
+
+js_library("oobe_modal_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_modal_dialog.m.js" ]
+  deps = [
+    "../behaviors:oobe_i18n_behavior.m",
+    "../buttons:oobe_text_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":oobe_modal_dialog_module" ]
+}
+
+#### Polymer3 auto generation
+
+polymer_modulizer("oobe_adaptive_dialog") {
+  js_file = "oobe_adaptive_dialog.js"
+  html_file = "oobe_adaptive_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+}
+
+polymer_modulizer("oobe_content_dialog") {
+  js_file = "oobe_content_dialog.js"
+  html_file = "oobe_content_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+}
+
+polymer_modulizer("oobe_loading_dialog") {
+  js_file = "oobe_loading_dialog.js"
+  html_file = "oobe_loading_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+}
+
+polymer_modulizer("oobe_modal_dialog") {
+  js_file = "oobe_modal_dialog.js"
+  html_file = "oobe_modal_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+}

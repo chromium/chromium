@@ -1,0 +1,3 @@
+EVENT_OBJECT_FOCUS on <button#btn1> role=ROLE_SYSTEM_PUSHBUTTON name="not editable" FOCUSED,FOCUSABLE
+=== Start Continuation ===
+EVENT_OBJECT_FOCUS on <button#btn2> role=ROLE_SYSTEM_PUSHBUTTON name="editable" FOCUSED,FOCUSABLE IA2_STATE_EDITABLE

@@ -38,7 +38,7 @@ function BrowserTestReporter(runner) {
     if (err.stack) {
       var stack = err.stack.split('\n');
       for (var i = 0; i < stack.length; i++) {
-        if (stack[i].indexOf('mocha.js:') == -1) {
+        if (stack[i].indexOf('mocha.js:') === -1) {
           message += stack[i] + '\n';
         }
       }
@@ -51,7 +51,7 @@ function BrowserTestReporter(runner) {
 
   // Report the results to the test API.
   runner.on('end', function() {
-    if (failures == 0) {
+    if (failures === 0) {
       if (passes > 0) {
         testDone();
       } else {
@@ -75,6 +75,14 @@ function BrowserTestReporter(runner) {
 window.runMochaTest = function(suiteName, testName) {
   const escapedTestName = testName.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
   mocha.grep(new RegExp('^' + suiteName + ' ' + escapedTestName + '$')).run();
+};
+
+/**
+ * Helper function provided to make running a single Mocha suite more robust.
+ * @param {string} suiteName
+ */
+window.runMochaSuite = function(suiteName) {
+  mocha.grep(new RegExp('^' + suiteName + ' ')).run();
 };
 
 // Configure mocha.

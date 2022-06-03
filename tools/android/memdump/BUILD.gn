@@ -3,10 +3,6 @@
 # found in the LICENSE file.
 
 executable("memdump") {
-  sources = [
-    "memdump.cc",
-  ]
-  deps = [
-    "//base",
-  ]
+  sources = [ "memdump.cc" ]
+  deps = [ "//base" ]
 }

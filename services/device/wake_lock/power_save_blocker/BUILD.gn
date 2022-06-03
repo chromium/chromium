@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
@@ -11,6 +12,15 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
+    # Crosapi power API needs to directly use the Ash PowerBlocker .
+    # TODO(b/193670013): Remove visibility after Wayland idle inhibitor replaces
+    # crosapi power service.
+    "//chrome/browser/ash/crosapi",
+
+    # Exo Wayland idle inhibit protocol needs to directly use the Ash
+    # PowerBlocker.
+    "//components/exo/wayland",
+
     # //remoting runs in a separate process which is outside of the context of
     # the ServiceManager-based world. Instead of embedding a Service Manager
     # environment and Device Service in it, we allow the power save blocker to
@@ -20,17 +30,11 @@ source_set("power_save_blocker") {
     "//services/device/wake_lock:*",
   ]
 
-  sources = [
-    "power_save_blocker.h",
-  ]
+  sources = [ "power_save_blocker.h" ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   if (use_dbus) {
     deps += [ "//dbus" ]
@@ -40,28 +44,30 @@ source_set("power_save_blocker") {
     sources += [ "power_save_blocker_android.cc" ]
     deps += [ ":jni_headers" ]
     public_deps += [ "//ui/android" ]
-  } else if (is_chromeos) {
-    sources += [ "power_save_blocker_chromeos.cc" ]
+  } else if (is_chromeos_ash) {
+    sources += [ "power_save_blocker_ash.cc" ]
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
     ]
-  } else if (is_linux && use_dbus) {
-    sources += [ "power_save_blocker_linux.cc" ]
+  } else if ((is_linux || is_chromeos) && use_dbus) {
+    if (is_chromeos_lacros) {
+      sources += [ "power_save_blocker_lacros.cc" ]
+      deps += [
+        "//chromeos/crosapi/mojom",
+        "//chromeos/lacros",
+      ]
+    } else {
+      sources += [ "power_save_blocker_linux.cc" ]
+      deps += [ "//ui/display" ]
+    }
     deps += [
       "//dbus",
       "//ui/gfx",
     ]
-    if (use_x11) {
-      configs += [
-        "//build/config/linux:x11",
-        "//build/config/linux:xscrnsaver",
-      ]
-      deps += [ "//ui/gfx/x" ]
-    }
   } else if (is_mac) {
     sources += [ "power_save_blocker_mac.cc" ]
-    libs = [
+    frameworks = [
       "CoreFoundation.framework",
       "IOKit.framework",
     ]
@@ -89,9 +95,7 @@ if (is_android) {
       "//services:*",
       "//services/device:*",
     ]
-    java_files = java_sources_needing_jni
-    deps = [
-      "//base:base_java",
-    ]
+    sources = java_sources_needing_jni
+    deps = [ "//base:base_java" ]
   }
 }

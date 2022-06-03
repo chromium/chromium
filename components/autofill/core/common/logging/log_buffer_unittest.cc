@@ -25,7 +25,7 @@ TEST(LogBuffer, JSONSerializeString) {
 
 TEST(LogBuffer, JSONSerializeString16) {
   LogBuffer buffer;
-  buffer << base::ASCIIToUTF16("<foo><!--\"");
+  buffer << u"<foo><!--\"";
   std::string json;
   EXPECT_TRUE(base::JSONWriter::Write(buffer.RetrieveResult(), &json));
   // JSON takes care of serializing the <, we don't want &lt; as that would then

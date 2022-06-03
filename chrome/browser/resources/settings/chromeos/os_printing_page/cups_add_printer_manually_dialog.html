@@ -1,0 +1,72 @@
+<style include="cups-printer-shared"></style>
+<add-printer-dialog>
+  <div slot="dialog-title">
+    <span>$i18n{addPrintersManuallyTitle}</span>
+    <printer-dialog-error error-text="[[errorText_]]">
+    </printer-dialog-error>
+  </div>
+  <div slot="dialog-body">
+    <div class="settings-box first two-line">
+      <cr-input class="printer-name-input" autofocus
+        id="printerNameInput" value="{{newPrinter.printerName}}"
+        label="$i18n{printerName}" maxlength=64 on-keypress="onKeypress_">
+      </cr-input>
+    </div>
+    <div class="settings-box two-line">
+      <cr-input id="printerAddressInput" label="$i18n{printerAddress}"
+          value="{{newPrinter.printerAddress}}" maxlength=63
+          error-message="$i18n{ippPrinterUnreachable}"
+          on-keypress="onKeypress_">
+      </cr-input>
+    </div>
+    <div class="settings-box two-line">
+      <div class="start">
+        <div id="printerProtocol" class="cr-form-field-label"
+            aria-hidden="true">
+          $i18n{printerProtocol}
+        </div>
+        <div class="secondary">
+          <select class="md-select" aria-labelledby="printerProtocol"
+              value="[[newPrinter.printerProtocol]]"
+              on-change="onProtocolChange_">
+            <option value="ipp">$i18n{printerProtocolIpp}</option>
+            <option value="ipps">$i18n{printerProtocolIpps}</option>
+            <option value="http">$i18n{printerProtocolHttp}</option>
+            <option value="https">$i18n{printerProtocolHttps}</option>
+            <option value="socket">$i18n{printerProtocolAppSocket}
+            </option>
+            <option value="lpd">$i18n{printerProtocolLpd}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <template is="dom-if" if="[[showPrinterQueue_]]" restamp>
+      <div class="settings-box two-line">
+        <cr-input id="printerQueueInput" label="$i18n{printerQueue}"
+            value="{{newPrinter.printerQueue}}" maxlength=64
+            on-keypress="onKeypress_">
+        </cr-input>
+      </div>
+    </template>
+  </div>
+  <div slot="dialog-buttons">
+    <!-- Left Group -->
+    <div>
+      <cr-button id="print-server-button" on-click="onPrintServerTap_">
+        $i18n{printServerButtonText}
+      </cr-button>
+    </div>
+    <!-- Right Group -->
+    <div>
+      <cr-button class="cancel-button" on-click="onCancelTap_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="addPrinterButton" class="action-button"
+          on-click="addPressed_"
+          disabled="[[!canAddPrinter_(newPrinter.*,
+                                      addPrinterInProgress_)]]">
+        $i18n{addPrinterButtonText}
+      </cr-button>
+    </div>
+  </div>
+</add-printer-dialog>

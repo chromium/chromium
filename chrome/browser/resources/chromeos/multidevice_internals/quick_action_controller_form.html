@@ -1,0 +1,51 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+    padding: 10px;
+    width: 100%;
+  }
+
+  #controls {
+    display: flex;
+    flex: 2;
+  }
+</style>
+
+<div class="column">
+  <span class="emphasize">Quick action items.</span>  Note that the toggles and
+  dropdowns reflect the current state of the feature status. They will update
+  on their own if changed outside of this page.
+</div>
+<div id="controls">
+  <div class="column label-top">
+    <div class="cr-padded-text">
+      Toggle Do Not Disturb
+    </div>
+    <cr-toggle checked="{{isDndEnabled_}}">
+    </cr-toggle>
+  </div>
+  <div class="column label-top">
+    <label>Select Find My Device status</label>
+    <select id="findMyDeviceStatus" class="md-select"
+        on-change="setFindMyDeviceStatus_">
+      <template is="dom-repeat" items="[[findMyDeviceStatusList_]]">
+        <option selected="[[isEqual_(item, findMyDeviceStatus_)]]">
+          [[getFindMyDeviceStatusName_(item)]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <div class="column label-top">
+    <label>Select tether status</label>
+    <select id="tetherStatusList" class="md-select"
+        on-change="setTetherStatus_">
+      <template is="dom-repeat" items="[[tetherStatusList_]]">
+        <option selected="[[isEqual_(item, tetherStatus_)]]">
+          [[getTetherStatusName_(item)]]
+        </option>
+      </template>
+    </select>
+  </div>
+</div>
+

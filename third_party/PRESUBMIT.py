@@ -4,7 +4,9 @@
 
 import os
 
-ANDROID_WHITELISTED_LICENSES = [
+USE_PYTHON = True
+
+ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
   'Apache( License)?,?( Version)? 2(\.0)?',
@@ -18,14 +20,16 @@ ANDROID_WHITELISTED_LICENSES = [
   'Microsoft Permissive License',
   'Public Domain',
   'Python',
+  'SIL Open Font License, Version 1.1',
   'SGI Free Software License B',
+  'Unicode, Inc. License',
   'University of Illinois\/NCSA Open Source',
   'X11',
   'Zlib',
 ]
 
 def LicenseIsCompatibleWithAndroid(input_api, license):
-  regex = '^(%s)$' % '|'.join(ANDROID_WHITELISTED_LICENSES)
+  regex = '^(%s)$' % '|'.join(ANDROID_ALLOWED_LICENSES)
   tokens = \
     [x.strip() for x in input_api.re.split(' and |,', license) if len(x) > 0]
   has_compatible_license = False
@@ -49,11 +53,7 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
       continue
     if (local_path.startswith('third_party' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'WebKit' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'blink' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'mojo' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'boringssl' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
@@ -63,9 +63,15 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
                                   'closure_compiler' + input_api.os_path.sep +
                                   'interfaces' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'webxr_test_pages' + input_api.os_path.sep) and
+                                  'feed_library' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'feed_library' + input_api.os_path.sep)):
+                                  'mojo' + input_api.os_path.sep) and
+        # TODO(danakj): We should look for the README.chromium file in
+        # third_party/rust/CRATE_NAME/vVERSION/.
+        not local_path.startswith('third_party' + input_api.os_path.sep +
+                                  'rust' + input_api.os_path.sep) and
+        not local_path.startswith('third_party' + input_api.os_path.sep +
+                                  'webxr_test_pages' + input_api.os_path.sep)):
       files.append(f)
       if local_path.endswith("README.chromium"):
         readmes.append(f)
@@ -84,7 +90,7 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
-    r'^Version: [a-zA-Z0-9_\-\+\.:]+\r?$',
+    r'^Version: [a-zA-Z0-9_\-\+\.:/]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   release_pattern = input_api.re.compile(
     r'^Security Critical: (yes|no)\r?$',
@@ -135,7 +141,7 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
     not_shipped_match = not_shipped_pattern.search(contents)
     android_compatible_match = (
         license_android_compatible_pattern.search(contents))
-    if (not not_shipped_pattern and not android_compatible_match and
+    if (not not_shipped_match and not android_compatible_match and
         not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1))):
       errors.append(output_api.PresubmitPromptWarning(
         'Cannot determine whether specified license is compatible with\n' +

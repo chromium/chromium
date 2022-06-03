@@ -2,17 +2,19 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script>
-  var t = async_test("Ensure preloads use video poster crossorigin value");
-  window.addEventListener('load', t.step_func(function() {
-      var entries = performance.getEntriesByName("http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square100.png&allow=false");
-      assert_equals(entries.length, 0, "100.png should not be loaded");
+  const t = async_test("Ensure preloads use video poster crossorigin value");
+  window.addEventListener('load', t.step_func_done(function() {
+      let entries = performance.getEntriesByName("http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square100.png&allow=false");
+      assert_equals(entries.length, 1, "100.png should get an entry");
+      assert_equals(entries[0].nextHopProtocol, '', "100.png should not be loaded");
 
       entries = performance.getEntriesByName("http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square200.png&allow=true");
       assert_equals(entries.length, 1, "200.png should load successfully once, as the server is using Access-Control-Allow-Origin: *");
+      assert_not_equals(entries[0].nextHopProtocol, '', "100.png should not be loaded");
 
       entries = performance.getEntriesByName("http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square20.png&allow=false");
       assert_equals(entries.length, 1, "20.png should load successfully once, as it is loaded with no-cors");
-      t.done();
+      assert_not_equals(entries[0].nextHopProtocol, '', "100.png should not be loaded");
   }));
 </script>
 <video poster="http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square100.png&allow=false" crossorigin>

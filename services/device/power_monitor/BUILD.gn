@@ -17,7 +17,5 @@ source_set("power_monitor") {
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 }

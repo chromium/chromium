@@ -5,10 +5,9 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NEW_SCRIPT_LOADER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NEW_SCRIPT_LOADER_H_
 
-#include "base/macros.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/common/content_export.h"
-#include "content/public/common/resource_type.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,12 +16,18 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
+
+namespace blink {
+
+class ThrottlingURLLoader;
+
+}  // namespace blink
 
 namespace content {
 
 class ServiceWorkerVersion;
-struct HttpResponseInfoIOBuffer;
 
 // This is the URLLoader used for loading scripts for a new (installing) service
 // worker. It fetches the script (the main script or imported script) and
@@ -44,15 +49,8 @@ struct HttpResponseInfoIOBuffer;
 // A set of |network_loader_state_|, |header_writer_state_|, and
 // |body_writer_state_| is the state of this loader. Each of them is changed
 // independently, while some state changes have dependency to other state
-// changes.  See the comment for each field below to see exactly when their
-// state changes happen. For resume loaders, these states are set to be
-// values extracted from ServiceWorkerSingleScriptUpdateChecker::PausedState
-// to make the loader seamlessly resume the download.
-//
-// In case there is already an installed service worker for this registration,
-// this class also performs the "byte-for-byte" comparison for updating the
-// worker. If the script is identical, the load succeeds but no script is
-// written, and ServiceWorkerVersion is told to terminate startup.
+// changes. See the comment for each field below to see exactly when their state
+// changes happen.
 //
 // NOTE: To perform the network request, this class uses |loader_factory_| which
 // may internally use a non-NetworkService factory if URL has a non-http(s)
@@ -74,28 +72,50 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
 
   enum class WriterState { kNotStarted, kWriting, kCompleted };
 
+  // If |is_throttle_needed| is true, the load will go through
+  // URLLoaderThrottles. Generally, all network requests need to go through
+  // throttles. It should be set to false only if this loader is being created
+  // after a request already went through throttles. Currently, this function
+  // has two callsites:
+  //
+  // - ServiceWorkerScriptLoaderFactory: in response to a request from the
+  // renderer. |is_throttle_needed| is false because the renderer is assumed to
+  // have already throttled the request. More precisely throttles should be set
+  // by ServiceWorkerFetchContextImpl::WillSendRequest.
+  // - ServiceWorkerNewScriptFetcher: directly in the browser process.
+  // |is_throttle_needed| is true because the request has not gone through
+  // throttles.
   static std::unique_ptr<ServiceWorkerNewScriptLoader> CreateAndStart(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& original_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ServiceWorkerVersion> version,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      int64_t cache_resource_id,
+      bool is_throttle_needed,
+      const GlobalRenderFrameHostId& requesting_frame_id);
+
+  ServiceWorkerNewScriptLoader(const ServiceWorkerNewScriptLoader&) = delete;
+  ServiceWorkerNewScriptLoader& operator=(const ServiceWorkerNewScriptLoader&) =
+      delete;
 
   ~ServiceWorkerNewScriptLoader() override;
 
   // network::mojom::URLLoader:
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override;
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient for the network load:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -117,17 +137,19 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   class WrappedIOBuffer;
 
   ServiceWorkerNewScriptLoader(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& original_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ServiceWorkerVersion> version,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      int64_t cache_resource_id,
+      bool is_throttle_needed,
+      const GlobalRenderFrameHostId& requesting_frame_id);
 
   // Writes the given headers into the service worker script storage.
-  void WriteHeaders(scoped_refptr<HttpResponseInfoIOBuffer> info_buffer);
+  void WriteHeaders(network::mojom::URLResponseHeadPtr response_head);
   void OnWriteHeadersComplete(net::Error error);
 
   // Starts watching the data pipe for the network load (i.e.,
@@ -162,15 +184,9 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // If not all data are received, it continues to download from network.
   void OnCacheWriterResumed(net::Error error);
 
-#if DCHECK_IS_ON()
-  void CheckVersionStatusBeforeLoad();
-#endif  // DCHECK_IS_ON()
-
   const GURL request_url_;
 
-  // This is ResourceType::kServiceWorker for the main script or
-  // ResourceType::kScript for an imported script.
-  const ResourceType resource_type_;
+  const bool is_main_script_;
 
   // Load options originally passed to this loader. The options passed to the
   // network loader might be different from this.
@@ -180,12 +196,13 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
 
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
 
-  // Used for fetching the script from network (or other loaders like extensions
-  // sometimes).
-  mojo::Remote<network::mojom::URLLoader> network_loader_;
+  // Used for fetching the script from the network (or other sources like
+  // extensions for example). Depending on where the
+  // ServiceWorkerNewScriptLoader is started from, and depending on the
+  // constructor's |is_throttle_needed| parameter, this might or might not
+  // have throttles. See CreateAndStart() for details.
+  std::unique_ptr<blink::ThrottlingURLLoader> network_loader_;
 
-  mojo::Receiver<network::mojom::URLLoaderClient> network_client_receiver_{
-      this};
   mojo::ScopedDataPipeConsumerHandle network_consumer_;
   mojo::SimpleWatcher network_watcher_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
@@ -227,9 +244,13 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   //     kWriting -> kCompleted
   WriterState body_writer_state_ = WriterState::kNotStarted;
 
-  base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
+  // When fetching the main script of a newly installed ServiceWorker with
+  // PlzServiceWorker, we don't have a renderer assigned yet. We could also fail
+  // the fetch and never get one. If that happens, we need to have a frame id
+  // to log the failure into devtools.
+  const GlobalRenderFrameHostId requesting_frame_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerNewScriptLoader);
+  base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
 };
 
 }  // namespace content

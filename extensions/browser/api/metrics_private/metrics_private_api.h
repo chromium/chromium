@@ -229,6 +229,24 @@ class MetricsPrivateRecordLongTimeFunction
   ResponseAction Run() override;
 };
 
+class MetricsPrivateGetHistogramFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("metricsPrivate.getHistogram",
+                             METRICSPRIVATE_GETHISTOGRAM)
+
+ private:
+  ~MetricsPrivateGetHistogramFunction() override;
+  ResponseAction Run() override;
+
+  // Sends an asynchronous response containing data for the histogram named
+  // |name|. Passed to content::FetchHistogramsAsynchronously() to be run after
+  // new data from other processes has been collected.
+  void RespondOnHistogramsFetched(const std::string& name);
+
+  // Creates a response with current data for the histogram named |name|.
+  ResponseValue GetHistogram(const std::string& name);
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_METRICS_PRIVATE_METRICS_PRIVATE_API_H_

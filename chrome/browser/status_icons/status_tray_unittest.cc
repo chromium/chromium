@@ -15,10 +15,10 @@ namespace {
 
 class MockStatusIcon : public StatusIcon {
   void SetImage(const gfx::ImageSkia& image) override {}
-  void SetToolTip(const base::string16& tool_tip) override {}
+  void SetToolTip(const std::u16string& tool_tip) override {}
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override {}
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {}
 };
@@ -28,7 +28,7 @@ class TestStatusTray : public StatusTray {
   std::unique_ptr<StatusIcon> CreatePlatformStatusIcon(
       StatusIconType type,
       const gfx::ImageSkia& image,
-      const base::string16& tool_tip) override {
+      const std::u16string& tool_tip) override {
     return std::make_unique<MockStatusIcon>();
   }
 
@@ -39,7 +39,7 @@ StatusIcon* CreateStatusIcon(StatusTray* tray) {
   // Just create a dummy icon image; the actual image is irrelevant.
   return tray->CreateStatusIcon(StatusTray::OTHER_ICON,
                                 gfx::test::CreateImageSkia(16, 16),
-                                base::string16());
+                                std::u16string());
 }
 
 }  // namespace

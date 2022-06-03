@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -44,12 +44,12 @@ class CORE_EXPORT RotationViewportAnchor {
   FloatPoint GetInnerOrigin(const FloatSize& inner_size) const;
 
   void ComputeOrigins(const FloatSize& inner_size,
-                      IntPoint& main_frame_offset,
+                      gfx::Point& main_frame_offset,
                       FloatPoint& visual_viewport_offset) const;
   ScrollableArea& LayoutViewport() const;
 
-  Member<LocalFrameView> root_frame_view_;
-  Member<VisualViewport> visual_viewport_;
+  LocalFrameView* root_frame_view_;
+  VisualViewport* visual_viewport_;
 
   float old_page_scale_factor_;
   float old_minimum_page_scale_factor_;
@@ -61,7 +61,7 @@ class CORE_EXPORT RotationViewportAnchor {
   // normalized to the outer viewport size.
   FloatSize normalized_visual_viewport_offset_;
 
-  Member<Node> anchor_node_;
+  Node* anchor_node_;
 
   // In Document coordinates.
   PhysicalRect anchor_node_bounds_;
@@ -69,7 +69,7 @@ class CORE_EXPORT RotationViewportAnchor {
   FloatSize anchor_in_inner_view_coords_;
   FloatSize anchor_in_node_coords_;
 
-  Member<PageScaleConstraintsSet> page_scale_constraints_set_;
+  PageScaleConstraintsSet* page_scale_constraints_set_;
 };
 
 }  // namespace blink

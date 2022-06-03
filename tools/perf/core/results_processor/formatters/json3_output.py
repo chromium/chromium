@@ -5,7 +5,7 @@
 """Output formatter for JSON Test Results Format.
 
 Format specification:
-https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md
+https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md
 """
 
 import collections

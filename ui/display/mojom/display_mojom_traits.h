@@ -5,22 +5,25 @@
 #ifndef UI_DISPLAY_MOJOM_DISPLAY_MOJOM_TRAITS_H_
 #define UI_DISPLAY_MOJOM_DISPLAY_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "ui/display/display.h"
-#include "ui/display/mojom/display.mojom.h"
+#include "ui/display/mojom/display.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<display::mojom::Rotation, display::Display::Rotation> {
+struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
+    EnumTraits<display::mojom::Rotation, display::Display::Rotation> {
   static display::mojom::Rotation ToMojom(display::Display::Rotation type);
   static bool FromMojom(display::mojom::Rotation type,
                         display::Display::Rotation* output);
 };
 
 template <>
-struct EnumTraits<display::mojom::TouchSupport,
-                  display::Display::TouchSupport> {
+struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
+    EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport> {
   static display::mojom::TouchSupport ToMojom(
       display::Display::TouchSupport type);
   static bool FromMojom(display::mojom::TouchSupport type,
@@ -28,8 +31,9 @@ struct EnumTraits<display::mojom::TouchSupport,
 };
 
 template <>
-struct EnumTraits<display::mojom::AccelerometerSupport,
-                  display::Display::AccelerometerSupport> {
+struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
+    EnumTraits<display::mojom::AccelerometerSupport,
+               display::Display::AccelerometerSupport> {
   static display::mojom::AccelerometerSupport ToMojom(
       display::Display::AccelerometerSupport type);
   static bool FromMojom(display::mojom::AccelerometerSupport type,
@@ -37,7 +41,8 @@ struct EnumTraits<display::mojom::AccelerometerSupport,
 };
 
 template <>
-struct StructTraits<display::mojom::DisplayDataView, display::Display> {
+struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
+    StructTraits<display::mojom::DisplayDataView, display::Display> {
   static int64_t id(const display::Display& display) { return display.id(); }
 
   static const gfx::Rect& bounds(const display::Display& display) {
@@ -72,6 +77,10 @@ struct StructTraits<display::mojom::DisplayDataView, display::Display> {
 
   static const gfx::Size& maximum_cursor_size(const display::Display& display) {
     return display.maximum_cursor_size();
+  }
+
+  static gfx::DisplayColorSpaces color_spaces(const display::Display& display) {
+    return display.color_spaces();
   }
 
   static int32_t color_depth(const display::Display& display) {

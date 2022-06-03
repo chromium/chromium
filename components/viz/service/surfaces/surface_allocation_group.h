@@ -32,6 +32,10 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   SurfaceAllocationGroup(SurfaceManager* surface_manager,
                          const FrameSinkId& submitter,
                          const base::UnguessableToken& embed_token);
+
+  SurfaceAllocationGroup(const SurfaceAllocationGroup&) = delete;
+  SurfaceAllocationGroup& operator=(const SurfaceAllocationGroup&) = delete;
+
   ~SurfaceAllocationGroup();
 
   // Returns the ID of the FrameSink that is submitting to surfaces in this
@@ -113,6 +117,10 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // will have their dependency resolved.
   void WillNotRegisterNewSurfaces();
 
+  // Called by surfaces which are blocked by this allocation group. This will
+  // send an Ack to the latest active surface, if it has an un-Acked frame.
+  void AckLastestActiveUnAckedFrame();
+
   // Returns the last surface created in this allocation group.
   Surface* last_created_surface() const {
     return surfaces_.empty() ? nullptr : surfaces_.back();
@@ -171,8 +179,6 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // The last SurfaceId of this allocation group that was ever referenced by the
   // active or pending frame of a surface.
   SurfaceId last_reference_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceAllocationGroup);
 };
 
 }  // namespace viz

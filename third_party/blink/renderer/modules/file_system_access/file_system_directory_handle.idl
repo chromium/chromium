@@ -1,0 +1,26 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/file-system-access/#filesystemdirectoryhandle
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    Serializable,
+    RuntimeEnabled=FileSystemAccess
+] interface FileSystemDirectoryHandle : FileSystemHandle {
+    // TODO(https://crbug.com/1087157): This interface defines an async
+    // iterable, however that isn't supported yet by the bindings. So for now
+    // just explicitly define what an async iterable definition implies.
+    //async iterable<USVString, FileSystemHandle>;
+    [RaisesException] FileSystemDirectoryIterator entries();
+    [RaisesException] FileSystemDirectoryIterator keys();
+    [RaisesException] FileSystemDirectoryIterator values();
+
+    [CallWith=ScriptState] Promise<FileSystemFileHandle> getFileHandle(USVString name, optional FileSystemGetFileOptions options = {});
+    [CallWith=ScriptState] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name, optional FileSystemGetDirectoryOptions options = {});
+
+    [CallWith=ScriptState] Promise<void> removeEntry(USVString name, optional FileSystemRemoveOptions options = {});
+
+    [CallWith=ScriptState, Measure] Promise<sequence<USVString>?> resolve(FileSystemHandle possibleChild);
+};

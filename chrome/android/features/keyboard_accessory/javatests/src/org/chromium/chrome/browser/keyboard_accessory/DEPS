@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  # To observer web contents swaps on the tab.
+  "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab",
+]

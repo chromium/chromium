@@ -29,6 +29,8 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_LINK name='doc-noteref' xml-roles:doc-noteref
 ++IA2_ROLE_NOTE name='doc-notice' xml-roles:doc-notice
 ++ROLE_SYSTEM_SEPARATOR name='doc-pagebreak' xml-roles:doc-pagebreak
+++IA2_ROLE_FOOTER name='doc-pagefooter' xml-roles:doc-pagefooter
+++IA2_ROLE_HEADER name='doc-pageheader' xml-roles:doc-pageheader
 ++IA2_ROLE_LANDMARK name='doc-pagelist' xml-roles:doc-pagelist
 ++IA2_ROLE_LANDMARK name='doc-part' xml-roles:doc-part
 ++IA2_ROLE_LANDMARK name='doc-preface' xml-roles:doc-preface

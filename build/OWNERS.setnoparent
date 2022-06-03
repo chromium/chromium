@@ -10,6 +10,7 @@ file://third_party/OWNERS
 # Security reviews
 file://chromeos/SECURITY_OWNERS
 file://content/browser/SITE_ISOLATION_OWNERS
+file://fuchsia/SECURITY_OWNERS
 file://ipc/SECURITY_OWNERS
 file://net/base/SECURITY_OWNERS
 file://sandbox/linux/OWNERS
@@ -27,11 +28,14 @@ file://base/metrics/OWNERS
 # expose to the open web.
 file://third_party/blink/API_OWNERS
 
+# third_party/blink/web_tests/VirtualTestSuites need special care.
+file://third_party/blink/web_tests/VIRTUAL_OWNERS
+
 # Extension related files.
-file://chrome/browser/extensions/component_extensions_whitelist/EXTENSION_WHITELIST_OWNERS
+file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS
 file://extensions/common/api/API_OWNERS
 
-# This restriction is in place to avoid accidential addition to our top level
+# This restriction is in place to avoid accidental addition to our top level
 # layout files, such as add duplicated assets, or introducing new colors when
 # we don't want them.
 file://ui/android/java/res/LAYOUT_OWNERS
@@ -50,8 +54,17 @@ file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIAN
 # Notification channels appear in system UI and are persisted forever by
 # Android, so should not be added or removed lightly, and the proper
 # deprecation and versioning steps must be taken when doing so.
-file://chrome/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS
+file://chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS
 
 # The Weblayer API is supposed to be stable and will be used outside of the
 # chromium repository.
 file://weblayer/API_OWNERS
+
+# New features for lock/login UI on Chrome OS need to work stably in all corner
+# cases.
+file://ash/login/LOGIN_LOCK_OWNERS
+
+# Changes to the CQ configuration can have a significant impact on the CQ cost
+# and performance. Approval should be limited to a small subset of the users
+# that can make infra changes.
+file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS

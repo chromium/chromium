@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
+#include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -87,7 +88,11 @@ void DecodedDataDocumentParser::Flush() {
 }
 
 void DecodedDataDocumentParser::UpdateDocument(String& decoded_data) {
-  GetDocument()->SetEncodingData(DocumentEncodingData(*decoder_.get()));
+  // A Document created from XSLT may have changed the encoding of the data
+  // before feeding it to the parser, so don't overwrite the encoding data XSLT
+  // provided about the original encoding.
+  if (!DocumentXSLT::HasTransformSourceDocument(*GetDocument()))
+    GetDocument()->SetEncodingData(DocumentEncodingData(*decoder_.get()));
 
   if (!decoded_data.IsEmpty())
     Append(decoded_data);

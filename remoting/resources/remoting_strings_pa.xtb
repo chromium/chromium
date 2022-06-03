@@ -3,350 +3,193 @@
 <translationbundle lang="pa">
 <translation id="1002108253973310084">ਇੱਕ ਅਧੂਰਾ ਪ੍ਰੋਟੋਕੋਲ ਵਰਜਨ ਖੋਜਿਆ ਗਿਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਸਾਫ਼ਟਵੇਅਰ ਦਾ ਨਵਾਂ ਵਰਜਨ ਦੋਵਾਂ ਕੰਪਿਊਟਰਾਂ 'ਤੇ ਸਥਾਪਤ ਕੀਤਾ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1008557486741366299">ਹੁਣ ਨਹੀਂ</translation>
-<translation id="1050693411695664090">ਘਟੀਆ</translation>
-<translation id="1152528166145813711">ਚੁਣੋ…</translation>
-<translation id="1199593201721843963">ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
-<translation id="1291443878853470558">ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chromoting ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋ ਗਈ</translation>
-<translation id="1324095856329524885">(ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਅਜੇ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ)</translation>
-<translation id="1342297293546459414">ਸਾਂਝਾ ਕੀਤਾ ਕੰਪਿਊਟਰ ਦੇਖੋ ਅਤੇ ਇਸਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
-<translation id="1389790901665088353">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="1450760146488584666">ਬੇਨਤੀ ਕੀਤੀ ਵਸਤੂ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1480046233931937785">ਕ੍ਰੈਡਿਟ</translation>
 <translation id="1520828917794284345">ਫਿਟ ਕਰਨ ਲਈ ਡੈਸਕਟਾਪ ਨੂੰ ਮੁੜ ਆਕਾਰ ਦਿਓ</translation>
-<translation id="154040539590487450">ਰਿਮੋਟ ਪਹੁੰਚ ਸੇਵਾ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="1546934824884762070">ਅਚਾਨਕ ਇੱਕ ਗੜਬੜ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਵਿਕਾਸਕਾਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ।</translation>
-<translation id="1624185583382384493">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੁਣ ਵੈੱਬ 'ਤੇ। <ph name="LINK_BEGIN" />ਵੈੱਬ ਐਪ<ph name="LINK_END" /> ਵਰਤ ਕੇ ਦੇਖੋ —ਇਹ ਹੋਰ ਵੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਾਲ ਤੇਜ਼ ਅਤੇ ਮੁਫ਼ਤ ਹੈ, ਜਿਸ ਵਿੱਚ ਇੱਕ ਤੋਂ ਵੱਧ ਮਾਨੀਟਰਾਂ ਲਈ ਬਿਹਤਰ ਸਮਰਥਨ ਸ਼ਾਮਲ ਹੈ।</translation>
-<translation id="1643640058022401035">ਇਸ ਸਫ਼ੇ ਨੂੰ ਛੱਡਣ ਨਾਲ ਤੁਹਾਡਾ Chromoting ਸੈਸ਼ਨ ਖ਼ਤਮ ਹੋ ਜਾਏਗਾ।</translation>
-<translation id="1654128982815600832">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="1697532407822776718">ਤੁਸੀਂ ਸਾਰਾ ਸੈਟ ਕਰ ਲਿਆ ਹੈ!</translation>
-<translation id="170207782578677537">ਇਹ ਕੰਪਿਊਟਰ ਰਜਿਸਟਰ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
-<translation id="174018511426417793">ਤੁਸੀਂ ਕੋਈ ਕੰਪਿਊਟਰ ਰਜਿਸਟਰ ਨਹੀਂ ਕੀਤੇ ਹਨ। ਇੱਕ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉੱਥੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਸਥਾਪਤ ਕਰੋ ਅਤੇ “<ph name="BUTTON_NAME" />” 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1742469581923031760">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ…</translation>
-<translation id="1770394049404108959">ਮੈਂ ਐਪਲੀਕੇਸ਼ਨ ਖੋਲ੍ਹ ਨਹੀਂ ਪਾ ਰਿਹਾ ਹਾਂ।</translation>
+<translation id="177040763384871009">ਰਿਮੋਟ ਡੀਵਾਈਸ 'ਤੇ ਕਲਿੱਕ ਕੀਤੇ ਲਿੰਕਾਂ ਨੂੰ ਕਲਾਇੰਟ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਿਸਟਮ ਦੇ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ "<ph name="URL_FORWARDER_NAME" />" ਵਿੱਚ ਬਦਲਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="177096447311351977">ਕਲਾਇੰਟ ਲਈ ਚੈਨਲ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ਚੈਨਲ='<ph name="CHANNEL_TYPE" />' ਕਨੈਕਸ਼ਨ='<ph name="CONNECTION_TYPE" />'.</translation>
-<translation id="1779766957982586368">window ਬੰਦ ਕਰੋ</translation>
-<translation id="1841799852846221389">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="1897488610212723051">ਮਿਟਾਓ</translation>
-<translation id="195619862187186579">ਕੀ-ਬੋਰਡ ਲੇਆਉਟਸ</translation>
-<translation id="1996161829609978754">Chrome, Chromoting ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ। ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋ ਜਾਣ 'ਤੇ, ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਤੋਂ ਪਹਿਲਾਂ ਸਥਾਪਨਾਕਾਰ ਚਲਾਓ।</translation>
 <translation id="2009755455353575666">ਕਨੈਕਸ਼ਨ ਅਸਫਲ</translation>
-<translation id="2013884659108657024">Chrome, 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ। ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋ ਜਾਣ 'ਤੇ, ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਤੋਂ ਪਹਿਲਾਂ ਸਥਾਪਨਾਕਾਰ ਚਲਾਓ।</translation>
-<translation id="2013996867038862849">ਸਾਰੇ ਪੇਅਰ ਕੀਤੇ ਕਲਈਂਟ ਮਿਟਾਏ ਗਏ ਹਨ।</translation>
 <translation id="2038229918502634450">ਕਿਸੇ ਨੀਤੀ ਵਿੱਚ ਤਬਦੀਲੀ ਹੋਣ ਕਰਕੇ ਹੋਸਟ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਰਿਹਾ ਹੈ।</translation>
-<translation id="2046651113449445291">ਅੱਗੇ ਦਿੱਤੇ ਕਲਾਇੰਟਾਂ ਨੂੰ ਇਸ ਕੰਪਿਊਟਰ ਨਾਲ ਜੋੜਾਬੱਧ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ ਕੋਈ ਪਿੰਨ ਪਾਏ ਕੀਤੇ ਬਿਨਾਂ ਕਨੈਕਟ ਕਰ ਸਕਦੇ ਹਨ। ਤੁਸੀਂ ਵਿਅਕਤੀਗਤ ਤੌਰ 'ਤੇ ਜਾਂ ਸਾਰੇ ਕਲਾਇੰਟਾਂ ਲਈ ਕਿਸੇ ਵੀ ਸਮੇਂ ਇਹ ਇਜਾਜ਼ਤ ਰੱਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2078880767960296260">ਹੋਸਟ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="20876857123010370">ਟਰੈਕਪੈਡ ਮੋਡ</translation>
-<translation id="2089514346391228378">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਚਾਲੂ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="2198363917176605566"><ph name="PRODUCT_NAME" /> ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ 'ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ' ਇਜਾਜ਼ਤ ਦੇਣ ਦੀ ਲੋੜ ਹੈ ਤਾਂ ਜੋ ਇਸ Mac 'ਤੇ ਸਕ੍ਰੀਨ ਸਮੱਗਰੀ ਨੂੰ ਦੂਰ-ਦੁਰਾਡੇ ਦੀ ਮਸ਼ੀਨ 'ਤੇ ਭੇਜਿਆ ਜਾ ਸਕੇ।
 
 ਇਹ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਹੇਠਾਂ '<ph name="BUTTON_NAME" />' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ 'ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ' ਤਰਜੀਹਾਂ ਪੇਨ ਖੋਲ੍ਹੋ ਅਤੇ ਫਿਰ '<ph name="SERVICE_SCRIPT_NAME" />' ਦੇ ਨਾਲ ਵਾਲੇ ਬਾਕਸ ਵਿੱਚ ਨਿਸ਼ਾਨ ਲਗਾਓ।
 
 ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
-<translation id="2208514473086078157">ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਇੱਕ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਹੋਸਟ ਵਜੋਂ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀਆਂ। ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
-<translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
-<translation id="2221097377466213233">Win ਕੁੰਜੀ ਲਈ ਸੱਜਾ Ctrl ਵਰਤੋ (⌘ Mac ਤੇ)</translation>
-<translation id="2235518894410572517">ਕਿਸੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਦਿਖਾਉਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਦੇਣ ਲਈ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰੋ।</translation>
-<translation id="2246783206985865117">ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੀ ਡੋਮੇਨ ਨੀਤੀ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
-<translation id="2256115617011615191">ਹੁਣ ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="225614027745146050">ਸੁਆਗਤ ਹੈ</translation>
-<translation id="228809120910082333">ਕਿਰਪਾ ਕਰਕੇ Chromoting ਵੱਲੋਂ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਹੇਠਾਂ ਆਪਣੇ ਖਾਤੇ ਅਤੇ ਪਿੰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।</translation>
-<translation id="2314101195544969792">ਤੁਹਾਡਾ <ph name="APPLICATION_NAME" /> ਸੈਸ਼ਨ ਥੋੜ੍ਹੀ ਦੇਰ ਲਈ ਨਿਸ਼ਕਿਰਿਆ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਜਲਦੀ ਹੀ ਡਿਸਕਨੈਕਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
-<translation id="2317666076142640974">ਨਵੀਂ <ph name="LINK_BEGIN" />Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵੈੱਬ ਐਪ<ph name="LINK_END" /> 'ਤੇ ਇੱਕ ਝਾਤ ਮਾਰੋ। ਸਾਨੂੰ ਤੁਹਾਡਾ ਵਿਚਾਰ ਪ੍ਰਾਪਤ ਕਰਕੇ ਖੁਸ਼ੀ ਹੋਵੇਗੀ।</translation>
 <translation id="2320166752086256636">ਕੀ-ਬੋਰਡ ਲੁੁਕਾਓ</translation>
-<translation id="2353140552984634198">ਤੁਸੀਂ Chromoting ਵਰਤਦੇ ਹੋਏ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਢੰਦ ਨਾਲ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="2329392777730037872">ਕਲਾਇੰਟ 'ਤੇ <ph name="URL" /> ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ।</translation>
+<translation id="2333212046079545895">ਕਾਪੀਰਾਈਟ 2021 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2366718077645204424">ਹੋਸਟ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਨੈੱਟਵਰਕ ਦਸੰਰੂਪਣ ਦੇ ਕਾਰਨ ਹੈ।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ਆਖਰੀ ਵਾਰ ਆਨਲਾਈਨ <ph name="RELATIVE_TIMESTAMP" />।</translation>
-<translation id="2405928220797050937">ਇਹ ਐਪ ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਹਾਨੂੰ ਸਭ ਤੋਂ ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਮਿਲਦੇ ਰਹਿਣ, ਕਿਰਪਾ ਕਰਕੇ <ph name="LINK_BEGIN" />Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵੈੱਬ ਐਪ<ph name="LINK_END" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
-<translation id="2499160551253595098">ਸਾਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਇਕੱਤਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਕੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ਨੂੰ 'ਪਹੁੰਚਯੋਗਤਾ' ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
-<translation id="2512228156274966424">ਨੋਟ: ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਸਾਰੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਹਨ, ਤੁਸੀਂ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਨੂੰ ‘ਵਿੰਡੋ ਵਜੋਂ ਖੋਲ੍ਹੋ’ ਨੂੰ ਸੰਰੂਪਿਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2540992418118313681">ਕੀ ਤੁਸੀਂ ਕਿਸੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਦਿਖਾਉਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਦੇਣ ਲਈ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2579271889603567289">ਹੋਸਟ ਕ੍ਰੈਸ਼ ਹੋਇਆ ਜਾਂ ਚਾਲੂ ਨਹੀਂ ਹੋ ਸਕਿਆ।</translation>
 <translation id="2599300881200251572">ਇਹ ਸੇਵਾ ਕਲਾਇੰਟਾਂ ਦੇ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਤੋਂ ਆਉਣ ਵਾਲੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਦੀ ਹੈ।</translation>
 <translation id="2647232381348739934">Chromoting ਸੇਵਾ</translation>
 <translation id="2676780859508944670">ਚਾਲੂ....</translation>
 <translation id="2699970397166997657">Chromoting</translation>
-<translation id="2747641796667576127">ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਆਮ ਤੌਰ 'ਤੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਹੁੰਦੇ ਹਨ, ਪਰ ਕੁਝ ਵਿਰਲੇ ਮਾਮਲਿਆਂ ਵਿੱਚ ਅਸਫਲ ਹੋ ਸਕਦੇ ਹਨ। ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਕੁਝ ਮਿੰਟਾਂ ਤੋਂ ਵੱਧ ਨਹੀਂ ਲੱਗਦੇ ਅਤੇ ਇਹ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਕਨੈਕਟ ਹੋਣ ਵੇਲੇ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2758123043070977469">ਪ੍ਰਮਾਣੀਕਰਨ ਸਮੇਂ ਕੋਈ ਸਮੱਸਿਆ ਹੋ ਗਈ, ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਲੌਗ-ਇਨ ਕਰੋ।</translation>
 <translation id="2803375539583399270">PIN ਦਾਖਲ ਕਰੋ</translation>
-<translation id="2841013758207633010">ਸਮਾਂ</translation>
-<translation id="2851754573186462851">Chromium ਐਪ ਸਟ੍ਰੀਮਿੰਗ</translation>
-<translation id="2888969873284818612">ਇੱਕ ਨੈੱਟਵਰਕ ਗੜਬੜ ਹੋਈ। ਜਦੋਂ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਆਨ-ਲਾਈਨ ਹੋਵੇਗੀ ਤਾਂ ਅਸੀਂ ਐਪ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਾਂਗੇ।</translation>
-<translation id="2891243864890517178">Mac ਲਈ (OS X Yosemite 10.10 ਅਤੇ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ)</translation>
-<translation id="2894654864775534701">ਇਹ ਕੰਪਿਊਟਰ ਕਿਸੇ ਵੱਖਰੇ ਖਾਤੇ ਦੇ ਅਧੀਨ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2919669478609886916">ਤੁਸੀਂ ਇਸ ਵੇਲੇ ਇਹ ਮਸ਼ੀਨ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨਾਲ ਸ਼ੇਅਰ ਕਰ ਰਹੇ ਹੋ। ਕੀ ਤੁਸੀਂ ਸ਼ੇਅਰ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="2921543551052660690">ਤੁਸੀਂ ਪਹਿਲਾਂ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ਵਜੋਂ ਸਾਈਨ ਇਨ-ਕੀਤਾ ਹੈ। ਉਸ ਖਾਤੇ 'ਤੇ ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਲਈ, ਉਸ ਖਾਤੇ ਨਾਲ, <ph name="LINK_BEGIN" />Chromium 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ<ph name="LINK_END" /> ਅਤੇ Chromoting ਨੂੰ ਮੁੜ-ਸਥਾਪਤ ਕਰੋ।</translation>
-<translation id="2926340305933667314">ਇਸ ਕੰਪਿਊਟਰ ਤੱਕ ਰਿਮੋਟ ਪਹੁੰਚ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="2930135165929238380">ਕੁਝ ਲੋੜੀਂਦੇ ਕੰਪੋਨੈਂਟ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ chrome://plugins 'ਤੇ ਜਾ ਕਾ ਪੱਕਾ ਕਰੋ ਕਿ ਨੇਟਿਵ ਕਲਾਇੰਟ ਚਾਲੂ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="2939145106548231838">ਹੋਸਟ ਲਈ ਪ੍ਰਮਾਣਿਤ ਕਰੋ</translation>
-<translation id="3020807351229499221">ਪਿੰਨ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ. ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="3025388528294795783">ਤੁਹਾਡੀ ਸਮੱਸਿਆ ਹੱਲ ਕਰਨ ਵਿੱਚ ਸਾਡੀ ਸਹਾਇਤਾ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਕੀ ਗ਼ਲਤ ਹੋਇਆ ਸੀ:</translation>
 <translation id="3027681561976217984">ਟਚ ਮੋਡ</translation>
 <translation id="3106379468611574572">ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਕਨੈਕਸ਼ਨ ਬੇਨਤੀਆਂ ਦਾ ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਆਨਲਾਈਨ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="310979712355504754">ਸਭ ਮਿਟਾਓ</translation>
 <translation id="3150823315463303127">ਹੋਸਟ ਨੀਤੀ ਪੜ੍ਹਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="3171922709365450819">ਇਸ ਕਲਾਇੰਟ ਵੱਲੋਂ ਇਹ ਡੀਵਾਈਸ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ, ਕਿਉਂਕਿ ਇਸਨੂੰ ਤੀਜੀ ਧਿਰ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="3197730452537982411">ਰਿਮੋਟ ਡੈਸਕਟਾਪ</translation>
 <translation id="324272851072175193">ਇਹਨਾਂ ਹਿਦਾਇਤਾਂ ਨੂੰ ਈਮੇਲ ਰਾਹੀਂ ਭੇਜੋ</translation>
-<translation id="3258789396564295715">ਤੁਸੀਂ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਵਰਤਦੇ ਹੋਏ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="3286521253923406898">Chromoting ਹੋਸਟ ਕੰਟ੍ਰੋਲਰ</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> ਤਬਦੀਲੀਆਂ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ।</translation>
-<translation id="332624996707057614">ਕੰਪਿਊਟਰ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3339299787263251426">ਇੰਟਰਨੈੱਟ ਰਾਹੀਂ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
-<translation id="3360306038446926262">Windows</translation>
-<translation id="3362124771485993931">PIN ਨੂੰ ਮੁੜ-ਟਾਈਪ ਕਰੋ</translation>
-<translation id="337167041784729019">ਅੰਕੜੇ ਦਿਖਾਓ</translation>
 <translation id="3385242214819933234">ਅਵੈਧ ਹੋਸਟ ਮਾਲਕ।</translation>
-<translation id="3403830762023901068">ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਇੱਕ Chromoting ਹੋਸਟ ਵਜੋਂ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀਆਂ। ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="3423542133075182604">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਰਿਮੋਟਿੰਗ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="3581045510967524389">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਆਨਲਾਈਨ ਹੈ।</translation>
 <translation id="3596628256176442606">ਇਹ ਸੇਵਾ ਕਲਾਈਂਟਾਂ ਨੂੰ Chromoting ਤੋਂ ਆਉਣ ਵਾਲੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਂਦੀ ਹੈ।</translation>
-<translation id="3606997049964069799">ਤੁਸੀਂ Chromium 'ਤੇ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="3649256019230929621">window ਨੂੰ ਨਿਊਨਤਮ ਬਣਾਓ</translation>
 <translation id="369442766917958684">ਆਫ਼ਲਾਈਨ।</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
-<translation id="3718805989288361841">'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਦੀਆਂ ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="3776024066357219166">ਤੁਹਾਡਾ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਸੈਸ਼ਨ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ।</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
-<translation id="3884839335308961732">ਕਿਰਪਾ ਕਰਕੇ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਵੱਲੋਂ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਹੇਠਾਂ ਆਪਣੇ ਖਾਤੇ ਅਤੇ ਪਿੰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।</translation>
+<translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3905196214175737742">ਅਵੈਧ ਹੋਸਟ ਮਾਲਕ ਡੋਮੇਨ।</translation>
-<translation id="3908017899227008678">ਫਿਟ ਕਰਨ ਲਈ ਛੋਟਾ ਕਰੋ</translation>
 <translation id="3931191050278863510">ਹੋਸਟ ਬੰਦ ਕੀਤਾ।</translation>
-<translation id="3933246213702324812"><ph name="HOSTNAME" /> ਤੇ Chromoting ਪੁਰਾਣਾ ਹੈ ਅਤੇ ਇਸਨੂੰ ਅੱਪਡੇਟ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
-<translation id="3989511127559254552">ਜਾਰੀ ਰੱਖਣ ਲਈ ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਵਿਸਤ੍ਰਿਤ ਪਹੁੰਚ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤਾਂ ਦੇਣੀਆਂ ਪੈਣਗੀਆਂ। ਇਹ ਤੁਹਾਨੂੰ ਸਿਰਫ਼ ਇੱਕ ਵਾਰ ਕਰਨਾ ਪਵੇਗਾ।</translation>
-<translation id="4006787130661126000">ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="405887016757208221">ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਸੈਸ਼ਨ ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਹੋ ਗਿਆ ਹੈ। ਜੇਕਰ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਹੋਸਟ ਨੂੰ ਦੁਬਾਰਾ ਸੰਰੂਪਿਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4060747889721220580">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
-<translation id="4068946408131579958">ਸਾਰੇ ਕਨੈਕਸ਼ਨ</translation>
-<translation id="409800995205263688">ਨੋਟ: ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਵਿੱਚ ਹੋਣ ਵਾਲੇ ਕੰਪਿਊਟਰਾਂ ਵਿਚਾਲੇ ਹੀ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦੀਆਂ ਹਨ।</translation>
 <translation id="4126409073460786861">ਸੈੱਟਅੱਪ ਪੂਰਾ ਹੋ ਜਾਣ ਤੋਂ ਬਾਅਦ, ਇਸ ਪੰਨੇ ਨੂੰ ਰੀਫ੍ਰੈਸ਼ ਕਰੋ, ਫਿਰ ਤੁਸੀਂ ਆਪਣਾ ਡੀਵਾਈਸ ਚੁਣ ਕੇ ਅਤੇ ਪਿੰਨ ਦਰਜ ਕਰਕੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕੋਗੇ</translation>
 <translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4155497795971509630">ਕੁਝ ਲੋੜੀਂਦੇ ਕੰਪੋਨੈਂਟ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਸਾਫ਼ਟਵੇਅਰ ਦਾ ਨਵਾਂ ਵਰਜਨ ਸਥਾਪਤ ਕੀਤਾ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="4156740505453712750">ਇਸ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ <ph name="BOLD_START" />ਘੱਟੋ-ਘੱਟ ਛੇ ਅੰਕਾਂ<ph name="BOLD_END" /> ਦਾ ਇੱਕ ਪਿੰਨ ਚੁਣੋ। ਇਹ ਪਿੰਨ ਦੂਜੇ ਟਿਕਾਣਿਆਂ ਤੋਂ ਕਨੈਕਟ ਕਰਦੇ ਸਮੇਂ ਲੋੜੀਂਦਾ ਹੋਵੇਗਾ।</translation>
-<translation id="4169432154993690151">ਇੱਕ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਚੁਣਨ ਲਈ, 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="4176825807642096119">ਪਹੁੰਚ ਕੋਡ</translation>
-<translation id="4207623512727273241">ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਤੋਂ ਪਹਿਲਾਂ ਸਥਾਪਨਾਕਾਰ ਚਲਾਓ।</translation>
 <translation id="4227991223508142681">ਹੋਸਟ ਪ੍ਰੋਵੀਜ਼ਨਿੰਗ ਯੂਟਿਲਟੀ</translation>
 <translation id="4240294130679914010">Chromoting ਹੋਸਟ ਅਣਸਥਾਪਨਾਕਾਰ</translation>
-<translation id="4277463233460010382">ਇਹ ਕੰਪਿਊਟਰ ਪਿੰਨ ਦਾਖਲ ਕੀਤੇ ਬਿਨਾਂ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇੱਕ ਜਾਂ ਵੱਧ ਕਲਾਇੰਟਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ ਸੰਰੂਪਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL ਅੱਗੇ ਭੇਜਣ ਵਾਲਾ</translation>
 <translation id="4277736576214464567">ਪਹੁੰਚ ਕੋਡ ਅਵੈਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4281844954008187215">ਸੇਵਾ ਦੀਆਂ ਮਦਾਂ</translation>
-<translation id="4361728918881830843">ਇੱਕ ਵੱਖਰੇ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉੱਥੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਸਥਾਪਤ ਕਰੋ ਅਤੇ “<ph name="BUTTON_NAME" />” 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
-<translation id="4394049700291259645">ਬੰਦ ਕਰੋ</translation>
 <translation id="4405930547258349619">ਕੋਰ ਲਾਇਬ੍ਰੇਰੀ</translation>
-<translation id="4430435636878359009">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
-<translation id="4430915108080446161">ਪਹੁੰਚ ਕੋਡ ਸਿਰਜ ਰਿਹਾ ਹੈ…</translation>
 <translation id="443560535555262820">ਪਹੁੰਚਯੋਗਤਾ ਤਰਜੀਹਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
-<translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
-<translation id="4481276415609939789">ਤੁਸੀਂ ਕੋਈ ਕੰਪਿਊਟਰ ਰਜਿਸਟਰ ਨਹੀਂ ਕੀਤੇ ਹਨ। ਇੱਕ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉੱਥੇ Chromoting ਸਥਾਪਤ ਕਰੋ ਅਤੇ “<ph name="BUTTON_NAME" />” 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
-<translation id="4513946894732546136">ਫ਼ੀਡਬੈਕ</translation>
-<translation id="4517233780764084060">ਨੋਟ: ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਸਾਰੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਹਨ, ਤੁਸੀਂ Chromoting ਨੂੰ ‘ਵਿੰਡੋ ਵਜੋਂ ਖੋਲ੍ਹੋ’ ਨੂੰ ਸੰਰੂਪਿਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
+<translation id="4513946894732546136">ਵਿਚਾਰ</translation>
 <translation id="4563926062592110512">ਕਲਾਇੰਟ ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ: <ph name="CLIENT_USERNAME" />।</translation>
-<translation id="4572065712096155137">ਪਹੁੰਚ</translation>
-<translation id="4592037108270173918">ਕਿਸੇ ਡੀਵਾਈਸ ਨੂੰ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ 'ਤੇ ਕਨੈਕਟ ਕਰਨ ਨਾਲ ਡਾਟਾ ਖਰਚੇ ਲਏ ਜਾ ਸਕਦੇ ਹਨ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="4619978527973181021">ਸਵੀਕਾਰ ਕਰੋ ਅਤੇ ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ਦਾ ਸੰਰੂਪਣ ਸਹੀ ਤਰ੍ਹਾਂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਚੁਣੋ ਅਤੇ ਫਿਰ URL ਫਾਰਵਰਡਿੰਗ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="4635770493235256822">ਰਿਮੋਟ ਡਿਵਾਈਸਾਂ</translation>
 <translation id="4660011489602794167">ਕੀ-ਬੋਰਡ ਦਿਖਾਓ</translation>
-<translation id="4703302905453407178">ਇੱਕ ਲੋੜੀਂਦੇ ਹਿੱਸੇ ਨੇ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਡਿਵੈਲਪਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ।</translation>
 <translation id="4703799847237267011">ਤੁਹਾਡਾ Chromoting ਸੈਸ਼ਨ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ।</translation>
-<translation id="4736223761657662401">ਕਨੈਕਸ਼ਨ ਇਤਿਹਾਸ</translation>
 <translation id="4741792197137897469">ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ Chrome 'ਤੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
-<translation id="477305884757156764">ਐਪਲੀਕੇਸ਼ਨ ਬਹੁਤ ਜ਼ਿਆਦਾ ਹੌਲੀ ਹੈ।</translation>
 <translation id="4784508858340177375">X ਸਰਵਰ ਕ੍ਰੈਸ਼ ਹੋਇਆ ਜਾਂ ਚਾਲੂ ਨਹੀਂ ਹੋ ਸਕਿਆ।</translation>
-<translation id="4795786176190567663">ਤੁਹਾਨੂੰ ਇਹ ਕਾਰਵਾਈ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4798680868612952294">ਮਾਊਸ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="4804818685124855865">ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4808503597364150972">ਕਿਰਪਾ ਕਰਕੇ <ph name="HOSTNAME" /> ਲਈ ਆਪਣਾ PIN ਦਰਜ ਕਰੋ।</translation>
 <translation id="4812684235631257312">ਹੋਸਟ</translation>
 <translation id="4867841927763172006">PrtScn ਭੇਜੋ</translation>
-<translation id="4913529628896049296">ਕਨੈਕਸ਼ਨ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
-<translation id="4918086044614829423">ਸਵੀਕਾਰ ਕਰੋ</translation>
-<translation id="492843737083352574">ਮੈਨੂੰ ਮੇਰੇ ਕੀਬੋਰਡ ਜਾਂ ਮਾਊਸ ਨਾਲ ਸਮੱਸਿਆਵਾਂ ਹਨ।</translation>
-<translation id="4973800994433240357">Chromoting ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਡਾਉਨਲੋਡ ਕਰਕੇ, ਤੁਸੀਂ Google ਦੀ <ph name="LINK_BEGIN" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="LINK_END" /> ਨਾਲ ਸਹਿਮਤ ਹੋ ਰਹੇ ਹੋ।</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ਲਈ ਕਨੈਕਸ਼ਨ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4985296110227979402">ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਲਈ ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="4987330545941822761">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਸਥਾਨਕ ਤੌਰ 'ਤੇ URL ਖੋਲ੍ਹਣ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਨਿਰਧਾਰਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਹੇਠਾਂ ਦਿੱਤੀ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣੋ।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ਆਫ਼ਲਾਈਨ)</translation>
-<translation id="5070121137485264635">ਰਿਮੋਟ ਹੋਸਟ ਲਈ ਇਹ ਜ਼ਰੂਰੀ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਤੀਜੀ ਧਿਰ ਦੀ ਵੈੱਬਸਾਈਟ ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਕਰੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਤੁਹਾਨੂੰ ਇਸ ਪਤੇ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਦੀ ਵਧੀਕ ਇਜਾਜ਼ਤਾਂ ਦੇਣੀ ਪਵੇਗੀ।</translation>
 <translation id="507204348399810022">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="HOSTNAME" /> ਲਈ ਰੀਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="5081343395220691640">ਸਰਵਰ ਨਾਲ ਸੰਚਾਰ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ: <ph name="ERROR" /></translation>
-<translation id="5156271271724754543">ਕਿਰਪਾ ਕਰਕੇ ਦੋਵੇਂ ਖਾਨਿਆਂ ਵਿੱਚ ਇੱਕੋ PIN ਦਰਜ ਕਰੋ।</translation>
 <translation id="5170982930780719864">ਅਵੈਧ ਹੋਸਟ ਆਈ.ਡੀ.</translation>
-<translation id="518094545883702183">ਇਹ ਜਾਣਕਾਰੀ ਕੇਵਲ ਤੁਹਾਡੇ ਵੱਲੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਜਾ ਰਹੀ ਸਮੱਸਿਆ ਦੀ ਤਸ਼ਖੀਸ ਕਰਨ ਲਈ ਵਰਤੀ ਜਾਂਦੀ ਹੈ, ਕੇਵਲ ਤੁਹਾਡੀ ਰਿਪੋਰਟ ਦੀ ਜਾਂਚ ਕਰਨ ਵਾਲੇ ਵਿਅਕਤੀ ਲਈ ਹੀ ਉਪਲਬਧ ਹੈ ਅਤੇ 30 ਦਿਨਾਂ ਤੋਂ ਵੱਧ ਨਹੀਂ ਰੱਖੀ ਜਾਂਦੀ।</translation>
 <translation id="5204575267916639804">ਅਕਸਰ ਪੁੱਛੇ ਜਾਣ ਵਾਲੇ ਸਵਾਲ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
-<translation id="5254120496627797685">ਇਸ ਪੰਨੇ ਨੂੰ ਛੱਡਣ ਨਾਲ ਤੁਹਾਡਾ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਸੈਸ਼ਨ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="533625276787323658">ਇੱਥੇ ਕਨੈਕਟ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
-<translation id="5363265567587775042">ਵਰਤੋਂਕਾਰ ਨੂੰ ਪੁੱਛੋ ਕਿ ਤੁਸੀਂ “<ph name="SHARE" />” 'ਤੇ ਕਲਿੱਕ ਕਰਨ ਕਰਕੇ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਕੋਡ ਦੇਣ ਲਈ ਕਿਸਦੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
-<translation id="5379087427956679853">'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨ ਦਿੰਦਾ ਹੈ। ਦੋਵੇਂ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਐਪ ਚਲਾਉਣੀ ਚਾਹੀਦੀ ਹੈ, ਜੋ <ph name="URL" /> 'ਤੇ ਮਿਲ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5397086374758643919">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੋਸਟ ਅਣਸਥਾਪਨਾਕਾਰ</translation>
-<translation id="5419185025274123272">ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਤੁਸੀਂ ਤਾਂ ਵੀ ਇੱਕ ਬੱਗ ਰਿਪੋਰਟ ਭੇਜ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5419418238395129586">ਪਿਛਲੀ ਵਾਰ ਆਨਲਾਈਨ ਹੋਣ ਦੀ ਤਾਰੀਖ: <ph name="DATE" /></translation>
 <translation id="544077782045763683">ਹੋਸਟ ਨੇ ਬੰਦ ਕੀਤਾ ਹੈ।</translation>
-<translation id="5510035215749041527">ਹੁਣ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="5593560073513909978">ਇਹ ਸੇਵਾ ਅਸਥਾਈ ਤੌਰ ਤੇ ਅਣਉਪਲਬਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5619148062500147964">ਇਸ ਕੰਪਿਊਟਰ ਲਈ</translation>
-<translation id="5625493749705183369">ਹੋਰਾਂ ਕੰਪਿਊਟਰਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ ਜਾਂ ਦੂਜੇ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਇੰਟਰਨੈੱਟ ਰਾਹੀਂ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚਣ ਦਿਓ</translation>
-<translation id="5702987232842159181">ਕਨੈਕਟ ਕੀਤਾ:</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ਤੁਹਾਡਾ ਡੈਸਕਟਾਪ ਇਸ ਵੇਲੇ <ph name="USER" /> ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਗਿਆ।</translation>
-<translation id="5773590752998175013">ਪੇਅਰ ਕਰਨ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="579702532610384533">ਰੀਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5810269635982033450">ਸਕ੍ਰੀਨ ਕਿਸੇ ਟਰੈਕਪੈਡ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ਨੇ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਦੇਖਣ ਅਤੇ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਬੇਨਤੀ ਦੀ ਉਮੀਦ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ਦਬਾਓ। ਨਹੀਂ ਤਾਂ ਤਿਆਰ ਹੋਣ 'ਤੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ਚੁਣੋ।</translation>
 <translation id="5823658491130719298">ਤੁਸੀਂ ਜਿਸ ਕੰਪਿਊਟਰ 'ਤੇ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਸ 'ਤੇ Chrome ਖੋਲ੍ਹੋ ਅਤੇ <ph name="INSTALLATION_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="5841343754884244200">ਦਿਖਾਉਣ ਦੇ ਵਿਕਲਪ</translation>
-<translation id="5843054235973879827">ਇਹ ਸੁਰੱਖਿਅਤ ਕਿਉਂ ਹੈ?</translation>
-<translation id="5859141382851488196">ਨਵੀਂ window…</translation>
-<translation id="6011539954251327702">Chromoting ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨ ਦਿੰਦਾ ਹੈ। ਦੋਵੇਂ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ Chromoting ਐਪ ਚਲਾਉਣੀ ਚਾਹੀਦੀ ਹੈ, ਜੋ <ph name="URL" /> 'ਤੇ ਮਿਲ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6033507038939587647">ਕੀ-ਬੋਰਡ ਵਿਕਲਪ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6062854958530969723">ਹੋਸਟ ਸ਼ੁਰੂਆਤ ਅਸਫਲ</translation>
-<translation id="6091564239975589852">ਕੁੰਜੀਆਂ ਭੇਜੋ</translation>
 <translation id="6099500228377758828">Chrome Remote ਡੈਸਕਟਾਪ ਸੇਵਾ</translation>
 <translation id="6122191549521593678">ਆਨਲਾਈਨ</translation>
-<translation id="6167788864044230298">Chrome ਐਪ ਸਟ੍ਰੀਮਿੰਗ</translation>
-<translation id="6173536234069435147">ਮੇਰੀਆਂ Google Drive ਫਾਈਲਾਂ ਖੁੱਲ੍ਹ ਨਹੀਂ ਰਹੀਆਂ ਹਨ।</translation>
 <translation id="6178645564515549384">ਰਿਮੋਟ ਸਹਾਇਤਾ ਲਈ ਮੂਲ ਮੈਸੇਜ਼ਿੰਗ ਹੋਸਟ</translation>
 <translation id="618120821413932081">ਵਿੰਡੋ ਨਾਲ ਮੇਲ ਕਰਨ ਲਈ ਰਿਮੋਟ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਅੱਪਡੇਟ ਕਰੋ</translation>
-<translation id="6193698048504518729"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="6198252989419008588">PIN ਬਦਲੋ</translation>
-<translation id="6204583485351780592"><ph name="HOSTNAME" /> (ਪੁਰਾਣਾ)</translation>
-<translation id="6221358653751391898">ਤੁਸੀਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6223301979382383752">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਤਰਜੀਹਾਂ ਖੋਲ੍ਹੋ</translation>
-<translation id="6227369581881558336">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੁਣ ਫ਼ਾਈਲ ਟ੍ਰਾਂਸਫਰ ਸਮੇਤ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਾਲ ਵੈੱਬ 'ਤੇ ਉਪਲਬਧ ਹੈ! ਸਾਡੀ <ph name="LINK_BEGIN" />ਵੈੱਬ ਐਪ<ph name="LINK_END" /> ਦੇਖੋ।</translation>
 <translation id="6284412385303060032">ਕੰਸੋਲ ਲੌਜਿਕ ਸਕ੍ਰੀਨ 'ਤੇ ਚੱਲ ਰਹੇ ਹੋਸਟ ਨੇ ਇੱਕ ਵਰਤੋਂਕਾਰ-ਵਿਸ਼ੇਸ਼ ਸੈਸ਼ਨ ਵਿੱਚ ਚੱਲ ਰਹੇ ਹੋਸਟ 'ਤੇ ਸਵਿੱਚ ਕਰਕੇ ਕਰਟੇਨ ਮੋਡ ਦੇ ਸਮਰਥਨ ਲਈ ਸ਼ਟਡਾਊਨ ਕੀਤਾ ਹੈ।</translation>
-<translation id="629730747756840877">ਖਾਤਾ</translation>
-<translation id="6304318647555713317">ਕਲਾਇੰਟ</translation>
-<translation id="6381670701864002291">ਕੁਝ ਹੋਰ।</translation>
-<translation id="6398765197997659313">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
-<translation id="6411861157501911556"><ph name="PRODUCT_NAME" /> ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ 'ਪਹੁੰਚਯੋਗਤਾ' ਇਜਾਜ਼ਤ ਦੇਣ ਦੀ ਲੋੜ ਹੈ ਤਾਂ ਜੋ ਦੂਰ-ਦੁਰਾਡੇ ਦੀ ਮਸ਼ੀਨ ਤੋਂ ਇਨਪੁੱਟ ਨੂੰ ਇਸ Mac 'ਤੇ ਪਾਇਆ ਜਾ ਸਕੇ।
-
-ਇਹ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਹੇਠਾਂ '<ph name="BUTTON_NAME" />' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ 'ਪਹੁੰਚਯੋਗਤਾ' ਤਰਜੀਹਾਂ ਪੇਨ ਖੋਲ੍ਹੋ ਅਤੇ ਫਿਰ '<ph name="SERVICE_SCRIPT_NAME" />' ਦੇ ਨਾਲ ਵਾਲੇ ਬਾਕਸ ਵਿੱਚ ਨਿਸ਼ਾਨ ਲਗਾਓ।
-
-ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
-<translation id="6441316101718669559">ਇਸ ਪਲੇਟਫਾਰਮ 'ਤੇ ਡੈਸਕਟਾਪ ਇੰਟੀਗ੍ਰੇਸ਼ਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਤੁਸੀਂ ਤਾਂ ਵੀ ਐਪਲੀਕੇਸ਼ਨ ਵਰਤ ਸਕਦੇ ਹੋ, ਪਰ ਵਰਤੋਂਕਾਰ ਅਨੁਭਵ ਘਟਾ ਦੇਵੇਗਾ।</translation>
-<translation id="652218476070540101">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਪਿੰਨ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
-<translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
-<translation id="6541219117979389420">ਐਪਲੀਕੇਸ਼ਨ ਲੌਗ ਵਿੱਚ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਹੋ ਸਕਦੀ ਹੈ, ਤੁਹਾਡੀ ਪਛਾਣ (ਈਮੇਲ ਪਤਾ) ਅਤੇ Google ਡਰਾਈਵ ਵਿੱਚ ਫਾਈਲ ਦੇ ਨਾਮ ਅਤੇ ਸੰਪਤੀ।</translation>
 <translation id="6542902059648396432">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ…</translation>
-<translation id="6550675742724504774">ਚੋਣਾਂ</translation>
-<translation id="6570205395680337606">ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਕਰੋ। ਤੁਸੀਂ ਅਣਰੱਖਿਅਤ ਕੀਤਾ ਕੋਈ ਵੀ ਕੰਮ ਵਾਪਸ ਹਾਸਲ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="6583902294974160967">ਸਹਾਇਤਾ</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del ਭੇਜੋ</translation>
 <translation id="6654753848497929428">ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="6668065415969892472">ਤੁਹਾਡਾ PIN ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
-<translation id="6681800064886881394">ਕਾਪੀਰਾਈਟ 2013 Google Inc. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
-<translation id="6705482892455291412">ਇੱਕ ਵਾਰ ਉਹਨਾਂ ਵੱਲੋਂ ਕੋਡ ਦਾਖਲ ਕਰਨ 'ਤੇ, ਤੁਹਾਨੂੰ ਕਨੈਕਸ਼ਨ ਸਵੀਕਾਰ ਕਰਨ ਅਤੇ ਸਾਂਝਾਕਰਨ ਸੈਸ਼ਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪੁੱਛਿਆ ਜਾਵੇਗਾ।</translation>
-<translation id="6746493157771801606">ਇਤਿਹਾਸ ਹਟਾਓ</translation>
-<translation id="6748108480210050150">ਤੋਂ</translation>
 <translation id="677755392401385740">ਵਰਤੋਂਕਾਰ ਲਈ ਸ਼ੁਰੂ ਕੀਤਾ ਹੋਸਟ: <ph name="HOST_USERNAME" />।</translation>
-<translation id="6865175692670882333">ਦੇਖੋ/ਸੰਪਾਦਿਤ ਕਰੋ</translation>
-<translation id="6913710942997637770">ਇੱਕ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਚੁਣਨ ਲਈ, 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਨੂੰ ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
-<translation id="6930242544192836755">ਮਿਆਦ</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> ਕਲਾਇੰਟ 'ਤੇ URL ਖੋਲ੍ਹਣ ਲਈ ਸਹਾਇਕ ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="6939719207673461467">ਕੀ-ਬੋਰਡ ਦਿਖਾਓ/ਲੁਕਾਓ।</translation>
-<translation id="6944854424004126054">window ਰੀਸਟੋਰ ਕਰੋ</translation>
-<translation id="6948905685698011662">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੁਣ ਵੈੱਬ 'ਤੇ ਹੈ! ਸਾਡੀ <ph name="LINK_BEGIN" />ਮੁਫ਼ਤ ਵੈੱਬ ਐਪ<ph name="LINK_END" /> ਦੇਖੋ।</translation>
 <translation id="6963936880795878952">ਰਿਮੋਟ ਕੰਪਿਊਟਰ 'ਤੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਕੋਈ ਵਿਅਕਤੀ ਅਵੈਧ ਪਿੰਨ ਨਾਲ ਇਸ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6985691951107243942">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="HOSTNAME" /> ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਵਿਚਾਰ ਬਦਲਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਕਨੈਕਸ਼ਨਾਂ ਨੂੂੰ ਮੁੜ ਚਾਲੂ ਕਰਨ ਲਈ ਉਸ ਕੰਪਿਊਟਰ 'ਤੇ ਜਾਣਾ ਪਵੇਗਾ।</translation>
-<translation id="6998989275928107238">ਨੂੰ</translation>
 <translation id="7019153418965365059">ਬਿਨਾਂ ਪਛਾਣੀ ਗਈ ਹੋਸਟ ਗੜਬੜ: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">ਰਿਮੋਟ ਸਹਾਇਤਾ</translation>
 <translation id="7026930240735156896">ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਵਾਸਤੇ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ ਹਿਦਾਇਤਾਂ ਦੀ ਪਾਲਣਾ ਕਰੋ</translation>
-<translation id="7038683108611689168">ਸਾਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਸੰਗ੍ਰਹਿ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇ ਕੇ Chromoting ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਸਹਾਇਤਾ ਕਰੋ।</translation>
 <translation id="7067321367069083429">ਸਕ੍ਰੀਨ ਕਿਸੇ ਸਪਰਸ਼ ਸਕ੍ਰੀਨ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="7116737094673640201">'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="7149517134817561223">ਐਪਲੀਕੇਸ਼ਨ Chrome Remote Desktop ਹੋਸਟ ਲਈ ਆਦੇਸ਼ ਜਾਰੀ ਕਰੇਗਾ।</translation>
-<translation id="7215059001581613786">ਕਿਰਪਾ ਕਰਕੇ ਛੇ ਜਾਂ ਵੱਧ ਅੰਕਾਂ ਦਾ ਇੱਕ PIN ਦਰਜ ਕਰੋ।</translation>
 <translation id="7312846573060934304">ਹੋਸਟ ਆਫ਼ਲਾਈਨ ਹੈ।</translation>
 <translation id="7319983568955948908">ਸ਼ੇਅਰਿੰਗ ਰੋਕੋ</translation>
+<translation id="7359298090707901886">ਸਥਾਨਕ ਮਸ਼ੀਨ 'ਤੇ URL ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਚੁਣੇ ਗਏ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="7401733114166276557">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ</translation>
 <translation id="7434397035092923453">ਕਲਾਇੰਟ ਲਈ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ਕਲਾਇੰਟ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ਖਾਤਾ ਬਦਲੋ</translation>
-<translation id="7606912958770842224">ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="7535110896613603182">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7628469622942688817">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੇਰਾ ਪਿੰਨ ਯਾਦ ਰੱਖੋ।</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7665369617277396874">ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="7672203038394118626">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨ ਬੰਦ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="7678209621226490279">ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="7693372326588366043">ਹੋਸਟਾਂ ਦੀ ਸੂਚੀ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7714222945760997814">ਇਸ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
-<translation id="7782471917492991422">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦੀਆਂ ਪਾਵਰ ਪ੍ਰਬੰਧਨ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਪੱਕਾ ਕਰੋ ਕਿ ਇਸਨੂੰ ਨਿਸ਼ਕਿਰਿਆ ਹੋਣ ਵੇਲੇ ਸਲੀਪ 'ਤੇ ਸੰਰੂਪਿਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
-<translation id="7810127880729796595">ਅੰਕੜੇ ਦਿਖਾਓ (ਕਨੈਕਸ਼ਨ: <ph name="QUALITY" />)</translation>
-<translation id="7836926030608666805">ਕੁਝ ਲੋੜੀਂਦੇ ਕੰਪੋਨੈਂਟ ਅਣਉਪਲਬਧ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ Chrome ਦਾ ਨਵਾਂ ਵਰਜਨ ਚਲਾ ਰਹੇ ਹੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7868137160098754906">ਕਿਰਪਾ ਕਰਕੇ ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਲਈ ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="7869445566579231750">ਤੁਹਾਨੂੰ ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7895403300744144251">ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਦੀਆਂ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਤੋਂ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀਆਂ ਹਨ।</translation>
 <translation id="7936528439960309876">ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
-<translation id="7948001860594368197">ਸਕ੍ਰੀਨ ਚੋਣਾਂ</translation>
 <translation id="7970576581263377361">ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ Chromium 'ਤੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="7981525049612125370">ਰਿਮੋਟ ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਖਤਮ ਹੋ ਗਈ ਹੈ।</translation>
 <translation id="8038111231936746805">(ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="8041089156583427627">ਵਿਚਾਰ ਭੇਜੋ</translation>
-<translation id="8041721485428375115">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਕੇ, ਤੁਸੀਂ Google ਦੇ <ph name="LINK_BEGIN" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="LINK_END" /> ਨਾਲ ਸਹਿਮਤ ਹੋ ਰਹੇ ਹੋ।</translation>
 <translation id="8060029310790625334">ਮਦਦ ਕੇਂਦਰ</translation>
 <translation id="806699900641041263"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8073845705237259513">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ Google ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਪਵੇਗਾ।</translation>
-<translation id="80739703311984697">ਰਿਮੋਟ ਹੋਸਟ ਲਈ ਇਹ ਜ਼ਰੂਰੀ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਤੀਜੀ ਧਿਰ ਦੀ ਵੈੱਬਸਾਈਟ ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਕਰੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਤੁਹਾਨੂੰ ਇਸ ਪਤੇ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chromoting ਦੀ ਵਧੀਕ ਇਜਾਜ਼ਤਾਂ ਦੇਣੀ ਪਵੇਗੀ।</translation>
 <translation id="809687642899217504">ਮੇਰੇ ਕੰਪਿਊਟਰ</translation>
-<translation id="811307782653349804">ਕਿਤੋਂ ਵੀ ਆਪਣੇ ਖੁਦ ਦੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="8116630183974937060">ਇੱਕ ਨੈੱਟਵਰਕ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਆਨ-ਲਾਈਨ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="8178433417677596899">ਵਰਤੋਂਕਾਰ-ਤੋਂ-ਵਰਤੋਂਕਾਰ ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ, ਰਿਮੋਟ ਤਕਨੀਕੀ ਸਹਾਇਤਾ ਲਈ ਉੱਤਮ ਹੈ।</translation>
-<translation id="8187079423890319756">ਕਾਪੀਰਾਈਟ 2013 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
-<translation id="8196755618196986400">ਸਾਨੂੰ ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਤੁਹਾਨੂੰ ਸੰਪਰਕ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ, ਤੁਹਾਡਾ ਈਮੇਲ ਪਤਾ ਕਿਸੇ ਵੀ ਫੀਡਬੈਕ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾਏਗਾ, ਜੋ ਤੁਸੀਂ ਪ੍ਰਸਤੁਤ ਕਰਦੇ ਹੋ।</translation>
-<translation id="8244400547700556338">ਜਾਣੋ ਕਿਵੇਂ ਕਰਨਾ ਹੈ।</translation>
-<translation id="8261506727792406068">ਮਿਟਾਓ</translation>
-<translation id="8355326866731426344">ਇਸ ਪਹੁੰਚ ਕੋਡ ਦੀ ਮਿਆਦ <ph name="TIMEOUT" /> ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ</translation>
-<translation id="8355485110405946777">ਆਪਣੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਕਰਨ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਐਪਲੀਕੇਸ਼ਨ ਲੌਗ ਸ਼ਾਮਲ ਕਰੋ (ਲੌਗ ਵਿੱਚ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ)।</translation>
-<translation id="837021510621780684">ਇਸ ਕੰਪਿਊਟਰ ਤੋਂ</translation>
+<translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ 'ਪਹੁੰਚਯੋਗਤਾ' ਇਜਾਜ਼ਤ ਦੇਣ ਦੀ ਲੋੜ ਹੈ ਤਾਂ ਜੋ ਦੂਰ-ਦੁਰਾਡੇ ਦੀ ਮਸ਼ੀਨ ਤੋਂ ਇਨਪੁੱਟ ਨੂੰ ਇਸ Mac 'ਤੇ ਪਾਇਆ ਜਾ ਸਕੇ।
+
+ਇਹ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਹੇਠਾਂ '<ph name="BUTTON_NAME" />' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਖੁੱਲ੍ਹਣ ਵਾਲੇ 'ਪਹੁੰਚਯੋਗਤਾ' ਤਰਜੀਹਾਂ ਪੇਨ ਵਿੱਚ '<ph name="SERVICE_SCRIPT_NAME" />' ਦੇ ਨਾਲ ਵਾਲੇ ਬਾਕਸ ਵਿੱਚ ਨਿਸ਼ਾਨ ਲਗਾਓ।
+
+ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
+<translation id="8305209735512572429">ਵੈੱਬ ਪ੍ਰਮਾਣੀਕਰਨ ਰਿਮੋਟਿੰਗ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="8383794970363966105">Chromoting ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ Google ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="8386846956409881180">ਹੋਸਟ ਨੂੰ ਅਵੈਧ OAuth ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="8406498562923498210">ਆਪਣੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵਾਤਾਵਰਨ ਅੰਦਰ ਲਾਂਚ ਕਰਨ ਲਈ ਸੈਸ਼ਨ ਚੁਣੋ। (ਨੋਟ ਕਰੋ ਕਿ ਕੁਝ ਸੈਸ਼ਨ ਕਿਸਮਾਂ ਸ਼ਾਇਦ ਇੱਕੋ ਵੇਲੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਅਤੇ ਸਥਾਨਕ ਕੰਸੋਲ 'ਤੇ ਚਲਣ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰਨ।)</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
-<translation id="8445362773033888690">Google Play ਸਟੋਰ ਵਿੱਚ ਦੇਖੋ</translation>
+<translation id="8445362773033888690">Google Play Store ਵਿੱਚ ਦੇਖੋ</translation>
 <translation id="8509907436388546015">ਡੈਸਕਟਾਪ ਇੰਟੀਗ੍ਰੇਸ਼ਨ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ</translation>
 <translation id="8513093439376855948">ਰਿਮੋਟਿੰਗ ਹੋਸਟ ਪ੍ਰਬੰਧਨ ਲਈ ਨੇਟਿਵ ਸੁਨੇਹਾ ਹੋਸਟ</translation>
 <translation id="8525306231823319788">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
-<translation id="8548209692293300397">ਤੁਸੀਂ ਪਹਿਲਾਂ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ਵਜੋਂ ਸਾਈਨ ਇਨ-ਕੀਤਾ ਹੈ। ਉਸ ਖਾਤੇ 'ਤੇ ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, ਉਸ ਖਾਤੇ ਨਾਲ <ph name="LINK_BEGIN" />Google Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ<ph name="LINK_END" /> ਅਤੇ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਨੂੰ ਮੁੜ-ਸਥਾਪਤ  ਕਰੋ।</translation>
 <translation id="858006550102277544">ਟਿੱਪਣੀ</translation>
-<translation id="8642984861538780905">ਉਚਿਤ</translation>
-<translation id="8712909229180978490">ਮੈਨੂੰ Google Drive ਵਿੱਚ ਔਨ-ਲਾਈਨ ਸੁਰੱਖਿਅਤ ਕੀਤੀਆਂ ਮੇਰੀਆਂ ਫਾਈਲਾਂ ਦਿਖਾਈ ਨਹੀਂ ਦੇ ਰਹੀਆਂ ਹਨ।</translation>
 <translation id="8743328882720071828">ਕੀ ਤੁਸੀਂ <ph name="CLIENT_USERNAME" /> ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਦੇਖਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8747048596626351634">ਸੈਸ਼ਨ ਕ੍ਰੈਸ਼ ਹੋ ਗਿਆ ਜਾਂ ਸ਼ੁਰੂ ਹੋਣ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਜੇਕਰ ਰਿਮੋਟ ਕੰਪਿਊਟਰ 'ਤੇ ~/.chrome-remote-desktop-session ਮੌਜੂਦ ਹੈ, ਤਾਂ ਇਸਦਾ ਕਿਸੇ ਡੈਸਕਟਾਪ ਵਾਤਾਵਰਨ ਜਾਂ ਵਿੰਡੋ ਪ੍ਰਬੰਧਕ ਵਜੋਂ ਸਾਹਮਣੇ ਚੱਲਣ ਵਾਲੀ ਲੰਬੀ-ਪ੍ਰਕਿਰਿਆ ਵਾਂਗ ਚੱਲਣਾ ਪੱਕਾ ਕਰੋ।</translation>
-<translation id="8759753423332885148">ਹੋਰ ਜਾਣੋ।</translation>
-<translation id="8791202241915690908">Chromoting ਹੋਸਟ ਸਥਾਪਨਾਕਾਰ ਡਾਉਨਲੋਡ ਕਰੋ</translation>
 <translation id="8804164990146287819">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</translation>
-<translation id="894763922177556086">ਵਧੀਆ</translation>
-<translation id="895780780740011433">Windows 7 ਅਤੇ ਬਾਅਦ ਵਾਲੇ ਸੰਸਕਰਣ</translation>
-<translation id="897805526397249209">ਇੱਕ ਵੱਖਰੇ ਕੰਪਿਊਟਰ ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉੱਥੇ Chromoting ਸਥਾਪਤ ਕਰੋ ਅਤੇ “<ph name="BUTTON_NAME" />” 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
-<translation id="8998327464021325874">Chrome Remote Desktop Host Controller</translation>
-<translation id="9016232822027372900">ਫੇਰ ਵੀ ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="906458777597946297">window ਨੂੰ ਅਧਿਕਤਮ ਬਣਾਓ</translation>
+<translation id="8906511416443321782">ਆਡੀਓ ਕੈਪਚਰ ਕਰਨ ਅਤੇ ਇਸਨੂੰ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਕਲਾਇੰਟ ਵਿੱਚ ਸਟ੍ਰੀਮ ਕਰਨ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="9111855907838866522">ਤੁਸੀਂ ਆਪਣੇ ਰਿਮੋਟ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੋ। ਮੀਨੂ ਖੋਲ੍ਹਣ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਸਕ੍ਰੀਨ 'ਤੇ ਚਾਰ ਉਂਗਲੀਆਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="9126115402994542723">ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਇਸ ਹੋਸਟ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਦੁਬਾਰਾ ਪਿੰਨ ਨਾ ਮੰਗੋ।</translation>
-<translation id="9149580767411232853">ਸਮੁੱਚੇ ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਨੂੰ ਦਿਖਣਯੋਗ ਰੱਖੋ</translation>
-<translation id="9149992051684092333">ਆਪਣੇ ਡੈਸਕਟਾਪ ਨੂੰ ਸ਼ੇਅਰ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਉਸ ਵਿਅਕਤੀ ਨੂੰ ਹੇਠਾਂ ਦਿੱਤਾ ਪਹੁੰਚ ਕੋਡ ਦਿਓ, ਜੋ ਤੁਹਾਡੀ ਸਹਾਇਤਾ ਕਰੇਗਾ।</translation>
 <translation id="916856682307586697">ਪੂਰਵ-ਨਿਰਧਾਰਤ XSession ਲਾਂਚ ਕਰੋ</translation>
 <translation id="9187628920394877737"><ph name="PRODUCT_NAME" /> ਨੂੰ 'ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ' ਇਜਾਜ਼ਤ ਦਿਓ</translation>
-<translation id="9188433529406846933">ਅਧਿਕਾਰ ਦਿਓ</translation>
 <translation id="9213184081240281106">ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਹੋਸਟ ਸੰਰੂਪਣ।</translation>
-<translation id="951991426597076286">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
-<translation id="962733587145768554">ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਨੈਕਸ਼ਨ ਡਾਇਲੌਗ ਬਾਕਸ 'ਤੇ <ph name="SHARE" />' ਨੂੰ ਚੁਣੋ।</translation>
-<translation id="979100198331752041"><ph name="HOSTNAME" /> 'ਤੇ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਪੁਰਾਣਾ ਹੈ ਅਤੇ ਇਸਨੂੰ ਅੱਪਡੇਟ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (ਪਿਛਲੀ ਵਾਰ ਆਨਲਾਈਨ <ph name="DATE_OR_TIME" />)</translation>

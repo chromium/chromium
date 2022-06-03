@@ -10,9 +10,9 @@ but for performance coverage.
 
 ## Writing Tests
 Each test entry point is a HTML file written using
-[runner.js](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/resources/runner.js)
+[runner.js](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/resources/runner.js)
 testing framework. The test file is placed inside a sub folder of
-[blink/perf_tests/](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/)
+[blink/perf_tests/](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/)
 and is started by importing `runner.js` script into the document:
 ```
   <script src="../resources/runner.js"></script>
@@ -83,9 +83,9 @@ also compute the total CPU times for trace events  'A' & 'B' per `foo()` run:
 
 Example tracing synchronous tests:
 
-*   [append-child-measure-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_data/append-child-measure-time.html)
+*   [append-child-measure-time.html](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/test_data/append-child-measure-time.html)
 
-*   [simple-html-measure-page-load-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_ata/simple-html-measure-page-load-time.html)
+*   [simple-html-measure-page-load-time.html](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/test_data/simple-html-measure-page-load-time.html)
 
 
 ### Asynchronous Perf Tests
@@ -143,32 +143,28 @@ example of synchronous tracing test above.
 
 Example of tracing asynchronous tests:
 
-[color-changes-measure-frame-time.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_data/color-changes-measure-frame-time.html)
+[color-changes-measure-frame-time.html](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/test_data/color-changes-measure-frame-time.html)
 
-[simple-blob-measure-async.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/test_data/simple-blob-measure-async.html)
+[simple-blob-measure-async.html](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/test_data/simple-blob-measure-async.html)
 
-## Canvas Tests
 
-The sub-framework [canvas_runner.js](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/canvas/resources/canvas_runner.js) is used for
-tests in the `canvas` directory. This can measure rasterization and GPU time
-using requestAnimationFrame (RAF) and contains a callback framework for video.
+### Service Worker Perf Tests
+You can also run perf tests in service workers. You need to trigger the test
+with `PerfTestRunner.startMeasureValuesInWorker()` in a page. Within the `run`
+method provided to this function, you can initialize a worker and ask the
+worker to run the workload by using `measureRunsPerSecond()` defined in
+[worker-test-helper.js](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/resources/worker-test-helper.js).
 
-Normal tests using `runTest()` work similarly to the asynchronous test above,
-but crucially wait for RAF after completing a single trial of
-`MEASURE_DRAW_TIMES` runs.
+`measureRunsPerSecond()` returns a promise which resolves to the test result.
+The worker should send the result back to the page, and the page records the
+result by `PerfTestRunner.recordResultFromWorker()`. After the result is
+recorded, the test finishes.
 
-RAF tests are triggered by appending the query string `raf` (case insensitive)
-to the test's url. These tests wait for RAF to return before making a
-measurement. This way rasterization and GPU time are included in the
-measurement.
+Here is an example for testing Cache Storage API of service workers:
 
-For example:
+[cache-open-add-delete-10K-service-worker.html](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/service_worker/cache-open-add-delete-10K-service-worker.html)
 
-The test [gpu-bound-shader.html](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/perf_tests/canvas/gpu-bound-shader.html) is just measuring
-CPU, and thus looks extremely fast as the test is just one slow shader.
-
-The url `gpu-bound-shader.html?raf` will measure rasterization and GPU time as
-well, thus giving a more realistic measurement of performance.
+[cache-open-add-delete-10K-service-worker.js](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/perf_tests/service_worker/resources/cache-open-add-delete-10K-service-worker.js)
 
 ## Running Tests
 

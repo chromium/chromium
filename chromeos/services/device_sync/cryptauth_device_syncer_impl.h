@@ -10,9 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
@@ -28,6 +26,9 @@
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefService;
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -41,6 +42,7 @@ namespace device_sync {
 class CryptAuthClient;
 class CryptAuthClientFactory;
 class CryptAuthKeyRegistry;
+class SyncedBluetoothAddressTracker;
 
 // An implementation of CryptAuthDeviceSyncer, using instances of
 // CryptAuthClient to make the API calls to CryptAuth. This implementation
@@ -51,30 +53,47 @@ class CryptAuthKeyRegistry;
 // devices that have a valid device ID, device name, device public key, and
 // feature states. If device metadata cannot be decrypted due to an error or
 // because the group private key was not returned by CryptAuth, the device is
-// still added to the registry without the decrypted metadata.
+// still added to the registry without the new decrypted metadata. Any existing
+// decrypted metadata from the device registry will remain there until the new
+// metadata can be decrypted.
 class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthDeviceSyncer> BuildInstance(
+    static std::unique_ptr<CryptAuthDeviceSyncer> Create(
         CryptAuthDeviceRegistry* device_registry,
         CryptAuthKeyRegistry* key_registry,
         CryptAuthClientFactory* client_factory,
+        SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+        PrefService* pref_service,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthDeviceSyncer> CreateInstance(
+        CryptAuthDeviceRegistry* device_registry,
+        CryptAuthKeyRegistry* key_registry,
+        CryptAuthClientFactory* client_factory,
+        SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+        PrefService* pref_service,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthDeviceSyncerImpl(const CryptAuthDeviceSyncerImpl&) = delete;
+  CryptAuthDeviceSyncerImpl& operator=(const CryptAuthDeviceSyncerImpl&) =
+      delete;
 
   ~CryptAuthDeviceSyncerImpl() override;
 
  private:
   enum class State {
     kNotStarted,
+    kWaitingForBluetoothAddress,
     kWaitingForMetadataSync,
     kWaitingForFeatureStatuses,
     kWaitingForEncryptedGroupPrivateKeyProcessing,
@@ -85,8 +104,8 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
-  static base::Optional<CryptAuthDeviceSyncResult::ResultCode>
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<CryptAuthDeviceSyncResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   // |device_registry|: At the end of a DeviceSync flow, the devices in the
@@ -95,11 +114,16 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   //     and it will read the user key pair and the key used for decrypting the
   //     group private key.
   // |client_factory|: Creates CryptAuthClient instances for making API calls.
+  // |synced_bluetooth_address_tracker|: Used to fetch Bluetooth address and
+  //     track address used for successful syncs.
   // |timer|: Handles timeouts for asynchronous operations.
-  CryptAuthDeviceSyncerImpl(CryptAuthDeviceRegistry* device_registry,
-                            CryptAuthKeyRegistry* key_registry,
-                            CryptAuthClientFactory* client_factory,
-                            std::unique_ptr<base::OneShotTimer> timer);
+  CryptAuthDeviceSyncerImpl(
+      CryptAuthDeviceRegistry* device_registry,
+      CryptAuthKeyRegistry* key_registry,
+      CryptAuthClientFactory* client_factory,
+      SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+      PrefService* pref_service,
+      std::unique_ptr<base::OneShotTimer> timer);
 
   // CryptAuthDeviceSyncer:
   void OnAttemptStarted(
@@ -112,14 +136,17 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   // Controls the logical flow of the class.
   void AttemptNextStep();
 
+  void GetBluetoothAddress();
+  void OnBluetoothAddress(const std::string& bluetooth_address);
+
   void SyncMetadata();
   void OnSyncMetadataFinished(
       const CryptAuthMetadataSyncer::IdToDeviceMetadataPacketMap&
           id_to_device_metadata_packet_map,
       std::unique_ptr<CryptAuthKey> new_group_key,
-      const base::Optional<cryptauthv2::EncryptedGroupPrivateKey>&
+      const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
           encrypted_group_private_key,
-      const base::Optional<cryptauthv2::ClientDirective>& new_client_directive,
+      const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
       CryptAuthDeviceSyncResult::ResultCode device_sync_result_code);
 
   void SetGroupKey(const CryptAuthKey& new_group_key);
@@ -141,7 +168,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   // we verify that they agree.
   void ProcessEncryptedGroupPrivateKey();
   void OnGroupPrivateKeyDecrypted(
-      const base::Optional<std::string>& group_private_key_from_cryptauth);
+      const absl::optional<std::string>& group_private_key_from_cryptauth);
 
   void ProcessEncryptedDeviceMetadata();
   void OnDeviceMetadataDecrypted(const CryptAuthEciesEncryptor::IdToOutputMap&
@@ -172,15 +199,15 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   // Output from CryptAuthMetadataSyncer.
   CryptAuthMetadataSyncer::IdToDeviceMetadataPacketMap
       id_to_device_metadata_packet_map_;
-  base::Optional<cryptauthv2::EncryptedGroupPrivateKey>
+  absl::optional<cryptauthv2::EncryptedGroupPrivateKey>
       encrypted_group_private_key_;
-  base::Optional<cryptauthv2::ClientDirective> new_client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> new_client_directive_;
 
   // Populated after a successful BatchGetFeatureStatuses call. Device metadata
   // is added if device metadata decryption is successful. Replaces the contents
   // of the device registry if non-null when the DeviceSync attempt ends,
   // successfully or not.
-  base::Optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
+  absl::optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
       new_device_registry_map_;
 
   // The time of the last state change. Used for execution time metrics.
@@ -195,9 +222,11 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   CryptAuthDeviceRegistry* device_registry_ = nullptr;
   CryptAuthKeyRegistry* key_registry_ = nullptr;
   CryptAuthClientFactory* client_factory_ = nullptr;
+  SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceSyncerImpl);
+  base::WeakPtrFactory<CryptAuthDeviceSyncerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace device_sync

@@ -14,7 +14,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/cronet/cronet_url_request.h"
@@ -54,7 +53,12 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
                           jboolean jtraffic_stats_tag_set,
                           jint jtraffic_stats_tag,
                           jboolean jtraffic_stats_uid_set,
-                          jint jtraffic_stats_uid);
+                          jint jtraffic_stats_uid,
+                          net::Idempotency idempotency);
+
+  CronetURLRequestAdapter(const CronetURLRequestAdapter&) = delete;
+  CronetURLRequestAdapter& operator=(const CronetURLRequestAdapter&) = delete;
+
   ~CronetURLRequestAdapter() override;
 
   // Methods called prior to Start are never called on network thread.
@@ -155,8 +159,6 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
 
   // Java object that owns this CronetURLRequestContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequestAdapter);
 };
 
 }  // namespace cronet

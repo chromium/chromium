@@ -5,9 +5,13 @@
 #include "media/capture/content/video_capture_oracle.h"
 
 #include <algorithm>
+#include <limits>
+#include <utility>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -38,8 +42,7 @@ const int kConsumerCapabilityEvaluationMicros = 1000000;  // 1 second
 // longer, and currently-accumulated feedback is not considered recent enough to
 // base decisions off of.  This prevents changes to the capture size when there
 // is an unexpected pause in events.
-const base::TimeDelta kMaxTimeSinceLastFeedbackUpdate =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMaxTimeSinceLastFeedbackUpdate = base::Seconds(1);
 
 // The amount of additional time, since content animation was last detected, to
 // continue being extra-careful about increasing the capture size.  This is used
@@ -55,17 +58,15 @@ const int kProvingPeriodForAnimatedContentMicros = 30000000;  // 30 seconds
 // time between frames at |frame_rate| and return the fractional difference.
 double FractionFromExpectedFrameRate(base::TimeDelta delta, int frame_rate) {
   DCHECK_GT(frame_rate, 0);
-  const base::TimeDelta expected_delta =
-      base::TimeDelta::FromSeconds(1) / frame_rate;
-  return (delta - expected_delta).InMillisecondsF() /
-         expected_delta.InMillisecondsF();
+  const base::TimeDelta expected_delta = base::Seconds(1) / frame_rate;
+  return (delta - expected_delta) / expected_delta;
 }
 
 // Returns the next-higher TimeTicks value.
 // TODO(miu): Patch FeedbackSignalAccumulator reset behavior and remove this
 // hack.
 base::TimeTicks JustAfter(base::TimeTicks t) {
-  return t + base::TimeDelta::FromMicroseconds(1);
+  return t + base::Microseconds(1);
 }
 
 }  // anonymous namespace
@@ -77,25 +78,28 @@ constexpr base::TimeDelta VideoCaptureOracle::kDefaultMinCapturePeriod;
 constexpr base::TimeDelta VideoCaptureOracle::kDefaultMinSizeChangePeriod;
 
 VideoCaptureOracle::VideoCaptureOracle(bool enable_auto_throttling)
-    : auto_throttling_enabled_(enable_auto_throttling),
+    : capture_size_throttling_mode_(
+          enable_auto_throttling ? kThrottlingEnabled : kThrottlingDisabled),
       min_size_change_period_(kDefaultMinSizeChangePeriod),
       next_frame_number_(0),
       last_successfully_delivered_frame_number_(-1),
       num_frames_pending_(0),
       smoothing_sampler_(kDefaultMinCapturePeriod),
       content_sampler_(kDefaultMinCapturePeriod),
-      buffer_pool_utilization_(base::TimeDelta::FromMicroseconds(
-          kBufferUtilizationEvaluationMicros)),
-      estimated_capable_area_(base::TimeDelta::FromMicroseconds(
-          kConsumerCapabilityEvaluationMicros)) {
-  VLOG(1) << "Auto-throttling is "
-          << (auto_throttling_enabled_ ? "enabled." : "disabled.");
+      min_capture_period_(kDefaultMinCapturePeriod),
+      buffer_pool_utilization_(
+          base::Microseconds(kBufferUtilizationEvaluationMicros)),
+      estimated_capable_area_(
+          base::Microseconds(kConsumerCapabilityEvaluationMicros)) {
+  VLOG(1) << "Capture size auto-throttling is now "
+          << (enable_auto_throttling ? "enabled." : "disabled.");
 }
 
 VideoCaptureOracle::~VideoCaptureOracle() = default;
 
 void VideoCaptureOracle::SetMinCapturePeriod(base::TimeDelta period) {
   DCHECK_GT(period, base::TimeDelta());
+  min_capture_period_ = period;
   smoothing_sampler_.SetMinCapturePeriod(period);
   content_sampler_.SetMinCapturePeriod(period);
 }
@@ -109,9 +113,14 @@ void VideoCaptureOracle::SetCaptureSizeConstraints(
 }
 
 void VideoCaptureOracle::SetAutoThrottlingEnabled(bool enabled) {
-  if (auto_throttling_enabled_ == enabled)
+  const bool was_enabled =
+      (capture_size_throttling_mode_ != kThrottlingDisabled);
+  if (was_enabled == enabled)
     return;
-  auto_throttling_enabled_ = enabled;
+  capture_size_throttling_mode_ =
+      enabled ? kThrottlingEnabled : kThrottlingDisabled;
+  VLOG(1) << "Capture size auto-throttling is now "
+          << (enabled ? "enabled." : "disabled.");
 
   // When not auto-throttling, have the CaptureResolutionChooser target the max
   // resolution within constraints.
@@ -194,7 +203,7 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
           event_time - GetFrameTimestamp(next_frame_number_ - 1);
     }
     const base::TimeDelta upper_bound =
-        base::TimeDelta::FromMilliseconds(kUpperBoundDurationEstimateMicros);
+        base::Milliseconds(kUpperBoundDurationEstimateMicros);
     duration_of_next_frame_ = std::max(
         std::min(duration_of_next_frame_, upper_bound), min_capture_period());
   }
@@ -208,8 +217,12 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
   } else if (capture_size_ != resolution_chooser_.capture_size()) {
     const base::TimeDelta time_since_last_change =
         event_time - buffer_pool_utilization_.reset_time();
-    if (time_since_last_change >= min_size_change_period_)
+    if (time_since_last_change >= min_size_change_period_ ||
+        capture_size_throttling_mode_ != kThrottlingActive) {
+      // Unless autothrottling has become active resolution should be changed
+      // ASAP.
       CommitCaptureSizeAndReset(GetFrameTimestamp(next_frame_number_ - 1));
+    }
   }
 
   SetFrameTimestamp(next_frame_number_, event_time);
@@ -223,7 +236,7 @@ void VideoCaptureOracle::RecordCapture(double pool_utilization) {
   const base::TimeTicks timestamp = GetFrameTimestamp(next_frame_number_);
   content_sampler_.RecordSample(timestamp);
 
-  if (auto_throttling_enabled_) {
+  if (capture_size_throttling_mode_ == kThrottlingActive) {
     buffer_pool_utilization_.Update(pool_utilization, timestamp);
     AnalyzeAndAdjust(timestamp);
   }
@@ -236,7 +249,7 @@ void VideoCaptureOracle::RecordWillNotCapture(double pool_utilization) {
   VLOG(1) << "Client rejects proposal to capture frame (at #"
           << next_frame_number_ << ").";
 
-  if (auto_throttling_enabled_) {
+  if (capture_size_throttling_mode_ == kThrottlingActive) {
     DCHECK(std::isfinite(pool_utilization) && pool_utilization >= 0.0);
     const base::TimeTicks timestamp = GetFrameTimestamp(next_frame_number_);
     buffer_pool_utilization_.Update(pool_utilization, timestamp);
@@ -322,18 +335,55 @@ void VideoCaptureOracle::CancelAllCaptures() {
   num_frames_pending_ = 0;
 }
 
-void VideoCaptureOracle::RecordConsumerFeedback(int frame_number,
-                                                double resource_utilization) {
-  if (!auto_throttling_enabled_)
+void VideoCaptureOracle::RecordConsumerFeedback(
+    int frame_number,
+    const media::VideoCaptureFeedback& feedback) {
+  // Max frame-rate constraint.
+
+  base::TimeDelta period;
+  if (std::isfinite(feedback.max_framerate_fps) &&
+      feedback.max_framerate_fps > 0.0) {
+    period =
+        std::max(min_capture_period_, base::Hertz(feedback.max_framerate_fps));
+  } else {
+    period = min_capture_period_;
+  }
+  smoothing_sampler_.SetMinCapturePeriod(period);
+  content_sampler_.SetMinCapturePeriod(period);
+
+  // Max pixels constraint. Only respected if auto-throttling is off because
+  // consumers could just rescale the image.
+
+  if (capture_size_throttling_mode_ != kThrottlingActive) {
+    int limit;
+    if (feedback.max_pixels < std::numeric_limits<int>::max()) {
+      // +1 so that |FindSmallerFrameSize| could return exact |max_pixels| size.
+      limit = feedback.max_pixels + 1;
+    } else {
+      limit = std::numeric_limits<int>::max();
+    }
+    int area = resolution_chooser_.FindSmallerFrameSize(limit, 1).GetArea();
+    resolution_chooser_.SetTargetFrameArea(area);
+  }
+
+  // resource_utilization feedback.
+
+  if (capture_size_throttling_mode_ == kThrottlingDisabled)
     return;
 
-  if (!std::isfinite(resource_utilization)) {
+  if (!std::isfinite(feedback.resource_utilization)) {
     LOG(DFATAL) << "Non-finite utilization provided by consumer for frame #"
-                << frame_number << ": " << resource_utilization;
+                << frame_number << ": " << feedback.resource_utilization;
     return;
   }
-  if (resource_utilization <= 0.0)
+  if (feedback.resource_utilization <= 0.0)
     return;  // Non-positive values are normal, meaning N/A.
+
+  if (capture_size_throttling_mode_ != kThrottlingActive) {
+    VLOG(1) << "Received consumer feedback at frame #" << frame_number
+            << "; activating capture size auto-throttling.";
+    capture_size_throttling_mode_ = kThrottlingActive;
+  }
 
   if (!IsFrameInRecentHistory(frame_number)) {
     VLOG(1) << "Very old frame feedback being ignored: frame #" << frame_number;
@@ -346,8 +396,8 @@ void VideoCaptureOracle::RecordConsumerFeedback(int frame_number,
   // most linearly proportional to area, and typically is sublinear.  Either
   // way, the end-to-end system should converge to the right place using the
   // more-conservative assumption (linear).
-  const int area_at_full_utilization =
-      base::saturated_cast<int>(capture_size_.GetArea() / resource_utilization);
+  const int area_at_full_utilization = base::saturated_cast<int>(
+      capture_size_.GetArea() / feedback.resource_utilization);
   estimated_capable_area_.Update(area_at_full_utilization, timestamp);
 }
 
@@ -407,11 +457,20 @@ void VideoCaptureOracle::CommitCaptureSizeAndReset(
 }
 
 void VideoCaptureOracle::AnalyzeAndAdjust(const base::TimeTicks analyze_time) {
-  DCHECK(auto_throttling_enabled_);
+  DCHECK(capture_size_throttling_mode_ == kThrottlingActive);
 
   const int decreased_area = AnalyzeForDecreasedArea(analyze_time);
   if (decreased_area > 0) {
     resolution_chooser_.SetTargetFrameArea(decreased_area);
+    if (!emit_log_message_cb_.is_null()) {
+      emit_log_message_cb_.Run(base::StringPrintf(
+          "VFC: CaptureOracle - Decreasing resolution. "
+          "buffer_utilization_: %lf "
+          "estimated_cappable_area: %lf "
+          "capture_size: %s ",
+          buffer_pool_utilization_.current(), estimated_capable_area_.current(),
+          capture_size_.ToString().c_str()));
+    }
     return;
   }
 
@@ -585,6 +644,11 @@ bool VideoCaptureOracle::HasSufficientRecentFeedback(
       accumulator.update_time() - accumulator.reset_time();
   return (amount_of_history >= min_size_change_period_) &&
          (now - accumulator.update_time() <= kMaxTimeSinceLastFeedbackUpdate);
+}
+
+void VideoCaptureOracle::SetLogCallback(
+    base::RepeatingCallback<void(const std::string&)> emit_log_cb) {
+  emit_log_message_cb_ = std::move(emit_log_cb);
 }
 
 }  // namespace media

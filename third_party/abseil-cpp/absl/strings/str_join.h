@@ -60,6 +60,7 @@
 #include "absl/strings/string_view.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // -----------------------------------------------------------------------------
 // Concept: Formatter
@@ -143,7 +144,7 @@ strings_internal::DereferenceFormatterImpl<Formatter> DereferenceFormatter(
       std::forward<Formatter>(f));
 }
 
-// Function overload of `DererefenceFormatter()` for using a default
+// Function overload of `DereferenceFormatter()` for using a default
 // `AlphaNumFormatter()`.
 inline strings_internal::DereferenceFormatterImpl<
     strings_internal::AlphaNumFormatterImpl>
@@ -286,6 +287,7 @@ std::string StrJoin(const std::tuple<T...>& value,
   return strings_internal::JoinAlgorithm(value, separator, AlphaNumFormatter());
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_STRINGS_STR_JOIN_H_

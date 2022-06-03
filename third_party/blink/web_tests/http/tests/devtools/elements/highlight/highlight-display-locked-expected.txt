@@ -82,11 +82,19 @@ container{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "container",
     "nodeWidth": "784",
-    "nodeHeight": "10"
+    "nodeHeight": "10",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "isLocked": true,
+    "showAccessibilityInfo": true
   }
 }
 child{
@@ -171,12 +179,19 @@ child{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "container",
     "nodeWidth": "784",
     "nodeHeight": "10",
-    "isLockedAncestor": "true"
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "isLockedAncestor": true,
+    "showAccessibilityInfo": true
   }
 }
 

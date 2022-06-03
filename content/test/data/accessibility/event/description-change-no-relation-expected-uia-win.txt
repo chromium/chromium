@@ -1,2 +1,1 @@
 FullDescription changed on role=group
-Text_TextChanged on role=document

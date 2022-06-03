@@ -12,24 +12,27 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_interface_impl.h"
-#include "base/fuchsia/testfidl/cpp/fidl.h"
-#include "base/run_loop.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/testfidl/cpp/fidl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ServiceDirectoryTestBase : public testing::Test {
  public:
   ServiceDirectoryTestBase();
+
+  ServiceDirectoryTestBase(const ServiceDirectoryTestBase&) = delete;
+  ServiceDirectoryTestBase& operator=(const ServiceDirectoryTestBase&) = delete;
+
   ~ServiceDirectoryTestBase() override;
 
   void VerifyTestInterface(fidl::InterfacePtr<testfidl::TestInterface>* stub,
                            zx_status_t expected_error);
 
  protected:
-  const RunLoop::ScopedRunTimeoutForTest run_timeout_;
+  const test::ScopedRunLoopTimeout run_timeout_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -42,11 +45,8 @@ class ServiceDirectoryTestBase : public testing::Test {
   std::unique_ptr<sys::ServiceDirectory> public_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> debug_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> root_service_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDirectoryTestBase);
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SERVICE_DIRECTORY_TEST_BASE_H_

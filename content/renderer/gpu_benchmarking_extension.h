@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "gin/wrappable.h"
@@ -28,6 +27,10 @@ class RenderFrameImpl;
 class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GpuBenchmarking(const GpuBenchmarking&) = delete;
+  GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
+
   static void Install(base::WeakPtr<RenderFrameImpl> frame);
 
  private:
@@ -50,6 +53,7 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
 
   // All arguments in these methods are in visual viewport coordinates.
   bool SmoothScrollBy(gin::Arguments* args);
+  bool SmoothScrollByXY(gin::Arguments* args);
   bool SmoothDrag(gin::Arguments* args);
   bool Swipe(gin::Arguments* args);
   bool ScrollBounce(gin::Arguments* args);
@@ -82,6 +86,7 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
   bool HasGpuChannel();
   bool HasGpuProcess();
   void CrashGpuProcess();
+  void TerminateGpuProcessNormally();
   void GetGpuDriverBugWorkarounds(gin::Arguments* args);
 
   // Starts/stops the sampling profiler. StartProfiling takes one optional
@@ -102,7 +107,6 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
 
   base::WeakPtr<RenderFrameImpl> render_frame_;
   mojo::Remote<mojom::InputInjector> input_injector_;
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarking);
 };
 
 }  // namespace content

@@ -10,17 +10,21 @@ TestSystemTrayClient::TestSystemTrayClient() = default;
 
 TestSystemTrayClient::~TestSystemTrayClient() = default;
 
-void TestSystemTrayClient::ShowSettings() {}
+void TestSystemTrayClient::ShowSettings(int64_t display_id) {}
 
 void TestSystemTrayClient::ShowBluetoothSettings() {
   show_bluetooth_settings_count_++;
 }
 
+void TestSystemTrayClient::ShowBluetoothSettings(const std::string& device_id) {
+  show_bluetooth_settings_count_++;
+  last_bluetooth_settings_device_id_ = device_id;
+}
+
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    const std::string& address,
-    const base::string16& name_for_display,
-    bool paired,
-    bool connected) {}
+    absl::optional<base::StringPiece> device_address) {
+  show_bluetooth_pairing_dialog_count_++;
+}
 
 void TestSystemTrayClient::ShowDateSettings() {}
 
@@ -38,6 +42,12 @@ void TestSystemTrayClient::ShowConnectedDevicesSettings() {
   show_connected_devices_settings_count_++;
 }
 
+void TestSystemTrayClient::ShowTetherNetworkSettings() {}
+
+void TestSystemTrayClient::ShowWifiSyncSettings() {
+  show_wifi_sync_settings_count_++;
+}
+
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
 void TestSystemTrayClient::ShowHelp() {}
@@ -46,9 +56,15 @@ void TestSystemTrayClient::ShowAccessibilityHelp() {}
 
 void TestSystemTrayClient::ShowAccessibilitySettings() {}
 
+void TestSystemTrayClient::ShowGestureEducationHelp() {}
+
 void TestSystemTrayClient::ShowPaletteHelp() {}
 
 void TestSystemTrayClient::ShowPaletteSettings() {}
+
+void TestSystemTrayClient::ShowPrivacyAndSecuritySettings() {
+  show_os_settings_privacy_and_security_count_++;
+}
 
 void TestSystemTrayClient::ShowPublicAccountInfo() {}
 
@@ -58,6 +74,12 @@ void TestSystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 }
 
 void TestSystemTrayClient::ShowNetworkCreate(const std::string& type) {}
+
+void TestSystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {}
+
+void TestSystemTrayClient::ShowSettingsSimUnlock() {
+  ++show_sim_unlock_settings_count_;
+}
 
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {}

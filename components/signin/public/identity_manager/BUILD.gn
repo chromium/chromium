@@ -2,16 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
 source_set("identity_manager") {
   sources = [
+    "access_token_constants.cc",
+    "access_token_constants.h",
     "access_token_fetcher.cc",
     "access_token_fetcher.h",
     "access_token_info.cc",
     "access_token_info.h",
+    "account_capabilities.cc",
+    "account_capabilities.h",
     "account_info.cc",
     "account_info.h",
     "accounts_cookie_mutator.h",
@@ -31,8 +37,13 @@ source_set("identity_manager") {
     "load_credentials_state.h",
     "primary_account_access_token_fetcher.cc",
     "primary_account_access_token_fetcher.h",
+    "primary_account_change_event.cc",
+    "primary_account_change_event.h",
     "primary_account_mutator.h",
+    "scope_set.h",
     "set_accounts_in_cookie_result.h",
+    "tribool.cc",
+    "tribool.h",
     "ubertoken_fetcher.cc",
     "ubertoken_fetcher.h",
   ]
@@ -45,11 +56,11 @@ source_set("identity_manager") {
     "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//google_apis",
-    "//services/identity/public/cpp:cpp_types",
     "//ui/gfx",
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/internal/identity_manager",
@@ -57,7 +68,7 @@ source_set("identity_manager") {
     "//services/network/public/cpp",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
   }
 
@@ -66,8 +77,7 @@ source_set("identity_manager") {
   }
 
   if (is_android) {
-    deps +=
-        [ "//components/signin/internal/identity_manager/android:jni_headers" ]
+    deps += [ "//components/signin/public/android:jni_headers" ]
   }
 
   allow_circular_includes_from = [
@@ -77,27 +87,22 @@ source_set("identity_manager") {
   ]
 }
 
-if (is_android) {
-  java_cpp_enum("identity_manager_enum_javagen") {
-    sources = [
-      "primary_account_mutator.h",
-    ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "access_token_fetcher_unittest.cc",
+    "account_capabilities_unittest.cc",
     "account_info_unittest.cc",
     "accounts_cookie_mutator_unittest.cc",
     "accounts_mutator_unittest.cc",
     "diagnostics_provider_unittest.cc",
+    "identity_manager_builder_unittest.cc",
     "identity_manager_unittest.cc",
     "identity_test_environment_unittest.cc",
     "identity_utils_unittest.cc",
     "primary_account_access_token_fetcher_unittest.cc",
+    "primary_account_change_event_unittest.cc",
     "primary_account_mutator_unittest.cc",
   ]
 
@@ -106,6 +111,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -120,6 +126,21 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//components/account_manager_core",
+      "//components/account_manager_core:test_support",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/components/account_manager" ]
+  }
 }
 
 source_set("test_support") {
@@ -142,6 +163,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
@@ -149,4 +171,12 @@ source_set("test_support") {
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//components/account_manager_core" ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/signin/public/android:test_support_jni_headers" ]
+  }
 }

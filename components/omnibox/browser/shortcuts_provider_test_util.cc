@@ -57,12 +57,11 @@ void PopulateShortcutsBackendWithTestData(
         cur.guid, base::ASCIIToUTF16(cur.text),
         ShortcutsDatabase::Shortcut::MatchCore(
             base::ASCIIToUTF16(cur.fill_into_edit), GURL(cur.destination_url),
-            static_cast<int>(cur.document_type),
-            base::ASCIIToUTF16(cur.contents), cur.contents_class,
-            base::ASCIIToUTF16(cur.description), cur.description_class,
-            cur.transition, cur.type, base::ASCIIToUTF16(cur.keyword)),
-        base::Time::Now() - base::TimeDelta::FromDays(cur.days_from_now),
-        cur.number_of_hits);
+            cur.document_type, base::ASCIIToUTF16(cur.contents),
+            cur.contents_class, base::ASCIIToUTF16(cur.description),
+            cur.description_class, cur.transition, cur.type,
+            base::ASCIIToUTF16(cur.keyword)),
+        base::Time::Now() - base::Days(cur.days_from_now), cur.number_of_hits);
     backend->AddShortcut(shortcut);
   }
   EXPECT_EQ(expected_size, backend->shortcuts_map().size());
@@ -70,11 +69,11 @@ void PopulateShortcutsBackendWithTestData(
 
 void RunShortcutsProviderTest(
     scoped_refptr<ShortcutsProvider> provider,
-    const base::string16 text,
+    const std::u16string text,
     bool prevent_inline_autocomplete,
     const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
     std::string expected_top_result,
-    base::string16 top_result_inline_autocompletion) {
+    std::u16string top_result_inline_autocompletion) {
   base::RunLoop().RunUntilIdle();
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

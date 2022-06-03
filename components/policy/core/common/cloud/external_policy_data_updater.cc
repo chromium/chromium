@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "crypto/sha2.h"
 #include "net/base/backoff_entry.h"
@@ -82,28 +81,28 @@ const net::BackoffEntry::Policy kRetryLaterPolicy = {
 // served at that URL are out of sync). This essentially retries every 12 hours,
 // with some random jitter.
 const net::BackoffEntry::Policy kRetryMuchLaterPolicy = {
-  // Number of initial errors to ignore before starting to back off.
-  0,
+    // Number of initial errors to ignore before starting to back off.
+    0,
 
-  // Initial delay in ms: 12 hours.
-  1000 * 60 * 60 * 12,
+    // Initial delay in ms: 12 hours.
+    1000 * 60 * 60 * 12,
 
-  // Factor by which the waiting time is multiplied.
-  2,
+    // Factor by which the waiting time is multiplied.
+    2,
 
-  // Fuzzing percentage; this spreads delays randomly between 80% and 100%
-  // of the calculated time.
-  0.20,
+    // Fuzzing percentage; this spreads delays randomly between 80% and 100%
+    // of the calculated time.
+    0.20,
 
-  // Maximum delay in ms: 12 hours.
-  1000 * 60 * 60 * 12,
+    // Maximum delay in ms: 12 hours.
+    1000 * 60 * 60 * 12,
 
-  // When to discard an entry: never.
-  -1,
+    // When to discard an entry: never.
+    -1,
 
-  // |always_use_initial_delay|; false means that the initial delay is
-  // applied after the first error, and starts backing off from there.
-  false,
+    // |always_use_initial_delay|; false means that the initial delay is
+    // applied after the first error, and starts backing off from there.
+    false,
 };
 
 // Maximum number of retries for requests that aren't likely to get a
@@ -119,6 +118,8 @@ class ExternalPolicyDataUpdater::FetchJob
            const std::string& key,
            const ExternalPolicyDataUpdater::Request& request,
            const ExternalPolicyDataUpdater::FetchSuccessCallback& callback);
+  FetchJob(const FetchJob&) = delete;
+  FetchJob& operator=(const FetchJob&) = delete;
   virtual ~FetchJob();
 
   const std::string& key() const;
@@ -128,6 +129,10 @@ class ExternalPolicyDataUpdater::FetchJob
 
   void OnFetchFinished(ExternalPolicyDataFetcher::Result result,
                        std::unique_ptr<std::string> data);
+
+  bool IsRescheduleWithDelayRunning() const {
+    return is_reschedule_with_delay_running_;
+  }
 
  private:
   void OnFailed(net::BackoffEntry* backoff_entry);
@@ -152,16 +157,17 @@ class ExternalPolicyDataUpdater::FetchJob
   // is reached.
   int limited_retries_remaining_ = kMaxLimitedRetries;
 
+  // Indicates that job rescheduling task is running. In this state the
+  // job is not fetching any data.
+  int is_reschedule_with_delay_running_ = false;
+
   // Various delays to retry a failed download, depending on the failure reason.
   net::BackoffEntry retry_soon_entry_{&kRetrySoonPolicy};
   net::BackoffEntry retry_later_entry_{&kRetryLaterPolicy};
   net::BackoffEntry retry_much_later_entry_{&kRetryMuchLaterPolicy};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchJob);
 };
 
-ExternalPolicyDataUpdater::Request::Request() {
-}
+ExternalPolicyDataUpdater::Request::Request() = default;
 
 ExternalPolicyDataUpdater::Request::Request(const std::string& url,
                                             const std::string& hash,
@@ -194,7 +200,7 @@ const std::string& ExternalPolicyDataUpdater::FetchJob::key() const {
 }
 
 const ExternalPolicyDataUpdater::Request&
-    ExternalPolicyDataUpdater::FetchJob::request() const {
+ExternalPolicyDataUpdater::FetchJob::request() const {
   return request_;
 }
 
@@ -207,8 +213,8 @@ void ExternalPolicyDataUpdater::FetchJob::Start() {
   // destructor cancels the fetcher job if one is still running.
   fetch_job_ = updater_->external_policy_data_fetcher_->StartJob(
       GURL(request_.url), request_.max_size,
-      base::Bind(&ExternalPolicyDataUpdater::FetchJob::OnFetchFinished,
-                 base::Unretained(this)));
+      base::BindOnce(&ExternalPolicyDataUpdater::FetchJob::OnFetchFinished,
+                     base::Unretained(this)));
 }
 
 void ExternalPolicyDataUpdater::FetchJob::OnFetchFinished(
@@ -281,6 +287,7 @@ void ExternalPolicyDataUpdater::FetchJob::OnFailed(net::BackoffEntry* entry) {
     const base::TimeDelta delay = entry->GetTimeUntilRelease();
     DVLOG(1) << "Rescheduling the fetch in " << delay << ".";
 
+    is_reschedule_with_delay_running_ = true;
     // This function may have been invoked because the job was obsoleted and is
     // in the process of being deleted. If this is the case, the WeakPtr will
     // become invalid and the delayed task will never run.
@@ -292,6 +299,7 @@ void ExternalPolicyDataUpdater::FetchJob::OnFailed(net::BackoffEntry* entry) {
 }
 
 void ExternalPolicyDataUpdater::FetchJob::Reschedule() {
+  is_reschedule_with_delay_running_ = false;
   updater_->ScheduleJob(this);
 }
 
@@ -328,12 +336,16 @@ void ExternalPolicyDataUpdater::FetchExternalData(
   // Check whether a job exists for this |key| already.
   FetchJob* job = job_map_[key].get();
   if (job) {
-    // If the current |job| is handling the given |request| already, nothing
-    // needs to be done.
-    if (job->request() == request) {
-      DVLOG(2) << "Fetching job already scheduled for " << key
-               << " with the same parameters.";
-      return;
+    // We should cancel the job which has been rescheduled for the future to
+    // avoid potentially long delays in data fetching.
+    if (!job->IsRescheduleWithDelayRunning()) {
+      // If the current |job| is handling the given |request| already, nothing
+      // needs to be done.
+      if (job->request() == request) {
+        DVLOG(2) << "Fetching job already scheduled for " << key
+                 << " with the same parameters.";
+        return;
+      }
     }
 
     // Otherwise, the current |job| is obsolete. If the |job| is on the queue,

@@ -23,10 +23,6 @@ var y = 100;
 var blue = document.getElementById('blue');
 
 window.onload = async () => {
-  if (window.internals) {
-    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-  }
-
   promise_test(async () => {
     await mouseMoveTo(x, y);
     await raf();

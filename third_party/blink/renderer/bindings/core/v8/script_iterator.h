@@ -61,16 +61,9 @@ class CORE_EXPORT ScriptIterator {
   // - ScriptIterator can be null even if there is no exception. In this case,
   //   it indicates that the given ES object does not have an @@iterator
   //   property.
-  static ScriptIterator FromIterable(v8::Isolate*,
-                                     v8::Local<v8::Object>,
-                                     ExceptionState&);
-
-  // Constructs a ScriptIterator from an ES object that implements the iterator
-  // protocol: |iterator| is supposed to have a next() method that returns an
-  // object with two properties, "done" and "value".
-  ScriptIterator(v8::Isolate*, v8::Local<v8::Object> iterator);
-
-  ScriptIterator() = default;
+  static ScriptIterator FromIterable(v8::Isolate* isolate,
+                                     v8::Local<v8::Object> iterable,
+                                     ExceptionState& exception_state);
 
   ScriptIterator(ScriptIterator&&) noexcept = default;
   ScriptIterator& operator=(ScriptIterator&&) noexcept = default;
@@ -81,16 +74,25 @@ class CORE_EXPORT ScriptIterator {
   bool IsNull() const { return iterator_.IsEmpty(); }
 
   // Returns true if the iterator is still not done.
-  bool Next(ExecutionContext*,
-            ExceptionState&,
-            v8::Local<v8::Value> next_value = v8::Local<v8::Value>());
+  bool Next(ExecutionContext* execution_context,
+            ExceptionState& exception_state,
+            v8::Local<v8::Value> value = v8::Local<v8::Value>());
 
   v8::MaybeLocal<v8::Value> GetValue() { return value_; }
 
  private:
+  // Constructs a ScriptIterator from an ES object that implements the iterator
+  // protocol: |iterator| is supposed to have a next() method that returns an
+  // object with two properties, "done" and "value".
+  ScriptIterator(v8::Isolate*,
+                 v8::Local<v8::Object> iterator,
+                 v8::Local<v8::Value> next_method);
+
+  ScriptIterator() = default;
+
   v8::Isolate* isolate_ = nullptr;
   v8::Local<v8::Object> iterator_;
-  v8::Local<v8::String> next_key_;
+  v8::Local<v8::Value> next_method_;
   v8::Local<v8::String> done_key_;
   v8::Local<v8::String> value_key_;
   bool done_ = true;

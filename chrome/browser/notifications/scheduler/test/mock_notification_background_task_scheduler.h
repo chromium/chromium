@@ -15,12 +15,13 @@ class MockNotificationBackgroundTaskScheduler
     : public NotificationBackgroundTaskScheduler {
  public:
   MockNotificationBackgroundTaskScheduler();
+  MockNotificationBackgroundTaskScheduler(
+      const MockNotificationBackgroundTaskScheduler&) = delete;
+  MockNotificationBackgroundTaskScheduler& operator=(
+      const MockNotificationBackgroundTaskScheduler&) = delete;
   ~MockNotificationBackgroundTaskScheduler() override;
   MOCK_METHOD2(Schedule, void(base::TimeDelta, base::TimeDelta));
   MOCK_METHOD0(Cancel, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationBackgroundTaskScheduler);
 };
 
 }  // namespace test

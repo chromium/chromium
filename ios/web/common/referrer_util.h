@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ios/web/public/navigation/referrer.h"
-#include "net/url_request/url_request.h"
+#include "net/url_request/referrer_policy.h"
 
 class GURL;
 
@@ -24,9 +24,8 @@ std::string ReferrerHeaderValueForNavigation(const GURL& destination,
 // any.
 // TODO(stuartmorgan): Replace this with ReferrerForNavigation, since it should
 // always be used with ReferrerHeaderValueForNavigation anyway.
-net::URLRequest::ReferrerPolicy PolicyForNavigation(
-    const GURL& destination,
-    const web::Referrer& referrer);
+net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
+                                        const web::Referrer& referrer);
 
 // Returns the WebReferrerPolicy corresponding to the given policy string
 // (e.g., 'always', 'never', 'origin', 'default'). The string is assumed to

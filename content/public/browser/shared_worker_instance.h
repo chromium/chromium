@@ -9,51 +9,57 @@
 
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_creation_context_type.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-// SharedWorkerInstance is the browser-side representation of one instance of a
+// This class hold the necessary information to decide if a shared worker
+// connection request (SharedWorkerConnector::Connect()) matches an existing
 // shared worker.
+//
+// Note: There exist one SharedWorkerInstance per SharedWorkerHost but it's
+// possible to have 2 distinct SharedWorkerHost that have an identical
+// SharedWorkerInstance. An example is if |url_| or |constructor_origin| has a
+// "file:" scheme, which is treated as opaque.
 class CONTENT_EXPORT SharedWorkerInstance {
  public:
   SharedWorkerInstance(
-      int64_t id,
       const GURL& url,
+      blink::mojom::ScriptType script_type,
+      network::mojom::CredentialsMode credentials_mode,
       const std::string& name,
-      const url::Origin& constructor_origin,
-      const std::string& content_security_policy,
-      network::mojom::ContentSecurityPolicyType content_security_policy_type,
+      const blink::StorageKey& storage_key,
       network::mojom::IPAddressSpace creation_address_space,
       blink::mojom::SharedWorkerCreationContextType creation_context_type);
   SharedWorkerInstance(const SharedWorkerInstance& other);
   SharedWorkerInstance(SharedWorkerInstance&& other);
-  SharedWorkerInstance& operator=(const SharedWorkerInstance& other);
-  SharedWorkerInstance& operator=(SharedWorkerInstance&& other);
+  SharedWorkerInstance& operator=(const SharedWorkerInstance& other) = delete;
+  SharedWorkerInstance& operator=(SharedWorkerInstance&& other) = delete;
   ~SharedWorkerInstance();
 
   // Checks if this SharedWorkerInstance matches the passed url, name, and
   // constructor origin params according to the SharedWorker constructor steps
   // in the HTML spec:
   // https://html.spec.whatwg.org/multipage/workers.html#shared-workers-and-the-sharedworker-interface
+  // Note that we are using StorageKey to represent the constructor origin.
   bool Matches(const GURL& url,
                const std::string& name,
-               const url::Origin& constructor_origin) const;
+               const blink::StorageKey& storage_key) const;
 
   // Accessors.
   const GURL& url() const { return url_; }
   const std::string& name() const { return name_; }
-  const url::Origin& constructor_origin() const { return constructor_origin_; }
-  const std::string& content_security_policy() const {
-    return content_security_policy_;
+  blink::mojom::ScriptType script_type() const { return script_type_; }
+  network::mojom::CredentialsMode credentials_mode() const {
+    return credentials_mode_;
   }
-  network::mojom::ContentSecurityPolicyType content_security_policy_type()
-      const {
-    return content_security_policy_type_;
-  }
+  const blink::StorageKey& storage_key() const { return storage_key_; }
   network::mojom::IPAddressSpace creation_address_space() const {
     return creation_address_space_;
   }
@@ -62,29 +68,22 @@ class CONTENT_EXPORT SharedWorkerInstance {
   }
 
  private:
-  // Compares SharedWorkerInstances using the |id_|.
-  CONTENT_EXPORT friend bool operator<(const SharedWorkerInstance& lhs,
-                                       const SharedWorkerInstance& rhs);
+  const GURL url_;
+  const blink::mojom::ScriptType script_type_;
 
-  // An internal ID that is unique within a storage partition. It is needed to
-  // differentiate 2 SharedWorkerInstance that have the same url, name and
-  // constructor origin but actually represent different workers. This is
-  // possible with a file: |url| or |constructor_origin| since they are treated
-  // as opaque in this class.
-  int64_t id_;
+  // Used for fetching the top-level worker script.
+  const network::mojom::CredentialsMode credentials_mode_;
 
-  GURL url_;
-  std::string name_;
+  const std::string name_;
 
-  // The origin of the document that created this shared worker instance. Used
-  // for security checks. See Matches() for details.
+  // The storage key. The key contains the origin of the document that created
+  // this shared worker instance. Used for security checks. See Matches() for
+  // details.
   // https://html.spec.whatwg.org/multipage/workers.html#concept-sharedworkerglobalscope-constructor-origin
-  url::Origin constructor_origin_;
+  const blink::StorageKey storage_key_;
 
-  std::string content_security_policy_;
-  network::mojom::ContentSecurityPolicyType content_security_policy_type_;
-  network::mojom::IPAddressSpace creation_address_space_;
-  blink::mojom::SharedWorkerCreationContextType creation_context_type_;
+  const network::mojom::IPAddressSpace creation_address_space_;
+  const blink::mojom::SharedWorkerCreationContextType creation_context_type_;
 };
 
 }  // namespace content

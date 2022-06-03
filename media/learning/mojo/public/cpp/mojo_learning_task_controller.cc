@@ -6,14 +6,12 @@
 
 #include <utility>
 
-#include "mojo/public/cpp/bindings/binding.h"
-
 namespace media {
 namespace learning {
 
 MojoLearningTaskController::MojoLearningTaskController(
     const LearningTask& task,
-    mojo::PendingRemote<mojom::LearningTaskController> controller)
+    mojo::Remote<mojom::LearningTaskController> controller)
     : task_(task), controller_(std::move(controller)) {}
 
 MojoLearningTaskController::~MojoLearningTaskController() = default;
@@ -21,9 +19,13 @@ MojoLearningTaskController::~MojoLearningTaskController() = default;
 void MojoLearningTaskController::BeginObservation(
     base::UnguessableToken id,
     const FeatureVector& features,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target,
+    const absl::optional<ukm::SourceId>& source_id) {
   // We don't need to keep track of in-flight observations, since the service
-  // side handles it for us.
+  // side handles it for us.  Also note that |source_id| is ignored; the service
+  // has no reason to trust it.  It will fill it in for us.  DCHECK in case
+  // somebody actually tries to send us one, expecting it to be used.
+  DCHECK(!source_id);
   controller_->BeginObservation(id, features, default_target);
 }
 
@@ -39,12 +41,18 @@ void MojoLearningTaskController::CancelObservation(base::UnguessableToken id) {
 
 void MojoLearningTaskController::UpdateDefaultTarget(
     base::UnguessableToken id,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target) {
   controller_->UpdateDefaultTarget(id, default_target);
 }
 
 const LearningTask& MojoLearningTaskController::GetLearningTask() {
   return task_;
+}
+
+void MojoLearningTaskController::PredictDistribution(
+    const FeatureVector& features,
+    PredictionCB callback) {
+  controller_->PredictDistribution(features, std::move(callback));
 }
 
 }  // namespace learning

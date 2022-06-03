@@ -4,6 +4,7 @@
 
 #include "ui/aura/window_tracker.h"
 
+#include "base/containers/contains.h"
 #include "ui/aura/window.h"
 
 namespace aura {

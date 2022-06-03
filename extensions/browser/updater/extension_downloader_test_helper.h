@@ -18,27 +18,41 @@
 
 namespace extensions {
 
-class MockExtensionDownloaderDelegate : public ExtensionDownloaderDelegate {
+class MockExtensionDownloaderDelegate
+    : public testing::NiceMock<ExtensionDownloaderDelegate> {
  public:
   MockExtensionDownloaderDelegate();
 
   ~MockExtensionDownloaderDelegate();
 
-  MOCK_METHOD4(
-      OnExtensionDownloadFailed,
-      void(const ExtensionId&, Error, const PingResult&, const std::set<int>&));
+  MOCK_METHOD5(OnExtensionDownloadFailed,
+               void(const ExtensionId&,
+                    Error,
+                    const PingResult&,
+                    const std::set<int>&,
+                    const FailureData&));
   MOCK_METHOD2(OnExtensionDownloadStageChanged,
                void(const ExtensionId&, Stage));
   MOCK_METHOD2(OnExtensionDownloadCacheStatusRetrieved,
                void(const ExtensionId&, CacheStatus));
-  MOCK_METHOD7(OnExtensionDownloadFinished,
+  // Gmock doesn't have good support for move-only types like
+  // base::OnceCallback, so we have to do this hack.
+  void OnExtensionDownloadFinished(const CRXFileInfo& file,
+                                   bool file_ownership_passed,
+                                   const GURL& download_url,
+                                   const PingResult& ping_result,
+                                   const std::set<int>& request_ids,
+                                   InstallCallback callback) override {
+    OnExtensionDownloadFinished_(file, file_ownership_passed, download_url,
+                                 ping_result, request_ids, callback);
+  }
+  MOCK_METHOD6(OnExtensionDownloadFinished_,
                void(const extensions::CRXFileInfo&,
                     bool,
                     const GURL&,
-                    const std::string&,
                     const PingResult&,
                     const std::set<int>&,
-                    const InstallCallback&));
+                    InstallCallback&));
   MOCK_METHOD0(OnExtensionDownloadRetryForTests, void());
   MOCK_METHOD2(GetPingDataForExtension,
                bool(const ExtensionId&, ManifestFetchData::PingData*));
@@ -62,6 +76,10 @@ class MockExtensionDownloaderDelegate : public ExtensionDownloaderDelegate {
 class ExtensionDownloaderTestHelper {
  public:
   ExtensionDownloaderTestHelper();
+
+  ExtensionDownloaderTestHelper(const ExtensionDownloaderTestHelper&) = delete;
+  ExtensionDownloaderTestHelper& operator=(
+      const ExtensionDownloaderTestHelper&) = delete;
 
   ~ExtensionDownloaderTestHelper();
 
@@ -93,8 +111,6 @@ class ExtensionDownloaderTestHelper {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   MockExtensionDownloaderDelegate delegate_;
   ExtensionDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDownloaderTestHelper);
 };
 
 }  // namespace extensions

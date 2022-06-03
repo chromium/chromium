@@ -13,14 +13,13 @@ process_version("chrome_exe_version_manifest") {
   process_only = true
   visibility = [ ":*" ]
   template_file = "chrome_exe_manifest.template"
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
   output = version_assembly_output_file
 }
 
 # Generates the manifest for chrome.exe. This is the normal manifest stuff plus
-# the version information.
+# opting in to the segment heap (Windows 10 2004 and above) if enabled, and the
+# version information.
 windows_manifest("chrome_exe_manifest") {
   sources = [
     as_invoker_manifest,
@@ -29,18 +28,18 @@ windows_manifest("chrome_exe_manifest") {
     version_assembly_output_file,
   ]
 
-  deps = [
-    ":chrome_exe_version_manifest",
-  ]
+  if (enable_segment_heap) {
+    sources += [ segment_heap_manifest ]
+  }
+
+  deps = [ ":chrome_exe_version_manifest" ]
 }
 
 # Generates the manifest for the version assembly, which is the versioned
 # directory where Chrome finds chrome.dll.
 process_version("version_assembly_manifest") {
   template_file = "version_assembly_manifest.template"
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
   output = "$root_build_dir/$chrome_version_full.manifest"
   process_only = true
 }

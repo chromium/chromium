@@ -23,7 +23,7 @@ class CORE_EXPORT IDLDictionaryBase
   virtual v8::Local<v8::Value> ToV8Impl(v8::Local<v8::Object> creation_context,
                                         v8::Isolate*) const;
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  protected:
   IDLDictionaryBase() = default;

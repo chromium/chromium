@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/favicon/core/favicon_service.h"
@@ -15,6 +15,7 @@
 #include "components/favicon_base/select_favicon_frames.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
@@ -42,13 +43,14 @@ void GetFaviconBitmapForNativeURL(
   if (resource_id == -1)
     return;
 
-  // Use ui::GetSupportedScaleFactors() because native URL favicon comes from
-  // resources.
-  std::vector<ui::ScaleFactor> scale_factors = ui::GetSupportedScaleFactors();
+  // Use ui::GetSupportedResourceScaleFactors() because native URL favicon comes
+  // from resources.
+  std::vector<ui::ResourceScaleFactor> scale_factors =
+      ui::GetSupportedResourceScaleFactors();
 
   std::vector<gfx::Size> candidate_sizes;
-  for (ui::ScaleFactor scale_factor : scale_factors) {
-    float scale = ui::GetScaleForScaleFactor(scale_factor);
+  for (ui::ResourceScaleFactor scale_factor : scale_factors) {
+    float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     int candidate_size = static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
     candidate_sizes.push_back(gfx::Size(candidate_size, candidate_size));
   }
@@ -58,7 +60,7 @@ void GetFaviconBitmapForNativeURL(
                             &selected_indices, nullptr);
 
   for (size_t selected_index : selected_indices) {
-    ui::ScaleFactor scale_factor = scale_factors[selected_index];
+    ui::ResourceScaleFactor scale_factor = scale_factors[selected_index];
     favicon_base::FaviconRawBitmapResult favicon_bitmap;
     favicon_bitmap.icon_type = favicon_base::IconType::kFavicon;
     favicon_bitmap.pixel_size = candidate_sizes[selected_index];
@@ -81,6 +83,15 @@ FaviconClientImpl::~FaviconClientImpl() {}
 
 bool FaviconClientImpl::IsNativeApplicationURL(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme);
+}
+
+bool FaviconClientImpl::IsReaderModeURL(const GURL& url) {
+  // iOS does not yet support Reader Mode.
+  return false;
+}
+
+const GURL FaviconClientImpl::GetOriginalUrlFromReaderModeUrl(const GURL& url) {
+  return url;
 }
 
 base::CancelableTaskTracker::TaskId

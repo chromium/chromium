@@ -4,11 +4,11 @@
 
 source_set("cpp") {
   sources = [
+    "bluetooth_address.cc",
+    "bluetooth_address.h",
     "bluetooth_uuid.cc",
     "bluetooth_uuid.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

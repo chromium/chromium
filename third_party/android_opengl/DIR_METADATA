@@ -1,0 +1,5 @@
+monorail {
+  component: "Mobile"
+}
+
+os: ANDROID

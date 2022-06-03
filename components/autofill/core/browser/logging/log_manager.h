@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 
 namespace base {
@@ -57,6 +56,9 @@ class LogManager {
 
   // This is the preferred way to submitting log entries.
   virtual LogBufferSubmitter Log() = 0;
+
+  // Returns a LogBufferSubmitter that ignores all input.
+  static LogBufferSubmitter DevNull();
 };
 
 }  // namespace autofill

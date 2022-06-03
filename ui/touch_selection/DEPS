@@ -2,6 +2,7 @@ include_rules = [
   "+ui/aura",
   "+ui/aura_extra",
   "+ui/base",
+  "+ui/compositor",
   "+ui/events",
   "+ui/gfx",
   "+ui/resources"

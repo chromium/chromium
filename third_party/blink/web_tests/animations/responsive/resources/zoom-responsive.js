@@ -27,14 +27,14 @@ function zoomDuringAnimation(property, values) {
     return footer.animate({opacity: ['1', '1']}, 1).ready;
   }
 
-  if (window.testRunner)
-    testRunner.waitUntilDone();
+  if (!window.testRunner)
+    return;
+
+  testRunner.waitUntilDone();
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      eventSender.setPageZoomFactor(2);
-      if (!window.testRunner)
-        return;
+      testRunner.setPageZoomFactor(2);
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -50,7 +50,7 @@ function zoomDuringAnimation(property, values) {
 }
 
 function zoomBeforeAnimation(property, values) {
-  eventSender.setPageZoomFactor(2);
+  testRunner.setPageZoomFactor(2);
 
   var footer = document.createElement('div');
   document.body.appendChild(footer);

@@ -14,8 +14,9 @@ namespace chromeos {
 
 // This class contains information about a challenge-response key for user
 // authentication. This includes information about the public key of the
-// cryptographic key to be challenged, as well as the signature algorithms
-// supported for the challenge.
+// cryptographic key to be challenged, the signature algorithms supported for
+// the challenge, and the id of the extension that handles the
+// challenge-response.
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ChallengeResponseKey {
  public:
   // Cryptographic signature algorithm type for challenge requests.
@@ -53,11 +54,31 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ChallengeResponseKey {
     signature_algorithms_ = signature_algorithms;
   }
 
+  // Getter and setter for the id of the extension that is used to sign the key.
+  const std::string& extension_id() const { return extension_id_; }
+  void set_extension_id(const std::string& extension_id) {
+    extension_id_ = extension_id;
+  }
+
  private:
   std::string public_key_spki_der_;
   std::vector<SignatureAlgorithm> signature_algorithms_;
+  std::string extension_id_;
+};
+
+// Contains the parts of a ChallengeResponseKey that can be persisted to disk.
+struct COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) DeserializedChallengeResponseKey {
+  std::string public_key_spki_der;
+  std::string extension_id;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ChallengeResponseKey;
+using ::chromeos::DeserializedChallengeResponseKey;
+}  // namespace ash
 
 #endif  // CHROMEOS_LOGIN_AUTH_CHALLENGE_RESPONSE_KEY_H_

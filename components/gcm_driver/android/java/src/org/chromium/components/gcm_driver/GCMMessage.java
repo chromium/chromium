@@ -4,8 +4,6 @@
 
 package org.chromium.components.gcm_driver;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
@@ -129,7 +127,6 @@ public class GCMMessage {
      * been created through {@link #toBundle}.
      */
     @Nullable
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static GCMMessage createFromBundle(Bundle bundle) {
         return create(bundle, new BundleReader());
     }
@@ -263,7 +260,6 @@ public class GCMMessage {
      * for purposes of scheduling a job. Only methods available in BaseBundle may be used here,
      * as it may have to be converted to a PersistableBundle.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Bundle toBundle() {
         return serialize(new BundleWriter());
     }

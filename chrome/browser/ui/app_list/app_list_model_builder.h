@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
 
 class AppListControllerDelegate;
 class ChromeAppListItem;
@@ -23,7 +23,9 @@ class AppListModelBuilder {
   // |controller| is owned by implementation of AppListService.
   AppListModelBuilder(AppListControllerDelegate* controller,
                       const char* item_type);
-  virtual ~AppListModelBuilder();
+  AppListModelBuilder(const AppListModelBuilder&) = delete;
+  AppListModelBuilder& operator=(const AppListModelBuilder&) = delete;
+  virtual ~AppListModelBuilder() = default;
 
   // Initialize to use app-list sync and sets |service_| to |service|.
   // |service| is the owner of this instance.
@@ -50,8 +52,10 @@ class AppListModelBuilder {
   // app is removed only from model and sync service is not used.
   virtual void RemoveApp(const std::string& id, bool unsynced_change);
 
+  // Returns a SyncItem of the specified type if it exists.
   const app_list::AppListSyncableService::SyncItem* GetSyncItem(
-      const std::string& id);
+      const std::string& id,
+      sync_pb::AppListSpecifics::AppListItemType type);
 
   // Returns app instance matching |id| or nullptr.
   ChromeAppListItem* GetAppItem(const std::string& id);
@@ -69,8 +73,6 @@ class AppListModelBuilder {
 
   // Global constant defined for each item type.
   const char* item_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListModelBuilder);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_MODEL_BUILDER_H_

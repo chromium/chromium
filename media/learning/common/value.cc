@@ -4,6 +4,8 @@
 
 #include "media/learning/common/value.h"
 
+#include <cstring>
+
 #include "base/hash/hash.h"
 
 namespace media {
@@ -45,6 +47,10 @@ bool Value::operator<(const Value& rhs) const {
 
 bool Value::operator>(const Value& rhs) const {
   return value_ > rhs.value_;
+}
+
+bool Value::operator>=(const Value& rhs) const {
+  return value_ >= rhs.value_;
 }
 
 std::ostream& operator<<(std::ostream& out, const Value& value) {

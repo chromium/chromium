@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<script>
+
+assert_true(document.prerendering);
+
+// Take a key used for storing a test result in the server.
+const params = new URLSearchParams(location.search);
+const key = params.get('key');
+
+const bc = new BroadcastChannel('prerender-channel');
+bc.postMessage('prerender writes to the broadcast channel');
+bc.addEventListener('message', e => {
+  // Send the initiator page the message this page received.
+  writeValueToServer(key, e.data);
+  bc.close();
+});
+
+// Inform the initiator page that the prerendering page has connected to the
+// Broadcast Channel.
+writeValueToServer(key, 'channel set up');
+
+</script>

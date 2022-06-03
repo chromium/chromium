@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_logging.h"
 #include "media/audio/audio_manager.h"
@@ -33,6 +33,7 @@ AudioOutputDispatcherImpl::AudioOutputDispatcherImpl(
                    &AudioOutputDispatcherImpl::CloseAllIdleStreams),
       audio_stream_id_(0) {
   DCHECK(audio_manager->GetTaskRunner()->BelongsToCurrentThread());
+  audio_manager->AddOutputDeviceChangeListener(this);
 }
 
 AudioOutputDispatcherImpl::~AudioOutputDispatcherImpl() {
@@ -46,6 +47,8 @@ AudioOutputDispatcherImpl::~AudioOutputDispatcherImpl() {
   // Close all idle streams immediately.  The |close_timer_| will handle
   // invalidating any outstanding tasks upon its destruction.
   CloseAllIdleStreams();
+
+  audio_manager()->RemoveOutputDeviceChangeListener(this);
 
   // All idle physical streams must have been closed during shutdown.
   CHECK(idle_streams_.empty());
@@ -133,6 +136,17 @@ void AudioOutputDispatcherImpl::CloseStream(AudioOutputProxy* stream_proxy) {
 // There is nothing to flush since the phsyical stream is removed during
 // StopStream().
 void AudioOutputDispatcherImpl::FlushStream(AudioOutputProxy* stream_proxy) {}
+
+void AudioOutputDispatcherImpl::OnDeviceChange() {
+  DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
+
+  // We don't want to end up reusing streams which were opened for the wrong
+  // default device. We need to post this task so it runs after device changes
+  // have been sent to all listeners and they've had time to close streams.
+  audio_manager()->GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&AudioOutputDispatcherImpl::CloseAllIdleStreams,
+                                weak_factory_.GetWeakPtr()));
+}
 
 bool AudioOutputDispatcherImpl::HasOutputProxies() const {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_
 #define COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_
 
-#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -18,7 +17,7 @@ class Location;
 namespace syncer {
 
 // Sync errors are used for debug purposes and handled internally and/or
-// exposed through Chrome's "about:sync" internal page.
+// exposed through Chrome's "chrome://sync-internals" internal page.
 // This class is copy-friendly and thread-safe.
 class SyncError {
  public:
@@ -27,15 +26,10 @@ class SyncError {
   // have more complicated results).
   enum ErrorType {
     UNSET,                 // No error.
-    UNRECOVERABLE_ERROR,   // An unrecoverable runtime error was encountered,
-                           // and sync should be disabled and purged completely.
     DATATYPE_ERROR,        // A datatype error was encountered, and the datatype
                            // should be disabled and purged completely. Note
                            // that datatype errors may be reset, triggering a
                            // re-enable.
-    PERSISTENCE_ERROR,     // A persistence error was detected, and the
-                           // datataype should be associated after a sync
-                           // update.
     CRYPTO_ERROR,          // A cryptographer error was detected, and the
                            // datatype should be associated after it is
                            // resolved.

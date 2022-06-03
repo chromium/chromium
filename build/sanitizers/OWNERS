@@ -2,9 +2,7 @@ ochang@chromium.org
 eugenis@chromium.org
 glider@chromium.org
 inferno@chromium.org
-mbarbella@chromium.org
 metzman@chromium.org
-mmoroz@chromium.org
 rnk@chromium.org
 per-file tsan_suppressions.cc=*
 per-file lsan_suppressions.cc=*

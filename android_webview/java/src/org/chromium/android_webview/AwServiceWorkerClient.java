@@ -5,14 +5,14 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Abstract base class that implementors of service worker related callbacks
  * derive from.
  */
 public abstract class AwServiceWorkerClient {
-
-    public abstract AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request);
+    public abstract WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request);
 
     // TODO: add support for onReceivedError and onReceivedHttpError callbacks.
 }

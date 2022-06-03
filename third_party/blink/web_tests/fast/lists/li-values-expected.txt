@@ -14,8 +14,8 @@
 0 The list marker should fall back to decimal 0 (armenian: 1-9999).
 0 The list marker should fall back to decimal 0 (georgian: 1-19999).
 0 The list marker should fall back to decimal 0 (ancient-tamil: 1-9999).
--1 The list marker should fall back to cjk-decimal -1 (japanese-informal: 0-9999).
--1 The list marker should fall back to cjk-decimal -1 (japanese-formal: 0-9999).
+マイナス一 The list marker should fall back to cjk-decimal -1 (japanese-informal: 0-9999).
+マイナス壱 The list marker should fall back to cjk-decimal -1 (japanese-formal: 0-9999).
 마이너스 一 The list marker should fall back to decimal -1 (korean-hanja-informal: 0-9999).
 마이너스 壹 The list marker should fall back to decimal -1 (korean-hanja-formal: 0-9999).
 0 The list marker should fall back to decimal 0 (greek: 1-999).

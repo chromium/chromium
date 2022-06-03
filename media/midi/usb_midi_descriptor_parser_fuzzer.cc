@@ -12,5 +12,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<midi::UsbMidiJack> jacks;
   parser.Parse(nullptr, data, size, &jacks);
 
+  midi::UsbMidiDescriptorParser::DeviceInfo device_info;
+  parser.ParseDeviceInfo(data, size, &device_info);
+
+  std::string version =
+      device_info.BcdVersionToString(device_info.bcd_device_version);
   return 0;
 }

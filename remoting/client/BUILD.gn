@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 static_library("client") {
   sources = [
     "chromoting_client.cc",
@@ -29,8 +31,6 @@ static_library("client") {
     "host_experiment_sender.h",
     "in_memory_log_handler.cc",
     "in_memory_log_handler.h",
-    "queued_task_poster.cc",
-    "queued_task_poster.h",
     "software_video_renderer.cc",
     "software_video_renderer.h",
   ]
@@ -41,21 +41,24 @@ static_library("client") {
     "//remoting/build/config:enable_webrtc_remoting_client",
   ]
 
-  public_deps = [
-    "//remoting/base",
-  ]
+  public_deps = [ "//remoting/base" ]
 
   deps = [
+    "//jingle:webrtc_glue",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
     "//remoting/client/audio",
     "//remoting/client/input",
     "//remoting/client/notification",
     "//remoting/client/ui",
+    "//remoting/client/ui:ui_manipulation",
     "//remoting/codec:decoder",
     "//remoting/protocol",
+    "//remoting/signaling",
     "//services/network:network_service",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/events:dom_keycode_converter",
@@ -63,7 +66,7 @@ static_library("client") {
 
   libs = []
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     # GestureInterpreter depends on //remoting/client/display, which currently
     # doesn't build on CrOS. crbug.com/869578
     sources += [
@@ -87,7 +90,6 @@ source_set("unit_tests") {
     "client_telemetry_logger_unittest.cc",
     "dual_buffer_frame_consumer_unittest.cc",
     "empty_cursor_filter_unittest.cc",
-    "queued_task_poster_unittest.cc",
     "software_video_renderer_unittest.cc",
   ]
 
@@ -98,7 +100,11 @@ source_set("unit_tests") {
 
   deps = [
     ":client",
+    "//base/test:test_support",
+    "//remoting/codec:encoder",
     "//remoting/proto",
+    "//remoting/protocol",
+    "//remoting/protocol:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",

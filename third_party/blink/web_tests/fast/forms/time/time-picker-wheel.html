@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
+</script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+<script src="../resources/common-wheel-event.js"></script>
+<input type="time" id="time" value="14:15" lang="ru">
+<script>
+let t = async_test('Test scrolling in time picker.');
+
+async function test1() {
+  let hourColumn = popupWindow.global.picker.timeColumns.firstChild;
+  const scrollHourTopBeforeWheelEvent = hourColumn.scrollTop;
+  // scroll up by 2 ticks ~ 2 cells
+  await dispatchWheelEvent(hourColumn, 0, -2);
+
+  let minuteColumn = hourColumn.nextSibling;
+  const scrollMinuteTopBeforeWheelEvent = minuteColumn.scrollTop;
+  // scroll up by 3 ticks ~ 3 cells
+  await dispatchWheelEvent(minuteColumn, 0, -3);
+
+  t.step_timeout(function() {
+    // verify that both columns have been scrolled up.
+    assert_true(scrollHourTopBeforeWheelEvent > hourColumn.scrollTop);
+    assert_true(scrollMinuteTopBeforeWheelEvent > minuteColumn.scrollTop);
+    t.done();
+  }, 200);
+}
+
+openPicker(document.getElementById('time'), t.step_func(test1));
+</script>

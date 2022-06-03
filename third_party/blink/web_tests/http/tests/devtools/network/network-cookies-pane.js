@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests cookie pane rendering in Network panel\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function run() {
@@ -12,7 +12,7 @@
     var target = panel._networkLogView;
     var types = Common.resourceTypes;
 
-    var requestFoo = new SDK.NetworkRequest('', '', '', '', '');
+    var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
     requestFoo.setResourceType(types.XHR);
     requestFoo.setRequestIdForTest('foo');
     requestFoo.setRequestHeaders([{name: 'Cookie', value: 'mycookie=myvalue;myother=myvalue2'}]);
@@ -29,5 +29,5 @@
     }, 0);
   }
 
-  self.runtime.loadModulePromise('cookie_table').then(run);
+  TestRunner.loadLegacyModule('cookie_table').then(run);
 })();

@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +18,7 @@ using ::payments::mojom::PaymentHandlerStatus;
 using ::payments::mojom::PaymentInstrument;
 using ::payments::mojom::PaymentInstrumentPtr;
 
-const char kServiceWorkerScope[] = "https://example.com/a";
+const char kServiceWorkerScope[] = "https://example.com/a/";
 const char kServiceWorkerScript[] = "https://example.com/a/script.js";
 
 void DeletePaymentInstrumentCallback(PaymentHandlerStatus* out_status,
@@ -67,6 +66,9 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
                                     GURL(kServiceWorkerScript));
     EXPECT_NE(nullptr, manager_);
   }
+
+  PaymentManagerTest(const PaymentManagerTest&) = delete;
+  PaymentManagerTest& operator=(const PaymentManagerTest&) = delete;
 
   PaymentManager* payment_manager() const { return manager_; }
 
@@ -120,8 +122,6 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
  private:
   // Owned by payment_app_context_.
   PaymentManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManagerTest);
 };
 
 TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {

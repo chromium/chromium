@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/dev_ui_components_resources.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "ios/chrome/browser/application_context.h"
@@ -41,6 +41,7 @@ web::WebUIIOSDataSource* CreateNetExportHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUINetExportHost);
 
   source->UseStringsJs();
+  source->AddResourcePath(net_log::kNetExportUICSS, IDR_NET_LOG_NET_EXPORT_CSS);
   source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
   source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
   return source;
@@ -55,6 +56,10 @@ class NetExportMessageHandler
       public net_log::NetExportFileWriter::StateObserver {
  public:
   NetExportMessageHandler();
+
+  NetExportMessageHandler(const NetExportMessageHandler&) = delete;
+  NetExportMessageHandler& operator=(const NetExportMessageHandler&) = delete;
+
   ~NetExportMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -80,18 +85,15 @@ class NetExportMessageHandler
   // This is owned by the ApplicationContext.
   net_log::NetExportFileWriter* file_writer_;
 
-  ScopedObserver<net_log::NetExportFileWriter,
-                 net_log::NetExportFileWriter::StateObserver>
-      state_observer_manager_;
+  base::ScopedObservation<net_log::NetExportFileWriter,
+                          net_log::NetExportFileWriter::StateObserver>
+      state_observation_manager_{this};
 
   base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportMessageHandler);
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
     : file_writer_(GetApplicationContext()->GetNetExportFileWriter()),
-      state_observer_manager_(this),
       weak_ptr_factory_(this) {
   file_writer_->Initialize();
 }
@@ -103,19 +105,19 @@ NetExportMessageHandler::~NetExportMessageHandler() {
 void NetExportMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kEnableNotifyUIWithStateHandler,
       base::BindRepeating(&NetExportMessageHandler::OnEnableNotifyUIWithState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kStartNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStartNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kStopNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStopNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kSendNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnSendNetLog,
                           base::Unretained(this)));
@@ -124,8 +126,8 @@ void NetExportMessageHandler::RegisterMessages() {
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  if (!state_observer_manager_.IsObservingSources()) {
-    state_observer_manager_.Add(file_writer_);
+  if (!state_observation_manager_.IsObserving()) {
+    state_observation_manager_.Observe(file_writer_);
   }
   NotifyUIWithState(file_writer_->GetState());
 }
@@ -165,8 +167,8 @@ void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
 
 void NetExportMessageHandler::OnSendNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  file_writer_->GetFilePathToCompletedLog(
-      base::Bind(&NetExportMessageHandler::SendEmail, base::Unretained(this)));
+  file_writer_->GetFilePathToCompletedLog(base::BindOnce(
+      &NetExportMessageHandler::SendEmail, base::Unretained(this)));
 }
 
 void NetExportMessageHandler::OnNewState(const base::DictionaryValue& state) {
@@ -202,16 +204,17 @@ void NetExportMessageHandler::NotifyUIWithState(
   DCHECK(web_ui());
 
   base::Value state = file_writer_state->Clone();
+  base::Value event(net_log::kNetLogInfoChangedEvent);
 
-  std::vector<const base::Value*> args{&state};
-  web_ui()->CallJavascriptFunction(net_log::kOnExportNetLogInfoChanged, args);
+  std::vector<const base::Value*> args{&event, &state};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 }  // namespace
 
-NetExportUI::NetExportUI(web::WebUIIOS* web_ui)
-    : web::WebUIIOSController(web_ui) {
+NetExportUI::NetExportUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<NetExportMessageHandler>());
-  web::WebUIIOSDataSource::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
                                CreateNetExportHTMLSource());
 }

@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface ImageTrackList {
+  getter ImageTrack([EnforceRange] unsigned long index);
+  readonly attribute unsigned long length;
+
+  // Index of the currently selected track or -1 if no track is selected.
+  readonly attribute long selectedIndex;
+
+  // Helper accessor for the currently selected track.
+  readonly attribute ImageTrack? selectedTrack;
+
+  // Property-based promise for signaling initial metadata readiness (e.g.,
+  // track count, animation status, etc).
+  [CallWith=ScriptState] readonly attribute Promise<void> ready;
+};

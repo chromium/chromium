@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/app.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
@@ -21,6 +21,8 @@ class FakeAppInstance : public mojom::AppInstance {
   enum class IconResponseType {
     // Generate and send good icon.
     ICON_RESPONSE_SEND_GOOD,
+    // Generate an empty icon.
+    ICON_RESPONSE_SEND_EMPTY,
     // Generate broken bad icon.
     ICON_RESPONSE_SEND_BAD,
     // Don't send icon.
@@ -30,6 +32,10 @@ class FakeAppInstance : public mojom::AppInstance {
    public:
     Request(const std::string& package_name, const std::string& activity)
         : package_name_(package_name), activity_(activity) {}
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request() {}
 
     const std::string& package_name() const { return package_name_; }
@@ -44,8 +50,6 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     std::string package_name_;
     std::string activity_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   class IconRequest : public Request {
@@ -55,14 +59,16 @@ class FakeAppInstance : public mojom::AppInstance {
                 int dimension)
         : Request(package_name, activity),
           dimension_(static_cast<int>(dimension)) {}
+
+    IconRequest(const IconRequest&) = delete;
+    IconRequest& operator=(const IconRequest&) = delete;
+
     ~IconRequest() {}
 
     int dimension() const { return dimension_; }
 
    private:
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(IconRequest);
   };
 
   class ShortcutIconRequest {
@@ -70,6 +76,10 @@ class FakeAppInstance : public mojom::AppInstance {
     ShortcutIconRequest(const std::string& icon_resource_id, int dimension)
         : icon_resource_id_(icon_resource_id),
           dimension_(static_cast<int>(dimension)) {}
+
+    ShortcutIconRequest(const ShortcutIconRequest&) = delete;
+    ShortcutIconRequest& operator=(const ShortcutIconRequest&) = delete;
+
     ~ShortcutIconRequest() {}
 
     const std::string& icon_resource_id() const { return icon_resource_id_; }
@@ -78,22 +88,28 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     const std::string icon_resource_id_;
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShortcutIconRequest);
   };
 
   explicit FakeAppInstance(mojom::AppHost* app_host);
+
+  FakeAppInstance(const FakeAppInstance&) = delete;
+  FakeAppInstance& operator=(const FakeAppInstance&) = delete;
+
   ~FakeAppInstance() override;
 
   // mojom::AppInstance overrides:
-  void InitDeprecated(mojom::AppHostPtr host_ptr) override;
-  void Init(mojom::AppHostPtr host_ptr, InitCallback callback) override;
+  void InitDeprecated(mojo::PendingRemote<mojom::AppHost> host_remote) override;
+  void Init(mojo::PendingRemote<mojom::AppHost> host_remote,
+            InitCallback callback) override;
   void LaunchAppDeprecated(const std::string& package_name,
                            const std::string& activity,
-                           const base::Optional<gfx::Rect>& dimension) override;
+                           const absl::optional<gfx::Rect>& dimension) override;
   void LaunchApp(const std::string& package_name,
                  const std::string& activity,
                  int64_t display_id) override;
+  void LaunchAppWithWindowInfo(const std::string& package_name,
+                               const std::string& activity,
+                               arc::mojom::WindowInfoPtr window_info) override;
   void LaunchAppShortcutItem(const std::string& package_name,
                              const std::string& shortcut_id,
                              int64_t display_id) override;
@@ -101,17 +117,32 @@ class FakeAppInstance : public mojom::AppInstance {
                       const std::string& activity,
                       int dimension,
                       RequestAppIconCallback callback) override;
+  void GetAppIcon(const std::string& package_name,
+                  const std::string& activity,
+                  int dimension,
+                  GetAppIconCallback callback) override;
   void LaunchIntentDeprecated(
       const std::string& intent_uri,
-      const base::Optional<gfx::Rect>& dimension_on_screen) override;
+      const absl::optional<gfx::Rect>& dimension_on_screen) override;
   void LaunchIntent(const std::string& intent_uri, int64_t display_id) override;
+  void LaunchIntentWithWindowInfo(
+      const std::string& intent_uri,
+      arc::mojom::WindowInfoPtr window_info) override;
+  void UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info) override;
   void RequestShortcutIcon(const std::string& icon_resource_id,
                            int dimension,
                            RequestShortcutIconCallback callback) override;
+  void GetAppShortcutIcon(const std::string& icon_resource_id,
+                          int dimension,
+                          GetAppShortcutIconCallback callback) override;
   void RequestPackageIcon(const std::string& package_name,
                           int dimension,
                           bool normalize,
                           RequestPackageIconCallback callback) override;
+  void GetPackageIcon(const std::string& package_name,
+                      int dimension,
+                      bool normalize,
+                      GetPackageIconCallback callback) override;
   void RemoveCachedIcon(const std::string& icon_resource_id) override;
   void CanHandleResolutionDeprecated(
       const std::string& package_name,
@@ -141,10 +172,6 @@ class FakeAppInstance : public mojom::AppInstance {
       const std::string& query,
       int32_t max_results,
       GetRecentAndSuggestedAppsFromPlayStoreCallback callback) override;
-  void GetIcingGlobalQueryResults(
-      const std::string& query,
-      int32_t max_results,
-      GetIcingGlobalQueryResultsCallback callback) override;
   void GetAppShortcutGlobalQueryItems(
       const std::string& query,
       int32_t max_results,
@@ -187,21 +214,19 @@ class FakeAppInstance : public mojom::AppInstance {
   void SendPackageUninstalled(const std::string& pacakge_name);
 
   void SendInstallationStarted(const std::string& package_name);
-  void SendInstallationFinished(const std::string& package_name,
-                                bool success);
+  void SendInstallationFinished(const std::string& package_name, bool success);
 
   // Returns latest icon response for particular dimension. Returns true and
   // fill |png_data_as_string| if icon for |dimension| was generated.
   bool GetIconResponse(int dimension, std::string* png_data_as_string);
   // Generates an icon for app or shorcut, determined by |app_icon| and returns:
-  //   false if |icon_response_type_| is IconResponseType::ICON_RESPONSE_SKIP.
-  //   true and valid png content in |png_data_as_string| if
-  //        |icon_response_type_| is IconResponseType::ICON_RESPONSE_SEND_GOOD.
-  //   true and invalid png content in |png_data_as_string| if
+  //   nullptr if |icon_response_type_| is IconResponseType::ICON_RESPONSE_SKIP.
+  //   valid raw icon png data if
+  //         |icon_response_type_| is IconResponseType::ICON_RESPONSE_SEND_GOOD.
+  //   invalid raw icon png data in |png_data_as_string| if
   //         |icon_response_type_| is IconResponseType::ICON_RESPONSE_SEND_BAD.
-  bool GenerateIconResponse(int dimension,
-                            bool app_icon,
-                            std::string* png_data_as_string);
+  arc::mojom::RawIconPngDataPtr GenerateIconResponse(int dimension,
+                                                     bool app_icon);
 
   int start_pai_request_count() const { return start_pai_request_count_; }
 
@@ -253,6 +278,9 @@ class FakeAppInstance : public mojom::AppInstance {
 
  private:
   using TaskIdToInfo = std::map<int32_t, std::unique_ptr<Request>>;
+
+  arc::mojom::RawIconPngDataPtr GetFakeIcon(mojom::ScaleFactor scale_factor);
+
   // Mojo endpoints.
   mojom::AppHost* app_host_;
   // Number of requests to start PAI flows.
@@ -290,12 +318,7 @@ class FakeAppInstance : public mojom::AppInstance {
 
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
-  mojom::AppHostPtr host_;
-
-  bool GetFakeIcon(mojom::ScaleFactor scale_factor,
-                   std::string* png_data_as_string);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppInstance);
+  mojo::Remote<mojom::AppHost> host_remote_;
 };
 
 }  // namespace arc

@@ -12,7 +12,15 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+
+namespace blink {
+namespace scheduler {
+class UkmTaskSampler;
+class MainThreadMetricsHelper;
+}
+}  // namespace blink
 
 namespace base {
 
@@ -72,6 +80,82 @@ void RandomShuffle(Itr first, Itr last) {
 #if defined(OS_POSIX)
 BASE_EXPORT int GetUrandomFD();
 #endif
+
+namespace partition_alloc {
+class RandomGenerator;
+}
+
+namespace sequence_manager {
+namespace internal {
+class SequenceManagerImpl;
+}
+}  // namespace sequence_manager
+
+// Fast, insecure pseudo-random number generator.
+//
+// WARNING: This is not the generator you are looking for. This has significant
+// caveats:
+//   - It is non-cryptographic, so easy to miuse
+//   - It is neither fork() nor clone()-safe.
+//   - Synchronization is up to the client.
+//
+// Always prefer base::Rand*() above, unless you have a use case where its
+// overhead is too high, or system calls are disallowed.
+//
+// Performance: As of 2021, rough overhead on Linux on a desktop machine of
+// base::RandUint64() is ~800ns per call (it performs a system call). On Windows
+// it is lower. On the same machine, this generator's cost is ~2ns per call,
+// regardless of platform.
+//
+// This is different from |Rand*()| above as it is guaranteed to never make a
+// system call to generate a new number, except to seed it.  This should *never*
+// be used for cryptographic applications, and is not thread-safe.
+//
+// It is seeded using base::RandUint64() in the constructor, meaning that it
+// doesn't need to be seeded. It can be re-seeded though, with
+// ReseedForTesting(). Its period is long enough that it should not need to be
+// re-seeded during use.
+//
+// Uses the XorShift128+ generator under the hood.
+class BASE_EXPORT InsecureRandomGenerator {
+ public:
+  // Never use outside testing, not enough entropy.
+  void ReseedForTesting(uint64_t seed);
+
+  uint32_t RandUint32();
+  uint64_t RandUint64();
+  // In [0, 1).
+  double RandDouble();
+
+ private:
+  InsecureRandomGenerator();
+  // State.
+  uint64_t a_ = 0, b_ = 0;
+
+  // Before adding a new friend class, make sure that the overhead of
+  // base::Rand*() is too high, using something more representative than a
+  // microbenchmark.
+  //
+  // PartitionAlloc allocations should not take more than 40-50ns per
+  // malloc()/free() pair, otherwise high-level benchmarks regress, and does not
+  // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
+  // free() time.
+  friend class partition_alloc::RandomGenerator;
+
+  // Friend classes below are using the generator to sub-sample metrics after
+  // task execution. Task execution overhead is ~1us on a Linux desktop, and yet
+  // accounts for multiple percentage points of total CPU usage. Keeping it low
+  // is thus important.
+  friend class sequence_manager::internal::SequenceManagerImpl;
+  friend class blink::scheduler::UkmTaskSampler;
+  friend class blink::scheduler::MainThreadMetricsHelper;
+
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
+                           InsecureRandomGeneratorProducesBothValuesOfAllBits);
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorChiSquared);
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorRandDouble);
+  FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
+};
 
 }  // namespace base
 

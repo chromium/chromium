@@ -11,8 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/mac/bundle_locations.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
@@ -22,7 +20,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,17 +30,15 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cocoa/controls/button_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/views/image_model_utils.h"
 
 namespace {
 
 NSString* ColumnIdentifier(int id) {
   return [NSString stringWithFormat:@"%d", id];
-}
-
-bool ShouldUseViewsTaskManager() {
-  return base::FeatureList::IsEnabled(features::kViewsTaskManager);
 }
 
 }  // namespace
@@ -63,8 +59,9 @@ bool ShouldUseViewsTaskManager() {
 
 @implementation TaskManagerWindowController
 
-- (id)initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
-                  tableModel:(task_manager::TaskManagerTableModel*)tableModel {
+- (instancetype)
+    initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
+                tableModel:(task_manager::TaskManagerTableModel*)tableModel {
   base::scoped_nsobject<NSWindow> window = [self createAndLayOutWindow];
   if ((self = [super initWithWindow:window])) {
     _taskManagerMac = taskManagerMac;
@@ -292,6 +289,9 @@ bool ShouldUseViewsTaskManager() {
       [[NSTableView alloc] initWithFrame:NSMakeRect(0, 0, 400, 200)]);
   [tableView setAllowsColumnReordering:NO];
   [tableView setAllowsMultipleSelection:YES];
+  // No autosaving, since column identifiers are IDS_ values which are not
+  // stable. TODO(avi): Would it be worth it to find stable identifiers so that
+  // we could use autosaving?
   [tableView setAutosaveTableColumns:NO];
   [tableView
       setColumnAutoresizingStyle:NSTableViewUniformColumnAutoresizingStyle];
@@ -313,24 +313,22 @@ bool ShouldUseViewsTaskManager() {
   base::scoped_nsobject<NSTableColumn> column([[NSTableColumn alloc]
       initWithIdentifier:ColumnIdentifier(columnData.id)]);
 
+  NSTableHeaderCell* headerCell = [column.get() headerCell];
+  id dataCell = [column.get() dataCell];
+
   NSTextAlignment textAlignment = (columnData.align == ui::TableColumn::LEFT)
                                       ? NSLeftTextAlignment
                                       : NSRightTextAlignment;
 
-  [[column.get() headerCell]
-      setStringValue:l10n_util::GetNSStringWithFixup(columnData.id)];
-  [[column.get() headerCell] setAlignment:textAlignment];
-  [[column.get() dataCell] setAlignment:textAlignment];
+  NSString* columnTitle = l10n_util::GetNSStringWithFixup(columnData.id);
+  [headerCell setStringValue:columnTitle];
+  [headerCell setAlignment:textAlignment];
+  [dataCell setAlignment:textAlignment];
 
   const CGFloat smallSystemFontSize = [NSFont smallSystemFontSize];
-  NSFont* font = nil;
-  if (@available(macOS 10.11, *)) {
-    font = [NSFont monospacedDigitSystemFontOfSize:smallSystemFontSize
-                                            weight:NSFontWeightRegular];
-  } else {
-    font = [NSFont systemFontOfSize:smallSystemFontSize];
-  }
-  [[column.get() dataCell] setFont:font];
+  NSFont* font = [NSFont monospacedDigitSystemFontOfSize:smallSystemFontSize
+                                                  weight:NSFontWeightRegular];
+  [dataCell setFont:font];
 
   [column.get() setHidden:!columnData.default_visibility];
   [column.get() setEditable:NO];
@@ -342,9 +340,19 @@ bool ShouldUseViewsTaskManager() {
   [column.get() setSortDescriptorPrototype:sortDescriptor.get()];
 
   [column.get() setMinWidth:columnData.min_width];
+  // If there is no specified max width, use a reasonable value of 1.5x the min
+  // width, but make sure that the max width is big enough to actually show the
+  // entire column title.
+  const int kTitleMargin = 40;  // Space for the arrow, etc.
   int maxWidth = columnData.max_width;
-  if (maxWidth < 0)
-    maxWidth = 3 * columnData.min_width / 2;  // *1.5 for ints.
+  if (maxWidth <= 0)
+    maxWidth = 3 * columnData.min_width / 2;
+  int columnTitleWidth =
+      [columnTitle
+          sizeWithAttributes:@{NSFontAttributeName : [headerCell font]}]
+          .width +
+      kTitleMargin;
+  maxWidth = std::max(maxWidth, columnTitleWidth);
   [column.get() setMaxWidth:maxWidth];
   [column.get() setResizingMask:NSTableColumnAutoresizingMask |
                                 NSTableColumnUserResizingMask];
@@ -525,6 +533,10 @@ bool ShouldUseViewsTaskManager() {
   return _tableModel->RowCount();
 }
 
+- (CGFloat)tableView:(NSTableView*)tableView heightOfRow:(NSInteger)row {
+  return 16;
+}
+
 - (NSString*)modelTextForRow:(int)row column:(int)columnId {
   DCHECK_LT(static_cast<size_t>(row), _viewToModelMap.size());
   return base::SysUTF16ToNSString(
@@ -596,7 +608,7 @@ bool ShouldUseViewsTaskManager() {
     NSSortDescriptor* initialDescriptor = [column sortDescriptorPrototype];
     if ([newDescriptor ascending] == [initialDescriptor ascending]) {
       _withinSortDescriptorsDidChange = YES;
-      [_tableView setSortDescriptors:[NSArray array]];
+      [_tableView setSortDescriptors:@[]];
       newDescriptor = nil;
       _withinSortDescriptorsDidChange = NO;
     }
@@ -703,7 +715,8 @@ void TaskManagerMac::WindowWasClosed() {
 
 NSImage* TaskManagerMac::GetImageForRow(int row) {
   const NSSize kImageSize = NSMakeSize(16.0, 16.0);
-  NSImage* image = gfx::NSImageFromImageSkia(table_model_.GetIcon(row));
+  NSImage* image = gfx::NSImageFromImageSkia(
+      views::GetImageSkiaFromImageModel(table_model_.GetIcon(row), nullptr));
   if (image)
     image.size = kImageSize;
   else
@@ -743,15 +756,15 @@ namespace chrome {
 
 // Declared in browser_dialogs.h.
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  if (ShouldUseViewsTaskManager())
-    return chrome::ShowTaskManagerViews(browser);
-  return task_manager::TaskManagerMac::Show();
+  return base::FeatureList::IsEnabled(features::kViewsTaskManager)
+             ? ShowTaskManagerViews(browser)
+             : task_manager::TaskManagerMac::Show();
 }
 
 void HideTaskManager() {
-  if (ShouldUseViewsTaskManager())
-    return chrome::HideTaskManagerViews();
-  task_manager::TaskManagerMac::Hide();
+  base::FeatureList::IsEnabled(features::kViewsTaskManager)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

@@ -28,11 +28,16 @@ class MockPostProcessor : public PostProcessingPipeline {
                     const std::string& name,
                     const base::Value* filter_description_list,
                     int channels);
+
+  MockPostProcessor(const MockPostProcessor&) = delete;
+  MockPostProcessor& operator=(const MockPostProcessor&) = delete;
+
   ~MockPostProcessor() override;
-  MOCK_METHOD4(ProcessFrames,
+  MOCK_METHOD5(ProcessFrames,
                double(float* data,
                       int num_frames,
                       float current_volume,
+                      float target_volume,
                       bool is_silence));
   MOCK_METHOD1(SetContentType, void(AudioContentType));
   bool SetOutputConfig(const AudioPostProcessor2::Config& config) override {
@@ -54,6 +59,7 @@ class MockPostProcessor : public PostProcessingPipeline {
   double DoProcessFrames(float* data,
                          int num_frames,
                          float current_volume,
+                         float target_volume,
                          bool is_silence) {
     output_buffer_ = data;
     return static_cast<double>(rendering_delay_frames_) / sample_rate_;
@@ -66,8 +72,6 @@ class MockPostProcessor : public PostProcessingPipeline {
   bool ringing_ = false;
   float* output_buffer_ = nullptr;
   int num_output_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPostProcessor);
 };
 
 class MockPostProcessorFactory : public PostProcessingPipelineFactory {

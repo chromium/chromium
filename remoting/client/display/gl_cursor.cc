@@ -4,6 +4,8 @@
 
 #include "remoting/client/display/gl_cursor.h"
 
+#include <memory>
+
 #include "remoting/base/util.h"
 #include "remoting/client/display/gl_canvas.h"
 #include "remoting/client/display/gl_math.h"
@@ -75,7 +77,7 @@ void GlCursor::SetCanvas(base::WeakPtr<Canvas> canvas) {
     layer_.reset();
     return;
   }
-  layer_.reset(new GlRenderLayer(kGlCursorTextureId, canvas));
+  layer_ = std::make_unique<GlRenderLayer>(kGlCursorTextureId, canvas);
   if (current_cursor_data_) {
     SetCurrentCursorShape(true);
   }

@@ -101,10 +101,10 @@ public class SharedStatics {
         // clang-format on
     }
 
-    public void setSafeBrowsingWhitelist(List<String> urls, Callback<Boolean> callback) {
+    public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
         // clang-format off
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> AwContentsStatics.setSafeBrowsingWhitelist(urls, callback));
+                () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
         // clang-format on
     }
 

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<head>
+  <meta name=referrer content="origin, origin" />
+</head>
+<script>
+  'use strict';
+
+  test(() => {
+    const kHTMLMetaElementReferrerPolicyOutsideHead = 3314; // from web_feature.mojom
+    assert_false(internals.isUseCounted(document, kHTMLMetaElementReferrerPolicyOutsideHead));
+  }, '<meta name=referrer> inside <head> is not use counted');
+</script>

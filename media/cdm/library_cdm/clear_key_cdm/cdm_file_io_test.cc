@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace media {
@@ -508,8 +508,8 @@ void FileIOTestRunner::AddTests() {
   END_TEST_CASE
 }
 
-void FileIOTestRunner::RunAllTests(const CompletionCB& completion_cb) {
-  completion_cb_ = completion_cb;
+void FileIOTestRunner::RunAllTests(CompletionCB completion_cb) {
+  completion_cb_ = std::move(completion_cb);
   total_num_tests_ = remaining_tests_.size();
   RunNextTest();
 }
@@ -524,8 +524,8 @@ void FileIOTestRunner::RunNextTest() {
     return;
   }
 
-  remaining_tests_.front()->Run(
-      base::Bind(&FileIOTestRunner::OnTestComplete, base::Unretained(this)));
+  remaining_tests_.front()->Run(base::BindOnce(
+      &FileIOTestRunner::OnTestComplete, base::Unretained(this)));
 }
 
 void FileIOTestRunner::OnTestComplete(bool success) {
@@ -560,9 +560,9 @@ void FileIOTest::AddResultReadEither(Status status,
                                  data_size, data2, data2_size));
 }
 
-void FileIOTest::Run(const CompletionCB& completion_cb) {
+void FileIOTest::Run(CompletionCB completion_cb) {
   FILE_IO_DVLOG(3) << "Run " << test_name_;
-  completion_cb_ = completion_cb;
+  completion_cb_ = std::move(completion_cb);
   DCHECK(!test_steps_.empty() && !IsResult(test_steps_.front()));
   RunNextStep();
 }

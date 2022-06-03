@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/facade/remoting_oauth_authentication.h"
 
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/bind.h"
-#import "base/bind_helpers.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
 #import "remoting/ios/facade/ios_client_runtime_delegate.h"
 #import "remoting/ios/facade/remoting_service.h"
 #import "remoting/ios/persistence/remoting_keychain.h"
 #import "remoting/ios/persistence/remoting_preferences.h"
-
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 static const char kOauthRedirectUrl[] =
     "https://chromoting-oauth.talkgadget."
@@ -68,7 +67,6 @@ std::unique_ptr<remoting::OAuthTokenGetter> CreateOAuthTokenWithRefreshToken(
   std::unique_ptr<remoting::OAuthTokenGetter> oauth_tokenGetter(
       new remoting::OAuthTokenGetterImpl(
           std::move(oauth_credentials),
-          base::DoNothing(),
           RemotingService.instance.runtime->url_loader_factory(),
           /*auto_refresh=*/true));
   return oauth_tokenGetter;
@@ -147,7 +145,7 @@ RemotingAuthenticationStatus oauthStatusToRemotingAuthenticationStatus(
     } else {
       LOG(ERROR) << "Failed to fetch access token from authorization code. ("
                  << status << ")";
-      [MDCSnackbarManager
+      [MDCSnackbarManager.defaultManager
           showMessage:
               [MDCSnackbarMessage
                   messageWithText:@"Authentication Failed. Please try again."]];

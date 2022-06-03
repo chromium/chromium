@@ -12,6 +12,7 @@ namespace blink {
 
 class Element;
 class LayoutObject;
+class Node;
 class Text;
 
 // The WhitespaceAttacher is used during the layout tree rebuild to lazily re-
@@ -77,10 +78,10 @@ class CORE_EXPORT WhitespaceAttacher {
   // Invariants:
   // DCHECK(!last_display_contents_ || !last_text_node_needs_reattach_)
   // DCHECK(last_text_node_ || !last_text_node_needs_reattach_)
-  Member<Element> last_display_contents_ = nullptr;
+  Element* last_display_contents_ = nullptr;
 
   // The last text node we've visited during rebuild for this attacher.
-  Member<Text> last_text_node_ = nullptr;
+  Text* last_text_node_ = nullptr;
 
   // Set to true if we need to re-attach last_text_node_ when:
   // 1. We visiting a previous in-flow sibling, or

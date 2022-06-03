@@ -13,17 +13,18 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"  // for FileAccessProvider
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,8 +97,8 @@ struct DictionaryIdComparator {
     const base::DictionaryValue* b_dict;
     bool b_is_dictionary = b.GetAsDictionary(&b_dict);
     DCHECK(b_is_dictionary);
-    base::string16 a_str;
-    base::string16 b_str;
+    std::u16string a_str;
+    std::u16string b_str;
     a_dict->GetString(kCertificatesHandlerNameField, &a_str);
     b_dict->GetString(kCertificatesHandlerNameField, &b_str);
     if (collator_ == nullptr)
@@ -184,20 +185,20 @@ class FileAccessProvider
  public:
   // The first parameter is 0 on success or errno on failure. The second
   // parameter is read result.
-  typedef base::Callback<void(const int*, const std::string*)> ReadCallback;
+  typedef base::OnceCallback<void(const int*, const std::string*)> ReadCallback;
 
   // The first parameter is 0 on success or errno on failure. The second
   // parameter is the number of bytes written on success.
-  typedef base::Callback<void(const int*, const int*)> WriteCallback;
+  typedef base::OnceCallback<void(const int*, const int*)> WriteCallback;
 
   base::CancelableTaskTracker::TaskId StartRead(
       const base::FilePath& path,
-      const ReadCallback& callback,
+      ReadCallback callback,
       base::CancelableTaskTracker* tracker);
   base::CancelableTaskTracker::TaskId StartWrite(
       const base::FilePath& path,
       const std::string& data,
-      const WriteCallback& callback,
+      WriteCallback callback,
       base::CancelableTaskTracker* tracker);
 
  private:
@@ -217,40 +218,41 @@ class FileAccessProvider
 
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
     const base::FilePath& path,
-    const ReadCallback& callback,
+    ReadCallback callback,
     base::CancelableTaskTracker* tracker) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
   std::string* data = new std::string();
 
   // Post task to a background sequence to read file.
-  auto task_runner = base::CreateTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  auto task_runner = base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno,
                      data),
-      base::BindOnce(callback, base::Owned(saved_errno), base::Owned(data)));
+      base::BindOnce(std::move(callback), base::Owned(saved_errno),
+                     base::Owned(data)));
 }
 
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
     const base::FilePath& path,
     const std::string& data,
-    const WriteCallback& callback,
+    WriteCallback callback,
     base::CancelableTaskTracker* tracker) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
   int* bytes_written = new int(0);
 
   // This task blocks shutdown because it saves critical user data.
-  auto task_runner = base::CreateTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+  auto task_runner = base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   return tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&FileAccessProvider::DoWrite, this, path, data,
                      saved_errno, bytes_written),
-      base::BindOnce(callback, base::Owned(saved_errno),
+      base::BindOnce(std::move(callback), base::Owned(saved_errno),
                      base::Owned(bytes_written)));
 }
 
@@ -277,80 +279,86 @@ CertificatesHandler::CertificatesHandler()
       use_hardware_backed_(false),
       file_access_provider_(base::MakeRefCounted<FileAccessProvider>()) {}
 
-CertificatesHandler::~CertificatesHandler() {}
+CertificatesHandler::~CertificatesHandler() {
+  if (select_file_dialog_.get())
+    select_file_dialog_->ListenerDestroyed();
+  select_file_dialog_ = nullptr;
+}
 
 void CertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "viewCertificate",
       base::BindRepeating(&CertificatesHandler::HandleViewCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleGetCATrust,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "editCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleEditCATrust,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancelImportExportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleCancelImportExportProcess,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "exportPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "exportPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleExportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleImportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importCaCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportCA,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importCaCertificateTrustSelected",
       base::BindRepeating(&CertificatesHandler::HandleImportCATrustSelected,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importServerCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportServer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "exportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "deleteCertificate",
       base::BindRepeating(&CertificatesHandler::HandleDeleteCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshCertificates",
       base::BindRepeating(&CertificatesHandler::HandleRefreshCertificates,
                           base::Unretained(this)));
 }
 
 void CertificatesHandler::CertificatesRefreshed() {
-  PopulateTree("personalCerts", net::USER_CERT);
+  if (ShouldDisplayClientCertificates()) {
+    PopulateTree("personalCerts", net::USER_CERT);
+  }
   PopulateTree("serverCerts", net::SERVER_CERT);
   PopulateTree("caCerts", net::CA_CERT);
   PopulateTree("otherCerts", net::OTHER_CERT);
@@ -403,15 +411,15 @@ void CertificatesHandler::HandleViewCertificate(const base::ListValue* args) {
 }
 
 void CertificatesHandler::AssignWebUICallbackId(const base::ListValue* args) {
-  CHECK_LE(1U, args->GetSize());
+  CHECK_LE(1U, args->GetList().size());
   CHECK(webui_callback_id_.empty());
-  CHECK(args->GetString(0, &webui_callback_id_));
+  webui_callback_id_ = args->GetList()[0].GetString();
 }
 
 void CertificatesHandler::HandleGetCATrust(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
 
   CertificateManagerModel::CertInfo* cert_info =
@@ -437,7 +445,8 @@ void CertificatesHandler::HandleGetCATrust(const base::ListValue* args) {
 }
 
 void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
   AssignWebUICallbackId(args);
 
   CertificateManagerModel::CertInfo* cert_info =
@@ -454,12 +463,9 @@ void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
     return;
   }
 
-  bool trust_ssl = false;
-  bool trust_email = false;
-  bool trust_obj_sign = false;
-  CHECK(args->GetBoolean(2, &trust_ssl));
-  CHECK(args->GetBoolean(3, &trust_email));
-  CHECK(args->GetBoolean(4, &trust_obj_sign));
+  const bool trust_ssl = list[2].GetBool();
+  const bool trust_email = list[3].GetBool();
+  const bool trust_obj_sign = list[4].GetBool();
 
   bool result = certificate_manager_model_->SetCertTrust(
       cert_info->cert(), net::CA_CERT,
@@ -479,7 +485,7 @@ void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
 }
 
 void CertificatesHandler::HandleExportPersonal(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
 
   CertificateManagerModel::CertInfo* cert_info =
@@ -500,7 +506,7 @@ void CertificatesHandler::HandleExportPersonal(const base::ListValue* args) {
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
       GetParentWindow(),
       reinterpret_cast<void*>(EXPORT_PERSONAL_FILE_SELECTED));
@@ -514,7 +520,7 @@ void CertificatesHandler::ExportPersonalFileSelected(
 
 void CertificatesHandler::HandleExportPersonalPasswordSelected(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
   CHECK(args->GetString(1, &password_));
 
@@ -547,8 +553,8 @@ void CertificatesHandler::ExportPersonalSlotsUnlocked() {
   }
   file_access_provider_->StartWrite(
       file_path_, output,
-      base::Bind(&CertificatesHandler::ExportPersonalFileWritten,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ExportPersonalFileWritten,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -568,18 +574,17 @@ void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno,
 }
 
 void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
-  // When policy changes while user on the certificate manager page, the UI
-  // doesn't update without page refresh and user can still see and use import
-  // button. Because of this 'return' the button will do nothing.
-  if (!IsClientCertificateManagementAllowedPolicy(Slot::kUser)) {
+  // When the "allowed" value changes while user on the certificate manager
+  // page, the UI doesn't update without page refresh and user can still see and
+  // use import button. Because of this 'return' the button will do nothing.
+  if (!IsClientCertificateManagementAllowed(Slot::kUser)) {
     return;
   }
-#endif
 
-  CHECK_EQ(2U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
   AssignWebUICallbackId(args);
-  CHECK(args->GetBoolean(1, &use_hardware_backed_));
+  use_hardware_backed_ = list[1].GetBool();
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(1);
@@ -594,7 +599,7 @@ void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
       GetParentWindow(),
       reinterpret_cast<void*>(IMPORT_PERSONAL_FILE_SELECTED));
@@ -604,8 +609,8 @@ void CertificatesHandler::ImportPersonalFileSelected(
     const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportPersonalFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportPersonalFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -658,7 +663,7 @@ void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
 
 void CertificatesHandler::HandleImportPersonalPasswordSelected(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
   CHECK(args->GetString(1, &password_));
 
@@ -738,7 +743,7 @@ void CertificatesHandler::ImportExportCleanup() {
 }
 
 void CertificatesHandler::HandleImportServer(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   AssignWebUICallbackId(args);
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -753,8 +758,8 @@ void CertificatesHandler::HandleImportServer(const base::ListValue* args) {
 void CertificatesHandler::ImportServerFileSelected(const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportServerFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportServerFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -805,16 +810,14 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
 }
 
 void CertificatesHandler::HandleImportCA(const base::ListValue* args) {
-#if defined(OS_CHROMEOS)
-  // When policy changes while user on the certificate manager page, the UI
-  // doesn't update without page refresh and user can still see and use import
-  // button. Because of this 'return' the button will do nothing.
-  if (!IsCACertificateManagementAllowedPolicy(CertificateSource::kImported)) {
+  // When the "allowed" value changes while user on the certificate manager
+  // page, the UI doesn't update without page refresh and user can still see and
+  // use import button. Because of this 'return' the button will do nothing.
+  if (!IsCACertificateManagementAllowed(CertificateSource::kImported)) {
     return;
   }
-#endif  // defined(OS_CHROMEOS)
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   AssignWebUICallbackId(args);
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -829,8 +832,8 @@ void CertificatesHandler::HandleImportCA(const base::ListValue* args) {
 void CertificatesHandler::ImportCAFileSelected(const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportCAFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportCAFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -872,15 +875,13 @@ void CertificatesHandler::ImportCAFileRead(const int* read_errno,
 
 void CertificatesHandler::HandleImportCATrustSelected(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(4U, list.size());
   AssignWebUICallbackId(args);
 
-  bool trust_ssl = false;
-  bool trust_email = false;
-  bool trust_obj_sign = false;
-  CHECK(args->GetBoolean(1, &trust_ssl));
-  CHECK(args->GetBoolean(2, &trust_email));
-  CHECK(args->GetBoolean(3, &trust_obj_sign));
+  const bool trust_ssl = list[1].GetBool();
+  const bool trust_email = list[2].GetBool();
+  const bool trust_obj_sign = list[3].GetBool();
 
   // TODO(mattm): add UI for setting explicit distrust, too.
   // http://crbug.com/128411
@@ -921,7 +922,7 @@ void CertificatesHandler::HandleExportCertificate(const base::ListValue* args) {
 }
 
 void CertificatesHandler::HandleDeleteCertificate(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   AssignWebUICallbackId(args);
 
   CertificateManagerModel::CertInfo* cert_info =
@@ -958,19 +959,13 @@ void CertificatesHandler::OnCertificateManagerModelCreated(
 }
 
 void CertificatesHandler::CertificateManagerModelReady() {
-  bool client_import_allowed = true;
-  bool ca_import_allowed = true;
-#if defined(OS_CHROMEOS)
-  client_import_allowed =
-      IsClientCertificateManagementAllowedPolicy(Slot::kUser);
-  ca_import_allowed =
-      IsCACertificateManagementAllowedPolicy(CertificateSource::kImported);
-#endif  // defined(OS_CHROMEOS)
   if (IsJavascriptAllowed()) {
-    FireWebUIListener("client-import-allowed-changed",
-                      base::Value(client_import_allowed));
+    FireWebUIListener(
+        "client-import-allowed-changed",
+        base::Value(IsClientCertificateManagementAllowed(Slot::kUser)));
     FireWebUIListener("ca-import-allowed-changed",
-                      base::Value(ca_import_allowed));
+                      base::Value(IsCACertificateManagementAllowed(
+                          CertificateSource::kImported)));
   }
   certificate_manager_model_->Refresh();
 }
@@ -990,8 +985,8 @@ void CertificatesHandler::HandleRefreshCertificates(
     // Request that a model be created.
     CertificateManagerModel::Create(
         Profile::FromWebUI(web_ui()), this,
-        base::Bind(&CertificatesHandler::OnCertificateManagerModelCreated,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&CertificatesHandler::OnCertificateManagerModelCreated,
+                       weak_ptr_factory_.GetWeakPtr()));
     requested_certificate_manager_model_ = true;
     return;
   }
@@ -1130,7 +1125,7 @@ void CertificatesHandler::RejectCallbackWithImportError(
   RejectCallback(*error_info);
 }
 
-gfx::NativeWindow CertificatesHandler::GetParentWindow() const {
+gfx::NativeWindow CertificatesHandler::GetParentWindow() {
   return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 
@@ -1152,10 +1147,66 @@ CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value& args,
   return cert_info_id_map_.Lookup(cert_info_id);
 }
 
+bool CertificatesHandler::IsClientCertificateManagementAllowed(Slot slot) {
+#if defined(OS_CHROMEOS)
+  if (!IsClientCertificateManagementAllowedPolicy(slot)) {
+    return false;
+  }
+#endif  //  defined(OS_CHROMEOS)
+
+  return ShouldDisplayClientCertificates();
+}
+
+bool CertificatesHandler::IsCACertificateManagementAllowed(
+    CertificateSource source) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/194781831): Currently CA certificates are shared between all
+  // profiles for technical reasons. Evaluating the policy independently in each
+  // profile would create a policy escape (e.g. if one of profiles is not
+  // managed). Therefore make the main profile "own" CA certificates and allow
+  // management based on its policy.
+  if (!Profile::FromWebUI(web_ui())->IsMainProfile()) {
+    return false;
+  }
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if defined(OS_CHROMEOS)
+  if (!IsCACertificateManagementAllowedPolicy(source)) {
+    return false;
+  }
+#endif  // defined(OS_CHROMEOS)
+
+  return true;
+}
+
+bool CertificatesHandler::ShouldDisplayClientCertificates() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/194781831): When secondary profiles in Lacros-Chrome support client
+  // certificates, this should be removed and the page should be updated to
+  // support them.
+  if (!Profile::FromWebUI(web_ui())->IsMainProfile()) {
+    return false;
+  }
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return true;
+}
+
 #if defined(OS_CHROMEOS)
 bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
-    Slot slot) const {
+    Slot slot) {
   Profile* profile = Profile::FromWebUI(web_ui());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile()) {
+    // TODO(b/194781831): Currently client certificates are not supported in
+    // secondary profiles on Lacros-Chrome. This "return" disables some buttons
+    // (e.g. Import, Import&Bind) that wouldn't work anyway. This can be changed
+    // when client certificates for secondary profiles are implemented.
+    return false;
+  }
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<ClientCertificateManagementPermission>(
       prefs->GetInteger(prefs::kClientCertificateManagementAllowed));
@@ -1167,8 +1218,19 @@ bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
 }
 
 bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
-    CertificateSource source) const {
+    CertificateSource source) {
   Profile* profile = Profile::FromWebUI(web_ui());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile()) {
+    // TODO(b/194781831): Currently CA certificates are shared between all
+    // profiles for technical reasons. Therefore only the main profile should
+    // decide if they are allowed to be managed. This can be changed when a
+    // proper separation of CA certificates between profiles is implemented.
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<CACertificateManagementPermission>(
       prefs->GetInteger(prefs::kCACertificateManagementAllowed));
@@ -1183,42 +1245,38 @@ bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
 #endif  // defined(OS_CHROMEOS)
 
 bool CertificatesHandler::CanDeleteCertificate(
-    const CertificateManagerModel::CertInfo* cert_info) const {
+    const CertificateManagerModel::CertInfo* cert_info) {
   if (!cert_info->can_be_deleted() ||
       cert_info->source() ==
           CertificateManagerModel::CertInfo::Source::kPolicy) {
     return false;
   }
 
-#if defined(OS_CHROMEOS)
   if (cert_info->type() == net::CertType::USER_CERT) {
-    return IsClientCertificateManagementAllowedPolicy(
+    return IsClientCertificateManagementAllowed(
         cert_info->device_wide() ? Slot::kSystem : Slot::kUser);
   }
   if (cert_info->type() == net::CertType::CA_CERT) {
     CertificateSource source = cert_info->can_be_deleted()
                                    ? CertificateSource::kImported
                                    : CertificateSource::kBuiltIn;
-    return IsCACertificateManagementAllowedPolicy(source);
+    return IsCACertificateManagementAllowed(source);
   }
-#endif  // defined(OS_CHROMEOS)
   return true;
 }
 
 bool CertificatesHandler::CanEditCertificate(
-    const CertificateManagerModel::CertInfo* cert_info) const {
+    const CertificateManagerModel::CertInfo* cert_info) {
   if ((cert_info->type() != net::CertType::CA_CERT) ||
       (cert_info->source() ==
        CertificateManagerModel::CertInfo::Source::kPolicy)) {
     return false;
   }
-#if defined(OS_CHROMEOS)
+
   CertificateSource source = cert_info->can_be_deleted()
                                  ? CertificateSource::kImported
                                  : CertificateSource::kBuiltIn;
-  return IsCACertificateManagementAllowedPolicy(source);
-#endif  // defined(OS_CHROMEOS)
-  return true;
+  return IsCACertificateManagementAllowed(source);
 }
 
 #if defined(OS_CHROMEOS)

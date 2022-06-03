@@ -7,7 +7,7 @@ function hasOGArticle() {
   const elems = document.head.querySelectorAll(
       'meta[property="og:type"],meta[name="og:type"]');
   for (const i in elems) {
-    if (elems[i].content && elems[i].content.toUpperCase() == 'ARTICLE') {
+    if (elems[i].content && elems[i].content.toUpperCase() === 'ARTICLE') {
       return true;
     }
   }

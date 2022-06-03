@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
+
 namespace blink {
 
 void FakeRemoteFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
@@ -16,10 +18,49 @@ void FakeRemoteFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
 void FakeRemoteFrameHost::SetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {}
 
+void FakeRemoteFrameHost::UpdateRenderThrottlingStatus(bool is_throttled,
+                                                       bool subtree_throttled,
+                                                       bool display_locked) {}
+
 void FakeRemoteFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}
 
 void FakeRemoteFrameHost::DidFocusFrame() {}
+
+void FakeRemoteFrameHost::CheckCompleted() {}
+
+void FakeRemoteFrameHost::CapturePaintPreviewOfCrossProcessSubframe(
+    const gfx::Rect& clip_rect,
+    const base::UnguessableToken& guid) {}
+
+void FakeRemoteFrameHost::SetIsInert(bool inert) {}
+
+void FakeRemoteFrameHost::DidChangeOpener(
+    const absl::optional<LocalFrameToken>& opener_frame_token) {}
+
+void FakeRemoteFrameHost::AdvanceFocus(
+    blink::mojom::FocusType focus_type,
+    const LocalFrameToken& source_frame_token) {}
+
+void FakeRemoteFrameHost::RouteMessageEvent(
+    const absl::optional<LocalFrameToken>& source_frame_token,
+    const String& source_origin,
+    const String& target_origin,
+    BlinkTransferableMessage message) {}
+
+void FakeRemoteFrameHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
+                                                    int document_cookie) {}
+
+void FakeRemoteFrameHost::Detach() {}
+
+void FakeRemoteFrameHost::UpdateViewportIntersection(
+    blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
+    const absl::optional<FrameVisualProperties>& visual_properties) {}
+
+void FakeRemoteFrameHost::SynchronizeVisualProperties(
+    const blink::FrameVisualProperties& properties) {}
+
+void FakeRemoteFrameHost::OpenURL(mojom::blink::OpenURLParamsPtr params) {}
 
 void FakeRemoteFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

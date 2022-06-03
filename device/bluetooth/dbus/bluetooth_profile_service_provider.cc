@@ -31,45 +31,51 @@ class BluetoothProfileServiceProviderImpl
         bus_(bus),
         delegate_(delegate),
         object_path_(object_path) {
-    VLOG(1) << "Creating Bluetooth Profile: " << object_path_.value();
+    DVLOG(1) << "Creating Bluetooth Profile: " << object_path_.value();
 
     exported_object_ = bus_->GetExportedObject(object_path_);
 
     exported_object_->ExportMethod(
         bluetooth_profile::kBluetoothProfileInterface,
         bluetooth_profile::kRelease,
-        base::Bind(&BluetoothProfileServiceProviderImpl::Release,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&BluetoothProfileServiceProviderImpl::OnExported,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&BluetoothProfileServiceProviderImpl::Release,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&BluetoothProfileServiceProviderImpl::OnExported,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     exported_object_->ExportMethod(
         bluetooth_profile::kBluetoothProfileInterface,
         bluetooth_profile::kNewConnection,
-        base::Bind(&BluetoothProfileServiceProviderImpl::NewConnection,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&BluetoothProfileServiceProviderImpl::OnExported,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&BluetoothProfileServiceProviderImpl::NewConnection,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&BluetoothProfileServiceProviderImpl::OnExported,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     exported_object_->ExportMethod(
         bluetooth_profile::kBluetoothProfileInterface,
         bluetooth_profile::kRequestDisconnection,
-        base::Bind(&BluetoothProfileServiceProviderImpl::RequestDisconnection,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&BluetoothProfileServiceProviderImpl::OnExported,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &BluetoothProfileServiceProviderImpl::RequestDisconnection,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&BluetoothProfileServiceProviderImpl::OnExported,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     exported_object_->ExportMethod(
         bluetooth_profile::kBluetoothProfileInterface,
         bluetooth_profile::kCancel,
-        base::Bind(&BluetoothProfileServiceProviderImpl::Cancel,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&BluetoothProfileServiceProviderImpl::OnExported,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&BluetoothProfileServiceProviderImpl::Cancel,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&BluetoothProfileServiceProviderImpl::OnExported,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
+  BluetoothProfileServiceProviderImpl(
+      const BluetoothProfileServiceProviderImpl&) = delete;
+  BluetoothProfileServiceProviderImpl& operator=(
+      const BluetoothProfileServiceProviderImpl&) = delete;
+
   ~BluetoothProfileServiceProviderImpl() override {
-    VLOG(1) << "Cleaning up Bluetooth Profile: " << object_path_.value();
+    DVLOG(1) << "Cleaning up Bluetooth Profile: " << object_path_.value();
 
     // Unregister the object path so we can reuse with a new agent.
     bus_->UnregisterExportedObject(object_path_);
@@ -176,8 +182,8 @@ class BluetoothProfileServiceProviderImpl
   void OnExported(const std::string& interface_name,
                   const std::string& method_name,
                   bool success) {
-    LOG_IF(WARNING, !success) << "Failed to export " << interface_name << "."
-                              << method_name;
+    DVLOG_IF(1, !success) << "Failed to export " << interface_name << "."
+                          << method_name;
   }
 
   // Called by the Delegate in response to a method requiring confirmation.
@@ -234,8 +240,6 @@ class BluetoothProfileServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileServiceProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileServiceProviderImpl);
 };
 
 BluetoothProfileServiceProvider::BluetoothProfileServiceProvider() = default;
@@ -250,7 +254,12 @@ BluetoothProfileServiceProvider* BluetoothProfileServiceProvider::Create(
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return new BluetoothProfileServiceProviderImpl(bus, object_path, delegate);
   }
+#if defined(USE_REAL_DBUS_CLIENTS)
+  LOG(FATAL) << "Fake is unavailable if USE_REAL_DBUS_CLIENTS is defined.";
+  return nullptr;
+#else
   return new FakeBluetoothProfileServiceProvider(object_path, delegate);
+#endif  // defined(USE_REAL_DBUS_CLIENTS)
 }
 
 }  // namespace bluez

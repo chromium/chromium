@@ -16,6 +16,7 @@ namespace blink {
 
 class EventTarget;
 class ExecutionContext;
+class ScriptState;
 
 class SensorTestContext final {
   STACK_ALLOCATED();
@@ -26,6 +27,7 @@ class SensorTestContext final {
   ~SensorTestContext();
 
   ExecutionContext* GetExecutionContext() const;
+  ScriptState* GetScriptState() const;
 
   device::FakeSensorProvider* sensor_provider() { return &sensor_provider_; }
 

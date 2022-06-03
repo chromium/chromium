@@ -4,26 +4,26 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.annotation.SuppressLint;
-import android.support.test.espresso.Espresso;
-import android.support.test.filters.MediumTest;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.Espresso;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,19 +32,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,17 +56,15 @@ import java.util.Collections;
  * end up rendering a View.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillIntegrationTest {
-    private static final String EXAMPLE_URL = "https://www.example.xyz";
+    private static GURL sExampleUrl;
     private static final String MOBILE_URL = "https://m.example.xyz";
-    private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", EXAMPLE_URL, false, false);
-    private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false);
+    private static Credential sAna;
+    private static Credential sBob;
 
-    private final TouchToFillComponent mTouchToFill = new TouchToFillCoordinator();
+    private TouchToFillComponent mTouchToFill;
 
     @Mock
     private TouchToFillComponent.Delegate mMockBridge;
@@ -72,32 +72,41 @@ public class TouchToFillIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    private BottomSheetController mBottomSheetController;
+
     public TouchToFillIntegrationTest() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Before
     public void setUp() throws InterruptedException {
+        sExampleUrl = new GURL("https://www.example.xyz");
+        // TODO(https://crbug.com/783819): Migrate Credential to GURL.
+        sAna = new Credential("Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), false, false, 0);
+        sBob = new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false, 0);
+
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.initialize(mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getBottomSheetController(), mMockBridge);
+            mTouchToFill = new TouchToFillCoordinator();
+            mBottomSheetController = BottomSheetControllerProvider.from(
+                    mActivityTestRule.getActivity().getWindowAndroid());
+            mTouchToFill.initialize(
+                    mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
         });
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1012221")
     public void testClickingSuggestionsTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(EXAMPLE_URL, true, Collections.singletonList(ANA));
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna));
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         pollUiThread(() -> getCredentials().getChildAt(1) != null);
         TouchCommon.singleClickView(getCredentials().getChildAt(1));
 
-        waitForEvent(mMockBridge).onCredentialSelected(ANA);
+        waitForEvent(mMockBridge).onCredentialSelected(sAna);
         verify(mMockBridge, never()).onDismissed();
     }
 
@@ -105,9 +114,9 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(EXAMPLE_URL, true, Arrays.asList(ANA, BOB));
+            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob));
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         Espresso.pressBack();
 
@@ -119,8 +128,6 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     @SuppressLint("SetTextI18n")
     public void testDismissedIfUnableToShow() throws Exception {
-        BottomSheetController bottomSheetController =
-                mActivityTestRule.getActivity().getBottomSheetController();
         BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
             TextView highPriorityBottomSheetContentView =
                     new TextView(mActivityTestRule.getActivity());
@@ -175,21 +182,21 @@ public class TouchToFillIntegrationTest {
                     return 0;
                 }
             };
-            bottomSheetController.requestShowContent(content, /* animate = */ false);
+            mBottomSheetController.requestShowContent(content, /* animate = */ false);
             return content;
         });
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(EXAMPLE_URL, true, Arrays.asList(ANA, BOB));
+            mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob));
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(() -> {
-            bottomSheetController.hideContent(otherBottomSheetContent, /* animate = */ false);
+            mBottomSheetController.hideContent(otherBottomSheetContent, /* animate = */ false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
     }
@@ -204,6 +211,6 @@ public class TouchToFillIntegrationTest {
     }
 
     private @SheetState int getBottomSheetState() {
-        return mActivityTestRule.getActivity().getBottomSheetController().getSheetState();
+        return mBottomSheetController.getSheetState();
     }
 }

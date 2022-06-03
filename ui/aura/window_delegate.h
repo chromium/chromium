@@ -89,10 +89,9 @@ class AURA_EXPORT WindowDelegate : public ui::EventHandler {
 
   // Called when the occlusion state or occluded region of the Window changes
   // while tracked (see WindowOcclusionTracker::Track). |occlusion_state| is
-  // the new occlusion state of the Window. |occluded_region| is the new
-  // occluded region of the Window.
-  virtual void OnWindowOcclusionChanged(Window::OcclusionState occlusion_state,
-                                        const SkRegion& occluded_region) {}
+  // the new occlusion state of the Window.
+  virtual void OnWindowOcclusionChanged(
+      Window::OcclusionState occlusion_state) {}
 
   // Called from Window::HitTest to check if the window has a custom hit test
   // mask. It works similar to the views counterparts. That is, if the function

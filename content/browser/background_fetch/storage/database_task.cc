@@ -13,11 +13,11 @@
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
-#include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -43,8 +43,6 @@ DatabaseTaskHost::~DatabaseTaskHost() = default;
 
 DatabaseTask::DatabaseTask(DatabaseTaskHost* host) : host_(host) {
   DCHECK(host_);
-  // Hold a reference to the CacheStorageManager.
-  cache_manager_ = data_manager()->cache_manager();
 }
 
 DatabaseTask::~DatabaseTask() = default;
@@ -54,7 +52,7 @@ base::WeakPtr<DatabaseTaskHost> DatabaseTask::GetWeakPtr() {
 }
 
 void DatabaseTask::Finished() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Post the OnTaskFinished callback to the same thread, to allow the the
   // DatabaseTask to finish execution before deallocating it.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -83,14 +81,15 @@ void DatabaseTask::AbandonFetches(int64_t service_worker_registration_id) {
     observer.OnServiceWorkerDatabaseCorrupted(service_worker_registration_id);
 }
 
-void DatabaseTask::IsQuotaAvailable(const url::Origin& origin,
+void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
                                     int64_t size,
                                     IsQuotaAvailableCallback callback) {
   DCHECK(quota_manager_proxy());
   DCHECK_GT(size, 0);
+
   quota_manager_proxy()->GetUsageAndQuota(
-      base::ThreadTaskRunnerHandle::Get().get(), origin,
-      blink::mojom::StorageType::kTemporary,
+      storage_key, blink::mojom::StorageType::kTemporary,
+      base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
 
@@ -174,11 +173,6 @@ ServiceWorkerContextWrapper* DatabaseTask::service_worker_context() {
   return data_manager()->service_worker_context();
 }
 
-CacheStorageManager* DatabaseTask::cache_manager() {
-  DCHECK(cache_manager_);
-  return cache_manager_.get();
-}
-
 std::set<std::string>& DatabaseTask::ref_counted_unique_ids() {
   return data_manager()->ref_counted_unique_ids();
 }
@@ -195,20 +189,36 @@ storage::QuotaManagerProxy* DatabaseTask::quota_manager_proxy() {
   return data_manager()->quota_manager_proxy();
 }
 
-CacheStorageHandle DatabaseTask::GetOrOpenCacheStorage(
-    const BackgroundFetchRegistrationId& registration_id) {
-  return GetOrOpenCacheStorage(registration_id.origin(),
-                               registration_id.unique_id());
+void DatabaseTask::OpenCache(
+    const BackgroundFetchRegistrationId& registration_id,
+    int64_t trace_id,
+    base::OnceCallback<void(blink::mojom::CacheStorageError)> callback) {
+  DCHECK(!cache_storage_cache_remote_.is_bound());
+  data_manager()->OpenCache(
+      registration_id.storage_key(), registration_id.unique_id(), trace_id,
+      base::BindOnce(&DatabaseTask::DidOpenCache,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-CacheStorageHandle DatabaseTask::GetOrOpenCacheStorage(
-    const url::Origin& origin,
-    const std::string& unique_id) {
-  return data_manager()->GetOrOpenCacheStorage(origin, unique_id);
+void DatabaseTask::DidOpenCache(
+    base::OnceCallback<void(blink::mojom::CacheStorageError)> callback,
+    blink::mojom::OpenResultPtr result) {
+  if (result->is_status()) {
+    std::move(callback).Run(result->get_status());
+    return;
+  }
+
+  cache_storage_cache_remote_.Bind(std::move(result->get_cache()));
+  std::move(callback).Run(blink::mojom::CacheStorageError::kSuccess);
 }
 
-void DatabaseTask::ReleaseCacheStorage(const std::string& unique_id) {
-  data_manager()->ReleaseCacheStorage(unique_id);
+void DatabaseTask::DeleteCache(
+    const blink::StorageKey& storage_key,
+    const std::string& unique_id,
+    int64_t trace_id,
+    blink::mojom::CacheStorage::DeleteCallback callback) {
+  data_manager()->DeleteCache(storage_key, unique_id, trace_id,
+                              std::move(callback));
 }
 
 }  // namespace background_fetch

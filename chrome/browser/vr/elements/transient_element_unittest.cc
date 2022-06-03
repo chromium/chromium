@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
@@ -18,7 +17,7 @@ namespace vr {
 namespace {
 
 bool DoBeginFrame(UiElement* element, int time_milliseconds) {
-  element->set_last_frame_time(MsToTicks(time_milliseconds));
+  element->set_last_frame_time(gfx::MsToTicks(time_milliseconds));
   const bool force_animations_to_completion = false;
   return element->DoBeginFrame(kStartHeadPose, force_animations_to_completion);
 }
@@ -26,7 +25,7 @@ bool DoBeginFrame(UiElement* element, int time_milliseconds) {
 }  // namespace
 
 TEST(SimpleTransientElementTest, Visibility) {
-  SimpleTransientElement element(base::TimeDelta::FromSeconds(2));
+  SimpleTransientElement element(base::Seconds(2));
   element.SetOpacity(0.0f);
 
   EXPECT_EQ(0.0f, element.opacity());
@@ -69,7 +68,7 @@ TEST(SimpleTransientElementTest, Visibility) {
 // Test that refreshing the visibility resets the transience timeout if the
 // element is currently visible.
 TEST(SimpleTransientElementTest, RefreshVisibility) {
-  SimpleTransientElement element(base::TimeDelta::FromSeconds(2));
+  SimpleTransientElement element(base::Seconds(2));
   element.SetOpacity(0.0f);
 
   // Enable, and ensure that the element is visible.
@@ -106,7 +105,7 @@ TEST(SimpleTransientElementTest, VisibilityChildren) {
   UiScene scene;
   // Create transient root.
   auto transient_element =
-      std::make_unique<SimpleTransientElement>(base::TimeDelta::FromSeconds(2));
+      std::make_unique<SimpleTransientElement>(base::Seconds(2));
   SimpleTransientElement* parent = transient_element.get();
   transient_element->set_opacity_when_visible(0.5);
   scene.AddUiElement(kRoot, std::move(transient_element));
@@ -119,31 +118,31 @@ TEST(SimpleTransientElementTest, VisibilityChildren) {
   parent->AddChild(std::move(element));
 
   // Child hidden because parent is hidden.
-  EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(0), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 
   // Setting visiblity on parent should make the child visible.
   parent->SetVisible(true);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(10), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(10), kStartHeadPose));
   EXPECT_TRUE(child->IsVisible());
   EXPECT_TRUE(parent->IsVisible());
 
   // Make sure the elements go away.
-  EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(2010), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2010), kStartHeadPose));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 
   // Test again, but this time manually set the visibility to false.
   parent->SetVisible(true);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(2020), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2020), kStartHeadPose));
   EXPECT_TRUE(child->IsVisible());
   EXPECT_TRUE(parent->IsVisible());
   parent->SetVisible(false);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(2030), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2030), kStartHeadPose));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 }

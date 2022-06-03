@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
-#include "base/macros.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,12 +27,16 @@ class MojoMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::PendingRemote<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jpeg_decoder);
+
+  MojoMjpegDecodeAccelerator(const MojoMjpegDecodeAccelerator&) = delete;
+  MojoMjpegDecodeAccelerator& operator=(const MojoMjpegDecodeAccelerator&) =
+      delete;
+
   ~MojoMjpegDecodeAccelerator() override;
 
   // MjpegDecodeAccelerator implementation.
   // |client| is called on the IO thread, but is never called into after the
   // MojoMjpegDecodeAccelerator is destroyed.
-  bool Initialize(Client* client) override;
   void InitializeAsync(Client* client, InitCB init_cb) override;
   void Decode(media::BitstreamBuffer bitstream_buffer,
               scoped_refptr<media::VideoFrame> video_frame) override;
@@ -67,8 +68,6 @@ class MojoMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
       jpeg_decoder_remote_;
 
   mojo::Remote<chromeos_camera::mojom::MjpegDecodeAccelerator> jpeg_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoMjpegDecodeAccelerator);
 };
 
 }  // namespace chromeos_camera

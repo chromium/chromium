@@ -8,8 +8,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -31,7 +32,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::COOKIES, 0},
     {ContentSettingsType::IMAGES, 1},
     {ContentSettingsType::JAVASCRIPT, 2},
-    {ContentSettingsType::PLUGINS, 3},
+    // Removed PLUGINS in M91.
     {ContentSettingsType::POPUPS, 4},
     {ContentSettingsType::GEOLOCATION, 5},
     {ContentSettingsType::NOTIFICATIONS, 6},
@@ -40,7 +41,6 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::MEDIASTREAM_MIC, 12},
     {ContentSettingsType::MEDIASTREAM_CAMERA, 13},
     {ContentSettingsType::PROTOCOL_HANDLERS, 14},
-    {ContentSettingsType::PPAPI_BROKER, 15},
     {ContentSettingsType::AUTOMATIC_DOWNLOADS, 16},
     {ContentSettingsType::MIDI_SYSEX, 17},
     {ContentSettingsType::SSL_CERT_DECISIONS, 19},
@@ -61,7 +61,6 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::CLIENT_HINTS, 37},
     {ContentSettingsType::SENSORS, 38},
     {ContentSettingsType::ACCESSIBILITY_EVENTS, 39},
-    {ContentSettingsType::PLUGINS_DATA, 42},
     {ContentSettingsType::PAYMENT_HANDLER, 43},
     {ContentSettingsType::USB_GUARD, 44},
     {ContentSettingsType::BACKGROUND_FETCH, 45},
@@ -76,7 +75,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::WAKE_LOCK_SCREEN, 54},
     {ContentSettingsType::WAKE_LOCK_SYSTEM, 55},
     {ContentSettingsType::LEGACY_COOKIE_ACCESS, 56},
-    {ContentSettingsType::NATIVE_FILE_SYSTEM_WRITE_GUARD, 57},
+    {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, 57},
     {ContentSettingsType::INSTALLED_WEB_APP_METADATA, 58},
     {ContentSettingsType::NFC, 59},
     {ContentSettingsType::BLUETOOTH_CHOOSER_DATA, 60},
@@ -85,6 +84,25 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, 63},
     {ContentSettingsType::VR, 64},
     {ContentSettingsType::AR, 65},
+    {ContentSettingsType::FILE_SYSTEM_READ_GUARD, 66},
+    {ContentSettingsType::STORAGE_ACCESS, 67},
+    {ContentSettingsType::CAMERA_PAN_TILT_ZOOM, 68},
+    {ContentSettingsType::WINDOW_PLACEMENT, 69},
+    {ContentSettingsType::INSECURE_PRIVATE_NETWORK, 70},
+    {ContentSettingsType::FONT_ACCESS, 71},
+    {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, 72},
+    {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, 73},
+    {ContentSettingsType::DISPLAY_CAPTURE, 74},
+    {ContentSettingsType::FILE_HANDLING, 75},
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, 76},
+    {ContentSettingsType::FEDERATED_IDENTITY_SHARING, 77},
+    {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, 78},
+    {ContentSettingsType::JAVASCRIPT_JIT, 79},
+    {ContentSettingsType::HTTP_ALLOWED, 80},
+    {ContentSettingsType::FORMFILL_METADATA, 81},
+    {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, 82},
+    {ContentSettingsType::AUTO_DARK_WEB_CONTENT, 83},
+    {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
 };
 
 }  // namespace
@@ -127,10 +145,12 @@ ContentSettingPatternSource::ContentSettingPatternSource(
     const ContentSettingsPattern& secondary_pattern,
     base::Value setting_value,
     const std::string& source,
-    bool incognito)
+    bool incognito,
+    base::Time expiration)
     : primary_pattern(primary_pattern),
       secondary_pattern(secondary_pattern),
       setting_value(std::move(setting_value)),
+      expiration(expiration),
       source(source),
       incognito(incognito) {}
 
@@ -146,6 +166,7 @@ ContentSettingPatternSource& ContentSettingPatternSource::operator=(
   primary_pattern = other.primary_pattern;
   secondary_pattern = other.secondary_pattern;
   setting_value = other.setting_value.Clone();
+  expiration = other.expiration;
   source = other.source;
   incognito = other.incognito;
   return *this;
@@ -157,6 +178,10 @@ ContentSetting ContentSettingPatternSource::GetContentSetting() const {
   return content_settings::ValueToContentSetting(&setting_value);
 }
 
+bool ContentSettingPatternSource::IsExpired() const {
+  return !expiration.is_null() && expiration < base::Time::Now();
+}
+
 // static
 bool RendererContentSettingRules::IsRendererContentSetting(
     ContentSettingsType content_type) {
@@ -164,7 +189,8 @@ bool RendererContentSettingRules::IsRendererContentSetting(
          content_type == ContentSettingsType::JAVASCRIPT ||
          content_type == ContentSettingsType::CLIENT_HINTS ||
          content_type == ContentSettingsType::POPUPS ||
-         content_type == ContentSettingsType::MIXEDSCRIPT;
+         content_type == ContentSettingsType::MIXEDSCRIPT ||
+         content_type == ContentSettingsType::AUTO_DARK_WEB_CONTENT;
 }
 
 RendererContentSettingRules::RendererContentSettingRules() {}

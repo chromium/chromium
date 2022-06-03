@@ -19,7 +19,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Supports blinkpy logging."""
 
 import logging
@@ -35,6 +34,7 @@ def _default_handlers(stream, logging_level, include_time):
       stream: See the configure_logging() docstring.
       include_time: See the configure_logging() docstring.
     """
+
     # Create the filter.
     def should_log(record):
         """Return whether a logging.LogRecord should be logged."""
@@ -53,7 +53,8 @@ def _default_handlers(stream, logging_level, include_time):
         prefix = ''
 
     if logging_level == logging.DEBUG:
-        formatter = logging.Formatter(prefix + '%(name)s: [%(levelname)s] %(message)s')
+        formatter = logging.Formatter(prefix +
+                                      '%(name)s: [%(levelname)s] %(message)s')
     else:
         formatter = logging.Formatter(prefix + '%(message)s')
 
@@ -63,8 +64,11 @@ def _default_handlers(stream, logging_level, include_time):
     return [handler]
 
 
-def configure_logging(logging_level=None, logger=None, stream=None,
-                      handlers=None, include_time=True):
+def configure_logging(logging_level=None,
+                      logger=None,
+                      stream=None,
+                      handlers=None,
+                      include_time=True):
     """Configure logging for standard purposes.
 
     Returns:

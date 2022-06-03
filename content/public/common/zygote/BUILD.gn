@@ -1,0 +1,11 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//content/public/common/zygote/features.gni")
+
+buildflag_header("buildflags") {
+  header = "zygote_buildflags.h"
+  flags = [ "USE_ZYGOTE_HANDLE=$use_zygote_handle" ]
+}

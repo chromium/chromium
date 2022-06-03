@@ -9,14 +9,14 @@
 
 namespace switches {
 
-// Shows additional checkboxes in Settings to enable Chrome OS accessibility
-// features that haven't launched yet.
-const char kEnableExperimentalAccessibilityFeatures[] =
-    "enable-experimental-accessibility-features";
-
 // Shows additional automatic click features that haven't launched yet.
 const char kEnableExperimentalAccessibilityAutoclick[] =
     "enable-experimental-accessibility-autoclick";
+
+// Enables the experimental dictation extension on Chrome OS that hasn't
+// launched yet.
+const char kEnableExperimentalAccessibilityDictationExtension[] =
+    "enable-experimental-accessibility-dictation-extension";
 
 // Enables support for visually debugging the accessibility labels
 // feature, which provides images descriptions for screen reader users.
@@ -33,23 +33,23 @@ const char kEnableExperimentalAccessibilityLanguageDetection[] =
 const char kEnableExperimentalAccessibilityLanguageDetectionDynamic[] =
     "enable-experimental-accessibility-language-detection-dynamic";
 
-// Shows setting to enable Switch Access before it has launched.
-const char kEnableExperimentalAccessibilitySwitchAccess[] =
-    "enable-experimental-accessibility-switch-access";
-
 // Enables in progress Switch Access features for text input.
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";
 
-// Enables language switching feature that hasn't launched yet.
-const char kEnableExperimentalAccessibilityChromeVoxLanguageSwitching[] =
-    "enable-experimental-accessibility-chromevox-language-switching";
+// Enables debug feature for drawing rectangle around magnified region, without
+// zooming in.
+const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
-// Enables ChromeVox language switching at the inner node level. This feature
-// hasn't launched yet.
-const char kEnableExperimentalAccessibilityChromeVoxSubNodeLanguageSwitching[] =
-    "enable-experimental-accessibility-chromevox-sub-node-language-"
-    "switching";
+// Enables multistep automation for Switch Access, which is a 2021 accessibility
+// sprint project and hasn't launched yet.
+const char kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation[] =
+    "enable-experimental-accessibility-switch-access-multistep-automation";
+
+bool IsExperimentalAccessibilityDictationExtensionEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationExtension);
+}
 
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -66,6 +66,17 @@ bool IsExperimentalAccessibilitySwitchAccessTextEnabled() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
+bool IsMagnifierDebugDrawRectEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableMagnifierDebugDrawRect);
+}
+
+bool IsSwitchAccessMultistepAutomationEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::
+          kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation);
+}
+
 #if defined(OS_WIN)
 // Enables UI Automation platform API in addition to the IAccessible API.
 const char kEnableExperimentalUIAutomation[] =
@@ -80,5 +91,9 @@ bool IsExperimentalAccessibilityPlatformUIAEnabled() {
   return false;
 #endif
 }
+
+// Optionally disable AXMenuList, which makes the internal pop-up menu
+// UI for a select element directly accessible.
+const char kDisableAXMenuList[] = "disable-ax-menu-list";
 
 }  // namespace switches

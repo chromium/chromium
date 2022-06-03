@@ -58,7 +58,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit LogicalWidthForChild(LineLayoutBox child) const {
     return ToBlockFlow()->LogicalWidthForChild(
-        *ToLayoutBox(child.GetLayoutObject()));
+        *To<LayoutBox>(child.GetLayoutObject()));
   }
 
   LayoutUnit MarginStartForChild(const LayoutBoxModelObject& child) const {
@@ -67,7 +67,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit MarginStartForChild(LineLayoutBox child) const {
     return ToBlockFlow()->MarginStartForChild(
-        *ToLayoutBoxModelObject(child.GetLayoutObject()));
+        *To<LayoutBoxModelObject>(child.GetLayoutObject()));
   }
 
   LayoutUnit MarginEndForChild(const LayoutBoxModelObject& child) const {
@@ -76,7 +76,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit MarginEndForChild(LineLayoutBox child) const {
     return ToBlockFlow()->MarginEndForChild(
-        *ToLayoutBoxModelObject(child.GetLayoutObject()));
+        *To<LayoutBoxModelObject>(child.GetLayoutObject()));
   }
 
   LayoutUnit MarginBeforeForChild(const LayoutBoxModelObject& child) const {
@@ -102,7 +102,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
   void SetStaticInlinePositionForChild(LineLayoutBox box,
                                        LayoutUnit inline_position) {
     ToBlockFlow()->SetStaticInlinePositionForChild(
-        *ToLayoutBox(box.GetLayoutObject()), inline_position);
+        *To<LayoutBox>(box.GetLayoutObject()), inline_position);
   }
 
   void UpdateStaticInlinePositionForChild(
@@ -110,7 +110,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
       LayoutUnit logical_top,
       IndentTextOrNot indent_text = kDoNotIndentText) {
     ToBlockFlow()->UpdateStaticInlinePositionForChild(
-        *ToLayoutBox(box.GetLayoutObject()), logical_top, indent_text);
+        *To<LayoutBox>(box.GetLayoutObject()), logical_top, indent_text);
   }
 
   FloatingObject* InsertFloatingObject(LayoutBox& box) {
@@ -119,7 +119,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   FloatingObject* InsertFloatingObject(LineLayoutBox box) {
     return ToBlockFlow()->InsertFloatingObject(
-        *ToLayoutBox(box.GetLayoutObject()));
+        *To<LayoutBox>(box.GetLayoutObject()));
   }
 
   FloatingObject* LastPlacedFloat(

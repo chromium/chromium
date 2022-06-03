@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -33,6 +32,10 @@ scoped_refptr<const Extension> CreateExtension(const std::string& id) {
 class ExtensionMigratorTest : public ExtensionServiceTestBase {
  public:
   ExtensionMigratorTest() {}
+
+  ExtensionMigratorTest(const ExtensionMigratorTest&) = delete;
+  ExtensionMigratorTest& operator=(const ExtensionMigratorTest&) = delete;
+
   ~ExtensionMigratorTest() override {}
 
  protected:
@@ -51,7 +54,8 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
   void AddMigratorProvider() {
     service()->AddProviderForTesting(std::make_unique<ExternalProviderImpl>(
         service(), new ExtensionMigrator(profile(), kOldId, kNewId), profile(),
-        Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
+        mojom::ManifestLocation::kExternalPref,
+        mojom::ManifestLocation::kExternalPrefDownload,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
   }
 
@@ -62,11 +66,8 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
 
   bool HasNewExtension() {
     return service()->pending_extension_manager()->IsIdPending(kNewId) ||
-           !!registry()->GetInstalledExtension(kNewId);
+           registry()->GetInstalledExtension(kNewId);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMigratorTest);
 };
 
 TEST_F(ExtensionMigratorTest, NoExistingOld) {
@@ -82,7 +83,7 @@ TEST_F(ExtensionMigratorTest, HasExistingOld) {
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasNewExtension());
-  EXPECT_TRUE(!!registry()->GetInstalledExtension(kOldId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kOldId));
 }
 
 TEST_F(ExtensionMigratorTest, KeepExistingNew) {
@@ -90,7 +91,7 @@ TEST_F(ExtensionMigratorTest, KeepExistingNew) {
   AddExtension(kNewId);
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(!!registry()->GetInstalledExtension(kNewId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kNewId));
 }
 
 TEST_F(ExtensionMigratorTest, HasBothOldAndNew) {
@@ -99,8 +100,8 @@ TEST_F(ExtensionMigratorTest, HasBothOldAndNew) {
   AddExtension(kNewId);
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(!!registry()->GetInstalledExtension(kOldId));
-  EXPECT_TRUE(!!registry()->GetInstalledExtension(kNewId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kOldId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kNewId));
 }
 
 }  // namespace extensions

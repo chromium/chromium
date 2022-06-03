@@ -5,25 +5,30 @@
 #include "base/metrics/persistent_memory_allocator.h"
 
 #include <assert.h>
+
 #include <algorithm>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include "winbase.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#include <sys/mman.h>
-#endif
-
+#include "base/bits.h"
 #include "base/debug/alias.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_WIN)
+// clang-format off
+#include <windows.h>
+#include <winbase.h>
+// clang-format on
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <sys/mman.h>
+#endif
 
 namespace {
 
@@ -471,7 +476,7 @@ void PersistentMemoryAllocator::CreateTrackingHistograms(
     base::StringPiece name) {
   if (name.empty() || readonly_)
     return;
-  std::string name_string = name.as_string();
+  std::string name_string(name);
 
 #if 0
   // This histogram wasn't being used so has been disabled. It is left here
@@ -640,7 +645,7 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
 
   // Round up the requested size, plus header, to the next allocation alignment.
   uint32_t size = static_cast<uint32_t>(req_size + sizeof(BlockHeader));
-  size = (size + (kAllocAlignment - 1)) & ~(kAllocAlignment - 1);
+  size = base::bits::AlignUp(size, kAllocAlignment);
   if (size <= sizeof(BlockHeader) || size > mem_page_) {
     NOTREACHED();
     return kReferenceNull;
@@ -1118,7 +1123,7 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   if (IsReadonly())
     return;
 
-  base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
+  absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   if (sync)
     scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
 
@@ -1127,7 +1132,7 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
   BOOL success = ::FlushViewOfFile(data(), length);
   DPCHECK(success);
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   // On OSX, "invalidate" removes all cached pages, forcing a re-read from
   // disk. That's not applicable to "flush" so omit it.
   int result =

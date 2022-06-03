@@ -6,7 +6,7 @@
   "accessibilityPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist" : [ "75C7F4B720314B6CB1B5817CD86089DB95CD2461" ] // built-in chromevox
+    "allowlist" : [ "75C7F4B720314B6CB1B5817CD86089DB95CD2461" ] // built-in chromevox
   },
   "bookmarks": {
     "channel": "stable",
@@ -25,6 +25,10 @@
   "history": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "loginState": {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension", "extension"]
   },
   "settingsPrivate": {
     "channel": "stable",
@@ -47,7 +51,7 @@
   "commands.accessibility": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist" : [
+    "allowlist" : [
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // built-in chromevox
     ]
   },
@@ -72,5 +76,9 @@
   "tabs": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "loginState": {
+    "channel": "stable",
+    "extension_types": ["extension"]
   }
 }

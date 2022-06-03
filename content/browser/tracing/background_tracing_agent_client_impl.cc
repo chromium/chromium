@@ -16,15 +16,12 @@ namespace content {
 // static
 void BackgroundTracingAgentClientImpl::Create(
     int child_process_id,
-    mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
-        pending_provider) {
+    mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider) {
   mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
 
   mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent;
 
-  mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider(
-      std::move(pending_provider));
   provider->Create(ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
                        child_process_id),
                    std::move(client), agent.BindNewPipeAndPassReceiver());

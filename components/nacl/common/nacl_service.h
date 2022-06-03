@@ -6,7 +6,7 @@
 #define COMPONENTS_NACL_COMMON_NACL_SERVICE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 

@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.view.View
-++++++android.view.View name='Static fallback'
-++++android.view.View
-++++++android.view.View clickable focusable name='Interactive fallback'
+++++android.widget.Image name='Static fallback'
+++++android.widget.Image
+++++++android.view.View role_description='link' clickable focusable link name='Interactive fallback'
+++++++++android.widget.TextView name='Interactive fallback'

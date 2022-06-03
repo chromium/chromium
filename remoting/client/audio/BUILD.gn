@@ -13,8 +13,6 @@ source_set("audio") {
     "audio_playback_stream.h",
     "audio_player.cc",
     "audio_player.h",
-    "audio_player_android.cc",
-    "audio_player_android.h",
     "audio_stream_format.cc",
     "audio_stream_format.h",
   ]
@@ -24,11 +22,16 @@ source_set("audio") {
   deps = [
     "//base",
     "//remoting/base",
+    "//remoting/protocol",
   ]
 
   libs = []
 
   if (is_android) {
+    sources += [
+      "audio_player_android.cc",
+      "audio_player_android.h",
+    ]
     libs += [
       "android",
       "OpenSLES",
@@ -46,6 +49,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//remoting/client/audio",
   ]
 }
 
@@ -61,6 +65,7 @@ source_set("unit_tests") {
 
   deps = [
     ":audio",
+    "//base",
     "//remoting/proto",
     "//testing/gmock",
     "//testing/gtest",

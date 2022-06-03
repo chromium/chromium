@@ -36,6 +36,10 @@ Test b5
 PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(176, 250) + pxMargins(1, 2, 3, 4)
 Test b4
 PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(250, 353) + pxMargins(1, 2, 3, 4)
+Test jis-b5
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(182, 257) + pxMargins(1, 2, 3, 4)
+Test jis-b4
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(257, 364) + pxMargins(1, 2, 3, 4)
 Test letter
 PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is inchSize(8.5, 11) + pxMargins(1, 2, 3, 4)
 Test legal

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="TextAppearance.ContinuousNavigationChipHint" parent="TextAppearance.ChipHint">
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <style name="TextAppearance.ContinuousNavigationChipText.Dark" parent="TextAppearance.ChipText">
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
+    <style name="TextAppearance.ContinuousNavigationChipText.Light" parent="TextAppearance.ChipText">
+        <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+    <style name="TextAppearance.ContinuousNavigationChipHint.Dark" parent="TextAppearance.ContinuousNavigationChipHint">
+        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
+    </style>
+    <style name="TextAppearance.ContinuousNavigationChipHint.Light" parent="TextAppearance.ContinuousNavigationChipHint">
+        <item name="android:textColor">@color/default_text_color_secondary_light</item>
+    </style>
+</resources>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+
+<input type=date id=date value="2019-09-10">
+
+<script>
+
+test(() => {
+  document.getElementById('date').focus();
+  eventSender.keyDown(" ");
+  assert_not_equals(internals.pagePopupWindow, null);
+}, "Test opening date picker with Space key.");
+
+</script>
+</body>
+</html>

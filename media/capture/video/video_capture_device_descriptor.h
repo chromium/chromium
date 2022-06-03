@@ -26,8 +26,16 @@ enum class VideoCaptureApi {
   ANDROID_API2_LEGACY,
   ANDROID_API2_FULL,
   ANDROID_API2_LIMITED,
+  FUCHSIA_CAMERA3,
   VIRTUAL_DEVICE,
   UNKNOWN
+};
+
+// Represents capture device's support for different controls.
+struct VideoCaptureControlSupport {
+  bool pan = false;
+  bool tilt = false;
+  bool zoom = false;
 };
 
 enum class VideoCaptureTransportType {
@@ -53,6 +61,8 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
       const std::string& display_name,
       const std::string& device_id,
       VideoCaptureApi capture_api = VideoCaptureApi::UNKNOWN,
+      const VideoCaptureControlSupport& control_support =
+          VideoCaptureControlSupport(),
       VideoCaptureTransportType transport_type =
           VideoCaptureTransportType::OTHER_TRANSPORT);
   VideoCaptureDeviceDescriptor(
@@ -60,6 +70,7 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
       const std::string& device_id,
       const std::string& model_id,
       VideoCaptureApi capture_api,
+      const VideoCaptureControlSupport& control_support,
       VideoCaptureTransportType transport_type =
           VideoCaptureTransportType::OTHER_TRANSPORT,
       VideoFacingMode facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE);
@@ -82,6 +93,13 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
   const std::string& display_name() const { return display_name_; }
   void set_display_name(const std::string& name);
 
+  const VideoCaptureControlSupport& control_support() const {
+    return control_support_;
+  }
+  void set_control_support(const VideoCaptureControlSupport& control_support) {
+    control_support_ = control_support;
+  }
+
   std::string device_id;
   // A unique hardware identifier of the capture device.
   // It is of the form "[vid]:[pid]" when a USB device is detected, and empty
@@ -95,6 +113,7 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
 
  private:
   std::string display_name_;  // Name that is intended for display in the UI
+  VideoCaptureControlSupport control_support_;
 };
 
 using VideoCaptureDeviceDescriptors = std::vector<VideoCaptureDeviceDescriptor>;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IMAGE_FETCHER_IOS_IMAGE_DECODER_IMPL_H_
-#define COMPONENTS_IMAGE_FETCHER_IOS_IMAGE_DECODER_IMPL_H_
+#ifndef COMPONENTS_IMAGE_FETCHER_IOS_IOS_IMAGE_DECODER_IMPL_H_
+#define COMPONENTS_IMAGE_FETCHER_IOS_IOS_IMAGE_DECODER_IMPL_H_
 
 #include <memory>
 
@@ -16,4 +16,4 @@ std::unique_ptr<ImageDecoder> CreateIOSImageDecoder();
 
 }  // namespace image_fetcher
 
-#endif  // COMPONENTS_IMAGE_FETCHER_IOS_IMAGE_DECODER_IMPL_H_
+#endif  // COMPONENTS_IMAGE_FETCHER_IOS_IOS_IMAGE_DECODER_IMPL_H_

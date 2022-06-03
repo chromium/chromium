@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gl/gl_image.h"
 
 namespace gpu {

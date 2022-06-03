@@ -45,6 +45,14 @@ void WindowControllerList::RemoveExtensionWindow(WindowController* window) {
   }
 }
 
+void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
+  auto iter = std::find(windows_.begin(), windows_.end(), window);
+  if (iter != windows_.end()) {
+    for (auto& observer : observers_)
+      observer.OnWindowBoundsChanged(window);
+  }
+}
+
 void WindowControllerList::AddObserver(WindowControllerListObserver* observer) {
   observers_.AddObserver(observer);
 }

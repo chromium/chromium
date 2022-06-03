@@ -12,7 +12,6 @@ namespace content {
 enum PageType {
   PAGE_TYPE_NORMAL = 0,
   PAGE_TYPE_ERROR,
-  PAGE_TYPE_INTERSTITIAL
 };
 
 }  // namespace content

@@ -32,7 +32,7 @@ const char kBogusId[] = "bogus";
 
 scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test")
-      .SetLocation(Manifest::INTERNAL)
+      .SetLocation(mojom::ManifestLocation::kInternal)
       .SetID(id)
       .Build();
 }
@@ -40,10 +40,10 @@ scoped_refptr<const Extension> CreateExtension(const std::string& id) {
 std::unique_ptr<const PermissionSet> CreatePermissions(
     bool include_clipboard = true) {
   APIPermissionSet apis;
-  apis.insert(APIPermission::kAudio);
-  apis.insert(APIPermission::kFullscreen);
+  apis.insert(mojom::APIPermissionID::kAudio);
+  apis.insert(mojom::APIPermissionID::kFullscreen);
   if (include_clipboard)
-    apis.insert(APIPermission::kClipboardRead);
+    apis.insert(mojom::APIPermissionID::kClipboardRead);
   ManifestPermissionSet manifest;
   manifest.insert(std::make_unique<MockManifestPermission>("author"));
   manifest.insert(std::make_unique<MockManifestPermission>("background"));

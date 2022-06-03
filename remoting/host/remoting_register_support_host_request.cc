@@ -5,27 +5,59 @@
 #include "remoting/host/remoting_register_support_host_request.h"
 
 #include "base/strings/stringize_macros.h"
-#include "remoting/base/grpc_support/grpc_async_unary_request.h"
-#include "remoting/base/grpc_support/grpc_channel.h"
-#include "remoting/base/grpc_support/grpc_util.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/oauth_token_getter.h"
+#include "remoting/base/protobuf_http_client.h"
+#include "remoting/base/protobuf_http_request.h"
+#include "remoting/base/protobuf_http_request_config.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_details.h"
-#include "remoting/proto/remoting/v1/remote_support_host_service.grpc.pb.h"
+#include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "remoting/signaling/signaling_address.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
 
 namespace {
 
-protocol::ErrorCode MapError(grpc::StatusCode status_code) {
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "remoting_register_support_host_request",
+        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Request used by Chrome Remote Desktop to register a new remote "
+            "support host."
+          trigger:
+            "User requests for remote assistance using Chrome Remote Desktop."
+          data:
+            "The user's OAuth token for Chrome Remote Desktop (CRD) and CRD "
+            "host information such as CRD host public key, host version, and "
+            "OS version."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the user does not use Chrome Remote Desktop."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr char kRegisterSupportHostPath[] =
+    "/v1/remotesupport:registersupporthost";
+
+protocol::ErrorCode MapError(ProtobufHttpStatus::Code status_code) {
   switch (status_code) {
-    case grpc::StatusCode::OK:
+    case ProtobufHttpStatus::Code::OK:
       return protocol::ErrorCode::OK;
-    case grpc::StatusCode::DEADLINE_EXCEEDED:
+    case ProtobufHttpStatus::Code::DEADLINE_EXCEEDED:
       return protocol::ErrorCode::SIGNALING_TIMEOUT;
-    case grpc::StatusCode::PERMISSION_DENIED:
-    case grpc::StatusCode::UNAUTHENTICATED:
+    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
+    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       return protocol::ErrorCode::AUTHENTICATION_FAILED;
     default:
       return protocol::ErrorCode::SIGNALING_ERROR;
@@ -37,54 +69,64 @@ protocol::ErrorCode MapError(grpc::StatusCode status_code) {
 class RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl final
     : public RegisterSupportHostClient {
  public:
-  explicit RegisterSupportHostClientImpl(OAuthTokenGetter* token_getter);
+  RegisterSupportHostClientImpl(
+      OAuthTokenGetter* token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RegisterSupportHostClientImpl(const RegisterSupportHostClientImpl&) = delete;
+  RegisterSupportHostClientImpl& operator=(
+      const RegisterSupportHostClientImpl&) = delete;
+
   ~RegisterSupportHostClientImpl() override;
 
   void RegisterSupportHost(
-      const apis::v1::RegisterSupportHostRequest& request,
+      std::unique_ptr<apis::v1::RegisterSupportHostRequest> request,
       RegisterSupportHostResponseCallback callback) override;
   void CancelPendingRequests() override;
 
  private:
-  using RemoteSupportService = apis::v1::RemoteSupportService;
-
-  GrpcAuthenticatedExecutor grpc_executor_;
-  std::unique_ptr<RemoteSupportService::Stub> remote_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterSupportHostClientImpl);
+  ProtobufHttpClient http_client_;
 };
 
 RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
-    RegisterSupportHostClientImpl(OAuthTokenGetter* token_getter)
-    : grpc_executor_(token_getter),
-      remote_support_(RemoteSupportService::NewStub(CreateSslChannelForEndpoint(
-          ServiceUrls::GetInstance()->remoting_server_endpoint()))) {}
+    RegisterSupportHostClientImpl(
+        OAuthTokenGetter* token_getter,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
+                   token_getter,
+                   url_loader_factory) {}
 
 RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
     ~RegisterSupportHostClientImpl() = default;
 
 void RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
-    RegisterSupportHost(const apis::v1::RegisterSupportHostRequest& request,
-                        RegisterSupportHostResponseCallback callback) {
-  auto grpc_request = CreateGrpcAsyncUnaryRequest(
-      base::BindOnce(&RemoteSupportService::Stub::AsyncRegisterSupportHost,
-                     base::Unretained(remote_support_.get())),
-      request, std::move(callback));
-  grpc_executor_.ExecuteRpc(std::move(grpc_request));
+    RegisterSupportHost(
+        std::unique_ptr<apis::v1::RegisterSupportHostRequest> request,
+        RegisterSupportHostResponseCallback callback) {
+  auto request_config =
+      std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
+  request_config->path = kRegisterSupportHostPath;
+  request_config->request_message = std::move(request);
+  auto http_request =
+      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
+  http_request->SetResponseCallback(std::move(callback));
+  http_client_.ExecuteRequest(std::move(http_request));
 }
 
 void RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
     CancelPendingRequests() {
-  grpc_executor_.CancelPendingRequests();
+  http_client_.CancelPendingRequests();
 }
 
 // End of RegisterSupportHostClientImpl.
 
 RemotingRegisterSupportHostRequest::RemotingRegisterSupportHostRequest(
-    std::unique_ptr<OAuthTokenGetter> token_getter)
+    std::unique_ptr<OAuthTokenGetter> token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : token_getter_(std::move(token_getter)),
       register_host_client_(std::make_unique<RegisterSupportHostClientImpl>(
-          token_getter_.get())) {}
+          token_getter_.get(),
+          url_loader_factory)) {}
 
 RemotingRegisterSupportHostRequest::~RemotingRegisterSupportHostRequest() {
   if (signal_strategy_) {
@@ -134,22 +176,22 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
   }
   state_ = State::REGISTERING;
 
-  apis::v1::RegisterSupportHostRequest request;
-  request.set_public_key(key_pair_->GetPublicKey());
-  request.set_tachyon_id(signal_strategy_->GetLocalAddress().id());
-  request.set_host_version(STRINGIZE(VERSION));
-  request.set_host_os_name(GetHostOperatingSystemName());
-  request.set_host_os_version(GetHostOperatingSystemVersion());
+  auto request = std::make_unique<apis::v1::RegisterSupportHostRequest>();
+  request->set_public_key(key_pair_->GetPublicKey());
+  request->set_tachyon_id(signal_strategy_->GetLocalAddress().id());
+  request->set_host_version(STRINGIZE(VERSION));
+  request->set_host_os_name(GetHostOperatingSystemName());
+  request->set_host_os_version(GetHostOperatingSystemVersion());
 
   register_host_client_->RegisterSupportHost(
-      request,
+      std::move(request),
       base::BindOnce(&RemotingRegisterSupportHostRequest::OnRegisterHostResult,
                      base::Unretained(this)));
 }
 
 void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
-    const grpc::Status& status,
-    const apis::v1::RegisterSupportHostResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::RegisterSupportHostResponse> response) {
   if (!status.ok()) {
     state_ = State::NOT_STARTED;
     RunCallback({}, {}, MapError(status.error_code()));
@@ -157,8 +199,8 @@ void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
   }
   state_ = State::REGISTERED;
   base::TimeDelta lifetime =
-      base::TimeDelta::FromSeconds(response.support_id_lifetime_seconds());
-  RunCallback(response.support_id(), lifetime, protocol::ErrorCode::OK);
+      base::Seconds(response->support_id_lifetime_seconds());
+  RunCallback(response->support_id(), lifetime, protocol::ErrorCode::OK);
 }
 
 void RemotingRegisterSupportHostRequest::RunCallback(

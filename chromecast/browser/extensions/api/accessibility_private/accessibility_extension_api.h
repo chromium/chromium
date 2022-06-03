@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_ACCESSIBILITY_PRIVATE_ACCESSIBILITY_EXTENSION_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_ACCESSIBILITY_PRIVATE_ACCESSIBILITY_EXTENSION_API_H_
 
-#include <string>
-
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -74,6 +72,15 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendSyntheticKeyEvent",
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT)
+};
+
+// API function that injects mouse events.
+class AccessibilityPrivateSendSyntheticMouseEventFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateSendSyntheticMouseEventFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendSyntheticMouseEvent",
+                             ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT)
 };
 
 }  // namespace api

@@ -12,11 +12,11 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 

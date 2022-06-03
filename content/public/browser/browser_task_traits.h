@@ -23,20 +23,32 @@ struct NonNestable {};
 
 // Semantic annotations which tell the scheduler what type of task it's dealing
 // with. This will be used by the scheduler for dynamic prioritization and for
-// attribution in traces, etc...
+// attribution in traces, etc... In general, BrowserTaskType::kDefault is what
+// you want (it's implicit if you don't specify this trait). Only explicitly
+// specify this trait if you carefully isolated a set of tasks that have no
+// ordering requirements with anything else (in doubt, consult with
+// scheduler-dev@chromium.org).
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
 enum class BrowserTaskType {
-  // A catch all tasks that don't fit the types below.
+  // A catch all for tasks that don't fit the types below.
   kDefault,
 
   // Critical startup tasks.
   kBootstrap,
 
-  // Navigation related tasks.
-  kNavigation,
-
   // A subset of network tasks related to preconnection.
   kPreconnect,
+
+  // A subset of tasks related to user input.
+  kUserInput,
+
+  // Tasks processing navigation network request's response from the network
+  // service.
+  // NOTE: This task type should not be used for other navigation-related tasks
+  // as they should be ordered w.r.t. IPC channel and the UI thread's default
+  // task runner. Reach out to navigation-dev@ before adding new usages.
+  // TODO(altimin): Make this content-internal.
+  kNavigationNetworkResponse,
 
   // Used to validate values in Java
   kBrowserTaskType_Last
@@ -48,10 +60,10 @@ enum class BrowserTaskType {
 // to a BrowserThread.
 //
 // To post a task to the UI thread (analogous for IO thread):
-//     base::PostTask(FROM_HERE, {BrowserThread::UI}, task);
+//     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, task);
 //
 // To obtain a TaskRunner for the UI thread (analogous for the IO thread):
-//     base::CreateSingleThreadTaskRunner({BrowserThread::UI});
+//     GetUIThreadTaskRunner({});
 //
 // Tasks posted to the same BrowserThread with the same traits will be executed
 // in the order they were posted, regardless of the TaskRunners they were
@@ -80,21 +92,12 @@ class CONTENT_EXPORT BrowserTaskTraitsExtension {
           base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
   constexpr BrowserTaskTraitsExtension(ArgTypes... args)
       : browser_thread_(
-            base::trait_helpers::GetEnum<BrowserThread::ID, BrowserThread::UI>(
-                args...)),
+            base::trait_helpers::GetEnum<BrowserThread::ID,
+                                         BrowserThread::ID_COUNT>(args...)),
         task_type_(
             base::trait_helpers::GetEnum<BrowserTaskType,
                                          BrowserTaskType::kDefault>(args...)),
-        nestable_(!base::trait_helpers::HasTrait<NonNestable, ArgTypes...>()) {
-    constexpr bool has_current_thread =
-        base::trait_helpers::HasTrait<base::CurrentThread, ArgTypes...>();
-    constexpr bool has_browser_thread =
-        base::trait_helpers::HasTrait<BrowserThread::ID, ArgTypes...>();
-    static_assert(
-        has_current_thread != has_browser_thread,
-        "Either content::BrowserThread::ID or base::CurrentThread must be set, "
-        "but not both");
-  }
+        nestable_(!base::trait_helpers::HasTrait<NonNestable, ArgTypes...>()) {}
 
   // Keep in sync with UiThreadTaskTraits.java
   constexpr base::TaskTraitsExtensionStorage Serialize() const {
@@ -115,8 +118,13 @@ class CONTENT_EXPORT BrowserTaskTraitsExtension {
         static_cast<bool>(extension.data[2]));
   }
 
-  // This must be ignored if base::CurrentThread is specified.
-  constexpr BrowserThread::ID browser_thread() const { return browser_thread_; }
+  constexpr BrowserThread::ID browser_thread() const {
+    // TODO(1026641): Migrate to BrowserTaskTraits under which BrowserThread is
+    // not a trait. Until then, only code that knows traits have explicitly set
+    // the BrowserThread trait should check this field.
+    DCHECK_NE(browser_thread_, BrowserThread::ID_COUNT);
+    return browser_thread_;
+  }
 
   constexpr BrowserTaskType task_type() const { return task_type_; }
 
@@ -145,6 +153,46 @@ constexpr base::TaskTraitsExtensionStorage MakeTaskTraitsExtension(
   return BrowserTaskTraitsExtension(std::forward<ArgTypes>(args)...)
       .Serialize();
 }
+
+class CONTENT_EXPORT BrowserTaskTraits : public base::TaskTraits {
+ public:
+  struct ValidTrait : public base::TaskTraits::ValidTrait {
+    ValidTrait(BrowserTaskType);
+    ValidTrait(NonNestable);
+
+    // TODO(1026641): Reconsider whether BrowserTaskTraits should really be
+    // supporting base::TaskPriority.
+    ValidTrait(base::TaskPriority);
+
+    // TODO(1026641): These traits are meaningless on BrowserThreads but some
+    // callers of post_task.h had been using them in conjunction with
+    // BrowserThread::ID traits. Remove such usage post-migration.
+    ValidTrait(base::MayBlock);
+    ValidTrait(base::TaskShutdownBehavior);
+  };
+
+  // TODO(1026641): Get rid of BrowserTaskTraitsExtension and store its members
+  // (|task_type_| & |nestable_|) directly in BrowserTaskTraits.
+  template <
+      class... ArgTypes,
+      class CheckArgumentsAreValid = std::enable_if_t<
+          base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  constexpr BrowserTaskTraits(ArgTypes... args) : base::TaskTraits(args...) {}
+
+  BrowserTaskType task_type() {
+    return GetExtension<BrowserTaskTraitsExtension>().task_type();
+  }
+
+  // Returns true if tasks with these traits may run in a nested RunLoop.
+  bool nestable() const {
+    return GetExtension<BrowserTaskTraitsExtension>().nestable();
+  }
+};
+
+static_assert(sizeof(BrowserTaskTraits) == sizeof(base::TaskTraits),
+              "During the migration away from BrowserTasktraitsExtension, "
+              "BrowserTaskTraits must only use base::TaskTraits for storage "
+              "to prevent slicing.");
 
 }  // namespace content
 

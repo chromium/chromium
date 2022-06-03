@@ -12,13 +12,17 @@ class UnitTrieWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
         super(UnitTrieWriter, self).__init__(json5_file_paths, output_dir)
 
-        self._units = {entry['name'].original: entry['unit_type'] for entry in self.json5_file.name_dictionaries}
+        self._units = {
+            entry['name'].original: entry['unit_type']
+            for entry in self.json5_file.name_dictionaries
+        }
 
         self._outputs = {
             'css_primitive_value_unit_trie.cc': self.generate_implementation
         }
 
-    @template_expander.use_jinja('core/css/templates/css_primitive_value_unit_trie.cc.tmpl')
+    @template_expander.use_jinja(
+        'core/css/templates/css_primitive_value_unit_trie.cc.tmpl')
     def generate_implementation(self):
         return {
             'input_files': self._input_files,

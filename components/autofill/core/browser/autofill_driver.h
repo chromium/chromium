@@ -7,26 +7,22 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/isolation_info.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "url/origin.h"
 
 #if !defined(OS_IOS)
-#include "third_party/blink/public/mojom/webauthn/internal_authenticator.mojom.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
 namespace network {
 class SharedURLLoaderFactory;
-}
-
-namespace gfx {
-class RectF;
-}
-
-namespace ui {
-class AXTreeID;
 }
 
 namespace autofill {
@@ -38,21 +34,21 @@ class FormStructure;
 // implementation must be provided by the driver.
 class AutofillDriver {
  public:
-   // The possible actions that the renderer can take on receiving form data.
-  enum RendererFormDataAction {
-    // The renderer should fill the form data.
-    FORM_DATA_ACTION_FILL,
-    // The renderer should preview the form data.
-    FORM_DATA_ACTION_PREVIEW
-  };
-
   virtual ~AutofillDriver() {}
 
   // Returns whether the user is currently operating in an incognito context.
   virtual bool IsIncognito() const = 0;
 
-  // Returns whether AutofillDriver instance is associated to the main frame.
+  // Returns whether AutofillDriver instance is associated with a main frame.
   virtual bool IsInMainFrame() const = 0;
+
+  // Returns whether the AutofillDriver instance is associated with a
+  // prerendered frame.
+  virtual bool IsPrerendering() const = 0;
+
+  // Returns true iff a popup can be shown on the behalf of the associated
+  // frame.
+  virtual bool CanShowAutofillUi() const = 0;
 
   // Returns the ax tree id associated with this driver.
   virtual ui::AXTreeID GetAxTreeId() const = 0;
@@ -65,18 +61,24 @@ class AutofillDriver {
   virtual bool RendererIsAvailable() = 0;
 
 #if !defined(OS_IOS)
-  // Binds the mojom request in order to facilitate WebAuthn flows.
-  virtual void ConnectToAuthenticator(
-      mojo::PendingReceiver<blink::mojom::InternalAuthenticator> receiver) = 0;
+  // Gets or creates a pointer to an implementation of InternalAuthenticator.
+  virtual webauthn::InternalAuthenticator*
+  GetOrCreateCreditCardInternalAuthenticator() = 0;
 #endif
 
-  // Forwards |data| to the renderer. |query_id| is the id of the renderer's
-  // original request for the data. |action| is the action the renderer should
-  // perform with the |data|. This method is a no-op if the renderer is not
-  // currently available.
-  virtual void SendFormDataToRenderer(int query_id,
-                                      RendererFormDataAction action,
-                                      const FormData& data) = 0;
+  // Forwards |data| to the renderer.
+  // |query_id| is the id of the renderer's original request for the data.
+  // |action| is the action the renderer should perform with the |data|.
+  // |triggered_origin| is the origin of the field on which Autofill was
+  // triggered, and |field_type_map| are the type predictions; these two
+  // parameters can be taken into account to decide which fields to fill across
+  // frames. This method is a no-op if the renderer is not currently available.
+  virtual void FillOrPreviewForm(
+      int query_id,
+      mojom::RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
 
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
@@ -84,7 +86,7 @@ class AutofillDriver {
       const std::vector<autofill::FormStructure*>& forms) = 0;
 
   // Forwards parsed |forms| to the embedder.
-  virtual void HandleParsedForms(const std::vector<FormStructure*>& forms) = 0;
+  virtual void HandleParsedForms(const std::vector<const FormData*>& forms) = 0;
 
   // Sends the field type predictions specified in |forms| to the renderer. This
   // method is a no-op if the renderer is not available or the appropriate
@@ -94,7 +96,8 @@ class AutofillDriver {
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(
-      const base::string16& value) = 0;
+      const FieldGlobalId& field_id,
+      const std::u16string& value) = 0;
 
   // Tells the renderer to clear the current section of the autofilled values.
   virtual void RendererShouldClearFilledSection() = 0;
@@ -104,27 +107,29 @@ class AutofillDriver {
 
   // Tells the renderer to set the node text.
   virtual void RendererShouldFillFieldWithValue(
-      const base::string16& value) = 0;
+      const FieldGlobalId& field_id,
+      const std::u16string& value) = 0;
 
   // Tells the renderer to preview the node with suggested text.
   virtual void RendererShouldPreviewFieldWithValue(
-      const base::string16& value) = 0;
+      const FieldGlobalId& field_id,
+      const std::u16string& value) = 0;
 
   // Tells the renderer to set the currently focused node's corresponding
   // accessibility node's autofill state to |state|.
   virtual void RendererShouldSetSuggestionAvailability(
+      const FieldGlobalId& field_id,
       const mojom::AutofillState state) = 0;
 
   // Informs the renderer that the popup has been hidden.
   virtual void PopupHidden() = 0;
 
-  // Transform bounding box coordinates to real viewport coordinates. In
-  // the case of a page spanning multiple renderer processes, subframe
-  // renderers cannot do this transformation themselves.
-  virtual gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) = 0;
+  virtual net::IsolationInfo IsolationInfo() = 0;
 
-  virtual net::NetworkIsolationKey NetworkIsolationKey() = 0;
+  // Tells the renderer about the form fields that are eligible for triggering
+  // manual filling on form interaction.
+  virtual void SendFieldsEligibleForManualFillingToRenderer(
+      const std::vector<FieldGlobalId>& fields) = 0;
 };
 
 }  // namespace autofill

@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include <memory>
 #include <sstream>
@@ -15,21 +16,23 @@
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
+#include "content/common/set_process_title.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
-#include "services/service_manager/embedder/set_process_title.h"
-#include "services/service_manager/sandbox/chromecast_sandbox_whitelist_buildflags.h"
-#include "services/service_manager/sandbox/linux/bpf_cros_amd_gpu_policy_linux.h"
-#include "services/service_manager/sandbox/linux/bpf_cros_arm_gpu_policy_linux.h"
-#include "services/service_manager/sandbox/linux/bpf_gpu_policy_linux.h"
-#include "services/service_manager/sandbox/linux/sandbox_linux.h"
+#include "sandbox/policy/chromecast_sandbox_allowlist_buildflags.h"
+#include "sandbox/policy/linux/bpf_cros_amd_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
 
 using sandbox::bpf_dsl::Policy;
 using sandbox::syscall_broker::BrokerFilePermission;
@@ -39,15 +42,15 @@ namespace content {
 namespace {
 
 inline bool IsChromeOS() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
 #endif
 }
 
-inline bool UseChromecastSandboxWhitelist() {
-#if BUILDFLAG(ENABLE_CHROMECAST_GPU_SANDBOX_WHITELIST)
+inline bool UseChromecastSandboxAllowlist() {
+#if BUILDFLAG(ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST)
   return true;
 #else
   return false;
@@ -78,7 +81,7 @@ inline bool UseLibV4L2() {
 #endif
 }
 
-#if defined(OS_CHROMEOS) && defined(__aarch64__)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(__aarch64__)
 static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
 static const char kLibEglPath[] = "/usr/lib64/libEGL.so.1";
 static const char kLibMaliPath[] = "/usr/lib64/libmali.so";
@@ -98,9 +101,9 @@ static const char kLibV4lEncPluginPath[] =
 
 constexpr int dlopen_flag = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
 
-void AddV4L2GpuWhitelist(
+void AddV4L2GpuPermissions(
     std::vector<BrokerFilePermission>* permissions,
-    const service_manager::SandboxSeccompBPF::Options& options) {
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
   if (options.accelerated_video_decode_enabled) {
     // Device nodes for V4L2 video decode accelerator drivers.
     // We do not use a FileEnumerator because the device files may not exist
@@ -131,8 +134,16 @@ void AddV4L2GpuWhitelist(
 
   if (options.accelerated_video_encode_enabled) {
     // Device node for V4L2 video encode accelerator drivers.
-    static const char kDevVideoEncPath[] = "/dev/video-enc";
-    permissions->push_back(BrokerFilePermission::ReadWrite(kDevVideoEncPath));
+    // See comments above for why we don't use a FileEnumerator.
+    static constexpr size_t MAX_V4L2_ENCODERS = 5;
+    static const base::FilePath::CharType kVideoEncBase[] = "/dev/video-enc";
+    permissions->push_back(BrokerFilePermission::ReadWrite(kVideoEncBase));
+    for (size_t i = 0; i < MAX_V4L2_ENCODERS; i++) {
+      std::ostringstream encoderPath;
+      encoderPath << kVideoEncBase << i;
+      permissions->push_back(
+          BrokerFilePermission::ReadWrite(encoderPath.str()));
+    }
   }
 
   // Device node for V4L2 JPEG decode accelerator drivers.
@@ -142,9 +153,15 @@ void AddV4L2GpuWhitelist(
   // Device node for V4L2 JPEG encode accelerator drivers.
   static const char kDevJpegEncPath[] = "/dev/jpeg-enc";
   permissions->push_back(BrokerFilePermission::ReadWrite(kDevJpegEncPath));
+
+  if (UseChromecastSandboxAllowlist()) {
+    static const char kAmlogicAvcEncoderPath[] = "/dev/amvenc_avc";
+    permissions->push_back(
+        BrokerFilePermission::ReadWrite(kAmlogicAvcEncoderPath));
+  }
 }
 
-void AddArmMaliGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
+void AddArmMaliGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   // Device file needed by the ARM GPU userspace.
   static const char kMali0Path[] = "/dev/mali0";
 
@@ -161,25 +178,57 @@ void AddArmMaliGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
   }
 }
 
-void AddImgPvrGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
+void AddImgPvrGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   // Device node needed by the IMG GPU userspace.
   static const char kPvrSyncPath[] = "/dev/pvr_sync";
 
   permissions->push_back(BrokerFilePermission::ReadWrite(kPvrSyncPath));
 }
 
-void AddAmdGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
-  static const char* const kReadOnlyList[] = {"/etc/ld.so.cache",
-                                              "/usr/lib64/libEGL.so.1",
-                                              "/usr/lib64/libGLESv2.so.2"};
+void AddDrmGpuDevPermissions(std::vector<BrokerFilePermission>* permissions,
+                             const std::string& path) {
+  struct stat st;
+
+  if (stat(path.c_str(), &st) == 0) {
+    permissions->push_back(BrokerFilePermission::ReadWrite(path));
+
+    uint32_t major = (static_cast<uint32_t>(st.st_rdev) >> 8) & 0xff;
+    uint32_t minor = static_cast<uint32_t>(st.st_rdev) & 0xff;
+    std::string char_device_path =
+        base::StringPrintf("/sys/dev/char/%u:%u/", major, minor);
+    permissions->push_back(
+        BrokerFilePermission::ReadOnlyRecursive(char_device_path));
+  }
+}
+
+void AddDrmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
+  permissions->push_back(BrokerFilePermission::ReadOnly("/dev/dri"));
+  for (int i = 0; i <= 9; ++i) {
+    AddDrmGpuDevPermissions(permissions,
+                            base::StringPrintf("/dev/dri/card%d", i));
+    AddDrmGpuDevPermissions(permissions,
+                            base::StringPrintf("/dev/dri/renderD%d", i + 128));
+  }
+}
+
+void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
+  static const char* const kReadOnlyList[] = {
+      "/etc/ld.so.cache",
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/share/vulkan/icd.d",
+      "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json",
+      "/usr/lib64/libvulkan.so.1",
+      "/usr/lib64/libvulkan_radeon.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
+  AddDrmGpuPermissions(permissions);
+
+  // NOTE: control nodes are probably not required:
+  // NOTE: amdgpu.ids should probably be read-only:
   static const char* const kReadWriteList[] = {
-      "/dev/dri",
-      "/dev/dri/card0",
       "/dev/dri/controlD64",
-      "/dev/dri/renderD128",
       "/sys/class/drm/card0/device/config",
       "/sys/class/drm/controlD64/device/config",
       "/sys/class/drm/renderD128/device/config",
@@ -196,14 +245,35 @@ void AddAmdGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
   }
 }
 
-void AddIntelGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
-  // TODO(hob): Whitelist all valid render node paths.
-  static const char* const kReadWriteList[] = {"/dev/dri/renderD128"};
-  for (const char* item : kReadWriteList)
-    permissions->push_back(BrokerFilePermission::ReadWrite(item));
+void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
+  static const char* const kReadOnlyList[] = {
+      "/usr/share/vulkan/icd.d",
+      "/usr/share/vulkan/icd.d/intel_icd.x86_64.json",
+      // TODO(hob): libvulkan.so is broadly applicable across all platforms
+      // for WebGPU, but let's allowlist only on Intel for now since it's the
+      // first platform to support WebGPU. As we start rolling out WebGPU on
+      // more platforms, we should move this into |AddStandardGpuPermissions|.
+      "/usr/lib64/libvulkan.so.1",
+      "/usr/lib64/libvulkan_intel.so",
+      // To support threads in mesa we use --gpu-sandbox-start-early and
+      // that requires the following libs and files to be accessible.
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/dri/i965_dri.so",
+      "/usr/lib64/dri/iris_dri.so",
+      // Allow libglvnd files and libs.
+      "/usr/share/glvnd/egl_vendor.d",
+      "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
+      "/usr/lib64/libEGL_mesa.so.0",
+      "/usr/lib64/libGLdispatch.so.0"};
+  for (const char* item : kReadOnlyList)
+    permissions->push_back(BrokerFilePermission::ReadOnly(item));
+
+  AddDrmGpuPermissions(permissions);
 }
 
-void AddArmGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
+void AddArmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   // On ARM we're enabling the sandbox before the X connection is made,
   // so we need to allow access to |.Xauthority|.
   static const char kXAuthorityPath[] = "/home/chronos/.Xauthority";
@@ -215,14 +285,15 @@ void AddArmGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
   permissions->push_back(BrokerFilePermission::ReadOnly(kLibGlesPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLibEglPath));
 
-  AddArmMaliGpuWhitelist(permissions);
+  AddArmMaliGpuPermissions(permissions);
 }
 
 // Need to look in vendor paths for custom vendor implementations.
-static const char* const kWhitelistedChromecastPaths[] = {
-    "/oem_cast_shlib/", "/system/vendor/lib/", "/system/lib/"};
+static const char* const kAllowedChromecastPaths[] = {
+    "/oem_cast_shlib/", "/system/vendor/lib/", "/system/lib/",
+    "/system/chrome/lib/"};
 
-void AddChromecastArmGpuWhitelist(
+void AddChromecastArmGpuPermissions(
     std::vector<BrokerFilePermission>* permissions) {
   // Device file needed by the ARM GPU userspace.
   static const char kMali0Path[] = "/dev/mali0";
@@ -230,10 +301,12 @@ void AddChromecastArmGpuWhitelist(
 
   // Files needed by the ARM GPU userspace.
   static const char* const kReadOnlyLibraries[] = {"libGLESv2.so.2",
-                                                   "libEGL.so.1"};
+                                                   "libEGL.so.1",
+                                                   // Allow ANGLE libraries.
+                                                   "libGLESv2.so", "libEGL.so"};
 
   for (const char* library : kReadOnlyLibraries) {
-    for (const char* path : kWhitelistedChromecastPaths) {
+    for (const char* path : kAllowedChromecastPaths) {
       const std::string library_path(std::string(path) + std::string(library));
       permissions->push_back(BrokerFilePermission::ReadOnly(library_path));
     }
@@ -241,15 +314,26 @@ void AddChromecastArmGpuWhitelist(
 
   static const char kLdSoCache[] = "/etc/ld.so.cache";
   permissions->push_back(BrokerFilePermission::ReadOnly(kLdSoCache));
+
+  base::FileEnumerator enumerator(
+      base::FilePath(FILE_PATH_LITERAL("/dev/dri/")), false /* recursive */,
+      base::FileEnumerator::FILES, FILE_PATH_LITERAL("renderD*"));
+  for (base::FilePath name = enumerator.Next(); !name.empty();
+       name = enumerator.Next()) {
+    permissions->push_back(BrokerFilePermission::ReadWrite(name.value()));
+  }
 }
 
-void AddStandardGpuWhiteList(std::vector<BrokerFilePermission>* permissions) {
+void AddStandardGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kDriCardBasePath[] = "/dev/dri/card";
   static const char kNvidiaCtlPath[] = "/dev/nvidiactl";
   static const char kNvidiaDeviceBasePath[] = "/dev/nvidia";
   static const char kNvidiaDeviceModeSetPath[] = "/dev/nvidia-modeset";
   static const char kNvidiaParamsPath[] = "/proc/driver/nvidia/params";
   static const char kDevShm[] = "/dev/shm/";
+  static const char kVulkanIcdPath[] = "/usr/share/vulkan/icd.d";
+  static const char kNvidiaVulkanIcd[] =
+      "/usr/share/vulkan/icd.d/nvidia_icd.json";
 
   // For shared memory.
   permissions->push_back(
@@ -270,10 +354,13 @@ void AddStandardGpuWhiteList(std::vector<BrokerFilePermission>* permissions) {
   permissions->push_back(
       BrokerFilePermission::ReadWrite(kNvidiaDeviceModeSetPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kNvidiaParamsPath));
+
+  permissions->push_back(BrokerFilePermission::ReadOnly(kVulkanIcdPath));
+  permissions->push_back(BrokerFilePermission::ReadOnly(kNvidiaVulkanIcd));
 }
 
 std::vector<BrokerFilePermission> FilePermissionsForGpu(
-    const service_manager::SandboxSeccompBPF::Options& options) {
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
   // All GPU process policies need this file brokered out.
   static const char kDriRcPath[] = "/etc/drirc";
   std::vector<BrokerFilePermission> permissions = {
@@ -281,50 +368,70 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
 
   if (IsChromeOS()) {
     if (UseV4L2Codec())
-      AddV4L2GpuWhitelist(&permissions, options);
+      AddV4L2GpuPermissions(&permissions, options);
     if (IsArchitectureArm()) {
-      AddImgPvrGpuWhitelist(&permissions);
-      AddArmGpuWhitelist(&permissions);
+      AddImgPvrGpuPermissions(&permissions);
+      AddArmGpuPermissions(&permissions);
+      // Add standard DRM permissions for snapdragon:
+      AddDrmGpuPermissions(&permissions);
       return permissions;
     }
     if (options.use_amd_specific_policies) {
-      AddAmdGpuWhitelist(&permissions);
+      AddAmdGpuPermissions(&permissions);
       return permissions;
     }
     if (options.use_intel_specific_policies) {
-      AddIntelGpuWhitelist(&permissions);
+      AddIntelGpuPermissions(&permissions);
       return permissions;
     }
   }
 
-  if (UseChromecastSandboxWhitelist()) {
+  if (UseChromecastSandboxAllowlist()) {
     if (UseV4L2Codec())
-      AddV4L2GpuWhitelist(&permissions, options);
+      AddV4L2GpuPermissions(&permissions, options);
 
     if (IsArchitectureArm()) {
-      AddChromecastArmGpuWhitelist(&permissions);
+      AddChromecastArmGpuPermissions(&permissions);
       return permissions;
     }
   }
 
-  AddStandardGpuWhiteList(&permissions);
+  AddStandardGpuPermissions(&permissions);
   return permissions;
 }
 
 void LoadArmGpuLibraries() {
   // Preload the Mali library.
-  if (UseChromecastSandboxWhitelist()) {
-    for (const char* path : kWhitelistedChromecastPaths) {
+  if (UseChromecastSandboxAllowlist()) {
+    for (const char* path : kAllowedChromecastPaths) {
       const std::string library_path(std::string(path) +
                                      std::string("libMali.so"));
       if (dlopen(library_path.c_str(), dlopen_flag))
         break;
     }
   } else {
-    dlopen(kLibMaliPath, dlopen_flag);
+    bool is_mali = dlopen(kLibMaliPath, dlopen_flag) != nullptr;
 
     // Preload the Tegra V4L2 (video decode acceleration) library.
-    dlopen(kLibTegraPath, dlopen_flag);
+    bool is_tegra = dlopen(kLibTegraPath, dlopen_flag) != nullptr;
+
+    // Preload mesa related libraries for devices which use mesa
+    // (ie. not mali or tegra):
+    if (!is_mali && !is_tegra &&
+        (nullptr != dlopen("libglapi.so", dlopen_flag))) {
+      const char* driver_paths[] = {
+#if defined(DRI_DRIVER_DIR)
+        DRI_DRIVER_DIR "/msm_dri.so",
+#else
+        "/usr/lib64/dri/msm_dri.so",
+        "/usr/lib/dri/msm_dri.so",
+#endif
+        nullptr
+      };
+
+      for (int i = 0; driver_paths[i] != nullptr; i++)
+        dlopen(driver_paths[i], dlopen_flag);
+    }
   }
 }
 
@@ -346,14 +453,29 @@ bool LoadAmdGpuLibraries() {
   return true;
 }
 
+bool LoadNvidiaLibraries() {
+  // The driver may lazily load several XCB libraries. It's not an error on
+  // wayland-only systems for them to be missing.
+  if (!dlopen("libxcb-glx.so.0", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-glx.so.0) failed with error: " << dlerror();
+  if (!dlopen("libxcb-dri3.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-dri3.so) failed with error: " << dlerror();
+  if (!dlopen("libxcb-present.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-present.so) failed with error: "
+                 << dlerror();
+  if (!dlopen("libxcb-sync.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-sync.so) failed with error: " << dlerror();
+  return true;
+}
+
 bool IsAcceleratedVideoEnabled(
-    const service_manager::SandboxSeccompBPF::Options& options) {
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
   return options.accelerated_video_encode_enabled ||
          options.accelerated_video_decode_enabled;
 }
 
 void LoadV4L2Libraries(
-    const service_manager::SandboxSeccompBPF::Options& options) {
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
   if (IsAcceleratedVideoEnabled(options) && UseLibV4L2()) {
     dlopen(kLibV4l2Path, dlopen_flag);
 
@@ -364,8 +486,17 @@ void LoadV4L2Libraries(
   }
 }
 
+void LoadChromecastV4L2Libraries() {
+  for (const char* path : kAllowedChromecastPaths) {
+    const std::string library_path(std::string(path) +
+                                   std::string("libvpcodec.so"));
+    if (dlopen(library_path.c_str(), dlopen_flag))
+      break;
+  }
+}
+
 bool LoadLibrariesForGpu(
-    const service_manager::SandboxSeccompBPF::Options& options) {
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
   if (IsChromeOS()) {
     if (UseV4L2Codec())
       LoadV4L2Libraries(options);
@@ -375,37 +506,45 @@ bool LoadLibrariesForGpu(
     }
     if (options.use_amd_specific_policies)
       return LoadAmdGpuLibraries();
-  } else if (UseChromecastSandboxWhitelist() && IsArchitectureArm()) {
-    LoadArmGpuLibraries();
+  } else {
+    if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
+      LoadArmGpuLibraries();
+      if (UseV4L2Codec())
+        LoadChromecastV4L2Libraries();
+    }
+    if (options.use_nvidia_specific_policies)
+      return LoadNvidiaLibraries();
   }
   return true;
 }
 
 sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
-    const service_manager::SandboxLinux::Options& options) {
+    const sandbox::policy::SandboxLinux::Options& options) {
   sandbox::syscall_broker::BrokerCommandSet command_set;
   command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
-  if (IsChromeOS() && options.use_amd_specific_policies) {
+  if (IsChromeOS() &&
+      (options.use_amd_specific_policies ||
+       options.use_intel_specific_policies || IsArchitectureArm())) {
     command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
   }
   return command_set;
 }
 
 bool BrokerProcessPreSandboxHook(
-    service_manager::SandboxLinux::Options options) {
+    sandbox::policy::SandboxLinux::Options options) {
   // Oddly enough, we call back into gpu to invoke this service manager
   // method, since it is part of the embedder component, and the service
   // mananger's sandbox component is a lower layer that can't depend on it.
-  service_manager::SetProcessTitleFromCommandLine(nullptr);
+  SetProcessTitleFromCommandLine(nullptr);
   return true;
 }
 
 }  // namespace
 
-bool GpuProcessPreSandboxHook(service_manager::SandboxLinux::Options options) {
-  service_manager::SandboxLinux::GetInstance()->StartBrokerProcess(
+bool GpuProcessPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
+  sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
       CommandSetForGPU(options), FilePermissionsForGpu(options),
       base::BindOnce(BrokerProcessPreSandboxHook), options);
 

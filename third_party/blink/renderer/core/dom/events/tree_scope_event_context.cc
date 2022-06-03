@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -82,7 +83,7 @@ HeapVector<Member<EventTarget>>& TreeScopeEventContext::EnsureEventPath(
 
 TouchEventContext& TreeScopeEventContext::EnsureTouchEventContext() {
   if (!touch_event_context_)
-    touch_event_context_ = TouchEventContext::Create();
+    touch_event_context_ = MakeGarbageCollected<TouchEventContext>();
   return *touch_event_context_;
 }
 
@@ -92,7 +93,7 @@ TreeScopeEventContext::TreeScopeEventContext(TreeScope& tree_scope)
       pre_order_(-1),
       post_order_(-1) {}
 
-void TreeScopeEventContext::Trace(Visitor* visitor) {
+void TreeScopeEventContext::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(target_);
   visitor->Trace(related_target_);
@@ -108,7 +109,7 @@ int TreeScopeEventContext::CalculateTreeOrderAndSetNearestAncestorClosedTree(
   pre_order_ = order_number;
   auto* shadow_root = DynamicTo<ShadowRoot>(&RootNode());
   containing_closed_shadow_tree_ =
-      (shadow_root && !shadow_root->IsOpenOrV0())
+      (shadow_root && !shadow_root->IsOpen())
           ? this
           : nearest_ancestor_closed_tree_scope_event_context;
   for (const auto& context : children_) {

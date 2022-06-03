@@ -3,5 +3,6 @@ FAIL createOffer() with no argument from newly created RTCPeerConnection should 
 PASS createOffer() and then setLocalDescription() should succeed
 PASS createOffer() after connection is closed should reject with InvalidStateError
 FAIL When media stream is added when createOffer() is running in parallel, the result offer should contain the new media stream Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL createOffer() should fail when signaling state is not stable or have-local-offer assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

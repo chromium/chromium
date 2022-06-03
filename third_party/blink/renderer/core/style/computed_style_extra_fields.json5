@@ -35,34 +35,6 @@
       custom_compare: true,
     },
     {
-      name: "BorderLeftColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "surround",
-    },
-    {
-      name: "BorderRightColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "surround",
-    },
-    {
-      name: "BorderTopColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "surround",
-    },
-    {
-      name: "BorderBottomColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "surround",
-    },
-    {
       name: "Display",
       field_template: "keyword",
       type_name: "EDisplay",
@@ -72,7 +44,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "inline-math"
+        "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
     },
@@ -102,7 +74,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "inline-math"
+        "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
     },
@@ -111,6 +83,14 @@
       field_template: "keyword",
       default_value: "not-inside-link",
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
+      inherited: true,
+    },
+    {
+      name: "InForcedColorsMode",
+      field_template: "primitive",
+      field_group: "inherited",
+      default_value: "false",
+      type_name: "bool",
       inherited: true,
     },
     // Whether we're inside an NG block fragmentation context.
@@ -158,6 +138,21 @@
       custom_copy: true,
       custom_compare: true,
     },
+    // Whether this style is related with :has() pseudo-class
+    {
+      name: "AffectedByHas",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_copy: true,
+      custom_compare: true,
+    },
+    {
+      name: "AncestorsAffectedByHas",
+      field_template: "primitive",
+      default_value: "false",
+      type_name: "bool",
+      inherited: true,
+    },
     // A non-inherited property references a variable or @apply is used
     {
       name: "HasVariableReferenceFromNonInheritedProperty",
@@ -166,14 +161,35 @@
       custom_copy: true,
       custom_compare: true,
     },
-    // Explicitly inherits a non-inherited property
+    // A property references a variable that needs to be resolved
     {
-      name: "HasExplicitlyInheritedProperties",
+      name: "HasVariableReference",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    // A property which value consists of a custom property declaration.
+    {
+      name: "HasVariableDeclaration",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    // Set on parent style when a child explicitly inherits a
+    // non-inherited property
+    {
+      name: "ChildHasExplicitInheritance",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
       mutable: true,
+    },
+    // Explicitly inherits a non-inherited property
+    {
+      name: "HasExplicitInheritance",
+      field_template: "monotonic_flag",
+      default_value: "false",
     },
     // These are set if we used viewport or rem units when resolving a length.
     // FIXME: HasViewportUnits should be a monotonic_flag.
@@ -190,10 +206,30 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "HasEmUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // Whether we used a length unit that must be resolved against the measure
     // of a certain glyph in some font.
     {
       name: "HasGlyphRelativeUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    {
+      name: "HasContainerRelativeUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
+    // that uses font metrics in its calculation.
+    {
+      name: "CustomStyleCallbackDependsOnFont",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
@@ -212,12 +248,21 @@
     {
       name: "PseudoBits",
       field_template: "primitive",
-      field_size: 8,
+      field_size: 12,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       custom_copy: true,
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
+    },
+    // Used by ::highlight
+    {
+      name: "PseudoArgument",
+      field_template: "external",
+      field_group: "*",
+      type_name: "AtomicString",
+      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
+      default_value: "g_null_atom",
     },
     // True if 'underline solid' is the only text decoration on this element.
     {
@@ -267,6 +312,13 @@
       computed_style_custom_functions: ["getter", "setter"],
     },
     {
+      name: "HasClipPath",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "visual",
+    },
+    {
       name: "HasAutoClip",
       field_template: "primitive",
       type_name: "bool",
@@ -313,94 +365,13 @@
       computed_style_custom_functions: ["getter", "setter"],
     },
     {
-      name: "TextStrokeColorIsCurrentColor",
+      name: "EffectiveZoom",
       inherited: true,
       field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
+      type_name: "float",
+      default_value: "1.0f",
       field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "TextFillColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "TextEmphasisColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "CaretColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "CaretColorIsAuto",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "InternalVisitedTextStrokeColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "InternalVisitedTextFillColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "InternalVisitedTextEmphasisColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "InternalVisitedCaretColorIsCurrentColor",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
-    },
-    {
-      name: "InternalVisitedCaretColorIsAuto",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "true",
-      field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "TextEmphasisFill",
@@ -443,14 +414,6 @@
     // expressed by 'will-change: contents' includes descendants.
     {
       name: "SubtreeWillChangeContents",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      field_group: "*",
-    },
-    {
-      name: "SelfOrAncestorHasDirAutoAttribute",
       inherited: true,
       field_template: "primitive",
       type_name: "bool",
@@ -500,7 +463,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 6,
+      field_size: 7,
       default_value: "TouchAction::kAuto",
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
@@ -536,13 +499,25 @@
     {
       name: "InheritedVariables",
       inherited: true,
+      semi_independent_variable: true,
       field_template: "external",
       type_name: "StyleInheritedVariables",
       include_paths: ["third_party/blink/renderer/core/style/style_inherited_variables.h"],
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
-      field_group: "*",
+      field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
+    },
+    {
+      name: "HighlightData",
+      inherited: true,
+      field_template: "external",
+      type_name: "StyleHighlightData",
+      include_paths: ["third_party/blink/renderer/core/style/style_highlight_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "scoped_refptr",
+      field_group: "*",
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "InitialData",
@@ -611,13 +586,6 @@
       include_paths: ["third_party/blink/renderer/platform/geometry/float_size.h"],
     },
     {
-      name: "OutlineColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "*",
-    },
-    {
       name: "OutlineStyleIsAuto",
       field_template: "primitive",
       type_name: "bool",
@@ -632,7 +600,7 @@
       default_value: "Vector<String>()",
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/platform/wtf/text/wtf_string.h"],
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "PaintImages",
@@ -657,10 +625,12 @@
     },
     {
       name: "PageSizeType",
-      field_template: "keyword",
-      keywords: ["auto", "landscape", "portrait", "resolved"],
+      field_template: "primitive",
       field_group: "*",
-      default_value: "auto",
+      type_name: "PageSizeType",
+      field_size: 2,
+      default_value: "PageSizeType::kAuto",
+      include_paths: ["third_party/blink/public/common/css/page_size_type.h"],
     },
     {
       name: "HasCurrentOpacityAnimation",
@@ -685,6 +655,27 @@
     },
     {
       name: "HasCurrentBackdropFilterAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "HasCurrentBackgroundColorAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "HasCurrentClipPathAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "CompositablePaintAnimationChanged",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -734,9 +725,10 @@
     // whereas a containing stacking context defines in which order the stacking
     // contexts below are painted.
     // See CSS 2.1, Appendix E (https://www.w3.org/TR/CSS21/zindex.html) for more
-    // details.
+    // details. Note that this field does _not_ consider paint or layout
+    // containment, since it depends on the type of layout object created.
     {
-      name: "IsStackingContext",
+      name: "IsStackingContextWithoutContainment",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -756,16 +748,26 @@
     // Style adjustment for appearance is disabled when certain properties are set.
     {
       name: "HasAuthorBackground",
-      field_template: "primitive",
-      type_name: "bool",
-      field_group: "*",
+      field_template: "monotonic_flag",
       default_value: "false",
     },
     {
       name: "HasAuthorBorder",
-      field_template: "primitive",
-      type_name: "bool",
-      field_group: "*",
+      field_template: "monotonic_flag",
+      default_value: "false",
+    },
+    {
+      name: "HasAuthorBorderRadius",
+      field_template: "monotonic_flag",
+      default_value: "false",
+    },
+    // Paired cascade: in highlight pseudo styles, the presence of any highlight
+    // colors affects whether all other highlight color properties default to
+    // initial or the UA default.
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    {
+      name: "HasAuthorHighlightColors",
+      field_template: "monotonic_flag",
       default_value: "false",
     },
     {
@@ -792,17 +794,10 @@
       default_value: "false",
     },
     {
-      name: "ColumnRuleColorIsCurrentColor",
-      field_template: "primitive",
-      default_value: "true",
-      type_name: "bool",
-      field_group: "*->multi-col",
-    },
-    {
       name: "HasAutoColumnWidth",
       field_template: "primitive",
       type_name: "bool",
-      field_group: "*->multi-col",
+      field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
     },
@@ -810,7 +805,7 @@
       name: "HasAutoColumnCount",
       field_template: "primitive",
       type_name: "bool",
-      field_group: "*->multi-col",
+      field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
     },
@@ -879,6 +874,22 @@
       include_paths: ["third_party/blink/renderer/core/style/ordered_named_grid_lines.h"],
     },
     {
+      name: "ImplicitNamedGridColumnLines",
+      field_template: "external",
+      type_name: "NamedGridLinesMap",
+      field_group: "*->grid",
+      default_value: "NamedGridLinesMap()",
+      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
+    },
+    {
+      name: "ImplicitNamedGridRowLines",
+      field_template: "external",
+      type_name: "NamedGridLinesMap",
+      field_group: "*->grid",
+      default_value: "NamedGridLinesMap()",
+      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
+    },
+    {
       name: "NamedGridArea",
       field_template: "external",
       type_name: "NamedGridAreaMap",
@@ -889,46 +900,46 @@
     {
       name: "NamedGridAreaRowCount",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
     {
       name: "NamedGridAreaColumnCount",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
     {
       name: "GridAutoRepeatColumns",
       field_template: "external",
-      type_name: "Vector<GridTrackSize>",
+      type_name: "Vector<GridTrackSize, 1>",
       field_group: "*->grid",
-      default_value: "Vector<GridTrackSize>()",
+      default_value: "Vector<GridTrackSize, 1>()",
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/core/style/grid_track_size.h"],
     },
     {
       name: "GridAutoRepeatRows",
       field_template: "external",
-      type_name: "Vector<GridTrackSize>",
+      type_name: "Vector<GridTrackSize, 1>",
       field_group: "*->grid",
-      default_value: "Vector<GridTrackSize>()",
+      default_value: "Vector<GridTrackSize, 1>()",
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/core/style/grid_track_size.h"],
     },
     {
       name: "GridAutoRepeatColumnsInsertionPoint",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
     {
       name: "GridAutoRepeatRowsInsertionPoint",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
@@ -960,12 +971,14 @@
     {
       name: "MayHaveMargin",
       field_template: "monotonic_flag",
+      field_group: "surround",
       default_value: "false",
       custom_compare: true,
     },
     {
       name: "MayHavePadding",
       field_template: "monotonic_flag",
+      field_group: "surround",
       default_value: "false",
       custom_compare: true,
     },
@@ -978,12 +991,12 @@
       inherited: true,
     },
     {
-      name: "IsColorInternalText",
-      inherited: true,
+      name: "ColorSchemeForced",
       field_template: "primitive",
       type_name: "bool",
-      field_group: "inherited",
       default_value: "false",
+      custom_compare: true,
+      inherited: true,
     },
     {
       name: "IsInBlockifyingDisplay",
@@ -998,36 +1011,10 @@
       custom_compare: true,
     },
     {
-      name: "ListStyleType",
-      inherited: true,
-      field_template: "keyword",
-      type_name: "EListStyleType",
-      keywords: [
-        "disc", "circle", "square", "decimal", "decimal-leading-zero",
-        "arabic-indic", "bengali", "cambodian", "khmer", "devanagari",
-        "gujarati", "gurmukhi", "kannada", "lao", "malayalam", "mongolian",
-        "myanmar", "oriya", "persian", "urdu", "telugu", "tibetan", "thai",
-        "lower-roman", "upper-roman", "lower-greek", "lower-alpha",
-        "lower-latin", "upper-alpha", "upper-latin", "cjk-earthly-branch",
-        "cjk-heavenly-stem", "ethiopic-halehame", "ethiopic-halehame-am",
-        "ethiopic-halehame-ti-er", "ethiopic-halehame-ti-et", "hangul",
-        "hangul-consonant", "korean-hangul-formal", "korean-hanja-formal",
-        "korean-hanja-informal", "hebrew", "armenian", "lower-armenian",
-        "upper-armenian", "georgian", "cjk-ideographic", "simp-chinese-formal",
-        "simp-chinese-informal", "trad-chinese-formal", "trad-chinese-informal",
-        "hiragana", "katakana", "hiragana-iroha", "katakana-iroha", "none",
-        "string",
-      ],
-      default_value: "disc",
-    },
-    {
-      name: "ListStyleStringValue",
-      inherited: true,
-      field_template: "external",
-      field_group: "*",
-      type_name: "AtomicString",
-      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
-      default_value: "g_null_atom",
+      name: "IsFlexOrGridItem",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
     },
     {
       name: "IsEnsuredOutsideFlatTree",
@@ -1035,6 +1022,150 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+    },
+    {
+      name: "IsInsideListElement",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+      inherited: true,
+    },
+
+    // This field disables the 'overflow' check in |LayoutBlock::
+    // InlineBlockBaseline()|. For 'inline-block', CSS says that the baseline
+    // is the bottom margin edge if 'overflow' is not visible. But some
+    // elements want to ignore this condition.
+    {
+      name: "ShouldIgnoreOverflowPropertyForInlineBlockBaseline",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      inherited: false,
+    },
+    {
+      name: "MathBaseline",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathBaseline",
+    },
+    {
+      name: "MathFractionBarThickness",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathFractionBarThickness",
+    },
+    {
+      name: "MathLSpace",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathLSpace",
+    },
+    {
+      name: "MathRSpace",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathRSpace",
+    },
+    {
+      name: "MathPaddedVOffset",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathPaddedVOffset",
+    },
+    {
+      name: "MathPaddedDepth",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathPaddedDepth",
+    },
+    {
+      name: "MathMinSize",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathMinSize",
+    },
+    {
+      name: "MathMaxSize",
+      field_template: "external",
+      default_value: "Length()",
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
+      type_name: "Length",
+      field_group: "*->math",
+      getter: "GetMathMaxSize",
+    },
+    {
+      name: "EffectiveZIndexZero",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "BaselineShiftType",
+      field_group: "svg->misc",
+      // Use a keyword?
+      field_template: "primitive",
+      field_size: 2,
+      type_name: "EBaselineShiftType",
+      default_value: "EBaselineShiftType::kLength",
+    },
+    {
+      // Represents 'dominant-baseline' defined in the css-inline specification,
+      // not in SVG 1.1 specification.
+      // This doesn't have 'use-script', 'no-change', and 'reset-size'.
+      // For now ComputedStyle for non-SVG elemnts always have the initial value
+      // in order to disable the feature.
+      name: "CssDominantBaseline",
+      field_group: "svg",
+      field_template: "primitive",
+      field_size: 4,
+      type_name: "EDominantBaseline",
+      default_value: "EDominantBaseline::kAuto",
+      inherited: true,
+    },
+    {
+      name: "DependsOnContainerQueries",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "BaseData",
+      inherited: false,
+      field_template: "external",
+      type_name: "StyleBaseData",
+      include_paths: ["third_party/blink/renderer/core/style/style_base_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "scoped_refptr",
+      custom_compare: true,
+      custom_copy: true,
+    },
+    {
+      // https://drafts.csswg.org/css-contain-2/#skips-its-contents
+      name: "SkipsContents",
+      field_template: "monotonic_flag",
+      default_value: "false",
     },
   ],
 }

@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/logging.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

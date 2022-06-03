@@ -1,0 +1,16 @@
+<style include="edu-login-css"></style>
+<edu-login-template>
+  <span slot="main">
+    <div class="main-padding">
+      <account-manager-error-screen error-title="[[getErrorTitle_(errorType)]]">
+        <span slot="body">
+          <p inner-h-t-m-l="[[getErrorBody_(errorType)]]"></p>
+        </span>
+      </account-manager-error-screen>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="ok" on-go-next="handleCloseButtonClick_">
+    </edu-login-button>
+  </span>
+ </edu-login-template>

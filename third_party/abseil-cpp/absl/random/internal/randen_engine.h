@@ -23,11 +23,13 @@
 #include <limits>
 #include <type_traits>
 
+#include "absl/base/internal/endian.h"
 #include "absl/meta/type_traits.h"
 #include "absl/random/internal/iostream_state_saver.h"
 #include "absl/random/internal/randen.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
 // Deterministic pseudorandom byte generator with backtracking resistance
@@ -75,7 +77,7 @@ class alignas(16) randen_engine {
       impl_.Generate(state_);
     }
 
-    return state_[next_++];
+    return little_endian::ToHost(state_[next_++]);
   }
 
   template <class SeedSequence>
@@ -119,6 +121,13 @@ class alignas(16) randen_engine {
       const size_t requested_entropy = (entropy_size == 0) ? 8u : entropy_size;
       std::fill(std::begin(buffer) + requested_entropy, std::end(buffer), 0);
       seq.generate(std::begin(buffer), std::begin(buffer) + requested_entropy);
+#ifdef ABSL_IS_BIG_ENDIAN
+      // Randen expects the seed buffer to be in Little Endian; reverse it on
+      // Big Endian platforms.
+      for (sequence_result_type& e : buffer) {
+        e = absl::little_endian::FromHost(e);
+      }
+#endif
       // The Randen paper suggests preferentially initializing even-numbered
       // 128-bit vectors of the randen state (there are 16 such vectors).
       // The seed data is merged into the state offset by 128-bits, which
@@ -180,7 +189,8 @@ class alignas(16) randen_engine {
       // In the case that `elem` is `uint8_t`, it must be cast to something
       // larger so that it prints as an integer rather than a character. For
       // simplicity, apply the cast all circumstances.
-      os << static_cast<numeric_type>(elem) << os.fill();
+      os << static_cast<numeric_type>(little_endian::FromHost(elem))
+         << os.fill();
     }
     os << engine.next_;
     return os;
@@ -199,7 +209,7 @@ class alignas(16) randen_engine {
       // necessary to read a wider type and then cast it to uint8_t.
       numeric_type value;
       is >> value;
-      elem = static_cast<result_type>(value);
+      elem = little_endian::ToHost(static_cast<result_type>(value));
     }
     is >> next;
     if (is.fail()) {
@@ -223,6 +233,7 @@ class alignas(16) randen_engine {
 };
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_RANDEN_ENGINE_H_

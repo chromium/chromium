@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_INTEGRATION_TEST_UTIL_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_INTEGRATION_TEST_UTIL_H_
 
-#include <string>
-
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "components/sync/base/model_type.h"
@@ -14,7 +12,7 @@
 class Profile;
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 }  // namespace syncer
 
 // Sets a custom theme and wait until the asynchronous process is done.
@@ -37,7 +35,7 @@ class ServerCountMatchStatusChecker
 // Checker to block until service is waiting for a passphrase.
 class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseRequiredChecker(syncer::ProfileSyncService* service);
+  explicit PassphraseRequiredChecker(syncer::SyncServiceImpl* service);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -46,7 +44,7 @@ class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
 // Checker to block until service has accepted a new passphrase.
 class PassphraseAcceptedChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseAcceptedChecker(syncer::ProfileSyncService* service);
+  explicit PassphraseAcceptedChecker(syncer::SyncServiceImpl* service);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;

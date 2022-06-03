@@ -1,9 +1,0 @@
-{
-  "name": "iGoogle new tab page",
-  "description": "Override the new tab page with iGoogle",
-  "version": "0.2",
-  "chrome_url_overrides": {
-    "newtab": "redirect.html"
-  },
-  "manifest_version": 2
-}

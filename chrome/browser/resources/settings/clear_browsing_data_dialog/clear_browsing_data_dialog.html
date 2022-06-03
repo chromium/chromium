@@ -1,24 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="clear_browsing_data_browser_proxy.html">
-<link rel="import" href="history_deletion_dialog.html">
-<link rel="import" href="installed_app_checkbox.html">
-<link rel="import" href="../controls/settings_checkbox.html">
-<link rel="import" href="../controls/settings_dropdown_menu.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-clear-browsing-data-dialog">
-  <template>
     <style include="settings-shared">
       :host {
         /* Fixed height to allow multiple tabs with different height.
@@ -49,6 +28,7 @@
 
       #clearBrowsingDataDialog::part(body-container) {
         height: var(--body-container-height);
+        min-height: 200px;
       }
 
       #clearBrowsingDataDialog [slot=body] {
@@ -115,10 +95,53 @@
         color: var(--cr-secondary-text-color);
         padding: 16px;
       }
+
+      #clearingDataAlert {
+        clip: rect(0, 0, 0, 0);
+        position: fixed;
+      }
+
+      .search-history-box {
+        background-color: var(--google-grey-50);
+        border: 1px solid var(--google-grey-200);
+        border-radius: 4px;
+        display: flex;
+        margin-top: 12px;
+        padding: 8px;
+      }
+
+      /* dark mode */
+      @media (prefers-color-scheme: dark) {
+        .search-history-box {
+          background-color: rgba(0, 0, 0, .3);
+          border-color: transparent;
+        }
+      }
+
+      .search-history-box-icon {
+        --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+            var(--google-grey-refresh-700));
+        display: flex;
+        flex-shrink: 0;
+        margin: auto;
+        padding-inline-end: 10px;
+        width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .search-history-box-icon {
+          --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+              var(--google-grey-refresh-500));
+        }
+      }
+
+      #nonGoogleSearchHistoryBox {
+        margin-bottom: 16px;
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
-        close-text="$i18n{close}" ignore-popstate has-tabs>
+        close-text="$i18n{close}" ignore-popstate has-tabs ignore-enter-key>
       <div slot="title">
         <div>$i18n{clearBrowsingData}</div>
       </div>
@@ -152,12 +175,13 @@
                 pref="{{prefs.browser.clear_data.browsing_history_basic}}"
                 label="$i18n{clearBrowsingHistory}"
                 sub-label-html="[[browsingCheckboxLabel_(
-                    isSignedIn_, isSyncingHistory_, syncStatus.hasError,
+                    isSyncConsented_, isSyncingHistory_, syncStatus.hasError,
                     '$i18nPolymer{clearBrowsingHistorySummary}',
                     '$i18nPolymer{clearBrowsingHistorySummarySignedIn}',
+                    '$i18nPolymer{clearBrowsingHistorySummarySignedInNoLink}',
                     '$i18nPolymer{clearBrowsingHistorySummarySynced}')]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]">
+                hidden="[[isSupervised_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckboxBasic"
                 class="cookies-checkbox"
@@ -167,15 +191,34 @@
                     shouldShowCookieException_,
                     '$i18nPolymer{clearCookiesSummary}',
                     '$i18nPolymer{clearCookiesSummarySignedIn}')]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cacheCheckboxBasic"
                 class="cache-checkbox"
                 pref="{{prefs.browser.clear_data.cache_basic}}"
                 label="$i18n{clearCache}"
                 sub-label="[[counters_.cache_basic]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
+            <div class="search-history-box"
+                hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]">
+              <iron-icon class="search-history-box-icon" aria-hidden="true"
+                  icon="settings20:googleg">
+              </iron-icon>
+              <div id="googleSearchHistoryLabel"
+                  inner-h-t-m-l="[[googleSearchHistoryString_]]">
+              </div>
+            </div>
+            <div id="nonGoogleSearchHistoryBox"
+                class="search-history-box"
+                hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]">
+              <iron-icon class="search-history-box-icon" aria-hidden="true"
+                  icon="cr:search">
+              </iron-icon>
+              <div id="nonGoogleSearchHistoryLabel"
+                  inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
+              </div>
+            </div>
           </div>
           <div id="advanced-tab">
             <div class="row time-range-row">
@@ -194,52 +237,52 @@
                 label="$i18n{clearBrowsingHistory}"
                 sub-label="[[counters_.browsing_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]">
+                hidden="[[isSupervised_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="downloadCheckbox"
                 pref="{{prefs.browser.clear_data.download_history}}"
                 label="$i18n{clearDownloadHistory}"
                 sub-label="[[counters_.download_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]">
+                hidden="[[isSupervised_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckbox"
                 class="cookies-checkbox"
                 pref="{{prefs.browser.clear_data.cookies}}"
                 label="$i18n{clearCookies}"
                 sub-label="[[counters_.cookies]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cacheCheckbox"
                 class="cache-checkbox"
                 pref="{{prefs.browser.clear_data.cache}}"
                 label="$i18n{clearCache}"
                 sub-label="[[counters_.cache]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox
                 pref="{{prefs.browser.clear_data.passwords}}"
                 label="$i18n{clearPasswords}"
                 sub-label="[[counters_.passwords]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox
                 pref="{{prefs.browser.clear_data.form_data}}"
                 label="$i18n{clearFormData}"
                 sub-label="[[counters_.form_data]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox
                 pref="{{prefs.browser.clear_data.site_settings}}"
                 label="$i18nPolymer{siteSettings}"
                 sub-label="[[counters_.site_settings]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox
                 pref="{{prefs.browser.clear_data.hosted_apps_data}}"
                 label="$i18n{clearHostedAppData}"
                 sub-label="[[counters_.hosted_apps_data]]"
-                disabled="[[clearingInProgress_]]">
+                disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
           </div>
         </iron-pages>
@@ -255,34 +298,42 @@
                                                clearButtonDisabled_)]]">
             $i18n{clearData}
         </cr-button>
-      </div>
-      <div slot="footer"
-          hidden="[[!shouldShowFooter_(syncStatus.signedIn)]]">
-        <settings-sync-account-control sync-status="[[syncStatus]]"
-            prefs="{{prefs}}" hide-buttons>
-        </settings-sync-account-control>
-        <div class="divider"></div>
-        <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
-          <span id="sync-info" hidden="[[syncStatus.hasError]]">
-            $i18nRaw{clearBrowsingDataWithSync}
-          </span>
-          <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
-            $i18nRaw{clearBrowsingDataWithSyncPaused}
-          </span>
-          <span id="sync-passphrase-error-info"
-              hidden="[[!hasPassphraseError_]]">
-            $i18nRaw{clearBrowsingDataWithSyncPassphraseError}
-          </span>
-          <span id="sync-other-error-info" hidden="[[!hasOtherSyncError_]]">
-            $i18nRaw{clearBrowsingDataWithSyncError}
-          </span>
+
+        <!-- The alert must be inside the dialog for it to be read while the
+             dialog is open. -->
+        <div id="clearingDataAlert" role="alert">
+          [[clearingDataAlertString_]]
         </div>
       </div>
+      <template is="dom-if" if="[[shouldShowFooter_(syncStatus.signedIn)]]"
+          restamp>
+        <div slot="footer">
+          <settings-sync-account-control sync-status="[[syncStatus]]"
+              prefs="{{prefs}}" hide-buttons>
+          </settings-sync-account-control>
+          <div class="divider"></div>
+          <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
+            <span id="sync-info" hidden="[[syncStatus.hasError]]">
+              $i18nRaw{clearBrowsingDataWithSync}
+            </span>
+            <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
+              $i18nRaw{clearBrowsingDataWithSyncPaused}
+            </span>
+            <span id="sync-passphrase-error-info"
+                hidden="[[!hasPassphraseError_]]">
+              $i18nRaw{clearBrowsingDataWithSyncPassphraseError}
+            </span>
+            <span id="sync-other-error-info" hidden="[[!hasOtherSyncError_]]">
+              $i18nRaw{clearBrowsingDataWithSyncError}
+            </span>
+          </div>
+        </div>
+      </template>
     </cr-dialog>
 
     <cr-dialog id="installedAppsDialog" close-text="$i18n{close}"
                ignore-popstate show-scroll-borders
-               on-close="hideInstalledApps_">
+               on-cancel="hideInstalledApps_">
       <div slot="title">
         $i18n{installedAppsTitle}
       </div>
@@ -290,8 +341,8 @@
         <template is="dom-repeat" items="[[installedApps_]]">
           <div class="row">
             <installed-app-checkbox
-              installed_app="[[item]]"
-              disabled="[[clearingInProgress_]]">
+                installed-app="[[item]]"
+                disabled="[[clearingInProgress_]]">
             </installed-app-checkbox>
           </div>
         </template>
@@ -300,7 +351,7 @@
         <paper-spinner-lite active="[[clearingInProgress_]]">
         </paper-spinner-lite>
         <cr-button class="cancel-button" disabled="[[clearingInProgress_]]"
-            on-click="hideInstalledApps_">
+            on-click="onCancelInstalledApps_">
           $i18n{cancel}
         </cr-button>
         <cr-button id="installedAppsConfirm" class="action-button"
@@ -312,10 +363,13 @@
     </cr-dialog>
 
     <template is="dom-if" if="[[showHistoryDeletionDialog_]]" restamp>
-      <settings-history-deletion-dialog id="notice"
+      <settings-history-deletion-dialog id="historyNotice"
           on-close="onHistoryDeletionDialogClose_">
       </settings-history-deletion-dialog>
     </template>
-  </template>
-  <script src="clear_browsing_data_dialog.js"></script>
-</dom-module>
+
+    <template is="dom-if" if="[[showPasswordsDeletionDialog_]]" restamp>
+      <settings-passwords-deletion-dialog id="passwordsNotice"
+          on-close="onPasswordsDeletionDialogClose_">
+      </settings-passwords-deletion-dialog>
+    </template>

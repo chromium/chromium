@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/task/post_task.h"
 
@@ -31,10 +32,14 @@ class CupsProxyServiceDelegate {
   // CupsProxyService internal managers.
   base::WeakPtr<CupsProxyServiceDelegate> GetWeakPtr();
 
+  // Printer access can be disabled by either policy or settings.
+  virtual bool IsPrinterAccessAllowed() const = 0;
+
   virtual std::vector<chromeos::Printer> GetPrinters(
       chromeos::PrinterClass printer_class) = 0;
-  virtual base::Optional<chromeos::Printer> GetPrinter(
+  virtual absl::optional<chromeos::Printer> GetPrinter(
       const std::string& id) = 0;
+  virtual std::vector<std::string> GetRecentlyUsedPrinters() = 0;
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) = 0;
   virtual void PrinterInstalled(const chromeos::Printer& printer) = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() = 0;

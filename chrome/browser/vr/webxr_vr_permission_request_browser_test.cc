@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
@@ -21,20 +21,26 @@ namespace vr {
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestInSessionPermissionNotificationCloseWhileVisible) {
   // We need to use a local server for permission requests to not hit a DCHECK.
-  t->LoadUrlAndAwaitInitialization(
-      t->GetEmbeddedServerUrlForHtmlTestFile("generic_webxr_page"));
+  t->LoadFileAndAwaitInitialization("generic_webxr_page");
   t->EnterSessionWithUserGestureOrFail();
   // Use location instead of camera/microphone since those automatically reject
   // if a suitable device is not connected.
   // TODO(bsheedy): Find a way to support more permission types (maybe use
   // MockPermissionPromptFactory?).
+
+  // AutoResponseForTest is overridden when requesting a session. We don't want
+  // to change that as we want anything necessary to request a session to get
+  // granted. However, we want no action to be taken now so that the prompt for
+  // location comes up and does not get dismissed.
+  t->GetPermissionRequestManager()->set_auto_response_for_test(
+      permissions::PermissionRequestManager::NONE);
   t->RunJavaScriptOrFail(
       "navigator.geolocation.getCurrentPosition( ()=>{}, ()=>{} )");
   base::RunLoop().RunUntilIdle();
   auto utils = UiUtils::Create();
   utils->PerformActionAndWaitForVisibilityStatus(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
-      true /* visible */, base::DoNothing::Once());
+      true /* visible */, base::DoNothing());
 }
 
 // TODO(https://crbug.com/920697): Add tests verifying the notification

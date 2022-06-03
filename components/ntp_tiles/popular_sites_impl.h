@@ -8,12 +8,9 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/ntp_tiles/popular_sites.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -46,11 +43,13 @@ class PopularSitesImpl : public PopularSites {
       variations::VariationsService* variations_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  PopularSitesImpl(const PopularSitesImpl&) = delete;
+  PopularSitesImpl& operator=(const PopularSitesImpl&) = delete;
+
   ~PopularSitesImpl() override;
 
   // PopularSites implementation.
-  bool MaybeStartFetch(bool force_download,
-                       const FinishedCallback& callback) override;
+  bool MaybeStartFetch(bool force_download, FinishedCallback callback) override;
   const std::map<SectionType, SitesVector>& sections() const override;
   GURL GetLastURLFetched() const override;
   GURL GetURLToFetch() override;
@@ -90,8 +89,6 @@ class PopularSitesImpl : public PopularSites {
   int version_in_pending_url_;
 
   base::WeakPtrFactory<PopularSitesImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopularSitesImpl);
 };
 
 }  // namespace ntp_tiles

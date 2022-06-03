@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests showing several node ranges in the Summary view of detailed heap snapshot.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 50;
@@ -19,10 +19,10 @@
     function dumpAndPopulate(step, from, to) {
       TestRunner.addResult('');
       TestRunner.addResult(step);
-      TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row._retrievedChildrenRanges));
+      TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row.retrievedChildrenRanges));
       for (var i = 0; i < row.children.length; ++i)
-        TestRunner.addResult('[' + i + '] ' + row.children[i]._element.textContent.replace(/[^\w\d]/mg, ' '));
-      return row._populateChildren(from, to);
+        TestRunner.addResult('[' + i + '] ' + row.children[i].element().textContent.replace(/[^\w\d]/mg, ' '));
+      return row.populateChildren(from, to);
     }
 
     function step1() {

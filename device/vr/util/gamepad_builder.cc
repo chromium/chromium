@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 #include "device/vr/util/gamepad_builder.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace device {
@@ -57,11 +56,11 @@ bool GamepadBuilder::IsValid() const {
   NOTREACHED();
 }
 
-base::Optional<Gamepad> GamepadBuilder::GetGamepad() {
+absl::optional<Gamepad> GamepadBuilder::GetGamepad() {
   if (IsValid())
     return gamepad_;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void GamepadBuilder::AddButton(const GamepadButton& button) {

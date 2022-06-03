@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -27,6 +26,10 @@ class View;
 class WindowReorderer : public aura::WindowObserver {
  public:
   WindowReorderer(aura::Window* window, View* root_view);
+
+  WindowReorderer(const WindowReorderer&) = delete;
+  WindowReorderer& operator=(const WindowReorderer&) = delete;
+
   ~WindowReorderer() override;
 
   // Explicitly reorder the children of |window_| (and their layers). This
@@ -52,8 +55,6 @@ class WindowReorderer : public aura::WindowObserver {
   // |parent_window_|.
   class AssociationObserver;
   std::unique_ptr<AssociationObserver> association_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowReorderer);
 };
 
 }  // namespace views

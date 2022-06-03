@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ContentDescription is set programmatically. -->
+    <ImageButton
+        android:id="@+id/security_button"
+        tools:ignore="ContentDescription"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:layout_height="@dimen/security_status_icon_size"
+        android:layout_width="@dimen/security_status_icon_size"
+        android:scaleType="center"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list"/>
+
+    <TextView
+        android:id="@+id/url_text"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:singleLine="true"
+        android:paddingEnd="@dimen/url_text_edge_padding"
+        android:paddingStart="@dimen/url_text_edge_padding"
+        android:ellipsize="start"
+        style="@style/TextAppearance.TextLarge.Primary"/>
+
+</merge>

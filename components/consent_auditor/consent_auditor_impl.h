@@ -7,19 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_sync_bridge.h"
-
-namespace sync_pb {
-class UserConsentSpecifics;
-}  // namespace sync_pb
 
 class PrefService;
 class PrefRegistrySimple;
@@ -33,6 +25,10 @@ class ConsentAuditorImpl : public ConsentAuditor {
                      const std::string& app_version,
                      const std::string& app_locale,
                      base::Clock* clock);
+
+  ConsentAuditorImpl(const ConsentAuditorImpl&) = delete;
+  ConsentAuditorImpl& operator=(const ConsentAuditorImpl&) = delete;
+
   ~ConsentAuditorImpl() override;
 
   // KeyedService (through ConsentAuditor) implementation.
@@ -60,6 +56,10 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
       override;
+  void RecordAccountPasswordsConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
+      override;
   void RecordLocalConsent(const std::string& feature,
                           const std::string& description_text,
                           const std::string& confirmation_text) override;
@@ -67,20 +67,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       override;
 
  private:
-  std::unique_ptr<sync_pb::UserConsentSpecifics> ConstructUserConsentSpecifics(
-      const CoreAccountId& account_id,
-      Feature feature,
-      const std::vector<int>& description_grd_ids,
-      int confirmation_grd_id,
-      ConsentStatus status);
-
   PrefService* pref_service_;
   std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
   std::string app_version_;
   std::string app_locale_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditorImpl);
 };
 
 }  // namespace consent_auditor

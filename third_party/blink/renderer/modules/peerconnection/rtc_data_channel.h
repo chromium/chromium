@@ -28,13 +28,15 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
@@ -44,20 +46,19 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
-class RTCPeerConnectionHandlerPlatform;
+class RTCPeerConnectionHandler;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<RTCDataChannel>,
-      public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(RTCDataChannel);
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(RTCDataChannel, Dispose);
 
  public:
   RTCDataChannel(ExecutionContext*,
                  scoped_refptr<webrtc::DataChannelInterface> channel,
-                 RTCPeerConnectionHandlerPlatform* peer_connection_handler);
+                 RTCPeerConnectionHandler* peer_connection_handler);
   ~RTCDataChannel() override;
 
   String label() const;
@@ -66,11 +67,11 @@ class MODULES_EXPORT RTCDataChannel final
   bool reliable() const;
 
   bool ordered() const;
-  uint16_t maxPacketLifeTime(bool&) const;
-  uint16_t maxRetransmits(bool&) const;
+  absl::optional<uint16_t> maxPacketLifeTime() const;
+  absl::optional<uint16_t> maxRetransmits() const;
   String protocol() const;
   bool negotiated() const;
-  uint16_t id(bool& is_null) const;
+  absl::optional<uint16_t> id() const;
   String readyState() const;
   unsigned bufferedAmount() const;
 
@@ -79,6 +80,12 @@ class MODULES_EXPORT RTCDataChannel final
 
   String binaryType() const;
   void setBinaryType(const String&, ExceptionState&);
+
+  // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
+  // in order to make things happen in the specified order when announcing
+  // a remote channel.
+  void SetStateToOpenWithoutEvent();
+  void DispatchOpenEvent();
 
   void send(const String&, ExceptionState&);
   void send(DOMArrayBuffer*, ExceptionState&);
@@ -91,19 +98,20 @@ class MODULES_EXPORT RTCDataChannel final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(closing, kClosing)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
 
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  // ContextLifecycleObserver
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   // ScriptWrappable
   bool HasPendingActivity() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class Observer;
@@ -157,24 +165,38 @@ class MODULES_EXPORT RTCDataChannel final
   void ScheduledEventTimerFired(TimerBase*);
 
   const scoped_refptr<webrtc::DataChannelInterface>& channel() const;
-  bool SendRawData(const char* data, size_t length);
+  bool ValidateSendLength(size_t length, ExceptionState& exception_state);
+  void SendRawData(const char* data, size_t length);
+  void SendDataBuffer(webrtc::DataBuffer data_buffer);
+
+  // Initializes |feature_handle_for_scheduler_|, which must not yet have been
+  // initialized.
+  void CreateFeatureHandleForScheduler();
 
   webrtc::DataChannelInterface::DataState state_;
 
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
   BinaryType binary_type_;
 
-  TaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
+  HeapTaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
   HeapVector<Member<Event>> scheduled_events_;
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Message);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, BufferedAmountLow);
 
+  // This handle notifies the scheduler about a connected data channel
+  // associated with a frame. The handle should be destroyed when the channel
+  // is closed.
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
+
   unsigned buffered_amount_low_threshold_;
   unsigned buffered_amount_;
   bool stopped_;
+  bool closed_from_owner_;
   scoped_refptr<Observer> observer_;
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   THREAD_CHECKER(thread_checker_);
 };
 

@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult('Tests service worker filters in network log.');
-  await TestRunner.loadModule('application_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('network');
 
@@ -50,7 +50,7 @@
     UI.panels.network._networkLogView._filterChanged(/* event */ null);
 
     for (const node of UI.panels.network._networkLogView.flatNodesList()) {
-      if (node[Network.NetworkLogView._isFilteredOutSymbol])
+      if (Network.NetworkLogView.isRequestFilteredOut(node))
         continue;
 
       const request = node.requestOrFirstKnownChildRequest();

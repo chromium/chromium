@@ -80,7 +80,7 @@ typedef void *(*xmlHashCopier)(void *payload, const xmlChar *name);
 /**
  * xmlHashScanner:
  * @payload:  the data in the hash
- * @data:  extra scannner data
+ * @data:  extra scanner data
  * @name:  the name associated
  *
  * Callback when scanning data in a hash with the simple scanner.
@@ -89,7 +89,7 @@ typedef void (*xmlHashScanner)(void *payload, void *data, const xmlChar *name);
 /**
  * xmlHashScannerFull:
  * @payload:  the data in the hash
- * @data:  extra scannner data
+ * @data:  extra scanner data
  * @name:  the name associated
  * @name2:  the second name associated
  * @name3:  the third name associated

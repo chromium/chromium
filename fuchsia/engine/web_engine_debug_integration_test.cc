@@ -9,23 +9,23 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/files/file_enumerator.h"
-#include "base/fuchsia/default_context.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/frame_test_util.h"
-#include "fuchsia/base/result_receiver.h"
-#include "fuchsia/base/test_devtools_list_fetcher.h"
-#include "fuchsia/base/test_navigation_listener.h"
-#include "fuchsia/engine/test/context_provider_test_connector.h"
+#include "base/test/test_future.h"
+#include "fuchsia/base/test/context_provider_test_connector.h"
+#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/test_devtools_list_fetcher.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test_debug_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const char kTestServerRoot[] = FILE_PATH_LITERAL("fuchsia/engine/test/data");
+const char kTestServerRoot[] = "fuchsia/engine/test/data";
 
 }  // namespace
 
@@ -34,28 +34,65 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   WebEngineDebugIntegrationTest()
       : dev_tools_listener_binding_(&dev_tools_listener_) {}
 
+  WebEngineDebugIntegrationTest(const WebEngineDebugIntegrationTest&) = delete;
+  WebEngineDebugIntegrationTest& operator=(
+      const WebEngineDebugIntegrationTest&) = delete;
+
   ~WebEngineDebugIntegrationTest() override = default;
 
   void SetUp() override {
-    web_context_provider_ =
-        StartWebEngineForTests(web_engine_controller_.NewRequest());
+    // Add a switch to the WebEngine instance to distinguish it from other
+    // instances that may be started by other tests.
+    std::string test_switch =
+        std::string("--test-name=") +
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch(test_switch);
+
+    web_context_provider_ = cr_fuchsia::ConnectContextProvider(
+        web_engine_controller_.NewRequest(), command_line);
     web_context_provider_.set_error_handler(
         [](zx_status_t status) { ADD_FAILURE(); });
 
-    WaitForWebEngine();
+    // Wait for the OnDirectoryReady event, which indicates that the component's
+    // outgoing directory is available, including the "/debug" contents accessed
+    // via the Hub.
+    base::RunLoop directory_loop;
+    web_engine_controller_.events().OnDirectoryReady =
+        [quit_loop = directory_loop.QuitClosure()]() { quit_loop.Run(); };
+    directory_loop.Run();
 
-    // Connect to the Debug API.
+    // Enumerate all entries in /hub/c/context_provider.cmx to find WebEngine
+    // instance with |test_switch|.
     base::FileEnumerator file_enum(
         base::FilePath("/hub/c/context_provider.cmx"), false,
         base::FileEnumerator::DIRECTORIES);
-    base::FilePath web_engine_path = file_enum.Next();
+    base::FilePath web_engine_path;
+
+    for (auto dir = file_enum.Next(); !dir.empty(); dir = file_enum.Next()) {
+      std::string args;
+      if (!base::ReadFileToString(dir.Append("args"), &args)) {
+        // WebEngine may shutdown while we are enumerating the directory, so
+        // it's safe to ignore this error.
+        continue;
+      }
+
+      if (args.find(test_switch) != std::string::npos) {
+        // There should only one instance of WebEngine with |test_switch|.
+        EXPECT_TRUE(web_engine_path.empty());
+
+        web_engine_path = dir;
+
+        // Keep iterating to check that there are no other matching instances.
+      }
+    }
+
+    // Check that we've found the WebEngine instance with |test_switch|.
     ASSERT_FALSE(web_engine_path.empty());
 
-    // There should only be one instance of WebEngine in the realm.
-    ASSERT_TRUE(file_enum.Next().empty());
-
     debug_dir_ = std::make_unique<sys::ServiceDirectory>(
-        base::fuchsia::OpenDirectory(web_engine_path.Append("out/debug")));
+        base::OpenDirectoryHandle(web_engine_path.Append("out/debug")));
     debug_dir_->Connect(debug_.NewRequest());
 
     // Attach the DevToolsListener. EnableDevTools has an acknowledgement
@@ -67,36 +104,6 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   }
 
  protected:
-  void WaitForWebEngine() {
-    // Create a throwaway web context to ensure the WebEngine process is
-    // initialized and a Debug instance can be created. This is necessary
-    // because the Debug service is not available on the debug directory until
-    // after the WebEngine is fully initialized.
-    fuchsia::web::CreateContextParams create_params;
-    auto directory = base::fuchsia::OpenDirectory(
-        base::FilePath(base::fuchsia::kServiceDirectoryPath));
-    ASSERT_TRUE(directory.is_valid());
-    create_params.set_service_directory(std::move(directory));
-
-    fuchsia::web::ContextPtr web_context;
-    web_context_provider_->Create(std::move(create_params),
-                                  web_context.NewRequest());
-    web_context.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
-
-    base::RunLoop run_loop;
-    cr_fuchsia::ResultReceiver<
-        fuchsia::web::Context_GetRemoteDebuggingPort_Result>
-        port_receiver(run_loop.QuitClosure());
-    web_context->GetRemoteDebuggingPort(
-        cr_fuchsia::CallbackToFitFunction(port_receiver.GetReceiveCallback()));
-    run_loop.Run();
-
-    // Sanity check.
-    ASSERT_TRUE(port_receiver->is_err());
-    ASSERT_EQ(port_receiver->err(),
-              fuchsia::web::ContextError::REMOTE_DEBUGGING_PORT_NOT_OPENED);
-  }
-
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
@@ -104,15 +111,12 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   fidl::Binding<fuchsia::web::DevToolsListener> dev_tools_listener_binding_;
   std::unique_ptr<sys::ServiceDirectory> debug_dir_;
   fuchsia::web::ContextProviderPtr web_context_provider_;
-  fidl::InterfaceHandle<fuchsia::sys::ComponentController>
-      web_engine_controller_;
+  fuchsia::sys::ComponentControllerPtr web_engine_controller_;
   fuchsia::web::DebugSyncPtr debug_;
 
   base::OnceClosure on_url_fetch_complete_ack_;
 
   net::EmbeddedTestServer test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineDebugIntegrationTest);
 };
 
 enum class UserModeDebugging { kEnabled = 0, kDisabled = 1 };
@@ -124,8 +128,8 @@ struct TestContextAndFrame {
                                UserModeDebugging user_mode_debugging,
                                std::string url) {
     // Create a Context, a Frame and navigate it to |url|.
-    auto directory = base::fuchsia::OpenDirectory(
-        base::FilePath(base::fuchsia::kServiceDirectoryPath));
+    auto directory =
+        base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath));
     if (!directory.is_valid())
       return;
 
@@ -145,13 +149,15 @@ struct TestContextAndFrame {
       return;
     }
   }
+
+  TestContextAndFrame(const TestContextAndFrame&) = delete;
+  TestContextAndFrame& operator=(const TestContextAndFrame&) = delete;
+
   ~TestContextAndFrame() = default;
 
   fuchsia::web::ContextPtr context;
   fuchsia::web::FramePtr frame;
   fuchsia::web::NavigationControllerPtr controller;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextAndFrame);
 };
 
 // Test the Debug service is properly started and accessible.
@@ -261,16 +267,14 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
 
   // Check we are getting the same port on both the debug and user APIs.
-  base::RunLoop run_loop;
-  cr_fuchsia::ResultReceiver<
-      fuchsia::web::Context_GetRemoteDebuggingPort_Result>
-      port_receiver(run_loop.QuitClosure());
+  base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
+      port_receiver;
   frame_data.context->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetReceiveCallback()));
-  run_loop.Run();
+      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+  port_receiver.Wait();
 
-  ASSERT_TRUE(port_receiver->is_response());
-  uint16_t remote_debugging_port = port_receiver->response().port;
+  ASSERT_TRUE(port_receiver.Get().is_response());
+  uint16_t remote_debugging_port = port_receiver.Get().response().port;
   ASSERT_EQ(remote_debugging_port, *dev_tools_listener_.debug_ports().begin());
 
   // Test the debug information is correct.

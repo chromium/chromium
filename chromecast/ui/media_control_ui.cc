@@ -5,13 +5,16 @@
 #include "chromecast/ui/media_control_ui.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -23,8 +26,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kUpdateMediaTimePeriod =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kUpdateMediaTimePeriod = base::Seconds(1);
 const int kButtonSmallHeight = 56;
 const int kButtonBigHeight = 124;
 
@@ -37,8 +39,11 @@ void SetButtonImage(views::ImageButton* button, const gfx::VectorIcon& icon) {
 // A view that invokes an |on_tapped| closure whenever it detects a tap gesture.
 class TouchView : public views::View {
  public:
+  METADATA_HEADER(TouchView);
   explicit TouchView(base::RepeatingClosure on_tapped)
       : on_tapped_(std::move(on_tapped)) {}
+  TouchView(const TouchView&) = delete;
+  TouchView& operator=(const TouchView&) = delete;
 
  private:
   // views::View implementation:
@@ -49,9 +54,10 @@ class TouchView : public views::View {
   }
 
   base::RepeatingClosure on_tapped_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchView);
 };
+
+BEGIN_METADATA(TouchView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -66,52 +72,42 @@ MediaControlUi::MediaControlUi(CastWindowManager* window_manager)
 
   // |touch_view| will detect touch events and decide whether to show
   // or hide |view_|, which contains the media controls.
-  touch_view_ = std::make_unique<TouchView>(base::BindRepeating(
+  auto touch_view = std::make_unique<TouchView>(base::BindRepeating(
       &MediaControlUi::OnTapped, weak_factory_.GetWeakPtr()));
 
   // Main view.
-  view_ = std::make_unique<views::View>();
-  view_->set_owned_by_client();
-  view_->SetVisible(false);
-  view_->SetBackground(
+  auto view = std::make_unique<views::View>();
+  view->SetVisible(false);
+  view->SetBackground(
       views::CreateSolidBackground(SkColorSetA(SK_ColorBLACK, 0x80)));
-  view_->SetBoundsRect(
+  view->SetBoundsRect(
       window_manager_->GetRootWindow()->GetBoundsInRootWindow());
-  touch_view_->AddChildView(view_.get());
+  view_ = touch_view->AddChildView(std::move(view));
 
   // Buttons.
-  btn_previous_ =
-      CreateImageButton(vector_icons::kPreviousIcon, kButtonSmallHeight);
-  btn_previous_->set_owned_by_client();
-  view_->AddChildView(btn_previous_.get());
-  btn_play_pause_ =
-      CreateImageButton(vector_icons::kPlayIcon, kButtonBigHeight);
-  btn_play_pause_->set_owned_by_client();
-  view_->AddChildView(btn_play_pause_.get());
-  btn_next_ = CreateImageButton(vector_icons::kNextIcon, kButtonSmallHeight);
-  btn_next_->set_owned_by_client();
-  view_->AddChildView(btn_next_.get());
-  btn_replay30_ =
-      CreateImageButton(vector_icons::kBack30Icon, kButtonSmallHeight);
-  btn_replay30_->set_owned_by_client();
-  view_->AddChildView(btn_replay30_.get());
-  btn_forward30_ =
-      CreateImageButton(vector_icons::kForward30Icon, kButtonSmallHeight);
-  btn_forward30_->set_owned_by_client();
-  view_->AddChildView(btn_forward30_.get());
+  btn_previous_ = view_->AddChildView(
+      CreateImageButton(mojom::MediaCommand::PREVIOUS,
+                        vector_icons::kPreviousIcon, kButtonSmallHeight));
+  btn_play_pause_ = view_->AddChildView(
+      CreateImageButton(mojom::MediaCommand::TOGGLE_PLAY_PAUSE,
+                        vector_icons::kPlayIcon, kButtonBigHeight));
+  btn_next_ = view_->AddChildView(CreateImageButton(
+      mojom::MediaCommand::NEXT, vector_icons::kNextIcon, kButtonSmallHeight));
+  btn_replay30_ = view_->AddChildView(
+      CreateImageButton(mojom::MediaCommand::REPLAY_30_SECONDS,
+                        vector_icons::kBack30Icon, kButtonSmallHeight));
+  btn_forward30_ = view_->AddChildView(
+      CreateImageButton(mojom::MediaCommand::FORWARD_30_SECONDS,
+                        vector_icons::kForward30Icon, kButtonSmallHeight));
 
   // Labels.
-  lbl_title_ = std::make_unique<views::Label>(base::string16());
-  lbl_title_->set_owned_by_client();
-  view_->AddChildView(lbl_title_.get());
-  lbl_meta_ = std::make_unique<views::Label>(base::string16());
-  lbl_meta_->set_owned_by_client();
-  view_->AddChildView(lbl_meta_.get());
+  lbl_title_ =
+      view_->AddChildView(std::make_unique<views::Label>(std::u16string()));
+  lbl_meta_ =
+      view_->AddChildView(std::make_unique<views::Label>(std::u16string()));
 
   // Progress Bar.
-  progress_bar_ = std::make_unique<views::ProgressBar>();
-  progress_bar_->set_owned_by_client();
-  view_->AddChildView(progress_bar_.get());
+  progress_bar_ = view_->AddChildView(std::make_unique<views::ProgressBar>());
 
   LayoutElements();
 
@@ -123,7 +119,7 @@ MediaControlUi::MediaControlUi(CastWindowManager* window_manager)
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.bounds = window_manager_->GetRootWindow()->GetBoundsInRootWindow();
   widget_->Init(std::move(params));
-  widget_->SetContentsView(touch_view_.release());  // Ownership passed.
+  widget_->SetContentsView(std::move(touch_view));
 
   window_manager_->SetZOrder(widget_->GetNativeView(),
                              mojom::ZOrder::MEDIA_INFO);
@@ -161,9 +157,8 @@ void MediaControlUi::SetAttributes(
     if (is_paused_ && !visible()) {
       ShowMediaControls(true);
     }
-    SetButtonImage(btn_play_pause_.get(), is_paused_
-                                              ? vector_icons::kPlayIcon
-                                              : vector_icons::kPauseIcon);
+    SetButtonImage(btn_play_pause_, is_paused_ ? vector_icons::kPlayIcon
+                                               : vector_icons::kPauseIcon);
   }
 
   if (attributes->duration > 0.0) {
@@ -223,31 +218,15 @@ void MediaControlUi::UpdateMediaTime() {
       last_media_time_ +
       (base::TimeTicks::Now() - last_media_timestamp_).InSecondsF();
   if (media_duration_ > 0.0) {
-    progress = std::min(std::max(0.0, progress), media_duration_);
+    progress = base::clamp(progress, 0.0, media_duration_);
     progress_bar_->SetValue(progress / media_duration_);
   }
 }
 
-void MediaControlUi::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
+void MediaControlUi::ButtonPressed(mojom::MediaCommand command) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!client_) {
-    return;
-  }
-
-  if (sender == btn_previous_.get()) {
-    client_->Execute(mojom::MediaCommand::PREVIOUS);
-  } else if (sender == btn_play_pause_.get()) {
-    client_->Execute(mojom::MediaCommand::TOGGLE_PLAY_PAUSE);
-  } else if (sender == btn_next_.get()) {
-    client_->Execute(mojom::MediaCommand::NEXT);
-  } else if (sender == btn_replay30_.get()) {
-    client_->Execute(mojom::MediaCommand::REPLAY_30_SECONDS);
-  } else if (sender == btn_forward30_.get()) {
-    client_->Execute(mojom::MediaCommand::FORWARD_30_SECONDS);
-  } else {
-    NOTREACHED();
-  }
+  if (client_)
+    client_->Execute(command);
 }
 
 void MediaControlUi::OnTapped() {
@@ -256,14 +235,17 @@ void MediaControlUi::OnTapped() {
 }
 
 std::unique_ptr<views::ImageButton> MediaControlUi::CreateImageButton(
+    mojom::MediaCommand command,
     const gfx::VectorIcon& icon,
     int height) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto button = std::make_unique<views::ImageButton>(this);
+  auto button = std::make_unique<views::ImageButton>(base::BindRepeating(
+      &MediaControlUi::ButtonPressed, base::Unretained(this), command));
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   button->SetSize(gfx::Size(height, height));
+  button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetButtonImage(button.get(), icon);
 
   return button;

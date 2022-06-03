@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_component("web_dialogs") {
+component("web_dialogs") {
   sources = [
     "web_dialog_delegate.cc",
     "web_dialog_delegate.h",
@@ -33,7 +31,7 @@ jumbo_component("web_dialogs") {
   }
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   sources = [
     "test/test_web_contents_handler.cc",
     "test/test_web_contents_handler.h",
@@ -41,9 +39,7 @@ jumbo_static_library("test_support") {
     "test/test_web_dialog_delegate.h",
   ]
 
-  public_deps = [
-    ":web_dialogs",
-  ]
+  public_deps = [ ":web_dialogs" ]
   deps = [
     "//base",
     "//content/public/browser",
@@ -56,9 +52,7 @@ jumbo_static_library("test_support") {
 source_set("web_dialogs_unittests") {
   testonly = true
 
-  sources = [
-    "web_dialog_ui_unittest.cc",
-  ]
+  sources = [ "web_dialog_ui_unittest.cc" ]
 
   deps = [
     ":web_dialogs",

@@ -84,24 +84,18 @@
   // the video resolution is as expected.
   function callAndExpectResolution(constraints,
                                    expected_width,
-                                   expected_height) {
+                                   expected_height,
+                                   alignment) {
     createConnections(null);
     navigator.mediaDevices.getUserMedia(constraints)
         .then(addStreamToBothConnectionsAndNegotiate)
         .catch(failTest);
 
-    function hasExpectedResolution(elementName) {
-      // Returns a promise that video is playing and has the expected
-      // resolution.
-      return detectVideoPlaying('remote-view-1').then(resolution => {
-        assertEquals(expected_width, resolution.width);
-        assertEquals(expected_height, resolution.height);
-      });
-    }
-
     Promise.all([
-      hasExpectedResolution('remote-view-1'),
-      hasExpectedResolution('remote-view-2')
+      detectVideoPlayingWithExpectedResolution(
+          'remote-view-1', expected_width, expected_height, alignment),
+      detectVideoPlayingWithExpectedResolution(
+          'remote-view-2', expected_width, expected_height, alignment)
     ]).then(reportTestSuccess);
   }
 
@@ -223,9 +217,13 @@
     setOfferSdpTransform(removeVideoCodec);
 
     setOnLocalDescriptionError(function(error) {
-      var expectedMsg = 'Failed to set local offer sdp: Failed to set local' +
-          ' video description recv parameters.';
-      assertEquals(expectedMsg, error.message);
+      var expectedMsg1 = 'Failed to set local offer sdp: Failed to set local ' +
+          'video description recv parameters.';
+      var expectedMsg2 = 'Failed to set local offer sdp: Failed to set local ' +
+          'video description recv parameters for m-section with mid=\'video\'.';
+      assertTrue(
+          expectedMsg1 === error.message ||
+          expectedMsg2 === error.message);
       reportTestSuccess();
     });
     navigator.mediaDevices.getUserMedia({audio: true, video: true})
@@ -756,17 +754,38 @@
     reportTestSuccess();
   }
 
-  function CanSetupH264VideoCallOnSupportedDevice() {
+  async function CanSetupH264VideoCallOnSupportedDevice() {
+    // Setup one way video call, prioritize H264 and verify that it used.
     createConnections(null);
     setOfferSdpTransform(maybePreferH264SendCodec);
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
+    navigator.mediaDevices.getUserMedia({audio: false, video: true})
+        .then(addStreamToTheFirstConnectionAndNegotiate)
         .catch(failTest);
 
-    Promise.all([
-      detectVideoPlaying('remote-view-1'),
-      detectVideoPlaying('remote-view-1')
-    ]).then(reportTestSuccess);
+    await detectVideoPlaying('remote-view-2');
+
+    assertEquals(gLocalStream.getVideoTracks().length, 1);
+
+    // Ensure that call uses H264.
+    gFirstConnection.getStats(gLocalStream.getVideoTracks()[0])
+        .then(function(report) {
+          var numCodecs = 0;
+          var hasH264 = false;
+          var supported_codecs = [];
+          report.forEach(stats => {
+            if (stats.type == 'codec') {
+              numCodecs++;
+              supported_codecs.push(stats.mimeType);
+              if (stats.mimeType == 'video/H264') {
+                hasH264 = true;
+              }
+            }
+          });
+          assertEquals(1, numCodecs);
+          assertTrue(hasH264, JSON.stringify(supported_codecs));
+          reportTestSuccess();
+        })
+        .catch(failTest);
   }
 
   </script>

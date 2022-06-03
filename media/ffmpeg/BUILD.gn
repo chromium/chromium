@@ -15,9 +15,6 @@ source_set("ffmpeg") {
     "//media/filters",
   ]
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-
     "//media:subcomponent_config",
   ]
   sources = [
@@ -38,9 +35,7 @@ source_set("ffmpeg") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ffmpeg_common_unittest.cc",
-  ]
+  sources = [ "ffmpeg_common_unittest.cc" ]
   configs += [ "//media:media_config" ]
   deps = [
     "//base",
@@ -52,9 +47,7 @@ source_set("unit_tests") {
 
 source_set("ffmpeg_regression_tests") {
   testonly = true
-  sources = [
-    "ffmpeg_regression_tests.cc",
-  ]
+  sources = [ "ffmpeg_regression_tests.cc" ]
   deps = [
     "//base",
     "//media",

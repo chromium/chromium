@@ -1,27 +1,16 @@
 # Optimizing Java Code
 
 This doc describes how Java code is optimized in Chrome on Android and how to
-deal with issues caused by the optimizer.
+deal with issues caused by the optimizer. For tips on how to write optimized
+code, see [//docs/speed/binary_size/optimization_advice.md#optimizing-java-code](/docs/speed/binary_size/optimization_advice.md#optimizing-java-code).
 
 [TOC]
 
-## History
+## ProGuard vs R8
 
-When Java code optimization was first added to Chrome the tool used was called
-[ProGuard](https://www.guardsquare.com/en/products/proguard). This was used
-in public builds until [January 3, 2019](http://crrev.com/c/1394387).
-
-On June 20, 2016, Chrome switched to using an internal fork of ProGuard for
-downstream builds because it offered better optimizations for binary size and
-method count.
-
-As of [July 20, 2019](https://crrev.com/c/1689877), all Chrome builds have
-switched to using [R8](https://r8.googlesource.com/r8), the new tool provided by
-Android Studio. R8 provides significant improvements to binary size and method
-count over both public and internal ProGuard. R8 uses the same configuration
-specification language as ProGuard and supports many of the same rules that
-ProGuard did.
-
+ProGuard is the original open-source tool used by many Android applications to
+perform whole-program bytecode optimization. [R8](https://r8.googlesource.com/r8),
+is a re-implementation that is used by Chrome (and the default for Android Studio).
 The terms "ProGuard" and "R8" are used interchangeably within Chromium but
 generally they're meant to refer to the tool providing Java code optimizations.
 
@@ -37,14 +26,11 @@ generally they're meant to refer to the tool providing Java code optimizations.
    further through various approaches (ex. inlining, outlining, class merging,
    etc).
 
-Chrome relies on ProGuard for keeping Java code size manageable. As of November
-2019, a debug build of Chrome has about 3.5x the amount of dex size of a
-release build and has 5 `.dex` files (vs. 1 in release).
-
 ## Build Process
 
-ProGuard is only enabled for release builds of Chrome because it is a slow build
-step. It can also be enabled manually via the GN arg `is_java_debug = false`.
+ProGuard is enabled only for release builds of Chrome because it is a slow build
+step and breaks Java debugging. It can also be enabled manually via the GN arg:
+```is_java_debug = false```
 
 ### ProGuard configuration files
 
@@ -59,18 +45,6 @@ step generates the `.dex` files for the application. The `proguard` step takes
 as input a list of `.jar` files, runs R8/ProGuard on those `.jar` files, and
 produces the final `.dex` file(s) that will be packaged into your `.apk`
 
-### Synchronized ProGuard
-
-Some additional steps are required for optimizing code that is shared between
-multiple application components (App Bundles and Trichrome). Because ProGuard is
-a whole program optimizer, it needs to know about *ALL* code used by the
-application or most optimizations won't work as expected.
-
-For synchronized ProGuard, the `.jar` files depended on by all application
-components are given to ProGuard to produce a single output. This is then split
-with an additional `dexsplitter` step to produce separate `.dex` files for each
-dependent application component.
-
 ## Deobfuscation
 
 Obfuscation can be turned off for local builds while leaving ProGuard enabled
@@ -82,7 +56,7 @@ There are two main methods for deobfuscating Java stack traces locally:
   * `$OUT/bin/chrome_public_apk run`  # Launch chrome and run adb logcat
 
 2. Using `java_deobfuscate`
-  * `$OUT/bin/java_deobfuscate $OUT/apks/ChromePublic.apk.mapping < logcat.txt`
+  * build/android/stacktrace/java_deobfuscate.py $OUT/apks/ChromePublic.apk.mapping < logcat.txt`
     * ProGuard mapping files are located beside APKs (ex.
       `$OUT/apks/ChromePublic.apk` and `$OUT/apks/ChromePublic.apk.mapping`)
 

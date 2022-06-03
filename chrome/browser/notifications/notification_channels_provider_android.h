@@ -11,7 +11,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -68,6 +67,10 @@ class NotificationChannelsProviderAndroid
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   NotificationChannelsProviderAndroid();
+  NotificationChannelsProviderAndroid(
+      const NotificationChannelsProviderAndroid&) = delete;
+  NotificationChannelsProviderAndroid& operator=(
+      const NotificationChannelsProviderAndroid&) = delete;
   ~NotificationChannelsProviderAndroid() override;
 
   // Migrates any notification settings from the passed-in provider to
@@ -85,26 +88,25 @@ class NotificationChannelsProviderAndroid
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& resource_identifier,
       bool incognito) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& resource_identifier,
-      std::unique_ptr<base::Value>&& value) override;
+      std::unique_ptr<base::Value>&& value,
+      const content_settings::ContentSettingConstraints& constraints = {})
+      override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
   base::Time GetWebsiteSettingLastModified(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& resource_identifier) override;
+      ContentSettingsType content_type) override;
+  void SetClockForTesting(base::Clock* clock) override;
 
  private:
   explicit NotificationChannelsProviderAndroid(
-      std::unique_ptr<NotificationChannelsBridge> bridge,
-      std::unique_ptr<base::Clock> clock);
+      std::unique_ptr<NotificationChannelsBridge> bridge);
   friend class NotificationChannelsProviderAndroidTest;
 
   std::vector<NotificationChannel> UpdateCachedChannels() const;
@@ -120,7 +122,7 @@ class NotificationChannelsProviderAndroid
 
   bool platform_supports_channels_;
 
-  std::unique_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Flag to keep track of whether |cached_channels_| has been initialized yet.
   bool initialized_cached_channels_;
@@ -141,8 +143,6 @@ class NotificationChannelsProviderAndroid
   std::map<std::string, NotificationChannel> cached_channels_;
 
   base::WeakPtrFactory<NotificationChannelsProviderAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationChannelsProviderAndroid);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_CHANNELS_PROVIDER_ANDROID_H_

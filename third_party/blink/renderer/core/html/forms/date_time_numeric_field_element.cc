@@ -94,8 +94,9 @@ int DateTimeNumericFieldElement::DefaultValueForStepUp() const {
   return range_.minimum;
 }
 
-void DateTimeNumericFieldElement::SetFocused(bool value,
-                                             WebFocusType focus_type) {
+void DateTimeNumericFieldElement::SetFocused(
+    bool value,
+    mojom::blink::FocusType focus_type) {
   if (!value) {
     int type_ahead_value = TypeAheadValue();
     type_ahead_buffer_.Clear();
@@ -122,7 +123,7 @@ void DateTimeNumericFieldElement::HandleKeyboardEvent(
 
   UChar char_code = static_cast<UChar>(keyboard_event.charCode());
   String number =
-      LocaleForOwner().ConvertFromLocalizedNumber(String(&char_code, 1));
+      LocaleForOwner().ConvertFromLocalizedNumber(String(&char_code, 1u));
   const int digit = number[0] - '0';
   if (digit < 0 || digit > 9)
     return;
@@ -193,6 +194,7 @@ void DateTimeNumericFieldElement::StepDown() {
       RoundDown(has_value_ ? value_ - 1 : DefaultValueForStepDown());
   if (!range_.IsInRange(new_value))
     new_value = RoundDown(range_.maximum);
+  NotifyOwnerIfStepDownRollOver(has_value_, step_, value_, new_value);
   type_ahead_buffer_.Clear();
   SetValueAsInteger(new_value, kDispatchEvent);
 }
@@ -201,6 +203,7 @@ void DateTimeNumericFieldElement::StepUp() {
   int new_value = RoundUp(has_value_ ? value_ + 1 : DefaultValueForStepUp());
   if (!range_.IsInRange(new_value))
     new_value = RoundUp(range_.minimum);
+  NotifyOwnerIfStepUpRollOver(has_value_, step_, value_, new_value);
   type_ahead_buffer_.Clear();
   SetValueAsInteger(new_value, kDispatchEvent);
 }

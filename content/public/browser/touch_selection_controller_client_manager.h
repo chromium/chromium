@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
+#ifndef CONTENT_PUBLIC_BROWSER_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
+#define CONTENT_PUBLIC_BROWSER_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 
 namespace gfx {
+class Point;
 class SelectionBound;
 }
 
@@ -61,8 +62,11 @@ class CONTENT_EXPORT TouchSelectionControllerClientManager {
   // monitor the manager's lifetime.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Used to request the active client to show a context menu at |location|.
+  virtual void ShowContextMenu(const gfx::Point& location) {}
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_

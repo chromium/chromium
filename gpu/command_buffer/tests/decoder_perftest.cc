@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/threading/platform_thread.h"
@@ -153,6 +155,8 @@ class RecordReplayContext : public GpuControl {
   RecordReplayContext()
       : gpu_preferences_(GetGpuPreferences()),
         share_group_(new gl::GLShareGroup),
+        discardable_manager_(gpu::GpuPreferences()),
+        passthrough_discardable_manager_(gpu::GpuPreferences()),
         translator_cache_(gpu_preferences_) {
     bool bind_generates_resource = false;
     if (base::CommandLine::ForCurrentProcess()->HasSwitch("use-stub")) {
@@ -180,7 +184,7 @@ class RecordReplayContext : public GpuControl {
         nullptr /* progress_reporter */, GpuFeatureInfo(),
         &discardable_manager_, &passthrough_discardable_manager_,
         &shared_image_manager_);
-    command_buffer_.reset(new RecordReplayCommandBuffer());
+    command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 
     decoder_.reset(gles2::GLES2Decoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
@@ -206,20 +210,21 @@ class RecordReplayContext : public GpuControl {
     capabilities_ = decoder_->GetCapabilities();
 
     const SharedMemoryLimits limits;
-    gles2_helper_.reset(new gles2::GLES2CmdHelper(command_buffer_.get()));
+    gles2_helper_ =
+        std::make_unique<gles2::GLES2CmdHelper>(command_buffer_.get());
     result = gles2_helper_->Initialize(limits.command_buffer_size);
     DCHECK_EQ(result, ContextResult::kSuccess);
 
     // Create a transfer buffer.
-    transfer_buffer_.reset(new TransferBuffer(gles2_helper_.get()));
+    transfer_buffer_ = std::make_unique<TransferBuffer>(gles2_helper_.get());
 
     // Create the object exposing the OpenGL API.
     const bool lose_context_when_out_of_memory = false;
     const bool support_client_side_arrays = false;
-    gles2_implementation_.reset(new gles2::GLES2Implementation(
+    gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
         gles2_helper_.get(), nullptr, transfer_buffer_.get(),
         bind_generates_resource, lose_context_when_out_of_memory,
-        support_client_side_arrays, this));
+        support_client_side_arrays, this);
 
     result = gles2_implementation_->Initialize(limits);
     DCHECK_EQ(result, ContextResult::kSuccess);
@@ -367,6 +372,9 @@ class PerfIterator {
     }
   }
 
+  PerfIterator(const PerfIterator&) = delete;
+  PerfIterator& operator=(const PerfIterator&) = delete;
+
   bool Iterate() {
     if (--current_iterations_ > 0)
       return true;
@@ -379,7 +387,7 @@ class PerfIterator {
     if (warmup_) {
       warmup_ = false;
       if (for_linux_perf_)
-        base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+        base::PlatformThread::Sleep(base::Seconds(1));
       else
         time = base::TimeTicks::Now();
     } else if (!for_linux_perf_) {
@@ -409,8 +417,6 @@ class PerfIterator {
   int current_iterations_ = 1 + kWarmupIterations;
   bool warmup_ = true;
   bool for_linux_perf_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfIterator);
 };
 
 class DecoderPerfTest : public testing::Test {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/logging.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_net_address.h"
 #include "ppapi/shared_impl/tracked_callback.h"

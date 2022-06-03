@@ -8,9 +8,12 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -23,12 +26,11 @@ namespace send_tab_to_self {
 void CreateNewEntry(content::WebContents* tab,
                     const std::string& target_device_name,
                     const std::string& target_device_guid,
-                    const GURL& link_url,
-                    bool show_notification) {
+                    const GURL& link_url) {
   DCHECK(tab);
 
   GURL shared_url = link_url;
-  std::string title = "";
+  std::string title;
   base::Time navigation_time = base::Time();
 
   content::NavigationEntry* navigation_entry =
@@ -51,25 +53,16 @@ void CreateNewEntry(content::WebContents* tab,
           ->GetSendTabToSelfModel();
   DCHECK(model);
 
-  UMA_HISTOGRAM_BOOLEAN("SendTabToSelf.Sync.ModelLoadedInTime",
-                        model->IsReady());
   if (!model->IsReady()) {
     DesktopNotificationHandler(profile).DisplayFailureMessage(shared_url);
     return;
   }
 
-  const SendTabToSelfEntry* entry =
-      model->AddEntry(shared_url, title, navigation_time, target_device_guid);
+  model->AddEntry(shared_url, title, navigation_time, target_device_guid);
 
-  if (!show_notification)
-    return;
-
-  if (entry) {
-    DesktopNotificationHandler(profile).DisplaySendingConfirmation(
-        *entry, target_device_name);
-  } else {
-    DesktopNotificationHandler(profile).DisplayFailureMessage(shared_url);
-  }
+  SendTabToSelfBubbleController* controller = send_tab_to_self::
+      SendTabToSelfBubbleController::CreateOrGetFromWebContents(tab);
+  controller->ShowConfirmationMessage();
 }
 
 void ShareToSingleTarget(content::WebContents* tab, const GURL& link_url) {
@@ -83,18 +76,6 @@ void ShareToSingleTarget(content::WebContents* tab, const GURL& link_url) {
                  link_url);
 }
 
-void RecordSendTabToSelfClickResult(const std::string& entry_point,
-                                    SendTabToSelfClickResult state) {
-  base::UmaHistogramEnumeration("SendTabToSelf." + entry_point + ".ClickResult",
-                                state);
-}
-
-void RecordSendTabToSelfDeviceCount(const std::string& entry_point,
-                                    const int& device_count) {
-  base::UmaHistogramCounts100("SendTabToSelf." + entry_point + ".DeviceCount",
-                              device_count);
-}
-
 size_t GetValidDeviceCount(Profile* profile) {
   SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
@@ -106,7 +87,7 @@ size_t GetValidDeviceCount(Profile* profile) {
   return devices.size();
 }
 
-base::string16 GetSingleTargetDeviceName(Profile* profile) {
+std::u16string GetSingleTargetDeviceName(Profile* profile) {
   DCHECK_EQ(GetValidDeviceCount(profile), 1u);
   return base::UTF8ToUTF16(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)

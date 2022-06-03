@@ -1,0 +1,136 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  g.tick line {
+    stroke: var(--google-grey-200);
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+  }
+
+  g.tick:first-of-type line {
+    stroke: var(--google-grey-700);
+  }
+
+  g.tick text {
+    color: var(--google-grey-700);
+    line-height: 18px;
+    @apply --diagnostics-chart-tick-font;
+  }
+
+  path.domain {
+    visibility: hidden;
+  }
+
+  #plotGroup {
+    fill: none;
+    stroke-width: 1.5px;
+  }
+
+  .user-area {
+    fill: url(#user-gradient);
+    shape-render: optimizeSpeed;
+    stroke-width: 1.5px;
+    stroke: var(--google-blue-600);
+  }
+
+  .system-area {
+    fill: url(#system-gradient);
+    shape-render: optimizeSpeed;
+    stroke-width: 1.5px;
+    stroke: var(--google-yellow-600);
+  }
+
+  .gradient-blue {
+    stop-color: var(--google-blue-300);
+  }
+
+  .gradient-yellow {
+    stop-color: var(--google-yellow-300);
+  }
+
+  .gradient-opacity {
+    stop-opacity: 0;
+  }
+
+  #chart-legend {
+    text-align: right;
+    @apply --diagnostics-chart-legend-font;
+    padding-right: 5px;
+  }
+
+  #chart-legend > .divider {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    top: 8px;
+  }
+
+  div.legend-group {
+    display: inline-block;
+    padding: 0 20px 8px 0;
+    text-align: left;
+  }
+
+  div.legend-group > span {
+    display: inline-block;
+    padding-left: 8px;
+    text-align: right;
+    width: 25px;
+  }
+
+  #legend-bar {
+    border-radius: 1px;
+    display: inline-block;
+    height: 2px;
+    margin: 0 16px 3px 0;
+    width: 10px;
+  }
+
+  #legend-bar.user {
+    background-color: var(--google-blue-600);
+  }
+
+  #legend-bar.system {
+    background-color: var(--google-yellow-600);
+  }
+</style>
+<svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">
+  <g id="chartGroup">
+    <defs>
+      <!-- Define chart area and boundaries -->
+      <clipPath id="defClip">
+        <rect width$="[[graphWidth_]]" height$="[[graphHeight_]]"></rect>
+      </clipPath>
+      <!-- Chart area gradient -->
+      <linearGradient id="user-gradient" gradientTransform="rotate(90)">
+        <stop offset="0%" class="gradient-blue"></stop>
+        <stop offset="100%" class="gradient-blue gradient-opacity"></stop>
+      </linearGradient>
+      <linearGradient id="system-gradient" gradientTransform="rotate(90)">
+        <stop offset="0%" class="gradient-yellow"></stop>
+        <stop offset="100%" class="gradient-yellow gradient-opacity"></stop>
+      </linearGradient>
+    </defs>
+
+    <g id="gridLines" class="grid"></g>
+    <g id="plotGroup" clip-path="url(#defClip)">
+      <path class="user-area"></path>
+      <path class="system-area"></path>
+    </g>
+  </g>
+</svg>
+<div id="chart-legend">
+  <div id="legend-user" class="legend-group">
+    <div id="legend-bar" class="user"></div>
+    <label id="userLabel">[[i18n('cpuUsageUser')]]</label>
+    <span id="userData" aria-labelledby="userLabel">
+      [[getPercentageLabel_(user)]]
+    </span>
+  </div>
+  <div class="divider"></div>
+  <div id="legend-system" class="legend-group">
+    <div id="legend-bar" class="system"></div>
+    <label id="systemLabel">[[i18n('cpuUsageSystem')]]</label>
+    <span id="systemData" aria-labelledby="systemLabel">
+      [[getPercentageLabel_(system)]]
+    </span>
+  </div>
+</div>

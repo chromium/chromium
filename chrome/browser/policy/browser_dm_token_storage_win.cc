@@ -15,20 +15,23 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -71,12 +74,12 @@ bool StoreDMTokenInRegistry(const std::string& token) {
 
   ConfigureProxyBlanket(google_update.Get());
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = google_update->createAppBundleWeb(dispatch.GetAddressOf());
+  hr = google_update->createAppBundleWeb(&dispatch);
   if (FAILED(hr))
     return false;
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
-  hr = dispatch.CopyTo(app_bundle.GetAddressOf());
+  hr = dispatch.As(&app_bundle);
   if (FAILED(hr))
     return false;
 
@@ -84,28 +87,28 @@ bool StoreDMTokenInRegistry(const std::string& token) {
   ConfigureProxyBlanket(app_bundle.Get());
   app_bundle->initialize();
   const wchar_t* app_guid = install_static::GetAppGuid();
-  hr = app_bundle->createInstalledApp(base::win::ScopedBstr(app_guid));
+  hr = app_bundle->createInstalledApp(base::win::ScopedBstr(app_guid).Get());
   if (FAILED(hr))
     return false;
 
-  hr = app_bundle->get_appWeb(0, dispatch.GetAddressOf());
+  hr = app_bundle->get_appWeb(0, &dispatch);
   if (FAILED(hr))
     return false;
 
   Microsoft::WRL::ComPtr<IAppWeb> app;
-  hr = dispatch.CopyTo(app.GetAddressOf());
+  hr = dispatch.As(&app);
   if (FAILED(hr))
     return false;
 
   dispatch.Reset();
   ConfigureProxyBlanket(app.Get());
-  hr = app->get_command(base::win::ScopedBstr(installer::kCmdStoreDMToken),
-                        dispatch.GetAddressOf());
+  hr = app->get_command(
+      base::win::ScopedBstr(installer::kCmdStoreDMToken).Get(), &dispatch);
   if (FAILED(hr) || !dispatch)
     return false;
 
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command;
-  hr = dispatch.CopyTo(app_command.GetAddressOf());
+  hr = dispatch.As(&app_command);
   if (FAILED(hr))
     return false;
 
@@ -131,7 +134,6 @@ bool StoreDMTokenInRegistry(const std::string& token) {
 
 std::string BrowserDMTokenStorageWin::InitClientId() {
   // For the client id, use the Windows machine GUID.
-  // TODO(crbug.com/821977): Need a backup plan if machine GUID doesn't exist.
   base::win::RegKey key;
   LSTATUS status =
       key.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography",
@@ -139,7 +141,7 @@ std::string BrowserDMTokenStorageWin::InitClientId() {
   if (status != ERROR_SUCCESS)
     return std::string();
 
-  base::string16 value;
+  std::wstring value;
   status = key.ReadValue(L"MachineGuid", &value);
   if (status != ERROR_SUCCESS)
     return std::string();
@@ -151,46 +153,49 @@ std::string BrowserDMTokenStorageWin::InitClientId() {
 }
 
 std::string BrowserDMTokenStorageWin::InitEnrollmentToken() {
-  return base::WideToUTF8(
-      InstallUtil::GetMachineLevelUserCloudPolicyEnrollmentToken());
+  return base::WideToUTF8(InstallUtil::GetCloudManagementEnrollmentToken());
 }
 
 std::string BrowserDMTokenStorageWin::InitDMToken() {
-  base::win::RegKey key;
-  base::string16 dm_token_key_path;
-  base::string16 dm_token_value_name;
-  InstallUtil::GetMachineLevelUserCloudPolicyDMTokenRegistryPath(
-      &dm_token_key_path, &dm_token_value_name);
-  LONG result = key.Open(HKEY_LOCAL_MACHINE, dm_token_key_path.c_str(),
-                         KEY_QUERY_VALUE | KEY_WOW64_64KEY);
-  if (result != ERROR_SUCCESS)
-    return std::string();
-
   // At the time of writing (January 2018), the DM token is about 200 bytes
   // long. The initial size of the buffer should be enough to cover most
   // realistic future size-increase scenarios, although we still make an effort
   // to support somewhat larger token sizes just to be safe.
   constexpr size_t kInitialDMTokenSize = 512;
 
-  DWORD size = kInitialDMTokenSize;
-  std::vector<char> raw_value(size);
-  DWORD dtype = REG_NONE;
-  result = key.ReadValue(dm_token_value_name.c_str(), raw_value.data(), &size,
-                         &dtype);
-  if (result == ERROR_MORE_DATA && size <= installer::kMaxDMTokenLength) {
-    raw_value.resize(size);
-    result = key.ReadValue(dm_token_value_name.c_str(), raw_value.data(), &size,
-                           &dtype);
+  base::win::RegKey key;
+  std::wstring dm_token_value_name;
+  std::vector<char> raw_value(kInitialDMTokenSize);
+
+  // Prefer the app-neutral location over the browser's to match Google Update's
+  // behavior.
+  for (const auto& location : {InstallUtil::BrowserLocation(false),
+                               InstallUtil::BrowserLocation(true)}) {
+    std::tie(key, dm_token_value_name) =
+        InstallUtil::GetCloudManagementDmTokenLocation(
+            InstallUtil::ReadOnly(true), location);
+    if (!key.Valid())
+      continue;
+
+    DWORD dtype = REG_NONE;
+    DWORD size = static_cast<DWORD>(raw_value.size());
+    auto result = key.ReadValue(dm_token_value_name.c_str(), raw_value.data(),
+                                &size, &dtype);
+    if (result == ERROR_MORE_DATA && size <= installer::kMaxDMTokenLength) {
+      raw_value.resize(size);
+      result = key.ReadValue(dm_token_value_name.c_str(), raw_value.data(),
+                             &size, &dtype);
+    }
+    if (result != ERROR_SUCCESS || dtype != REG_BINARY || size == 0)
+      continue;
+
+    DCHECK_LE(size, installer::kMaxDMTokenLength);
+    return std::string(base::TrimWhitespaceASCII(
+        base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
   }
 
-  if (result != ERROR_SUCCESS || dtype != REG_BINARY || size == 0) {
-    DVLOG(1) << "Failed to get DMToken from Registry.";
-    return std::string();
-  }
-  DCHECK_LE(size, installer::kMaxDMTokenLength);
-  std::string dm_token;
-  dm_token.assign(raw_value.data(), size);
-  return base::TrimWhitespaceASCII(dm_token, base::TRIM_ALL).as_string();
+  DVLOG(1) << "Failed to get DMToken from Registry.";
+  return std::string();
 }
 
 bool BrowserDMTokenStorageWin::InitEnrollmentErrorOption() {
@@ -208,18 +213,9 @@ BrowserDMTokenStorageWin::SaveDMTokenTaskRunner() {
   return com_sta_task_runner_;
 }
 
-// static
-BrowserDMTokenStorage* BrowserDMTokenStorage::Get() {
-  if (storage_for_testing_)
-    return storage_for_testing_;
-
-  static base::NoDestructor<BrowserDMTokenStorageWin> storage;
-  return storage.get();
-}
-
 BrowserDMTokenStorageWin::BrowserDMTokenStorageWin()
-    : com_sta_task_runner_(base::CreateCOMSTATaskRunner(
-          {base::ThreadPool(), base::MayBlock()})) {}
+    : com_sta_task_runner_(
+          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})) {}
 
 BrowserDMTokenStorageWin::~BrowserDMTokenStorageWin() {}
 

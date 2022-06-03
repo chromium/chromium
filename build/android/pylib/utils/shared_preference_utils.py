@@ -19,12 +19,19 @@ def UnicodeToStr(data):
     strings.
   """
   if isinstance(data, dict):
-    return {UnicodeToStr(key): UnicodeToStr(value)
-            for key, value in data.iteritems()}
+    return {
+        UnicodeToStr(key): UnicodeToStr(value)
+        for key, value in data.items()
+    }
   elif isinstance(data, list):
     return [UnicodeToStr(element) for element in data]
-  elif isinstance(data, unicode):
-    return data.encode('utf-8')
+  try:
+    # Python-2 compatibility.
+    if isinstance(data, unicode):
+      return data.encode('utf-8')
+  except NameError:
+    # Strings are already unicode in python3.
+    pass
   return data
 
 
@@ -80,16 +87,30 @@ def ApplySharedPreferenceSetting(shared_pref, setting):
       shared_pref.Remove(key)
     except KeyError:
       logging.warning("Attempted to remove non-existent key %s", key)
-  for key, value in setting.get('set', {}).iteritems():
-    if isinstance(value, bool):
+  for key, value in setting.get('set', {}).items():
+    is_set = False
+    if not is_set and isinstance(value, bool):
       shared_pref.SetBoolean(key, value)
-    elif isinstance(value, basestring):
-      shared_pref.SetString(key, value)
-    elif isinstance(value, long) or isinstance(value, int):
-      shared_pref.SetLong(key, value)
-    elif isinstance(value, list):
+      is_set = True
+    try:
+      # Python-2 compatibility.
+      if not is_set and isinstance(value, basestring):
+        shared_pref.SetString(key, value)
+        is_set = True
+      if not is_set and (isinstance(value, long) or isinstance(value, int)):
+        shared_pref.SetLong(key, value)
+        is_set = True
+    except NameError:
+      if not is_set and isinstance(value, str):
+        shared_pref.SetString(key, value)
+        is_set = True
+      if not is_set and isinstance(value, int):
+        shared_pref.SetLong(key, value)
+        is_set = True
+    if not is_set and isinstance(value, list):
       shared_pref.SetStringSet(key, value)
-    else:
+      is_set = True
+    if not is_set:
       raise ValueError("Given invalid value type %s for key %s" % (
           str(type(value)), key))
   shared_pref.Commit()

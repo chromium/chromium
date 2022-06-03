@@ -28,7 +28,7 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/web_screen_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -59,6 +60,8 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -93,7 +96,8 @@ class DraggedNodeImageBuilder {
     DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
 #endif
     // Construct layout object for |node_| with pseudo class "-webkit-drag"
-    local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint();
+    local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kDragImage);
     LayoutObject* const dragged_layout_object = node_->GetLayoutObject();
     if (!dragged_layout_object)
       return nullptr;
@@ -102,18 +106,18 @@ class DraggedNodeImageBuilder {
     // object contains transparency and there are other elements in the same
     // stacking context which stacked below.
     PaintLayer* layer = dragged_layout_object->EnclosingLayer();
-    if (!layer->GetLayoutObject().StyleRef().IsStackingContext())
+    if (!layer->GetLayoutObject().IsStackingContext())
       layer = layer->AncestorStackingContext();
 
     IntRect absolute_bounding_box =
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     // TODO(chrishtr): consider using the root frame's visible rect instead
     // of the local frame, to avoid over-clipping.
-    IntRect visible_rect(IntPoint(),
+    IntRect visible_rect(gfx::Point(),
                          layer->GetLayoutObject().GetFrameView()->Size());
     // If the absolute bounding box is large enough to be possibly a memory
     // or IPC payload issue, clip it to the visible content rect.
-    if (absolute_bounding_box.Size().Area() > visible_rect.Size().Area()) {
+    if (absolute_bounding_box.size().Area() > visible_rect.size().Area()) {
       absolute_bounding_box.Intersect(visible_rect);
     }
 
@@ -121,41 +125,51 @@ class DraggedNodeImageBuilder {
         layer->GetLayoutObject()
             .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
             .BoundingBox();
+    absl::optional<OverriddenCullRectScope> cull_rect_scope;
+    if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+      FloatRect cull_rect = bounding_box;
+      cull_rect.Offset(
+          FloatSize(layer->GetLayoutObject().FirstFragment().PaintOffset()));
+      cull_rect_scope.emplace(*layer,
+                              CullRect(ToGfxRect(EnclosingIntRect(cull_rect))));
+    }
     PaintLayerPaintingInfo painting_info(
-        layer, CullRect(EnclosingIntRect(bounding_box)),
+        layer, CullRect(ToGfxRect(EnclosingIntRect(bounding_box))),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
-    PaintLayerFlags flags = kPaintLayerHaveTransparency;
-    PaintRecordBuilder builder;
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder.Context(), painting_info, flags);
+    PaintLayerPainter(*layer).Paint(builder->Context(), painting_info,
+                                    kPaintLayerNoFlag);
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
 
-    FloatPoint paint_offset = bounding_box.Location();
-    PropertyTreeState border_box_properties =
-        layer->GetLayoutObject().FirstFragment().LocalBorderBoxProperties();
+    FloatPoint paint_offset = bounding_box.origin();
+    PropertyTreeState border_box_properties = layer->GetLayoutObject()
+                                                  .FirstFragment()
+                                                  .LocalBorderBoxProperties()
+                                                  .Unalias();
     // We paint in the containing transform node's space. Add the offset from
     // the layer to this transform space.
     paint_offset +=
         FloatPoint(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f,
-        LayoutObject::ShouldRespectImageOrientation(dragged_layout_object),
-        bounding_box.Size(), paint_offset, builder, border_box_properties);
+        *local_frame_, 1.0f, bounding_box.size(), paint_offset, *builder,
+        border_box_properties);
   }
 
  private:
-  const Member<LocalFrame> local_frame_;
-  const Member<Node> node_;
+  LocalFrame* const local_frame_;
+  Node* const node_;
 #if DCHECK_IS_ON()
   const uint64_t dom_tree_version_;
 #endif
 };
-}  // namespace
-static DragOperation ConvertEffectAllowedToDragOperation(const String& op) {
+
+absl::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
+    const AtomicString& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
   if (op == "uninitialized")
@@ -167,33 +181,36 @@ static DragOperation ConvertEffectAllowedToDragOperation(const String& op) {
   if (op == "link")
     return kDragOperationLink;
   if (op == "move")
-    return (DragOperation)(kDragOperationGeneric | kDragOperationMove);
-  if (op == "copyLink")
-    return (DragOperation)(kDragOperationCopy | kDragOperationLink);
-  if (op == "copyMove")
-    return (DragOperation)(kDragOperationCopy | kDragOperationGeneric |
-                           kDragOperationMove);
-  if (op == "linkMove")
-    return (DragOperation)(kDragOperationLink | kDragOperationGeneric |
-                           kDragOperationMove);
+    return kDragOperationMove;
+  if (op == "copyLink") {
+    return static_cast<DragOperationsMask>(kDragOperationCopy |
+                                           kDragOperationLink);
+  }
+  if (op == "copyMove") {
+    return static_cast<DragOperationsMask>(kDragOperationCopy |
+                                           kDragOperationMove);
+  }
+  if (op == "linkMove") {
+    return static_cast<DragOperationsMask>(kDragOperationLink |
+                                           kDragOperationMove);
+  }
   if (op == "all")
     return kDragOperationEvery;
-  return kDragOperationPrivate;  // really a marker for "no conversion"
+  return absl::nullopt;
 }
 
-static String ConvertDragOperationToEffectAllowed(DragOperation op) {
-  bool move_set = !!((kDragOperationGeneric | kDragOperationMove) & op);
-
-  if ((move_set && (op & kDragOperationCopy) && (op & kDragOperationLink)) ||
+AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
+  if (((op & kDragOperationMove) && (op & kDragOperationCopy) &&
+       (op & kDragOperationLink)) ||
       (op == kDragOperationEvery))
     return "all";
-  if (move_set && (op & kDragOperationCopy))
+  if ((op & kDragOperationMove) && (op & kDragOperationCopy))
     return "copyMove";
-  if (move_set && (op & kDragOperationLink))
+  if ((op & kDragOperationMove) && (op & kDragOperationLink))
     return "linkMove";
   if ((op & kDragOperationCopy) && (op & kDragOperationLink))
     return "copyLink";
-  if (move_set)
+  if (op & kDragOperationMove)
     return "move";
   if (op & kDragOperationCopy)
     return "copy";
@@ -203,11 +220,10 @@ static String ConvertDragOperationToEffectAllowed(DragOperation op) {
 }
 
 // We provide the IE clipboard types (URL and Text), and the clipboard types
-// specified in the WHATWG Web Applications 1.0 draft see
-// http://www.whatwg.org/specs/web-apps/current-work/ Section 6.3.5.3
-static String NormalizeType(const String& type,
-                            bool* convert_to_url = nullptr) {
-  String clean_type = type.StripWhiteSpace().DeprecatedLower();
+// specified in the HTML spec. See
+// https://html.spec.whatwg.org/multipage/dnd.html#the-datatransfer-interface
+String NormalizeType(const String& type, bool* convert_to_url = nullptr) {
+  String clean_type = type.StripWhiteSpace().LowerASCII();
   if (clean_type == kMimeTypeText ||
       clean_type.StartsWith(kMimeTypeTextPlainEtc))
     return kMimeTypeTextPlain;
@@ -219,6 +235,9 @@ static String NormalizeType(const String& type,
   return clean_type;
 }
 
+}  // namespace
+
+// static
 DataTransfer* DataTransfer::Create() {
   DataTransfer* data = Create(
       kCopyAndPaste, DataTransferAccessPolicy::kWritable, DataObject::Create());
@@ -227,6 +246,7 @@ DataTransfer* DataTransfer::Create() {
   return data;
 }
 
+// static
 DataTransfer* DataTransfer::Create(DataTransferType type,
                                    DataTransferAccessPolicy policy,
                                    DataObject* data_object) {
@@ -235,7 +255,7 @@ DataTransfer* DataTransfer::Create(DataTransferType type,
 
 DataTransfer::~DataTransfer() = default;
 
-void DataTransfer::setDropEffect(const String& effect) {
+void DataTransfer::setDropEffect(const AtomicString& effect) {
   if (!IsForDragAndDrop())
     return;
 
@@ -247,18 +267,14 @@ void DataTransfer::setDropEffect(const String& effect) {
 
   // The specification states that dropEffect can be changed at all times, even
   // if the DataTransfer instance is protected or neutered.
-  //
-  // Allowing these changes seems inconsequential, but findDropZone() in
-  // EventHandler.cpp relies on being able to call setDropEffect during
-  // dragenter, when the DataTransfer policy is DataTransferTypesReadable.
   drop_effect_ = effect;
 }
 
-void DataTransfer::setEffectAllowed(const String& effect) {
+void DataTransfer::setEffectAllowed(const AtomicString& effect) {
   if (!IsForDragAndDrop())
     return;
 
-  if (ConvertEffectAllowedToDragOperation(effect) == kDragOperationPrivate) {
+  if (!ConvertEffectAllowedToDragOperationsMask(effect)) {
     // This means that there was no conversion, and the effectAllowed that
     // we are passed isn't a valid effectAllowed, so we should ignore it,
     // and not set |effect_allowed_|.
@@ -339,7 +355,7 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
   if (!IsForDragAndDrop())
     return;
 
-  IntPoint location(x, y);
+  gfx::Point location(x, y);
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())
     SetDragImageResource(html_image_element->CachedImage(), location);
@@ -348,15 +364,15 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
 }
 
 void DataTransfer::ClearDragImage() {
-  setDragImage(nullptr, nullptr, IntPoint());
+  setDragImage(nullptr, nullptr, gfx::Point());
 }
 
 void DataTransfer::SetDragImageResource(ImageResourceContent* img,
-                                        const IntPoint& loc) {
+                                        const gfx::Point& loc) {
   setDragImage(img, nullptr, loc);
 }
 
-void DataTransfer::SetDragImageElement(Node* node, const IntPoint& loc) {
+void DataTransfer::SetDragImageElement(Node* node, const gfx::Point& loc) {
   setDragImage(nullptr, node, loc);
 }
 
@@ -366,7 +382,7 @@ FloatRect DataTransfer::ClipByVisualViewport(const FloatRect& absolute_rect,
       EnclosingIntRect(frame.GetPage()->GetVisualViewport().VisibleRect());
   FloatRect absolute_viewport =
       FloatRect(frame.View()->ConvertFromRootFrame(viewport_in_root_frame));
-  return Intersection(absolute_viewport, absolute_rect);
+  return IntersectRects(absolute_viewport, absolute_rect);
 }
 
 // static
@@ -386,7 +402,6 @@ FloatSize DataTransfer::DeviceSpaceSize(const FloatSize& css_size,
 std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     LocalFrame& frame,
     float opacity,
-    RespectImageOrientationEnum image_orientation,
     const FloatSize& css_size,
     const FloatPoint& paint_offset,
     PaintRecordBuilder& builder,
@@ -397,15 +412,15 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
   FloatSize device_size = DeviceSpaceSize(css_size, frame);
   AffineTransform transform;
   FloatSize paint_offset_size =
-      DeviceSpaceSize(FloatSize(paint_offset.X(), paint_offset.Y()), frame);
-  transform.Translate(-paint_offset_size.Width(), -paint_offset_size.Height());
+      DeviceSpaceSize(FloatSize(paint_offset.x(), paint_offset.y()), frame);
+  transform.Translate(-paint_offset_size.width(), -paint_offset_size.height());
   transform.Scale(device_scale_factor * page_scale_factor);
 
   // Rasterize upfront, since DragImage::create() is going to do it anyway
   // (SkImage::asLegacyBitmap).
   SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
   sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
-      device_size.Width(), device_size.Height(), &surface_props);
+      device_size.width(), device_size.height(), &surface_props);
   if (!surface)
     return nullptr;
 
@@ -419,7 +434,10 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
   float screen_device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;
 
-  return DragImage::Create(image.get(), image_orientation,
+  // There is no orientation information in the image, so pass
+  // kDoNotRespectImageOrientation in order to avoid wasted work looking
+  // at orientation.
+  return DragImage::Create(image.get(), kDoNotRespectImageOrientation,
                            screen_device_scale_factor, kInterpolationDefault,
                            opacity);
 }
@@ -432,7 +450,7 @@ std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
 }
 
 std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
-    IntPoint& loc,
+    gfx::Point& loc,
     LocalFrame* frame) const {
   if (drag_image_element_) {
     loc = drag_loc_;
@@ -449,14 +467,10 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
 static ImageResourceContent* GetImageResourceContent(Element* element) {
   // Attempt to pull ImageResourceContent from element
   DCHECK(element);
-  LayoutObject* layout_object = element->GetLayoutObject();
-  if (!layout_object || !layout_object->IsImage())
-    return nullptr;
-
-  LayoutImage* image = ToLayoutImage(layout_object);
-  if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
-    return image->CachedImage();
-
+  if (auto* image = DynamicTo<LayoutImage>(element->GetLayoutObject())) {
+    if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
+      return image->CachedImage();
+  }
   return nullptr;
 }
 
@@ -473,8 +487,9 @@ static void WriteImageToDataObject(DataObject* data_object,
   if (!image_buffer || !image_buffer->size())
     return;
 
-  data_object->AddSharedBuffer(
-      image_buffer, image_url, image->FilenameExtension(),
+  data_object->AddFileSharedBuffer(
+      image_buffer, cached_image->IsAccessAllowed(), image_url,
+      image->FilenameExtension(),
       cached_image->GetResponse().HttpHeaderFields().Get(
           http_names::kContentDisposition));
 }
@@ -557,43 +572,27 @@ bool DataTransfer::CanSetDragImage() const {
          policy_ == DataTransferAccessPolicy::kWritable;
 }
 
-DragOperation DataTransfer::SourceOperation() const {
-  DragOperation op = ConvertEffectAllowedToDragOperation(effect_allowed_);
-  DCHECK_NE(op, kDragOperationPrivate);
-  return op;
+DragOperationsMask DataTransfer::SourceOperation() const {
+  absl::optional<DragOperationsMask> op =
+      ConvertEffectAllowedToDragOperationsMask(effect_allowed_);
+  DCHECK(op);
+  return *op;
 }
 
-DragOperation DataTransfer::DestinationOperation() const {
-  DragOperation op = ConvertEffectAllowedToDragOperation(drop_effect_);
-  DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
-         op == kDragOperationLink ||
-         op == (DragOperation)(kDragOperationGeneric | kDragOperationMove) ||
-         op == kDragOperationEvery);
-  return op;
+ui::mojom::blink::DragOperation DataTransfer::DestinationOperation() const {
+  DCHECK(DropEffectIsInitialized());
+  absl::optional<DragOperationsMask> op =
+      ConvertEffectAllowedToDragOperationsMask(drop_effect_);
+  return static_cast<ui::mojom::blink::DragOperation>(*op);
 }
 
-void DataTransfer::SetSourceOperation(DragOperation op) {
-  DCHECK_NE(op, kDragOperationPrivate);
-  effect_allowed_ = ConvertDragOperationToEffectAllowed(op);
+void DataTransfer::SetSourceOperation(DragOperationsMask op) {
+  effect_allowed_ = ConvertDragOperationsMaskToEffectAllowed(op);
 }
 
-void DataTransfer::SetDestinationOperation(DragOperation op) {
-  DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
-         op == kDragOperationLink || op == kDragOperationGeneric ||
-         op == kDragOperationMove ||
-         op == static_cast<DragOperation>(kDragOperationGeneric |
-                                          kDragOperationMove));
-  drop_effect_ = ConvertDragOperationToEffectAllowed(op);
-}
-
-bool DataTransfer::HasDropZoneType(const String& keyword) {
-  if (keyword.StartsWith("file:"))
-    return HasFileOfType(keyword.Substring(5));
-
-  if (keyword.StartsWith("string:"))
-    return HasStringOfType(keyword.Substring(7));
-
-  return false;
+void DataTransfer::SetDestinationOperation(ui::mojom::blink::DragOperation op) {
+  drop_effect_ = ConvertDragOperationsMaskToEffectAllowed(
+      static_cast<DragOperationsMask>(op));
 }
 
 DataTransferItemList* DataTransfer::items() {
@@ -612,7 +611,6 @@ DataTransfer::DataTransfer(DataTransferType type,
                            DataTransferAccessPolicy policy,
                            DataObject* data_object)
     : policy_(policy),
-      drop_effect_("uninitialized"),
       effect_allowed_("uninitialized"),
       transfer_type_(type),
       data_object_(data_object),
@@ -622,7 +620,7 @@ DataTransfer::DataTransfer(DataTransferType type,
 
 void DataTransfer::setDragImage(ImageResourceContent* image,
                                 Node* node,
-                                const IntPoint& loc) {
+                                const gfx::Point& loc) {
   if (!CanSetDragImage())
     return;
 
@@ -653,31 +651,7 @@ bool DataTransfer::HasStringOfType(const String& type) const {
   return data_object_->Types().Contains(type);
 }
 
-DragOperation ConvertDropZoneOperationToDragOperation(
-    const String& drag_operation) {
-  if (drag_operation == "copy")
-    return kDragOperationCopy;
-  if (drag_operation == "move")
-    return kDragOperationMove;
-  if (drag_operation == "link")
-    return kDragOperationLink;
-  return kDragOperationNone;
-}
-
-String ConvertDragOperationToDropZoneOperation(DragOperation operation) {
-  switch (operation) {
-    case kDragOperationCopy:
-      return String("copy");
-    case kDragOperationMove:
-      return String("move");
-    case kDragOperationLink:
-      return String("link");
-    default:
-      return String("copy");
-  }
-}
-
-void DataTransfer::Trace(blink::Visitor* visitor) {
+void DataTransfer::Trace(Visitor* visitor) const {
   visitor->Trace(data_object_);
   visitor->Trace(drag_image_);
   visitor->Trace(drag_image_element_);

@@ -11,7 +11,7 @@
 #import "remoting/ios/domain/host_info.h"
 #import "remoting/ios/domain/host_settings.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 static NSString* const kActiveUserKey = @"kActiveUserKey";
 static NSString* const kHostSettingsKey = @"kHostSettingsKey";

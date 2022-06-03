@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_APP_HELPER_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace chromeos {
 namespace multidevice_setup {
@@ -14,6 +13,10 @@ namespace multidevice_setup {
 // A delegate class used to install the Messages for Web PWA.
 class AndroidSmsAppHelperDelegate {
  public:
+  AndroidSmsAppHelperDelegate(const AndroidSmsAppHelperDelegate&) = delete;
+  AndroidSmsAppHelperDelegate& operator=(const AndroidSmsAppHelperDelegate&) =
+      delete;
+
   virtual ~AndroidSmsAppHelperDelegate() = default;
 
   // Sets up the Messages for Web PWA. Handles retries and errors internally.
@@ -28,15 +31,26 @@ class AndroidSmsAppHelperDelegate {
   // Returns true if the app was ever installed successfully since the feature
   // was enabled and then been manually uninstalled by the user.
   virtual bool HasAppBeenManuallyUninstalledByUser() = 0;
+  // Returns whether the PWA is currently installed.
+  virtual bool IsAppInstalled() = 0;
+  // Returns true when details about installed PWAs is available to query.
+  virtual bool IsAppRegistryReady() = 0;
+  // Takes a task to run when the app registry is available.  If already
+  // available it will execute asynchronously.
+  virtual void ExecuteOnAppRegistryReady(base::OnceClosure task) = 0;
 
  protected:
   AndroidSmsAppHelperDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppHelperDelegate);
 };
 
 }  // namespace multidevice_setup
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::AndroidSmsAppHelperDelegate;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_APP_HELPER_DELEGATE_H_

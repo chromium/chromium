@@ -37,7 +37,7 @@ void PortSetTraits::Free(mach_port_t port) {
 
 bool CreateMachPort(ScopedMachReceiveRight* receive,
                     ScopedMachSendRight* send,
-                    Optional<mach_port_msgcount_t> queue_limit) {
+                    absl::optional<mach_port_msgcount_t> queue_limit) {
   mach_port_options_t options{};
   options.flags = (send != nullptr ? MPO_INSERT_SEND_RIGHT : 0);
 
@@ -61,6 +61,15 @@ bool CreateMachPort(ScopedMachReceiveRight* receive,
   }
 
   return true;
+}
+
+ScopedMachSendRight RetainMachSendRight(mach_port_t port) {
+  kern_return_t kr =
+      mach_port_mod_refs(mach_task_self(), port, MACH_PORT_RIGHT_SEND, 1);
+  if (kr == KERN_SUCCESS)
+    return ScopedMachSendRight(port);
+  MACH_DLOG(ERROR, kr) << "mach_port_mod_refs +1";
+  return {};
 }
 
 }  // namespace mac

@@ -8,8 +8,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 
 struct DevToolsToggleAction {
  public:
@@ -25,12 +25,12 @@ struct DevToolsToggleAction {
   };
 
   struct RevealParams {
-    RevealParams(const base::string16& url,
+    RevealParams(const std::u16string& url,
                  size_t line_number,
                  size_t column_number);
     ~RevealParams();
 
-    base::string16 url;
+    std::u16string url;
     size_t line_number;
     size_t column_number;
   };
@@ -45,7 +45,7 @@ struct DevToolsToggleAction {
   static DevToolsToggleAction PauseInDebugger();
   static DevToolsToggleAction Inspect();
   static DevToolsToggleAction Toggle();
-  static DevToolsToggleAction Reveal(const base::string16& url,
+  static DevToolsToggleAction Reveal(const std::u16string& url,
                                      size_t line_number,
                                      size_t column_number);
   static DevToolsToggleAction NoOp();

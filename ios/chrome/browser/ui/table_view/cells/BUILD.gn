@@ -16,8 +16,14 @@ source_set("cells") {
     "table_view_disclosure_header_footer_item.mm",
     "table_view_header_footer_item.h",
     "table_view_header_footer_item.mm",
+    "table_view_illustrated_item.h",
+    "table_view_illustrated_item.mm",
     "table_view_image_item.h",
     "table_view_image_item.mm",
+    "table_view_info_button_cell.h",
+    "table_view_info_button_cell.mm",
+    "table_view_info_button_item.h",
+    "table_view_info_button_item.mm",
     "table_view_item.h",
     "table_view_item.mm",
     "table_view_link_header_footer_item.h",
@@ -47,9 +53,11 @@ source_set("cells") {
     "resources:table_view_cell_edit_icon",
     "resources:table_view_cell_error_icon",
     "resources:table_view_cell_favicon_background",
+    "resources:table_view_cell_info",
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors:colors",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/list_model",
@@ -58,9 +66,9 @@ source_set("cells") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/favicon",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
@@ -76,6 +84,8 @@ source_set("cells_constants") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/common/ui/util",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -83,11 +93,11 @@ source_set("cells_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "table_view_detail_icon_item_unittest.mm",
     "table_view_detail_text_item_unittest.mm",
     "table_view_header_footer_item_unittest.mm",
     "table_view_image_item_unittest.mm",
     "table_view_item_unittest.mm",
-    "table_view_link_header_footer_item_unittest.mm",
     "table_view_multi_detail_text_item_unittest.mm",
     "table_view_text_button_item_unittest.mm",
     "table_view_text_edit_item_unittest.mm",
@@ -100,8 +110,10 @@ source_set("unit_tests") {
     ":cells",
     ":cells_constants",
     "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
     "//net:net",
     "//testing/gtest",
     "//third_party/ocmock:ocmock",

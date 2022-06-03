@@ -32,9 +32,7 @@ source_set("afl_runtime") {
     "//build/config/gcc:symbol_visibility_hidden",
   ]
 
-  sources = [
-    "src/llvm_mode/afl-llvm-rt.o.c",
-  ]
+  sources = [ "src/llvm_mode/afl-llvm-rt.o.c" ]
 }
 
 afl_headers = [
@@ -68,26 +66,16 @@ config("afl-tool") {
 copy("afl-cmin") {
   # afl-cmin is a bash script used to minimize the corpus, therefore we can just
   # copy it over.
-  sources = [
-    "src/afl-cmin",
-  ]
-  outputs = [
-    "$root_build_dir/{{source_file_part}}",
-  ]
-  deps = [
-    ":afl-showmap",
-  ]
+  sources = [ "src/afl-cmin" ]
+  outputs = [ "$root_build_dir/{{source_file_part}}" ]
+  deps = [ ":afl-showmap" ]
 }
 
 copy("afl_docs") {
   # Copy the docs folder. This is so that we can use a real value for for
   # -DDOC_PATH when compiling.
-  sources = [
-    "src/docs",
-  ]
-  outputs = [
-    "$root_build_dir/afl/{{source_file_part}}",
-  ]
+  sources = [ "src/docs" ]
+  outputs = [ "$root_build_dir/afl/{{source_file_part}}" ]
 }
 
 executable("afl-fuzz") {
@@ -97,9 +85,7 @@ executable("afl-fuzz") {
 
   no_default_deps = true
 
-  sources = [
-    "src/afl-fuzz.c",
-  ]
+  sources = [ "src/afl-fuzz.c" ]
   sources += afl_headers
 }
 
@@ -109,9 +95,7 @@ executable("afl-tmin") {
 
   no_default_deps = true
 
-  sources = [
-    "src/afl-tmin.c",
-  ]
+  sources = [ "src/afl-tmin.c" ]
   sources += afl_headers
 }
 
@@ -121,8 +105,6 @@ executable("afl-showmap") {
 
   no_default_deps = true
 
-  sources = [
-    "src/afl-showmap.c",
-  ]
+  sources = [ "src/afl-showmap.c" ]
   sources += afl_headers
 }

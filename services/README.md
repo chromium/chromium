@@ -4,11 +4,6 @@
 
 ## Overview
 
-If you're looking for general documentation on the Service Manager, what a
-"service" is, and how to build one, see the
-[Service Manager &amp; Services](/services/service_manager/README.md)
-documentation instead of this document.
-
 The top-level `//services` directory contains the sources, public Mojo interface
 definitions, and public client libraries for a number of essential services,
 designated as **Chrome Foundation Services**. If you think of Chrome as a
@@ -17,9 +12,6 @@ services of that OS.
 
 Each subdirectory here corresponds to a service that:
 
-- implements
-  [`Service`](https://cs.chromium.org/chromium/src/services/service_manager/public/cpp/service.h?rcl=ebec02bcca6e327b2e01855ce43ab1bec0aeef27&l=21)
-  and is thus a client of the Service Manager
 - generally focuses on a subset of functionality or features which are
   thematically or functionally related in a way that makes sense given the name
   of the service
@@ -29,15 +21,11 @@ Each subdirectory here corresponds to a service that:
 *** aside
 Note that there are other parts of the tree which aggregate
 slightly-less-than-foundational service definitions, such as services specific
-to the Chrome browser, defined in `//chrome/services`. The motivations, advice,
-and standards discussed in this document apply to all service definitions in the
-Chromium tree.
+to the Chrome browser defined in `//chrome/services` or reusable services for
+Content or its embedders, defined in `//components/services`. The motivations,
+advice, and standards discussed in this document apply to all service
+definitions in the Chromium tree.
 ***
-
-The `//services/service_manager` directory contains the implementation and
-public APIs of the Service Manager itself, including an embedder API with which
-software applications (such as Chrome) can embed the Service Manager to manage
-their own multiprocess service architecture.
 
 One of the main motivations for expressing Chromium as a collection of services
 is long-term maintainability and code health. Because service API boundaries are
@@ -47,10 +35,10 @@ strongly isolated from other components in the system.
 Another key motivation is general modularity and reusability: in the past there
 have been a number of missed opportunities for potential new features or
 Chromium-based products due to the browser's generally monolothic and inflexible
-system design. With the Service Manager &amp; services providing scaffolding for
-system components, it becomes progressively easier to build out newer use cases
-with *e.g.* a smaller resource footprint, or a different process model, or even
-a more granular binary distribution.
+system design. With the services providing scaffolding for system components, it
+becomes progressively easier to build out newer use cases with *e.g.* a smaller
+resource footprint, or a different process model, or even a more granular binary
+distribution.
 
 ## Service Standards
 
@@ -126,19 +114,13 @@ expose `GoatTeleporterFactory` instead. Now it's impossible for a client to
 acquire a functioning `GoatTeleporter` pipe without also providing a
 corresponding client pipe to complement it.
 
-### Service &amp; Interface Naming
+### Interface Naming
 
 Just some basic tips for service and interface naming:
 
-- Strive to give your service a name that makes it immediately obvious what the
-  service is for (*e.g.*, `"network"`, `"metrics"`) rather than a meaningless
-  codename like `"cromulator_3000"`.
-- Avoid the usage of `"Service"` in interface names. While the term "service"
-  is overloaded in Chromium and certainly has plenty of valid interpretations,
-  in the context of Service Manager services it has a very specific meaning
-  and should not be overloaded further if possible. An interface which exposes a
-  control API for a goat teleporter can just be called `GoatTeleporter`, not
-  `GoatTeleporterService`.
+- Strive to give your service's main interface a name that directly conveys the
+  general purpose of the service (*e.g.*, `NetworkService`, `StorageService`)
+  rather than a meaningless codename like `Cromulator`.
 
 - Strive to avoid conceptual layering violations in naming and documentation --
   *e.g.*, avoid referencing Blink or Content concepts like "renderers" or
@@ -170,9 +152,7 @@ system.
 
 Generally the language-specific client libraries are built against only the
 public mojom API of the service (and usually few other common dependencies like
-`//base` and `//mojo`), and they bootstrap connections to those interfaces by
-using public Service Manager APIs like
-[`Connector`](/services/service_manager/README.md#Connectors).
+`//base` and `//mojo`).
 
 Even in the private service implementation, services should not depend on very
 large components like Content, Chrome, or Blink.
@@ -219,20 +199,7 @@ actually required as part of the service implementation. For example
   what expectations and guarantees are supposed to be upheld by *any*
   implementation of the service's APIs.
 
-- Take advantage of the
-  [test support library](https://cs.chromium.org/chromium/src/services/service_manager/public/cpp/test/)
-  provided by the Service Manager. In particular, `TestConnectorFactory` is
-  useful for driving public API tests with the service running inside the test
-  process, and `TestServiceManager` makes it possible to easily cover
-  out-of-process testing scenarios while faking out as little of the system as
-  possible.
-
 ## Adding a New Service
-
-See the [Service Manager documentation](/services/service_manager/README.md) for
-more details regarding how to define a service and expose or consume interfaces
-to and from it, as well as how to make the service available to an application's
-runtime environment.
 
 Please start a thread on
 [services-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/services-dev)

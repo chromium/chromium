@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_INFOBAR_BANNER_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_INFOBAR_BANNER_CONSUMER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @protocol InfobarBannerConsumer <NSObject>
 
@@ -19,6 +19,9 @@
 // The icon displayed by this InfobarBanner.
 - (void)setIconImage:(UIImage*)iconImage;
 
+// YES if the icon image should have a default tint applied to its background.
+- (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint;
+
 // YES if the banner should be able to present a Modal. Changing this property
 // will immediately update the Banner UI that is related to triggering modal
 // presentation.
@@ -29,6 +32,10 @@
 
 // The subtitle displayed by this InfobarBanner.
 - (void)setSubtitleText:(NSString*)subtitleText;
+
+// If YES, restricts the number of lines in subtitle to 1.
+- (void)setRestrictSubtitleTextToSingleLine:
+    (BOOL)restrictSubtitleTextToSingleLine;
 
 @end
 

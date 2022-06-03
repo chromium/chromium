@@ -4,33 +4,35 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import android.support.test.filters.SmallTest;
 import android.view.View;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.DropdownItem;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,23 +41,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * popups.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AutofillTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private AutofillPopup mAutofillPopup;
-    private WindowAndroid mWindowAndroid;
     private MockAutofillCallback mMockAutofillCallback;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
         mMockAutofillCallback = new MockAutofillCallback();
-        final ChromeActivity activity = mActivityTestRule.getActivity();
+        final ChromeActivity activity = sActivityTestRule.getActivity();
         final ViewAndroidDelegate viewDelegate =
                 ViewAndroidDelegate.createBasicDelegate(activity.getActivityTab().getContentView());
 
@@ -63,7 +66,6 @@ public class AutofillTest {
             View anchorView = viewDelegate.acquireView();
             viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
 
-            mWindowAndroid = new ActivityWindowAndroid(activity);
             mAutofillPopup = new AutofillPopup(activity, anchorView, mMockAutofillCallback);
             mAutofillPopup.filterAndShow(
                     new AutofillSuggestion[0], /* isRtl= */ false, /* isRefresh= */ false);
@@ -89,12 +91,8 @@ public class AutofillTest {
         }
 
         public void waitForCallback() {
-            CriteriaHelper.pollInstrumentationThread(new Criteria() {
-                @Override
-                public boolean isSatisfied() {
-                    return mGotPopupSelection.get();
-                }
-            }, CALLBACK_TIMEOUT_MS, CHECK_INTERVAL_MS);
+            CriteriaHelper.pollInstrumentationThread(
+                    mGotPopupSelection::get, CALLBACK_TIMEOUT_MS, CHECK_INTERVAL_MS);
         }
 
         @Override
@@ -108,25 +106,29 @@ public class AutofillTest {
 
     private AutofillSuggestion[] createTwoAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
-                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", DropdownItem.NO_ICON,
-                        false, 42, false, false, false),
-                new AutofillSuggestion("Arthur Dent", "West Country", DropdownItem.NO_ICON,
-                        false, 43, false, false, false),
+                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
+                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        /* featureForIPH= */ ""),
+                new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
+                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        /* featureForIPH= */ ""),
         };
     }
 
     private AutofillSuggestion[] createFiveAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
-                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", DropdownItem.NO_ICON,
-                        false, 42, false, false, false),
-                new AutofillSuggestion("Arthur Dent", "West Country", DropdownItem.NO_ICON,
-                        false, 43, false, false, false),
-                new AutofillSuggestion("Arthos", "France", DropdownItem.NO_ICON,
-                        false, 44, false, false, false),
-                new AutofillSuggestion("Porthos", "France", DropdownItem.NO_ICON,
-                        false, 45, false, false, false),
-                new AutofillSuggestion("Aramis", "France", DropdownItem.NO_ICON,
-                        false, 46, false, false, false),
+                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
+                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        /* featureForIPH= */ ""),
+                new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
+                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        /* featureForIPH= */ ""),
+                new AutofillSuggestion("Arthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
+                        false, 44, false, false, false, /* featureForIPH= */ ""),
+                new AutofillSuggestion("Porthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
+                        false, 45, false, false, false, /* featureForIPH= */ ""),
+                new AutofillSuggestion("Aramis", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
+                        false, 46, false, false, false, /* featureForIPH= */ ""),
         };
     }
 
@@ -135,11 +137,9 @@ public class AutofillTest {
                 ()
                         -> mAutofillPopup.filterAndShow(
                                 suggestions, /* isRtl= */ false, /* isRefresh= */ false));
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mAutofillPopup.getListView().getChildCount() > 0;
-            }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    mAutofillPopup.getListView().getChildCount(), Matchers.greaterThan(0));
         });
     }
 

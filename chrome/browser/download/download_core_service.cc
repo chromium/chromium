@@ -22,10 +22,11 @@ int DownloadCoreService::NonMaliciousDownloadCountAllProfiles() {
   for (auto it = profiles.begin(); it < profiles.end(); ++it) {
     count += DownloadCoreServiceFactory::GetForBrowserContext(*it)
                  ->NonMaliciousDownloadCount();
-    if ((*it)->HasOffTheRecordProfile())
-      count += DownloadCoreServiceFactory::GetForBrowserContext(
-                   (*it)->GetOffTheRecordProfile())
+    std::vector<Profile*> otr_profiles = (*it)->GetAllOffTheRecordProfiles();
+    for (Profile* otr : otr_profiles) {
+      count += DownloadCoreServiceFactory::GetForBrowserContext(otr)
                    ->NonMaliciousDownloadCount();
+    }
   }
 
   return count;

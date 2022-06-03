@@ -10,7 +10,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_export.h"
@@ -23,6 +22,10 @@ namespace media {
 class MEDIA_EXPORT CdmPromiseAdapter {
  public:
   CdmPromiseAdapter();
+
+  CdmPromiseAdapter(const CdmPromiseAdapter&) = delete;
+  CdmPromiseAdapter& operator=(const CdmPromiseAdapter&) = delete;
+
   ~CdmPromiseAdapter();
 
   enum : uint32_t { kInvalidPromiseId = 0 };
@@ -42,8 +45,13 @@ class MEDIA_EXPORT CdmPromiseAdapter {
                      uint32_t system_code,
                      const std::string& error_message);
 
+  enum class ClearReason {
+    kDestruction,
+    kConnectionError,
+  };
+
   // Rejects and clears all |promises_|.
-  void Clear();
+  void Clear(ClearReason reason);
 
  private:
   // A map between promise IDs and CdmPromises.
@@ -57,7 +65,6 @@ class MEDIA_EXPORT CdmPromiseAdapter {
   PromiseMap promises_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(CdmPromiseAdapter);
 };
 
 }  // namespace media

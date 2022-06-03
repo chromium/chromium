@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "chromecast/media/cma/backend/cma_backend.h"
-#include "chromecast/media/cma/backend/cma_backend_factory.h"
+#include "chromecast/media/api/cma_backend.h"
+#include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

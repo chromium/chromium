@@ -26,6 +26,9 @@ class HitTester {
   HitTester();
   ~HitTester();
 
+  HitTester(const HitTester&) = delete;
+  HitTester& operator=(const HitTester&) = delete;
+
   // Builds a R-Tree from the underlying data.
   void Build(const PaintPreviewFrameProto& proto);
   void Build(const std::vector<LinkData>& links);
@@ -43,9 +46,6 @@ class HitTester {
 
  private:
   cc::RTree<GURL> rtree_;
-
-  HitTester(const HitTester&) = delete;
-  HitTester& operator=(const HitTester&) = delete;
 };
 
 }  // namespace paint_preview

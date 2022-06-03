@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/skia/include/core/SkFont.h"
 
 struct hb_font_t;
@@ -26,10 +25,12 @@ struct HarfBuzzFontData {
  public:
   HarfBuzzFontData()
       : font_(),
-        space_in_gpos_(SpaceGlyphInOpenTypeTables::Unknown),
-        space_in_gsub_(SpaceGlyphInOpenTypeTables::Unknown),
+        space_in_gpos_(SpaceGlyphInOpenTypeTables::kUnknown),
+        space_in_gsub_(SpaceGlyphInOpenTypeTables::kUnknown),
         vertical_data_(nullptr),
         range_set_(nullptr) {}
+  HarfBuzzFontData(const HarfBuzzFontData&) = delete;
+  HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
 
   // The vertical origin and vertical advance functions in HarfBuzzFace require
   // the ascent and height metrics as fallback in case no specific vertical
@@ -45,7 +46,7 @@ struct HarfBuzzFontData {
     font_ = SkFont();
     platform_data.SetupSkFont(&font_);
 
-    if (UNLIKELY(vertical_layout == HarfBuzzFace::PrepareForVerticalLayout)) {
+    if (UNLIKELY(vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)) {
       FontMetrics::AscentDescentWithHacks(
           ascent, descent, dummy_ascent_inflation, dummy_descent_inflation,
           platform_data, font_);
@@ -98,16 +99,13 @@ struct HarfBuzzFontData {
   float ascent_fallback_;
   float height_fallback_;
 
-  enum class SpaceGlyphInOpenTypeTables { Unknown, Present, NotPresent };
+  enum class SpaceGlyphInOpenTypeTables { kUnknown, kPresent, kNotPresent };
 
   SpaceGlyphInOpenTypeTables space_in_gpos_;
   SpaceGlyphInOpenTypeTables space_in_gsub_;
 
   scoped_refptr<OpenTypeVerticalData> vertical_data_;
   scoped_refptr<UnicodeRangeSet> range_set_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzFontData);
 };
 
 }  // namespace blink

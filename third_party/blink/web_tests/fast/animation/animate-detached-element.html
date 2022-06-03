@@ -1,0 +1,11 @@
+<body>
+PASS if no crash.
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var scrollingElement = i.contentDocument.scrollingElement;
+i.remove();
+scrollingElement.animate({"bottom": [0]}); 
+</script>

@@ -1,28 +1,24 @@
 <!DOCTYPE html>
-<html>
-<body style="word-wrap: break-word; -khtml-nbsp-mode: space; -khtml-line-break: after-white-space; ">
-<div contenteditable id="root" style="border: 2px solid red; padding: 12px; font-size: 24px">
-<span id="test">a<span style="white-space:pre">			</span>z</span>
-</div>
-<script src="../editing.js"></script>
-<script src="../../resources/dump-as-markup.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-var test = document.getElementById('test');
-test.focus();
-window.getSelection().collapse(test, 0);
-
-if (window.testRunner)
-    testRunner.dumpEditingCallbacks();
-
-extendSelectionForwardByCharacterCommand();
-copyCommand();
-moveSelectionForwardByCharacterCommand();
-pasteCommand();
-typeCharacterCommand();
-
-Markup.dump('root', 'You should see aax\\tz below');
-
+selection_test(
+    [
+        '<div contenteditable>',
+            'a<span style="white-space:pre">|\t\t\t</span>z',
+        '</div>',
+    ],
+    selection => {
+        if (!window.internals)
+            throw 'This test requires internals.';
+        selection.setClipboardData('X');
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div contenteditable>',
+            'aX|<span style="white-space:pre">\t\t\t</span>z',
+        '</div>',
+    ],
+    'Paste in tabspan');
 </script>
-</body>
-</html>

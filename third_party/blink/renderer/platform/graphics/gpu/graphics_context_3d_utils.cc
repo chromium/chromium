@@ -9,8 +9,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrContext.h"
 
 namespace blink {
 

@@ -1,0 +1,14 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # The channel to build on Android: stable, beta, dev, canary, work, or
+  # default. "default" should be used on non-official builds.
+  android_channel = "default"
+}
+
+assert(android_channel == "default" || android_channel == "canary" ||
+           android_channel == "dev" || android_channel == "beta" ||
+           android_channel == "stable",
+       "Invalid channel: " + android_channel)

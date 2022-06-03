@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_BANDWIDTH_ESTIMATOR_H_
 #define REMOTING_PROTOCOL_BANDWIDTH_ESTIMATOR_H_
 
-#include "base/time/time.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 
 namespace remoting {
@@ -17,9 +16,6 @@ class BandwidthEstimator {
  public:
   BandwidthEstimator() = default;
   virtual ~BandwidthEstimator() = default;
-
-  // Called at any time to update the latest round-trip delay.
-  virtual void UpdateRtt(base::TimeDelta rtt) {}
 
   // Called before sending a |frame|.
   virtual void OnSendingFrame(const WebrtcVideoEncoder::EncodedFrame& frame) {}

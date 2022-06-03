@@ -20,9 +20,7 @@ source_set("perf") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "luci_test_result_unittest.cc",
-  ]
+  sources = [ "luci_test_result_unittest.cc" ]
   deps = [
     ":perf",
     "//base",

@@ -10,8 +10,8 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -67,6 +67,10 @@ bool TabScrubber::IsActivationPending() {
   return activate_timer_.IsRunning();
 }
 
+void TabScrubber::SetEnabled(bool enabled) {
+  enabled_ = enabled;
+}
+
 TabScrubber::TabScrubber() {
   // TODO(mash): Add window server API to observe swipe gestures. Observing
   // gestures on browser windows is not sufficient, as this feature works when
@@ -80,6 +84,9 @@ TabScrubber::~TabScrubber() {
 }
 
 void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
+  if (!enabled_)
+    return;
+
   if (event->type() == ui::ET_SCROLL_FLING_CANCEL ||
       event->type() == ui::ET_SCROLL_FLING_START) {
     FinishScrub(true);
@@ -195,7 +202,7 @@ void TabScrubber::OnTabRemoved(int index) {
 
 Browser* TabScrubber::GetActiveBrowser() {
   Browser* browser = chrome::FindLastActive();
-  if (!browser || !browser->is_type_normal() ||
+  if (!browser || !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP) ||
       !browser->window()->IsActive()) {
     return nullptr;
   }
@@ -256,8 +263,8 @@ void TabScrubber::FinishScrub(bool activate) {
 void TabScrubber::ScheduleFinishScrubIfNeeded() {
   // Tests use a really long delay to ensure RunLoops don't unnecessarily
   // trigger the timer running.
-  const base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      use_default_activation_delay_ ? 200 : 20000);
+  const base::TimeDelta delay =
+      base::Milliseconds(use_default_activation_delay_ ? 200 : 20000);
   activate_timer_.Start(FROM_HERE, delay,
                         base::BindRepeating(&TabScrubber::FinishScrub,
                                             base::Unretained(this), true));
@@ -284,16 +291,19 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
   // Make the swipe speed inversely proportional with the number or tabs:
   // Each added tab introduces a reduction of 2% in |x_offset|, with a value of
   // one fourth of |x_offset| as the minimum (i.e. we need 38 tabs to reach
-  // that minimum reduction).
-  swipe_x_ += base::ClampToRange(
-      x_offset - (tab_strip_->tab_count() * 0.02f * x_offset), 0.25f * x_offset,
-      x_offset);
+  // that minimum reduction). Please note, x_offset might be negative.
+  float min = 0.25 * x_offset;
+  float max = x_offset;
+  if (x_offset < 0)
+    std::swap(min, max);
+  swipe_x_ += base::clamp(
+      x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset), min, max);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab
   // (with the smallest X mirrored co-ordinates) is actually the index of the
   // last tab. Same for the index of the last tab.
-  int first_tab_index = base::i18n::IsRTL() ? tab_strip_->tab_count() - 1 : 0;
-  int last_tab_index = base::i18n::IsRTL() ? 0 : tab_strip_->tab_count() - 1;
+  int first_tab_index = base::i18n::IsRTL() ? tab_strip_->GetTabCount() - 1 : 0;
+  int last_tab_index = base::i18n::IsRTL() ? 0 : tab_strip_->GetTabCount() - 1;
 
   Tab* first_tab = tab_strip_->tab_at(first_tab_index);
   int first_tab_center = first_tab->GetMirroredBounds().CenterPoint().x();

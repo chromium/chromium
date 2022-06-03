@@ -1,0 +1,45 @@
+This is a testharness.js-based test.
+PASS table 1
+PASS table 2
+PASS table 3
+PASS table 4
+PASS table 5
+PASS table 6
+PASS table 7
+PASS table 8
+PASS table 9
+PASS table 10
+PASS table 11
+PASS table 12
+FAIL table 13 assert_equals: 
+<table data-expected-width="66">
+  <tbody><tr>
+    <td style="width:50px" data-expected-width="50"><div style="width:20px">max</div></td>
+  </tr>
+  <tr>
+    <td><div style="width:40px">max</div><div style="width:40px">max</div></td>
+  </tr>
+</tbody></table>
+width expected 66 but got 96
+PASS table 14
+PASS table 15
+PASS table 16
+PASS table 17
+PASS table 18
+PASS table 19
+PASS table 20
+PASS table 21
+PASS table 22
+PASS table 23
+PASS table 24
+PASS table 25
+PASS table 26
+PASS table 27
+PASS table 28
+PASS table 29
+PASS table 30
+PASS table 31
+PASS table 32
+PASS table 33
+Harness: the test ran to completion.
+

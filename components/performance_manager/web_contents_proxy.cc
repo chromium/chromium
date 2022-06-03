@@ -42,6 +42,13 @@ int64_t WebContentsProxy::LastNavigationId() const {
   return proxy->LastNavigationId();
 }
 
+int64_t WebContentsProxy::LastNewDocNavigationId() const {
+  auto* proxy = impl_.get();
+  if (!proxy)
+    return 0;
+  return proxy->LastNewDocNavigationId();
+}
+
 WebContentsProxy::WebContentsProxy(
     const base::WeakPtr<WebContentsProxyImpl>& impl)
     : impl_(impl) {}

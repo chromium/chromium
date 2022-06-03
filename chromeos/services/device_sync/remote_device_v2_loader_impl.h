@@ -38,10 +38,12 @@ class RemoteDeviceV2LoaderImpl : public RemoteDeviceV2Loader {
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<RemoteDeviceV2Loader> Create();
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<RemoteDeviceV2Loader> BuildInstance();
+    virtual std::unique_ptr<RemoteDeviceV2Loader> CreateInstance() = 0;
 
    private:
     static Factory* test_factory_;

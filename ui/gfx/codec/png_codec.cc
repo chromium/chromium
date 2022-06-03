@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -17,7 +17,6 @@
 #include "third_party/zlib/zlib.h"
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 
@@ -39,13 +38,12 @@ class PngDecoderState {
   PngDecoderState(PNGCodec::ColorFormat ofmt, std::vector<unsigned char>* o)
       : output_format(ofmt),
         output_channels(0),
-        bitmap(NULL),
+        bitmap(nullptr),
         is_opaque(true),
         output(o),
         width(0),
         height(0),
-        done(false) {
-  }
+        done(false) {}
 
   // Output is an SkBitmap.
   explicit PngDecoderState(SkBitmap* skbitmap)
@@ -53,11 +51,13 @@ class PngDecoderState {
         output_channels(0),
         bitmap(skbitmap),
         is_opaque(true),
-        output(NULL),
+        output(nullptr),
         width(0),
         height(0),
-        done(false) {
-  }
+        done(false) {}
+
+  PngDecoderState(const PngDecoderState&) = delete;
+  PngDecoderState& operator=(const PngDecoderState&) = delete;
 
   PNGCodec::ColorFormat output_format;
   int output_channels;
@@ -79,9 +79,6 @@ class PngDecoderState {
 
   // Set to true when we've found the end of the data.
   bool done;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngDecoderState);
 };
 
 // User transform (passed to libpng) which converts a row decoded by libpng to
@@ -265,6 +262,10 @@ class PngReadStructInfo {
  public:
   PngReadStructInfo(): png_ptr_(nullptr), info_ptr_(nullptr) {
   }
+
+  PngReadStructInfo(const PngReadStructInfo&) = delete;
+  PngReadStructInfo& operator=(const PngReadStructInfo&) = delete;
+
   ~PngReadStructInfo() {
     png_destroy_read_struct(&png_ptr_, &info_ptr_, NULL);
   }
@@ -291,8 +292,6 @@ class PngReadStructInfo {
 
   png_struct* png_ptr_;
   png_info* info_ptr_;
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngReadStructInfo);
 };
 
 // Holds png struct and info ensuring the proper destruction.
@@ -301,14 +300,15 @@ class PngWriteStructInfo {
   PngWriteStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {
   }
 
+  PngWriteStructInfo(const PngWriteStructInfo&) = delete;
+  PngWriteStructInfo& operator=(const PngWriteStructInfo&) = delete;
+
   ~PngWriteStructInfo() {
     png_destroy_write_struct(&png_ptr_, &info_ptr_);
   }
 
   png_struct* png_ptr_;
   png_info* info_ptr_;
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngWriteStructInfo);
 };
 
 // Libpng user error and warning functions which allows us to print libpng

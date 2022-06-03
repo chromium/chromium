@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBRTC_WEBRTC_INTERNALS_MESSAGE_HANDLER_H_
 #define CONTENT_BROWSER_WEBRTC_WEBRTC_INTERNALS_MESSAGE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -26,6 +25,11 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
       public WebRTCInternalsUIObserver {
  public:
   WebRTCInternalsMessageHandler();
+
+  WebRTCInternalsMessageHandler(const WebRTCInternalsMessageHandler&) = delete;
+  WebRTCInternalsMessageHandler& operator=(
+      const WebRTCInternalsMessageHandler&) = delete;
+
   ~WebRTCInternalsMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -40,7 +44,7 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
  private:
   // Returns a pointer to the RFH iff it is currently hosting the
   // webrtc-internals page.
-  RenderFrameHost* GetWebRTCInternalsHost() const;
+  RenderFrameHost* GetWebRTCInternalsHost();
 
   // Javascript message handler.
   void OnGetStandardStats(const base::ListValue* list);
@@ -51,12 +55,11 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   void OnDOMLoadDone(const base::ListValue* list);
 
   // WebRTCInternalsUIObserver override.
-  void OnUpdate(const char* command, const base::Value* args) override;
+  void OnUpdate(const std::string& event_name,
+                const base::Value* event_data) override;
 
   // Executes Javascript command.
   void ExecuteJavascriptCommand(const char* command, const base::Value* args);
-
-  DISALLOW_COPY_AND_ASSIGN(WebRTCInternalsMessageHandler);
 };
 
 }  // namespace content

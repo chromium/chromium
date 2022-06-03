@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
+#include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace chromeos {
 
@@ -59,45 +59,43 @@ class SecureMessageDelegate {
   virtual ~SecureMessageDelegate();
 
   // Generates a new asymmetric key pair.
-  typedef base::Callback<void(const std::string& public_key,
-                              const std::string& private_key)>
+  typedef base::OnceCallback<void(const std::string& public_key,
+                                  const std::string& private_key)>
       GenerateKeyPairCallback;
-  virtual void GenerateKeyPair(const GenerateKeyPairCallback& callback) = 0;
+  virtual void GenerateKeyPair(GenerateKeyPairCallback callback) = 0;
 
   // Derives a symmetric key from our private key and the remote device's
   // public key.
-  typedef base::Callback<void(const std::string& derived_key)>
+  typedef base::OnceCallback<void(const std::string& derived_key)>
       DeriveKeyCallback;
   virtual void DeriveKey(const std::string& private_key,
                          const std::string& public_key,
-                         const DeriveKeyCallback& callback) = 0;
+                         DeriveKeyCallback callback) = 0;
 
   // Creates a new secure message with a |payload| given the |key| and
   // |create_options| specifying the cryptographic details.
   // |callback| will be invoked with the serialized SecureMessage upon success
   // or the empty string upon failure.
-  typedef base::Callback<void(const std::string& secure_message)>
+  typedef base::OnceCallback<void(const std::string& secure_message)>
       CreateSecureMessageCallback;
-  virtual void CreateSecureMessage(
-      const std::string& payload,
-      const std::string& key,
-      const CreateOptions& create_options,
-      const CreateSecureMessageCallback& callback) = 0;
+  virtual void CreateSecureMessage(const std::string& payload,
+                                   const std::string& key,
+                                   const CreateOptions& create_options,
+                                   CreateSecureMessageCallback callback) = 0;
 
   // Unwraps |secure_message| given the |key| and |unwrap_options| specifying
   // the cryptographic details.
   // |callback| will be invoked with true for the |verified| argument if the
   // message was verified and decrypted successfully. The |payload| and
   // |header| fields will be non-empty if the message was verified successfully.
-  typedef base::Callback<void(bool verified,
-                              const std::string& payload,
-                              const securemessage::Header& header)>
+  typedef base::OnceCallback<void(bool verified,
+                                  const std::string& payload,
+                                  const securemessage::Header& header)>
       UnwrapSecureMessageCallback;
-  virtual void UnwrapSecureMessage(
-      const std::string& serialized_message,
-      const std::string& key,
-      const UnwrapOptions& unwrap_options,
-      const UnwrapSecureMessageCallback& callback) = 0;
+  virtual void UnwrapSecureMessage(const std::string& serialized_message,
+                                   const std::string& key,
+                                   const UnwrapOptions& unwrap_options,
+                                   UnwrapSecureMessageCallback callback) = 0;
 };
 
 }  // namespace multidevice

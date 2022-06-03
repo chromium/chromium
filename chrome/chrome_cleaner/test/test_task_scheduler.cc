@@ -4,8 +4,10 @@
 
 #include "chrome/chrome_cleaner/test/test_task_scheduler.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
@@ -50,8 +52,7 @@ bool TestTaskScheduler::GetNextTaskRunTime(const wchar_t* task_name,
   return false;
 }
 
-bool TestTaskScheduler::GetTaskNameList(
-    std::vector<base::string16>* task_names) {
+bool TestTaskScheduler::GetTaskNameList(std::vector<std::wstring>* task_names) {
   DCHECK(task_names);
 
   for (const auto& task : tasks_)

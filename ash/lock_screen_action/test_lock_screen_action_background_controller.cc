@@ -14,26 +14,6 @@ namespace {
 
 const char kTestingWidgetName[] = "TestingLockScreenActionBackgroundWidget";
 
-class TestWindowDelegate : public views::WidgetDelegate {
- public:
-  explicit TestWindowDelegate(views::Widget* widget) : widget_(widget) {}
-  ~TestWindowDelegate() override = default;
-
-  // views::WidgetDelegate:
-  void DeleteDelegate() override { delete this; }
-  views::Widget* GetWidget() override { return widget_; }
-  const views::Widget* GetWidget() const override { return widget_; }
-  bool CanActivate() const override { return false; }
-  bool CanResize() const override { return true; }
-  bool CanMaximize() const override { return true; }
-  bool ShouldAdvanceFocusToTopLevelWidget() const override { return true; }
-
- private:
-  views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
-};
-
 }  // namespace
 
 TestLockScreenActionBackgroundController::
@@ -62,7 +42,12 @@ bool TestLockScreenActionBackgroundController::ShowBackground() {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
     params.name = kTestingWidgetName;
     params.parent = parent_window_;
-    params.delegate = new TestWindowDelegate(widget_.get());
+    params.delegate = new views::WidgetDelegate();
+    params.delegate->SetCanActivate(false);
+    params.delegate->SetCanMaximize(true);
+    params.delegate->SetCanResize(true);
+    params.delegate->SetOwnedByWidget(true);
+    params.delegate->SetFocusTraversesOut(true);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
     widget_->Init(std::move(params));

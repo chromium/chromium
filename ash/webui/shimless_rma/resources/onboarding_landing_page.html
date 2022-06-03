@@ -1,0 +1,36 @@
+<style include="cr-shared-style shimless-rma-shared">
+  .large-icon {
+    height: 200px;
+    width: 300px;
+  }
+
+  .small-icon {
+    height: 30px;
+    width: 30px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('welcomeTitleText')]]</h1>
+    <div>[[i18n('beginRmaWarningText')]]</div>
+    <div id="verificationMessage">
+      <paper-spinner-lite id="busyIcon" hidden$="[[!verificationInProgress_]]"
+        active>
+      </paper-spinner-lite>
+      <iron-icon id="verificationIcon"
+        icon="[[getVerificationIcon_(isCompliant_)]]"
+        hidden$="[[verificationInProgress_]]" class="small-icon">
+      </iron-icon>
+      [[verificationMessage_]]
+    </div>
+    <div hidden$="[[verificationInProgress_]]">
+      <p id="errorMessage" hidden="[[isCompliant_]]">[[errorMessage_]]</p>
+    </div>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with real image -->
+    <iron-icon icon="shimless:shimless-placeholder" class="large-icon">
+    </iron-icon>
+  </div>
+</base-page>

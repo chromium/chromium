@@ -4,13 +4,9 @@
       "name": "Scrolling Contents Layer",
       "bounds": [800, 1000],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
-          "rect": [400, 0, 200, 1000],
-          "reason": "incremental"
-        }
+      "backgroundColor": "#0000FF",
+      "invalidations": [
+        [400, 0, 200, 1000]
       ]
     },
     {

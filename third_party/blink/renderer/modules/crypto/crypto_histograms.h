@@ -121,4 +121,4 @@ void HistogramAlgorithmAndKey(ExecutionContext*,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_HISTOGRAMS_H_

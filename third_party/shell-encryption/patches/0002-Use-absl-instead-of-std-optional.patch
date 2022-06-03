@@ -1,0 +1,13 @@
+diff --git a/ntt_parameters.h b/ntt_parameters.h
+index c3da197..55671ec 100644
+--- a/ntt_parameters.h
++++ b/ntt_parameters.h
+@@ -168,7 +168,7 @@ struct NttParameters {
+   ~NttParameters() = default;
+ 
+   int number_coeffs;
+-  std::optional<ModularInt> n_inv_ptr;
++  absl::optional<ModularInt> n_inv_ptr;
+   std::vector<ModularInt> psis_bitrev;
+   std::vector<ModularInt> psis_inv_bitrev;
+   std::vector<unsigned int> bitrevs;

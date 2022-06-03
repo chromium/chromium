@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
@@ -23,14 +22,21 @@ PendingBleListenerConnectionRequest::Factory*
     PendingBleListenerConnectionRequest::Factory::test_factory_ = nullptr;
 
 // static
-PendingBleListenerConnectionRequest::Factory*
-PendingBleListenerConnectionRequest::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
+PendingBleListenerConnectionRequest::Factory::Create(
+    std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
+    ConnectionPriority connection_priority,
+    PendingConnectionRequestDelegate* delegate,
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(
+        std::move(client_connection_parameters), connection_priority, delegate,
+        bluetooth_adapter);
+  }
 
-  static base::NoDestructor<PendingBleListenerConnectionRequest::Factory>
-      factory;
-  return factory.get();
+  return base::WrapUnique(new PendingBleListenerConnectionRequest(
+      std::move(client_connection_parameters), connection_priority, delegate,
+      bluetooth_adapter));
 }
 
 // static
@@ -40,17 +46,6 @@ void PendingBleListenerConnectionRequest::Factory::SetFactoryForTesting(
 }
 
 PendingBleListenerConnectionRequest::Factory::~Factory() = default;
-
-std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
-PendingBleListenerConnectionRequest::Factory::BuildInstance(
-    std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
-    ConnectionPriority connection_priority,
-    PendingConnectionRequestDelegate* delegate,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
-  return base::WrapUnique(new PendingBleListenerConnectionRequest(
-      std::move(client_connection_parameters), connection_priority, delegate,
-      bluetooth_adapter));
-}
 
 PendingBleListenerConnectionRequest::PendingBleListenerConnectionRequest(
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters,

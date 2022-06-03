@@ -11,11 +11,12 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/warning_set.h"
+#include "extensions/common/extension_id.h"
 
 // TODO(battre) Remove the Extension prefix.
 
@@ -40,6 +41,10 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
   // |browser_context| may be NULL for testing. In this case, be sure to not
   // insert any warnings.
   explicit WarningService(content::BrowserContext* browser_context);
+
+  WarningService(const WarningService&) = delete;
+  WarningService& operator=(const WarningService&) = delete;
+
   ~WarningService() override;
 
   // Get the instance of the WarningService for |browser_context|.
@@ -84,12 +89,10 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
   content::BrowserContext* const browser_context_;
 
   // Listen to extension unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningService);
 };
 
 }  // namespace extensions

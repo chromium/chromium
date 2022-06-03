@@ -8,8 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -20,7 +19,7 @@
 #include "components/gcm_driver/gcm_internals_constants.h"
 #include "components/gcm_driver/gcm_internals_helper.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/dev_ui_components_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -32,17 +31,24 @@ namespace {
 class GcmInternalsUIMessageHandler : public content::WebUIMessageHandler {
  public:
   GcmInternalsUIMessageHandler();
+
+  GcmInternalsUIMessageHandler(const GcmInternalsUIMessageHandler&) = delete;
+  GcmInternalsUIMessageHandler& operator=(const GcmInternalsUIMessageHandler&) =
+      delete;
+
   ~GcmInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   // Return all of the GCM related infos to the gcm-internals page by calling
   // Javascript callback function
   // |gcm-internals.returnInfo()|.
-  void ReturnResults(Profile* profile, gcm::GCMProfileService* profile_service,
-                     const gcm::GCMClient::GCMStatistics* stats) const;
+  void ReturnResults(Profile* profile,
+                     gcm::GCMProfileService* profile_service,
+                     const gcm::GCMClient::GCMStatistics* stats);
 
   // Request all of the GCM related infos through gcm profile service.
   void RequestAllInfo(const base::ListValue* args);
@@ -51,13 +57,10 @@ class GcmInternalsUIMessageHandler : public content::WebUIMessageHandler {
   void SetRecording(const base::ListValue* args);
 
   // Callback function of the request for all gcm related infos.
-  void RequestGCMStatisticsFinished(
-      const gcm::GCMClient::GCMStatistics& args) const;
+  void RequestGCMStatisticsFinished(const gcm::GCMClient::GCMStatistics& args);
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GcmInternalsUIMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GcmInternalsUIMessageHandler);
 };
 
 GcmInternalsUIMessageHandler::GcmInternalsUIMessageHandler() {}
@@ -67,25 +70,22 @@ GcmInternalsUIMessageHandler::~GcmInternalsUIMessageHandler() {}
 void GcmInternalsUIMessageHandler::ReturnResults(
     Profile* profile,
     gcm::GCMProfileService* profile_service,
-    const gcm::GCMClient::GCMStatistics* stats) const {
+    const gcm::GCMClient::GCMStatistics* stats) {
   base::DictionaryValue results;
   gcm_driver::SetGCMInternalsInfo(stats, profile_service, profile->GetPrefs(),
                                   &results);
-  web_ui()->CallJavascriptFunctionUnsafe(gcm_driver::kSetGcmInternalsInfo,
-                                         results);
+  FireWebUIListener(gcm_driver::kSetGcmInternalsInfo, results);
 }
 
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  AllowJavascript();
+  const auto& list = args->GetList();
+  if (list.size() != 1) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = false;
-  if (!args->GetBoolean(0, &clear_logs)) {
-    NOTREACHED();
-    return;
-  }
+  const bool clear_logs = list[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -98,22 +98,20 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
     ReturnResults(profile, NULL, NULL);
   } else {
     profile_service->driver()->GetGCMStatistics(
-        base::Bind(&GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
-                   weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
+            weak_ptr_factory_.GetWeakPtr()),
         clear_activity_logs);
   }
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  const auto& list = args->GetList();
+  if (list.size() != 1) {
     NOTREACHED();
     return;
   }
-  bool recording = false;
-  if (!args->GetBoolean(0, &recording)) {
-    NOTREACHED();
-    return;
-  }
+  const bool recording = list[0].GetBool();
 
   Profile* profile = Profile::FromWebUI(web_ui());
   gcm::GCMProfileService* profile_service =
@@ -125,14 +123,14 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
   }
   // Get fresh stats after changing recording setting.
   profile_service->driver()->SetGCMRecording(
-      base::Bind(
+      base::BindRepeating(
           &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
           weak_ptr_factory_.GetWeakPtr()),
       recording);
 }
 
 void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
-    const gcm::GCMClient::GCMStatistics& stats) const {
+    const gcm::GCMClient::GCMStatistics& stats) {
   Profile* profile = Profile::FromWebUI(web_ui());
   DCHECK(profile);
   gcm::GCMProfileService* profile_service =
@@ -142,14 +140,26 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  // It is safe to use base::Unretained here, since web_ui owns this message
+  // handler.
+  web_ui()->RegisterDeprecatedMessageCallback(
       gcm_driver::kGetGcmInternalsInfo,
       base::BindRepeating(&GcmInternalsUIMessageHandler::RequestAllInfo,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       gcm_driver::kSetGcmInternalsRecording,
       base::BindRepeating(&GcmInternalsUIMessageHandler::SetRecording,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
+}
+
+void GcmInternalsUIMessageHandler::OnJavascriptDisallowed() {
+  // Invalidate weak ptrs in order to cancel callbacks from the
+  // GCMProfileServiceFactory. If the page is being navigated away from, this
+  // prevents such callbacks from triggering a CHECK by trying to run JS code
+  // on some other page. If the page is refreshed, this prevents the callbacks
+  // from triggering a CHECK by trying to run JS code on the refreshed page when
+  // the JS side is not yet ready, which can lead to a broken UI experience.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace

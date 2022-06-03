@@ -22,6 +22,10 @@ class X11Keyboard;
 class X11CharacterInjector {
  public:
   explicit X11CharacterInjector(std::unique_ptr<X11Keyboard> keyboard);
+
+  X11CharacterInjector(const X11CharacterInjector&) = delete;
+  X11CharacterInjector& operator=(const X11CharacterInjector&) = delete;
+
   ~X11CharacterInjector();
 
   void Inject(uint32_t code_point);
@@ -57,7 +61,6 @@ class X11CharacterInjector {
   std::vector<KeyInfo> available_keycodes_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(X11CharacterInjector);
 };
 
 }  // namespace remoting

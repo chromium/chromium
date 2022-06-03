@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -13,6 +12,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -24,18 +24,20 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;
 
-BookmarkMenuController::BookmarkMenuController(Browser* browser,
-                                               PageNavigator* page_navigator,
-                                               views::Widget* parent,
-                                               const BookmarkNode* node,
-                                               size_t start_child_index,
-                                               bool for_drop)
-    : menu_delegate_(new BookmarkMenuDelegate(browser, page_navigator, parent)),
+BookmarkMenuController::BookmarkMenuController(
+    Browser* browser,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+    views::Widget* parent,
+    const BookmarkNode* node,
+    size_t start_child_index,
+    bool for_drop)
+    : menu_delegate_(
+          new BookmarkMenuDelegate(browser, std::move(get_navigator), parent)),
       node_(node),
-      observer_(NULL),
+      observer_(nullptr),
       for_drop_(for_drop),
-      bookmark_bar_(NULL) {
-  menu_delegate_->Init(this, NULL, node, start_child_index,
+      bookmark_bar_(nullptr) {
+  menu_delegate_->Init(this, nullptr, node, start_child_index,
                        BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
                        BOOKMARK_LAUNCH_LOCATION_BAR_SUBFOLDER);
   int run_type = 0;
@@ -75,12 +77,9 @@ MenuItemView* BookmarkMenuController::context_menu() const {
   return menu_delegate_->context_menu();
 }
 
-void BookmarkMenuController::SetPageNavigator(PageNavigator* navigator) {
-  menu_delegate_->SetPageNavigator(navigator);
-}
-
-base::string16 BookmarkMenuController::GetTooltipText(int id,
-                                                const gfx::Point& p) const {
+std::u16string BookmarkMenuController::GetTooltipText(
+    int id,
+    const gfx::Point& p) const {
   return menu_delegate_->GetTooltipText(id, p);
 }
 
@@ -114,20 +113,32 @@ bool BookmarkMenuController::CanDrop(MenuItemView* menu,
   return menu_delegate_->CanDrop(menu, data);
 }
 
-int BookmarkMenuController::GetDropOperation(
+ui::mojom::DragOperation BookmarkMenuController::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {
   return menu_delegate_->GetDropOperation(item, event, position);
 }
 
-int BookmarkMenuController::OnPerformDrop(MenuItemView* menu,
-                                          DropPosition position,
-                                          const ui::DropTargetEvent& event) {
-  int result = menu_delegate_->OnPerformDrop(menu, position, event);
+ui::mojom::DragOperation BookmarkMenuController::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  ui::mojom::DragOperation result =
+      menu_delegate_->OnPerformDrop(menu, position, event);
   if (for_drop_)
     delete this;
   return result;
+}
+
+views::View::DropCallback BookmarkMenuController::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  auto drop_cb = menu_delegate_->GetDropCallback(menu, position, event);
+  if (for_drop_)
+    delete this;
+  return drop_cb;
 }
 
 bool BookmarkMenuController::ShowContextMenu(MenuItemView* source,
@@ -161,14 +172,14 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
     bool* has_mnemonics,
     views::MenuButton** button) {
   if (!bookmark_bar_ || for_drop_)
-    return NULL;
+    return nullptr;
   gfx::Point bookmark_bar_loc(screen_point);
   views::View::ConvertPointFromScreen(bookmark_bar_, &bookmark_bar_loc);
   size_t start_index;
   const BookmarkNode* node = bookmark_bar_->GetNodeForButtonAtModelIndex(
       bookmark_bar_loc, &start_index);
   if (!node || !node->is_folder())
-    return NULL;
+    return nullptr;
 
   menu_delegate_->SetActiveMenu(node, start_index);
   *button = bookmark_bar_->GetMenuButtonForNode(node);

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/test/gtest_util.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/test_switches.h"

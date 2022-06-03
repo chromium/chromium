@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/json/json_reader.h"
+#include "base/macros.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -87,9 +89,11 @@ void PrintMeanAndMax(const std::string& var_name,
   CalculateMeanAndMax(vars, &mean, &std_dev, &max);
   perf_test::PrintResultMeanAndError(
       kTestResultString, name_modifier, var_name + " Mean",
-      base::StringPrintf("%.0lf,%.0lf", mean, std_dev), "μs", true);
+      base::StringPrintf("%.0lf,%.0lf", mean, std_dev), "μs_smallerIsBetter",
+      true);
   perf_test::PrintResult(kTestResultString, name_modifier, var_name + " Max",
-                         base::StringPrintf("%.0lf", max), "μs", true);
+                         base::StringPrintf("%.0lf", max), "μs_smallerIsBetter",
+                         true);
 }
 
 void FindEvents(trace_analyzer::TraceAnalyzer* analyzer,
@@ -113,8 +117,9 @@ void AssociateEvents(trace_analyzer::TraceAnalyzer* analyzer,
 }
 
 content::WebContents* OpenWebrtcInternalsTab(Browser* browser) {
-  chrome::AddTabAt(browser, GURL(), -1, true);
-  ui_test_utils::NavigateToURL(browser, GURL("chrome://webrtc-internals"));
+  chrome::AddTabAt(browser, GURL(url::kAboutBlankURL), -1, true);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser, GURL("chrome://webrtc-internals")));
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
@@ -130,19 +135,19 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
   ignore_result(parsed_json.release());
 
   // |dictionary| should have exactly two entries, one per ssrc.
-  if (!dictionary || dictionary->size() != 2u)
+  if (!dictionary || dictionary->DictSize() != 2u)
     return goog_decode_ms;
 
   // Only a given |dictionary| entry will have a "stats" entry that has a key
   // that ends with "recv-googMaxDecodeMs" inside (it will start with the ssrc
   // id, but we don't care about that). Then collect the string of "values" out
   // of that key and convert those into the |goog_decode_ms| vector of doubles.
-  for (const auto& dictionary_entry : *dictionary) {
-    for (const auto& ssrc_entry : dictionary_entry.second->DictItems()) {
+  for (auto dictionary_entry : dictionary->DictItems()) {
+    for (auto ssrc_entry : dictionary_entry.second.DictItems()) {
       if (ssrc_entry.first != "stats")
         continue;
 
-      for (const auto& stat_entry : ssrc_entry.second.DictItems()) {
+      for (auto stat_entry : ssrc_entry.second.DictItems()) {
         if (!base::EndsWith(stat_entry.first, "recv-googMaxDecodeMs",
                             base::CompareCase::SENSITIVE)) {
           continue;
@@ -197,6 +202,7 @@ class WebRtcVideoDisplayPerfBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+    command_line->RemoveSwitch(switches::kUseFakeDeviceForMediaStream);
     command_line->AppendSwitchASCII(
         switches::kUseFakeDeviceForMediaStream,
         base::StringPrintf("fps=%d", test_config_.fps));
@@ -227,8 +233,11 @@ class WebRtcVideoDisplayPerfBrowserTest
         OpenPageAndGetUserMediaInNewTabWithConstraints(
             embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage),
             "{audio: true, video: false}");
-    const int process_id =
-        right_tab->GetRenderViewHost()->GetProcess()->GetProcess().Pid();
+    const int process_id = right_tab->GetMainFrame()
+                               ->GetRenderViewHost()
+                               ->GetProcess()
+                               ->GetProcess()
+                               .Pid();
 
     const std::string disable_cpu_adaptation_constraint(
         "{'optional': [{'googCpuOveruseDetection': false}]}");
@@ -408,8 +417,8 @@ class WebRtcVideoDisplayPerfBrowserTest
         test_config_.fps, smoothness_indicator.c_str());
     perf_test::PrintResult(
         kTestResultString, name_modifier, "Skipped frames",
-        base::StringPrintf("%.2lf", skipped_frame_percentage_), "percent",
-        true);
+        base::StringPrintf("%.2lf", skipped_frame_percentage_),
+        "percent_smallerIsBetter", true);
     // We identify intervals in a way that can help us easily bisect the source
     // of added latency in case of a regression. From these intervals, "Render
     // Algorithm" can take random amount of times based on the vsync cycle it is

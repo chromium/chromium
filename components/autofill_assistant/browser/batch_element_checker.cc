@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -19,10 +21,12 @@ BatchElementChecker::BatchElementChecker() {}
 BatchElementChecker::~BatchElementChecker() {}
 
 void BatchElementChecker::AddElementCheck(const Selector& selector,
+                                          bool strict,
                                           ElementCheckCallback callback) {
   DCHECK(!started_);
 
-  element_check_callbacks_[selector].emplace_back(std::move(callback));
+  element_check_callbacks_[std::make_pair(selector, strict)].emplace_back(
+      std::move(callback));
 }
 
 void BatchElementChecker::AddFieldValueCheck(const Selector& selector,
@@ -50,8 +54,8 @@ void BatchElementChecker::Run(WebController* web_controller) {
       element_check_callbacks_.size() + get_field_value_callbacks_.size() + 1;
 
   for (auto& entry : element_check_callbacks_) {
-    web_controller->ElementCheck(
-        entry.first, /* strict= */ false,
+    web_controller->FindElement(
+        /* selector= */ entry.first.first, /* strict= */ entry.first.second,
         base::BindOnce(
             &BatchElementChecker::OnElementChecked,
             weak_ptr_factory_.GetWeakPtr(),
@@ -61,14 +65,19 @@ void BatchElementChecker::Run(WebController* web_controller) {
   }
 
   for (auto& entry : get_field_value_callbacks_) {
-    web_controller->GetFieldValue(
-        entry.first,
+    web_controller->FindElement(
+        entry.first, /* strict= */ true,
         base::BindOnce(
-            &BatchElementChecker::OnGetFieldValue,
-            weak_ptr_factory_.GetWeakPtr(),
-            // Guaranteed to exist for the lifetime of this instance, because
-            // the map isn't modified after Run has been called.
-            base::Unretained(&entry.second)));
+            &element_action_util::TakeElementAndGetProperty<const std::string&>,
+            base::BindOnce(&WebController::GetFieldValue,
+                           web_controller->GetWeakPtr()),
+            std::string(),
+            base::BindOnce(&BatchElementChecker::OnFieldValueChecked,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           // Guaranteed to exist for the lifetime of
+                           // this instance, because the map isn't
+                           // modified after Run has been called.
+                           base::Unretained(&entry.second))));
   }
 
   // The extra +1 of pending_check_count and this check happening last
@@ -84,20 +93,21 @@ void BatchElementChecker::Run(WebController* web_controller) {
 
 void BatchElementChecker::OnElementChecked(
     std::vector<ElementCheckCallback>* callbacks,
-    const ClientStatus& element_status) {
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element_result) {
   for (auto& callback : *callbacks) {
-    std::move(callback).Run(element_status);
+    std::move(callback).Run(element_status, *element_result);
   }
   callbacks->clear();
   CheckDone();
 }
 
-void BatchElementChecker::OnGetFieldValue(
+void BatchElementChecker::OnFieldValueChecked(
     std::vector<GetFieldValueCallback>* callbacks,
-    const ClientStatus& element_status,
+    const ClientStatus& status,
     const std::string& value) {
   for (auto& callback : *callbacks) {
-    std::move(callback).Run(element_status, value);
+    std::move(callback).Run(status, value);
   }
   callbacks->clear();
   CheckDone();

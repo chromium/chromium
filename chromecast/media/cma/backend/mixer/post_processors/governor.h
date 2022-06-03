@@ -28,15 +28,16 @@ namespace media {
 class Governor : public AudioPostProcessor2 {
  public:
   Governor(const std::string& config, int input_channels);
+
+  Governor(const Governor&) = delete;
+  Governor& operator=(const Governor&) = delete;
+
   ~Governor() override;
 
   // AudioPostProcessor2 implementation:
   bool SetConfig(const Config& config) override;
   const Status& GetStatus() override;
-  void ProcessFrames(float* data,
-                     int frames,
-                     float cast_volume,
-                     float volume_dbfs) override;
+  void ProcessFrames(float* data, int frames, Metadata* metadata) override;
   bool UpdateParameters(const std::string& message) override;
 
   void SetSlewTimeMsForTest(int slew_time_ms);
@@ -49,8 +50,6 @@ class Governor : public AudioPostProcessor2 {
   double onset_volume_;
   double clamp_multiplier_;
   SlewVolume slew_volume_;
-
-  DISALLOW_COPY_AND_ASSIGN(Governor);
 };
 
 }  // namespace media

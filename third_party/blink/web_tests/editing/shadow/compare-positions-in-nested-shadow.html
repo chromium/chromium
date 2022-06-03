@@ -17,11 +17,11 @@ function createBox(name) {
 }
 
 function createNestedShadowDOM(host, content) {
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var div = document.createElement('div');
     shadowRoot.appendChild(div);
 
-    var nestedShadowRoot = div.createShadowRoot();
+    var nestedShadowRoot = div.attachShadow({mode: 'open'});
     var divInNestedShadowRoot = document.createElement('div');
     divInNestedShadowRoot.innerHTML = content;
     nestedShadowRoot.appendChild(divInNestedShadowRoot);

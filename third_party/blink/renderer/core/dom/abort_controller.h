@@ -34,7 +34,7 @@ class CORE_EXPORT AbortController : public ScriptWrappable {
   // https://dom.spec.whatwg.org/#dom-abortcontroller-abort
   void abort();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<AbortSignal> signal_;

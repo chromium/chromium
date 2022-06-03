@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +33,10 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       std::unordered_map<std::string, scoped_refptr<FakeUsbDeviceInfo>>;
 
   FakeUsbDeviceManager();
+
+  FakeUsbDeviceManager(const FakeUsbDeviceManager&) = delete;
+  FakeUsbDeviceManager& operator=(const FakeUsbDeviceManager&) = delete;
+
   ~FakeUsbDeviceManager() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::UsbDeviceManager> receiver);
@@ -72,6 +76,11 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
                   GetDevicesCallback callback) override;
   void GetDevice(
       const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
+      mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
+      mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
+  void GetSecurityKeyDevice(
+      const std::string& guid,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
 
@@ -80,13 +89,15 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
                          RefreshDeviceInfoCallback callback) override;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
 
   void OpenFileDescriptor(const std::string& guid,
+                          uint32_t drop_privileges_mask,
+                          mojo::PlatformHandle lifeline_fd,
                           OpenFileDescriptorCallback callback) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void SetClient(mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient>
                      client) override;
@@ -97,8 +108,6 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
   DeviceMap devices_;
 
   base::WeakPtrFactory<FakeUsbDeviceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDeviceManager);
 };
 
 }  // namespace device

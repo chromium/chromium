@@ -1,0 +1,5 @@
+CONSOLE WARNING: <link rel=preload> must have a valid `as` value
+CONSOLE WARNING: <link rel=preload> uses an unsupported `as` value
+CONSOLE WARNING: <link rel=preload> uses an unsupported `as` value
+CONSOLE WARNING: <link rel=preload> uses an unsupported `as` value
+

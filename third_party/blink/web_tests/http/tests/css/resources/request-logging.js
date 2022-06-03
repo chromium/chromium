@@ -1,3 +1,6 @@
+// Do not use for new tests as this logging functionalities are not maintained,
+// and are not safe to run tests in parallel. Accesses for other tests may be
+// merged, or other commands may trim the log.
 function CallCommand(cmd)
 {
  try {
@@ -16,7 +19,7 @@ function startTest()
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
     }
- 
+
     window.setTimeout(endTest, 0);
 }
 

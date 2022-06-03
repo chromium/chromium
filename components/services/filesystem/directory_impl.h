@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "components/services/filesystem/shared_temp_dir.h"
 
@@ -26,6 +25,10 @@ class DirectoryImpl : public mojom::Directory {
   DirectoryImpl(base::FilePath directory_path,
                 scoped_refptr<SharedTempDir> temp_dir,
                 scoped_refptr<LockTable> lock_table);
+
+  DirectoryImpl(const DirectoryImpl&) = delete;
+  DirectoryImpl& operator=(const DirectoryImpl&) = delete;
+
   ~DirectoryImpl() override;
 
   // |Directory| implementation:
@@ -71,8 +74,6 @@ class DirectoryImpl : public mojom::Directory {
   base::FilePath directory_path_;
   scoped_refptr<SharedTempDir> temp_dir_;
   scoped_refptr<LockTable> lock_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectoryImpl);
 };
 
 }  // namespace filesystem

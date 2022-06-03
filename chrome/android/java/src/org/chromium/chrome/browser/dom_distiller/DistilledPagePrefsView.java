@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +20,13 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.FontFamily;
-import org.chromium.components.dom_distiller.core.Theme;
-import org.chromium.ui.UiUtils;
+import org.chromium.dom_distiller.mojom.FontFamily;
+import org.chromium.dom_distiller.mojom.Theme;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -69,8 +69,12 @@ public class DistilledPagePrefsView extends LinearLayout
      */
     public DistilledPagePrefsView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mDistilledPagePrefs = DomDistillerServiceFactory.getForProfile(
-                Profile.getLastUsedProfile()).getDistilledPagePrefs();
+        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now, but
+        // it is not safe.
+        mDistilledPagePrefs =
+                DomDistillerServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .getDistilledPagePrefs();
         mColorModeButtons = new HashMap<Integer /* Theme */, RadioButton>();
         mPercentageFormatter = NumberFormat.getPercentInstance(Locale.getDefault());
     }
@@ -81,8 +85,8 @@ public class DistilledPagePrefsView extends LinearLayout
     }
 
     public static void showDialog(Context context) {
-        AlertDialog.Builder builder = new UiUtils.CompatibleAlertDialogBuilder(
-                context, R.style.Theme_Chromium_AlertDialog);
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog);
         builder.setView(DistilledPagePrefsView.create(context));
         builder.show();
     }
@@ -132,7 +136,8 @@ public class DistilledPagePrefsView extends LinearLayout
                 return overrideTypeFace(view, position);
             }
 
-            private View overrideTypeFace(View view, @FontFamily int family) {
+            private View overrideTypeFace(View view, int family) {
+                FontFamily.validate(family);
                 if (view instanceof TextView) {
                     TextView textView = (TextView) view;
                     if (family == FontFamily.MONOSPACE) {
@@ -153,7 +158,7 @@ public class DistilledPagePrefsView extends LinearLayout
         mFontFamilySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int family, long id) {
-                if (family >= 0 && family < FontFamily.NUM_ENTRIES) {
+                if (FontFamily.isKnownValue(family)) {
                     mDistilledPagePrefs.setFontFamily(family);
                 }
             }
@@ -207,7 +212,8 @@ public class DistilledPagePrefsView extends LinearLayout
     // DistilledPagePrefs.Observer
 
     @Override
-    public void onChangeFontFamily(@FontFamily int fontFamily) {
+    public void onChangeFontFamily(int fontFamily) {
+        FontFamily.validate(fontFamily);
         mFontFamilySpinner.setSelection(fontFamily);
     }
 
@@ -215,7 +221,8 @@ public class DistilledPagePrefsView extends LinearLayout
      * Changes which button is selected if the theme is changed in another tab.
      */
     @Override
-    public void onChangeTheme(@Theme int theme) {
+    public void onChangeTheme(int theme) {
+        Theme.validate(theme);
         mColorModeButtons.get(theme).setChecked(true);
     }
 
@@ -248,7 +255,8 @@ public class DistilledPagePrefsView extends LinearLayout
      * Initiatializes a Button and selects it if it corresponds to the current
      * theme.
      */
-    private RadioButton initializeAndGetButton(int id, final @Theme int theme) {
+    private RadioButton initializeAndGetButton(int id, final int theme) {
+        Theme.validate(theme);
         final RadioButton button = (RadioButton) findViewById(id);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

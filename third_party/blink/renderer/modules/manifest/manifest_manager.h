@@ -8,14 +8,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-blink.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -26,42 +25,44 @@ class ManifestFetcher;
 class ResourceResponse;
 
 // The ManifestManager is a helper class that takes care of fetching and parsing
-// the Manifest of the associated LocalFrame. It uses the ManifestFetcher and
+// the Manifest of the associated window. It uses the ManifestFetcher and
 // the ManifestParser in order to do so.
 //
 // Consumers should use the mojo ManifestManager interface to use this class.
-class MODULES_EXPORT ManifestManager : public GarbageCollected<ManifestManager>,
-                                       public Supplement<LocalFrame>,
-                                       public mojom::blink::ManifestManager,
-                                       public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(ManifestManager);
-  USING_PRE_FINALIZER(ManifestManager, Prefinalize);
-
+class MODULES_EXPORT ManifestManager
+    : public GarbageCollected<ManifestManager>,
+      public Supplement<LocalDOMWindow>,
+      public mojom::blink::ManifestManager,
+      public ExecutionContextLifecycleObserver {
  public:
   static const char kSupplementName[];
 
-  static ManifestManager* From(LocalFrame&);
+  static ManifestManager* From(LocalDOMWindow&);
 
-  static void ProvideTo(LocalFrame&);
+  explicit ManifestManager(LocalDOMWindow&);
 
-  explicit ManifestManager(LocalFrame&);
+  ManifestManager(const ManifestManager&) = delete;
+  ManifestManager& operator=(const ManifestManager&) = delete;
+
   ~ManifestManager() override;
 
   void DidChangeManifest();
-  void DidCommitLoad();
   bool CanFetchManifest();
 
   KURL ManifestURL() const;
   bool ManifestUseCredentials() const;
 
   void RequestManifestForTesting(WebManifestManager::Callback callback);
+  void SetManifestChangeNotifierForTest(ManifestChangeNotifier* notifier) {
+    manifest_change_notifier_ = notifier;
+  }
 
   // mojom::blink::ManifestManager implementation.
   void RequestManifest(RequestManifestCallback callback) override;
   void RequestManifestDebugInfo(
       RequestManifestDebugInfoCallback callback) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   enum ResolveState { ResolveStateSuccess, ResolveStateFailure };
@@ -71,8 +72,8 @@ class MODULES_EXPORT ManifestManager : public GarbageCollected<ManifestManager>,
                               const mojom::blink::ManifestPtr&,
                               const mojom::blink::ManifestDebugInfo*)>;
 
-  // From ContextLifecycleObserver
-  void ContextDestroyed(ExecutionContext*) override;
+  // From ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   void RequestManifestImpl(InternalRequestManifestCallback callback);
 
@@ -80,19 +81,18 @@ class MODULES_EXPORT ManifestManager : public GarbageCollected<ManifestManager>,
   void OnManifestFetchComplete(const KURL& document_url,
                                const ResourceResponse& response,
                                const String& data);
+  void RecordMetrics(const mojom::blink::Manifest& manifest);
   void ResolveCallbacks(ResolveState state);
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::blink::ManifestManager> receiver);
-
-  void Prefinalize();
 
   friend class ManifestManagerTest;
 
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
 
-  // Whether the LocalFrame may have an associated Manifest. If true, the frame
+  // Whether the window may have an associated Manifest. If true, the frame
   // may have a manifest, if false, it can't have one. This boolean is true when
   // DidChangeManifest() is called, if it is never called, it means that the
   // associated document has no <link rel="manifest">.
@@ -112,9 +112,8 @@ class MODULES_EXPORT ManifestManager : public GarbageCollected<ManifestManager>,
 
   Vector<InternalRequestManifestCallback> pending_callbacks_;
 
-  mojo::ReceiverSet<mojom::blink::ManifestManager> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestManager);
+  HeapMojoReceiverSet<mojom::blink::ManifestManager, ManifestManager>
+      receivers_;
 };
 
 }  // namespace blink

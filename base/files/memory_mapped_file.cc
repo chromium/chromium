@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -49,8 +50,8 @@ bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
       break;
 #if defined(OS_WIN)
     case READ_CODE_IMAGE:
-      flags |= File::FLAG_OPEN | File::FLAG_READ | File::FLAG_EXCLUSIVE_WRITE |
-               File::FLAG_EXECUTE;
+      flags |= File::FLAG_OPEN | File::FLAG_READ |
+               File::FLAG_WIN_EXCLUSIVE_WRITE | File::FLAG_WIN_EXECUTE;
       break;
 #endif
   }

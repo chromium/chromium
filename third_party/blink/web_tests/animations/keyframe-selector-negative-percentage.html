@@ -14,6 +14,7 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
 var r = '';
 var s = getComputedStyle(document.getElementById("test"));
 assert_equals(s.backgroundColor, "rgb(0, 128, 0)", 'background color should be green');

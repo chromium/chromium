@@ -11,11 +11,13 @@ namespace page_load_metrics {
 // page load finishes (or reaches some point like first paint), then we consider
 // the load to be aborted.
 //
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. For any additions, also update the
-// corresponding PageEndReason enum in enums.xml.
+// These values are persisted to logs and the history DB. Entries should not be
+// renumbered and numeric values should never be reused. For any additions, also
+// update the corresponding PageEndReason enum in enums.xml.
 enum PageEndReason {
-  // Page lifetime has not yet ended (page is still active).
+  // Page lifetime has not yet ended (page is still active). Pages that
+  // become hidden are logged in END_HIDDEN, so we expect low numbers in this
+  // bucket from the end of May 2020.
   END_NONE = 0,
 
   // The page was reloaded, possibly by the user.
@@ -49,6 +51,15 @@ enum PageEndReason {
   // terminated provisional load if the only signal we get is the load finished
   // without committing, either without error or with net::ERR_ABORTED.
   END_OTHER = 9,
+
+  // The page became hidden but is still active. Added end of May 2020 for
+  // Navigation.PageEndReason2. Deprecated Jan 2021 with
+  // Navigation.PageEndReason3.
+  END_HIDDEN = 10,
+
+  // The page load has not yet ended but we need to flush the metrics because
+  // the app has entered the background.
+  END_APP_ENTER_BACKGROUND = 11,
 
   PAGE_END_REASON_COUNT
 };

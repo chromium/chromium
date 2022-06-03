@@ -14,18 +14,12 @@
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "headless/lib/browser/headless_platform_event_source.h"
 #include "headless/lib/headless_content_client.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
 
-#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-#include "headless/lib/browser/headless_platform_event_source.h"
-#endif
-
 namespace base {
-namespace debug {
-struct CrashKeyString;
-}  // namespace debug
 class CommandLine;
 }  // namespace base
 
@@ -40,16 +34,21 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   explicit HeadlessContentMainDelegate(
       std::unique_ptr<HeadlessBrowserImpl> browser);
   explicit HeadlessContentMainDelegate(HeadlessBrowser::Options options);
+
+  HeadlessContentMainDelegate(const HeadlessContentMainDelegate&) = delete;
+  HeadlessContentMainDelegate& operator=(const HeadlessContentMainDelegate&) =
+      delete;
+
   ~HeadlessContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
-#if defined(OS_MACOSX)
-  void PreCreateMainMessageLoop() override;
+      content::MainFunctionParams main_function_params) override;
+#if defined(OS_MAC)
+  void PreBrowserMain() override;
 #endif
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
@@ -60,7 +59,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 
   HeadlessBrowserImpl* browser() const { return browser_.get(); }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void ZygoteForked() override;
 #endif
 
@@ -80,16 +79,10 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   std::unique_ptr<content::ContentBrowserClient> browser_client_;
   std::unique_ptr<content::ContentUtilityClient> utility_client_;
   HeadlessContentClient content_client_;
-#if !defined(CHROME_MULTIPLE_DLL_CHILD)
   HeadlessPlatformEventSource platform_event_source_;
-#endif
 
   std::unique_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowser::Options> options_;
-
-  base::debug::CrashKeyString* headless_crash_key_;  // Note: never deallocated.
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentMainDelegate);
 };
 
 }  // namespace headless

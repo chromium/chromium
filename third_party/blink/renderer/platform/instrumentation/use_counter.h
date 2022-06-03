@@ -43,19 +43,17 @@ class UseCounter : public GarbageCollectedMixin {
     use_counter.CountUse(feature);
   }
 
- public:
   UseCounter() = default;
+  UseCounter(const UseCounter&) = delete;
+  UseCounter& operator=(const UseCounter&) = delete;
   virtual ~UseCounter() = default;
 
   // Counts a use of the given feature. Repeated calls are ignored.
   virtual void CountUse(mojom::WebFeature feature) = 0;
 
-  // Counts and reports a use of the given (deprecated) feature. Repeated
+  // Counts a use of the given feature which is being deprecated. Repeated
   // calls are ignored.
   virtual void CountDeprecation(mojom::WebFeature feature) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UseCounter);
 };
 
 }  // namespace blink

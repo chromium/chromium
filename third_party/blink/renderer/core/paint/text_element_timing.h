@@ -13,11 +13,15 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
+namespace gfx {
+class Rect;
+class RectF;
+}  // namespace gfx
+
 namespace blink {
 
-class IntRect;
 class LocalFrameView;
-class PropertyTreeState;
+class PropertyTreeStateOrAlias;
 class TextRecord;
 
 // TextElementTiming is responsible for tracking the paint timings for groups of
@@ -25,12 +29,12 @@ class TextRecord;
 class CORE_EXPORT TextElementTiming final
     : public GarbageCollected<TextElementTiming>,
       public Supplement<LocalDOMWindow> {
-  USING_GARBAGE_COLLECTED_MIXIN(TextElementTiming);
-
  public:
   static const char kSupplementName[];
 
   explicit TextElementTiming(LocalDOMWindow&);
+  TextElementTiming(const TextElementTiming&) = delete;
+  TextElementTiming& operator=(const TextElementTiming&) = delete;
 
   static TextElementTiming& From(LocalDOMWindow&);
 
@@ -40,10 +44,10 @@ class CORE_EXPORT TextElementTiming final
            element->FastHasAttribute(html_names::kElementtimingAttr);
   }
 
-  static FloatRect ComputeIntersectionRect(
+  static gfx::RectF ComputeIntersectionRect(
       const LayoutObject&,
-      const IntRect& aggregated_visual_rect,
-      const PropertyTreeState&,
+      const gfx::Rect& aggregated_visual_rect,
+      const PropertyTreeStateOrAlias&,
       const LocalFrameView*);
 
   bool CanReportElements() const;
@@ -52,11 +56,9 @@ class CORE_EXPORT TextElementTiming final
   // resolved. Dispatches PerformanceElementTiming entries to WindowPerformance.
   void OnTextObjectPainted(const TextRecord&);
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   Member<WindowPerformance> performance_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextElementTiming);
 };
 
 }  // namespace blink

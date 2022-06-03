@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-FAIL Property appearance has initial value auto assert_true: appearance doesn't seem to be supported in the computed style expected true got false
-FAIL Property appearance does not inherit assert_true: expected true got false
+PASS Property appearance has initial value none
+PASS Property appearance does not inherit
 PASS Property caret-color has initial value rgb(0, 255, 0)
 PASS Property caret-color inherits
 FAIL Property caret-shape has initial value auto assert_true: caret-shape doesn't seem to be supported in the computed style expected true got false

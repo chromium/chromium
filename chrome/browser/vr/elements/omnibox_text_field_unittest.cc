@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/elements/omnibox_text_field.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/test/mock_text_input_delegate.h"

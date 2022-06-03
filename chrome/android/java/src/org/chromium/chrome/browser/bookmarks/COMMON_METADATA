@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Bookmarks"
+}
+team_email: "clank-app-team@google.com"

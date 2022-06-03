@@ -7,7 +7,7 @@
 #include <utility>
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
-#include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 // https://drafts.css-houdini.org/css-properties-values-api-1/#supported-names
-base::Optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
+absl::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "length")
     return CSSSyntaxType::kLength;
   if (type == "number")
@@ -49,7 +49,7 @@ base::Optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   }
   if (type == "custom-ident")
     return CSSSyntaxType::kCustomIdent;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool IsPreMultiplied(CSSSyntaxType type) {
@@ -61,9 +61,9 @@ bool IsPreMultiplied(CSSSyntaxType type) {
 CSSSyntaxStringParser::CSSSyntaxStringParser(const String& string)
     : string_(string.StripWhiteSpace()), input_(string_) {}
 
-base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
+absl::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
   if (string_.IsEmpty())
-    return base::nullopt;
+    return absl::nullopt;
   if (string_.length() == 1 && string_[0] == '*')
     return CSSSyntaxDefinition::CreateUniversal();
 
@@ -71,7 +71,7 @@ base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
 
   while (true) {
     if (!ConsumeSyntaxComponent(components))
-      return base::nullopt;
+      return absl::nullopt;
     input_.AdvanceUntilNonWhitespace();
     UChar cc = input_.NextInputChar();
     input_.Advance();
@@ -79,7 +79,7 @@ base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
       break;
     if (cc == '|')
       continue;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return CSSSyntaxDefinition(std::move(components));
@@ -150,11 +150,10 @@ bool CSSSyntaxStringParser::ConsumeDataTypeName(CSSSyntaxType& type) {
 
 bool CSSSyntaxStringParser::ConsumeIdent(String& ident) {
   ident = ConsumeName(input_);
-  // TODO(crbug.com/579788): Implement 'revert'.
   // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
-  return !css_property_parser_helpers::IsCSSWideKeyword(ident) &&
-         !css_property_parser_helpers::IsRevertKeyword(ident) &&
-         !css_property_parser_helpers::IsDefaultKeyword(ident);
+  return !css_parsing_utils::IsCSSWideKeyword(ident) &&
+         !css_parsing_utils::IsRevertKeyword(ident) &&
+         !css_parsing_utils::IsDefaultKeyword(ident);
 }
 
 }  // namespace blink

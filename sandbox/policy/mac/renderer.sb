@@ -1,0 +1,193 @@
+; Copyright 2017 The Chromium Authors. All rights reserved.
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Put the denials first.
+; crbug.com/799149: These operations are allowed by default.
+(if (>= os-version 1013)
+  (if (param-true? disable-sandbox-denial-logging)
+    (deny iokit-get-properties process-info* nvram* (with no-log))
+    (deny iokit-get-properties process-info* nvram*)
+))
+
+; Allow cf prefs to work.
+(allow user-preference-read)
+
+; process-info
+(if (>= os-version 1013)
+  (begin
+    (allow process-info-pidinfo)
+    (allow process-info-setcontrol (target self))
+))
+
+; File reads.
+; Reads from the home directory.
+(allow file-read-data
+  (path (user-homedir-path "/.CFUserTextEncoding"))
+  (path (user-homedir-path "/Library/Preferences/com.apple.universalaccess.plist"))
+)
+
+; Reads of /dev devices.
+(allow file-read-data
+  (path "/dev/autofs_nowait")
+  (path "/dev/fd")
+)
+
+(allow-cvms-blobs)
+
+(allow file-write-data
+  (require-all
+    (path "/dev/null")
+    (vnode-type CHARACTER-DEVICE)))
+
+; Needed for Fonts.
+(allow-font-access)
+
+; Reads from /System.
+(allow file-read-data
+  (path "/System/Library/CoreServices/CoreTypes.bundle/Contents/Library/AppExceptions.bundle/Exceptions.plist")
+  (path "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Exceptions.plist")
+  (path "/System/Library/Preferences/Logging/Subsystems/com.apple.SkyLight.plist")
+  (subpath "/System/Library/ColorSync/Profiles")
+  (subpath "/System/Library/CoreServices/SystemAppearance.bundle")
+  (subpath "/System/Library/CoreServices/SystemVersion.bundle")
+  (subpath "/System/Library/Extensions")  ; https://crbug.com/847518
+  (subpath "/System/Library/LinguisticData")
+)
+
+; Reads from /Library.
+(allow file-read-data
+  (subpath "/Library/GPUBundles")  ; https://crbug.com/850021
+)
+
+; IOKit
+(allow iokit-open
+  (iokit-registry-entry-class "IOSurfaceRootUserClient")
+  (iokit-registry-entry-class "RootDomainUserClient")
+  (iokit-user-client-class "IOSurfaceSendRight")
+)
+
+; POSIX IPC
+(allow ipc-posix-shm-read-data
+  (ipc-posix-name "apple.cfprefs.317580v1")
+  (ipc-posix-name "apple.cfprefs.daemonv1")
+  (ipc-posix-name "apple.shm.notification_center")  ; https://crbug.com/792217
+)
+
+; mach IPC
+(allow mach-lookup
+  (global-name "com.apple.cvmsServ")  ; https://crbug.com/850021
+  (global-name "com.apple.distributed_notifications@Uv3")  ; https://crbug.com/792257
+  (global-name "com.apple.lsd.mapdb")
+  (global-name "com.apple.system.notification_center")  ; https://crbug.com/792217
+)
+
+; IOKit properties.
+(if (>= os-version 1013)
+  (allow iokit-get-properties
+    (iokit-property "CaseSensitive")
+    (iokit-property "CoreStorage Encrypted")
+    (iokit-property "Ejectable")
+    (iokit-property "Encrypted")
+    (iokit-property "IOClassNameOverride")
+    (iokit-property "IOMediaIcon")
+    (iokit-property "Product Identification")
+    (iokit-property "Protocol Characteristics")
+    (iokit-property "Removable")
+    (iokit-property "image-encrypted")
+))
+
+; For V8 to use in thread calculations.
+(if (>= os-version 1014)
+  (begin
+    (allow sysctl-read (sysctl-name "kern.tcsm_enable"))
+    (allow sysctl-write (sysctl-name "kern.tcsm_enable"))
+    (allow sysctl-read (sysctl-name "kern.tcsm_available"))
+))
+
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))
+    (allow syscall-unix
+      (syscall-number SYS_change_fdguard_np)
+      (syscall-number SYS_chdir)
+      (syscall-number SYS_chmod)
+      (syscall-number SYS_csops)
+      (syscall-number SYS_csrctl)
+      (syscall-number SYS_dup)
+      (syscall-number SYS_dup2)
+      (syscall-number SYS_fchmod)
+      (syscall-number SYS_fcntl_nocancel)
+      (syscall-number SYS_fgetxattr)
+      (syscall-number SYS_fileport_makefd)
+      (syscall-number SYS_fileport_makeport)
+      (syscall-number SYS_flock)
+      (syscall-number SYS_fsetattrlist)
+      (syscall-number SYS_fsgetpath)
+      (syscall-number SYS_fsync)
+      (syscall-number SYS_ftruncate)
+      (syscall-number SYS_getegid)
+      (syscall-number SYS_getentropy)
+      (syscall-number SYS_getfsstat64)
+      (syscall-number SYS_getrusage)
+      (syscall-number SYS_getsockopt)
+      (syscall-number SYS_gettid)
+      (syscall-number SYS_getxattr)
+      (syscall-number SYS_guarded_close_np)
+      (syscall-number SYS_guarded_open_np)
+      (syscall-number SYS_guarded_pwrite_np)
+      (syscall-number SYS_kdebug_trace)
+      (syscall-number SYS_kdebug_typefilter)
+      (syscall-number SYS_listxattr)
+      (syscall-number SYS_lseek)
+      (syscall-number SYS_memorystatus_control)
+      (syscall-number SYS_mkdir)
+      (syscall-number SYS_mkdirat)
+      (syscall-number SYS_mlock)
+      (syscall-number SYS_msync)
+      (syscall-number SYS_munlock)
+      (syscall-number SYS_necp_client_action)
+      (syscall-number SYS_necp_open)
+      (syscall-number SYS_openat)
+      (syscall-number SYS_openat_nocancel)
+      (syscall-number SYS_pathconf)
+      (syscall-number SYS_pipe)
+      (syscall-number SYS_pread_nocancel)
+      (syscall-number SYS_proc_rlimit_control)
+      (syscall-number SYS_process_policy)
+      (syscall-number SYS_psynch_cvbroad)
+      (syscall-number SYS_psynch_cvclrprepost)
+      (syscall-number SYS_psynch_cvsignal)
+      (syscall-number SYS_psynch_cvwait)
+      (syscall-number SYS_psynch_rw_unlock)
+      (syscall-number SYS_psynch_rw_wrlock)
+      (syscall-number SYS_pwrite)
+      (syscall-number SYS_quotactl)
+      (syscall-number SYS_recvfrom_nocancel)
+      (syscall-number SYS_rename)
+      (syscall-number SYS_rmdir)
+      (syscall-number SYS_select)
+      (syscall-number SYS_select_nocancel)
+      (syscall-number SYS_sem_close)
+      (syscall-number SYS_sem_open)
+      (syscall-number SYS_sem_post)
+      (syscall-number SYS_sem_wait)
+      (syscall-number SYS_sendmsg_nocancel)
+      (syscall-number SYS_sendto)
+      (syscall-number SYS_sendto_nocancel)
+      (syscall-number SYS_setpriority)
+      (syscall-number SYS_setrlimit)
+      (syscall-number SYS_setsockopt)
+      (syscall-number SYS_shared_region_check_np)
+      (syscall-number SYS_shutdown)
+      (syscall-number SYS_sigaltstack)
+      (syscall-number SYS_umask)
+      (syscall-number SYS_unlink)
+      (syscall-number SYS_work_interval_ctl)
+      (syscall-number SYS_write)
+      (syscall-number SYS_write_nocancel)
+      (syscall-number SYS_writev)
+)))

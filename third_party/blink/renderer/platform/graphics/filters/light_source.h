@@ -24,7 +24,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,12 +32,14 @@
 
 namespace blink {
 
-enum LightType { LS_DISTANT, LS_POINT, LS_SPOT };
+enum LightType { kLsDistant, kLsPoint, kLsSpot };
 
 class PLATFORM_EXPORT LightSource : public RefCounted<LightSource> {
 
  public:
   LightSource(LightType type) : type_(type) {}
+  LightSource(const LightSource&) = delete;
+  LightSource& operator=(const LightSource&) = delete;
 
   virtual ~LightSource();
 
@@ -54,8 +55,6 @@ class PLATFORM_EXPORT LightSource : public RefCounted<LightSource> {
 
  private:
   LightType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(LightSource);
 };
 
 }  // namespace blink

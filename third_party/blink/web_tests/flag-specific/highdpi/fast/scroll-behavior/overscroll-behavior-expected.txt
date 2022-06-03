@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS overscroll-behavior-y: none should only prevent scroll propagation on y axis with: wheel.
+PASS overscroll-behavior-x: none should only prevent scroll propagation on x axis with: wheel.
+PASS overscroll-behavior should not affect scrolling inside the applied container with: wheel.
+PASS overscroll-behavior on non-scrollable area should not affect scroll propagation with: wheel.
+FAIL overscroll-behavior-y: none should only prevent scroll propagation on y axis with: touch. assert_equals: expected 0 but got 100
+FAIL overscroll-behavior-x: none should only prevent scroll propagation on x axis with: touch. assert_equals: expected 0 but got 100
+PASS overscroll-behavior on non-scrollable area should not affect scroll propagation with: touch.
+Harness: the test ran to completion.
+

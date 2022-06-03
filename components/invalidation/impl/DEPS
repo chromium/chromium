@@ -13,8 +13,6 @@ include_rules = [
 
   "+google_apis/gaia",
   "+google_apis/gcm",
-  "+jingle/glue/network_service_config_test_util.h",
-  "+jingle/notifier",
   "+net/base/backoff_entry.h",
   "+net/base/ip_endpoint.h",
   "+net/base/network_change_notifier.h",

@@ -1,0 +1,93 @@
+<style include="pdf-shared cr-hidden-style cr-shared-style">
+  :host {
+    --sidenav-selected-tab-color: var(--google-blue-refresh-300);
+    background-color: var(--viewer-pdf-toolbar-background-color);
+    display: flex;
+    height: 100%;
+    min-width: var(--viewer-pdf-sidenav-width);
+    overflow: hidden;
+    width: var(--viewer-pdf-sidenav-width);
+  }
+
+  #icons {
+    display: flex;
+    flex-direction: column;
+    min-width: 64px;
+  }
+
+  /* These are dummy styles currently - replace with real content. */
+  #content {
+    color: white;
+    flex: 1;
+    overflow-x: hidden;
+  }
+
+  #icons:not([hidden]) + #content {
+    --viewer-thumbnail-bar-padding-inline-end: 28px;
+  }
+
+  .selected cr-icon-button {
+    --cr-icon-button-fill-color: var(--sidenav-selected-tab-color);
+  }
+
+  .button-wrapper {
+    --button-wrapper-height: 36px;
+    --button-wrapper-margin: 12px;
+    --button-wrapper-total-height: calc(
+        var(--button-wrapper-height) + var(--button-wrapper-margin));
+    align-items: center;
+    display: flex;
+    height: var(--button-wrapper-height);
+    margin: var(--button-wrapper-margin) 0;
+    width: 100%;
+  }
+
+  .cr-vertical-tab {
+    --cr-vertical-tab-selected-color: var(--sidenav-selected-tab-color);
+  }
+
+  .cr-vertical-tab::before {
+    transform: translateY(var(--button-wrapper-total-height));
+    transition: transform 250ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .cr-vertical-tab.selected + .cr-vertical-tab::before {
+    transform: translateY(calc(-1 * var(--button-wrapper-total-height)));
+  }
+
+  .cr-vertical-tab.selected::before {
+    transform: translateY(0);
+  }
+
+  cr-icon-button {
+    margin: 0 auto;
+  }
+</style>
+<div id="icons" hidden$="[[!bookmarks.length]]">
+  <div class$="
+      button-wrapper cr-vertical-tab [[thumbnailButtonClass_(thumbnailView_)]]">
+    <cr-icon-button iron-icon="pdf:thumbnails" role="tab"
+        title="$i18n{tooltipThumbnails}" aria-label="$i18n{tooltipThumbnails}"
+        aria-selected$="[[getAriaSelectedThumbnails_(thumbnailView_)]]"
+        on-click="onThumbnailClick_">
+    </cr-icon-button>
+  </div>
+  <div class$="
+      button-wrapper cr-vertical-tab [[outlineButtonClass_(thumbnailView_)]]">
+    <cr-icon-button iron-icon="pdf:doc-outline" role="tab"
+        title="$i18n{tooltipDocumentOutline}"
+        aria-label="$i18n{tooltipDocumentOutline}"
+        aria-selected$="[[getAriaSelectedOutline_(thumbnailView_)]]"
+        on-click="onOutlineClick_">
+    </cr-icon-button>
+  </div>
+</div>
+<div id="content">
+  <viewer-thumbnail-bar id="thumbnail-bar" tabindex="0"
+      hidden="[[!thumbnailView_]]" active-page="[[activePage]]"
+      clockwise-rotations="[[clockwiseRotations]]" doc-length="[[docLength]]">
+  </viewer-thumbnail-bar>
+  <viewer-document-outline id="outline" hidden="[[thumbnailView_]]"
+      bookmarks="[[bookmarks]]">
+  </viewer-document-outline>
+</div>

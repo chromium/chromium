@@ -10,7 +10,10 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -50,10 +53,7 @@ class TouchEventTest : public PageTestBase {
  public:
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<ConsoleCapturingChromeClient>();
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = chrome_client_.Get();
-    SetupPageWithClients(&clients);
+    SetupPageWithClients(chrome_client_);
     Page::InsertOrdinaryPageForTesting(&GetPage());
   }
 
@@ -65,12 +65,12 @@ class TouchEventTest : public PageTestBase {
   LocalDOMWindow& Window() { return *GetFrame().DomWindow(); }
 
   TouchEvent* EventWithDispatchType(WebInputEvent::DispatchType dispatch_type) {
-    WebTouchEvent web_touch_event(WebInputEvent::kTouchStart, 0,
+    WebTouchEvent web_touch_event(WebInputEvent::Type::kTouchStart, 0,
                                   base::TimeTicks());
     web_touch_event.dispatch_type = dispatch_type;
-    return TouchEvent::Create(WebCoalescedInputEvent(web_touch_event), nullptr,
-                              nullptr, nullptr, "touchstart", &Window(),
-                              TouchAction::kAuto);
+    return TouchEvent::Create(
+        WebCoalescedInputEvent(web_touch_event, ui::LatencyInfo()), nullptr,
+        nullptr, nullptr, "touchstart", &Window(), TouchAction::kAuto);
   }
 
  private:
@@ -80,8 +80,8 @@ class TouchEventTest : public PageTestBase {
 
 TEST_F(TouchEventTest,
        PreventDefaultPassiveDueToDocumentLevelScrollerIntervention) {
-  TouchEvent* event =
-      EventWithDispatchType(WebInputEvent::kListenersNonBlockingPassive);
+  TouchEvent* event = EventWithDispatchType(
+      WebInputEvent::DispatchType::kListenersNonBlockingPassive);
   event->SetHandlingPassive(Event::PassiveMode::kPassiveForcedDocumentLevel);
 
   EXPECT_THAT(Messages(), ElementsAre());
@@ -90,9 +90,21 @@ TEST_F(TouchEventTest,
       Messages(),
       ElementsAre("Unable to preventDefault inside passive event listener due "
                   "to target being treated as passive. See "
-                  "https://www.chromestatus.com/features/5093566007214080"));
+                  "https://www.chromestatus.com/feature/5093566007214080"));
   EXPECT_THAT(MessageSources(),
               ElementsAre(mojom::ConsoleMessageSource::kIntervention));
+}
+
+TEST_F(TouchEventTest, DispatchWithEmptyDocTargetDoesntCrash) {
+  String script =
+      "var empty_document = new Document();"
+      "var touch = new Touch({'identifier': 0, 'target': empty_document});"
+      "var touch_event = new TouchEvent('touchmove', {'touches': [touch]});"
+      "document.dispatchEvent(touch_event);";
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script))
+      ->RunScript(GetDocument().domWindow());
 }
 
 class TouchEventTestNoFrame : public testing::Test {};

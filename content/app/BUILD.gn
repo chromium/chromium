@@ -6,203 +6,137 @@ import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
-# Implements "content_main" given the defines and visibility. On Windows this
-# is compiled with a different define for browser and child, but all code needs
-# to be shared.
-template("implement_content_app") {
-  runner_target_name = "content_main_runner_" + target_name
-  main_target_name = target_name
+extra_configs = [
+  "//build/config/compiler:wexit_time_destructors",
+  "//content:content_implementation",
+  "//tools/v8_context_snapshot:use_v8_context_snapshot",
+  "//v8:external_startup_data",
+]
 
-  extra_configs = [
-    "//build/config/compiler:wexit_time_destructors",
-    "//content:content_implementation",
-    "//tools/v8_context_snapshot:use_v8_context_snapshot",
-    "//v8:external_startup_data",
-  ]
+content_app_deps = [
+  "//base",
+  "//base:i18n",
+  "//content:export",
+  "//content:sandbox_helper_win",
+  "//content/public/common:common_sources",
+  "//crypto",
+  "//mojo/core/embedder",
+  "//ppapi/buildflags",
+  "//services/tracing/public/cpp",
+  "//ui/base",
+  "//ui/gfx",
+  "//ui/gfx/geometry",
+]
 
-  content_app_deps = [
-    "//base",
-    "//base:i18n",
-    "//content:export",
-    "//content:sandbox_helper_win",
-    "//content/public/common:common_sources",
-    "//content/public/common:service_names",
-    "//crypto",
-    "//mojo/core/embedder",
-    "//ppapi/buildflags",
-    "//services/service_manager/embedder",
-    "//services/service_manager/public/mojom",
-    "//services/tracing/public/cpp",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-  ]
-
-  if (is_win) {
-    content_app_deps += [ "//sandbox" ]
-  } else if (is_android) {
-    # Android doesn't use the browser/child split and in the component build
-    # all symbols are exported from the .so, so the Android-specific files
-    # can include headers from both places. Many of these are required for
-    # JNI registration.
-    content_app_deps += [
-      "//content/browser",
-      "//content/child",
-      "//content/public/android:jni",
-      "//device/bluetooth",
-      "//device/gamepad",
-      "//gpu",
-      "//media",
-      "//media/capture",
-      "//media/midi",
-      "//net",
-      "//skia",
-      "//third_party/android_ndk:cpu_features",
-      "//ui/android",
-      "//ui/events",
-      "//ui/shell_dialogs",
-    ]
-  }
-
-  if (!is_multi_dll_chrome && enable_plugins) {
-    content_app_deps += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
-  }
-
-  # Compile content_main_runner_impl.[h, cc] in a separate target to exempt from
-  # GN header checking without exempting any other source file. These files
-  # includes headers of all process types and varies significantly per platform
-  # in between browser and child. Otherwise it would require many "nogncheck"
-  # annotations that would both be useless and add noise.
-  #
-  # This will generate :content_main_runner_both, :content_main_runner_browser,
-  # and :content_main_runner_child.
-  source_set(runner_target_name) {
-    visibility = [ ":$main_target_name" ]
-    check_includes = false
-
-    sources = [
-      "content_main_runner_impl.cc",
-      "content_main_runner_impl.h",
-    ]
-
-    configs += extra_configs
-    deps = content_app_deps
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-
-    forward_variables_from(invoker, [ "defines" ])
-  }
-
-  source_set(main_target_name) {
-    check_includes = false
-
-    sources = [
-      "content_service_manager_main_delegate.cc",
-      "content_service_manager_main_delegate.h",
-      "mojo/mojo_init.cc",
-      "mojo/mojo_init.h",
-    ]
-
-    if (defined(invoker.include_browser_sources) &&
-        invoker.include_browser_sources) {
-      sources += [
-        "service_manager_environment.cc",
-        "service_manager_environment.h",
-      ]
-    }
-
-    configs += extra_configs
-    deps = content_app_deps + [
-             ":$runner_target_name",
-             "//ipc",
-             "//services/service_manager/embedder",
-           ]
-    forward_variables_from(invoker,
-                           [
-                             "defines",
-                             "visibility",
-                           ])
-
-    if (is_android) {
-      sources += [
-        "android/content_child_process_service_delegate.cc",
-        "android/content_jni_onload.cc",
-        "android/content_main.cc",
-        "android/library_loader_hooks.cc",
-        "android/library_loader_hooks.h",
-      ]
-      deps += [
-        "//mojo/public/java/system:native_support",
-        "//ui/gl",
-      ]
-    } else {
-      sources += [ "content_main.cc" ]
-    }
-  }
-}
-
-group("content_app_browser_deps") {
-  deps = [
+if (is_win) {
+  content_app_deps += [ "//sandbox" ]
+} else if (is_android) {
+  # Many of these are required for JNI registration.
+  content_app_deps += [
     "//content/browser",
-    "//content/public/browser:browser_sources",
+    "//content/child",
+    "//content/public/android:jni",
+    "//device/bluetooth",
+    "//device/gamepad",
+    "//gpu",
+    "//media",
+    "//media/capture",
+    "//media/midi",
+    "//net",
+    "//skia",
+    "//third_party/android_ndk:cpu_features",
+    "//ui/android",
+    "//ui/events",
+    "//ui/shell_dialogs",
   ]
 }
 
-group("content_app_child_deps") {
-  deps = [
-    "//content/public/gpu:gpu_sources",
-    "//content/public/renderer:renderer_sources",
-    "//content/public/utility:utility_sources",
-  ]
+if (enable_plugins) {
+  content_app_deps += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
 }
 
-# This includes the app sources for both the browser and child processes.
-implement_content_app("both") {
+# Compile content_main_runner_impl.[h, cc] in a separate target to exempt from
+# GN header checking without exempting any other source file. These files
+# includes headers of all process types and varies significantly per platform
+# in between browser and child. Otherwise it would require many "nogncheck"
+# annotations that would both be useless and add noise.
+source_set("content_main_runner_app") {
+  visibility = [ ":app" ]
+  check_includes = false
+
+  sources = [
+    "content_main_runner_impl.cc",
+    "content_main_runner_impl.h",
+  ]
+
+  configs += extra_configs
+  deps = content_app_deps + [
+           "//components/power_scheduler",
+           "//content/browser",
+           "//content/gpu:gpu_sources",
+           "//content/public/browser:browser_sources",
+           "//content/public/gpu:gpu_sources",
+           "//content/public/renderer:renderer_sources",
+           "//content/public/utility:utility_sources",
+           "//content/renderer",
+           "//content/utility",
+           "//content/zygote",
+         ]
+}
+
+source_set("app") {
+  # TODO(thakis): The comment above content_main_runner_app suggests this
+  # line shouldn't be here; try removing it.
+  check_includes = false
+
+  sources = [
+    "content_main.cc",
+    "mojo/mojo_init.cc",
+    "mojo/mojo_init.h",
+    "mojo_ipc_support.cc",
+    "mojo_ipc_support.h",
+  ]
+
+  configs += extra_configs
+  deps = content_app_deps + [ "//ipc" ]
+
+  public_deps = [ ":content_main_runner_app" ]
+
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
   visibility = [
-    ":both_for_content_tests",  # See top of //content/BUILD.gn for why.
+    ":for_content_tests",  # See top of //content/BUILD.gn for why.
     "//content/public/app:*",
   ]
-  deps = [
-    ":content_app_browser_deps",
-    ":content_app_child_deps",
-    "//content/gpu:gpu_sources",
-    "//content/renderer",
-    "//content/utility",
-  ]
-  include_browser_sources = true
+
+  if (is_android) {
+    sources += [
+      "android/content_child_process_service_delegate.cc",
+      "android/content_jni_onload.cc",
+      "android/content_main_android.cc",
+      "android/library_loader_hooks.cc",
+      "android/library_loader_hooks.h",
+    ]
+    deps += [
+      "//mojo/public/java/system:native_support",
+      "//ui/gl",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac_init.h",
+      "mac_init.mm",
+    ]
+
+    frameworks = [ "Foundation.framework" ]
+  }
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
-group("both_for_content_tests") {
+group("for_content_tests") {
   visibility = [ "//content/test/*" ]
   if (!is_component_build) {
-    public_deps = [
-      ":both",
-    ]
-  }
-}
-
-if (is_multi_dll_chrome) {
-  # It doesn't make sense to do the browser/child dll split in component mode.
-  assert(!is_component_build)
-
-  implement_content_app("browser") {
-    visibility = [ "//content/public/app:browser" ]
-    defines = [ "CHROME_MULTIPLE_DLL_BROWSER" ]
-    deps = [
-      ":content_app_browser_deps",
-    ]
-    include_browser_sources = true
-  }
-
-  implement_content_app("child") {
-    visibility = [ "//content/public/app:child" ]
-    defines = [ "CHROME_MULTIPLE_DLL_CHILD" ]
-    deps = [
-      ":content_app_child_deps",
-    ]
+    public_deps = [ ":app" ]
   }
 }

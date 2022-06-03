@@ -50,7 +50,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_auth_scheme.h"
 #include "net/log/file_net_log_observer.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -61,7 +61,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -298,8 +298,9 @@ void MCSProbe::Start() {
       "probe", &clock_, connection_factory_.get(), gcm_store_.get(),
       base::ThreadTaskRunnerHandle::Get(), &recorder_);
   run_loop_ = std::make_unique<base::RunLoop>();
-  gcm_store_->Load(GCMStore::CREATE_IF_MISSING,
-                   base::Bind(&MCSProbe::LoadCallback, base::Unretained(this)));
+  gcm_store_->Load(
+      GCMStore::CREATE_IF_MISSING,
+      base::BindOnce(&MCSProbe::LoadCallback, base::Unretained(this)));
   run_loop_->Run();
 }
 
@@ -309,19 +310,18 @@ void MCSProbe::LoadCallback(std::unique_ptr<GCMStore::LoadResult> load_result) {
     DVLOG(1) << "Presetting MCS id " << android_id_;
     load_result->device_android_id = android_id_;
     load_result->device_security_token = secret_;
-    gcm_store_->SetDeviceCredentials(android_id_,
-                                     secret_,
-                                     base::Bind(&MCSProbe::UpdateCallback,
-                                                base::Unretained(this)));
+    gcm_store_->SetDeviceCredentials(
+        android_id_, secret_,
+        base::BindOnce(&MCSProbe::UpdateCallback, base::Unretained(this)));
   } else {
     android_id_ = load_result->device_android_id;
     secret_ = load_result->device_security_token;
     DVLOG(1) << "Loaded MCS id " << android_id_;
   }
   mcs_client_->Initialize(
-      base::Bind(&MCSProbe::ErrorCallback, base::Unretained(this)),
-      base::Bind(&MessageReceivedCallback), base::Bind(&MessageSentCallback),
-      std::move(load_result));
+      base::BindRepeating(&MCSProbe::ErrorCallback, base::Unretained(this)),
+      base::BindRepeating(&MessageReceivedCallback),
+      base::BindRepeating(&MessageSentCallback), std::move(load_result));
 
   if (!android_id_ || !secret_) {
     DVLOG(1) << "Checkin to generate new MCS credentials.";
@@ -338,10 +338,11 @@ void MCSProbe::UpdateCallback(bool success) {
 void MCSProbe::InitializeNetworkState() {
   if (command_line_.HasSwitch(kLogFileSwitch)) {
     base::FilePath log_path = command_line_.GetSwitchValuePath(kLogFileSwitch);
-    logger_ = net::FileNetLogObserver::CreateUnbounded(log_path, nullptr);
     net::NetLogCaptureMode capture_mode =
         net::NetLogCaptureMode::kIncludeSensitive;
-    logger_->StartObserving(net_log_, capture_mode);
+    logger_ = net::FileNetLogObserver::CreateUnbounded(log_path, capture_mode,
+                                                       nullptr);
+    logger_->StartObserving(net_log_);
   }
 
   net::URLRequestContextBuilder builder;
@@ -352,7 +353,7 @@ void MCSProbe::InitializeNetworkState() {
       &http_auth_preferences_,
       std::vector<std::string>{net::kBasicAuthScheme}));
   builder.set_proxy_resolution_service(
-      net::ProxyResolutionService::CreateDirect());
+      net::ConfiguredProxyResolutionService::CreateDirect());
 
   if (command_line_.HasSwitch(kIgnoreCertSwitch))
     builder.SetCertVerifier(std::make_unique<MyTestCertVerifier>());
@@ -403,7 +404,7 @@ void MCSProbe::CheckIn() {
 
   checkin_request_ = std::make_unique<CheckinRequest>(
       GServicesSettings().GetCheckinURL(), request_info, kDefaultBackoffPolicy,
-      base::Bind(&MCSProbe::OnCheckInCompleted, base::Unretained(this)),
+      base::BindOnce(&MCSProbe::OnCheckInCompleted, base::Unretained(this)),
       shared_url_loader_factory_, base::ThreadTaskRunnerHandle::Get(),
       &recorder_);
   checkin_request_->Start();
@@ -426,10 +427,9 @@ void MCSProbe::OnCheckInCompleted(
   android_id_ = checkin_response.android_id();
   secret_ = checkin_response.security_token();
 
-  gcm_store_->SetDeviceCredentials(android_id_,
-                                   secret_,
-                                   base::Bind(&MCSProbe::UpdateCallback,
-                                              base::Unretained(this)));
+  gcm_store_->SetDeviceCredentials(
+      android_id_, secret_,
+      base::BindOnce(&MCSProbe::UpdateCallback, base::Unretained(this)));
 
   StartMCSLogin();
 }

@@ -6,14 +6,13 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -62,7 +61,7 @@ std::string MergeServerAddressesIntoProfilesAndUpdateDb(
 
   // Wallet addresses don't have an email address, use the one from the
   // currently signed-in account.
-  base::string16 email = base::UTF8ToUTF16(primary_account_email);
+  std::u16string email = base::UTF8ToUTF16(primary_account_email);
   if (!email.empty())
     existing_profiles->back()->SetRawInfo(EMAIL_ADDRESS, email);
 

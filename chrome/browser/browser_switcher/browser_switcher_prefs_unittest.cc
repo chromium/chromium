@@ -55,10 +55,11 @@ class BrowserSwitcherPrefsTest : public testing::Test {
  public:
   void SetUp() override {
     BrowserSwitcherPrefs::RegisterProfilePrefs(prefs_backend_.registry());
-    policy_provider_ =
-        std::make_unique<policy::MockConfigurationPolicyProvider>();
-    EXPECT_CALL(*policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    policy_provider_ = std::make_unique<
+        testing::NiceMock<policy::MockConfigurationPolicyProvider>>();
+    policy_provider_->SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     std::vector<policy::ConfigurationPolicyProvider*> providers = {
         policy_provider_.get()};
     policy_service_ = std::make_unique<policy::PolicyServiceImpl>(providers);
@@ -114,7 +115,7 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
   EXPECT_EQ("c", prefs()->GetAlternativeBrowserParameters()[2]);
 
 #if defined(OS_WIN)
-  EXPECT_EQ("cmd.exe", prefs()->GetChromePath());
+  EXPECT_EQ("cmd.exe", prefs()->GetChromePath().MaybeAsASCII());
 
   EXPECT_EQ(3u, prefs()->GetChromeParameters().size());
   EXPECT_EQ("d", prefs()->GetChromeParameters()[0]);
@@ -123,18 +124,18 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
 #endif
 
   EXPECT_EQ(1u, prefs()->GetRules().sitelist.size());
-  EXPECT_EQ("example.com", prefs()->GetRules().sitelist[0]);
+  EXPECT_EQ("example.com", prefs()->GetRules().sitelist[0]->ToString());
 
   EXPECT_EQ(1u, prefs()->GetRules().greylist.size());
-  EXPECT_EQ("foo.example.com", prefs()->GetRules().greylist[0]);
+  EXPECT_EQ("foo.example.com", prefs()->GetRules().greylist[0]->ToString());
 }
 
 TEST_F(BrowserSwitcherPrefsTest, TriggersObserversOnPolicyChange) {
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kAlternativeBrowserPath,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_PLATFORM,
-                 std::make_unique<base::Value>("notepad.exe"), nullptr);
+                 policy::POLICY_SOURCE_PLATFORM, base::Value("notepad.exe"),
+                 nullptr);
 
   base::RunLoop run_loop;
   auto subscription = prefs()->RegisterPrefsChangedCallback(base::BindRepeating(

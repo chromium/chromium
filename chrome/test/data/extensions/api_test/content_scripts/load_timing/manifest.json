@@ -1,0 +1,23 @@
+{
+  "name": "page timing script injection",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests that content scripts fire at each of the load timings",
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["document_start.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*/*"],
+      "js": ["document_end.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://*/*"],
+      "js": ["document_idle.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/autotest_private_api_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/window_user_data.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
@@ -21,12 +20,14 @@ namespace {
 class Data {
  public:
   explicit Data(bool* delete_setter) : delete_setter_(delete_setter) {}
+
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+
   ~Data() { *delete_setter_ = true; }
 
  private:
   bool* delete_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 
 }  // namespace
@@ -36,7 +37,8 @@ using WindowUserDataTest = AshTestBase;
 // Verifies clear() deletes the data associated with a window.
 TEST_F(WindowUserDataTest, ClearDestroys) {
   WindowUserData<Data> user_data;
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow();
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   bool data_deleted = false;
   user_data.Set(window.get(), std::make_unique<Data>(&data_deleted));
@@ -48,7 +50,8 @@ TEST_F(WindowUserDataTest, ClearDestroys) {
 // Verifies Set() called with an existing window replaces the existing data.
 TEST_F(WindowUserDataTest, ReplaceDestroys) {
   WindowUserData<Data> user_data;
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow();
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   bool data1_deleted = false;
   user_data.Set(window.get(), std::make_unique<Data>(&data1_deleted));
@@ -67,7 +70,8 @@ TEST_F(WindowUserDataTest, ReplaceDestroys) {
 // Verifies Set() with null deletes existing data.
 TEST_F(WindowUserDataTest, NullClears) {
   WindowUserData<Data> user_data;
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow();
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   bool data1_deleted = false;
   user_data.Set(window.get(), std::make_unique<Data>(&data1_deleted));

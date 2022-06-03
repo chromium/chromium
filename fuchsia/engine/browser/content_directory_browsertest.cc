@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include <lib/fdio/directory.h>
+#include <lib/fdio/namespace.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/vmo_file.h>
 
+#include "base/strings/string_piece.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 
 #include "base/files/file_path.h"
@@ -13,14 +15,16 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
-#include "base/test/bind_test_util.h"
-#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "fuchsia/base/frame_test_util.h"
-#include "fuchsia/base/test_navigation_listener.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/content_test_suite_base.h"
+#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/content_directory_loader_factory.h"
 #include "fuchsia/engine/switches.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -41,33 +45,60 @@ void AddFileToPseudoDir(base::StringPiece data,
   ASSERT_EQ(status, ZX_OK);
 }
 
-// Serves |dir| as a ContentDirectory under the path |name|.
-void ServePseudoDir(base::StringPiece name, vfs::PseudoDir* dir) {
-  fuchsia::web::ContentDirectoryProvider provider;
-  provider.set_name(name.as_string());
-  fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel;
-  dir->Serve(
-      fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,
-      directory_channel.NewRequest().TakeChannel());
-  provider.set_directory(std::move(directory_channel));
-  std::vector<fuchsia::web::ContentDirectoryProvider> providers;
-  providers.emplace_back(std::move(provider));
-  ContentDirectoryLoaderFactory::SetContentDirectoriesForTest(
-      std::move(providers));
-}
+// Sets the specified directory as a ContentDirectory under the path |name|.
+class ScopedBindContentDirectory {
+ public:
+  ScopedBindContentDirectory(base::StringPiece name, vfs::PseudoDir* pseudo_dir)
+      : ScopedBindContentDirectory(name, ServePseudoDir(pseudo_dir)) {}
+  ScopedBindContentDirectory(
+      base::StringPiece name,
+      fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel)
+      : path_(base::FilePath(
+                  ContentDirectoryLoaderFactory::kContentDirectoriesPath)
+                  .Append(name)) {
+    zx_status_t status = fdio_ns_get_installed(&namespace_);
+    ZX_CHECK(status == ZX_OK, status);
+    status = fdio_ns_bind(namespace_, path_.value().data(),
+                          directory_channel.TakeChannel().release());
+    ZX_CHECK(status == ZX_OK, status);
+  }
+  ~ScopedBindContentDirectory() {
+    zx_status_t status = fdio_ns_unbind(namespace_, path_.value().data());
+    ZX_CHECK(status == ZX_OK, status);
+  }
+
+ private:
+  fidl::InterfaceHandle<fuchsia::io::Directory> ServePseudoDir(
+      vfs::PseudoDir* pseudo_dir) {
+    fidl::InterfaceHandle<fuchsia::io::Directory> handle;
+    pseudo_dir->Serve(
+        fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,
+        handle.NewRequest().TakeChannel());
+    return handle;
+  }
+
+  const base::FilePath path_;
+  fdio_ns_t* namespace_ = nullptr;
+};
 
 class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
-  ContentDirectoryTest()
-      : run_timeout_(TestTimeouts::action_timeout(),
-                     base::MakeExpectedNotRunClosure(FROM_HERE)) {}
+  ContentDirectoryTest() = default;
   ~ContentDirectoryTest() override = default;
+
+  ContentDirectoryTest(const ContentDirectoryTest&) = delete;
+  ContentDirectoryTest& operator=(const ContentDirectoryTest&) = delete;
 
   void SetUp() override {
     // Set this flag early so that the fuchsia-dir:// scheme will be
     // registered at browser startup.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kContentDirectories);
+        "enable-content-directories");
+
+    // Scheme initialization for the WebEngineContentClient depends on the above
+    // command line modification, which won't have been present when the schemes
+    // were initially registered.
+    content::ContentTestSuiteBase::ReRegisterContentSchemes();
 
     cr_fuchsia::WebEngineBrowserTest::SetUp();
   }
@@ -75,95 +106,74 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
   void SetUpOnMainThread() override {
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
 
-    fuchsia::web::ContentDirectoryProvider provider;
-    provider.set_name("testdata");
     base::FilePath pkg_path;
-    base::PathService::Get(base::DIR_ASSETS, &pkg_path);
-    provider.set_directory(base::fuchsia::OpenDirectory(
-        pkg_path.AppendASCII("fuchsia/engine/test/data")));
-    providers.emplace_back(std::move(provider));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
 
-    provider = {};
-    provider.set_name("alternate");
-    provider.set_directory(base::fuchsia::OpenDirectory(
-        pkg_path.AppendASCII("fuchsia/engine/test/data")));
-    providers.emplace_back(std::move(provider));
-
-    ContentDirectoryLoaderFactory::SetContentDirectoriesForTest(
-        std::move(providers));
+    testdata_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
+        "testdata", base::OpenDirectoryHandle(
+                        pkg_path.AppendASCII("fuchsia/engine/test/data")));
+    alternate_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
+        "alternate", base::OpenDirectoryHandle(
+                         pkg_path.AppendASCII("fuchsia/engine/test/data")));
 
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
   }
 
-  void TearDown() override {
-    ContentDirectoryLoaderFactory::SetContentDirectoriesForTest({});
-  }
-
- protected:
-  // Creates a Frame with |navigation_listener_| attached.
-  fuchsia::web::FramePtr CreateFrame() {
-    return WebEngineBrowserTest::CreateFrame(&navigation_listener_);
-  }
-
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-
  private:
-  const base::RunLoop::ScopedRunTimeoutForTest run_timeout_;
+  url::ScopedSchemeRegistryForTests scoped_registry_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentDirectoryTest);
+  std::unique_ptr<ScopedBindContentDirectory> testdata_content_directory_;
+  std::unique_ptr<ScopedBindContentDirectory> alternate_content_directory_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, Navigate) {
   const GURL kUrl("fuchsia-dir://testdata/title1.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlEquals(kUrl);
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlEquals(kUrl);
 }
 
 // Navigate to a resource stored under a secondary provider.
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, NavigateAlternate) {
   const GURL kUrl("fuchsia-dir://alternate/title1.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlEquals(kUrl);
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlEquals(kUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, ScriptSubresource) {
   const GURL kUrl("fuchsia-dir://testdata/include_script.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "title set by script");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl,
+                                                        "title set by script");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, ImgSubresource) {
   const GURL kUrl("fuchsia-dir://testdata/include_image.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "image fetched");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "image fetched");
 }
 
 // Reads content sourced from VFS PseudoDirs and VmoFiles.
@@ -172,81 +182,78 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, FromVfsPseudoDir) {
 
   std::string contents;
   base::FilePath pkg_path;
-  base::PathService::Get(base::DIR_ASSETS, &pkg_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   ASSERT_TRUE(base::ReadFileToString(
       pkg_path.AppendASCII("fuchsia/engine/test/data/title1.html"), &contents));
 
   vfs::PseudoDir pseudo_dir;
   AddFileToPseudoDir(contents, base::FilePath("title1.html"), &pseudo_dir);
-  ServePseudoDir("pseudo-dir", &pseudo_dir);
+  ScopedBindContentDirectory test_directory("pseudo-dir", &pseudo_dir);
 
   // Access the VmoFile under the PseudoDir.
   const GURL kUrl("fuchsia-dir://pseudo-dir/title1.html");
-  fuchsia::web::FramePtr frame = CreateFrame();
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "title 1");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "title 1");
 }
 
 // Verify that resource providers are origin-isolated.
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, ScriptSrcCrossOriginBlocked) {
   const GURL kUrl("fuchsia-dir://testdata/cross_origin_include_script.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   // If the cross-origin script succeeded, then we should see "title set by
   // script". If "not clobbered" remains set, then we know that CROS enforcement
   // is working.
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "same origin ftw");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl,
+                                                        "same origin ftw");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, CrossOriginImgBlocked) {
   const GURL kUrl("fuchsia-dir://testdata/cross_origin_include_image.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
 
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl, "image rejected");
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "image rejected");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, MetadataFileParsed) {
   const GURL kUrl("fuchsia-dir://testdata/mime_override.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(
       kUrl, "content-type: text/bleep; charset=US-ASCII");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BadMetadataFile) {
   const GURL kUrl("fuchsia-dir://testdata/mime_override_invalid.html");
 
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl,
-                                                 "content-type: text/html");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(
+      kUrl, "content-type: text/html");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
@@ -254,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
 
   std::string contents;
   base::FilePath pkg_path;
-  base::PathService::Get(base::DIR_ASSETS, &pkg_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   ASSERT_TRUE(base::ReadFileToString(
       pkg_path.AppendASCII("fuchsia/engine/test/data/mime_override.html"),
       &contents));
@@ -266,18 +273,17 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
   // zeroes to the end of an existing HTML file.
   contents.resize(1000000, ' ');
   AddFileToPseudoDir(contents, base::FilePath("blob.bin"), &pseudo_dir);
-
-  ServePseudoDir("pseudo-dir", &pseudo_dir);
+  ScopedBindContentDirectory test_directory("pseudo-dir", &pseudo_dir);
 
   // Access the VmoFile under the PseudoDir.
   const GURL kUrl("fuchsia-dir://pseudo-dir/test.html");
-  fuchsia::web::FramePtr frame = CreateFrame();
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), kUrl.spec()));
-  navigation_listener_.RunUntilUrlAndTitleEquals(kUrl,
-                                                 "content-type: text/html");
+      frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      kUrl.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(
+      kUrl, "content-type: text/html");
 }
 
 }  // namespace

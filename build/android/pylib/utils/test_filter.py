@@ -20,7 +20,7 @@ def ParseFilterFile(input_lines):
   syntax that |input_lines| are expected to follow.
 
   See
-  https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#running-a-subset-of-the-tests
+  https://github.com/google/googletest/blob/master/docs/advanced.md#running-a-subset-of-the-tests
   for description of the syntax that --gtest_filter argument should follow.
 
   Args:
@@ -50,9 +50,10 @@ def AddFilterOptions(parser):
       '--gtest-filter-file',
       # New argument.
       '--test-launcher-filter-file',
-      dest='test_filter_file', type=os.path.realpath,
+      action='append',
+      dest='test_filter_files',
       help='Path to file that contains googletest-style filter strings. '
-           'See also //testing/buildbot/filters/README.md.')
+      'See also //testing/buildbot/filters/README.md.')
 
   filter_group = parser.add_mutually_exclusive_group()
   filter_group.add_argument(
@@ -125,15 +126,23 @@ def InitializeFilterFromArgs(args):
     test_filter = _CMDLINE_NAME_SEGMENT_RE.sub(
         '', args.test_filter.replace('#', '.'))
 
-  if args.test_filter_file:
-    with open(args.test_filter_file, 'r') as f:
-      positive_file_patterns, negative_file_patterns = ParseFilterFile(f)
-      if positive_file_patterns and HasPositivePatterns(test_filter):
-        raise ConflictingPositiveFiltersException(
-            'Cannot specify positive pattern in both filter file and ' +
-            'filter command line argument')
-      test_filter = AppendPatternsToFilter(test_filter,
-          positive_patterns=positive_file_patterns,
-          negative_patterns=negative_file_patterns)
+  if not args.test_filter_files:
+    return test_filter
+
+  # At this point it's potentially several files, in a list and ; separated
+  for test_filter_file in args.test_filter_files:
+    # At this point it's potentially several files, ; separated
+    for test_filter_file in test_filter_file.split(';'):
+      # At this point it's individual files
+      with open(test_filter_file, 'r') as f:
+        positive_file_patterns, negative_file_patterns = ParseFilterFile(f)
+        if positive_file_patterns and HasPositivePatterns(test_filter):
+          raise ConflictingPositiveFiltersException(
+              'Cannot specify positive pattern in both filter file and ' +
+              'filter command line argument')
+        test_filter = AppendPatternsToFilter(
+            test_filter,
+            positive_patterns=positive_file_patterns,
+            negative_patterns=negative_file_patterns)
 
   return test_filter

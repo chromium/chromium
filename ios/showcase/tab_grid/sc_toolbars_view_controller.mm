@@ -4,8 +4,8 @@
 
 #import "ios/showcase/tab_grid/sc_toolbars_view_controller.h"
 
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_bottom_toolbar.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_top_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_top_toolbar.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,14 +19,10 @@
 
   TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc] init];
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  topToolbar.leadingButton.title = @"Leading";
-  topToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:topToolbar];
 
   TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
   bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  bottomToolbar.leadingButton.title = @"Leading";
-  bottomToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:bottomToolbar];
 
   NSArray* constraints = @[

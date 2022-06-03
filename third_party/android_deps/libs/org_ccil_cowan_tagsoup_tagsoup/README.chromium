@@ -1,0 +1,13 @@
+Name: TagSoup
+Short Name: tagsoup
+URL: http://home.ccil.org/~cowan/XML/tagsoup/
+Version: 1.2.1
+License: Apache License 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+TagSoup is a SAX-compliant parser written in Java that, instead of parsing well-formed or valid XML, parses HTML as it is found in the wild: poor, nasty and brutish, though quite often far from short. TagSoup is designed for people who have to process this stuff using some semblance of a rational application design. By providing a SAX interface, it allows standard XML tools to be applied to even the worst HTML. TagSoup also includes a command-line processor that reads HTML files and can generate either clean HTML or well-formed XML that is a close approximation to XHTML.
+
+Local Modifications:
+No modifications.

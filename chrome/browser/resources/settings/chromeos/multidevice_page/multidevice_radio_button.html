@@ -1,0 +1,57 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<!-- TODO(jhawkins): This is copy/pasted from controlled_radio_button. Figure
+  out how to refactor such that a common UI/behavior may be shared. The only
+  difference is how the controlling preference is read. -->
+<dom-module id="multidevice-radio-button">
+  <template>
+    <style include="settings-shared cr-radio-button-style">
+      :host([disabled]) {
+        opacity: 1;
+      }
+
+      /* Disc and label should be transluscent, but not the policy indicator. */
+      :host([disabled]) .disc-wrapper,
+      :host([disabled]) #labelWrapper {
+        opacity: var(--cr-disabled-opacity);
+      }
+
+      cr-policy-pref-indicator {
+        margin-inline-start: var(--settings-controlled-by-spacing);
+        /* Enable pointer events for the indicator so :hover works. Disable
+         * clicks/taps via onIndicatorTap_ so outer on-tap doesn't trigger. */
+        pointer-events: all;
+      }
+    </style>
+
+    <div
+        role="presentation"
+        class="disc-wrapper"
+        id="button"
+        tabindex$="[[buttonTabIndex_]]"
+        on-keydown="onInputKeydown_">
+      <div class="disc-border"></div>
+      <div class="disc"></div>
+    </div>
+
+    <div id="labelWrapper" role="presentation">
+      <span>[[label]]</span>
+    </div>
+
+    <template is="dom-if" if="[[disabled]]" restamp>
+      <cr-policy-indicator
+          indicator-type="userPolicy"
+          icon-aria-label="[[label]]"
+          on-click="onIndicatorTap_">
+      </cr-policy-indicator>
+    </template>
+
+  </template>
+  <script src="multidevice_radio_button.js"></script>
+</dom-module>

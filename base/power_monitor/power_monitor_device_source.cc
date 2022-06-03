@@ -7,20 +7,13 @@
 namespace base {
 
 PowerMonitorDeviceSource::PowerMonitorDeviceSource() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   PlatformInit();
-#endif
-
-#if defined(OS_WIN) || defined(OS_MACOSX)
-  // Provide the correct battery status if possible. Others platforms, such as
-  // Android and ChromeOS, will update their status once their backends are
-  // actually initialized.
-  SetInitialOnBatteryPowerState(IsOnBatteryPowerImpl());
 #endif
 }
 
 PowerMonitorDeviceSource::~PowerMonitorDeviceSource() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   PlatformDestroy();
 #endif
 }

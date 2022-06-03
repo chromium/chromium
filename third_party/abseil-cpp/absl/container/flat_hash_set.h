@@ -40,6 +40,7 @@
 #include "absl/memory/memory.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 template <typename T>
 struct FlatHashSetPolicy;
@@ -226,7 +227,8 @@ class flat_hash_set
   //
   // size_type erase(const key_type& key):
   //
-  //   Erases the element with the matching key, if it exists.
+  //   Erases the element with the matching key, if it exists, returning the
+  //   number of elements erased (0 or 1).
   using Base::erase;
 
   // flat_hash_set::insert()
@@ -322,7 +324,7 @@ class flat_hash_set
 
   // flat_hash_set::merge()
   //
-  // Extracts elements from a given `source` flat hash map into this
+  // Extracts elements from a given `source` flat hash set into this
   // `flat_hash_set`. If the destination `flat_hash_set` already contains an
   // element with an equivalent key, that element is not extracted.
   using Base::merge;
@@ -438,6 +440,14 @@ class flat_hash_set
   using Base::key_eq;
 };
 
+// erase_if(flat_hash_set<>, Pred)
+//
+// Erases all elements that satisfy the predicate `pred` from the container `c`.
+template <typename T, typename H, typename E, typename A, typename Predicate>
+void erase_if(flat_hash_set<T, H, E, A>& c, Predicate pred) {
+  container_internal::EraseIf(pred, &c);
+}
+
 namespace container_internal {
 
 template <class T>
@@ -488,6 +498,7 @@ struct IsUnorderedContainer<absl::flat_hash_set<Key, Hash, KeyEqual, Allocator>>
 
 }  // namespace container_algorithm_internal
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_FLAT_HASH_SET_H_

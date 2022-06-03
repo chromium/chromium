@@ -1,6 +1,10 @@
-CONSOLE ERROR: line 39: [audit.js] this test requires the explicit comparison with the expected result when it runs with run_web_tests.py.
+CONSOLE ERROR: [audit.js] this test requires the explicit comparison with the expected result when it runs with run_web_tests.py.
 This is a testharness.js-based test.
 PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "basic-failure"
+PASS Executing "numerical-failures"
+PASS Executing "load-file-in-should"
+PASS Audit report
 PASS > [basic-failure] Testing basic assertion failures.
 FAIL X Setting foo to bar incorrectly threw ReferenceError: "bar is not defined". assert_true: expected true got false
 FAIL X function() {

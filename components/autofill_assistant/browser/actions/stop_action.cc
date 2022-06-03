@@ -23,7 +23,7 @@ void StopAction::InternalProcessAction(ProcessActionCallback callback) {
   if (proto_.stop().close_cct()) {
     delegate_->Close();
   } else {
-    delegate_->Shutdown();
+    delegate_->Shutdown(proto_.stop().show_feedback_chip());
   }
   UpdateProcessedAction(ACTION_APPLIED);
   std::move(callback).Run(std::move(processed_action_proto_));

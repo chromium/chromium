@@ -1,0 +1,2 @@
+# BUG: The expected result is 'foo bar baz'
+textField name='foo baz' nameFrom=relatedElement

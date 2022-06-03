@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL IntersectionObserver target in cross-origin iframe with fixed position reports viewport intersectino. assert_equals: Fixed position div intersects viewport.left expected 25 but got 24.65625
+Harness: the test ran to completion.
+

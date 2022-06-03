@@ -12,8 +12,8 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac running 10.12.6 or later.
-* [Xcode](https://developer.apple.com/xcode) 10.0+.
+* A 64-bit Mac running 11.3 or later.
+* [Xcode](https://developer.apple.com/xcode) 13.0 or higher.
 * The current version of the JDK (required for the Closure compiler).
 
 ## Install `depot_tools`
@@ -73,8 +73,11 @@ development and testing purposes.
 Since the iOS build is a bit more complicated than a desktop build, we provide
 `ios/build/tools/setup-gn.py`, which will create four appropriately configured
 build directories under `out` for Release and Debug device and simulator
-builds, and generates an appropriate Xcode workspace
-(`out/build/all.xcworkspace`) as well.
+builds, and generates an appropriate Xcode project (`out/build/all.xcodeproj`)
+as well.
+
+More information about [developing with Xcode](xcode_tips.md). *Xcode project
+is an artifact, any changes made in the project itself will be ignored.*
 
 You can customize the build by editing the file `$HOME/.setup-gn` (create it if
 it does not exist).  Look at `src/ios/build/tools/setup-gn.config` for
@@ -91,9 +94,39 @@ $ autoninja -C out/Debug-iphonesimulator gn_all
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
 
-Note: you need to run `setup-gn.py` script every time one of the `BUILD.gn`
-file is updated (either by you or after rebasing). If you forget to run it,
-the list of targets and files in the Xcode solution may be stale.
+Note: The `setup-gn.py` script needs to run every time one of the `BUILD.gn`
+files is updated (either by you or after rebasing). If you forget to run it,
+the list of targets and files in the Xcode solution may be stale. You can run
+the script directly or use either `gclient sync` or `gclient runhooks` which
+will run `setup-gn.py` for you as part of the update hooks.
+
+You can add a custom hook to `.gclient` file to configure `setup-gn.py` to
+be run as part of `gclient runhooks`. In that case, your `.gclient` file
+would look like this:
+
+```
+solutions = [
+  {
+    "name"        : "src",
+    "url"         : "https://chromium.googlesource.com/chromium/src.git",
+    "deps_file"   : "DEPS",
+    "managed"     : False,
+    "custom_deps" : {},
+    "custom_vars" : {},
+    "custom_hooks": [{
+      "name": "setup_gn",
+      "pattern": ".",
+      "action": [
+        "python",
+        "src/ios/build/tools/setup-gn.py",
+      ]
+    }],
+    "safesync_url": "",
+  },
+]
+target_os = ["ios"]
+target_os_only = True
+```
 
 You can also follow the manual instructions on the
 [Mac page](../mac_build_instructions.md), but make sure you set the
@@ -135,10 +168,14 @@ You then need to request provisioning profiles from Apple for your devices
 for the following bundle identifiers to build and run Chromium with these
 application extensions:
 
--   `${prefix}.chrome.ios.herebedragons`
--   `${prefix}.chrome.ios.herebedragons.ShareExtension`
--   `${prefix}.chrome.ios.herebedragons.TodayExtension`
--   `${prefix}.chrome.ios.herebedragons.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev`
+-   `${prefix}.chrome.ios.dev.ContentTodayExtension`
+-   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
+-   `${prefix}.chrome.ios.dev.IntentsExtension`
+-   `${prefix}.chrome.ios.dev.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev.ShareExtension`
+-   `${prefix}.chrome.ios.dev.TodayExtension`
+-   `${prefix}.chrome.ios.dev.WidgetKitExtension`
 
 All these certificates need to have the "App Groups"
 (`com.apple.security.application-groups`) capability enabled for
@@ -151,6 +188,11 @@ The `group.${prefix}.chrome` is only shared by Chromium and its extensions
 to share files and configurations while the `group.${prefix}.common` is shared
 with Chromium and other applications from the same organisation and can be used
 to send commands to Chromium.
+
+`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill 
+Credential Provider Entitlement, which corresponds to the key 
+`com.apple.developer.authentication-services.autofill-credential-provider`
+Please refer to Apple's documentation on how to set this up.
 
 ### Mobile provisioning profiles for tests
 
@@ -196,7 +238,7 @@ installed that could sign the `ios_web_shell.app` bundle with the identity
 request such a mobile provisioning profile from Apple.
 
 You can inspect the file passed via the `-e` flag to the `codesign.py` script
-to check which capabilites are required for the mobile provisioning profile
+to check which capabilities are required for the mobile provisioning profile
 (e.g. `src/build/config/ios/entitlements.plist` for the above build error,
 remember that the paths are relative to the build directory, not to the source
 directory).
@@ -206,7 +248,7 @@ then it will be impossible to install the application on a device (Xcode will
 display an error stating that "The application was signed with invalid
 entitlements").
 
-## Running apps from the commandline
+## Running apps from the command line
 
 Any target that is built and runs on the bots (see [below](#Troubleshooting))
 should run successfully in a local build. To run in the simulator from the
@@ -277,7 +319,7 @@ $ gclient sync
 
 The first command updates the primary Chromium source repository and rebases
 any of your local branches on top of tip-of-tree (aka the Git branch
-`origin/master`). If you don't want to use this script, you can also just use
+`origin/main`). If you don't want to use this script, you can also just use
 `git pull` or other common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs
@@ -285,10 +327,72 @@ hooks as needed.
 
 ## Tips, tricks, and troubleshooting
 
+Remember that the XCode project you interact with while working on Chromium is a
+build artifact, generated from the `BUILD.gn` files. Do not use it to add new
+files; instead see the procedures for [working with
+files](working_with_files.md).
+
 If you have problems building, join us in `#chromium` on `irc.freenode.net` and
 ask there. As mentioned above, be sure that the
 [waterfall](https://build.chromium.org/buildbot/waterfall/) is green and the tree
 is open before checking out. This will increase your chances of success.
+
+### Debugging
+
+To help with deterministic builds, and to work with Goma, the path to source
+files in debugging symbols are relative to source directory. To allow Xcode
+to find the source files, you need to ensure to have an `~/.lldbinit-Xcode`
+file with the following lines into it (substitute {SRC} for your actual path
+to the root of Chromium's sources):
+
+```
+script sys.path[:0] = ['{SRC}/tools/lldb']
+script import lldbinit
+```
+
+This will also allow you to see the content of some of Chromium types in the
+debugger like `std::u16string`, ... If you want to use `lldb` directly, name
+the file `~/.lldbinit` instead of `~/.lldbinit-Xcode`.
+
+Note: if you are using `ios/build/tools/setup-gn.py` to generate the Xcode
+project, the script also generate an `.lldbinit` file next to the project and
+configure Xcode to use that file instead of the global one.
+
+### Changing the version of Xcode
+
+To change the version of Xcode used to build Chromium on iOS, please follow
+the steps below:
+
+1.  Launch the new version of Xcode.app.
+
+    This is required as Xcode may need to install some components into
+    the system before the new version can be used from the command-line.
+
+1.  Reboot your computer.
+
+    This is required as some of Xcode components are daemons that are not
+    automatically stopped when updating Xcode, and command-line tools will
+    fail if the daemon version is incompatible (usually `actool` fails).
+
+1.  Run `gn gen`.
+
+    This is required as the `ninja` files generated by `gn` encodes some
+    information about Xcode (notably the path to the SDK, ...) that will
+    change with each version. It is not possible to have `ninja` re-run
+    `gn gen` automatically when those changes unfortunately.
+
+    If you have a downstream chekout, run `gclient runhooks` instead of
+    `gn gen` as it will ensure that `gn gen` will be run automatically
+    for all possible combination of target and configuration from within
+    Xcode.
+
+If you skip some of those steps, the build may occasionally succeed, but
+it has been observed in the past that those steps are required in the
+vast majority of the situation. Please save yourself some painful build
+debugging and follow them.
+
+If you use `xcode-select` to switch between multiple version of Xcode,
+you will have to follow the same steps.
 
 ### Improving performance of `git status`
 

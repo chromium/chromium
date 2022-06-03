@@ -1,0 +1,59 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility hidden subtree is not exposed to accessibility when added">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+.hidden {
+  content-visibility: hidden;
+}
+</style>
+<div id="container">
+  <div role="group" id="target" aria-labelledby="target_label">
+    target
+    <div id="child">
+      child
+    </div>
+    <div id="target_label">Label</div>
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  let target = document.getElementById("target");
+  let axTarget = axElementById("target");
+  t.step(() => { assert_false(axTarget.isIgnored); });
+  t.step(() => { assert_equals(axTarget.childrenCount, 3, "When unlocked, nodes in hidden subtree are not ignored"); });
+  t.step(() => { assert_equals(axTarget.name, "Label"); });
+  for (let i = 0; i < axTarget.childrenCount; ++i) {
+    const axChild = axTarget.childAtIndex(i);
+    t.step(() => assert_false(axChild.isIgnored));
+  }
+
+  target.classList.add("hidden");
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // The ax object for #target got replaced since the layout object changed, so use the new ax object.
+    axTarget = axElementById("target");
+    axTarget.childrenCount;  // Touch children to cause invalidations. Only necessary in web tests. Normally serializer does this.
+    t.step(() => { assert_false(axTarget.isIgnored); });
+    // Note that when locked, the ignored text nodes don't show up as children; so we expect 2.
+    t.step(() => { assert_equals(axTarget.childrenCount, 2, "When locked, nodes in hidden subtree are visible"); });
+    t.step(() => { assert_equals(axTarget.name, "Label"); });
+    for (let i = 0; i < axTarget.childrenCount; ++i) {
+      const axChild = axTarget.childAtIndex(i);
+      t.step(() => assert_true(axChild.isIgnored));
+    }
+    t.done();
+  }));
+}, "When hidden is added, nodes in non-activatable tree are not exposed to accessibility tree");
+</script>

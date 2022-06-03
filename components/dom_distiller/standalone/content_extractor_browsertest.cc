@@ -11,15 +11,16 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/id_map.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "google/protobuf/io/coded_stream.h"
@@ -134,7 +136,7 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
       std::make_unique<DistillerPageWebContentsFactory>(context);
   auto distiller_url_fetcher_factory =
       std::make_unique<DistillerURLFetcherFactory>(
-          content::BrowserContext::GetDefaultStoragePartition(context)
+          context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
 
   dom_distiller::proto::DomDistillerOptions options;
@@ -175,7 +177,7 @@ void AddComponentsTestResources() {
   pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_file, ui::SCALE_FACTOR_NONE);
+      pak_file, ui::kScaleFactorNone);
 }
 
 bool WriteProtobufWithSize(
@@ -223,9 +225,10 @@ class ContentExtractionRequest : public ViewRequestDelegate {
  public:
   ContentExtractionRequest(const GURL& url) : url_(url) {}
 
-  void Start(DomDistillerService* service, const gfx::Size& render_view_size,
-             base::Closure finished_callback) {
-    finished_callback_ = finished_callback;
+  void Start(DomDistillerService* service,
+             const gfx::Size& render_view_size,
+             base::OnceClosure finished_callback) {
+    finished_callback_ = std::move(finished_callback);
     viewer_handle_ =
         service->ViewUrl(this,
                          service->CreateDefaultDistillerPage(render_view_size),
@@ -294,14 +297,14 @@ class ContentExtractionRequest : public ViewRequestDelegate {
   void OnArticleReady(const DistilledArticleProto* article_proto) override {
     article_proto_ = article_proto;
     CHECK(article_proto->pages_size()) << "Failed extracting " << url_;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  finished_callback_);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(finished_callback_));
   }
 
   const DistilledArticleProto* article_proto_;
   std::unique_ptr<ViewerHandle> viewer_handle_;
   GURL url_;
-  base::Closure finished_callback_;
+  base::OnceClosure finished_callback_;
 };
 
 class ContentExtractor : public ContentBrowserTest {
@@ -348,9 +351,9 @@ class ContentExtractor : public ContentBrowserTest {
   void PumpQueue() {
     while (pending_tasks_ < max_tasks_ && next_request_ < requests_.size()) {
       requests_[next_request_]->Start(
-          service_.get(),
-          shell()->web_contents()->GetContainerBounds().size(),
-          base::Bind(&ContentExtractor::FinishRequest, base::Unretained(this)));
+          service_.get(), shell()->web_contents()->GetContainerBounds().size(),
+          base::BindOnce(&ContentExtractor::FinishRequest,
+                         base::Unretained(this)));
       ++next_request_;
       ++pending_tasks_;
     }

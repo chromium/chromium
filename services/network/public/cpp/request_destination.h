@@ -15,6 +15,10 @@ namespace network {
 COMPONENT_EXPORT(NETWORK_CPP)
 const char* RequestDestinationToString(network::mojom::RequestDestination dest);
 
+// Returns whether the destination is a frame embedded in the document.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool IsRequestDestinationEmbeddedFrame(network::mojom::RequestDestination dest);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_REQUEST_DESTINATION_H_

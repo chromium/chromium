@@ -6,7 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
@@ -16,6 +21,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace browser_switcher {
 
 namespace {
@@ -23,7 +32,7 @@ namespace {
 std::vector<std::string> GetCachedRules(PrefService* prefs,
                                         const std::string& pref_name) {
   std::vector<std::string> rules;
-  for (const auto& url : *prefs->GetList(pref_name))
+  for (const auto& url : prefs->GetList(pref_name)->GetList())
     rules.push_back(url.GetString());
   return rules;
 }
@@ -39,8 +48,26 @@ void SetCachedRules(PrefService* prefs,
 
 }  // namespace
 
+NoCopyUrl::NoCopyUrl(const GURL& original) : original_(original) {
+  spec_without_port_ = original_.spec();
+
+  int int_port = original_.IntPort();
+  std::string port_suffix;
+  if (int_port != url::PORT_UNSPECIFIED) {
+    port_suffix = base::StrCat({":", base::NumberToString(int_port)});
+    base::ReplaceSubstringsAfterOffset(&spec_without_port_, 0, port_suffix,
+                                       base::StringPiece());
+  }
+
+  host_and_port_ = base::StrCat({original.host(), port_suffix});
+}
+
+Rule::Rule(base::StringPiece original_rule)
+    : priority_(original_rule.size()),
+      inverted_(base::StartsWith(original_rule, "!")) {}
+
 RuleSet::RuleSet() = default;
-RuleSet::RuleSet(const RuleSet&) = default;
+RuleSet::RuleSet(RuleSet&&) = default;
 RuleSet::~RuleSet() = default;
 
 BrowserSwitcherPrefs::BrowserSwitcherPrefs(Profile* profile)
@@ -63,6 +90,8 @@ BrowserSwitcherPrefs::BrowserSwitcherPrefs(
     {prefs::kAlternativeBrowserParameters,
      base::BindRepeating(
          &BrowserSwitcherPrefs::AlternativeBrowserParametersChanged)},
+    {prefs::kParsingMode,
+     base::BindRepeating(&BrowserSwitcherPrefs::ParsingModeChanged)},
     {prefs::kUrlList,
      base::BindRepeating(&BrowserSwitcherPrefs::UrlListChanged)},
     {prefs::kUrlGreylist,
@@ -90,6 +119,7 @@ BrowserSwitcherPrefs::BrowserSwitcherPrefs(
     prefs::kAlternativeBrowserPath,
     prefs::kAlternativeBrowserParameters,
     prefs::kKeepLastTab,
+    prefs::kParsingMode,
     prefs::kUrlList,
     prefs::kUrlGreylist,
     prefs::kExternalSitelistUrl,
@@ -125,6 +155,7 @@ void BrowserSwitcherPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kAlternativeBrowserPath, "");
   registry->RegisterListPref(prefs::kAlternativeBrowserParameters);
   registry->RegisterBooleanPref(prefs::kKeepLastTab, true);
+  registry->RegisterIntegerPref(prefs::kParsingMode, 0);
   registry->RegisterListPref(prefs::kUrlList);
   registry->RegisterListPref(prefs::kUrlGreylist);
   registry->RegisterStringPref(prefs::kExternalSitelistUrl, "");
@@ -159,6 +190,10 @@ bool BrowserSwitcherPrefs::KeepLastTab() const {
 
 int BrowserSwitcherPrefs::GetDelay() const {
   return prefs_->GetInteger(prefs::kDelay);
+}
+
+ParsingMode BrowserSwitcherPrefs::GetParsingMode() const {
+  return parsing_mode_;
 }
 
 const RuleSet& BrowserSwitcherPrefs::GetRules() const {
@@ -215,7 +250,7 @@ bool BrowserSwitcherPrefs::UseIeSitelist() const {
   return prefs_->GetBoolean(prefs::kUseIeSitelist);
 }
 
-const std::string& BrowserSwitcherPrefs::GetChromePath() const {
+const base::FilePath& BrowserSwitcherPrefs::GetChromePath() const {
   return chrome_path_;
 }
 
@@ -235,7 +270,7 @@ void BrowserSwitcherPrefs::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<BrowserSwitcherPrefs::CallbackSubscription>
+base::CallbackListSubscription
 BrowserSwitcherPrefs::RegisterPrefsChangedCallback(
     BrowserSwitcherPrefs::PrefsChangedCallback cb) {
   return callback_list_.Add(cb);
@@ -264,9 +299,28 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
     return;
   const base::ListValue* params =
       prefs_->GetList(prefs::kAlternativeBrowserParameters);
-  for (const auto& param : *params) {
+  for (const auto& param : params->GetList()) {
     std::string param_string = param.GetString();
     alt_browser_params_.push_back(param_string);
+  }
+}
+
+void BrowserSwitcherPrefs::ParsingModeChanged() {
+  ParsingMode old_parsing_mode = parsing_mode_;
+  parsing_mode_ =
+      static_cast<ParsingMode>(prefs_->GetInteger(prefs::kParsingMode));
+  if (parsing_mode_ < ParsingMode::kDefault ||
+      parsing_mode_ > ParsingMode::kMaxValue) {
+    LOG(WARNING) << "Unknown BrowserSwitcherParsingMode value "
+                 << static_cast<int>(parsing_mode_)
+                 << ". Falling back to 'Default' parsing mode.";
+    parsing_mode_ = ParsingMode::kDefault;
+  }
+
+  if (parsing_mode_ != old_parsing_mode) {
+    // Parsing mode just changed, re-canonicalize rules.
+    UrlListChanged();
+    GreylistChanged();
   }
 }
 
@@ -281,10 +335,11 @@ void BrowserSwitcherPrefs::UrlListChanged() {
       prefs_->GetList(prefs::kUrlList)->GetList().size());
 
   bool has_wildcard = false;
-  for (const auto& url : *prefs_->GetList(prefs::kUrlList)) {
-    std::string canonical = url.GetString();
-    CanonicalizeRule(&canonical);
-    rules_.sitelist.push_back(std::move(canonical));
+  for (const auto& url : prefs_->GetList(prefs::kUrlList)->GetList()) {
+    std::unique_ptr<Rule> rule =
+        CanonicalizeRule(url.GetString(), parsing_mode_);
+    if (rule)
+      rules_.sitelist.push_back(std::move(rule));
     if (url.GetString() == "*")
       has_wildcard = true;
   }
@@ -304,10 +359,11 @@ void BrowserSwitcherPrefs::GreylistChanged() {
       prefs_->GetList(prefs::kUrlGreylist)->GetList().size());
 
   bool has_wildcard = false;
-  for (const auto& url : *prefs_->GetList(prefs::kUrlGreylist)) {
-    std::string canonical = url.GetString();
-    CanonicalizeRule(&canonical);
-    rules_.greylist.push_back(std::move(canonical));
+  for (const auto& url : prefs_->GetList(prefs::kUrlGreylist)->GetList()) {
+    std::unique_ptr<Rule> rule =
+        CanonicalizeRule(url.GetString(), parsing_mode_);
+    if (rule)
+      rules_.greylist.push_back(std::move(rule));
     if (url.GetString() == "*")
       has_wildcard = true;
   }
@@ -319,7 +375,14 @@ void BrowserSwitcherPrefs::GreylistChanged() {
 void BrowserSwitcherPrefs::ChromePathChanged() {
   chrome_path_.clear();
   if (prefs_->IsManagedPreference(prefs::kChromePath))
-    chrome_path_ = prefs_->GetString(prefs::kChromePath);
+    chrome_path_ = prefs_->GetFilePath(prefs::kChromePath);
+#if defined(OS_WIN)
+  if (chrome_path_.empty()) {
+    base::FilePath::CharType chrome_path[MAX_PATH];
+    ::GetModuleFileName(NULL, chrome_path, ARRAYSIZE(chrome_path));
+    chrome_path_ = base::FilePath(chrome_path);
+  }
+#endif
 }
 
 void BrowserSwitcherPrefs::ChromeParametersChanged() {
@@ -327,7 +390,7 @@ void BrowserSwitcherPrefs::ChromeParametersChanged() {
   if (!prefs_->IsManagedPreference(prefs::kChromeParameters))
     return;
   const base::ListValue* params = prefs_->GetList(prefs::kChromeParameters);
-  for (const auto& param : *params) {
+  for (const auto& param : params->GetList()) {
     std::string param_string = param.GetString();
     chrome_params_.push_back(param_string);
   }
@@ -382,6 +445,9 @@ const char kEnabled[] = "browser_switcher.enabled";
 
 // How long to wait on chrome://browser-switch (milliseconds).
 const char kDelay[] = "browser_switcher.delay";
+
+// Behavior switch for BrowserSwitcherSitelist.
+const char kParsingMode[] = "browser_switcher.parsing_mode";
 
 }  // namespace prefs
 }  // namespace browser_switcher

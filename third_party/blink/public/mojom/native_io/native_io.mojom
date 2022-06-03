@@ -1,0 +1,186 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_error.mojom";
+
+// NativeIOErrorTypes are designed to give sufficient information to web
+// application developers while masking platform-specific behaviour that may
+// create privacy or security issues.
+// See https://crbug.com/1095537 for a design doc.
+// TODO(rstz): Add error descriptions to the specification.
+enum NativeIOErrorType {
+  kSuccess,
+  // The operation failed due to an unspecified file error. There is no clear
+  // path to recovery from this error.
+  kUnknown,
+  // The object being operated on was in a permanent invalid state for the
+  // operation. Retrying is unlikely to succeed.
+  kInvalidState,
+  // An object being operated on was not found.
+  kNotFound,
+  // An object being operated cannot be modified at this time. Retrying might
+  // succeed.
+  kNoModificationAllowed,
+  // No space on disk is available for this operation.
+  kNoSpace,
+};
+
+struct NativeIOError {
+  NativeIOErrorType type;
+  string message;
+};
+
+// The NativeIO API currently offers synchronous access to storage. This is
+// purely for purpose of allowing developers to experiment, so we can learn the
+// performance and stability implications of a synchronous API. All the methods
+// here are [Sync] for this reason.
+//
+// NativeIO API docs: https://github.com/fivedots/nativeio-explainer
+
+// Handle and lock for a NativeIO file opened by a renderer.
+//
+// The interface is consumed by Blink in the renderer process. The interface is
+// currently implemented in the browser process, and will eventually move to the
+// Storage Service.
+//
+// This interface currently serves as a lock. The renderer gets exclusive access
+// to the associated file while it keeps this interface's mojo pipe open.
+//
+// The interface will also be used by the renderer to notify the browser of
+// writes to the file, for quota management purposes.
+interface NativeIOFileHost {
+  // Promises to the browser that the file was closed.
+  //
+  // Well-behaved renderers will call this method after closing the file
+  // descriptor received by the NativeIOHost.OpenFile() call that bound this
+  // NativeIOFile.
+  //
+  // A compromised renderer may lie and call this method without closing its
+  // corresponding file descriptor. This may allow it to observe writes from
+  // other renderers to the same (origin-scoped) file, so no cross-origin data
+  // would be leaked. This may also allow the compromised renderer to bypass a
+  // browser-managed quota on open file descriptors, but compromised renderers
+  // can already exhaust the system's resources.
+  [Sync] Close() => ();
+
+  // Extends or truncates a previously opened file on macOS < 10.15.
+  //
+  // `actual_length` contains the file's new length, which may be different
+  //  from the desired `length` if the base:File::SetLength() call fails.
+  //
+  // A negative `actual_length` indicates a failure to get the file's length.
+  // The renderer should handle this error case by closing the file.
+  //
+  // Calls ReportBadMessage() on macOS 10.15+. Disabled on other OSes.
+  //
+  // This call is a workaround for a sandboxing limitation in macOS < 10.15 that
+  // results in ftruncate() to fail when called from (sandboxed) renderers.
+  // On modern macOS versions, the renderer calls ftruncate() directly instead
+  // of using this call. The sandboxing issue is discussed at crbug.com/1084565.
+  //
+  // The rendererer passes the file handle to the backend. This could have been
+  // avoided by having NativeIOFileHost always store a dup()ed handle for the
+  // file. This alternative was rejected in order to avoid reasoning about the
+  // effects of having multiple file handles pointing to the same file.
+  //
+  // A compromised renderer may use this call with an arbitrary file handle.
+  // This is not considered a significant attack surface because renderers on
+  // macOS 10.15+ and all other OSes are able to call ftruncate() on any file
+  // handle they have.
+  //
+  // By the same reasoning above (renderers on most OSes can call ftruncate()
+  // directly), this call returns unsanitized base::File::Error information.
+  [EnableIf=is_mac, Sync] SetLength(int64 length,
+                                    mojo_base.mojom.File backing_file) =>
+      (mojo_base.mojom.File backing_file,
+       int64 actual_length,
+       NativeIOError set_length_error);
+};
+
+// Origin-scoped implementation of the Web Platform's NativeIO API.
+//
+// The interface is consumed by Blink in the renderer process. The interface is
+// currently implemented in the browser process, and will eventually move to the
+// Storage Service.
+//
+// The interface grants access to origin-scoped data in the user's profile. A
+// compromised renderer can only use this interface to access the origin's data.
+//
+// Each instance has an associated capacity, which is the number of bytes of
+// disk space that the consumer is allowed to take up by writing to the files
+// that it opens. Operations that extend an opened file past its current size,
+// such as Write() and SetLength(), consume associated capacity. Operations that
+// reduce an opened file's size on disk, such as SetLength() and deleting the
+// file, create capacity. Empty files do not consume capacity.
+//
+// Each instance starts out with zero (0) capacity, and may call
+// RequestCapacityChange() to obtain capacity from the quota system. Capacity
+// counts as quota usage by the origin. When the instance's mojo pipe is
+// closed, any available capacity is automatically returned to the quota system.
+//
+// Consumers should never take up more disk space than available capacity.
+// Renderers that deviate from this requirement will be terminated.
+interface NativeIOHost {
+  // Requests or releases storage capacity.
+  //
+  // This interface's consumer must only create / expand file handles obtained
+  // from OpenFile() according to the capacity obtained from
+  // RequestCapacityChange(). Renderers that deviate from this requirement will
+  // be terminated.
+  //
+  // Positive deltas are requests for capacity increases. The implementation may
+  // grant less capacity than requested, but it will never decrease capacity
+  // when an increase is requested. In other words, if capacity_delta > 0,
+  // granted_capacity_delta is guaranteed to be >= 0.
+  //
+  // Negative deltas are capacity releases. Releasing unavailable capacity is a
+  // bad message. Subject to this constraint, capacity releases are guaranteed
+  // to succeed. In other words, if capacity_delta < 0, granted_capacity_delta
+  // is guaranteed to == capacity_delta.
+  //
+  // The synchronous interface is needed as NativeIO implements a fully
+  // synchronous version of its API.
+  [Sync]
+  RequestCapacityChange(int64 capacity_delta) =>
+      (int64 granted_capacity_delta);
+
+  // Opens a previously created file. Creates a new file if necessary.
+  //
+  // The origin has an exclusive lock on the file until it calls Close() on the
+  // `backing_file`, or until it disconnects from it. Returns the file size
+  //  as needed for the quota implementation.
+  //
+  // This interface's consumer must only create / expand file handles
+  // obtained from OpenFile() according to the capacity obtained from
+  // RequestCapacityChange(). Renderers that deviate from this requirement
+  // will be terminated.
+  [Sync]
+  OpenFile(string name, pending_receiver<NativeIOFileHost> file_host_receiver)
+      => (mojo_base.mojom.File? backing_file, uint64 backing_file_size,
+          NativeIOError open_error);
+
+  // Deletes a previously created file.
+  //
+  // The space previously occupied by the file is returned to the consumer as
+  // available capacity. The returned value conveys the capacity change, and is
+  // guaranteed to be non-negative.
+  [Sync]
+  DeleteFile(string name) => (NativeIOError delete_error,
+                              uint64 granted_capacity_delta);
+
+  // Lists all the files created by the origin.
+  [Sync]
+  GetAllFileNames() => (bool success, array<string> names);
+
+  // Renames a previously created file.
+  //
+  // Rename does not allow renaming any files that are currently open and does
+  // not override existing files.
+  [Sync]
+  RenameFile(string old_name, string new_name) =>
+    (NativeIOError rename_error);
+};

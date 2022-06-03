@@ -4,7 +4,6 @@
   <script src=/resources/testharnessreport.js></script>
   <script src="resources/webxr_util.js"></script>
   <script src="resources/webxr_test_constants.js"></script>
-  <canvas></canvas>
   <script>
 
     let makeSpaceTest = (space_type) => {
@@ -20,7 +19,7 @@
 
     let makeInvalidSpaceTest = (space_type) => {
       return (session, fakeDeviceController, t) => {
-          return  promise_rejects(t, "NotSupportedError",
+          return  promise_rejects_dom(t, "NotSupportedError",
                                   session.requestReferenceSpace(space_type),
                                   "requestReferenceSpace('" + space_type + "')");
       };

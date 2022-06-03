@@ -5,7 +5,7 @@
 <script>
 description('Element direction details are accessible to shadow root');
 var root = document.getElementById('target');
-var shadowRoot = root.createShadowRoot();
+var shadowRoot = root.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = "<div id='target2'> hello! </div>"
 
 shouldBeEqualToString('getComputedStyle(shadowRoot.getElementById("target2")).direction', 'rtl'); 

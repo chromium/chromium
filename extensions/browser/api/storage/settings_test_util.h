@@ -11,14 +11,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/mock_extension_system.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/extension.h"
 
+namespace value_store {
 class ValueStore;
+}
 
 namespace extensions {
 
@@ -33,13 +34,14 @@ std::unique_ptr<base::Value> CreateKilobyte();
 std::unique_ptr<base::Value> CreateMegabyte();
 
 // Synchronously gets the storage area for an extension from |frontend|.
-ValueStore* GetStorage(scoped_refptr<const Extension> extension,
-                       settings_namespace::Namespace setting_namespace,
-                       StorageFrontend* frontend);
+value_store::ValueStore* GetStorage(
+    scoped_refptr<const Extension> extension,
+    settings_namespace::Namespace setting_namespace,
+    StorageFrontend* frontend);
 
 // Synchronously gets the SYNC storage for an extension from |frontend|.
-ValueStore* GetStorage(scoped_refptr<const Extension> extension,
-                       StorageFrontend* frontend);
+value_store::ValueStore* GetStorage(scoped_refptr<const Extension> extension,
+                                    StorageFrontend* frontend);
 
 // Creates an extension with |id| and adds it to the registry for |context|.
 scoped_refptr<const Extension> AddExtensionWithId(

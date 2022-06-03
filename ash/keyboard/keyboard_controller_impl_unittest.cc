@@ -8,23 +8,29 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/container_behavior.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/test/test_keyboard_controller_observer.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/wm/core/window_util.h"
 
 using keyboard::KeyboardConfig;
 using keyboard::KeyboardEnableFlag;
@@ -32,6 +38,10 @@ using keyboard::KeyboardEnableFlag;
 namespace ash {
 
 namespace {
+
+ShelfLayoutManager* GetShelfLayoutManager() {
+  return AshTestBase::GetPrimaryShelf()->shelf_layout_manager();
+}
 
 class TestContainerBehavior : public keyboard::ContainerBehavior {
  public:
@@ -52,7 +62,8 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
   gfx::Rect AdjustSetBoundsRequest(
       const gfx::Rect& display_bounds,
       const gfx::Rect& requested_bounds_in_screen_coords) override {
-    return gfx::Rect();
+    return adjusted_bounds_in_screen_ ? *adjusted_bounds_in_screen_
+                                      : requested_bounds_in_screen_coords;
   }
 
   void SetCanonicalBounds(aura::Window* container,
@@ -65,6 +76,10 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
 
   bool HandlePointerEvent(const ui::LocatedEvent& event,
                           const display::Display& current_display) override {
+    return false;
+  }
+  bool HandleGestureEvent(const ui::GestureEvent& event,
+                          const gfx::Rect& bounds_in_screen) override {
     return false;
   }
 
@@ -97,16 +112,26 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
     return area_to_remain_on_screen_;
   }
 
+  void set_adjusted_bounds_in_screen(const gfx::Rect& rect) {
+    adjusted_bounds_in_screen_ = rect;
+  }
+
  private:
   keyboard::ContainerType type_ = keyboard::ContainerType::kFullWidth;
   gfx::Rect occluded_bounds_;
   gfx::Rect draggable_area_;
   gfx::Rect area_to_remain_on_screen_;
+  absl::optional<gfx::Rect> adjusted_bounds_in_screen_;
 };
 
 class KeyboardControllerImplTest : public AshTestBase {
  public:
   KeyboardControllerImplTest() = default;
+
+  KeyboardControllerImplTest(const KeyboardControllerImplTest&) = delete;
+  KeyboardControllerImplTest& operator=(const KeyboardControllerImplTest&) =
+      delete;
+
   ~KeyboardControllerImplTest() override = default;
 
   void SetUp() override {
@@ -130,7 +155,7 @@ class KeyboardControllerImplTest : public AshTestBase {
 
  protected:
   bool SetContainerType(keyboard::ContainerType container_type,
-                        const base::Optional<gfx::Rect>& target_bounds) {
+                        const gfx::Rect& target_bounds) {
     bool result = false;
     base::RunLoop run_loop;
     keyboard_controller()->SetContainerType(
@@ -158,8 +183,25 @@ class KeyboardControllerImplTest : public AshTestBase {
     focusable_window->Focus();
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerImplTest);
+  void SetKeyboardConfigToPref(const base::Value& value) {
+    base::Value features(base::Value::Type::DICTIONARY);
+    features.SetKey("auto_complete_enabled", value.Clone());
+    features.SetKey("auto_correct_enabled", value.Clone());
+    features.SetKey("handwriting_enabled", value.Clone());
+    features.SetKey("spell_check_enabled", value.Clone());
+    features.SetKey("voice_input_enabled", value.Clone());
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    prefs->Set(prefs::kAccessibilityVirtualKeyboardFeatures, features);
+  }
+
+  void VerifyKeyboardConfig(const KeyboardConfig& config, bool expected_value) {
+    EXPECT_EQ(test_observer()->config().auto_complete, expected_value);
+    EXPECT_EQ(test_observer()->config().auto_correct, expected_value);
+    EXPECT_EQ(test_observer()->config().handwriting, expected_value);
+    EXPECT_EQ(test_observer()->config().spell_check, expected_value);
+    EXPECT_EQ(test_observer()->config().voice_input, expected_value);
+  }
 };
 
 }  // namespace
@@ -185,6 +227,71 @@ TEST_F(KeyboardControllerImplTest, SetKeyboardConfig) {
 
   // Test that the test observer received the change.
   EXPECT_NE(old_auto_complete, test_observer()->config().auto_complete);
+}
+
+TEST_F(KeyboardControllerImplTest, SetKeyboardConfigFromPref) {
+  // Enable the keyboard so that config changes trigger observer events.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // Set the policy for virtual keyboard features.
+  SetKeyboardConfigToPref(base::Value(false));
+
+  // Test that all virtual keyboard features are enabled by default.
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), true);
+  VerifyKeyboardConfig(test_observer()->config(), true);
+
+  // Enabled the keyboard config from pref service.
+  keyboard_controller()->SetKeyboardConfigFromPref(true);
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), false);
+  VerifyKeyboardConfig(test_observer()->config(), false);
+
+  // Change the feature values from 'false' to 'true'.
+  SetKeyboardConfigToPref(base::Value(true));
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), true);
+  VerifyKeyboardConfig(test_observer()->config(), true);
+}
+
+TEST_F(KeyboardControllerImplTest,
+       SetKeyboardConfigFromPref_DefaultPolicyValue) {
+  // Enable the keyboard so that config changes trigger observer events.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // Enabled the keyboard config from pref service. The feature values should be
+  // false by default.
+  keyboard_controller()->SetKeyboardConfigFromPref(true);
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), false);
+  VerifyKeyboardConfig(test_observer()->config(), false);
+}
+
+TEST_F(KeyboardControllerImplTest,
+       SetKeyboardConfigFromPref_DefaultFeatureValue) {
+  // Enable the keyboard so that config changes trigger observer events.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // Set the policy for virtual keyboard features.
+  base::Value features(base::Value::Type::DICTIONARY);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  prefs->Set(prefs::kAccessibilityVirtualKeyboardFeatures, features);
+
+  // Enabled the keyboard config from pref service. The feature values should be
+  // false by default.
+  keyboard_controller()->SetKeyboardConfigFromPref(true);
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), false);
+  VerifyKeyboardConfig(test_observer()->config(), false);
+}
+
+TEST_F(KeyboardControllerImplTest,
+       SetKeyboardConfigFromPref_InvalidFeatureType) {
+  // Enable the keyboard so that config changes trigger observer events.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // The Integer type is not acceptable to virtual keyboard features, so they
+  // fallback to use the default value (false).
+  SetKeyboardConfigToPref(base::Value(100));
+  keyboard_controller()->SetKeyboardConfigFromPref(true);
+  VerifyKeyboardConfig(keyboard_controller()->GetKeyboardConfig(), false);
+  VerifyKeyboardConfig(test_observer()->config(), false);
 }
 
 TEST_F(KeyboardControllerImplTest, EnableFlags) {
@@ -279,7 +386,7 @@ TEST_F(KeyboardControllerImplTest, SetContainerType) {
 
   // Setting the container type to the current type should fail.
   EXPECT_FALSE(
-      SetContainerType(keyboard::ContainerType::kFloating, base::nullopt));
+      SetContainerType(keyboard::ContainerType::kFloating, target_bounds));
   EXPECT_EQ(keyboard::ContainerType::kFloating,
             keyboard_ui_controller()->GetActiveContainerType());
 }
@@ -347,6 +454,40 @@ TEST_F(KeyboardControllerImplTest, SetAreaToRemainOnScreen) {
   EXPECT_EQ(bounds, behavior->area_to_remain_on_screen());
 }
 
+TEST_F(KeyboardControllerImplTest, SetWindowBoundsInScreen) {
+  // Enable the keyboard.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // Override the container behavior.
+  auto scoped_behavior = std::make_unique<TestContainerBehavior>();
+  keyboard_ui_controller()->set_container_behavior_for_test(
+      std::move(scoped_behavior));
+
+  gfx::Rect bounds(1, 1, 300, 400);
+  keyboard_controller()->SetWindowBoundsInScreen(bounds);
+  EXPECT_EQ(bounds,
+            keyboard_ui_controller()->GetKeyboardWindow()->GetBoundsInScreen());
+}
+
+TEST_F(KeyboardControllerImplTest,
+       SetWindowBoundsInScreenShouldRespectAdjustedBounds) {
+  gfx::Rect adjusted_bounds_in_screen(10, 10, 30, 40);
+
+  // Enable the keyboard.
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  // Override the container behavior.
+  auto scoped_behavior = std::make_unique<TestContainerBehavior>();
+  scoped_behavior->set_adjusted_bounds_in_screen(adjusted_bounds_in_screen);
+  keyboard_ui_controller()->set_container_behavior_for_test(
+      std::move(scoped_behavior));
+
+  gfx::Rect requested_bounds(1, 1, 300, 400);
+  keyboard_controller()->SetWindowBoundsInScreen(requested_bounds);
+  EXPECT_EQ(adjusted_bounds_in_screen,
+            keyboard_ui_controller()->GetKeyboardWindow()->GetBoundsInScreen());
+}
+
 TEST_F(KeyboardControllerImplTest, ChangingSessionRebuildsKeyboard) {
   // Enable the keyboard.
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
@@ -370,7 +511,8 @@ TEST_F(KeyboardControllerImplTest, VisualBoundsInMultipleDisplays) {
 
   // Show the keyboard in the second display.
   keyboard_ui_controller()->ShowKeyboardInDisplay(
-      Shell::Get()->display_manager()->GetSecondaryDisplay());
+      display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+          .GetSecondaryDisplay());
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   gfx::Rect root_bounds = keyboard_ui_controller()->visual_bounds_in_root();
@@ -387,7 +529,8 @@ TEST_F(KeyboardControllerImplTest, OccludedBoundsInMultipleDisplays) {
 
   // Show the keyboard in the second display.
   keyboard_ui_controller()->ShowKeyboardInDisplay(
-      Shell::Get()->display_manager()->GetSecondaryDisplay());
+      display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+          .GetSecondaryDisplay());
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   gfx::Rect screen_bounds =
@@ -398,7 +541,7 @@ TEST_F(KeyboardControllerImplTest, OccludedBoundsInMultipleDisplays) {
 // Test for http://crbug.com/303429. |GetContainerForDisplay| should move
 // keyboard to specified display even when it's not touchable.
 TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make primary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -428,7 +571,7 @@ TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
 // no window is focused.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerInPrimaryDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -444,7 +587,7 @@ TEST_F(KeyboardControllerImplTest,
 // move keyboard to focused display if no display has touch capability.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -460,7 +603,7 @@ TEST_F(KeyboardControllerImplTest,
 // Test for http://crbug.com/303429. |GetContainerForDefaultDisplay| should
 // move keyboard to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -483,7 +626,7 @@ TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
 TEST_F(
     KeyboardControllerImplTest,
     DefaultContainerIsInFirstTouchableDisplayIfFocusedDisplayIsNotTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -507,7 +650,7 @@ TEST_F(
 // move keyborad to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayIfTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make both displays touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -537,7 +680,7 @@ TEST_F(KeyboardControllerImplTest,
 
 // Test for https://crbug.com/897007.
 TEST_F(KeyboardControllerImplTest, ShowKeyboardInSecondaryDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 
@@ -548,6 +691,85 @@ TEST_F(KeyboardControllerImplTest, ShowKeyboardInSecondaryDisplay) {
   ASSERT_TRUE(keyboard::WaitUntilShown());
   EXPECT_TRUE(
       !keyboard_ui_controller()->GetKeyboardWindow()->bounds().IsEmpty());
+}
+
+TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(start + gfx::Vector2d(0, -80));
+  const base::TimeDelta time_delta = base::Milliseconds(100);
+  const int num_scroll_steps = 4;
+  GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
+                                             num_scroll_steps);
+
+  // Keyboard should hide and gesture should forward to the shelf.
+  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+}
+
+TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(start + gfx::Vector2d(0, -200));
+  const int fling_speed =
+      DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 1;
+  const int scroll_steps = 20;
+  base::TimeDelta scroll_time =
+      GetEventGenerator()->CalculateScrollDurationForFlingVelocity(
+          start, end, fling_speed, scroll_steps);
+  GetEventGenerator()->GestureScrollSequence(start, end, scroll_time,
+                                             scroll_steps);
+
+  // Keyboard should hide and gesture should forward to the shelf.
+  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  EXPECT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
+}
+
+TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(start + gfx::Vector2d(0, -80));
+  const base::TimeDelta time_delta = base::Milliseconds(100);
+  const int num_scroll_steps = 4;
+  GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
+                                             num_scroll_steps);
+
+  EXPECT_FALSE(keyboard::IsKeyboardHiding());
 }
 
 }  // namespace ash

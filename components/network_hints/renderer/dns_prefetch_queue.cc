@@ -6,7 +6,9 @@
 
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 
-#include "base/logging.h"
+#include <cstring>
+
+#include "base/check.h"
 
 namespace network_hints {
 

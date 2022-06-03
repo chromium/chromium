@@ -22,10 +22,14 @@ class StreamChannelFactory;
 // P2PStreamSocket.
 class StreamMessagePipeAdapter : public MessagePipe {
  public:
-  typedef base::Callback<void(int)> ErrorCallback;
+  typedef base::OnceCallback<void(int)> ErrorCallback;
 
   StreamMessagePipeAdapter(std::unique_ptr<P2PStreamSocket> socket,
-                           const ErrorCallback& error_callback);
+                           ErrorCallback error_callback);
+
+  StreamMessagePipeAdapter(const StreamMessagePipeAdapter&) = delete;
+  StreamMessagePipeAdapter& operator=(const StreamMessagePipeAdapter&) = delete;
+
   ~StreamMessagePipeAdapter() override;
 
   // MessagePipe interface.
@@ -43,32 +47,34 @@ class StreamMessagePipeAdapter : public MessagePipe {
 
   std::unique_ptr<MessageReader> reader_;
   std::unique_ptr<BufferedSocketWriter> writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMessagePipeAdapter);
 };
 
 class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
  public:
-  typedef base::Callback<void(int)> ErrorCallback;
+  typedef base::RepeatingCallback<void(int)> ErrorCallback;
 
   StreamMessageChannelFactoryAdapter(
       StreamChannelFactory* stream_channel_factory,
       const ErrorCallback& error_callback);
+
+  StreamMessageChannelFactoryAdapter(
+      const StreamMessageChannelFactoryAdapter&) = delete;
+  StreamMessageChannelFactoryAdapter& operator=(
+      const StreamMessageChannelFactoryAdapter&) = delete;
+
   ~StreamMessageChannelFactoryAdapter() override;
 
   // MessageChannelFactory interface.
   void CreateChannel(const std::string& name,
-                     const ChannelCreatedCallback& callback) override;
+                     ChannelCreatedCallback callback) override;
   void CancelChannelCreation(const std::string& name) override;
 
  private:
-  void OnChannelCreated(const ChannelCreatedCallback& callback,
+  void OnChannelCreated(ChannelCreatedCallback callback,
                         std::unique_ptr<P2PStreamSocket> socket);
 
   StreamChannelFactory* stream_channel_factory_;
   ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMessageChannelFactoryAdapter);
 };
 
 }  // namespace protocol

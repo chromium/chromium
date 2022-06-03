@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/models/combobox_model.h"
@@ -27,12 +26,17 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
  public:
   RecentlyUsedFoldersComboModel(bookmarks::BookmarkModel* model,
                                 const bookmarks::BookmarkNode* node);
+
+  RecentlyUsedFoldersComboModel(const RecentlyUsedFoldersComboModel&) = delete;
+  RecentlyUsedFoldersComboModel& operator=(
+      const RecentlyUsedFoldersComboModel&) = delete;
+
   ~RecentlyUsedFoldersComboModel() override;
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
-  bool IsItemSeparatorAt(int index) override;
+  std::u16string GetItemAt(int index) const override;
+  bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
   void AddObserver(ui::ComboboxModelObserver* observer) override;
   void RemoveObserver(ui::ComboboxModelObserver* observer) override;
@@ -83,14 +87,11 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   struct Item;
   std::vector<Item> items_;
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  bookmarks::BookmarkModel* const bookmark_model_;
 
-  // The index of the original parent folder.
-  int node_parent_index_;
+  const bookmarks::BookmarkNode* const parent_node_;
 
   base::ObserverList<ui::ComboboxModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyUsedFoldersComboModel);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_RECENTLY_USED_FOLDERS_COMBO_MODEL_H_

@@ -32,14 +32,9 @@ class StubChrome : public Chrome {
   Status NewWindow(const std::string& target_id,
                    WindowType type,
                    std::string* window_handle) override;
-  Status GetWindowSize(const std::string& id, int* width, int* height) override;
-  Status SetWindowSize(const std::string& id, int width, int height) override;
+  Status GetWindowRect(const std::string& id, WindowRect* rect) override;
   Status SetWindowRect(const std::string& target_id,
                        const base::DictionaryValue& params) override;
-  Status GetWindowPosition(const std::string& target_id,
-                           int* x,
-                           int* y) override;
-  Status SetWindowPosition(const std::string& target_id, int x, int y) override;
   Status MaximizeWindow(const std::string& target_id) override;
   Status MinimizeWindow(const std::string& target_id) override;
   Status FullScreenWindow(const std::string& target_id) override;

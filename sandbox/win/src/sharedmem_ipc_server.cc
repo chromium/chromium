@@ -8,14 +8,16 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_args.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
+#include "sandbox/win/src/threadpool.h"
 
 namespace {
 // This handle must not be closed.
@@ -30,10 +32,10 @@ SharedMemIPCServer::ServerControl::~ServerControl() {}
 
 SharedMemIPCServer::SharedMemIPCServer(HANDLE target_process,
                                        DWORD target_process_id,
-                                       ThreadProvider* thread_provider,
+                                       ThreadPool* thread_pool,
                                        Dispatcher* dispatcher)
     : client_control_(nullptr),
-      thread_provider_(thread_provider),
+      thread_pool_(thread_pool),
       target_process_(target_process),
       target_process_id_(target_process_id),
       call_dispatcher_(dispatcher) {
@@ -54,7 +56,7 @@ SharedMemIPCServer::SharedMemIPCServer(HANDLE target_process,
 
 SharedMemIPCServer::~SharedMemIPCServer() {
   // Free the wait handles associated with the thread pool.
-  if (!thread_provider_->UnRegisterWaits(this)) {
+  if (!thread_pool_->UnRegisterWaits(this)) {
     // Better to leak than to crash.
     return;
   }
@@ -126,8 +128,8 @@ bool SharedMemIPCServer::Init(void* shared_mem,
     // Advance to the next channel.
     base_start += channel_size;
     // Register the ping event with the threadpool.
-    thread_provider_->RegisterWait(this, service_context->ping_event.Get(),
-                                   ThreadPingEventReady, service_context);
+    thread_pool_->RegisterWait(this, service_context->ping_event.Get(),
+                               ThreadPingEventReady, service_context);
   }
   if (!::DuplicateHandle(::GetCurrentProcess(), g_alive_mutex, target_process_,
                          &client_control_->server_alive,

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UTIL_MAC_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UTIL_MAC_H_
 
-#include "chrome/browser/password_manager/reauth_purpose.h"
+#include "components/password_manager/core/browser/reauth_purpose.h"
 
 namespace password_manager_util_mac {
 

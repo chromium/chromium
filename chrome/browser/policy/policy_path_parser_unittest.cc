@@ -79,7 +79,7 @@ TEST_F(PolicyPathParserTests, AllPlatformVariables) {
                        FILE_PATH_LITERAL("${machine_name}"));
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 
 TEST_F(PolicyPathParserTests, MacVariables) {
   CheckForSubstitution(FILE_PATH_LITERAL("//$C/${users}"),

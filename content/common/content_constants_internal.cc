@@ -4,21 +4,9 @@
 
 #include "content/common/content_constants_internal.h"
 
-#include "build/build_config.h"
+#include "media/media_buildflags.h"
 
 namespace content {
-
-#if defined(OS_ANDROID)
-const int64_t kHungRendererDelayMs = 5000;
-#else
-// TODO(jdduke): Consider shortening this delay on desktop. It was originally
-// set to 5 seconds but was extended to accomodate less responsive plugins.
-const int64_t kHungRendererDelayMs = 30000;
-#endif
-
-const int64_t kNewContentRenderingDelayMs = 4000;
-
-const int64_t kAsyncHitTestTimeoutMs = 5000;
 
 // 20MiB
 const size_t kMaxLengthOfDataURLString = 1024 * 1024 * 20;
@@ -31,6 +19,18 @@ const int kTraceEventGpuProcessSortIndex = -1;
 
 const int kTraceEventRendererMainThreadSortIndex = -1;
 
-const char kDoNotTrackHeader[] = "DNT";
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+const char kFrameAcceptHeaderValue[] =
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
+    "image/webp,image/apng,*/*;q=0.8";
+#else
+const char kFrameAcceptHeaderValue[] =
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
+    "image/apng,*/*;q=0.8";
+#endif
+
+const int kChildProcessReceiverAttachmentName = 0;
+const int kChildProcessHostRemoteAttachmentName = 1;
+const int kLegacyIpcBootstrapAttachmentName = 2;
 
 } // namespace content

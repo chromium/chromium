@@ -7,26 +7,14 @@ source_set("snackbar") {
   sources = [
     "snackbar_coordinator.h",
     "snackbar_coordinator.mm",
+    "snackbar_coordinator_delegate.h",
   ]
   deps = [
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/third_party/material_components_ios",
   ]
-  libs = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "snackbar_coordinator_unittest.mm",
-  ]
-  deps = [
-    ":snackbar",
-    "//ios/chrome/browser/ui/commands",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }

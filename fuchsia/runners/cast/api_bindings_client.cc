@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 namespace {
 
@@ -18,40 +19,45 @@ uint64_t kBindingsIdStart = 0xFF0000;
 
 ApiBindingsClient::ApiBindingsClient(
     fidl::InterfaceHandle<chromium::cast::ApiBindings> bindings_service,
-    base::OnceClosure on_bindings_received_callback,
-    base::OnceClosure on_error_callback)
+    base::OnceClosure on_initialization_complete)
     : bindings_service_(bindings_service.Bind()),
-      on_bindings_received_callback_(std::move(on_bindings_received_callback)) {
+      on_initialization_complete_(std::move(on_initialization_complete)) {
   DCHECK(bindings_service_);
-  DCHECK(on_bindings_received_callback_);
+  DCHECK(on_initialization_complete_);
 
   bindings_service_->GetAll(
       fit::bind_member(this, &ApiBindingsClient::OnBindingsReceived));
 
-  bindings_service_.set_error_handler(
-      [on_error_callback =
-           std::move(on_error_callback)](zx_status_t status) mutable {
-        ZX_LOG(ERROR, status) << "ApiBindings dicsonnected.";
-        std::move(on_error_callback).Run();
-      });
+  bindings_service_.set_error_handler([this](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "ApiBindings disconnected.";
+    std::move(on_initialization_complete_).Run();
+  });
 }
 
-void ApiBindingsClient::OnBindingsReceived(
-    std::vector<chromium::cast::ApiBinding> bindings) {
-  DCHECK(on_bindings_received_callback_);
+ApiBindingsClient::~ApiBindingsClient() {
+  if (connector_ && frame_) {
+    connector_->RegisterPortHandler({});
 
-  bindings_ = std::move(bindings);
-  std::move(on_bindings_received_callback_).Run();
+    // Remove all injected scripts using their automatically enumerated IDs.
+    for (uint64_t i = 0; i < bindings_->size(); ++i)
+      frame_->RemoveBeforeLoadJavaScript(kBindingsIdStart + i);
+  }
 }
 
-void ApiBindingsClient::AttachToFrame(fuchsia::web::Frame* frame,
-                                      NamedMessagePortConnector* connector,
-                                      base::OnceClosure on_error_callback) {
+void ApiBindingsClient::AttachToFrame(
+    fuchsia::web::Frame* frame,
+    cast_api_bindings::NamedMessagePortConnector* connector,
+    base::OnceClosure on_error_callback) {
   DCHECK(!frame_) << "AttachToFrame() was called twice.";
   DCHECK(frame);
   DCHECK(connector);
   DCHECK(bindings_)
       << "AttachToFrame() was called before bindings were received.";
+
+  if (!bindings_service_) {
+    std::move(on_error_callback).Run();
+    return;
+  }
 
   connector_ = connector;
   frame_ = frame;
@@ -63,8 +69,8 @@ void ApiBindingsClient::AttachToFrame(fuchsia::web::Frame* frame,
     std::move(on_error_callback).Run();
   });
 
-  connector_->Register(base::BindRepeating(&ApiBindingsClient::OnPortConnected,
-                                           base::Unretained(this)));
+  connector_->RegisterPortHandler(base::BindRepeating(
+      &ApiBindingsClient::OnPortConnected, base::Unretained(this)));
 
   // Enumerate and inject all scripts in |bindings|.
   uint64_t bindings_id = kBindingsIdStart;
@@ -78,23 +84,32 @@ void ApiBindingsClient::AttachToFrame(fuchsia::web::Frame* frame,
   }
 }
 
-ApiBindingsClient::~ApiBindingsClient() {
-  if (connector_ && frame_) {
-    connector_->Register({});
-
-    // Remove all injected scripts using their automatically enumerated IDs.
-    for (uint64_t i = 0; i < bindings_->size(); ++i)
-      frame_->RemoveBeforeLoadJavaScript(kBindingsIdStart + i);
-  }
-}
-
-void ApiBindingsClient::OnPortConnected(
-    base::StringPiece port_name,
-    fidl::InterfaceHandle<fuchsia::web::MessagePort> port) {
-  if (bindings_service_)
-    bindings_service_->Connect(port_name.as_string(), std::move(port));
+void ApiBindingsClient::DetachFromFrame(fuchsia::web::Frame* frame) {
+  DCHECK_EQ(frame, frame_);
+  frame_ = nullptr;
+  bindings_service_.set_error_handler(nullptr);
 }
 
 bool ApiBindingsClient::HasBindings() const {
   return bindings_.has_value();
+}
+
+bool ApiBindingsClient::OnPortConnected(
+    base::StringPiece port_name,
+    std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  if (!bindings_service_)
+    return false;
+
+  bindings_service_->Connect(
+      std::string(port_name),
+      cast_api_bindings::MessagePortFuchsia::FromMessagePort(port.get())
+          ->TakeClientHandle());
+  return true;
+}
+
+void ApiBindingsClient::OnBindingsReceived(
+    std::vector<chromium::cast::ApiBinding> bindings) {
+  bindings_ = std::move(bindings);
+  bindings_service_.set_error_handler(nullptr);
+  std::move(on_initialization_complete_).Run();
 }

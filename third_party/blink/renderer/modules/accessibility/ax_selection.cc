@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -144,16 +145,26 @@ AXSelection AXSelection::FromCurrentSelection(
   const AXObject* ax_text_control =
       ax_object_cache_impl->GetOrCreate(&text_control);
   DCHECK(ax_text_control);
+
+  // We can't directly use "text_control.Selection()" because the selection it
+  // returns is inside the shadow DOM and it's not anchored to the text field
+  // itself.
   const TextAffinity extent_affinity = text_control.Selection().Affinity();
   const TextAffinity base_affinity =
       text_control.selectionStart() == text_control.selectionEnd()
           ? extent_affinity
           : TextAffinity::kDownstream;
+
+  const bool is_backward = (text_control.selectionDirection() == "backward");
   const auto ax_base = AXPosition::CreatePositionInTextObject(
-      *ax_text_control, static_cast<int>(text_control.selectionStart()),
+      *ax_text_control,
+      static_cast<int>(is_backward ? text_control.selectionEnd()
+                                   : text_control.selectionStart()),
       base_affinity);
   const auto ax_extent = AXPosition::CreatePositionInTextObject(
-      *ax_text_control, static_cast<int>(text_control.selectionEnd()),
+      *ax_text_control,
+      static_cast<int>(is_backward ? text_control.selectionStart()
+                                   : text_control.selectionEnd()),
       extent_affinity);
 
   if (!ax_base.IsValid() || !ax_extent.IsValid())
@@ -191,7 +202,7 @@ AXSelection AXSelection::FromSelection(
   // in the accessibility tree.
   if (!selection.IsCaret()) {
     switch (selection_behavior) {
-      case AXSelectionBehavior::kShrinkToValidDOMRange:
+      case AXSelectionBehavior::kShrinkToValidRange:
         if (selection.IsBaseFirst()) {
           base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
           extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
@@ -200,7 +211,7 @@ AXSelection AXSelection::FromSelection(
           extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
         }
         break;
-      case AXSelectionBehavior::kExtendToValidDOMRange:
+      case AXSelectionBehavior::kExtendToValidRange:
         if (selection.IsBaseFirst()) {
           base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
           extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
@@ -253,19 +264,18 @@ bool AXSelection::IsValid() const {
   // boundaries, replaced elements, CSS user-select, etc.
   //
 
-  if (base_.IsTextPosition() &&
-      base_.ContainerObject()->IsNativeTextControl() &&
+  if (base_.IsTextPosition() && base_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         extent_.IsTextPosition() &&
-        extent_.ContainerObject()->IsNativeTextControl())) {
+        extent_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
   if (extent_.IsTextPosition() &&
-      extent_.ContainerObject()->IsNativeTextControl() &&
+      extent_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         base_.IsTextPosition() &&
-        base_.ContainerObject()->IsNativeTextControl())) {
+        base_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
@@ -289,7 +299,7 @@ const SelectionInDOMTree AXSelection::AsSelection(
   AXPositionAdjustmentBehavior extent_adjustment =
       AXPositionAdjustmentBehavior::kMoveLeft;
   switch (selection_behavior) {
-    case AXSelectionBehavior::kShrinkToValidDOMRange:
+    case AXSelectionBehavior::kShrinkToValidRange:
       if (base_ < extent_) {
         base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
         extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
@@ -298,7 +308,7 @@ const SelectionInDOMTree AXSelection::AsSelection(
         extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
       }
       break;
-    case AXSelectionBehavior::kExtendToValidDOMRange:
+    case AXSelectionBehavior::kExtendToValidRange:
       if (base_ < extent_) {
         base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
         extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
@@ -319,31 +329,52 @@ const SelectionInDOMTree AXSelection::AsSelection(
   return selection_builder.Build();
 }
 
+void AXSelection::UpdateSelectionIfNecessary() {
+  Document* document = base_.ContainerObject()->GetDocument();
+  if (!document)
+    return;
+
+  LocalFrameView* view = document->View();
+  if (!view || !view->LayoutPending())
+    return;
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+#if DCHECK_IS_ON()
+  base_.dom_tree_version_ = extent_.dom_tree_version_ = dom_tree_version_ =
+      document->DomTreeVersion();
+  base_.style_version_ = extent_.style_version_ = style_version_ =
+      document->StyleVersion();
+#endif  // DCHECK_IS_ON()
+}
+
 bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
   if (!IsValid()) {
     NOTREACHED() << "Trying to select an invalid accessibility selection.";
     return false;
   }
 
-  base::Optional<AXSelection::TextControlSelection> text_control_selection =
+  absl::optional<AXSelection::TextControlSelection> text_control_selection =
       AsTextControlSelection();
   if (text_control_selection.has_value()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
-    TextControlElement& text_control =
-        ToTextControl(*base_.ContainerObject()->GetNode());
+    TextControlElement& text_control = ToTextControl(
+        *base_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());
     if (!text_control.SetSelectionRange(text_control_selection->start,
                                         text_control_selection->end,
                                         text_control_selection->direction)) {
       return false;
     }
 
+    // TextControl::SetSelectionRange deliberately does not set focus. But if
+    // we're updating the selection, the text control should be focused.
     ScheduleSelectEvent(text_control);
+    text_control.focus();
     return true;
   }
 
-  const SelectionInDOMTree selection = AsSelection(selection_behavior);
-  DCHECK(selection.AssertValid());
-  Document* document = selection.Base().GetDocument();
+  const SelectionInDOMTree old_selection = AsSelection(selection_behavior);
+  DCHECK(old_selection.AssertValid());
+  Document* document = old_selection.Base().GetDocument();
   if (!document) {
     NOTREACHED() << "Valid DOM selections should have an attached document.";
     return false;
@@ -361,46 +392,32 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   // See the following section in the Selection API Specification:
   // https://w3c.github.io/selection-api/#selectstart-event
-  if (DispatchSelectStart(selection.Extent().ComputeContainerNode()) !=
+  if (DispatchSelectStart(old_selection.Base().ComputeContainerNode()) !=
       DispatchEventResult::kNotCanceled) {
     return false;
   }
+
+  UpdateSelectionIfNecessary();
+  if (!IsValid())
+    return false;
+
+  // Dispatching the "selectstart" event could potentially change the document
+  // associated with the current frame.
+  if (!frame_selection.IsAvailable())
+    return false;
+
+  // Re-retrieve the SelectionInDOMTree in case a DOM mutation took place.
+  // That way it will also have the updated DOM tree and Style versions,
+  // and the SelectionTemplate checks for each won't fail.
+  const SelectionInDOMTree selection = AsSelection(selection_behavior);
 
   SetSelectionOptions::Builder options_builder;
   options_builder.SetIsDirectional(true)
       .SetShouldCloseTyping(true)
       .SetShouldClearTypingStyle(true)
       .SetSetSelectionBy(SetSelectionBy::kUser);
-  frame_selection.ClearDocumentCachedRange();
-  frame_selection.SetSelection(selection, options_builder.Build());
-
-  // Cache the newly created document range. This doesn't affect the already
-  // applied selection. Note that DOM's |Range| object has a start and an end
-  // container that need to be in DOM order. See the DOM specification for more
-  // information: https://dom.spec.whatwg.org/#interface-range
-  Range* range = Range::Create(*document);
-  if (selection.Extent().IsNull()) {
-    DCHECK(selection.Base().IsNotNull())
-        << "AX selections converted to DOM selections should have at least one "
-           "endpoint non-null.\n"
-        << *this << '\n'
-        << selection;
-    range->setStart(selection.Base().ComputeContainerNode(),
-                    selection.Base().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Base().ComputeContainerNode(),
-                  selection.Base().ComputeOffsetInContainerNode());
-  } else if (selection.Base() < selection.Extent()) {
-    range->setStart(selection.Base().ComputeContainerNode(),
-                    selection.Base().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Extent().ComputeContainerNode(),
-                  selection.Extent().ComputeOffsetInContainerNode());
-  } else {
-    range->setStart(selection.Extent().ComputeContainerNode(),
-                    selection.Extent().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Base().ComputeContainerNode(),
-                  selection.Base().ComputeOffsetInContainerNode());
-  }
-  frame_selection.CacheRangeOfDocument(range);
+  frame_selection.SetSelectionForAccessibility(selection,
+                                               options_builder.Build());
   return true;
 }
 
@@ -410,22 +427,26 @@ String AXSelection::ToString() const {
   return "AXSelection from " + Base().ToString() + " to " + Extent().ToString();
 }
 
-base::Optional<AXSelection::TextControlSelection>
+absl::optional<AXSelection::TextControlSelection>
 AXSelection::AsTextControlSelection() const {
   if (!IsValid() || !base_.IsTextPosition() || !extent_.IsTextPosition() ||
-      base_.ContainerObject() != extent_.ContainerObject() ||
-      !base_.ContainerObject()->IsNativeTextControl() ||
-      !IsTextControl(base_.ContainerObject()->GetNode())) {
+      base_.ContainerObject() != extent_.ContainerObject()) {
     return {};
   }
+
+  const AXObject* text_control =
+      base_.ContainerObject()->GetAtomicTextFieldAncestor();
+  if (!text_control)
+    return {};
+
+  DCHECK(IsTextControl(text_control->GetNode()));
 
   if (base_ <= extent_) {
     return TextControlSelection(base_.TextOffset(), extent_.TextOffset(),
                                 kSelectionHasForwardDirection);
-  } else {
-    return TextControlSelection(extent_.TextOffset(), base_.TextOffset(),
-                                kSelectionHasBackwardDirection);
   }
+  return TextControlSelection(extent_.TextOffset(), base_.TextOffset(),
+                              kSelectionHasBackwardDirection);
 }
 
 bool operator==(const AXSelection& a, const AXSelection& b) {

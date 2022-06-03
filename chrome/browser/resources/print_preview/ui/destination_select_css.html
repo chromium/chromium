@@ -1,0 +1,38 @@
+<template>
+  <style include="cr-shared-style">
+    :host {
+      --printer-icon-side-padding: 4px;
+      --printer-icon-size: 20px;
+    }
+
+    select.md-select {
+      background-position: var(--printer-icon-side-padding) center,
+          calc(100% - var(--md-select-side-padding)) center;
+      background-size: var(--printer-icon-size), var(--md-arrow-width);
+      padding-inline-start: 32px;
+    }
+
+    :host-context([dir=rtl]) .md-select {
+      background-position-x: calc(100% - var(--printer-icon-side-padding)),
+          var(--md-select-side-padding);
+    }
+
+    .throbber-container {
+      align-items: center;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .destination-additional-info,
+    .destination-additional-info div {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .destination-status {
+      color: var(--cr-secondary-text-color);
+      font-size: calc(12/13 * 1em);
+      padding: 4px 0;
+    }
+  </style>
+</template>

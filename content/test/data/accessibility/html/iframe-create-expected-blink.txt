@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++iframe
+++++++++rootWebArea
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++link name='done'
+++++++++++++++++staticText name='done'
+++++++++++++++++++inlineTextBox name='done'

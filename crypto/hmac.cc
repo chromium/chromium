@@ -9,7 +9,8 @@
 #include <algorithm>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "crypto/openssl_util.h"
 #include "crypto/secure_util.h"
@@ -56,16 +57,31 @@ bool HMAC::Init(const SymmetricKey* key) {
 bool HMAC::Sign(base::StringPiece data,
                 unsigned char* digest,
                 size_t digest_length) const {
+  return Sign(base::as_bytes(base::make_span(data)),
+              base::make_span(digest, digest_length));
+}
+
+bool HMAC::Sign(base::span<const uint8_t> data,
+                base::span<uint8_t> digest) const {
   DCHECK(initialized_);
 
-  ScopedOpenSSLSafeSizeBuffer<EVP_MAX_MD_SIZE> result(digest, digest_length);
+  if (digest.size() > DigestLength())
+    return false;
+
+  ScopedOpenSSLSafeSizeBuffer<EVP_MAX_MD_SIZE> result(digest.data(),
+                                                      digest.size());
   return !!::HMAC(hash_alg_ == SHA1 ? EVP_sha1() : EVP_sha256(), key_.data(),
-                  key_.size(),
-                  reinterpret_cast<const unsigned char*>(data.data()),
-                  data.size(), result.safe_buffer(), nullptr);
+                  key_.size(), data.data(), data.size(), result.safe_buffer(),
+                  nullptr);
 }
 
 bool HMAC::Verify(base::StringPiece data, base::StringPiece digest) const {
+  return Verify(base::as_bytes(base::make_span(data)),
+                base::as_bytes(base::make_span(digest)));
+}
+
+bool HMAC::Verify(base::span<const uint8_t> data,
+                  base::span<const uint8_t> digest) const {
   if (digest.size() != DigestLength())
     return false;
   return VerifyTruncated(data, digest);
@@ -73,16 +89,25 @@ bool HMAC::Verify(base::StringPiece data, base::StringPiece digest) const {
 
 bool HMAC::VerifyTruncated(base::StringPiece data,
                            base::StringPiece digest) const {
+  return VerifyTruncated(base::as_bytes(base::make_span(data)),
+                         base::as_bytes(base::make_span(digest)));
+}
+
+bool HMAC::VerifyTruncated(base::span<const uint8_t> data,
+                           base::span<const uint8_t> digest) const {
   if (digest.empty())
     return false;
+
   size_t digest_length = DigestLength();
-  std::unique_ptr<unsigned char[]> computed_digest(
-      new unsigned char[digest_length]);
-  if (!Sign(data, computed_digest.get(), digest_length))
+  if (digest.size() > digest_length)
     return false;
 
-  return SecureMemEqual(digest.data(), computed_digest.get(),
-                        std::min(digest.size(), digest_length));
+  uint8_t computed_digest[EVP_MAX_MD_SIZE];
+  CHECK_LE(digest.size(), size_t{EVP_MAX_MD_SIZE});
+  if (!Sign(data, base::make_span(computed_digest, digest.size())))
+    return false;
+
+  return SecureMemEqual(digest.data(), computed_digest, digest.size());
 }
 
 }  // namespace crypto

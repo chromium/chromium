@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc =
+    'requestLEScan with a filter that looks for both a name AND a uuid';
+let scan_result;
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(
+      async () => {
+          scan_result = await navigator.bluetooth.requestLEScan(
+              {filters: [{name: 'Some Device', services: [health_uuid]}]})});
+  assert_equals(scan_result.filters[0].name, 'Some Device')
+  assert_array_equals(scan_result.filters[0].services, [health_uuid]);
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let promise = eventWatcher.wait_for(['advertisementreceived']).then(e => {
+    assert_equals(e.name, 'Some Device');
+    assert_array_equals(e.uuids, [health_uuid]);
+  });
+
+  let scan = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  // This scan does not have a uuids or name set, so shouldn't be seen.
+  fake_central.simulateAdvertisementReceived(scan);
+
+  // This scan has a uuid but no name, so shouldn't be seen.
+  scan.scanRecord.uuids = [health_uuid];
+  fake_central.simulateAdvertisementReceived(scan);
+
+  // This can should be seen as it has both a name and uuids.
+  scan.scanRecord.name = 'Some Device';
+  scan.scanRecord.uuids = [health_uuid];
+  fake_central.simulateAdvertisementReceived(scan);
+
+  return promise;
+}, test_desc);
+</script>

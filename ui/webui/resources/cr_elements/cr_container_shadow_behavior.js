@@ -29,10 +29,13 @@
  * Clients should either use the existing shared styling in
  * shared_styles_css.html, '#cr-container-shadow-[top/bottom]' and
  * '#cr-container-shadow-[top/bottom].has-shadow', or define their own styles.
+ *
+ * NOTE: This file is deprecated in favor of cr_container_shadow_mixin.js. Don't
+ * use it in any new code.
  */
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js'
+// #import {assert} from '../js/assert.m.js';
 // clang-format on
 
 /** @enum {string} */
@@ -56,13 +59,13 @@
   sides_: null,
 
   /** @override */
-  ready: function() {
+  ready() {
     this.dropShadows_ = new Map();
     this.intersectionProbes_ = new Map();
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     const hasBottomShadow = this.$.container.hasAttribute('show-bottom-shadow');
     this.sides_ = hasBottomShadow ?
         [CrContainerShadowSide.TOP, CrContainerShadowSide.BOTTOM] :
@@ -93,7 +96,7 @@
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     this.enableShadowBehavior(false);
   },
 
@@ -101,7 +104,7 @@
    * @return {!IntersectionObserver}
    * @private
    */
-  getIntersectionObserver_: function() {
+  getIntersectionObserver_() {
     const callback = entries => {
       // In some rare cases, there could be more than one entry per observed
       // element, in which case the last entry's result stands.
@@ -110,7 +113,7 @@
         this.sides_.forEach(side => {
           if (target === this.intersectionProbes_.get(side)) {
             this.dropShadows_.get(side).classList.toggle(
-                'has-shadow', entry.intersectionRatio == 0);
+                'has-shadow', entry.intersectionRatio === 0);
           }
         });
       }
@@ -128,7 +131,7 @@
    *     function does nothing if the behavior is already in the requested
    *     state.
    */
-  enableShadowBehavior: function(enable) {
+  enableShadowBehavior(enable) {
     // Behavior is already enabled/disabled. Return early.
     if (enable === !!this.intersectionObserver_) {
       return;
@@ -158,7 +161,7 @@
    * Shows the shadows. The shadow behavior must be disabled before calling this
    * method, otherwise the intersection observer might show the shadows again.
    */
-  showDropShadows: function() {
+  showDropShadows() {
     assert(!this.intersectionObserver_);
     assert(this.sides_);
     for (const side of this.sides_) {

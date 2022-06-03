@@ -8,6 +8,18 @@
 
 namespace blink {
 
+namespace {
+
+String DecodeByteByByte(TextResourceDecoder& decoder,
+                        base::span<const uint8_t> data) {
+  String decoded;
+  for (const uint8_t c : data)
+    decoded = decoded + decoder.Decode(reinterpret_cast<const char*>(&c), 1);
+  return decoded + decoder.Flush();
+}
+
+}  // namespace
+
 TEST(TextResourceDecoderTest, UTF8Decode) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(
@@ -58,17 +70,96 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
   EXPECT_EQ("foo", decoded);
 }
 
+TEST(TextResourceDecoderTest, BrokenBOMs) {
+  {
+    std::unique_ptr<TextResourceDecoder> decoder =
+        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+            TextResourceDecoderOptions::kPlainTextContent));
+
+    const uint8_t kBrokenUTF8BOM[] = {0xef, 0xbb};
+    EXPECT_EQ(g_empty_string,
+              decoder->Decode(reinterpret_cast<const char*>(kBrokenUTF8BOM),
+                              sizeof(kBrokenUTF8BOM)));
+    EXPECT_EQ("\xef\xbb", decoder->Flush());
+    EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
+  }
+  {
+    std::unique_ptr<TextResourceDecoder> decoder =
+        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+            TextResourceDecoderOptions::kPlainTextContent));
+
+    const uint8_t c = 0xff;  // Half UTF-16LE BOM.
+    EXPECT_EQ(g_empty_string,
+              decoder->Decode(reinterpret_cast<const char*>(&c), 1));
+    EXPECT_EQ("\xff", decoder->Flush());
+    EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
+  }
+  {
+    std::unique_ptr<TextResourceDecoder> decoder =
+        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+            TextResourceDecoderOptions::kPlainTextContent));
+
+    const uint8_t c = 0xfe;  // Half UTF-16BE BOM.
+    EXPECT_EQ(g_empty_string,
+              decoder->Decode(reinterpret_cast<const char*>(&c), 1));
+    EXPECT_EQ("\xfe", decoder->Flush());
+    EXPECT_EQ(Latin1Encoding(), decoder->Encoding());
+  }
+}
+
+TEST(TextResourceDecoderTest, UTF8DecodePieces) {
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateUTF8Decode());
+
+  const uint8_t kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
+  String decoded = DecodeByteByByte(*decoder, base::make_span(kFooUTF8WithBOM));
+  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ("foo", decoded);
+}
+
 TEST(TextResourceDecoderTest, UTF16Pieces) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent));
 
-  WTF::String decoded;
-  const unsigned char kFoo[] = {0xff, 0xfe, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00};
-  for (char c : kFoo)
-    decoded = decoded + decoder->Decode(reinterpret_cast<const char*>(&c), 1);
-  decoded = decoded + decoder->Flush();
-  EXPECT_EQ("foo", decoded);
+  {
+    const uint8_t kFooLE[] = {0xff, 0xfe, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00};
+    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooLE));
+    EXPECT_EQ(UTF16LittleEndianEncoding(), decoder->Encoding());
+    EXPECT_EQ("foo", decoded);
+  }
+
+  {
+    const uint8_t kFooBE[] = {0xfe, 0xff, 0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f};
+    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooBE));
+    EXPECT_EQ(UTF16BigEndianEncoding(), decoder->Encoding());
+    EXPECT_EQ("foo", decoded);
+  }
+}
+
+TEST(TextResourceDecoderTest, XMLDeclPieces) {
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions(TextResourceDecoderOptions::kHTMLContent));
+
+  const uint8_t kXMLDeclUtf8[] = "<?xml encoding='utf-8'?>foo";
+  String decoded = DecodeByteByByte(
+      *decoder, base::make_span(kXMLDeclUtf8, sizeof(kXMLDeclUtf8) - 1));
+  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ("<?xml encoding='utf-8'?>foo", decoded);
+}
+
+TEST(TextResourceDecoderTest, CSSCharsetPieces) {
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions(TextResourceDecoderOptions::kCSSContent));
+
+  const uint8_t kCSSCharsetUtf8[] = "@charset \"utf-8\";\n:root{}";
+  String decoded = DecodeByteByByte(
+      *decoder, base::make_span(kCSSCharsetUtf8, sizeof(kCSSCharsetUtf8) - 1));
+  EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ("@charset \"utf-8\";\n:root{}", decoded);
 }
 
 TEST(TextResourceDecoderTest, ContentSniffingStopsAfterSuccess) {

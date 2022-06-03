@@ -8,6 +8,7 @@
 
 # pylint: disable=W0212
 
+
 import collections
 import glob
 import logging
@@ -114,8 +115,7 @@ DEVICE_PERF_OUTPUT_DIR = (
 
 SCREENSHOTS_DIR = os.path.join(DIR_SOURCE_ROOT, 'out_screenshots')
 
-ANDROID_SDK_VERSION = version_codes.OREO_MR1
-ANDROID_SDK_BUILD_TOOLS_VERSION = '29.0.2'
+ANDROID_SDK_BUILD_TOOLS_VERSION = '31.0.0'
 ANDROID_SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                 'public')
 ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT,
@@ -158,6 +158,7 @@ PYTHON_UNIT_TEST_SUITES = {
         'path':
         os.path.join(DIR_SOURCE_ROOT, 'build', 'android', 'gyp'),
         'test_modules': [
+            'create_unwind_table_tests',
             'java_cpp_enum_tests',
             'java_cpp_strings_tests',
             'java_google_api_keys_tests',

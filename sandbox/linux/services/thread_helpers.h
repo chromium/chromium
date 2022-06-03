@@ -14,6 +14,10 @@ namespace sandbox {
 
 class SANDBOX_EXPORT ThreadHelpers {
  public:
+  ThreadHelpers() = delete;
+  ThreadHelpers(const ThreadHelpers&) = delete;
+  ThreadHelpers& operator=(const ThreadHelpers&) = delete;
+
   // Checks whether the current process is single threaded. |proc_fd|
   // must be a file descriptor to /proc/ and remains owned by the
   // caller.
@@ -37,9 +41,6 @@ class SANDBOX_EXPORT ThreadHelpers {
   static bool StopThreadAndWatchProcFS(int proc_fd, base::Thread* thread);
 
   static const char* GetAssertSingleThreadedErrorMessageForTests();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ThreadHelpers);
 };
 
 }  // namespace sandbox

@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>PageLifecycle"
+}
+team_email: "speed-metrics-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

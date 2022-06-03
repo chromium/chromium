@@ -14,7 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/nss_util.h"
 
-NSSDecryptor::NSSDecryptor() : is_nss_initialized_(false), db_slot_(NULL) {}
+NSSDecryptor::NSSDecryptor() : is_nss_initialized_(false), db_slot_(nullptr) {}
 NSSDecryptor::~NSSDecryptor() {
   if (db_slot_) {
     // Deliberately leave the user db open, just in case we need to open more
@@ -35,7 +35,7 @@ bool NSSDecryptor::Init(const base::FilePath& dll_path,
           "flags=readOnly",
           db_path.value().c_str());
   db_slot_ = SECMOD_OpenUserDB(modspec.c_str());
-  return db_slot_ != NULL;
+  return !!db_slot_;
 }
 
 // This method is based on some NSS code in

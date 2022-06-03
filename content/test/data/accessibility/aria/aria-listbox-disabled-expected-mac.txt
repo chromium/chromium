@@ -1,0 +1,10 @@
+AXWebArea
+++AXHeading AXTitle='Start of test: striped should have selected state' AXValue=1
+++++AXStaticText AXValue='Start of test: striped should have selected state'
+++AXList
+++++AXStaticText AXValue='Orange'
+++++AXStaticText AXValue='Striped'
+++++AXStaticText AXValue='Calico'
+++++AXStaticText AXValue='Black'
+++AXGroup
+++++AXStaticText AXValue='End of test'

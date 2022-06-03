@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/perf/performance_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/test/ui_controls.h"
 
 // Test overview enter/exit animations with following conditions
@@ -23,6 +23,10 @@ class OverviewAnimationsTest
       public testing::WithParamInterface<::testing::tuple<int, bool, bool>> {
  public:
   OverviewAnimationsTest() = default;
+
+  OverviewAnimationsTest(const OverviewAnimationsTest&) = delete;
+  OverviewAnimationsTest& operator=(const OverviewAnimationsTest&) = delete;
+
   ~OverviewAnimationsTest() override = default;
 
   // UIPerformanceTest:
@@ -39,20 +43,20 @@ class OverviewAnimationsTest
     GURL ntp_url("chrome://newtab");
     // The default is blank page.
     if (blank_page)
-      ui_test_utils::NavigateToURL(browser(), ntp_url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
 
     for (int i = additional_browsers; i > 0; i--) {
       Browser* new_browser = CreateBrowser(browser()->profile());
       if (blank_page)
-        ui_test_utils::NavigateToURL(new_browser, ntp_url);
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, ntp_url));
     }
 
     float cost_per_browser = blank_page ? 0.5 : 0.1;
     int wait_seconds = (base::SysInfo::IsRunningOnChromeOS() ? 5 : 0) +
                        additional_browsers * cost_per_browser;
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                          base::TimeDelta::FromSeconds(wait_seconds));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(wait_seconds));
     run_loop.Run();
   }
 
@@ -68,7 +72,6 @@ class OverviewAnimationsTest
 
  private:
   bool tablet_mode_ = false;
-  DISALLOW_COPY_AND_ASSIGN(OverviewAnimationsTest);
 };
 
 // TODO(https://crbug.com/1033653) flaky test

@@ -58,7 +58,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1^ line2| a line3</div>`
-      : `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1^ line2 |a line3</div>`,
+      : `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1^ |line2 a line3</div>`,
   `${behavior} 21-5 ltr forward word`);
 
 selection_test(
@@ -106,7 +106,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2^ a| line3</div>`
-      : `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2^ a |line3</div>`,
+      : `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2^ |a line3</div>`,
   `${behavior} 21-11 ltr forward word`);
 
 selection_test(
@@ -120,7 +120,9 @@ selection_test(
 selection_test(
   `<div contenteditable dir="ltr" style="${kStyle}">line1 line2 a| line3</div>`,
   selection => selection.modify('extend', 'forward', 'word'),
-  `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2 a^ line3|</div>`,
+  behavior === 'mac'
+      ? `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2 a^ line3|</div>`
+      : `<div contenteditable dir="ltr" style="line-break:before-white-space; width: 100px; font: 20px monospace;">line1 line2 a^ |line3</div>`,
   `${behavior} 21-13 ltr forward word`);
 
 selection_test(

@@ -1,0 +1,1 @@
+CONSOLE ERROR: Document policy violation: Image bpp (byte per pixel) exceeds max value set in lossless-images-max-bpp.

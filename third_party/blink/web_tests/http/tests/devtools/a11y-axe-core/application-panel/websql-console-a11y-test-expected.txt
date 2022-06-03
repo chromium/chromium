@@ -1,0 +1,4 @@
+Tests accessibility of WebSQL console in application panel.
+aXe violations: []
+
+

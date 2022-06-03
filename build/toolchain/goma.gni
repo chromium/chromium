@@ -9,23 +9,21 @@ declare_args() {
   use_goma = false
 
   # This flag is for ChromeOS compiler wrapper.
-  # By passing gomacc path via GOMACC_PATH environment variable, ChromeOS'
-  # compiler wrapper invokes gomacc inside it.
-  has_gomacc_path = false
+  # By passing gomacc path via cmd-line arg, ChromeOS' compiler wrapper
+  # invokes gomacc inside it.
+  needs_gomacc_path_arg = false
 
-  # Set the default value based on the platform.
-  if (host_os == "win") {
-    # Absolute directory containing the gomacc.exe binary.
-    goma_dir = "C:\src\goma\goma-win64"
-  } else {
-    if (getenv("GOMA_DIR") != "") {
-      # Absolute directory containing the gomacc binary.
-      goma_dir = getenv("GOMA_DIR")
-    } else {
-      # Absolute directory containing the gomacc binary.
-      goma_dir = getenv("HOME") + "/goma"
-    }
-  }
+  # Absolute directory containing the gomacc binary.
+  goma_dir = ""
+}
+
+if (use_goma && goma_dir == "") {
+  goma_dir = exec_script("get_goma_dir.py", [], "string")
+}
+
+declare_args() {
+  # TODO(crbug.com/726475): true if use_goma = true in the future.
+  use_java_goma = false
 }
 
 assert(!is_win || !use_goma || is_clang,

@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>CSS Grid Layout test: box model parts and alignment properties, vertical-LR writing mode</title>
 <link rel="author" title="Rossana Monteriso" href="mailto:rmonteriso@igalia.com">
-<link rel="help" href="https://drafts.csswg.org/css-align-3/">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#align-items-property">
 <link rel="help" href="https://drafts.csswg.org/css-writing-modes-4/#propdef-writing-mode">
 <meta name="assert" content="This test checks that the 'margin', 'border' and 'padding' properties are applied together correctly for 'align' and 'justify' properties on vertical-LR grids, in both LTR and RTL directions.">
 <meta name="flags" content="ahem">
@@ -33,8 +33,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
+<script type="text/javascript">
+  setup({ explicit_done: true });
+</script>
 
-<body onload="checkLayout('.grid')">
+<body onload="document.fonts.ready.then(() => { checkLayout('.grid'); })">
 
 <p>This test checks that the 'margin', 'border' and 'padding' properties are applied together correctly for 'align' and 'justify' properties on vertical-LR grids.</p>
 

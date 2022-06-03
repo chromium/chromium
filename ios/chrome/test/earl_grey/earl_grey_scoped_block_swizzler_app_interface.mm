@@ -6,7 +6,7 @@
 
 #include <map>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ios/testing/scoped_block_swizzler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

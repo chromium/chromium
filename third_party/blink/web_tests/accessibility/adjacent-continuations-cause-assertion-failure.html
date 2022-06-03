@@ -6,9 +6,9 @@
 </head>
 <body>
 
-<span><div></div></span><span>x<div>y</div>z</span>
-
-<div>End of test</div>
+<div id="container">
+  <span><div></div></span><span>x<div>y</div>z</span>
+</div>
 
 <p id="description"></p>
 <div id="console"></div>
@@ -17,9 +17,7 @@
     description("Make sure that a debug assert is not triggered when constructing the accessibility tree for this page.");
 
     if (window.accessibilityController) {
-        // Build the accessibility tree up until 'End of test' is encountered.
-        document.body.focus();
-        buildAccessibilityTree(accessibilityController.focusedElement, 0);
+        buildAccessibilityTree(accessibilityController.accessibleElementById('container'), 0);
     }
 
 </script>

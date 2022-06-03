@@ -26,9 +26,9 @@
 namespace blink {
 namespace {
 TransformOperation::OperationType GetTypeForRotation(const Rotation& rotation) {
-  float x = rotation.axis.X();
-  float y = rotation.axis.Y();
-  float z = rotation.axis.Z();
+  float x = rotation.axis.x();
+  float y = rotation.axis.y();
+  float z = rotation.axis.z();
   if (x && !y && !z)
     return TransformOperation::kRotateX;
   if (y && !x && !z)
@@ -43,7 +43,7 @@ bool RotateTransformOperation::operator==(
     const TransformOperation& other) const {
   if (!IsSameType(other))
     return false;
-  const Rotation& other_rotation = ToRotateTransformOperation(other).rotation_;
+  const auto& other_rotation = To<RotateTransformOperation>(other).rotation_;
   return rotation_.axis == other_rotation.axis &&
          rotation_.angle == other_rotation.angle;
 }
@@ -62,7 +62,7 @@ scoped_refptr<TransformOperation> RotateTransformOperation::Accumulate(
     const TransformOperation& other) {
   DCHECK(IsMatchingOperationType(other.GetType()));
   Rotation new_rotation =
-      Rotation::Add(rotation_, ToRotateTransformOperation(other).rotation_);
+      Rotation::Add(rotation_, To<RotateTransformOperation>(other).rotation_);
   return RotateTransformOperation::Create(new_rotation,
                                           GetTypeForRotation(new_rotation));
 }
@@ -71,8 +71,7 @@ scoped_refptr<TransformOperation> RotateTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !IsMatchingOperationType(from->GetType()))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   if (blend_to_identity)
     return RotateTransformOperation::Create(
@@ -91,15 +90,9 @@ scoped_refptr<TransformOperation> RotateTransformOperation::Blend(
   DCHECK(from->PrimitiveType() == OperationType::kRotate3D);
   OperationType type =
       from->IsSameType(*this) ? type_ : OperationType::kRotate3D;
-  const RotateTransformOperation& from_rotate =
-      ToRotateTransformOperation(*from);
+  const auto& from_rotate = To<RotateTransformOperation>(*from);
   return RotateTransformOperation::Create(
       Rotation::Slerp(from_rotate.rotation_, rotation_, progress), type);
-}
-
-bool RotateTransformOperation::CanBlendWith(
-    const TransformOperation& other) const {
-  return other.IsSameType(*this);
 }
 
 RotateAroundOriginTransformOperation::RotateAroundOriginTransformOperation(
@@ -123,8 +116,7 @@ bool RotateAroundOriginTransformOperation::operator==(
     const TransformOperation& other) const {
   if (!IsSameType(other))
     return false;
-  const RotateAroundOriginTransformOperation& other_rotate =
-      ToRotateAroundOriginTransformOperation(other);
+  const auto& other_rotate = To<RotateAroundOriginTransformOperation>(other);
   const Rotation& other_rotation = other_rotate.rotation_;
   return rotation_.axis == other_rotation.axis &&
          rotation_.angle == other_rotation.angle &&
@@ -136,8 +128,8 @@ scoped_refptr<TransformOperation> RotateAroundOriginTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
+
   if (blend_to_identity) {
     return RotateAroundOriginTransformOperation::Create(
         Angle() * (1 - progress), origin_x_, origin_y_);
@@ -146,8 +138,7 @@ scoped_refptr<TransformOperation> RotateAroundOriginTransformOperation::Blend(
     return RotateAroundOriginTransformOperation::Create(Angle() * progress,
                                                         origin_x_, origin_y_);
   }
-  const RotateAroundOriginTransformOperation& from_rotate =
-      ToRotateAroundOriginTransformOperation(*from);
+  const auto& from_rotate = To<RotateAroundOriginTransformOperation>(*from);
   return RotateAroundOriginTransformOperation::Create(
       blink::Blend(from_rotate.Angle(), Angle(), progress),
       blink::Blend(from_rotate.origin_x_, origin_x_, progress),

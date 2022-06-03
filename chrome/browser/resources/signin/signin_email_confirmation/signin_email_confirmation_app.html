@@ -32,17 +32,11 @@
         line-height: 22px;
         padding: 16px 24px;
       }
-
-      #closeButton {
-        margin-inline-start: 8px;
+      @media (prefers-color-scheme: dark) {
+        .top-title-bar {
+          color: var(--cr-primary-text-color);
+        }
       }
-
-<if expr="is_macosx or is_linux">
-      #closeButton {
-        margin-inline-end: 8px;
-        margin-inline-start: 0;
-      }
-</if>
     </style>
     <div class="container">
       <div class="top-title-bar" id='dialogTitle'>
@@ -70,7 +64,7 @@
       </div>
       <div class="action-container">
         <cr-button class="action-button" id="confirmButton"
-            on-click="onConfirm_">
+            on-click="onConfirm_" autofocus>
           $i18n{signinEmailConfirmationConfirmLabel}
         </cr-button>
         <cr-button id="closeButton" on-click="onCancel_">

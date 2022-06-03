@@ -1,0 +1,107 @@
+
+First dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+
+Second dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='greatgrandchild'",
+      "bounds": [375, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 6
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [47, 59, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [0.866025403784439, 0.5, 0, 0],
+        [-0.5, 0.866025403784439, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [150, 150]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [150, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [0.5, 0, -0.866025403784439, 0.00144337567297406],
+        [0, 1, 0, 0],
+        [0.866025403784439, 0, 0.5, -0.000833333333333333],
+        [-45, 45, 150, 0.75]
+      ],
+      "origin": [187.5, 75]
+    }
+  ]
+}
+
+Third dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+

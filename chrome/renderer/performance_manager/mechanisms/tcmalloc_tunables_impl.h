@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_PERFORMANCE_MANAGER_MECHANISMS_TCMALLOC_TUNABLES_IMPL_H_
 #define CHROME_RENDERER_PERFORMANCE_MANAGER_MECHANISMS_TCMALLOC_TUNABLES_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -14,6 +13,9 @@ namespace mechanism {
 
 class TcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
  public:
+  TcmallocTunablesImpl(const TcmallocTunablesImpl&) = delete;
+  TcmallocTunablesImpl& operator=(const TcmallocTunablesImpl&) = delete;
+
   ~TcmallocTunablesImpl() override;
   TcmallocTunablesImpl();
 
@@ -23,9 +25,6 @@ class TcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
  protected:
   // TcmallocTunables impl:
   void SetMaxTotalThreadCacheBytes(uint32_t size_bytes) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TcmallocTunablesImpl);
 };
 
 }  // namespace mechanism

@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client_settings.h"
@@ -26,6 +24,10 @@ class ElementArea {
   // |delegate| and |settings| must remain valid for the lifetime of this
   // instance.
   explicit ElementArea(ScriptExecutorDelegate* delegate);
+
+  ElementArea(const ElementArea&) = delete;
+  ElementArea& operator=(const ElementArea&) = delete;
+
   ~ElementArea();
 
   // Clears the area. Stops scheduled updates.
@@ -36,15 +38,6 @@ class ElementArea {
   //
   // The area is updated asynchronously, so Contains will not work right away.
   void SetFromProto(const ElementAreaProto& proto);
-
-  // Forces an out-of-schedule update of the viewport and positions right away.
-  //
-  // This method is never strictly necessary. It is useful to call it when
-  // there's a reason to think the positions might have changed, to speed up
-  // updates.
-  //
-  // Does nothing if the area is empty.
-  void Update();
 
   // Defines a callback that'll be run every time the set of element coordinates
   // changes.
@@ -76,6 +69,8 @@ class ElementArea {
   }
 
  private:
+  friend class ElementAreaTest;
+
   // A rectangle that corresponds to the area of the visual viewport covered by
   // an element. Coordinates are values between 0 and 1, relative to the size of
   // the visible viewport.
@@ -93,6 +88,8 @@ class ElementArea {
     ElementPosition();
     ElementPosition(const ElementPosition& orig);
     ~ElementPosition();
+
+    bool operator==(const ElementPosition& another) const;
   };
 
   // A rectangular area, defined by its elements.
@@ -109,27 +106,43 @@ class ElementArea {
     bool IsPending() const;
 
     // Fills the given rectangle from the current state, if possible.
-    void FillRect(RectF* rect, const RectF& visual_viewport) const;
+    void FillRect(RectF* rect) const;
+
+    bool operator==(const Rectangle& another) const;
   };
+
+  // Forces an out-of-schedule update of the viewport and positions right away.
+  //
+  // This method is never strictly necessary. It is useful to call it when
+  // there's a reason to think the positions might have changed, to speed up
+  // updates.
+  //
+  // Does nothing if the area is empty.
+  void Update();
 
   void AddRectangles(const ::google::protobuf::RepeatedPtrField<
                          ElementAreaProto::Rectangle>& rectangles_proto,
                      bool restricted);
-  void OnGetElementPosition(const Selector& selector,
-                            bool found,
-                            const RectF& rect);
-  void OnGetVisualViewport(bool success, const RectF& rect);
+  void OnGetElementRect(const Selector& selector,
+                        const ClientStatus& rect_status,
+                        const RectF& rect);
+  void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
   ScriptExecutorDelegate* const delegate_;
   std::vector<Rectangle> rectangles_;
 
-  // If true, update for the visual viewport position is currently scheduled.
+  // If true, u pdate for the visual viewport position is currently scheduled.
   bool visual_viewport_pending_update_ = false;
 
-  // Visual viewport coordinates, in CSS pixels, relative to the layout
+  // Visual viewport coordinates, in CSS pixels. Relative to the layout
   // viewport.
   RectF visual_viewport_;
+
+  // Cached positions from the last time an update was sent, used to avoid
+  // sending updates when nothing has changed.
+  RectF last_visual_viewport_;
+  std::vector<Rectangle> last_rectangles_;
 
   // While running, regularly calls Update().
   base::RepeatingTimer timer_;
@@ -140,8 +153,6 @@ class ElementArea {
       on_update_;
 
   base::WeakPtrFactory<ElementArea> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ElementArea);
 };
 
 }  // namespace autofill_assistant

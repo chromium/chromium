@@ -181,9 +181,9 @@ promise_test(function() {
     assert_true(response.bodyUsed, 'bodyUsed should be true when locked.');
     assert_false(response2.bodyUsed,
                  'Cloned bodies should not share bodyUsed.');
-    assert_throws({name: 'TypeError'},
-                  function() { response3 = response.clone(); },
-                  'Response.clone() should throw if the body was used.');
+    assert_throws_js(TypeError,
+                     function() { response3 = response.clone(); },
+                     'Response.clone() should throw if the body was used.');
     return p.then(function(text) {
         assert_true(response.bodyUsed);
         assert_false(response2.bodyUsed);

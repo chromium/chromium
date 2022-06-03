@@ -19,15 +19,18 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/logging.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
+#include "sandbox/linux/system_headers/linux_ptrace.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
@@ -35,8 +38,9 @@
 #if !defined(OS_NACL_NONSFI)
 #include <sys/ioctl.h>
 #include <sys/ptrace.h>
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(__arm__) && \
-    !defined(__aarch64__) && !defined(PTRACE_GET_THREAD_AREA)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !defined(__arm__) && !defined(__aarch64__) &&           \
+    !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
 // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
 // asm/ptrace-abi.h doesn't exist on arm32 and PTRACE_GET_THREAD_AREA isn't
@@ -51,19 +55,6 @@
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)
 #endif
 
-#if !defined(PR_SET_TIMERSLACK)
-#define PR_SET_TIMERSLACK 29
-#endif
-
-// https://android.googlesource.com/platform/bionic/+/lollipop-release/libc/private/bionic_prctl.h
-#if !defined(PR_SET_VMA)
-#define PR_SET_VMA 0x53564d41
-#endif
-
-#ifndef PR_SET_PTRACER
-#define PR_SET_PTRACER 0x59616d61
-#endif
-
 #endif  // defined(OS_ANDROID)
 
 #if defined(__arm__) && !defined(MAP_STACK)
@@ -73,6 +64,14 @@
 #if defined(__mips__) && !defined(MAP_STACK)
 #define MAP_STACK 0x40000
 #endif
+
+// Temporary definitions for Arm's Memory Tagging Extension (MTE) and Branch
+// Target Identification (BTI).
+#if defined(ARCH_CPU_ARM64)
+#define PROT_MTE 0x20
+#define PROT_BTI 0x10
+#endif
+
 namespace {
 
 inline bool IsArchitectureX86_64() {
@@ -112,7 +111,7 @@ inline bool IsArchitectureMips() {
 // to allow those futex(2) calls to fail with EINVAL, instead of crashing the
 // process. See crbug.com/598471.
 inline bool IsBuggyGlibcSemPost() {
-#if defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -168,6 +167,10 @@ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
       .Else(CrashSIGSYSClone());
 }
 
+#ifndef PR_PAC_RESET_KEYS
+#define PR_PAC_RESET_KEYS 54
+#endif
+
 ResultExpr RestrictPrctl() {
   // Will need to add seccomp compositing in the future. PR_SET_PTRACER is
   // used by breakpad but not needed anymore.
@@ -176,7 +179,7 @@ ResultExpr RestrictPrctl() {
       .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if defined(OS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
-              , PR_GET_NO_NEW_PRIVS
+              , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
 // https://android.googlesource.com/platform/system/core/+/lollipop-release/libcutils/sched_policy.c.
@@ -224,7 +227,7 @@ ResultExpr RestrictMmapFlags() {
   // TODO(davidung), remove MAP_DENYWRITE with updated Tegra libraries.
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
-                                MAP_DENYWRITE;
+                                MAP_DENYWRITE | MAP_LOCKED;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
@@ -234,7 +237,15 @@ ResultExpr RestrictMprotectFlags() {
   // "denied" mask because of the negation operator.
   // Significantly, we don't permit weird undocumented flags such as
   // PROT_GROWSDOWN.
-  const uint64_t kAllowedMask = PROT_READ | PROT_WRITE | PROT_EXEC;
+#if defined(ARCH_CPU_ARM64)
+  // Allows PROT_MTE and PROT_BTI (as explained higher up) on only Arm
+  // platforms.
+  const uint64_t kArchSpecificFlags = PROT_MTE | PROT_BTI;
+#else
+  const uint64_t kArchSpecificFlags = 0;
+#endif
+  const uint64_t kAllowedMask =
+      PROT_READ | PROT_WRITE | PROT_EXEC | kArchSpecificFlags;
   const Arg<int> prot(2);
   return If((prot & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
@@ -254,9 +265,12 @@ ResultExpr RestrictFcntlCommands() {
 
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
+  const uint64_t kAllowedSeals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
+  // clang-format off
   return Switch(cmd)
       .CASES((F_GETFL,
               F_GETFD,
+              F_GET_SEALS,
               F_SETFD,
               F_SETLK,
               F_SETLKW,
@@ -266,7 +280,10 @@ ResultExpr RestrictFcntlCommands() {
              Allow())
       .Case(F_SETFL,
             If((long_arg & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS()))
+      .Case(F_ADD_SEALS,
+            If((long_arg & ~kAllowedSeals) == 0, Allow()).Else(CrashSIGSYS()))
       .Default(CrashSIGSYS());
+  // clang-format on
 }
 
 #if defined(__i386__) || defined(__mips__)
@@ -335,6 +352,10 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
     case __NR_sched_getparam:
     case __NR_sched_getscheduler:
     case __NR_sched_rr_get_interval:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_sched_rr_get_interval_time64:
+#endif
     case __NR_sched_setaffinity:
     case __NR_sched_setattr:
     case __NR_sched_setparam:
@@ -405,25 +426,45 @@ ResultExpr RestrictPrlimit(pid_t target_pid) {
   return If(AnyOf(pid == 0, pid == target_pid), Allow()).Else(Error(EPERM));
 }
 
+ResultExpr RestrictPrlimitToGetrlimit(pid_t target_pid) {
+  const Arg<pid_t> pid(0);
+  const Arg<uintptr_t> new_limit(2);
+  // Only allow operations for the current process, and only with |new_limit|
+  // set to null.
+  return If(AllOf(new_limit == 0, AnyOf(pid == 0, pid == target_pid)), Allow())
+      .Else(Error(EPERM));
+}
+
 #if !defined(OS_NACL_NONSFI)
 ResultExpr RestrictPtrace() {
   const Arg<int> request(0);
-  return Switch(request).CASES((
+#if defined(__aarch64__)
+  const Arg<uintptr_t> addr(2);
+#endif
+  return Switch(request)
+      .CASES((
 #if !defined(__aarch64__)
-        PTRACE_GETREGS,
-        PTRACE_GETFPREGS,
-        PTRACE_GET_THREAD_AREA,
+                 PTRACE_GETREGS, PTRACE_GETFPREGS, PTRACE_GET_THREAD_AREA,
+                 PTRACE_GETREGSET,
 #endif
 #if defined(__arm__)
-        PTRACE_GETVFPREGS,
+                 PTRACE_GETVFPREGS,
 #endif
-        PTRACE_GETREGSET,
-        PTRACE_PEEKDATA,
-        PTRACE_ATTACH,
-        PTRACE_DETACH),
-      Allow())
+                 PTRACE_PEEKDATA, PTRACE_ATTACH, PTRACE_DETACH),
+             Allow())
+#if defined(__aarch64__)
+      .Case(
+          PTRACE_GETREGSET,
+          If(AllOf(addr != NT_ARM_PACA_KEYS, addr != NT_ARM_PACG_KEYS), Allow())
+              .Else(CrashSIGSYSPtrace()))
+#endif
       .Default(CrashSIGSYSPtrace());
 }
 #endif  // defined(OS_NACL_NONSFI)
+
+ResultExpr RestrictPkeyAllocFlags() {
+  const Arg<int> flags(0);
+  return If(flags == 0, Allow()).Else(CrashSIGSYS());
+}
 
 }  // namespace sandbox.

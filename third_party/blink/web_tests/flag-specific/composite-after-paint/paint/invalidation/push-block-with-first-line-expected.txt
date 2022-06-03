@@ -5,27 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalLineBoxFragment",
-          "rect": [8, 68, 784, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalLineBoxFragment",
-          "rect": [8, 8, 784, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'JOCULAR'",
-          "rect": [8, 68, 140, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'JOCULAR'",
-          "rect": [8, 8, 140, 20],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 68, 140, 20],
+        [8, 8, 140, 20]
       ]
     }
   ]

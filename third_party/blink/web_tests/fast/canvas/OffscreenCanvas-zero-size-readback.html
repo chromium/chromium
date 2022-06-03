@@ -59,6 +59,6 @@ function zeroSizeReadback(zeroDimension, contextType, t) {
     assert_equals(imgdata.height, 1);
   }
 
-  return promise_rejects(t, new DOMException('', 'IndexSizeError'), offscreen.convertToBlob());
+  return promise_rejects_dom(t, 'IndexSizeError', offscreen.convertToBlob());
 }
 </script>

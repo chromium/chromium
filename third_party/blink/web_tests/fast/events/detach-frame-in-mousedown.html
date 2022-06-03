@@ -1,0 +1,24 @@
+<body>
+PASS if no crash.
+<script src="../../resources/gesture-util.js"></script>
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+
+async function test() {
+  var a = i.contentDocument.createElement('a');
+  a.onmousedown = () => i.remove();
+  a.appendChild(document.createTextNode('Click'));
+  i.contentDocument.body.appendChild(a);
+
+  await mouseDownAt(i.offsetLeft + a.offsetLeft + 7,
+                    i.offsetTop + a.offsetTop + 7);
+  if (window.testRunner)
+    testRunner.notifyDone();
+};
+test();
+</script>

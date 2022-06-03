@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/css-masking/#InterfaceSVGMaskElement
 
-interface SVGMaskElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGMaskElement : SVGElement {
     [MeasureAs=SVG1DOMMaskElement] readonly attribute SVGAnimatedEnumeration maskUnits;
     [MeasureAs=SVG1DOMMaskElement] readonly attribute SVGAnimatedEnumeration maskContentUnits;
     [MeasureAs=SVG1DOMMaskElement] readonly attribute SVGAnimatedLength x;

@@ -10,6 +10,7 @@ namespace dom_distiller {
 extern const char kDomDistillerScheme[];
 extern const char kEntryIdKey[];
 extern const char kUrlKey[];
+extern const char kTitleKey[];
 extern const char kTimeKey[];
 extern const char kViewerCssPath[];
 extern const char kViewerLoadingImagePath[];

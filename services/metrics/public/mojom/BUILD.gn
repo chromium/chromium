@@ -5,11 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "ukm_interface.mojom",
-  ]
+  sources = [ "ukm_interface.mojom" ]
 
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }

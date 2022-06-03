@@ -18,7 +18,6 @@ This test ensures WebKit does not ignore the content of hr, datagrid, and object
 |   " WebKit"
 |   <shadow:root>
 |     <slot>
-|       name="user-agent-default-slot"
 
 The result below should be identical to the result above:
 | <hr>
@@ -38,4 +37,3 @@ The result below should be identical to the result above:
 |   " WebKit"
 |   <shadow:root>
 |     <slot>
-|       name="user-agent-default-slot"

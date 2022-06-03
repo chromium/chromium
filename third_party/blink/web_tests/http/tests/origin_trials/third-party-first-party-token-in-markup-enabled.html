@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that trial which supports third-party is enabled by valid first-party token provided in markup</title>
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 FrobulateThirdParty --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="A0TyTDFs2N+ecIcAeQo8DlipLQwIEcD+bJlRGpZj5NfDDGF8VEcEL4zByhPrdadxF1PX8VG4bfd2XZep1O6m3wsAAABbeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlVGhpcmRQYXJ0eSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script>
+  // The trial should be enabled, as first party tokens can be used normally,
+  // when the trial has third-party support enabled.
+  expect_success_third_party();
+</script>

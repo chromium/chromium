@@ -7,13 +7,13 @@
 #include <wtsdefs.h>
 
 #include <list>
+#include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local.h"
 #include "base/win/scoped_bstr.h"
@@ -38,8 +38,7 @@ constexpr BYTE kKeyPressedFlag = 0x80;
 
 constexpr int kKeyboardStateLength = 256;
 
-constexpr base::TimeDelta kReapplyResolutionPeriod =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kReapplyResolutionPeriod = base::Milliseconds(250);
 
 // We want to try to reapply resolution changes for ~5 seconds (20 * 250ms).
 constexpr int kMaxResolutionReapplyAttempts = 20;
@@ -67,7 +66,7 @@ base::LazyInstance<base::ThreadLocalPointer<RdpClientWindow::WindowHook>>::
 // FindWindowEx() this function walks the tree of windows recursively. The walk
 // is done in breadth-first order. The function returns nullptr if the child
 // window could not be found.
-HWND FindWindowRecursively(HWND parent, const base::string16& class_name) {
+HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
   std::list<HWND> windows;
   windows.push_back(parent);
 
@@ -77,7 +76,7 @@ HWND FindWindowRecursively(HWND parent, const base::string16& class_name) {
       // See if the window class name matches |class_name|.
       WCHAR name[kMaxWindowClassLength];
       int length = GetClassName(child, name, base::size(name));
-      if (base::string16(name, length)  == class_name)
+      if (std::wstring(name, length) == class_name)
         return child;
 
       // Remember the window to look through its children.
@@ -104,6 +103,9 @@ class RdpClientWindow::WindowHook
  public:
   static scoped_refptr<WindowHook> Create();
 
+  WindowHook(const WindowHook&) = delete;
+  WindowHook& operator=(const WindowHook&) = delete;
+
  private:
   friend class base::RefCounted<WindowHook>;
 
@@ -114,8 +116,6 @@ class RdpClientWindow::WindowHook
       int code, WPARAM wparam, LPARAM lparam);
 
   HHOOK hook_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowHook);
 };
 
 RdpClientWindow::RdpClientWindow(const net::IPEndPoint& server_endpoint,
@@ -265,8 +265,8 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
   Microsoft::WRL::ComPtr<mstsc::IMsTscSecuredSettings> secured_settings;
   Microsoft::WRL::ComPtr<mstsc::IMsRdpClientSecuredSettings> secured_settings2;
   base::win::ScopedBstr server_name(
-      base::UTF8ToUTF16(server_endpoint_.ToStringWithoutPort()));
-  base::win::ScopedBstr terminal_id(base::UTF8ToUTF16(terminal_id_));
+      base::UTF8ToWide(server_endpoint_.ToStringWithoutPort()));
+  base::win::ScopedBstr terminal_id(base::UTF8ToWide(terminal_id_));
 
   // Create the child window that actually hosts the ActiveX control.
   RECT rect = {0, 0, screen_resolution_.dimensions().width(),
@@ -278,13 +278,13 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
 
   // Instantiate the RDP ActiveX control.
   result = activex_window.CreateControlEx(
-      OLESTR("MsTscAx.MsTscAx"), nullptr, nullptr, control.GetAddressOf(),
+      OLESTR("MsTscAx.MsTscAx"), nullptr, nullptr, &control,
       __uuidof(mstsc::IMsTscAxEvents),
       reinterpret_cast<IUnknown*>(static_cast<RdpEventsSink*>(this)));
   if (FAILED(result))
     return LogOnCreateError(result);
 
-  result = control.CopyTo(client_.GetAddressOf());
+  result = control.As(&client_);
   if (FAILED(result))
     return LogOnCreateError(result);
 
@@ -302,18 +302,18 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
     return LogOnCreateError(result);
 
   // Check to see if the platform exposes the interface used for resizing.
-  result = client_.CopyTo(client_9_.GetAddressOf());
+  result = client_.As(&client_9_);
   if (FAILED(result) && result != E_NOINTERFACE) {
     return LogOnCreateError(result);
   }
 
   // Set the server name to connect to.
-  result = client_->put_Server(server_name);
+  result = client_->put_Server(server_name.Get());
   if (FAILED(result))
     return LogOnCreateError(result);
 
   // Fetch IMsRdpClientAdvancedSettings interface for the client.
-  result = client_->get_AdvancedSettings2(client_settings_.GetAddressOf());
+  result = client_->get_AdvancedSettings2(&client_settings_);
   if (FAILED(result))
     return LogOnCreateError(result);
 
@@ -367,7 +367,7 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
   if (FAILED(result))
     return LogOnCreateError(result);
 
-  result = client_->get_SecuredSettings2(secured_settings2.GetAddressOf());
+  result = client_->get_SecuredSettings2(&secured_settings2);
   if (SUCCEEDED(result)) {
     result =
         secured_settings2->put_AudioRedirectionMode(kRdpAudioModeRedirect);
@@ -375,7 +375,7 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
       return LogOnCreateError(result);
   }
 
-  result = client_->get_SecuredSettings(secured_settings.GetAddressOf());
+  result = client_->get_SecuredSettings(&secured_settings);
   if (FAILED(result))
     return LogOnCreateError(result);
 
@@ -386,7 +386,7 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
   // match the RDP connection with the session it is attached to.
   //
   // This code should be in sync with WtsTerminalMonitor::LookupTerminalId().
-  result = secured_settings->put_WorkDir(terminal_id);
+  result = secured_settings->put_WorkDir(terminal_id.Get());
   if (FAILED(result))
     return LogOnCreateError(result);
 
@@ -467,7 +467,7 @@ HRESULT RdpClientWindow::OnDisconnected(long reason) {
   // Get the error message as well.
   base::win::ScopedBstr error_message;
   Microsoft::WRL::ComPtr<mstsc::IMsRdpClient5> client5;
-  result = client_.CopyTo(client5.GetAddressOf());
+  result = client_.As(&client5);
   if (SUCCEEDED(result)) {
     result = client5->GetErrorDescription(reason, extended_code,
                                           error_message.Receive());
@@ -475,8 +475,8 @@ HRESULT RdpClientWindow::OnDisconnected(long reason) {
       error_message.Reset();
   }
 
-  LOG(ERROR) << "RDP: disconnected from " << server_endpoint_.ToString()
-             << ": " << error_message << " (reason=" << reason
+  LOG(ERROR) << "RDP: disconnected from " << server_endpoint_.ToString() << ": "
+             << error_message.Get() << " (reason=" << reason
              << ", extended_code=" << extended_code << ")";
 
   NotifyDisconnected();

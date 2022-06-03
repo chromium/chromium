@@ -109,9 +109,4 @@ TEST_F(EncodeDecodeTest, Elf_HighBSS) {
   TestAssembleToStreamDisassemble(file, 7308);
 }
 
-TEST_F(EncodeDecodeTest, Elf_Arm) {
-  std::string file = FileContents("elf-armv7");
-  TestAssembleToStreamDisassemble(file, 8531);
-}
-
 }  // namespace courgette

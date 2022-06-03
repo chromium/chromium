@@ -6,12 +6,12 @@
 #define UI_OZONE_PLATFORM_SCENIC_SYSMEM_BUFFER_MANAGER_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/session.h>
 #include <vulkan/vulkan.h>
 
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
@@ -23,11 +23,27 @@
 namespace ui {
 
 class SysmemBufferCollection;
+class ScenicSurfaceFactory;
 
 class SysmemBufferManager {
  public:
-  explicit SysmemBufferManager(fuchsia::sysmem::AllocatorSyncPtr allocator);
+  explicit SysmemBufferManager(ScenicSurfaceFactory* scenic_surface_factory);
+
+  SysmemBufferManager(const SysmemBufferManager&) = delete;
+  SysmemBufferManager& operator=(const SysmemBufferManager&) = delete;
+
   ~SysmemBufferManager();
+
+  // Initializes the buffer manager with a connection to the sysmem service.
+  void Initialize(fuchsia::sysmem::AllocatorHandle allocator);
+
+  // Disconnects from the sysmem service. After disconnecting, it's safe to call
+  // Initialize() again.
+  void Shutdown();
+
+  // Returns sysmem allocator. Should only be called after `Initialize()` and
+  // before `Shutdown()`.
+  fuchsia::sysmem::Allocator_Sync* GetAllocator();
 
   scoped_refptr<SysmemBufferCollection> CreateCollection(
       VkDevice vk_device,
@@ -39,7 +55,12 @@ class SysmemBufferManager {
   scoped_refptr<SysmemBufferCollection> ImportSysmemBufferCollection(
       VkDevice vk_device,
       gfx::SysmemBufferCollectionId id,
-      zx::channel token);
+      zx::channel token,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      size_t min_buffer_count,
+      bool register_with_image_pipe);
 
   scoped_refptr<SysmemBufferCollection> GetCollectionById(
       gfx::SysmemBufferCollectionId id);
@@ -48,6 +69,7 @@ class SysmemBufferManager {
   void RegisterCollection(SysmemBufferCollection* collection);
   void OnCollectionDestroyed(gfx::SysmemBufferCollectionId id);
 
+  ScenicSurfaceFactory* const scenic_surface_factory_;
   fuchsia::sysmem::AllocatorSyncPtr allocator_;
 
   base::small_map<std::unordered_map<gfx::SysmemBufferCollectionId,
@@ -55,8 +77,6 @@ class SysmemBufferManager {
                                      base::UnguessableTokenHash>>
       collections_ GUARDED_BY(collections_lock_);
   base::Lock collections_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferManager);
 };
 
 }  // namespace ui

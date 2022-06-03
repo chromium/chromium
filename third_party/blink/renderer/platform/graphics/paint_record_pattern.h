@@ -20,7 +20,7 @@ class PLATFORM_EXPORT PaintRecordPattern final : public Pattern {
   ~PaintRecordPattern() override;
 
  protected:
-  sk_sp<PaintShader> CreateShader(const SkMatrix&) override;
+  sk_sp<PaintShader> CreateShader(const SkMatrix&) const override;
 
  private:
   PaintRecordPattern(sk_sp<PaintRecord>,
@@ -33,4 +33,4 @@ class PLATFORM_EXPORT PaintRecordPattern final : public Pattern {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RECORD_PATTERN_H_

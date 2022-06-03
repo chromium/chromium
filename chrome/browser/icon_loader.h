@@ -5,13 +5,9 @@
 #ifndef CHROME_BROWSER_ICON_LOADER_H_
 #define CHROME_BROWSER_ICON_LOADER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,7 +46,11 @@ class IconLoader {
   // the caller, be sure to use a weak pointer in the |callback|.
   static IconLoader* Create(const base::FilePath& file_path,
                             IconSize size,
+                            float scale,
                             IconLoadedCallback callback);
+
+  IconLoader(const IconLoader&) = delete;
+  IconLoader& operator=(const IconLoader&) = delete;
 
   // Starts the process of reading the icon. When the reading of the icon is
   // complete, the IconLoadedCallback callback will be fulfilled, and the
@@ -60,6 +60,7 @@ class IconLoader {
  private:
   IconLoader(const base::FilePath& file_path,
              IconSize size,
+             float scale,
              IconLoadedCallback callback);
 
   ~IconLoader();
@@ -72,13 +73,19 @@ class IconLoader {
 
   void ReadGroup();
   void ReadIcon();
+#if defined(OS_WIN)
+  // Reads an icon in a sandboxed service. Use this when the file itself must
+  // be parsed.
+  void ReadIconInSandbox();
+#endif
 
-  // The traits of the tasks posted by this class. These operations may block,
-  // because they are fetching icons from the disk, yet the result will be seen
-  // by the user so they should be prioritized accordingly.
+  // The traits of the tasks posted to base::ThreadPool by this class. These
+  // operations may block, because they are fetching icons from the disk, yet
+  // the result will be seen by the user so they should be prioritized
+  // accordingly. They should not however block shutdown if long running.
   static constexpr base::TaskTraits traits() {
-    return {base::ThreadPool(), base::MayBlock(),
-            base::TaskPriority::USER_VISIBLE};
+    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
   }
 
   // The task runner object of the thread in which we notify the delegate.
@@ -91,10 +98,8 @@ class IconLoader {
 #if !defined(OS_ANDROID)
   IconSize icon_size_;
 #endif  // !defined(OS_ANDROID)
-
+  const float scale_;
   IconLoadedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconLoader);
 };
 
 #endif  // CHROME_BROWSER_ICON_LOADER_H_

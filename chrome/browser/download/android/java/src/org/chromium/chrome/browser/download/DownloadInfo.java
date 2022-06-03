@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -14,6 +15,7 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
+import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
@@ -42,6 +44,7 @@ public final class DownloadInfo {
     private final boolean mIsResumable;
     private final boolean mIsPaused;
     private final boolean mIsOffTheRecord;
+    private final OTRProfileID mOTRProfileId;
     private final boolean mIsOfflinePage;
     private final int mState;
     private final long mLastAccessTime;
@@ -58,6 +61,7 @@ public final class DownloadInfo {
     @FailState
     private final int mFailState;
     private final boolean mShouldPromoteOrigin;
+    private final OfflineItemSchedule mSchedule;
 
     private DownloadInfo(Builder builder) {
         mUrl = builder.mUrl;
@@ -80,6 +84,7 @@ public final class DownloadInfo {
         mIsResumable = builder.mIsResumable;
         mIsPaused = builder.mIsPaused;
         mIsOffTheRecord = builder.mIsOffTheRecord;
+        mOTRProfileId = builder.mOTRProfileId;
         mIsOfflinePage = builder.mIsOfflinePage;
         mState = builder.mState;
         mLastAccessTime = builder.mLastAccessTime;
@@ -97,6 +102,7 @@ public final class DownloadInfo {
         mPendingState = builder.mPendingState;
         mFailState = builder.mFailState;
         mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
+        mSchedule = builder.mSchedule;
     }
 
     public String getUrl() {
@@ -182,6 +188,10 @@ public final class DownloadInfo {
         return mIsOffTheRecord;
     }
 
+    public OTRProfileID getOTRProfileId() {
+        return mOTRProfileId;
+    }
+
     public boolean isOfflinePage() {
         return mIsOfflinePage;
     }
@@ -228,6 +238,10 @@ public final class DownloadInfo {
 
     public boolean getShouldPromoteOrigin() {
         return mShouldPromoteOrigin;
+    }
+
+    public OfflineItemSchedule getOfflineItemSchedule() {
+        return mSchedule;
     }
 
     /**
@@ -281,9 +295,9 @@ public final class DownloadInfo {
                 .setLastAccessTime(item.lastAccessedTimeMs)
                 .setIsOpenable(item.isOpenable)
                 .setMimeType(item.mimeType)
-                .setUrl(item.pageUrl)
+                .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
-                .setIsOffTheRecord(item.isOffTheRecord)
+                .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
                 .setIsResumable(item.isResumable)
@@ -296,7 +310,8 @@ public final class DownloadInfo {
                 .setIcon(visuals == null ? null : visuals.icon)
                 .setPendingState(item.pendingState)
                 .setFailState(item.failState)
-                .setShouldPromoteOrigin(item.promoteOrigin);
+                .setShouldPromoteOrigin(item.promoteOrigin)
+                .setOfflineItemSchedule(item.schedule);
     }
 
     /**
@@ -323,6 +338,7 @@ public final class DownloadInfo {
         private boolean mIsResumable = true;
         private boolean mIsPaused;
         private boolean mIsOffTheRecord;
+        private OTRProfileID mOTRProfileId;
         private boolean mIsOfflinePage;
         private int mState = DownloadState.IN_PROGRESS;
         private long mLastAccessTime;
@@ -337,6 +353,7 @@ public final class DownloadInfo {
         @FailState
         private int mFailState;
         private boolean mShouldPromoteOrigin;
+        private OfflineItemSchedule mSchedule;
 
         public Builder setUrl(String url) {
             mUrl = url;
@@ -433,8 +450,9 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            mIsOffTheRecord = isOffTheRecord;
+        public Builder setOTRProfileId(OTRProfileID otrProfileId) {
+            mOTRProfileId = otrProfileId;
+            mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileId);
             return this;
         }
 
@@ -498,6 +516,11 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setOfflineItemSchedule(OfflineItemSchedule schedule) {
+            mSchedule = schedule;
+            return this;
+        }
+
         public DownloadInfo build() {
             return new DownloadInfo(this);
         }
@@ -529,7 +552,7 @@ public final class DownloadInfo {
                     .setIsDangerous(downloadInfo.getIsDangerous())
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
-                    .setIsOffTheRecord(downloadInfo.isOffTheRecord())
+                    .setOTRProfileId(downloadInfo.getOTRProfileId())
                     .setIsOfflinePage(downloadInfo.isOfflinePage())
                     .setState(downloadInfo.state())
                     .setLastAccessTime(downloadInfo.getLastAccessTime())
@@ -538,7 +561,8 @@ public final class DownloadInfo {
                     .setIcon(downloadInfo.getIcon())
                     .setPendingState(downloadInfo.getPendingState())
                     .setFailState(downloadInfo.getFailState())
-                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin());
+                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin())
+                    .setOfflineItemSchedule(downloadInfo.getOfflineItemSchedule());
             return builder;
         }
     }
@@ -546,15 +570,14 @@ public final class DownloadInfo {
     @CalledByNative
     private static DownloadInfo createDownloadInfo(String downloadGuid, String fileName,
             String filePath, String url, String mimeType, long bytesReceived, long bytesTotalSize,
-            boolean isIncognito, int state, int percentCompleted, boolean isPaused,
+            OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
             boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
             String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
-            boolean isDangerous, @FailState int failState) {
+            boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url, fileName);
 
         Progress progress = new Progress(bytesReceived,
                 percentCompleted == -1 ? null : bytesTotalSize, OfflineItemProgressUnit.BYTES);
-
         return new DownloadInfo.Builder()
                 .setBytesReceived(bytesReceived)
                 .setBytesTotalSize(bytesTotalSize)
@@ -563,7 +586,7 @@ public final class DownloadInfo {
                 .setFileName(fileName)
                 .setFilePath(filePath)
                 .setHasUserGesture(hasUserGesture)
-                .setIsOffTheRecord(isIncognito)
+                .setOTRProfileId(otrProfileId)
                 .setIsPaused(isPaused)
                 .setIsResumable(isResumable)
                 .setIsParallelDownload(isParallelDownload)
@@ -577,6 +600,7 @@ public final class DownloadInfo {
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)
+                .setOfflineItemSchedule(schedule)
                 .build();
     }
 }

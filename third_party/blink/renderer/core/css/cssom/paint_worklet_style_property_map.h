@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -38,7 +37,7 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
   // TODO(xidachen): consider making the input_property_ids as part of the
   // return value. Or make both CrossThreadData and input_property_ids as
   // params and return a bool.
-  static base::Optional<CrossThreadData> BuildCrossThreadData(
+  static absl::optional<CrossThreadData> BuildCrossThreadData(
       const Document&,
       UniqueObjectId unique_object_id,
       const ComputedStyle&,
@@ -50,6 +49,9 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
 
   // This constructor should be called on the worklet-thread only.
   explicit PaintWorkletStylePropertyMap(CrossThreadData data);
+  PaintWorkletStylePropertyMap(const PaintWorkletStylePropertyMap&) = delete;
+  PaintWorkletStylePropertyMap& operator=(const PaintWorkletStylePropertyMap&) =
+      delete;
 
   CSSStyleValue* get(const ExecutionContext*,
                      const String& property_name,
@@ -65,7 +67,7 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
 
   unsigned int size() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   const CrossThreadData& StyleMapDataForTest() const { return data_; }
 
@@ -75,10 +77,8 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
   CrossThreadData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletStylePropertyMap);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_PAINT_WORKLET_STYLE_PROPERTY_MAP_H_

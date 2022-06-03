@@ -74,6 +74,7 @@ contribution can be accepted:
 - If the author or their company is not listed, the CL should include a new
   AUTHORS entry.
   - Ensure the new entry is reviewed by a reviewer who works for Google.
+  - Contributor License Agreement can be verified by Googlers at http://go/cla.
   - If there is a corporate CLA for the author's company, it must list the
     person explicitly (or the list of authorized contributors must say
     something like "All employees"). If the author is not on their company's
@@ -95,15 +96,18 @@ contribution can be accepted:
    # Uncomment if you want new branches to track the current branch.
    # git config --global branch.autosetupmerge always
    ```
+3. Visit <https://chromium-review.googlesource.com/settings/> to ensure that
+   your preferred email is set to the same one you use in your git
+   configuration.
 
 ## Creating a change
 
 First, create a new branch for your change in git. Here, we create a branch
-called `mychange` (use whatever name you want here), with `origin/master` as
+called `mychange` (use whatever name you want here), with `origin/main` as
 the upstream branch.
 
 ```
-git checkout -b mychange -t origin/master
+git checkout -b mychange -t origin/main
 ```
 
 Write and test your change.
@@ -111,7 +115,7 @@ Write and test your change.
 - Conform to the [style guide][cr-styleguide].
 - Include tests.
 - Patches should be a reasonable size to review. Review time often increases
-  expontentially with patch size.
+  exponentially with patch size.
 
 Commit your change locally in git:
 
@@ -157,9 +161,9 @@ Bug: 123456
 
 A short subject and a blank line after the subject are crucial: `git` uses this
 as a heuristic for tools like `git log --oneline`. Use the bug number from the
-[issue tracker][crbug] (see more on [CL footer syntax][cl-footer-syntax]). Also
-see [How to Write a Git Commit Message][good-git-commit-message], which has more
-in-depth tips for writing a good commit description.
+[issue tracker][crbug] (see more on [CL footer syntax](#cl-footer-reference)).
+Also see [How to Write a Git Commit Message][good-git-commit-message], which
+has more in-depth tips for writing a good commit description.
 
 ### Chromium-specific description tips
 
@@ -209,9 +213,22 @@ nearest ancestor OWNERS file.
 - Anybody can review code, but there must be at least one owner for each
   affected directory.
 - If there are multiple reviewers, make it clear what each reviewer is expected
-  to review. Otherwise, people might assume their input is not required or
-  waste time with redundant reviews.
+  to review.
 - `git cl owners` automatically suggests reviewers based on the OWNERS files.
+
+_Note:_ By default, please only select one reviewer for each file (that is, a
+single reviewer may review multiple files, but typically each file only needs
+to be reviewed by one person). It can be tempting to add multiple reviewers so
+that "whoever gets to it first" can review, but this has two common failure
+modes:
+- Reviewer Alpha and Beta both review the CL, resulting in duplicate effort.
+- Out of fear of the above failure case, neither reviewer Alpha nor Beta review
+  the CL.
+
+There are times when requesting multiple reviewers for the same file may be
+desirable - such as when the code is particularly complicated, or when the file
+uses multiple systems and a perspective from each is valuable. In this case,
+please make it explicit that you would like both reviewers to review.
 
 ### Requesting review
 
@@ -230,8 +247,8 @@ list of the reviewers you picked.
 
 In the same dialog, you can include an optional message to your reviewers. This
 space can be used for specific questions or instructions. Once you're done,
-make sure to click **Send**, which notifies the requested reviewers that they
-should review your change.
+make sure to click **Start Review**, which notifies the requested reviewers that
+they should review your change.
 
 **IMPORTANT: UNTIL YOU SEND THE REVIEW REQUEST, NO ONE WILL LOOK AT THE REVIEW**
 
@@ -310,6 +327,10 @@ general rules of thumb can be helpful in navigating how to structure changes:
   find a product in the Chromium repositories that depends on that line of code
   or else the line of code should be removed.
 
+  Completely new additions to the project (for example, support for a new OS
+  or architecture, or a new top-level directory for a new sub-project) must
+  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
   build overly generic common libraries as that can lead to code bloat and
@@ -331,6 +352,14 @@ general rules of thumb can be helpful in navigating how to structure changes:
   corresponding tests so we can ensure that there is good coverage for code and
   that future changes will be less likely to regress functionality. Protect
   your code with tests!
+
+- **Stick to the current set of supported languages as described in the
+  [styleguide][cr-styleguide].** While there is likely always a slightly better
+  tool for any particular job, maintainability of the codebase is paramount.
+  Reducing the number of languages eases toolchain and infrastructure
+  requirements, and minimizes the learning hurdles for developers to be
+  successful contributing across the codebase. Additions of new languages must
+  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
 
 ## Tips
 
@@ -355,12 +384,90 @@ If you would like to be notified about changes to a set of files covering a
 topic or an area of Chromium, you may use the [watchlists][watchlist-doc]
 feature in order to receive email notifications.
 
+## Appendix: CL footer reference {#cl-footer-reference}
+
+Chromium stores a lot of information in footers at the bottom of commit
+messages. With the exception of `R=`, these footers are only valid in the
+last paragraph of a commit message; any footers separated from the last
+line of the message by whitespace or non-footer lines will be ignored.
+This includes everything from the unique `Change-Id` which identifies a
+Gerrit change, to more useful metadata like bugs the change helps fix,
+trybots which should be run to test the change, and more. This section
+includes a listing of well-known footers, their meanings, and their
+formats.
+
+* **Bug:**
+  * A comma-separated list of bug references.
+  * A bug reference
+    * can be a bare number, e.g. `Bug: 123456`, or
+    * can specify a project and a number, e.g. `Bug: skia:1234`.
+  * On chromium-review, the default project is assumed to be `chromium`,
+    so all bugs in non-chromium projects on bugs.chromium.org should be
+    qualified by their project name.
+  * The Google-internal issue tracker is accessible by using the `b:`
+    project prefix.
+* **Fixed:** The same as `Bug:`, but will automatically close the
+  bug(s) as fixed when the CL lands.
+* **R=**
+  * This footer is _deprecated_ in the Chromium project; it was
+    deprecated when code review migrated to Gerrit. Instead, use
+    `-r foo@example.com` when running `git cl upload`.
+  * A comma-separated list of reviewer email addresses (e.g.
+    foo@example.com, bar@example.com).
+* **Tbr:** The same format as the `R` footer, but indicates to the
+  commit queue that it can skip checking that all files in the change
+  have been approved by their respective `OWNERS`.
+* **Cq-Include-Trybots:**
+  * A comma-separated list of trybots which should be triggered and
+    checked by the CQ in addition to the normal set.
+  * Trybots are indicated in `master:builder` format (e.g.
+    `tryserver.chromium.linux:linux_asan_experimental`).
+* **No-Presubmit:**
+  * If present, the value should always be the string `true`.
+  * Indicates to the CQ that it should not run presubmit checks on the CL.
+  * Used primarily on automated reverts.
+* **No-Try:**
+  * If present, the value should always be the string `true`.
+  * Indicates to the CQ that it should not start or check the results of
+    any tryjobs.
+  * Used primarily on automated reverts.
+* **No-Tree-Checks:**
+  * If present, the value should always be the string `true`.
+  * Indicates to the CQ that it should ignore the tree status and submit
+    the change even to a closed tree.
+  * Used primarily on automated reverts.
+* **Test:**
+  * A freeform description of manual testing performed on the change.
+  * Not necessary if all testing is covered by trybots.
+* **Reviewed-by:**
+  * Automatically added by Gerrit when a change is submitted.
+  * Lists the names and email addresses of the people who approved
+    (set the `Code-Review` label on) the change prior to submission.
+* **Reviewed-on:**
+  * Automatically added by Gerrit when a change is submitted.
+  * Links back to the code review page for easy access to comment and
+    patch set history.
+* **Change-Id:**
+  * Automatically added by `git cl upload`.
+  * A unique ID that helps Gerrit keep track of commits that are part of
+    the same code review.
+* **Cr-Commit-Position:**
+  * Automatically added by the git-numberer Gerrit plugin when a change
+    is submitted.
+  * This is of the format `fully/qualified/ref@{#123456}` and gives both
+    the branch name and "sequence number" along that branch.
+  * This approximates an SVN-style monotonically increasing revision
+    number.
+* **Cr-Branched-From:**
+  * Automatically added by the git-numberer Gerrit plugin on changes
+    which are submitted to non-main branches.
+  * Aids those reading a non-main branch history in finding when a
+    given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
-[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/master/docs/#checking-out-and-building
+[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
 [chromium-design-docs]: https://groups.google.com/a/chromium.org/forum/#!forum/chromium-design-docs
-[cl-footer-syntax]: https://dev.chromium.org/developers/contributing-code/-bug-syntax
 [code-reviews-owners]: code_reviews.md#OWNERS-files
 [code-reviews]: code_reviews.md
 [commit-checklist]: commit_checklist.md
@@ -368,12 +475,12 @@ feature in order to receive email notifications.
 [core-principles]: https://www.chromium.org/developers/core-principles
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate?csw=1
 [cr-authors]: https://chromium.googlesource.com/chromium/src/+/HEAD/AUTHORS
-[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/master/
-[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md
+[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/main/
+[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md
 [crbug-new]: https://bugs.chromium.org/p/chromium/issues/entry
 [crbug]: https://bugs.chromium.org/p/chromium/issues/list
-[cros-authors]: https://chromium.googlesource.com/chromium/src/+/master/AUTHORS
-[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/master/developer_guide.md
+[cros-authors]: https://chromium.googlesource.com/chromium/src/+/main/AUTHORS
+[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/main/developer_guide.md
 [crrev]: https://chromium-review.googlesource.com
 [depot-tools-setup]: https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
 [design-doc-template]: https://docs.google.com/document/d/14YBYKgk-uSfjfwpKFlp_omgUq5hwMVazy_M965s_1KA
@@ -382,7 +489,7 @@ feature in order to receive email notifications.
 [github-tutorial]: https://try.github.io
 [good-git-commit-message]: https://chris.beams.io/posts/git-commit/
 [individual-cla]: https://cla.developers.google.com/about/google-individual?csw=1
-[life-of-a-chromium-developer]: https://docs.google.com/a/google.com/present/view?id=0AetfwCoL2lQAZGQ5bXJ0NDVfMGRtdGQ0OWM2
+[life-of-a-chromium-developer]: https://docs.google.com/presentation/d/1abnqM9j6zFodPHA38JG1061rG2iGj_GABxEDgZsdbJg/edit
 [noms-tutorial]: https://meowni.ca/posts/chromium-101
 [review-lag]: https://dev.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones
 [skia-dev-guide]: https://skia.org/dev/contrib

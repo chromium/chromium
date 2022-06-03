@@ -14,10 +14,11 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxPopupView {
  public:
-  virtual ~OmniboxPopupView() {}
+  virtual ~OmniboxPopupView() = default;
 
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const = 0;
@@ -25,8 +26,11 @@ class OmniboxPopupView {
   // Invalidates one line of the autocomplete popup.
   virtual void InvalidateLine(size_t line) = 0;
 
-  // Invoked on the old and new selected lines when the selected line changes.
-  virtual void OnSelectionStateChanged(size_t line) = 0;
+  // Invoked when the selection changes. The |line| field in either selection
+  // may be OmniboxPopupSelection::kNoMatch. This method is invoked by the
+  // model.
+  virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                                  OmniboxPopupSelection new_selection) {}
 
   // Redraws the popup window to match any changes in the result set; this may
   // mean opening or closing the window.

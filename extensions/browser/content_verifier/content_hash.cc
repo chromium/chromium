@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
@@ -18,9 +19,11 @@
 #include "crypto/sha2.h"
 #include "extensions/browser/content_hash_fetcher.h"
 #include "extensions/browser/content_hash_tree.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/file_util.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -48,10 +51,10 @@ std::unique_ptr<VerifiedContents> ReadVerifiedContents(
   base::FilePath verified_contents_path =
       file_util::GetVerifiedContentsPath(key.extension_root);
   std::unique_ptr<VerifiedContents> verified_contents =
-      VerifiedContents::Create(key.verifier_key, verified_contents_path);
+      VerifiedContents::CreateFromFile(key.verifier_key,
+                                       verified_contents_path);
   if (!verified_contents) {
-    if (delete_invalid_file &&
-        !base::DeleteFile(verified_contents_path, false)) {
+    if (delete_invalid_file && !base::DeleteFile(verified_contents_path)) {
       LOG(WARNING) << "Failed to delete " << verified_contents_path.value();
     }
     return nullptr;
@@ -103,7 +106,7 @@ void ContentHash::Create(
 
     GetComputedHashes(source_type, is_cancelled, std::move(created_callback),
                       std::move(key), /*verified_contents=*/nullptr,
-                      /*did_attempt_fetch=*/false);
+                      /*did_attempt_fetch=*/false, /*fetch_error=*/net::OK);
   }
 }
 
@@ -139,7 +142,7 @@ ContentHash::TreeHashVerificationResult ContentHash::VerifyTreeHashRoot(
 }
 
 const ComputedHashes& ContentHash::computed_hashes() const {
-  DCHECK(succeeded_ && computed_hashes_);
+  DCHECK(succeeded() && computed_hashes_);
   return *computed_hashes_;
 }
 
@@ -155,15 +158,11 @@ ContentHash::ContentHash(
     const ExtensionId& id,
     const base::FilePath& root,
     ContentVerifierDelegate::VerifierSourceType source_type,
-    std::unique_ptr<const VerifiedContents> verified_contents,
-    std::unique_ptr<const ComputedHashes> computed_hashes)
+    std::unique_ptr<const VerifiedContents> verified_contents)
     : extension_id_(id),
       extension_root_(root),
       source_type_(source_type),
-      verified_contents_(std::move(verified_contents)),
-      computed_hashes_(std::move(computed_hashes)) {
-  succeeded_ = verified_contents_ != nullptr && computed_hashes_ != nullptr;
-}
+      verified_contents_(std::move(verified_contents)) {}
 
 ContentHash::~ContentHash() = default;
 
@@ -184,7 +183,7 @@ void ContentHash::GetVerifiedContents(
   if (verified_contents) {
     std::move(verified_contents_callback)
         .Run(std::move(key), std::move(verified_contents),
-             /*did_attempt_fetch=*/false);
+             /*did_attempt_fetch=*/false, /*fetch_error=*/net::OK);
     return;
   }
 
@@ -217,7 +216,7 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // can be a login redirect html, xml file, etc. if you aren't logged in with
   // the right cookies).  TODO(asargent) - It would be a nice enhancement to
   // move to parsing this in a sandboxed helper (https://crbug.com/372878).
-  base::Optional<base::Value> parsed =
+  absl::optional<base::Value> parsed =
       base::JSONReader::Read(*fetched_contents);
   if (!parsed)
     return nullptr;
@@ -245,20 +244,22 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
 void ContentHash::DidFetchVerifiedContents(
     GetVerifiedContentsCallback verified_contents_callback,
     FetchKey key,
-    std::unique_ptr<std::string> fetched_contents) {
+    std::unique_ptr<std::string> fetched_contents,
+    FetchErrorCode fetch_error) {
   std::unique_ptr<VerifiedContents> verified_contents =
       StoreAndRetrieveVerifiedContents(std::move(fetched_contents), key);
 
   if (!verified_contents) {
     std::move(verified_contents_callback)
-        .Run(std::move(key), nullptr, /*did_attempt_fetch=*/true);
+        .Run(std::move(key), nullptr, /*did_attempt_fetch=*/true,
+             /*fetch_error=*/fetch_error);
     return;
   }
 
-  RecordFetchResult(true);
+  RecordFetchResult(true, fetch_error);
   std::move(verified_contents_callback)
       .Run(std::move(key), std::move(verified_contents),
-           /*did_attempt_fetch=*/true);
+           /*did_attempt_fetch=*/true, /*fetch_error=*/fetch_error);
 }
 
 // static
@@ -268,19 +269,20 @@ void ContentHash::GetComputedHashes(
     CreatedCallback created_callback,
     FetchKey key,
     std::unique_ptr<VerifiedContents> verified_contents,
-    bool did_attempt_fetch) {
+    bool did_attempt_fetch,
+    FetchErrorCode fetch_error) {
   if (source_type ==
           ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES &&
       !verified_contents) {
     DCHECK(did_attempt_fetch);
     ContentHash::DispatchFetchFailure(key.extension_id, key.extension_root,
                                       source_type, std::move(created_callback),
-                                      is_cancelled);
+                                      is_cancelled, fetch_error);
     return;
   }
   scoped_refptr<ContentHash> hash =
       new ContentHash(key.extension_id, key.extension_root, source_type,
-                      std::move(verified_contents), nullptr);
+                      std::move(verified_contents));
   hash->BuildComputedHashes(did_attempt_fetch, /*force_build=*/false,
                             is_cancelled);
   std::move(created_callback).Run(hash, is_cancelled && is_cancelled.Run());
@@ -292,21 +294,26 @@ void ContentHash::DispatchFetchFailure(
     const base::FilePath& extension_root,
     ContentVerifierDelegate::VerifierSourceType source_type,
     CreatedCallback created_callback,
-    const IsCancelledCallback& is_cancelled) {
+    const IsCancelledCallback& is_cancelled,
+    FetchErrorCode fetch_error) {
   DCHECK_EQ(ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES,
             source_type)
       << "Only signed hashes should attempt fetching verified_contents.json";
-  RecordFetchResult(false);
+  RecordFetchResult(false, fetch_error);
   // NOTE: bare new because ContentHash constructor is private.
-  scoped_refptr<ContentHash> content_hash = new ContentHash(
-      extension_id, extension_root, source_type, nullptr, nullptr);
+  scoped_refptr<ContentHash> content_hash =
+      new ContentHash(extension_id, extension_root, source_type, nullptr);
   std::move(created_callback)
       .Run(content_hash, is_cancelled && is_cancelled.Run());
 }
 
 // static
-void ContentHash::RecordFetchResult(bool success) {
+void ContentHash::RecordFetchResult(bool success, int fetch_error) {
   UMA_HISTOGRAM_BOOLEAN("Extensions.ContentVerification.FetchResult", success);
+  if (!success) {
+    base::UmaHistogramSparse("Extensions.ContentVerification.FetchFailureError",
+                             fetch_error);
+  }
 }
 
 bool ContentHash::ShouldComputeHashesForResource(
@@ -324,19 +331,22 @@ std::set<base::FilePath> ContentHash::GetMismatchedComputedHashes(
   DCHECK(computed_hashes_data);
   if (source_type_ !=
       ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES) {
-    return std::set<base::FilePath>();
+    return {};
   }
 
   std::set<base::FilePath> mismatched_hashes;
 
-  for (const auto& resource_info : *computed_hashes_data) {
-    const base::FilePath& relative_unix_path = resource_info.first;
-    const std::vector<std::string>& hashes = resource_info.second.second;
+  for (const auto& resource_info : computed_hashes_data->items()) {
+    const ComputedHashes::Data::HashInfo& hash_info = resource_info.second;
+    const content_verifier_utils::CanonicalRelativePath&
+        canonical_relative_path = resource_info.first;
 
-    std::string root =
-        ComputeTreeHashRoot(hashes, block_size_ / crypto::kSHA256Length);
-    if (!verified_contents_->TreeHashRootEquals(relative_unix_path, root))
-      mismatched_hashes.insert(relative_unix_path);
+    std::string root = ComputeTreeHashRoot(hash_info.hashes,
+                                           block_size_ / crypto::kSHA256Length);
+    if (!verified_contents_->TreeHashRootEqualsForCanonicalPath(
+            canonical_relative_path, root)) {
+      mismatched_hashes.insert(hash_info.relative_unix_path);
+    }
   }
 
   return mismatched_hashes;
@@ -349,7 +359,7 @@ bool ContentHash::CreateHashes(const base::FilePath& hashes_file,
   base::ElapsedTimer timer;
   did_attempt_creating_computed_hashes_ = true;
 
-  base::Optional<ComputedHashes::Data> computed_hashes_data =
+  absl::optional<ComputedHashes::Data> computed_hashes_data =
       ComputedHashes::Compute(
           extension_root_, block_size_, is_cancelled,
           // Using base::Unretained is safe here as
@@ -365,7 +375,7 @@ bool ContentHash::CreateHashes(const base::FilePath& hashes_file,
       VLOG(1) << "content mismatch for " << relative_unix_path.AsUTF8Unsafe();
       // Remove hash entry to keep computed_hashes.json file clear of mismatched
       // hashes.
-      computed_hashes_data->erase(relative_unix_path);
+      computed_hashes_data->Remove(relative_unix_path);
     }
     hash_mismatch_unix_paths_ = std::move(hashes_mismatch);
   }
@@ -375,9 +385,6 @@ bool ContentHash::CreateHashes(const base::FilePath& hashes_file,
                     .WriteToFile(hashes_file);
   UMA_HISTOGRAM_TIMES("ExtensionContentHashFetcher.CreateHashesTime",
                       timer.Elapsed());
-
-  if (result)
-    succeeded_ = true;
 
   return result;
 }
@@ -411,15 +418,17 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   if (!will_create) {
     // Note: Tolerate for existing implementation.
     // Try to read and initialize the file first. On failure, continue creating.
-    base::Optional<ComputedHashes> computed_hashes =
-        ComputedHashes::CreateFromFile(computed_hashes_path);
+    absl::optional<ComputedHashes> computed_hashes =
+        ComputedHashes::CreateFromFile(computed_hashes_path,
+                                       &computed_hashes_status_);
+    DCHECK_EQ(computed_hashes_status_ == ComputedHashes::Status::SUCCESS,
+              computed_hashes.has_value());
     if (!computed_hashes) {
       // TODO(lazyboy): Also create computed_hashes.json in this case. See the
       // comment above about |will_create|.
       // will_create = true;
     } else {
       // Read successful.
-      succeeded_ = true;
       computed_hashes_ =
           std::make_unique<ComputedHashes>(std::move(computed_hashes.value()));
       return;
@@ -435,13 +444,15 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   if (!base::PathExists(computed_hashes_path))
     return;
 
-  base::Optional<ComputedHashes> computed_hashes =
-      ComputedHashes::CreateFromFile(computed_hashes_path);
+  absl::optional<ComputedHashes> computed_hashes =
+      ComputedHashes::CreateFromFile(computed_hashes_path,
+                                     &computed_hashes_status_);
+  DCHECK_EQ(computed_hashes_status_ == ComputedHashes::Status::SUCCESS,
+            computed_hashes.has_value());
   if (!computed_hashes)
     return;
 
   // Read successful.
-  succeeded_ = true;
   computed_hashes_ =
       std::make_unique<ComputedHashes>(std::move(computed_hashes.value()));
 }

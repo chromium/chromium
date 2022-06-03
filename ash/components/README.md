@@ -1,21 +1,17 @@
-//ash/components
-----------------
-This directory is for medium-sized UI "components" or "modules" or "mini-apps"
-that run on Chrome OS. In the long term, some of these mini-apps may become
-their own mojo applications and run independently, instead of as part of the
-browser or as part of ash.
+# About //ash/components
 
-Generally these mini-apps depend on //base, //chromeos, //ui and low-level
-components like //components/prefs.
+This directory contains components that are used by //ash system UI and window
+manager code. It sits "below" //ash in the dependency graph. For C++ code,
+think of //ash/components like top-level //components, but for code that is
+only used on Chrome OS, and only for system UI / window manager support.
 
-Code here should not depend on //ash, except for the public mojo IPC interfaces
-in //ash/public. Likewise, //ash should not depend on these components, except
-for possibly for a header that allows launching the mini-app.
+For example, //ash/components/account_manager manages the user's GAIA accounts,
+but only on behalf of Chrome OS code. //components/account_manager_core contains
+cross-platform support for accounts.
 
-If the mini-app contains webui it might depend on //content, but in general
-//content dependencies should be avoided.
-
-Code in //ash/components/foo should be in "namespace foo" not "namespace ash".
-
-//ash is only used on Chrome OS. If a component is used on other platforms the
-code should move to //components.
+Much of this code used to live in //chromeos/components. The
+[Lacros project](/docs/lacros.md) is extracting browser functionality into a
+separate binary. As part of this migration, code used only by the ash-chrome
+system UI binary moved into "ash" directories. See the
+[Chrome OS source directory migration](https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE/edit)
+design doc for details.

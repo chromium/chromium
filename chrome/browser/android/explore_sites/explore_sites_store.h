@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_STORE_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_STORE_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/trace_event.h"
 #include "components/offline_pages/task/sql_store_base.h"
 
 namespace sql {

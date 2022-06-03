@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -93,23 +92,27 @@ void CheckSerializedSecureMessage(
 }  // namespace
 
 class CryptAuthFakeSecureMessageDelegateTest : public testing::Test {
+ public:
+  CryptAuthFakeSecureMessageDelegateTest(
+      const CryptAuthFakeSecureMessageDelegateTest&) = delete;
+  CryptAuthFakeSecureMessageDelegateTest& operator=(
+      const CryptAuthFakeSecureMessageDelegateTest&) = delete;
+
  protected:
   CryptAuthFakeSecureMessageDelegateTest() {}
 
   FakeSecureMessageDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFakeSecureMessageDelegateTest);
 };
 
 TEST_F(CryptAuthFakeSecureMessageDelegateTest, GenerateKeyPair) {
   std::string public_key1, private_key1;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key1, &private_key1));
+      base::BindOnce(&SaveKeyPair, &public_key1, &private_key1));
   EXPECT_NE(private_key1, public_key1);
 
   std::string public_key2, private_key2;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key2, &private_key2));
+      base::BindOnce(&SaveKeyPair, &public_key2, &private_key2));
   EXPECT_NE(private_key2, public_key2);
 
   EXPECT_NE(public_key1, public_key2);
@@ -118,7 +121,7 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest, GenerateKeyPair) {
   delegate_.set_next_public_key(kTestPublicKey);
   std::string public_key3, private_key3;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key3, &private_key3));
+      base::BindOnce(&SaveKeyPair, &public_key3, &private_key3));
   EXPECT_EQ(kTestPublicKey, public_key3);
   EXPECT_NE(private_key3, public_key3);
 
@@ -130,18 +133,18 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest, DeriveKey) {
   delegate_.set_next_public_key("key_pair_1");
   std::string public_key1, private_key1;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key1, &private_key1));
+      base::BindOnce(&SaveKeyPair, &public_key1, &private_key1));
 
   delegate_.set_next_public_key("key_pair_2");
   std::string public_key2, private_key2;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key2, &private_key2));
+      base::BindOnce(&SaveKeyPair, &public_key2, &private_key2));
 
   std::string symmetric_key1, symmetric_key2;
   delegate_.DeriveKey(private_key1, public_key2,
-                      base::Bind(&SaveString, &symmetric_key1));
+                      base::BindOnce(&SaveString, &symmetric_key1));
   delegate_.DeriveKey(private_key2, public_key1,
-                      base::Bind(&SaveString, &symmetric_key2));
+                      base::BindOnce(&SaveString, &symmetric_key2));
 
   EXPECT_EQ(symmetric_key1, symmetric_key2);
 }
@@ -152,8 +155,9 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest,
   SecureMessageDelegate::CreateOptions create_options =
       GetCreateOptions(securemessage::AES_256_CBC, securemessage::HMAC_SHA256);
   std::string serialized_message;
-  delegate_.CreateSecureMessage(kPayload, kSymmetricKey, create_options,
-                                base::Bind(&SaveString, &serialized_message));
+  delegate_.CreateSecureMessage(
+      kPayload, kSymmetricKey, create_options,
+      base::BindOnce(&SaveString, &serialized_message));
 
   CheckSerializedSecureMessage(serialized_message, create_options);
 
@@ -164,7 +168,7 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest,
   securemessage::Header header;
   delegate_.UnwrapSecureMessage(
       serialized_message, kSymmetricKey, unwrap_options,
-      base::Bind(&SaveUnwrapResults, &payload, &header));
+      base::BindOnce(&SaveUnwrapResults, &payload, &header));
 
   EXPECT_EQ(kPayload, payload);
 }
@@ -174,14 +178,15 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest,
   delegate_.set_next_public_key(kTestPublicKey);
   std::string public_key, private_key;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key, &private_key));
+      base::BindOnce(&SaveKeyPair, &public_key, &private_key));
 
   // Create SecureMessage using asymmetric key.
   SecureMessageDelegate::CreateOptions create_options =
       GetCreateOptions(securemessage::NONE, securemessage::ECDSA_P256_SHA256);
   std::string serialized_message;
-  delegate_.CreateSecureMessage(kPayload, private_key, create_options,
-                                base::Bind(&SaveString, &serialized_message));
+  delegate_.CreateSecureMessage(
+      kPayload, private_key, create_options,
+      base::BindOnce(&SaveString, &serialized_message));
 
   CheckSerializedSecureMessage(serialized_message, create_options);
 
@@ -192,7 +197,7 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest,
   securemessage::Header header;
   delegate_.UnwrapSecureMessage(
       serialized_message, public_key, unwrap_options,
-      base::Bind(&SaveUnwrapResults, &payload, &header));
+      base::BindOnce(&SaveUnwrapResults, &payload, &header));
 
   EXPECT_EQ(kPayload, payload);
 }
@@ -201,7 +206,7 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest, GetPrivateKeyForPublicKey) {
   delegate_.set_next_public_key(kTestPublicKey);
   std::string public_key, private_key;
   delegate_.GenerateKeyPair(
-      base::Bind(&SaveKeyPair, &public_key, &private_key));
+      base::BindOnce(&SaveKeyPair, &public_key, &private_key));
   EXPECT_EQ(kTestPublicKey, public_key);
   EXPECT_EQ(private_key, delegate_.GetPrivateKeyForPublicKey(kTestPublicKey));
 }

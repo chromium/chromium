@@ -8,19 +8,17 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
+class ChromeBrowserState;
+
 namespace infobars {
 class InfoBar;
 }  // namespace infobars
-
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
 
 namespace web {
 class WebState;
@@ -33,6 +31,10 @@ class BlockedPopupTabHelper
       public web::WebStateUserData<BlockedPopupTabHelper> {
  public:
   explicit BlockedPopupTabHelper(web::WebState* web_state);
+
+  BlockedPopupTabHelper(const BlockedPopupTabHelper&) = delete;
+  BlockedPopupTabHelper& operator=(const BlockedPopupTabHelper&) = delete;
+
   ~BlockedPopupTabHelper() override;
 
   // Returns true if popup requested by the page with the given |source_url|
@@ -68,7 +70,7 @@ class BlockedPopupTabHelper
   void ShowInfoBar();
 
   // Returns BrowserState for the WebState that this object is attached to.
-  ios::ChromeBrowserState* GetBrowserState() const;
+  ChromeBrowserState* GetBrowserState() const;
 
   // Registers this object as an observer for the InfoBarManager associated with
   // |web_state_|.  Does nothing if already registered.
@@ -84,12 +86,11 @@ class BlockedPopupTabHelper
   // For management of infobars::InfoBarManager::Observer registration.  This
   // object will not start observing the InfoBarManager until ShowInfoBars() is
   // called.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      scoped_observation_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedPopupTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_BLOCKED_POPUP_TAB_HELPER_H_

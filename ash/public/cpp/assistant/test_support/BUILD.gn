@@ -1,0 +1,16 @@
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_assistant_controller.cc",
+    "mock_assistant_controller.h",
+    "mock_assistant_state.cc",
+    "mock_assistant_state.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//testing/gmock",
+    "//url",
+  ]
+}

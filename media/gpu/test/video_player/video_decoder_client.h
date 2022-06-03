@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -31,11 +30,11 @@ class EncodedDataHelper;
 class FrameRenderer;
 class VideoFrameProcessor;
 
-// TODO(dstaessens@) Remove allocation mode, temporary added here so we can
-// support the thumbnail test for older platforms that don't support import.
-enum class AllocationMode {
-  kImport,    // Client allocates video frame memory.
-  kAllocate,  // Video decoder allocates video frame memory.
+// The supported video decoding implementation.
+enum class DecoderImplementation {
+  kVDA,    // VDA-based video decoder.
+  kVD,     // VD-based video decoder.
+  kVDVDA,  // VD-based video decoder with VdVDA.
 };
 
 // Video decoder client configuration.
@@ -43,10 +42,7 @@ struct VideoDecoderClientConfig {
   // The maximum number of bitstream buffer decodes that can be requested
   // without waiting for the result of the previous decode requests.
   size_t max_outstanding_decode_requests = 1;
-  // How the pictures buffers should be allocated.
-  AllocationMode allocation_mode = AllocationMode::kImport;
-  // Use VD-based video decoders instead of VDA-based video decoders.
-  bool use_vd = false;
+  DecoderImplementation implementation = DecoderImplementation::kVDA;
 };
 
 // The video decoder client is responsible for the communication between the
@@ -61,15 +57,17 @@ struct VideoDecoderClientConfig {
 // necessary if we don't want to interrupt the test flow.
 class VideoDecoderClient {
  public:
+  VideoDecoderClient(const VideoDecoderClient&) = delete;
+  VideoDecoderClient& operator=(const VideoDecoderClient&) = delete;
+
   ~VideoDecoderClient();
 
   // Return an instance of the VideoDecoderClient. The
-  // |gpu_memory_buffer_factory|, |frame_renderer| and |frame_processors| will
-  // not be owned by the decoder client, the caller should guarantee they
-  // outlive the decoder client. The |event_cb| will be called whenever an event
-  // occurs (e.g. frame decoded) and should be thread-safe. Initialization is
-  // performed asynchronous, upon completion a 'kInitialized' event will be
-  // thrown.
+  // |gpu_memory_buffer_factory| will not be owned by the decoder client, the
+  // caller should guarantee it outlives the decoder client. The |event_cb| will
+  // be called whenever an event occurs (e.g. frame decoded) and should be
+  // thread-safe. Initialization is performed asynchronous, upon completion a
+  // 'kInitialized' event will be thrown.
   static std::unique_ptr<VideoDecoderClient> Create(
       const VideoPlayer::EventCallback& event_cb,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
@@ -143,13 +141,13 @@ class VideoDecoderClient {
   // The below functions are callbacks provided to the video decoder. They are
   // all executed on the |decoder_client_thread_|.
   // Called by the decoder when initialization has completed.
-  void DecoderInitializedTask(bool status);
+  void DecoderInitializedTask(Status status);
   // Called by the decoder when a fragment has been decoded.
-  void DecodeDoneTask(media::DecodeStatus status);
+  void DecodeDoneTask(media::Status status);
   // Called by the decoder when a video frame is ready.
   void FrameReadyTask(scoped_refptr<VideoFrame> video_frame);
   // Called by the decoder when flushing has completed.
-  void FlushDoneTask(media::DecodeStatus status);
+  void FlushDoneTask(media::Status status);
   // Called by the decoder when resetting has completed.
   void ResetDoneTask();
 
@@ -185,8 +183,6 @@ class VideoDecoderClient {
 
   base::WeakPtr<VideoDecoderClient> weak_this_;
   base::WeakPtrFactory<VideoDecoderClient> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderClient);
 };
 
 }  // namespace test

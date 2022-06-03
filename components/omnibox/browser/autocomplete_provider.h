@@ -8,13 +8,12 @@
 #include <stddef.h>
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -39,12 +38,26 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // below may have some utility, nothing compares with first-hand
 // investigation and experience.
 //
-// ZERO SUGGEST (empty) input type:
+// ZERO SUGGEST (empty input type) on NTP:
 // --------------------------------------------------------------------|-----
-// Clipboard URL                                                       |  800
-// Zero Suggest (most visited, Android only)                           |  600--
-// Zero Suggest (default, may be overridden by server)                 |  100
-// Local History Zero Suggest                                          |  500--
+// Query Tiles (Android only)                                          |  1599
+// Clipboard (Mobile only)                                             |  1501
+// Remote Zero Suggest (relevance expected to be overridden by server) |  100
+// Local History Zero Suggest (signed-out users)                       |  1450--
+// Local History Zero Suggest (signed-in users)                        |  500--
+//
+// ZERO SUGGEST (empty input type) on SERP:
+// --------------------------------------------------------------------|-----
+// Verbatim Match (Mobile only)                                        |  1600
+// Clipboard (Mobile only)                                             |  1501
+//
+// ZERO SUGGEST (empty input type) on OTHER (e.g., contextual web):
+// --------------------------------------------------------------------|-----
+// Verbatim Match (Mobile only)                                        |  1600
+// Clipboard (Mobile only)                                             |  1501
+// Most Visited Carousel (Android only)                                |  1500
+// Most Visited Sites (Mobile only)                                    |  600--
+// Remote Zero Suggest (relevance expected to be overridden by server) |  100
 //
 // UNKNOWN input type:
 // --------------------------------------------------------------------|-----
@@ -151,9 +164,16 @@ class AutocompleteProvider
     TYPE_DOCUMENT = 1 << 9,
     TYPE_ON_DEVICE_HEAD = 1 << 10,
     TYPE_ZERO_SUGGEST_LOCAL_HISTORY = 1 << 11,
+    TYPE_QUERY_TILE = 1 << 12,
+    TYPE_MOST_VISITED_SITES = 1 << 13,
+    TYPE_VERBATIM_MATCH = 1 << 14,
+    TYPE_VOICE_SUGGEST = 1 << 15,
   };
 
   explicit AutocompleteProvider(Type type);
+
+  AutocompleteProvider(const AutocompleteProvider&) = delete;
+  AutocompleteProvider& operator=(const AutocompleteProvider&) = delete;
 
   // Returns a string describing a particular AutocompleteProvider type.
   static const char* TypeToString(Type type);
@@ -240,7 +260,7 @@ class AutocompleteProvider
   // Returns a string describing this provider's type.
   const char* GetName() const;
 
-  typedef std::multimap<base::char16, base::string16> WordMap;
+  typedef std::multimap<char16_t, std::u16string> WordMap;
 
   // Finds the matches for |find_text| in |text|, classifies those matches,
   // merges those classifications with |original_class|, and returns the merged
@@ -277,8 +297,8 @@ class AutocompleteProvider
   //      ^      ^
   //      0 M    7 N
   static ACMatchClassifications ClassifyAllMatchesInString(
-      const base::string16& find_text,
-      const base::string16& text,
+      const std::u16string& find_text,
+      const std::u16string& text,
       const bool text_is_search_query,
       const ACMatchClassifications& original_class = ACMatchClassifications());
 
@@ -287,13 +307,20 @@ class AutocompleteProvider
   // (not accidentally) in keyword mode. Combined, this method returns
   // whether the caller should perform steps that are only valid in this state.
   static bool InExplicitExperimentalKeywordMode(const AutocompleteInput& input,
-                                                const base::string16& keyword);
+                                                const std::u16string& keyword);
 
   // Uses the keyword entry mode in |input| (and possibly compare the length
   // of the user input vs |keyword|) to decide if the user intentionally
   // entered keyword mode.
   static bool IsExplicitlyInKeywordMode(const AutocompleteInput& input,
-                                        const base::string16& keyword);
+                                        const std::u16string& keyword);
+
+  // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
+  // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
+  // number of characters that were trimmed.
+  // NOTE: For a view-source: URL, this will trim from after "view-source:" and
+  // return 0.
+  static size_t TrimSchemePrefix(std::u16string* url, bool trim_https);
 
  protected:
   friend class base::RefCountedThreadSafe<AutocompleteProvider>;
@@ -301,7 +328,7 @@ class AutocompleteProvider
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
 
-  typedef std::pair<bool, base::string16> FixupReturn;
+  typedef std::pair<bool, std::u16string> FixupReturn;
 
   virtual ~AutocompleteProvider();
 
@@ -321,21 +348,12 @@ class AutocompleteProvider
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
-  // Trims "http:" and up to two subsequent slashes from |url|.  Returns the
-  // number of characters that were trimmed.
-  // NOTE: For a view-source: URL, this will trim from after "view-source:" and
-  // return 0.
-  static size_t TrimHttpPrefix(base::string16* url);
-
   const size_t provider_max_matches_;
 
   ACMatches matches_;
   bool done_;
 
   Type type_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteProvider);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_H_

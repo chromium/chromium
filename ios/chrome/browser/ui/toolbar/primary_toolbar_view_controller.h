@@ -7,19 +7,28 @@
 
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 // ViewController for the primary toobar part of the adaptive toolbar. It is the
 // part always displayed and containing the location bar.
 @interface PrimaryToolbarViewController
-    : AdaptiveToolbarViewController<ActivityServicePositioner,
-                                    FullscreenUIElement,
-                                    ToolbarAnimatee>
+    : AdaptiveToolbarViewController <ActivityServicePositioner,
+                                     FullscreenUIElement,
+                                     ToolbarAnimatee,
+                                     ViewRevealingAnimatee>
 
 @property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate> delegate;
+
+// Whether the omnibox should be hidden on NTP.
+@property(nonatomic, assign) BOOL shouldHideOmniboxOnNTP;
+
+// Pan gesture handler for the toolbar.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Sets the location bar view controller, containing the omnibox.
 - (void)setLocationBarViewController:(UIViewController*)locationBarView;

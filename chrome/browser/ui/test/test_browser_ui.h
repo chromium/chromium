@@ -8,8 +8,20 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
+
+namespace views {
+class Widget;
+class View;
+}  // namespace views
+
+namespace ui {
+namespace test {
+class SkiaGoldMatchingAlgorithm;
+}  // namespace test
+}  // namespace ui
 
 // TestBrowserUi provides a way to register an InProcessBrowserTest testing
 // harness with a framework that invokes Chrome browser UI in a consistent way.
@@ -65,6 +77,10 @@
 //   browser_tests --gtest_filter=BrowserUiTest.Invoke
 //       --test-launcher-interactive --ui=FooUiTest.InvokeUi_name
 class TestBrowserUi {
+ public:
+  TestBrowserUi(const TestBrowserUi&) = delete;
+  TestBrowserUi& operator=(const TestBrowserUi&) = delete;
+
  protected:
   TestBrowserUi();
   virtual ~TestBrowserUi();
@@ -81,6 +97,27 @@ class TestBrowserUi {
   // successfully shown.
   virtual bool VerifyUi() = 0;
 
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  // Can be called by VerifyUi() to ensure pixel correctness.
+  bool VerifyPixelUi(views::Widget* widget,
+                     const std::string& screenshot_prefix,
+                     const std::string& screenshot_name);
+
+  // Can be called by VerifyUi() to ensure pixel correctness.
+  bool VerifyPixelUi(views::View* view,
+                     const std::string& screenshot_prefix,
+                     const std::string& screenshot_name);
+
+  // Own |algorithm|.
+  void SetPixelMatchAlgorithm(
+      std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm);
+  ui::test::SkiaGoldMatchingAlgorithm* GetPixelMatchAlgorithm() {
+    return algorithm_.get();
+  }
+#endif
+
   // Called by ShowAndVerifyUi() after VerifyUi(), in the case where the test is
   // interactive.  This should block until the UI has been dismissed.
   virtual void WaitForUserDismissal() = 0;
@@ -96,19 +133,25 @@ class TestBrowserUi {
   void ShowAndVerifyUi();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserUi);
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm_;
+#endif
 };
 
 // Helper to mix in a TestBrowserUi to an existing test harness. |Base| must be
 // a descendant of InProcessBrowserTest.
 template <class Base, class TestUi>
 class SupportsTestUi : public Base, public TestUi {
+ public:
+  SupportsTestUi(const SupportsTestUi&) = delete;
+  SupportsTestUi& operator=(const SupportsTestUi&) = delete;
+
  protected:
   template <class... Args>
   explicit SupportsTestUi(Args&&... args) : Base(std::forward<Args>(args)...) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupportsTestUi);
 };
 
 using UiBrowserTest = SupportsTestUi<InProcessBrowserTest, TestBrowserUi>;

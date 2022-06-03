@@ -5,5 +5,3 @@ thestig@chromium.org
 
 # For Android-specific changes:
 per-file *android*=file://components/crash/android/OWNERS
-
-# COMPONENT: Internals>CrashReporting

@@ -8,7 +8,7 @@
 #include <IOKit/IOKitLib.h>
 
 #include <map>
-#include <string>
+#include <utility>
 
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
@@ -23,12 +23,12 @@ namespace device {
 class SerialDeviceEnumeratorMac : public SerialDeviceEnumerator {
  public:
   SerialDeviceEnumeratorMac();
-  ~SerialDeviceEnumeratorMac() override;
 
-  // SerialDeviceEnumerator
-  std::vector<mojom::SerialPortInfoPtr> GetDevices() override;
-  base::Optional<base::FilePath> GetPathFromToken(
-      const base::UnguessableToken& token) override;
+  SerialDeviceEnumeratorMac(const SerialDeviceEnumeratorMac&) = delete;
+  SerialDeviceEnumeratorMac& operator=(const SerialDeviceEnumeratorMac&) =
+      delete;
+
+  ~SerialDeviceEnumeratorMac() override;
 
  private:
   static void FirstMatchCallback(void* context, io_iterator_t iterator);
@@ -37,19 +37,13 @@ class SerialDeviceEnumeratorMac : public SerialDeviceEnumerator {
   void AddDevices();
   void RemoveDevices();
 
-  std::map<base::UnguessableToken, mojom::SerialPortInfoPtr> ports_;
-  // Each IORegistry entry potentially creates two serial ports for the dialin
-  // and callout device nodes.
-  std::map<uint64_t, std::pair<base::UnguessableToken, base::UnguessableToken>>
-      entries_;
+  // Map from IORegistry entry IDs to the token used to refer to the device
+  // internally.
+  std::map<uint64_t, base::UnguessableToken> entries_;
 
   base::mac::ScopedIONotificationPortRef notify_port_;
   base::mac::ScopedIOObject<io_iterator_t> devices_added_iterator_;
   base::mac::ScopedIOObject<io_iterator_t> devices_removed_iterator_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SerialDeviceEnumeratorMac);
 };
 
 }  // namespace device

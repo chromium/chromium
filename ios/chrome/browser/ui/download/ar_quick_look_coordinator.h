@@ -30,12 +30,6 @@ enum class PresentQLPreviewController {
 // Presents QLPreviewController in order to display USDZ format 3D models.
 @interface ARQuickLookCoordinator : ChromeCoordinator
 
-// Unavailable, use -initWithBaseViewController:browser:
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_AR_QUICK_LOOK_COORDINATOR_H_

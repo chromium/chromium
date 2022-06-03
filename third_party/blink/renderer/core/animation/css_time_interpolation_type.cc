@@ -30,7 +30,7 @@ const CSSValue* CSSTimeInterpolationType::CreateCSSValue(
     const InterpolableValue& value,
     const NonInterpolableValue*,
     const StyleResolverState&) const {
-  return CSSNumericLiteralValue::Create(ToInterpolableNumber(value).Value(),
+  return CSSNumericLiteralValue::Create(To<InterpolableNumber>(value).Value(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 

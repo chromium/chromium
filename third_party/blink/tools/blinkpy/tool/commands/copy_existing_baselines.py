@@ -6,8 +6,8 @@ import logging
 
 from blinkpy.common.memoized import memoized
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
-from blinkpy.web_tests.models.test_expectations import SKIP
 from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
 
@@ -34,9 +34,12 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
 
     def _copy_existing_baseline(self, port_name, test_name, suffix):
         """Copies the baseline for the given builder to all "predecessor" directories."""
-        baseline_directory = self._tool.port_factory.get(port_name).baseline_version_dir()
-        ports = [self._port_for_primary_baseline(baseline)
-                 for baseline in self._immediate_predecessors_in_fallback(baseline_directory)]
+        baseline_directory = self._tool.port_factory.get(
+            port_name).baseline_version_dir()
+        ports = [
+            self._port_for_primary_baseline(baseline) for baseline in self.
+            _immediate_predecessors_in_fallback(baseline_directory)
+        ]
 
         old_baselines = []
         new_baselines = []
@@ -53,11 +56,13 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                 port.baseline_version_dir(),
                 self._file_name_for_expected_result(test_name, suffix))
             if self._tool.filesystem.exists(new_baseline):
-                _log.debug('Existing baseline at %s, not copying over it.', new_baseline)
+                _log.debug('Existing baseline at %s, not copying over it.',
+                           new_baseline)
                 continue
 
-            full_expectations = TestExpectations(port, tests=[test_name], include_overrides=True)
-            if SKIP in full_expectations.get_expectations(test_name):
+            full_expectations = TestExpectations(port)
+            if ResultType.Skip in full_expectations.get_expectations(
+                    test_name).results:
                 _log.debug('%s is skipped on %s.', test_name, port.name())
                 continue
             if port.skipped_due_to_smoke_tests(test_name):
@@ -71,16 +76,23 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             old_baseline = old_baselines[i]
             new_baseline = new_baselines[i]
 
-            _log.debug('Copying baseline from %s to %s.', old_baseline, new_baseline)
-            self._tool.filesystem.maybe_make_directory(self._tool.filesystem.dirname(new_baseline))
+            _log.debug('Copying baseline from %s to %s.', old_baseline,
+                       new_baseline)
+            self._tool.filesystem.maybe_make_directory(
+                self._tool.filesystem.dirname(new_baseline))
             self._tool.filesystem.copyfile(old_baseline, new_baseline)
 
     def _port_for_primary_baseline(self, baseline):
         """Returns a Port object for the given baseline directory base name."""
-        for port in [self._tool.port_factory.get(port_name) for port_name in self._tool.port_factory.all_port_names()]:
-            if self._tool.filesystem.basename(port.baseline_version_dir()) == baseline:
+        for port in [
+                self._tool.port_factory.get(port_name)
+                for port_name in self._tool.port_factory.all_port_names()
+        ]:
+            if self._tool.filesystem.basename(
+                    port.baseline_version_dir()) == baseline:
                 return port
-        raise Exception('Failed to find port for primary baseline %s.' % baseline)
+        raise Exception(
+            'Failed to find port for primary baseline %s.' % baseline)
 
     @memoized
     def _immediate_predecessors_in_fallback(self, path_to_rebaseline):
@@ -115,7 +127,9 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             try:
                 index = baseline_search_path.index(path_to_rebaseline)
                 if index:
-                    immediate_predecessors.append(self._tool.filesystem.basename(baseline_search_path[index - 1]))
+                    immediate_predecessors.append(
+                        self._tool.filesystem.basename(
+                            baseline_search_path[index - 1]))
             except ValueError:
                 # baseline_search_path.index() throws a ValueError if the item isn't in the list.
                 pass

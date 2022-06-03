@@ -13,7 +13,7 @@
 // static
 password_manager::PasswordRequirementsService*
 IOSPasswordRequirementsServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state,
+    ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
   return static_cast<password_manager::PasswordRequirementsService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));

@@ -1,8 +1,8 @@
+set noparent
+
 # Primary:
 pwnall@chromium.org
 
 # Secondary:
 cmumford@google.com
-
-# TEAM: storage-dev@chromium.org
-# COMPONENT: Internals>Storage
+mek@chromium.org

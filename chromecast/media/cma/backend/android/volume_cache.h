@@ -28,6 +28,10 @@ class SystemVolumeTableAccessApi {
 class VolumeCache {
  public:
   VolumeCache(AudioContentType type, SystemVolumeTableAccessApi* api);
+
+  VolumeCache(const VolumeCache&) = delete;
+  VolumeCache& operator=(const VolumeCache&) = delete;
+
   ~VolumeCache();
 
   // Returns the mapped and interpolated dBFS value for the given volume level,
@@ -42,8 +46,6 @@ class VolumeCache {
   const int kMaxVolumeIndex;
 
   std::vector<float> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeCache);
 };
 
 }  // namespace media

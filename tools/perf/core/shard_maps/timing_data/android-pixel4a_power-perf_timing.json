@@ -1,0 +1,14 @@
+[
+    {
+        "duration": "75.0",
+        "name": "power.mobile/browse:media:flickr_infinite_scroll:2019"
+    },
+    {
+        "duration": "112.0",
+        "name": "power.mobile/browse:social:tumblr_infinite_scroll:2018"
+    },
+    {
+        "duration": "104.0",
+        "name": "power.mobile/browse:tech:discourse_infinite_scroll:2018"
+    }
+]

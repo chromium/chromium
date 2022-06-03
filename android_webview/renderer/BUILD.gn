@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//printing/buildflags/buildflags.gni")
+
 source_set("renderer") {
   sources = [
     "aw_content_renderer_client.cc",
@@ -26,43 +28,46 @@ source_set("renderer") {
     "aw_websocket_handshake_throttle_provider.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
-    "js_java_interaction/js_binding.cc",
-    "js_java_interaction/js_binding.h",
-    "js_java_interaction/js_java_configurator.cc",
-    "js_java_interaction/js_java_configurator.h",
-    "print_render_frame_observer.cc",
-    "print_render_frame_observer.h",
   ]
 
   deps = [
     "//android_webview:generate_aw_resources",
     "//android_webview:generate_aw_strings",
     "//android_webview/common",
-    "//android_webview/common:common_mojom",
+    "//android_webview/common:mojom",
     "//base",
+    "//components/android_system_error_page",
     "//components/autofill/content/renderer",
     "//components/cdm/renderer",
     "//components/content_capture/common",
     "//components/content_capture/renderer",
+    "//components/js_injection/common",
+    "//components/js_injection/renderer",
     "//components/page_load_metrics/renderer",
-    "//components/printing/common",
-    "//components/printing/renderer",
-    "//components/safe_browsing:features",
-    "//components/safe_browsing/common",
-    "//components/safe_browsing/renderer:throttles",
+    "//components/power_scheduler",
+    "//components/resources",
+    "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/content/renderer:throttles",
+    "//components/safe_browsing/core/common",
     "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core/common/mojom",
     "//components/spellcheck:buildflags",
     "//components/spellcheck/renderer",
+    "//components/strings",
     "//components/visitedlink/renderer",
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",
-    "//gin",
     "//third_party/blink/public:blink",
     "//ui/base",
     "//url",
-    "//v8",
   ]
+
+  if (enable_basic_printing) {
+    deps += [
+      "//components/printing/common",
+      "//components/printing/renderer",
+    ]
+  }
 }

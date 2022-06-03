@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace media {
 
@@ -34,9 +34,9 @@ void FileDataSource::Abort() {}
 void FileDataSource::Read(int64_t position,
                           int size,
                           uint8_t* data,
-                          const DataSource::ReadCB& read_cb) {
+                          DataSource::ReadCB read_cb) {
   if (force_read_errors_ || !file_.IsValid()) {
-    read_cb.Run(kReadError);
+    std::move(read_cb).Run(kReadError);
     return;
   }
 
@@ -53,7 +53,7 @@ void FileDataSource::Read(int64_t position,
 
   memcpy(data, file_.data() + position, clamped_size);
   bytes_read_ += clamped_size;
-  read_cb.Run(clamped_size);
+  std::move(read_cb).Run(clamped_size);
 }
 
 bool FileDataSource::GetSize(int64_t* size_out) {

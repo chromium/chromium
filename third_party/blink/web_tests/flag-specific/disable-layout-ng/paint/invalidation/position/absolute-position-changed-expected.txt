@@ -1,17 +1,10 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow HTML",
-          "rect": [100, 500, 100, 100],
-          "reason": "chunk disappeared"
-        }
-      ],
       "transform": 1
     },
     {
@@ -27,24 +20,10 @@
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV id='absoluteDiv' class='absolute green'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 100, 100]
       ],
       "transform": 1
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [0, 600],
-      "bounds": [800, 0]
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [800, 0],
-      "bounds": [0, 600]
     }
   ],
   "transforms": [

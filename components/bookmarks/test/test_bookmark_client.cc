@@ -10,18 +10,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/notreached.h"
+#include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
+#include "components/favicon_base/favicon_types.h"
+#include "ui/gfx/image/image.h"
 
 namespace bookmarks {
 
-TestBookmarkClient::TestBookmarkClient() {}
+TestBookmarkClient::TestBookmarkClient() = default;
 
-TestBookmarkClient::~TestBookmarkClient() {}
+TestBookmarkClient::~TestBookmarkClient() = default;
 
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
@@ -42,12 +44,12 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
   return bookmark_model;
 }
 
-void TestBookmarkClient::SetManagedNodeToLoad(
-    std::unique_ptr<BookmarkPermanentNode> managed_node) {
-  managed_node_ = std::move(managed_node);
+BookmarkPermanentNode* TestBookmarkClient::EnableManagedNode() {
+  managed_node_ = BookmarkPermanentNode::CreateManagedBookmarks(/*id=*/100);
   // Keep a copy of the node in |unowned_managed_node_| for the accessor
   // functions.
   unowned_managed_node_ = managed_node_.get();
+  return unowned_managed_node_;
 }
 
 bool TestBookmarkClient::IsManagedNodeRoot(const BookmarkNode* node) {
@@ -58,12 +60,57 @@ bool TestBookmarkClient::IsAManagedNode(const BookmarkNode* node) {
   return node && node->HasAncestor(unowned_managed_node_);
 }
 
-bool TestBookmarkClient::IsPermanentNodeVisible(
-    const BookmarkPermanentNode* node) {
-  DCHECK(node->type() == BookmarkNode::BOOKMARK_BAR ||
-         node->type() == BookmarkNode::OTHER_NODE ||
-         node->type() == BookmarkNode::MOBILE || IsManagedNodeRoot(node));
-  return node->type() != BookmarkNode::MOBILE && !IsManagedNodeRoot(node);
+bool TestBookmarkClient::SimulateFaviconLoaded(const GURL& page_url,
+                                               const GURL& icon_url,
+                                               const gfx::Image& image) {
+  if (requests_per_page_url_[page_url].empty()) {
+    return false;
+  }
+
+  favicon_base::FaviconImageCallback callback =
+      std::move(requests_per_page_url_[page_url].front());
+  requests_per_page_url_[page_url].pop_front();
+
+  favicon_base::FaviconImageResult result;
+  result.image = image;
+  result.icon_url = icon_url;
+  std::move(callback).Run(result);
+  return true;
+}
+
+bool TestBookmarkClient::SimulateEmptyFaviconLoaded(const GURL& page_url) {
+  if (requests_per_page_url_[page_url].empty()) {
+    return false;
+  }
+
+  favicon_base::FaviconImageCallback callback =
+      std::move(requests_per_page_url_[page_url].front());
+  requests_per_page_url_[page_url].pop_front();
+
+  std::move(callback).Run(favicon_base::FaviconImageResult());
+  return true;
+}
+
+bool TestBookmarkClient::HasFaviconLoadTasks() const {
+  return !requests_per_page_url_.empty();
+}
+
+bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
+    BookmarkNode::Type type) {
+  switch (type) {
+    case bookmarks::BookmarkNode::URL:
+      NOTREACHED();
+      return false;
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+    case bookmarks::BookmarkNode::OTHER_NODE:
+      return true;
+    case bookmarks::BookmarkNode::FOLDER:
+    case bookmarks::BookmarkNode::MOBILE:
+      return false;
+  }
+
+  NOTREACHED();
+  return false;
 }
 
 void TestBookmarkClient::RecordAction(const base::UserMetricsAction& action) {
@@ -94,6 +141,15 @@ std::string TestBookmarkClient::EncodeBookmarkSyncMetadata() {
 void TestBookmarkClient::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {}
+
+base::CancelableTaskTracker::TaskId
+TestBookmarkClient::GetFaviconImageForPageURL(
+    const GURL& page_url,
+    favicon_base::FaviconImageCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  requests_per_page_url_[page_url].push_back(std::move(callback));
+  return next_task_id_++;
+}
 
 // static
 std::unique_ptr<BookmarkPermanentNode> TestBookmarkClient::LoadManagedNode(

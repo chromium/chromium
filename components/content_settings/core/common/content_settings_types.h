@@ -13,7 +13,7 @@
 // When adding/removing values from this enum, be sure to update the
 // kHistogramValue array in content_settings.cc as well.
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class ContentSettingsType : int32_t {
   // "DEFAULT" is only used as an argument to the Content Settings Window
   // opener; there it means "whatever was last shown".
@@ -21,7 +21,6 @@ enum class ContentSettingsType : int32_t {
   COOKIES = 0,
   IMAGES,
   JAVASCRIPT,
-  PLUGINS,
 
   // This setting governs both popups and unwanted redirects like tab-unders and
   // framebusting.
@@ -96,10 +95,6 @@ enum class ContentSettingsType : int32_t {
   // technology.
   ACCESSIBILITY_EVENTS,
 
-  // Used to store whether the user has ever changed the Flash permission for
-  // a site.
-  PLUGINS_DATA,
-
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,
 
@@ -130,6 +125,8 @@ enum class ContentSettingsType : int32_t {
   // Nothing is stored in this setting at present. Please refer to
   // PeriodicBackgroundSyncPermissionContext for details on how this permission
   // is ascertained.
+  // This content setting is not registered because it does not require access
+  // to any existing providers.
   PERIODIC_BACKGROUND_SYNC,
 
   // Content setting which stores whether to allow sites to ask for permission
@@ -149,18 +146,20 @@ enum class ContentSettingsType : int32_t {
   WAKE_LOCK_SCREEN,
   WAKE_LOCK_SYSTEM,
 
-  // Legacy SameSite cookie behavior. This disables SameSiteByDefaultCookies
-  // and CookiesWithoutSameSiteMustBeSecure, and forces the legacy behavior
-  // where cookies that don't specify SameSite are treated as SameSite=None and
-  // SameSite=None cookies are not required to be Secure.
+  // Legacy SameSite cookie behavior. This disables SameSite=Lax-by-default,
+  // SameSite=None requires Secure, and Schemeful Same-Site, forcing the
+  // legacy behavior wherein 1) cookies that don't specify SameSite are treated
+  // as SameSite=None, 2) SameSite=None cookies are not required to be Secure,
+  // and 3) schemeful same-site is not active.
+  //
   // This will also be used to revert to legacy behavior when future changes
   // in cookie handling are introduced.
   LEGACY_COOKIE_ACCESS,
 
   // Content settings which stores whether to allow sites to ask for permission
-  // to save changes to an original file selected by the user through the Native
-  // File System API.
-  NATIVE_FILE_SYSTEM_WRITE_GUARD,
+  // to save changes to an original file selected by the user through the
+  // File System Access API.
+  FILE_SYSTEM_WRITE_GUARD,
 
   // Content settings for installed web apps that browsing history may be
   // inferred from e.g. last update check timestamp.
@@ -193,6 +192,105 @@ enum class ContentSettingsType : int32_t {
   // the WebXr Device API.
   VR,
   AR,
+
+  // Content setting which stores whether to allow site to open and read files
+  // and directories selected through the File System Access API.
+  FILE_SYSTEM_READ_GUARD,
+
+  // Access to first party storage in a third-party context. Exceptions are
+  // scoped to the combination of requesting/top-level origin, and are managed
+  // through the Storage Access API. For the time being, this content setting
+  // exists in parallel to third-party cookie rules stored in COOKIES.
+  // TODO(https://crbug.com/989663): Reconcile the two.
+  STORAGE_ACCESS,
+
+  // Content setting which stores whether to allow a site to control camera
+  // movements. It does not give access to camera.
+  CAMERA_PAN_TILT_ZOOM,
+
+  // Content setting for Screen Enumeration and Window Placement functionality.
+  // Permits access to information about the screens, like size and position.
+  // Permits creating and placing windows across the set of connected screens.
+  WINDOW_PLACEMENT,
+
+  // Stores whether to allow insecure websites to make private network requests.
+  // See also: https://wicg.github.io/cors-rfc1918
+  // Set through enterprise policies only.
+  INSECURE_PRIVATE_NETWORK,
+
+  // Content setting which stores whether or not a site can access low-level
+  // locally installed font data using the Font Access API.
+  FONT_ACCESS,
+
+  // Stores per-origin state for permission auto-revocation (for all permission
+  // types).
+  PERMISSION_AUTOREVOCATION_DATA,
+
+  // Stores per-origin state of the most recently selected directory for the use
+  // by the File System Access API.
+  FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+
+  // Controls access to the getDisplayMedia API when {preferCurrentTab: true}
+  // is specified.
+  // TODO(crbug.com/1150788): Also apply this when getDisplayMedia() is called
+  // without specifying {preferCurrentTab: true}.
+  // No values are stored for this type, this is solely needed to be able to
+  // register the PermissionContext.
+  DISPLAY_CAPTURE,
+
+  // Register file-type associations with the operating system and obtain
+  // read-only access to files that the user chooses to open with this
+  // installed web application from the system file manager. This setting has
+  // no effect on the File System API, <input type="file">, or the ability to
+  // access files through drag & drop or clipboard paste operations.
+  FILE_HANDLING,
+
+  // Website setting to store permissions metadata granted to paths on the local
+  // file system via the File System Access API. |FILE_SYSTEM_WRITE_GUARD| is
+  // the corresponding "guard" setting.
+  FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+
+  // Stores a grant for the browser to intermediate or allow without
+  // restriction sharing of identity information by an identity provider to
+  // specified relying parties. The setting is associated with the identity
+  // provider's origin.
+  // This is managed by WebID.
+  FEDERATED_IDENTITY_SHARING,
+
+  // Stores a grant that allows a relying party to send a request for identity
+  // information to specified identity providers, potentially through any
+  // anti-tracking measures that would otherwise prevent it. This setting is
+  // associated with the relying party's origin.
+  FEDERATED_IDENTITY_REQUEST,
+
+  // Whether to use the v8 optimized JIT for running JavaScript on the page.
+  JAVASCRIPT_JIT,
+
+  // Content setting which stores user decisions to allow loading a site over
+  // HTTP. Entries are added by hostname when a user bypasses the HTTPS-First
+  // Mode interstitial warning when a site does not support HTTPS. Allowed hosts
+  // are exact hostname matches -- subdomains of a host on the allowlist must be
+  // separately allowlisted.
+  HTTP_ALLOWED,
+
+  // Stores metadata related to form fill, such as e.g. whether user data was
+  // autofilled on a specific website.
+  FORMFILL_METADATA,
+
+  // Setting to indicate that there is an active federated sign-in session
+  // between a specified relying party and a specified identity provider for
+  // a specified account. When this is present it allows access to session
+  // management capabilities between the sites. This setting is associated
+  // with the relying party's origin.
+  FEDERATED_IDENTITY_ACTIVE_SESSION,
+
+  // Setting to indicate whether Chrome should automatically apply darkening to
+  // web content.
+  AUTO_DARK_WEB_CONTENT,
+
+  // Setting to indicate whether Chrome should request the desktop view of a
+  // site instead of the mobile one.
+  REQUEST_DESKTOP_SITE,
 
   NUM_TYPES,
 };

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect_init.h"
 
 namespace blink {
 
@@ -30,14 +30,24 @@ ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
   return result.GetScriptValue();
 }
 
+DOMRectReadOnly* DOMRectReadOnly::FromRect(const gfx::Rect& rect) {
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
+}
+
+DOMRectReadOnly* DOMRectReadOnly::FromRectF(const gfx::RectF& rect) {
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
+}
+
 DOMRectReadOnly* DOMRectReadOnly::FromIntRect(const IntRect& rect) {
-  return MakeGarbageCollected<DOMRectReadOnly>(rect.X(), rect.Y(), rect.Width(),
-                                               rect.Height());
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
 }
 
 DOMRectReadOnly* DOMRectReadOnly::FromFloatRect(const FloatRect& rect) {
-  return MakeGarbageCollected<DOMRectReadOnly>(rect.X(), rect.Y(), rect.Width(),
-                                               rect.Height());
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
 }
 
 DOMRectReadOnly* DOMRectReadOnly::fromRect(const DOMRectInit* other) {

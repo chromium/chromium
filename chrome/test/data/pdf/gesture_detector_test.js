@@ -2,176 +2,171 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GestureDetector} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/gesture_detector.js';
+import {GestureDetector, PinchEventDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {createWheelEvent} from './test_util.js';
 
 chrome.test.runTests(function() {
   'use strict';
 
-  class StubElement {
-    constructor() {
-      this.listeners = new Map([
-        ['touchstart', []],
-        ['touchmove', []],
-        ['touchend', []],
-        ['touchcancel', []],
-        ['wheel', []],
-      ]);
-    }
-
-    addEventListener(type, listener, options) {
-      if (this.listeners.has(type)) {
-        this.listeners.get(type).push({listener: listener, options: options});
-      }
-    }
-
-    sendEvent(event) {
-      for (const l of this.listeners.get(event.type)) {
-        l.listener(event);
-      }
-    }
-  }
-
-  class MockTouchEvent {
-    constructor(type, touches) {
-      this.type = type;
-      this.touches = touches;
-      this.defaultPrevented = false;
-    }
-
-    preventDefault() {
-      this.defaultPrevented = true;
-    }
-  }
-
-  class MockWheelEvent {
-    constructor(deltaY, position, ctrlKey) {
-      this.type = 'wheel';
-      this.deltaY = deltaY;
-      this.clientX = position.clientX;
-      this.clientY = position.clientY;
-      this.ctrlKey = ctrlKey;
-      this.defaultPrevented = false;
-    }
-
-    preventDefault() {
-      this.defaultPrevented = true;
-    }
-  }
-
   class PinchListener {
+    /** @param {!GestureDetector} gestureDetector */
     constructor(gestureDetector) {
+      /** @type {?CustomEvent<!PinchEventDetail>} */
       this.lastEvent = null;
-      gestureDetector.addEventListener('pinchstart', this.onPinch_.bind(this));
-      gestureDetector.addEventListener('pinchupdate', this.onPinch_.bind(this));
-      gestureDetector.addEventListener('pinchend', this.onPinch_.bind(this));
+
+      gestureDetector.getEventTarget().addEventListener(
+          'pinchstart',
+          e => this.onPinch_(
+              /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+      gestureDetector.getEventTarget().addEventListener(
+          'pinchupdate',
+          e => this.onPinch_(
+              /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+      gestureDetector.getEventTarget().addEventListener(
+          'pinchend',
+          e => this.onPinch_(
+              /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
     }
 
+    /**
+     * @param {!CustomEvent<!PinchEventDetail>} pinchEvent
+     * @private
+     */
     onPinch_(pinchEvent) {
       this.lastEvent = pinchEvent;
     }
   }
 
+  /** @type {!EventTarget} */
+  let stubElement;
+
+  /**
+   * @param {string} type
+   * @param {!Array<{
+   *   clientX: (number|undefined),
+   *   clientY: (number|undefined)
+   * }>} touches
+   * @return {!TouchEvent}
+   */
+  function createTouchEvent(type, touches) {
+    return new TouchEvent(type, {
+      touches: touches.map(t => {
+        return new Touch(
+            /** @type {!TouchInitDict} */ (
+                Object.assign({identifier: 0, target: stubElement}, t)));
+      }),
+      // Necessary for preventDefault() to work.
+      cancelable: true,
+    });
+  }
+
   return [
     function testPinchZoomIn() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
 
-      stubElement.sendEvent(new MockTouchEvent('touchstart', [
+      stubElement.dispatchEvent(createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 2},
       ]));
+      chrome.test.assertEq('pinchstart', pinchListener.lastEvent.type);
       chrome.test.assertEq(
-          {type: 'pinchstart', center: {x: 0, y: 1}}, pinchListener.lastEvent);
+          {center: {x: 0, y: 1}}, pinchListener.lastEvent.detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchmove', [
+      stubElement.dispatchEvent(createTouchEvent('touchmove', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 4},
       ]));
+      chrome.test.assertEq('pinchupdate', pinchListener.lastEvent.type);
       chrome.test.assertEq(
           {
-            type: 'pinchupdate',
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 2,
             center: {x: 0, y: 2}
           },
-          pinchListener.lastEvent);
+          pinchListener.lastEvent.detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchmove', [
+      stubElement.dispatchEvent(createTouchEvent('touchmove', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 8},
       ]));
+      chrome.test.assertEq('pinchupdate', pinchListener.lastEvent.type);
       chrome.test.assertEq(
           {
-            type: 'pinchupdate',
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 4,
             center: {x: 0, y: 4}
           },
-          pinchListener.lastEvent);
+          pinchListener.lastEvent.detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchend', []));
+      stubElement.dispatchEvent(createTouchEvent('touchend', []));
+      chrome.test.assertEq('pinchend', pinchListener.lastEvent.type);
       chrome.test.assertEq(
-          {type: 'pinchend', startScaleRatio: 4, center: {x: 0, y: 4}},
-          pinchListener.lastEvent);
+          {startScaleRatio: 4, center: {x: 0, y: 4}},
+          pinchListener.lastEvent.detail);
 
       chrome.test.succeed();
     },
 
     function testPinchZoomInAndBackOut() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
 
-      stubElement.sendEvent(new MockTouchEvent('touchstart', [
+      stubElement.dispatchEvent(createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 2},
       ]));
-      chrome.test.assertEq(
-          {type: 'pinchstart', center: {x: 0, y: 1}}, pinchListener.lastEvent);
+      let {type, detail} = pinchListener.lastEvent;
+      chrome.test.assertEq('pinchstart', type);
+      chrome.test.assertEq({center: {x: 0, y: 1}}, detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchmove', [
+      stubElement.dispatchEvent(createTouchEvent('touchmove', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 4},
       ]));
+      ({type, detail} = pinchListener.lastEvent);
+      chrome.test.assertEq('pinchupdate', type);
       chrome.test.assertEq(
           {
-            type: 'pinchupdate',
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 2,
             center: {x: 0, y: 2}
           },
-          pinchListener.lastEvent);
+          detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchmove', [
+      stubElement.dispatchEvent(createTouchEvent('touchmove', [
         {clientX: 0, clientY: 0},
         {clientX: 0, clientY: 2},
       ]));
       // This should be part of the same gesture as an update.
       // A change in direction should not end the gesture and start a new one.
+      ({type, detail} = pinchListener.lastEvent);
+      chrome.test.assertEq('pinchupdate', type);
       chrome.test.assertEq(
           {
-            type: 'pinchupdate',
             scaleRatio: 0.5,
             direction: 'out',
             startScaleRatio: 1,
             center: {x: 0, y: 1}
           },
-          pinchListener.lastEvent);
+          detail);
 
-      stubElement.sendEvent(new MockTouchEvent('touchend', []));
-      chrome.test.assertEq(
-          {type: 'pinchend', startScaleRatio: 1, center: {x: 0, y: 1}},
-          pinchListener.lastEvent);
+      stubElement.dispatchEvent(createTouchEvent('touchend', []));
+      ({type, detail} = pinchListener.lastEvent);
+      chrome.test.assertEq('pinchend', type);
+      chrome.test.assertEq({startScaleRatio: 1, center: {x: 0, y: 1}}, detail);
 
       chrome.test.succeed();
     },
 
-    function testZoomWithWheel() {
-      const stubElement = new StubElement();
+    async function testZoomWithWheel() {
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
 
@@ -181,11 +176,13 @@ chrome.test.runTests(function() {
       class PinchSequenceListener {
         constructor(gestureDetector) {
           this.seenBegin = false;
-          gestureDetector.addEventListener('pinchstart', function() {
-            this.seenBegin = true;
-          }.bind(this));
+          gestureDetector.getEventTarget().addEventListener(
+              'pinchstart', function() {
+                this.seenBegin = true;
+              }.bind(this));
           this.endPromise = new Promise(function(resolve) {
-            gestureDetector.addEventListener('pinchend', resolve);
+            gestureDetector.getEventTarget().addEventListener(
+                'pinchend', resolve);
           });
         }
       }
@@ -194,54 +191,54 @@ chrome.test.runTests(function() {
       const scale = 1.23;
       const deltaY = -(100.0 * Math.log(scale));
       const position = {clientX: 12, clientY: 34};
-      stubElement.sendEvent(new MockWheelEvent(deltaY, position, true));
+      stubElement.dispatchEvent(createWheelEvent(deltaY, position, true));
 
       chrome.test.assertTrue(pinchSequenceListener.seenBegin);
 
-      const lastEvent = pinchListener.lastEvent;
-      chrome.test.assertEq('pinchupdate', lastEvent.type);
-      chrome.test.assertTrue(Math.abs(lastEvent.scaleRatio - scale) < 0.001);
-      chrome.test.assertEq('in', lastEvent.direction);
-      chrome.test.assertTrue(
-          Math.abs(lastEvent.startScaleRatio - scale) < 0.001);
+      const {type, detail} = pinchListener.lastEvent;
+      chrome.test.assertEq('pinchupdate', type);
+      chrome.test.assertTrue(Math.abs(detail.scaleRatio - scale) < 0.001);
+      chrome.test.assertEq('in', detail.direction);
+      chrome.test.assertTrue(Math.abs(detail.startScaleRatio - scale) < 0.001);
       chrome.test.assertEq(
-          {x: position.clientX, y: position.clientY}, lastEvent.center);
+          {x: position.clientX, y: position.clientY}, detail.center);
 
-      pinchSequenceListener.endPromise.then(chrome.test.succeed);
+      await pinchSequenceListener.endPromise;
+
+      chrome.test.succeed();
     },
 
     function testIgnoreTouchScrolling() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
 
-      const touchScrollStartEvent = new MockTouchEvent('touchstart', [
+      const touchScrollStartEvent = createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
       ]);
-      stubElement.sendEvent(touchScrollStartEvent);
+      stubElement.dispatchEvent(touchScrollStartEvent);
       chrome.test.assertEq(null, pinchListener.lastEvent);
       chrome.test.assertFalse(touchScrollStartEvent.defaultPrevented);
 
-      stubElement.sendEvent(new MockTouchEvent('touchmove', [
+      stubElement.dispatchEvent(createTouchEvent('touchmove', [
         {clientX: 0, clientY: 1},
       ]));
       chrome.test.assertEq(null, pinchListener.lastEvent);
 
-      stubElement.sendEvent(new MockTouchEvent('touchend', []));
+      stubElement.dispatchEvent(createTouchEvent('touchend', []));
       chrome.test.assertEq(null, pinchListener.lastEvent);
 
       chrome.test.succeed();
     },
 
     function testIgnoreWheelScrolling() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
 
       // A wheel event where ctrlKey is false does not indicate zooming.
-      const scrollingWheelEvent =
-          new MockWheelEvent(1, {clientX: 0, clientY: 0}, false);
-      stubElement.sendEvent(scrollingWheelEvent);
+      stubElement.dispatchEvent(
+          createWheelEvent(1, {clientX: 0, clientY: 0}, false));
       chrome.test.assertEq(null, pinchListener.lastEvent);
 
       chrome.test.succeed();
@@ -257,37 +254,27 @@ chrome.test.runTests(function() {
     },
 
     function testPreventNativeZoomFromWheel() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
-
-      // Ensure that the wheel listener is not passive, otherwise the call to
-      // preventDefault will be ignored. Since listeners could default to being
-      // passive, we must set the value explicitly.
-      for (const l of stubElement.listeners.get('wheel')) {
-        const options = l.options;
-        chrome.test.assertTrue(
-            !!options && typeof (options.passive) == 'boolean');
-        chrome.test.assertFalse(options.passive);
-      }
 
       // We should not preventDefault a wheel event where ctrlKey is false as
       // that would prevent scrolling, not zooming.
       const scrollingWheelEvent =
-          new MockWheelEvent(1, {clientX: 0, clientY: 0}, false);
-      stubElement.sendEvent(scrollingWheelEvent);
+          createWheelEvent(1, {clientX: 0, clientY: 0}, false);
+      stubElement.dispatchEvent(scrollingWheelEvent);
       chrome.test.assertFalse(scrollingWheelEvent.defaultPrevented);
 
       const zoomingWheelEvent =
-          new MockWheelEvent(1, {clientX: 0, clientY: 0}, true);
-      stubElement.sendEvent(zoomingWheelEvent);
+          createWheelEvent(1, {clientX: 0, clientY: 0}, true);
+      stubElement.dispatchEvent(zoomingWheelEvent);
       chrome.test.assertTrue(zoomingWheelEvent.defaultPrevented);
 
       chrome.test.succeed();
     },
 
     function testWasTwoFingerTouch() {
-      const stubElement = new StubElement();
+      stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
 
 
@@ -295,14 +282,14 @@ chrome.test.runTests(function() {
           gestureDetector.wasTwoFingerTouch(),
           'Should not have two finger touch before first touch event.');
 
-      stubElement.sendEvent(new MockTouchEvent('touchstart', [
+      stubElement.dispatchEvent(createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
       ]));
       chrome.test.assertFalse(
           gestureDetector.wasTwoFingerTouch(),
           'Should not have a two finger touch with one touch.');
 
-      stubElement.sendEvent(new MockTouchEvent('touchstart', [
+      stubElement.dispatchEvent(createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
         {clientX: 2, clientY: 2},
       ]));
@@ -311,12 +298,12 @@ chrome.test.runTests(function() {
           'Should have a two finger touch.');
 
       // Make sure we keep |wasTwoFingerTouch| true after the end event.
-      stubElement.sendEvent(new MockTouchEvent('touchend', []));
+      stubElement.dispatchEvent(createTouchEvent('touchend', []));
       chrome.test.assertTrue(
           gestureDetector.wasTwoFingerTouch(),
           'Should maintain two finger touch after touchend.');
 
-      stubElement.sendEvent(new MockTouchEvent('touchstart', [
+      stubElement.dispatchEvent(createTouchEvent('touchstart', [
         {clientX: 0, clientY: 0},
         {clientX: 2, clientY: 2},
         {clientX: 4, clientY: 4},

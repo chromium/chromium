@@ -20,9 +20,19 @@ namespace {
 const char* kFlatbufferSchemaExpected = R"(
 include "components/url_pattern_index/flat/url_pattern_index.fbs";
 namespace extensions.declarative_net_request.flat;
+enum ActionType : ubyte {
+  block,
+  allow,
+  redirect,
+  upgrade_scheme,
+  modify_headers,
+  allow_all_requests,
+  count
+}
 table QueryKeyValue {
   key : string (required);
   value : string (required);
+  replace_only: bool = false;
 }
 table UrlTransform {
    scheme : string;
@@ -42,35 +52,35 @@ table UrlTransform {
 }
 table UrlRuleMetadata {
   id : uint (key);
+  action : ActionType;
   redirect_url : string;
   transform : UrlTransform;
+  request_headers: [ModifyHeaderInfo];
+  response_headers: [ModifyHeaderInfo];
 }
-enum ActionIndex : ubyte {
-  block = 0,
-  allow,
-  redirect,
-  upgrade_scheme,
-  remove_cookie_header,
-  remove_referer_header,
-  remove_set_cookie_header,
+table EmbedderConditions {
+  tab_ids_included : [int];
+  tab_ids_excluded : [int];
+}
+enum IndexType : ubyte {
+  before_request_except_allow_all_requests = 0,
+  allow_all_requests,
+  modify_headers,
   count
 }
-enum ActionType : ubyte {
-  block,
-  allow,
-  redirect,
-  upgrade_scheme,
-  remove_headers
+enum HeaderOperation : ubyte {
+  append,
+  set,
+  remove
 }
-enum RemoveHeaderType : ubyte (bit_flags) {
-  cookie,
-  referer,
-  set_cookie
+table ModifyHeaderInfo {
+  operation: HeaderOperation;
+  header: string;
+  value: string;
 }
 table RegexRule {
   url_rule: url_pattern_index.flat.UrlRule;
   action_type: ActionType;
-  remove_headers_mask: ubyte;
   regex_substitution: string;
 }
 table ExtensionIndexedRuleset {
@@ -144,7 +154,7 @@ TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   EXPECT_EQ(StripCommentsAndWhitespace(kFlatbufferSchemaExpected),
             StripCommentsAndWhitespace(flatbuffer_schema))
       << "Schema change detected; update this test and the schema version.";
-  EXPECT_EQ(13, GetIndexedRulesetFormatVersionForTesting())
+  EXPECT_EQ(26, GetIndexedRulesetFormatVersionForTesting())
       << "Update this test if you update the schema version.";
 }
 

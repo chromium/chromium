@@ -1,8 +1,8 @@
 <html>
 <script>
-function dragElement(srcElement, gx, gy, deltaX, deltaY) {
-    var x = gx + srcElement.offsetLeft + 7;
-    var y = gy + srcElement.offsetTop + 7;
+function dragElement(srcElement, deltaX, deltaY) {
+    var x = srcElement.offsetLeft;
+    var y = srcElement.offsetTop;
     eventSender.mouseMoveTo(x, y);
     eventSender.mouseDown();
     eventSender.leapForward(100);
@@ -12,9 +12,14 @@ function dragElement(srcElement, gx, gy, deltaX, deltaY) {
 
 window.ondragend = function() { window.parent.finishUp(); };
 
-function test(x, y) {
-    dragElement(document.getElementById('anchor'), x, y, 50, 50);
-    testRunner.notifyDone();
+function test() {
+  // Stash the parent so we can use it after |window| is gone.
+  var w = window.parent;
+  // This does a drag and drop, which will delete this frame when the
+  // drag ends, via the ondragend handler above.
+  dragElement(document.getElementById('anchor'), 50, 50);
+  // End the test through the parent.
+  w.testRunner.notifyDone();
 }
 </script>
 <body>

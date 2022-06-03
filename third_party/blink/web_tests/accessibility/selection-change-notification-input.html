@@ -1,56 +1,46 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-</head>
-<body id="static_eventTarget">
+<script src="../resources/run-after-layout-and-paint.js"></script>
 
-<input id="input" value="input">
+<input autofocus id="input" value="input">
 
-<div id="console"></div>
 <script>
-window.jsTestIsAsync = true;
+'use strict';
 
-async_test((t) => {
-    // This forces building the accessibility tree, because selection change
-    // events only fire on elements that already exist.
-    accessibilityController.accessibleElementById('dummy');
+async_test_after_layout_and_paint((t) => {
+  const inputElement = document.getElementById('input');
+  const axRootElement = accessibilityController.rootElement;
+  const axInputElement = accessibilityController.accessibleElementById('input');
 
-    var inputElement = document.getElementById('input');
-    var axRootElement = accessibilityController.rootElement;
-    var axInputElement = accessibilityController.accessibleElementById('input');
-    inputElement.focus();
+  let gotDocumentSelectionChanged = false;
+  let gotSelectedTextChanged = false;
+  const succeedIfDone = t.step_func(() => {
+    if (gotDocumentSelectionChanged && gotSelectedTextChanged)
+      t.done();
+  });
 
-    var gotDocumentSelectionChanged = false;
-    var gotSelectedTextChanged = false;
-    succeedIfDone = t.step_func(() => {
-        if (gotDocumentSelectionChanged && gotSelectedTextChanged)
-            t.done();
-    });
+  axRootElement.setNotificationListener(function(notification, intents) {
+    if (notification == 'DocumentSelectionChanged') {
+      assert_array_equals(intents,
+                          ['AXEventIntent(setSelection,none,character,forward)']);
+      gotDocumentSelectionChanged = true;
+      axRootElement.unsetNotificationListener();
+      succeedIfDone();
+    }
+  });
 
-    axRootElement.addNotificationListener(function(notification) {
-        if (notification == 'DocumentSelectionChanged') {
-            console.log('Got DocumentSelectionChanged notification on root element.');
-            gotDocumentSelectionChanged = true;
-            axRootElement.removeNotificationListener();
-            succeedIfDone();
-        }
-    });
+  axInputElement.setNotificationListener(function(notification, intents) {
+    if (notification == 'SelectedTextChanged') {
+      assert_array_equals(intents,
+                          ['AXEventIntent(setSelection,none,character,forward)']);
+      gotSelectedTextChanged = true;
+      axInputElement.unsetNotificationListener();
+      succeedIfDone();
+    }
+  });
 
-    axInputElement.addNotificationListener(function(notification) {
-        if (notification == 'SelectedTextChanged') {
-            console.log('Got SelectedTextChanged notification on input element.');
-            gotSelectedTextChanged = true;
-            axInputElement.removeNotificationListener();
-            succeedIfDone();
-        }
-    });
-
-    inputElement.setSelectionRange(0, 1);
-}, "Tests that a 'selected text changed' notification fires on an input element when the user moves the cursor.");
+  inputElement.setSelectionRange(0, 1);
+});
 
 </script>
-
-</body>
-</html>

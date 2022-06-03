@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.view.View
+++++++android.view.View name='1.'
+++++++android.view.View name='2.'
+++android.view.View focusable name='3. 4.'
+++++android.view.View
+++++++android.view.View
+++++++++android.view.View name='3.'
+++++++++android.view.View name='4.'

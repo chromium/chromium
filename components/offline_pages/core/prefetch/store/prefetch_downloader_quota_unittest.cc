@@ -97,21 +97,21 @@ TEST_F(PrefetchDownloaderQuotaTest, SetQuotaToMoreThanMaximum) {
 TEST_F(PrefetchDownloaderQuotaTest, CheckQuotaForHalfDay) {
   // Start with no quota, and wait for half a day, we should have half of quota.
   EXPECT_TRUE(store_util()->SetPrefetchQuota(0));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(12));
+  store_util()->clock()->Advance(base::Hours(12));
   EXPECT_EQ(PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 2,
             store_util()->GetPrefetchQuota());
 
   // Now start with quota set to 1/4. Expecting 3/4 of quota.
   EXPECT_TRUE(store_util()->SetPrefetchQuota(
       PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 4));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(12));
+  store_util()->clock()->Advance(base::Hours(12));
   EXPECT_EQ(3 * PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 4,
             store_util()->GetPrefetchQuota());
 
   // Now start with quota set to 1/2. Expects full quota.
   EXPECT_TRUE(store_util()->SetPrefetchQuota(
       PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 2));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(12));
+  store_util()->clock()->Advance(base::Hours(12));
   EXPECT_EQ(PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes,
             store_util()->GetPrefetchQuota());
 
@@ -119,7 +119,7 @@ TEST_F(PrefetchDownloaderQuotaTest, CheckQuotaForHalfDay) {
   // maximum.
   EXPECT_TRUE(store_util()->SetPrefetchQuota(
       3 * PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes / 4));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(12));
+  store_util()->clock()->Advance(base::Hours(12));
   EXPECT_EQ(PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes,
             store_util()->GetPrefetchQuota());
 }
@@ -127,21 +127,21 @@ TEST_F(PrefetchDownloaderQuotaTest, CheckQuotaForHalfDay) {
 // This test deals with small and extreme time change scenarios.
 TEST_F(PrefetchDownloaderQuotaTest, CheckQuotaAfterTimeChange) {
   EXPECT_TRUE(store_util()->SetPrefetchQuota(0));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(-1));
+  store_util()->clock()->Advance(base::Hours(-1));
   EXPECT_EQ(0, store_util()->GetPrefetchQuota());
 
   EXPECT_TRUE(store_util()->SetPrefetchQuota(
       PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes));
-  store_util()->clock()->Advance(base::TimeDelta::FromHours(1));
+  store_util()->clock()->Advance(base::Hours(1));
   EXPECT_EQ(PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes,
             store_util()->GetPrefetchQuota());
 
   // When going back in time, we get a situation where quota would be negative,
   // we detect it and write back a value of 0 with that date.
-  store_util()->clock()->Advance(base::TimeDelta::FromDays(-365));
+  store_util()->clock()->Advance(base::Days(-365));
   EXPECT_EQ(0, store_util()->GetPrefetchQuota());
   // Above implies that after another day our quota is back to full daily max.
-  store_util()->clock()->Advance(base::TimeDelta::FromDays(1));
+  store_util()->clock()->Advance(base::Days(1));
   EXPECT_EQ(PrefetchDownloaderQuota::kDefaultMaxDailyQuotaBytes,
             store_util()->GetPrefetchQuota());
 }

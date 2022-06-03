@@ -3,17 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
-jumbo_static_library("browser") {
+static_library("browser") {
   sources = [
     "content_settings_default_provider.cc",
     "content_settings_default_provider.h",
-    "content_settings_details.cc",
-    "content_settings_details.h",
-    "content_settings_ephemeral_provider.cc",
-    "content_settings_ephemeral_provider.h",
     "content_settings_global_value_map.cc",
     "content_settings_global_value_map.h",
     "content_settings_info.cc",
@@ -34,14 +29,17 @@ jumbo_static_library("browser") {
     "content_settings_registry.h",
     "content_settings_rule.cc",
     "content_settings_rule.h",
-    "content_settings_usages_state.cc",
-    "content_settings_usages_state.h",
+    "content_settings_type_set.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
     "cookie_settings.cc",
     "cookie_settings.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
+    "private_network_settings.cc",
+    "private_network_settings.h",
+    "uma_util.cc",
+    "uma_util.h",
     "user_modifiable_provider.h",
     "website_settings_info.cc",
     "website_settings_info.h",
@@ -51,6 +49,7 @@ jumbo_static_library("browser") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
@@ -58,7 +57,9 @@ jumbo_static_library("browser") {
     "//components/url_formatter",
     "//extensions/buildflags",
     "//net",
+    "//services/network/public/mojom",
     "//services/preferences/public/cpp",
+    "//services/tracing/public/cpp",
     "//url",
   ]
 
@@ -70,23 +71,23 @@ jumbo_static_library("browser") {
     sources += [
       "cookie_settings_policy_handler.cc",
       "cookie_settings_policy_handler.h",
+      "insecure_private_network_policy_handler.cc",
+      "insecure_private_network_policy_handler.h",
     ]
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//third_party/blink/public/common:headers",
     ]
   }
 
-  configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_settings_ephemeral_provider_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
     "content_settings_rule_unittest.cc",
@@ -103,11 +104,13 @@ jumbo_source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/sync_preferences:test_support",
     "//extensions/buildflags",
     "//net",
@@ -123,6 +126,7 @@ jumbo_source_set("unit_tests") {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser:test_support",
+      "//third_party/blink/public/common:headers",
     ]
   }
 }

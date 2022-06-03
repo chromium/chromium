@@ -4,7 +4,7 @@
 
 #include "remoting/base/rate_counter.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace remoting {
 

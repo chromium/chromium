@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 executable("adb_reboot") {
-  sources = [
-    "adb_reboot.c",
-  ]
+  sources = [ "adb_reboot.c" ]
 }

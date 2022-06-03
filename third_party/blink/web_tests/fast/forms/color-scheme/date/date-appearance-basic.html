@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Date: <input type="date" /></li>
+</ul>
+
+<!-- disabled, readonly -->
+<ul>
+  <li>Date disabled: <input type="date" disabled/></li>
+  <li>Date readonly: <input type="date" readonly/></li>
+</ul>
+
+<!-- RTL -->
+<ul>
+  <li>Date RTL: <input type="date" value="2019-02-14" dir="rtl"/></li>
+</ul>
+
+<!-- font-size, font-weight -->
+<ul>
+  <li>Date font-size, font-weight: <input type="date" value="2019-02-14" style="font-size: 36px; font-weight: bold;"/> </li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Date hover: <input type="date" id="hoverTarget" value="2019-02-14"/></li>
+</ul>
+
+<!-- small width -->
+<ul>
+  <li>Date width: 10px: <input type="date" value="2019-02-14" style="width: 10px;"/> </li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Date zoom: 1.5: <input type="date" style="zoom: 1.5;"/></li>
+  <li>Date zoom: 3: <input type="date" style="zoom: 3;"/></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

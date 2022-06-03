@@ -1,9 +1,0 @@
-See the documentation at
-    http://code.google.com/chrome/webstore/docs/get_started.html
-for instructions on how to use these files.
-
-"lib" contains the necessary OAuth and OpenID libraries to talk to the Chrome
-Web Store Licensing API and Google's OpenID endpoint.
-
-To "index.php", replace APP_ID, TOKEN, and TOKEN_SECRET with your app's id, your
-developer OAuth access token, and its token secret, respectively.

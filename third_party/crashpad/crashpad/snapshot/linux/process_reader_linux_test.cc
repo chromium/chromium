@@ -31,12 +31,13 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
+#include "snapshot/linux/test_modules.h"
 #include "test/errors.h"
 #include "test/linux/fake_ptrace_connection.h"
 #include "test/linux/get_tls.h"
@@ -102,6 +103,10 @@ constexpr char kTestMemory[] = "Read me from another process";
 class BasicChildTest : public Multiprocess {
  public:
   BasicChildTest() : Multiprocess() {}
+
+  BasicChildTest(const BasicChildTest&) = delete;
+  BasicChildTest& operator=(const BasicChildTest&) = delete;
+
   ~BasicChildTest() {}
 
  private:
@@ -128,8 +133,6 @@ class BasicChildTest : public Multiprocess {
   }
 
   void MultiprocessChild() override { CheckedReadFileAtEOF(ReadPipeHandle()); }
-
-  DISALLOW_COPY_AND_ASSIGN(BasicChildTest);
 };
 
 TEST(ProcessReaderLinux, ChildBasic) {
@@ -149,6 +152,9 @@ class TestThreadPool {
   };
 
   TestThreadPool() : threads_() {}
+
+  TestThreadPool(const TestThreadPool&) = delete;
+  TestThreadPool& operator=(const TestThreadPool&) = delete;
 
   ~TestThreadPool() {
     for (const auto& thread : threads_) {
@@ -251,8 +257,6 @@ class TestThreadPool {
   }
 
   std::vector<std::unique_ptr<Thread>> threads_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThreadPool);
 };
 
 using ThreadMap = std::map<pid_t, TestThreadPool::ThreadExpectation>;
@@ -287,9 +291,12 @@ void ExpectThreads(const ThreadMap& thread_map,
 #if !defined(ADDRESS_SANITIZER)
     // AddressSanitizer causes stack variables to be stored separately from the
     // call stack.
-    EXPECT_LE(thread.stack_region_address, iterator->second.stack_address);
-    EXPECT_GE(thread.stack_region_address + thread.stack_region_size,
-              iterator->second.stack_address);
+    EXPECT_LE(
+        thread.stack_region_address,
+        connection->Memory()->PointerToAddress(iterator->second.stack_address));
+    EXPECT_GE(
+        thread.stack_region_address + thread.stack_region_size,
+        connection->Memory()->PointerToAddress(iterator->second.stack_address));
 #endif  // !defined(ADDRESS_SANITIZER)
 
     if (iterator->second.max_stack_size) {
@@ -306,6 +313,10 @@ class ChildThreadTest : public Multiprocess {
  public:
   ChildThreadTest(size_t stack_size = 0)
       : Multiprocess(), stack_size_(stack_size) {}
+
+  ChildThreadTest(const ChildThreadTest&) = delete;
+  ChildThreadTest& operator=(const ChildThreadTest&) = delete;
+
   ~ChildThreadTest() {}
 
  private:
@@ -374,8 +385,6 @@ class ChildThreadTest : public Multiprocess {
 
   static constexpr size_t kThreadCount = 3;
   const size_t stack_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildThreadTest);
 };
 
 TEST(ProcessReaderLinux, ChildWithThreads) {
@@ -392,6 +401,10 @@ TEST(ProcessReaderLinux, ChildThreadsWithSmallUserStacks) {
 class ChildWithSplitStackTest : public Multiprocess {
  public:
   ChildWithSplitStackTest() : Multiprocess(), page_size_(getpagesize()) {}
+
+  ChildWithSplitStackTest(const ChildWithSplitStackTest&) = delete;
+  ChildWithSplitStackTest& operator=(const ChildWithSplitStackTest&) = delete;
+
   ~ChildWithSplitStackTest() {}
 
  private:
@@ -464,8 +477,6 @@ class ChildWithSplitStackTest : public Multiprocess {
   }
 
   const size_t page_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildWithSplitStackTest);
 };
 
 // AddressSanitizer with use-after-return detection causes stack variables to
@@ -491,23 +502,29 @@ int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   auto modules =
       reinterpret_cast<const std::vector<ProcessReaderLinux::Module>*>(data);
 
-  auto phdr_addr = FromPointerCast<LinuxVMAddress>(info->dlpi_phdr);
 
 #if defined(OS_ANDROID)
-  // Bionic includes a null entry.
-  if (!phdr_addr) {
-    EXPECT_EQ(info->dlpi_name, nullptr);
+  // Prior to API 27, Bionic includes a null entry for /system/bin/linker.
+  if (!info->dlpi_name) {
     EXPECT_EQ(info->dlpi_addr, 0u);
     EXPECT_EQ(info->dlpi_phnum, 0u);
+    EXPECT_EQ(info->dlpi_phdr, nullptr);
     return 0;
   }
 #endif
 
+  // Bionic doesn't always set both of these addresses for the vdso and
+  // /system/bin/linker, but it does always set one of them.
+  VMAddress module_addr = info->dlpi_phdr
+                              ? FromPointerCast<LinuxVMAddress>(info->dlpi_phdr)
+                              : info->dlpi_addr;
+
   // TODO(jperaza): This can use a range map when one is available.
   bool found = false;
   for (const auto& module : *modules) {
-    if (module.elf_reader && phdr_addr >= module.elf_reader->Address() &&
-        phdr_addr < module.elf_reader->Address() + module.elf_reader->Size()) {
+    if (module.elf_reader && module_addr >= module.elf_reader->Address() &&
+        module_addr <
+            module.elf_reader->Address() + module.elf_reader->Size()) {
       found = true;
       break;
     }
@@ -535,196 +552,7 @@ void ExpectModulesFromSelf(
 #endif  // !OS_ANDROID || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
 }
 
-bool WriteTestModule(const base::FilePath& module_path) {
-#if defined(ARCH_CPU_64_BITS)
-  using Ehdr = Elf64_Ehdr;
-  using Phdr = Elf64_Phdr;
-  using Shdr = Elf64_Shdr;
-  using Dyn = Elf64_Dyn;
-  using Sym = Elf64_Sym;
-  unsigned char elf_class = ELFCLASS64;
-#else
-  using Ehdr = Elf32_Ehdr;
-  using Phdr = Elf32_Phdr;
-  using Shdr = Elf32_Shdr;
-  using Dyn = Elf32_Dyn;
-  using Sym = Elf32_Sym;
-  unsigned char elf_class = ELFCLASS32;
-#endif
-
-  struct {
-    Ehdr ehdr;
-    struct {
-      Phdr load1;
-      Phdr load2;
-      Phdr dynamic;
-    } phdr_table;
-    struct {
-      Dyn hash;
-      Dyn strtab;
-      Dyn symtab;
-      Dyn strsz;
-      Dyn syment;
-      Dyn null;
-    } dynamic_array;
-    struct {
-      Elf32_Word nbucket;
-      Elf32_Word nchain;
-      Elf32_Word bucket;
-      Elf32_Word chain;
-    } hash_table;
-    struct {
-    } string_table;
-    struct {
-      Sym und_symbol;
-    } symbol_table;
-    struct {
-      Shdr null;
-      Shdr dynamic;
-      Shdr string_table;
-    } shdr_table;
-  } module = {};
-
-  module.ehdr.e_ident[EI_MAG0] = ELFMAG0;
-  module.ehdr.e_ident[EI_MAG1] = ELFMAG1;
-  module.ehdr.e_ident[EI_MAG2] = ELFMAG2;
-  module.ehdr.e_ident[EI_MAG3] = ELFMAG3;
-
-  module.ehdr.e_ident[EI_CLASS] = elf_class;
-
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  module.ehdr.e_ident[EI_DATA] = ELFDATA2LSB;
-#else
-  module.ehdr.e_ident[EI_DATA] = ELFDATA2MSB;
-#endif  // ARCH_CPU_LITTLE_ENDIAN
-
-  module.ehdr.e_ident[EI_VERSION] = EV_CURRENT;
-
-  module.ehdr.e_type = ET_DYN;
-
-#if defined(ARCH_CPU_X86)
-  module.ehdr.e_machine = EM_386;
-#elif defined(ARCH_CPU_X86_64)
-  module.ehdr.e_machine = EM_X86_64;
-#elif defined(ARCH_CPU_ARMEL)
-  module.ehdr.e_machine = EM_ARM;
-#elif defined(ARCH_CPU_ARM64)
-  module.ehdr.e_machine = EM_AARCH64;
-#elif defined(ARCH_CPU_MIPSEL) || defined(ARCH_CPU_MIPS64EL)
-  module.ehdr.e_machine = EM_MIPS;
-#endif
-
-  module.ehdr.e_version = EV_CURRENT;
-  module.ehdr.e_ehsize = sizeof(module.ehdr);
-
-  module.ehdr.e_phoff = offsetof(decltype(module), phdr_table);
-  module.ehdr.e_phnum = sizeof(module.phdr_table) / sizeof(Phdr);
-  module.ehdr.e_phentsize = sizeof(Phdr);
-
-  module.ehdr.e_shoff = offsetof(decltype(module), shdr_table);
-  module.ehdr.e_shentsize = sizeof(Shdr);
-  module.ehdr.e_shnum = sizeof(module.shdr_table) / sizeof(Shdr);
-  module.ehdr.e_shstrndx = SHN_UNDEF;
-
-  constexpr size_t load2_vaddr = 0x200000;
-
-  module.phdr_table.load1.p_type = PT_LOAD;
-  module.phdr_table.load1.p_offset = 0;
-  module.phdr_table.load1.p_vaddr = 0;
-  module.phdr_table.load1.p_filesz = sizeof(module);
-  module.phdr_table.load1.p_memsz = sizeof(module);
-  module.phdr_table.load1.p_flags = PF_R;
-  module.phdr_table.load1.p_align = load2_vaddr;
-
-  module.phdr_table.load2.p_type = PT_LOAD;
-  module.phdr_table.load2.p_offset = 0;
-  module.phdr_table.load2.p_vaddr = load2_vaddr;
-  module.phdr_table.load2.p_filesz = sizeof(module);
-  module.phdr_table.load2.p_memsz = sizeof(module);
-  module.phdr_table.load2.p_flags = PF_R | PF_W;
-  module.phdr_table.load2.p_align = load2_vaddr;
-
-  module.phdr_table.dynamic.p_type = PT_DYNAMIC;
-  module.phdr_table.dynamic.p_offset =
-      offsetof(decltype(module), dynamic_array);
-  module.phdr_table.dynamic.p_vaddr =
-      load2_vaddr + module.phdr_table.dynamic.p_offset;
-  module.phdr_table.dynamic.p_filesz = sizeof(module.dynamic_array);
-  module.phdr_table.dynamic.p_memsz = sizeof(module.dynamic_array);
-  module.phdr_table.dynamic.p_flags = PF_R | PF_W;
-  module.phdr_table.dynamic.p_align = 8;
-
-  module.dynamic_array.hash.d_tag = DT_HASH;
-  module.dynamic_array.hash.d_un.d_ptr = offsetof(decltype(module), hash_table);
-  module.dynamic_array.strtab.d_tag = DT_STRTAB;
-  module.dynamic_array.strtab.d_un.d_ptr =
-      offsetof(decltype(module), string_table);
-  module.dynamic_array.symtab.d_tag = DT_SYMTAB;
-  module.dynamic_array.symtab.d_un.d_ptr =
-      offsetof(decltype(module), symbol_table);
-  module.dynamic_array.strsz.d_tag = DT_STRSZ;
-  module.dynamic_array.strsz.d_un.d_val = sizeof(module.string_table);
-  module.dynamic_array.syment.d_tag = DT_SYMENT;
-  module.dynamic_array.syment.d_un.d_val = sizeof(Sym);
-
-  module.dynamic_array.null.d_tag = DT_NULL;
-
-  module.hash_table.nbucket = 1;
-  module.hash_table.nchain = 1;
-  module.hash_table.bucket = 0;
-  module.hash_table.chain = 0;
-
-  module.shdr_table.null.sh_type = SHT_NULL;
-
-  module.shdr_table.dynamic.sh_name = 0;
-  module.shdr_table.dynamic.sh_type = SHT_DYNAMIC;
-  module.shdr_table.dynamic.sh_flags = SHF_WRITE | SHF_ALLOC;
-  module.shdr_table.dynamic.sh_addr = module.phdr_table.dynamic.p_vaddr;
-  module.shdr_table.dynamic.sh_offset = module.phdr_table.dynamic.p_offset;
-  module.shdr_table.dynamic.sh_size = module.phdr_table.dynamic.p_filesz;
-  module.shdr_table.dynamic.sh_link =
-      offsetof(decltype(module.shdr_table), string_table) / sizeof(Shdr);
-
-  module.shdr_table.string_table.sh_name = 0;
-  module.shdr_table.string_table.sh_type = SHT_STRTAB;
-  module.shdr_table.string_table.sh_offset =
-      offsetof(decltype(module), string_table);
-
-  FileWriter writer;
-  if (!writer.Open(module_path,
-                   FileWriteMode::kCreateOrFail,
-                   FilePermissions::kWorldReadable)) {
-    ADD_FAILURE();
-    return false;
-  }
-
-  if (!writer.Write(&module, sizeof(module))) {
-    ADD_FAILURE();
-    return false;
-  }
-
-  return true;
-}
-
-ScopedModuleHandle LoadTestModule(const std::string& module_name) {
-  base::FilePath module_path(
-      TestPaths::Executable().DirName().Append(module_name));
-
-  if (!WriteTestModule(module_path)) {
-    return ScopedModuleHandle(nullptr);
-  }
-  EXPECT_TRUE(IsRegularFile(module_path));
-
-  ScopedModuleHandle handle(
-      dlopen(module_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL));
-  EXPECT_TRUE(handle.valid())
-      << "dlopen: " << module_path.value() << " " << dlerror();
-
-  EXPECT_TRUE(LoggingRemoveFile(module_path));
-
-  return handle;
-}
-
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
 void ExpectTestModule(ProcessReaderLinux* reader,
                       const std::string& module_name) {
   for (const auto& module : reader->Modules()) {
@@ -743,11 +571,16 @@ void ExpectTestModule(ProcessReaderLinux* reader,
   }
   ADD_FAILURE() << "Test module not found";
 }
+#endif  // !ADDRESS_SANITIZER && !MEMORY_SANITIZER
 
 TEST(ProcessReaderLinux, SelfModules) {
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
   const std::string module_name = "test_module.so";
-  ScopedModuleHandle empty_test_module(LoadTestModule(module_name));
+  const std::string module_soname = "test_module_soname";
+  ScopedModuleHandle empty_test_module(
+      LoadTestModule(module_name, module_soname));
   ASSERT_TRUE(empty_test_module.valid());
+#endif  // !ADDRESS_SANITIZER && !MEMORY_SANITIZER
 
   FakePtraceConnection connection;
   connection.Initialize(getpid());
@@ -756,12 +589,18 @@ TEST(ProcessReaderLinux, SelfModules) {
   ASSERT_TRUE(process_reader.Initialize(&connection));
 
   ExpectModulesFromSelf(process_reader.Modules());
-  ExpectTestModule(&process_reader, module_name);
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
+  ExpectTestModule(&process_reader, module_soname);
+#endif  // !ADDRESS_SANITIZER && !MEMORY_SANITIZER
 }
 
 class ChildModuleTest : public Multiprocess {
  public:
-  ChildModuleTest() : Multiprocess(), module_name_("test_module.so") {}
+  ChildModuleTest() : Multiprocess(), module_soname_("test_module_soname") {}
+
+  ChildModuleTest(const ChildModuleTest&) = delete;
+  ChildModuleTest& operator=(const ChildModuleTest&) = delete;
+
   ~ChildModuleTest() = default;
 
  private:
@@ -776,12 +615,17 @@ class ChildModuleTest : public Multiprocess {
     ASSERT_TRUE(process_reader.Initialize(&connection));
 
     ExpectModulesFromSelf(process_reader.Modules());
-    ExpectTestModule(&process_reader, module_name_);
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
+    ExpectTestModule(&process_reader, module_soname_);
+#endif  // !ADDRESS_SANITIZER && !MEMORY_SANITIZER
   }
 
   void MultiprocessChild() override {
-    ScopedModuleHandle empty_test_module(LoadTestModule(module_name_));
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
+    ScopedModuleHandle empty_test_module(
+        LoadTestModule("test_module.so", module_soname_));
     ASSERT_TRUE(empty_test_module.valid());
+#endif  // !ADDRESS_SANITIZER && !MEMORY_SANITIZER
 
     char c = 0;
     ASSERT_TRUE(LoggingWriteFile(WritePipeHandle(), &c, sizeof(c)));
@@ -789,9 +633,7 @@ class ChildModuleTest : public Multiprocess {
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
 
-  const std::string module_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildModuleTest);
+  const std::string module_soname_;
 };
 
 TEST(ProcessReaderLinux, ChildModules) {

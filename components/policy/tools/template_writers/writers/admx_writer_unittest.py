@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -389,7 +389,7 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
         'name': 'SampleIntPolicy',
         'type': 'int',
         'supported_on': [{
-            'platforms': ['win7'],
+            'platform': 'win7',
         }]
     }
     self._initWriterForPolicy(self.writer, int_policy)
@@ -612,17 +612,19 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
     self.assertTrue(
         self.writer.IsPolicySupported({
             'supported_on': [{
-                'platforms': ['win', 'zzz']
+                'platform': 'win'
             }, {
-                'platforms': ['aaa']
+                'platform': 'aaa'
             }]
         }))
     self.assertFalse(
         self.writer.IsPolicySupported({
             'supported_on': [{
-                'platforms': ['mac', 'linux']
+                'platform': 'mac'
             }, {
-                'platforms': ['aaa']
+                'platform': 'aaa'
+            }, {
+                'platform': 'linux'
             }]
         }))
 

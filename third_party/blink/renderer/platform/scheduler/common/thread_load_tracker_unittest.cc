@@ -19,11 +19,11 @@ void AddToVector(Vector<std::pair<base::TimeTicks, double>>* vector,
 }
 
 base::TimeTicks SecondsToTime(int seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 base::TimeTicks MillisecondsToTime(int milliseconds) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(milliseconds);
+  return base::TimeTicks() + base::Milliseconds(milliseconds);
 }
 
 }  // namespace
@@ -34,7 +34,7 @@ TEST(ThreadLoadTrackerTest, RecordTasks) {
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   thread_load_tracker.Resume(SecondsToTime(1));
 
   thread_load_tracker.RecordTaskTime(SecondsToTime(1), SecondsToTime(3));
@@ -70,7 +70,7 @@ TEST(ThreadLoadTrackerTest, PauseAndResume) {
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   thread_load_tracker.Resume(SecondsToTime(1));
 
   thread_load_tracker.RecordTaskTime(SecondsToTime(2), SecondsToTime(3));
@@ -107,7 +107,7 @@ TEST(ThreadLoadTrackerTest, DisabledByDefault) {
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   // ThreadLoadTracker should be disabled and these tasks should be
   // ignored.
@@ -127,7 +127,7 @@ TEST(ThreadLoadTrackerTest, Reset) {
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   thread_load_tracker.Resume(SecondsToTime(1));
 

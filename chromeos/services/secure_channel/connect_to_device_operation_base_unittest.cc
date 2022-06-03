@@ -9,12 +9,12 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -55,7 +55,7 @@ class TestConnectToDeviceOperation
 
   bool has_attempted_connection() const { return has_attempted_connection_; }
   bool has_canceled_connection() const { return has_canceled_connection_; }
-  const base::Optional<ConnectionPriority>& current_connection_priority() {
+  const absl::optional<ConnectionPriority>& current_connection_priority() {
     return current_connection_priority_;
   }
 
@@ -99,12 +99,18 @@ class TestConnectToDeviceOperation
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   bool has_attempted_connection_ = false;
   bool has_canceled_connection_ = false;
-  base::Optional<ConnectionPriority> current_connection_priority_;
+  absl::optional<ConnectionPriority> current_connection_priority_;
 };
 
 }  // namespace
 
 class SecureChannelConnectToDeviceOperationBaseTest : public testing::Test {
+ public:
+  SecureChannelConnectToDeviceOperationBaseTest(
+      const SecureChannelConnectToDeviceOperationBaseTest&) = delete;
+  SecureChannelConnectToDeviceOperationBaseTest& operator=(
+      const SecureChannelConnectToDeviceOperationBaseTest&) = delete;
+
  protected:
   SecureChannelConnectToDeviceOperationBaseTest()
       : test_device_id_pair_(kTestRemoteDeviceId, kTestLocalDeviceId) {}
@@ -155,8 +161,6 @@ class SecureChannelConnectToDeviceOperationBaseTest : public testing::Test {
   std::string last_failure_detail_;
 
   std::unique_ptr<TestConnectToDeviceOperation> test_operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectToDeviceOperationBaseTest);
 };
 
 TEST_F(SecureChannelConnectToDeviceOperationBaseTest, Success) {

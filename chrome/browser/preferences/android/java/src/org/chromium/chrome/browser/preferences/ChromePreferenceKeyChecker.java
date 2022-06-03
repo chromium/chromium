@@ -24,7 +24,8 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
     private static final ChromePreferenceKeyChecker INSTANCE = new ChromePreferenceKeyChecker();
 
     private Set<String> mKeysInUse;
-    private Set<String> mGrandfatheredFormatKeys;
+    private Set<String> mLegacyFormatKeys;
+    private List<KeyPrefix> mLegacyPrefixes;
     private Pattern mDynamicPartPattern;
 
     /**
@@ -32,17 +33,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * ChromePreferenceKeys}.
      */
     private ChromePreferenceKeyChecker() {
-        this(ChromePreferenceKeys.createKeysInUse(),
-                ChromePreferenceKeys.createGrandfatheredFormatKeys());
+        this(ChromePreferenceKeys.getKeysInUse(), LegacyChromePreferenceKeys.getKeysInUse(),
+                LegacyChromePreferenceKeys.getPrefixesInUse());
     }
 
     /**
      * Generic constructor, dependencies are passed in.
      */
     @VisibleForTesting
-    ChromePreferenceKeyChecker(List<String> keysInUse, List<String> grandfatheredKeys) {
+    ChromePreferenceKeyChecker(
+            List<String> keysInUse, List<String> legacyKeys, List<KeyPrefix> legacyPrefixes) {
         mKeysInUse = new HashSet<>(keysInUse);
-        mGrandfatheredFormatKeys = new HashSet<>(grandfatheredKeys);
+        mLegacyFormatKeys = new HashSet<>(legacyKeys);
+        mLegacyPrefixes = legacyPrefixes;
 
         // The dynamic part cannot be empty, but otherwise it is anything that does not contain
         // stars.
@@ -72,12 +75,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * @return Whether |key| is in use.
      */
     private boolean isKeyInUse(String key) {
-        // Grandfathered keys cannot be dynamic, so just check if they are in [keys in use].
-        if (mGrandfatheredFormatKeys.contains(key)) {
-            return mKeysInUse.contains(key);
+        // For non-dynamic legacy keys, a simple map check is enough.
+        if (mLegacyFormatKeys.contains(key)) {
+            return true;
         }
 
-        // If not a format-grandfathered key, assume it follows the format and find out if it is
+        // For dynamic legacy keys, each legacy prefix has to be checked.
+        for (KeyPrefix prefix : mLegacyPrefixes) {
+            if (prefix.hasGenerated(key)) {
+                return true;
+            }
+        }
+
+        // If not a format-legacy key, assume it follows the format and find out if it is
         // a prefixed key.
         String[] parts = key.split("\\.", 4);
         if (parts.length < 3) return false;
@@ -86,7 +96,7 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
         if (isPrefixed) {
             // Key with prefix in format "Chrome.[Feature].[KeyPrefix].[Suffix]".
 
-            // Check if its prefix is whitelisted in |mKeysInUse|.
+            // Check if its prefix is registered in |mKeysInUse|.
             String prefixFormat =
                     TextUtils.join(".", Arrays.asList(parts[0], parts[1], parts[2], "*"));
             if (!mKeysInUse.contains(prefixFormat)) return false;
@@ -99,5 +109,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
             // Just check if it is in [keys in use].
             return mKeysInUse.contains(key);
         }
+    }
+
+    @Override
+    void checkIsPrefixInUse(KeyPrefix prefix) {
+        if (mLegacyPrefixes.contains(prefix)) {
+            return;
+        }
+
+        if (mKeysInUse.contains(prefix.pattern())) {
+            return;
+        }
+
+        throw new RuntimeException("SharedPreferences KeyPrefix \"" + prefix.pattern()
+                + "\" is not registered in ChromePreferenceKeys.createKeysInUse()");
     }
 }

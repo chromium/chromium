@@ -1,0 +1,40 @@
+import("//chromecast/chromecast.gni")
+import("//media/media_options.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "media_types.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromecast.media.mojom.AudioCodec"
+          cpp = "::chromecast::media::AudioCodec"
+        },
+        {
+          mojom = "chromecast.media.mojom.ChannelLayout"
+          cpp = "::chromecast::media::ChannelLayout"
+        },
+        {
+          mojom = "chromecast.media.mojom.SampleFormat"
+          cpp = "::chromecast::media::SampleFormat"
+        },
+        {
+          mojom = "chromecast.media.mojom.StreamId"
+          cpp = "::chromecast::media::StreamId"
+        },
+        {
+          mojom = "chromecast.media.mojom.EncryptionScheme"
+          cpp = "::chromecast::media::EncryptionScheme"
+        },
+        {
+          mojom = "chromecast.media.mojom.AudioConfig"
+          cpp = "::chromecast::media::AudioConfig"
+        },
+      ]
+      traits_headers = [ "decoder_config_mojom_traits.h" ]
+      traits_sources = [ "decoder_config_mojom_traits.cc" ]
+      traits_public_deps = [ "//chromecast/public/media" ]
+    },
+  ]
+}

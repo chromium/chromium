@@ -15,16 +15,6 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BookmarkEarlGreyAppInterface);
-#pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
-
 const GURL GetFirstUrl() {
   return web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/pony.html");
@@ -88,6 +78,11 @@ const GURL GetFrenchUrl() {
       inFolderWithName:name]);
 }
 
+- (void)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [BookmarkEarlGreyAppInterface addBookmarkWithTitle:title URL:url]);
+}
+
 - (void)removeBookmarkWithTitle:(NSString*)title {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
       [BookmarkEarlGreyAppInterface removeBookmarkWithTitle:title]);
@@ -111,6 +106,11 @@ const GURL GetFrenchUrl() {
       [BookmarkEarlGreyAppInterface verifyAbsenceOfBookmarkWithURL:URL]);
 }
 
+- (void)verifyExistenceOfFolderWithTitle:(NSString*)title {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [BookmarkEarlGreyAppInterface verifyExistenceOfFolderWithTitle:title]);
+}
+
 #pragma mark - Promo
 
 - (void)verifyPromoAlreadySeen:(BOOL)seen {
@@ -128,10 +128,6 @@ const GURL GetFrenchUrl() {
 
 - (int)numberOfTimesPromoAlreadySeen {
   return [BookmarkEarlGreyAppInterface numberOfTimesPromoAlreadySeen];
-}
-
-- (NSString*)setupFakeIdentity {
-  return [BookmarkEarlGreyAppInterface setupFakeIdentity];
 }
 
 @end

@@ -12,16 +12,19 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
 
 namespace mojo {
 
+// DEPRECATED: Do not introduce new uses of this type. Instead use the
+// Remote type defined in remote.h.
+//
 // A pointer to a local proxy of a remote Interface implementation. Uses a
 // message pipe to communicate with the remote implementation, and automatically
 // closes the pipe and deletes the proxy on destruction. The pointer must be
@@ -73,6 +76,9 @@ class InterfacePtr {
     reset();
     return *this;
   }
+
+  InterfacePtr(const InterfacePtr&) = delete;
+  InterfacePtr& operator=(const InterfacePtr&) = delete;
 
   // Closes the bound message pipe (if any) on destruction.
   ~InterfacePtr() {}
@@ -221,8 +227,6 @@ class InterfacePtr {
  private:
   typedef internal::InterfacePtrState<Interface> State;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfacePtr);
 };
 
 // If |info| is valid (containing a valid message pipe handle), returns an

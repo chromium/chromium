@@ -1,4 +1,4 @@
-AXWebArea AXRequired='0'
+AXWebArea AXRequired=0
 ++AXRadioGroup
-++++AXRadioButton AXValue='0'
-++++AXRadioButton AXValue='0'
+++++AXRadioButton AXValue=0
+++++AXRadioButton AXValue=0

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/process/process.h"
@@ -54,10 +55,13 @@ class Transaction {
   // volatile is not enough for that, but it should be a good hint.
   Transaction(volatile disk_cache::LruData* data, disk_cache::Addr addr,
               Operation op, int list);
+
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
+
   ~Transaction();
  private:
   volatile disk_cache::LruData* data_;
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 Transaction::Transaction(volatile disk_cache::LruData* data,
@@ -246,7 +250,6 @@ void Rankings::Reset() {
 }
 
 void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
-  Trace("Insert 0x%x l %d", node->address().value(), list);
   DCHECK(node->HasData());
   Addr& my_head = heads_[list];
   Addr& my_tail = tails_[list];
@@ -281,6 +284,8 @@ void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
 
   UpdateTimes(node, modified);
   node->Store();
+  // Make sure other aliased in-memory copies get synchronized.
+  UpdateIterators(node);
   GenerateCrash(ON_INSERT_3);
 
   // The last thing to do is move our head to point to a node already stored.
@@ -317,8 +322,6 @@ void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
 //    3. a(x, a), r(a, r), head(x), tail(a)           prev.Store()
 //    4. a(x, a), r(0, 0), head(x), tail(a)           next.Store()
 void Rankings::Remove(CacheRankingsBlock* node, List list, bool strict) {
-  Trace("Remove 0x%x (0x%x 0x%x) l %d", node->address().value(),
-        node->Data()->next, node->Data()->prev, list);
   DCHECK(node->HasData());
 
   Addr next_addr(node->Data()->next);
@@ -642,25 +645,18 @@ void Rankings::CompleteTransaction() {
     return;
   }
 
-  Trace("CompleteTransaction 0x%x", node_addr.value());
-
   CacheRankingsBlock node(backend_->File(node_addr), node_addr);
   if (!node.Load())
     return;
 
   node.Store();
 
-  Addr& my_head = heads_[control_data_->operation_list];
-  Addr& my_tail = tails_[control_data_->operation_list];
-
   // We want to leave the node inside the list. The entry must me marked as
   // dirty, and will be removed later. Otherwise, we'll get assertions when
   // attempting to remove the dirty entry.
   if (INSERT == control_data_->operation) {
-    Trace("FinishInsert h:0x%x t:0x%x", my_head.value(), my_tail.value());
     FinishInsert(&node);
   } else if (REMOVE == control_data_->operation) {
-    Trace("RevertRemove h:0x%x t:0x%x", my_head.value(), my_tail.value());
     RevertRemove(&node);
   } else {
     NOTREACHED();
@@ -753,15 +749,11 @@ bool Rankings::CheckLinks(CacheRankingsBlock* node, CacheRankingsBlock* prev,
     return true;
   }
 
-  Trace("CheckLinks 0x%x (0x%x 0x%x)", node_addr,
-        prev->Data()->next, next->Data()->prev);
-
   if (node_addr != prev->address().value() &&
       node_addr != next->address().value() &&
       prev->Data()->next == next->address().value() &&
       next->Data()->prev == prev->address().value()) {
     // The list is actually ok, node is wrong.
-    Trace("node 0x%x out of list %d", node_addr, list);
     node->Data()->next = 0;
     node->Data()->prev = 0;
     node->Store();
@@ -826,7 +818,8 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
   std::unique_ptr<CacheRankingsBlock> node;
   Addr prev_addr(current);
   do {
-    node.reset(new CacheRankingsBlock(backend_->File(current), current));
+    node =
+        std::make_unique<CacheRankingsBlock>(backend_->File(current), current);
     node->Load();
     if (!SanityCheck(node.get(), true))
       return ERR_INVALID_ENTRY;
@@ -848,8 +841,7 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
     (*num_items)++;
 
     if (next_addr == prev_addr) {
-      Addr last = forward ? tails_[list] : heads_[list];
-      if (next_addr == last)
+      if (next_addr == (forward ? tails_[list] : heads_[list]))
         return ERR_NO_ERROR;
       return ERR_INVALID_TAIL;
     }
@@ -860,8 +852,6 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
 bool Rankings::IsHead(CacheAddr addr, List* list) const {
   for (int i = 0; i < LAST_ELEMENT; i++) {
     if (addr == heads_[i].value()) {
-      if (*list != i)
-        Trace("Changing list %d to %d", *list, i);
       *list = static_cast<List>(i);
       return true;
     }
@@ -872,8 +862,6 @@ bool Rankings::IsHead(CacheAddr addr, List* list) const {
 bool Rankings::IsTail(CacheAddr addr, List* list) const {
   for (int i = 0; i < LAST_ELEMENT; i++) {
     if (addr == tails_[i].value()) {
-      if (*list != i)
-        Trace("Changing list %d to %d", *list, i);
       *list = static_cast<List>(i);
       return true;
     }
@@ -889,7 +877,8 @@ void Rankings::UpdateIterators(CacheRankingsBlock* node) {
   for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
     if (it->first == address && it->second->HasData()) {
       CacheRankingsBlock* other = it->second;
-      *other->Data() = *node->Data();
+      if (other != node)
+        *other->Data() = *node->Data();
     }
   }
 }

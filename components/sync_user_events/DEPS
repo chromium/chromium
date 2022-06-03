@@ -4,5 +4,5 @@ include_rules = [
   "+components/sync/driver",
   "+components/sync/model",
   "+components/sync/protocol",
-  "+google_apis/gaia",
+  "+components/sync/test/model",
 ]

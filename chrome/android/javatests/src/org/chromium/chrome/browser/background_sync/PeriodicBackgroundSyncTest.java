@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.background_sync;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,18 +19,18 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
-import org.chromium.chrome.browser.engagement.SiteEngagementService;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.site_engagement.SiteEngagementService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.BackgroundSyncNetworkUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
@@ -53,10 +54,13 @@ import java.util.concurrent.atomic.AtomicInteger;
                 + "skip_permissions_check_for_testing/true"})
 public final class PeriodicBackgroundSyncTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    // loadNativeLibraryNoBrowserProcess will access AccountManagerFacade, so we need
+    // to mock AccountManagerFacade
     @Rule
-    public NativeLibraryTestRule mNativeLibraryTestRule = new NativeLibraryTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private EmbeddedTestServer mTestServer;
     private String mTestPage;
@@ -74,17 +78,13 @@ public final class PeriodicBackgroundSyncTest {
 
     @Before
     public void setUp() throws InterruptedException, TimeoutException {
-        // loadNativeLibraryNoBrowserProcess will access AccountManagerFacade, so it should
-        // be initialized beforehand.
-        SigninTestUtil.setUpAuthForTest();
-
         // This is necessary because our test devices don't have Google Play Services up to date,
         // and Periodic Background Sync requires that. Remove this once https://crbug.com/514449 has
         // been fixed.
         // Note that this should be done before the startMainActivityOnBlankPage(), because Chrome
         // will otherwise run this check on startup and disable Periodic Background Sync code.
-        if (!ExternalAuthUtils.canUseGooglePlayServices()) {
-            mNativeLibraryTestRule.loadNativeLibraryNoBrowserProcess();
+        if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
+            NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
             disableGooglePlayServicesVersionCheck();
         }
 
@@ -102,8 +102,9 @@ public final class PeriodicBackgroundSyncTest {
     @After
     public void tearDown() throws TimeoutException {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
-        SigninTestUtil.tearDownAuthForTest();
-        BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        });
     }
 
     @Test
@@ -212,7 +213,7 @@ public final class PeriodicBackgroundSyncTest {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
         } catch (TimeoutException e) {
             // The title is not as expected, this assertion neatly logs what the difference is.
-            Assert.assertEquals(expectedTitle, tab.getTitle());
+            Assert.assertEquals(expectedTitle, ChromeTabUtils.getTitleOnUiThread(tab));
         }
     }
 
@@ -231,7 +232,8 @@ public final class PeriodicBackgroundSyncTest {
 
     private void resetEngagementForUrl(final String url, final double engagement) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SiteEngagementService.getForProfile(Profile.getLastUsedProfile())
+            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+            SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
                     .resetBaseScoreForUrl(url, engagement);
         });
     }
@@ -257,6 +259,8 @@ public final class PeriodicBackgroundSyncTest {
             }
         };
 
-        BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        });
     }
 }

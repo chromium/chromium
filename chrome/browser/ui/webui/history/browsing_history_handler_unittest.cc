@@ -10,15 +10,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
@@ -59,7 +59,12 @@ class BrowsingHistoryHandlerWithWebUIForTesting
     test_clock_.SetNow(PretendNow());
   }
 
-  void SendHistoryQuery(int count, const base::string16& query) override {
+  BrowsingHistoryHandlerWithWebUIForTesting(
+      const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
+  BrowsingHistoryHandlerWithWebUIForTesting& operator=(
+      const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
+
+  void SendHistoryQuery(int count, const std::u16string& query) override {
     if (postpone_query_results_) {
       return;
     }
@@ -73,8 +78,6 @@ class BrowsingHistoryHandlerWithWebUIForTesting
  private:
   base::SimpleTestClock test_clock_;
   bool postpone_query_results_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryHandlerWithWebUIForTesting);
 };
 
 }  // namespace
@@ -83,10 +86,9 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    profile()->CreateBookmarkModel(false);
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        ProfileSyncServiceFactory::GetForProfile(profile()));
+        SyncServiceFactory::GetForProfile(profile()));
     web_history_service_ = static_cast<history::FakeWebHistoryService*>(
         WebHistoryServiceFactory::GetForProfile(profile()));
     ASSERT_TRUE(web_history_service_);
@@ -102,18 +104,19 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {ProfileSyncServiceFactory::GetInstance(),
+        {SyncServiceFactory::GetInstance(),
          base::BindRepeating(&BuildTestSyncService)},
         {WebHistoryServiceFactory::GetInstance(),
          base::BindRepeating(&BuildFakeWebHistoryService)},
+        {BookmarkModelFactory::GetInstance(),
+         BookmarkModelFactory::GetDefaultFactory()},
     };
   }
 
   void VerifyHistoryDeletedFired(content::TestWebUI::CallData& data) {
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event_fired;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_fired));
-    EXPECT_EQ("history-deleted", event_fired);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("history-deleted", data.arg1()->GetString());
   }
 
   void InitializeWebUI(BrowsingHistoryHandlerWithWebUIForTesting& handler) {
@@ -153,7 +156,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 // Tests that BrowsingHistoryHandler is informed about WebHistoryService
 // deletions.
 TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
-  base::Callback<void(bool)> callback = base::DoNothing();
+  base::RepeatingCallback<void(bool)> callback = base::DoNothing();
 
   // BrowsingHistoryHandler is informed about WebHistoryService history
   // deletions.
@@ -241,12 +244,10 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
     EXPECT_EQ(11U, web_ui()->call_data().size());
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ("remove-visits-callback-id", callback_id);
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("remove-visits-callback-id", data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2()->GetBool());
   }
 
   // When history sync is not active, we don't listen to WebHistoryService

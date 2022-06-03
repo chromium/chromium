@@ -27,7 +27,7 @@ const char kIgnoreUrlFetcherCertRequests[] = "ignore-urlfetcher-cert-requests";
 // or more certificates have public key hashes that match a key from this list,
 // the error is ignored.
 //
-// The switch value must a be a comma-separated list of Base64-encoded SHA-256
+// The switch value must be a comma-separated list of Base64-encoded SHA-256
 // SPKI Fingerprints (RFC 7469, Section 2.4).
 //
 // This switch has no effect unless --user-data-dir (as defined by the content
@@ -56,10 +56,6 @@ const char kNetLogCaptureMode[] = "net-log-capture-mode";
 // for the format.
 const char kSSLKeyLogFile[] = "ssl-key-log-file";
 
-// Allows overriding the list of restricted ports by passing a comma-separated
-// list of port numbers.
-const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
-
 // Treat given (insecure) origins as secure origins. Multiple origins can be
 // supplied as a comma-separated list. For the definition of secure contexts,
 // see https://w3c.github.io/webappsec-secure-contexts/ and
@@ -70,8 +66,51 @@ const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
 const char kUnsafelyTreatInsecureOriginAsSecure[] =
     "unsafely-treat-insecure-origin-as-secure";
 
-// Disable OOR-CORS in child processes regardless of the base::Feature flag.
-const char kForceToDisableOutOfBlinkCors[] = "disable-oor-cors";
+// Manually sets additional Trust Tokens key commitments in the network service
+// to the given value, which should be a JSON dictionary satisfying the
+// requirements of TrustTokenKeyCommitmentParser::ParseMultipleIssuers.
+//
+// These keys are available in addition to keys provided by the most recent call
+// to TrustTokenKeyCommitments::Set.
+//
+// For issuers with keys provided through both the command line and
+// TrustTokenKeyCommitments::Set, the keys provided through the command line
+// take precedence. This is because someone testing manually might want to pass
+// additional keys via the command line to a real Chrome release with the
+// component updater enabled, and it would be surprising if the manually-passed
+// keys were overwritten some time after startup when the component updater
+// runs.
+const char kAdditionalTrustTokenKeyCommitments[] =
+    "additional-trust-token-key-commitments";
+
+// Allows the manual specification of a First-Party Set, as a comma-separated
+// list of origins. The first origin in the list is treated as the owner of the
+// set.
+const char kUseFirstPartySet[] = "use-first-party-set";
+
+// Specifies manual overrides to the IP endpoint -> IP address space mapping.
+// This allows running local tests against "public" and "private" IP addresses.
+//
+// This switch is specified as a comma-separated list of overrides. Each
+// override is given as a colon-separated "<endpoint>:<address space>" pair.
+// Grammar, in pseudo-BNF format:
+//
+//   switch := override-list
+//   override-list := override “,” override-list | <nil>
+//   override := ip-endpoint “=” address-space
+//   address-space := “public” | “private” | “local”
+//   ip-endpoint := ip-address ":" port
+//   ip-address := see `net::ParseURLHostnameToAddress()` for details
+//   port := integer in the [0-65535] range
+//
+// Any invalid entries in the comma-separated list are ignored.
+//
+// See also the design doc:
+// https://docs.google.com/document/d/1-umCGylIOuSG02k9KGDwKayt3bzBXtGwVlCQHHkIcnQ/edit#
+//
+// And the Web Platform Test RFC #72 behind it:
+// https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
+const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
 }  // namespace switches
 

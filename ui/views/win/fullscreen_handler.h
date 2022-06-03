@@ -8,9 +8,7 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
-#include <map>
-
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 
 namespace gfx {
 class Rect;
@@ -21,6 +19,10 @@ namespace views {
 class FullscreenHandler {
  public:
   FullscreenHandler();
+
+  FullscreenHandler(const FullscreenHandler&) = delete;
+  FullscreenHandler& operator=(const FullscreenHandler&) = delete;
+
   ~FullscreenHandler();
 
   void set_hwnd(HWND hwnd) { hwnd_ = hwnd; }
@@ -54,7 +56,7 @@ class FullscreenHandler {
   // Used to mark a window as fullscreen.
   Microsoft::WRL::ComPtr<ITaskbarList2> task_bar_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(FullscreenHandler);
+  base::WeakPtrFactory<FullscreenHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace views

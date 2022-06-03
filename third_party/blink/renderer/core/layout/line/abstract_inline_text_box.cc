@@ -32,12 +32,24 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
-#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
+
+typedef HeapHashMap<Member<InlineTextBox>, scoped_refptr<AbstractInlineTextBox>>
+    InlineToLegacyAbstractInlineTextBoxHashMap;
+
+InlineToLegacyAbstractInlineTextBoxHashMap& GetAbstractInlineTextBoxMap() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<InlineToLegacyAbstractInlineTextBoxHashMap>,
+      abstract_inline_text_box_map,
+      (MakeGarbageCollected<InlineToLegacyAbstractInlineTextBoxHashMap>()));
+  return *abstract_inline_text_box_map;
+}
 
 AbstractInlineTextBox::AbstractInlineTextBox(LineLayoutText line_layout_item)
     : line_layout_item_(line_layout_item) {}
@@ -55,17 +67,12 @@ LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   Node* node = GetLineLayoutItem().GetNode();
   if (!node)
     return nullptr;
-
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsText())
-    return nullptr;
-  return ToLayoutText(layout_object)->GetFirstLetterPart();
+  if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
+    return layout_text->GetFirstLetterPart();
+  return nullptr;
 }
 
 // ----
-
-LegacyAbstractInlineTextBox::InlineToLegacyAbstractInlineTextBoxHashMap*
-    LegacyAbstractInlineTextBox::g_abstract_inline_text_box_map_ = nullptr;
 
 scoped_refptr<AbstractInlineTextBox> LegacyAbstractInlineTextBox::GetOrCreate(
     LineLayoutText line_layout_text,
@@ -73,31 +80,23 @@ scoped_refptr<AbstractInlineTextBox> LegacyAbstractInlineTextBox::GetOrCreate(
   if (!inline_text_box)
     return nullptr;
 
-  if (!g_abstract_inline_text_box_map_) {
-    g_abstract_inline_text_box_map_ =
-        new InlineToLegacyAbstractInlineTextBoxHashMap();
-  }
-
   InlineToLegacyAbstractInlineTextBoxHashMap::const_iterator it =
-      g_abstract_inline_text_box_map_->find(inline_text_box);
-  if (it != g_abstract_inline_text_box_map_->end())
+      GetAbstractInlineTextBoxMap().find(inline_text_box);
+  if (it != GetAbstractInlineTextBoxMap().end())
     return it->value;
 
   scoped_refptr<AbstractInlineTextBox> obj = base::AdoptRef(
       new LegacyAbstractInlineTextBox(line_layout_text, inline_text_box));
-  g_abstract_inline_text_box_map_->Set(inline_text_box, obj);
+  GetAbstractInlineTextBoxMap().Set(inline_text_box, obj);
   return obj;
 }
 
 void LegacyAbstractInlineTextBox::WillDestroy(InlineTextBox* inline_text_box) {
-  if (!g_abstract_inline_text_box_map_)
-    return;
-
   InlineToLegacyAbstractInlineTextBoxHashMap::const_iterator it =
-      g_abstract_inline_text_box_map_->find(inline_text_box);
-  if (it != g_abstract_inline_text_box_map_->end()) {
+      GetAbstractInlineTextBoxMap().find(inline_text_box);
+  if (it != GetAbstractInlineTextBoxMap().end()) {
     it->value->Detach();
-    g_abstract_inline_text_box_map_->erase(inline_text_box);
+    GetAbstractInlineTextBoxMap().erase(inline_text_box);
   }
 }
 
@@ -113,10 +112,8 @@ LegacyAbstractInlineTextBox::~LegacyAbstractInlineTextBox() {
 
 void AbstractInlineTextBox::Detach() {
   DCHECK(GetLineLayoutItem());
-  if (Node* node = GetNode()) {
-    if (AXObjectCache* cache = node->GetDocument().ExistingAXObjectCache())
-      cache->Remove(this);
-  }
+  if (AXObjectCache* cache = ExistingAXObjectCache())
+    cache->Remove(this);
 
   line_layout_item_ = LineLayoutText(nullptr);
 }
@@ -146,31 +143,66 @@ LayoutRect LegacyAbstractInlineTextBox::LocalBounds() const {
 
 unsigned LegacyAbstractInlineTextBox::Len() const {
   if (!inline_text_box_)
-    return 0;
+    return 0u;
 
-  return inline_text_box_->Len();
+  return NeedsTrailingSpace() ? inline_text_box_->Len() + 1
+                              : inline_text_box_->Len();
 }
 
-unsigned LegacyAbstractInlineTextBox::TextOffsetInContainer(
+unsigned LegacyAbstractInlineTextBox::TextOffsetInFormattingContext(
     unsigned offset) const {
   if (!inline_text_box_)
-    return 0;
-
-  unsigned offset_in_container = inline_text_box_->Start() + offset;
-
-  const NGOffsetMapping* offset_mapping = GetOffsetMapping();
-  if (!offset_mapping)
-    return offset_in_container;
+    return 0U;
 
   // The start offset of the inline text box returned by
-  // inline_text_box_->Start() includes the collapsed white-spaces. Here, we
-  // want the position in the parent node after white-space collapsing.
+  // inline_text_box_->Start() includes the collapsed white-spaces in the inline
+  // box's parent, which could be e.g. a text node or a br element. Here, we
+  // want the position in the layout block flow ancestor object after
+  // white-space collapsing.
+  //
   // NGOffsetMapping can map an offset before whites-spaces are collapsed to the
-  // offset after white-spaces are collapsed.
-  Position position(GetNode(), offset_in_container);
-  const NGOffsetMappingUnit* unit =
-      offset_mapping->GetMappingUnitForPosition(position);
-  return offset_in_container - unit->DOMStart() + unit->TextContentStart();
+  // offset after white-spaces are collapsed even when using Legacy Layout.
+  unsigned int offset_in_parent = inline_text_box_->Start() + offset;
+
+  const Node* node = GetNode();
+  // If the associated node is a text node, then |offset_in_parent| is a text
+  // offset, otherwise we can't represent the exact offset using a DOM position.
+  // We fall back to using the layout object associated with this inline text
+  // box. In other words, if the associated node is a text node, then we can
+  // return a more exact offset in our formatting context. Otherwise, we need to
+  // approximate the offset using our associated layout object.
+  if (node && node->IsTextNode()) {
+    const Position position(node, static_cast<int>(offset_in_parent));
+    LayoutBlockFlow* formatting_context =
+        NGOffsetMapping::GetInlineFormattingContextOf(position);
+    // If "formatting_context" is not a Layout NG object, the offset mappings
+    // will be computed on demand and cached.
+    const NGOffsetMapping* offset_mapping =
+        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                           : nullptr;
+    if (!offset_mapping)
+      return offset_in_parent;
+
+    return offset_mapping->GetTextContentOffset(position).value_or(
+        offset_in_parent);
+  }
+
+  const LayoutObject* layout_object =
+      LineLayoutAPIShim::LayoutObjectFrom(GetLineLayoutItem());
+  DCHECK(layout_object);
+  LayoutBlockFlow* formatting_context =
+      NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
+  const NGOffsetMapping* offset_mapping =
+      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                         : nullptr;
+  if (!offset_mapping)
+    return offset_in_parent;
+
+  base::span<const NGOffsetMappingUnit> mapping_units =
+      offset_mapping->GetMappingUnitsForLayoutObject(*layout_object);
+  if (mapping_units.empty())
+    return offset_in_parent;
+  return mapping_units.front().ConvertDOMOffsetToTextContent(offset_in_parent);
 }
 
 AbstractInlineTextBox::Direction LegacyAbstractInlineTextBox::GetDirection()
@@ -193,32 +225,103 @@ Node* AbstractInlineTextBox::GetNode() const {
   return GetLineLayoutItem().GetNode();
 }
 
+LayoutObject* AbstractInlineTextBox::GetLayoutObject() const {
+  if (!GetLineLayoutItem())
+    return nullptr;
+  return GetLineLayoutItem().GetLayoutObject();
+}
+
+AXObjectCache* AbstractInlineTextBox::ExistingAXObjectCache() const {
+  if (LayoutObject* layout_object = GetLayoutObject())
+    return layout_object->GetDocument().ExistingAXObjectCache();
+  return nullptr;
+}
+
 void LegacyAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   if (!inline_text_box_)
     return;
 
   inline_text_box_->CharacterWidths(widths);
+  if (NeedsTrailingSpace())
+    widths.push_back(inline_text_box_->NewlineSpaceWidth());
 }
 
 void AbstractInlineTextBox::GetWordBoundaries(
     Vector<WordBoundaries>& words) const {
-  if (Len() == 0)
+  return GetWordBoundariesForText(words, GetText());
+}
+
+// static
+void AbstractInlineTextBox::GetWordBoundariesForText(
+    Vector<WordBoundaries>& words,
+    const String& text) {
+  if (!text.length())
     return;
 
-  String text = GetText();
-  int len = text.length();
-  TextBreakIterator* iterator = WordBreakIterator(text, 0, len);
-
-  // FIXME: When http://crbug.com/411764 is fixed, replace this with an ASSERT.
-  if (!iterator)
+  TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+  if (!it)
     return;
+  absl::optional<int> word_start;
+  for (int offset = 0;
+       offset != kTextBreakDone && offset < static_cast<int>(text.length());
+       offset = it->following(offset)) {
+    // Unlike in ICU's WordBreakIterator, a word boundary is valid only if it is
+    // before, or immediately preceded by, an alphanumeric character, a series
+    // of punctuation marks, an underscore or a line break. We therefore need to
+    // filter the boundaries returned by ICU's WordBreakIterator and return a
+    // subset of them. For example we should exclude a word boundary that is
+    // between two space characters, "Hello | there".
 
-  int pos = iterator->first();
-  while (pos >= 0 && pos < len) {
-    int next = iterator->next();
-    if (IsWordTextBreak(iterator))
-      words.push_back(WordBoundaries(pos, next));
-    pos = next;
+    // Case 1: A new word should start if |offset| is before an alphanumeric
+    // character, an underscore or a hard line break
+    if (WTF::unicode::IsAlphanumeric(text[offset]) ||
+        text[offset] == kLowLineCharacter ||
+        text[offset] == kNewlineCharacter ||
+        text[offset] == kCarriageReturnCharacter) {
+      // We found a new word start or end. Append the previous word (if it
+      // exists) to the results, otherwise save this offset as a word start.
+      if (word_start)
+        words.emplace_back(*word_start, offset);
+      word_start = offset;
+
+      // Case 2: A new word should start before and end after a series of
+      // punctuation marks, i.e., Consecutive punctuation marks should be
+      // accumulated into a single word. For example, "|Hello|+++---|there|".
+    } else if (WTF::unicode::IsPunct(text[offset])) {
+      // At beginning of text, or the previous character was a punctuation
+      // symbol.
+      if (offset == 0 || !WTF::unicode::IsPunct(text[offset - 1])) {
+        if (word_start)
+          words.emplace_back(*word_start, offset);
+        word_start = offset;
+      }
+      continue;  // Skip to the end of the punctuation run.
+
+      // Case 3: A word should end if |offset| is proceeded by an alphanumeric
+      // character, a series of punctuation marks, an underscore or a hard line
+      // break.
+    } else if (offset > 0) {
+      UChar prev_character = text[offset - 1];
+      if (WTF::unicode::IsAlphanumeric(prev_character) ||
+          WTF::unicode::IsPunct(prev_character) ||
+          prev_character == kLowLineCharacter ||
+          prev_character == kNewlineCharacter ||
+          prev_character == kCarriageReturnCharacter) {
+        if (word_start) {
+          words.emplace_back(*word_start, offset);
+          word_start = absl::nullopt;
+        }
+      }
+    }
+  }
+
+  // Case 4: If the character at last |offset| in |text| was an alphanumeric
+  // character, a punctuation mark, an underscore, or a line break, then it
+  // would have started a new word. We need to add its corresponding word end
+  // boundary which should be at |text|'s length.
+  if (word_start) {
+    words.emplace_back(*word_start, text.length());
+    word_start = absl::nullopt;
   }
 }
 
@@ -228,7 +331,7 @@ String LegacyAbstractInlineTextBox::GetText() const {
 
   String result = inline_text_box_->GetText();
 
-  // Simplify all whitespace to just a space character, except for
+  // Change all whitespace to just a space character, except for
   // actual line breaks.
   if (!inline_text_box_->IsLineBreak())
     result = result.SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace);
@@ -241,13 +344,8 @@ String LegacyAbstractInlineTextBox::GetText() const {
   }
 
   // Insert a space at the end of this if necessary.
-  if (InlineTextBox* next = inline_text_box_->NextForSameLayoutObject()) {
-    if (next->Start() > inline_text_box_->Start() + inline_text_box_->Len() &&
-        result.length() && !result.Right(1).ContainsOnlyWhitespaceOrEmpty() &&
-        next->GetText().length() &&
-        !next->GetText().Left(1).ContainsOnlyWhitespaceOrEmpty())
-      return result + " ";
-  }
+  if (NeedsTrailingSpace())
+    return result + " ";
 
   return result;
 }
@@ -272,9 +370,8 @@ scoped_refptr<AbstractInlineTextBox> LegacyAbstractInlineTextBox::NextOnLine()
     return nullptr;
 
   InlineBox* next = inline_text_box_->NextOnLine();
-  if (next && next->IsInlineTextBox())
-    return GetOrCreate(ToInlineTextBox(next)->GetLineLayoutItem(),
-                       ToInlineTextBox(next));
+  if (auto* text_box = DynamicTo<InlineTextBox>(next))
+    return GetOrCreate(text_box->GetLineLayoutItem(), text_box);
 
   return nullptr;
 }
@@ -287,9 +384,8 @@ LegacyAbstractInlineTextBox::PreviousOnLine() const {
     return nullptr;
 
   InlineBox* previous = inline_text_box_->PrevOnLine();
-  if (previous && previous->IsInlineTextBox())
-    return GetOrCreate(ToInlineTextBox(previous)->GetLineLayoutItem(),
-                       ToInlineTextBox(previous));
+  if (auto* text_box = DynamicTo<InlineTextBox>(previous))
+    return GetOrCreate(text_box->GetLineLayoutItem(), text_box);
 
   return nullptr;
 }
@@ -303,23 +399,18 @@ bool LegacyAbstractInlineTextBox::IsLineBreak() const {
   return inline_text_box_->IsLineBreak();
 }
 
-const NGOffsetMapping* LegacyAbstractInlineTextBox::GetOffsetMapping() const {
-  const auto* text_node = DynamicTo<Text>(GetNode());
-
-  LayoutBlockFlow& block_flow = *NGOffsetMapping::GetInlineFormattingContextOf(
-      *text_node->GetLayoutObject());
-  const NGOffsetMapping* offset_mapping =
-      NGInlineNode::GetOffsetMapping(&block_flow);
-
-  if (UNLIKELY(!offset_mapping)) {
-    // TODO(crbug.com/955678): There are certain cases where we fail to
-    // compute // |NGOffsetMapping| due to failures in layout. As the root
-    // cause is hard to fix at the moment, we work around it here so that the
-    // production build doesn't crash.
-    NOTREACHED();
-    return nullptr;
+bool LegacyAbstractInlineTextBox::NeedsTrailingSpace() const {
+  if (const InlineTextBox* next = inline_text_box_->NextForSameLayoutObject()) {
+    return next->Start() >
+               inline_text_box_->Start() + inline_text_box_->Len() &&
+           inline_text_box_->GetText().length() &&
+           !inline_text_box_->GetText()
+                .Right(1)
+                .ContainsOnlyWhitespaceOrEmpty() &&
+           next->GetText().length() &&
+           !next->GetText().Left(1).ContainsOnlyWhitespaceOrEmpty();
   }
-  return offset_mapping;
+  return false;
 }
 
 }  // namespace blink

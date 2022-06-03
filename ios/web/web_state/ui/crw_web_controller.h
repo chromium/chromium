@@ -11,6 +11,10 @@
 #import "ios/web/web_state/ui/crw_touch_tracking_recognizer.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace web {
 
 enum class NavigationInitiationType;
@@ -18,7 +22,7 @@ enum class WKNavigationState;
 
 }  // namespace web
 
-@class CRWJSInjector;
+@class CRWJSInjectionReceiver;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
@@ -67,6 +71,11 @@ class WebStateImpl;
 @property(nonatomic, readonly, assign, getter=isWebProcessCrashed)
     BOOL webProcessCrashed;
 
+// Whether or not the user is currently interacting with the web content
+// presented by this controller.
+@property(nonatomic, readonly, assign, getter=isUserInteracting)
+    BOOL userInteracting;
+
 // Whether the WebController is visible. Returns YES after wasShown call and
 // NO after wasHidden() call.
 @property(nonatomic, assign, getter=isVisible) BOOL visible;
@@ -75,8 +84,8 @@ class WebStateImpl;
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
-// JavaScript injector.
-@property(nonatomic, strong, readonly) CRWJSInjector* jsInjector;
+@property(strong, nonatomic, readonly)
+    CRWJSInjectionReceiver* jsInjectionReceiver;
 
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
@@ -90,18 +99,9 @@ class WebStateImpl;
 // stored in navigation context.
 - (web::NavigationItemImpl*)lastPendingItemForNewNavigation;
 
-// Replaces the currently displayed content with |contentView|.  The content
-// view will be dismissed for the next navigation.
-- (void)showTransientContentView:(UIView<CRWScrollableContent>*)contentView;
-
-// Clear the transient content view, if one is shown. This is a delegate
-// method for WebStateImpl::ClearTransientContent(). Callers should use the
-// WebStateImpl API instead of calling this method directly.
-- (void)clearTransientContentView;
-
 // Removes the back WebView. DANGER: this method is exposed for the sole purpose
-// of allowing WKBasedNavigationManagerImpl to reset the back-forward history.
-// Please reconsider before using this method.
+// of allowing NavigationManagerImpl to reset the back-forward history. Please
+// reconsider before using this method.
 - (void)removeWebView;
 
 // Call when the CRWWebController needs go away. Caller must reset the delegate
@@ -115,7 +115,6 @@ class WebStateImpl;
 - (BOOL)isViewAlive;
 
 // Returns YES if the current live view is a web view with HTML.
-// TODO(crbug.com/949651): Remove once JSFindInPageManager is removed.
 - (BOOL)contentIsHTML;
 
 // Returns the CRWWebController's view of the current URL. Moreover, this method
@@ -156,13 +155,6 @@ class WebStateImpl;
 // Notifies the CRWWebController that it has been hidden.
 - (void)wasHidden;
 
-// Called when NavigationManager has completed go to index same-document
-// navigation. Updates HTML5 history state, current document URL and sends
-// approprivate navigation and loading WebStateObserver callbacks.
-- (void)didFinishGoToIndexSameDocumentNavigationWithType:
-            (web::NavigationInitiationType)type
-                                          hasUserGesture:(BOOL)hasUserGesture;
-
 // Instructs WKWebView to navigate to the given navigation item. |wk_item| and
 // |item| must point to the same navigation item. Calling this method may
 // result in an iframe navigation.
@@ -178,8 +170,56 @@ class WebStateImpl;
 - (void)takeSnapshotWithRect:(CGRect)rect
                   completion:(void (^)(UIImage* snapshot))completion;
 
+// Creates PDF representation of the web page and invokes the |completion| with
+// the NSData of the PDF or nil if a PDF couldn't be generated.
+- (void)createFullPagePDFWithCompletion:
+    (void (^)(NSData* PDFDocumentData))completion;
+
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
+
+// Removes the webView from the view hierarchy.
+- (void)removeWebViewFromViewHierarchy;
+// Adds the webView back in the view hierarchy.
+- (void)addWebViewToViewHierarchy;
+
+// Notifies this controller that the surface size has changed due to
+// multiwindow action or orientation change.
+- (void)surfaceSizeChanged;
+
+// Injects an opaque NSData block into a WKWebView to restore or serialize. Only
+// supported on iOS15+. On earlier iOS versions, |setSessionStateData| is
+// a no-op, and |sessionStateData| will return nil.
+- (BOOL)setSessionStateData:(NSData*)data;
+- (NSData*)sessionStateData;
+
+// Injects the windowID into the main frame of the current webpage.
+// TODO(crbug.com/905939): Remove WindowID.
+- (void)injectWindowID;
+
+#pragma mark Navigation Message Handlers
+
+// Handles a navigation hash change message for the current webpage.
+- (void)handleNavigationHashChange;
+
+// Handles a navigation will change message for the current webpage.
+- (void)handleNavigationWillChangeState;
+
+// Handles a navigation did push state message for the current webpage.
+- (void)handleNavigationDidPushStateMessage:(base::Value*)message;
+
+// Handles a navigation did replace state message for the current webpage.
+- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message;
+
+#pragma mark CRWJSInjectionEvaluator
+
+// Do not use these executeJavaScript functions directly, prefer
+// WebFrame::CallJavaScriptFunction if possible, otherwise use
+// WebState::ExecuteJavaScript and WebState::ExecuteUserJavaScript.
+- (void)executeJavaScript:(NSString*)javascript
+        completionHandler:(void (^)(id result, NSError* error))completion;
+- (void)executeUserJavaScript:(NSString*)javascript
+            completionHandler:(void (^)(id result, NSError* error))completion;
 
 @end
 

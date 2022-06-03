@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_EFFECT_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_EFFECT_MODEL_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -52,9 +53,9 @@ class CORE_EXPORT EffectModel : public GarbageCollected<EffectModel> {
     kCompositeAdd,
     kCompositeAccumulate,
   };
-  static base::Optional<CompositeOperation> StringToCompositeOperation(
+  static absl::optional<CompositeOperation> StringToCompositeOperation(
       const String&);
-  static String CompositeOperationToString(base::Optional<CompositeOperation>);
+  static String CompositeOperationToString(absl::optional<CompositeOperation>);
 
   EffectModel() = default;
   virtual ~EffectModel() = default;
@@ -68,7 +69,7 @@ class CORE_EXPORT EffectModel : public GarbageCollected<EffectModel> {
   virtual bool IsTransformRelatedEffect() const { return false; }
   virtual bool IsKeyframeEffectModel() const { return false; }
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

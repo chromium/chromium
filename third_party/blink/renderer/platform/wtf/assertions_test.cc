@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
+#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 

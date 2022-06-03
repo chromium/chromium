@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <script type="module">
+      import {GeolocationMock} from './geolocation-mock.js';
+
+      window.init = function() {
+          const mock = new GeolocationMock();
+          mock.setGeolocationPermission(true);
+          mock.setGeolocationPosition(51.478, -0.166, 100);
+          window.parent.onIframeReady()
+      }
+    </script>
+  </head>
+  <body onload="init()">
+  </body>
+</html>

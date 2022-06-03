@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
 
@@ -17,8 +17,8 @@ ProcessResourceUsage::ProcessResourceUsage(
     mojo::PendingRemote<content::mojom::ResourceUsageReporter> service)
     : service_(std::move(service)), update_in_progress_(false) {
   service_.set_disconnect_handler(
-      base::Bind(&ProcessResourceUsage::RunPendingRefreshCallbacks,
-                 base::Unretained(this)));
+      base::BindOnce(&ProcessResourceUsage::RunPendingRefreshCallbacks,
+                     base::Unretained(this)));
 }
 
 ProcessResourceUsage::~ProcessResourceUsage() {
@@ -28,26 +28,28 @@ ProcessResourceUsage::~ProcessResourceUsage() {
 void ProcessResourceUsage::RunPendingRefreshCallbacks() {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  for (const auto& callback : refresh_callbacks_)
-    task_runner->PostTask(FROM_HERE, callback);
-  refresh_callbacks_.clear();
+  base::circular_deque<base::OnceClosure> callbacks;
+  std::swap(callbacks, refresh_callbacks_);
+  for (auto& callback : callbacks)
+    task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
-void ProcessResourceUsage::Refresh(const base::Closure& callback) {
+void ProcessResourceUsage::Refresh(base::OnceClosure callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!service_ || !service_.is_connected()) {
     if (!callback.is_null())
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(callback));
     return;
   }
 
   if (!callback.is_null())
-    refresh_callbacks_.push_back(callback);
+    refresh_callbacks_.push_back(std::move(callback));
 
   if (!update_in_progress_) {
     update_in_progress_ = true;
-    service_->GetUsageData(base::Bind(&ProcessResourceUsage::OnRefreshDone,
-                                      base::Unretained(this)));
+    service_->GetUsageData(base::BindOnce(&ProcessResourceUsage::OnRefreshDone,
+                                          base::Unretained(this)));
   }
 }
 

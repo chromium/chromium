@@ -6,9 +6,7 @@
 visibility = [ "//chrome/chrome_cleaner/*" ]
 
 source_set("http_status_codes") {
-  sources = [
-    "http_status_codes.h",
-  ]
+  sources = [ "http_status_codes.h" ]
 }
 
 source_set("http") {

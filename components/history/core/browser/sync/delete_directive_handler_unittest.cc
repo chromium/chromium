@@ -19,9 +19,12 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/sync/model/fake_sync_change_processor.h"
-#include "components/sync/model/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/sync_error_factory.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/history_delete_directive_specifics.pb.h"
+#include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,12 +33,16 @@ namespace history {
 namespace {
 
 base::Time UnixUsecToTime(int64_t usec) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(usec);
+  return base::Time::UnixEpoch() + base::Microseconds(usec);
 }
 
 class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
  public:
   TestHistoryBackendDelegate() {}
+
+  TestHistoryBackendDelegate(const TestHistoryBackendDelegate&) = delete;
+  TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
+      delete;
 
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
@@ -51,12 +58,9 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term) override {}
+                                      const std::u16string& term) override {}
   void NotifyKeywordSearchTermDeleted(URLID url_id) override {}
   void DBLoaded() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestHistoryBackendDelegate);
 };
 
 void ScheduleDBTask(scoped_refptr<HistoryBackend> history_backend,
@@ -81,7 +85,7 @@ void CheckDirectiveProcessingResult(
     return;
   }
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult, timeout,
                                 change_processor, num_changes));
@@ -115,19 +119,27 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
     return history_backend_->QueryURL(url, /*want_visits=*/true);
   }
 
+  HistoryDeleteDirectiveHandlerTest(const HistoryDeleteDirectiveHandlerTest&) =
+      delete;
+  HistoryDeleteDirectiveHandlerTest& operator=(
+      const HistoryDeleteDirectiveHandlerTest&) = delete;
+
   ~HistoryDeleteDirectiveHandlerTest() override { history_backend_->Closing(); }
 
   scoped_refptr<HistoryBackend> history_backend() { return history_backend_; }
 
   DeleteDirectiveHandler* handler() { return delete_directive_handler_.get(); }
 
+  // DeleteDirectiveHandler doesn't actually read the client tag, so a fake
+  // constant is used in tests.
+  const syncer::ClientTagHash kFakeClientTagHash =
+      syncer::ClientTagHash::FromHashed("unused");
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
   scoped_refptr<HistoryBackend> history_backend_;
   std::unique_ptr<DeleteDirectiveHandler> delete_directive_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectiveHandlerTest);
 };
 
 // Tests calling WaitUntilReadyToSync() after the backend has already been
@@ -164,8 +176,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
   sync_pb::GlobalIdDirective* global_id_directive =
       delete_directive.mutable_global_id_directive();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(1))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(1)).ToInternalValue());
 
   syncer::FakeSyncChangeProcessor change_processor;
 
@@ -176,17 +187,16 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
               std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
                   &change_processor),
               std::unique_ptr<syncer::SyncErrorFactory>())
-          .error()
-          .IsSet());
+          .has_value());
 
-  syncer::SyncError err =
+  absl::optional<syncer::ModelError> err =
       handler()->ProcessLocalDeleteDirective(delete_directive);
-  EXPECT_FALSE(err.IsSet());
+  EXPECT_FALSE(err.has_value());
   EXPECT_EQ(1u, change_processor.changes().size());
 
   handler()->StopSyncing(syncer::HISTORY_DELETE_DIRECTIVES);
   err = handler()->ProcessLocalDeleteDirective(delete_directive);
-  EXPECT_TRUE(err.IsSet());
+  EXPECT_TRUE(err.has_value());
   EXPECT_EQ(1u, change_processor.changes().size());
 }
 
@@ -212,20 +222,20 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
       entity_specs.mutable_history_delete_directive()
           ->mutable_global_id_directive();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(6))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(6)).ToInternalValue());
   global_id_directive->set_start_time_usec(3);
   global_id_directive->set_end_time_usec(10);
-  directives.push_back(syncer::SyncData::CreateRemoteData(1, entity_specs));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
 
   // 2nd directive.
   global_id_directive->Clear();
   global_id_directive->add_global_id(
-      (base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(17))
-          .ToInternalValue());
+      (base::Time::UnixEpoch() + base::Microseconds(17)).ToInternalValue());
   global_id_directive->set_start_time_usec(13);
   global_id_directive->set_end_time_usec(19);
-  directives.push_back(syncer::SyncData::CreateRemoteData(2, entity_specs));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
 
   syncer::FakeSyncChangeProcessor change_processor;
   EXPECT_FALSE(handler()
@@ -235,16 +245,14 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
                            new syncer::SyncChangeProcessorWrapperForTest(
                                &change_processor)),
                        std::unique_ptr<syncer::SyncErrorFactory>())
-                   .error()
-                   .IsSet());
+                   .has_value());
 
   // Inject a task to check status and keep message loop filled before directive
   // processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url);
@@ -260,9 +268,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
   const syncer::SyncChangeList& sync_changes = change_processor.changes();
   ASSERT_EQ(2u, sync_changes.size());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[0].change_type());
-  EXPECT_EQ(1, syncer::SyncDataRemote(sync_changes[0].sync_data()).GetId());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[1].change_type());
-  EXPECT_EQ(2, syncer::SyncDataRemote(sync_changes[1].sync_data()).GetId());
 }
 
 // Create delete directives for time ranges.  The expected entries should be
@@ -287,13 +293,15 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
           ->mutable_time_range_directive();
   time_range_directive->set_start_time_usec(2);
   time_range_directive->set_end_time_usec(5);
-  directives.push_back(syncer::SyncData::CreateRemoteData(1, entity_specs));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
 
   // 2nd directive.
   time_range_directive->Clear();
   time_range_directive->set_start_time_usec(8);
   time_range_directive->set_end_time_usec(10);
-  directives.push_back(syncer::SyncData::CreateRemoteData(2, entity_specs));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs, kFakeClientTagHash));
 
   syncer::FakeSyncChangeProcessor change_processor;
   EXPECT_FALSE(handler()
@@ -303,16 +311,14 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
                            new syncer::SyncChangeProcessorWrapperForTest(
                                &change_processor)),
                        std::unique_ptr<syncer::SyncErrorFactory>())
-                   .error()
-                   .IsSet());
+                   .has_value());
 
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url);
@@ -326,9 +332,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
   const syncer::SyncChangeList& sync_changes = change_processor.changes();
   ASSERT_EQ(2u, sync_changes.size());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[0].change_type());
-  EXPECT_EQ(1, syncer::SyncDataRemote(sync_changes[0].sync_data()).GetId());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[1].change_type());
-  EXPECT_EQ(2, syncer::SyncDataRemote(sync_changes[1].sync_data()).GetId());
 }
 
 // Create a delete directive for urls.  The expected entries should be
@@ -355,13 +359,15 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
       entity_specs1.mutable_history_delete_directive()->mutable_url_directive();
   url_directive->set_url(test_url1.spec());
   url_directive->set_end_time_usec(8);
-  directives.push_back(syncer::SyncData::CreateRemoteData(1, entity_specs1));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs1, kFakeClientTagHash));
   sync_pb::EntitySpecifics entity_specs2;
   url_directive =
       entity_specs2.mutable_history_delete_directive()->mutable_url_directive();
   url_directive->set_url(test_url2.spec());
   url_directive->set_end_time_usec(8);
-  directives.push_back(syncer::SyncData::CreateRemoteData(2, entity_specs2));
+  directives.push_back(
+      syncer::SyncData::CreateRemoteData(entity_specs2, kFakeClientTagHash));
 
   syncer::FakeSyncChangeProcessor change_processor;
   EXPECT_FALSE(handler()
@@ -371,16 +377,14 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
                            new syncer::SyncChangeProcessorWrapperForTest(
                                &change_processor)),
                        std::unique_ptr<syncer::SyncErrorFactory>())
-                   .error()
-                   .IsSet());
+                   .has_value());
 
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckDirectiveProcessingResult,
-                     base::Time::Now() + base::TimeDelta::FromSeconds(10),
-                     &change_processor, 2));
+      FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
+                                base::Time::Now() + base::Seconds(10),
+                                &change_processor, 2));
   base::RunLoop().RunUntilIdle();
 
   QueryURLResult query = QueryURL(test_url1);
@@ -392,9 +396,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
   const syncer::SyncChangeList& sync_changes = change_processor.changes();
   ASSERT_EQ(2u, sync_changes.size());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[0].change_type());
-  EXPECT_EQ(1, syncer::SyncDataRemote(sync_changes[0].sync_data()).GetId());
   EXPECT_EQ(syncer::SyncChange::ACTION_DELETE, sync_changes[1].change_type());
-  EXPECT_EQ(2, syncer::SyncDataRemote(sync_changes[1].sync_data()).GetId());
 }
 
 }  // namespace

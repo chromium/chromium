@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 18: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 This tests that frame used when setting eventListeners on an XMLHttpRequest using addEventListener, is the requests frame. (rdar://problem/5426142). This test passes if you don't see an alert dialog with the domain of "localhost" in it and an "Unsafe JavaScript" warning is logged to the console.
 
  

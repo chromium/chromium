@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
+#include <sstream>
+
 #include "base/format_macros.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +19,53 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+// Define static storage for trace event categories (see
+// PERFETTO_DEFINE_CATEGORIES).
+PERFETTO_TRACK_EVENT_STATIC_STORAGE();
+
+namespace perfetto {
+namespace legacy {
+
+template <>
+perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
+}
+
+#if defined(OS_WIN)
+template <>
+perfetto::ThreadTrack ConvertThreadId(const int& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
+}
+#endif  // defined(OS_WIN)
+
+}  // namespace legacy
+
+TraceTimestamp
+TraceTimestampTraits<::base::TimeTicks>::ConvertTimestampToTraceTimeNs(
+    const ::base::TimeTicks& ticks) {
+  return {TrackEvent::GetTraceClockId(),
+          static_cast<uint64_t>(ticks.since_origin().InNanoseconds())};
+}
+
+namespace internal {
+
+void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
+                          ::base::TimeTicks ticks) {
+  annotation->set_uint_value(ticks.since_origin().InMilliseconds());
+}
+
+void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
+                          ::base::Time time) {
+  annotation->set_uint_value(time.since_origin().InMilliseconds());
+}
+
+}  // namespace internal
+}  // namespace perfetto
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 namespace trace_event {
@@ -311,42 +359,3 @@ void TraceEvent::AppendPrettyPrinted(std::ostringstream* out) const {
 
 }  // namespace trace_event
 }  // namespace base
-
-namespace trace_event_internal {
-
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-TraceID::AsConvertableToTraceFormat() const {
-  auto value = std::make_unique<base::trace_event::TracedValue>();
-
-  if (scope_ != kGlobalScope)
-    value->SetString("scope", scope_);
-
-  const char* id_field_name = "id";
-  if (id_flags_ == TRACE_EVENT_FLAG_HAS_GLOBAL_ID) {
-    id_field_name = "global";
-    value->BeginDictionary("id2");
-  } else if (id_flags_ == TRACE_EVENT_FLAG_HAS_LOCAL_ID) {
-    id_field_name = "local";
-    value->BeginDictionary("id2");
-  } else if (id_flags_ != TRACE_EVENT_FLAG_HAS_ID) {
-    NOTREACHED() << "Unrecognized ID flag";
-  }
-
-  if (has_prefix_) {
-    value->SetString(id_field_name,
-                     base::StringPrintf("0x%" PRIx64 "/0x%" PRIx64,
-                                        static_cast<uint64_t>(prefix_),
-                                        static_cast<uint64_t>(raw_id_)));
-  } else {
-    value->SetString(
-        id_field_name,
-        base::StringPrintf("0x%" PRIx64, static_cast<uint64_t>(raw_id_)));
-  }
-
-  if (id_flags_ != TRACE_EVENT_FLAG_HAS_ID)
-    value->EndDictionary();
-
-  return std::move(value);
-}
-
-}  // namespace trace_event_internal

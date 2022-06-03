@@ -22,6 +22,10 @@
 typedef int GLsizei;
 typedef int GLint;
 
+namespace gfx {
+class ColorSpace;
+}  // namespace gfx
+
 namespace gpu {
 
 class CommandBufferServiceBase;
@@ -60,6 +64,10 @@ class GPU_EXPORT CommonDecoder {
   class GPU_EXPORT Bucket {
    public:
     Bucket();
+
+    Bucket(const Bucket&) = delete;
+    Bucket& operator=(const Bucket&) = delete;
+
     ~Bucket();
 
     size_t size() const {
@@ -108,12 +116,14 @@ class GPU_EXPORT CommonDecoder {
 
     size_t size_;
     ::std::unique_ptr<int8_t[]> data_;
-
-    DISALLOW_COPY_AND_ASSIGN(Bucket);
   };
 
   explicit CommonDecoder(DecoderClient* client,
                          CommandBufferServiceBase* command_buffer_service);
+
+  CommonDecoder(const CommonDecoder&) = delete;
+  CommonDecoder& operator=(const CommonDecoder&) = delete;
+
   ~CommonDecoder();
 
   CommandBufferServiceBase* command_buffer_service() const {
@@ -193,6 +203,13 @@ class GPU_EXPORT CommonDecoder {
   // watchdog checks in CommandExecutor().
   virtual void ExitCommandProcessingEarly() {}
 
+  // Read a serialized gfx::ColorSpace. Return true on success and false if the
+  // serialization was invalid.
+  bool ReadColorSpace(uint32_t shm_id,
+                      uint32_t shm_offset,
+                      uint32_t color_space_size,
+                      gfx::ColorSpace* color_space);
+
  private:
   // Generate a member function prototype for each command in an automated and
   // typesafe way.
@@ -224,8 +241,6 @@ class GPU_EXPORT CommonDecoder {
 
   // A table of CommandInfo for all the commands.
   static const CommandInfo command_info[];
-
-  DISALLOW_COPY_AND_ASSIGN(CommonDecoder);
 };
 
 }  // namespace gpu

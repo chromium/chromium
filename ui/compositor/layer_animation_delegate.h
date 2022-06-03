@@ -5,12 +5,13 @@
 #ifndef UI_COMPOSITOR_LAYER_ANIMATION_DELEGATE_H_
 #define UI_COMPOSITOR_LAYER_ANIMATION_DELEGATE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 class Layer;
@@ -59,7 +60,9 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual cc::Layer* GetCcLayer() const = 0;
   virtual LayerAnimatorCollection* GetLayerAnimatorCollection() = 0;
   virtual LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() = 0;
-  virtual int GetFrameNumber() const = 0;
+  // Returns absl::nullopt if the frame number is not available, e.g. when
+  // Layer is not attached to a Compositor. Otherwise, returns the frame number.
+  virtual absl::optional<int> GetFrameNumber() const = 0;
   virtual float GetRefreshRate() const = 0;
 
  protected:

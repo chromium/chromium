@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that expressions have thrown objects.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function throwError()
@@ -41,9 +41,9 @@
     ['setTimeout(rejectWithObject, 0); undefined', 3], ['rejectWithObject();', 3]
   ];
 
-  function nextExpression() {
+  async function nextExpression() {
     if (!expressions.length) {
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       TestRunner.completeTest();
       return;
     }

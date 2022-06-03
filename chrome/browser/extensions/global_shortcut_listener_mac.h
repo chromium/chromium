@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace extensions {
@@ -31,6 +30,11 @@ class GlobalShortcutListenerMac : public GlobalShortcutListener,
                                   public ui::MediaKeysListener::Delegate {
  public:
   GlobalShortcutListenerMac();
+
+  GlobalShortcutListenerMac(const GlobalShortcutListenerMac&) = delete;
+  GlobalShortcutListenerMac& operator=(const GlobalShortcutListenerMac&) =
+      delete;
+
   ~GlobalShortcutListenerMac() override;
 
  private:
@@ -88,8 +92,6 @@ class GlobalShortcutListenerMac : public GlobalShortcutListener,
 
   // Media keys listener.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalShortcutListenerMac);
 };
 
 }  // namespace extensions

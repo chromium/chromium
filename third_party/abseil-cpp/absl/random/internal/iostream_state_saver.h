@@ -24,6 +24,7 @@
 #include "absl/numeric/int128.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
 // The null_state_saver does nothing.
@@ -191,8 +192,8 @@ struct stream_u128_helper<absl::uint128> {
 
   template <typename OStream>
   inline void write(absl::uint128 val, OStream& out) {
-    uint64_t h = Uint128High64(val);
-    uint64_t l = Uint128Low64(val);
+    uint64_t h = absl::Uint128High64(val);
+    uint64_t l = absl::Uint128Low64(val);
     out << h << out.fill() << l;
   }
 };
@@ -238,6 +239,7 @@ inline FloatType read_floating_point(IStream& is) {
 }
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_IOSTREAM_STATE_SAVER_H_

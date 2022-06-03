@@ -4,11 +4,13 @@
 
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 
-namespace syncer {
+#include "base/logging.h"
+
+namespace invalidation {
 
 FCMSyncNetworkChannel::FCMSyncNetworkChannel() : received_messages_count_(0) {}
 
-FCMSyncNetworkChannel::~FCMSyncNetworkChannel() {}
+FCMSyncNetworkChannel::~FCMSyncNetworkChannel() = default;
 
 void FCMSyncNetworkChannel::SetMessageReceiver(
     MessageCallback incoming_receiver) {
@@ -58,4 +60,4 @@ bool FCMSyncNetworkChannel::DeliverToken(const std::string& token) {
   return true;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

@@ -8,9 +8,10 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
 
@@ -29,6 +30,8 @@ class PerContextData;
 class GIN_EXPORT ContextHolder {
  public:
   explicit ContextHolder(v8::Isolate* isolate);
+  ContextHolder(const ContextHolder&) = delete;
+  ContextHolder& operator=(const ContextHolder&) = delete;
   ~ContextHolder();
 
   v8::Isolate* isolate() const { return isolate_; }
@@ -43,8 +46,6 @@ class GIN_EXPORT ContextHolder {
   v8::Isolate* isolate_;
   v8::UniquePersistent<v8::Context> context_;
   std::unique_ptr<PerContextData> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextHolder);
 };
 
 }  // namespace gin

@@ -1,0 +1,13 @@
+Name: transport-api
+Short Name: transport-api
+URL: https://developers.google.com/android/guides/setup
+Version: 2.2.1
+License: Android Software Development Kit License
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Interfaces for data logging in GmsCore SDKs.
+
+Local Modifications:
+No modifications.

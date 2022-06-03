@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
-
 #include "device/vr/openxr/openxr_path_helper.h"
+
+#include "base/check.h"
 #include "device/vr/openxr/openxr_util.h"
 
 namespace device {
@@ -13,43 +13,69 @@ OpenXRPathHelper::OpenXRPathHelper() {}
 
 OpenXRPathHelper::~OpenXRPathHelper() = default;
 
-XrResult OpenXRPathHelper::Initialize(XrInstance instance) {
+XrResult OpenXRPathHelper::Initialize(XrInstance instance, XrSystemId system) {
   DCHECK(!initialized_);
 
-  // Create path declarations
-  RETURN_IF_XR_FAILED(xrStringToPath(
-      instance, "/interaction_profiles/microsoft/motion_controller",
-      &declared_paths_.microsoft_motion_controller_interaction_profile));
-  RETURN_IF_XR_FAILED(xrStringToPath(
-      instance, "/interaction_profiles/khr/simple_controller",
-      &declared_paths_.khronos_simple_controller_interaction_profile));
+  // Get the system properties, which is needed to determine the name of the
+  // hardware being used. This helps disambiguate certain sets of controllers.
+  XrSystemProperties system_properties = {XR_TYPE_SYSTEM_PROPERTIES};
+  RETURN_IF_XR_FAILED(
+      xrGetSystemProperties(instance, system, &system_properties));
+  system_name_ = std::string(system_properties.systemName);
 
+  // Create path declarations
+  for (const auto& profile : GetOpenXrControllerInteractionProfiles()) {
+    RETURN_IF_XR_FAILED(
+        xrStringToPath(instance, profile.path.c_str(),
+                       &(declared_interaction_profile_paths_[profile.type])));
+  }
   initialized_ = true;
 
   return XR_SUCCESS;
 }
 
-std::vector<std::string> OpenXRPathHelper::GetInputProfiles(
+OpenXrInteractionProfileType OpenXRPathHelper::GetInputProfileType(
     XrPath interaction_profile) const {
   DCHECK(initialized_);
-
-  if (interaction_profile ==
-      declared_paths_.microsoft_motion_controller_interaction_profile) {
-    return {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"};
+  for (auto it : declared_interaction_profile_paths_) {
+    if (it.second == interaction_profile) {
+      return it.first;
+    }
   }
-  if (interaction_profile ==
-      declared_paths_.khronos_simple_controller_interaction_profile) {
-    return {"generic-button"};
+  return OpenXrInteractionProfileType::kCount;
+}
+
+std::vector<std::string> OpenXRPathHelper::GetInputProfiles(
+    OpenXrInteractionProfileType interaction_profile) const {
+  DCHECK(initialized_);
+
+  const auto& input_profiles_map = GetOpenXrInputProfilesMap();
+  if (input_profiles_map.contains(interaction_profile)) {
+    const OpenXrSystemInputProfiles* active_system = nullptr;
+    for (const auto& system : input_profiles_map.at(interaction_profile)) {
+      if (system.system_name.empty()) {
+        active_system = &system;
+      } else if (system_name_.compare(system.system_name) == 0) {
+        active_system = &system;
+        break;
+      }
+    }
+
+    // Each interaction profile should always at least have a null system_name
+    // entry.
+    DCHECK(active_system);
+    return active_system->input_profiles;
   }
 
   return {};
 }
 
-const OpenXRPathHelper::DeclaredPaths& OpenXRPathHelper::GetDeclaredPaths()
-    const {
-  DCHECK(initialized_);
-  return declared_paths_;
+XrPath OpenXRPathHelper::GetInteractionProfileXrPath(
+    OpenXrInteractionProfileType type) const {
+  if (type == OpenXrInteractionProfileType::kCount) {
+    return XR_NULL_PATH;
+  }
+  return declared_interaction_profile_paths_.at(type);
 }
 
 }  // namespace device

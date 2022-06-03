@@ -2,6 +2,7 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/sab-polyfill.js"></script>
 </head>
 <body>
 <script>
@@ -31,10 +32,8 @@ shouldBe("new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, d
 shouldBe("new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).cancelable", "true");
 shouldEvaluateTo("new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).data", data);
 
-if (window.SharedArrayBuffer) {
-    data = new Uint8Array(new SharedArrayBuffer(3));
-    shouldThrow("new MIDIMessageEvent('eventType', { data: data })");
-}
+data = new Uint8Array(new SharedArrayBuffer(3));
+shouldThrow("new MIDIMessageEvent('eventType', { data: data })");
 
 </script>
 </body>

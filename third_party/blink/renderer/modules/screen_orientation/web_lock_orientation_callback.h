@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ORIENTATION_WEB_LOCK_ORIENTATION_CALLBACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ORIENTATION_WEB_LOCK_ORIENTATION_CALLBACK_H_
 
-#include "third_party/blink/public/common/screen_orientation/web_screen_orientation_type.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_error.h"
 
 namespace blink {

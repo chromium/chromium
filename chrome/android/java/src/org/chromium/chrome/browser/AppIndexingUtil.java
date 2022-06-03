@@ -15,16 +15,16 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.blink.mojom.document_metadata.CopylessPaste;
-import org.chromium.blink.mojom.document_metadata.WebPage;
+import org.chromium.blink.mojom.DocumentMetadata;
+import org.chromium.blink.mojom.WebPage;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.services.service_manager.InterfaceProvider;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,8 +58,8 @@ public class AppIndexingUtil {
         if (mTabModelSelectorImpl != null && isEnabledForDevice()) {
             mObserver = new TabModelSelectorTabObserver(mTabModelSelectorImpl) {
                 @Override
-                public void onPageLoadFinished(final Tab tab, String url) {
-                    extractCopylessPasteMetadata(tab);
+                public void onPageLoadFinished(final Tab tab, GURL url) {
+                    extractDocumentMetadata(tab);
                 }
 
                 @Override
@@ -80,7 +80,7 @@ public class AppIndexingUtil {
      * title of the page is reported to App Indexing.
      */
     @VisibleForTesting
-    void extractCopylessPasteMetadata(final Tab tab) {
+    void extractDocumentMetadata(final Tab tab) {
         if (!isEnabledForTab(tab)) return;
 
         // There are three conditions that can occur with respect to the cache.
@@ -88,7 +88,7 @@ public class AppIndexingUtil {
         // 2. Cache hit, but no entity was found. Ignore.
         // 3. Cache miss, we need to parse the page.
         // Note that page view is reported unconditionally.
-        final String url = tab.getUrl();
+        final String url = tab.getUrl().getSpec();
         if (wasPageVisitedRecently(url)) {
             if (lastPageVisitContainedEntity(url)) {
                 // Condition 1
@@ -103,12 +103,12 @@ public class AppIndexingUtil {
             // Condition 3
             RecordHistogram.recordEnumeratedHistogram(
                     "CopylessPaste.CacheHit", CacheHit.MISS, CacheHit.NUM_ENTRIES);
-            CopylessPaste copylessPaste = getCopylessPasteInterface(tab);
-            if (copylessPaste == null) {
+            DocumentMetadata documentMetadata = getDocumentMetadataInterface(tab);
+            if (documentMetadata == null) {
                 return;
             }
-            copylessPaste.getEntities(webpage -> {
-                copylessPaste.close();
+            documentMetadata.getEntities(webpage -> {
+                documentMetadata.close();
                 putCacheEntry(url, webpage != null);
                 if (sCallbackForTesting != null) {
                     sCallbackForTesting.onResult(webpage);
@@ -122,7 +122,7 @@ public class AppIndexingUtil {
     @VisibleForTesting
     void reportPageView(Tab tab) {
         if (!isEnabledForTab(tab)) return;
-        getAppIndexingReporter().reportWebPageView(tab.getUrl(), tab.getTitle());
+        getAppIndexingReporter().reportWebPageView(tab.getUrl().getSpec(), tab.getTitle());
     }
 
     @VisibleForTesting
@@ -165,17 +165,16 @@ public class AppIndexingUtil {
     }
 
     @VisibleForTesting
-    CopylessPaste getCopylessPasteInterface(Tab tab) {
+    DocumentMetadata getDocumentMetadataInterface(Tab tab) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null) return null;
 
         RenderFrameHost mainFrame = webContents.getMainFrame();
         if (mainFrame == null) return null;
 
-        InterfaceProvider interfaces = mainFrame.getRemoteInterfaces();
-        if (interfaces == null) return null;
+        if (!mainFrame.isRenderFrameCreated()) return null;
 
-        return interfaces.getInterface(CopylessPaste.MANAGER);
+        return mainFrame.getInterfaceToRendererFrame(DocumentMetadata.MANAGER);
     }
 
     @VisibleForTesting
@@ -190,8 +189,7 @@ public class AppIndexingUtil {
 
     @VisibleForTesting
     boolean isEnabledForTab(Tab tab) {
-        final String url = tab.getUrl();
-        boolean isHttpOrHttps = UrlUtilities.isHttpOrHttps(url);
+        boolean isHttpOrHttps = UrlUtilities.isHttpOrHttps(tab.getUrl());
         return isEnabledForDevice() && !tab.isIncognito() && isHttpOrHttps;
     }
 

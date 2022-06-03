@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 
+#import <MaterialComponents/MaterialPalettes.h>
+#import <MaterialComponents/MaterialTypography.h>
+
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,14 +36,8 @@ const CGFloat kHorizontalImageFixedSize = 40;
 const CGFloat kHorizontalErrorIconFixedSize = 25;
 }
 
-@interface CollectionViewAccountCell ()
-// Updates the cell's fonts and colors for the given |cellStyle|.
-- (void)updateForStyle:(CollectionViewCellStyle)cellStyle;
-@end
-
 @implementation CollectionViewAccountItem
 
-@synthesize cellStyle = _cellStyle;
 @synthesize image = _image;
 @synthesize text = _text;
 @synthesize detailText = _detailText;
@@ -57,7 +51,6 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   if (self) {
     self.cellClass = [CollectionViewAccountCell class];
     self.accessibilityTraits |= UIAccessibilityTraitButton;
-    _cellStyle = CollectionViewCellStyle::kMaterial;
     _enabled = YES;
   }
   return self;
@@ -68,7 +61,6 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 - (void)configureCell:(CollectionViewAccountCell*)cell {
   [super configureCell:cell];
 
-  [cell updateForStyle:self.cellStyle];
   cell.imageView.image = self.image;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
@@ -123,7 +115,6 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   if (self) {
     self.isAccessibilityElement = YES;
     [self addSubviews];
-    [self updateForStyle:CollectionViewCellStyle::kMaterial];
     [self setViewConstraints];
   }
   return self;
@@ -136,6 +127,9 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 
   _imageView = [[UIImageView alloc] init];
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _imageView.contentMode = UIViewContentModeCenter;
+  _imageView.layer.masksToBounds = YES;
+  _imageView.contentMode = UIViewContentModeScaleAspectFit;
   [contentView addSubview:_imageView];
 
   _errorIcon = [[UIImageView alloc] init];
@@ -144,30 +138,15 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 
   _textLabel = [[UILabel alloc] init];
   _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
+  _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [contentView addSubview:_textLabel];
 
   _detailTextLabel = [[UILabel alloc] init];
   _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
+  _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [contentView addSubview:_detailTextLabel];
-}
-
-- (void)updateForStyle:(CollectionViewCellStyle)cellStyle {
-  _imageView.contentMode = UIViewContentModeCenter;
-  _imageView.layer.masksToBounds = YES;
-  _imageView.contentMode = UIViewContentModeScaleAspectFit;
-
-  if (cellStyle == CollectionViewCellStyle::kUIKit) {
-    _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    _textLabel.textColor = UIColor.cr_labelColor;
-    _detailTextLabel.font =
-        [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
-    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
-  } else {
-    _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  }
 }
 
 // Set constraints on subviews.

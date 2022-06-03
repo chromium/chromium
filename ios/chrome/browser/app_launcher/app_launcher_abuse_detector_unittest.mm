@@ -12,23 +12,13 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const GURL kSourceUrl1("http://www.google.com");
-const GURL kSourceUrl2("http://www.goog.com");
-const GURL kSourceUrl3("http://www.goog.ab");
-const GURL kSourceUrl4("http://www.foo.com");
-const GURL kAppUrl1("facetime://+1354");
-const GURL kAppUrl2("facetime-audio://+1234");
-const GURL kAppUrl3("abc://abc");
-const GURL kAppUrl4("chrome://www.google.com");
-
-}  // namespace
-
 using AppLauncherAbuseDetectorTest = PlatformTest;
 
 // Tests cases when the same app is launched repeatedly from same source.
 TEST_F(AppLauncherAbuseDetectorTest,
        TestRepeatedAppLaunches_SameAppSameSource) {
+  const GURL kSourceUrl1("http://www.google.com");
+
   AppLauncherAbuseDetector* abuseDetector =
       [[AppLauncherAbuseDetector alloc] init];
   EXPECT_EQ(ExternalAppLaunchPolicyAllow,
@@ -59,6 +49,12 @@ TEST_F(AppLauncherAbuseDetectorTest,
 // Tests cases when same app is launched repeatedly from different sources.
 TEST_F(AppLauncherAbuseDetectorTest,
        TestRepeatedAppLaunches_SameAppDifferentSources) {
+  const GURL kSourceUrl1("http://www.google.com");
+  const GURL kSourceUrl2("http://www.goog.com");
+  const GURL kSourceUrl3("http://www.goog.ab");
+  const GURL kSourceUrl4("http://www.foo.com");
+  const GURL kAppUrl1("facetime://+1354");
+
   AppLauncherAbuseDetector* abuseDetector =
       [[AppLauncherAbuseDetector alloc] init];
   EXPECT_EQ(ExternalAppLaunchPolicyAllow,
@@ -90,6 +86,15 @@ TEST_F(AppLauncherAbuseDetectorTest,
 // Tests cases when different apps are launched from different sources.
 TEST_F(AppLauncherAbuseDetectorTest,
        TestRepeatedAppLaunches_DifferentAppsDifferentSources) {
+  const GURL kSourceUrl1("http://www.google.com");
+  const GURL kSourceUrl2("http://www.goog.com");
+  const GURL kSourceUrl3("http://www.goog.ab");
+  const GURL kSourceUrl4("http://www.foo.com");
+  const GURL kAppUrl1("facetime://+1354");
+  const GURL kAppUrl2("facetime-audio://+1234");
+  const GURL kAppUrl3("abc://abc");
+  const GURL kAppUrl4("chrome://www.google.com");
+
   AppLauncherAbuseDetector* abuseDetector =
       [[AppLauncherAbuseDetector alloc] init];
   EXPECT_EQ(ExternalAppLaunchPolicyAllow,
@@ -121,6 +126,11 @@ TEST_F(AppLauncherAbuseDetectorTest,
 // Tests blocking App launch only when the app have been allowed through the
 // abuse detector before.
 TEST_F(AppLauncherAbuseDetectorTest, TestBlockLaunchingApp) {
+  const GURL kSourceUrl1("http://www.google.com");
+  const GURL kSourceUrl2("http://www.goog.com");
+  const GURL kAppUrl1("facetime://+1354");
+  const GURL kAppUrl2("facetime-audio://+1234");
+
   AppLauncherAbuseDetector* abuseDetector =
       [[AppLauncherAbuseDetector alloc] init];
   EXPECT_EQ(ExternalAppLaunchPolicyAllow,

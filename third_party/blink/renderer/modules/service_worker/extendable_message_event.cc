@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/modules/service_worker/extendable_message_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_client_messageport_serviceworker.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
+
 namespace blink {
 
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
@@ -13,23 +18,6 @@ ExtendableMessageEvent* ExtendableMessageEvent::Create(
 }
 
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
-    const AtomicString& type,
-    const ExtendableMessageEventInit* initializer,
-    WaitUntilObserver* observer) {
-  return MakeGarbageCollected<ExtendableMessageEvent>(type, initializer,
-                                                      observer);
-}
-
-ExtendableMessageEvent* ExtendableMessageEvent::Create(
-    scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
-    MessagePortArray* ports,
-    WaitUntilObserver* observer) {
-  return MakeGarbageCollected<ExtendableMessageEvent>(std::move(data), origin,
-                                                      ports, observer);
-}
-
-ExtendableMessageEvent* ExtendableMessageEvent::Create(
     scoped_refptr<SerializedScriptValue> data,
     const String& origin,
     MessagePortArray* ports,
@@ -75,18 +63,34 @@ ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
   return event;
 }
 
-void ExtendableMessageEvent::source(
-    ClientOrServiceWorkerOrMessagePort& result) const {
-  if (source_as_client_)
-    result = ClientOrServiceWorkerOrMessagePort::FromClient(source_as_client_);
-  else if (source_as_service_worker_)
-    result = ClientOrServiceWorkerOrMessagePort::FromServiceWorker(
+ScriptValue ExtendableMessageEvent::data(ScriptState* script_state) const {
+  v8::Local<v8::Value> value;
+  if (!data_.IsEmpty()) {
+    value = data_.GetAcrossWorld(script_state);
+  } else if (serialized_data_) {
+    SerializedScriptValue::DeserializeOptions options;
+    MessagePortArray message_ports = ports();
+    options.message_ports = &message_ports;
+    value = serialized_data_->Deserialize(script_state->GetIsolate(), options);
+  } else {
+    value = v8::Null(script_state->GetIsolate());
+  }
+  return ScriptValue(script_state->GetIsolate(), value);
+}
+
+V8UnionClientOrMessagePortOrServiceWorker* ExtendableMessageEvent::source()
+    const {
+  if (source_as_client_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
+        source_as_client_);
+  } else if (source_as_service_worker_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
         source_as_service_worker_);
-  else if (source_as_message_port_)
-    result = ClientOrServiceWorkerOrMessagePort::FromMessagePort(
+  } else if (source_as_message_port_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
         source_as_message_port_);
-  else
-    result = ClientOrServiceWorkerOrMessagePort();
+  }
+  return nullptr;
 }
 
 MessagePortArray ExtendableMessageEvent::ports() const {
@@ -104,7 +108,8 @@ const AtomicString& ExtendableMessageEvent::InterfaceName() const {
   return event_interface_names::kExtendableMessageEvent;
 }
 
-void ExtendableMessageEvent::Trace(blink::Visitor* visitor) {
+void ExtendableMessageEvent::Trace(Visitor* visitor) const {
+  visitor->Trace(data_);
   visitor->Trace(source_as_client_);
   visitor->Trace(source_as_service_worker_);
   visitor->Trace(source_as_message_port_);
@@ -122,17 +127,27 @@ ExtendableMessageEvent::ExtendableMessageEvent(
     const ExtendableMessageEventInit* initializer,
     WaitUntilObserver* observer)
     : ExtendableEvent(type, initializer, observer) {
+  if (initializer->hasData()) {
+    const ScriptValue& data = initializer->data();
+    data_.Set(data.GetIsolate(), data.V8Value());
+  }
   if (initializer->hasOrigin())
     origin_ = initializer->origin();
   if (initializer->hasLastEventId())
     last_event_id_ = initializer->lastEventId();
-  if (initializer->hasSource()) {
-    if (initializer->source().IsClient())
-      source_as_client_ = initializer->source().GetAsClient();
-    else if (initializer->source().IsServiceWorker())
-      source_as_service_worker_ = initializer->source().GetAsServiceWorker();
-    else if (initializer->source().IsMessagePort())
-      source_as_message_port_ = initializer->source().GetAsMessagePort();
+  if (initializer->hasSource() and initializer->source()) {
+    switch (initializer->source()->GetContentType()) {
+      case V8UnionClientOrMessagePortOrServiceWorker::ContentType::kClient:
+        source_as_client_ = initializer->source()->GetAsClient();
+        break;
+      case V8UnionClientOrMessagePortOrServiceWorker::ContentType::kMessagePort:
+        source_as_message_port_ = initializer->source()->GetAsMessagePort();
+        break;
+      case V8UnionClientOrMessagePortOrServiceWorker::ContentType::
+          kServiceWorker:
+        source_as_service_worker_ = initializer->source()->GetAsServiceWorker();
+        break;
+    }
   }
   if (initializer->hasPorts())
     ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());

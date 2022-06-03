@@ -11,9 +11,7 @@
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
 
-// TODO(crbug.com/894800): This protocol is added to have a common interface
-// between the SettingsRootViewControllers for table views and collections.
-// Remove it once it is completed.
+// Protocol allowing the dispatcher to be passed to the settings ViewController.
 @protocol SettingsRootViewControlling
 
 // The dispatcher used by this ViewController.

@@ -21,14 +21,6 @@ class RenderWidgetHostViewBase;
 // update was received for the current view.
 class CONTENT_EXPORT CursorManager {
  public:
-  class TooltipObserver {
-   public:
-    virtual ~TooltipObserver() {}
-
-    virtual void OnSetTooltipTextForView(
-        const RenderWidgetHostViewBase* view,
-        const base::string16& tooltip_text) = 0;
-  };
 
   CursorManager(RenderWidgetHostViewBase* root);
   ~CursorManager();
@@ -40,22 +32,20 @@ class CONTENT_EXPORT CursorManager {
   // Called when the mouse moves over a different RenderWidgetHostView.
   void UpdateViewUnderCursor(RenderWidgetHostViewBase*);
 
-  // Accepts TooltipText updates from views, but only updates what's displayed
-  // if the requesting view is currently under the mouse cursor.
-  void SetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                             const base::string16& tooltip_text);
-
   // Notification of a RenderWidgetHostView being destroyed, so that its
   // cursor map entry can be removed if it has one. If it is the current
   // view_under_cursor_, then the root_view_'s cursor will be displayed.
   void ViewBeingDestroyed(RenderWidgetHostViewBase*);
 
+  // Called by any RenderWidgetHostView before updating the tooltip text to
+  // validate that the tooltip text being updated is for the view under the
+  // cursor. This is only used for cursor triggered tooltips.
+  bool IsViewUnderCursor(RenderWidgetHostViewBase*) const;
+
   // Accessor for browser tests, enabling verification of the cursor_map_.
   // Returns false if the provided View is not in the map, and outputs
   // the cursor otherwise.
   bool GetCursorForTesting(RenderWidgetHostViewBase*, WebCursor&);
-
-  void SetTooltipObserverForTesting(TooltipObserver* observer);
 
  private:
   // Stores the last received cursor from each RenderWidgetHostView.
@@ -68,8 +58,6 @@ class CONTENT_EXPORT CursorManager {
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
   RenderWidgetHostViewBase* root_view_;
-
-  TooltipObserver* tooltip_observer_for_testing_;
 };
 
 }  // namespace content

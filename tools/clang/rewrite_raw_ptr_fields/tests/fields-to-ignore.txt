@@ -1,0 +1,13 @@
+# File that can be used as an argument of the --exclude-fields cmdline
+# parameter of rewrite_raw_ptr_fields tool.
+#
+# Each non-whitespace / non-comment line specified a
+# fully-namespace-qualified field that should not be rewritten
+# to use raw_ptr<T>.
+
+# Next line is non-empty, but contains only whitespace.
+            
+
+my_namespace::MyStruct::my_field
+my_namespace::MyStruct::my_field2  # Trailing comments also ok.
+my_namespace::MyTemplate::my_field

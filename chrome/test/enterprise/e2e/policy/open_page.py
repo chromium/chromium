@@ -32,9 +32,9 @@ def main(argv):
     time.sleep(FLAGS.wait)
 
   if FLAGS.text_only:
-    print driver.find_element_by_css_selector('html').text.encode('utf-8')
+    print(driver.find_element_by_css_selector('html').text.encode('utf-8'))
   else:
-    print driver.page_source.encode('utf-8')
+    print(driver.page_source.encode('utf-8'))
 
   driver.quit()
 

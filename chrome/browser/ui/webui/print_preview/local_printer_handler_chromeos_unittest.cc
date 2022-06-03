@@ -5,277 +5,257 @@
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/test_printer_configurer.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/printing/browser/printer_capabilities.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/test/browser_task_environment.h"
-#include "printing/backend/print_backend.h"
-#include "printing/backend/printing_restrictions.h"
-#include "printing/backend/test_print_backend.h"
-#include "printing/print_job_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
 namespace {
-
-using chromeos::CupsPrintersManager;
-using chromeos::Printer;
-using chromeos::PrinterClass;
-using chromeos::PrinterConfigurer;
-using chromeos::PrinterSetupCallback;
-using chromeos::PrinterSetupResult;
-
-// Used as a callback to StartGetPrinters in tests.
-// Increases |*call_count| and records values returned by StartGetPrinters.
-void RecordPrinterList(size_t* call_count,
-                       std::unique_ptr<base::ListValue>* printers_out,
+// Used as a callback to `StartGetPrinters()` in tests.
+// Increases `call_count` and records values returned by `StartGetPrinters()`.
+// TODO(crbug.com/1171579) Get rid of use of base::ListValue.
+void RecordPrinterList(size_t& call_count,
+                       std::unique_ptr<base::ListValue>& printers_out,
                        const base::ListValue& printers) {
-  ++(*call_count);
-  printers_out->reset(printers.DeepCopy());
+  ++call_count;
+  printers_out = printers.CreateDeepCopy();
 }
 
-// Used as a callback to StartGetPrinters in tests.
+// Used as a callback to `StartGetPrinters` in tests.
 // Records that the test is done.
-void RecordPrintersDone(bool* is_done_out) {
-  *is_done_out = true;
+void RecordPrintersDone(bool& is_done_out) {
+  is_done_out = true;
 }
 
-void RecordGetCapability(std::unique_ptr<base::Value>* capabilities_out,
+void RecordGetCapability(base::Value& capabilities_out,
                          base::Value capability) {
-  capabilities_out->reset(capability.DeepCopy());
+  capabilities_out = std::move(capability);
 }
 
-Printer CreateTestPrinter(const std::string& id,
-                          const std::string& name,
-                          const std::string& description) {
-  Printer printer;
-  printer.set_id(id);
-  printer.set_display_name(name);
-  printer.set_description(description);
-  return printer;
-}
-
-Printer CreateEnterprisePrinter(const std::string& id,
-                                const std::string& name,
-                                const std::string& description) {
-  Printer printer = CreateTestPrinter(id, name, description);
-  printer.set_source(Printer::SRC_POLICY);
-  return printer;
-}
-
-// Converts JSON string to base::ListValue object.
-// On failure, returns NULL and fills |*error| string.
-std::unique_ptr<base::ListValue> GetJSONAsListValue(const std::string& json,
-                                                    std::string* error) {
-  auto ret = base::ListValue::From(
-      JSONStringValueDeserializer(json).Deserialize(nullptr, error));
-  if (!ret)
-    *error = "Value is not a list.";
-  return ret;
+void RecordGetEulaUrl(std::string& fetched_eula_url,
+                      const std::string& eula_url) {
+  fetched_eula_url = eula_url;
 }
 
 }  // namespace
 
+// Test that the printer handler runs callbacks with reasonable defaults when
+// the mojo connection to ash cannot be established, which should never occur in
+// production but may occur in unit/browser tests.
 class LocalPrinterHandlerChromeosTest : public testing::Test {
  public:
   LocalPrinterHandlerChromeosTest() = default;
+  LocalPrinterHandlerChromeosTest(const LocalPrinterHandlerChromeosTest&) =
+      delete;
+  LocalPrinterHandlerChromeosTest& operator=(
+      const LocalPrinterHandlerChromeos&) = delete;
   ~LocalPrinterHandlerChromeosTest() override = default;
 
   void SetUp() override {
-    test_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    PrintBackend::SetPrintBackendForTesting(test_backend_.get());
-    local_printer_handler_ = LocalPrinterHandlerChromeos::CreateForTesting(
-        &profile_, nullptr, &printers_manager_,
-        std::make_unique<chromeos::TestPrinterConfigurer>());
+    local_printer_handler_ = LocalPrinterHandlerChromeos::CreateForTesting();
   }
 
- protected:
-  // Must outlive |profile_|.
-  content::BrowserTaskEnvironment task_environment_;
-  // Must outlive |printers_manager_|.
-  TestingProfile profile_;
-  scoped_refptr<TestPrintBackend> test_backend_;
-  chromeos::TestCupsPrintersManager printers_manager_;
-  std::unique_ptr<LocalPrinterHandlerChromeos> local_printer_handler_;
+  LocalPrinterHandlerChromeos* local_printer_handler() {
+    return local_printer_handler_.get();
+  }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LocalPrinterHandlerChromeosTest);
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<LocalPrinterHandlerChromeos> local_printer_handler_;
 };
 
-TEST_F(LocalPrinterHandlerChromeosTest, GetPrinters) {
+TEST_F(LocalPrinterHandlerChromeosTest,
+       PrinterStatusRequestNoAsh_ProvidesDefaultValue) {
+  base::Value printer_status("unset");
+  local_printer_handler()->StartPrinterStatusRequest(
+      "printer1",
+      base::BindOnce(base::BindLambdaForTesting([&](const base::Value& status) {
+        printer_status = status.Clone();
+      })));
+  EXPECT_EQ(base::Value(), printer_status);
+}
+
+TEST_F(LocalPrinterHandlerChromeosTest, GetPrintersNoAsh_ProvidesDefaultValue) {
   size_t call_count = 0;
   std::unique_ptr<base::ListValue> printers;
   bool is_done = false;
-
-  // TODO(1023589): Add the eulaUrl field to the test printers and test that
-  // the field is properly set. This is done after the Printer object has
-  // the EULA field.
-  Printer saved_printer =
-      CreateTestPrinter("printer1", "saved", "description1");
-  Printer enterprise_printer =
-      CreateEnterprisePrinter("printer2", "enterprise", "description2");
-  Printer automatic_printer =
-      CreateTestPrinter("printer3", "automatic", "description3");
-
-  printers_manager_.AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager_.AddPrinter(enterprise_printer, PrinterClass::kEnterprise);
-  printers_manager_.AddPrinter(automatic_printer, PrinterClass::kAutomatic);
-
-  local_printer_handler_->StartGetPrinters(
-      base::BindRepeating(&RecordPrinterList, &call_count, &printers),
-      base::BindOnce(&RecordPrintersDone, &is_done));
-
-  EXPECT_EQ(call_count, 1u);
+  local_printer_handler()->StartGetPrinters(
+      base::BindRepeating(&RecordPrinterList, std::ref(call_count),
+                          std::ref(printers)),
+      base::BindOnce(&RecordPrintersDone, std::ref(is_done)));
+  // RecordPrinterList is called when printers are discovered. If no printers
+  // are discovered, the function is not called.
+  EXPECT_EQ(0u, call_count);
+  // RecordPrintersDone is called once printer discovery is finished, even if no
+  // printers have been discovered.
   EXPECT_TRUE(is_done);
-  ASSERT_TRUE(printers);
+}
 
-  const std::string expected_list = R"(
-    [
-      {
-        "cupsEnterprisePrinter": false,
-        "deviceName": "printer1",
-        "printerDescription": "description1",
-        "printerName": "saved",
-        "printerOptions": {
-          "cupsEnterprisePrinter": "false",
-          "printerEulaUrl": ""
-        }
+TEST_F(LocalPrinterHandlerChromeosTest,
+       GetDefaultPrinterNoAsh_ProvidesDefaultValue) {
+  std::string default_printer = "unset";
+  local_printer_handler()->GetDefaultPrinter(
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const std::string& printer) { default_printer = printer; })));
+  EXPECT_EQ("", default_printer);
+}
+
+TEST_F(LocalPrinterHandlerChromeosTest,
+       GetCapabilityNoAsh_ProvidesDefaultValue) {
+  base::Value fetched_caps("unset");
+  local_printer_handler()->StartGetCapability(
+      "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+  EXPECT_EQ(base::Value(), fetched_caps);
+}
+
+TEST_F(LocalPrinterHandlerChromeosTest, GetEulaUrlNoAsh_ProvidesDefaultValue) {
+  std::string fetched_eula_url = "unset";
+  local_printer_handler()->StartGetEulaUrl(
+      "printer1",
+      base::BindOnce(&RecordGetEulaUrl, std::ref(fetched_eula_url)));
+  EXPECT_EQ("", fetched_eula_url);
+}
+
+TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
+  crosapi::mojom::LocalDestinationInfo input("device_name", "printer_name",
+                                             "printer_description", false);
+  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+   "cupsEnterprisePrinter": false,
+   "deviceName": "device_name",
+   "printerDescription": "printer_description",
+   "printerName": "printer_name"
+})");
+  EXPECT_EQ(kExpectedValue, LocalPrinterHandlerChromeos::PrinterToValue(input));
+}
+
+TEST(LocalPrinterHandlerChromeos, PrinterToValue_ConfiguredViaPolicy) {
+  crosapi::mojom::LocalDestinationInfo printer("device_name", "printer_name",
+                                               "printer_description", true);
+  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+   "cupsEnterprisePrinter": true,
+   "deviceName": "device_name",
+   "printerDescription": "printer_description",
+   "printerName": "printer_name"
+})");
+  EXPECT_EQ(kExpectedValue,
+            LocalPrinterHandlerChromeos::PrinterToValue(printer));
+}
+
+TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
+  auto caps = crosapi::mojom::CapabilitiesResponse::New();
+  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
+      "device_name", "printer_name", "printer_description", false);
+
+  // TODO(b/195001379, jkopanski): This block of code should be removed once
+  // Ash Chrome M94 is on stable channel. Also remove associated "policies"
+  // field in kExpectedValue below.
+  caps->allowed_color_modes_deprecated = 1;
+  caps->allowed_duplex_modes_deprecated = 2;
+  caps->allowed_pin_modes_deprecated_version_1 =
+      printing::mojom::PinModeRestriction::kPin;
+  caps->default_color_mode_deprecated =
+      printing::mojom::ColorModeRestriction::kColor;
+  caps->default_duplex_mode_deprecated =
+      printing::mojom::DuplexModeRestriction::kSimplex;
+  caps->default_pin_mode_deprecated =
+      printing::mojom::PinModeRestriction::kNoPin;
+
+  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+   "printer": {
+      "cupsEnterprisePrinter": false,
+      "deviceName": "device_name",
+      "policies": {
+         "allowedColorModes": 1,
+         "allowedDuplexModes": 2,
+         "allowedPinModes": 1,
+         "defaultColorMode": 2,
+         "defaultDuplexMode": 1,
+         "defaultPinMode": 2
       },
-      {
-        "cupsEnterprisePrinter": true,
-        "deviceName": "printer2",
-        "printerDescription": "description2",
-        "printerName": "enterprise",
-        "printerOptions": {
-          "cupsEnterprisePrinter": "true",
-          "printerEulaUrl": ""
-        }
+      "printerDescription": "printer_description",
+      "printerName": "printer_name",
+      "printerOptions": {}
+   }
+})");
+  EXPECT_EQ(kExpectedValue,
+            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
+}
+
+TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
+  auto caps = crosapi::mojom::CapabilitiesResponse::New();
+  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
+      "device_name", "printer_name", "printer_description", true);
+
+  // TODO(b/195001379, jkopanski): This block of code should be removed once
+  // Ash Chrome M94 is on stable channel. Also remove associated "policies"
+  // field in kExpectedValue below.
+  caps->allowed_color_modes_deprecated = 1;
+  caps->allowed_duplex_modes_deprecated = 2;
+  caps->allowed_pin_modes_deprecated_version_1 =
+      printing::mojom::PinModeRestriction::kPin;
+  caps->default_color_mode_deprecated =
+      printing::mojom::ColorModeRestriction::kColor;
+  caps->default_duplex_mode_deprecated =
+      printing::mojom::DuplexModeRestriction::kSimplex;
+  caps->default_pin_mode_deprecated =
+      printing::mojom::PinModeRestriction::kNoPin;
+
+  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+   "printer": {
+      "cupsEnterprisePrinter": true,
+      "deviceName": "device_name",
+      "policies": {
+         "allowedColorModes": 1,
+         "allowedDuplexModes": 2,
+         "allowedPinModes": 1,
+         "defaultColorMode": 2,
+         "defaultDuplexMode": 1,
+         "defaultPinMode": 2
       },
-      {
-        "cupsEnterprisePrinter": false,
-        "deviceName": "printer3",
-        "printerDescription": "description3",
-        "printerName": "automatic",
-        "printerOptions": {
-          "cupsEnterprisePrinter": "false",
-          "printerEulaUrl": ""
-        }
-      }
-    ]
-  )";
-  std::string error;
-  std::unique_ptr<base::ListValue> expected_printers(
-      GetJSONAsListValue(expected_list, &error));
-  ASSERT_TRUE(expected_printers) << "Error deserializing printers: " << error;
-  EXPECT_EQ(*printers, *expected_printers);
+      "printerDescription": "printer_description",
+      "printerName": "printer_name",
+      "printerOptions": {}
+   }
+})");
+  EXPECT_EQ(kExpectedValue,
+            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
 }
 
-// Tests that fetching capabilities for an existing installed printer is
-// successful.
-TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityValidPrinter) {
-  Printer saved_printer =
-      CreateTestPrinter("printer1", "saved", "description1");
-  printers_manager_.AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager_.InstallPrinter("printer1");
-
-  // Add printer capabilities to |test_backend_|.
-  PrinterSemanticCapsAndDefaults caps;
-  test_backend_->AddValidPrinter(
-      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps));
-
-  std::unique_ptr<base::Value> fetched_caps;
-  local_printer_handler_->StartGetCapability(
-      "printer1", base::BindOnce(&RecordGetCapability, &fetched_caps));
-
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(fetched_caps);
-  base::DictionaryValue* dict;
-  ASSERT_TRUE(fetched_caps->GetAsDictionary(&dict));
-  ASSERT_TRUE(dict->HasKey(kSettingCapabilities));
-  ASSERT_TRUE(dict->HasKey(kPrinter));
+TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
+  EXPECT_EQ(base::Value(),
+            LocalPrinterHandlerChromeos::CapabilityToValue(nullptr));
 }
 
-// Test that printers which have not yet been installed are installed with
-// SetUpPrinter before their capabilities are fetched.
-TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityPrinterNotInstalled) {
-  Printer discovered_printer =
-      CreateTestPrinter("printer1", "discovered", "description1");
-  // NOTE: The printer |discovered_printer| is not installed using
-  // InstallPrinter.
-  printers_manager_.AddPrinter(discovered_printer, PrinterClass::kDiscovered);
-
-  // Add printer capabilities to |test_backend_|.
-  PrinterSemanticCapsAndDefaults caps;
-  test_backend_->AddValidPrinter(
-      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps));
-
-  std::unique_ptr<base::Value> fetched_caps;
-  local_printer_handler_->StartGetCapability(
-      "printer1", base::BindOnce(&RecordGetCapability, &fetched_caps));
-
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(fetched_caps);
-  base::DictionaryValue* dict;
-  ASSERT_TRUE(fetched_caps->GetAsDictionary(&dict));
-  ASSERT_TRUE(dict->HasKey(kSettingCapabilities));
-  ASSERT_TRUE(dict->HasKey(kPrinter));
-}
-
-// In this test we expect the StartGetCapability to bail early because the
-// provided printer can't be found in the CupsPrintersManager.
-TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityInvalidPrinter) {
-  std::unique_ptr<base::Value> fetched_caps;
-  local_printer_handler_->StartGetCapability(
-      "invalid printer", base::BindOnce(&RecordGetCapability, &fetched_caps));
-
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(fetched_caps);
-  EXPECT_TRUE(fetched_caps->is_none());
-}
-
-TEST_F(LocalPrinterHandlerChromeosTest, GetNativePrinterPolicies) {
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile_.GetTestingPrefService();
-
-  prefs->SetUserPref(prefs::kPrintingAllowedColorModes,
-                     std::make_unique<base::Value>(1));
-  prefs->SetUserPref(prefs::kPrintingAllowedDuplexModes,
-                     std::make_unique<base::Value>(0));
-  prefs->SetUserPref(prefs::kPrintingAllowedPinModes,
-                     std::make_unique<base::Value>(1));
-  prefs->SetUserPref(prefs::kPrintingColorDefault,
-                     std::make_unique<base::Value>(2));
-  prefs->SetUserPref(prefs::kPrintingDuplexDefault,
-                     std::make_unique<base::Value>(4));
-  prefs->SetUserPref(prefs::kPrintingPinDefault,
-                     std::make_unique<base::Value>(0));
-
-  base::Value expected_policies(base::Value::Type::DICTIONARY);
-  expected_policies.SetKey(kAllowedColorModes, base::Value(1));
-  expected_policies.SetKey(kAllowedDuplexModes, base::Value(0));
-  expected_policies.SetKey(kAllowedPinModes, base::Value(1));
-  expected_policies.SetKey(kDefaultColorMode, base::Value(2));
-  expected_policies.SetKey(kDefaultDuplexMode, base::Value(4));
-  expected_policies.SetKey(kDefaultPinMode, base::Value(0));
-
-  EXPECT_EQ(expected_policies,
-            local_printer_handler_->GetNativePrinterPolicies());
+TEST(LocalPrinterHandlerChromeos, StatusToValue) {
+  crosapi::mojom::PrinterStatus status;
+  status.printer_id = "printer_id";
+  status.timestamp = base::Time::FromDoubleT(1e9);
+  status.status_reasons.push_back(crosapi::mojom::StatusReason::New(
+      crosapi::mojom::StatusReason::Reason::kOutOfInk,
+      crosapi::mojom::StatusReason::Severity::kWarning));
+  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+   "printerId": "printer_id",
+   "statusReasons": [ {
+      "reason": 6,
+      "severity": 2
+   } ],
+   "timestamp": 1e+12
+})");
+  EXPECT_EQ(kExpectedValue, LocalPrinterHandlerChromeos::StatusToValue(status));
 }
 
 }  // namespace printing

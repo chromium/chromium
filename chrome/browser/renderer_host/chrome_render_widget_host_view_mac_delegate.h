@@ -7,8 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-
 #include "base/mac/scoped_nsobject.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 
@@ -26,7 +24,8 @@ class RenderWidgetHost;
   base::scoped_nsobject<HistorySwiper> _historySwiper;
 }
 
-- (id)initWithRenderWidgetHost:(content::RenderWidgetHost*)renderWidgetHost;
+- (instancetype)initWithRenderWidgetHost:
+    (content::RenderWidgetHost*)renderWidgetHost;
 
 - (BOOL)handleEvent:(NSEvent*)event;
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item

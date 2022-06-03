@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/{{file_basename}}.h"
 
 #include <string.h>
+#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -40,9 +41,11 @@ const Property* FindProperty(const char* str, unsigned int len) {
   return {{class_name}}Hash::findPropertyImpl(str, len);
 }
 
-CSSPropertyID cssPropertyID(const String& string)
+CSSPropertyID CssPropertyID(const ExecutionContext* execution_context,
+                            const String& string)
 {
-    return resolveCSSPropertyID(unresolvedCSSPropertyID(string));
+    return ResolveCSSPropertyID(UnresolvedCSSPropertyID(execution_context,
+                                                        string));
 }
 
 mojom::blink::CSSSampleId GetCSSSampleId(CSSPropertyID id) {

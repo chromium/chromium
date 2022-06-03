@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 7: Uncaught TypeError: host1.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL content-element-change-select-attribute-after-deleted-crash Uncaught TypeError: host1.createShadowRoot is not a function
-Harness: the test ran to completion.
-

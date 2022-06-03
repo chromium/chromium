@@ -8,35 +8,42 @@
 #include <map>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/session_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/storage_policy_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
-namespace base {
-class FilePath;
-}
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class SpecialStoragePolicy;
-}
+namespace mojom {
+class Partition;
+}  // namespace mojom
+}  // namespace storage
 
 namespace content {
 
-class SessionStorageContextMojo;
 class SessionStorageNamespaceImpl;
+class StoragePartitionImpl;
 
 // This is owned by Storage Partition and encapsulates all its dom storage
 // state.
@@ -59,24 +66,24 @@ class CONTENT_EXPORT DOMStorageContextWrapper
     PURGE_AGGRESSIVE,
   };
 
-  // If |profile_path| is empty, nothing will be saved to disk.
   static scoped_refptr<DOMStorageContextWrapper> Create(
-      const base::FilePath& profile_path,
-      const base::FilePath& local_partition_path,
-      storage::SpecialStoragePolicy* special_storage_policy);
+      StoragePartitionImpl* partition,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
-  DOMStorageContextWrapper(
-      scoped_refptr<base::SequencedTaskRunner> mojo_task_runner,
-      SessionStorageContextMojo* mojo_session_storage_context,
-      mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control,
-      storage::SpecialStoragePolicy* special_storage_policy);
+  DOMStorageContextWrapper() = delete;
 
+  explicit DOMStorageContextWrapper(StoragePartitionImpl* partition);
+
+  DOMStorageContextWrapper(const DOMStorageContextWrapper&) = delete;
+  DOMStorageContextWrapper& operator=(const DOMStorageContextWrapper&) = delete;
+
+  storage::mojom::SessionStorageControl* GetSessionStorageControl();
   storage::mojom::LocalStorageControl* GetLocalStorageControl();
 
   // DOMStorageContext implementation.
   void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) override;
   void GetSessionStorageUsage(GetSessionStorageUsageCallback callback) override;
-  void DeleteLocalStorage(const url::Origin& origin,
+  void DeleteLocalStorage(const blink::StorageKey& storage_key,
                           base::OnceClosure callback) override;
   void PerformLocalStorageCleanup(base::OnceClosure callback) override;
   void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
@@ -98,30 +105,37 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void Flush();
 
   void OpenLocalStorage(
-      const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
-  void OpenSessionStorage(
-      int process_id,
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
+  void BindNamespace(
       const std::string& namespace_id,
       mojo::ReportBadMessageCallback bad_message_callback,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver);
+  void BindStorageArea(
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
+      const std::string& namespace_id,
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
-  SessionStorageContextMojo* mojo_session_state() {
-    return mojo_session_state_;
-  }
+  // Pushes information about known Session Storage namespaces down to the
+  // Storage Service instance after a crash. This in turn allows renderer
+  // clients to re-establish working connections.
+  void RecoverFromStorageServiceCrash();
 
  private:
-  friend class DOMStorageMessageFilter;  // for access to context()
-  friend class SessionStorageNamespaceImpl;  // ditto
+  friend class DOMStorageContextWrapperTest;
   friend class base::RefCountedThreadSafe<DOMStorageContextWrapper>;
-  friend class DOMStorageBrowserTest;
+  friend class SessionStorageNamespaceImpl;  // For MaybeGetExistingNamespace()
 
   ~DOMStorageContextWrapper() override;
 
-  base::SequencedTaskRunner* mojo_task_runner() {
-    return mojo_task_runner_.get();
-  }
-
+  void MaybeBindSessionStorageControl();
+  void MaybeBindLocalStorageControl();
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;
 
@@ -139,16 +153,20 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void PurgeMemory(PurgeOption purge_option);
 
   void OnStartupUsageRetrieved(
-      std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage);
-  void EnsureLocalStorageOriginIsTracked(const GURL& origin);
-  void OnStoragePolicyChanged();
-  bool ShouldPurgeLocalStorageOnShutdown(const GURL& origin);
+      std::vector<storage::mojom::StorageUsageInfoPtr> usage);
+  void ApplyPolicyUpdates(
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
 
-  // Keep all mojo-ish details together and not bleed them through the public
-  // interface. The |mojo_session_state_| object is owned by this object, but
-  // destroyed asynchronously on the |mojo_task_runner_|.
-  SessionStorageContextMojo* mojo_session_state_ = nullptr;
-  scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
+  enum class StorageType {
+    kLocalStorage,
+    kSessionStorage,
+  };
+  bool IsRequestValid(
+      const StorageType type,
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   // Since the tab restore code keeps a reference to the session namespaces
   // of recently closed tabs (see sessions::ContentPlatformSpecificTabData and
@@ -164,38 +182,20 @@ class CONTENT_EXPORT DOMStorageContextWrapper
       GUARDED_BY(alive_namespaces_lock_);
   mutable base::Lock alive_namespaces_lock_;
 
+  // Unowned reference to our owning partition. This is always valid until it's
+  // reset to null if/when the partition is destroyed. May also be null in
+  // tests.
+  StoragePartitionImpl* partition_;
+
   // To receive memory pressure signals.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
-  // Connection to the partition's LocalStorageControl interface within the
-  // Storage Service.
+  // Connections to the partition's Session and Local Storage control interfaces
+  // within the Storage Service.
+  mojo::Remote<storage::mojom::SessionStorageControl> session_storage_control_;
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
 
-  const scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
-
-  // This wrapper generally lives on the UI thread, but must observe the
-  // BrowserContext's SpecialStoragePolicy from the IO thread. This helper does
-  // that.
-  class StoragePolicyObserver;
-  base::SequenceBound<StoragePolicyObserver> storage_policy_observer_;
-
-  // Tracks the total set of origins which may currently have Local Storage data
-  // in this partition. This set is synchronized on startup of Local Storage and
-  // maintained as new storage areas are bound. This mapping is used to
-  // efficiently deduce what policy changes to push to the Local Storage
-  // implementation any time a SpecialStoragePolicy change is observed.
-  struct LocalStorageOriginState {
-    // Indicates that storage for this origin should be purged on shutdown.
-    bool should_purge_on_shutdown = false;
-
-    // Indicates the last value for |purge_on_shutdown| communicated to the
-    // Local Storage implementation.
-    bool will_purge_on_shutdown = false;
-  };
-  // NOTE: The GURL key is specifically an origin GURL.
-  std::map<GURL, LocalStorageOriginState> local_storage_origins_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DOMStorageContextWrapper);
+  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 };
 
 }  // namespace content

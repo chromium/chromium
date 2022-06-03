@@ -70,9 +70,9 @@ void WebMainLoop::EarlyInitialization() {
   }
 }
 
-void WebMainLoop::MainMessageLoopStart() {
+void WebMainLoop::CreateMainMessageLoop() {
   if (parts_) {
-    parts_->PreMainMessageLoopStart();
+    parts_->PreCreateMainMessageLoop();
   }
 
   ios_global_state::BuildSingleThreadTaskExecutor();
@@ -87,7 +87,7 @@ void WebMainLoop::MainMessageLoopStart() {
   ios_global_state::CreateNetworkChangeNotifier();
 
   if (parts_) {
-    parts_->PostMainMessageLoopStart();
+    parts_->PostCreateMainMessageLoop();
   }
 }
 
@@ -124,7 +124,7 @@ int WebMainLoop::CreateThreads() {
   base::Thread::Options io_message_loop_options;
   io_message_loop_options.message_pump_type = base::MessagePumpType::IO;
   io_thread_ = std::make_unique<WebSubThread>(WebThread::IO);
-  if (!io_thread_->StartWithOptions(io_message_loop_options))
+  if (!io_thread_->StartWithOptions(std::move(io_message_loop_options)))
     LOG(FATAL) << "Failed to start WebThread::IO";
   io_thread_->RegisterAsWebThread();
 
@@ -155,22 +155,21 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
 
   // Teardown may start in PostMainMessageLoopRun, and during teardown we
   // need to be able to perform IO.
-  base::ThreadRestrictions::SetIOAllowed(true);
-  base::PostTask(
-      FROM_HERE, {WebThread::IO},
-      base::BindOnce(
-          base::IgnoreResult(&base::ThreadRestrictions::SetIOAllowed), true));
+  base::PermanentThreadAllowance::AllowBlocking();
+  base::PostTask(FROM_HERE, {WebThread::IO},
+                 base::BindOnce(base::IgnoreResult(
+                     &base::PermanentThreadAllowance::AllowBlocking)));
 
   // Also allow waiting to join threads.
-  // TODO(crbug.com/800808): Ideally this (and the above SetIOAllowed()
-  // would be scoped allowances). That would be one of the first step to ensure
-  // no persistent work is being done after ThreadPoolInstance::Shutdown() in
-  // order to move towards atomic shutdown.
-  base::ThreadRestrictions::SetWaitAllowed(true);
+  // TODO(crbug.com/800808): Ideally this (and the above AllowBlocking() would
+  // be scoped allowances). That would be one of the first step to ensure no
+  // persistent work is being done after ThreadPoolInstance::Shutdown() in order
+  // to move towards atomic shutdown.
+  base::PermanentThreadAllowance::AllowBaseSyncPrimitives();
   base::PostTask(
       FROM_HERE, {WebThread::IO},
-      base::BindOnce(
-          base::IgnoreResult(&base::ThreadRestrictions::SetWaitAllowed), true));
+      base::BindOnce(base::IgnoreResult(
+          &base::PermanentThreadAllowance::AllowBaseSyncPrimitives)));
 
   if (parts_) {
     parts_->PostMainMessageLoopRun();

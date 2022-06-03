@@ -19,14 +19,10 @@ void DriveUploaderWrapper::UploadExistingFile(
     const base::FilePath& local_file_path,
     const std::string& content_type,
     const drive::UploadExistingFileOptions& options,
-    const drive::UploadCompletionCallback& callback) {
+    drive::UploadCompletionCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   drive_uploader_->UploadExistingFile(
-      resource_id,
-      local_file_path,
-      content_type,
-      options,
-      callback,
+      resource_id, local_file_path, content_type, options, std::move(callback),
       google_apis::ProgressCallback());
 }
 
@@ -36,16 +32,11 @@ void DriveUploaderWrapper::UploadNewFile(
     const std::string& title,
     const std::string& content_type,
     const drive::UploadNewFileOptions& options,
-    const drive::UploadCompletionCallback& callback) {
+    drive::UploadCompletionCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  drive_uploader_->UploadNewFile(
-      parent_resource_id,
-      local_file_path,
-      title,
-      content_type,
-      options,
-      callback,
-      google_apis::ProgressCallback());
+  drive_uploader_->UploadNewFile(parent_resource_id, local_file_path, title,
+                                 content_type, options, std::move(callback),
+                                 google_apis::ProgressCallback());
 }
 
 }  // namespace drive_backend

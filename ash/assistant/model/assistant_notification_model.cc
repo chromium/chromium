@@ -4,8 +4,11 @@
 
 #include "ash/assistant/model/assistant_notification_model.h"
 
+#include <utility>
+
 #include "ash/assistant/model/assistant_notification_model_observer.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 
 namespace ash {
 
@@ -14,28 +17,27 @@ AssistantNotificationModel::AssistantNotificationModel() = default;
 AssistantNotificationModel::~AssistantNotificationModel() = default;
 
 void AssistantNotificationModel::AddObserver(
-    AssistantNotificationModelObserver* observer) {
+    AssistantNotificationModelObserver* observer) const {
   observers_.AddObserver(observer);
 }
 
 void AssistantNotificationModel::RemoveObserver(
-    AssistantNotificationModelObserver* observer) {
+    AssistantNotificationModelObserver* observer) const {
   observers_.RemoveObserver(observer);
 }
 
 void AssistantNotificationModel::AddOrUpdateNotification(
-    AssistantNotificationPtr notification) {
-  AssistantNotification* ptr = notification.get();
+    AssistantNotification&& notification) {
+  const auto client_id = notification.client_id;
+  DCHECK(!client_id.empty());
+  bool is_update = HasNotificationForId(client_id);
 
-  DCHECK(!ptr->client_id.empty());
-  bool is_update = HasNotificationForId(ptr->client_id);
-
-  notifications_[ptr->client_id] = std::move(notification);
+  notifications_[client_id] = std::move(notification);
 
   if (is_update)
-    NotifyNotificationUpdated(ptr);
+    NotifyNotificationUpdated(notifications_[client_id]);
   else
-    NotifyNotificationAdded(ptr);
+    NotifyNotificationAdded(notifications_[client_id]);
 }
 
 void AssistantNotificationModel::RemoveNotificationById(const std::string& id,
@@ -44,20 +46,20 @@ void AssistantNotificationModel::RemoveNotificationById(const std::string& id,
   if (it == notifications_.end())
     return;
 
-  AssistantNotificationPtr notification = std::move(it->second);
+  AssistantNotification notification = std::move(it->second);
   notifications_.erase(id);
-  NotifyNotificationRemoved(notification.get(), from_server);
+  NotifyNotificationRemoved(notification, from_server);
 }
 
 void AssistantNotificationModel::RemoveNotificationsByGroupingKey(
     const std::string& grouping_key,
     bool from_server) {
   for (auto it = notifications_.begin(); it != notifications_.end();) {
-    if (it->second->grouping_key == grouping_key) {
-      AssistantNotificationPtr notification =
-          std::move(notifications_[it->second->client_id]);
+    if (it->second.grouping_key == grouping_key) {
+      AssistantNotification notification =
+          std::move(notifications_[it->second.client_id]);
       it = notifications_.erase(it);
-      NotifyNotificationRemoved(notification.get(), from_server);
+      NotifyNotificationRemoved(notification, from_server);
       continue;
     }
     ++it;
@@ -72,25 +74,17 @@ void AssistantNotificationModel::RemoveAllNotifications(bool from_server) {
   NotifyAllNotificationsRemoved(from_server);
 }
 
-const chromeos::assistant::mojom::AssistantNotification*
+const chromeos::assistant::AssistantNotification*
 AssistantNotificationModel::GetNotificationById(const std::string& id) const {
   auto it = notifications_.find(id);
-  return it != notifications_.end() ? it->second.get() : nullptr;
+  return it != notifications_.end() ? &it->second : nullptr;
 }
 
-std::vector<const chromeos::assistant::mojom::AssistantNotification*>
+std::vector<const chromeos::assistant::AssistantNotification*>
 AssistantNotificationModel::GetNotifications() const {
-  return GetNotificationsByType(base::nullopt);
-}
-
-std::vector<const chromeos::assistant::mojom::AssistantNotification*>
-AssistantNotificationModel::GetNotificationsByType(
-    base::Optional<AssistantNotificationType> type) const {
   std::vector<const AssistantNotification*> notifications;
-  for (const auto& notification : notifications_) {
-    if (!type || notification.second->type == type.value())
-      notifications.push_back(notification.second.get());
-  }
+  for (const auto& notification : notifications_)
+    notifications.push_back(&notification.second);
   return notifications;
 }
 
@@ -100,19 +94,19 @@ bool AssistantNotificationModel::HasNotificationForId(
 }
 
 void AssistantNotificationModel::NotifyNotificationAdded(
-    const AssistantNotification* notification) {
+    const AssistantNotification& notification) {
   for (auto& observer : observers_)
     observer.OnNotificationAdded(notification);
 }
 
 void AssistantNotificationModel::NotifyNotificationUpdated(
-    const AssistantNotification* notification) {
+    const AssistantNotification& notification) {
   for (auto& observer : observers_)
     observer.OnNotificationUpdated(notification);
 }
 
 void AssistantNotificationModel::NotifyNotificationRemoved(
-    const AssistantNotification* notification,
+    const AssistantNotification& notification,
     bool from_server) {
   for (auto& observer : observers_)
     observer.OnNotificationRemoved(notification, from_server);

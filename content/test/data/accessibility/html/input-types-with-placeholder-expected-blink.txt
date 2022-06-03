@@ -1,0 +1,43 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++labelText
+++++++++staticText name='Email: '
+++++++++++inlineTextBox name='Email: '
+++++++++textField editable name='Email:' placeholder='email@example.com'
+++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Number: '
+++++++++++inlineTextBox name='Number: '
+++++++++spinButton editable name='Number:' placeholder='3'
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Password: '
+++++++++++inlineTextBox name='Password: '
+++++++++textField editable protected name='Password:' placeholder='pwd'
+++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Search: '
+++++++++++inlineTextBox name='Search: '
+++++++++searchBox editable name='Search:' placeholder='search'
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Tel: '
+++++++++++inlineTextBox name='Tel: '
+++++++++textField editable name='Tel:' placeholder='555-1212'
+++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Text: '
+++++++++++inlineTextBox name='Text: '
+++++++++textField editable name='Text:' placeholder='just text'
+++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Url: '
+++++++++++inlineTextBox name='Url: '
+++++++++textField editable name='Url:' placeholder='https://www.example.com'
+++++++++++genericContainer ignored
+++++++++++genericContainer editable

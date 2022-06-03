@@ -13,7 +13,9 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace permissions {
 class MockPermissionPromptFactory;
+}  // namespace permissions
 
 // This is a base class for end-to-end testing of features that have
 // permissions. It will navigate to the URL passed in upon construction, ready
@@ -37,7 +39,7 @@ class PermissionsBrowserTest : public InProcessBrowserTest {
 
   std::string test_url() const { return test_url_; }
 
-  MockPermissionPromptFactory* prompt_factory() {
+  permissions::MockPermissionPromptFactory* prompt_factory() {
     return prompt_factory_.get();
   }
 
@@ -54,7 +56,7 @@ class PermissionsBrowserTest : public InProcessBrowserTest {
 
  private:
   std::string test_url_;
-  std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSIONS_BROWSERTEST_H_

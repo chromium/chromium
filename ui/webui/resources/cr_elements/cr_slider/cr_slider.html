@@ -1,13 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
-<link rel="import" href="../../html/cr.html">
-<link rel="import" href="../../html/event_tracker.html">
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<dom-module id="cr-slider">
-  <template>
     <style include="cr-hidden-style">
       :host {
         --cr-slider-active-color: var(--google-blue-600);
@@ -49,7 +39,12 @@
         }
       }
 
-      :host([dragging]) {
+      /* TODO(crbug/1068914): For reasons I don't understand we need to set
+         touch-action: none on the container for sliders inside dialogs and on
+         the host for sliders not in dialogs. If we don't, then you can't drag
+         the slider via touch (mouse works fine).*/
+      :host([dragging]),
+      :host([dragging]) > #container {
         touch-action: none;
       }
 
@@ -221,6 +216,3 @@
         <div id="label">[[label_]]</div>
       </div>
     </div>
-  </template>
-  <script src="cr_slider.js"></script>
-</dom-module>

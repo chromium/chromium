@@ -15,17 +15,10 @@
 #include <string>
 #include <vector>
 
-// Win8 SDK compatibility, see http://goo.gl/fufvl for more information.
-// "Note: This interface has been renamed IDataObjectAsyncCapability."
-// If we're building on pre-8 we define it to its old name. It's documented as
-// being binary compatible.
-#ifndef __IDataObjectAsyncCapability_FWD_DEFINED__
-#define IDataObjectAsyncCapability IAsyncOperation
-#endif
-
-#include "base/macros.h"
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/ui_base_export.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -94,13 +87,26 @@ class DataObjectImpl : public DownloadFileObserver,
 
   // Our internal representation of stored data & type info.
   struct StoredDataInfo {
+   public:
     FORMATETC format_etc;
-    STGMEDIUM* medium;
-    bool owns_medium;
+    STGMEDIUM medium;
     std::unique_ptr<DownloadFileProvider> downloader;
 
-    StoredDataInfo(const FORMATETC& format_etc, STGMEDIUM* medium);
     ~StoredDataInfo();
+    StoredDataInfo(const StoredDataInfo&) = delete;
+    StoredDataInfo& operator=(const StoredDataInfo&) = delete;
+
+    // Takes ownership of and nullifies `medium` to approximate moving from
+    // STGMEDIUM.
+    static std::unique_ptr<StoredDataInfo> TakeStorageMedium(
+        const FORMATETC& format_etc,
+        STGMEDIUM& medium);
+
+   private:
+    // STGMEDIUM is just a POD, it does not guarantee `medium` is no longer be
+    // used after calling this constructor while the ownership of `medium` is
+    // passed.
+    StoredDataInfo(const FORMATETC& format_etc, const STGMEDIUM& medium);
   };
 
   typedef std::vector<std::unique_ptr<StoredDataInfo>> StoredData;
@@ -114,8 +120,8 @@ class DataObjectImpl : public DownloadFileObserver,
   bool async_operation_started_;
 };
 
-class UI_BASE_EXPORT OSExchangeDataProviderWin
-    : public OSExchangeData::Provider {
+class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
+    : public OSExchangeDataProvider {
  public:
   // Returns true if source has plain text that is a valid url.
   static bool HasPlainTextURL(IDataObject* source);
@@ -126,23 +132,25 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
 
   static DataObjectImpl* GetDataObjectImpl(const OSExchangeData& data);
   static IDataObject* GetIDataObject(const OSExchangeData& data);
-  static IDataObjectAsyncCapability* GetIAsyncOperation(
-      const OSExchangeData& data);
 
   explicit OSExchangeDataProviderWin(IDataObject* source);
   OSExchangeDataProviderWin();
+
+  OSExchangeDataProviderWin(const OSExchangeDataProviderWin&) = delete;
+  OSExchangeDataProviderWin& operator=(const OSExchangeDataProviderWin&) =
+      delete;
 
   ~OSExchangeDataProviderWin() override;
 
   IDataObject* data_object() const { return data_.get(); }
   IDataObjectAsyncCapability* async_operation() const { return data_.get(); }
 
-  // OSExchangeData::Provider methods.
-  std::unique_ptr<Provider> Clone() const override;
+  // OSExchangeDataProvider methods.
+  std::unique_ptr<OSExchangeDataProvider> Clone() const override;
   void MarkOriginatedFromRenderer() override;
   bool DidOriginateFromRenderer() const override;
-  void SetString(const base::string16& data) override;
-  void SetURL(const GURL& url, const base::string16& title) override;
+  void SetString(const std::u16string& data) override;
+  void SetURL(const GURL& url, const std::u16string& title) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   // Test only method for adding virtual file content to the data store. The
@@ -156,12 +164,12 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
                       const base::Pickle& data) override;
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-  void SetHtml(const base::string16& html, const GURL& base_url) override;
+  void SetHtml(const std::u16string& html, const GURL& base_url) override;
 
-  bool GetString(base::string16* data) const override;
-  bool GetURLAndTitle(OSExchangeData::FilenameToURLPolicy policy,
+  bool GetString(std::u16string* data) const override;
+  bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
-                      base::string16* title) const override;
+                      std::u16string* title) const override;
   bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool HasVirtualFilenames() const override;
@@ -174,19 +182,21 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
                       base::Pickle* data) const override;
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const override;
-  bool GetHtml(base::string16* html, GURL* base_url) const override;
+  bool GetHtml(std::u16string* html, GURL* base_url) const override;
   bool HasString() const override;
-  bool HasURL(OSExchangeData::FilenameToURLPolicy policy) const override;
+  bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasFileContents() const override;
   bool HasHtml() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
-  void SetDownloadFileInfo(
-      OSExchangeData::DownloadFileInfo* download_info) override;
+  void SetDownloadFileInfo(DownloadFileInfo* download_info) override;
   void SetDragImage(const gfx::ImageSkia& image_skia,
                     const gfx::Vector2d& cursor_offset) override;
   gfx::ImageSkia GetDragImage() const override;
   gfx::Vector2d GetDragImageOffset() const override;
+
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
 
  private:
   void SetVirtualFileContentAtIndexForTesting(base::span<const uint8_t> data,
@@ -195,8 +205,6 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
 
   scoped_refptr<DataObjectImpl> data_;
   Microsoft::WRL::ComPtr<IDataObject> source_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSExchangeDataProviderWin);
 };
 
 }  // namespace ui

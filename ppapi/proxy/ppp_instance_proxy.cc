@@ -77,8 +77,6 @@ void DidChangeView(PP_Instance instance, PP_Resource view_resource) {
 
   PP_Bool flash_fullscreen = PP_FALSE;
   EnterInstanceNoLock enter_instance(instance);
-  if (!enter_instance.failed())
-    flash_fullscreen = enter_instance.functions()->FlashIsFullscreen(instance);
   dispatcher->Send(new PpapiMsg_PPPInstance_DidChangeView(
       API_ID_PPP_INSTANCE, instance, enter_view.object()->GetData(),
       flash_fullscreen));
@@ -121,7 +119,7 @@ PPP_Instance_Proxy::PPP_Instance_Proxy(Dispatcher* dispatcher)
     // convert it here. This magic conversion code is hardcoded into
     // PluginDispatcher::OnMsgSupportsInterface.
     combined_interface_.reset(PPP_Instance_Combined::Create(
-        base::Bind(dispatcher->local_get_interface())));
+        base::BindRepeating(dispatcher->local_get_interface())));
   }
 }
 

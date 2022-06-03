@@ -1,0 +1,115 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "polymer_1_0"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  input_files = [
+    "iron-a11y-announcer/iron-a11y-announcer-extracted.js",
+    "iron-a11y-announcer/iron-a11y-announcer.html",
+    "iron-a11y-keys-behavior/iron-a11y-keys-behavior-extracted.js",
+    "iron-a11y-keys-behavior/iron-a11y-keys-behavior.html",
+    "iron-a11y-keys/iron-a11y-keys-extracted.js",
+    "iron-a11y-keys/iron-a11y-keys.html",
+    "iron-behaviors/iron-button-state-extracted.js",
+    "iron-behaviors/iron-button-state.html",
+    "iron-behaviors/iron-control-state-extracted.js",
+    "iron-behaviors/iron-control-state.html",
+    "iron-collapse/iron-collapse-extracted.js",
+    "iron-collapse/iron-collapse.html",
+    "iron-fit-behavior/iron-fit-behavior-extracted.js",
+    "iron-fit-behavior/iron-fit-behavior.html",
+    "iron-flex-layout/iron-flex-layout-classes.html",
+    "iron-flex-layout/iron-flex-layout.html",
+    "iron-icon/iron-icon-extracted.js",
+    "iron-icon/iron-icon.html",
+    "iron-iconset-svg/iron-iconset-svg-extracted.js",
+    "iron-iconset-svg/iron-iconset-svg.html",
+    "iron-list/iron-list-extracted.js",
+    "iron-list/iron-list.html",
+    "iron-media-query/iron-media-query-extracted.js",
+    "iron-media-query/iron-media-query.html",
+    "iron-meta/iron-meta-extracted.js",
+    "iron-meta/iron-meta.html",
+    "iron-pages/iron-pages-extracted.js",
+    "iron-pages/iron-pages.html",
+    "iron-range-behavior/iron-range-behavior-extracted.js",
+    "iron-range-behavior/iron-range-behavior.html",
+    "iron-resizable-behavior/iron-resizable-behavior-extracted.js",
+    "iron-resizable-behavior/iron-resizable-behavior.html",
+    "iron-scroll-target-behavior/iron-scroll-target-behavior-extracted.js",
+    "iron-scroll-target-behavior/iron-scroll-target-behavior.html",
+    "iron-scroll-threshold/iron-scroll-threshold-extracted.js",
+    "iron-scroll-threshold/iron-scroll-threshold.html",
+    "iron-selector/iron-multi-selectable-extracted.js",
+    "iron-selector/iron-multi-selectable.html",
+    "iron-selector/iron-selectable-extracted.js",
+    "iron-selector/iron-selectable.html",
+    "iron-selector/iron-selection-extracted.js",
+    "iron-selector/iron-selection.html",
+    "iron-selector/iron-selector-extracted.js",
+    "iron-selector/iron-selector.html",
+    "paper-behaviors/paper-ripple-behavior-extracted.js",
+    "paper-behaviors/paper-ripple-behavior.html",
+    "paper-progress/paper-progress-extracted.js",
+    "paper-progress/paper-progress.html",
+    "paper-ripple/paper-ripple-extracted.js",
+    "paper-ripple/paper-ripple.html",
+    "paper-spinner/paper-spinner-behavior-extracted.js",
+    "paper-spinner/paper-spinner-behavior.html",
+    "paper-spinner/paper-spinner-lite-extracted.js",
+    "paper-spinner/paper-spinner-lite.html",
+    "paper-spinner/paper-spinner-styles.html",
+    "paper-styles/color.html",
+    "paper-styles/shadow.html",
+    "paper-tooltip/paper-tooltip-extracted.js",
+    "paper-tooltip/paper-tooltip.html",
+    "polymer2/polymer-extracted.js",
+    "polymer2/polymer.html",
+  ]
+
+  if (is_chromeos_ash) {
+    input_files += [
+      "html-imports/html-imports.min.js",
+      "iron-dropdown/iron-dropdown-extracted.js",
+      "iron-dropdown/iron-dropdown.html",
+      "iron-dropdown/iron-dropdown-scroll-manager-extracted.js",
+      "iron-dropdown/iron-dropdown-scroll-manager.html",
+      "iron-overlay-behavior/iron-focusables-helper-extracted.js",
+      "iron-overlay-behavior/iron-focusables-helper.html",
+      "iron-overlay-behavior/iron-overlay-backdrop-extracted.js",
+      "iron-overlay-behavior/iron-overlay-backdrop.html",
+      "iron-overlay-behavior/iron-overlay-behavior-extracted.js",
+      "iron-overlay-behavior/iron-overlay-behavior.html",
+      "iron-overlay-behavior/iron-overlay-manager-extracted.js",
+      "iron-overlay-behavior/iron-overlay-manager.html",
+      "iron-overlay-behavior/iron-scroll-manager-extracted.js",
+      "iron-overlay-behavior/iron-scroll-manager.html",
+      "neon-animation/animations/fade-in-animation-extracted.js",
+      "neon-animation/animations/fade-in-animation.html",
+      "neon-animation/animations/fade-out-animation-extracted.js",
+      "neon-animation/animations/fade-out-animation.html",
+      "neon-animation/neon-animatable-behavior-extracted.js",
+      "neon-animation/neon-animatable-behavior.html",
+      "neon-animation/neon-animatable-extracted.js",
+      "neon-animation/neon-animatable.html",
+      "neon-animation/neon-animated-pages-extracted.js",
+      "neon-animation/neon-animated-pages.html",
+      "neon-animation/neon-animation-behavior-extracted.js",
+      "neon-animation/neon-animation-behavior.html",
+      "neon-animation/neon-animation-runner-behavior-extracted.js",
+      "neon-animation/neon-animation-runner-behavior.html",
+      "neon-animation/web-animations.html",
+    ]
+  }
+  input_files_base_dir = rebase_path("./components-chromium/", "//")
+  resource_path_rewrites = [
+    "polymer2/polymer-extracted.js|polymer/polymer-extracted.js",
+    "polymer2/polymer.html|polymer/polymer.html",
+  ]
+  resource_path_prefix = "polymer/v1_0"
+}

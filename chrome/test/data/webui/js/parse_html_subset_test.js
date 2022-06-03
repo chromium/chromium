@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
+import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 
 suite('ParseHtmlSubsetModuleTest', function() {
   function parseAndAssertThrows() {
-    var args = arguments;
+    const args = arguments;
     assertThrows(function() {
       parseHtmlSubset.apply(null, args);
     });
@@ -25,11 +25,13 @@ suite('ParseHtmlSubsetModuleTest', function() {
     parseHtmlSubset('<B>bold</B>');
     parseHtmlSubset('Some <B>bold</B> text');
     parseHtmlSubset('Some <STRONG>strong</STRONG> text');
+    parseHtmlSubset('<PRE>pre</PRE><BR>');
+    parseHtmlSubset('Some <PRE>pre</PRE><BR> text', ['BR']);
   });
 
   test('invalid tags', function() {
     parseAndAssertThrows('<unknown_tag>x</unknown_tag>');
-    parseAndAssertThrows('<img>');
+    parseAndAssertThrows('<style>*{color:red;}</style>');
     parseAndAssertThrows(
         '<script>alert(1)<' +
         '/script>');
@@ -65,46 +67,59 @@ suite('ParseHtmlSubsetModuleTest', function() {
   });
 
   test('anchor target', function() {
-    var df = parseHtmlSubset(
+    const df = parseHtmlSubset(
         '<a href="https://google.com" target="_blank">Google</a>');
     assertEquals('_blank', df.firstChild.target);
   });
 
   test('invalid target', function() {
-    parseAndAssertThrows('<form target="_evil">', ['form']);
-    parseAndAssertThrows('<iframe target="_evil">', ['iframe']);
     parseAndAssertThrows(
         '<a href="https://google.com" target="foo">Google</a>');
   });
 
-  test('custom tags', function() {
-    parseHtmlSubset('yo <I>ho</i><bR>yo <EM>ho</em>', ['i', 'EM', 'Br']);
+  test('supported optional tags', function() {
+    parseHtmlSubset('<img>Some <b>bold</b> text', ['img']);
+    parseHtmlSubset('A list:<ul><li>An item</li></ul>', ['li', 'ul']);
   });
 
-  test('invalid custom tags', function() {
-    parseAndAssertThrows(
-        'a pirate\'s<script>lifeForMe();<' +
-            '/script>',
-        ['br']);
+  test('supported optional tags without the argument', function() {
+    parseAndAssertThrows('<img>');
   });
 
-  test('custom attributes', function() {
-    const returnsTruthy = function(node, value) {
-      assertEquals('A', node.tagName);
-      assertEquals('fancy', value);
-      return true;
-    };
-    parseHtmlSubset(
-        '<a class="fancy">I\'m fancy!</a>', null, {class: returnsTruthy});
+  test('invalid optional tags', function() {
+    parseAndAssertThrows('a pirate\'s<script>alert();</script>', ['script']);
   });
 
-  test('invalid custom attributes', function() {
-    const returnsFalsey = function() {
-      return false;
-    };
-    parseAndAssertThrows(
-        '<a class="fancy">I\'m fancy!</a>', null, {class: returnsFalsey});
-    parseAndAssertThrows('<a class="fancy">I\'m fancy!</a>');
+  test('supported optional attributes', function() {
+    let result = parseHtmlSubset('<a role="link">link</a>', null, ['role']);
+    assertEquals('link', result.firstChild.getAttribute('role'));
+    result =
+        parseHtmlSubset('<img src="chrome://favicon2/">', ['img'], ['src']);
+    assertEquals('chrome://favicon2/', result.firstChild.getAttribute('src'));
+  });
+
+  test('supported optional attributes without the argument', function() {
+    parseAndAssertThrows('<img src="chrome://favicon2/">', ['img']);
+    parseAndAssertThrows('<a id="test">link</a>');
+  });
+
+  test('invalid optional attributes', function() {
+    parseAndAssertThrows('<a test="fancy">I\'m fancy!</a>', null, ['test']);
+    parseAndAssertThrows('<a name="fancy">I\'m fancy!</a>');
+  });
+
+  test('invalid optional attribute\'s value', function() {
+    parseAndAssertThrows('<a is="xss-link">link</a>', null, ['is']);
+  });
+
+  test('sanitizeInnerHtml', function() {
+    assertEquals(
+        '<a href="chrome://foo"></a>',
+        sanitizeInnerHtml('<a href="chrome://foo"></a>'));
+    assertThrows(() => {
+      sanitizeInnerHtml('<iframe></iframe>');
+    }, 'IFRAME is not supported');
+    assertEquals('<div></div>', sanitizeInnerHtml('<div></div>'));
   });
 
   test('on error async', function(done) {

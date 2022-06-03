@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_ORIENTATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_ORIENTATION_H_
 
+#include <stdint.h>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -36,7 +38,9 @@ class FloatSize;
 
 // This enum intentionally matches the orientation values from the EXIF spec.
 // See JEITA CP-3451, page 18. http://www.exif.org/Exif2-2.PDF
-enum ImageOrientationEnum {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ImageOrientationEnum : int8_t {
   // "TopLeft" means that the 0 row starts at the Top, the 0 column starts at
   // the Left.
   kOriginTopLeft = 1,      // default
@@ -48,8 +52,8 @@ enum ImageOrientationEnum {
   kOriginRightBottom = 7,  // mirror along x-axis + 90 degree CW rotation
   kOriginLeftBottom = 8,   // 270 degree CW rotation
   // All other values are "reserved" as of EXIF 2.2
-  kDefaultImageOrientation = kOriginTopLeft,
-  kImageOrientationEnumEnd = kOriginLeftBottom + 1,
+  kDefault = kOriginTopLeft,
+  kMaxValue = kOriginLeftBottom,
 };
 
 enum RespectImageOrientationEnum {
@@ -61,12 +65,13 @@ class PLATFORM_EXPORT ImageOrientation final {
   DISALLOW_NEW();
 
  public:
-  ImageOrientation(ImageOrientationEnum orientation = kDefaultImageOrientation)
+  ImageOrientation(
+      ImageOrientationEnum orientation = ImageOrientationEnum::kDefault)
       : orientation_(orientation) {}
 
   bool UsesWidthAsHeight() const {
     // Values 5 through 8 all flip the width/height.
-    return orientation_ >= kOriginLeftTop;
+    return orientation_ >= ImageOrientationEnum::kOriginLeftTop;
   }
 
   // ImageOrientationEnum currently matches EXIF values, however code outside
@@ -74,8 +79,9 @@ class PLATFORM_EXPORT ImageOrientation final {
   static ImageOrientation FromEXIFValue(int exif_value) {
     // Values direct from images may be invalid, in which case we use the
     // default.
-    if (exif_value < kOriginTopLeft || exif_value > kOriginLeftBottom)
-      return kDefaultImageOrientation;
+    if (exif_value < static_cast<int>(ImageOrientationEnum::kOriginTopLeft) ||
+        exif_value > static_cast<int>(ImageOrientationEnum::kOriginLeftBottom))
+      return ImageOrientationEnum::kDefault;
     return static_cast<ImageOrientationEnum>(exif_value);
   }
 
@@ -93,7 +99,6 @@ class PLATFORM_EXPORT ImageOrientation final {
   ImageOrientationEnum Orientation() const { return orientation_; }
 
  private:
-  // FIXME: This only needs to be one byte.
   ImageOrientationEnum orientation_;
 };
 

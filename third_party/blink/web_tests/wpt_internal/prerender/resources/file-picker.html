@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+assert_true(document.prerendering);
+
+async function showFilePicker(){
+  const bc = new BroadcastChannel('prerender-channel');
+
+  try {
+    const _ = await window.showOpenFilePicker()
+    bc.postMessage('unexpected success');
+  } catch (err){
+    bc.postMessage(err.name);
+  } finally {
+    bc.close();
+  }
+}
+
+showFilePicker();
+
+</script>

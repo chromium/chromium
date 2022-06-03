@@ -19,6 +19,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "build/build_config.h"
+
 namespace crashpad {
 
 //! \brief A Mach message option specifying that an audit trailer should be
@@ -166,6 +168,23 @@ void SetMIGReplyError(mach_msg_header_t* out_header, kern_return_t error);
 const mach_msg_trailer_t* MachMessageTrailerFromHeader(
     const mach_msg_header_t* header);
 
+//! \brief Destroys or deallocates a Mach port received in a Mach message.
+//!
+//! This function disposes of port rights received in a Mach message. Receive
+//! rights will be destroyed with `mach_port_mod_refs()`. Send and send-once
+//! rights will be deallocated with `mach_port_deallocate()`.
+//!
+//! \param[in] port The port to destroy or deallocate.
+//! \param[in] port_right_type The right type held for \a port:
+//!     `MACH_MSG_TYPE_PORT_RECEIVE`, `MACH_MSG_TYPE_PORT_SEND`, or
+//!     `MACH_MSG_TYPE_PORT_SEND_ONCE`.
+//!
+//! \return `true` on success, or `false` on failure with a message logged.
+bool MachMessageDestroyReceivedPort(mach_port_t port,
+                                    mach_msg_type_name_t port_right_type);
+
+#if defined(OS_MAC) || DOXYGEN
+
 //! \brief Returns the process ID of a Mach message’s sender from its audit
 //!     trailer.
 //!
@@ -182,20 +201,7 @@ const mach_msg_trailer_t* MachMessageTrailerFromHeader(
 //!     audit information.
 pid_t AuditPIDFromMachMessageTrailer(const mach_msg_trailer_t* trailer);
 
-//! \brief Destroys or deallocates a Mach port received in a Mach message.
-//!
-//! This function disposes of port rights received in a Mach message. Receive
-//! rights will be destroyed with `mach_port_mod_refs()`. Send and send-once
-//! rights will be deallocated with `mach_port_deallocate()`.
-//!
-//! \param[in] port The port to destroy or deallocate.
-//! \param[in] port_right_type The right type held for \a port:
-//!     `MACH_MSG_TYPE_PORT_RECEIVE`, `MACH_MSG_TYPE_PORT_SEND`, or
-//!     `MACH_MSG_TYPE_PORT_SEND_ONCE`.
-//!
-//! \return `true` on success, or `false` on failure with a message logged.
-bool MachMessageDestroyReceivedPort(mach_port_t port,
-                                    mach_msg_type_name_t port_right_type);
+#endif  // OS_MAC
 
 }  // namespace crashpad
 

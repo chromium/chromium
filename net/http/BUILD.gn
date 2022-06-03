@@ -15,9 +15,7 @@ compiled_action("generate_transport_security_state") {
     "transport_security_state_static.pins",
     "transport_security_state_static.template",
   ]
-  outputs = [
-    "$target_gen_dir/transport_security_state_static.h",
-  ]
+  outputs = [ "$target_gen_dir/transport_security_state_static.h" ]
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
@@ -32,9 +30,8 @@ compiled_action("transport_security_state_unittest_data_default") {
     "transport_security_state_static_unittest_default.pins",
     "transport_security_state_static_unittest.template",
   ]
-  outputs = [
-    "$target_gen_dir/transport_security_state_static_unittest_default.h",
-  ]
+  outputs =
+      [ "$target_gen_dir/transport_security_state_static_unittest_default.h" ]
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
@@ -54,9 +51,7 @@ compiled_action_foreach("transport_security_state_unittest_data") {
     "transport_security_state_static_unittest.pins",
     "transport_security_state_static_unittest.template",
   ]
-  outputs = [
-    "$target_gen_dir/{{source_name_part}}.h",
-  ]
+  outputs = [ "$target_gen_dir/{{source_name_part}}.h" ]
   args =
       [ rebase_path("{{source_name_part}}.json", root_build_dir) ] +
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
@@ -68,9 +63,7 @@ source_set("transport_security_state_generated_files") {
   # Do not publicize any header to remove build dependency.
   public = []
 
-  sources = [
-    "transport_security_state.cc",
-  ]
+  sources = [ "transport_security_state.cc" ]
 
   deps = [
     "//build:branding_buildflags",

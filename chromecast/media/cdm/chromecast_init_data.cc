@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cdm/chromecast_init_data.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/bit_reader.h"
 #include "media/cdm/cenc_utils.h"
 

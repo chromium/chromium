@@ -6,6 +6,6 @@
   test(() => {
     document.body.offsetTop;
     // Did not reproduce with attachShadow().
-    container.createShadowRoot();
+    container.attachShadow({mode: 'open'});
   }, "Recalculate text style after removed from flat tree should not crash.");
 </script>

@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -63,7 +62,9 @@ struct UUID {
   //!     been initialized with the data. `false` if the string could not be
   //!     parsed, with the object state untouched.
   bool InitializeFromString(const base::StringPiece& string);
-  bool InitializeFromString(const base::StringPiece16& string);
+#if defined(OS_WIN) || DOXYGEN
+  bool InitializeFromString(const base::WStringPiece& string);
+#endif  // OS_WIN
 
   //! \brief Initializes the %UUID using a standard system facility to generate
   //!     the value.
@@ -85,8 +86,8 @@ struct UUID {
   std::string ToString() const;
 
 #if defined(OS_WIN) || DOXYGEN
-  //! \brief The same as ToString, but returned as a string16.
-  base::string16 ToString16() const;
+  //! \brief The same as ToString, but returned as a wstring.
+  std::wstring ToWString() const;
 #endif  // OS_WIN
 
   // These fields are laid out according to RFC 4122 §4.1.2.

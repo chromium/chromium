@@ -34,7 +34,7 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.BlackBodyDefault" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline" />
 
         <TextView
             android:id="@+id/dropdown_sublabel"
@@ -44,7 +44,17 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.BlackCaption" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
+
+        <TextView
+            android:id="@+id/dropdown_item_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
     </LinearLayout>
 
     <ImageView

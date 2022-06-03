@@ -36,6 +36,10 @@ class TestEventRouter : public EventRouter {
   };
 
   explicit TestEventRouter(content::BrowserContext* context);
+
+  TestEventRouter(const TestEventRouter&) = delete;
+  TestEventRouter& operator=(const TestEventRouter&) = delete;
+
   ~TestEventRouter() override;
 
   // Returns the number of times an event has been broadcast or dispatched.
@@ -64,8 +68,6 @@ class TestEventRouter : public EventRouter {
   std::map<std::string, int> seen_events_;
 
   base::ObserverList<EventObserver, false>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRouter);
 };
 
 // Creates and enables a TestEventRouter for testing. Callers can override T to

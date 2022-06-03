@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 executable("ps_ext") {
-  sources = [
-    "ps_ext.c",
-  ]
+  sources = [ "ps_ext.c" ]
 }

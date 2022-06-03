@@ -62,9 +62,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
     : public Entry,
       public base::LinkNode<MemEntryImpl> {
  public:
-  enum EntryType {
-    PARENT_ENTRY,
-    CHILD_ENTRY,
+  enum class EntryType {
+    kParent,
+    kChild,
   };
 
   // Provided to better document calls to |UpdateStateOnUse()|.
@@ -84,10 +84,15 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
+  MemEntryImpl(const MemEntryImpl&) = delete;
+  MemEntryImpl& operator=(const MemEntryImpl&) = delete;
+
   void Open();
   bool InUse() const;
 
-  EntryType type() const { return parent_ ? CHILD_ENTRY : PARENT_ENTRY; }
+  EntryType type() const {
+    return parent_ ? EntryType::kChild : EntryType::kParent;
+  }
   const std::string& key() const { return key_; }
   const MemEntryImpl* parent() const { return parent_; }
   int64_t child_id() const { return child_id_; }
@@ -126,15 +131,13 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                       IOBuffer* buf,
                       int buf_len,
                       CompletionOnceCallback callback) override;
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override;
+  RangeResult GetAvailableRange(int64_t offset,
+                                int len,
+                                RangeResultCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override {}
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
-  size_t EstimateMemoryUsage() const;
 
  private:
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
@@ -156,7 +159,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                         bool truncate);
   int InternalReadSparseData(int64_t offset, IOBuffer* buf, int buf_len);
   int InternalWriteSparseData(int64_t offset, IOBuffer* buf, int buf_len);
-  int InternalGetAvailableRange(int64_t offset, int len, int64_t* start);
+  RangeResult InternalGetAvailableRange(int64_t offset, int len);
 
   // Initializes the children map and sparse info. This method is only called
   // on a parent entry.
@@ -195,8 +198,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   bool doomed_;               // True if this entry was removed from the cache.
 
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemEntryImpl);
 };
 
 }  // namespace disk_cache

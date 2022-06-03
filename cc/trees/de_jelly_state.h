@@ -7,15 +7,13 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
-#include "ui/gfx/transform.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 class SharedQuadState;
-class RenderPass;
+class CompositorRenderPass;
 }  // namespace viz
 
 namespace cc {
@@ -36,7 +34,7 @@ class CC_EXPORT DeJellyState {
   // |target_render_pass|.
   void UpdateSharedQuadState(LayerTreeImpl* layer_tree_impl,
                              int transform_id,
-                             viz::RenderPass* target_render_pass);
+                             viz::CompositorRenderPass* target_render_pass);
 
  private:
   bool should_de_jelly_ = false;
@@ -44,7 +42,7 @@ class CC_EXPORT DeJellyState {
   float scroll_offset_ = 0;
   float fallback_delta_y_ = 0;
 
-  base::Optional<gfx::Transform> new_scroll_node_transform_;
+  absl::optional<gfx::Transform> new_scroll_node_transform_;
   std::map<int, gfx::Transform> previous_transforms_;
   std::map<int, gfx::Transform> new_transforms_;
 };

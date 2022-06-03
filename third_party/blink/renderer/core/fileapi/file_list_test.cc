@@ -42,8 +42,10 @@ TEST(FileListTest, pathsForUserVisibleFiles) {
   {
     KURL url(
         "filesystem:http://example.com/isolated/hash/visible-non-native-file");
-    file_list->Append(File::CreateForFileSystemFile(url, FileMetadata(),
-                                                    File::kIsUserVisible));
+    FileMetadata metadata;
+    metadata.length = 0;
+    file_list->Append(
+        File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible));
   }
 
   // Not user visible file system URL file.
@@ -51,8 +53,10 @@ TEST(FileListTest, pathsForUserVisibleFiles) {
     KURL url(
         "filesystem:http://example.com/isolated/hash/"
         "not-visible-non-native-file");
-    file_list->Append(File::CreateForFileSystemFile(url, FileMetadata(),
-                                                    File::kIsNotUserVisible));
+    FileMetadata metadata;
+    metadata.length = 0;
+    file_list->Append(
+        File::CreateForFileSystemFile(url, metadata, File::kIsNotUserVisible));
   }
 
   Vector<base::FilePath> paths = file_list->PathsForUserVisibleFiles();

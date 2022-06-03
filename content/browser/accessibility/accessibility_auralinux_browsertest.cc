@@ -5,14 +5,18 @@
 #include <atk/atk.h>
 #include <dlfcn.h>
 
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include <string>
+#include <vector>
+
+#include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -21,6 +25,9 @@
 namespace content {
 
 namespace {
+
+const char16_t kBullet[2] = {u'\x2022', ' '};
+const std::u16string kString16Bullet = std::u16string(kBullet, 2);
 
 AtkObject* FindAtkObjectParentFrame(AtkObject* atk_object) {
   while (atk_object) {
@@ -38,11 +45,24 @@ static bool IsAtkObjectFocused(AtkObject* object) {
   return result;
 }
 
+static bool IsAtkObjectEditable(AtkObject* object) {
+  AtkStateSet* state_set = atk_object_ref_state_set(object);
+  bool result = atk_state_set_contains_state(state_set, ATK_STATE_EDITABLE);
+  g_object_unref(state_set);
+  return result;
+}
+
 }  // namespace
 
 class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
  public:
   AccessibilityAuraLinuxBrowserTest() = default;
+
+  AccessibilityAuraLinuxBrowserTest(const AccessibilityAuraLinuxBrowserTest&) =
+      delete;
+  AccessibilityAuraLinuxBrowserTest& operator=(
+      const AccessibilityAuraLinuxBrowserTest&) = delete;
+
   ~AccessibilityAuraLinuxBrowserTest() override = default;
 
  protected:
@@ -55,6 +75,8 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
     return false;
   }
 
+  // Ensures that the text and the start and end offsets retrieved using
+  // get_textAtOffset match the expected values.
   static void CheckTextAtOffset(AtkText* text_object,
                                 int offset,
                                 AtkTextBoundary boundary_type,
@@ -62,54 +84,67 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
                                 int expected_end_offset,
                                 const char* expected_text);
 
+  // Loads a page with  an input text field and places sample text in it.
+  // Returns a pointer to the field's AtkText interface.
   AtkText* SetUpInputField();
-  AtkText* SetUpTextareaField();
-  AtkText* SetUpSampleParagraph();
-  AtkText* SetUpSampleParagraphInScrollableDocument();
 
+  // Loads a page with  a textarea text field, places sample text in it, and
+  // places the caret after the last character.
+  //  Returns a pointer to the field's AtkText interface.
+  AtkText* SetUpTextareaField();
+
+  // Loads a page with a paragraph of sample text and returns its AtkText
+  // interface.
+  AtkText* SetUpSampleParagraph();
+
+  // Retrieves a pointer to the already loaded paragraph's AtkText interface.
   AtkText* GetSampleParagraph();
-  AtkText* GetAtkTextForChild(AtkRole expected_role);
+
+  // Searches the accessibility tree in pre-order debth-first traversal for a
+  // node with the given role and returns its AtkText interface if found,
+  // otherwise returns nullptr.
+  AtkText* FindNode(const AtkRole role);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityAuraLinuxBrowserTest);
+  // Searches the accessibility tree in pre-order debth-first traversal starting
+  // at a given node and for a node with the given role and returns its AtkText
+  // interface if found, otherwise returns nullptr.
+  AtkText* FindNode(AtkObject* root, const AtkRole role) const;
 };
 
-AtkText* AccessibilityAuraLinuxBrowserTest::GetAtkTextForChild(
-    AtkRole expected_role) {
-  AtkObject* document = GetRendererAccessible();
-  EXPECT_EQ(1, atk_object_get_n_accessible_children(document));
+void AccessibilityAuraLinuxBrowserTest::CheckTextAtOffset(
+    AtkText* text_object,
+    int offset,
+    AtkTextBoundary boundary_type,
+    int expected_start_offset,
+    int expected_end_offset,
+    const char* expected_text) {
+  ::testing::Message message;
+  message << "While checking at index \'" << offset << "\' for \'"
+          << expected_text << "\' at " << expected_start_offset << '-'
+          << expected_end_offset << '.';
+  SCOPED_TRACE(message);
 
-  AtkObject* parent_element = atk_object_ref_accessible_child(document, 0);
-  int number_of_children = atk_object_get_n_accessible_children(parent_element);
-  EXPECT_LT(0, number_of_children);
-
-  // The input field is always the last child.
-  AtkObject* input =
-      atk_object_ref_accessible_child(parent_element, number_of_children - 1);
-  EXPECT_EQ(expected_role, atk_object_get_role(input));
-
-  EXPECT_TRUE(ATK_IS_TEXT(input));
-  AtkText* atk_text = ATK_TEXT(input);
-
-  g_object_unref(parent_element);
-
-  return atk_text;
+  int start_offset = 0;
+  int end_offset = 0;
+  char* text = atk_text_get_text_at_offset(text_object, offset, boundary_type,
+                                           &start_offset, &end_offset);
+  EXPECT_EQ(expected_start_offset, start_offset);
+  EXPECT_EQ(expected_end_offset, end_offset);
+  EXPECT_STREQ(expected_text, text);
+  g_free(text);
 }
 
-// Loads a page with  an input text field and places sample text in it.
 AtkText* AccessibilityAuraLinuxBrowserTest::SetUpInputField() {
   LoadInputField();
-  return GetAtkTextForChild(ATK_ROLE_ENTRY);
+  return FindNode(ATK_ROLE_ENTRY);
 }
 
-// Loads a page with  a textarea text field and places sample text in it. Also,
-// places the caret before the last character.
 AtkText* AccessibilityAuraLinuxBrowserTest::SetUpTextareaField() {
   LoadTextareaField();
-  return GetAtkTextForChild(ATK_ROLE_ENTRY);
+  return FindNode(ATK_ROLE_ENTRY);
 }
 
-// Loads a page with a paragraph of sample text.
 AtkText* AccessibilityAuraLinuxBrowserTest::SetUpSampleParagraph() {
   LoadSampleParagraph();
 
@@ -134,37 +169,48 @@ AtkText* AccessibilityAuraLinuxBrowserTest::GetSampleParagraph() {
   int number_of_children = atk_object_get_n_accessible_children(document);
   EXPECT_LT(0, number_of_children);
 
-  // The input field is always the last child.
-  AtkObject* input = atk_object_ref_accessible_child(document, 0);
-  EXPECT_EQ(ATK_ROLE_PARAGRAPH, atk_object_get_role(input));
+  // The paragraph is the last child.
+  AtkObject* paragraph = atk_object_ref_accessible_child(document, 0);
+  EXPECT_EQ(ATK_ROLE_PARAGRAPH, atk_object_get_role(paragraph));
 
-  EXPECT_TRUE(ATK_IS_TEXT(input));
-  return ATK_TEXT(input);
+  EXPECT_TRUE(ATK_IS_TEXT(paragraph));
+  return ATK_TEXT(paragraph);
 }
 
-// Ensures that the text and the start and end offsets retrieved using
-// get_textAtOffset match the expected values.
-void AccessibilityAuraLinuxBrowserTest::CheckTextAtOffset(
-    AtkText* text_object,
-    int offset,
-    AtkTextBoundary boundary_type,
-    int expected_start_offset,
-    int expected_end_offset,
-    const char* expected_text) {
-  testing::Message message;
-  message << "While checking at index \'" << offset << "\' for \'"
-          << expected_text << "\' at " << expected_start_offset << '-'
-          << expected_end_offset << '.';
-  SCOPED_TRACE(message);
+AtkText* AccessibilityAuraLinuxBrowserTest::FindNode(const AtkRole role) {
+  AtkObject* document = GetRendererAccessible();
+  EXPECT_NE(nullptr, document);
+  return FindNode(document, role);
+}
 
-  int start_offset = 0;
-  int end_offset = 0;
-  char* text = atk_text_get_text_at_offset(text_object, offset, boundary_type,
-                                           &start_offset, &end_offset);
-  EXPECT_EQ(expected_start_offset, start_offset);
-  EXPECT_EQ(expected_end_offset, end_offset);
-  EXPECT_STREQ(expected_text, text);
-  g_free(text);
+AtkText* AccessibilityAuraLinuxBrowserTest::FindNode(AtkObject* root,
+                                                     const AtkRole role) const {
+  EXPECT_NE(nullptr, root);
+  if (atk_object_get_role(root) == role) {
+    EXPECT_TRUE(ATK_IS_TEXT(root));
+    g_object_ref(root);
+    AtkText* root_text = ATK_TEXT(root);
+    return root_text;
+  }
+
+  for (int i = 0; i < atk_object_get_n_accessible_children(root); ++i) {
+    AtkObject* child = atk_object_ref_accessible_child(root, i);
+    EXPECT_NE(nullptr, child);
+    if (atk_object_get_role(child) == role) {
+      EXPECT_TRUE(ATK_IS_TEXT(child));
+      AtkText* child_text = ATK_TEXT(child);
+      return child_text;
+    }
+
+    if (AtkText* descendant_text = FindNode(child, role)) {
+      g_object_unref(child);
+      return descendant_text;
+    }
+
+    g_object_unref(child);
+  }
+
+  return nullptr;
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
@@ -195,6 +241,62 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestTextAtOffsetWithBoundaryCharacterAndEmbeddedObject) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <div contenteditable>
+        Before<img alt="image">after.
+      </div>
+      )HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  ASSERT_EQ(1, atk_object_get_n_accessible_children(document));
+
+  AtkObject* contenteditable = atk_object_ref_accessible_child(document, 0);
+  ASSERT_NE(nullptr, contenteditable);
+  ASSERT_EQ(ATK_ROLE_SECTION, atk_object_get_role(contenteditable));
+  ASSERT_TRUE(ATK_IS_TEXT(contenteditable));
+
+  AtkText* contenteditable_text = ATK_TEXT(contenteditable);
+  int character_count = atk_text_get_character_count(contenteditable_text);
+  ASSERT_EQ(13, character_count);
+
+  const std::u16string embedded_character(
+      1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
+  const std::vector<const std::string> expected_hypertext = {
+      "B", "e", "f", "o", "r", "e", base::UTF16ToUTF8(embedded_character),
+      "a", "f", "t", "e", "r", "."};
+
+  // "Before".
+  //
+  // The embedded object character representing the image is at offset 6.
+  for (int i = 0; i < 6; ++i) {
+    CheckTextAtOffset(contenteditable_text, i, ATK_TEXT_BOUNDARY_CHAR, i,
+                      (i + 1), expected_hypertext[i].c_str());
+  }
+
+  // "after.".
+  //
+  // Note that according to the ATK Spec, an offset that is equal to
+  // "character_count" is not permitted.
+  for (int i = 7; i < character_count; ++i) {
+    CheckTextAtOffset(contenteditable_text, i, ATK_TEXT_BOUNDARY_CHAR, i,
+                      (i + 1), expected_hypertext[i].c_str());
+  }
+
+  ASSERT_EQ(3, atk_object_get_n_accessible_children(contenteditable));
+  // The image is the second child.
+  AtkObject* image = atk_object_ref_accessible_child(contenteditable, 1);
+  ASSERT_NE(nullptr, image);
+  ASSERT_EQ(ATK_ROLE_IMAGE, atk_object_get_role(image));
+
+  // The alt text of the image is not navigable as text.
+  ASSERT_FALSE(ATK_IS_TEXT(image));
+
+  g_object_unref(image);
+  g_object_unref(contenteditable_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                        TestMultilingualTextAtOffsetWithBoundaryCharacter) {
   AtkText* atk_text = SetUpInputField();
   ASSERT_NE(nullptr, atk_text);
@@ -202,11 +304,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
   // Place an e acute, and two emoticons in the text field.
-  ExecuteScript(base::UTF8ToUTF16(R"SCRIPT(
+  ExecuteScript(
+      uR"SCRIPT(
       const input = document.querySelector('input');
       input.value =
-          'e\u0301\uD83D\uDC69\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83D\uDC36';
-      )SCRIPT"));
+          'é👩\u200D❤\uFE0F\u200D👩🐶';
+      )SCRIPT");
   waiter.WaitForNotification();
 
   int character_count = atk_text_get_character_count(atk_text);
@@ -255,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Single line text fields should return the whole text.
   CheckTextAtOffset(atk_text, 0, ATK_TEXT_BOUNDARY_LINE_START, 0,
-                    InputContentsString().size(),
+                    static_cast<int>(InputContentsString().size()),
                     InputContentsString().c_str());
 
   g_object_unref(atk_text);
@@ -274,7 +377,55 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Last line does not have a trailing newline.
   CheckTextAtOffset(atk_text, 32, ATK_TEXT_BOUNDARY_LINE_START, 32,
-                    InputContentsString().size(), "\"KHTML, like\".");
+                    static_cast<int>(InputContentsString().size()),
+                    "\"KHTML, like\".");
+
+  g_object_unref(atk_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestBlankLineTextAtOffsetWithBoundaryLine) {
+  AtkText* atk_text = SetUpTextareaField();
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kValueChanged);
+  // Add a blank line at the end of the textarea.
+  ExecuteScript(
+      uR"SCRIPT(
+      const textarea = document.querySelector('textarea');
+      textarea.value += '\n';
+      )SCRIPT");
+  waiter.WaitForNotification();
+
+  // The second last line should have an additional trailing newline. Also,
+  // Blink represents the blank line with a newline character, so in total there
+  // should be two more newlines. The second newline is not part of the HTML
+  // value attribute however.
+  int contents_string_length =
+      static_cast<int>(InputContentsString().size()) + 1;
+  CheckTextAtOffset(atk_text, 32, ATK_TEXT_BOUNDARY_LINE_START, 32,
+                    contents_string_length, "\"KHTML, like\".\n");
+  CheckTextAtOffset(atk_text, 46, ATK_TEXT_BOUNDARY_LINE_START, 32,
+                    contents_string_length, "\"KHTML, like\".\n");
+
+  // An offset one past the last character should return the last line which is
+  // blank. This is represented by Blink with yet another line break.
+  CheckTextAtOffset(atk_text, contents_string_length,
+                    ATK_TEXT_BOUNDARY_LINE_START, contents_string_length,
+                    (contents_string_length + 1), "\n");
+
+  {
+    // There should be no text after the blank line.
+    int start_offset = 0;
+    int end_offset = 0;
+    char* text = atk_text_get_text_at_offset(
+        atk_text, (contents_string_length + 1), ATK_TEXT_BOUNDARY_LINE_START,
+        &start_offset, &end_offset);
+    EXPECT_EQ(0, start_offset);
+    EXPECT_EQ(0, end_offset);
+    EXPECT_EQ(nullptr, text);
+  }
 
   g_object_unref(atk_text);
 }
@@ -288,10 +439,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   int n_characters = atk_text_get_character_count(atk_text);
   ASSERT_LT(newline_offset, n_characters);
 
-  const base::string16 string16_embed(
+  const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
   std::string expected_string = "Game theory is \"the study of " +
-                                base::UTF16ToUTF8(string16_embed) +
+                                base::UTF16ToUTF8(embedded_character) +
                                 " of conflict and\n";
   for (int i = 0; i <= newline_offset; ++i) {
     CheckTextAtOffset(atk_text, i, ATK_TEXT_BOUNDARY_LINE_START, 0,
@@ -443,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
     gfx::Rect combined_extents(x, y, width, height);
     for (int offset = 1; offset < newline_offset; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -472,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << newline_offset + 1;
       SCOPED_TRACE(message);
 
@@ -487,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
     combined_extents = gfx::Rect(x, y, width, height);
     for (int offset = newline_offset + 2; offset < n_characters; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -538,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     // Test that non offscreen characters have increasing x coordinates and a
     // height that is greater than 1px.
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset 0";
       SCOPED_TRACE(message);
 
@@ -551,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     for (int offset = 1; offset < first_line_end; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -568,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << last_line_start;
       SCOPED_TRACE(message);
 
@@ -581,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     for (int offset = last_line_start + 1; offset < n_characters; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -781,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
                             &height, ATK_XY_SCREEN);
 
   int doc_bottom = doc_y + doc_height;
-  int bottom_third = doc_bottom - (float{doc_height} / 3.0);
+  int bottom_third = doc_bottom - (static_cast<float>(doc_height) / 3.0);
   EXPECT_GT(y, bottom_third);
   EXPECT_LT(y, doc_bottom - height + 1);
 
@@ -989,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 #endif  //  defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 32, 0)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Flaky on crbug.com/1026149
 #define MAYBE_TestSetSelection DISABLED_TestSetSelection
 #else
@@ -1009,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
-  int contents_string_length = int{InputContentsString().size()};
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   start_offset = 0;
   end_offset = contents_string_length;
 
@@ -1036,6 +1187,125 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   g_object_unref(atk_text);
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SetSelectionWithIgnoredObjects) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <html>
+        <body>
+          <ul>
+            <li>
+              <div role="presentation"></div>
+              <p role="presentation">
+                <span>Banana</span>
+              </p>
+              <span>fruit.</span>
+            </li>
+          </ul>
+        </body>
+      </html>)HTML");
+
+  AtkText* atk_list_item = FindNode(ATK_ROLE_LIST_ITEM);
+  ASSERT_NE(nullptr, atk_list_item);
+
+  // The hypertext expose by "list_item_text" includes a bullet (U+2022)
+  // followed by a space for the list bullet and the joined word "Bananafruit.".
+  // The word "Banana" is exposed as text because its container paragraph is
+  // ignored.
+  int n_characters = atk_text_get_character_count(atk_list_item);
+  ASSERT_EQ(14, n_characters);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
+
+  // First select the whole of the text found in the hypertext.
+  int start_offset = 0;
+  int end_offset = n_characters;
+  std::string bullet = base::UTF16ToUTF8(kString16Bullet);
+  char* selected_text = nullptr;
+
+  EXPECT_TRUE(
+      atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
+  waiter.WaitForNotification();
+
+  selected_text =
+      atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
+  ASSERT_NE(nullptr, selected_text);
+  EXPECT_EQ(0, start_offset);
+  EXPECT_EQ(n_characters, end_offset);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ((bullet + std::string("Bananafruit.")).c_str(), selected_text);
+  g_free(selected_text);
+
+  // Select only the list bullet.
+  start_offset = 0;
+  end_offset = 2;
+  EXPECT_TRUE(
+      atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
+  waiter.WaitForNotification();
+
+  selected_text =
+      atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
+  ASSERT_NE(nullptr, selected_text);
+  EXPECT_EQ(0, start_offset);
+  EXPECT_EQ(2, end_offset);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ(bullet.c_str(), selected_text);
+  g_free(selected_text);
+
+  // Select the word "Banana" in the ignored paragraph.
+  start_offset = 2;
+  end_offset = 8;
+  EXPECT_TRUE(
+      atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
+  waiter.WaitForNotification();
+
+  selected_text =
+      atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
+  ASSERT_NE(nullptr, selected_text);
+  EXPECT_EQ(2, start_offset);
+  EXPECT_EQ(8, end_offset);
+  EXPECT_STREQ("Banana", selected_text);
+  g_free(selected_text);
+
+  // Select both the list bullet and the word "Banana" in the ignored paragraph.
+  start_offset = 0;
+  end_offset = 8;
+  EXPECT_TRUE(
+      atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
+  waiter.WaitForNotification();
+
+  selected_text =
+      atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
+  ASSERT_NE(nullptr, selected_text);
+  EXPECT_EQ(0, start_offset);
+  EXPECT_EQ(8, end_offset);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ((bullet + std::string("Banana")).c_str(), selected_text);
+  g_free(selected_text);
+
+  // Select the joined word "Bananafruit." both in the ignored paragraph and in
+  // the unignored span.
+  start_offset = 2;
+  end_offset = n_characters;
+  EXPECT_TRUE(
+      atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
+  waiter.WaitForNotification();
+
+  selected_text =
+      atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
+  ASSERT_NE(nullptr, selected_text);
+  EXPECT_EQ(2, start_offset);
+  EXPECT_EQ(n_characters, end_offset);
+  EXPECT_STREQ("Bananafruit.", selected_text);
+  g_free(selected_text);
+
+  g_object_unref(atk_list_item);
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestAtkTextListItem) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
@@ -1055,22 +1325,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestAtkTextListItem) {
 
   EXPECT_TRUE(ATK_IS_TEXT(list_item_1));
 
-  const base::string16 string16_embed(
-      1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
-  std::string expected_string = base::UTF16ToUTF8(string16_embed) + "Text 1";
+  std::string expected_string = base::UTF16ToUTF8(kString16Bullet) + "Text 1";
 
-  // The text of the list item should include the list marker as an embedded
-  // object.
+  // The text of the list item should include the list marker as a bullet char.
   gchar* text = atk_text_get_text(ATK_TEXT(list_item_1), 0, -1);
-  ASSERT_STREQ(text, expected_string.c_str());
+  EXPECT_STREQ(text, expected_string.c_str());
   g_free(text);
+
   text = atk_text_get_text_at_offset(
       ATK_TEXT(list_item_2), 0, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
-  ASSERT_STREQ(text, base::UTF16ToUTF8(string16_embed).c_str());
+  ASSERT_STREQ(text, base::UTF16ToUTF8(kString16Bullet).c_str());
   g_free(text);
 
   text = atk_text_get_text_at_offset(
-      ATK_TEXT(list_item_2), 1, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
+      ATK_TEXT(list_item_2), 2, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
   ASSERT_STREQ(text, "Text ");
   g_free(text);
 
@@ -1176,15 +1444,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
   ExecuteScript(
-      base::UTF8ToUTF16("let parent = document.getElementById('parent');"
-                        "let child1 = document.getElementById('child1');"
-                        "let child2 = document.getElementById('child2');"
-                        "let range = document.createRange();"
-                        "range.setStart(child1.firstChild, 3);"
-                        "range.setEnd(child1.firstChild, 5);"
-                        "parent.focus();"
-                        "document.getSelection().removeAllRanges();"
-                        "document.getSelection().addRange(range);"));
+      u"let parent = document.getElementById('parent');"
+      u"let child1 = document.getElementById('child1');"
+      u"let child2 = document.getElementById('child2');"
+      u"let range = document.createRange();"
+      u"range.setStart(child1.firstChild, 3);"
+      u"range.setEnd(child1.firstChild, 5);"
+      u"parent.focus();"
+      u"document.getSelection().removeAllRanges();"
+      u"document.getSelection().addRange(range);");
   selection_waiter.WaitForNotification();
 
   EXPECT_FALSE(saw_selection_change_in_parent);
@@ -1207,17 +1475,57 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   saw_selection_change_in_child2 = false;
 
   ExecuteScript(
-      base::UTF8ToUTF16("let range2 = document.createRange();"
-                        "range2.setStart(child1.firstChild, 0);"
-                        "range2.setEnd(child2.firstChild, 3);"
-                        "parent.focus();"
-                        "document.getSelection().removeAllRanges();"
-                        "document.getSelection().addRange(range2);"));
+      u"let range2 = document.createRange();"
+      u"range2.setStart(child1.firstChild, 0);"
+      u"range2.setEnd(child2.firstChild, 3);"
+      u"parent.focus();"
+      u"document.getSelection().removeAllRanges();"
+      u"document.getSelection().addRange(range2);");
   selection_waiter.WaitForNotification();
 
   EXPECT_TRUE(saw_selection_change_in_parent);
   EXPECT_FALSE(saw_selection_change_in_child1);
   EXPECT_FALSE(saw_selection_change_in_child2);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SetCaretInTextWithGeneratedContent) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <body>
+      <style>h1.generated::before{content:"   [   ";}</style>
+      <style>h1.generated::after{content:"   ]   ";}</style>
+      <h1 class="generated">Foo</h1>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* heading = atk_object_ref_accessible_child(document, 0);
+  ASSERT_EQ(atk_object_get_role(heading), ATK_ROLE_HEADING);
+
+  // The accessible text for the heading should match the rendered text and
+  // not the DOM text.
+  gchar* text = atk_text_get_text(ATK_TEXT(heading), 0, -1);
+  ASSERT_STREQ(text, "[ Foo ]");
+  g_free(text);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+
+  // Caret can't be set inside generated content, it will go to the closest
+  // allowed place. Ordered the targets so that the caret will always actually
+  // move somewhere between steps, and thus the waiter will always be satisfied.
+  std::vector<int> target_offset = {0, 3, 1, 4, 2, 4, 5, 4, 6};
+  std::vector<int> expect_offset = {2, 3, 2, 4, 2, 4, 2, 4, 2};
+  for (size_t i = 0; i < target_offset.size(); i++) {
+    atk_text_set_caret_offset(ATK_TEXT(heading), target_offset[i]);
+    waiter.WaitForNotification();
+    ASSERT_EQ(expect_offset[i], atk_text_get_caret_offset(ATK_TEXT(heading)));
+  }
+
+  g_object_unref(heading);
 }
 
 // TODO(crbug.com/981913): This flakes on linux.
@@ -1308,6 +1616,170 @@ IN_PROC_BROWSER_TEST_F(
   g_object_unref(child_2);
   g_object_unref(child_3);
   g_object_unref(child_7);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SelectionTriggersReparentingOnSelectionStart) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <head>
+        <script>
+          document.onselectstart = () => {
+            var tomove = document.getElementById("tomove");
+            document.getElementById("div").appendChild(tomove);
+          }
+        </script>
+      </head>
+      <body>
+         <div id="tomove">Move me</div>
+         <p id="paragraph">hello world</p>
+         <div id="div"></div>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* paragraph = atk_object_ref_accessible_child(document, 1);
+  ASSERT_EQ(atk_object_get_role(paragraph), ATK_ROLE_PARAGRAPH);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+
+  EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 5));
+  waiter.WaitForNotification();
+
+  gchar* selected =
+      atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
+  EXPECT_STREQ(selected, "hello");
+  g_free(selected);
+
+  g_object_unref(paragraph);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SelectionTriggersAnchorDeletionOnSelectionStart) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <head>
+        <script>
+          document.onselectstart = () => {
+          document.getElementById("p").removeChild(p.childNodes[0]);
+          }
+        </script>
+      </head>
+      <body>
+         <p id="p"><span>hello</span> <span>world</span></p>
+         <button id="button">ok</button>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* paragraph = atk_object_ref_accessible_child(document, 0);
+  ASSERT_EQ(atk_object_get_role(paragraph), ATK_ROLE_PARAGRAPH);
+
+  AtkObject* button = atk_object_ref_accessible_child(document, 1);
+  ASSERT_EQ(atk_object_get_role(button), ATK_ROLE_PUSH_BUTTON);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+
+  EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 11));
+  atk_component_grab_focus(ATK_COMPONENT(button));
+  waiter.WaitForNotification();
+
+  gchar* selected =
+      atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
+  EXPECT_STREQ(selected, nullptr);
+  g_free(selected);
+
+  g_object_unref(paragraph);
+  g_object_unref(button);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SelectionTriggersFocusDeletionOnSelectionStart) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <head>
+        <script>
+          document.onselectstart = () => {
+          document.getElementById("p").removeChild(p.childNodes[2]);
+          }
+        </script>
+      </head>
+      <body>
+         <p id="p"><span>hello</span> <span>world</span></p>
+         <button id="button">ok</button>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* paragraph = atk_object_ref_accessible_child(document, 0);
+  ASSERT_EQ(atk_object_get_role(paragraph), ATK_ROLE_PARAGRAPH);
+
+  AtkObject* button = atk_object_ref_accessible_child(document, 1);
+  ASSERT_EQ(atk_object_get_role(button), ATK_ROLE_PUSH_BUTTON);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+
+  EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 11));
+  atk_component_grab_focus(ATK_COMPONENT(button));
+  waiter.WaitForNotification();
+
+  gchar* selected =
+      atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
+  EXPECT_STREQ(selected, nullptr);
+  g_free(selected);
+
+  g_object_unref(paragraph);
+  g_object_unref(button);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SelectionTriggersReparentingOnFocus) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <head>
+        <script>
+          function go() {
+            var edit = document.getElementById("edit");
+            document.getElementById("search").appendChild(edit);
+          }
+        </script>
+      </head>
+      <body>
+        <span id="edit" tabindex="0" contenteditable onfocusin="go()">foo</span>
+        <div id="search" role="search"></div>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* section = atk_object_ref_accessible_child(document, 0);
+  AtkObject* edit = atk_object_ref_accessible_child(section, 0);
+  ASSERT_TRUE(IsAtkObjectEditable(edit));
+  ASSERT_FALSE(IsAtkObjectFocused(edit));
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+
+  EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(edit), 0, 1, 2));
+  waiter.WaitForNotification();
+
+  // When the unfocused contenteditable span has its selection set, focus will
+  // be set. That will trigger the script in the source to move that span to
+  // a different parent, causing focus to be removed and the selection cleared.
+  ASSERT_FALSE(IsAtkObjectFocused(edit));
+  gchar* selected = atk_text_get_selection(ATK_TEXT(edit), 0, nullptr, nullptr);
+  EXPECT_STREQ(selected, nullptr);
+  g_free(selected);
+
+  g_object_unref(edit);
+  g_object_unref(section);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
@@ -1434,15 +1906,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
-  ExecuteScript(base::UTF8ToUTF16(
-      "let selection = document.getSelection();"
-      "let editable = document.querySelector('div[contenteditable=\"true\"]');"
-      "editable.focus();"
-      "let range = document.createRange();"
-      "range.setStart(editable.lastChild, 4);"
-      "range.setEnd(editable.lastChild, 4);"
-      "selection.removeAllRanges();"
-      "selection.addRange(range);"));
+  ExecuteScript(
+      u"let selection = document.getSelection();"
+      u"let editable = document.querySelector('div[contenteditable=\"true\"]');"
+      u"editable.focus();"
+      u"let range = document.createRange();"
+      u"range.setStart(editable.lastChild, 4);"
+      u"range.setEnd(editable.lastChild, 4);"
+      u"selection.removeAllRanges();"
+      u"selection.addRange(range);");
   selection_waiter.WaitForNotification();
 
   // We should see the event happen in div and not the static text element.
@@ -1566,6 +2038,178 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   g_object_unref(div1);
   g_object_unref(div2);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestOffsetsOfSelectionAll) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <p>Hello world.</p>
+      <p>Another paragraph.</p>
+      <p>Goodbye world.</p>
+      <script>
+      var root = document.documentElement;
+      window.getSelection().selectAllChildren(root);
+      </script>)HTML");
+
+  // Retrieve the AtkObject interface for the document node.
+  AtkObject* document = GetRendererAccessible();
+  ASSERT_TRUE(ATK_IS_COMPONENT(document));
+
+  auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(document));
+  std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
+  EXPECT_EQ(0, offsets.first);
+  EXPECT_EQ(3, offsets.second);
+
+  std::vector<int> expected = {12, 18, 14};  // text length of each child
+  int number_of_children = atk_object_get_n_accessible_children(document);
+  for (int i = 0; i < number_of_children; i++) {
+    AtkObject* p = atk_object_ref_accessible_child(document, i);
+    EXPECT_NE(p, nullptr);
+    auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
+        ui::AXPlatformNode::FromNativeViewAccessible(p));
+    std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
+    EXPECT_EQ(0, offsets.first);
+    EXPECT_EQ(expected[i], offsets.second);
+    g_object_unref(p);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestGetIndexInParent) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <p>Hello world</p>
+      <p>Another paragraph.</p>
+      <p>Goodbye world.</p>
+      )HTML");
+
+  // Retrieve the AtkObject interface for the document node.
+  AtkObject* document = GetRendererAccessible();
+  ASSERT_TRUE(ATK_IS_COMPONENT(document));
+  EXPECT_EQ(0, atk_object_get_index_in_parent(document));
+
+  int number_of_children = atk_object_get_n_accessible_children(document);
+  for (int i = 0; i < number_of_children; i++) {
+    AtkObject* p = atk_object_ref_accessible_child(document, i);
+    EXPECT_NE(p, nullptr);
+    EXPECT_EQ(i, atk_object_get_index_in_parent(p));
+    g_object_unref(p);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       HitTestOnAncestorOfWebRoot) {
+  // Load the page.
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <button>This is a button</button>
+      )HTML");
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  BrowserAccessibilityManager* manager =
+      web_contents->GetRootBrowserAccessibilityManager();
+
+  // Find a node to hit test. Note that this is a really simple page,
+  // so synchronous hit testing will work fine.
+  BrowserAccessibility* node = manager->GetRoot();
+  while (node && node->GetRole() != ax::mojom::Role::kButton)
+    node = manager->NextInTreeOrder(node);
+  DCHECK(node);
+
+  // Get the screen bounds of the hit target and find the point in the middle.
+  gfx::Rect bounds = node->GetClippedScreenBoundsRect();
+  gfx::Point point = bounds.CenterPoint();
+
+  // Get the root AXPlatformNodeAuraLinux.
+  ui::AXPlatformNodeAuraLinux* root_platform_node =
+      static_cast<ui::AXPlatformNodeAuraLinux*>(
+          ui::AXPlatformNode::FromNativeViewAccessible(
+              manager->GetRoot()->GetNativeViewAccessible()));
+
+  // First test that calling accHitTest on the root node returns the button.
+  {
+    gfx::NativeViewAccessible hit_child = root_platform_node->HitTestSync(
+        point.x(), point.y(), AtkCoordType::ATK_XY_SCREEN);
+    ASSERT_NE(nullptr, hit_child);
+    ui::AXPlatformNode* hit_child_node =
+        ui::AXPlatformNode::FromNativeViewAccessible(hit_child);
+    ASSERT_NE(nullptr, hit_child_node);
+    EXPECT_EQ(node->GetId(), hit_child_node->GetDelegate()->GetData().id);
+  }
+
+  // Now test it again, but this time caliing accHitTest on the parent
+  // IAccessible of the web root node.
+  {
+    RenderWidgetHostViewAura* rwhva = static_cast<RenderWidgetHostViewAura*>(
+        shell()->web_contents()->GetRenderWidgetHostView());
+    gfx::NativeViewAccessible ancestor = rwhva->GetParentNativeViewAccessible();
+
+    ASSERT_NE(nullptr, ancestor);
+
+    ui::AXPlatformNodeAuraLinux* ancestor_node =
+        static_cast<ui::AXPlatformNodeAuraLinux*>(
+            ui::AXPlatformNode::FromNativeViewAccessible(ancestor));
+    ASSERT_NE(nullptr, ancestor_node);
+
+    gfx::NativeViewAccessible hit_child = ancestor_node->HitTestSync(
+        point.x(), point.y(), AtkCoordType::ATK_XY_SCREEN);
+    ASSERT_NE(nullptr, hit_child);
+    ui::AXPlatformNode* hit_child_node =
+        ui::AXPlatformNode::FromNativeViewAccessible(hit_child);
+    ASSERT_NE(nullptr, hit_child_node);
+    EXPECT_EQ(node->GetId(), hit_child_node->GetDelegate()->GetData().id);
+  }
+}
+
+// Tests if it does not DCHECK when textarea has a placeholder break element.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestGetTextContainerFromTextArea) {
+  std::string content = std::string("<textarea style=\"height:100px;\">hello") +
+                        std::string("\n") + std::string("</textarea>");
+  LoadInitialAccessibilityTreeFromHtml(content);
+
+  AtkText* atk_text = FindNode(ATK_ROLE_ENTRY);
+  AtkTextRectangle atk_rect;
+  // atk_text_get_range_extents() calls GetTextContainerForPlainTextField() and
+  // DCHECK on checking children counts.
+  atk_text_get_range_extents(atk_text, 0, 7, AtkCoordType::ATK_XY_SCREEN,
+                             &atk_rect);
+  g_object_unref(atk_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestCaretMovedInNumberInput) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<input type="number" value="12">
+      )HTML");
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+  auto caret_callback =
+      G_CALLBACK(+[](AtkText*, int new_position, int* out_caret_position) {
+        *out_caret_position = new_position;
+      });
+  int out_caret_position = -1;
+  AtkText* input_text = FindNode(ATK_ROLE_SPIN_BUTTON);
+  g_signal_connect(input_text, "text-caret-moved", caret_callback,
+                   &out_caret_position);
+
+  atk_text_set_caret_offset(input_text, 0);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 0);
+  EXPECT_EQ(out_caret_position, 0);
+
+  atk_text_set_caret_offset(input_text, 1);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 1);
+  EXPECT_EQ(out_caret_position, 1);
+
+  atk_text_set_caret_offset(input_text, 2);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 2);
+  EXPECT_EQ(out_caret_position, 2);
+
+  g_object_unref(input_text);
 }
 
 }  // namespace content

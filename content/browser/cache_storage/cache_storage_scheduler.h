@@ -10,15 +10,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 class CacheStorageOperation;
+
+CONTENT_EXPORT extern const base::Feature kCacheStorageParallelOps;
 
 // TODO(jkarlin): Support operation identification so that ops can be checked in
 // DCHECKs.
@@ -31,6 +32,10 @@ class CONTENT_EXPORT CacheStorageScheduler {
  public:
   CacheStorageScheduler(CacheStorageSchedulerClient client_type,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  CacheStorageScheduler(const CacheStorageScheduler&) = delete;
+  CacheStorageScheduler& operator=(const CacheStorageScheduler&) = delete;
+
   virtual ~CacheStorageScheduler();
 
   // Create a scheduler-unique identifier for an operation to be scheduled.
@@ -111,15 +116,8 @@ class CONTENT_EXPORT CacheStorageScheduler {
   int num_running_shared_ = 0;
   int num_running_exclusive_ = 0;
 
-  // The peak number of parallel shared operations that ran at once.  Measured
-  // between the last time the sheduler started running shared operations and
-  // when the number of running shared operations drops to zero.
-  int peak_parallel_shared_ = 0;
-
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CacheStorageScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageScheduler);
 };
 
 }  // namespace content

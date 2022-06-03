@@ -32,35 +32,29 @@ namespace blink {
 
 ContentType::ContentType(const String& content_type) : type_(content_type) {}
 
-String ContentType::Parameter(const String& parameter_name) const {
-  String parameter_value;
-  String stripped_type = type_.StripWhiteSpace();
+static bool IsASCIIQuote(UChar c) {
+  return c == '"';
+}
 
-  // a MIME type can have one or more "param=value" after a semi-colon, and
-  // separated from each other by semi-colons
-  wtf_size_t semi = stripped_type.find(';');
-  if (semi != kNotFound) {
-    wtf_size_t start =
-        stripped_type.FindIgnoringASCIICase(parameter_name, semi + 1);
-    if (start != kNotFound) {
-      start = stripped_type.find('=', start + parameter_name.length());
-      if (start != kNotFound) {
-        wtf_size_t quote = stripped_type.find('\"', start + 1);
-        wtf_size_t end = stripped_type.find('\"', start + 2);
-        if (quote != kNotFound && end != kNotFound) {
-          start = quote;
-        } else {
-          end = stripped_type.find(';', start + 1);
-          if (end == kNotFound)
-            end = stripped_type.length();
-        }
-        parameter_value = stripped_type.Substring(start + 1, end - (start + 1))
-                              .StripWhiteSpace();
+String ContentType::Parameter(const String& parameter_name) const {
+  Vector<String> parameters;
+  ParseParameters(parameters);
+
+  for (auto& parameter : parameters) {
+    String stripped_parameter = parameter.StripWhiteSpace();
+    wtf_size_t separator_pos = stripped_parameter.find('=');
+    if (separator_pos != kNotFound) {
+      String attribute =
+          stripped_parameter.Left(separator_pos).StripWhiteSpace();
+      if (EqualIgnoringASCIICase(attribute, parameter_name)) {
+        return stripped_parameter.Substring(separator_pos + 1)
+            .StripWhiteSpace()
+            .RemoveCharacters(IsASCIIQuote);
       }
     }
   }
 
-  return parameter_value;
+  return String();
 }
 
 String ContentType::GetType() const {
@@ -72,6 +66,31 @@ String ContentType::GetType() const {
     stripped_type = stripped_type.Left(semi).StripWhiteSpace();
 
   return stripped_type;
+}
+
+void ContentType::ParseParameters(Vector<String>& result) const {
+  String stripped_type = type_.StripWhiteSpace();
+
+  unsigned cur_pos = 0;
+  unsigned end_pos = stripped_type.length();
+  unsigned start_pos = 0;
+  bool is_quote = false;
+
+  while (cur_pos < end_pos) {
+    if (!is_quote && stripped_type[cur_pos] == ';') {
+      if (cur_pos != start_pos) {
+        result.push_back(
+            stripped_type.Substring(start_pos, cur_pos - start_pos));
+      }
+      start_pos = cur_pos + 1;
+    } else if (stripped_type[cur_pos] == '"') {
+      is_quote = !is_quote;
+    }
+    cur_pos++;
+  }
+
+  if (start_pos != end_pos)
+    result.push_back(stripped_type.Substring(start_pos));
 }
 
 }  // namespace blink

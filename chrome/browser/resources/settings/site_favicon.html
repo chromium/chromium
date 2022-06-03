@@ -1,9 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/icon.html">
-
-<dom-module id="site-favicon">
-  <template>
     <style>
       :host {
         --site-favicon-height: 16px;
@@ -13,6 +7,7 @@
       #favicon {
         background-repeat: no-repeat;
         background-size: contain;
+        border-radius: inherit;
         display: block;
         height: var(--site-favicon-height);
         width: var(--site-favicon-width);
@@ -22,6 +17,3 @@
         id="favicon"
         style="background-image: [[getBackgroundImage_(faviconUrl, url)]]">
     </div>
-  </template>
-  <script src="site_favicon.js"></script>
-</dom-module>

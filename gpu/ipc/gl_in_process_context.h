@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
@@ -16,6 +16,7 @@
 #include "ui/gl/gl_surface.h"
 
 namespace gpu {
+class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class TransferBuffer;
 struct GpuFeatureInfo;
@@ -31,6 +32,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
  public:
   // You must call Initialize() before using the context.
   GLInProcessContext();
+
+  GLInProcessContext(const GLInProcessContext&) = delete;
+  GLInProcessContext& operator=(const GLInProcessContext&) = delete;
+
   ~GLInProcessContext();
 
   // Initialize the GLInProcessContext, if |is_offscreen| is true, renders to an
@@ -50,6 +55,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
       const SharedMemoryLimits& memory_limits,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       ImageFactory* image_factory,
+      GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller_on_gpu,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   const Capabilities& GetCapabilities() const;
@@ -67,8 +74,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<gles2::GLES2Implementation> gles2_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLInProcessContext);
 };
 
 }  // namespace gpu

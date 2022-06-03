@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: 4dd9124e2fa42c53e137cf831e5d9193f189b543
+Revision: 8342e6bd613a5b2e44eca1d74288e3115ccef139
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -36,4 +36,11 @@ $ git am --3way --message-id -p4 /tmp/patchdir
 
 Local Modifications:
  - codereview.settings has been excluded.
- - elf_image_reader_fuzzer is enabled only when use_fuzzing_engine is true.
+ - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
+   BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
+   (crashpad/test/BUILD.gn, crashpad/test/multiprocess_exec_test.cc)
+ - MemoryMap.SelfLargeMapFile, SelfBasic, SelfLargeFiles are disabled when
+   BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1163794
+   (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
+ - CloseMultipleNowOrOnExec has been updated to invoke the new
+   base::subtle::ResetFDOwnership() API

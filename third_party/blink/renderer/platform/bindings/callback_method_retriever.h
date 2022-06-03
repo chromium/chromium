@@ -25,6 +25,8 @@ class PLATFORM_EXPORT CallbackMethodRetriever {
 
  public:
   explicit CallbackMethodRetriever(CallbackFunctionBase* constructor);
+  CallbackMethodRetriever(const CallbackMethodRetriever&) = delete;
+  CallbackMethodRetriever& operator=(const CallbackMethodRetriever&) = delete;
 
   // Get the prototype object from the callback function. Must be invoked prior
   // to GetMethod or GetStaticMethod.
@@ -75,12 +77,10 @@ class PLATFORM_EXPORT CallbackMethodRetriever {
                                              const StringView& property,
                                              ExceptionState&);
 
-  Member<CallbackFunctionBase> constructor_;
+  CallbackFunctionBase* constructor_;
   v8::Isolate* isolate_;
   v8::Local<v8::Context> current_context_;
   v8::Local<v8::Object> prototype_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackMethodRetriever);
 };
 
 }  // namespace blink

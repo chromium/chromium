@@ -143,7 +143,12 @@ constexpr int kMaxConcurrentChannels = 8;
 // from 0 to ChannelLayoutToChannelCount(layout) - 1.
 MEDIA_SHMEM_EXPORT int ChannelOrder(ChannelLayout layout, Channels channel);
 
-// Returns the number of channels in a given ChannelLayout.
+// Returns the number of channels in a given ChannelLayout or 0 if the
+// channel layout can't be mapped to a valid value. Currently, 0
+// is returned for CHANNEL_LAYOUT_NONE, CHANNEL_LAYOUT_UNSUPPORTED,
+// CHANNEL_LAYOUT_DISCRETE, and CHANNEL_LAYOUT_BITSTREAM. For these cases,
+// additional steps must be taken to manually figure out the corresponding
+// number of channels.
 MEDIA_SHMEM_EXPORT int ChannelLayoutToChannelCount(ChannelLayout layout);
 
 // Given the number of channels, return the best layout,

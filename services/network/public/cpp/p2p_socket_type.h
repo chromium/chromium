@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
@@ -28,8 +27,6 @@ enum P2PSocketOption {
 // Type of P2P Socket.
 enum P2PSocketType {
   P2P_SOCKET_UDP,
-  P2P_SOCKET_TCP_SERVER,
-  P2P_SOCKET_STUN_TCP_SERVER,
   P2P_SOCKET_TCP_CLIENT,
   P2P_SOCKET_STUN_TCP_CLIENT,
   P2P_SOCKET_SSLTCP_CLIENT,

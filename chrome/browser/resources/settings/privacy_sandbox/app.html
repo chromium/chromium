@@ -1,0 +1,174 @@
+<style include="cr-shared-style settings-shared cr-page-host-style">
+  .banner {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    width: 120px;
+  }
+
+  .box-last {
+    padding-bottom: 12px;
+  }
+
+  .card {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    flex: 1;
+  }
+
+  .card-banner {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    max-width: 400px;
+  }
+
+  .info-header {
+    color: var(--cr-secondary-text-color);
+    font-weight: 500;
+  }
+
+  .label-wrapper {
+    display: block;
+  }
+
+  .secondary {
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+  }
+
+  .section-header {
+    color: var(--cr-primary-text-color);
+    font-size: 108%;
+    font-weight: 400;
+    letter-spacing: .25px;
+    margin-bottom: 12px;
+    margin-top: var(--cr-section-vertical-margin);
+    outline: none;
+    padding-bottom: 4px;
+    padding-top: 8px;
+  }
+
+  #flocCard {
+    margin-top: var(--cr-section-vertical-margin);
+  }
+
+  #flocExplanation {
+    margin-block-end: 8px;
+  }
+
+  #overscroll {
+    padding-top: 64px;
+  }
+
+  #page-container {
+    box-sizing: border-box;
+    display: block;
+    height: inherit;
+    margin: 0 auto;
+    max-width: 550px;
+    min-width: 400px;
+    position: relative;
+    width: calc(100% * var(--cr-centered-card-width-percentage));
+  }
+
+  #page-heading {
+    font-size: 2rem;
+    font-weight: 200;
+    margin: 0;
+    padding: 28px 0 14px 0;
+    text-align: center;
+  }
+
+  settings-toggle-button {
+    font-weight: 500;
+  }
+</style>
+
+<settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
+<div id="page-container">
+  <h1 id="page-heading">$i18n{privacySandboxTitle}</h1>
+  <picture>
+    <source class="banner"
+        srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img class="banner" alt=""
+        src="chrome://settings/images/privacy_sandbox_banner.svg">
+  </picture>
+  <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
+  <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
+  <div class="card">
+    <settings-toggle-button id="apiToggleButton"
+        pref="{{prefs.privacy_sandbox.apis_enabled}}"
+        label="$i18n{privacySandboxPageSettingTitle}"
+        on-change="onApiToggleButtonChange_">
+    </settings-toggle-button>
+    <div class="cr-row continuation">
+      <div class="secondary">
+        $i18n{privacySandboxPageSettingExplanation1Phase2}
+      </div>
+    </div>
+    <div class="cr-row continuation box-last">
+      <div class="secondary">
+        <ul>
+          <li>
+            <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
+          </li>
+          <li>
+            <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="flocCard" class="card">
+    <picture>
+      <source class="card-banner" media="(prefers-color-scheme: dark)"
+          srcset="./images/privacy_sandbox_floc_banner_dark.svg">
+      <img class="card-banner" alt=""
+          src="./images/privacy_sandbox_floc_banner.svg">
+    </picture>
+    <settings-toggle-button id="flocToggleButton"
+        pref="{{prefs.generated.floc_enabled}}"
+        label="$i18n{privacySandboxPageFlocHeading}"
+        on-change="onFlocToggleButtonChange_">
+    </settings-toggle-button>
+    <div id="flocExplanation" class="cr-row continuation">
+      <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
+        <div id="flocStatus" class="cr-secondary-text">
+          [[flocId_.trialStatus]]
+        </div>
+      </div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
+        <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+      </div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">
+          $i18n{privacySandboxPageFlocCohortNextUpdate}
+        </div>
+        <div id="flocUpdatedOn" class="cr-secondary-text">
+          [[flocId_.nextUpdate]]
+        </div>
+      </div>
+    </div>
+  <div class="cr-row continuation">
+    <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
+  </div>
+  <div class="cr-row continuation box-last">
+    <cr-button id="resetFlocIdButton" class="cr-button" role="button"
+        disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
+      $i18n{privacySandboxPageFlocResetCohort}
+    </cr-button>
+  </div>
+</div>
+<div id="overscroll"></div>

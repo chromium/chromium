@@ -1,2 +1,0 @@
-The test checks that we don't add non-children of the grid into the grid representation
-This test has passed if it didn't crash under ASAN.

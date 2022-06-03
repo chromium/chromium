@@ -8,18 +8,21 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 
+namespace flags_ui {
+class FlagsStorage;
+}  // namespace flags_ui
+
 namespace flags {
 
-extern const base::Feature kUnexpireFlagsM78;
-extern const base::Feature kUnexpireFlagsM80;
-
-bool IsFlagExpired(const char* internal_name);
+bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
+                   const char* internal_name);
 
 namespace testing {
 
-using FlagPredicate = base::RepeatingCallback<bool(const std::string&)>;
-
-void SetFlagExpiredPredicate(FlagPredicate predicate);
+// Overrides the expiration milestone for a named flag. Useful for tests that
+// need to expire a flag that doesn't normally appear in the generated
+// expiration table.
+void SetFlagExpiration(const std::string& name, int mstone);
 
 }  // namespace testing
 

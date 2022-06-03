@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/sync/model_impl/model_type_store_service_impl.h"
+#include "components/sync/model/model_type_store_service_impl.h"
 
 // static
 ModelTypeStoreServiceFactory* ModelTypeStoreServiceFactory::GetInstance() {

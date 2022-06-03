@@ -37,6 +37,22 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
+namespace {
+class ScopedSegmentReaderDataLocker {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedSegmentReaderDataLocker(blink::SegmentReader* segment_reader)
+      : segment_reader_(segment_reader) {
+    segment_reader_->LockData();
+  }
+  ~ScopedSegmentReaderDataLocker() { segment_reader_->UnlockData(); }
+
+ private:
+  blink::SegmentReader* const segment_reader_;
+};
+}  // namespace
+
 namespace blink {
 
 // static
@@ -56,11 +72,11 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
 
   const IntSize size = decoder->Size();
   const SkImageInfo info =
-      SkImageInfo::MakeN32(size.Width(), size.Height(), kPremul_SkAlphaType,
+      SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType,
                            decoder->ColorSpaceForSkImages());
 
   scoped_refptr<ImageFrameGenerator> frame = ImageFrameGenerator::Create(
-      SkISize::Make(size.Width(), size.Height()), false,
+      SkISize::Make(size.width(), size.height()), false,
       decoder->GetColorBehavior(), decoder->GetSupportedDecodeSizes());
   if (!frame)
     return nullptr;
@@ -178,9 +194,11 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
   {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                  "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
+
+    ScopedSegmentReaderDataLocker lock_data(data_.get());
     decoded = frame_generator_->DecodeAndScale(
-        data_.get(), all_data_received_, frame_index, decode_info, memory,
-        adjusted_row_bytes, alpha_option, client_id);
+        data_.get(), all_data_received_, static_cast<wtf_size_t>(frame_index),
+        decode_info, memory, adjusted_row_bytes, alpha_option, client_id);
   }
 
   if (decoded && needs_color_xform) {
@@ -211,64 +229,62 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
       decoded = bitmap.installPixels(target_info, memory, adjusted_row_bytes);
       DCHECK(decoded);
 
-      canvas->drawBitmap(bitmap, 0, 0, &paint);
+      canvas->drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
     }
   }
   return decoded;
 }
 
-bool DecodingImageGenerator::QueryYUVA8(
-    SkYUVASizeInfo* size_info,
-    SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-    SkYUVColorSpace* color_space) const {
+bool DecodingImageGenerator::QueryYUVA(
+    const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+    SkYUVAPixmapInfo* yuva_pixmap_info) const {
   if (!can_yuv_decode_)
     return false;
 
-  TRACE_EVENT0("blink", "DecodingImageGenerator::queryYUVA8");
-
-  // Indicate that we have three separate planes
-  indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-  indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-  indices[SkYUVAIndex::kV_Index] = {2, SkColorChannel::kR};
-  indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kR};
+  TRACE_EVENT0("blink", "DecodingImageGenerator::QueryYUVAInfo");
 
   DCHECK(all_data_received_);
-  return frame_generator_->GetYUVComponentSizes(data_.get(), size_info,
-                                                color_space);
+
+  ScopedSegmentReaderDataLocker lock_data(data_.get());
+  return frame_generator_->GetYUVAInfo(data_.get(), supported_data_types,
+                                       yuva_pixmap_info);
 }
 
-bool DecodingImageGenerator::GetYUVA8Planes(const SkYUVASizeInfo& size_info,
-                                            const SkYUVAIndex indices[4],
-                                            void* planes[3],
-                                            size_t frame_index,
-                                            uint32_t lazy_pixel_ref) {
+bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
+                                           size_t frame_index,
+                                           uint32_t lazy_pixel_ref) {
   // TODO(crbug.com/943519): YUV decoding does not currently support incremental
   // decoding. See comment in image_frame_generator.h.
   DCHECK(can_yuv_decode_);
   DCHECK(all_data_received_);
 
-  TRACE_EVENT0("blink", "DecodingImageGenerator::getYUVA8Planes");
+  TRACE_EVENT0("blink", "DecodingImageGenerator::GetYUVAPlanes");
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
 
-  // Verify sizes and indices
+  SkISize plane_sizes[3];
+  wtf_size_t plane_row_bytes[3];
+  void* plane_addrs[3];
+
+  // Verify sizes and extract DecodeToYUV parameters
   for (int i = 0; i < 3; ++i) {
-    if (size_info.fSizes[i].isEmpty() || !size_info.fWidthBytes[i]) {
+    const SkPixmap& plane = pixmaps.plane(i);
+    if (plane.dimensions().isEmpty() || !plane.rowBytes())
       return false;
-    }
+    if (plane.colorType() != pixmaps.plane(0).colorType())
+      return false;
+    plane_sizes[i] = plane.dimensions();
+    plane_row_bytes[i] = base::checked_cast<wtf_size_t>(plane.rowBytes());
+    plane_addrs[i] = plane.writable_addr();
   }
-  if (!size_info.fSizes[3].isEmpty() || size_info.fWidthBytes[3]) {
-    return false;
-  }
-  int numPlanes;
-  if (!SkYUVAIndex::AreValidIndices(indices, &numPlanes) || numPlanes != 3) {
+  if (!pixmaps.plane(3).dimensions().isEmpty()) {
     return false;
   }
 
-  bool decoded =
-      frame_generator_->DecodeToYUV(data_.get(), frame_index, size_info.fSizes,
-                                    planes, size_info.fWidthBytes);
-  return decoded;
+  ScopedSegmentReaderDataLocker lock_data(data_.get());
+  return frame_generator_->DecodeToYUV(
+      data_.get(), static_cast<wtf_size_t>(frame_index),
+      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(

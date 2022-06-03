@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 11: Uncaught TypeError: host.createShadowRoot is not a function
-Calling ShadowRoot.cloneNode() should throw a NotSupportedError exception.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

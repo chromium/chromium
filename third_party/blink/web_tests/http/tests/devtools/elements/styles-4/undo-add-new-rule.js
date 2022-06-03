@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule can be undone.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div class="foo" id="inspected" style="font-size: 12px">Text</div>
@@ -23,9 +23,9 @@
     addNewRuleAndSelectNode('inspected', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('After adding new rule:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     printStyleSheetAndCall(step4);
   }
 
@@ -34,9 +34,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step5);
   }
 
-  function step5() {
+  async function step5() {
     TestRunner.addResult('After undo:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     printStyleSheetAndCall(step6);
   }
 
@@ -45,9 +45,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step7);
   }
 
-  function step7() {
+  async function step7() {
     TestRunner.addResult('After redo:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     printStyleSheetAndCall(step8);
   }
 

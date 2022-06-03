@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
+<!-- Copyright © 1991-2021 Unicode, Inc.
+For terms of use, see http://www.unicode.org/copyright.html
+SPDX-License-Identifier: Unicode-DFS-2016
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+
+Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/ for derived annotations.
+-->
+<ldml>
+	<identity>
+		<version number="$Revision$"/>
+		<language type="en"/>
+		<territory type="001"/>
+	</identity>
+	<annotations>
+		<annotation cp="{">brace | bracket | curly brace | curly bracket | gullwing | left curly bracket | open curly bracket</annotation>
+		<annotation cp="🏻">light skin tone | skin tone</annotation>
+		<annotation cp="🏼">medium-light skin tone | skin tone</annotation>
+		<annotation cp="🏽">medium skin tone | skin tone</annotation>
+		<annotation cp="🏾">medium-dark skin tone | skin tone</annotation>
+		<annotation cp="🏿">dark skin tone | skin tone</annotation>
+		<annotation cp="،">Arabic | comma</annotation>
+		<annotation cp="،" type="tts">Arabic comma</annotation>
+		<annotation cp="؛">Arabic | Arabic semicolon | semi-colon</annotation>
+		<annotation cp="؛" type="tts">Arabic semicolon</annotation>
+		<annotation cp="؟">Arabic | Arabic question mark | question | question mark</annotation>
+		<annotation cp="؟" type="tts">Arabic question mark</annotation>
+		<annotation cp="‘">apostrophe | curly quote | left apostrophe | quote | single quote | smart quote</annotation>
+		<annotation cp="’">apostrophe | curly quote | quote | right apostrophe | single quote | smart quote</annotation>
+		<annotation cp="“">curly quotes | double quote | left quotation mark | quotation | quote | smart quotation</annotation>
+		<annotation cp="”">curly quotes | double quote | quotation | quote | right quotation mark | smart quotation</annotation>
+		<annotation cp=")">bracket | close parenthesis | parens | parenthesis | round bracket</annotation>
+		<annotation cp="[">bracket | crotchet | left square bracket | open square bracket | square bracket</annotation>
+		<annotation cp="]">bracket | close square bracket | crotchet | right square bracket | square bracket</annotation>
+		<annotation cp="}">brace | bracket | close curly bracket | curly brace | curly bracket | gullwing | right curly bracket</annotation>
+		<annotation cp="〈">angle bracket | bracket | chevron | diamond brackets | left angle bracket | pointy bracket | tuple</annotation>
+		<annotation cp="〉">angle bracket | bracket | chevron | diamond brackets | pointy bracket | right angle bracket | tuple</annotation>
+		<annotation cp="《">bracket | double angle bracket | left double angle bracket</annotation>
+		<annotation cp="》">bracket | double angle bracket | right double angle bracket</annotation>
+		<annotation cp="「">bracket | corner bracket | left corner bracket</annotation>
+		<annotation cp="」">bracket | corner bracket | right corner bracket</annotation>
+		<annotation cp="『">bracket | hollow corner bracket | left hollow corner bracket</annotation>
+		<annotation cp="』">bracket | hollow corner bracket | right hollow corner bracket</annotation>
+		<annotation cp="【">bracket | left black lenticular bracket | lens bracket | lenticular bracket</annotation>
+		<annotation cp="】">bracket | lens bracket | lenticular bracket | right black lenticular bracket</annotation>
+		<annotation cp="〔">bracket | left tortoise shell bracket | open tortoise shell bracket | shell bracket | tortoise shell bracket</annotation>
+		<annotation cp="〕">bracket | close tortoise shell bracket | right tortoise shell bracket | shell bracket | tortoise shell bracket</annotation>
+		<annotation cp="〖">bracket | hollow lens bracket | hollow lenticular bracket | left hollow lenticular bracket</annotation>
+		<annotation cp="〗">bracket | hollow lens bracket | hollow lenticular bracket | right hollow lenticular bracket</annotation>
+		<annotation cp="↹">leftwards arrow to bar over rightwards arrow to bar</annotation>
+		<annotation cp="∂">differential | partial derivative | partial differential</annotation>
+		<annotation cp="∃">existential | mathematics | quantifier | there exists</annotation>
+		<annotation cp="∅">empty set | mathematics | null set | null sign | set operator</annotation>
+		<annotation cp="∉">element | not an element | not an element of | set</annotation>
+		<annotation cp="∉" type="tts">not an element of</annotation>
+		<annotation cp="∎">end of proof | end proof | halmos | q.e.d. | qed | tombstone</annotation>
+		<annotation cp="∎" type="tts">end of proof</annotation>
+		<annotation cp="∑">mathematics | n-ary summation | sigma | summation</annotation>
+		<annotation cp="|">bar | line | pipe | sheffer stroke | vertical bar | vertical line</annotation>
+		<annotation cp="∓">minus-or-plus | minus-plus</annotation>
+		<annotation cp="∝">is proportional | proportional | proportionality</annotation>
+		<annotation cp="∝" type="tts">is proportional</annotation>
+		<annotation cp="∣">divides | divisor | vertical bar</annotation>
+		<annotation cp="∥">parallel | parallel to</annotation>
+		<annotation cp="∥" type="tts">parallel to</annotation>
+		<annotation cp="∮">complex analysis | contour integral</annotation>
+		<annotation cp="≃">asymptote | asymptotically equal | asymptotically equal to | mathematics</annotation>
+		<annotation cp="≃" type="tts">asymptotically equal to</annotation>
+		<annotation cp="≅">approximately equal | approximately equal to | congruence | equality | isomorphism | mathematics</annotation>
+		<annotation cp="≅" type="tts">approximately equal to</annotation>
+		<annotation cp="≌">all equal | all equal to | equality | mathematics</annotation>
+		<annotation cp="≌" type="tts">all equal to</annotation>
+		<annotation cp="≣">equality | mathematics | strictly equivalent | strictly equivalent to</annotation>
+		<annotation cp="≣" type="tts">strictly equivalent to</annotation>
+		<annotation cp="≳">equivalent | greater-than | greater-than or equivalent to | inequality | mathematics</annotation>
+		<annotation cp="≳" type="tts">greater-than or equivalent to</annotation>
+		<annotation cp="≺">mathematics | ordered set | precedes | set operator</annotation>
+		<annotation cp="≻">follows | mathematics | ordered set | set operator | succeeds</annotation>
+		<annotation cp="⊁">does not succeed | mathematics | ordered set | set operator</annotation>
+		<annotation cp="⊃">mathematics | proper superset | set operator | superset of</annotation>
+		<annotation cp="⊃" type="tts">superset of</annotation>
+		<annotation cp="⊆">equal | mathematics | subset | subset of or equal to</annotation>
+		<annotation cp="⊆" type="tts">subset of or equal to</annotation>
+		<annotation cp="⊇">equal | mathematics | superset | superset of or equal to</annotation>
+		<annotation cp="⊇" type="tts">superset of or equal to</annotation>
+		<annotation cp="⊕">circled plus | direct sum | exclusive or | logic | mathematics</annotation>
+		<annotation cp="⊖">circled minus | erosion | mathematics | symmetric difference</annotation>
+		<annotation cp="⊗">circled times | Kronecker | product | tensor</annotation>
+		<annotation cp="⊙">circled dot operator | mathematics | vector | XNOR</annotation>
+		<annotation cp="⊛">circled asterisk operator</annotation>
+		<annotation cp="⊞">addition-like | free additive convolution | mathematics | squared plus</annotation>
+		<annotation cp="⊮">does not force | mathematics</annotation>
+		<annotation cp="⊰">mathematics | ordered set | precedes under relation | set operator</annotation>
+		<annotation cp="⊱">mathematics | ordered set | set operator | succeeds under relation</annotation>
+		<annotation cp="⋭">does not contain as normal subgroup equal | does not contain as normal subgroup or equal | group theory | mathematics</annotation>
+		<annotation cp="⋭" type="tts">does not contain as normal subgroup or equal</annotation>
+		<annotation cp="⊶">original | original of</annotation>
+		<annotation cp="⊶" type="tts">original of</annotation>
+		<annotation cp="⋰">ellipsis | mathematics | upwards diagonal ellipsis | upwards right diagonal ellipsis</annotation>
+		<annotation cp="⋰" type="tts">upwards right diagonal ellipsis</annotation>
+		<annotation cp="⋱">downwards right diagonal ellipsis | ellipsis | mathematics</annotation>
+		<annotation cp="⋱" type="tts">downwards right diagonal ellipsis</annotation>
+		<annotation cp="■">black square | filled square</annotation>
+		<annotation cp="□">hollow square | white square</annotation>
+		<annotation cp="▢">hollow square with rounded corners | white square with rounded corners</annotation>
+		<annotation cp="▣">hollow square containing filled square | white square containing black small square</annotation>
+		<annotation cp="▦">square with orthogonal crosshatch fill</annotation>
+		<annotation cp="▦" type="tts">square with orthogonal crosshatch fill</annotation>
+		<annotation cp="▧">square with upper left to lower right fill</annotation>
+		<annotation cp="▧" type="tts">square with upper left to lower right fill</annotation>
+		<annotation cp="▨">square with upper right to lower left fill</annotation>
+		<annotation cp="▨" type="tts">square with upper right to lower left fill</annotation>
+		<annotation cp="▩">square with diagonal crosshatch fill</annotation>
+		<annotation cp="▩" type="tts">square with diagonal crosshatch fill</annotation>
+		<annotation cp="▬">black rectangle | filled rectangle</annotation>
+		<annotation cp="▭">hollow rectangle | white rectangle</annotation>
+		<annotation cp="▮">black vertical rectangle | filled vertical rectangle</annotation>
+		<annotation cp="▰">black parallelogram | filled parallelogram</annotation>
+		<annotation cp="▲">arrow | black up-pointing triangle | triangle | up</annotation>
+		<annotation cp="△">hollow up-pointing triangle | white up-pointing triangle</annotation>
+		<annotation cp="▴">black up-pointing small triangle | filled up-pointing small triangle</annotation>
+		<annotation cp="▵">hollow up-pointing small triangle | white up-pointing small triangle</annotation>
+		<annotation cp="▷">hollow right-pointing triangle | white right-pointing triangle</annotation>
+		<annotation cp="▸">black right-pointing triangle | filled right-pointing small triangle</annotation>
+		<annotation cp="▹">hollow right-pointing small triangle | white right-pointing small triangle</annotation>
+		<annotation cp="►">black right-pointing pointer | filled right-pointing pointer</annotation>
+		<annotation cp="▻">hollow right-pointing pointer | white right-pointing pointer</annotation>
+		<annotation cp="▼">arrow | black down-pointing triangle | down | triangle</annotation>
+		<annotation cp="▽">hollow down-pointing triangle | white down-pointing triangle</annotation>
+		<annotation cp="▾">black down-pointing small triangle | filled down-pointing small triangle</annotation>
+		<annotation cp="▿">hollow down-pointing small triangle | white down-pointing small triangle</annotation>
+		<annotation cp="◁">hollow left-pointing triangle | white left-pointing triangle</annotation>
+		<annotation cp="◂">black left-pointing small triangle | filled left-pointing small triangle</annotation>
+		<annotation cp="◃">hollow left-pointing small triangle | white left-pointing small triangle</annotation>
+		<annotation cp="◄">black left-pointing pointer | filled left-pointing pointer</annotation>
+		<annotation cp="◅">hollow left-pointing pointer | white left-pointing pointer</annotation>
+		<annotation cp="◆">black diamond | filled diamond</annotation>
+		<annotation cp="◇">hollow diamond | white diamond</annotation>
+		<annotation cp="◈">hollow diamond containing filled diamond | white diamond containing black small diamond</annotation>
+		<annotation cp="◉">circled dot | concentric circles filled | fisheye | hollow circle containing filled circle | white circle containing black small circle</annotation>
+		<annotation cp="○">circle | hollow circle | ring | white circle</annotation>
+		<annotation cp="●">black circle | circle | filled circle</annotation>
+		<annotation cp="◔">circle with upper-right quadrant filled</annotation>
+		<annotation cp="◔" type="tts">circle with upper-right quadrant filled</annotation>
+		<annotation cp="◕">circle with all but upper-left quadrant filled</annotation>
+		<annotation cp="◕" type="tts">circle with all but upper-left quadrant filled</annotation>
+		<annotation cp="◖">left half black circle | left half filled circle</annotation>
+		<annotation cp="◗">right half black circle | right half filled circle</annotation>
+		<annotation cp="◙">black square containing hollow circle | inverse hollow circle</annotation>
+		<annotation cp="◜">upper-left quadrant circular arc</annotation>
+		<annotation cp="◜" type="tts">upper-left quadrant circular arc</annotation>
+		<annotation cp="◝">upper-right quadrant circular arc</annotation>
+		<annotation cp="◝" type="tts">upper-right quadrant circular arc</annotation>
+		<annotation cp="◞">lower-right quadrant circular arc</annotation>
+		<annotation cp="◞" type="tts">lower-right quadrant circular arc</annotation>
+		<annotation cp="◟">lower-left quadrant circular arc</annotation>
+		<annotation cp="◟" type="tts">lower-left quadrant circular arc</annotation>
+		<annotation cp="◢">black lower-right triangle | filled lower-right triangle</annotation>
+		<annotation cp="◢" type="tts">filled lower-right triangle</annotation>
+		<annotation cp="◣">black lower-left triangle | filled lower-left triangle</annotation>
+		<annotation cp="◣" type="tts">filled lower-left triangle</annotation>
+		<annotation cp="◤">black upper-left triangle | filled upper-left triangle</annotation>
+		<annotation cp="◤" type="tts">filled upper-left triangle</annotation>
+		<annotation cp="◥">black upper-right triangle | filled upper-right triangle</annotation>
+		<annotation cp="◥" type="tts">filled upper-right triangle</annotation>
+		<annotation cp="◯">circle | large hollow circle | large white circle | ring</annotation>
+		<annotation cp="◳">hollow square with upper-right quadrant | white square with upper-right quadrant</annotation>
+		<annotation cp="◳" type="tts">hollow square with upper-right quadrant</annotation>
+		<annotation cp="◷">hollow circle with upper-right quadrant | white circle with upper-right quadrant</annotation>
+		<annotation cp="◷" type="tts">hollow circle with upper-right quadrant</annotation>
+		<annotation cp="◿">lower-right triangle | white</annotation>
+		<annotation cp="◿" type="tts">lower-right triangle</annotation>
+		<annotation cp="⨧">plus sign with subscript two</annotation>
+		<annotation cp="⨧" type="tts">plus sign with subscript two</annotation>
+		<annotation cp="⨯">vector or cross product</annotation>
+		<annotation cp="⨯" type="tts">vector or cross product</annotation>
+		<annotation cp="⨼">interior product | mathematics</annotation>
+		<annotation cp="⩣">logical or with double underbar | mathematics</annotation>
+		<annotation cp="⩣" type="tts">logical or with double underbar</annotation>
+		<annotation cp="⩽">inequality | less-than or slanted equal to | mathematics</annotation>
+		<annotation cp="⩽" type="tts">less-than or slanted equal to</annotation>
+		<annotation cp="⪍">less-than above similar or equal</annotation>
+		<annotation cp="⪍" type="tts">less-than above similar or equal</annotation>
+		<annotation cp="⪚">double-line equal to or greater-than | inequality | mathematics</annotation>
+		<annotation cp="⪚" type="tts">double-line equal to or greater-than</annotation>
+		<annotation cp="🪪">credentials | driving | ID | licence | security</annotation>
+		<annotation cp="🫤">disappointed | meh | sceptical | unsure</annotation>
+		<annotation cp="🛞">circle | turn | tyre</annotation>
+		<annotation cp="🟰">equality | math | maths</annotation>
+		<annotation cp="😷">cold | doctor | ill | mask | medicine | poorly | sick</annotation>
+		<annotation cp="😵‍💫">dizzy | face with spiral eyes | hypnotised | spiral | trouble | whoa</annotation>
+		<annotation cp="😤">angry | face | face with steam from nose | frustration | triumph | won</annotation>
+		<annotation cp="🙌">celebration | gesture | hand | hooray | woo hoo | yay</annotation>
+		<annotation cp="🙏">ask | hand | high 5 | high five | please | pray | thanks</annotation>
+		<annotation cp="👬">couple | Gemini | holding hands | man | men holding hands | twins | zodiac</annotation>
+		<annotation cp="🧇">breakfast | iron | unclear | vague | waffle</annotation>
+		<annotation cp="🥩">chop | cut of meat | lamb chop | pork chop | steak</annotation>
+		<annotation cp="🍥">cake | fish | fish cake with swirl | narutomaki | pastry | swirl</annotation>
+		<annotation cp="🍶">bar | beverage | bottle | cup | drink | sake | saké</annotation>
+		<annotation cp="🗻">Fuji | Mount Fuji | mountain</annotation>
+		<annotation cp="🗻" type="tts">Mount Fuji</annotation>
+		<annotation cp="🏛">classical | classical building | column</annotation>
+		<annotation cp="🕌">Islam | mosque | Muslim | religion</annotation>
+		<annotation cp="🛕">Hindu | temple</annotation>
+		<annotation cp="🛕" type="tts">Hindu temple</annotation>
+		<annotation cp="🕋">Islam | Kaaba | Muslim | religion</annotation>
+		<annotation cp="🕋" type="tts">Kaaba</annotation>
+		<annotation cp="🚙">4x4 | off-road vehicle | sport utility | sport utility vehicle</annotation>
+		<annotation cp="🩱">bathing suit | one-piece swimsuit | swimming costume</annotation>
+		<annotation cp="🥿">ballet flat | flat shoe | pump | slip-on | slipper</annotation>
+		<annotation cp="📯" type="tts">post horn</annotation>
+		<annotation cp="💷">banknote | bill | currency | money | note | pound | sterling</annotation>
+		<annotation cp="📫">closed postbox with raised flag | letterbox | mail | mailbox | post | post box | postbox</annotation>
+		<annotation cp="📪">closed postbox with lowered flag | letterbox | lowered | mail | mailbox | post box | postbox</annotation>
+		<annotation cp="📬">mail | mailbox | open postbox with raised flag | post | post box | postbox</annotation>
+		<annotation cp="📭">lowered | mail | mailbox | open postbox with lowered flag | post | post box | postbox</annotation>
+		<annotation cp="🔒">closed | locked | padlock</annotation>
+		<annotation cp="🔓">lock | open | padlock | unlock | unlocked</annotation>
+		<annotation cp="🦯">accessibility | blind | guide cane</annotation>
+		<annotation cp="🩹">injury | plaster | sticking plaster</annotation>
+		<annotation cp="🪒">cut-throat | razor | sharp | shave</annotation>
+		<annotation cp="🚾">closet | lavatory | restroom | toilet | water | wc</annotation>
+		<annotation cp="🔄">anticlockwise | anticlockwise arrows button | arrow | counterclockwise | counterclockwise arrows button | withershins</annotation>
+		<annotation cp="✡">David | Jewish | Judaism | religion | star | Star of David</annotation>
+		<annotation cp="✡" type="tts">Star of David</annotation>
+		<annotation cp="✝">Christian | cross | Latin cross | religion</annotation>
+		<annotation cp="✝" type="tts">Latin cross</annotation>
+		<annotation cp="☦">Christian | cross | Orthodox cross | religion</annotation>
+		<annotation cp="☦" type="tts">Orthodox cross</annotation>
+		<annotation cp="☪">Islam | Muslim | religion | star and crescent</annotation>
+		<annotation cp="✖">× | cancel | heavy multiplication sign | multiplication | sign | x</annotation>
+		<annotation cp="➖">- | − | heavy minus sign | math | maths | sign</annotation>
+		<annotation cp="⁉">! | !? | ? | interrobang | mark | punctuation | question</annotation>
+		<annotation cp="®">r | registered | trademark</annotation>
+		<annotation cp="🚩">post | red flag | triangular flag</annotation>
+		<annotation cp="🏳">surrender | waving | white flag</annotation>
+		<annotation cp="₢">Brazil | BRB | cruzeiro | currency</annotation>
+		<annotation cp="₣">currency | franc | France | French franc</annotation>
+		<annotation cp="₣" type="tts">French franc</annotation>
+		<annotation cp="₤">currency | Italy | lira</annotation>
+		<annotation cp="₰">currency | German penny | pfennig</annotation>
+		<annotation cp="₰" type="tts">German penny</annotation>
+		<annotation cp="₳">ARA | Argentina | austral | currency</annotation>
+		<annotation cp="₶">currency | France | livre tournois</annotation>
+		<annotation cp="₹">currency | Indian rupee | rupee</annotation>
+		<annotation cp="₹" type="tts">Indian rupee</annotation>
+	</annotations>
+</ldml>

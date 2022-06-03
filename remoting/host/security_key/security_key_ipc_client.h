@@ -29,14 +29,18 @@ namespace remoting {
 class SecurityKeyIpcClient : public IPC::Listener {
  public:
   SecurityKeyIpcClient();
+
+  SecurityKeyIpcClient(const SecurityKeyIpcClient&) = delete;
+  SecurityKeyIpcClient& operator=(const SecurityKeyIpcClient&) = delete;
+
   ~SecurityKeyIpcClient() override;
 
   // Used to send security key extension messages to the client.
-  typedef base::Callback<void(const std::string& response_data)>
+  typedef base::RepeatingCallback<void(const std::string& response_data)>
       ResponseCallback;
 
   // Used to indicate whether the channel can be used for request forwarding.
-  typedef base::Callback<void(bool connection_usable)> ConnectedCallback;
+  typedef base::OnceCallback<void(bool connection_usable)> ConnectedCallback;
 
   // Returns true if there is an active remoting session which supports
   // security key request forwarding.
@@ -49,14 +53,13 @@ class SecurityKeyIpcClient : public IPC::Listener {
   // |connection_error_callback| is stored and will be called back for any
   // unexpected errors that occur while establishing, or during, the session.
   virtual void EstablishIpcConnection(
-      const ConnectedCallback& connected_callback,
-      const base::Closure& connection_error_callback);
+      ConnectedCallback connected_callback,
+      base::OnceClosure connection_error_callback);
 
   // Sends a security key request message to the network process to be forwarded
   // to the remote client.
-  virtual bool SendSecurityKeyRequest(
-      const std::string& request_payload,
-      const ResponseCallback& response_callback);
+  virtual bool SendSecurityKeyRequest(const std::string& request_payload,
+                                      ResponseCallback response_callback);
 
   // Closes the IPC channel if connected.
   virtual void CloseIpcConnection();
@@ -100,7 +103,7 @@ class SecurityKeyIpcClient : public IPC::Listener {
   ConnectedCallback connected_callback_;
 
   // Signaled when an error occurs in either the IPC channel or communication.
-  base::Closure connection_error_callback_;
+  base::OnceClosure connection_error_callback_;
 
   // Signaled when a security key response has been received.
   ResponseCallback response_callback_;
@@ -112,8 +115,6 @@ class SecurityKeyIpcClient : public IPC::Listener {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SecurityKeyIpcClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClient);
 };
 
 }  // namespace remoting

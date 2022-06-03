@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 
@@ -30,22 +30,23 @@ class Label;
 // couldn't bring myself to use such a long name.
 class KeywordHintView : public views::Button {
  public:
-  KeywordHintView(LocationBarView* parent, Profile* profile);
+  METADATA_HEADER(KeywordHintView);
+  KeywordHintView(PressedCallback callback, Profile* profile);
+  KeywordHintView(const KeywordHintView&) = delete;
+  KeywordHintView& operator=(const KeywordHintView&) = delete;
   ~KeywordHintView() override;
 
-  void SetKeyword(const base::string16& keyword);
+  std::u16string GetKeyword() const;
+  void SetKeyword(const std::u16string& keyword);
 
   // views::View:
   gfx::Insets GetInsets() const override;
   // The minimum size is just big enough to show the tab.
   gfx::Size GetMinimumSize() const override;
-  const char* GetClassName() const override;
 
   void OnThemeChanged() override;
 
  private:
-  // Creates a label for non-chip text.
-  views::Label* CreateLabel(SkColor text_color, SkColor background_color);
 
   Profile* profile_ = nullptr;
 
@@ -54,9 +55,7 @@ class KeywordHintView : public views::Button {
   views::Label* chip_label_ = nullptr;
   views::Label* trailing_label_ = nullptr;
 
-  base::string16 keyword_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordHintView);
+  std::u16string keyword_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_KEYWORD_HINT_VIEW_H_

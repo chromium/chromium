@@ -11,12 +11,10 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/audio_decoder_config.h"
-#include "media/base/callback_registry.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -79,6 +77,11 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
 
  public:
   SessionIdDecryptionKeyMap() = default;
+
+  SessionIdDecryptionKeyMap(const SessionIdDecryptionKeyMap&) = delete;
+  SessionIdDecryptionKeyMap& operator=(const SessionIdDecryptionKeyMap&) =
+      delete;
+
   ~SessionIdDecryptionKeyMap() = default;
 
   // Replaces value if |session_id| is already present, or adds it if not.
@@ -111,8 +114,6 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
   void Erase(KeyList::iterator position);
 
   KeyList key_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionIdDecryptionKeyMap);
 };
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Insert(
@@ -169,14 +170,11 @@ AesDecryptor::AesDecryptor(
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
-    const SessionExpirationUpdateCB& session_expiration_update_cb)
+    const SessionExpirationUpdateCB& /*session_expiration_update_cb*/)
     : session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
-      session_keys_change_cb_(session_keys_change_cb),
-      session_expiration_update_cb_(session_expiration_update_cb) {
+      session_keys_change_cb_(session_keys_change_cb) {
   DVLOG(1) << __func__;
-  // AesDecryptor doesn't keep any persistent data, so no need to do anything
-  // with |security_origin|.
   DCHECK(session_message_cb_);
   DCHECK(session_closed_cb_);
   DCHECK(session_keys_change_cb_);
@@ -338,18 +336,8 @@ bool AesDecryptor::UpdateSessionWithJWK(const std::string& session_id,
 void AesDecryptor::FinishUpdate(const std::string& session_id,
                                 bool key_added,
                                 std::unique_ptr<SimpleCdmPromise> promise) {
-  {
-    base::AutoLock auto_lock(new_key_cb_lock_);
-
-    if (new_audio_key_cb_)
-      new_audio_key_cb_.Run();
-
-    if (new_video_key_cb_)
-      new_video_key_cb_.Run();
-  }
-
+  event_callbacks_.Notify(Event::kHasAdditionalUsableKey);
   promise->resolve();
-
   session_keys_change_cb_.Run(
       session_id, key_added,
       GenerateKeysInfoList(session_id, CdmKeyInformation::USABLE));
@@ -381,7 +369,7 @@ void AesDecryptor::CloseSession(const std::string& session_id,
 
   // 5.3. Queue a task to run the following steps:
   // 5.3.1. Run the Session Closed algorithm on the session.
-  session_closed_cb_.Run(session_id);
+  session_closed_cb_.Run(session_id, CdmSessionClosedReason::kClose);
   // 5.3.2. Resolve promise.
   promise->resolve();
 }
@@ -419,14 +407,16 @@ void AesDecryptor::RemoveSession(const std::string& session_id,
   //              Let message be a message containing or reflecting the record
   //              of license destruction.
   std::vector<uint8_t> message;
-  if (it->second != CdmSessionType::kTemporary) {
+  if (it->second == CdmSessionType::kPersistentLicense) {
     // The license release message is specified in the spec:
     // https://w3c.github.io/encrypted-media/#clear-key-release-format.
+    // TODO(crbug.com/1107614) Move session message for persistent-license
+    // session from AesDecryptor to ClearKeyPersistentSessionCdm.
     KeyIdList key_ids;
     key_ids.reserve(keys_info.size());
     for (const auto& key_info : keys_info)
       key_ids.push_back(key_info->key_id);
-    CreateKeyIdsInitData(key_ids, &message);
+    message = CreateLicenseReleaseMessage(key_ids);
   }
 
   // 4.5. Queue a task to run the following steps:
@@ -436,7 +426,7 @@ void AesDecryptor::RemoveSession(const std::string& session_id,
   session_keys_change_cb_.Run(session_id, false, std::move(keys_info));
 
   // 4.5.2 Run the Update Expiration algorithm on the session, providing NaN.
-  session_expiration_update_cb_.Run(session_id, base::Time());
+  // But for Clear Key, the keys never expire. So do nothing here.
 
   // 4.5.3 If any of the preceding steps failed, reject promise with a new
   //       DOMException whose name is the appropriate error name.
@@ -457,43 +447,24 @@ CdmContext* AesDecryptor::GetCdmContext() {
 
 std::unique_ptr<CallbackRegistration> AesDecryptor::RegisterEventCB(
     EventCB event_cb) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return event_callbacks_.Register(std::move(event_cb));
 }
 
 Decryptor* AesDecryptor::GetDecryptor() {
   return this;
 }
 
-int AesDecryptor::GetCdmId() const {
-  return kInvalidCdmId;
-}
-
-void AesDecryptor::RegisterNewKeyCB(StreamType stream_type,
-                                    const NewKeyCB& new_key_cb) {
-  base::AutoLock auto_lock(new_key_cb_lock_);
-
-  switch (stream_type) {
-    case kAudio:
-      new_audio_key_cb_ = new_key_cb;
-      break;
-    case kVideo:
-      new_video_key_cb_ = new_key_cb;
-      break;
-    default:
-      NOTREACHED();
-  }
-}
 
 void AesDecryptor::Decrypt(StreamType stream_type,
                            scoped_refptr<DecoderBuffer> encrypted,
-                           const DecryptCB& decrypt_cb) {
-  DVLOG(3) << __func__ << ": " << encrypted->AsHumanReadableString();
+                           DecryptCB decrypt_cb) {
+  DVLOG(3) << __func__ << ": "
+           << encrypted->AsHumanReadableString(/*verbose=*/true);
 
   if (!encrypted->decrypt_config()) {
     // If there is no DecryptConfig, then the data is unencrypted so return it
     // immediately.
-    decrypt_cb.Run(kSuccess, encrypted);
+    std::move(decrypt_cb).Run(kSuccess, encrypted);
     return;
   }
 
@@ -502,7 +473,7 @@ void AesDecryptor::Decrypt(StreamType stream_type,
   DecryptionKey* key = GetKey_Locked(key_id);
   if (!key) {
     DVLOG(1) << "Could not find a matching key for the given key ID.";
-    decrypt_cb.Run(kNoKey, nullptr);
+    std::move(decrypt_cb).Run(kNoKey, nullptr);
     return;
   }
 
@@ -510,13 +481,13 @@ void AesDecryptor::Decrypt(StreamType stream_type,
       DecryptData(*encrypted.get(), *key->decryption_key());
   if (!decrypted) {
     DVLOG(1) << "Decryption failed.";
-    decrypt_cb.Run(kError, nullptr);
+    std::move(decrypt_cb).Run(kError, nullptr);
     return;
   }
 
   DCHECK_EQ(decrypted->timestamp(), encrypted->timestamp());
   DCHECK_EQ(decrypted->duration(), encrypted->duration());
-  decrypt_cb.Run(kSuccess, std::move(decrypted));
+  std::move(decrypt_cb).Run(kSuccess, std::move(decrypted));
 }
 
 void AesDecryptor::CancelDecrypt(StreamType stream_type) {
@@ -524,24 +495,24 @@ void AesDecryptor::CancelDecrypt(StreamType stream_type) {
 }
 
 void AesDecryptor::InitializeAudioDecoder(const AudioDecoderConfig& config,
-                                          const DecoderInitCB& init_cb) {
+                                          DecoderInitCB init_cb) {
   // AesDecryptor does not support audio decoding.
-  init_cb.Run(false);
+  std::move(init_cb).Run(false);
 }
 
 void AesDecryptor::InitializeVideoDecoder(const VideoDecoderConfig& config,
-                                          const DecoderInitCB& init_cb) {
+                                          DecoderInitCB init_cb) {
   // AesDecryptor does not support video decoding.
-  init_cb.Run(false);
+  std::move(init_cb).Run(false);
 }
 
 void AesDecryptor::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                                         const AudioDecodeCB& audio_decode_cb) {
+                                         AudioDecodeCB audio_decode_cb) {
   NOTREACHED() << "AesDecryptor does not support audio decoding";
 }
 
 void AesDecryptor::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                                         const VideoDecodeCB& video_decode_cb) {
+                                         VideoDecodeCB video_decode_cb) {
   NOTREACHED() << "AesDecryptor does not support video decoding";
 }
 

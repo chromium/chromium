@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FAVICON_CORE_FAVICON_URL_
-#define COMPONENTS_FAVICON_CORE_FAVICON_URL_
+#ifndef COMPONENTS_FAVICON_CORE_FAVICON_URL_H_
+#define COMPONENTS_FAVICON_CORE_FAVICON_URL_H_
 
 #include <vector>
 
@@ -34,4 +34,4 @@ struct FaviconURL {
 
 }  // namespace favicon
 
-#endif  // COMPONENTS_FAVICON_CORE_FAVICON_URL_
+#endif  // COMPONENTS_FAVICON_CORE_FAVICON_URL_H_

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 #include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
@@ -20,6 +19,7 @@
 #include "net/base/host_port_pair.h"
 
 class ChromeDevToolsSession;
+class ScopedKeepAlive;
 using RemoteLocations = std::set<net::HostPortPair>;
 
 namespace extensions {
@@ -32,6 +32,11 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   static const char kTypeBackgroundPage[];
 
   ChromeDevToolsManagerDelegate();
+
+  ChromeDevToolsManagerDelegate(const ChromeDevToolsManagerDelegate&) = delete;
+  ChromeDevToolsManagerDelegate& operator=(
+      const ChromeDevToolsManagerDelegate&) = delete;
+
   ~ChromeDevToolsManagerDelegate() override;
 
   static ChromeDevToolsManagerDelegate* GetInstance();
@@ -53,15 +58,16 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   std::vector<content::BrowserContext*> GetBrowserContexts() override;
   content::BrowserContext* GetDefaultBrowserContext() override;
 
+  // Closes browser soon, not in the current task.
+  static void CloseBrowserSoon();
+
  private:
   friend class DevToolsManagerDelegateTest;
 
   // content::DevToolsManagerDelegate implementation.
   void Inspect(content::DevToolsAgentHost* agent_host) override;
-  void HandleCommand(content::DevToolsAgentHost* agent_host,
-                     content::DevToolsAgentHostClient* client,
-                     const std::string& method,
-                     const std::string& message,
+  void HandleCommand(content::DevToolsAgentHostClientChannel* channel,
+                     base::span<const uint8_t> message,
                      NotHandledCallback callback) override;
   std::string GetTargetType(content::WebContents* web_contents) override;
   std::string GetTargetTitle(content::WebContents* web_contents) override;
@@ -71,10 +77,10 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
                              DisposeCallback callback) override;
 
   bool AllowInspectingRenderFrameHost(content::RenderFrameHost* rfh) override;
-  void ClientAttached(content::DevToolsAgentHost* agent_host,
-                      content::DevToolsAgentHostClient* client) override;
-  void ClientDetached(content::DevToolsAgentHost* agent_host,
-                      content::DevToolsAgentHostClient* client) override;
+  void ClientAttached(
+      content::DevToolsAgentHostClientChannel* channel) override;
+  void ClientDetached(
+      content::DevToolsAgentHostClientChannel* channel) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url) override;
   std::string GetDiscoveryPageHTML() override;
@@ -83,7 +89,7 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   void DevicesAvailable(
       const DevToolsDeviceDiscovery::CompleteDevices& devices);
 
-  std::map<content::DevToolsAgentHostClient*,
+  std::map<content::DevToolsAgentHostClientChannel*,
            std::unique_ptr<ChromeDevToolsSession>>
       sessions_;
 
@@ -91,8 +97,7 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   std::unique_ptr<DevToolsDeviceDiscovery> device_discovery_;
   content::DevToolsAgentHost::List remote_agent_hosts_;
   RemoteLocations remote_locations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDevToolsManagerDelegate);
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_MANAGER_DELEGATE_H_

@@ -11,11 +11,13 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
 #include "url/origin.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
 
 namespace blink {
+
 // The enum entries below are written to histograms and thus cannot be deleted
 // or reordered.
 // New entries must be added immediately before the end.
@@ -30,7 +32,9 @@ enum class OriginTrialTokenStatus {
   kWrongVersion = 7,
   kFeatureDisabled = 8,
   kTokenDisabled = 9,
-  kMaxValue = kTokenDisabled
+  kFeatureDisabledForUser = 10,
+  kUnknownTrial = 11,
+  kMaxValue = kUnknownTrial
 };
 
 // The Origin Trials Framework (OT) provides limited access to experimental
@@ -43,11 +47,13 @@ enum class OriginTrialTokenStatus {
 // provided tokens.
 //
 // More documentation on the token format can be found at
-// https://docs.google.com/document/d/1v5fi0EUV_QHckVHVF2K4P72iNywnrJtNhNZ6i2NPt0M
+// origin_trials_token_structure.md
 
 class BLINK_COMMON_EXPORT TrialToken {
  public:
   ~TrialToken();
+
+  enum class UsageRestriction { kNone, kSubset };
 
   // If the string represents a signed well-formed token, a token object is
   // returned, and success is returned in the |out_status| parameter. Otherwise,
@@ -57,9 +63,10 @@ class BLINK_COMMON_EXPORT TrialToken {
   // appropriate for a given origin / feature. It only means that it is
   // correctly formatted and signed by the supplied public key, and can be
   // parsed.
-  static std::unique_ptr<TrialToken> From(base::StringPiece token_text,
-                                          base::StringPiece public_key,
-                                          OriginTrialTokenStatus* out_status);
+  static std::unique_ptr<TrialToken> From(
+      base::StringPiece token_text,
+      const OriginTrialPublicKey& public_key,
+      OriginTrialTokenStatus* out_status);
 
   // Returns success if this token is appropriate for use by the given origin
   // and has not yet expired. Otherwise, the return value indicates why the
@@ -67,11 +74,21 @@ class BLINK_COMMON_EXPORT TrialToken {
   OriginTrialTokenStatus IsValid(const url::Origin& origin,
                                  const base::Time& now) const;
 
-  url::Origin origin() { return origin_; }
+  url::Origin origin() const { return origin_; }
   bool match_subdomains() const { return match_subdomains_; }
-  std::string feature_name() { return feature_name_; }
-  base::Time expiry_time() { return expiry_time_; }
-  std::string signature() { return signature_; }
+  std::string feature_name() const { return feature_name_; }
+  base::Time expiry_time() const { return expiry_time_; }
+  std::string signature() const { return signature_; }
+  bool is_third_party() const { return is_third_party_; }
+  UsageRestriction usage_restriction() const { return usage_restriction_; }
+
+  static std::unique_ptr<TrialToken> CreateTrialTokenForTesting(
+      const url::Origin& origin,
+      bool match_subdomains,
+      const std::string& feature_name,
+      base::Time expiry_time,
+      bool is_third_party,
+      UsageRestriction usage_restriction);
 
  protected:
   // Tests can access the Parse method directly to validate it, and so are
@@ -82,18 +99,21 @@ class BLINK_COMMON_EXPORT TrialToken {
   friend int ::LLVMFuzzerTestOneInput(const uint8_t*, size_t);
 
   // If the string represents a properly signed and well-formed token, success
-  // is returned, with the token payload and signature returned in the
-  // |out_token_payload| and |out_token_signature| parameters, respectively.
-  // Otherwise,the return code indicates what was wrong with the string, and
-  // |out_token_payload| and |out_token_signature| are unchanged.
+  // is returned, with the token payload, signature and version returned in the
+  // |out_token_payload|, |out_token_signature| and |out_token_version|
+  // parameters, respectively. Otherwise,the return code indicates what was
+  // wrong with the string, and |out_token_payload|, |out_token_signature| and
+  // |out_token_version| are unchanged.
   static OriginTrialTokenStatus Extract(base::StringPiece token_text,
-                                        base::StringPiece public_key,
+                                        const OriginTrialPublicKey& public_key,
                                         std::string* out_token_payload,
-                                        std::string* out_token_signature);
+                                        std::string* out_token_signature,
+                                        uint8_t* out_token_version);
 
   // Returns a token object if the string represents a well-formed JSON token
   // payload, or nullptr otherwise.
-  static std::unique_ptr<TrialToken> Parse(const std::string& token_payload);
+  static std::unique_ptr<TrialToken> Parse(const std::string& token_payload,
+                                           const uint8_t version);
 
   bool ValidateOrigin(const url::Origin& origin) const;
   bool ValidateFeatureName(base::StringPiece feature_name) const;
@@ -101,13 +121,15 @@ class BLINK_COMMON_EXPORT TrialToken {
 
   static bool ValidateSignature(base::StringPiece signature_text,
                                 const std::string& data,
-                                base::StringPiece public_key);
+                                const OriginTrialPublicKey& public_key);
 
  private:
   TrialToken(const url::Origin& origin,
              bool match_subdomains,
              const std::string& feature_name,
-             uint64_t expiry_timestamp);
+             base::Time expiry_time,
+             bool is_third_party,
+             UsageRestriction usage_restriction);
 
   // The origin for which this token is valid. Must be a secure origin.
   url::Origin origin_;
@@ -123,6 +145,18 @@ class BLINK_COMMON_EXPORT TrialToken {
 
   // The signature identifying the fully signed contents of the token.
   std::string signature_;
+
+  // Indicates whether the token should validate against third party origin.
+  // See design doc
+  // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA
+  // for more details.
+  bool is_third_party_;
+
+  // Indicates the alternative usage restriction mode imposed on the token.
+  // See design doc
+  // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA
+  // for more details.
+  UsageRestriction usage_restriction_;
 };
 
 }  // namespace blink

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema.h"
@@ -28,9 +27,9 @@ typedef std::map<PolicyDomain, ComponentMap> DomainMap;
 class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
  public:
   SchemaMap();
-  // Takes ownership of |map| (its contents will be swapped).
-  // TODO(emaxx): Change to use move semantics.
-  explicit SchemaMap(DomainMap& map);
+  explicit SchemaMap(DomainMap map);
+  SchemaMap(const SchemaMap&) = delete;
+  SchemaMap& operator=(const SchemaMap&) = delete;
 
   const DomainMap& GetDomains() const;
 
@@ -41,7 +40,13 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
   // Removes all the policies in |bundle| that don't match the known schemas.
   // Unknown components are also dropped. Unknown fields in component policies
   // are removed.
-  void FilterBundle(PolicyBundle* bundle) const;
+  // If |drop_invalid_component_policies| is true, invalid policies are removed.
+  // If |drop_invalid_component_policies| is false, they will merely be marked
+  // invalid. They will still be filtered when accessing them via
+  // PolicyMap::Get() or PolicyMap::GetValue(), but will be surfaced in
+  // about:policy with an attached error.
+  void FilterBundle(PolicyBundle* bundle,
+                    bool drop_invalid_component_policies) const;
 
   // Returns true if this map contains at least one component of a domain other
   // than POLICY_DOMAIN_CHROME.
@@ -60,8 +65,6 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
   ~SchemaMap();
 
   DomainMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaMap);
 };
 
 }  // namespace policy

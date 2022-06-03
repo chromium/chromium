@@ -14,10 +14,10 @@ remote changes provided via the [`ModelTypeWorker`][MTW], or local changes
 reported by the [`ModelTypeSyncBridge`][MTSB]) must specify a client tag, which
 is considered (after being hashed) the main global identifier of a sync entity.
 
-[SMTP]: https://cs.chromium.org/chromium/src/components/sync/model_impl/client_tag_based_model_type_processor.h
+[SMTP]: https://cs.chromium.org/chromium/src/components/sync/model/client_tag_based_model_type_processor.h
 [MTSB]: https://cs.chromium.org/chromium/src/components/sync/model/model_type_sync_bridge.h
 [MTCP]: https://cs.chromium.org/chromium/src/components/sync/model/model_type_change_processor.h
-[MTW]: https://cs.chromium.org/chromium/src/components/sync/engine_impl/model_type_worker.h
+[MTW]: https://cs.chromium.org/chromium/src/components/sync/engine/model_type_worker.h
 [CQ]: https://cs.chromium.org/chromium/src/components/sync/engine/commit_queue.h
 [MTP]: https://cs.chromium.org/chromium/src/components/sync/engine/model_type_processor.h
 
@@ -32,7 +32,7 @@ immediately created to replace it.
 ## Processor State Machines
 
 The processor sits between the model bridge and the sync engine. It has
-knowledge of what state each is in based on the calls it has receieved and
+knowledge of what state each is in based on the calls it has received and
 performed. The states are not stored explicitly, but are implicit based on
 state stored in the processor. Here are the states of each, with notes on their
 transitions and how to determine them.
@@ -116,5 +116,5 @@ The tracker holds the metadata in memory forever, which is needed so we know
 what to update the on-disk memory with when we get a new local or remote change.
 Changing this would require being able to handle updates asynchronously.
 
-[PET]: https://cs.chromium.org/chromium/src/components/sync/model_impl/processor_entity.h
+[PET]: https://cs.chromium.org/chromium/src/components/sync/model/processor_entity.h
 [EM]: https://cs.chromium.org/chromium/src/components/sync/protocol/entity_metadata.proto

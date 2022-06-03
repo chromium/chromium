@@ -34,7 +34,7 @@ TEST(LoggingInstallerTest, TestTruncate) {
             installer::TruncateLogFileIfNeeded(temp_file));
 
   EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
-  EXPECT_EQ(installer::kTruncatedInstallerLogFileSize , file_size);
+  EXPECT_EQ(installer::kTruncatedInstallerLogFileSize, file_size);
 
   // Check that the temporary file was deleted.
   EXPECT_FALSE(base::PathExists(temp_file.Append(L".tmp")));
@@ -110,8 +110,8 @@ TEST(LoggingInstallerTest, TestMoveFailsNeedsTruncation) {
   // TruncateLogFileIfNeeded would like to move the log file to.
   uint32_t file_flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
                         base::File::FLAG_EXCLUSIVE_READ;
-  base::FilePath temp_file_move_dest(
-      temp_file.value() + FILE_PATH_LITERAL(".tmp"));
+  base::FilePath temp_file_move_dest(temp_file.value() +
+                                     FILE_PATH_LITERAL(".tmp"));
   base::File temp_move_destination_file(temp_file_move_dest, file_flags);
   ASSERT_TRUE(temp_move_destination_file.IsValid());
 

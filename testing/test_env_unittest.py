@@ -17,20 +17,29 @@ import sys
 import time
 import unittest
 
-
-TEST_SCRIPT = 'test_env_user_script.py'
+HERE = os.path.dirname(os.path.abspath(__file__))
+TEST_SCRIPT = os.path.join(HERE, 'test_env_user_script.py')
 
 
 def launch_process_windows(args):
+  # The `universal_newlines` option is equivalent to `text` in Python 3.
   return subprocess.Popen(
-      [sys.executable, TEST_SCRIPT] + args, stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT, env=os.environ.copy(),
-      creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+      [sys.executable, TEST_SCRIPT] + args,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      env=os.environ.copy(),
+      creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+      universal_newlines=True)
+
 
 def launch_process_nonwindows(args):
+  # The `universal_newlines` option is equivalent to `text` in Python 3.
   return subprocess.Popen(
-      [sys.executable, TEST_SCRIPT] + args, stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT, env=os.environ.copy())
+      [sys.executable, TEST_SCRIPT] + args,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      env=os.environ.copy(),
+      universal_newlines=True)
 
 
 def read_subprocess_message(proc, starts_with):
@@ -58,7 +67,7 @@ class SignalingWindowsTest(unittest.TestCase):
     proc = launch_process_windows([])
     send_and_wait(proc, signal.CTRL_BREAK_EVENT)
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(signal.SIGBREAK))
+    self.assertEqual(sig, str(int(signal.SIGBREAK)))
 
 
 class SignalingNonWindowsTest(unittest.TestCase):
@@ -72,13 +81,13 @@ class SignalingNonWindowsTest(unittest.TestCase):
     proc = launch_process_nonwindows([])
     send_and_wait(proc, signal.SIGTERM)
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(signal.SIGTERM))
+    self.assertEqual(sig, str(int(signal.SIGTERM)))
 
   def test_send_sigint(self):
     proc = launch_process_nonwindows([])
     send_and_wait(proc, signal.SIGINT)
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(signal.SIGINT))
+    self.assertEqual(sig, str(int(signal.SIGINT)))
 
 
 if __name__ == '__main__':

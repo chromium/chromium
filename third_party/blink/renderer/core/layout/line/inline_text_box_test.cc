@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -16,12 +17,16 @@ class TestInlineTextBox : public InlineTextBox {
   TestInlineTextBox(LineLayoutItem item) : InlineTextBox(item, 0, 0) {
     SetHasVirtualLogicalHeight();
   }
+  void Destroy() override {
+    InlineTextBox::Destroy();
+    GetLineLayoutItem().GetLayoutObject()->Destroy();
+  }
 
   static TestInlineTextBox* Create(Document& document, const String& string) {
     Text* node = document.createTextNode(string);
-    LayoutText* text = new LayoutText(node, string.Impl());
-    text->SetStyle(ComputedStyle::Create());
-    return new TestInlineTextBox(LineLayoutItem(text));
+    LayoutText* text = MakeGarbageCollected<LayoutText>(node, string.Impl());
+    text->SetStyle(document.GetStyleResolver().CreateComputedStyle());
+    return MakeGarbageCollected<TestInlineTextBox>(LineLayoutItem(text));
   }
 
   LayoutUnit VirtualLogicalHeight() const override { return logical_height_; }
@@ -79,6 +84,8 @@ TEST_F(InlineTextBoxTest, LogicalOverflowRect) {
 
   // Ensure it's still movable correctly.
   MoveAndTest(box, move, frame, overflow);
+
+  box->Destroy();
 }
 
 }  // namespace blink

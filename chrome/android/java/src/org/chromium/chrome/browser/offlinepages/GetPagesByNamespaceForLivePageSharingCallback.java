@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.share.ShareParams;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.share.ShareParams;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class GetPagesByNamespaceForLivePageSharingCallback
         // If there is already a page in the Live Page Sharing namespace and matches the url, share
         // it directly.
         for (OfflinePageItem item : items) {
-            if (item.getUrl().equals(mTab.getUrl())) {
+            if (item.getUrl().equals(mTab.getUrl().getSpec())) {
                 OfflinePageUtils.sharePublishedPage(item, mTab.getWindowAndroid(), mShareCallback);
                 return;
             }

@@ -4,7 +4,9 @@
 
 #import "ios/testing/ocmock_complex_type_helper.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

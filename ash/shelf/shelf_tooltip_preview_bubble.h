@@ -28,6 +28,11 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
                             ShelfTooltipManager* manager,
                             ShelfAlignment alignment,
                             SkColor background_color);
+
+  ShelfTooltipPreviewBubble(const ShelfTooltipPreviewBubble&) = delete;
+  ShelfTooltipPreviewBubble& operator=(const ShelfTooltipPreviewBubble&) =
+      delete;
+
   ~ShelfTooltipPreviewBubble() override;
 
  private:
@@ -35,7 +40,6 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
   void RemovePreview(WindowPreview* preview);
 
   // BubbleDialogDelegateView overrides:
-  gfx::Rect GetBubbleBounds() override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
   // ShelfBubble:
@@ -54,10 +58,6 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
 
   ShelfTooltipManager* manager_;
   base::OneShotTimer dismiss_timer_;
-
-  const ShelfAlignment shelf_alignment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfTooltipPreviewBubble);
 };
 
 }  // namespace ash

@@ -11,36 +11,39 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
-namespace syncer {
+namespace invalidation {
 
-class ObjectIdInvalidationMap;
+class TopicInvalidationMap;
 
 class INVALIDATION_EXPORT InvalidationHandler {
  public:
-  InvalidationHandler();
+  InvalidationHandler() = default;
+  InvalidationHandler(const InvalidationHandler& other) = delete;
+  InvalidationHandler& operator=(const InvalidationHandler& other) = delete;
+  virtual ~InvalidationHandler() = default;
 
   // Called when the invalidator state changes.
   virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
 
-  // Called when a invalidation is received.  The per-id states are in
-  // |id_state_map| and the source is in |source|.  Note that this may be
-  // called regardless of the current invalidator state.
+  // Called when a invalidation is received. Note that this may be called
+  // regardless of the current invalidator state.
   virtual void OnIncomingInvalidation(
-      const ObjectIdInvalidationMap& invalidation_map) = 0;
+      const TopicInvalidationMap& invalidation_map) = 0;
 
+  // Returned value must be unique for the handlers using the same invalidation
+  // service.
+  // TODO(crbug.com/1049591): this is currently not the case for
+  // CloudPolicyInvalidator.
   virtual std::string GetOwnerName() const = 0;
 
   // Called on change of |client_id|. Client id is used to identify the
   // the invalidator. The id is only relevant to some handlers, e.g. Sync
   // where the reflection blocking logic is based on it.
-  virtual void OnInvalidatorClientIdChange(const std::string& client_id) {}
+  virtual void OnInvalidatorClientIdChange(const std::string& client_id);
 
   virtual bool IsPublicTopic(const Topic& topic) const;
-
- protected:
-  virtual ~InvalidationHandler();
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_HANDLER_H_

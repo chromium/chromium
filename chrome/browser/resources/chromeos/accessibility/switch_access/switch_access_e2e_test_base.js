@@ -2,115 +2,117 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../chromevox/testing/callback_helper.js']);
+GEN_INCLUDE([
+  '../common/testing/assert_additions.js', '../common/testing/e2e_test_base.js'
+]);
 
-/**
- * Base class for browser tests for Switch Access.
- * @constructor
- */
-function SwitchAccessE2ETest() {
-  this.callbackHelper_ = new CallbackHelper(this);
-}
-
-SwitchAccessE2ETest.prototype = {
-  __proto__: testing.Test.prototype,
-
-  /**
-   * @override
-   * No UI in the background context.
-   */
-  runAccessibilityChecks: false,
-
+/** Base class for browser tests for Switch Access. */
+SwitchAccessE2ETest = class extends E2ETestBase {
   /** @override */
-  isAsync: true,
-
-  /** @override */
-  browsePreload: null,
-
-  /** @override */
-  testGenCppIncludes: function() {
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "content/public/test/browser_test.h"
 #include "ash/keyboard/ui/keyboard_util.h"
     `);
-  },
+  }
 
   /** @override */
-  testGenPreamble: function() {
+  testGenPreamble() {
+    super.testGenPreamble();
     GEN(`
-  //keyboard::SetRequestedKeyboardState(keyboard::KEYBOARD_STATE_ENABLED);
-  //ash::Shell::Get()->CreateKeyboard();
-  base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+  base::OnceClosure load_cb =
+      base::BindOnce(&ash::AccessibilityManager::SetSwitchAccessEnabled,
+          base::Unretained(ash::AccessibilityManager::Get()),
           true);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
-  chromeos::AccessibilityManager::Get()->SetSwitchAccessEnabled(true);
-  WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);
-  },
+    super.testGenPreambleCommon('kSwitchAccessExtensionId');
+  }
 
   /**
-   * Creates a callback that optionally calls {@code opt_callback} when
-   * called.  If this method is called one or more times, then
-   * {@code testDone()} will be called when all callbacks have been called.
-   * @param {Function=} opt_callback Wrapped callback that will have its this
-   *        reference bound to the test fixture.
-   * @return {Function}
+   * @param {string} id The HTML id of an element.
+   * @return {!AutomationNode}
    */
-  newCallback: function(opt_callback) {
-    return this.callbackHelper_.wrap(opt_callback);
-  },
+  findNodeById(id) {
+    const predicate = (node) => node.htmlAttributes.id === id;
+    const nodeString = 'node with id "' + id + '"';
+    return this.findNodeMatchingPredicate(predicate, nodeString);
+  }
 
   /**
-   * From chromevox_next_e2e_test_base.js
-   * Gets the desktop from the automation API and Launches a new tab with
-   * the given document, and runs |callback| with the desktop when a load
-   * complete fires on the created tab.
-   * Arranges to call |testDone()| after |callback| returns.
-   * NOTE: Callbacks created inside |callback| must be wrapped with
-   * |this.newCallback| if passed to asynchonous calls.  Otherwise, the test
-   * will be finished prematurely.
-   * @param {string} url Url to load and wait for.
-   * @param {function(chrome.automation.AutomationNode)} callback Called with
-   *     the desktop node once the document is ready.
+   * @param {string} name The name of the node within the automation tree.
+   * @param {string} role The node's role.
+   * @return {!AutomationNode}
    */
-  runWithLoadedTree: function(url, callback) {
-    const prefix = url.substring(0, 4);
-    if (prefix !== 'http' && prefix !== 'data') {
-      url = 'data:text/html;charset=utf-8,' + url;
-    }
+  findNodeByNameAndRole(name, role) {
+    const predicate = (node) => node.name === name && node.role === role;
+    const nodeString = 'node with name "' + name + '" and role ' + role;
+    return this.findNodeMatchingPredicate(predicate, nodeString);
+  }
 
-    callback = this.newCallback(callback);
-    chrome.automation.getDesktop(function(desktopRootNode) {
-      var createParams = {active: true, url: url};
-      chrome.tabs.create(createParams, function(unused_tab) {
-        chrome.automation.getTree(function(returnedRootNode) {
-          rootNode = returnedRootNode;
-          if (rootNode.docLoaded) {
-            callback && callback(desktopRootNode);
-            callback = null;
-            return;
-          }
-          rootNode.addEventListener('loadComplete', function(evt) {
-            // URL encoding of newlines in the target root URL were causing
-            // tests to fail, so we decode %0A to \n.
-            const targetUrl = evt.target.root.url.replace(/%0A/g, '\n');
-            if (targetUrl != url) {
-              return;
-            }
-            callback && callback(desktopRootNode);
-            callback = null;
-          });
-        });
-      });
-    }.bind(this));
-  },
+  /**
+   * @param {function(): boolean} predicate The condition under which the
+   *     callback should be fired.
+   * @param {function()} callback
+   */
+  waitForPredicate(predicate, callback) {
+    this.listenUntil(
+        predicate, Navigator.byItem.desktopNode, 'childrenChanged', callback);
+  }
+
+  /**
+   * @param {!Object} expected
+   * @return {!Promise}
+   */
+  untilFocusIs(expected) {
+    const doesMatch = (expected) => {
+      const newNode = Navigator.byItem.node_;
+      const automationNode = newNode.automationNode || {};
+      return (!expected.instance || newNode instanceof expected.instance) &&
+          (!expected.role || expected.role === automationNode.role) &&
+          (!expected.name || expected.name === automationNode.name) &&
+          (!expected.className ||
+           expected.className === automationNode.className);
+    };
+
+    let didResolve = false;
+    let lastFocusChangeTime = new Date();
+    const id = setInterval(() => {
+      if (didResolve) {
+        clearInterval(id);
+        return;
+      }
+
+      if ((new Date() - lastFocusChangeTime) < 3000) {
+        return;
+      }
+
+      console.log(
+          `\nStill waiting for expectation: ${JSON.stringify(expected)}\n` +
+          `Focus is: ${Navigator.byItem.node_.debugString()}`);
+    }, 1000);
+    return new Promise(resolve => {
+      if (doesMatch(expected)) {
+        didResolve = true;
+        resolve(Navigator.byItem.node_);
+        return;
+      }
+      const original = Navigator.byItem.setNode_.bind(Navigator.byItem);
+      Navigator.byItem.setNode_ = (node) => {
+        original(node);
+        lastFocusChangeTime = new Date();
+        if (doesMatch(expected)) {
+          Navigator.byItem.setNode_ = original;
+          didResolve = true;
+          resolve(Navigator.byItem.node_);
+        }
+      };
+    });
+  }
 };

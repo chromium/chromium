@@ -10,9 +10,9 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -32,9 +32,9 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class Profile;
-struct WebApplicationInfo;
 
 namespace extensions {
 class ExtensionCacheFake;
@@ -48,42 +48,64 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
  public:
   // Different types of extension's lazy background contexts used in some tests.
   enum class ContextType {
+    // TODO(crbug.com:/1241220): Get rid of this value when we can use
+    // absl::optional in the LoadOptions struct.
+    // No specific context type.
+    kNone,
     // A non-persistent background page/JS based extension.
     kEventPage,
     // A Service Worker based extension.
     kServiceWorker,
     // An extension with a persistent background page.
     kPersistentBackground,
+    // Use the value from the manifest. This is used when the test
+    // has been parameterized but the particular extension should
+    // be loaded without using the parameterized type. Typically,
+    // this is used when a test loads another extension that is
+    // not parameterized.
+    kFromManifest,
   };
+
+  ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
+  ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
 
  protected:
-  // Flags used to configure how the tests are run.
-  enum Flags {
-    kFlagNone = 0,
+  struct LoadOptions {
+    // Allows the extension to run in incognito mode.
+    bool allow_in_incognito = false;
 
-    // Allow the extension to run in incognito mode.
-    kFlagEnableIncognito = 1 << 0,
+    // Allows file access for the extension.
+    bool allow_file_access = false;
 
-    // Allow file access for the extension.
-    kFlagEnableFileAccess = 1 << 1,
-
-    // Don't fail when the loaded manifest has warnings (should only be used
+    // Doesn't fail when the loaded manifest has warnings (should only be used
     // when testing deprecated features).
-    kFlagIgnoreManifestWarnings = 1 << 2,
+    bool ignore_manifest_warnings = false;
 
-    // Allow older manifest versions (typically these can't be loaded - we allow
-    // them for testing).
-    kFlagAllowOldManifestVersions = 1 << 3,
+    // Waits for extension renderers to fully load.
+    bool wait_for_renderers = true;
 
-    // Pass the FOR_LOGIN_SCREEN flag when loading the extension. This flag is
-    // usually provided for force-installed extension on the login screen.
-    kFlagLoadForLoginScreen = 1 << 4,
+    // An optional install param.
+    const char* install_param = nullptr;
 
-    // Load the provided extension as Service Worker based extension.
-    kFlagRunAsServiceWorkerBasedExtension = 1 << 5,
+    // If this is a Service Worker-based extension, wait for the
+    // Service Worker's registration to be stored before returning.
+    bool wait_for_registration_stored = false;
+
+    // Loads the extension with location COMPONENT.
+    bool load_as_component = false;
+
+    // Changes the "manifest_version" manifest key to 3. Note as of now, this
+    // doesn't make any other changes to convert the extension to MV3 other than
+    // changing the integer value in the manifest.
+    bool load_as_manifest_version_3 = false;
+
+    // Used to force loading the extension with a particular background type.
+    // Currently this only support loading an extension as using a service
+    // worker.
+    ContextType context_type = ContextType::kNone;
   };
 
-  ExtensionBrowserTest();
+  explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 
   // Useful accessors.
@@ -130,30 +152,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   const Extension* LoadExtension(const base::FilePath& path);
 
-  // Load extension and enable it in incognito mode.
-  const Extension* LoadExtensionIncognito(const base::FilePath& path);
-
-  // Load extension from the |path| folder. |flags| is bit mask of values from
-  // |Flags| enum.
-  const Extension* LoadExtensionWithFlags(const base::FilePath& path,
-                                          int flags);
-
-  // Same as above, but sets the installation parameter to the extension
-  // preferences.
-  const Extension* LoadExtensionWithInstallParam(
-      const base::FilePath& path,
-      int flags,
-      const std::string& install_param);
-
-  // Converts an extension from |path| to a Service Worker based extension and
-  // returns true on success.
-  // If successful, |out_path| contains path of the converted extension.
-  //
-  // NOTE: The conversion works only for extensions with background.scripts and
-  // background.persistent = false; persistent background pages and
-  // background.page are not supported.
-  bool CreateServiceWorkerBasedExtension(const base::FilePath& path,
-                                         base::FilePath* out_path);
+  const Extension* LoadExtension(const base::FilePath& path,
+                                 const LoadOptions& options);
 
   // Loads unpacked extension from |path| with manifest |manifest_relative_path|
   // and imitates that it is a component extension.
@@ -172,8 +172,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   // Launches |extension| as a window and returns the browser.
   Browser* LaunchAppBrowser(const Extension* extension);
-  // Launches |extension| as a tab and returns the browser.
-  Browser* LaunchBrowserForAppInTab(const Extension* extension);
 
   // Pack the extension in |dir_path| into a crx file and return its path.
   // Return an empty FilePath if there were errors.
@@ -202,11 +200,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
         std::string(), path, INSTALL_UI_TYPE_NONE, expected_change);
   }
 
-  // Same as above, but an install source other than Manifest::INTERNAL can be
-  // specified.
+  // Same as above, but an install source other than
+  // mojom::ManifestLocation::kInternal can be specified.
   const Extension* InstallExtension(const base::FilePath& path,
                                     int expected_change,
-                                    Manifest::Location install_source) {
+                                    mojom::ManifestLocation install_source) {
     return InstallOrUpdateExtension(std::string(),
                                     path,
                                     INSTALL_UI_TYPE_NONE,
@@ -222,11 +220,9 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       int expected_change) {
     return InstallOrUpdateExtension(
         std::string(), file_path, INSTALL_UI_TYPE_NONE, expected_change,
-        Manifest::INTERNAL, browser(), Extension::NO_FLAGS, false, true);
+        mojom::ManifestLocation::kInternal, browser(), Extension::NO_FLAGS,
+        false, true);
   }
-
-  // Installs bookmark app for |info|.
-  const Extension* InstallBookmarkApp(WebApplicationInfo info);
 
   // Installs extension as if it came from the Chrome Webstore.
   const Extension* InstallExtensionFromWebstore(const base::FilePath& path,
@@ -246,14 +242,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
                                               const base::FilePath& path,
                                               int expected_change);
 
-  // Same as |InstallExtension| but with the normal extension UI showing up
-  // (for e.g. info bar on success).
-  const Extension* InstallExtensionWithUI(const base::FilePath& path,
-                                          int expected_change) {
-    return InstallOrUpdateExtension(
-        std::string(), path, INSTALL_UI_TYPE_NORMAL, expected_change);
-  }
-
   const Extension* InstallExtensionWithUIAutoConfirm(const base::FilePath& path,
                                                      int expected_change,
                                                      Browser* browser) {
@@ -265,7 +253,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
       int expected_change,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source,
       Extension::InitFromValueFlags creation_flags) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     expected_change, install_source, browser(),
@@ -291,24 +279,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count) {
     return observer_->WaitForPageActionVisibilityChangeTo(count);
-  }
-
-  // Wait for an extension install error to be raised. Returns true if an
-  // error was raised.
-  bool WaitForExtensionInstallError() {
-    return observer_->WaitForExtensionInstallError();
-  }
-
-  // Waits for an extension load error. Returns true if the error really
-  // happened.
-  bool WaitForExtensionLoadError() {
-    return observer_->WaitForExtensionLoadError();
-  }
-
-  // Wait for the specified extension to crash. Returns true if it really
-  // crashed.
-  bool WaitForExtensionCrash(const std::string& extension_id) {
-    return observer_->WaitForExtensionCrash(extension_id);
   }
 
   // Wait for the crx installer to be done. Returns true if it has finished
@@ -370,10 +340,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
                                            const std::string& script);
 
-  bool loaded_;
-  bool installed_;
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the command line should be tweaked as if ChromeOS user is
   // already logged in.
   bool set_chromeos_user_;
@@ -385,7 +352,15 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
 
+  const ContextType context_type_;
+
  private:
+  // Modifies extension at `input_path` as dictated by `options`. On success,
+  // returns true and populates `out_path`. On failure, false is returned.
+  bool ModifyExtensionIfNeeded(const LoadOptions& options,
+                               const base::FilePath& input_path,
+                               base::FilePath* out_path);
+
   // Temporary directory for testing.
   base::ScopedTempDir temp_dir_;
 
@@ -409,17 +384,18 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       int expected_change,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags);
-  const Extension* InstallOrUpdateExtension(const std::string& id,
-                                            const base::FilePath& path,
-                                            InstallUIType ui_type,
-                                            int expected_change,
-                                            Manifest::Location install_source);
   const Extension* InstallOrUpdateExtension(
       const std::string& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       int expected_change,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source);
+  const Extension* InstallOrUpdateExtension(
+      const std::string& id,
+      const base::FilePath& path,
+      InstallUIType ui_type,
+      int expected_change,
+      mojom::ManifestLocation install_source,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
@@ -463,8 +439,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       verifier_format_override_;
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserTest);
 };
 
 }  // namespace extensions

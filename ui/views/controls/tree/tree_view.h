@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"
@@ -19,12 +18,22 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
+namespace ui {
+
+struct AXActionData;
+struct AXNodeData;
+
+}  // namespace ui
+
 namespace gfx {
+
 class Rect;
+
 }  // namespace gfx
 
 namespace views {
 
+class AXVirtualView;
 class PrefixSelector;
 class ScrollView;
 class Textfield;
@@ -33,6 +42,13 @@ class TreeViewController;
 // TreeView displays hierarchical data as returned from a TreeModel. The user
 // can expand, collapse and edit the items. A Controller may be attached to
 // receive notification of selection changes and restrict editing.
+//
+// In addition to tracking selection, TreeView also tracks the active node,
+// which is the item that receives keyboard input when the tree has focus.
+// Active/focus is like a pointer for keyboard navigation, and operations such
+// as selection are performed at the point of focus. The active node is synced
+// to the selected node. When the active node is nullptr, the TreeView itself is
+// the target of keyboard input.
 //
 // Note on implementation. This implementation doesn't scale well. In particular
 // it does not store any row information, but instead calculates it as
@@ -46,6 +62,10 @@ class VIEWS_EXPORT TreeView : public View,
   METADATA_HEADER(TreeView);
 
   TreeView();
+
+  TreeView(const TreeView&) = delete;
+  TreeView& operator=(const TreeView&) = delete;
+
   ~TreeView() override;
 
   // Returns a new ScrollView that contains the given |tree|.
@@ -86,8 +106,26 @@ class VIEWS_EXPORT TreeView : public View,
   // Selects the specified node. This expands all the parents of node.
   void SetSelectedNode(ui::TreeModelNode* model_node);
 
-  // Returns the selected node, or NULL if nothing is selected.
-  ui::TreeModelNode* GetSelectedNode();
+  // Returns the selected node, or nullptr if nothing is selected.
+  ui::TreeModelNode* GetSelectedNode() {
+    return const_cast<ui::TreeModelNode*>(
+        const_cast<const TreeView*>(this)->GetSelectedNode());
+  }
+  const ui::TreeModelNode* GetSelectedNode() const;
+
+  // Marks the specified node as active, scrolls it into view, and reports a
+  // keyboard focus update to ATs. Active node should be synced to the selected
+  // node and should be nullptr when the tree is empty.
+  // TODO(crbug.com/1080944): Decouple active node from selected node by adding
+  // new keyboard affordances.
+  void SetActiveNode(ui::TreeModelNode* model_node);
+
+  // Returns the active node, or nullptr if nothing is active.
+  ui::TreeModelNode* GetActiveNode() {
+    return const_cast<ui::TreeModelNode*>(
+        const_cast<const TreeView*>(this)->GetActiveNode());
+  }
+  const ui::TreeModelNode* GetActiveNode() const;
 
   // Marks |model_node| as collapsed. This only effects the UI if node and all
   // its parents are expanded (IsExpanded(model_node) returns true).
@@ -120,7 +158,7 @@ class VIEWS_EXPORT TreeView : public View,
   // Maps a node to a row, returns -1 if node is not valid.
   int GetRowForNode(ui::TreeModelNode* node);
 
-  views::Textfield* editor() { return editor_; }
+  Textfield* editor() { return editor_; }
 
   // Replaces this TreeView's TreeViewDrawingProvider with |provider|.
   void SetDrawingProvider(std::unique_ptr<TreeViewDrawingProvider> provider);
@@ -138,6 +176,7 @@ class VIEWS_EXPORT TreeView : public View,
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // TreeModelObserver overrides:
   void TreeNodesAdded(ui::TreeModel* model,
@@ -153,7 +192,7 @@ class VIEWS_EXPORT TreeView : public View,
 
   // TextfieldController overrides:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
@@ -165,7 +204,7 @@ class VIEWS_EXPORT TreeView : public View,
   int GetRowCount() override;
   int GetSelectedRow() override;
   void SetSelectedRow(int row) override;
-  base::string16 GetTextForRow(int row) override;
+  std::u16string GetTextForRow(int row) override;
 
  protected:
   // View overrides:
@@ -178,6 +217,20 @@ class VIEWS_EXPORT TreeView : public View,
  private:
   friend class TreeViewTest;
 
+  // Enumeration of possible changes to tree view state when the UI is updated.
+  enum class SelectionType {
+    // Active state is being set to a tree item.
+    kActive,
+
+    // Active and selected states are being set to a tree item.
+    kActiveAndSelected,
+  };
+
+  // Performs active node and selected node state transitions. Updates states
+  // and scrolling before notifying assistive technologies and the controller.
+  void UpdateSelection(ui::TreeModelNode* model_node,
+                       SelectionType selection_type);
+
   // Selects, expands or collapses nodes in the tree.  Consistent behavior for
   // tap gesture and click events.
   bool OnClickOrTap(const ui::LocatedEvent& event);
@@ -187,6 +240,10 @@ class VIEWS_EXPORT TreeView : public View,
   class InternalNode : public ui::TreeNode<InternalNode> {
    public:
     InternalNode();
+
+    InternalNode(const InternalNode&) = delete;
+    InternalNode& operator=(const InternalNode&) = delete;
+
     ~InternalNode() override;
 
     // Resets the state from |node|.
@@ -194,6 +251,16 @@ class VIEWS_EXPORT TreeView : public View,
 
     // The model node this InternalNode represents.
     ui::TreeModelNode* model_node() { return model_node_; }
+
+    // Gets or sets a virtual accessibility view that is used to expose
+    // information about this node to assistive software.
+    //
+    // This is a weak pointer. This class doesn't own its virtual accessibility
+    // view but the Views system does.
+    void set_accessibility_view(AXVirtualView* accessibility_view) {
+      accessibility_view_ = accessibility_view;
+    }
+    AXVirtualView* accessibility_view() const { return accessibility_view_; }
 
     // Whether the node is expanded.
     void set_is_expanded(bool expanded) { is_expanded_ = expanded; }
@@ -220,14 +287,19 @@ class VIEWS_EXPORT TreeView : public View,
     // The node from the model.
     ui::TreeModelNode* model_node_ = nullptr;
 
+    // A virtual accessibility view that is used to expose information about
+    // this node to assistive software.
+    //
+    // This is a weak pointer. This class doesn't own its virtual accessibility
+    // view but the Views system does.
+    AXVirtualView* accessibility_view_ = nullptr;
+
     // Whether the children have been loaded.
     bool loaded_children_ = false;
 
     bool is_expanded_ = false;
 
     int text_width_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(InternalNode);
   };
 
   // Used by GetInternalNodeForModelNode.
@@ -240,12 +312,12 @@ class VIEWS_EXPORT TreeView : public View,
   };
 
   // Used by IncrementSelection.
-  enum IncrementType {
+  enum class IncrementType {
     // Selects the next node.
-    INCREMENT_NEXT,
+    kNext,
 
     // Selects the previous node.
-    INCREMENT_PREVIOUS
+    kPrevious
   };
 
   // Row of the root node. This varies depending upon whether the root is
@@ -262,8 +334,24 @@ class VIEWS_EXPORT TreeView : public View,
   // when a node changes as well as when loading.
   void ConfigureInternalNode(ui::TreeModelNode* model_node, InternalNode* node);
 
+  // Returns whether the given node is the root.
+  bool IsRoot(const InternalNode* node) const;
+
   // Sets |node|s text_width.
   void UpdateNodeTextWidth(InternalNode* node);
+
+  // Creates a virtual accessibility view that is used to expose information
+  // about this node to assistive software.
+  //
+  // Also attaches the newly created virtual accessibility view to the internal
+  // node.
+  std::unique_ptr<AXVirtualView> CreateAndSetAccessibilityView(
+      InternalNode* node);
+
+  // Populates the accessibility data for a tree item. This is data that can
+  // dynamically change, such as whether a tree item is expanded, and if it's
+  // visible.
+  void PopulateAccessibilityData(InternalNode* node, ui::AXNodeData* data);
 
   // Invoked when the set of drawn nodes changes.
   void DrawnNodesChanged();
@@ -288,10 +376,7 @@ class VIEWS_EXPORT TreeView : public View,
                  int* row);
 
   // Invoked to paint a single node.
-  void PaintRow(gfx::Canvas* canvas,
-                InternalNode* node,
-                int row,
-                int depth);
+  void PaintRow(gfx::Canvas* canvas, InternalNode* node, int row, int depth);
 
   // Paints the expand control given the specified nodes bounds.
   void PaintExpandControl(gfx::Canvas* canvas,
@@ -303,11 +388,14 @@ class VIEWS_EXPORT TreeView : public View,
                      InternalNode* node,
                      const gfx::Rect& bounds);
 
-  // Returns the InternalNode for a model node. |create_type| indicates wheter
+  // Returns the InternalNode for a model node. |create_type| indicates whether
   // this should load InternalNode or not.
   InternalNode* GetInternalNodeForModelNode(
       ui::TreeModelNode* model_node,
       GetInternalNodeCreateType create_type);
+
+  // Returns the InternalNode for a virtual view.
+  InternalNode* GetInternalNodeForVirtualView(AXVirtualView* ax_view);
 
   // Returns the bounds for a node. This rectangle contains the node's icon,
   // text, arrow, and auxiliary text (if any). All of the other bounding
@@ -343,7 +431,7 @@ class VIEWS_EXPORT TreeView : public View,
   // Returns the row and depth of the specified node.
   InternalNode* GetNodeByRow(int row, int* depth);
 
-  // Implementation of GetNodeByRow. |curent_row| is updated as we iterate.
+  // Implementation of GetNodeByRow. |current_row| is updated as we iterate.
   InternalNode* GetNodeByRowImpl(InternalNode* node,
                                  int target_row,
                                  int current_depth,
@@ -390,10 +478,13 @@ class VIEWS_EXPORT TreeView : public View,
   // The selected node, may be null.
   InternalNode* selected_node_ = nullptr;
 
+  // The current active node, may be null.
+  InternalNode* active_node_ = nullptr;
+
   bool editing_ = false;
 
   // The editor; lazily created and never destroyed (well, until TreeView is
-  // destroyed). Hidden when no longer editing. We do this avoid destruction
+  // destroyed). Hidden when no longer editing. We do this to avoid destruction
   // problems.
   Textfield* editor_ = nullptr;
 
@@ -433,8 +524,6 @@ class VIEWS_EXPORT TreeView : public View,
 
   // The current drawing provider for this TreeView.
   std::unique_ptr<TreeViewDrawingProvider> drawing_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeView);
 };
 
 }  // namespace views

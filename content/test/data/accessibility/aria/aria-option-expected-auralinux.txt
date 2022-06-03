@@ -2,3 +2,6 @@
 ++[list box] xml-roles:listbox
 ++++[list item] name='option 1' selectable xml-roles:option
 ++++[list item] name='label 2' selectable xml-roles:option
+++++[list item] name='caterpillar' selectable xml-roles:option
+++++[list item] name='catfish' selectable xml-roles:option
+++++[list item] name='medusa' selectable xml-roles:option

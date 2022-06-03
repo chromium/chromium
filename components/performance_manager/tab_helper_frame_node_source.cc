@@ -12,36 +12,36 @@
 namespace performance_manager {
 
 TabHelperFrameNodeSource::TabHelperFrameNodeSource()
-    : performance_manager_tab_helper_observers_(this) {}
+    : performance_manager_tab_helper_observations_(this) {}
 
 TabHelperFrameNodeSource::~TabHelperFrameNodeSource() {
   DCHECK(observed_frame_nodes_.empty());
-  DCHECK(!performance_manager_tab_helper_observers_.IsObservingSources());
+  DCHECK(!performance_manager_tab_helper_observations_.IsObservingAnySource());
 }
 
-FrameNodeImpl* TabHelperFrameNodeSource::GetFrameNode(int render_process_id,
-                                                      int frame_id) {
+FrameNodeImpl* TabHelperFrameNodeSource::GetFrameNode(
+    content::GlobalRenderFrameHostId render_process_host_id) {
   // Retrieve the client's RenderFrameHost and its associated
   // PerformanceManagerTabHelper.
   auto* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, frame_id);
+      content::RenderFrameHost::FromID(render_process_host_id);
   if (!render_frame_host)
     return nullptr;
 
   PerformanceManagerTabHelper* performance_manager_tab_helper =
       PerformanceManagerTabHelper::FromWebContents(
           content::WebContents::FromRenderFrameHost(render_frame_host));
-  DCHECK(performance_manager_tab_helper);
+  if (!performance_manager_tab_helper)
+    return nullptr;
 
   return performance_manager_tab_helper->GetFrameNode(render_frame_host);
 }
 
 void TabHelperFrameNodeSource::SubscribeToFrameNode(
-    int render_process_id,
-    int frame_id,
+    content::GlobalRenderFrameHostId render_process_host_id,
     OnbeforeFrameNodeRemovedCallback on_before_frame_node_removed_callback) {
   auto* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, frame_id);
+      content::RenderFrameHost::FromID(render_process_host_id);
   DCHECK(render_frame_host);
 
   PerformanceManagerTabHelper* performance_manager_tab_helper =
@@ -57,7 +57,7 @@ void TabHelperFrameNodeSource::SubscribeToFrameNode(
   if (AddObservedFrameNode(performance_manager_tab_helper, frame_node)) {
     // Start observing the tab helper only if this is the first observed frame
     // that is associated with it.
-    performance_manager_tab_helper_observers_.Add(
+    performance_manager_tab_helper_observations_.AddObservation(
         performance_manager_tab_helper);
   }
 
@@ -70,10 +70,10 @@ void TabHelperFrameNodeSource::SubscribeToFrameNode(
   DCHECK(inserted);
 }
 
-void TabHelperFrameNodeSource::UnsubscribeFromFrameNode(int render_process_id,
-                                                        int frame_id) {
+void TabHelperFrameNodeSource::UnsubscribeFromFrameNode(
+    content::GlobalRenderFrameHostId render_process_host_id) {
   auto* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, frame_id);
+      content::RenderFrameHost::FromID(render_process_host_id);
   DCHECK(render_frame_host);
 
   PerformanceManagerTabHelper* performance_manager_tab_helper =
@@ -93,7 +93,7 @@ void TabHelperFrameNodeSource::UnsubscribeFromFrameNode(int render_process_id,
   if (RemoveObservedFrameNode(performance_manager_tab_helper, frame_node)) {
     // Stop observing that tab helper if there no longer are any observed
     // frames that are associated with it.
-    performance_manager_tab_helper_observers_.Remove(
+    performance_manager_tab_helper_observations_.RemoveObservation(
         performance_manager_tab_helper);
   }
 }
@@ -116,7 +116,7 @@ void TabHelperFrameNodeSource::OnBeforeFrameNodeRemoved(
   if (RemoveObservedFrameNode(performance_manager_tab_helper, frame_node)) {
     // Stop observing that tab helper if there no longer are any observed
     // frames that are associated with it.
-    performance_manager_tab_helper_observers_.Remove(
+    performance_manager_tab_helper_observations_.RemoveObservation(
         performance_manager_tab_helper);
   }
 }

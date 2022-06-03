@@ -8,7 +8,7 @@ var ctx = document.createElement('canvas').getContext('2d');
 function testCreateLinearGradient(params)
 {
     x0 = params[0]; y0 = params[1]; x1 = params[2]; y1 = params[3];
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.createLinearGradient(x0, y0, x1, y1);
     });
 }

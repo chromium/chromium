@@ -32,6 +32,8 @@
     Exposed=(Window,Worker)
 ] interface Crypto {
     [RaisesException, MeasureAs=CryptoGetRandomValues] ArrayBufferView getRandomValues(ArrayBufferView array);
-
+    // Implementation of crypto.randomUUID() from the standard:
+    // https://wicg.github.io/uuid/#extensions-to-the-crypto-interface
+    [RuntimeEnabled=UUID, SecureContext] DOMString randomUUID();
     [SecureContext] readonly attribute SubtleCrypto subtle;
 };

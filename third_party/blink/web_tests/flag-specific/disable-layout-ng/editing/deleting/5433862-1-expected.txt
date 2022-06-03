@@ -1,0 +1,7 @@
+This tests for a crash when removing a selection ends with a fully selected table row.
+
+foo
+
+		
+
+foo	bar	baz

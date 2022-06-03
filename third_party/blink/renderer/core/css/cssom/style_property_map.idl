@@ -10,6 +10,6 @@
     // TODO(https://crbug.com/838890): DOMString should be CSSOMString
     [RaisesException, CallWith=ExecutionContext] void set(CSSOMString property, (CSSStyleValue or DOMString)... values);
     [RaisesException, CallWith=ExecutionContext] void append(CSSOMString property, (CSSStyleValue or DOMString)... values);
-    [RaisesException, ImplementedAs=remove] void delete(CSSOMString property);
+    [RaisesException, CallWith=ExecutionContext, ImplementedAs=remove] void delete(CSSOMString property);
     void clear();
 };

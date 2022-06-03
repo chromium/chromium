@@ -43,7 +43,6 @@ namespace blink {
 class SVGAnimatedNumberList final : public ScriptWrappable,
                                     public SVGAnimatedProperty<SVGNumberList> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedNumberList);
 
  public:
   SVGAnimatedNumberList(SVGElement* context_element,
@@ -53,7 +52,7 @@ class SVGAnimatedNumberList final : public ScriptWrappable,
             attribute_name,
             MakeGarbageCollected<SVGNumberList>()) {}
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     SVGAnimatedProperty<SVGNumberList>::Trace(visitor);
     ScriptWrappable::Trace(visitor);
   }
@@ -61,4 +60,4 @@ class SVGAnimatedNumberList final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_NUMBER_LIST_H_

@@ -13,7 +13,18 @@ namespace tracing {
 class COMPONENT_EXPORT(TRACING_CPP) SystemProducer : public PerfettoProducer,
                                                      public perfetto::Producer {
  public:
-  SystemProducer(PerfettoTaskRunner* task_runner);
+  explicit SystemProducer(base::tracing::PerfettoTaskRunner*);
+  ~SystemProducer() override;
+
+  // Initiate connection to the system service. Should only be called once on
+  // the producer's task runner (while disconnected) and after the thread pool
+  // was initialized.
+  virtual void ConnectToSystemService() = 0;
+
+  // Send the given trigger names to the system service. Should only be called
+  // on the producer's task runner.
+  virtual void ActivateTriggers(const std::vector<std::string>& triggers) = 0;
+
   // Since Chrome does not support concurrent tracing sessions, and system
   // tracing is always lower priority than human or DevTools initiated tracing,
   // all system producers must be able to disconnect and stop tracing.
@@ -24,7 +35,6 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemProducer : public PerfettoProducer,
       base::OnceClosure on_disconnect_complete) = 0;
 
   virtual bool IsDummySystemProducerForTesting();
-  virtual void ResetSequenceForTesting() = 0;
 };
 }  // namespace tracing
 

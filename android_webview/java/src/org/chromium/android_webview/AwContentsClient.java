@@ -29,10 +29,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Base-class that an AwContents embedder derives from to receive callbacks.
@@ -56,6 +59,9 @@ public abstract class AwContentsClient {
     private String mTitle = "";
 
     private static final int INVALID_COLOR = 0;
+
+    private static final Pattern FILE_ANDROID_ASSET_PATTERN =
+            Pattern.compile("^file:///android_(asset|res)/.*");
 
     public AwContentsClient() {
         this(Looper.myLooper());
@@ -146,7 +152,7 @@ public abstract class AwContentsClient {
      * Parameters for {@link AwContentsClient#onReceivedError} method.
      */
     public static class AwWebResourceError {
-        public int errorCode = ErrorCodeConversionHelper.ERROR_UNKNOWN;
+        public @WebviewErrorCode int errorCode = WebviewErrorCode.ERROR_UNKNOWN;
         public String description;
     }
 
@@ -161,8 +167,7 @@ public abstract class AwContentsClient {
 
     public abstract void onProgressChanged(int progress);
 
-    public abstract AwWebResourceResponse shouldInterceptRequest(
-            AwWebResourceRequest request);
+    public abstract WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request);
 
     public abstract boolean shouldOverrideKeyEvent(KeyEvent event);
 
@@ -215,8 +220,13 @@ public abstract class AwContentsClient {
             return true;
         }
 
-        // Treat 'about:' URLs as internal, always open them in the WebView
-        if (url.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)) {
+        // Treat some URLs as internal, always open them in the WebView:
+        // * about: scheme URIs
+        // * chrome:// scheme URIs
+        // * file:///android_asset/ or file:///android_res/ URIs
+        if (url.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
+                || url.startsWith(UrlConstants.CHROME_URL_PREFIX)
+                || FILE_ANDROID_ASSET_PATTERN.matcher(url).matches()) {
             return false;
         }
 
@@ -417,8 +427,8 @@ public abstract class AwContentsClient {
     protected abstract void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
             Callback<AwSafeBrowsingResponse> callback);
 
-    public abstract void onReceivedHttpError(AwWebResourceRequest request,
-            AwWebResourceResponse response);
+    public abstract void onReceivedHttpError(
+            AwWebResourceRequest request, WebResourceResponseInfo response);
 
     public abstract void onShowCustomView(View view, CustomViewCallback callback);
 

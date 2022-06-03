@@ -33,25 +33,25 @@ AssistantQueryHistory::Iterator::Iterator(
 
 AssistantQueryHistory::Iterator::~Iterator() = default;
 
-base::Optional<std::string> AssistantQueryHistory::Iterator::Next() {
+absl::optional<std::string> AssistantQueryHistory::Iterator::Next() {
   // queries_.size() is of type unsigned int and queries_.size() -1 will
   // overflow if it is 0.
   if (cur_pos_ + 1 >= queries_.size()) {
     cur_pos_ = queries_.size();
-    return base::nullopt;
+    return absl::nullopt;
   }
   cur_pos_++;
-  return base::make_optional<std::string>(queries_[cur_pos_]);
+  return absl::make_optional<std::string>(queries_[cur_pos_]);
 }
 
-base::Optional<std::string> AssistantQueryHistory::Iterator::Prev() {
+absl::optional<std::string> AssistantQueryHistory::Iterator::Prev() {
   if (queries_.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (cur_pos_ != 0)
     cur_pos_--;
 
-  return base::make_optional<std::string>(queries_[cur_pos_]);
+  return absl::make_optional<std::string>(queries_[cur_pos_]);
 }
 
 void AssistantQueryHistory::Iterator::ResetToLast() {

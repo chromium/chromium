@@ -5,12 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPUTE_PIPELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPUTE_PIPELINE_H_
 
+#include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 
 namespace blink {
 
 class GPUBindGroupLayout;
 class GPUComputePipelineDescriptor;
+
+WGPUComputePipelineDescriptor AsDawnType(
+    const GPUComputePipelineDescriptor* webgpu_desc,
+    std::string* label,
+    OwnedProgrammableStageDescriptor* computeStageDescriptor,
+    GPUDevice* device);
 
 class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
   DEFINE_WRAPPERTYPEINFO();
@@ -21,12 +28,11 @@ class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
       const GPUComputePipelineDescriptor* webgpu_desc);
   explicit GPUComputePipeline(GPUDevice* device,
                               WGPUComputePipeline compute_pipeline);
-  ~GPUComputePipeline() override;
+
+  GPUComputePipeline(const GPUComputePipeline&) = delete;
+  GPUComputePipeline& operator=(const GPUComputePipeline&) = delete;
 
   GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUComputePipeline);
 };
 
 }  // namespace blink

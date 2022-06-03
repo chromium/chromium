@@ -11,8 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/check_op.h"
 #include "sql/recover_module/parsing.h"
 #include "third_party/sqlite/sqlite3.h"
 

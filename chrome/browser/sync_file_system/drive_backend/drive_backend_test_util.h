@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "chrome/browser/sync_file_system/sync_status_code.h"
-#include "google_apis/drive/drive_api_error_codes.h"
 
 namespace google_apis {
 class FileResource;

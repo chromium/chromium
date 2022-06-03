@@ -9,21 +9,16 @@
 #include <sstream>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 
 namespace media {
 
 namespace {
-
-std::ostream& operator<<(std::ostream& ostream,
-                         const VideoFrame::StorageType& storage_type) {
-  ostream << VideoFrame::StorageTypeToString(storage_type);
-  return ostream;
-}
 
 // Verify if the format of |frame| matches |config|.
 bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
@@ -43,9 +38,10 @@ bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
     return false;
   }
 
-  if (frame.storage_type() != config.storage_type()) {
-    VLOGF(1) << "Invalid frame.storage_type=" << frame.storage_type()
-             << ", input_storage_type=" << config.storage_type();
+  if (frame.visible_rect() != config.visible_rect) {
+    VLOGF(1) << "Invalid frame visible rectangle="
+             << frame.visible_rect().ToString()
+             << ", expected=" << config.visible_rect.ToString();
     return false;
   }
 
@@ -68,16 +64,17 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
     const std::vector<OutputMode>& preferred_output_modes,
+    VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+      base::ThreadPool::CreateSequencedTaskRunner({});
   auto wrapped_error_cb = base::BindRepeating(
       base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
       client_task_runner, FROM_HERE, std::move(error_cb));
-  std::unique_ptr<ImageProcessorBackend> backend =
-      create_backend_cb.Run(input_config, output_config, preferred_output_modes,
-                            std::move(wrapped_error_cb), backend_task_runner);
+  std::unique_ptr<ImageProcessorBackend> backend = create_backend_cb.Run(
+      input_config, output_config, preferred_output_modes, relative_rotation,
+      std::move(wrapped_error_cb), backend_task_runner);
   if (!backend)
     return nullptr;
 
@@ -106,11 +103,7 @@ ImageProcessor::~ImageProcessor() {
   weak_this_factory_.InvalidateWeakPtrs();
 
   // Delete |backend_| on |backend_task_runner_|.
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<ImageProcessorBackend>>(),
-          std::move(backend_)));
+  backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
 }
 
 bool ImageProcessor::Process(scoped_refptr<VideoFrame> input_frame,
@@ -140,7 +133,7 @@ bool ImageProcessor::Process(scoped_refptr<VideoFrame> input_frame,
 // static
 void ImageProcessor::OnProcessDoneThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Optional<base::WeakPtr<ImageProcessor>> weak_this,
+    absl::optional<base::WeakPtr<ImageProcessor>> weak_this,
     int cb_index,
     scoped_refptr<VideoFrame> frame) {
   DVLOGF(4);
@@ -187,7 +180,7 @@ bool ImageProcessor::Process(scoped_refptr<VideoFrame> frame,
 // static
 void ImageProcessor::OnProcessLegacyDoneThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Optional<base::WeakPtr<ImageProcessor>> weak_this,
+    absl::optional<base::WeakPtr<ImageProcessor>> weak_this,
     int cb_index,
     size_t buffer_id,
     scoped_refptr<VideoFrame> frame) {

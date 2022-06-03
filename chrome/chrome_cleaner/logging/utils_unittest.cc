@@ -40,7 +40,7 @@ TEST(DiskUtilTests, RetrieveFolderInformation) {
   EXPECT_TRUE(RetrieveFolderInformation(temp_folder, &folder_information));
 
   // The expected file path value should be sanitized.
-  EXPECT_EQ(base::UTF16ToUTF8(SanitizePath(temp_folder)),
+  EXPECT_EQ(base::WideToUTF8(SanitizePath(temp_folder)),
             folder_information.path());
   EXPECT_FALSE(folder_information.creation_date().empty());
   EXPECT_FALSE(folder_information.last_modified_date().empty());
@@ -68,7 +68,7 @@ TEST(DiskUtilTests, RetrieveFolderInformationNoFile) {
 // Returns all files in |files| that start with a fixed pattern.
 class PrefixInfoSampler : public InfoSampler {
  public:
-  explicit PrefixInfoSampler(const base::string16& prefix) : prefix_(prefix) {}
+  explicit PrefixInfoSampler(const std::wstring& prefix) : prefix_(prefix) {}
 
   void SelectPathSetToSample(const FilePathSet& files,
                              FilePathSet* sampled_file_paths) override {
@@ -81,7 +81,7 @@ class PrefixInfoSampler : public InfoSampler {
   }
 
  private:
-  const base::string16 prefix_;
+  const std::wstring prefix_;
 };
 
 class PUPToUwSTest : public ::testing::TestWithParam<bool> {
@@ -118,7 +118,7 @@ class PUPToUwSTest : public ::testing::TestWithParam<bool> {
     test_pup_data_.AddPUP(kTestPUPId, PUPData::FLAGS_NONE, nullptr,
                           PUPData::kMaxFilesToRemoveSmallUwS);
     for (const auto& expectation : expectations_) {
-      const base::string16 filename = expectation.first;
+      const std::wstring filename = expectation.first;
       test_pup_data_.AddDiskFootprint(kTestPUPId, CSIDL_STARTUP,
                                       filename.c_str(),
                                       PUPData::DISK_MATCH_ANY_FILE);
@@ -133,7 +133,7 @@ class PUPToUwSTest : public ::testing::TestWithParam<bool> {
     PUPData::PUP* pup = PUPData::GetPUP(kTestPUPId);
     DCHECK(pup);
     for (const auto& expectation : expectations_) {
-      const base::string16 filename = expectation.first;
+      const std::wstring filename = expectation.first;
       pup->AddDiskFootprint(temp_dir_.GetPath().Append(filename));
     }
     return pup;
@@ -143,7 +143,7 @@ class PUPToUwSTest : public ::testing::TestWithParam<bool> {
   bool is_cleaning_;
 
   PrefixInfoSampler sampler_;
-  std::map<base::string16, FileFlags> expectations_;
+  std::map<std::wstring, FileFlags> expectations_;
   base::ScopedTempDir temp_dir_;
   TestPUPData test_pup_data_;
 };
@@ -158,13 +158,13 @@ TEST_P(PUPToUwSTest, PUPToUwS) {
 
   // Loop through all converted files and make sure each was converted
   // correctly.
-  std::vector<base::string16> converted_files;
+  std::vector<std::wstring> converted_files;
   for (int i = 0; i < uws.files_size(); ++i) {
     ASSERT_TRUE(uws.files(i).has_file_information());
     const FileInformation& file_info = uws.files(i).file_information();
     ASSERT_TRUE(file_info.has_path());
-    base::FilePath file_path(base::UTF8ToUTF16(file_info.path()));
-    base::string16 uws_filename =
+    base::FilePath file_path(base::UTF8ToWide(file_info.path()));
+    std::wstring uws_filename =
         base::ToLowerASCII(file_path.BaseName().value());
     converted_files.push_back(uws_filename);
 
@@ -177,7 +177,7 @@ TEST_P(PUPToUwSTest, PUPToUwS) {
     EXPECT_EQ(expectation->second.has_details, file_info.has_sha256());
   }
 
-  std::vector<base::string16> expected_files;
+  std::vector<std::wstring> expected_files;
   for (const auto& expectation : expectations_)
     expected_files.push_back(expectation.first);
   EXPECT_THAT(converted_files,

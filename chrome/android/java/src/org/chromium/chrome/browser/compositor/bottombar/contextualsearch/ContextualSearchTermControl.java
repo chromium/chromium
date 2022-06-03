@@ -10,13 +10,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls the Search Term View that is used as a dynamic resource.
+ * Controls showing the Search Term - what we'll search for - in unstyled text at the top of the
+ * Bar.
+ * <p>This is similar to the {@link ContextualSearchContextControl} which places two-part styled
+ * text in the same location of the Bar. Typically the UX flow starts by showing the selection
+ * (which is the Search Term0 using this View and if page context is available to resolve the query
+ * then this View is immediately replaced by the Context Control (Context being the selection and
+ * page content), until the server returns the Resolved Search Term which is displayed with this
+ * control. If there's no access to page context then the selection is the Search Term.
+ * <p>This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
 public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     /**
@@ -35,10 +42,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
                                           ViewGroup container,
                                           DynamicResourceLoader resourceLoader) {
         super(panel, R.layout.contextual_search_term_view, R.id.contextual_search_term_view,
-                context, container, resourceLoader,
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
-                                ? R.dimen.contextual_search_end_padding
-                                : R.dimen.contextual_search_padded_button_width),
+                context, container, resourceLoader, R.dimen.contextual_search_end_padding,
                 R.dimen.contextual_search_padded_button_width);
     }
 

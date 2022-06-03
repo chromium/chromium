@@ -13,9 +13,7 @@ component("common") {
     "network_switches.h",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
   defines = [ "NETWORK_SESSION_CONFIGURATOR_IMPLEMENTATION" ]
 }

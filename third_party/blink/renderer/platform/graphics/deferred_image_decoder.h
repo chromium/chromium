@@ -28,16 +28,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkRWBuffer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -58,27 +59,32 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   static std::unique_ptr<DeferredImageDecoder> CreateForTesting(
       std::unique_ptr<ImageDecoder>);
 
+  DeferredImageDecoder(const DeferredImageDecoder&) = delete;
+  DeferredImageDecoder& operator=(const DeferredImageDecoder&) = delete;
   ~DeferredImageDecoder();
 
   String FilenameExtension() const;
 
-  sk_sp<PaintImageGenerator> CreateGenerator(size_t index);
+  sk_sp<PaintImageGenerator> CreateGenerator();
 
   scoped_refptr<SharedBuffer> Data();
+  bool HasData() const;
+  size_t DataSize() const;
   void SetData(scoped_refptr<SharedBuffer> data, bool all_data_received);
 
   bool IsSizeAvailable();
   bool HasEmbeddedColorProfile() const;
   IntSize Size() const;
-  IntSize FrameSizeAtIndex(size_t index) const;
-  size_t FrameCount();
+  IntSize FrameSizeAtIndex(wtf_size_t index) const;
+  wtf_size_t FrameCount();
   bool ImageIsHighBitDepth() const { return image_is_high_bit_depth_; }
   int RepetitionCount() const;
-  bool FrameHasAlphaAtIndex(size_t index) const;
-  bool FrameIsReceivedAtIndex(size_t index) const;
-  base::TimeDelta FrameDurationAtIndex(size_t index) const;
-  ImageOrientation OrientationAtIndex(size_t index) const;
-  bool HotSpot(IntPoint&) const;
+  bool FrameIsReceivedAtIndex(wtf_size_t index) const;
+  base::TimeDelta FrameDurationAtIndex(wtf_size_t index) const;
+  ImageOrientation OrientationAtIndex(wtf_size_t index) const;
+  IntSize DensityCorrectedSizeAtIndex(wtf_size_t index) const;
+  bool HotSpot(gfx::Point&) const;
+  SkAlphaType AlphaType() const;
 
   // A less expensive method for getting the number of bytes thus far received
   // for the image. Checking Data()->size() involves copying bytes to a
@@ -103,7 +109,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Copy of the data that is passed in, used by deferred decoding.
   // Allows creating readonly snapshots that may be read in another thread.
-  std::unique_ptr<SkRWBuffer> rw_buffer_;
+  scoped_refptr<ParkableImage> parkable_image_;
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;
@@ -116,21 +122,26 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool has_hot_spot_;
   bool image_is_high_bit_depth_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
-  IntPoint hot_spot_;
+  gfx::Point hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;
-  base::Optional<bool> incremental_decode_needed_;
+  absl::optional<bool> incremental_decode_needed_;
+
+  // Set to true if the image is detected to be invalid after parsing the
+  // metadata.
+  bool invalid_image_ = false;
 
   // Caches an image's metadata so it can outlive |metadata_decoder_| after all
   // data is received in cases where multiple generators are created.
-  base::Optional<cc::ImageHeaderMetadata> image_metadata_;
+  absl::optional<cc::ImageHeaderMetadata> image_metadata_;
 
   // Caches frame state information.
   Vector<DeferredFrameData> frame_data_;
+  // The number of received/complete frames in |frame_data_|. Note: This is also
+  // the index of the first unreceived/incomplete frame in |frame_data_|.
+  wtf_size_t received_frame_count_ = 0;
   scoped_refptr<ImageFrameGenerator> frame_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredImageDecoder);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DEFERRED_IMAGE_DECODER_H_

@@ -2,91 +2,84 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+
 /**
  * Test fixture for paragraph_utils.js.
- * @constructor
- * @extends {testing.Test}
  */
-function SelectToSpeakParagraphUnitTest() {
-  testing.Test.call(this);
-}
-
-SelectToSpeakParagraphUnitTest.prototype = {
-  __proto__: testing.Test.prototype,
-
+SelectToSpeakParagraphUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  extraLibraries: ['test_support.js', 'paragraph_utils.js']
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      await importModule(
+          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+      runTest();
+    })();
+  }
 };
 
-TEST_F('SelectToSpeakParagraphUnitTest', 'GetFirstBlockAncestor', function() {
-  let root = {role: 'rootWebArea'};
-  let paragraph = {role: 'paragraph', parent: root, root: root};
-  let text1 =
-      {role: 'staticText', parent: paragraph, display: 'block', root: root};
-  let text2 = {role: 'staticText', parent: root, root: root};
-  let text3 = {role: 'inlineTextBox', parent: text1, root: root};
-  let div = {
-    role: 'genericContainer',
-    parent: paragraph,
-    display: 'block',
-    root: root
-  };
-  let text4 = {role: 'staticText', parent: div, root: root};
-  assertEquals(paragraph, ParagraphUtils.getFirstBlockAncestor(text1));
-  assertEquals(root, ParagraphUtils.getFirstBlockAncestor(text2));
-  assertEquals(paragraph, ParagraphUtils.getFirstBlockAncestor(text3));
-  assertEquals(div, ParagraphUtils.getFirstBlockAncestor(text4));
-});
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'GetFirstBlockAncestor', function() {
+      const root = {role: 'rootWebArea'};
+      const paragraph = {role: 'paragraph', parent: root, root};
+      const text1 =
+          {role: 'staticText', parent: paragraph, display: 'block', root};
+      const text2 = {role: 'staticText', parent: root, root};
+      const text3 = {role: 'inlineTextBox', parent: text1, root};
+      const div =
+          {role: 'genericContainer', parent: paragraph, display: 'block', root};
+      const text4 = {role: 'staticText', parent: div, root};
+      assertEquals(paragraph, ParagraphUtils.getFirstBlockAncestor(text1));
+      assertEquals(root, ParagraphUtils.getFirstBlockAncestor(text2));
+      assertEquals(paragraph, ParagraphUtils.getFirstBlockAncestor(text3));
+      assertEquals(div, ParagraphUtils.getFirstBlockAncestor(text4));
+    });
 
-TEST_F('SelectToSpeakParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
-  let root = {role: 'rootWebArea'};
-  let svgRoot = {role: 'svgRoot', parent: root, root: root};
-  let text1 = {role: 'staticText', parent: svgRoot, root: root};
-  let inline1 = {role: 'inlineTextBox', parent: text1, root: root};
-  let text2 = {role: 'staticText', parent: svgRoot, root: root};
-  let inline2 = {role: 'inlineTextBox', parent: text2, root: root};
-  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(text1));
-  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline1));
-  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline2));
-  assertTrue(ParagraphUtils.inSameParagraph(inline1, inline2));
-});
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
+      const root = {role: 'rootWebArea'};
+      const svgRoot = {role: 'svgRoot', parent: root, root};
+      const text1 = {role: 'staticText', parent: svgRoot, root};
+      const inline1 = {role: 'inlineTextBox', parent: text1, root};
+      const text2 = {role: 'staticText', parent: svgRoot, root};
+      const inline2 = {role: 'inlineTextBox', parent: text2, root};
+      assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(text1));
+      assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline1));
+      assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline2));
+      assertTrue(ParagraphUtils.inSameParagraph(inline1, inline2));
+    });
 
-
-TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
-  let root = {role: 'rootWebArea'};
-  let paragraph1 =
-      {role: 'paragraph', display: 'block', parent: 'rootWebArea', root: root};
-  let text1 = {role: 'staticText', parent: paragraph1, root: root};
-  let text2 = {role: 'staticText', parent: paragraph1, root: root};
-  let paragraph2 =
-      {role: 'paragraph', display: 'block', parent: 'rootWebArea', root: root};
-  let text3 = {role: 'staticText', parent: paragraph2, root: root};
+SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
+  const root = {role: 'rootWebArea'};
+  const paragraph1 =
+      {role: 'paragraph', display: 'block', parent: 'rootWebArea', root};
+  const text1 = {role: 'staticText', parent: paragraph1, root};
+  const text2 = {role: 'staticText', parent: paragraph1, root};
+  const paragraph2 =
+      {role: 'paragraph', display: 'block', parent: 'rootWebArea', root};
+  const text3 = {role: 'staticText', parent: paragraph2, root};
   assertTrue(ParagraphUtils.inSameParagraph(text1, text2));
   assertFalse(ParagraphUtils.inSameParagraph(text1, text3));
 });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BlockDivBreaksSameParagraph',
     function() {
-      let root = {role: 'rootWebArea'};
-      let paragraph1 = {
-        role: 'paragraph',
-        display: 'block',
-        parent: 'rootWebArea',
-        root: root
-      };
-      let text1 = {role: 'staticText', parent: paragraph1, root: root};
-      let text2 =
-          {role: 'image', parent: paragraph1, display: 'block', root: root};
-      let text3 =
-          {role: 'image', parent: paragraph1, display: 'inline', root: root};
-      let text4 = {role: 'staticText', parent: paragraph1, root: root};
+      const root = {role: 'rootWebArea'};
+      const paragraph1 =
+          {role: 'paragraph', display: 'block', parent: 'rootWebArea', root};
+      const text1 = {role: 'staticText', parent: paragraph1, root};
+      const text2 = {role: 'image', parent: paragraph1, display: 'block', root};
+      const text3 =
+          {role: 'image', parent: paragraph1, display: 'inline', root};
+      const text4 = {role: 'staticText', parent: paragraph1, root};
       assertFalse(ParagraphUtils.inSameParagraph(text1, text2));
       assertFalse(ParagraphUtils.inSameParagraph(text2, text3));
       assertTrue(ParagraphUtils.inSameParagraph(text3, text4));
     });
 
-TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
+SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
   assertTrue(ParagraphUtils.isWhitespace(''));
   assertTrue(ParagraphUtils.isWhitespace(' '));
   assertTrue(ParagraphUtils.isWhitespace(' \n \t '));
@@ -95,7 +88,7 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
   assertFalse(ParagraphUtils.isWhitespace(' cats '));
 });
 
-TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
+SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
   assertEquals(
       ParagraphUtils.getNodeName({role: 'staticText', name: 'cat'}), 'cat');
   assertEquals(
@@ -131,25 +124,25 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
       'partially selected');
 });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'GetStartCharIndexInParent', function() {
-      let staticText = {
+      const staticText = {
         role: 'staticText',
         name: 'My name is Bond, James Bond'
       };
-      let inline1 = {
+      const inline1 = {
         role: 'inlineTextBox',
         name: 'My name is ',
         indexInParent: 0,
         parent: staticText
       };
-      let inline2 = {
+      const inline2 = {
         role: 'inlineTextBox',
         name: 'Bond, ',
         indexInParent: 1,
         parent: staticText
       };
-      let inline3 = {
+      const inline3 = {
         role: 'inlineTextBox',
         name: 'James Bond',
         indexInParent: 2,
@@ -161,16 +154,16 @@ TEST_F(
       assertEquals(ParagraphUtils.getStartCharIndexInParent(inline3), 17);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeByCharIndex',
     function() {
-      let staticText = {
+      const staticText = {
         role: 'staticText',
         name: 'My name is Bond, James Bond'
       };
-      let inline1 = {role: 'inlineTextBox', name: 'My name is '};
-      let inline2 = {role: 'inlineTextBox', name: 'Bond, '};
-      let inline3 = {role: 'inlineTextBox', name: 'James Bond'};
+      const inline1 = {role: 'inlineTextBox', name: 'My name is '};
+      const inline2 = {role: 'inlineTextBox', name: 'Bond, '};
+      const inline3 = {role: 'inlineTextBox', name: 'James Bond'};
       staticText.children = [inline1, inline2, inline3];
       assertEquals(
           ParagraphUtils.findInlineTextNodeByCharacterIndex(staticText, 0),
@@ -196,22 +189,63 @@ TEST_F(
           null);
     });
 
-TEST_F(
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeIndexByCharIndex',
+    function() {
+      const staticText = {
+        role: 'staticText',
+        name: 'My name is Bond, James Bond'
+      };
+      const inline1 = {role: 'inlineTextBox', name: 'My name is '};
+      const inline2 = {role: 'inlineTextBox', name: 'Bond, '};
+      const inline3 = {role: 'inlineTextBox', name: 'James Bond'};
+      staticText.children = [inline1, inline2, inline3];
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(staticText, 0),
+          0);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 10),
+          0);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 11),
+          1);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 16),
+          1);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 17),
+          2);
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 50),
+          2);
+      staticText.children = [];
+      assertEquals(
+          ParagraphUtils.findInlineTextNodeIndexByCharacterIndex(
+              staticText, 10),
+          -1);
+    });
+
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
     function() {
-      let root = {role: 'rootWebArea'};
-      let paragraph1 =
-          {role: 'paragraph', display: 'block', parent: root, root: root};
-      let text1 =
-          {role: 'staticText', parent: paragraph1, name: 'text1', root: root};
-      let text2 =
-          {role: 'staticText', parent: paragraph1, name: 'text2', root: root};
-      let paragraph2 =
-          {role: 'paragraph', display: 'block', parent: root, root: root};
-      let text3 =
-          {role: 'staticText', parent: paragraph2, name: 'text3', root: root};
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, false /* do not split on language */);
+      const root = {role: 'rootWebArea'};
+      const paragraph1 =
+          {role: 'paragraph', display: 'block', parent: root, root};
+      const text1 =
+          {role: 'staticText', parent: paragraph1, name: 'text1', root};
+      const text2 =
+          {role: 'staticText', parent: paragraph1, name: 'text2', root};
+      const paragraph2 =
+          {role: 'paragraph', display: 'block', parent: root, root};
+      const text3 =
+          {role: 'staticText', parent: paragraph2, name: 'text3', root};
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 0, {splitOnLanguage: false});
       assertEquals('text1 text2 ', result.text);
       assertEquals(1, result.endIndex);
       assertEquals(2, result.nodes.length);
@@ -222,38 +256,65 @@ TEST_F(
       assertEquals(paragraph1, result.blockParent);
     });
 
-TEST_F(
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupAcrossParagraphs',
+    function() {
+      const root = {role: 'rootWebArea'};
+      const paragraph1 =
+          {role: 'paragraph', display: 'block', parent: root, root};
+      const text1 =
+          {role: 'staticText', parent: paragraph1, name: 'text1', root};
+      const text2 =
+          {role: 'staticText', parent: paragraph1, name: 'text2', root};
+      const paragraph2 =
+          {role: 'paragraph', display: 'block', parent: root, root};
+      const text3 =
+          {role: 'staticText', parent: paragraph2, name: 'text3', root};
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 0, {splitOnParagraph: false});
+      assertEquals('text1 text2 text3 ', result.text);
+      assertEquals(2, result.endIndex);
+      assertEquals(3, result.nodes.length);
+      assertEquals(0, result.nodes[0].startChar);
+      assertEquals(text1, result.nodes[0].node);
+      assertEquals(6, result.nodes[1].startChar);
+      assertEquals(text2, result.nodes[1].node);
+      assertEquals(12, result.nodes[2].startChar);
+      assertEquals(text3, result.nodes[2].node);
+    });
+
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtLanguageBoundary',
     function() {
-      let splitOnLanguage = true;
+      const splitOnLanguage = true;
 
       // When the detectedLanguage changes from en-US to fr-FR we expect to
       // break the NodeGroup.
-      let root = {role: 'rootWebArea'};
-      let text1 = {
+      const root = {role: 'rootWebArea'};
+      const text1 = {
         role: 'staticText',
         parent: root,
         name: 'text1',
-        root: root,
+        root,
         detectedLanguage: 'en-US'
       };
-      let text2 = {
+      const text2 = {
         role: 'staticText',
         parent: root,
         name: 'text2',
-        root: root,
+        root,
         detectedLanguage: 'en-US'
       };
-      let text3 = {
+      const text3 = {
         role: 'staticText',
         parent: root,
         name: 'text3',
-        root: root,
+        root,
         detectedLanguage: 'fr-FR'
       };
 
-      let result1 = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+      const result1 = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 ', result1.text);
       assertEquals(1, result1.endIndex);
       assertEquals(2, result1.nodes.length);
@@ -263,8 +324,8 @@ TEST_F(
       assertEquals(text2, result1.nodes[1].node);
       assertEquals('en-US', result1.detectedLanguage);
 
-      let result2 = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 2, splitOnLanguage);
+      const result2 = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 2, {splitOnLanguage});
       assertEquals('text3 ', result2.text);
       assertEquals(2, result2.endIndex);
       assertEquals(1, result2.nodes.length);
@@ -273,18 +334,18 @@ TEST_F(
       assertEquals('fr-FR', result2.detectedLanguage);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryAllUndefined', function() {
-      let splitOnLanguage = true;
+      const splitOnLanguage = true;
 
       // If no detectedLanguage is defined then we should not split at all....
-      let root = {role: 'rootWebArea'};
-      let text1 = {role: 'staticText', parent: root, name: 'text1', root: root};
-      let text2 = {role: 'staticText', parent: root, name: 'text2', root: root};
-      let text3 = {role: 'staticText', parent: root, name: 'text3', root: root};
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+      const root = {role: 'rootWebArea'};
+      const text1 = {role: 'staticText', parent: root, name: 'text1', root};
+      const text2 = {role: 'staticText', parent: root, name: 'text2', root};
+      const text3 = {role: 'staticText', parent: root, name: 'text3', root};
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -297,24 +358,24 @@ TEST_F(
       assertEquals(undefined, result.detectedLanguage);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryLastNode', function() {
-      let splitOnLanguage = true;
+      const splitOnLanguage = true;
 
       // our NodeGroup should get the first defined detectedLanguage
-      let root = {role: 'rootWebArea'};
-      let text1 = {role: 'staticText', parent: root, name: 'text1', root: root};
-      let text2 = {role: 'staticText', parent: root, name: 'text2', root: root};
-      let text3 = {
+      const root = {role: 'rootWebArea'};
+      const text1 = {role: 'staticText', parent: root, name: 'text1', root};
+      const text2 = {role: 'staticText', parent: root, name: 'text2', root};
+      const text3 = {
         role: 'staticText',
         parent: root,
         name: 'text3',
-        root: root,
+        root,
         detectedLanguage: 'fr-FR'
       };
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -327,32 +388,32 @@ TEST_F(
       assertEquals('fr-FR', result.detectedLanguage);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupSplitOnLanguageDisabled',
     function() {
       // Test behaviour with splitOnLanguage disabled. This is to show that we
       // haven't introduced an obvious regression.
-      let splitOnLanguage = false;
+      const splitOnLanguage = false;
 
-      let root = {role: 'rootWebArea'};
-      let text1 = {role: 'staticText', parent: root, name: 'text1', root: root};
-      let text2 = {
+      const root = {role: 'rootWebArea'};
+      const text1 = {role: 'staticText', parent: root, name: 'text1', root};
+      const text2 = {
         role: 'staticText',
         parent: root,
         name: 'text2',
-        root: root,
+        root,
         detectedLanguage: 'en-US'
       };
-      let text3 = {role: 'staticText', parent: root, name: 'text3', root: root};
-      let text4 = {
+      const text3 = {role: 'staticText', parent: root, name: 'text3', root};
+      const text4 = {
         role: 'staticText',
         parent: root,
         name: 'text4',
-        root: root,
+        root,
         detectedLanguage: 'fr-FR'
       };
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3, text4], 0, splitOnLanguage);
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3, text4], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 text4 ', result.text);
       assertEquals(3, result.endIndex);
       assertEquals(4, result.nodes.length);
@@ -361,34 +422,34 @@ TEST_F(
       assertEquals(undefined, result.detectedLanguage);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundarySomeUndefined', function() {
-      let splitOnLanguage = true;
+      const splitOnLanguage = true;
 
       // We never want to break up a NodeGroup based on an undefined
       // detectedLanguage, instead we allow an undefined detectedLanguage to
       // match any other language. The language for the NodeGroup will be
       // determined by the first defined detectedLanguage.
-      let root = {role: 'rootWebArea'};
-      let text1 = {role: 'staticText', parent: root, name: 'text1', root: root};
-      let text2 = {
+      const root = {role: 'rootWebArea'};
+      const text1 = {role: 'staticText', parent: root, name: 'text1', root};
+      const text2 = {
         role: 'staticText',
         parent: root,
         name: 'text2',
-        root: root,
+        root,
         detectedLanguage: 'en-US'
       };
-      let text3 = {role: 'staticText', parent: root, name: 'text3', root: root};
-      let text4 = {
+      const text3 = {role: 'staticText', parent: root, name: 'text3', root};
+      const text4 = {
         role: 'staticText',
         parent: root,
         name: 'text4',
-        root: root,
+        root,
         detectedLanguage: 'fr-FR'
       };
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3, text4], 0, splitOnLanguage);
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, text3, text4], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -401,22 +462,21 @@ TEST_F(
       assertEquals('en-US', result.detectedLanguage);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
     function() {
-      let root = {role: 'rootWebArea'};
-      let paragraph1 =
-          {role: 'paragraph', display: 'block', parent: root, root: root};
-      let text1 =
-          {role: 'staticText', parent: paragraph1, name: 'text1', root: root};
+      const root = {role: 'rootWebArea'};
+      const paragraph1 =
+          {role: 'paragraph', display: 'block', parent: root, root};
+      const text1 =
+          {role: 'staticText', parent: paragraph1, name: 'text1', root};
       // Whitespace-only nodes should be ignored.
-      let text2 =
-          {role: 'staticText', parent: paragraph1, name: '\n', root: root};
-      let link = {role: 'link', parent: paragraph1, root: root};
-      let linkText =
-          {role: 'staticText', parent: link, name: 'linkText', root: root};
-      let result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, linkText], 0, false /* do not split on language */);
+      const text2 = {role: 'staticText', parent: paragraph1, name: '\n', root};
+      const link = {role: 'link', parent: paragraph1, root};
+      const linkText =
+          {role: 'staticText', parent: link, name: 'linkText', root};
+      const result = ParagraphUtils.buildNodeGroup(
+          [text1, text2, linkText], 0, {splitOnLanguage: false});
       assertEquals('text1 linkText ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(2, result.nodes.length);
@@ -427,12 +487,12 @@ TEST_F(
       assertEquals(paragraph1, result.blockParent);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
     function() {
-      let root = {role: 'desktop'};
-      let parent = {role: 'pane', parent: root, root: root};
-      let searchBar = {
+      const root = {role: 'desktop'};
+      const parent = {role: 'pane', parent: root, root};
+      const searchBar = {
         role: 'textField',
         name: 'Address and search bar',
         value: 'http://www.google.com',
@@ -444,21 +504,198 @@ TEST_F(
       // If there is no value, it should use the name.
       searchBar.value = '';
       result = ParagraphUtils.buildNodeGroup(
-          [searchBar], 0, false /* do not split on language */);
+          [searchBar], 0, {splitOnLanguage: false});
       assertEquals('Address and search bar ', result.text);
     });
 
-TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
-  let root = {role: 'rootWebArea'};
-  let svgRoot = {role: 'svgRoot', parent: root, root: root};
-  let text1 = {role: 'staticText', parent: svgRoot, root: root, name: 'Hello,'};
-  let inline1 =
-      {role: 'inlineTextBox', parent: text1, root: root, name: 'Hello,'};
-  let text2 = {role: 'staticText', parent: svgRoot, root: root, name: 'world!'};
-  let inline2 =
-      {role: 'inlineTextBox', parent: text2, root: root, name: 'world!'};
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
+      const root = {role: 'rootWebArea'};
+      const svgRoot = {role: 'svgRoot', parent: root, root};
+      const text1 = {role: 'staticText', parent: svgRoot, root, name: 'Hello,'};
+      const inline1 =
+          {role: 'inlineTextBox', parent: text1, root, name: 'Hello,'};
+      const text2 = {role: 'staticText', parent: svgRoot, root, name: 'world!'};
+      const inline2 =
+          {role: 'inlineTextBox', parent: text2, root, name: 'world!'};
 
-  let result = ParagraphUtils.buildNodeGroup(
-      [inline1, inline2], 0, false /* do not split on language */);
-  assertEquals('Hello, world! ', result.text);
-});
+      const result = ParagraphUtils.buildNodeGroup(
+          [inline1, inline2], 0, {splitOnLanguage: false});
+      assertEquals('Hello, world! ', result.text);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'findNodeFromNodeGroupByCharIndex',
+    function() {
+      // The array has four inline text nodes and one static text node.
+      const nodeGroup =
+          ParagraphUtils.buildNodeGroup(generateNodesForParagraph(), 0);
+      // Start index = 0
+      const firstInline = 'The first';
+      // Start index = 9
+      const secondInline = ' sentence.';
+      // Start index = 20
+      const thirdInline = 'The second';
+      // Start index = 30
+      const fourthInline = ' sentence is longer.';
+      // Start index = 51
+      const thirdStatic = 'No child sentence.';
+
+      let result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 0 /* charIndex */);
+      assertEquals(result.node.name, firstInline);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(result.node.name, firstInline);
+      assertEquals(result.offset, 3);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 10 /* charIndex */);
+      assertEquals(result.node.name, secondInline);
+      assertEquals(result.offset, 1);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 20 /* charIndex */);
+      assertEquals(result.node.name, thirdInline);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 33 /* charIndex */);
+      assertEquals(result.node.name, fourthInline);
+      assertEquals(result.offset, 3);
+
+      // Pointing to the gap between the fourthInline and thirdStatic.
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 50 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 51 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 52 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 1);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 100 /* charIndex */);
+      assertEquals(result.node, null);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'BuildSingleNodeGroupWithOffset',
+    function() {
+      // The array has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodes = generateNodesForParagraph();
+      // Start index = 0
+      const firstInline = 'The first';
+      // Start index = 9
+      const secondInline = ' sentence.';
+      const firstSentence = firstInline + secondInline + ' ';
+      // Start index = 20
+      const thirdInline = 'The second';
+      // Start index = 30
+      const fourthInline = ' sentence is longer.';
+      const secondSentence = thirdInline + fourthInline + ' ';
+      // Start index = 51
+      const thirdStatic = 'No child sentence.';
+      const thirdSentence = thirdStatic + ' ';
+
+      let nodeGroup, startIndexInGroup, endIndexInGroup;
+      ({nodeGroup, startIndexInGroup, endIndexInGroup} =
+           ParagraphUtils.buildSingleNodeGroupWithOffset(nodes));
+      assertEquals(
+          nodeGroup.text, firstSentence + secondSentence + thirdSentence);
+      assertEquals(startIndexInGroup, undefined);
+      assertEquals(endIndexInGroup, undefined);
+
+      ({nodeGroup, startIndexInGroup, endIndexInGroup} =
+           ParagraphUtils.buildSingleNodeGroupWithOffset(
+               nodes, 5 /* startIndex */));
+      assertEquals(
+          nodeGroup.text, firstSentence + secondSentence + thirdSentence);
+      assertEquals(startIndexInGroup, 5);
+      assertEquals(endIndexInGroup, undefined);
+
+      ({nodeGroup, startIndexInGroup, endIndexInGroup} =
+           ParagraphUtils.buildSingleNodeGroupWithOffset(
+               nodes.slice(1), 0 /* startIndex */));
+      assertEquals(
+          nodeGroup.text, firstSentence + secondSentence + thirdSentence);
+      assertEquals(startIndexInGroup, 9);
+      assertEquals(endIndexInGroup, undefined);
+
+      ({nodeGroup, startIndexInGroup, endIndexInGroup} =
+           ParagraphUtils.buildSingleNodeGroupWithOffset(
+               nodes.slice(2, 5), 1 /* startIndex */, 1 /* endIndex */));
+      assertEquals(nodeGroup.text, secondSentence + thirdSentence);
+      assertEquals(startIndexInGroup, 1);
+      assertEquals(endIndexInGroup, 32);
+
+      ({nodeGroup, startIndexInGroup, endIndexInGroup} =
+           ParagraphUtils.buildSingleNodeGroupWithOffset(
+               nodes.slice(4, 5), undefined, 5 /* endIndex */));
+      assertEquals(nodeGroup.text, thirdSentence);
+      assertEquals(startIndexInGroup, undefined);
+      assertEquals(endIndexInGroup, 5);
+    });
+
+/**
+ * Creates an array of nodes that represents a paragraph.
+ * @return {Array<AutomationNode>}
+ */
+function generateNodesForParagraph() {
+  const root = {role: 'rootWebArea'};
+  const paragraph = {role: 'paragraph', display: 'block', parent: root, root};
+  const text1 = {
+    name: 'The first sentence.',
+    role: 'staticText',
+    parent: paragraph
+  };
+  const inlineText1 = {
+    role: 'inlineTextBox',
+    name: 'The first',
+    indexInParent: 0,
+    parent: text1
+  };
+  const inlineText2 = {
+    role: 'inlineTextBox',
+    name: ' sentence.',
+    indexInParent: 1,
+    parent: text1
+  };
+  text1.children = [inlineText1, inlineText2];
+
+  const text2 = {
+    name: 'The second sentence is longer.',
+    role: 'staticText',
+    parent: paragraph
+  };
+  const inlineText3 = {
+    role: 'inlineTextBox',
+    name: 'The second',
+    indexInParent: 0,
+    parent: text2
+  };
+  const inlineText4 = {
+    role: 'inlineTextBox',
+    name: ' sentence is longer.',
+    indexInParent: 1,
+    parent: text2
+  };
+  text2.children = [inlineText3, inlineText4];
+
+  const text3 = {
+    name: 'No child sentence.',
+    role: 'staticText',
+    parent: paragraph
+  };
+
+  return [inlineText1, inlineText2, inlineText3, inlineText4, text3];
+}

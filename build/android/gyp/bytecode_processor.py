@@ -1,16 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Wraps bin/helper/java_bytecode_rewriter and expands @FileArgs."""
+"""Wraps bin/helper/bytecode_processor and expands @FileArgs."""
 
 import argparse
-import os
-import subprocess
 import sys
 
 from util import build_utils
+from util import server_utils
 
 
 def _AddSwitch(parser, val):
@@ -21,45 +20,58 @@ def _AddSwitch(parser, val):
 def main(argv):
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
   parser.add_argument('--script', required=True,
                       help='Path to the java binary wrapper script.')
+  parser.add_argument('--gn-target', required=True)
   parser.add_argument('--input-jar', required=True)
-  parser.add_argument('--output-jar', required=True)
-  parser.add_argument('--direct-classpath-jars', required=True)
-  parser.add_argument('--sdk-classpath-jars', required=True)
-  parser.add_argument('--extra-classpath-jars', dest='extra_jars',
-                      action='append', default=[],
-                      help='Extra inputs, passed last to the binary script.')
+  parser.add_argument('--direct-classpath-jars')
+  parser.add_argument('--sdk-classpath-jars')
+  parser.add_argument('--full-classpath-jars')
+  parser.add_argument('--full-classpath-gn-targets')
+  parser.add_argument('--stamp')
   parser.add_argument('-v', '--verbose', action='store_true')
+  parser.add_argument('--missing-classes-allowlist')
+  parser.add_argument('--warnings-as-errors',
+                      action='store_true',
+                      help='Treat all warnings as errors.')
   _AddSwitch(parser, '--is-prebuilt')
-  _AddSwitch(parser, '--enable-custom-resources')
-  _AddSwitch(parser, '--enable-assert')
-  _AddSwitch(parser, '--enable-thread-annotations')
-  _AddSwitch(parser, '--enable-check-class-path')
   args = parser.parse_args(argv)
 
-  sdk_jars = build_utils.ParseGnList(args.sdk_classpath_jars)
-  assert len(sdk_jars) > 0
+  if server_utils.MaybeRunCommand(name=args.target_name,
+                                  argv=sys.argv,
+                                  stamp_file=args.stamp):
+    return
 
-  direct_jars = build_utils.ParseGnList(args.direct_classpath_jars)
-  assert len(direct_jars) > 0
+  args.sdk_classpath_jars = build_utils.ParseGnList(args.sdk_classpath_jars)
+  args.direct_classpath_jars = build_utils.ParseGnList(
+      args.direct_classpath_jars)
+  args.full_classpath_jars = build_utils.ParseGnList(args.full_classpath_jars)
+  args.full_classpath_gn_targets = build_utils.ParseGnList(
+      args.full_classpath_gn_targets)
+  args.missing_classes_allowlist = build_utils.ParseGnList(
+      args.missing_classes_allowlist)
 
-  extra_classpath_jars = []
-  for a in args.extra_jars:
-    extra_classpath_jars.extend(build_utils.ParseGnList(a))
+  verbose = '--verbose' if args.verbose else '--not-verbose'
 
-  if args.verbose:
-    verbose = '--verbose'
-  else:
-    verbose = '--not-verbose'
+  cmd = [args.script, args.gn_target, args.input_jar, verbose, args.is_prebuilt]
+  cmd += [str(len(args.missing_classes_allowlist))]
+  cmd += args.missing_classes_allowlist
+  cmd += [str(len(args.sdk_classpath_jars))]
+  cmd += args.sdk_classpath_jars
+  cmd += [str(len(args.direct_classpath_jars))]
+  cmd += args.direct_classpath_jars
+  cmd += [str(len(args.full_classpath_jars))]
+  cmd += args.full_classpath_jars
+  cmd += [str(len(args.full_classpath_gn_targets))]
+  cmd += args.full_classpath_gn_targets
+  build_utils.CheckOutput(cmd,
+                          print_stdout=True,
+                          fail_func=None,
+                          fail_on_output=args.warnings_as_errors)
 
-  cmd = ([
-      args.script, args.input_jar, args.output_jar, verbose, args.is_prebuilt,
-      args.enable_assert, args.enable_custom_resources,
-      args.enable_thread_annotations, args.enable_check_class_path,
-      str(len(sdk_jars))
-  ] + sdk_jars + [str(len(direct_jars))] + direct_jars + extra_classpath_jars)
-  subprocess.check_call(cmd)
+  if args.stamp:
+    build_utils.Touch(args.stamp)
 
 
 if __name__ == '__main__':

@@ -41,6 +41,9 @@ class GFX_EXPORT GlobalFontConfig {
     DCHECK_EQ(result, FcTrue);
   }
 
+  GlobalFontConfig(const GlobalFontConfig&) = delete;
+  GlobalFontConfig& operator=(const GlobalFontConfig&) = delete;
+
   ~GlobalFontConfig() { FcConfigDestroy(fc_config_); }
 
   // Retrieve the native font-config FcConfig pointer.
@@ -63,8 +66,6 @@ class GFX_EXPORT GlobalFontConfig {
 
  private:
   FcConfig* fc_config_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalFontConfig);
 };
 
 // Converts Fontconfig FC_HINT_STYLE to FontRenderParams::Hinting.

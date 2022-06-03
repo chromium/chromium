@@ -8,7 +8,7 @@ typedef unsigned long long GLuint64EXT;
 
 [
     DoNotCheckConstants,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface EXTDisjointTimerQuery {
     const GLenum QUERY_COUNTER_BITS_EXT      = 0x8864;
     const GLenum CURRENT_QUERY_EXT           = 0x8865;

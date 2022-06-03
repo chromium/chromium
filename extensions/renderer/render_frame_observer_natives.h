@@ -8,6 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/object_backed_native_handler.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace extensions {
 class ScriptContext;
@@ -16,6 +18,11 @@ class ScriptContext;
 class RenderFrameObserverNatives : public ObjectBackedNativeHandler {
  public:
   explicit RenderFrameObserverNatives(ScriptContext* context);
+
+  RenderFrameObserverNatives(const RenderFrameObserverNatives&) = delete;
+  RenderFrameObserverNatives& operator=(const RenderFrameObserverNatives&) =
+      delete;
+
   ~RenderFrameObserverNatives() override;
 
   // ObjectBackedNativeHandler:
@@ -32,8 +39,6 @@ class RenderFrameObserverNatives : public ObjectBackedNativeHandler {
   void InvokeCallback(v8::Global<v8::Function> callback, bool succeeded);
 
   base::WeakPtrFactory<RenderFrameObserverNatives> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameObserverNatives);
 };
 
 }  // namespace extensions

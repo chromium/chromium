@@ -32,6 +32,10 @@ std::string Base32Encode(
     base::StringPiece input,
     Base32EncodePolicy policy = Base32EncodePolicy::INCLUDE_PADDING);
 
+// Decodes the |input| string piece from base32. Returns an empty string on
+// error, including if |input| is empty.
+std::string Base32Decode(base::StringPiece input);
+
 }  // namespace base32
 
 #endif  // COMPONENTS_BASE32_BASE32_H_

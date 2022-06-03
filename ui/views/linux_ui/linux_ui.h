@@ -5,15 +5,16 @@
 #ifndef UI_VIEWS_LINUX_UI_LINUX_UI_H_
 #define UI_VIEWS_LINUX_UI_LINUX_UI_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/cursor/cursor_theme_manager_linux.h"
+#include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#include "ui/gfx/animation/animation_settings_provider_linux.h"
 #include "ui/gfx/skia_font_delegate.h"
 #include "ui/shell_dialogs/shell_dialog_linux.h"
 #include "ui/views/buildflags.h"
@@ -22,8 +23,6 @@
 
 // The main entrypoint into Linux toolkit specific code. GTK code should only
 // be executed behind this interface.
-
-class PrefService;
 
 namespace aura {
 class Window;
@@ -46,11 +45,9 @@ class Border;
 class DeviceScaleFactorObserver;
 class LabelButton;
 class LabelButtonBorder;
-class WindowButtonOrderObserver;
-
-#if BUILDFLAG(ENABLE_NATIVE_WINDOW_NAV_BUTTONS)
 class NavButtonProvider;
-#endif
+class WindowButtonOrderObserver;
+class WindowFrameProvider;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
@@ -58,7 +55,8 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
                              public gfx::SkiaFontDelegate,
                              public ui::ShellDialogLinux,
                              public ui::TextEditKeyBindingsDelegateAuraLinux,
-                             public ui::CursorThemeManagerLinux {
+                             public ui::CursorThemeManager,
+                             public gfx::AnimationSettingsProviderLinux {
  public:
   using UseSystemThemeCallback =
       base::RepeatingCallback<bool(aura::Window* window)>;
@@ -80,10 +78,12 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
     kRightClick,
   };
 
+  LinuxUI(const LinuxUI&) = delete;
+  LinuxUI& operator=(const LinuxUI&) = delete;
   ~LinuxUI() override;
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
-  static void SetInstance(LinuxUI* instance);
+  static void SetInstance(std::unique_ptr<LinuxUI> instance);
 
   // Returns a LinuxUI instance for the toolkit used in the user's desktop
   // environment.
@@ -96,7 +96,7 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   virtual bool GetTint(int id, color_utils::HSL* tint) const = 0;
   virtual bool GetColor(int id,
                         SkColor* color,
-                        PrefService* pref_service) const = 0;
+                        bool use_custom_frame) const = 0;
   virtual bool GetDisplayProperty(int id, int* result) const = 0;
 
   // Returns the preferences that we pass to Blink.
@@ -171,20 +171,22 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // preferred.
   virtual bool PreferDarkTheme() const = 0;
 
-#if BUILDFLAG(ENABLE_NATIVE_WINDOW_NAV_BUTTONS)
   // Returns a new NavButtonProvider, or nullptr if the underlying
   // toolkit does not support drawing client-side navigation buttons.
   virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider() = 0;
-#endif
+
+  // Returns a WindowFrameProvider, or nullptr if the underlying toolkit does
+  // not support drawing client-side window decorations. |solid_frame| indicates
+  // if transparency is unsupported and the frame should be rendered opaque.
+  // The returned object is not owned by the caller and will remain alive until
+  // the process ends.
+  virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) = 0;
 
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
 
  protected:
   LinuxUI();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LinuxUI);
 };
 
 }  // namespace views

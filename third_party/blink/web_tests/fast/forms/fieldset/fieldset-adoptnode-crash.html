@@ -12,7 +12,7 @@ testRunner.dumpAsText();
 testRunner.waitUntilDone();
 
 (function() {
-  var aDivShadow = aDiv.createShadowRoot();
+  var aDivShadow = aDiv.attachShadow({mode: 'open'});
   var bDiv = document.createElement("div");
   aDivShadow.appendChild(bDiv);
 

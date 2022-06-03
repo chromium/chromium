@@ -17,7 +17,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "util/mach/exception_behaviors.h"
 #include "util/mach/mach_extensions.h"
@@ -154,7 +154,7 @@ std::string ThreadStateFlavorFullToShort(const base::StringPiece& flavor) {
 #elif defined(__ppc__) || defined(__ppc64__)
   static constexpr char kArchPrefix[] = "PPC_";
 #elif defined(__arm__) || defined(__aarch64__)
-  static constexpr char kArchPrefix[] = "ARM_"
+  static constexpr char kArchPrefix[] = "ARM_";
 #endif
   prefix_len = strlen(kArchPrefix);
   if (flavor_len >= prefix_len &&

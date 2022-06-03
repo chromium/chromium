@@ -19,6 +19,7 @@ source_set("alert_coordinator") {
     "//components/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/dialogs:completion_block_util",
     "//ios/web",
@@ -41,6 +42,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test/fakes",
@@ -49,24 +51,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/strings",
   ]
-}
-
-source_set("alert_coordinator_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "loading_alert_coordinator.h",
-    "loading_alert_coordinator.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/strings",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/material_components",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui_util",
-    "//ios/third_party/material_components_ios",
-    "//ui/base",
-  ]
-  libs = [ "UIKit.framework" ]
 }

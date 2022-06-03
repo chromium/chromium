@@ -18,101 +18,116 @@ class MidiManagerAlsaTest : public ::testing::Test {
     // following tests.
 
     // Inputs. port_input_0_ == port_input_1_.
-    port_input_0_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+    port_input_0_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_1_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_1_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_minimal_.reset(new MidiManagerAlsa::MidiPort(
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_minimal_ = std::make_unique<MidiManagerAlsa::MidiPort>(
         "", MidiManagerAlsa::MidiPort::Id(), 0, 0, 0, "", "", "", "",
-        MidiManagerAlsa::MidiPort::Type::kInput));
+        MidiManagerAlsa::MidiPort::Type::kInput);
     // Outputs. port_output_0_ == port_output_1_.
-    port_output_0_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+    port_output_0_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kOutput));
-    port_output_1_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kOutput);
+    port_output_1_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kOutput));
+        MidiManagerAlsa::MidiPort::Type::kOutput);
 
     // MidiPort fields that differ from port_input_0_ in a single way each time.
     // Used for testing the Match* and Find* methods.
-    port_input_0_alt_path_.reset(new MidiManagerAlsa::MidiPort(
-        "path2", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                               "interface", "serial"),
+    port_input_0_alt_path_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path2",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_id_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial2"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_id_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial2"),
         1, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_client_name_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_client_name_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name2", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_port_name_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_port_name_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 5, "client_name", "port_name2", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_client_id_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_client_id_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         2, 2, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_port_id_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_port_id_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 3, 5, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_alt_midi_device_.reset(new MidiManagerAlsa::MidiPort(
-        "path", MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model",
-                                              "interface", "serial"),
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_alt_midi_device_ = std::make_unique<MidiManagerAlsa::MidiPort>(
+        "path",
+        MidiManagerAlsa::MidiPort::Id("bus", "vendor", "model", "interface",
+                                      "serial"),
         1, 2, 6, "client_name", "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
+        MidiManagerAlsa::MidiPort::Type::kInput);
 
     // "No card" variants of above. For testing FindDisconnected.
-    port_input_0_no_card_.reset(new MidiManagerAlsa::MidiPort(
+    port_input_0_no_card_ = std::make_unique<MidiManagerAlsa::MidiPort>(
         "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name",
         "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_1_no_card_.reset(new MidiManagerAlsa::MidiPort(
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_1_no_card_ = std::make_unique<MidiManagerAlsa::MidiPort>(
         "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name",
         "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_output_0_no_card_.reset(new MidiManagerAlsa::MidiPort(
+        MidiManagerAlsa::MidiPort::Type::kInput);
+    port_output_0_no_card_ = std::make_unique<MidiManagerAlsa::MidiPort>(
         "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name",
         "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kOutput));
+        MidiManagerAlsa::MidiPort::Type::kOutput);
 
     // No card variants of the alt variants from above. For more testing
     // of Match* and Find*.
-    port_input_0_no_card_alt_client_name_.reset(new MidiManagerAlsa::MidiPort(
-        "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name2",
-        "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_no_card_alt_port_name_.reset(new MidiManagerAlsa::MidiPort(
-        "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name",
-        "port_name2", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_no_card_alt_client_id_.reset(new MidiManagerAlsa::MidiPort(
-        "", MidiManagerAlsa::MidiPort::Id(), 2, 2, -1, "client_name",
-        "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
-    port_input_0_no_card_alt_port_id_.reset(new MidiManagerAlsa::MidiPort(
-        "", MidiManagerAlsa::MidiPort::Id(), 1, 3, -1, "client_name",
-        "port_name", "manufacturer", "version",
-        MidiManagerAlsa::MidiPort::Type::kInput));
+    port_input_0_no_card_alt_client_name_ =
+        std::make_unique<MidiManagerAlsa::MidiPort>(
+            "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name2",
+            "port_name", "manufacturer", "version",
+            MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_no_card_alt_port_name_ =
+        std::make_unique<MidiManagerAlsa::MidiPort>(
+            "", MidiManagerAlsa::MidiPort::Id(), 1, 2, -1, "client_name",
+            "port_name2", "manufacturer", "version",
+            MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_no_card_alt_client_id_ =
+        std::make_unique<MidiManagerAlsa::MidiPort>(
+            "", MidiManagerAlsa::MidiPort::Id(), 2, 2, -1, "client_name",
+            "port_name", "manufacturer", "version",
+            MidiManagerAlsa::MidiPort::Type::kInput);
+    port_input_0_no_card_alt_port_id_ =
+        std::make_unique<MidiManagerAlsa::MidiPort>(
+            "", MidiManagerAlsa::MidiPort::Id(), 1, 3, -1, "client_name",
+            "port_name", "manufacturer", "version",
+            MidiManagerAlsa::MidiPort::Type::kInput);
   }
 
   // Counts ports for help with testing ToMidiPortState().

@@ -10,10 +10,10 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/platform/web_gesture_curve.h"
-#include "third_party/blink/public/platform/web_gesture_device.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
@@ -23,15 +23,25 @@ class WebGestureCurveImpl : public blink::WebGestureCurve {
  public:
   static std::unique_ptr<blink::WebGestureCurve> CreateFromDefaultPlatformCurve(
       blink::WebGestureDevice device_source,
+      // Initial velocity has boost_multiplier from fling booster already
+      // applied
       const gfx::Vector2dF& initial_velocity,
       const gfx::Vector2dF& initial_offset,
       bool on_main_thread,
       bool use_mobile_fling_curve,
       const gfx::PointF& position_in_screen,
-      const gfx::Size& viewport_szie);
+      // Multiplier for fling distance based on fling boosting. Used in physics
+      // based fling curve
+      const float boost_multiplier,
+      // Maximum fling distance subject to boost_multiplier and default
+      // bounds multiplier. Used in physics based fling curve
+      const gfx::Size& bounding_size);
   static std::unique_ptr<blink::WebGestureCurve> CreateFromUICurveForTesting(
       std::unique_ptr<GestureCurve> curve,
       const gfx::Vector2dF& initial_offset);
+
+  WebGestureCurveImpl(const WebGestureCurveImpl&) = delete;
+  WebGestureCurveImpl& operator=(const WebGestureCurveImpl&) = delete;
 
   ~WebGestureCurveImpl() override;
 
@@ -58,8 +68,6 @@ class WebGestureCurveImpl : public blink::WebGestureCurve {
   int64_t ticks_since_first_animate_;
   double first_animate_time_;
   double last_animate_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGestureCurveImpl);
 };
 
 }  // namespace ui

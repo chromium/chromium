@@ -1,8 +1,0 @@
-Name: Xstream
-URL: https://x-stream.github.io/
-Version: 1.4.8
-License: BSD 3-Clause
-License File: NOT_SHIPPED
-Security Critical: no
-Description: A simple Java library to serialize objects to XML and back again.
-Local Modifications: None

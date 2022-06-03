@@ -26,8 +26,11 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -35,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -43,6 +47,37 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+class OptionTextObserver : public MutationObserver::Delegate {
+ public:
+  explicit OptionTextObserver(HTMLOptionElement& option)
+      : option_(option), observer_(MutationObserver::Create(this)) {
+    MutationObserverInit* init = MutationObserverInit::Create();
+    init->setCharacterData(true);
+    init->setChildList(true);
+    init->setSubtree(true);
+    observer_->observe(option_, init, ASSERT_NO_EXCEPTION);
+  }
+
+  ExecutionContext* GetExecutionContext() const override {
+    return option_->GetExecutionContext();
+  }
+
+  void Deliver(const MutationRecordVector& records,
+               MutationObserver&) override {
+    option_->DidChangeTextContent();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(option_);
+    visitor->Trace(observer_);
+    MutationObserver::Delegate::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLOptionElement> option_;
+  Member<MutationObserver> observer_;
+};
 
 HTMLOptionElement::HTMLOptionElement(Document& document)
     : HTMLElement(html_names::kOptionTag, document), is_selected_(false) {
@@ -81,10 +116,17 @@ HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
   return element;
 }
 
+void HTMLOptionElement::Trace(Visitor* visitor) const {
+  visitor->Trace(text_observer_);
+  HTMLElement::Trace(visitor);
+}
+
 bool HTMLOptionElement::SupportsFocus() const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
+  if (is_descendant_of_select_menu_)
+    return !IsDisabledFormControl();
   return HTMLElement::SupportsFocus();
 }
 
@@ -135,7 +177,8 @@ void HTMLOptionElement::setText(const String& text) {
     select->setSelectedIndex(old_selected_index);
 }
 
-void HTMLOptionElement::AccessKeyAction(bool) {
+void HTMLOptionElement::AccessKeyAction(SimulatedClickCreationScope) {
+  // TODO(crbug.com/1176745): why creation_scope arg is not used at all?
   if (HTMLSelectElement* select = OwnerSelectElement())
     select->SelectOptionByAccessKey(this);
 }
@@ -174,14 +217,15 @@ void HTMLOptionElement::ParseAttribute(
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
-      if (LayoutObject* o = GetLayoutObject())
-        o->InvalidateIfControlStateChanged(kEnabledControlState);
+      InvalidateIfHasEffectiveAppearance();
     }
   } else if (name == html_names::kSelectedAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_)
       SetSelected(!params.new_value.IsNull());
     PseudoStateChanged(CSSSelector::kPseudoDefault);
   } else if (name == html_names::kLabelAttr) {
+    if (HTMLSelectElement* select = OwnerSelectElement())
+      select->OptionElementChildrenChanged(*this);
     UpdateLabel();
   } else {
     HTMLElement::ParseAttribute(params);
@@ -249,8 +293,7 @@ void HTMLOptionElement::SetSelectedState(bool selected) {
       // notifications only when it's a listbox (and not a menu list). If
       // there's no layoutObject, fire them anyway just to be safe (to make sure
       // the AX tree is in sync).
-      if (!select->GetLayoutObject() ||
-          select->GetLayoutObject()->IsListBox()) {
+      if (!select->GetLayoutObject() || !select->UsesMenuList()) {
         cache->ListboxOptionStateChanged(this);
         cache->ListboxSelectedChildrenChanged(select);
       }
@@ -279,6 +322,15 @@ void HTMLOptionElement::SetDirty(bool value) {
 
 void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
+  DidChangeTextContent();
+
+  // If an element is inserted, We need to use MutationObserver to detect
+  // textContent changes.
+  if (change.type == ChildrenChangeType::kElementInserted && !text_observer_)
+    text_observer_ = MakeGarbageCollected<OptionTextObserver>(*this);
+}
+
+void HTMLOptionElement::DidChangeTextContent() {
   if (HTMLDataListElement* data_list = OwnerDataListElement())
     data_list->OptionElementChildrenChanged();
   else if (HTMLSelectElement* select = OwnerSelectElement())
@@ -338,30 +390,6 @@ String HTMLOptionElement::DefaultToolTip() const {
   return String();
 }
 
-Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
-    ContainerNode& insertion_point) {
-  HTMLElement::InsertedInto(insertion_point);
-  if (HTMLSelectElement* select = OwnerSelectElement()) {
-    if (&insertion_point == select ||
-        (IsA<HTMLOptGroupElement>(insertion_point) &&
-         insertion_point.parentNode() == select))
-      select->OptionInserted(*this, is_selected_);
-  }
-  return kInsertionDone;
-}
-
-void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
-    if (!parentNode() || IsA<HTMLOptGroupElement>(*parentNode()))
-      select->OptionRemoved(*this);
-  } else if (IsA<HTMLOptGroupElement>(insertion_point)) {
-    select = DynamicTo<HTMLSelectElement>(insertion_point.parentNode());
-    if (select)
-      select->OptionRemoved(*this);
-  }
-  HTMLElement::RemovedFrom(insertion_point);
-}
-
 String HTMLOptionElement::CollectOptionInnerText() const {
   StringBuilder text;
   for (Node* node = firstChild(); node;) {
@@ -389,8 +417,45 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
+  // For <selectmenu> the label should not replace descendants for the visual
+  // in order to allow to render arbitrary content.
+  if (is_descendant_of_select_menu_)
+    return;
+
   if (ShadowRoot* root = UserAgentShadowRoot())
     root->setTextContent(DisplayLabel());
+}
+
+void HTMLOptionElement::OptionInsertedIntoSelectMenuElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+
+  if (is_descendant_of_select_menu_)
+    return;
+
+  ShadowRoot* root = UserAgentShadowRoot();
+  DCHECK(root);
+
+  is_descendant_of_select_menu_ = true;
+  // TODO(crbug.com/1196022) Refine the content that an option can render.
+  // Enable the option element to render arbitrary content.
+  root->RemoveChildren();
+  Document& document = GetDocument();
+  auto* default_slot = MakeGarbageCollected<HTMLSlotElement>(document);
+  root->AppendChild(default_slot);
+}
+
+void HTMLOptionElement::OptionRemovedFromSelectMenuElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+
+  if (!is_descendant_of_select_menu_)
+    return;
+
+  ShadowRoot* root = UserAgentShadowRoot();
+  DCHECK(root);
+
+  is_descendant_of_select_menu_ = false;
+  root->RemoveChildren();
+  UpdateLabel();
 }
 
 bool HTMLOptionElement::SpatialNavigationFocused() const {

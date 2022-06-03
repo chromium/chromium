@@ -8,14 +8,15 @@
 
 namespace ui {
 
-Microsoft::WRL::ComPtr<ui::DragSourceWin> DragSourceWin::Create() {
-  return Microsoft::WRL::Make<ui::DragSourceWin>();
+Microsoft::WRL::ComPtr<DragSourceWin> DragSourceWin::Create() {
+  return Microsoft::WRL::Make<DragSourceWin>();
 }
 
 DragSourceWin::DragSourceWin() : cancel_drag_(false), data_(nullptr) {
 }
 
 HRESULT DragSourceWin::QueryContinueDrag(BOOL escape_pressed, DWORD key_state) {
+  num_query_continues_++;
   if (cancel_drag_)
     return DRAGDROP_S_CANCEL;
 
@@ -24,7 +25,7 @@ HRESULT DragSourceWin::QueryContinueDrag(BOOL escape_pressed, DWORD key_state) {
     return DRAGDROP_S_CANCEL;
   }
 
-  if (!(key_state & MK_LBUTTON)) {
+  if (!(key_state & MK_LBUTTON) && !(key_state & MK_RBUTTON)) {
     OnDragSourceDrop();
     return DRAGDROP_S_DROP;
   }
@@ -39,8 +40,7 @@ HRESULT DragSourceWin::GiveFeedback(DWORD effect) {
 
 void DragSourceWin::OnDragSourceDrop() {
   DCHECK(data_);
-  ui::OSExchangeDataProviderWin::GetDataObjectImpl(*data_)
-      ->set_in_drag_loop(false);
+  OSExchangeDataProviderWin::GetDataObjectImpl(*data_)->set_in_drag_loop(false);
 }
 
 }  // namespace ui

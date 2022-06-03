@@ -5,17 +5,44 @@
 #include "extensions/browser/api/system_info/system_info_provider.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner_util.h"
+#include "base/task/thread_pool.h"
+#include "components/storage_monitor/storage_info.h"
+#include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/api/system_storage.h"
+
+using storage_monitor::StorageInfo;
+using storage_monitor::StorageMonitor;
 
 namespace extensions {
 
+using api::system_storage::STORAGE_UNIT_TYPE_FIXED;
+using api::system_storage::STORAGE_UNIT_TYPE_REMOVABLE;
+using api::system_storage::StorageUnitInfo;
+
+namespace systeminfo {
+
+void BuildStorageUnitInfo(const StorageInfo& info, StorageUnitInfo* unit) {
+  unit->id = StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
+      info.device_id());
+  unit->name = base::UTF16ToUTF8(info.GetDisplayName(false));
+  // TODO(hmin): Might need to take MTP device into consideration.
+  unit->type = StorageInfo::IsRemovableDevice(info.device_id())
+                   ? STORAGE_UNIT_TYPE_REMOVABLE
+                   : STORAGE_UNIT_TYPE_FIXED;
+  unit->capacity = static_cast<double>(info.total_size_in_bytes());
+}
+
+}  // namespace systeminfo
+
 SystemInfoProvider::SystemInfoProvider()
     : is_waiting_for_completion_(false),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(),
            /* default priority, */
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
@@ -26,32 +53,31 @@ void SystemInfoProvider::PrepareQueryOnUIThread() {
 }
 
 void SystemInfoProvider::InitializeProvider(
-    const base::Closure& do_query_info_callback) {
-  do_query_info_callback.Run();
+    base::OnceClosure do_query_info_callback) {
+  std::move(do_query_info_callback).Run();
 }
 
-void SystemInfoProvider::StartQueryInfo(
-    const QueryInfoCompletionCallback& callback) {
+void SystemInfoProvider::StartQueryInfo(QueryInfoCompletionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  callbacks_.push(callback);
+  callbacks_.push(std::move(callback));
 
   if (is_waiting_for_completion_)
     return;
 
   is_waiting_for_completion_ = true;
 
-  InitializeProvider(
-      base::Bind(&SystemInfoProvider::StartQueryInfoPostInitialization, this));
+  InitializeProvider(base::BindOnce(
+      &SystemInfoProvider::StartQueryInfoPostInitialization, this));
 }
 
 void SystemInfoProvider::OnQueryCompleted(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   while (!callbacks_.empty()) {
-    QueryInfoCompletionCallback callback = callbacks_.front();
-    callback.Run(success);
+    QueryInfoCompletionCallback callback = std::move(callbacks_.front());
+    std::move(callback).Run(success);
     callbacks_.pop();
   }
 
@@ -64,8 +90,8 @@ void SystemInfoProvider::StartQueryInfoPostInitialization() {
   // and reply with OnQueryCompleted.
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::Bind(&SystemInfoProvider::QueryInfo, this),
-      base::Bind(&SystemInfoProvider::OnQueryCompleted, this));
+      base::BindOnce(&SystemInfoProvider::QueryInfo, this),
+      base::BindOnce(&SystemInfoProvider::OnQueryCompleted, this));
 }
 
 }  // namespace extensions

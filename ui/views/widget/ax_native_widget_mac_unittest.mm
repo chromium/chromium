@@ -7,8 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "testing/gtest_mac.h"
@@ -51,6 +49,10 @@ bool AXObjectHandlesSelector(id<NSAccessibility> ax_obj, SEL action) {
 class FlexibleRoleTestView : public View {
  public:
   explicit FlexibleRoleTestView(ax::mojom::Role role) : role_(role) {}
+
+  FlexibleRoleTestView(const FlexibleRoleTestView&) = delete;
+  FlexibleRoleTestView& operator=(const FlexibleRoleTestView&) = delete;
+
   void set_role(ax::mojom::Role role) { role_ = role; }
 
   // Add a child view and resize to fit the child.
@@ -76,39 +78,37 @@ class FlexibleRoleTestView : public View {
  private:
   ax::mojom::Role role_;
   bool mouse_was_pressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FlexibleRoleTestView);
 };
 
 class TestLabelButton : public LabelButton {
  public:
-  TestLabelButton() : LabelButton(nullptr, base::string16()) {
+  TestLabelButton() {
     // Make sure the label doesn't cover the hit test co-ordinates.
     label()->SetSize(gfx::Size(1, 1));
   }
 
-  using LabelButton::label;
+  TestLabelButton(const TestLabelButton&) = delete;
+  TestLabelButton& operator=(const TestLabelButton&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLabelButton);
+  using LabelButton::label;
 };
 
 class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
  public:
   TestWidgetDelegate() = default;
 
-  static constexpr char kAccessibleWindowTitle[] = "My Accessible Window";
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
+  static constexpr char16_t kAccessibleWindowTitle[] = u"My Accessible Window";
 
   // WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override {
-    return base::ASCIIToUTF16(kAccessibleWindowTitle);
+  std::u16string GetAccessibleWindowTitle() const override {
+    return kAccessibleWindowTitle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
-constexpr char TestWidgetDelegate::kAccessibleWindowTitle[];
+constexpr char16_t TestWidgetDelegate::kAccessibleWindowTitle[];
 
 // Widget-level tests for accessibility properties - these are actually mostly
 // tests of accessibility behavior for individual Views *as they appear* in
@@ -116,6 +116,9 @@ constexpr char TestWidgetDelegate::kAccessibleWindowTitle[];
 class AXNativeWidgetMacTest : public test::WidgetTest {
  public:
   AXNativeWidgetMacTest() = default;
+
+  AXNativeWidgetMacTest(const AXNativeWidgetMacTest&) = delete;
+  AXNativeWidgetMacTest& operator=(const AXNativeWidgetMacTest&) = delete;
 
   void SetUp() override {
     test::WidgetTest::SetUp();
@@ -152,8 +155,6 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
 
  private:
   TestWidgetDelegate widget_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXNativeWidgetMacTest);
 };
 
 }  // namespace
@@ -272,7 +273,7 @@ TEST_F(AXNativeWidgetMacTest, ChildrenAttribute) {
 
   // Check ignored children don't show up in the accessibility tree.
   widget()->GetContentsView()->AddChildView(
-      new FlexibleRoleTestView(ax::mojom::Role::kIgnored));
+      new FlexibleRoleTestView(ax::mojom::Role::kNone));
   EXPECT_EQ(kNumChildren, ax_node.accessibilityChildren.count);
 }
 
@@ -304,7 +305,7 @@ TEST_F(AXNativeWidgetMacTest, ParentAttribute) {
   EXPECT_NSEQ(NSAccessibilityGroupRole, ax_parent.accessibilityRole);
 
   // Test an ignored role parent is skipped in favor of the grandparent.
-  parent->set_role(ax::mojom::Role::kIgnored);
+  parent->set_role(ax::mojom::Role::kNone);
   ASSERT_NSNE(nil, AXParentOf(ax_child));
   EXPECT_NSEQ(NSAccessibilityGroupRole, AXParentOf(ax_child).accessibilityRole);
 }
@@ -349,7 +350,7 @@ TEST_F(AXNativeWidgetMacTest, NativeWindowProperties) {
   EXPECT_NSEQ(window, ax_view.accessibilityWindow);
   EXPECT_NSEQ(window, ax_view.accessibilityTopLevelUIElement);
   EXPECT_NSEQ(
-      base::SysUTF8ToNSString(TestWidgetDelegate::kAccessibleWindowTitle),
+      base::SysUTF16ToNSString(TestWidgetDelegate::kAccessibleWindowTitle),
       window.accessibilityTitle);
 }
 
@@ -551,10 +552,10 @@ TEST_F(AXNativeWidgetMacTest, TextfieldWritableAttributes) {
             textfield->GetSelectedRange());
 
   // Replace a middle section only (with a backwards selection range).
-  base::string16 front = base::ASCIIToUTF16("Front ");
-  base::string16 middle = base::ASCIIToUTF16("middle");
-  base::string16 back = base::ASCIIToUTF16(" back");
-  base::string16 replacement = base::ASCIIToUTF16("replaced");
+  std::u16string front = u"Front ";
+  std::u16string middle = u"middle";
+  std::u16string back = u" back";
+  std::u16string replacement = u"replaced";
   textfield->SetText(front + middle + back);
   test_range = gfx::Range(front.length() + middle.length(), front.length());
   new_string = base::SysUTF16ToNSString(front + replacement + back);
@@ -698,13 +699,13 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
   EXPECT_EQ(0, ax_node.accessibilityInsertionPointLineNumber);
 
   // Test replacing text.
-  textfield->SetText(base::ASCIIToUTF16("123"));
+  textfield->SetText(u"123");
   EXPECT_NSEQ(@"•••", ax_node.accessibilityValue);
   EXPECT_EQ(3, ax_node.accessibilityNumberOfCharacters);
 
   textfield->SetSelectedRange(gfx::Range(2, 3));  // Selects "3".
   ax_node.accessibilitySelectedText = @"ab";
-  EXPECT_EQ(base::ASCIIToUTF16("12ab"), textfield->GetText());
+  EXPECT_EQ(u"12ab", textfield->GetText());
   EXPECT_NSEQ(@"••••", ax_node.accessibilityValue);
   EXPECT_EQ(4, ax_node.accessibilityNumberOfCharacters);
 }
@@ -771,15 +772,15 @@ class TestComboboxModel : public ui::ComboboxModel {
  public:
   TestComboboxModel() = default;
 
+  TestComboboxModel(const TestComboboxModel&) = delete;
+  TestComboboxModel& operator=(const TestComboboxModel&) = delete;
+
   // ui::ComboboxModel:
   int GetItemCount() const override { return 2; }
-  base::string16 GetItemAt(int index) override {
+  std::u16string GetItemAt(int index) const override {
     return index == 0 ? base::SysNSStringToUTF16(kTestStringValue)
-                      : base::ASCIIToUTF16("Second Item");
+                      : u"Second Item";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModel);
 };
 
 // Test a11y attributes of Comboboxes.

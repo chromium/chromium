@@ -5,22 +5,44 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
 namespace blink {
 
+class Element;
 class Node;
 class PseudoElement;
 
 // Class for keeping track of the need for traversing down flat tree children,
 // recompute their computed styles, and marking nodes for layout tree re-
 // attachment during the style recalc phase.
-class StyleRecalcChange {
+class CORE_EXPORT StyleRecalcChange {
+ private:
+  enum Flag {
+    kNoFlags = 0,
+    // Recalc container query dependent elements within this container,
+    // but not in nested containers.
+    kRecalcContainer = 1 << 0,
+    // Recalc container query dependent elements within this container,
+    // and also in nested containers.
+    kRecalcDescendantContainers = 1 << 1,
+    // If set, need to reattach layout tree.
+    kReattach = 1 << 2,
+    // If set, will prevent style recalc for the node passed to
+    // ShouldRecalcStyleFor. This flag is lost when ForChildren is called.
+    kSuppressRecalc = 1 << 3,
+  };
+  using Flags = uint8_t;
+
+  static const Flags kRecalcContainerFlags =
+      kRecalcContainer | kRecalcDescendantContainers;
+
  public:
   enum Propagate {
     // No need to update style of any children.
     kNo,
-    // Need to traverse children in display:none or non-slotted/distributed
-    // children of shadow hosts to clear ensured computed styles.
-    kClearEnsured,
     // Need to update existence and style for pseudo elements.
     kUpdatePseudoElements,
     // Need to recalculate style for children for inheritance. All changed
@@ -35,56 +57,96 @@ class StyleRecalcChange {
 
   StyleRecalcChange() = default;
   StyleRecalcChange(const StyleRecalcChange&) = default;
-  StyleRecalcChange(Propagate propagate) : propagate_(propagate) {}
+  StyleRecalcChange& operator=(const StyleRecalcChange&) = default;
+  explicit StyleRecalcChange(Propagate propagate) : propagate_(propagate) {}
 
-  StyleRecalcChange ForChildren() const {
-    return {RecalcDescendants() ? kRecalcDescendants : kNo, reattach_,
-            calc_invisible_};
+  bool IsEmpty() const { return !propagate_ && !flags_; }
+
+  StyleRecalcChange ForChildren(const Element& element) const {
+    return {RecalcDescendants() ? kRecalcDescendants : kNo,
+            FlagsForChildren(element)};
   }
   StyleRecalcChange ForPseudoElement() const {
     if (propagate_ == kUpdatePseudoElements)
-      return {kRecalcChildren, reattach_, calc_invisible_};
+      return {kRecalcChildren, flags_};
     return *this;
   }
   StyleRecalcChange EnsureAtLeast(Propagate propagate) const {
     if (propagate > propagate_)
-      return {propagate, reattach_, calc_invisible_};
-    return {propagate_, reattach_, calc_invisible_};
+      return {propagate, flags_};
+    return {propagate_, flags_};
   }
   StyleRecalcChange ForceRecalcDescendants() const {
-    return {kRecalcDescendants, reattach_, calc_invisible_};
+    return {kRecalcDescendants, flags_};
   }
   StyleRecalcChange ForceReattachLayoutTree() const {
-    return {propagate_, true, calc_invisible_};
+    return {propagate_, static_cast<Flags>(flags_ | kReattach)};
   }
-  StyleRecalcChange ForceCalcInvisible() const {
-    return {propagate_, reattach_, true};
+  StyleRecalcChange ForceRecalcContainer() const {
+    return {propagate_, static_cast<Flags>(flags_ | kRecalcContainer)};
+  }
+  StyleRecalcChange ForceRecalcDescendantContainers() const {
+    return {propagate_,
+            static_cast<Flags>(flags_ | kRecalcDescendantContainers)};
+  }
+  StyleRecalcChange SuppressRecalc() const {
+    return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
+  }
+  StyleRecalcChange WithRecalcContainerFlags(StyleRecalcChange& from) const {
+    return {propagate_,
+            static_cast<Flags>(flags_ | (from.flags_ & kRecalcContainerFlags))};
+  }
+  StyleRecalcChange Combine(const StyleRecalcChange& other) const {
+    return {std::max(propagate_, other.propagate_),
+            static_cast<Flags>(flags_ | other.flags_)};
   }
 
-  bool ReattachLayoutTree() const { return reattach_; }
+  bool ReattachLayoutTree() const { return flags_ & kReattach; }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
   bool IndependentInherit() const { return propagate_ == kIndependentInherit; }
-  bool TraverseChildren(const Node&) const;
+  bool TraverseChildren(const Element&) const;
   bool TraverseChild(const Node&) const;
-  bool TraversePseudoElements(const Node&) const;
+  bool TraversePseudoElements(const Element&) const;
   bool ShouldRecalcStyleFor(const Node&) const;
   bool ShouldUpdatePseudoElement(const PseudoElement&) const;
-  bool CalcInvisible() const { return calc_invisible_; }
+  bool IsSuppressed() const { return flags_ & kSuppressRecalc; }
+
+  String ToString() const;
 
  private:
-  StyleRecalcChange(Propagate propagate, bool reattach, bool calc_invisible)
-      : propagate_(propagate),
-        reattach_(reattach),
-        calc_invisible_(calc_invisible) {}
+  StyleRecalcChange(Propagate propagate, Flags flags)
+      : propagate_(propagate), flags_(flags) {}
+
+  bool RecalcContainerQueryDependent() const {
+    return flags_ & kRecalcContainerFlags;
+  }
+  Flags FlagsForChildren(const Element&) const;
 
   // To what extent do we need to update style for children.
   Propagate propagate_ = kNo;
-  // Need to reattach layout tree if true.
-  bool reattach_ = false;
-  // Forcing ComputedStyle for find-in-page for invisible DOM.
-  bool calc_invisible_ = false;
+  // See StyleRecalc::Flag.
+  Flags flags_ = kNoFlags;
+};
+
+// StyleRecalcContext is an object that is passed on the stack during
+// the style recalc process.
+//
+// Its purpose is to hold context related to the style recalc process as
+// a whole, i.e. information not directly associated to the specific element
+// style is being calculated for.
+class StyleRecalcContext {
+  STACK_ALLOCATED();
+
+ public:
+  // Using the ancestor chain, build a StyleRecalcContext suitable for
+  // resolving the style of the given Element.
+  static StyleRecalcContext FromAncestors(Element&);
+
+  // Set to the nearest container (for container queries), if any.
+  // This is used to evaluate container queries in ElementRuleCollector.
+  Element* container = nullptr;
 };
 
 }  // namespace blink

@@ -8,10 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,18 +79,21 @@ void MaybeShowSettingsResetPrompt(
     return;
 
   DefaultSettingsFetcher::FetchDefaultSettings(
-      base::Bind(&TryToShowSettingsResetPrompt, base::Passed(&model)));
+      base::BindOnce(&TryToShowSettingsResetPrompt, std::move(model)));
 }
 
 class SettingsResetPromptDelegateImpl : public SettingsResetPromptDelegate {
  public:
   SettingsResetPromptDelegateImpl();
+
+  SettingsResetPromptDelegateImpl(const SettingsResetPromptDelegateImpl&) =
+      delete;
+  SettingsResetPromptDelegateImpl& operator=(
+      const SettingsResetPromptDelegateImpl&) = delete;
+
   ~SettingsResetPromptDelegateImpl() override;
 
   void ShowSettingsResetPromptWithDelay() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDelegateImpl);
 };
 
 SettingsResetPromptDelegateImpl::SettingsResetPromptDelegateImpl() = default;
@@ -105,10 +107,9 @@ void SettingsResetPromptDelegateImpl::ShowSettingsResetPromptWithDelay() const {
     return;
 
   base::TimeDelta delay = config->delay_before_prompt();
-  base::PostDelayedTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(MaybeShowSettingsResetPrompt, base::Passed(&config)),
-      delay);
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(MaybeShowSettingsResetPrompt, std::move(config)), delay);
 }
 
 SettingsResetPromptDelegate* g_settings_reset_prompt_delegate = nullptr;

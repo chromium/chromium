@@ -16,16 +16,15 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.widget.MoreProgressButton;
-import org.chromium.chrome.browser.ui.widget.MoreProgressButton.State;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+import org.chromium.components.browser_ui.widget.MoreProgressButton;
+import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for the {@link HistoryAdapter}. This test will more focusing on cases when accessibility
- * turned on (HistoryManager::isScrollToLoadDisabled() == true).
+ * turned on (HistoryContentManager::isScrollToLoadDisabled() == true).
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -37,6 +36,8 @@ public class HistoryAdapterAccessibilityTest {
 
     @Mock
     private MoreProgressButton mMockButton;
+    @Mock
+    private HistoryContentManager mContentManager;
 
     @Before
     public void setUp() {
@@ -44,7 +45,7 @@ public class HistoryAdapterAccessibilityTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
-        mAdapter = new HistoryAdapter(new SelectionDelegate<HistoryItem>(), null, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);

@@ -1,0 +1,44 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const isWin = navigator.platform.indexOf('Win') !== -1;
+
+selection_test(
+  '<div contenteditable>one two three four|</div>',
+  selection => {
+    assert_own_property(window, 'eventSender',
+                        'This test requires eventSender to test key bindings.');
+    selection.document.execCommand('insertText', false, 'undo');
+    if (isWin) {
+      // Alt+Backspace shortcut is bound to undo on Windows only.
+      // Performing this on Mac will cause a one word delete.
+      eventSender.keyDown('Backspace', 'altKey');
+    }
+  },
+  // Alt+Backspace shortcut is bound to undo on Windows only.
+  isWin
+      ? '<div contenteditable>one two three four|</div>'
+      : '<div contenteditable>one two three fourundo|</div>',
+  'Alt+Backspace should be bound to undo on Windows');
+
+selection_test(
+  '<div contenteditable>one two three four|</div>',
+  selection => {
+    assert_own_property(window, 'eventSender',
+                        'This test requires eventSender to test key bindings.');
+    selection.document.execCommand('insertText', false, 'undo');
+    selection.document.execCommand('undo');
+    if (isWin) {
+      // Alt+Shift+Backspace shortcut is bound to redo on Windows only.
+      // Performing this on Mac will cause a one word delete.
+      eventSender.keyDown('Backspace', ['altKey', 'shiftKey']);
+    }
+  },
+  // Alt+Shift+Backspace shortcut is bound to redo on Windows only.
+  isWin
+      ? '<div contenteditable>one two three fourundo|</div>'
+      : '<div contenteditable>one two three four|</div>',
+  'Alt+Shift+Backspace should be bound to redo on Windows');
+</script>

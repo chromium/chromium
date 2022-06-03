@@ -11,13 +11,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 UrlRequestRulesReceiver::UrlRequestRulesReceiver(
-    content::RenderFrame* render_frame,
-    base::OnceCallback<void(int)> on_render_frame_deleted_callback)
-    : content::RenderFrameObserver(render_frame),
-      on_render_frame_deleted_callback_(
-          std::move(on_render_frame_deleted_callback)) {
+    content::RenderFrame* render_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(on_render_frame_deleted_callback_);
   DCHECK(render_frame);
 
   // It is fine to use an unretained pointer to |this| here as the
@@ -33,6 +28,12 @@ UrlRequestRulesReceiver::~UrlRequestRulesReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
+UrlRequestRulesReceiver::GetCachedRules() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return cached_rules_;
+}
+
 void UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver(
     mojo::PendingAssociatedReceiver<mojom::UrlRequestRulesReceiver> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -41,25 +42,8 @@ void UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver(
 }
 
 void UrlRequestRulesReceiver::OnRulesUpdated(
-    std::vector<mojom::UrlRequestRewriteRulePtr> rules) {
+    mojom::UrlRequestRewriteRulesPtr rules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock auto_lock(lock_);
-  cached_rules_ =
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
-          std::move(rules));
-}
-
-scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-UrlRequestRulesReceiver::GetCachedRules() {
-  base::AutoLock auto_lock(lock_);
-  return cached_rules_;
-}
-
-void UrlRequestRulesReceiver::OnDestruct() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // The RenderFrame corresponding to this object was destroyed, which means
-  // the AssociatedInterfaceRegsitry is also gone. It is expected that
-  // |on_render_frame_deleted_callback_| will delete |this|.
-  std::move(on_render_frame_deleted_callback_).Run(routing_id());
+  cached_rules_ = base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
+      std::move(rules));
 }

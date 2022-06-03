@@ -26,11 +26,16 @@ namespace remoting {
 class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
  public:
   explicit SecurityKeyMessageReaderImpl(base::File input_file);
+
+  SecurityKeyMessageReaderImpl(const SecurityKeyMessageReaderImpl&) = delete;
+  SecurityKeyMessageReaderImpl& operator=(const SecurityKeyMessageReaderImpl&) =
+      delete;
+
   ~SecurityKeyMessageReaderImpl() override;
 
   // SecurityKeyMessageReader interface.
   void Start(const SecurityKeyMessageCallback& message_callback,
-             const base::Closure& error_callback) override;
+             base::OnceClosure error_callback) override;
 
  private:
   // Reads a message from the remote_security_key process and passes it to
@@ -53,7 +58,7 @@ class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
 
   // Caller-supplied message and error callbacks.
   SecurityKeyMessageCallback message_callback_;
-  base::Closure error_callback_;
+  base::OnceClosure error_callback_;
 
   // Thread used for blocking IO operations.
   base::Thread reader_thread_;
@@ -62,8 +67,6 @@ class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
 
   base::WeakPtr<SecurityKeyMessageReaderImpl> reader_;
   base::WeakPtrFactory<SecurityKeyMessageReaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageReaderImpl);
 };
 
 }  // namespace remoting

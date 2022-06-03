@@ -61,9 +61,6 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // apparently not supported by FilteredRE2.
   void RebuildMatcher();
 
-  // Clean up StringPatterns in |substring_patterns_|.
-  void DeleteSubstringPatterns();
-
   // Mapping of regex StringPattern::IDs to regexes.
   RegexMap regexes_;
   // Mapping of RE2IDs from FilteredRE2 (which are assigned in order)
@@ -72,10 +69,6 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
 
   std::unique_ptr<re2::FilteredRE2> filtered_re2_;
   std::unique_ptr<SubstringSetMatcher> substring_matcher_;
-
-  // The substring patterns from FilteredRE2, which are used in
-  // |substring_matcher_| but whose lifetime is managed here.
-  std::vector<std::unique_ptr<StringPattern>> substring_patterns_;
 };
 
 }  // namespace url_matcher

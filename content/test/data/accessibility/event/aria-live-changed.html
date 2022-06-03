@@ -10,6 +10,10 @@
   <h4 id="d2" aria-live="polite">Item2</h4>
   <h4 id="d3" aria-live="polite">Item3</h4>
   <h4 id="d4">Item4</h4>
+  <div aria-live="polite">
+    <h4 id="d5" aria-live="off">Item5</h4>
+  </div>
+
   <button onclick="go()">go</button>
   <script>
     function go() {
@@ -24,6 +28,9 @@
 
       // set live to 'polite'; should fire an event
       document.getElementById('d4').setAttribute('aria-live', 'polite');
+
+      // set live from 'off'->[removed] inside 'polite'; should fire event
+      document.getElementById('d5').removeAttribute('aria-live');
     }
   </script>
 </body>

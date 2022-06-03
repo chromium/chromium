@@ -12,7 +12,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::ProcessIdDataView, base::ProcessId> {
   static uint32_t pid(const base::ProcessId& process_id) {
     return static_cast<uint32_t>(process_id);

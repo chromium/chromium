@@ -4,9 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport"
       content="initial-scale=1, minimum-scale=1, width=device-width">
+  <meta http-equiv="Content-Security-Policy"
+      content="require-trusted-types-for 'script'; trusted-types jstemplate;">
   <title>$i18n{tabTitle}</title>
   <link rel="stylesheet" href="../../common/resources/interstitial_core.css">
   <link rel="stylesheet" href="interstitial_webview_quiet.css">
+  <script src="../../../../../ui/webui/resources/js/assert.js"></script>
   <script src="../../../../../ui/webui/resources/js/util.js"></script>
   <script src="../../common/resources/interstitial_common.js"></script>
   <script src="interstitial_webview_quiet.js"></script>
@@ -14,7 +17,7 @@
 <body id="body">
   <div class="interstitial-wrapper">
     <div id="main-content">
-      <div class="icon"></div>
+      <div id="icon" class="icon"></div>
       <div id="main-message">
         <h1>
           <span>$i18n{heading}</span>

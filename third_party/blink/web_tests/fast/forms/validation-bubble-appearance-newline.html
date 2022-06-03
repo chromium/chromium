@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<p>Check if text in a validation bubble renders newlines.</p>
+<input>
+<script>
+const input = document.querySelector('input');
+input.setCustomValidity('hello\nworld');
+input.reportValidity();
+</script>
+

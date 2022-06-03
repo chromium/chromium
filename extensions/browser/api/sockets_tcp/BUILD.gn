@@ -15,19 +15,15 @@ source_set("sockets_tcp") {
     "tcp_socket_event_dispatcher.h",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//base",
     "//content/public/browser",
+    "//extensions/browser/api",
+    "//extensions/browser/api/socket",
+    "//extensions/common",
     "//extensions/common/api",
     "//net",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

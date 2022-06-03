@@ -36,7 +36,7 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
 
     for (LayoutObject* child = layout_table_.FirstChild(); child;
          child = child->NextSibling()) {
-      if (child->IsBox() && !ToLayoutBox(child)->HasSelfPaintingLayer() &&
+      if (child->IsBox() && !To<LayoutBox>(child)->HasSelfPaintingLayer() &&
           (child->IsTableSection() || child->IsTableCaption())) {
         child->Paint(paint_info_for_descendants);
       }
@@ -45,7 +45,7 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
     if (layout_table_.HasCollapsedBorders() &&
         ShouldPaintDescendantBlockBackgrounds(paint_phase) &&
         layout_table_.StyleRef().Visibility() == EVisibility::kVisible) {
-      PaintCollapsedBorders(paint_info_for_descendants);
+      PaintCollapsedBorders(paint_info_for_descendants, paint_offset);
     }
   }
 
@@ -62,10 +62,15 @@ void TablePainter::PaintBoxDecorationBackground(
   if (layout_table_.HasBoxDecorationBackground() &&
       layout_table_.StyleRef().Visibility() == EVisibility::kVisible) {
     BoxPainter(layout_table_)
-        .PaintBoxDecorationBackgroundWithRect(paint_info, rect, layout_table_);
+        .PaintBoxDecorationBackgroundWithRect(
+            paint_info,
+            IntRect(BoxPainter(layout_table_).VisualRect(paint_offset)), rect,
+            layout_table_);
   }
 
   BoxPainter(layout_table_).RecordHitTestData(paint_info, rect, layout_table_);
+  BoxPainter(layout_table_)
+      .RecordRegionCaptureData(paint_info, rect, layout_table_);
 }
 
 void TablePainter::PaintMask(const PaintInfo& paint_info,
@@ -81,22 +86,13 @@ void TablePainter::PaintMask(const PaintInfo& paint_info,
   PhysicalRect rect(paint_offset, layout_table_.Size());
   layout_table_.SubtractCaptionRect(rect);
 
-  DrawingRecorder recorder(paint_info.context, layout_table_, paint_info.phase);
+  BoxDrawingRecorder recorder(paint_info.context, layout_table_,
+                              paint_info.phase, paint_offset);
   BoxPainter(layout_table_).PaintMaskImages(paint_info, rect);
 }
 
-void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info) {
-  base::Optional<DrawingRecorder> recorder;
-  if (UNLIKELY(layout_table_.ShouldPaintAllCollapsedBorders())) {
-    if (DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, layout_table_,
-            DisplayItem::kTableCollapsedBorders))
-      return;
-    recorder.emplace(paint_info.context, layout_table_,
-                     DisplayItem::kTableCollapsedBorders);
-  }
-  // Otherwise each rows will create its own recorder.
-
+void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
+                                         const PhysicalOffset& paint_offset) {
   for (LayoutTableSection* section = layout_table_.BottomSection(); section;
        section = layout_table_.SectionAbove(section)) {
     TableSectionPainter(*section).PaintCollapsedBorders(paint_info);

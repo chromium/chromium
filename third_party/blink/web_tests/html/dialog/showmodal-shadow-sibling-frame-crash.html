@@ -10,17 +10,15 @@
 
 <script>
   async_test(function(test) {
-    let customDialog = Object.create(HTMLElement.prototype);
-
-    customDialog.createdCallback = function() {
-      this.createShadowRoot().innerHTML = '<dialog></dialog>';
-    };
-
-    customDialog.show = function() {
-      this.shadowRoot.querySelector('dialog').showModal();
-    };
-
-    document.registerElement('custom-dialog', {prototype: customDialog});
+    customElements.define('custom-dialog',class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({mode: 'open'}).innerHTML = '<dialog></dialog>';
+      }
+      show() {
+        this.shadowRoot.querySelector('dialog').showModal();
+      }
+    });
 
     onload = test.step_func(() => {
       const template = document.querySelector('template');

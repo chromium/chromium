@@ -13,7 +13,6 @@ import android.content.Intent;
 public class VrIntentDelegateFallback extends VrIntentDelegate {
     @Override
     public Intent setupVrFreIntent(Context context, Intent freIntent) {
-        VrDelegateFallback.ENTER_VR_BROWSER_WITHOUT_FEATURE_MODULE_METRIC.record(false);
         if (VrModuleProvider.getDelegate().bootsToVr()) return freIntent;
         // Don't bother handling FRE without VR module on smartphone VR. Just request module and
         // return to caller.

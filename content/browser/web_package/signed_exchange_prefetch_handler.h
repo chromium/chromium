@@ -8,9 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -18,12 +15,10 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace net {
-struct SHA256HashValue;
-}
-
 namespace network {
+class NetworkIsolationKey;
 class SharedURLLoaderFactory;
+struct ResourceRequest;
 }
 
 namespace blink {
@@ -32,6 +27,7 @@ class URLLoaderThrottle;
 
 namespace content {
 
+class PrefetchedSignedExchangeCacheEntry;
 class SignedExchangeLoader;
 class SignedExchangePrefetchMetricRecorder;
 
@@ -57,8 +53,14 @@ class SignedExchangePrefetchHandler final
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       URLLoaderThrottlesGetter loader_throttles_getter,
       network::mojom::URLLoaderClient* forwarding_client,
+      const net::NetworkIsolationKey& network_isolation_key,
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
-      const std::string& accept_langs);
+      const std::string& accept_langs,
+      bool keep_entry_for_prefetch_cache);
+
+  SignedExchangePrefetchHandler(const SignedExchangePrefetchHandler&) = delete;
+  SignedExchangePrefetchHandler& operator=(
+      const SignedExchangePrefetchHandler&) = delete;
 
   ~SignedExchangePrefetchHandler() override;
 
@@ -70,20 +72,15 @@ class SignedExchangePrefetchHandler final
   mojo::PendingReceiver<network::mojom::URLLoaderClient> FollowRedirect(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver);
 
-  // Returns the header integrity value of the loaded signed exchange if
-  // available. This is available after OnReceiveRedirect() of
-  // |forwarding_client| is called and before FollowRedirect() of |this| is
-  // called. Otherwise returns nullopt.
-  base::Optional<net::SHA256HashValue> ComputeHeaderIntegrity() const;
-
-  // Returns the signature expire time of the loaded signed exchange if
-  // available. This is available after OnReceiveRedirect() of
-  // |forwarding_client| is called and before FollowRedirect() of |this| is
-  // called. Otherwise returns a null Time.
-  base::Time GetSignatureExpireTime() const;
+  // Called to get the information about the prefetched signed exchange. To call
+  // this method, |keep_entry_for_prefetch_cache| constructor argument must be
+  // set.
+  std::unique_ptr<PrefetchedSignedExchangeCacheEntry>
+  TakePrefetchedSignedExchangeCacheEntry();
 
  private:
   // network::mojom::URLLoaderClient overrides:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
@@ -101,8 +98,6 @@ class SignedExchangePrefetchHandler final
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
   network::mojom::URLLoaderClient* forwarding_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchHandler);
 };
 
 }  // namespace content

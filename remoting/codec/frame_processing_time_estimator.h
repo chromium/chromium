@@ -20,12 +20,8 @@ class FrameProcessingTimeEstimator {
   FrameProcessingTimeEstimator();
   virtual ~FrameProcessingTimeEstimator();
 
-  // Marks the start of capturing a frame. Calling StartFrame() again without
-  // calling FinishFrame() will deprecate last record.
-  void StartFrame();
-
-  // Marks the finish of encoding a frame. FinishFrame() should only be called
-  // after a StartFrame() call.
+  // Marks the finish of encoding a frame. The frame must have a FrameStats
+  // object, otherwise the frame will be ignored.
   void FinishFrame(const WebrtcVideoEncoder::EncodedFrame& frame);
 
   // Sets the estimated network bandwidth. Negative |bandwidth_kbps| will be
@@ -95,9 +91,6 @@ class FrameProcessingTimeEstimator {
   // TODO(zijiehe): This should be removed once we have a reliable bandwidth
   // estimator.
   RunningSamples bandwidth_kbps_;
-
-  // The time when last StartFrame() is called.
-  base::TimeTicks start_time_;
 };
 
 }  // namespace remoting

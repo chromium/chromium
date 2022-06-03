@@ -21,6 +21,10 @@ class CastBrowserMetrics {
  public:
   explicit CastBrowserMetrics(
       std::unique_ptr<CastMetricsServiceClient> metrics_service_client);
+
+  CastBrowserMetrics(const CastBrowserMetrics&) = delete;
+  CastBrowserMetrics& operator=(const CastBrowserMetrics&) = delete;
+
   ~CastBrowserMetrics();
   void Initialize();
   void Finalize();
@@ -38,12 +42,10 @@ class CastBrowserMetrics {
  private:
   std::unique_ptr<CastMetricsServiceClient> metrics_service_client_;
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ExternalMetrics* external_metrics_ = nullptr;
   ExternalMetrics* platform_metrics_ = nullptr;
-#endif  // defined(OS_LINUX)
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserMetrics);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 };
 
 }  // namespace metrics

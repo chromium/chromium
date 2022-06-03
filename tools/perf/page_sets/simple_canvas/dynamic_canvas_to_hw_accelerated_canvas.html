@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var colourCounter = 0;
+
+var sourceCanvas2D = document.createElement("canvas");
+var sourceCtx2D = sourceCanvas2D.getContext("2d");
+var destCanvas2D = document.createElement("canvas");
+var destCtx2D = destCanvas2D.getContext("2d");
+var dummyCanvas2D = document.createElement("canvas");
+var dummyCtx2D = dummyCanvas2D.getContext("2d");
+document.body.appendChild(sourceCanvas2D);
+document.body.appendChild(destCanvas2D);
+
+function setSize(sourceWidth, sourceHeight, destWidth, destHeight) {
+    sourceCanvas2D.width = sourceWidth;
+    sourceCanvas2D.height = sourceHeight;
+    destCanvas2D.width = destWidth;
+    destCanvas2D.height = destHeight;
+    dummyCanvas2D.width = destWidth;
+    dummyCanvas2D.height = destHeight;
+}
+
+function fillCanvas(ctx2d, canvas2d) {
+    ctx2d.fillStyle = "rgba(0, 0, " + colourCounter + ", 1)";
+    colourCounter = (colourCounter + 1) % 256;
+    ctx2d.fillRect(0, 0, canvas2d.width, canvas2d.height);
+}
+
+function doRun() {
+    fillCanvas(sourceCtx2D, sourceCanvas2D);
+    // draw dynamic Canvas
+    destCtx2D.drawImage(sourceCanvas2D, 0, 0);
+}
+
+function ensureComplete() {
+    // Using destCanvas2D as a source image is just to flush out the content when
+    // accelerated 2D canvas is in use.
+    dummyCtx2D.drawImage(destCanvas2D, 0, 0, 1, 1, 0, 0, 1, 1);
+}
+
+function completeRun() {
+    doRun();
+    ensureComplete();
+    requestAnimationFrame(completeRun);
+}
+
+window.onload = function () {
+    setSize(1024, 1024, 1024, 1024);
+    completeRun();
+}
+
+</script>
+</body>
+</html>

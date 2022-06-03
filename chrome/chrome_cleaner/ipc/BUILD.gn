@@ -87,6 +87,25 @@ source_set("ipc_test_util") {
   ]
 }
 
+source_set("chrome_prompt_test_util") {
+  testonly = true
+
+  sources = [
+    "chrome_prompt_test_util.cc",
+    "chrome_prompt_test_util.h",
+  ]
+
+  deps = [
+    ":chrome_prompt_ipc",
+    "//base",
+    "//base/test:test_support",
+    "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/public/proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unittest_sources") {
   testonly = true
 
@@ -100,6 +119,7 @@ source_set("unittest_sources") {
 
   deps = [
     ":chrome_prompt_ipc",
+    ":chrome_prompt_test_util",
     ":ipc_test_util",
     ":mojo_task_runner",
     ":sandbox",
@@ -117,21 +137,6 @@ source_set("unittest_sources") {
     "//components/chrome_cleaner/test:test_name_helper",
     "//mojo/core/embedder",
     "//sandbox/win:sandbox",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("mock_chrome_prompt_ipc") {
-  testonly = true
-
-  sources = [
-    "mock_chrome_prompt_ipc.cc",
-    "mock_chrome_prompt_ipc.h",
-  ]
-
-  deps = [
-    ":chrome_prompt_ipc",
     "//testing/gmock",
     "//testing/gtest",
   ]

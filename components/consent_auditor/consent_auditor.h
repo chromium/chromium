@@ -5,15 +5,12 @@
 #ifndef COMPONENTS_CONSENT_AUDITOR_CONSENT_AUDITOR_H_
 #define COMPONENTS_CONSENT_AUDITOR_CONSENT_AUDITOR_H_
 
-#include <memory>
 #include <string>
-#include <utility>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace consent_auditor {
@@ -47,6 +44,10 @@ enum class ConsentStatus { NOT_GIVEN, GIVEN };
 class ConsentAuditor : public KeyedService {
  public:
   ConsentAuditor() = default;
+
+  ConsentAuditor(const ConsentAuditor&) = delete;
+  ConsentAuditor& operator=(const ConsentAuditor&) = delete;
+
   ~ConsentAuditor() override = default;
 
   // Records the ARC Play |consent| for the signed-in GAIA account with the ID
@@ -82,6 +83,12 @@ class ConsentAuditor : public KeyedService {
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent&
           consent) = 0;
 
+  // Records the |consent| to download and use passwords from the signed-in GAIA
+  // account with the ID |account_id| (as defined in AccountInfo).
+  virtual void RecordAccountPasswordsConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
+
   // Records that the user consented to a |feature|. The user was presented with
   // |description_text| and accepted it by interacting |confirmation_text|
   // (e.g. clicking on a button; empty if not applicable).
@@ -93,9 +100,6 @@ class ConsentAuditor : public KeyedService {
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditor);
 };
 
 }  // namespace consent_auditor

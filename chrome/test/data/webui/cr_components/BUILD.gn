@@ -2,9 +2,69 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//build/config/crypto.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 
-js_modulizer("modulize") {
-  input_files = [ "managed_footnote_test.js" ]
-  namespace_rewrites = [ "cr.isChromeOS|isChromeOS" ]
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://settings/=../../chrome/browser/resources/settings/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page//\"",
+                    "js_module_root=./gen/ui/webui/resources/preprocessed/",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+
+  deps = [
+    ":managed_dialog_test",
+    ":most_visited_focus_test",
+    ":most_visited_test",
+  ]
+}
+
+js_library("managed_dialog_test") {
+  deps = [
+    "..:chai_assert",
+    "//ui/webui/resources/cr_components/managed_dialog",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("most_visited_focus_test") {
+  deps = [
+    ":most_visited_test_support",
+    "..:test_browser_proxy",
+    "..:test_util",
+    "//ui/webui/resources/cr_components/most_visited",
+    "//ui/webui/resources/cr_components/most_visited:browser_proxy",
+    "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("most_visited_test") {
+  deps = [
+    ":most_visited_test_support",
+    "..:chai_assert",
+    "..:test_browser_proxy",
+    "..:test_util",
+    "//ui/webui/resources/cr_components/most_visited",
+    "//ui/webui/resources/cr_components/most_visited:browser_proxy",
+    "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_components/most_visited:window_proxy",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("most_visited_test_support") {
+  deps = [
+    "..:chai_assert",
+    "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -15,10 +15,12 @@ namespace headless {
 class HeadlessPlatformEventSource : public ui::PlatformEventSource {
  public:
   HeadlessPlatformEventSource();
-  ~HeadlessPlatformEventSource() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPlatformEventSource);
+  HeadlessPlatformEventSource(const HeadlessPlatformEventSource&) = delete;
+  HeadlessPlatformEventSource& operator=(const HeadlessPlatformEventSource&) =
+      delete;
+
+  ~HeadlessPlatformEventSource() override;
 };
 
 }  // namespace headless

@@ -2,44 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ImageRequestTask} from './image_request_task.js';
+
 /**
- * Scheduler for requests. Fetches requests from a queue and processes them
- * synchronously, taking into account priorities. The highest priority is 0.
+ * Scheduler for ImageRequestTask objects. Fetches tasks from a queue and
+ * processes them synchronously, taking into account priorities. The highest
+ * priority is 0.
  * @constructor
  */
-function Scheduler() {
+export function Scheduler() {
   /**
-   * List of requests waiting to be checked. If these items are available in
+   * List of tasks waiting to be checked. If these items are available in
    * cache, then they are processed immediately after starting the scheduler.
-   * However, if they have to be downloaded, then these requests are moved
-   * to pendingRequests_.
+   * However, if they have to be downloaded, then these tasks are moved
+   * to pendingTasks_.
    *
-   * @type {Array<ImageRequest>}
+   * @type {Array<ImageRequestTask>}
    * @private
    */
-  this.newRequests_ = [];
+  this.newTasks_ = [];
 
   /**
-   * List of pending requests for images to be downloaded.
-   * @type {Array<ImageRequest>}
+   * List of pending tasks for images to be downloaded.
+   * @type {Array<ImageRequestTask>}
    * @private
    */
-  this.pendingRequests_ = [];
+  this.pendingTasks_ = [];
 
   /**
-   * List of requests being processed.
-   * @type {Array<ImageRequest>}
+   * List of tasks being processed.
+   * @type {Array<ImageRequestTask>}
    * @private
    */
-  this.activeRequests_ = [];
+  this.activeTasks_ = [];
 
   /**
-   * Map of requests being added to the queue, but not finalized yet. Keyed by
-   * the ImageRequest id.
-   * @type {Object<string, ImageRequest>}>
+   * Map of tasks being added to the queue, but not finalized yet. Keyed by
+   * the ImageRequestTask id.
+   * @type {Object<string, ImageRequestTask>}>
    * @private
    */
-  this.requests_ = {};
+  this.tasks_ = {};
 
   /**
    * If the scheduler has been started.
@@ -50,121 +53,119 @@ function Scheduler() {
 }
 
 /**
- * Maximum download requests to be run in parallel.
+ * Maximum download tasks to be run in parallel.
  * @type {number}
  * @const
  */
 Scheduler.MAXIMUM_IN_PARALLEL = 5;
 
 /**
- * Adds a request to the internal priority queue and executes it when requests
+ * Adds a task to the internal priority queue and executes it when tasks
  * with higher priorities are finished. If the result is cached, then it is
  * processed immediately once the scheduler is started.
  *
- * @param {ImageRequest} request Request object.
+ * @param {ImageRequestTask} task A task to be run
  */
-Scheduler.prototype.add = function(request) {
+Scheduler.prototype.add = function(task) {
   if (!this.started_) {
-    this.newRequests_.push(request);
-    this.requests_[request.getId()] = request;
+    this.newTasks_.push(task);
+    this.tasks_[task.getId()] = task;
     return;
   }
 
-  // Enqueue the request, since already started.
-  this.pendingRequests_.push(request);
-  this.sortPendingRequests_();
+  // Enqueue the tasks, since already started.
+  this.pendingTasks_.push(task);
+  this.sortPendingTasks_();
 
   this.continue_();
 };
 
 /**
- * Removes a request from the scheduler (if exists).
- * @param {string} requestId Unique ID of the request.
+ * Removes a task from the scheduler (if exists).
+ * @param {string} taskId Unique ID of the task.
  */
-Scheduler.prototype.remove = function(requestId) {
-  var request = this.requests_[requestId];
-  if (!request) {
+Scheduler.prototype.remove = function(taskId) {
+  const task = this.tasks_[taskId];
+  if (!task) {
     return;
   }
 
   // Remove from the internal queues with pending tasks.
-  var newIndex = this.pendingRequests_.indexOf(request);
+  const newIndex = this.newTasks_.indexOf(task);
   if (newIndex != -1) {
-    this.newRequests_.splice(newIndex, 1);
+    this.newTasks_.splice(newIndex, 1);
   }
-  var pendingIndex = this.pendingRequests_.indexOf(request);
+  const pendingIndex = this.pendingTasks_.indexOf(task);
   if (pendingIndex != -1) {
-    this.pendingRequests_.splice(pendingIndex, 1);
+    this.pendingTasks_.splice(pendingIndex, 1);
   }
 
-  // Cancel the request.
-  request.cancel();
-  delete this.requests_[requestId];
+  // Cancel the task.
+  task.cancel();
+  delete this.tasks_[taskId];
 };
 
 /**
- * Starts handling requests.
+ * Starts handling tasks.
  */
 Scheduler.prototype.start = function() {
   this.started_ = true;
 
   // Process tasks added before scheduler has been started.
-  this.pendingRequests_ = this.newRequests_;
-  this.sortPendingRequests_();
-  this.newRequests_ = [];
+  this.pendingTasks_ = this.newTasks_;
+  this.sortPendingTasks_();
+  this.newTasks_ = [];
 
-  // Start serving enqueued requests.
+  // Start serving enqueued tasks.
   this.continue_();
 };
 
 /**
- * Sorts pending requests by priorities.
+ * Sorts pending tasks by priorities.
  * @private
  */
-Scheduler.prototype.sortPendingRequests_ = function() {
-  this.pendingRequests_.sort(function(a, b) {
+Scheduler.prototype.sortPendingTasks_ = function() {
+  this.pendingTasks_.sort(function(a, b) {
     return a.getPriority() - b.getPriority();
   });
 };
 
 /**
- * Processes pending requests from the queue. There is no guarantee that
+ * Processes pending tasks from the queue. There is no guarantee that
  * all of the tasks will be processed at once.
  *
  * @private
  */
 Scheduler.prototype.continue_ = function() {
   // Run only up to MAXIMUM_IN_PARALLEL in the same time.
-  while (this.pendingRequests_.length &&
-         this.activeRequests_.length < Scheduler.MAXIMUM_IN_PARALLEL) {
-    var request = this.pendingRequests_.shift();
-    this.activeRequests_.push(request);
+  while (this.pendingTasks_.length &&
+         this.activeTasks_.length < Scheduler.MAXIMUM_IN_PARALLEL) {
+    const task = this.pendingTasks_.shift();
+    this.activeTasks_.push(task);
 
     // Try to load from cache. If doesn't exist, then download.
-    request.loadFromCacheAndProcess(
-        this.finish_.bind(this, request),
-        function(currentRequest) {
-          currentRequest.downloadAndProcess(
-              this.finish_.bind(this, currentRequest));
-        }.bind(this, request));
+    task.loadFromCacheAndProcess(
+        this.finish_.bind(this, task), function(currentTask) {
+          currentTask.downloadAndProcess(this.finish_.bind(this, currentTask));
+        }.bind(this, task));
   }
 };
 
 /**
- * Handles finished requests.
+ * Handles finished tasks.
  *
- * @param {ImageRequest} request Finished request.
+ * @param {ImageRequestTask} task Finished task.
  * @private
  */
-Scheduler.prototype.finish_ = function(request) {
-  var index = this.activeRequests_.indexOf(request);
+Scheduler.prototype.finish_ = function(task) {
+  const index = this.activeTasks_.indexOf(task);
   if (index < 0) {
-    console.warn('Request not found.');
+    console.warn('ImageRequestTask not found.');
   }
-  this.activeRequests_.splice(index, 1);
-  delete this.requests_[request.getId()];
+  this.activeTasks_.splice(index, 1);
+  delete this.tasks_[task.getId()];
 
-  // Continue handling the most important requests (if started).
+  // Continue handling the most important tasks (if started).
   if (this.started_) {
     this.continue_();
   }

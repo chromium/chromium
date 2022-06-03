@@ -20,14 +20,16 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/dhcp_pac_file_fetcher.h"
 #include "net/proxy_resolution/mock_pac_file_fetcher.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/test/event_waiter.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -72,14 +74,14 @@ class TestNetworkDelegate : public net::NetworkDelegateImpl {
 
   net::EventWaiter<Event>& event_waiter() { return event_waiter_; }
 
-  void OnPACScriptError(int line_number, const base::string16& error) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
 
  private:
   net::EventWaiter<Event> event_waiter_;
 };
 
 void TestNetworkDelegate::OnPACScriptError(int line_number,
-                                           const base::string16& error) {
+                                           const std::u16string& error) {
   event_waiter_.NotifyEvent(PAC_SCRIPT_ERROR);
   EXPECT_EQ(3, line_number);
   EXPECT_TRUE(base::UTF16ToUTF8(error).find("error: http://foo") !=
@@ -117,15 +119,17 @@ class ProxyServiceMojoTest : public testing::Test {
     mock_host_resolver_.rules()->AddRule("example.com", "1.2.3.4");
 
     fetcher_ = new net::MockPacFileFetcher;
-    proxy_resolution_service_ = CreateProxyResolutionServiceUsingMojoFactory(
-        test_mojo_proxy_resolver_factory_.CreateFactoryRemote(),
-        std::make_unique<net::ProxyConfigServiceFixed>(
-            net::ProxyConfigWithAnnotation(
-                net::ProxyConfig::CreateFromCustomPacURL(GURL(kPacUrl)),
-                TRAFFIC_ANNOTATION_FOR_TESTS)),
-        base::WrapUnique(fetcher_),
-        std::make_unique<net::DoNothingDhcpPacFileFetcher>(),
-        &mock_host_resolver_, &net_log_, &network_delegate_);
+    proxy_resolution_service_ =
+        CreateConfiguredProxyResolutionServiceUsingMojoFactory(
+            test_mojo_proxy_resolver_factory_.CreateFactoryRemote(),
+            std::make_unique<net::ProxyConfigServiceFixed>(
+                net::ProxyConfigWithAnnotation(
+                    net::ProxyConfig::CreateFromCustomPacURL(GURL(kPacUrl)),
+                    TRAFFIC_ANNOTATION_FOR_TESTS)),
+            base::WrapUnique(fetcher_),
+            std::make_unique<net::DoNothingDhcpPacFileFetcher>(),
+            &mock_host_resolver_, net::NetLog::Get(),
+            true /* pac_quick_check_enabled */, &network_delegate_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -134,14 +138,15 @@ class ProxyServiceMojoTest : public testing::Test {
   net::MockHostResolver mock_host_resolver_;
   // Owned by |proxy_resolution_service_|.
   net::MockPacFileFetcher* fetcher_;
-  net::RecordingTestNetLog net_log_;
-  std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service_;
+  net::RecordingNetLogObserver net_log_observer_;
+  std::unique_ptr<net::ConfiguredProxyResolutionService>
+      proxy_resolution_service_;
 };
 
 TEST_F(ProxyServiceMojoTest, Basic) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::ProxyResolutionService::Request> request;
+  std::unique_ptr<net::ProxyResolutionRequest> request;
   EXPECT_EQ(net::ERR_IO_PENDING,
             proxy_resolution_service_->ResolveProxy(
                 GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
@@ -162,7 +167,7 @@ TEST_F(ProxyServiceMojoTest, Basic) {
 TEST_F(ProxyServiceMojoTest, DnsResolution) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::ProxyResolutionService::Request> request;
+  std::unique_ptr<net::ProxyResolutionRequest> request;
   EXPECT_EQ(net::ERR_IO_PENDING,
             proxy_resolution_service_->ResolveProxy(
                 GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
@@ -184,12 +189,13 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
 TEST_F(ProxyServiceMojoTest, Error) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
-  net::RecordingBoundTestNetLog test_net_log;
-  std::unique_ptr<net::ProxyResolutionService::Request> request;
+  net::NetLogWithSource net_log_with_source =
+      net::NetLogWithSource::Make(net::NetLogSourceType::NONE);
+  std::unique_ptr<net::ProxyResolutionRequest> request;
   EXPECT_EQ(net::ERR_IO_PENDING,
             proxy_resolution_service_->ResolveProxy(
                 GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, test_net_log.bound()));
+                &info, callback.callback(), &request, net_log_with_source));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.
@@ -203,15 +209,15 @@ TEST_F(ProxyServiceMojoTest, Error) {
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ("DIRECT", info.ToPacString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
-
-  CheckCapturedNetLogEntries(test_net_log.GetEntries());
-  CheckCapturedNetLogEntries(net_log_.GetEntries());
+  CheckCapturedNetLogEntries(
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source()));
+  CheckCapturedNetLogEntries(net_log_observer_.GetEntries());
 }
 
 TEST_F(ProxyServiceMojoTest, ErrorOnInitialization) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::ProxyResolutionService::Request> request;
+  std::unique_ptr<net::ProxyResolutionRequest> request;
   EXPECT_EQ(net::ERR_IO_PENDING,
             proxy_resolution_service_->ResolveProxy(
                 GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
@@ -230,7 +236,7 @@ TEST_F(ProxyServiceMojoTest, ErrorOnInitialization) {
   EXPECT_EQ("DIRECT", info.ToPacString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
 
-  CheckCapturedNetLogEntries(net_log_.GetEntries());
+  CheckCapturedNetLogEntries(net_log_observer_.GetEntries());
 }
 
 }  // namespace network

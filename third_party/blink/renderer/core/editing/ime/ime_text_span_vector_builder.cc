@@ -33,7 +33,7 @@
 namespace blink {
 
 Vector<ImeTextSpan> ImeTextSpanVectorBuilder::Build(
-    const WebVector<WebImeTextSpan>& ime_text_spans) {
+    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
   Vector<ImeTextSpan> result;
   wtf_size_t size = SafeCast<wtf_size_t>(ime_text_spans.size());
   result.ReserveCapacity(size);

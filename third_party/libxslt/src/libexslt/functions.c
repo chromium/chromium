@@ -1,12 +1,6 @@
 #define IN_LIBEXSLT
 #include "libexslt/libexslt.h"
 
-#if defined(_WIN32) && !defined (__CYGWIN__) && (!__MINGW32__)
-#include <win32config.h>
-#else
-#include "config.h"
-#endif
-
 #include <string.h>
 
 #include <libxml/tree.h>
@@ -674,7 +668,7 @@ exsltFuncResultComp (xsltStylesheetPtr style, xmlNodePtr inst,
      */
     sel = xmlGetNsProp(inst, (const xmlChar *) "select", NULL);
     if (sel != NULL) {
-	ret->select = xmlXPathCompile (sel);
+	ret->select = xsltXPathCompileFlags(style, sel, 0);
 	xmlFree(sel);
     }
     /*

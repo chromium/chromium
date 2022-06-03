@@ -21,8 +21,10 @@ PooledParallelTaskRunner::~PooledParallelTaskRunner() = default;
 bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
                                                OnceClosure closure,
                                                TimeDelta delay) {
-  if (!PooledTaskRunnerDelegate::Exists())
+  if (!PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          pooled_task_runner_delegate_)) {
     return false;
+  }
 
   // Post the task as part of a one-off single-task Sequence.
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
@@ -34,7 +36,8 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
   }
 
   return pooled_task_runner_delegate_->PostTaskWithSequence(
-      Task(from_here, std::move(closure), delay), std::move(sequence));
+      Task(from_here, std::move(closure), TimeTicks::Now(), delay),
+      std::move(sequence));
 }
 
 void PooledParallelTaskRunner::UnregisterSequence(Sequence* sequence) {

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -97,6 +97,17 @@ class MessageUnittest(unittest.TestCase):
     msg.SetReplaceEllipsis(True)
     content = msg.Translate('en')
     self.failUnlessEqual(u'A...B.... %s\u2026 B\u2026 C\u2026', content)
+
+  def testRemoveByteOrderMark(self):
+    root = util.ParseGrdForUnittest(u'''
+        <messages>
+        <message name="IDS_HAS_BOM" desc="">
+        \uFEFFThis\uFEFF i\uFEFFs OK\uFEFF
+        </message>
+        </messages>''')
+    msg, = root.GetChildrenOfType(message.MessageNode)
+    content = msg.Translate('en')
+    self.failUnlessEqual(u'This is OK', content)
 
   def testPlaceholderHasTooManyExamples(self):
     try:

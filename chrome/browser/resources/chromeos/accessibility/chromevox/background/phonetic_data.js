@@ -12,57 +12,63 @@ goog.provide('PhoneticData');
 
 goog.require('JaPhoneticData');
 
-/**
- * Maps languages to their phonetic maps.
- * @type {Object<string,Object<string,string>>}
- * @private
- */
-PhoneticData.phoneticMap_ = {};
+PhoneticData = class {
+  constructor() {}
 
-/**
- * Initialization function for PhoneticData.
- */
-PhoneticData.init = function() {
-  try {
-    // The UI language of the browser. This corresponds to the system language
-    // set by the user. Behind the scenes, the getUIlanguage() API retrieves the
-    // locale that was passed from the browser to the renderer via the --lang
-    // command line flag.
-    var browserUILanguage = chrome.i18n.getUILanguage().toLowerCase();
-    // Phonetic disambiguation data for the browserUI language.
-    // This is loaded from a chromevox_strings_*.xtb file, where * is a variable
-    // language code that corresponds to the system language.
-    var browserUILanguagePhoneticMap = /** @type {Object<string,string>} */
-        (JSON.parse(Msgs.getMsg('phonetic_map')));
-    PhoneticData.phoneticMap_[browserUILanguage] = browserUILanguagePhoneticMap;
-  } catch (e) {
-    console.log('Error: unable to parse phonetic map message.');
-  }
-  PhoneticData.phoneticMap_['ja'] = JaPhoneticData.phoneticMap_;
-};
+  /**
+   * Returns the phonetic disambiguation for |char| in |locale|.
+   * Returns empty string if disambiguation can't be found.
+   * @param {string} char
+   * @param {string} locale
+   * @return {string}
+   */
+  static forCharacter(char, locale) {
+    if (!char || !locale) {
+      throw Error('PhoneticData api requires non-empty arguments.');
+    }
 
-/**
- * Returns the phonetic disambiguation for the provided character in the
- * provided language. Returns empty string if disambiguation can't be found.
- * @param {string} language
- * @param {string} character
- * @return {string}
- */
-PhoneticData.getPhoneticDisambiguation = function(language, character) {
-  if (!language || !character) {
-    return '';
+    if (locale === 'ja') {
+      return JaPhoneticData.forCharacter(char);
+    }
+
+    const phoneticDictionaries =
+        chrome.extension.getBackgroundPage().PhoneticDictionaries;
+    if (!phoneticDictionaries || !phoneticDictionaries.phoneticMap_) {
+      throw Error('PhoneticDictionaries map must be defined.');
+    }
+
+    char = char.toLowerCase();
+    locale = locale.toLowerCase();
+    let map = null;
+    // Try a lookup using |locale|, but use only the language component if the
+    // lookup fails, e.g. "en-us" -> "en" or "zh-hant-hk" -> "zh".
+    map = phoneticDictionaries.phoneticMap_[locale] ||
+        phoneticDictionaries.phoneticMap_[locale.split('-')[0]];
+
+    if (!map) {
+      return '';
+    }
+
+    return map[char] || '';
   }
-  language = language.toLowerCase();
-  character = character.toLowerCase();
-  // If language isn't in the map, try stripping extra information, such as the
-  // country and/or script codes (e.g. "en-us" or "zh-hant-hk") and use only the
-  // language code to do a lookup.
-  if (!PhoneticData.phoneticMap_[language]) {
-    language = language.split('-')[0];
+
+  /**
+   * @param {string} text
+   * @param {string} locale
+   * @return {string}
+   */
+  static forText(text, locale) {
+    if (locale === 'ja') {
+      // Japanese phonetic readings require specialized logic.
+      return JaPhoneticData.forText(text);
+    }
+
+    const result = [];
+    const chars = [...text];
+    for (const char of chars) {
+      const phoneticText = PhoneticData.forCharacter(char, locale);
+      result.push(char + ': ' + phoneticText);
+    }
+    return result.join(', ');
   }
-  // If language still isn't in the map, return empty string.
-  if (!PhoneticData.phoneticMap_[language]) {
-    return '';
-  }
-  return PhoneticData.phoneticMap_[language][character] || '';
 };

@@ -95,6 +95,110 @@ public abstract class org.chromium.net.CronetProvider {
   public java.lang.String toString();
   public static java.util.List<org.chromium.net.CronetProvider> getAllProviders(android.content.Context);
 }
+public abstract class org.chromium.net.ExperimentalBidirectionalStream$Builder extends org.chromium.net.BidirectionalStream$Builder {
+  public org.chromium.net.ExperimentalBidirectionalStream$Builder();
+  public org.chromium.net.ExperimentalBidirectionalStream$Builder addRequestAnnotation(java.lang.Object);
+  public org.chromium.net.ExperimentalBidirectionalStream$Builder setTrafficStatsTag(int);
+  public org.chromium.net.ExperimentalBidirectionalStream$Builder setTrafficStatsUid(int);
+  public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder setHttpMethod(java.lang.String);
+  public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder addHeader(java.lang.String, java.lang.String);
+  public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder setPriority(int);
+  public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder delayRequestHeadersUntilFirstFlush(boolean);
+  public abstract org.chromium.net.ExperimentalBidirectionalStream build();
+  public org.chromium.net.BidirectionalStream build();
+  public org.chromium.net.BidirectionalStream$Builder delayRequestHeadersUntilFirstFlush(boolean);
+  public org.chromium.net.BidirectionalStream$Builder setPriority(int);
+  public org.chromium.net.BidirectionalStream$Builder addHeader(java.lang.String, java.lang.String);
+  public org.chromium.net.BidirectionalStream$Builder setHttpMethod(java.lang.String);
+}
+public abstract class org.chromium.net.ExperimentalBidirectionalStream extends org.chromium.net.BidirectionalStream {
+  public org.chromium.net.ExperimentalBidirectionalStream();
+}
+public class org.chromium.net.ExperimentalCronetEngine$Builder extends org.chromium.net.CronetEngine$Builder {
+  public org.chromium.net.ExperimentalCronetEngine$Builder(android.content.Context);
+  public org.chromium.net.ExperimentalCronetEngine$Builder(org.chromium.net.ICronetEngineBuilder);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enableNetworkQualityEstimator(boolean);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setExperimentalOptions(java.lang.String);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setThreadPriority(int);
+  public org.chromium.net.ICronetEngineBuilder getBuilderDelegate();
+  public org.chromium.net.ExperimentalCronetEngine$Builder setUserAgent(java.lang.String);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setStoragePath(java.lang.String);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setLibraryLoader(org.chromium.net.CronetEngine$Builder$LibraryLoader);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enableQuic(boolean);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enableHttp2(boolean);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enableSdch(boolean);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enableHttpCache(int, long);
+  public org.chromium.net.ExperimentalCronetEngine$Builder addQuicHint(java.lang.String, int, int);
+  public org.chromium.net.ExperimentalCronetEngine$Builder addPublicKeyPins(java.lang.String, java.util.Set<byte[]>, boolean, java.util.Date);
+  public org.chromium.net.ExperimentalCronetEngine$Builder enablePublicKeyPinningBypassForLocalTrustAnchors(boolean);
+  public org.chromium.net.ExperimentalCronetEngine build();
+  public org.chromium.net.CronetEngine build();
+  public org.chromium.net.CronetEngine$Builder enablePublicKeyPinningBypassForLocalTrustAnchors(boolean);
+  public org.chromium.net.CronetEngine$Builder addPublicKeyPins(java.lang.String, java.util.Set, boolean, java.util.Date);
+  public org.chromium.net.CronetEngine$Builder addQuicHint(java.lang.String, int, int);
+  public org.chromium.net.CronetEngine$Builder enableHttpCache(int, long);
+  public org.chromium.net.CronetEngine$Builder enableSdch(boolean);
+  public org.chromium.net.CronetEngine$Builder enableHttp2(boolean);
+  public org.chromium.net.CronetEngine$Builder enableQuic(boolean);
+  public org.chromium.net.CronetEngine$Builder setLibraryLoader(org.chromium.net.CronetEngine$Builder$LibraryLoader);
+  public org.chromium.net.CronetEngine$Builder setStoragePath(java.lang.String);
+  public org.chromium.net.CronetEngine$Builder setUserAgent(java.lang.String);
+}
+public abstract class org.chromium.net.ExperimentalCronetEngine extends org.chromium.net.CronetEngine {
+  public static final int CONNECTION_METRIC_UNKNOWN;
+  public static final int EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+  public static final int EFFECTIVE_CONNECTION_TYPE_OFFLINE;
+  public static final int EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
+  public static final int EFFECTIVE_CONNECTION_TYPE_2G;
+  public static final int EFFECTIVE_CONNECTION_TYPE_3G;
+  public static final int EFFECTIVE_CONNECTION_TYPE_4G;
+  public org.chromium.net.ExperimentalCronetEngine();
+  public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder newBidirectionalStreamBuilder(java.lang.String, org.chromium.net.BidirectionalStream$Callback, java.util.concurrent.Executor);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
+  public void startNetLogToDisk(java.lang.String, boolean, int);
+  public int getEffectiveConnectionType();
+  public void configureNetworkQualityEstimatorForTesting(boolean, boolean, boolean);
+  public void addRttListener(org.chromium.net.NetworkQualityRttListener);
+  public void removeRttListener(org.chromium.net.NetworkQualityRttListener);
+  public void addThroughputListener(org.chromium.net.NetworkQualityThroughputListener);
+  public void removeThroughputListener(org.chromium.net.NetworkQualityThroughputListener);
+  public java.net.URLConnection openConnection(java.net.URL, java.net.Proxy) throws java.io.IOException;
+  public void addRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public void removeRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public int getHttpRttMs();
+  public int getTransportRttMs();
+  public int getDownstreamThroughputKbps();
+  public org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
+}
+public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends org.chromium.net.UrlRequest$Builder {
+  public static final int DEFAULT_IDEMPOTENCY;
+  public static final int IDEMPOTENT;
+  public static final int NOT_IDEMPOTENT;
+  public org.chromium.net.ExperimentalUrlRequest$Builder();
+  public org.chromium.net.ExperimentalUrlRequest$Builder disableConnectionMigration();
+  public org.chromium.net.ExperimentalUrlRequest$Builder addRequestAnnotation(java.lang.Object);
+  public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsTag(int);
+  public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsUid(int);
+  public org.chromium.net.ExperimentalUrlRequest$Builder setRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public org.chromium.net.ExperimentalUrlRequest$Builder setIdempotency(int);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder setHttpMethod(java.lang.String);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder addHeader(java.lang.String, java.lang.String);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder disableCache();
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder setPriority(int);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder setUploadDataProvider(org.chromium.net.UploadDataProvider, java.util.concurrent.Executor);
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder allowDirectExecutor();
+  public abstract org.chromium.net.ExperimentalUrlRequest build();
+  public org.chromium.net.UrlRequest build();
+  public org.chromium.net.UrlRequest$Builder allowDirectExecutor();
+  public org.chromium.net.UrlRequest$Builder setUploadDataProvider(org.chromium.net.UploadDataProvider, java.util.concurrent.Executor);
+  public org.chromium.net.UrlRequest$Builder setPriority(int);
+  public org.chromium.net.UrlRequest$Builder disableCache();
+  public org.chromium.net.UrlRequest$Builder addHeader(java.lang.String, java.lang.String);
+  public org.chromium.net.UrlRequest$Builder setHttpMethod(java.lang.String);
+}
+public abstract class org.chromium.net.ExperimentalUrlRequest extends org.chromium.net.UrlRequest {
+  public org.chromium.net.ExperimentalUrlRequest();
+}
 public abstract class org.chromium.net.ICronetEngineBuilder {
   public org.chromium.net.ICronetEngineBuilder();
   public abstract org.chromium.net.ICronetEngineBuilder addPublicKeyPins(java.lang.String, java.util.Set<byte[]>, boolean, java.util.Date);
@@ -294,4 +398,4 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: fadacc3f49758e52a33a1ae7f032ec97
+Stamp: 1c548f381e3715d983e967e830d675d8

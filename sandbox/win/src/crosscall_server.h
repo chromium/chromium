@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_CROSSCALL_SERVER_H_
-#define SANDBOX_SRC_CROSSCALL_SERVER_H_
+#ifndef SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
+#define SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
 
 #include <stdint.h>
 
@@ -18,8 +18,8 @@
 // This is the IPC server interface for CrossCall: The  IPC for the Sandbox
 // On the server, CrossCall needs two things:
 // 1) threads: Or better said, someone to provide them, that is what the
-//             ThreadProvider interface is defined for. These thread(s) are
-//             the ones that will actually execute the  IPC data retrieval.
+//             ThreadPool is for. These thread(s) are
+//             the ones that will actually execute the IPC data retrieval.
 //
 // 2) a dispatcher: This interface represents the way to route and process
 //                  an  IPC call given the  IPC tag.
@@ -33,7 +33,7 @@
 //
 //                                 ------------
 //                                 |          |
-//  ThreadProvider <--(1)Register--|  IPC     |
+//  ThreadPool<-------(1)Register--|  IPC     |
 //      |                          | Implemen |
 //      |                          | -tation  |
 //     (2)                         |          |  OnMessage
@@ -48,46 +48,6 @@ namespace sandbox {
 
 class InterceptionManager;
 
-// This function signature is required as the callback when an  IPC call fires.
-// context: a user-defined pointer that was set using  ThreadProvider
-// reason: 0 if the callback was fired because of a timeout.
-//         1 if the callback was fired because of an event.
-typedef void(__stdcall* CrossCallIPCCallback)(void* context,
-                                              unsigned char reason);
-
-// ThreadProvider models a thread factory. The idea is to decouple thread
-// creation and lifetime from the inner guts of the IPC. The contract is
-// simple:
-//   - the IPC implementation calls RegisterWait with a waitable object that
-//     becomes signaled when an IPC arrives and needs to be serviced.
-//   - when the waitable object becomes signaled, the thread provider conjures
-//     a thread that calls the callback (CrossCallIPCCallback) function
-//   - the callback function tries its best not to block and return quickly
-//     and should not assume that the next callback will use the same thread
-//   - when the callback returns the ThreadProvider owns again the thread
-//     and can destroy it or keep it around.
-class ThreadProvider {
- public:
-  // Registers a waitable object with the thread provider.
-  // client: A number to associate with all the RegisterWait calls, typically
-  //         this is the address of the caller object. This parameter cannot
-  //         be zero.
-  // waitable_object : a kernel object that can be waited on
-  // callback: a function pointer which is the function that will be called
-  //           when the waitable object fires
-  // context: a user-provider pointer that is passed back to the callback
-  //          when its called
-  virtual bool RegisterWait(const void* client,
-                            HANDLE waitable_object,
-                            CrossCallIPCCallback callback,
-                            void* context) = 0;
-
-  // Removes all the registrations done with the same cookie parameter.
-  // This frees internal thread pool resources.
-  virtual bool UnRegisterWaits(void* cookie) = 0;
-  virtual ~ThreadProvider() {}
-};
-
 // Models the server-side of the original input parameters.
 // Provides IPC buffer validation and it is capable of reading the parameters
 // out of the IPC buffer.
@@ -100,6 +60,9 @@ class CrossCallParamsEx : public CrossCallParams {
   static CrossCallParamsEx* CreateFromBuffer(void* buffer_base,
                                              uint32_t buffer_size,
                                              uint32_t* output_size);
+
+  CrossCallParamsEx(const CrossCallParamsEx&) = delete;
+  CrossCallParamsEx& operator=(const CrossCallParamsEx&) = delete;
 
   // Provides IPCinput parameter raw access:
   // index : the parameter to read; 0 is the first parameter
@@ -132,7 +95,6 @@ class CrossCallParamsEx : public CrossCallParams {
   CrossCallParamsEx();
 
   ParamInfo param_info_[1];
-  DISALLOW_COPY_AND_ASSIGN(CrossCallParamsEx);
 };
 
 // Simple helper function that sets the members of CrossCallReturn
@@ -258,4 +220,4 @@ class Dispatcher {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_CROSSCALL_SERVER_H_
+#endif  // SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_

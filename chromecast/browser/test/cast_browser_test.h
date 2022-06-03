@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_web_view.h"
-#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
 namespace content {
@@ -29,11 +28,16 @@ namespace shell {
 // case, then shuts down the entire shell.
 // Note that this process takes 7-10 seconds per test case on Chromecast, so
 // fewer test cases with more assertions are preferable.
-class CastBrowserTest : public content::BrowserTestBase,
-                        public CastWebView::Delegate {
+class CastBrowserTest : public content::BrowserTestBase {
+ public:
+  CastBrowserTest(const CastBrowserTest&) = delete;
+  CastBrowserTest& operator=(const CastBrowserTest&) = delete;
+
  protected:
   CastBrowserTest();
   ~CastBrowserTest() override;
+
+  CastWebView* cast_web_view() const { return cast_web_view_.get(); }
 
   // content::BrowserTestBase implementation:
   void SetUp() final;
@@ -45,19 +49,11 @@ class CastBrowserTest : public content::BrowserTestBase,
   content::WebContents* NavigateToURL(const GURL& url);
 
  private:
-  // CastWebView::Delegate implementation:
-  void OnWindowDestroyed() override;
-  void OnVisibilityChange(VisibilityType visibility_type) override;
-  bool CanHandleGesture(GestureType gesture_type) override;
-  bool ConsumeGesture(GestureType gesture_type) override;
-  std::string GetId() override;
-
   std::unique_ptr<CastWebViewFactory> web_view_factory_;
   std::unique_ptr<CastWebService> web_service_;
   CastWebView::Scoped cast_web_view_;
 
   base::WeakPtrFactory<CastBrowserTest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserTest);
 };
 
 }  // namespace shell

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.content;
 
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 public final class TabContentManagerHandler extends TabModelSelectorTabObserver {
     private final TabContentManager mTabContentManager;
 
-    private final ChromeFullscreenManager mFullscreenManager;
-    private final FullscreenListener mFullscreenListener;
+    private final FullscreenManager mFullscreenManager;
+    private final Observer mFullscreenObserver;
 
     // Indicates that thumbnail cache should be removed when tab becomes interactive.
     // Used when a request is made while a tab is not in interactive state so
@@ -28,17 +28,17 @@ public final class TabContentManagerHandler extends TabModelSelectorTabObserver 
     // A tab whose thumbnail needs to be removed.
     private Tab mThumbnailTab;
 
-    public static void create(TabContentManager manager, ChromeFullscreenManager fullscreenManager,
+    public static void create(TabContentManager manager, FullscreenManager fullscreenManager,
             TabModelSelector selector) {
         new TabContentManagerHandler(manager, fullscreenManager, selector);
     }
 
-    private TabContentManagerHandler(TabContentManager manager,
-            ChromeFullscreenManager fullscreenManager, TabModelSelector selector) {
+    private TabContentManagerHandler(TabContentManager manager, FullscreenManager fullscreenManager,
+            TabModelSelector selector) {
         super(selector);
         mTabContentManager = manager;
         mFullscreenManager = fullscreenManager;
-        mFullscreenListener = new FullscreenListener() {
+        mFullscreenObserver = new Observer() {
             @Override
             public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
                 if (!tab.isUserInteractable()) {
@@ -50,7 +50,7 @@ public final class TabContentManagerHandler extends TabModelSelectorTabObserver 
             }
         };
 
-        mFullscreenManager.addListener(mFullscreenListener);
+        mFullscreenManager.addObserver(mFullscreenObserver);
     }
 
     @Override
@@ -76,6 +76,6 @@ public final class TabContentManagerHandler extends TabModelSelectorTabObserver 
     @Override
     public void destroy() {
         super.destroy();
-        mFullscreenManager.removeListener(mFullscreenListener);
+        mFullscreenManager.removeObserver(mFullscreenObserver);
     }
 }

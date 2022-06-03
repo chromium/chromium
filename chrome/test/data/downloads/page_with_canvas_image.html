@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<canvas id="canvas" width="300" height="300" style="border:1px solid #000000;"></canvas>
+<script>
+var c = document.getElementById("canvas");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(300, 300);
+ctx.stroke();
+</script>
+</body>
+</html>

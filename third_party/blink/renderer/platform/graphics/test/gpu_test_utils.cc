@@ -12,23 +12,35 @@
 
 namespace blink {
 
-void InitializeSharedGpuContext(viz::TestContextProvider* context_provider,
-                                cc::ImageDecodeCache* cache) {
-  auto factory = [](viz::TestGLES2Interface* gl, GrContext* context,
-                    cc::ImageDecodeCache* cache, bool* gpu_compositing_disabled)
+void InitializeSharedGpuContext(viz::TestContextProvider* test_context_provider,
+                                cc::ImageDecodeCache* cache,
+                                SetIsContextLost set_context_lost) {
+  auto factory = [](viz::TestGLES2Interface* gl, GrDirectContext* context,
+                    cc::ImageDecodeCache* cache,
+                    viz::RasterContextProvider* raster_context_provider,
+                    SetIsContextLost set_context_lost,
+                    bool* gpu_compositing_disabled)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
     *gpu_compositing_disabled = false;
-    auto context_provider =
-        std::make_unique<FakeWebGraphicsContext3DProvider>(gl, cache, context);
+
+    if (set_context_lost == SetIsContextLost::kSetToFalse)
+      gl->set_context_lost(false);
+    else if (set_context_lost == SetIsContextLost::kSetToTrue)
+      gl->set_context_lost(true);
+    // else set_context_lost will not be modified
+
+    auto context_provider = std::make_unique<FakeWebGraphicsContext3DProvider>(
+        gl, cache, context, raster_context_provider);
     context_provider->SetCapabilities(gl->test_capabilities());
     return context_provider;
   };
-  context_provider->BindToCurrentThread();
-  viz::TestGLES2Interface* gl = context_provider->TestContextGL();
-  GrContext* context = context_provider->GrContext();
-  SharedGpuContext::SetContextProviderFactoryForTesting(
-      WTF::BindRepeating(factory, WTF::Unretained(gl), WTF::Unretained(context),
-                         WTF::Unretained(cache)));
+  test_context_provider->BindToCurrentThread();
+  viz::TestGLES2Interface* gl = test_context_provider->TestContextGL();
+  GrDirectContext* context = test_context_provider->GrContext();
+  SharedGpuContext::SetContextProviderFactoryForTesting(WTF::BindRepeating(
+      factory, WTF::Unretained(gl), WTF::Unretained(context),
+      WTF::Unretained(cache), WTF::Unretained(test_context_provider),
+      set_context_lost));
 }
 
 }  // namespace blink

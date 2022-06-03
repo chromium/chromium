@@ -79,9 +79,7 @@ void MojoAudioOutputStream::OnStreamCreated(
     return;
   }
 
-  mojo::ScopedHandle socket_handle =
-      mojo::WrapPlatformFile(foreign_socket->Release());
-
+  mojo::PlatformHandle socket_handle(foreign_socket->Take());
   DCHECK(socket_handle.is_valid());
 
   mojo::PendingRemote<mojom::AudioOutputStream> pending_stream;

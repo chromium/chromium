@@ -5,15 +5,15 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/web_preferences.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 
 namespace extensions {
 
-// Tests that background pages are marked as never visible to prevent GPU
+// Tests that background pages are marked as never composited to prevent GPU
 // resource allocation. See crbug.com/362165 and crbug.com/163698.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageIsNeverVisible) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageIsNeverComposited) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("good").AppendASCII("Extensions")
                     .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageIsNeverVisible) {
 
   ProcessManager* manager = ProcessManager::Get(browser()->profile());
   ExtensionHost* host = FindHostWithPath(manager, "/backgroundpage.html", 1);
-  ASSERT_TRUE(host->host_contents()->GetDelegate()->IsNeverVisible(
+  ASSERT_TRUE(host->host_contents()->GetDelegate()->IsNeverComposited(
       host->host_contents()));
 }
 

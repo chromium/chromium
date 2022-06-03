@@ -8,14 +8,15 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "remoting/host/file_transfer/buffered_file_writer.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -52,7 +53,7 @@ class FileTransferMessageHandler : public protocol::NamedMessagePipeHandler {
 
   // Handlers for specific messages from the client.
   void OnMetadata(protocol::FileTransfer_Metadata metadata);
-  void OnData(std::string data);
+  void OnData(std::vector<std::uint8_t> data);
   void OnEnd();
   void OnRequestTransfer();
   void OnSuccess();
@@ -83,7 +84,7 @@ class FileTransferMessageHandler : public protocol::NamedMessagePipeHandler {
 
   State state_ = kConnected;
   std::unique_ptr<FileOperations> file_operations_;
-  base::Optional<BufferedFileWriter> buffered_file_writer_;
+  absl::optional<BufferedFileWriter> buffered_file_writer_;
   std::unique_ptr<FileOperations::Reader> file_reader_;
   std::size_t queued_chunks_ = 0;
   base::WeakPtrFactory<FileTransferMessageHandler> weak_ptr_factory_{this};

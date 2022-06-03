@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 
 namespace blink {
@@ -16,10 +15,10 @@ FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
   if (scheduler->GetFrameType() == FrameScheduler::FrameType::kMainFrame)
     return FrameOriginType::kMainFrame;
 
-  if (scheduler->IsCrossOrigin()) {
-    return FrameOriginType::kCrossOriginFrame;
+  if (scheduler->IsCrossOriginToMainFrame()) {
+    return FrameOriginType::kCrossOriginToMainFrame;
   } else {
-    return FrameOriginType::kSameOriginFrame;
+    return FrameOriginType::kSameOriginToMainFrame;
   }
 }
 
@@ -27,12 +26,10 @@ const char* FrameOriginTypeToString(FrameOriginType origin) {
   switch (origin) {
     case FrameOriginType::kMainFrame:
       return "main-frame";
-    case FrameOriginType::kSameOriginFrame:
-      return "same-origin";
-    case FrameOriginType::kCrossOriginFrame:
-      return "cross-origin";
-    case FrameOriginType::kCount:
-      NOTREACHED();
+    case FrameOriginType::kSameOriginToMainFrame:
+      return "same-origin-to-main-frame";
+    case FrameOriginType::kCrossOriginToMainFrame:
+      return "cross-origin-to-main-frame";
   }
   NOTREACHED();
   return nullptr;

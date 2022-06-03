@@ -5,19 +5,12 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_UTILS_H_
 #define MEDIA_GPU_VAAPI_VAAPI_UTILS_H_
 
-#include "base/bind_helpers.h"
+#include <va/va.h>
+
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
-
-// Forward declarations taken verbatim from <va/va.h>
-typedef unsigned int VABufferID;
-typedef void* VADisplay;
-typedef struct _VAImage VAImage;
-typedef struct _VAImageFormat VAImageFormat;
-typedef int VAStatus;
-typedef unsigned int VASurfaceID;
 
 namespace base {
 class Lock;
@@ -39,6 +32,10 @@ class ScopedVABufferMapping {
                         VABufferID buffer_id,
                         base::OnceCallback<void(VABufferID)> release_callback =
                             base::NullCallback());
+
+  ScopedVABufferMapping(const ScopedVABufferMapping&) = delete;
+  ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
+
   ~ScopedVABufferMapping();
   bool IsValid() const { return !!va_buffer_data_; }
   void* data() const {
@@ -55,8 +52,43 @@ class ScopedVABufferMapping {
   const VABufferID buffer_id_;
 
   void* va_buffer_data_ = nullptr;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ScopedVABufferMapping);
+// This class tracks the VABuffer life cycle from vaCreateBuffer() to
+// vaDestroyBuffer(). Users of this class are responsible for mapping and
+// unmapping the buffer as needed. The destructor acquires |lock|, but the user
+// of this class must acquire the lock prior to construction.
+class ScopedVABuffer {
+ public:
+  // Creates ScopedVABuffer. Returns nullptr if creating the va buffer fails.
+  static std::unique_ptr<ScopedVABuffer> Create(base::Lock* lock,
+                                                VADisplay va_display,
+                                                VAContextID va_context_id,
+                                                VABufferType va_buffer_type,
+                                                size_t size);
+  static std::unique_ptr<ScopedVABuffer>
+  CreateForTesting(VABufferID buffer_id, VABufferType buffer_type, size_t size);
+  ScopedVABuffer(const ScopedVABuffer&) = delete;
+  ScopedVABuffer& operator=(const ScopedVABuffer&) = delete;
+  ~ScopedVABuffer();
+
+  VABufferID id() const { return va_buffer_id_; }
+  VABufferType type() const { return va_buffer_type_; }
+  size_t size() const { return size_; }
+
+ private:
+  ScopedVABuffer(base::Lock* lock,
+                 VADisplay va_display,
+                 VABufferID va_buffer_id,
+                 VABufferType va_buffer_type,
+                 size_t size);
+
+  base::Lock* const lock_;
+  const VADisplay va_display_ GUARDED_BY(lock_);
+
+  const VABufferID va_buffer_id_;
+  const VABufferType va_buffer_type_;
+  const size_t size_;
 };
 
 // This class tracks the VAImage life cycle from vaCreateImage() - vaGetImage()
@@ -71,6 +103,10 @@ class ScopedVAImage {
                 VASurfaceID va_surface_id,
                 VAImageFormat* format /* Needs to be a pointer for libva */,
                 const gfx::Size& size);
+
+  ScopedVAImage(const ScopedVAImage&) = delete;
+  ScopedVAImage& operator=(const ScopedVAImage&) = delete;
+
   ~ScopedVAImage();
 
   bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
@@ -86,8 +122,6 @@ class ScopedVAImage {
   const VADisplay va_display_ GUARDED_BY(lock_);
   std::unique_ptr<VAImage> image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVAImage);
 };
 
 // A VA-API-specific surface used by video/image codec accelerators to work on.
@@ -98,6 +132,10 @@ class ScopedVASurface {
                   VASurfaceID va_surface_id,
                   const gfx::Size& size,
                   unsigned int va_rt_format);
+
+  ScopedVASurface(const ScopedVASurface&) = delete;
+  ScopedVASurface& operator=(const ScopedVASurface&) = delete;
+
   ~ScopedVASurface();
 
   bool IsValid() const;
@@ -111,16 +149,46 @@ class ScopedVASurface {
   const VASurfaceID va_surface_id_;
   const gfx::Size size_;
   const unsigned int va_rt_format_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVASurface);
 };
 
-// Adapts |frame_header| to the Vaapi data types, prepping it for consumption by
-// |vaapi_wrapper|
-bool FillVP8DataStructures(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-                           VASurfaceID va_surface_id,
-                           const Vp8FrameHeader& frame_header,
-                           const Vp8ReferenceFrameVector& reference_frames);
+// A combination of a numeric ID |id| and a callback to release it. This class
+// makes no assumptions on threading or lifetimes; |release_cb_| must provide
+// for this.
+// ScopedID allows for object-specific release callbacks, whereas
+// unique_ptr::deleter_type (or base::ScopedGeneric) only supports free
+// functions (or class-static methods) for freeing.
+template <typename T>
+class ScopedID {
+ public:
+  using ReleaseCB = base::OnceCallback<void(T)>;
+
+  ScopedID(T id, ReleaseCB release_cb)
+      : id_(id), release_cb_(std::move(release_cb)) {
+    DCHECK(release_cb_);
+    static_assert(std::is_integral<T>::value, "T must be a numeric type.");
+  }
+  ~ScopedID() { std::move(release_cb_).Run(id_); }
+
+  ScopedID& operator=(const ScopedID&) = delete;
+  ScopedID(const ScopedID&) = delete;
+
+  T id() const { return id_; }
+
+ private:
+  const T id_;
+  ReleaseCB release_cb_;
+};
+
+// Adapts |frame_header| to the Vaapi data types.
+void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
+                           const Vp8ReferenceFrameVector& reference_frames,
+                           VAIQMatrixBufferVP8* iq_matrix_buf,
+                           VAProbabilityDataBufferVP8* prob_buf,
+                           VAPictureParameterBufferVP8* pic_param,
+                           VASliceParameterBufferVP8* slice_param);
+
+bool IsValidVABufferType(VABufferType type);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_UTILS_H_

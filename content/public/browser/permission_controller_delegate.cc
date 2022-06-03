@@ -8,7 +8,7 @@ namespace content {
 
 bool PermissionControllerDelegate::IsPermissionOverridableByDevTools(
     PermissionType permission,
-    const url::Origin& origin) {
+    const absl::optional<url::Origin>& origin) {
   return true;
 }
 

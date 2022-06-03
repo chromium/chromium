@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 
-#include "base/logging.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

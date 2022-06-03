@@ -47,7 +47,8 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   bool IsEnumeratable() const override { return true; }
   bool SupportsFocus() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-  bool TypeShouldForceLegacyLayout() const final;
+  LayoutBox* GetLayoutBoxForScrolling() const override;
+  void DidRecalcStyle(const StyleRecalcChange change) override;
   const AtomicString& FormControlType() const override;
   bool RecalcWillValidate() const override { return false; }
   bool MatchesValidityPseudoClasses() const final;

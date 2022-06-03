@@ -1,0 +1,331 @@
+This test verifies that persistent grid in iframe are positioned correctly.
+
+{
+  "gridHighlights": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 158,
+          "y": 98,
+          "computedSize": 80,
+          "authoredSize": "120px"
+        },
+        {
+          "x": 288,
+          "y": 98,
+          "computedSize": 80,
+          "authoredSize": "120px"
+        },
+        {
+          "x": 418,
+          "y": 98,
+          "computedSize": 80,
+          "authoredSize": "120px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 98,
+          "y": 220.5,
+          "computedSize": 163.3333282470703,
+          "authoredSize": "1fr"
+        },
+        {
+          "x": 98,
+          "y": 475.5,
+          "computedSize": 163.3333282470703,
+          "authoredSize": "1fr"
+        }
+      ],
+      "rows": [
+        "M",
+        98,
+        98,
+        "L",
+        478,
+        98,
+        "M",
+        478,
+        343,
+        "L",
+        98,
+        343,
+        "M",
+        98,
+        353,
+        "L",
+        478,
+        353,
+        "M",
+        478,
+        598,
+        "L",
+        98,
+        598
+      ],
+      "rowGaps": [
+        "M",
+        98,
+        343,
+        "L",
+        478,
+        343,
+        "L",
+        478,
+        353,
+        "L",
+        98,
+        353,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        98,
+        98,
+        "L",
+        98,
+        598,
+        "M",
+        218,
+        598,
+        "L",
+        218,
+        98,
+        "M",
+        228,
+        98,
+        "L",
+        228,
+        598,
+        "M",
+        348,
+        598,
+        "L",
+        348,
+        98,
+        "M",
+        358,
+        98,
+        "L",
+        358,
+        598,
+        "M",
+        478,
+        598,
+        "L",
+        478,
+        98
+      ],
+      "columnGaps": [
+        "M",
+        218,
+        98,
+        "L",
+        228,
+        98,
+        "L",
+        228,
+        598,
+        "L",
+        218,
+        598,
+        "Z",
+        "M",
+        348,
+        98,
+        "L",
+        358,
+        98,
+        "L",
+        358,
+        598,
+        "L",
+        348,
+        598,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 98,
+          "y": 98
+        },
+        {
+          "x": 98,
+          "y": 348
+        },
+        {
+          "x": 98,
+          "y": 598
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 98,
+          "y": 98
+        },
+        {
+          "x": 223,
+          "y": 98
+        },
+        {
+          "x": 353,
+          "y": 98
+        },
+        {
+          "x": 478,
+          "y": 98
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 478,
+          "y": 98
+        },
+        {
+          "x": 478,
+          "y": 348
+        },
+        {
+          "x": 478,
+          "y": 598
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 98,
+          "y": 598
+        },
+        {
+          "x": 223,
+          "y": 598
+        },
+        {
+          "x": 353,
+          "y": 598
+        },
+        {
+          "x": 478,
+          "y": 598
+        }
+      ],
+      "areaNames": {
+        "header": [
+          "M",
+          228,
+          98,
+          "L",
+          478,
+          98,
+          "L",
+          478,
+          343,
+          "L",
+          228,
+          343,
+          "Z"
+        ],
+        "sidebar": [
+          "M",
+          98,
+          353,
+          "L",
+          218,
+          353,
+          "L",
+          218,
+          598,
+          "L",
+          98,
+          598,
+          "Z"
+        ],
+        "content": [
+          "M",
+          228,
+          353,
+          "L",
+          478,
+          353,
+          "L",
+          478,
+          598,
+          "L",
+          228,
+          598,
+          "Z"
+        ]
+      },
+      "rowLineNameOffsets": [
+        {
+          "x": 98,
+          "y": 598,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 98,
+          "y": 348,
+          "name": "sidebar-start"
+        },
+        {
+          "x": 98,
+          "y": 348,
+          "name": "content-start"
+        },
+        {
+          "x": 98,
+          "y": 348,
+          "name": "header-end"
+        },
+        {
+          "x": 98,
+          "y": 598,
+          "name": "content-end"
+        },
+        {
+          "x": 98,
+          "y": 98,
+          "name": "header-start"
+        }
+      ],
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        98,
+        98,
+        "L",
+        478,
+        98,
+        "L",
+        478,
+        598,
+        "L",
+        98,
+        598,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+

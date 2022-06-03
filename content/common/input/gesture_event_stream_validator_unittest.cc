@@ -4,8 +4,8 @@
 
 #include "content/common/input/gesture_event_stream_validator.h"
 
-#include "content/common/input/synthetic_web_input_event_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 using blink::WebInputEvent;
 using blink::WebGestureEvent;
@@ -17,10 +17,10 @@ const blink::WebGestureDevice kDefaultGestureDevice =
     blink::WebGestureDevice::kTouchscreen;
 
 blink::WebGestureEvent Build(WebInputEvent::Type type) {
-  blink::WebGestureEvent event =
-      SyntheticWebGestureEventBuilder::Build(type, kDefaultGestureDevice);
+  blink::WebGestureEvent event = blink::SyntheticWebGestureEventBuilder::Build(
+      type, kDefaultGestureDevice);
   // Default to providing a (valid) non-zero fling velocity.
-  if (type == WebInputEvent::kGestureFlingStart)
+  if (type == WebInputEvent::Type::kGestureFlingStart)
     event.data.fling_start.velocity_x = 5;
   return event;
 }
@@ -32,15 +32,15 @@ TEST(GestureEventStreamValidator, ValidScroll) {
   std::string error_msg;
   WebGestureEvent event;
 
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureScrollUpdate);
+  event = Build(WebInputEvent::Type::kGestureScrollUpdate);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureScrollEnd);
+  event = Build(WebInputEvent::Type::kGestureScrollEnd);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 }
@@ -51,30 +51,30 @@ TEST(GestureEventStreamValidator, InvalidScroll) {
   WebGestureEvent event;
 
   // No preceding ScrollBegin.
-  event = Build(WebInputEvent::kGestureScrollUpdate);
+  event = Build(WebInputEvent::Type::kGestureScrollUpdate);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
   // No preceding ScrollBegin.
-  event = Build(WebInputEvent::kGestureScrollEnd);
+  event = Build(WebInputEvent::Type::kGestureScrollEnd);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
   // Already scrolling.
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureScrollEnd);
+  event = Build(WebInputEvent::Type::kGestureScrollEnd);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
   // Scroll already ended.
-  event = Build(WebInputEvent::kGestureScrollEnd);
+  event = Build(WebInputEvent::Type::kGestureScrollEnd);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 }
@@ -84,11 +84,11 @@ TEST(GestureEventStreamValidator, ValidFling) {
   std::string error_msg;
   WebGestureEvent event;
 
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureFlingStart);
+  event = Build(WebInputEvent::Type::kGestureFlingStart);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 }
@@ -99,16 +99,16 @@ TEST(GestureEventStreamValidator, InvalidFling) {
   WebGestureEvent event;
 
   // No preceding ScrollBegin.
-  event = Build(WebInputEvent::kGestureFlingStart);
+  event = Build(WebInputEvent::Type::kGestureFlingStart);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
   // Zero velocity.
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureFlingStart);
+  event = Build(WebInputEvent::Type::kGestureFlingStart);
   event.data.fling_start.velocity_x = 0;
   event.data.fling_start.velocity_y = 0;
   EXPECT_FALSE(validator.Validate(event, &error_msg));
@@ -120,15 +120,15 @@ TEST(GestureEventStreamValidator, ValidPinch) {
   std::string error_msg;
   WebGestureEvent event;
 
-  event = Build(WebInputEvent::kGesturePinchBegin);
+  event = Build(WebInputEvent::Type::kGesturePinchBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGesturePinchUpdate);
+  event = Build(WebInputEvent::Type::kGesturePinchUpdate);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGesturePinchEnd);
+  event = Build(WebInputEvent::Type::kGesturePinchEnd);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 }
@@ -139,35 +139,35 @@ TEST(GestureEventStreamValidator, InvalidPinch) {
   WebGestureEvent event;
 
   // No preceding PinchBegin.
-  event = Build(WebInputEvent::kGesturePinchUpdate);
+  event = Build(WebInputEvent::Type::kGesturePinchUpdate);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGesturePinchBegin);
+  event = Build(WebInputEvent::Type::kGesturePinchBegin);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
   // ScrollBegin while pinching.
-  event = Build(WebInputEvent::kGestureScrollBegin);
+  event = Build(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
   // ScrollEnd while pinching.
-  event = Build(WebInputEvent::kGestureScrollEnd);
+  event = Build(WebInputEvent::Type::kGestureScrollEnd);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
   // Pinch already begun.
-  event = Build(WebInputEvent::kGesturePinchBegin);
+  event = Build(WebInputEvent::Type::kGesturePinchBegin);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGesturePinchEnd);
+  event = Build(WebInputEvent::Type::kGesturePinchEnd);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
   // Pinch already ended.
-  event = Build(WebInputEvent::kGesturePinchEnd);
+  event = Build(WebInputEvent::Type::kGesturePinchEnd);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 }
@@ -177,37 +177,37 @@ TEST(GestureEventStreamValidator, ValidTap) {
   std::string error_msg;
   WebGestureEvent event;
 
-  event = Build(WebInputEvent::kGestureTapDown);
+  event = Build(WebInputEvent::Type::kGestureTapDown);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapCancel);
+  event = Build(WebInputEvent::Type::kGestureTapCancel);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapDown);
+  event = Build(WebInputEvent::Type::kGestureTapDown);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapUnconfirmed);
+  event = Build(WebInputEvent::Type::kGestureTapUnconfirmed);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapCancel);
+  event = Build(WebInputEvent::Type::kGestureTapCancel);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapDown);
+  event = Build(WebInputEvent::Type::kGestureTapDown);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTap);
+  event = Build(WebInputEvent::Type::kGestureTap);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
   // DoubleTap does not require a TapDown (unlike Tap, TapUnconfirmed and
   // TapCancel).
-  event = Build(WebInputEvent::kGestureDoubleTap);
+  event = Build(WebInputEvent::Type::kGestureDoubleTap);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 }
@@ -218,41 +218,41 @@ TEST(GestureEventStreamValidator, InvalidTap) {
   WebGestureEvent event;
 
   // No preceding TapDown.
-  event = Build(WebInputEvent::kGestureTapUnconfirmed);
+  event = Build(WebInputEvent::Type::kGestureTapUnconfirmed);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapCancel);
+  event = Build(WebInputEvent::Type::kGestureTapCancel);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTap);
-  EXPECT_FALSE(validator.Validate(event, &error_msg));
-  EXPECT_FALSE(error_msg.empty());
-
-  // TapDown already terminated.
-  event = Build(WebInputEvent::kGestureTapDown);
-  EXPECT_TRUE(validator.Validate(event, &error_msg));
-  EXPECT_TRUE(error_msg.empty());
-
-  event = Build(WebInputEvent::kGestureDoubleTap);
-  EXPECT_TRUE(validator.Validate(event, &error_msg));
-  EXPECT_TRUE(error_msg.empty());
-
-  event = Build(WebInputEvent::kGestureTapCancel);
+  event = Build(WebInputEvent::Type::kGestureTap);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 
   // TapDown already terminated.
-  event = Build(WebInputEvent::kGestureTapDown);
+  event = Build(WebInputEvent::Type::kGestureTapDown);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTap);
+  event = Build(WebInputEvent::Type::kGestureDoubleTap);
   EXPECT_TRUE(validator.Validate(event, &error_msg));
   EXPECT_TRUE(error_msg.empty());
 
-  event = Build(WebInputEvent::kGestureTapCancel);
+  event = Build(WebInputEvent::Type::kGestureTapCancel);
+  EXPECT_FALSE(validator.Validate(event, &error_msg));
+  EXPECT_FALSE(error_msg.empty());
+
+  // TapDown already terminated.
+  event = Build(WebInputEvent::Type::kGestureTapDown);
+  EXPECT_TRUE(validator.Validate(event, &error_msg));
+  EXPECT_TRUE(error_msg.empty());
+
+  event = Build(WebInputEvent::Type::kGestureTap);
+  EXPECT_TRUE(validator.Validate(event, &error_msg));
+  EXPECT_TRUE(error_msg.empty());
+
+  event = Build(WebInputEvent::Type::kGestureTapCancel);
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
 }

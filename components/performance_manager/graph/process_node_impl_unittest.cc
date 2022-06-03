@@ -4,11 +4,16 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/process/process.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "content/public/browser/background_tracing_config.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,12 +39,6 @@ using ProcessNodeImplDeathTest = ProcessNodeImplTest;
 TEST_F(ProcessNodeImplDeathTest, SafeDowncast) {
   auto process = CreateNode<ProcessNodeImpl>();
   ASSERT_DEATH_IF_SUPPORTED(FrameNodeImpl::FromNodeBase(process.get()), "");
-}
-
-TEST_F(ProcessNodeImplTest, MeasureCPUUsage) {
-  auto process_node = CreateNode<ProcessNodeImpl>();
-  process_node->SetCPUUsage(1.0);
-  EXPECT_EQ(1.0, process_node->cpu_usage());
 }
 
 TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
@@ -68,12 +67,9 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   EXPECT_EQ(0U, process_node->private_footprint_kb());
   EXPECT_EQ(0U, process_node->resident_set_kb());
-  EXPECT_EQ(base::TimeDelta(), process_node->cumulative_cpu_usage());
 
-  constexpr base::TimeDelta kCpuUsage = base::TimeDelta::FromMicroseconds(1);
   process_node->set_private_footprint_kb(10u);
   process_node->set_resident_set_kb(20u);
-  process_node->set_cumulative_cpu_usage(kCpuUsage);
 
   // Kill it again.
   // Verify that the process is cleared, but the properties stick around.
@@ -84,17 +80,15 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_EQ(launch_time, process_node->launch_time());
   EXPECT_EQ(10u, process_node->private_footprint_kb());
   EXPECT_EQ(20u, process_node->resident_set_kb());
-  EXPECT_EQ(kCpuUsage, process_node->cumulative_cpu_usage());
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
-  const base::Time launch2_time = launch_time + base::TimeDelta::FromSeconds(1);
+  const base::Time launch2_time = launch_time + base::Seconds(1);
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->launch_time());
   EXPECT_EQ(0U, process_node->private_footprint_kb());
   EXPECT_EQ(0U, process_node->resident_set_kb());
-  EXPECT_EQ(base::TimeDelta(), process_node->cumulative_cpu_usage());
 }
 
 TEST_F(ProcessNodeImplTest, GetPageNodeIfExclusive) {
@@ -131,7 +125,6 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   MOCK_METHOD1(OnProcessNodeAdded, void(const ProcessNode*));
   MOCK_METHOD1(OnProcessLifetimeChange, void(const ProcessNode*));
   MOCK_METHOD1(OnBeforeProcessNodeRemoved, void(const ProcessNode*));
-  MOCK_METHOD1(OnExpectedTaskQueueingDurationSample, void(const ProcessNode*));
   MOCK_METHOD1(OnMainThreadTaskLoadIsLow, void(const ProcessNode*));
   MOCK_METHOD2(OnPriorityChanged, void(const ProcessNode*, base::TaskPriority));
   MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
@@ -154,6 +147,7 @@ using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using testing::_;
 using testing::Invoke;
+using testing::Return;
 
 }  // namespace
 
@@ -173,12 +167,6 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   process_node->SetProcess(base::Process::Current(), base::Time::Now());
   EXPECT_CALL(obs, OnProcessLifetimeChange(_));
   process_node->SetProcessExitStatus(10);
-
-  EXPECT_CALL(obs, OnExpectedTaskQueueingDurationSample(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
-  process_node->SetExpectedTaskQueueingDuration(
-      base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
@@ -207,6 +195,23 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   graph()->RemoveProcessNodeObserver(&obs);
 }
 
+TEST_F(ProcessNodeImplTest, ConstructionArguments) {
+  constexpr RenderProcessHostId kRenderProcessHostId =
+      RenderProcessHostId(0xF0B);
+  auto process_node = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_GPU,
+      RenderProcessHostProxy::CreateForTesting(kRenderProcessHostId));
+
+  const ProcessNode* public_process_node = process_node.get();
+
+  EXPECT_EQ(content::PROCESS_TYPE_GPU, process_node->process_type());
+  EXPECT_EQ(content::PROCESS_TYPE_GPU, public_process_node->GetProcessType());
+
+  EXPECT_EQ(kRenderProcessHostId,
+            public_process_node->GetRenderProcessHostProxy()
+                .render_process_host_id());
+}
+
 TEST_F(ProcessNodeImplTest, PublicInterface) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   const ProcessNode* public_process_node = process_node.get();
@@ -220,6 +225,8 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
 
   // Simply test that the public interface impls yield the same result as their
   // private counterpart.
+  EXPECT_EQ(process_node->process_type(),
+            public_process_node->GetProcessType());
 
   const base::Process self = base::Process::Current();
   const base::Time launch_time = base::Time::Now();
@@ -248,21 +255,9 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
       }));
   EXPECT_EQ(public_frame_nodes, visited_frame_nodes);
 
-  process_node->SetExpectedTaskQueueingDuration(
-      base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(process_node->expected_task_queueing_duration(),
-            public_process_node->GetExpectedTaskQueueingDuration());
-
   process_node->SetMainThreadTaskLoadIsLow(true);
   EXPECT_EQ(process_node->main_thread_task_load_is_low(),
             public_process_node->GetMainThreadTaskLoadIsLow());
-
-  process_node->SetCPUUsage(0.5);
-  EXPECT_EQ(process_node->cpu_usage(), public_process_node->GetCpuUsage());
-
-  process_node->set_cumulative_cpu_usage(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(process_node->cumulative_cpu_usage(),
-            public_process_node->GetCumulativeCpuUsage());
 
   process_node->set_private_footprint_kb(628);
   EXPECT_EQ(process_node->private_footprint_kb(),
@@ -271,6 +266,99 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   process_node->set_resident_set_kb(398);
   EXPECT_EQ(process_node->resident_set_kb(),
             public_process_node->GetResidentSetKb());
+}
+
+namespace {
+
+class LenientFakeBackgroundTracingManager
+    : public content::BackgroundTracingManager {
+ public:
+  LenientFakeBackgroundTracingManager() = default;
+  ~LenientFakeBackgroundTracingManager() override = default;
+
+  // Functions we want to intercept.
+  MOCK_METHOD(TriggerHandle,
+              RegisterTriggerType,
+              (base::StringPiece trigger_name),
+              (override));
+  MOCK_METHOD(bool, HasActiveScenario, (), (override));
+  MOCK_METHOD(void,
+              TriggerNamedEvent,
+              (TriggerHandle trigger_handle,
+               StartedFinalizingCallback started_callback),
+              (override));
+
+  // Functions we don't care about.
+  bool SetActiveScenario(
+      std::unique_ptr<content::BackgroundTracingConfig> config,
+      DataFiltering data_filtering) override {
+    return true;
+  }
+  bool SetActiveScenarioWithReceiveCallback(
+      std::unique_ptr<content::BackgroundTracingConfig> config,
+      ReceiveCallback receive_callback,
+      DataFiltering data_filtering) override {
+    return true;
+  }
+
+  void WhenIdle(IdleCallback idle_callback) override {}
+  const std::string& GetTriggerNameFromHandle(
+      TriggerHandle trigger_handle) override {
+    static std::string name;
+    return name;
+  }
+  bool HasTraceToUpload() override { return false; }
+  std::string GetLatestTraceToUpload() override { return std::string(); }
+  std::string GetBackgroundTracingUploadUrl(
+      const std::string& trial_name) override {
+    return std::string();
+  }
+  std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(
+      const std::string& trial_name) override {
+    return nullptr;
+  }
+  void AbortScenarioForTesting() override {}
+  void SetTraceToUploadForTesting(
+      std::unique_ptr<std::string> trace_data) override {}
+  void SetConfigTextFilterForTesting(
+      ConfigTextFilterForTesting predicate) override {}
+};
+
+using FakeBackgroundTracingManager =
+    ::testing::StrictMock<LenientFakeBackgroundTracingManager>;
+
+}  // namespace
+
+TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
+  const std::string kTrigger1("trigger1");
+  const std::string kTrigger2("trigger2");
+  constexpr content::BackgroundTracingManager::TriggerHandle kHandle1 = 1;
+
+  FakeBackgroundTracingManager manager;
+
+  // Don't expect any other functions exception HasActiveScenario to be called
+  // it that function returns false.
+  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(false));
+  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
+                                                              &manager);
+  testing::Mock::VerifyAndClear(&manager);
+
+  // If HasActiveScenario returns true, expect a new trigger to be registered
+  // and triggered.
+  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
+  EXPECT_CALL(manager, RegisterTriggerType(_)).WillOnce(Return(kHandle1));
+  EXPECT_CALL(manager, TriggerNamedEvent(_, _));
+  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
+                                                              &manager);
+  testing::Mock::VerifyAndClear(&manager);
+
+  // Now that a trigger is registered, expect the trigger to be validated, and
+  // triggered again.
+  EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
+  EXPECT_CALL(manager, TriggerNamedEvent(_, _));
+  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
+                                                              &manager);
+  testing::Mock::VerifyAndClear(&manager);
 }
 
 }  // namespace performance_manager

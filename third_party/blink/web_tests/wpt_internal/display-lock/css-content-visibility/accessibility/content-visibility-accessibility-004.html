@@ -1,0 +1,54 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility press</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto subtrees are exposed by accessibility press">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="height:10000px;">
+  spacer so that everything below will be offscreen (and won't get viewport-activated)
+</div>
+<div id="hidden" style="content-visibility: auto">
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+// #hidden is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
+// and has 3 child nodes: "foo" text, "<newline>" text, and #child node.
+// Note that we have the separate <newline> text because it's an AXNodeObject and does
+// not do whitespace collapsing (though this might change in the future).
+async_test((t) => {
+  let axHidden = axElementById("hidden");
+  t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count when locked"); });
+
+  // Press on the #child. This will cause the element to be brought into the view,
+  // since it is interactable even though it is locked by content-visibility (see
+  // https://github.com/WICG/display-locking for details). When that is done,
+  // the element will become unlocked and AXNodeObjects will be replaced with
+  // AXLayoutObjects, causing <newline> to be collapsed, so we expect to see
+  // two children.
+  axElementById("child").press();
+  // Wait for the next frame for the ax object to be recreated.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      axHidden = axElementById("hidden");
+      // #hidden is now unlocked and saved as a normal AXLayoutObject with 2 child nodes:
+      // "foo" text and #child node.
+      t.step(() => { assert_equals(axHidden.childrenCount, 2, "Children count after activation"); });
+      t.done();
+    });
+  });
+}, "Accessiblility press() causes activatable hidden tree to activate");
+
+</script>

@@ -7,6 +7,7 @@
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
@@ -24,6 +25,9 @@ namespace {
 class SendGlobalKeyEventsHelper {
  public:
   SendGlobalKeyEventsHelper();
+  SendGlobalKeyEventsHelper(const SendGlobalKeyEventsHelper&) = delete;
+  SendGlobalKeyEventsHelper& operator=(const SendGlobalKeyEventsHelper&) =
+      delete;
   ~SendGlobalKeyEventsHelper();
 
   // Callback for MockCrApplication.
@@ -46,9 +50,7 @@ class SendGlobalKeyEventsHelper {
   base::RunLoop run_loop_;
   // First key code pressed in the event sequence. This is also the last key
   // code to be released and so it will be waited for.
-  base::Optional<int> first_key_down_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendGlobalKeyEventsHelper);
+  absl::optional<int> first_key_down_code_;
 };
 
 SendGlobalKeyEventsHelper* g_global_key_events_helper = nullptr;

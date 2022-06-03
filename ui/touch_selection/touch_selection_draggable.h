@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
-#define UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
+#ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_
+#define UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_
 
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -27,6 +27,15 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggableClient {
 
 // Generic interface for entities that manipulate the selection via dragging.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggable {
+ public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.touch_selection
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: TouchSelectionDraggableType
+  enum class Type {
+    kNone,
+    kTouchHandle,
+    kLongpress,
+  };
+
  protected:
   virtual ~TouchSelectionDraggable() {}
 
@@ -40,4 +49,4 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggable {
 
 }  // namespace ui
 
-#endif  // UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
+#endif  // UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_

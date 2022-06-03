@@ -81,7 +81,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
         any_order=True,
       )
 
-    for artifact in test_result['outputArtifacts'].itervalues():
+    for artifact in test_result['outputArtifacts'].values():
       self.assertEqual(artifact['fetchUrl'], 'gs://bucket/path')
       self.assertEqual(
           artifact['viewUrl'],
@@ -127,7 +127,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
 
     artifacts = test_result['outputArtifacts']
     self.assertEqual(len(artifacts), 1)
-    self.assertEqual(artifacts.keys()[0], 'trace.html')
+    self.assertEqual(list(artifacts.keys())[0], 'trace.html')
 
   def testMeasurementToHistogram(self):
     hist = processor.MeasurementToHistogram('a', {
@@ -179,3 +179,20 @@ class ResultsProcessorUnitTests(unittest.TestCase):
     test_result = testing.TestResult('benchmark/story')
     url = processor.GetTraceUrl(test_result)
     self.assertIsNone(url)
+
+  def testAmortizeProcessingDuration_UndefinedDuration(self):
+    test_results = [testing.TestResult('benchmark/story')]
+    del test_results[0]['runDuration']
+    # pylint: disable=protected-access
+    processor._AmortizeProcessingDuration(1.0, test_results)
+    # pylint: enable=protected-access
+    self.assertNotIn('runDuration', test_results[0])
+    self.assertEqual(len(test_results), 1)
+
+  def testAmortizeProcessingDuration_OneResult(self):
+    test_results = [testing.TestResult('benchmark/story', run_duration='1.0s')]
+    # pylint: disable=protected-access
+    processor._AmortizeProcessingDuration(1.0, test_results)
+    # pylint: enable=protected-access
+    self.assertEqual(str(test_results[0]['runDuration']), '2.0s')
+    self.assertEqual(len(test_results), 1)

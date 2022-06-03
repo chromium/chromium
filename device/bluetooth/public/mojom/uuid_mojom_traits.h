@@ -8,7 +8,8 @@
 #include <string>
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/public/mojom/uuid.mojom.h"
+#include "device/bluetooth/public/mojom/uuid.mojom-shared.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 

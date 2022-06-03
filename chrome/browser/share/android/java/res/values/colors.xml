@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Qr code scanner camera preview overlay colors -->
+    <color name="overlay_mask">@color/black_alpha_65</color>
+    <color name="camera_background">@color/modern_grey_100</color>
+</resources>

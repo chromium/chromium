@@ -11,7 +11,7 @@ test(function(t) {
   var ctxNewOffscreen = canNewOffscreen.getContext("bitmaprenderer");
   //We are not loading a bitmap to this context, so it is empty.
 
-  assert_throws("UnknownError", function () {canNewOffscreen.transferToImageBitmap();});
+  assert_throws_dom("UnknownError", function () {canNewOffscreen.transferToImageBitmap();});
 }, "Test whether transferToImageBitmap does not works with an empty bitmap");
 </script>
 </body>

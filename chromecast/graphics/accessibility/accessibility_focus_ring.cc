@@ -9,7 +9,6 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 
 namespace chromecast {
 

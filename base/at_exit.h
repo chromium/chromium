@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -33,6 +32,8 @@ class BASE_EXPORT AtExitManager {
   typedef void (*AtExitCallbackType)(void*);
 
   AtExitManager();
+  AtExitManager(const AtExitManager&) = delete;
+  AtExitManager& operator=(const AtExitManager&) = delete;
 
   // The dtor calls all the registered callbacks. Do not try to register more
   // callbacks after this point.
@@ -71,8 +72,6 @@ class BASE_EXPORT AtExitManager {
 
   // Stack of managers to allow shadowing.
   AtExitManager* const next_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtExitManager);
 };
 
 #if defined(UNIT_TEST)

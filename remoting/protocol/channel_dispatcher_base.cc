@@ -27,8 +27,9 @@ void ChannelDispatcherBase::Init(MessageChannelFactory* channel_factory,
   channel_factory_ = channel_factory;
   event_handler_ = event_handler;
 
-  channel_factory_->CreateChannel(channel_name_, base::Bind(
-      &ChannelDispatcherBase::OnChannelReady, base::Unretained(this)));
+  channel_factory_->CreateChannel(
+      channel_name_, base::BindOnce(&ChannelDispatcherBase::OnChannelReady,
+                                    base::Unretained(this)));
 }
 
 void ChannelDispatcherBase::Init(std::unique_ptr<MessagePipe> message_pipe,

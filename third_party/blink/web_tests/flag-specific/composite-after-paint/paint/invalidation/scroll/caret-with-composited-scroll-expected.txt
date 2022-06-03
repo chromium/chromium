@@ -8,24 +8,23 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [205, 1022],
-      "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl INPUT id='text'",
-          "rect": [0, 999, 205, 23],
-          "reason": "subtree"
-        },
-        {
-          "object": "LayoutTextControl INPUT id='text'",
-          "rect": [0, 999, 205, 23],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [3, 1003, 1, 16],
-          "reason": "chunk appeared"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 999, 205, 23]
       ],
       "transform": 2
     }

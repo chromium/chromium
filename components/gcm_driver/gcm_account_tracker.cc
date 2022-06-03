@@ -11,13 +11,15 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/ip_endpoint.h"
 
@@ -25,10 +27,6 @@ namespace gcm {
 
 namespace {
 
-// Scopes needed by the OAuth2 access tokens.
-const char kGCMGroupServerScope[] = "https://www.googleapis.com/auth/gcm";
-const char kGCMCheckinServerScope[] =
-    "https://www.googleapis.com/auth/android_checkin";
 // Name of the GCM account tracker for fetching access tokens.
 const char kGCMAccountTrackerName[] = "gcm_account_tracker";
 // Minimum token validity when sending to GCM groups server.
@@ -214,8 +212,7 @@ void GCMAccountTracker::SanitizeTokens() {
        ++iter) {
     if (iter->second.state == TOKEN_PRESENT &&
         iter->second.expiration_time <
-            base::Time::Now() +
-                base::TimeDelta::FromMilliseconds(kMinimumTokenValidityMs)) {
+            base::Time::Now() + base::Milliseconds(kMinimumTokenValidityMs)) {
       iter->second.access_token.clear();
       iter->second.state = TOKEN_NEEDED;
       iter->second.expiration_time = base::Time();
@@ -251,19 +248,18 @@ bool GCMAccountTracker::IsTokenFetchingRequired() const {
 base::TimeDelta GCMAccountTracker::GetTimeToNextTokenReporting() const {
   base::TimeDelta time_till_next_reporting =
       driver_->GetLastTokenFetchTime() +
-      base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs) -
-      base::Time::Now();
+      base::Milliseconds(kTokenReportingIntervalMs) - base::Time::Now();
 
   // Case when token fetching is overdue.
-  if (time_till_next_reporting < base::TimeDelta())
+  if (time_till_next_reporting.is_negative())
     return base::TimeDelta();
 
   // Case when calculated period is larger than expected, including the
   // situation when the method is called before GCM driver is completely
   // initialized.
   if (time_till_next_reporting >
-          base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs)) {
-    return base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs);
+      base::Milliseconds(kTokenReportingIntervalMs)) {
+    return base::Milliseconds(kTokenReportingIntervalMs);
   }
 
   return time_till_next_reporting;
@@ -278,6 +274,10 @@ void GCMAccountTracker::GetAllNeededTokens() {
   if (!driver_->IsConnected())
     return;
 
+  // Only start fetching access tokens if the user consented for sync.
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
+    return;
+
   for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == TOKEN_NEEDED)
@@ -288,9 +288,9 @@ void GCMAccountTracker::GetAllNeededTokens() {
 void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
   DCHECK_EQ(account_iter->second.state, TOKEN_NEEDED);
 
-  identity::ScopeSet scopes;
-  scopes.insert(kGCMGroupServerScope);
-  scopes.insert(kGCMCheckinServerScope);
+  signin::ScopeSet scopes;
+  scopes.insert(GaiaConstants::kGCMGroupServerOAuth2Scope);
+  scopes.insert(GaiaConstants::kGCMCheckinServerOAuth2Scope);
 
   // NOTE: It is safe to use base::Unretained() here as |token_fetcher| is owned
   // by this object and guarantees that it will not invoke its callback after

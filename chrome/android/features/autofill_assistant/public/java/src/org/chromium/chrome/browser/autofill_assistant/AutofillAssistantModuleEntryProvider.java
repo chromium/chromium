@@ -30,6 +30,10 @@ public class AutofillAssistantModuleEntryProvider {
     static final AutofillAssistantModuleEntryProvider INSTANCE =
             new AutofillAssistantModuleEntryProvider();
 
+    boolean isInstalled() {
+        return AutofillAssistantModule.isInstalled();
+    }
+
     /* Returns the AA module entry, if it is already installed. */
     @Nullable
     /* package */
@@ -42,15 +46,13 @@ public class AutofillAssistantModuleEntryProvider {
 
     /** Gets the AA module entry, installing it if necessary. */
     /* package */
-    void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         AutofillAssistantModuleEntry entry = getModuleEntryIfInstalled();
         if (entry != null) {
-            AutofillAssistantMetrics.recordFeatureModuleInstallation(
-                    FeatureModuleInstallation.DFM_ALREADY_INSTALLED);
             callback.onResult(entry);
             return;
         }
-        loadDynamicModuleWithUi(tab, callback);
+        loadDynamicModule(tab, callback, showUi);
     }
 
     /**
@@ -69,14 +71,11 @@ public class AutofillAssistantModuleEntryProvider {
     public static void maybeInstallDeferred() {
         boolean isNotBundle = !BundleUtils.isBundle();
         boolean isInstalled = AutofillAssistantModule.isInstalled();
-        boolean isVersionBeforeLollipop =
-                android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP;
         boolean isNotHighEndDiskDevice = !SysUtils.isHighEndDiskDevice();
-        if (isNotBundle || isInstalled || isVersionBeforeLollipop || isNotHighEndDiskDevice) {
+        if (isNotBundle || isInstalled || isNotHighEndDiskDevice) {
             Log.v(TAG,
                     "Deferred install not triggered: not_bundle=" + isNotBundle
                             + ", already_installed=" + isInstalled
-                            + ", before_lollipop=" + isVersionBeforeLollipop
                             + ", not_high_end_device=" + isNotHighEndDiskDevice);
             return;
         }
@@ -86,33 +85,35 @@ public class AutofillAssistantModuleEntryProvider {
         AutofillAssistantModule.installDeferred();
     }
 
-    private static void loadDynamicModuleWithUi(
-            Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    private static void loadDynamicModule(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         ModuleInstallUi ui = new ModuleInstallUi(tab, R.string.autofill_assistant_module_title,
                 new ModuleInstallUi.FailureUiListener() {
                     @Override
                     public void onFailureUiResponse(boolean retry) {
                         if (retry) {
-                            loadDynamicModuleWithUi(tab, callback);
+                            loadDynamicModule(tab, callback, showUi);
                         } else {
-                            AutofillAssistantMetrics.recordFeatureModuleInstallation(
-                                    FeatureModuleInstallation.DFM_FOREGROUND_INSTALLATION_FAILED);
                             callback.onResult(null);
                         }
                     }
                 });
-        // Shows toast informing user about install start.
-        ui.showInstallStartUi();
+        if (showUi) {
+            // Shows toast informing user about install start.
+            ui.showInstallStartUi();
+        }
+
         AutofillAssistantModule.install((success) -> {
             if (success) {
-                // Don't show success UI from DFM, transition to autobot UI directly.
-                AutofillAssistantMetrics.recordFeatureModuleInstallation(
-                        FeatureModuleInstallation.DFM_FOREGROUND_INSTALLATION_SUCCEEDED);
+                // Don't show success UI from DFM, transition to Autofill Assistant UI directly.
                 callback.onResult(AutofillAssistantModule.getImpl());
                 return;
+            } else if (showUi) {
+                // Show inforbar to ask user if they want to retry or cancel.
+                ui.showInstallFailureUi();
+            } else {
+                callback.onResult(null);
             }
-            // Show inforbar to ask user if they want to retry or cancel.
-            ui.showInstallFailureUi();
         });
     }
 }

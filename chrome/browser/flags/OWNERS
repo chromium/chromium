@@ -1,0 +1,9 @@
+dtrainor@chromium.org
+hnakashima@chromium.org
+twellington@chromium.org
+
+# This is for simple changes of adding/removing features.  For more structural
+# changes, use the normal OWNERS rules.
+per-file android/chrome_feature_list.*=*
+per-file android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java=*
+per-file android/java_templates/ChromeSwitches.java.tmpl=*

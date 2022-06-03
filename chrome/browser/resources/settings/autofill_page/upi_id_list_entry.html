@@ -1,0 +1,28 @@
+    <style include="settings-shared passwords-shared">
+      .expiration-column {
+        align-items: center;
+        display: flex;
+        flex: 1;
+      }
+
+      #upiIdExpiration {
+        flex: 1;
+      }
+
+      .payments-label {
+        color: var(--cr-secondary-text-color);
+        margin-inline-start: 16px;
+      }
+    </style>
+    <div class="list-item">
+      <div class="type-column">
+        <span id="upiIdLabel">[[upiId]]</span>
+        <span class="payments-label">$i18n{upiIdLabel}</span>
+      </div>
+      <div class="expiration-column">
+        <div id="upiIdExpiration">
+          $i18n{upiIdExpirationNever}
+        </div>
+        <!-- TODO(crbug.com/986289) Implement button for deleting a row. -->
+      </div>
+    </div>

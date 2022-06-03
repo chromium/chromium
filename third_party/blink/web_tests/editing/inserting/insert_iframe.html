@@ -1,0 +1,15 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests pasting a fragment containing an <iframe> after a <div>. This used
+// to fail on an assertion in moveParagraphContentsToNewBlockIfNecessary. You
+// should see 'foo' and then an <iframe> below.
+selection_test(
+    '<div contenteditable>|</div>',
+    selection =>
+        selection.document.execCommand('insertHTML', false,
+            '<div>abc</div><iframe></iframe>'),
+    '<div contenteditable><div>abc</div><iframe></iframe>|</div>');
+</script>

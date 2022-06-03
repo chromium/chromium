@@ -31,7 +31,7 @@
 namespace blink {
 
 class Element;
-class HTMLCollectionOrElement;
+class V8UnionElementOrHTMLCollection;
 
 class HTMLAllCollection final : public HTMLCollection {
   DEFINE_WRAPPERTYPEINFO();
@@ -42,14 +42,8 @@ class HTMLAllCollection final : public HTMLCollection {
   ~HTMLAllCollection() override;
 
   Element* AnonymousIndexedGetter(unsigned index);
-  void NamedGetter(const AtomicString& name, HTMLCollectionOrElement&);
+  V8UnionElementOrHTMLCollection* NamedGetter(const AtomicString& name);
 };
-
-DEFINE_TYPE_CASTS(HTMLAllCollection,
-                  LiveNodeListBase,
-                  collection,
-                  collection->GetType() == kDocAll,
-                  collection.GetType() == kDocAll);
 
 }  // namespace blink
 

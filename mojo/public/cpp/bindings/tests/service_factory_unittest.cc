@@ -5,10 +5,10 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/service_factory_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -25,10 +26,11 @@ class ServiceFactoryTest : public testing::Test {
  public:
   ServiceFactoryTest() = default;
 
+  ServiceFactoryTest(const ServiceFactoryTest&) = delete;
+  ServiceFactoryTest& operator=(const ServiceFactoryTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactoryTest);
 };
 
 class TestService1Impl : public mojom::TestService1 {
@@ -38,21 +40,14 @@ class TestService1Impl : public mojom::TestService1 {
     ++num_instances_;
   }
 
+  TestService1Impl(const TestService1Impl&) = delete;
+  TestService1Impl& operator=(const TestService1Impl&) = delete;
+
   ~TestService1Impl() override {
     --num_instances_;
-    if (destruction_wait_loop_)
-      destruction_wait_loop_->Quit();
   }
 
   static int num_instances() { return num_instances_; }
-
-  static void WaitForInstanceDestruction() {
-    static base::NoDestructor<base::Optional<base::RunLoop>> loop;
-    loop->emplace();
-    destruction_wait_loop_ = &loop->value();
-    (*loop)->Run();
-    destruction_wait_loop_ = nullptr;
-  }
 
  private:
   // mojom::TestService1:
@@ -64,15 +59,15 @@ class TestService1Impl : public mojom::TestService1 {
 
   Receiver<mojom::TestService1> receiver_;
   static int num_instances_;
-  static base::RunLoop* destruction_wait_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService1Impl);
 };
 
 class TestService2Impl : public mojom::TestService2 {
  public:
   explicit TestService2Impl(PendingReceiver<mojom::TestService2> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestService2Impl(const TestService2Impl&) = delete;
+  TestService2Impl& operator=(const TestService2Impl&) = delete;
 
   ~TestService2Impl() override = default;
 
@@ -83,12 +78,9 @@ class TestService2Impl : public mojom::TestService2 {
   }
 
   Receiver<mojom::TestService2> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService2Impl);
 };
 
 int TestService1Impl::num_instances_ = 0;
-base::RunLoop* TestService1Impl::destruction_wait_loop_ = nullptr;
 
 auto RunTestService1(PendingReceiver<mojom::TestService1> receiver) {
   return std::make_unique<TestService1Impl>(std::move(receiver));
@@ -99,11 +91,13 @@ auto RunTestService2(PendingReceiver<mojom::TestService2> receiver) {
 }
 
 TEST_F(ServiceFactoryTest, BasicMatching) {
-  ServiceFactory factory{RunTestService1, RunTestService2};
+  ServiceFactory factory;
+  factory.Add(RunTestService1);
+  factory.Add(RunTestService2);
 
   Remote<mojom::TestService1> remote1;
   GenericPendingReceiver receiver = remote1.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory.MaybeRunService(&receiver));
+  EXPECT_TRUE(factory.RunService(std::move(receiver), base::NullCallback()));
   EXPECT_FALSE(receiver.is_valid());
 
   // Verify that we connected to an instance of TestService1.
@@ -113,7 +107,7 @@ TEST_F(ServiceFactoryTest, BasicMatching) {
 
   Remote<mojom::TestService2> remote2;
   receiver = remote2.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory.MaybeRunService(&receiver));
+  EXPECT_TRUE(factory.RunService(std::move(receiver), base::NullCallback()));
   EXPECT_FALSE(receiver.is_valid());
 
   // Verify that we connected to an instance of TestService2.
@@ -122,64 +116,73 @@ TEST_F(ServiceFactoryTest, BasicMatching) {
 
   Remote<mojom::TestService3> remote3;
   receiver = remote3.BindNewPipeAndPassReceiver();
-  EXPECT_FALSE(factory.MaybeRunService(&receiver));
-  EXPECT_TRUE(receiver.is_valid());
-  EXPECT_TRUE(receiver.As<mojom::TestService3>());
+  EXPECT_FALSE(factory.CanRunService(receiver));
+  EXPECT_FALSE(factory.RunService(std::move(receiver), base::NullCallback()));
+  EXPECT_FALSE(receiver.is_valid());
 }
 
 TEST_F(ServiceFactoryTest, DestroyInstanceOnClientDisconnect) {
-  ServiceFactory factory{RunTestService1};
+  ServiceFactory factory;
+  factory.Add(RunTestService1);
 
+  base::RunLoop loop1;
+  base::OnceClosure quit1 = loop1.QuitClosure();
   Remote<mojom::TestService1> remote1;
   GenericPendingReceiver receiver = remote1.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory.MaybeRunService(&receiver));
+  EXPECT_TRUE(factory.RunService(std::move(receiver), std::move(quit1)));
 
+  base::RunLoop loop2;
+  base::OnceClosure quit2 = loop2.QuitClosure();
   Remote<mojom::TestService1> remote2;
   receiver = remote2.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory.MaybeRunService(&receiver));
+  EXPECT_TRUE(factory.RunService(std::move(receiver), std::move(quit2)));
 
   remote1.FlushForTesting();
   remote2.FlushForTesting();
   EXPECT_EQ(2, TestService1Impl::num_instances());
 
   remote1.reset();
-  TestService1Impl::WaitForInstanceDestruction();
+  loop1.Run();
   EXPECT_EQ(1, TestService1Impl::num_instances());
 
   remote2.FlushForTesting();
   EXPECT_EQ(1, TestService1Impl::num_instances());
 
   remote2.reset();
-  TestService1Impl::WaitForInstanceDestruction();
+  loop2.Run();
   EXPECT_EQ(0, TestService1Impl::num_instances());
 }
 
 TEST_F(ServiceFactoryTest, DestroyInstanceOnServiceDisconnect) {
-  ServiceFactory factory{RunTestService1};
+  ServiceFactory factory;
+  factory.Add(RunTestService1);
 
+  base::RunLoop loop;
+  base::OnceClosure quit = loop.QuitClosure();
   Remote<mojom::TestService1> remote;
   GenericPendingReceiver receiver = remote.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory.MaybeRunService(&receiver));
+  EXPECT_TRUE(factory.RunService(std::move(receiver), std::move(quit)));
 
   remote.FlushForTesting();
   EXPECT_EQ(1, TestService1Impl::num_instances());
   remote->Quit();
-  remote.FlushForTesting();
+  loop.Run();
   EXPECT_EQ(0, TestService1Impl::num_instances());
 }
 
 TEST_F(ServiceFactoryTest, DestroyInstancesOnFactoryDestruction) {
-  base::Optional<ServiceFactory> factory{base::in_place, RunTestService1};
+  absl::optional<ServiceFactory> factory{absl::in_place};
+  factory->Add(RunTestService1);
 
   Remote<mojom::TestService1> remote1;
   GenericPendingReceiver receiver = remote1.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory->MaybeRunService(&receiver));
+  EXPECT_TRUE(factory->RunService(std::move(receiver), base::NullCallback()));
   remote1.FlushForTesting();
   EXPECT_EQ(1, TestService1Impl::num_instances());
 
   Remote<mojom::TestService1> remote2;
   receiver = remote2.BindNewPipeAndPassReceiver();
-  EXPECT_TRUE(factory->MaybeRunService(&receiver));
+  EXPECT_TRUE(factory->RunService(std::move(receiver), base::NullCallback()));
   remote2.FlushForTesting();
   EXPECT_EQ(2, TestService1Impl::num_instances());
 

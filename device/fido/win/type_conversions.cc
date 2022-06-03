@@ -4,12 +4,14 @@
 
 #include "device/fido/win/type_conversions.h"
 
+#include <algorithm>
+#include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/reader.h"
@@ -20,10 +22,11 @@
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation) {
   auto authenticator_data = AuthenticatorData::DecodeAuthenticatorData(
@@ -33,19 +36,19 @@ ToAuthenticatorMakeCredentialResponse(
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(credential_attestation.pbAuthenticatorData,
                                    credential_attestation.cbAuthenticatorData);
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
+  absl::optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
       base::span<const uint8_t>(credential_attestation.pbAttestation,
                                 credential_attestation.cbAttestation));
   if (!cbor_attestation_statement || !cbor_attestation_statement->is_map()) {
     DLOG(ERROR) << "CBOR decoding attestation statement failed: "
                 << base::HexEncode(credential_attestation.pbAttestation,
                                    credential_attestation.cbAttestation);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<FidoTransportProtocol> transport_used;
+  absl::optional<FidoTransportProtocol> transport_used;
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3) {
     // dwUsedTransport should have exactly one of the
@@ -69,17 +72,27 @@ ToAuthenticatorMakeCredentialResponse(
     }
   }
 
-  return AuthenticatorMakeCredentialResponse(
+  AuthenticatorMakeCredentialResponse ret(
       transport_used,
       AttestationObject(
           std::move(*authenticator_data),
           std::make_unique<OpaqueAttestationStatement>(
               base::WideToUTF8(credential_attestation.pwszFormatType),
               std::move(*cbor_attestation_statement))));
+
+  if (credential_attestation.dwVersion >=
+      WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
+    ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
+    ret.is_resident_key = credential_attestation.bResidentKey;
+  }
+
+  return ret;
 }
 
-base::Optional<AuthenticatorGetAssertionResponse>
-ToAuthenticatorGetAssertionResponse(const WEBAUTHN_ASSERTION& assertion) {
+absl::optional<AuthenticatorGetAssertionResponse>
+ToAuthenticatorGetAssertionResponse(
+    const WEBAUTHN_ASSERTION& assertion,
+    const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   auto authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(base::span<const uint8_t>(
           assertion.pbAuthenticatorData, assertion.cbAuthenticatorData));
@@ -87,22 +100,20 @@ ToAuthenticatorGetAssertionResponse(const WEBAUTHN_ASSERTION& assertion) {
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(assertion.pbAuthenticatorData,
                                    assertion.cbAuthenticatorData);
-    return base::nullopt;
+    return absl::nullopt;
   }
   AuthenticatorGetAssertionResponse response(
       std::move(*authenticator_data),
       std::vector<uint8_t>(assertion.pbSignature,
                            assertion.pbSignature + assertion.cbSignature));
-  if (assertion.Credential.cbId > 0) {
-    response.SetCredential(PublicKeyCredentialDescriptor(
-        CredentialType::kPublicKey,
-        std::vector<uint8_t>(
-            assertion.Credential.pbId,
-            assertion.Credential.pbId + assertion.Credential.cbId)));
-  }
+  response.credential = PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey,
+      std::vector<uint8_t>(
+          assertion.Credential.pbId,
+          assertion.Credential.pbId + assertion.Credential.cbId));
   if (assertion.cbUserId > 0) {
-    response.SetUserEntity(PublicKeyCredentialUserEntity(std::vector<uint8_t>(
-        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId)));
+    response.user_entity = PublicKeyCredentialUserEntity(std::vector<uint8_t>(
+        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId));
   }
   return response;
 }
@@ -150,6 +161,7 @@ static uint32_t ToWinTransportsMask(
         result |= WEBAUTHN_CTAP_TRANSPORT_BLE;
         break;
       case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+      case FidoTransportProtocol::kAndroidAccessory:
         // caBLE is unsupported by the Windows API.
         break;
       case FidoTransportProtocol::kInternal:
@@ -169,7 +181,7 @@ std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
     }
     result.push_back(WEBAUTHN_CREDENTIAL{
         WEBAUTHN_CREDENTIAL_CURRENT_VERSION,
-        credential.id().size(),
+        base::checked_cast<DWORD>(credential.id().size()),
         const_cast<unsigned char*>(credential.id().data()),
         WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
     });
@@ -185,7 +197,8 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
       continue;
     }
     result.push_back(WEBAUTHN_CREDENTIAL_EX{
-        WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION, credential.id().size(),
+        WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION,
+        base::checked_cast<DWORD>(credential.id().size()),
         const_cast<unsigned char*>(credential.id().data()),
         WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
         ToWinTransportsMask(credential.transports())});
@@ -194,7 +207,7 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
 }
 
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const base::string16& error_name) {
+    const std::u16string& error_name) {
   // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
   //
   // Note that the set of errors that browser are allowed to return in a
@@ -203,19 +216,18 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
   // permissible errors are "InvalidStateError" (aka CREDENTIAL_EXCLUDED in
   // Chromium code) and "NotAllowedError". Hence, we can collapse the set of
   // Windows errors to a smaller set of CtapDeviceResponseCodes.
-  static base::flat_map<base::string16, CtapDeviceResponseCode>
+  static base::flat_map<std::u16string, CtapDeviceResponseCode>
       kResponseCodeMap({
-          {STRING16_LITERAL("Success"), CtapDeviceResponseCode::kSuccess},
-          {STRING16_LITERAL("InvalidStateError"),
+          {u"Success", CtapDeviceResponseCode::kSuccess},
+          {u"InvalidStateError",
            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded},
-          {STRING16_LITERAL("ConstraintError"),
+          {u"ConstraintError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotSupportedError"),
+          {u"NotSupportedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotAllowedError"),
+          {u"NotAllowedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("UnknownError"),
-           CtapDeviceResponseCode::kCtap2ErrOperationDenied},
+          {u"UnknownError", CtapDeviceResponseCode::kCtap2ErrOperationDenied},
       });
   if (!base::Contains(kResponseCodeMap, error_name)) {
     FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;
@@ -266,7 +278,8 @@ GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
 }
 
 uint32_t ToWinAttestationConveyancePreference(
-    const AttestationConveyancePreference& value) {
+    const AttestationConveyancePreference& value,
+    int api_version) {
   switch (value) {
     case AttestationConveyancePreference::kNone:
       return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
@@ -274,9 +287,12 @@ uint32_t ToWinAttestationConveyancePreference(
       return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
     case AttestationConveyancePreference::kDirect:
       return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
-    case AttestationConveyancePreference::kEnterprise:
-      // Windows does not support enterprise attestation.
-      return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
+    case AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator:
+    case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
+      // Enterprise attestation is supported in API version 3.
+      return api_version >= 3
+                 ? WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+                 : WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
   }
   NOTREACHED();
   return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;

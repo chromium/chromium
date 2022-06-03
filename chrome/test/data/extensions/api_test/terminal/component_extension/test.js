@@ -269,20 +269,42 @@ chrome.test.runTests([
       chrome.test.assertEq('v', settings['k']);
 
       // 4. Get settings - {'k': 'v'}.
-      chrome.terminalPrivate.getSettings(
-          chrome.test.callbackPass((settings) => {
-            chrome.test.assertEq(1, Object.keys(settings).length);
-            chrome.test.assertEq('v', settings['k']);
-            chrome.test.succeed();
-          }));
+      chrome.terminalPrivate.getSettings((settings) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(1, Object.keys(settings).length);
+        chrome.test.assertEq('v', settings['k']);
+        chrome.test.succeed();
+      });
     });
 
     // 1. Get settings - {}.
-    chrome.terminalPrivate.getSettings(chrome.test.callbackPass((settings) => {
+    chrome.terminalPrivate.getSettings((settings) => {
+      chrome.test.assertNoLastError();
       chrome.test.assertEq(0, Object.keys(settings).length);
 
       // 2. Set {'k': 'v'}.
-      chrome.terminalPrivate.setSettings({k: 'v'}, chrome.test.callbackPass());
-    }));
-  }
+      chrome.terminalPrivate.setSettings(
+          {k: 'v'}, () => chrome.test.assertNoLastError());
+    });
+  },
+
+  function invalidTerminalIdTest() {
+    const foreign_id = (new URLSearchParams(location.search)).get('foreign_id');
+    chrome.test.assertTrue(!!foreign_id);
+
+    const callbackFail = chrome.test.callbackFail;
+
+    [foreign_id, 'invalid id'].forEach((id) => {
+      // Ideally, we will also want to test ackOutput, but it does not have a
+      // result callback.
+      chrome.terminalPrivate.closeTerminalProcess(
+          id, callbackFail('invalid terminal id'));
+      // If this manages to write to the `foreign_id` process, we should detect
+      // some output in terminal_private_apitest.cc.
+      chrome.terminalPrivate.sendInput(
+          id, 'hello', callbackFail('invalid terminal id'));
+      chrome.terminalPrivate.onTerminalResize(
+          id, 10, 10, callbackFail('invalid terminal id'));
+    });
+  },
 ]);

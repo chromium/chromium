@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/base/simple_media_task_runner.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromecast {
 namespace media {
@@ -18,9 +18,9 @@ SimpleMediaTaskRunner::~SimpleMediaTaskRunner() {
 }
 
 bool SimpleMediaTaskRunner::PostMediaTask(const base::Location& from_here,
-                                          const base::Closure& task,
+                                          base::OnceClosure task,
                                           base::TimeDelta timestamp) {
-  return task_runner_->PostTask(from_here, task);
+  return task_runner_->PostTask(from_here, std::move(task));
 }
 
 }  // namespace media

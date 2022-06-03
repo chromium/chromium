@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/accessibility/test_accessibility_controller_client.h"
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"
@@ -36,10 +36,14 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
  public:
   TestPowerManagerObserver()
       : power_manager_(chromeos::FakePowerManagerClient::Get()) {
-    scoped_observer_.Add(power_manager_);
+    scoped_observation_.Observe(power_manager_);
     power_manager_->set_user_activity_callback(base::BindRepeating(
         &TestPowerManagerObserver::OnUserActivity, base::Unretained(this)));
   }
+
+  TestPowerManagerObserver(const TestPowerManagerObserver&) = delete;
+  TestPowerManagerObserver& operator=(const TestPowerManagerObserver&) = delete;
+
   ~TestPowerManagerObserver() override {
     power_manager_->set_user_activity_callback(base::RepeatingClosure());
   }
@@ -67,11 +71,9 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
   chromeos::FakePowerManagerClient* power_manager_;
   std::vector<double> brightness_changes_;
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestPowerManagerObserver);
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace
@@ -79,6 +81,12 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
 class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
  public:
   LockScreenNoteDisplayStateHandlerTest() = default;
+
+  LockScreenNoteDisplayStateHandlerTest(
+      const LockScreenNoteDisplayStateHandlerTest&) = delete;
+  LockScreenNoteDisplayStateHandlerTest& operator=(
+      const LockScreenNoteDisplayStateHandlerTest&) = delete;
+
   ~LockScreenNoteDisplayStateHandlerTest() override = default;
 
   // AshTestBase:
@@ -107,7 +115,7 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
     power_manager_observer_->ClearBrightnessChanges();
 
     // Advance the tick clock so it's not close to the null clock value.
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10000));
+    tick_clock_.Advance(base::Milliseconds(10000));
   }
   void TearDown() override {
     power_manager_observer_.reset();
@@ -146,7 +154,7 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
 
   void SimulatePowerButtonPress() {
     power_manager_client()->SendPowerButtonEvent(true, tick_clock_.NowTicks());
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    tick_clock_.Advance(base::Milliseconds(10));
     power_manager_client()->SendPowerButtonEvent(false, tick_clock_.NowTicks());
     base::RunLoop().RunUntilIdle();
   }
@@ -189,8 +197,6 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
   }
 
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandlerTest);
 };
 
 TEST_F(LockScreenNoteDisplayStateHandlerTest, EjectWhenScreenOn) {

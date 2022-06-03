@@ -1,0 +1,13 @@
+Name: Small subset of OpenJDK libraries
+Short Name: desugar_jdk_libs
+URL: https://github.com/google/desugar_jdk_libs
+Version: 1.1.1
+License: GPL v2 with the classpath exception
+License File: LICENSE
+Security Critical: yes
+
+Description:
+This project contains a small subset of OpenJDK libraries simplified for use on older runtimes. This is not an official Google product.
+
+Local Modifications:
+No modifications.

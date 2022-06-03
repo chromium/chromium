@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/ui/settings/translate_table_view_controller.h"
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
+
+#import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/mac/foundation_util.h"
 #include "components/google/core/common/google_util.h"
@@ -20,15 +23,14 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -70,16 +72,13 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
 
 - (instancetype)initWithPrefs:(PrefService*)prefs {
   DCHECK(prefs);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _prefs = prefs;
     _translationEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:_prefs
-                   prefName:prefs::kOfferTranslateEnabled];
+                   prefName:translate::prefs::kOfferTranslateEnabled];
     [_translationEnabled setObserver:self];
   }
   return self;
@@ -119,9 +118,9 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footer.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING_DESCRIPTION);
-  footer.linkURL = google_util::AppendGoogleLocaleParam(
+  footer.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
       GURL(kTranslateLearnMoreUrl),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocale())};
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierTranslate];
 }
 

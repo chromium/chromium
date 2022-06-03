@@ -18,44 +18,48 @@ import("//build/config/python.gni")
 #     requires at runtime. Will consider all transitively depended on
 #     shared_libraries.
 #   paks: (Optional) PAK files going into the module.
+#   load_native_on_get_impl: (Optional) Whether the module's native libraries /
+#     resources are automatically loaded when Module.getImpl() is called.
 template("module_desc_java") {
   _target_name = target_name
 
-  _libraries = "${target_gen_dir}/${_target_name}.libraries"
-  _rebased_libraries = rebase_path(_libraries, root_out_dir)
+  _libraries_file = "${target_gen_dir}/${_target_name}.libraries"
   generated_file("${_target_name}__libraries") {
     if (defined(invoker.shared_libraries)) {
       deps = invoker.shared_libraries
     }
-    outputs = [
-      _libraries,
-    ]
+    outputs = [ _libraries_file ]
     data_keys = [ "shared_libraries" ]
     walk_keys = [ "shared_libraries_barrier" ]
     rebase = root_build_dir
-    output_conversion = "json"
+    output_conversion = "value"
   }
 
   _srcjar = "$target_gen_dir/${_target_name}__srcjar.srcjar"
   action_with_pydeps("${_target_name}__srcjar") {
     script = "//components/module_installer/android/module_desc_java.py"
-    deps = [
-      ":${_target_name}__libraries",
-    ]
-    inputs = [
-      _libraries,
-    ]
-    outputs = [
-      _srcjar,
-    ]
+    outputs = [ _srcjar ]
+
+    # Do not add a dep on the generated_file target in order to avoid having
+    # to build the native libraries before this target. The dependency is
+    # instead captured via a depfile.
+    depfile = "$target_gen_dir/$target_name.d"
     args = [
       "--module",
       invoker.module_name,
-      "--libraries",
-      "@FileArg($_rebased_libraries)",
+      "--libraries-file",
+      rebase_path(_libraries_file, root_out_dir),
       "--output",
       rebase_path(_srcjar, root_out_dir),
+      "--depfile",
+      rebase_path(depfile, root_out_dir),
     ]
+
+    if (defined(invoker.load_native_on_get_impl) &&
+        invoker.load_native_on_get_impl) {
+      args += [ "--load-native-on-get-impl" ]
+    }
+
     if (defined(invoker.paks)) {
       _rebased_paks = []
       foreach(_pak, invoker.paks) {

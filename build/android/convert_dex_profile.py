@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -6,6 +6,7 @@
 
 import argparse
 import collections
+import functools
 import logging
 import re
 import subprocess
@@ -66,6 +67,8 @@ DOT_NOTATION_MAP = {
     'double': 'D'
 }
 
+
+@functools.total_ordering
 class Method(object):
   def __init__(self, name, class_name, param_types=None, return_type=None):
     self.name = name
@@ -81,9 +84,16 @@ class Method(object):
     return 'Method<{}->{}({}){}>'.format(self.class_name, self.name,
         self.param_types or '', self.return_type or '')
 
-  def __cmp__(self, other):
-    return cmp((self.class_name, self.name, self.param_types, self.return_type),
-        (other.class_name, other.name, other.param_types, other.return_type))
+  @staticmethod
+  def serialize(method):
+    return (method.class_name, method.name, method.param_types,
+            method.return_type)
+
+  def __eq__(self, other):
+    return self.serialize(self) == self.serialize(other)
+
+  def __lt__(self, other):
+    return self.serialize(self) < self.serialize(other)
 
   def __hash__(self):
     # only hash name and class_name since other fields may not be set yet.
@@ -230,7 +240,8 @@ class MalformedProfileException(MalformedLineException):
 
 
 def _RunDexDump(dexdump_path, dex_file_path):
-  return subprocess.check_output([dexdump_path, dex_file_path]).splitlines()
+  return subprocess.check_output([dexdump_path,
+                                  dex_file_path]).decode('utf-8').splitlines()
 
 
 def _ReadFile(file_path):

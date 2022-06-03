@@ -1,8 +1,0 @@
-
-	Add line: ' <item id="G" hash_code="4" content_hash_code="40" os_list="linux,windows"/>'
-	Remove line: ' <item id="A" hash_code="1" content_hash_code="10" os_list="linux,windows"/>'
-	Remove line: ' <item id="C" hash_code="3" content_hash_code="30" os_list="linux,windows"/>'
-	Remove line: ' <item id="E" hash_code="5" content_hash_code="50" os_list="linux,windows"/>'
-	Remove line: ' <item id="M" hash_code="7" content_hash_code="70" os_list="linux,windows"/>'
-	Remove line: ' <item id="X" hash_code="8" content_hash_code="80" os_list="linux,windows"/>'
-	Remove line: ' <item id="Z" hash_code="9" content_hash_code="90" os_list="linux,windows"/>'

@@ -14,9 +14,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 class GURL;
+
+namespace network {
+struct CrossOriginEmbedderPolicy;
+}
 
 namespace content {
 
@@ -73,6 +78,8 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   blink::ServiceWorkerStatusCode AllocateWorkerProcess(
       int embedded_worker_id,
       const GURL& script_url,
+      const absl::optional<network::CrossOriginEmbedderPolicy>&
+          cross_origin_embedder_policy,
       bool can_use_existing_process,
       AllocatedProcessInfo* out_info);
 
@@ -94,6 +101,12 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // Sets the process ID to be used for tests that force creating a new process.
   void SetNewProcessIdForTest(int process_id) {
     new_process_id_for_test_ = process_id;
+  }
+
+  // Forces AllocateWorkerProcess to create a new process instead of reusing an
+  // existing one.
+  void ForceNewProcessForTest(bool force_new_process) {
+    force_new_process_for_test_ = force_new_process;
   }
 
   // AsWeakPtr() can be called from any thread, but the WeakPtr must be
@@ -134,6 +147,8 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // EmbeddedWorkerInstances.
   int process_id_for_test_;
   int new_process_id_for_test_;
+
+  bool force_new_process_for_test_;
 
   // Used to double-check that we don't access *this after it's destroyed.
   base::WeakPtr<ServiceWorkerProcessManager> weak_this_;

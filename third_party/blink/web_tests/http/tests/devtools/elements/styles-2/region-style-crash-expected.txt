@@ -2,7 +2,6 @@ Tests that webkit css region styling can be parsed correctly. Test passes if it 
 
 color: rgb(255, 0, 0);
     #ff0000 - #p1 <style>
-    OVERLOADED -internal-root-color - html user agent stylesheet
 display: block;
     block - p user agent stylesheet
 margin-block-end: 16px;
@@ -27,10 +26,5 @@ p { (user agent stylesheet)
     margin-block-end: 1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 

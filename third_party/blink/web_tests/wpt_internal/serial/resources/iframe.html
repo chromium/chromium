@@ -1,0 +1,19 @@
+<script type="module">
+  import {SerialService} from '/gen/third_party/blink/public/mojom/serial/serial.mojom.m.js';
+
+  const interceptor =
+      new MojoInterfaceInterceptor(SerialService.$interfaceName);
+  interceptor.oninterfacerequest = (e) => {
+    window.parent.postMessage({
+      type: 'Attach',
+      handle: e.handle
+    }, '*', [e.handle]);
+  };
+  interceptor.start();
+
+  // Wait for a call to getPorts() to complete to ensure that the interface
+  // handle has been bound to the parent context.
+  await navigator.serial.getPorts();
+
+  window.parent.postMessage({ type: 'Ready'}, '*');
+</script>

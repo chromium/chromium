@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/shell/common/shell_switches.h"
 #include "media/base/media_switches.h"
@@ -23,8 +23,7 @@
 // process and hence does not support capture: https://crbug.com/641559.
 #define MAYBE_CaptureFromMediaElement DISABLED_CaptureFromMediaElement
 #else
-// crbug.com/769903: Disabling due to TSAN error.
-#define MAYBE_CaptureFromMediaElement DISABLED_CaptureFromMediaElement
+#define MAYBE_CaptureFromMediaElement CaptureFromMediaElement
 #endif
 
 namespace {
@@ -59,6 +58,12 @@ class WebRtcCaptureFromElementBrowserTest
       public testing::WithParamInterface<struct FileAndTypeParameters> {
  public:
   WebRtcCaptureFromElementBrowserTest() {}
+
+  WebRtcCaptureFromElementBrowserTest(
+      const WebRtcCaptureFromElementBrowserTest&) = delete;
+  WebRtcCaptureFromElementBrowserTest& operator=(
+      const WebRtcCaptureFromElementBrowserTest&) = delete;
+
   ~WebRtcCaptureFromElementBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -75,9 +80,6 @@ class WebRtcCaptureFromElementBrowserTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kExposeInternalsForTesting);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcCaptureFromElementBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
@@ -88,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        VerifyCanvasWebGLCaptureColor) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   // TODO(crbug.com/706009): Make this test pass on mac.  Behavior is not buggy
   // (verified manually) on mac, but for some reason this test fails on the mac
   // bot.
@@ -125,16 +127,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebRtcCaptureFromElementBrowserTest,
                        MAYBE_CaptureFromMediaElement) {
-#if defined(OS_ANDROID)
-  // TODO(mcasas): flaky on Lollipop Low-End devices, investigate and reconnect
-  // https://crbug.com/626299
-  if (base::SysInfo::IsLowEndDevice() &&
-      base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-#endif
-
   MakeTypicalCall(JsReplace("testCaptureFromMediaElement($1, $2, $3, $4)",
                             GetParam().filename, GetParam().has_video,
                             GetParam().has_audio, GetParam().use_audio_tag),

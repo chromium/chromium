@@ -1,32 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTextControl INPUT id='root'",
-      "position": [-3, -3],
-      "bounds": [47, 25],
+      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
+      "position": [-1, -1],
+      "bounds": [50, 23],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl INPUT id='root'",
-          "rect": [0, 0, 47, 25],
-          "reason": "full layer"
-        },
-        {
-          "object": "LayoutTextControl INPUT id='root'",
-          "rect": [0, 0, 41, 19],
-          "reason": "full layer"
-        },
-        {
-          "object": "Caret",
-          "rect": [39, 6, 1, 13],
-          "reason": "caret"
-        }
+      "invalidations": [
+        [0, 0, 50, 23]
       ],
       "transform": 1
     }

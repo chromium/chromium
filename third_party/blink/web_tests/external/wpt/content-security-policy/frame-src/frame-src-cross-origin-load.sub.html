@@ -12,7 +12,7 @@
         window.addEventListener('securitypolicyviolation', function(e) {
             log("violated-directive=" + e.violatedDirective);
         });
-        
+
         window.addEventListener("message", function(event) {
             alert_assert(event.data);
         }, false);
@@ -28,7 +28,7 @@
                 }
                 for (var i = 0; i < expected_alerts.length; i++) {
                     if (expected_alerts[i] == msg) {
-                        assert_true(expected_alerts[i] == msg);
+                        assert_equals(expected_alerts[i], msg);
                         expected_alerts.splice(i, 1);
                         if (expected_alerts.length == 0) {
                             t_alert.done();
@@ -42,7 +42,7 @@
         }
 
     </script>
-    
+
     <p>
         IFrames blocked by CSP should generate a 'load', not 'error' event, regardless of blocked state. This means they appear to be normal cross-origin loads, thereby not leaking URL information directly to JS.
     </p>

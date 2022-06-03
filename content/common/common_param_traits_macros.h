@@ -9,54 +9,23 @@
 #define CONTENT_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
 #include "cc/trees/browser_controls_params.h"
-#include "content/common/frame_messages.h"
-#include "content/common/visual_properties.h"
+#include "content/common/content_export.h"
 #include "ipc/ipc_message_macros.h"
-#include "third_party/blink/public/web/web_device_emulation_params.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/common/widget/visual_properties.h"
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
 // Traits for VisualProperties.
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebDeviceEmulationParams::ScreenPosition,
-                          blink::WebDeviceEmulationParams::kScreenPositionLast)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::EmulatedScreenType,
+                          blink::mojom::EmulatedScreenType::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(content::ScreenOrientationValues,
-                          content::SCREEN_ORIENTATION_VALUES_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(device::mojom::ScreenOrientationLockType,
+                          device::mojom::ScreenOrientationLockType::kMaxValue)
 
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::WebScreenOrientationType,
-                              blink::kWebScreenOrientationUndefined,
-                              blink::WebScreenOrientationTypeLast)
-
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::DisplayMode,
-                          blink::mojom::DisplayMode::kMaxValue)
-
-IPC_STRUCT_TRAITS_BEGIN(cc::BrowserControlsParams)
-  IPC_STRUCT_TRAITS_MEMBER(top_controls_height)
-  IPC_STRUCT_TRAITS_MEMBER(top_controls_min_height)
-  IPC_STRUCT_TRAITS_MEMBER(bottom_controls_height)
-  IPC_STRUCT_TRAITS_MEMBER(bottom_controls_min_height)
-  IPC_STRUCT_TRAITS_MEMBER(animate_browser_controls_height_changes)
-  IPC_STRUCT_TRAITS_MEMBER(browser_controls_shrink_blink_size)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(content::VisualProperties)
-  IPC_STRUCT_TRAITS_MEMBER(screen_info)
-  IPC_STRUCT_TRAITS_MEMBER(auto_resize_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(min_size_for_auto_resize)
-  IPC_STRUCT_TRAITS_MEMBER(max_size_for_auto_resize)
-  IPC_STRUCT_TRAITS_MEMBER(new_size)
-  IPC_STRUCT_TRAITS_MEMBER(visible_viewport_size)
-  IPC_STRUCT_TRAITS_MEMBER(compositor_viewport_pixel_rect)
-  IPC_STRUCT_TRAITS_MEMBER(browser_controls_params)
-  IPC_STRUCT_TRAITS_MEMBER(scroll_focused_node_into_view)
-  IPC_STRUCT_TRAITS_MEMBER(local_surface_id_allocation)
-  IPC_STRUCT_TRAITS_MEMBER(is_fullscreen_granted)
-  IPC_STRUCT_TRAITS_MEMBER(display_mode)
-  IPC_STRUCT_TRAITS_MEMBER(capture_sequence_number)
-  IPC_STRUCT_TRAITS_MEMBER(zoom_level)
-  IPC_STRUCT_TRAITS_MEMBER(page_scale_factor)
-  IPC_STRUCT_TRAITS_MEMBER(is_pinch_gesture_active)
-IPC_STRUCT_TRAITS_END()
+IPC_ENUM_TRAITS_MAX_VALUE(display::mojom::ScreenOrientation,
+                          display::mojom::ScreenOrientation::kMaxValue)
 
 #endif  // CONTENT_COMMON_COMMON_PARAM_TRAITS_MACROS_H_

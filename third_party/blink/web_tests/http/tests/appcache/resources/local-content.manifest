@@ -1,4 +1,0 @@
-CACHE MANIFEST
-/appcache/local-content.html
-NETWORK:
-file:/ # Should be ignored due to different URL scheme, but it doesn't hurt to try.

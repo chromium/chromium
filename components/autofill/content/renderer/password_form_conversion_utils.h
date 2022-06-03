@@ -9,11 +9,10 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/strings/string_piece.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
-#include "components/autofill/core/common/password_form.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "url/gurl.h"
 
@@ -28,7 +27,6 @@ class RE2;
 
 namespace autofill {
 
-struct PasswordForm;
 class FieldDataManager;
 
 // The caller of this function is responsible for deleting the returned object.
@@ -40,20 +38,19 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form);
 // Tests whether the given form is a GAIA form with a skip password argument.
 bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form);
 
-// Creates a |PasswordForm| from DOM which only contains the |form_data| as well
-// as origin, action and gaia flags.
-std::unique_ptr<PasswordForm> CreateSimplifiedPasswordFormFromWebForm(
-    const blink::WebFormElement& form,
+std::unique_ptr<FormData> CreateFormDataFromWebForm(
+    const blink::WebFormElement& web_form,
     const FieldDataManager* field_data_manager,
-    UsernameDetectorCache* username_detector_cache);
+    UsernameDetectorCache* username_detector_cache,
+    form_util::ButtonTitlesCache* button_titles_cache);
 
-// Same as CreateSimlePasswordFormFromWebForm() but for input elements that are
+// Same as CreateFormDataFromWebForm() but for input elements that are
 // not enclosed in <form> element.
-std::unique_ptr<PasswordForm>
-CreateSimplifiedPasswordFormFromUnownedInputElements(
+std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     const blink::WebLocalFrame& frame,
     const FieldDataManager* field_data_manager,
-    UsernameDetectorCache* username_detector_cache);
+    UsernameDetectorCache* username_detector_cache,
+    form_util::ButtonTitlesCache* button_titles_cache);
 
 // The "Realm" for the sign-on. This is scheme, host, port.
 std::string GetSignOnRealm(const GURL& origin);

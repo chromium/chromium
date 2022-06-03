@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  test(() => {
+    const parser = new DOMParser();
+    const parsed_document =
+      parser.parseFromString('<iframe loading=lazy ' +
+                             'src=https://domfarolino.com></iframe>',
+                             'text/html');
+  }, 'Creating a loading=lazy iframe from DOMParser does not crash the renderer');
+</script>

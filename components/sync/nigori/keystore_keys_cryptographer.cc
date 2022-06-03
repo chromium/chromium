@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -72,13 +73,13 @@ bool KeystoreKeysCryptographer::IsEmpty() const {
 
 std::unique_ptr<KeystoreKeysCryptographer> KeystoreKeysCryptographer::Clone()
     const {
-  return base::WrapUnique(new KeystoreKeysCryptographer(
-      cryptographer_->CloneImpl(), keystore_keys_));
+  return base::WrapUnique(
+      new KeystoreKeysCryptographer(cryptographer_->Clone(), keystore_keys_));
 }
 
 std::unique_ptr<CryptographerImpl>
 KeystoreKeysCryptographer::ToCryptographerImpl() const {
-  return cryptographer_->CloneImpl();
+  return cryptographer_->Clone();
 }
 
 bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(

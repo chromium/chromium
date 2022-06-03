@@ -9,12 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ntp_snippets {
@@ -67,6 +64,8 @@ class ContentSuggestion {
                     const GURL& url);
   ContentSuggestion(ContentSuggestion&&);
   ContentSuggestion& operator=(ContentSuggestion&&);
+  ContentSuggestion(const ContentSuggestion&) = delete;
+  ContentSuggestion& operator=(const ContentSuggestion&) = delete;
 
   ~ContentSuggestion();
 
@@ -98,12 +97,12 @@ class ContentSuggestion {
   static GURL GetFaviconDomain(const GURL& favicon_url);
 
   // Title of the suggestion.
-  const base::string16& title() const { return title_; }
-  void set_title(const base::string16& title) { title_ = title; }
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
 
   // Summary or relevant textual extract from the content.
-  const base::string16& snippet_text() const { return snippet_text_; }
-  void set_snippet_text(const base::string16& snippet_text) {
+  const std::u16string& snippet_text() const { return snippet_text_; }
+  void set_snippet_text(const std::u16string& snippet_text) {
     snippet_text_ = snippet_text;
   }
 
@@ -114,8 +113,8 @@ class ContentSuggestion {
   }
 
   // The name of the source/publisher of this suggestion.
-  const base::string16& publisher_name() const { return publisher_name_; }
-  void set_publisher_name(const base::string16& publisher_name) {
+  const std::u16string& publisher_name() const { return publisher_name_; }
+  void set_publisher_name(const std::u16string& publisher_name) {
     publisher_name_ = publisher_name;
   }
 
@@ -156,11 +155,11 @@ class ContentSuggestion {
     fetch_date_ = fetch_date;
   }
 
-  const base::Optional<uint32_t>& optional_image_dominant_color() const {
+  const absl::optional<uint32_t>& optional_image_dominant_color() const {
     return image_dominant_color_;
   }
   void set_optional_image_dominant_color(
-      const base::Optional<uint32_t>& optional_color_int) {
+      const absl::optional<uint32_t>& optional_color_int) {
     image_dominant_color_ = optional_color_int;
   }
 
@@ -169,10 +168,10 @@ class ContentSuggestion {
   GURL url_;
   GURL url_with_favicon_;
   GURL salient_image_url_;
-  base::string16 title_;
-  base::string16 snippet_text_;
+  std::u16string title_;
+  std::u16string snippet_text_;
   base::Time publish_date_;
-  base::string16 publisher_name_;
+  std::u16string publisher_name_;
   float score_;
   std::unique_ptr<ReadingListSuggestionExtra> reading_list_suggestion_extra_;
   std::unique_ptr<NotificationExtra> notification_extra_;
@@ -185,9 +184,7 @@ class ContentSuggestion {
   bool is_video_suggestion_;
 
   // Encoded as an Android @ColorInt.
-  base::Optional<uint32_t> image_dominant_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestion);
+  absl::optional<uint32_t> image_dominant_color_;
 };
 
 std::ostream& operator<<(std::ostream& os, const ContentSuggestion::ID& id);

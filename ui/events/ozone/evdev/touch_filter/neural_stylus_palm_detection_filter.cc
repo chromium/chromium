@@ -14,9 +14,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/values.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_util.h"
+#include "ui/events/ozone/features.h"
 
 namespace ui {
 namespace {
@@ -32,6 +37,7 @@ NeuralStylusPalmDetectionFilter::NeuralStylusPalmDetectionFilter(
     std::unique_ptr<NeuralStylusPalmDetectionFilterModel> palm_model,
     SharedPalmDetectionFilterState* shared_palm_state)
     : PalmDetectionFilter(shared_palm_state),
+      tracking_ids_count_within_session_(0),
       palm_filter_dev_info_(CreatePalmFilterDeviceInfo(devinfo)),
       model_(std::move(palm_model)) {
   DCHECK(CompatibleWithNeuralStylusPalmDetectionFilter(devinfo))
@@ -42,6 +48,7 @@ NeuralStylusPalmDetectionFilter::~NeuralStylusPalmDetectionFilter() {}
 
 void NeuralStylusPalmDetectionFilter::FindBiggestNeighborsWithin(
     int neighbor_count,
+    unsigned long min_sample_count,
     float max_distance,
     const PalmFilterStroke& stroke,
     std::vector<std::pair<float, int>>* biggest_strokes) const {
@@ -55,7 +62,7 @@ void NeuralStylusPalmDetectionFilter::FindBiggestNeighborsWithin(
     if (neighbor.tracking_id() == stroke.tracking_id()) {
       continue;
     }
-    if (neighbor.samples().size() < model_->config().min_sample_count) {
+    if (neighbor.samples().size() < min_sample_count) {
       continue;
     }
     float distance =
@@ -118,6 +125,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
   slots_to_hold->reset();
   slots_to_suppress->reset();
   std::unordered_set<int> slots_to_decide;
+  std::vector<int> ended_tracking_ids;
   uint32_t total_finger_touching = 0;
   for (const auto& touch : touches) {
     if (touch.touching && touch.tool_code != BTN_TOOL_PEN) {
@@ -154,6 +162,12 @@ void NeuralStylusPalmDetectionFilter::Filter(
     }
 
     DCHECK_NE(tracking_id, -1);
+
+    auto insert_result = active_tracking_ids_.insert(tracking_id);
+    // New tracking_id.
+    if (insert_result.second)
+      tracking_ids_count_within_session_++;
+
     // Find the stroke in the stroke list.
     auto stroke_it = strokes_.find(tracking_id);
 
@@ -170,6 +184,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
       if (stroke.samples().size() < config.max_sample_count) {
         slots_to_decide.insert(slot);
       }
+
+      ended_tracking_ids.push_back(tracking_id);
       continue;
     }
 
@@ -210,6 +226,11 @@ void NeuralStylusPalmDetectionFilter::Filter(
       shared_palm_state_->latest_palm_touch_time = time;
     }
   }
+
+  for (const int tracking_id : ended_tracking_ids) {
+    active_tracking_ids_.erase(tracking_id);
+  }
+
   *slots_to_suppress |= is_palm_;
   *slots_to_hold |= is_delay_;
 
@@ -241,23 +262,27 @@ bool NeuralStylusPalmDetectionFilter::IsHeuristicPalmStroke(
   const auto& config = model_->config();
   if (config.heuristic_palm_touch_limit > 0.0) {
     if (stroke.MaxMajorRadius() >= config.heuristic_palm_touch_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes major radius.";
       return true;
     }
   }
   if (config.heuristic_palm_area_limit > 0.0) {
     if (stroke.BiggestSize() >= config.heuristic_palm_area_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes area.";
       return true;
     }
     std::vector<std::pair<float, int>> biggest_strokes;
-    FindBiggestNeighborsWithin(1 /* neighbors */,
+    FindBiggestNeighborsWithin(1 /* neighbors */, 1 /* min sample count */,
                                model_->config().max_neighbor_distance_in_mm,
                                stroke, &biggest_strokes);
     if (!biggest_strokes.empty() &&
         strokes_.find(biggest_strokes[0].second)->second.BiggestSize() >=
             config.heuristic_palm_area_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes neighbor area.";
       return true;
     }
   }
+  VLOG(1) << "IsHeuristicPalm: No.";
   return false;
 }
 
@@ -265,7 +290,15 @@ bool NeuralStylusPalmDetectionFilter::DetectSpuriousStroke(
     const std::vector<float>& features,
     int tracking_id,
     float threshold) const {
-  return model_->Inference(features) >= threshold;
+  auto inference_value = model_->Inference(features);
+  if (VLOG_IS_ON(1)) {
+    VLOG(1) << "Running Inference, features are:";
+    for (std::vector<float>::size_type i = 0; i < features.size(); ++i) {
+      VLOG(1) << "Feature " << i << " is " << features[i];
+    }
+    VLOG(1) << "Inference value is  : " << inference_value;
+  }
+  return inference_value >= threshold;
 }
 
 std::vector<float> NeuralStylusPalmDetectionFilter::ExtractFeatures(
@@ -279,9 +312,10 @@ std::vector<float> NeuralStylusPalmDetectionFilter::ExtractFeatures(
   FindNearestNeighborsWithin(config.nearest_neighbor_count,
                              config.max_neighbor_distance_in_mm, stroke,
                              &nearest_strokes);
-  FindBiggestNeighborsWithin(config.biggest_near_neighbor_count,
-                             config.max_neighbor_distance_in_mm, stroke,
-                             &biggest_strokes);
+  FindBiggestNeighborsWithin(
+      config.biggest_near_neighbor_count,
+      model_->config().min_sample_count /* min sample count */,
+      config.max_neighbor_distance_in_mm, stroke, &biggest_strokes);
   for (uint32_t i = 0; i < config.nearest_neighbor_count; ++i) {
     if (i < nearest_strokes.size()) {
       const auto& nearest_stroke = nearest_strokes[i];
@@ -301,6 +335,14 @@ std::vector<float> NeuralStylusPalmDetectionFilter::ExtractFeatures(
       features.resize(
           features.size() + features_per_stroke + kExtraFeaturesForNeighbor, 0);
     }
+  }
+
+  if (config.use_tracking_id_count) {
+    features.push_back(tracking_ids_count_within_session_);
+  }
+
+  if (config.use_active_tracking_id_count) {
+    features.push_back(active_tracking_ids_.size());
   }
 
   return features;
@@ -364,12 +406,19 @@ std::string NeuralStylusPalmDetectionFilter::FilterNameForTesting() const {
   return kFilterName;
 }
 
-const std::vector<int> NeuralStylusPalmDetectionFilter::kRequiredAbsMtCodes = {
-    ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_TOUCH_MAJOR};
-
 bool NeuralStylusPalmDetectionFilter::
     CompatibleWithNeuralStylusPalmDetectionFilter(
         const EventDeviceInfo& devinfo) {
+  return NeuralStylusPalmDetectionFilter::
+      CompatibleWithNeuralStylusPalmDetectionFilter(
+          devinfo, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                       kOzoneNNPalmSwitchName));
+}
+
+bool NeuralStylusPalmDetectionFilter::
+    CompatibleWithNeuralStylusPalmDetectionFilter(
+        const EventDeviceInfo& devinfo,
+        const std::string& ozone_params_switch_string) {
   if (devinfo.HasStylus()) {
     return false;
   }
@@ -385,8 +434,11 @@ bool NeuralStylusPalmDetectionFilter::
     }
     return true;
   };
-  if (!std::all_of(kRequiredAbsMtCodes.begin(), kRequiredAbsMtCodes.end(),
-                   code_check)) {
+
+  static constexpr int kRequiredAbsMtCodes[] = {
+      ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_TOUCH_MAJOR};
+  if (!std::all_of(std::begin(kRequiredAbsMtCodes),
+                   std::end(kRequiredAbsMtCodes), code_check)) {
     return false;
   }
 
@@ -395,6 +447,37 @@ bool NeuralStylusPalmDetectionFilter::
   if (devinfo.HasAbsEvent(ABS_MT_TOUCH_MINOR) &&
       !code_check(ABS_MT_TOUCH_MINOR)) {
     return false;
+  }
+  // Only work with internal touchscreens.
+  if (devinfo.device_type() != INPUT_DEVICE_INTERNAL) {
+    return false;
+  }
+
+  // Check the switch string.
+
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(ozone_params_switch_string);
+  if (value != absl::nullopt && !ozone_params_switch_string.empty()) {
+    if (!value->is_dict()) {
+      return false;
+    }
+    // If the key isn't set, default to false.
+    if (value->FindKey(kOzoneNNPalmTouchCompatibleProperty) == nullptr) {
+      return false;
+    }
+    std::string* touch_string_val =
+        value->FindStringKey(kOzoneNNPalmTouchCompatibleProperty);
+    if (touch_string_val != nullptr) {
+      if (*touch_string_val == "false") {
+        return false;
+      } else if (*touch_string_val == "true") {
+        return true;
+      } else {
+        LOG(DFATAL) << "Unexpected value for nnpalm touch compatible. expected "
+                       "\"true\" or \"false\" . Got: "
+                    << *touch_string_val;
+      }
+    }
   }
   return true;
 }
@@ -412,5 +495,12 @@ void NeuralStylusPalmDetectionFilter::EraseOldStrokes(base::TimeTicks time) {
       ++it;
     }
   }
+
+  // If the blank time is more than max_blank_time, starts a new session.
+  if (time - previous_report_time_ > model_->config().max_blank_time) {
+    tracking_ids_count_within_session_ = 0;
+    active_tracking_ids_.clear();
+  }
+  previous_report_time_ = time;
 }
 }  // namespace ui

@@ -11,6 +11,21 @@ import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+template("pdfium_fuzzer_test") {
+  fuzzer_test(target_name) {
+    forward_variables_from(invoker, "*", [ "deps" ])
+
+    sources = []
+    deps = [ "//third_party/pdfium/testing/fuzzers:${target_name}_src" ]
+    if (is_component_build) {
+      deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_impl" ]
+    }
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}
+
 group("fuzzers") {
 }
 
@@ -68,166 +83,90 @@ group("pdf_fuzzers") {
     }
   }
   if (is_clang) {
-    deps += [ ":pdf_nametree_fuzzer" ]
+    deps += [
+      ":pdf_cpdf_tounicodemap_fuzzer",
+      ":pdf_nametree_fuzzer",
+    ]
   }
 }
 
-fuzzer_test("pdfium_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdfium_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdfium_fuzzer") {
   dict = "dicts/pdf.dict"
   seed_corpus = "//third_party/pdfium/testing/resources"
+  grammar_options = [ "grammar=PDF" ]
 }
 
-fuzzer_test("pdf_cmap_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_cmap_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_cmap_fuzzer") {
 }
 
-fuzzer_test("pdf_codec_a85_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_codec_a85_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_codec_a85_fuzzer") {
 }
 
-fuzzer_test("pdf_codec_fax_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_codec_fax_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_codec_fax_fuzzer") {
 }
 
-fuzzer_test("pdf_codec_rle_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_codec_rle_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_codec_rle_fuzzer") {
 }
 
-fuzzer_test("pdf_codec_icc_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_codec_icc_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_codec_icc_fuzzer") {
   dict = "dicts/pdf_codec_icc.dict"
 }
 
-fuzzer_test("pdf_codec_jbig2_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_codec_jbig2_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_codec_jbig2_fuzzer") {
 }
 
-fuzzer_test("pdf_font_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_font_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_font_fuzzer") {
 }
 
-fuzzer_test("pdf_hint_table_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_hint_table_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_hint_table_fuzzer") {
 }
 
-fuzzer_test("pdf_jpx_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_jpx_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_jpx_fuzzer") {
   seed_corpus = "corpora/pdf_jpx"
 }
 
-fuzzer_test("pdf_psengine_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_psengine_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_psengine_fuzzer") {
 }
 
-fuzzer_test("pdf_scanlinecompositor_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_scanlinecompositor_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_scanlinecompositor_fuzzer") {
 }
 
-fuzzer_test("pdf_streamparser_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_streamparser_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_streamparser_fuzzer") {
 }
 
-fuzzer_test("pdf_xml_fuzzer") {
-  sources = []
-  deps = [
-    "//third_party/pdfium/testing/fuzzers:pdf_xml_fuzzer_src",
-  ]
+pdfium_fuzzer_test("pdf_xml_fuzzer") {
   dict = "dicts/pdf_xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
 }
 
 if (pdf_enable_v8) {
-  fuzzer_test("pdf_cjs_util_fuzzer") {
-    sources = []
-    deps = [
-      "//third_party/pdfium/testing/fuzzers:pdf_cjs_util_fuzzer_src",
-    ]
+  pdfium_fuzzer_test("pdf_cjs_util_fuzzer") {
   }
 
-  fuzzer_test("pdf_fx_date_helpers_fuzzer") {
-    sources = []
-    deps = [
-      "//third_party/pdfium/testing/fuzzers:pdf_fx_date_helpers_fuzzer_src",
-    ]
+  pdfium_fuzzer_test("pdf_fx_date_helpers_fuzzer") {
   }
 
   if (pdf_enable_xfa) {
     if (pdf_enable_xfa_bmp) {
-      fuzzer_test("pdf_codec_bmp_fuzzer") {
-        sources = []
-        deps = [
-          "//third_party/pdfium/testing/fuzzers:pdf_codec_bmp_fuzzer_src",
-        ]
+      pdfium_fuzzer_test("pdf_codec_bmp_fuzzer") {
         seed_corpus = "corpora/pdf_codec_bmp"
       }
     }
 
     if (pdf_enable_xfa_gif) {
-      fuzzer_test("pdf_codec_gif_fuzzer") {
-        sources = []
-        deps = [
-          "//third_party/pdfium/testing/fuzzers:pdf_codec_gif_fuzzer_src",
-        ]
+      pdfium_fuzzer_test("pdf_codec_gif_fuzzer") {
         dict = "dicts/pdf_codec_gif.dict"
         seed_corpus = "corpora/pdf_codec_gif"
       }
     }
 
-    fuzzer_test("pdf_codec_jpeg_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_codec_jpeg_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_codec_jpeg_fuzzer") {
       dict = "dicts/pdf_codec_jpeg.dict"
       seed_corpus = "corpora/pdf_codec_jpeg"
     }
 
     if (pdf_enable_xfa_png) {
-      fuzzer_test("pdf_codec_png_fuzzer") {
-        sources = []
-        deps = [
-          "//third_party/pdfium/testing/fuzzers:pdf_codec_png_fuzzer_src",
-        ]
+      pdfium_fuzzer_test("pdf_codec_png_fuzzer") {
         dict = "dicts/pdf_codec_png.dict"
         seed_corpuses = [
           "corpora/pdf_codec_png",
@@ -239,85 +178,46 @@ if (pdf_enable_v8) {
     }
 
     if (pdf_enable_xfa_tiff) {
-      fuzzer_test("pdf_codec_tiff_fuzzer") {
-        sources = []
-        deps = [
-          "//third_party/pdfium/testing/fuzzers:pdf_codec_tiff_fuzzer_src",
-        ]
+      pdfium_fuzzer_test("pdf_codec_tiff_fuzzer") {
         dict = "dicts/pdf_codec_tiff.dict"
         seed_corpus = "corpora/pdf_codec_tiff"
       }
     }
 
-    fuzzer_test("pdf_css_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_css_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_css_fuzzer") {
       dict = "dicts/pdf_css.dict"
     }
 
-    fuzzer_test("pdf_fm2js_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_fm2js_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_fm2js_fuzzer") {
       dict = "dicts/pdf_formcalc.dict"
     }
 
-    fuzzer_test("pdf_formcalc_context_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_formcalc_context_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_formcalc_context_fuzzer") {
       dict = "dicts/pdf_xfa_js.dict"
     }
 
-    fuzzer_test("pdf_formcalc_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_formcalc_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_formcalc_fuzzer") {
       dict = "dicts/pdf_formcalc.dict"
     }
 
     if (pdf_enable_xfa_gif) {
-      fuzzer_test("pdf_lzw_fuzzer") {
-        sources = []
-        deps = [
-          "//third_party/pdfium/testing/fuzzers:pdf_lzw_fuzzer_src",
-        ]
+      pdfium_fuzzer_test("pdf_lzw_fuzzer") {
       }
     }
 
-    fuzzer_test("pdf_bidi_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_bidi_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_bidi_fuzzer") {
     }
 
-    fuzzer_test("pdf_cfx_barcode_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_cfx_barcode_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_cfx_barcode_fuzzer") {
     }
 
-    fuzzer_test("pdf_cfgas_stringformatter_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdf_cfgas_stringformatter_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdf_cfgas_stringformatter_fuzzer") {
     }
 
-    fuzzer_test("pdfium_xfa_fuzzer") {
-      sources = []
-      deps = [
-        "//third_party/pdfium/testing/fuzzers:pdfium_xfa_fuzzer_src",
-      ]
+    pdfium_fuzzer_test("pdfium_xfa_fuzzer") {
       dict = "dicts/pdf.dict"
       seed_corpus = "corpora/xfa"
+      grammar_options = [ "grammar=PDF" ]
     }
 
     static_library("proto_to_xfa") {
@@ -327,16 +227,12 @@ if (pdf_enable_v8) {
         "pdfium_xfa_lpm_fuzzer/simple_xfa_pdf.cc",
         "pdfium_xfa_lpm_fuzzer/simple_xfa_pdf.h",
       ]
-      deps = [
-        ":xfa_proto",
-        "//base",
-      ]
+      deps = [ "//base" ]
+      public_deps = [ ":xfa_proto" ]
     }
 
     fuzzer_test("pdfium_xfa_lpm_fuzzer") {
-      sources = [
-        "pdfium_xfa_lpm_fuzzer/fuzzer.cc",
-      ]
+      sources = [ "pdfium_xfa_lpm_fuzzer/fuzzer.cc" ]
       deps = [
         ":proto_to_xfa",
         "//base",
@@ -344,7 +240,11 @@ if (pdf_enable_v8) {
         "//third_party/pdfium",
         "//third_party/pdfium/testing/fuzzers:fuzzer_init_public",
       ]
-      if (!is_component_build) {
+      if (is_component_build) {
+        deps += [
+          "//third_party/pdfium/testing/fuzzers:pdfium_xfa_lpm_fuzzer_impl",
+        ]
+      } else {
         deps +=
             [ "//third_party/pdfium/testing/fuzzers:pdfium_xfa_lpm_fuzzer_src" ]
       }
@@ -356,9 +256,7 @@ if (pdf_enable_v8) {
     }
 
     test("pdfium_xfa_lpm_unittest") {
-      sources = [
-        "pdfium_xfa_lpm_fuzzer/simple_xfa_pdf_unittest.cc",
-      ]
+      sources = [ "pdfium_xfa_lpm_fuzzer/simple_xfa_pdf_unittest.cc" ]
 
       deps = [
         ":proto_to_xfa",
@@ -370,16 +268,13 @@ if (pdf_enable_v8) {
 }
 
 if (is_clang) {
-  fuzzer_test("pdf_nametree_fuzzer") {
-    sources = []
-    deps = [
-      "//third_party/pdfium/testing/fuzzers:pdf_nametree_fuzzer_src",
-    ]
+  pdfium_fuzzer_test("pdf_cpdf_tounicodemap_fuzzer") {
+  }
+
+  pdfium_fuzzer_test("pdf_nametree_fuzzer") {
   }
 }
 
 proto_library("xfa_proto") {
-  sources = [
-    "pdfium_xfa_lpm_fuzzer/xfa.proto",
-  ]
+  sources = [ "pdfium_xfa_lpm_fuzzer/xfa.proto" ]
 }

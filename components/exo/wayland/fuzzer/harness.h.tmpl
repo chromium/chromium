@@ -29,6 +29,9 @@ class Harness {
  public:
   Harness();
 
+  Harness(const Harness&) = delete;
+  Harness& operator=(const Harness&) = delete;
+
   ~Harness();
 
   void Run(const actions::action& current_step);
@@ -61,8 +64,6 @@ class Harness {
 
  private:
   std::map<int, base::UnsafeSharedMemoryRegion> shared_memory_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Harness);
 };
 
 }  // namespace wayland_fuzzer

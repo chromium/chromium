@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+import {checkStateTransition} from './resources/state-check-utils.js';
+
+const mock = new MockMIDIService();
+async function runTests(port) {
+  await checkStateTransition({
+    port: port,
+    method: "close",
+    initialconnection: "closed",
+    finalconnection: "closed",
+  });
+
+  await checkStateTransition({
+    port: port,
+    method: "open",
+    initialconnection: "closed",
+    finalconnection: "open",
+  });
+
+  await checkStateTransition({
+    port: port,
+    method: "open",
+    initialconnection: "open",
+    finalconnection: "open",
+  });
+
+  await checkStateTransition.bind({
+    port: port,
+    method: "close",
+    initialconnection: "open",
+    finalconnection: "closed",
+  });
+}
+
+promise_test(async _ => {
+  // Set default permission behavior that grants non-sysex requests.
+  await setMidiPermission({}, 'granted');
+
+  const access = await navigator.requestMIDIAccess();
+  return runTests(access.inputs.values().next().value);
+}, 'opening and closing MIDI devices');
+
+</script>
+</body>
+</html>

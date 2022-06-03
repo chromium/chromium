@@ -5,12 +5,12 @@
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_API_UTILS_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_API_UTILS_H_
 
-#include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "extensions/common/api/bluetooth.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
@@ -27,7 +27,7 @@ void BluetoothDeviceToApiDevice(
 void PopulateAdapterState(const device::BluetoothAdapter& adapter,
                           AdapterState* out);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type);
 #endif
 

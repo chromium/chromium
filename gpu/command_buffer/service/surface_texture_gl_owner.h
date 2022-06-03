@@ -24,29 +24,42 @@ namespace gpu {
 // frames. Media frames can update the attached surface handle with image data.
 // This class helps to update the attached texture using that image data
 // present in the surface.
-class GPU_EXPORT SurfaceTextureGLOwner : public TextureOwner {
+class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
  public:
+  SurfaceTextureGLOwner(const SurfaceTextureGLOwner&) = delete;
+  SurfaceTextureGLOwner& operator=(const SurfaceTextureGLOwner&) = delete;
+
   gl::GLContext* GetContext() const override;
   gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
       const base::RepeatingClosure& frame_available_cb) override;
   gl::ScopedJavaSurface CreateJavaSurface() const override;
   void UpdateTexImage() override;
-  void EnsureTexImageBound() override;
-  void GetTransformMatrix(float mtx[16]) override;
+  void EnsureTexImageBound(GLuint service_id) override;
   void ReleaseBackBuffers() override;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;
-  gfx::Rect GetCropRect() override;
+  bool GetCodedSizeAndVisibleRect(gfx::Size rotated_visible_size,
+                                  gfx::Size* coded_size,
+                                  gfx::Rect* visible_rect) override;
+
+  void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
  protected:
-  void OnTextureDestroyed(gles2::AbstractTexture*) override;
+  void ReleaseResources() override;
 
  private:
   friend class TextureOwner;
+  friend class SurfaceTextureTransformTest;
 
-  SurfaceTextureGLOwner(std::unique_ptr<gles2::AbstractTexture> texture);
+  SurfaceTextureGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
+                        scoped_refptr<SharedContextState> context_state);
   ~SurfaceTextureGLOwner() override;
+
+  static bool DecomposeTransform(float matrix[16],
+                                 gfx::Size rotated_visible_size,
+                                 gfx::Size* coded_size,
+                                 gfx::Rect* visible_rect);
 
   scoped_refptr<gl::SurfaceTexture> surface_texture_;
 
@@ -58,7 +71,6 @@ class GPU_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   bool is_frame_available_callback_set_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTextureGLOwner);
 };
 
 }  // namespace gpu

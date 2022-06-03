@@ -4,10 +4,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
 
-var dataU8 = new Uint8ClampedArray([255, 192, 128, 64]);
-var dataU16 = new Uint16Array([65535, 256*192, 256*128, 256*64]);
-var dataF32 = new Float32Array([1.0, 0.75, 0.5, 0.25]);
-
 function checkDataTypeAgainstStorageFormat(data, storageFormat) {
   if (storageFormat == "uint8")
     assert_equals(Object.prototype.toString.call(data), "[object Uint8ClampedArray]");
@@ -27,24 +23,9 @@ function runTest(colorSettings, expectedColorSettings) {
   var ctx = canvas.getContext("2d");
 
   imageData = ctx.createImageData(1, 1, colorSettings);
-  checkDataTypeAgainstStorageFormat(imageData.dataUnion, colorSettings.storageFormat);
-  assert_array_equals(imageData.dataUnion, [0, 0, 0, 0]);
-  checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, expectedColorSettings.storageFormat);
-
-  imageData = ctx.createImageData(dataU8, 1, 1, colorSettings);
-  assert_equals(Object.prototype.toString.call(imageData.dataUnion), "[object Uint8ClampedArray]");
-  assert_array_equals(imageData.dataUnion, dataU8);
-  checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, "uint8");
-
-  imageData = ctx.createImageData(dataU16, 1, 1, colorSettings);
-  assert_equals(Object.prototype.toString.call(imageData.dataUnion), "[object Uint16Array]");
-  assert_array_equals(imageData.dataUnion, dataU16);
-  checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, "uint16");
-
-  imageData = ctx.createImageData(dataF32, 1, 1, colorSettings);
-  assert_equals(Object.prototype.toString.call(imageData.dataUnion), "[object Float32Array]");
-  assert_array_equals(imageData.dataUnion, dataF32);
-  checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, "float32");
+  checkDataTypeAgainstStorageFormat(imageData.data, colorSettings.storageFormat);
+  assert_array_equals(imageData.data, [0, 0, 0, 0]);
+  checkColorSettings(imageData.getSettings(), expectedColorSettings.colorSpace, expectedColorSettings.storageFormat);
 }
 
 var testScenarios = [
@@ -57,17 +38,13 @@ var testScenarios = [
 	["Test color settings: {srgb, uint16}", {colorSpace: "srgb", storageFormat: "uint16"}, {colorSpace: "srgb", storageFormat: "uint16"}],
 	["Test color settings: {srgb, float32}", {colorSpace: "srgb", storageFormat: "float32"}, {colorSpace: "srgb", storageFormat: "float32"}],
 
-  ["Test color settings: {linear-rgb, uint8}", {colorSpace: "linear-rgb", storageFormat: "uint8"}, {colorSpace: "linear-rgb", storageFormat: "uint8"}],
-  ["Test color settings: {linear-rgb, uint16}", {colorSpace: "linear-rgb", storageFormat: "uint16"}, {colorSpace: "linear-rgb", storageFormat: "uint16"}],
-  ["Test color settings: {linear-rgb, float32}", {colorSpace: "linear-rgb", storageFormat: "float32"}, {colorSpace: "linear-rgb", storageFormat: "float32"}],
-
 	["Test color settings: {rec2020, uint8}", {colorSpace: "rec2020", storageFormat: "uint8"}, {colorSpace: "rec2020", storageFormat: "uint8"}],
 	["Test color settings: {rec2020, uint16}", {colorSpace: "rec2020", storageFormat: "uint16"}, {colorSpace: "rec2020", storageFormat: "uint16"}],
 	["Test color settings: {rec2020, float32}", {colorSpace: "rec2020", storageFormat: "float32"}, {colorSpace: "rec2020", storageFormat: "float32"}],
 
-	["Test color settings: {p3, uint8}", {colorSpace: "p3", storageFormat: "uint8"}, {colorSpace: "p3", storageFormat: "uint8"}],
-	["Test color settings: {p3, uint16}", {colorSpace: "p3", storageFormat: "uint16"}, {colorSpace: "p3", storageFormat: "uint16"}],
-	["Test color settings: {p3, float32}", {colorSpace: "p3", storageFormat: "float32"}, {colorSpace: "p3", storageFormat: "float32"}],
+	["Test color settings: {display-p3, uint8}", {colorSpace: "display-p3", storageFormat: "uint8"}, {colorSpace: "display-p3", storageFormat: "uint8"}],
+	["Test color settings: {display-p3, uint16}", {colorSpace: "display-p3", storageFormat: "uint16"}, {colorSpace: "display-p3", storageFormat: "uint16"}],
+	["Test color settings: {display-p3, float32}", {colorSpace: "display-p3", storageFormat: "float32"}, {colorSpace: "display-p3", storageFormat: "float32"}],
 
 ];
 

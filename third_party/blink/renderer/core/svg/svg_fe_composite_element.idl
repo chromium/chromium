@@ -26,7 +26,8 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFECompositeElement
 
 [
-    DoNotCheckConstants
+    DoNotCheckConstants,
+    Exposed=Window
 ] interface SVGFECompositeElement : SVGElement {
     // Composite Operators
     [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_UNKNOWN = 0;

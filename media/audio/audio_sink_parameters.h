@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -31,7 +31,7 @@ struct MEDIA_EXPORT AudioSinkParameters final {
 
   base::UnguessableToken session_id;
   std::string device_id;
-  base::Optional<base::UnguessableToken> processing_id;
+  absl::optional<base::UnguessableToken> processing_id;
 };
 
 }  // namespace media

@@ -29,23 +29,26 @@ class FilesListRequestRunner {
 
   // Creates a FilesListRequest instance and starts the request with a backoff
   // retry in case of DRIVE_RESPONSE_TOO_LARGE error code.
-  CancelCallback CreateAndStartWithSizeBackoff(
+  CancelCallbackOnce CreateAndStartWithSizeBackoff(
       int max_results,
       FilesListCorpora corpora,
       const std::string& team_drive_id,
       const std::string& q,
       const std::string& fields,
-      const FileListCallback& callback);
+      FileListCallback callback);
+
+  FilesListRequestRunner(const FilesListRequestRunner&) = delete;
+  FilesListRequestRunner& operator=(const FilesListRequestRunner&) = delete;
 
   ~FilesListRequestRunner();
 
-  void SetRequestCompletedCallbackForTesting(const base::Closure& callback);
+  void SetRequestCompletedCallbackForTesting(base::OnceClosure callback);
 
  private:
   // Called when the cancelling callback returned by
   // CreateAndStartWithSizeBackoff is invoked. Once called cancels the current
   // request.
-  void OnCancel(CancelCallback* cancel_callback);
+  void OnCancel(CancelCallbackOnce* cancel_callback);
 
   // Called when a single request is completed with either a success or an
   // error. In case of DRIVE_RESPONSE_TOO_LARGE it will retry the request with
@@ -55,19 +58,18 @@ class FilesListRequestRunner {
                    const std::string& team_drive_id,
                    const std::string& q,
                    const std::string& fields,
-                   const FileListCallback& callback,
-                   CancelCallback* cancel_callback,
-                   DriveApiErrorCode error,
+                   FileListCallback callback,
+                   CancelCallbackOnce* cancel_callback,
+                   ApiErrorCode error,
                    std::unique_ptr<FileList> entry);
 
   RequestSender* request_sender_;                          // Not owned.
   const google_apis::DriveApiUrlGenerator url_generator_;  // Not owned.
-  base::Closure request_completed_callback_for_testing_;
+  base::OnceClosure request_completed_callback_for_testing_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FilesListRequestRunner> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FilesListRequestRunner);
 };
 
 }  // namespace google_apis

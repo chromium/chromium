@@ -8,22 +8,21 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -32,6 +31,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -46,6 +46,8 @@
 #include "net/base/filename_util.h"
 #include "url/url_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -54,15 +56,18 @@ namespace errors = manifest_errors;
 
 namespace {
 
-const int kModernManifestVersion = 2;
-const int kPEMOutputColumns = 64;
+constexpr int kModernManifestVersion = 2;
+constexpr int kMaximumSupportedManifestVersion = 3;
+constexpr int kPEMOutputColumns = 64;
+static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
+              "The modern manifest version must be supported.");
 
 // KEY MARKERS
-const char kKeyBeginHeaderMarker[] = "-----BEGIN";
-const char kKeyBeginFooterMarker[] = "-----END";
-const char kKeyInfoEndMarker[] = "KEY-----";
-const char kPublic[] = "PUBLIC";
-const char kPrivate[] = "PRIVATE";
+constexpr char kKeyBeginHeaderMarker[] = "-----BEGIN";
+constexpr char kKeyBeginFooterMarker[] = "-----END";
+constexpr char kKeyInfoEndMarker[] = "KEY-----";
+constexpr char kPublic[] = "PUBLIC";
+constexpr char kPrivate[] = "PRIVATE";
 
 bool ContainsReservedCharacters(const base::FilePath& path) {
   // We should disallow backslash '\\' as file path separator even on Windows,
@@ -82,9 +87,14 @@ bool IsManifestSupported(int manifest_version,
                          Manifest::Type type,
                          int creation_flags,
                          std::string* warning) {
-  static constexpr int kMaximumSupportedManifestVersion = 2;
-  static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
-                "The modern manifest version must be supported.");
+  // The ultimate short-circuit: If the feature for MV3 is disabled, it's not
+  // supported.
+  if (manifest_version == 3 &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kMv3ExtensionsSupported)) {
+    return false;
+  }
+
   // Modern is always safe.
   if (manifest_version >= kModernManifestVersion &&
       manifest_version <= kMaximumSupportedManifestVersion) {
@@ -92,10 +102,16 @@ bool IsManifestSupported(int manifest_version,
   }
 
   if (manifest_version > kMaximumSupportedManifestVersion) {
-    *warning = ErrorUtils::FormatErrorMessage(
-        manifest_errors::kManifestVersionTooHighWarning,
-        base::NumberToString(kMaximumSupportedManifestVersion),
-        base::NumberToString(manifest_version));
+    // Silence future manifest error with flag.
+    bool allow_future_manifest_version =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kAllowFutureManifestVersion);
+    if (!allow_future_manifest_version) {
+      *warning = ErrorUtils::FormatErrorMessage(
+          manifest_errors::kManifestVersionTooHighWarning,
+          base::NumberToString(kMaximumSupportedManifestVersion),
+          base::NumberToString(manifest_version));
+    }
     return true;
   }
 
@@ -124,6 +140,61 @@ bool IsManifestSupported(int manifest_version,
   return true;
 }
 
+// Computes the |extension_id| from the given parameters. On success, returns
+// true. On failure, populates |error| and returns false.
+bool ComputeExtensionID(const base::DictionaryValue& manifest,
+                        const base::FilePath& path,
+                        int creation_flags,
+                        std::u16string* error,
+                        ExtensionId* extension_id) {
+  if (manifest.HasKey(keys::kPublicKey)) {
+    std::string public_key;
+    std::string public_key_bytes;
+    if (!manifest.GetString(keys::kPublicKey, &public_key) ||
+        !Extension::ParsePEMKeyBytes(public_key, &public_key_bytes)) {
+      *error = base::ASCIIToUTF16(errors::kInvalidKey);
+      return false;
+    }
+    *extension_id = crx_file::id_util::GenerateId(public_key_bytes);
+    return true;
+  }
+
+  if (creation_flags & Extension::REQUIRE_KEY) {
+    *error = base::ASCIIToUTF16(errors::kInvalidKey);
+    return false;
+  }
+
+  // If there is a path, we generate the ID from it. This is useful for
+  // development mode, because it keeps the ID stable across restarts and
+  // reloading the extension.
+  *extension_id = crx_file::id_util::GenerateIdForPath(path);
+  if (extension_id->empty()) {
+    NOTREACHED() << "Could not create ID from path.";
+    return false;
+  }
+  return true;
+}
+
+std::u16string InvalidManifestVersionError(const char* manifest_version_error,
+                                           bool is_platform_app) {
+  std::string valid_version;
+  if (kModernManifestVersion == kMaximumSupportedManifestVersion) {
+    valid_version = base::NumberToString(kModernManifestVersion);
+  } else if (kMaximumSupportedManifestVersion - kModernManifestVersion == 1) {
+    valid_version = base::StrCat(
+        {"either ", base::NumberToString(kModernManifestVersion), " or ",
+         base::NumberToString(kMaximumSupportedManifestVersion)});
+  } else {
+    valid_version = base::StrCat(
+        {"between ", base::NumberToString(kModernManifestVersion), " and ",
+         base::NumberToString(kMaximumSupportedManifestVersion)});
+  }
+
+  return ErrorUtils::FormatErrorMessageUTF16(
+      manifest_version_error, valid_version,
+      is_platform_app ? "apps" : "extensions");
+}
+
 }  // namespace
 
 const int Extension::kInitFromValueFlagBits = 15;
@@ -137,10 +208,12 @@ const int Extension::kValidBookmarkAppSchemes = URLPattern::SCHEME_HTTP |
                                                 URLPattern::SCHEME_HTTPS |
                                                 URLPattern::SCHEME_EXTENSION;
 
+// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int Extension::kValidHostPermissionSchemes =
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_HTTP |
     URLPattern::SCHEME_HTTPS | URLPattern::SCHEME_FILE |
-    URLPattern::SCHEME_FTP | URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS;
+    URLPattern::SCHEME_FTP | URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
+    URLPattern::SCHEME_URN | URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 //
 // Extension
@@ -148,7 +221,7 @@ const int Extension::kValidHostPermissionSchemes =
 
 // static
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           Manifest::Location location,
+                                           ManifestLocation location,
                                            const base::DictionaryValue& value,
                                            int flags,
                                            std::string* utf8_error) {
@@ -161,28 +234,32 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 }
 
 // TODO(sungguk): Continue removing std::string errors and replacing
-// with base::string16. See http://crbug.com/71980.
+// with std::u16string. See http://crbug.com/71980.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           Manifest::Location location,
+                                           ManifestLocation location,
                                            const base::DictionaryValue& value,
                                            int flags,
                                            const std::string& explicit_id,
                                            std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
-  base::string16 error;
+  std::u16string error;
+
+  ExtensionId extension_id;
+  if (!explicit_id.empty()) {
+    extension_id = explicit_id;
+  } else if (!ComputeExtensionID(value, path, flags, &error, &extension_id)) {
+    *utf8_error = base::UTF16ToUTF8(error);
+    return nullptr;
+  }
 
   std::unique_ptr<extensions::Manifest> manifest;
   if (flags & FOR_LOGIN_SCREEN) {
-    manifest = Manifest::CreateManifestForLoginScreen(location,
-                                                      value.CreateDeepCopy());
+    manifest = Manifest::CreateManifestForLoginScreen(
+        location, value.CreateDeepCopy(), std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy());
-  }
-
-  if (!InitExtensionID(manifest.get(), path, explicit_id, flags, &error)) {
-    *utf8_error = base::UTF16ToUTF8(error);
-    return nullptr;
+    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy(),
+                                          std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;
@@ -197,6 +274,8 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     *utf8_error = base::UTF16ToUTF8(error);
     return nullptr;
   }
+
+  extension->guid_ = base::GUID::GenerateRandomV4();
 
   return extension;
 }
@@ -326,33 +405,6 @@ GURL Extension::GetBaseURLFromExtensionId(const std::string& extension_id) {
                             url::kStandardSchemeSeparator, extension_id}));
 }
 
-// static
-bool Extension::ShouldDisplayInExtensionSettings(Manifest::Type type,
-                                                 Manifest::Location location) {
-  // Don't show for themes since the settings UI isn't really useful for them.
-  if (type == Manifest::TYPE_THEME)
-    return false;
-
-  // Hide component extensions because they are only extensions as an
-  // implementation detail of Chrome.
-  if (Manifest::IsComponentLocation(location) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kShowComponentExtensionOptions)) {
-    return false;
-  }
-
-  // Unless they are unpacked, never show hosted apps. Note: We intentionally
-  // show packaged apps and platform apps because there are some pieces of
-  // functionality that are only available in chrome://extensions/ but which
-  // are needed for packaged and platform apps. For example, inspecting
-  // background pages. See http://crbug.com/116134.
-  if (!Manifest::IsUnpackedLocation(location) &&
-      type == Manifest::TYPE_HOSTED_APP)
-    return false;
-
-  return true;
-}
-
 bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   if (url() == origin)
     return true;
@@ -387,10 +439,6 @@ bool Extension::ShouldDisplayInNewTabPage() const {
   return is_app() && display_in_new_tab_page_;
 }
 
-bool Extension::ShouldDisplayInExtensionSettings() const {
-  return Extension::ShouldDisplayInExtensionSettings(GetType(), location());
-}
-
 bool Extension::ShouldExposeViaManagementAPI() const {
   // Hide component extensions because they are only extensions as an
   // implementation detail of Chrome.
@@ -412,7 +460,17 @@ void Extension::SetManifestData(const std::string& key,
   manifest_data_[key] = std::move(data);
 }
 
-Manifest::Location Extension::location() const {
+void Extension::SetGUID(const ExtensionGuid& guid) {
+  guid_ = base::GUID::ParseLowercase(guid);
+  DCHECK(guid_.is_valid());
+}
+
+const ExtensionGuid& Extension::guid() const {
+  DCHECK(guid_.is_valid());
+  return guid_.AsLowercaseString();
+}
+
+ManifestLocation Extension::location() const {
   return manifest_->location();
 }
 
@@ -490,53 +548,16 @@ bool Extension::is_login_screen_extension() const {
   return manifest()->is_login_screen_extension();
 }
 
+bool Extension::is_chromeos_system_extension() const {
+  return manifest()->is_chromeos_system_extension();
+}
+
 void Extension::AddWebExtentPattern(const URLPattern& pattern) {
   // Bookmark apps are permissionless.
   if (from_bookmark())
     return;
 
   extent_.AddPattern(pattern);
-}
-
-// static
-bool Extension::InitExtensionID(extensions::Manifest* manifest,
-                                const base::FilePath& path,
-                                const std::string& explicit_id,
-                                int creation_flags,
-                                base::string16* error) {
-  if (!explicit_id.empty()) {
-    manifest->SetExtensionId(explicit_id);
-    return true;
-  }
-
-  if (manifest->HasKey(keys::kPublicKey)) {
-    std::string public_key;
-    std::string public_key_bytes;
-    if (!manifest->GetString(keys::kPublicKey, &public_key) ||
-        !ParsePEMKeyBytes(public_key, &public_key_bytes)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidKey);
-      return false;
-    }
-    std::string extension_id = crx_file::id_util::GenerateId(public_key_bytes);
-    manifest->SetExtensionId(extension_id);
-    return true;
-  }
-
-  if (creation_flags & REQUIRE_KEY) {
-    *error = base::ASCIIToUTF16(errors::kInvalidKey);
-    return false;
-  } else {
-    // If there is a path, we generate the ID from it. This is useful for
-    // development mode, because it keeps the ID stable across restarts and
-    // reloading the extension.
-    std::string extension_id = crx_file::id_util::GenerateIdForPath(path);
-    if (extension_id.empty()) {
-      NOTREACHED() << "Could not create ID from path.";
-      return false;
-    }
-    manifest->SetExtensionId(extension_id);
-    return true;
-  }
 }
 
 Extension::Extension(const base::FilePath& path,
@@ -556,7 +577,7 @@ Extension::Extension(const base::FilePath& path,
 Extension::~Extension() {
 }
 
-bool Extension::InitFromValue(int flags, base::string16* error) {
+bool Extension::InitFromValue(int flags, std::u16string* error) {
   DCHECK(error);
 
   creation_flags_ = flags;
@@ -588,7 +609,7 @@ bool Extension::InitFromValue(int flags, base::string16* error) {
   if (is_app() && !LoadAppFeatures(error))
     return false;
 
-  permissions_parser_.reset(new PermissionsParser());
+  permissions_parser_ = std::make_unique<PermissionsParser>();
   if (!permissions_parser_->Parse(this, error))
     return false;
 
@@ -607,29 +628,29 @@ bool Extension::InitFromValue(int flags, base::string16* error) {
   return true;
 }
 
-bool Extension::LoadRequiredFeatures(base::string16* error) {
+bool Extension::LoadRequiredFeatures(std::u16string* error) {
   if (!LoadName(error) ||
       !LoadVersion(error))
     return false;
   return true;
 }
 
-bool Extension::LoadName(base::string16* error) {
-  base::string16 localized_name;
+bool Extension::LoadName(std::u16string* error) {
+  std::u16string localized_name;
   if (!manifest_->GetString(keys::kName, &localized_name)) {
     *error = base::ASCIIToUTF16(errors::kInvalidName);
     return false;
   }
 
   non_localized_name_ = base::UTF16ToUTF8(localized_name);
-  base::string16 sanitized_name =
+  std::u16string sanitized_name =
       base::CollapseWhitespace(localized_name, true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   display_name_ = base::UTF16ToUTF8(sanitized_name);
   return true;
 }
 
-bool Extension::LoadVersion(base::string16* error) {
+bool Extension::LoadVersion(std::u16string* error) {
   std::string version_str;
   if (!manifest_->GetString(keys::kVersion, &version_str)) {
     *error = base::ASCIIToUTF16(errors::kInvalidVersion);
@@ -649,7 +670,7 @@ bool Extension::LoadVersion(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadAppFeatures(base::string16* error) {
+bool Extension::LoadAppFeatures(std::u16string* error) {
   if (!LoadExtent(keys::kWebURLs, &extent_,
                   errors::kInvalidWebURLs, errors::kInvalidWebURL, error)) {
     return false;
@@ -676,7 +697,7 @@ bool Extension::LoadExtent(const char* key,
                            URLPatternSet* extent,
                            const char* list_error,
                            const char* value_error,
-                           base::string16* error) {
+                           std::u16string* error) {
   const base::Value* temp_pattern_value = nullptr;
   if (!manifest_->Get(key, &temp_pattern_value))
     return true;
@@ -687,7 +708,7 @@ bool Extension::LoadExtent(const char* key,
     return false;
   }
 
-  for (size_t i = 0; i < pattern_list->GetSize(); ++i) {
+  for (size_t i = 0; i < pattern_list->GetList().size(); ++i) {
     std::string pattern_string;
     if (!pattern_list->GetString(i, &pattern_string)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -740,7 +761,7 @@ bool Extension::LoadExtent(const char* key,
   return true;
 }
 
-bool Extension::LoadSharedFeatures(base::string16* error) {
+bool Extension::LoadSharedFeatures(std::u16string* error) {
   if (!LoadDescription(error) ||
       !ManifestHandler::ParseExtension(this, error) ||
       !LoadShortName(error))
@@ -749,7 +770,7 @@ bool Extension::LoadSharedFeatures(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadDescription(base::string16* error) {
+bool Extension::LoadDescription(std::u16string* error) {
   if (manifest_->HasKey(keys::kDescription) &&
       !manifest_->GetString(keys::kDescription, &description_)) {
     *error = base::ASCIIToUTF16(errors::kInvalidDescription);
@@ -758,29 +779,31 @@ bool Extension::LoadDescription(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadManifestVersion(base::string16* error) {
+bool Extension::LoadManifestVersion(std::u16string* error) {
   // Get the original value out of the dictionary so that we can validate it
   // more strictly.
-  if (manifest_->value()->HasKey(keys::kManifestVersion)) {
+  bool key_exists =
+      manifest_->available_values().HasKey(keys::kManifestVersion);
+  if (key_exists) {
     int manifest_version = 1;
-    if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version) ||
-        manifest_version < 1) {
-      *error = base::ASCIIToUTF16(errors::kInvalidManifestVersion);
+    if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version)) {
+      *error = InvalidManifestVersionError(
+          errors::kInvalidManifestVersionUnsupported, is_platform_app());
       return false;
     }
   }
 
-  manifest_version_ = manifest_->GetManifestVersion();
+  manifest_version_ = manifest_->manifest_version();
   std::string warning;
   if (!IsManifestSupported(manifest_version_, GetType(), creation_flags_,
                            &warning)) {
     std::string json;
     base::JSONWriter::Write(*manifest_->value(), &json);
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidManifestVersionOld,
-        base::NumberToString(kModernManifestVersion),
-        is_platform_app() ? "apps" : "extensions");
+    *error = InvalidManifestVersionError(
+        key_exists ? errors::kInvalidManifestVersionUnsupported
+                   : errors::kInvalidManifestVersionMissingKey,
+        is_platform_app());
     return false;
   }
 
@@ -790,9 +813,9 @@ bool Extension::LoadManifestVersion(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadShortName(base::string16* error) {
+bool Extension::LoadShortName(std::u16string* error) {
   if (manifest_->HasKey(keys::kShortName)) {
-    base::string16 localized_short_name;
+    std::u16string localized_short_name;
     if (!manifest_->GetString(keys::kShortName, &localized_short_name) ||
         localized_short_name.empty()) {
       *error = base::ASCIIToUTF16(errors::kInvalidShortName);
@@ -810,10 +833,8 @@ bool Extension::LoadShortName(base::string16* error) {
 ExtensionInfo::ExtensionInfo(const base::DictionaryValue* manifest,
                              const std::string& id,
                              const base::FilePath& path,
-                             Manifest::Location location)
-    : extension_id(id),
-      extension_path(path),
-      extension_location(location) {
+                             ManifestLocation location)
+    : extension_id(id), extension_path(path), extension_location(location) {
   if (manifest)
     extension_manifest = manifest->CreateDeepCopy();
 }

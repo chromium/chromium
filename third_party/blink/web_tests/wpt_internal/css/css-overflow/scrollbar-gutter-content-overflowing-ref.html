@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<title>Test that scrollbar-gutter does not clip overflowing content</title>
+<link rel="author" title="Felipe Erias Morandeira" href="mailto:felipeerias@gmail.com"/>
+<link rel="help" href="https://www.w3.org/TR/css-overflow-4/#scollbar-gutter-property"/>
+<link rel="match" href="scrollbar-gutter-content-overflowing-ref.html">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .row {
+        display: flex;
+        flex-flow: row wrap;
+    }
+    .container {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: 185px;
+        width: 185px;
+        margin: 6px;
+        border: 1px solid black;
+        background-color: #00AA00;
+    }
+    .container.ltr {
+        direction: ltr;
+    }
+    .container.rtl {
+        direction: rtl;
+    }
+    .container.vertical {
+        writing-mode: vertical-rl;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+    .overflowing {
+        background-color: #FF0000;
+        width: 500px;
+        height: 50px;
+        margin-left: -100px;
+    }
+    .vertical > .overflowing {
+        width: 50px;
+        height: 500px;
+        margin-top: -100px;
+    }
+    .tall {
+        background: transparent;
+        width: 100%;
+        height: 500px;
+    }
+    .vertical > .tall {
+        width: 500px;
+        height: 100%;
+    }
+</style>
+<body>
+    <div class="row">
+        <div class="container ltr">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+        <div class="container rtl">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+        <div class="container vertical">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+    </div>
+</body>

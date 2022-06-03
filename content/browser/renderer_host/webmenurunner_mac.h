@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "content/public/common/menu_item.h"
-
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 // WebMenuRunner ---------------------------------------------------------------
 // A class for determining whether an item was selected from an HTML select
@@ -39,7 +38,7 @@
 }
 
 // Initializes the MenuDelegate with a list of items sent from WebKit.
-- (id)initWithItems:(const std::vector<content::MenuItem>&)items
+- (id)initWithItems:(const std::vector<blink::mojom::MenuItemPtr>&)items
            fontSize:(CGFloat)fontSize
        rightAligned:(BOOL)rightAligned;
 

@@ -1,4 +1,6 @@
 include_rules = [
   "+components/os_crypt",
   "+components/pref_registry",
+  "+components/unified_consent",
+  "+components/webauthn/core",
 ]

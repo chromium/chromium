@@ -36,6 +36,10 @@ ShelfBubble::ShelfBubble(views::View* anchor,
           /* Don't pass the Shelf so the translucent color is always used. */
           nullptr,
           Shell::Get()->wallpaper_controller()) {
+  // Bubbles that use transparent colors should not paint their ClientViews to a
+  // layer as doing so could result in visual artifacts.
+  SetPaintClientToLayer(false);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
   background_animator_.Init(ShelfBackgroundType::kDefaultBg);
   background_animator_.AddObserver(this);
 
@@ -43,17 +47,14 @@ ShelfBubble::ShelfBubble(views::View* anchor,
   set_parent_window(
       anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
           kShellWindowId_SettingBubbleContainer));
+  // We override the role because the base class sets it to alert dialog,
+  // which results in each tooltip title being announced twice on screen
+  // readers each time it is shown.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
 }
 
 ShelfBubble::~ShelfBubble() {
   background_animator_.RemoveObserver(this);
-}
-
-ax::mojom::Role ShelfBubble::GetAccessibleWindowRole() {
-  // We override the role because the base class sets it to alert dialog,
-  // which results in each tooltip title being announced twice on screen
-  // readers each time it is shown.
-  return ax::mojom::Role::kDialog;
 }
 
 void ShelfBubble::CreateBubble() {
@@ -63,10 +64,6 @@ void ShelfBubble::CreateBubble() {
   // Settings that should only be changed just after bubble creation.
   GetBubbleFrameView()->SetCornerRadius(border_radius_);
   GetBubbleFrameView()->SetBackgroundColor(color());
-}
-
-int ShelfBubble::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
 }
 
 void ShelfBubble::UpdateShelfBackground(SkColor color) {

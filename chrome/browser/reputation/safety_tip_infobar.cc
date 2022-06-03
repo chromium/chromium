@@ -26,9 +26,11 @@ SafetyTipInfoBar::~SafetyTipInfoBar() {}
 
 SafetyTipInfoBar::SafetyTipInfoBar(
     std::unique_ptr<SafetyTipInfoBarDelegate> delegate)
-    : ConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   ScopedJavaLocalRef<jstring> ok_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_OK));
@@ -47,12 +49,13 @@ ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(JNIEnv* env) {
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (delegate->GetIconId() == infobars::InfoBarDelegate::kNoIconID &&
       !delegate->GetIcon().IsEmpty()) {
-    java_bitmap = gfx::ConvertToJavaBitmap(delegate->GetIcon().ToSkBitmap());
+    java_bitmap = gfx::ConvertToJavaBitmap(*delegate->GetIcon().ToSkBitmap());
   }
 
-  return Java_SafetyTipInfoBar_create(env, GetEnumeratedIconId(), java_bitmap,
-                                      message_text, link_text, ok_button_text,
-                                      cancel_button_text, description_text);
+  return Java_SafetyTipInfoBar_create(
+      env, resource_id_mapper.Run(delegate->GetIconId()), java_bitmap,
+      message_text, link_text, ok_button_text, cancel_button_text,
+      description_text);
 }
 
 SafetyTipInfoBarDelegate* SafetyTipInfoBar::GetDelegate() {

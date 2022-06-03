@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("library") {
+  sources = [
+    "closure/goog/asserts/asserts.js",
+    "closure/goog/base.js",
+    "closure/goog/debug/error.js",
+    "closure/goog/dom/nodetype.js",
+    "closure/goog/i18n/messageformat.js",
+    "closure/goog/i18n/ordinalrules.js",
+    "closure/goog/i18n/pluralrules.js",
+    "closure/goog/object/object.js",
+    "closure/goog/string/string.js",
+  ]
+}

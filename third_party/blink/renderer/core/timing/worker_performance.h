@@ -49,7 +49,7 @@ class WorkerPerformance final : public Performance {
     return execution_context_;
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<ExecutionContext> execution_context_;

@@ -44,7 +44,7 @@ class TestMessage : public UserMessage {
 
   TestMessage(const base::StringPiece& payload)
       : UserMessage(&kUserMessageTypeInfo), payload_(payload) {}
-  ~TestMessage() override {}
+  ~TestMessage() override = default;
 
   const std::string& payload() const { return payload_; }
 
@@ -69,7 +69,7 @@ class TestNode;
 
 class MessageRouter {
  public:
-  virtual ~MessageRouter() {}
+  virtual ~MessageRouter() = default;
 
   virtual void ForwardEvent(TestNode* from_node,
                             const NodeName& node_name,
@@ -401,6 +401,26 @@ class PortsTest : public testing::Test, public MessageRouter {
     if (it == nodes_.end()) {
       DVLOG(1) << "Node not found: " << node_name;
       return;
+    }
+
+    // Serialize and de-serialize all forwarded events.
+    size_t buf_size = event->GetSerializedSize();
+    std::unique_ptr<char[]> buf(new char[buf_size]);
+    event->Serialize(buf.get());
+    ScopedEvent copy = Event::Deserialize(buf.get(), buf_size);
+    // This should always succeed unless serialization or deserialization
+    // is broken. In that case, the loss of events should cause a test failure.
+    ASSERT_TRUE(copy);
+
+    // Also copy the payload for user messages.
+    if (event->type() == Event::Type::kUserMessage) {
+      UserMessageEvent* message_event =
+          static_cast<UserMessageEvent*>(event.get());
+      UserMessageEvent* message_copy =
+          static_cast<UserMessageEvent*>(copy.get());
+
+      message_copy->AttachMessage(std::make_unique<TestMessage>(
+          message_event->GetMessage<TestMessage>()->payload()));
     }
 
     it->second->EnqueueEvent(std::move(event));

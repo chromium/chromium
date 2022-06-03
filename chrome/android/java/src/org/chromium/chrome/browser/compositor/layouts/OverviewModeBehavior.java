@@ -7,11 +7,18 @@ package org.chromium.chrome.browser.compositor.layouts;
 /**
  * Exposes the current overview mode state as well as a way to listen to overview mode state
  * changes.
+ *
+ * DEPRECATED, please use {@link org.chromium.chrome.browser.layouts.LayoutStateProvider} instead.
  */
+@Deprecated
 public interface OverviewModeBehavior {
     /**
      * An observer that is notified when the overview mode state changes.
+     *
+     * DEPRECATED, please use {@link
+     * org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver} instead.
      */
+    @Deprecated
     interface OverviewModeObserver {
         /**
          * Called when overview mode starts showing.
@@ -24,13 +31,6 @@ public interface OverviewModeBehavior {
          * Called when overview mode finishes showing.
          */
         void onOverviewModeFinishedShowing();
-
-        /**
-         * Called when the internal state is changed.
-         * @param showTabSwitcherToolbar Whether or not request showing the Tab switcher toolbar.
-         */
-        void onOverviewModeStateChanged(
-                @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar);
 
         /**
          * Called when overview mode starts hiding.

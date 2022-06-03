@@ -60,10 +60,6 @@ extern const base::Feature kChromeCleanupInBrowserPromptFeature;
 // versions will be downloaded. When not enabled, default versions will be used.
 extern const base::Feature kChromeCleanupDistributionFeature;
 
-// Extensions cleanup feature. When enabled, Chrome Cleaner will prompt users
-// for, and cleanup, bad extensions.
-extern const base::Feature kChromeCleanupExtensionsFeature;
-
 // Returns true if this Chrome is in a field trial group which shows the SRT
 // prompt.
 bool IsSRTPromptFeatureEnabled();

@@ -5,9 +5,7 @@
 #include "base/containers/flat_set.h"
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"

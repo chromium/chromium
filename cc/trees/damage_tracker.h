@@ -5,7 +5,9 @@
 #ifndef CC_TREES_DAMAGE_TRACKER_H_
 #define CC_TREES_DAMAGE_TRACKER_H_
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "cc/cc_export.h"
@@ -151,6 +153,15 @@ class CC_EXPORT DamageTracker {
 
   // Damage accumulated since the last call to PrepareForUpdate().
   DamageAccumulator damage_for_this_update_;
+
+  struct SurfaceWithRect {
+    SurfaceWithRect(RenderSurfaceImpl* rs, const gfx::Rect& rect)
+        : render_surface(rs), rect_in_target_space(rect) {}
+    RenderSurfaceImpl* render_surface;
+    const gfx::Rect rect_in_target_space;
+  };
+
+  std::vector<SurfaceWithRect> contributing_surfaces_;
 };
 
 }  // namespace cc

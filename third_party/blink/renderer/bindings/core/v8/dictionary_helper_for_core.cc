@@ -24,14 +24,13 @@
  */
 
 #include "third_party/blink/renderer/bindings/core/v8/array_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_track.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -198,18 +197,9 @@ bool DictionaryHelper::Get(const Dictionary& dictionary,
   if (!dictionary.Get(key, v8_value))
     return false;
 
-  TrackBase* source = nullptr;
-  if (v8_value->IsObject()) {
-    v8::Local<v8::Object> wrapper = v8::Local<v8::Object>::Cast(v8_value);
-
-    // FIXME: this will need to be changed so it can also return an AudioTrack
-    // or a VideoTrack once we add them.
-    v8::Local<v8::Object> track = V8TextTrack::FindInstanceInPrototypeChain(
-        wrapper, dictionary.GetIsolate());
-    if (!track.IsEmpty())
-      source = V8TextTrack::ToImpl(track);
-  }
-  value = source;
+  // FIXME: this will need to be changed so it can also return an AudioTrack
+  // or a VideoTrack once we add them.
+  value = V8TextTrack::ToImplWithTypeCheck(dictionary.GetIsolate(), v8_value);
   return true;
 }
 
@@ -265,7 +255,13 @@ CORE_EXPORT bool DictionaryHelper::Get(const Dictionary& dictionary,
   if (!dictionary.Get(key, v8_value))
     return false;
 
-  value = V8Uint8Array::ToImplWithTypeCheck(dictionary.GetIsolate(), v8_value);
+  if (!v8_value->IsUint8Array())
+    return false;
+
+  NonThrowableExceptionState exception_state;
+  value = NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
+              dictionary.GetIsolate(), v8_value, exception_state)
+              .Get();
   return true;
 }
 

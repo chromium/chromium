@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that debugger live location gets updated.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   TestRunner.markStep('attachFrame');
   await Promise.all([
@@ -13,14 +13,14 @@
     BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
 
-  var jsLiveLocation = BindingsTestRunner.createDebuggerLiveLocation('js', 'sourcemap-script.js');
-  var cssLiveLocation = BindingsTestRunner.createCSSLiveLocation('css', 'sourcemap-style.css');
+  const jsLiveLocation = await BindingsTestRunner.createDebuggerLiveLocation('js', 'sourcemap-script.js');
+  const cssLiveLocation = await BindingsTestRunner.createCSSLiveLocation('css', 'sourcemap-style.css');
 
   TestRunner.markStep('navigateMainFrame');
-  var url = TestRunner.url('resources/empty-page.html');
+  const url = TestRunner.url('resources/empty-page.html');
   await TestRunner.navigatePromise(url);
-  BindingsTestRunner.dumpLocation(jsLiveLocation);
-  BindingsTestRunner.dumpLocation(cssLiveLocation);
+  await BindingsTestRunner.dumpLocation(jsLiveLocation);
+  await BindingsTestRunner.dumpLocation(cssLiveLocation);
 
   TestRunner.completeTest();
 })();

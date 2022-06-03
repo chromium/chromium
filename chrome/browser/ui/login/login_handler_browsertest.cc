@@ -8,42 +8,49 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/net/proxy_test_utils.h"
-#include "chrome/browser/prerender/prerender_manager.h"
-#include "chrome/browser/prerender/prerender_origin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
-#include "chrome/browser/ui/login/login_interstitial_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
-#include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/auth.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -55,6 +62,39 @@ using content::OpenURLParams;
 using content::Referrer;
 
 namespace {
+
+// A slow HTTP response that serves a WWW-Authenticate header and 401 status
+// code.
+class SlowAuthResponse : public content::SlowHttpResponse {
+ public:
+  explicit SlowAuthResponse(GotRequestCallback got_request)
+      : content::SlowHttpResponse(std::move(got_request)) {}
+  ~SlowAuthResponse() override = default;
+
+  SlowAuthResponse(const SlowAuthResponse& other) = delete;
+  SlowAuthResponse operator=(const SlowAuthResponse& other) = delete;
+
+  // content::SlowHttpResponse:
+  base::StringPairs ResponseHeaders() override {
+    base::StringPairs response;
+    response.emplace_back("WWW-Authenticate", "Basic realm=\"test\"");
+    response.emplace_back("Cache-Control", "max-age=0");
+    // Content-length and Content-type are both necessary to trigger the bug
+    // that this class is used to test. Specifically, there must be a delay
+    // between the OnAuthRequired notification from the net stack and when the
+    // response body is ready, and the OnAuthRequired notification requires
+    // headers to be complete (which requires a known content type and length).
+    response.emplace_back("Content-type", "text/html");
+    response.emplace_back(
+        "Content-Length",
+        base::NumberToString(kFirstResponsePartSize + kSecondResponsePartSize));
+    return response;
+  }
+
+  std::pair<net::HttpStatusCode, std::string> StatusLine() override {
+    return {net::HTTP_UNAUTHORIZED, "Unauthorized"};
+  }
+};
 
 // This helper function sets |notification_fired| to true if called. It's used
 // as an observer callback for notifications that are not expected to fire.
@@ -74,7 +114,7 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
 
   {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
-    ui_test_utils::NavigateToURL(browser, test_page);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page));
     auth_needed_waiter.Wait();
   }
 
@@ -100,8 +140,11 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
     auth_cancelled_waiter.Wait();
     reload_observer.Wait();
     if (https) {
-      EXPECT_EQ(true, content::EvalJs(contents, "document.body === null"));
+      EXPECT_EQ(
+          "<head></head><body></body>",
+          content::EvalJs(contents, "document.documentElement.innerHTML"));
     }
+
     EXPECT_FALSE(browser->location_bar_model()->GetFormattedFullURL().empty());
   }
 
@@ -117,16 +160,16 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
 
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = observer.handlers().front();
-  handler->SetAuth(base::UTF8ToUTF16("foo"), base::UTF8ToUTF16("bar"));
+  handler->SetAuth(u"foo", u"bar");
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = base::ASCIIToUTF16("OK");
+  std::u16string expected_title = u"OK";
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_FALSE(browser->location_bar_model()->GetFormattedFullURL().empty());
 }
 
-content::InterstitialPageDelegate* GetInterstitialDelegate(
+security_interstitials::SecurityInterstitialPage* GetSecurityInterstitial(
     content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -156,7 +199,7 @@ void TestCrossOriginPrompt(Browser* browser,
 
   // Load a page which will trigger a login prompt.
   WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser, visit_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, visit_url));
   auth_needed_waiter.Wait();
   ASSERT_EQ(1u, observer.handlers().size());
 
@@ -194,22 +237,12 @@ class LoginPromptBrowserTest
     auth_map_["bar"] = AuthInfo("testuser", "barpassword");
     auth_map_["testrealm"] = AuthInfo(username_basic_, password_);
 
-    // TODO(https://crbug.com/333943): Remove kFtpProtocol feature and FTP
-    // credential tests when FTP support is removed.
     if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {features::kHTTPAuthCommittedInterstitials, features::kFtpProtocol},
-          // disabled_features
-          {network::features::kSplitAuthCacheByNetworkIsolationKey});
+      scoped_feature_list_.InitAndDisableFeature(
+          network::features::kSplitAuthCacheByNetworkIsolationKey);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {features::kHTTPAuthCommittedInterstitials,
-           network::features::kSplitAuthCacheByNetworkIsolationKey,
-           features::kFtpProtocol},
-          // disabled_features
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          network::features::kSplitAuthCacheByNetworkIsolationKey);
     }
   }
 
@@ -278,10 +311,10 @@ const char kAuthDigestPage[] = "/auth-digest";
 // (https://crbug.com/636875).
 const char kNoAuthPage1[] = "/simple.html";
 
-base::string16 ExpectedTitleFromAuth(const base::string16& username,
-                                     const base::string16& password) {
+std::u16string ExpectedTitleFromAuth(const std::u16string& username,
+                                     const std::u16string& password) {
   // The TestServer sets the title to username/password on successful login.
-  return username + base::UTF8ToUTF16("/") + password;
+  return username + u"/" + password;
 }
 
 // Confirm that <link rel="prefetch"> targetting an auth required
@@ -298,21 +331,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PrefetchAuthCancels) {
 
   class SetPrefetchForTest {
    public:
-    explicit SetPrefetchForTest(bool prefetch)
-        : old_prerender_mode_(prerender::PrerenderManager::GetMode()) {
+    explicit SetPrefetchForTest(bool prefetch) {
       std::string exp_group = prefetch ? "ExperimentYes" : "ExperimentNo";
       base::FieldTrialList::CreateFieldTrial("Prefetch", exp_group);
-      // Disable prerender so this is just a prefetch of the top-level page.
-      prerender::PrerenderManager::SetMode(
-          prerender::PrerenderManager::PRERENDER_MODE_SIMPLE_LOAD_EXPERIMENT);
     }
-
-    ~SetPrefetchForTest() {
-      prerender::PrerenderManager::SetMode(old_prerender_mode_);
-    }
-
-   private:
-    prerender::PrerenderManager::PrerenderManagerMode old_prerender_mode_;
+    ~SetPrefetchForTest() = default;
   } set_prefetch_for_test(true);
 
   content::WebContents* contents =
@@ -349,7 +372,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
 
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }
 
@@ -388,8 +413,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
     SetAuthFor(handler);
     auth_supplied_waiter.Wait();
 
-    base::string16 expected_title = ExpectedTitleFromAuth(
-        base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+    std::u16string expected_title =
+        ExpectedTitleFromAuth(u"basicuser", u"secret");
     content::TitleWatcher title_watcher(contents, expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -436,12 +461,12 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestDigestAuth) {
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = *observer.handlers().begin();
 
-  base::string16 username(base::UTF8ToUTF16(username_digest_));
-  base::string16 password(base::UTF8ToUTF16(password_));
+  std::u16string username(base::UTF8ToUTF16(username_digest_));
+  std::u16string password(base::UTF8ToUTF16(password_));
   handler->SetAuth(username, password);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(username, password);
+  std::u16string expected_title = ExpectedTitleFromAuth(username, password);
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -488,9 +513,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestTwoAuths) {
   LoginHandler* handler1 = *observer.handlers().begin();
   LoginHandler* handler2 = *(++(observer.handlers().begin()));
 
-  base::string16 expected_title1 = ExpectedTitleFromAuth(
+  std::u16string expected_title1 = ExpectedTitleFromAuth(
       base::UTF8ToUTF16(username_basic_), base::UTF8ToUTF16(password_));
-  base::string16 expected_title2 = ExpectedTitleFromAuth(
+  std::u16string expected_title2 = ExpectedTitleFromAuth(
       base::UTF8ToUTF16(username_digest_), base::UTF8ToUTF16(password_));
   content::TitleWatcher title_watcher1(contents1, expected_title1);
   content::TitleWatcher title_watcher2(contents2, expected_title2);
@@ -551,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_OnNavigation) {
                                    ui::PAGE_TRANSITION_TYPED, false));
   WindowedAuthCancelledObserver auth_cancelled_waiter(controller);
   // Navigating while auth is requested is the same as cancelling.
-  ui_test_utils::NavigateToURL(browser(), kNoAuthURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kNoAuthURL));
   auth_cancelled_waiter.Wait();
   load_stop_waiter.Wait();
   EXPECT_TRUE(observer.handlers().empty());
@@ -571,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_OnBack) {
 
   // First navigate to an unauthenticated page so we have something to
   // go back to.
-  ui_test_utils::NavigateToURL(browser(), kNoAuthURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kNoAuthURL));
 
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   WindowedAuthNeededObserver auth_needed_waiter(controller);
@@ -600,8 +625,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_OnForward) {
   LoginPromptBrowserTestObserver observer;
   observer.Register(content::Source<NavigationController>(controller));
 
-  ui_test_utils::NavigateToURL(browser(), kAuthURL);
-  ui_test_utils::NavigateToURL(browser(), kNoAuthURL1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kAuthURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kNoAuthURL1));
   ASSERT_TRUE(controller->CanGoBack());
   WindowedAuthNeededObserver auth_needed_waiter(controller);
   controller->GoBack();
@@ -1259,7 +1284,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(u"status=401");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1293,7 +1318,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(u"status=200");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1348,15 +1373,15 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = *observer.handlers().begin();
 
-  base::string16 username(base::UTF8ToUTF16(username_digest_));
-  base::string16 password(base::UTF8ToUTF16(password_));
+  std::u16string username(base::UTF8ToUTF16(username_digest_));
+  std::u16string password(base::UTF8ToUTF16(password_));
   handler->SetAuth(username, password);
   auth_supplied_waiter.Wait();
 
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(u"status=200");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(2, observer.auth_supplied_count());
@@ -1400,7 +1425,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(u"status=401");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1433,14 +1458,16 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
-      base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
                        run_loop.QuitClosure());
@@ -1453,7 +1480,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
     // When allowing credentials to be used across NetworkIsolationKeys, the
     // auth credentials should be reused and there should be no new auth dialog.
-    ui_test_utils::NavigateToURL(browser(), cross_origin_page);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_page));
     EXPECT_EQ(0u, observer.handlers().size());
     EXPECT_EQ(1, observer.auth_needed_count());
   } else {
@@ -1466,23 +1493,22 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
                                      ui::PAGE_TRANSITION_TYPED, false));
     auth_needed_waiter2.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
-    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-    LoginHandler* handler = *observer.handlers().begin();
+    WindowedAuthSuppliedObserver auth_supplied_waiter2(controller);
+    handler = *observer.handlers().begin();
     SetAuthFor(handler);
-    auth_supplied_waiter.Wait();
+    auth_supplied_waiter2.Wait();
     navigation_observer.Wait();
     EXPECT_EQ(2, observer.auth_needed_count());
   }
 
-  std::vector<content::RenderFrameHost*> frames = contents->GetAllFrames();
-  ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[1]->IsDescendantOf(frames[0]));
-  ASSERT_EQ(test_page, frames[1]->GetLastCommittedURL());
+  content::RenderFrameHost* child_frame = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(child_frame);
+  ASSERT_EQ(test_page, child_frame->GetLastCommittedURL());
 
   // Make sure the iframe is displaying the base64-encoded credentials that
   // should have been set, which the EmbeddedTestServer echos back in response
   // bodies when /basic-auth is requested.
-  EXPECT_EQ(true, content::EvalJs(frames[1],
+  EXPECT_EQ(true, content::EvalJs(child_frame,
                                   "document.documentElement.innerText.search("
                                   "'YmFzaWN1c2VyOnNlY3JldA==') >= 0"));
 }
@@ -1497,7 +1523,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // the same pipe that the pref change uses, making sure the change is applied
   // before the network process receives credentials, but seems safest to flush
   // the NetworkContext pipe explicitly.
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
@@ -1520,14 +1548,16 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
-      base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
                        run_loop.QuitClosure());
@@ -1540,19 +1570,18 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   // When allowing credentials to be used across NetworkIsolationKeys, the
   // auth credentials should be reused and there should be no new auth dialog.
-  ui_test_utils::NavigateToURL(browser(), cross_origin_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_page));
   EXPECT_EQ(0u, observer.handlers().size());
   EXPECT_EQ(1, observer.auth_needed_count());
 
-  std::vector<content::RenderFrameHost*> frames = contents->GetAllFrames();
-  ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[1]->IsDescendantOf(frames[0]));
-  ASSERT_EQ(test_page, frames[1]->GetLastCommittedURL());
+  content::RenderFrameHost* child_frame = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(child_frame);
+  ASSERT_EQ(test_page, child_frame->GetLastCommittedURL());
 
   // Make sure the iframe is displaying the base64-encoded credentials that
   // should have been set, which the EmbeddedTestServer echos back in response
   // bodies when /basic-auth is requested.
-  EXPECT_EQ(true, content::EvalJs(frames[1],
+  EXPECT_EQ(true, content::EvalJs(child_frame,
                                   "document.documentElement.innerText.search("
                                   "'YmFzaWN1c2VyOnNlY3JldA==') >= 0"));
 }
@@ -1602,7 +1631,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 // the omnibox.
 
 // Fails occasionally on Mac. http://crbug.com/852703
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #define MAYBE_CancelLoginInterstitialOnRedirect \
   DISABLED_CancelLoginInterstitialOnRedirect
 #else
@@ -1661,63 +1690,6 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   EXPECT_EQ("www.b.com", contents->GetVisibleURL().host());
 }
 
-// Test the scenario where proceeding through a different type of interstitial
-// that ends up with an auth URL works fine. This can happen if a URL that
-// triggers the auth dialog can also trigger an SSL interstitial (or any other
-// type of interstitial).
-IN_PROC_BROWSER_TEST_P(
-    LoginPromptBrowserTest,
-    DISABLED_LoginInterstitialShouldReplaceExistingInterstitial) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  ASSERT_TRUE(https_server.Start());
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  LoginPromptBrowserTestObserver observer;
-
-  observer.Register(content::Source<NavigationController>(controller));
-
-  // Load a page which triggers an SSL interstitial. Proceeding through it
-  // should show the login page with the blank interstitial.
-  {
-    GURL test_page = https_server.GetURL(kAuthBasicPage);
-    ASSERT_EQ("127.0.0.1", test_page.host());
-
-    WindowedAuthNeededObserver auth_needed_waiter(controller);
-    browser()->OpenURL(OpenURLParams(test_page, Referrer(),
-                                     WindowOpenDisposition::CURRENT_TAB,
-                                     ui::PAGE_TRANSITION_TYPED, false));
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    content::WaitForInterstitialAttach(contents);
-
-    EXPECT_EQ(SSLBlockingPage::kTypeForTesting, contents->GetInterstitialPage()
-                                                    ->GetDelegateForTesting()
-                                                    ->GetTypeForTesting());
-    // An overrideable SSL interstitial is now being displayed. Proceed through
-    // the interstitial to see the login prompt.
-    contents->GetInterstitialPage()->Proceed();
-    auth_needed_waiter.Wait();
-    ASSERT_EQ(1u, observer.handlers().size());
-    content::WaitForInterstitialAttach(contents);
-
-    // The omnibox should show the correct origin while the login prompt is
-    // being displayed.
-    EXPECT_EQ("127.0.0.1", contents->GetVisibleURL().host());
-
-    // Cancelling the login prompt should detach the interstitial while keeping
-    // the correct origin.
-    LoginHandler* handler = *observer.handlers().begin();
-    content::RunTaskAndWaitForInterstitialDetach(
-        contents,
-        base::BindOnce(&LoginHandler::CancelAuth, base::Unretained(handler)));
-
-    EXPECT_EQ("127.0.0.1", contents->GetVisibleURL().host());
-    EXPECT_FALSE(contents->ShowingInterstitialPage());
-  }
-}
-
 // Test the scenario where an auth interstitial should replace a different type
 // of interstitial (e.g. SSL) even though the navigation isn't cross origin.
 // This is different than the above scenario in that the last
@@ -1755,9 +1727,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // Navigate to an auth url and wait for the login prompt.
   {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
-    ui_test_utils::NavigateToURL(browser(), auth_url);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("http"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), auth_url));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("http"));
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
     // Cancel the auth prompt, which triggers a reload.
@@ -1773,9 +1745,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // schemes don't match (http vs https).
   {
     ASSERT_EQ("127.0.0.1", broken_ssl_page.host());
-    ui_test_utils::NavigateToURL(browser(), broken_ssl_page);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("https"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), broken_ssl_page));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("https"));
     ASSERT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
   }
 
@@ -1789,9 +1761,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // cross origin navigation.
   {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
-    ui_test_utils::NavigateToURL(browser(), auth_url);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("http"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), auth_url));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("http"));
 
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
@@ -1832,7 +1804,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
                                    ui::PAGE_TRANSITION_TYPED, false));
   auth_needed_waiter.Wait();
   ASSERT_EQ(1u, observer.handlers().size());
-  EXPECT_FALSE(contents->ShowingInterstitialPage());
+  security_interstitials::SecurityInterstitialPage* interstitial =
+      GetSecurityInterstitial(contents);
+  EXPECT_FALSE(interstitial);
 
   // Redirect to a broken SSL page. This redirect should not accidentally
   // proceed through the SSL interstitial.
@@ -1842,11 +1816,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
       std::string("window.location = '") + broken_ssl_page.spec() + "'"));
   ssl_observer.Wait();
 
-  content::InterstitialPageDelegate* delegate =
-      GetInterstitialDelegate(contents);
+  interstitial = GetSecurityInterstitial(contents);
 
-  EXPECT_TRUE(delegate);
-  EXPECT_EQ(SSLBlockingPage::kTypeForTesting, delegate->GetTypeForTesting());
+  EXPECT_TRUE(interstitial);
+  EXPECT_EQ(SSLBlockingPage::kTypeForTesting,
+            interstitial->GetTypeForTesting());
 }
 
 // Test where Basic HTTP authentication is disabled.
@@ -1870,7 +1844,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
     if (crash_network_service && content::IsOutOfProcessNetworkService()) {
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }
 
@@ -1882,8 +1858,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
                                      ui::PAGE_TRANSITION_TYPED, false));
     EXPECT_EQ(0, observer.auth_supplied_count());
 
-    const base::string16 kExpectedTitle =
-        base::ASCIIToUTF16("Denied: Missing Authorization Header");
+    const std::u16string kExpectedTitle =
+        u"Denied: Missing Authorization Header";
     content::TitleWatcher title_watcher(contents, kExpectedTitle);
     EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
   }
@@ -1903,7 +1879,7 @@ IN_PROC_BROWSER_TEST_P(
   observer.Register(content::Source<NavigationController>(controller));
 
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
   // The login prompt should display above an empty page.
   EXPECT_EQ("<head></head><body></body>",
@@ -1926,7 +1902,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedAuthNeededObserver auth_needed_waiter(controller);
 
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
   // Test that the login prompt displays above an empty page.
   EXPECT_EQ("<head></head><body></body>",
@@ -1941,8 +1917,43 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
-      base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
+  content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
+  EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+}
+
+// Tests that the repost dialog is not shown when credentials are entered for a
+// POST navigation. Regression test for https://crbug.com/1062317.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoRepostDialogAfterCredentials) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigationController* controller = &contents->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+  WindowedAuthNeededObserver auth_needed_waiter(controller);
+
+  // Navigate to a blank page and inject a form to trigger a POST navigation
+  // that requests credentials.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/login/form.html")));
+  ASSERT_TRUE(
+      content::ExecJs(contents, "document.getElementById('submit').click()"));
+
+  auth_needed_waiter.Wait();
+  ASSERT_EQ(1u, observer.handlers().size());
+
+  // Enter credentials and test that the page loads. If the repost dialog is
+  // shown, the test will hang while waiting for input.
+  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
+  LoginHandler* handler = *observer.handlers().begin();
+  SetAuthFor(handler);
+  auth_supplied_waiter.Wait();
+
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
   content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
 }
@@ -1956,7 +1967,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithNoVisibleEntry) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Open a new window via JavaScript and navigate it to a page that delivers an
   // auth prompt.
@@ -1986,8 +1997,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithNoVisibleEntry) {
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
-      base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
   content::TitleWatcher auth_supplied_title_watcher(opened_contents,
                                                     expected_title);
   EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
@@ -2002,7 +2013,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptFromSubframe) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigationController* controller = &contents->GetController();
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Via JavaScript, create an iframe that delivers an auth prompt.
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
@@ -2031,98 +2042,78 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptFromSubframe) {
   EXPECT_FALSE(notification_fired);
 }
 
-// Tests that FTP auth challenges appear over a blank committed interstitial.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuth) {
-  net::SpawnedTestServer ftp_server(
-      net::SpawnedTestServer::TYPE_FTP,
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp")));
-  ftp_server.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_server.Start());
+namespace {
 
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  LoginPromptBrowserTestObserver observer;
-  observer.Register(content::Source<NavigationController>(controller));
-
-  // Navigate to an FTP server and wait for the auth prompt to appear.
-  WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  auth_needed_waiter.Wait();
-  ASSERT_EQ(1u, observer.handlers().size());
-  EXPECT_EQ("<head></head><body></body>",
-            content::EvalJs(contents, "document.documentElement.innerHTML"));
-
-  // Supply credentials and wait for the page to successfully load.
-  LoginHandler* handler = *observer.handlers().begin();
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  handler->SetAuth(base::ASCIIToUTF16("chrome"), base::ASCIIToUTF16("chrome"));
-  auth_supplied_waiter.Wait();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Index of /");
-  content::TitleWatcher title_watcher(contents, kExpectedTitle);
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-}
-
-// Tests that FTP auth prompts do not appear when credentials have been
-// previously entered and cached.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuthWithCache) {
-  net::SpawnedTestServer ftp_server(
-      net::SpawnedTestServer::TYPE_FTP,
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp")));
-  ftp_server.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_server.Start());
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  LoginPromptBrowserTestObserver observer;
-  observer.Register(content::Source<NavigationController>(controller));
-
-  // Navigate to an FTP server and wait for the auth prompt to appear.
-  WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  auth_needed_waiter.Wait();
-  ASSERT_EQ(1u, observer.handlers().size());
-
-  // Supply credentials and wait for the page to successfully load.
-  LoginHandler* handler = *observer.handlers().begin();
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  handler->SetAuth(base::ASCIIToUTF16("chrome"), base::ASCIIToUTF16("chrome"));
-  auth_supplied_waiter.Wait();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Index of /");
-  content::TitleWatcher title_watcher(contents, kExpectedTitle);
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-
-  // Navigate away and then back to the FTP server. There should be no auth
-  // prompt because the credentials are cached.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
-  content::TitleWatcher revisit_title_watcher(contents, kExpectedTitle);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  EXPECT_EQ(kExpectedTitle, revisit_title_watcher.WaitAndGetTitle());
-  EXPECT_EQ(0u, observer.handlers().size());
-}
-
-class ProxyBrowserTestWithHttpAuthCommittedInterstitials
-    : public ProxyBrowserTest {
- public:
-  ProxyBrowserTestWithHttpAuthCommittedInterstitials() {
-    feature_list_.InitAndEnableFeature(
-        features::kHTTPAuthCommittedInterstitials);
+// A request handler that returns a 401 Unauthorized response on the
+// /unauthorized path.
+std::unique_ptr<net::test_server::HttpResponse> HandleUnauthorized(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != "/unauthorized") {
+    return nullptr;
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+  std::unique_ptr<net::test_server::BasicHttpResponse> response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_UNAUTHORIZED);
+  response->set_content("<html><body>Unauthorized</body></html>");
+  return response;
+}
+
+}  // namespace
+
+// Tests that 401 responses are not cancelled and replaced with a blank page
+// when incorrect credentials were supplied in the request. See
+// https://crbug.com/1047742.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
+                       ResponseNotCancelledWithIncorrectCredentials) {
+  // Register a custom handler that returns a 401 Unauthorized response
+  // regardless of what credentials were supplied in the request.
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&HandleUnauthorized));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a page that prompts basic auth and fill in correct
+  // credentials. A subsequent navigation handled by HandleUnauthorized() will
+  // send the credentials cached from the navigation to |test_page|, but return
+  // a 401 Unauthorized response.
+  NavigationController* controller = &web_contents->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+  WindowedAuthNeededObserver auth_needed_waiter(controller);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
+  auth_needed_waiter.Wait();
+  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
+  LoginHandler* handler = *observer.handlers().begin();
+  SetAuthFor(handler);
+  auth_supplied_waiter.Wait();
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // Now navigate to a page handled by HandleUnauthorized(), for which the
+  // cached credentials are incorrect.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/unauthorized")));
+  // Test that the 401 response body is rendered, instead of the navigation
+  // being cancelled and a blank error page committing.
+  EXPECT_EQ(false,
+            content::EvalJs(
+                web_contents,
+                "document.body.innerHTML.indexOf('Unauthorized') === -1"));
+}
 
 // Tests that basic proxy auth works as expected, for HTTPS pages.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // TODO(https://crbug.com/1000446): Re-enable this test.
 #define MAYBE_ProxyAuthHTTPS DISABLED_ProxyAuthHTTPS
 #else
 #define MAYBE_ProxyAuthHTTPS ProxyAuthHTTPS
 #endif
-IN_PROC_BROWSER_TEST_F(ProxyBrowserTestWithHttpAuthCommittedInterstitials,
-                       MAYBE_ProxyAuthHTTPS) {
+IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, MAYBE_ProxyAuthHTTPS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
@@ -2131,11 +2122,364 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTestWithHttpAuthCommittedInterstitials,
 }
 
 // Tests that basic proxy auth works as expected, for HTTP pages.
-IN_PROC_BROWSER_TEST_F(ProxyBrowserTestWithHttpAuthCommittedInterstitials,
-                       ProxyAuthHTTP) {
+IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, ProxyAuthHTTP) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_NO_FATAL_FAILURE(
       TestProxyAuth(browser(), embedded_test_server()->GetURL("/simple.html")));
 }
 
+class LoginPromptExtensionBrowserTest
+    : public extensions::ExtensionBrowserTest,
+      public testing::WithParamInterface<SplitAuthCacheByNetworkIsolationKey> {
+ public:
+  LoginPromptExtensionBrowserTest() {
+    if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
+      scoped_feature_list_.InitWithFeatures(
+          // enabled_features
+          {},
+          // disabled_features
+          {network::features::kSplitAuthCacheByNetworkIsolationKey});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          // enabled_features
+          {network::features::kSplitAuthCacheByNetworkIsolationKey},
+          // disabled_features
+          {});
+    }
+  }
+
+  ~LoginPromptExtensionBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoginPromptExtensionBrowserTest,
+    ::testing::Values(SplitAuthCacheByNetworkIsolationKey::kFalse,
+                      SplitAuthCacheByNetworkIsolationKey::kTrue));
+
+// Tests that with committed interstitials, extensions are notified once per
+// request when auth is required. Regression test for https://crbug.com/1034468.
+IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
+                       OnAuthRequiredNotifiedOnce) {
+  const char kSlowResponse[] = "/slow-response";
+
+  // Once the request has been made, this will be set with a closure to finish
+  // the slow response.
+  base::OnceClosure finish_slow_response;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kSlowResponse)
+          return nullptr;
+        auto response = std::make_unique<SlowAuthResponse>(
+            base::BindLambdaForTesting([&](base::OnceClosure start_response,
+                                           base::OnceClosure finish_response) {
+              // The response is started immediately, but we delay finishing it.
+              std::move(start_response).Run();
+              finish_slow_response = std::move(finish_response);
+            }));
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load an extension that logs to the console each time onAuthRequired is
+  // called. We attach a console observer so that we can verify that the
+  // extension only logs once per request.
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("log_auth_required"));
+  ASSERT_TRUE(extension);
+  content::WebContentsConsoleObserver console_observer(
+      extensions::ProcessManager::Get(profile())
+          ->GetBackgroundHostForExtension(extension->id())
+          ->host_contents());
+
+  // Navigate to a page that prompts for basic auth and then hangs.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigationController* controller = &contents->GetController();
+  WindowedAuthNeededObserver auth_needed_waiter(controller);
+  GURL test_page = embedded_test_server()->GetURL(kSlowResponse);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
+
+  console_observer.Wait();
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ(u"onAuthRequired " + base::ASCIIToUTF16(test_page.spec()),
+            console_observer.messages()[0].message);
+
+  // End the response that prompted for basic auth.
+  std::move(finish_slow_response).Run();
+
+  // If https://crbug.com/1034468 regresses, the test may hang here. In that
+  // bug, extensions were getting notified of each auth request twice, and the
+  // extension must handle the auth request both times before LoginHandler
+  // proceeds to show the login prompt. Usually, the request is fully destroyed
+  // before the second extension dispatch, so the second extension dispatch is a
+  // no-op. But when there is a delay between the OnAuthRequired notification
+  // and the response body being read (as provided by SlowAuthResponse), the
+  // WebRequestAPI is notified that the request is destroyed between the second
+  // dispatch to an extension and when the extension replies. When this happens,
+  // the LoginHandler is never notified that it can continue to show the login
+  // prompt, so the auth needed notification that we are waiting for <will never
+  // come. The fix to this bug is to ensure that extensions are notified of each
+  // auth request only once; this test verifies that condition by checking that
+  // the auth needed notification comes as expected and that the test extension
+  // only logs once for onAuthRequired.
+  auth_needed_waiter.Wait();
+  // No second console message should have been logged, because extensions
+  // should only be notified of the auth request once.
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  // It's possible that a second message was in fact logged, but the observer
+  // hasn't heard about it yet. Navigate to a different URL and wait for the
+  // corresponding console message, to "flush" any possible second message from
+  // the current page load.
+  WindowedAuthNeededObserver second_auth_needed_waiter(controller);
+  GURL second_test_page = embedded_test_server()->GetURL("/auth-basic");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_test_page));
+  second_auth_needed_waiter.Wait();
+  ASSERT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ(u"onAuthRequired " + base::ASCIIToUTF16(second_test_page.spec()),
+            console_observer.messages()[1].message);
+}
+
+// Tests that extensions can cancel authentication requests to suppress a
+// prompt. Regression test for https://crbug.com/1075442.
+IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest, OnAuthRequiredCancels) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load an extension that cancels each auth request.
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("cancel_auth_required"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page that prompts for basic auth and test that the 401
+  // response body is rendered.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
+
+  std::u16string expected_title(u"Denied: Missing Authorization Header");
+  EXPECT_EQ(expected_title, contents->GetTitle());
+}
+
+// Tests that login prompts are shown for main resource requests that are
+// intercepted by service workers. Regression test for
+// https://crbug.com/1055253.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Install a Service Worker that responds to fetch events by fetch()ing the
+  // requested resource.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server.GetURL("/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            content::EvalJs(web_contents,
+                            "register('/service_worker/"
+                            "fetch_event_respond_with_fetch.js', '/')"));
+
+  // Now navigate to a page that requests basic auth.
+  NavigationController* controller = &web_contents->GetController();
+  {
+    LoginPromptBrowserTestObserver observer;
+    observer.Register(content::Source<NavigationController>(controller));
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server.GetURL(kAuthBasicPage)));
+    auth_needed_waiter.Wait();
+    EXPECT_FALSE(observer.handlers().empty());
+
+    // Cancel the auth prompt and check that the 401 response is displayed after
+    // a reload.
+    LoginHandler* handler = *observer.handlers().begin();
+    content::TestNavigationObserver reload_observer(web_contents);
+    handler->CancelAuth();
+    reload_observer.Wait();
+    const std::u16string kExpectedTitle =
+        u"Denied: Missing Authorization Header";
+    EXPECT_EQ(kExpectedTitle, web_contents->GetTitle());
+  }
+
+  // Reload and provide correct credentials this time.
+  {
+    LoginPromptBrowserTestObserver observer;
+    observer.Register(content::Source<NavigationController>(controller));
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server.GetURL(kAuthBasicPage)));
+    auth_needed_waiter.Wait();
+    EXPECT_FALSE(observer.handlers().empty());
+    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
+    LoginHandler* handler = *observer.handlers().begin();
+    SetAuthFor(handler);
+    auth_supplied_waiter.Wait();
+
+    std::u16string expected_title =
+        ExpectedTitleFromAuth(u"basicuser", u"secret");
+    content::TitleWatcher auth_supplied_title_watcher(web_contents,
+                                                      expected_title);
+    EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+  }
+}
+
+class LoginPromptPrerenderBrowserTest : public LoginPromptBrowserTest {
+ public:
+  LoginPromptPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &LoginPromptPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~LoginPromptPrerenderBrowserTest() override = default;
+  LoginPromptPrerenderBrowserTest(const LoginPromptPrerenderBrowserTest&) =
+      delete;
+  LoginPromptPrerenderBrowserTest& operator=(
+      const LoginPromptPrerenderBrowserTest&) = delete;
+
+  void SetUp() override { LoginPromptBrowserTest::SetUp(); }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    LoginPromptBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoginPromptPrerenderBrowserTest,
+    ::testing::Values(SplitAuthCacheByNetworkIsolationKey::kFalse,
+                      SplitAuthCacheByNetworkIsolationKey::kTrue));
+
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest, CancelOnAuthRequested) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Keep an observer for auth requests.
+  NavigationController* controller = &GetWebContents()->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL(kAuthBasicPage);
+  prerender_helper().AddPrerenderAsync(kPrerenderingUrl);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
+  EXPECT_EQ(0, observer.auth_needed_count());
+}
+
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
+                       CancelOnAuthRequestedSubFrame) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Keep an observer for auth requests.
+  NavigationController* controller = &GetWebContents()->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  // Fetch a subframe that requires authentication.
+  const GURL kAuthIFrameUrl = embedded_test_server()->GetURL(kAuthBasicPage);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ignore_result(ExecJs(prerender_rfh,
+                       "var i = document.createElement('iframe'); i.src = '" +
+                           kAuthIFrameUrl.spec() +
+                           "'; document.body.appendChild(i);"));
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
+  EXPECT_EQ(0, observer.auth_needed_count());
+}
+
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
+                       CancelOnAuthRequestedSubResource) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+
+  // Keep an observer for auth requests.
+  NavigationController* controller = &GetWebContents()->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  ASSERT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Fetch a subresrouce.
+  std::string fetch_subresource_script = R"(
+        const imgElement = document.createElement('img');
+        imgElement.src = '/auth-basic/favicon.gif';
+        document.body.appendChild(imgElement);
+  )";
+  ignore_result(ExecJs(prerender_helper().GetPrerenderedMainFrameHost(host_id),
+                       fetch_subresource_script));
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
+  EXPECT_EQ(0, observer.auth_needed_count());
+}
 }  // namespace

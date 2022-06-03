@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "ash/assistant/model/ui/assistant_card_element.h"
-#include "ash/assistant/ui/assistant_container_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/main_stage/assistant_ui_element_view_animator.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
@@ -19,6 +21,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -26,7 +29,9 @@ namespace {
 
 using assistant::util::DeepLinkParam;
 using assistant::util::DeepLinkType;
-using assistant::util::ProactiveSuggestionsAction;
+
+constexpr char kAssistantCardElementHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.CardElement";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -39,7 +44,7 @@ void CreateAndSendMouseClick(aura::WindowTreeHost* host,
 
   // Send an ET_MOUSE_PRESSED event.
   ui::EventDispatchDetails details =
-      host->event_sink()->OnEventFromSource(&press_event);
+      host->GetEventSink()->OnEventFromSource(&press_event);
 
   if (details.dispatcher_destroyed)
     return;
@@ -50,7 +55,7 @@ void CreateAndSendMouseClick(aura::WindowTreeHost* host,
                                ui::EF_LEFT_MOUSE_BUTTON);
 
   // Send an ET_MOUSE_RELEASED event.
-  ignore_result(host->event_sink()->OnEventFromSource(&release_event));
+  ignore_result(host->GetEventSink()->OnEventFromSource(&release_event));
 }
 
 }  // namespace
@@ -59,19 +64,27 @@ AssistantCardElementView::AssistantCardElementView(
     AssistantViewDelegate* delegate,
     const AssistantCardElement* card_element)
     : delegate_(delegate), card_element_(card_element) {
-  InitLayout(card_element);
+  InitLayout();
 
-  // We observe contents() to receive events pertaining to the underlying web
-  // contents including auto-resize and suppressed navigation events.
-  contents()->AddObserver(this);
+  // We observe contents_view() to receive events pertaining to the underlying
+  // WebContents including focus change and suppressed navigation events.
+  contents_view_->AddObserver(this);
 }
 
 AssistantCardElementView::~AssistantCardElementView() {
-  contents()->RemoveObserver(this);
+  contents_view_->RemoveObserver(this);
 }
 
 const char* AssistantCardElementView::GetClassName() const {
   return "AssistantCardElementView";
+}
+
+ui::Layer* AssistantCardElementView::GetLayerForAnimating() {
+  return native_view()->layer();
+}
+
+std::string AssistantCardElementView::ToStringForTesting() const {
+  return card_element_->html();
 }
 
 void AssistantCardElementView::AddedToWidget() {
@@ -87,22 +100,11 @@ void AssistantCardElementView::AddedToWidget() {
   // vertically. As such, we need to prevent the Assistant card window from
   // receiving events it doesn't need. It needs mouse click events for
   // handling links.
-  window->SetProperty(ash::assistant::ui::kOnlyAllowMouseClickEvents, true);
+  window->SetProperty(assistant::ui::kOnlyAllowMouseClickEvents, true);
 }
 
 void AssistantCardElementView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
-}
-
-void AssistantCardElementView::AboutToRequestFocusFromTabTraversal(
-    bool reverse) {
-  // Focus in the web contents will be reset in FocusThroughTabTraversal().
-  focused_node_rect_ = gfx::Rect();
-  contents()->FocusThroughTabTraversal(reverse);
-}
-
-void AssistantCardElementView::OnFocus() {
-  contents()->Focus();
 }
 
 void AssistantCardElementView::OnGestureEvent(ui::GestureEvent* event) {
@@ -149,10 +151,10 @@ void AssistantCardElementView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void AssistantCardElementView::ScrollRectToVisible(const gfx::Rect& rect) {
-  // We expect this method is called outside this class to show its local
+  // We expect this method is called outside this class to show its contents
   // bounds. Inside this class, should call views::View::ScrollRectToVisible()
   // to show the focused node in the web contents.
-  DCHECK(rect == GetLocalBounds());
+  DCHECK(rect == GetContentsBounds());
 
   // When this view is focused, View::Focus() calls ScrollViewToVisible(), which
   // calls ScrollRectToVisible().  But we don't want that call to do anything,
@@ -166,39 +168,16 @@ void AssistantCardElementView::ScrollRectToVisible(const gfx::Rect& rect) {
   views::View::ScrollRectToVisible(focused_node_rect_);
 }
 
-void AssistantCardElementView::DidAutoResizeView(const gfx::Size& new_size) {
-  contents()->GetView()->view()->SetPreferredSize(new_size);
-}
-
 void AssistantCardElementView::DidSuppressNavigation(
     const GURL& url,
     WindowOpenDisposition disposition,
     bool from_user_gesture) {
-  // Proactive suggestion deep links may be invoked without a user gesture to
-  // log view impressions. Those are (currently) the only deep links we allow to
-  // be processed without originating from a user event.
-  if (!from_user_gesture) {
-    DeepLinkType deep_link_type = assistant::util::GetDeepLinkType(url);
-    if (deep_link_type != DeepLinkType::kProactiveSuggestions) {
-      NOTREACHED();
-      return;
-    }
-
-    const base::Optional<ProactiveSuggestionsAction> action =
-        assistant::util::GetDeepLinkParamAsProactiveSuggestionsAction(
-            assistant::util::GetDeepLinkParams(url), DeepLinkParam::kAction);
-    if (action != ProactiveSuggestionsAction::kViewImpression) {
-      NOTREACHED();
-      return;
-    }
-  }
   // We delegate navigation to the AssistantController so that it can apply
   // special handling to deep links.
-  delegate_->OpenUrlFromView(url);
+  AssistantController::Get()->OpenUrl(url);
 }
 
-void AssistantCardElementView::FocusedNodeChanged(
-    bool is_editable_node,
+void AssistantCardElementView::DidChangeFocusedNode(
     const gfx::Rect& node_bounds_in_screen) {
   // TODO(b/143985066): Card has element with empty bounds, e.g. the line break.
   if (node_bounds_in_screen.IsEmpty())
@@ -210,20 +189,20 @@ void AssistantCardElementView::FocusedNodeChanged(
   views::View::ScrollRectToVisible(focused_node_rect_);
 }
 
-void AssistantCardElementView::InitLayout(
-    const AssistantCardElement* card_element) {
-  SetFocusBehavior(FocusBehavior::ALWAYS);
+void AssistantCardElementView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Contents view.
-  AddChildView(contents()->GetView()->view());
+  contents_view_ = AddChildView(
+      const_cast<AssistantCardElement*>(card_element_)->MoveContentsView());
 
   // OverrideDescription() doesn't work. Only names are read automatically.
-  GetViewAccessibility().OverrideName(card_element->fallback());
+  GetViewAccessibility().OverrideName(card_element_->fallback());
 }
 
-content::NavigableContents* AssistantCardElementView::contents() {
-  return const_cast<AssistantCardElement*>(card_element_)->contents();
+std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
+  return std::make_unique<AssistantUiElementViewAnimator>(
+      this, kAssistantCardElementHistogram);
 }
 
 }  // namespace ash

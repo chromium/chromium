@@ -175,6 +175,10 @@ class GPU_GLES2_EXPORT QueryManager {
   };
 
   QueryManager();
+
+  QueryManager(const QueryManager&) = delete;
+  QueryManager& operator=(const QueryManager&) = delete;
+
   virtual ~QueryManager();
 
   // Must call before destruction.
@@ -260,8 +264,6 @@ class GPU_GLES2_EXPORT QueryManager {
   // Queries waiting for completion.
   using QueryQueue = base::circular_deque<scoped_refptr<Query>>;
   QueryQueue pending_queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryManager);
 };
 
 }  // namespace gpu

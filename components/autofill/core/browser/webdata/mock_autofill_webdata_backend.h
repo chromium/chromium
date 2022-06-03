@@ -19,23 +19,41 @@ class AutofillWebDataServiceObserverOnDBSequence;
 class MockAutofillWebDataBackend : public AutofillWebDataBackend {
  public:
   MockAutofillWebDataBackend();
+
+  MockAutofillWebDataBackend(const MockAutofillWebDataBackend&) = delete;
+  MockAutofillWebDataBackend& operator=(const MockAutofillWebDataBackend&) =
+      delete;
+
   ~MockAutofillWebDataBackend() override;
 
-  MOCK_METHOD0(GetDatabase, WebDatabase*());
-  MOCK_METHOD1(AddObserver,
-               void(AutofillWebDataServiceObserverOnDBSequence* observer));
-  MOCK_METHOD1(RemoveObserver,
-               void(AutofillWebDataServiceObserverOnDBSequence* observer));
-  MOCK_METHOD0(CommitChanges, void());
-  MOCK_METHOD1(NotifyOfAutofillProfileChanged,
-               void(const AutofillProfileChange& change));
-  MOCK_METHOD1(NotifyOfCreditCardChanged, void(const CreditCardChange& change));
-  MOCK_METHOD0(NotifyOfMultipleAutofillChanges, void());
-  MOCK_METHOD0(NotifyOfAddressConversionCompleted, void());
-  MOCK_METHOD1(NotifyThatSyncHasStarted, void(syncer::ModelType model_type));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillWebDataBackend);
+  MOCK_METHOD(WebDatabase*, GetDatabase, (), (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (AutofillWebDataServiceObserverOnDBSequence * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (AutofillWebDataServiceObserverOnDBSequence * observer),
+              (override));
+  MOCK_METHOD(void, CommitChanges, (), (override));
+  MOCK_METHOD(void,
+              NotifyOfAutofillProfileChanged,
+              (const AutofillProfileChange& change),
+              (override));
+  MOCK_METHOD(void,
+              NotifyOfCreditCardChanged,
+              (const CreditCardChange& change),
+              (override));
+  MOCK_METHOD(void, NotifyOfMultipleAutofillChanges, (), (override));
+  MOCK_METHOD(void, NotifyOfAddressConversionCompleted, (), (override));
+  MOCK_METHOD(void,
+              NotifyThatSyncHasStarted,
+              (syncer::ModelType model_type),
+              (override));
+  MOCK_METHOD(void,
+              NotifyOfCreditCardArtImagesChanged,
+              (const std::vector<std::string>& server_ids),
+              (override));
 };
 
 }  // namespace autofill

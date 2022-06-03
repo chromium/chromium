@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `https://crbug.com/738932 Tests the snapshot view is not empty on repeatitive expand-collapse.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;
@@ -27,7 +27,7 @@
     function step3(row) {
       row.collapse();
       row.expand();
-      var visibleChildren = row.children.filter(c => c._element.classList.contains('revealed'));
+      var visibleChildren = row.children.filter(c => c.element().classList.contains('revealed'));
       TestRunner.assertEquals(11, visibleChildren.length);
       next();
     }

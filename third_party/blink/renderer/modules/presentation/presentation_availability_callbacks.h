@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -24,18 +23,22 @@ class MODULES_EXPORT PresentationAvailabilityCallbacks
  public:
   PresentationAvailabilityCallbacks(PresentationAvailabilityProperty*,
                                     const WTF::Vector<KURL>&);
+
+  PresentationAvailabilityCallbacks(const PresentationAvailabilityCallbacks&) =
+      delete;
+  PresentationAvailabilityCallbacks& operator=(
+      const PresentationAvailabilityCallbacks&) = delete;
+
   virtual ~PresentationAvailabilityCallbacks();
 
   virtual void Resolve(bool value);
   virtual void RejectAvailabilityNotSupported();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   Member<PresentationAvailabilityProperty> resolver_;
   const WTF::Vector<KURL> urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationAvailabilityCallbacks);
 };
 
 }  // namespace blink

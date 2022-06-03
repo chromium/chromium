@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "components/assist_ranker/example_preprocessing.h"
 #include "components/assist_ranker/nn_classifier.h"

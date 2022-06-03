@@ -157,7 +157,7 @@ Emoji place additional requirements in isolating sub-runs for shaping. Emoji
 Unicode code points and code point sequences have different default presentation
 styles, text-default, or emoji-default. This is defined in the
 section
-[Presentation Style of Unicode Technical Report #51](http://unicode.org/draft/reports/tr51/tr51.html#Presentation_Style). So
+[Presentation Style of Unicode Technical Standard #51](https://unicode.org/reports/tr51/#Presentation_Style). So
 in order to select the correct font for emoji presentation — either a color
 font, or a regular contour font — the incoming text needs to be segmented and
 isolated by its emoji properties as well.
@@ -359,7 +359,9 @@ fonts are searched next. This behavior matches the requirements of the font
 style matching algorithm of
 the
 [CSS Fonts specification](https://drafts.csswg.org/css-fonts/#font-style-matching),
-which mandates to prioritize web fonts over system fonts.
+which mandates to prioritize web fonts over system fonts. Some additional
+details can be found in
+[LocaleInFonts.md](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/fonts/LocaleInFonts.md#Installed-Font-Fallback).
 
 `FontFallbackIterator` is intialized with a `FontFallbackList` and starts
 retrieving fonts from this list as its first source for fonts. If during shaping
@@ -379,4 +381,5 @@ additional system fonts pulled in to the shaping process.
 In summary, `FontFallbackIterator` feeds fonts from the CSS `font-family` list
 as well as system fallback fonts to `HarfBuzzShaper` for use in the shaping
 iterations until ideally all gaps are filled and the full text run can be drawn
-with the correct glyphs.
+with the correct glyphs.  When there are gaps, and the .notdef tofu character
+must be rendered, the primary font is used for this.

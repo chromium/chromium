@@ -1,76 +1,47 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 57, 47, 185],
-          "reason": "style change"
-        }
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow PRE id='scroller'",
+      "bounds": [185, 185],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 185],
+      "bounds": [200, 15],
+      "contentsOpaqueForText": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [185, 0],
+      "bounds": [15, 185],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow PRE id='scroller'",
+      "bounds": [47, 615],
+      "invalidations": [
+        [0, 0, 47, 615]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 57, 0, 1]
       ]
     }
   ]

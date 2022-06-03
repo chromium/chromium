@@ -5,12 +5,7 @@
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 
 #include "base/metrics/histogram_macros.h"
-
-namespace {
-// If a request completes faster than this amount (in ms), then we ignore it.
-// Any delays on such a request was negligible.
-const int kMinRequestTimeToCareMs = 10;
-}  // namespace
+#include "base/numerics/safe_conversions.h"
 
 ExtensionWebRequestTimeTracker::RequestTimeLog::RequestTimeLog() = default;
 ExtensionWebRequestTimeTracker::RequestTimeLog::~RequestTimeLog() = default;
@@ -69,11 +64,11 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
 
   // Ignore really short requests. Time spent on these is negligible, and any
   // extra delay the extension adds is likely to be noise.
-  if (request_duration.InMilliseconds() >= kMinRequestTimeToCareMs) {
-    double percentage = log.block_duration.InMillisecondsF() /
-                        request_duration.InMillisecondsF();
-    UMA_HISTOGRAM_PERCENTAGE("Extensions.NetworkDelayPercentage",
-                             static_cast<int>(100 * percentage));
+  constexpr auto kMinRequestTimeToCare = base::Milliseconds(10);
+  if (request_duration >= kMinRequestTimeToCare) {
+    const int percentage =
+        base::ClampRound(log.block_duration / request_duration * 100);
+    UMA_HISTOGRAM_PERCENTAGE("Extensions.NetworkDelayPercentage", percentage);
   }
 }
 

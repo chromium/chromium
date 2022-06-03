@@ -1,5 +1,5 @@
 # mako/template.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -7,11 +7,11 @@
 """Provides the Template class, a facade for parsing, generating and executing
 template strings, as well as template runtime operations."""
 
+import json
 import os
 import re
 import shutil
 import stat
-import sys
 import tempfile
 import types
 import weakref
@@ -413,14 +413,12 @@ class Template(object):
                     self, data, filename, path, self.module_writer
                 )
             module = compat.load_module(self.module_id, path)
-            del sys.modules[self.module_id]
             if module._magic_number != codegen.MAGIC_NUMBER:
                 data = util.read_file(filename)
                 _compile_module_file(
                     self, data, filename, path, self.module_writer
                 )
                 module = compat.load_module(self.module_id, path)
-                del sys.modules[self.module_id]
             ModuleInfo(module, path, self, filename, None, None, None)
         else:
             # template filename and no module directory, compile code
@@ -519,17 +517,17 @@ class ModuleTemplate(Template):
 
     """A Template which is constructed given an existing Python module.
 
-        e.g.::
+       e.g.::
 
-        t = Template("this is a template")
-        f = file("mymodule.py", "w")
-        f.write(t.code)
-        f.close()
+            t = Template("this is a template")
+            f = file("mymodule.py", "w")
+            f.write(t.code)
+            f.close()
 
-        import mymodule
+            import mymodule
 
-        t = ModuleTemplate(mymodule)
-        print t.render()
+            t = ModuleTemplate(mymodule)
+            print(t.render())
 
     """
 
@@ -659,7 +657,7 @@ class ModuleInfo(object):
         source_map = re.search(
             r"__M_BEGIN_METADATA(.+?)__M_END_METADATA", module_source, re.S
         ).group(1)
-        source_map = compat.json.loads(source_map)
+        source_map = json.loads(source_map)
         source_map["line_map"] = dict(
             (int(k), int(v)) for k, v in source_map["line_map"].items()
         )

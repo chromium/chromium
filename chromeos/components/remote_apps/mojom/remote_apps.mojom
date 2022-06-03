@@ -1,0 +1,66 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.remote_apps.mojom;
+
+import "url/mojom/url.mojom";
+
+// Interface for communication between an extension and the Remote Apps
+// Manager.
+interface RemoteApps {
+  // Adds a Remote Apps folder to the launcher. Empty folders are not shown in
+  // the launcher.
+  //
+  // Input parameters:
+  // - |name|: the name of the folder.
+  //
+  // Output parameters:
+  // - |folder_id|: the ID of the newly added folder.
+  // - |error|: A string describing the error if any.
+  // - |add_to_front|: true if the folder should be added to the front of the
+  //                   app list.
+  AddFolder(string name,
+            bool add_to_front) => (string? folder_id, string? error);
+
+  // Adds a Remote Apps app to the launcher.
+  //
+  // Input parameters:
+  // - |name|: the name of the app.
+  // - |folder_id|: the ID of the parent folder. An empty string indicates the
+  //                app has no parent folder.
+  // - |icon_url|: a URL pointing to an image which represents the app's icon.
+  // - |add_to_front|: true if the app should be added to the front of the app
+  //                   list. Has no effect if the app has a parent folder.
+  //
+  // Output parameters:
+  // - |app_id|: the ID of the newly added app.
+  // - |error|: A string describing the error if any.
+  AddApp(string name,
+         string folder_id,
+         url.mojom.Url icon_url,
+         bool add_to_front) => (string? app_id, string? error);
+
+  // Deletes a Remote App added by |AddApp()|.
+  //
+  // Input parameters:
+  // - |app_id|: ID of the app.
+  //
+  // Output parameters:
+  // - |error|: A string describing the error if any.
+  DeleteApp(string app_id) => (string? error);
+};
+
+// Factory for creating an instance of RemoteApps.
+interface RemoteAppsFactory {
+  // Creates an instance of RemoteApps.
+  Create(pending_receiver<RemoteApps> remote_apps,
+         pending_remote<RemoteAppLaunchObserver> observer);
+};
+
+// A RemoteAppLaunchObserver gets notifications when a remote app is launched.
+interface RemoteAppLaunchObserver {
+  // Invoked when a remote app is launched. |app_id| is the ID of the app which
+  // was launched.
+  OnRemoteAppLaunched(string app_id);
+};

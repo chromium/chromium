@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {Result} from '/gen/media/midi/midi_service.mojom.m.js';
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+
+promise_test(async t => {
+  await setMidiPermission({}, 'granted');
+
+  mock.setStartSessionResult(Result.INITIALIZATION_ERROR);
+  return promise_rejects_dom(t, 'InvalidStateError',
+      navigator.requestMIDIAccess());
+}, 'initialization failure causes requestMIDIAccess to fail');
+
+</script>
+</body>
+</html>

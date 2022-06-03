@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
+import("//ios/web/js_compile.gni")
 
 buildflag_header("block_universal_links_buildflags") {
   header = "block_universal_links_buildflags.h"
@@ -21,9 +22,9 @@ source_set("navigation") {
     "//ios/web:core",
     "//ios/web/common",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated:deprecated_navigation_util",
     "//ios/web/public/download",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
@@ -32,9 +33,11 @@ source_set("navigation") {
     "//ios/web/session",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:web_view_handler",
     "//ios/web/web_view:util",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
     "//url",
   ]
@@ -42,8 +45,6 @@ source_set("navigation") {
   sources = [
     "crw_js_navigation_handler.h",
     "crw_js_navigation_handler.mm",
-    "crw_navigation_item_holder.h",
-    "crw_navigation_item_holder.mm",
     "crw_pending_navigation_info.h",
     "crw_pending_navigation_info.mm",
     "crw_web_view_navigation_observer.h",
@@ -53,25 +54,17 @@ source_set("navigation") {
     "crw_wk_navigation_handler.mm",
     "crw_wk_navigation_states.h",
     "crw_wk_navigation_states.mm",
-    "navigation_item_impl_list.h",
-    "navigation_item_impl_list.mm",
     "navigation_item_storage_builder.h",
     "navigation_item_storage_builder.mm",
-    "nscoder_util.h",
-    "nscoder_util.mm",
     "serializable_user_data_manager_impl.h",
     "serializable_user_data_manager_impl.mm",
     "session_storage_builder.h",
     "session_storage_builder.mm",
-    "time_smoother.cc",
-    "time_smoother.h",
     "url_schemes.mm",
     "web_kit_constants.cc",
     "web_kit_constants.h",
     "wk_back_forward_list_item_holder.h",
     "wk_back_forward_list_item_holder.mm",
-    "wk_based_navigation_manager_impl.h",
-    "wk_based_navigation_manager_impl.mm",
     "wk_navigation_action_policy_util.h",
     "wk_navigation_action_policy_util.mm",
     "wk_navigation_action_util.h",
@@ -86,16 +79,17 @@ source_set("core") {
     "//base",
     "//components/url_formatter:url_formatter",
     "//ios/web/common:features",
+    "//ios/web/common:user_agent",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated:deprecated_navigation_util",
     "//ios/web/public/security",
+    "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ui/base",
   ]
 
   sources = [
-    "error_retry_state_machine.h",
-    "error_retry_state_machine.mm",
+    "crw_navigation_item_holder.h",
+    "crw_navigation_item_holder.mm",
     "navigation_context_impl.h",
     "navigation_context_impl.mm",
     "navigation_item_impl.h",
@@ -103,8 +97,55 @@ source_set("core") {
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
+    "time_smoother.cc",
+    "time_smoother.h",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("navigation_feature") {
+  deps = [
+    ":navigation_js",
+    ":navigation_listeners_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+  ]
+  sources = [
+    "navigation_java_script_feature.h",
+    "navigation_java_script_feature.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("navigation_js") {
+  visibility = [ ":navigation_feature" ]
+  closure_entry_point = "__crWeb.navigation"
+
+  sources = [ "resources/navigation.js" ]
+}
+
+js_compile_bundle("navigation_listeners_js") {
+  visibility = [ ":navigation_feature" ]
+  closure_entry_point = "__crWeb.navigationListeners"
+
+  sources = [ "resources/navigation_listeners.js" ]
+}
+
+source_set("session_restore_feature") {
+  deps = [
+    "//base",
+    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:scoped_wk_script_message_handler",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  sources = [
+    "session_restore_java_script_feature.h",
+    "session_restore_java_script_feature.mm",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -117,6 +158,10 @@ source_set("wk_navigation_util") {
   ]
 
   sources = [
+    "crw_error_page_helper.h",
+    "crw_error_page_helper.mm",
+    "nscoder_util.h",
+    "nscoder_util.mm",
     "wk_navigation_util.h",
     "wk_navigation_util.mm",
   ]

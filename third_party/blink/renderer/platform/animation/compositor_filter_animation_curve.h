@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_filter_keyframe.h"
@@ -29,6 +28,10 @@ class PLATFORM_EXPORT CompositorFilterAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorFilterAnimationCurve();
+  CompositorFilterAnimationCurve(const CompositorFilterAnimationCurve&) =
+      delete;
+  CompositorFilterAnimationCurve& operator=(
+      const CompositorFilterAnimationCurve&) = delete;
   ~CompositorFilterAnimationCurve() override;
 
   void AddKeyframe(const CompositorFilterKeyframe&);
@@ -36,12 +39,10 @@ class PLATFORM_EXPORT CompositorFilterAnimationCurve
   void SetScaledDuration(double);
 
   // blink::CompositorAnimationCurve implementation.
-  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
 
  private:
   std::unique_ptr<cc::KeyframedFilterAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFilterAnimationCurve);
 };
 
 }  // namespace blink

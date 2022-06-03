@@ -61,5 +61,5 @@ compositor_frame_fuzzer <path-to-build-gen-files>/components/viz/service/composi
 
 [libfuzzer]: http://llvm.org/docs/LibFuzzer.html
 [protobuf-mutator]: https://github.com/google/libprotobuf-mutator/
-[libfuzzer-chromium]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
-[efficient-fuzzing]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/efficient_fuzzer.md
+[libfuzzer-chromium]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
+[efficient-fuzzing]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/efficient_fuzzer.md

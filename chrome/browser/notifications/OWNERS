@@ -1,9 +1,7 @@
 dewittj@chromium.org
 dimich@chromium.org
 knollr@chromium.org
-mukai@chromium.org
 peter@chromium.org
-stevenjb@chromium.org
 yoshiki@chromium.org
 
 # Linux files
@@ -15,7 +13,4 @@ per-file *_mac*=rsesek@chromium.org
 # Windows files
 per-file *_win*=finnur@chromium.org
 
-per-file *permission_context*=file://chrome/browser/permissions/PERMISSIONS_OWNERS
-
-# TEAM: platform-capabilities@chromium.org
-# COMPONENT: UI>Notifications
+per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS

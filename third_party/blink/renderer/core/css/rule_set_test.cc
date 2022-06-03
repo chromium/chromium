@@ -30,7 +30,16 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -55,7 +64,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("-webkit-details-marker");
   const HeapVector<Member<const RuleData>>* rules =
-      rule_set.ShadowPseudoElementRules(str);
+      rule_set.UAShadowPseudoElementRules(str);
   ASSERT_EQ(1u, rules->size());
   ASSERT_EQ(str, rules->at(0)->Selector().Value());
 }
@@ -128,18 +137,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
   ASSERT_EQ(1u, rules->size());
   AtomicString tag_str("div");
   ASSERT_EQ(tag_str, rules->at(0)->Selector().TagQName().LocalName());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_DivWithContent) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules("div::content { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  AtomicString str("div");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules(str);
-  ASSERT_EQ(1u, rules->size());
-  AtomicString value_str("content");
-  ASSERT_EQ(value_str, rules->at(0)->Selector().TagHistory()->Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
@@ -253,58 +250,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
   sheet.AddCSSRules("::placeholder { }");
   sheet.AddCSSRules("input::placeholder { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  auto* rules = rule_set.ShadowPseudoElementRules("-webkit-input-placeholder");
+  auto* rules =
+      rule_set.UAShadowPseudoElementRules("-webkit-input-placeholder");
   ASSERT_EQ(2u, rules->size());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoIs) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(".a :is(.b+.c, .d>:is(.e, .f)) { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  {
-    AtomicString str("c");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("e");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("f");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhere) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(".a :where(.b+.c, .d>:where(.e, .f)) { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  {
-    AtomicString str("c");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("e");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
-  {
-    AtomicString str("f");
-    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
-    ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0)->Selector().Value());
-  }
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
@@ -314,39 +262,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   RuleSet& rule_set = sheet.GetRuleSet();
   const HeapVector<Member<const RuleData>>* rules = rule_set.PartPseudoRules();
   ASSERT_EQ(2u, rules->size());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoIsTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(
-      ":is(.a#a, .b#b, .c#c, .d#d) + "
-      ":is(.e#e, .f#f, .g#g, .h#h) + "
-      ":is(.i#i, .j#j, .k#k, .l#l) + "
-      ":is(.m#m, .n#n, .o#o, .p#p) + "
-      ":is(.q#q, .r#r, .s#s, .t#t) + "
-      ":is(.u#u, .v#v, .w#w, .x#x) { }",
-      true);
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(0u, rule_set.RuleCount());
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhereTooLarge) {
-  // RuleData cannot support selectors at index 8192 or beyond so the expansion
-  // is limited to this size
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules(
-      ":where(.a#a, .b#b, .c#c, .d#d) + :where(.e#e, .f#f, .g#g, .h#h) + "
-      ":where(.i#i, .j#j, .k#k, .l#l) + :where(.m#m, .n#n, .o#o, .p#p) + "
-      ":where(.q#q, .r#r, .s#s, .t#t) + :where(.u#u, .v#v, .w#w, .x#x) { }",
-      true);
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(0u, rule_set.RuleCount());
 }
 
 TEST(RuleSetTest, SelectorIndexLimit) {
@@ -380,22 +295,28 @@ TEST(RuleSetTest, RuleDataSelectorIndexLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned position = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags));
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags,
+                                    nullptr /* container_query */));
   EXPECT_FALSE(RuleData::MaybeCreate(rule, (1 << RuleData::kSelectorIndexBits),
-                                     position, flags));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, (1 << RuleData::kSelectorIndexBits) + 1, position, flags));
+                                     position, flags,
+                                     nullptr /* container_query */));
+  EXPECT_FALSE(
+      RuleData::MaybeCreate(rule, (1 << RuleData::kSelectorIndexBits) + 1,
+                            position, flags, nullptr /* container_query */));
 }
 
 TEST(RuleSetTest, RuleDataPositionLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned selector_index = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags));
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags,
+                                    nullptr /* container_query */));
   EXPECT_FALSE(RuleData::MaybeCreate(rule, selector_index,
-                                     (1 << RuleData::kPositionBits), flags));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, selector_index, (1 << RuleData::kPositionBits) + 1, flags));
+                                     (1 << RuleData::kPositionBits), flags,
+                                     nullptr /* container_query */));
+  EXPECT_FALSE(RuleData::MaybeCreate(rule, selector_index,
+                                     (1 << RuleData::kPositionBits) + 1, flags,
+                                     nullptr /* container_query */));
 }
 
 TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
@@ -406,12 +327,227 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   StyleRule* rule = CreateDummyStyleRule();
 
   // Add with valid selector_index=0.
-  rule_set->AddRule(rule, 0, flags);
+  rule_set->AddRule(rule, 0, flags, nullptr /* container_query */,
+                    nullptr /* cascade_layer */);
   EXPECT_EQ(1u, rule_set->RuleCount());
 
   // Adding with invalid selector_index should not lead to a change in count.
-  rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags);
+  rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags,
+                    nullptr /* container_query */, nullptr /* cascade_layer */);
   EXPECT_EQ(1u, rule_set->RuleCount());
+}
+
+class RuleSetCascadeLayerTest : public SimTest,
+                                private ScopedCSSCascadeLayersForTest {
+ public:
+  using LayerName = StyleRuleBase::LayerName;
+
+  RuleSetCascadeLayerTest() : ScopedCSSCascadeLayersForTest(true) {}
+
+ protected:
+  const RuleSet& GetRuleSet() {
+    return To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+        ->sheet()
+        ->Contents()
+        ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
+                        kRuleHasNoSpecialState);
+  }
+
+  const CascadeLayer* GetLayerByRule(const RuleData& rule) {
+    return GetRuleSet().GetLayerForTest(rule);
+  }
+
+  const CascadeLayer* GetLayerByName(const LayerName name) {
+    return const_cast<CascadeLayer*>(ImplicitOuterLayer())
+        ->GetOrAddSubLayer(name);
+  }
+
+  const CascadeLayer* ImplicitOuterLayer() {
+    return GetRuleSet().implicit_outer_layer_;
+  }
+
+  const RuleData& GetIdRule(const AtomicString& key) {
+    return *GetRuleSet().IdRules(key)->front();
+  }
+
+  const CascadeLayer* GetLayerByIdRule(const AtomicString& key) {
+    return GetLayerByRule(GetIdRule(key));
+  }
+
+  String LayersToString() {
+    return GetRuleSet().CascadeLayers().ToStringForTesting();
+  }
+};
+
+TEST_F(RuleSetCascadeLayerTest, NoLayer) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      #no-layers { }
+    </style>
+  )HTML");
+
+  EXPECT_FALSE(GetRuleSet().HasCascadeLayers());
+  EXPECT_FALSE(ImplicitOuterLayer());
+}
+
+TEST_F(RuleSetCascadeLayerTest, Basic) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      #zero { }
+      @layer foo {
+        #one { }
+        #two { }
+        @layer bar {
+          #three { }
+          #four { }
+        }
+        #five { }
+      }
+      #six { }
+    </style>
+  )HTML");
+
+  EXPECT_EQ("foo,foo.bar", LayersToString());
+
+  EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("four"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("five"));
+  EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("six"));
+}
+
+TEST_F(RuleSetCascadeLayerTest, NestingAndFlatListName) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @layer foo {
+        @layer bar {
+          #zero { }
+          #one { }
+        }
+      }
+      @layer foo.bar {
+        #two { }
+        #three { }
+      }
+    </style>
+  )HTML");
+
+  EXPECT_EQ("foo,foo.bar", LayersToString());
+
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
+}
+
+TEST_F(RuleSetCascadeLayerTest, LayerStatementOrdering) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @layer foo, bar, foo.baz;
+      @layer bar {
+        #zero { }
+      }
+      @layer foo {
+        #one { }
+        @layer baz {
+          #two { }
+        }
+      }
+    </style>
+  )HTML");
+
+  EXPECT_EQ("foo,foo.baz,bar", LayersToString());
+
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "baz"})), GetLayerByIdRule("two"));
+}
+
+TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest sub_resource("https://example.com/sheet.css",
+                                     "text/css");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @import url(/sheet.css) layer(foo);
+      @layer foo.bar {
+        #two { }
+        #three { }
+      }
+    </style>
+  )HTML");
+  sub_resource.Complete(R"CSS(
+    #zero { }
+    @layer bar {
+      #one { }
+    }
+  )CSS");
+
+  test::RunPendingTasks();
+
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
+}
+
+TEST_F(RuleSetCascadeLayerTest, LayerStatementsBeforeAndAfterImport) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest sub_resource("https://example.com/sheet.css",
+                                     "text/css");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @layer foo, bar;
+      @import url(/sheet.css) layer(bar);
+      @layer baz, bar, foo;
+      @layer foo {
+        #two { }
+        #three { }
+      }
+      @layer baz {
+        #four { }
+      }
+    </style>
+  )HTML");
+  sub_resource.Complete(R"CSS(
+    #zero { }
+    #one { }
+  )CSS");
+
+  test::RunPendingTasks();
+
+  EXPECT_EQ("foo,bar,baz", LayersToString());
+
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"baz"})), GetLayerByIdRule("four"));
 }
 
 }  // namespace blink

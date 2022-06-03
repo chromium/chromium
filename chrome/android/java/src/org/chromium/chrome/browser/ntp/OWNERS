@@ -1,5 +1,5 @@
+skym@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 
-# TEAM: ntp-dev@chromium.org
-# COMPONENT: UI>Browser>NewTabPage
+per-file *Incognito*=file://chrome/browser/incognito/OWNERS

@@ -10,7 +10,7 @@
 // InfobarBannerPositioner contains methods used to position the InfobarBanner.
 @protocol InfobarBannerPositioner
 
-// Y axis value used to position the InfobarBanner.
+// The vertical positioning of the infobar banner in window coordinates.
 - (CGFloat)bannerYPosition;
 
 // The InfobarBanner view that will be presented. Used to calculate the

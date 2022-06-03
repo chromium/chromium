@@ -14,6 +14,7 @@
 // 4. Removed external functions that don't have implementation in shim file.
 // 5. Changed RectF, Point, and PoseTracker to correct package name.
 // 6. Added function RegisterGvrApiNatives at the end of this file.
+// 7. Added "vr" as an argument to base::android::LazyGetClass.
 
 #ifndef com_google_vr_ndk_base_GvrApi_JNI
 #define com_google_vr_ndk_base_GvrApi_JNI
@@ -35,7 +36,7 @@ const char kGvrApiClassPath[] = "com/google/vr/ndk/base/GvrApi";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
 std::atomic<jclass> g_GvrApi_clazz __attribute__((unused)) (nullptr);
 #define GvrApi_clazz(env) \
-  base::android::LazyGetClass(env, kGvrApiClassPath, &g_GvrApi_clazz)
+  base::android::LazyGetClass(env, kGvrApiClassPath, "vr", &g_GvrApi_clazz)
 
 }  // namespace
 

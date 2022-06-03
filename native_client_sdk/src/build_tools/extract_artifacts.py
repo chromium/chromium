@@ -91,7 +91,7 @@ def ExtractArchive(archive_path, destdirs):
   Untar(archive_path, EXTRACT_ARCHIVE_DIR)
   basename = RemoveExt(os.path.basename(archive_path))
   srcdir = os.path.join(EXTRACT_ARCHIVE_DIR, basename)
-  if type(destdirs) is not list:
+  if not isinstance(destdirs, list):
     destdirs = [destdirs]
 
   for destdir in destdirs:
@@ -106,7 +106,7 @@ def ExtractAll(archive_dict, archive_dir, destroot):
   for archive_part, rel_destdirs in archive_dict:
     archive_name = '%s_%s.tar.bz2' % (PLATFORM, archive_part)
     archive_path = os.path.join(archive_dir, archive_name)
-    if type(rel_destdirs) is not list:
+    if not isinstance(rel_destdirs, list):
       rel_destdirs = [rel_destdirs]
     destdirs = [os.path.join(destroot, d) for d in rel_destdirs]
     ExtractArchive(archive_path, destdirs)

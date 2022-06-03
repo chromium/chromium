@@ -15,7 +15,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       // Validate message.data.
       var payloadSize = 0;
       forEach(message.data, function(property, value) {
-        if (property.length == 0)
+        if (property.length === 0)
           throw new Error("One of data keys is empty.");
 
         var lowerCasedProperty = property.toLowerCase();
@@ -33,7 +33,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         throw new Error("Payload exceeded allowed size limit. Payload size is: "
             + payloadSize);
 
-      if (payloadSize == 0)
+      if (payloadSize === 0)
         throw new Error("No data to send.");
 
       return arguments;

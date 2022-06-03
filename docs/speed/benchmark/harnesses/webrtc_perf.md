@@ -20,7 +20,7 @@ which controls the user interactions and duration of the test.
 The [`webrtc.py`](../../../../tools/perf/benchmarks/webrtc.py)
 benchmark specifies which metrics should be collected for the
 test pages, and extra options that we pass to the test to fake the real camera
-and skip assing permission to get access to the video and audio from the user.
+and skip assign permission to get access to the video and audio from the user.
 
 
 ## Running the Tests
@@ -44,7 +44,10 @@ the following command:
 ./tools/perf/run_benchmark webrtc --browser-executable=out/Release/chrome
 --story-tag-filter=stress
 ```
-
+Or you can run the single story directly:
+```
+./tools/perf/run_benchmark webrtc --story multiple-peerconnections --browser-executable=out/Release/chrome
+```
 
 ## Adding Telemetry Tests for WebRTC
 

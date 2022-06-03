@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that geolocation emulation with latitude and longitude works as expected.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.navigatePromise('https://devtools.test:8443/devtools/network/resources/empty.html');
   await TestRunner.BrowserAgent.invoke_grantPermissions({
     origin: 'https://devtools.test:8443',
@@ -14,7 +14,7 @@
   await TestRunner.evaluateInPagePromise(`
     async function getPositionPromise() {
       try {
-        const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+        const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 1000 }));
         if ((new Date(position.timestamp)).toDateString() != (new Date()).toDateString())
             return 'Unexpected error occured: timestamps mismatch.';
         if (position && position.coords)

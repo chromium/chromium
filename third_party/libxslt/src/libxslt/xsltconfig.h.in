@@ -111,6 +111,19 @@ extern "C" {
 #endif
 
 /**
+ * WITH_PROFILER:
+ *
+ * Activate the compilation of the profiler. Speed penalty
+ * is insignifiant.
+ * On by default unless --without-profiler is passed to configure
+ */
+#if @WITH_PROFILER@
+#ifndef WITH_PROFILER
+#define WITH_PROFILER
+#endif
+#endif
+
+/**
  * WITH_MODULES:
  *
  * Whether module support is configured into libxslt

@@ -9,13 +9,12 @@
 #include <list>
 #include <map>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/le_scan_manager.h"
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 #include "chromecast/device/bluetooth/shlib/le_scanner.h"
@@ -27,23 +26,27 @@ class LeScanManagerImpl : public LeScanManager,
                           public bluetooth_v2_shlib::LeScanner::Delegate {
  public:
   explicit LeScanManagerImpl(bluetooth_v2_shlib::LeScannerImpl* le_scanner);
+
+  LeScanManagerImpl(const LeScanManagerImpl&) = delete;
+  LeScanManagerImpl& operator=(const LeScanManagerImpl&) = delete;
+
   ~LeScanManagerImpl() override;
 
   static constexpr int kMaxScanResultEntries = 1024;
 
-  void Initialize(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-  void Finalize();
-
   // LeScanManager implementation:
+  void Initialize(
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) override;
+  void Finalize() override;
   void AddObserver(Observer* o) override;
   void RemoveObserver(Observer* o) override;
   void RequestScan(RequestScanCallback cb) override;
   void GetScanResults(
       GetScanResultsCallback cb,
-      base::Optional<ScanFilter> service_uuid = base::nullopt) override;
+      absl::optional<ScanFilter> service_uuid = absl::nullopt) override;
   void ClearScanResults() override;
   void PauseScan() override;
-  void RestartScan() override;
+  void ResumeScan() override;
   void SetScanParameters(int scan_interval_ms, int scan_window_ms) override;
 
  private:
@@ -53,10 +56,12 @@ class LeScanManagerImpl : public LeScanManager,
   void OnScanResult(const bluetooth_v2_shlib::LeScanner::ScanResult&
                         scan_result_shlib) override;
 
+  void InitializeOnIoThread();
+
   // Returns a list of all BLE scan results. The results are sorted by RSSI.
   // Must be called on |io_task_runner|.
   std::vector<LeScanResult> GetScanResultsInternal(
-      base::Optional<ScanFilter> service_uuid);
+      absl::optional<ScanFilter> service_uuid);
 
   void NotifyScanHandleDestroyed(int32_t id);
 
@@ -75,8 +80,6 @@ class LeScanManagerImpl : public LeScanManager,
   std::set<int32_t> scan_handle_ids_;
 
   base::WeakPtrFactory<LeScanManagerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LeScanManagerImpl);
 };
 
 }  // namespace bluetooth

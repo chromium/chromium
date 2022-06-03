@@ -12,7 +12,7 @@
 
 namespace web {
 
-base::string16 GetDisplayTitleForUrl(const GURL& url) {
+std::u16string GetDisplayTitleForUrl(const GURL& url) {
   return NavigationItemImpl::GetDisplayTitleForURL(url);
 }
 

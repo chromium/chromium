@@ -32,19 +32,27 @@ namespace api {
 // Per-browser-context dispatcher for events on serial connections.
 class SerialPortManager : public BrowserContextKeyedAPI {
  public:
+  using OpenPortCallback =
+      base::OnceCallback<void(mojo::PendingRemote<device::mojom::SerialPort>)>;
+
   static SerialPortManager* Get(content::BrowserContext* context);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<SerialPortManager>* GetFactoryInstance();
 
   explicit SerialPortManager(content::BrowserContext* context);
+
+  SerialPortManager(const SerialPortManager&) = delete;
+  SerialPortManager& operator=(const SerialPortManager&) = delete;
+
   ~SerialPortManager() override;
 
   void GetDevices(
       device::mojom::SerialPortManager::GetDevicesCallback callback);
-
-  void GetPort(const std::string& path,
-               mojo::PendingReceiver<device::mojom::SerialPort> receiver);
+  void OpenPort(const std::string& path,
+                device::mojom::SerialConnectionOptionsPtr options,
+                mojo::PendingRemote<device::mojom::SerialPortClient> client,
+                OpenPortCallback callback);
 
   // Start the poilling process for the connection.
   void StartConnectionPolling(const std::string& extension_id,
@@ -84,7 +92,9 @@ class SerialPortManager : public BrowserContextKeyedAPI {
   void EnsureConnection();
   void OnGotDevicesToGetPort(
       const std::string& path,
-      mojo::PendingReceiver<device::mojom::SerialPort> receiver,
+      device::mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<device::mojom::SerialPortClient> client,
+      OpenPortCallback callback,
       std::vector<device::mojom::SerialPortInfoPtr> devices);
   void OnPortManagerConnectionError();
 
@@ -95,8 +105,6 @@ class SerialPortManager : public BrowserContextKeyedAPI {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<SerialPortManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialPortManager);
 };
 
 }  // namespace api

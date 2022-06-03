@@ -40,17 +40,4 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
 UIImage* GetLocationBarSecurityIconForSecurityState(
     security_state::SecurityLevel security_level);
 
-#pragma mark - Legacy utils.
-
-// Converts |type| to a resource identifier for the appropriate icon for this
-// type to show in the omnibox.
-int GetIconForAutocompleteMatchType(AutocompleteMatchType::Type type,
-                                    bool is_starred,
-                                    bool is_incognito);
-
-
-// Converts |security_level| to a resource identifier for the appropriate icon
-// for this security level in the omnibox.
-int GetIconForSecurityState(security_state::SecurityLevel security_level);
-
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UTIL_H_

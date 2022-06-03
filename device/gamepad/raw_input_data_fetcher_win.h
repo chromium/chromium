@@ -15,11 +15,9 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/win/message_window.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
-#include "device/gamepad/hid_dll_functions_win.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/raw_input_gamepad_device_win.h"
@@ -33,6 +31,8 @@ class RawInputDataFetcher : public GamepadDataFetcher,
                                                 GAMEPAD_SOURCE_WIN_RAW>;
 
   explicit RawInputDataFetcher();
+  RawInputDataFetcher(const RawInputDataFetcher&) = delete;
+  RawInputDataFetcher& operator=(const RawInputDataFetcher&) = delete;
   ~RawInputDataFetcher() override;
 
   GamepadSource source() override;
@@ -52,8 +52,6 @@ class RawInputDataFetcher : public GamepadDataFetcher,
   bool DisconnectUnrecognizedGamepad(int source_id) override;
 
  private:
-  void OnAddedToProvider() override;
-
   void StartMonitor();
   void StopMonitor();
   void EnumerateDevices();
@@ -71,10 +69,6 @@ class RawInputDataFetcher : public GamepadDataFetcher,
   // The window to receive RawInput events.
   std::unique_ptr<base::win::MessageWindow> window_;
 
-  // True if DLL loading succeeded and methods for enumerating and polling
-  // RawInput devices are available.
-  bool rawinput_available_ = false;
-
   // When true, XInput devices will not be enumerated by this data fetcher.
   // This should be enabled when the platform data fetcher is active to avoid
   // enumerating XInput gamepads twice.
@@ -86,14 +80,9 @@ class RawInputDataFetcher : public GamepadDataFetcher,
   // The last ID assigned to an enumerated device.
   int last_source_id_ = 0;
 
-  // HID functions loaded from hid.dll.
-  std::unique_ptr<HidDllFunctionsWin> hid_functions_;
-
   // Connected devices, keyed by device handle.
   std::unordered_map<HANDLE, std::unique_ptr<RawInputGamepadDeviceWin>>
       controllers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawInputDataFetcher);
 };
 
 }  // namespace device

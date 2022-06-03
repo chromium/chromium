@@ -20,6 +20,21 @@ function register() {
         registration.active.postMessage({port: channel.port2}, [channel.port2]);
         return saw_message;
       })
+    .then(function() {
+      // Wait for service worker to control us.
+      return new Promise(function(resolve, reject) {
+        if (navigator.serviceWorker.controller) {
+          resolve();
+          return;
+        }
+        navigator.serviceWorker.oncontrollerchange = function(e) {
+          if (navigator.serviceWorker.controller) {
+            resolve();
+            return;
+          }
+        };
+      });
+    })
     .then(function() { return fetch('./sw_controlled_check'); })
     .then(function(res) { return res.text(); })
     .then(function(txt) { window.domAutomationController.send(txt); })

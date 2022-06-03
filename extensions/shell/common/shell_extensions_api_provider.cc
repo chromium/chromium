@@ -4,8 +4,7 @@
 
 #include "extensions/shell/common/shell_extensions_api_provider.h"
 
-#include "extensions/common/features/json_feature_provider_source.h"
-#include "extensions/shell/common/api/generated_schemas.h"
+#include "base/strings/string_piece.h"
 #include "extensions/shell/common/api/shell_api_features.h"
 #include "extensions/shell/grit/app_shell_resources.h"
 
@@ -35,16 +34,16 @@ void ShellExtensionsAPIProvider::AddBehaviorFeatures(
 
 void ShellExtensionsAPIProvider::AddAPIJSONSources(
     JSONFeatureProviderSource* json_source) {
-  json_source->LoadJSON(IDR_SHELL_EXTENSION_API_FEATURES);
+  // No shell-specific APIs.
 }
 
 bool ShellExtensionsAPIProvider::IsAPISchemaGenerated(const std::string& name) {
-  return shell::api::ShellGeneratedSchemas::IsGenerated(name);
+  return false;
 }
 
 base::StringPiece ShellExtensionsAPIProvider::GetAPISchema(
     const std::string& name) {
-  return shell::api::ShellGeneratedSchemas::Get(name);
+  return base::StringPiece();
 }
 
 void ShellExtensionsAPIProvider::RegisterPermissions(

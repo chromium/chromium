@@ -191,24 +191,3 @@ function sortByColumn(head) {
 function sortSuiteTableByFailedTestCases() {
   sortByColumn(document.getElementById('number_fail_tests'));
 }
-
-function setTableCellsAsClickable() {
-  const tableCells = document.getElementsByTagName('td');
-  for(let i = 0; i < tableCells.length; i++) {
-    const links = tableCells[i].getElementsByTagName('a');
-    // Only make the cell clickable if there is only one link.
-    if (links.length == 1) {
-      tableCells[i].addEventListener('click', function() {
-          links[0].click();
-      });
-      tableCells[i].addEventListener('mouseover', function() {
-          tableCells[i].style.cursor = 'pointer';
-          links[0].style.textDecoration = 'underline';
-      });
-      tableCells[i].addEventListener('mouseout', function() {
-          tableCells[i].style.cursor = 'initial';
-          links[0].style.textDecoration = 'initial';
-      });
-    }
-  }
-}

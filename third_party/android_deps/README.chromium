@@ -1,6 +1,6 @@
 Name: Android Deps Repository
 Short Name: android_deps
-URL: https://chromium.googlesource.com/chromium/src/+/master/tools/android/roll/android_deps/README.md
+URL: https://chromium.googlesource.com/chromium/src/+/master/third_party/android_deps/README.md
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes
@@ -22,10 +22,16 @@ third_party/android_deps
 ├── BUILD.gn (partly generated)
 ├── libs (generated)
 │   ├── dependency_group_name_and_version
+│   │   ├── 3pp (generated)
+│   │   │   ├── 3pp.pb (generated)
+│   │   │   └── fetch.py (generated)
 │   │   ├── dependency_name_and_version.jar (third_party)
 │   │   ├── LICENSE (third_party)
 │   │   └── README.chromium (generated)
 │   └── other_dependency_group_name_and_version
+│       ├── 3pp (generated)
+│       │   ├── 3pp.pb (generated)
+│       │   └── fetch.py (generated)
 │       ├── other_dependency_name_and_version.jar (third_party)
 │       ├── LICENSE (third_party)
 │       └── README.chromium (generated)
@@ -35,4 +41,8 @@ third_party/android_deps
 ```
 
 Instructions for adding/updating dependencies are in:
-    //tools/android/roll/android_deps/README.md
+    //third_party/android_deps/README.md
+
+Vulnerability detection: fetch_all.py runs 'gradle dependencyCheckAnalyze' to look
+for known vulnerabilities each time the script is run. It is expected that Vomit
+(go/vomit) will absorb this responsibility in future.

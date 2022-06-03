@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SACache} from './cache.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
 const StateType = chrome.automation.StateType;
 const RoleType = chrome.automation.RoleType;
 const DefaultActionVerb = chrome.automation.DefaultActionVerb;
@@ -13,62 +17,62 @@ const DefaultActionVerb = chrome.automation.DefaultActionVerb;
  *    - isGroup
  *    - isInteresting
  *    - isInterestingSubtree
+ *    - isVisible
  *    - isTextInput
- *    - isNotContainer
- *    - isSwitchAccessMenuPanel
  *
  * In addition to these basic predicates, there are also methods to get the
  * restrictions required by TreeWalker for specific traversal situations.
  */
-const SwitchAccessPredicate = {
+export const SwitchAccessPredicate = {
   GROUP_INTERESTING_CHILD_THRESHOLD: 2,
 
   /**
    * Returns true if |node| is actionable, meaning that a user can interact with
    * it in some way.
    *
-   * @param {!chrome.automation.AutomationNode} node
+   * @param {!AutomationNode} node
+   * @param {!SACache} cache
    * @return {boolean}
    */
-  isActionable: (node) => {
+  isActionable: (node, cache) => {
+    if (cache.isActionable.has(node)) {
+      return cache.isActionable.get(node);
+    }
+
     const defaultActionVerb = node.defaultActionVerb;
     const loc = node.location;
     const parent = node.parent;
-    const root = node.root;
     const role = node.role;
     const state = node.state;
 
     // Skip things that are offscreen or invisible.
-    if (state[StateType.OFFSCREEN] || !loc || loc.top < 0 || loc.left < 0 ||
-        state[StateType.INVISIBLE]) {
+    if (!SwitchAccessPredicate.isVisible(node)) {
+      cache.isActionable.set(node, false);
       return false;
     }
 
     // Skip things that are disabled.
     if (node.restriction === chrome.automation.Restriction.DISABLED) {
+      cache.isActionable.set(node, false);
       return false;
     }
 
     // These web containers are not directly actionable.
     if (role === RoleType.WEB_VIEW || role === RoleType.ROOT_WEB_AREA) {
+      cache.isActionable.set(node, false);
       return false;
     }
 
-    if (parent) {
-      // crbug.com/710559
-      // Work around for browser tabs.
-      if (role === RoleType.TAB && parent.role === RoleType.TAB_LIST &&
-          root.role === RoleType.DESKTOP) {
-        return true;
-      }
-    }
-
     // Check various indicators that the node is actionable.
-    if (role === RoleType.BUTTON || role === RoleType.SLIDER) {
+    if (role === RoleType.BUTTON || role === RoleType.SLIDER ||
+        role === RoleType.TAB) {
+      cache.isActionable.set(node, true);
       return true;
     }
 
-    if (SwitchAccessPredicate.isTextInput(node)) {
+    if (AutomationPredicate.comboBox(node) ||
+        SwitchAccessPredicate.isTextInput(node)) {
+      cache.isActionable.set(node, true);
       return true;
     }
 
@@ -79,11 +83,13 @@ const SwitchAccessPredicate = {
          defaultActionVerb === DefaultActionVerb.PRESS ||
          defaultActionVerb === DefaultActionVerb.SELECT ||
          defaultActionVerb === DefaultActionVerb.UNCHECK)) {
+      cache.isActionable.set(node, true);
       return true;
     }
 
     if (role === RoleType.LIST_ITEM &&
         defaultActionVerb === DefaultActionVerb.CLICK) {
+      cache.isActionable.set(node, true);
       return true;
     }
 
@@ -92,7 +98,10 @@ const SwitchAccessPredicate = {
     // Current heuristic is to show as actionble any focusable item where no
     // child is an interesting subtree.
     if (state[StateType.FOCUSABLE] || role === RoleType.MENU_ITEM) {
-      return !node.children.some(SwitchAccessPredicate.isInterestingSubtree);
+      const result = !node.children.some(
+          (child) => SwitchAccessPredicate.isInterestingSubtree(child, cache));
+      cache.isActionable.set(node, result);
+      return result;
     }
     return false;
   },
@@ -105,32 +114,49 @@ const SwitchAccessPredicate = {
    * Additionally, for |node| to be a group, it cannot have the same bounding
    * box as its scope.
    *
-   * @param {!chrome.automation.AutomationNode} node
-   * @param {SARootNode} scope
+   * @param {!AutomationNode} node
+   * @param {!AutomationNode|!SARootNode|null} scope
+   * @param {!SACache} cache
    * @return {boolean}
    */
-  isGroup: (node, scope) => {
-    if (scope && !scope.isEquivalentTo(node) &&
-        RectHelper.areEqual(node.location, scope.location)) {
+  isGroup: (node, scope, cache) => {
+    if (cache.isGroup.has(node)) {
+      return cache.isGroup.get(node);
+    }
+
+    const scopeEqualsNode = scope &&
+        (scope instanceof SARootNode ? scope.isEquivalentTo(node) :
+                                       scope === node);
+    if (scope && !scopeEqualsNode &&
+        RectUtil.equal(node.location, scope.location)) {
+      cache.isGroup.set(node, false);
       return false;
     }
     if (node.state[StateType.INVISIBLE]) {
+      cache.isGroup.set(node, false);
       return false;
     }
 
+    if (node.role === chrome.automation.RoleType.KEYBOARD) {
+      cache.isGroup.set(node, true);
+      return true;
+    }
+
     let interestingBranchesCount =
-        SwitchAccessPredicate.isActionable(node) ? 1 : 0;
+        SwitchAccessPredicate.isActionable(node, cache) ? 1 : 0;
     let child = node.firstChild;
     while (child) {
-      if (SwitchAccessPredicate.isInterestingSubtree(child)) {
+      if (SwitchAccessPredicate.isInterestingSubtree(child, cache)) {
         interestingBranchesCount += 1;
       }
       if (interestingBranchesCount >=
           SwitchAccessPredicate.GROUP_INTERESTING_CHILD_THRESHOLD) {
+        cache.isGroup.set(node, true);
         return true;
       }
       child = child.nextSibling;
     }
+    cache.isGroup.set(node, false);
     return false;
   },
 
@@ -138,12 +164,26 @@ const SwitchAccessPredicate = {
    * Returns true if |node| is interesting for the user, meaning that |node|
    * is either actionable or a group.
    *
-   * @param {!chrome.automation.AutomationNode} node
-   * @param {!SARootNode} scope
+   * @param {!AutomationNode} node
+   * @param {!AutomationNode|!SARootNode} scope
+   * @param {!SACache} cache
    * @return {boolean}
    */
-  isInteresting: (node, scope) => SwitchAccessPredicate.isActionable(node) ||
-      SwitchAccessPredicate.isGroup(node, scope),
+  isInteresting: (node, scope, cache) => {
+    cache = cache || new SACache();
+    return SwitchAccessPredicate.isActionable(node, cache) ||
+        SwitchAccessPredicate.isGroup(node, scope, cache);
+  },
+
+  /**
+   * Returns true if the element is visible to the user for any reason.
+   *
+   * @param {AutomationNode} node
+   * @return {boolean}
+   */
+  isVisible: (node) => !node.state[StateType.OFFSCREEN] && !!node.location &&
+      node.location.top >= 0 && node.location.left >= 0 &&
+      !node.state[StateType.INVISIBLE],
 
   /**
    * Returns true if there is an interesting node in the subtree containing
@@ -153,48 +193,52 @@ const SwitchAccessPredicate = {
    * cause a loop (isInteresting calls isGroup, and isGroup calls
    * isInterestingSubtree).
    *
-   * @param {!chrome.automation.AutomationNode} node
+   * @param {!AutomationNode} node
+   * @param {!SACache} cache
    * @return {boolean}
    */
-  isInterestingSubtree: (node) => SwitchAccessPredicate.isActionable(node) ||
-      node.children.some(SwitchAccessPredicate.isInterestingSubtree),
+  isInterestingSubtree: (node, cache) => {
+    cache = cache || new SACache();
+    if (cache.isInterestingSubtree.has(node)) {
+      return cache.isInterestingSubtree.get(node);
+    }
+    const result = SwitchAccessPredicate.isActionable(node, cache) ||
+        node.children.some(
+            (child) =>
+                SwitchAccessPredicate.isInterestingSubtree(child, cache));
+    cache.isInterestingSubtree.set(node, result);
+    return result;
+  },
 
   /**
    * Returns true if |node| is an element that contains editable text.
-   * @param {chrome.automation.AutomationNode} node
+   * @param {AutomationNode} node
    * @return {boolean}
    */
   isTextInput: (node) => !!node && !!node.state[StateType.EDITABLE],
 
   /**
-   * Returns true if |node| does not have a role of desktop, window, web view,
-   * or root web area.
-   * @param {!chrome.automation.AutomationNode} node
+   * Returns true if |node| should be considered a window.
+   * @param {AutomationNode} node
    * @return {boolean}
    */
-  isNotContainer: (node) => node.role !== RoleType.ROOT_WEB_AREA &&
-      node.role !== RoleType.WINDOW && node.role !== RoleType.DESKTOP &&
-      node.role !== RoleType.WEB_VIEW,
-
-  /**
-   * Returns true if |node| is the Switch Access menu.
-   * @param {!chrome.automation.AutomationNode} node
-   * @return {boolean}
-   */
-  isSwitchAccessMenuPanel: (node) =>
-      node.htmlAttributes.id === SAConstants.MENU_PANEL_ID,
+  isWindow: (node) => !!node &&
+      (node.role === chrome.automation.RoleType.WINDOW ||
+       (node.role === chrome.automation.RoleType.CLIENT && !!node.parent &&
+        node.parent.role === chrome.automation.RoleType.WINDOW)),
 
   /**
    * Returns a Restrictions object ready to be passed to AutomationTreeWalker.
    *
-   * @param {!SARootNode} scope
+   * @param {!AutomationNode} scope
    * @return {!AutomationTreeWalkerRestriction}
    */
   restrictions: (scope) => {
+    const cache = new SACache();
     return {
-      leaf: SwitchAccessPredicate.leaf(scope),
+      leaf: SwitchAccessPredicate.leaf(scope, cache),
       root: SwitchAccessPredicate.root(scope),
-      visit: SwitchAccessPredicate.visit(scope)
+      visit: SwitchAccessPredicate.visit(scope, cache)
     };
   },
 
@@ -202,47 +246,37 @@ const SwitchAccessPredicate = {
    * Creates a function that confirms if |node| is a terminal leaf node of a
    * SwitchAccess scope tree when |scope| is the root.
    *
-   * @param {!SARootNode} scope
-   * @return {function(!chrome.automation.AutomationNode): boolean}
+   * @param {!AutomationNode} scope
+   * @param {!SACache} cache
+   * @return {function(!AutomationNode): boolean}
    */
-  leaf: function(scope) {
-    return (node) => node.state[StateType.INVISIBLE] ||
-        (!scope.isEquivalentTo(node) &&
-         SwitchAccessPredicate.isInteresting(node, scope)) ||
-        !SwitchAccessPredicate.isInterestingSubtree(node);
+  leaf(scope, cache) {
+    return (node) => !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
+        (scope !== node &&
+         SwitchAccessPredicate.isInteresting(node, scope, cache));
   },
 
   /**
    * Creates a function that confirms if |node| is the root of a SwitchAccess
    * scope tree when |scope| is the root.
    *
-   * @param {!SARootNode} scope
-   * @return {function(!chrome.automation.AutomationNode): boolean}
+   * @param {!AutomationNode} scope
+   * @return {function(!AutomationNode): boolean}
    */
-  root: function(scope) {
-    return (node) => scope.isEquivalentTo(node);
+  root(scope) {
+    return (node) => scope === node;
   },
 
   /**
    * Creates a function that determines whether |node| is to be visited in the
    * SwitchAccess scope tree with |scope| as the root.
    *
-   * @param {!SARootNode} scope
-   * @return {function(!chrome.automation.AutomationNode): boolean}
+   * @param {!AutomationNode} scope
+   * @param {!SACache} cache
+   * @return {function(!AutomationNode): boolean}
    */
-  visit: function(scope) {
+  visit(scope, cache) {
     return (node) => node.role !== RoleType.DESKTOP &&
-        SwitchAccessPredicate.isInteresting(node, scope);
-  },
-
-  /**
-   * Returns a Restrictions object for finding the Switch Access Menu root.
-   * @return {!AutomationTreeWalkerRestriction}
-   */
-  switchAccessMenuPanelDiscoveryRestrictions: () => {
-    return {
-      leaf: SwitchAccessPredicate.isNotContainer,
-      visit: SwitchAccessPredicate.isSwitchAccessMenuPanel
-    };
+        SwitchAccessPredicate.isInteresting(node, scope, cache);
   }
 };

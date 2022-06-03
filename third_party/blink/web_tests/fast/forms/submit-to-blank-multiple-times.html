@@ -19,7 +19,7 @@
         <script type="text/javascript">
         if (window.testRunner) {
             testRunner.dumpAsText();
-            testRunner.setCanOpenWindows();
+            testRunner.setPopupBlockingEnabled(false);
             testRunner.waitUntilDone();
         }
         var numberTimesToClick = 2;
@@ -65,7 +65,6 @@
             eventSender.keyDown(' ');
         }
         function notifyDone() {
-            testRunner.setCloseRemainingWindowsWhenComplete();
             testRunner.notifyDone();
         }
         </script>

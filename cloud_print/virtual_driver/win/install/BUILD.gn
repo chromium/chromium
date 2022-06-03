@@ -8,9 +8,7 @@ import("//tools/grit/grit_rule.gni")
 assert(is_win)
 
 executable("virtual_driver_setup") {
-  sources = [
-    "setup.cc",
-  ]
+  sources = [ "setup.cc" ]
 
   configs -= [ "//build/config/win:console" ]
   configs += [ "//build/config/win:windowed" ]
@@ -31,27 +29,17 @@ executable("virtual_driver_setup") {
 }
 
 copy("copy_gcp_driver_gpd") {
-  sources = [
-    "inf/gcp_driver.gpd",
-  ]
-  outputs = [
-    "$root_build_dir/gcp_driver.gpd",
-  ]
+  sources = [ "inf/gcp_driver.gpd" ]
+  outputs = [ "$root_build_dir/gcp_driver.gpd" ]
 }
 
 copy("copy_gcp_driver_inf") {
-  sources = [
-    "inf/gcp_driver.inf",
-  ]
-  outputs = [
-    "$root_build_dir/gcp_driver.inf",
-  ]
+  sources = [ "inf/gcp_driver.inf" ]
+  outputs = [ "$root_build_dir/gcp_driver.inf" ]
 }
 
 process_version_rc_template("setup_version") {
-  sources = [
-    "virtual_driver_setup_exe.ver",
-  ]
+  sources = [ "virtual_driver_setup_exe.ver" ]
   output = "$target_gen_dir/virtual_driver_setup.rc"
 }
 

@@ -17,7 +17,6 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"

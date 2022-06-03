@@ -22,13 +22,14 @@
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace {
 
 // This is a standin for the private pm_task_energy_data_t struct.
 struct OpaquePMTaskEnergyData {
   // Empirical size of the private struct.
-  uint8_t data[384];
+  uint8_t data[408];
 };
 
 // Sample everything but network usage, since fetching network
@@ -151,7 +152,7 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   timeradd(&user_timeval, &task_timeval, &task_timeval);
   timeradd(&system_timeval, &task_timeval, &task_timeval);
 
-  return TimeDelta::FromMicroseconds(TimeValToMicroseconds(task_timeval));
+  return Microseconds(TimeValToMicroseconds(task_timeval));
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
@@ -295,7 +296,12 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   }
   DCHECK_EQ(HOST_VM_INFO64_COUNT, count);
 
+#if defined(ARCH_CPU_ARM64)
+  // PAGE_SIZE is vm_page_size on arm, which isn't constexpr.
+  DCHECK_EQ(PAGE_SIZE % 1024, 0u) << "Invalid page size";
+#else
   static_assert(PAGE_SIZE % 1024 == 0, "Invalid page size");
+#endif
   meminfo->free = saturated_cast<int>(
       PAGE_SIZE / 1024 * (vm_info.free_count - vm_info.speculative_count));
   meminfo->speculative =

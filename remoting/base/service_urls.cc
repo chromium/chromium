@@ -4,8 +4,8 @@
 
 #include "remoting/base/service_urls.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "google_apis/google_api_keys.h"
 
 // Configurable service data.

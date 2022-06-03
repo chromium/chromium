@@ -1,0 +1,5 @@
+load page <button>Hi</button>
+next
+previous
+select
+expect focus on button

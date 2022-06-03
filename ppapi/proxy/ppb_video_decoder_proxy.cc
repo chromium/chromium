@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -29,6 +29,10 @@ class VideoDecoder : public PPB_VideoDecoder_Shared {
  public:
   // You must call Init() before using this class.
   explicit VideoDecoder(const HostResource& resource);
+
+  VideoDecoder(const VideoDecoder&) = delete;
+  VideoDecoder& operator=(const VideoDecoder&) = delete;
+
   ~VideoDecoder() override;
 
   static VideoDecoder* Create(const HostResource& resource,
@@ -54,8 +58,6 @@ class VideoDecoder : public PPB_VideoDecoder_Shared {
   void FlushACK(int32_t result);
   void ResetACK(int32_t result);
   void EndOfBitstreamACK(int32_t buffer_id, int32_t result);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoder);
 };
 
 VideoDecoder::VideoDecoder(const HostResource& decoder)

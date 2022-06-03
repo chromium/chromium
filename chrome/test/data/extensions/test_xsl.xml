@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="test_xsl.xsl"?>
+<catalog>
+  <book id="bk1/3">
+    <author>Adams, Douglas</author>
+    <title>The Hitchhiker's Guide to the Galaxy</title>
+    <publish_date>August 1978</publish_date>
+  </book>
+  <book id="bk2/3">
+    <author>Adams, Douglas</author>
+    <title>The Restaurant at the End of the Universe</title>
+    <publish_date>August 1980</publish_date>
+  </book>
+  <book id="bk3/3">
+    <author>Adams, Douglas</author>
+    <title>Life, the Universe and Everything</title>
+    <publish_date>August 1982</publish_date>
+  </book>
+  <book id="bk4/3">
+    <author>Adams, Douglas</author>
+    <title>So Long, and Thanks for All the Fish</title>
+    <publish_date>November 1984</publish_date>
+  </book>
+  <book id="bk5/3">
+    <author>Adams, Douglas</author>
+    <title>Mostly Harmless</title>
+    <publish_date>1992</publish_date>
+  </book>
+</catalog>

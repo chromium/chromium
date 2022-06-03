@@ -26,7 +26,8 @@
 #include "third_party/blink/renderer/core/html/track/track_event.h"
 
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/renderer/bindings/core/v8/video_track_or_audio_track_or_text_track.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_track_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_audiotrack_texttrack_videotrack.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
@@ -39,18 +40,21 @@ TrackEvent::TrackEvent() = default;
 TrackEvent::TrackEvent(const AtomicString& type,
                        const TrackEventInit* initializer)
     : Event(type, initializer) {
-  if (!initializer->hasTrack())
+  if (!(initializer->hasTrack() && initializer->track()))
     return;
 
-  const VideoTrackOrAudioTrackOrTextTrack& track = initializer->track();
-  if (track.IsVideoTrack())
-    track_ = track.GetAsVideoTrack();
-  else if (track.IsAudioTrack())
-    track_ = track.GetAsAudioTrack();
-  else if (track.IsTextTrack())
-    track_ = track.GetAsTextTrack();
-  else
-    NOTREACHED();
+  const V8UnionAudioTrackOrTextTrackOrVideoTrack* track = initializer->track();
+  switch (track->GetContentType()) {
+    case V8UnionAudioTrackOrTextTrackOrVideoTrack::ContentType::kAudioTrack:
+      track_ = track->GetAsAudioTrack();
+      break;
+    case V8UnionAudioTrackOrTextTrackOrVideoTrack::ContentType::kTextTrack:
+      track_ = track->GetAsTextTrack();
+      break;
+    case V8UnionAudioTrackOrTextTrackOrVideoTrack::ContentType::kVideoTrack:
+      track_ = track->GetAsVideoTrack();
+      break;
+  }
 }
 
 TrackEvent::~TrackEvent() = default;
@@ -59,26 +63,27 @@ const AtomicString& TrackEvent::InterfaceName() const {
   return event_interface_names::kTrackEvent;
 }
 
-void TrackEvent::track(VideoTrackOrAudioTrackOrTextTrack& return_value) {
+V8UnionAudioTrackOrTextTrackOrVideoTrack* TrackEvent::track() {
   if (!track_)
-    return;
+    return nullptr;
 
   switch (track_->GetType()) {
     case WebMediaPlayer::kTextTrack:
-      return_value.SetTextTrack(ToTextTrack(track_.Get()));
-      break;
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<TextTrack>(track_.Get()));
     case WebMediaPlayer::kAudioTrack:
-      return_value.SetAudioTrack(ToAudioTrack(track_.Get()));
-      break;
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<AudioTrack>(track_.Get()));
     case WebMediaPlayer::kVideoTrack:
-      return_value.SetVideoTrack(ToVideoTrack(track_.Get()));
-      break;
-    default:
-      NOTREACHED();
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<VideoTrack>(track_.Get()));
   }
+
+  NOTREACHED();
+  return nullptr;
 }
 
-void TrackEvent::Trace(Visitor* visitor) {
+void TrackEvent::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   Event::Trace(visitor);
 }

@@ -17,11 +17,9 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/cast_channel/cast_auth_util.h"
@@ -63,13 +61,13 @@ bool IsTerminalState(ConnectionState state) {
 void OnConnected(
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(std::move(callback), result, local_addr, peer_addr,
                      std::move(receive_stream), std::move(send_stream)));
 }
@@ -80,7 +78,7 @@ void ConnectOnUIThread(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
   network_context_getter.Run()->CreateTCPConnectedSocket(
-      base::nullopt /* local_addr */, remote_address_list,
+      absl::nullopt /* local_addr */, remote_address_list,
       nullptr /* tcp_connected_socket_options */,
       net::MutableNetworkTrafficAnnotationTag(
           CastSocketImpl::GetNetworkTrafficAnnotationTag()),
@@ -151,7 +149,7 @@ void CastSocketImpl::set_id(int id) {
 }
 
 bool CastSocketImpl::keep_alive() const {
-  return open_params_.liveness_timeout > base::TimeDelta();
+  return open_params_.liveness_timeout.is_positive();
 }
 
 bool CastSocketImpl::audio_only() const {
@@ -231,8 +229,8 @@ void CastSocketImpl::Connect() {
   // Set up connection timeout.
   if (open_params_.connect_timeout.InMicroseconds() > 0) {
     DCHECK(connect_timeout_callback_.IsCancelled());
-    connect_timeout_callback_.Reset(
-        base::Bind(&CastSocketImpl::OnConnectTimeout, base::Unretained(this)));
+    connect_timeout_callback_.Reset(base::BindOnce(
+        &CastSocketImpl::OnConnectTimeout, base::Unretained(this)));
     GetTimer()->Start(FROM_HERE, open_params_.connect_timeout,
                       connect_timeout_callback_.callback());
   }
@@ -301,7 +299,7 @@ void CastSocketImpl::OnConnectTimeout() {
 void CastSocketImpl::ResetConnectLoopCallback() {
   DCHECK(connect_loop_callback_.IsCancelled());
   connect_loop_callback_.Reset(
-      base::Bind(&CastSocketImpl::DoConnectLoop, base::Unretained(this)));
+      base::BindOnce(&CastSocketImpl::DoConnectLoop, base::Unretained(this)));
 }
 
 void CastSocketImpl::PostTaskToStartConnectLoop(int result) {
@@ -380,8 +378,8 @@ int CastSocketImpl::DoTcpConnect() {
   VLOG_WITH_CONNECTION(1) << "DoTcpConnect";
   SetConnectState(ConnectionState::TCP_CONNECT_COMPLETE);
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(ConnectOnUIThread, network_context_getter_,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(ConnectOnUIThread, network_context_getter_,
                                 net::AddressList(open_params_.ip_endpoint),
                                 tcp_socket_.BindNewPipeAndPassReceiver(),
                                 base::BindOnce(&CastSocketImpl::OnConnect,
@@ -444,9 +442,9 @@ int CastSocketImpl::DoSslConnectComplete(int result) {
     if (!transport_) {
       // Create a channel transport if one wasn't already set (e.g. by test
       // code).
-      transport_.reset(new CastTransportImpl(mojo_data_pump_.get(), channel_id_,
-                                             open_params_.ip_endpoint,
-                                             logger_));
+      transport_ = std::make_unique<CastTransportImpl>(
+          mojo_data_pump_.get(), channel_id_, open_params_.ip_endpoint,
+          logger_);
     }
     auth_delegate_ = new AuthTransportDelegate(this);
     transport_->SetReadDelegate(base::WrapUnique(auth_delegate_));
@@ -516,7 +514,7 @@ void CastSocketImpl::AuthTransportDelegate::OnMessage(
     error_state_ = ChannelError::TRANSPORT_ERROR;
     socket_->PostTaskToStartConnectLoop(net::ERR_INVALID_RESPONSE);
   } else {
-    socket_->challenge_reply_.reset(new CastMessage(message));
+    socket_->challenge_reply_ = std::make_unique<CastMessage>(message);
     socket_->PostTaskToStartConnectLoop(net::OK);
   }
 }
@@ -551,8 +549,8 @@ int CastSocketImpl::DoAuthChallengeReplyComplete(int result) {
 
 void CastSocketImpl::OnConnect(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DoConnectLoop(result);
@@ -562,7 +560,7 @@ void CastSocketImpl::OnUpgradeToTLS(
     int result,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const base::Optional<net::SSLInfo>& ssl_info) {
+    const absl::optional<net::SSLInfo>& ssl_info) {
   if (result == net::OK) {
     mojo_data_pump_ = std::make_unique<MojoDataPump>(std::move(receive_stream),
                                                      std::move(send_stream));

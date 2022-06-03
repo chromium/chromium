@@ -25,5 +25,7 @@
 
 // https://svgwg.org/specs/animations/#InterfaceSVGSetElement
 
-interface SVGSetElement : SVGAnimationElement {
+[
+    Exposed=Window
+] interface SVGSetElement : SVGAnimationElement {
 };

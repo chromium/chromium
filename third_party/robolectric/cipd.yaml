@@ -13,3 +13,5 @@ data:
   - file: lib/android-all-8.0.0_r4-robolectric-r1.jar
   - file: lib/android-all-8.1.0-robolectric-4611349.jar
   - file: lib/android-all-9-robolectric-4913185-2.jar
+  - file: lib/android-all-10-robolectric-5803371.jar
+

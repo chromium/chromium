@@ -23,9 +23,7 @@ template("remoting_credits") {
       _credits_template,
       _credits_entry_template,
     ]
-    outputs = [
-      _credits_html_file,
-    ]
+    outputs = [ _credits_html_file ]
     args = [
       "credits",
       rebase_path(_credits_html_file, root_build_dir),
@@ -53,11 +51,7 @@ template("remoting_credits") {
                 "$_credits_source_dir/credits_css.css",
                 "$_credits_source_dir/credits_js.js",
               ] + get_target_outputs(_generate_target)
-    outputs = [
-      "$_credits_gen_dir/{{source_file_part}}",
-    ]
-    deps = [
-      _generate_target,
-    ]
+    outputs = [ "$_credits_gen_dir/{{source_file_part}}" ]
+    deps = [ _generate_target ]
   }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<input id=inputid aria-labelledby="hiddenmatchable-label">
+<div style="content-visibility: hidden-matchable">
+  <span id="hiddenmatchable-label">hiddenmatchable label text</span>
+</div>
+
+<script>
+test(() => {
+  const axInput = accessibilityController.accessibleElementById('inputid');
+  assert_equals(axInput.name, 'hiddenmatchable label text');
+}, `aria labels inside content-visibility:hidden-matchable subtrees should still work.`);
+</script>

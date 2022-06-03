@@ -24,8 +24,6 @@ class TrackedPreferenceValidationDelegate;
 // A TrackedSplitPreference must be tracking a dictionary pref. Each top-level
 // entry in its dictionary is tracked and enforced independently. An optional
 // delegate is notified of the status of the preference during enforcement.
-// Note: preferences using this strategy must be kept in sync with
-// TrackedSplitPreferences in histograms.xml.
 class TrackedSplitPreference : public TrackedPreference {
  public:
   // Constructs a TrackedSplitPreference. |pref_path| must be a dictionary pref.
@@ -37,6 +35,9 @@ class TrackedSplitPreference : public TrackedPreference {
           enforcement_level,
       prefs::mojom::TrackedPreferenceMetadata::ValueType value_type,
       prefs::mojom::TrackedPreferenceValidationDelegate* delegate);
+
+  TrackedSplitPreference(const TrackedSplitPreference&) = delete;
+  TrackedSplitPreference& operator=(const TrackedSplitPreference&) = delete;
 
   // TrackedPreference implementation.
   TrackedPreferenceType GetType() const override;
@@ -51,8 +52,6 @@ class TrackedSplitPreference : public TrackedPreference {
   const std::string pref_path_;
   const TrackedPreferenceHelper helper_;
   prefs::mojom::TrackedPreferenceValidationDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedSplitPreference);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_SPLIT_PREFERENCE_H_

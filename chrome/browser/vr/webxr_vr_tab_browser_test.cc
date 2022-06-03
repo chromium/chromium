@@ -17,7 +17,7 @@ namespace vr {
 // Tests that non-focused tabs cannot get pose information from WebXR.
 void TestPoseDataUnfocusedTabImpl(WebXrVrBrowserTestBase* t,
                                   std::string filename) {
-  t->LoadUrlAndAwaitInitialization(t->GetFileUrlForHtmlTestFile(filename));
+  t->LoadFileAndAwaitInitialization(filename);
   t->ExecuteStepAndWait("stepCheckFrameDataWhileFocusedTab()");
   auto* first_tab_web_contents = t->GetCurrentWebContents();
   chrome::AddTabAt(t->browser(), GURL(url::kAboutBlankURL),

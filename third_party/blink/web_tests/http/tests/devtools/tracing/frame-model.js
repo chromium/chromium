@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test the frames are correctly built based on trace events\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -138,7 +138,8 @@
       {
         'name': 'Layout',
         'ts': 1021000,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 5999,
         'ph': 'X',
         'tid': mainThread,
@@ -274,7 +275,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1000000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -283,7 +284,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1016000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -292,7 +293,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1030000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -301,7 +302,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1032000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -310,7 +311,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1046000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -319,7 +320,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1048000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -328,7 +329,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1064000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -377,7 +378,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1078000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -386,7 +387,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1080000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 105},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -395,7 +396,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1081000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 105},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -416,7 +417,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1000000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -434,7 +435,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1014000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -443,7 +444,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1016000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -452,7 +453,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1030000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -461,7 +462,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1032000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -510,7 +511,8 @@
       {
         'name': 'Layout',
         'ts': 1021000,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 11999,
         'ph': 'X',
         'tid': mainThread,
@@ -561,7 +563,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1046000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -570,7 +572,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1048001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -588,7 +590,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1062000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -628,7 +630,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1064000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -668,8 +670,17 @@
     'impl-side with interleaving commits': [
       {
         'name': 'BeginFrame',
+        'ts': 984000,
+        args: {'layerTreeId': 17, 'frameSeqId': 99 },
+        'ph': 'I',
+        'tid': implThread,
+        'pid': 100,
+        'cat': 'disabled-by-default-devtools.timeline'
+      },
+      {
+        'name': 'BeginFrame',
         'ts': 1000000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100 },
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -696,7 +707,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1014001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -736,7 +747,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1016000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -763,7 +774,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1030001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -813,7 +824,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1032000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -840,7 +851,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1046001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -890,7 +901,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1048000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -908,6 +919,15 @@
       },
     ],
     'pre-frame time accounting': [
+      {
+        'name': 'BeginFrame',
+        'ts': 1000000,
+        args: {'layerTreeId': 17, 'frameSeqId': 99},
+        'ph': 'I',
+        'tid': implThread,
+        'pid': 100,
+        'cat': 'disabled-by-default-devtools.timeline'
+      },
       {
         'name': 'Program',
         'ts': 1000000,
@@ -941,7 +961,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1032000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -968,7 +988,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1035001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1018,7 +1038,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1048000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1058,7 +1078,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1063001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1067,7 +1087,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1064000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1094,7 +1114,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1071002,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1123,7 +1143,8 @@
       {
         'name': 'Layout',
         'ts': 1065002,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 2998,
         'ph': 'X',
         'tid': mainThread,
@@ -1144,7 +1165,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1080000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1171,7 +1192,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1081002,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1202,7 +1223,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1096000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1220,7 +1241,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1096002,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1259,9 +1280,9 @@
     ],
     'record processing order': [
       {
-        'name': 'DrawFrame',
-        'ts': 1000000,
-        args: {'layerTreeId': 17},
+        'name': 'BeginFrame',
+        'ts': 984000,
+        args: {'layerTreeId': 17, 'frameSeqId': 99},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1270,7 +1291,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1000001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1297,7 +1318,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1013005,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1306,7 +1327,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1016000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1365,7 +1386,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1030001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1374,7 +1395,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1031000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1401,13 +1422,21 @@
       {
         'name': 'DrawFrame',
         'ts': 1062001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
         'cat': 'disabled-by-default-devtools.timeline'
       },
-
+      {
+        'name': 'BeginFrame',
+        'ts': 1064000,
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
+        'ph': 'I',
+        'tid': implThread,
+        'pid': 100,
+        'cat': 'disabled-by-default-devtools.timeline'
+      },
       {
         'name': 'Program',
         'ts': 1032000,
@@ -1451,7 +1480,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1080001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1461,8 +1490,17 @@
     'commits without activation': [
       {
         'name': 'BeginFrame',
+        'ts': 984000,
+        args: {'layerTreeId': 17, 'frameSeqId': 99},
+        'ph': 'I',
+        'tid': implThread,
+        'pid': 100,
+        'cat': 'disabled-by-default-devtools.timeline'
+      },
+      {
+        'name': 'BeginFrame',
         'ts': 1000000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1480,7 +1518,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1014001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1520,7 +1558,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1016000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1538,7 +1576,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1030001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 101},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1588,7 +1626,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1032000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1606,7 +1644,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1046001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1656,7 +1694,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1048000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1676,8 +1714,17 @@
     'Idle frames': [
       {
         'name': 'BeginFrame',
+        'ts': 984000,
+        args: {'layerTreeId': 17, 'frameSeqId': 99},
+        'ph': 'I',
+        'tid': implThread,
+        'pid': 100,
+        'cat': 'disabled-by-default-devtools.timeline'
+      },
+      {
+        'name': 'BeginFrame',
         'ts': 1000000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1695,7 +1742,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1014001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 100},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1722,7 +1769,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1231000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1731,7 +1778,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1247000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1740,7 +1787,7 @@
       {
         'name': 'BeginFrame',
         'ts': 1263000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1807,7 +1854,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1270001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 102},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1825,7 +1872,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1296001,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 103},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1834,7 +1881,7 @@
       {
         'name': 'DrawFrame',
         'ts': 1312000,
-        args: {'layerTreeId': 17},
+        args: {'layerTreeId': 17, 'frameSeqId': 104},
         'ph': 'I',
         'tid': implThread,
         'pid': 100,
@@ -1847,7 +1894,7 @@
     var data = testData[testName];
     var performanceModel = PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(data));
     TestRunner.addResult('Test: ' + testName);
-    for (var frame of performanceModel.frameModel().frames()) {
+    for (var frame of performanceModel.frameModel().getFrames()) {
       TestRunner.addResult(Timeline.TimelineUIUtils.frameDuration(frame).textContent);
       PerformanceTestRunner.dumpFrame(frame);
     }

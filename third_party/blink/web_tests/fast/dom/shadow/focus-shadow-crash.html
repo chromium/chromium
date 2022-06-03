@@ -9,7 +9,7 @@
 <div id="before" tabindex="1"></div>
 <div id="host"></div>
 <script>
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 var shadow = document.createElement("shadow");
 shadowRoot.appendChild(shadow);
 before.focus();

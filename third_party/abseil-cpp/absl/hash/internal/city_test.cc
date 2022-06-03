@@ -20,6 +20,7 @@
 #include "gtest/gtest.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace hash_internal {
 
 static const uint64_t k0 = 0xc3a5c85c97cb3127ULL;
@@ -590,4 +591,5 @@ TEST(CityHashTest, Unchanging) {
 }
 
 }  // namespace hash_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

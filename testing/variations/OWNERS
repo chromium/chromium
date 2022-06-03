@@ -1,3 +1,4 @@
 file://base/metrics/OWNERS
 
-# COMPONENT: Internals>Metrics>Variations
+# Changes to the testing config can be approved by any committer.
+per-file fieldtrial_testing_config.json=*

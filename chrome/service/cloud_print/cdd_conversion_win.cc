@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/memory/free_deleter.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "printing/backend/win_helper.h"
@@ -22,7 +23,7 @@ bool IsValidCjt(const std::string& print_ticket_data) {
 }
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> CjtToDevMode(
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     const std::string& print_ticket) {
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode;
 

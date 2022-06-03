@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Client hints loaded on cross-origin iframe request with feature policy.
+FAIL Client hints loaded on same-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL Sec-CH-UA True None"
+PASS Iframe trying to set Accept-CH-Lifetime.
+PASS Client hints loaded on cross-origin iframe request with feature policy after attempting to set independently.
+Harness: the test ran to completion.
+

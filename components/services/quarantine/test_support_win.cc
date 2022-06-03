@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "components/services/quarantine/common.h"
@@ -59,11 +59,11 @@ bool ZoneIdentifierPresentForFile(const base::FilePath& path,
   // a test. If Windows starts adding whitespace or doing anything fancier than
   // ASCII, then we'd have to update this.
   for (const auto& line : lines) {
-    if (line.starts_with("ZoneId="))
+    if (base::StartsWith(line, "ZoneId="))
       found_zone_id = line.substr(7);
-    else if (line.starts_with("HostUrl="))
+    else if (base::StartsWith(line, "HostUrl="))
       found_host_url = line.substr(8);
-    else if (line.starts_with("ReferrerUrl="))
+    else if (base::StartsWith(line, "ReferrerUrl="))
       found_referrer_url = line.substr(12);
   }
 

@@ -3,8 +3,8 @@ This test checks that if style sheet is removed between two inspector launches i
 Running test
 Opening front-end for the first time
 Enabling CSS domain.
- - style sheet added: foo.css
  - style sheet added: bar.css
+ - style sheet added: foo.css
 Closing inspector.
 
 Removing style sheet.

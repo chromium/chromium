@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
 namespace protocol {
@@ -17,8 +17,7 @@ DOMHandler::DOMHandler(bool allow_file_access)
       host_(nullptr),
       allow_file_access_(allow_file_access) {}
 
-DOMHandler::~DOMHandler() {
-}
+DOMHandler::~DOMHandler() = default;
 
 void DOMHandler::Wire(UberDispatcher* dispatcher) {
   DOM::Dispatcher::wire(dispatcher, this);
@@ -30,7 +29,7 @@ void DOMHandler::SetRenderer(int process_host_id,
 }
 
 Response DOMHandler::Disable() {
-  return Response::OK();
+  return Response::Success();
 }
 
 Response DOMHandler::SetFileInputFiles(
@@ -39,7 +38,7 @@ Response DOMHandler::SetFileInputFiles(
     Maybe<DOM::BackendNodeId> backend_node_id,
     Maybe<String> in_object_id) {
   if (!allow_file_access_)
-    return Response::Error("Not allowed");
+    return Response::ServerError("Not allowed");
   if (host_) {
     for (const std::string& file : *files) {
       ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(

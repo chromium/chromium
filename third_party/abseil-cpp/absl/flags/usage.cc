@@ -14,12 +14,20 @@
 // limitations under the License.
 #include "absl/flags/usage.h"
 
+#include <stdlib.h>
+
 #include <string>
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/const_init.h"
+#include "absl/base/thread_annotations.h"
 #include "absl/flags/internal/usage.h"
+#include "absl/strings/string_view.h"
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 namespace {
 ABSL_CONST_INIT absl::Mutex usage_message_guard(absl::kConstInit);
@@ -53,4 +61,5 @@ absl::string_view ProgramUsageMessage() {
              : "Warning: SetProgramUsageMessage() never called";
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl

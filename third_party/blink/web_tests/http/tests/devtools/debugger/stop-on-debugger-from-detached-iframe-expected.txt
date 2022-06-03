@@ -1,0 +1,10 @@
+Tests that debugger statement stops execution from eval on detached iframes
+
+
+Running: 
+Script execution paused.
+Call stack:
+    0)  (:1)
+    1)  (stop-on-debugger-from-detached-iframe.js:25)
+Script execution resumed.
+

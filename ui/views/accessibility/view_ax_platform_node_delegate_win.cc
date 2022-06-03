@@ -15,10 +15,10 @@
 #include "base/win/windows_version.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/accessibility_switches.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
@@ -35,7 +35,9 @@ namespace views {
 
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
-  return std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
+  auto result = std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
+  result->Init();
+  return result;
 }
 
 ViewAXPlatformNodeDelegateWin::ViewAXPlatformNodeDelegateWin(View* view)
@@ -43,10 +45,10 @@ ViewAXPlatformNodeDelegateWin::ViewAXPlatformNodeDelegateWin(View* view)
 
 ViewAXPlatformNodeDelegateWin::~ViewAXPlatformNodeDelegateWin() = default;
 
-gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() {
+gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() const {
   // If the View has a parent View, return that View's IAccessible.
   if (view()->parent())
-    return view()->parent()->GetNativeViewAccessible();
+    return ViewAXPlatformNodeDelegate::GetParent();
 
   // Otherwise we must be the RootView, get the corresponding Widget
   // and Window.
@@ -93,14 +95,17 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
-    case ui::AXCoordinateSystem::kScreen:
-      // We could optionally add clipping here if ever needed.
+    case ui::AXCoordinateSystem::kScreenPhysicalPixels:
       return display::win::ScreenWin::DIPToScreenRect(
           HWNDForView(view()), view()->GetBoundsInScreen());
+    case ui::AXCoordinateSystem::kScreenDIPs:
+      // We could optionally add clipping here if ever needed.
+      return view()->GetBoundsInScreen();
     case ui::AXCoordinateSystem::kRootFrame:
     case ui::AXCoordinateSystem::kFrame:
       NOTIMPLEMENTED();
       return gfx::Rect();
   }
 }
+
 }  // namespace views

@@ -16,7 +16,7 @@ SocketsManifestHandler::SocketsManifestHandler() {}
 SocketsManifestHandler::~SocketsManifestHandler() {}
 
 bool SocketsManifestHandler::Parse(Extension* extension,
-                                   base::string16* error) {
+                                   std::u16string* error) {
   const base::Value* sockets = NULL;
   CHECK(extension->manifest()->Get(manifest_keys::kSockets, &sockets));
   std::unique_ptr<SocketsManifestData> data =

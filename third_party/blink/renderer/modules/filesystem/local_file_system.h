@@ -36,8 +36,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -52,65 +51,51 @@ class KURL;
 class ResolveURICallbacks;
 
 class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
-                              public Supplement<LocalFrame>,
-                              public Supplement<WorkerGlobalScope>,
+                              public Supplement<ExecutionContext>,
                               public NameClient {
-  USING_GARBAGE_COLLECTED_MIXIN(LocalFileSystem);
-
  public:
   enum SynchronousType { kAsynchronous, kSynchronous };
 
   static const char kSupplementName[];
 
-  explicit LocalFileSystem(LocalFrame&);
-  explicit LocalFileSystem(WorkerGlobalScope&);
+  explicit LocalFileSystem(ExecutionContext&);
 
-  void ResolveURL(ExecutionContext*,
-                  const KURL&,
+  LocalFileSystem(const LocalFileSystem&) = delete;
+  LocalFileSystem& operator=(const LocalFileSystem&) = delete;
+
+  ~LocalFileSystem() final = default;
+
+  void ResolveURL(const KURL&,
                   std::unique_ptr<ResolveURICallbacks>,
                   SynchronousType sync_type);
-  void RequestFileSystem(ExecutionContext*,
-                         mojom::blink::FileSystemType,
+  void RequestFileSystem(mojom::blink::FileSystemType,
                          int64_t size,
                          std::unique_ptr<FileSystemCallbacks>,
                          SynchronousType sync_type);
 
   static LocalFileSystem* From(ExecutionContext&);
 
-  void Trace(blink::Visitor*) override;
   const char* NameInHeapSnapshot() const override { return "LocalFileSystem"; }
 
  private:
-  void ResolveURLCallback(ExecutionContext* context,
-                          const KURL& file_system_url,
+  void ResolveURLCallback(const KURL& file_system_url,
                           std::unique_ptr<ResolveURICallbacks> callbacks,
                           SynchronousType sync_type,
                           bool allowed);
-  void RequestFileSystemCallback(ExecutionContext* context,
-                                 mojom::blink::FileSystemType type,
+  void RequestFileSystemCallback(mojom::blink::FileSystemType type,
                                  std::unique_ptr<FileSystemCallbacks> callbacks,
                                  SynchronousType sync_type,
                                  bool allowed);
-  void RequestFileSystemAccessInternal(ExecutionContext*,
-                                       base::OnceCallback<void(bool)> callback);
-  void FileSystemNotAllowedInternal(ExecutionContext*,
-                                    std::unique_ptr<FileSystemCallbacks>);
-  void FileSystemNotAllowedInternal(ExecutionContext*,
-                                    std::unique_ptr<ResolveURICallbacks>);
-  void FileSystemAllowedInternal(ExecutionContext*,
-                                 mojom::blink::FileSystemType,
+  void RequestFileSystemAccessInternal(base::OnceCallback<void(bool)> callback);
+  void FileSystemNotAllowedInternal(std::unique_ptr<FileSystemCallbacks>);
+  void FileSystemNotAllowedInternal(std::unique_ptr<ResolveURICallbacks>);
+  void FileSystemAllowedInternal(mojom::blink::FileSystemType,
                                  std::unique_ptr<FileSystemCallbacks> callbacks,
                                  SynchronousType sync_type);
-  void ResolveURLInternal(ExecutionContext*,
-                          const KURL&,
+  void ResolveURLInternal(const KURL&,
                           std::unique_ptr<ResolveURICallbacks>,
                           SynchronousType sync_type);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSystem);
 };
-
-void ProvideLocalFileSystemTo(LocalFrame&);
-void ProvideLocalFileSystemToWorker(WorkerGlobalScope&);
 
 }  // namespace blink
 

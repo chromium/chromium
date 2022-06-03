@@ -5,169 +5,323 @@
 #include "components/autofill_assistant/browser/script_precondition.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill_assistant {
 namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Eq;
+using ::testing::ElementsAre;
+using ::testing::Key;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
+using ::testing::WithArgs;
 
 class ElementPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"empty"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, FindElement(Selector({"exists"}), _, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
+    ON_CALL(mock_web_controller_, FindElement(Selector({"exists_too"}), _, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
-
-    ON_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "foo"));
+            FindElement(Selector({"does_not_exist"}), _, _))
+        .WillByDefault(RunOnceCallback<2>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
     ON_CALL(mock_web_controller_,
-            OnGetFieldValue(Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(), ""));
-    ON_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"empty"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
+            FindElement(Selector({"does_not_exist_either"}), _, _))
+        .WillByDefault(RunOnceCallback<2>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   }
 
  protected:
   // Runs a precondition given |exists_| and |value_match_|.
-  void Check(base::OnceCallback<void(bool)> callback) {
-    ElementPrecondition precondition(exist_, value_match_);
+  void Check(
+      base::OnceCallback<void(
+          const ClientStatus&,
+          const std::vector<std::string>&,
+          const base::flat_map<std::string, DomObjectFrameStack>&)> callback) {
+    ElementPrecondition precondition(condition_);
     BatchElementChecker batch_checks;
     precondition.Check(&batch_checks, std::move(callback));
     batch_checks.Run(&mock_web_controller_);
   }
 
   MockWebController mock_web_controller_;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback_;
-  google::protobuf::RepeatedPtrField<ElementReferenceProto> exist_;
-  google::protobuf::RepeatedPtrField<FormValueMatchProto> value_match_;
+  base::MockCallback<base::OnceCallback<void(
+      const ClientStatus&,
+      const std::vector<std::string>&,
+      const base::flat_map<std::string, DomObjectFrameStack>&)>>
+      mock_callback_;
+  ElementConditionProto condition_;
 };
 
 TEST_F(ElementPreconditionTest, Empty) {
-  EXPECT_TRUE(ElementPrecondition(exist_, value_match_).empty());
+  EXPECT_TRUE(ElementPrecondition(condition_).empty());
 }
 
 TEST_F(ElementPreconditionTest, NonEmpty) {
-  exist_.Add()->add_selectors("exists");
-  EXPECT_FALSE(ElementPrecondition(exist_, value_match_).empty());
+  *condition_.mutable_match() = ToSelectorProto("exists");
+  EXPECT_FALSE(ElementPrecondition(condition_).empty());
 }
 
 TEST_F(ElementPreconditionTest, NoConditions) {
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
   Check(mock_callback_.Get());
 }
 
 TEST_F(ElementPreconditionTest, EmptySelector) {
-  exist_.Add();
+  condition_.mutable_match();
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
 TEST_F(ElementPreconditionTest, ElementExists) {
-  exist_.Add()->add_selectors("exists");
+  *condition_.mutable_match() = ToSelectorProto("exists");
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, ElementDoesNotExist) {
-  exist_.Add()->add_selectors("does_not_exist");
+TEST_F(ElementPreconditionTest, ElementDoes_Not_Exist) {
+  *condition_.mutable_match() = ToSelectorProto("does_not_exist");
 
-  EXPECT_CALL(mock_callback_, Run(false));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueMatchDoesNotExist) {
-  value_match_.Add()->mutable_element()->add_selectors("does_not_exist");
+TEST_F(ElementPreconditionTest, AnyOf_Empty) {
+  condition_.mutable_any_of();
 
-  EXPECT_CALL(mock_callback_, Run(false));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueMatchNonEmpty) {
-  value_match_.Add()->mutable_element()->add_selectors("exists");
+TEST_F(ElementPreconditionTest, AnyOf_NoneMatch) {
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist_either");
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueShouldNotMatchEmpty) {
-  value_match_.Add()->mutable_element()->add_selectors("empty");
+TEST_F(ElementPreconditionTest, AnyOf_SomeMatch) {
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
 
-  EXPECT_CALL(mock_callback_, Run(false));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueShouldMatchEmpty) {
-  auto* match = value_match_.Add();
-  match->mutable_element()->add_selectors("empty");
-  match->set_value("");
+TEST_F(ElementPreconditionTest, AnyOf_AllMatch) {
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists_too");
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueMatchWrongValue) {
-  auto* match = value_match_.Add();
-  match->mutable_element()->add_selectors("exists");
-  match->set_value("wrong");
+TEST_F(ElementPreconditionTest, AllOf_Empty) {
+  condition_.mutable_all_of();
 
-  EXPECT_CALL(mock_callback_, Run(false));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, FormValueMatchCorrectValue) {
-  auto* match = value_match_.Add();
-  match->mutable_element()->add_selectors("exists");
-  match->set_value("foo");
+TEST_F(ElementPreconditionTest, AllOf_NoneMatch) {
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist_either");
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, SomeMatch) {
-  exist_.Add()->add_selectors("exists");
-  exist_.Add()->add_selectors("does_not_exist");
+TEST_F(ElementPreconditionTest, AllOf_SomeMatch) {
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
 
-  value_match_.Add()->mutable_element()->add_selectors("empty");
-  auto* match = value_match_.Add();
-  match->mutable_element()->add_selectors("exists");
-  match->set_value("wrong");
-
-  EXPECT_CALL(mock_callback_, Run(false));
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
   Check(mock_callback_.Get());
 }
 
-TEST_F(ElementPreconditionTest, AllMatch) {
-  exist_.Add()->add_selectors("exists");
-  exist_.Add()->add_selectors("empty");
+TEST_F(ElementPreconditionTest, AllOf_AllMatch) {
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists_too");
 
-  auto* match_exists = value_match_.Add();
-  match_exists->mutable_element()->add_selectors("exists");
-  match_exists->set_value("foo");
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
+  Check(mock_callback_.Get());
+}
 
-  auto* match_empty = value_match_.Add();
-  match_empty->mutable_element()->add_selectors("empty");
-  match_empty->set_value("");
+TEST_F(ElementPreconditionTest, NoneOf_Empty) {
+  condition_.mutable_none_of();
 
-  EXPECT_CALL(mock_callback_, Run(true));
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, NoneOf_NoneMatch) {
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist_either");
+
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED), _, _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, NoneOf_SomeMatch) {
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
+
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, NoneOf_AllMatch) {
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists_too");
+
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  _, _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, Payload_ConditionMet) {
+  auto* exists = condition_.mutable_any_of()->add_conditions();
+  *exists->mutable_match() = ToSelectorProto("exists");
+  exists->set_payload("exists");
+
+  auto* exists_too = condition_.mutable_any_of()->add_conditions();
+  *exists_too->mutable_match() = ToSelectorProto("exists_too");
+  exists_too->set_payload("exists_too");
+
+  condition_.set_payload("any_of");
+
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED),
+                  ElementsAre("exists", "exists_too", "any_of"), _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, Payload_ConditionNotMet) {
+  auto* exists = condition_.mutable_none_of()->add_conditions();
+  *exists->mutable_match() = ToSelectorProto("exists");
+  exists->set_payload("exists");
+
+  auto* exists_too = condition_.mutable_none_of()->add_conditions();
+  *exists_too->mutable_match() = ToSelectorProto("exists_too");
+  exists_too->set_payload("exists_too");
+
+  condition_.set_payload("none_of");
+
+  EXPECT_CALL(mock_callback_, Run(Property(&ClientStatus::proto_status,
+                                           ELEMENT_RESOLUTION_FAILED),
+                                  ElementsAre("exists", "exists_too"), _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, Complex) {
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists");
+  *condition_.mutable_all_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("exists_too");
+  auto* none_of = condition_.mutable_all_of()->add_conditions();
+  none_of->set_payload("none_of");
+  auto* does_not_exist_in_none_of =
+      none_of->mutable_none_of()->add_conditions();
+  *does_not_exist_in_none_of->mutable_match() =
+      ToSelectorProto("does_not_exist");
+  does_not_exist_in_none_of->set_payload("does_not_exist in none_of");
+  *none_of->mutable_none_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist_either");
+
+  auto* any_of = condition_.mutable_all_of()->add_conditions();
+  any_of->set_payload("any_of");
+  auto* exists_in_any_of = any_of->mutable_any_of()->add_conditions();
+  *exists_in_any_of->mutable_match() = ToSelectorProto("exists");
+  exists_in_any_of->set_payload("exists in any_of");
+
+  *any_of->mutable_any_of()->add_conditions()->mutable_match() =
+      ToSelectorProto("does_not_exist");
+
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED),
+                  ElementsAre("none_of", "exists in any_of", "any_of"), _));
+  Check(mock_callback_.Get());
+}
+
+TEST_F(ElementPreconditionTest, ReturnsFoundElements) {
+  auto* exists = condition_.mutable_all_of()->add_conditions();
+  *exists->mutable_match() = ToSelectorProto("exists");
+  exists->set_payload("exists");
+  exists->mutable_client_id()->set_identifier("exists");
+
+  auto* exists_too = condition_.mutable_all_of()->add_conditions();
+  *exists_too->mutable_match() = ToSelectorProto("exists_too");
+  exists_too->set_payload("exists_too");
+  exists_too->mutable_client_id()->set_identifier("exists_too");
+
+  EXPECT_CALL(mock_callback_,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED),
+                  ElementsAre("exists", "exists_too"),
+                  UnorderedElementsAre(Key("exists"), Key("exists_too"))));
   Check(mock_callback_.Get());
 }
 

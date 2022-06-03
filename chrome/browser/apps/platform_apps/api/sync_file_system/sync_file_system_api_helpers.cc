@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"

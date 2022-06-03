@@ -1,0 +1,32 @@
+Document
+++List
+++++ListItem Name='Level 1, item 1 of set size unknown'
+++++++Text Name='Level 1, item 1 of set size unknown'
+++List
+++++ListItem Name='++Level 2, item 1 of set size unknown'
+++++++Text Name='++Level 2, item 1 of set size unknown'
+++List
+++++ListItem Name='++Level 2, item 2 of set size unknown'
+++++++Text Name='++Level 2, item 2 of set size unknown'
+++List
+++++ListItem Name='++Level 2, item 3 of set size unknown'
+++++++Text Name='++Level 2, item 3 of set size unknown'
+++List
+++++ListItem Name='++++Level 3, item 1 of set size unknown'
+++++++Text Name='++++Level 3, item 1 of set size unknown'
+++List
+++++ListItem Name='++++Level 3, item 2 of set size unknown'
+++++++Text Name='++++Level 3, item 2 of set size unknown'
+++List
+++++ListItem Name='Level 1, item 2 of set size unknown'
+++++++Text Name='Level 1, item 2 of set size unknown'
+++List
+++++ListItem Name='Level 1, item 3 of set size unknown'
+++++++Text Name='Level 1, item 3 of set size unknown'
+++List
+++++List
+++++++ListItem Name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++++++Text Name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++List
+++++++ListItem Name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'
+++++++++Text Name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'

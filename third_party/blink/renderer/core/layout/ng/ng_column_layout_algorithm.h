@@ -22,92 +22,98 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  base::Optional<MinMaxSize> ComputeMinMaxSize(
-      const MinMaxSizeInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:
-  // Lay out as many children as we can. If false is returned, it means that we
-  // ran out of space at an unappealing location, and need to relayout and break
-  // earlier (because we have a better breakpoint there).
-  bool LayoutChildren();
+  MinMaxSizesResult ComputeSpannersMinMaxSizes(
+      const NGBlockNode& search_parent) const;
+
+  // Lay out as many children as we can. If |kNeedsEarlierBreak| is returned, it
+  // means that we ran out of space at an unappealing location, and need to
+  // relayout and break earlier (because we have a better breakpoint there). If
+  // |kBrokeBefore| is returned, it means that we need to break before the
+  // multicol container, and retry in the next fragmentainer.
+  NGBreakStatus LayoutChildren();
 
   // Lay out one row of columns. The layout result returned is for the last
-  // column that was laid out. The rows themselves don't create fragments.
+  // column that was laid out. The rows themselves don't create fragments. If
+  // we're in a nested fragmentation context and completely out of outer
+  // fragmentainer space, nullptr will be returned.
   scoped_refptr<const NGLayoutResult> LayoutRow(
       const NGBlockBreakToken* next_column_token,
       NGMarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
-  // before the spanner or not. If we're not to break before the spanner, but
-  // rather inside, |spanner_break_token| will be set, so that we know where to
-  // resume in the next outer fragmentainer. If |NGBreakStatus::kContinue| is
-  // returned, and no break token was set, it means that we can proceed to the
-  // next row of columns.
+  // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
+  // no break token was set, it means that we can proceed to the next row of
+  // columns.
   NGBreakStatus LayoutSpanner(NGBlockNode spanner_node,
                               const NGBlockBreakToken* break_token,
-                              NGMarginStrut*,
-                              scoped_refptr<const NGBlockBreakToken>*);
+                              NGMarginStrut*);
+
+  // Attempt to position the list-item marker (if any) beside the child
+  // fragment. This requires the fragment to have a baseline. If it doesn't,
+  // we'll keep the unpositioned marker around, so that we can retry with a
+  // later fragment (if any). If we reach the end of layout and still have an
+  // unpositioned marker, it can be placed by calling
+  // PositionAnyUnclaimedListMarker().
+  void AttemptToPositionListMarker(const NGPhysicalBoxFragment& child_fragment,
+                                   LayoutUnit block_offset);
+
+  // At the end of layout, if no column or spanner were able to position the
+  // list-item marker, position the marker at the beginning of the multicol
+  // container.
+  void PositionAnyUnclaimedListMarker();
+
+  // Propagate the baseline from the given |child| if needed.
+  void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
+                                  LayoutUnit block_offset);
 
   LayoutUnit CalculateBalancedColumnBlockSize(
       const LogicalSize& column_size,
+      LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
 
-  // Stretch the column length. We do this during column balancing, when we
-  // discover that the current length isn't large enough to fit all content.
-  LayoutUnit StretchColumnBlockSize(LayoutUnit minimal_space_shortage,
-                                    LayoutUnit current_column_size) const;
-
-  LayoutUnit ConstrainColumnBlockSize(LayoutUnit size) const;
-  LayoutUnit CurrentContentBlockOffset() const {
-    return intrinsic_block_size_ - border_scrollbar_padding_.block_start;
+  LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
+                                      LayoutUnit row_offset) const;
+  LayoutUnit CurrentContentBlockOffset(LayoutUnit border_box_row_offset) const {
+    return border_box_row_offset - BorderScrollbarPadding().block_start;
   }
 
-  // Finalize layout after breaking before a spanner.
-  void FinishAfterBreakBeforeSpanner(
-      scoped_refptr<const NGBlockBreakToken> next_column_token);
+  // Get the percentage resolution size to use for column content (i.e. not
+  // spanners).
+  LogicalSize ColumnPercentageResolutionSize() const {
+    // Percentage block-size on children is resolved against the content-box of
+    // the multicol container (just like in regular block layout), while
+    // percentage inline-size is restricted by the columns.
+    return LogicalSize(column_inline_size_, ChildAvailableSize().block_size);
+  }
 
-  // Lay out again, this time with a predefined good breakpoint that we
-  // discovered in the first pass. This happens when we run out of space in a
-  // fragmentainer at an less-than-ideal location, due to breaking restrictions,
-  // such as break-before:avoid or break-after:avoid.
-  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier();
-
-  NGConstraintSpace CreateConstraintSpaceForColumns(
-      const LogicalSize& column_size,
-      bool is_first_fragmentainer,
-      bool balance_columns) const;
   NGConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
   NGConstraintSpace CreateConstraintSpaceForSpanner(
+      const NGBlockNode& spanner,
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
 
-  // When set, this will specify where to break before or inside.
-  const NGEarlyBreak* early_break_ = nullptr;
-
-  // Border + padding sum, resolved from the node's computed style.
-  const NGBoxStrut border_padding_;
-
-  // Border + scrollbar + padding sum for the fragment to be generated (most
-  // importantly, for non-first fragments, leading block border + scrollbar +
-  // padding is zero).
-  NGBoxStrut border_scrollbar_padding_;
-
-  LogicalSize content_box_size_;
   int used_column_count_;
   LayoutUnit column_inline_size_;
   LayoutUnit column_inline_progression_;
+  LayoutUnit column_block_size_;
   LayoutUnit intrinsic_block_size_;
+  LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
+
+  bool has_processed_first_column_ = false;
 };
 
 }  // namespace blink

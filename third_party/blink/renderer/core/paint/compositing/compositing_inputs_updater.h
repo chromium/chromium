@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_UPDATER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_UPDATER_H_
 
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -26,6 +26,9 @@ class CompositingInputsUpdater {
   static void AssertNeedsCompositingInputsUpdateBitsCleared(PaintLayer*);
 #endif
 
+  // Combine all reasons for compositing a layer into a single boolean value
+  bool LayerOrDescendantShouldBeComposited(PaintLayer*);
+
  private:
   enum UpdateType {
     kDoNotForceUpdate,
@@ -33,13 +36,15 @@ class CompositingInputsUpdater {
   };
 
   struct AncestorInfo {
+    STACK_ALLOCATED();
+
+   public:
     // The ancestor composited PaintLayer which is also a stacking context.
     PaintLayer* enclosing_stacking_composited_layer = nullptr;
     // A "squashing composited layer" is a PaintLayer that owns a squashing
     // layer. This variable stores the squashing composited layer for the
     // nearest PaintLayer ancestor which is squashed.
     PaintLayer* enclosing_squashing_composited_layer = nullptr;
-    PaintLayer* last_overflow_clip_layer = nullptr;
 
     PaintLayer* clip_chain_parent_for_absolute = nullptr;
     PaintLayer* clip_chain_parent_for_fixed = nullptr;
@@ -74,7 +79,7 @@ class CompositingInputsUpdater {
                                            AncestorInfo);
   void UpdateAncestorDependentCompositingInputs(PaintLayer*,
                                                 const AncestorInfo&);
-  // This is a recursive method to compute the geometry_map_ and AncestorInfo
+  // This is a recursive method to update AncestorInfo
   // starting from the root layer down to the compositing_inputs_root_.
   void ApplyAncestorInfoToSelfAndAncestorsRecursively(PaintLayer*,
                                                       UpdateType&,
@@ -83,10 +88,8 @@ class CompositingInputsUpdater {
   // current value of AncestorInfo.
   void UpdateAncestorInfo(PaintLayer* const, UpdateType&, AncestorInfo&);
 
-  // Combine all reasons for compositing a layer into a single boolean value
-  bool LayerOrDescendantShouldBeComposited(PaintLayer*);
+  bool NeedsPaintOffsetTranslationForCompositing(PaintLayer*);
 
-  LayoutGeometryMap geometry_map_;
   PaintLayer* root_layer_;
   PaintLayer* compositing_inputs_root_;
 };

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Screen wake locks available.
+FAIL System wake locks available. promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'setPermission' on 'Internals': System Wake Lock is not enabled."
+Harness: the test ran to completion.
+

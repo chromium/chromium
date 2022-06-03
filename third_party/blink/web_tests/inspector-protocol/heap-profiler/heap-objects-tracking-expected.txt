@@ -26,7 +26,7 @@ HeapProfiler.lastSeenObjectId has params.lastSeenObjectId: true
 HeapProfiler.lastSeenObjectId has timestamp: true
 A heap stats fragment did arrive before HeapProfiler.lastSeenObjectId: true
 
-Number of heapStatsUpdate events >= numbrt of lastSeenObjectId events: true
+Number of heapStatsUpdate events >= number of lastSeenObjectId events: true
 At least 2 lastSeenObjectId arrived: true
 SUCCESS: tracking stopped
 

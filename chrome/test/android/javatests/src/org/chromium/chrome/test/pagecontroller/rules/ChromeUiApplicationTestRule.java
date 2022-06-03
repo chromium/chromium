@@ -11,7 +11,7 @@ import org.junit.rules.ExternalResource;
 import org.chromium.base.Log;
 import org.chromium.chrome.test.pagecontroller.controllers.PageController;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.DataSaverController;
-import org.chromium.chrome.test.pagecontroller.controllers.first_run.SyncController;
+import org.chromium.chrome.test.pagecontroller.controllers.first_run.SyncConfirmationViewPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.TOSController;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
@@ -64,8 +64,8 @@ public class ChromeUiApplicationTestRule extends ExternalResource {
             ((DataSaverController) controller).clickNext();
             controller = detectPageOnFirstRun();
         }
-        if (controller instanceof SyncController) {
-            ((SyncController) controller).clickNoThanks();
+        if (controller instanceof SyncConfirmationViewPageController) {
+            ((SyncConfirmationViewPageController) controller).clickNoThanks();
             controller = detectPageOnFirstRun();
         }
         if (controller instanceof NewTabPageController) {
@@ -105,7 +105,8 @@ public class ChromeUiApplicationTestRule extends ExternalResource {
      * @throws UiLocationException If page can't be determined.
      */
     private static PageController detectPageOnFirstRun() {
-        return detectPageAmong(TOSController.getInstance(), SyncController.getInstance(),
-                DataSaverController.getInstance(), NewTabPageController.getInstance());
+        return detectPageAmong(TOSController.getInstance(),
+                SyncConfirmationViewPageController.getInstance(), DataSaverController.getInstance(),
+                NewTabPageController.getInstance());
     }
 }

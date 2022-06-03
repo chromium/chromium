@@ -8,9 +8,10 @@
 Usage: tools/boilerplate.py path/to/file.{h,cc}
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 from datetime import date
+import io
 import os
 import os.path
 import sys
@@ -22,9 +23,15 @@ LINES = [
     'found in the LICENSE file.'
 ]
 
+NO_COMPILE_LINES = [
+    'This is a "No Compile Test" suite.',
+    'https://dev.chromium.org/developers/testing/no-compile-tests'
+]
+
 EXTENSIONS_TO_COMMENTS = {
     'h': '//',
     'cc': '//',
+    'nc': '//',
     'mm': '//',
     'js': '//',
     'py': '#',
@@ -32,13 +39,24 @@ EXTENSIONS_TO_COMMENTS = {
     'gni': '#',
     'mojom': '//',
     'typemap': '#',
+    "swift": "//",
 }
 
-def _GetHeader(filename):
+
+def _GetHeaderImpl(filename, lines):
   _, ext = os.path.splitext(filename)
   ext = ext[1:]
   comment = EXTENSIONS_TO_COMMENTS[ext] + ' '
-  return '\n'.join([comment + line for line in LINES])
+  return '\n'.join([comment + line for line in lines])
+
+
+def _GetHeader(filename):
+  return _GetHeaderImpl(filename, LINES)
+
+
+def _GetNoCompileHeader(filename):
+  assert (filename.endswith(".nc"))
+  return '\n' + _GetHeaderImpl(filename, NO_COMPILE_LINES)
 
 
 def _CppHeader(filename):
@@ -53,6 +71,16 @@ def _CppHeader(filename):
     '#endif  // ' + guard,
     ''
   ])
+
+
+def _RemoveCurrentDirectoryPrefix(filename):
+  current_dir_prefixes = [os.curdir + os.sep]
+  if os.altsep is not None:
+    current_dir_prefixes.append(os.curdir + os.altsep)
+  for prefix in current_dir_prefixes:
+    if filename.startswith(prefix):
+      return filename[len(prefix):]
+  return filename
 
 
 def _RemoveTestSuffix(filename):
@@ -94,18 +122,22 @@ def _ObjCppImplementation(filename):
 
 
 def _CreateFile(filename):
+  filename = _RemoveCurrentDirectoryPrefix(filename)
+
   contents = _GetHeader(filename) + '\n'
 
   if filename.endswith('.h'):
     contents += _CppHeader(filename)
   elif filename.endswith('.cc'):
     contents += _CppImplementation(filename)
+  elif filename.endswith('.nc'):
+    contents += _GetNoCompileHeader(filename) + '\n'
+    contents += _CppImplementation(filename)
   elif filename.endswith('.mm'):
     contents += _ObjCppImplementation(filename)
 
-  fd = open(filename, 'wb')
-  fd.write(contents)
-  fd.close()
+  with io.open(filename, mode='w', newline='\n') as fd:
+    fd.write(contents)
 
 
 def Main():

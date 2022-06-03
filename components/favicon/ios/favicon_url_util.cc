@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/notreached.h"
 #include "components/favicon/core/favicon_url.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ios/web/public/favicon/favicon_url.h"

@@ -1,0 +1,60 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/theme/ThemeColorProvider.java",
+    "java/src/org/chromium/chrome/browser/theme/ThemeUtils.java",
+    "java/src/org/chromium/chrome/browser/theme/TopUiThemeColorProvider.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/security_state/content/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  public_deps = [ ":delegate_java" ]
+  resources_package = "org.chromium.chrome.browser.theme"
+}
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegateImpl.java",
+  ]
+
+  # Targets will need to add the actual implementation at a later point when
+  # downstream vs upstream has been resolved.
+  jar_excluded_patterns = [ "*/ColorDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/ui/theme/ColorDelegateImpl.java" ]
+  deps = [ ":delegate_java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/color/toolbar_icon_tint_dark.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/values.xml",
+  ]
+  deps = [
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}

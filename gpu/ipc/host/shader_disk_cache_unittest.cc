@@ -6,7 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +25,9 @@ const char kCacheValue2[] = "cached value2";
 class ShaderDiskCacheTest : public testing::Test {
  public:
   ShaderDiskCacheTest() = default;
+
+  ShaderDiskCacheTest(const ShaderDiskCacheTest&) = delete;
+  ShaderDiskCacheTest& operator=(const ShaderDiskCacheTest&) = delete;
 
   ~ShaderDiskCacheTest() override = default;
 
@@ -50,8 +53,6 @@ class ShaderDiskCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   ShaderCacheFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskCacheTest);
 };
 
 TEST_F(ShaderDiskCacheTest, ClearsCache) {

@@ -9,13 +9,14 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -36,6 +37,13 @@ constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 constexpr char kMyFilesUuid[] = "0000000000000000000000000000CAFEF00D2019";
 // Dummy UUID for testing.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
+
+// Keep in sync with Android's ArcVolumeMounterService.MAX_MOUNT_FAILURE_COUNT.
+// Receiving this value at ReportMountFailureCount() indicates that mounting a
+// volume has been given up after failing in mount attempts the number of times.
+// It goes to the overflow bucket of the Arc.VolumeMounter.MountFailureCount
+// histogram.
+constexpr int kUmaMaxMountFailureCount = 40;
 
 // Singleton factory for ArcVolumeMounterBridge.
 class ArcVolumeMounterBridgeFactory
@@ -70,9 +78,15 @@ ArcVolumeMounterBridge* ArcVolumeMounterBridge::GetForBrowserContextForTesting(
   return ArcVolumeMounterBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
+// static
+KeyedServiceBaseFactory* ArcVolumeMounterBridge::GetFactory() {
+  return ArcVolumeMounterBridgeFactory::GetInstance();
+}
+
 ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
                                                ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
+    : delegate_(nullptr),
+      arc_bridge_service_(bridge_service),
       pref_service_(user_prefs::UserPrefs::Get(context)) {
   DCHECK(pref_service_);
   arc_bridge_service_->volume_mounter()->AddObserver(this);
@@ -90,9 +104,15 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 }
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
-  DiskMountManager::GetInstance()->RemoveObserver(this);
+  if (DiskMountManager::GetInstance())  // for testing
+    DiskMountManager::GetInstance()->RemoveObserver(this);
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
   arc_bridge_service_->volume_mounter()->RemoveObserver(this);
+}
+
+void ArcVolumeMounterBridge::Initialize(Delegate* delegate) {
+  delegate_ = delegate;
+  DCHECK(delegate_);
 }
 
 // Sends MountEvents of all existing MountPoints in cros-disks.
@@ -120,9 +140,11 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
   // TODO(niwa): Add a new DeviceType enum value for MyFiles.
   chromeos::DeviceType device_type = chromeos::DeviceType::DEVICE_TYPE_SD;
 
+  // Conditionally set MyFiles to be visible for P and invisible for R. In R, we
+  // use IsVisibleRead so this is not needed.
   volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
       DiskMountManager::MOUNTING, kMyFilesPath, kMyFilesPath, kMyFilesUuid,
-      device_label, device_type, false));
+      device_label, device_type, !IsArcVmEnabled()));
 }
 
 bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
@@ -150,19 +172,12 @@ void ArcVolumeMounterBridge::OnVisibleStoragesChanged() {
   }
 }
 
-void ArcVolumeMounterBridge::OnConnectionReady() {
-  // Deferring the SendAllMountEvents as a task to current thread to not
-  // block the mojo request since SendAllMountEvents might take non trivial
-  // amount of time.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ArcVolumeMounterBridge::SendAllMountEvents,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
 void ArcVolumeMounterBridge::OnMountEvent(
     DiskMountManager::MountEvent event,
     chromeos::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info) {
+  DCHECK(delegate_);
+
   // ArcVolumeMounter is limited for local storage, as Android's StorageManager
   // volume concept relies on assumption that it is local filesystem. Hence,
   // special volumes like DriveFS should not come through this path.
@@ -199,17 +214,35 @@ void ArcVolumeMounterBridge::OnMountEvent(
              << " is null during MountEvent " << event;
   }
 
-  mojom::VolumeMounterInstance* volume_mounter_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
-                                  OnMountEvent);
-
-  if (!volume_mounter_instance)
-    return;
-
   const bool visible = IsVisibleToAndroidApps(fs_uuid);
-  volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
-      event, mount_info.source_path, mount_info.mount_path, fs_uuid,
-      device_label, device_type, visible));
+  switch (event) {
+    case DiskMountManager::MountEvent::MOUNTING:
+      // Attach watcher to the directories. This is the best place to add the
+      // watcher, because if the watcher is attached after Android mounts (and
+      // performs full scan) the removable media, there might be a small time
+      // interval that has undetectable changes.
+      delegate_->StartWatchingRemovableMedia(
+          fs_uuid, mount_info.mount_path,
+          base::BindOnce(
+              &ArcVolumeMounterBridge::SendMountEventForRemovableMedia,
+              weak_ptr_factory_.GetWeakPtr(), event, mount_info.source_path,
+              mount_info.mount_path, fs_uuid, device_label, device_type,
+              visible));
+      break;
+    case DiskMountManager::MountEvent::UNMOUNTING:
+
+      // The actual ordering for the unmount event is not very important because
+      // during unmount, we don't care about accidentally ignoring changes.
+      // Hence, no synchronization is needed as we only care about cleaning up
+      // memory usage for watchers which is ok to be done at any time as long as
+      // it is done.
+      SendMountEventForRemovableMedia(event, mount_info.source_path,
+                                      mount_info.mount_path, fs_uuid,
+                                      device_label, device_type, visible);
+      delegate_->StopWatchingRemovableMedia(mount_info.mount_path);
+      break;
+  }
+
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       (device_type == chromeos::DeviceType::DEVICE_TYPE_USB ||
        device_type == chromeos::DeviceType::DEVICE_TYPE_SD)) {
@@ -220,6 +253,25 @@ void ArcVolumeMounterBridge::OnMountEvent(
   }
 }
 
+void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
+    DiskMountManager::MountEvent event,
+    const std::string& source_path,
+    const std::string& mount_path,
+    const std::string& fs_uuid,
+    const std::string& device_label,
+    chromeos::DeviceType device_type,
+    bool visible) {
+  mojom::VolumeMounterInstance* volume_mounter_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
+                                  OnMountEvent);
+
+  if (!volume_mounter_instance)
+    return;
+  volume_mounter_instance->OnMountEvent(
+      mojom::MountPointInfo::New(event, source_path, mount_path, fs_uuid,
+                                 device_label, device_type, visible));
+}
+
 void ArcVolumeMounterBridge::RequestAllMountPoints() {
   // Deferring the SendAllMountEvents as a task to current thread to not
   // block the mojo request since SendAllMountEvents might take non trivial
@@ -227,6 +279,12 @@ void ArcVolumeMounterBridge::RequestAllMountPoints() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&ArcVolumeMounterBridge::SendAllMountEvents,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVolumeMounterBridge::ReportMountFailureCount(uint16_t count) {
+  base::UmaHistogramCustomCounts("Arc.VolumeMounter.MountFailureCount",
+                                 base::strict_cast<int>(count), /*min=*/1,
+                                 kUmaMaxMountFailureCount, /*buckets=*/10);
 }
 
 }  // namespace arc

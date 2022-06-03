@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+<script>
+var value = PerfTestRunner.loadFile("resources/chrome_code_search.txt");
+PerfTestRunner.measureTime({
+  description: "This benchmark tests Sanitizer sanitize function for a large DOM tree",
+  run: function() {
+    s = new Sanitizer();
+    fragment = s.sanitizeFor("template", value);
+  },
+  iterationCount: 5
+});
+</script>
+</body>
+</html>

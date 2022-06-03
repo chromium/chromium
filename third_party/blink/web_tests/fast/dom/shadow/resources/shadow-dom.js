@@ -84,7 +84,7 @@ function createDOM(tagName, attributes)
                 if (child.parameter && Object.keys(child.parameter).length > 0)
                     shadowRoot = element.attachShadow(child.parameter);
                 else
-                    shadowRoot = element.createShadowRoot();
+                    shadowRoot = element.attachShadow({mode: 'open'});
             }
             if (child.attributes) {
                 for (var attribute in child.attributes) {

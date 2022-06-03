@@ -13,14 +13,17 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
@@ -45,7 +48,7 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
     return;
 
   Microsoft::WRL::ComPtr<IShellFolder> desktop;
-  HRESULT hr = SHGetDesktopFolder(desktop.GetAddressOf());
+  HRESULT hr = SHGetDesktopFolder(&desktop);
   if (FAILED(hr))
     return;
 
@@ -64,6 +67,11 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
     return;
 
   const ITEMIDLIST* highlight[] = {file_item};
+
+  // Skip opening the folder during browser tests, to avoid leaving an open
+  // file explorer window behind.
+  if (!platform_util::internal::AreShellOperationsAllowed())
+    return;
 
   hr =
       SHOpenFolderAndSelectItems(dir_item, base::size(highlight), highlight, 0);
@@ -101,9 +109,19 @@ void OpenExternalOnWorkerThread(const GURL& url) {
   if (escaped_url.length() > kMaxUrlLength)
     return;
 
-  if (reinterpret_cast<ULONG_PTR>(ShellExecuteA(NULL, "open",
-                                                escaped_url.c_str(), NULL, NULL,
-                                                SW_SHOWNORMAL)) <= 32) {
+  // Specify %windir%\system32 as the CWD so that any new proc spawned does not
+  // inherit this proc's CWD. Without this, uninstalls may be broken by a
+  // long-lived child proc that holds a handle to the browser's version
+  // directory (the browser's CWD). A process's CWD is in the standard list of
+  // directories to search when loading a DLL, and precedes the system directory
+  // when safe DLL search mode is disabled (not the default). Setting the CWD to
+  // the system directory is a nice way to mitigate a potential DLL search order
+  // hijack for processes that don't implement their own mitigation.
+  base::FilePath system_dir;
+  base::PathService::Get(base::DIR_SYSTEM, &system_dir);
+  if (reinterpret_cast<ULONG_PTR>(ShellExecuteA(
+          NULL, "open", escaped_url.c_str(), NULL,
+          system_dir.AsUTF8Unsafe().c_str(), SW_SHOWNORMAL)) <= 32) {
     // On failure, it may be good to display a message to the user.
     // https://crbug.com/727913
     return;
@@ -113,8 +131,8 @@ void OpenExternalOnWorkerThread(const GURL& url) {
 }  // namespace
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  base::CreateCOMSTATaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&ShowItemInFolderOnWorkerThread, full_path));
 }
@@ -141,8 +159,8 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 void OpenExternal(Profile* profile, const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::CreateCOMSTATaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
       ->PostTask(FROM_HERE, base::BindOnce(&OpenExternalOnWorkerThread, url));
 }
 

@@ -1,39 +1,51 @@
 This is the App Engine app that serves https://crashpad.chromium.org/.
 
-To work on this app, obtain the App Engine SDK for Go from
-https://cloud.google.com/appengine/docs/go/download. Unpacking it produces a
-go_appengine directory. This may be added to your $PATH for convenience,
-although it is not necessary.
+To work on this app, obtain the following packages:
+
+ - Go, from https://golang.org/dl/. This is only necessary for local development
+   and testing. The directory containing the “go” executable, such as
+   /usr/local/go/bin, must appear in $PATH. It does not appear critical for the
+   Go version used to match the Go runtime version used (for example, these
+   instructions were tested with Go 1.14 locally but a Go 1.11 runtime when
+   deployed), but if problems are encountered, it would be wise to use the same
+   version for both local development and AppEngine deployment.
+ - The Google Cloud SDK from, https://cloud.google.com/sdk/docs. This is
+   necessary for both local development and for AppEngine deployment. Unpacking
+   this package produces a google-cloud-sdk directory, whose bin child directory
+   may be added to $PATH for convenience, although this is not strictly
+   necessary.
 
 The commands in this README are expected to be run from the directory containing
-app.yaml.
+it. $GOPATH must also be set to include this directory:
 
-The App Engine SDK for Go provides App Engine packages at the “appengine” import
-path, but not the newer “google.golang.org/appengine” path. The Crashpad app
-uses the newer paths. See
-https://github.com/golang/appengine#2-update-import-paths and
-https://code.google.com/p/googleappengine/issues/detail?id=11670.  To make these
-available, obtain a Go release from https://golang.org/dl/, and run:
-
-$ GOROOT=…/go_appengine/goroot GOPATH=…/go_appengine/gopath go get -d
+% export GOPATH="$(go env GOPATH):$(pwd)"
 
 To test locally:
 
-$ …/go_appengine/goapp serve
+% go get -d crashpad-home
+% …/google-cloud-sdk/bin/dev_appserver.py src/crashpad-home
 
 Look for the “Starting module "default" running at: http://localhost:8080” line,
-which tells you the URL of the local running instance of the app.
+which tells you the URL of the local running instance of the app. Test
+http://localhost:8080/ and http://localhost:8080/doxygen to ensure that they
+work.
 
 To deploy:
 
-$ version=$(git rev-parse --short=12 HEAD)
-$ [[ -n "$(git status --porcelain)" ]] && version+=-dirty
-$ …/go_appengine/goapp deploy -version "${version}"
+% version=$(git rev-parse --short=12 HEAD)
+% [[ -n "$(git status --porcelain)" ]] && version+=-dirty
+% …/google-cloud-sdk/bin/gcloud app deploy \
+      --project=crashpad-home --version="${version}" --no-promote \
+      "$(pwd)/src/crashpad-home"
 
-Note that app.yaml does not name a “version” to encourage you to use a git hash
-as the version, as above.
+(Note: the $(pwd) is necessary for “gcloud app deploy” to recognize that the
+application is in GOPATH, putting it into “GOPATH mode”. This normally happens
+correctly on its own even with a relative path, but will fail for relative
+paths when $(pwd) is a symbolic link. Using an absolute path here will save you
+from this frustration, freeing you up to undoubtedly experience other
+frustrations.)
 
 Activate a newly-deployed version by visiting the App Engine console at
-https://appengine.google.com/deployment?&app_id=s~crashpad-home, selecting it,
-and choosing “Make Default”. It is also possible to delete old versions from
-this page when they are no longer needed.
+https://console.cloud.google.com/appengine/versions?project=crashpad-home,
+selecting it, and choosing “Migrate Traffic”. It is also possible to delete old
+versions from this page when they are no longer needed.

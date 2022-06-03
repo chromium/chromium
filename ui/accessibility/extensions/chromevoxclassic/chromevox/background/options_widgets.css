@@ -45,14 +45,14 @@ select {
 button:not(.custom-appearance):not(.link-button),
 input[type='button']:not(.custom-appearance):not(.link-button),
 input[type='submit']:not(.custom-appearance):not(.link-button) {
-  -webkit-padding-end: 10px;
-  -webkit-padding-start: 10px;
+  padding-inline-end: 10px;
+  padding-inline-start: 10px;
 }
 
 select {
   -webkit-appearance: none;
-  -webkit-padding-end: 20px;
-  -webkit-padding-start: 6px;
+  padding-inline-end: 20px;
+  padding-inline-start: 6px;
   /* OVERRIDE */
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAYAAAAbQcSUAAAAWklEQVQokWNgoAOIAuI0PDiKaJMSgYCZmfkbkPkfHYPEQfJEG/b//3+FBQsWLGRjY/uJbBCIDxIHyRNtGDYDyTYI3UA+Pr4vFBmEbODbt2+bKDYIyUBWYtQBAIRzRP/XKJ//AAAAAElFTkSuQmCC"),
       -linear-gradient(#ededed, #ededed 38%, #dedede);
@@ -282,7 +282,7 @@ select:enabled:focus {
 
 .checkbox label input ~ span,
 .radio label input ~ span {
-  -webkit-margin-start: 0.6em;
+  margin-block-start: 0.6em;
   /* Make sure long spans wrap at the same horizontal position they start. */
   display: block;
 }

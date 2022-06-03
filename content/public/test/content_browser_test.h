@@ -5,14 +5,11 @@
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -49,7 +46,7 @@ class ContentBrowserTest : public BrowserTestBase {
  private:
   Shell* shell_ = nullptr;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
   // executed (as opposed to executed inside a message loop) would autorelease
   // objects into a higher-level pool. This pool is not recycled in-sync with

@@ -6,11 +6,7 @@ import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 
 assert(enable_vulkan)
-assert(use_x11 || use_ozone)
-
-config("vulkan_x11") {
-  defines = [ "VK_USE_PLATFORM_XLIB_KHR" ]
-}
+assert(ozone_platform_x11)
 
 component("x") {
   output_name = "vulkan_x11"
@@ -24,10 +20,8 @@ component("x") {
 
   defines = [ "IS_VULKAN_X11_IMPL" ]
 
-  public_configs = [ ":vulkan_x11" ]
-  configs += [ "//build/config/linux:x11" ]
-
   deps = [
+    "//ui/base/x",
     "//ui/events/platform/x11",
     "//ui/gfx",
     "//ui/gfx/x",
@@ -38,9 +32,9 @@ component("x") {
     "//gpu/vulkan",
   ]
 
-  # Vulkan Swiftshader can only be built on Linux.
-  # TODO(samans): Support more platforms. https://crbug.com/963988
-  data_deps = [
-    "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
-  ]
+  if (enable_swiftshader_vulkan) {
+    # Vulkan Swiftshader can only be built on Linux.
+    # TODO(samans): Support more platforms. https://crbug.com/963988
+    data_deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
+  }
 }

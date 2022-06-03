@@ -27,46 +27,29 @@
 
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
-
-// In order to conserve memory, the border width uses fixed point,
-// which can be bitpacked.  This fixed point implementation is
-// essentially the same as in LayoutUnit.  Six bits are used for the
-// fraction, which leaves 20 bits for the integer part, making 1048575
-// the largest number.
-
-static const int kBorderWidthFractionalBits = 6;
-static const int kBorderWidthDenominator = 1 << kBorderWidthFractionalBits;
-static const int kMaxForBorderWidth = ((1 << 26) - 1) / kBorderWidthDenominator;
 
 class BorderValue {
   DISALLOW_NEW();
   friend class ComputedStyle;
 
  public:
-  BorderValue()
-      : color_(0),
-        color_is_current_color_(true),
-        style_(static_cast<unsigned>(EBorderStyle::kNone)) {
-    SetWidth(3);
+  BorderValue() : style_(static_cast<unsigned>(EBorderStyle::kNone)) {
+    SetWidth(LayoutUnit(3));
   }
 
-  BorderValue(EBorderStyle style, const StyleColor& color, float width) {
+  BorderValue(EBorderStyle style, const StyleColor& color, LayoutUnit width) {
     SetColor(color);
     SetStyle(style);
     SetWidth(width);
   }
 
-  bool IsTransparent() const {
-    return !color_is_current_color_ && !color_.Alpha();
-  }
-
   bool operator==(const BorderValue& o) const {
-    return width_ == o.width_ && style_ == o.style_ && color_ == o.color_ &&
-           color_is_current_color_ == o.color_is_current_color_;
+    return width_ == o.width_ && style_ == o.style_ && color_ == o.color_;
   }
 
   // The default width is 3px, but if the style is none we compute a value of 0
@@ -83,47 +66,40 @@ class BorderValue {
 
   bool operator!=(const BorderValue& o) const { return !(*this == o); }
 
-  void SetColor(const StyleColor& color) {
-    color_ = color.Resolve(Color());
-    color_is_current_color_ = color.IsCurrentColor();
-  }
+  void SetColor(const StyleColor& color) { color_ = color; }
 
-  StyleColor GetColor() const {
-    return color_is_current_color_ ? StyleColor::CurrentColor()
-                                   : StyleColor(color_);
-  }
+  StyleColor GetColor() const { return color_; }
 
-  float Width() const {
-    return static_cast<float>(width_) / kBorderWidthDenominator;
-  }
-  void SetWidth(float width) { width_ = WidthToFixedPoint(width); }
+  LayoutUnit Width() const { return LayoutUnit::FromRawValue(width_); }
+  void SetWidth(LayoutUnit width) { width_ = ClampToLimitedWidth(width); }
 
   // Since precision is lost with fixed point, comparisons also have
   // to be done in fixed point.
-  bool WidthEquals(float width) const {
-    return WidthToFixedPoint(width) == width_;
-  }
+  bool WidthEquals(LayoutUnit width) const { return width == Width(); }
 
   EBorderStyle Style() const { return static_cast<EBorderStyle>(style_); }
   void SetStyle(EBorderStyle style) { style_ = static_cast<unsigned>(style); }
 
-  bool ColorIsCurrentColor() const { return color_is_current_color_; }
-  void SetColorIsCurrentColor(bool color_is_current_color) {
-    color_is_current_color_ = static_cast<unsigned>(color_is_current_color);
-  }
+  static LayoutUnit MaxWidth() { return LayoutUnit::FromRawValue(kMaxValue); }
 
  protected:
-  static unsigned WidthToFixedPoint(float width) {
+  // In order to conserve memory, the border width uses fixed point, which can
+  // be bitpacked. This fixed point implementation is essentially the same as in
+  // LayoutUnit. Six bits are used for the fraction, which leaves 20 bits for
+  // the integer part, making 1048575.98 the largest number.
+  static constexpr int kMaxValue = (1 << 26) - 1;
+
+  static unsigned ClampToLimitedWidth(LayoutUnit width) {
     DCHECK_GE(width, 0);
     // Avoid min()/max() from std here in the header, because that would require
     // inclusion of <algorithm>, which is slow to compile.
-    if (width > float(kMaxForBorderWidth))
-      width = float(kMaxForBorderWidth);
-    return static_cast<unsigned>(width * kBorderWidthDenominator);
+    int raw_width = width.RawValue();
+    if (raw_width > kMaxValue)
+      raw_width = kMaxValue;
+    return static_cast<unsigned>(raw_width);
   }
 
-  Color color_;
-  unsigned color_is_current_color_ : 1;
+  StyleColor color_;
 
   unsigned width_ : 26;  // Fixed point width
   unsigned style_ : 4;   // EBorderStyle

@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (column spanner) DIV id='target'",
-          "rect": [8, 8, 100, 100],
-          "reason": "background"
-        }
+      "invalidations": [
+        [8, 8, 100, 100]
       ]
     }
   ]

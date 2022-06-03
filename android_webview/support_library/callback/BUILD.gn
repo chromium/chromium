@@ -6,7 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("callback_java") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/support_lib_callback_glue/SupportLibSafeBrowsingResponse.java",
     "java/src/org/chromium/support_lib_callback_glue/SupportLibWebResourceError.java",
     "java/src/org/chromium/support_lib_callback_glue/SupportLibWebViewContentsClientAdapter.java",
@@ -16,5 +16,6 @@ android_library("callback_java") {
     "//android_webview:browser_java",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

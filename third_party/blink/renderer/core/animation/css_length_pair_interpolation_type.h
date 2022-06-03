@@ -21,9 +21,11 @@ class CSSLengthPairInterpolationType : public CSSLengthListInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue& value,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final {
-    const auto& pair = To<CSSValuePair>(value);
+    const auto* pair = DynamicTo<CSSValuePair>(value);
+    if (!pair)
+      return nullptr;
     return ListInterpolationFunctions::CreateList(2, [&pair](size_t index) {
-      const CSSValue& item = index == 0 ? pair.First() : pair.Second();
+      const CSSValue& item = index == 0 ? pair->First() : pair->Second();
       return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(item));
     });
   }

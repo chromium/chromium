@@ -6,15 +6,14 @@
 
 #include <utility>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ui {
 
 KeyboardHookBase::KeyboardHookBase(
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     KeyEventCallback callback)
     : key_event_callback_(std::move(callback)),
       dom_codes_(std::move(dom_codes)) {
@@ -25,6 +24,11 @@ KeyboardHookBase::~KeyboardHookBase() = default;
 
 bool KeyboardHookBase::IsKeyLocked(DomCode dom_code) const {
   return ShouldCaptureKeyEvent(dom_code);
+}
+
+bool KeyboardHookBase::RegisterHook() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool KeyboardHookBase::ShouldCaptureKeyEvent(DomCode dom_code) const {

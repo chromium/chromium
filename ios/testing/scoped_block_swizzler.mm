@@ -4,7 +4,7 @@
 
 #include "ios/testing/scoped_block_swizzler.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,6 +15,21 @@ ScopedBlockSwizzler::ScopedBlockSwizzler(Class target, SEL selector, id block) {
   if (!method_) {
     // Try swizzling a class method instead.
     method_ = class_getClassMethod(target, selector);
+  }
+  DCHECK(method_);
+
+  IMP block_imp = imp_implementationWithBlock(block);
+  original_imp_ = method_setImplementation(method_, block_imp);
+}
+
+ScopedBlockSwizzler::ScopedBlockSwizzler(Class target,
+                                         SEL selector,
+                                         id block,
+                                         BOOL class_method) {
+  if (class_method) {
+    method_ = class_getClassMethod(target, selector);
+  } else {
+    method_ = class_getInstanceMethod(target, selector);
   }
   DCHECK(method_);
 

@@ -11,7 +11,6 @@ import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.os.Trace;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -41,17 +40,6 @@ class WebViewDelegateFactory {
      * See {@link WebViewDelegateFactory} for the reasons why this copy is needed.
      */
     interface WebViewDelegate extends AwDrawFnImpl.DrawFnAccess {
-        /** @see android.webkit.WebViewDelegate.OnTraceEnabledChangeListener */
-        interface OnTraceEnabledChangeListener {
-            void onTraceEnabledChange(boolean enabled);
-        }
-
-        /** @see android.webkit.WebViewDelegate#setOnTraceEnabledChangeListener */
-        void setOnTraceEnabledChangeListener(final OnTraceEnabledChangeListener listener);
-
-        /** @see android.webkit.WebViewDelegate#isTraceTagEnabled */
-        boolean isTraceTagEnabled();
-
         /** @see android.webkit.WebViewDelegate#canInvokeDrawGlFunctor */
         boolean canInvokeDrawGlFunctor(View containerView);
 
@@ -88,6 +76,9 @@ class WebViewDelegateFactory {
 
         /** @see android.webkit.WebViewDelegate#getDataDirectorySuffix */
         String getDataDirectorySuffix();
+
+        /** @see android.webkit.WebViewDelegate#getTimestamps */
+        public long[] getTimestamps();
     }
 
     /**
@@ -121,22 +112,6 @@ class WebViewDelegateFactory {
 
         ProxyDelegate(android.webkit.WebViewDelegate delegate) {
             mDelegate = delegate;
-        }
-
-        @Override
-        public void setOnTraceEnabledChangeListener(final OnTraceEnabledChangeListener listener) {
-            mDelegate.setOnTraceEnabledChangeListener(
-                    new android.webkit.WebViewDelegate.OnTraceEnabledChangeListener() {
-                        @Override
-                        public void onTraceEnabledChange(boolean enabled) {
-                            listener.onTraceEnabledChange(enabled);
-                        }
-                    });
-        }
-
-        @Override
-        public boolean isTraceTagEnabled() {
-            return mDelegate.isTraceTagEnabled();
         }
 
         @Override
@@ -220,6 +195,11 @@ class WebViewDelegateFactory {
         public void drawWebViewFunctor(Canvas canvas, int functor) {
             mDelegate.drawWebViewFunctor(canvas, functor);
         }
+
+        @Override
+        public long[] getTimestamps() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -234,12 +214,7 @@ class WebViewDelegateFactory {
      * framework.
      */
     private static class Api21CompatibilityDelegate implements WebViewDelegate {
-        /** Copy of Trace.TRACE_TAG_WEBVIEW */
-        private static final long TRACE_TAG_WEBVIEW = 1L << 4;
-
         /** Hidden APIs released in the API 21 version of the framework */
-        private final Method mIsTagEnabledMethod;
-        private final Method mAddChangeCallbackMethod;
         private final Method mGetViewRootImplMethod;
         private final Method mInvokeFunctorMethod;
         private final Method mCallDrawGLFunctionMethod;
@@ -255,9 +230,6 @@ class WebViewDelegateFactory {
                 // Important: This reflection essentially defines a snapshot of some hidden APIs
                 // at version 21 of the framework for compatibility reasons, and the reflection
                 // should not be changed even if those hidden APIs change in future releases.
-                mIsTagEnabledMethod = Trace.class.getMethod("isTagEnabled", long.class);
-                mAddChangeCallbackMethod = Class.forName("android.os.SystemProperties")
-                                                   .getMethod("addChangeCallback", Runnable.class);
                 mGetViewRootImplMethod = View.class.getMethod("getViewRootImpl");
                 mInvokeFunctorMethod =
                         Class.forName("android.view.ViewRootImpl")
@@ -275,29 +247,6 @@ class WebViewDelegateFactory {
                                            .getMethod("getString", int.class, Context.class);
                 mGetLoadedPackageInfoMethod = Class.forName("android.webkit.WebViewFactory")
                                                       .getMethod("getLoadedPackageInfo");
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid reflection", e);
-            }
-        }
-
-        @Override
-        public void setOnTraceEnabledChangeListener(final OnTraceEnabledChangeListener listener) {
-            try {
-                mAddChangeCallbackMethod.invoke(null, new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onTraceEnabledChange(isTraceTagEnabled());
-                    }
-                });
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid reflection", e);
-            }
-        }
-
-        @Override
-        public boolean isTraceTagEnabled() {
-            try {
-                return ((Boolean) mIsTagEnabledMethod.invoke(null, TRACE_TAG_WEBVIEW));
             } catch (Exception e) {
                 throw new RuntimeException("Invalid reflection", e);
             }
@@ -418,6 +367,11 @@ class WebViewDelegateFactory {
         @Override
         public void drawWebViewFunctor(Canvas canvas, int functor) {
             throw new RuntimeException();
+        }
+
+        @Override
+        public long[] getTimestamps() {
+            throw new UnsupportedOperationException();
         }
     }
 }

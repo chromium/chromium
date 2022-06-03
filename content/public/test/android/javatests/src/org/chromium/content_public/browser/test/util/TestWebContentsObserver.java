@@ -4,11 +4,14 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
+import org.chromium.url.GURL;
 
 /**
  * The default WebContentsObserver used by ContentView tests. The below callbacks can be
@@ -18,12 +21,14 @@ public class TestWebContentsObserver extends WebContentsObserver {
     private final OnPageStartedHelper mOnPageStartedHelper;
     private final OnPageFinishedHelper mOnPageFinishedHelper;
     private final OnReceivedErrorHelper mOnReceivedErrorHelper;
+    private final CallbackHelper mOnFirstVisuallyNonEmptyPaintHelper;
 
     public TestWebContentsObserver(WebContents webContents) {
         super(webContents);
         mOnPageStartedHelper = new OnPageStartedHelper();
         mOnPageFinishedHelper = new OnPageFinishedHelper();
         mOnReceivedErrorHelper = new OnReceivedErrorHelper();
+        mOnFirstVisuallyNonEmptyPaintHelper = new CallbackHelper();
     }
 
     public OnPageStartedHelper getOnPageStartedHelper() {
@@ -38,6 +43,10 @@ public class TestWebContentsObserver extends WebContentsObserver {
         return mOnReceivedErrorHelper;
     }
 
+    public CallbackHelper getOnFirstVisuallyNonEmptyPaintHelper() {
+        return mOnFirstVisuallyNonEmptyPaintHelper;
+    }
+
     /**
      * ATTENTION!: When overriding the following methods, be sure to call
      * the corresponding methods in the super class. Otherwise
@@ -45,21 +54,27 @@ public class TestWebContentsObserver extends WebContentsObserver {
      * stop working!
      */
     @Override
-    public void didStartLoading(String url) {
+    public void didStartLoading(GURL url) {
         super.didStartLoading(url);
-        mOnPageStartedHelper.notifyCalled(url);
+        mOnPageStartedHelper.notifyCalled(url.getPossiblyInvalidSpec());
     }
 
     @Override
-    public void didStopLoading(String url) {
-        super.didStopLoading(url);
-        mOnPageFinishedHelper.notifyCalled(url);
+    public void didStopLoading(GURL url, boolean isKnownValid) {
+        super.didStopLoading(url, isKnownValid);
+        mOnPageFinishedHelper.notifyCalled(url.getPossiblyInvalidSpec());
     }
 
     @Override
-    public void didFailLoad(
-            boolean isMainFrame, int errorCode, String description, String failingUrl) {
-        super.didFailLoad(isMainFrame, errorCode, description, failingUrl);
-        mOnReceivedErrorHelper.notifyCalled(errorCode, description, failingUrl);
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
+            @LifecycleState int frameLifecycleState) {
+        super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
+        mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl.getSpec());
+    }
+
+    @Override
+    public void didFirstVisuallyNonEmptyPaint() {
+        super.didFirstVisuallyNonEmptyPaint();
+        mOnFirstVisuallyNonEmptyPaintHelper.notifyCalled();
     }
 }

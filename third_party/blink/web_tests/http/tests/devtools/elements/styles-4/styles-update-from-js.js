@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that changes to an inline style and ancestor/sibling className from JavaScript are reflected in the Styles pane and Elements tree.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -90,21 +90,21 @@
 
   function waitAndDumpAttributeAndStyles(next, id) {
     id = id || 'container';
-    function callback() {
-      dumpAttributeAndStyles(id);
+    async function callback() {
+      await dumpAttributeAndStyles(id);
       next();
     }
     ElementsTestRunner.waitForStyles(id, callback);
   }
 
-  function dumpAttributeAndStyles(id) {
+  async function dumpAttributeAndStyles(id) {
     var treeElement = findNodeTreeElement(id);
     if (!treeElement) {
       TestRunner.addResult('\'' + id + '\' tree element not found');
       return;
     }
     TestRunner.addResult(treeElement.listItemElement.textContent.replace(/\u200b/g, ''));
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
   }
 
   function findNodeTreeElement(id) {

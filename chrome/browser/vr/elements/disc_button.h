@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_DISC_BUTTON_H_
 #define CHROME_BROWSER_VR_ELEMENTS_DISC_BUTTON_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/vector_icon_button.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -25,15 +22,17 @@ class VR_UI_EXPORT DiscButton : public VectorIconButton {
   DiscButton(base::RepeatingCallback<void()> click_handler,
              const gfx::VectorIcon& icon,
              AudioDelegate* audio_delegate);
+
+  DiscButton(const DiscButton&) = delete;
+  DiscButton& operator=(const DiscButton&) = delete;
+
   ~DiscButton() override;
 
  private:
   void OnSetCornerRadii(const CornerRadii& radii) override;
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                cc::KeyframeModel* keyframe_model) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscButton);
+  void OnSizeAnimated(const gfx::SizeF& size,
+                      int target_property_id,
+                      gfx::KeyframeModel* keyframe_model) override;
 };
 
 }  // namespace vr

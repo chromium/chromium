@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/completion_event.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -49,6 +52,8 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
+  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/false);
+  EXPECT_EQ(1, host->SourceFrameNumber());
   host->CommitComplete();
   EXPECT_EQ(1, host->SourceFrameNumber());
 
@@ -67,7 +72,11 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   std::unique_ptr<FakePictureLayerImpl> layer_impl =
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1);
 
-  layer->PushPropertiesTo(layer_impl.get());
+  // Here and elsewhere: when doing a full commit, we would call
+  // layer_tree_host_->ActivateCommitState() and the second argument would come
+  // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
+  // just to keep the test code simple.
+  layer->PushPropertiesTo(layer_impl.get(), *host->pending_commit_state());
   EXPECT_FALSE(layer_impl->CanHaveTilings());
   EXPECT_TRUE(layer_impl->bounds() == gfx::Size(0, 0));
   EXPECT_EQ(gfx::Size(), layer_impl->raster_source()->GetSize());
@@ -95,7 +104,6 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
   layer->SetNeedsDisplayRect(invalidation_bounds);
   layer->Update();
 
-  host->CommitComplete();
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d());
@@ -109,7 +117,7 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl);
+  layer->PushPropertiesTo(layer_impl, *host->pending_commit_state());
 
   EXPECT_EQ(invalidation_bounds,
             layer_impl->GetPendingInvalidation()->bounds());
@@ -135,7 +143,6 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   // The important line is the following (note that we do not call Update):
   layer->SetNeedsDisplayRect(invalidation_bounds);
 
-  host->CommitComplete();
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d());
@@ -145,11 +152,12 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   host_impl.SetVisible(true);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
   host_impl.CreatePendingTree();
+  host_impl.pending_tree()->set_source_frame_number(host->SourceFrameNumber());
   host_impl.pending_tree()->SetRootLayerForTesting(
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl);
+  layer->PushPropertiesTo(layer_impl, *host->pending_commit_state());
 
   EXPECT_EQ(gfx::Rect(), layer_impl->GetPendingInvalidation()->bounds());
 }
@@ -158,8 +166,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   gfx::Size layer_size(50, 50);
   FakeContentLayerClient client;
   client.set_bounds(layer_size);
-  client.add_draw_image(CreateDiscardablePaintImage(layer_size), gfx::Point(),
-                        PaintFlags());
+  client.add_draw_image(CreateDiscardablePaintImage(layer_size), gfx::Point());
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(10, 10));
 
@@ -173,6 +180,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
+  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/false);
   host->CommitComplete();
   EXPECT_EQ(1, host->SourceFrameNumber());
 
@@ -196,9 +204,11 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   SetupRootProperties(layer_impl);
   UpdateDrawProperties(host_impl.pending_tree());
 
-  layer->PushPropertiesTo(layer_impl);
-
+  auto* commit_state =
+      host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
+  layer->PushPropertiesTo(layer_impl, *commit_state);
   host->CommitComplete();
+
   EXPECT_EQ(2, host->SourceFrameNumber());
 
   host_impl.ActivateSyncTree();
@@ -215,12 +225,12 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   // We should now have invalid contents and should therefore clear the
   // recording source.
-  layer->PushPropertiesTo(layer_impl);
+  layer->PushPropertiesTo(layer_impl, *host->pending_commit_state());
   UpdateDrawProperties(host_impl.pending_tree());
 
   host_impl.ActivateSyncTree();
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
@@ -277,13 +287,13 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   // Do a main frame, record the picture layers.
   EXPECT_EQ(0, layer->update_count());
   layer->SetNeedsDisplay();
-  host1->Composite(base::TimeTicks::Now(), false);
+  host1->CompositeForTest(base::TimeTicks::Now(), false);
   EXPECT_EQ(1, layer->update_count());
   EXPECT_EQ(1, host1->SourceFrameNumber());
 
   // The source frame number in |host1| is now higher than host2.
   layer->SetNeedsDisplay();
-  host1->Composite(base::TimeTicks::Now(), false);
+  host1->CompositeForTest(base::TimeTicks::Now(), false);
   EXPECT_EQ(2, layer->update_count());
   EXPECT_EQ(2, host1->SourceFrameNumber());
 
@@ -294,7 +304,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   // Do a main frame, record the picture layers. The frame number has changed
   // non-monotonically.
   layer->SetNeedsDisplay();
-  host2->Composite(base::TimeTicks::Now(), false);
+  host2->CompositeForTest(base::TimeTicks::Now(), false);
   EXPECT_EQ(3, layer->update_count());
   EXPECT_EQ(1, host2->SourceFrameNumber());
 
@@ -349,7 +359,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   // Do a main frame, record the picture layers.
   EXPECT_EQ(0, layer->update_count());
   layer->SetBounds(gfx::Size(500, 500));
-  host1->Composite(base::TimeTicks::Now(), false);
+  host1->CompositeForTest(base::TimeTicks::Now(), false);
   EXPECT_EQ(1, layer->update_count());
   EXPECT_EQ(1, host1->SourceFrameNumber());
   EXPECT_EQ(gfx::Size(500, 500), layer->bounds());
@@ -367,7 +377,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
 
   // Change its bounds while it's in a state that can't update.
   layer->SetBounds(gfx::Size(600, 600));
-  host2->Composite(base::TimeTicks::Now(), false);
+  host2->CompositeForTest(base::TimeTicks::Now(), false);
 
   // This layer should not have been updated because it is invisible.
   EXPECT_EQ(1, layer->update_count());

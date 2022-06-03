@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/wm/core/capture_controller.h"
-
 #include <memory>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -15,19 +11,20 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/native_widget_factory.h"
-#include "ui/views/test/views_interactive_ui_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_position_client.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/capture_controller.h"
 
 // NOTE: these tests do native capture, so they have to be in
 // interactive_ui_tests.
 
 namespace views {
 
-using DesktopCaptureControllerTest = ViewsInteractiveUITestBase;
+using DesktopCaptureControllerTest = test::DesktopWidgetTestInteractive;
 
 // This class provides functionality to verify whether the View instance
 // received the gesture event.
@@ -35,22 +32,21 @@ class DesktopViewInputTest : public View {
  public:
   DesktopViewInputTest() = default;
 
+  DesktopViewInputTest(const DesktopViewInputTest&) = delete;
+  DesktopViewInputTest& operator=(const DesktopViewInputTest&) = delete;
+
   void OnGestureEvent(ui::GestureEvent* event) override {
     received_gesture_event_ = true;
     return View::OnGestureEvent(event);
   }
 
   // Resets state maintained by this class.
-  void Reset() {
-    received_gesture_event_ = false;
-  }
+  void Reset() { received_gesture_event_ = false; }
 
   bool received_gesture_event() const { return received_gesture_event_; }
 
  private:
   bool received_gesture_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopViewInputTest);
 };
 
 views::Widget* CreateWidget() {
@@ -106,7 +102,7 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
-      params, widget1.get(), test::kStubCapture, nullptr);
+      widget1.get(), test::kStubCapture, nullptr);
   widget1->Init(std::move(params));
   internal::RootView* root1 =
       static_cast<internal::RootView*>(widget1->GetRootView());
@@ -128,7 +124,7 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
-      params, widget2.get(), test::kStubCapture, nullptr);
+      widget2.get(), test::kStubCapture, nullptr);
   widget2->Init(std::move(params));
 
   internal::RootView* root2 =

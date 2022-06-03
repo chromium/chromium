@@ -26,12 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_SECURITY_POLICY_VIOLATION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_SECURITY_POLICY_VIOLATION_EVENT_H_
 
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
-#include "third_party/blink/renderer/core/events/security_policy_violation_event_init.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 
 namespace blink {
+
+class SecurityPolicyViolationEventInit;
 
 class SecurityPolicyViolationEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -70,7 +72,7 @@ class SecurityPolicyViolationEvent final : public Event {
     return event_interface_names::kSecurityPolicyViolationEvent;
   }
 
-  void Trace(blink::Visitor* visitor) override { Event::Trace(visitor); }
+  void Trace(Visitor* visitor) const override { Event::Trace(visitor); }
 
  private:
   String document_uri_;
@@ -79,12 +81,13 @@ class SecurityPolicyViolationEvent final : public Event {
   String violated_directive_;
   String effective_directive_;
   String original_policy_;
-  ContentSecurityPolicyHeaderType disposition_;
+  network::mojom::ContentSecurityPolicyType disposition_ =
+      network::mojom::ContentSecurityPolicyType::kEnforce;
   String source_file_;
   String sample_;
-  int line_number_;
-  int column_number_;
-  uint16_t status_code_;
+  int line_number_ = 0;
+  int column_number_ = 0;
+  uint16_t status_code_ = 0;
 };
 
 }  // namespace blink

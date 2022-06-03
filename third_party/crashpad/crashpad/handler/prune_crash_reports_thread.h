@@ -17,7 +17,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "util/thread/stoppable.h"
 #include "util/thread/worker_thread.h"
 
@@ -41,6 +40,10 @@ class PruneCrashReportThread : public WorkerThread::Delegate, public Stoppable {
   //!     pruning.
   PruneCrashReportThread(CrashReportDatabase* database,
                          std::unique_ptr<PruneCondition> condition);
+
+  PruneCrashReportThread(const PruneCrashReportThread&) = delete;
+  PruneCrashReportThread& operator=(const PruneCrashReportThread&) = delete;
+
   ~PruneCrashReportThread();
 
   // Stoppable:
@@ -70,8 +73,6 @@ class PruneCrashReportThread : public WorkerThread::Delegate, public Stoppable {
   WorkerThread thread_;
   std::unique_ptr<PruneCondition> condition_;
   CrashReportDatabase* database_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(PruneCrashReportThread);
 };
 
 }  // namespace crashpad

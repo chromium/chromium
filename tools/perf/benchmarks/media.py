@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from core import perf_benchmark
+from core import platforms
 
 from telemetry import benchmark
 from telemetry import story
@@ -47,9 +48,13 @@ class _MediaBenchmark(perf_benchmark.PerfBenchmark):
 
 @benchmark.Info(emails=['dalecurtis@chromium.org'],
                 component='Internals>Media',
-                documentation_url='https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
+                documentation_url='https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
 class MediaDesktop(_MediaBenchmark):
   """Obtains media performance for key user scenarios on desktop."""
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
 
   def CreateStorySet(self, options):
@@ -63,11 +68,20 @@ class MediaDesktop(_MediaBenchmark):
 # If any story is failing on svelte, please only disable on svelte.
 @benchmark.Info(emails=['dalecurtis@chromium.org'],
                 component='Internals>Media',
-                documentation_url='https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
+                documentation_url='https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
 class MediaMobile(_MediaBenchmark):
   """Obtains media performance for key user scenarios on mobile devices."""
 
-  SUPPORTED_PLATFORMS = [story.expectations.ANDROID_NOT_WEBVIEW]
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [
+      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO
+  ]
+  SUPPORTED_PLATFORMS = [
+      story.expectations.ANDROID_NOT_WEBVIEW,
+      story.expectations.FUCHSIA_WEB_ENGINE_SHELL
+  ]
 
   def CreateStorySet(self, options):
     return page_sets.MediaCasesMobileStorySet()
@@ -82,3 +96,7 @@ class MediaMobile(_MediaBenchmark):
     # The following option works around that.
     options.AppendExtraBrowserArgs(
         ['--autoplay-policy=no-user-gesture-required'])
+    # Force online state for the offline indicator so it doesn't show and affect
+    # the benchmarks on bots, which are offline by default.
+    options.AppendExtraBrowserArgs(
+        '--force-online-connection-state-for-indicator')

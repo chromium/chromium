@@ -13,8 +13,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -193,6 +193,9 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
         next_tracker_id_(kSyncRootTrackerID + 1),
         next_file_id_number_(1),
         next_md5_sequence_number_(1) {}
+
+  MetadataDatabaseTest(const MetadataDatabaseTest&) = delete;
+  MetadataDatabaseTest& operator=(const MetadataDatabaseTest&) = delete;
 
   virtual ~MetadataDatabaseTest() {}
 
@@ -625,7 +628,7 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
 
  private:
   base::ScopedTempDir database_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<leveldb::Env> in_memory_env_;
   std::unique_ptr<MetadataDatabase> metadata_database_;
@@ -634,8 +637,6 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
   int64_t next_tracker_id_;
   int64_t next_file_id_number_;
   int64_t next_md5_sequence_number_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(MetadataDatabaseTestWithIndexesOnDisk,
@@ -1161,7 +1162,7 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
 
   std::unique_ptr<base::ListValue> files =
       metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files->GetSize());
+  ASSERT_EQ(2u, files->GetList().size());
 
   base::DictionaryValue* file = nullptr;
   std::string str;

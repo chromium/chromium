@@ -87,9 +87,9 @@ needed to associate the device with the correct domain. The email is sent from
 the Device Management (DM) Server to Chrome in the
 [username field of the PolicyData message](https://cs.chromium.org/chromium/src/components/policy/proto/device_management_backend.proto?rcl=d477c3a9479cbebc4c7c36b7b89d641abda404a2&l=448)
 during device
-[policy fetch](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/enrollment_handler_chromeos.cc?l=316&rcl=176048587047ce83551542b20d973b2ff698cc5f).
+[policy fetch](https://cs.chromium.org/chromium/src/chrome/browser/ash/policy/enrollment/enrollment_handler.cc?l=316&rcl=176048587047ce83551542b20d973b2ff698cc5f).
 The domain name is extracted
-[here](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/enrollment_handler_chromeos.cc?rcl=d477c3a9479cbebc4c7c36b7b89d641abda404a2&l=576).
+[here](https://cs.chromium.org/chromium/src/chrome/browser/ash/policy/enrollment/enrollment_handler.cc?rcl=d477c3a9479cbebc4c7c36b7b89d641abda404a2&l=576).
 
 There is no need to determine the user’s password.
 

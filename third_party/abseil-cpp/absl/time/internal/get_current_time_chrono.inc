@@ -16,6 +16,7 @@
 #include <cstdint>
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 
 static int64_t GetCurrentTimeNanosFromSystem() {
@@ -26,4 +27,5 @@ static int64_t GetCurrentTimeNanosFromSystem() {
 }
 
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

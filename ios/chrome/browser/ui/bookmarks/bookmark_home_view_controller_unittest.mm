@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
@@ -20,12 +19,10 @@ using BookmarkHomeViewControllerTest = BookmarkIOSUnitTest;
 TEST_F(BookmarkHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
-    BookmarkHomeViewController* controller = [[BookmarkHomeViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()
-                  dispatcher:nil
-                webStateList:nullptr];
+    BookmarkHomeViewController* controller =
+        [[BookmarkHomeViewController alloc] initWithBrowser:browser_.get()];
 
-    [controller setRootNode:_bookmarkModel->mobile_node()];
+    [controller setRootNode:bookmark_model_->mobile_node()];
     // Two sections: Messages and Bookmarks.
     EXPECT_EQ(2, [controller numberOfSectionsInTableView:controller.tableView]);
   }

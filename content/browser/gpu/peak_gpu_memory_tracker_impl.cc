@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -16,18 +19,114 @@
 
 namespace content {
 
+namespace {
+
+// These count values should be recalculated in case of changes to the number
+// of values in their respective enums.
+constexpr int kUsageTypeCount =
+    static_cast<int>(PeakGpuMemoryTracker::Usage::USAGE_MAX) + 1;
+constexpr int kAllocationSourceTypeCount =
+    static_cast<int>(gpu::GpuPeakMemoryAllocationSource::
+                         GPU_PEAK_MEMORY_ALLOCATION_SOURCE_MAX) +
+    1;
+constexpr int kAllocationSourceHistogramIndex =
+    kUsageTypeCount * kAllocationSourceTypeCount;
+
+// Histogram values based on MEMORY_METRICS_HISTOGRAM_MB, allowing this to match
+// Memory.Gpu.PrivateMemoryFootprint. Previously this was reported in KB, with a
+// maximum of 500 MB. However that maximum is too low for Mac.
+constexpr int kMemoryHistogramMin = 1;
+constexpr int kMemoryHistogramMax = 64000;
+constexpr int kMemoryHistogramBucketCount = 100;
+
+constexpr const char* GetUsageName(PeakGpuMemoryTracker::Usage usage) {
+  switch (usage) {
+    case PeakGpuMemoryTracker::Usage::CHANGE_TAB:
+      return "ChangeTab";
+    case PeakGpuMemoryTracker::Usage::PAGE_LOAD:
+      return "PageLoad";
+    case PeakGpuMemoryTracker::Usage::SCROLL:
+      return "Scroll";
+  }
+}
+
+constexpr const char* GetAllocationSourceName(
+    gpu::GpuPeakMemoryAllocationSource source) {
+  switch (source) {
+    case gpu::GpuPeakMemoryAllocationSource::UNKNOWN:
+      return "Unknown";
+    case gpu::GpuPeakMemoryAllocationSource::COMMAND_BUFFER:
+      return "CommandBuffer";
+    case gpu::GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE:
+      return "SharedContextState";
+    case gpu::GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB:
+      return "SharedImageStub";
+    case gpu::GpuPeakMemoryAllocationSource::SKIA:
+      return "Skia";
+  }
+}
+
+std::string GetPeakMemoryUsageUMAName(PeakGpuMemoryTracker::Usage usage) {
+  return base::StrCat({"Memory.GPU.PeakMemoryUsage2.", GetUsageName(usage)});
+}
+
+std::string GetPeakMemoryAllocationSourceUMAName(
+    PeakGpuMemoryTracker::Usage usage,
+    gpu::GpuPeakMemoryAllocationSource source) {
+  return base::StrCat({"Memory.GPU.PeakMemoryAllocationSource2.",
+                       GetUsageName(usage), ".",
+                       GetAllocationSourceName(source)});
+}
+
+// Callback provided to the GpuService, which will be notified of the
+// |peak_memory| used. This will then report that to UMA Histograms, for the
+// requested |usage|. Some tests may provide an optional |testing_callback| in
+// order to sync tests with the work done here on the IO thread.
+void PeakMemoryCallback(PeakGpuMemoryTracker::Usage usage,
+                        base::OnceClosure testing_callback,
+                        const uint64_t peak_memory,
+                        const base::flat_map<gpu::GpuPeakMemoryAllocationSource,
+                                             uint64_t>& allocation_per_source) {
+  uint64_t memory_in_mb = peak_memory / 1048576u;
+  STATIC_HISTOGRAM_POINTER_GROUP(
+      GetPeakMemoryUsageUMAName(usage), static_cast<int>(usage),
+      kUsageTypeCount, Add(memory_in_mb),
+      base::Histogram::FactoryGet(
+          GetPeakMemoryUsageUMAName(usage), kMemoryHistogramMin,
+          kMemoryHistogramMax, kMemoryHistogramBucketCount,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+
+  for (auto& source : allocation_per_source) {
+    uint64_t source_memory_in_mb = source.second / 1048576u;
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        GetPeakMemoryAllocationSourceUMAName(usage, source.first),
+        static_cast<int>(usage) * kAllocationSourceTypeCount +
+            static_cast<int>(source.first),
+        kAllocationSourceHistogramIndex, Add(source_memory_in_mb),
+        base::Histogram::FactoryGet(
+            GetPeakMemoryAllocationSourceUMAName(usage, source.first),
+            kMemoryHistogramMin, kMemoryHistogramMax,
+            kMemoryHistogramBucketCount,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+  }
+
+  std::move(testing_callback).Run();
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<PeakGpuMemoryTracker> PeakGpuMemoryTracker::Create(
-    PeakMemoryCallback callback) {
-  return std::make_unique<PeakGpuMemoryTrackerImpl>(std::move(callback));
+    PeakGpuMemoryTracker::Usage usage) {
+  return std::make_unique<PeakGpuMemoryTrackerImpl>(usage);
 }
 
 // static
 uint32_t PeakGpuMemoryTrackerImpl::next_sequence_number_ = 0;
 
-PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(PeakMemoryCallback callback)
-    : callback_(std::move(callback)),
-      callback_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(
+    PeakGpuMemoryTracker::Usage usage)
+    : usage_(usage) {
   // Actually performs request to GPU service to begin memory tracking for
   // |sequence_number_|. This will normally be created from the UI thread, so
   // repost to the IO thread.
@@ -48,46 +147,45 @@ PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(PeakMemoryCallback callback)
 }
 
 PeakGpuMemoryTrackerImpl::~PeakGpuMemoryTrackerImpl() {
-  // The reply arrives on the IO Thread, repost to the callback's thread.
-  auto wrap_callback = base::BindOnce(
-      [](base::SingleThreadTaskRunner* task_runner, PeakMemoryCallback callback,
-         const uint64_t peak_memory) {
-        if (callback.is_null())
-          return;
-        task_runner->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(callback), peak_memory));
-      },
-      base::RetainedRef(std::move(callback_task_runner_)),
-      std::move(callback_));
+  if (canceled_)
+    return;
 
   GpuProcessHost::CallOnIO(
       GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
       base::BindOnce(
-          [](uint32_t sequence_num, PeakMemoryCallback callback,
-             GpuProcessHost* host) {
+          [](uint32_t sequence_num, PeakGpuMemoryTracker::Usage usage,
+             base::OnceClosure testing_callback, GpuProcessHost* host) {
             // There may be no host nor service available. This may occur during
             // shutdown, when the service is fully disabled, and in some tests.
-            // In those cases run the callback, reporting 0 memory usage. This
-            // will signify a failure state, and allow for the callback to
-            // perform any needed cleanup.
+            // In those cases there is nothing to report to UMA. However we
+            // still run the optional testing callback.
             if (!host) {
-              std::move(callback).Run(0u);
+              std::move(testing_callback).Run();
               return;
             }
             if (auto* gpu_service = host->gpu_service()) {
-              gpu_service->GetPeakMemoryUsage(sequence_num,
-                                              std::move(callback));
+              gpu_service->GetPeakMemoryUsage(
+                  sequence_num, base::BindOnce(&PeakMemoryCallback, usage,
+                                               std::move(testing_callback)));
             }
           },
-          sequence_num_, std::move(wrap_callback)));
+          sequence_num_, usage_,
+          std::move(post_gpu_service_callback_for_testing_)));
 }
 
 void PeakGpuMemoryTrackerImpl::Cancel() {
-  callback_ = PeakMemoryCallback();
-}
-
-void PeakGpuMemoryTrackerImpl::SetCallback(PeakMemoryCallback callback) {
-  callback_ = std::move(callback);
+  canceled_ = true;
+  // Notify the GpuProcessHost that we are done observing this sequence.
+  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
+                           base::BindOnce(
+                               [](uint32_t sequence_num, GpuProcessHost* host) {
+                                 if (!host)
+                                   return;
+                                 if (auto* gpu_service = host->gpu_service())
+                                   gpu_service->GetPeakMemoryUsage(
+                                       sequence_num, base::DoNothing());
+                               },
+                               sequence_num_));
 }
 
 }  // namespace content

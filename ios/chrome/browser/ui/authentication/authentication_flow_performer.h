@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
 
-#include <string>
 
 #import <UIKit/UIKit.h>
 
@@ -14,11 +13,8 @@
 
 class Browser;
 @protocol BrowsingDataCommands;
-@class ChromeIdentity;
-
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
+@class ChromeIdentity;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
 @interface AuthenticationFlowPerformer : NSObject
@@ -30,28 +26,28 @@ class ChromeBrowserState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Cancels any outstanding work and dismisses an alert view (if shown).
-- (void)cancelAndDismiss;
+// Cancels any outstanding work and dismisses an alert view (if shown) using
+// animation if |animated| is true.
+- (void)cancelAndDismissAnimated:(BOOL)animated;
 
 // Starts sync for |browserState|.
-- (void)commitSyncForBrowserState:(ios::ChromeBrowserState*)browserState;
+- (void)commitSyncForBrowserState:(ChromeBrowserState*)browserState;
 
 // Fetches the managed status for |identity|.
-- (void)fetchManagedStatus:(ios::ChromeBrowserState*)browserState
+- (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(ChromeIdentity*)identity;
 
 // Signs |identity| with |hostedDomain| into |browserState|.
 - (void)signInIdentity:(ChromeIdentity*)identity
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ios::ChromeBrowserState*)browserState;
+        toBrowserState:(ChromeBrowserState*)browserState;
 
 // Signs out of |browserState| and sends |didSignOut| to the delegate when
 // complete.
-- (void)signOutBrowserState:(ios::ChromeBrowserState*)browserState;
+- (void)signOutBrowserState:(ChromeBrowserState*)browserState;
 
 // Immediately signs out |browserState| without waiting for dependent services.
-- (void)signOutImmediatelyFromBrowserState:
-    (ios::ChromeBrowserState*)browserState;
+- (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState;
 
 // Asks the user whether to clear or merge their previous identity's data with
 // that of |identity| or cancel sign-in, sending |didChooseClearDataPolicy:|
@@ -70,18 +66,19 @@ class ChromeBrowserState;
 // Determines whether the user must decide what to do with |identity|'s browsing
 // data before signing into |browserState|.
 - (BOOL)shouldHandleMergeCaseForIdentity:(ChromeIdentity*)identity
-                            browserState:(ios::ChromeBrowserState*)browserState;
+                            browserState:(ChromeBrowserState*)browserState;
 
 // Shows a confirmation dialog for signing in to an account managed by
 // |hostedDomain|.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
-                                viewController:
-                                    (UIViewController*)viewController;
+                                viewController:(UIViewController*)viewController
+                                       browser:(Browser*)browser;
 
 // Shows |error| to the user and calls |callback| on dismiss.
 - (void)showAuthenticationError:(NSError*)error
                  withCompletion:(ProceduralBlock)callback
-                 viewController:(UIViewController*)viewController;
+                 viewController:(UIViewController*)viewController
+                        browser:(Browser*)browser;
 
 @property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>
     delegate;

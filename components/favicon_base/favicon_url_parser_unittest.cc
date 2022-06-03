@@ -6,31 +6,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/favicon_base/favicon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/layout.h"
 
 class FaviconUrlParserTest : public testing::Test {
  public:
-  FaviconUrlParserTest() {
-    // Set the supported scale factors because the supported scale factors
-    // affect the result of ParsePathAndScale().
-    std::vector<ui::ScaleFactor> supported_scale_factors;
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_140P);
-    scoped_set_supported_scale_factors_.reset(
-        new ui::test::ScopedSetSupportedScaleFactors(supported_scale_factors));
-  }
+  FaviconUrlParserTest() = default;
 
-  ~FaviconUrlParserTest() override {}
+  FaviconUrlParserTest(const FaviconUrlParserTest&) = delete;
+  FaviconUrlParserTest& operator=(const FaviconUrlParserTest&) = delete;
 
- private:
-  typedef std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>
-      ScopedSetSupportedScaleFactors;
-  ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUrlParserTest);
+  ~FaviconUrlParserTest() override = default;
 };
 
 // Test parsing path with no extra parameters.
@@ -70,8 +56,8 @@ TEST_F(FaviconUrlParserTest, LegacyParsingSizeParam) {
   EXPECT_EQ(32, parsed.size_in_dip);
   EXPECT_EQ(1.4f, parsed.device_scale_factor);
 
-  // Test that we pick the ui::ScaleFactor which is closest to the passed in
-  // scale factor.
+  // Test that we pick the ui::ResourceScaleFactor which is closest to the
+  // passed in scale factor.
   const std::string path4 = "size/16@1.41x/" + url;
   EXPECT_TRUE(chrome::ParseFaviconPath(
       path4, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));

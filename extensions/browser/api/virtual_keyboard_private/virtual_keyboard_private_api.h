@@ -140,6 +140,19 @@ class VirtualKeyboardPrivateOpenSettingsFunction
   ResponseAction Run() override;
 };
 
+class VirtualKeyboardPrivateOpenSuggestionSettingsFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.openSuggestionSettings",
+                             VIRTUALKEYBOARDPRIVATE_OPENSUGGESTIONSETTINGS)
+
+ protected:
+  ~VirtualKeyboardPrivateOpenSuggestionSettingsFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class VirtualKeyboardPrivateSetContainerBehaviorFunction
     : public VirtualKeyboardPrivateFunction {
  public:
@@ -216,6 +229,61 @@ class VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction
 
  protected:
   ~VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction() override {}
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class VirtualKeyboardPrivateSetWindowBoundsInScreenFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.setWindowBoundsInScreen",
+                             VIRTUALKEYBOARDPRIVATE_SETWINDOWBOUNDSINSCREEN)
+
+ protected:
+  ~VirtualKeyboardPrivateSetWindowBoundsInScreenFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class VirtualKeyboardPrivateGetClipboardHistoryFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.getClipboardHistory",
+                             VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY)
+
+ protected:
+  ~VirtualKeyboardPrivateGetClipboardHistoryFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnGetClipboardHistory(base::Value results);
+};
+
+class VirtualKeyboardPrivatePasteClipboardItemFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.pasteClipboardItem",
+                             VIRTUALKEYBOARDPRIVATE_PASTECLIPBOARDITEM)
+
+ protected:
+  ~VirtualKeyboardPrivatePasteClipboardItemFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class VirtualKeyboardPrivateDeleteClipboardItemFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.deleteClipboardItem",
+                             VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM)
+
+ protected:
+  ~VirtualKeyboardPrivateDeleteClipboardItemFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;

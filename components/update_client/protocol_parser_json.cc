@@ -17,6 +17,11 @@ namespace update_client {
 
 namespace {
 
+std::string GetValueString(const base::Value& node, const char* key) {
+  const auto* value = node.FindKey(key);
+  return (value && value->is_string()) ? value->GetString() : std::string();
+}
+
 bool ParseManifest(const base::Value& manifest_node,
                    ProtocolParser::Result* result,
                    std::string* error) {
@@ -47,6 +52,9 @@ bool ParseManifest(const base::Value& manifest_node,
     }
   }
 
+  result->manifest.run = GetValueString(manifest_node, "run");
+  result->manifest.arguments = GetValueString(manifest_node, "arguments");
+
   const auto* packages_node = manifest_node.FindKey("packages");
   if (!packages_node || !packages_node->is_dict()) {
     *error = "Missing packages in manifest or 'packages' is not a dictionary.";
@@ -71,17 +79,10 @@ bool ParseManifest(const base::Value& manifest_node,
     }
     p.name = name->GetString();
 
-    const auto* namediff = package.FindKey("namediff");
-    if (namediff && namediff->is_string())
-      p.namediff = namediff->GetString();
-
-    const auto* fingerprint = package.FindKey("fp");
-    if (fingerprint && fingerprint->is_string())
-      p.fingerprint = fingerprint->GetString();
-
-    const auto* hash_sha256 = package.FindKey("hash_sha256");
-    if (hash_sha256 && hash_sha256->is_string())
-      p.hash_sha256 = hash_sha256->GetString();
+    p.namediff = GetValueString(package, "namediff");
+    p.fingerprint = GetValueString(package, "fp");
+    p.hash_sha256 = GetValueString(package, "hash_sha256");
+    p.hashdiff_sha256 = GetValueString(package, "hashdiff_sha256");
 
     const auto* size = package.FindKey("size");
     if (size && (size->is_int() || size->is_double())) {
@@ -89,10 +90,6 @@ bool ParseManifest(const base::Value& manifest_node,
       if (0 <= val && val < kProtocolMaxInt)
         p.size = size->GetDouble();
     }
-
-    const auto* hashdiff_sha256 = package.FindKey("hashdiff_sha256");
-    if (hashdiff_sha256 && hashdiff_sha256->is_string())
-      p.hashdiff_sha256 = hashdiff_sha256->GetString();
 
     const auto* sizediff = package.FindKey("sizediff");
     if (sizediff && (sizediff->is_int() || sizediff->is_double())) {
@@ -120,9 +117,7 @@ void ParseActions(const base::Value& actions_node,
   if (action_list.empty() || !action_list[0].is_dict())
     return;
 
-  const auto* run = action_list[0].FindKey("run");
-  if (run && run->is_string())
-    result->action_run = run->GetString();
+  result->action_run = GetValueString(action_list[0], "run");
 }
 
 bool ParseUrls(const base::Value& urls_node,
@@ -171,6 +166,13 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node,
     *error = "'updatecheck' is not a dictionary.";
     return false;
   }
+
+  for (auto kv : updatecheck_node.DictItems()) {
+    if (kv.first.front() == '_' && kv.second.is_string()) {
+      result->custom_attributes[kv.first] = kv.second.GetString();
+    }
+  }
+
   const auto* status = updatecheck_node.FindKey("status");
   if (!status || !status->is_string()) {
     *error = "Missing status on updatecheck node";
@@ -282,9 +284,9 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     ParseError("Missing secure JSON prefix.");
     return false;
   }
-  const auto doc = base::JSONReader::Read(
-      {response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
-       response_json.end()});
+  const auto doc = base::JSONReader::Read(base::MakeStringPiece(
+      response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
+      response_json.end()));
   if (!doc) {
     ParseError("JSON read error.");
     return false;

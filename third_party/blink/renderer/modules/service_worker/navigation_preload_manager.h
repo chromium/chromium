@@ -27,7 +27,7 @@ class NavigationPreloadManager final : public ScriptWrappable {
                                ExceptionState& exception_state);
   ScriptPromise getState(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   ScriptPromise SetEnabled(bool enable, ScriptState*);

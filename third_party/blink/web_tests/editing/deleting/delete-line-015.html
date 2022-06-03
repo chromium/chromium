@@ -1,28 +1,23 @@
-<html> 
-
-<head>
-<script src="../editing.js"></script>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-function editingTest() {
-    extendSelectionForwardByLineCommand();    
-    deleteCommand(); 
-}
+// This tests deletion of an empty line starting inside a <div> element,
+// but ending outside that element (just before a <br>). If the deletion is
+// successful, the result should have two lines, and the insertion point
+// should be on the second line, at the end of the editable area.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>a</div><div>^<br></div>|<br>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<div>a</div><div>|<br></div>',
+        '</div>',
+    ],
+    'Delete an empty line starting inside a <div>');
 </script>
-</head> 
-
-<body>
-
-<p>This tests deletion of an empty line starting inside a &lt;div&gt; element,
-but ending outside that element (just before a &lt;br&gt;). If the deletion is
-successful, the result should have two lines, and the insertion point
-should be on the second line, at the end of the editable area.</p>
-
-<div contenteditable>
-<div>a</div><div id="test"><br></div><br>
-</div>
-
-</body>
-
-<script>runEditingTest()</script>
-
-</html>

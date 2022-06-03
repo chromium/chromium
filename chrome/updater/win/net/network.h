@@ -7,18 +7,25 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
-#include "chrome/updater/win/net/scoped_hinternet.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/network.h"
+#include "components/winhttp/scoped_hinternet.h"
+
+namespace winhttp {
+class ProxyConfiguration;
+}
 
 namespace updater {
+
+class PolicyService;
 
 // Network fetcher factory for WinHTTP.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  NetworkFetcherFactory();
+  explicit NetworkFetcherFactory(scoped_refptr<PolicyService> policy_service);
+  NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
+  NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 
   std::unique_ptr<update_client::NetworkFetcher> Create() const override;
 
@@ -26,12 +33,11 @@ class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
   ~NetworkFetcherFactory() override;
 
  private:
-  static scoped_hinternet CreateSessionHandle();
-
-  THREAD_CHECKER(thread_checker_);
-  scoped_hinternet session_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherFactory);
+  SEQUENCE_CHECKER(sequence_checker_);
+  // Proxy configuration for WinHTTP should be initialized before
+  // the session handle.
+  scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
+  winhttp::ScopedHInternet session_handle_;
 };
 
 }  // namespace updater

@@ -1,144 +1,9 @@
 <!DOCTYPE html>
-
-<script src="../../../../resources/js-test.js"></script>
-<script>
-  if (window.testRunner && window.eventSender && window.internals) {
-    window.jsTestIsAsync = true;
-    testRunner.waitUntilDone();
-  }
-
-  var horizontalContainer;
-  var verticalContainer;
-
-  var visualViewportContentX = 300;
-  var visualViewportContentY = 300;
-  var scale = 2;
-
-  var fullyScrolled;
-
-  var currentTest = 0;
-  var checkExpectation;
-
-  window.onload = function() {
-    verticalContainer = document.getElementById('vcontainer');
-    horizontalContainer = document.getElementById('hcontainer');
-    fullyScrolled = verticalContainer.scrollHeight - verticalContainer.clientHeight;
-
-    if (window.testRunner && window.eventSender && window.internals) {
-      internals.setPageScaleFactorLimits(1, 4.0);
-      runTest();
-    }
-
-    description('Tests that slow-path flings convert to the scaled coordinate '
-              + 'space correctly. To test manually, pinch zoom into the page '
-              + 'and perform a touchpad fling. If the mouse passes over the '
-              + 'div it should cause it to scroll. If it doesn\'t pass over '
-              + 'the div it shouldn\'t scroll.');
-  }
-
-  var verticalContainerScrollHandler = function() {
-    if (verticalContainer.scrollTop < fullyScrolled)
-      finishedTest();
-  }
-
-  var horizontalContainerScrollHandler = function() {
-    if (horizontalContainer.scrollLeft < fullyScrolled)
-      finishedTest();
-  }
-
-  var setHorizontalContainerScrollsExpectation = function() {
-    horizontalContainer.addEventListener("scroll", horizontalContainerScrollHandler);
-    checkExpectation = function() {
-          shouldNotBe('horizontalContainer.scrollLeft', 'fullyScrolled');
-    }
-  }
-
-  var setVerticalContainerScrollsExpectation = function() {
-    verticalContainer.addEventListener("scroll", verticalContainerScrollHandler);
-    checkExpectation = function() {
-      shouldNotBe('verticalContainer.scrollTop', 'fullyScrolled');
-    }
-  }
-
-  var reset = function() {
-    horizontalContainer.removeEventListener("scroll", horizontalContainerScrollHandler);
-    verticalContainer.removeEventListener("scroll", verticalContainerScrollHandler);
-
-    // Fully scroll both containers.
-    verticalContainer.scrollTop = verticalContainer.scrollHeight;
-    horizontalContainer.scrollLeft = horizontalContainer.scrollWidth;
-
-    checkExpectation = null;
-
-    internals.setPageScaleFactor(scale);
-
-    // Position the visual viewport.
-    eventSender.gestureScrollBegin(0, 0);
-
-    // Start from visual viewport offset (0, 0).
-    eventSender.gestureScrollUpdate(10000, 10000);
-    eventSender.gestureScrollUpdate(-visualViewportContentX*scale,
-                                    -visualViewportContentY*scale);
-    eventSender.gestureScrollEnd(0, 0);
-  }
-
-  var verticalFlingOverContainerTest = function() {
-    debug('Flinging vertically with mouse over container. Container should be scrolled.');
-    var verticalStartX = verticalContainer.offsetLeft + verticalContainer.offsetWidth/2;
-    var verticalStartY = verticalContainer.offsetTop + verticalContainer.offsetHeight/2;
-    var startXInViewport = (verticalStartX - visualViewportContentX)*scale;
-    var startYInViewport = (verticalStartY - visualViewportContentY)*scale;
-    setVerticalContainerScrollsExpectation();
-    eventSender.gestureFlingCancel();
-    eventSender.gestureScrollBegin(startXInViewport, startYInViewport);
-    eventSender.gestureFlingStart(
-      startXInViewport,
-      startYInViewport,
-      0,
-      10000,
-      "touchpad");
-  };
-
-  var horizontalFlingOverContainerTest = function() {
-    debug('Flinging horizontally with mouse over container. Container should be scrolled.');
-    var horizontalStartX = horizontalContainer.offsetLeft + horizontalContainer.offsetWidth/2;
-    var horizontalStartY = horizontalContainer.offsetTop + horizontalContainer.offsetHeight/2;
-    var startXInViewport = (horizontalStartX - visualViewportContentX)*scale;
-    var startYInViewport = (horizontalStartY - visualViewportContentY)*scale;
-    setHorizontalContainerScrollsExpectation();
-    eventSender.gestureFlingCancel();
-    eventSender.gestureScrollBegin(startXInViewport, startYInViewport);
-    eventSender.gestureFlingStart(
-      startXInViewport,
-      startYInViewport,
-      10000,
-      0,
-      "touchpad");
-  };
-
-  var tests = [verticalFlingOverContainerTest, horizontalFlingOverContainerTest];
-
-  var finishedTest = function() {
-    checkExpectation();
-
-    currentTest++;
-    var test = tests[currentTest];
-    if (test === undefined) {
-      finishJSTest();
-    } else {
-      reset();
-      test();
-    }
-  }
-
-  var runTest = function() {
-    reset();
-    tests[currentTest]();
-  }
-</script>
-
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
 <style>
-  .verticalContainer {
+  #vcontainer {
     position: absolute;
     left: 350px;
     top: 0px;
@@ -148,7 +13,7 @@
     overflow-x: hidden;
   }
 
-  .horizontalContainer {
+  #hcontainer {
     position: absolute;
     left: 0px;
     top: 350px;
@@ -158,47 +23,91 @@
     overflow-x: scroll;
 
   }
-  .redbox {
-    width: 50px;
-    height: 50px;
-    background-color: red;
-  }
-  .greenbox {
-    width: 50px;
-    height: 50px;
-    background-color: green;
+  .space {
+    background: linear-gradient(135deg, dodgerblue 0%, green 100%);
+    width: 2000px;
+    height: 2000px;
   }
 </style>
 
-<div class="verticalContainer" id="vcontainer">
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
-  <div class="redbox"></div>
-  <div class="greenbox"></div>
+<div id="vcontainer">
+  <div class="space"></div>
 </div>
-<div class="horizontalContainer" id="hcontainer">
-  <div style="overflow: hidden; width: 650px; height:50px;">
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-    <div style="float: left" class="greenbox"></div>
-    <div style="float: left" class="redbox"></div>
-  </div>
+<div id="hcontainer">
+  <div class="space"></div>
 </div>
+
+<script>
+  // This test originally guarded a regression in touchpad fling event
+  // targeting, see https://crbug.com/423345. Since then, fling is no longer
+  // processed in the renderer so this is less relevant but we still want to
+  // try a touchpad fling. However, gpuBenchmarking.swipe doesn't support fling
+  // on Mac touchpads because it generates a GestureFling event which Mac
+  // doesn't process. Instead, Mac apps continue to receive wheel events from
+  // the OS with momentum phase; gpuBenchmarking doesn't support generating
+  // these kinds of events yet. Thus, on Mac, we'll settle for a simple
+  // touchpad scroll.
+  async function performGesture(test, start_point, direction) {
+    const pixels_to_scroll = 50;
+    if (navigator.platform.indexOf("Mac") != -1) {
+      let delta;
+      // Swipe direction is opposite to scroll direction since it assumes the
+      // direction is of the finger.
+      if (direction == "up") {
+        delta = {x: 0, y: pixels_to_scroll};
+      } else if (direction == "left") {
+        delta = {x: pixels_to_scroll, y: 0};
+      } else {
+        throw new Error("Got an unexpected scroll direction");
+      }
+      await smoothScrollWithXY(delta.x,
+                               delta.y,
+                               start_point.x,
+                               start_point.y,
+                               GestureSourceType.TOUCHPAD_INPUT,
+                               SPEED_INSTANT);
+    } else {
+      await swipe(pixels_to_scroll,
+                  start_point.x,
+                  start_point.y,
+                  direction,
+                  SPEED_INSTANT /*touch_velocity*/,
+                  SPEED_INSTANT /*fling_velocity*/,
+                  GestureSourceType.TOUCHPAD_INPUT);
+    }
+  }
+
+  window.onload = async () => {
+    const verticalContainer = document.getElementById('vcontainer');
+    const horizontalContainer = document.getElementById('hcontainer');
+
+    if (!window.internals) {
+      assert_true(window.internals, "This test requires internals");
+      return;
+    }
+
+    // Zoom and offset the visual viewport. This test ensures hit testing of
+    // scrollers is correct in the presence of a visual viewport transform.
+    internals.setPageScaleFactorLimits(1, 4.0);
+    internals.setPageScaleFactor(2);
+    internals.setVisualViewportOffset(200, 200);
+
+    promise_test(async (test) => {
+      const start_point = pointInElement(verticalContainer, 25, 295);
+      // In a swipe gesture, the direction is the "finger direction", meaning
+      // "up" scrolls the page down.
+      await performGesture(test, start_point, "up");
+
+      assert_greater_than(verticalContainer.scrollTop, 0);
+    }, "Correctly targetted vertical container when zoomed");
+
+    promise_test(async (test) => {
+      const start_point = pointInElement(horizontalContainer, 295, 25);
+      // In a swipe gesture, the direction is the "finger direction", meaning
+      // "left" scrolls the page right.
+      await performGesture(test, start_point, "left");
+
+      assert_greater_than(horizontalContainer.scrollLeft, 0);
+    }, "Correctly targetted horizontal container when zoomed");
+  }
+</script>

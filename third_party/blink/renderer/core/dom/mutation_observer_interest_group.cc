@@ -72,10 +72,6 @@ void MutationObserverInterestGroup::EnqueueMutationRecord(
     MutationRecord* mutation) {
   MutationRecord* mutation_with_null_old_value = nullptr;
 
-  // For investigation of crbug.com/1003733.
-  // If the crashes stop it means there is a GC related issue.
-  ThreadState::GCForbiddenScope gc_forbidden(ThreadState::Current());
-
   for (auto& iter : observers_) {
     MutationObserver* observer = iter.key.Get();
     if (HasOldValue(iter.value)) {
@@ -93,7 +89,7 @@ void MutationObserverInterestGroup::EnqueueMutationRecord(
   }
 }
 
-void MutationObserverInterestGroup::Trace(Visitor* visitor) {
+void MutationObserverInterestGroup::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
 }
 

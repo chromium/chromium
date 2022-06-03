@@ -18,27 +18,23 @@
 
         function init()
         {
+            var videosPresented = allVideosPresentedPromise();
             setSrcByTagName("video", "content/test.ogv");
 
-            var totalCount = document.getElementsByTagName('video').length;
-            var count = totalCount;
-            document.addEventListener("canplaythrough", function () {
-                if (!--count)
-                    setTimeout(function() { changeStyle(); }, 500);
-            }, true);
+            videosPresented.then(changeStyle);
         }
 
-	function changeStyle()
-	{
-	    video1.style.objectFit = 'contain';
-	    video2.style.objectFit = 'cover';
-	    video3.style.objectFit = 'fill';
-	    video4.style.objectFit = 'scale-down';
+        function changeStyle()
+        {
+            video1.style.objectFit = 'contain';
+            video2.style.objectFit = 'cover';
+            video3.style.objectFit = 'fill';
+            video4.style.objectFit = 'scale-down';
 
             if (window.testRunner) {
                 setTimeout(function() { testRunner.notifyDone(); }, 500);
             }
-	}
+        }
     </script>
 
   </head>

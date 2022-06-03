@@ -36,4 +36,4 @@ class HTMLCanvasElementCapture {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_HTML_CANVAS_ELEMENT_CAPTURE_H_

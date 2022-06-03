@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/ios_test_runner_wrapper.gni")
 import("//build/config/ios/rules.gni")
-import("//ios/third_party/firebase/firebase.gni")
+import("//ios/public/provider/chrome/browser/build_config.gni")
 
 template("ios_eg2_test_app_host") {
   ios_app_bundle(target_name) {
@@ -16,42 +17,42 @@ template("ios_eg2_test_app_host") {
       bundle_deps = []
     }
     bundle_deps += [ "//ios/third_party/earl_grey2:app_framework+bundle" ]
-    if (ios_enable_firebase_sdk) {
-      assert(ios_firebase_resources_target != "",
-             "ios_firebase_resources_target must be defined if Firebase SDK " +
-                 "is enabled.")
-      bundle_deps += [ ios_firebase_resources_target ]
+    if (!defined(include_provider_resources)) {
+      include_provider_resources = true
     }
-
+    if (include_provider_resources) {
+      bundle_deps += ios_providers_resources_targets
+    }
     if (!defined(deps)) {
       deps = []
     }
     deps += [ "//ios/third_party/earl_grey2:app_framework+link" ]
-    if (ios_enable_firebase_sdk) {
-      deps += [ "//ios/third_party/firebase" ]
-    }
 
     # Xcode needs the following frameworks installed in the application (and
     # signed) for the XCTest to run, so install them using
     # extra_system_frameworks.
-    _ios_platform_library = "$ios_sdk_platform_path/Developer/Library"
     extra_system_frameworks = [
-      "$_ios_platform_library/Frameworks/XCTest.framework",
+      "$ios_sdk_platform_path/Developer/Library/Frameworks/XCTest.framework",
       "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework",
     ]
+
+    # Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
+    # everything that Xcode copies.
+    if (xcode_version_int >= 1300) {
+      extra_system_frameworks += [
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
+        "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
+      ]
+    }
 
     if (!defined(ldflags)) {
       ldflags = []
     }
     ldflags += [
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@executable_path/Frameworks",
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@loader_path/Frameworks",
+      "-Wl,-rpath,@executable_path/Frameworks",
+      "-Wl,-rpath,@loader_path/Frameworks",
     ]
   }
 }
@@ -68,19 +69,63 @@ template("ios_eg2_test") {
       defined(invoker.deps),
       "deps must be defined for $target_name to include at least one earl grey test file.")
 
-  ios_xcuitest_test(target_name) {
+  _target_name = target_name
+  _test_target = "${target_name}_test"
+  ios_xcuitest_test(_test_target) {
     forward_variables_from(invoker,
                            [
                              "xcode_test_application_name",
                              "xctest_bundle_principal_class",
                              "bundle_deps",
                              "deps",
+                             "data_deps",
                            ])
 
     if (!defined(deps)) {
       deps = []
     }
     deps += [ "//ios/third_party/earl_grey2:test_lib" ]
+
+    # TODO(crbug.com/1056328) Because we change the target name, the subnodes
+    # are going to append with the _test in the naming, which won't be backwards
+    # compatible during migration from iOS recipe to Chromium.
+    output_name = "${_target_name}"
+  }
+
+  ios_test_runner_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "data",
+                             "data_deps",
+                             "deps",
+                             "executable_args",
+                             "retries",
+                             "shards",
+                             "xcode_test_application_name",
+                           ])
+    _root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
+
+    if (!defined(data_deps)) {
+      data_deps = []
+    }
+
+    # Include the top ios_eg2_test target, and the host app
+    data_deps += [ ":${_test_target}" ]
+
+    if (!defined(executable_args)) {
+      executable_args = []
+    }
+
+    # EG2 tests app are bundled as *-Runner.app, while the host app is bundled
+    # as *.app.
+    executable_args += [
+      "--app",
+      "@WrappedPath(${_root_build_dir}/${target_name}-Runner.app)",
+    ]
+    executable_args += [
+      "--host-app",
+      "@WrappedPath(${_root_build_dir}/${xcode_test_application_name}.app)",
+    ]
   }
 }
 

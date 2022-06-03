@@ -25,8 +25,8 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -38,9 +38,7 @@ struct SameSizeAsQualifiedNameImpl
   void* pointers[4];
 };
 
-static_assert(sizeof(QualifiedName::QualifiedNameImpl) ==
-                  sizeof(SameSizeAsQualifiedNameImpl),
-              "QualifiedNameImpl should stay small");
+ASSERT_SIZE(QualifiedName::QualifiedNameImpl, SameSizeAsQualifiedNameImpl);
 
 using QualifiedNameCache =
     HashSet<QualifiedName::QualifiedNameImpl*, QualifiedNameHash>;
@@ -67,8 +65,8 @@ struct QNameComponentsTranslator {
                         unsigned) {
     const QualifiedNameComponents& components = data.components_;
     auto name = QualifiedName::QualifiedNameImpl::Create(
-        AtomicString(components.prefix_), AtomicString(components.local_name_),
-        AtomicString(components.namespace_), data.is_static_);
+        components.prefix_, components.local_name_, components.namespace_,
+        data.is_static_);
     name->AddRef();
     location = name.get();
   }

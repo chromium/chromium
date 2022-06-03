@@ -1,5 +1,0 @@
-Tests that console will NOT contain stack trace for exception thrown when inspector front-end was closed. Bug 109427. https://bugs.webkit.org/show_bug.cgi?id=109427
-
-SUCCESS: message doesn't have stack trace
-TEST COMPLETE.
-

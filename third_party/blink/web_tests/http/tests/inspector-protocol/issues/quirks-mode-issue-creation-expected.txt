@@ -1,0 +1,44 @@
+Tests that Quirks Mode issues are reported.
+Inspector issue: {
+    issue : {
+        code : QuirksModeIssue
+        details : {
+            quirksModeIssueDetails : {
+                documentNodeId : <number>
+                frameId : <string>
+                isLimitedQuirksMode : false
+                loaderId : <string>
+                url : http://127.0.0.1:8000/inspector-protocol/resources/quirks-mode.html
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : QuirksModeIssue
+        details : {
+            quirksModeIssueDetails : {
+                documentNodeId : <number>
+                frameId : <string>
+                isLimitedQuirksMode : true
+                loaderId : <string>
+                url : http://127.0.0.1:8000/inspector-protocol/resources/limited-quirks-mode.html
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : QuirksModeIssue
+        details : {
+            quirksModeIssueDetails : {
+                documentNodeId : <number>
+                frameId : <string>
+                isLimitedQuirksMode : false
+                loaderId : <string>
+                url : http://127.0.0.1:8000/inspector-protocol/resources/quirks-mode.html
+            }
+        }
+    }
+}
+

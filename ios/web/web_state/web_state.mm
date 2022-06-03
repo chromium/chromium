@@ -36,19 +36,21 @@ WebState::OpenURLParams::OpenURLParams(const GURL& url,
                                        ui::PageTransition transition,
                                        bool is_renderer_initiated)
     : OpenURLParams(url,
-                    GURL::EmptyGURL(),
+                    GURL(),
                     referrer,
                     disposition,
                     transition,
                     is_renderer_initiated) {}
 
-WebState::OpenURLParams::OpenURLParams(const OpenURLParams& params)
-    : url(params.url),
-      virtual_url(params.virtual_url),
-      referrer(params.referrer),
-      disposition(params.disposition),
-      transition(params.transition),
-      is_renderer_initiated(params.is_renderer_initiated) {}
+WebState::OpenURLParams::OpenURLParams(const OpenURLParams& params) = default;
+
+WebState::OpenURLParams& WebState::OpenURLParams::operator=(
+    const OpenURLParams& params) = default;
+
+WebState::OpenURLParams::OpenURLParams(OpenURLParams&& params) = default;
+
+WebState::OpenURLParams& WebState::OpenURLParams::operator=(
+    OpenURLParams&& params) = default;
 
 WebState::OpenURLParams::~OpenURLParams() {}
 
@@ -59,7 +61,7 @@ WebState::InterfaceBinder::~InterfaceBinder() = default;
 
 void WebState::InterfaceBinder::AddInterface(base::StringPiece interface_name,
                                              Callback callback) {
-  callbacks_.emplace(interface_name.as_string(), std::move(callback));
+  callbacks_.emplace(std::string(interface_name), std::move(callback));
 }
 
 void WebState::InterfaceBinder::BindInterface(

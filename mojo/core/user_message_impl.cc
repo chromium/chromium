@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,6 +17,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
+#include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
 #include "mojo/core/node_channel.h"
 #include "mojo/core/node_controller.h"
@@ -282,6 +284,10 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
         this, "MojoMessages", nullptr);
   }
 
+  MessageMemoryDumpProvider(const MessageMemoryDumpProvider&) = delete;
+  MessageMemoryDumpProvider& operator=(const MessageMemoryDumpProvider&) =
+      delete;
+
   ~MessageMemoryDumpProvider() override {
     base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
         this);
@@ -297,8 +303,6 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
                     base::subtle::NoBarrier_Load(&g_message_count));
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MessageMemoryDumpProvider);
 };
 
 void EnsureMemoryDumpProviderExists() {
@@ -342,10 +346,10 @@ UserMessageImpl::~UserMessageImpl() {
 
 // static
 std::unique_ptr<ports::UserMessageEvent>
-UserMessageImpl::CreateEventForNewMessage() {
+UserMessageImpl::CreateEventForNewMessage(MojoCreateMessageFlags flags) {
   auto message_event = std::make_unique<ports::UserMessageEvent>(0);
   message_event->AttachMessage(
-      base::WrapUnique(new UserMessageImpl(message_event.get())));
+      base::WrapUnique(new UserMessageImpl(message_event.get(), flags)));
   return message_event;
 }
 
@@ -415,7 +419,14 @@ Channel::MessagePtr UserMessageImpl::FinalizeEventMessage(
   if (channel_message) {
     void* data;
     size_t size;
-    NodeChannel::GetEventMessageData(channel_message.get(), &data, &size);
+    // The `channel_message` must either be produced locally or must have
+    // already been validated by the caller, as is done for example by
+    // NodeController::DeserializeEventMessage before
+    // NodeController::OnBroadcast re-serializes each copy of the message it
+    // received.
+    bool result =
+        NodeChannel::GetEventMessageData(*channel_message, &data, &size);
+    DCHECK(result);
     message_event->Serialize(data);
   }
 
@@ -502,8 +513,9 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
       size_t user_payload_offset =
           static_cast<uint8_t*>(user_payload_) -
           static_cast<const uint8_t*>(channel_message_->payload());
-      channel_message_->ExtendPayload(user_payload_offset + user_payload_size_ +
-                                      additional_payload_size);
+      Channel::Message::ExtendPayload(
+          channel_message_,
+          user_payload_offset + user_payload_size_ + additional_payload_size);
       header_ = static_cast<uint8_t*>(channel_message_->mutable_payload()) +
                 header_offset;
       user_payload_ =
@@ -511,6 +523,16 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
           user_payload_offset;
       user_payload_size_ += additional_payload_size;
     }
+  }
+
+  if (!unlimited_size_ &&
+      user_payload_size_ > GetConfiguration().max_message_num_bytes) {
+    // We want to be aware of new undocumented cases of very large IPCs. Crashes
+    // which result from this stack should be addressed by either marking the
+    // corresponding mojom interface method with an [UnlimitedSize] attribute;
+    // or preferably by refactoring to avoid such large message contents, for
+    // example by batching calls or leveraging shared memory where feasible.
+    base::debug::DumpWithoutCrashing();
   }
 
   return MOJO_RESULT_OK;
@@ -595,7 +617,7 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
       channel_message_->TakeHandles();
   std::vector<PlatformHandle> msg_handles(handles_in_transit.size());
   for (size_t i = 0; i < handles_in_transit.size(); ++i) {
-    DCHECK(!handles_in_transit[i].owning_process().is_valid());
+    DCHECK(!handles_in_transit[i].owning_process().IsValid());
     msg_handles[i] = handles_in_transit[i].TakeHandle();
   }
   for (size_t i = 0; i < header->num_dispatchers; ++i) {
@@ -653,8 +675,11 @@ void UserMessageImpl::FailHandleSerializationForTesting(bool fail) {
   g_always_fail_handle_serialization = fail;
 }
 
-UserMessageImpl::UserMessageImpl(ports::UserMessageEvent* message_event)
-    : ports::UserMessage(&kUserMessageTypeInfo), message_event_(message_event) {
+UserMessageImpl::UserMessageImpl(ports::UserMessageEvent* message_event,
+                                 MojoCreateMessageFlags flags)
+    : ports::UserMessage(&kUserMessageTypeInfo),
+      message_event_(message_event),
+      unlimited_size_((flags & MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE) != 0) {
   EnsureMemoryDumpProviderExists();
   IncrementMessageCount();
 }

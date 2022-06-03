@@ -8,33 +8,36 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/as_const.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/i18n/rtl.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_cache.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
@@ -42,10 +45,11 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
@@ -61,6 +65,7 @@ class Transform;
 namespace ui {
 struct AXActionData;
 struct AXNodeData;
+class ColorProvider;
 class Compositor;
 class InputMethod;
 class Layer;
@@ -78,9 +83,10 @@ class ContextMenuController;
 class DragController;
 class FocusManager;
 class FocusTraversable;
-class LayoutManager;
-class ViewAccessibility;
+class LayoutProvider;
 class ScrollView;
+class ViewAccessibility;
+class ViewMaskLayer;
 class ViewObserver;
 class Widget;
 class WordLookupClient;
@@ -120,13 +126,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   View* move_view = nullptr;
 };
 
-// Used to identify the CallbackList<> within the PropertyChangedVectors map.
-using PropertyKey = const void*;
-
-using PropertyChangedCallbacks = base::CallbackList<void()>;
-using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
-using PropertyChangedSubscription =
-    std::unique_ptr<PropertyChangedCallbacks::Subscription>;
+using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
 
 // The elements in PropertyEffects represent bits which define what effect(s) a
 // changed Property has on the containing class. Additional elements should
@@ -198,8 +198,8 @@ enum PropertyEffects {
 //   Each property should also have a way to "listen" to changes by registering
 //   a callback.
 //
-//   PropertyChangedSubscription AddFrobbleChangedCallback(
-//       PropertyChangedCallback callback) WARN_UNUSED_RETURN;
+//   base::CallbackListSubscription AddFrobbleChangedCallback(
+//       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 //
 //   Each callback uses the the existing base::Bind mechanisms which allow for
 //   various kinds of callbacks; object methods, normal functions and lambdas.
@@ -210,7 +210,7 @@ enum PropertyEffects {
 //    ...
 //    private:
 //     void OnFrobbleChanged();
-//     PropertyChangeSubscription frobble_changed_subscription_;
+//     base::CallbackListSubscription frobble_changed_subscription_;
 //   }
 //
 //   ...
@@ -222,7 +222,7 @@ enum PropertyEffects {
 //
 //   void MyView::ValidateFrobbleChanged() {
 //     bool frobble_changed = false;
-//     PropertyChangedSubscription subscription =
+//     base::CallbackListSubscription subscription =
 //       frobble_view_->AddFrobbleChangedCallback(
 //           base::BindRepeating([](bool* frobble_changed_ptr) {
 //             *frobble_changed_ptr = true;
@@ -249,20 +249,18 @@ enum PropertyEffects {
 //   In the implementing .cc file, add the following macros to the same
 //   namespace in which the class resides.
 //
-//   BEGIN_METADATA(View)
-//   ADD_PROPERTY_METADATA(View, bool, Frobble)
-//   END_METADATA()
+//   BEGIN_METADATA(View, ParentView)
+//   ADD_PROPERTY_METADATA(bool, Frobble)
+//   END_METADATA
 //
 //   For each property, add a definition using ADD_PROPERTY_METADATA() between
 //   the begin and end macros.
 //
-//   Descendant classes must add the METADATA_PARENT_CLASS() macro to the
-//   similar block in the respective implementing file.
+//   Descendant classes must specify the parent class as a macro parameter.
 //
-//   BEGIN_METADATA(MyView)
-//   METADATA_PARENT_CLASS(views::View);
-//   ADD_PROPERTY_METADATA(MyView, int, Bobble)
-//   END_METADATA()
+//   BEGIN_METADATA(MyView, views::View)
+//   ADD_PROPERTY_METADATA(int, Bobble)
+//   END_METADATA
 /////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::LayerObserver,
@@ -271,9 +269,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::EventTarget,
                           public ui::EventHandler,
                           public ui::PropertyHandler,
-                          public views::metadata::MetaDataProvider {
+                          public ui::metadata::MetaDataProvider {
  public:
   using Views = std::vector<View*>;
+
+  using DropCallback =
+      base::OnceCallback<void(const ui::DropTargetEvent& event,
+                              ui::mojom::DragOperation& output_drag_op)>;
 
   METADATA_HEADER_BASE(View);
 
@@ -356,9 +358,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
       // Since pixels cannot be fractional, we need to round the offset to get
       // the correct physical pixel coordinate.
-      gfx::Vector2dF integral_pixel_offset(
-          gfx::ToRoundedInt(fractional_pixel_offset.x()),
-          gfx::ToRoundedInt(fractional_pixel_offset.y()));
+      gfx::Vector2d integral_pixel_offset =
+          gfx::ToRoundedVector2d(fractional_pixel_offset);
 
       // |integral_pixel_offset - fractional_pixel_offset| gives the subpixel
       // offset amount for |offset_to_parent|. This is added to
@@ -382,6 +383,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Creation and lifetime -----------------------------------------------------
 
   View();
+  View(const View&) = delete;
+  View& operator=(const View&) = delete;
   ~View() override;
 
   // By default a View is owned by its parent unless specified otherwise here.
@@ -417,7 +420,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // for new code.
   template <typename T>
   T* AddChildView(T* view) {
-    AddChildViewAtImpl(view, int{children_.size()});
+    AddChildViewAtImpl(view, static_cast<int>(children_.size()));
     return view;
   }
   template <typename T>
@@ -433,9 +436,29 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Removes |view| from this view. The view's parent will change to null.
   void RemoveChildView(View* view);
 
-  // Removes all the children from this view. If |delete_children| is true,
-  // the views are deleted, unless marked as not parent owned.
-  void RemoveAllChildViews(bool delete_children);
+  // Removes |view| from this view and transfers ownership back to the caller in
+  // the form of a std::unique_ptr<T>.
+  // TODO(kylixrd): Rename back to RemoveChildView() once the code is refactored
+  //                to eliminate the uses of the old RemoveChildView().
+  template <typename T>
+  std::unique_ptr<T> RemoveChildViewT(T* view) {
+    DCHECK(!view->owned_by_client())
+        << "This should only be called if the client doesn't already have "
+           "ownership of |view|.";
+    DCHECK(std::find(children_.cbegin(), children_.cend(), view) !=
+           children_.cend());
+    RemoveChildView(view);
+    return base::WrapUnique(view);
+  }
+
+  // Removes all the children from this view. This deletes all children that are
+  // not set_owned_by_client(), which is deprecated.
+  void RemoveAllChildViews();
+
+  // TODO(pbos): Remove this method, deleting children when removing them should
+  // not be optional. If ownership needs to be preserved, use RemoveChildViewT()
+  // to retain ownership of the removed children.
+  void RemoveAllChildViewsWithoutDeleting();
 
   const Views& children() const { return children_; }
 
@@ -557,9 +580,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Return whether a view is visible.
   bool GetVisible() const;
 
-  // Adds a callback subscription associated with the above Visible property.
-  // The callback will be invoked whenever the Visible property changes.
-  PropertyChangedSubscription AddVisibleChangedCallback(
+  // Adds a callback associated with the above Visible property. The callback
+  // will be invoked whenever the Visible property changes.
+  base::CallbackListSubscription AddVisibleChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Returns true if this view is drawn on screen.
@@ -575,9 +598,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns whether the view is enabled.
   bool GetEnabled() const;
 
-  // Adds a callback subscription associated with the above |Enabled| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddEnabledChangedCallback(
+  // Adds a callback associated with the above |Enabled| property. The callback
+  // will be invoked whenever the property changes.
+  base::CallbackListSubscription AddEnabledChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Returns the child views ordered in reverse z-order. That is, views later in
@@ -596,7 +619,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   gfx::Transform GetTransform() const;
 
   // Clipping is done relative to the view's local bounds.
-  void set_clip_path(const SkPath& path) { clip_path_ = path; }
+  void SetClipPath(const SkPath& path);
+  const SkPath& clip_path() const { return clip_path_; }
 
   // Sets the transform to the supplied transform.
   void SetTransform(const gfx::Transform& transform);
@@ -665,6 +689,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   //       transparent to the View subclasses and therefore you should use the
   //       bounds() accessor instead.
   gfx::Rect GetMirroredBounds() const;
+  gfx::Rect GetMirroredContentsBounds() const;
   gfx::Point GetMirroredPosition() const;
   int GetMirroredX() const;
 
@@ -716,8 +741,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // parent views do not change.
   void InvalidateLayout();
 
+  // TODO(kylixrd): Update comment once UseDefaultFillLayout is true by default.
+  // UseDefaultFillLayout will be set to true by default once the codebase is
+  // audited and refactored.
+  //
   // Gets/Sets the Layout Manager used by this view to size and place its
-  // children.
+  // children. NOTE: This will force UseDefaultFillLayout to false if it had
+  // been set to true.
   //
   // The LayoutManager is owned by the View and is deleted when the view is
   // deleted, or when a new LayoutManager is installed. Call
@@ -740,22 +770,27 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   }
   void SetLayoutManager(std::nullptr_t);
 
+  // Sets whether or not the default layout manager should be used for this
+  // view. NOTE: this can only be set if |layout_manager_| isn't assigned.
+  bool GetUseDefaultFillLayout() const;
+  void SetUseDefaultFillLayout(bool value);
+
   // Attributes ----------------------------------------------------------------
 
   // Recursively descends the view tree starting at this view, and returns
   // the first child that it encounters that has the given ID.
   // Returns NULL if no matching child view is found.
-  virtual const View* GetViewByID(int id) const;
-  virtual View* GetViewByID(int id);
+  const View* GetViewByID(int id) const;
+  View* GetViewByID(int id);
 
   // Gets and sets the ID for this view. ID should be unique within the subtree
   // that you intend to search for it. 0 is the default ID for views.
   int GetID() const { return id_; }
   void SetID(int id);
 
-  // Adds a callback subscription associated with the above |ID| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddIDChangedCallback(
+  // Adds a callback associated with the above |ID| property. The callback will
+  // be invoked whenever the property changes.
+  base::CallbackListSubscription AddIDChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // A group id is used to tag views which are part of the same logical group.
@@ -766,9 +801,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns the group id of the view, or -1 if the id is not set yet.
   int GetGroup() const;
 
-  // Adds a callback subscription associated with the above |Group| property.
-  // The callback will be invoked whenever the property changes.
-  PropertyChangedSubscription AddGroupChangedCallback(
+  // Adds a callback associated with the above |Group| property. The callback
+  // will be invoked whenever the property changes.
+  base::CallbackListSubscription AddGroupChangedCallback(
       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // If this returns true, the views from the same group can each be focused
@@ -852,16 +887,26 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // The background object may be null.
   void SetBackground(std::unique_ptr<Background> b);
+  Background* GetBackground() const;
   const Background* background() const { return background_.get(); }
   Background* background() { return background_.get(); }
 
   // The border object may be null.
   virtual void SetBorder(std::unique_ptr<Border> b);
-  const Border* border() const { return border_.get(); }
-  Border* border() { return border_.get(); }
+  Border* GetBorder() const;
 
   // Get the theme provider from the parent widget.
   const ui::ThemeProvider* GetThemeProvider() const;
+
+  // Get the layout provider for the View.
+  const LayoutProvider* GetLayoutProvider() const;
+
+  // Returns the ColorProvider from the ColorProviderManager.
+  ui::ColorProvider* GetColorProvider() {
+    return const_cast<ui::ColorProvider*>(
+        base::as_const(*this).GetColorProvider());
+  }
+  const ui::ColorProvider* GetColorProvider() const;
 
   // Returns the NativeTheme to use for this View. This calls through to
   // GetNativeTheme() on the Widget this View is in, or provides a default
@@ -869,8 +914,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // set. Warning: the default theme might not be correct; you should probably
   // override OnThemeChanged().
   ui::NativeTheme* GetNativeTheme() {
-    return const_cast<ui::NativeTheme*>(
-        const_cast<const View*>(this)->GetNativeTheme());
+    return const_cast<ui::NativeTheme*>(base::as_const(*this).GetNativeTheme());
   }
   const ui::NativeTheme* GetNativeTheme() const;
 
@@ -879,24 +923,40 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // RTL painting --------------------------------------------------------------
 
-  // This method determines whether the gfx::Canvas object passed to
-  // Paint() needs to be transformed such that anything drawn on the canvas
-  // object during Paint() is flipped horizontally.
-  bool flip_canvas_on_paint_for_rtl_ui() const {
-    return flip_canvas_on_paint_for_rtl_ui_;
-  }
-
+  // Returns whether the gfx::Canvas object passed to Paint() needs to be
+  // transformed such that anything drawn on the canvas object during Paint()
+  // is flipped horizontally.
+  bool GetFlipCanvasOnPaintForRTLUI() const;
   // Enables or disables flipping of the gfx::Canvas during Paint(). Note that
   // if canvas flipping is enabled, the canvas will be flipped only if the UI
   // layout is right-to-left; that is, the canvas will be flipped only if
-  // base::i18n::IsRTL() returns true.
+  // GetMirrored() is true.
   //
   // Enabling canvas flipping is useful for leaf views that draw an image that
   // needs to be flipped horizontally when the UI layout is right-to-left
   // (views::Button, for example). This method is helpful for such classes
   // because their drawing logic stays the same and they can become agnostic to
   // the UI directionality.
-  virtual void EnableCanvasFlippingForRTLUI(bool enable);
+  void SetFlipCanvasOnPaintForRTLUI(bool enable);
+
+  // Adds a callback associated with the above FlipCanvasOnPaintForRTLUI
+  // property. The callback will be invoked whenever the
+  // FlipCanvasOnPaintForRTLUI property changes.
+  base::CallbackListSubscription AddFlipCanvasOnPaintForRTLUIChangedCallback(
+      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+
+  // When set, this view will ignore base::l18n::IsRTL() and instead be drawn
+  // according to |is_mirrored|.
+  //
+  // This is useful for views that should be displayed the same regardless of UI
+  // direction. Unlike SetFlipCanvasOnPaintForRTLUI this setting has an effect
+  // on the visual order of child views.
+  //
+  // This setting does not propagate to child views. So while the visual order
+  // of this view's children may change, the visual order of this view's
+  // grandchildren in relation to their parents are unchanged.
+  void SetMirrored(bool is_mirrored);
+  bool GetMirrored() const;
 
   // Input ---------------------------------------------------------------------
   // The points, rects, mouse locations, and touch locations in the following
@@ -935,13 +995,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Returns true if this view or any of its descendants are permitted to
   // be the target of an event.
-  virtual bool CanProcessEventsWithinSubtree() const;
+  virtual bool GetCanProcessEventsWithinSubtree() const;
 
   // Sets whether this view or any of its descendants are permitted to be the
   // target of an event.
-  void set_can_process_events_within_subtree(bool can_process) {
-    can_process_events_within_subtree_ = can_process;
-  }
+  void SetCanProcessEventsWithinSubtree(bool can_process);
 
   // Returns true if the mouse cursor is over |view| and mouse events are
   // enabled.
@@ -1004,7 +1062,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Default implementation does nothing. Override as needed.
   virtual void OnMouseExited(const ui::MouseEvent& event);
 
-  // Set the MouseHandler for a drag session.
+  // Set both the MouseHandler and the GestureHandler for a drag session.
   //
   // A drag session is a stream of mouse events starting
   // with a MousePressed event, followed by several MouseDragged
@@ -1021,9 +1079,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   //
   // Note: if the mouse handler is no longer connected to a
   // view hierarchy, events won't be sent.
-  //
-  // TODO(sky): rename this.
-  virtual void SetMouseHandler(View* new_mouse_handler);
+  virtual void SetMouseAndGestureHandler(View* new_handler);
+
+  // Sets a new mouse handler.
+  virtual void SetMouseHandler(View* new_handler);
 
   // Invoked when a key is pressed or released.
   // Subclasses should return true if the event has been processed and false
@@ -1038,20 +1097,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // will be given a chance.
   virtual bool OnMouseWheel(const ui::MouseWheelEvent& event);
 
-
   // See field for description.
-  void set_notify_enter_exit_on_child(bool notify) {
-    notify_enter_exit_on_child_ = notify;
-  }
-  bool notify_enter_exit_on_child() const {
-    return notify_enter_exit_on_child_;
-  }
+  void SetNotifyEnterExitOnChild(bool notify);
+  bool GetNotifyEnterExitOnChild() const;
 
   // Convenience method to retrieve the InputMethod associated with the
   // Widget that contains this view.
   ui::InputMethod* GetInputMethod() {
-    return const_cast<ui::InputMethod*>(
-        const_cast<const View*>(this)->GetInputMethod());
+    return const_cast<ui::InputMethod*>(base::as_const(*this).GetInputMethod());
   }
   const ui::InputMethod* GetInputMethod() const;
 
@@ -1085,6 +1138,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) final;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Accelerators --------------------------------------------------------------
 
@@ -1121,16 +1175,28 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns the view that should be selected next when pressing Shift-Tab.
   View* GetPreviousFocusableView();
 
-  // Sets the component that should be selected next when pressing Tab, and
-  // makes the current view the precedent view of the specified one.
-  // Note that by default views are linked in the order they have been added to
-  // their container. Use this method if you want to modify the order.
-  // IMPORTANT NOTE: loops in the focus hierarchy are not supported.
-  void SetNextFocusableView(View* view);
+  // Removes |this| from its focus list, updating the previous and next
+  // views' points accordingly.
+  void RemoveFromFocusList();
+
+  // Insert |this| before or after |view| in the focus list.
+  void InsertBeforeInFocusList(View* view);
+  void InsertAfterInFocusList(View* view);
 
   // Gets/sets |FocusBehavior|. SetFocusBehavior() advances focus if necessary.
-  FocusBehavior GetFocusBehavior() const;
+  virtual FocusBehavior GetFocusBehavior() const;
   void SetFocusBehavior(FocusBehavior focus_behavior);
+
+  // Set this to suppress default handling of focus for this View. By default
+  // native focus will be cleared and a11y events announced based on the new
+  // View focus.
+  // TODO(pbos): This is here to make removing focus behavior from the base
+  // implementation of OnFocus a no-op. Try to avoid new uses of this. Also
+  // investigate if this can be configured with more granularity (which event
+  // to fire on focus etc.).
+  void set_suppress_default_focus_handling() {
+    suppress_default_focus_handling_ = true;
+  }
 
   // Returns true if this view is focusable, |enabled_| and drawn.
   bool IsFocusable() const;
@@ -1183,7 +1249,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Any time the tooltip text that a View is displaying changes, it must
   // invoke TooltipTextChanged.
   // |p| provides the coordinates of the mouse (relative to this view).
-  virtual base::string16 GetTooltipText(const gfx::Point& p) const;
+  virtual std::u16string GetTooltipText(const gfx::Point& p) const;
 
   // Context menus -------------------------------------------------------------
 
@@ -1202,12 +1268,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // to provide right-click menu display triggered by the keyboard (i.e. for the
   // Chrome toolbar Back and Forward buttons). No source needs to be specified,
   // as it is always equal to the current View.
+  // Note that this call is asynchronous for views menu and synchronous for
+  // mac's native menu.
   virtual void ShowContextMenu(const gfx::Point& p,
                                ui::MenuSourceType source_type);
-
-  // On some platforms, we show context menu on mouse press instead of release.
-  // This method returns true for those platforms.
-  static bool ShouldShowContextMenuOnMousePress();
 
   // Returns the location, in screen coordinates, to show the context menu at
   // when the context menu is shown from the keyboard. This implementation
@@ -1275,11 +1339,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
   // operation and the user release the mouse.
-  virtual int OnPerformDrop(const ui::DropTargetEvent& event);
+  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
+  // instead.
+  virtual ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event);
 
   // Invoked from DoDrag after the drag completes. This implementation does
   // nothing, and is intended for subclasses to do cleanup.
   virtual void OnDragDone();
+
+  // Invoked during a drag and drop session when OnDragUpdated returns a valid
+  // operation and the user release the mouse but the drop is held because of
+  // DataTransferPolicyController.
+  virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event);
 
   // Returns true if the mouse was dragged enough to start a drag operation.
   // delta_x and y are the distance the mouse was dragged.
@@ -1288,9 +1360,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accessibility -------------------------------------------------------------
 
   // Get the object managing the accessibility interface for this View.
-  ViewAccessibility& GetViewAccessibility();
+  ViewAccessibility& GetViewAccessibility() const;
 
-  // Modifies |node_data| to reflect the current accessible state of this view.
+  // Modifies |node_data| to reflect the current accessible state of this
+  // view.
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) {}
 
   // Handle a request from assistive technology to perform an action on this
@@ -1348,7 +1421,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     void PossibleDrag(const gfx::Point& p);
 
     // Whether the press may generate a drag.
-    bool possible_drag;
+    bool possible_drag = false;
 
     // Coordinates of the mouse press.
     gfx::Point start_pt;
@@ -1486,6 +1559,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Overridden from ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnLayerTransformed(const gfx::Transform& old_transform,
+                          ui::PropertyChangeReason reason) final;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
@@ -1529,7 +1604,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // allows individual Views to do special cleanup and processing (such as
   // dropping resource caches). To dispatch a theme changed notification, call
   // Widget::ThemeChanged().
-  virtual void OnThemeChanged() {}
+  virtual void OnThemeChanged();
 
   // Tooltips ------------------------------------------------------------------
 
@@ -1555,18 +1630,18 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   static int GetHorizontalDragThreshold();
   static int GetVerticalDragThreshold();
 
+  // PropertyHandler -----------------------------------------------------------
+
+  // Note: you MUST call this base method from derived classes that override it
+  // or else your class  will not properly register for ElementTrackerViews and
+  // won't be available for interactive tests or in-product help/tutorials which
+  // use that system.
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
+
   // Property Support ----------------------------------------------------------
 
-  PropertyChangedSubscription AddPropertyChangedCallback(
-      PropertyKey property,
-      PropertyChangedCallback callback);
-  void OnPropertyChanged(PropertyKey property,
+  void OnPropertyChanged(ui::metadata::PropertyKey property,
                          PropertyEffects property_effects);
-
-  // Empty function called in HandlePropertyChangeEffects to be overridden in
-  // subclasses if they have custom functions for property changes.
-  virtual void OnHandlePropertyChangeEffects(PropertyEffects property_effects) {
-  }
 
  private:
   friend class internal::PreEventDispatchHandler;
@@ -1574,6 +1649,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   friend class internal::RootView;
   friend class internal::ScopedChildrenLock;
   friend class FocusManager;
+  friend class ViewDebugWrapperImpl;
   friend class ViewLayerTest;
   friend class ViewLayerPixelCanvasTest;
   friend class ViewTestApi;
@@ -1582,8 +1658,26 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCacheInRTL);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
 
-  using PropertyChangedVectors =
-      std::map<PropertyKey, std::unique_ptr<PropertyChangedCallbacks>>;
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  enum class LifeCycleState : uint32_t {
+    kAlive = 0x600D600D,
+    kDestroyed = 0xBAADBAAD,
+  };
+
+  // This is the default view layout. It is a very simple version of FillLayout,
+  // which merely sets the bounds of the children to the content bounds. The
+  // actual FillLayout isn't used here because it supports a couple of features
+  // not used in the vast majority of instances. It also descends from
+  // LayoutManagerBase which adds some extra overhead not needed here.
+
+  class DefaultFillLayout : public LayoutManager {
+   public:
+    DefaultFillLayout();
+    ~DefaultFillLayout() override;
+    void Layout(View* host) override;
+    gfx::Size GetPreferredSize(const View* host) const override;
+    int GetPreferredHeightForWidth(const View* host, int width) const override;
+  };
 
   // Painting  -----------------------------------------------------------------
 
@@ -1636,15 +1730,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Adds |view| as a child of this view at |index|.
   void AddChildViewAtImpl(View* view, int index);
 
-  // Removes |view| from the hierarchy tree.  If |update_focus_cycle| is true,
-  // the next and previous focusable views of views pointing to this view are
-  // updated.  If |update_tool_tip| is true, the tooltip is updated.  If
-  // |delete_removed_view| is true, the view is also deleted (if it is parent
-  // owned).  If |new_parent| is not null, the remove is the result of
-  // AddChildView() to a new parent.  For this case, |new_parent| is the View
-  // that |view| is going to be added to after the remove completes.
+  // Removes |view| from the hierarchy tree. If |update_tool_tip| is
+  // true, the tooltip is updated. If |delete_removed_view| is true, the
+  // view is also deleted (if it is parent owned). If |new_parent| is
+  // not null, the remove is the result of AddChildView() to a new
+  // parent. For this case, |new_parent| is the View that |view| is
+  // going to be added to after the remove completes.
   void DoRemoveChildView(View* view,
-                         bool update_focus_cycle,
                          bool update_tool_tip,
                          bool delete_removed_view,
                          View* new_parent);
@@ -1668,10 +1760,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // children.
   void PropagateNativeViewHierarchyChanged();
 
-  // Takes care of registering/unregistering accelerators if
-  // |register_accelerators| true and calls ViewHierarchyChanged().
-  void ViewHierarchyChangedImpl(bool register_accelerators,
-                                const ViewHierarchyChangedDetails& details);
+  // Calls ViewHierarchyChanged() and notifies observers.
+  void ViewHierarchyChangedImpl(const ViewHierarchyChangedDetails& details);
 
   // Size and disposition ------------------------------------------------------
 
@@ -1787,6 +1877,15 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void SetLayerBounds(const gfx::Size& size_in_dip,
                       const LayerOffsetData& layer_offset_data);
 
+  // Creates a mask layer for the current view using |clip_path_|.
+  void CreateMaskLayer();
+
+  // Layout --------------------------------------------------------------------
+
+  // Returns whether a layout is deferred to a layout manager, either the
+  // default fill layout or the assigned layout manager.
+  bool HasLayoutManager() const;
+
   // Input ---------------------------------------------------------------------
 
   bool ProcessMousePressed(const ui::MouseEvent& event);
@@ -1843,13 +1942,27 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns true if a drag was started.
   bool DoDrag(const ui::LocatedEvent& event,
               const gfx::Point& press_pt,
-              ui::DragDropTypes::DragEventSource source);
+              ui::mojom::DragEventSource source);
 
   // Property support ----------------------------------------------------------
 
   // Called from OnPropertyChanged with the given set of property effects. This
   // function is NOT called if effects == kPropertyEffectsNone.
   void HandlePropertyChangeEffects(PropertyEffects effects);
+
+  // The following methods are used by the property access system described in
+  // the comments above. They follow the required naming convention in order to
+  // allow them to be visible via the metadata.
+  int GetX() const;
+  int GetY() const;
+  int GetWidth() const;
+  int GetHeight() const;
+  void SetWidth(int width);
+  void SetHeight(int height);
+  bool GetIsDrawn() const;
+
+  // Special property accessor used by metadata to get the ToolTip text.
+  std::u16string GetTooltip() const;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -1887,7 +2000,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Size and disposition ------------------------------------------------------
 
-  base::Optional<gfx::Size> preferred_size_;
+  absl::optional<gfx::Size> preferred_size_;
 
   // This View's bounds in the parent coordinate system.
   gfx::Rect bounds_;
@@ -1922,8 +2035,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Transformations -----------------------------------------------------------
 
-  // Painting will be clipped to this path. TODO(estade): this doesn't work for
-  // layers.
+  // Painting will be clipped to this path.
   SkPath clip_path_;
 
   // Layout --------------------------------------------------------------------
@@ -1934,6 +2046,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;
+
+  // The default "fill" layout manager. This is set only if |layout_manager_|
+  // isn't set and SetUseDefaultFillLayout(true) is called or
+  // |kUseDefaultFillLayout| is true.
+  absl::optional<DefaultFillLayout> default_fill_layout_;
 
   // Whether this View's layer should be snapped to the pixel boundary.
   bool snap_layer_to_pixel_boundary_ = false;
@@ -1966,6 +2083,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // right-to-left locales for this View.
   bool flip_canvas_on_paint_for_rtl_ui_ = false;
 
+  // Controls whether GetTransform(), the mirroring functions, and the like
+  // horizontally mirror. This controls how child views are physically
+  // positioned onscreen. The default behavior should be correct in most cases,
+  // but can be overridden if a particular view must always be laid out in some
+  // direction regardless of the application's default UI direction.
+  absl::optional<bool> is_mirrored_;
+
   // Accelerated painting ------------------------------------------------------
 
   // Whether layer painting was explicitly set by a call to |SetPaintToLayer()|.
@@ -1978,6 +2102,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // layers are maintained as siblings of this View's layer and are stacked
   // beneath.
   std::vector<ui::Layer*> layers_beneath_;
+
+  // If painting to a layer |mask_layer_| will mask the current layer and all
+  // child layers to within the |clip_path_|.
+  std::unique_ptr<views::ViewMaskLayer> mask_layer_;
 
   // Accelerators --------------------------------------------------------------
 
@@ -2001,6 +2129,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
 
+  // This is set when focus events should be skipped after focus reaches this
+  // View.
+  bool suppress_default_focus_handling_ = false;
+
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
@@ -2014,21 +2146,73 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   std::unique_ptr<ViewTargeter> targeter_;
 
+  // System events -------------------------------------------------------------
+
+#if DCHECK_IS_ON()
+  bool on_theme_changed_called_ = false;
+#endif
+
   // Accessibility -------------------------------------------------------------
 
   // Manages the accessibility interface for this View.
-  std::unique_ptr<ViewAccessibility> view_accessibility_;
+  mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
+
+#if DCHECK_IS_ON()
+  // Keeps track of whether accessibility checks for this View have run yet.
+  // They run once inside ::OnPaint() to keep overhead low. The idea is that if
+  // a View is ready to paint it should also be set up to be accessible.
+  bool has_run_accessibility_paint_checks_ = false;
+#endif
 
   // Observers -----------------------------------------------------------------
 
   base::ObserverList<ViewObserver>::Unchecked observers_;
 
-  // Property Changed Callbacks ------------------------------------------------
-  PropertyChangedVectors property_changed_vectors_;
-
-  DISALLOW_COPY_AND_ASSIGN(View);
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
+template <typename LayoutManager>
+BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, std::unique_ptr<LayoutManager>,
+      decltype((static_cast<LayoutManager* (
+                    ViewClass_::*)(std::unique_ptr<LayoutManager>)>(
+          &ViewClass_::SetLayoutManager))),
+      &ViewClass_::SetLayoutManager>>(std::move(layout_manager));
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+template <typename LayoutManager>
+BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
+  return std::move(this->SetLayoutManager(std::move(layout_manager)));
+}
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
+VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)
+VIEW_BUILDER_PROPERTY(gfx::Size, Size)
+VIEW_BUILDER_PROPERTY(gfx::Point, Position)
+VIEW_BUILDER_PROPERTY(int, X)
+VIEW_BUILDER_PROPERTY(int, Y)
+VIEW_BUILDER_PROPERTY(gfx::Size, PreferredSize)
+VIEW_BUILDER_PROPERTY(SkPath, ClipPath)
+VIEW_BUILDER_PROPERTY_DEFAULT(ui::LayerType, PaintToLayer, ui::LAYER_TEXTURED)
+VIEW_BUILDER_PROPERTY(bool, Enabled)
+VIEW_BUILDER_PROPERTY(bool, FlipCanvasOnPaintForRTLUI)
+VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
+VIEW_BUILDER_PROPERTY(int, Group)
+VIEW_BUILDER_PROPERTY(int, ID)
+VIEW_BUILDER_PROPERTY(bool, Mirrored)
+VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
+VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
+VIEW_BUILDER_PROPERTY(bool, Visible)
+VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
+VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 #endif  // UI_VIEWS_VIEW_H_

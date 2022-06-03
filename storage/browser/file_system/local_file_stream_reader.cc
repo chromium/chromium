@@ -6,15 +6,16 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -26,40 +27,27 @@ namespace {
 const int kOpenFlagsForRead =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
 
-struct GetFileInfoResults {
-  base::File::Error error;
+base::FileErrorOr<base::File::Info> DoGetFileInfo(const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return base::File::FILE_ERROR_NOT_FOUND;
+
   base::File::Info info;
-};
-
-using GetFileInfoCallback =
-    base::OnceCallback<void(base::File::Error, const base::File::Info&)>;
-
-GetFileInfoResults DoGetFileInfo(const base::FilePath& path) {
-  GetFileInfoResults results;
-  if (!base::PathExists(path)) {
-    results.error = base::File::FILE_ERROR_NOT_FOUND;
-    return results;
-  }
-  results.error = base::GetFileInfo(path, &results.info)
-                      ? base::File::FILE_OK
-                      : base::File::FILE_ERROR_FAILED;
-  return results;
-}
-
-void SendGetFileInfoResults(GetFileInfoCallback callback,
-                            const GetFileInfoResults& results) {
-  std::move(callback).Run(results.error, results.info);
+  bool success = base::GetFileInfo(path, &info);
+  if (!success)
+    return base::File::FILE_ERROR_FAILED;
+  return info;
 }
 
 }  // namespace
 
 std::unique_ptr<FileStreamReader> FileStreamReader::CreateForLocalFile(
-    base::TaskRunner* task_runner,
+    scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time) {
-  return base::WrapUnique(new LocalFileStreamReader(
-      task_runner, file_path, initial_offset, expected_modification_time));
+  return base::WrapUnique(
+      new LocalFileStreamReader(std::move(task_runner), file_path,
+                                initial_offset, expected_modification_time));
 }
 
 LocalFileStreamReader::~LocalFileStreamReader() = default;
@@ -83,24 +71,21 @@ int64_t LocalFileStreamReader::GetLength(
     net::Int64CompletionOnceCallback callback) {
   bool posted = base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE, base::BindOnce(&DoGetFileInfo, file_path_),
-      base::BindOnce(
-          &SendGetFileInfoResults,
-          base::BindOnce(&LocalFileStreamReader::DidGetFileInfoForGetLength,
-                         weak_factory_.GetWeakPtr(), std::move(callback))));
+      base::BindOnce(&LocalFileStreamReader::DidGetFileInfoForGetLength,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   DCHECK(posted);
   return net::ERR_IO_PENDING;
 }
 
 LocalFileStreamReader::LocalFileStreamReader(
-    base::TaskRunner* task_runner,
+    scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time)
-    : task_runner_(task_runner),
+    : task_runner_(std::move(task_runner)),
       file_path_(file_path),
       initial_offset_(initial_offset),
-      expected_modification_time_(expected_modification_time),
-      has_pending_open_(false) {}
+      expected_modification_time_(expected_modification_time) {}
 
 void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_open_);
@@ -123,7 +108,7 @@ void LocalFileStreamReader::DidVerifyForOpen(
     return;
   }
 
-  stream_impl_.reset(new net::FileStream(task_runner_));
+  stream_impl_ = std::make_unique<net::FileStream>(task_runner_);
   callback_ = std::move(callback);
   const int result = stream_impl_->Open(
       file_path_, kOpenFlagsForRead,
@@ -182,14 +167,14 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
-    base::File::Error error,
-    const base::File::Info& file_info) {
-  if (file_info.is_directory) {
-    std::move(callback).Run(net::ERR_FILE_NOT_FOUND);
+    base::FileErrorOr<base::File::Info> result) {
+  if (result.is_error()) {
+    std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
   }
-  if (error != base::File::FILE_OK) {
-    std::move(callback).Run(net::FileErrorToNetError(error));
+  const auto& file_info = result.value();
+  if (file_info.is_directory) {
+    std::move(callback).Run(net::ERR_FILE_NOT_FOUND);
     return;
   }
   if (!VerifySnapshotTime(expected_modification_time_, file_info)) {

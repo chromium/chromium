@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/permissions/features.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -21,20 +23,24 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
  public:
   PermissionDelegationBrowserTest()
       : geolocation_overrider_(
-            std::make_unique<device::ScopedGeolocationOverrider>(0, 0)) {
-    scoped_feature_list_.InitAndEnableFeature(features::kPermissionDelegation);
-  }
+            std::make_unique<device::ScopedGeolocationOverrider>(0, 0)) {}
+
+  PermissionDelegationBrowserTest(const PermissionDelegationBrowserTest&) =
+      delete;
+  PermissionDelegationBrowserTest& operator=(
+      const PermissionDelegationBrowserTest&) = delete;
 
   ~PermissionDelegationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    PermissionRequestManager* manager =
-        PermissionRequestManager::FromWebContents(GetWebContents());
-    mock_permission_prompt_factory_.reset(
-        new MockPermissionPromptFactory(manager));
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(
+            GetWebContents());
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
-    https_embedded_test_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_embedded_test_server_->ServeFilesFromSourceDirectory(
         GetChromeTestDataDir());
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -53,7 +59,7 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  MockPermissionPromptFactory* prompt_factory() {
+  permissions::MockPermissionPromptFactory* prompt_factory() {
     return mock_permission_prompt_factory_.get();
   }
 
@@ -66,16 +72,15 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      mock_permission_prompt_factory_;
   std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionDelegationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
-  prompt_factory()->set_response_type(PermissionRequestManager::ACCEPT_ALL);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
 
   // Main frame is on a.com, iframe 1 is on b.com and iframe 2 is on c.com.
   GURL main_frame_url =
@@ -85,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   GURL iframe_url_2 =
       https_embedded_test_server()->GetURL("c.com", "/simple.html");
 
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   content::RenderFrameHost* main_frame = GetWebContents()->GetMainFrame();
 
   // Delegate permission to both frames.
@@ -103,11 +108,11 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
       content::NavigateIframeToURL(GetWebContents(), "iframe2", iframe_url_2));
 
   content::RenderFrameHost* frame_1 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe1"));
   EXPECT_NE(nullptr, frame_1);
   content::RenderFrameHost* frame_2 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe2"));
   EXPECT_NE(nullptr, frame_2);
 
@@ -123,9 +128,12 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   // A prompt should have been shown with the top level origin rather than the
   // iframe origin.
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(main_frame_url.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_1.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_2.GetOrigin()));
+  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(
+      main_frame_url.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_1.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_2.DeprecatedGetOriginAsURL()));
 
   // Request permission from the second iframe. Because it was granted to the
   // top level frame, it should also be granted to this iframe and there should

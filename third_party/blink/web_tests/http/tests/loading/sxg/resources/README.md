@@ -6,6 +6,7 @@ The signed exchange files in this directory are generated using
 [webpackage repository][1]. To install them, run:
 ```
 go get -u github.com/WICG/webpackage/go/signedexchange/cmd/...
+export PATH=$PATH:$(go env GOPATH)/bin
 ```
 The revision of the tools used to generate the test files is `cf19833`.
 

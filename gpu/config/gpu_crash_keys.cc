@@ -18,7 +18,8 @@ crash_reporter::CrashKeyString<16> gpu_revision("gpu-rev");
 crash_reporter::CrashKeyString<64> gpu_driver_version("gpu-driver");
 crash_reporter::CrashKeyString<16> gpu_pixel_shader_version("gpu-psver");
 crash_reporter::CrashKeyString<16> gpu_vertex_shader_version("gpu-vsver");
-#if defined(OS_MACOSX)
+crash_reporter::CrashKeyString<16> gpu_generation_intel("gpu-generation-intel");
+#if defined(OS_MAC)
 crash_reporter::CrashKeyString<64> gpu_gl_version("gpu-glver");
 #elif defined(OS_POSIX)
 crash_reporter::CrashKeyString<256> gpu_vendor("gpu-gl-vendor");
@@ -34,6 +35,7 @@ crash_reporter::CrashKeyString<4> gpu_watchdog_kill_after_power_resume(
     "gpu-watchdog-kill-after-power-resume");
 crash_reporter::CrashKeyString<4> gpu_watchdog_crashed_in_gpu_init(
     "gpu-watchdog-crashed-in-gpu-init");
+crash_reporter::CrashKeyString<16> num_of_processors("num-of-processors");
 
 }  // namespace crash_keys
 }  // namespace gpu

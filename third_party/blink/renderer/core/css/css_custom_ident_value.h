@@ -17,7 +17,7 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
   explicit CSSCustomIdentValue(const AtomicString&);
   explicit CSSCustomIdentValue(CSSPropertyID);
 
-  AtomicString Value() const {
+  const AtomicString& Value() const {
     DCHECK(!IsKnownPropertyID());
     return string_;
   }
@@ -36,7 +36,7 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
                                : string_ == other.string_;
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString string_;

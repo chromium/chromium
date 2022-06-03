@@ -1,0 +1,2 @@
+Test that debugger breakpoints still work after reloading an xslt document
+

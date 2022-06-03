@@ -4,24 +4,20 @@
 
 module content.mojom;
 
-import "content/common/input/input_handler.mojom";
-import "content/common/widget.mojom";
 import "mojo/public/mojom/base/thread_priority.mojom";
-import "mojo/public/mojom/base/time.mojom";
-import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 interface RenderMessageFilter {
   // Synchronously generates a new routing ID for the caller.
   [Sync] GenerateRoutingID() => (int32 routing_id);
 
-  // Similar to CreateWindow, except used for sub-widgets, like <select>
-  // dropdowns.
-  [Sync] CreateNewWidget(int32 opener_id, pending_remote<Widget> widget)
-      => (int32 route_id);
-
-  // Similar to CreateWidget except the widget is a full screen window.
-  [Sync] CreateFullscreenWidget(int32 opener_id, pending_remote<Widget> widget)
-      => (int32 route_id);
+  // Similar to GenerateRoutingID but also generates a frame token and
+  // devtools_frame_token. A subsequent call to FrameHost::CreateChildFrame
+  // is expected after this call.
+  [Sync] GenerateFrameRoutingID() => (int32 routing_id,
+                   blink.mojom.LocalFrameToken frame_token,
+                   mojo_base.mojom.UnguessableToken devtools_frame_token);
 
   // A renderer sends this when it wants to know whether a gpu process exists.
   [Sync] HasGpuProcess() => (bool has_gpu_process);

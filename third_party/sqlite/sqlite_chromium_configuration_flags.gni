@@ -1,0 +1,99 @@
+# Compile-time options passed to SQLite when compiling and building
+# the Chromium amalgamation.
+#
+# The vast majority of the macros here are documented at
+# https://www.sqlite.org/compile.html
+#
+# This file is read by a GN build script as well as generate_amalgamation.py
+#
+# By default, we disable all SQLite features that can be disabled by adding a
+# SQLITE_OMIT_ define, or by leaving out a SQLITE_ENABLE_ define. We only enable
+# features that have compelling use cases in the codebase.
+#
+# Each SQLite feature carries a cost to our users (binary size, pressure on
+# caches and branch predictors, extra surface area for security
+# vulnerabilities), as well as a maintenance cost (more surface area to be
+# covered by our fuzzers, more logic to reason through when debugging a crash
+# or a security vulnerability report). Enabled features must provide benefits
+# that outweigh these costs.
+sqlite_chromium_configuration_flags = [
+  # Chrome doesn't use the ANALYZE SQLite extension.
+  #
+  # ANALYZE [1] is non-standard, and currently performs a table scan to
+  # update statistics used by the query planner. Chrome uses straightforward
+  # database schemas which do not require the level of fine tuning provided
+  # by ANALYZE, and we generally cannot afford the I/O cost of the required
+  # table scans.
+  #
+  # [1] https://www.sqlite.org/lang_analyze.html
+  "SQLITE_OMIT_ANALYZE",
+
+  # Chrome initializes SQLite manually in //sql/connection.cc.
+  "SQLITE_OMIT_AUTOINIT",
+
+  # Chrome should not use queries with the pathologic performance cases
+  # mitigated by automatic indexes.
+  #
+  # Disabling automatic indexing exposes the pathological performance problems,
+  # instead of having SQLite paper over them. This helps us catch the prbolems
+  # in early testing, such as pinpoint and Finch.
+  #
+  # As a bonus, disabling automatic indexing simplifies the mental model for
+  # SQLite's optimizer, which makes a bit it easier to reason about SQL
+  # statement performance.
+  #
+  # See https://www.sqlite.org/optoverview.html#autoindex
+  "SQLITE_OMIT_AUTOMATIC_INDEX",
+
+  # Chrome calls sqlite3_reset() correctly to reset prepared statements.
+  "SQLITE_OMIT_AUTORESET",
+
+  # Chromium does not use sqlite3_{get,free}_table().
+  # Chrome doesn't use sqlite3_compileoption_{used,get}().
+  "SQLITE_OMIT_COMPILEOPTION_DIAGS",
+
+  # Chrome doesn't ship the SQLite shell, so command auto-completion is not
+  # needed. Chrome developers who build the SQLite shell living at
+  # //third_party/sqlite:sqlite_shell for diagnostic purposes will have to
+  # live without auto-completion.
+  "SQLITE_OMIT_COMPLETE",
+
+  # EXPLAIN's output is not stable across releases [1], so it should not be
+  # used in Chrome. Skipping the EXPLAIN machinery also results in
+  # non-trivial binary savings.
+  #
+  # [1] https://www.sqlite.org/lang_explain.html
+  "SQLITE_OMIT_EXPLAIN",
+
+  # Chrome does not use sqlite3_{get,free}_table().
+  "SQLITE_OMIT_GET_TABLE",
+
+  # Chrome does not use PRAGMA {function,module,pragma}_list.
+  "SQLITE_OMIT_INTROSPECTION_PRAGMAS",
+
+  # Chrome already depends on malloc being very efficient, so we disable
+  # SQLite's arena allocator.
+  "SQLITE_DEFAULT_LOOKASIDE=0,0",
+  "SQLITE_OMIT_LOOKASIDE",
+
+  # Chrome doesn't use TCL variables.
+  "SQLITE_OMIT_TCL_VARIABLE",
+
+  # The REINDEX statemnt is only useful if a collation sequence's definition
+  # changes [1]. Chrome never defines its own collation sequences [2, 3], so
+  # it never needs to call REINDEX.
+  #
+  # [1] https://www.sqlite.org/lang_reindex.html
+  # [2] https://www.sqlite.org/datatype3.html#collating_sequences
+  # [3] https://www.sqlite.org/c3ref/create_collation.html
+  "SQLITE_OMIT_REINDEX",
+
+  # Chrome doesn't use sqlite3_{profile,trace}().
+  "SQLITE_OMIT_TRACE",
+
+  # Chrome doesn't use UPSERT.
+  "SQLITE_OMIT_UPSERT",
+
+  # Chrome doesn't use window functions in SQL.
+  "SQLITE_OMIT_WINDOWFUNC",
+]

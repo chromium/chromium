@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests Picture-in-Picture event listener breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <video id="video" src="../../../media/resources/test.ogv"></video>
@@ -53,8 +53,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('playVideo()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:play', false, 'video');
         SourcesTestRunner.resumeExecution(next);
@@ -66,8 +66,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('requestPictureInPicture()', true /* userGesture */);
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:enterpictureinpicture', false, 'video');
         SourcesTestRunner.resumeExecution(next);
@@ -79,8 +79,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('exitPictureInPicture()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:leavepictureinpicture', false, 'video');
         SourcesTestRunner.resumeExecution(next);

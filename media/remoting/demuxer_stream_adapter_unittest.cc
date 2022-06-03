@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using openscreen::cast::RpcMessenger;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
@@ -36,20 +37,25 @@ class MockDemuxerStreamAdapter {
       DemuxerStream* demuxer_stream,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender_remote,
       mojo::ScopedDataPipeProducerHandle producer_handle) {
-    rpc_broker_.reset(new RpcBroker(
-        base::BindRepeating(&MockDemuxerStreamAdapter::OnSendMessageToSink,
-                            weak_factory_.GetWeakPtr())));
-    demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+    rpc_messenger_ = std::make_unique<RpcMessenger>(
+        [cb =
+             base::BindRepeating(&MockDemuxerStreamAdapter::OnSendMessageToSink,
+                                 weak_factory_.GetWeakPtr())](
+            std::vector<uint8_t> message) { cb.Run(std::move(message)); });
+    demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         std::move(main_task_runner), std::move(media_task_runner), name,
-        demuxer_stream, rpc_broker_->GetWeakPtr(),
-        rpc_broker_->GetUniqueHandle(), std::move(stream_sender_remote),
+        demuxer_stream, rpc_messenger_->GetWeakPtr(),
+        rpc_messenger_->GetUniqueHandle(), std::move(stream_sender_remote),
         std::move(producer_handle),
         base::BindOnce(&MockDemuxerStreamAdapter::OnError,
-                       weak_factory_.GetWeakPtr())));
+                       weak_factory_.GetWeakPtr()));
 
     // Faking initialization with random callback handle to start mojo watcher.
     demuxer_stream_adapter_->Initialize(3);
   }
+
+  MockDemuxerStreamAdapter(const MockDemuxerStreamAdapter&) = delete;
+  MockDemuxerStreamAdapter& operator=(const MockDemuxerStreamAdapter&) = delete;
 
   ~MockDemuxerStreamAdapter() {
     // Make sure unit tests that did not expect errors did not cause any errors.
@@ -71,9 +77,10 @@ class MockDemuxerStreamAdapter {
 
   // Fake to signal that it's in reading state.
   void FakeReadUntil(int read_until_count, int callback_handle) {
-    std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+    std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+        new openscreen::cast::RpcMessage());
     rpc->set_handle(rpc_handle());
-    rpc->set_proc(pb::RpcMessage::RPC_DS_READUNTIL);
+    rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL);
     auto* read_message = rpc->mutable_demuxerstream_readuntil_rpc();
     read_message->set_callback_handle(
         callback_handle);  // Given an unique callback handle.
@@ -87,53 +94,56 @@ class MockDemuxerStreamAdapter {
 
   void SignalFlush(bool flush) { demuxer_stream_adapter_->SignalFlush(flush); }
 
-  pb::RpcMessage* last_received_rpc() const { return last_received_rpc_.get(); }
+  openscreen::cast::RpcMessage* last_received_rpc() const {
+    return last_received_rpc_.get();
+  }
 
  private:
-  void OnSendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message) {
-    last_received_rpc_.reset(new pb::RpcMessage());
-    CHECK(last_received_rpc_->ParseFromArray(message->data(), message->size()));
+  void OnSendMessageToSink(std::vector<uint8_t> message) {
+    last_received_rpc_ = std::make_unique<openscreen::cast::RpcMessage>();
+    CHECK(last_received_rpc_->ParseFromArray(message.data(), message.size()));
   }
 
   void OnError(StopTrigger stop_trigger) { errors_.push_back(stop_trigger); }
 
-  std::unique_ptr<RpcBroker> rpc_broker_;
+  std::unique_ptr<RpcMessenger> rpc_messenger_;
   std::unique_ptr<DemuxerStreamAdapter> demuxer_stream_adapter_;
-  std::unique_ptr<pb::RpcMessage> last_received_rpc_;
+  std::unique_ptr<openscreen::cast::RpcMessage> last_received_rpc_;
 
   std::vector<StopTrigger> errors_;
 
   base::WeakPtrFactory<MockDemuxerStreamAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockDemuxerStreamAdapter);
 };
 
 class DemuxerStreamAdapterTest : public ::testing::Test {
  public:
   DemuxerStreamAdapterTest() = default;
+
+  DemuxerStreamAdapterTest(const DemuxerStreamAdapterTest&) = delete;
+  DemuxerStreamAdapterTest& operator=(const DemuxerStreamAdapterTest&) = delete;
+
   ~DemuxerStreamAdapterTest() override = default;
 
   void SetUpDataPipe() {
     constexpr size_t kDataPipeCapacity = 256;
-    demuxer_stream_.reset(new FakeDemuxerStream(true));  // audio.
+    demuxer_stream_ = std::make_unique<FakeDemuxerStream>(true);  // audio.
     const MojoCreateDataPipeOptions data_pipe_options{
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         kDataPipeCapacity};
     mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender;
     mojo::ScopedDataPipeProducerHandle producer_end;
     mojo::ScopedDataPipeConsumerHandle consumer_end;
-    CHECK_EQ(
-        MOJO_RESULT_OK,
-        mojo::CreateDataPipe(&data_pipe_options, &producer_end, &consumer_end));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
+                                                  producer_end, consumer_end));
 
-    data_stream_sender_.reset(new FakeRemotingDataStreamSender(
+    data_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
         stream_sender.InitWithNewPipeAndPassReceiver(),
-        std::move(consumer_end)));
-    demuxer_stream_adapter_.reset(new MockDemuxerStreamAdapter(
+        std::move(consumer_end));
+    demuxer_stream_adapter_ = std::make_unique<MockDemuxerStreamAdapter>(
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner(), "test",
         demuxer_stream_.get(), std::move(stream_sender),
-        std::move(producer_end)));
+        std::move(producer_end));
     // DemuxerStreamAdapter constructor posts task to main thread to
     // register MessageReceiverCallback. Therefore it should call
     // RunPendingTasks() to make sure task is executed.
@@ -152,9 +162,6 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
   std::unique_ptr<FakeDemuxerStream> demuxer_stream_;
   std::unique_ptr<FakeRemotingDataStreamSender> data_stream_sender_;
   std::unique_ptr<MockDemuxerStreamAdapter> demuxer_stream_adapter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapterTest);
 };
 
 TEST_F(DemuxerStreamAdapterTest, SingleReadUntil) {
@@ -188,9 +195,11 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameSmallerThanCapacity) {
   // Checks if it's sent to consumer side and data is correct
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 50, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 999);
   data_stream_sender_->ResetHistory();
 }
@@ -205,9 +214,11 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameLargerThanCapacity) {
   // Checks if it's sent to consumer side and data is correct
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 800, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 999);
   data_stream_sender_->ResetHistory();
 }
@@ -221,9 +232,11 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   RunPendingTasks();
   ASSERT_EQ(data_stream_sender_->send_frame_count(), 1U);
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 50, true, 1));
-  pb::RpcMessage* last_rpc = demuxer_stream_adapter_->last_received_rpc();
+  openscreen::cast::RpcMessage* last_rpc =
+      demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 100);
   data_stream_sender_->ResetHistory();
 
@@ -238,7 +251,8 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(1, 150, false, 3));
   last_rpc = demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 101);
   data_stream_sender_->ResetHistory();
 
@@ -269,7 +283,8 @@ TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
   ASSERT_TRUE(data_stream_sender_->ValidateFrameBuffer(0, 100, false, 4));
   last_rpc = demuxer_stream_adapter_->last_received_rpc();
   ASSERT_TRUE(last_rpc);
-  ASSERT_EQ(last_rpc->proc(), pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  ASSERT_EQ(last_rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   ASSERT_EQ(last_rpc->handle(), 103);
   data_stream_sender_->ResetHistory();
 }

@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html>
-<body>
-<div style="padding: 20px;" contenteditable>Click on the left of this line.
-<div>Caret should NOT be placed in this line,</div>
-<div style="position:absolute; top:0px; right:0px;"></div>
-</div>
-<pre><script>
-
-if (window.testRunner) {
-    testRunner.dumpAsText();
-
-    var container = document.body.children[0];
-    eventSender.mouseMoveTo(container.offsetLeft + 5, container.offsetTop + 5);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-
-    if (!getSelection().isCollapsed)
-        document.writeln('FAIL - selection was not collapsed');
-    else if (getSelection().baseNode != container.firstChild)
-        document.writeln('FAIL - caret was not in the first line');
-    else if (getSelection().baseOffset)
-        document.writeln('FAIL - caret was not on the left edge');
-    else
-        document.writeln('PASS');
-}
-
-</script></pre>
-</body>
-</html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+        '<div contenteditable id="target" style="padding: 20px;">',
+            'abc',
+            '<div>def</div>',
+            '<div style="position:absolute; top:0px; right:0px;"></div>',
+        '</div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+            throw 'This test requires eventSender.';
+        const target = selection.document.getElementById('target');
+        eventSender.mouseMoveTo(selection.computeLeft(target) + 5,
+                                selection.computeTop(target) + 5);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+    },
+    [
+        '<div contenteditable id="target" style="padding: 20px;">',
+            '|abc',
+            '<div>def</div>',
+            '<div style="position:absolute; top:0px; right:0px;"></div>',
+        '</div>',
+    ]);
+</script>

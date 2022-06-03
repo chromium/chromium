@@ -1,0 +1,65 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Proto to hold the features computed from parsed documents.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/pdf_parser/proto/pdf_feature.proto";
+import "maldoca/service/proto/doc_type.proto";
+import "maldoca/vba/antivirus/vba_feature.proto";
+
+message DocumentFeatures {
+  optional string sha256 = 1;  // The hex string SHA256 of the doc
+  optional DocType doc_type = 2;
+  optional GeneralDocType general_doc_type = 3;
+  optional bytes file_name = 4;
+  optional int64 file_size = 5;
+  oneof features {
+    OfficeDocumentFeatures office = 6;
+    PdfDocumentFeatures pdf = 7;
+  }
+}
+
+message OfficeDocumentFeatures {
+  // Reseved for pluginins. Latest used extension is none.
+  extensions 100000 to 200000;
+
+  // Specific doc type. e.g. doc, docx, ...
+  optional DocType doc_type = 1;
+
+  // General doc type.
+  // This is a grouping of DocType.
+  // For example, both DocType::DOC and DocType::DOCX are GENERAL_DOC_TYPE_DOC.
+  optional GeneralDocType general_doc_type = 2;
+
+  // Per-doc aggregated VBA features.
+  // Each doc may contain multiple VBA files, and these VBA files are considered
+  // a VBA project.
+  optional VbaFeature vba_project_feature = 3;
+
+  // Per-file VBA features.
+  // These are the unaggregated features.
+  repeated VbaFeature vba_file_features = 4;
+}
+
+message PdfDocumentFeatures {
+  // Reseved for plugins. Latest used extension is none.
+  extensions 100000 to 200000;
+  optional maldoca.pdf.PdfFeature base_features = 1;
+}

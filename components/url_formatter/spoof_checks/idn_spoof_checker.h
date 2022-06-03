@@ -10,8 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
 
 #include "third_party/icu/source/common/unicode/uniset.h"
@@ -21,7 +21,6 @@
 // 'icu' does not work. Use U_ICU_NAMESPACE.
 namespace U_ICU_NAMESPACE {
 
-class Transliterator;
 class UnicodeString;
 
 }  // namespace U_ICU_NAMESPACE
@@ -33,12 +32,30 @@ FORWARD_DECLARE_TEST(UrlFormatterTest, IDNToUnicode);
 
 using Skeletons = base::flat_set<std::string>;
 
+// The |SkeletonType| and |TopDomainEntry| are mirrored in trie_entry.h. These
+// are used to insert and read nodes from the Trie.
+// The type of skeleton in the trie node.
+enum SkeletonType {
+  // The skeleton represents the full domain (e.g. google.corn).
+  kFull = 0,
+  // The skeleton represents the domain with '.'s and '-'s removed (e.g.
+  // googlecorn).
+  kSeparatorsRemoved = 1,
+  // Max value used to determine the number of different types. Update this and
+  // |kSkeletonTypeBitLength| when new SkeletonTypes are added.
+  kMaxValue = kSeparatorsRemoved
+};
+
+const uint8_t kSkeletonTypeBitLength = 1;
+
 // Represents a top domain entry in the trie.
 struct TopDomainEntry {
   // The domain name.
   std::string domain;
   // True if the domain is in the top 500.
   bool is_top_500 = false;
+  // Type of the skeleton stored in the trie node.
+  SkeletonType skeleton_type;
 };
 
 // A helper class for IDN Spoof checking, used to ensure that no IDN input is
@@ -55,21 +72,62 @@ class IDNSpoofChecker {
     size_t trie_root_position;
   };
 
+  enum class Result {
+    // Spoof checks weren't performed because the domain wasn't IDN. Should
+    // never be returned from SafeToDisplayAsUnicode.
+    kNone,
+    // The domain passed all spoof checks.
+    kSafe,
+    // Failed ICU's standard spoof checks such as Greek mixing with Latin.
+    kICUSpoofChecks,
+    // Domain contains deviation characters.
+    kDeviationCharacters,
+    // Domain contains characters that are only allowed for certain TLDs, such
+    // as thorn (þ) used outside Icelandic.
+    kTLDSpecificCharacters,
+    // Domain has an unsafe middle dot.
+    kUnsafeMiddleDot,
+    // Domain is composed of only Latin-like characters from non Latin scripts.
+    // E.g. apple.com but apple in Cyrillic (xn--80ak6aa92e.com).
+    kWholeScriptConfusable,
+    // Domain is composed of only characters that look like digits.
+    kDigitLookalikes,
+    // Domain mixes Non-ASCII Latin with Non-Latin characters.
+    kNonAsciiLatinCharMixedWithNonLatin,
+    // Domain contains dangerous patterns that are mostly found when mixing
+    // Latin and CJK scripts. E.g. Katakana iteration mark (U+30FD) not preceded
+    // by Katakana.
+    kDangerousPattern,
+  };
+
   IDNSpoofChecker();
   ~IDNSpoofChecker();
 
-  // Returns true if |label| is safe to display as Unicode. In the event of
-  // library failure, all IDN inputs will be treated as unsafe.
+  // Returns kSafe if |label| is safe to display as Unicode. Some of the checks
+  // depend on the TLD of the full domain name, so this function also takes
+  // the ASCII (including punycode) TLD in |top_level_domain| and its unicode
+  // version in |top_level_domain_unicode|.
+  // This method doesn't check for similarity to a top domain: If the input
+  // matches a top domain but is otherwise safe (e.g. googlé.com), the result
+  // will be kSafe.
+  // In the event of library failure, all IDN inputs will be treated as unsafe
+  // and the return value will be kICUSpoofChecks.
   // See the function body for details on the specific safety checks performed.
-  // top_level_domain_unicode can be empty if top_level_domain is not well
-  // formed punycode.
-  bool SafeToDisplayAsUnicode(base::StringPiece16 label,
-                              base::StringPiece top_level_domain,
-                              base::StringPiece16 top_level_domain_unicode);
+  // |top_level_domain_unicode| can be passed as empty if |top_level_domain| is
+  // not well formed punycode.
+  // Example usages:
+  // - SafeToDisplayAsUnicode(L"google", "com", "com") -> kSafe
+  // - SafeToDisplayAsUnicode(L"аррӏе", "com", "com") -> kWholeScriptConfusable
+  // - SafeToDisplayAsUnicode(L"аррӏе", "xn--p1ai", "рф") -> kSafe (xn--p1ai is
+  //   the punycode form of рф)
+  Result SafeToDisplayAsUnicode(base::StringPiece16 label,
+                                base::StringPiece top_level_domain,
+                                base::StringPiece16 top_level_domain_unicode);
 
   // Returns the matching top domain if |hostname| or the last few components of
-  // |hostname| looks similar to one of top domains listed i
-  // top_domains/alexa_domains.list.
+  // |hostname| looks similar to one of top domains listed in domains.list.
+  // Returns empty result if |hostname| is a top domain itself, or is a
+  // subdomain of a top domain.
   // Two checks are done:
   //   1. Calculate the skeleton of |hostname| based on the Unicode confusable
   //   character list and look it up in the pre-calculated skeleton list of
@@ -80,10 +138,19 @@ class IDNSpoofChecker {
 
   // Returns skeleton strings computed from |hostname|. This function can apply
   // extra mappings to some characters to produce multiple skeletons.
-  Skeletons GetSkeletons(base::StringPiece16 hostname);
+  Skeletons GetSkeletons(base::StringPiece16 hostname) const;
 
   // Returns a top domain from the top 10K list matching the given |skeleton|.
-  TopDomainEntry LookupSkeletonInTopDomains(const std::string& skeleton);
+  // If |without_separators| is set, the skeleton will be compared against
+  // skeletons without '.' and '-'s as well.
+  TopDomainEntry LookupSkeletonInTopDomains(
+      const std::string& skeleton,
+      SkeletonType skeleton_type = SkeletonType::kFull);
+
+  // Removes diacritics from |hostname| and returns the new string if the input
+  // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
+  // input string.
+  std::u16string MaybeRemoveDiacritics(const std::u16string& hostname);
 
   // Used for unit tests.
   static void SetTrieParamsForTesting(const HuffmanTrieParams& trie_params);
@@ -100,7 +167,9 @@ class IDNSpoofChecker {
         const std::vector<std::string>& allowed_tlds);
     ~WholeScriptConfusable();
 
-    // Captures all letters belonging to this script.
+    // Captures all letters belonging to this script. See kScriptNameCodeList in
+    // blink/renderer/platform/text/locale_to_script_mapping.cc for script
+    // codes.
     std::unique_ptr<icu::UnicodeSet> all_letters;
     // The subset of all_letters that look like Latin ASCII letters. A domain
     // label entirely made of them is blocked as a simplified
@@ -121,7 +190,7 @@ class IDNSpoofChecker {
   // number of domains in |script| (as in, written script). |tld_unicode| can be
   // empty if |tld| is not well formed punycode.
   static bool IsWholeScriptConfusableAllowedForTLD(
-      const WholeScriptConfusable& wsc,
+      const WholeScriptConfusable& script,
       base::StringPiece tld,
       base::StringPiece16 tld_unicode);
 
@@ -139,10 +208,9 @@ class IDNSpoofChecker {
   icu::UnicodeSet combining_diacritics_exceptions_;
   icu::UnicodeSet digits_;
   icu::UnicodeSet digit_lookalikes_;
-  icu::UnicodeSet lgc_letters_n_ascii_;
   icu::UnicodeSet icelandic_characters_;
-  std::unique_ptr<icu::Transliterator> diacritic_remover_;
-  std::unique_ptr<icu::Transliterator> extra_confusable_mapper_;
+
+  std::unique_ptr<SkeletonGenerator> skeleton_generator_;
 
   // List of scripts containing whole-script-confusable information.
   std::vector<std::unique_ptr<WholeScriptConfusable>> wholescriptconfusables_;

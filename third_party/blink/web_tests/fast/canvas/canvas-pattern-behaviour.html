@@ -35,28 +35,28 @@ test(function () {
     pixelShouldBe(1, 48, [0, 128, 0, 255]);
     pixelShouldBe(98, 48, [0, 128, 0, 255]);
 
-    assert_throws("SYNTAX_ERR", function() {
+    assert_throws_dom("SYNTAX_ERR", function() {
       context.createPattern(green1x1, 'null');
     });
-    assert_throws("SYNTAX_ERR", function() {
+    assert_throws_dom("SYNTAX_ERR", function() {
       context.createPattern(green1x1, undefined);
     });
-    assert_throws("SYNTAX_ERR", function() {
+    assert_throws_dom("SYNTAX_ERR", function() {
       context.createPattern(green1x1, 'undefined');
     });
-    assert_throws("SYNTAX_ERR", function() {
+    assert_throws_dom("SYNTAX_ERR", function() {
         context.createPattern(green1x1, {oString:function(){ return null;}});
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       context.createPattern(null, '');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       context.createPattern(undefined, '');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       context.createPattern({}, '');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       context.createPattern([], '');
     });
 

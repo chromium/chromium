@@ -1,0 +1,4 @@
+monorail: {
+  component: "UI>Settings>Metrics"
+}
+team_email: "chrome-friendly-settings@google.com"

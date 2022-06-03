@@ -5,33 +5,42 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * The {@link BottomSheetContent} for the Autofill Assistant. It supports notifying the
  * BottomSheet when its size changes and allows to dynamically set its scrollable content (in
  * practice, this allows to replace the onboarding by the actual Autofill Assistant content).
  */
-class AssistantBottomSheetContent implements BottomSheetContent {
+public class AssistantBottomSheetContent implements BottomSheetContent {
     private final View mToolbarView;
     private final SizeListenableLinearLayout mContentView;
     @Nullable
     private ScrollView mContentScrollableView;
+    private Supplier<AssistantBottomBarDelegate> mBottomBarDelegateSupplier;
+    private boolean mPeekModeDisabled;
+    private BottomSheetController mController;
+    @Nullable
+    private Callback<Integer> mOffsetController;
 
-    public AssistantBottomSheetContent(Context context) {
-        mToolbarView = LayoutInflater.from(context).inflate(
+    public AssistantBottomSheetContent(
+            Context context, Supplier<AssistantBottomBarDelegate> supplier) {
+        mToolbarView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_bottom_sheet_toolbar, /* root= */ null);
         mContentView = new SizeListenableLinearLayout(context);
         mContentView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mBottomBarDelegateSupplier = supplier;
     }
 
     public void setContent(View content, ScrollView scrollableView) {
@@ -43,6 +52,14 @@ class AssistantBottomSheetContent implements BottomSheetContent {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mContentView.addView(content);
         mContentScrollableView = scrollableView;
+    }
+
+    public void setDelegate(Supplier<AssistantBottomBarDelegate> supplier) {
+        mBottomBarDelegateSupplier = supplier;
+    }
+
+    public void setPeekModeDisabled(boolean disabled) {
+        mPeekModeDisabled = disabled;
     }
 
     @Override
@@ -100,8 +117,14 @@ class AssistantBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public int getPeekHeight() {
+        return mPeekModeDisabled ? BottomSheetContent.HeightMode.DISABLED
+                                 : BottomSheetContent.HeightMode.DEFAULT;
+    }
+
+    @Override
     public boolean hideOnScroll() {
-        return true;
+        return false;
     }
 
     @Override
@@ -122,5 +145,29 @@ class AssistantBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.autofill_assistant_sheet_closed;
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        AssistantBottomBarDelegate bottomBarDelegate = mBottomBarDelegateSupplier.get();
+        if (bottomBarDelegate == null) {
+            return false;
+        }
+
+        return bottomBarDelegate.onBackButtonPressed();
+    }
+
+    @Override
+    public boolean contentControlsOffset() {
+        return true;
+    }
+
+    @Override
+    public void setOffsetController(Callback<Integer> offsetController) {
+        mOffsetController = offsetController;
+    }
+
+    public Callback<Integer> getOffsetController() {
+        return mOffsetController;
     }
 }

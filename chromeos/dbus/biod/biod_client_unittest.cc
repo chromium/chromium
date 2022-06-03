@@ -61,6 +61,10 @@ void RunResponseCallback(dbus::ObjectProxy::ResponseCallback callback,
 class BiodClientTest : public testing::Test {
  public:
   BiodClientTest() = default;
+
+  BiodClientTest(const BiodClientTest&) = delete;
+  BiodClientTest& operator=(const BiodClientTest&) = delete;
+
   ~BiodClientTest() override = default;
 
   void SetUp() override {
@@ -201,8 +205,6 @@ class BiodClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(pending_response)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BiodClientTest);
 };
 
 TEST_F(BiodClientTest, TestStartEnrollSession) {

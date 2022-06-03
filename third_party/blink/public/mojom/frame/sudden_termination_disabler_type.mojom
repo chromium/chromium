@@ -8,5 +8,7 @@ module blink.mojom;
 // renderer process may be prevented.
 enum SuddenTerminationDisablerType {
   kBeforeUnloadHandler,
-  kUnloadHandler
+  kPageHideHandler,
+  kUnloadHandler,
+  kVisibilityChangeHandler
 };

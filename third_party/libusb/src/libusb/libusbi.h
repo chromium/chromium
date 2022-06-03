@@ -435,7 +435,8 @@ void usbi_connect_device (struct libusb_device *dev);
 void usbi_disconnect_device (struct libusb_device *dev);
 
 /* Internal abstraction for poll (needs struct usbi_transfer on Windows) */
-#if defined(OS_LINUX) || defined(OS_DARWIN) || defined(OS_OPENBSD) || defined(OS_NETBSD)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_DARWIN) || \
+    defined(OS_OPENBSD) || defined(OS_NETBSD)
 #include <unistd.h>
 #include "os/poll_posix.h"
 #elif defined(OS_WINDOWS) || defined(OS_WINCE)

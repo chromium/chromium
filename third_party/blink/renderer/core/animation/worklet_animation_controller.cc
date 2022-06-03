@@ -81,38 +81,25 @@ void WorkletAnimationController::UpdateAnimationTimings(
   ApplyAnimationTimings(reason);
 }
 
-void WorkletAnimationController::ScrollSourceCompositingStateChanged(
-    Node* node) {
-  DCHECK(ScrollTimeline::HasActiveScrollTimeline(node));
-  for (const auto& animation : animations_.Values()) {
-    if (animation->GetTimeline()->IsScrollTimeline() &&
-        To<ScrollTimeline>(animation->GetTimeline())->scrollSource() == node) {
-      InvalidateAnimation(*animation);
-    }
-  }
-}
-
 base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
 WorkletAnimationController::EnsureMainThreadMutatorDispatcher(
-    scoped_refptr<base::SingleThreadTaskRunner>* mutator_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner) {
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl> mutator_dispatcher;
-  if (!mutator_task_runner_) {
+  if (!main_thread_mutator_client_) {
     main_thread_mutator_client_ =
         AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
-            &mutator_dispatcher, &mutator_task_runner_);
+            mutator_dispatcher, std::move(mutator_task_runner));
     main_thread_mutator_client_->SetDelegate(this);
   }
 
   DCHECK(main_thread_mutator_client_);
-  DCHECK(mutator_task_runner_);
   DCHECK(mutator_dispatcher);
-  *mutator_task_runner = mutator_task_runner_;
   return mutator_dispatcher;
 }
 
-// TODO(yigu): Currently one animator name is synced back per registration.
-// Eventually all registered names should be synced in batch once a module
-// completes its loading in the worklet scope. https://crbug.com/920722.
+// TODO(crbug.com/920722): Currently one animator name is synced back per
+// registration. Eventually all registered names should be synced in batch once
+// a module completes its loading in the worklet scope.
 void WorkletAnimationController::SynchronizeAnimatorName(
     const String& animator_name) {
   animator_names_.insert(animator_name);
@@ -160,7 +147,7 @@ void WorkletAnimationController::ApplyAnimationTimings(
     animation->Update(reason);
 }
 
-void WorkletAnimationController::Trace(blink::Visitor* visitor) {
+void WorkletAnimationController::Trace(Visitor* visitor) const {
   visitor->Trace(pending_animations_);
   visitor->Trace(animations_);
   visitor->Trace(document_);

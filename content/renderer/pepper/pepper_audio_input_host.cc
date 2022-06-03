@@ -4,7 +4,7 @@
 
 #include "content/renderer/pepper/pepper_audio_input_host.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
@@ -53,13 +53,13 @@ int32_t PepperAudioInputHost::OnResourceMessageReceived(
 
 void PepperAudioInputHost::StreamCreated(
     base::ReadOnlySharedMemoryRegion shared_memory_region,
-    base::SyncSocket::Handle socket) {
-  OnOpenComplete(PP_OK, std::move(shared_memory_region), socket);
+    base::SyncSocket::ScopedHandle socket) {
+  OnOpenComplete(PP_OK, std::move(shared_memory_region), std::move(socket));
 }
 
 void PepperAudioInputHost::StreamCreationFailed() {
   OnOpenComplete(PP_ERROR_FAILED, base::ReadOnlySharedMemoryRegion(),
-                 base::SyncSocket::kInvalidHandle);
+                 base::SyncSocket::ScopedHandle());
 }
 
 int32_t PepperAudioInputHost::OnOpen(ppapi::host::HostMessageContext* context,
@@ -113,9 +113,9 @@ int32_t PepperAudioInputHost::OnClose(
 void PepperAudioInputHost::OnOpenComplete(
     int32_t result,
     base::ReadOnlySharedMemoryRegion shared_memory_region,
-    base::SyncSocket::Handle socket_handle) {
+    base::SyncSocket::ScopedHandle socket_handle) {
   // Make sure the handles are cleaned up.
-  base::SyncSocket scoped_socket(socket_handle);
+  base::SyncSocket scoped_socket(std::move(socket_handle));
 
   if (!open_context_.is_valid()) {
     NOTREACHED();

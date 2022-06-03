@@ -22,35 +22,6 @@ namespace memory_instrumentation {
 
 namespace {
 
-#if !defined(MAC_OS_X_VERSION_10_11) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_11
-// The |phys_footprint| field was introduced in 10.11.
-struct ChromeTaskVMInfo {
-  mach_vm_size_t virtual_size;
-  integer_t region_count;
-  integer_t page_size;
-  mach_vm_size_t resident_size;
-  mach_vm_size_t resident_size_peak;
-  mach_vm_size_t device;
-  mach_vm_size_t device_peak;
-  mach_vm_size_t internal;
-  mach_vm_size_t internal_peak;
-  mach_vm_size_t external;
-  mach_vm_size_t external_peak;
-  mach_vm_size_t reusable;
-  mach_vm_size_t reusable_peak;
-  mach_vm_size_t purgeable_volatile_pmap;
-  mach_vm_size_t purgeable_volatile_resident;
-  mach_vm_size_t purgeable_volatile_virtual;
-  mach_vm_size_t compressed;
-  mach_vm_size_t compressed_peak;
-  mach_vm_size_t compressed_lifetime;
-  mach_vm_size_t phys_footprint;
-};
-#else
-using ChromeTaskVMInfo = task_vm_info;
-#endif  // MAC_OS_X_VERSION_10_11
-
 // Don't simply use sizeof(task_vm_info) / sizeof(natural_t):
 // In the 10.15 SDK, this structure is 87 32-bit words long, and in
 // mach_types.defs:
@@ -266,20 +237,21 @@ void AddRegionByteStats(VMRegion* dest, const VMRegion& source) {
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
                                  mojom::RawOSMemDump* dump) {
-  ChromeTaskVMInfo task_vm_info;
+  task_vm_info info;
   mach_msg_type_number_t count = ChromeTaskVMInfoCount;
   kern_return_t result =
       task_info(mach_task_self(), TASK_VM_INFO,
-                reinterpret_cast<task_info_t>(&task_vm_info), &count);
+                reinterpret_cast<task_info_t>(&info), &count);
   if (result != KERN_SUCCESS)
     return false;
 
-  dump->platform_private_footprint->internal_bytes = task_vm_info.internal;
-  dump->platform_private_footprint->compressed_bytes = task_vm_info.compressed;
+  dump->platform_private_footprint->internal_bytes = info.internal;
+  dump->platform_private_footprint->compressed_bytes = info.compressed;
 
+  // The |phys_footprint| field was introduced in 10.11.
   if (count == ChromeTaskVMInfoCount) {
     dump->platform_private_footprint->phys_footprint_bytes =
-        task_vm_info.phys_footprint;
+        info.phys_footprint;
   }
 
   return true;

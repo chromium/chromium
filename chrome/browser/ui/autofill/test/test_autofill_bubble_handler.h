@@ -7,19 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 
 namespace autofill {
 
-class TestLocalCardMigrationBubbleView final : public LocalCardMigrationBubble {
-  void Hide() override {}
-};
-
-class TestSaveCardBubbleView final : public SaveCardBubbleView {
+class TestAutofillBubble final : public AutofillBubbleBase {
   void Hide() override {}
 };
 
@@ -30,33 +24,55 @@ class TestSaveUPIBubble final : public SaveUPIBubble {
 class TestAutofillBubbleHandler : public AutofillBubbleHandler {
  public:
   TestAutofillBubbleHandler();
+
+  TestAutofillBubbleHandler(const TestAutofillBubbleHandler&) = delete;
+  TestAutofillBubbleHandler& operator=(const TestAutofillBubbleHandler&) =
+      delete;
+
   ~TestAutofillBubbleHandler() override;
 
   // AutofillBubbleHandler:
-  SaveCardBubbleView* ShowSaveCreditCardBubble(
+  AutofillBubbleBase* ShowSaveCreditCardBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
       bool is_user_gesture) override;
-  SaveCardBubbleView* ShowSaveCardSignInPromoBubble(
-      content::WebContents* contents,
-      autofill::SaveCardBubbleController* controller) override;
-  LocalCardMigrationBubble* ShowLocalCardMigrationBubble(
+  AutofillBubbleBase* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
+      bool is_user_gesture) override;
+  AutofillBubbleBase* ShowOfferNotificationBubble(
+      content::WebContents* contents,
+      OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
   SaveUPIBubble* ShowSaveUPIBubble(
       content::WebContents* contents,
       SaveUPIBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveAddressProfileBubble(
+      content::WebContents* contents,
+      SaveUpdateAddressProfileBubbleController* controller,
+      bool is_user_gesture) override;
+  AutofillBubbleBase* ShowUpdateAddressProfileBubble(
+      content::WebContents* contents,
+      SaveUpdateAddressProfileBubbleController* controller,
+      bool is_user_gesture) override;
+  AutofillBubbleBase* ShowEditAddressProfileDialog(
+      content::WebContents* contents,
+      EditAddressProfileDialogController* controller) override;
+  AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+      content::WebContents* web_contents,
+      VirtualCardManualFallbackBubbleController* controller,
+      bool is_user_gesture) override;
   void OnPasswordSaved() override;
-  void HideSignInPromo() override;
 
  private:
-  std::unique_ptr<TestLocalCardMigrationBubbleView>
-      local_card_migration_bubble_view_;
-  std::unique_ptr<TestSaveCardBubbleView> save_card_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> local_card_migration_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> offer_notification_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> save_card_bubble_view_;
   std::unique_ptr<TestSaveUPIBubble> save_upi_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillBubbleHandler);
+  std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> virtual_card_manual_fallback_bubble_view_;
 };
 
 }  // namespace autofill

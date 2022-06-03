@@ -1,5 +1,6 @@
 <script src="../resources/js-test.js"></script>
 <script src="../resources/accessibility-helper.js"></script>
+<div id="container">
 <ul role="radiogroup">
     <li role="radio">Explicit Item 1</li>
     <li role="radio">Explicit Item 2</li>
@@ -32,7 +33,7 @@
 <input type="range" name="points" min="0" max="10" role="status">
 <input type="range" name="points" min="0" max="10">
 </div>
-<p>End of test</p>
+</div>  <!-- container -->
 <p id="description"></p>
 <div id="console"></div>
 <script>
@@ -41,5 +42,5 @@ description("This tests that the role attribute is not missed.");
 if (window.testRunner)
     testRunner.dumpAsText();
 if (window.accessibilityController)
-    buildAccessibilityTree(accessibilityController.focusedElement, 0, 1);
+    buildAccessibilityTree(accessibilityController.accessibleElementById('container'), 0, 1);
 </script>

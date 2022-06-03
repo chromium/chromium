@@ -5,6 +5,7 @@
 
 """A tool to extract minidumps from dmp crash dumps."""
 
+from __future__ import print_function
 import os
 import sys
 from cgi import parse_multipart
@@ -25,11 +26,11 @@ def ProcessDump(dump_file, minidump_file):
     boundary = dump.readline().strip()[2:]
     data = parse_multipart(dump, {'boundary': boundary})
   except:
-    print 'Failed to read dmp file %s' % dump_file
+    print('Failed to read dmp file %s' % dump_file)
     return
 
   if not 'upload_file_minidump' in data:
-    print 'Could not find minidump file in dump.'
+    print('Could not find minidump file in dump.')
     return
 
   f = open(minidump_file, 'w')
@@ -39,9 +40,9 @@ def ProcessDump(dump_file, minidump_file):
 
 def main():
   if len(sys.argv) != 3:
-    print 'Usage: %s [dmp file] [minidump]' % sys.argv[0]
-    print ''
-    print 'Extracts the minidump stored in the crash dump file'
+    print('Usage: %s [dmp file] [minidump]' % sys.argv[0])
+    print('')
+    print('Extracts the minidump stored in the crash dump file')
     return 1
 
   ProcessDump(sys.argv[1], sys.argv[2])

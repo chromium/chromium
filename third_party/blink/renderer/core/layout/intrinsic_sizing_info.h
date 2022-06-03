@@ -15,6 +15,9 @@ struct IntrinsicSizingInfo {
 
   IntrinsicSizingInfo() : has_width(true), has_height(true) {}
 
+  // Both size and aspect_ratio use logical coordinates.
+  // Because they are using float instead of LayoutUnit, we can't use
+  // LogicalSize here.
   FloatSize size;
   FloatSize aspect_ratio;
   bool has_width;

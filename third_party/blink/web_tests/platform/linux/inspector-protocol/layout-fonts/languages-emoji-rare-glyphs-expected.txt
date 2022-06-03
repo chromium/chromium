@@ -23,13 +23,14 @@
 "DejaVu Sans" : 71,
 "Tinos" : 14
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
 #emoji:
-"DejaVu Sans" : 20
+"Noto Color Emoji" : 22,
+"Tinos" : 2
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
-"DejaVu Sans" : 16
+"Tinos" : 16
 
 ខ្ញុំអាចញុំកញ្ចក់បាន ដោយគ្មានបញ្ហារ
 #khmer:
@@ -38,15 +39,16 @@
 
 𐌲𐌿𐍄𐌹𐍃𐌺
 #gothic:
-"DejaVu Sans" : 6
+"Tinos" : 6
 
 ܐܬܘܪܝܐ
 #syriac:
-"DejaVu Sans" : 6
+"Tinos" : 6
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"DejaVu Sans" : 5,
-"Noto Sans CJK JP Regular" : 4
+"Noto Sans CJK JP Regular" : 4,
+"DejaVu Sans" : 4,
+"Tinos" : 1
 
 

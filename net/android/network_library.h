@@ -13,13 +13,14 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
-#include "net/dns/dns_config_service_posix.h"
 #include "net/socket/socket_descriptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace android {
@@ -56,12 +57,9 @@ bool GetMimeTypeFromExtension(const std::string& extension,
                               std::string* result);
 
 // Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current registered operator.
+// the numeric name of the current registered operator. This function
+// potentially blocks the thread, so use with care.
 NET_EXPORT std::string GetTelephonyNetworkOperator();
-
-// Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current SIM operator.
-NET_EXPORT std::string GetTelephonySimOperator();
 
 // Returns true if the device is roaming on the currently active network. When
 // true, it suggests that use of data may incur extra costs.
@@ -85,19 +83,30 @@ NET_EXPORT_PRIVATE std::string GetWifiSSID();
 // Returns the signal strength level (between 0 and 4, both inclusive) of the
 // currently registered Wifi connection. If the value is unavailable, an
 // empty value is returned.
-NET_EXPORT_PRIVATE base::Optional<int32_t> GetWifiSignalLevel();
+NET_EXPORT_PRIVATE absl::optional<int32_t> GetWifiSignalLevel();
 
 // Gets the DNS servers and puts them in |dns_servers|. Sets
 // |dns_over_tls_active| and |dns_over_tls_hostname| based on the private DNS
 // settings. |dns_over_tls_hostname| will only be non-empty if
 // |dns_over_tls_active| is true.
 // Only callable on Marshmallow and newer releases.
-// Returns CONFIG_PARSE_POSIX_OK upon success,
-// CONFIG_PARSE_POSIX_NO_NAMESERVERS if no DNS servers found.
-NET_EXPORT_PRIVATE internal::ConfigParsePosixResult GetDnsServers(
+// Returns false when a valid server config could not be read.
+NET_EXPORT_PRIVATE bool GetDnsServers(
     std::vector<IPEndPoint>* dns_servers,
     bool* dns_over_tls_active,
-    std::string* dns_over_tls_hostname);
+    std::string* dns_over_tls_hostname,
+    std::vector<std::string>* search_suffixes);
+using DnsServerGetter =
+    base::RepeatingCallback<bool(std::vector<IPEndPoint>* dns_servers,
+                                 bool* dns_over_tls_active,
+                                 std::string* dns_over_tls_hostname,
+                                 std::vector<std::string>* search_suffixes)>;
+
+// Reports to the framework that the current default network appears to have
+// connectivity issues. This may serve as a signal for the OS to consider
+// switching to a different default network. Returns |true| if successfully
+// reported to the OS, or |false| if not supported.
+NET_EXPORT_PRIVATE bool ReportBadDefaultNetwork();
 
 // Apply TrafficStats tag |tag| and UID |uid| to |socket|. Future network
 // traffic used by |socket| will be attributed to |uid| and |tag|.

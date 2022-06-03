@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARKS_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARKS_API_H_
 
-#include <vector>
-
 #include "chromecast/common/extensions_api/bookmarks.h"
 #include "extensions/browser/extension_function.h"
 

@@ -10,7 +10,7 @@
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
- * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
  *
  * Author: daniel@veillard.com
@@ -38,7 +38,8 @@
  *  list we will use the BigKey algo as soon as the hash size grows
  *  over MIN_DICT_SIZE so this actually works
  */
-#if defined(HAVE_RAND) && defined(HAVE_SRAND) && defined(HAVE_TIME)
+#if defined(HAVE_RAND) && defined(HAVE_SRAND) && defined(HAVE_TIME) && \
+    !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
 #define DICT_RANDOMIZATION
 #endif
 
@@ -371,6 +372,9 @@ found_pool:
  * http://burtleburtle.net/bob/hash/doobs.html
  */
 
+#ifdef __clang__
+ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
+#endif
 static uint32_t
 xmlDictComputeBigKey(const xmlChar* data, int namelen, int seed) {
     uint32_t hash;
@@ -403,6 +407,9 @@ xmlDictComputeBigKey(const xmlChar* data, int namelen, int seed) {
  *
  * Neither of the two strings must be NULL.
  */
+#ifdef __clang__
+ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
+#endif
 static unsigned long
 xmlDictComputeBigQKey(const xmlChar *prefix, int plen,
                       const xmlChar *name, int len, int seed)
@@ -445,7 +452,7 @@ xmlDictComputeFastKey(const xmlChar *name, int namelen, int seed) {
     unsigned long value = seed;
 
     if (name == NULL) return(0);
-    value = *name;
+    value += *name;
     value <<= 5;
     if (namelen > 10) {
         value += name[namelen - 1];
@@ -727,7 +734,7 @@ xmlDictGrow(xmlDictPtr dict, size_t size) {
 		dict->dict[key].next = entry;
 	    } else {
 	        /*
-		 * we don't have much ways to alert from herei
+		 * we don't have much ways to alert from here
 		 * result is losing an entry and unicity guarantee
 		 */
 	        ret = -1;
@@ -1202,7 +1209,7 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
  * @dict: the dictionary
  * @str: the string
  *
- * check if a string is owned by the disctionary
+ * check if a string is owned by the dictionary
  *
  * Returns 1 if true, 0 if false and -1 in case of error
  * -1 in case of error

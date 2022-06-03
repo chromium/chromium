@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -115,9 +115,6 @@ void ChromeTableViewControllerTest::CheckSectionFooterWithId(
   CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
-// TODO(crbug.com/894800): There are some unittests that are using
-// CheckTextCellText to check Item with both "text" and "detailText". Change all
-// of them to CheckTextCellTextAndDetailText when the migration is finished.
 void ChromeTableViewControllerTest::CheckTextCellText(NSString* expected_text,
                                                       int section,
                                                       int item) {

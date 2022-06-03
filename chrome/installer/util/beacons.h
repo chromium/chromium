@@ -8,9 +8,8 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/installer/util/shell_util.h"
@@ -65,7 +64,11 @@ class Beacon {
     PER_INSTALL,
   };
 
-  Beacon(base::StringPiece16 name, BeaconType type, BeaconScope scope);
+  Beacon(base::WStringPiece name, BeaconType type, BeaconScope scope);
+
+  Beacon(const Beacon&) = delete;
+  Beacon& operator=(const Beacon&) = delete;
+
   ~Beacon();
 
   // Updates the beacon. For a type LAST beacon, the current time is written
@@ -81,7 +84,7 @@ class Beacon {
 
  private:
   // Initializes the key_path_ and value_name_ fields of the beacon.
-  void Initialize(base::StringPiece16 name);
+  void Initialize(base::WStringPiece name);
 
   // The type of beacon.
   const BeaconType type_;
@@ -93,12 +96,10 @@ class Beacon {
   const BeaconScope scope_;
 
   // The path to the registry key holding the beacon.
-  base::string16 key_path_;
+  std::wstring key_path_;
 
   // The name of the registry value holding the beacon.
-  base::string16 value_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(Beacon);
+  std::wstring value_name_;
 };
 
 }  // namespace installer_util

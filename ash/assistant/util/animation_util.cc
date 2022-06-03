@@ -4,8 +4,12 @@
 
 #include "ash/assistant/util/animation_util.h"
 
+#include "ash/public/cpp/metrics_util.h"
+#include "base/bind.h"
 #include "base/time/time.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -84,7 +88,7 @@ ui::CallbackLayerAnimationObserver* BuildObserverToHideView(views::View* view) {
   if (d)
     layer_animation_sequence->AddElement(std::move(d));
 
-  layer_animation_sequence->set_is_cyclic(params.is_cyclic);
+  layer_animation_sequence->set_is_repeating(params.is_cyclic);
 
   return layer_animation_sequence;
 }
@@ -112,19 +116,28 @@ std::unique_ptr<::ui::LayerAnimationElement> CreateTransformElement(
 void StartLayerAnimationSequence(
     ::ui::LayerAnimator* layer_animator,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
-    ::ui::LayerAnimationObserver* observer) {
+    ::ui::LayerAnimationObserver* observer,
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   if (observer)
     layer_animation_sequence->AddObserver(observer);
+
+  absl::optional<ui::AnimationThroughputReporter> reporter;
+  if (smoothness_callback) {
+    reporter.emplace(layer_animator, ash::metrics_util::ForSmoothness(
+                                         smoothness_callback.value()));
+  }
   layer_animator->StartAnimation(layer_animation_sequence);
 }
 
 void StartLayerAnimationSequence(
     views::View* view,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
-    ::ui::LayerAnimationObserver* observer) {
+    ::ui::LayerAnimationObserver* observer,
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   DCHECK(view->layer());
   StartLayerAnimationSequence(view->layer()->GetAnimator(),
-                              layer_animation_sequence, observer);
+                              layer_animation_sequence, observer,
+                              smoothness_callback);
 }
 
 void StartLayerAnimationSequencesTogether(

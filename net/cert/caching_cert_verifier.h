@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/net_export.h"
@@ -40,6 +41,9 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
   // item has expired.
   explicit CachingCertVerifier(std::unique_ptr<CertVerifier> verifier);
 
+  CachingCertVerifier(const CachingCertVerifier&) = delete;
+  CachingCertVerifier& operator=(const CachingCertVerifier&) = delete;
+
   ~CachingCertVerifier() override;
 
   // CertVerifier implementation:
@@ -52,6 +56,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHit);
+  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHitCTResultsCached);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, Visitor);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, AddsEntries);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, DifferentCACerts);
@@ -128,8 +133,6 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
   uint64_t requests_;
   uint64_t cache_hits_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachingCertVerifier);
 };
 
 }  // namespace net

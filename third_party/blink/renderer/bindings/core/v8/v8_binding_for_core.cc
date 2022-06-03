@@ -30,11 +30,11 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/bindings/core/v8/custom/v8_custom_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_link_element.h"
@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -187,7 +186,7 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
       return 0;
     }
     if (configuration == kClamp)
-      return clampTo<T>(result);
+      return ClampTo<T>(result);
     result %= LimitsTrait::kNumberOfValues;
     return static_cast<T>(result > LimitsTrait::kMaxValue
                               ? result - LimitsTrait::kNumberOfValues
@@ -218,7 +217,7 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<T>(number_value);
+    return ClampTo<T>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -251,7 +250,7 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
       return 0;
     }
     if (configuration == kClamp)
-      return clampTo<T>(result);
+      return ClampTo<T>(result);
     return static_cast<T>(result);
   }
 
@@ -280,7 +279,7 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<T>(number_value);
+    return ClampTo<T>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -352,7 +351,7 @@ int32_t ToInt32Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<int32_t>(number_value);
+    return ClampTo<int32_t>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -381,7 +380,7 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
       return 0;
     }
     DCHECK_EQ(configuration, kClamp);
-    return clampTo<uint32_t>(result);
+    return ClampTo<uint32_t>(result);
   }
 
   // Can the value be converted to a number?
@@ -404,7 +403,7 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<uint32_t>(number_value);
+    return ClampTo<uint32_t>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -458,7 +457,7 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
       return 0;
     }
     DCHECK_EQ(configuration, kClamp);
-    return clampTo<uint64_t>(result);
+    return ClampTo<uint64_t>(result);
   }
 
   v8::Local<v8::Number> number_object;
@@ -481,7 +480,7 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<uint64_t>(number_value);
+    return ClampTo<uint64_t>(number_value);
 
   return DoubleToInteger(number_value);
 }
@@ -552,8 +551,8 @@ static bool HasUnmatchedSurrogates(const String& string) {
 }
 
 // Replace unmatched surrogates with REPLACEMENT CHARACTER U+FFFD.
-String ReplaceUnmatchedSurrogates(const String& string) {
-  // This roughly implements http://heycam.github.io/webidl/#dfn-obtain-unicode
+String ReplaceUnmatchedSurrogates(String string) {
+  // This roughly implements https://webidl.spec.whatwg.org/#dfn-obtain-unicode
   // but since Blink strings are 16-bits internally, the output is simply
   // re-encoded to UTF-16.
 
@@ -575,8 +574,8 @@ String ReplaceUnmatchedSurrogates(const String& string) {
   unsigned i = 0;
 
   // 4. Initialize U to be an empty sequence of Unicode characters.
-  StringBuilder u;
-  u.ReserveCapacity(n);
+  StringBuffer<UChar> result(n);
+  UChar* u = result.Characters();
 
   // 5. While i < n:
   while (i < n) {
@@ -586,17 +585,17 @@ String ReplaceUnmatchedSurrogates(const String& string) {
     if (U16_IS_SINGLE(c)) {
       // c < 0xD800 or c > 0xDFFF
       // Append to U the Unicode character with code point c.
-      u.Append(c);
+      u[i] = c;
     } else if (U16_IS_TRAIL(c)) {
       // 0xDC00 <= c <= 0xDFFF
       // Append to U a U+FFFD REPLACEMENT CHARACTER.
-      u.Append(kReplacementCharacter);
+      u[i] = kReplacementCharacter;
     } else {
       // 0xD800 <= c <= 0xDBFF
       DCHECK(U16_IS_LEAD(c));
       if (i == n - 1) {
         // 1. If i = n-1, then append to U a U+FFFD REPLACEMENT CHARACTER.
-        u.Append(kReplacementCharacter);
+        u[i] = kReplacementCharacter;
       } else {
         // 2. Otherwise, i < n-1:
         DCHECK_LT(i, n - 1);
@@ -608,13 +607,12 @@ String ReplaceUnmatchedSurrogates(const String& string) {
           // ..2. Let b be d & 0x3FF.
           // ..3. Append to U the Unicode character with code point
           //      2^16+2^10*a+b.
-          u.Append(U16_GET_SUPPLEMENTARY(c, d));
-          // Blink: This is equivalent to u.append(c); u.append(d);
-          ++i;
+          u[i++] = c;
+          u[i] = d;
         } else {
           // 3. Otherwise, d < 0xDC00 or d > 0xDFFF. Append to U a U+FFFD
           //    REPLACEMENT CHARACTER.
-          u.Append(kReplacementCharacter);
+          u[i] = kReplacementCharacter;
         }
       }
     }
@@ -623,8 +621,8 @@ String ReplaceUnmatchedSurrogates(const String& string) {
   }
 
   // 6. Return U.
-  DCHECK_EQ(u.length(), string.length());
-  return u.ToString();
+  DCHECK_EQ(i, string.length());
+  return String::Adopt(result);
 }
 
 XPathNSResolver* ToXPathNSResolver(ScriptState* script_state,
@@ -640,14 +638,7 @@ XPathNSResolver* ToXPathNSResolver(ScriptState* script_state,
 }
 
 DOMWindow* ToDOMWindow(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  if (value.IsEmpty() || !value->IsObject())
-    return nullptr;
-
-  v8::Local<v8::Object> window_wrapper = V8Window::FindInstanceInPrototypeChain(
-      v8::Local<v8::Object>::Cast(value), isolate);
-  if (!window_wrapper.IsEmpty())
-    return V8Window::ToImpl(window_wrapper);
-  return nullptr;
+  return V8Window::ToImplWithTypeCheck(isolate, value);
 }
 
 LocalDOMWindow* ToLocalDOMWindow(v8::Local<v8::Context> context) {
@@ -675,12 +666,20 @@ LocalDOMWindow* CurrentDOMWindow(v8::Isolate* isolate) {
 }
 
 ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
-  DCHECK(!context.IsEmpty());
+  // TODO(jgruber,crbug.com/v8/10460): Change this back to a DCHECK once the
+  // crash has been flushed out.
+  CHECK(!context.IsEmpty());
 
   RUNTIME_CALL_TIMER_SCOPE(context->GetIsolate(),
                            RuntimeCallStats::CounterId::kToExecutionContext);
 
   v8::Local<v8::Object> global_proxy = context->Global();
+
+  // TODO(jgruber,crbug.com/v8/10460): Change these back to a DCHECK once the
+  // crash has been flushed out.
+  CHECK(!global_proxy.IsEmpty());
+  CHECK(global_proxy->IsObject());
+
   // There are several contexts other than Window, WorkerGlobalScope or
   // WorkletGlobalScope but entering into ToExecutionContext, namely GC context,
   // DevTools' context (debug context), and maybe more.  They all don't have
@@ -716,20 +715,12 @@ LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context> context) {
 
 void ToFlexibleArrayBufferView(v8::Isolate* isolate,
                                v8::Local<v8::Value> value,
-                               FlexibleArrayBufferView& result,
-                               void* storage) {
+                               FlexibleArrayBufferView& result) {
   if (!value->IsArrayBufferView()) {
     result.Clear();
     return;
   }
-  v8::Local<v8::ArrayBufferView> buffer = value.As<v8::ArrayBufferView>();
-  if (!storage) {
-    result.SetFull(V8ArrayBufferView::ToImpl(buffer));
-    return;
-  }
-  size_t length = buffer->ByteLength();
-  buffer->CopyContents(storage, length);
-  result.SetSmall(storage, SafeCast<uint32_t>(length));
+  result.SetContents(value.As<v8::ArrayBufferView>());
 }
 
 static ScriptState* ToScriptStateImpl(LocalFrame* frame,
@@ -749,8 +740,8 @@ static ScriptState* ToScriptStateImpl(LocalFrame* frame,
 v8::Local<v8::Context> ToV8Context(ExecutionContext* context,
                                    DOMWrapperWorld& world) {
   DCHECK(context);
-  if (auto* document = DynamicTo<Document>(context)) {
-    if (LocalFrame* frame = document->GetFrame())
+  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (LocalFrame* frame = window->GetFrame())
       return ToV8Context(frame, world);
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
     if (WorkerOrWorkletScriptController* script = scope->ScriptController()) {
@@ -773,14 +764,22 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // TODO(yukishiino): this method probably should not force context creation,
   // but it does through WindowProxy() call.
   DCHECK(frame);
+
+  // TODO(crbug.com/1046282): The following bailout is a temporary fix
+  // introduced due to crbug.com/1037985 .  Remove this temporary fix once
+  // the root cause is fixed.
+  if (frame->IsProvisional()) {
+    base::debug::DumpWithoutCrashing();
+    return v8::Local<v8::Context>();
+  }
+
   return frame->WindowProxy(world)->ContextIfInitialized();
 }
 
 ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
   DCHECK(context);
-  if (auto* document = DynamicTo<Document>(context)) {
-    if (LocalFrame* frame = document->GetFrame())
-      return ToScriptState(frame, world);
+  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
+    return ToScriptState(window->GetFrame(), world);
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
     if (WorkerOrWorkletScriptController* script = scope->ScriptController())
       return script->GetScriptState();
@@ -789,6 +788,8 @@ ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
 }
 
 ScriptState* ToScriptState(LocalFrame* frame, DOMWrapperWorld& world) {
+  if (!frame)
+    return nullptr;
   v8::HandleScope handle_scope(ToIsolate(frame));
   return ToScriptStateImpl(frame, world);
 }

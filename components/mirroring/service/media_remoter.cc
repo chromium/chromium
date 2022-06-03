@@ -47,9 +47,9 @@ MediaRemoter::~MediaRemoter() {
 }
 
 void MediaRemoter::OnMessageFromSink(const ReceiverResponse& response) {
-  DCHECK_EQ(ResponseType::RPC, response.type);
+  DCHECK_EQ(ResponseType::RPC, response.type());
   remoting_source_->OnMessageFromSink(
-      std::vector<uint8_t>(response.rpc.begin(), response.rpc.end()));
+      std::vector<uint8_t>(response.rpc().begin(), response.rpc().end()));
 }
 
 void MediaRemoter::StartRpcMessaging(

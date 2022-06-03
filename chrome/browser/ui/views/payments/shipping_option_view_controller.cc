@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
@@ -22,10 +23,10 @@ namespace {
 class ShippingOptionItem : public PaymentRequestItemList::Item {
  public:
   ShippingOptionItem(mojom::PaymentShippingOption* shipping_option,
-                     PaymentRequestSpec* spec,
-                     PaymentRequestState* state,
+                     base::WeakPtr<PaymentRequestSpec> spec,
+                     base::WeakPtr<PaymentRequestState> state,
                      PaymentRequestItemList* parent_list,
-                     PaymentRequestDialogView* dialog,
+                     base::WeakPtr<PaymentRequestDialogView> dialog,
                      bool selected)
       : PaymentRequestItemList::Item(spec,
                                      state,
@@ -36,15 +37,21 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
         shipping_option_(shipping_option) {
     Init();
   }
+
+  ShippingOptionItem(const ShippingOptionItem&) = delete;
+  ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
+
   ~ShippingOptionItem() override {}
 
  private:
   // payments::PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateContentView(
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     return CreateShippingOptionLabel(
         shipping_option_,
-        spec()->GetFormattedCurrencyAmount(shipping_option_->amount),
+        /*formatted_amount=*/
+        spec() ? spec()->GetFormattedCurrencyAmount(shipping_option_->amount)
+               : std::u16string(),
         /*emphasize_label=*/true, accessible_content);
   }
 
@@ -54,7 +61,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
     }
   }
 
-  base::string16 GetNameForDataType() override {
+  std::u16string GetNameForDataType() override {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
   }
 
@@ -74,16 +81,14 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
   }
 
   mojom::PaymentShippingOption* shipping_option_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingOptionItem);
 };
 
 }  // namespace
 
 ShippingOptionViewController::ShippingOptionViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog),
       shipping_option_list_(dialog) {
   spec->AddObserver(this);
@@ -95,10 +100,14 @@ ShippingOptionViewController::ShippingOptionViewController(
 }
 
 ShippingOptionViewController::~ShippingOptionViewController() {
-  spec()->RemoveObserver(this);
+  if (spec())
+    spec()->RemoveObserver(this);
 }
 
 void ShippingOptionViewController::OnSpecUpdated() {
+  if (!spec())
+    return;
+
   if (spec()->current_update_reason() ==
       PaymentRequestSpec::UpdateReason::SHIPPING_OPTION) {
     dialog()->GoBack();
@@ -107,8 +116,9 @@ void ShippingOptionViewController::OnSpecUpdated() {
   }
 }
 
-base::string16 ShippingOptionViewController::GetSheetTitle() {
-  return GetShippingOptionSectionString(spec()->shipping_type());
+std::u16string ShippingOptionViewController::GetSheetTitle() {
+  return spec() ? GetShippingOptionSectionString(spec()->shipping_type())
+                : std::u16string();
 }
 
 void ShippingOptionViewController::FillContentView(views::View* content_view) {
@@ -119,6 +129,10 @@ void ShippingOptionViewController::FillContentView(views::View* content_view) {
 std::unique_ptr<views::View>
 ShippingOptionViewController::CreateExtraFooterView() {
   return nullptr;
+}
+
+bool ShippingOptionViewController::ShouldShowPrimaryButton() {
+  return false;
 }
 
 bool ShippingOptionViewController::ShouldShowSecondaryButton() {

@@ -7,10 +7,10 @@ import("//build/config/android/rules.gni")
 
 android_library("battery_monitor_java") {
   visibility = [ "//services/device:*" ]
-  java_files = [
-    "java/src/org/chromium/device/battery/BatteryStatusManager.java",
-    "java/src/org/chromium/device/battery/BatteryMonitorImpl.java",
+  sources = [
     "java/src/org/chromium/device/battery/BatteryMonitorFactory.java",
+    "java/src/org/chromium/device/battery/BatteryMonitorImpl.java",
+    "java/src/org/chromium/device/battery/BatteryStatusManager.java",
   ]
 
   deps = [
@@ -19,6 +19,7 @@ android_library("battery_monitor_java") {
     "//mojo/public/java:system_java",
     "//services/device/public/mojom:mojom_java",
     "//services/service_manager/public/java:service_manager_java",
-    "//third_party/jsr-305:jsr_305_javalib",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

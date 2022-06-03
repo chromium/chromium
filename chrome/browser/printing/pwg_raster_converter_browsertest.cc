@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/printing/pwg_raster_converter.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/test/browser_test.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
 
@@ -24,7 +26,7 @@ namespace {
 
 // Note that for some reason the generated PWG varies depending on the
 // platform (32 or 64 bits) on Linux.
-#if defined(OS_LINUX) && defined(ARCH_CPU_32_BITS)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_32_BITS)
 constexpr char kPdfToPwgRasterColorTestFile[] = "pdf_to_pwg_raster_test_32.pwg";
 constexpr char kPdfToPwgRasterMonoTestFile[] =
     "pdf_to_pwg_raster_mono_test_32.pwg";
@@ -127,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(PdfToPwgRasterBrowserTest, TestSuccessColor) {
                                  /*use_color=*/true,
                                  PdfRenderSettings::Mode::NORMAL);
   PwgRasterSettings pwg_settings;
-  pwg_settings.duplex_mode = DuplexMode::SIMPLEX;
+  pwg_settings.duplex_mode = mojom::DuplexMode::kSimplex;
   pwg_settings.odd_page_transform = PwgRasterTransformType::TRANSFORM_NORMAL;
   pwg_settings.rotate_all_pages = false;
   pwg_settings.reverse_page_order = false;
@@ -155,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PdfToPwgRasterBrowserTest, TestSuccessMono) {
                                  /*use_color=*/false,
                                  PdfRenderSettings::Mode::NORMAL);
   PwgRasterSettings pwg_settings;
-  pwg_settings.duplex_mode = DuplexMode::SIMPLEX;
+  pwg_settings.duplex_mode = mojom::DuplexMode::kSimplex;
   pwg_settings.odd_page_transform = PwgRasterTransformType::TRANSFORM_NORMAL;
   pwg_settings.rotate_all_pages = false;
   pwg_settings.reverse_page_order = false;
@@ -183,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PdfToPwgRasterBrowserTest, TestSuccessLongDuplex) {
                                  /*use_color=*/false,
                                  PdfRenderSettings::Mode::NORMAL);
   PwgRasterSettings pwg_settings;
-  pwg_settings.duplex_mode = DuplexMode::LONG_EDGE;
+  pwg_settings.duplex_mode = mojom::DuplexMode::kLongEdge;
   pwg_settings.odd_page_transform = PwgRasterTransformType::TRANSFORM_NORMAL;
   pwg_settings.rotate_all_pages = false;
   pwg_settings.reverse_page_order = false;

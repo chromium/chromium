@@ -1,0 +1,12 @@
+<!--
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_OBJECT_VALUECHANGE*
+-->
+<div aria-controls="listbox1" aria-expanded="false" aria-haspopup="listbox" role="combobox" tabindex="0">Apple</div>
+<div role="listbox" id="listbox1"><!-- Options would normally go here --></div>
+<script>
+  function go() {
+    var combo_box = document.querySelector('[role=combobox]');
+    combo_box.innerText = 'Orange';
+  }
+</script>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,10 +14,8 @@ import urllib2
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TOOLS_DIR = os.path.dirname(SCRIPT_DIR)
 CHROME_SRC = os.path.dirname(os.path.dirname(os.path.dirname(TOOLS_DIR)))
-MOCK_DIR = os.path.join(CHROME_SRC, 'third_party', 'pymock')
 
 sys.path.append(TOOLS_DIR)
-sys.path.append(MOCK_DIR)
 
 import httpd
 from mock import patch, Mock

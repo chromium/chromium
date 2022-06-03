@@ -12,9 +12,4 @@ div#inspected { (inspector-stylesheet:1 -> inspector-stylesheet:1:16)
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 

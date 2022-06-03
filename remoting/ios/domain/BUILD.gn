@@ -20,7 +20,8 @@ source_set("domain") {
 
   deps = [
     "//base",
-    "//remoting/proto/remoting/v1:directory_proto",
+    "//base:i18n",
+    "//remoting/proto/remoting/v1:host_info_proto",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

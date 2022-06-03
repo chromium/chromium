@@ -6,19 +6,17 @@ test(() => {
   assert_equals(window.constructor.prototype, window.__proto__,
       "Window constructor prototype is window prototype.");
 
-  assert_throws(new TypeError, () => { window.constructor(); },
+  assert_throws_js(TypeError, () => { window.constructor(); },
       "Window constructor must be non-callable.");
-  assert_throws(new TypeError, () => { new window.constructor; },
+  assert_throws_js(TypeError, () => { new window.constructor; },
       "Window constructor must be non-callable.");
 
-  assert_throws(new TypeError, () => { window.__proto__.constructor(); },
+  assert_throws_js(TypeError, () => { window.__proto__.constructor(); },
       "Window.prototype constructor must be non-callable.");
-  assert_throws(new TypeError, () => { new window.__proto__.constructor; },
+  assert_throws_js(TypeError, () => { new window.__proto__.constructor; },
       "Window.prototype constructor must be non-callable.");
 
-  assert_throws(new TypeError, () => { window.__proto__.__proto__.constructor(); },
-      "WindowProperties constructor must be non-callable.");
-  assert_throws(new TypeError, () => { new window.__proto__.__proto__.constructor; },
-      "WindowProperties constructor must be non-callable.");
+  assert_equals(window.__proto__.__proto__.constructor, EventTarget,
+      "WindowProperties constructor is EventTarget.");
 }, "Test Window and its prototype chain's constructors.");
 </script>

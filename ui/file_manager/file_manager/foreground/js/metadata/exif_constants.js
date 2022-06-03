@@ -58,3 +58,5 @@ Exif.Tag = {
   Y_DIMENSION: 0xA003,
   SOFTWARE: 0x0131,
 };
+
+export {Exif};

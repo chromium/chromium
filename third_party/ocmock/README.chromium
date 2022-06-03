@@ -37,3 +37,6 @@ the introspection used by Xcode 9 SDK.
 
 Chromium patches in https://github.com/erikdoe/ocmock/pull/343 to fix the
 comparison of structure representation as strings (again).
+
+Chromium patches in a fix for iOS15 ptrath failures in OCMArg to cache all
+OCMPassByRefSetters rather than checking with object_getClass.

@@ -24,37 +24,46 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void SetNeedsCompositingUpdate() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override {}
   void UpdateMemoryUsage() override {}
+  size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
-      AccelerationHint hint) override {
+      RasterModeHint hint) override {
     return GetOrCreateCanvasResourceProviderImpl(hint);
   }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      AccelerationHint hint) override {
+      RasterModeHint hint) override {
     if (ResourceProvider())
       return ResourceProvider();
+    const SkImageInfo resource_info =
+        SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
-    CanvasResourceProvider::ResourceUsage usage =
-        hint == kPreferAcceleration ? CanvasResourceProvider::ResourceUsage::
-                                          kAcceleratedCompositedResourceUsage
-                                    : CanvasResourceProvider::ResourceUsage::
-                                          kSoftwareCompositedResourceUsage;
-
-    uint8_t presentation_mode =
-        CanvasResourceProvider::kDefaultPresentationMode;
-    if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
-      presentation_mode |=
-          CanvasResourceProvider::kAllowImageChromiumPresentationMode;
+    std::unique_ptr<CanvasResourceProvider> provider;
+    if (hint == RasterModeHint::kPreferGPU ||
+        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+      uint32_t shared_image_usage_flags =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      provider = CanvasResourceProvider::CreateSharedImageProvider(
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          SharedGpuContext::ContextProviderWrapper(),
+          hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
+                                             : RasterMode::kCPU,
+          false /*is_origin_top_left*/, shared_image_usage_flags);
+    }
+    if (!provider) {
+      provider = CanvasResourceProvider::CreateSharedBitmapProvider(
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          nullptr /* dispatcher_weakptr */);
+    }
+    if (!provider) {
+      provider = CanvasResourceProvider::CreateBitmapProvider(
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear);
     }
 
-    ReplaceResourceProvider(CanvasResourceProvider::Create(
-        size_, usage, SharedGpuContext::ContextProviderWrapper(), 0,
-        kMedium_SkFilterQuality, CanvasColorParams(), presentation_mode,
-        nullptr));
-    return ResourceProvider();
-  }
+    ReplaceResourceProvider(std::move(provider));
 
-  SkFilterQuality FilterQuality() const override {
-    return kLow_SkFilterQuality;
+    return ResourceProvider();
   }
 
  private:
@@ -63,4 +72,4 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_FAKE_CANVAS_RESOURCE_HOST_H_

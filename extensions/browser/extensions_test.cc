@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extensions_test.h"
 
+#include <memory>
+
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
@@ -16,7 +18,6 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/test/test_content_utility_client.h"
-#include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 
 namespace {
 
@@ -26,20 +27,6 @@ std::unique_ptr<content::TestBrowserContext> CreateTestIncognitoContext() {
   incognito_context->set_is_off_the_record(true);
   return incognito_context;
 }
-
-class ExtensionTestBrowserContext : public content::TestBrowserContext {
- private:
-  void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override {
-    // This method is called for setting up Extensions, but can be ignored
-    // unless actual network requests need to be handled.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
-  }
-};
 
 }  // namespace
 
@@ -69,7 +56,7 @@ void ExtensionsTest::SetExtensionsBrowserClient(
 void ExtensionsTest::SetUp() {
   content::ForceInProcessNetworkService(true);
   content_utility_client_ = std::make_unique<TestContentUtilityClient>();
-  browser_context_ = std::make_unique<ExtensionTestBrowserContext>();
+  browser_context_ = std::make_unique<content::TestBrowserContext>();
   incognito_context_ = CreateTestIncognitoContext();
 
   if (!extensions_browser_client_) {
@@ -85,7 +72,7 @@ void ExtensionsTest::SetUp() {
   extensions_browser_client_->SetIncognitoContext(incognito_context_.get());
 
   // Set up all the dependencies of ExtensionPrefs.
-  extension_pref_value_map_.reset(new ExtensionPrefValueMap());
+  extension_pref_value_map_ = std::make_unique<ExtensionPrefValueMap>();
   PrefServiceFactory factory;
   factory.set_user_prefs(new TestingPrefStore());
   factory.set_extension_prefs(new TestingPrefStore());

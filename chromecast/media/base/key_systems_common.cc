@@ -6,7 +6,6 @@
 
 #include <cstddef>
 
-#include "media/base/key_system_names.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -22,20 +21,16 @@ const char kChromecastPlayreadyKeySystem[] = "com.chromecast.playready";
 
 CastKeySystem GetKeySystemByName(const std::string& key_system_name) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
-  if (key_system_name.compare(kWidevineKeySystem) == 0) {
+  if (key_system_name == kWidevineKeySystem) {
     return KEY_SYSTEM_WIDEVINE;
   }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(ENABLE_PLAYREADY)
-  if (key_system_name.compare(kChromecastPlayreadyKeySystem) == 0) {
+  if (key_system_name == kChromecastPlayreadyKeySystem) {
     return KEY_SYSTEM_PLAYREADY;
   }
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
-
-  if (::media::IsClearKey(key_system_name)) {
-    return KEY_SYSTEM_CLEAR_KEY;
-  }
 
   return KEY_SYSTEM_NONE;
 }

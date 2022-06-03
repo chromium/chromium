@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/logging.h"
 
 namespace media {
 namespace learning {

@@ -12,9 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
-#include "base/time/time.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/log/net_log_with_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,26 +24,34 @@ namespace net {
 class DelayedCookieMonsterChangeDispatcher : public CookieChangeDispatcher {
  public:
   DelayedCookieMonsterChangeDispatcher();
+
+  DelayedCookieMonsterChangeDispatcher(
+      const DelayedCookieMonsterChangeDispatcher&) = delete;
+  DelayedCookieMonsterChangeDispatcher& operator=(
+      const DelayedCookieMonsterChangeDispatcher&) = delete;
+
   ~DelayedCookieMonsterChangeDispatcher() override;
 
   // net::CookieChangeDispatcher
   std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
       const GURL& url,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DelayedCookieMonsterChangeDispatcher);
 };
 
 class DelayedCookieMonster : public CookieStore {
  public:
   DelayedCookieMonster();
+
+  DelayedCookieMonster(const DelayedCookieMonster&) = delete;
+  DelayedCookieMonster& operator=(const DelayedCookieMonster&) = delete;
 
   ~DelayedCookieMonster() override;
 
@@ -54,13 +60,15 @@ class DelayedCookieMonster : public CookieStore {
   // Post a delayed task to invoke the original callback with the results.
 
   void SetCanonicalCookieAsync(std::unique_ptr<CanonicalCookie> cookie,
-                               std::string source_scheme,
+                               const GURL& source_url,
                                const CookieOptions& options,
                                SetCookiesCallback callback) override;
 
-  void GetCookieListWithOptionsAsync(const GURL& url,
-                                     const CookieOptions& options,
-                                     GetCookieListCallback callback) override;
+  void GetCookieListWithOptionsAsync(
+      const GURL& url,
+      const CookieOptions& options,
+      const CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
 
   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
 
@@ -76,6 +84,8 @@ class DelayedCookieMonster : public CookieStore {
 
   void DeleteSessionCookiesAsync(DeleteCallback) override;
 
+  void DeleteMatchingCookiesAsync(DeletePredicate, DeleteCallback) override;
+
   void FlushStore(base::OnceClosure callback) override;
 
   CookieChangeDispatcher& GetChangeDispatcher() override;
@@ -86,13 +96,12 @@ class DelayedCookieMonster : public CookieStore {
  private:
   // Be called immediately from CookieMonster.
 
-  void SetCookiesInternalCallback(
-      CanonicalCookie::CookieInclusionStatus result);
+  void SetCookiesInternalCallback(CookieAccessResult result);
 
   void GetCookiesWithOptionsInternalCallback(const std::string& cookie);
   void GetCookieListWithOptionsInternalCallback(
-      const CookieStatusList& cookie,
-      const CookieStatusList& excluded_cookies);
+      const CookieAccessResultList& cookie,
+      const CookieAccessResultList& excluded_cookies);
 
   // Invoke the original callbacks.
 
@@ -107,13 +116,11 @@ class DelayedCookieMonster : public CookieStore {
   DelayedCookieMonsterChangeDispatcher change_dispatcher_;
 
   bool did_run_;
-  CanonicalCookie::CookieInclusionStatus result_;
+  CookieAccessResult result_;
   std::string cookie_;
   std::string cookie_line_;
-  CookieStatusList cookie_status_list_;
+  CookieAccessResultList cookie_access_result_list_;
   CookieList cookie_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedCookieMonster);
 };
 
 class CookieURLHelper {

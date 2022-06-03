@@ -5,15 +5,17 @@
 module subresource_filter.mojom;
 
 import "components/subresource_filter/core/mojom/subresource_filter.mojom";
-import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
+import "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom";
 
 interface SubresourceFilterAgent {
   // Instructs the renderer to activate subresource filtering at the specified
-  // |activation_state| for the document load committed next in a frame.
+  // |activation_state| for the document load committed next in a frame. Also
+  // informs the renderer of the frame's ad evidence. If the frame is a main
+  // frame, `ad_evidence` should be null as only subframes can be tagged.
   //
-  // Most be called just before mojom::FrameNavigationControl::CommitNavigation,
+  // Must be called just before mojom::FrameNavigationControl::CommitNavigation,
   // at ReadyToCommitNavigation time. If not called, the default behavior is
-  // mojom::ActivationLevel::kDisabled.
+  // mojom::ActivationLevel::kDisabled and unchanged ad evidence.
   ActivateForNextCommittedLoad(ActivationState activation_state,
-                               blink.mojom.AdFrameType ad_type);
+                               blink.mojom.FrameAdEvidence? ad_evidence);
 };

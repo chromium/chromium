@@ -34,7 +34,7 @@ window.onload = function() {
             requestAnimationFrame(tick);
         } else {
             if (window.internals) {
-                var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+                var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
                 internals.stopTrackingRepaints(document);
                 document.getElementById("result").textContent = "Tested locations: " + testedLocations + '\n' + layerTree;
             }

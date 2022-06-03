@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 
 #scroller {
@@ -16,18 +19,20 @@
 <div id="scroller" onmousewheel="">
   <div id="fracheight"></div>
 </div>
+
 <script>
-description("Verifies that main-thread scrolls chain correctly from a " +
-            "fractional-height scroller to its parent.");
+promise_test(async () => {
+    await waitForCompositorCommit();
+    var scroller_element = document.getElementById("scroller");
+    var scroller_center = pointInElement(scroller_element, 50, 50);
+    await mouseClickOn(50, 50);
+    await wheelTick(0, 1, scroller_center);
+    await waitForAnimationEndTimeBased(() => { return window.scrollY });
 
-if (window.eventSender) {
-    internals.settings.setScrollAnimatorEnabled(false);
-    eventSender.mouseMoveTo(100, 400);
-    eventSender.mouseScrollBy(0, -1);
-    shouldBe("scrollY", "40");
-}
-else
-    debug("To run interactively, try to scroll the page with the mouse " +
-          "wheel while the pointer is inside the gray box below.")
-
+    const pixelsToScrollY = pixelsPerTick();
+    const { y: expectedScrollY } = calculateExpectedScroll(
+      document.scrollingElement, 0, pixelsToScrollY
+    );
+    assert_approx_equals(window.scrollY, expectedScrollY, 0.001);
+}, "Verify that wheel scrolls chain correctly from a fractional-height scroller to its parent.");
 </script>

@@ -22,6 +22,9 @@ class SpeechInputLocaleConfig {
   // Returns a pointer to the singleton object.
   static SpeechInputLocaleConfig* GetInstance();
 
+  SpeechInputLocaleConfig(const SpeechInputLocaleConfig&) = delete;
+  SpeechInputLocaleConfig& operator=(const SpeechInputLocaleConfig&) = delete;
+
   // Returns the default locale as determined by the system language.
   virtual SpeechInputLocale GetDefaultLocale() const = 0;
 
@@ -48,8 +51,6 @@ class SpeechInputLocaleConfig {
  protected:
   SpeechInputLocaleConfig() = default;
   virtual ~SpeechInputLocaleConfig() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechInputLocaleConfig);
 };
 
 }  // namespace voice

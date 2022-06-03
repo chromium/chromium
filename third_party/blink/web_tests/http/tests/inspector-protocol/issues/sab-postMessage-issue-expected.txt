@@ -1,0 +1,56 @@
+Verifies that post-messaging a SAB causes an issue.
+
+Creation issue: {
+    issue : {
+        code : SharedArrayBufferIssue
+        details : {
+            sharedArrayBufferIssueDetails : {
+                isWarning : true
+                sourceCodeLocation : {
+                    columnNumber : 18
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : CreationIssue
+            }
+        }
+    }
+}
+Deprecation issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                message : SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+                sourceCodeLocation : {
+                    columnNumber : 18
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+            }
+        }
+    }
+}
+Transfer issue: {
+    issue : {
+        code : SharedArrayBufferIssue
+        details : {
+            sharedArrayBufferIssueDetails : {
+                isWarning : false
+                sourceCodeLocation : {
+                    columnNumber : 1
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : TransferIssue
+            }
+        }
+    }
+}
+

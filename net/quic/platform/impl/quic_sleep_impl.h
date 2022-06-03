@@ -12,8 +12,7 @@
 namespace quic {
 
 inline void QuicSleepImpl(QuicTime::Delta duration) {
-  base::PlatformThread::Sleep(
-      base::TimeDelta::FromMilliseconds(duration.ToMilliseconds()));
+  base::PlatformThread::Sleep(base::Milliseconds(duration.ToMilliseconds()));
 }
 
 }  // namespace quic

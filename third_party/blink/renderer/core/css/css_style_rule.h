@@ -54,10 +54,10 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   // FIXME: Not CSSOM. Remove.
   StyleRule* GetStyleRule() const { return style_rule_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kStyleRule; }
+  CSSRule::Type GetType() const override { return kStyleRule; }
 
   Member<StyleRule> style_rule_;
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
@@ -67,7 +67,7 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSStyleRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kStyleRule;
+    return rule.GetType() == CSSRule::kStyleRule;
   }
 };
 

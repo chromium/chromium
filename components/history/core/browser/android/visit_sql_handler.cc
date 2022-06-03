@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_database.h"
 
@@ -32,7 +32,7 @@ VisitSQLHandler::VisitSQLHandler(URLDatabase* url_db, VisitDatabase* visit_db)
 VisitSQLHandler::~VisitSQLHandler() {
 }
 
-// The created time is updated according the given |row|.
+// The created time is updated according the given `row`.
 // We simulate updating created time by
 // a. Remove all visits.
 // b. Insert a new visit which has visit time same as created time.
@@ -119,8 +119,11 @@ bool VisitSQLHandler::Delete(const TableIDRows& ids_set) {
 bool VisitSQLHandler::AddVisit(URLID url_id, const Time& visit_time) {
   // TODO : Is 'ui::PAGE_TRANSITION_AUTO_BOOKMARK' proper?
   // if not, a new ui::PageTransition type will need.
-  VisitRow visit_row(url_id, visit_time, 0,
-                     ui::PAGE_TRANSITION_AUTO_BOOKMARK, 0, false);
+  VisitRow visit_row(url_id, visit_time, /*referring_visit=*/0,
+                     ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                     /*segment_id=*/0,
+                     /*incremented_omnibox_typed_score=*/false,
+                     /*opening_visit=*/0);
   return visit_db_->AddVisit(&visit_row, SOURCE_BROWSED);
 }
 

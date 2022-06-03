@@ -7,6 +7,9 @@ package org.chromium.weblayer_private;
 import android.os.RemoteException;
 import android.webkit.ValueCallback;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,12 +25,18 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 public final class FullscreenCallbackProxy {
     private long mNativeFullscreenCallbackProxy;
     private IFullscreenCallbackClient mClient;
+    private TabImpl mTab;
+    private FullscreenToast mToast;
+    private boolean mIsNotifyingClientOfEnter;
+    // Used so that only the most recent callback supplied to the client is acted on.
+    private int mNextFullscreenId;
 
-    FullscreenCallbackProxy(long tab, IFullscreenCallbackClient client) {
+    FullscreenCallbackProxy(TabImpl tab, long nativeTab, IFullscreenCallbackClient client) {
         assert client != null;
         mClient = client;
+        mTab = tab;
         mNativeFullscreenCallbackProxy =
-                FullscreenCallbackProxyJni.get().createFullscreenCallbackProxy(this, tab);
+                FullscreenCallbackProxyJni.get().createFullscreenCallbackProxy(this, nativeTab);
     }
 
     public void setClient(IFullscreenCallbackClient client) {
@@ -39,32 +48,63 @@ public final class FullscreenCallbackProxy {
         FullscreenCallbackProxyJni.get().deleteFullscreenCallbackProxy(
                 mNativeFullscreenCallbackProxy);
         mNativeFullscreenCallbackProxy = 0;
+        destroyToast();
+        mTab = null;
+    }
+
+    public void destroyToast() {
+        if (mToast == null) return;
+        mToast.destroy();
+        mToast = null;
+    }
+
+    @VisibleForTesting
+    public boolean didShowFullscreenToast() {
+        return mToast != null && mToast.didShowFullscreenToast();
     }
 
     @CalledByNative
     private void enterFullscreen() throws RemoteException {
+        final int id = ++mNextFullscreenId;
         ValueCallback<Void> exitFullscreenCallback = new ValueCallback<Void>() {
             @Override
             public void onReceiveValue(Void result) {
+                ThreadUtils.assertOnUiThread();
+                if (id != mNextFullscreenId) {
+                    // This is an old fullscreen request. Ignore it.
+                    return;
+                }
                 if (mNativeFullscreenCallbackProxy == 0) {
                     throw new IllegalStateException("Called after destroy()");
                 }
-                FullscreenCallbackProxyJni.get().doExitFullscreen(
-                        mNativeFullscreenCallbackProxy, FullscreenCallbackProxy.this);
+                if (mIsNotifyingClientOfEnter) {
+                    throw new IllegalStateException(
+                            "Fullscreen callback must not be called synchronously");
+                }
+                destroyToast();
+                FullscreenCallbackProxyJni.get().doExitFullscreen(mNativeFullscreenCallbackProxy);
             }
         };
-        mClient.enterFullscreen(ObjectWrapper.wrap(exitFullscreenCallback));
+        destroyToast();
+        mToast = new FullscreenToast(mTab);
+        mIsNotifyingClientOfEnter = true;
+        try {
+            mClient.enterFullscreen(ObjectWrapper.wrap(exitFullscreenCallback));
+        } finally {
+            mIsNotifyingClientOfEnter = false;
+        }
     }
 
     @CalledByNative
     private void exitFullscreen() throws RemoteException {
         mClient.exitFullscreen();
+        destroyToast();
     }
 
     @NativeMethods
     interface Natives {
         long createFullscreenCallbackProxy(FullscreenCallbackProxy proxy, long tab);
         void deleteFullscreenCallbackProxy(long proxy);
-        void doExitFullscreen(long nativeFullscreenCallbackProxy, FullscreenCallbackProxy proxy);
+        void doExitFullscreen(long nativeFullscreenCallbackProxy);
     }
 }

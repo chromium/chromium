@@ -5,7 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_DROP_TARGET_VIEW_H_
 #define ASH_WM_OVERVIEW_DROP_TARGET_VIEW_H_
 
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -15,7 +15,11 @@ namespace ash {
 // be dragged into it and then dropped into overview.
 class DropTargetView : public views::View {
  public:
+  METADATA_HEADER(DropTargetView);
+
   explicit DropTargetView(bool has_plus_icon);
+  DropTargetView(const DropTargetView&) = delete;
+  DropTargetView& operator=(const DropTargetView&) = delete;
   ~DropTargetView() override = default;
 
   // Updates the visibility of |background_view_| since it is only shown when
@@ -30,8 +34,6 @@ class DropTargetView : public views::View {
 
   views::View* background_view_ = nullptr;
   PlusIconView* plus_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DropTargetView);
 };
 
 }  // namespace ash

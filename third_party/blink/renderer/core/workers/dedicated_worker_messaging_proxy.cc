@@ -5,10 +5,16 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 
 #include <memory>
+#include "base/feature_list.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -17,10 +23,10 @@
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
-#include "third_party/blink/renderer/core/workers/worker_options.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -32,19 +38,32 @@ DedicatedWorkerMessagingProxy::DedicatedWorkerMessagingProxy(
     DedicatedWorker* worker_object)
     : ThreadedMessagingProxyBase(execution_context),
       worker_object_(worker_object) {
-  worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxy>(
-      this, GetParentExecutionContextTaskRunners());
+  if (worker_object) {
+    // Worker object is only nullptr in tests, which subsequently manually
+    // injects a |worker_object_proxy_|.
+    worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxy>(
+        this, GetParentExecutionContextTaskRunners(),
+        worker_object->GetToken());
+  }
 }
 
 DedicatedWorkerMessagingProxy::~DedicatedWorkerMessagingProxy() = default;
 
 void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
+    std::unique_ptr<WorkerMainScriptLoadParameters>
+        worker_main_script_load_params,
     const WorkerOptions* options,
     const KURL& script_url,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     const v8_inspector::V8StackTraceId& stack_id,
-    const String& source_code) {
+    const String& source_code,
+    RejectCoepUnsafeNone reject_coep_unsafe_none,
+    const blink::DedicatedWorkerToken& token,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host,
+    mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+        back_forward_cache_controller_host) {
   DCHECK(IsParentContextThread());
   if (AskedToTerminate()) {
     // Worker.terminate() could be called from JS before the thread was
@@ -52,54 +71,52 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     return;
   }
 
-  OffMainThreadWorkerScriptFetchOption off_main_thread_fetch_option =
-      creation_params->off_main_thread_fetch_option;
-
+  // These must be stored before InitializeWorkerThread.
+  pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
+  pending_back_forward_cache_controller_host_ =
+      std::move(back_forward_cache_controller_host);
   InitializeWorkerThread(
       std::move(creation_params),
-      CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()));
+      CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()),
+      token);
 
   // Step 13: "Obtain script by switching on the value of options's type
   // member:"
-  if (options->type() == "classic") {
+  if (options->type() == script_type_names::kClassic) {
     // "classic: Fetch a classic worker script given url, outside settings,
     // destination, and inside settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kClassicDedicatedWorker);
-    switch (off_main_thread_fetch_option) {
-      case OffMainThreadWorkerScriptFetchOption::kEnabled: {
-        auto* resource_timing_notifier =
-            WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
-                *GetExecutionContext());
-        GetWorkerThread()->FetchAndRunClassicScript(
-            script_url, outside_settings_object.CopyData(),
-            resource_timing_notifier, stack_id);
-        break;
-      }
-      case OffMainThreadWorkerScriptFetchOption::kDisabled:
-        // Legacy code path (to be deprecated, see https://crbug.com/835717):
-        GetWorkerThread()->EvaluateClassicScript(
-            script_url, source_code, nullptr /* cached_meta_data */, stack_id);
-        break;
+    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
+      auto* resource_timing_notifier =
+          WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
+              *GetExecutionContext());
+      GetWorkerThread()->FetchAndRunClassicScript(
+          script_url, std::move(worker_main_script_load_params),
+          outside_settings_object.CopyData(), resource_timing_notifier,
+          stack_id);
+    } else {
+      // Legacy code path (to be deprecated, see https://crbug.com/835717):
+      GetWorkerThread()->EvaluateClassicScript(
+          script_url, source_code, nullptr /* cached_meta_data */, stack_id);
     }
-  } else if (options->type() == "module") {
-    DCHECK_EQ(off_main_thread_fetch_option,
-              OffMainThreadWorkerScriptFetchOption::kEnabled);
+  } else if (options->type() == script_type_names::kModule) {
     // "module: Fetch a module worker script graph given url, outside settings,
     // destination, the value of the credentials member of options, and inside
     // settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kModuleDedicatedWorker);
-    network::mojom::CredentialsMode credentials_mode;
-    bool result = Request::ParseCredentialsMode(options->credentials(),
-                                                &credentials_mode);
-    DCHECK(result);
+    absl::optional<network::mojom::CredentialsMode> credentials_mode =
+        Request::ParseCredentialsMode(options->credentials());
+    DCHECK(credentials_mode);
+
     auto* resource_timing_notifier =
         WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
             *GetExecutionContext());
     GetWorkerThread()->FetchAndRunModuleScript(
-        script_url, outside_settings_object.CopyData(),
-        resource_timing_notifier, credentials_mode);
+        script_url, std::move(worker_main_script_load_params),
+        outside_settings_object.CopyData(), resource_timing_notifier,
+        *credentials_mode, reject_coep_unsafe_none);
   } else {
     NOTREACHED();
   }
@@ -118,8 +135,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
       *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
       CrossThreadBindOnce(
           &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-          CrossThreadUnretained(&WorkerObjectProxy()),
-          WTF::Passed(std::move(message)),
+          CrossThreadUnretained(&WorkerObjectProxy()), std::move(message),
           CrossThreadUnretained(GetWorkerThread())));
 }
 
@@ -172,8 +188,7 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
         *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
         CrossThreadBindOnce(
             &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-            CrossThreadUnretained(&WorkerObjectProxy()),
-            WTF::Passed(std::move(task)),
+            CrossThreadUnretained(&WorkerObjectProxy()), std::move(task),
             CrossThreadUnretained(GetWorkerThread())));
   }
 }
@@ -237,12 +252,12 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   GetExecutionContext()->DispatchErrorEvent(event, mute_script_errors);
 }
 
-void DedicatedWorkerMessagingProxy::Trace(blink::Visitor* visitor) {
+void DedicatedWorkerMessagingProxy::Trace(Visitor* visitor) const {
   visitor->Trace(worker_object_);
   ThreadedMessagingProxyBase::Trace(visitor);
 }
 
-base::Optional<WorkerBackingThreadStartupData>
+absl::optional<WorkerBackingThreadStartupData>
 DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
     v8::Isolate* isolate) {
   using HeapLimitMode = WorkerBackingThreadStartupData::HeapLimitMode;
@@ -256,8 +271,11 @@ DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
 
 std::unique_ptr<WorkerThread>
 DedicatedWorkerMessagingProxy::CreateWorkerThread() {
-  return std::make_unique<DedicatedWorkerThread>(GetExecutionContext(),
-                                                 WorkerObjectProxy());
+  DCHECK(pending_dedicated_worker_host_);
+  return std::make_unique<DedicatedWorkerThread>(
+      GetExecutionContext(), WorkerObjectProxy(),
+      std::move(pending_dedicated_worker_host_),
+      std::move(pending_back_forward_cache_controller_host_));
 }
 
 }  // namespace blink

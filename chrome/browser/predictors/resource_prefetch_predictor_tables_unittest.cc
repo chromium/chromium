@@ -8,14 +8,17 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictor_database.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sqlite_proto/key_value_table.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/request_priority.h"
@@ -23,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace predictors {
+
+using ::sqlite_proto::KeyValueTable;
 
 class ResourcePrefetchPredictorTablesTest : public testing::Test {
  public:
@@ -128,12 +133,12 @@ void ResourcePrefetchPredictorTablesTest::TestDeleteData() {
                                              "http://google.com"};
   std::vector<std::string> hosts_to_delete = {"microsoft.com"};
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &LoadingPredictorKeyValueTable<RedirectData>::DeleteData,
+      &KeyValueTable<RedirectData>::DeleteData,
       base::Unretained(tables_->host_redirect_table()), hosts_to_delete));
 
   hosts_to_delete = {"twitter.com"};
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &LoadingPredictorKeyValueTable<OriginData>::DeleteData,
+      &KeyValueTable<OriginData>::DeleteData,
       base::Unretained(tables_->origin_table()), hosts_to_delete));
 
   RedirectDataMap actual_host_redirect_data;
@@ -159,7 +164,7 @@ void ResourcePrefetchPredictorTablesTest::TestUpdateData() {
                          GURL("https://microsoft.org"), 7, 2, 0);
 
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
+      base::BindOnce(&KeyValueTable<RedirectData>::UpdateData,
                      base::Unretained(tables_->host_redirect_table()),
                      microsoft.primary_key(), microsoft));
 
@@ -167,7 +172,7 @@ void ResourcePrefetchPredictorTablesTest::TestUpdateData() {
   InitializeOriginStat(twitter.add_origins(), "https://dogs.twitter.com", 10, 1,
                        0, 12., false, true);
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
+      &KeyValueTable<OriginData>::UpdateData,
       base::Unretained(tables_->origin_table()), twitter.host(), twitter));
 
   RedirectDataMap actual_host_redirect_data;
@@ -308,11 +313,11 @@ std::string ResourcePrefetchPredictorTablesTest::GetKeyForRedirectStat(
 }
 
 void ResourcePrefetchPredictorTablesTest::DeleteAllData() {
-  tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &LoadingPredictorKeyValueTable<RedirectData>::DeleteAllData,
-      base::Unretained(tables_->host_redirect_table())));
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&LoadingPredictorKeyValueTable<OriginData>::DeleteAllData,
+      base::BindOnce(&KeyValueTable<RedirectData>::DeleteAllData,
+                     base::Unretained(tables_->host_redirect_table())));
+  tables_->ExecuteDBTaskOnDBSequence(
+      base::BindOnce(&KeyValueTable<OriginData>::DeleteAllData,
                      base::Unretained(tables_->origin_table())));
 }
 
@@ -320,10 +325,10 @@ void ResourcePrefetchPredictorTablesTest::GetAllData(
     RedirectDataMap* host_redirect_data,
     OriginDataMap* origin_data) const {
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &LoadingPredictorKeyValueTable<RedirectData>::GetAllData,
+      &KeyValueTable<RedirectData>::GetAllData,
       base::Unretained(tables_->host_redirect_table()), host_redirect_data));
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&LoadingPredictorKeyValueTable<OriginData>::GetAllData,
+      base::BindOnce(&KeyValueTable<OriginData>::GetAllData,
                      base::Unretained(tables_->origin_table()), origin_data));
 }
 
@@ -353,11 +358,11 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
         std::make_pair(microsoft.primary_key(), microsoft));
 
     tables_->ExecuteDBTaskOnDBSequence(
-        base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
+        base::BindOnce(&KeyValueTable<RedirectData>::UpdateData,
                        base::Unretained(tables_->host_redirect_table()),
                        bbc.primary_key(), bbc));
     tables_->ExecuteDBTaskOnDBSequence(
-        base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
+        base::BindOnce(&KeyValueTable<RedirectData>::UpdateData,
                        base::Unretained(tables_->host_redirect_table()),
                        microsoft.primary_key(), microsoft));
   }
@@ -382,15 +387,20 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
     test_origin_data_.insert({"abc.xyz", alphabet});
 
     tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-        &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
+        &KeyValueTable<OriginData>::UpdateData,
         base::Unretained(tables_->origin_table()), twitter.host(), twitter));
     tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-        &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
+        &KeyValueTable<OriginData>::UpdateData,
         base::Unretained(tables_->origin_table()), alphabet.host(), alphabet));
   }
 }
 
 void ResourcePrefetchPredictorTablesTest::ReopenDatabase() {
+  // Ensure that the database is closed before attempting to reopen it.
+  db_ = nullptr;
+  tables_ = nullptr;
+  content::RunAllTasksUntilIdle();
+
   db_ = std::make_unique<PredictorDatabase>(&profile_, task_runner_);
   content::RunAllTasksUntilIdle();
   tables_ = db_->resource_prefetch_tables();
@@ -424,6 +434,51 @@ TEST_F(ResourcePrefetchPredictorTablesTest, ComputeOriginScore) {
             compute_score(1, 1, 12., false, true));
   EXPECT_GT(compute_score(1, 1, 12., true, false),
             compute_score(1, 1, 2., false, true));
+
+  // Accessed network.
+  EXPECT_GT(compute_score(1, 1, 12., false, true),
+            compute_score(1, 1, 12., false, false));
+  EXPECT_GT(compute_score(1, 1, 12., false, true),
+            compute_score(1, 1, 2., false, false));
+
+  // All else being equal, position matters.
+  EXPECT_GT(compute_score(1, 1, 2., false, false),
+            compute_score(1, 1, 12., false, false));
+  EXPECT_GT(compute_score(1, 1, 2., true, true),
+            compute_score(1, 1, 12., true, true));
+}
+
+TEST_F(ResourcePrefetchPredictorTablesTest,
+       ComputeOriginScore_LoadingPredictorDisregardAlwaysAccessesNetwork) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kLoadingPredictorDisregardAlwaysAccessesNetwork);
+
+  auto compute_score = [](int hits, int misses, double average_position,
+                          bool always_access_network, bool accessed_network) {
+    OriginStat origin;
+    InitializeOriginStat(&origin, "", hits, misses, 0, average_position,
+                         always_access_network, accessed_network);
+    return ResourcePrefetchPredictorTables::ComputeOriginScore(origin);
+  };
+
+  // High-confidence is more important than the rest.
+  EXPECT_GT(compute_score(20, 2, 12., false, false),
+            compute_score(2, 0, 12., false, false));
+  EXPECT_GT(compute_score(20, 2, 12., false, false),
+            compute_score(2, 0, 2., true, true));
+
+  // Don't care about the confidence as long as it's high.
+  EXPECT_NEAR(compute_score(20, 2, 12., false, false),
+              compute_score(50, 6, 12., false, false), 1e-4);
+
+  // Mandatory network access.
+  EXPECT_EQ(compute_score(1, 1, 12., true, false),
+            compute_score(1, 1, 12., false, false));
+  EXPECT_LT(compute_score(1, 1, 12., true, false),
+            compute_score(1, 1, 12., false, true));
+  EXPECT_LT(compute_score(1, 1, 12., false, false),
+            compute_score(1, 1, 2., true, true));
 
   // Accessed network.
   EXPECT_GT(compute_score(1, 1, 12., false, true),

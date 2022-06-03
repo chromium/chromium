@@ -16,11 +16,11 @@ source_set("runtime") {
   ]
 
   deps = [
+    "//components/prefs",
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

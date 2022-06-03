@@ -6,7 +6,6 @@
 #define COMPONENTS_COMPONENT_UPDATER_TIMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -16,11 +15,15 @@ namespace component_updater {
 class Timer {
  public:
   Timer();
+
+  Timer(const Timer&) = delete;
+  Timer& operator=(const Timer&) = delete;
+
   ~Timer();
 
   void Start(base::TimeDelta initial_delay,
              base::TimeDelta delay,
-             const base::Closure& user_task);
+             const base::RepeatingClosure& user_task);
 
   void Stop();
 
@@ -32,9 +35,7 @@ class Timer {
   base::OneShotTimer timer_;
 
   base::TimeDelta delay_;
-  base::Closure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(Timer);
+  base::RepeatingClosure user_task_;
 };
 
 }  // namespace component_updater

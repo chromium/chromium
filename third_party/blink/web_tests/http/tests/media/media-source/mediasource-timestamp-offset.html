@@ -17,7 +17,7 @@
                   var sourceBuffer = mediaSource.addSourceBuffer(segmentInfo.type);
 
                   if (expected == 'TypeError')  {
-                      assert_throws({name: 'TypeError'},
+                      assert_throws_js(TypeError,
                           function() { sourceBuffer.timestampOffset = value; },
                           'setting timestampOffset to ' + description + ' throws an exception.');
                   } else {
@@ -111,7 +111,7 @@
               assert_true(mediaSource.sourceBuffers.length == 0, "MediaSource.sourceBuffers is empty");
               assert_true(mediaSource.activeSourceBuffers.length == 0, "MediaSource.activesourceBuffers is empty");
                           
-              assert_throws("InvalidStateError", function() 
+              assert_throws_dom("InvalidStateError", function() 
               {
                   sourceBuffer.timestampOffset = 10;
               });

@@ -6,12 +6,14 @@
 
 #include <arpa/inet.h>
 #include <elf.h>
+#include <string.h>
 
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NOTE: This code may be used in crash handling code, so the implementation
 // must avoid dynamic memory allocation or using data structures which rely on
@@ -20,6 +22,8 @@
 namespace base {
 namespace debug {
 namespace {
+
+// See https://refspecs.linuxbase.org/elf/elf.pdf for the ELF specification.
 
 #if __SIZEOF_POINTER__ == 4
 using Ehdr = Elf32_Ehdr;
@@ -37,62 +41,36 @@ using Word = Elf64_Word;
 
 constexpr char kGnuNoteName[] = "GNU";
 
-// Returns a pointer to the header of the ELF binary mapped into memory,
-// or a null pointer if the header is invalid.
+// Returns a pointer to the header of the ELF binary mapped into memory, or a
+// null pointer if the header is invalid. Here and below |elf_mapped_base| is a
+// pointer to the start of the ELF image.
 const Ehdr* GetElfHeader(const void* elf_mapped_base) {
-  const char* elf_base = reinterpret_cast<const char*>(elf_mapped_base);
-  if (strncmp(elf_base, ELFMAG, SELFMAG) != 0)
+  if (strncmp(reinterpret_cast<const char*>(elf_mapped_base), ELFMAG,
+              SELFMAG) != 0)
     return nullptr;
 
-  const Ehdr* elf_header = reinterpret_cast<const Ehdr*>(elf_base);
-  return elf_header;
-}
-
-// Returns the ELF base address that should be used as a starting point to
-// access other segments.
-const char* GetElfBaseVirtualAddress(const void* elf_mapped_base) {
-  const char* elf_base = reinterpret_cast<const char*>(elf_mapped_base);
-  for (const Phdr& header : GetElfProgramHeaders(elf_mapped_base)) {
-    if (header.p_type == PT_LOAD) {
-      size_t load_bias = static_cast<size_t>(header.p_vaddr);
-      CHECK_GE(reinterpret_cast<uintptr_t>(elf_base), load_bias);
-      return elf_base - load_bias;
-    }
-  }
-  return elf_base;
+  return reinterpret_cast<const Ehdr*>(elf_mapped_base);
 }
 
 }  // namespace
-
-span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {
-  // NOTE: Function should use async signal safe calls only.
-
-  const char* elf_base = reinterpret_cast<const char*>(elf_mapped_base);
-  const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
-  if (!elf_header)
-    return {};
-
-  return span<const Phdr>(
-      reinterpret_cast<const Phdr*>(elf_base + elf_header->e_phoff),
-      elf_header->e_phnum);
-}
 
 size_t ReadElfBuildId(const void* elf_mapped_base,
                       bool uppercase,
                       ElfBuildIdBuffer build_id) {
   // NOTE: Function should use async signal safe calls only.
 
-  const char* elf_virtual_base = GetElfBaseVirtualAddress(elf_mapped_base);
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
   if (!elf_header)
     return 0;
 
+  const size_t relocation_offset = GetRelocationOffset(elf_mapped_base);
   for (const Phdr& header : GetElfProgramHeaders(elf_mapped_base)) {
     if (header.p_type != PT_NOTE)
       continue;
 
     // Look for a NT_GNU_BUILD_ID note with name == "GNU".
-    const char* current_section = elf_virtual_base + header.p_vaddr;
+    const char* current_section =
+        reinterpret_cast<const char*>(header.p_vaddr + relocation_offset);
     const char* section_end = current_section + header.p_memsz;
     const Nhdr* current_note = nullptr;
     bool found = false;
@@ -108,8 +86,8 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
         }
       }
 
-      size_t section_size = bits::Align(current_note->n_namesz, 4) +
-                            bits::Align(current_note->n_descsz, 4) +
+      size_t section_size = bits::AlignUp(current_note->n_namesz, 4) +
+                            bits::AlignUp(current_note->n_descsz, 4) +
                             sizeof(Nhdr);
       if (section_size > static_cast<size_t>(section_end - current_section))
         return 0;
@@ -127,7 +105,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     // Write out the build ID as a null-terminated hex string.
     const uint8_t* build_id_raw =
         reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-        bits::Align(current_note->n_namesz, 4);
+        bits::AlignUp(current_note->n_namesz, 4);
     size_t i = 0;
     for (i = 0; i < current_note->n_descsz; ++i) {
       strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
@@ -142,14 +120,14 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
   return 0;
 }
 
-Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
+absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
   // NOTE: Function should use async signal safe calls only.
 
-  const char* elf_base = reinterpret_cast<const char*>(elf_mapped_base);
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
   if (!elf_header)
     return {};
 
+  const size_t relocation_offset = GetRelocationOffset(elf_mapped_base);
   for (const Phdr& header : GetElfProgramHeaders(elf_mapped_base)) {
     if (header.p_type != PT_DYNAMIC)
       continue;
@@ -158,21 +136,20 @@ Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
     // SONAME offsets, which are used to compute the offset of the library
     // name string.
     const Dyn* dynamic_start =
-        reinterpret_cast<const Dyn*>(elf_base + header.p_vaddr);
+        reinterpret_cast<const Dyn*>(header.p_vaddr + relocation_offset);
     const Dyn* dynamic_end = reinterpret_cast<const Dyn*>(
-        elf_base + header.p_vaddr + header.p_memsz);
+        header.p_vaddr + relocation_offset + header.p_memsz);
     Word soname_strtab_offset = 0;
     const char* strtab_addr = 0;
     for (const Dyn* dynamic_iter = dynamic_start; dynamic_iter < dynamic_end;
          ++dynamic_iter) {
       if (dynamic_iter->d_tag == DT_STRTAB) {
 #if defined(OS_FUCHSIA) || defined(OS_ANDROID)
-        // Fuchsia and Android executables are position-independent, so treat
-        // pointers in the ELF header as offsets into the address space instead
-        // of absolute addresses.
-        strtab_addr = (size_t)dynamic_iter->d_un.d_ptr + (const char*)elf_base;
+        // Fuchsia and Android do not relocate the symtab pointer on ELF load.
+        strtab_addr = static_cast<size_t>(dynamic_iter->d_un.d_ptr) +
+                      reinterpret_cast<const char*>(relocation_offset);
 #else
-        strtab_addr = (const char*)dynamic_iter->d_un.d_ptr;
+        strtab_addr = reinterpret_cast<const char*>(dynamic_iter->d_un.d_ptr);
 #endif
       } else if (dynamic_iter->d_tag == DT_SONAME) {
         soname_strtab_offset = dynamic_iter->d_un.d_val;
@@ -182,7 +159,41 @@ Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
       return StringPiece(strtab_addr + soname_strtab_offset);
   }
 
-  return nullopt;
+  return absl::nullopt;
+}
+
+span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {
+  // NOTE: Function should use async signal safe calls only.
+
+  const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
+  if (!elf_header)
+    return {};
+
+  const char* phdr_start =
+      reinterpret_cast<const char*>(elf_header) + elf_header->e_phoff;
+  return span<const Phdr>(reinterpret_cast<const Phdr*>(phdr_start),
+                          elf_header->e_phnum);
+}
+
+// Returns the offset to add to virtual addresses in the image to compute the
+// mapped virtual address.
+size_t GetRelocationOffset(const void* elf_mapped_base) {
+  span<const Phdr> headers = GetElfProgramHeaders(elf_mapped_base);
+  for (const Phdr& header : headers) {
+    if (header.p_type == PT_LOAD) {
+      // |elf_mapped_base| + |header.p_offset| is the mapped address of this
+      // segment. |header.p_vaddr| is the specified virtual address within the
+      // ELF image.
+      const char* const mapped_address =
+          reinterpret_cast<const char*>(elf_mapped_base) + header.p_offset;
+      return reinterpret_cast<uintptr_t>(mapped_address) - header.p_vaddr;
+    }
+  }
+
+  // Assume the virtual addresses in the image start at 0, so the offset is
+  // from 0 to the actual mapped base address.
+  return static_cast<size_t>(reinterpret_cast<uintptr_t>(elf_mapped_base) -
+                             reinterpret_cast<uintptr_t>(nullptr));
 }
 
 }  // namespace debug

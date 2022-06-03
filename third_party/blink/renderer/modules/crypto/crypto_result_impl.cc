@@ -34,13 +34,12 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
@@ -74,13 +73,13 @@ class CryptoResultImpl::Resolver final : public ScriptPromiseResolver {
   Resolver(ScriptState* script_state, CryptoResultImpl* result)
       : ScriptPromiseResolver(script_state), result_(result) {}
 
-  void ContextDestroyed(ExecutionContext* destroyed_context) override {
+  void ContextDestroyed() override {
     result_->Cancel();
     result_ = nullptr;
-    ScriptPromiseResolver::ContextDestroyed(destroyed_context);
+    ScriptPromiseResolver::ContextDestroyed();
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(result_);
     ScriptPromiseResolver::Trace(visitor);
   }
@@ -121,7 +120,7 @@ CryptoResultImpl::~CryptoResultImpl() {
   DCHECK(!resolver_);
 }
 
-void CryptoResultImpl::Trace(blink::Visitor* visitor) {
+void CryptoResultImpl::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   CryptoResult::Trace(visitor);
 }
@@ -220,6 +219,14 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
                                  MakeGarbageCollected<CryptoKey>(private_key)));
 
   resolver_->Resolve(key_pair.V8Value());
+  ClearResolver();
+}
+
+void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
+  if (!resolver_)
+    return;
+
+  resolver_->Reject(exception_state);
   ClearResolver();
 }
 

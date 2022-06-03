@@ -21,7 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -94,7 +94,7 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
         length, expected_modification_time);
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // May be needed to avoid leaks on OSX.
   base::mac::ScopedNSAutoreleasePool scoped_pool_;
 #endif
@@ -296,7 +296,7 @@ TEST_P(UploadFileElementReaderTest, FileChanged) {
 
   // Expect one second before the actual modification time to simulate change.
   const base::Time expected_modification_time =
-      info.last_modified - base::TimeDelta::FromSeconds(1);
+      info.last_modified - base::Seconds(1);
   reader_ = CreateReader(0, std::numeric_limits<uint64_t>::max(),
                          expected_modification_time);
   TestCompletionCallback init_callback;
@@ -309,7 +309,7 @@ TEST_P(UploadFileElementReaderTest, InexactExpectedTimeStamp) {
   ASSERT_TRUE(base::GetFileInfo(temp_file_path_, &info));
 
   const base::Time expected_modification_time =
-      info.last_modified - base::TimeDelta::FromMilliseconds(900);
+      info.last_modified - base::Milliseconds(900);
   reader_ = CreateReader(0, std::numeric_limits<uint64_t>::max(),
                          expected_modification_time);
   TestCompletionCallback init_callback;

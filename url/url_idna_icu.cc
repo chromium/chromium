@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/logging.h"
-#include "base/no_destructor.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/url_canon_icu.h"
@@ -17,10 +18,8 @@
 
 namespace url {
 
-namespace {
-
-// A wrapper to use LazyInstance<>::Leaky with ICU's UIDNA, a C pointer to
-// a UTS46/IDNA 2008 handling object opened with uidna_openUTS46().
+// Use UIDNA, a C pointer to a UTS46/IDNA 2008 handling object opened with
+// uidna_openUTS46().
 //
 // We use UTS46 with BiDiCheck to migrate from IDNA 2003 (with unassigned
 // code points allowed) to IDNA 2008 with
@@ -40,30 +39,23 @@ namespace {
 // http://goo.gl/3XBhqw ).
 // See http://http://unicode.org/reports/tr46/ and references therein
 // for more details.
-struct UIDNAWrapper {
-  UIDNAWrapper() {
+UIDNA* GetUIDNA() {
+  static UIDNA* uidna = [] {
     UErrorCode err = U_ZERO_ERROR;
     // TODO(jungshik): Change options as different parties (browsers,
     // registrars, search engines) converge toward a consensus.
-    value = uidna_openUTS46(UIDNA_CHECK_BIDI, &err);
+    UIDNA* value = uidna_openUTS46(UIDNA_CHECK_BIDI, &err);
     if (U_FAILURE(err)) {
       CHECK(false) << "failed to open UTS46 data with error: "
                    << u_errorName(err)
                    << ". If you see this error message in a test environment "
                    << "your test environment likely lacks the required data "
                    << "tables for libicu. See https://crbug.com/778929.";
-      value = NULL;
+      value = nullptr;
     }
-  }
-
-  UIDNA* value;
-};
-
-}  // namespace
-
-UIDNA* GetUIDNA() {
-  static base::NoDestructor<UIDNAWrapper> uidna_wrapper;
-  return uidna_wrapper->value;
+    return value;
+  }();
+  return uidna;
 }
 
 // Converts the Unicode input representing a hostname to ASCII using IDN rules.
@@ -80,23 +72,49 @@ UIDNA* GetUIDNA() {
 // conversions in our code. In addition, consider using icu::IDNA's UTF-8/ASCII
 // version with StringByteSink. That way, we can avoid C wrappers and additional
 // string conversion.
-bool IDNToASCII(const base::char16* src, int src_len, CanonOutputW* output) {
+bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
   DCHECK(output->length() == 0);  // Output buffer is assumed empty.
 
   UIDNA* uidna = GetUIDNA();
-  DCHECK(uidna != NULL);
+  DCHECK(uidna != nullptr);
   while (true) {
     UErrorCode err = U_ZERO_ERROR;
     UIDNAInfo info = UIDNA_INFO_INITIALIZER;
     int output_length = uidna_nameToASCII(uidna, src, src_len, output->data(),
                                           output->capacity(), &info, &err);
+
+    // Ignore various errors for web compatibility. The options are specified
+    // by the WHATWG URL Standard. See
+    //  - https://unicode.org/reports/tr46/
+    //  - https://url.spec.whatwg.org/#concept-domain-to-ascii
+    //    (we set beStrict to false)
+
+    // Disable the "CheckHyphens" option in UTS #46. See
+    //  - https://crbug.com/804688
+    //  - https://github.com/whatwg/url/issues/267
+    info.errors &= ~UIDNA_ERROR_HYPHEN_3_4;
+    info.errors &= ~UIDNA_ERROR_LEADING_HYPHEN;
+    info.errors &= ~UIDNA_ERROR_TRAILING_HYPHEN;
+
+    // Disable the "VerifyDnsLength" option in UTS #46.
+    info.errors &= ~UIDNA_ERROR_EMPTY_LABEL;
+    info.errors &= ~UIDNA_ERROR_LABEL_TOO_LONG;
+    info.errors &= ~UIDNA_ERROR_DOMAIN_NAME_TOO_LONG;
+
     if (U_SUCCESS(err) && info.errors == 0) {
+      // Per WHATWG URL, it is a failure if the ToASCII output is empty.
+      //
+      // ICU would usually return UIDNA_ERROR_EMPTY_LABEL in this case, but we
+      // want to continue allowing http://abc..def/ while forbidding http:///.
+      //
+      if (output_length == 0) {
+        return false;
+      }
+
       output->set_length(output_length);
       return true;
     }
 
-    // TODO(jungshik): Look at info.errors to handle them case-by-case basis
-    // if necessary.
     if (err != U_BUFFER_OVERFLOW_ERROR || info.errors != 0)
       return false;  // Unknown error, give up.
 

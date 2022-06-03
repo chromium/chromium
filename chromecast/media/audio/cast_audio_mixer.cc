@@ -5,8 +5,8 @@
 #include "chromecast/media/audio/cast_audio_mixer.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -36,6 +36,9 @@ class CastAudioMixer::MixerProxyStream
     DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   }
 
+  MixerProxyStream(const MixerProxyStream&) = delete;
+  MixerProxyStream& operator=(const MixerProxyStream&) = delete;
+
   ~MixerProxyStream() override {
     DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   }
@@ -61,6 +64,9 @@ class CastAudioMixer::MixerProxyStream
       DETACH_FROM_THREAD(backend_thread_checker_);
     }
 
+    ResamplerProxy(const ResamplerProxy&) = delete;
+    ResamplerProxy& operator=(const ResamplerProxy&) = delete;
+
     ~ResamplerProxy() override {}
 
    private:
@@ -76,7 +82,6 @@ class CastAudioMixer::MixerProxyStream
     std::unique_ptr<::media::AudioConverter> resampler_;
 
     THREAD_CHECKER(backend_thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(ResamplerProxy);
   };
 
   // ::media::AudioOutputStream implementation
@@ -179,7 +184,6 @@ class CastAudioMixer::MixerProxyStream
   std::unique_ptr<ResamplerProxy> proxy_;
 
   THREAD_CHECKER(audio_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(MixerProxyStream);
 };
 
 CastAudioMixer::CastAudioMixer(CastAudioManager* audio_manager)

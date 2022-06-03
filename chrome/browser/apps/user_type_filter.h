@@ -21,7 +21,6 @@ extern const char kKeyUserType[];
 extern const char kUserTypeChild[];
 extern const char kUserTypeGuest[];
 extern const char kUserTypeManaged[];
-extern const char kUserTypeSupervised[];
 extern const char kUserTypeUnmanaged[];
 
 // Returns user type based on |profile|. Must be called on UI thread. List of

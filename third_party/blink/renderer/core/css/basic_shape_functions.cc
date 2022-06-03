@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
@@ -358,6 +359,9 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     StyleRay::RaySize size = KeywordToRaySize(ray_value->Size().GetValueID());
     bool contain = !!ray_value->Contain();
     basic_shape = StyleRay::Create(angle, size, contain);
+  } else if (const auto* path_value =
+                 DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
+    basic_shape = path_value->GetStylePath();
   } else {
     NOTREACHED();
   }
@@ -365,13 +369,12 @@ scoped_refptr<BasicShape> BasicShapeForValue(
   return basic_shape;
 }
 
-FloatPoint FloatPointForCenterCoordinate(
-    const BasicShapeCenterCoordinate& center_x,
-    const BasicShapeCenterCoordinate& center_y,
-    FloatSize box_size) {
-  float x = FloatValueForLength(center_x.ComputedLength(), box_size.Width());
-  float y = FloatValueForLength(center_y.ComputedLength(), box_size.Height());
-  return FloatPoint(x, y);
+gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
+                                     const BasicShapeCenterCoordinate& center_y,
+                                     FloatSize box_size) {
+  float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
+  float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
+  return gfx::PointF(x, y);
 }
 
 }  // namespace blink

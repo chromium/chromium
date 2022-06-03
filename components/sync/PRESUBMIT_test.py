@@ -77,7 +77,6 @@ MOCK_PROTOFILE_CONTENTS = ('\n'
   '    AppSpecifics app = 456;\n'
   '    AppSettingSpecifics app_setting = 789;\n'
   '    ExtensionSettingSpecifics extension_setting = 910;\n'
-  '    ExperimentsSpecifics experiments = 161496;\n'
   '    //comment\n'
   '  }\n'
   '}\n'
@@ -112,10 +111,13 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     results = self._testChange('{PROXY_TABS, "", "", "Tabs", -1, 25},')
     self.assertEqual(0, len(results))
 
-  def testValidChangeDeprecatedEntry(self):
-    results = self._testChange('{DEPRECATED_EXPERIMENTS, "EXPERIMENTS",'
-      '"experiments", "Experiments",'
-      'sync_pb::EntitySpecifics::kExperimentsFieldNumber, 19},')
+  # TODO(crbug.com/1170749): The only remaining deprecated type doesn't satisfy
+  # this test, revisit it.
+  def DISABLED_testValidChangeDeprecatedEntry(self):
+    results = self._testChange('{DEPRECATED_SUPERVISED_USER_ALLOWLISTS,\n'
+      '"MANAGED_USER_WHITELIST",\n'
+      '"managed_user_whitelists", "Managed User Whitelists",\n'
+      'sync_pb::EntitySpecifics::kManagedUserWhitelistFieldNumber, 33},')
     self.assertEqual(0, len(results))
 
   def testInvalidChangeMismatchedNotificationType(self):
@@ -149,13 +151,13 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     self.assertEqual(6, len(results))
     self.assertTrue('APP_SETTINGS' in results[0].message)
 
-  def testBlacklistedRootTag(self):
+  def testBlocklistedRootTag(self):
     results = self._testChange('{EXTENSION_SETTING, "EXTENSION_SETTING",\n'
       '"_mts_schema_descriptor","Extension Setting",\n'
       'sync_pb::EntitySpecifics::kExtensionSettingFieldNumber, 6},')
     self.assertEqual(2, len(results))
     self.assertTrue('_mts_schema_descriptor' in results[0].message)
-    self.assertTrue("blacklist" in results[0].message)
+    self.assertTrue("blocklist" in results[0].message)
 
   def _testChange(self, modeltype_literal):
     mock_input_api = MockInputApi()

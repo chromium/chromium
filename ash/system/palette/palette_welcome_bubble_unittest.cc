@@ -4,7 +4,7 @@
 
 #include "ash/system/palette/palette_welcome_bubble.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -32,6 +32,10 @@ constexpr char kPublicAccountEmail[] = "public@palettewelcome.com";
 class PaletteWelcomeBubbleTest : public AshTestBase {
  public:
   PaletteWelcomeBubbleTest() = default;
+
+  PaletteWelcomeBubbleTest(const PaletteWelcomeBubbleTest&) = delete;
+  PaletteWelcomeBubbleTest& operator=(const PaletteWelcomeBubbleTest&) = delete;
+
   ~PaletteWelcomeBubbleTest() override = default;
 
   PrefService* user1_pref_service() {
@@ -66,9 +70,6 @@ class PaletteWelcomeBubbleTest : public AshTestBase {
 
  protected:
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteWelcomeBubbleTest);
 };
 
 // Test the basic Show/Hide functions work.

@@ -54,9 +54,9 @@ LineSegment ExcludedSegment(const NGExclusion& exclusion,
   segment.logical_right += margin_delta;
 
   // Clamp the segment offsets to the size of the exclusion.
-  segment.logical_left = clampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
+  segment.logical_left = ClampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
                                              exclusion.rect.InlineSize());
-  segment.logical_right = clampTo<LayoutUnit>(
+  segment.logical_right = ClampTo<LayoutUnit>(
       segment.logical_right, LayoutUnit(), exclusion.rect.InlineSize());
 
   // Make the segment offsets relative to the BFC coordinate space.
@@ -94,17 +94,6 @@ bool NGLayoutOpportunity::IsBlockDeltaBelowShapes(
   }
 
   return true;
-}
-
-NGLineLayoutOpportunity NGLayoutOpportunity::ComputeLineLayoutOpportunity(
-    const NGConstraintSpace& space,
-    LayoutUnit line_block_size,
-    LayoutUnit block_delta) const {
-  return NGLineLayoutOpportunity(
-      ComputeLineLeftOffset(space, line_block_size, block_delta),
-      ComputeLineRightOffset(space, line_block_size, block_delta),
-      rect.LineStartOffset(), rect.LineEndOffset(),
-      rect.BlockStartOffset() + block_delta, line_block_size);
 }
 
 LayoutUnit NGLayoutOpportunity::ComputeLineLeftOffset(

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests function's return value reported from backend.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function d()
@@ -28,14 +28,14 @@
   }
 
   var stepCount = 0;
-  function step2(callFrames) {
+  async function step2(callFrames) {
     if (stepCount < 2) {
       for (var i = 0, frame; frame = callFrames[i]; ++i)
         TestRunner.assertTrue(!frame.returnValue(), 'Unexpected returnValue in frame #' + i);
       SourcesTestRunner.stepOver();
       SourcesTestRunner.waitUntilResumed(SourcesTestRunner.waitUntilPaused.bind(SourcesTestRunner, step2));
     } else {
-      SourcesTestRunner.captureStackTrace(callFrames, null, {printReturnValue: true});
+      await SourcesTestRunner.captureStackTrace(callFrames, null, {printReturnValue: true});
       SourcesTestRunner.completeDebuggerTest();
     }
     ++stepCount;

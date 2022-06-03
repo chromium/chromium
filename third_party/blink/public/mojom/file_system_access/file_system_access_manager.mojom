@@ -1,0 +1,128 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
+
+enum WellKnownDirectory {
+  kDefault,
+  kDirDesktop,
+  kDirDocuments,
+  kDirDownloads,
+  kDirMusic,
+  kDirPictures,
+  kDirVideos,
+};
+
+// Struct to represent individual options for types of files that are accepted
+// by calls to ChooseEntry. Each type has an optional description, and any
+// number of mime types and/or extensions.
+// Options with no extensions and no known mime types will be ignored.
+struct ChooseFileSystemEntryAcceptsOption {
+  mojo_base.mojom.String16 description;
+  array<string> mime_types;
+  array<string> extensions;
+};
+
+// If `include_accepts_all` is true, an "all files" option is included in the
+// dialog displayed to the user. If no valid options are present in `accepts`
+// `include_accepts_all` is treated as if it was true.
+struct AcceptsTypesInfo {
+  array<ChooseFileSystemEntryAcceptsOption> accepts;
+  bool include_accepts_all;
+};
+
+struct OpenFilePickerOptions {
+  AcceptsTypesInfo accepts_types_info;
+  bool can_select_multiple_files;
+};
+
+struct SaveFilePickerOptions {
+  AcceptsTypesInfo accepts_types_info;
+  string suggested_name;
+};
+
+struct DirectoryPickerOptions {
+  bool request_writable;
+};
+
+// Encapsulation of data from the FilePickerOptions idl spec:
+// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.
+union FilePickerOptions {
+  OpenFilePickerOptions open_file_picker_options;
+  SaveFilePickerOptions save_file_picker_options;
+  DirectoryPickerOptions directory_picker_options;
+};
+
+// See the documentation for how the `starting_directory` fields interact:
+// https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
+// `starting_directory_id` allows for specification of the "purpose" of a file
+// picker invocation. When an ID is specified, the picker will remember the
+// picked directory. The next time the matching ID is specified, the picker
+// will default to this directory. The ID cannot exceed 32 characters in
+// length and may only contain alphanumeric characters, '-', and '_'.
+// A maximum of 32 custom IDs is allowed per origin (LRU eviction).
+// `well_known_starting_directory` opens the file picker at a well-known
+// directory.
+// `starting_directory_token` is resolved into a file or directory by the
+// FileSystemAccessManager to be used as the starting directory for the file
+// picker. If the token is a file, its parent directory is used.
+// See the FileSystemAccessManager's ResolveDefaultDirectory() method for
+// how these fields are prioritized.
+struct CommonFilePickerOptions {
+  string starting_directory_id;
+  WellKnownDirectory well_known_starting_directory;
+  pending_remote<FileSystemAccessTransferToken>? starting_directory_token;
+};
+
+// Interface provided by the browser to the renderer as main entry point to the
+// File System Access API. The renderer can request this interface for a
+// specific worker or document, so the browser process will always be able to
+// tell what operations are being done by which document or worker.
+interface FileSystemAccessManager {
+  // Opens the sandboxed filesystem for the origin of the current document or worker.
+  GetSandboxedFileSystem() =>
+      (FileSystemAccessError result,
+       pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
+  // Prompts the user to select a file from the local filesystem. Returns an
+  // error code if something failed, or a list of the selected entries on
+  // success.
+  ChooseEntries(FilePickerOptions options,
+                CommonFilePickerOptions common_options) =>
+      (FileSystemAccessError result,
+       array<FileSystemAccessEntry> entries);
+
+  // Used to redeem tokens received by a postMessage() target. Clones
+  // FileSystemFileHandles. Token redemption should never fail. The
+  // postMessage() target should perform an origin check before
+  // redeeming tokens. Origin check failures must dispatch a messageerror
+  // event instead of cloning the objects. FileSystemAccessManager will also
+  // validate the redeemed token, including the token's origin, before binding the
+  // FileSystemHandle.
+  GetFileHandleFromToken(
+    pending_remote<FileSystemAccessTransferToken> token,
+    pending_receiver<FileSystemAccessFileHandle> file_handle);
+
+  // Same as GetFileHandleFromToken(), but for FileSystemDirectoryHandles.
+  // See GetFileHandleFromToken() comment above for details.
+  GetDirectoryHandleFromToken(
+    pending_remote<FileSystemAccessTransferToken> token,
+    pending_receiver<FileSystemAccessDirectoryHandle> directory_handle);
+
+  // Used to redeem FileSystemAccessDataTransferToken that are passed to the
+  // renderer from the browser during a drag-and-drop or clipboard operation.
+  // Token redemption can fail if the id of the process trying to redeem the
+  // token does not match the id assigned to the token at creation or if the
+  // FileSystemAccessManager does not have record of the token.
+  GetEntryFromDataTransferToken(
+    pending_remote<FileSystemAccessDataTransferToken> token
+  )  => (FileSystemAccessEntry entry);
+};

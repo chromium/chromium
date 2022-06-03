@@ -45,8 +45,9 @@ int32_t AudioEncoderResource::GetSupportedProfiles(
   get_supported_profiles_callback_ = callback;
   Call<PpapiPluginMsg_AudioEncoder_GetSupportedProfilesReply>(
       RENDERER, PpapiHostMsg_AudioEncoder_GetSupportedProfiles(),
-      base::Bind(&AudioEncoderResource::OnPluginMsgGetSupportedProfilesReply,
-                 this, output));
+      base::BindOnce(
+          &AudioEncoderResource::OnPluginMsgGetSupportedProfilesReply, this,
+          output));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -75,7 +76,7 @@ int32_t AudioEncoderResource::Initialize(
 
   Call<PpapiPluginMsg_AudioEncoder_InitializeReply>(
       RENDERER, PpapiHostMsg_AudioEncoder_Initialize(parameters),
-      base::Bind(&AudioEncoderResource::OnPluginMsgInitializeReply, this));
+      base::BindOnce(&AudioEncoderResource::OnPluginMsgInitializeReply, this));
   return PP_OK_COMPLETIONPENDING;
 }
 

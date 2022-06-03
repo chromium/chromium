@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>headers</key>
+	<array>
+		<string>ios/widget_kit_extension/grit/ios_widget_kit_extension_strings.h</string>
+	</array>
+	<key>outputs</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>Localizable.strings</string>
+			<key>strings</key>
+			<array>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME</string>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

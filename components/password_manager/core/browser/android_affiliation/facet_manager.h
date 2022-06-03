@@ -8,11 +8,10 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 namespace base {
 class Clock;
@@ -35,10 +34,15 @@ class FacetManager {
   FacetManager(const FacetURI& facet_uri,
                FacetManagerHost* backend,
                base::Clock* clock);
+
+  FacetManager(const FacetManager&) = delete;
+  FacetManager& operator=(const FacetManager&) = delete;
+
   ~FacetManager();
 
-  // Facet-specific implementations for methods in AffiliationService of the
-  // same name. See documentation in affiliation_service.h for details:
+  // Facet-specific implementations for methods in AffiliationService of
+  // the same name. See documentation in android_affiliation_service.h for
+  // details:
   void GetAffiliationsAndBranding(
       StrategyOnCacheMiss cache_miss_strategy,
       AffiliationService::ResultCallback callback,
@@ -129,8 +133,6 @@ class FacetManager {
   // of individual prefetches can be supported even if there are two requests
   // with the same |keep_fresh_until| threshold.
   std::multiset<base::Time> keep_fresh_until_thresholds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FacetManager);
 };
 
 }  // namespace password_manager

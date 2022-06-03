@@ -33,15 +33,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
-#include "third_party/blink/renderer/core/dom/events/event_listener_options.h"
 #include "third_party/blink/renderer/core/dom/events/registered_event_listener.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
+class EventListenerOptions;
 class EventTarget;
 
 using EventListenerVector = HeapVector<RegisteredEventListener, 1>;
@@ -51,6 +50,8 @@ class CORE_EXPORT EventListenerMap final {
 
  public:
   EventListenerMap();
+  EventListenerMap(const EventListenerMap&) = delete;
+  EventListenerMap& operator=(const EventListenerMap&) = delete;
 
   bool IsEmpty() const { return entries_.IsEmpty(); }
   bool Contains(const AtomicString& event_type) const;
@@ -72,7 +73,7 @@ class CORE_EXPORT EventListenerMap final {
 
   void CopyEventListenersNotCreatedFromMarkupToTarget(EventTarget*);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   friend class EventListenerIterator;
@@ -88,7 +89,6 @@ class CORE_EXPORT EventListenerMap final {
 #if DCHECK_IS_ON()
   int active_iterator_count_ = 0;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(EventListenerMap);
 };
 
 #if !DCHECK_IS_ON()

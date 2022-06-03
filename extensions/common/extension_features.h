@@ -9,16 +9,30 @@
 
 namespace extensions_features {
 
-extern const base::Feature kExtensionsCheckup;
-extern const char kExtensionsCheckupEntryPointParameter[];
-extern const char kExtensionsCheckupBannerMessageParameter[];
-extern const char kStartupEntryPoint[];
-extern const char kNtpPromoEntryPoint[];
-extern const char kPerformanceMessage[];
-extern const char kPrivacyMessage[];
-extern const char kNeutralMessage[];
+extern const base::Feature kDisablePolicyViolationExtensionsRemotely;
+extern const base::Feature kDisablePotentiallyUwsExtensionsRemotely;
+extern const base::Feature kSafeBrowsingCrxAllowlistShowWarnings;
+extern const base::Feature kSafeBrowsingCrxAllowlistAutoDisable;
 
 extern const base::Feature kForceWebRequestProxyForTest;
+
+extern const base::Feature kAllowWithholdingExtensionPermissionsOnInstall;
+
+extern const base::Feature kContentScriptsMatchOriginAsFallback;
+
+extern const base::Feature kMv3ExtensionsSupported;
+
+extern const base::Feature kReportKeepaliveUkm;
+
+extern const base::Feature kStrictExtensionIsolation;
+
+extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
+
+extern const base::Feature kU2FSecurityKeyAPI;
+
+extern const base::Feature kAllowWasmInMV3;
+
+extern const base::Feature kStructuredCloningForMV3Messaging;
 
 }  // namespace extensions_features
 

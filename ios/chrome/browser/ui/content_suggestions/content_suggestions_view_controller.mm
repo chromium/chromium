@@ -7,30 +7,35 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cell.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recording.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,50 +45,35 @@ namespace {
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 const CGFloat kMostVisitedBottomMargin = 13;
 const CGFloat kCardBorderRadius = 11;
-
+const CGFloat kDiscoverFeedContentWith = 430;
+// Height for the Discover Feed section header.
+const CGFloat kDiscoverFeedFeaderHeight = 30;
 }
 
-NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
-    @"contentSuggestionsMostVisitedAccessibilityIdentifierPrefix";
-
-@interface ContentSuggestionsViewController ()<UIGestureRecognizerDelegate> {
-  CGFloat _initialContentOffset;
-}
+@interface ContentSuggestionsViewController () <UIGestureRecognizerDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsCollectionUpdater* collectionUpdater;
 
-// The overscroll actions controller managing accelerators over the toolbar.
-@property(nonatomic, strong)
-    OverscrollActionsController* overscrollActionsController;
+// The layout of the content suggestions collection view.
+@property(nonatomic, strong) ContentSuggestionsLayout* layout;
+
 @end
 
 @implementation ContentSuggestionsViewController
 
-@synthesize audience = _audience;
-@synthesize suggestionCommandHandler = _suggestionCommandHandler;
-@synthesize headerSynchronizer = _headerSynchronizer;
-@synthesize collectionUpdater = _collectionUpdater;
-@synthesize overscrollActionsController = _overscrollActionsController;
-@synthesize overscrollDelegate = _overscrollDelegate;
-@synthesize scrolledToTop = _scrolledToTop;
-@synthesize metricsRecorder = _metricsRecorder;
 @dynamic collectionViewModel;
 
 #pragma mark - Lifecycle
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style {
-  UICollectionViewLayout* layout = [[ContentSuggestionsLayout alloc] init];
-  self = [super initWithLayout:layout style:style];
+  _layout = [[ContentSuggestionsLayout alloc] init];
+  self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
-    _initialContentOffset = NAN;
+    _discoverFeedHeaderDelegate = _collectionUpdater;
   }
   return self;
-}
-
-- (void)dealloc {
-  [self.overscrollActionsController invalidate];
 }
 
 #pragma mark - Public
@@ -101,10 +91,10 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     return;
   }
 
-  [self.metricsRecorder
-      onSuggestionDismissed:[self.collectionViewModel itemAtIndexPath:indexPath]
-                atIndexPath:indexPath
-      suggestionsShownAbove:[self numberOfSuggestionsAbove:indexPath.section]];
+  if ([self.collectionUpdater isReturnToRecentTabSection:indexPath.section]) {
+    [self.suggestionCommandHandler hideMostRecentTab];
+    return;
+  }
 
   [self.collectionView performBatchUpdates:^{
     [self collectionView:self.collectionView
@@ -160,47 +150,6 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [self.collectionView performBatchUpdates:batchUpdates completion:nil];
 }
 
-- (NSInteger)numberOfSuggestionsAbove:(NSInteger)section {
-  NSInteger suggestionsAbove = 0;
-  for (NSInteger sectionAbove = 0; sectionAbove < section; sectionAbove++) {
-    if ([self.collectionUpdater isContentSuggestionsSection:sectionAbove]) {
-      suggestionsAbove +=
-          [self.collectionViewModel numberOfItemsInSection:sectionAbove];
-    }
-  }
-  return suggestionsAbove;
-}
-
-- (NSInteger)numberOfSectionsAbove:(NSInteger)section {
-  NSInteger sectionsAbove = 0;
-  for (NSInteger sectionAbove = 0; sectionAbove < section; sectionAbove++) {
-    if ([self.collectionUpdater isContentSuggestionsSection:sectionAbove]) {
-      sectionsAbove++;
-    }
-  }
-  return sectionsAbove;
-}
-
-- (void)updateConstraints {
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.headerSynchronizer updateConstraints];
-  [self.collectionView reloadData];
-  self.styler.cellStyle = MDCCollectionViewCellStyleCard;
-}
-
-- (void)clearOverscroll {
-  [self.overscrollActionsController clear];
-}
-
-- (void)setContentOffset:(CGFloat)offset {
-  _initialContentOffset = offset;
-  if (self.isViewLoaded && self.collectionView.window &&
-      self.collectionView.contentSize.height != 0) {
-    [self applyContentOffset];
-  }
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -211,8 +160,6 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   // to never and internally offset the UI to account for safe area insets.
   self.collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
-  self.collectionView.accessibilityIdentifier =
-      kContentSuggestionsCollectionIdentifier;
   _collectionUpdater.collectionViewController = self;
 
   self.collectionView.delegate = self;
@@ -225,99 +172,31 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   ApplyVisualConstraints(@[ @"V:|[collection]|", @"H:|[collection]|" ],
                          @{@"collection" : self.collectionView});
 
-  UILongPressGestureRecognizer* longPressRecognizer =
-      [[UILongPressGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(handleLongPress:)];
-  longPressRecognizer.delegate = self;
-  [self.collectionView addGestureRecognizer:longPressRecognizer];
+    UILongPressGestureRecognizer* longPressRecognizer =
+        [[UILongPressGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(handleLongPress:)];
+    longPressRecognizer.delegate = self;
+    [self.collectionView addGestureRecognizer:longPressRecognizer];
 
-  self.overscrollActionsController = [[OverscrollActionsController alloc]
-      initWithScrollView:self.collectionView];
-  [self.overscrollActionsController
-      setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
-  self.overscrollActionsController.delegate = self.overscrollDelegate;
-  [self updateOverscrollActionsState];
-}
-
-- (void)updateOverscrollActionsState {
-  if (IsSplitToolbarMode(self)) {
-    [self.overscrollActionsController enableOverscrollActions];
-  } else {
-    [self.overscrollActionsController disableOverscrollActions];
-  }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  self.headerSynchronizer.showing = YES;
-  // Reload data to ensure the Most Visited tiles and fakeOmnibox are correctly
-  // positionned, in particular during a rotation while a ViewController is
-  // presented in front of the NTP.
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-  // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  // Resize the collection as it might have been rotated while not being
-  // presented (e.g. rotation on stack view).
-  [self updateConstraints];
-}
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  [self applyContentOffset];
+  // TODO(crbug.com/1200303): Reload data is needed here so the content matches
+  // the current UI Layout after changing the Feed state (e.g. Turned On/Off).
+  // This shouldn't be necessary once we stop starting and stopping the
+  // Coordinator to achieve this.
+  [self.collectionView reloadData];
+  [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  self.headerSynchronizer.showing = NO;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-  void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
-      ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self.headerSynchronizer updateFakeOmniboxOnNewWidth:size.width];
-        [self.collectionView.collectionViewLayout invalidateLayout];
-      };
-  [coordinator animateAlongsideTransition:alongsideBlock completion:nil];
-}
-
-- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
-              withTransitionCoordinator:
-                  (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super willTransitionToTraitCollection:newCollection
-               withTransitionCoordinator:coordinator];
-  // Invalidating the layout after changing the cellStyle results in the layout
-  // not being updated. Do it before to have it taken into account.
-  [self.collectionView.collectionViewLayout invalidateLayout];
-  self.styler.cellStyle = MDCCollectionViewCellStyleCard;
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self.collectionViewLayout invalidateLayout];
-    [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
+    [self.audience viewDidDisappear];
   }
-  [self.headerSynchronizer updateConstraints];
-  [self updateOverscrollActionsState];
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.headerSynchronizer updateConstraints];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -326,30 +205,22 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
 
-  [self.headerSynchronizer unfocusOmnibox];
-
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
   switch ([self.collectionUpdater contentSuggestionTypeForItem:item]) {
-    case ContentSuggestionTypeReadingList:
-      base::RecordAction(base::UserMetricsAction("MobileReadingListOpen"));
-      [self.suggestionCommandHandler openPageForItemAtIndexPath:indexPath];
-      break;
-    case ContentSuggestionTypeArticle:
-      [self.suggestionCommandHandler openPageForItemAtIndexPath:indexPath];
-      break;
     case ContentSuggestionTypeMostVisited:
       [self.suggestionCommandHandler openMostVisitedItem:item
                                                  atIndex:indexPath.item];
+      break;
+    case ContentSuggestionTypeReturnToRecentTab:
+      [self.suggestionCommandHandler openMostRecentTab:item];
       break;
     case ContentSuggestionTypePromo:
       [self dismissSection:indexPath.section];
       [self.suggestionCommandHandler handlePromoTapped];
       [self.collectionViewLayout invalidateLayout];
       break;
-    case ContentSuggestionTypeLearnMore:
-      [self.suggestionCommandHandler handleLearnMoreTapped];
-      break;
+    case ContentSuggestionTypeDiscover:
     case ContentSuggestionTypeEmpty:
       break;
   }
@@ -357,21 +228,6 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  CSCollectionViewItem* item =
-      [self.collectionViewModel itemAtIndexPath:indexPath];
-
-  if ([self.collectionUpdater isContentSuggestionsSection:indexPath.section] &&
-      [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-          ContentSuggestionTypeEmpty &&
-      !item.metricsRecorded) {
-    [self.metricsRecorder
-            onSuggestionShown:item
-                  atIndexPath:indexPath
-        suggestionsShownAbove:[self
-                                  numberOfSuggestionsAbove:indexPath.section]];
-    item.metricsRecorded = YES;
-  }
-
   UICollectionViewCell* cell = [super collectionView:collectionView
                               cellForItemAtIndexPath:indexPath];
   if ([self.collectionUpdater isMostVisitedSection:indexPath.section]) {
@@ -380,10 +236,53 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
             @"%@%li",
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
             indexPath.row];
+    // Apple doesn't handle the transparency of the background during animations
+    // linked to context menus. To prevent the cell from turning black during
+    // animations, its background is set to be the same as the NTP background.
+    // See: crbug.com/1120321.
+    cell.backgroundColor = ntp_home::kNTPBackgroundColor();
     [self.collectionViewModel itemAtIndexPath:indexPath]
         .accessibilityIdentifier = cell.accessibilityIdentifier;
   }
 
+  return cell;
+}
+
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point {
+  CollectionViewItem* item =
+      [self.collectionViewModel itemAtIndexPath:indexPath];
+
+  if (![item isKindOfClass:[ContentSuggestionsMostVisitedItem class]])
+    return nil;
+
+  ContentSuggestionsMostVisitedItem* contentSuggestionsItem =
+      base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
+
+  return [self.menuProvider
+      contextMenuConfigurationForItem:contentSuggestionsItem
+                             fromView:[self.collectionView
+                                          cellForItemAtIndexPath:indexPath]];
+}
+
+#pragma mark - UICollectionViewDataSource
+
+- (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
+          viewForSupplementaryElementOfKind:(NSString*)kind
+                                atIndexPath:(NSIndexPath*)indexPath {
+  UICollectionReusableView* cell = [super collectionView:collectionView
+                       viewForSupplementaryElementOfKind:kind
+                                             atIndexPath:indexPath];
+  if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
+      [self.collectionUpdater isDiscoverSection:indexPath.section]) {
+    ContentSuggestionsDiscoverHeaderCell* discoverFeedHeader =
+        base::mac::ObjCCastStrict<ContentSuggestionsDiscoverHeaderCell>(cell);
+    [discoverFeedHeader.menuButton addTarget:self
+                                      action:@selector(openDiscoverFeedMenu)
+                            forControlEvents:UIControlEventTouchUpInside];
+    [self.audience discoverHeaderMenuButtonShown:discoverFeedHeader.menuButton];
+  }
   return cell;
 }
 
@@ -411,6 +310,16 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     parentInset.top = 0;
     parentInset.left = 0;
     parentInset.right = 0;
+  } else if ([self.collectionUpdater isReturnToRecentTabSection:section]) {
+    CGFloat collectionWidth = collectionView.bounds.size.width;
+    CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
+        collectionWidth, self.traitCollection);
+    CGFloat margin =
+        MAX(0, (collectionView.frame.size.width - maxCardWidth) / 2);
+    parentInset.left = margin;
+    parentInset.right = margin;
+    parentInset.bottom =
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
   } else if ([self.collectionUpdater isMostVisitedSection:section] ||
              [self.collectionUpdater isPromoSection:section]) {
     CGFloat margin = CenteredTilesMarginForWidth(
@@ -420,10 +329,17 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     if ([self.collectionUpdater isMostVisitedSection:section]) {
       parentInset.bottom = kMostVisitedBottomMargin;
     }
+  } else if ([self.collectionUpdater isDiscoverSection:section]) {
+    // TODO(crbug.com/1085419): Get card width from Mulder.
+    CGFloat feedCardWidth = kDiscoverFeedContentWith;
+    CGFloat margin =
+        MAX(0, (collectionView.frame.size.width - feedCardWidth) / 2);
+    parentInset.left = margin;
+    parentInset.right = margin;
   } else if (self.styler.cellStyle == MDCCollectionViewCellStyleCard) {
     CGFloat collectionWidth = collectionView.bounds.size.width;
-    CGFloat maxCardWidth =
-        content_suggestions::searchFieldWidth(collectionWidth);
+    CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
+        collectionWidth, self.traitCollection);
     CGFloat margin =
         MAX(0, (collectionView.frame.size.width - maxCardWidth) / 2);
     parentInset.left = margin;
@@ -457,13 +373,6 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
           shouldUseCustomStyleForSection:indexPath.section]) {
     return UIColor.clearColor;
   }
-  // MDCCollectionView doesn't support dynamic colors, so they have to be
-  // resolved now.
-  // TODO(crbug.com/984928): Clean up once dynamic color support is added.
-  if (@available(iOS 13, *)) {
-    return [ntp_home::kNTPBackgroundColor()
-        resolvedColorWithTraitCollection:self.traitCollection];
-  }
   return ntp_home::kNTPBackgroundColor();
 }
 
@@ -472,14 +381,16 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
   if ([self.collectionUpdater isHeaderSection:section]) {
-    return CGSizeMake(0, [self.headerSynchronizer headerHeight]);
+    return CGSizeMake(0, [self.headerProvider headerHeight]);
+  }
+  if ([self.collectionUpdater isDiscoverSection:section]) {
+    return CGSizeMake(0, kDiscoverFeedFeaderHeight);
   }
   CGSize defaultSize = [super collectionView:collectionView
                                       layout:collectionViewLayout
              referenceSizeForHeaderInSection:section];
   if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory) &&
-      [self.collectionUpdater isContentSuggestionsSection:section]) {
+          self.traitCollection.preferredContentSizeCategory)) {
     // Double the size of the header as it is now on two lines.
     defaultSize.height *= 2;
   }
@@ -511,75 +422,10 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 }
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
-    shouldHideItemSeparatorAtIndexPath:(NSIndexPath*)indexPath {
-  // Show separators for all cells in content suggestion sections.
-  return !
-      [self.collectionUpdater isContentSuggestionsSection:indexPath.section];
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
     shouldHideHeaderSeparatorForSection:(NSInteger)section {
   return [self.collectionUpdater shouldUseCustomStyleForSection:section];
 }
 
-#pragma mark - MDCCollectionViewEditingDelegate
-
-- (BOOL)collectionViewAllowsSwipeToDismissItem:
-    (UICollectionView*)collectionView {
-  return YES;
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
-    canSwipeToDismissItemAtIndexPath:(NSIndexPath*)indexPath {
-  CollectionViewItem* item =
-      [self.collectionViewModel itemAtIndexPath:indexPath];
-  return ![self.collectionUpdater isMostVisitedSection:indexPath.section] &&
-         ![self.collectionUpdater isPromoSection:indexPath.section] &&
-         [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-             ContentSuggestionTypeLearnMore &&
-         [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-             ContentSuggestionTypeEmpty;
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
-    didEndSwipeToDismissItemAtIndexPath:(NSIndexPath*)indexPath {
-  [self.collectionUpdater
-      dismissItem:[self.collectionViewModel itemAtIndexPath:indexPath]];
-  [self dismissEntryAtIndexPath:indexPath];
-}
-
-#pragma mark - UIScrollViewDelegate Methods.
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [super scrollViewDidScroll:scrollView];
-  [self.overscrollActionsController scrollViewDidScroll:scrollView];
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
-  self.scrolledToTop =
-      scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
-  [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-  [self.overscrollActionsController scrollViewDidEndDragging:scrollView
-                                              willDecelerate:decelerate];
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset {
-  [super scrollViewWillEndDragging:scrollView
-                      withVelocity:velocity
-               targetContentOffset:targetContentOffset];
-  [self.overscrollActionsController
-      scrollViewWillEndDragging:scrollView
-                   withVelocity:velocity
-            targetContentOffset:targetContentOffset];
-}
 
 #pragma mark - UIGestureRecognizerDelegate
 
@@ -643,32 +489,11 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   ContentSuggestionType type =
       [self.collectionUpdater contentSuggestionTypeForItem:touchedItem];
   switch (type) {
-    case ContentSuggestionTypeArticle:
-      [self.suggestionCommandHandler
-          displayContextMenuForSuggestion:touchedItem
-                                  atPoint:touchLocation
-                              atIndexPath:touchedItemIndexPath
-                          readLaterAction:YES];
-      break;
-    case ContentSuggestionTypeReadingList:
-      [self.suggestionCommandHandler
-          displayContextMenuForSuggestion:touchedItem
-                                  atPoint:touchLocation
-                              atIndexPath:touchedItemIndexPath
-                          readLaterAction:NO];
-      break;
     case ContentSuggestionTypeMostVisited:
-      [self.suggestionCommandHandler
-          displayContextMenuForMostVisitedItem:touchedItem
-                                       atPoint:touchLocation
-                                   atIndexPath:touchedItemIndexPath];
       break;
     default:
       break;
   }
-
-  if (IsRegularXRegularSizeClass(self))
-    [self.headerSynchronizer unfocusOmnibox];
 }
 
 // Checks if the |section| is empty and add an empty element if it is the case.
@@ -683,26 +508,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     [self.collectionView insertItemsAtIndexPaths:@[ emptyItem ]];
 }
 
-// Sets the collectionView's contentOffset if |_initialContentOffset| is set.
-- (void)applyContentOffset {
-  if (!isnan(_initialContentOffset)) {
-    UICollectionView* collection = self.collectionView;
-    // Don't set the offset such as the content of the collection is smaller
-    // than the part of the collection which should be displayed with that
-    // offset, taking into account the size of the toolbar.
-    CGFloat offset = MAX(
-        0, MIN(_initialContentOffset,
-               collection.contentSize.height - collection.bounds.size.height -
-                   ToolbarExpandedHeight(
-                       self.traitCollection.preferredContentSizeCategory) +
-                   collection.contentInset.bottom));
-    if (collection.contentOffset.y != offset) {
-      collection.contentOffset = CGPointMake(0, offset);
-      // Update the constraints in case the omnibox needs to be moved.
-      [self updateConstraints];
-    }
-  }
-  _initialContentOffset = NAN;
+// Opens top-level feed menu when pressing |menuButton|.
+- (void)openDiscoverFeedMenu {
+  [self.discoverFeedMenuHandler openDiscoverFeedMenu];
 }
 
 @end

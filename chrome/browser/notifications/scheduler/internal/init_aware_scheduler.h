@@ -6,15 +6,13 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_INIT_AWARE_SCHEDULER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -27,6 +25,10 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
  public:
   explicit InitAwareNotificationScheduler(
       std::unique_ptr<NotificationScheduler> impl);
+  InitAwareNotificationScheduler(const InitAwareNotificationScheduler&) =
+      delete;
+  InitAwareNotificationScheduler& operator=(
+      const InitAwareNotificationScheduler&) = delete;
   ~InitAwareNotificationScheduler() override;
 
  private:
@@ -54,7 +56,7 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
 
   // Whether the initialization is successful. No value if initialization is not
   // finished.
-  base::Optional<bool> init_success_;
+  absl::optional<bool> init_success_;
 
   // Cached calls.
   std::vector<base::OnceClosure> cached_closures_;
@@ -63,7 +65,6 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
   std::unique_ptr<NotificationScheduler> impl_;
 
   base::WeakPtrFactory<InitAwareNotificationScheduler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitAwareNotificationScheduler);
 };
 
 }  // namespace notifications

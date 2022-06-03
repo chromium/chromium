@@ -18,7 +18,7 @@ enum class AccessoryTabType {
   PASSWORDS = 1,
   CREDIT_CARDS = 2,
   ADDRESSES = 3,
-  TOUCH_TO_FILL = 4,
+  OBSOLETE_TOUCH_TO_FILL = 4,
   COUNT,
 };
 
@@ -36,6 +36,18 @@ enum class AccessoryAction {
   MANAGE_CREDIT_CARDS = 3,
   MANAGE_ADDRESSES = 4,
   GENERATE_PASSWORD_MANUAL = 5,
+  TOGGLE_SAVE_PASSWORDS = 6,
+  USE_OTHER_PASSWORD = 7,
+  COUNT,
+};
+
+// Used to record metrics for accessory toggles. Entries should not be
+// renumbered and numeric values should never be reused. Must be kept in sync
+// with the enum in enums.xml. A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
+enum class AccessoryToggleType {
+  SAVE_PASSWORDS_TOGGLE_ON = 0,
+  SAVE_PASSWORDS_TOGGLE_OFF = 1,
   COUNT,
 };
 

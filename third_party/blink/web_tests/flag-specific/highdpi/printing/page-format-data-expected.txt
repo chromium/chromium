@@ -1,0 +1,90 @@
+This tests page format data
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Test default visibility
+PASS internals.isPageBoxVisible(document, 0) is true
+Test display: none. display property doesn't apply to @page
+PASS internals.isPageBoxVisible(document, 0) is true
+Test display: inline. display property doesn't apply to @page
+PASS internals.isPageBoxVisible(document, 0) is true
+Test visibility: hidden
+PASS internals.isPageBoxVisible(document, 0) is false
+Test visibility: visible
+PASS internals.isPageBoxVisible(document, 0) is true
+
+
+Test default page size
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(100, 200)' + pxMargins(1, 2, 3, 4)
+Test auto page size
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(100, 200)' + pxMargins(1, 2, 3, 4)
+Test landscape
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(200, 100)' + pxMargins(1, 2, 3, 4)
+PASS internals.pageSizeAndMarginsInPixels(0, 200, 100, 1, 2, 3, 4) is '(200, 100)' + pxMargins(1, 2, 3, 4)
+Test portrait
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(100, 200)' + pxMargins(1, 2, 3, 4)
+PASS internals.pageSizeAndMarginsInPixels(0, 200, 100, 1, 2, 3, 4) is '(100, 200)' + pxMargins(1, 2, 3, 4)
+Test a5
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(148, 210) + pxMargins(1, 2, 3, 4)
+Test a5 landscape
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(210, 148) + pxMargins(1, 2, 3, 4)
+Test portrait a4
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(210, 297) + pxMargins(1, 2, 3, 4)
+Test a3
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(297, 420) + pxMargins(1, 2, 3, 4)
+Test b5
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(176, 250) + pxMargins(1, 2, 3, 4)
+Test b4
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(250, 353) + pxMargins(1, 2, 3, 4)
+Test jis-b5
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(182, 257) + pxMargins(1, 2, 3, 4)
+Test jis-b4
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(257, 364) + pxMargins(1, 2, 3, 4)
+Test letter
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is inchSize(8.5, 11) + pxMargins(1, 2, 3, 4)
+Test legal
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is inchSize(8.5, 14) + pxMargins(1, 2, 3, 4)
+Test ledger
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is inchSize(11, 17) + pxMargins(1, 2, 3, 4)
+Test 10cm
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(100, 100) + pxMargins(1, 2, 3, 4)
+Test 20cm x 30cm
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is mmSize(200, 300) + pxMargins(1, 2, 3, 4)
+Test 10000px 20000px
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: -10cm
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: a4 a4
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: landscape portrait
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: 10cm letter
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: 10cm 10cm 10cm
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+Test invalid page size: empty
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 2, 3, 4)
+
+
+Test 0px margins
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(0, 0, 0, 0)
+Test non-zero margins
+FAIL internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) should be (10000, 20000) 10 20 40 80. Was (10000, 20000) 15 30 60 120.
+Test percentage margin
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 100)
+Test margin: auto 4% 2% 1%
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 400, 200, 100)
+Test margin: 8% auto 2% 1%
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 2, 200, 100)
+Test margin: 8% 4% auto 1%
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 3, 100)
+Test margin: 8% 4% 2% auto
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 4)
+Test visibility: hidden
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 4)
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -5,83 +5,74 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.PopupWindow;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}.
  */
 class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
-    private final PopupWindow mWindow;
     private TabSelectionEditorToolbar mToolbar;
-    private View mParentView;
-    private ViewTreeObserver.OnGlobalLayoutListener mParentLayoutListener;
-    private @Nullable Rect mPositionRect;
+    private ViewGroup mParentView;
     private boolean mIsInitialized;
+    private boolean mIsShowing;
+
+    private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
 
     // TODO(meiliang): inflates R.layout.tab_selection_editor_layout in
     // TabSelectionEditorCoordinator.
     public TabSelectionEditorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mWindow = new PopupWindow(
-                this, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     /**
      * Initializes the RecyclerView and the toolbar for the layout. Also initializes the selection
      * editor layout provider if there is one.This must be called before calling show/hide.
      *
-     * @param parentView The parent view for the {@link PopupWindow}.
+     * @param parentView The parent view to attach the {@link TabSelectionEditorLayout}.
      * @param recyclerView The recycler view to be shown.
      * @param adapter The adapter that provides views that represent items in the recycler view.
      * @param selectionDelegate The {@link SelectionDelegate} that will inform the toolbar of
      *                            selection changes.
      */
-    void initialize(View parentView, RecyclerView recyclerView, RecyclerView.Adapter adapter,
+    void initialize(ViewGroup parentView, RecyclerView recyclerView, RecyclerView.Adapter adapter,
             SelectionDelegate<Integer> selectionDelegate) {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
-        mToolbar =
-                (TabSelectionEditorToolbar) initializeToolbar(R.layout.tab_selection_editor_toolbar,
-                        selectionDelegate, 0, 0, 0, null, false, true);
+        mToolbar = (TabSelectionEditorToolbar) initializeToolbar(
+                R.layout.tab_selection_editor_toolbar, selectionDelegate, 0, 0, 0, null, true);
         mParentView = parentView;
     }
 
     /**
-     * Shows the layout in a {@link PopupWindow}.
+     * Add and shows the layout in the parent view.
      */
     public void show() {
         assert mIsInitialized;
-        if (mPositionRect == null) {
-            mWindow.showAtLocation(mParentView, Gravity.CENTER, 0, 0);
-            return;
-        }
-        mWindow.setWidth(mPositionRect.width());
-        mWindow.setHeight(mPositionRect.height());
-        mWindow.showAtLocation(
-                mParentView, Gravity.NO_GRAVITY, mPositionRect.left, mPositionRect.top);
+        mIsShowing = true;
+        clearBackgroundViewAccessibilityImportance();
+        mParentView.addView(this);
     }
 
     /**
-     * Hides the {@link PopupWindow}.
+     * Remove and hides the layout from parent view.
      */
     public void hide() {
-        assert mIsInitialized;
-        if (mWindow.isShowing()) mWindow.dismiss();
+        assert mIsInitialized && mIsShowing;
+        mIsShowing = false;
+        mParentView.removeView(this);
+        restoreBackgroundViewAccessibilityImportance();
     }
 
     /**
@@ -92,42 +83,39 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
     }
 
     /**
-     * Register a {@link ViewTreeObserver.OnGlobalLayoutListener} handling TabSelectionEditor
-     * related changes when parent view global layout changed.
-     */
-    public void registerGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener listener) {
-        if (mParentView == null || listener == null) return;
-        if (mParentLayoutListener != null) {
-            mParentView.getViewTreeObserver().removeOnGlobalLayoutListener(mParentLayoutListener);
-        }
-        mParentLayoutListener = listener;
-        mParentView.getViewTreeObserver().addOnGlobalLayoutListener(listener);
-    }
-
-    /**
-     * Update the {@link Rect} used to show the selection editor. If the editor is currently
-     * showing, update its positioning.
-     * @param rect  The {@link Rect} to update mPositionRect.
-     */
-    public void updateTabSelectionEditorPositionRect(@NonNull Rect rect) {
-        assert rect != null;
-        mPositionRect = rect;
-        if (mWindow.isShowing()) {
-            mWindow.update(rect.left, rect.top, rect.width(), rect.height());
-        }
-    }
-
-    /**
      * Destroy any members that needs clean up.
      */
     public void destroy() {
-        if (mParentView != null && mParentLayoutListener != null) {
-            mParentView.getViewTreeObserver().removeOnGlobalLayoutListener(mParentLayoutListener);
-        }
+        super.onDestroyed();
     }
 
-    @VisibleForTesting
-    Rect getPositionRectForTesting() {
-        return mPositionRect;
+    private void clearBackgroundViewAccessibilityImportance() {
+        assert mAccessibilityImportanceMap.size() == 0 && mParentView.indexOfChild(this) == -1;
+
+        for (int i = 0; i < mParentView.getChildCount(); i++) {
+            View view = mParentView.getChildAt(i);
+            mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
+            view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        }
+        mAccessibilityImportanceMap.put(mParentView, mParentView.getImportantForAccessibility());
+        mParentView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+    }
+
+    private void restoreBackgroundViewAccessibilityImportance() {
+        assert mParentView.indexOfChild(this) == -1;
+
+        for (int i = 0; i < mParentView.getChildCount(); i++) {
+            View view = mParentView.getChildAt(i);
+
+            assert mAccessibilityImportanceMap.containsKey(view);
+            Integer importance = mAccessibilityImportanceMap.get(view);
+            view.setImportantForAccessibility(
+                    importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+        }
+        assert mAccessibilityImportanceMap.containsKey(mParentView);
+        Integer importance = mAccessibilityImportanceMap.get(mParentView);
+        mParentView.setImportantForAccessibility(
+                importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+        mAccessibilityImportanceMap.clear();
     }
 }

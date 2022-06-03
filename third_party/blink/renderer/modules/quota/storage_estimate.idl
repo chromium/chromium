@@ -7,5 +7,5 @@
 dictionary StorageEstimate {
     unsigned long long usage;
     unsigned long long quota;
-    [RuntimeEnabled=StorageQuotaDetails] StorageUsageDetails usageDetails;
+    StorageUsageDetails usageDetails;
 };

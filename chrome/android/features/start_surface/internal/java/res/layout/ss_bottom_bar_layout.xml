@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/ss_bottom_bar_height"
     android:layout_gravity="bottom"
-    android:background="@color/modern_primary_color"
+    android:background="@color/default_bg_color"
     android:visibility="invisible">
     <ImageView
         android:layout_width="match_parent"
@@ -19,18 +19,18 @@
         android:scaleType="fitXY"
         android:scaleY="-1"
         android:importantForAccessibility="no" />
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/bottom_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/toolbar_shadow_height"
-        app:tabIndicatorColor="@color/light_active_color"
+        app:tabIndicatorColor="@macro/tab_layout_selected_tab_color"
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabMaxWidth="2000dp">
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:layout="@layout/ss_home_button"/>
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:layout="@layout/ss_explore_button"/>
-    </android.support.design.widget.TabLayout>
+    </com.google.android.material.tabs.TabLayout>
 </org.chromium.chrome.features.start_surface.BottomBarView>

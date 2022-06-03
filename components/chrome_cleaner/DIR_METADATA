@@ -1,0 +1,3 @@
+mixins: "//chrome/chrome_cleaner/COMMON_METADATA"
+
+team_email: "security-dev@chromium.org"

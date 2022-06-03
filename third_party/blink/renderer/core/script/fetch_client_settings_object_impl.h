@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_FETCH_CLIENT_SETTINGS_OBJECT_IMPL_H_
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -35,6 +36,7 @@ class CORE_EXPORT FetchClientSettingsObjectImpl final
   const KURL& BaseUrl() const override;
   const SecurityOrigin* GetSecurityOrigin() const override;
   network::mojom::ReferrerPolicy GetReferrerPolicy() const override;
+
   const String GetOutgoingReferrer() const override;
 
   HttpsState GetHttpsState() const override;
@@ -44,11 +46,12 @@ class CORE_EXPORT FetchClientSettingsObjectImpl final
 
   network::mojom::IPAddressSpace GetAddressSpace() const override;
 
-  WebInsecureRequestPolicy GetInsecureRequestsPolicy() const override;
+  mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
+      const override;
   const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
       const override;
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<ExecutionContext> execution_context_;

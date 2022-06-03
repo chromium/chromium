@@ -2,10 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const FilesQuickView = Polymer({
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './files_icon_button.js';
+import './files_metadata_box.js';
+import './files_safe_media.js';
+import './files_tooltip.js';
+import './icons.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {toSandboxedURL} from '../../common/js/url_constants.js';
+
+export const FilesQuickView = Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-quick-view',
 
   properties: {
+    /**
+     * True if the Quick View is used in legacy mode.
+     * @type {boolean}
+     */
+    isLegacy: Boolean,
+
     // File media type, e.g. image, video.
     type: String,
     subtype: String,
@@ -14,9 +34,18 @@ const FilesQuickView = Polymer({
     // True if there is a file task that can open the file type.
     hasTask: Boolean,
 
-    // URLs should be accessible from the <webview> since their content is
-    // rendered inside the <wevbiew>. Hint: use URL.createObjectURL.
-    contentUrl: String,
+    /**
+     * True if the entry shown in Quick View can be deleted.
+     * @type {boolean}
+     */
+    canDelete: Boolean,
+
+    // Preview content to be sent rendered in a sandboxed environment.
+    sourceContent: {
+      type: Object,
+      observer: 'refreshUntrustedIframe_',
+    },
+
     videoPoster: String,
     audioArtwork: String,
 
@@ -47,7 +76,34 @@ const FilesQuickView = Polymer({
   },
 
   listeners: {
+    'files-safe-media-tap-inside': 'tapInside',
     'files-safe-media-tap-outside': 'close',
+    'files-safe-media-load-error': 'loaderror',
+  },
+
+  /**
+   * Generate URL for browsable files (Text/PDF).
+   */
+  generateBrowsableUrl_: function(sourceContent, subtype) {
+    let contentUrl = '';
+    switch (sourceContent.dataType) {
+      case 'url':
+        contentUrl = sourceContent.data;
+        break;
+      case 'blob':
+        contentUrl = URL.createObjectURL(sourceContent.data);
+        break;
+      default:
+        return contentUrl;
+    }
+
+    if (subtype === 'PDF') {
+      // contentUrls are only modified for PDFs, see getQuickViewParameters_ in
+      // quick_view_controller.js.
+      contentUrl += '#view=FitH';
+    }
+
+    return contentUrl;
   },
 
   /**
@@ -63,28 +119,66 @@ const FilesQuickView = Polymer({
 
     const webview = /** @type {WebView} */ (e.target);
     webview.insertCSS({
-      'file': 'foreground/elements/files_safe_text_webview_content.css',
+      'file': 'untrusted_resources/files_text_content.css',
     });
+  },
+
+  /**
+   * Send browsable preview content (i.e. content that can be displayed by the
+   * browser directly as PDF/text/html) to the chrome-untrusted:// <iframe>.
+   */
+  refreshUntrustedIframe_: function() {
+    if (this.isLegacy || !this.browsable) {
+      return;
+    }
+
+    const iframe = this.shadowRoot.querySelector('#untrusted');
+    if (!iframe) {
+      return;
+    }
+
+    const data = {
+      browsable: this.browsable,
+      subtype: this.subtype,
+      sourceContent: this.sourceContent,
+    };
+    iframe.contentWindow.postMessage(data, toSandboxedURL().origin);
   },
 
   // Clears fields.
   clear: function() {
     this.setProperties({
-        type: '',
-        subtype: '',
-        filePath: '',
-        hasTask: false,
-        contentUrl: '',
-        videoPoster: '',
-        audioArtwork: '',
-        autoplay: false,
-        browsable: false,
+      type: '',
+      subtype: '',
+      filePath: '',
+      hasTask: false,
+      canDelete: false,
+      sourceContent: {
+        data: null,
+        dataType: '',
+      },
+      videoPoster: '',
+      audioArtwork: '',
+      autoplay: false,
+      browsable: false,
     });
+
     const video = this.$.contentPanel.querySelector('#videoSafeMedia');
     if (video) {
       video.src = '';
       video.fire('src-changed');
     }
+
+    this.removeAttribute('load-error');
+  },
+
+  // Handle load error from the files-safe-media container.
+  loaderror: function() {
+    this.setAttribute('load-error', '');
+    this.sourceContent = {
+      data: null,
+      dataType: '',
+    };
   },
 
   /** @return {boolean} */
@@ -113,11 +207,18 @@ const FilesQuickView = Polymer({
     }
   },
 
+  tapInside: function(e) {
+    if (this.type === 'image') {
+      const dialog = this.shadowRoot.querySelector('#dialog');
+      dialog.focus();
+    }
+  },
+
   /**
-   * @return {!FilesMetadataBox}
+   * @return {!FilesMetadataBoxElement}
    */
   getFilesMetadataBox: function() {
-    return this.$['metadata-box'];
+    return /** @type {!FilesMetadataBoxElement} */ (this.$['metadata-box']);
   },
 
   /**
@@ -139,14 +240,39 @@ const FilesQuickView = Polymer({
   },
 
   /**
+   * Client should assign the function to delete the file.
+   *
+   * @param {!Event} event
+   */
+  onDeleteButtonTap: function(event) {},
+
+  /**
+   * @param {boolean} canDelete
+   * @param {boolean} isModal
+   * @return {boolean}
+   *
+   * @private
+   */
+  shouldShowDeleteButton_: function(canDelete, isModal) {
+    return canDelete && !isModal;
+  },
+
+  /**
+   * See the changes on crbug.com/641587, but crbug.com/779044#c11 later undid
+   * that work. So the focus remains on the metadata button when clicked after
+   * the crbug.com/779044 "ghost focus" fix.
+   *
+   * crbug.com/641587 mentions a different UI behavior, that was wanted to fix
+   * that bug. TODO(files-ng): UX to resolve the correct behavior needed here.
+   *
    * @param {!Event} event tap event.
    *
    * @private
    */
   onMetadataButtonTap_: function(event) {
-    // Set focus back to innerContent panel so that pressing space key next
-    // closes Quick View.
-    this.$.innerContentPanel.focus();
+    if (this.hasAttribute('files-ng')) {
+      this.metadataBoxActive = !this.metadataBoxActive;
+    }
   },
 
   /**
@@ -166,6 +292,16 @@ const FilesQuickView = Polymer({
       target = target.parentElement;
     }
     this.close();
+  },
+
+  /**
+   * @param {Object} sourceContent
+   * @return {boolean}
+   *
+   * @private
+   */
+  hasContent_: function(sourceContent) {
+    return sourceContent.dataType !== '';
   },
 
   /**
@@ -210,14 +346,20 @@ const FilesQuickView = Polymer({
   },
 
   /**
-   * @param {string} contentUrl
+   * @param {Object} sourceContent
    * @param {string} type
-   * @return {string}
+   * @return {Object}
    *
    * @private
    */
-  audioUrl_: function(contentUrl, type) {
-    return this.isAudio_(type) ? contentUrl : '';
+  audioContent_: function(sourceContent, type) {
+    if (this.isAudio_(type)) {
+      return sourceContent;
+    }
+    return {
+      data: null,
+      dataType: '',
+    };
   },
 
   /**
@@ -242,3 +384,5 @@ const FilesQuickView = Polymer({
     this.fire('close');
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_quick_view.js

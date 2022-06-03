@@ -11,15 +11,13 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -85,6 +83,10 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   };
 
   FakeDeviceSyncClient();
+
+  FakeDeviceSyncClient(const FakeDeviceSyncClient&) = delete;
+  FakeDeviceSyncClient& operator=(const FakeDeviceSyncClient&) = delete;
+
   ~FakeDeviceSyncClient() override;
 
   const base::circular_deque<SetSoftwareFeatureStateInputs>&
@@ -129,7 +131,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
       mojom::NetworkRequestResult result_code,
-      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           device_activity_status);
   void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
@@ -138,7 +140,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   }
 
   void set_local_device_metadata(
-      base::Optional<multidevice::RemoteDeviceRef> local_device_metadata) {
+      absl::optional<multidevice::RemoteDeviceRef> local_device_metadata) {
     local_device_metadata_ = local_device_metadata;
   }
 
@@ -152,7 +154,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
-  base::Optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
+  absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
   void SetSoftwareFeatureState(
       const std::string public_key,
@@ -177,7 +179,7 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   void GetDebugInfo(mojom::DeviceSync::GetDebugInfoCallback callback) override;
 
   multidevice::RemoteDeviceRefList synced_devices_;
-  base::Optional<multidevice::RemoteDeviceRef> local_device_metadata_;
+  absl::optional<multidevice::RemoteDeviceRef> local_device_metadata_;
 
   base::circular_deque<mojom::DeviceSync::ForceEnrollmentNowCallback>
       force_enrollment_now_callback_queue_;
@@ -193,12 +195,18 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       get_devices_activity_status_callback_queue_;
   base::circular_deque<mojom::DeviceSync::GetDebugInfoCallback>
       get_debug_info_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceSyncClient);
 };
 
 }  // namespace device_sync
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::FakeDeviceSyncClient;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_

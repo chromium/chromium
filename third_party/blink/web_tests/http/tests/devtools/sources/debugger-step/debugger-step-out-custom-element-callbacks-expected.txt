@@ -2,37 +2,7 @@ Tests stepping out from custom element callbacks.
 
 Set timer for test function.
 Call stack:
-    0) createdCallback (debugger-step-out-custom-element-callbacks.js:23)
-    1) testFunction (debugger-step-out-custom-element-callbacks.js:39)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
-    0) testFunction (debugger-step-out-custom-element-callbacks.js:40)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Call stack:
-    0) attributeChangedCallback (debugger-step-out-custom-element-callbacks.js:36)
-    1) testFunction (debugger-step-out-custom-element-callbacks.js:40)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
-    0) testFunction (debugger-step-out-custom-element-callbacks.js:41)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Call stack:
-    0) attachedCallback (debugger-step-out-custom-element-callbacks.js:28)
+    0) FooElement (debugger-step-out-custom-element-callbacks.js:23)
     1) testFunction (debugger-step-out-custom-element-callbacks.js:41)
     [setTimeout]
     0) scheduleTestFunction <omitted>
@@ -47,7 +17,7 @@ Call stack:
 
 Executing StepInto...
 Call stack:
-    0) detachedCallback (debugger-step-out-custom-element-callbacks.js:32)
+    0) attributeChangedCallback (debugger-step-out-custom-element-callbacks.js:36)
     1) testFunction (debugger-step-out-custom-element-callbacks.js:42)
     [setTimeout]
     0) scheduleTestFunction <omitted>
@@ -60,8 +30,38 @@ Call stack:
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
-[page] Invoked createdCallback.
+Executing StepInto...
+Call stack:
+    0) connectedCallback (debugger-step-out-custom-element-callbacks.js:27)
+    1) testFunction (debugger-step-out-custom-element-callbacks.js:43)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) testFunction (debugger-step-out-custom-element-callbacks.js:44)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Call stack:
+    0) disconnectedCallback (debugger-step-out-custom-element-callbacks.js:30)
+    1) testFunction (debugger-step-out-custom-element-callbacks.js:44)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) testFunction (debugger-step-out-custom-element-callbacks.js:45)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+[page] Invoked constructor.
 [page] Invoked attributeChangedCallback.
-[page] Invoked attachedCallback.
-[page] Invoked detachedCallback.
+[page] Invoked connectedCallback.
+[page] Invoked disconnectedCallback.
 

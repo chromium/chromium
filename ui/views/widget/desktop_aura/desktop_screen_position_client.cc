@@ -13,7 +13,7 @@ namespace {
 // Returns true if bounds passed to window in SetBounds should be treated as
 // though they are in screen coordinates.
 bool PositionWindowInScreenCoordinates(aura::Window* window) {
-  if (window->type() == aura::client::WINDOW_TYPE_POPUP)
+  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP)
     return true;
 
   Widget* widget = Widget::GetWidgetForNativeView(window);
@@ -22,15 +22,7 @@ bool PositionWindowInScreenCoordinates(aura::Window* window) {
 
 }  // namespace
 
-DesktopScreenPositionClient::DesktopScreenPositionClient(
-    aura::Window* root_window)
-    : root_window_(root_window) {
-  aura::client::SetScreenPositionClient(root_window_, this);
-}
-
-DesktopScreenPositionClient::~DesktopScreenPositionClient() {
-  aura::client::SetScreenPositionClient(root_window_, nullptr);
-}
+DesktopScreenPositionClient::~DesktopScreenPositionClient() = default;
 
 void DesktopScreenPositionClient::SetBounds(aura::Window* window,
                                             const gfx::Rect& bounds,
@@ -54,7 +46,7 @@ void DesktopScreenPositionClient::SetBounds(aura::Window* window,
     gfx::Point origin = bounds.origin();
     aura::Window::ConvertPointToTarget(window->parent(), root, &origin);
 
-    gfx::Point host_origin = GetOriginInScreen(root);
+    gfx::Point host_origin = GetRootWindowOriginInScreen(root);
     origin.Offset(-host_origin.x(), -host_origin.y());
     window->SetBounds(gfx::Rect(origin, bounds.size()));
     return;

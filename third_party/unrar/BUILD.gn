@@ -100,7 +100,5 @@ static_library("unrar") {
     "UNRAR_NO_EXCEPTIONS",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

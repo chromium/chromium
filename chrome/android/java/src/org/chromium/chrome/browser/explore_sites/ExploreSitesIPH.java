@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.browser.explore_sites;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.widget.highlight.PulseDrawable;
-import org.chromium.chrome.browser.ui.widget.highlight.ViewHighlighter;
-import org.chromium.chrome.browser.ui.widget.textbubble.TextBubble;
-import org.chromium.chrome.browser.widget.tile.TileView;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -25,11 +30,10 @@ import org.chromium.ui.widget.ViewRectProvider;
 public class ExploreSitesIPH {
     public static void configureIPH(TileView tileView, Profile profile) {
         Context context = tileView.getContext();
-        if (!(context instanceof ChromeActivity)) {
-            return;
-        }
+        if (context == null) return;
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) return;
 
-        ChromeActivity activity = (ChromeActivity) context;
         if (tileView.isAttachedToWindow()) {
             maybeShowIPH(tileView, profile, activity);
         } else {
@@ -45,8 +49,8 @@ public class ExploreSitesIPH {
         }
     }
 
-    private static void maybeShowIPH(TileView tileView, Profile profile, ChromeActivity activity) {
-        if (activity.isActivityFinishingOrDestroyed()) return;
+    private static void maybeShowIPH(TileView tileView, Profile profile, Activity activity) {
+        if (ActivityUtils.isActivityFinishingOrDestroyed(activity)) return;
 
         final String contentString =
                 tileView.getContext().getString(org.chromium.chrome.R.string.explore_sites_iph);
@@ -61,14 +65,16 @@ public class ExploreSitesIPH {
 
         ViewRectProvider rectProvider = new ViewRectProvider(tileView);
 
-        TextBubble textBubble = new TextBubble(tileView.getContext(), tileView, contentString,
-                accessibilityString, true, rectProvider);
+        TextBubble textBubble =
+                new TextBubble(tileView.getContext(), tileView, contentString, accessibilityString,
+                        true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setDismissOnTouchInteraction(true);
         View foregroundView = tileView.findViewById(org.chromium.chrome.R.id.tile_view_highlight);
         if (foregroundView == null) return;
 
-        PulseDrawable pulseDrawable = PulseDrawable.createCustomCircle(
-                foregroundView.getContext(), new PulseDrawable.Bounds() {
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setCircleRadius(
+                new PulseDrawable.Bounds() {
                     @Override
                     public float getMaxRadiusPx(Rect bounds) {
                         return Math.min(bounds.width(), bounds.height()) / 2.f;
@@ -80,7 +86,7 @@ public class ExploreSitesIPH {
                         return Math.min(bounds.width(), bounds.height()) / 3.f;
                     }
                 });
-        ViewHighlighter.attachViewAsHighlight(foregroundView, pulseDrawable);
+        ViewHighlighter.turnOnHighlight(foregroundView, params);
 
         textBubble.addOnDismissListener(() -> {
             ViewHighlighter.turnOffHighlight(foregroundView);

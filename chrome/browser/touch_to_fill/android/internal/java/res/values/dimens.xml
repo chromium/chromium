@@ -14,13 +14,23 @@
          + Handlebar (16dp)
          + Header size (112 dp)
          + Title size and margin (48+16dp)
-         + First suggestion (72dp)
-         + Bottom padding (16dp) -->
-    <dimen name="touch_to_fill_sheet_height_single_credential">298dp</dimen>
-    <!-- Base height (298dp) plus padding (8dp) plus 2nd suggestion (72dp) -->
-    <dimen name="touch_to_fill_sheet_height_multiple_credentials">378dp</dimen>
-    <!-- Base height (298dp)  plus padding (16dp) plus confirm button (48dp) -->
-    <dimen name="touch_to_fill_sheet_height_single_credential_with_button">
-      362dp
-    </dimen>
+         + First suggestion (72dp) -->
+    <dimen name="touch_to_fill_sheet_height_single_credential">282dp</dimen>
+
+    <!-- Top padding between RecyclerView elements (8 dp)
+         + Extra suggestion height (72 dp). -->
+    <dimen name="touch_to_fill_sheet_height_second_credential">80dp</dimen>
+
+    <!-- Top padding between RecyclerView elements (8 dp)
+         + Top margin (2 dp)
+         + button height (48 dp)
+         + Bottom margin (2 dp) -->
+    <dimen name="touch_to_fill_sheet_height_button">60dp</dimen>
+
+    <!-- Depending on the experiments that are active we might show a call to
+         action button or branding message to the users, at which point we need
+         different bottom paddings. They are exposed here, so that they can be
+         added dynamically, depending on the state of the experiments. -->
+    <dimen name="touch_to_fill_sheet_bottom_padding_credentials">16dp</dimen>
+    <dimen name="touch_to_fill_sheet_bottom_padding_button">8dp</dimen>
 </resources>

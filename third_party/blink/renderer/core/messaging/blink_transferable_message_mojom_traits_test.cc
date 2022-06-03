@@ -4,15 +4,14 @@
 
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
@@ -48,13 +48,14 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     size_t num_elements = 8;
     v8::Local<v8::ArrayBuffer> v8_buffer =
         v8::ArrayBuffer::New(isolate, num_elements);
-    uint8_t* original_data =
-        static_cast<uint8_t*>(v8_buffer->GetContents().Data());
+    auto backing_store = v8_buffer->GetBackingStore();
+    uint8_t* original_data = static_cast<uint8_t*>(backing_store->Data());
     for (size_t i = 0; i < num_elements; i++)
       original_data[i] = static_cast<uint8_t>(i);
 
     DOMArrayBuffer* array_buffer =
-        V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(v8_buffer));
+        NativeValueTraits<DOMArrayBuffer>::NativeValue(
+            isolate, v8_buffer, scope.GetExceptionState());
     Transferables transferables;
     transferables.array_buffers.push_back(array_buffer);
     BlinkTransferableMessage msg;
@@ -87,13 +88,15 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   size_t num_elements = 8;
   v8::Local<v8::ArrayBuffer> v8_buffer =
       v8::ArrayBuffer::New(isolate, num_elements);
-  void* originalContentsData = v8_buffer->GetContents().Data();
+  auto backing_store = v8_buffer->GetBackingStore();
+  void* originalContentsData = backing_store->Data();
   uint8_t* contents = static_cast<uint8_t*>(originalContentsData);
   for (size_t i = 0; i < num_elements; i++)
     contents[i] = static_cast<uint8_t>(i);
 
   DOMArrayBuffer* original_array_buffer =
-      V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(v8_buffer));
+      NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8_buffer,
+                                                     scope.GetExceptionState());
   Transferables transferables;
   transferables.array_buffers.push_back(original_array_buffer);
   BlinkTransferableMessage msg;
@@ -115,14 +118,14 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ASSERT_EQ(originalContentsData, deserialized_contents.Data());
 
   // The original ArrayBufferContents should be detached.
-  ASSERT_EQ(nullptr, v8_buffer->GetContents().Data());
+  ASSERT_EQ(nullptr, v8_buffer->GetBackingStore()->Data());
   ASSERT_TRUE(original_array_buffer->IsDetached());
 }
 
 ImageBitmap* CreateBitmap() {
   sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(8, 4);
   surface->getCanvas()->clear(SK_ColorRED);
-  return ImageBitmap::Create(
+  return MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()));
 }
 
@@ -178,8 +181,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ASSERT_EQ(out.message->GetImageBitmapContentsArray().size(), 1U);
   scoped_refptr<blink::StaticBitmapImage> deserialized_bitmap_contents =
       out.message->GetImageBitmapContentsArray()[0];
-  ImageBitmap* deserialized_bitmap =
-      ImageBitmap::Create(std::move(deserialized_bitmap_contents));
+  auto* deserialized_bitmap = MakeGarbageCollected<ImageBitmap>(
+      std::move(deserialized_bitmap_contents));
   ASSERT_EQ(deserialized_bitmap->height(), original_bitmap_height);
   ASSERT_EQ(deserialized_bitmap->width(), original_bitmap_width);
   // When using WrapAsMessage, the deserialized bitmap should own

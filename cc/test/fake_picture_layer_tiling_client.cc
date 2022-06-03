@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/test/fake_raster_source.h"
@@ -41,7 +42,7 @@ FakePictureLayerTilingClient::~FakePictureLayerTilingClient() = default;
 
 std::unique_ptr<Tile> FakePictureLayerTilingClient::CreateTile(
     const Tile::CreateInfo& info) {
-  return tile_manager_->CreateTile(info, 0, 0, 0, false);
+  return tile_manager_->CreateTile(info, 0, 0, 0);
 }
 
 void FakePictureLayerTilingClient::SetTileSize(const gfx::Size& tile_size) {
@@ -81,6 +82,18 @@ bool FakePictureLayerTilingClient::RequiresHighResToDraw() const {
 const PaintWorkletRecordMap&
 FakePictureLayerTilingClient::GetPaintWorkletRecords() const {
   return paint_worklet_records_;
+}
+
+bool FakePictureLayerTilingClient::IsDirectlyCompositedImage() const {
+  return false;
+}
+
+bool FakePictureLayerTilingClient::ScrollInteractionInProgress() const {
+  return false;
+}
+bool FakePictureLayerTilingClient::CurrentScrollCheckerboardsDueToNoRecording()
+    const {
+  return false;
 }
 
 }  // namespace cc

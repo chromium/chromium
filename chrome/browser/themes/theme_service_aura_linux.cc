@@ -5,7 +5,6 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/common/pref_names.h"
@@ -20,13 +19,16 @@ class SystemThemeX11 : public CustomThemeSupplier {
  public:
   explicit SystemThemeX11(PrefService* pref_service);
 
+  SystemThemeX11(const SystemThemeX11&) = delete;
+  SystemThemeX11& operator=(const SystemThemeX11&) = delete;
+
   // Overridden from CustomThemeSupplier:
   void StartUsingTheme() override;
   void StopUsingTheme() override;
   bool GetTint(int id, color_utils::HSL* hsl) const override;
   bool GetColor(int id, SkColor* color) const override;
   bool GetDisplayProperty(int id, int* result) const override;
-  gfx::Image GetImageNamed(int id) override;
+  gfx::Image GetImageNamed(int id) const override;
   bool HasCustomImage(int id) const override;
 
  private:
@@ -35,8 +37,6 @@ class SystemThemeX11 : public CustomThemeSupplier {
   // These pointers are not owned by us.
   views::LinuxUI* const linux_ui_;
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemThemeX11);
 };
 
 SystemThemeX11::SystemThemeX11(PrefService* pref_service)
@@ -47,14 +47,14 @@ SystemThemeX11::SystemThemeX11(PrefService* pref_service)
 void SystemThemeX11::StartUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, true);
   // Have the former theme notify its observers of change.
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
 void SystemThemeX11::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
   if (linux_ui_)
-    linux_ui_->GetNativeTheme(nullptr)->NotifyObservers();
+    linux_ui_->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
 }
 
 bool SystemThemeX11::GetTint(int id, color_utils::HSL* hsl) const {
@@ -62,14 +62,16 @@ bool SystemThemeX11::GetTint(int id, color_utils::HSL* hsl) const {
 }
 
 bool SystemThemeX11::GetColor(int id, SkColor* color) const {
-  return linux_ui_ && linux_ui_->GetColor(id, color, pref_service_);
+  return linux_ui_ && linux_ui_->GetColor(id, color,
+                                          pref_service_->GetBoolean(
+                                              prefs::kUseCustomChromeFrame));
 }
 
 bool SystemThemeX11::GetDisplayProperty(int id, int* result) const {
   return linux_ui_ && linux_ui_->GetDisplayProperty(id, result);
 }
 
-gfx::Image SystemThemeX11::GetImageNamed(int id) {
+gfx::Image SystemThemeX11::GetImageNamed(int id) const {
   return gfx::Image();
 }
 
@@ -95,14 +97,9 @@ bool ThemeServiceAuraLinux::IsSystemThemeDistinctFromDefaultTheme() const {
   return true;
 }
 
-bool ThemeServiceAuraLinux::UsingDefaultTheme() const {
-  return ThemeService::UsingDefaultTheme() && !UsingSystemTheme();
-}
-
 bool ThemeServiceAuraLinux::UsingSystemTheme() const {
-  const CustomThemeSupplier* theme_supplier = get_theme_supplier();
-  return theme_supplier &&
-         theme_supplier->get_theme_type() == CustomThemeSupplier::NATIVE_X11;
+  return GetThemeSupplier() && GetThemeSupplier()->get_theme_type() ==
+                                   CustomThemeSupplier::NATIVE_X11;
 }
 
 void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
@@ -110,7 +107,7 @@ void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
 
   // When using the system theme, the theme ID should match the default. Give
   // precedence to the non-default theme specified.
-  if (GetThemeID() != ThemeService::kDefaultThemeID &&
+  if (GetThemeID() != ThemeHelper::kDefaultThemeID &&
       prefs->GetBoolean(prefs::kUsesSystemTheme)) {
     prefs->SetBoolean(prefs::kUsesSystemTheme, false);
   }

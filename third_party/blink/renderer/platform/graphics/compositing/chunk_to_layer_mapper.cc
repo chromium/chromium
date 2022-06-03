@@ -4,24 +4,22 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
-ChunkToLayerMapper::ChunkToLayerMapper(
-    const PropertyTreeState& layer_state,
-    const gfx::Vector2dF& layer_offset,
-    const FloatSize& visual_rect_subpixel_offset)
-    : layer_state_(layer_state.Unalias()),
+ChunkToLayerMapper::ChunkToLayerMapper(const PropertyTreeState& layer_state,
+                                       const gfx::Vector2dF& layer_offset)
+    : layer_state_(layer_state),
       layer_offset_(layer_offset),
-      visual_rect_subpixel_offset_(visual_rect_subpixel_offset),
       chunk_state_(layer_state_),
-      translation_2d_or_matrix_(
-          FloatSize(-layer_offset.x(), -layer_offset.y())) {}
+      translation_2d_or_matrix_(-layer_offset) {}
 
 void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
-  outset_for_raster_effects_ = chunk.outset_for_raster_effects;
+  raster_effect_outset_ = chunk.raster_effect_outset;
 
   const auto& new_chunk_state =
       chunk.properties.GetPropertyTreeState().Unalias();
@@ -30,8 +28,8 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
 
   if (new_chunk_state == layer_state_) {
     has_filter_that_moves_pixels_ = false;
-    translation_2d_or_matrix_ = GeometryMapper::Translation2DOrMatrix(
-        FloatSize(-layer_offset_.x(), -layer_offset_.y()));
+    translation_2d_or_matrix_ =
+        GeometryMapper::Translation2DOrMatrix(-layer_offset_);
     clip_rect_ = FloatClipRect();
     chunk_state_ = new_chunk_state;
     return;
@@ -49,7 +47,7 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
     new_has_filter_that_moves_pixels = false;
     for (const auto* effect = &new_chunk_state.Effect();
          effect && effect != &layer_state_.Effect();
-         effect = SafeUnalias(effect->Parent())) {
+         effect = effect->UnaliasedParent()) {
       if (effect->HasFilterThatMovesPixels()) {
         new_has_filter_that_moves_pixels = true;
         break;
@@ -64,38 +62,37 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
     clip_rect_ =
         GeometryMapper::LocalToAncestorClipRect(new_chunk_state, layer_state_);
     if (!clip_rect_.IsInfinite())
-      clip_rect_.MoveBy(FloatPoint(-layer_offset_.x(), -layer_offset_.y()));
+      clip_rect_.Move(-layer_offset_);
   }
 
   chunk_state_ = new_chunk_state;
   has_filter_that_moves_pixels_ = new_has_filter_that_moves_pixels;
 }
 
-IntRect ChunkToLayerMapper::MapVisualRect(const IntRect& rect) const {
+gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
   if (rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
   if (UNLIKELY(has_filter_that_moves_pixels_))
     return MapUsingGeometryMapper(rect);
 
-  FloatRect mapped_rect(rect);
+  gfx::RectF mapped_rect(rect);
   translation_2d_or_matrix_.MapRect(mapped_rect);
   if (!mapped_rect.IsEmpty() && !clip_rect_.IsInfinite())
     mapped_rect.Intersect(clip_rect_.Rect());
 
-  IntRect result;
+  gfx::Rect result;
   if (!mapped_rect.IsEmpty()) {
-    mapped_rect.Inflate(outset_for_raster_effects_);
-    AdjustVisualRectBySubpixelOffset(mapped_rect);
-    result = EnclosingIntRect(mapped_rect);
+    InflateForRasterEffectOutset(mapped_rect);
+    result = gfx::ToEnclosingRect(mapped_rect);
   }
 #if DCHECK_IS_ON()
   auto slow_result = MapUsingGeometryMapper(rect);
   if (result != slow_result) {
     // Not a DCHECK because this may result from a floating point error.
     LOG(WARNING) << "ChunkToLayerMapper::MapVisualRect: Different results from"
-                 << "fast path (" << result << ") and slow path ("
-                 << slow_result << ")";
+                 << "fast path (" << result.ToString() << ") and slow path ("
+                 << slow_result.ToString() << ")";
   }
 #endif
   return result;
@@ -104,27 +101,25 @@ IntRect ChunkToLayerMapper::MapVisualRect(const IntRect& rect) const {
 // This is called when the fast path doesn't apply if there is any filter that
 // moves pixels. GeometryMapper::LocalToAncestorVisualRect() will apply the
 // visual effects of the filters, though slowly.
-IntRect ChunkToLayerMapper::MapUsingGeometryMapper(const IntRect& rect) const {
-  FloatClipRect visual_rect((FloatRect(rect)));
+gfx::Rect ChunkToLayerMapper::MapUsingGeometryMapper(
+    const gfx::Rect& rect) const {
+  FloatClipRect visual_rect((gfx::RectF(rect)));
   GeometryMapper::LocalToAncestorVisualRect(chunk_state_, layer_state_,
                                             visual_rect);
   if (visual_rect.Rect().IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
-  visual_rect.Rect().Move(-layer_offset_.x(), -layer_offset_.y());
-  visual_rect.Rect().Inflate(outset_for_raster_effects_);
-  AdjustVisualRectBySubpixelOffset(visual_rect.Rect());
-  return EnclosingIntRect(visual_rect.Rect());
+  gfx::RectF result = visual_rect.Rect();
+  result.Offset(-layer_offset_);
+  InflateForRasterEffectOutset(result);
+  return gfx::ToEnclosingRect(result);
 }
 
-void ChunkToLayerMapper::AdjustVisualRectBySubpixelOffset(
-    FloatRect& rect) const {
-  // Add back the layer's subpixel accumulation that was excluded from the
-  // visual rect by
-  // PaintInvalidator::ExcludeCompositedLayerSubpixelAccumulation().
-  // The condition below should be kept consistent with that function.
-  if (&chunk_state_.Transform() == &layer_state_.Transform())
-    rect.Move(visual_rect_subpixel_offset_);
+void ChunkToLayerMapper::InflateForRasterEffectOutset(gfx::RectF& rect) const {
+  if (raster_effect_outset_ == RasterEffectOutset::kHalfPixel)
+    rect.Outset(0.5);
+  else if (raster_effect_outset_ == RasterEffectOutset::kWholePixel)
+    rect.Outset(1);
 }
 
 }  // namespace blink

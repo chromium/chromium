@@ -17,6 +17,11 @@ class IOSChromePrefModelAssociatorClient
   // Returns the global instance.
   static IOSChromePrefModelAssociatorClient* GetInstance();
 
+  IOSChromePrefModelAssociatorClient(
+      const IOSChromePrefModelAssociatorClient&) = delete;
+  IOSChromePrefModelAssociatorClient& operator=(
+      const IOSChromePrefModelAssociatorClient&) = delete;
+
  private:
   friend class base::NoDestructor<IOSChromePrefModelAssociatorClient>;
 
@@ -31,8 +36,6 @@ class IOSChromePrefModelAssociatorClient
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePrefModelAssociatorClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_PREFS_IOS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_

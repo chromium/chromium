@@ -5,10 +5,11 @@
 #ifndef DEVICE_FIDO_MAC_SCOPED_TOUCH_ID_TEST_ENVIRONMENT_H_
 #define DEVICE_FIDO_MAC_SCOPED_TOUCH_ID_TEST_ENVIRONMENT_H_
 
+#include <os/availability.h>
+
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/mac/availability.h"
 #include "base/macros.h"
 
 namespace device {
@@ -31,6 +32,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
     API_AVAILABLE(macosx(10.12.2)) ScopedTouchIdTestEnvironment {
  public:
   ScopedTouchIdTestEnvironment();
+
+  ScopedTouchIdTestEnvironment(const ScopedTouchIdTestEnvironment&) = delete;
+  ScopedTouchIdTestEnvironment& operator=(const ScopedTouchIdTestEnvironment&) =
+      delete;
+
   ~ScopedTouchIdTestEnvironment();
 
   // ForgeNextTouchIdContext sets up the FakeTouchIdContext returned by the
@@ -47,10 +53,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
 
  private:
   static std::unique_ptr<TouchIdContext> ForwardCreate();
-  static bool ForwardTouchIdAvailable(const AuthenticatorConfig& config);
+  static bool ForwardTouchIdAvailable(AuthenticatorConfig);
 
   std::unique_ptr<TouchIdContext> CreateTouchIdContext();
-  bool TouchIdAvailable(const AuthenticatorConfig&);
+  bool TouchIdAvailable(AuthenticatorConfig);
 
   using CreateFuncPtr = decltype(&ForwardCreate);
   CreateFuncPtr touch_id_context_create_ptr_;
@@ -60,8 +66,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   std::unique_ptr<FakeTouchIdContext> next_touch_id_context_;
   std::unique_ptr<FakeKeychain> keychain_;
   bool touch_id_available_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTouchIdTestEnvironment);
 };
 
 }  // namespace mac

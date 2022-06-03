@@ -6,9 +6,8 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,24 +21,28 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_side_navigation_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/views/test/test_views_delegate.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/test/ash_test_views_delegate.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "content/public/browser/context_factory.h"
-#else
-#include "ui/views/test/test_views_delegate.h"
 #endif
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#include "chromeos/ui/base/tablet_state.h"
 #endif
 
 using content::NavigationController;
@@ -51,29 +54,34 @@ BrowserWithTestWindowTest::~BrowserWithTestWindowTest() {}
 
 void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();
-#if defined(OS_CHROMEOS)
-  ash::AshTestHelper::InitParams init_params;
-  ash_test_helper_.SetUp(init_params);
-#elif defined(TOOLKIT_VIEWS)
-  views_test_helper_.reset(new views::ScopedViewsTestHelper());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash_test_helper_.SetUp();
 #endif
 
-  // This must be created after ash_test_helper_ is set up so that it doesn't
-  // create an DeviceDataManager.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::LacrosService::Get()) {
+    lacros_service_test_helper_ =
+        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
+  }
+  tablet_state_ = std::make_unique<chromeos::TabletState>();
+#endif
+
+  // This must be created after |ash_test_helper_| is set up so that it doesn't
+  // create a DeviceDataManager.
   rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
 
 #if defined(TOOLKIT_VIEWS)
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
-
-  test_views_delegate()->set_layout_provider(
-      ChromeLayoutProvider::CreateLayoutProvider());
 #endif
-
-  content::BrowserSideNavigationSetUp();
 
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::IdleServiceAsh::DisableForTesting();
+  manager_ = std::make_unique<crosapi::CrosapiManager>();
+#endif
 
   // Subclasses can provide their own Profile.
   profile_ = CreateProfile();
@@ -97,8 +105,6 @@ void BrowserWithTestWindowTest::TearDown() {
   browser_.reset();
   window_.reset();
 
-  content::BrowserSideNavigationTearDown();
-
 #if defined(TOOLKIT_VIEWS)
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
 #endif
@@ -111,28 +117,40 @@ void BrowserWithTestWindowTest::TearDown() {
     SystemNetworkContextManager::DeleteInstance();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  manager_.reset();
+#endif
+
   profile_manager_.reset();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  tablet_state_.reset();
+  lacros_service_test_helper_.reset();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If initialized, the KioskAppManager will register an observer to
   // CrosSettings and will need to be destroyed before it. Having it destroyed
   // as part of the teardown will avoid unexpected test failures.
-  chromeos::KioskAppManager::Shutdown();
+  ash::KioskAppManager::Shutdown();
 
   ash_test_helper_.TearDown();
+  test_views_delegate_.reset();
 #elif defined(TOOLKIT_VIEWS)
   views_test_helper_.reset();
 #endif
 
   testing::Test::TearDown();
 
-  // A Task is leaked if we don't destroy everything, then run the message loop.
-  base::RunLoop().RunUntilIdle();
+  // A Task is leaked if we don't destroy everything, then run all pending
+  // tasks. This includes backend tasks which could otherwise be affected by the
+  // deletion of the temp dir.
+  task_environment_->RunUntilIdle();
 }
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
-#if defined(OS_CHROMEOS)
-  return ash_test_helper_.CurrentContext();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash_test_helper_.GetContext();
 #elif defined(TOOLKIT_VIEWS)
   return views_test_helper_->GetContext();
 #else
@@ -156,33 +174,29 @@ void BrowserWithTestWindowTest::CommitPendingLoad(
   RenderFrameHostTester::CommitPendingLoad(controller);
 }
 
-void BrowserWithTestWindowTest::NavigateAndCommit(
-    NavigationController* controller,
-    const GURL& url) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      controller->GetWebContents(), url);
+void BrowserWithTestWindowTest::NavigateAndCommit(WebContents* web_contents,
+                                                  const GURL& url) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents, url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {
-  NavigateAndCommit(&browser()->tab_strip_model()->GetActiveWebContents()->
-                        GetController(),
-                    url);
+  NavigateAndCommit(browser()->tab_strip_model()->GetActiveWebContents(), url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
     Browser* navigating_browser,
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   WebContents* contents =
       navigating_browser->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  NavigateAndCommit(controller, url);
-  contents->UpdateTitleForEntry(controller->GetActiveEntry(), title);
+  NavigateAndCommit(contents, url);
+  contents->UpdateTitleForEntry(contents->GetController().GetActiveEntry(),
+                                title);
 }
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
   return profile_manager_->CreateTestingProfile(
-      "testing_profile", nullptr, base::string16(), 0, std::string(),
+      "testing_profile", nullptr, std::u16string(), 0, std::string(),
       GetTestingFactories());
 }
 
@@ -211,11 +225,11 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
     params.type = browser_type;
   }
   params.window = browser_window;
-  return std::make_unique<Browser>(params);
+  return std::unique_ptr<Browser>(Browser::Create(params));
 }
 
-#if defined(OS_CHROMEOS)
-chromeos::ScopedCrosSettingsTestHelper*
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ash::ScopedCrosSettingsTestHelper*
 BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;
 }
@@ -224,7 +238,7 @@ chromeos::StubInstallAttributes*
 BrowserWithTestWindowTest::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BrowserWithTestWindowTest::BrowserWithTestWindowTest(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment,

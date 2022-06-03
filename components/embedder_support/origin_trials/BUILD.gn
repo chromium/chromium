@@ -1,0 +1,25 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("origin_trials") {
+  sources = [
+    "component_updater_utils.cc",
+    "component_updater_utils.h",
+    "features.cc",
+    "features.h",
+    "origin_trial_policy_impl.cc",
+    "origin_trial_policy_impl.h",
+    "origin_trial_prefs.cc",
+    "origin_trial_prefs.h",
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+  deps = [
+    "//base",
+    "//components/embedder_support",
+    "//components/prefs",
+    "//content/public/common",
+    "//third_party/blink/public/common",
+  ]
+}

@@ -1,0 +1,378 @@
+This is a testharness.js-based test.
+Found 374 tests; 336 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Checking place-items: normal left
+PASS Checking place-items: normal right
+PASS Checking place-items: normal legacy left
+PASS Checking place-items: normal legacy center
+PASS Checking place-items: normal legacy right
+PASS Checking place-items: normal normal
+PASS Checking place-items: normal stretch
+PASS Checking place-items: normal start
+PASS Checking place-items: normal end
+PASS Checking place-items: normal self-start
+PASS Checking place-items: normal self-end
+PASS Checking place-items: normal center
+PASS Checking place-items: normal flex-start
+PASS Checking place-items: normal flex-end
+PASS Checking place-items: normal baseline
+PASS Checking place-items: normal first baseline
+FAIL Checking place-items: normal last baseline assert_equals: align-items expanded value expected "normal" but got ""
+PASS Checking place-items: normal safe flex-end
+PASS Checking place-items: normal unsafe end
+PASS Checking place-items: normal safe end
+PASS Checking place-items: normal unsafe flex-start
+PASS Checking place-items: normal safe center
+PASS Checking place-items: stretch left
+PASS Checking place-items: stretch right
+PASS Checking place-items: stretch legacy left
+PASS Checking place-items: stretch legacy center
+PASS Checking place-items: stretch legacy right
+PASS Checking place-items: stretch normal
+PASS Checking place-items: stretch stretch
+PASS Checking place-items: stretch start
+PASS Checking place-items: stretch end
+PASS Checking place-items: stretch self-start
+PASS Checking place-items: stretch self-end
+PASS Checking place-items: stretch center
+PASS Checking place-items: stretch flex-start
+PASS Checking place-items: stretch flex-end
+PASS Checking place-items: stretch baseline
+PASS Checking place-items: stretch first baseline
+FAIL Checking place-items: stretch last baseline assert_equals: align-items expanded value expected "stretch" but got ""
+PASS Checking place-items: stretch safe flex-end
+PASS Checking place-items: stretch unsafe end
+PASS Checking place-items: stretch safe end
+PASS Checking place-items: stretch unsafe flex-start
+PASS Checking place-items: stretch safe center
+PASS Checking place-items: start left
+PASS Checking place-items: start right
+PASS Checking place-items: start legacy left
+PASS Checking place-items: start legacy center
+PASS Checking place-items: start legacy right
+PASS Checking place-items: start normal
+PASS Checking place-items: start stretch
+PASS Checking place-items: start start
+PASS Checking place-items: start end
+PASS Checking place-items: start self-start
+PASS Checking place-items: start self-end
+PASS Checking place-items: start center
+PASS Checking place-items: start flex-start
+PASS Checking place-items: start flex-end
+PASS Checking place-items: start baseline
+PASS Checking place-items: start first baseline
+FAIL Checking place-items: start last baseline assert_equals: align-items expanded value expected "start" but got ""
+PASS Checking place-items: start safe flex-end
+PASS Checking place-items: start unsafe end
+PASS Checking place-items: start safe end
+PASS Checking place-items: start unsafe flex-start
+PASS Checking place-items: start safe center
+PASS Checking place-items: end left
+PASS Checking place-items: end right
+PASS Checking place-items: end legacy left
+PASS Checking place-items: end legacy center
+PASS Checking place-items: end legacy right
+PASS Checking place-items: end normal
+PASS Checking place-items: end stretch
+PASS Checking place-items: end start
+PASS Checking place-items: end end
+PASS Checking place-items: end self-start
+PASS Checking place-items: end self-end
+PASS Checking place-items: end center
+PASS Checking place-items: end flex-start
+PASS Checking place-items: end flex-end
+PASS Checking place-items: end baseline
+PASS Checking place-items: end first baseline
+FAIL Checking place-items: end last baseline assert_equals: align-items expanded value expected "end" but got ""
+PASS Checking place-items: end safe flex-end
+PASS Checking place-items: end unsafe end
+PASS Checking place-items: end safe end
+PASS Checking place-items: end unsafe flex-start
+PASS Checking place-items: end safe center
+PASS Checking place-items: self-start left
+PASS Checking place-items: self-start right
+PASS Checking place-items: self-start legacy left
+PASS Checking place-items: self-start legacy center
+PASS Checking place-items: self-start legacy right
+PASS Checking place-items: self-start normal
+PASS Checking place-items: self-start stretch
+PASS Checking place-items: self-start start
+PASS Checking place-items: self-start end
+PASS Checking place-items: self-start self-start
+PASS Checking place-items: self-start self-end
+PASS Checking place-items: self-start center
+PASS Checking place-items: self-start flex-start
+PASS Checking place-items: self-start flex-end
+PASS Checking place-items: self-start baseline
+PASS Checking place-items: self-start first baseline
+FAIL Checking place-items: self-start last baseline assert_equals: align-items expanded value expected "self-start" but got ""
+PASS Checking place-items: self-start safe flex-end
+PASS Checking place-items: self-start unsafe end
+PASS Checking place-items: self-start safe end
+PASS Checking place-items: self-start unsafe flex-start
+PASS Checking place-items: self-start safe center
+PASS Checking place-items: self-end left
+PASS Checking place-items: self-end right
+PASS Checking place-items: self-end legacy left
+PASS Checking place-items: self-end legacy center
+PASS Checking place-items: self-end legacy right
+PASS Checking place-items: self-end normal
+PASS Checking place-items: self-end stretch
+PASS Checking place-items: self-end start
+PASS Checking place-items: self-end end
+PASS Checking place-items: self-end self-start
+PASS Checking place-items: self-end self-end
+PASS Checking place-items: self-end center
+PASS Checking place-items: self-end flex-start
+PASS Checking place-items: self-end flex-end
+PASS Checking place-items: self-end baseline
+PASS Checking place-items: self-end first baseline
+FAIL Checking place-items: self-end last baseline assert_equals: align-items expanded value expected "self-end" but got ""
+PASS Checking place-items: self-end safe flex-end
+PASS Checking place-items: self-end unsafe end
+PASS Checking place-items: self-end safe end
+PASS Checking place-items: self-end unsafe flex-start
+PASS Checking place-items: self-end safe center
+PASS Checking place-items: center left
+PASS Checking place-items: center right
+PASS Checking place-items: center legacy left
+PASS Checking place-items: center legacy center
+PASS Checking place-items: center legacy right
+PASS Checking place-items: center normal
+PASS Checking place-items: center stretch
+PASS Checking place-items: center start
+PASS Checking place-items: center end
+PASS Checking place-items: center self-start
+PASS Checking place-items: center self-end
+PASS Checking place-items: center center
+PASS Checking place-items: center flex-start
+PASS Checking place-items: center flex-end
+PASS Checking place-items: center baseline
+PASS Checking place-items: center first baseline
+FAIL Checking place-items: center last baseline assert_equals: align-items expanded value expected "center" but got ""
+PASS Checking place-items: center safe flex-end
+PASS Checking place-items: center unsafe end
+PASS Checking place-items: center safe end
+PASS Checking place-items: center unsafe flex-start
+PASS Checking place-items: center safe center
+PASS Checking place-items: flex-start left
+PASS Checking place-items: flex-start right
+PASS Checking place-items: flex-start legacy left
+PASS Checking place-items: flex-start legacy center
+PASS Checking place-items: flex-start legacy right
+PASS Checking place-items: flex-start normal
+PASS Checking place-items: flex-start stretch
+PASS Checking place-items: flex-start start
+PASS Checking place-items: flex-start end
+PASS Checking place-items: flex-start self-start
+PASS Checking place-items: flex-start self-end
+PASS Checking place-items: flex-start center
+PASS Checking place-items: flex-start flex-start
+PASS Checking place-items: flex-start flex-end
+PASS Checking place-items: flex-start baseline
+PASS Checking place-items: flex-start first baseline
+FAIL Checking place-items: flex-start last baseline assert_equals: align-items expanded value expected "flex-start" but got ""
+PASS Checking place-items: flex-start safe flex-end
+PASS Checking place-items: flex-start unsafe end
+PASS Checking place-items: flex-start safe end
+PASS Checking place-items: flex-start unsafe flex-start
+PASS Checking place-items: flex-start safe center
+PASS Checking place-items: flex-end left
+PASS Checking place-items: flex-end right
+PASS Checking place-items: flex-end legacy left
+PASS Checking place-items: flex-end legacy center
+PASS Checking place-items: flex-end legacy right
+PASS Checking place-items: flex-end normal
+PASS Checking place-items: flex-end stretch
+PASS Checking place-items: flex-end start
+PASS Checking place-items: flex-end end
+PASS Checking place-items: flex-end self-start
+PASS Checking place-items: flex-end self-end
+PASS Checking place-items: flex-end center
+PASS Checking place-items: flex-end flex-start
+PASS Checking place-items: flex-end flex-end
+PASS Checking place-items: flex-end baseline
+PASS Checking place-items: flex-end first baseline
+FAIL Checking place-items: flex-end last baseline assert_equals: align-items expanded value expected "flex-end" but got ""
+PASS Checking place-items: flex-end safe flex-end
+PASS Checking place-items: flex-end unsafe end
+PASS Checking place-items: flex-end safe end
+PASS Checking place-items: flex-end unsafe flex-start
+PASS Checking place-items: flex-end safe center
+PASS Checking place-items: baseline left
+PASS Checking place-items: baseline right
+PASS Checking place-items: baseline legacy left
+PASS Checking place-items: baseline legacy center
+PASS Checking place-items: baseline legacy right
+PASS Checking place-items: baseline normal
+PASS Checking place-items: baseline stretch
+PASS Checking place-items: baseline start
+PASS Checking place-items: baseline end
+PASS Checking place-items: baseline self-start
+PASS Checking place-items: baseline self-end
+PASS Checking place-items: baseline center
+PASS Checking place-items: baseline flex-start
+PASS Checking place-items: baseline flex-end
+PASS Checking place-items: baseline baseline
+PASS Checking place-items: baseline first baseline
+FAIL Checking place-items: baseline last baseline assert_equals: align-items expanded value expected "baseline" but got ""
+PASS Checking place-items: baseline safe flex-end
+PASS Checking place-items: baseline unsafe end
+PASS Checking place-items: baseline safe end
+PASS Checking place-items: baseline unsafe flex-start
+PASS Checking place-items: baseline safe center
+PASS Checking place-items: first baseline left
+PASS Checking place-items: first baseline right
+PASS Checking place-items: first baseline legacy left
+PASS Checking place-items: first baseline legacy center
+PASS Checking place-items: first baseline legacy right
+PASS Checking place-items: first baseline normal
+PASS Checking place-items: first baseline stretch
+PASS Checking place-items: first baseline start
+PASS Checking place-items: first baseline end
+PASS Checking place-items: first baseline self-start
+PASS Checking place-items: first baseline self-end
+PASS Checking place-items: first baseline center
+PASS Checking place-items: first baseline flex-start
+PASS Checking place-items: first baseline flex-end
+PASS Checking place-items: first baseline baseline
+PASS Checking place-items: first baseline first baseline
+FAIL Checking place-items: first baseline last baseline assert_equals: align-items expanded value expected "baseline" but got ""
+PASS Checking place-items: first baseline safe flex-end
+PASS Checking place-items: first baseline unsafe end
+PASS Checking place-items: first baseline safe end
+PASS Checking place-items: first baseline unsafe flex-start
+PASS Checking place-items: first baseline safe center
+FAIL Checking place-items: last baseline left assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline right assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline legacy left assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline legacy center assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline legacy right assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline normal assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline stretch assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline start assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline self-start assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline self-end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline center assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline flex-start assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline flex-end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline baseline assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline first baseline assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline last baseline assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline safe flex-end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline unsafe end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline safe end assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline unsafe flex-start assert_equals: align-items expanded value expected "last baseline" but got ""
+FAIL Checking place-items: last baseline safe center assert_equals: align-items expanded value expected "last baseline" but got ""
+PASS Checking place-items: safe flex-end left
+PASS Checking place-items: safe flex-end right
+PASS Checking place-items: safe flex-end legacy left
+PASS Checking place-items: safe flex-end legacy center
+PASS Checking place-items: safe flex-end legacy right
+PASS Checking place-items: safe flex-end normal
+PASS Checking place-items: safe flex-end stretch
+PASS Checking place-items: safe flex-end start
+PASS Checking place-items: safe flex-end end
+PASS Checking place-items: safe flex-end self-start
+PASS Checking place-items: safe flex-end self-end
+PASS Checking place-items: safe flex-end center
+PASS Checking place-items: safe flex-end flex-start
+PASS Checking place-items: safe flex-end flex-end
+PASS Checking place-items: safe flex-end baseline
+PASS Checking place-items: safe flex-end first baseline
+FAIL Checking place-items: safe flex-end last baseline assert_equals: align-items expanded value expected "safe flex-end" but got ""
+PASS Checking place-items: safe flex-end safe flex-end
+PASS Checking place-items: safe flex-end unsafe end
+PASS Checking place-items: safe flex-end safe end
+PASS Checking place-items: safe flex-end unsafe flex-start
+PASS Checking place-items: safe flex-end safe center
+PASS Checking place-items: unsafe end left
+PASS Checking place-items: unsafe end right
+PASS Checking place-items: unsafe end legacy left
+PASS Checking place-items: unsafe end legacy center
+PASS Checking place-items: unsafe end legacy right
+PASS Checking place-items: unsafe end normal
+PASS Checking place-items: unsafe end stretch
+PASS Checking place-items: unsafe end start
+PASS Checking place-items: unsafe end end
+PASS Checking place-items: unsafe end self-start
+PASS Checking place-items: unsafe end self-end
+PASS Checking place-items: unsafe end center
+PASS Checking place-items: unsafe end flex-start
+PASS Checking place-items: unsafe end flex-end
+PASS Checking place-items: unsafe end baseline
+PASS Checking place-items: unsafe end first baseline
+FAIL Checking place-items: unsafe end last baseline assert_equals: align-items expanded value expected "unsafe end" but got ""
+PASS Checking place-items: unsafe end safe flex-end
+PASS Checking place-items: unsafe end unsafe end
+PASS Checking place-items: unsafe end safe end
+PASS Checking place-items: unsafe end unsafe flex-start
+PASS Checking place-items: unsafe end safe center
+PASS Checking place-items: safe end left
+PASS Checking place-items: safe end right
+PASS Checking place-items: safe end legacy left
+PASS Checking place-items: safe end legacy center
+PASS Checking place-items: safe end legacy right
+PASS Checking place-items: safe end normal
+PASS Checking place-items: safe end stretch
+PASS Checking place-items: safe end start
+PASS Checking place-items: safe end end
+PASS Checking place-items: safe end self-start
+PASS Checking place-items: safe end self-end
+PASS Checking place-items: safe end center
+PASS Checking place-items: safe end flex-start
+PASS Checking place-items: safe end flex-end
+PASS Checking place-items: safe end baseline
+PASS Checking place-items: safe end first baseline
+FAIL Checking place-items: safe end last baseline assert_equals: align-items expanded value expected "safe end" but got ""
+PASS Checking place-items: safe end safe flex-end
+PASS Checking place-items: safe end unsafe end
+PASS Checking place-items: safe end safe end
+PASS Checking place-items: safe end unsafe flex-start
+PASS Checking place-items: safe end safe center
+PASS Checking place-items: unsafe flex-start left
+PASS Checking place-items: unsafe flex-start right
+PASS Checking place-items: unsafe flex-start legacy left
+PASS Checking place-items: unsafe flex-start legacy center
+PASS Checking place-items: unsafe flex-start legacy right
+PASS Checking place-items: unsafe flex-start normal
+PASS Checking place-items: unsafe flex-start stretch
+PASS Checking place-items: unsafe flex-start start
+PASS Checking place-items: unsafe flex-start end
+PASS Checking place-items: unsafe flex-start self-start
+PASS Checking place-items: unsafe flex-start self-end
+PASS Checking place-items: unsafe flex-start center
+PASS Checking place-items: unsafe flex-start flex-start
+PASS Checking place-items: unsafe flex-start flex-end
+PASS Checking place-items: unsafe flex-start baseline
+PASS Checking place-items: unsafe flex-start first baseline
+FAIL Checking place-items: unsafe flex-start last baseline assert_equals: align-items expanded value expected "unsafe flex-start" but got ""
+PASS Checking place-items: unsafe flex-start safe flex-end
+PASS Checking place-items: unsafe flex-start unsafe end
+PASS Checking place-items: unsafe flex-start safe end
+PASS Checking place-items: unsafe flex-start unsafe flex-start
+PASS Checking place-items: unsafe flex-start safe center
+PASS Checking place-items: safe center left
+PASS Checking place-items: safe center right
+PASS Checking place-items: safe center legacy left
+PASS Checking place-items: safe center legacy center
+PASS Checking place-items: safe center legacy right
+PASS Checking place-items: safe center normal
+PASS Checking place-items: safe center stretch
+PASS Checking place-items: safe center start
+PASS Checking place-items: safe center end
+PASS Checking place-items: safe center self-start
+PASS Checking place-items: safe center self-end
+PASS Checking place-items: safe center center
+PASS Checking place-items: safe center flex-start
+PASS Checking place-items: safe center flex-end
+PASS Checking place-items: safe center baseline
+PASS Checking place-items: safe center first baseline
+FAIL Checking place-items: safe center last baseline assert_equals: align-items expanded value expected "safe center" but got ""
+PASS Checking place-items: safe center safe flex-end
+PASS Checking place-items: safe center unsafe end
+PASS Checking place-items: safe center safe end
+PASS Checking place-items: safe center unsafe flex-start
+PASS Checking place-items: safe center safe center
+Harness: the test ran to completion.
+

@@ -15,6 +15,9 @@ namespace blink {
 // TextFragmentMarkerListImpl to implement the MarkerType() method).
 class CORE_EXPORT TextMarkerBaseListImpl : public DocumentMarkerList {
  public:
+  TextMarkerBaseListImpl(const TextMarkerBaseListImpl&) = delete;
+  TextMarkerBaseListImpl& operator=(const TextMarkerBaseListImpl&) = delete;
+
   // DocumentMarkerList implementations
   bool IsEmpty() const final;
 
@@ -35,14 +38,11 @@ class CORE_EXPORT TextMarkerBaseListImpl : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   TextMarkerBaseListImpl() = default;
   HeapVector<Member<DocumentMarker>> markers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextMarkerBaseListImpl);
 };
 
 template <>

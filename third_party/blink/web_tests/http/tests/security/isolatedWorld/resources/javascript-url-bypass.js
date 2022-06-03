@@ -1,49 +1,60 @@
 if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
 }
 
-// This is needed because isolated worlds are not reset between test runs and a
-// previous test's CSP may interfere with this test. See
-// https://crbug.com/415845.
-testRunner.setIsolatedWorldInfo(1, null, null);
-
-tests = 1;
-window.addEventListener("message", function(message) {
-    tests -= 1;
-    test();
+let tests = 1;
+window.addEventListener('message', function(message) {
+  tests += 1;
+  test();
 }, false);
 
-function setup() {
+function setIframeSrcToJavaScript() {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
 
-    var iframe = document.getElementById('testiframe');
-    iframe.onload = function () {
-        alert('iframe loaded');
-        window.postMessage("next", "*");
-    }
+  // Use a timeout to ensure the javascript alert below is executed before the
+  // next test begins.
+  setTimeout(() => {
+    window.postMessage('next', '*');
+  }, 100);
 
-    test();
+  iframe.src = 'javascript:alert(\'iframe javascript: src running\')';
+}
+
+const isolatedWorldID = 1;
+function testJavaScriptUrlInIsolatedWorld() {
+  testRunner.evaluateScriptInIsolatedWorld(
+      isolatedWorldID,
+      String(eval('setIframeSrcToJavaScript')) +
+          '\nsetIframeSrcToJavaScript();');
 }
 
 function test() {
-    function setIframeSrcToJavaScript(num) {
-        var iframe = document.getElementById('testiframe');
-        // Provide a body in the iframe src to trigger an onload event once
-        // execution has finished.
-        iframe.src = "javascript:alert('iframe javascript: src running') || 'alerted'";
-    }
-
-    alert("Running test #" + tests + "\n");
-    switch (tests) {
-        case 1:
-            alert("Bypass main world's CSP with javascript: URL");
-            testRunner.setIsolatedWorldInfo(1, "chrome-extension://123", "frame-src *; script-src 'unsafe-inline'");
-            testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrcToJavaScript")) + "\nsetIframeSrcToJavaScript(1);");
-            break;
-        case 0:
-            testRunner.notifyDone();
-            break;
-    }
+  alert('Running test #' + tests);
+  switch (tests) {
+    case 1:
+      alert('Isolated world with no CSP');
+      testRunner.setIsolatedWorldInfo(isolatedWorldID, null, null);
+      testJavaScriptUrlInIsolatedWorld();
+      break;
+    case 2:
+      alert('Isolated world with permissive CSP');
+      testRunner.setIsolatedWorldInfo(
+          isolatedWorldID, 'chrome-extension://123',
+          'script-src \'unsafe-inline\'');
+      testJavaScriptUrlInIsolatedWorld();
+      break;
+    case 3:
+      alert('Isolated world with strict CSP');
+      testRunner.setIsolatedWorldInfo(
+          isolatedWorldID, 'chrome-extension://123', 'script-src \'none\'');
+      testJavaScriptUrlInIsolatedWorld();
+      break;
+    case 4:
+      testRunner.notifyDone();
+      break;
+  }
 }
 
-document.addEventListener('DOMContentLoaded', setup);
+document.addEventListener('DOMContentLoaded', test);

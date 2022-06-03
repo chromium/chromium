@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_EXTENSIONS_RUNTIME_HOOKS_DELEGATE_H_
-#define CHROME_RENDERER_EXTENSIONS_RUNTIME_HOOKS_DELEGATE_H_
+#ifndef EXTENSIONS_RENDERER_RUNTIME_HOOKS_DELEGATE_H_
+#define EXTENSIONS_RENDERER_RUNTIME_HOOKS_DELEGATE_H_
 
 #include <vector>
 
 #include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class NativeRendererMessagingService;
@@ -20,6 +20,10 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
  public:
   explicit RuntimeHooksDelegate(
       NativeRendererMessagingService* messaging_service);
+
+  RuntimeHooksDelegate(const RuntimeHooksDelegate&) = delete;
+  RuntimeHooksDelegate& operator=(const RuntimeHooksDelegate&) = delete;
+
   ~RuntimeHooksDelegate() override;
 
   // Returns an absolute url for a path inside of an extension, as requested
@@ -71,10 +75,8 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.
   NativeRendererMessagingService* const messaging_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeHooksDelegate);
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_RENDERER_EXTENSIONS_RUNTIME_HOOKS_DELEGATE_H_
+#endif  // EXTENSIONS_RENDERER_RUNTIME_HOOKS_DELEGATE_H_

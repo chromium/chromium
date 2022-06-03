@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
 #include "third_party/skia/include/core/SkBitmap.h"

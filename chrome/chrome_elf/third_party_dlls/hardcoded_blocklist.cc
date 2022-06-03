@@ -65,7 +65,7 @@ bool DllMatch(const std::string& module_name) {
   if (module_name.empty())
     return false;
 
-  for (int i = 0; kDllBlocklist[i] != nullptr; ++i) {
+  for (int i = 0; kDllBlocklist[i]; ++i) {
     if (strcmp(module_name.c_str(), kDllBlocklist[i]) == 0)
       return true;
   }

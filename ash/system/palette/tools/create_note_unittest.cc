@@ -10,7 +10,6 @@
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/palette/tools/create_note_action.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/views/view.h"
 
@@ -19,6 +18,12 @@ namespace ash {
 class TestNoteTakingControllerClient : public NoteTakingClient {
  public:
   TestNoteTakingControllerClient() = default;
+
+  TestNoteTakingControllerClient(const TestNoteTakingControllerClient&) =
+      delete;
+  TestNoteTakingControllerClient& operator=(
+      const TestNoteTakingControllerClient&) = delete;
+
   ~TestNoteTakingControllerClient() override = default;
 
   int GetCreateNoteCount() {
@@ -34,8 +39,6 @@ class TestNoteTakingControllerClient : public NoteTakingClient {
  private:
   bool can_create_ = true;
   int create_note_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNoteTakingControllerClient);
 };
 
 namespace {
@@ -44,6 +47,10 @@ namespace {
 class CreateNoteTest : public AshTestBase {
  public:
   CreateNoteTest() = default;
+
+  CreateNoteTest(const CreateNoteTest&) = delete;
+  CreateNoteTest& operator=(const CreateNoteTest&) = delete;
+
   ~CreateNoteTest() override = default;
 
   void SetUp() override {
@@ -53,12 +60,16 @@ class CreateNoteTest : public AshTestBase {
     tool_ = std::make_unique<CreateNoteAction>(palette_tool_delegate_.get());
   }
 
+  void TearDown() override {
+    // This needs to be called first to remove the event handler before the
+    // shell instance gets torn down.
+    tool_.reset();
+    AshTestBase::TearDown();
+  }
+
  protected:
   std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
   std::unique_ptr<PaletteTool> tool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreateNoteTest);
 };
 
 }  // namespace
@@ -123,4 +134,25 @@ TEST_F(CreateNoteTest, ClientGetsRemovedAfterViewCreated) {
   tool_->OnEnable();
 }
 
+TEST_F(CreateNoteTest, ToolIsEnabledWhenStylusButtonIsPressed) {
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
+  std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
+
+  // Send a stylus button event.
+  PressAndReleaseKey(ui::VKEY_F19, ui::EF_IS_STYLUS_BUTTON);
+
+  EXPECT_EQ(1, note_taking_client->GetCreateNoteCount());
+}
+
+// The note tool is only visible on the internal display
+TEST_F(CreateNoteTest, ViewOnlyAppearsOnInternalDisplay) {
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
+  std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
+  EXPECT_TRUE(view);
+  tool_->OnViewDestroyed();
+
+  tool_->SetExternalDisplayForTest();
+  EXPECT_FALSE(tool_->CreateView());
+  tool_->OnViewDestroyed();
+}
 }  // namespace ash

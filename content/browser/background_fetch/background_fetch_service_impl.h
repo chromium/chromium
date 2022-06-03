@@ -10,29 +10,40 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/common/content_export.h"
+#include "net/base/isolation_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
-#include "url/origin.h"
+
+namespace net {
+class NetworkIsolationKey;
+}  // namespace net
 
 namespace content {
 
-struct ServiceWorkerVersionInfo;
+struct ServiceWorkerVersionBaseInfo;
 
 class CONTENT_EXPORT BackgroundFetchServiceImpl
     : public blink::mojom::BackgroundFetchService {
  public:
   BackgroundFetchServiceImpl(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
-      url::Origin origin,
-      int render_frame_tree_node_id,
-      WebContents::Getter wc_getter);
+      blink::StorageKey storage_key,
+      net::IsolationInfo isolation_info,
+      RenderFrameHostImpl* rfh);
+
+  BackgroundFetchServiceImpl(const BackgroundFetchServiceImpl&) = delete;
+  BackgroundFetchServiceImpl& operator=(const BackgroundFetchServiceImpl&) =
+      delete;
+
   ~BackgroundFetchServiceImpl() override;
 
   static void CreateForWorker(
-      const ServiceWorkerVersionInfo& info,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const ServiceWorkerVersionBaseInfo& info,
       mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
 
   static void CreateForFrame(
@@ -55,13 +66,6 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
                        GetDeveloperIdsCallback callback) override;
 
  private:
-  static void CreateOnCoreThread(
-      scoped_refptr<BackgroundFetchContext> background_fetch_context,
-      url::Origin origin,
-      int render_frame_tree_node_id,
-      WebContents::Getter wc_getter,
-      mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
-
   // Validates and returns whether the |developer_id|, |unique_id|, |requests|
   // and |title| respectively have valid values. The renderer will be flagged
   // for having sent a bad message if the values are invalid.
@@ -73,12 +77,16 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   // The Background Fetch context on which operations will be dispatched.
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
 
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
 
-  int render_frame_tree_node_id_;
-  WebContents::Getter wc_getter_;
+  net::IsolationInfo isolation_info_;
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchServiceImpl);
+  // Identifies the RenderFrameHost that is using this service, if any. May not
+  // resolve to a host if the frame has already been destroyed or a worker is
+  // using this service.
+  GlobalRenderFrameHostId rfh_id_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

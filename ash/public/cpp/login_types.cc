@@ -8,17 +8,16 @@
 
 namespace ash {
 
-EasyUnlockIconOptions::EasyUnlockIconOptions() = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(EasyUnlockIconOptions&& other) =
+EasyUnlockIconInfo::EasyUnlockIconInfo() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(const EasyUnlockIconInfo& other) =
     default;
-EasyUnlockIconOptions::~EasyUnlockIconOptions() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(EasyUnlockIconInfo&& other) = default;
+EasyUnlockIconInfo::~EasyUnlockIconInfo() = default;
 
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    EasyUnlockIconOptions&& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(
+    const EasyUnlockIconInfo& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(EasyUnlockIconInfo&& other) =
+    default;
 
 InputMethodItem::InputMethodItem() = default;
 InputMethodItem::InputMethodItem(const InputMethodItem& other) = default;
@@ -36,6 +35,11 @@ LocaleItem::~LocaleItem() = default;
 
 LocaleItem& LocaleItem::operator=(const LocaleItem& other) = default;
 LocaleItem& LocaleItem::operator=(LocaleItem&& other) = default;
+
+bool LocaleItem::operator==(const LocaleItem& other) const {
+  return language_code == other.language_code && title == other.title &&
+         group_name == other.group_name;
+}
 
 PublicAccountInfo::PublicAccountInfo() = default;
 PublicAccountInfo::PublicAccountInfo(const PublicAccountInfo& other) = default;

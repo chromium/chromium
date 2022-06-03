@@ -53,24 +53,18 @@ interface VideoFrameHandleReleaser {
                     gpu.mojom.SyncToken release_sync_token);
 };
 
-// Identifier to select between multiple underlying VideoDecoder implementations
-// to back a mojo VideoDecoder service.
-[Native]
-enum VideoDecoderImplementation;
-
 // A Mojo equivalent of media::VideoDecoder. In practice, this is used for
 // hardware decode offloading; in this case the client is a <video> tag running
 // in a renderer, and the implementation is running in the GPU process.
 interface VideoDecoder {
-  // Returns a list of supported configs. It is expected that Initialize() will
-  // fail for any config that does not match an entry in this list.  Note that
-  // this returns a map for all VideoDecoderImplementation types, since it's
-  // much more convenient; we always want all of them.
+  // Returns a list of supported configs as well as the decoder ID for the decoder
+  // which supports them. It is expected that Initialize() will fail for any config
+  // that does not match an entry in this list.
   //
   // May be called before Construct().
   GetSupportedConfigs() =>
-      (map<VideoDecoderImplementation,
-           array<SupportedVideoDecoderConfig>> supported_configs);
+      (array<SupportedVideoDecoderConfig> supported_configs,
+       VideoDecoderType decoder_type);
 
   // Initialize the decoder. This must be called before any method other than
   // GetSupportedConfigs().
@@ -101,11 +95,10 @@ interface VideoDecoder {
   // media::VideoDecoder::Initialize() is renamed to Configure().
   Construct(
       pending_associated_remote<VideoDecoderClient> client,
-      pending_associated_remote<MediaLog> media_log,
+      pending_remote<MediaLog> media_log,
       pending_receiver<VideoFrameHandleReleaser> video_frame_handle_releaser,
       handle<data_pipe_consumer> decoder_buffer_pipe,
       CommandBufferId? command_buffer_id,
-      VideoDecoderImplementation implementation,
       gfx.mojom.ColorSpace target_color_space);
 
   // Configure (or reconfigure) the decoder. This must be called before decoding
@@ -124,9 +117,12 @@ interface VideoDecoder {
   //
   // |cdm_id| must refer to a valid CDM if |config.is_encrypted()|.  It is not
   // used for unencrypted streams.
-  Initialize(VideoDecoderConfig config, bool low_delay, int32 cdm_id) =>
-      (bool success, bool needs_bitstream_conversion,
-       int32 max_decode_requests);
+  Initialize(VideoDecoderConfig config, bool low_delay,
+             mojo_base.mojom.UnguessableToken? cdm_id)
+      => (Status status,
+          bool needs_bitstream_conversion,
+          int32 max_decode_requests,
+          VideoDecoderType decoder_type);
 
   // Request decoding of exactly one frame or an EOS buffer. This must not be
   // called while there are pending Initialize(), Reset(), or Decode(EOS)
@@ -140,7 +136,7 @@ interface VideoDecoder {
   // If |buffer| is an EOS buffer, implementations must execute all other
   // pending Decode() callbacks and output all pending frames before executing
   // the Decode(EOS) callback. (That is, they must flush.)
-  Decode(DecoderBuffer buffer) => (DecodeStatus status);
+  Decode(DecoderBuffer buffer) => (Status status);
 
   // Reset the decoder. All ongoing Decode() requests must be completed or
   // aborted before executing the callback. This must not be called while there

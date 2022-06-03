@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_NAVIGATION_SERIALIZED_NAVIGATION_MANAGER_BUILDER_H_
-#define IOS_WEB_NAVIGATION_SERIALIZED_NAVIGATION_MANAGER_BUILDER_H_
+#ifndef IOS_WEB_NAVIGATION_SESSION_STORAGE_BUILDER_H_
+#define IOS_WEB_NAVIGATION_SESSION_STORAGE_BUILDER_H_
 
 @class CRWSessionStorage;
 
@@ -15,7 +15,7 @@ class WebStateImpl;
 class SessionStorageBuilder {
  public:
   // Creates a serializable session storage from |web_state|.
-  CRWSessionStorage* BuildStorage(WebStateImpl* web_state) const;
+  CRWSessionStorage* BuildStorage(const WebStateImpl* web_state) const;
   // Populates |web_state| with |storage|'s session information.
   // The provided |web_state| must already have a |NavigationManager|.
   void ExtractSessionState(WebStateImpl* web_state,
@@ -24,4 +24,4 @@ class SessionStorageBuilder {
 
 }  // namespace web
 
-#endif  // IOS_WEB_NAVIGATION_SERIALIZED_NAVIGATION_MANAGER_BUILDER_H_
+#endif  // IOS_WEB_NAVIGATION_SESSION_STORAGE_BUILDER_H_

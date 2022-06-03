@@ -5,7 +5,7 @@
 #include "media/capture/video/chromeos/mock_vendor_tag_ops.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/synchronization/waitable_event.h"
 
 namespace media {

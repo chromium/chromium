@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging different types of functions correctly.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -34,8 +34,8 @@
 
   ConsoleTestRunner.expandConsoleMessages(dumpConsoleMessages);
 
-  function dumpConsoleMessages() {
-    ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+  async function dumpConsoleMessages() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }
 })();

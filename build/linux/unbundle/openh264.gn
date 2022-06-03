@@ -21,22 +21,16 @@ shim_headers("openh264_shim") {
 }
 
 source_set("common") {
-  deps = [
-    ":openh264_shim",
-  ]
+  deps = [ ":openh264_shim" ]
   public_configs = [ ":config" ]
 }
 
 source_set("processing") {
-  deps = [
-    ":openh264_shim",
-  ]
+  deps = [ ":openh264_shim" ]
   public_configs = [ ":config" ]
 }
 
 source_set("encoder") {
-  deps = [
-    ":openh264_shim",
-  ]
+  deps = [ ":openh264_shim" ]
   public_configs = [ ":config" ]
 }

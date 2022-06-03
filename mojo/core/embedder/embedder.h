@@ -7,21 +7,15 @@
 
 #include <stddef.h>
 
-#include <string>
-
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/configuration.h"
 
 namespace mojo {
 namespace core {
-
-using ProcessErrorCallback =
-    base::RepeatingCallback<void(const std::string& error)>;
 
 // Basic configuration/initialization ------------------------------------------
 
@@ -35,16 +29,20 @@ void Init(const Configuration& configuration);
 // Like above but uses a default Configuration.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void Init();
 
-// Sets a default callback to invoke when an internal error is reported but
-// cannot be associated with a specific child process. Calling this is optional.
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
-void SetDefaultProcessErrorCallback(ProcessErrorCallback callback);
-
 // Initialialization/shutdown for interprocess communication (IPC) -------------
 
-// Retrieves the TaskRunner used for IPC I/O, as set by ScopedIPCSupport.
+// Retrieves the SequencedTaskRunner used for IPC I/O, as set by
+// ScopedIPCSupport.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
-scoped_refptr<base::TaskRunner> GetIOTaskRunner();
+scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner();
+
+// InitFeatures will be called as soon as the base::FeatureList is initialized.
+// NOTE: This is temporarily necessary because of how Mojo is started with
+// respect to base::FeatureList.
+//
+// TODO(rockot): Remove once a long term solution is in place for using
+// base::Features inside of Mojo.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
 
 }  // namespace core
 }  // namespace mojo

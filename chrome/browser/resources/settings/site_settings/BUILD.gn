@@ -2,287 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":add_site_dialog",
-    ":all_sites",
-    ":category_default_setting",
-    ":category_setting_exceptions",
-    ":chooser_exception_list",
-    ":chooser_exception_list_entry",
-    ":constants",
-    ":cookie_info",
-    ":local_data_browser_proxy",
-    ":media_picker",
-    ":protocol_handlers",
-    ":site_data",
-    ":site_data_details_subpage",
-    ":site_data_entry",
-    ":site_details",
-    ":site_details_permission",
-    ":site_entry",
-    ":site_list",
-    ":site_list_entry",
-    ":site_settings_behavior",
-    ":site_settings_prefs_browser_proxy",
-    ":website_usage_private_api",
-    ":zoom_levels",
-  ]
-}
-
-js_library("add_site_dialog") {
-  deps = [
-    ":constants",
-    ":site_settings_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("all_sites") {
-  deps = [
-    ":constants",
-    ":site_settings_behavior",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("category_default_setting") {
-  deps = [
-    ":constants",
-    ":site_settings_behavior",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("category_setting_exceptions") {
-  deps = [
-    ":constants",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("chooser_exception_list") {
-  deps = [
-    ":chooser_exception_list_entry",
-    ":constants",
-    ":site_settings_behavior",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("chooser_exception_list_entry") {
-  deps = [
-    ":constants",
-    ":site_list_entry",
-    ":site_settings_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("constants") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("local_data_browser_proxy") {
-  deps = [
-    ":constants",
-    ":cookie_info",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("media_picker") {
-  deps = [
-    ":site_settings_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cookie_info") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("protocol_handlers") {
-  deps = [
-    ":site_settings_behavior",
-
-    # Must be included on all platforms to satisfy closure compiler.
-    "../chromeos/os_apps_page:android_apps_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("site_data") {
-  deps = [
-    ":cookie_info",
-    ":local_data_browser_proxy",
-    ":site_data_entry",
-    ":site_settings_behavior",
-    "..:global_scroll_target_behavior",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("site_data_details_subpage") {
-  deps = [
-    ":local_data_browser_proxy",
-    "..:route",
-    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("site_data_entry") {
-  deps = [
-    ":cookie_info",
-    ":local_data_browser_proxy",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-}
-
-js_library("site_details") {
-  deps = [
-    ":constants",
-    ":site_details_permission",
-    ":site_settings_behavior",
-    ":website_usage_private_api",
-    "..:route",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("site_details_permission") {
-  deps = [
-    ":constants",
-    ":site_settings_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("site_entry") {
-  deps = [
-    ":constants",
-    ":local_data_browser_proxy",
-    ":site_settings_behavior",
-    ":site_settings_prefs_browser_proxy",
-    "..:route",
-    "//third_party/polymer/v1_0/components-chromium/iron-collapse:iron-collapse-extracted",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("site_list") {
-  deps = [
-    ":constants",
-    ":site_list_entry",
-    ":site_settings_behavior",
-    "../multidevice_page:multidevice_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("site_list_entry") {
-  deps = [
-    ":constants",
-    ":site_settings_behavior",
-    "..:route",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-}
-
-js_library("site_settings_behavior") {
-  deps = [
-    ":constants",
-    ":site_settings_prefs_browser_proxy",
-    "..:route",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("site_settings_prefs_browser_proxy") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("website_usage_private_api") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("zoom_levels") {
-  deps = [
-    ":site_settings_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
+html_to_js("web_components") {
+  js_files = [
+    "add_site_dialog.ts",
+    "all_sites.ts",
+    "all_sites_icons.ts",
+    "category_default_setting.ts",
+    "category_setting_exceptions.ts",
+    "chooser_exception_list.ts",
+    "chooser_exception_list_entry.ts",
+    "clear_storage_dialog_css.ts",
+    "edit_exception_dialog.ts",
+    "media_picker.ts",
+    "pdf_documents.ts",
+    "protocol_handlers.ts",
+    "settings_category_default_radio_group.ts",
+    "site_data.ts",
+    "site_data_details_subpage.ts",
+    "site_data_entry.ts",
+    "site_details.ts",
+    "site_details_permission.ts",
+    "site_entry.ts",
+    "site_list.ts",
+    "site_list_entry.ts",
+    "zoom_levels.ts",
   ]
 }

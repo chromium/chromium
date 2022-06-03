@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests stopping in debugger in the worker.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function installWorker()
@@ -21,8 +21,8 @@
     SourcesTestRunner.waitUntilPaused(paused);
   }
 
-  function paused(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function paused(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.resumeExecution(SourcesTestRunner.completeDebuggerTest);
   }
 })();

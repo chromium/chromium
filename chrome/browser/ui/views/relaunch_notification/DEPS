@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "relaunch_notification_controller_platform_impl_chromeos\.cc": [
+    "+ash/shell.h",
+  ],
+  "relaunch_notification_controller_unittest\.cc": [
+    "+ash/shell.h",
+    "+ash/test/ash_test_helper.h"
+  ],
+}

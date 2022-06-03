@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_V8_SCRIPT_VALUE_SERIALIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_V8_SCRIPT_VALUE_SERIALIZER_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -36,7 +37,18 @@ class CORE_EXPORT V8ScriptValueSerializer
 
  public:
   using Options = SerializedScriptValue::SerializeOptions;
+
+  // |object_index| is for use in exceptiun messages.
+  static bool ExtractTransferable(v8::Isolate*,
+                                  v8::Local<v8::Value>,
+                                  wtf_size_t object_index,
+                                  Transferables&,
+                                  ExceptionState&);
+
   explicit V8ScriptValueSerializer(ScriptState*, const Options& = Options());
+
+  V8ScriptValueSerializer(const V8ScriptValueSerializer&) = delete;
+  V8ScriptValueSerializer& operator=(const V8ScriptValueSerializer&) = delete;
 
   scoped_refptr<SerializedScriptValue> Serialize(v8::Local<v8::Value>,
                                                  ExceptionState&);
@@ -46,6 +58,8 @@ class CORE_EXPORT V8ScriptValueSerializer
   // If false is returned and no more specific exception is thrown, a generic
   // DataCloneError message will be used.
   virtual bool WriteDOMObject(ScriptWrappable*, ExceptionState&);
+
+  ScriptState* GetScriptState() const { return script_state_; }
 
   void WriteTag(SerializationTag tag) {
     uint8_t tag_byte = tag;
@@ -106,7 +120,9 @@ class CORE_EXPORT V8ScriptValueSerializer
                                size_t* actual_size) override;
   void FreeBufferMemory(void* buffer) override;
 
-  Member<ScriptState> script_state_;
+  bool TransferableStreamsEnabled() const;
+
+  ScriptState* script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueSerializer serializer_;
   const Transferables* transferables_ = nullptr;
@@ -118,8 +134,6 @@ class CORE_EXPORT V8ScriptValueSerializer
 #if DCHECK_IS_ON()
   bool serialize_invoked_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(V8ScriptValueSerializer);
 };
 
 // For code testing V8ScriptValueSerializer

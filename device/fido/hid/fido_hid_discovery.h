@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device_discovery.h"
@@ -17,18 +18,30 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
-#include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/public/mojom/hid.mojom-forward.h"
 
 namespace device {
 
-// TODO(crbug/769631): Now the U2F is talking to HID via mojo, once the U2F
-// servicification is unblocked, we'll move U2F back to //service/device/.
-// Then it will talk to HID via C++ as part of servicifying U2F.
+// VidPid represents an HID vendor and product ID pair.
+struct COMPONENT_EXPORT(DEVICE_FIDO) VidPid {
+  uint16_t vid;
+  uint16_t pid;
+};
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool operator==(const VidPid& lhs, const VidPid& rhs);
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool operator<(const VidPid& lhs, const VidPid& rhs);
+
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDiscovery
     : public FidoDeviceDiscovery,
       device::mojom::HidManagerClient {
  public:
-  FidoHidDiscovery();
+  explicit FidoHidDiscovery(base::flat_set<VidPid> ignore_list = {});
+
+  FidoHidDiscovery(const FidoHidDiscovery&) = delete;
+  FidoHidDiscovery& operator=(const FidoHidDiscovery&) = delete;
+
   ~FidoHidDiscovery() override;
 
   // Sets a callback for this class to use when binding a HidManager receiver.
@@ -43,15 +56,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDiscovery
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
 
   void OnGetDevices(std::vector<device::mojom::HidDeviceInfoPtr> devices);
 
   mojo::Remote<device::mojom::HidManager> hid_manager_;
   mojo::AssociatedReceiver<device::mojom::HidManagerClient> receiver_{this};
   HidDeviceFilter filter_;
+  base::flat_set<VidPid> ignore_list_;
   base::WeakPtrFactory<FidoHidDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoHidDiscovery);
 };
 
 }  // namespace device

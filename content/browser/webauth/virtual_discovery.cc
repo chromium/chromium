@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/fido_device.h"
@@ -20,9 +20,7 @@ VirtualFidoDiscovery::VirtualFidoDiscovery(
     ::device::FidoTransportProtocol transport)
     : FidoDeviceDiscovery(transport) {}
 
-VirtualFidoDiscovery::~VirtualFidoDiscovery() {
-  AuthenticatorEnvironmentImpl::GetInstance()->OnDiscoveryDestroyed(this);
-}
+VirtualFidoDiscovery::~VirtualFidoDiscovery() = default;
 
 void VirtualFidoDiscovery::AddVirtualDevice(
     std::unique_ptr<::device::FidoDevice> device) {

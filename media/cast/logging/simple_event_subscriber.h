@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/raw_event_subscriber.h"
 
@@ -19,9 +18,12 @@ namespace cast {
 // in std::vector's.
 // The user of this class can call the GetXXXEventsAndReset functions to get
 // list of events that have acccumulated since last inovcation.
-class SimpleEventSubscriber : public RawEventSubscriber {
+class SimpleEventSubscriber final : public RawEventSubscriber {
  public:
   SimpleEventSubscriber();
+
+  SimpleEventSubscriber(const SimpleEventSubscriber&) = delete;
+  SimpleEventSubscriber& operator=(const SimpleEventSubscriber&) = delete;
 
   ~SimpleEventSubscriber() final;
 
@@ -43,8 +45,6 @@ class SimpleEventSubscriber : public RawEventSubscriber {
 
   // All functions must be called on the main thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleEventSubscriber);
 };
 
 }  // namespace cast

@@ -27,6 +27,6 @@
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGTests
 
 interface mixin SVGTests {
-    [MeasureAs=SVG1DOMSVGTests] readonly attribute SVGStringList requiredExtensions;
-    [MeasureAs=SVG1DOMSVGTests] readonly attribute SVGStringList systemLanguage;
+    [HighEntropy=Direct, MeasureAs=SVG1DOMSVGTests] readonly attribute SVGStringList requiredExtensions;
+    [HighEntropy=Direct, MeasureAs=SVG1DOMSVGTests] readonly attribute SVGStringList systemLanguage;
 };

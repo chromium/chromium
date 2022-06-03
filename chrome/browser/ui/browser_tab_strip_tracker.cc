@@ -12,17 +12,17 @@
 
 BrowserTabStripTracker::BrowserTabStripTracker(
     TabStripModelObserver* tab_strip_model_observer,
-    BrowserTabStripTrackerDelegate* delegate,
-    BrowserListObserver* browser_list_observer)
+    BrowserTabStripTrackerDelegate* delegate)
     : tab_strip_model_observer_(tab_strip_model_observer),
       delegate_(delegate),
-      browser_list_observer_(browser_list_observer),
       is_processing_initial_browsers_(false) {
   DCHECK(tab_strip_model_observer_);
 }
 
 BrowserTabStripTracker::~BrowserTabStripTracker() {
-  for (Browser* browser : browsers_observing_)
+  // Per ObserverList::RemoveObserver() documentation, this does nothing if the
+  // observer is not in the ObserverList (i.e. if |browser| is not tracked).
+  for (auto* browser : *BrowserList::GetInstance())
     browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
 
   BrowserList::RemoveObserver(this);
@@ -31,20 +31,9 @@ BrowserTabStripTracker::~BrowserTabStripTracker() {
 void BrowserTabStripTracker::Init() {
   BrowserList::AddObserver(this);
 
-  base::AutoReset<bool> restter(&is_processing_initial_browsers_, true);
+  base::AutoReset<bool> resetter(&is_processing_initial_browsers_, true);
   for (auto* browser : *BrowserList::GetInstance())
     MaybeTrackBrowser(browser);
-}
-
-void BrowserTabStripTracker::StopObservingAndSendOnBrowserRemoved() {
-  Browsers current_browsers;
-  current_browsers.swap(browsers_observing_);
-
-  for (Browser* browser : current_browsers) {
-    browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
-    if (browser_list_observer_)
-      browser_list_observer_->OnBrowserRemoved(browser);
-  }
 }
 
 bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {
@@ -54,16 +43,6 @@ bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {
 void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
   if (!ShouldTrackBrowser(browser))
     return;
-
-  // It's possible that a browser is added to the observed browser list twice.
-  // In this case it might cause crash as seen in crbug.com/685731.
-  if (browsers_observing_.find(browser) != browsers_observing_.end())
-    return;
-
-  browsers_observing_.insert(browser);
-
-  if (browser_list_observer_)
-    browser_list_observer_->OnBrowserAdded(browser);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_strip_model->AddObserver(tab_strip_model_observer_);
@@ -81,22 +60,19 @@ void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
 }
 
 void BrowserTabStripTracker::OnBrowserAdded(Browser* browser) {
+  // No Browser should be added when iterating on Browsers in Init(), as that
+  // may invalidate the iterator.
+  DCHECK(!is_processing_initial_browsers_);
+
   MaybeTrackBrowser(browser);
 }
 
 void BrowserTabStripTracker::OnBrowserRemoved(Browser* browser) {
-  auto it = browsers_observing_.find(browser);
-  if (it == browsers_observing_.end())
-    return;
+  // No Browser should be removed when iterating on Browsers in Init(), as that
+  // invalidates any iterator that is past the removed Browser.
+  DCHECK(!is_processing_initial_browsers_);
 
-  browsers_observing_.erase(it);
+  // Per ObserverList::RemoveObserver() documentation, this does nothing if the
+  // observer is not in the ObserverList (i.e. if |browser| is not tracked).
   browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
-
-  if (browser_list_observer_)
-    browser_list_observer_->OnBrowserRemoved(browser);
-}
-
-void BrowserTabStripTracker::OnBrowserSetLastActive(Browser* browser) {
-  if (browser_list_observer_)
-    browser_list_observer_->OnBrowserSetLastActive(browser);
 }

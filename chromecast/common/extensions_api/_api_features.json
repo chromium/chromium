@@ -44,7 +44,7 @@
       "channel": "stable",
       "contexts": ["blessed_extension"],
       "extension_types": ["platform_app"],
-      "whitelist": [
+      "allowlist": [
         "A948368FC53BE437A55FEB414106E207925482F5"  // File manager
       ]
     }
@@ -88,6 +88,10 @@
       "chrome://bookmarks/*"
     ]
   }],
+  "loginState": {
+    "dependencies": ["permission:loginState"],
+    "contexts": ["blessed_extension"]
+  },
   "settingsPrivate": [{
     "dependencies": ["permission:settingsPrivate"],
     "contexts": ["blessed_extension"]
@@ -111,6 +115,10 @@
   }],
   "tts": {
     "dependencies": ["permission:tts"],
+    "contexts": ["blessed_extension"]
+  },
+  "loginState": {
+    "dependencies": ["permission:loginState"],
     "contexts": ["blessed_extension"]
   },
   "windows": [{

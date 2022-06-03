@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check result assert_equals: Check log expected "outeronload;outeractivelement:body;starttest;middleactivelement:body;callfocus;middleactivelement:iframe;innerfocus;middletimer;middleactivelement:iframe;outeractivelement:iframe;" but got "outeronload;outeractivelement:body;starttest;middleactivelement:body;callfocus;middleactivelement:iframe;middletimer;middleactivelement:iframe;outeractivelement:iframe;"
+Harness: the test ran to completion.
+

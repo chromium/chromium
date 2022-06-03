@@ -6,16 +6,22 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/page_setup.h"
-#include "printing/page_size_margins.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion.h"
+#include "printing/printing_context_factory_for_test.h"
 #include "printing/units.h"
 
 namespace printing {
 
 namespace {
+
+PrintingContextFactoryForTest* g_printing_context_factory_for_test = nullptr;
+
 const float kCloudPrintMarginInch = 0.25;
 }
 
@@ -29,8 +35,22 @@ PrintingContext::PrintingContext(Delegate* delegate)
 
 PrintingContext::~PrintingContext() = default;
 
-void PrintingContext::set_margin_type(MarginType type) {
-  DCHECK(type != CUSTOM_MARGINS);
+// static
+std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+  return g_printing_context_factory_for_test
+             ? g_printing_context_factory_for_test->CreatePrintingContext(
+                   delegate)
+             : PrintingContext::CreateImpl(delegate);
+}
+
+// static
+void PrintingContext::SetPrintingContextFactoryForTest(
+    PrintingContextFactoryForTest* factory) {
+  g_printing_context_factory_for_test = factory;
+}
+
+void PrintingContext::set_margin_type(mojom::MarginType type) {
+  DCHECK(type != mojom::MarginType::kCustomMargins);
   settings_->set_margin_type(type);
 }
 
@@ -61,52 +81,64 @@ std::unique_ptr<PrintSettings> PrintingContext::TakeAndResetSettings() {
   return result;
 }
 
-PrintingContext::Result PrintingContext::OnError() {
-  Result result = abort_printing_ ? CANCEL : FAILED;
+mojom::ResultCode PrintingContext::OnError() {
+  mojom::ResultCode result = abort_printing_ ? mojom::ResultCode::kCanceled
+                                             : mojom::ResultCode::kFailed;
   ResetSettings();
   return result;
 }
 
-PrintingContext::Result PrintingContext::UsePdfSettings() {
+mojom::ResultCode PrintingContext::UsePdfSettings() {
   base::Value pdf_settings(base::Value::Type::DICTIONARY);
   pdf_settings.SetBoolKey(kSettingHeaderFooterEnabled, false);
   pdf_settings.SetBoolKey(kSettingShouldPrintBackgrounds, false);
   pdf_settings.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
-  pdf_settings.SetIntKey(kSettingMarginsType, printing::NO_MARGINS);
+  pdf_settings.SetIntKey(kSettingMarginsType,
+                         static_cast<int>(mojom::MarginType::kNoMargins));
   pdf_settings.SetBoolKey(kSettingCollate, true);
   pdf_settings.SetIntKey(kSettingCopies, 1);
-  pdf_settings.SetIntKey(kSettingColor, printing::COLOR);
+  pdf_settings.SetIntKey(kSettingColor,
+                         static_cast<int>(mojom::ColorModel::kColor));
   pdf_settings.SetIntKey(kSettingDpiHorizontal, kPointsPerInch);
   pdf_settings.SetIntKey(kSettingDpiVertical, kPointsPerInch);
-  pdf_settings.SetIntKey(kSettingDuplexMode, printing::SIMPLEX);
+  pdf_settings.SetIntKey(
+      kSettingDuplexMode,
+      static_cast<int>(printing::mojom::DuplexMode::kSimplex));
   pdf_settings.SetBoolKey(kSettingLandscape, false);
   pdf_settings.SetStringKey(kSettingDeviceName, "");
-  pdf_settings.SetIntKey(kSettingPrinterType, kPdfPrinter);
+  pdf_settings.SetIntKey(kSettingPrinterType,
+                         static_cast<int>(mojom::PrinterType::kPdf));
   pdf_settings.SetIntKey(kSettingScaleFactor, 100);
   pdf_settings.SetBoolKey(kSettingRasterizePdf, false);
   pdf_settings.SetIntKey(kSettingPagesPerSheet, 1);
   return UpdatePrintSettings(std::move(pdf_settings));
 }
 
-PrintingContext::Result PrintingContext::UpdatePrintSettings(
+mojom::ResultCode PrintingContext::UpdatePrintSettings(
     base::Value job_settings) {
   ResetSettings();
-
-  if (!PrintSettingsFromJobSettings(job_settings, settings_.get())) {
-    NOTREACHED();
-    return OnError();
+  {
+    std::unique_ptr<PrintSettings> settings =
+        PrintSettingsFromJobSettings(job_settings);
+    if (!settings) {
+      NOTREACHED();
+      return OnError();
+    }
+    settings_ = std::move(settings);
   }
 
-  PrinterType printer_type = static_cast<PrinterType>(
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       job_settings.FindIntKey(kSettingPrinterType).value());
-  bool print_with_privet = printer_type == kPrivetPrinter;
+  bool print_with_privet = printer_type == mojom::PrinterType::kPrivet;
   bool print_to_cloud = !!job_settings.FindKey(kSettingCloudPrintId);
   bool open_in_external_preview =
       !!job_settings.FindKey(kSettingOpenPDFInPreview);
 
   if (!open_in_external_preview &&
-      (print_to_cloud || print_with_privet || printer_type == kPdfPrinter ||
-       printer_type == kCloudPrinter || printer_type == kExtensionPrinter)) {
+      (print_to_cloud || print_with_privet ||
+       printer_type == mojom::PrinterType::kPdf ||
+       printer_type == mojom::PrinterType::kCloud ||
+       printer_type == mojom::PrinterType::kExtension)) {
     settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
     if (!settings_->requested_media().size_microns.IsEmpty()) {
@@ -126,7 +158,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
           kCloudPrintMarginInch * settings_->device_units_per_inch());
     }
     settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
-    return OK;
+    return mojom::ResultCode::kSuccess;
   }
 
   return UpdatePrinterSettings(
@@ -136,7 +168,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
 }
 
 #if defined(OS_CHROMEOS)
-PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
+mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();
   settings_ = std::move(job_settings);
@@ -146,5 +178,9 @@ PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
                                0 /* page_count is only used on Android */);
 }
 #endif
+
+void PrintingContext::ApplyPrintSettings(const PrintSettings& settings) {
+  *settings_ = settings;
+}
 
 }  // namespace printing

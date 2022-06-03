@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL INVALID_STATE_ERR error test assert_throws_dom: function "function(){cache.swapCache();}" threw object "TypeError: Cannot read properties of undefined (reading 'swapCache')" that is not a DOMException INVALID_STATE_ERR: property "code" is equal to undefined, expected 11
+Harness: the test ran to completion.
+

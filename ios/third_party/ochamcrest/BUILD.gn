@@ -247,7 +247,7 @@ ios_framework_bundle("ochamcrest") {
     "src/Source/OCHamcrest.h",
   ]
 
-  libs = [
+  frameworks = [
     "Foundation.framework",
     "UIKit.framework",
   ]

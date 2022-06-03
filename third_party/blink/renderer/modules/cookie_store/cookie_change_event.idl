@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 // Used to signal cookie changes to Document contexts.
-// https://github.com/WICG/async-cookies-api/blob/gh-pages/explainer.md
+// https://wicg.github.io/cookie-store/explainer.html
 //
 // See extendable_cookie_change_event.idl for the equivalent event in
 // ServiceWorker contexts.
 
 [
   Exposed=Window,
-  RuntimeEnabled=CookieStore,
   SecureContext
 ] interface CookieChangeEvent : Event {
-  constructor(DOMString type, optional CookieChangeEventInit eventInitDict);
-  [MeasureAs=CookieStoreAPI] readonly attribute CookieList changed;
-  [MeasureAs=CookieStoreAPI] readonly attribute CookieList deleted;
+  constructor(DOMString type, optional CookieChangeEventInit eventInitDict = {});
+  [
+    MeasureAs=CookieStoreAPI, SameObject, SaveSameObject
+  ] readonly attribute FrozenArray<CookieListItem> changed;
+  [
+    MeasureAs=CookieStoreAPI, SameObject, SaveSameObject
+  ] readonly attribute FrozenArray<CookieListItem> deleted;
 };

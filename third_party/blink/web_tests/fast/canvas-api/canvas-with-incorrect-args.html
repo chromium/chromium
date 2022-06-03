@@ -22,7 +22,7 @@ test(function () {
 
     context.fill();
     context.arc(2, 2, 0, 0, 90, true);
-    assert_throws("INDEX_SIZE_ERR", function() {
+    assert_throws_dom("INDEX_SIZE_ERR", function() {
       context.arc(2, 2, -10, 0, 90, true);
     });
     context.arc(2, 2, Infinity, 0, 90, true);
@@ -230,7 +230,7 @@ test(function () {
 
     var canvas2 = document.createElement('canvas');
     canvas2.width = canvas2.height = 0;
-    assert_throws("INVALID_STATE_ERR", function() {
+    assert_throws_dom("INVALID_STATE_ERR", function() {
       var pattern = context.createPattern(canvas2, 'repeat');
     });
     context.fillStyle = '#0f0';

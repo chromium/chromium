@@ -55,7 +55,7 @@ public class VibrationManagerImpl implements VibrationManager {
     public void onConnectionError(MojoException e) {}
 
     @Override
-    public void vibrate(long milliseconds, VibrateResponse callback) {
+    public void vibrate(long milliseconds, Vibrate_Response callback) {
         // Though the Blink implementation already sanitizes vibration times, don't
         // trust any values passed from the client.
         long sanitizedMilliseconds = Math.max(MINIMUM_VIBRATION_DURATION_MS,
@@ -70,7 +70,7 @@ public class VibrationManagerImpl implements VibrationManager {
     }
 
     @Override
-    public void cancel(CancelResponse callback) {
+    public void cancel(Cancel_Response callback) {
         if (mHasVibratePermission) {
             mVibrator.cancel();
         }

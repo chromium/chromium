@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Layout for the device item list. -->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- The title at the top. -->
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+
+    <!-- The "no item found" message. -->
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/not_found_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+        android:visibility="gone" />
+
+    <!-- A layout containing a spinning progress bar that gets replaced with a
+         list of items. -->
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp" >
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <ListView
+            android:id="@+id/items"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:fadeScrollbars="false"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <View style="@style/ButtonBarTopDivider" />
+
+</merge>

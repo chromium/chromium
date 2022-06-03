@@ -6,6 +6,7 @@ module remote_cocoa.mojom;
 
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
@@ -65,11 +66,6 @@ struct NativeWidgetNSWindowInitParams {
   ui.mojom.ModalType modal_type;
   // If true, the underlying window potentially be seen through.
   bool is_translucent;
-  // True if the widget is considered top level widget.
-  bool widget_is_top_level;
-  // True if the bounds specified to SetBounds should be treated as though they
-  // are in screen coordinates.
-  bool position_window_in_screen_coords;
   // If true, then the NSWindow is set to have a shadow using
   // -[NSWindow setHasShadow:YES].
   bool has_window_server_shadow;
@@ -81,6 +77,11 @@ struct NativeWidgetNSWindowInitParams {
   // window's workspace and fullscreen state, and can be retrieved from or
   // applied to a window.
   array<uint8> state_restoration_data;
+};
+
+enum WindowControlsOverlayNSViewType {
+  kCaptionButtonContainer,
+  kWebAppFrameToolbar,
 };
 
 // The interface through which a NativeWidgetMac may interact with an NSWindow
@@ -96,6 +97,9 @@ interface NativeWidgetNSWindow {
   // Open a panel for file selection or creation.
   CreateSelectFileDialog(pending_receiver<SelectFileDialog> dialog);
 
+  // Open a panel to display the specified certificate.
+  ShowCertificateViewer(network.mojom.X509Certificate certificate);
+
   // Places this NativeWidgetNSWindow in front of the NativeWidgetNSWindow
   // indicated by |sibling_id| in z-order.
   StackAbove(uint64 sibling_id);
@@ -110,8 +114,9 @@ interface NativeWidgetNSWindow {
 
   // Initialize the view to display compositor output. This will send the
   // current visibility and dimensions (and any future updates) to the
-  // NativeWidgetNSWindowHost.
-  InitCompositorView();
+  // NativeWidgetNSWindowHost. Returns the CGWindowID to associate with
+  // the compositor's FrameSinkId.
+  InitCompositorView() => (uint32 cg_window_id);
 
   // Create the NSView to be the content view for the window. Use |ns_view_id|
   // to look up this NSView in other functions (e.g, to specify a parent view).
@@ -187,8 +192,8 @@ interface NativeWidgetNSWindow {
   // Set the window level of the NSWindow.
   SetWindowLevel(int32 level);
 
-  // Set the content aspect ratio of the NSWindow.
-  SetContentAspectRatio(gfx.mojom.SizeF aspect_ratio);
+  // Set the aspect ratio of the NSWindow. |aspect_ratio| must not be empty.
+  SetAspectRatio(gfx.mojom.SizeF aspect_ratio);
 
   // Specify the content to draw in the NSView.
   SetCALayerParams(gfx.mojom.CALayerParams ca_layer_params);
@@ -220,4 +225,19 @@ interface NativeWidgetNSWindow {
 
   // Redispatch a keyboard event using the widget's window's CommandDispatcher.
   RedispatchKeyEvent(array<uint8> native_event_data);
+
+  // Add the overlay NSView for a PWA with window controls overlay
+  // display override given a |overlay_type|.
+  CreateWindowControlsOverlayNSView(
+      WindowControlsOverlayNSViewType overlay_type);
+
+  // Update the overlay NSView with |bounds| for a PWA with window controls
+  // overlay display override for a |overlay_type|.
+  UpdateWindowControlsOverlayNSView(
+    gfx.mojom.Rect bounds, WindowControlsOverlayNSViewType overlay_type);
+
+  // Remove the overlay NSView with |bounds| for a PWA with window controls
+  // overlay display override for a |overlay_type|.
+  RemoveWindowControlsOverlayNSView(
+      WindowControlsOverlayNSViewType overlay_type);
 };

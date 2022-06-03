@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <cmath>
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -28,7 +29,7 @@ static const int kAACRemainderFrameCount = 519;
 AudioFileReader::AudioFileReader(FFmpegURLProtocol* protocol)
     : stream_index_(0),
       protocol_(protocol),
-      audio_codec_(kUnknownAudioCodec),
+      audio_codec_(AudioCodec::kUnknown),
       channels_(0),
       sample_rate_(0),
       av_sample_format_(0) {}
@@ -42,7 +43,7 @@ bool AudioFileReader::Open() {
 }
 
 bool AudioFileReader::OpenDemuxer() {
-  glue_.reset(new FFmpegGlue(protocol_));
+  glue_ = std::make_unique<FFmpegGlue>(protocol_);
   AVFormatContext* format_context = glue_->format_context();
 
   // Open FFmpeg AVFormatContext.
@@ -85,7 +86,7 @@ bool AudioFileReader::OpenDemuxer() {
 }
 
 bool AudioFileReader::OpenDecoder() {
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (codec) {
     // MP3 decodes to S16P which we don't support, tell it to use S16 instead.
     if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)
@@ -168,7 +169,7 @@ base::TimeDelta AudioFileReader::GetDuration() const {
   base::CheckedNumeric<int64_t> estimated_duration_us =
       glue_->format_context()->duration;
 
-  if (audio_codec_ == kCodecAAC) {
+  if (audio_codec_ == AudioCodec::kAAC) {
     // For certain AAC-encoded files, FFMPEG's estimated frame count might not
     // be sufficient to capture the entire audio content that we want. This is
     // especially noticeable for short files (< 10ms) resulting in silence
@@ -191,7 +192,7 @@ base::TimeDelta AudioFileReader::GetDuration() const {
 }
 
 int AudioFileReader::GetNumberOfFrames() const {
-  return static_cast<int>(ceil(GetDuration().InSecondsF() * sample_rate()));
+  return base::ClampCeil(GetDuration().InSecondsF() * sample_rate());
 }
 
 bool AudioFileReader::OpenDemuxerForTesting() {
@@ -241,16 +242,16 @@ bool AudioFileReader::OnNewFrame(
   // silence from being output. In the case where we are also discarding some
   // portion of the packet (as indicated by a negative pts), we further want to
   // adjust the duration downward by however much exists before zero.
-  if (audio_codec_ == kCodecAAC && frame->pkt_duration) {
+  if (audio_codec_ == AudioCodec::kAAC && frame->pkt_duration) {
     const base::TimeDelta pkt_duration = ConvertFromTimeBase(
         glue_->format_context()->streams[stream_index_]->time_base,
         frame->pkt_duration + std::min(static_cast<int64_t>(0), frame->pts));
-    const base::TimeDelta frame_duration = base::TimeDelta::FromSecondsD(
-        frames_read / static_cast<double>(sample_rate_));
+    const base::TimeDelta frame_duration =
+        base::Seconds(frames_read / static_cast<double>(sample_rate_));
 
-    if (pkt_duration < frame_duration && pkt_duration > base::TimeDelta()) {
-      const int new_frames_read = frames_read * (pkt_duration.InSecondsF() /
-                                                 frame_duration.InSecondsF());
+    if (pkt_duration < frame_duration && pkt_duration.is_positive()) {
+      const int new_frames_read =
+          base::ClampFloor(frames_read * (pkt_duration / frame_duration));
       DVLOG(2) << "Shrinking AAC frame from " << frames_read << " to "
                << new_frames_read << " based on packet duration.";
       frames_read = new_frames_read;
@@ -276,9 +277,25 @@ bool AudioFileReader::OnNewFrame(
              sizeof(float) * frames_read);
     }
   } else {
-    audio_bus->FromInterleaved(
-        frame->data[0], frames_read,
-        av_get_bytes_per_sample(codec_context_->sample_fmt));
+    int bytes_per_sample = av_get_bytes_per_sample(codec_context_->sample_fmt);
+    switch (bytes_per_sample) {
+      case 1:
+        audio_bus->FromInterleaved<UnsignedInt8SampleTypeTraits>(
+            reinterpret_cast<const uint8_t*>(frame->data[0]), frames_read);
+        break;
+      case 2:
+        audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(
+            reinterpret_cast<const int16_t*>(frame->data[0]), frames_read);
+        break;
+      case 4:
+        audio_bus->FromInterleaved<SignedInt32SampleTypeTraits>(
+            reinterpret_cast<const int32_t*>(frame->data[0]), frames_read);
+        break;
+      default:
+        NOTREACHED() << "Unsupported bytes per sample encountered: "
+                     << bytes_per_sample;
+        audio_bus->ZeroFrames(frames_read);
+    }
   }
 
   (*total_frames) += frames_read;

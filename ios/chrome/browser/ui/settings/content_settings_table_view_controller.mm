@@ -4,27 +4,34 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings_table_view_controller.h"
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
+#import "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/translate/core/browser/translate_pref_names.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/settings/translate_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
+#include "ios/web/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -34,65 +41,57 @@
 
 namespace {
 
+// Is YES when one window has mailTo controller opened.
+BOOL openedMailTo = NO;
+
+// Notification name of changes to openedMailTo state.
+NSString* kMailToInstanceChanged = @"MailToInstanceChanged";
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSettings = kSectionIdentifierEnumZero,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsBlockPopups = kItemTypeEnumZero,
-  ItemTypeSettingsTranslate,
   ItemTypeSettingsComposeEmail,
+  ItemTypeSettingsShowLinkPreview,
 };
 
 }  // namespace
 
-@interface ContentSettingsTableViewController ()<PrefObserverDelegate,
-                                                 BooleanObserver> {
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  PrefChangeRegistrar _prefChangeRegistrar;
-
+@interface ContentSettingsTableViewController () <BooleanObserver> {
   // The observable boolean that binds to the "Disable Popups" setting state.
   ContentSettingBackedBoolean* _disablePopupsSetting;
 
   // Updatable Items
   TableViewDetailIconItem* _blockPopupsDetailItem;
-  TableViewDetailIconItem* _translateDetailItem;
   TableViewDetailIconItem* _composeEmailDetailItem;
+  TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
 }
 
-// Returns the value for the default setting with ID |settingID|.
-- (ContentSetting)getContentSetting:(ContentSettingsType)settingID;
+// PrefBackedBoolean for "Show Link Preview" setting state.
+@property(nonatomic, strong, readonly) PrefBackedBoolean* linkPreviewEnabled;
+
+// The item related to the switch for the "Show Link Preview" setting.
+@property(nonatomic, strong) SettingsSwitchItem* linkPreviewItem;
 
 // Helpers to create collection view items.
 - (id)blockPopupsItem;
-- (id)translateItem;
 - (id)composeEmailItem;
 
 @end
 
 @implementation ContentSettingsTableViewController {
-  ios::ChromeBrowserState* _browserState;  // weak
+  ChromeBrowserState* _browserState;  // weak
 }
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(browserState);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _browserState = browserState;
     self.title = l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE);
-
-    _prefChangeRegistrar.Init(browserState->GetPrefs());
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
-    // Register to observe any changes on Perf backed values displayed by the
-    // screen.
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kOfferTranslateEnabled, &_prefChangeRegistrar);
 
     HostContentSettingsMap* settingsMap =
         ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
@@ -101,6 +100,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              settingID:ContentSettingsType::POPUPS
                               inverted:YES];
     [_disablePopupsSetting setObserver:self];
+
+    _linkPreviewEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_browserState->GetPrefs()
+                   prefName:prefs::kLinkPreviewEnabled];
+    [_linkPreviewEnabled setObserver:self];
   }
   return self;
 }
@@ -110,8 +114,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.rowHeight = UITableViewAutomaticDimension;
-
   [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(mailToControllerChanged)
+             name:kMailToInstanceChanged
+           object:nil];
+  [self checkMailToOwnership];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [self checkMailToOwnership];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:kMailToInstanceChanged
+                                                object:nil];
 }
 
 #pragma mark - ChromeTableViewController
@@ -123,17 +144,39 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSettings];
   [model addItem:[self blockPopupsItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
-  if (!base::FeatureList::IsEnabled(kLanguageSettings)) {
-    [model addItem:[self translateItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
+  // Display email settings only on one window at a time, by checking
+  // if this is the current owner.
+  _openedInAnotherWindowItem = nil;
+  _composeEmailDetailItem = nil;
   if (settingsTitle) {
-    [model addItem:[self composeEmailItem]
+    if (!openedMailTo) {
+      [model addItem:[self composeEmailItem]
+          toSectionWithIdentifier:SectionIdentifierSettings];
+    } else {
+      [model addItem:[self openedInAnotherWindowItem]
+          toSectionWithIdentifier:SectionIdentifierSettings];
+    }
+  }
+
+  if (IsDiscoverFeedPreviewEnabled() ||
+      base::FeatureList::IsEnabled(
+          web::features::kWebViewNativeContextMenuPhase2)) {
+    [model addItem:[self linkPreviewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileContentSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileContentSettingsBack"));
 }
 
 #pragma mark - ContentSettingsTableViewController
@@ -149,22 +192,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _blockPopupsDetailItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   _blockPopupsDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _blockPopupsDetailItem.accessibilityIdentifier = kSettingsBlockPopupsCellId;
   return _blockPopupsDetailItem;
-}
-
-- (TableViewItem*)translateItem {
-  _translateDetailItem =
-      [[TableViewDetailIconItem alloc] initWithType:ItemTypeSettingsTranslate];
-  BOOL enabled =
-      _browserState->GetPrefs()->GetBoolean(prefs::kOfferTranslateEnabled);
-  NSString* subtitle = enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  _translateDetailItem.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING);
-  _translateDetailItem.detailText = subtitle;
-  _translateDetailItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  _translateDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  return _translateDetailItem;
 }
 
 - (TableViewItem*)composeEmailItem {
@@ -172,7 +201,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
   MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
   NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
@@ -181,12 +210,59 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _composeEmailDetailItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   _composeEmailDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _composeEmailDetailItem.accessibilityIdentifier = kSettingsDefaultAppsCellId;
   return _composeEmailDetailItem;
 }
 
-- (ContentSetting)getContentSetting:(ContentSettingsType)settingID {
-  return ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
-      ->GetDefaultContentSetting(settingID, NULL);
+- (TableViewItem*)openedInAnotherWindowItem {
+  _openedInAnotherWindowItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeSettingsComposeEmail];
+  // Use the handler's preferred title string for the compose email item.
+  MailtoHandlerProvider* provider =
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
+  NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
+  DCHECK([settingsTitle length]);
+  // .detailText can display the selected mailto handling app, but the current
+  // MailtoHandlerProvider does not expose this through its API.
+  _openedInAnotherWindowItem.text = settingsTitle;
+
+  _openedInAnotherWindowItem.trailingDetailText =
+      l10n_util::GetNSString(IDS_IOS_SETTING_OPENED_IN_ANOTHER_WINDOW);
+  _openedInAnotherWindowItem.accessibilityTraits |=
+      UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled;
+  _openedInAnotherWindowItem.accessibilityIdentifier =
+      kSettingsDefaultAppsCellId;
+  return _openedInAnotherWindowItem;
+}
+
+- (SettingsSwitchItem*)linkPreviewItem {
+  if (!_linkPreviewItem) {
+    _linkPreviewItem = [[SettingsSwitchItem alloc]
+        initWithType:ItemTypeSettingsShowLinkPreview];
+
+    _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
+    _linkPreviewItem.on = [self.linkPreviewEnabled value];
+    _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
+  }
+  return _linkPreviewItem;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  if (itemType == ItemTypeSettingsShowLinkPreview) {
+    SettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(showLinkPreviewSwitchToggled:)
+                    forControlEvents:UIControlEventValueChanged];
+  }
+  return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -198,62 +274,85 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeSettingsBlockPopups: {
-      UIViewController* controller = [[BlockPopupsTableViewController alloc]
-          initWithBrowserState:_browserState];
-      [self.navigationController pushViewController:controller animated:YES];
-      break;
-    }
-    case ItemTypeSettingsTranslate: {
-      TranslateTableViewController* controller =
-          [[TranslateTableViewController alloc]
-              initWithPrefs:_browserState->GetPrefs()];
+      BlockPopupsTableViewController* controller =
+          [[BlockPopupsTableViewController alloc]
+              initWithBrowserState:_browserState];
       controller.dispatcher = self.dispatcher;
       [self.navigationController pushViewController:controller animated:YES];
       break;
     }
     case ItemTypeSettingsComposeEmail: {
+      if (openedMailTo)
+        break;
+
       MailtoHandlerProvider* provider =
-          ios::GetChromeBrowserProvider()->GetMailtoHandlerProvider();
+          ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
       UIViewController* controller =
           provider->MailtoHandlerSettingsController();
-      if (controller)
+      if (controller) {
         [self.navigationController pushViewController:controller animated:YES];
+        openedMailTo = YES;
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:kMailToInstanceChanged
+                          object:nil];
+      }
       break;
     }
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  // _translateDetailItem is lazily initialized when -translateItem is called.
-  // TODO(crbug.com/1008433): If kLanguageSettings feature is enabled,
-  // -translateItem is not called, leaving _translateDetailItem uninitialized.
-  // This logic can be simplified when kLanguageSettings feature flag is
-  // removed (when feature is fully enabled).
-  if (_translateDetailItem && preferenceName == prefs::kOfferTranslateEnabled) {
-    BOOL enabled = _browserState->GetPrefs()->GetBoolean(preferenceName);
-    NSString* subtitle = enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                 : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    _translateDetailItem.detailText = subtitle;
-    [self reconfigureCellsForItems:@[ _translateDetailItem ]];
-  }
-}
-
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  DCHECK_EQ(observableBoolean, _disablePopupsSetting);
+  if (observableBoolean == _disablePopupsSetting) {
+    NSString* subtitle = [_disablePopupsSetting value]
+                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    // Update the item.
+    _blockPopupsDetailItem.detailText = subtitle;
 
-  NSString* subtitle = [_disablePopupsSetting value]
-                           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  // Update the item.
-  _blockPopupsDetailItem.detailText = subtitle;
+    // Update the cell.
+    [self reconfigureCellsForItems:@[ _blockPopupsDetailItem ]];
+  } else if (observableBoolean == self.linkPreviewEnabled) {
+    self.linkPreviewItem.on = [self.linkPreviewEnabled value];
+    [self reconfigureCellsForItems:@[ self.linkPreviewItem ]];
+  } else {
+    NOTREACHED();
+  }
+}
 
-  // Update the cell.
-  [self reconfigureCellsForItems:@[ _blockPopupsDetailItem ]];
+#pragma mark - Switch Actions
+
+- (void)showLinkPreviewSwitchToggled:(UISwitch*)sender {
+  BOOL newSwitchValue = sender.isOn;
+  self.linkPreviewItem.on = newSwitchValue;
+  [self.linkPreviewEnabled setValue:newSwitchValue];
+}
+
+#pragma mark - Private
+
+// Called to reload data when another window has mailTo settings opened.
+- (void)mailToControllerChanged {
+  [self reloadData];
+}
+
+// Verifies using the navigation stack if this is a return from mailTo settings
+// and this instance should reset |openedMailTo|.
+- (void)checkMailToOwnership {
+  // Since this doesn't know or have access to the mailTo controller code,
+  // it detects if the flow is coming back from it, based on the navigation
+  // bar stack items.
+  NSString* top = self.navigationController.navigationBar.topItem.title;
+  MailtoHandlerProvider* provider =
+      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
+  NSString* mailToTitle = provider->MailtoHandlerSettingsTitle();
+  if ([top isEqualToString:mailToTitle]) {
+    openedMailTo = NO;
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kMailToInstanceChanged
+                      object:nil];
+  }
 }
 
 @end

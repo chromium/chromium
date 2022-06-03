@@ -32,3 +32,34 @@ def DaysAgoToTimestamp(num_days):
   """Return an ISO formatted timestamp for a number of days ago."""
   timestamp = datetime.datetime.utcnow() - datetime.timedelta(days=num_days)
   return timestamp.isoformat()
+
+
+def MergeIndexRanges(section_list):
+  """Given a list of (begin, end) ranges, return the merged ranges.
+
+    Args:
+      range_list: a list of index ranges as (begin, end)
+    Return:
+      a list of merged index ranges.
+  """
+  actions = []
+  for section in section_list:
+    if section[0] >= section[1]:
+      raise ValueError('Invalid range: (%d, %d)', section[0], section[1])
+    actions.append((section[0], 1))
+    actions.append((section[1], -1))
+
+  actions.sort(key=lambda x: (x[0], -x[1]))
+
+  merged_indexes = []
+  status = 0
+  start = -1
+  for action in actions:
+    if start == -1:
+      start = action[0]
+    status += action[1]
+    if status == 0:
+      merged_indexes.append((start, action[0]))
+      start = -1
+
+  return merged_indexes

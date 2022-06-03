@@ -9,6 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "dbus/message.h"
 
@@ -17,7 +18,7 @@ namespace dbus {
 namespace {
 
 // Returns whether |value| is exactly representable by double or not.
-template<typename T>
+template <typename T>
 bool IsExactlyRepresentableByDouble(T value) {
   return value == static_cast<T>(static_cast<double>(value));
 }
@@ -59,7 +60,8 @@ bool PopDictionaryEntries(MessageReader* reader,
     std::unique_ptr<base::Value> value = PopDataAsValue(&entry_reader);
     if (!value)
       return false;
-    dictionary_value->SetWithoutPathExpansion(key_string, std::move(value));
+    dictionary_value->SetKey(key_string,
+                             base::Value::FromUniquePtrValue(std::move(value)));
   }
   return true;
 }
@@ -135,8 +137,8 @@ std::unique_ptr<base::Value> PopDataAsValue(MessageReader* reader) {
     case Message::INT64: {
       int64_t value = 0;
       if (reader->PopInt64(&value)) {
-        DLOG_IF(WARNING, !IsExactlyRepresentableByDouble(value)) <<
-            value << " is not exactly representable by double";
+        DLOG_IF(WARNING, !IsExactlyRepresentableByDouble(value))
+            << value << " is not exactly representable by double";
         result = std::make_unique<base::Value>(static_cast<double>(value));
       }
       break;
@@ -144,8 +146,8 @@ std::unique_ptr<base::Value> PopDataAsValue(MessageReader* reader) {
     case Message::UINT64: {
       uint64_t value = 0;
       if (reader->PopUint64(&value)) {
-        DLOG_IF(WARNING, !IsExactlyRepresentableByDouble(value)) <<
-            value << " is not exactly representable by double";
+        DLOG_IF(WARNING, !IsExactlyRepresentableByDouble(value))
+            << value << " is not exactly representable by double";
         result = std::make_unique<base::Value>(static_cast<double>(value));
       }
       break;
@@ -217,31 +219,19 @@ std::unique_ptr<base::Value> PopDataAsValue(MessageReader* reader) {
 void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::BOOLEAN: {
-      bool bool_value = false;
-      bool success = value.GetAsBoolean(&bool_value);
-      DCHECK(success);
-      writer->AppendBool(bool_value);
+      writer->AppendBool(value.GetBool());
       break;
     }
     case base::Value::Type::INTEGER: {
-      int int_value = 0;
-      bool success = value.GetAsInteger(&int_value);
-      DCHECK(success);
-      writer->AppendInt32(int_value);
+      writer->AppendInt32(value.GetInt());
       break;
     }
     case base::Value::Type::DOUBLE: {
-      double double_value = 0;
-      bool success = value.GetAsDouble(&double_value);
-      DCHECK(success);
-      writer->AppendDouble(double_value);
+      writer->AppendDouble(value.GetDouble());
       break;
     }
     case base::Value::Type::STRING: {
-      std::string string_value;
-      bool success = value.GetAsString(&string_value);
-      DCHECK(success);
-      writer->AppendString(string_value);
+      writer->AppendString(value.GetString());
       break;
     }
     default:
@@ -265,8 +255,8 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
       value.GetAsDictionary(&dictionary);
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("{sv}", &array_writer);
-      for (base::DictionaryValue::Iterator iter(*dictionary);
-           !iter.IsAtEnd(); iter.Advance()) {
+      for (base::DictionaryValue::Iterator iter(*dictionary); !iter.IsAtEnd();
+           iter.Advance()) {
         dbus::MessageWriter dict_entry_writer(nullptr);
         array_writer.OpenDictEntry(&dict_entry_writer);
         dict_entry_writer.AppendString(iter.key());
@@ -281,8 +271,8 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
       value.GetAsList(&list);
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("v", &array_writer);
-      for (const auto& value : *list) {
-        AppendValueDataAsVariant(&array_writer, value);
+      for (const auto& value_in_list : list->GetList()) {
+        AppendValueDataAsVariant(&array_writer, value_in_list);
       }
       writer->CloseContainer(&array_writer);
       break;

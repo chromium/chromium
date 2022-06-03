@@ -6,13 +6,13 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_MOJOM_TRAITS_H_
 
 #include "services/service_manager/public/cpp/interface_provider_spec.h"
-#include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
+#include "services/service_manager/public/mojom/interface_provider_spec.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
-    StructTraits<service_manager::mojom::InterfaceProviderSpec::DataView,
+    StructTraits<service_manager::mojom::InterfaceProviderSpecDataView,
                  service_manager::InterfaceProviderSpec> {
   static const std::map<service_manager::Capability,
                         service_manager::InterfaceSet>&
@@ -32,7 +32,7 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
 
 template <>
 struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
-    StructTraits<service_manager::mojom::InterfaceSet::DataView,
+    StructTraits<service_manager::mojom::InterfaceSetDataView,
                  service_manager::InterfaceSet> {
   static std::vector<std::string> interfaces(
       const service_manager::InterfaceSet& spec) {
@@ -57,7 +57,7 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
 
 template <>
 struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
-    StructTraits<service_manager::mojom::CapabilitySet::DataView,
+    StructTraits<service_manager::mojom::CapabilitySetDataView,
                  service_manager::CapabilitySet> {
   static std::vector<std::string> capabilities(
       const service_manager::CapabilitySet& spec) {

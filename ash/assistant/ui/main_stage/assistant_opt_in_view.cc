@@ -10,11 +10,13 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -37,7 +39,7 @@ views::StyledLabel::RangeStyleInfo CreateStyleInfo(
   return style;
 }
 
-base::string16 GetAction(int consent_status) {
+std::u16string GetAction(int consent_status) {
   return consent_status ==
                  chromeos::assistant::prefs::ConsentStatus::kUnauthorized
              ? l10n_util::GetStringUTF16(
@@ -49,13 +51,19 @@ base::string16 GetAction(int consent_status) {
 
 class AssistantOptInContainer : public views::Button {
  public:
-  explicit AssistantOptInContainer(views::ButtonListener* listener)
-      : views::Button(listener) {
+  METADATA_HEADER(AssistantOptInContainer);
+
+  explicit AssistantOptInContainer(views::Button::PressedCallback callback)
+      : views::Button(callback) {
     constexpr float kHighlightOpacity = 0.06f;
     SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
         SkColorSetA(SK_ColorBLACK, 0xff * kHighlightOpacity),
         kPreferredHeightDip / 2));
   }
+
+  AssistantOptInContainer(const AssistantOptInContainer&) = delete;
+
+  AssistantOptInContainer& operator=(const AssistantOptInContainer) = delete;
 
   ~AssistantOptInContainer() override = default;
 
@@ -79,10 +87,10 @@ class AssistantOptInContainer : public views::Button {
     flags.setColor(gfx::kGoogleBlue500);
     canvas->DrawRoundRect(GetContentsBounds(), height() / 2, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInContainer);
 };
+
+BEGIN_METADATA(AssistantOptInContainer, views::Button)
+END_METADATA
 
 }  // namespace
 
@@ -99,21 +107,8 @@ AssistantOptInView::~AssistantOptInView() {
   AssistantState::Get()->RemoveObserver(this);
 }
 
-const char* AssistantOptInView::GetClassName() const {
-  return "AssistantOptInView";
-}
-
 void AssistantOptInView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
-}
-
-void AssistantOptInView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  label_->SizeToFit(width());
-}
-
-void AssistantOptInView::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  delegate_->OnOptInButtonPressed();
 }
 
 void AssistantOptInView::OnAssistantConsentStatusChanged(int consent_status) {
@@ -126,33 +121,29 @@ void AssistantOptInView::InitLayout() {
           views::BoxLayout::Orientation::kHorizontal));
 
   layout_manager->set_cross_axis_alignment(
-      app_list_features::IsAssistantLauncherUIEnabled()
-          ? views::BoxLayout::CrossAxisAlignment::kCenter
-          : views::BoxLayout::CrossAxisAlignment::kEnd);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
 
   // Container.
-  container_ = new AssistantOptInContainer(/*listener=*/this);
+  container_ = AddChildView(
+      std::make_unique<AssistantOptInContainer>(base::BindRepeating(
+          &AssistantOptInView::OnButtonPressed, base::Unretained(this))));
 
   layout_manager =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, kPaddingDip)));
+          gfx::Insets(0, assistant::ui::GetHorizontalPadding())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(container_);
-
   // Label.
-  label_ = new views::StyledLabel(base::string16(), /*listener=*/nullptr);
+  label_ = container_->AddChildView(std::make_unique<views::StyledLabel>());
+  label_->SetID(AssistantViewID::kOptInViewStyledLabel);
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-
-  container_->AddChildView(label_);
-  container_->SetFocusForPlatform();
 
   UpdateLabel(AssistantState::Get()->consent_status().value_or(
       chromeos::assistant::prefs::ConsentStatus::kUnknown));
@@ -160,11 +151,11 @@ void AssistantOptInView::InitLayout() {
 
 void AssistantOptInView::UpdateLabel(int consent_status) {
   // First substitution string: "Unlock more Assistant features."
-  const base::string16 unlock_features =
+  const std::u16string unlock_features =
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_OPT_IN_UNLOCK_MORE_FEATURES);
 
   // Second substitution string specifies the action to be taken.
-  const base::string16 action = GetAction(consent_status);
+  const std::u16string action = GetAction(consent_status);
 
   // Set the text, having replaced placeholders in the opt in prompt with
   // substitution strings and caching their offset positions for styling.
@@ -191,5 +182,12 @@ void AssistantOptInView::UpdateLabel(int consent_status) {
   container_->Layout();
   container_->SchedulePaint();
 }
+
+void AssistantOptInView::OnButtonPressed() {
+  delegate_->OnOptInButtonPressed();
+}
+
+BEGIN_METADATA(AssistantOptInView, views::View)
+END_METADATA
 
 }  // namespace ash

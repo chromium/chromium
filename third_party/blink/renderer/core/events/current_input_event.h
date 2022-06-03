@@ -22,7 +22,6 @@ class CORE_EXPORT CurrentInputEvent {
   static const WebInputEvent* Get() { return current_input_event_; }
 
  private:
-  friend class WebViewImpl;
   friend class WebFrameWidgetImpl;
   friend class NavigationPolicyTest;
 
@@ -31,4 +30,4 @@ class CORE_EXPORT CurrentInputEvent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_CURRENT_INPUT_EVENT_H_

@@ -82,14 +82,7 @@ class CAPTURE_EXPORT FakeVideoCaptureDeviceFactory
   // VideoCaptureDeviceFactory implementation:
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
-  void GetDeviceDescriptors(
-      VideoCaptureDeviceDescriptors* device_descriptors) override;
-  void GetSupportedFormats(
-      const VideoCaptureDeviceDescriptor& device_descriptor,
-      VideoCaptureFormats* supported_formats) override;
-  void GetCameraLocationsAsync(
-      std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
-      DeviceDescriptorsCallback result_callback) override;
+  void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
   int number_of_devices() {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -97,6 +90,9 @@ class CAPTURE_EXPORT FakeVideoCaptureDeviceFactory
   }
 
  private:
+  // Helper used in GetDevicesInfo().
+  VideoCaptureFormats GetSupportedFormats(const std::string& device_id);
+
   std::vector<FakeVideoCaptureDeviceSettings> devices_config_;
 };
 

@@ -18,6 +18,11 @@ namespace multidevice_setup {
 class PrivilegedHostDeviceSetterBase
     : public mojom::PrivilegedHostDeviceSetter {
  public:
+  PrivilegedHostDeviceSetterBase(const PrivilegedHostDeviceSetterBase&) =
+      delete;
+  PrivilegedHostDeviceSetterBase& operator=(
+      const PrivilegedHostDeviceSetterBase&) = delete;
+
   ~PrivilegedHostDeviceSetterBase() override;
 
   void BindReceiver(
@@ -28,8 +33,6 @@ class PrivilegedHostDeviceSetterBase
 
  private:
   mojo::ReceiverSet<mojom::PrivilegedHostDeviceSetter> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivilegedHostDeviceSetterBase);
 };
 
 }  // namespace multidevice_setup

@@ -27,7 +27,6 @@ const TimeColumnType = {
   AMPM: 5,
 };
 
-
 /**
  * Supported label types.
  * @enum {number}
@@ -63,7 +62,7 @@ class Time {
     this.minute_ = minute;
     this.second_ = second;
     this.millisecond_ = millisecond;
-  }
+  };
 
   next = (columnType) => {
     switch (columnType) {
@@ -210,15 +209,15 @@ DateTime.ISOStringRegExp = /^(\d+)-(\d+)-(\d+)T(\d+):(\d+):?(\d*).?(\d*)/;
 
 /**
  * TimePicker: Custom element providing a time picker implementation.
- *             TimePicker contains 2 parts:
- *                 - column container
- *                 - submission controls
  */
 class TimePicker extends HTMLElement {
   constructor(config) {
     super();
 
     this.className = TimePicker.ClassName;
+    if (global.params.isBorderTransparent) {
+      this.style.borderColor = 'transparent';
+    }
     this.initializeFromConfig_(config);
 
     this.timeColumns_ = new TimeColumns(this);
@@ -226,10 +225,8 @@ class TimePicker extends HTMLElement {
 
     if (config.mode == 'time') {
       // TimePicker doesn't handle the submission when used for non-time types.
-      this.submissionControls_ = new SubmissionControls(
-          this.onSubmitButtonClick_, this.onCancelButtonClick_);
-      this.append(this.submissionControls_);
       this.addEventListener('keydown', this.onKeyDown_);
+      this.addEventListener('click', this.onClick_);
     }
 
     window.addEventListener('resize', this.onWindowResize_, {once: true});
@@ -237,48 +234,83 @@ class TimePicker extends HTMLElement {
 
   initializeFromConfig_ = (config) => {
     const initialSelection = parseDateTimeString(config.currentValue, 'time');
-    this.selectedTime_ =
+    this.initialSelectedTime_ =
         initialSelection ? initialSelection : Time.currentTime();
+    this.hadValidValueWhenOpened_ = (initialSelection != null);
     this.hasSecond_ = config.hasSecond;
     this.hasMillisecond_ = config.hasMillisecond;
     this.hasAMPM_ = config.hasAMPM;
-  };
-
-  onSubmitButtonClick_ = () => {
-    const selectedValue = this.selectedValue;
-    window.setTimeout(function() {
-      window.pagePopupController.setValueAndClosePopup(0, selectedValue);
-    }, 100);
-  };
-
-  onCancelButtonClick_ = () => {
-    window.pagePopupController.closePopup();
+    this.initialFocusedFieldIndex_ = config.focusedFieldIndex || 0;
   };
 
   onWindowResize_ = (event) => {
-    // Scroll columns to the second half to allow scrolling up.
-    this.timeColumns_.scrollColumnsToMiddle();
-    this.timeColumns_.firstChild.focus();
+    this.timeColumns_.scrollColumnsToSelectedCells();
+    if (!this.focusOnFieldIndex(this.initialFocusedFieldIndex_))
+      this.timeColumns_.firstChild.focus();
+  };
+
+  /** Focus on given index if valid. Return true if so. */
+  focusOnFieldIndex = (index) => {
+    if (index >= 0 && index < this.timeColumns_.children.length) {
+      this.timeColumns_.children[index].focus();
+      return true;
+    }
+    return false
   };
 
   onKeyDown_ = (event) => {
     switch (event.key) {
       case 'Enter':
-        this.submissionControls_.submitButton.click();
+        window.pagePopupController.setValueAndClosePopup(0, this.selectedValue);
         break;
       case 'Escape':
-        this.submissionControls_.cancelButton.click();
+        if (this.selectedValue ===
+            this.initialSelectedTime.toString(
+                this.hasSecond, this.hasMillisecond)) {
+          window.pagePopupController.closePopup();
+        } else {
+          this.resetToInitialValue();
+          window.pagePopupController.setValue(
+              this.hadValidValueWhenOpened ? this.selectedValue : '');
+        }
+        break;
+      case 'ArrowUp':
+      case 'ArrowDown':
+        window.pagePopupController.setValue(this.selectedValue);
+        event.stopPropagation();
+        event.preventDefault();
+        break;
+      case 'Home':
+      case 'End':
+        window.pagePopupController.setValue(this.selectedValue);
+        event.stopPropagation();
+        // Prevent an attempt to scroll to the end of
+        // of an infinitely looping column.
+        event.preventDefault();
         break;
     }
   };
+
+  onClick_ = (event) => {
+    window.pagePopupController.setValue(this.selectedValue);
+  };
+
+  resetToInitialValue = () => {
+    this.timeColumns_.resetToInitialValues();
+    this.timeColumns_.scrollColumnsToSelectedCells();
+  }
 
   get selectedValue() {
     return this.timeColumns_.selectedValue().toString(
         this.hasSecond, this.hasMillisecond);
   }
 
-  get selectedTime() {
-    return this.selectedTime_;
+  get initialSelectedTime() {
+    return this.initialSelectedTime_;
+  }
+
+  get hadValidValueWhenOpened() {
+    return this.hadValidValueWhenOpened_;
   }
 
   get hasSecond() {
@@ -304,13 +336,9 @@ class TimePicker extends HTMLElement {
   get timeColumns() {
     return this.timeColumns_;
   }
-
-  get submissionControls() {
-    return this.submissionControls_;
-  }
 }
 TimePicker.ClassName = 'time-picker';
-TimePicker.Height = 300;
+TimePicker.Height = 260;
 TimePicker.ColumnWidth = 56;
 TimePicker.BorderWidth = 1;
 window.customElements.define('time-picker', TimePicker);
@@ -379,15 +407,21 @@ class TimeColumns extends HTMLElement {
     return new Time(hour, minute, second, millisecond);
   };
 
-  scrollColumnsToMiddle = () => {
-    this.hourColumn_.scrollTop = this.hourColumn_.scrollHeight / 2;
-    this.minuteColumn_.scrollTop = this.minuteColumn_.scrollHeight / 2;
+  resetToInitialValues =
+      () => {
+        Array.prototype.forEach.call(this.children, (column) => {
+          column.resetToInitialValue();
+        });
+      }
+
+  scrollColumnsToSelectedCells = () => {
+    this.hourColumn_.scrollToSelectedCell();
+    this.minuteColumn_.scrollToSelectedCell();
     if (this.secondColumn_) {
-      this.secondColumn_.scrollTop = this.secondColumn_.scrollHeight / 2;
+      this.secondColumn_.scrollToSelectedCell();
     }
     if (this.millisecondColumn_) {
-      this.millisecondColumn_.scrollTop =
-          this.millisecondColumn_.scrollHeight / 2;
+      this.millisecondColumn_.scrollToSelectedCell();
     }
   }
 }
@@ -405,10 +439,24 @@ class TimeColumn extends HTMLUListElement {
     this.className = TimeColumn.ClassName;
     this.tabIndex = 0;
     this.columnType_ = columnType;
+    this.setAttribute('role', 'listbox');
+    if (this.columnType_ === TimeColumnType.HOUR) {
+      this.setAttribute('aria-label', global.params.axHourLabel);
+    } else if (this.columnType_ === TimeColumnType.MINUTE) {
+      this.setAttribute('aria-label', global.params.axMinuteLabel);
+    } else if (this.columnType_ === TimeColumnType.SECOND) {
+      this.setAttribute('aria-label', global.params.axSecondLabel);
+    } else if (this.columnType_ === TimeColumnType.MILLISECOND) {
+      this.setAttribute('aria-label', global.params.axMillisecondLabel);
+    } else {
+      this.setAttribute('aria-label', global.params.axAmPmLabel);
+    }
+
     if (this.columnType_ == TimeColumnType.AMPM) {
       this.createAndInitializeAMPMCells_(timePicker);
     } else {
       this.createAndInitializeCells_(timePicker);
+      this.setupScrollHandler_();
     }
 
     this.addEventListener('click', this.onClick_);
@@ -417,23 +465,156 @@ class TimeColumn extends HTMLUListElement {
 
   createAndInitializeCells_ = (timePicker) => {
     const totalCells = Time.numberOfValues(this.columnType_, timePicker.hasAMPM);
-    let currentTime = timePicker.selectedTime.clone();
-    let cells = [];
-    let duplicateCells = [];
-    // In order to support a continuous looping navigation for up/down arrows,
-    // the initial list of cells is doubled and middleTimeCell is kept
-    // to inform where the duplicated cells begin.
-    for (let i = 0; i < totalCells; i++) {
-      let value = currentTime.value(this.columnType_, timePicker.hasAMPM);
-      let timeCell = new TimeCell(value, localizeNumber(value));
-      let duplicatedTimeCell = new TimeCell(value, localizeNumber(value));
-      cells.push(timeCell);
-      duplicateCells.push(duplicatedTimeCell);
-      currentTime.next(this.columnType_);
+    let currentTime = timePicker.initialSelectedTime.clone();
+
+    // The granularity of millisecond cells is once cell per 100ms.
+    // But, we want to have a cell with the exact millisecond value of the
+    // in-page control, so we'll replace the millisecond cell closest to that
+    // value with the exact value.  We do that by figuring out here which of
+    // the cells will be the closest one here, and then matching against that
+    // one in the subsequent loop.
+    let roundedMillisecondValue = 0;
+    if (this.columnType_ === TimeColumnType.MILLISECOND) {
+      let millisecondValue =
+          currentTime.value(TimeColumnType.MILLISECOND, timePicker.hasAMPM);
+      roundedMillisecondValue =
+          (100 * Math.floor((Number(millisecondValue) + 50.0) / 100.0)) % 1000;
     }
-    this.selectedTimeCell = duplicateCells[0];
-    this.middleTimeCell_ = duplicateCells[0];
-    this.append(...cells, ...duplicateCells);
+
+    let time = new Time(1, 1, 1, 100);
+    let cells = [];
+    let initialCellIndex = -1;
+    for (let i = 0; i < totalCells; i++) {
+      let value = time.value(this.columnType_, timePicker.hasAMPM);
+
+      if (this.columnType_ === TimeColumnType.MILLISECOND &&
+          Number(value) === roundedMillisecondValue) {
+        // Set this cell to the exact ms value of the in-page control
+        value =
+            currentTime.value(TimeColumnType.MILLISECOND, timePicker.hasAMPM);
+        initialCellIndex = i;
+      } else if (
+          time.value(this.columnType_, timePicker.hasAMPM) ===
+          currentTime.value(this.columnType_, timePicker.hasAMPM)) {
+        initialCellIndex = i;
+      }
+
+      let timeCell = new TimeCell(value, localizeNumber(value));
+      cells.push(timeCell);
+
+      timeCell.initialOffsetTop = TimeColumn.CELL_HEIGHT * i;
+      timeCell.style.top = `${TimeColumn.SCROLL_OFFSET}px`;
+
+      time.next(this.columnType_);
+    }
+    this.selectedTimeCell = this.initialTimeCell_ = cells[initialCellIndex];
+    this.cellsInLayoutOrder = cells;
+    this.append(...cells);
+  };
+
+  /*
+  * Create a scroll handler that implements infinite looping scroll by
+  * rotating TimeCells up/down so that there is always at least one cell
+  * offscreen in the direction of the scroll.  This activity should be
+  * invisible to the user.
+  */
+  setupScrollHandler_ = () => {
+    let lastScrollPosition = 0;
+    let upcomingSnapToCellEdge = null;
+    this.addEventListener('scroll', (event) => {
+      let isGoingDown = (this.scrollTop > lastScrollPosition);
+      lastScrollPosition = this.scrollTop;
+
+      // Rotate cells down until there is one cell beyond the bottom
+      // of the visible scroller area.
+      while (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1]
+                     .offsetTop -
+                 this.scrollTop - this.clientHeight <
+             TimeColumn.CELL_HEIGHT) {
+        this.rotateCells_(
+            /*topToBottom*/ true);
+      }
+
+      // Rotate cells up until there is one cell beyond the top
+      // of the visible scroller area.
+      while (this.scrollTop - this.cellsInLayoutOrder[0].offsetTop <
+             TimeColumn.CELL_HEIGHT * 2) {
+        this.rotateCells_(
+            /*topToBottom*/ false);
+      }
+
+      // Snap the scroll amount to the nearest TimeCell top edge 1 second
+      // after the user has stopped scrolling.  This would be done with
+      // CSS scroll-snap-align, but it interferes with this scroll handler
+      // and causes jittery scrolling.
+      window.clearTimeout(upcomingSnapToCellEdge);
+      upcomingSnapToCellEdge =
+          window.setTimeout(() => {this.snapToCellEdge_(isGoingDown)}, 1000);
+    });
+  };
+
+  /*
+  * Scroll the column so that the top is aligned with the top edge of the
+  * nearest TimeCell in the given direction.
+  */
+  snapToCellEdge_ = (isGoingDown) => {
+    let offsetFromCellEdge =
+        (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1].offsetTop -
+         this.scrollTop) %
+        TimeColumn.CELL_HEIGHT;
+    if (isGoingDown) {
+      this.scrollTop += offsetFromCellEdge;
+    } else {
+      if (offsetFromCellEdge != 0) {
+        this.scrollTop -= TimeColumn.CELL_HEIGHT - offsetFromCellEdge;
+      }
+    }
+  };
+
+  // Ideally we would have truly infinite scrolling in both directions.
+  // However, the platform does not allow scrolling into negative scroll
+  // offsets.  So, we start the column at a large positive scroll so that
+  // the column will be unlikely to hit the top during normal use.
+  static SCROLL_OFFSET = 100000;
+  static CELL_HEIGHT = 36;  // Height of one TimeCell, including border
+
+  // Using position:absolute for TimeCells seems like the natural choice,
+  // but absolutely positioned children don't cause the TimeColumn scroll
+  // container to expand to hold the cells, so they fall off the end of
+  // the popup.  Instead, we use relative positioning and use these
+  // helpers to convert to an "absolute" position that is easier to reason
+  // about when manipulating the layout position of the TimeCells.
+  static getCellAbsolutePosition = (cell) => {
+    let cellOffset = parseInt(cell.style.top.substring(
+        0, cell.style.top.length - 2));  // Chop off the 'px'
+    return (cellOffset + cell.initialOffsetTop);
+  };
+  static setCellAbsolutePosition = (cell, absolutePosition) => {
+    cell.style.top = `${absolutePosition - cell.initialOffsetTop}px`;
+  };
+
+  // Take the top/bottom TimeCell in this column and move it to the
+  // bottom/top.  This should only be done for offscreen cells so that
+  // it is invisible to the user -- but it ensures that the cells will
+  // always be visible wherever the user scrolls.
+  rotateCells_ = (topToBottom) => {
+    if (topToBottom) {
+      let topCell = this.cellsInLayoutOrder.shift();
+      let bottomCell =
+          this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1];
+      let bottomCellAbsoluteOffset =
+          TimeColumn.getCellAbsolutePosition(bottomCell);
+      TimeColumn.setCellAbsolutePosition(
+          topCell, bottomCellAbsoluteOffset + TimeColumn.CELL_HEIGHT);
+      this.cellsInLayoutOrder.push(topCell);
+    } else {
+      let topCell = this.cellsInLayoutOrder[0];
+      let bottomCell = this.cellsInLayoutOrder.pop();
+      let absoluteTopCellOffset = TimeColumn.getCellAbsolutePosition(topCell);
+      TimeColumn.setCellAbsolutePosition(
+          bottomCell, absoluteTopCellOffset - TimeColumn.CELL_HEIGHT);
+      this.cellsInLayoutOrder.unshift(bottomCell);
+    }
   };
 
   createAndInitializeAMPMCells_ = (timePicker) => {
@@ -444,7 +625,7 @@ class TimeColumn extends HTMLUListElement {
       cells.push(timeCell);
     }
 
-    if (timePicker.selectedTime.isAM()) {
+    if (timePicker.initialSelectedTime.isAM()) {
       this.append(cells[Label.AM], cells[Label.PM]);
       this.selectedTimeCell = cells[Label.AM];
     } else {
@@ -458,40 +639,53 @@ class TimeColumn extends HTMLUListElement {
   };
 
   /**
-   * Continuous looping navigation for up/down arrows is supported by:
-   *   - moving for ArrowUp to previous cell and for topmost cell which
-   * has no previous, we are moving to the last cell from the first list
-   *   - moving for ArrowDown to next cell and for the last duplicated cell
-   * which has no next, we are moving to the first cell from the duplicated list
+   * Continuous looping navigation for up/down arrows and scrolling is
+   * supported by rotating the layout positions of the TimeCells.  This
+   * is done in a scroll event handler and the following keydown handler.
+   * Cells are rotated in before they are reached by the visible part of
+   * the scroller, so the user just sees an infinitely looping column.
    */
   onKeyDown_ = (event) => {
-    let eventHandled = false;
     switch (event.key) {
       case 'ArrowUp':
-        const previousTimeCell = this.selectedTimeCell.previousSibling;
-        if (previousTimeCell) {
-          this.selectedTimeCell = previousTimeCell;
-          previousTimeCell.scrollIntoViewIfNeeded(false);
-        } else if (this.columnType != TimeColumnType.AMPM) {
-          // move from the topmost cell to the last cell (the last cell is
-          // the first one before the duplicated list).
-          this.selectedTimeCell = this.middleTimeCell.previousSibling;
-          this.selectedTimeCell.scrollIntoView();
+        const previousTimeCell = this.selectedTimeCell.previousSibling ?
+            this.selectedTimeCell.previousSibling :
+            this.lastElementChild;
+
+        if (this.scrollTop === 0 && previousTimeCell.offsetTop <= 0) {
+          // If the user somehow made it all the way to the top of the
+          // scroller, stop going up and rotating cells into negative
+          // offsets.  This should not be a normal scenario.
+          break;
         }
-        eventHandled = true;
+
+        // Ensure that we don't run out of cells ahead of the selected cell in
+        // the event that the scroll event handler can't keep up.  This can
+        // happen e.g. if the user holds down the arrow key.
+        if (this.columnType_ !== TimeColumnType.AMPM &&
+            this.selectedTimeCell === this.cellsInLayoutOrder[0]) {
+          this.rotateCells_(/*topToBottom*/ false);
+        }
+
+        this.selectedTimeCell = previousTimeCell;
+        this.selectedTimeCell.scrollIntoViewIfNeeded(false);
         break;
       case 'ArrowDown':
-        const nextTimeCell = this.selectedTimeCell.nextSibling;
-        if (nextTimeCell) {
-          this.selectedTimeCell = nextTimeCell;
-          nextTimeCell.scrollIntoViewIfNeeded(false);
-        } else if (this.columnType != TimeColumnType.AMPM) {
-          // move from the last duplicated cell to the first cell
-          // of the duplicated list.
-          this.selectedTimeCell = this.middleTimeCell;
-          this.selectedTimeCell.scrollIntoView(false);
+        const nextTimeCell = this.selectedTimeCell.nextSibling ?
+            this.selectedTimeCell.nextSibling :
+            this.firstElementChild;
+
+        // Ensure that we don't run out of cells ahead of the selected cell in
+        // the event that the scroll event handler can't keep up.  This can
+        // happen e.g. if the user holds down the arrow key.
+        if (this.columnType_ !== TimeColumnType.AMPM &&
+            this.selectedTimeCell ===
+                this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1]) {
+          this.rotateCells_(/*topToBottom*/ true);
         }
-        eventHandled = true;
+
+        this.selectedTimeCell = nextTimeCell;
+        this.selectedTimeCell.scrollIntoViewIfNeeded(false);
         break;
       case 'ArrowLeft':
         const previousTimeColumn = this.previousSibling;
@@ -505,13 +699,23 @@ class TimeColumn extends HTMLUListElement {
           nextTimeColumn.focus();
         }
         break;
-    }
-
-    if (eventHandled) {
-      event.stopPropagation();
-      event.preventDefault();
+      case 'Home':
+        this.setToMinValue();
+        this.scrollToSelectedCell();
+        break;
+      case 'End':
+        this.setToMaxValue();
+        this.scrollToSelectedCell();
+        break;
     }
   };
+
+  scrollToSelectedCell = (cell) => {
+    while(this.cellsInLayoutOrder[1] != this.selectedTimeCell) {
+      this.rotateCells_(/*topToBottom*/true);
+    }
+    this.scrollTop = this.selectedTimeCell.offsetTop;
+  }
 
   get selectedTimeCell() {
     return this.selectedTimeCell_;
@@ -520,14 +724,53 @@ class TimeColumn extends HTMLUListElement {
   set selectedTimeCell(timeCell) {
     if (this.selectedTimeCell_) {
       this.selectedTimeCell_.classList.remove('selected');
+      this.selectedTimeCell_.removeAttribute('aria-selected');
     }
     this.selectedTimeCell_ = timeCell;
+    this.setAttribute('aria-activedescendant', timeCell.id);
     this.selectedTimeCell_.classList.add('selected');
+    this.selectedTimeCell_.setAttribute('aria-selected', 'true');
   }
 
-  get middleTimeCell() {
-    return this.middleTimeCell_;
-  }
+  resetToInitialValue = () => {
+    if (this.columnType_ == TimeColumnType.AMPM) {
+      this.selectedTimeCell = this.firstChild;
+    } else {
+      this.selectedTimeCell = this.initialTimeCell_;
+    }
+  };
+
+  setToMinValue = () => {
+    if (this.columnType_ == TimeColumnType.AMPM) {
+      this.selectedTimeCell = this.firstChild;
+      const isAM = this.selectedTimeCell.textContent ==
+          global.params.ampmLabels[Label.AM];
+      if (!isAM)
+        this.selectedTimeCell = this.lastChild;
+    } else {
+      this.selectedTimeCell = this.firstChild;
+      for (let timeCell of this.children) {
+        if (timeCell.value < this.selectedTimeCell.value)
+          this.selectedTimeCell = timeCell;
+      }
+    }
+  };
+
+  setToMaxValue = () => {
+    if (this.columnType_ == TimeColumnType.AMPM) {
+      this.selectedTimeCell = this.firstChild;
+      const isAM = this.selectedTimeCell.textContent ==
+          global.params.ampmLabels[Label.AM];
+      if (isAM)
+        this.selectedTimeCell = this.lastChild;
+    } else {
+      this.selectedTimeCell = this.lastChild;
+      for (let timeCell of this.children) {
+        if (timeCell.value > this.selectedTimeCell.value)
+          this.selectedTimeCell = timeCell;
+      }
+    }
+  };
 
   get columnType() {
     return this.columnType_;
@@ -546,65 +789,16 @@ class TimeCell extends HTMLLIElement {
     this.className = TimeCell.ClassName;
     this.textContent = localizedValue;
     this.value = value;
+
+    this.setAttribute('role', 'option');
+    this.id = TimeCell.getNextUniqueId();
   };
+
+  static getNextUniqueId() {
+    return `timeCell${TimeCell.idCount++}`;
+  }
+
+  static idCount = 0;
 }
 TimeCell.ClassName = 'time-cell';
 window.customElements.define('time-cell', TimeCell, {extends: 'li'});
-
-/**
- * SubmissionControls: Provides functionality to submit or discard a change.
- */
-class SubmissionControls extends HTMLElement {
-  constructor(submitCallback, cancelCallback) {
-    super();
-
-    const padding = document.createElement('span');
-    padding.setAttribute('id', 'submission-controls-padding');
-    this.append(padding);
-
-    this.className = SubmissionControls.ClassName;
-
-    this.submitButton_ = new SubmissionButton(
-        submitCallback,
-        '<svg width="14" height="10" viewBox="0 0 14 10" fill="none" ' +
-            'xmlns="http://www.w3.org/2000/svg"><path d="M13.3516 ' +
-            '1.35156L5 9.71094L0.648438 5.35156L1.35156 4.64844L5 ' +
-            '8.28906L12.6484 0.648438L13.3516 1.35156Z" fill="black"/></svg>');
-    this.cancelButton_ = new SubmissionButton(
-        cancelCallback,
-        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" ' +
-            'xmlns="http://www.w3.org/2000/svg"><path d="M7.71094 7L13.1016 ' +
-            '12.3984L12.3984 13.1016L7 7.71094L1.60156 13.1016L0.898438 ' +
-            '12.3984L6.28906 7L0.898438 1.60156L1.60156 0.898438L7 ' +
-            '6.28906L12.3984 0.898438L13.1016 1.60156L7.71094 7Z" ' +
-            'fill="black"/></svg>');
-    this.append(this.submitButton_, this.cancelButton_);
-  }
-
-  get submitButton() {
-    return this.submitButton_;
-  }
-
-  get cancelButton() {
-    return this.cancelButton_;
-  }
-}
-SubmissionControls.ClassName = 'submission-controls';
-window.customElements.define('submission-controls', SubmissionControls);
-
-/**
- * SubmissionButton: Button with a custom look that can be clicked for
- *                   a submission action.
- */
-class SubmissionButton extends HTMLButtonElement {
-  constructor(clickCallback, htmlString) {
-    super();
-
-    this.className = SubmissionButton.ClassName;
-    this.innerHTML = htmlString;
-    this.addEventListener('click', clickCallback);
-  }
-}
-SubmissionButton.ClassName = 'submission-button';
-window.customElements.define(
-    'submission-button', SubmissionButton, {extends: 'button'});

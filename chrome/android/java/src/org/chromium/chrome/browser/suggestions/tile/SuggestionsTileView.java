@@ -11,13 +11,13 @@ import android.util.AttributeSet;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.widget.tile.TileWithTextView;
-
+import org.chromium.components.browser_ui.widget.tile.TileView;
+import org.chromium.url.GURL;
 /**
  * The view for a site suggestion tile. Displays the title of the site beneath a large icon. If a
  * large icon isn't available, displays a rounded rectangle with a single letter in its place.
  */
-public class SuggestionsTileView extends TileWithTextView {
+public class SuggestionsTileView extends TileView {
     /** The data currently associated to this tile. */
     private SiteSuggestion mData;
 
@@ -47,7 +47,7 @@ public class SuggestionsTileView extends TileWithTextView {
     }
 
     /** Retrieves url associated with this view. */
-    public String getUrl() {
+    public GURL getUrl() {
         return mData.url;
     }
 
@@ -62,7 +62,7 @@ public class SuggestionsTileView extends TileWithTextView {
     }
 
     protected void setIconViewLayoutParams(Tile tile) {
-        MarginLayoutParams params = (MarginLayoutParams) mIconView.getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) getIconView().getLayoutParams();
         Resources resources = getResources();
         if (tile.getType() == TileVisualType.ICON_COLOR
                 || tile.getType() == TileVisualType.ICON_DEFAULT) {
@@ -76,6 +76,6 @@ public class SuggestionsTileView extends TileWithTextView {
             params.topMargin =
                     resources.getDimensionPixelSize(R.dimen.tile_view_icon_margin_top_modern);
         }
-        mIconView.setLayoutParams(params);
+        getIconView().setLayoutParams(params);
     }
 }

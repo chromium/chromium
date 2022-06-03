@@ -29,7 +29,7 @@ test(() => {
 
   for (let method of NON_TOKEN_METHODS) {
     const xhr = new XMLHttpRequest();
-    assert_throws('SyntaxError', () => {
+    assert_throws_dom('SyntaxError', () => {
       xhr.open(method, '/');
     }, 'open() should throw for a SyntaxError for method "' + method +
         '" which does not conform to the token ABNF');
@@ -47,7 +47,7 @@ test(() => {
 
   for (let method of FORBIDDEN_METHODS) {
     const xhr = new XMLHttpRequest();
-    assert_throws('SecurityError', () => {
+    assert_throws_dom('SecurityError', () => {
       xhr.open(method, '/');
     }, 'open() should throw a SecurityError for a forbidden method "' + method + '"');
   }

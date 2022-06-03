@@ -6,35 +6,35 @@
 #define ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 
 #include "ash/style/ash_color_provider.h"
-#include "base/strings/string16.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
 namespace gfx {
 struct VectorIcon;
 }
 
-namespace views {
-class ImageView;
-class Label;
-}  // namespace views
-
 namespace ash {
 
-class BottomStatusIndicator : public views::View {
+class BottomStatusIndicator : public views::LabelButton {
  public:
-  BottomStatusIndicator();
+  using TappedCallback = base::RepeatingClosure;
 
+  explicit BottomStatusIndicator(TappedCallback on_tapped_callback);
   BottomStatusIndicator(const BottomStatusIndicator&) = delete;
   BottomStatusIndicator& operator=(const BottomStatusIndicator&) = delete;
-  ~BottomStatusIndicator() override = default;
+  ~BottomStatusIndicator() override;
 
-  void SetText(const base::string16& text, SkColor color);
   void SetIcon(const gfx::VectorIcon& vector_icon,
                AshColorProvider::ContentLayerType type);
 
+  void set_role_for_accessibility(ax::mojom::Role role) { role_ = role; }
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
-  views::Label* label_ = nullptr;
-  views::ImageView* icon_ = nullptr;
+  ax::mojom::Role role_ = ax::mojom::Role::kStaticText;
 };
 
 }  // namespace ash

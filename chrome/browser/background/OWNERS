@@ -1,3 +1,4 @@
-atwilson@chromium.org
+rdevlin.cronin@chromium.org
 
-# COMPONENT: Platform>Apps>BackgroundPage
+# TODO(devlin): Figure out the ownership and future of background mode.
+# https://crbug.com/1117280.

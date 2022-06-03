@@ -20,7 +20,7 @@ using jingle_xmpp::XmlPrinter;
 XmlBuilder builder;
 XmlParser parser(&builder);
 
-extern "C" int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 1)
     return 0;
 

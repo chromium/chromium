@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url)
       {
@@ -18,26 +18,26 @@
   Common.settingForTest('monitoringXHREnabled').set(true);
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
-  await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(4);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
@@ -45,30 +45,36 @@
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
-  TestRunner.deprecatedRunAfterPendingDispatches(() => {
-    ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.deprecatedRunAfterPendingDispatches(async () => {
+    await dumpConsoleMessagesSorted();
     TestRunner.completeTest();
   });
+
+  async function dumpConsoleMessagesSorted() {
+    const messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray();
+    messages.sort().forEach(TestRunner.addResult);
+  };
+
 })();

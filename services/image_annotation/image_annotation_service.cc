@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -15,7 +16,10 @@ namespace image_annotation {
 // static
 const base::Feature ImageAnnotationService::kExperiment{
     "ImageAnnotationServiceExperimental", base::FEATURE_DISABLED_BY_DEFAULT};
-constexpr base::FeatureParam<std::string> ImageAnnotationService::kServerUrl;
+constexpr base::FeatureParam<std::string>
+    ImageAnnotationService::kPixelsServerUrl;
+constexpr base::FeatureParam<std::string>
+    ImageAnnotationService::kLangsServerUrl;
 constexpr base::FeatureParam<std::string> ImageAnnotationService::kApiKey;
 constexpr base::FeatureParam<int> ImageAnnotationService::kThrottleMs;
 constexpr base::FeatureParam<int> ImageAnnotationService::kBatchSize;
@@ -27,9 +31,10 @@ ImageAnnotationService::ImageAnnotationService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     std::unique_ptr<Annotator::Client> annotator_client)
     : receiver_(this, std::move(receiver)),
-      annotator_(GURL(kServerUrl.Get()),
+      annotator_(GURL(kPixelsServerUrl.Get()),
+                 GURL(kLangsServerUrl.Get()),
                  kApiKey.Get().empty() ? std::move(api_key) : kApiKey.Get(),
-                 base::TimeDelta::FromMilliseconds(kThrottleMs.Get()),
+                 base::Milliseconds(kThrottleMs.Get()),
                  kBatchSize.Get(),
                  kMinOcrConfidence.Get(),
                  shared_url_loader_factory,

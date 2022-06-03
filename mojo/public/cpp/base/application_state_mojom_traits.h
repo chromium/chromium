@@ -8,12 +8,12 @@
 #include "base/android/application_status_listener.h"
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "mojo/public/mojom/base/application_state.mojom.h"
+#include "mojo/public/mojom/base/application_state.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::ApplicationState,
                base::android::ApplicationState> {
   static mojo_base::mojom::ApplicationState ToMojom(

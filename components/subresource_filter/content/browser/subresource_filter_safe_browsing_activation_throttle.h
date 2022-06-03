@@ -12,12 +12,11 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -25,8 +24,6 @@
 #include "content/public/browser/navigation_throttle.h"
 
 namespace subresource_filter {
-
-class SubresourceFilterClient;
 
 // Enum representing a position in the redirect chain. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
@@ -46,12 +43,40 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       public base::SupportsWeakPtr<
           SubresourceFilterSafeBrowsingActivationThrottle> {
  public:
+  // Interface that allows the client of this class to adjust activation
+  // decisions if/as desired.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when the initial activation decision has been computed by the
+    // safe browsing activation throttle. Returns
+    // the effective activation for this navigation.
+    //
+    // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
+    // this method if any decision changes.
+    //
+    // Precondition: The navigation must be a main frame navigation.
+    virtual mojom::ActivationLevel OnPageActivationComputed(
+        content::NavigationHandle* navigation_handle,
+        mojom::ActivationLevel initial_activation_level,
+        ActivationDecision* decision) = 0;
+  };
+
+  // |delegate| is allowed to be null, in which case the client creating this
+  // throttle will not be able to adjust activation decisions made by the
+  // throttle.
   SubresourceFilterSafeBrowsingActivationThrottle(
       content::NavigationHandle* handle,
-      SubresourceFilterClient* client,
+      Delegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
+
+  SubresourceFilterSafeBrowsingActivationThrottle(
+      const SubresourceFilterSafeBrowsingActivationThrottle&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottle& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottle&) = delete;
 
   ~SubresourceFilterSafeBrowsingActivationThrottle() override;
 
@@ -94,9 +119,7 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       const SubresourceFilterSafeBrowsingClient::CheckResult& result);
   // Gets the ActivationDecision for the given Configuration.
   // Returns it, or ACTIVATION_CONDITIONS_NOT_MET if no Configuration.
-  ActivationDecision GetActivationDecision(
-      const std::vector<ConfigResult>& configs,
-      ConfigResult* selected_config);
+  ActivationDecision GetActivationDecision(const ConfigResult& configs);
 
   // Returns whether a main-frame navigation satisfies the activation
   // |conditions| of a given configuration, except for |priority|.
@@ -112,8 +135,8 @@ class SubresourceFilterSafeBrowsingActivationThrottle
                   base::OnTaskRunnerDeleter>
       database_client_;
 
-  // Must outlive this class.
-  SubresourceFilterClient* client_;
+  // May be null. If non-null, must outlive this class.
+  Delegate* delegate_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.
@@ -122,8 +145,6 @@ class SubresourceFilterSafeBrowsingActivationThrottle
   // Whether this throttle is deferring the navigation. Only set to true in
   // WillProcessResponse if there are ongoing safe browsing checks.
   bool deferring_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingActivationThrottle);
 };
 
 }  // namespace subresource_filter

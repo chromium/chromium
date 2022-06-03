@@ -4,10 +4,13 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_tag.h"
 
+#include <memory>
+
 namespace task_manager {
 
-TabContentsTask* TabContentsTag::CreateTask() const {
-  return new TabContentsTask(web_contents());
+std::unique_ptr<RendererTask> TabContentsTag::CreateTask(
+    WebContentsTaskProvider*) const {
+  return std::make_unique<TabContentsTask>(web_contents());
 }
 
 TabContentsTag::TabContentsTag(content::WebContents* web_contents)

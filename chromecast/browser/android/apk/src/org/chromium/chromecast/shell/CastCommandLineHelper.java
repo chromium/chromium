@@ -66,6 +66,7 @@ public class CastCommandLineHelper {
      * Reads command line args from persistent storage and initializes the CommandLine with those
      * args. Does not initialize CommandLine if it has been already been done.
      */
+    @SuppressWarnings("VisibleForTests")  // For call to cmdline.hasSwitch()
     public static void initCommandLineWithSavedArgs(CommandLineInitializer commandLineInitializer) {
         // CommandLine is a singleton, so check whether CastCommandLineHelper has initialized it
         // already and do nothing if so. We keep track of this in a static variable so we can still

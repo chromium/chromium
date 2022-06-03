@@ -11,7 +11,7 @@ namespace base {
 namespace win {
 class RegKey;
 }
-}
+}  // namespace base
 
 namespace installer {
 
@@ -19,8 +19,8 @@ namespace installer {
 // |VisitUserHives|. |user_sid| is the user SID being visited. |key| is the root
 // of that user's registry hive. Implementations return |true| to indicate that
 // the visits should continue, or |false| to indicate that visits should stop.
-using HiveVisitor =
-    base::Callback<bool(const wchar_t* user_sid, base::win::RegKey* key)>;
+using HiveVisitor = base::RepeatingCallback<bool(const wchar_t* user_sid,
+                                                 base::win::RegKey* key)>;
 
 // Runs |visitor| for each local user profile's registry hive.
 void VisitUserHives(const HiveVisitor& visitor);

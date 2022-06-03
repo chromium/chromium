@@ -7,7 +7,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/proto/remoting/v1/telemetry_service.grpc.pb.h"
+#include "remoting/base/protobuf_http_status.h"
+#include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,7 +54,8 @@ class RemotingLogToServerTest : public testing::Test {
       ServerLogEntry::ME2ME,
       std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
                                              "fake_email",
-                                             "fake_access_token")};
+                                             "fake_access_token"),
+      nullptr};
 };
 
 TEST_F(RemotingLogToServerTest, SuccessfullySendOneLog) {
@@ -62,7 +65,9 @@ TEST_F(RemotingLogToServerTest, SuccessfullySendOneLog) {
         ASSERT_EQ(1, request.payload().entry().field_size());
         ASSERT_EQ("test-key", request.payload().entry().field(0).key());
         ASSERT_EQ("test-value", request.payload().entry().field(0).value());
-        std::move(callback).Run(grpc::Status::OK, {});
+        std::move(callback).Run(
+            ProtobufHttpStatus::OK(),
+            std::make_unique<apis::v1::CreateLogEntryResponse>());
       });
 
   ServerLogEntry entry;
@@ -83,7 +88,9 @@ TEST_F(RemotingLogToServerTest, FailedToSend_RetryWithBackoff) {
         ASSERT_EQ("test-key", request.payload().entry().field(0).key());
         ASSERT_EQ("test-value", request.payload().entry().field(0).value());
         std::move(callback).Run(
-            grpc::Status(grpc::StatusCode::UNAVAILABLE, "unavailable"), {});
+            ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
+                               "unavailable"),
+            nullptr);
       });
 
   ServerLogEntry entry;
@@ -142,15 +149,23 @@ TEST_F(RemotingLogToServerTest, FailedToSendTwoLogs_RetryThenSucceeds) {
   ASSERT_EQ(0, GetBackoffEntry().failure_count());
 
   std::move(response_callback_1)
-      .Run(grpc::Status(grpc::StatusCode::UNAVAILABLE, "unavailable"), {});
+      .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
+                              "unavailable"),
+           nullptr);
   task_environment_.FastForwardUntilNoTasksRemain();
   std::move(response_callback_2)
-      .Run(grpc::Status(grpc::StatusCode::UNAVAILABLE, "unavailable"), {});
+      .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
+                              "unavailable"),
+           nullptr);
   task_environment_.FastForwardUntilNoTasksRemain();
   ASSERT_EQ(2, GetBackoffEntry().failure_count());
 
-  std::move(response_callback_1).Run(grpc::Status::OK, {});
-  std::move(response_callback_2).Run(grpc::Status::OK, {});
+  std::move(response_callback_1)
+      .Run(ProtobufHttpStatus::OK(),
+           std::make_unique<apis::v1::CreateLogEntryResponse>());
+  std::move(response_callback_2)
+      .Run(ProtobufHttpStatus::OK(),
+           std::make_unique<apis::v1::CreateLogEntryResponse>());
   task_environment_.FastForwardUntilNoTasksRemain();
   ASSERT_EQ(0, GetBackoffEntry().failure_count());
 }

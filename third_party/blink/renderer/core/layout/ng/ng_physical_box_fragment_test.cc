@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -14,14 +15,15 @@ class NGPhysicalBoxFragmentTest : public NGLayoutTest {
 
   const NGPhysicalBoxFragment& GetBodyFragment() const {
     return *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject())
-                ->CurrentFragment();
+                ->GetPhysicalFragment(0);
   }
 
   const NGPhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(
       const char* id) {
     auto* layout_object = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     DCHECK(layout_object);
-    const NGPhysicalBoxFragment* fragment = layout_object->CurrentFragment();
+    const NGPhysicalBoxFragment* fragment =
+        layout_object->GetPhysicalFragment(0);
     DCHECK(fragment);
     return *fragment;
   }
@@ -122,7 +124,7 @@ TEST_F(NGPhysicalBoxFragmentTest, DISABLED_NormalLegacyLayoutRoot) {
   EXPECT_TRUE(fragment->IsBox());
   EXPECT_EQ(NGPhysicalFragment::kNormalBox, fragment->BoxType());
   EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsBlockFormattingContextRoot());
+  EXPECT_TRUE(fragment->IsFormattingContextRoot());
 }
 
 // TODO(editing-dev): Once LayoutNG supports editing, we should change this
@@ -136,7 +138,7 @@ TEST_F(NGPhysicalBoxFragmentTest, DISABLED_FloatLegacyLayoutRoot) {
   EXPECT_TRUE(fragment->IsBox());
   EXPECT_EQ(NGPhysicalFragment::kFloating, fragment->BoxType());
   EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsBlockFormattingContextRoot());
+  EXPECT_TRUE(fragment->IsFormattingContextRoot());
 }
 
 // TODO(editing-dev): Once LayoutNG supports editing, we should change this
@@ -145,14 +147,13 @@ TEST_F(NGPhysicalBoxFragmentTest, DISABLED_FloatLegacyLayoutRoot) {
 TEST_F(NGPhysicalBoxFragmentTest, DISABLED_InlineBlockLegacyLayoutRoot) {
   SetBodyInnerHTML(
       "<span contenteditable style='display:inline-block'>X</span>foo");
-  const auto* line_box = To<NGPhysicalContainerFragment>(
-      GetBodyFragment().Children().front().get());
+  const auto* line_box = GetBodyFragment().Children().front().get();
   const NGPhysicalFragment* fragment = line_box->Children().front().get();
   ASSERT_TRUE(fragment);
   EXPECT_TRUE(fragment->IsBox());
   EXPECT_EQ(NGPhysicalFragment::kAtomicInline, fragment->BoxType());
   EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsBlockFormattingContextRoot());
+  EXPECT_TRUE(fragment->IsFormattingContextRoot());
 }
 
 // TODO(editing-dev): Once LayoutNG supports editing, we should change this
@@ -170,7 +171,7 @@ TEST_F(NGPhysicalBoxFragmentTest,
   EXPECT_TRUE(fragment->IsBox());
   EXPECT_EQ(NGPhysicalFragment::kOutOfFlowPositioned, fragment->BoxType());
   EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsBlockFormattingContextRoot());
+  EXPECT_TRUE(fragment->IsFormattingContextRoot());
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
@@ -184,6 +185,129 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
   // crbug.com/567964
   EXPECT_FALSE(fragment.IsAtomicInline());
   EXPECT_EQ(fragment.BoxType(), NGPhysicalFragment::kBlockFlowRoot);
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="multicol" style="columns:3;">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  const auto& multicol = GetPhysicalBoxFragmentByElementId("multicol");
+  EXPECT_TRUE(multicol.IsFragmentationContextRoot());
+
+  // There should be one column.
+  EXPECT_EQ(multicol.Children().size(), 1u);
+  const auto& column = To<NGPhysicalBoxFragment>(*multicol.Children()[0]);
+  EXPECT_TRUE(column.IsColumnBox());
+  EXPECT_FALSE(column.IsFragmentationContextRoot());
+
+  const auto& child = GetPhysicalBoxFragmentByElementId("child");
+  EXPECT_FALSE(child.IsFragmentationContextRoot());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="outer" style="columns:3;">
+      <div id="foo">
+        <div id="inner" style="columns:3;">
+          <div id="bar"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  const auto& outer = GetPhysicalBoxFragmentByElementId("outer");
+  EXPECT_TRUE(outer.IsFragmentationContextRoot());
+
+  EXPECT_EQ(outer.Children().size(), 1u);
+  const auto& outer_column = To<NGPhysicalBoxFragment>(*outer.Children()[0]);
+  EXPECT_TRUE(outer_column.IsColumnBox());
+  EXPECT_FALSE(outer_column.IsFragmentationContextRoot());
+
+  const auto& foo = GetPhysicalBoxFragmentByElementId("foo");
+  EXPECT_FALSE(foo.IsFragmentationContextRoot());
+
+  const auto& inner = GetPhysicalBoxFragmentByElementId("inner");
+  EXPECT_TRUE(inner.IsFragmentationContextRoot());
+
+  EXPECT_EQ(inner.Children().size(), 1u);
+  const auto& inner_column = To<NGPhysicalBoxFragment>(*inner.Children()[0]);
+  EXPECT_TRUE(inner_column.IsColumnBox());
+  EXPECT_FALSE(inner_column.IsFragmentationContextRoot());
+
+  const auto& bar = GetPhysicalBoxFragmentByElementId("bar");
+  EXPECT_FALSE(bar.IsFragmentationContextRoot());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <fieldset id="fieldset" style="columns:3;">
+      <legend id="legend"></legend>
+      <div id="child"></div>
+    </fieldset>
+  )HTML");
+
+  const auto& fieldset = GetPhysicalBoxFragmentByElementId("fieldset");
+  EXPECT_FALSE(fieldset.IsFragmentationContextRoot());
+
+  // There should be a legend and an anonymous fieldset wrapper fragment.
+  ASSERT_EQ(fieldset.Children().size(), 2u);
+
+  const auto& legend = To<NGPhysicalBoxFragment>(*fieldset.Children()[0]);
+  EXPECT_EQ(To<Element>(legend.GetNode())->GetIdAttribute(), "legend");
+  EXPECT_FALSE(legend.IsFragmentationContextRoot());
+
+  // The multicol container is established by the anonymous content wrapper, not
+  // the actual fieldset.
+  const auto& wrapper = To<NGPhysicalBoxFragment>(*fieldset.Children()[1]);
+  EXPECT_FALSE(wrapper.GetNode());
+  EXPECT_TRUE(wrapper.IsFragmentationContextRoot());
+
+  EXPECT_EQ(wrapper.Children().size(), 1u);
+  const auto& column = To<NGPhysicalBoxFragment>(*wrapper.Children()[0]);
+  EXPECT_TRUE(column.IsColumnBox());
+
+  const auto& child = GetPhysicalBoxFragmentByElementId("child");
+  EXPECT_FALSE(child.IsFragmentationContextRoot());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container2">
+      <div id="container">
+        <div style="height: 100px"></div>
+        <div style="height: 100px; margin-top: -200px"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto& container = GetPhysicalBoxFragmentByElementId("container");
+  EXPECT_TRUE(container.MayHaveDescendantAboveBlockStart());
+  const auto& container2 = GetPhysicalBoxFragmentByElementId("container2");
+  EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest,
+       MayHaveDescendantAboveBlockStartBlockInInline) {
+  ScopedLayoutNGBlockInInlineForTest block_in_inline(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="container2">
+      <div id="container">
+        <span>
+          <div style="height: 100px"></div>
+          <div style="height: 100px; margin-top: -200px"></div>
+        </span>
+      </div>
+    </div>
+  )HTML");
+  const auto& container = GetPhysicalBoxFragmentByElementId("container");
+  EXPECT_TRUE(container.MayHaveDescendantAboveBlockStart());
+  const auto& container2 = GetPhysicalBoxFragmentByElementId("container2");
+  EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
 }
 
 }  // namespace blink

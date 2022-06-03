@@ -10,7 +10,7 @@ ScopedMockClockOverride* ScopedMockClockOverride::scoped_mock_clock_ = nullptr;
 
 ScopedMockClockOverride::ScopedMockClockOverride()
     :  // Start the offset past zero so that it's not treated as a null value.
-      offset_(TimeDelta::FromDays(365)) {
+      offset_(Days(365)) {
   DCHECK(!scoped_mock_clock_)
       << "Nested ScopedMockClockOverrides are not supported.";
 

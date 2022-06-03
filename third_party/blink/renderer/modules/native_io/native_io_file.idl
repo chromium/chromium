@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/fivedots/nativeio-explainer
+
+[
+  Exposed=(Window, Worker),
+  RuntimeEnabled=StorageFoundationAPI,
+  SecureContext
+] interface NativeIOFile {
+  [CallWith=ScriptState] Promise<void> close();
+
+  [
+    CallWith=ScriptState, RaisesException
+  ] Promise<unsigned long long> getLength();
+
+  [
+    CallWith=ScriptState, RaisesException
+  ] Promise<void> setLength(unsigned long long length);
+
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationRead
+  ] Promise<NativeIOReadResult> read(ArrayBufferView buffer,
+                                     unsigned long long file_offset);
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationWrite
+  ] Promise<NativeIOWriteResult> write(ArrayBufferView buffer,
+                                      unsigned long long file_offset);
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationFlush
+  ] Promise<void> flush();
+};

@@ -6,9 +6,10 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/notreached.h"
+#include "base/values.h"
 
 namespace base {
 
@@ -17,8 +18,10 @@ namespace {
 // Helper classes for DummyHistogram.
 class DummySampleCountIterator : public SampleCountIterator {
  public:
-  DummySampleCountIterator() {}
-  ~DummySampleCountIterator() override {}
+  DummySampleCountIterator() = default;
+  DummySampleCountIterator(const DummySampleCountIterator&) = delete;
+  DummySampleCountIterator& operator=(const DummySampleCountIterator&) = delete;
+  ~DummySampleCountIterator() override = default;
 
   // SampleCountIterator:
   bool Done() const override { return true; }
@@ -28,14 +31,13 @@ class DummySampleCountIterator : public SampleCountIterator {
            HistogramBase::Count* count) const override {
     NOTREACHED();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummySampleCountIterator);
 };
 
 class DummyHistogramSamples : public HistogramSamples {
  public:
-  explicit DummyHistogramSamples() : HistogramSamples(0, new LocalMetadata()) {}
+  DummyHistogramSamples() : HistogramSamples(0, new LocalMetadata()) {}
+  DummyHistogramSamples(const DummyHistogramSamples&) = delete;
+  DummyHistogramSamples& operator=(const DummyHistogramSamples&) = delete;
   ~DummyHistogramSamples() override {
     delete static_cast<LocalMetadata*>(meta());
   }
@@ -55,9 +57,6 @@ class DummyHistogramSamples : public HistogramSamples {
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyHistogramSamples);
 };
 
 }  // namespace
@@ -97,6 +96,14 @@ std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotDelta() {
 
 std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotFinalDelta() const {
   return std::make_unique<DummyHistogramSamples>();
+}
+
+Value DummyHistogram::ToGraphDict() const {
+  return Value(Value::Type::DICTIONARY);
+}
+
+Value DummyHistogram::GetParameters() const {
+  return Value();
 }
 
 }  // namespace base

@@ -30,6 +30,10 @@ class ConfigFileWatcher : public ConfigWatcher {
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const base::FilePath& config_path);
+
+  ConfigFileWatcher(const ConfigFileWatcher&) = delete;
+  ConfigFileWatcher& operator=(const ConfigFileWatcher&) = delete;
+
   ~ConfigFileWatcher() override;
 
   // Inherited from ConfigWatcher.
@@ -37,8 +41,6 @@ class ConfigFileWatcher : public ConfigWatcher {
 
  private:
   scoped_refptr<ConfigFileWatcherImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcher);
 };
 
 }  // namespace remoting

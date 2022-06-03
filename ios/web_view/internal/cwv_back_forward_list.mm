@@ -15,6 +15,8 @@
 
 @implementation CWVBackForwardListItemArray {
   BOOL _isBackList;
+
+  CWVBackForwardListItem* _fastEnumerationItemCache;
 }
 
 - (instancetype)initWithBackForwardList:(CWVBackForwardList*)list
@@ -23,6 +25,8 @@
   if (self) {
     _list = list;
     _isBackList = isBackList;
+
+    _fastEnumerationItemCache = nil;
   }
   return self;
 }
@@ -67,6 +71,34 @@
       self.list.navigationManager->GetItemAtIndex(internalIndex);
   DCHECK(item);
   return [[CWVBackForwardListItem alloc] initWithNavigationItem:item];
+}
+
+#pragma mark - NSFastEnumeration
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState*)state
+                                  objects:(id __unsafe_unretained[])stackbuf
+                                    count:(NSUInteger)len {
+  DCHECK_GE(self.count, state->state);
+  DCHECK_GE(len, 1UL);
+  if (self.count == state->state) {
+    return 0;
+  }
+
+  // |state| is a pure C-struct so retaining an item in |state| is impossible.
+  // So, |_fastEnumerationItemCache| is designed to retain the returned item.
+  // It is the caller's responsibility to ensure this is not deallocated during
+  // enumeration, so a caller should not use nested for-in statement on the same
+  // list, otherwise it will cause a use-after-free bug.
+  _fastEnumerationItemCache = [self objectAtIndexedSubscript:state->state];
+
+  // This tells Obj-C runtime that |self| is immutable (because
+  // |&state->extra[0]| is constant) during enumeration.
+  state->mutationsPtr = &state->extra[0];
+
+  state->itemsPtr = stackbuf;
+  state->itemsPtr[0] = _fastEnumerationItemCache;
+  ++state->state;
+  return 1;
 }
 
 @end

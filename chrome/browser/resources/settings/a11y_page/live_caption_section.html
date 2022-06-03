@@ -1,0 +1,66 @@
+    <style include="cr-shared-style settings-shared">
+      /* Override the default padding of a cr-row to 0. The template inside has
+         left and right padding. */
+      .cr-row-with-template {
+        padding: 0;
+      }
+
+      /* Ensure the toggle button stretches the width of its container despite
+         removing its parent's padding. */
+      #liveCaptionToggleButton {
+        width: 100%;
+      }
+
+      /* Add bottom padding to the radio group to separate it from the next
+         section. */
+      .live-caption-language-radio-group {
+        padding-bottom: var(--cr-section-padding);
+      }
+
+      /* Override the min-height to make the radio buttons appear closer
+         together since they are all part of the same section. */
+      .live-caption-language-radio-button {
+        min-height: var(--cr-button-height);
+      }
+    </style>
+    <template is="dom-if" if="[[!enableLiveCaptionMultiLanguage_]]">
+      <div class="cr-row cr-row-with-template first">
+        <settings-toggle-button id="liveCaptionToggleButton"
+            pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+            on-change="onLiveCaptionEnabledChanged_"
+            label="$i18n{captionsEnableLiveCaptionTitle}"
+            sub-label="[[enableLiveCaptionSubtitle_]]">
+        </settings-toggle-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[enableLiveCaptionMultiLanguage_]]">
+      <div class="cr-row cr-row-with-template first">
+        <settings-toggle-button id="liveCaptionToggleButton"
+            pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+            on-change="onLiveCaptionEnabledChanged_"
+            label="$i18n{captionsEnableLiveCaptionTitle}"
+            sub-label="$i18n{captionsEnableLiveCaptionSubtitle}">
+        </settings-toggle-button>
+      </div>
+      <template is="dom-if"
+                if="[[prefs.accessibility.captions.live_caption_enabled.value]]"
+                mutable-data>
+        <div class="live-caption-language-radio-group">
+          <settings-radio-group
+              pref="{{prefs.accessibility.captions.live_caption_language}}">
+            <template is="dom-repeat" items="[[liveCaptionLanguages_]]"
+                      as="language">
+              <controlled-radio-button
+                  class="cr-row continuation live-caption-language-radio-button"
+                  label="[[language.display_name]]"
+                  name="[[language.code]]"
+                  pref="[[prefs.accessibility.captions.live_caption_language]]">
+                <span class="cr-secondary-text cr-row-gap">
+                  [[language.downloadProgress]]
+                </span>
+              </controlled-radio-button>
+            </template>
+          </settings-radio-group>
+        </div>
+      </template>
+    </template>

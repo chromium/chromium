@@ -5,6 +5,7 @@
 #include "chromecast/device/bluetooth/le/remote_descriptor_impl.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager_impl.h"
 #include "chromecast/device/bluetooth/le/remote_device_impl.h"
@@ -98,7 +99,7 @@ const bluetooth_v2_shlib::Uuid RemoteDescriptorImpl::uuid() const {
   return descriptor_->uuid;
 }
 
-uint16_t RemoteDescriptorImpl::handle() const {
+HandleId RemoteDescriptorImpl::handle() const {
   return descriptor_->handle;
 }
 

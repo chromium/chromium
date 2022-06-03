@@ -15,18 +15,20 @@ bindingUtil.registerEventArgumentMassager('downloads.onDeterminingFilename',
   function isValidResult(result) {
     if (result === undefined)
       return false;
-    if (typeof(result) != 'object') {
-      console.error('Error: Invocation of form suggest(' + typeof(result) +
-                    ') doesn\'t match definition suggest({filename: string, ' +
-                    'conflictAction: string})');
+    if (typeof result !== 'object') {
+      console.error(
+          'Error: Invocation of form suggest(' + typeof result +
+          ') doesn\'t match definition suggest({filename: string, ' +
+          'conflictAction: string})');
       return false;
-    } else if ((typeof(result.filename) != 'string') ||
-               (result.filename.length == 0)) {
+    } else if (
+        typeof result.filename !== 'string' || result.filename.length === 0) {
       console.error('Error: "filename" parameter to suggest() must be a ' +
                     'non-empty string');
       return false;
-    } else if ([undefined, 'uniquify', 'overwrite', 'prompt'].indexOf(
-                 result.conflictAction) < 0) {
+    } else if ([
+                 undefined, 'uniquify', 'overwrite', 'prompt'
+               ].indexOf(result.conflictAction) < 0) {
       console.error('Error: "conflictAction" parameter to suggest() must be ' +
                     'one of undefined, "uniquify", "overwrite", "prompt"');
       return false;
@@ -48,10 +50,9 @@ bindingUtil.registerEventArgumentMassager('downloads.onDeterminingFilename',
   }
   try {
     var results = dispatch([downloadItem, suggestCallback]);
-    var async = (results &&
-                 results.results &&
-                 (results.results.length != 0) &&
-                 (results.results[0] === true));
+    var async =
+        (results && results.results && (results.results.length !== 0) &&
+         (results.results[0] === true));
     if (suggestable && !async)
       suggestCallback();
   } catch (e) {

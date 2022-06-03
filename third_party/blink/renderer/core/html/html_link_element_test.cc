@@ -23,7 +23,7 @@ class HTMLLinkElementSimTest : public SimTest {};
 // This tests that we should ignore empty string value
 // in href attribute value of the link element.
 TEST_F(HTMLLinkElementTest, EmptyHrefAttribute) {
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<head>"
       "<link rel=\"icon\" type=\"image/ico\" href=\"\" />"
       "</head>");
@@ -34,14 +34,14 @@ TEST_F(HTMLLinkElementTest, EmptyHrefAttribute) {
 // This tests whether Web Monetization counter is properly triggered.
 TEST_F(HTMLLinkElementTest, WebMonetizationCounter) {
   // A <link rel="icon"> is not counted.
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <link rel="icon" type="image/ico" href="">
   )HTML");
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kHTMLLinkElementMonetization));
 
   // A <link rel="monetization"> is counted.
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <link rel="monetization">
   )HTML");
   EXPECT_TRUE(
@@ -59,19 +59,19 @@ TEST_F(HTMLLinkElementSimTest, WebMonetizationNotCountedInSubFrame) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(
       R"HTML(
         <body onload='console.log("main body onload");'>
           <iframe src='https://example.com/subframe.html'
                   onload='console.log("child frame element onload");'></iframe>
-        </body>)HTML"));
+        </body>)HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  child_frame_resource.Complete(String::Format(R"HTML(
+  child_frame_resource.Complete(R"HTML(
     <link rel="monetization">
-  )HTML"));
+  )HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

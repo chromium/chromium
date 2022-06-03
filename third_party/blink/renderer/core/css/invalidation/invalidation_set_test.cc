@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
@@ -264,9 +265,8 @@ TEST(InvalidationSetTest, Backing_GetHashSet) {
 TEST(InvalidationSetTest, ClassInvalidatesElement) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   auto& document = dummy_page_holder->GetDocument();
-  document.body()->SetInnerHTMLFromString("<div id=test class='a b'>");
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  document.body()->setInnerHTML("<div id=test class='a b'>");
+  document.View()->UpdateAllLifecyclePhasesForTest();
   Element* element = document.getElementById("test");
   ASSERT_TRUE(element);
 
@@ -290,9 +290,8 @@ TEST(InvalidationSetTest, ClassInvalidatesElement) {
 TEST(InvalidationSetTest, AttributeInvalidatesElement) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   auto& document = dummy_page_holder->GetDocument();
-  document.body()->SetInnerHTMLFromString("<div id=test a b>");
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  document.body()->setInnerHTML("<div id=test a b>");
+  document.View()->UpdateAllLifecyclePhasesForTest();
   Element* element = document.getElementById("test");
   ASSERT_TRUE(element);
 
@@ -385,13 +384,6 @@ TEST(InvalidationSetTest, SelfInvalidationSet_Combine) {
   set->Combine(*self_set);
   EXPECT_TRUE(set->InvalidatesSelf());
 }
-
-#ifndef NDEBUG
-TEST(InvalidationSetTest, ShowDebug) {
-  scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-  set->Show();
-}
-#endif  // NDEBUG
 
 }  // namespace
 }  // namespace blink

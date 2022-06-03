@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/data_use_measurement/core/data_use_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,59 +24,43 @@
 
 namespace data_use_measurement {
 
-class DataUseMeasurementTest : public testing::Test {
+class DataUseMeasurementTest {
  public:
-  DataUseMeasurementTest()
+  explicit DataUseMeasurementTest(TestingPrefServiceSimple* test_prefs_)
       : data_use_measurement_(
+            test_prefs_,
             network::TestNetworkConnectionTracker::GetInstance()) {
     // During the test it is expected to not have cellular connection.
     DCHECK(!net::NetworkChangeNotifier::IsConnectionCellular(
         net::NetworkChangeNotifier::GetConnectionType()));
   }
 
+  DataUseMeasurementTest(const DataUseMeasurementTest&) = delete;
+  DataUseMeasurementTest& operator=(const DataUseMeasurementTest&) = delete;
+
   // This function makes a user request and confirms that its effect is
   // reflected in proper histograms.
   void TestForAUserRequest(const std::string& target_dimension) {
     base::HistogramTester histogram_tester;
-    data_use_measurement_.RecordTrafficSizeMetric(
-        true /* is_user_traffic */, true /* is_downstream */,
+    data_use_measurement_.RecordDownstreamUserTrafficSizeMetric(
         true /* is_tab_visible */, 5 /* bytest */);
-    data_use_measurement_.RecordTrafficSizeMetric(
-        true /* is_user_traffic */, false /* is_downstream */,
+    data_use_measurement_.RecordDownstreamUserTrafficSizeMetric(
         true /* is_tab_visible */, 5 /* bytest */);
     histogram_tester.ExpectTotalCount("DataUse.TrafficSize.User.Downstream." +
                                           target_dimension + kConnectionType,
-                                      1);
-    histogram_tester.ExpectTotalCount("DataUse.TrafficSize.User.Upstream." +
-                                          target_dimension + kConnectionType,
-                                      1);
+                                      2);
   }
 
-  // This function makes a service request and confirms that its effect is
-  // reflected in proper histograms.
-  void TestForAServiceRequest(const std::string& target_dimension) {
-    base::HistogramTester histogram_tester;
-    data_use_measurement_.RecordTrafficSizeMetric(
-        false /* is_user_traffic */, true /* is_downstream */,
-        true /* is_tab_visible */, 5 /* bytest */);
-    data_use_measurement_.RecordTrafficSizeMetric(
-        false /* is_user_traffic */, false /* is_downstream */,
-        true /* is_tab_visible */, 5 /* bytest */);
-    histogram_tester.ExpectTotalCount("DataUse.TrafficSize.System.Downstream." +
-                                          target_dimension + kConnectionType,
-                                      1);
-    histogram_tester.ExpectTotalCount("DataUse.TrafficSize.System.Upstream." +
-                                          target_dimension + kConnectionType,
-                                      1);
-  }
 
   DataUseMeasurement* data_use_measurement() { return &data_use_measurement_; }
 
  protected:
+  // Required to register a NetworkConnectionObserver from the constructor of
+  // DataUseMeasurement.
+  base::test::TaskEnvironment task_environment_;
+
   DataUseMeasurement data_use_measurement_;
   const std::string kConnectionType = "NotCellular";
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMeasurementTest);
 };
 
 // This test function tests recording of data use information in UMA histogram
@@ -81,24 +68,45 @@ class DataUseMeasurementTest : public testing::Test {
 // foreground or the OS is not Android.
 // TODO(amohammadkhan): Add tests for Cellular/non-cellular connection types
 // when support for testing is provided in its class.
-TEST_F(DataUseMeasurementTest, UserNotUserTest) {
+TEST(DataUseMeasurementTest, UserNotUserTest) {
+  TestingPrefServiceSimple test_prefs;
+
+  test_prefs.registry()->RegisterDictionaryPref(prefs::kDataUsedUserForeground);
+  test_prefs.registry()->RegisterDictionaryPref(prefs::kDataUsedUserBackground);
+  test_prefs.registry()->RegisterDictionaryPref(
+      prefs::kDataUsedServicesForeground);
+  test_prefs.registry()->RegisterDictionaryPref(
+      prefs::kDataUsedServicesBackground);
+
+  DataUseMeasurementTest data_use_measurement_test(&test_prefs);
 #if defined(OS_ANDROID)
-  data_use_measurement()->OnApplicationStateChangeForTesting(
-      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  data_use_measurement_test.data_use_measurement()
+      ->OnApplicationStateChangeForTesting(
+          base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 #endif
-  TestForAServiceRequest("Foreground.");
-  TestForAUserRequest("Foreground.");
+  data_use_measurement_test.TestForAUserRequest("Foreground.");
 }
 
 #if defined(OS_ANDROID)
 // This test function tests recording of data use information in UMA histogram
 // when packet is originated from user or services when the app is in the
 // background and OS is Android.
-TEST_F(DataUseMeasurementTest, ApplicationStateTest) {
-  data_use_measurement()->OnApplicationStateChangeForTesting(
-      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-  TestForAServiceRequest("Background.");
-  TestForAUserRequest("Background.");
+TEST(DataUseMeasurementTest, ApplicationStateTest) {
+  TestingPrefServiceSimple test_prefs;
+
+  test_prefs.registry()->RegisterDictionaryPref(prefs::kDataUsedUserForeground);
+  test_prefs.registry()->RegisterDictionaryPref(prefs::kDataUsedUserBackground);
+  test_prefs.registry()->RegisterDictionaryPref(
+      prefs::kDataUsedServicesForeground);
+  test_prefs.registry()->RegisterDictionaryPref(
+      prefs::kDataUsedServicesBackground);
+
+  DataUseMeasurementTest data_use_measurement_test(&test_prefs);
+
+  data_use_measurement_test.data_use_measurement()
+      ->OnApplicationStateChangeForTesting(
+          base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  data_use_measurement_test.TestForAUserRequest("Background.");
 }
 #endif
 

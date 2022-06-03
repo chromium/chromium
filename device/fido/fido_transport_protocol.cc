@@ -12,15 +12,7 @@ const char kBluetoothLowEnergy[] = "ble";
 const char kCloudAssistedBluetoothLowEnergy[] = "cable";
 const char kInternal[] = "internal";
 
-base::flat_set<FidoTransportProtocol> GetAllTransportProtocols() {
-  return {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-          FidoTransportProtocol::kBluetoothLowEnergy,
-          FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy,
-          FidoTransportProtocol::kNearFieldCommunication,
-          FidoTransportProtocol::kInternal};
-}
-
-base::Optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
+absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     base::StringPiece protocol) {
   if (protocol == kUsbHumanInterfaceDevice)
     return FidoTransportProtocol::kUsbHumanInterfaceDevice;
@@ -33,11 +25,11 @@ base::Optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
   else if (protocol == kInternal)
     return FidoTransportProtocol::kInternal;
   else
-    return base::nullopt;
+    return absl::nullopt;
 }
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string ToString(FidoTransportProtocol protocol) {
+base::StringPiece ToString(FidoTransportProtocol protocol) {
   switch (protocol) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
       return kUsbHumanInterfaceDevice;
@@ -49,9 +41,11 @@ std::string ToString(FidoTransportProtocol protocol) {
       return kCloudAssistedBluetoothLowEnergy;
     case FidoTransportProtocol::kInternal:
       return kInternal;
+    case FidoTransportProtocol::kAndroidAccessory:
+      // The Android accessory transport is not exposed to the outside world and
+      // is considered a flavour of caBLE.
+      return kCloudAssistedBluetoothLowEnergy;
   }
-  NOTREACHED();
-  return "";
 }
 
 }  // namespace device

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/download/download_started_animation.h"
 
-#include "base/macros.h"
+#include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/color_palette.h"
@@ -17,7 +19,7 @@
 #include "ui/views/widget/widget.h"
 
 // How long to spend moving downwards and fading out after waiting.
-constexpr auto kMoveTime = base::TimeDelta::FromMilliseconds(600);
+constexpr auto kMoveTime = base::Milliseconds(600);
 
 // The animation framerate.
 const int kFrameRateHz = 60;
@@ -32,7 +34,11 @@ namespace {
 class DownloadStartedAnimationViews : public gfx::LinearAnimation,
                                       public views::ImageView {
  public:
+  METADATA_HEADER(DownloadStartedAnimationViews);
   explicit DownloadStartedAnimationViews(content::WebContents* web_contents);
+  DownloadStartedAnimationViews(const DownloadStartedAnimationViews&) = delete;
+  DownloadStartedAnimationViews& operator=(
+      const DownloadStartedAnimationViews&) = delete;
 
  private:
   // Move the animation to wherever it should currently be.
@@ -54,13 +60,11 @@ class DownloadStartedAnimationViews : public gfx::LinearAnimation,
   // with the parent window, but it's so fast that this shouldn't cause too
   // much heartbreak.
   gfx::Rect web_contents_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadStartedAnimationViews);
 };
 
 DownloadStartedAnimationViews::DownloadStartedAnimationViews(
     content::WebContents* web_contents)
-    : gfx::LinearAnimation(kMoveTime, kFrameRateHz, NULL), popup_(NULL) {
+    : gfx::LinearAnimation(kMoveTime, kFrameRateHz, nullptr), popup_(nullptr) {
   gfx::ImageSkia download_image =
       gfx::CreateVectorIcon(kFileDownloadShelfIcon, 72, gfx::kGoogleBlue500);
 
@@ -116,6 +120,9 @@ void DownloadStartedAnimationViews::AnimateToState(double state) {
         std::min(1.0 - pow(GetCurrentValue() - 0.5, 2) * 4.0, 1.0)));
   }
 }
+
+BEGIN_METADATA(DownloadStartedAnimationViews, views::ImageView)
+END_METADATA
 
 }  // namespace
 

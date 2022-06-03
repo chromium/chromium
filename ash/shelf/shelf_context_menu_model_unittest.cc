@@ -6,15 +6,17 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "ash/public/cpp/wallpaper_controller_client.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/user_manager/user_type.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/widget.h"
 
@@ -23,44 +25,37 @@ namespace {
 
 using CommandId = ShelfContextMenuModel::CommandId;
 
-class ShelfContextMenuModelTest : public AshTestBase {
+class ShelfContextMenuModelTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<user_manager::UserType> {
  public:
   ShelfContextMenuModelTest() = default;
+
+  ShelfContextMenuModelTest(const ShelfContextMenuModelTest&) = delete;
+  ShelfContextMenuModelTest& operator=(const ShelfContextMenuModelTest&) =
+      delete;
+
   ~ShelfContextMenuModelTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
     TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession("user1@test.com");
+    session->AddUserSession("user1@test.com", GetUserType());
     session->SetSessionState(session_manager::SessionState::ACTIVE);
     session->SwitchActiveUser(AccountId::FromUserEmail("user1@test.com"));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuModelTest);
-};
-
-// A test wallpaper controller client class.
-class TestWallpaperControllerClient : public WallpaperControllerClient {
- public:
-  TestWallpaperControllerClient() = default;
-  virtual ~TestWallpaperControllerClient() = default;
-
-  size_t open_count() const { return open_count_; }
-
-  // WallpaperControllerClient:
-  void OpenWallpaperPicker() override { open_count_++; }
-
- private:
-  size_t open_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperControllerClient);
+  user_manager::UserType GetUserType() const { return GetParam(); }
 };
 
 // A test shelf item delegate that records the commands sent for execution.
 class TestShelfItemDelegate : public ShelfItemDelegate {
  public:
   TestShelfItemDelegate() : ShelfItemDelegate(ShelfID()) {}
+
+  TestShelfItemDelegate(const TestShelfItemDelegate&) = delete;
+  TestShelfItemDelegate& operator=(const TestShelfItemDelegate&) = delete;
+
   ~TestShelfItemDelegate() override = default;
 
   int last_executed_command() const { return last_executed_command_; }
@@ -69,7 +64,8 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
   void ItemSelected(std::unique_ptr<ui::Event> event,
                     int64_t display_id,
                     ShelfLaunchSource source,
-                    ItemSelectedCallback callback) override {}
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override {}
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,
@@ -81,12 +77,15 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
  private:
   int last_executed_command_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShelfItemDelegate);
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         ShelfContextMenuModelTest,
+                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
+                                           user_manager::USER_TYPE_CHILD));
+
 // Tests the default items in a shelf context menu.
-TEST_F(ShelfContextMenuModelTest, Basic) {
+TEST_P(ShelfContextMenuModelTest, Basic) {
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
 
   ASSERT_EQ(3, menu.GetItemCount());
@@ -109,7 +108,7 @@ TEST_F(ShelfContextMenuModelTest, Basic) {
 }
 
 // Test invocation of the default menu items.
-TEST_F(ShelfContextMenuModelTest, Invocation) {
+TEST_P(ShelfContextMenuModelTest, Invocation) {
   int64_t primary_id = GetPrimaryDisplay().id();
   Shelf* shelf = GetPrimaryShelf();
 
@@ -148,7 +147,7 @@ TEST_F(ShelfContextMenuModelTest, Invocation) {
 }
 
 // Tests custom items in a shelf context menu for an application.
-TEST_F(ShelfContextMenuModelTest, CustomItems) {
+TEST_P(ShelfContextMenuModelTest, CustomItems) {
   // Pass a valid delegate to indicate the menu is for an application.
   TestShelfItemDelegate delegate;
   ShelfContextMenuModel menu(&delegate, GetPrimaryDisplay().id());
@@ -158,11 +157,11 @@ TEST_F(ShelfContextMenuModelTest, CustomItems) {
   ASSERT_EQ(0, menu.GetItemCount());
 
   // Add some custom items.
-  menu.AddItem(203, base::ASCIIToUTF16("item"));
-  menu.AddCheckItem(107, base::ASCIIToUTF16("check"));
-  menu.AddRadioItem(101, base::ASCIIToUTF16("radio"), 0);
+  menu.AddItem(203, u"item");
+  menu.AddCheckItem(107, u"check");
+  menu.AddRadioItem(101, u"radio", 0);
   ui::SimpleMenuModel submenu(nullptr);
-  menu.AddSubMenu(55, base::ASCIIToUTF16("submenu"), &submenu);
+  menu.AddSubMenu(55, u"submenu", &submenu);
 
   // Ensure the menu contents match the items above.
   ASSERT_EQ(4, menu.GetItemCount());
@@ -177,7 +176,7 @@ TEST_F(ShelfContextMenuModelTest, CustomItems) {
 }
 
 // Tests fullscreen's per-display removal of "Autohide shelf": crbug.com/496681
-TEST_F(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
+TEST_P(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
   UpdateDisplay("940x550,940x550");
   int64_t primary_id = GetPrimaryDisplay().id();
   int64_t secondary_id = GetSecondaryDisplay().id();
@@ -195,7 +194,7 @@ TEST_F(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
 
 // Tests that the autohide and alignment menu options are not included in tablet
 // mode.
-TEST_F(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
+TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   int64_t primary_id = GetPrimaryDisplay().id();
@@ -244,7 +243,7 @@ TEST_F(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   EXPECT_TRUE(menu2.IsEnabledAt(2));
 }
 
-TEST_F(ShelfContextMenuModelTest, CommandIdsMatchEnumsForHistograms) {
+TEST_P(ShelfContextMenuModelTest, CommandIdsMatchEnumsForHistograms) {
   // Tests that CommandId enums are not changed as the values are used in
   // histograms.
   EXPECT_EQ(500, ShelfContextMenuModel::MENU_AUTO_HIDE);
@@ -255,7 +254,7 @@ TEST_F(ShelfContextMenuModelTest, CommandIdsMatchEnumsForHistograms) {
   EXPECT_EQ(505, ShelfContextMenuModel::MENU_CHANGE_WALLPAPER);
 }
 
-TEST_F(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
+TEST_P(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
   // Tests that there are exactly 3 shelf context menu options. If you're adding
   // a context menu option ensure that you have added the enum to
   // tools/metrics/enums.xml and that you haven't modified the order of the
@@ -264,11 +263,11 @@ TEST_F(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
   EXPECT_EQ(3, menu.GetItemCount());
 }
 
-TEST_F(ShelfContextMenuModelTest, NotificationContainerEnabled) {
+TEST_P(ShelfContextMenuModelTest, NotificationContainerEnabled) {
   // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
   // container is able to handle gesture events.
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
-  menu.AddItem(NOTIFICATION_CONTAINER, base::string16());
+  menu.AddItem(NOTIFICATION_CONTAINER, std::u16string());
 
   EXPECT_TRUE(menu.IsCommandIdEnabled(NOTIFICATION_CONTAINER));
 }

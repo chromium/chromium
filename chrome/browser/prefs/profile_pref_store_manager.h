@@ -12,12 +12,11 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/preferences/public/mojom/preferences.mojom.h"
-#include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
+#include "services/preferences/public/mojom/preferences.mojom-forward.h"
+#include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom-forward.h"
 
 class PersistentPrefStore;
 class PrefService;
@@ -47,6 +46,8 @@ class ProfilePrefStoreManager {
                           const std::string& seed,
                           const std::string& legacy_device_id);
 
+  ProfilePrefStoreManager(const ProfilePrefStoreManager&) = delete;
+  ProfilePrefStoreManager& operator=(const ProfilePrefStoreManager&) = delete;
   ~ProfilePrefStoreManager();
 
   static const bool kPlatformSupportsPreferenceTracking;
@@ -70,7 +71,7 @@ class ProfilePrefStoreManager {
   // storing and validating tracked preference MACs. Callers are responsible
   // for ensuring that the key is deleted on shutdown. For testing only.
   static void SetPreferenceValidationRegistryPathForTesting(
-      const base::string16* path);
+      const std::wstring* path);
 #endif
 
   // Creates a PersistentPrefStore providing access to the user preferences of
@@ -125,8 +126,6 @@ class ProfilePrefStoreManager {
   const base::FilePath profile_path_;
   const std::string seed_;
   const std::string legacy_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilePrefStoreManager);
 };
 
 #endif  // CHROME_BROWSER_PREFS_PROFILE_PREF_STORE_MANAGER_H_

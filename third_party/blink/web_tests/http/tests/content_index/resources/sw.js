@@ -17,7 +17,7 @@ async function reregisterContent() {
       icons: [{
         src: '/resources/square.png',
       }],
-      launchUrl: 'resources/',
+      url: 'resources/',
     });
     await postMessageToWindow('Successfully registered');
   } catch (e) {

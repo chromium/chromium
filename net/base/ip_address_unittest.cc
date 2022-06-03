@@ -6,8 +6,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -213,9 +213,8 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv4) {
                {"224.0.0.0", RESERVED},
                {"255.255.255.255", RESERVED}};
 
-  IPAddress address;
-  IPAddress mapped_address;
   for (const auto& test : tests) {
+    IPAddress address;
     EXPECT_TRUE(address.AssignFromIPLiteral(test.address));
     ASSERT_TRUE(address.IsValid());
     EXPECT_EQ(!test.is_reserved, address.IsPubliclyRoutable());
@@ -300,6 +299,16 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv6) {
     EXPECT_TRUE(address.AssignFromIPLiteral(test.address));
     EXPECT_EQ(!test.is_reserved, address.IsPubliclyRoutable());
   }
+}
+
+TEST(IPAddressTest, ConsiderLoopbackIPToBePubliclyRoutableForTestingMethod) {
+  IPAddress address;
+  EXPECT_TRUE(address.AssignFromIPLiteral("127.0.0.1"));
+  ASSERT_TRUE(address.IsValid());
+  EXPECT_FALSE(address.IsPubliclyRoutable());
+
+  IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+  EXPECT_TRUE(address.IsPubliclyRoutable());
 }
 
 TEST(IPAddressTest, IsZero) {

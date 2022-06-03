@@ -8,16 +8,17 @@
 #import <netinet/in.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
+#include <map>
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
@@ -29,6 +30,10 @@ namespace wifi {
 class WiFiServiceMac : public WiFiService {
  public:
   WiFiServiceMac();
+
+  WiFiServiceMac(const WiFiServiceMac&) = delete;
+  WiFiServiceMac& operator=(const WiFiServiceMac&) = delete;
+
   ~WiFiServiceMac() override;
 
   // WiFiService interface implementation.
@@ -151,8 +156,6 @@ class WiFiServiceMac : public WiFiService {
   std::string connected_network_guid_;
   // Temporary storage of network properties indexed by |network_guid|.
   base::DictionaryValue network_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(WiFiServiceMac);
 };
 
 WiFiServiceMac::WiFiServiceMac() : wlan_observer_(nil) {
@@ -396,17 +399,33 @@ void WiFiServiceMac::SetEventObservers(
 
   // Subscribe to OS notifications.
   if (!networks_changed_observer_.is_null()) {
-    void (^ns_observer) (NSNotification* notification) =
-        ^(NSNotification* notification) {
-            DVLOG(1) << "Received CWSSIDDidChangeNotification";
-            task_runner_->PostTask(
-                FROM_HERE,
-                base::BindOnce(&WiFiServiceMac::OnWlanObserverNotification,
-                               base::Unretained(this)));
+    void (^ns_observer)(NSNotification* notification) = ^(
+        NSNotification* notification) {
+      DVLOG(1) << "Received CoreWLAN notification that the SSID changed";
+      task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&WiFiServiceMac::OnWlanObserverNotification,
+                                    base::Unretained(this)));
     };
 
+    // A notification with the symbol kCWSSIDDidChangeNotification started being
+    // broadcast on SSID change starting with 10.6 and continuing on through
+    // 10.15. However, that symbol was marked as deprecated after macOS 10.10,
+    // and actually was removed starting with the macOS 10.9 SDK.
+    //
+    // Starting with 10.8, a set of parallel notifications with explicitly-
+    // specified string names started being broadcast. The parallel notification
+    // for that symbol is @"com.apple.coreWLAN.notification.ssid.legacy".
+    //
+    // Given the choice between a symbol that is marked as "deprecated" in the
+    // docs and actually removed from the SDK, and an undocumented string that
+    // is secretly broadcast, the string is the safer choice.
+    //
+    // This is not a supported way to do this. The correct way to do this is the
+    // -[CWWiFiClient startMonitoringEventWithType:error:] API:
+    // https://developer.apple.com/documentation/corewlan/cwwificlient/1512439-startmonitoringeventwithtype?language=objc
+    // TODO(avi): Use this API. https://crbug.com/1054063
     wlan_observer_ = [[NSNotificationCenter defaultCenter]
-        addObserverForName:kCWSSIDDidChangeNotification
+        addObserverForName:@"com.apple.coreWLAN.notification.ssid.legacy"
                     object:nil
                      queue:nil
                 usingBlock:ns_observer];

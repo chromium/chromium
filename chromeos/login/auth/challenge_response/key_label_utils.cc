@@ -4,7 +4,7 @@
 
 #include "chromeos/login/auth/challenge_response/key_label_utils.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 

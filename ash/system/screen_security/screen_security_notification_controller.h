@@ -5,10 +5,12 @@
 #ifndef ASH_SYSTEM_SCREEN_SECURITY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_SCREEN_SECURITY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/shell_observer.h"
 #include "ash/system/screen_security/screen_capture_observer.h"
 #include "ash/system/screen_security/screen_share_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -25,10 +27,16 @@ class ASH_EXPORT ScreenSecurityNotificationController
       public ShellObserver {
  public:
   ScreenSecurityNotificationController();
+
+  ScreenSecurityNotificationController(
+      const ScreenSecurityNotificationController&) = delete;
+  ScreenSecurityNotificationController& operator=(
+      const ScreenSecurityNotificationController&) = delete;
+
   ~ScreenSecurityNotificationController() override;
 
  private:
-  void CreateNotification(const base::string16& message, bool is_capture);
+  void CreateNotification(const std::u16string& message, bool is_capture);
   // Remove the notification and call all the callbacks in
   // |capture_stop_callbacks_| or |share_stop_callbacks_|, depending on
   // |is_capture| argument.
@@ -41,12 +49,12 @@ class ASH_EXPORT ScreenSecurityNotificationController
   void OnScreenCaptureStart(
       const base::RepeatingClosure& stop_callback,
       const base::RepeatingClosure& source_callback,
-      const base::string16& screen_capture_status) override;
+      const std::u16string& screen_capture_status) override;
   void OnScreenCaptureStop() override;
 
   // ScreenShareObserver:
   void OnScreenShareStart(const base::RepeatingClosure& stop_callback,
-                          const base::string16& helper_name) override;
+                          const std::u16string& helper_name) override;
   void OnScreenShareStop() override;
 
   // ShellObserver:
@@ -63,8 +71,6 @@ class ASH_EXPORT ScreenSecurityNotificationController
 
   base::WeakPtrFactory<ScreenSecurityNotificationController> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenSecurityNotificationController);
 };
 
 }  // namespace ash

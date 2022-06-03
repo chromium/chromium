@@ -27,6 +27,9 @@ To build the docs you will need these debian/ubuntu packages:
 * python-sphinx
 * python-beautifulsoup
 
+Note: Sphinx version 1.3.3 is required due to dependency on
+SmartyPantsHTMLTranslator, which is unavailable in recent versions of Sphinx.
+
 There are two primary make targets: ``chromesite`` and ``chromesite_rst``. The
 ``chromesite`` target will build all documentation, including the doxygen docs.
 This usually takes about a minute. To build this config, run::

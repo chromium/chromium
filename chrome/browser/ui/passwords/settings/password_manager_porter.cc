@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -30,7 +31,6 @@
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
-#include "base/strings/string16.h"
 #endif
 
 namespace {
@@ -55,8 +55,8 @@ base::FilePath GetDefaultFilepathForPasswordFile(
   base::FilePath default_path;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
 #if defined(OS_WIN)
-  base::string16 file_name =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_DEFAULT_EXPORT_FILENAME);
+  std::wstring file_name = base::UTF8ToWide(
+      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_DEFAULT_EXPORT_FILENAME));
 #else
   std::string file_name =
       l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_DEFAULT_EXPORT_FILENAME);
@@ -70,14 +70,15 @@ class PasswordImportConsumer {
  public:
   explicit PasswordImportConsumer(Profile* profile);
 
+  PasswordImportConsumer(const PasswordImportConsumer&) = delete;
+  PasswordImportConsumer& operator=(const PasswordImportConsumer&) = delete;
+
   void ConsumePassword(password_manager::PasswordImporter::Result result,
                        password_manager::CSVPasswordSequence seq);
 
  private:
   Profile* profile_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordImportConsumer);
 };
 
 PasswordImportConsumer::PasswordImportConsumer(Profile* profile)
@@ -95,7 +96,7 @@ void PasswordImportConsumer::ConsumePassword(
   if (result != password_manager::PasswordImporter::SUCCESS)
     return;
 
-  scoped_refptr<password_manager::PasswordStore> store(
+  scoped_refptr<password_manager::PasswordStoreInterface> store(
       PasswordStoreFactory::GetForProfile(profile_,
                                           ServiceAccessType::EXPLICIT_ACCESS));
   for (const auto& pwd : seq) {
@@ -117,7 +118,7 @@ PasswordManagerPorter::PasswordManagerPorter(
     : credential_provider_interface_(credential_provider_interface),
       on_export_progress_callback_(on_export_progress_callback) {}
 
-PasswordManagerPorter::~PasswordManagerPorter() {}
+PasswordManagerPorter::~PasswordManagerPorter() = default;
 
 bool PasswordManagerPorter::Store() {
   // In unittests a null WebContents means: "Abort creating the file Selector."

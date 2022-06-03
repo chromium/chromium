@@ -8,8 +8,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <iosfwd>
+
 #include "base/base_export.h"
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -21,6 +22,8 @@
 #endif
 
 namespace base {
+
+class FilePath;
 
 // ProcessHandle is a platform specific type which represents the underlying OS
 // handle to a process.
@@ -103,7 +106,7 @@ BASE_EXPORT ProcessId GetCurrentProcId();
 // processes may be reused.
 BASE_EXPORT UniqueProcId GetUniqueIdForProcess();
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // When a process is started in a different PID namespace from the browser
 // process, this function must be called with the process's PID in the browser's
 // PID namespace in order to initialize its unique ID. Not thread safe.

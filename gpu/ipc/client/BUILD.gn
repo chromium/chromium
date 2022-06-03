@@ -6,18 +6,16 @@ import("//build/config/ui.gni")
 
 group("client") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu",
-    ]
+    public_deps = [ "//gpu" ]
   } else {
-    public_deps = [
-      ":ipc_client_sources",
-    ]
+    public_deps = [ ":ipc_client_sources" ]
   }
 }
 
 source_set("ipc_client_sources") {
   sources = [
+    "client_shared_image_interface.cc",
+    "client_shared_image_interface.h",
     "command_buffer_proxy_impl.cc",
     "command_buffer_proxy_impl.h",
     "gpu_channel_host.cc",
@@ -28,7 +26,6 @@ source_set("ipc_client_sources") {
     "shared_image_interface_proxy.h",
   ]
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//gpu:gpu_implementation",
   ]
   deps = [
@@ -37,13 +34,14 @@ source_set("ipc_client_sources") {
     "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/config:config_sources",
-    "//gpu/ipc/common:ipc_common_sources",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
   public_deps = [
+    "//gpu/ipc/common:ipc_common_sources",
     "//ipc",
   ]
 }

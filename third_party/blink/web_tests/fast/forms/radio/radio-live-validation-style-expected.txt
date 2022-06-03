@@ -6,7 +6,7 @@ Removing a checked radio button from a required radio button group by a DOM tree
 PASS backgroundOf($("radio1")) is validColor
 PASS parent.removeChild($("radio2")); backgroundOf($("radio1")) is invalidColor
 PASS $("radio1").remove(); radio2.webkitMatchesSelector(":valid") is false
-PASS radio2.remove(); radio2.webkitMatchesSelector(":valid") is true
+PASS radio2.remove(); radio2.webkitMatchesSelector(":valid") is false
 
 
 Removing a checked radio button from a required radio button group by name attribute change:

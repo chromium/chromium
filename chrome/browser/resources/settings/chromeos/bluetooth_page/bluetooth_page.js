@@ -8,7 +8,7 @@
  * just provodes a summary and link to the subpage.
  */
 
-const bluetoothApis = window['bluetoothApis'] || {
+export const bluetoothApis = window['bluetoothApis'] || {
   /**
    * Set this to provide a fake implementation for testing.
    * @type {Bluetooth}
@@ -22,10 +22,37 @@ const bluetoothApis = window['bluetoothApis'] || {
   bluetoothPrivateApiForTest: null,
 };
 
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import '../os_icons.m.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import '../../prefs/prefs.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import './bluetooth_subpage.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-bluetooth-page',
 
-  behaviors: [I18nBehavior, PrefsBehavior],
+  behaviors: [
+    I18nBehavior,
+    DeepLinkingBehavior,
+    PrefsBehavior,
+    RouteObserverBehavior,
+  ],
 
   properties: {
     /** Preferences state. */
@@ -69,11 +96,11 @@ Polymer({
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
-      value: function() {
+      value() {
         const map = new Map();
-        if (settings.routes.BLUETOOTH_DEVICES) {
+        if (routes.BLUETOOTH_DEVICES) {
           map.set(
-              settings.routes.BLUETOOTH_DEVICES.path,
+              routes.BLUETOOTH_DEVICES.path,
               '#bluetoothDevices .subpage-arrow');
         }
         return map;
@@ -106,7 +133,7 @@ Polymer({
      */
     isSecondaryUser_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('isSecondaryUser');
       },
       readOnly: true,
@@ -118,10 +145,19 @@ Polymer({
      */
     primaryUserEmail_: {
       type: String,
-      value: function() {
+      value() {
         return loadTimeData.getString('primaryUserEmail');
       },
       readOnly: true,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([chromeos.settings.mojom.Setting.kBluetoothOnOff]),
     },
   },
 
@@ -135,7 +171,7 @@ Polymer({
   bluetoothAdapterStateChangedListener_: undefined,
 
   /** @override */
-  ready: function() {
+  ready() {
     if (bluetoothApis.bluetoothApiForTest) {
       this.bluetooth = bluetoothApis.bluetoothApiForTest;
     }
@@ -145,7 +181,7 @@ Polymer({
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.bluetoothAdapterStateChangedListener_ =
         this.onBluetoothAdapterStateChanged_.bind(this);
     this.bluetooth.onAdapterStateChanged.addListener(
@@ -156,7 +192,7 @@ Polymer({
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     if (this.bluetoothAdapterStateChangedListener_) {
       this.bluetooth.onAdapterStateChanged.removeListener(
           this.bluetoothAdapterStateChangedListener_);
@@ -164,11 +200,26 @@ Polymer({
   },
 
   /**
+   * RouteObserverBehavior
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
+   * @protected
+   */
+  currentRouteChanged(newRoute, oldRoute) {
+    // Does not apply to this page.
+    if (newRoute !== routes.BLUETOOTH) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  },
+
+  /**
    * @param {boolean} bluetoothToggleState
    * @return {string}
    * @private
    */
-  getIcon_: function(bluetoothToggleState) {
+  getIcon_(bluetoothToggleState) {
     // Don't use |this.bluetoothToggleState_| here, since it has not been
     // updated yet to the latest value.
     if (!bluetoothToggleState) {
@@ -184,7 +235,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getOnOffString_: function(enabled, onstr, offstr) {
+  getOnOffString_(enabled, onstr, offstr) {
     return enabled ? onstr : offstr;
   },
 
@@ -192,7 +243,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isToggleEnabled_: function() {
+  isToggleEnabled_() {
     return this.adapterState_ !== undefined && this.adapterState_.available &&
         !this.stateChangeInProgress_;
   },
@@ -202,15 +253,27 @@ Polymer({
    * @param {!chrome.bluetooth.AdapterState} state
    * @private
    */
-  onBluetoothAdapterStateChanged_: function(state) {
+  onBluetoothAdapterStateChanged_(state) {
     this.adapterState_ = state;
     if (this.isToggleEnabled_()) {
       this.bluetoothToggleState_ = state.powered;
     }
   },
 
+  /**
+   * Listens for toggle change events (rather than state changes) to handle
+   * just user-triggered changes to the bluetoothToggleState_.
+   * @private
+   */
+  onBluetoothToggledByUser_() {
+    // Record that the user manually enabled/disabled Bluetooth.
+    recordSettingChange(
+        chromeos.settings.mojom.Setting.kBluetoothOnOff,
+        {boolValue: this.bluetoothToggleState_});
+  },
+
   /** @private */
-  onTap_: function() {
+  onTap_() {
     if (!this.isToggleEnabled_()) {
       return;
     }
@@ -225,15 +288,15 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onSubpageArrowTap_: function(e) {
+  onSubpageArrowTap_(e) {
     this.openSubpage_();
     e.stopPropagation();
   },
 
   /** @private */
-  bluetoothToggleStateChanged_: function() {
+  bluetoothToggleStateChanged_() {
     if (!this.adapterState_ || !this.isToggleEnabled_() ||
-        this.bluetoothToggleState_ == this.adapterState_.powered) {
+        this.bluetoothToggleState_ === this.adapterState_.powered) {
       return;
     }
     this.stateChangeInProgress_ = true;
@@ -244,7 +307,7 @@ Polymer({
           this.stateChangeInProgress_ = false;
 
           const error = chrome.runtime.lastError;
-          if (error && error != 'Error setting adapter properties: powered') {
+          if (error && error !== 'Error setting adapter properties: powered') {
             console.error('Error enabling bluetooth: ' + error.message);
             return;
           }
@@ -255,7 +318,7 @@ Polymer({
   },
 
   /** @private */
-  openSubpage_: function() {
-    settings.navigateTo(settings.routes.BLUETOOTH_DEVICES);
+  openSubpage_() {
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
   }
 });

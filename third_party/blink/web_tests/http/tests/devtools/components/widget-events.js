@@ -9,41 +9,41 @@
   var TestWidget = class extends UI.Widget {
     constructor(widgetName) {
       super();
-      this._widgetName = widgetName;
-      this._processWillShowCount = 0;
-      this._processWasHiddenCount = 0;
-      TestRunner.addResult(this._widgetName + '()');
+      this.widgetName = widgetName;
+      this.processWillShowCount = 0;
+      this.processWasHiddenCount = 0;
+      TestRunner.addResult(this.widgetName + '()');
     }
 
-    _processWillShow() {
-      TestRunner.assertEquals(this._processWillShowCount, this._processWasHiddenCount);
-      super._processWillShow();
-      ++this._processWillShowCount;
+    processWillShow() {
+      TestRunner.assertEquals(this.processWillShowCount, this.processWasHiddenCount);
+      super.processWillShow();
+      ++this.processWillShowCount;
     }
 
-    _processWasHidden() {
-      super._processWasHidden();
-      ++this._processWasHiddenCount;
-      TestRunner.assertEquals(this._processWillShowCount, this._processWasHiddenCount);
+    processWasHidden() {
+      super.processWasHidden();
+      ++this.processWasHiddenCount;
+      TestRunner.assertEquals(this.processWillShowCount, this.processWasHiddenCount);
     }
 
     show(parentElement) {
-      TestRunner.addResult(this._widgetName + '.show()');
+      TestRunner.addResult(this.widgetName + '.show()');
       super.show(parentElement);
     }
 
     detach() {
-      TestRunner.addResult(this._widgetName + '.detach()');
+      TestRunner.addResult(this.widgetName + '.detach()');
       super.detach();
     }
 
     doResize() {
-      TestRunner.addResult(this._widgetName + '.doResize()');
+      TestRunner.addResult(this.widgetName + '.doResize()');
       super.doResize();
     }
 
     wasShown() {
-      TestRunner.addResult('  ' + this._widgetName + '.wasShown()');
+      TestRunner.addResult('  ' + this.widgetName + '.wasShown()');
       if (this.showOnWasShown)
         this.showOnWasShown.show(this.showRoot || this.element);
       if (this.detachOnWasShown)
@@ -53,7 +53,7 @@
     }
 
     willHide() {
-      TestRunner.addResult('  ' + this._widgetName + '.willHide()');
+      TestRunner.addResult('  ' + this.widgetName + '.willHide()');
       if (this.showOnWillHide)
         this.showOnWillHide.show(this.element);
       if (this.detachOnWillHide)
@@ -61,7 +61,7 @@
     }
 
     onResize() {
-      TestRunner.addResult('  ' + this._widgetName + '.onResize()');
+      TestRunner.addResult('  ' + this.widgetName + '.onResize()');
     }
   };
 
@@ -108,7 +108,7 @@
       var parentWidget = new TestWidget('Parent');
       var childWidget = new TestWidget('Child');
       childWidget.show(parentWidget.element);
-      if (childWidget._parentWidget === parentWidget)
+      if (childWidget.parentWidget() === parentWidget)
         TestRunner.addResult('OK');
       else
         TestRunner.addResult('FAILED');
@@ -122,7 +122,7 @@
       var childWidget = new TestWidget('Child');
       childWidget.show(div);
 
-      if (childWidget._parentWidget === parentWidget)
+      if (childWidget.parentWidget() === parentWidget)
         TestRunner.addResult('OK');
       else
         TestRunner.addResult('FAILED');

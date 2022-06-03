@@ -6,55 +6,37 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_AUTO_COLOR_H_
 
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class StyleAutoColor {
+class StyleAutoColor : public StyleColor {
   DISALLOW_NEW();
 
  public:
-  StyleAutoColor(Color color)
-      : type_(ValueType::kSpecifiedColor), color_(color) {}
-  static StyleAutoColor AutoColor() { return StyleAutoColor(ValueType::kAuto); }
+  explicit StyleAutoColor(Color color) : StyleColor(color) {}
+  explicit StyleAutoColor(CSSValueID keyword) : StyleColor(keyword) {}
+  StyleAutoColor(Color color, CSSValueID keyword)
+      : StyleColor(color, keyword) {}
+  static StyleAutoColor AutoColor() {
+    return StyleAutoColor(CSSValueID::kAuto);
+  }
   static StyleAutoColor CurrentColor() {
-    return StyleAutoColor(ValueType::kCurrentColor);
+    return StyleAutoColor(CSSValueID::kCurrentcolor);
   }
 
-  bool IsAutoColor() const { return type_ == ValueType::kAuto; }
-  bool IsCurrentColor() const { return type_ == ValueType::kCurrentColor; }
-  Color GetColor() const {
-    DCHECK(type_ == ValueType::kSpecifiedColor);
-    return color_;
+  bool IsAutoColor() const { return color_keyword_ == CSSValueID::kAuto; }
+
+  const StyleColor& ToStyleColor() const {
+    DCHECK(!IsAutoColor());
+    return *this;
   }
-
-  Color Resolve(Color current_color) const {
-    return type_ == ValueType::kSpecifiedColor ? color_ : current_color;
-  }
-
-  StyleColor ToStyleColor() const {
-    DCHECK(type_ != ValueType::kAuto);
-    if (type_ == ValueType::kSpecifiedColor)
-      return StyleColor(color_);
-    DCHECK(type_ == ValueType::kCurrentColor);
-    return StyleColor::CurrentColor();
-  }
-
- private:
-  enum class ValueType { kAuto, kCurrentColor, kSpecifiedColor };
-  StyleAutoColor(ValueType type) : type_(type) {}
-
-  ValueType type_;
-  Color color_;
 };
 
 inline bool operator==(const StyleAutoColor& a, const StyleAutoColor& b) {
   if (a.IsAutoColor() || b.IsAutoColor())
     return a.IsAutoColor() && b.IsAutoColor();
-  if (a.IsCurrentColor() || b.IsCurrentColor())
-    return a.IsCurrentColor() && b.IsCurrentColor();
-  return a.GetColor() == b.GetColor();
+  return a.ToStyleColor() == b.ToStyleColor();
 }
 
 inline bool operator!=(const StyleAutoColor& a, const StyleAutoColor& b) {

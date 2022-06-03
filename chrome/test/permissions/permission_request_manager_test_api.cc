@@ -7,72 +7,67 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "chrome/browser/permissions/permission_request_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-
-#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
+#include "components/permissions/permission_request.h"
 #include "ui/views/widget/widget.h"
-#endif
 
 namespace test {
 namespace {
 
-// Wraps a PermissionRequestImpl so that it can pass a closure to itself to the
-// PermissionRequestImpl constructor. Without this wrapper, there's no way to
+// Wraps a PermissionRequest so that it can pass a closure to itself to the
+// PermissionRequest constructor. Without this wrapper, there's no way to
 // handle all destruction paths.
-class TestPermisisonRequestOwner {
+class TestPermissionRequestOwner {
  public:
-  explicit TestPermisisonRequestOwner(ContentSettingsType type) {
-    bool user_gesture = true;
-    auto decided = [](ContentSetting) {};
-    request_ = std::make_unique<PermissionRequestImpl>(
-        GURL("https://example.com"), type, user_gesture, base::Bind(decided),
-        base::Bind(&TestPermisisonRequestOwner::DeleteThis,
-                   base::Unretained(this)));
+  explicit TestPermissionRequestOwner(permissions::RequestType type) {
+    const bool user_gesture = true;
+    auto decided = [](ContentSetting, bool) {};
+    request_ = std::make_unique<permissions::PermissionRequest>(
+        GURL("https://example.com"), type, user_gesture,
+        base::BindOnce(decided),
+        base::BindOnce(&TestPermissionRequestOwner::DeleteThis,
+                       base::Unretained(this)));
   }
 
-  PermissionRequestImpl* request() { return request_.get(); }
+  TestPermissionRequestOwner(const TestPermissionRequestOwner&) = delete;
+  TestPermissionRequestOwner& operator=(const TestPermissionRequestOwner&) =
+      delete;
+
+  permissions::PermissionRequest* request() { return request_.get(); }
 
  private:
   void DeleteThis() { delete this; }
 
-  std::unique_ptr<PermissionRequestImpl> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPermisisonRequestOwner);
+  std::unique_ptr<permissions::PermissionRequest> request_;
 };
 
 }  // namespace
 
 PermissionRequestManagerTestApi::PermissionRequestManagerTestApi(
-    PermissionRequestManager* manager)
+    permissions::PermissionRequestManager* manager)
     : manager_(manager) {}
 
 PermissionRequestManagerTestApi::PermissionRequestManagerTestApi(
     Browser* browser)
-    : PermissionRequestManagerTestApi(PermissionRequestManager::FromWebContents(
-          browser->tab_strip_model()->GetActiveWebContents())) {}
+    : PermissionRequestManagerTestApi(
+          permissions::PermissionRequestManager::FromWebContents(
+              browser->tab_strip_model()->GetActiveWebContents())) {}
 
 void PermissionRequestManagerTestApi::AddSimpleRequest(
-    ContentSettingsType type) {
-  TestPermisisonRequestOwner* request_owner =
-      new TestPermisisonRequestOwner(type);
-  manager_->AddRequest(request_owner->request());
+    content::RenderFrameHost* source_frame,
+    permissions::RequestType type) {
+  TestPermissionRequestOwner* request_owner =
+      new TestPermissionRequestOwner(type);
+  manager_->AddRequest(source_frame, request_owner->request());
 }
 
-gfx::NativeWindow PermissionRequestManagerTestApi::GetPromptWindow() {
-#if defined(TOOLKIT_VIEWS)
+views::Widget* PermissionRequestManagerTestApi::GetPromptWindow() {
   PermissionPromptImpl* prompt =
       static_cast<PermissionPromptImpl*>(manager_->view_.get());
-  return prompt ? prompt->prompt_bubble_for_testing()
-                      ->GetWidget()
-                      ->GetNativeWindow()
-                : nullptr;
-#else
-  NOTIMPLEMENTED();
-#endif
+  return prompt ? prompt->GetPromptBubbleWidgetForTesting() : nullptr;
 }
 
 void PermissionRequestManagerTestApi::SimulateWebContentsDestroyed() {

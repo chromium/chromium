@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/win/wrapped_window_proc.h"
@@ -124,13 +125,13 @@ void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
 ChildWindowWin::ChildWindowWin(HWND parent_window)
     : parent_window_(parent_window) {}
 
-bool ChildWindowWin::Initialize() {
+void ChildWindowWin::Initialize() {
   if (window_)
-    return true;
+    return;
 
   thread_ = std::make_unique<base::Thread>("Window owner thread");
   base::Thread::Options options(base::MessagePumpType::UI, 0);
-  thread_->StartWithOptions(options);
+  thread_->StartWithOptions(std::move(options));
 
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -143,8 +144,6 @@ bool ChildWindowWin::Initialize() {
       base::BindOnce(&CreateWindowsOnThread, gfx::Rect(window_rect).size(),
                      &event, &window_, &initial_parent_window_));
   event.Wait();
-
-  return true;
 }
 
 ChildWindowWin::~ChildWindowWin() {

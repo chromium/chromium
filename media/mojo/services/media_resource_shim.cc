@@ -7,22 +7,21 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 
 namespace media {
 
 MediaResourceShim::MediaResourceShim(
     std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
-    const base::Closure& demuxer_ready_cb)
-    : demuxer_ready_cb_(demuxer_ready_cb), streams_ready_(0) {
+    base::OnceClosure demuxer_ready_cb)
+    : demuxer_ready_cb_(std::move(demuxer_ready_cb)), streams_ready_(0) {
   DCHECK(!streams.empty());
   DCHECK(demuxer_ready_cb_);
 
   for (auto& s : streams) {
     streams_.emplace_back(new MojoDemuxerStreamAdapter(
-        std::move(s), base::Bind(&MediaResourceShim::OnStreamReady,
-                                 weak_factory_.GetWeakPtr())));
+        std::move(s), base::BindOnce(&MediaResourceShim::OnStreamReady,
+                                     weak_factory_.GetWeakPtr())));
   }
 }
 

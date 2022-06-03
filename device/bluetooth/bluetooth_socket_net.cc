@@ -9,11 +9,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
@@ -56,48 +57,42 @@ BluetoothSocketNet::~BluetoothSocketNet() {
                             base::BindOnce(&DeactivateSocket, socket_thread_));
 }
 
-void BluetoothSocketNet::Close() {
+void BluetoothSocketNet::Disconnect(base::OnceClosure success_callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   socket_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSocketNet::DoClose, this));
-}
-
-void BluetoothSocketNet::Disconnect(
-    const base::Closure& success_callback) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  socket_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSocketNet::DoDisconnect, this,
-                                base::Bind(&BluetoothSocketNet::PostSuccess,
-                                           this, success_callback)));
+      FROM_HERE,
+      base::BindOnce(&BluetoothSocketNet::DoDisconnect, this,
+                     base::BindOnce(&BluetoothSocketNet::PostSuccess, this,
+                                    std::move(success_callback))));
 }
 
 void BluetoothSocketNet::Receive(
     int buffer_size,
-    const ReceiveCompletionCallback& success_callback,
-    const ReceiveErrorCompletionCallback& error_callback) {
+    ReceiveCompletionCallback success_callback,
+    ReceiveErrorCompletionCallback error_callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   socket_thread_->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&BluetoothSocketNet::DoReceive, this, buffer_size,
-                     base::Bind(&BluetoothSocketNet::PostReceiveCompletion,
-                                this, success_callback),
-                     base::Bind(&BluetoothSocketNet::PostReceiveErrorCompletion,
-                                this, error_callback)));
+      base::BindOnce(
+          &BluetoothSocketNet::DoReceive, this, buffer_size,
+          base::BindOnce(&BluetoothSocketNet::PostReceiveCompletion, this,
+                         std::move(success_callback)),
+          base::BindOnce(&BluetoothSocketNet::PostReceiveErrorCompletion, this,
+                         std::move(error_callback))));
 }
 
-void BluetoothSocketNet::Send(
-    scoped_refptr<net::IOBuffer> buffer,
-    int buffer_size,
-    const SendCompletionCallback& success_callback,
-    const ErrorCompletionCallback& error_callback) {
+void BluetoothSocketNet::Send(scoped_refptr<net::IOBuffer> buffer,
+                              int buffer_size,
+                              SendCompletionCallback success_callback,
+                              ErrorCompletionCallback error_callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   socket_thread_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSocketNet::DoSend, this, buffer, buffer_size,
-                     base::Bind(&BluetoothSocketNet::PostSendCompletion, this,
-                                success_callback),
-                     base::Bind(&BluetoothSocketNet::PostErrorCompletion, this,
-                                error_callback)));
+                     base::BindOnce(&BluetoothSocketNet::PostSendCompletion,
+                                    this, std::move(success_callback)),
+                     base::BindOnce(&BluetoothSocketNet::PostErrorCompletion,
+                                    this, std::move(error_callback))));
 }
 
 void BluetoothSocketNet::ResetData() {
@@ -112,17 +107,17 @@ void BluetoothSocketNet::SetTCPSocket(
   tcp_socket_ = std::move(tcp_socket);
 }
 
-void BluetoothSocketNet::PostSuccess(const base::Closure& callback) {
-  ui_task_runner_->PostTask(FROM_HERE, callback);
+void BluetoothSocketNet::PostSuccess(base::OnceClosure callback) {
+  ui_task_runner_->PostTask(FROM_HERE, std::move(callback));
 }
 
-void BluetoothSocketNet::PostErrorCompletion(
-    const ErrorCompletionCallback& callback,
-    const std::string& error) {
-  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, error));
+void BluetoothSocketNet::PostErrorCompletion(ErrorCompletionCallback callback,
+                                             const std::string& error) {
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(callback), error));
 }
 
-void BluetoothSocketNet::DoClose() {
+void BluetoothSocketNet::DoDisconnect(base::OnceClosure callback) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -140,87 +135,83 @@ void BluetoothSocketNet::DoClose() {
   std::swap(write_queue_, empty);
 
   ResetData();
-}
-
-void BluetoothSocketNet::DoDisconnect(const base::Closure& callback) {
-  DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
-
-  DoClose();
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void BluetoothSocketNet::DoReceive(
     int buffer_size,
-    const ReceiveCompletionCallback& success_callback,
-    const ReceiveErrorCompletionCallback& error_callback) {
+    ReceiveCompletionCallback success_callback,
+    ReceiveErrorCompletionCallback error_callback) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   if (!tcp_socket_) {
-    error_callback.Run(BluetoothSocket::kDisconnected, kSocketNotConnected);
+    std::move(error_callback)
+        .Run(BluetoothSocket::kDisconnected, kSocketNotConnected);
     return;
   }
 
   // Only one pending read at a time
   if (read_buffer_.get()) {
-    error_callback.Run(BluetoothSocket::kIOPending,
-                       net::ErrorToString(net::ERR_IO_PENDING));
+    std::move(error_callback)
+        .Run(BluetoothSocket::kIOPending,
+             net::ErrorToString(net::ERR_IO_PENDING));
     return;
   }
 
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&BluetoothSocketNet::OnSocketReadComplete, this,
+                     std::move(success_callback), std::move(error_callback)));
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
-  int read_result =
-      tcp_socket_->Read(buffer.get(),
-                        buffer->size(),
-                        base::Bind(&BluetoothSocketNet::OnSocketReadComplete,
-                                   this,
-                                   success_callback,
-                                   error_callback));
+  int read_result = tcp_socket_->Read(buffer.get(), buffer->size(),
+                                      std::move(split_callback.first));
 
   read_buffer_ = buffer;
-  if (read_result != net::ERR_IO_PENDING)
-    OnSocketReadComplete(success_callback, error_callback, read_result);
+
+  // Read() will not have run |split_callback.first| if there is no pending I/O.
+  if (read_result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(read_result);
+  }
 }
 
 void BluetoothSocketNet::OnSocketReadComplete(
-    const ReceiveCompletionCallback& success_callback,
-    const ReceiveErrorCompletionCallback& error_callback,
+    ReceiveCompletionCallback success_callback,
+    ReceiveErrorCompletionCallback error_callback,
     int read_result) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
 
   scoped_refptr<net::IOBufferWithSize> buffer;
   buffer.swap(read_buffer_);
   if (read_result > 0) {
-    success_callback.Run(read_result, buffer);
+    std::move(success_callback).Run(read_result, buffer);
   } else if (read_result == net::OK ||
              read_result == net::ERR_CONNECTION_CLOSED ||
              read_result == net::ERR_CONNECTION_RESET) {
-    error_callback.Run(BluetoothSocket::kDisconnected,
-                       net::ErrorToString(read_result));
+    std::move(error_callback)
+        .Run(BluetoothSocket::kDisconnected, net::ErrorToString(read_result));
   } else {
-    error_callback.Run(BluetoothSocket::kSystemError,
-                       net::ErrorToString(read_result));
+    std::move(error_callback)
+        .Run(BluetoothSocket::kSystemError, net::ErrorToString(read_result));
   }
 }
 
-void BluetoothSocketNet::DoSend(
-    scoped_refptr<net::IOBuffer> buffer,
-    int buffer_size,
-    const SendCompletionCallback& success_callback,
-    const ErrorCompletionCallback& error_callback) {
+void BluetoothSocketNet::DoSend(scoped_refptr<net::IOBuffer> buffer,
+                                int buffer_size,
+                                SendCompletionCallback success_callback,
+                                ErrorCompletionCallback error_callback) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
 
   if (!tcp_socket_) {
-    error_callback.Run(kSocketNotConnected);
+    std::move(error_callback).Run(kSocketNotConnected);
     return;
   }
 
   auto request = std::make_unique<WriteRequest>();
   request->buffer = buffer;
   request->buffer_size = buffer_size;
-  request->success_callback = success_callback;
-  request->error_callback = error_callback;
+  request->success_callback = std::move(success_callback);
+  request->error_callback = std::move(error_callback);
 
   write_queue_.push(std::move(request));
   if (write_queue_.size() == 1) {
@@ -236,13 +227,43 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
   if (!tcp_socket_)
     return;
 
+  if (pending_write_request_) {
+    // It is possible to enter this function while a write request is
+    // currently pending if the following sequence happens:
+    //
+    // 1) A single pending write is running and it is the last one in the queue.
+    // 2) A Send() call queues a DoSend() call on the sequence.
+    // 3) The pending write completes, queue length is zero, a call to
+    //      SendFrontWriteRequest is queued on the sequence.
+    // 4) DoSend() runs on the sequence, queues a write request, and runs
+    //      SendFrontWriteRequest() inline because the queue size is 1.
+    // 5) The immediate call for SendFrontWriteRequest() starts a write request
+    //      and exits.
+    // 6) The next SendFrontWriteRequest() which was queued in step 3 now runs
+    //      while the write request from 5 is still pending.
+    //
+    // At this point we have entered SendFrontWriteRequest() while we are
+    // waiting for a pending write. Previously the code did not handle this
+    // situation and would attempt to process the write request at the front
+    // of the queue twice which is both wrong from a data perspective and also
+    // triggers a CHECK in the Socket.
+    //
+    // The fix is to ensure we only process a new write request when there are
+    // no pending requests, so we exit early here and let OnSocketWriteComplete
+    // queue the next SendFrontWriteRequest.
+    return;
+  }
+
   if (write_queue_.size() == 0)
     return;
 
-  WriteRequest* request = write_queue_.front().get();
-  net::CompletionRepeatingCallback callback =
-      base::BindRepeating(&BluetoothSocketNet::OnSocketWriteComplete, this,
-                          request->success_callback, request->error_callback);
+  pending_write_request_ = std::move(write_queue_.front());
+  write_queue_.pop();
+
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&BluetoothSocketNet::OnSocketWriteComplete, this,
+                     std::move(pending_write_request_->success_callback),
+                     std::move(pending_write_request_->error_callback)));
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("bluetooth_socket", R"(
         semantics {
@@ -267,26 +288,29 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
             "DeviceAllowBluetooth policy can disable Bluetooth for ChromeOS, "
             "not implemented for other platforms."
         })");
-  int send_result =
-      tcp_socket_->Write(request->buffer.get(), request->buffer_size, callback,
-                         traffic_annotation);
+  int send_result = tcp_socket_->Write(
+      pending_write_request_->buffer.get(), pending_write_request_->buffer_size,
+      std::move(split_callback.first), traffic_annotation);
+
+  // Write() will not have run |split_callback.first| if there is no pending
+  // I/O.
   if (send_result != net::ERR_IO_PENDING) {
-    callback.Run(send_result);
+    std::move(split_callback.second).Run(send_result);
   }
 }
 
 void BluetoothSocketNet::OnSocketWriteComplete(
-    const SendCompletionCallback& success_callback,
-    const ErrorCompletionCallback& error_callback,
+    SendCompletionCallback success_callback,
+    ErrorCompletionCallback error_callback,
     int send_result) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
 
-  write_queue_.pop();
+  pending_write_request_.reset();
 
   if (send_result >= net::OK) {
-    success_callback.Run(send_result);
+    std::move(success_callback).Run(send_result);
   } else {
-    error_callback.Run(net::ErrorToString(send_result));
+    std::move(error_callback).Run(net::ErrorToString(send_result));
   }
 
   // Don't call directly to avoid potentail large recursion.
@@ -296,25 +320,26 @@ void BluetoothSocketNet::OnSocketWriteComplete(
 }
 
 void BluetoothSocketNet::PostReceiveCompletion(
-    const ReceiveCompletionCallback& callback,
+    ReceiveCompletionCallback callback,
     int io_buffer_size,
     scoped_refptr<net::IOBuffer> io_buffer) {
   ui_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(callback, io_buffer_size, io_buffer));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), io_buffer_size, io_buffer));
 }
 
 void BluetoothSocketNet::PostReceiveErrorCompletion(
-    const ReceiveErrorCompletionCallback& callback,
+    ReceiveErrorCompletionCallback callback,
     ErrorReason reason,
     const std::string& error_message) {
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(callback, reason, error_message));
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), reason, error_message));
 }
 
-void BluetoothSocketNet::PostSendCompletion(
-    const SendCompletionCallback& callback,
-    int bytes_written) {
-  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, bytes_written));
+void BluetoothSocketNet::PostSendCompletion(SendCompletionCallback callback,
+                                            int bytes_written) {
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(callback), bytes_written));
 }
 
 }  // namespace device

@@ -4,10 +4,12 @@
 
 #include "ash/login/ui/login_big_user_view.h"
 
-#include "ash/public/cpp/login_constants.h"
+#include "ash/login/ui/login_constants.h"
 #include "ash/shell.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "components/account_id/account_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -26,6 +28,14 @@ bool OnlyOneSet(views::View* a, views::View* b) {
 
 }  // namespace
 
+LoginBigUserView::TestApi::TestApi(LoginBigUserView* view) : view_(view) {}
+
+LoginBigUserView::TestApi::~TestApi() = default;
+
+void LoginBigUserView::TestApi::Remove() {
+  view_->auth_user_callbacks_.on_remove.Run();
+}
+
 LoginBigUserView::LoginBigUserView(
     const LoginUserInfo& user,
     const LoginAuthUserView::Callbacks& auth_user_callbacks,
@@ -38,7 +48,7 @@ LoginBigUserView::LoginBigUserView(
   // Creates either |auth_user_| or |public_account_|.
   CreateChildView(user);
 
-  observer_.Add(Shell::Get()->wallpaper_controller());
+  observation_.Observe(Shell::Get()->wallpaper_controller());
   // Adding the observer will not run OnWallpaperBlurChanged; run it now to set
   // the initial state.
   OnWallpaperBlurChanged();
@@ -110,9 +120,9 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
     layer()->SetFillsBoundsOpaquely(false);
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainter(
-            SkColorSetA(login_constants::kDefaultBaseColor,
-                        login_constants::kNonBlurredWallpaperBackgroundAlpha),
-            login_constants::kNonBlurredWallpaperBackgroundRadiusDp)));
+            AshColorProvider::Get()->GetShieldLayerColor(
+                AshColorProvider::ShieldLayerType::kShield80),
+            login::kNonBlurredWallpaperBackgroundRadiusDp)));
   }
 }
 

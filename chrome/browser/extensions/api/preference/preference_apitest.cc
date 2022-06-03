@@ -5,10 +5,10 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -21,14 +21,17 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/embedder_support/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -36,24 +39,36 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
+using CookieControlsMode = content_settings::CookieControlsMode;
+
 class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
  protected:
-  ExtensionPreferenceApiTest() : profile_(NULL) {}
+  ExtensionPreferenceApiTest() : profile_(nullptr) {}
+
+  void SetCookieControlsMode(PrefService* prefs, CookieControlsMode mode) {
+    prefs->SetInteger(prefs::kCookieControlsMode, static_cast<int>(mode));
+  }
+
+  CookieControlsMode GetCookieControlsMode(PrefService* prefs) {
+    return static_cast<CookieControlsMode>(
+        prefs->GetInteger(prefs::kCookieControlsMode));
+  }
 
   void CheckPreferencesSet() {
     PrefService* prefs = profile_->GetPrefs();
-    const PrefService::Preference* pref = prefs->FindPreference(
-        prefs::kBlockThirdPartyCookies);
+    const PrefService::Preference* pref =
+        prefs->FindPreference(prefs::kCookieControlsMode);
     ASSERT_TRUE(pref);
     EXPECT_TRUE(pref->IsExtensionControlled());
-    EXPECT_TRUE(prefs->GetBoolean(prefs::kAlternateErrorPagesEnabled));
+    EXPECT_TRUE(
+        prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
     EXPECT_TRUE(prefs->GetBoolean(autofill::prefs::kAutofillEnabledDeprecated));
     EXPECT_TRUE(prefs->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled));
     EXPECT_TRUE(prefs->GetBoolean(autofill::prefs::kAutofillProfileEnabled));
-    EXPECT_FALSE(prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+    EXPECT_EQ(CookieControlsMode::kOff, GetCookieControlsMode(prefs));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableReferrers));
-    EXPECT_TRUE(prefs->GetBoolean(prefs::kOfferTranslateEnabled));
+    EXPECT_TRUE(prefs->GetBoolean(translate::prefs::kOfferTranslateEnabled));
     EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_DEFAULT,
               prefs->GetInteger(prefs::kNetworkPredictionOptions));
     EXPECT_TRUE(
@@ -64,26 +79,46 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
 
   void CheckPreferencesCleared() {
     PrefService* prefs = profile_->GetPrefs();
-    const PrefService::Preference* pref = prefs->FindPreference(
-        prefs::kBlockThirdPartyCookies);
+    const PrefService::Preference* pref =
+        prefs->FindPreference(prefs::kCookieControlsMode);
     ASSERT_TRUE(pref);
     EXPECT_FALSE(pref->IsExtensionControlled());
-    EXPECT_FALSE(prefs->GetBoolean(prefs::kAlternateErrorPagesEnabled));
+    EXPECT_FALSE(
+        prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
     EXPECT_FALSE(
         prefs->GetBoolean(autofill::prefs::kAutofillEnabledDeprecated));
     EXPECT_FALSE(
         prefs->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled));
     EXPECT_FALSE(prefs->GetBoolean(autofill::prefs::kAutofillProfileEnabled));
-    EXPECT_TRUE(prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+    EXPECT_EQ(CookieControlsMode::kBlockThirdParty,
+              GetCookieControlsMode(prefs));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableReferrers));
-    EXPECT_FALSE(prefs->GetBoolean(prefs::kOfferTranslateEnabled));
+    EXPECT_FALSE(prefs->GetBoolean(translate::prefs::kOfferTranslateEnabled));
     EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_NEVER,
               prefs->GetInteger(prefs::kNetworkPredictionOptions));
     EXPECT_FALSE(
         prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
+  }
+
+  // Verifies whether the boolean |preference| has the |expected_value| and is
+  // |expected_controlled| by an extension.
+
+  void VerifyPrefValueAndControlledState(const std::string& preference,
+                                         const base::Value& expected_value,
+                                         bool expected_controlled) {
+    SCOPED_TRACE(preference);
+
+    PrefService* prefs = profile_->GetPrefs();
+    const PrefService::Preference* pref = prefs->FindPreference(preference);
+    ASSERT_TRUE(pref);
+    const base::Value* actual_value = pref->GetValue();
+    EXPECT_EQ(expected_value.type(), actual_value->type());
+
+    EXPECT_EQ(expected_value, *actual_value);
+    EXPECT_EQ(expected_controlled, pref->IsExtensionControlled());
   }
 
   void SetUpOnMainThread() override {
@@ -96,8 +131,8 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
     // Closing the last browser window also releases a module reference. Make
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly.
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::BROWSER,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
   }
 
   void TearDownOnMainThread() override {
@@ -115,35 +150,27 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 
-// http://crbug.com/177163
-#if defined(OS_WIN) && !defined(NDEBUG)
-#define MAYBE_Standard DISABLED_Standard
-#else
-#define MAYBE_Standard Standard
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, MAYBE_Standard) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Standard) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kAlternateErrorPagesEnabled, false);
+  prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
   prefs->SetBoolean(autofill::prefs::kAutofillEnabledDeprecated, false);
   prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
   prefs->SetBoolean(autofill::prefs::kAutofillProfileEnabled, false);
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, false);
   prefs->SetBoolean(prefs::kEnableReferrers, false);
-  prefs->SetBoolean(prefs::kOfferTranslateEnabled, false);
+  prefs->SetBoolean(translate::prefs::kOfferTranslateEnabled, false);
   prefs->SetInteger(prefs::kNetworkPredictionOptions,
                     chrome_browser_net::NETWORK_PREDICTION_NEVER);
   prefs->SetBoolean(password_manager::prefs::kCredentialsEnableService, false);
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   prefs->SetBoolean(prefs::kSearchSuggestEnabled, false);
-  prefs->SetBoolean(prefs::kWebRTCMultipleRoutesEnabled, false);
-  prefs->SetBoolean(prefs::kWebRTCNonProxiedUdpEnabled, false);
   prefs->SetString(prefs::kWebRTCIPHandlingPolicy,
                    blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
 
   const char kExtensionPath[] = "preference/standard";
 
-  EXPECT_TRUE(RunExtensionSubtest(kExtensionPath, "test.html")) << message_;
+  EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
   CheckPreferencesSet();
 
   // The settings should not be reset when the extension is reloaded.
@@ -164,72 +191,73 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, MAYBE_Standard) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, false);
+  SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/persistent_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest("preference/persistent_incognito", {},
+                               {.allow_in_incognito = true}))
+      << message_;
 
   // Setting an incognito preference should not create an incognito profile.
-  EXPECT_FALSE(profile_->HasOffTheRecordProfile());
+  EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
 
-  PrefService* otr_prefs = profile_->GetOffTheRecordProfile()->GetPrefs();
-  const PrefService::Preference* pref =
-      otr_prefs->FindPreference(prefs::kBlockThirdPartyCookies);
-  ASSERT_TRUE(pref);
-  EXPECT_TRUE(pref->IsExtensionControlled());
-  EXPECT_TRUE(otr_prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+  PrefService* otr_prefs =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
+  auto* otr_pref = otr_prefs->FindPreference(prefs::kCookieControlsMode);
+  ASSERT_TRUE(otr_pref);
+  EXPECT_TRUE(otr_pref->IsExtensionControlled());
+  EXPECT_EQ(CookieControlsMode::kBlockThirdParty,
+            GetCookieControlsMode(otr_prefs));
 
-  pref = prefs->FindPreference(prefs::kBlockThirdPartyCookies);
+  auto* pref = prefs->FindPreference(prefs::kCookieControlsMode);
   ASSERT_TRUE(pref);
   EXPECT_FALSE(pref->IsExtensionControlled());
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+  EXPECT_EQ(CookieControlsMode::kOff, GetCookieControlsMode(prefs));
 }
 
-// Flakily times out: http://crbug.com/106144
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, DISABLED_IncognitoDisabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, IncognitoDisabled) {
   EXPECT_FALSE(RunExtensionTest("preference/persistent_incognito"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, false);
+  SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/session_only_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest("preference/session_only_incognito", {},
+                               {.allow_in_incognito = true}))
+      << message_;
 
-  EXPECT_TRUE(profile_->HasOffTheRecordProfile());
+  EXPECT_TRUE(profile_->HasPrimaryOTRProfile());
 
-  PrefService* otr_prefs = profile_->GetOffTheRecordProfile()->GetPrefs();
-  const PrefService::Preference* pref =
-      otr_prefs->FindPreference(prefs::kBlockThirdPartyCookies);
-  ASSERT_TRUE(pref);
-  EXPECT_TRUE(pref->IsExtensionControlled());
-  EXPECT_FALSE(otr_prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+  PrefService* otr_prefs =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
+  auto* otr_pref = otr_prefs->FindPreference(prefs::kCookieControlsMode);
+  ASSERT_TRUE(otr_pref);
+  EXPECT_TRUE(otr_pref->IsExtensionControlled());
+  EXPECT_EQ(CookieControlsMode::kOff, GetCookieControlsMode(otr_prefs));
 
-  pref = prefs->FindPreference(prefs::kBlockThirdPartyCookies);
+  auto* pref = prefs->FindPreference(prefs::kCookieControlsMode);
   ASSERT_TRUE(pref);
   EXPECT_FALSE(pref->IsExtensionControlled());
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+  EXPECT_EQ(CookieControlsMode::kOff, GetCookieControlsMode(prefs));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Clear) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
 
   EXPECT_TRUE(RunExtensionTest("preference/clear")) << message_;
 
-  const PrefService::Preference* pref = prefs->FindPreference(
-      prefs::kBlockThirdPartyCookies);
+  const PrefService::Preference* pref =
+      prefs->FindPreference(prefs::kCookieControlsMode);
   ASSERT_TRUE(pref);
   EXPECT_FALSE(pref->IsExtensionControlled());
-  EXPECT_EQ(true, prefs->GetBoolean(prefs::kBlockThirdPartyCookies));
+  EXPECT_EQ(CookieControlsMode::kBlockThirdParty, GetCookieControlsMode(prefs));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChange) {
-  EXPECT_TRUE(RunExtensionTestIncognito("preference/onchange")) <<
-      message_;
+  EXPECT_TRUE(
+      RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
@@ -237,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
   catcher.RestrictToBrowserContext(profile_);
   extensions::ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(
-      profile_->GetOffTheRecordProfile());
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Open an incognito window.
   OpenURLOffTheRecord(profile_, GURL("chrome://newtab/"));
@@ -295,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
 
   base::FilePath extension_data_dir =
       test_data_dir_.AppendASCII("preference").AppendASCII("onchange_split");
-  ASSERT_TRUE(LoadExtensionIncognito(extension_data_dir));
+  ASSERT_TRUE(LoadExtension(extension_data_dir, {.allow_in_incognito = true}));
 
   // Test 1 - changeDefault
   EXPECT_TRUE(listener1.WaitUntilSatisfied()); // Regular ready
@@ -356,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                        OnChangeSplitWithNoOTRProfile) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
 
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener loaded_incognito_test_listener(
@@ -364,26 +392,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
 
   ExtensionTestMessageListener change_pref_listener("change pref value", false);
 
-  ASSERT_TRUE(
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("preference")
-                                 .AppendASCII("onchange_split_regular_only")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("preference")
+                                .AppendASCII("onchange_split_regular_only"),
+                            {.allow_in_incognito = true}));
 
   ASSERT_TRUE(change_pref_listener.WaitUntilSatisfied());
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, false);
+  SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_FALSE(loaded_incognito_test_listener.was_satisfied());
-  EXPECT_FALSE(profile_->HasOffTheRecordProfile());
+  EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                        OnChangeSplitWithoutIncognitoAccess) {
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
 
   // Open an incognito window.
   OpenURLOffTheRecord(profile_, GURL("chrome://newtab/"));
-  EXPECT_TRUE(profile_->HasOffTheRecordProfile());
+  EXPECT_TRUE(profile_->HasPrimaryOTRProfile());
 
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener loaded_incognito_test_listener(
@@ -395,13 +423,132 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                                 .AppendASCII("onchange_split_regular_only")));
 
   ASSERT_TRUE(change_pref_listener.WaitUntilSatisfied());
-  prefs->SetBoolean(prefs::kBlockThirdPartyCookies, false);
+  SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_FALSE(loaded_incognito_test_listener.was_satisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, DataReductionProxy) {
-  EXPECT_TRUE(RunExtensionTest("preference/data_reduction_proxy")) <<
-      message_;
+// Tests the behavior of the Safe Browsing API as described in
+// crbug.com/1064722.
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
+  ExtensionTestMessageListener listener_true("set to true",
+                                             /* will_reply */ true);
+  ExtensionTestMessageListener listener_clear("cleared", /* will_reply */ true);
+  ExtensionTestMessageListener listener_false("set to false",
+                                              /* will_reply */ true);
+  ExtensionTestMessageListener listener_done("done", /* will_reply */ false);
+
+  const base::FilePath extension_path =
+      test_data_dir_.AppendASCII("preference").AppendASCII("safe_browsing");
+  const extensions::Extension* extension = LoadExtension(extension_path);
+  ASSERT_TRUE(extension);
+
+  // Step 1. of the test sets the API to TRUE.
+  // Both preferences are now controlled by extension. |kSafeBrowsingEnabled| is
+  // set to TRUE, while |kSafeBrowsingEnhanced| is always FALSE.
+  ASSERT_TRUE(listener_true.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnabled,
+                                    base::Value(true),
+                                    /* expected_controlled */ true);
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnhanced,
+                                    base::Value(false),
+                                    /* expected_controlled */ true);
+  listener_true.Reply("ok");
+
+  // Step 2. of the test clears the value.
+  // Neither preference is now controlled by extension, and they take on their
+  // default values - TRUE and FALSE, respectively.
+  ASSERT_TRUE(listener_clear.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnabled,
+                                    base::Value(true),
+                                    /* expected_controlled */ false);
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnhanced,
+                                    base::Value(false),
+                                    /* expected_controlled */ false);
+  listener_clear.Reply("ok");
+
+  // Step 3. of the test sets the API to FALSE.
+  // Both preferences are now controlled by extension. |kSafeBrowsingEnabled| is
+  // set to FALSE, and |kSafeBrowsingEnhanced| is also FALSE.
+  ASSERT_TRUE(listener_false.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnabled,
+                                    base::Value(false),
+                                    /* expected_controlled */ true);
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnhanced,
+                                    base::Value(false),
+                                    /* expected_controlled */ true);
+  listener_false.Reply("ok");
+
+  // Step 4. of the test uninstalls the extension.
+  // Neither preference is now controlled by extension, and they take on their
+  // default values - TRUE and FALSE, respectively.
+  ASSERT_TRUE(listener_done.WaitUntilSatisfied());
+  UninstallExtension(extension->id());
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnabled,
+                                    base::Value(true),
+                                    /* expected_controlled */ false);
+  VerifyPrefValueAndControlledState(prefs::kSafeBrowsingEnhanced,
+                                    base::Value(false),
+                                    /* expected_controlled */ false);
+}
+
+// Tests the behavior of the ThirdPartyCookies preference API.
+// kCookieControlsMode should be set to kOff/kBlockThirdParty if
+// ThirdPartyCookiesAllowed is set to true/false by an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
+  ExtensionTestMessageListener listener_true("set to true",
+                                             /* will_reply */ true);
+  ExtensionTestMessageListener listener_clear("cleared", /* will_reply */ true);
+  ExtensionTestMessageListener listener_false("set to false",
+                                              /* will_reply */ true);
+  ExtensionTestMessageListener listener_done("done", /* will_reply */ false);
+
+  // Verify initial state.
+  VerifyPrefValueAndControlledState(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kIncognitoOnly)),
+      /* expected_controlled */ false);
+
+  const base::FilePath extension_path =
+      test_data_dir_.AppendASCII("preference")
+          .AppendASCII("third_party_cookies_allowed");
+  const extensions::Extension* extension = LoadExtension(extension_path);
+  ASSERT_TRUE(extension);
+
+  // Step 1. of the test sets the API to TRUE.
+  ASSERT_TRUE(listener_true.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(content_settings::CookieControlsMode::kOff)),
+      /* expected_controlled */ true);
+  listener_true.Reply("ok");
+
+  // Step 2. of the test clears the value.
+  ASSERT_TRUE(listener_clear.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kIncognitoOnly)),
+      /* expected_controlled */ false);
+  listener_clear.Reply("ok");
+
+  // Step 3. of the test sets the API to FALSE.
+  ASSERT_TRUE(listener_false.WaitUntilSatisfied());
+  VerifyPrefValueAndControlledState(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)),
+      /* expected_controlled */ true);
+  listener_false.Reply("ok");
+
+  // Step 4. of the test uninstalls the extension.
+  ASSERT_TRUE(listener_done.WaitUntilSatisfied());
+  UninstallExtension(extension->id());
+  VerifyPrefValueAndControlledState(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kIncognitoOnly)),
+      /* expected_controlled */ false);
 }

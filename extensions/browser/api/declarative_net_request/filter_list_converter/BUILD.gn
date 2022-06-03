@@ -18,15 +18,14 @@ source_set("support") {
     "//extensions/browser",
     "//extensions/common",
     "//extensions/common:test_support",
+    "//extensions/common/api:api",
     "//url",
   ]
 }
 
 executable("filter_list_converter") {
   testonly = true
-  sources = [
-    "main.cc",
-  ]
+  sources = [ "main.cc" ]
   deps = [
     ":support",
     "//base",
@@ -35,9 +34,7 @@ executable("filter_list_converter") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "converter_unittest.cc",
-  ]
+  sources = [ "converter_unittest.cc" ]
   deps = [
     ":support",
     "//base",

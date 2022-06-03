@@ -63,11 +63,11 @@ FAIL CSSParserFunction interface: attribute name assert_own_property: self does 
 FAIL CSSParserFunction interface: attribute args assert_own_property: self does not have own property "CSSParserFunction" expected property "CSSParserFunction" missing
 FAIL CSSParserFunction interface: stringifier assert_own_property: self does not have own property "CSSParserFunction" expected property "CSSParserFunction" missing
 PASS CSS namespace: operation escape(CSSOMString)
-FAIL CSS namespace: operation parseStylesheet(CSSStringSource, CSSParserOptions) assert_own_property: namespace object missing operation "parseStylesheet" expected property "parseStylesheet" missing
-FAIL CSS namespace: operation parseRuleList(CSSStringSource, CSSParserOptions) assert_own_property: namespace object missing operation "parseRuleList" expected property "parseRuleList" missing
-FAIL CSS namespace: operation parseRule(CSSStringSource, CSSParserOptions) assert_own_property: namespace object missing operation "parseRule" expected property "parseRule" missing
-FAIL CSS namespace: operation parseDeclarationList(CSSStringSource, CSSParserOptions) assert_own_property: namespace object missing operation "parseDeclarationList" expected property "parseDeclarationList" missing
-FAIL CSS namespace: operation parseDeclaration(DOMString, CSSParserOptions) assert_own_property: namespace object missing operation "parseDeclaration" expected property "parseDeclaration" missing
+FAIL CSS namespace: operation parseStylesheet(CSSStringSource, optional CSSParserOptions) assert_own_property: namespace object missing operation "parseStylesheet" expected property "parseStylesheet" missing
+FAIL CSS namespace: operation parseRuleList(CSSStringSource, optional CSSParserOptions) assert_own_property: namespace object missing operation "parseRuleList" expected property "parseRuleList" missing
+FAIL CSS namespace: operation parseRule(CSSStringSource, optional CSSParserOptions) assert_own_property: namespace object missing operation "parseRule" expected property "parseRule" missing
+FAIL CSS namespace: operation parseDeclarationList(CSSStringSource, optional CSSParserOptions) assert_own_property: namespace object missing operation "parseDeclarationList" expected property "parseDeclarationList" missing
+FAIL CSS namespace: operation parseDeclaration(DOMString, optional CSSParserOptions) assert_own_property: namespace object missing operation "parseDeclaration" expected property "parseDeclaration" missing
 FAIL CSS namespace: operation parseValue(DOMString) assert_own_property: namespace object missing operation "parseValue" expected property "parseValue" missing
 FAIL CSS namespace: operation parseValueList(DOMString) assert_own_property: namespace object missing operation "parseValueList" expected property "parseValueList" missing
 FAIL CSS namespace: operation parseCommaValueList(DOMString) assert_own_property: namespace object missing operation "parseCommaValueList" expected property "parseCommaValueList" missing

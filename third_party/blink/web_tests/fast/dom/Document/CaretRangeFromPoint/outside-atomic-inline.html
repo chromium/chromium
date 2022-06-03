@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<style>
+  body { margin:0; }
+  #ib { display:inline-block; width:100px; height:10px; line-height:50px; }
+</style>
+<div id="ib">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX X</div>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+      // At the beginning of the second line, which overflows #ib. Hit the 'X'.
+      assert_equals(document.caretRangeFromPoint(0, 75).startOffset, 41);
+
+      // At the end of the second line. Nothing there.
+      assert_equals(document.caretRangeFromPoint(90, 75).startOffset, 1);
+      assert_equals(document.caretRangeFromPoint(90, 75).startContainer, ib);
+  }, "Just outside an atomic inline");
+</script>

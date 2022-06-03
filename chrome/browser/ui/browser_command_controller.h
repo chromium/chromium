@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_COMMAND_CONTROLLER_H_
 #define CHROME_BROWSER_UI_BROWSER_COMMAND_CONTROLLER_H_
 
-#include <vector>
-
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
@@ -36,6 +34,10 @@ class BrowserCommandController : public CommandUpdater,
                                  public sessions::TabRestoreServiceObserver {
  public:
   explicit BrowserCommandController(Browser* browser);
+
+  BrowserCommandController(const BrowserCommandController&) = delete;
+  BrowserCommandController& operator=(const BrowserCommandController&) = delete;
+
   ~BrowserCommandController() override;
 
   // Returns true if |command_id| is a reserved command whose keyboard shortcuts
@@ -62,7 +64,8 @@ class BrowserCommandController : public CommandUpdater,
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
   void ExtensionStateChanged();
-  void TabKeyboardFocusChangedTo(base::Optional<int> index);
+  void TabKeyboardFocusChangedTo(absl::optional<int> index);
+  void WebContentsFocusChanged();
 
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
@@ -82,9 +85,6 @@ class BrowserCommandController : public CommandUpdater,
   // Shared state updating: these functions are static and public to share with
   // outside code.
 
-  // Updates the open-file state.
-  static void UpdateOpenFileState(CommandUpdater* command_updater);
-
   // Update commands whose state depends on incognito mode availability and that
   // only depend on the profile.
   static void UpdateSharedCommandsForIncognitoAvailability(
@@ -92,7 +92,6 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-  class InterstitialObserver;
   FRIEND_TEST_ALL_PREFIXES(BrowserCommandControllerBrowserTest,
                            LockedFullscreen);
 
@@ -193,12 +192,10 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands for tab keyboard focus state. If |target_index| is
   // populated, it is the index of the tab with focus; if it is not populated,
   // no tab has keyboard focus.
-  void UpdateCommandsForTabKeyboardFocus(base::Optional<int> target_index);
+  void UpdateCommandsForTabKeyboardFocus(absl::optional<int> target_index);
 
-  // Add/remove observers for interstitial attachment/detachment from
-  // |contents|.
-  void AddInterstitialObservers(content::WebContents* contents);
-  void RemoveInterstitialObservers(content::WebContents* contents);
+  // Updates commands that depend on whether web contents is focused or not.
+  void UpdateCommandsForWebContentsFocus();
 
   inline BrowserWindow* window();
   inline Profile* profile();
@@ -208,16 +205,12 @@ class BrowserCommandController : public CommandUpdater,
   // The CommandUpdaterImpl that manages the browser window commands.
   CommandUpdaterImpl command_updater_;
 
-  std::vector<InterstitialObserver*> interstitial_observers_;
-
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
   BooleanPrefMember pref_signin_allowed_;
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandController);
 };
 
 }  // namespace chrome

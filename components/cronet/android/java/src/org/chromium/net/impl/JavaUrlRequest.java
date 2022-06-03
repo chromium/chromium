@@ -40,7 +40,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -70,8 +70,7 @@ final class JavaUrlRequest extends UrlRequestBase {
      * waiting for the read to succeed), runtime error (network code or user code throws an
      * exception), or cancellation.
      */
-    private final AtomicReference<Integer /* @State */> mState =
-            new AtomicReference<>(State.NOT_STARTED);
+    private final AtomicInteger /* State */ mState = new AtomicInteger(State.NOT_STARTED);
     private final AtomicBoolean mUploadProviderClosed = new AtomicBoolean(false);
 
     private final boolean mAllowDirectExecutor;

@@ -15,7 +15,7 @@
 #import "remoting/ios/facade/ios_client_runtime_delegate.h"
 #import "remoting/ios/facade/remoting_authentication.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
 NSString* const kUserDidUpdate = @"kUserDidUpdate";

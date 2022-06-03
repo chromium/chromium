@@ -14,8 +14,14 @@ class FilePath;
 // Observer for bookmark html output. Used only in tests.
 class BookmarksExportObserver {
  public:
+  enum class Result {
+    kSuccess,
+    kCouldNotCreateFile,
+    kCouldNotWriteHeader,
+    kCouldNotWriteNodes,
+  };
   // Is invoked on the IO thread.
-  virtual void OnExportFinished() = 0;
+  virtual void OnExportFinished(Result result) = 0;
 
  protected:
   virtual ~BookmarksExportObserver() {}

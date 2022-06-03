@@ -7,13 +7,18 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ui/views/controls/button/button.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/views/view.h"
+
+class PrefRegistrySimple;
+
+namespace views {
+class Button;
+}
 
 namespace ash {
 
 class CollapseButton;
-class SignOutButton;
 class TopShortcutButton;
 class TopShortcutsViewTest;
 class UnifiedSystemTrayController;
@@ -24,6 +29,11 @@ class UnifiedSystemTrayController;
 class TopShortcutButtonContainer : public views::View {
  public:
   TopShortcutButtonContainer();
+
+  TopShortcutButtonContainer(const TopShortcutButtonContainer&) = delete;
+  TopShortcutButtonContainer& operator=(const TopShortcutButtonContainer&) =
+      delete;
+
   ~TopShortcutButtonContainer() override;
 
   // views::View:
@@ -38,26 +48,20 @@ class TopShortcutButtonContainer : public views::View {
  private:
   views::View* user_avatar_button_ = nullptr;
   views::View* sign_out_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutButtonContainer);
 };
 
 // Top shortcuts view shown on the top of UnifiedSystemTrayView.
-class ASH_EXPORT TopShortcutsView : public views::View,
-                                    public views::ButtonListener,
-                                    public AccessibilityObserver {
+class ASH_EXPORT TopShortcutsView : public views::View {
  public:
   explicit TopShortcutsView(UnifiedSystemTrayController* controller);
-  ~TopShortcutsView() override;
+
+  TopShortcutsView(const TopShortcutsView&) = delete;
+  TopShortcutsView& operator=(const TopShortcutsView&) = delete;
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Change the expanded state. CollapseButton icon will rotate.
   void SetExpandedAmount(double expanded_amount);
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  // AccessibilityObserver:
-  void OnAccessibilityStatusChanged() override;
 
   // views::View
   const char* GetClassName() const override;
@@ -65,18 +69,19 @@ class ASH_EXPORT TopShortcutsView : public views::View,
  private:
   friend class TopShortcutsViewTest;
 
-  UnifiedSystemTrayController* controller_;
+  // Disables/Enables the |settings_button_| based on kSettingsIconEnabled pref.
+  void UpdateSettingsButtonState();
 
   // Owned by views hierarchy.
   views::Button* user_avatar_button_ = nullptr;
-  SignOutButton* sign_out_button_ = nullptr;
+  views::Button* sign_out_button_ = nullptr;
   TopShortcutButtonContainer* container_ = nullptr;
   TopShortcutButton* lock_button_ = nullptr;
   TopShortcutButton* settings_button_ = nullptr;
   TopShortcutButton* power_button_ = nullptr;
   CollapseButton* collapse_button_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsView);
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 };
 
 }  // namespace ash

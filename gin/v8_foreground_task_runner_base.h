@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef V8_FOREGROUND_TASK_RUNNER_BASE_H
-#define V8_FOREGROUND_TASK_RUNNER_BASE_H
+#ifndef GIN_V8_FOREGROUND_TASK_RUNNER_BASE_H_
+#define GIN_V8_FOREGROUND_TASK_RUNNER_BASE_H_
 
 #include "v8/include/v8-platform.h"
 
@@ -33,4 +33,4 @@ class V8ForegroundTaskRunnerBase : public v8::TaskRunner {
 
 }  // namespace gin
 
-#endif /* !V8_FOREGROUND_TASK_RUNNER_BASE_H */
+#endif  // GIN_V8_FOREGROUND_TASK_RUNNER_BASE_H_

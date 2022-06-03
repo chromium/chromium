@@ -1,3 +1,0 @@
-# Metrics changes should always be reviewed by owners.
-per-file rappor.xml=file://base/metrics/OWNERS
-per-file rappor.xml=set noparent

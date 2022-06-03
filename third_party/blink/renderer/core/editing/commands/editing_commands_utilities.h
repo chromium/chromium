@@ -60,7 +60,6 @@ class SetSelectionOptions;
 
 Node* HighestNodeToRemoveInPruning(Node*, const Node* exclude_node = nullptr);
 
-Element* EnclosingTableCell(const Position&);
 Node* EnclosingEmptyListItem(const VisiblePosition&);
 
 bool IsTableStructureNode(const Node*);
@@ -174,4 +173,4 @@ bool IsEndOfBlock(const VisiblePosition&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_EDITING_COMMANDS_UTILITIES_H_

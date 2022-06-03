@@ -17,8 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/thread/thread.h"
@@ -36,42 +36,13 @@ TEST(ThreadLogMessages, Empty) {
   EXPECT_TRUE(log_messages.empty());
 }
 
-// For a message formatted like "[preamble] message\n", returns just "message".
-// If the message is not formatted as expected, a gtest expectation failure will
-// be recorded and this function will return an empty string.
-std::string MessageString(const std::string& log_message) {
-  if (log_message.size() < 1) {
-    EXPECT_GE(log_message.size(), 1u);
-    return std::string();
-  }
-
-  constexpr char kStartChar = '[';
-  if (log_message[0] != kStartChar) {
-    EXPECT_EQ(log_message[0], kStartChar);
-    return std::string();
-  }
-
-  static constexpr char kFindString[] = "] ";
-  size_t pos = log_message.find(kFindString);
-  if (pos == std::string::npos) {
-    EXPECT_NE(pos, std::string::npos);
-    return std::string();
-  }
-
-  std::string message_string = log_message.substr(pos + strlen(kFindString));
-  if (message_string.size() < 1) {
-    EXPECT_GE(message_string.size(), 1u);
-    return std::string();
-  }
-
-  constexpr char kEndChar = '\n';
-  if (message_string[message_string.size() - 1] != kEndChar) {
-    EXPECT_NE(message_string[message_string.size() - 1], kEndChar);
-    return std::string();
-  }
-
-  message_string.resize(message_string.size() - 1);
-  return message_string;
+void ExpectLogMessage(const std::string& message, const std::string& expected) {
+  ASSERT_GT(message.size(), expected.size());
+  EXPECT_EQ(message.back(), '\n');
+  EXPECT_STREQ(
+      message.substr(message.size() - expected.size() - 1, expected.size())
+          .c_str(),
+      expected.c_str());
 }
 
 TEST(ThreadLogMessages, Basic) {
@@ -96,7 +67,8 @@ TEST(ThreadLogMessages, Basic) {
 
     EXPECT_EQ(log_messages.size(), base::size(kMessages));
     for (size_t index = 0; index < base::size(kMessages); ++index) {
-      EXPECT_EQ(MessageString(log_messages[index]), kMessages[index])
+      ASSERT_NO_FATAL_FAILURE(
+          ExpectLogMessage(log_messages[index], kMessages[index]))
           << "index " << index;
     }
   }
@@ -112,7 +84,7 @@ TEST(ThreadLogMessages, Basic) {
         thread_log_messages.log_messages();
 
     EXPECT_EQ(log_messages.size(), 1u);
-    EXPECT_EQ(MessageString(log_messages[0]), kMessage);
+    ExpectLogMessage(log_messages[0], kMessage);
   }
 
   {
@@ -124,14 +96,18 @@ TEST(ThreadLogMessages, Basic) {
         thread_log_messages.log_messages();
 
     EXPECT_EQ(log_messages.size(), 1u);
-    EXPECT_EQ(MessageString(log_messages[0]),
-              "I can't believe I streamed the whole thing.");
+    ExpectLogMessage(log_messages[0],
+                     "I can't believe I streamed the whole thing.");
   }
 }
 
 class LoggingTestThread : public Thread {
  public:
   LoggingTestThread() : thread_number_(0), start_(0), count_(0) {}
+
+  LoggingTestThread(const LoggingTestThread&) = delete;
+  LoggingTestThread& operator=(const LoggingTestThread&) = delete;
+
   ~LoggingTestThread() override {}
 
   void Initialize(size_t thread_number, int start, int count) {
@@ -156,7 +132,8 @@ class LoggingTestThread : public Thread {
 
     ASSERT_EQ(log_messages.size(), static_cast<size_t>(count_));
     for (size_t index = 0; index < log_messages.size(); ++index) {
-      EXPECT_EQ(MessageString(log_messages[index]), expected_messages[index])
+      ASSERT_NO_FATAL_FAILURE(
+          ExpectLogMessage(log_messages[index], expected_messages[index]))
           << "thread_number_ " << thread_number_ << ", index " << index;
     }
   }
@@ -164,8 +141,6 @@ class LoggingTestThread : public Thread {
   size_t thread_number_;
   int start_;
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingTestThread);
 };
 
 TEST(ThreadLogMessages, Multithreaded) {

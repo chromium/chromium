@@ -4,14 +4,12 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 
-#include <utility>
-
 #include "base/bind.h"
+#include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
@@ -19,7 +17,7 @@
 #include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_v2_enroller_impl.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
+#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -29,12 +27,6 @@ namespace chromeos {
 namespace device_sync {
 
 namespace {
-
-// Timeout value for asynchronous operation.
-// TODO(https://crbug.com/933656): Use async execution time metrics to tune
-// this timeout value.
-constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
-    base::TimeDelta::FromSeconds(60);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -119,28 +111,6 @@ void RecordEnrollmentResult(const CryptAuthEnrollmentResult& result) {
                                 result.result_code());
 }
 
-void RecordGcmRegistrationMetrics(const base::TimeDelta& execution_time,
-                                  bool success) {
-  base::UmaHistogramCustomTimes(
-      "CryptAuth.EnrollmentV2.GcmRegistration.AttemptTime", execution_time,
-      base::TimeDelta::FromSeconds(1) /* min */,
-      base::TimeDelta::FromMinutes(10) /* max */, 100 /* buckets */);
-
-  base::UmaHistogramBoolean("CryptAuth.EnrollmentV2.GcmRegistration.Success",
-                            success);
-}
-
-void RecordClientAppMetadataFetchMetrics(const base::TimeDelta& execution_time,
-                                         CryptAuthAsyncTaskResult result) {
-  base::UmaHistogramCustomTimes(
-      "CryptAuth.EnrollmentV2.ExecutionTime.ClientAppMetadataFetch2",
-      execution_time, base::TimeDelta::FromSeconds(1) /* min */,
-      kWaitingForClientAppMetadataTimeout /* max */, 100 /* buckets */);
-
-  LogCryptAuthAsyncTaskSuccessMetric(
-      "CryptAuth.EnrollmentV2.AsyncTaskResult.ClientAppMetadataFetch", result);
-}
-
 }  // namespace
 
 // static
@@ -148,13 +118,24 @@ CryptAuthV2EnrollmentManagerImpl::Factory*
     CryptAuthV2EnrollmentManagerImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthV2EnrollmentManagerImpl::Factory*
-CryptAuthV2EnrollmentManagerImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<CryptAuthEnrollmentManager>
+CryptAuthV2EnrollmentManagerImpl::Factory::Create(
+    const cryptauthv2::ClientAppMetadata& client_app_metadata,
+    CryptAuthKeyRegistry* key_registry,
+    CryptAuthClientFactory* client_factory,
+    CryptAuthGCMManager* gcm_manager,
+    CryptAuthScheduler* scheduler,
+    PrefService* pref_service,
+    base::Clock* clock) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(client_app_metadata, key_registry,
+                                         client_factory, gcm_manager, scheduler,
+                                         pref_service, clock);
+  }
 
-  static base::NoDestructor<CryptAuthV2EnrollmentManagerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthV2EnrollmentManagerImpl(
+      client_app_metadata, key_registry, client_factory, gcm_manager, scheduler,
+      pref_service, clock));
 }
 
 // static
@@ -163,9 +144,14 @@ void CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(
   test_factory_ = test_factory;
 }
 
+CryptAuthV2EnrollmentManagerImpl::Factory::~Factory() = default;
+
 // static
 void CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(
+      prefs::kCryptAuthLastEnrolledClientAppMetadataHash, std::string());
+
   // TODO(nohle): Remove when v1 Enrollment is deprecated.
   registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPublicKey,
                                std::string());
@@ -173,40 +159,21 @@ void CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(
                                std::string());
 }
 
-CryptAuthV2EnrollmentManagerImpl::Factory::~Factory() = default;
-
-std::unique_ptr<CryptAuthEnrollmentManager>
-CryptAuthV2EnrollmentManagerImpl::Factory::BuildInstance(
-    ClientAppMetadataProvider* client_app_metadata_provider,
-    CryptAuthKeyRegistry* key_registry,
-    CryptAuthClientFactory* client_factory,
-    CryptAuthGCMManager* gcm_manager,
-    CryptAuthScheduler* scheduler,
-    PrefService* pref_service,
-    base::Clock* clock,
-    std::unique_ptr<base::OneShotTimer> timer) {
-  return base::WrapUnique(new CryptAuthV2EnrollmentManagerImpl(
-      client_app_metadata_provider, key_registry, client_factory, gcm_manager,
-      scheduler, pref_service, clock, std::move(timer)));
-}
-
 CryptAuthV2EnrollmentManagerImpl::CryptAuthV2EnrollmentManagerImpl(
-    ClientAppMetadataProvider* client_app_metadata_provider,
+    const cryptauthv2::ClientAppMetadata& client_app_metadata,
     CryptAuthKeyRegistry* key_registry,
     CryptAuthClientFactory* client_factory,
     CryptAuthGCMManager* gcm_manager,
     CryptAuthScheduler* scheduler,
     PrefService* pref_service,
-    base::Clock* clock,
-    std::unique_ptr<base::OneShotTimer> timer)
-    : client_app_metadata_provider_(client_app_metadata_provider),
+    base::Clock* clock)
+    : client_app_metadata_(client_app_metadata),
       key_registry_(key_registry),
       client_factory_(client_factory),
       gcm_manager_(gcm_manager),
       scheduler_(scheduler),
       pref_service_(pref_service),
-      clock_(clock),
-      timer_(std::move(timer)) {
+      clock_(clock) {
   // TODO(nohle): Remove when v1 Enrollment is deprecated.
   AddV1UserKeyPairToRegistryIfNecessary();
 
@@ -221,36 +188,45 @@ void CryptAuthV2EnrollmentManagerImpl::Start() {
   scheduler_->StartEnrollmentScheduling(
       scheduler_weak_ptr_factory_.GetWeakPtr());
 
-  // If the v1 and v2 user key pairs initially disagreed, force a re-enrollment
-  // with the v1 user key pair that replaced the v2 user key pair.
-  if (initial_v1_and_v2_user_key_pairs_disagree_) {
+  std::string last_enrolled_client_app_metadata_hash = pref_service_->GetString(
+      prefs::kCryptAuthLastEnrolledClientAppMetadataHash);
+  if (!last_enrolled_client_app_metadata_hash.empty() &&
+      GetClientAppMetadataHash() != last_enrolled_client_app_metadata_hash) {
+    // Re-enroll if the ClientAppMetadata has changed since the last successful
+    // enrollment. NOTE: Do not force an enrollment if the ClientAppMetadata
+    // hash has never been set.
+    ForceEnrollmentNow(
+        cryptauth::InvocationReason::INVOCATION_REASON_SOFTWARE_UPDATE,
+        absl::nullopt /* session_id */);
+  } else if (initial_v1_and_v2_user_key_pairs_disagree_) {
+    // If the v1 and v2 user key pairs initially disagreed, force a
+    // re-enrollment with the v1 user key pair that replaced the v2 user key
+    // pair.
     ForceEnrollmentNow(
         cryptauth::InvocationReason::INVOCATION_REASON_INITIALIZATION,
-        base::nullopt /* session_id */);
-  }
-
-  // It is possible, though unlikely, that |scheduler_| has previously enrolled
-  // successfully but |key_registry_| no longer holds the enrolled keys, for
-  // example, if keys are deleted from the key registry or if the persisted key
-  // registry pref cannot be parsed due to an encoding change. In this case,
-  // force a re-enrollment.
-  if (scheduler_->GetLastSuccessfulEnrollmentTime() &&
-      (GetUserPublicKey().empty() || GetUserPrivateKey().empty())) {
+        absl::nullopt /* session_id */);
+  } else if (scheduler_->GetLastSuccessfulEnrollmentTime() &&
+             (GetUserPublicKey().empty() || GetUserPrivateKey().empty())) {
+    // It is possible, though unlikely, that |scheduler_| has previously
+    // enrolled successfully but |key_registry_| no longer holds the enrolled
+    // keys, for example, if keys are deleted from the key registry or if the
+    // persisted key registry pref cannot be parsed due to an encoding change.
+    // In this case, force a re-enrollment.
     ForceEnrollmentNow(
         cryptauth::InvocationReason::INVOCATION_REASON_FAILURE_RECOVERY,
-        base::nullopt /* session_id */);
+        absl::nullopt /* session_id */);
   }
 }
 
 void CryptAuthV2EnrollmentManagerImpl::ForceEnrollmentNow(
     cryptauth::InvocationReason invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   scheduler_->RequestEnrollment(
       ConvertInvocationReasonV1ToV2(invocation_reason), session_id);
 }
 
 bool CryptAuthV2EnrollmentManagerImpl::IsEnrollmentValid() const {
-  base::Optional<base::Time> last_successful_enrollment_time =
+  absl::optional<base::Time> last_successful_enrollment_time =
       scheduler_->GetLastSuccessfulEnrollmentTime();
 
   if (!last_successful_enrollment_time)
@@ -264,7 +240,7 @@ bool CryptAuthV2EnrollmentManagerImpl::IsEnrollmentValid() const {
 }
 
 base::Time CryptAuthV2EnrollmentManagerImpl::GetLastEnrollmentTime() const {
-  base::Optional<base::Time> last_successful_enrollment_time =
+  absl::optional<base::Time> last_successful_enrollment_time =
       scheduler_->GetLastSuccessfulEnrollmentTime();
 
   if (!last_successful_enrollment_time)
@@ -279,7 +255,7 @@ base::TimeDelta CryptAuthV2EnrollmentManagerImpl::GetTimeToNextAttempt() const {
 }
 
 bool CryptAuthV2EnrollmentManagerImpl::IsEnrollmentInProgress() const {
-  return state_ != State::kIdle;
+  return scheduler_->IsWaitingForEnrollmentResult();
 }
 
 bool CryptAuthV2EnrollmentManagerImpl::IsRecoveringFromFailure() const {
@@ -321,10 +297,8 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetUserPrivateKey() const {
 
 void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentRequested(
     const cryptauthv2::ClientMetadata& client_metadata,
-    const base::Optional<cryptauthv2::PolicyReference>&
+    const absl::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
-  DCHECK(state_ == State::kIdle);
-
   NotifyEnrollmentStarted();
 
   current_client_metadata_ = client_metadata;
@@ -335,89 +309,23 @@ void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentRequested(
       current_client_metadata_->invocation_reason(),
       cryptauthv2::ClientMetadata::InvocationReason_ARRAYSIZE);
 
-  AttemptEnrollment();
-}
-
-void CryptAuthV2EnrollmentManagerImpl::OnGCMRegistrationResult(bool success) {
-  if (state_ != State::kWaitingForGcmRegistration)
-    return;
-
-  bool was_successful = success && !gcm_manager_->GetRegistrationId().empty();
-
-  RecordGcmRegistrationMetrics(
-      base::TimeTicks::Now() - last_state_change_timestamp_, was_successful);
-
-  if (!was_successful) {
-    OnEnrollmentFinished(CryptAuthEnrollmentResult(
-        CryptAuthEnrollmentResult::ResultCode::kErrorGcmRegistrationFailed,
-        base::nullopt /* client_directive */));
-    return;
-  }
-
-  AttemptEnrollment();
+  Enroll();
 }
 
 void CryptAuthV2EnrollmentManagerImpl::OnReenrollMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED, session_id);
-}
-
-void CryptAuthV2EnrollmentManagerImpl::OnClientAppMetadataFetched(
-    const base::Optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
-  DCHECK(state_ == State::kWaitingForClientAppMetadata);
-
-  bool success = client_app_metadata.has_value();
-
-  CryptAuthAsyncTaskResult result = success ? CryptAuthAsyncTaskResult::kSuccess
-                                            : CryptAuthAsyncTaskResult::kError;
-  RecordClientAppMetadataFetchMetrics(
-      base::TimeTicks::Now() - last_state_change_timestamp_, result);
-
-  if (!success) {
-    OnEnrollmentFinished(
-        CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
-                                      kErrorClientAppMetadataFetchFailed,
-                                  base::nullopt /* client_directive */));
-    return;
-  }
-
-  client_app_metadata_ = client_app_metadata;
-
-  AttemptEnrollment();
-}
-
-void CryptAuthV2EnrollmentManagerImpl::AttemptEnrollment() {
-  if (gcm_manager_->GetRegistrationId().empty()) {
-    SetState(State::kWaitingForGcmRegistration);
-    gcm_manager_->RegisterWithGCM();
-    return;
-  }
-
-  if (!client_app_metadata_) {
-    SetState(State::kWaitingForClientAppMetadata);
-    client_app_metadata_provider_->GetClientAppMetadata(
-        gcm_manager_->GetRegistrationId(),
-        base::BindOnce(
-            &CryptAuthV2EnrollmentManagerImpl::OnClientAppMetadataFetched,
-            callback_weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  Enroll();
 }
 
 void CryptAuthV2EnrollmentManagerImpl::Enroll() {
   DCHECK(current_client_metadata_);
-  DCHECK(client_app_metadata_);
 
-  enroller_ = CryptAuthV2EnrollerImpl::Factory::Get()->BuildInstance(
-      key_registry_, client_factory_);
-
-  SetState(State::kWaitingForEnrollment);
-
+  PA_LOG(VERBOSE) << "Starting CryptAuth v2 Enrollment attempt.";
+  enroller_ =
+      CryptAuthV2EnrollerImpl::Factory::Create(key_registry_, client_factory_);
   enroller_->Enroll(
-      *current_client_metadata_, *client_app_metadata_,
+      *current_client_metadata_, client_app_metadata_,
       client_directive_policy_reference_,
       base::BindOnce(&CryptAuthV2EnrollmentManagerImpl::OnEnrollmentFinished,
                      callback_weak_ptr_factory_.GetWeakPtr()));
@@ -439,6 +347,8 @@ void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentFinished(
                  << current_client_metadata_->invocation_reason()
                  << " succeeded with result code "
                  << enrollment_result_copy.result_code();
+    pref_service_->SetString(prefs::kCryptAuthLastEnrolledClientAppMetadataHash,
+                             GetClientAppMetadataHash());
   } else {
     PA_LOG(WARNING) << "Enrollment attempt with invocation reason "
                     << current_client_metadata_->invocation_reason()
@@ -460,43 +370,25 @@ void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentFinished(
                  << scheduler_->GetNumConsecutiveEnrollmentFailures();
   }
 
-  SetState(State::kIdle);
-
   NotifyEnrollmentFinished(enrollment_result_copy.IsSuccess());
 }
 
-void CryptAuthV2EnrollmentManagerImpl::SetState(State state) {
-  timer_->Stop();
-
-  PA_LOG(INFO) << "Transitioning from " << state_ << " to " << state;
-  state_ = state;
-  last_state_change_timestamp_ = base::TimeTicks::Now();
-
-  if (state_ != State::kWaitingForClientAppMetadata)
-    return;
-
-  // TODO(https://crbug.com/936273): Add metrics to track failure rates due to
-  // async timeouts.
-  timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
-                base::BindOnce(&CryptAuthV2EnrollmentManagerImpl::OnTimeout,
-                               callback_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CryptAuthV2EnrollmentManagerImpl::OnTimeout() {
-  DCHECK(state_ == State::kWaitingForClientAppMetadata);
-  RecordClientAppMetadataFetchMetrics(
-      base::TimeTicks::Now() - last_state_change_timestamp_
-      /* execution_time */,
-      CryptAuthAsyncTaskResult::kTimeout);
-
-  OnEnrollmentFinished(
-      CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
-                                    kErrorTimeoutWaitingForClientAppMetadata,
-                                base::nullopt /*client_directive */));
+std::string CryptAuthV2EnrollmentManagerImpl::GetClientAppMetadataHash() const {
+  // NOTE: SerializeAsString() is not guaranteed to be stable; it could change
+  // if the protobuf serialization algorithm changes or if the field
+  // serialization is inherently nondeterministic. However, because we only have
+  // MessageLite protocol buffers in Chrome, MessageDifferencer is not
+  // available. So, we either need to compare field-by-field (maintenance heavy)
+  // or compare the serializations. We choose the latter and risk a spurious
+  // re-enrollment if the serialization algorithm changes. We assume the
+  // ClientAppMetadata fields are serialized deterministically; unit tests will
+  // fail if they are not.
+  return base::NumberToString(
+      base::PersistentHash(client_app_metadata_.SerializeAsString()));
 }
 
 std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPublicKey() const {
-  base::Optional<std::string> public_key = util::DecodeFromValueString(
+  absl::optional<std::string> public_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPublicKey));
   if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
@@ -507,7 +399,7 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPublicKey() const {
 }
 
 std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPrivateKey() const {
-  base::Optional<std::string> private_key = util::DecodeFromValueString(
+  absl::optional<std::string> private_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPrivateKey));
   if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
@@ -547,26 +439,6 @@ void CryptAuthV2EnrollmentManagerImpl::AddV1UserKeyPairToRegistryIfNecessary() {
                                          cryptauthv2::KeyType::P256,
                                          kCryptAuthFixedUserKeyPairHandle));
   };
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         const CryptAuthV2EnrollmentManagerImpl::State& state) {
-  switch (state) {
-    case CryptAuthV2EnrollmentManagerImpl::State::kIdle:
-      stream << "[EnrollmentManager state: Idle]";
-      break;
-    case CryptAuthV2EnrollmentManagerImpl::State::kWaitingForGcmRegistration:
-      stream << "[EnrollmentManager state: Waiting for GCM registration]";
-      break;
-    case CryptAuthV2EnrollmentManagerImpl::State::kWaitingForClientAppMetadata:
-      stream << "[EnrollmentManager state: Waiting for ClientAppMetadata]";
-      break;
-    case CryptAuthV2EnrollmentManagerImpl::State::kWaitingForEnrollment:
-      stream << "[EnrollmentManager state: Waiting for enrollment to finish]";
-      break;
-  }
-
-  return stream;
 }
 
 }  // namespace device_sync

@@ -1,0 +1,45 @@
+# Defines the configuration of Remote Build Execution (RBE).
+
+# The directory where the re-client tooling binaries are.
+rbe_bin_dir = rebase_path("//buildtools/reclient", root_build_dir)
+
+# Execution root - this should be the root of the source tree.
+# This is defined here instead of in the config file because
+# this will vary depending on where the user has placed the
+# chromium source on their system.
+rbe_exec_root = rebase_path("//")
+
+declare_args() {
+  # Set to true to enable remote compilation using reclient.
+  use_remoteexec = false
+
+  # Set to true to enable remote compilation using reclient (deprecated).
+  use_rbe = false
+
+  # The directory where the re-client configuration files are.
+  rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
+
+  # Set to the path of the RBE reclient configuration file.
+  rbe_cc_cfg_file = ""
+
+  # Set to the path of the RBE recleint wrapper for ChromeOS.
+  rbe_cros_cc_wrapper = ""
+}
+
+# Set use_remoteexec if use_rbe is set.  Remove this once use_rbe is no longer
+# used to configure builds.
+if (!use_remoteexec && use_rbe) {
+  use_remoteexec = true
+}
+
+# Configuration file selection based on operating system.
+if (is_linux || is_android || is_chromeos) {
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
+}
+if (is_win) {
+  rbe_cc_cfg_file =
+      "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_windows.cfg"
+}
+if (is_mac || is_ios) {
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_mac.cfg"
+}

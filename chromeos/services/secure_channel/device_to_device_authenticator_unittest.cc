@@ -10,7 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/timer/mock_timer.h"
@@ -19,6 +19,8 @@
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "chromeos/services/secure_channel/wire_message.h"
@@ -67,6 +69,10 @@ class FakeConnection : public Connection {
  public:
   explicit FakeConnection(multidevice::RemoteDeviceRef remote_device)
       : Connection(remote_device), connection_blocked_(false) {}
+
+  FakeConnection(const FakeConnection&) = delete;
+  FakeConnection& operator=(const FakeConnection&) = delete;
+
   ~FakeConnection() override {}
 
   // Connection:
@@ -96,12 +102,18 @@ class FakeConnection : public Connection {
     OnDidSendMessage(message_alias, !connection_blocked_);
   }
 
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override {
+    std::move(registration_result_callback).Run(/*success=*/false);
+  }
+
  private:
   std::vector<std::unique_ptr<WireMessage>> message_buffer_;
 
   bool connection_blocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnection);
 };
 
 // Harness for testing DeviceToDeviceAuthenticator.
@@ -114,6 +126,12 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
       : DeviceToDeviceAuthenticator(connection,
                                     std::move(secure_message_delegate)),
         timer_(nullptr) {}
+
+  DeviceToDeviceAuthenticatorForTest(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+  DeviceToDeviceAuthenticatorForTest& operator=(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+
   ~DeviceToDeviceAuthenticatorForTest() override {}
 
   base::MockOneShotTimer* timer() { return timer_; }
@@ -128,8 +146,6 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
 
   // This instance is owned by the super class.
   base::MockOneShotTimer* timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticatorForTest);
 };
 
 }  // namespace
@@ -142,6 +158,12 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate),
         authenticator_(&connection_,
                        base::WrapUnique(secure_message_delegate_)) {}
+
+  SecureChannelDeviceToDeviceAuthenticatorTest(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+  SecureChannelDeviceToDeviceAuthenticatorTest& operator=(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+
   ~SecureChannelDeviceToDeviceAuthenticatorTest() override {}
 
   void SetUp() override {
@@ -163,13 +185,13 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
     secure_message_delegate_->DeriveKey(
         remote_session_private_key_, local_session_public_key_,
-        base::Bind(&SaveStringResult, &session_symmetric_key_));
+        base::BindOnce(&SaveStringResult, &session_symmetric_key_));
   }
 
   // Begins authentication, and returns the [Hello] message sent from the local
   // device to the remote device.
   std::string BeginAuthentication() {
-    authenticator_.Authenticate(base::Bind(
+    authenticator_.Authenticate(base::BindOnce(
         &SecureChannelDeviceToDeviceAuthenticatorTest::OnAuthenticationResult,
         base::Unretained(this)));
 
@@ -182,8 +204,8 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
     DeviceToDeviceResponderOperations::ValidateHelloMessage(
         hello_message, remote_device_.persistent_symmetric_key(),
         secure_message_delegate_,
-        base::Bind(&SaveValidateHelloMessageResult, &validated,
-                   &local_session_public_key));
+        base::BindOnce(&SaveValidateHelloMessageResult, &validated,
+                       &local_session_public_key));
 
     EXPECT_TRUE(validated);
     EXPECT_EQ(local_session_public_key_, local_session_public_key);
@@ -202,7 +224,7 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         hello_message, remote_session_public_key_, remote_session_private_key_,
         remote_device_private_key, remote_device_.persistent_symmetric_key(),
         secure_message_delegate_,
-        base::Bind(&SaveStringResult, &responder_auth_message));
+        base::BindOnce(&SaveStringResult, &responder_auth_message));
     EXPECT_FALSE(responder_auth_message.empty());
 
     WireMessage wire_message(responder_auth_message,
@@ -241,8 +263,6 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
   // Stores the SecureContext returned after authentication succeeds.
   std::unique_ptr<SecureContext> secure_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDeviceToDeviceAuthenticatorTest);
 };
 
 TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, AuthenticateSucceeds) {
@@ -264,7 +284,7 @@ TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, AuthenticateSucceeds) {
       initiator_auth, SessionKeys(session_symmetric_key_),
       remote_device_.persistent_symmetric_key(), responder_auth_message,
       secure_message_delegate_,
-      base::Bind(&SaveBooleanResult, &initiator_auth_validated));
+      base::BindOnce(&SaveBooleanResult, &initiator_auth_validated));
   ASSERT_TRUE(initiator_auth_validated);
 }
 
@@ -304,7 +324,7 @@ TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, NotConnectedInitially) {
   connection_.Disconnect();
   EXPECT_CALL(*this,
               OnAuthenticationResultProxy(Authenticator::Result::DISCONNECTED));
-  authenticator_.Authenticate(base::Bind(
+  authenticator_.Authenticate(base::BindOnce(
       &SecureChannelDeviceToDeviceAuthenticatorTest::OnAuthenticationResult,
       base::Unretained(this)));
   EXPECT_FALSE(secure_context_);
@@ -314,7 +334,7 @@ TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, FailToSendHello) {
   connection_.set_connection_blocked(true);
   EXPECT_CALL(*this,
               OnAuthenticationResultProxy(Authenticator::Result::FAILURE));
-  authenticator_.Authenticate(base::Bind(
+  authenticator_.Authenticate(base::BindOnce(
       &SecureChannelDeviceToDeviceAuthenticatorTest::OnAuthenticationResult,
       base::Unretained(this)));
   EXPECT_FALSE(secure_context_);

@@ -255,7 +255,7 @@ class AndroidRndisConfigurator(object):
       logging.info('HoRNDIS kext loaded successfully.')
       return
     logging.info('Installing HoRNDIS...')
-    pkg_path = binary_manager.FetchPath('horndis', arch_name, 'mac')
+    pkg_path = binary_manager.FetchPath('horndis', 'mac', arch_name)
     subprocess.check_call(
         ['/usr/bin/sudo', 'installer', '-pkg', pkg_path, '-target', '/'])
 

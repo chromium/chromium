@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -212,15 +213,13 @@ class ChildProcessSecurityPolicy {
   // This can only return false for processes locked to a particular origin,
   // which can happen for any origin when the --site-per-process flag is used,
   // or for isolated origins that require a dedicated process (see
-  // AddIsolatedOrigin).
-  //
-  // TODO(lukasza, nasko): https://crbug.com/882053: Convert this method to take
-  // url::Origin instead of GURL (so that CanAccessDataForOrigin can verify
-  // whether precursor of opaque origins also matches the process lock).
-  virtual bool CanAccessDataForOrigin(int child_id, const GURL& url) = 0;
+  // AddFutureIsolatedOrigins).
+  virtual bool CanAccessDataForOrigin(int child_id,
+                                      const url::Origin& origin) = 0;
 
   // Defines available sources of isolated origins.  This should be specified
-  // when adding isolated origins with the AddIsolatedOrigins() call below.
+  // when adding isolated origins with the AddFutureIsolatedOrigins() call
+  // below.
   enum class IsolatedOriginSource {
     // Used for origins that are hardcoded into the browser.
     BUILT_IN,
@@ -235,6 +234,9 @@ class ChildProcessSecurityPolicy {
     // Used for origins that are isolated based on user-triggered runtime
     // heuristics.
     USER_TRIGGERED,
+    // Used for origins that are isolated based on runtime heuristics triggered
+    // directly by web pages, such as headers.
+    WEB_TRIGGERED,
     // Used for testing purposes.
     TEST
   };
@@ -286,7 +288,7 @@ class ChildProcessSecurityPolicy {
   // BrowserContexts for which this function has been called.  However,
   // attempts to re-add an origin for the same |browser_context| will be
   // ignored.
-  virtual void AddIsolatedOrigins(
+  virtual void AddFutureIsolatedOrigins(
       const std::vector<url::Origin>& origins,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) = 0;
@@ -302,8 +304,8 @@ class ChildProcessSecurityPolicy {
   // implies breaking document.domain for all of its subdomains.
   //
   // Note that wildcards can only be added using this version of
-  // AddIsolatedOrigins; they cannot be specified in a url::Origin().
-  virtual void AddIsolatedOrigins(
+  // AddFutureIsolatedOrigins(); they cannot be specified in a url::Origin().
+  virtual void AddFutureIsolatedOrigins(
       base::StringPiece origins_to_add,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) = 0;
@@ -316,7 +318,7 @@ class ChildProcessSecurityPolicy {
   // by the source of how they were added and/or by BrowserContext.
   //
   // If |source| is provided, only origins that were added with the same source
-  // will be returned; if |source| is base::nullopt, origins from all sources
+  // will be returned; if |source| is absl::nullopt, origins from all sources
   // will be returned.
   //
   // If |browser_context| is null, only globally applicable origins will be
@@ -324,9 +326,24 @@ class ChildProcessSecurityPolicy {
   // within that particular BrowserContext will be returned (note that this
   // includes both matching per-profile isolated origins as well as globally
   // applicable origins which apply to |browser_context| by definition).
+  //
+  // Origins returned by this function only include origins that would apply to
+  // any future BrowsingInstance (browsing context group).  Origins that were
+  // isolated only in specific BrowsingInstances are not included.  (In
+  // particular, this excludes BrowsingInstance-specific isolated origins for
+  // Origin-Agent-Cluster as well as COOP documents loaded without user
+  // activation.)
   virtual std::vector<url::Origin> GetIsolatedOrigins(
-      base::Optional<IsolatedOriginSource> source = base::nullopt,
+      absl::optional<IsolatedOriginSource> source = absl::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
+
+  // Returns whether the site of |origin| is isolated and was added by the
+  // |source| to be isolated.
+  virtual bool IsIsolatedSiteFromSource(const url::Origin& origin,
+                                        IsolatedOriginSource source) = 0;
+
+  // Clears all isolated origins.  This is unsafe to use outside of testing.
+  virtual void ClearIsolatedOriginsForTesting() = 0;
 };
 
 }  // namespace content

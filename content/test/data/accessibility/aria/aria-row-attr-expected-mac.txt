@@ -1,18 +1,34 @@
 AXWebArea
-++AXTable AXARIARowCount='5'
+++AXTable AXARIARowCount=5
 ++++AXRow
-++++++AXCell AXARIARowIndex='3'
+++++++AXCell AXARIARowIndex=3
 ++++++++AXStaticText AXValue='cell 2'
-++++++AXCell AXARIARowIndex='3'
+++++++AXCell AXARIARowIndex=3
 ++++++++AXStaticText AXValue='cell 3'
-++++++AXCell AXARIARowIndex='3'
+++++++AXCell AXARIARowIndex=3
 ++++++++AXStaticText AXValue='cell 4'
 ++++AXRow
-++++++AXCell AXARIARowIndex='4'
+++++++AXCell AXARIARowIndex=4
 ++++++++AXStaticText AXValue='cell 2'
-++++++AXCell AXARIARowIndex='4'
+++++++AXCell AXARIARowIndex=4
 ++++++++AXStaticText AXValue='cell 3'
 ++++AXColumn
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 2'
+++++++AXCell AXARIARowIndex=4
+++++++++AXStaticText AXValue='cell 2'
 ++++AXColumn
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 3'
+++++++AXCell AXARIARowIndex=4
+++++++++AXStaticText AXValue='cell 3'
 ++++AXColumn
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 4'
 ++++AXGroup
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 2'
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 3'
+++++++AXCell AXARIARowIndex=3
+++++++++AXStaticText AXValue='cell 4'

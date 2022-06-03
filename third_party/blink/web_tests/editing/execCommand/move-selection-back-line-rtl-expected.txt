@@ -1,9 +1,0 @@
-Move the caret upwards from [ ] on the second line. The caret should appear in the green box inside [ ] on the first line.
-
-קו [ ] ראשון
-
-
-קו [ ] שני
-
-
-PASS

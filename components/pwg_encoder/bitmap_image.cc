@@ -4,7 +4,7 @@
 
 #include "components/pwg_encoder/bitmap_image.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace pwg_encoder {
 

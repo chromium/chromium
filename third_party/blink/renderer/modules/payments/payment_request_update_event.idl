@@ -8,6 +8,6 @@
     RuntimeEnabled=PaymentRequest,
     Exposed=Window
 ] interface PaymentRequestUpdateEvent : Event {
-    [CallWith=ExecutionContext] constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict);
+    [CallWith=ExecutionContext] constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict = {});
     [CallWith=ScriptState,RaisesException] void updateWith(Promise<PaymentDetailsUpdate> detailsPromise);
 };

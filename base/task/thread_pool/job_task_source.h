@@ -9,18 +9,18 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
+#include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool/sequence_sort_key.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 
 namespace base {
 namespace internal {
@@ -34,13 +34,15 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
  public:
   JobTaskSource(const Location& from_here,
                 const TaskTraits& traits,
-                RepeatingCallback<void(experimental::JobDelegate*)> worker_task,
-                RepeatingCallback<size_t()> max_concurrency_callback,
+                RepeatingCallback<void(JobDelegate*)> worker_task,
+                MaxConcurrencyCallback max_concurrency_callback,
                 PooledTaskRunnerDelegate* delegate);
+  JobTaskSource(const JobTaskSource&) = delete;
+  JobTaskSource& operator=(const JobTaskSource&) = delete;
 
-  static experimental::JobHandle CreateJobHandle(
+  static JobHandle CreateJobHandle(
       scoped_refptr<internal::JobTaskSource> task_source) {
-    return experimental::JobHandle(std::move(task_source));
+    return JobHandle(std::move(task_source));
   }
 
   // Notifies this task source that max concurrency was increased, and the
@@ -68,10 +70,18 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
+  TaskSourceSortKey GetSortKey(
+      bool disable_fair_scheduling = false) const override;
+
+  bool IsActive() const;
+  size_t GetWorkerCount() const;
 
   // Returns the maximum number of tasks from this TaskSource that can run
   // concurrently.
   size_t GetMaxConcurrency() const;
+
+  uint8_t AcquireTaskId();
+  void ReleaseTaskId(uint8_t task_id);
 
   // Returns true if a worker should return from the worker task on the current
   // thread ASAP.
@@ -79,21 +89,17 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
   PooledTaskRunnerDelegate* delegate() const { return delegate_; }
 
-#if DCHECK_IS_ON()
-  size_t GetConcurrencyIncreaseVersion() const;
-  // Returns true if the concurrency version was updated above
-  // |recorded_version|, or false on timeout.
-  bool WaitForConcurrencyIncreaseUpdate(size_t recorded_version);
-#endif  // DCHECK_IS_ON()
-
  private:
   // Atomic internal state to track the number of workers running a task from
-  // this JobTaskSource and whether this JobTaskSource is canceled.
+  // this JobTaskSource and whether this JobTaskSource is canceled. All
+  // operations are performed with std::memory_order_relaxed as State is only
+  // ever modified under a lock or read atomically (optimistic read).
   class State {
    public:
-    static constexpr size_t kCanceledMask = 1;
-    static constexpr size_t kWorkerCountBitOffset = 1;
-    static constexpr size_t kWorkerCountIncrement = 1 << kWorkerCountBitOffset;
+    static constexpr uint32_t kCanceledMask = 1;
+    static constexpr int kWorkerCountBitOffset = 1;
+    static constexpr uint32_t kWorkerCountIncrement = 1
+                                                      << kWorkerCountBitOffset;
 
     struct Value {
       size_t worker_count() const { return value >> kWorkerCountBitOffset; }
@@ -106,28 +112,17 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
     State();
     ~State();
 
-    // Sets as canceled using std::memory_order_relaxed. Returns the state
+    // Sets as canceled. Returns the state
     // before the operation.
     Value Cancel();
 
-    // Increments the worker count by 1 if smaller than |max_concurrency| and if
-    // |!is_canceled()|, using std::memory_order_release, and returns the state
-    // before the operation. Equivalent to Load() otherwise.
-    Value TryIncrementWorkerCountFromWorkerRelease(size_t max_concurrency);
+    // Increments the worker count by 1. Returns the state before the operation.
+    Value IncrementWorkerCount();
 
-    // Decrements the worker count by 1 using std::memory_order_acquire. Returns
-    // the state before the operation.
-    Value DecrementWorkerCountFromWorkerAcquire();
+    // Decrements the worker count by 1. Returns the state before the operation.
+    Value DecrementWorkerCount();
 
-    // Increments the worker count by 1 using std::memory_order_relaxed. Returns
-    // the state before the operation.
-    Value IncrementWorkerCountFromJoiningThread();
-
-    // Decrements the worker count by 1 using std::memory_order_relaxed. Returns
-    // the state before the operation.
-    Value DecrementWorkerCountFromJoiningThread();
-
-    // Loads and returns the state, using std::memory_order_relaxed.
+    // Loads and returns the state.
     Value Load() const;
 
    private:
@@ -149,6 +144,15 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
     JoinFlag();
     ~JoinFlag();
+
+    // Returns true if the status is not kNotWaiting, using
+    // std::memory_order_relaxed.
+    bool IsWaiting() {
+      return value_.load(std::memory_order_relaxed) != kNotWaiting;
+    }
+
+    // Resets the status as kNotWaiting  using std::memory_order_relaxed.
+    void Reset();
 
     // Sets the status as kWaitingForWorkerToYield using
     // std::memory_order_relaxed.
@@ -177,45 +181,41 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // DidProcessTask()). Returns true if the joining thread should run a task, or
   // false if joining was completed and all other workers returned because
   // either there's no work remaining or Job was cancelled.
-  bool WaitForParticipationOpportunity();
+  bool WaitForParticipationOpportunity() EXCLUSIVE_LOCKS_REQUIRED(worker_lock_);
+
+  size_t GetMaxConcurrency(size_t worker_count) const;
 
   // TaskSource:
   RunStatus WillRunTask() override;
   Task TakeTask(TaskSource::Transaction* transaction) override;
   Task Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
-  SequenceSortKey GetSortKey() const override;
 
-  // Current atomic state.
-  State state_;
+  // Synchronizes access to workers state.
+  mutable CheckedLock worker_lock_{UniversalSuccessor()};
+
+  // Current atomic state (atomic despite the lock to allow optimistic reads
+  // and cancellation without the lock).
+  State state_ GUARDED_BY(worker_lock_);
   // Normally, |join_flag_| is protected by |lock_|, except in ShouldYield()
   // hence the use of atomics.
-  JoinFlag join_flag_ GUARDED_BY(lock_);
+  JoinFlag join_flag_ GUARDED_BY(worker_lock_);
   // Signaled when |join_flag_| is kWaiting* and a worker returns.
   std::unique_ptr<ConditionVariable> worker_released_condition_
-      GUARDED_BY(lock_);
+      GUARDED_BY(worker_lock_);
+
+  std::atomic<uint32_t> assigned_task_ids_{0};
 
   const Location from_here_;
-  RepeatingCallback<size_t()> max_concurrency_callback_;
+  RepeatingCallback<size_t(size_t)> max_concurrency_callback_;
 
   // Worker task set by the job owner.
-  RepeatingCallback<void(experimental::JobDelegate*)> worker_task_;
+  RepeatingCallback<void(JobDelegate*)> worker_task_;
   // Task returned from TakeTask(), that calls |worker_task_| internally.
   RepeatingClosure primary_task_;
 
-  const TimeTicks queue_time_;
+  const TimeTicks ready_time_;
   PooledTaskRunnerDelegate* delegate_;
-
-#if DCHECK_IS_ON()
-  // Synchronizes accesses to |increase_version_|.
-  mutable Lock version_lock_;
-  // Signaled whenever increase_version_ is updated.
-  ConditionVariable version_condition_{&version_lock_};
-  // Incremented every time max concurrency is increased.
-  size_t increase_version_ GUARDED_BY(version_lock_) = 0;
-#endif  // DCHECK_IS_ON()
-
-  DISALLOW_COPY_AND_ASSIGN(JobTaskSource);
 };
 
 }  // namespace internal

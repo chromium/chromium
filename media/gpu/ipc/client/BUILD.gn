@@ -8,8 +8,6 @@ source_set("client") {
     "gpu_video_decode_accelerator_host.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//gpu/ipc/common",
@@ -18,6 +16,7 @@ source_set("client") {
     "//media:media_buildflags",
     "//media/gpu",
     "//media/gpu/ipc/common",
+    "//media/mojo/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",

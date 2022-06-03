@@ -39,6 +39,7 @@ CORE_EXPORT extern const char kMimeTypeText[];
 CORE_EXPORT extern const char kMimeTypeTextPlain[];
 CORE_EXPORT extern const char kMimeTypeTextPlainEtc[];
 CORE_EXPORT extern const char kMimeTypeTextHTML[];
+CORE_EXPORT extern const char kMimeTypeImageSvg[];
 CORE_EXPORT extern const char kMimeTypeTextRTF[];
 CORE_EXPORT extern const char kMimeTypeURL[];
 CORE_EXPORT extern const char kMimeTypeTextURIList[];

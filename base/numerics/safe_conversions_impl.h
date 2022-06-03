@@ -80,8 +80,9 @@ template <typename T>
 constexpr typename std::make_unsigned<T>::type SafeUnsignedAbs(T value) {
   static_assert(std::is_integral<T>::value, "Type must be integral");
   using UnsignedT = typename std::make_unsigned<T>::type;
-  return IsValueNegative(value) ? 0 - static_cast<UnsignedT>(value)
-                                : static_cast<UnsignedT>(value);
+  return IsValueNegative(value)
+             ? static_cast<UnsignedT>(0u - static_cast<UnsignedT>(value))
+             : static_cast<UnsignedT>(value);
 }
 
 // This allows us to switch paths on known compile-time constants.
@@ -377,9 +378,17 @@ struct DstRangeRelationToSrcRangeImpl<Dst,
     using SrcLimits = std::numeric_limits<Src>;
     using DstLimits = NarrowingRange<Dst, Src, Bounds>;
     using Promotion = decltype(Src() + Dst());
+    bool ge_zero = false;
+    // Converting floating-point to integer will discard fractional part, so
+    // values in (-1.0, -0.0) will truncate to 0 and fit in Dst.
+    if (std::is_floating_point<Src>::value) {
+      ge_zero = value > Src(-1);
+    } else {
+      ge_zero = value >= Src(0);
+    }
     return RangeCheck(
-        value >= Src(0) && (DstLimits::lowest() == 0 ||
-                            static_cast<Dst>(value) >= DstLimits::lowest()),
+        ge_zero && (DstLimits::lowest() == 0 ||
+                    static_cast<Dst>(value) >= DstLimits::lowest()),
         static_cast<Promotion>(SrcLimits::max()) <=
                 static_cast<Promotion>(DstLimits::max()) ||
             static_cast<Promotion>(value) <=

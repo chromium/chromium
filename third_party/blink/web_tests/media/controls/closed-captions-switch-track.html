@@ -13,10 +13,10 @@ async_test(t => {
 
   enableTestMode(video);
 
-  video.oncanplaythrough = t.step_func(_ => {
+  video.onplaying = t.step_func(_ => {
     for (var i = 0; i < trackLanguages.length; i++) {
       var track = video.addTextTrack('captions', trackCueText[i], trackLanguages[i]);
-      track.addCue(new VTTCue(0, 1, trackCueText[i]));
+      track.addCue(new VTTCue(0, 10, trackCueText[i]));
       track.mode = 'disabled';
     }
 
@@ -31,6 +31,7 @@ async_test(t => {
   });
 
   video.src = '../content/test.ogv';
+  video.play();
 
   function checkTrack(i) {
     // If we've reached the end, the test is complete.

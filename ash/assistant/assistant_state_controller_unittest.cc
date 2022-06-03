@@ -5,19 +5,40 @@
 #include "ash/assistant/assistant_state_controller.h"
 
 #include <memory>
+#include <string>
 
-#include "ash/assistant/assistant_controller.h"
+#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
 
+namespace {
+
+using chromeos::assistant::prefs::AssistantOnboardingMode;
+using chromeos::assistant::prefs::ConsentStatus;
+using chromeos::assistant::prefs::kAssistantConsentStatus;
+using chromeos::assistant::prefs::kAssistantContextEnabled;
+using chromeos::assistant::prefs::kAssistantEnabled;
+using chromeos::assistant::prefs::kAssistantHotwordAlwaysOn;
+using chromeos::assistant::prefs::kAssistantHotwordEnabled;
+using chromeos::assistant::prefs::kAssistantLaunchWithMicOpen;
+using chromeos::assistant::prefs::kAssistantNotificationEnabled;
+using chromeos::assistant::prefs::kAssistantOnboardingMode;
+using chromeos::assistant::prefs::kAssistantOnboardingModeDefault;
+using chromeos::assistant::prefs::kAssistantOnboardingModeEducation;
+
 class TestAssistantStateObserver : public AssistantStateObserver {
  public:
   TestAssistantStateObserver() = default;
+
+  TestAssistantStateObserver(const TestAssistantStateObserver&) = delete;
+  TestAssistantStateObserver& operator=(const TestAssistantStateObserver&) =
+      delete;
+
   ~TestAssistantStateObserver() override = default;
 
   // AssistantStateObserver:
@@ -42,6 +63,10 @@ class TestAssistantStateObserver : public AssistantStateObserver {
   void OnAssistantNotificationEnabled(bool notification_enabled) override {
     notification_enabled_ = notification_enabled;
   }
+  void OnAssistantOnboardingModeChanged(
+      AssistantOnboardingMode onboarding_mode) override {
+    onboarding_mode_ = onboarding_mode;
+  }
 
   int consent_status() const { return consent_status_; }
   bool context_enabled() const { return context_enabled_; }
@@ -50,20 +75,25 @@ class TestAssistantStateObserver : public AssistantStateObserver {
   bool hotword_enabled() const { return hotword_enabled_; }
   bool launch_with_mic_open() const { return launch_with_mic_open_; }
   bool notification_enabled() const { return notification_enabled_; }
+  AssistantOnboardingMode onboarding_mode() const { return onboarding_mode_; }
 
  private:
-  int consent_status_ = chromeos::assistant::prefs::ConsentStatus::kUnknown;
+  int consent_status_ = ConsentStatus::kUnknown;
   bool context_enabled_ = false;
   bool settings_enabled_ = false;
   bool hotword_always_on_ = false;
   bool hotword_enabled_ = false;
   bool launch_with_mic_open_ = false;
   bool notification_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAssistantStateObserver);
+  AssistantOnboardingMode onboarding_mode_ = AssistantOnboardingMode::kDefault;
 };
 
 class AssistantStateControllerTest : public AshTestBase {
+ public:
+  AssistantStateControllerTest(const AssistantStateControllerTest&) = delete;
+  AssistantStateControllerTest& operator=(const AssistantStateControllerTest&) =
+      delete;
+
  protected:
   AssistantStateControllerTest() = default;
   ~AssistantStateControllerTest() override = default;
@@ -85,65 +115,56 @@ class AssistantStateControllerTest : public AshTestBase {
  private:
   PrefService* prefs_ = nullptr;
   std::unique_ptr<TestAssistantStateObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateControllerTest);
 };
 
+}  // namespace
+
 TEST_F(AssistantStateControllerTest, InitObserver) {
-  prefs()->SetInteger(
-      chromeos::assistant::prefs::kAssistantConsentStatus,
-      chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordAlwaysOn,
-                      true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordEnabled,
-                      true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantLaunchWithMicOpen,
-                      true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantNotificationEnabled,
-                      true);
+  prefs()->SetInteger(kAssistantConsentStatus,
+                      ConsentStatus::kActivityControlAccepted);
+  prefs()->SetBoolean(kAssistantContextEnabled, true);
+  prefs()->SetBoolean(kAssistantEnabled, true);
+  prefs()->SetBoolean(kAssistantHotwordAlwaysOn, true);
+  prefs()->SetBoolean(kAssistantHotwordEnabled, true);
+  prefs()->SetBoolean(kAssistantLaunchWithMicOpen, true);
+  prefs()->SetBoolean(kAssistantNotificationEnabled, true);
+  prefs()->SetString(kAssistantOnboardingMode, kAssistantOnboardingModeDefault);
 
   // The observer class should get an instant notification about the current
   // pref value.
   AssistantState::Get()->AddObserver(observer());
-  EXPECT_EQ(chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted,
-            observer()->consent_status());
+  EXPECT_EQ(observer()->consent_status(),
+            ConsentStatus::kActivityControlAccepted);
   EXPECT_EQ(observer()->context_enabled(), true);
   EXPECT_EQ(observer()->settings_enabled(), true);
   EXPECT_EQ(observer()->hotword_always_on(), true);
   EXPECT_EQ(observer()->hotword_enabled(), true);
   EXPECT_EQ(observer()->launch_with_mic_open(), true);
   EXPECT_EQ(observer()->notification_enabled(), true);
+  EXPECT_EQ(observer()->onboarding_mode(), AssistantOnboardingMode::kDefault);
   AssistantState::Get()->RemoveObserver(observer());
 }
 
 TEST_F(AssistantStateControllerTest, NotifyConsentStatus) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetInteger(chromeos::assistant::prefs::kAssistantConsentStatus,
-                      chromeos::assistant::prefs::ConsentStatus::kUnauthorized);
-  EXPECT_EQ(chromeos::assistant::prefs::ConsentStatus::kUnauthorized,
-            observer()->consent_status());
+  prefs()->SetInteger(kAssistantConsentStatus, ConsentStatus::kUnauthorized);
+  EXPECT_EQ(observer()->consent_status(), ConsentStatus::kUnauthorized);
 
-  prefs()->SetInteger(
-      chromeos::assistant::prefs::kAssistantConsentStatus,
-      chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted);
-  EXPECT_EQ(chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted,
-            observer()->consent_status());
+  prefs()->SetInteger(kAssistantConsentStatus,
+                      ConsentStatus::kActivityControlAccepted);
+  EXPECT_EQ(observer()->consent_status(),
+            ConsentStatus::kActivityControlAccepted);
   AssistantState::Get()->RemoveObserver(observer());
 }
 
 TEST_F(AssistantStateControllerTest, NotifyContextEnabled) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      false);
+  prefs()->SetBoolean(kAssistantContextEnabled, false);
   EXPECT_EQ(observer()->context_enabled(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      true);
+  prefs()->SetBoolean(kAssistantContextEnabled, true);
   EXPECT_EQ(observer()->context_enabled(), true);
   AssistantState::Get()->RemoveObserver(observer());
 }
@@ -151,10 +172,10 @@ TEST_F(AssistantStateControllerTest, NotifyContextEnabled) {
 TEST_F(AssistantStateControllerTest, NotifySettingsEnabled) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+  prefs()->SetBoolean(kAssistantEnabled, false);
   EXPECT_EQ(observer()->settings_enabled(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(kAssistantEnabled, true);
   EXPECT_EQ(observer()->settings_enabled(), true);
   AssistantState::Get()->RemoveObserver(observer());
 }
@@ -162,12 +183,10 @@ TEST_F(AssistantStateControllerTest, NotifySettingsEnabled) {
 TEST_F(AssistantStateControllerTest, NotifyHotwordAlwaysOn) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordAlwaysOn,
-                      false);
+  prefs()->SetBoolean(kAssistantHotwordAlwaysOn, false);
   EXPECT_EQ(observer()->hotword_always_on(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordAlwaysOn,
-                      true);
+  prefs()->SetBoolean(kAssistantHotwordAlwaysOn, true);
   EXPECT_EQ(observer()->hotword_always_on(), true);
   AssistantState::Get()->RemoveObserver(observer());
 }
@@ -175,12 +194,10 @@ TEST_F(AssistantStateControllerTest, NotifyHotwordAlwaysOn) {
 TEST_F(AssistantStateControllerTest, NotifyHotwordEnabled) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordEnabled,
-                      false);
+  prefs()->SetBoolean(kAssistantHotwordEnabled, false);
   EXPECT_EQ(observer()->hotword_enabled(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantHotwordEnabled,
-                      true);
+  prefs()->SetBoolean(kAssistantHotwordEnabled, true);
   EXPECT_EQ(observer()->hotword_enabled(), true);
   AssistantState::Get()->RemoveObserver(observer());
 }
@@ -188,12 +205,10 @@ TEST_F(AssistantStateControllerTest, NotifyHotwordEnabled) {
 TEST_F(AssistantStateControllerTest, NotifyLaunchWithMicOpen) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantLaunchWithMicOpen,
-                      false);
+  prefs()->SetBoolean(kAssistantLaunchWithMicOpen, false);
   EXPECT_EQ(observer()->launch_with_mic_open(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantLaunchWithMicOpen,
-                      true);
+  prefs()->SetBoolean(kAssistantLaunchWithMicOpen, true);
   EXPECT_EQ(observer()->launch_with_mic_open(), true);
   AssistantState::Get()->RemoveObserver(observer());
 }
@@ -201,13 +216,23 @@ TEST_F(AssistantStateControllerTest, NotifyLaunchWithMicOpen) {
 TEST_F(AssistantStateControllerTest, NotifyNotificationEnabled) {
   AssistantState::Get()->AddObserver(observer());
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantNotificationEnabled,
-                      false);
+  prefs()->SetBoolean(kAssistantNotificationEnabled, false);
   EXPECT_EQ(observer()->notification_enabled(), false);
 
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantNotificationEnabled,
-                      true);
+  prefs()->SetBoolean(kAssistantNotificationEnabled, true);
   EXPECT_EQ(observer()->notification_enabled(), true);
+  AssistantState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(AssistantStateControllerTest, NotifyOnboardingModeChanged) {
+  AssistantState::Get()->AddObserver(observer());
+
+  prefs()->SetString(kAssistantOnboardingMode, kAssistantOnboardingModeDefault);
+  EXPECT_EQ(observer()->onboarding_mode(), AssistantOnboardingMode::kDefault);
+
+  prefs()->SetString(kAssistantOnboardingMode,
+                     kAssistantOnboardingModeEducation);
+  EXPECT_EQ(observer()->onboarding_mode(), AssistantOnboardingMode::kEducation);
   AssistantState::Get()->RemoveObserver(observer());
 }
 

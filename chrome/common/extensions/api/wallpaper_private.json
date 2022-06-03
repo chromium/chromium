@@ -35,6 +35,10 @@
         "type": "object",
         "description": "The info (url, description etc.) specific to each wallpaper image.",
         "properties": {
+          "assetId": {
+            "type": "string",
+            "description": "The unique identifier for this image."
+          },
           "imageUrl": {
             "type": "string",
             "description": "The url that points to the image."
@@ -98,7 +102,17 @@
         "parameters": [
           {
             "type": "string",
+            "name": "assetId",
+            "description": "The unique identifier of the wallpaper. The id is used for analytics. When empty, the metric will not be logged."
+          },
+          {
+            "type": "string",
             "name": "url"
+          },
+          {
+            "type": "string",
+            "name": "collectionId",
+            "description": "The id of the collection that the wallpaper belongs to. The id is used for analytics. If it is empty, the metric will not be logged."
           },
           {
             "name": "layout",
@@ -497,7 +511,25 @@
             ]
           }
         ]
-       }
+       },
+       {
+        "name": "isSwaEnabled",
+        "type": "function",
+        "description": "Gets if the new wallpaper picker SWA is enabled.",
+        "nodoc": true,
+        "parameters": [
+          {
+            "type": "function",
+            "name": "callback",
+            "parameters": [
+              {
+                "type": "boolean",
+                "name": "swaEnabled"
+              }
+            ]
+          }
+        ]
+      }
     ],
     "events": [
       {
@@ -525,6 +557,12 @@
             "description": "The third party wallpaper app name."
           }
         ]
+      },
+      {
+        "name": "onClosePreviewWallpaper",
+        "type": "function",
+        "description": "This event is sent when the app side of preview wallpaper should be closed.",
+        "parameters": []
       }
     ]
   }

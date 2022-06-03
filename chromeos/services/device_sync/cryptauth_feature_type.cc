@@ -4,10 +4,10 @@
 
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "crypto/sha2.h"
 
 namespace chromeos {
@@ -27,6 +27,16 @@ const char kMagicTetherClientSupportedString[] =
     "MAGIC_TETHER_CLIENT_SUPPORTED";
 const char kSmsConnectHostSupportedString[] = "SMS_CONNECT_HOST_SUPPORTED";
 const char kSmsConnectClientSupportedString[] = "SMS_CONNECT_CLIENT_SUPPORTED";
+const char kPhoneHubHostSupportedString[] = "PHONE_HUB_HOST_SUPPORTED";
+const char kPhoneHubClientSupportedString[] = "PHONE_HUB_CLIENT_SUPPORTED";
+const char kWifiSyncHostSupportedString[] = "WIFI_SYNC_HOST_SUPPORTED";
+const char kWifiSyncClientSupportedString[] = "WIFI_SYNC_CLIENT_SUPPORTED";
+const char kEcheHostSupportedString[] = "EXO_HOST_SUPPORTED";
+const char kEcheClientSupportedString[] = "EXO_CLIENT_SUPPORTED";
+const char kPhoneHubCameraRollHostSupportedString[] =
+    "PHONE_HUB_CAMERA_ROLL_HOST_SUPPORTED";
+const char kPhoneHubCameraRollClientSupportedString[] =
+    "PHONE_HUB_CAMERA_ROLL_CLIENT_SUPPORTED";
 
 const char kBetterTogetherHostEnabledString[] = "BETTER_TOGETHER_HOST";
 const char kBetterTogetherClientEnabledString[] = "BETTER_TOGETHER_CLIENT";
@@ -36,58 +46,144 @@ const char kMagicTetherHostEnabledString[] = "MAGIC_TETHER_HOST";
 const char kMagicTetherClientEnabledString[] = "MAGIC_TETHER_CLIENT";
 const char kSmsConnectHostEnabledString[] = "SMS_CONNECT_HOST";
 const char kSmsConnectClientEnabledString[] = "SMS_CONNECT_CLIENT";
+const char kPhoneHubHostEnabledString[] = "PHONE_HUB_HOST";
+const char kPhoneHubClientEnabledString[] = "PHONE_HUB_CLIENT";
+const char kWifiSyncHostEnabledString[] = "WIFI_SYNC_HOST";
+const char kWifiSyncClientEnabledString[] = "WIFI_SYNC_CLIENT";
+const char kEcheHostEnabledString[] = "EXO_HOST";
+const char kEcheClientEnabledString[] = "EXO_CLIENT";
+const char kPhoneHubCameraRollHostEnabledString[] =
+    "PHONE_HUB_CAMERA_ROLL_HOST";
+const char kPhoneHubCameraRollClientEnabledString[] =
+    "PHONE_HUB_CAMERA_ROLL_CLIENT";
 
 }  // namespace
 
 const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
-  static const base::flat_set<CryptAuthFeatureType> feature_set{
-      CryptAuthFeatureType::kBetterTogetherHostSupported,
-      CryptAuthFeatureType::kBetterTogetherClientSupported,
-      CryptAuthFeatureType::kEasyUnlockHostSupported,
-      CryptAuthFeatureType::kEasyUnlockClientSupported,
-      CryptAuthFeatureType::kMagicTetherHostSupported,
-      CryptAuthFeatureType::kMagicTetherClientSupported,
-      CryptAuthFeatureType::kSmsConnectHostSupported,
-      CryptAuthFeatureType::kSmsConnectClientSupported,
-      CryptAuthFeatureType::kBetterTogetherHostEnabled,
-      CryptAuthFeatureType::kBetterTogetherClientEnabled,
-      CryptAuthFeatureType::kEasyUnlockHostEnabled,
-      CryptAuthFeatureType::kEasyUnlockClientEnabled,
-      CryptAuthFeatureType::kMagicTetherHostEnabled,
-      CryptAuthFeatureType::kMagicTetherClientEnabled,
-      CryptAuthFeatureType::kSmsConnectHostEnabled,
-      CryptAuthFeatureType::kSmsConnectClientEnabled};
+  static const base::NoDestructor<base::flat_set<CryptAuthFeatureType>>
+      feature_set([] {
+        base::flat_set<CryptAuthFeatureType> feature_set{
+            CryptAuthFeatureType::kBetterTogetherHostSupported,
+            CryptAuthFeatureType::kBetterTogetherClientSupported,
+            CryptAuthFeatureType::kEasyUnlockHostSupported,
+            CryptAuthFeatureType::kEasyUnlockClientSupported,
+            CryptAuthFeatureType::kMagicTetherHostSupported,
+            CryptAuthFeatureType::kMagicTetherClientSupported,
+            CryptAuthFeatureType::kSmsConnectHostSupported,
+            CryptAuthFeatureType::kSmsConnectClientSupported,
+            CryptAuthFeatureType::kBetterTogetherHostEnabled,
+            CryptAuthFeatureType::kBetterTogetherClientEnabled,
+            CryptAuthFeatureType::kEasyUnlockHostEnabled,
+            CryptAuthFeatureType::kEasyUnlockClientEnabled,
+            CryptAuthFeatureType::kMagicTetherHostEnabled,
+            CryptAuthFeatureType::kMagicTetherClientEnabled,
+            CryptAuthFeatureType::kSmsConnectHostEnabled,
+            CryptAuthFeatureType::kSmsConnectClientEnabled};
+        if (features::IsPhoneHubEnabled()) {
+          feature_set.insert(CryptAuthFeatureType::kPhoneHubClientSupported);
+          feature_set.insert(CryptAuthFeatureType::kPhoneHubClientEnabled);
+          feature_set.insert(CryptAuthFeatureType::kPhoneHubHostSupported);
+          feature_set.insert(CryptAuthFeatureType::kPhoneHubHostEnabled);
+        }
+        if (features::IsWifiSyncAndroidEnabled()) {
+          feature_set.insert(CryptAuthFeatureType::kWifiSyncClientSupported);
+          feature_set.insert(CryptAuthFeatureType::kWifiSyncClientEnabled);
+          feature_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
+          feature_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
+        }
+        if (features::IsEcheSWAEnabled()) {
+          feature_set.insert(CryptAuthFeatureType::kEcheClientSupported);
+          feature_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
+          feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+          feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
+        }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
+        }
+        return feature_set;
+      }());
 
-  return feature_set;
+  return *feature_set;
 }
 
 const base::flat_set<CryptAuthFeatureType>&
 GetSupportedCryptAuthFeatureTypes() {
-  static const base::flat_set<CryptAuthFeatureType> supported_set{
-      CryptAuthFeatureType::kBetterTogetherHostSupported,
-      CryptAuthFeatureType::kBetterTogetherClientSupported,
-      CryptAuthFeatureType::kEasyUnlockHostSupported,
-      CryptAuthFeatureType::kEasyUnlockClientSupported,
-      CryptAuthFeatureType::kMagicTetherHostSupported,
-      CryptAuthFeatureType::kMagicTetherClientSupported,
-      CryptAuthFeatureType::kSmsConnectHostSupported,
-      CryptAuthFeatureType::kSmsConnectClientSupported};
+  static const base::NoDestructor<base::flat_set<CryptAuthFeatureType>>
+      supported_set([] {
+        base::flat_set<CryptAuthFeatureType> supported_set{
+            CryptAuthFeatureType::kBetterTogetherHostSupported,
+            CryptAuthFeatureType::kBetterTogetherClientSupported,
+            CryptAuthFeatureType::kEasyUnlockHostSupported,
+            CryptAuthFeatureType::kEasyUnlockClientSupported,
+            CryptAuthFeatureType::kMagicTetherHostSupported,
+            CryptAuthFeatureType::kMagicTetherClientSupported,
+            CryptAuthFeatureType::kSmsConnectHostSupported,
+            CryptAuthFeatureType::kSmsConnectClientSupported};
+        if (features::IsPhoneHubEnabled()) {
+          supported_set.insert(CryptAuthFeatureType::kPhoneHubHostSupported);
+          supported_set.insert(CryptAuthFeatureType::kPhoneHubClientSupported);
+        }
+        if (features::IsWifiSyncAndroidEnabled()) {
+          supported_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
+          supported_set.insert(CryptAuthFeatureType::kWifiSyncClientSupported);
+        }
+        if (features::IsEcheSWAEnabled()) {
+          supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+          supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
+        }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          supported_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+          supported_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
+        }
+        return supported_set;
+      }());
 
-  return supported_set;
+  return *supported_set;
 }
 
 const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
-  static const base::flat_set<CryptAuthFeatureType> enabled_set{
-      CryptAuthFeatureType::kBetterTogetherHostEnabled,
-      CryptAuthFeatureType::kBetterTogetherClientEnabled,
-      CryptAuthFeatureType::kEasyUnlockHostEnabled,
-      CryptAuthFeatureType::kEasyUnlockClientEnabled,
-      CryptAuthFeatureType::kMagicTetherHostEnabled,
-      CryptAuthFeatureType::kMagicTetherClientEnabled,
-      CryptAuthFeatureType::kSmsConnectHostEnabled,
-      CryptAuthFeatureType::kSmsConnectClientEnabled};
+  static const base::NoDestructor<base::flat_set<CryptAuthFeatureType>>
+      enabled_set([] {
+        base::flat_set<CryptAuthFeatureType> enabled_set{
+            CryptAuthFeatureType::kBetterTogetherHostEnabled,
+            CryptAuthFeatureType::kBetterTogetherClientEnabled,
+            CryptAuthFeatureType::kEasyUnlockHostEnabled,
+            CryptAuthFeatureType::kEasyUnlockClientEnabled,
+            CryptAuthFeatureType::kMagicTetherHostEnabled,
+            CryptAuthFeatureType::kMagicTetherClientEnabled,
+            CryptAuthFeatureType::kSmsConnectHostEnabled,
+            CryptAuthFeatureType::kSmsConnectClientEnabled};
+        if (features::IsPhoneHubEnabled()) {
+          enabled_set.insert(CryptAuthFeatureType::kPhoneHubHostEnabled);
+          enabled_set.insert(CryptAuthFeatureType::kPhoneHubClientEnabled);
+        }
+        if (features::IsWifiSyncAndroidEnabled()) {
+          enabled_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
+          enabled_set.insert(CryptAuthFeatureType::kWifiSyncClientEnabled);
+        }
+        if (features::IsEcheSWAEnabled()) {
+          enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
+          enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
+        }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          enabled_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
+          enabled_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
+        }
+        return enabled_set;
+      }());
 
-  return enabled_set;
+  return *enabled_set;
 }
 
 const base::flat_set<std::string>& GetAllCryptAuthFeatureTypeStrings() {
@@ -136,10 +232,42 @@ const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type) {
       return kSmsConnectClientSupportedString;
     case CryptAuthFeatureType::kSmsConnectClientEnabled:
       return kSmsConnectClientEnabledString;
+    case CryptAuthFeatureType::kPhoneHubHostSupported:
+      return kPhoneHubHostSupportedString;
+    case CryptAuthFeatureType::kPhoneHubHostEnabled:
+      return kPhoneHubHostEnabledString;
+    case CryptAuthFeatureType::kPhoneHubClientSupported:
+      return kPhoneHubClientSupportedString;
+    case CryptAuthFeatureType::kPhoneHubClientEnabled:
+      return kPhoneHubClientEnabledString;
+    case CryptAuthFeatureType::kWifiSyncHostSupported:
+      return kWifiSyncHostSupportedString;
+    case CryptAuthFeatureType::kWifiSyncHostEnabled:
+      return kWifiSyncHostEnabledString;
+    case CryptAuthFeatureType::kWifiSyncClientSupported:
+      return kWifiSyncClientSupportedString;
+    case CryptAuthFeatureType::kWifiSyncClientEnabled:
+      return kWifiSyncClientEnabledString;
+    case CryptAuthFeatureType::kEcheHostSupported:
+      return kEcheHostSupportedString;
+    case CryptAuthFeatureType::kEcheHostEnabled:
+      return kEcheHostEnabledString;
+    case CryptAuthFeatureType::kEcheClientSupported:
+      return kEcheClientSupportedString;
+    case CryptAuthFeatureType::kEcheClientEnabled:
+      return kEcheClientEnabledString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostSupported:
+      return kPhoneHubCameraRollHostSupportedString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled:
+      return kPhoneHubCameraRollHostEnabledString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientSupported:
+      return kPhoneHubCameraRollClientSupportedString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled:
+      return kPhoneHubCameraRollClientEnabledString;
   }
 }
 
-base::Optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
+absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     const std::string& feature_type_string) {
   if (feature_type_string == kBetterTogetherHostSupportedString)
     return CryptAuthFeatureType::kBetterTogetherHostSupported;
@@ -173,8 +301,40 @@ base::Optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     return CryptAuthFeatureType::kSmsConnectClientSupported;
   if (feature_type_string == kSmsConnectClientEnabledString)
     return CryptAuthFeatureType::kSmsConnectClientEnabled;
+  if (feature_type_string == kPhoneHubHostSupportedString)
+    return CryptAuthFeatureType::kPhoneHubHostSupported;
+  if (feature_type_string == kPhoneHubHostEnabledString)
+    return CryptAuthFeatureType::kPhoneHubHostEnabled;
+  if (feature_type_string == kPhoneHubClientSupportedString)
+    return CryptAuthFeatureType::kPhoneHubClientSupported;
+  if (feature_type_string == kPhoneHubClientEnabledString)
+    return CryptAuthFeatureType::kPhoneHubClientEnabled;
+  if (feature_type_string == kWifiSyncHostSupportedString)
+    return CryptAuthFeatureType::kWifiSyncHostSupported;
+  if (feature_type_string == kWifiSyncHostEnabledString)
+    return CryptAuthFeatureType::kWifiSyncHostEnabled;
+  if (feature_type_string == kWifiSyncClientSupportedString)
+    return CryptAuthFeatureType::kWifiSyncClientSupported;
+  if (feature_type_string == kWifiSyncClientEnabledString)
+    return CryptAuthFeatureType::kWifiSyncClientEnabled;
+  if (feature_type_string == kEcheHostSupportedString)
+    return CryptAuthFeatureType::kEcheHostSupported;
+  if (feature_type_string == kEcheHostEnabledString)
+    return CryptAuthFeatureType::kEcheHostEnabled;
+  if (feature_type_string == kEcheClientSupportedString)
+    return CryptAuthFeatureType::kEcheClientSupported;
+  if (feature_type_string == kEcheClientEnabledString)
+    return CryptAuthFeatureType::kEcheClientEnabled;
+  if (feature_type_string == kPhoneHubCameraRollHostSupportedString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollHostSupported;
+  if (feature_type_string == kPhoneHubCameraRollHostEnabledString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled;
+  if (feature_type_string == kPhoneHubCameraRollClientSupportedString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollClientSupported;
+  if (feature_type_string == kPhoneHubCameraRollClientEnabledString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Computes the base64url-encoded, SHA-256 8-byte hash of the
@@ -191,7 +351,7 @@ std::string CryptAuthFeatureTypeToGcmHash(CryptAuthFeatureType feature_type) {
   return hash_base64url;
 }
 
-base::Optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
+absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
     const std::string& feature_type_hash) {
   // The map from the feature type hash value that CryptAuth sends in GCM
   // messages to the CryptAuthFeatureType enum.
@@ -211,7 +371,7 @@ base::Optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
   auto it = hash_to_feature_map->find(feature_type_hash);
 
   if (it == hash_to_feature_map->end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second;
 }
@@ -256,8 +416,48 @@ multidevice::SoftwareFeature CryptAuthFeatureTypeToSoftwareFeature(
 
     case CryptAuthFeatureType::kSmsConnectClientSupported:
       FALLTHROUGH;
-    case CryptAuthFeatureType::kSmsConnectClientEnabled:;
+    case CryptAuthFeatureType::kSmsConnectClientEnabled:
       return multidevice::SoftwareFeature::kMessagesForWebClient;
+
+    case CryptAuthFeatureType::kPhoneHubHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubHostEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubHost;
+
+    case CryptAuthFeatureType::kPhoneHubClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubClientEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubClient;
+
+    case CryptAuthFeatureType::kWifiSyncHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kWifiSyncHostEnabled:
+      return multidevice::SoftwareFeature::kWifiSyncHost;
+
+    case CryptAuthFeatureType::kWifiSyncClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kWifiSyncClientEnabled:
+      return multidevice::SoftwareFeature::kWifiSyncClient;
+
+    case CryptAuthFeatureType::kEcheHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kEcheHostEnabled:
+      return multidevice::SoftwareFeature::kEcheHost;
+
+    case CryptAuthFeatureType::kEcheClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kEcheClientEnabled:
+      return multidevice::SoftwareFeature::kEcheClient;
+
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
+
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
   }
 }
 
@@ -280,6 +480,22 @@ CryptAuthFeatureType CryptAuthFeatureTypeFromSoftwareFeature(
       return CryptAuthFeatureType::kSmsConnectHostEnabled;
     case multidevice::SoftwareFeature::kMessagesForWebClient:
       return CryptAuthFeatureType::kSmsConnectClientEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubHost:
+      return CryptAuthFeatureType::kPhoneHubHostEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubClient:
+      return CryptAuthFeatureType::kPhoneHubClientEnabled;
+    case multidevice::SoftwareFeature::kWifiSyncHost:
+      return CryptAuthFeatureType::kWifiSyncHostEnabled;
+    case multidevice::SoftwareFeature::kWifiSyncClient:
+      return CryptAuthFeatureType::kWifiSyncClientEnabled;
+    case multidevice::SoftwareFeature::kEcheHost:
+      return CryptAuthFeatureType::kEcheHostEnabled;
+    case multidevice::SoftwareFeature::kEcheClient:
+      return CryptAuthFeatureType::kEcheClientEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubCameraRollHost:
+      return CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubCameraRollClient:
+      return CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled;
   }
 }
 

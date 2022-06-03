@@ -6,10 +6,10 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
@@ -48,19 +48,17 @@ SafeBrowsingQuietErrorUI::~SafeBrowsingQuietErrorUI() {
 }
 
 void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
-    base::DictionaryValue* load_time_data) {
+    base::Value* load_time_data) {
   DCHECK(load_time_data);
 
-  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
-
-  load_time_data->SetString("type", "SAFEBROWSING");
-  load_time_data->SetString(
+  load_time_data->SetStringKey("type", "SAFEBROWSING");
+  load_time_data->SetStringKey(
       "tabTitle", l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
-  load_time_data->SetBoolean("overridable", !is_proceed_anyway_disabled());
-  load_time_data->SetString(
+  load_time_data->SetBoolKey("overridable", !is_proceed_anyway_disabled());
+  load_time_data->SetStringKey(
       "openDetails",
       l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_OPEN_DETAILS_BUTTON));
-  load_time_data->SetBoolean("is_giant", is_giant_webview_);
+  load_time_data->SetBoolKey("is_giant", is_giant_webview_);
 
   switch (interstitial_reason()) {
     case BaseSafeBrowsingErrorUI::SB_REASON_MALWARE:
@@ -78,8 +76,8 @@ void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
   }
 
   // Not used by this interstitial.
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
+  load_time_data->SetStringKey("recurrentErrorParagraph", "");
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
 }
 
 void SafeBrowsingQuietErrorUI::SetGiantWebViewForTesting(
@@ -114,49 +112,50 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
     case CMD_ERROR:
     case CMD_TEXT_FOUND:
     case CMD_TEXT_NOT_FOUND:
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
       NOTREACHED();
       break;
   }
 }
 
 void SafeBrowsingQuietErrorUI::PopulateMalwareLoadTimeData(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("phishing", false);
-  load_time_data->SetString(
+    base::Value* load_time_data) {
+  load_time_data->SetBoolKey("phishing", false);
+  load_time_data->SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulateHarmfulLoadTimeData(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("phishing", false);
-  load_time_data->SetString(
+    base::Value* load_time_data) {
+  load_time_data->SetBoolKey("phishing", false);
+  load_time_data->SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulatePhishingLoadTimeData(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("phishing", true);
-  load_time_data->SetString(
+    base::Value* load_time_data) {
+  load_time_data->SetBoolKey("phishing", true);
+  load_time_data->SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulateBillingLoadTimeData(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("phishing", false);
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
-  load_time_data->SetString(
+    base::Value* load_time_data) {
+  load_time_data->SetBoolKey("phishing", false);
+  load_time_data->SetStringKey("tabTitle",
+                               l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
+  load_time_data->SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_HEADING));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_EXPLANATION_PARAGRAPH));
 }

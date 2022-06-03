@@ -25,12 +25,14 @@ ClipNode& ClipNode::operator=(const ClipNode& other) = default;
 
 ClipNode::~ClipNode() = default;
 
+#if DCHECK_IS_ON()
 bool ClipNode::operator==(const ClipNode& other) const {
   return id == other.id && parent_id == other.parent_id &&
          clip_type == other.clip_type && clip == other.clip &&
          clip_expander == other.clip_expander &&
          transform_id == other.transform_id;
 }
+#endif
 
 void ClipNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);

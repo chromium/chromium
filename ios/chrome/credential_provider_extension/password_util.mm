@@ -1,0 +1,49 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/credential_provider_extension/password_util.h"
+
+#import "base/logging.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/components/credential_provider_extension/password_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
+  if (!identifier) {
+    UpdateUMACountForKey(
+        app_group::kCredentialExtensionFetchPasswordNilArgumentCount);
+    return @"";
+  }
+
+  NSString* password =
+      credential_provider_extension::PasswordWithKeychainIdentifier(identifier);
+  if (password) {
+    return password;
+  }
+
+  UpdateUMACountForKey(
+      app_group::kCredentialExtensionFetchPasswordFailureCount);
+  return @"";
+}
+
+BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
+  if (!identifier || identifier.length == 0) {
+    return NO;
+  }
+
+  BOOL stored_successfully =
+      credential_provider_extension::StorePasswordInKeychain(password,
+                                                             identifier);
+
+  if (!stored_successfully) {
+    UpdateUMACountForKey(
+        app_group::kCredentialExtensionKeychainSavePasswordFailureCount);
+  }
+
+  return stored_successfully;
+}

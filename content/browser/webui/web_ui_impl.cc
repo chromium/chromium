@@ -9,24 +9,25 @@
 #include <string>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/frame_tree.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/dip_util.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
-#include "content/common/frame_messages.h"
+#include "content/browser/webui/web_ui_main_frame_observer.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -34,37 +35,17 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
-
-class WebUIImpl::MainFrameNavigationObserver : public WebContentsObserver {
- public:
-  MainFrameNavigationObserver(WebUIImpl* web_ui, WebContents* contents)
-      : WebContentsObserver(contents), web_ui_(web_ui) {}
-  ~MainFrameNavigationObserver() override {}
-
- private:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    // Only disallow JavaScript on cross-document navigations in the main frame.
-    if (!navigation_handle->IsInMainFrame() ||
-        !navigation_handle->HasCommitted() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
-
-    web_ui_->DisallowJavascriptOnAllHandlers();
-  }
-
-  WebUIImpl* web_ui_;
-};
 
 const WebUI::TypeID WebUI::kNoWebUI = nullptr;
 
 // static
-base::string16 WebUI::GetJavascriptCall(
+std::u16string WebUI::GetJavascriptCall(
     const std::string& function_name,
     const std::vector<const base::Value*>& arg_list) {
-  base::string16 result(base::ASCIIToUTF16(function_name));
+  std::u16string result(base::ASCIIToUTF16(function_name));
   result.push_back('(');
 
   std::string json;
@@ -81,46 +62,42 @@ base::string16 WebUI::GetJavascriptCall(
   return result;
 }
 
-WebUIImpl::WebUIImpl(WebContentsImpl* contents)
+WebUIImpl::WebUIImpl(WebContentsImpl* contents, RenderFrameHostImpl* frame_host)
     : bindings_(BINDINGS_POLICY_WEB_UI),
+      requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
+      frame_host_(frame_host),
       web_contents_(contents),
-      web_contents_observer_(new MainFrameNavigationObserver(this, contents)) {
+      web_contents_observer_(new WebUIMainFrameObserver(this, contents)) {
   DCHECK(contents);
+
+  // Assert that we can only open webui for the active or speculative pages.
+  DCHECK(frame_host->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kActive ||
+         frame_host->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 }
 
 WebUIImpl::~WebUIImpl() {
   // Delete the controller first, since it may also be keeping a pointer to some
   // of the handlers and can call them at destruction.
   controller_.reset();
+  remote_.reset();
+  receiver_.reset();
 }
 
-// WebUIImpl, public: ----------------------------------------------------------
-
-bool WebUIImpl::OnMessageReceived(const IPC::Message& message,
-                                  RenderFrameHost* sender) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(WebUIImpl, message, sender)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_WebUISend, OnWebUISend)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+void WebUIImpl::SetProperty(const std::string& name, const std::string& value) {
+  DCHECK(remote_);
+  remote_->SetProperty(name, value);
 }
 
-void WebUIImpl::OnWebUISend(RenderFrameHost* sender,
-                            const std::string& message,
-                            const base::ListValue& args) {
-  // Ignore IPCs from frames that are pending deletion.  See also
-  // https://crbug.com/780920.
-  if (!sender->IsCurrent())
-    return;
-
-  const GURL& source_url = sender->GetLastCommittedURL();
+void WebUIImpl::Send(const std::string& message, base::Value args) {
+  const GURL& source_url = frame_host_->GetLastCommittedURL();
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          sender->GetProcess()->GetID()) ||
+          frame_host_->GetProcess()->GetID()) ||
       !WebUIControllerFactoryRegistry::GetInstance()->IsURLAcceptableForWebUI(
           web_contents_->GetBrowserContext(), source_url)) {
     bad_message::ReceivedBadMessage(
-        sender->GetProcess(),
+        frame_host_->GetProcess(),
         bad_message::WEBUI_SEND_FROM_UNAUTHORIZED_PROCESS);
     return;
   }
@@ -132,11 +109,11 @@ void WebUIImpl::OnWebUISend(RenderFrameHost* sender,
     return;
   }
 
-  ProcessWebUIMessage(source_url, message, args);
+  ProcessWebUIMessage(source_url, message, base::Value::AsListValue(args));
 }
 
-void WebUIImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
-  controller_->RenderFrameCreated(render_frame_host);
+void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
+  controller_->WebUIRenderFrameCreated(render_frame_host);
 }
 
 void WebUIImpl::RenderFrameReused(RenderFrameHost* render_frame_host) {
@@ -146,8 +123,31 @@ void WebUIImpl::RenderFrameReused(RenderFrameHost* render_frame_host) {
   }
 }
 
-void WebUIImpl::RenderFrameHostSwappingOut() {
+void WebUIImpl::RenderFrameHostUnloading() {
   DisallowJavascriptOnAllHandlers();
+}
+
+void WebUIImpl::RenderFrameDeleted() {
+  DisallowJavascriptOnAllHandlers();
+}
+
+void WebUIImpl::SetUpMojoConnection() {
+  // TODO(nasko): WebUI mojo might be useful to be registered for
+  // subframes as well, though at this time there is no such usage.
+  if (frame_host_->GetParent())
+    return;
+
+  frame_host_->GetFrameBindingsControl()->BindWebUI(
+      remote_.BindNewEndpointAndPassReceiver(),
+      receiver_.BindNewEndpointAndPassRemote());
+}
+
+void WebUIImpl::TearDownMojoConnection() {
+  if (frame_host_->GetParent())
+    return;
+
+  remote_.reset();
+  receiver_.reset();
 }
 
 WebContents* WebUIImpl::GetWebContents() {
@@ -158,11 +158,11 @@ float WebUIImpl::GetDeviceScaleFactor() {
   return GetScaleFactorForView(web_contents_->GetRenderWidgetHostView());
 }
 
-const base::string16& WebUIImpl::GetOverriddenTitle() {
+const std::u16string& WebUIImpl::GetOverriddenTitle() {
   return overridden_title_;
 }
 
-void WebUIImpl::OverrideTitle(const base::string16& title) {
+void WebUIImpl::OverrideTitle(const std::u16string& title) {
   overridden_title_ = title;
 }
 
@@ -172,6 +172,14 @@ int WebUIImpl::GetBindings() {
 
 void WebUIImpl::SetBindings(int bindings) {
   bindings_ = bindings;
+}
+
+const std::vector<std::string>& WebUIImpl::GetRequestableSchemes() {
+  return requestable_schemes_;
+}
+
+void WebUIImpl::AddRequestableScheme(const char* scheme) {
+  requestable_schemes_.push_back(scheme);
 }
 
 WebUIController* WebUIImpl::GetController() {
@@ -184,18 +192,16 @@ void WebUIImpl::SetController(std::unique_ptr<WebUIController> controller) {
 }
 
 bool WebUIImpl::CanCallJavascript() {
-  RenderFrameHost* frame_host = web_contents_->GetMainFrame();
-  return frame_host &&
-         (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-              frame_host->GetProcess()->GetID()) ||
+  return (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+              frame_host_->GetProcess()->GetID()) ||
           // It's possible to load about:blank in a Web UI renderer.
           // See http://crbug.com/42547
-          frame_host->GetLastCommittedURL().spec() == url::kAboutBlankURL);
+          frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);
 }
 
 void WebUIImpl::CallJavascriptFunctionUnsafe(const std::string& function_name) {
   DCHECK(base::IsStringASCII(function_name));
-  base::string16 javascript = base::ASCIIToUTF16(function_name + "();");
+  std::u16string javascript = base::ASCIIToUTF16(function_name + "();");
   ExecuteJavascript(javascript);
 }
 
@@ -251,8 +257,14 @@ void WebUIImpl::CallJavascriptFunctionUnsafe(
 }
 
 void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
-                                        const MessageCallback& callback) {
-  message_callbacks_.emplace(message.as_string(), callback);
+                                        MessageCallback callback) {
+  message_callbacks_.emplace(std::string(message), std::move(callback));
+}
+
+void WebUIImpl::RegisterDeprecatedMessageCallback(
+    base::StringPiece message,
+    const DeprecatedMessageCallback& callback) {
+  deprecated_message_callbacks_.emplace(std::string(message), callback);
 }
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
@@ -265,10 +277,19 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
   auto callback_pair = message_callbacks_.find(message);
   if (callback_pair != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback_pair->second.Run(&args);
-  } else {
-    NOTREACHED() << "Unhandled chrome.send(\"" << message << "\");";
+    callback_pair->second.Run(args.GetList());
+    return;
   }
+
+  // Look up the deprecated callback for this message.
+  auto deprecated_callback_pair = deprecated_message_callbacks_.find(message);
+  if (deprecated_callback_pair != deprecated_message_callbacks_.end()) {
+    // Forward this message and content on.
+    deprecated_callback_pair->second.Run(&args);
+    return;
+  }
+
+  NOTREACHED() << "Unhandled chrome.send(\"" << message << "\");";
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*
@@ -286,14 +307,13 @@ void WebUIImpl::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void WebUIImpl::ExecuteJavascript(const base::string16& javascript) {
+void WebUIImpl::ExecuteJavascript(const std::u16string& javascript) {
   // Silently ignore the request. Would be nice to clean-up WebUI so we
   // could turn this into a CHECK(). http://crbug.com/516690.
   if (!CanCallJavascript())
     return;
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(javascript,
-                                                   base::NullCallback());
+  frame_host_->ExecuteJavaScript(javascript, base::NullCallback());
 }
 
 void WebUIImpl::DisallowJavascriptOnAllHandlers() {

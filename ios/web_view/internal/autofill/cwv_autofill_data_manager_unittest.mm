@@ -14,13 +14,14 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
+#import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -57,9 +58,10 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
-    password_store_ = new password_manager::TestPasswordStore();
-    password_store_->Init(base::RepeatingCallback<void(syncer::ModelType)>(),
-                          nullptr);
+    password_store_ = new password_manager::TestPasswordStore(
+        password_manager::IsAccountStore(true));
+    password_store_->Init(/*prefs=*/nullptr,
+                          /*affiliated_match_helper=*/nullptr);
 
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
         initWithPersonalDataManager:personal_data_manager_.get()
@@ -99,9 +101,9 @@ class CWVAutofillDataManagerTest : public PlatformTest {
   }
 
   // Create a test password form for testing.
-  autofill::PasswordForm GetTestPassword() {
-    autofill::PasswordForm password_form;
-    password_form.origin = GURL("http://www.example.com/accounts/LoginAuth");
+  password_manager::PasswordForm GetTestPassword() {
+    password_manager::PasswordForm password_form;
+    password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
     password_form.action = GURL("http://www.example.com/accounts/Login");
     password_form.username_element = base::SysNSStringToUTF16(@"Email");
     password_form.username_value = base::SysNSStringToUTF16(@"test@egmail.com");
@@ -109,8 +111,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     password_form.password_value = base::SysNSStringToUTF16(@"test");
     password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
     password_form.signon_realm = "http://www.example.com/";
-    password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
-    password_form.blacklisted_by_user = false;
+    password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    password_form.blocked_by_user = false;
     return password_form;
   }
 
@@ -213,42 +215,14 @@ TEST_F(CWVAutofillDataManagerTest, ReturnCreditCard) {
   }));
 }
 
-// Tests CWVAutofillDataManager properly deletes credit cards.
-TEST_F(CWVAutofillDataManagerTest, DeleteCreditCard) {
-  personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
-
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    for (CWVCreditCard* cwv_credit_card in credit_cards) {
-      [autofill_data_manager_ deleteCreditCard:cwv_credit_card];
-    }
-  }));
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    EXPECT_EQ(0ul, credit_cards.count);
-  }));
-}
-
-// Tests CWVAutofillDataManager properly updates credit cards.
-TEST_F(CWVAutofillDataManagerTest, UpdateCreditCard) {
-  personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
-
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    CWVCreditCard* cwv_credit_card = credit_cards.firstObject;
-    cwv_credit_card.cardHolderFullName = kNewName;
-    [autofill_data_manager_ updateCreditCard:cwv_credit_card];
-  }));
-
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    EXPECT_NSEQ(kNewName, credit_cards.firstObject.cardHolderFullName);
-  }));
-}
-
 // Tests CWVAutofillDataManager properly returns passwords.
 TEST_F(CWVAutofillDataManagerTest, ReturnPassword) {
-  autofill::PasswordForm test_password = GetTestPassword();
+  password_manager::PasswordForm test_password = GetTestPassword();
   password_store_->AddLogin(test_password);
   NSArray<CWVPassword*>* fetched_passwords = FetchPasswords();
   EXPECT_EQ(1ul, fetched_passwords.count);
-  EXPECT_EQ(test_password, *[fetched_passwords[0] internalPasswordForm]);
+  EXPECT_THAT(test_password, password_manager::MatchesFormExceptStore(
+                                 *[fetched_passwords[0] internalPasswordForm]));
 }
 
 // Tests CWVAutofillDataManager properly deletes passwords.
@@ -259,6 +233,61 @@ TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
   [autofill_data_manager_ deletePassword:passwords[0]];
   passwords = FetchPasswords();
   EXPECT_EQ(0ul, passwords.count);
+}
+
+// Tests CWVAutofillDataManager invokes password did change callback.
+TEST_F(CWVAutofillDataManagerTest, PasswordsDidChangeCallback) {
+  // OCMock objects are often autoreleased, but it must be destroyed before this
+  // test exits to avoid holding on to |autofill_data_manager_|.
+  @autoreleasepool {
+    id observer = OCMProtocolMock(@protocol(CWVAutofillDataManagerObserver));
+    [autofill_data_manager_ addObserver:observer];
+
+    password_manager::PasswordForm test_password = GetTestPassword();
+    [[observer expect]
+               autofillDataManager:autofill_data_manager_
+        didChangePasswordsByAdding:[OCMArg checkWithBlock:^BOOL(
+                                               NSArray<CWVPassword*>* added) {
+          EXPECT_EQ(1U, added.count);
+          CWVPassword* added_password = added.firstObject;
+          return *[added_password internalPasswordForm] == test_password;
+        }]
+                          updating:@[]
+                          removing:@[]];
+
+    // AddLogin is async, so the run loop needs to run until idle so the
+    // callback will be invoked.
+    password_store_->AddLogin(test_password);
+    base::RunLoop().RunUntilIdle();
+
+    [observer verify];
+  }
+}
+
+// Tests CWVAutofillDataManager can add a new password created from the
+// credential provider extension.
+TEST_F(CWVAutofillDataManagerTest,
+       AddNewPasswordFromCredentialProviderExtension) {
+  NSString* keychain_identifier = @"keychain-identifier";
+  [CWVCredentialProviderExtensionUtils
+      storePasswordForKeychainIdentifier:keychain_identifier
+                                password:@"testpassword"];
+  [autofill_data_manager_ addNewPasswordForUsername:@"testusername"
+                                  serviceIdentifier:@"https://www.chromium.org/"
+                                 keychainIdentifier:keychain_identifier];
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSEQ(@"testusername", password.username);
+
+  // The following expectation fails because the TestPasswordStore does not
+  // use the LoginDatabase underneath. A LoginDatabase will properly decrypt
+  // the password from the keychain identifier and fill it out.
+  // EXPECT_NSEQ(@"testpassword", password.password);
+
+  EXPECT_NSEQ(@"https://www.chromium.org/", password.site);
+  EXPECT_NSEQ(keychain_identifier, password.keychainIdentifier);
 }
 
 }  // namespace ios_web_view

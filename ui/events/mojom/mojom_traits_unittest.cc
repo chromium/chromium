@@ -4,11 +4,12 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/ipc/ui_events_param_traits_macros.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/mojom/event.mojom.h"
 #include "ui/events/mojom/event_mojom_traits.h"
@@ -47,6 +48,7 @@ void ExpectMouseEventsEqual(const MouseEvent& expected,
 void ExpectMouseWheelEventsEqual(const MouseWheelEvent& expected,
                                  const MouseWheelEvent& actual) {
   EXPECT_EQ(expected.offset(), actual.offset());
+  EXPECT_EQ(expected.tick_120ths(), actual.tick_120ths());
 }
 
 void ExpectKeyEventsEqual(const KeyEvent& expected, const KeyEvent& actual) {
@@ -104,16 +106,16 @@ TEST(StructTraitsTest, KeyEvent) {
       {'Z', VKEY_Z, DomCode::NONE, EF_CAPS_LOCK_ON},
       {'z', VKEY_Z, DomCode::NONE, EF_NONE},
       {ET_KEY_PRESSED, VKEY_Z, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(101)},
+       base::TimeTicks() + base::Microseconds(101)},
       {'Z', VKEY_Z, DomCode::NONE, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(102)},
+       base::TimeTicks() + base::Microseconds(102)},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     EXPECT_TRUE(output->IsKeyEvent());
 
     const KeyEvent* output_key_event = output->AsKeyEvent();
@@ -124,38 +126,35 @@ TEST(StructTraitsTest, KeyEvent) {
 TEST(StructTraitsTest, MouseEvent) {
   const MouseEvent kTestData[] = {
       {ET_MOUSE_PRESSED, gfx::Point(10, 10), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(201), EF_NONE, 0,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(201), EF_NONE, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_DRAGGED, gfx::Point(1, 5), gfx::Point(5, 1),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(202),
-       EF_LEFT_MOUSE_BUTTON, EF_LEFT_MOUSE_BUTTON,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(202), EF_LEFT_MOUSE_BUTTON,
+       EF_LEFT_MOUSE_BUTTON,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_RELEASED, gfx::Point(411, 130), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(203),
+       base::TimeTicks() + base::Microseconds(203),
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON, EF_RIGHT_MOUSE_BUTTON,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_MOVED, gfx::Point(0, 1), gfx::Point(2, 3),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(204), EF_ALT_DOWN,
-       0,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(204), EF_ALT_DOWN, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_ENTERED, gfx::Point(6, 7), gfx::Point(8, 9),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(205), EF_NONE, 0,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(205), EF_NONE, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_EXITED, gfx::Point(10, 10), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(206),
-       EF_BACK_MOUSE_BUTTON, 0,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(206), EF_BACK_MOUSE_BUTTON, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_CAPTURE_CHANGED, gfx::Point(99, 99), gfx::Point(99, 99),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(207),
-       EF_CONTROL_DOWN, 0,
-       PointerDetails(EventPointerType::POINTER_TYPE_MOUSE, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(207), EF_CONTROL_DOWN, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_TRUE(output->IsMouseEvent());
 
     ExpectEventsEqual(kTestData[i], *output);
@@ -164,23 +163,24 @@ TEST(StructTraitsTest, MouseEvent) {
 
 TEST(StructTraitsTest, MouseWheelEvent) {
   const MouseWheelEvent kTestData[] = {
-      {gfx::Vector2d(11, 15), gfx::Point(3, 4), gfx::Point(40, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(301),
-       EF_LEFT_MOUSE_BUTTON, EF_LEFT_MOUSE_BUTTON},
-      {gfx::Vector2d(-5, 3), gfx::Point(40, 3), gfx::Point(4, 0),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(302),
+      {gfx::Vector2d(11, 15), gfx::PointF(3, 4), gfx::PointF(40, 30),
+       base::TimeTicks() + base::Microseconds(301), EF_LEFT_MOUSE_BUTTON,
+       EF_LEFT_MOUSE_BUTTON, gfx::Vector2d(1320, 1800)},
+      {gfx::Vector2d(-5, 3), gfx::PointF(40, 3), gfx::PointF(4, 0),
+       base::TimeTicks() + base::Microseconds(302),
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
-       EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON},
-      {gfx::Vector2d(1, 0), gfx::Point(3, 4), gfx::Point(40, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(303), EF_NONE,
-       EF_NONE},
+       EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
+       gfx::Vector2d(-600, 360)},
+      {gfx::Vector2d(1, 0), gfx::PointF(3, 4), gfx::PointF(40, 30),
+       base::TimeTicks() + base::Microseconds(303), EF_NONE, EF_NONE,
+       gfx::Vector2d(120, -15)},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_EQ(ET_MOUSEWHEEL, output->type());
 
     const MouseWheelEvent* output_event = output->AsMouseWheelEvent();
@@ -209,8 +209,8 @@ TEST(StructTraitsTest, FloatingPointLocations) {
   for (Event* event : test_data) {
     std::unique_ptr<Event> event_copy = Event::Clone(*event);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(&event_copy,
-                                                                  &output));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::Event>(event_copy, output));
     EXPECT_EQ(location, output->AsLocatedEvent()->location_f());
     EXPECT_EQ(root_location, output->AsLocatedEvent()->root_location_f());
   }
@@ -245,28 +245,23 @@ TEST(StructTraitsTest, GestureEvent) {
   pinch_update_details.set_scale(1.23f);
 
   const GestureEvent kTestData[] = {
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        GestureEventDetails(ET_SCROLL_FLING_START)},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        GestureEventDetails(ET_GESTURE_TAP)},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_begin_details},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_end_details},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_update_details},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ASSERT_TRUE(output->IsGestureEvent());
 
     const GestureEvent* output_ptr_event = output->AsGestureEvent();
@@ -280,40 +275,39 @@ TEST(StructTraitsTest, GestureEvent) {
 TEST(StructTraitsTest, ScrollEvent) {
   const ScrollEvent kTestData[] = {
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kUpdate},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kUpdate},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kBegan},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kBegan},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kEnd},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kEnd},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::BEGAN, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::BEGAN, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::INERTIAL_UPDATE,
-       ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::INERTIAL_UPDATE, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::END, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::END, ScrollEventPhase::kNone},
       {ET_SCROLL_FLING_START, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(502), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::MAY_BEGIN, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::MAY_BEGIN, ScrollEventPhase::kNone},
       {ET_SCROLL_FLING_CANCEL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(502), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::END, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::END, ScrollEventPhase::kNone},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     EXPECT_TRUE(output->IsScrollEvent());
 
     const ScrollEvent* output_ptr_event = output->AsScrollEvent();
@@ -332,13 +326,11 @@ TEST(StructTraitsTest, ScrollEvent) {
 
 TEST(StructTraitsTest, PointerDetails) {
   const PointerDetails kTestData[] = {
-      {EventPointerType::POINTER_TYPE_UNKNOWN, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
-      {EventPointerType::POINTER_TYPE_MOUSE, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
-      {EventPointerType::POINTER_TYPE_PEN, 11, 12.f, 13.f, 14.f, 15.f, 16.f,
-       17.f},
-      {EventPointerType::POINTER_TYPE_TOUCH, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
-      {EventPointerType::POINTER_TYPE_ERASER, 21, 22.f, 23.f, 24.f, 25.f, 26.f,
-       27.f},
+      {EventPointerType::kUnknown, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
+      {EventPointerType::kMouse, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
+      {EventPointerType::kPen, 11, 12.f, 13.f, 14.f, 15.f, 16.f, 17.f},
+      {EventPointerType::kTouch, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
+      {EventPointerType::kEraser, 21, 22.f, 23.f, 24.f, 25.f, 26.f, 27.f},
   };
   for (size_t i = 0; i < base::size(kTestData); i++) {
     // Set |offset| as the constructor used above does not modify it.
@@ -348,7 +340,7 @@ TEST(StructTraitsTest, PointerDetails) {
 
     PointerDetails output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PointerDetails>(
-        &input, &output));
+        input, output));
     EXPECT_EQ(input, output);
   }
 }
@@ -358,8 +350,7 @@ TEST(StructTraitsTest, TouchEvent) {
       {ET_TOUCH_RELEASED,
        {1, 2},
        base::TimeTicks::Now(),
-       {EventPointerType::POINTER_TYPE_UNKNOWN, 1, 2.f, 3.f, 4.f, 5.f, 6.f,
-        7.f},
+       {EventPointerType::kUnknown, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
        EF_SHIFT_DOWN},
       {ET_TOUCH_PRESSED, {1, 2}, base::TimeTicks::Now(), {}, EF_CONTROL_DOWN},
       {ET_TOUCH_MOVED, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
@@ -368,8 +359,8 @@ TEST(StructTraitsTest, TouchEvent) {
   for (size_t i = 0; i < base::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(
-        &expected_copy, &output));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
+                                                                  output));
     ExpectEventsEqual(*expected_copy, *output);
   }
 
@@ -382,7 +373,7 @@ TEST(StructTraitsTest, TouchEvent) {
   std::unique_ptr<Event> expected = std::move(touch_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
 }
 
@@ -393,7 +384,7 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
   std::unique_ptr<Event> expected = std::move(touch_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
   EXPECT_NE(expected->AsTouchEvent()->unique_event_id(),
             output->AsTouchEvent()->unique_event_id());
@@ -405,6 +396,11 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
 class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
  public:
   FixedKeyboardLayoutEngine() = default;
+
+  FixedKeyboardLayoutEngine(const FixedKeyboardLayoutEngine&) = delete;
+  FixedKeyboardLayoutEngine& operator=(const FixedKeyboardLayoutEngine&) =
+      delete;
+
   ~FixedKeyboardLayoutEngine() override = default;
 
   // StubKeyboardLayoutEngine:
@@ -416,9 +412,6 @@ class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
     *out_key_code = ui::VKEY_X;
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FixedKeyboardLayoutEngine);
 };
 
 TEST(StructTraitsTest, DifferentKeyboardLayout) {
@@ -431,7 +424,7 @@ TEST(StructTraitsTest, DifferentKeyboardLayout) {
   std::unique_ptr<Event> expected = std::move(key_event);
   std::unique_ptr<Event> output;
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::Event>(&expected, &output));
+      mojo::test::SerializeAndDeserialize<mojom::Event>(expected, output));
   ExpectEventsEqual(*expected, *output);
 }
 

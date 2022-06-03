@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/session/session_observer.h"
+#include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/palette/palette_tool_manager.h"
+#include "ash/system/palette/stylus_battery_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -38,14 +39,19 @@ class TrayBubbleWrapper;
 // The PaletteTray shows the palette in the bottom area of the screen. This
 // class also controls the lifetime for all of the tools available in the
 // palette. PaletteTray has one instance per-display. It is only made visible if
-// the display is primary and if the device has stylus hardware.
+// the display has stylus hardware.
 class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
                                public ShellObserver,
+                               public ash::WindowTreeHostManager::Observer,
                                public PaletteToolManager::Delegate,
                                public ui::InputDeviceEventObserver {
  public:
   explicit PaletteTray(Shelf* shelf);
+
+  PaletteTray(const PaletteTray&) = delete;
+  PaletteTray& operator=(const PaletteTray&) = delete;
+
   ~PaletteTray() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -55,9 +61,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // for determining if an event should be propagated through to the palette.
   bool ContainsPointInScreen(const gfx::Point& point);
 
-  // Returns true if the palette should be visible in the UI. This happens when:
-  // there is a stylus input, there is an internal display, and the user has not
-  // disabled it in settings. This can be overridden by passing switches.
+  // Returns true if the palette should be visible in the UI. This happens when
+  // there is a stylus display and the user has not disabled it in settings.
+  // This can be overridden by passing switches.
   bool ShouldShowPalette() const;
 
   // Handles stylus events to show the welcome bubble on first usage.
@@ -70,16 +76,22 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // ShellObserver:
   void OnLockStateChanged(bool locked) override;
 
+  // ash::WindowTreeHostManager::Observer:
+  void OnDisplayConfigurationChanged() override;
+
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
-  base::string16 GetAccessibleNameForTray() override;
+  void OnThemeChanged() override;
+  std::u16string GetAccessibleNameForTray() override;
+  void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // PaletteToolManager::Delegate:
@@ -95,16 +107,24 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // ui::InputDeviceObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
   void OnStylusStateChanged(ui::StylusState stylus_state) override;
+  void OnTouchDeviceAssociationChanged() override;
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // PaletteToolManager::Delegate:
   void OnActiveToolChanged() override;
   aura::Window* GetWindow() override;
+
+  // Returns true if we're on a display with a stylus or on every
+  // display if requested from the command line.
+  bool ShouldShowOnDisplay();
+
+  // Returns true if our widget is on an internal display.
+  bool IsWidgetOnInternalDisplay();
 
   // Initializes with Shell's local state and starts to observe it.
   void InitializeWithLocalState();
@@ -128,6 +148,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // previously, or if the device has an internal stylus.
   bool HasSeenStylus();
 
+  // Have the palette act as though it is on a display with a stylus for
+  // testing purposes.
+  void SetDisplayHasStylusForTesting();
+
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -146,6 +170,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // Cached palette pref value.
   bool is_palette_enabled_ = true;
 
+  // Whether the palette should behave as though its display has a stylus.
+  bool display_has_stylus_for_testing_ = false;
+
   // Used to indicate whether the palette bubble is automatically opened by a
   // stylus eject event.
   bool is_bubble_auto_opened_ = false;
@@ -156,8 +183,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   ScopedSessionObserver scoped_session_observer_;
 
   base::WeakPtrFactory<PaletteTray> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteTray);
 };
 
 }  // namespace ash

@@ -12,6 +12,11 @@
 namespace arc {
 
 class StabilityMetricsManagerTest : public testing::Test {
+ public:
+  StabilityMetricsManagerTest(const StabilityMetricsManagerTest&) = delete;
+  StabilityMetricsManagerTest& operator=(const StabilityMetricsManagerTest&) =
+      delete;
+
  protected:
   StabilityMetricsManagerTest() {
     prefs::RegisterLocalStatePrefs(local_state.registry());
@@ -28,8 +33,6 @@ class StabilityMetricsManagerTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple local_state;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsManagerTest);
 };
 
 TEST_F(StabilityMetricsManagerTest, GetArcEnabledState) {

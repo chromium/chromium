@@ -5,6 +5,7 @@
 #include "components/viz/service/display/geometry_binding.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "ui/gfx/geometry/rect_f.h"

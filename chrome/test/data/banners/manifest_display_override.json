@@ -1,0 +1,39 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "launcher-icon-1x.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "launcher-icon-1-5x.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "launcher-icon-2x.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any monochrome"
+    },
+    {
+      "src": "launcher-icon-3x.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "launcher-icon-4x.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "fullscreen",
+  "display_override": [ "minimal-ui", "standalone" ]
+}

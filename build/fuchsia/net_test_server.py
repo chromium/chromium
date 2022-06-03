@@ -37,12 +37,13 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     return self._port_mapping[host_port]
 
   def Unmap(self, device_port):
-    for host_port, entry in self._port_mapping.iteritems():
+    for host_port, entry in self._port_mapping.items():
       if entry == device_port:
         forwarding_args = [
             '-NT', '-O', 'cancel', '-R', '0:localhost:%d' % host_port]
         task = self._target.RunCommandPiped([],
                                             ssh_args=forwarding_args,
+                                            stdout=open(os.devnull, 'w'),
                                             stderr=subprocess.PIPE)
         task.wait()
         if task.returncode != 0:
@@ -55,7 +56,7 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     raise Exception('Unmap called for unknown port: %d' % device_port)
 
 
-def SetupTestServer(target, test_concurrency, for_package):
+def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
   """Provisions a forwarding test server and configures |target| to use it.
 
   Returns a Popen object for the test server process."""
@@ -74,17 +75,15 @@ def SetupTestServer(target, test_concurrency, for_package):
                 spawning_server.server_port)
   logging.debug('Forwarded port is %d' % forwarded_port)
 
-  config_file = tempfile.NamedTemporaryFile(delete=True)
+  with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tf:
+    tf.write(
+        json.dumps({'spawner_url_base':
+                    'http://localhost:%d' % forwarded_port}))
 
-  # Clean up the config JSON to only pass ports. See https://crbug.com/810209 .
-  config_file.write(json.dumps({
-    'name': 'testserver',
-    'address': '127.0.0.1',
-    'spawner_url_base': 'http://localhost:%d' % forwarded_port
-  }))
-
-  config_file.flush()
-  target.PutFile(config_file.name, '/tmp/net-test-server-config',
-                 for_package=for_package)
+    tf.flush()
+    target.PutFile(tf.name,
+                   '/tmp/net-test-server-config',
+                   for_package=for_package,
+                   for_realms=for_realms)
 
   return spawning_server

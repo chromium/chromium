@@ -5,32 +5,45 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/mac/io_surface_hdr_metadata.h"
 
 namespace gpu {
 namespace {
 
 // The maximum number of times to dump before throttling (to avoid sending
 // thousands of crash dumps).
+
 const int kMaxCrashDumps = 10;
 
 uint32_t LockFlags(gfx::BufferUsage usage) {
   switch (usage) {
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      // The AvoidSync call has the property that it will not preserve the
+      // previous contents of the buffer if those contents were written by a
+      // GPU.
       return kIOSurfaceLockAvoidSync;
+    case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
+      // This constant is used for buffers used by video capture. On macOS,
+      // these buffers are only ever written to in the capture process,
+      // directly as IOSurfaces.
+      // Once they are sent to other processes, no CPU writes are performed.
+      return kIOSurfaceLockReadOnly;
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
       return 0;
   }
   NOTREACHED();
@@ -60,13 +73,12 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
-  if (!handle.mach_port) {
-    LOG(ERROR) << "Invalid IOSurface mach port returned to client.";
+  if (!handle.io_surface) {
+    LOG(ERROR) << "Invalid IOSurface returned to client.";
     return nullptr;
   }
 
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      IOSurfaceLookupFromMachPort(handle.mach_port.get()));
+  gfx::ScopedIOSurface io_surface = handle.io_surface;
   if (!io_surface) {
     LOG(ERROR) << "Failed to open IOSurface via mach port returned to client.";
     static int dump_counter = kMaxCrashDumps;
@@ -94,34 +106,36 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      gfx::CreateIOSurface(size, format));
-  DCHECK(io_surface);
   gfx::GpuMemoryBufferId kBufferId(1);
   handle->type = gfx::IO_SURFACE_BUFFER;
   handle->id = kBufferId;
-  handle->mach_port.reset(IOSurfaceCreateMachPort(io_surface));
+  handle->io_surface.reset(gfx::CreateIOSurface(size, format));
+  DCHECK(handle->io_surface);
   return base::DoNothing();
 }
 
 bool GpuMemoryBufferImplIOSurface::Map() {
-  DCHECK(!mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  if (map_count_++)
+    return true;
+
   IOReturn status = IOSurfaceLock(io_surface_, lock_flags_, nullptr);
   DCHECK_NE(status, kIOReturnCannotLock);
-  mapped_ = true;
   return true;
 }
 
 void* GpuMemoryBufferImplIOSurface::memory(size_t plane) {
-  DCHECK(mapped_);
+  AssertMapped();
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return IOSurfaceGetBaseAddressOfPlane(io_surface_, plane);
 }
 
 void GpuMemoryBufferImplIOSurface::Unmap() {
-  DCHECK(mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+  if (--map_count_)
+    return;
   IOSurfaceUnlock(io_surface_, lock_flags_, nullptr);
-  mapped_ = false;
 }
 
 int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
@@ -137,6 +151,11 @@ void GpuMemoryBufferImplIOSurface::SetColorSpace(
   IOSurfaceSetColorSpace(io_surface_, color_space);
 }
 
+void GpuMemoryBufferImplIOSurface::SetHDRMetadata(
+    const gfx::HDRMetadata& hdr_metadata) {
+  IOSurfaceSetHDRMetadata(io_surface_, hdr_metadata);
+}
+
 gfx::GpuMemoryBufferType GpuMemoryBufferImplIOSurface::GetType() const {
   return gfx::IO_SURFACE_BUFFER;
 }
@@ -145,7 +164,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplIOSurface::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::IO_SURFACE_BUFFER;
   handle.id = id_;
-  handle.mach_port.reset(IOSurfaceCreateMachPort(io_surface_));
+  handle.io_surface = io_surface_;
   return handle;
 }
 

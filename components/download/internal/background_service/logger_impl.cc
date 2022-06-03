@@ -32,7 +32,7 @@ std::string ControllerStateToString(Controller::State state) {
   }
 }
 
-std::string OptBoolToString(base::Optional<bool> value) {
+std::string OptBoolToString(absl::optional<bool> value) {
   if (value.has_value())
     return value.value() ? "OK" : "BAD";
 
@@ -56,6 +56,8 @@ std::string ClientToString(DownloadClient client) {
       return "MountainInternal";
     case DownloadClient::PLUGIN_VM_IMAGE:
       return "PluginVmImage";
+    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      return "OptimizationGuidePredictionModels";
     case DownloadClient::BOUNDARY:  // Intentional fallthrough.
     default:
       NOTREACHED();
@@ -141,48 +143,44 @@ std::string StartResultToString(DownloadParams::StartResult result) {
   }
 }
 
-std::unique_ptr<base::DictionaryValue> DriverEntryToValue(
-    const DriverEntry& entry) {
-  std::unique_ptr<base::DictionaryValue> serialized_entry =
-      std::make_unique<base::DictionaryValue>();
-  serialized_entry->SetString("state", DriverEntryStateToString(entry.state));
-  serialized_entry->SetBoolean("paused", entry.paused);
-  serialized_entry->SetBoolean("done", entry.done);
+base::Value DriverEntryToValue(const DriverEntry& entry) {
+  base::Value serialized_entry(base::Value::Type::DICTIONARY);
+  serialized_entry.SetStringKey("state", DriverEntryStateToString(entry.state));
+  serialized_entry.SetBoolKey("paused", entry.paused);
+  serialized_entry.SetBoolKey("done", entry.done);
   return serialized_entry;
 }
 
-std::unique_ptr<base::DictionaryValue> EntryToValue(
+base::Value EntryToValue(
     const Entry& entry,
-    const base::Optional<DriverEntry>& driver,
-    const base::Optional<CompletionType>& completion_type) {
-  std::unique_ptr<base::DictionaryValue> serialized_entry =
-      std::make_unique<base::DictionaryValue>();
-  serialized_entry->SetString("client", ClientToString(entry.client));
-  serialized_entry->SetString("state", EntryStateToString(entry.state));
-  serialized_entry->SetString("guid", entry.guid);
+    const absl::optional<DriverEntry>& driver,
+    const absl::optional<CompletionType>& completion_type) {
+  base::Value serialized_entry(base::Value::Type::DICTIONARY);
+  serialized_entry.SetStringKey("client", ClientToString(entry.client));
+  serialized_entry.SetStringKey("state", EntryStateToString(entry.state));
+  serialized_entry.SetStringKey("guid", entry.guid);
 
   // Convert the URL to a proper logging format.
   GURL::Replacements replacements;
   replacements.ClearQuery();
 
-  serialized_entry->SetString(
+  serialized_entry.SetStringKey(
       "url", entry.request_params.url.ReplaceComponents(replacements).spec());
-  serialized_entry->SetString("file_path",
-                              entry.target_file_path.MaybeAsASCII());
+  serialized_entry.SetStringKey("file_path",
+                                entry.target_file_path.MaybeAsASCII());
 
   if (driver.has_value()) {
-    serialized_entry->SetDouble("bytes_downloaded", driver->bytes_downloaded);
-    serialized_entry->SetDictionary("driver",
-                                    DriverEntryToValue(driver.value()));
+    serialized_entry.SetDoubleKey("bytes_downloaded", driver->bytes_downloaded);
+    serialized_entry.SetKey("driver", DriverEntryToValue(driver.value()));
   } else {
-    serialized_entry->SetDouble("bytes_downloaded", entry.bytes_downloaded);
+    serialized_entry.SetDoubleKey("bytes_downloaded", entry.bytes_downloaded);
   }
 
   if (completion_type.has_value()) {
-    serialized_entry->SetString(
+    serialized_entry.SetStringKey(
         "result", CompletionTypeToString(completion_type.value()));
   } else if (entry.state == Entry::State::COMPLETE) {
-    serialized_entry->SetString(
+    serialized_entry.SetStringKey(
         "result", CompletionTypeToString(CompletionType::SUCCEED));
   }
   return serialized_entry;
@@ -208,40 +206,41 @@ void LoggerImpl::RemoveObserver(Observer* observer) {
 }
 
 base::Value LoggerImpl::GetServiceStatus() {
-  base::DictionaryValue service_status;
+  base::Value service_status(base::Value::Type::DICTIONARY);
 
   if (!log_source_)
-    return std::move(service_status);
+    return service_status;
 
   Controller::State state = log_source_->GetControllerState();
   const StartupStatus& status = log_source_->GetStartupStatus();
 
-  service_status.SetString("serviceState", ControllerStateToString(state));
-  service_status.SetString("modelStatus", OptBoolToString(status.model_ok));
-  service_status.SetString("driverStatus", OptBoolToString(status.driver_ok));
-  service_status.SetString("fileMonitorStatus",
-                           OptBoolToString(status.file_monitor_ok));
+  service_status.SetStringKey("serviceState", ControllerStateToString(state));
+  service_status.SetStringKey("modelStatus", OptBoolToString(status.model_ok));
+  service_status.SetStringKey("driverStatus",
+                              OptBoolToString(status.driver_ok));
+  service_status.SetStringKey("fileMonitorStatus",
+                              OptBoolToString(status.file_monitor_ok));
 
-  return std::move(service_status);
+  return service_status;
 }
 
 base::Value LoggerImpl::GetServiceDownloads() {
-  base::ListValue serialized_entries;
+  base::Value serialized_entries(base::Value::Type::LIST);
 
   if (!log_source_)
-    return std::move(serialized_entries);
+    return serialized_entries;
 
   auto entries = log_source_->GetServiceDownloads();
   for (auto& entry : entries) {
     serialized_entries.Append(
-        EntryToValue(*entry.first, entry.second, base::nullopt));
+        EntryToValue(*entry.first, entry.second, absl::nullopt));
   }
 
-  return std::move(serialized_entries);
+  return serialized_entries;
 }
 
 void LoggerImpl::OnServiceStatusChanged() {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   base::Value service_status = GetServiceStatus();
@@ -251,7 +250,7 @@ void LoggerImpl::OnServiceStatusChanged() {
 }
 
 void LoggerImpl::OnServiceDownloadsAvailable() {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   base::Value service_downloads = GetServiceDownloads();
@@ -260,7 +259,7 @@ void LoggerImpl::OnServiceDownloadsAvailable() {
 }
 
 void LoggerImpl::OnServiceDownloadChanged(const std::string& guid) {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   auto entry_details = log_source_->GetServiceDownload(guid);
@@ -268,35 +267,35 @@ void LoggerImpl::OnServiceDownloadChanged(const std::string& guid) {
     return;
 
   auto entry = EntryToValue(*(entry_details->first), entry_details->second,
-                            base::nullopt);
+                            absl::nullopt);
 
   for (auto& observer : observers_)
-    observer.OnServiceDownloadChanged(*entry);
+    observer.OnServiceDownloadChanged(entry);
 }
 
 void LoggerImpl::OnServiceDownloadFailed(CompletionType completion_type,
                                          const Entry& entry) {
   DCHECK_NE(CompletionType::SUCCEED, completion_type);
 
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
-  auto serialized_entry = EntryToValue(entry, base::nullopt, completion_type);
+  auto serialized_entry = EntryToValue(entry, absl::nullopt, completion_type);
   for (auto& observer : observers_)
-    observer.OnServiceDownloadFailed(*serialized_entry);
+    observer.OnServiceDownloadFailed(serialized_entry);
 }
 
 void LoggerImpl::OnServiceRequestMade(
     DownloadClient client,
     const std::string& guid,
     DownloadParams::StartResult start_result) {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
-  base::DictionaryValue serialized_request;
-  serialized_request.SetString("client", ClientToString(client));
-  serialized_request.SetString("guid", guid);
-  serialized_request.SetString("result", StartResultToString(start_result));
+  base::Value serialized_request(base::Value::Type::DICTIONARY);
+  serialized_request.SetStringKey("client", ClientToString(client));
+  serialized_request.SetStringKey("guid", guid);
+  serialized_request.SetStringKey("result", StartResultToString(start_result));
   for (auto& observer : observers_)
     observer.OnServiceRequestMade(serialized_request);
 }

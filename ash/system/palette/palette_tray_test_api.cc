@@ -4,7 +4,7 @@
 
 #include "ash/system/palette/palette_tray_test_api.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace ash {
 

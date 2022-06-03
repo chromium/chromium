@@ -15,8 +15,9 @@
 #include "content/renderer/service_worker/service_worker_type_converters.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider_type.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -36,8 +37,8 @@ WebServiceWorkerProviderImpl::WebServiceWorkerProviderImpl(
     ServiceWorkerProviderContext* context)
     : context_(context), provider_client_(nullptr) {
   DCHECK(context_);
-  DCHECK_EQ(context_->provider_type(),
-            blink::mojom::ServiceWorkerProviderType::kForWindow);
+  DCHECK_EQ(context_->container_type(),
+            blink::mojom::ServiceWorkerContainerType::kForWindow);
   context_->SetWebServiceWorkerProvider(weak_factory_.GetWeakPtr());
 }
 
@@ -88,9 +89,10 @@ void WebServiceWorkerProviderImpl::RegisterServiceWorker(
     return;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN2(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-      this, "Scope", pattern.spec(), "Script URL", script_url.spec());
+      TRACE_ID_LOCAL(this), "Scope", pattern.spec(), "Script URL",
+      script_url.spec());
 
   // TODO(asamidoi): Create this options in
   // ServiceWorkerContainer::RegisterServiceWorker() and pass it as an argument
@@ -127,9 +129,9 @@ void WebServiceWorkerProviderImpl::GetRegistration(
     return;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN1("ServiceWorker",
-                           "WebServiceWorkerProviderImpl::GetRegistration",
-                           this, "Document URL", document_url.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
+      TRACE_ID_LOCAL(this), "Document URL", document_url.spec());
   context_->container_host()->GetRegistration(
       document_url,
       base::BindOnce(&WebServiceWorkerProviderImpl::OnDidGetRegistration,
@@ -149,8 +151,9 @@ void WebServiceWorkerProviderImpl::GetRegistrations(
     return;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN0(
-      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
+      TRACE_ID_LOCAL(this));
   context_->container_host()->GetRegistrations(
       base::BindOnce(&WebServiceWorkerProviderImpl::OnDidGetRegistrations,
                      weak_factory_.GetWeakPtr(), std::move(callbacks)));
@@ -162,9 +165,9 @@ void WebServiceWorkerProviderImpl::GetRegistrationForReady(
     return;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN0(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrationForReady",
-      this);
+      TRACE_ID_LOCAL(this));
   context_->container_host()->GetRegistrationForReady(base::BindOnce(
       &WebServiceWorkerProviderImpl::OnDidGetRegistrationForReady,
       weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -192,7 +195,7 @@ void WebServiceWorkerProviderImpl::SetController(
   for (blink::mojom::WebFeature feature : features)
     provider_client_->CountFeature(feature);
   provider_client_->SetController(
-      controller.To<blink::WebServiceWorkerObjectInfo>(),
+      std::move(controller).To<blink::WebServiceWorkerObjectInfo>(),
       should_notify_controller_change);
 }
 
@@ -203,7 +206,8 @@ void WebServiceWorkerProviderImpl::PostMessageToClient(
     return;
 
   provider_client_->ReceiveMessage(
-      source.To<blink::WebServiceWorkerObjectInfo>(), std::move(message));
+      std::move(source).To<blink::WebServiceWorkerObjectInfo>(),
+      std::move(message));
 }
 
 void WebServiceWorkerProviderImpl::CountFeature(
@@ -216,11 +220,12 @@ void WebServiceWorkerProviderImpl::CountFeature(
 void WebServiceWorkerProviderImpl::OnRegistered(
     std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks,
     blink::mojom::ServiceWorkerErrorType error,
-    const base::Optional<std::string>& error_msg,
+    const absl::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_ASYNC_END2(
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-      this, "Error", ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error",
+      ServiceWorkerUtils::MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
@@ -235,18 +240,20 @@ void WebServiceWorkerProviderImpl::OnRegistered(
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             registration->registration_id);
   callbacks->OnSuccess(
-      registration.To<blink::WebServiceWorkerRegistrationObjectInfo>());
+      std::move(registration)
+          .To<blink::WebServiceWorkerRegistrationObjectInfo>());
 }
 
 void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     std::unique_ptr<WebServiceWorkerGetRegistrationCallbacks> callbacks,
     blink::mojom::ServiceWorkerErrorType error,
-    const base::Optional<std::string>& error_msg,
+    const absl::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_ASYNC_END2("ServiceWorker",
-                         "WebServiceWorkerProviderImpl::GetRegistration", this,
-                         "Error", ServiceWorkerUtils::MojoEnumToString(error),
-                         "Message", error_msg ? *error_msg : "Success");
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
+      TRACE_ID_LOCAL(this), "Error",
+      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
     DCHECK(!registration);
@@ -262,20 +269,22 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
          registration->registration_id !=
              blink::mojom::kInvalidServiceWorkerRegistrationId);
   callbacks->OnSuccess(
-      registration.To<blink::WebServiceWorkerRegistrationObjectInfo>());
+      std::move(registration)
+          .To<blink::WebServiceWorkerRegistrationObjectInfo>());
 }
 
 void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
     std::unique_ptr<WebServiceWorkerGetRegistrationsCallbacks> callbacks,
     blink::mojom::ServiceWorkerErrorType error,
-    const base::Optional<std::string>& error_msg,
-    base::Optional<
+    const absl::optional<std::string>& error_msg,
+    absl::optional<
         std::vector<blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>>
         infos) {
-  TRACE_EVENT_ASYNC_END2("ServiceWorker",
-                         "WebServiceWorkerProviderImpl::GetRegistrations", this,
-                         "Error", ServiceWorkerUtils::MojoEnumToString(error),
-                         "Message", error_msg ? *error_msg : "Success");
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
+      TRACE_ID_LOCAL(this), "Error",
+      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
     DCHECK(!infos);
@@ -292,7 +301,8 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
               (*infos)[i]->registration_id);
     registrations.emplace_back(
-        (*infos)[i].To<blink::WebServiceWorkerRegistrationObjectInfo>());
+        std::move((*infos)[i])
+            .To<blink::WebServiceWorkerRegistrationObjectInfo>());
   }
   callbacks->OnSuccess(std::move(registrations));
 }
@@ -300,23 +310,24 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
 void WebServiceWorkerProviderImpl::OnDidGetRegistrationForReady(
     GetRegistrationForReadyCallback callback,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_ASYNC_END0(
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrationForReady",
-      this);
+      TRACE_ID_LOCAL(this));
   // TODO(leonhsl): Currently the only reason that we allow nullable
   // |registration| is: impl of the mojo method
   // GetRegistrationForReady() needs to respond some non-sense params even if it
   // has found that the request is a bad message and has called
   // mojo::ReportBadMessage(), this is forced by Mojo, please see
-  // content::ServiceWorkerProviderHost::GetRegistrationForReady(). We'll find a
-  // better solution once the discussion at
+  // content::ServiceWorkerContainerHost::GetRegistrationForReady(). We'll find
+  // a better solution once the discussion at
   // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-mojo/NNsogKNurlA
   // settled.
   CHECK(registration);
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             registration->registration_id);
   std::move(callback).Run(
-      registration.To<blink::WebServiceWorkerRegistrationObjectInfo>());
+      std::move(registration)
+          .To<blink::WebServiceWorkerRegistrationObjectInfo>());
 }
 
 }  // namespace content

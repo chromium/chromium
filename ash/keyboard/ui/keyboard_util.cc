@@ -27,9 +27,12 @@ bool GetFlag(KeyboardEnableFlag flag) {
 }
 
 void SetOrClearEnableFlag(KeyboardEnableFlag flag, bool enabled) {
-  auto* controller = KeyboardUIController::Get();
-  if (!controller)
+  // This function can get called asynchronously after the instance has been
+  // destroyed, so return early if there is no instance.
+  if (!KeyboardUIController::HasInstance())
     return;
+
+  auto* controller = KeyboardUIController::Get();
   if (enabled)
     controller->SetEnableFlag(flag);
   else

@@ -10,7 +10,9 @@
 
 #include "base/macros.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -31,9 +33,13 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
  public:
   ChromiumServiceWrapper(
       ExternalConnector* connector,
-      service_manager::mojom::ServicePtr service_ptr,
+      mojo::Remote<service_manager::mojom::Service> service_remote,
       std::unique_ptr<service_manager::Service> chromium_service,
       const std::string& service_name);
+
+  ChromiumServiceWrapper(const ChromiumServiceWrapper&) = delete;
+  ChromiumServiceWrapper& operator=(const ChromiumServiceWrapper&) = delete;
+
   ~ChromiumServiceWrapper() override;
 
  private:
@@ -41,24 +47,23 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
   void OnBindInterface(const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
-  const service_manager::mojom::ServicePtr service_ptr_;
+  const mojo::Remote<service_manager::mojom::Service> service_remote_;
   const std::unique_ptr<service_manager::Service> chromium_service_;
 
   mojo::Receiver<external_mojo::mojom::ExternalService> service_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumServiceWrapper);
 };
 
 // Creates a ServiceRequest (analogous to one created by Chromium
 // ServiceManager) for use in creating Chromium Mojo services in an external
-// process. |service_ptr| will be filled in with a pointer for the service,
+// process. |service_remote| will be filled in with a pointer for the service,
 // which should be bassed to ChromiumServiceWrapper's constructor. |identity| is
 // the desired identity of the service to be created (ie, what will be returned
 // from ServiceBinding::identity() once the service binding is created). If you
 // don't care about the identity, just use the default.
-service_manager::mojom::ServiceRequest CreateChromiumServiceRequest(
+mojo::PendingReceiver<service_manager::mojom::Service>
+CreateChromiumServiceReceiver(
     ExternalConnector* connector,
-    service_manager::mojom::ServicePtr* service_ptr,
+    mojo::Remote<service_manager::mojom::Service>* service_remote,
     service_manager::Identity identity = service_manager::Identity());
 
 // Creates a service_manager::Connector instance from an external service
@@ -72,11 +77,11 @@ template <typename T>
 std::unique_ptr<ChromiumServiceWrapper> CreateChromiumService(
     ExternalConnector* connector,
     const std::string& name) {
-  service_manager::mojom::ServicePtr service_ptr;
-  auto request = CreateChromiumServiceRequest(connector, &service_ptr);
+  mojo::Remote<service_manager::mojom::Service> service_remote;
+  auto receiver = CreateChromiumServiceReceiver(connector, &service_remote);
   return std::make_unique<ChromiumServiceWrapper>(
-      connector, std::move(service_ptr),
-      std::make_unique<T>(std::move(request)), name);
+      connector, std::move(service_remote),
+      std::make_unique<T>(std::move(receiver)), name);
 }
 
 }  // namespace external_service_support

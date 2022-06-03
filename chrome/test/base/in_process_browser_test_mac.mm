@@ -30,8 +30,8 @@ Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     chrome::OpenURLOffTheRecord(profile, url);
-    Browser* browser =
-        chrome::FindTabbedBrowser(profile->GetOffTheRecordProfile(), false);
+    Browser* browser = chrome::FindTabbedBrowser(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
     content::TestNavigationObserver observer(
         browser->tab_strip_model()->GetActiveWebContents());
     observer.Wait();
@@ -45,7 +45,7 @@ Browser* InProcessBrowserTest::CreateBrowser(Profile* profile) {
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser = new Browser(Browser::CreateParams(profile, true));
+    Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -60,8 +60,8 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
       profile = browser()->profile();
 
     // Create a new browser with using the incognito profile.
-    Browser* incognito = new Browser(
-        Browser::CreateParams(profile->GetOffTheRecordProfile(), true));
+    Browser* incognito = Browser::Create(Browser::CreateParams(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
     AddBlankTabAndShow(incognito);
     return incognito;
   }
@@ -71,8 +71,8 @@ Browser* InProcessBrowserTest::CreateBrowserForPopup(Profile* profile) {
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser =
-        new Browser(Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+    Browser* browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -83,7 +83,7 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    Browser* browser = new Browser(Browser::CreateParams::CreateForApp(
+    Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
         app_name, false /* trusted_source */, gfx::Rect(), profile, true));
     AddBlankTabAndShow(browser);
     return browser;

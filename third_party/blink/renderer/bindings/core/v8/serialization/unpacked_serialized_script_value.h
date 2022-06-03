@@ -42,7 +42,7 @@ class CORE_EXPORT UnpackedSerializedScriptValue final
   explicit UnpackedSerializedScriptValue(scoped_refptr<SerializedScriptValue>);
   ~UnpackedSerializedScriptValue();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   SerializedScriptValue* Value() { return value_.get(); }
   const SerializedScriptValue* Value() const { return value_.get(); }

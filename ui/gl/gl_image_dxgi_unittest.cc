@@ -10,7 +10,9 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_image_dxgi.h"
+#include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
+#include "ui/gl/test/gl_image_zero_initialize_test_template.h"
 
 namespace gl {
 namespace {
@@ -52,12 +54,11 @@ class GLImageDXGITestDelegate : public GLImageTestDelegateBase {
         QueryD3D11DeviceObjectFromANGLE();
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-    HRESULT hr = d3d11_device->CreateTexture2D(&desc, &initial_data,
-                                               texture.GetAddressOf());
+    HRESULT hr = d3d11_device->CreateTexture2D(&desc, &initial_data, &texture);
     EXPECT_HRESULT_SUCCEEDED(hr);
 
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-    hr = texture.CopyTo(dxgi_resource.GetAddressOf());
+    hr = texture.As(&dxgi_resource);
     EXPECT_HRESULT_SUCCEEDED(hr);
 
     HANDLE handle = nullptr;

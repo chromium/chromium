@@ -8,6 +8,8 @@ source_set("renderer") {
     "metrics_render_frame_observer.h",
     "page_resource_data_use.cc",
     "page_resource_data_use.h",
+    "page_timing_metadata_recorder.cc",
+    "page_timing_metadata_recorder.h",
     "page_timing_metrics_sender.cc",
     "page_timing_metrics_sender.h",
     "page_timing_sender.h",

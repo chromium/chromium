@@ -1,8 +1,0 @@
-{
-  "name": "chrome.displaySource",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "WiFi Display tests",
-  "permissions": ["displaySource", "tabCapture", "tabs"]
-}
-

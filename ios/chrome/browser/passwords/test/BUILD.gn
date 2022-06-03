@@ -7,6 +7,8 @@ source_set("test") {
   testonly = true
 
   sources = [
+    "mock_ios_chrome_save_passwords_infobar_delegate.h",
+    "mock_ios_chrome_save_passwords_infobar_delegate.mm",
     "test_password_manager_client.h",
     "test_password_manager_client.mm",
   ]
@@ -16,6 +18,10 @@ source_set("test") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }

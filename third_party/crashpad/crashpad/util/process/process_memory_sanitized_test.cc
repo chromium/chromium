@@ -19,13 +19,23 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
 
-TEST(ProcessMemorySanitized, DenyOnEmptyWhitelist) {
+TEST(ProcessMemorySanitized, DenyDisallowedMemory) {
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(GetSelfProcess()));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(GetSelfProcess()));
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
   char c = 42;
   char out;
@@ -34,25 +44,31 @@ TEST(ProcessMemorySanitized, DenyOnEmptyWhitelist) {
   san_null.Initialize(&memory, nullptr);
   EXPECT_FALSE(san_null.Read(FromPointerCast<VMAddress>(&c), 1, &out));
 
-  std::vector<std::pair<VMAddress, VMAddress>> whitelist;
-  ProcessMemorySanitized san_blank;
-  san_blank.Initialize(&memory, &whitelist);
-  EXPECT_FALSE(san_blank.Read(FromPointerCast<VMAddress>(&c), 1, &out));
+  std::vector<std::pair<VMAddress, VMAddress>> allowed_memory;
+  ProcessMemorySanitized san_empty;
+  san_empty.Initialize(&memory, &allowed_memory);
+  EXPECT_FALSE(san_empty.Read(FromPointerCast<VMAddress>(&c), 1, &out));
 }
 
-TEST(ProcessMemorySanitized, WhitelistingWorks) {
+TEST(ProcessMemorySanitized, AllowedMemory) {
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(GetSelfProcess()));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(GetSelfProcess()));
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
   char str[4] = "ABC";
   char out[4];
 
-  std::vector<std::pair<VMAddress, VMAddress>> whitelist;
-  whitelist.push_back(std::make_pair(FromPointerCast<VMAddress>(str + 1),
-                                     FromPointerCast<VMAddress>(str + 2)));
+  std::vector<std::pair<VMAddress, VMAddress>> allowed_memory;
+  allowed_memory.push_back(std::make_pair(FromPointerCast<VMAddress>(str + 1),
+                                          FromPointerCast<VMAddress>(str + 2)));
 
   ProcessMemorySanitized sanitized;
-  sanitized.Initialize(&memory, &whitelist);
+  sanitized.Initialize(&memory, &allowed_memory);
 
   EXPECT_FALSE(sanitized.Read(FromPointerCast<VMAddress>(str), 1, &out));
   EXPECT_TRUE(sanitized.Read(FromPointerCast<VMAddress>(str + 1), 1, &out));

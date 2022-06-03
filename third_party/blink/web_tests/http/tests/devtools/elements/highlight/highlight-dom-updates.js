@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests DOM update highlights in the DOM tree.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -125,8 +125,8 @@
       runAndDumpHighlights('setFirstChildTextContent(\'textTest\', \'\')', textTestNode, next);
     },
 
-    function testAppendChildWhenHidden(next) {
-      UI.viewManager.showView('console');
+    async function testAppendChildWhenHidden(next) {
+      await UI.viewManager.showView('console');
       runAndDumpHighlights('appendChild(\'childTest\', \'child1\')', childTestNode, next);
     }
   ]);
@@ -141,7 +141,7 @@
 
     function callback() {
       var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
-      var highlights = treeOutline._element.getElementsByClassName('dom-update-highlight');
+      var highlights = treeOutline.elementInternal.getElementsByClassName('dom-update-highlight');
       for (var i = 0; i < highlights.length; ++i)
         highlights[i].classList.remove('dom-update-highlight');
       next();

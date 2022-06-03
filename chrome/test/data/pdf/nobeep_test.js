@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
+import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const tests = [
   /**
    * Test that blocked JS was not able to call back via "app.beep()"
    */
   function testHasCorrectBeepCount() {
-    chrome.test.assertEq(0, viewer.beepCount_);
+    const viewer = /** @type {!PDFViewerElement} */ (
+        document.body.querySelector('#viewer'));
+    chrome.test.assertEq(0, viewer.beepCount);
     chrome.test.succeed();
   }
 ];
 
 const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCallback(function() {
+scriptingAPI.setLoadCompleteCallback(function() {
   chrome.test.runTests(tests);
 });

@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 
-#include "base/logging.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
-#include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,8 +29,25 @@
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
-  DCHECK(self.image);
   cell.image = self.image;
+
+  if (self.attributedText) {
+    cell.textLabel.attributedText = self.attributedText;
+  }
+
+  if (self.detailTextColor) {
+    cell.detailTextLabel.textColor = self.detailTextColor;
+  } else {
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+
+  if (self.imageViewTintColor) {
+    [cell setImageViewTintColor:self.imageViewTintColor];
+  }
+
+  if (self.image && self.alignImageWithFirstLineOfText) {
+    [cell alignImageWithFirstLineOfText:YES];
+  }
 }
 
 @end

@@ -13,5 +13,6 @@ source_set("open_from_clipboard") {
     "//components/open_from_clipboard",
     "//ios/chrome/browser",
     "//ios/chrome/common/app_group",
+    "//ios/components/webui:url_constants",
   ]
 }

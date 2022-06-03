@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "components/autofill_assistant/browser/devtools/error_reporter.h"
 
 namespace autofill_assistant {
@@ -135,7 +136,7 @@ template <>
 struct FromValue<base::Value> {
   static std::unique_ptr<base::Value> Parse(const base::Value& value,
                                             ErrorReporter* errors) {
-    return value.CreateDeepCopy();
+    return base::Value::ToUniquePtrValue(value.Clone());
   }
 };
 

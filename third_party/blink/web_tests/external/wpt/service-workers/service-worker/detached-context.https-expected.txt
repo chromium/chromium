@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL accessing a ServiceWorkerRegistration from a removed iframe assert_equals: expected (string) "activated" but got (undefined) undefined
-PASS accessing a ServiceWorker object from a removed iframe
-PASS accessing navigator.serviceWorker on a detached iframe
-PASS accessing navigator on a removed frame
-PASS accessing navigator.serviceWorker on a removed about:blank frame
-Harness: the test ran to completion.
-

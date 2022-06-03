@@ -12,16 +12,16 @@ import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_DEVICE_DAYDREAM;
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VR_SETTINGS_SERVICE;
+import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VR_DON_ENABLED;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.support.test.uiautomator.UiDevice;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,23 +35,19 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.vr.rules.VrSettingsFile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
-import org.chromium.chrome.browser.vr.util.VrSettingsServiceUtils;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.browser.vr.util.VrTransitionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.io.File;
 import java.util.List;
@@ -67,8 +63,6 @@ import java.util.concurrent.TimeUnit;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebXR is only supported on L+
-@TargetApi(Build.VERSION_CODES.KITKAT) // Necessary to allow taking screenshots with UiAutomation
 public class WebXrVrTransitionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -97,13 +91,11 @@ public class WebXrVrTransitionTest {
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
             public void testRequestSessionEntersVr() {
-        testPresentationEntryImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page"),
-                mWebXrVrTestFramework);
+        testPresentationEntryImpl("generic_webxr_page", mWebXrVrTestFramework);
     }
 
     private void testPresentationEntryImpl(String url, WebXrVrTestFramework framework) {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
         Assert.assertTrue("Browser did not enter VR", VrShellDelegate.isInVr());
 
@@ -150,13 +142,12 @@ public class WebXrVrTransitionTest {
             .Add({"disable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
             public void testWebXrDisabledWithoutFlagSet() {
-        apiDisabledWithoutFlagSetImpl(WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                                              "test_webxr_disabled_without_flag_set"),
-                mWebXrVrTestFramework);
+        apiDisabledWithoutFlagSetImpl(
+                "test_webxr_disabled_without_flag_set", mWebXrVrTestFramework);
     }
 
     private void apiDisabledWithoutFlagSetImpl(String url, WebXrVrTestFramework framework) {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.waitOnJavaScriptStep();
         framework.endTest();
     }
@@ -167,20 +158,19 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_SETTINGS_SERVICE})
-    @VrSettingsFile(VrSettingsServiceUtils.FILE_DDVIEW_DONENABLED)
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testPresentationPromiseUnresolvedDuringDon_WebXr() {
+    @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1236093")
+    public void testPresentationPromiseUnresolvedDuringDon_WebXr() {
         presentationPromiseUnresolvedDuringDonImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                        "webxr_test_presentation_promise_unresolved_during_don"),
-                mWebXrVrTestFramework);
+
+                "webxr_test_presentation_promise_unresolved_during_don", mWebXrVrTestFramework);
     }
 
     private void presentationPromiseUnresolvedDuringDonImpl(
             String url, WebXrVrTestFramework framework) {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureAndWait();
         framework.endTest();
     }
@@ -190,20 +180,19 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_SETTINGS_SERVICE})
-    @VrSettingsFile(VrSettingsServiceUtils.FILE_DDVIEW_DONENABLED)
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testPresentationPromiseRejectedIfDonCanceled_WebXr() {
+    @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1246405")
+    public void testPresentationPromiseRejectedIfDonCanceled_WebXr() {
         presentationPromiseRejectedIfDonCanceledImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                        "webxr_test_presentation_promise_rejected_if_don_canceled"),
-                mWebXrVrTestFramework);
+
+                "webxr_test_presentation_promise_rejected_if_don_canceled", mWebXrVrTestFramework);
     }
 
     private void presentationPromiseRejectedIfDonCanceledImpl(
             String url, WebXrVrTestFramework framework) {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         final UiDevice uiDevice =
                 UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         framework.enterSessionWithUserGesture();
@@ -211,7 +200,8 @@ public class WebXrVrTransitionTest {
         // TODO(bsheedy): Make this less hacky if there's ever an explicit way to check if the
         // DON flow is currently active https://crbug.com/758296
         CriteriaHelper.pollUiThread(() -> {
-            return uiDevice.getCurrentPackageName().equals("com.google.vr.vrcore");
+            String currentPackageName = uiDevice.getCurrentPackageName();
+            return currentPackageName != null && currentPackageName.equals("com.google.vr.vrcore");
         }, "DON flow did not start", POLL_TIMEOUT_LONG_MS, POLL_CHECK_INTERVAL_SHORT_MS);
         uiDevice.pressBack();
         framework.waitOnJavaScriptStep();
@@ -223,29 +213,28 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @Restriction(RESTRICTION_TYPE_SVR)
-            public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
-        controlsVisibleAfterExitingVrImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page"),
-                mWebXrVrTestFramework);
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @Restriction(RESTRICTION_TYPE_SVR)
+    @FlakyTest(message = "crbug.com/1229236")
+    public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
+        controlsVisibleAfterExitingVrImpl("generic_webxr_page", mWebXrVrTestFramework);
     }
 
     private void controlsVisibleAfterExitingVrImpl(String url, final WebXrVrTestFramework framework)
             throws InterruptedException {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
         VrTransitionUtils.forceExitVr();
         // The hiding of the controls may only propagate after VR has exited, so give it a chance
         // to propagate. In the worst case this test will erroneously pass, but should never
         // erroneously fail, and should only be flaky if omnibox showing is broken.
         Thread.sleep(100);
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> {
-                    ChromeActivity activity = framework.getRule().getActivity();
-                    return activity.getFullscreenManager().getBrowserControlHiddenRatio() == 0.0;
-                },
+        CriteriaHelper.pollUiThread(()
+                                            -> framework.getRule()
+                                                       .getActivity()
+                                                       .getBrowserControlsManager()
+                                                       .getBrowserControlHiddenRatio()
+                        == 0.0,
                 "Browser controls did not unhide after exiting VR", POLL_TIMEOUT_SHORT_MS,
                 POLL_CHECK_INTERVAL_SHORT_MS);
         framework.assertNoJavaScriptErrors();
@@ -262,14 +251,14 @@ public class WebXrVrTransitionTest {
             public void testWindowRafStopsFiringWhilePresenting_WebXr()
             throws InterruptedException {
         windowRafStopsFiringWhilePresentingImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                        "webxr_test_window_raf_stops_firing_during_immersive_session"),
+
+                "webxr_test_window_raf_stops_firing_during_immersive_session",
                 mWebXrVrTestFramework);
     }
 
     private void windowRafStopsFiringWhilePresentingImpl(String url, WebXrVrTestFramework framework)
             throws InterruptedException {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.executeStepAndWait("stepVerifyBeforePresent()");
         // Pausing of window.rAF is done asynchronously, so wait until that's done.
         final CountDownLatch vsyncPausedLatch = new CountDownLatch(1);
@@ -291,13 +280,11 @@ public class WebXrVrTransitionTest {
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
             @CommandLineFlags.Add({"enable-features=WebXR"})
             public void testRendererKilledInWebXrStaysInVr() throws IllegalArgumentException {
-        rendererKilledInVrStaysInVrImpl(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page"),
-                mWebXrVrTestFramework);
+        rendererKilledInVrStaysInVrImpl("generic_webxr_page", mWebXrVrTestFramework);
     }
 
     private void rendererKilledInVrStaysInVrImpl(String url, WebXrVrTestFramework framework) {
-        framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
         framework.simulateRendererKilled();
         Assert.assertTrue("Browser did not enter VR", VrShellDelegate.isInVr());
@@ -312,10 +299,8 @@ public class WebXrVrTransitionTest {
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
             public void testWindowRafFiresDuringNonImmersiveSession() {
-        mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                        "test_window_raf_fires_during_non_immersive_session"),
-                PAGE_LOAD_TIMEOUT_S);
+        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
+                "test_window_raf_fires_during_non_immersive_session", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.waitOnJavaScriptStep();
         mWebXrVrTestFramework.endTest();
     }
@@ -328,12 +313,9 @@ public class WebXrVrTransitionTest {
     @MediumTest
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF)
             public void testNonImmersiveStopsDuringImmersive() {
-        mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile(
-                        "test_non_immersive_stops_during_immersive"),
-                PAGE_LOAD_TIMEOUT_S);
+        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
+                "test_non_immersive_stops_during_immersive", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.executeStepAndWait("stepBeforeImmersive()");
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
         mWebXrVrTestFramework.executeStepAndWait("stepDuringImmersive()");
@@ -352,32 +334,31 @@ public class WebXrVrTransitionTest {
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA})
             public void testAppButtonExitToast() {
-        mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page"),
-                PAGE_LOAD_TIMEOUT_S);
+        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
+                "generic_webxr_page", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
         NativeUiUtils.performActionAndWaitForVisibilityStatus(
                 UserFriendlyElementName.APP_BUTTON_EXIT_TOAST, true /* visible*/, () -> {});
     }
 
     /**
-     * Tests that a consent dialog dismisses by itself when the page navigates away from
+     * Tests that a permission prompt dismisses by itself when the page navigates away from
      * the current page.
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
-        mWebXrVrTestFramework.setConsentDialogAction(
-                WebXrVrTestFramework.CONSENT_DIALOG_ACTION_DO_NOTHING);
-        mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
-                WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page"),
-                PAGE_LOAD_TIMEOUT_S);
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // WAA/CCT versions no longer fail consistently.
+    // @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
+        mWebXrVrTestFramework.setPermissionPromptAction(
+                WebXrVrTestFramework.PERMISSION_PROMPT_ACTION_DO_NOTHING);
+        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
+                "generic_webxr_page", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGesture();
         mWebXrVrTestFramework.runJavaScriptOrFail(
                 "window.location.href = 'https://google.com'", POLL_TIMEOUT_SHORT_MS);
-        PermissionUtils.waitForConsentPromptDismissal(
-                mWebXrVrTestFramework.getRule().getActivity());
+        PermissionUtils.waitForPermissionPromptDismissal();
     }
 }

@@ -12,8 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
@@ -34,29 +34,57 @@ constexpr VAImageFormat kImageFormatI420 = {
 }  // namespace
 
 class VaapiUtilsTest : public testing::Test {
+ public:
+  VaapiUtilsTest(const VaapiUtilsTest&) = delete;
+  VaapiUtilsTest& operator=(const VaapiUtilsTest&) = delete;
+
  protected:
   VaapiUtilsTest() = default;
 
   void SetUp() override {
     // Create a VaapiWrapper for testing.
-    vaapi_wrapper_ = VaapiWrapper::Create(
-        VaapiWrapper::kDecode, VAProfileJPEGBaseline,
-        base::BindRepeating([]() { LOG(FATAL) << "Oh noes! Decoder failed"; }));
+    vaapi_wrapper_ =
+        VaapiWrapper::Create(VaapiWrapper::kDecode, VAProfileJPEGBaseline,
+                             EncryptionScheme::kUnencrypted,
+                             base::BindRepeating([](VaapiFunctions function) {
+                               LOG(FATAL) << "Oh noes! Decoder failed";
+                             }));
     ASSERT_TRUE(vaapi_wrapper_);
   }
 
  protected:
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiUtilsTest);
 };
+
+TEST_F(VaapiUtilsTest, ScopedVABuffer) {
+  const std::pair<VABufferType, size_t> kBufferParameters[] = {
+      {VASliceDataBufferType, 1024},
+      {VAEncCodedBufferType, 2048},
+      {VAProcPipelineParameterBufferType,
+       sizeof(VAProcPipelineParameterBuffer)},
+  };
+  constexpr gfx::Size kCodedSize(64, 64);
+  ASSERT_TRUE(vaapi_wrapper_->CreateContext(kCodedSize));
+  for (size_t i = 0; i < base::size(kBufferParameters); i++) {
+    const VABufferType buffer_type = kBufferParameters[i].first;
+    const size_t buffer_size = kBufferParameters[i].second;
+    auto scoped_va_buffer =
+        vaapi_wrapper_->CreateVABuffer(buffer_type, buffer_size);
+    ASSERT_TRUE(scoped_va_buffer);
+    EXPECT_NE(scoped_va_buffer->id(), VA_INVALID_ID);
+    EXPECT_EQ(scoped_va_buffer->type(), buffer_type);
+    EXPECT_EQ(scoped_va_buffer->size(), buffer_size);
+  }
+}
 
 // This test exercises the usual ScopedVAImage lifetime.
 TEST_F(VaapiUtilsTest, ScopedVAImage) {
   std::vector<VASurfaceID> va_surfaces;
   const gfx::Size coded_size(64, 64);
   ASSERT_TRUE(vaapi_wrapper_->CreateContextAndSurfaces(
-      VA_RT_FORMAT_YUV420, coded_size, VaapiWrapper::SurfaceUsageHint::kGeneric,
+      VA_RT_FORMAT_YUV420, coded_size,
+      std::vector<VaapiWrapper::SurfaceUsageHint>{
+          VaapiWrapper::SurfaceUsageHint::kGeneric},
       1, &va_surfaces));
   ASSERT_EQ(va_surfaces.size(), 1u);
 
@@ -125,10 +153,13 @@ TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
 // This test exercises the creation of a valid ScopedVASurface.
 TEST_F(VaapiUtilsTest, ScopedVASurface) {
   const gfx::Size coded_size(64, 64);
-  auto scoped_va_surface = vaapi_wrapper_->CreateContextAndScopedVASurface(
-      VA_RT_FORMAT_YUV420, coded_size);
+  auto scoped_va_surfaces = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
+      VA_RT_FORMAT_YUV420, coded_size,
+      {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
+      /*visible_size=*/absl::nullopt);
+  ASSERT_FALSE(scoped_va_surfaces.empty());
 
-  ASSERT_TRUE(scoped_va_surface);
+  auto scoped_va_surface = std::move(scoped_va_surfaces[0]);
   EXPECT_TRUE(scoped_va_surface->IsValid());
   EXPECT_EQ(VA_RT_FORMAT_YUV420,
             base::checked_cast<int>(scoped_va_surface->format()));
@@ -140,10 +171,12 @@ TEST_F(VaapiUtilsTest, ScopedVASurface) {
 TEST_F(VaapiUtilsTest, ScopedVASurfaceWithVisibleSize) {
   const gfx::Size coded_size(64, 64);
   const gfx::Size visible_size(60, 60);
-  auto scoped_va_surface = vaapi_wrapper_->CreateContextAndScopedVASurface(
-      VA_RT_FORMAT_YUV420, coded_size, visible_size);
+  auto scoped_va_surfaces = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
+      VA_RT_FORMAT_YUV420, coded_size,
+      {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u, visible_size);
+  ASSERT_FALSE(scoped_va_surfaces.empty());
 
-  ASSERT_TRUE(scoped_va_surface);
+  auto scoped_va_surface = std::move(scoped_va_surfaces[0]);
   EXPECT_TRUE(scoped_va_surface->IsValid());
   EXPECT_EQ(VA_RT_FORMAT_YUV420,
             base::checked_cast<int>(scoped_va_surface->format()));
@@ -154,16 +187,24 @@ TEST_F(VaapiUtilsTest, ScopedVASurfaceWithVisibleSize) {
 // size.
 TEST_F(VaapiUtilsTest, ScopedVASurfaceInvalidSizeRequest) {
   const gfx::Size invalid_size(0, 0);
-  EXPECT_FALSE(vaapi_wrapper_->CreateContextAndScopedVASurface(
-      VA_RT_FORMAT_YUV420, invalid_size));
+  EXPECT_TRUE(vaapi_wrapper_
+                  ->CreateContextAndScopedVASurfaces(
+                      VA_RT_FORMAT_YUV420, invalid_size,
+                      {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
+                      /*visible_size=*/absl::nullopt)
+                  .empty());
 }
 
 // This test exercises the creation of a ScopedVASurface with an invalid
 // RT format.
 TEST_F(VaapiUtilsTest, ScopedVASurfaceInvalidRTFormatRequest) {
   const gfx::Size coded_size(64, 64);
-  EXPECT_FALSE(vaapi_wrapper_->CreateContextAndScopedVASurface(
-      kInvalidVaRtFormat, coded_size));
+  EXPECT_TRUE(vaapi_wrapper_
+                  ->CreateContextAndScopedVASurfaces(
+                      kInvalidVaRtFormat, coded_size,
+                      {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
+                      /*visible_size=*/absl::nullopt)
+                  .empty());
 }
 
 }  // namespace media

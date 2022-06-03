@@ -15,7 +15,7 @@ namespace autofill {
 
 ChromeStorageImpl::ChromeStorageImpl(WriteablePrefStore* store)
     : backing_store_(store) {
-  scoped_observer_.Add(backing_store_);
+  scoped_observation_.Observe(backing_store_);
 }
 
 ChromeStorageImpl::~ChromeStorageImpl() {}
@@ -52,7 +52,8 @@ void ChromeStorageImpl::DoGet(const std::string& key,
 
   const base::Value* value = NULL;
   std::unique_ptr<std::string> data(new std::string);
-  if (backing_store_->GetValue(key, &value) && value->GetAsString(data.get())) {
+  if (backing_store_->GetValue(key, &value) && value->is_string()) {
+    *data = value->GetString();
     data_ready(true, key, data.release());
   } else if (FallbackDataStore::Get(key, data.get())) {
     data_ready(true, key, data.release());

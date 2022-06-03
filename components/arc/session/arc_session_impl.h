@@ -8,21 +8,21 @@
 #include <memory>
 #include <ostream>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/session/arc_client_adapter.h"
 #include "components/arc/session/arc_session.h"
 
-namespace ash {
-class DefaultScaleFactorRetriever;
+namespace base {
+struct SystemMemoryInfoKB;
+}
+
+namespace cryptohome {
+class Identification;
 }
 
 namespace arc {
@@ -42,8 +42,6 @@ class ArcSessionImpl
   //
   // NOT_STARTED
   // -> StartMiniInstance() ->
-  // WAITING_FOR_LCD_DENSITY
-  // -> OnLcdDensity ->
   // WAITING_FOR_NUM_CORES
   // -> OnConfigurationSet ->
   // STARTING_MINI_INSTANCE
@@ -60,11 +58,10 @@ class ArcSessionImpl
   // state, the state change to STARTING_FULL_INSTANCE is suspended until
   // the state becomes RUNNING_MINI_INSTANCE.
   //
-  // Upon |StartMiniInstance()| call, it queries LCD Density through
-  // Delegate::GetLcdDenstity, and moves to WAITING_FOR_LCD_DENSITY state.  The
-  // query may be made synchronlsly or asynchronosly depending on the
-  // availability of the density information. It then asks SessionManager to
-  // start mini container and moves to STARTING_MINI_INSTANCE state.
+  // Upon |StartMiniInstance()| call, it first waits for # of CPU cores
+  // currently available to be reported, and then then asks SessionManager to
+  // start mini container (or Concierge to start mini VM if ARCVM is in use)
+  // and moves to STARTING_MINI_INSTANCE state.
   //
   // At any state, Stop() can be called. It may not immediately stop the
   // instance, but will eventually stop it. The actual stop will be notified
@@ -110,9 +107,6 @@ class ArcSessionImpl
     // ARC is not yet started.
     NOT_STARTED,
 
-    // It's waiting for LCD density to be available.
-    WAITING_FOR_LCD_DENSITY,
-
     // It's waiting for CPU cores information to be available.
     WAITING_FOR_NUM_CORES,
 
@@ -155,34 +149,40 @@ class ArcSessionImpl
     virtual base::ScopedFD ConnectMojo(base::ScopedFD socket_fd,
                                        ConnectMojoCallback callback) = 0;
 
-    using GetLcdDensityCallback = base::OnceCallback<void(int32_t)>;
-
-    // Gets the lcd density via callback. The callback may be invoked
-    // immediately if its already available, or called asynchronosly later if
-    // it's not yet available. Calling this method while there is a pending
-    // callback will cancel the pending callback.
-    virtual void GetLcdDensity(GetLcdDensityCallback callback) = 0;
-
     // Gets the available disk space under /home. The result is in bytes.
     using GetFreeDiskSpaceCallback = base::OnceCallback<void(int64_t)>;
     virtual void GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) = 0;
 
     // Returns the channel for the installation.
     virtual version_info::Channel GetChannel() = 0;
+
+    // Creates and returns a client adapter.
+    virtual std::unique_ptr<ArcClientAdapter> CreateClient() = 0;
   };
+
+  using SystemMemoryInfoCallback =
+      base::RepeatingCallback<bool(base::SystemMemoryInfoKB*)>;
 
   ArcSessionImpl(std::unique_ptr<Delegate> delegate,
                  chromeos::SchedulerConfigurationManagerBase*
-                     scheduler_configuration_manager_);
+                     scheduler_configuration_manager,
+                 AdbSideloadingAvailabilityDelegate*
+                     adb_sideloading_availability_delegate);
+
+  ArcSessionImpl(const ArcSessionImpl&) = delete;
+  ArcSessionImpl& operator=(const ArcSessionImpl&) = delete;
+
   ~ArcSessionImpl() override;
 
   // Returns default delegate implementation used for the production.
   static std::unique_ptr<Delegate> CreateDelegate(
       ArcBridgeService* arc_bridge_service,
-      ash::DefaultScaleFactorRetriever* retriever,
       version_info::Channel channel);
 
   State GetStateForTesting() { return state_; }
+  ArcClientAdapter* GetClientForTesting() { return client_.get(); }
+
+  void SetSystemMemoryInfoCallbackForTesting(SystemMemoryInfoCallback callback);
 
   // ArcSession overrides:
   void StartMiniInstance() override;
@@ -190,8 +190,13 @@ class ArcSessionImpl
   void Stop() override;
   bool IsStopRequested() override;
   void OnShutdown() override;
-  void SetUserInfo(const std::string& hash,
+  void SetUserInfo(const cryptohome::Identification& cryptohome_id,
+                   const std::string& hash,
                    const std::string& serial_number) override;
+  void SetDemoModeDelegate(
+      ArcClientAdapter::DemoModeDelegate* delegate) override;
+  void TrimVmMemory(TrimVmMemoryCallback callback) override;
+  void SetDefaultDeviceScaleFactor(float scale_factor) override;
 
   // chromeos::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -206,6 +211,15 @@ class ArcSessionImpl
   // Called when arcbridge socket is created.
   void OnSocketCreated(base::ScopedFD fd);
 
+  // Loads ARC data/ snapshot if necessary.
+  // |callback| is called once the load process is finished.
+  void StartLoadingDataSnapshot(base::OnceClosure callback);
+
+  // Called when ARC data/ snapshot step is done: either snapshot is loaded or
+  // skipped.
+  // |socket_fd| should be a socket to be passed to OnUpgraded.
+  void OnDataSnapshotLoaded(base::ScopedFD scoped_fd);
+
   // D-Bus callback for UpgradeArcContainer(). |socket_fd| should be a socket
   // which should be accept(2)ed to connect ArcBridgeService Mojo channel.
   void OnUpgraded(base::ScopedFD socket_fd, bool result);
@@ -219,24 +233,25 @@ class ArcSessionImpl
   // connect.)
   void OnMojoConnected(std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host);
 
-  // Request to stop ARC instance via DBus.
-  void StopArcInstance(bool on_shutdown);
+  // Request to stop ARC instance via DBus. Also backs up the ARC
+  // bug report if |should_backup_log| is set to true.
+  void StopArcInstance(bool on_shutdown, bool should_backup_log);
 
   // ArcClientAdapter::Observer:
-  void ArcInstanceStopped() override;
+  void ArcInstanceStopped(bool is_system_shutdown) override;
 
   // Completes the termination procedure. Note that calling this may end up with
   // deleting |this| because the function calls observers' OnSessionStopped().
   void OnStopped(ArcStopReason reason);
-
-  // LCD density for the device is available.
-  void OnLcdDensity(int32_t lcd_density);
 
   // Called when |state_| moves to STARTING_MINI_INSTANCE.
   void DoStartMiniInstance(size_t num_cores_disabled);
 
   // Free disk space under /home in bytes.
   void OnFreeDiskSpace(int64_t space);
+
+  // Whether adb sideloading can be changed
+  void OnCanChangeAdbSideloading(bool can_change_adb_sideloading);
 
   // Checks whether a function runs on the thread where the instance is
   // created.
@@ -274,10 +289,15 @@ class ArcSessionImpl
   chromeos::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
 
+  // Owned by ArcSessionManager.
+  AdbSideloadingAvailabilityDelegate* const
+      adb_sideloading_availability_delegate_;
+
+  // Callback to read system memory info.
+  SystemMemoryInfoCallback system_memory_info_callback_;
+
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionImpl);
 };
 
 // Stringified output for logging purpose.

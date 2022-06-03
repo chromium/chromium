@@ -1,0 +1,36 @@
+PASS window.matchMedia('(min-width: 959px)').matches is true
+PASS window.matchMedia('(max-width: 961px)').matches is true
+PASS window.matchMedia('(min-width: 1151px)').matches is true
+PASS window.matchMedia('(max-width: 1153px)').matches is true
+PASS window.matchMedia('(min-width: 1381px)').matches is true
+PASS window.matchMedia('(max-width: 1383px)').matches is true
+PASS window.matchMedia('(min-width: 1657px)').matches is true
+PASS window.matchMedia('(max-width: 1659px)').matches is true
+PASS window.matchMedia('(min-width: 1989px)').matches is true
+PASS window.matchMedia('(max-width: 1991px)').matches is true
+PASS window.matchMedia('(min-width: 1657px)').matches is true
+PASS window.matchMedia('(max-width: 1659px)').matches is true
+PASS window.matchMedia('(min-width: 1381px)').matches is true
+PASS window.matchMedia('(max-width: 1383px)').matches is true
+PASS window.matchMedia('(min-width: 1151px)').matches is true
+PASS window.matchMedia('(max-width: 1153px)').matches is true
+PASS window.matchMedia('(min-width: 959px)').matches is true
+PASS window.matchMedia('(max-width: 961px)').matches is true
+PASS window.matchMedia('(min-width: 799px)').matches is true
+PASS window.matchMedia('(max-width: 801px)').matches is true
+PASS window.matchMedia('(min-width: 665px)').matches is true
+PASS window.matchMedia('(max-width: 667px)').matches is true
+PASS window.matchMedia('(min-width: 554px)').matches is true
+PASS window.matchMedia('(max-width: 556px)').matches is true
+PASS window.matchMedia('(min-width: 462px)').matches is true
+PASS window.matchMedia('(max-width: 464px)').matches is true
+PASS window.matchMedia('(min-width: 384px)').matches is true
+PASS window.matchMedia('(max-width: 386px)').matches is true
+PASS window.matchMedia('(min-width: 320px)').matches is true
+PASS window.matchMedia('(max-width: 322px)').matches is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Tests that width MQ feature is correct on zoom.

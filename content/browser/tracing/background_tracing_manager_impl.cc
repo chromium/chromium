@@ -8,18 +8,18 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
-#include "content/browser/tracing/background_memory_tracing_observer.h"
+#include "components/variations/variations_associated_data.h"
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
@@ -39,18 +39,34 @@
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_ANDROID)
+#include "content/browser/tracing/background_reached_code_tracing_observer_android.h"
+#endif
 
 namespace content {
+
+namespace {
+
+const char kBackgroundTracingConfig[] = "config";
+const char kBackgroundTracingUploadUrl[] = "upload_url";
+
+}  // namespace
+
+// static
+const char BackgroundTracingManager::kContentTriggerConfig[] =
+    "content-trigger-config";
+
+// static
+BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
+  return BackgroundTracingManagerImpl::GetInstance();
+}
 
 // static
 void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
   UMA_HISTOGRAM_ENUMERATION("Tracing.Background.ScenarioState", metric,
                             Metrics::NUMBER_OF_BACKGROUND_TRACING_METRICS);
-}
-
-// static
-BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
-  return BackgroundTracingManagerImpl::GetInstance();
 }
 
 // static
@@ -70,21 +86,18 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
   child_process->GetBackgroundTracingAgentProvider(
       pending_provider.InitWithNewPipeAndPassReceiver());
 
-  auto constructor =
-      base::BindOnce(&BackgroundTracingAgentClientImpl::Create,
-                     child_process_id, std::move(pending_provider));
-
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&BackgroundTracingManagerImpl::AddPendingAgentConstructor,
-                     std::move(constructor)));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BackgroundTracingManagerImpl::AddPendingAgent,
+                                child_process_id, std::move(pending_provider)));
 }
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
       trigger_handle_ids_(0) {
-  AddEnabledStateObserver(BackgroundMemoryTracingObserver::GetInstance());
   AddEnabledStateObserver(BackgroundStartupTracingObserver::GetInstance());
+#if defined(OS_ANDROID)
+  AddEnabledStateObserver(&BackgroundReachedCodeTracingObserver::GetInstance());
+#endif
 }
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() = default;
@@ -100,7 +113,15 @@ void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
 
 bool BackgroundTracingManagerImpl::SetActiveScenario(
     std::unique_ptr<BackgroundTracingConfig> config,
-    BackgroundTracingManager::ReceiveCallback receive_callback,
+    DataFiltering data_filtering) {
+  // Pass a null ReceiveCallback to use the default upload behaviour.
+  return SetActiveScenarioWithReceiveCallback(
+      std::move(config), ReceiveCallback(), data_filtering);
+}
+
+bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
+    std::unique_ptr<BackgroundTracingConfig> config,
+    ReceiveCallback receive_callback,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (config) {
@@ -125,8 +146,18 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
       static_cast<BackgroundTracingConfigImpl*>(config.release()));
   config_impl = BackgroundStartupTracingObserver::GetInstance()
                     ->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  if (BackgroundStartupTracingObserver::GetInstance()
-          ->enabled_in_current_session()) {
+#if defined(OS_ANDROID)
+  config_impl = BackgroundReachedCodeTracingObserver::GetInstance()
+                    .IncludeReachedCodeConfigIfNeeded(std::move(config_impl));
+
+  if (BackgroundReachedCodeTracingObserver::GetInstance()
+          .enabled_in_current_session()) {
+    data_filtering = DataFiltering::ANONYMIZE_DATA;
+    RecordMetric(Metrics::REACHED_CODE_SCENARIO_TRIGGERED);
+  } else
+#endif
+      if (BackgroundStartupTracingObserver::GetInstance()
+              ->enabled_in_current_session()) {
     // Anonymize data for startup tracing by default. We currently do not
     // support storing the config in preferences for next session.
     data_filtering = DataFiltering::ANONYMIZE_DATA;
@@ -149,25 +180,10 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
   bool requires_anonymized_data = (data_filtering == ANONYMIZE_DATA);
   config_impl->set_requires_anonymized_data(requires_anonymized_data);
 
-  // If the profile hasn't loaded or been created yet, this is a startup
-  // scenario and we have to wait until initialization is finished to validate
-  // that the scenario can run.
-  if (!delegate_ || delegate_->IsProfileLoaded()) {
-    // TODO(oysteine): Retry when time_until_allowed has elapsed.
-    if (config_impl && delegate_ &&
-        !delegate_->IsAllowedToBeginBackgroundScenario(
-            *config_impl.get(), requires_anonymized_data)) {
-      return false;
-    }
-  } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackgroundTracingManagerImpl::ValidateStartupScenario,
-                       base::Unretained(this)));
-  }
-
-  // No point in tracing if there's nowhere to send it.
-  if (config_impl && receive_callback.is_null()) {
+  // TODO(oysteine): Retry when time_until_allowed has elapsed.
+  if (config_impl && delegate_ &&
+      !delegate_->IsAllowedToBeginBackgroundScenario(
+          *config_impl.get(), requires_anonymized_data)) {
     return false;
   }
 
@@ -225,7 +241,11 @@ std::string BackgroundTracingManagerImpl::GetLatestTraceToUpload() {
 
 void BackgroundTracingManagerImpl::AddEnabledStateObserver(
     EnabledStateObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Ensure that this code is called on the UI thread, except for
+  // tests where a UI thread might not have been initialized at this point.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
   background_tracing_observers_.insert(observer);
 }
 
@@ -292,6 +312,11 @@ void BackgroundTracingManagerImpl::SetTraceToUploadForTesting(
   SetTraceToUpload(std::move(trace_data));
 }
 
+void BackgroundTracingManagerImpl::SetConfigTextFilterForTesting(
+    ConfigTextFilterForTesting predicate) {
+  config_text_filter_for_testing_ = std::move(predicate);
+}
+
 void BackgroundTracingManagerImpl::SetTraceToUpload(
     std::unique_ptr<std::string> trace_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -302,18 +327,32 @@ void BackgroundTracingManagerImpl::SetTraceToUpload(
   }
 }
 
-void BackgroundTracingManagerImpl::ValidateStartupScenario() {
-  if (!active_scenario_ || !delegate_) {
-    return;
-  }
-
-  if (!delegate_->IsAllowedToBeginBackgroundScenario(
-          *active_scenario_->GetConfig(),
-          active_scenario_->GetConfig()->requires_anonymized_data())) {
-    AbortScenario();
-  }
+std::string BackgroundTracingManagerImpl::GetBackgroundTracingUploadUrl(
+    const std::string& trial_name) {
+  return variations::GetVariationParamValue(trial_name,
+                                            kBackgroundTracingUploadUrl);
 }
 
+std::unique_ptr<content::BackgroundTracingConfig>
+BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
+    const std::string& trial_name) {
+  std::string config_text =
+      variations::GetVariationParamValue(trial_name, kBackgroundTracingConfig);
+  if (config_text.empty())
+    return nullptr;
+
+  if (config_text_filter_for_testing_)
+    config_text = config_text_filter_for_testing_.Run(config_text);
+
+  auto value = base::JSONReader::Read(config_text);
+  if (!value)
+    return nullptr;
+
+  if (!value->is_dict())
+    return nullptr;
+
+  return BackgroundTracingConfig::FromDict(std::move(*value));
+}
 
 void BackgroundTracingManagerImpl::OnHistogramTrigger(
     const std::string& histogram_name) {
@@ -327,8 +366,8 @@ void BackgroundTracingManagerImpl::TriggerNamedEvent(
     BackgroundTracingManagerImpl::TriggerHandle handle,
     StartedFinalizingCallback callback) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&BackgroundTracingManagerImpl::TriggerNamedEvent,
                        base::Unretained(this), handle, std::move(callback)));
     return;
@@ -356,7 +395,8 @@ void BackgroundTracingManagerImpl::OnRuleTriggered(
 }
 
 BackgroundTracingManagerImpl::TriggerHandle
-BackgroundTracingManagerImpl::RegisterTriggerType(const char* trigger_name) {
+BackgroundTracingManagerImpl::RegisterTriggerType(
+    base::StringPiece trigger_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   trigger_handle_ids_ += 1;
@@ -371,8 +411,8 @@ bool BackgroundTracingManagerImpl::IsTriggerHandleValid(
   return trigger_handles_.find(handle) != trigger_handles_.end();
 }
 
-std::string BackgroundTracingManagerImpl::GetTriggerNameFromHandle(
-    BackgroundTracingManager::TriggerHandle handle) const {
+const std::string& BackgroundTracingManagerImpl::GetTriggerNameFromHandle(
+    BackgroundTracingManager::TriggerHandle handle) {
   CHECK(IsTriggerHandleValid(handle));
   return trigger_handles_.find(handle)->second;
 }
@@ -399,24 +439,22 @@ void BackgroundTracingManagerImpl::WhenIdle(
   }
 }
 
-bool BackgroundTracingManagerImpl::IsAllowedFinalization() const {
+bool BackgroundTracingManagerImpl::IsAllowedFinalization(
+    bool is_crash_scenario) const {
   return !delegate_ ||
          (active_scenario_ &&
           delegate_->IsAllowedToEndBackgroundScenario(
               *active_scenario_->GetConfig(),
-              active_scenario_->GetConfig()->requires_anonymized_data()));
+              active_scenario_->GetConfig()->requires_anonymized_data(),
+              is_crash_scenario));
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value>
 BackgroundTracingManagerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
-  if (active_scenario_) {
-    active_scenario_->GenerateMetadataDict(metadata_dict.get());
-  }
-
-  return metadata_dict;
+  if (!active_scenario_)
+    return absl::nullopt;
+  return active_scenario_->GenerateMetadataDict();
 }
 
 void BackgroundTracingManagerImpl::GenerateMetadataProto(
@@ -456,15 +494,28 @@ void BackgroundTracingManagerImpl::OnScenarioAborted() {
 }
 
 // static
-void BackgroundTracingManagerImpl::AddPendingAgentConstructor(
-    base::OnceClosure constructor) {
+void BackgroundTracingManagerImpl::AddPendingAgent(
+    int child_process_id,
+    mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
+        pending_provider) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Stash away the parameters here, and delay agent initialization until we
-  // have an interested AgentObserver.
+  // Delay agent initialization until we have an interested AgentObserver.
+  // We set disconnect handler for cleanup when the tracing target is closed.
+  mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider(
+      std::move(pending_provider));
 
-  GetInstance()->pending_agent_constructors_.push_back(std::move(constructor));
+  provider.set_disconnect_handler(base::BindOnce(
+      &BackgroundTracingManagerImpl::ClearPendingAgent, child_process_id));
+
+  GetInstance()->pending_agents_[child_process_id] = std::move(provider);
   GetInstance()->MaybeConstructPendingAgents();
+}
+
+// static
+void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetInstance()->pending_agents_.erase(child_process_id);
 }
 
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
@@ -473,9 +524,12 @@ void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
   if (agent_observers_.empty())
     return;
 
-  for (auto& constructor : pending_agent_constructors_)
-    std::move(constructor).Run();
-  pending_agent_constructors_.clear();
+  for (auto& pending_agent : pending_agents_) {
+    pending_agent.second.set_disconnect_handler(base::OnceClosure());
+    BackgroundTracingAgentClientImpl::Create(pending_agent.first,
+                                             std::move(pending_agent.second));
+  }
+  pending_agents_.clear();
 }
 
 }  // namespace content

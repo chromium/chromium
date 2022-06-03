@@ -41,11 +41,6 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
     private static final int VRCORE_UNREGISTER_DELAY_MS = 500;
 
     /**
-     * Essentially a Runnable that can throw exceptions.
-     */
-    public interface ChromeLaunchMethod { public void launch() throws Throwable; }
-
-    /**
      * Helper method to apply a VrTestRule/ChromeActivityTestRule combination. The only difference
      * between various classes that implement VrTestRule is how they start their activity, so the
      * common boilerplate code can be kept here so each VrTestRule only has to provide a way to
@@ -63,9 +58,6 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
 
         VrTestRuleUtils.ensureNoVrActivitiesDisplayed();
         launcher.launch();
-        // Must be called after Chrome is started, as otherwise startService fails with an
-        // IllegalStateException for being used from a backgrounded app.
-        VrSettingsServiceUtils.checkForAndApplyVrSettingsFileAnnotation(desc, rule);
 
         // Reset the VR feedback shared preferences if they're not currently the default because
         // otherwise we can run into issues with VrFeedbackInfoBarTest#* erroneously failing due to

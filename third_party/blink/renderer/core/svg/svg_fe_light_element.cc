@@ -23,9 +23,12 @@
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_diffuse_lighting_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_specular_lighting_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
+#include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -81,7 +84,7 @@ SVGFELightElement::SVGFELightElement(const QualifiedName& tag_name,
   AddToPropertyMap(limiting_cone_angle_);
 }
 
-void SVGFELightElement::Trace(blink::Visitor* visitor) {
+void SVGFELightElement::Trace(Visitor* visitor) const {
   visitor->Trace(azimuth_);
   visitor->Trace(elevation_);
   visitor->Trace(x_);
@@ -112,7 +115,39 @@ FloatPoint3D SVGFELightElement::PointsAt() const {
                       pointsAtZ()->CurrentValue()->Value());
 }
 
-void SVGFELightElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+absl::optional<bool> SVGFELightElement::SetLightSourceAttribute(
+    FELighting* lighting_effect,
+    const QualifiedName& attr_name) const {
+  LightSource* light_source = lighting_effect->GetLightSource();
+  DCHECK(light_source);
+
+  const Filter* filter = lighting_effect->GetFilter();
+  DCHECK(filter);
+  if (attr_name == svg_names::kAzimuthAttr)
+    return light_source->SetAzimuth(azimuth()->CurrentValue()->Value());
+  if (attr_name == svg_names::kElevationAttr)
+    return light_source->SetElevation(elevation()->CurrentValue()->Value());
+  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kZAttr)
+    return light_source->SetPosition(filter->Resolve3dPoint(GetPosition()));
+  if (attr_name == svg_names::kPointsAtXAttr ||
+      attr_name == svg_names::kPointsAtYAttr ||
+      attr_name == svg_names::kPointsAtZAttr)
+    return light_source->SetPointsAt(filter->Resolve3dPoint(PointsAt()));
+  if (attr_name == svg_names::kSpecularExponentAttr) {
+    return light_source->SetSpecularExponent(
+        specularExponent()->CurrentValue()->Value());
+  }
+  if (attr_name == svg_names::kLimitingConeAngleAttr) {
+    return light_source->SetLimitingConeAngle(
+        limitingConeAngle()->CurrentValue()->Value());
+  }
+  return absl::nullopt;
+}
+
+void SVGFELightElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kAzimuthAttr ||
       attr_name == svg_names::kElevationAttr ||
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
@@ -127,7 +162,7 @@ void SVGFELightElement::SvgAttributeChanged(const QualifiedName& attr_name) {
       return;
 
     LayoutObject* layout_object = parent->GetLayoutObject();
-    if (!layout_object || !layout_object->IsSVGResourceFilterPrimitive())
+    if (!layout_object || !layout_object->IsSVGFilterPrimitive())
       return;
 
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -139,16 +174,16 @@ void SVGFELightElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGFELightElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (!change.by_parser) {
+  if (!change.ByParser()) {
     if (ContainerNode* parent = parentNode()) {
       LayoutObject* layout_object = parent->GetLayoutObject();
-      if (layout_object && layout_object->IsSVGResourceFilterPrimitive())
+      if (layout_object && layout_object->IsSVGFilterPrimitive())
         MarkForLayoutAndParentResourceInvalidation(*layout_object);
     }
   }

@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "components/sync/nigori/cryptographer.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
@@ -39,6 +39,8 @@ class CryptographerImpl : public Cryptographer {
   static std::unique_ptr<CryptographerImpl> FromProto(
       const sync_pb::CryptographerData& proto);
 
+  CryptographerImpl& operator=(const CryptographerImpl&) = delete;
+
   ~CryptographerImpl() override;
 
   // Serialization.
@@ -61,9 +63,21 @@ class CryptographerImpl : public Cryptographer {
   // return true. |key_name| must not be empty and must represent a known key.
   void SelectDefaultEncryptionKey(const std::string& key_name);
 
+  // Adds all keys in |other| that weren't previously known, and selects the
+  // same default key. |other| must have selected a default key.
+  void EmplaceKeysAndSelectDefaultKeyFrom(const CryptographerImpl& other);
+
   // Clears the default encryption key, which causes CanEncrypt() to return
   // false.
   void ClearDefaultEncryptionKey();
+
+  // Reverts the cryptographer to an empty one, i.e. what would be returned by
+  // CreateEmpty(). The default key is also cleared.
+  // The set of known encryption keys shouldn't decrease in general, since this
+  // may lead to data becoming undecryptable. This method can be called a) if
+  // sync is disabled, or b) if sync finds an error that can be solved by
+  // resetting the encryption state.
+  void ClearAllKeys();
 
   // Determines whether |key_name| represents a known key.
   bool HasKey(const std::string& key_name) const;
@@ -72,13 +86,11 @@ class CryptographerImpl : public Cryptographer {
   // have a default encryption key set, as reflected by CanEncrypt().
   sync_pb::NigoriKey ExportDefaultKey() const;
 
-  // Similar to Clone() but returns CryptographerImpl.
-  std::unique_ptr<CryptographerImpl> CloneImpl() const;
+  std::unique_ptr<CryptographerImpl> Clone() const;
 
   size_t KeyBagSizeForTesting() const;
 
   // Cryptographer overrides.
-  std::unique_ptr<Cryptographer> Clone() const override;
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
   std::string GetDefaultEncryptionKeyName() const override;
@@ -98,8 +110,6 @@ class CryptographerImpl : public Cryptographer {
   // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
   // is not.
   std::string default_encryption_key_name_;
-
-  DISALLOW_ASSIGN(CryptographerImpl);
 };
 
 }  // namespace syncer

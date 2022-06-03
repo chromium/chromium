@@ -14,11 +14,11 @@ source_set("app_window") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

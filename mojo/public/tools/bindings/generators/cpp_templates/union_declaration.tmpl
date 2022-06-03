@@ -13,43 +13,10 @@ class {{export_attribute}} {{class_name}} {
   // Used to identify Mojom Union Data Classes.
   typedef void MojomUnionDataType;
 
-  {{class_name}}() {}
+  {{class_name}}() = default;
   // Do nothing in the destructor since it won't be called when it is a
   // non-inlined union.
-  ~{{class_name}}() {}
-
-  class BufferWriter {
-   public:
-    BufferWriter() = default;
-
-    void Allocate(mojo::internal::Buffer* serialization_buffer) {
-      serialization_buffer_ = serialization_buffer;
-      index_ = serialization_buffer_->Allocate(sizeof({{class_name}}));
-      new (data()) {{class_name}}();
-    }
-
-    void AllocateInline(mojo::internal::Buffer* serialization_buffer,
-                        void* ptr) {
-      const char* start = static_cast<const char*>(
-          serialization_buffer->data());
-      const char* slot = static_cast<const char*>(ptr);
-      DCHECK_GT(slot, start);
-      serialization_buffer_ = serialization_buffer;
-      index_ = slot - start;
-      new (data()) {{class_name}}();
-    }
-
-    bool is_null() const { return !serialization_buffer_; }
-    {{class_name}}* data() {
-      DCHECK(!is_null());
-      return serialization_buffer_->Get<{{class_name}}>(index_);
-    }
-    {{class_name}}* operator->() { return data(); }
-
-   private:
-    mojo::internal::Buffer* serialization_buffer_ = nullptr;
-    size_t index_ = 0;
-  };
+  ~{{class_name}}() = default;
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context,
@@ -63,10 +30,16 @@ class {{export_attribute}} {{class_name}} {
     data.unknown = 0U;
   }
 
+  // TODO(crbug.com/1148486): SHOUTY_CASE values are being deprecated per C++ code style
+  // guidelines (https://google.github.io/styleguide/cppguide.html#Enumerator_Names),
+  // please use kCamelCase values instead.  Cleanup NULL_VALUE, BOOL_VALUE, INT_VALUE, etc.
+  // generation once codebase is transitioned to kNullValue, kBoolValue, kIntValue, etc.
   enum class {{enum_name}} : uint32_t {
 {%  for field in union.fields %}
     {{ kythe_annotation("%s.%s"|format(union|get_full_mojom_name_for_kind(), field.name)) }}
     {{field.name|upper}},
+    {{ kythe_annotation("%s.%s"|format(union|get_full_mojom_name_for_kind(), field.name)) }}
+    k{{field.name|under_to_camel}} = {{field.name|upper}},
 {%- endfor %}
   };
 

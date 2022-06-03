@@ -14,7 +14,6 @@ import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.HashMap;
@@ -72,8 +71,7 @@ public class SplitAvailabilityLogger {
 
     private static void recordAvailabilityStatus(String moduleName, int status) {
         String key = "Android.FeatureModules.AvailabilityStatus." + moduleName;
-        EnumeratedHistogramSample sample = new EnumeratedHistogramSample(key, COUNT);
-        sample.record(status);
+        RecordHistogram.recordEnumeratedHistogram(key, status, COUNT);
     }
 
     /**
@@ -98,7 +96,7 @@ public class SplitAvailabilityLogger {
      * @param moduleName The module name.
      */
     public void storeRequestStart(String moduleName) {
-        assert !mInstallTimesMap.containsKey(moduleName);
+        // Ignore previously failed requests (orphan keys).
         boolean moduleRequested = storeModuleRequested(moduleName, ONDEMAND_REQ_PREV);
         mInstallTimesMap.put(moduleName, new InstallTimes(moduleRequested));
     }
@@ -119,6 +117,9 @@ public class SplitAvailabilityLogger {
      * @param status The install status.
      */
     public void storeModuleInstalled(String moduleName, int status) {
+        if (!mInstallTimesMap.containsKey(moduleName)) {
+            return;
+        }
         InstallTimes times = mInstallTimesMap.get(moduleName);
         times.mInstallTimes.put(status, SystemClock.uptimeMillis());
     }
@@ -143,7 +144,9 @@ public class SplitAvailabilityLogger {
 
     private void recordInstallTime(
             String moduleName, String histogramSubname, int startKey, int endKey) {
-        assert mInstallTimesMap.containsKey(moduleName);
+        if (!mInstallTimesMap.containsKey(moduleName)) {
+            return;
+        }
 
         InstallTimes installTimes = mInstallTimesMap.get(moduleName);
         long startTime = installTimes.mInstallTimes.get(startKey);

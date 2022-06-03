@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace arc {
@@ -30,7 +28,8 @@ class IntentFilter {
     AuthorityEntry();
     AuthorityEntry(AuthorityEntry&& other);
     AuthorityEntry(const std::string& host, int port);
-
+    AuthorityEntry(const AuthorityEntry&) = delete;
+    AuthorityEntry& operator=(const AuthorityEntry&) = delete;
     AuthorityEntry& operator=(AuthorityEntry&& other);
 
     bool Match(const GURL& url) const;
@@ -42,8 +41,6 @@ class IntentFilter {
     std::string host_;
     bool wild_;
     int port_;
-
-    DISALLOW_COPY_AND_ASSIGN(AuthorityEntry);
   };
 
   // A helper class for handling matching of various patterns in the URL.
@@ -52,7 +49,8 @@ class IntentFilter {
     PatternMatcher();
     PatternMatcher(PatternMatcher&& other);
     PatternMatcher(const std::string& pattern, mojom::PatternType match_type);
-
+    PatternMatcher(const PatternMatcher&) = delete;
+    PatternMatcher& operator=(const PatternMatcher&) = delete;
     PatternMatcher& operator=(PatternMatcher&& other);
 
     bool Match(const std::string& match) const;
@@ -63,39 +61,54 @@ class IntentFilter {
    private:
     std::string pattern_;
     mojom::PatternType match_type_;
-
-    DISALLOW_COPY_AND_ASSIGN(PatternMatcher);
   };
 
   IntentFilter();
   IntentFilter(IntentFilter&& other);
   IntentFilter(const std::string& package_name,
+               std::vector<std::string> actions,
                std::vector<AuthorityEntry> authorities,
                std::vector<PatternMatcher> paths,
-               std::vector<std::string> schemes);
-  ~IntentFilter();
-
+               std::vector<std::string> schemes,
+               std::vector<std::string> mime_types);
+  IntentFilter(const std::string& package_name,
+               const std::string& activity_name,
+               const std::string& activity_label,
+               std::vector<std::string> actions,
+               std::vector<IntentFilter::AuthorityEntry> authorities,
+               std::vector<IntentFilter::PatternMatcher> paths,
+               std::vector<std::string> schemes,
+               std::vector<std::string> mime_types);
+  IntentFilter(const IntentFilter&) = delete;
+  IntentFilter& operator=(const IntentFilter&) = delete;
   IntentFilter& operator=(IntentFilter&& other);
+  ~IntentFilter();
 
   bool Match(const GURL& url) const;
 
   const std::string& package_name() const { return package_name_; }
+  const std::string& activity_name() const { return activity_name_; }
+  const std::string& activity_label() const { return activity_label_; }
+  const std::vector<std::string>& actions() const { return actions_; }
   const std::vector<AuthorityEntry>& authorities() const {
     return authorities_;
   }
   const std::vector<PatternMatcher>& paths() const { return paths_; }
   const std::vector<std::string>& schemes() const { return schemes_; }
+  const std::vector<std::string>& mime_types() const { return mime_types_; }
 
  private:
   bool MatchDataAuthority(const GURL& url) const;
   bool HasDataPath(const GURL& url) const;
 
   std::string package_name_;
+  std::string activity_name_;
+  std::string activity_label_;
+  std::vector<std::string> actions_;
   std::vector<AuthorityEntry> authorities_;
   std::vector<PatternMatcher> paths_;
   std::vector<std::string> schemes_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentFilter);
+  std::vector<std::string> mime_types_;
 };
 
 }  // namespace arc

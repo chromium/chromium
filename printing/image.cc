@@ -40,10 +40,7 @@ bool Image::SaveToPng(const base::FilePath& filepath) const {
       std::vector<gfx::PNGCodec::Comment>(), &compressed);
   DCHECK(success && compressed.size());
   if (success) {
-    int write_bytes =
-        base::WriteFile(filepath, reinterpret_cast<char*>(&*compressed.begin()),
-                        base::checked_cast<int>(compressed.size()));
-    success = (write_bytes == static_cast<int>(compressed.size()));
+    success = base::WriteFile(filepath, compressed);
     DCHECK(success);
   }
   return success;

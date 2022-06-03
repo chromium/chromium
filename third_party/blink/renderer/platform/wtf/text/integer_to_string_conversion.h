@@ -26,10 +26,9 @@
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace WTF {
 
@@ -45,7 +44,7 @@ class IntegerToStringConverter {
                 "IntegerType must be a type of integer.");
 
   explicit IntegerToStringConverter(IntegerType input) {
-    LChar* end = buffer_ + base::size(buffer_);
+    LChar* end = buffer_ + kBufferSize;
     begin_ = end;
 
     // We need to switch to the unsigned type when negating the value since

@@ -28,8 +28,7 @@ if (window.eventSender && window.internals) {
     leapForwardAndMove(div.offsetWidth - 10);
 
     var cursorInfo = internals.getCurrentCursorInfo();
-    var currentCursorType = cursorInfo.substring(cursorInfo.indexOf('=') + 1, cursorInfo.lastIndexOf(' '));
-    shouldBeEqualToString('currentCursorType', 'Progress');
+    shouldBeEqualToString('cursorInfo', 'type=Progress');
 }
 </script>
 </body>

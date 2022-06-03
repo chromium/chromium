@@ -9,16 +9,18 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/account_id/account_id.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
@@ -36,6 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printing_context.h"
 #include "printing/units.h"
@@ -43,9 +47,19 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-#if defined(OS_MACOSX)
-#include "components/printing/browser/features.h"
-#include "components/printing/browser/printer_capabilities_mac.h"
+#if defined(OS_MAC)
+#include "chrome/common/printing/printer_capabilities_mac.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
+#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace printing {
@@ -63,10 +77,19 @@ class PrintingContextDelegate : public PrintingContext::Delegate {
   }
 };
 
+const AccountId& GetAccountId(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  return user ? user->GetAccountId() : EmptyAccountId();
+#else
+  return EmptyAccountId();
+#endif
+}
+
 gfx::Size GetDefaultPdfMediaSizeMicrons() {
   PrintingContextDelegate delegate;
   auto printing_context(PrintingContext::Create(&delegate));
-  if (PrintingContext::OK != printing_context->UsePdfSettings() ||
+  if (mojom::ResultCode::kSuccess != printing_context->UsePdfSettings() ||
       printing_context->settings().device_units_per_inch() <= 0) {
     return gfx::Size();
   }
@@ -95,7 +118,8 @@ base::Value GetPdfCapabilities(
   {
     cloud_devices::printer::Color standard_color(
         cloud_devices::printer::ColorType::STANDARD_COLOR);
-    standard_color.vendor_id = base::NumberToString(COLOR);
+    standard_color.vendor_id =
+        base::NumberToString(static_cast<int>(mojom::ColorModel::kColor));
     color.AddDefaultOption(standard_color, true);
   }
   color.SaveTo(&description);
@@ -132,12 +156,32 @@ base::Value GetPdfCapabilities(
 
 // Callback that stores a PDF file on disk.
 void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
-                        const base::FilePath& path,
-                        base::OnceClosure pdf_file_saved_closure) {
-  base::File file(path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(reinterpret_cast<const char*>(data->front()),
-                         base::checked_cast<int>(data->size()));
+                        const base::FilePath& path) {
+  base::WriteFile(path, *data);
+}
+
+// Callback that runs after `PrintToPdfCallback()` returns.
+void OnPdfPrintedCallback(const AccountId& account_id,
+                          bool from_incognito_profile,
+                          const base::FilePath& path,
+                          base::OnceClosure pdf_file_saved_closure) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile) {
+    ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+        ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+            profile);
+    if (holding_space_keyed_service)
+      holding_space_keyed_service->AddPrintedPdf(path, from_incognito_profile);
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  if (service && service->IsAvailable<crosapi::mojom::HoldingSpaceService>()) {
+    service->GetRemote<crosapi::mojom::HoldingSpaceService>()->AddPrintedPdf(
+        path, from_incognito_profile);
+  }
+#endif
   if (!pdf_file_saved_closure.is_null())
     std::move(pdf_file_saved_closure).Run();
 }
@@ -195,28 +239,23 @@ void PdfPrinterHandler::StartGetCapability(const std::string& destination_id,
                                            GetCapabilityCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_MACOSX)
-  if (base::FeatureList::IsEnabled(features::kEnableCustomMacPaperSizes)) {
-    // Read the Mac custom paper sizes on a separate thread.
-    // USER_VISIBLE because the result is displayed in the print preview dialog.
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&GetMacCustomPaperSizes),
-        base::BindOnce(&ConstructCapabilitiesAndCompleteCallback,
-                       destination_id, std::move(callback)));
-    return;
-  }
-#endif
-
+#if defined(OS_MAC)
+  // Read the Mac custom paper sizes on a separate thread.
+  // USER_VISIBLE because the result is displayed in the print preview dialog.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetMacCustomPaperSizes),
+      base::BindOnce(&ConstructCapabilitiesAndCompleteCallback, destination_id,
+                     std::move(callback)));
+#else
   ConstructCapabilitiesAndCompleteCallback(
       destination_id, std::move(callback),
       PrinterSemanticCapsAndDefaults::Papers());
+#endif
 }
 
 void PdfPrinterHandler::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     base::Value settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
@@ -253,6 +292,10 @@ void PdfPrinterHandler::StartPrint(
 
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   bool prompt_user = !cmdline->HasSwitch(switches::kKioskModePrinting);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  use_drive_mount_ =
+      settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false);
+#endif
 
   SelectFile(path, initiator, prompt_user);
 }
@@ -277,12 +320,17 @@ void PdfPrinterHandler::SetPdfSavedClosureForTesting(
   pdf_file_saved_closure_ = std::move(closure);
 }
 
+void PdfPrinterHandler::SetPrintToPdfPathForTesting(
+    const base::FilePath& path) {
+  print_to_pdf_path_ = path;
+}
+
 // static
 base::FilePath PdfPrinterHandler::GetFileNameForPrintJobTitle(
-    const base::string16& job_title) {
+    const std::u16string& job_title) {
   DCHECK(!job_title.empty());
 #if defined(OS_WIN)
-  base::FilePath::StringType print_job_title(job_title);
+  base::FilePath::StringType print_job_title(base::AsWString(job_title));
 #elif defined(OS_POSIX)
   base::FilePath::StringType print_job_title = base::UTF16ToUTF8(job_title);
 #endif
@@ -326,7 +374,7 @@ base::FilePath PdfPrinterHandler::GetFileNameForURL(const GURL& url) {
 
 // static
 base::FilePath PdfPrinterHandler::GetFileName(const GURL& url,
-                                              const base::string16& job_title,
+                                              const std::u16string& job_title,
                                               bool is_savable) {
   if (is_savable) {
     bool title_is_url =
@@ -343,6 +391,8 @@ base::FilePath PdfPrinterHandler::GetFileName(const GURL& url,
 void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
                                    content::WebContents* initiator,
                                    bool prompt_user) {
+  // Handle case where user expects to be prompted but policy disallows file
+  // selection. Call CanOpenSelectFileDialog() to notify user and early return.
   if (prompt_user) {
     ChromeSelectFilePolicy policy(initiator);
     if (!policy.CanOpenSelectFileDialog()) {
@@ -352,17 +402,33 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
     }
   }
 
-  // Get save location from Download Preferences.
-  DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
-  base::FilePath path = download_prefs->SaveFilePath();
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  if (service &&
+      service->IsAvailable<crosapi::mojom::DriveIntegrationService>()) {
+    service->GetRemote<crosapi::mojom::DriveIntegrationService>()
+        ->GetMountPointPath(
+            base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(default_filename), prompt_user));
+    return;
+  }
+#endif
+
+  OnSaveLocationReady(default_filename, prompt_user, GetSaveLocation());
+}
+
+void PdfPrinterHandler::OnSaveLocationReady(
+    const base::FilePath& default_filename,
+    bool prompt_user,
+    const base::FilePath& path) {
   // Handle the no prompting case. Like the dialog prompt, this function
   // returns and eventually FileSelected() gets called.
   if (!prompt_user) {
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&base::GetUniquePath, path.Append(default_filename)),
         base::BindOnce(&PdfPrinterHandler::OnGotUniqueFileName,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -378,23 +444,27 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
   // Get default download directory. This will be used as a fallback if the
   // save directory does not exist.
+  DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
   base::FilePath default_path = download_prefs->DownloadPath();
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&SelectSaveDirectory, path, default_path),
       base::BindOnce(&PdfPrinterHandler::OnDirectorySelected,
                      weak_ptr_factory_.GetWeakPtr(), default_filename));
 }
 
 void PdfPrinterHandler::PostPrintToPdfTask() {
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&PrintToPdfCallback, print_data_, print_to_pdf_path_,
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&PrintToPdfCallback, print_data_, print_to_pdf_path_),
+      base::BindOnce(&OnPdfPrintedCallback, GetAccountId(profile_),
+                     profile_->IsIncognitoProfile(), print_to_pdf_path_,
                      std::move(pdf_file_saved_closure_)));
+
   print_to_pdf_path_.clear();
-  std::move(print_callback_).Run(base::Value());
+
+  if (print_callback_)
+    std::move(print_callback_).Run(base::Value());
 }
 
 void PdfPrinterHandler::OnGotUniqueFileName(const base::FilePath& path) {
@@ -421,9 +491,22 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
   select_file_dialog_ =
       ui::SelectFileDialog::Create(this, nullptr /*policy already checked*/);
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(), path,
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), path,
       &file_type_info, 0, base::FilePath::StringType(),
       platform_util::GetTopLevel(preview_web_contents_->GetNativeView()), NULL);
+}
+
+base::FilePath PdfPrinterHandler::GetSaveLocation() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
+  if (use_drive_mount_ && drive_service && drive_service->IsMounted()) {
+    return drive_service->GetMountPointPath().Append(
+        drive::util::kDriveMyDriveRootDirName);
+  }
+#endif
+  DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
+  return download_prefs->SaveFilePath();
 }
 
 }  // namespace printing

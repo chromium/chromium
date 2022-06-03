@@ -8,14 +8,16 @@
 
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "content/public/utility/utility_thread.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
 #if defined(OS_WIN)
 #include "content/public/child/dwrite_font_proxy_init_win.h"
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"
 #endif
 
@@ -25,17 +27,31 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
     mojo::PendingReceiver<mojom::PaintPreviewCompositorCollection> receiver,
     bool initialize_environment,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : io_task_runner_(std ::move(io_task_runner)) {
+    : initialize_environment_(initialize_environment),
+      io_task_runner_(std ::move(io_task_runner)) {
   if (receiver)
     receiver_.Bind(std::move(receiver));
 
-  if (!initialize_environment)
+  // Adapted from content::InitializeSkia().
+  // TODO(crbug/1199857): Tune these limits.
+  constexpr int kMB = 1024 * 1024;
+#if defined(OS_ANDROID)
+  SkGraphics::SetFontCacheLimit(base::SysInfo::IsLowEndDevice() ? kMB
+                                                                : 8 * kMB);
+  SkGraphics::SetResourceCacheTotalByteLimit(
+      base::SysInfo::IsLowEndDevice() ? 32 * kMB : 64 * kMB);
+  SkGraphics::SetResourceCacheSingleAllocationByteLimit(16 * kMB);
+#else
+  SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * kMB);
+#endif  // defined(OS_ANDROID)
+
+  if (!initialize_environment_)
     return;
 
     // Initialize font access for Skia.
 #if defined(OS_WIN)
   content::InitializeDWriteFontProxy();
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   mojo::PendingRemote<font_service::mojom::FontService> font_service;
   content::UtilityThread::Get()->BindHostReceiver(
       font_service.InitWithNewPipeAndPassReceiver());
@@ -54,7 +70,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // encoding to PNG or we could provide our own codec implementations.
 
   // Sanity check that fonts are working.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // No WebSandbox is provided on Linux so the local fonts aren't accessible.
   // This is fine since since the subsetted fonts are provided in the SkPicture.
   // However, we still need to check that the SkFontMgr starts as it is used by
@@ -76,7 +92,7 @@ void PaintPreviewCompositorCollectionImpl::SetDiscardableSharedMemoryManager(
         discardable_memory::mojom::DiscardableSharedMemoryManager> manager) {
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
       manager_remote(std::move(manager));
-  discardable_shared_memory_manager_ = std::make_unique<
+  discardable_shared_memory_manager_ = base::MakeRefCounted<
       discardable_memory::ClientDiscardableSharedMemoryManager>(
       std::move(manager_remote), io_task_runner_);
   base::DiscardableMemoryAllocator::SetInstance(
@@ -86,14 +102,31 @@ void PaintPreviewCompositorCollectionImpl::SetDiscardableSharedMemoryManager(
 void PaintPreviewCompositorCollectionImpl::CreateCompositor(
     mojo::PendingReceiver<mojom::PaintPreviewCompositor> receiver,
     PaintPreviewCompositorCollectionImpl::CreateCompositorCallback callback) {
+  DCHECK(discardable_shared_memory_manager_ || !initialize_environment_);
   base::UnguessableToken token = base::UnguessableToken::Create();
   compositors_.insert(
       {token,
        std::make_unique<PaintPreviewCompositorImpl>(
-           std::move(receiver),
+           std::move(receiver), discardable_shared_memory_manager_,
            base::BindOnce(&PaintPreviewCompositorCollectionImpl::OnDisconnect,
-                          base::Unretained(this), token))});
+                          weak_ptr_factory_.GetWeakPtr(), token))});
   std::move(callback).Run(token);
+}
+
+void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level >=
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    receiver_.reset();
+    return;
+  }
+  if (memory_pressure_level >=
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    SkGraphics::PurgeAllCaches();
+    if (discardable_shared_memory_manager_) {
+      discardable_shared_memory_manager_->ReleaseFreeMemory();
+    }
+  }
 }
 
 void PaintPreviewCompositorCollectionImpl::ListCompositors(

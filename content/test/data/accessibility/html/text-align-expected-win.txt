@@ -1,0 +1,23 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE text-align:left
+++IA2_ROLE_SECTION text-align:left
+++++ROLE_SYSTEM_STATICTEXT name='Left-aligned text'
+++IA2_ROLE_SECTION text-align:right
+++++ROLE_SYSTEM_STATICTEXT name='Right-aligned text'
+++IA2_ROLE_SECTION text-align:center
+++++ROLE_SYSTEM_STATICTEXT name='Centered text'
+++IA2_ROLE_SECTION text-align:justify
+++++ROLE_SYSTEM_STATICTEXT name='Justified text'
+++IA2_ROLE_SECTION text-align:left
+++++ROLE_SYSTEM_STATICTEXT name='Webkit left-aligned text'
+++IA2_ROLE_SECTION text-align:right
+++++ROLE_SYSTEM_STATICTEXT name='Webkit right-aligned text'
+++IA2_ROLE_SECTION text-align:center
+++++ROLE_SYSTEM_STATICTEXT name='Webkit centered text'
+++IA2_ROLE_SECTION text-align:left
+++++ROLE_SYSTEM_STATICTEXT name='Start-aligned text'
+++IA2_ROLE_SECTION text-align:right
+++++ROLE_SYSTEM_STATICTEXT name='End-aligned text'
+++IA2_ROLE_SECTION text-align:left
+++++ROLE_SYSTEM_STATICTEXT name='No text alignment specified'
+++IA2_ROLE_SECTION text-align:left
+++++ROLE_SYSTEM_STATICTEXT name='Invalid text alignment'

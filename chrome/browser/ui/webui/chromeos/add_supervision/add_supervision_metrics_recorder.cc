@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
@@ -12,8 +12,8 @@
 
 // static
 AddSupervisionMetricsRecorder* AddSupervisionMetricsRecorder::GetInstance() {
-  static base::NoDestructor<AddSupervisionMetricsRecorder> instance_;
-  return instance_.get();
+  static AddSupervisionMetricsRecorder instance_;
+  return &instance_;
 }
 
 void AddSupervisionMetricsRecorder::RecordAddSupervisionEnrollment(

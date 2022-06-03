@@ -5,7 +5,7 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 
 // Encode some random data, and then decode it.

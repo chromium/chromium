@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTES_HELPER_H_
-#define DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTES_HELPER_H_
+#ifndef DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTE_HELPERS_H_
+#define DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTE_HELPERS_H_
 
 #include <map>
 
@@ -21,4 +21,4 @@ bool ReadOptions(dbus::MessageReader* reader,
 
 }  // namespace bluez
 
-#endif  // DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTES_HELPER_H_
+#endif  // DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_ATTRIBUTE_HELPERS_H_

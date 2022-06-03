@@ -19,12 +19,13 @@ AUTHOR_REGEX = re.compile('author-mail <(.+)>')
 CHROMIUM_SRC_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OWNERS_FILENAME = 'OWNERS'
-THIRD_PARTY_SEARCH_STRING = 'third_party' + os.sep
+THIRD_PARTY = 'third_party'
+THIRD_PARTY_SEARCH_STRING = THIRD_PARTY + os.path.sep
 
 
 def GetAuthorFromGitBlame(blame_output):
   """Return author from git blame output."""
-  for line in blame_output.splitlines():
+  for line in blame_output.decode('utf-8').splitlines():
     m = AUTHOR_REGEX.match(line)
     if m:
       return m.group(1)
@@ -40,25 +41,28 @@ def GetGitCommand():
 
 
 def GetOwnersIfThirdParty(source):
-  """Return owners using OWNERS file if in third_party."""
+  """Return owners using the closest OWNERS file if in third_party."""
   match_index = source.find(THIRD_PARTY_SEARCH_STRING)
   if match_index == -1:
     # Not in third_party, skip.
     return None
 
-  match_index_with_library = source.find(
-      os.sep, match_index + len(THIRD_PARTY_SEARCH_STRING))
-  if match_index_with_library == -1:
-    # Unable to determine library name, skip.
-    return None
+  path_prefix = source[:match_index + len(THIRD_PARTY_SEARCH_STRING)]
+  path_after_third_party = source[len(path_prefix):].split(os.path.sep)
 
-  owners_file_path = os.path.join(source[:match_index_with_library],
-                                  OWNERS_FILENAME)
-  if not os.path.exists(owners_file_path):
-    return None
+  # Test all the paths after third_party/<libname>, making sure that we don't
+  # test third_party/OWNERS itself, otherwise we'd default to CCing them for
+  # all fuzzer issues without OWNERS, which wouldn't be nice.
+  while path_after_third_party:
+    owners_file_path = path_prefix + \
+        os.path.join(*(path_after_third_party + [OWNERS_FILENAME]))
 
-  return open(owners_file_path).read()
+    if os.path.exists(owners_file_path):
+      return open(owners_file_path).read()
 
+    path_after_third_party.pop()
+
+  return None
 
 def GetOwnersForFuzzer(sources):
   """Return owners given a list of sources as input."""
@@ -105,7 +109,8 @@ def FindGroupsAndDepsInDeps(deps_list, build_dir):
   deps_for_groups = {}
   for deps in deps_list:
     output = subprocess.check_output(
-        [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps])
+        [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps]).decode(
+                'utf8')
     needle = 'Type: '
     for line in output.splitlines():
       if needle and not line.startswith(needle):
@@ -166,7 +171,7 @@ def GetSourcesFromDeps(deps_list, build_dir):
   for deps in full_deps_list:
     output = subprocess.check_output(
         [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps, 'sources'])
-    for source in output.splitlines():
+    for source in bytes(output).decode('utf8').splitlines():
       if source.startswith('//'):
         source = source[2:]
       all_sources.append(source)

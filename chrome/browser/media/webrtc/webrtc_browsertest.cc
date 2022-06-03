@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/deferred_sequenced_task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/deferred_sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -17,6 +17,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,8 +27,9 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -55,11 +57,9 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     // Ensure the infobar is enabled, since we expect that in this test.
     EXPECT_FALSE(command_line->HasSwitch(switches::kUseFakeUIForMediaStream));
 
-    // Always use fake devices.
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
-
     // Flag used by TestWebAudioMediaStream to force garbage collection.
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void RunsAudioVideoWebRTCCallInTwoTabs(
@@ -148,7 +148,7 @@ class WebRtcBrowserTest : public WebRtcTestBase {
   void DetectVideoAndHangUp() {
     StartDetectingVideo(left_tab_, "remote-view");
     StartDetectingVideo(right_tab_, "remote-view");
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     // Video is choppy on Mac OS X. http://crbug.com/443542.
     WaitForVideoToPlay(left_tab_);
     WaitForVideoToPlay(right_tab_);
@@ -163,7 +163,7 @@ class WebRtcBrowserTest : public WebRtcTestBase {
 
 // TODO(898546): many of these tests are failing on ASan builds.
 // They are also flaky crashers on Linux.
-#if defined(ADDRESS_SANITIZER) || defined(OS_LINUX)
+#if defined(ADDRESS_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_WebRtcBrowserTest DISABLED_WebRtcBrowserTest
 class DISABLED_WebRtcBrowserTest : public WebRtcBrowserTest {};
 #else
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
     return;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // TODO(jam): this test only on 10.12.
   if (base::mac::IsOS10_12())
     return;
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest, TestWebAudioMediaStream) {
   // integration.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/webrtc/webaudio_crash.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -326,9 +326,17 @@ IN_PROC_BROWSER_TEST_F(
   DetectVideoAndHangUp();
 }
 
+// Test is flaky on windows. https://crbug.com/1239275
+#if defined(OS_WIN)
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount \
+  DISABLED_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount
+#else
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount \
+  RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount
+#endif
 IN_PROC_BROWSER_TEST_F(
     MAYBE_WebRtcBrowserTest,
-    RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount) {
+    MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount) {
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);

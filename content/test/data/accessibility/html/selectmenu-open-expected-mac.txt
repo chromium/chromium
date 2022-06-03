@@ -1,0 +1,8 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='group'
+++++AXGroup AXRoleDescription='group'
+++++++AXPopUpButton AXRoleDescription='pop up button' AXTitle='Custom selectmenu button'
+++++++AXList AXRoleDescription='list'
+++++++++AXStaticText AXRoleDescription='text' AXValue='Option 1'
+++++++++AXStaticText AXRoleDescription='text' AXValue='Option 2'
+++++++++AXStaticText AXRoleDescription='text' AXValue='Option 3'

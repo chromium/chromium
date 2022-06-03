@@ -13,16 +13,16 @@ description('This test checks that getComputedStyle returns pixel values for vie
 function zoomBy(zoomFactor)
 {
     while (zoomFactor > 0) {
-        eventSender.zoomPageIn();
+        testRunner.zoomPageIn();
         zoomFactor--;
     }
     while (zoomFactor < 0) {
-        eventSender.zoomPageOut();
+        testRunner.zoomPageOut();
         zoomFactor++;
     }
 }
 
-if (window.eventSender) {
+if (window.testRunner) {
     var zoomLevels = [-4, -2, -1, 0, 1, 3, 5];
     for (zoom in zoomLevels) {
         zoomBy(zoomLevels[zoom]);

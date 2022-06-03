@@ -1,0 +1,12 @@
+Tests that cross-origin embedder policy (COEP) related blocking is reported correctly.
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php: net::ERR_BLOCKED_BY_RESPONSE corp-not-same-origin-after-defaulted-to-same-origin-by-coep
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep: net::ERR_BLOCKED_BY_RESPONSE corp-not-same-origin-after-defaulted-to-same-origin-by-coep
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-origin: net::ERR_BLOCKED_BY_RESPONSE corp-not-same-origin
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-site: net::ERR_BLOCKED_BY_RESPONSE corp-not-same-site
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coop: net::ERR_BLOCKED_BY_RESPONSE corp-not-same-origin-after-defaulted-to-same-origin-by-coep
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&: net::ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep corp-not-same-origin-after-defaulted-to-same-origin-by-coep
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&corp=cross-origin: *loading finished*
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&corp=same-origin: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin corp-not-same-origin
+https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&corp=same-site: net::ERR_BLOCKED_BY_RESPONSE.NotSameSite corp-not-same-site
+https://devtools.test:8443/inspector-protocol/network/cross-origin-isolation/resources/coep-page-with-resources.php: *loading finished*
+

@@ -31,6 +31,12 @@ BASE_EXPORT extern const char kDotConfigDir[];
 // The XDG config directory environment variable.
 BASE_EXPORT extern const char kXdgConfigHomeEnvVar[];
 
+// The XDG current desktop environment variable.
+BASE_EXPORT extern const char kXdgCurrentDesktopEnvVar[];
+
+// The XDG session type environment variable.
+BASE_EXPORT extern const char kXdgSessionTypeEnvVar[];
+
 // Utility function for getting XDG directories.
 // |env_name| is the name of an environment variable that we want to use to get
 // a directory path. |fallback_dir| is the directory relative to $HOME that we

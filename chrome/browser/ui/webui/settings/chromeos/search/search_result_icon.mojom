@@ -1,0 +1,50 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.settings.mojom;
+
+// Icon types associated with a settings search result.
+enum SearchResultIcon {
+  kA11y,
+  kAndroid,
+  kAppsGrid,
+  kAssistant,
+  kAuthKey,
+  kAvatar,
+  kBluetooth,
+  kCellular,
+  kChrome,
+  kClock,
+  kDarkMode,
+  kDeveloperTags,
+  kDisplay,
+  kDrive,
+  kEthernet,
+  kFingerprint,
+  kFolder,
+  kGlobe,
+  kGooglePlay,
+  kHardDrive,
+  kInstantTethering,
+  kKeyboard,
+  kLaptop,
+  kLock,
+  kMagnifyingGlass,
+  kMessages,
+  kMouse,
+  kNearbyShare,
+  kPaintbrush,
+  kPenguin,
+  kPhone,
+  kPluginVm,
+  kPower,
+  kPrinter,
+  kReset,
+  kShield,
+  kStartup,
+  kStylus,
+  kSync,
+  kWallpaper,
+  kWifi
+};

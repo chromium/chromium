@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/content_settings/core/common",
+  "+content/public/common",
+]

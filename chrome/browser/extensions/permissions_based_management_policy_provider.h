@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -23,17 +22,21 @@ class PermissionsBasedManagementPolicyProvider
  public:
   explicit PermissionsBasedManagementPolicyProvider(
       ExtensionManagement* settings);
+
+  PermissionsBasedManagementPolicyProvider(
+      const PermissionsBasedManagementPolicyProvider&) = delete;
+  PermissionsBasedManagementPolicyProvider& operator=(
+      const PermissionsBasedManagementPolicyProvider&) = delete;
+
   ~PermissionsBasedManagementPolicyProvider() override;
 
   // ManagementPolicy::Provider implementation.
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const Extension* extension,
-                           base::string16* error) const override;
+                   std::u16string* error) const override;
 
  private:
   ExtensionManagement* settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsBasedManagementPolicyProvider);
 };
 
 }  // namespace extensions

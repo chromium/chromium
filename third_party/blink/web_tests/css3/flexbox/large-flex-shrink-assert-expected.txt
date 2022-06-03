@@ -1,3 +1,0 @@
-Passes if it does not assert. The high flex shrink factor can lead to loss of precision as we calculate the sum of scaled flex shrink factors as required by the spec, and as we later subtract the scaled flex factors for frozen violations, we can get to a negative value due to that lost precision.
-
-PASS

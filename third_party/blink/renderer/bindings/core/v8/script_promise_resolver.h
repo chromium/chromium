@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "v8/include/v8.h"
@@ -29,7 +31,7 @@ namespace blink {
 // functionalities.
 //  - A ScriptPromiseResolver retains a ScriptState. A caller
 //    can call resolve or reject from outside of a V8 context.
-//  - This class is an ContextLifecycleObserver and keeps track of the
+//  - This class is an ExecutionContextLifecycleObserver and keeps track of the
 //    associated ExecutionContext state. When it is stopped, resolve or reject
 //    will be ignored.
 //
@@ -37,13 +39,16 @@ namespace blink {
 // terminated). In such cases operations will silently fail.
 class CORE_EXPORT ScriptPromiseResolver
     : public GarbageCollected<ScriptPromiseResolver>,
-      public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(ScriptPromiseResolver);
+      public ExecutionContextLifecycleObserver {
   USING_PRE_FINALIZER(ScriptPromiseResolver, Dispose);
 
  public:
   explicit ScriptPromiseResolver(ScriptState*);
-  virtual ~ScriptPromiseResolver();
+
+  ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
+  ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
+
+  ~ScriptPromiseResolver() override;
 
   void Dispose();
 
@@ -76,8 +81,8 @@ class CORE_EXPORT ScriptPromiseResolver
     return resolver_.Promise();
   }
 
-  // ContextLifecycleObserver implementation.
-  void ContextDestroyed(ExecutionContext*) override { Detach(); }
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override { Detach(); }
 
   // Calling this function makes the resolver release its internal resources.
   // That means the associated promise will never be resolved or rejected
@@ -85,11 +90,19 @@ class CORE_EXPORT ScriptPromiseResolver
   // Do not call this function unless you truly need the behavior.
   void Detach();
 
+  // Suppresses the check in Dispose. Do not use this function unless you truly
+  // need the behavior. Also consider using Detach().
+  void SuppressDetachCheck() {
+#if DCHECK_IS_ON()
+    suppress_detach_check_ = true;
+#endif
+  }
+
   // Once this function is called this resolver stays alive while the
   // promise is pending and the associated ExecutionContext isn't stopped.
   void KeepAliveWhilePending();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   typedef ScriptPromise::InternalResolver Resolver;
@@ -118,9 +131,11 @@ class CORE_EXPORT ScriptPromiseResolver
     // resolveOrReject shouldn't be called inside a ScriptForbiddenScope.
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      value_.Set(script_state_->GetIsolate(),
-                 ToV8(value, script_state_->GetContext()->Global(),
-                      script_state_->GetIsolate()));
+      v8::Isolate* isolate = script_state_->GetIsolate();
+      v8::MicrotasksScope microtasks_scope(
+          isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
+                                 script_state_->GetIsolate()));
     }
 
     if (GetExecutionContext()->IsContextPaused()) {
@@ -157,11 +172,10 @@ class CORE_EXPORT ScriptPromiseResolver
 #if DCHECK_IS_ON()
   // True if promise() is called.
   bool is_promise_called_ = false;
+  bool suppress_detach_check_ = false;
 
   base::debug::StackTrace create_stack_trace_{8};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseResolver);
 };
 
 }  // namespace blink

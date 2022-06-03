@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,6 +25,10 @@ class ListValue;
 class MetricsHandler : public content::WebUIMessageHandler {
  public:
   MetricsHandler();
+
+  MetricsHandler(const MetricsHandler&) = delete;
+  MetricsHandler& operator=(const MetricsHandler&) = delete;
+
   ~MetricsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -49,16 +52,15 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // the value to record.
   void HandleRecordBooleanHistogram(const base::ListValue* args);
 
-  // Record a millisecond time value in a histogram, similar to
+  // Records a millisecond time value in a histogram, similar to
   // UMA_HISTOGRAM_TIMES. Handles times between 1ms and 10sec. |args|
   // contains the histogram name and a value in milliseconds.
   void HandleRecordTime(const base::ListValue* args);
 
-  // Callback for the "metricsHandler:logEventTime" message.
-  void HandleLogEventTime(const base::ListValue* args);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsHandler);
+  // Records a millisecond time value in a histogram, similar to
+  // UmaHistogramMedium. Handles times up to 3 minutes. |args| contains the
+  // histogram name and a value in milliseconds.
+  void HandleRecordMediumTime(const base::ListValue* args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_

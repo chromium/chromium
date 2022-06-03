@@ -1,4 +1,4 @@
-from helpers import makeDropCookie, setNoCacheAndCORSHeaders
+from cookies.resources.helpers import makeDropCookie, setNoCacheAndCORSHeaders
 
 def main(request, response):
     """Respond to `/cookies/resources/dropSameSiteNone.py by dropping the
@@ -6,6 +6,6 @@ def main(request, response):
     headers = setNoCacheAndCORSHeaders(request, response)
 
     # Expire the cookies, and return a JSON-encoded success code.
-    headers.append(makeDropCookie("samesite_none_insecure", False))
-    headers.append(makeDropCookie("samesite_none_secure", True))
-    return headers, '{"success": true}'
+    headers.append(makeDropCookie(b"samesite_none_insecure", False))
+    headers.append(makeDropCookie(b"samesite_none_secure", True))
+    return headers, b'{"success": true}'

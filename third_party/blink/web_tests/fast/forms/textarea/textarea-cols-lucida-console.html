@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<!-- This test depends on fonts of which the fractional part of AvgCharWidth()
+     is less than 0.5. crbug.com/1227341 -->
+<style>
+textarea {
+  font-family: lucida console, monospace;
+  font-size: 14px;
+}
+</style>
+<textarea cols="41">123456789 123456789 123456789 123456789 1
+</textarea>
+<textarea cols="30">123456789 123456789 123456789 123456789 1
+</textarea>
+<script>
+if (window.testRunner)
+  testRunner.setTextSubpixelPositioning(true);
+test(() => {
+  const areas = document.querySelectorAll('textarea');
+  assert_less_than(areas[0].scrollHeight, areas[1].scrollHeight);
+}, 'The first Textaera should not be wrapped.');
+</script>

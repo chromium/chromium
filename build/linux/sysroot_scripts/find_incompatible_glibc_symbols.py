@@ -16,13 +16,16 @@ MAX_ALLOWED_GLIBC_VERSION = [2, 17]
 
 
 def get_replacements(nm_file, max_allowed_glibc_version):
-  symbol_format = re.compile('\S+ \S+ ([^@]+)@@?(\S+)\n')
   version_format = re.compile('GLIBC_[0-9\.]+')
   symbols = {}
   for line in nm_file:
-    m = re.match(symbol_format, line)
-    symbol = m.group(1)
-    version = m.group(2)
+    # Some versions of nm have a bug where the version gets printed twice.
+    # Since the symbol may either be formatted like "name@@VERSION" or
+    # "name@@VERSION@@VERSION", handle both cases.
+    line = line.replace('@@', '@')
+    symver = line.split('@')
+    symbol = symver[0].split(' ')[-1]
+    version = symver[-1]
     if not re.match(version_format, version):
       continue
     if symbol in symbols:
@@ -31,7 +34,7 @@ def get_replacements(nm_file, max_allowed_glibc_version):
       symbols[symbol] = set([version])
 
   replacements = []
-  for symbol, versions in symbols.iteritems():
+  for symbol, versions in symbols.items():
     if len(versions) <= 1:
       continue
     versions_parsed = [[

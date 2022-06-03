@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_VR_MODEL_OMNIBOX_SUGGESTIONS_H_
 #define CHROME_BROWSER_VR_MODEL_OMNIBOX_SUGGESTIONS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/vr/vr_base_export.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "url/gurl.h"
@@ -14,8 +15,8 @@ namespace vr {
 
 struct VR_BASE_EXPORT Autocompletion {
   Autocompletion();
-  Autocompletion(const base::string16& new_input,
-                 const base::string16& new_suffix);
+  Autocompletion(const std::u16string& new_input,
+                 const std::u16string& new_suffix);
 
   bool operator==(const Autocompletion& other) const;
   bool operator!=(const Autocompletion& other) const {
@@ -23,29 +24,29 @@ struct VR_BASE_EXPORT Autocompletion {
   }
 
   // Input string that yielded the autocomplete text.
-  base::string16 input;
+  std::u16string input;
   // The suffix to be appended to |input| to generate a complete match.
-  base::string16 suffix;
+  std::u16string suffix;
 };
 
 struct VR_BASE_EXPORT OmniboxSuggestion {
   OmniboxSuggestion();
 
-  OmniboxSuggestion(const base::string16& new_contents,
-                    const base::string16& new_description,
+  OmniboxSuggestion(const std::u16string& new_contents,
+                    const std::u16string& new_description,
                     const AutocompleteMatch::ACMatchClassifications&
                         new_contents_classifications,
                     const AutocompleteMatch::ACMatchClassifications&
                         new_description_classifications,
                     const gfx::VectorIcon* icon,
                     GURL new_destination,
-                    const base::string16& new_input,
-                    const base::string16& new_inline_autocompletion);
+                    const std::u16string& new_input,
+                    const std::u16string& new_inline_autocompletion);
   OmniboxSuggestion(const OmniboxSuggestion& other);
   ~OmniboxSuggestion();
 
-  base::string16 contents;
-  base::string16 description;
+  std::u16string contents;
+  std::u16string description;
   AutocompleteMatch::ACMatchClassifications contents_classifications;
   AutocompleteMatch::ACMatchClassifications description_classifications;
   const gfx::VectorIcon* icon = nullptr;
@@ -56,7 +57,7 @@ struct VR_BASE_EXPORT OmniboxSuggestion {
 // This struct contains the minimal set of information required to construct an
 // AutocompleteInput on VR's behalf.
 struct VR_BASE_EXPORT AutocompleteRequest {
-  base::string16 text;
+  std::u16string text;
   size_t cursor_position = 0;
   bool prevent_inline_autocomplete = false;
 
@@ -72,7 +73,7 @@ struct VR_BASE_EXPORT AutocompleteRequest {
 // This struct represents the current request to the AutocompleteController.
 struct VR_BASE_EXPORT AutocompleteStatus {
   bool active = false;
-  base::string16 input;
+  std::u16string input;
 
   bool operator==(const AutocompleteStatus& other) const {
     return active == other.active && input == other.input;

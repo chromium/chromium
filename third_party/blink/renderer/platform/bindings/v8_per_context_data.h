@@ -36,11 +36,11 @@
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/bindings/v8_global_value_map.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -49,22 +49,25 @@
 
 namespace blink {
 
-class V0CustomElementBinding;
 class V8DOMActivityLogger;
 class V8PerContextData;
 struct WrapperTypeInfo;
 
 // Used to hold data that is associated with a single v8::Context object, and
 // has a 1:1 relationship with v8::Context.
-class PLATFORM_EXPORT V8PerContextData final {
-  USING_FAST_MALLOC(V8PerContextData);
-
+class PLATFORM_EXPORT V8PerContextData final
+    : public GarbageCollected<V8PerContextData> {
  public:
   explicit V8PerContextData(v8::Local<v8::Context>);
+  V8PerContextData(const V8PerContextData&) = delete;
+  V8PerContextData& operator=(const V8PerContextData&) = delete;
 
   static V8PerContextData* From(v8::Local<v8::Context>);
 
   ~V8PerContextData();
+
+  void Trace(Visitor* visitor) const;
+  void Dispose();
 
   v8::Local<v8::Context> GetContext() { return context_.NewLocal(isolate_); }
 
@@ -72,15 +75,18 @@ class PLATFORM_EXPORT V8PerContextData final {
   // object, and then simply Clone that object each time we need a new one.
   // This is faster than going through the full object creation process.
   v8::Local<v8::Object> CreateWrapperFromCache(const WrapperTypeInfo* type) {
-    v8::Local<v8::Object> boilerplate = wrapper_boilerplates_.Get(type);
-    return !boilerplate.IsEmpty() ? boilerplate->Clone()
-                                  : CreateWrapperFromCacheSlowCase(type);
+    auto it = wrapper_boilerplates_.find(type);
+    return it != wrapper_boilerplates_.end()
+               ? it->value->Clone()
+               : CreateWrapperFromCacheSlowCase(type);
   }
 
+  // Returns the interface object that is appropriately initialized (e.g.
+  // context-dependent properties are installed).
   v8::Local<v8::Function> ConstructorForType(const WrapperTypeInfo* type) {
-    v8::Local<v8::Function> interface_object = constructor_map_.Get(type);
-    return (!interface_object.IsEmpty()) ? interface_object
-                                         : ConstructorForTypeSlowCase(type);
+    auto it = constructor_map_.find(type);
+    return it != constructor_map_.end() ? it->value.Get(isolate_)
+                                        : ConstructorForTypeSlowCase(type);
   }
 
   v8::Local<v8::Object> PrototypeForType(const WrapperTypeInfo*);
@@ -93,8 +99,6 @@ class PLATFORM_EXPORT V8PerContextData final {
       const WrapperTypeInfo*,
       v8::Local<v8::Object>* prototype_object,
       v8::Local<v8::Function>* interface_object);
-
-  void AddCustomElementBinding(std::unique_ptr<V0CustomElementBinding>);
 
   // Gets a Private to store custom element definition IDs on a
   // constructor that has been registered as a custom element in this
@@ -128,13 +132,15 @@ class PLATFORM_EXPORT V8PerContextData final {
   v8::Local<v8::Object> CreateWrapperFromCacheSlowCase(const WrapperTypeInfo*);
   v8::Local<v8::Function> ConstructorForTypeSlowCase(const WrapperTypeInfo*);
 
-  v8::Isolate* isolate_;
+  v8::Isolate* const isolate_;
 
   // For each possible type of wrapper, we keep a boilerplate object.
   // The boilerplate is used to create additional wrappers of the same type.
-  V8GlobalValueMap<const WrapperTypeInfo*, v8::Object> wrapper_boilerplates_;
+  HeapHashMap<const WrapperTypeInfo*, TraceWrapperV8Reference<v8::Object>>
+      wrapper_boilerplates_;
 
-  V8GlobalValueMap<const WrapperTypeInfo*, v8::Function> constructor_map_;
+  HeapHashMap<const WrapperTypeInfo*, TraceWrapperV8Reference<v8::Function>>
+      constructor_map_;
 
   std::unique_ptr<gin::ContextHolder> context_holder_;
 
@@ -142,17 +148,11 @@ class PLATFORM_EXPORT V8PerContextData final {
 
   ScopedPersistent<v8::Private> private_custom_element_definition_id_;
 
-  typedef Vector<std::unique_ptr<V0CustomElementBinding>>
-      V0CustomElementBindingList;
-  V0CustomElementBindingList custom_element_bindings_;
-
   // This is owned by a static hash map in V8DOMActivityLogger.
   V8DOMActivityLogger* activity_logger_;
 
   using DataMap = HeapHashMap<const char*, Member<Data>>;
-  Persistent<DataMap> data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8PerContextData);
+  DataMap data_map_;
 };
 
 }  // namespace blink

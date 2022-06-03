@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests debug(fn) console command.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function simpleTestFunction()
@@ -60,7 +60,7 @@
 
     async function didPause(callFrames, reason) {
       TestRunner.addResult('Script execution paused.');
-      SourcesTestRunner.captureStackTrace(callFrames);
+      await SourcesTestRunner.captureStackTrace(callFrames);
       await ConsoleTestRunner.evaluateInConsolePromise('undebug(' + functionName + ')');
       TestRunner.addResult('Breakpoint removed.');
       TestRunner.assertEquals(reason, SDK.DebuggerModel.BreakReason.DebugCommand);

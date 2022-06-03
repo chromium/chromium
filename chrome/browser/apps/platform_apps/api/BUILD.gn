@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/apps/platform_apps/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -43,13 +44,16 @@ source_set("api") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources_grit",
 
     # TODO(https://crbug.com/883570): It'd be nice to have more APIs here
     # extracted into their own BUILD files (so they are easy to audit, add, or
     # remove), but any that depend on //chrome/browser:browser can't.
+    "//chrome/browser:browser_process",
     "//chrome/browser/apps/platform_apps/api/music_manager_private",
     "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common/apps/platform_apps",
     "//chrome/common/apps/platform_apps/api",
@@ -59,16 +63,13 @@ source_set("api") {
     "//extensions/browser",
   ]
 
-  public_deps = [
-    "//chrome/browser/apps/platform_apps/api/music_manager_private",
-  ]
+  public_deps =
+      [ "//chrome/browser/apps/platform_apps/api/music_manager_private" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
-      "first_run_private/first_run_private_api.cc",
-      "first_run_private/first_run_private_api.h",
       "webstore_widget_private/app_installer.cc",
       "webstore_widget_private/app_installer.h",
       "webstore_widget_private/webstore_widget_private_api.cc",
@@ -101,7 +102,7 @@ source_set("api") {
     ]
   }
   visibility += [
-    "//chrome/browser/chromeos",
     ":api_registration",
+    "//chrome/browser/chromeos",
   ]
 }

@@ -37,6 +37,10 @@ class ITunesUrlsHandlerTabHelper
     : public web::WebStatePolicyDecider,
       public web::WebStateUserData<ITunesUrlsHandlerTabHelper> {
  public:
+  ITunesUrlsHandlerTabHelper(const ITunesUrlsHandlerTabHelper&) = delete;
+  ITunesUrlsHandlerTabHelper& operator=(const ITunesUrlsHandlerTabHelper&) =
+      delete;
+
   ~ITunesUrlsHandlerTabHelper() override;
   explicit ITunesUrlsHandlerTabHelper(web::WebState* web_state);
 
@@ -44,9 +48,10 @@ class ITunesUrlsHandlerTabHelper
   static bool CanHandleUrl(const GURL& url);
 
   // web::WebStatePolicyDecider implementation
-  bool ShouldAllowRequest(
+  void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
+      web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:
   friend class web::WebStateUserData<ITunesUrlsHandlerTabHelper>;
@@ -55,8 +60,6 @@ class ITunesUrlsHandlerTabHelper
   void HandleITunesUrl(const GURL& url);
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ITunesUrlsHandlerTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_

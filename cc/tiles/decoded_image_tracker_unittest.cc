@@ -109,12 +109,13 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   // space differs then that image is not locked. Note that we use the high
   // filter quality here, since it shouldn't matter and the checks should
   // succeed anyway.
-  DrawImage locked_draw_image(
-      paint_image, SkIRect::MakeWH(1, 1), kHigh_SkFilterQuality, SkMatrix::I(),
-      PaintImage::kDefaultFrameIndex, decoded_color_space);
+  DrawImage locked_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
+                              PaintFlags::FilterQuality::kHigh, SkM44(),
+                              PaintImage::kDefaultFrameIndex,
+                              decoded_color_space);
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(locked_draw_image));
-  DrawImage srgb_draw_image(paint_image, SkIRect::MakeWH(1, 1),
-                            kHigh_SkFilterQuality, SkMatrix::I(),
+  DrawImage srgb_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
+                            PaintFlags::FilterQuality::kHigh, SkM44(),
                             PaintImage::kDefaultFrameIndex, srgb_color_space);
   EXPECT_FALSE(image_controller()->IsDrawImageLocked(srgb_draw_image));
 }
@@ -130,7 +131,7 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Advance by 150ms, the image should still be locked.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(150));
+  task_runner()->FastForwardBy(base::Milliseconds(150));
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Add an image, this will not start a new timeout, as one is pending.
@@ -143,11 +144,11 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
 
   // Advance by 100ms, we our first image should be released.
   // Trigger a single commit, the first image should be unlocked.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_runner()->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Advance by another 250ms, our second image should release.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(250));
+  task_runner()->FastForwardBy(base::Milliseconds(250));
   EXPECT_EQ(0u, image_controller()->num_locked_images());
 }
 
@@ -171,11 +172,11 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 
   // Create dummy draw images for each:
-  DrawImage draw_image_1(paint_image_1, SkIRect::MakeWH(1, 1),
-                         kHigh_SkFilterQuality, SkMatrix::I(), 0,
+  DrawImage draw_image_1(paint_image_1, false, SkIRect::MakeWH(1, 1),
+                         PaintFlags::FilterQuality::kHigh, SkM44(), 0,
                          gfx::ColorSpace());
-  DrawImage draw_image_2(paint_image_2, SkIRect::MakeWH(1, 1),
-                         kHigh_SkFilterQuality, SkMatrix::I(), 0,
+  DrawImage draw_image_2(paint_image_2, false, SkIRect::MakeWH(1, 1),
+                         PaintFlags::FilterQuality::kHigh, SkM44(), 0,
                          gfx::ColorSpace());
 
   // Both should be in the cache:

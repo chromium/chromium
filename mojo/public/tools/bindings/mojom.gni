@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/protobuf/proto_library.gni")
 import("//ui/webui/webui_features.gni")
 
 # TODO(rockot): Maybe we can factor these dependencies out of //mojo. They're
@@ -14,7 +14,9 @@ import("//ui/webui/webui_features.gni")
 # flipped elsewhere though.
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/nacl/config.gni")
+import("//build/toolchain/kythe.gni")
 import("//components/nacl/features.gni")
 import("//third_party/jinja2/jinja2.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -38,14 +40,14 @@ declare_args() {
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
-  enable_mojom_closure_compile = closure_compile && optimize_webui
-
-  # Enable adding annotations to generated C++ headers that are used for
-  # cross-references in CodeSearch.
-  enable_kythe_annotations = false
+  enable_mojom_closure_compile = enable_js_type_check && optimize_webui
 
   # Enables generating Typescript bindings and compiling them to JS bindings.
   enable_typescript_bindings = false
+
+  # Enables generating javascript fuzzing-related code and the bindings for the
+  # MojoLPM fuzzer targets. Off by default.
+  enable_mojom_fuzzer = false
 }
 
 # NOTE: We would like to avoid scrambling message IDs where it doesn't add
@@ -61,51 +63,52 @@ declare_args() {
 # ARC) we have to explicitly opt out there even when NaCl is enabled (and
 # consequently also when building for NaCl toolchains.) For this reason we
 # check |target_os| explicitly, as it's consistent across all toolchains.
+#
+# TODO(crbug.com/1052397): Remove !chromeos_is_browser_only once
+# lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
-    (is_mac || is_win || (is_linux && !is_chromeos && !is_chromecast) ||
-     ((enable_nacl || is_nacl || is_nacl_nonsfi) && target_os != "chromeos"))
+    (is_mac || is_win ||
+     (is_linux && !is_chromeos_ash && !is_chromecast && !is_chromeos_lacros) ||
+     ((enable_nacl || is_nacl || is_nacl_nonsfi) &&
+      (target_os != "chromeos" && !chromeos_is_browser_only)))
 
-mojom_generator_root = "//mojo/public/tools/bindings"
-compile_typescript_script = "$mojom_generator_root/compile_typescript.py"
-mojom_generator_script = "$mojom_generator_root/mojom_bindings_generator.py"
-mojom_generator_sources = [
-  "$mojom_generator_root/generators/mojom_cpp_generator.py",
-  "$mojom_generator_root/generators/mojom_java_generator.py",
-  "$mojom_generator_root/generators/mojom_js_generator.py",
-  "$mojom_generator_root/generators/mojom_ts_generator.py",
-  "$mojom_generator_root/pylib/mojom/__init__.py",
-  "$mojom_generator_root/pylib/mojom/error.py",
-  "$mojom_generator_root/pylib/mojom/generate/__init__.py",
-  "$mojom_generator_root/pylib/mojom/generate/constant_resolver.py",
-  "$mojom_generator_root/pylib/mojom/generate/generator.py",
-  "$mojom_generator_root/pylib/mojom/generate/module.py",
-  "$mojom_generator_root/pylib/mojom/generate/pack.py",
-  "$mojom_generator_root/pylib/mojom/generate/template_expander.py",
-  "$mojom_generator_root/pylib/mojom/generate/translate.py",
-  "$mojom_generator_root/pylib/mojom/parse/__init__.py",
-  "$mojom_generator_root/pylib/mojom/parse/ast.py",
-  "$mojom_generator_root/pylib/mojom/parse/lexer.py",
-  "$mojom_generator_root/pylib/mojom/parse/parser.py",
-  "$mojom_generator_script",
+_mojom_tools_root = "//mojo/public/tools"
+_mojom_library_root = "$_mojom_tools_root/mojom/mojom"
+mojom_parser_script = "$_mojom_tools_root/mojom/mojom_parser.py"
+mojom_parser_sources = [
+  "$_mojom_library_root/__init__.py",
+  "$_mojom_library_root/error.py",
+  "$_mojom_library_root/generate/__init__.py",
+  "$_mojom_library_root/generate/generator.py",
+  "$_mojom_library_root/generate/module.py",
+  "$_mojom_library_root/generate/pack.py",
+  "$_mojom_library_root/generate/template_expander.py",
+  "$_mojom_library_root/generate/translate.py",
+  "$_mojom_library_root/parse/__init__.py",
+  "$_mojom_library_root/parse/ast.py",
+  "$_mojom_library_root/parse/lexer.py",
+  "$_mojom_library_root/parse/parser.py",
 ]
+
+mojom_generator_root = "$_mojom_tools_root/bindings"
+mojom_generator_script = "$mojom_generator_root/mojom_bindings_generator.py"
+mojom_generator_sources =
+    mojom_parser_sources + [
+      "$mojom_generator_root/generators/cpp_util.py",
+      "$mojom_generator_root/generators/mojom_cpp_generator.py",
+      "$mojom_generator_root/generators/mojom_java_generator.py",
+      "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
+      "$mojom_generator_root/generators/mojom_js_generator.py",
+      "$mojom_generator_root/generators/mojom_ts_generator.py",
+      "$mojom_generator_script",
+    ]
 
 if (enable_scrambled_message_ids) {
   declare_args() {
     # The path to a file whose contents can be used as the basis for a message
     # ID scrambling salt.
     mojom_message_id_salt_path = "//chrome/VERSION"
-
-    # The path to a file whose contents will be concatenated to the contents of
-    # the file at |mojom_message_id_salt_path| to form a complete salt for
-    # message ID scrambling. May be the empty string, in which case the contents
-    # of the above file alone are used as the complete salt.
-    if (is_chrome_branded) {
-      mojom_message_id_salt_suffix_path =
-          "//mojo/internal/chrome-message-id-salt-suffix"
-    } else {
-      mojom_message_id_salt_suffix_path = ""
-    }
   }
 
   assert(mojom_message_id_salt_path != "")
@@ -114,56 +117,9 @@ if (enable_scrambled_message_ids) {
     rebase_path(mojom_message_id_salt_path, root_build_dir),
   ]
   message_scrambling_inputs = [ mojom_message_id_salt_path ]
-
-  if (mojom_message_id_salt_suffix_path != "") {
-    message_scrambling_args += [
-      "--scrambled_message_id_salt_path",
-      rebase_path(mojom_message_id_salt_suffix_path, root_build_dir),
-    ]
-    message_scrambling_inputs += [ mojom_message_id_salt_suffix_path ]
-  }
 } else {
   message_scrambling_args = []
   message_scrambling_inputs = []
-}
-
-if (enable_mojom_typemapping) {
-  if (!is_ios) {
-    _bindings_configuration_files = [
-      "//mojo/public/tools/bindings/chromium_bindings_configuration.gni",
-      "//mojo/public/tools/bindings/blink_bindings_configuration.gni",
-    ]
-  } else {
-    _bindings_configuration_files =
-        [ "//mojo/public/tools/bindings/chromium_bindings_configuration.gni" ]
-  }
-  _bindings_configurations = []
-  foreach(config_file, _bindings_configuration_files) {
-    _bindings_configurations += [ read_file(config_file, "scope") ]
-  }
-  foreach(configuration, _bindings_configurations) {
-    # Check that the mojom field of each typemap refers to a mojom that exists.
-    foreach(typemap, configuration.typemaps) {
-      _typemap_config = {
-      }
-      _typemap_config = typemap.config
-      read_file(_typemap_config.mojom, "")
-    }
-  }
-} else {
-  _bindings_configuration_files = []
-  _bindings_configurations = [
-    {
-      typemaps = []
-      component_macro_suffix = ""
-    },
-    {
-      variant = "blink"
-      component_macro_suffix = "_BLINK"
-      for_blink = true
-      typemaps = []
-    },
-  ]
 }
 
 # Generates targets for building C++, JavaScript and Java bindings from mojom
@@ -202,8 +158,20 @@ if (enable_mojom_typemapping) {
 #   public_deps (optional)
 #       Note: this can contain only other mojom targets.
 #
+#   parser_deps (optional)
+#       List of non-mojom targets required for the mojom sources to be parsed.
+#
 #   import_dirs (optional)
 #       List of import directories that will get added when processing sources.
+#
+#   input_root_override (optional)
+#       Root path for the .mojom files used to generate the namespaces for
+#       interfaces. Useful with targets outside //, e.g. in parent directories
+#       above "//". The default input root is //
+#       Example: Vivaldi's source root is "//vivaldi/",
+#       and "//vivaldi/chromium/" is "//"
+#       In such cases, not using this argument lead to the output files being
+#       located in different directories than expected.
 #
 #   testonly (optional)
 #
@@ -216,9 +184,58 @@ if (enable_mojom_typemapping) {
 #   cpp_only (optional)
 #       If set to true, only the C++ bindings targets will be generated.
 #
-#       NOTE: If the global |enable_ipc_fuzzer| build arg is true, JS bindings
+#       NOTE: If the global |enable_mojom_fuzzer| build arg is true, JS bindings
 #       will still be generated even when |cpp_only| is set to |true|, unless
 #       you also set |enable_fuzzing| to |false| in your mojom target.
+#
+#   cpp_typemaps (optional)
+#       A list of typemaps to be applied to the generated C++ bindings for this
+#       mojom target. Note that this only applies to the non-Blink variant of
+#       generated C++ bindings.
+#
+#       Every typemap is a GN scope describing how one or more mojom types maps
+#       to a non-mojom C++ type, including necessary deps and headers required
+#       for the mapping to work. See the Typemaps section below.
+#
+#   blink_cpp_typemaps (optional)
+#       Same as above, but for the Blink variant of generated C++ bindings.
+#
+#   cpp_proxy_target (optional)
+#       The name of a target which all C++ dependencies will link against
+#       instead of linking directly against this mojom target's generated C++
+#       sources. Normally when declaring invoking the mojom("foo") target, GN
+#       emits a source_set or component target named "foo" which encompasses the
+#       default variant of generated C++ bindings. This changes that to instead
+#       emit a group("foo") which merely forwards public_deps to the named
+#       `cpp_proxy_target`. That target must in turn depend on
+#       "foo_cpp_sources".
+#
+#       This is useful primarily in conjunction with export_define et al to
+#       embed generated C++ bindings within an existing component target.
+#
+#   blink_cpp_proxy_target (optional)
+#       Same concept as `cpp_proxy_target` above, but affects the generated
+#       "foo_blink" Blink-variant C++ bindings.
+#
+#   cpp_configs (optional)
+#       A list of extra configs to apply to the default variant of generated C++
+#       bindings.
+#
+#   blink_cpp_configs (optional)
+#       A list of extra configs to apply to the Blink variant of generated C++
+#       bindings.
+#
+#   mojom_source_deps (optional)
+#       A list of mojoms this target depends upon. This is equivalent to
+#       public_deps except that the C++ bindings depend on each of the named
+#       "foo" targets' "foo_cpp_sources" rather than on foo's
+#       `cpp_proxy_target`. It only makes sense to use this for dependencies
+#       that set `cpp_proxy_target`, and only when the dependent mojom() would
+#       otherwise have circular dependencies with that proxy target.
+#
+#   mojom_blink_source_deps (optional)
+#       Same as above but depends on "foo_blink_cpp_sources" and is used for
+#       dependencies that specify a `blink_cpp_proxy_target`.
 #
 #   generate_java (optional)
 #       If set to true, Java bindings are generated for Android builds. If
@@ -227,7 +244,7 @@ if (enable_mojom_typemapping) {
 #
 #   enable_fuzzing (optional)
 #       Enables generation of fuzzing sources for the target if the global build
-#       arg |enable_ipc_fuzzer| is also set to |true|. Defaults to |true|. If
+#       arg |enable_mojom_fuzzer| is also set to |true|. Defaults to |true|. If
 #       fuzzing generation is enabled for a target, the target will always
 #       generate JS bindings even if |cpp_only| is set to |true|. See note
 #       above.
@@ -295,8 +312,27 @@ if (enable_mojom_typemapping) {
 #   use_typescript_sources (optional)
 #       Uses the Typescript generator to generate JavaScript bindings.
 #
-#   js_generate_struct_deserializers (optiona)
+#   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
+#
+#   extra_cpp_template_paths (optional)
+#       List of extra C++ templates that are used to generate additional source
+#       and/or header files. The templates should end with extension ".tmpl".
+#
+#   webui_module_path (optional)
+#       The path or URL at which modules generated by this target will be
+#       accessible to WebUI pages. This may either be an absolute path or
+#       a full URL path starting with "chrome://resources/mojo".
+#
+#       If an absolute path, a WebUI page may only import these modules if
+#       they are manually packaged and mapped independently by that page's
+#       WebUIDataSource. The mapped path must match the path given here.
+#
+#       If this is is instead a URL string starting with
+#       "chrome://resources/mojo", the generated resources must be added to
+#       content_resources.grd and registered with
+#       content::SharedResourcesDataSource with a corresponding path, at which
+#       point they will be made available to all WebUI pages at the given URL.
 #
 # The following parameters are used to support the component build. They are
 # needed so that bindings which are linked with a component can use the same
@@ -331,10 +367,106 @@ if (enable_mojom_typemapping) {
 #   component_deps_blink (optional)
 #       These two parameters are the blink variants of the previous two.
 #
-# check_includes_blink (optional)
-#     Overrides the check_includes variable for the blink variant.
-#     If check_includes_blink is not defined, the check_includes variable
-#     retains its original value.
+#   check_includes_blink (optional)
+#       Overrides the check_includes variable for the blink variant.
+#       If check_includes_blink is not defined, the check_includes variable
+#       retains its original value.
+#
+# Typemaps
+# ========
+# The cpp_typemaps and blink_cpp_typemaps each specify an optional list of
+# typemapping configurations. Each configuration is a GN scope with metadata
+# describing what and how to map.
+#
+# Typemap scope parameters:
+#   types
+#       A list of type specifications for this typemap. Each type specification
+#       is a nested GN scope which can be expressed with the following syntax:
+#
+#           {
+#             mojom = "foo.mojom.Bar"
+#             cpp = "::foo::LegitBar"
+#             move_only = true
+#             # etc...
+#           }
+#
+#       Each type specification supports the following values:
+#
+#         mojom (required)
+#             The fully qualified name of a mojom type to be mapped. This is a
+#             string like "foo.mojom.Bar".
+#
+#         cpp (required)
+#             The fully qualified name of the C++ type to which the mojom type
+#             should be mapped in generated bindings. This is a string like
+#             "::base::Value" or "std::vector<::base::Value>".
+#
+#         forward_declaration (optional)
+#             A forward declaration of the C++ type, which bindings that don't
+#             need the full type definition can use to reduce the size of
+#             the generated code. This is a string like
+#             "namespace base { class Value; }".
+#
+#         move_only (optional)
+#             A boolean value (default false) which indicates whether the C++
+#             type is move-only. If true, generated bindings will pass the type
+#             by value and use std::move() at call sites.
+#
+#         copyable_pass_by_value (optional)
+#             A boolean value (default false) which effectively indicates
+#             whether the C++ type is very cheap to copy. If so, generated
+#             bindings will pass by value but not use std::move() at call sites.
+#
+#         nullable_is_same_type (optional)
+#             A boolean value (default false) which indicates that the C++ type
+#             has some baked-in semantic notion of a "null" state. If true, the
+#             traits for the type must define IsNull and SetToNull methods.
+#
+#             When false, nullable fields are represented by wrapping the C++
+#             type with absl::optional, and null values are simply
+#             absl::nullopt.
+#
+#         hashable (optional)
+#             A boolean value (default false) indicating whether the C++ type is
+#             hashable. Set to true if true AND needed (i.e. you need to use the
+#             type as the key of a mojom map).
+#
+#         force_serialize (optional)
+#             A boolean value (default false) which disables lazy serialization
+#             of the typemapped type if lazy serialization is enabled for the
+#             mojom target applying this typemap.
+#
+# Additional typemap scope parameters:
+#
+#   traits_headers (optional)
+#       Headers which must be included in the generated mojom in order for
+#       serialization to be possible. This generally means including at least
+#       the header for the corresponding mojom traits definitions.
+#
+#   traits_private_headers (optional)
+#       Headers which must be included in generated C++ serialization code for
+#       a mojom using the typemap. This should be used only when including a
+#       header in |traits_headers| is problematic for compilation, as is
+#       sometimes the case with legacy IPC message headers.
+#
+#   traits_sources (optional)
+#       The references to the source files (typically a single .cc and .h file)
+#       defining an appropriate set of EnumTraits or StructTraits, etc for the
+#       the type-mapping. Using this will cause the listed sources to be
+#       integrated directly into the dependent mojom's generated type-mapping
+#       targets.
+#
+#       Prefer using |traits_public_deps| over inlined |traits_sources|, as this
+#       will generally lead to easier build maintenance over time.
+#
+#       NOTE: If a typemap is shared by Blink and non-Blink bindings, you cannot
+#       use this and MUST use |traits_public_deps| to reference traits built
+#       within a separate target.
+#
+#   traits_deps / traits_public_deps (optional)
+#       Any dependencies of sources in |traits_headers| or |traits_sources| must
+#       be listed here.
+#
 template("mojom") {
   assert(
       defined(invoker.sources) || defined(invoker.deps) ||
@@ -344,14 +476,15 @@ template("mojom") {
   if (defined(invoker.export_class_attribute) ||
       defined(invoker.export_define) || defined(invoker.export_header)) {
     assert(defined(invoker.export_class_attribute))
-    assert(defined(invoker.export_define))
+    assert(defined(invoker.export_define) || defined(invoker.cpp_configs))
     assert(defined(invoker.export_header))
   }
   if (defined(invoker.export_class_attribute_blink) ||
       defined(invoker.export_define_blink) ||
       defined(invoker.export_header_blink)) {
     assert(defined(invoker.export_class_attribute_blink))
-    assert(defined(invoker.export_define_blink))
+    assert(defined(invoker.export_define_blink) ||
+           defined(invoker.blink_cpp_configs))
     assert(defined(invoker.export_header_blink))
 
     # Not all platforms use the Blink variant, so make sure GN doesn't complain
@@ -374,18 +507,35 @@ template("mojom") {
     assert(defined(invoker.component_deps_blink))
   }
 
+  # Type-mapping may be disabled or we may not generate C++ bindings.
+  not_needed(invoker,
+             [
+               "cpp_typemaps",
+               "blink_cpp_typemaps",
+             ])
+
   require_full_cpp_deps =
       !defined(invoker.disallow_native_types) ||
       !invoker.disallow_native_types || !defined(invoker.disallow_interfaces) ||
       !invoker.disallow_interfaces
 
   all_deps = []
+  mojom_cpp_deps = []
   if (defined(invoker.deps)) {
     all_deps += invoker.deps
+    mojom_cpp_deps += invoker.deps
   }
   if (defined(invoker.public_deps)) {
     all_deps += invoker.public_deps
+    mojom_cpp_deps += invoker.public_deps
   }
+  if (defined(invoker.mojom_source_deps)) {
+    all_deps += invoker.mojom_source_deps
+  }
+  if (defined(invoker.mojom_blink_source_deps)) {
+    all_deps += invoker.mojom_blink_source_deps
+  }
+  not_needed([ "mojom_deps" ])
 
   if (defined(invoker.component_macro_prefix)) {
     assert(defined(invoker.component_output_prefix))
@@ -405,12 +555,50 @@ template("mojom") {
     }
   }
 
-  target_sources_list = "$target_gen_dir/$target_name.sources_list"
   sources_list = []
   if (defined(invoker.sources)) {
     sources_list = invoker.sources
   }
-  write_file(target_sources_list, sources_list)
+
+  # Listed sources may be relative to the current target dir, or they may be
+  # absolute paths, including paths to generated mojom files. While those are
+  # fine as-is for input references, deriving output paths can be more subtle.
+  #
+  # Here we rewrite all source paths to be relative to the root build dir and
+  # strip any root_gen_dir prefixes.
+  #
+  # So for a target in //foo/bar with:
+  #
+  #     sources = [
+  #       "a.mojom",
+  #       "b/c.mojom",
+  #       "//baz/d.mojom",
+  #       "$target_gen_dir/e.mojom",
+  #     ]
+  #
+  # output_file_base_paths will be:
+  #
+  #     [
+  #       "foo/bar/a.mojom",
+  #       "foo/bar/b/c.mojom",
+  #       "baz/d.mojom",
+  #       "foo/bar/e.mojom",
+  #     ]
+  #
+  # This result is essentially a list of base filename paths which are suitable
+  # for the naming of any generated output files derived from their
+  # corresponding input mojoms. These paths are always considered to be relative
+  # to root_gen_dir.
+  if (defined(invoker.input_root_override)) {
+    source_abspaths = rebase_path(sources_list, invoker.input_root_override)
+  } else {
+    source_abspaths = rebase_path(sources_list, "//")
+  }
+  output_file_base_paths = []
+  foreach(path, source_abspaths) {
+    output_file_base_paths +=
+        [ string_replace(path, rebase_path(root_gen_dir, "//") + "/", "") ]
+  }
 
   # Sanity check that either all input files have a .mojom extension, or
   # all input files have a .test-mojom extension AND |testonly| is |true|.
@@ -435,23 +623,39 @@ template("mojom") {
     }
   }
 
-  # a target implicitly depends on its own sources
-  deps_sources = [ rebase_path(target_sources_list, root_build_dir) ]
-  foreach(d, all_deps) {
-    dep_dir = get_label_info("$d", "target_gen_dir")
-    dep_short_name = get_label_info("$d", "name")
-    deps_sources +=
-        [ rebase_path("$dep_dir/$dep_short_name.sources_list", root_build_dir) ]
+  build_metadata_filename = "$target_gen_dir/$target_name.build_metadata"
+  build_metadata = {
   }
+  build_metadata.sources = rebase_path(sources_list)
+  build_metadata.deps = []
+  foreach(dep, all_deps) {
+    dep_target_gen_dir = get_label_info(dep, "target_gen_dir")
+    dep_name = get_label_info(dep, "name")
+    build_metadata.deps +=
+        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata") ]
+  }
+  write_file(build_metadata_filename, build_metadata, "json")
 
-  write_file("$target_gen_dir/$target_name.deps_sources_list", deps_sources)
+  generate_fuzzing =
+      (!defined(invoker.enable_fuzzing) || invoker.enable_fuzzing) &&
+      enable_mojom_fuzzer && (!defined(invoker.testonly) || !invoker.testonly)
 
-  generate_fuzzing = enable_ipc_fuzzer && (!defined(invoker.enable_fuzzing) ||
-                                           invoker.enable_fuzzing) &&
-                     (!defined(invoker.testonly) || !invoker.testonly)
-
-  if (defined(invoker.sources)) {
-    parser_target_name = "${target_name}__parser"
+  parser_target_name = "${target_name}__parser"
+  parser_deps = []
+  foreach(dep, all_deps) {
+    _label = get_label_info(dep, "label_no_toolchain")
+    parser_deps += [ "${_label}__parser" ]
+  }
+  if (defined(invoker.parser_deps)) {
+    parser_deps += invoker.parser_deps
+  }
+  if (sources_list == []) {
+    # Even without sources we generate a parser target to at least forward
+    # other parser dependencies.
+    group(parser_target_name) {
+      public_deps = parser_deps
+    }
+  } else {
     enabled_features = []
     if (defined(invoker.enabled_features)) {
       enabled_features += invoker.enabled_features
@@ -461,14 +665,23 @@ template("mojom") {
     }
     if (is_android) {
       enabled_features += [ "is_android" ]
-    } else if (is_chromeos) {
-      enabled_features += [ "is_chromeos" ]
+    } else if (is_chromeos_ash) {
+      enabled_features += [
+        "is_chromeos",
+        "is_chromeos_ash",
+      ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
       enabled_features += [ "is_ios" ]
-    } else if (is_linux) {
+    } else if (is_linux || is_chromeos_lacros) {
       enabled_features += [ "is_linux" ]
+      if (is_chromeos_lacros) {
+        enabled_features += [
+          "is_chromeos",
+          "is_chromeos_lacros",
+        ]
+      }
     } else if (is_mac) {
       enabled_features += [ "is_mac" ]
     } else if (is_win) {
@@ -476,106 +689,90 @@ template("mojom") {
     }
 
     action(parser_target_name) {
-      script = mojom_generator_script
-      inputs = mojom_generator_sources + jinja2_sources
-      sources = invoker.sources
+      script = mojom_parser_script
+      inputs = mojom_parser_sources + [ build_metadata_filename ]
+      sources = sources_list
+      deps = parser_deps
       outputs = []
-      filelist = []
-      foreach(source, invoker.sources) {
-        filename = get_path_info("$source", "name")
-        dirname = get_path_info("$source", "gen_dir")
-        outputs += [ "$dirname/$filename.p" ]
-        filelist += [ rebase_path("$source", root_build_dir) ]
+      foreach(base_path, output_file_base_paths) {
+        filename = get_path_info(base_path, "file")
+        dirname = get_path_info(base_path, "dir")
+        outputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
       }
 
+      filelist = []
+      foreach(source, sources_list) {
+        filelist += [ rebase_path(source) ]
+      }
       response_file_contents = filelist
 
       args = [
-        "parse",
-        "--filelist={{response_file_name}}",
-        "-o",
-        rebase_path(root_gen_dir, root_build_dir),
-        "-d",
-        rebase_path("//", root_build_dir),
+        # Resolve relative input mojom paths against both the root src dir and
+        # the root gen dir.
+        "--input-root",
+        rebase_path("//."),
+        "--input-root",
+        rebase_path(root_gen_dir),
+
+        "--output-root",
+        rebase_path(root_gen_dir),
+
+        "--mojom-file-list={{response_file_name}}",
+
+        "--check-imports",
+        rebase_path(build_metadata_filename),
       ]
+
+      if (defined(invoker.input_root_override)) {
+        args += [
+          "--input-root",
+          rebase_path(invoker.input_root_override),
+        ]
+      }
+
       foreach(enabled_feature, enabled_features) {
         args += [
-          "--enable_feature",
+          "--enable-feature",
           enabled_feature,
         ]
       }
-    }
-  }
 
-  parsed_target_name = "${target_name}__parsed"
-  group(parsed_target_name) {
-    public_deps = []
-    if (defined(invoker.sources)) {
-      public_deps += [ ":$parser_target_name" ]
-    }
-    foreach(d, all_deps) {
-      # Resolve the name, so that a target //mojo/something becomes
-      # //mojo/something:something and we can append the parsed
-      # suffix to get the mojom dependency name.
-      full_name = get_label_info("$d", "label_no_toolchain")
-      public_deps += [ "${full_name}__parsed" ]
-    }
-  }
-
-  if (defined(invoker.sources)) {
-    verify_deps_target_names = []
-    verify_deps_target_name = "${target_name}__verify_deps"
-    verify_deps_target_names += [ ":$verify_deps_target_name" ]
-    mojom_target_name = target_name
-
-    action(verify_deps_target_name) {
-      script = mojom_generator_script
-      inputs = mojom_generator_sources + jinja2_sources
-      sources = invoker.sources
-      deps = [
-        ":$parsed_target_name",
-      ]
-      outputs = []
-      filelist = []
-      foreach(source, invoker.sources) {
-        filename = get_path_info("$source", "name")
-        dirname = get_path_info("$source", "gen_dir")
-        outputs += [ "$dirname/$filename.v" ]
-        filelist += [ rebase_path("$source", root_build_dir) ]
+      if (defined(invoker.webui_module_path)) {
+        args += [
+          "--add-module-metadata",
+          "webui_module_path=${invoker.webui_module_path}",
+        ]
       }
-
-      response_file_contents = filelist
-
-      args = [
-        "verify",
-        "--filelist={{response_file_name}}",
-        "-f",
-        rebase_path("$target_gen_dir/$mojom_target_name.deps_sources_list",
-                    root_build_dir),
-        "--gen_dir",
-        rebase_path(root_gen_dir, root_build_dir),
-        "--depth",
-        rebase_path("//", root_build_dir),
-      ]
     }
   }
 
   generator_cpp_message_ids_target_name = "${target_name}__generate_message_ids"
 
   # Generate code that is shared by different variants.
-  if (defined(invoker.sources)) {
+  if (sources_list != []) {
+    base_dir = "//"
+    if (defined(invoker.input_root_override)) {
+      base_dir = invoker.input_root_override
+    }
+
     common_generator_args = [
       "--use_bundled_pylibs",
-      "generate",
-      "-d",
-      rebase_path("//", root_build_dir),
-      "-I",
-      rebase_path("//", root_build_dir),
       "-o",
       rebase_path(root_gen_dir, root_build_dir),
+      "generate",
+      "-d",
+      rebase_path(base_dir, root_build_dir),
+      "-I",
+      rebase_path("//", root_build_dir),
       "--bytecode_path",
       rebase_path("$root_gen_dir/mojo/public/tools/bindings", root_build_dir),
     ]
+    if (defined(invoker.input_root_override)) {
+      common_generator_args += [
+        "-I",
+        rebase_path(invoker.input_root_override, root_build_dir),
+      ]
+    }
 
     if (defined(invoker.disallow_native_types) &&
         invoker.disallow_native_types) {
@@ -629,17 +826,22 @@ template("mojom") {
     action(generator_cpp_message_ids_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
-      sources = invoker.sources
+      sources = sources_list
       deps = [
-        ":$parsed_target_name",
+        ":$parser_target_name",
         "//mojo/public/tools/bindings:precompile_templates",
       ]
+      if (defined(invoker.parser_deps)) {
+        deps += invoker.parser_deps
+      }
       outputs = []
       args = common_generator_args
       filelist = []
-      foreach(source, invoker.sources) {
-        outputs += [ "$target_gen_dir/$source-shared-message-ids.h" ]
+      foreach(source, sources_list) {
         filelist += [ rebase_path("$source", root_build_dir) ]
+      }
+      foreach(base_path, output_file_base_paths) {
+        outputs += [ "$root_gen_dir/$base_path-shared-message-ids.h" ]
       }
 
       response_file_contents = filelist
@@ -659,33 +861,33 @@ template("mojom") {
       }
     }
 
-    generator_shared_cpp_outputs = [
-      "{{source_gen_dir}}/{{source_file_part}}-params-data.h",
-      "{{source_gen_dir}}/{{source_file_part}}-shared-internal.h",
-      "{{source_gen_dir}}/{{source_file_part}}-shared.cc",
-      "{{source_gen_dir}}/{{source_file_part}}-shared.h",
-    ]
     generator_shared_target_name = "${target_name}_shared__generator"
+
     action(generator_shared_target_name) {
       visibility = [ ":*" ]
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
-      sources = invoker.sources
+      sources = sources_list
       deps = [
-               ":$parsed_target_name",
-               "//mojo/public/tools/bindings:precompile_templates",
-             ] + verify_deps_target_names
+        ":$parser_target_name",
+        "//mojo/public/tools/bindings:precompile_templates",
+      ]
+      if (defined(invoker.parser_deps)) {
+        deps += invoker.parser_deps
+      }
 
       outputs = []
       args = common_generator_args
       filelist = []
-      foreach(source, invoker.sources) {
+      foreach(source, sources_list) {
         filelist += [ rebase_path("$source", root_build_dir) ]
+      }
+      foreach(base_path, output_file_base_paths) {
         outputs += [
-          "$target_gen_dir/$source-params-data.h",
-          "$target_gen_dir/$source-shared-internal.h",
-          "$target_gen_dir/$source-shared.cc",
-          "$target_gen_dir/$source-shared.h",
+          "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-shared-internal.h",
+          "$root_gen_dir/$base_path-shared.cc",
+          "$root_gen_dir/$base_path-shared.h",
         ]
       }
 
@@ -707,6 +909,8 @@ template("mojom") {
         ]
       }
 
+      # Enable adding annotations to generated C++ headers that are used for
+      # cross-references in CodeSearch.
       if (enable_kythe_annotations) {
         args += [ "--enable_kythe_annotations" ]
       }
@@ -717,15 +921,22 @@ template("mojom") {
   }
 
   shared_cpp_sources_target_name = "${target_name}_shared_cpp_sources"
-  jumbo_source_set(shared_cpp_sources_target_name) {
+  source_set(shared_cpp_sources_target_name) {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
     deps = []
     public_deps = []
-    if (defined(invoker.sources)) {
-      sources =
-          process_file_template(invoker.sources, generator_shared_cpp_outputs)
+    if (output_file_base_paths != []) {
+      sources = []
+      foreach(base_path, output_file_base_paths) {
+        sources += [
+          "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-shared-internal.h",
+          "$root_gen_dir/$base_path-shared.cc",
+          "$root_gen_dir/$base_path-shared.h",
+        ]
+      }
       public_deps += [ ":$generator_shared_target_name" ]
     }
     if (require_full_cpp_deps) {
@@ -752,28 +963,111 @@ template("mojom") {
         testonly = invoker.testonly
       }
       output_name = "$shared_component_output_name"
-      public_deps = [
-        ":$shared_cpp_sources_target_name",
-      ]
+      public_deps = [ ":$shared_cpp_sources_target_name" ]
     }
   } else {
     group(shared_cpp_library_target_name) {
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }
-      public_deps = [
-        ":$shared_cpp_sources_target_name",
+      public_deps = [ ":$shared_cpp_sources_target_name" ]
+    }
+  }
+
+  if (generate_fuzzing) {
+    # This block generates the proto files used for the MojoLPM fuzzer,
+    # and the corresponding proto targets that will be linked in the fuzzer
+    # targets. These are independent of the typemappings, and can be done
+    # separately here.
+
+    generator_mojolpm_proto_target_name =
+        "${target_name}_mojolpm_proto_generator"
+
+    action(generator_mojolpm_proto_target_name) {
+      script = mojom_generator_script
+      inputs = mojom_generator_sources + jinja2_sources
+      sources = invoker.sources
+      deps = [
+        ":$parser_target_name",
+        "//mojo/public/tools/bindings:precompile_templates",
       ]
+
+      outputs = []
+      args = common_generator_args
+      filelist = []
+      foreach(source, invoker.sources) {
+        filelist += [ rebase_path("$source", root_build_dir) ]
+        outputs += [ "$target_gen_dir/$source.mojolpm.proto" ]
+      }
+
+      response_file_contents = filelist
+
+      args += [
+        "--filelist={{response_file_name}}",
+        "--generate_non_variant_code",
+        "-g",
+        "mojolpm",
+      ]
+    }
+
+    mojolpm_proto_target_name = "${target_name}_mojolpm_proto"
+    if (defined(invoker.sources)) {
+      proto_library(mojolpm_proto_target_name) {
+        testonly = true
+        generate_python = false
+        sources = process_file_template(
+                invoker.sources,
+                [ "{{source_gen_dir}}/{{source_file_part}}.mojolpm.proto" ])
+        import_dirs = [ "//" ]
+        proto_in_dir = "${root_gen_dir}"
+        proto_out_dir = "."
+        proto_deps = [ ":$generator_mojolpm_proto_target_name" ]
+        link_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
+
+        foreach(d, all_deps) {
+          # Resolve the name, so that a target //mojo/something becomes
+          # //mojo/something:something and we can append mojolpm_proto_suffix
+          # to get the proto dependency name.
+          full_name = get_label_info("$d", "label_no_toolchain")
+          proto_deps += [ "${full_name}_mojolpm_proto" ]
+          link_deps += [ "${full_name}_mojolpm_proto" ]
+        }
+      }
+    } else {
+      group(mojolpm_proto_target_name) {
+        testonly = true
+        public_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
+        if (defined(generator_shared_target_name)) {
+          public_deps += [ ":$generator_shared_target_name" ]
+        }
+        foreach(d, all_deps) {
+          # Resolve the name, so that a target //mojo/something becomes
+          # //mojo/something:something and we can append #mojolpm_proto_suffix
+          # to get the proto dependency name.
+          full_name = get_label_info("$d", "label_no_toolchain")
+          public_deps += [ "${full_name}_mojolpm_proto" ]
+        }
+      }
     }
   }
 
   # Generate code for variants.
-  if (!defined(invoker.disable_variants) || !invoker.disable_variants) {
-    enabled_configurations = _bindings_configurations
+  default_variant = {
+    component_macro_suffix = ""
+  }
+  if ((!defined(invoker.disable_variants) || !invoker.disable_variants) &&
+      !is_ios) {
+    blink_variant = {
+      variant = "blink"
+      component_macro_suffix = "_BLINK"
+      for_blink = true
+    }
+    enabled_configurations = [
+      default_variant,
+      blink_variant,
+    ]
   } else {
-    first_config = _bindings_configurations[0]
-    assert(!defined(first_config.variant))
-    enabled_configurations = [ first_config ]
+    enabled_configurations = [ default_variant ]
   }
   foreach(bindings_configuration, enabled_configurations) {
     cpp_only = false
@@ -787,20 +1081,65 @@ template("mojom") {
       cpp_only = true
     }
 
+    cpp_typemap_configs = []
     export_defines = []
     export_defines_overridden = false
     force_source_set = false
+    proxy_target = ""
+    extra_configs = []
+    output_visibility = []
+    output_visibility = [ "*" ]
+    cpp_source_deps = []
     if (defined(bindings_configuration.for_blink) &&
         bindings_configuration.for_blink) {
+      if (defined(invoker.blink_cpp_typemaps)) {
+        cpp_typemap_configs = invoker.blink_cpp_typemaps
+      }
       if (defined(invoker.export_define_blink)) {
         export_defines_overridden = true
         export_defines = [ invoker.export_define_blink ]
         force_source_set = true
       }
-    } else if (defined(invoker.export_define)) {
-      export_defines_overridden = true
-      export_defines = [ invoker.export_define ]
-      force_source_set = true
+      if (defined(invoker.blink_cpp_configs)) {
+        extra_configs += invoker.blink_cpp_configs
+      }
+      if (defined(invoker.blink_cpp_proxy_target)) {
+        proxy_target = invoker.blink_cpp_proxy_target
+      }
+      if (defined(invoker.visibility_blink)) {
+        output_visibility = []
+        output_visibility = invoker.visibility_blink
+      }
+      if (defined(invoker.mojom_blink_source_deps)) {
+        cpp_source_deps = invoker.mojom_blink_source_deps
+      }
+    } else {
+      if (defined(invoker.cpp_typemaps)) {
+        cpp_typemap_configs = invoker.cpp_typemaps
+      }
+      if (defined(invoker.export_define)) {
+        export_defines_overridden = true
+        export_defines = [ invoker.export_define ]
+        force_source_set = true
+      }
+      if (defined(invoker.cpp_configs)) {
+        extra_configs += invoker.cpp_configs
+      }
+      if (defined(invoker.cpp_proxy_target)) {
+        proxy_target = invoker.cpp_proxy_target
+      }
+      if (defined(invoker.visibility)) {
+        output_visibility = []
+        output_visibility = invoker.visibility
+      }
+      if (defined(invoker.mojom_source_deps)) {
+        cpp_source_deps = invoker.mojom_source_deps
+      }
+    }
+    not_needed([ "cpp_typemap_configs" ])
+    if (proxy_target != "") {
+      group("${target_name}${variant_suffix}__has_cpp_proxy") {
+      }
     }
 
     if (!export_defines_overridden && defined(invoker.component_macro_prefix)) {
@@ -851,100 +1190,56 @@ template("mojom") {
     type_mappings_target_name = "${target_name}${variant_suffix}__type_mappings"
     type_mappings_path =
         "$target_gen_dir/${target_name}${variant_suffix}__type_mappings"
-    active_typemaps = []
-    enabled_sources = []
-    if (defined(invoker.sources)) {
-      generator_cpp_outputs = []
+    if (sources_list != []) {
+      generator_cpp_output_suffixes = []
       variant_dash_suffix = ""
       if (defined(variant)) {
         variant_dash_suffix = "-${variant}"
       }
-      generator_cpp_outputs += [
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}-forward.h",
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}-import-headers.h",
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}-test-utils.cc",
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}-test-utils.h",
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}.cc",
-        "{{source_gen_dir}}/{{source_file_part}}${variant_dash_suffix}.h",
+      generator_cpp_output_suffixes += [
+        "${variant_dash_suffix}-forward.h",
+        "${variant_dash_suffix}-import-headers.h",
+        "${variant_dash_suffix}-test-utils.h",
+        "${variant_dash_suffix}.cc",
+        "${variant_dash_suffix}.h",
       ]
-      enabled_sources = []
-      if (defined(bindings_configuration.blacklist)) {
-        foreach(source, invoker.sources) {
-          blacklisted = false
-          foreach(blacklisted_source, bindings_configuration.blacklist) {
-            if (get_path_info(source, "abspath") == blacklisted_source) {
-              blacklisted = true
-            }
-          }
-          if (!blacklisted) {
-            enabled_sources += [ source ]
-          }
-        }
-      } else {
-        enabled_sources = invoker.sources
-      }
-      foreach(source, enabled_sources) {
-        # TODO(sammc): Use a map instead of a linear scan when GN supports maps.
-        foreach(typemap, bindings_configuration.typemaps) {
-          _typemap_config = {
-          }
-          _typemap_config = typemap.config
-          if (get_path_info(source, "abspath") == _typemap_config.mojom) {
-            enabled = false
-            if (!defined(_typemap_config.os_whitelist)) {
-              enabled = true
-            } else {
-              foreach(os, _typemap_config.os_whitelist) {
-                if (os == "android" && is_android) {
-                  enabled = true
-                } else if (os == "chromeos" && is_chromeos) {
-                  enabled = true
-                } else if (os == "fuchsia" && is_fuchsia) {
-                  enabled = true
-                } else if (os == "ios" && is_ios) {
-                  enabled = true
-                } else if (os == "linux" && is_linux) {
-                  enabled = true
-                } else if (os == "mac" && is_mac) {
-                  enabled = true
-                } else if (os == "posix" && is_posix) {
-                  enabled = true
-                } else if (os == "win" && is_win) {
-                  enabled = true
-                }
-              }
-            }
-            if (enabled) {
-              active_typemaps += [ typemap ]
-            }
-          }
-        }
-      }
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
+
+      # TODO(crbug.com/1194274): Investigate nondeterminism in Py3 builds.
       action(generator_target_name) {
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
-        sources = invoker.sources
+        sources = sources_list
         deps = [
-                 ":$parsed_target_name",
-                 ":$type_mappings_target_name",
-                 "//mojo/public/tools/bindings:precompile_templates",
-               ] + verify_deps_target_names
+          ":$parser_target_name",
+          ":$type_mappings_target_name",
+          "//mojo/public/tools/bindings:precompile_templates",
+        ]
+        if (defined(invoker.parser_deps)) {
+          deps += invoker.parser_deps
+        }
         outputs = []
         args = common_generator_args + export_args
         filelist = []
-        foreach(source, invoker.sources) {
+        foreach(source, sources_list) {
           filelist += [ rebase_path("$source", root_build_dir) ]
+        }
+        foreach(base_path, output_file_base_paths) {
           outputs += [
-            "$target_gen_dir/${source}${variant_dash_suffix}-forward.h",
-            "$target_gen_dir/${source}${variant_dash_suffix}-import-headers.h",
-            "$target_gen_dir/${source}${variant_dash_suffix}-test-utils.cc",
-            "$target_gen_dir/${source}${variant_dash_suffix}-test-utils.h",
-            "$target_gen_dir/${source}${variant_dash_suffix}.cc",
-            "$target_gen_dir/${source}${variant_dash_suffix}.h",
+            "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
+            "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
+            "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.h",
+            "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
+            "$root_gen_dir/${base_path}${variant_dash_suffix}.h",
           ]
+          if (generate_fuzzing && !defined(bindings_configuration.variant)) {
+            outputs += [
+              "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.cc",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.h",
+            ]
+          }
         }
 
         response_file_contents = filelist
@@ -952,8 +1247,13 @@ template("mojom") {
         args += [
           "--filelist={{response_file_name}}",
           "-g",
-          "c++",
         ]
+
+        if (generate_fuzzing && !defined(bindings_configuration.variant)) {
+          args += [ "c++,mojolpm" ]
+        } else {
+          args += [ "c++" ]
+        }
 
         if (defined(bindings_configuration.variant)) {
           args += [
@@ -986,17 +1286,125 @@ template("mojom") {
           inputs += message_scrambling_inputs
           args += message_scrambling_args
         }
+
+        if (defined(invoker.extra_cpp_template_paths)) {
+          foreach(extra_cpp_template, invoker.extra_cpp_template_paths) {
+            args += [
+              "--extra_cpp_template_paths",
+              rebase_path(extra_cpp_template, root_build_dir),
+            ]
+            assert(
+                get_path_info(extra_cpp_template, "extension") == "tmpl",
+                "--extra_cpp_template_paths only accepts template files ending in extension .tmpl")
+            foreach(base_path, output_file_base_paths) {
+              template_file_name = get_path_info("$extra_cpp_template", "name")
+              outputs += [ "$root_gen_dir/${base_path}${variant_dash_suffix}-${template_file_name}" ]
+            }
+          }
+        }
       }
     }
 
-    action(type_mappings_target_name) {
-      inputs = _bindings_configuration_files + mojom_generator_sources +
-               jinja2_sources
-      outputs = [
-        type_mappings_path,
+    if (generate_fuzzing && !defined(variant)) {
+      # This block contains the C++ targets for the MojoLPM fuzzer, we need to
+      # do this here so that we can use the typemap configuration for the
+      # empty-variant Mojo target.
+
+      mojolpm_target_name = "${target_name}_mojolpm"
+      mojolpm_generator_target_name = "${target_name}__generator"
+      source_set(mojolpm_target_name) {
+        # There are still a few missing header dependencies between mojo targets
+        # with typemaps and the dependencies of their typemap headers. It would
+        # be good to enable include checking for these in the future though.
+        check_includes = false
+        testonly = true
+        if (defined(invoker.sources)) {
+          sources = process_file_template(
+                  invoker.sources,
+                  [
+                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.cc",
+                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.h",
+                  ])
+          deps = []
+        } else {
+          sources = []
+          deps = []
+        }
+
+        public_deps = [
+          ":$generator_shared_target_name",
+
+          # NB: hardcoded dependency on the no-variant variant generator, since
+          # mojolpm only uses the no-variant type.
+          ":$mojolpm_generator_target_name",
+          ":$mojolpm_proto_target_name",
+          "//base",
+          "//mojo/public/tools/fuzzers:mojolpm",
+        ]
+
+        foreach(d, all_deps) {
+          # Resolve the name, so that a target //mojo/something becomes
+          # //mojo/something:something and we can append variant_suffix to
+          # get the cpp dependency name.
+          full_name = get_label_info("$d", "label_no_toolchain")
+          public_deps += [ "${full_name}_mojolpm" ]
+        }
+
+        foreach(config, cpp_typemap_configs) {
+          if (defined(config.traits_deps)) {
+            deps += config.traits_deps
+          }
+          if (defined(config.traits_public_deps)) {
+            public_deps += config.traits_public_deps
+          }
+        }
+      }
+    }
+
+    # Write the typemapping configuration for this target out to a file to be
+    # validated by a Python script. This helps catch mistakes that can't
+    # be caught by logic in GN.
+    _typemap_config_filename =
+        "$target_gen_dir/${target_name}${variant_suffix}.typemap_config"
+    _typemap_stamp_filename = "${_typemap_config_filename}.validated"
+    _typemap_validator_target_name = "${type_mappings_target_name}__validator"
+    _rebased_typemap_configs = []
+    foreach(config, cpp_typemap_configs) {
+      _rebased_config = {
+      }
+      _rebased_config = config
+      if (defined(config.traits_headers)) {
+        _rebased_config.traits_headers = []
+        _rebased_config.traits_headers =
+            rebase_path(config.traits_headers, "//")
+      }
+      if (defined(config.traits_private_headers)) {
+        _rebased_config.traits_private_headers = []
+        _rebased_config.traits_private_headers =
+            rebase_path(config.traits_private_headers, "//")
+      }
+      _rebased_typemap_configs += [ _rebased_config ]
+    }
+    write_file(_typemap_config_filename, _rebased_typemap_configs, "json")
+    _mojom_target_name = target_name
+
+    action(_typemap_validator_target_name) {
+      script = "$mojom_generator_root/validate_typemap_config.py"
+      inputs = [ _typemap_config_filename ]
+      outputs = [ _typemap_stamp_filename ]
+      args = [
+        get_label_info(_mojom_target_name, "label_no_toolchain"),
+        rebase_path(_typemap_config_filename),
+        rebase_path(_typemap_stamp_filename),
       ]
+    }
+
+    action(type_mappings_target_name) {
+      inputs =
+          mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
+      outputs = [ type_mappings_path ]
       script = "$mojom_generator_root/generate_type_mappings.py"
-      deps = []
+      deps = [ ":$_typemap_validator_target_name" ]
       args = [
         "--output",
         rebase_path(type_mappings_path, root_build_dir),
@@ -1020,41 +1428,17 @@ template("mojom") {
         ]
       }
 
-      if (enabled_sources != []) {
-        # TODO(sammc): Pass the typemap description in a file to avoid command
-        # line length limitations.
-        typemap_description = []
-        foreach(typemap, active_typemaps) {
-          _typemap_config = {
-          }
-          _typemap_config = typemap.config
-          typemap_description += [ "--start-typemap" ]
-          if (defined(_typemap_config.public_headers)) {
-            foreach(value, _typemap_config.public_headers) {
-              typemap_description += [ "public_headers=$value" ]
-            }
-          }
-          if (defined(_typemap_config.traits_headers)) {
-            foreach(value, _typemap_config.traits_headers) {
-              typemap_description += [ "traits_headers=$value" ]
-            }
-          }
-          foreach(value, _typemap_config.type_mappings) {
-            typemap_description += [ "type_mappings=$value" ]
-          }
-
-          # The typemap configuration files are not actually used as inputs here
-          # but this establishes a necessary build dependency to ensure that
-          # typemap changes force a rebuild of affected targets.
-          inputs += [ typemap.filename ]
-        }
-        args += typemap_description
-      }
+      # Newer GN-based typemaps are aggregated into a single config.
+      inputs += [ _typemap_config_filename ]
+      args += [
+        "--cpp-typemap-config",
+        rebase_path(_typemap_config_filename, root_build_dir),
+      ]
     }
 
     group("${target_name}${variant_suffix}_headers") {
       public_deps = []
-      if (enabled_sources != []) {
+      if (sources_list != []) {
         public_deps += [
           ":$generator_cpp_message_ids_target_name",
           ":$generator_shared_target_name",
@@ -1065,34 +1449,52 @@ template("mojom") {
         full_name = get_label_info("$d", "label_no_toolchain")
         public_deps += [ "${full_name}${variant_suffix}_headers" ]
       }
-    }
-
-    if (!force_source_set && defined(invoker.component_macro_prefix)) {
-      output_target_type = "component"
-    } else {
-      output_target_type = "source_set"
+      if (defined(bindings_configuration.for_blink) &&
+          bindings_configuration.for_blink) {
+        public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
+      }
     }
 
     js_data_deps_target_name = target_name + "_js_data_deps"
     not_needed([ "js_data_deps_target_name" ])
 
-    target("jumbo_" + output_target_type, "${target_name}${variant_suffix}") {
+    if (!force_source_set && defined(invoker.component_macro_prefix)) {
+      sources_target_type = "component"
+    } else {
+      sources_target_type = "source_set"
+    }
+
+    output_target_name = "${target_name}${variant_suffix}"
+    if (proxy_target != "") {
+      group(output_target_name) {
+        public_deps = [ proxy_target ]
+        visibility = output_visibility
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+      }
+      sources_target_name = "${output_target_name}_cpp_sources"
+    } else {
+      sources_target_name = output_target_name
+    }
+
+    target(sources_target_type, sources_target_name) {
       if (defined(output_name_override)) {
         output_name = output_name_override
       }
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink &&
-          defined(invoker.visibility_blink)) {
-        visibility = invoker.visibility_blink
-      } else if (defined(invoker.visibility)) {
-        visibility = invoker.visibility
-      }
+      visibility = output_visibility + [ ":$output_target_name" ]
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }
       defines = export_defines
-      if (enabled_sources != []) {
-        sources = process_file_template(enabled_sources, generator_cpp_outputs)
+      configs += extra_configs
+      if (output_file_base_paths != []) {
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          foreach(suffix, generator_cpp_output_suffixes) {
+            sources += [ "$root_gen_dir/${base_path}$suffix" ]
+          }
+        }
       }
       deps = [
         ":$generator_cpp_message_ids_target_name",
@@ -1109,15 +1511,22 @@ template("mojom") {
         public_deps += [ "//mojo/public/cpp/bindings:bindings_base" ]
       }
 
-      if (enabled_sources != []) {
+      if (sources_list != []) {
         public_deps += [ ":$generator_target_name" ]
       }
-      foreach(d, all_deps) {
+      foreach(d, mojom_cpp_deps) {
         # Resolve the name, so that a target //mojo/something becomes
         # //mojo/something:something and we can append variant_suffix to
         # get the cpp dependency name.
-        full_name = get_label_info("$d", "label_no_toolchain")
+        full_name = get_label_info(d, "label_no_toolchain")
         public_deps += [ "${full_name}${variant_suffix}" ]
+      }
+      foreach(d, cpp_source_deps) {
+        full_name = get_label_info(d, "label_no_toolchain")
+        public_deps += [
+          "${full_name}${variant_suffix}__has_cpp_proxy",
+          "${full_name}${variant_suffix}_cpp_sources",
+        ]
       }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {
@@ -1149,31 +1558,20 @@ template("mojom") {
           public_deps += invoker.component_deps
         }
       }
-      foreach(typemap, active_typemaps) {
-        _typemap_config = {
+      foreach(config, cpp_typemap_configs) {
+        if (defined(config.traits_sources)) {
+          sources += config.traits_sources
         }
-        _typemap_config = typemap.config
-        if (defined(_typemap_config.sources)) {
-          sources += _typemap_config.sources
+        if (defined(config.traits_deps)) {
+          deps += config.traits_deps
         }
-        if (defined(_typemap_config.public_deps)) {
-          public_deps += _typemap_config.public_deps
+        if (defined(config.traits_public_deps)) {
+          public_deps += config.traits_public_deps
         }
-        if (defined(_typemap_config.deps)) {
-          deps += _typemap_config.deps
-        }
-      }
-      if (defined(invoker.export_header)) {
-        sources += [ "//" + invoker.export_header ]
       }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {
         public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
-      }
-
-      if (generate_fuzzing) {
-        # Generate JS bindings by default if IPC fuzzer is enabled.
-        public_deps += [ ":$js_data_deps_target_name" ]
       }
     }
 
@@ -1181,24 +1579,24 @@ template("mojom") {
       import("//build/config/android/rules.gni")
 
       java_generator_target_name = target_name + "_java__generator"
-      if (enabled_sources != []) {
-        generator_java_outputs =
-            [ "{{source_gen_dir}}/{{source_file_part}}.srcjar" ]
+      if (sources_list != []) {
         action(java_generator_target_name) {
           script = mojom_generator_script
           inputs = mojom_generator_sources + jinja2_sources
-          sources = enabled_sources
+          sources = sources_list
           deps = [
-                   ":$parsed_target_name",
-                   ":$type_mappings_target_name",
-                   "//mojo/public/tools/bindings:precompile_templates",
-                 ] + verify_deps_target_names
+            ":$parser_target_name",
+            ":$type_mappings_target_name",
+            "//mojo/public/tools/bindings:precompile_templates",
+          ]
           outputs = []
           args = common_generator_args
           filelist = []
-          foreach(source, invoker.sources) {
+          foreach(source, sources_list) {
             filelist += [ rebase_path("$source", root_build_dir) ]
-            outputs += [ "$target_gen_dir/$source.srcjar" ]
+          }
+          foreach(base_path, output_file_base_paths) {
+            outputs += [ "$root_gen_dir/$base_path.srcjar" ]
           }
 
           response_file_contents = filelist
@@ -1221,37 +1619,37 @@ template("mojom") {
       }
 
       java_srcjar_target_name = target_name + "_java_sources"
+
       action(java_srcjar_target_name) {
-        script = "//mojo/public/tools/gn/zip.py"
+        script = "//build/android/gyp/zip.py"
         inputs = []
-        if (enabled_sources != []) {
-          inputs =
-              process_file_template(enabled_sources, generator_java_outputs)
+        if (output_file_base_paths != []) {
+          foreach(base_path, output_file_base_paths) {
+            inputs += [ "$root_gen_dir/${base_path}.srcjar" ]
+          }
         }
         output = "$target_gen_dir/$target_name.srcjar"
-        outputs = [
-          output,
-        ]
+        outputs = [ output ]
         rebase_inputs = rebase_path(inputs, root_build_dir)
         rebase_output = rebase_path(output, root_build_dir)
         args = [
-          "--zip-inputs=$rebase_inputs",
+          "--input-zips=$rebase_inputs",
           "--output=$rebase_output",
         ]
         deps = []
-        if (enabled_sources != []) {
-          deps = [
-            ":$java_generator_target_name",
-          ]
+        if (sources_list != []) {
+          deps = [ ":$java_generator_target_name" ]
         }
       }
 
       java_target_name = target_name + "_java"
       android_library(java_target_name) {
+        forward_variables_from(invoker, [ "enable_bytecode_checks" ])
         deps = [
           "//base:base_java",
           "//mojo/public/java:bindings_java",
           "//mojo/public/java:system_java",
+          "//third_party/androidx:androidx_annotation_annotation_java",
         ]
 
         # Disable warnings/checks on these generated files.
@@ -1280,35 +1678,38 @@ template("mojom") {
 
   if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
       !use_typescript_for_target) {
-    if (defined(invoker.sources)) {
+    if (sources_list != []) {
       generator_js_target_name = "${target_name}_js__generator"
-      generator_js_lite_outputs =
-          [ "{{source_gen_dir}}/{{source_file_part}}-lite.js" ]
-      generator_js_outputs = [ "{{source_gen_dir}}/{{source_file_part}}.js" ] +
-                             generator_js_lite_outputs
+
       action(generator_js_target_name) {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
-        sources = []
-        if (defined(invoker.sources)) {
-          sources += invoker.sources
-        }
+        sources = sources_list
         deps = [
-                 ":$parsed_target_name",
-                 "//mojo/public/tools/bindings:precompile_templates",
-               ] + verify_deps_target_names
+          ":$parser_target_name",
+          "//mojo/public/tools/bindings:precompile_templates",
+        ]
+        if (defined(invoker.parser_deps)) {
+          deps += invoker.parser_deps
+        }
         outputs = []
         args = common_generator_args
         filelist = []
-        foreach(source, invoker.sources) {
+        foreach(source, sources_list) {
           filelist += [ rebase_path("$source", root_build_dir) ]
+        }
+        foreach(base_path, output_file_base_paths) {
           outputs += [
-            "$target_gen_dir/$source.js",
-            "$target_gen_dir/$source.externs.js",
-            "$target_gen_dir/$source-lite.js",
-            "$target_gen_dir/$source.html",
-            "$target_gen_dir/$source-lite-for-compile.js",
+            "$root_gen_dir/$base_path.js",
+            "$root_gen_dir/$base_path.m.js",
+            "$root_gen_dir/$base_path-lite.js",
+            "$root_gen_dir/$base_path.html",
+            "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
+
+          if (defined(invoker.webui_module_path)) {
+            outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.js" ]
+          }
         }
 
         response_file_contents = filelist
@@ -1340,7 +1741,7 @@ template("mojom") {
     js_target_name = target_name + "_js"
     group(js_target_name) {
       public_deps = []
-      if (defined(invoker.sources)) {
+      if (sources_list != []) {
         public_deps += [ ":$generator_js_target_name" ]
       }
 
@@ -1352,12 +1753,24 @@ template("mojom") {
 
     group(js_data_deps_target_name) {
       deps = []
-      if (defined(invoker.sources)) {
-        data = process_file_template(invoker.sources, generator_js_outputs)
+      if (sources_list != []) {
+        data = []
+        foreach(base_path, output_file_base_paths) {
+          data += [
+            "$root_gen_dir/${base_path}.js",
+            "$root_gen_dir/${base_path}.m.js",
+            "$root_gen_dir/${base_path}-lite.js",
+          ]
+        }
         deps += [ ":$generator_js_target_name" ]
       }
 
-      data_deps = []
+      if (defined(invoker.disallow_native_types) &&
+          invoker.disallow_native_types) {
+        data_deps = []
+      } else {
+        data_deps = [ "//mojo/public/js:bindings_module" ]
+      }
       foreach(d, all_deps) {
         full_name = get_label_info(d, "label_no_toolchain")
         data_deps += [ "${full_name}_js_data_deps" ]
@@ -1365,11 +1778,13 @@ template("mojom") {
     }
 
     js_library_target_name = "${target_name}_js_library"
-    if (defined(invoker.sources)) {
+    if (sources_list != []) {
       js_library(js_library_target_name) {
         extra_public_deps = [ ":$generator_js_target_name" ]
-        sources =
-            process_file_template(invoker.sources, generator_js_lite_outputs)
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          sources += [ "$root_gen_dir/${base_path}-lite.js" ]
+        }
         externs_list = [
           "${externs_path}/mojo_core.js",
           "${externs_path}/pending.js",
@@ -1387,14 +1802,13 @@ template("mojom") {
     }
 
     js_library_for_compile_target_name = "${target_name}_js_library_for_compile"
-    if (defined(invoker.sources)) {
-      generator_js_lite_for_compile_outputs =
-          [ "{{source_gen_dir}}/{{source_file_part}}-lite-for-compile.js" ]
+    if (sources_list != []) {
       js_library(js_library_for_compile_target_name) {
         extra_public_deps = [ ":$generator_js_target_name" ]
-        sources = process_file_template(invoker.sources,
-                                        generator_js_lite_for_compile_outputs)
-
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          sources += [ "$root_gen_dir/${base_path}-lite-for-compile.js" ]
+        }
         externs_list = [
           "${externs_path}/mojo_core.js",
           "${externs_path}/pending.js",
@@ -1412,72 +1826,192 @@ template("mojom") {
       group(js_library_for_compile_target_name) {
       }
     }
+
+    js_modules_target_name = "${target_name}_js_modules"
+    if (sources_list != []) {
+      js_library(js_modules_target_name) {
+        extra_public_deps = [ ":$generator_js_target_name" ]
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          sources += [ "$root_gen_dir/${base_path}.m.js" ]
+        }
+        externs_list = [
+          "${externs_path}/mojo_core.js",
+          "${externs_path}/pending.js",
+        ]
+        if (defined(invoker.disallow_native_types) &&
+            invoker.disallow_native_types) {
+          deps = []
+        } else {
+          deps = [ "//mojo/public/js:bindings_uncompiled" ]
+        }
+        foreach(d, all_deps) {
+          full_name = get_label_info(d, "label_no_toolchain")
+          deps += [ "${full_name}_js_modules" ]
+        }
+      }
+    } else {
+      group(js_modules_target_name) {
+      }
+    }
+
+    if (defined(invoker.webui_module_path)) {
+      webui_js_target_name = "${target_name}_webui_js"
+      if (sources_list != []) {
+        js_library(webui_js_target_name) {
+          extra_public_deps = [ ":$generator_js_target_name" ]
+          sources = []
+          foreach(base_path, output_file_base_paths) {
+            sources += [ "$root_gen_dir/mojom-webui/${base_path}-webui.js" ]
+          }
+          externs_list = [
+            "${externs_path}/mojo_core.js",
+            "${externs_path}/pending.js",
+          ]
+          if (defined(invoker.disallow_native_types) &&
+              invoker.disallow_native_types) {
+            deps = []
+          } else {
+            deps = [ "//mojo/public/js:bindings_uncompiled" ]
+          }
+          foreach(d, all_deps) {
+            full_name = get_label_info(d, "label_no_toolchain")
+            deps += [ "${full_name}_webui_js" ]
+          }
+        }
+      } else {
+        group(webui_js_target_name) {
+        }
+      }
+    }
   }
   if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
       use_typescript_for_target) {
-    generator_ts_target_name = "${target_name}_ts__generator"
-
+    generator_js_target_names = []
     source_filelist = []
-    ts_filelist = []
-    ts_outputs = []
-    js_outputs = []
-    foreach(source, invoker.sources) {
+    foreach(source, sources_list) {
       source_filelist += [ rebase_path("$source", root_build_dir) ]
-      ts_outputs += [
-        "$target_gen_dir/$source-lite.ts",
-        "$target_gen_dir/$source-lite.m.ts",
-      ]
-      ts_filelist += [
-        rebase_path("$target_gen_dir/$source-lite.ts", root_build_dir),
-        rebase_path("$target_gen_dir/$source-lite.m.ts", root_build_dir),
-      ]
-
-      js_outputs += [
-        "$target_gen_dir/$source-lite.js",
-        "$target_gen_dir/$source-lite.m.js",
-      ]
     }
 
-    generator_ts_target_name = "${target_name}_ts__generator"
-    action(generator_ts_target_name) {
-      script = mojom_generator_script
-      inputs = mojom_generator_sources + jinja2_sources
-      sources = invoker.sources
-      deps = [
-               ":$parsed_target_name",
-               "//mojo/public/tools/bindings:precompile_templates",
-             ] + verify_deps_target_names
-      outputs = ts_outputs
-      args = common_generator_args
-      response_file_contents = source_filelist
+    dependency_types = [
+      {
+        name = "regular"
+        ts_extension = ".ts"
+        js_extension = ".js"
+      },
+      {
+        name = "es_modules"
+        ts_extension = ".m.ts"
+        js_extension = ".m.js"
+      },
+    ]
 
-      args += [
-        "--filelist={{response_file_name}}",
-        "-g",
-        "typescript",
-      ]
+    foreach(dependency_type, dependency_types) {
+      ts_outputs = []
+      js_outputs = []
 
-      # TODO(crbug.com/1007587): Support scramble_message_ids.
-      # TODO(crbug.com/1007591): Support generate_fuzzing.
-    }
+      foreach(base_path, output_file_base_paths) {
+        ts_outputs +=
+            [ "$root_gen_dir/$base_path-lite${dependency_type.ts_extension}" ]
+        js_outputs +=
+            [ "$root_gen_dir/$base_path-lite${dependency_type.js_extension}" ]
+      }
 
-    generator_js_target_name = "${target_name}_js__generator"
-    action(generator_js_target_name) {
-      script = compile_typescript_script
-      sources = ts_outputs
-      outputs = js_outputs
-      public_deps = [
-        ":$generator_ts_target_name",
-      ]
-      response_file_contents = ts_filelist
-      args = [ "--filelist={{response_file_name}}" ]
+      # Generate Typescript bindings.
+      generator_ts_target_name =
+          "${target_name}_${dependency_type.name}__ts__generator"
+
+      action(generator_ts_target_name) {
+        script = mojom_generator_script
+        inputs = mojom_generator_sources + jinja2_sources
+        sources = sources_list
+        deps = [
+          ":$parser_target_name",
+          "//mojo/public/tools/bindings:precompile_templates",
+        ]
+
+        outputs = ts_outputs
+        args = common_generator_args
+        response_file_contents = source_filelist
+
+        args += [
+          "--filelist={{response_file_name}}",
+          "-g",
+          "typescript",
+        ]
+
+        if (dependency_type.name == "es_modules") {
+          args += [ "--ts_use_es_modules" ]
+        }
+
+        # TODO(crbug.com/1007587): Support scramble_message_ids.
+        # TODO(crbug.com/1007591): Support generate_fuzzing.
+      }
+
+      # Create tsconfig.json for the generated Typescript.
+      tsconfig_filename =
+          "$target_gen_dir/$target_name-${dependency_type.name}-tsconfig.json"
+      tsconfig = {
+      }
+      tsconfig.compilerOptions = {
+        composite = true
+        target = "es6"
+        module = "es6"
+        lib = [
+          "es6",
+          "esnext.bigint",
+        ]
+        strict = true
+      }
+      tsconfig.files = []
+      foreach(base_path, output_file_base_paths) {
+        tsconfig.files += [ rebase_path(
+                "$root_gen_dir/$base_path-lite${dependency_type.ts_extension}",
+                target_gen_dir,
+                root_gen_dir) ]
+      }
+      tsconfig.references = []
+
+      # Get tsconfigs for deps.
+      foreach(d, all_deps) {
+        dep_target_gen_dir = rebase_path(get_label_info(d, "target_gen_dir"))
+        dep_name = get_label_info(d, "name")
+        reference = {
+        }
+        reference.path = "$dep_target_gen_dir/$dep_name-${dependency_type.name}-tsconfig.json"
+        tsconfig.references += [ reference ]
+      }
+      write_file(tsconfig_filename, tsconfig, "json")
+
+      # Compile previously generated Typescript to Javascript.
+      generator_js_target_name =
+          "${target_name}_${dependency_type.name}__js__generator"
+      generator_js_target_names += [ generator_js_target_name ]
+
+      action(generator_js_target_name) {
+        script = "$mojom_generator_root/compile_typescript.py"
+        sources = ts_outputs
+        outputs = js_outputs
+        public_deps = [ ":$generator_ts_target_name" ]
+        foreach(d, all_deps) {
+          full_name = get_label_info(d, "label_no_toolchain")
+          public_deps +=
+              [ "${full_name}_${dependency_type.name}__js__generator" ]
+        }
+
+        absolute_tsconfig_path =
+            rebase_path(tsconfig_filename, "", target_gen_dir)
+        args = [ "--tsconfig_path=$absolute_tsconfig_path" ]
+      }
     }
 
     js_target_name = target_name + "_js"
     group(js_target_name) {
       public_deps = []
-      if (defined(invoker.sources)) {
-        public_deps += [ ":$generator_js_target_name" ]
+      if (sources_list != []) {
+        foreach(generator_js_target_name, generator_js_target_names) {
+          public_deps += [ ":$generator_js_target_name" ]
+        }
       }
 
       foreach(d, all_deps) {
@@ -1487,10 +2021,11 @@ template("mojom") {
     }
 
     group(js_data_deps_target_name) {
-      data = process_file_template(invoker.sources, js_outputs)
-      deps = [
-        ":$generator_js_target_name",
-      ]
+      data = js_outputs
+      deps = []
+      foreach(generator_js_target_name, generator_js_target_names) {
+        deps += [ ":$generator_js_target_name" ]
+      }
       data_deps = []
       foreach(d, all_deps) {
         full_name = get_label_info(d, "label_no_toolchain")

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ຢະ! ສ້າງລະຫັດສ່ວນຕົວ RSA ​ແບບສຸ່ມບໍ່ສໍາເລັດ.</translation>
 <translation id="1445572445564823378">ສ່ວນຂະຫຍາຍນີ້ກໍາລັງຊ້າລົງ <ph name="PRODUCT_NAME" />. ທ່ານຄວນຈະປິດໃຊ້ງານມັນ​ເພື່ອ​ກູ້​ຄືນ​ການ​ໃຊ້​ງານ​ຂອງ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ບໍ່ຮອງຮັບ.</translation>
-<translation id="149347756975725155">ບໍ່ສາມາດໂຫຼດໄອຄອນສ່ວນຂະຫຍາຍໄດ້ '<ph name="ICON" />'.</translation>
 <translation id="1803557475693955505">ບໍ່ສາມາດໂຫຼດໜ້າພື້ນຫຼັງໄດ້ '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ໃຊ້ການຈໍາກັດແລ້ວ, ແຕ່ default_locale ບໍ່ໄດ້ກໍານົດຢູ່ໃນໃບລາຍການ.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ອ່ານປຸ່ມສ່ວນຕົວບໍ່ໄດ້.</translation>
 <translation id="6391538222494443604">ບັນຊີລາຍຊື່ການປ້ອນ​ຕ້ອງ​ມີຢູ່​.</translation>
 <translation id="641087317769093025">ບໍ່​ສາ​ມາດແຍກຊິບສ່ວນຂະ​ຫຍາຍໄດ້</translation>
-<translation id="6413453408918378296">ໄອຄອນບໍ່ເຫັນໄດ້ຢ່າງພຽງພໍ '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ກຳລັງຮ້ອງຂໍການເຂົ້າເຖິງອຸປະກອນຂອງທ່ານໜຶ່ງ ຫຼື ຫຼາຍເຄື່ອງ:</translation>
 <translation id="657064425229075395">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ໜັງສືພື້ນຫຼັງໄດ້ ' <ph name="BACKGROUND_SCRIPT" /> .</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ຈາກ <ph name="VENDOR_NAME" /> (ເລກລໍາດັບ <ph name="SERIAL_NUMBER" />)</translation>

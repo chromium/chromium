@@ -5,19 +5,18 @@
 #ifndef UI_BASE_MODELS_BUTTON_MENU_ITEM_MODEL_H_
 #define UI_BASE_MODELS_BUTTON_MENU_ITEM_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/component_export.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
 // A model representing the rows of buttons that should be inserted in a button
 // containing menu item.
-class UI_BASE_EXPORT ButtonMenuItemModel {
+class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
  public:
   // Types of buttons.
   enum ButtonType {
@@ -26,11 +25,11 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
     TYPE_BUTTON_LABEL
   };
 
-  class UI_BASE_EXPORT Delegate : public AcceleratorProvider {
+  class COMPONENT_EXPORT(UI_BASE) Delegate : public AcceleratorProvider {
    public:
     // Some command ids have labels that change over time.
     virtual bool IsItemForCommandIdDynamic(int command_id) const;
-    virtual base::string16 GetLabelForCommandId(int command_id) const;
+    virtual std::u16string GetLabelForCommandId(int command_id) const;
 
     // Performs the action associated with the specified command id.
     virtual void ExecuteCommand(int command_id, int event_flags) = 0;
@@ -48,6 +47,10 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
   };
 
   ButtonMenuItemModel(int string_id, ButtonMenuItemModel::Delegate* delegate);
+
+  ButtonMenuItemModel(const ButtonMenuItemModel&) = delete;
+  ButtonMenuItemModel& operator=(const ButtonMenuItemModel&) = delete;
+
   ~ButtonMenuItemModel();
 
   // Adds a button that will emit |command_id|. All buttons created through
@@ -85,7 +88,7 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const;
 
   // Returns the current label value for the button at |index|.
-  base::string16 GetLabelAt(int index) const;
+  std::u16string GetLabelAt(int index) const;
 
   // If the button at |index| should have its size equalized along with all
   // other items that have their PartOfGroup bit set.
@@ -106,18 +109,16 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
   // Returns whether clicking on |command_id| dismisses the menu.
   bool DoesCommandIdDismissMenu(int command_id) const;
 
-  const base::string16& label() const { return item_label_; }
+  const std::u16string& label() const { return item_label_; }
 
  private:
   // The non-clickable label to the left of the buttons.
-  base::string16 item_label_;
+  std::u16string item_label_;
 
   struct Item;
   std::vector<Item> items_;
 
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonMenuItemModel);
 };
 
 }  // namespace ui

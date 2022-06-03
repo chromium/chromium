@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_PAINT_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_PAINT_TIMING_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -13,6 +12,8 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class LocalFrame;
 
 class FramePaintTiming {
   STACK_ALLOCATED();
@@ -22,6 +23,8 @@ class FramePaintTiming {
       : context_(context), frame_(frame) {
     context_.GetPaintController().BeginFrame(frame_);
   }
+  FramePaintTiming(const FramePaintTiming&) = delete;
+  FramePaintTiming& operator=(const FramePaintTiming&) = delete;
 
   ~FramePaintTiming() {
     DCHECK(frame_->GetDocument());
@@ -33,8 +36,7 @@ class FramePaintTiming {
 
  private:
   GraphicsContext& context_;
-  Member<const LocalFrame> frame_;
-  DISALLOW_COPY_AND_ASSIGN(FramePaintTiming);
+  const LocalFrame* frame_;
 };
 
 }  // namespace blink

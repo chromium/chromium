@@ -1,0 +1,15 @@
+Tests <select> text update when popup is visible and selectionIndex changes.
+Needs run-layout-test.
+
+A
+B
+C
+layer at (0,0) size 47x27
+  LayoutNGBlockFlow (positioned) {DIV} at (12,75) size 47x27
+    LayoutNGFlexibleBox {SELECT} at (0,0) size 47x27 [bgcolor=#DDDDDD] [border: (1.50px solid #767676)]
+    LayoutText {#text} at (0,0) size 0x0
+layer at (8,2) size 14x24
+  LayoutNGBlockFlow {DIV} at (7.50,1.50) size 14x24
+    LayoutText {#text} at (0,1) size 14x22
+      text run at (0,1) width 14: "C"
+

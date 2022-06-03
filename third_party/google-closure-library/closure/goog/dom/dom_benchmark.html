@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Closure Benchmarks - goog.dom</title>
+<script src="../base.js"></script>
+<script>
+  goog.require('goog.dom');
+  goog.require('goog.testing.benchmark');
+</script>
+<link rel="stylesheet" href="../testing/performancetable.css"/>
+</head>
+<body>
+<script>
+  /**
+   * Create a table using DOM calls.
+   * @param {number} rows The number of rows in the table.  Must be >= 1.
+   * @param {number} columns The number of columns in the table.  Must be >= 1.
+   * @param {boolean=} opt_fillWithNbsp If true, fills table entries with nsbps.
+   * @return {!Element} The created table.
+   */
+  function createTableDom(rows, columns, opt_fillWithNbsp) {
+    var table = goog.dom.createElement(goog.dom.TagName.TABLE);
+    for (var i = 0; i < rows; i++) {
+      var tableRow = table.insertRow(0);
+      for (var j = 0; j < columns; j++) {
+        var tableColumn = tableRow.insertCell(0);
+        if (opt_fillWithNbsp) {
+          tableColumn.appendChild(document.createTextNode(
+              goog.string.Unicode.NBSP));
+        }
+      }
+    }
+    return table;
+  };
+
+  function benchmarkCreateTable3x3_Dom() {
+    createTableDom(3, 3);
+  }
+
+  function benchmarkCreateTable3x3_InnerHtml() {
+    goog.dom.createTable(3, 3);
+  }
+
+  function benchmarkCreateTable3x3Nbsp_Dom() {
+    createTableDom(3, 3, true);
+  }
+
+  function benchmarkCreateTable3x3Nbsp_InnerHtml() {
+    goog.dom.createTable(3, 3);
+  }
+
+  function benchmarkCreateTable10x10Nbsp_Dom() {
+    createTableDom(10, 10, true);
+  }
+
+  function benchmarkCreateTable10x10Nbsp_InnerHtml() {
+    goog.dom.createTable(10, 10, true);
+  }
+</script>
+</body>
+</html>

@@ -7,8 +7,6 @@ source_set("browser") {
   sources = [
     "account_consistency_service.h",
     "account_consistency_service.mm",
-    "features.cc",
-    "features.h",
     "manage_accounts_delegate.h",
     "wait_for_network_callback_helper.cc",
     "wait_for_network_callback_helper.h",
@@ -19,7 +17,8 @@ source_set("browser") {
     "//components/google/core/common",
     "//components/prefs",
     "//components/signin/core/browser",
-    "//components/signin/public/base",
+    "//google_apis",
+    "//ios/net",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public",
     "//url",
@@ -27,11 +26,24 @@ source_set("browser") {
 
   public_deps = [
     ":active_state_manager",
+    ":features",
     "//base",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//net",
   ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//components/signin/public/base" ]
 }
 
 source_set("active_state_manager") {

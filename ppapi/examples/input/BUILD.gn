@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("input") {
   output_name = "ppapi_example_input"
-  sources = [
-    "pointer_event_input.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "pointer_event_input.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

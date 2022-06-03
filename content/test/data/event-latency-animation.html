@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>EventLatency vs. Animation</title>
+    <style>
+      #raf-box {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+      }
+
+      #main-box {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background-color: red;
+      }
+
+      .pulse-width {
+        animation: pulse-width 1s infinite;
+      }
+
+      @keyframes pulse-width {
+        0% {
+          width: 100px;
+        }
+        100% {
+          width: 200px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id="button">Press here with space</button>
+    <input id="input" placeholder="Type something here">
+    <div>
+      <div id="raf-box"></div>
+      <div id="main-box"></div>
+    </div>
+    <script>
+      var button = document.getElementById('button');
+      var input = document.getElementById('input');
+      var rafBox = document.getElementById('raf-box');
+      var mainBox = document.getElementById('main-box');
+
+      var rafId = null;
+      var rafStart = null;
+
+      var focusButton = function() {
+        button.focus();
+      };
+
+      var focusInput = function() {
+        input.focus();
+      };
+
+      var rafAnimate = function(time) {
+        if (rafStart === null)
+          rafStart = time;
+        var w = Math.floor((time - rafStart) / 10) % 100 + 100;
+        rafBox.style.width = w + 'px';
+        rafId = requestAnimationFrame(rafAnimate);
+      };
+
+      var startAnimations = function() {
+        if (rafId === null)
+          rafId = requestAnimationFrame(rafAnimate);
+        if (!mainBox.classList.contains('pulse-width'))
+          mainBox.classList.add('pulse-width');
+      };
+    </script>
+  </body>
+</html>

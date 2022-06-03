@@ -10,12 +10,14 @@
 #include "base/process/process_iterator.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/process_snapshot_server.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/providers/vm/crostini_process_task.h"
 #include "chrome/browser/task_manager/providers/vm/plugin_vm_process_task.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace task_manager {
 
@@ -29,8 +31,7 @@ constexpr char kVmConciergeName[] = "/usr/bin/vm_concierge";
 constexpr char kVmProcessName[] = "/usr/bin/crosvm";
 
 // Delay between refreshing the list of VM processes.
-constexpr base::TimeDelta kRefreshProcessListDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRefreshProcessListDelay = base::Seconds(5);
 
 // Matches the process name "vm_concierge" in the process tree and get the
 // corresponding process ID.
@@ -54,7 +55,7 @@ bool HasValidVmDiskExtension(const std::string& filename) {
   };
 
   for (auto* const ext : valid_extensions) {
-    if (base::EndsWith(filename, ext, base::CompareCase::SENSITIVE)) {
+    if (filename.find(ext) != std::string::npos) {
       return true;
     }
   }
@@ -62,12 +63,10 @@ bool HasValidVmDiskExtension(const std::string& filename) {
 }
 
 // The argument this is extracting from will look like this:
-// /home/root/53d63eda33c610d37b44cde8ed06854a05e9cc84/crosvm/dGVybWluYQ==.qcow2
-// This is the path to a VM disk in the user-specific root directory that is not
-// exposed to the user in the Files app. The base for this is /home/root and
-// the cryptohome ID for the user is the next path element. Then we have the
-// service specific 'crosvm' directory which we put VM images in. VM images use
-// base64 encoding of the VM name as the filename with a .qcow2/.img extension.
+// /run/daemon-store/crosvm/53d63eda33c610d37b44cde8ed06854a05e9cc84/dGVybWluYQ==.img
+// This is the path to a VM disk in the user's cryptohome that's not exposed to
+// the user in the Files app, consisting of the path to crosvm's daemon store,
+// the user hash, then the base64 encoded VM name with a .qcow2/.img extension.
 bool CrostiniExtractVmNameAndOwnerId(const std::string& arg,
                                      std::string* vm_name_out,
                                      std::string* owner_id_out) {
@@ -75,7 +74,7 @@ bool CrostiniExtractVmNameAndOwnerId(const std::string& arg,
   DCHECK(owner_id_out);
 
   // All VM disk images are contained in a subdirectory of this path.
-  constexpr char kVmDiskRoot[] = "/home/root/";
+  constexpr char kVmDiskRoot[] = "/run/daemon-store";
 
   // Skip paths that don't start with the correct prefix to filter out the
   // rootfs .img file.
@@ -93,40 +92,42 @@ bool CrostiniExtractVmNameAndOwnerId(const std::string& arg,
   base::Base64Decode(vm_disk_path.RemoveExtension().BaseName().value(),
                      vm_name_out);
 
-  // The owner ID is the long hex string in there...which is 2 parents up.
+  // The owner ID is the long hex string in there...which is 1 parent up.
   // It's safe to call this even if there's not enough parents because the
   // DirName of the root is still the root.
-  *owner_id_out = vm_disk_path.DirName().DirName().BaseName().value();
+  *owner_id_out = vm_disk_path.DirName().BaseName().value();
 
   return true;
 }
 
-// We are looking for argument like this:
-// /run/pvm-images/<cryptohome id>/UHZtRGVmYXVsdA==.pvm/...
+// We are looking for an argument like this:
+// /run/daemon-store/pvm/<cryptohome id>/UHZtRGVmYXVsdA==.pvm:/pvm:true
 bool PluginVmExtractVmNameAndOwnerId(const std::string& arg,
                                      std::string* vm_name_out,
                                      std::string* owner_id_out) {
   DCHECK(vm_name_out);
   DCHECK(owner_id_out);
 
-  // All VM disk images are mounted at this path.
-  constexpr char kVmDiskRoot[] = "/run/pvm-images/";
+  constexpr char kArgStart[] = "/run/daemon-store/pvm/";
+  constexpr char kArgEnd[] = ":/pvm:true";
 
-  // Skip paths that don't start with the correct prefix.
-  if (!base::StartsWith(arg, kVmDiskRoot, base::CompareCase::SENSITIVE)) {
+  // Skip paths that don't start/end with the expected prefix/suffix.
+  if (!base::StartsWith(arg, kArgStart, base::CompareCase::SENSITIVE))
     return false;
-  }
+  if (!base::EndsWith(arg, kArgEnd, base::CompareCase::SENSITIVE))
+    return false;
 
-  const base::FilePath vm_disk_path(arg);
+  const base::FilePath vm_disk_path(
+      base::MakeStringPiece(arg.begin(), arg.end() - strlen(kArgEnd)));
 
   std::vector<std::string> components;
   vm_disk_path.GetComponents(&components);
 
-  // Expect /, root, pvm-images, <owner_id>, vm_name.pvm, ...
-  if (components.size() < 5)
+  // Expect /, run, daemon-store, pvm, <owner_id>, vm_name.pvm
+  if (components.size() != 6)
     return false;
 
-  base::FilePath vm_subdir(components[4]);
+  base::FilePath vm_subdir(components[5]);
   if (vm_subdir.Extension() != ".pvm")
     return false;
 
@@ -134,10 +135,7 @@ bool PluginVmExtractVmNameAndOwnerId(const std::string& arg,
   // file itself without the extension.
   base::Base64Decode(vm_subdir.RemoveExtension().value(), vm_name_out);
 
-  // The owner ID is the long hex string in there...which is 2 parents up.
-  // It's safe to call this even if there's not enough parents because the
-  // DirName of the root is still the root.
-  *owner_id_out = components[3];
+  *owner_id_out = components[4];
 
   return true;
 }
@@ -154,7 +152,7 @@ bool ExtractVmNameAndOwnerIdFromCmdLine(const std::vector<std::string>& cmdline,
   DCHECK(is_plugin_vm_out);
 
   // Find the arg with the disk file path on it.
-  for (const auto arg : cmdline) {
+  for (const auto& arg : cmdline) {
     if (CrostiniExtractVmNameAndOwnerId(arg, vm_name_out, owner_id_out)) {
       *is_plugin_vm_out = false;
       return true;
@@ -186,15 +184,7 @@ struct VmProcessData {
 };
 
 VmProcessTaskProvider::VmProcessTaskProvider()
-    : task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-           base::TaskPriority::USER_VISIBLE})),
-      refresh_timer_(
-          FROM_HERE,
-          kRefreshProcessListDelay,
-          base::BindRepeating(&VmProcessTaskProvider::RequestVmProcessList,
-                              base::Unretained(this))) {}
+    : ash::ProcessSnapshotServer::Observer(kRefreshProcessListDelay) {}
 
 VmProcessTaskProvider::~VmProcessTaskProvider() = default;
 
@@ -203,55 +193,58 @@ Task* VmProcessTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
   return nullptr;
 }
 
-void VmProcessTaskProvider::StartUpdating() {
-  RequestVmProcessList();
-  refresh_timer_.Reset();
-}
+void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
+    const base::ProcessIterator::ProcessEntries& snapshot) {
+  TRACE_EVENT0("browser", "VmProcessTaskProvider::OnProcessSnapshotRefreshed");
 
-void VmProcessTaskProvider::StopUpdating() {
-  refresh_timer_.Stop();
-  task_map_.clear();
-}
+  // Throttle the refreshes in case the `ash::ProcessSnapshotServer` has
+  // observers with a much higher desired refresh rates.
+  const auto old_snapshot_time = last_process_snapshot_time_;
+  last_process_snapshot_time_ = base::Time::Now();
+  if ((last_process_snapshot_time_ - old_snapshot_time) <
+      kRefreshProcessListDelay) {
+    return;
+  }
 
-std::vector<VmProcessData> GetVmProcessList() {
-  std::vector<VmProcessData> ret_processes;
-  const base::ProcessIterator::ProcessEntries& entry_list =
-      base::ProcessIterator(nullptr).Snapshot();
-  const base::ProcessId vm_init_pid = GetVmInitProcessId(entry_list);
+  std::vector<VmProcessData> vm_process_list;
+  const base::ProcessId vm_init_pid = GetVmInitProcessId(snapshot);
   if (vm_init_pid == base::kNullProcessId) {
-    return ret_processes;
+    OnUpdateVmProcessList(vm_process_list);
+    return;
   }
 
   // Find all of the child processes of vm_concierge, the ones that are the
   // crosvm program are the VM processes, we can then extract the name of the
   // VM from its command line args.
-  for (const base::ProcessEntry& entry : entry_list) {
+  for (const base::ProcessEntry& entry : snapshot) {
     if (entry.parent_pid() == vm_init_pid && !entry.cmd_line_args().empty() &&
         entry.cmd_line_args()[0] == kVmProcessName) {
       std::string vm_name;
       std::string owner_id;
       bool is_plugin_vm;
       if (ExtractVmNameAndOwnerIdFromCmdLine(entry.cmd_line_args(), &vm_name,
-                                             &owner_id, &is_plugin_vm))
-        ret_processes.emplace_back(vm_name, owner_id, entry.pid(),
-                                   is_plugin_vm);
+                                             &owner_id, &is_plugin_vm)) {
+        vm_process_list.emplace_back(vm_name, owner_id, entry.pid(),
+                                     is_plugin_vm);
+      }
     }
   }
-  return ret_processes;
+
+  OnUpdateVmProcessList(vm_process_list);
 }
 
-void VmProcessTaskProvider::RequestVmProcessList() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE, base::BindOnce(&GetVmProcessList),
-      base::BindOnce(&VmProcessTaskProvider::OnUpdateVmProcessList,
-                     weak_ptr_factory_.GetWeakPtr()));
+void VmProcessTaskProvider::StartUpdating() {
+  ash::ProcessSnapshotServer::Get()->AddObserver(this);
+}
+
+void VmProcessTaskProvider::StopUpdating() {
+  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
+  task_map_.clear();
 }
 
 void VmProcessTaskProvider::OnUpdateVmProcessList(
     const std::vector<VmProcessData>& vm_process_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!refresh_timer_.IsRunning())
+  if (!IsUpdating())
     return;
 
   base::flat_set<base::ProcessId> pids_to_remove;

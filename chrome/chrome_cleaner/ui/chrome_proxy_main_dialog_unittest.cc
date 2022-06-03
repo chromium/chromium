@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/chrome_cleaner/ipc/mock_chrome_prompt_ipc.h"
+#include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
 #include "chrome/chrome_cleaner/test/test_file_util.h"
 #include "chrome/chrome_cleaner/test/test_pup_data.h"
 #include "chrome/chrome_cleaner/test/test_settings_util.h"
@@ -56,8 +56,8 @@ TEST_F(ChromeProxyMainDialogTest, NoPUPsFound) {
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
   EXPECT_CALL(chrome_prompt_ipc_, MockPostPromptUserTask(_, _, _, _))
       .WillOnce(Invoke([](const std::vector<base::FilePath>& files_to_delete,
-                          const std::vector<base::string16>& registry_keys,
-                          const std::vector<base::string16>& extension_ids,
+                          const std::vector<std::wstring>& registry_keys,
+                          const std::vector<std::wstring>& extension_ids,
                           ChromePromptIPC::PromptUserCallback* callback) {
         std::move(*callback).Run(PromptUserResponse::DENIED);
       }));
@@ -86,7 +86,8 @@ class ConfirmCleanupChromeProxyMainDialogTest
   StrictMock<MockSettings> mock_settings_;
 };
 
-TEST_P(ConfirmCleanupChromeProxyMainDialogTest, ConfirmCleanup) {
+// Flaky, see: crbug.com/1189076.
+TEST_P(ConfirmCleanupChromeProxyMainDialogTest, DISABLED_ConfirmCleanup) {
   constexpr UwSId kFakePupId = 1024;
   PromptUserResponse::PromptAcceptance prompt_acceptance = GetParam();
   bool accept_cleanup =
@@ -127,7 +128,7 @@ TEST_P(ConfirmCleanupChromeProxyMainDialogTest, ConfirmCleanup) {
 
   pup->expanded_registry_footprints.push_back(PUPData::RegistryFootprint(
       RegKeyPath(HKEY_USERS, L"Software\\bad-software\\bad-key"),
-      base::string16(), base::string16(), REGISTRY_VALUE_MATCH_KEY));
+      std::wstring(), std::wstring(), REGISTRY_VALUE_MATCH_KEY));
 
   std::vector<UwSId> found_pups{kFakePupId};
 
@@ -138,8 +139,8 @@ TEST_P(ConfirmCleanupChromeProxyMainDialogTest, ConfirmCleanup) {
                                      /*extensions*/ SizeIs(0), _))
       .WillOnce(Invoke([prompt_acceptance](
                            const std::vector<base::FilePath>& files_to_delete,
-                           const std::vector<base::string16>& registry_keys,
-                           const std::vector<base::string16>& extension_ids,
+                           const std::vector<std::wstring>& registry_keys,
+                           const std::vector<std::wstring>& extension_ids,
                            ChromePromptIPC::PromptUserCallback* callback) {
         std::move(*callback).Run(prompt_acceptance);
       }));

@@ -6,9 +6,9 @@
 #define BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -32,10 +32,9 @@ int ThreadPriorityToNiceValue(ThreadPriority priority);
 // specific implementation of kThreadPriorityToNiceValueMap.
 BASE_EXPORT ThreadPriority NiceValueToThreadPriority(int nice_value);
 
-// If non-nullopt, this return value will be used as the platform-specific
-// result of CanIncreaseThreadPriority().
-Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
-    ThreadPriority priority);
+// Returns whether SetCurrentThreadPriorityForPlatform can set a thread as
+// REALTIME_AUDIO.
+bool CanSetThreadPriorityToRealtimeAudio();
 
 // Allows platform specific tweaks to the generic POSIX solution for
 // SetCurrentThreadPriority(). Returns true if the platform-specific
@@ -45,15 +44,15 @@ bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority);
 
 // If non-null, this return value will be used as the platform-specific result
 // of CanIncreaseThreadPriority().
-Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform();
+absl::optional<ThreadPriority> GetCurrentThreadPriorityForPlatform();
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Current thread id is cached in thread local storage for performance reasons.
 // In some rare cases it's important to clear that cache explicitly (e.g. after
 // going through clone() syscall which does not call pthread_atfork()
 // handlers).
 BASE_EXPORT void ClearTidCache();
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace internal
 

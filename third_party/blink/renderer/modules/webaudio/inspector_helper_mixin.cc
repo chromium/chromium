@@ -15,7 +15,7 @@ InspectorHelperMixin::InspectorHelperMixin(
       uuid_(WTF::CreateCanonicalUUIDString()),
       parent_uuid_(parent_uuid) {}
 
-void InspectorHelperMixin::Trace(blink::Visitor* visitor) {
+void InspectorHelperMixin::Trace(Visitor* visitor) const {
   visitor->Trace(graph_tracer_);
 }
 

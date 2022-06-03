@@ -4,10 +4,10 @@
 
 #include "components/contextual_search/core/browser/ctr_aggregator.h"
 
+#include <memory>
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +22,10 @@ namespace contextual_search {
 class CtrAggregatorTest : public testing::Test {
  public:
   CtrAggregatorTest() {}
+
+  CtrAggregatorTest(const CtrAggregatorTest&) = delete;
+  CtrAggregatorTest& operator=(const CtrAggregatorTest&) = delete;
+
   ~CtrAggregatorTest() override {}
 
   class WeeklyActivityStorageStub : public WeeklyActivityStorage {
@@ -56,14 +60,11 @@ class CtrAggregatorTest : public testing::Test {
   std::unique_ptr<WeeklyActivityStorage> storage_;
 
   void SetUp() override {
-    storage_.reset(new WeeklyActivityStorageStub());
+    storage_ = std::make_unique<WeeklyActivityStorageStub>();
     aggregator_.reset(new CtrAggregator(*storage_, kTestWeek));
   }
 
   void TearDown() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CtrAggregatorTest);
 };
 
 CtrAggregatorTest::WeeklyActivityStorageStub::WeeklyActivityStorageStub()

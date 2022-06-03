@@ -4,7 +4,7 @@
 
 package org.chromium.ui.test.util;
 
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -13,7 +13,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.test.DisableNativeTestRule;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 
 /**
  * Test case to instrument DummyUiActivity for UI testing scenarios.
@@ -23,17 +24,30 @@ import org.chromium.base.test.DisableNativeTestRule;
 public class DummyUiActivityTestCase {
     private DummyUiActivity mActivity;
 
-    private ActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ActivityTestRule<>(DummyUiActivity.class);
+    private final BaseActivityTestRule<? extends DummyUiActivity> mActivityTestRule;
 
     // Disable animations to reduce flakiness.
     @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    public static final DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
 
     @Rule
-    public TestRule ruleChain = RuleChain.outerRule(mActivityTestRule)
-                                        .around(new DisableNativeTestRule())
-                                        .around(new TestDriverRule());
+    public final TestRule ruleChain;
+
+    /** Default constructor that creates a {@link DummyUiActivity} as expected. */
+    public DummyUiActivityTestCase() {
+        this(new BaseActivityTestRule<DummyUiActivity>(DummyUiActivity.class));
+    }
+
+    /**
+     * Constructor to allow subclasses to inject activity and rule subclasses.
+     * @param activityTestRule Injected rule to use for activity interactions.
+     */
+    protected DummyUiActivityTestCase(
+            BaseActivityTestRule<? extends DummyUiActivity> activityTestRule) {
+        mActivityTestRule = activityTestRule;
+        ruleChain = RuleChain.outerRule(mActivityTestRule).around(new TestDriverRule());
+    }
 
     /**
      * TestRule to setup and tear down for each test.
@@ -44,6 +58,10 @@ public class DummyUiActivityTestCase {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
+                    beforeActivityLaunch();
+                    mActivityTestRule.launchActivity(null);
+                    ApplicationTestUtils.waitForActivityState(
+                            mActivityTestRule.getActivity(), Stage.RESUMED);
                     setUpTest();
                     try {
                         base.evaluate();
@@ -55,6 +73,8 @@ public class DummyUiActivityTestCase {
         }
     }
 
+    public void beforeActivityLaunch() throws Exception {}
+
     // Override this to setup before test.
     public void setUpTest() throws Exception {
         mActivity = mActivityTestRule.getActivity();
@@ -65,9 +85,5 @@ public class DummyUiActivityTestCase {
 
     public DummyUiActivity getActivity() {
         return mActivity;
-    }
-
-    public ActivityTestRule<DummyUiActivity> getActivityTestRule() {
-        return mActivityTestRule;
     }
 }

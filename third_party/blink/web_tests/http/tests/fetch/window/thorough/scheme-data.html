@@ -12,16 +12,16 @@
 </head>
 <body>
 <script>
-var host_info = get_host_info();
+var options = get_thorough_test_options();
 function start(t) {
   executeTests(TEST_TARGETS);
   t.done();
 }
 function init(test) {
-  return login(test, host_info['HTTP_ORIGIN'], host_info['HTTP_REMOTE_ORIGIN'])
+  return login(test, options['BASE_HTTP_ORIGIN'], options['OTHER_HTTP_ORIGIN'])
     .then(function() {
-        return login(test, host_info['HTTPS_ORIGIN'],
-                     host_info['HTTPS_REMOTE_ORIGIN']);
+      return login(test, options['BASE_HTTPS_ORIGIN'],
+        options['OTHER_HTTPS_ORIGIN']);
       });
 }
 </script>

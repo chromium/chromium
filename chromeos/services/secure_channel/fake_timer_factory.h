@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/timer_factory.h"
@@ -23,6 +22,10 @@ class FakeOneShotTimer;
 class FakeTimerFactory : public TimerFactory {
  public:
   FakeTimerFactory();
+
+  FakeTimerFactory(const FakeTimerFactory&) = delete;
+  FakeTimerFactory& operator=(const FakeTimerFactory&) = delete;
+
   ~FakeTimerFactory() override;
 
   const base::UnguessableToken& id_for_last_created_one_shot_timer() {
@@ -48,8 +51,6 @@ class FakeTimerFactory : public TimerFactory {
   size_t num_instances_created_ = 0u;
 
   base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerFactory);
 };
 
 }  // namespace secure_channel

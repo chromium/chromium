@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<textarea id="textarea1">Drag me to the other textarea</textarea>
+<textarea id="textarea2"></textarea>
+
+<script>
+const textarea1 = document.getElementById('textarea1');
+const textarea2 = document.getElementById('textarea2');
+
+function hoverOverElement(element) {
+    const offsetX = element.offsetLeft;
+    const offsetY = element.offsetTop;
+
+    const centerX = offsetX + (element.offsetWidth / 2);
+    const centerY = offsetY + (element.offsetHeight / 2);
+
+    eventSender.mouseMoveTo(centerX, centerY);
+}
+
+function assertTextareasValues(expectedValueTextarea1, expectedValueTextarea2) {
+    assert_equals(textarea1.value, expectedValueTextarea1, "Wrong value for textarea1");
+    assert_equals(textarea2.value, expectedValueTextarea2, "Wrong value for textarea2");
+}
+
+test(() => {
+    assert_own_property(window, 'eventSender', 'This test requires eventSender.');
+
+    // Make sure the initial values are correct
+    assertTextareasValues("Drag me to the other textarea", "");
+
+    // Select all the text in textarea1
+    textarea1.select();
+
+    // Start dragging the text from textarea1
+    hoverOverElement(textarea1);
+    eventSender.mouseDown();
+
+    // Leap the event time so that mouseMove will start a new drag instead of changing selection.
+    eventSender.leapForward(400);
+
+    // Drop the text on textarea2
+    hoverOverElement(textarea2);
+    eventSender.mouseUp();
+
+    // Make sure the text was dragged and the values were updated
+    assertTextareasValues("", "Drag me to the other textarea");
+
+    // Undo, and make sure the values were also reverted
+    document.execCommand('Undo');
+    assertTextareasValues("Drag me to the other textarea", "");
+
+}, "Undo after dragging text between elements should restore the values");
+</script>
+</body>

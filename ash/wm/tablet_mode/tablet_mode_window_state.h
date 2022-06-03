@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 class TabletModeWindowManager;
@@ -36,6 +37,10 @@ class TabletModeWindowState : public WindowState::State {
                         bool snap,
                         bool animate_bounds_on_attach,
                         bool entering_tablet_mode);
+
+  TabletModeWindowState(const TabletModeWindowState&) = delete;
+  TabletModeWindowState& operator=(const TabletModeWindowState&) = delete;
+
   ~TabletModeWindowState() override;
 
   void set_ignore_wm_events(bool ignore) { ignore_wm_events_ = ignore; }
@@ -46,11 +51,14 @@ class TabletModeWindowState : public WindowState::State {
   // WindowState::State overrides:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
 
-  WindowStateType GetType() const override;
+  chromeos::WindowStateType GetType() const override;
   void AttachState(WindowState* window_state,
                    WindowState::State* previous_state) override;
   void DetachState(WindowState* window_state) override;
 
+  gfx::Rect old_window_bounds_in_screen() const {
+    return old_window_bounds_in_screen_;
+  }
   WindowState::State* old_state() { return old_state_.get(); }
 
  private:
@@ -59,25 +67,36 @@ class TabletModeWindowState : public WindowState::State {
   // change, only the bounds will be changed. If |animate| is set, the bound
   // change get animated.
   void UpdateWindow(WindowState* window_state,
-                    WindowStateType new_state_type,
+                    chromeos::WindowStateType new_state_type,
                     bool animate);
 
   // Depending on the capabilities of the window we either return
   // |WindowStateType::kMaximized| or |WindowStateType::kNormal|.
-  WindowStateType GetMaximizedOrCenteredWindowType(WindowState* window_state);
+  chromeos::WindowStateType GetMaximizedOrCenteredWindowType(
+      WindowState* window_state);
 
-  // If |target_state| is LEFT/RIGHT_SNAPPED and the window can be snapped,
-  // returns |target_state|. Otherwise depending on the capabilities of the
-  // window either returns |WindowStateType::kMaximized| or
+  // If |target_state| is PRIMARY/SECONDARY_SNAPPED and the window can be
+  // snapped, returns |target_state|. Otherwise depending on the capabilities
+  // of the window either returns |WindowStateType::kMaximized| or
   // |WindowStateType::kNormal|.
-  WindowStateType GetSnappedWindowStateType(WindowState* window_state,
-                                            WindowStateType target_state);
+  chromeos::WindowStateType GetSnappedWindowStateType(
+      WindowState* window_state,
+      chromeos::WindowStateType target_state);
 
   // Updates the bounds to the maximum possible bounds according to the current
   // window state. If |animated| is set we animate the change.
   void UpdateBounds(WindowState* window_state, bool animated);
 
-  // The original state object of the window.
+  // Handles Alt+[ if |snap_position| is |SplitViewController::LEFT|; handles
+  // Alt+] if |snap_position| is |SplitViewController::RIGHT|.
+  void CycleTabletSnap(WindowState* window_state,
+                       SplitViewController::SnapPosition snap_position);
+
+  // Snap the window in tablet split view if it can be snapped.
+  void DoTabletSnap(WindowState* window_state, WMEventType snap_event_type);
+
+  // The original bounds and state object of the window.
+  gfx::Rect old_window_bounds_in_screen_;
   std::unique_ptr<WindowState::State> old_state_;
 
   // The window whose WindowState owns this instance.
@@ -89,7 +108,7 @@ class TabletModeWindowState : public WindowState::State {
   // The state type to be established in AttachState(), unless
   // previous_state->GetType() is MAXIMIZED, MINIMIZED, FULLSCREEN, PINNED, or
   // TRUSTED_PINNED.
-  WindowStateType state_type_on_attach_;
+  chromeos::WindowStateType state_type_on_attach_;
 
   // Whether to animate in case of a bounds update when switching to
   // |state_type_on_attach_|.
@@ -97,12 +116,10 @@ class TabletModeWindowState : public WindowState::State {
 
   // The current state type. Due to the nature of this state, this can only be
   // WM_STATE_TYPE{NORMAL, MINIMIZED, MAXIMIZED}.
-  WindowStateType current_state_type_;
+  chromeos::WindowStateType current_state_type_;
 
   // If true, the state will not process events.
   bool ignore_wm_events_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowState);
 };
 
 }  // namespace ash

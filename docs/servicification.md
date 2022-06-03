@@ -28,26 +28,15 @@ command-line switch. Client code using the Network Service stays the same,
 independent of that switch.
 
 This document focuses on helpful guidelines and patterns for servicifying parts
-of Chromium, taking into account some nuances in how Chromium models its core
-services as well as how it embeds and configures the Service Manager. Readers
-are strongly encouraged to first read some basic
-[Service Manager documentation](/services/service_manager/README.md), as it will
-likely make the contents of this document easier to digest.
+of Chromium.
 
 Also see general [Mojo &amp; Services](/docs/README.md#Mojo-Services)
 documentation for other introductory guides, API references, *etc.*
 
 ## Setting Up The Service
 
-There are three big things you must decide when building and hooking up a shiny
-new service:
-
-- Where should the service live in the tree?
-- Do you need an instance of your service per BrowserContext?
-- Can Content depend on your service, or must Content embedders like Chrome do
-  so independently?
-
-This section aims to help you understand and answer those questions.
+This section briefly covers early decisions and implementation concerns when
+introducing a new service.
 
 ### Where in the Tree?
 
@@ -72,115 +61,51 @@ Other common places where developers place services, and why:
   just Chrome itself (for example, if the `ash` service must also connect to
   them for use in system UI).
 
-### Inside Content or Not?
+### Launching Service Processes
 
-The next decision you need to make is whether or not Content will wire in your
-service directly -- that is, whether or not your service is necessary to support
-some subsystem Content makes available to either the web platform or to Content
-embedders like Chrome, Android WebView, Cast Shell, and various third-party
-applications.
+Content provides a simple
+[`ServiceProcessHost`](https://cs.chromium.org/chromium/src/content/public/browser/service_process_host.h?rcl=723edf64a56ef6058e886afc67adc786bea39e78&l=47)
+API to launch a new Service Process. The Mojo Remote corresponding to each
+process launch is effectively a lifetime control for the launched process.
 
-For example, Content cannot function at all without the Network Service being
-available, because Content depends heavily on the Network Service to issue and
-process all of its network requests (imagine that, right?). As such, the
-Network Service is wired up to the Service Manager from within Content directly.
-In general, services which will be wired up in Content must live either in
-`//services` or `//components/services` but ideally the former.
+You may choose to maintain only a single concurrent instance of your service
+at a time, similar to the Network or Storage services. In this case, typically
+you will have some browser code maintain a lazy Mojo Remote to the service
+process, and any clients of the service will have their connections brokered
+through this interface.
 
-Conversely there are a large number of services used only by Chrome today,
-such as the `unzip` service which safely performs sandboxed unpacking of
-compressed archive files on behalf of clients in the browser process. These
-can always be placed in `//chrome/services`.
+In other cases you may want to manage multiple independent service processes.
+The Data Decoder service, for example, allows for arbitrary browser code
+to launch a unique isolated instance to process a single decode operation or
+a batch of related operations (e.g. to decode a bunch of different objects
+from the same untrusted origin).
 
-### Per-BrowserContext or Not?
+Insofar as the browser can use ServiceProcessLauncher however it likes, and the
+corresponding Mojo Remotes can be owned just like any other object, developers
+are free to manage their service instances however they like.
 
-Now that you've decided on a source location for your service and you know
-whether it will be wired into Content or hooked up by Content embedder code, all
-that's left left is to decide whether or not you want an instance of your service
-per BrowserContext (*i.e.* per user profile in Chrome).
+### Hooking Up the Service Implementation
 
-The alternative is for you to manage your own instance arity, either as a
-singleton service (quite common) or as a service which supports multiple
-instances that are *not* each intrinsically tied to a BrowserContext. Most
-services choose this path because BrowserContext coupling is typically
-unnecessary.
+For out-of-process service launching, Content uses its "utility" process type.
 
-As a general rule, if you're porting a subsystem which today relies heavily
-on `BrowserContextKeyedService`, it's likely that you want your service
-instances to have a 1:1 correspondence with BrowserContext instances.
+For services known to content, this is accomplished by adding an appropriate
+factory function to
+[`//content/utility/services.cc`](https://cs.chromium.org/chromium/src/content/utility/services.cc)
 
-### Putting It All Together
+For other services known only to Chrome, we have a similar file at
+[`//chrome/utility/services.cc`](https://cs.chromium.org/chromium/src/chrome/utility/services.cc).
 
-Let's get down to brass tacks. You're a developer of action. You've made all the
-important choices you need to make and you've even built a small and extremely
-well-tested prototype service with the help of
-[this glorious guide](/services/service_manager/README.md#Services). Now you
-want to get it working in Chromium while suffering as little pain as possible.
+Once an appropriate service factory is registered for your main service
+interface in one of these places, `ServiceProcessHost::Launch` can be used to
+acquire a new isolated instance from within the browser process.
 
-You're not going to believe it, but this section was written *just for YOU*.
+To run a service in-process, you can simply instantiate your service
+implementation (e.g. on a background thread) like you would any other object,
+and you can then bind a Mojo Remote which is connected to that instance.
 
-For services which are **are not** isolated per BrowserContext and which **can**
-be wired directly into Content:
-
-  - Include your service's manifest in the `content_packaged_services` manifest
-    directly, similar to
-    [these ones](https://cs.chromium.org/chromium/src/content/public/app/content_packaged_services_manifest.cc?rcl=0e8ac57eec2acfaa6f44b06eaa2fa667fe84a293&l=63).
-  - If you want to run your service embedded in the browser process, follow the
-    examples using `RegisterInProcessService`
-    [here](https://cs.chromium.org/chromium/src/content/browser/service_manager/service_manager_context.cc?rcl=0e8ac57eec2acfaa6f44b06eaa2fa667fe84a293&l=589).
-  - If you want to run your service out-of-process, update
-    `out_of_process_services`
-    [like so](https://cs.chromium.org/chromium/src/content/browser/service_manager/service_manager_context.cc?rcl=0e8ac57eec2acfaa6f44b06eaa2fa667fe84a293&l=642)
-    and hook up your actual private `Service` implementation exactly like the
-    many examples
-    [here](https://cs.chromium.org/chromium/src/content/utility/utility_service_factory.cc?rcl=2bdcc80a55c72a26ffe9778681f98dc4b6a565c0&l=114).
-
-For services which are **are** isolated per BrowserContext and which **can**
-be wired directly into Content:
-
-- Include your service's manifest in the `content_browser` manifest directly,
-  similar to
-  [these ones](https://cs.chromium.org/chromium/src/content/public/app/content_browser_manifest.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=277).
-- If you want to run your service embedded in the browser process, follow the
-  example
-  [here](https://cs.chromium.org/chromium/src/content/browser/browser_context.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=250)
-- If you want to run your service out-of-process, you are doing something that
-  hasn't been done yet and you will need to build a new thing.
-
-For services which **are not** isolated per BrowserContext but which **can not**
-be wired directly into Content:
-
-- Include your service's manifest in Chrome's `content_packaged_services`
-  manifest overlay similar to
-  [these ones](https://cs.chromium.org/chromium/src/chrome/app/chrome_packaged_service_manifests.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=135)
-- If you want to run your service embedded in the browser process, follow the
-  examples in `ChromeContentBrowserClient::HandleServiceRequest`
-  [here](https://cs.chromium.org/chromium/src/chrome/browser/chrome_content_browser_client.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=3891)
-- If you want to run your service out-of-process, modify
-  `ChromeContentBrowserClient::RegisterOutOfProcessServices` like the examples
-  [here](https://cs.chromium.org/chromium/src/chrome/browser/chrome_content_browser_client.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=3785)
-  and hook up your `Service` implementation in
-  `ChromeContentUtilityClient::HandleServiceRequest` like the ones
-  [here](https://cs.chromium.org/chromium/src/chrome/utility/chrome_content_utility_client.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=237).
-
-For services which **are** isolated per BrowserContext but which **can not** be
-wired directly into Content:
-
-- Include your service's manifest in Chrome's `content_browser` manifest overlay
-  similar to
-  [these ones](https://cs.chromium.org/chromium/src/chrome/app/chrome_content_browser_overlay_manifest.cc?rcl=a651619623a7b56d0c21083463ef8e61bf0a6058&l=247)
-- If you want to run your service embedded in the browser process, follow the
-  examples in `ProfileImpl::HandleServiceRequest`
-  [here](https://cs.chromium.org/chromium/src/chrome/browser/profiles/profile_impl.cc?rcl=350aea1a0242c2ea8610c9f755acee085c74ea7d&l=1263)
-- If you want to run your service out-of-process, you are doing something that
-  hasn't been done yet and you will need to build a new thing.
-
-*** aside
-The non-Content examples above are obviously specific to Chrome as the embedder,
-but Chrome's additions to supported services are all facilitated through the
-common `ContentBrowserClient` and `ContentUtilityClient` APIs that all embedders
-can implement. Mimicking what Chrome does should be sufficient for any embedder.
-***
+This is useful if you want to avoid the overhead of extra processes in some
+scenarios, and it allows the detail of where and how the service runs to be
+fully hidden behind management of the main interface's Mojo Remote.
 
 ## Incremental Servicification
 
@@ -259,30 +184,9 @@ doubt, look approximately near the recommended bits of code and try to find
 relevant prior art.
 ***
 
-Services are supported on iOS, with the usage model in //ios/web being very
-close to the usage model in //content. More specifically:
-
-* To embed a global service in the browser service, override
-  [WebClient::RegisterServices](https://cs.chromium.org/chromium/src/ios/web/public/web_client.h?q=WebClient::Register&sq=package:chromium&l=136). For an example usage, see
-  [ShellWebClient](https://cs.chromium.org/chromium/src/ios/web/shell/shell_web_client.mm?q=ShellWebClient::RegisterS&sq=package:chromium&l=91)
-  and the related integration test that
-  [connects to the embedded service](https://cs.chromium.org/chromium/src/ios/web/shell/test/service_manager_egtest.mm?q=service_manager_eg&sq=package:chromium&l=89).
-* To embed a per-BrowserState service, override
-  [BrowserState::RegisterServices](https://cs.chromium.org/chromium/src/ios/web/public/browser_state.h?q=BrowserState::RegisterServices&sq=package:chromium&l=89). For an
-  example usage, see
-  [ShellBrowserState](https://cs.chromium.org/chromium/src/ios/web/shell/shell_browser_state.mm?q=ShellBrowserState::RegisterServices&sq=package:chromium&l=48)
-  and the related integration test that
-  [connects to the embedded service](https://cs.chromium.org/chromium/src/ios/web/shell/test/service_manager_egtest.mm?q=service_manager_eg&sq=package:chromium&l=110).
-* To register a per-frame Mojo interface, override
-  [WebClient::BindInterfaceRequestFromMainFrame](https://cs.chromium.org/chromium/src/ios/web/public/web_client.h?q=WebClient::BindInterfaceRequestFromMainFrame&sq=package:chromium&l=148).
-  For an example usage, see
-  [ShellWebClient](https://cs.chromium.org/chromium/src/ios/web/shell/shell_web_client.mm?type=cs&q=ShellWebClient::BindInterfaceRequestFromMainFrame&sq=package:chromium&l=115)
-  and the related integration test that
-  [connects to the interface](https://cs.chromium.org/chromium/src/ios/web/shell/test/service_manager_egtest.mm?q=service_manager_eg&sq=package:chromium&l=130).
-  Note that this is the equivalent of
-  [ContentBrowserClient::BindInterfaceRequestFromFrame()](https://cs.chromium.org/chromium/src/content/public/browser/content_browser_client.h?type=cs&q=ContentBrowserClient::BindInterfaceRequestFromFrame&sq=package:chromium&l=667),
-  as on iOS all operation "in the content area" is implicitly operating in the
-  context of the page's main frame.
+Services are supported on iOS insofar as Mojo is supported. However, Chrome on
+iOS is strictly single-process, and all services thus must run in-process on
+iOS.
 
 If you have a use case or need for services on iOS, contact
 blundell@chromium.org. For general information on the motivations and vision for

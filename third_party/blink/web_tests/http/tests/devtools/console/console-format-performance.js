@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console nicely formats performance getters.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -20,8 +20,8 @@
 
   TestRunner.evaluateInPage('logToConsole()', callback);
 
-  function callback() {
-    var messages = ConsoleTestRunner.dumpConsoleMessagesIntoArray();
+  async function callback() {
+    var messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray();
     messages.map(m => TestRunner.addResult(m.replace(/:\s+\d+/g, ': <number>')));
     TestRunner.completeTest();
   }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import codecs
+import six
 
 
 def web_socket_do_extra_handshake(request):
@@ -15,7 +16,7 @@ def web_socket_transfer_data(request):
         line = request.ws_stream.receive_message()
         if line is None:
             return
-        if isinstance(line, unicode):
+        if isinstance(line, six.text_type):
             request.received_bytes += len(codecs.encode(line, 'utf-8'))
         else:
             request.received_bytes += len(line)

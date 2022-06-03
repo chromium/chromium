@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
@@ -34,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
   EventRouter* event_router = EventRouter::Get(profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
-  std::string test_extension_name = "events_are_unregistered";
-  ASSERT_TRUE(RunExtensionSubtest(test_extension_name, "page1.html"))
+  constexpr char test_extension_name[] = "events_are_unregistered";
+  ASSERT_TRUE(RunExtensionTest(test_extension_name, {.page_url = "page1.html"}))
       << message_;
 
   // Find the extension we just installed by looking for the path.
@@ -73,7 +74,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 // Test that listeners for webview-related events are not stored (even for lazy
 // contexts). See crbug.com/736381.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
-  ASSERT_TRUE(RunPlatformAppTest("events/webview_events")) << message_;
+  ASSERT_TRUE(RunExtensionTest("events/webview_events",
+                               {.launch_as_platform_app = true}))
+      << message_;
   EventRouter* event_router = EventRouter::Get(profile());
   // We should not register lazy listeners for any webview-related events.
   EXPECT_FALSE(
@@ -107,6 +110,9 @@ class EventsApiTest : public ExtensionApiTest {
  public:
   EventsApiTest() {}
 
+  EventsApiTest(const EventsApiTest&) = delete;
+  EventsApiTest& operator=(const EventsApiTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -136,8 +142,6 @@ class EventsApiTest : public ExtensionApiTest {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventsApiTest);
 };
 
 // Tests that updating an extension sends runtime.onInstalled event to the
@@ -208,10 +212,16 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
   }
 }
 
-// Disabled due to flaky timeouts. https://crbug.com/833854
+// This test is OK on Windows, but times out on other platforms.
+// https://crbug.com/833854
+#if defined(OS_WIN)
+#define MAYBE_NewlyIntroducedListener NewlyIntroducedListener
+#else
+#define MAYBE_NewlyIntroducedListener DISABLED_NewlyIntroducedListener
+#endif
 // Tests that if an extension's updated version has a new lazy listener, it
 // fires properly after the update.
-IN_PROC_BROWSER_TEST_F(EventsApiTest, DISABLED_NewlyIntroducedListener) {
+IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
   std::vector<ExtensionCRXData> data;
   data.emplace_back("v1");
   data.emplace_back("v2");
@@ -239,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, DISABLED_NewlyIntroducedListener) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
         WindowOpenDisposition::NEW_BACKGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     // Expect tabs.onCreated to fire.
     EXPECT_TRUE(catcher.GetNextResult());
   }
@@ -253,6 +263,10 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
     // it needs to be done before any of the extensions system is created.
     ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(true);
   }
+
+  ChromeUpdatesEventsApiTest(const ChromeUpdatesEventsApiTest&) = delete;
+  ChromeUpdatesEventsApiTest& operator=(const ChromeUpdatesEventsApiTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     EventsApiTest::SetUpOnMainThread();
@@ -284,8 +298,6 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
 
  private:
   std::set<std::string> observed_extension_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdatesEventsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, PRE_ChromeUpdates) {

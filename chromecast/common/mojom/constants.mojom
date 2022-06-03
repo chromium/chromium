@@ -5,3 +5,5 @@
 module chromecast.mojom;
 
 const string kChromecastServiceName = "chromecast";
+
+const string kContentBrowserServiceName = "content_browser";

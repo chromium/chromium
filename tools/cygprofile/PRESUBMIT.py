@@ -9,11 +9,16 @@ for more details on the presubmit API built into depot_tools.
 """
 
 
+USE_PYTHON3 = True
+
+
 def CommonChecks(input_api, output_api):
   output = []
-  blacklist = []
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api, output_api, black_list=blacklist))
+  files_to_skip = []
+  output.extend(
+      input_api.canned_checks.RunPylint(input_api,
+                                        output_api,
+                                        files_to_skip=files_to_skip))
   output.extend(input_api.canned_checks.RunUnitTests(
       input_api,
       output_api,

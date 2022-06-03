@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 
+#include "android_webview/browser/gfx/begin_frame_source_webview.h"
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
@@ -18,11 +19,11 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -55,6 +56,9 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   BrowserViewRenderer(
       BrowserViewRendererClient* client,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+
+  BrowserViewRenderer(const BrowserViewRenderer&) = delete;
+  BrowserViewRenderer& operator=(const BrowserViewRenderer&) = delete;
 
   ~BrowserViewRenderer() override;
 
@@ -114,7 +118,10 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // Android views hierarchy gluing.
   bool IsVisible() const;
   gfx::Rect GetScreenRect() const;
+  bool view_visible() const { return view_visible_; }
+  bool window_visible() const { return window_visible_; }
   bool attached_to_window() const { return attached_to_window_; }
+  bool was_attached() const { return was_attached_; }
   gfx::Size size() const { return size_; }
 
   bool IsClientVisible() const;
@@ -149,11 +156,13 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       content::SynchronousCompositor* compositor,
       std::unique_ptr<viz::CopyOutputRequest> copy_request) override;
 
+  void AddBeginFrameCompletionCallback(base::OnceClosure callback) override;
+
   // CompositorFrameProducer overrides
   base::WeakPtr<CompositorFrameProducer> GetWeakPtr() override;
   void RemoveCompositorFrameConsumer(
       CompositorFrameConsumer* consumer) override;
-  void ReturnUsedResources(const std::vector<viz::ReturnedResource>& resources,
+  void ReturnUsedResources(std::vector<viz::ReturnedResource> resources,
                            const viz::FrameSinkId& frame_sink_id,
                            uint32_t layer_tree_frame_sink_id) override;
   void OnParentDrawDataUpdated(
@@ -165,7 +174,10 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   // RootFrameSinkProxy overrides
   void Invalidate() override;
-  void ProgressFling(base::TimeTicks frame_time) override;
+  void ReturnResourcesFromViz(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      std::vector<viz::ReturnedResource> resources) override;
 
   // Visible for testing.
   content::SynchronousCompositor* GetActiveCompositorForTesting() const {
@@ -178,7 +190,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   void SetActiveCompositor(content::SynchronousCompositor* compositor);
   void SetTotalRootLayerScrollOffset(const gfx::Vector2dF& new_value_dip);
   bool CanOnDraw();
-  bool CompositeSW(SkCanvas* canvas);
+  bool CompositeSW(SkCanvas* canvas, bool software_canvas);
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   RootLayerStateAsValue(const gfx::Vector2dF& total_scroll_offset_dip,
                         const gfx::SizeF& scrollable_size_dip);
@@ -189,6 +201,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       CompositorFrameConsumer* compositor_frame_consumer);
   void ReleaseHardware();
   bool DoUpdateParentDrawData();
+  void UpdateBeginFrameSource();
 
   gfx::Vector2d max_scroll_offset() const;
 
@@ -228,6 +241,9 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   bool on_new_picture_enable_;
   bool clear_view_;
 
+  // Used for metrics, indicates if we called invalidate since last draw.
+  bool did_invalidate_since_last_draw_ = false;
+
   // Approximates whether render thread functor has a frame to draw. It is safe
   // for Java side to stop blitting the background color once this is true.
   bool has_rendered_frame_ = false;
@@ -245,26 +261,22 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   // When zoom-for-dsf enabled |max_scroll_offset_unscaled_| and
   // |scroll_offset_unscaled_| is in physical pixel; otherwise, they are in dip
-  // TODO(miletus): Make scroll_offset_unscaled_ a gfx::ScrollOffset.
   gfx::Vector2dF scroll_offset_unscaled_;
-
-  // TODO(miletus): Make max_scroll_offset_unscaled_ a gfx::ScrollOffset.
   gfx::Vector2dF max_scroll_offset_unscaled_;
 
   // Used to prevent rounding errors from accumulating enough to generate
   // visible skew (especially noticeable when scrolling up and down in the same
   // spot over a period of time).
-  // TODO(miletus): Make overscroll_rounding_error_ a gfx::ScrollOffset.
   gfx::Vector2dF overscroll_rounding_error_;
 
   // The scroll to apply after the next scroll state update.
-  base::Optional<gfx::Vector2d> scroll_on_scroll_state_update_;
+  absl::optional<gfx::Vector2d> scroll_on_scroll_state_update_;
 
   ParentCompositorDrawConstraints external_draw_constraints_;
 
-  base::WeakPtrFactory<CompositorFrameProducer> weak_ptr_factory_{this};
+  std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewRenderer);
+  base::WeakPtrFactory<CompositorFrameProducer> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview

@@ -9,9 +9,7 @@ import("//testing/test.gni")
 # "gn_all" target (i.e. by the bots).
 group("all_tests") {
   testonly = true
-  deps = [
-    ":ios_components_unittests",
-  ]
+  deps = [ ":ios_components_unittests" ]
 }
 
 # To add a unit test to this target, make a "unit_tests" source_set in your
@@ -27,6 +25,9 @@ test("ios_components_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//ios/components/io_thread:unit_tests",
+    "//ios/components/security_interstitials:unit_tests",
+    "//ios/components/security_interstitials/lookalikes:unit_tests",
+    "//ios/components/ui_util:unit_tests",
   ]
 
   assert_no_deps = ios_assert_no_deps

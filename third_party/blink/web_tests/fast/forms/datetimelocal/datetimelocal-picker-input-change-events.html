@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="time" value="2020-01-13T14:15:02" oninput="inputEventCount++;" onchange="changeEventCount++">
+<script>
+'use strict';
+
+var inputEventCount = 0;
+var changeEventCount = 0;
+
+let timeElement = document.getElementById("time");
+
+promise_test(() => {
+    assert_equals(internals.pagePopupWindow, null);
+    return openPickerWithPromise(timeElement).then(() => {
+        assert_equals(timeElement.value, "2020-01-13T14:15:02");
+        assert_not_equals(internals.pagePopupWindow, null);
+        assert_equals(inputEventCount, 0, "No input event should have not have fired before making changes.");
+        assert_equals(changeEventCount, 0, "No change event should have fired before popup is closed.");
+
+        clickTimeCellAt(0, 1);
+        clickTimeCellAt(0, 2);
+
+        assert_equals(timeElement.value, "2020-01-13T16:15:02");
+        assert_equals(inputEventCount, 2, "One input event should have fired for each modification.");
+        assert_equals(changeEventCount, 0, "No change event should have fired before popup is closed.");
+
+        eventSender.keyDown('Enter');
+
+        assert_equals(internals.pagePopupWindow, null, "Popup should have closed from Enter key");
+        assert_equals(inputEventCount, 2, 'No extra input event should fire when closing popup.');
+        assert_equals(changeEventCount, 0, 'Change event is fired asynchronously after closing popup.');
+        return new Promise((resolve) => {
+            window.setTimeout(() => {
+                assert_equals(changeEventCount, 1, 'Change event should have fired (once) asynchronously after closing popup.');
+                resolve();
+            }, 1);
+        });
+    });
+}, "Test input and change event firing when popup value is modified");
+
+promise_test(() => {
+    inputEventCount = changeEventCount = 0;
+    assert_equals(internals.pagePopupWindow, null);
+    return openPickerWithPromise(timeElement).then(() => {
+        assert_equals(timeElement.value, "2020-01-13T16:15:02");
+        assert_not_equals(internals.pagePopupWindow, null);
+        assert_equals(inputEventCount, 0, "No input event should have not have fired before making changes.");
+        assert_equals(changeEventCount, 0, "No change event should have fired before popup is closed.");
+
+        clickTimeCellAt(0, 1);
+
+        assert_equals(timeElement.value, "2020-01-13T17:15:02");
+        assert_equals(inputEventCount, 1, "One input event should have fired for the modification.");
+        assert_equals(changeEventCount, 0, "No change event should have fired before popup is closed.");
+
+        eventSender.keyDown('Escape');
+
+        assert_equals(timeElement.value, "2020-01-13T16:15:02");
+        assert_not_equals(internals.pagePopupWindow, null, "Popup should not have closed from single escape");
+        assert_equals(inputEventCount, 2, "One input event should have fired when restoring the initial value.");
+        assert_equals(changeEventCount, 0, "No change event should have fired before popup is closed.");
+
+        eventSender.keyDown('Escape');
+
+        assert_equals(internals.pagePopupWindow, null, "Popup should have closed from Enter key");
+        assert_equals(inputEventCount, 2, 'No extra input event should fire when closing popup.');
+        return new Promise((resolve) => {
+            window.setTimeout(() => {
+                assert_equals(changeEventCount, 0, 'No change event should fire if popup was submitted with value still matching the original.');
+                resolve();
+            }, 1);
+        });
+    });
+}, "Test that change does not fire if popup value is modified and then restored to original value.");
+
+</script>
+</body>
+</html>

@@ -8,14 +8,13 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using autofill::PasswordForm;
 using testing::ElementsAre;
 
 namespace password_manager {
@@ -23,7 +22,7 @@ namespace password_manager {
 namespace {
 
 MATCHER_P3(FormHasOriginUsernamePassword, origin, username, password, "") {
-  return arg.signon_realm == origin && arg.origin == GURL(origin) &&
+  return arg.signon_realm == origin && arg.url == GURL(origin) &&
          arg.username_value == base::UTF8ToUTF16(username) &&
          arg.password_value == base::UTF8ToUTF16(password);
 }
@@ -42,9 +41,9 @@ TEST(PasswordCSVWriterTest, SerializePasswords_ZeroPasswords) {
 TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
   std::vector<std::unique_ptr<PasswordForm>> passwords;
   PasswordForm form;
-  form.origin = GURL("http://example.com");
-  form.username_value = base::UTF8ToUTF16("Someone");
-  form.password_value = base::UTF8ToUTF16("Secret");
+  form.url = GURL("http://example.com");
+  form.username_value = u"Someone";
+  form.password_value = u"Secret";
   passwords.push_back(std::make_unique<PasswordForm>(form));
 
   CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(passwords));
@@ -61,13 +60,13 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
 TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
   std::vector<std::unique_ptr<PasswordForm>> passwords;
   PasswordForm form;
-  form.origin = GURL("http://example.com");
-  form.username_value = base::UTF8ToUTF16("Someone");
-  form.password_value = base::UTF8ToUTF16("Secret");
+  form.url = GURL("http://example.com");
+  form.username_value = u"Someone";
+  form.password_value = u"Secret";
   passwords.push_back(std::make_unique<PasswordForm>(form));
-  form.origin = GURL("http://other.org");
-  form.username_value = base::UTF8ToUTF16("Anyone");
-  form.password_value = base::UTF8ToUTF16("None");
+  form.url = GURL("http://other.org");
+  form.username_value = u"Anyone";
+  form.password_value = u"None";
   passwords.push_back(std::make_unique<PasswordForm>(form));
 
   CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(passwords));

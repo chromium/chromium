@@ -5,6 +5,9 @@
 package org.chromium.ui.modelutil;
 
 import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
@@ -43,9 +46,10 @@ public interface MVCListAdapter {
      */
     interface ViewBuilder<T extends View> {
         /**
+         * @param parent Parent view.
          * @return A new view to show in the list.
          */
-        T buildView();
+        T buildView(@NonNull ViewGroup parent);
     }
 
     /**

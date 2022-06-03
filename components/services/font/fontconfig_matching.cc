@@ -13,13 +13,13 @@
 
 namespace font_service {
 
-base::Optional<FontConfigLocalMatching::FontConfigMatchResult>
+absl::optional<FontConfigLocalMatching::FontConfigMatchResult>
 FontConfigLocalMatching::FindFontByPostscriptNameOrFullFontName(
     const std::string& font_name) {
   // TODO(crbug.com/876652): This FontConfig-backed implementation will
   // match PostScript and full font name in any language, and we're okay
   // with that for now since it is what FireFox does.
-  base::Optional<FontConfigLocalMatching::FontConfigMatchResult>
+  absl::optional<FontConfigLocalMatching::FontConfigMatchResult>
       postscript_result =
           FindFontBySpecifiedName(FC_POSTSCRIPT_NAME, font_name);
   if (postscript_result)
@@ -28,7 +28,7 @@ FontConfigLocalMatching::FindFontByPostscriptNameOrFullFontName(
   return FindFontBySpecifiedName(FC_FULLNAME, font_name);
 }
 
-base::Optional<FontConfigLocalMatching::FontConfigMatchResult>
+absl::optional<FontConfigLocalMatching::FontConfigMatchResult>
 FontConfigLocalMatching::FindFontBySpecifiedName(
     const char* fontconfig_parameter_name,
     const std::string& font_name) {
@@ -37,7 +37,7 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
              std::string(FC_POSTSCRIPT_NAME));
 
   if (!base::IsStringUTF8(font_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::unique_ptr<FcPattern, void (*)(FcPattern*)> pattern(FcPatternCreate(),
                                                            FcPatternDestroy);
@@ -60,7 +60,7 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
       FcFontList(nullptr, pattern.get(), object_set.get()), FcFontSetDestroy);
 
   if (!font_set || !font_set->nfont)
-    return base::nullopt;
+    return absl::nullopt;
 
   FcPattern* current = font_set->fonts[0];
 
@@ -68,7 +68,7 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   if (FcPatternGetString(current, FC_FILE, 0,
                          reinterpret_cast<FcChar8**>(const_cast<char**>(
                              &c_filename))) != FcResultMatch) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const char* sysroot =
       reinterpret_cast<const char*>(FcConfigGetSysRoot(nullptr));
@@ -78,7 +78,8 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   // very good way of detecting this so we'll filter based on the
   // filename.
   bool is_sfnt = false;
-  static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc", ""};
+  static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc",
+                                            ".otf", ".OTF", ""};
   for (size_t j = 0;; j++) {
     if (kSFNTExtensions[j][0] == 0) {
       // None of the extensions matched.
@@ -92,18 +93,18 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   }
 
   if (!is_sfnt)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::FilePath font_file_path(filename);
   base::File verify_file_exists(font_file_path,
                                 base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!verify_file_exists.IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   int ttc_index = 0;
   FcPatternGetInteger(current, FC_INDEX, 0, &ttc_index);
   if (ttc_index < 0)
-    return base::nullopt;
+    return absl::nullopt;
   FontConfigMatchResult match_result;
   match_result.file_path = font_file_path;
   match_result.ttc_index = ttc_index;

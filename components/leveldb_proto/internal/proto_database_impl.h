@@ -126,6 +126,11 @@ class ProtoDatabaseImpl : public ProtoDatabase<P, T> {
       const std::string& end,
       typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
       override;
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
+      typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
+      override;
 
   void LoadKeys(Callbacks::LoadKeysCallback callback) override;
 
@@ -498,6 +503,20 @@ void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesInRange(
   base::OnceClosure load_task =
       base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesInRange,
                      db_wrapper_, start, end,
+                     base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
+                                    base::SequencedTaskRunnerHandle::Get(),
+                                    std::move(callback)));
+  PostTransaction(std::move(load_task));
+}
+
+template <typename P, typename T>
+void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const KeyIteratorController& controller,
+    typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
+  base::OnceClosure load_task =
+      base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesWhile,
+                     db_wrapper_, start, controller,
                      base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
                                     base::SequencedTaskRunnerHandle::Get(),
                                     std::move(callback)));

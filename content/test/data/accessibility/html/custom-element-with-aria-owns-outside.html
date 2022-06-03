@@ -1,0 +1,18 @@
+<hr aria-label="Outside custom element">
+<p>Hello, world</p>
+<template id="test-contents">something</template>
+<hr aria-label="Inside custom element">
+<div role="group" aria-owns="t1 t2"></div>
+<test-element role="button" id="t1"></test-element>
+<test-element role="button" id="t2"></test-element>
+<script>
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const testContents = document.getElementById('test-contents');
+      this.attachShadow({mode: 'open'}).innerHTML = testContents.innerHTML;
+    }
+  }
+  customElements.define('test-element', TestElement);
+</script>

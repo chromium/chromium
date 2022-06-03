@@ -11,8 +11,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/test/test_support_jni_headers/MainReturnCodeResult_jni.h"
 #include "base/test/test_support_jni_headers/MultiprocessTestClientLauncher_jni.h"
 

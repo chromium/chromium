@@ -1,3 +1,3 @@
 AXWebArea
-++AXGroup AXSubrole=AXApplicationAlert AXRoleDescription='alert' AXARIAAtomic='1'
-++++AXStaticText AXValue='This test is for aria role="alert"' AXARIAAtomic='0'
+++AXGroup AXSubrole=AXApplicationAlert AXARIAAtomic=1 AXRoleDescription='alert'
+++++AXStaticText AXARIAAtomic=0 AXValue='This test is for aria role="alert"'

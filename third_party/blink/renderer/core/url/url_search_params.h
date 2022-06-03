@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_SEARCH_PARAMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_SEARCH_PARAMS_H_
 
-#include <base/gtest_prod_util.h>
 #include <utility>
+
+#include "base/dcheck_is_on.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
-#include "third_party/blink/renderer/bindings/core/v8/usv_string_sequence_sequence_or_usv_string_usv_string_record_or_usv_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -17,18 +18,20 @@
 
 namespace blink {
 
-class ExceptionState;
 class DOMURL;
+class ExceptionState;
+class V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
-typedef USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString
-    URLSearchParamsInit;
+using URLSearchParamsInit =
+    V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
 class CORE_EXPORT URLSearchParams final : public ScriptWrappable,
                                           public PairIterable<String, String> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static URLSearchParams* Create(const URLSearchParamsInit&, ExceptionState&);
+  static URLSearchParams* Create(const URLSearchParamsInit* init,
+                                 ExceptionState& exception_state);
   static URLSearchParams* Create(const Vector<std::pair<String, String>>&,
                                  ExceptionState&);
   static URLSearchParams* Create(const Vector<Vector<String>>&,
@@ -61,7 +64,7 @@ class CORE_EXPORT URLSearchParams final : public ScriptWrappable,
   DOMURL* UrlObject() const;
 #endif
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(URLSearchParamsTest, EncodedFormData);

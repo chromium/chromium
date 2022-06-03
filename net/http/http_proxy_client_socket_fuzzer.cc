@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/address_list.h"
 #include "net/base/auth.h"
@@ -24,6 +24,7 @@
 #include "net/http/http_auth_handler_digest.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_scheme.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/fuzzed_socket.h"
 #include "net/socket/next_proto.h"
@@ -35,14 +36,14 @@
 // |data| is used to create a FuzzedSocket to fuzz reads and writes, see that
 // class for details.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // Use a test NetLog, to exercise logging code.
-  net::RecordingTestNetLog test_net_log;
-
   FuzzedDataProvider data_provider(data, size);
+  // Including an observer; even though the recorded results aren't currently
+  // used, it'll ensure the netlogging code is fuzzed as well.
+  net::RecordingNetLogObserver net_log_observer;
 
   net::TestCompletionCallback callback;
   std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
-      new net::FuzzedSocket(&data_provider, &test_net_log));
+      new net::FuzzedSocket(&data_provider, net::NetLog::Get()));
   CHECK_EQ(net::OK, fuzzed_socket->Connect(callback.callback()));
 
   // Create auth handler supporting basic and digest schemes.  Other schemes can
@@ -75,8 +76,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Repeatedly try to log in with the same credentials.
   while (result == net::ERR_PROXY_AUTH_REQUESTED) {
     if (!auth_controller->HaveAuth()) {
-      auth_controller->ResetAuth(net::AuthCredentials(
-          base::ASCIIToUTF16("user"), base::ASCIIToUTF16("pass")));
+      auth_controller->ResetAuth(net::AuthCredentials(u"user", u"pass"));
     }
     result = socket.RestartWithAuth(callback.callback());
     result = callback.GetResult(result);

@@ -5,6 +5,8 @@
 #include "chromeos/components/proximity_auth/proximity_monitor_impl.h"
 
 #include <math.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -36,7 +38,7 @@ ProximityMonitorImpl::ProximityMonitorImpl(
       remote_device_is_in_proximity_(false),
       is_active_(false) {
   if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
-    device::BluetoothAdapterFactory::GetAdapter(
+    device::BluetoothAdapterFactory::Get()->GetAdapter(
         base::BindOnce(&ProximityMonitorImpl::OnAdapterInitialized,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -95,7 +97,7 @@ void ProximityMonitorImpl::UpdatePollingState() {
         base::BindOnce(
             &ProximityMonitorImpl::PerformScheduledUpdatePollingState,
             polling_weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kPollingTimeoutMs));
+        base::Milliseconds(kPollingTimeoutMs));
     Poll();
   } else {
     polling_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -132,10 +134,10 @@ void ProximityMonitorImpl::OnGetConnectionMetadata(
   if (connection_metadata->bluetooth_connection_metadata)
     OnGetRssi(connection_metadata->bluetooth_connection_metadata->current_rssi);
   else
-    OnGetRssi(base::nullopt);
+    OnGetRssi(absl::nullopt);
 }
 
-void ProximityMonitorImpl::OnGetRssi(const base::Optional<int32_t>& rssi) {
+void ProximityMonitorImpl::OnGetRssi(const absl::optional<int32_t>& rssi) {
   if (!is_active_) {
     PA_LOG(VERBOSE) << "Received RSSI after stopping.";
     return;
@@ -161,7 +163,7 @@ void ProximityMonitorImpl::ClearProximityState() {
 void ProximityMonitorImpl::AddSample(int32_t rssi) {
   double weight = kRssiSampleWeight;
   if (!rssi_rolling_average_) {
-    rssi_rolling_average_.reset(new double(rssi));
+    rssi_rolling_average_ = std::make_unique<double>(rssi);
   } else {
     *rssi_rolling_average_ =
         weight * rssi + (1 - weight) * (*rssi_rolling_average_);

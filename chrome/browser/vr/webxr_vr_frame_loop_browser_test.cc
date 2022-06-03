@@ -63,8 +63,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNoStalledFrameLoop) {
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.
-  t->LoadUrlAndAwaitInitialization(
-      t->GetFileUrlForHtmlTestFile("webxr_no_stalled_frame_loop"));
+  t->LoadFileAndAwaitInitialization("webxr_no_stalled_frame_loop");
   t->EnterSessionWithUserGestureOrFail();
 
   // Wait for 2 frames to be submitted back to the device, but the js frame loop
@@ -84,8 +83,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLateSetOfBaseLayer) {
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.
-  t->LoadUrlAndAwaitInitialization(
-      t->GetFileUrlForHtmlTestFile("webxr_set_base_layer_late"));
+  t->LoadFileAndAwaitInitialization("webxr_set_base_layer_late");
   t->EnterSessionWithUserGestureOrFail();
 
   // Poll and have the javascript yield for 500 ms.  This should give us enough

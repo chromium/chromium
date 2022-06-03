@@ -35,7 +35,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
  public:
   StyleElement(Document*, bool created_by_parser);
   virtual ~StyleElement();
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   enum ProcessingResult { kProcessingSuccessful, kProcessingFatalError };
@@ -70,4 +70,4 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ELEMENT_H_

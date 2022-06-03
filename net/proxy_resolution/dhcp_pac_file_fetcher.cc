@@ -21,7 +21,7 @@ DoNothingDhcpPacFileFetcher::DoNothingDhcpPacFileFetcher() = default;
 DoNothingDhcpPacFileFetcher::~DoNothingDhcpPacFileFetcher() = default;
 
 int DoNothingDhcpPacFileFetcher::Fetch(
-    base::string16* utf16_text,
+    std::u16string* utf16_text,
     CompletionOnceCallback callback,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag traffic_annotation) {

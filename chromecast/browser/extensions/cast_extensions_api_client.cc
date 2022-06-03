@@ -18,7 +18,8 @@ namespace extensions {
 namespace {
 class CastWebViewGuestDelegate : public WebViewGuestDelegate {
  public:
-  bool HandleContextMenu(const content::ContextMenuParams& params) override {
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override {
     return true;
   }
 

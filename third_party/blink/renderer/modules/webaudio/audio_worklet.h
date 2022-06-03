@@ -21,10 +21,13 @@ class SerializedScriptValue;
 
 class MODULES_EXPORT AudioWorklet final : public Worklet {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(AudioWorklet);
 
  public:
   explicit AudioWorklet(BaseAudioContext*);
+
+  AudioWorklet(const AudioWorklet&) = delete;
+  AudioWorklet& operator=(const AudioWorklet&) = delete;
+
   ~AudioWorklet() override = default;
 
   void CreateProcessor(scoped_refptr<AudioWorkletHandler>,
@@ -51,7 +54,7 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
   // are ready.
   bool IsReady();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Implements Worklet
@@ -62,8 +65,6 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
   bool worklet_started_ = false;
 
   Member<BaseAudioContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioWorklet);
 };
 
 }  // namespace blink

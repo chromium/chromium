@@ -8,7 +8,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.net.EffectiveConnectionType;
 
@@ -68,8 +67,7 @@ public class NetworkQualityProvider {
     }
 
     protected void doNativeInit() {
-        assert BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .isFullBrowserStarted();
+        assert BrowserStartupController.getInstance().isFullBrowserStarted();
         mNativeNetworkQualityProvider =
                 NetworkQualityProviderJni.get().init(NetworkQualityProvider.this);
     }

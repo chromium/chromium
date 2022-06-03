@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,13 +14,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.Callable;
 
@@ -31,8 +30,7 @@ import java.util.concurrent.Callable;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ChromeDownloadDelegateTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -59,18 +57,22 @@ public class ChromeDownloadDelegateTest {
     @Test
     @SmallTest
     @Feature({"Download"})
-    @RetryOnFailure
     public void testShouldInterceptContextMenuDownload() {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("about:blank");
         ChromeDownloadDelegate delegate = TestThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<ChromeDownloadDelegate>) () -> new MockChromeDownloadDelegate(tab));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("file://test/test.html"));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("http://test/test.html"));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("ftp://test/test.dm"));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("data://test.dd"));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("http://test.dd"));
-        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload("http://test/test.dd"));
-        Assert.assertTrue(delegate.shouldInterceptContextMenuDownload("https://test/test.dm"));
+        Assert.assertFalse(
+                delegate.shouldInterceptContextMenuDownload(new GURL("file://test/test.html")));
+        Assert.assertFalse(
+                delegate.shouldInterceptContextMenuDownload(new GURL("http://test/test.html")));
+        Assert.assertFalse(
+                delegate.shouldInterceptContextMenuDownload(new GURL("ftp://test/test.dm")));
+        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload(new GURL("data://test.dd")));
+        Assert.assertFalse(delegate.shouldInterceptContextMenuDownload(new GURL("http://test.dd")));
+        Assert.assertFalse(
+                delegate.shouldInterceptContextMenuDownload(new GURL("http://test/test.dd")));
+        Assert.assertTrue(
+                delegate.shouldInterceptContextMenuDownload(new GURL("https://test/test.dm")));
     }
 }

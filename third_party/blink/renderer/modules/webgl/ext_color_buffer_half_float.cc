@@ -25,11 +25,16 @@
 
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_half_float.h"
 
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+
 namespace blink {
 
 EXTColorBufferHalfFloat::EXTColorBufferHalfFloat(
     WebGLRenderingContextBase* context)
-    : WebGLExtension(context) {}
+    : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_EXT_color_buffer_half_float");
+}
 
 WebGLExtensionName EXTColorBufferHalfFloat::GetName() const {
   return kEXTColorBufferHalfFloatName;

@@ -9,16 +9,15 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
-#include "chrome/common/safe_browsing/file_type_policies.h"
-#include "components/safe_browsing/common/utils.h"
-#include "components/safe_browsing/db/database_manager.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/common/utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -27,9 +26,9 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_status_code.h"
-#include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using content::BrowserThread;
 
@@ -52,7 +51,7 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
       initiating_frame_url_(initiating_frame_url),
       initiating_main_frame_url_(
           web_contents ? web_contents->GetLastCommittedURL() : GURL()),
-      tab_id_(SessionTabHelper::IdForTab(web_contents)),
+      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       default_file_path_(default_file_path),
       alternate_extensions_(alternate_extensions),
       callback_(std::move(callback)),
@@ -60,16 +59,26 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
       database_manager_(database_manager),
       start_time_(base::TimeTicks::Now()),
       supported_path_(
-          GetSupportedFilePath(default_file_path, alternate_extensions)) {
+          GetSupportedFilePath(default_file_path, alternate_extensions)),
+      profile_(profile),
+      web_contents_(web_contents) {
   DCHECK(profile);
   is_extended_reporting_ = IsExtendedReportingEnabled(*profile->GetPrefs());
+  is_enhanced_protection_ = IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
-  if (service->navigation_observer_manager()) {
-    has_user_gesture_ =
-        service->navigation_observer_manager()->HasUserGesture(web_contents);
+  // web_contents can be null in tests.
+  if (!web_contents) {
+    return;
+  }
+
+  Observe(web_contents);
+
+  SafeBrowsingNavigationObserverManager* observer_manager =
+      service->GetNavigationObserverManager(web_contents);
+  if (observer_manager) {
+    has_user_gesture_ = observer_manager->HasUserGesture(web_contents);
     if (has_user_gesture_) {
-      service->navigation_observer_manager()->OnUserGestureConsumed(
-          web_contents, base::Time::Now());
+      observer_manager->OnUserGestureConsumed(web_contents);
     }
   }
 }
@@ -107,15 +116,15 @@ void PPAPIDownloadRequest::Start() {
   // verdict. The weak pointer used for the timeout will be invalidated (and
   // hence would prevent the timeout) if the check completes on time and
   // execution reaches Finish().
-  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                        base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
-                                       weakptr_factory_.GetWeakPtr()),
-                        base::TimeDelta::FromMilliseconds(
-                            service_->download_request_timeout_ms()));
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
+                     weakptr_factory_.GetWeakPtr()),
+      base::Milliseconds(service_->download_request_timeout_ms()));
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&PPAPIDownloadRequest::CheckWhitelistsOnIOThread,
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PPAPIDownloadRequest::CheckAllowlistsOnIOThread,
                      requestor_url_, database_manager_,
                      weakptr_factory_.GetWeakPtr()));
 }
@@ -130,33 +139,36 @@ GURL PPAPIDownloadRequest::GetDownloadRequestUrl() {
   return url;
 }
 
-// Whitelist checking needs to the done on the IO thread.
-void PPAPIDownloadRequest::CheckWhitelistsOnIOThread(
+void PPAPIDownloadRequest::WebContentsDestroyed() {
+  Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
+}
+
+// Allowlist checking needs to the done on the IO thread.
+void PPAPIDownloadRequest::CheckAllowlistsOnIOThread(
     const GURL& requestor_url,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     base::WeakPtr<PPAPIDownloadRequest> download_request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DVLOG(2) << " checking whitelists for requestor URL:" << requestor_url;
+  DVLOG(2) << " checking allowlists for requestor URL:" << requestor_url;
 
-  bool url_was_whitelisted =
+  bool url_was_allowlisted =
       requestor_url.is_valid() && database_manager &&
-      database_manager->MatchDownloadWhitelistUrl(requestor_url);
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&PPAPIDownloadRequest::WhitelistCheckComplete,
-                                download_request, url_was_whitelisted));
+      database_manager->MatchDownloadAllowlistUrl(requestor_url);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PPAPIDownloadRequest::AllowlistCheckComplete,
+                                download_request, url_was_allowlisted));
 }
 
-void PPAPIDownloadRequest::WhitelistCheckComplete(bool was_on_whitelist) {
-  DVLOG(2) << __func__ << " was_on_whitelist:" << was_on_whitelist;
-  if (was_on_whitelist) {
-    RecordCountOfWhitelistedDownload(URL_WHITELIST);
-    // TODO(asanka): Should sample whitelisted downloads based on
-    // service_->whitelist_sample_rate(). http://crbug.com/610924
-    Finish(RequestOutcome::WHITELIST_HIT, DownloadCheckResult::SAFE);
+void PPAPIDownloadRequest::AllowlistCheckComplete(bool was_on_allowlist) {
+  DVLOG(2) << __func__ << " was_on_allowlist:" << was_on_allowlist;
+  if (was_on_allowlist) {
+    // TODO(asanka): Should sample allowlisted downloads based on
+    // service_->allowlist_sample_rate(). http://crbug.com/610924
+    Finish(RequestOutcome::ALLOWLIST_HIT, DownloadCheckResult::SAFE);
     return;
   }
 
-  // Not on whitelist, so we are going to check with the SafeBrowsing
+  // Not on allowlist, so we are going to check with the SafeBrowsing
   // backend.
   SendRequest();
 }
@@ -166,9 +178,11 @@ void PPAPIDownloadRequest::SendRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ClientDownloadRequest request;
-  auto population = is_extended_reporting_
-                        ? ChromeUserPopulation::EXTENDED_REPORTING
-                        : ChromeUserPopulation::SAFE_BROWSING;
+  auto population = is_enhanced_protection_
+                        ? ChromeUserPopulation::ENHANCED_PROTECTION
+                        : is_extended_reporting_
+                              ? ChromeUserPopulation::EXTENDED_REPORTING
+                              : ChromeUserPopulation::SAFE_BROWSING;
   request.mutable_population()->set_user_population(population);
   request.mutable_population()->set_profile_management_status(
       GetProfileManagementStatus(
@@ -194,7 +208,7 @@ void PPAPIDownloadRequest::SendRequest() {
   }
 
   service_->AddReferrerChainToPPAPIClientDownloadRequest(
-      initiating_frame_url_, initiating_main_frame_url_, tab_id_,
+      web_contents_, initiating_frame_url_, initiating_main_frame_url_, tab_id_,
       has_user_gesture_, &request);
 
   if (!request.SerializeToString(&client_download_request_data_)) {
@@ -219,7 +233,7 @@ void PPAPIDownloadRequest::SendRequest() {
           "download is safe or the danger type of this download (e.g. "
           "dangerous content, uncommon content, potentially harmful, etc)."
         trigger:
-          "When user triggers a non-whitelisted PPAPI download, and the "
+          "When user triggers a non-allowlisted PPAPI download, and the "
           "file extension is supported by download protection service. "
           "Please refer to https://cs.chromium.org/chromium/src/chrome/"
           "browser/resources/safe_browsing/download_file_types.asciipb for "
@@ -255,7 +269,7 @@ void PPAPIDownloadRequest::SendRequest() {
   loader_->AttachStringForUpload(client_download_request_data_,
                                  "application/octet-stream");
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      service_->url_loader_factory_.get(),
+      service_->GetURLLoaderFactory(profile_).get(),
       base::BindOnce(&PPAPIDownloadRequest::OnURLLoaderComplete,
                      base::Unretained(this)));
 }
@@ -322,6 +336,8 @@ PPAPIDownloadRequest::DownloadCheckResultFromClientDownloadResponse(
       return DownloadCheckResult::DANGEROUS_HOST;
     case ClientDownloadResponse::UNKNOWN:
       return DownloadCheckResult::UNKNOWN;
+    case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+      return DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE;
   }
   return DownloadCheckResult::UNKNOWN;
 }

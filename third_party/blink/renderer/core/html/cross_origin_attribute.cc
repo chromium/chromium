@@ -9,7 +9,7 @@ namespace blink {
 CrossOriginAttributeValue GetCrossOriginAttributeValue(const String& value) {
   if (value.IsNull())
     return kCrossOriginAttributeNotSet;
-  if (DeprecatedEqualIgnoringCase(value, "use-credentials"))
+  if (EqualIgnoringASCIICase(value, "use-credentials"))
     return kCrossOriginAttributeUseCredentials;
   return kCrossOriginAttributeAnonymous;
 }

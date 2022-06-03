@@ -7,14 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/test/test_views_delegate.h"
+#include "ui/views/test/views_test_helper.h"
+#include "ui/views/views_delegate.h"
 
 namespace views {
 
-class PlatformTestHelper;
-class TestViewsDelegate;
-class ViewsTestHelper;
+class Widget;
 
 // Creates a ViewsTestHelper that is destroyed automatically. Acts like
 // ViewsTestBase but allows a test harness to use a different base class, or
@@ -22,35 +23,29 @@ class ViewsTestHelper;
 // by ViewsTestBase.
 class ScopedViewsTestHelper {
  public:
-  // Initialize with the default TestViewsDelegate,
-  // MessageLoopCurrentForUI::Get() and the default test ContextFactory.
-  ScopedViewsTestHelper();
-
-  // Initialize with the given TestViewsDelegate instance, after setting the
-  // ContextFactory.
+  // Initialize with the given TestViewsDelegate instance.
   explicit ScopedViewsTestHelper(
-      std::unique_ptr<TestViewsDelegate> views_delegate);
-
+      std::unique_ptr<TestViewsDelegate> test_views_delegate = nullptr,
+      absl::optional<ViewsDelegate::NativeWidgetFactory> factory =
+          absl::nullopt);
+  ScopedViewsTestHelper(const ScopedViewsTestHelper&) = delete;
+  ScopedViewsTestHelper& operator=(const ScopedViewsTestHelper&) = delete;
   ~ScopedViewsTestHelper();
 
   // Returns the context for creating new windows. In Aura builds, this will be
   // the RootWindow. Everywhere else, null.
   gfx::NativeWindow GetContext();
 
+  // Simulate an OS-level destruction of the native window held by |widget|.
+  void SimulateNativeDestroy(Widget* widget);
+
   TestViewsDelegate* test_views_delegate() {
     return test_views_delegate_.get();
   }
 
-  PlatformTestHelper* platform_test_helper() {
-    return platform_test_helper_.get();
-  }
-
  private:
+  std::unique_ptr<ViewsTestHelper> test_helper_ = ViewsTestHelper::Create();
   std::unique_ptr<TestViewsDelegate> test_views_delegate_;
-  std::unique_ptr<ViewsTestHelper> test_helper_;
-  std::unique_ptr<PlatformTestHelper> platform_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedViewsTestHelper);
 };
 
 }  // namespace views

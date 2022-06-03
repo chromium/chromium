@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/gesture-util.js"></script>
+<style>
+
+#scroller {
+  position: absolute;
+  overflow: auto;
+  left: 20px;
+  top: 20px;
+  width: 600px;
+  height: 400px;
+}
+#scroller::-webkit-scrollbar {
+  width: 20px;
+  height: 20px;
+  background: #abc;
+}
+#scroller::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 10px;
+}
+.space {
+  height: 2000px;
+  position: absolute;
+}
+#text {
+  font: 20px monospace;
+  padding: 20px;
+}
+
+</style>
+</head>
+<body>
+<div id=scroller>
+  <div class=space>
+    <div id=text>
+      x
+    </div>
+  </div>
+</div>
+<script>
+
+churnLayout = () => {
+  text.innerText += " x";
+  requestAnimationFrame(churnLayout);
+};
+churnLayout();
+
+var STATES = [0, 1, 2, 3, 4, 3, 2, 1, 0, 3, 1, 2, 4, 0];
+
+var thumb_x = 610;
+var thumb_y = state => 30 + state * 80;
+var expected_y = state => state * 400;
+
+var steps = new Promise((resolve, reject) => {
+  var cur = 0;
+  scroller.onscroll = () => {
+    var y = scroller.scrollTop;
+    text.style.marginTop = Math.min(1900, y) + "px";
+
+    ++cur;
+    var next = cur + 1;
+
+    try {
+      assert_equals(y, expected_y(STATES[cur]));
+    } catch (e) {
+      reject(e);
+    }
+
+    if (next == STATES.length)
+      resolve();
+    else
+      mouseMoveTo(thumb_x, thumb_y(STATES[next]), Buttons.LEFT);
+  };
+});
+
+promise_test(async (t) => {
+  await mouseMoveTo(thumb_x, thumb_y(STATES[0]));
+  await mouseDownAt(thumb_x, thumb_y(STATES[0]));
+  await mouseMoveTo(thumb_x, thumb_y(STATES[1]), Buttons.LEFT);
+  await steps;
+}, "Scroll offset responds correctly to thumb drags.");
+
+</script>
+</body>
+</html>

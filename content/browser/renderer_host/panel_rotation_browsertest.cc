@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
@@ -12,7 +13,7 @@
 namespace content {
 
 // TODO(https://crbug.com/998131): Add test coverage across all platforms.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PanelRotationBrowserTest : public ContentBrowserTest {
  protected:
   void SetPanelRotation(display::Display::Rotation rotation) {
@@ -39,6 +40,6 @@ IN_PROC_BROWSER_TEST_F(PanelRotationBrowserTest, ScreenOrientationAPI) {
   SetPanelRotation(display::Display::ROTATE_270);
   EXPECT_EQ(ReadScreenOrientationAngle(), 90);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace content

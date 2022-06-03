@@ -8,11 +8,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_configuration.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_configuration.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+
+class ExceptionState;
 
 class NavigatorRequestMediaKeySystemAccess {
   STATIC_ONLY(NavigatorRequestMediaKeySystemAccess);
@@ -23,7 +24,8 @@ class NavigatorRequestMediaKeySystemAccess {
       Navigator&,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
-          supported_configurations);
+          supported_configurations,
+      ExceptionState&);
 };
 
 }  // namespace blink

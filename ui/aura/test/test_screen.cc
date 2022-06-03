@@ -6,23 +6,19 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-
-#if defined(OS_FUCHSIA)
-#include "ui/ozone/public/ozone_platform.h"  // nogncheck
-#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
-#endif
 
 namespace aura {
 
@@ -51,13 +47,6 @@ WindowTreeHost* TestScreen::CreateHostForPrimaryDisplay() {
   DCHECK(!host_);
   ui::PlatformWindowInitProperties properties(
       gfx::Rect(GetPrimaryDisplay().GetSizeInPixel()));
-#if defined(OS_FUCHSIA)
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .needs_view_token) {
-    ui::fuchsia::InitializeViewTokenAndPresentView(&properties);
-  }
-#endif
   host_ = WindowTreeHost::Create(std::move(properties)).release();
   // Some tests don't correctly manage window focus/activation states.
   // Makes sure InputMethod is default focused so that IME basics can work.
@@ -70,18 +59,23 @@ WindowTreeHost* TestScreen::CreateHostForPrimaryDisplay() {
   return host_;
 }
 
-void TestScreen::SetDeviceScaleFactor(float device_scale_factor) {
+void TestScreen::SetDeviceScaleFactor(float device_scale_factor,
+                                      bool resize_host) {
   display::Display display(GetPrimaryDisplay());
   gfx::Rect bounds_in_pixel(display.GetSizeInPixel());
   display.SetScaleAndBounds(device_scale_factor, bounds_in_pixel);
   display_list().UpdateDisplay(display);
-  host_->OnHostResizedInPixels(bounds_in_pixel.size());
+  if (resize_host)
+    host_->OnHostResizedInPixels(bounds_in_pixel.size());
 }
 
 void TestScreen::SetColorSpace(const gfx::ColorSpace& color_space,
                                float sdr_white_level) {
   display::Display display(GetPrimaryDisplay());
-  display.SetColorSpaceAndDepth(color_space, sdr_white_level);
+  gfx::DisplayColorSpaces display_color_spaces(color_space,
+                                               gfx::BufferFormat::RGBA_8888);
+  display_color_spaces.SetSDRWhiteLevel(sdr_white_level);
+  display.set_color_spaces(display_color_spaces);
   display_list().UpdateDisplay(display);
 }
 
@@ -160,9 +154,19 @@ gfx::NativeWindow TestScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
   return host_->window()->GetEventHandlerForPoint(point);
 }
 
+gfx::NativeWindow TestScreen::GetLocalProcessWindowAtPoint(
+    const gfx::Point& point,
+    const std::set<gfx::NativeWindow>& ignore) {
+  return nullptr;
+}
+
 display::Display TestScreen::GetDisplayNearestWindow(
     gfx::NativeWindow window) const {
   return GetPrimaryDisplay();
+}
+
+std::string TestScreen::GetCurrentWorkspace() {
+  return {};
 }
 
 TestScreen::TestScreen(const gfx::Rect& screen_bounds) {

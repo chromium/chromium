@@ -152,7 +152,7 @@ class TreeBuilder {
     this.rootNode = createNode({
       idPath: this._sep,
       shortNameIndex: 0,
-      type: this._containerType(this._sep),
+      type: this._artifactType(this._sep),
     });
     /** @type {Map<string, TreeNode>} Cache for directory nodes */
     this._parents = new Map();
@@ -184,7 +184,7 @@ class TreeBuilder {
       const {parent} = node;
 
       // Track the size of `lastBiggestType` for comparisons.
-      let [containerType, lastBiggestType] = parent.type;
+      let [artifactType, lastBiggestType] = parent.type;
       let lastBiggestSize = 0;
       const lastBiggestStats = parent.childStats[lastBiggestType];
       if (lastBiggestStats) {
@@ -208,7 +208,7 @@ class TreeBuilder {
         }
       }
 
-      parent.type = `${containerType}${lastBiggestType}`;
+      parent.type = `${artifactType}${lastBiggestType}`;
       parent.size += additionalSize;
       parent.flags |= additionalFlags;
       node = parent;
@@ -217,18 +217,18 @@ class TreeBuilder {
 
   /**
    * Merges dex method symbols such as "Controller#get" and "Controller#set"
-   * into containers, based on the class of the dex methods.
+   * into artifacts, based on the class of the dex methods.
    * @param {TreeNode} node
    */
   _joinDexMethodClasses(node) {
-    const isFileNode = node.type[0] === _CONTAINER_TYPES.FILE;
+    const isFileNode = node.type[0] === _ARTIFACT_TYPES.FILE;
     const hasDex = node.childStats[_DEX_SYMBOL_TYPE] ||
         node.childStats[_DEX_METHOD_SYMBOL_TYPE];
     const isNoPath = node.idPath === "";
     if (!isFileNode || !hasDex || isNoPath || !node.children) return node;
 
     /** @type {Map<string, TreeNode>} */
-    const javaClassContainers = new Map();
+    const javaClassArtifacts = new Map();
     /** @type {TreeNode[]} */
     const otherSymbols = [];
 
@@ -258,16 +258,16 @@ class TreeBuilder {
           }
         }
 
-        let classNode = javaClassContainers.get(classIdPath);
+        let classNode = javaClassArtifacts.get(classIdPath);
         if (!classNode) {
           classNode = createNode({
             idPath: classIdPath,
             srcPath: node.srcPath,
             component: node.component,
             shortNameIndex: shortNameIndex,
-            type: _CONTAINER_TYPES.JAVA_CLASS,
+            type: _ARTIFACT_TYPES.JAVA_CLASS,
           });
-          javaClassContainers.set(classIdPath, classNode);
+          javaClassArtifacts.set(classIdPath, classNode);
         }
 
         // Adjust the dex method's short name so it starts after the "#"
@@ -281,11 +281,11 @@ class TreeBuilder {
     }
 
     node.children = otherSymbols;
-    for (const containerNode of javaClassContainers.values()) {
+    for (const artifactNode of javaClassArtifacts.values()) {
       // Delay setting the parent until here so that `_attachToParent`
       // doesn't add method stats twice
-      containerNode.parent = node;
-      node.children.push(containerNode);
+      artifactNode.parent = node;
+      node.children.push(artifactNode);
     }
     return node;
   }
@@ -332,17 +332,17 @@ class TreeBuilder {
   }
 
   /**
-   * Returns the container type for a parent node.
+   * Returns the artifact type for a parent node.
    * @param {string} childIdPath
    * @private
    */
-  _containerType(childIdPath) {
+  _artifactType(childIdPath) {
     const useAlternateType =
       childIdPath.lastIndexOf(this._sep) > childIdPath.lastIndexOf(_PATH_SEP);
     if (useAlternateType) {
-      return _CONTAINER_TYPES.COMPONENT;
+      return _ARTIFACT_TYPES.COMPONENT;
     } else {
-      return _CONTAINER_TYPES.DIRECTORY;
+      return _ARTIFACT_TYPES.DIRECTORY;
     }
   }
 
@@ -374,7 +374,7 @@ class TreeBuilder {
         parentNode = createNode({
           idPath: parentPath,
           shortNameIndex: lastIndexOf(parentPath, this._sep) + 1,
-          type: this._containerType(childNode.idPath),
+          type: this._artifactType(childNode.idPath),
         });
         this._parents.set(parentPath, parentNode);
       }
@@ -403,7 +403,7 @@ class TreeBuilder {
       srcPath,
       component,
       shortNameIndex: lastIndexOf(idPath, this._sep) + 1,
-      type: _CONTAINER_TYPES.FILE,
+      type: _ARTIFACT_TYPES.FILE,
     });
     const defaultCount = diffMode ? 0 : 1;
     // build child nodes for this file's symbols and attach to self
@@ -506,7 +506,7 @@ class TreeBuilder {
       path = idPath.split(this._splitter);
     }
 
-    // If the path is empty, it refers to the _NO_NAME container.
+    // If the path is empty, it refers to the _NO_NAME artifact.
     if (path[0] === '') {
       path.unshift(_NO_NAME);
     }
@@ -762,6 +762,7 @@ async function buildTree(groupBy, filterTest, methodCountMode, onProgress) {
       root: builder.formatNode(data.root || builder.rootNode),
       percent,
       diffMode: meta && meta.diff_mode,
+      isMultiContainer: false,
     };
     if (data.error) {
       message.error = data.error.message;

@@ -4,21 +4,20 @@
 
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/file_util_service.h"
-#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/sha2.h"
@@ -55,9 +54,9 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedRarAnalyzer> analyzer(new SandboxedRarAnalyzer(
-        path, results_getter.GetCallback(), std::move(remote)));
-    analyzer->Start();
+    analyzer_ = base::MakeRefCounted<SandboxedRarAnalyzer>(
+        path, results_getter.GetCallback(), std::move(remote));
+    analyzer_->Start();
     run_loop.Run();
   }
 
@@ -104,9 +103,12 @@ class SandboxedRarAnalyzerTest : public testing::Test {
                   safe_browsing::ArchiveAnalyzerResults* results)
         : next_closure_(next_closure), results_(results) {}
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedRarAnalyzer::ResultCallback GetCallback() {
-      return base::BindRepeating(&ResultsGetter::ResultsCallback,
-                                 base::Unretained(this));
+      return base::BindOnce(&ResultsGetter::ResultsCallback,
+                            base::Unretained(this));
     }
 
    private:
@@ -117,10 +119,11 @@ class SandboxedRarAnalyzerTest : public testing::Test {
 
     base::RepeatingClosure next_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
-
+  // |analzyer_| should be destroyed after task_environment, so that any other
+  // threads with objects holding references to it will be shut down first.
+  // This should make the final reference get released on the main thread.
+  scoped_refptr<SandboxedRarAnalyzer> analyzer_;
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -175,7 +178,10 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeBenignRar) {
 
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
-  EXPECT_TRUE(results.archived_binary.empty());
+  EXPECT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_basename(), "limerick.txt");
+  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
@@ -190,7 +196,10 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPassword) {
 
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
-  EXPECT_TRUE(results.archived_binary.empty());
+  EXPECT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_basename(), "file1.txt");
+  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
@@ -252,10 +261,13 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarContainingAssortmentOfFiles) {
 
   ASSERT_TRUE(results.success);
   EXPECT_TRUE(results.has_executable);
-  EXPECT_EQ(3, results.archived_binary.size());
+  EXPECT_EQ(4, results.archived_binary.size());
   ExpectBinary(kSignedExe, results.archived_binary.Get(0));
   ExpectBinary(kNotARar, results.archived_binary.Get(1));
-  ExpectBinary(kEmptyZip, results.archived_binary.Get(2));
+  EXPECT_EQ(results.archived_binary[2].file_basename(), "text.txt");
+  EXPECT_FALSE(results.archived_binary[2].is_executable());
+  EXPECT_FALSE(results.archived_binary[2].is_archive());
+  ExpectBinary(kEmptyZip, results.archived_binary.Get(3));
   EXPECT_EQ(2u, results.archived_archive_filenames.size());
 
   EXPECT_THAT(

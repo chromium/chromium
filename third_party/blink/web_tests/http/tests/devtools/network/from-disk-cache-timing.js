@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests requests loaded from disk cache have correct timing\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.addScriptTag('resources/gc.js');
   await TestRunner.evaluateInPagePromise(`
@@ -48,11 +48,11 @@
   function step5() {
     var request = NetworkTestRunner.networkRequests().pop();
     TestRunner.addResult('URL:' + request.url());
-    TestRunner.addResult('from memory cache: ' + !!request._fromMemoryCache);
-    TestRunner.addResult('from disk cache: ' + !!request._fromDiskCache);
-    TestRunner.addResult('has timing: ' + !!request._timing);
+    TestRunner.addResult('from memory cache: ' + !!request.fromMemoryCache);
+    TestRunner.addResult('from disk cache: ' + !!request.fromDiskCache);
+    TestRunner.addResult('has timing: ' + !!request.timing);
     TestRunner.addResult('');
-    timeZero = request._timing.requestTime;
+    timeZero = request.timing.requestTime;
     TestRunner.NetworkAgent.setCacheDisabled(false).then(step6);
   }
 
@@ -64,11 +64,11 @@
   function step7() {
     var request = NetworkTestRunner.networkRequests().pop();
     TestRunner.addResult('URL:' + request.url());
-    TestRunner.addResult('from memory cache: ' + !!request._fromMemoryCache);
-    TestRunner.addResult('from disk cache: ' + !!request._fromDiskCache);
-    TestRunner.addResult('has timing: ' + !!request._timing);
+    TestRunner.addResult('from memory cache: ' + !!request.fromMemoryCache);
+    TestRunner.addResult('from disk cache: ' + !!request.fromDiskCache);
+    TestRunner.addResult('has timing: ' + !!request.timing);
     TestRunner.addResult('');
-    var time = request._timing.requestTime;
+    var time = request.timing.requestTime;
     TestRunner.addResult('Second request starts later than first: ' + (time > timeZero));
     TestRunner.completeTest();
   }

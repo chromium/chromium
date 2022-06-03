@@ -4,6 +4,8 @@
 
 #include "media/base/output_device_info.h"
 
+#include <sstream>
+
 namespace media {
 
 // Output device information returned by GetOutputDeviceInfo() methods of

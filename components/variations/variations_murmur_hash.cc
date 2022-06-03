@@ -4,6 +4,9 @@
 
 #include "components/variations/variations_murmur_hash.h"
 
+#include <string.h>
+
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -17,7 +20,7 @@ namespace internal {
 
 // static
 std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
-    const std::string& data) {
+    base::StringPiece data) {
   const size_t data_size = data.size();
   const size_t word_num = (data_size + 3) / 4;  // data_size / 4, rounding up
   std::vector<uint32_t> words(word_num, 0);

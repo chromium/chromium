@@ -4,11 +4,13 @@
 
 #include "base/barrier_closure.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -31,21 +33,20 @@ class NoBestEffortTasksDuringStartupTest : public InProcessBrowserTest {
     auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
 
     // Thread pool task.
-    base::PostTask(
-        FROM_HERE, {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindLambdaForTesting([&]() {
           EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
           barrier.Run();
         }));
 
     // UI thread task.
-    base::PostTask(
-        FROM_HERE,
-        {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
-        base::BindLambdaForTesting([&]() {
-          EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-          barrier.Run();
-        }));
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+              barrier.Run();
+            }));
 
     run_loop.Run();
   }

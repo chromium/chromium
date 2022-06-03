@@ -1,0 +1,264 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.safe_browsing.settings;
+
+import android.content.Context;
+import android.os.Bundle;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.Preference;
+
+import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
+import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
+
+/**
+ * Fragment containing Safe Browsing settings.
+ */
+public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBase
+        implements FragmentSettingsLauncher,
+                   RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
+                   Preference.OnPreferenceChangeListener {
+    @VisibleForTesting
+    static final String PREF_TEXT_MANAGED = "text_managed";
+    @VisibleForTesting
+    static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
+    public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
+
+    // An instance of SettingsLauncher that is used to launch Safe Browsing subsections.
+    private SettingsLauncher mSettingsLauncher;
+    private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
+    private @SettingsAccessPoint int mAccessPoint;
+
+    /**
+     * @return A summary that describes the current Safe Browsing state.
+     */
+    public static String getSafeBrowsingSummaryString(Context context) {
+        @SafeBrowsingState
+        int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
+        String safeBrowsingStateString = "";
+        if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
+            safeBrowsingStateString =
+                    context.getString(R.string.safe_browsing_enhanced_protection_title);
+        } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
+            safeBrowsingStateString =
+                    context.getString(R.string.safe_browsing_standard_protection_title);
+        } else if (safeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING) {
+            return context.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        } else {
+            assert false : "Should not be reached";
+        }
+        return context.getString(R.string.prefs_safe_browsing_summary, safeBrowsingStateString);
+    }
+
+    /**
+     * Creates an argument bundle to open the Safe Browsing settings page.
+     * @param accessPoint The access point for opening the Safe Browsing settings page.
+     */
+    public static Bundle createArguments(@SettingsAccessPoint int accessPoint) {
+        Bundle result = new Bundle();
+        result.putInt(ACCESS_POINT, accessPoint);
+        return result;
+    }
+
+    @Override
+    protected void onCreatePreferencesInternal(Bundle bundle, String s) {
+        mAccessPoint =
+                IntentUtils.safeGetInt(getArguments(), ACCESS_POINT, SettingsAccessPoint.DEFAULT);
+
+        ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
+
+        mSafeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
+        mSafeBrowsingPreference.init(SafeBrowsingBridge.getSafeBrowsingState(),
+                mAccessPoint);
+        mSafeBrowsingPreference.setSafeBrowsingModeDetailsRequestedListener(this);
+        mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
+        mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
+
+        TextMessagePreference textManaged = findPreference(PREF_TEXT_MANAGED);
+        textManaged.setManagedPreferenceDelegate(managedPreferenceDelegate);
+        textManaged.setVisible(managedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
+                mSafeBrowsingPreference));
+
+        recordUserActionHistogram(UserAction.SHOWED);
+    }
+
+    @Override
+    protected int getPreferenceResource() {
+        return R.xml.safe_browsing_preferences;
+    }
+
+    @Override
+    public void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState) {
+        recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
+        if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
+            mSettingsLauncher.launchSettingsActivity(
+                    getActivity(), EnhancedProtectionSettingsFragment.class);
+        } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
+            mSettingsLauncher.launchSettingsActivity(
+                    getActivity(), StandardProtectionSettingsFragment.class);
+        } else {
+            assert false : "Should not be reached";
+        }
+    }
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
+    }
+
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return preference -> {
+            String key = preference.getKey();
+            if (PREF_TEXT_MANAGED.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
+                return SafeBrowsingBridge.isSafeBrowsingManaged();
+            } else {
+                assert false : "Should not be reached.";
+            }
+            return false;
+        };
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String key = preference.getKey();
+        assert PREF_SAFE_BROWSING.equals(key) : "Unexpected preference key.";
+        @SafeBrowsingState
+        int newState = (int) newValue;
+        @SafeBrowsingState
+        int currentState = SafeBrowsingBridge.getSafeBrowsingState();
+        if (newState == currentState) {
+            return true;
+        }
+        recordUserActionHistogramForNewStateClicked(newState);
+        // If the user selects no protection from another Safe Browsing state, show a confirmation
+        // dialog to double check if they want to select no protection.
+        if (newState == SafeBrowsingState.NO_SAFE_BROWSING) {
+            // The user hasn't confirmed to select no protection, keep the radio button / UI checked
+            // state at the currently selected level.
+            mSafeBrowsingPreference.setCheckedState(currentState);
+            NoProtectionConfirmationDialog
+                    .create(getContext(),
+                            (didConfirm) -> {
+                                recordUserActionHistogramForNoProtectionConfirmation(didConfirm);
+                                if (didConfirm) {
+                                    // The user has confirmed to select no protection, set Safe
+                                    // Browsing pref to no protection, and change the radio button /
+                                    // UI checked state to no protection.
+                                    SafeBrowsingBridge.setSafeBrowsingState(
+                                            SafeBrowsingState.NO_SAFE_BROWSING);
+                                    mSafeBrowsingPreference.setCheckedState(
+                                            SafeBrowsingState.NO_SAFE_BROWSING);
+                                }
+                                // No-ops if the user denies.
+                            })
+                    .show();
+        } else {
+            SafeBrowsingBridge.setSafeBrowsingState(newState);
+        }
+        return true;
+    }
+
+    private void recordUserActionHistogramForNewStateClicked(
+            @SafeBrowsingState int safeBrowsingState) {
+        switch (safeBrowsingState) {
+            case (SafeBrowsingState.ENHANCED_PROTECTION):
+                recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_CLICKED);
+                break;
+            case (SafeBrowsingState.STANDARD_PROTECTION):
+                recordUserActionHistogram(UserAction.STANDARD_PROTECTION_CLICKED);
+                break;
+            case (SafeBrowsingState.NO_SAFE_BROWSING):
+                recordUserActionHistogram(UserAction.DISABLE_SAFE_BROWSING_CLICKED);
+                break;
+            default:
+                assert false : "Should not be reached.";
+        }
+    }
+
+    private void recordUserActionHistogramForStateDetailsClicked(
+            @SafeBrowsingState int safeBrowsingState) {
+        switch (safeBrowsingState) {
+            case (SafeBrowsingState.ENHANCED_PROTECTION):
+                recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED);
+                break;
+            case (SafeBrowsingState.STANDARD_PROTECTION):
+                recordUserActionHistogram(UserAction.STANDARD_PROTECTION_EXPAND_ARROW_CLICKED);
+                break;
+            default:
+                assert false : "Should not be reached.";
+        }
+    }
+
+    private void recordUserActionHistogramForNoProtectionConfirmation(boolean didConfirm) {
+        if (didConfirm) {
+            recordUserActionHistogram(UserAction.DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED);
+        } else {
+            recordUserActionHistogram(UserAction.DISABLE_SAFE_BROWSING_DIALOG_DENIED);
+        }
+    }
+
+    private void recordUserActionHistogram(@UserAction int userAction) {
+        String metricsSuffix;
+        // The metricsSuffix string shouldn't be changed. When adding a new access point, please
+        // also update the "SafeBrowsing.Settings.AccessPoint" histogram suffix in the
+        // histograms.xml file.
+        if (mAccessPoint == SettingsAccessPoint.PARENT_SETTINGS) {
+            metricsSuffix = "ParentSettings";
+        } else if (mAccessPoint == SettingsAccessPoint.SAFETY_CHECK) {
+            metricsSuffix = "SafetyCheck";
+        } else if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
+            metricsSuffix = "SurfaceExplorerPromoSlinger";
+        } else if (mAccessPoint == SettingsAccessPoint.SECURITY_INTERSTITIAL) {
+            metricsSuffix = "SecurityInterstitial";
+        } else {
+            metricsSuffix = "Default";
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "SafeBrowsing.Settings.UserAction." + metricsSuffix, userAction,
+                UserAction.MAX_VALUE + 1);
+
+        String userActionSuffix;
+        switch (userAction) {
+            case UserAction.SHOWED:
+                userActionSuffix = "ShowedFrom" + metricsSuffix;
+                break;
+            case UserAction.ENHANCED_PROTECTION_CLICKED:
+                userActionSuffix = "EnhancedProtectionClicked";
+                break;
+            case UserAction.STANDARD_PROTECTION_CLICKED:
+                userActionSuffix = "StandardProtectionClicked";
+                break;
+            case UserAction.DISABLE_SAFE_BROWSING_CLICKED:
+                userActionSuffix = "DisableSafeBrowsingClicked";
+                break;
+            case UserAction.ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED:
+                userActionSuffix = "EnhancedProtectionExpandArrowClicked";
+                break;
+            case UserAction.STANDARD_PROTECTION_EXPAND_ARROW_CLICKED:
+                userActionSuffix = "StandardProtectionExpandArrowClicked";
+                break;
+            case UserAction.DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED:
+                userActionSuffix = "DisableSafeBrowsingDialogConfirmed";
+                break;
+            case UserAction.DISABLE_SAFE_BROWSING_DIALOG_DENIED:
+                userActionSuffix = "DisableSafeBrowsingDialogDenied";
+                break;
+            default:
+                assert false : "Should not be reached.";
+                userActionSuffix = "";
+        }
+        RecordUserAction.record("SafeBrowsing.Settings." + userActionSuffix);
+    }
+}

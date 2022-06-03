@@ -17,21 +17,23 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
+#include "sql/sql_features.h"
 #include "sql/statement_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct sqlite3;
 struct sqlite3_stmt;
 
 namespace base {
 class FilePath;
-class HistogramBase;
 namespace trace_event {
 class ProcessMemoryDump;
 }  // namespace trace_event
@@ -46,64 +48,167 @@ namespace test {
 class ScopedErrorExpecter;
 }  // namespace test
 
+struct COMPONENT_EXPORT(SQL) DatabaseOptions {
+  // Default page size for newly created databases.
+  //
+  // Guaranteed to match SQLITE_DEFAULT_PAGE_SIZE.
+  static constexpr int kDefaultPageSize = 4096;
+
+  // If true, the database can only be opened by one process at a time.
+  //
+  // SQLite supports a locking protocol that allows multiple processes to safely
+  // operate on the same database at the same time. The locking protocol is used
+  // on every transaction, and comes with a small performance penalty.
+  //
+  // Setting this to true causes the locking protocol to be used once, when the
+  // database is opened. No other process will be able to access the database at
+  // the same time.
+  //
+  // More details at https://www.sqlite.org/pragma.html#pragma_locking_mode
+  //
+  // SQLite's locking protocol is summarized at
+  // https://www.sqlite.org/c3ref/io_methods.html
+  //
+  // Exclusive mode is strongly recommended. It reduces the I/O cost of setting
+  // up a transaction. It also removes the need of handling transaction failures
+  // due to lock contention.
+  bool exclusive_locking = true;
+
+  // If true, enables SQLite's Write-Ahead Logging (WAL).
+  //
+  // WAL integration is under development, and should not be used in shipping
+  // Chrome features yet. In particular, our custom database recovery code does
+  // not support the WAL log file.
+  //
+  // WAL mode is currently not fully supported on FuchsiaOS. It will only be
+  // turned on if the database is also using exclusive locking mode.
+  // (https://crbug.com/1082059)
+  //
+  // Note: Changing page size is not supported when in WAL mode. So running
+  // 'PRAGMA page_size = <new-size>' will result in no-ops.
+  //
+  // More details at https://www.sqlite.org/wal.html
+  bool wal_mode =
+      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
+
+  // Database page size.
+  //
+  // New Chrome features should set an explicit page size in their
+  // DatabaseOptions initializers, even if they use the default page size. This
+  // makes it easier to track the page size used by the databases on the users'
+  // devices.
+  //
+  // The value in this option is only applied to newly created databases. In
+  // other words, changing the value doesn't impact the databases that have
+  // already been created on the users' devices. So, changing the value in the
+  // code without a lot of work (re-creating existing databases) will result in
+  // inconsistent page sizes across the fleet of user devices, which will make
+  // it (even) more difficult to reason about database performance.
+  //
+  // Larger page sizes result in shallower B-trees, because they allow an inner
+  // page to hold more keys. On the flip side, larger page sizes may result in
+  // more I/O when making small changes to existing records.
+  //
+  // Must be a power of two between 512 and 65536 inclusive.
+  //
+  // TODO(pwnall): Replace the default with an invalid value after all
+  //               sql::Database users explicitly initialize page_size.
+  int page_size = kDefaultPageSize;
+
+  // The size of in-memory cache, in pages.
+  //
+  // New Chrome features should set an explicit cache size in their
+  // DatabaseOptions initializers, even if they use the default cache size. This
+  // makes it easier to track the cache size used by the databases on the users'
+  // devices. The default page size of 4,096 bytes results in a cache size of
+  // 500 pages.
+  //
+  // SQLite's database cache will take up at most (`page_size` * `cache_size`)
+  // bytes of RAM.
+  //
+  // 0 invokes SQLite's default, which is currently to size up the cache to use
+  // exactly 2,048,000 bytes of RAM.
+  //
+  // TODO(pwnall): Replace the default with an invalid value after all
+  //               sql::Database users explicitly initialize page_size.
+  int cache_size = 0;
+
+  // Stores mmap failures in the SQL schema, instead of the meta table.
+  //
+  // This option is strongly discouraged for new databases, and will eventually
+  // be removed.
+  //
+  // If this option is true, the mmap status is stored in the database schema.
+  // Like any other schema change, changing the mmap status invalidates all
+  // pre-compiled SQL statements.
+  bool mmap_alt_status_discouraged = false;
+
+  // If true, enables SQL views (a discouraged feature) for this database.
+  //
+  // The use of views is discouraged for Chrome code. See README.md for details
+  // and recommended replacements.
+  //
+  // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
+  // statements targeting views fail.
+  bool enable_views_discouraged = false;
+
+  // If true, enables virtual tables (a discouraged feature) for this database.
+  //
+  // The use of virtual tables is discouraged for Chrome code. See README.md for
+  // details and recommended replacements.
+  //
+  // If this option is false, CREATE VIRTUAL TABLE and DROP VIRTUAL TABLE
+  // succeed, but statements targeting virtual tables fail.
+  bool enable_virtual_tables_discouraged = false;
+};
+
 // Handle to an open SQLite database.
 //
 // Instances of this class are thread-unsafe and DCHECK that they are accessed
 // on the same sequence.
+//
+// When a Database instance goes out of scope, any uncommitted transactions are
+// rolled back.
 class COMPONENT_EXPORT(SQL) Database {
  private:
   class StatementRef;  // Forward declaration, see real one below.
 
  public:
-  // The database is opened by calling Open[InMemory](). Any uncommitted
-  // transactions will be rolled back when this object is deleted.
+  // Creates an instance that can receive Open() / OpenInMemory() calls.
+  //
+  // Some `options` members are only applied to newly created databases.
+  //
+  // Most operations on the new instance will fail until Open() / OpenInMemory()
+  // is called.
+  explicit Database(DatabaseOptions options);
+
+  // This constructor is deprecated.
+  //
+  // When transitioning away from this default constructor, consider setting
+  // DatabaseOptions::explicit_locking to true. For historical reasons, this
+  // constructor results in DatabaseOptions::explicit_locking set to false.
+  //
+  // TODO(crbug.com/1126968): Remove this constructor after migrating all
+  //                          uses to the explicit constructor below.
   Database();
+
+  Database(const Database&) = delete;
+  Database& operator=(const Database&) = delete;
   ~Database();
+
+  // Allows mmapping to be disabled globally by default in the calling process.
+  // Must be called before any threads attempt to create a Database.
+  //
+  // TODO(crbug.com/1117049): Remove this global configuration.
+  static void DisableMmapByDefault();
 
   // Pre-init configuration ----------------------------------------------------
 
-  // Sets the page size that will be used when creating a new database. This
-  // must be called before Init(), and will only have an effect on new
-  // databases.
-  //
-  // The page size must be a power of two between 512 and 65536 inclusive.
-  void set_page_size(int page_size) {
-    DCHECK_GE(page_size, 512);
-    DCHECK_LE(page_size, 65536);
-    DCHECK(!(page_size & (page_size - 1)))
-        << "page_size must be a power of two";
-
-    page_size_ = page_size;
-  }
-
   // The page size that will be used when creating a new database.
-  int page_size() const { return page_size_; }
+  int page_size() const { return options_.page_size; }
 
-  // Sets the number of pages that will be cached in memory by sqlite. The
-  // total cache size in bytes will be page_size * cache_size. This must be
-  // called before Open() to have an effect.
-  void set_cache_size(int cache_size) {
-    DCHECK_GE(cache_size, 0);
-
-    cache_size_ = cache_size;
-  }
-
-  // Call to put the database in exclusive locking mode. There is no "back to
-  // normal" flag because of some additional requirements sqlite puts on this
-  // transaction (requires another access to the DB) and because we don't
-  // actually need it.
-  //
-  // Exclusive mode means that the database is not unlocked at the end of each
-  // transaction, which means there may be less time spent initializing the
-  // next transaction because it doesn't have to re-aquire locks.
-  //
-  // This must be called before Open() to have an effect.
-  void set_exclusive_locking() { exclusive_locking_ = true; }
-
-  // Call to use alternative status-tracking for mmap.  Usually this is tracked
-  // in the meta table, but some databases have no meta table.
-  // TODO(shess): Maybe just have all databases use the alt option?
-  void set_mmap_alt_status() { mmap_alt_status_ = true; }
+  // Returns whether a database will be opened in WAL mode.
+  bool UseWALMode() const;
 
   // Opt out of memory-mapped file I/O.
   void set_mmap_disabled() { mmap_disabled_ = true; }
@@ -111,8 +216,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // Set an error-handling callback.  On errors, the error number (and
   // statement, if available) will be passed to the callback.
   //
-  // If no callback is set, the default action is to crash in debug
-  // mode or return failure in release mode.
+  // If no callback is set, the default error-handling behavior is invoked. The
+  // default behavior is to LOGs the error and propagate the failure.
+  //
+  // In DCHECK-enabled builds, the default error-handling behavior currently
+  // DCHECKs on errors. This is not correct, because DCHECKs are supposed to
+  // cover invariants and never fail, whereas SQLite errors can surface even on
+  // correct usage, due to I/O errors and data corruption. At some point in the
+  // future, errors will not result in DCHECKs.
+  //
+  // The callback will be called on the sequence used for database operations.
+  // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(const ErrorCallback& callback) {
     error_callback_ = callback;
@@ -120,65 +234,8 @@ class COMPONENT_EXPORT(SQL) Database {
   bool has_error_callback() const { return !error_callback_.is_null(); }
   void reset_error_callback() { error_callback_.Reset(); }
 
-  // Set this to enable additional per-database histogramming.  Must be called
-  // before Open().
+  // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);
-
-  // Record a sparse UMA histogram sample under
-  // |name|+"."+|histogram_tag_|.  If |histogram_tag_| is empty, no
-  // histogram is recorded.
-  void AddTaggedHistogram(const std::string& name, int sample) const;
-
-  // Track various API calls and results.  Values corrospond to UMA
-  // histograms, do not modify, or add or delete other than directly
-  // before EVENT_MAX_VALUE.
-  enum Events {
-    // Number of statements run, either with sql::Statement or Execute*().
-    EVENT_STATEMENT_RUN_DEPRECATED = 0,
-
-    // Number of rows returned by statements run.
-    EVENT_STATEMENT_ROWS_DEPRECATED,
-
-    // Number of statements successfully run (all steps returned SQLITE_DONE or
-    // SQLITE_ROW).
-    EVENT_STATEMENT_SUCCESS_DEPRECATED,
-
-    // Number of statements run by Execute() or ExecuteAndReturnErrorCode().
-    EVENT_EXECUTE_DEPRECATED,
-
-    // Number of rows changed by autocommit statements.
-    EVENT_CHANGES_AUTOCOMMIT_DEPRECATED,
-
-    // Number of rows changed by statements in transactions.
-    EVENT_CHANGES_DEPRECATED,
-
-    // Count actual SQLite transaction statements (not including nesting).
-    EVENT_BEGIN_DEPRECATED,
-    EVENT_COMMIT_DEPRECATED,
-    EVENT_ROLLBACK_DEPRECATED,
-
-    // Track success and failure in GetAppropriateMmapSize().
-    // GetAppropriateMmapSize() should record at most one of these per run.  The
-    // case of mapping everything is not recorded.
-    EVENT_MMAP_META_MISSING,                    // No meta table present.
-    EVENT_MMAP_META_FAILURE_READ,               // Failed reading meta table.
-    EVENT_MMAP_META_FAILURE_UPDATE,             // Failed updating meta table.
-    EVENT_MMAP_VFS_FAILURE,                     // Failed to access VFS.
-    EVENT_MMAP_FAILED,                          // Failure from past run.
-    EVENT_MMAP_FAILED_NEW,                      // Read error in this run.
-    EVENT_MMAP_SUCCESS_NEW_DEPRECATED,          // Read to EOF in this run.
-    EVENT_MMAP_SUCCESS_PARTIAL_DEPRECATED,      // Read but did not reach EOF.
-    EVENT_MMAP_SUCCESS_NO_PROGRESS_DEPRECATED,  // Read quota exhausted.
-
-    EVENT_MMAP_STATUS_FAILURE_READ,    // Failure reading MmapStatus view.
-    EVENT_MMAP_STATUS_FAILURE_UPDATE,  // Failure updating MmapStatus view.
-
-    // Leave this at the end.
-    // TODO(shess): |EVENT_MAX| causes compile fail on Windows.
-    EVENT_MAX_VALUE,
-  };
-  void RecordEvent(Events event, size_t count);
-  void RecordOneEvent(Events event) { RecordEvent(event, 1); }
 
   // Run "PRAGMA integrity_check" and post each line of
   // results into |messages|.  Returns the success of running the
@@ -259,7 +316,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // these all return false, since it is unlikely that the caller
   // could fix them.
   //
-  // The database's page size is taken from |page_size_|.  The
+  // The database's page size is taken from |options_.page_size|.  The
   // existing database's |auto_vacuum| setting is lost (the
   // possibility of corruption makes it unreliable to pull it from the
   // existing database).  To re-enable on the empty database requires
@@ -317,43 +374,63 @@ class COMPONENT_EXPORT(SQL) Database {
   // be scoped transactions on the stack.
   void RollbackAllTransactions();
 
+  bool HasActiveTransactions() const {
+    DCHECK_GE(transaction_nesting_, 0);
+    return transaction_nesting_ > 0;
+  }
+
+  // Deprecated in favor of HasActiveTransactions().
+  //
   // Returns the current transaction nesting, which will be 0 if there are
   // no open transactions.
   int transaction_nesting() const { return transaction_nesting_; }
 
   // Attached databases---------------------------------------------------------
 
-  // SQLite supports attaching multiple database files to a single connection.
+  // Attaches an existing database to this connection.
   //
-  // Attach the database in |other_db_path| to the current connection under
-  // |attachment_point|. |attachment_point| must only contain characters from
-  // [a-zA-Z0-9_].
+  // `attachment_point` must only contain lowercase letters.
+  //
+  // Attachment APIs are only exposed for use in recovery. General use is
+  // discouraged in Chrome. The README has more details.
   //
   // On the SQLite version shipped with Chrome (3.21+, Oct 2017), databases can
   // be attached while a transaction is opened. However, these databases cannot
   // be detached until the transaction is committed or aborted.
-  //
-  // These APIs are only exposed for use in recovery. They are extremely subtle
-  // and are not useful for features built on top of //sql.
   bool AttachDatabase(const base::FilePath& other_db_path,
-                      const char* attachment_point,
+                      base::StringPiece attachment_point,
                       InternalApiToken);
-  bool DetachDatabase(const char* attachment_point, InternalApiToken);
+
+  // Detaches a database that was previously attached with AttachDatabase().
+  //
+  // `attachment_point` must match the argument of a previously successsful
+  // AttachDatabase() call.
+  //
+  // Attachment APIs are only exposed for use in recovery. General use is
+  // discouraged in Chrome. The README has more details.
+  bool DetachDatabase(base::StringPiece attachment_point, InternalApiToken);
 
   // Statements ----------------------------------------------------------------
 
-  // Executes the given SQL string, returning true on success. This is
-  // normally used for simple, 1-off statements that don't take any bound
-  // parameters and don't return any data (e.g. CREATE TABLE).
+  // Executes a SQL statement. Returns true for success, and false for failure.
   //
-  // This will DCHECK if the |sql| contains errors.
+  // `sql` should be a single SQL statement. Production code should not execute
+  // multiple SQL statements at once, to facilitate crash debugging. Test code
+  // should use ExecuteScriptForTesting().
   //
-  // Do not use ignore_result() to ignore all errors.  Use
-  // ExecuteAndReturnErrorCode() and ignore only specific errors.
+  // `sql` cannot have parameters. Statements with parameters can be handled by
+  // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
   bool Execute(const char* sql) WARN_UNUSED_RESULT;
 
-  // Like Execute(), but returns the error code given by SQLite.
-  int ExecuteAndReturnErrorCode(const char* sql) WARN_UNUSED_RESULT;
+  // Executes a sequence of SQL statements.
+  //
+  // Returns true if all statements execute successfully. If a statement fails,
+  // stops and returns false. Calls should be wrapped in ASSERT_TRUE().
+  //
+  // The database's error handler is not invoked when errors occur. This method
+  // is a convenience for setting up a complex on-disk database state, such as
+  // an old schema version with test contents.
+  bool ExecuteScriptForTesting(const char* sql_script) WARN_UNUSED_RESULT;
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
@@ -396,14 +473,22 @@ class COMPONENT_EXPORT(SQL) Database {
   // See GetCachedStatement above for examples and error information.
   scoped_refptr<StatementRef> GetUniqueStatement(const char* sql);
 
+  // Performs a passive checkpoint on the main attached database if it is in
+  // WAL mode. Returns true if the checkpoint was successful and false in case
+  // of an error. It is a no-op if the database is not in WAL mode.
+  //
+  // Note: Checkpointing is a very slow operation and will block any writes
+  // until it is finished. Please use with care.
+  bool CheckpointDatabase();
+
   // Info querying -------------------------------------------------------------
 
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
-  bool DoesIndexExist(const char* index_name) const;
-  bool DoesTableExist(const char* table_name) const;
-  bool DoesViewExist(const char* table_name) const;
+  bool DoesIndexExist(base::StringPiece index_name);
+  bool DoesTableExist(base::StringPiece table_name);
+  bool DoesViewExist(base::StringPiece table_name);
 
   // Returns true if a column with the given name exists in the given table.
   //
@@ -412,7 +497,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // This should only be used by migration code for legacy features that do not
   // use MetaTable, and need an alternative way of figuring out the database's
   // current version.
-  bool DoesColumnExist(const char* table_name, const char* column_name) const;
+  bool DoesColumnExist(const char* table_name, const char* column_name);
 
   // Returns sqlite's internal ID for the last inserted row. Valid only
   // immediately after an insert.
@@ -422,6 +507,15 @@ class COMPONENT_EXPORT(SQL) Database {
   // statement executed. Will be 0 if no statement has executed or the database
   // is closed.
   int GetLastChangeCount() const;
+
+  // Approximates the amount of memory used by SQLite for this database.
+  //
+  // This measures the memory used for the page cache (most likely the biggest
+  // consumer), database schema, and prepared statements.
+  //
+  // The memory used by the page cache can be recovered by calling TrimMemory(),
+  // which will cause SQLite to drop the page cache.
+  int GetMemoryUsage();
 
   // Errors --------------------------------------------------------------------
 
@@ -438,8 +532,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Return a reproducible representation of the schema equivalent to
   // running the following statement at a sqlite3 command-line:
-  //   SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY 1, 2, 3, 4;
-  std::string GetSchema() const;
+  //   SELECT type, name, tbl_name, sql FROM sqlite_schema ORDER BY 1, 2, 3, 4;
+  std::string GetSchema();
 
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and
   // that expecter returns |true| when passed |error|.  Clients which provide an
@@ -481,19 +575,18 @@ class COMPONENT_EXPORT(SQL) Database {
   // the existence of specific files.
   static base::FilePath SharedMemoryFilePath(const base::FilePath& db_path);
 
-  // Default page size for newly created databases.
-  //
-  // Guaranteed to match SQLITE_DEFAULT_PAGE_SIZE.
-  static constexpr int kDefaultPageSize = 4096;
-
   // Internal state accessed by other classes in //sql.
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
 
- private:
-  // Allow test-support code to set/reset error expecter.
-  friend class test::ScopedErrorExpecter;
+  // Interface with sql::test::ScopedErrorExpecter.
+  using ScopedErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
+  static void SetScopedErrorExpecter(ScopedErrorExpecterCallback* expecter,
+                                     base::PassKey<test::ScopedErrorExpecter>);
+  static void ResetScopedErrorExpecter(
+      base::PassKey<test::ScopedErrorExpecter>);
 
+ private:
   // Statement accesses StatementRef which we don't want to expose to everybody
   // (they should go through Statement).
   friend class Statement;
@@ -520,22 +613,20 @@ class COMPONENT_EXPORT(SQL) Database {
   void CloseInternal(bool forced);
 
   // Construct a ScopedBlockingCall to annotate IO calls, but only if
-  // database wasn't open in memory.
+  // database wasn't open in memory. ScopedBlockingCall uses |from_here| to
+  // declare its blocking execution scope (see https://www.crbug/934302).
   void InitScopedBlockingCall(
-      base::Optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+      const base::Location& from_here,
+      absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
     if (!in_memory_)
-      scoped_blocking_call->emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
+      scoped_blocking_call->emplace(from_here, base::BlockingType::MAY_BLOCK);
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(const char* name, const char* type) const;
+  bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
 
-  // Accessors for global error-expecter, for injecting behavior during tests.
-  // See test/scoped_error_expecter.h.
-  using ErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
-  static ErrorExpecterCallback* current_expecter_cb_;
-  static void SetErrorExpecter(ErrorExpecterCallback* expecter);
-  static void ResetErrorExpecter();
+  // Used to implement the interface with sql::test::ScopedErrorExpecter.
+  static ScopedErrorExpecterCallback* current_expecter_cb_;
 
   // A StatementRef is a refcounted wrapper around a sqlite statement pointer.
   // Refcounting allows us to give these statements out to sql::Statement
@@ -555,13 +646,16 @@ class COMPONENT_EXPORT(SQL) Database {
 
     // |database| is the sql::Database instance associated with
     // the statement, and is used for tracking outstanding statements
-    // and for error handling.  Set to nullptr for invalid or untracked
-    // refs.  |stmt| is the actual statement, and should only be null
+    // and for error handling.  Set to nullptr for invalid refs.
+    // |stmt| is the actual statement, and should only be null
     // to create an invalid ref.  |was_valid| indicates whether the
     // statement should be considered valid for diagnostic purposes.
     // |was_valid| can be true for a null |stmt| if the Database has
     // been forcibly closed by an error handler.
     StatementRef(Database* database, sqlite3_stmt* stmt, bool was_valid);
+
+    StatementRef(const StatementRef&) = delete;
+    StatementRef& operator=(const StatementRef&) = delete;
 
     // When true, the statement can be used.
     bool is_valid() const { return !!stmt_; }
@@ -572,10 +666,6 @@ class COMPONENT_EXPORT(SQL) Database {
     bool was_valid() const { return was_valid_; }
 
     // If we've not been linked to a database, this will be null.
-    //
-    // TODO(shess): database_ can be nullptr in case of
-    // GetUntrackedStatement(), which prevents Statement::OnError() from
-    // forwarding errors.
     Database* database() const { return database_; }
 
     // Returns the sqlite statement if any. If the statement is not active,
@@ -588,11 +678,13 @@ class COMPONENT_EXPORT(SQL) Database {
     void Close(bool forced);
 
     // Construct a ScopedBlockingCall to annotate IO calls, but only if
-    // database wasn't open in memory.
+    // database wasn't open in memory. ScopedBlockingCall uses |from_here| to
+    // declare its blocking execution scope (see https://www.crbug/934302).
     void InitScopedBlockingCall(
-        base::Optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+        const base::Location& from_here,
+        absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
       if (database_)
-        database_->InitScopedBlockingCall(scoped_blocking_call);
+        database_->InitScopedBlockingCall(from_here, scoped_blocking_call);
     }
 
    private:
@@ -603,8 +695,6 @@ class COMPONENT_EXPORT(SQL) Database {
     Database* database_;
     sqlite3_stmt* stmt_;
     bool was_valid_;
-
-    DISALLOW_COPY_AND_ASSIGN(StatementRef);
   };
   friend class StatementRef;
 
@@ -629,23 +719,18 @@ class COMPONENT_EXPORT(SQL) Database {
   // this did not work out.
   int OnSqliteError(int err, Statement* stmt, const char* sql) const;
 
+  // Like Execute(), but returns the error code given by SQLite.
+  //
+  // This is only exposed to the Database implementation. Code that uses
+  // sql::Database should not be concerned with SQLite error codes.
+  int ExecuteAndReturnErrorCode(const char* sql) WARN_UNUSED_RESULT;
+
   // Like |Execute()|, but retries if the database is locked.
   bool ExecuteWithTimeout(const char* sql,
                           base::TimeDelta ms_timeout) WARN_UNUSED_RESULT;
 
-  // Implementation helper for GetUniqueStatement() and GetUntrackedStatement().
-  // |tracking_db| is the db the resulting ref should register with for
-  // outstanding statement tracking, which should be |this| to track or null to
-  // not track.
-  scoped_refptr<StatementRef> GetStatementImpl(sql::Database* tracking_db,
-                                               const char* sql) const;
-
-  // Helper for implementing const member functions.  Like GetUniqueStatement(),
-  // except the StatementRef is not entered into |open_statements_|, so an
-  // outstanding StatementRef from this function can block closing the database.
-  // The StatementRef will not call OnSqliteError(), because that can call
-  // |error_callback_| which can close the database.
-  scoped_refptr<StatementRef> GetUntrackedStatement(const char* sql) const;
+  // Implementation helper for GetUniqueStatement() and GetCachedStatement().
+  scoped_refptr<StatementRef> GetStatementImpl(const char* sql);
 
   bool IntegrityCheckHelper(const char* pragma_sql,
                             std::vector<std::string>* messages)
@@ -681,15 +766,16 @@ class COMPONENT_EXPORT(SQL) Database {
   bool GetMmapAltStatus(int64_t* status);
   bool SetMmapAltStatus(int64_t status);
 
+  // sqlite3_prepare_v3() flags for this database.
+  int SqlitePrepareFlags() const;
+
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
-  sqlite3* db_;
+  sqlite3* db_ = nullptr;
 
-  // Parameters we'll configure in sqlite before doing anything else. Zero means
-  // use the default value.
-  int page_size_;
-  int cache_size_;
-  bool exclusive_locking_;
+  // TODO(shuagga@microsoft.com): Make `options_` const after removing all
+  // setters.
+  DatabaseOptions options_;
 
   // Holds references to all cached statements so they remain active.
   //
@@ -704,49 +790,50 @@ class COMPONENT_EXPORT(SQL) Database {
   std::set<StatementRef*> open_statements_;
 
   // Number of currently-nested transactions.
-  int transaction_nesting_;
+  int transaction_nesting_ = 0;
 
   // True if any of the currently nested transactions have been rolled back.
   // When we get to the outermost transaction, this will determine if we do
   // a rollback instead of a commit.
-  bool needs_rollback_;
+  bool needs_rollback_ = false;
 
   // True if database is open with OpenInMemory(), False if database is open
   // with Open().
-  bool in_memory_;
+  bool in_memory_ = false;
 
   // |true| if the Database was closed using RazeAndClose().  Used
   // to enable diagnostics to distinguish calls to never-opened
   // databases (incorrect use of the API) from calls to once-valid
   // databases.
-  bool poisoned_;
-
-  // |true| to use alternate storage for tracking mmap status.
-  bool mmap_alt_status_;
+  bool poisoned_ = false;
 
   // |true| if SQLite memory-mapped I/O is not desired for this database.
   bool mmap_disabled_;
 
   // |true| if SQLite memory-mapped I/O was enabled for this database.
   // Used by ReleaseCacheMemoryIfNeeded().
-  bool mmap_enabled_;
+  bool mmap_enabled_ = false;
 
   // Used by ReleaseCacheMemoryIfNeeded() to track if new changes have happened
   // since memory was last released.
-  int total_changes_at_last_release_;
+  int total_changes_at_last_release_ = 0;
 
+  // Called when a SQLite error occurs.
+  //
+  // This callback may be null, in which case errors are handled using a default
+  // behavior.
+  //
+  // This callback must never be exposed outside this Database instance. This is
+  // a straight-forward way to guarantee that this callback will not be called
+  // after the Database instance goes out of scope. set_error_callback() makes
+  // this guarantee.
   ErrorCallback error_callback_;
 
-  // Tag for auxiliary histograms.
+  // Developer-friendly database ID used in logging output and memory dumps.
   std::string histogram_tag_;
-
-  // Linear histogram for RecordEvent().
-  base::HistogramBase* stats_histogram_;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(Database);
 };
 
 }  // namespace sql

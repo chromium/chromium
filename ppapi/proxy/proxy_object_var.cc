@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/proxy_object_var.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ppapi/c/pp_var.h"
 
 using ppapi::proxy::PluginDispatcher;

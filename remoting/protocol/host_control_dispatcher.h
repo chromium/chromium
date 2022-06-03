@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/client_stub.h"
@@ -26,6 +27,10 @@ class HostControlDispatcher : public ChannelDispatcherBase,
                               public ClientStub {
  public:
   HostControlDispatcher();
+
+  HostControlDispatcher(const HostControlDispatcher&) = delete;
+  HostControlDispatcher& operator=(const HostControlDispatcher&) = delete;
+
   ~HostControlDispatcher() override;
 
   // ClientStub implementation.
@@ -33,6 +38,7 @@ class HostControlDispatcher : public ChannelDispatcherBase,
   void SetPairingResponse(const PairingResponse& pairing_response) override;
   void DeliverHostMessage(const ExtensionMessage& message) override;
   void SetVideoLayout(const VideoLayout& layout) override;
+  void SetTransportInfo(const TransportInfo& transport_info) override;
 
   // ClipboardStub implementation for sending clipboard data to client.
   void InjectClipboardEvent(const ClipboardEvent& event) override;
@@ -70,8 +76,6 @@ class HostControlDispatcher : public ChannelDispatcherBase,
   // 64 KiB is the default message size expected to be supported in absence of
   // a higher value negotiated via SDP.
   std::size_t max_message_size_ = 64 * 1024;
-
-  DISALLOW_COPY_AND_ASSIGN(HostControlDispatcher);
 };
 
 }  // namespace protocol

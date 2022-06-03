@@ -41,11 +41,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 
 
 #### AFTER PROPERTY INSERTION ####
@@ -89,11 +84,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 4 rule ranges are equal.
 4 rule ranges are equal.
 3 rule ranges are equal.
@@ -101,6 +91,5 @@ html { (user agent stylesheet)
 3 rule ranges are equal.
 3 rule ranges are equal.
 3 rule ranges are equal.
-0 rule ranges are equal.
 0 rule ranges are equal.
 

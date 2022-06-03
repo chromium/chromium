@@ -25,14 +25,14 @@ function getBackgroundColor(element) {
     return window.getComputedStyle(element).backgroundColor;
 }
 
-var shadowRootWithKeyframe = document.getElementById("d1").createShadowRoot();
+var shadowRootWithKeyframe = document.getElementById("d1").attachShadow({mode: 'open'});
 shadowRootWithKeyframe.innerHTML = '<style>@keyframes anim {' +
     'from { background-color:red; } to { background-color: blue; } }' +
     '#box { height: 100px; width: 100px; background: red; ' +
     'animation: anim 0.5s both; }</style>' +
     '<div id="box"></div>';
 
-var shadowRootWithoutKeyframe = document.getElementById("d2").createShadowRoot();
+var shadowRootWithoutKeyframe = document.getElementById("d2").attachShadow({mode: 'open'});
 shadowRootWithoutKeyframe.innerHTML = '<style>' +
     '#box { height: 100px; width: 100px; background: red; ' +
     'animation: anim 0.5s both; }</style>' +

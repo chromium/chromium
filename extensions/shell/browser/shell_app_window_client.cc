@@ -32,7 +32,7 @@ AppWindow* ShellAppWindowClient::CreateAppWindowForLockScreenAction(
 
 void ShellAppWindowClient::OpenDevToolsWindow(
     content::WebContents* web_contents,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   NOTIMPLEMENTED();
 }
 

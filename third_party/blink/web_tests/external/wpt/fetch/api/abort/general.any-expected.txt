@@ -31,6 +31,7 @@ PASS response.blob() rejects if already aborted
 PASS response.formData() rejects if already aborted
 PASS response.json() rejects if already aborted
 PASS response.text() rejects if already aborted
+PASS Call text() twice on aborted response
 PASS Already aborted signal does not make request
 PASS Already aborted signal can be used for many fetches
 PASS Signal can be used to abort other fetches, even if another fetch succeeded before aborting

@@ -12,9 +12,9 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/safe_browsing/file_type_policies_test_util.h"
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
-#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -242,7 +242,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidZip) {
 
 // Since we only inspect contents of DMGs on OS X, we only get
 // MAC_ARCHIVE_FAILED_PARSING on OS X.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 TEST_F(FileAnalyzerTest, TypeInvalidDmg) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =
       new testing::StrictMock<MockBinaryFeatureExtractor>();
@@ -631,7 +631,7 @@ TEST_F(FileAnalyzerTest, ExtractsImageHeadersForExe) {
   EXPECT_EQ(result_.image_headers.pe_headers().file_header(), "image header");
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 
 TEST_F(FileAnalyzerTest, ExtractsSignatureForDmg) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =

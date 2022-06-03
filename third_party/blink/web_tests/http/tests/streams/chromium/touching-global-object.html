@@ -90,7 +90,7 @@ async function runTest() {
       close() {
         resolve();
       }
-    }, new CountQueuingStrategy(10));
+    }, new CountQueuingStrategy({ highWaterMark: 10}));
     emptyRS.pipeThrough({
       writable: closeResolvesWS,
       readable: new ReadableStream()
@@ -144,7 +144,7 @@ async function runTest() {
   }
 
   async function testWritableStreamClose() {
-    const ws = new WritableStream({}, new ByteLengthQueuingStrategy(1024));
+    const ws = new WritableStream({}, new ByteLengthQueuingStrategy({ highWaterMark: 1024 }));
     const writer = ws.getWriter();
     await writer.close();
     await writer.closed;

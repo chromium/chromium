@@ -4,9 +4,12 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 
+#include "components/services/storage/filesystem_proxy_factory.h"
+
 namespace content {
 
-IndexedDBLevelDBEnv::IndexedDBLevelDBEnv() : ChromiumEnv("LevelDBEnv.IDB") {}
+IndexedDBLevelDBEnv::IndexedDBLevelDBEnv()
+    : ChromiumEnv("LevelDBEnv.IDB", storage::CreateFilesystemProxy()) {}
 
 IndexedDBLevelDBEnv* IndexedDBLevelDBEnv::Get() {
   static base::NoDestructor<IndexedDBLevelDBEnv> g_leveldb_env;

@@ -140,6 +140,18 @@ function documentSubscribePushWithBase64URLEncodedString() {
   }).catch(sendErrorToTest);
 }
 
+function documentSubscribePushGetExpirationTime() {
+  navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: kApplicationServerKey.buffer
+        })
+        .then(function(subscription) {
+          sendResultToTest(subscription.expirationTime);
+        });
+  }).catch(sendErrorToTest);
+}
+
 function workerSubscribePush() {
   // Send the message to the worker for it to subscribe
   navigator.serviceWorker.controller.postMessage({command: 'workerSubscribe'});
@@ -172,6 +184,15 @@ function GetP256dh() {
         .then(function(subscription) {
           sendResultToTest(btoa(String.fromCharCode.apply(null,
               new Uint8Array(subscription.getKey('p256dh')))));
+        });
+  }).catch(sendErrorToTest);
+}
+
+function GetSubscriptionExpirationTime() {
+  navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.getSubscription()
+        .then(function(subscription) {
+          sendResultToTest(subscription.expirationTime);
         });
   }).catch(sendErrorToTest);
 }
@@ -253,8 +274,12 @@ function hasSubscription() {
 
 navigator.serviceWorker.addEventListener('message', function(event) {
   var message = JSON.parse(event.data);
-  if (message.type == 'push')
+  if (message.type === 'push') {
     resultQueue.push(message.data);
-  else
+  } else if (message.type === 'pushsubscriptionchange') {
+    resultQueue.push(message.data.oldEndpoint);
+    resultQueue.push(message.data.newEndpoint);
+  } else {
     sendResultToTest(message.data);
+  }
 }, false);

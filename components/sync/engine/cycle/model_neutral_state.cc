@@ -22,7 +22,7 @@ ModelNeutralState::ModelNeutralState()
 
 ModelNeutralState::ModelNeutralState(const ModelNeutralState& other) = default;
 
-ModelNeutralState::~ModelNeutralState() {}
+ModelNeutralState::~ModelNeutralState() = default;
 
 bool HasSyncerError(const ModelNeutralState& state) {
   const bool get_key_error = state.last_get_key_result.IsActualError();

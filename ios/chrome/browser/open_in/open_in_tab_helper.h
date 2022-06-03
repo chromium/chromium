@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 #include "ios/web/public/web_state_observer.h"
@@ -14,6 +16,61 @@ namespace net {
 class HttpResponseHeaders;
 }  //  namespace net
 
+namespace content_type {
+
+// .pptx extension.
+extern const char kMimeTypeMicrosoftPowerPointOpenXML[];
+
+// .docx extension.
+extern const char kMimeTypeMicrosoftWordOpenXML[];
+
+// .xlsx extension.
+extern const char kMimeTypeMicrosoftExcelOpenXML[];
+
+// .pdf extension.
+extern const char kMimeTypePDF[];
+
+// .doc extension.
+extern const char kMimeTypeMicrosoftWord[];
+
+// .jpeg or .jpg extension.
+extern const char kMimeTypeJPEG[];
+
+// .png extension.
+extern const char kMimeTypePNG[];
+
+// .ppt extension.
+extern const char kMimeTypeMicrosoftPowerPoint[];
+
+// .rtf extension.
+extern const char kMimeTypeRTF[];
+
+// .svg extension.
+extern const char kMimeTypeSVG[];
+
+// .xls extension.
+extern const char kMimeTypeMicrosoftExcel[];
+
+}  // namespace content_type
+
+// Enum used to determine the MIME type of a previewed file. Entries should
+// always keep synced with the IOS.OpenIn.MimeType UMA histogram.
+enum class OpenInMimeType {
+  kMimeTypeNotHandled = 0,
+  kMimeTypePDF = 1,
+  kMimeTypeMicrosoftWord = 2,
+  kMimeTypeMicrosoftWordOpenXML = 3,
+  kMimeTypeJPEG = 4,
+  kMimeTypePNG = 5,
+  kMimeTypeMicrosoftPowerPoint = 6,
+  kMimeTypeMicrosoftPowerPointOpenXML = 7,
+  kMimeTypeRTF = 8,
+  kMimeTypeSVG = 9,
+  kMimeTypeMicrosoftExcel = 10,
+  kMimeTypeMicrosoftExcelOpenXML = 11,
+  kMaxValue = kMimeTypeMicrosoftExcelOpenXML,
+};
+
 @class OpenInController;
 
 // A tab helper that observes WebState and shows open in button for PDF
@@ -21,6 +78,9 @@ class HttpResponseHeaders;
 class OpenInTabHelper : public web::WebStateObserver,
                         public web::WebStateUserData<OpenInTabHelper> {
  public:
+  OpenInTabHelper(const OpenInTabHelper&) = delete;
+  OpenInTabHelper& operator=(const OpenInTabHelper&) = delete;
+
   ~OpenInTabHelper() override;
 
   // Creates OpenInTabHelper and attaches to |web_state|. |web_state| must not
@@ -39,6 +99,9 @@ class OpenInTabHelper : public web::WebStateObserver,
   // Handles exportable files and shows open in button if content mime type is
   // PDF.
   void HandleExportableFile();
+
+  // Tests that files are exportable and returns their MIME type.
+  OpenInMimeType GetUmaResult(const std::string& mime_type) const;
 
   // WebStateObserver implementation.
   void PageLoaded(
@@ -61,8 +124,6 @@ class OpenInTabHelper : public web::WebStateObserver,
   __weak id<OpenInTabHelperDelegate> delegate_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OpenInTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_

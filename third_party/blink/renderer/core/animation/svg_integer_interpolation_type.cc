@@ -21,13 +21,13 @@ InterpolationValue SVGIntegerInterpolationType::MaybeConvertSVGValue(
   if (svg_value.GetType() != kAnimatedInteger)
     return nullptr;
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(ToSVGInteger(svg_value).Value()));
+      std::make_unique<InterpolableNumber>(To<SVGInteger>(svg_value).Value()));
 }
 
 SVGPropertyBase* SVGIntegerInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  double value = ToInterpolableNumber(interpolable_value).Value();
+  double value = To<InterpolableNumber>(interpolable_value).Value();
   return MakeGarbageCollected<SVGInteger>(round(value));
 }
 

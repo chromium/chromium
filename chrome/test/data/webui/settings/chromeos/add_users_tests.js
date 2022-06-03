@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {FakeUsersPrivate} from './fake_users_private.m.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// clang-format on
+
 suite('AddPersonDialog', function() {
   let dialog = null;
 

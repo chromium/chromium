@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Handover with datachannel reinitiated from new callee completes promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'transport')"
+Harness: the test ran to completion.
+

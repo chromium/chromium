@@ -56,10 +56,14 @@ base::Value NetLogStringValue(base::StringPiece raw) {
   return base::Value("%ESCAPED:\xE2\x80\x8B " + EscapeNonASCIIAndPercent(raw));
 }
 
+base::Value NetLogBinaryValue(base::span<const uint8_t> bytes) {
+  return NetLogBinaryValue(bytes.data(), bytes.size());
+}
+
 base::Value NetLogBinaryValue(const void* bytes, size_t length) {
   std::string b64;
-  Base64Encode(base::StringPiece(reinterpret_cast<const char*>(bytes), length),
-               &b64);
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(bytes), length), &b64);
   return base::Value(std::move(b64));
 }
 
@@ -71,6 +75,10 @@ base::Value NetLogNumberValue(uint64_t num) {
   return NetLogNumberValueHelper(num);
 }
 
+base::Value NetLogNumberValue(uint32_t num) {
+  return NetLogNumberValueHelper(num);
+}
+
 base::Value NetLogParamsWithInt(base::StringPiece name, int value) {
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetIntKey(name, value);
@@ -78,9 +86,9 @@ base::Value NetLogParamsWithInt(base::StringPiece name, int value) {
 }
 
 base::Value NetLogParamsWithInt64(base::StringPiece name, int64_t value) {
-  base::DictionaryValue event_params;
-  event_params.SetKey(name, NetLogNumberValue(value));
-  return std::move(event_params);
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetKey(name, NetLogNumberValue(value));
+  return params;
 }
 
 base::Value NetLogParamsWithBool(base::StringPiece name, bool value) {

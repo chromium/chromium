@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/notification_presenter.h"
 #include "chromeos/network/network_state.h"
@@ -37,6 +35,11 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // instance.
   TetherNotificationPresenter(Profile* profile,
                               NetworkConnect* network_connect);
+
+  TetherNotificationPresenter(const TetherNotificationPresenter&) = delete;
+  TetherNotificationPresenter& operator=(const TetherNotificationPresenter&) =
+      delete;
+
   ~TetherNotificationPresenter() override;
 
   // NotificationPresenter:
@@ -85,15 +88,15 @@ class TetherNotificationPresenter : public NotificationPresenter {
   };
 
   void OnNotificationClicked(const std::string& notification_id,
-                             base::Optional<int> button_index);
+                             absl::optional<int> button_index);
   NotificationInteractionType GetMetricValueForClickOnNotificationBody(
       const std::string& clicked_notification_id) const;
   void OnNotificationClosed(const std::string& notification_id);
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
-      const base::string16& title,
-      const base::string16& message,
+      const std::u16string& title,
+      const std::u16string& message,
       const gfx::ImageSkia& small_image,
       const message_center::RichNotificationData& rich_notification_data);
 
@@ -118,8 +121,6 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // in the "multiple hotspots available" mode, this pointer is null.
   std::unique_ptr<std::string> hotspot_nearby_device_id_;
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationPresenter);
 };
 
 }  // namespace tether

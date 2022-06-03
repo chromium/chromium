@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_REMOTE_CHANGE_PROCESSOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 
@@ -34,12 +33,16 @@ class RemoteChangeProcessor {
   // URL in the local filesystem. If the target URL does not exist it is
   // set to SYNC_FILE_TYPE_UNKNOWN.
   // |changes| indicates a set of pending changes for the target URL.
-  typedef base::Callback<void(
-      SyncStatusCode status,
-      const SyncFileMetadata& metadata,
-      const FileChangeList& changes)> PrepareChangeCallback;
+  using PrepareChangeCallback =
+      base::OnceCallback<void(SyncStatusCode status,
+                              const SyncFileMetadata& metadata,
+                              const FileChangeList& changes)>;
 
   RemoteChangeProcessor() {}
+
+  RemoteChangeProcessor(const RemoteChangeProcessor&) = delete;
+  RemoteChangeProcessor& operator=(const RemoteChangeProcessor&) = delete;
+
   virtual ~RemoteChangeProcessor() {}
 
   // This must be called before processing the change for the |url|.
@@ -49,7 +52,7 @@ class RemoteChangeProcessor {
   // which is supposed to be done by LocalChangeProcessor)
   virtual void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) = 0;
+      PrepareChangeCallback callback) = 0;
 
   // This is called to apply the remote |change|. If the change type is
   // ADD_OR_UPDATE for a file, |local_path| needs to point to a
@@ -61,7 +64,7 @@ class RemoteChangeProcessor {
   virtual void ApplyRemoteChange(const FileChange& change,
                                  const base::FilePath& local_path,
                                  const storage::FileSystemURL& url,
-                                 const SyncStatusCallback& callback) = 0;
+                                 SyncStatusCallback callback) = 0;
 
   // Finalizes the remote sync started by PrepareForProcessRemoteChange.
   // This clears sync flag on |url| to unlock the file for future writes/sync.
@@ -70,7 +73,7 @@ class RemoteChangeProcessor {
   // processed the existing local changes while processing a remote change.
   virtual void FinalizeRemoteSync(const storage::FileSystemURL& url,
                                   bool clear_local_changes,
-                                  const base::Closure& completion_callback) = 0;
+                                  base::OnceClosure completion_callback) = 0;
 
   // Records a fake local change so that the change will be processed in the
   // next local sync.
@@ -79,10 +82,7 @@ class RemoteChangeProcessor {
   // resolve a conflict by uploading the local file).
   virtual void RecordFakeLocalChange(const storage::FileSystemURL& url,
                                      const FileChange& change,
-                                     const SyncStatusCallback& callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessor);
+                                     SyncStatusCallback callback) = 0;
 };
 
 }  // namespace sync_file_system

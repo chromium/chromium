@@ -13,7 +13,13 @@ import logging
 import mimetypes
 import os
 import time
-import urllib2
+try:
+  from urllib.request import urlopen, Request
+  from urllib.error import HTTPError, URLError
+  from urllib.parse import quote
+except ImportError:
+  from urllib import quote
+  from urllib2 import urlopen, HTTPError, URLError, Request
 
 _log = logging.getLogger(__name__)
 
@@ -44,7 +50,7 @@ def WriteJSON(json_object, file_path, callback=None):
 def ConvertTrieToFlatPaths(trie, prefix=None):
   """Flattens the trie of paths, prepending a prefix to each."""
   result = {}
-  for name, data in trie.iteritems():
+  for name, data in trie.items():
     if prefix:
       name = prefix + '/' + name
 
@@ -95,7 +101,7 @@ class TestResult(object):
   """A simple class that represents a single test result."""
 
   # Test modifier constants.
-  (NONE, FAILS, FLAKY, DISABLED) = range(4)
+  (NONE, FAILS, FLAKY, DISABLED) = list(range(4))
 
   def __init__(self, test, failed=False, elapsed_time=0):
     self.test_name = test
@@ -195,7 +201,7 @@ class JSONResultsGeneratorBase(object):
     self._results_directory = results_file_base_path
 
     self._test_results_map = test_results_map
-    self._test_results = test_results_map.values()
+    self._test_results = list(test_results_map.values())
 
     self._svn_repositories = svn_repositories
     if not self._svn_repositories:
@@ -217,7 +223,7 @@ class JSONResultsGeneratorBase(object):
       WriteJSON(json_object, file_path)
 
   def GenerateTimesMSFile(self):
-    times = TestTimingsTrie(self._test_results_map.values())
+    times = TestTimingsTrie(list(self._test_results_map.values()))
     file_path = os.path.join(self._results_directory, self.TIMES_MS_FILENAME)
     WriteJSON(times, file_path)
 
@@ -326,7 +332,7 @@ class JSONResultsGeneratorBase(object):
       return self.__class__.NO_DATA_RESULT
 
     test_result = self._test_results_map[test_name]
-    if test_result.modifier in self.MODIFIER_TO_CHAR.keys():
+    if test_result.modifier in list(self.MODIFIER_TO_CHAR.keys()):
       return self.MODIFIER_TO_CHAR[test_result.modifier]
 
     return self.__class__.PASS_RESULT
@@ -374,23 +380,21 @@ class JSONResultsGeneratorBase(object):
       return {}, None
 
     results_file_url = (self.URL_FOR_TEST_LIST_JSON %
-                        (urllib2.quote(self._test_results_server),
-                         urllib2.quote(self._builder_name),
-                         self.RESULTS_FILENAME,
-                         urllib2.quote(self._test_type),
-                         urllib2.quote(self._master_name)))
+                        (quote(self._test_results_server),
+                         quote(self._builder_name), self.RESULTS_FILENAME,
+                         quote(self._test_type), quote(self._master_name)))
 
     # pylint: disable=redefined-variable-type
     try:
       # FIXME: We should talk to the network via a Host object.
-      results_file = urllib2.urlopen(results_file_url)
+      results_file = urlopen(results_file_url)
       old_results = results_file.read()
-    except urllib2.HTTPError as http_error:
+    except HTTPError as http_error:
       # A non-4xx status code means the bot is hosed for some reason
       # and we can't grab the results.json file off of it.
       if http_error.code < 400 and http_error.code >= 500:
         error = http_error
-    except urllib2.URLError as url_error:
+    except URLError as url_error:
       error = url_error
     # pylint: enable=redefined-variable-type
 
@@ -426,7 +430,7 @@ class JSONResultsGeneratorBase(object):
 
     # Create a test modifiers (FAILS, FLAKY etc) summary dictionary.
     entry = {}
-    for test_name in self._test_results_map.iterkeys():
+    for test_name in self._test_results_map.keys():
       result_char = self._GetModifierChar(test_name)
       entry[result_char] = entry.get(result_char, 0) + 1
 
@@ -543,7 +547,7 @@ class JSONResultsGeneratorBase(object):
 
     # version 3->4
     if archive_version == 3:
-      for results in results_json.values():
+      for results in list(results_json.values()):
         self._ConvertTestsToTrie(results)
 
     results_json[self.VERSION_KEY] = self.VERSION
@@ -554,7 +558,7 @@ class JSONResultsGeneratorBase(object):
 
     test_results = results[self.TESTS]
     test_results_trie = {}
-    for test in test_results.iterkeys():
+    for test in test_results.keys():
       single_test_result = test_results[test]
       AddPathToTrie(test, single_test_result, test_results_trie)
 
@@ -642,10 +646,9 @@ class _FileUploader(object):
     end = start + self._timeout_seconds
     while time.time() < end:
       try:
-        request = urllib2.Request(self._url, data,
-                                  {'Content-Type': content_type})
-        return urllib2.urlopen(request)
-      except urllib2.HTTPError as e:
+        request = Request(self._url, data, {'Content-Type': content_type})
+        return urlopen(request)
+      except HTTPError as e:
         _log.warn("Received HTTP status %s loading \"%s\".  "
                   'Retrying in 10 seconds...', e.code, e.filename)
         time.sleep(10)
@@ -678,7 +681,7 @@ def _EncodeMultipartFormData(fields, files):
     lines.append('--' + BOUNDARY)
     lines.append('Content-Disposition: form-data; name="%s"' % key)
     lines.append('')
-    if isinstance(value, unicode):
+    if isinstance(value, str):
       value = value.encode('utf-8')
     lines.append(value)
 
@@ -688,7 +691,7 @@ def _EncodeMultipartFormData(fields, files):
                  'filename="%s"' % (key, filename))
     lines.append('Content-Type: %s' % _GetMIMEType(filename))
     lines.append('')
-    if isinstance(value, unicode):
+    if isinstance(value, str):
       value = value.encode('utf-8')
     lines.append(value)
 

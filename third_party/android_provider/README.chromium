@@ -1,0 +1,19 @@
+Name: MediaStoreUtils Android sample.
+URL: https://android.googlesource.com/platform/cts/+/master/tests/tests/provider/src/android/provider/cts/MediaStoreUtils.java
+Version: 50f25a19f2a3de940d6ef7eac84b37d1c62f1b5f
+License: Apache 2.0
+Security Critical: yes
+
+Description:
+This contains a modified copy of MediaStoreUtils.java. Please don't modify this.
+
+MediaStoreUtils.java is based on a public Android sample that was
+available as part of the Android cts libraries. It is
+also available from:
+https://android.googlesource.com/platform/cts/+/master/tests/tests/provider/src/android/provider/cts/MediaStoreUtils.java
+
+Local Modifications:
+- Added logs
+- Introduced some helper method.
+- Add @TargetApi(Build.VERSION_CODES.Q).
+- Catch an exception thrown by ContentResolver.delete()

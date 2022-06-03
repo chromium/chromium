@@ -4,14 +4,14 @@
 
 #include "chrome/browser/vr/elements/controller.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/animation/keyframed_animation_curve.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace vr {
 
@@ -61,14 +61,13 @@ static constexpr char const* kFragmentShader = SHADER(
 );
 // clang-format on
 
-std::unique_ptr<cc::FloatAnimationCurve> CreateAlphaCurve(
+std::unique_ptr<gfx::FloatAnimationCurve> CreateAlphaCurve(
     const float* alpha_stops,
     size_t length) {
-  auto alpha_curve = cc::KeyframedFloatAnimationCurve::Create();
+  auto alpha_curve = gfx::KeyframedFloatAnimationCurve::Create();
   for (size_t i = 0; i < length; i += 2) {
-    alpha_curve->AddKeyframe(cc::FloatKeyframe::Create(
-        base::TimeDelta::FromSecondsD(alpha_stops[i + 1]), alpha_stops[i],
-        nullptr));
+    alpha_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        base::Seconds(alpha_stops[i + 1]), alpha_stops[i], nullptr));
   }
   return alpha_curve;
 }
@@ -84,12 +83,12 @@ void AddVertex(const gfx::Point3F& local_vertex,
 }
 
 void AddColor(float alpha,
-              const cc::FloatAnimationCurve& alpha_curve,
+              const gfx::FloatAnimationCurve& alpha_curve,
               std::vector<float>* colors) {
   colors->push_back(SkColorGetR(kColor) / 255.0);
   colors->push_back(SkColorGetG(kColor) / 255.0);
   colors->push_back(SkColorGetB(kColor) / 255.0);
-  colors->push_back(alpha_curve.GetValue(base::TimeDelta::FromSecondsD(alpha)));
+  colors->push_back(alpha_curve.GetValue(base::Seconds(alpha)));
 }
 
 void AddSphere(size_t num_rings,
@@ -97,7 +96,7 @@ void AddSphere(size_t num_rings,
                float arc_rings,
                float arc_sectors,
                const gfx::Transform& transform,
-               const cc::FloatAnimationCurve& alpha_curve,
+               const gfx::FloatAnimationCurve& alpha_curve,
                std::vector<float>* vertices,
                std::vector<float>* colors,
                std::vector<GLushort>* indices) {
@@ -139,7 +138,7 @@ void AddCylinder(size_t num_rings,
                  size_t num_sectors,
                  float arc,
                  const gfx::Transform& transform,
-                 const cc::FloatAnimationCurve& alpha_curve,
+                 const gfx::FloatAnimationCurve& alpha_curve,
                  std::vector<float>* vertices,
                  std::vector<float>* colors,
                  std::vector<GLushort>* indices) {
@@ -179,7 +178,7 @@ void AddCircle(size_t num_rings,
                size_t num_sectors,
                float arc,
                const gfx::Transform& transform,
-               const cc::FloatAnimationCurve& alpha_curve,
+               const gfx::FloatAnimationCurve& alpha_curve,
                std::vector<float>* vertices,
                std::vector<float>* colors,
                std::vector<GLushort>* indices) {
@@ -218,7 +217,7 @@ void AddCircle(size_t num_rings,
 void AddSquare(size_t num_rings,
                size_t num_sectors,
                const gfx::Transform& transform,
-               const cc::FloatAnimationCurve& alpha_curve,
+               const gfx::FloatAnimationCurve& alpha_curve,
                std::vector<float>* vertices,
                std::vector<float>* colors,
                std::vector<GLushort>* indices) {

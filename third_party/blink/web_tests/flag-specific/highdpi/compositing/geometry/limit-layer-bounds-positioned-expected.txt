@@ -1,0 +1,35 @@
+Text here
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='compositing'",
+      "bounds": [150, 150],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='indicator')",
+      "position": [-15001, -32],
+      "bounds": [15182, 213],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [44, 44, 0, 1]
+      ]
+    }
+  ]
+}
+

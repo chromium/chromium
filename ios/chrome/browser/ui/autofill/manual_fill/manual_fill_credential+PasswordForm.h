@@ -7,15 +7,15 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential.h"
 
-namespace autofill {
+namespace password_manager {
 struct PasswordForm;
-}
+}  // namespace password_manager
 
 @interface ManualFillCredential (PasswordForm)
 
 // Convenience initializer from a PasswordForm.
 - (instancetype)initWithPasswordForm:
-    (const autofill::PasswordForm&)passwordForm;
+    (const password_manager::PasswordForm&)passwordForm;
 
 @end
 

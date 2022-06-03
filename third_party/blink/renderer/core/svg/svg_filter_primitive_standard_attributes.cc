@@ -21,8 +21,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter_primitive.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_filter_primitive.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -69,7 +71,7 @@ SVGFilterPrimitiveStandardAttributes::SVGFilterPrimitiveStandardAttributes(
   AddToPropertyMap(result_);
 }
 
-void SVGFilterPrimitiveStandardAttributes::Trace(blink::Visitor* visitor) {
+void SVGFilterPrimitiveStandardAttributes::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -84,7 +86,7 @@ bool SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
   DCHECK(attr_name == svg_names::kColorInterpolationFiltersAttr);
   DCHECK(GetLayoutObject());
   EColorInterpolation color_interpolation =
-      GetLayoutObject()->StyleRef().SvgStyle().ColorInterpolationFilters();
+      GetLayoutObject()->StyleRef().ColorInterpolationFilters();
   InterpolationSpace resolved_interpolation_space =
       SVGFilterBuilder::ResolveInterpolationSpace(color_interpolation);
   if (resolved_interpolation_space == effect->OperatingInterpolationSpace())
@@ -94,7 +96,8 @@ bool SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
 }
 
 void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr ||
@@ -104,14 +107,14 @@ void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGFilterPrimitiveStandardAttributes::ChildrenChanged(
     const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (!change.by_parser)
+  if (!change.ByParser())
     Invalidate();
 }
 
@@ -137,7 +140,7 @@ static FloatRect DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
     // filter region..."
     if (input_effect->GetFilterEffectType() == kFilterEffectTypeSourceInput)
       return filter_effect->GetFilter()->FilterRegion();
-    subregion_union.Unite(input_effect->FilterPrimitiveSubregion());
+    subregion_union.Union(input_effect->FilterPrimitiveSubregion());
   }
   return subregion_union;
 }
@@ -153,13 +156,13 @@ void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
       SVGLengthContext::ResolveRectangle(this, primitive_units, reference_box);
 
   if (x()->IsSpecified())
-    subregion.SetX(primitive_boundaries.X());
+    subregion.set_x(primitive_boundaries.x());
   if (y()->IsSpecified())
-    subregion.SetY(primitive_boundaries.Y());
+    subregion.set_y(primitive_boundaries.y());
   if (width()->IsSpecified())
-    subregion.SetWidth(primitive_boundaries.Width());
+    subregion.set_width(primitive_boundaries.width());
   if (height()->IsSpecified())
-    subregion.SetHeight(primitive_boundaries.Height());
+    subregion.set_height(primitive_boundaries.height());
 
   filter_effect->SetFilterPrimitiveSubregion(subregion);
 }
@@ -167,7 +170,7 @@ void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
 LayoutObject* SVGFilterPrimitiveStandardAttributes::CreateLayoutObject(
     const ComputedStyle&,
     LegacyLayout) {
-  return new LayoutSVGResourceFilterPrimitive(this);
+  return MakeGarbageCollected<LayoutSVGFilterPrimitive>(this);
 }
 
 bool SVGFilterPrimitiveStandardAttributes::LayoutObjectIsNeeded(

@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
-#include <list>
-
 #include "cc/cc_export.h"
 #include "cc/trees/property_tree.h"
+#include "ui/events/types/scroll_types.h"
 
 namespace cc {
 
@@ -18,6 +17,7 @@ class CC_EXPORT ScrollStateData {
  public:
   ScrollStateData();
   ScrollStateData(const ScrollStateData& other);
+  ScrollStateData& operator=(const ScrollStateData& other);
 
   // Scroll delta in viewport coordinates (DIP).
   double delta_x;
@@ -46,8 +46,11 @@ class CC_EXPORT ScrollStateData {
   // True if the user interacts directly with the display, e.g., via
   // touch.
   bool is_direct_manipulation;
-  // Minimum amount this input device can scroll.
-  double delta_granularity;
+  // True if the scroll is the result of a scrollbar interaction.
+  bool is_scrollbar_interaction;
+
+  // Granularity units for the scroll delta.
+  ui::ScrollGranularity delta_granularity;
 
   // TODO(tdresser): ScrollState shouldn't need to keep track of whether or not
   // this ScrollState object has caused a scroll. Ideally, any native scroller
@@ -68,12 +71,18 @@ class CC_EXPORT ScrollStateData {
   ElementId current_native_scrolling_element() const;
   void set_current_native_scrolling_element(ElementId element_id);
 
+  // Used in scroll unification to specify that a scroll state has been hit
+  // tested on the main thread. If this is true, the hit test result will be
+  // placed in the current_native_scrolling_element_.
+  bool is_main_thread_hit_tested;
+
  private:
   // The id of the last native element to respond to a scroll, or 0 if none
   // exists.
   // TODO(bokan): In the compositor, this is now only used as an override to
-  // scroller targeting, i.e. we'll latch scrolling to the specified
-  // element_id. It will be renamed when the main thread is also converted.
+  // scroller targeting. I.e. we'll latch scrolling to the specified
+  // element_id. It will be renamed to a better name (target_element_id?) when
+  // the main thread is also converted.
   ElementId current_native_scrolling_element_;
 };
 

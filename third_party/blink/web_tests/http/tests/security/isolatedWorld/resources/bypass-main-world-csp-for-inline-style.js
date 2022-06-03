@@ -100,11 +100,7 @@ function test() {
             'Have a separate CSP for the isolated world. Disallow unsafe-inline.');
         testRunner.setIsolatedWorldInfo(
             1, 'chrome-extension://123', 'style-src \'none\'');
-        console.log(
-            'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-            internals.runtimeFlags.isolatedWorldCSPEnabled);
-        var allowUnsafeInline = !internals.runtimeFlags.isolatedWorldCSPEnabled;
-        testInlineStyleInIsolatedWorld(1, allowUnsafeInline, tests);
+        testInlineStyleInIsolatedWorld(1, false, tests);
         break;
       case 1:
         console.log("Injecting into main world again: this should fail.");

@@ -9,7 +9,7 @@ import android.os.Build;
 
 import org.junit.runner.Description;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.vr.rules.VrModuleNotInstalled;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -23,7 +23,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
     private Runnable mOnVSyncPausedCallback;
     private static TestVrShellDelegate sInstance;
     private static Description sTestDescription;
-    private boolean mDisableVrBrowsing;
     private boolean mExpectingBroadcast;
     private boolean mExpectingIntent;
     private Boolean mAllow2dIntents;
@@ -69,10 +68,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
         super.overrideDaydreamApi(api);
     }
 
-    public void overrideVrCoreVersionCheckerForTesting(VrCoreVersionChecker versionChecker) {
-        super.overrideVrCoreVersionChecker(versionChecker);
-    }
-
     public void setFeedbackFrequencyForTesting(int frequency) {
         super.setFeedbackFrequency(frequency);
     }
@@ -115,16 +110,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
 
     public int getLastUiOperationResultForTesting(int actionType) {
         return getVrShell().getLastUiOperationResultForTesting(actionType);
-    }
-
-    @Override
-    protected boolean isVrBrowsingEnabled() {
-        if (mDisableVrBrowsing) return false;
-        return super.isVrBrowsingEnabled();
-    }
-
-    public void setVrBrowsingDisabled(boolean disabled) {
-        mDisableVrBrowsing = disabled;
     }
 
     public void setVrShellOnVSyncPausedCallback(Runnable callback) {

@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/protobuf/proto_library.gni")
+}
+
+source_set("cc") {
+  deps = [
+    "//base",
+    "//cc",
+    "//chrome/browser/image_decoder",
+    "//chrome/common",
+    "//chrome/services/media_gallery_util/public/cpp",
+    "//chrome/services/media_gallery_util/public/mojom",
+    "//content/public/browser",
+    "//media",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//skia",
+    "//ui/gfx",
+  ]
+
+  sources = [
+    "scoped_ptr_expiring_cache.h",
+    "thumbnail.cc",
+    "thumbnail.h",
+    "thumbnail_cache.cc",
+    "thumbnail_cache.h",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//third_party/android_opengl/etc1",
+      "//ui/android",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  deps = [
+    ":cc",
+    "//base",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "scoped_ptr_expiring_cache_unittest.cc" ]
+}

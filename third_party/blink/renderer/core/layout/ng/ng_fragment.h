@@ -6,10 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_border_edges.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
 
@@ -19,40 +18,31 @@ class CORE_EXPORT NGFragment {
   STACK_ALLOCATED();
 
  public:
-  NGFragment(WritingMode writing_mode,
+  NGFragment(WritingDirectionMode writing_direction,
              const NGPhysicalFragment& physical_fragment)
       : physical_fragment_(physical_fragment),
-        writing_mode_(static_cast<unsigned>(writing_mode)) {}
-
-  WritingMode GetWritingMode() const {
-    return static_cast<WritingMode>(writing_mode_);
-  }
+        writing_direction_(writing_direction) {}
 
   // Returns the border-box size.
   LayoutUnit InlineSize() const {
-    return GetWritingMode() == WritingMode::kHorizontalTb
-               ? physical_fragment_.Size().width
-               : physical_fragment_.Size().height;
+    return writing_direction_.IsHorizontal() ? physical_fragment_.Size().width
+                                             : physical_fragment_.Size().height;
   }
   LayoutUnit BlockSize() const {
-    return GetWritingMode() == WritingMode::kHorizontalTb
-               ? physical_fragment_.Size().height
-               : physical_fragment_.Size().width;
+    return writing_direction_.IsHorizontal() ? physical_fragment_.Size().height
+                                             : physical_fragment_.Size().width;
   }
   LogicalSize Size() const {
     return physical_fragment_.Size().ConvertToLogical(
-        static_cast<WritingMode>(writing_mode_));
+        writing_direction_.GetWritingMode());
   }
-
-  NGPhysicalFragment::NGFragmentType Type() const {
-    return physical_fragment_.Type();
+  WritingDirectionMode GetWritingDirection() const {
+    return writing_direction_;
   }
-  const ComputedStyle& Style() const { return physical_fragment_.Style(); }
 
  protected:
   const NGPhysicalFragment& physical_fragment_;
-
-  unsigned writing_mode_ : 3;
+  const WritingDirectionMode writing_direction_;
 };
 
 }  // namespace blink

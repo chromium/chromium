@@ -1,5 +1,5 @@
 // META: title=Cookie Store API: cookiechange event in ServiceWorker with overlapping subscriptions
-// META: global=!default,serviceworker
+// META: global=serviceworker
 
 'use strict';
 
@@ -35,8 +35,8 @@ promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
   const subscriptions = [
-    { name: 'coo', matchType: 'starts-with' },
-    { name: 'cookie', matchType: 'starts-with' },
+    { name: 'cookie-name' },
+    { url: `${kScope}/path` }
   ];
   await registration.cookies.subscribe(subscriptions);
   testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));

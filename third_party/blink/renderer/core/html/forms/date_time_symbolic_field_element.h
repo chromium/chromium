@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_SYMBOLIC_FIELD_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_SYMBOLIC_FIELD_ELEMENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
 
@@ -36,6 +35,11 @@ namespace blink {
 // format, such as: AM/PM, and month.
 class DateTimeSymbolicFieldElement : public DateTimeFieldElement,
                                      public TypeAheadDataSource {
+ public:
+  DateTimeSymbolicFieldElement(const DateTimeSymbolicFieldElement&) = delete;
+  DateTimeSymbolicFieldElement& operator=(const DateTimeSymbolicFieldElement&) =
+      delete;
+
  protected:
   DateTimeSymbolicFieldElement(Document&,
                                FieldOwner&,
@@ -82,10 +86,8 @@ class DateTimeSymbolicFieldElement : public DateTimeFieldElement,
   TypeAhead type_ahead_;
   const int minimum_index_;
   const int maximum_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeSymbolicFieldElement);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_SYMBOLIC_FIELD_ELEMENT_H_

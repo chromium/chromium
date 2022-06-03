@@ -32,26 +32,19 @@ from blinkpy.tool import grammar
 
 
 class GrammarTest(unittest.TestCase):
-
     def test_join_with_separators_zero(self):
-        self.assertEqual(
-            '',
-            grammar.join_with_separators([]))
+        self.assertEqual('', grammar.join_with_separators([]))
 
     def test_join_with_separators_one(self):
-        self.assertEqual(
-            'one',
-            grammar.join_with_separators(['one']))
+        self.assertEqual('one', grammar.join_with_separators(['one']))
 
     def test_join_with_separators_two(self):
-        self.assertEqual(
-            'one and two',
-            grammar.join_with_separators(['one', 'two']))
+        self.assertEqual('one and two',
+                         grammar.join_with_separators(['one', 'two']))
 
     def test_join_with_separators_three(self):
-        self.assertEqual(
-            'one, two, and three',
-            grammar.join_with_separators(['one', 'two', 'three']))
+        self.assertEqual('one, two, and three',
+                         grammar.join_with_separators(['one', 'two', 'three']))
 
     def test_pluralize_zero(self):
         self.assertEqual('0 tests', grammar.pluralize('test', 0))

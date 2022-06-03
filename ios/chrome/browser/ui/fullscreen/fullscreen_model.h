@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
-#define IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
+#ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
+#define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
 
 #import <CoreGraphics/CoreGraphics.h>
 #include <cmath>
@@ -20,6 +20,10 @@ class FullscreenModelObserver;
 class FullscreenModel : public ChromeBroadcastObserverInterface {
  public:
   FullscreenModel();
+
+  FullscreenModel(const FullscreenModel&) = delete;
+  FullscreenModel& operator=(const FullscreenModel&) = delete;
+
   ~FullscreenModel() override;
 
   // Adds and removes FullscreenModelObservers.
@@ -46,7 +50,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Returns the difference between the max and min toolbar heights.
   CGFloat toolbar_height_delta() const {
-    return expanded_toolbar_height_ - collapsed_toolbar_height_;
+    return GetExpandedToolbarHeight() - GetCollapsedToolbarHeight();
   }
 
   // Returns whether the page content is tall enough for the toolbar to be
@@ -57,7 +61,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Whether the view is scrolled all the way to the top.
   bool is_scrolled_to_top() const {
-    return y_content_offset_ <= -expanded_toolbar_height_;
+    return y_content_offset_ <= -GetExpandedToolbarHeight();
   }
 
   // Whether the view is scrolled all the way to the bottom.
@@ -79,8 +83,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // Returns the toolbar insets at |progress|.
   UIEdgeInsets GetToolbarInsetsAtProgress(CGFloat progress) const {
     return UIEdgeInsetsMake(
-        collapsed_toolbar_height_ +
-            progress * (expanded_toolbar_height_ - collapsed_toolbar_height_),
+        GetCollapsedToolbarHeight() + progress * (GetExpandedToolbarHeight() -
+                                                  GetCollapsedToolbarHeight()),
         0, progress * bottom_toolbar_height_, 0);
   }
 
@@ -156,6 +160,9 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // Setter for the safe area insets for the current WebState's view.
   void SetWebViewSafeAreaInsets(UIEdgeInsets safe_area_insets);
   UIEdgeInsets GetWebViewSafeAreaInsets() const;
+
+  void SetFreezeToolbarHeight(bool freeze_toolbar_height);
+  bool GetFreezeToolbarHeight() const;
 
  private:
   // Returns how a scroll to the current |y_content_offset_| from |from_offset|
@@ -234,8 +241,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   UIEdgeInsets safe_area_insets_ = UIEdgeInsetsZero;
   // The number of FullscreenModelObserver callbacks currently being executed.
   size_t observer_callback_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenModel);
+  bool freeze_toolbar_height_ = false;
 };
 
-#endif  // IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
+#endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_

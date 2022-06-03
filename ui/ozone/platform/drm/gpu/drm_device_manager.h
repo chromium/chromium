@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -30,6 +29,10 @@ typedef std::vector<scoped_refptr<DrmDevice>> DrmDeviceVector;
 class DrmDeviceManager {
  public:
   DrmDeviceManager(std::unique_ptr<DrmDeviceGenerator> drm_device_generator);
+
+  DrmDeviceManager(const DrmDeviceManager&) = delete;
+  DrmDeviceManager& operator=(const DrmDeviceManager&) = delete;
+
   ~DrmDeviceManager();
 
   // The first device registered is assumed to be the primary device.
@@ -63,8 +66,6 @@ class DrmDeviceManager {
   // 2) in order to allocate buffers for unmatched surfaces (surfaces without a
   // display; ie: when in headless mode).
   scoped_refptr<DrmDevice> primary_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDeviceManager);
 };
 
 }  // namespace ui

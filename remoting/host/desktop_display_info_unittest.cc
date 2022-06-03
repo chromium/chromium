@@ -5,29 +5,8 @@
 #include "remoting/host/desktop_display_info.h"
 
 #include "base/location.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// TODO(crbug.com/961064): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_SingleDisplay DISABLED_SingleDisplay
-#define MAYBE_DualDisplayRight_ReverseOrder \
-  DISABLED_DualDisplayRight_ReverseOrder
-#define MAYBE_DualDisplayLeft_ReverseOrder DISABLED_DualDisplayLeft_ReverseOrder
-#define MAYBE_DualDisplayRight DISABLED_DualDisplayRight
-#define MAYBE_DualDisplayLeft DISABLED_DualDisplayLeft
-#define MAYBE_Multimon3 DISABLED_Multimon3
-#define MAYBE_TripleDisplayMiddle DISABLED_TripleDisplayMiddle
-#define MAYBE_Multimon7 DISABLED_Multimon7
-#else
-#define MAYBE_SingleDisplay SingleDisplay
-#define MAYBE_DualDisplayRight_ReverseOrder DualDisplayRight_ReverseOrder
-#define MAYBE_DualDisplayLeft_ReverseOrder DualDisplayLeft_ReverseOrder
-#define MAYBE_DualDisplayRight DualDisplayRight
-#define MAYBE_DualDisplayLeft DualDisplayLeft
-#define MAYBE_Multimon3 Multimon3
-#define MAYBE_TripleDisplayMiddle TripleDisplayMiddle
-#define MAYBE_Multimon7 Multimon7
-#endif
 
 namespace remoting {
 
@@ -42,7 +21,7 @@ class DesktopDisplayInfoTest : public testing::Test {
     display->dpi = 96;
     display->bpp = 24;
     display->is_default = false;
-    info_.AddDisplay(display);
+    info_.AddDisplay(std::unique_ptr<DisplayGeometry>(display));
   }
 
   void VerifyDisplayOffset(const base::Location& from_here,
@@ -63,7 +42,7 @@ class DesktopDisplayInfoTest : public testing::Test {
 // | 300x200 |
 // +---------+
 // o = desktop origin
-TEST_F(DesktopDisplayInfoTest, MAYBE_SingleDisplay) {
+TEST_F(DesktopDisplayInfoTest, SingleDisplay) {
   AddDisplay(0, 0, 300, 200);
 
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
@@ -74,7 +53,7 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_SingleDisplay) {
 // | 300x200 | 500x400    |
 // +---------+            |
 //           +------------+
-TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayRight) {
+TEST_F(DesktopDisplayInfoTest, DualDisplayRight) {
   AddDisplay(0, 0, 300, 200);
   AddDisplay(300, 0, 500, 400);
 
@@ -87,7 +66,7 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayRight) {
 // | 300x200 | 500x400    |
 // +---------+            |
 //           +------------+
-TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayRight_ReverseOrder) {
+TEST_F(DesktopDisplayInfoTest, DualDisplayRight_ReverseOrder) {
   AddDisplay(300, 0, 500, 400);
   AddDisplay(0, 0, 300, 200);
 
@@ -100,12 +79,17 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayRight_ReverseOrder) {
 // | 300x200 | 500x400    |
 // +---------+            |
 //           +------------+
-TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayLeft) {
+TEST_F(DesktopDisplayInfoTest, DualDisplayLeft) {
   AddDisplay(0, 0, 500, 400);
   AddDisplay(-300, 0, 300, 200);
 
+#if defined(OS_APPLE)
+  VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
+  VerifyDisplayOffset(FROM_HERE, 1, -300, 0);
+#else
   VerifyDisplayOffset(FROM_HERE, 0, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
+#endif  // defined(OS_APPLE)
 }
 
 // +---------o------------+
@@ -113,12 +97,17 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayLeft) {
 // | 300x200 | 500x400    |
 // +---------+            |
 //           +------------+
-TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayLeft_ReverseOrder) {
+TEST_F(DesktopDisplayInfoTest, DualDisplayLeft_ReverseOrder) {
   AddDisplay(-300, 0, 300, 200);
   AddDisplay(0, 0, 500, 400);
 
+#if defined(OS_APPLE)
+  VerifyDisplayOffset(FROM_HERE, 0, -300, 0);
+  VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
+#else
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 300, 0);
+#endif  // defined(OS_APPLE)
 }
 
 // +---------o------------+
@@ -126,14 +115,20 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_DualDisplayLeft_ReverseOrder) {
 // | 300x200 | 500x400    | 2       |
 // +---------+            | 400x350 |
 //           +------------+---------+
-TEST_F(DesktopDisplayInfoTest, MAYBE_TripleDisplayMiddle) {
+TEST_F(DesktopDisplayInfoTest, TripleDisplayMiddle) {
   AddDisplay(-300, 0, 300, 200);
   AddDisplay(0, 0, 500, 400);  // Default display.
   AddDisplay(500, 50, 400, 350);
 
+#if defined(OS_APPLE)
+  VerifyDisplayOffset(FROM_HERE, 0, -300, 0);
+  VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
+  VerifyDisplayOffset(FROM_HERE, 2, 500, 50);
+#else
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 2, 800, 50);
+#endif  // defined(OS_APPLE)
 }
 
 //  x         o-----------+            - 0
@@ -145,14 +140,20 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_TripleDisplayMiddle) {
 //                    +-----------+    - 950
 //  |         |       |   |       |
 // -300       0      300 500     900
-TEST_F(DesktopDisplayInfoTest, MAYBE_Multimon3) {
+TEST_F(DesktopDisplayInfoTest, Multimon3) {
   AddDisplay(0, 0, 500, 400);  // Default display.
   AddDisplay(300, 400, 600, 450);
   AddDisplay(-300, 350, 300, 200);
 
+#if defined(OS_APPLE)
+  VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
+  VerifyDisplayOffset(FROM_HERE, 1, 300, 400);
+  VerifyDisplayOffset(FROM_HERE, 2, -300, 350);
+#else
   VerifyDisplayOffset(FROM_HERE, 0, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 600, 400);
   VerifyDisplayOffset(FROM_HERE, 2, 0, 350);
+#endif  // defined(OS_APPLE)
 }
 
 //  x                     +-------+               -- -50
@@ -172,7 +173,7 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_Multimon3) {
 //  -       -       0     6 7 8   1  1  1     1
 //  7       4             0 0 0   2  3  5     9
 //  0       0                     0  5  0     0
-TEST_F(DesktopDisplayInfoTest, MAYBE_Multimon7) {
+TEST_F(DesktopDisplayInfoTest, Multimon7) {
   AddDisplay(80, -10, 70, 60);
   AddDisplay(60, -50, 60, 40);
   AddDisplay(-70, 40, 30, 60);
@@ -181,6 +182,16 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_Multimon7) {
   AddDisplay(70, 100, 65, 20);
   AddDisplay(0, 0, 80, 55);  // Default display.
 
+#if defined(OS_APPLE)
+  // Relative to display 6.
+  VerifyDisplayOffset(FROM_HERE, 0, 80, -10);
+  VerifyDisplayOffset(FROM_HERE, 1, 60, -50);
+  VerifyDisplayOffset(FROM_HERE, 2, -70, 40);
+  VerifyDisplayOffset(FROM_HERE, 3, 135, 50);
+  VerifyDisplayOffset(FROM_HERE, 4, -40, -20);
+  VerifyDisplayOffset(FROM_HERE, 5, 70, 100);
+  VerifyDisplayOffset(FROM_HERE, 6, 0, 0);
+#else
   VerifyDisplayOffset(FROM_HERE, 0, 150, 40);
   VerifyDisplayOffset(FROM_HERE, 1, 130, 0);
   VerifyDisplayOffset(FROM_HERE, 2, 0, 90);
@@ -188,6 +199,7 @@ TEST_F(DesktopDisplayInfoTest, MAYBE_Multimon7) {
   VerifyDisplayOffset(FROM_HERE, 4, 30, 30);
   VerifyDisplayOffset(FROM_HERE, 5, 140, 150);
   VerifyDisplayOffset(FROM_HERE, 6, 70, 50);
+#endif  // defined(OS_APPLE)
 }
 
 }  // namespace remoting

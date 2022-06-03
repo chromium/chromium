@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,11 +9,9 @@ import unittest
 
 from pylib.base import output_manager
 from pylib.base import output_manager_test_case
-from pylib.constants import host_paths
 from pylib.output import remote_output_manager
 
-with host_paths.SysPath(host_paths.PYMOCK_PATH):
-  import mock  # pylint: disable=import-error
+import mock  # pylint: disable=import-error
 
 
 @mock.patch('pylib.utils.google_storage_helper')

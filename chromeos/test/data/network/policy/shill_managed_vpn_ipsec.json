@@ -1,0 +1,11 @@
+{
+  "AutoConnect": false,
+  "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+  "Name": "my vpn",
+  "Provider": {
+    "Host": "vpn.my.domain.com",
+    "Type": "l2tpipsec"
+  },
+  "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{}}",
+  "Type": "vpn"
+}

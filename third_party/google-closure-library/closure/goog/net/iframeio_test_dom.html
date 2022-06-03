@@ -1,0 +1,247 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ html, body {
+    width: 100%;
+    height: 100%;
+    overflow:hidden;
+  }
+
+  #log {
+    position: absolute;
+    top: 0px;
+    width: 50%;
+    right: 0%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  p, input {
+    font-family: verdana, helvetica, arial, sans-serif;
+    font-size: small;
+    margin: 0px;
+  }
+
+  input {
+    font-family: verdana, helvetica, arial, sans-serif;
+    font-size: x-small;
+  }
+
+  i {
+    font-size: 85%;
+  }
+</style>
+<p>
+ <b>
+  IframeIo manual tests:
+ </b>
+ <br>
+  <br>
+   <i>
+    All operations should have no effect on history.
+   </i>
+   <br>
+    <br>
+     <i>
+      These tests require the ClosureTestServer
+      <br>
+       to be running with the IframeIoTestServlet.
+      </br>
+     </i>
+     <br>
+      <br/>
+     </br>
+    </br>
+   </br>
+  </br>
+ </br>
+</p>
+<p>
+ <a href="javascript:simpleGet()">
+  Simple GET
+ </a>
+ <br>
+  <a href="javascript:simplePost()">
+   Simple POST
+  </a>
+  <br>
+   <a href="javascript:jsonEcho('GET')">
+    JSON echo (get)
+   </a>
+   <br>
+    <a href="javascript:jsonEcho('POST')">
+     JSON echo (post)
+    </a>
+    <br>
+     <a href="javascript:abort()">
+      Test abort
+     </a>
+    </br>
+   </br>
+  </br>
+ </br>
+</p>
+<form action="/iframeio/upload" enctype="multipart/form-data" id="uploadform" method="POST">
+ <p>
+  <a href="javascript:sendFromForm()">
+   Upload
+  </a>
+  <input name="userfile" type="file">
+   (big files should fail)
+  </input>
+ </p>
+</form>
+<p>
+ <a href="javascript:incremental()">
+  Incremental results
+ </a>
+ <br>
+  <a href="javascript:redirect1()">
+   Redirect (google.com)
+  </a>
+  <br>
+   <a href="javascript:redirect2()">
+    Redirect (/iframeio/ping)
+   </a>
+   <br>
+    <a href="javascript:localUrl1()">
+     Local request (Win path)
+    </a>
+    <br>
+     <a href="javascript:localUrl2()">
+      Local request (Linux path)
+     </a>
+     <br>
+      <a href="javascript:badUrl()">
+       Out of domain request
+      </a>
+      <br>
+       <a href="javascript:getServerTime(false)">
+        Test cache
+       </a>
+       (Date should stay the same for subsequent tests)
+       <br>
+        <a href="javascript:getServerTime(true)">
+         Test no-cache
+        </a>
+        <br>
+         <a href="javascript:errorGse404()">
+          GSE 404 Error
+         </a>
+         <br>
+          <a href="javascript:errorGfe()">
+           Simulated GFE Error
+          </a>
+          <br>
+           <a href="javascript:errorGmail()">
+            Simulated Gmail Server Error
+           </a>
+           <br>
+            <br>
+            </br>
+           </br>
+          </br>
+         </br>
+        </br>
+       </br>
+      </br>
+     </br>
+    </br>
+   </br>
+  </br>
+ </br>
+</p>
+<form action="/iframeio/jsonecho" id="testfrm" method="POST">
+ <p>
+  <b>
+   Comprehensive Form Post Test:
+  </b>
+  <br>
+   <input name="textinput" type="text" value="Default">
+    Text Input
+    <br>
+     Text Area
+     <br>
+      <textarea name="textarea">Default</textarea>
+      <br>
+       <input checked="checked" name="checkbox1" type="checkbox">
+        Checkbox, default on
+        <br>
+         <input name="checkbox2" type="checkbox">
+          Checkbox, default off
+          <br>
+           Radio:
+           <input checked="checked" name="radio" type="radio" value="Default">
+            Default,
+            <input name="radio" type="radio" value="Foo">
+             Foo,
+             <input name="radio" type="radio" value="Bar">
+              Bar
+              <br>
+               <select name="select">
+                <option>
+                 One
+                </option>
+                <option>
+                 Two
+                </option>
+                <option selected="selected">
+                 Three (Default)
+                </option>
+                <option>
+                 Four
+                </option>
+                <option>
+                 Five
+                </option>
+               </select>
+               <br>
+                <select name="selectmultiple">
+                 <option>
+                  One
+                 </option>
+                 <option selected="selected">
+                  Two (Default checked)
+                 </option>
+                 <option selected="selected">
+                  Three (Default checked)
+                 </option>
+                 <option>
+                  Four
+                 </option>
+                </select>
+                <a href="javascript:postForm()">
+                 Submit this form
+                </a>
+               </br>
+              </br>
+             </input>
+            </input>
+           </input>
+          </br>
+         </input>
+        </br>
+       </input>
+      </br>
+     </br>
+    </br>
+   </input>
+  </br>
+ </p>
+</form>
+<p>
+ <br>
+  <br>
+   TODO(user):
+   <br>
+    - Local timeout
+   </br>
+  </br>
+ </br>
+</p>
+<div id="log">
+</div>

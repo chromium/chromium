@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNSUPPORTED_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNSUPPORTED_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -19,6 +18,9 @@ class CORE_EXPORT CrossThreadUnsupportedValue final
     : public CrossThreadStyleValue {
  public:
   explicit CrossThreadUnsupportedValue(const String& value) : value_(value) {}
+  CrossThreadUnsupportedValue(const CrossThreadUnsupportedValue&) = delete;
+  CrossThreadUnsupportedValue& operator=(const CrossThreadUnsupportedValue&) =
+      delete;
   ~CrossThreadUnsupportedValue() override = default;
 
   StyleValueType GetType() const override {
@@ -33,7 +35,6 @@ class CORE_EXPORT CrossThreadUnsupportedValue final
   friend class CrossThreadStyleValueTest;
 
   String value_;
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadUnsupportedValue);
 };
 
 template <>
@@ -46,4 +47,4 @@ struct DowncastTraits<CrossThreadUnsupportedValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNSUPPORTED_VALUE_H_

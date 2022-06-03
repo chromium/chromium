@@ -29,6 +29,14 @@ using net::test::IsOk;
 
 namespace net {
 
+namespace {
+// Helper function, generating valid HTTP cache key from `url`.
+// See also: HttpCache::GenerateCacheKey(..)
+std::string GenerateCacheKey(const std::string& url) {
+  return "1/0/" + url;
+}
+}  // namespace
+
 class WritersTest;
 
 class TestHttpCacheTransaction : public HttpCache::Transaction {
@@ -91,9 +99,9 @@ class WritersTest : public TestWithTaskEnvironment {
       disk_entry_->Close();
   }
 
-  void CreateWriters(const std::string& url) {
-    cache_.CreateBackendEntry(kSimpleGET_Transaction.url, &disk_entry_,
-                              nullptr);
+  void CreateWriters() {
+    cache_.CreateBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
+                              &disk_entry_, nullptr);
     entry_ = std::make_unique<HttpCache::ActiveEntry>(disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
     writers_ = std::make_unique<HttpCache::Writers>(&test_cache_, entry_.get());
@@ -120,14 +128,14 @@ class WritersTest : public TestWithTaskEnvironment {
     base::RunLoop().RunUntilIdle();
     response_info_ = *(network_transaction->GetResponseInfo());
     if (content_encoding_present)
-      response_info_.headers->AddHeader("Content-Encoding: gzip");
+      response_info_.headers->AddHeader("Content-Encoding", "gzip");
 
     // Create a mock cache transaction.
     std::unique_ptr<TestHttpCacheTransaction> transaction =
         std::make_unique<TestHttpCacheTransaction>(DEFAULT_PRIORITY,
                                                    cache_.http_cache());
 
-    CreateWriters(kSimpleGET_Transaction.url);
+    CreateWriters();
     EXPECT_TRUE(writers_->IsEmpty());
     HttpCache::Writers::TransactionInfo info(
         transaction->partial(), transaction->is_truncated(), response_info_);
@@ -389,7 +397,8 @@ class WritersTest : public TestWithTaskEnvironment {
 
       // We have to open the entry again to propagate the failure flag.
       disk_cache::Entry* en;
-      cache_.OpenBackendEntry(kSimpleGET_Transaction.url, &en);
+      cache_.OpenBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
+                              &en);
       en->Close();
 
       for (size_t i = 0; i < transactions_.size(); i++) {

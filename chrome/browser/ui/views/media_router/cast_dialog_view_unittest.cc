@@ -11,26 +11,34 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
+using testing::NiceMock;
 using testing::WithArg;
 
 namespace media_router {
@@ -38,7 +46,7 @@ namespace media_router {
 namespace {
 
 UIMediaSink CreateAvailableSink() {
-  UIMediaSink sink;
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.id = "sink_available";
   sink.state = UIMediaSinkState::AVAILABLE;
   sink.cast_modes = {TAB_MIRROR};
@@ -46,7 +54,7 @@ UIMediaSink CreateAvailableSink() {
 }
 
 UIMediaSink CreateConnectedSink() {
-  UIMediaSink sink;
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.id = "sink_connected";
   sink.state = UIMediaSinkState::CONNECTED;
   sink.cast_modes = {TAB_MIRROR};
@@ -57,7 +65,7 @@ UIMediaSink CreateConnectedSink() {
 
 CastDialogModel CreateModelWithSinks(std::vector<UIMediaSink> sinks) {
   CastDialogModel model;
-  model.set_dialog_header(base::UTF8ToUTF16("Dialog header"));
+  model.set_dialog_header(u"Dialog header");
   model.set_media_sinks(std::move(sinks));
   return model;
 }
@@ -88,11 +96,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Create an anchor for the dialog.
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    anchor_widget_ = std::make_unique<views::Widget>();
-    anchor_widget_->Init(std::move(params));
+    anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
   }
 
@@ -109,7 +113,8 @@ class CastDialogViewTest : public ChromeViewsTestBase {
             })));
     CastDialogView::ShowDialog(anchor_widget_->GetContentsView(),
                                views::BubbleBorder::TOP_RIGHT, &controller_,
-                               &profile_, base::Time::Now());
+                               &profile_, base::Time::Now(),
+                               MediaRouterDialogOpenOrigin::PAGE);
 
     dialog_->OnModelUpdated(model);
   }
@@ -117,7 +122,8 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   void SinkPressedAtIndex(int index) {
     ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
                                gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
-    dialog_->ButtonPressed(sink_buttons().at(index), mouse_event);
+    views::test::ButtonTestApi(sink_buttons().at(index))
+        .NotifyClick(mouse_event);
     // The request to cast/stop is sent asynchronously, so we must call
     // RunUntilIdle().
     base::RunLoop().RunUntilIdle();
@@ -133,6 +139,10 @@ class CastDialogViewTest : public ChromeViewsTestBase {
 
   views::Button* sources_button() { return dialog_->sources_button_for_test(); }
 
+  HoverButton* access_code_cast_button() {
+    return dialog_->access_code_cast_button_for_test();
+  }
+
   ui::SimpleMenuModel* sources_menu_model() {
     return dialog_->sources_menu_model_for_test();
   }
@@ -142,7 +152,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  MockCastDialogController controller_;
+  NiceMock<MockCastDialogController> controller_;
   CastDialogView* dialog_ = nullptr;
   TestingProfile profile_;
 };
@@ -154,7 +164,8 @@ TEST_F(CastDialogViewTest, ShowAndHideDialog) {
   EXPECT_CALL(controller_, AddObserver(_));
   CastDialogView::ShowDialog(anchor_widget_->GetContentsView(),
                              views::BubbleBorder::TOP_RIGHT, &controller_,
-                             &profile_, base::Time::Now());
+                             &profile_, base::Time::Now(),
+                             MediaRouterDialogOpenOrigin::PAGE);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(CastDialogView::IsShowing());
   EXPECT_NE(nullptr, CastDialogView::GetCurrentDialogWidget());
@@ -215,7 +226,7 @@ TEST_F(CastDialogViewTest, ShowSourcesMenu) {
   CastDialogModel model = CreateModelWithSinks(media_sinks);
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // The items should be "tab" (includes tab mirroring and presentation),
   // "desktop", and "local file".
   EXPECT_EQ(3, sources_menu_model()->GetItemCount());
@@ -236,7 +247,7 @@ TEST_F(CastDialogViewTest, CastAlternativeSources) {
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // There should be three sources: tab, desktop, and local file.
   ASSERT_EQ(3, sources_menu_model()->GetItemCount());
 
@@ -258,11 +269,11 @@ TEST_F(CastDialogViewTest, CastLocalFile) {
   media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
 
 #if defined(OS_WIN)
-  ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToUTF16(file_name)),
-                                 base::FilePath(base::UTF8ToUTF16(file_path))};
+  ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToWide(file_name)),
+                                 base::FilePath(base::UTF8ToWide(file_path))};
 #else
   ui::SelectedFileInfo file_info{base::FilePath(file_name),
                                  base::FilePath(file_path)};
@@ -289,7 +300,7 @@ TEST_F(CastDialogViewTest, CancelLocalFileSelection) {
   media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
 
   // The tab source should be selected by default.
   ASSERT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
@@ -321,7 +332,8 @@ TEST_F(CastDialogViewTest, DisableUnsupportedSinks) {
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
 
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi test_api(sources_button());
+  test_api.NotifyClick(CreateMouseEvent());
   EXPECT_EQ(CastDialogView::kDesktop, sources_menu_model()->GetCommandIdAt(1));
   sources_menu_model()->ActivatedAt(1);
   // Sink at index 0 doesn't support desktop mirroring, so it should be
@@ -329,7 +341,7 @@ TEST_F(CastDialogViewTest, DisableUnsupportedSinks) {
   EXPECT_FALSE(sink_buttons().at(0)->GetEnabled());
   EXPECT_TRUE(sink_buttons().at(1)->GetEnabled());
 
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  test_api.NotifyClick(CreateMouseEvent());
   EXPECT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
   sources_menu_model()->ActivatedAt(0);
   // Both sinks support tab or presentation casting, so they should be enabled.
@@ -364,6 +376,27 @@ TEST_F(CastDialogViewTest, SwitchToNoDeviceView) {
   dialog_->OnModelUpdated(model);
   EXPECT_TRUE(no_sinks_view()->GetVisible());
   EXPECT_FALSE(scroll_view());
+}
+
+TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
+
+  CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
+  InitializeDialogWithModel(model);
+  EXPECT_FALSE(access_code_cast_button());
+}
+
+TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
+
+  CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
+  InitializeDialogWithModel(model);
+
+  EXPECT_TRUE(access_code_cast_button());
 }
 
 }  // namespace media_router

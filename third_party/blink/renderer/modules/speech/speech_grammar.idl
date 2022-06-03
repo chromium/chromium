@@ -26,10 +26,12 @@
 // https://w3c.github.io/speech-api/#speechgrammar
 
 [
-    Measure,
-    NoInterfaceObject
+    LegacyWindowAlias=webkitSpeechGrammar,
+    LegacyWindowAlias_Measure,
+    LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
+    LegacyNoInterfaceObject
 ] interface SpeechGrammar {
-    constructor();
+    [Measure] constructor();
     [URL,CallWith=ScriptState] attribute DOMString src;
     attribute float weight;
 };

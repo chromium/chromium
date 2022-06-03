@@ -1,0 +1,53 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_BLOCKED_CONTENT_POPUP_NAVIGATION_DELEGATE_H_
+#define COMPONENTS_BLOCKED_CONTENT_POPUP_NAVIGATION_DELEGATE_H_
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
+#include "ui/base/window_open_disposition.h"
+
+class GURL;
+
+namespace content {
+class RenderFrameHost;
+class WebContents;
+}  // namespace content
+
+namespace blocked_content {
+
+// A delegate interface to allow an embedder specific representation of a
+// navigation. This is stored internally in the popup blocker to recover
+// navigations when the user clicks through a previously blocked popup.
+class PopupNavigationDelegate {
+ public:
+  virtual ~PopupNavigationDelegate() = default;
+
+  // Gets the opener used if new WebContents are created for this navigation.
+  virtual content::RenderFrameHost* GetOpener() = 0;
+
+  // Gets whether the blocked navigation was initiated by a user gesture.
+  virtual bool GetOriginalUserGesture() = 0;
+
+  // Gets the URL to be loaded.
+  virtual const GURL& GetURL() = 0;
+
+  // Performs the navigation.
+  struct NavigateResult {
+    content::WebContents* navigated_or_inserted_contents = nullptr;
+    WindowOpenDisposition disposition = WindowOpenDisposition::UNKNOWN;
+  };
+  virtual NavigateResult NavigateWithGesture(
+      const blink::mojom::WindowFeatures& window_features,
+      absl::optional<WindowOpenDisposition> updated_disposition) = 0;
+
+  // Called when the navigation represented by this class was blocked.
+  virtual void OnPopupBlocked(content::WebContents* web_contents,
+                              int total_popups_blocked_on_page) = 0;
+};
+
+}  // namespace blocked_content
+
+#endif  // COMPONENTS_BLOCKED_CONTENT_POPUP_NAVIGATION_DELEGATE_H_

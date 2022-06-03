@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/view_android.h"
@@ -75,7 +76,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jint search_bar_shadow_resource_id,
     jint search_provider_icon_resource_id,
     jint quick_action_icon_resource_id,
-    jint arrow_up_resource_id,
     jint drag_handlebar_resource_id,
     jint open_tab_icon_resource_id,
     jint close_icon_resource_id,
@@ -94,6 +94,21 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat search_promo_height,
     jfloat search_promo_opacity,
     jint search_promo_background_color,
+    // Panel Help
+    jint panel_help_resource_id,
+    jboolean panel_help_visible,
+    jfloat panel_help_height,
+    jfloat panel_help_opacity,
+    jint panel_help_container_background_color,
+    // Related Searches
+    jint related_searches_in_content_resource_id,
+    jboolean related_searches_in_content_visible,
+    jfloat related_searches_in_content_height,
+    jint related_searches_in_bar_resource_id,
+    jboolean related_searches_in_bar_visible,
+    jfloat related_searches_in_bar_height,
+    jfloat related_searches_in_bar_redundant_padding,
+    // Banner etc
     jboolean search_bar_banner_visible,
     jfloat search_bar_banner_height,
     jfloat search_bar_banner_padding,
@@ -122,18 +137,11 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jint bar_image_size,
     jint icon_color,
     jint drag_handlebar_color,
-    jfloat arrow_icon_opacity,
-    jfloat arrow_icon_rotation,
     jfloat close_icon_opacity,
     jboolean progress_bar_visible,
     jfloat progress_bar_height,
     jfloat progress_bar_opacity,
     jfloat progress_bar_completion,
-    jfloat divider_line_visibility_percentage,
-    jfloat divider_line_width,
-    jfloat divider_line_height,
-    jint divider_line_color,
-    jfloat divider_line_x_offset,
     jboolean touch_highlight_visible,
     jfloat touch_highlight_x_offset,
     jfloat touch_highlight_width,
@@ -170,28 +178,33 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       search_context_resource_id, search_term_resource_id,
       search_caption_resource_id, search_bar_shadow_resource_id,
       search_provider_icon_resource_id, quick_action_icon_resource_id,
-      arrow_up_resource_id, drag_handlebar_resource_id,
-      open_tab_icon_resource_id, close_icon_resource_id,
-      progress_bar_background_resource_id, progress_bar_resource_id,
-      search_promo_resource_id, bar_banner_ripple_resource_id,
-      bar_banner_text_resource_id, dp_to_px, content_layer,
-      search_promo_visible, search_promo_height, search_promo_opacity,
-      search_promo_background_color, search_bar_banner_visible,
-      search_bar_banner_height, search_bar_banner_padding,
-      search_bar_banner_ripple_width, search_bar_banner_ripple_opacity,
-      search_bar_banner_text_opacity, search_panel_x, search_panel_y,
-      search_panel_width, search_panel_height, search_bar_margin_side,
-      search_bar_margin_top, search_bar_height, search_context_opacity,
-      search_text_layer_min_height, search_term_opacity,
+      drag_handlebar_resource_id, open_tab_icon_resource_id,
+      close_icon_resource_id, progress_bar_background_resource_id,
+      progress_bar_resource_id, search_promo_resource_id,
+      bar_banner_ripple_resource_id, bar_banner_text_resource_id, dp_to_px,
+      content_layer, search_promo_visible, search_promo_height,
+      search_promo_opacity, search_promo_background_color,
+      // Panel Help
+      panel_help_resource_id, panel_help_visible, panel_help_height,
+      panel_help_opacity, panel_help_container_background_color,
+      // Related Searches
+      related_searches_in_content_resource_id,
+      related_searches_in_content_visible, related_searches_in_content_height,
+      related_searches_in_bar_resource_id, related_searches_in_bar_visible,
+      related_searches_in_bar_height, related_searches_in_bar_redundant_padding,
+      // Banner etc
+      search_bar_banner_visible, search_bar_banner_height,
+      search_bar_banner_padding, search_bar_banner_ripple_width,
+      search_bar_banner_ripple_opacity, search_bar_banner_text_opacity,
+      search_panel_x, search_panel_y, search_panel_width, search_panel_height,
+      search_bar_margin_side, search_bar_margin_top, search_bar_height,
+      search_context_opacity, search_text_layer_min_height, search_term_opacity,
       search_term_caption_spacing, search_caption_animation_percentage,
       search_caption_visible, search_bar_border_visible,
       search_bar_border_height, quick_action_icon_visible, thumbnail_visible,
       custom_image_visibility_percentage, bar_image_size, icon_color,
-      drag_handlebar_color, arrow_icon_opacity, arrow_icon_rotation,
-      close_icon_opacity, progress_bar_visible, progress_bar_height,
-      progress_bar_opacity, progress_bar_completion,
-      divider_line_visibility_percentage, divider_line_width,
-      divider_line_height, divider_line_color, divider_line_x_offset,
+      drag_handlebar_color, close_icon_opacity, progress_bar_visible,
+      progress_bar_height, progress_bar_opacity, progress_bar_completion,
       touch_highlight_visible, touch_highlight_x_offset, touch_highlight_width,
       rounded_bar_top_resource_id, separator_line_color);
 
@@ -207,14 +220,14 @@ void ContextualSearchSceneLayer::FetchThumbnail(
   GURL gurl(thumbnail_url_);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   network::mojom::URLLoaderFactory* loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   fetcher_ =
-      std::make_unique<BitmapFetcher>(gurl, this, NO_TRAFFIC_ANNOTATION_YET);
+      std::make_unique<BitmapFetcher>(gurl, this, MISSING_TRAFFIC_ANNOTATION);
   fetcher_->Init(
       std::string(),
-      net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
   fetcher_->Start(loader_factory);
 }

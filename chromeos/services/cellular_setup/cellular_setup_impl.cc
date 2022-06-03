@@ -11,10 +11,18 @@
 #include "base/no_destructor.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/ota_activator_impl.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace chromeos {
 
 namespace cellular_setup {
+
+// static
+void CellularSetupImpl::CreateAndBindToReciever(
+    mojo::PendingReceiver<mojom::CellularSetup> receiver) {
+  mojo::MakeSelfOwnedReceiver(base::WrapUnique(new CellularSetupImpl()),
+                              std::move(receiver));
+}
 
 CellularSetupImpl::CellularSetupImpl() = default;
 
@@ -31,7 +39,7 @@ void CellularSetupImpl::StartActivation(
       OtaActivatorImpl::Factory::Create(
           std::move(delegate),
           base::BindOnce(&CellularSetupImpl::OnActivationAttemptFinished,
-                         base::Unretained(this), request_id),
+                         weak_ptr_factory_.GetWeakPtr(), request_id),
           network_handler->network_state_handler(),
           network_handler->network_connection_handler(),
           network_handler->network_activation_handler());

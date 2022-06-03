@@ -5,11 +5,21 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 #define CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 
+#include <string>
+
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/files/file_path.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "url/gurl.h"
+
+class Browser;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -23,7 +33,15 @@ class PolicyMap;
 
 void GetTestDataDirectory(base::FilePath* test_data_directory);
 
-class PolicyTest : public InProcessBrowserTest {
+class PolicyTest : public PlatformBrowserTest {
+ public:
+  // The possibilities for a boolean policy.
+  enum class BooleanPolicy {
+    kNotConfigured,
+    kFalse,
+    kTrue,
+  };
+
  protected:
   PolicyTest();
   ~PolicyTest() override;
@@ -38,7 +56,7 @@ class PolicyTest : public InProcessBrowserTest {
 
   void SetScreenshotPolicy(bool enabled);
 
-  void SetShouldRequireCTForTesting(bool* required);
+  void SetRequireCTForTesting(bool required);
 
   scoped_refptr<const extensions::Extension> LoadUnpackedExtension(
       const base::FilePath::StringType& name);
@@ -48,22 +66,22 @@ class PolicyTest : public InProcessBrowserTest {
   // Sends a mouse click at the given coordinates to the current renderer.
   void PerformClick(int x, int y);
 
-  void SetPolicy(PolicyMap* policies,
-                 const char* key,
-                 std::unique_ptr<base::Value> value);
+  static void SetPolicy(PolicyMap* policies,
+                        const char* key,
+                        absl::optional<base::Value> value);
 
-  void ApplySafeSearchPolicy(std::unique_ptr<base::Value> legacy_safe_search,
-                             std::unique_ptr<base::Value> google_safe_search,
-                             std::unique_ptr<base::Value> legacy_youtube,
-                             std::unique_ptr<base::Value> youtube_restrict);
+  void ApplySafeSearchPolicy(absl::optional<base::Value> legacy_safe_search,
+                             absl::optional<base::Value> google_safe_search,
+                             absl::optional<base::Value> legacy_youtube,
+                             absl::optional<base::Value> youtube_restrict);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TestScreenshotFile(bool enabled);
 
   void SetEnableFlag(const keyboard::KeyboardEnableFlag& flag);
 
   void ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static GURL GetExpectedSearchURL(bool expect_safe_search);
 
@@ -71,15 +89,11 @@ class PolicyTest : public InProcessBrowserTest {
                               bool expect_safe_search,
                               const std::string& url = "http://google.com/");
 
-  static void CheckYouTubeRestricted(
-      int youtube_restrict_mode,
-      const std::map<GURL, net::HttpRequestHeaders>& urls_requested,
-      const GURL& url);
+  static void CheckYouTubeRestricted(int youtube_restrict_mode,
+                                     const net::HttpRequestHeaders& headers);
 
-  static void CheckAllowedDomainsHeader(
-      const std::string& allowed_domain,
-      const std::map<GURL, net::HttpRequestHeaders>& urls_requested,
-      const GURL& url);
+  static void CheckAllowedDomainsHeader(const std::string& allowed_domain,
+                                        const net::HttpRequestHeaders& headers);
 
   static bool FetchSubresource(content::WebContents* web_contents,
                                const GURL& url);
@@ -88,13 +102,15 @@ class PolicyTest : public InProcessBrowserTest {
 
   void WaitForInterstitial(content::WebContents* tab);
 
-  int IsExtendedReportingCheckboxVisibleOnInterstitial();
+  int IsEnhancedProtectionMessageVisibleOnInterstitial();
 
   void SendInterstitialCommand(
       content::WebContents* tab,
       security_interstitials::SecurityInterstitialCommand command);
 
-  MockConfigurationPolicyProvider provider_;
+  void FlushBlocklistPolicy();
+
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 };
 
 }  // namespace policy

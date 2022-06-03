@@ -39,9 +39,13 @@ class AXObjectCacheImpl;
 class AXListBox final : public AXLayoutObject {
  public:
   AXListBox(LayoutObject*, AXObjectCacheImpl&);
+
+  AXListBox(const AXListBox&) = delete;
+  AXListBox& operator=(const AXListBox&) = delete;
+
   ~AXListBox() override;
 
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
   bool IsAXListBox() const override { return true; }
   AXObject* ActiveDescendant() final;
 
@@ -49,11 +53,12 @@ class AXListBox final : public AXLayoutObject {
 
  private:
   int active_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXListBox);
 };
 
-DEFINE_AX_OBJECT_TYPE_CASTS(AXListBox, IsAXListBox());
+template <>
+struct DowncastTraits<AXListBox> {
+  static bool AllowFrom(const AXObject& object) { return object.IsAXListBox(); }
+};
 
 }  // namespace blink
 

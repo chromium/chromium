@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,11 +49,9 @@
   cell.titleLabel.text = self.title;
   cell.accessibilityLabel =
       self.accessibilityLabel.length ? self.accessibilityLabel : self.title;
-  if (@available(iOS 13, *)) {
-    // The accessibilityUserInputLabel should just be the title, with nothing
-    // extra from the accessibilityLabel.
-    cell.accessibilityUserInputLabels = @[ self.title ];
-  }
+  // The accessibilityUserInputLabel should just be the title, with nothing
+  // extra from the accessibilityLabel.
+  cell.accessibilityUserInputLabels = @[ self.title ];
   cell.iconView.image = ImageForCollectionShortcutType(_collectionShortcutType);
   if (self.count != 0) {
     cell.countLabel.text = [@(self.count) stringValue];

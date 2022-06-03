@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/metrics/web_vital_metrics.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
@@ -26,7 +27,7 @@ class ClientResourceProvider;
 }
 
 namespace cc {
-class FrameRateCounter;
+class DroppedFrameCounter;
 class LayerTreeFrameSink;
 class PaintCanvas;
 class PaintFlags;
@@ -49,17 +50,17 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void UpdateHudTexture(DrawMode draw_mode,
                         LayerTreeFrameSink* frame_sink,
                         viz::ClientResourceProvider* resource_provider,
                         bool gpu_raster,
-                        const viz::RenderPassList& list);
+                        const viz::CompositorRenderPassList& list);
 
   void ReleaseResources() override;
 
-  gfx::Rect GetEnclosingRectInTargetSpace() const override;
+  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
 
   bool IsAnimatingHUDContents() const {
     return paint_rects_fade_step_ > 0 || layout_shift_rects_fade_step_ > 0;
@@ -67,33 +68,17 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   void SetHUDTypeface(sk_sp<SkTypeface> typeface);
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
+  void ClearLayoutShiftRects();
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
+  void SetWebVitalMetrics(std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
   // This evicts hud quad appended during render pass preparation.
-  void EvictHudQuad(const viz::RenderPassList& list);
+  void EvictHudQuad(const viz::CompositorRenderPassList& list);
 
   // LayerImpl overrides.
   void PushPropertiesTo(LayerImpl* layer) override;
 
  private:
-  class Graph {
-   public:
-    Graph(double indicator_value, double start_upper_bound);
-
-    // Eases the upper bound, which limits what is currently visible in the
-    // graph, so that the graph always scales to either it's max or
-    // default_upper_bound.
-    double UpdateUpperBound();
-
-    double value;
-    double min;
-    double max;
-
-    double current_upper_bound;
-    const double default_upper_bound;
-    const double indicator;
-  };
-
   HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl, int id);
 
   const char* LayerTypeAsString() const override;
@@ -120,13 +105,17 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                            const SkRect& bounds) const;
   void DrawGraphLines(PaintCanvas* canvas,
                       PaintFlags* flags,
-                      const SkRect& bounds,
-                      const Graph& graph) const;
+                      const SkRect& bounds) const;
+  // Draw a separator line at top of bounds.
+  void DrawSeparatorLine(PaintCanvas* canvas,
+                         PaintFlags* flags,
+                         const SkRect& bounds) const;
 
-  SkRect DrawFPSDisplay(PaintCanvas* canvas,
-                        const FrameRateCounter* fps_counter,
-                        int right,
-                        int top) const;
+  SkRect DrawFrameThroughputDisplay(
+      PaintCanvas* canvas,
+      const DroppedFrameCounter* dropped_frame_counter,
+      int right,
+      int top) const;
   SkRect DrawMemoryDisplay(PaintCanvas* canvas,
                            int top,
                            int right,
@@ -145,6 +134,35 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void DrawDebugRects(PaintCanvas* canvas,
                       DebugRectHistory* debug_rect_history);
 
+  // This function draws a single web vital metric. If the metrics doesn't have
+  // a valid value, the value is set to -1. This function returns the height
+  // of the current draw so it can be used to calculate the top of the next
+  // draw.
+  int DrawSingleMetric(PaintCanvas* canvas,
+                       int left,
+                       int right,
+                       int top,
+                       std::string name,
+                       const WebVitalMetrics::MetricsInfo& info,
+                       bool has_value,
+                       double value) const;
+  SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
+                             int left,
+                             int top,
+                             int width) const;
+
+  // This function draws a single smoothness related metric.
+  int DrawSinglePercentageMetric(PaintCanvas* canvas,
+                                 int left,
+                                 int right,
+                                 int top,
+                                 std::string name,
+                                 double value) const;
+  SkRect DrawSmoothnessMetrics(PaintCanvas* canvas,
+                               int left,
+                               int top,
+                               int width) const;
+
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
   viz::DrawQuad* current_quad_ = nullptr;
@@ -154,16 +172,19 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   sk_sp<SkTypeface> typeface_;
   std::vector<gfx::Rect> layout_shift_rects_;
 
-  float internal_contents_scale_;
+  float internal_contents_scale_ = 1.0f;
   gfx::Size internal_content_bounds_;
 
-  Graph fps_graph_;
-  Graph paint_time_graph_;
+  uint32_t throughput_value_ = 0.0f;
+  // Obtained from the current BeginFrameArgs.
+  absl::optional<base::TimeDelta> frame_interval_;
   MemoryHistory::Entry memory_entry_;
   int paint_rects_fade_step_ = 0;
   int layout_shift_rects_fade_step_ = 0;
   std::vector<DebugRect> paint_rects_;
   std::vector<DebugRect> layout_shift_debug_rects_;
+
+  std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
 
   base::TimeTicks time_of_last_graph_update_;
 };

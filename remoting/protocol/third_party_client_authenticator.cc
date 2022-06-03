@@ -29,7 +29,7 @@ ThirdPartyClientAuthenticator::~ThirdPartyClientAuthenticator() = default;
 
 void ThirdPartyClientAuthenticator::ProcessTokenMessage(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   std::string token_url = message->TextNamed(kTokenUrlTag);
   std::string token_scope = message->TextNamed(kTokenScopeTag);
 
@@ -38,7 +38,7 @@ void ThirdPartyClientAuthenticator::ProcessTokenMessage(
         "missing token verification URL or scope.";
     token_state_ = REJECTED;
     rejection_reason_ = PROTOCOL_ERROR;
-    resume_callback.Run();
+    std::move(resume_callback).Run();
     return;
   }
 
@@ -46,8 +46,10 @@ void ThirdPartyClientAuthenticator::ProcessTokenMessage(
 
   fetch_token_callback_.Run(
       token_url, token_scope,
-      base::Bind(&ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched,
-                 weak_factory_.GetWeakPtr(), resume_callback));
+      base::BindRepeating(
+          &ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched,
+          weak_factory_.GetWeakPtr(),
+          base::Passed(std::move(resume_callback))));
 }
 
 void ThirdPartyClientAuthenticator::AddTokenElements(
@@ -62,19 +64,21 @@ void ThirdPartyClientAuthenticator::AddTokenElements(
 }
 
 void ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched(
-    const base::Closure& resume_callback,
+    base::OnceClosure resume_callback,
     const std::string& third_party_token,
-    const std::string& shared_secret) {
+    const TokenValidator::ValidationResult& validation_result) {
   token_ = third_party_token;
-  if (token_.empty() || shared_secret.empty()) {
+  if (token_.empty() || validation_result.is_error()) {
     token_state_ = REJECTED;
-    rejection_reason_ = INVALID_CREDENTIALS;
+    rejection_reason_ = validation_result.is_error() ? validation_result.error()
+                                                     : INVALID_CREDENTIALS;
   } else {
+    DCHECK(!validation_result.success().empty());
     token_state_ = MESSAGE_READY;
-    underlying_ =
-        create_base_authenticator_callback_.Run(shared_secret, MESSAGE_READY);
+    underlying_ = create_base_authenticator_callback_.Run(
+        validation_result.success(), MESSAGE_READY);
   }
-  resume_callback.Run();
+  std::move(resume_callback).Run();
 }
 
 }  // namespace protocol

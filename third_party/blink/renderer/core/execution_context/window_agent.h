@@ -33,7 +33,7 @@ class WindowAgent final : public Agent {
 
   ~WindowAgent() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // TODO(keishi): Move per-agent data here with the correct granularity.

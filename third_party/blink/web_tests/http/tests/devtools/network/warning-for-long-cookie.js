@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Checks that we show warning message for long cookie.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.makeFetch(
@@ -28,6 +28,6 @@
 
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
 
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 })();

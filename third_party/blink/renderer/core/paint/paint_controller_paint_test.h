@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -28,7 +29,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   LayoutView& GetLayoutView() const { return *GetDocument().GetLayoutView(); }
   PaintController& RootPaintController() const {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return *GetDocument().View()->GetPaintController();
+      return GetDocument().View()->GetPaintControllerForTesting();
     return GetLayoutView()
         .Layer()
         ->GraphicsLayerBacking()
@@ -40,88 +41,84 @@ class PaintControllerPaintTestBase : public RenderingTest {
     RenderingTest::SetUp();
   }
 
-  bool PaintWithoutCommit(
-      const base::Optional<IntRect>& interest_rect = base::nullopt) {
-    GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
-        GraphicsContext graphics_context(RootPaintController());
-        GetDocument().View()->Paint(
-            graphics_context, kGlobalPaintNormalPhase,
-            interest_rect ? CullRect(*interest_rect) : CullRect::Infinite());
-        return true;
-      }
-      GetDocument().View()->Lifecycle().AdvanceTo(
-          DocumentLifecycle::kPaintClean);
-      return false;
-    }
-    // Only root graphics layer is supported.
-    if (!GetLayoutView()
-             .Layer()
-             ->GraphicsLayerBacking()
-             ->PaintWithoutCommitForTesting(interest_rect)) {
-      GetDocument().View()->Lifecycle().AdvanceTo(
-          DocumentLifecycle::kPaintClean);
-      return false;
-    }
-    return true;
-  }
-
   const DisplayItemClient& ViewScrollingBackgroundClient() {
     return GetLayoutView()
         .GetScrollableArea()
         ->GetScrollingBackgroundDisplayItemClient();
   }
 
-  void CommitAndFinishCycle() {
-    // Only root graphics layer is supported.
-    RootPaintController().CommitNewDisplayItems();
-    RootPaintController().FinishCycle();
-    GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
+  void UpdateAllLifecyclePhasesExceptPaint() {
+    GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kTest);
+    // Run CullRectUpdater to ease testing of cull rects and repaint flags of
+    // PaintLayers on cull rect change.
+    if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
+      CullRectUpdater(*GetLayoutView().Layer()).Update();
   }
 
-  void Paint(const base::Optional<IntRect>& interest_rect = base::nullopt) {
-    // Only root graphics layer is supported.
-    if (PaintWithoutCommit(interest_rect))
-      CommitAndFinishCycle();
+  void PaintContents(const gfx::Rect& interest_rect) {
+    GetDocument().View()->PaintContentsForTest(CullRect(interest_rect));
   }
 
-  bool DisplayItemListContains(const DisplayItemList& display_item_list,
-                               DisplayItemClient& client,
-                               DisplayItem::Type type) const {
-    for (auto& item : display_item_list) {
-      if (item.Client() == client && item.GetType() == type)
-        return true;
-    }
-    return false;
-  }
-
-  int NumCachedNewItems() const {
-    return RootPaintController().num_cached_new_items_;
-  }
-
-  const DisplayItemClient& CaretDisplayItemClientForTesting() const {
-    return GetDocument()
-        .GetFrame()
-        ->Selection()
-        .CaretDisplayItemClientForTesting();
-  }
-
-  void InvalidateAll(PaintController& paint_controller) {
-    paint_controller.InvalidateAllForTesting();
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      DCHECK_EQ(&paint_controller, GetDocument().View()->GetPaintController());
+  void InvalidateAll() {
+    RootPaintController().InvalidateAllForTesting();
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
       GetLayoutView().Layer()->SetNeedsRepaint();
-    }
   }
 
   bool ClientCacheIsValid(const DisplayItemClient& client) {
     return RootPaintController().ClientCacheIsValid(client);
   }
 
-  using SubsequenceMarkers = PaintController::SubsequenceMarkers;
+  using SubsequenceMarkers = const PaintController::SubsequenceMarkers;
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
-    return RootPaintController().GetSubsequenceMarkers(client);
+    return RootPaintController().GetSubsequenceMarkers(client.Id());
+  }
+
+  static bool IsNotContentType(DisplayItem::Type type) {
+    return type == DisplayItem::kFrameOverlay ||
+           type == DisplayItem::kForeignLayerLinkHighlight ||
+           type == DisplayItem::kForeignLayerViewportScroll ||
+           type == DisplayItem::kForeignLayerViewportScrollbar;
+  }
+
+  // Excludes display items for LayoutView non-scrolling background, visual
+  // viewport, overlays, etc. Includes LayoutView scrolling background.
+  DisplayItemRange ContentDisplayItems() {
+    const auto& display_item_list = RootPaintController().GetDisplayItemList();
+    wtf_size_t begin_index = 0;
+    wtf_size_t end_index = display_item_list.size();
+    while (begin_index < end_index &&
+           display_item_list[begin_index].ClientId() == GetLayoutView().Id()) {
+      begin_index++;
+    }
+    while (end_index > begin_index &&
+           IsNotContentType(display_item_list[end_index - 1].GetType())) {
+      end_index--;
+    }
+    return display_item_list.ItemsInRange(begin_index, end_index);
+  }
+
+  // Excludes paint chunks for LayoutView non-scrolling background and scroll
+  // hit test, visual viewport, overlays, etc. Includes LayoutView scrolling
+  // background.
+  PaintChunkSubset ContentPaintChunks() {
+    const auto& chunks = RootPaintController().PaintChunks();
+    wtf_size_t begin_index = 0;
+    wtf_size_t end_index = chunks.size();
+    while (begin_index < end_index) {
+      DisplayItemClientId client_id = chunks[begin_index].id.client_id;
+      if (client_id != GetLayoutView().Id() &&
+          client_id != GetLayoutView().Layer()->Id()) {
+        break;
+      }
+      begin_index++;
+    }
+    while (end_index > begin_index &&
+           IsNotContentType(chunks[end_index - 1].id.type))
+      end_index--;
+    return PaintChunkSubset(RootPaintController().GetPaintArtifactShared(),
+                            begin_index, end_index);
   }
 };
 
@@ -137,23 +134,32 @@ const DisplayItem::Type kNonScrollingBackgroundChunkType =
     DisplayItem::PaintPhaseToDrawingType(PaintPhase::kSelfBlockBackgroundOnly);
 const DisplayItem::Type kScrollingBackgroundChunkType =
     DisplayItem::PaintPhaseToClipType(PaintPhase::kSelfBlockBackgroundOnly);
-const DisplayItem::Type kNonScrollingContentsBackgroundChunkType =
-    DisplayItem::PaintPhaseToDrawingType(
-        PaintPhase::kDescendantBlockBackgroundsOnly);
-const DisplayItem::Type kScrollingContentsBackgroundChunkType =
+const DisplayItem::Type kClippedContentsBackgroundChunkType =
     DisplayItem::PaintPhaseToClipType(
         PaintPhase::kDescendantBlockBackgroundsOnly);
 
-#define EXPECT_SUBSEQUENCE(client, expected_start, expected_end)        \
-  do {                                                                  \
-    auto* subsequence = GetSubsequenceMarkers(client);                  \
-    ASSERT_NE(nullptr, subsequence);                                    \
-    EXPECT_EQ(static_cast<size_t>(expected_start), subsequence->start); \
-    EXPECT_EQ(static_cast<size_t>(expected_end), subsequence->end);     \
-  } while (false)
+#define VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM   \
+  IsSameId(ViewScrollingBackgroundClient().Id(), \
+           DisplayItem::kDocumentBackground)
 
-#define EXPECT_NO_SUBSEQUENCE(client) \
-  EXPECT_EQ(nullptr, GetSubsequenceMarkers(client)
+// Checks for view scrolling background chunk in common case that there is only
+// one display item in the chunk and no hit test rects.
+#define VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON                      \
+  IsPaintChunk(0, 1,                                                \
+               PaintChunk::Id(ViewScrollingBackgroundClient().Id(), \
+                              DisplayItem::kDocumentBackground),    \
+               GetLayoutView().FirstFragment().ContentsProperties())
+
+// This version also checks the following additional parameters:
+//   wtf_size_t display_item_count,
+//   const HitTestData* hit_test_data,
+//   (optional) const IntRect& bounds
+#define VIEW_SCROLLING_BACKGROUND_CHUNK(display_item_count, ...)     \
+  IsPaintChunk(0, display_item_count,                                \
+               PaintChunk::Id(ViewScrollingBackgroundClient().Id(),  \
+                              DisplayItem::kDocumentBackground),     \
+               GetLayoutView().FirstFragment().ContentsProperties(), \
+               __VA_ARGS__)
 
 }  // namespace blink
 

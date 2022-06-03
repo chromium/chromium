@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,13 +36,13 @@ using ::testing::StrictMock;
 // Callback for CreateProfile() that assigns |profile| to |*out_profile|
 // if the profile creation is successful.
 void CreateProfileCallback(Profile** out_profile,
-                           const base::Closure& closure,
+                           base::OnceClosure closure,
                            Profile* profile,
                            Profile::CreateStatus status) {
   DCHECK(out_profile);
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     *out_profile = profile;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 // Creates a new profile from the UI thread.
@@ -51,8 +52,8 @@ Profile* CreateProfile() {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       profile_manager->GenerateNextProfileDirectoryPath(),
-      base::Bind(&CreateProfileCallback, &profile, run_loop.QuitClosure()),
-      base::string16(), std::string());
+      base::BindRepeating(&CreateProfileCallback, &profile,
+                          run_loop.QuitClosure()));
   run_loop.Run();
   return profile;
 }
@@ -65,7 +66,7 @@ bool ProfileIsTagged(Profile* profile) {
 // Saves |value| in the registry at the value name corresponding to the cleanup
 // completed state.
 void SetCompletedState(DWORD value) {
-  base::string16 cleaner_key_path(
+  std::wstring cleaner_key_path(
       chrome_cleaner::kSoftwareRemovalToolRegistryKey);
   cleaner_key_path.append(L"\\").append(chrome_cleaner::kCleanerSubKey);
 
@@ -94,11 +95,16 @@ class SettingsResetterTestDelegate
  public:
   explicit SettingsResetterTestDelegate(int* num_resets)
       : num_resets_(num_resets) {}
+
+  SettingsResetterTestDelegate(const SettingsResetterTestDelegate&) = delete;
+  SettingsResetterTestDelegate& operator=(const SettingsResetterTestDelegate&) =
+      delete;
+
   ~SettingsResetterTestDelegate() override = default;
 
   void FetchDefaultSettings(
       DefaultSettingsFetcher::SettingsCallback callback) override {
-    callback.Run(std::make_unique<BrandcodedDefaultSettings>());
+    std::move(callback).Run(std::make_unique<BrandcodedDefaultSettings>());
   }
 
   // Returns a MockProfileResetter that requires Reset() be called.
@@ -113,8 +119,6 @@ class SettingsResetterTestDelegate
 
  private:
   int* num_resets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetterTestDelegate);
 };
 
 // Indicates the possible values to be written to the registry for cleanup

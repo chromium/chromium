@@ -39,8 +39,8 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
   void SimulateLocalGattCharacteristicValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
-      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-      base::OnceClosure error_callback) override;
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback)
+      override;
   void SimulateLocalGattCharacteristicValueWriteRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
@@ -58,8 +58,8 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
   void SimulateLocalGattDescriptorValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattDescriptor* descriptor,
-      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-      base::OnceClosure error_callback) override;
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback)
+      override;
   void SimulateLocalGattDescriptorValueWriteRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattDescriptor* descriptor,
@@ -67,6 +67,7 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
       base::OnceClosure success_callback,
       base::OnceClosure error_callback) override;
   bool SimulateLocalGattCharacteristicNotificationsRequest(
+      BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
       bool start) override;
   std::vector<uint8_t> LastNotifactionValueForCharacteristic(

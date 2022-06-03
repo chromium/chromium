@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 // https://w3c.github.io/keyboard-lock/
 
@@ -7,7 +8,7 @@
 
 idl_test(
   ['keyboard-lock'],
-  ['html'],
+  ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({
       Navigator: ['navigator'],

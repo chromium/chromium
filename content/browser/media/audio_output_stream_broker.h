@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
@@ -17,10 +16,10 @@
 #include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace content {
 
@@ -36,15 +35,17 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
       const std::string& output_device_id,
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
-      const base::Optional<base::UnguessableToken>& processing_id,
       DeleterCallback deleter,
       mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
           client);
 
+  AudioOutputStreamBroker(const AudioOutputStreamBroker&) = delete;
+  AudioOutputStreamBroker& operator=(const AudioOutputStreamBroker&) = delete;
+
   ~AudioOutputStreamBroker() final;
 
   // Creates the stream.
-  void CreateStream(audio::mojom::StreamFactory* factory) final;
+  void CreateStream(media::mojom::AudioStreamFactory* factory) final;
 
  private:
   using DisconnectReason =
@@ -62,7 +63,6 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   const std::string output_device_id_;
   const media::AudioParameters params_;
   const base::UnguessableToken group_id_;
-  const base::Optional<base::UnguessableToken> processing_id_;
 
   // Set while CreateStream() has been called, but not StreamCreated().
   base::TimeTicks stream_creation_start_time_;
@@ -78,8 +78,6 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   DisconnectReason disconnect_reason_ = DisconnectReason::kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioOutputStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamBroker);
 };
 
 }  // namespace content

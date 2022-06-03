@@ -28,12 +28,13 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -41,6 +42,16 @@ class FetchParameters;
 class ResourceFetcher;
 class FontCustomPlatformData;
 class FontResourceClient;
+
+// An observer that will be notified when original data is cleared
+// from the resource. Inspector may collect this data and store it for
+// future inspection.
+class CORE_EXPORT FontResourceClearDataObserver : public GarbageCollectedMixin {
+ public:
+  // Called before the original data is cleared. Only called once,
+  // and observer is automatically removed.
+  virtual void FontResourceDataWillBeCleared() = 0;
+};
 
 class CORE_EXPORT FontResource final : public Resource {
  public:
@@ -50,12 +61,12 @@ class CORE_EXPORT FontResource final : public Resource {
 
   FontResource(const ResourceRequest&, const ResourceLoaderOptions&);
   ~FontResource() override;
+  void Trace(Visitor*) const override;
 
   void DidAddClient(ResourceClient*) override;
 
-  void SetRevalidatingRequest(const ResourceRequest&) override;
+  void SetRevalidatingRequest(const ResourceRequestHead&) override;
 
-  void AllClientsAndObserversRemoved() override;
   void StartLoadLimitTimersIfNecessary(base::SingleThreadTaskRunner*);
 
   String OtsParsingMessage() const { return ots_parsing_message_; }
@@ -71,6 +82,8 @@ class CORE_EXPORT FontResource final : public Resource {
 
   void OnMemoryDump(WebMemoryDumpLevelOfDetail,
                     WebProcessMemoryDump*) const override;
+
+  void AddClearDataObserver(FontResourceClearDataObserver* observer) const;
 
  private:
   class FontResourceFactory : public NonTextResourceFactory {
@@ -90,12 +103,12 @@ class CORE_EXPORT FontResource final : public Resource {
   void NotifyClientsLongLimitExceeded();
 
   // This is used in UMA histograms, should not change order.
-  enum LoadLimitState {
+  enum class LoadLimitState {
     kLoadNotStarted,
     kUnderLimit,
     kShortLimitExceeded,
     kLongLimitExceeded,
-    kLoadLimitStateEnumMax
+    kMaxValue = kLongLimitExceeded,
   };
 
   scoped_refptr<FontCustomPlatformData> font_data_;
@@ -104,12 +117,19 @@ class CORE_EXPORT FontResource final : public Resource {
   bool cors_failed_;
   TaskHandle font_load_short_limit_;
   TaskHandle font_load_long_limit_;
+  mutable HeapHashSet<WeakMember<FontResourceClearDataObserver>>
+      clear_data_observers_;
 
   friend class MemoryCache;
   FRIEND_TEST_ALL_PREFIXES(CacheAwareFontResourceTest, CacheAwareFontLoading);
 };
 
-DEFINE_RESOURCE_TYPE_CASTS(Font);
+template <>
+struct DowncastTraits<FontResource> {
+  static bool AllowFrom(const Resource& resource) {
+    return resource.GetType() == ResourceType::kFont;
+  }
+};
 
 class FontResourceClient : public ResourceClient {
  public:
@@ -134,4 +154,4 @@ class FontResourceClient : public ResourceClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_FONT_RESOURCE_H_

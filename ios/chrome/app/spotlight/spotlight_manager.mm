@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #include "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #include "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
@@ -21,7 +21,7 @@
   ActionsSpotlightManager* _actionsManager;
 }
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
 @end
@@ -29,14 +29,14 @@
 @implementation SpotlightManager
 
 + (SpotlightManager*)spotlightManagerWithBrowserState:
-    (ios::ChromeBrowserState*)browserState {
+    (ChromeBrowserState*)browserState {
   if (spotlight::IsSpotlightAvailable()) {
     return [[SpotlightManager alloc] initWithBrowserState:browserState];
   }
   return nil;
 }
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(browserState);
   DCHECK(spotlight::IsSpotlightAvailable());
   self = [super init];

@@ -6,7 +6,6 @@
 #define NET_SSL_SSL_CLIENT_AUTH_CACHE_H_
 
 #include <map>
-#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"

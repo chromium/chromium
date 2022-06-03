@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepOut will skip inlined scripts created by document.write().\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var numberOfStepOut = 5;
@@ -17,8 +17,8 @@
 
   async function step2(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
-    SourcesTestRunner.setBreakpoint(sourceFrame, 3, '', true);
-    SourcesTestRunner.setBreakpoint(sourceFrame, 11, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 3, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 11, '', true);
     SourcesTestRunner.waitUntilPaused(step3);
     TestRunner.reloadPage(completeTest);
   }

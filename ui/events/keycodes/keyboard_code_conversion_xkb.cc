@@ -5,11 +5,10 @@
 #include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/dom/dom_key.h"
-
-#ifndef XK_dead_greek
-#define XK_dead_greek 0xfe8c
-#endif
+#include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace ui {
 
@@ -204,7 +203,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
       return DomKey::CONTROL;
     case XKB_KEY_Caps_Lock:
       return DomKey::CAPS_LOCK;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case XKB_KEY_Meta_L:
     case XKB_KEY_Meta_R:
     case XKB_KEY_Alt_L:
@@ -219,7 +218,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
     case XKB_KEY_Alt_L:
     case XKB_KEY_Alt_R:
       return DomKey::ALT;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case XKB_KEY_Super_L:
     case XKB_KEY_Super_R:
       return DomKey::META;
@@ -482,7 +481,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
       return DomKey::NONE;
   }
 }
-DomKey XKeySymToDomKey(xkb_keysym_t keysym, base::char16 character) {
+DomKey XKeySymToDomKey(xkb_keysym_t keysym, char16_t character) {
   DomKey dom_key = NonPrintableXKeySymToDomKey(keysym);
   if (dom_key != DomKey::NONE)
     return dom_key;

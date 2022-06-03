@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -19,19 +20,19 @@ class FocusControllerTest : public PageTestBase {
 };
 
 TEST_F(FocusControllerTest, SetInitialFocus) {
-  GetDocument().body()->SetInnerHTMLFromString("<input><textarea>");
+  GetDocument().body()->setInnerHTML("<input><textarea>");
   auto* input = To<Element>(GetDocument().body()->firstChild());
   // Set sequential focus navigation point before the initial focus.
   input->focus();
   input->blur();
-  GetFocusController().SetInitialFocus(kWebFocusTypeForward);
+  GetFocusController().SetInitialFocus(mojom::blink::FocusType::kForward);
   EXPECT_EQ(input, GetDocument().FocusedElement())
       << "We should ignore sequential focus navigation starting point in "
          "setInitialFocus().";
 }
 
 TEST_F(FocusControllerTest, DoNotCrash1) {
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<div id='host'></div>This test is for crbug.com/609012<p id='target' "
       "tabindex='0'></p>");
   // <div> with shadow root
@@ -45,13 +46,13 @@ TEST_F(FocusControllerTest, DoNotCrash1) {
   // Set sequential focus navigation point at text node.
   GetDocument().SetSequentialFocusNavigationStartingPoint(text);
 
-  GetFocusController().AdvanceFocus(kWebFocusTypeForward);
+  GetFocusController().AdvanceFocus(mojom::blink::FocusType::kForward);
   EXPECT_EQ(target, GetDocument().FocusedElement())
       << "This should not hit assertion and finish properly.";
 }
 
 TEST_F(FocusControllerTest, DoNotCrash2) {
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<p id='target' tabindex='0'></p>This test is for crbug.com/609012<div "
       "id='host'></div>");
   // <p>
@@ -65,7 +66,7 @@ TEST_F(FocusControllerTest, DoNotCrash2) {
   // Set sequential focus navigation point at text node.
   GetDocument().SetSequentialFocusNavigationStartingPoint(text);
 
-  GetFocusController().AdvanceFocus(kWebFocusTypeBackward);
+  GetFocusController().AdvanceFocus(mojom::blink::FocusType::kBackward);
   EXPECT_EQ(target, GetDocument().FocusedElement())
       << "This should not hit assertion and finish properly.";
 }
@@ -81,7 +82,7 @@ TEST_F(FocusControllerTest, SetActiveOnInactiveDocument) {
 
 // This test is for crbug.com/733218
 TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<form>"
       "<input id='first'>"
       "<svg width='100px' height='100px' tabindex='0'>"
@@ -95,18 +96,18 @@ TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
   auto* last = To<Element>(form->lastChild());
 
   Element* next = GetFocusController().NextFocusableElementInForm(
-      first, kWebFocusTypeForward);
+      first, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next, last)
       << "SVG Element should be skipped even when focusable in form.";
 
   Element* prev = GetFocusController().NextFocusableElementInForm(
-      next, kWebFocusTypeBackward);
+      next, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(prev, first)
       << "SVG Element should be skipped even when focusable in form.";
 }
 
 TEST_F(FocusControllerTest, FindFocusableAfterElement) {
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<input id='first'><div id='second'></div><input id='third'><div "
       "id='fourth' tabindex='0'></div>");
   Element* first = GetElementById("first");
@@ -114,25 +115,25 @@ TEST_F(FocusControllerTest, FindFocusableAfterElement) {
   Element* third = GetElementById("third");
   Element* fourth = GetElementById("fourth");
   EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
-                       *first, kWebFocusTypeForward));
+                       *first, mojom::blink::FocusType::kForward));
   EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
-                       *second, kWebFocusTypeForward));
+                       *second, mojom::blink::FocusType::kForward));
   EXPECT_EQ(fourth, GetFocusController().FindFocusableElementAfter(
-                        *third, kWebFocusTypeForward));
+                        *third, mojom::blink::FocusType::kForward));
   EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
-                         *fourth, kWebFocusTypeForward));
+                         *fourth, mojom::blink::FocusType::kForward));
 
   EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
-                         *first, kWebFocusTypeBackward));
+                         *first, mojom::blink::FocusType::kBackward));
   EXPECT_EQ(first, GetFocusController().FindFocusableElementAfter(
-                       *second, kWebFocusTypeBackward));
+                       *second, mojom::blink::FocusType::kBackward));
   EXPECT_EQ(first, GetFocusController().FindFocusableElementAfter(
-                       *third, kWebFocusTypeBackward));
+                       *third, mojom::blink::FocusType::kBackward));
   EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
-                       *fourth, kWebFocusTypeBackward));
+                       *fourth, mojom::blink::FocusType::kBackward));
 
   EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
-                         *first, kWebFocusTypeNone));
+                         *first, mojom::blink::FocusType::kNone));
 }
 
 }  // namespace blink

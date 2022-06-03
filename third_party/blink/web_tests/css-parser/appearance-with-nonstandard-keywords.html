@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+/* See https://drafts.csswg.org/css-ui-4/#appearance-switching */
+.t {
+  appearance: auto;
+  appearance: checkbox;
+  appearance: radio;
+  appearance: push-button;
+  appearance: square-button;
+  appearance: button;
+  appearance: inner-spin-button; /* should be warned */
+  appearance: listbox;
+  appearance: media-slider; /* should be warned */
+  appearance: media-sliderthumb; /* should be warned */
+  appearance: media-volume-slider; /* should be warned */
+  appearance: media-volume-sliderthumb; /* should be warned */
+  appearance: menulist;
+  appearance: menulist-button;
+  appearance: meter;
+  appearance: progress-bar;
+  appearance: slider-horizontal;
+  appearance: slider-vertical; /* should be warned */
+  appearance: sliderthumb-horizontal; /* should be warned */
+  appearance: sliderthumb-vertical; /* should be warned */
+  appearance: searchfield;
+  appearance: searchfield-cancel-button; /* should be warned */
+  appearance: textfield;
+  appearance: textarea;
+}
+</style>
+<script>
+test(() => {
+  assert_true(false, 'This should FAIL to have -expected.txt');
+}, 'There should be consle warnings about non-standard appearance keywords');
+</script>

@@ -11,9 +11,9 @@
 
 namespace extensions {
 
-TestImageLoader::TestImageLoader() : waiting_(false), image_loaded_(false) {}
+TestImageLoader::TestImageLoader() = default;
 
-TestImageLoader::~TestImageLoader() {}
+TestImageLoader::~TestImageLoader() = default;
 
 // static
 SkBitmap TestImageLoader::LoadAndGetExtensionBitmap(
@@ -28,7 +28,7 @@ void TestImageLoader::OnImageLoaded(const gfx::Image& image) {
   image_ = image;
   image_loaded_ = true;
   if (waiting_)
-    loader_message_loop_quit_.Run();
+    std::move(loader_message_loop_quit_).Run();
 }
 
 SkBitmap TestImageLoader::LoadAndGetBitmap(const Extension* extension,
@@ -39,7 +39,7 @@ SkBitmap TestImageLoader::LoadAndGetBitmap(const Extension* extension,
   ImageLoader image_loader;
   image_loader.LoadImageAsync(
       extension, extension->GetResource(path), gfx::Size(size, size),
-      base::Bind(&TestImageLoader::OnImageLoaded, base::Unretained(this)));
+      base::BindOnce(&TestImageLoader::OnImageLoaded, base::Unretained(this)));
 
   // If |image_| still hasn't been loaded (i.e. it is being loaded
   // asynchronously), wait for it.

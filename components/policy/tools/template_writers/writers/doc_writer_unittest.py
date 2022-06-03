@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -217,27 +217,6 @@ class DocWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     self.assertEquals(
         self.writer.GetLocalizedMessage('hello_world'), 'hello, vilag!')
 
-  def testMapListToString(self):
-    # Test function DocWriter.MapListToString()
-    self.assertEquals(
-        self.writer._MapListToString({
-            'a1': 'a2',
-            'b1': 'b2'
-        }, ['a1', 'b1']), 'a2, b2')
-    self.assertEquals(
-        self.writer._MapListToString({
-            'a1': 'a2',
-            'b1': 'b2'
-        }, []), '')
-    result = self.writer._MapListToString({
-        'a': '1',
-        'b': '2',
-        'c': '3',
-        'd': '4'
-    }, ['b', 'd'])
-    expected_result = '2, 4'
-    self.assertEquals(result, expected_result)
-
   def testAddStyledElement(self):
     # Test function DocWriter.AddStyledElement()
 
@@ -381,10 +360,17 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
 
   def testAddListExample(self):
     policy = {
-        'name': 'PolicyName',
+        'name':
+        'PolicyName',
         'example_value': ['Foo', 'Bar'],
         'supported_on': [{
-            'platforms': ['win', 'mac', 'linux', 'chrome_os']
+            'platform': 'win'
+        }, {
+            'platform': 'mac'
+        }, {
+            'platform': 'linux'
+        }, {
+            'platform': 'chrome_os'
         }]
     }
     self.writer._AddListExample(self.doc_root, policy)
@@ -421,11 +407,20 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testBoolExample(self):
     # Test representation of boolean example values.
     policy = {
-        'name': 'PolicyName',
-        'type': 'main',
-        'example_value': True,
+        'name':
+        'PolicyName',
+        'type':
+        'main',
+        'example_value':
+        True,
         'supported_on': [{
-            'platforms': ['win', 'mac', 'linux', 'android']
+            'platform': 'win'
+        }, {
+            'platform': 'mac'
+        }, {
+            'platform': 'linux'
+        }, {
+            'platform': 'android'
         }]
     }
     e1 = self.writer.AddElement(self.doc_root, 'e1')
@@ -439,11 +434,20 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '</e1>')
 
     policy = {
-        'name': 'PolicyName',
-        'type': 'main',
-        'example_value': False,
+        'name':
+        'PolicyName',
+        'type':
+        'main',
+        'example_value':
+        False,
         'supported_on': [{
-            'platforms': ['win', 'mac', 'linux', 'android']
+            'platform': 'win'
+        }, {
+            'platform': 'mac'
+        }, {
+            'platform': 'linux'
+        }, {
+            'platform': 'android'
         }]
     }
     e2 = self.writer.AddElement(self.doc_root, 'e2')
@@ -459,11 +463,20 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testIntEnumExample(self):
     # Test representation of 'int-enum' example values.
     policy = {
-        'name': 'PolicyName',
-        'type': 'int-enum',
-        'example_value': 16,
+        'name':
+        'PolicyName',
+        'type':
+        'int-enum',
+        'example_value':
+        16,
         'supported_on': [{
-            'platforms': ['win', 'mac', 'linux', 'android']
+            'platform': 'win'
+        }, {
+            'platform': 'mac'
+        }, {
+            'platform': 'linux'
+        }, {
+            'platform': 'android'
         }]
     }
     self.writer._AddExample(self.doc_root, policy)
@@ -481,9 +494,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         'name': 'PolicyName',
         'type': 'string-enum',
         'example_value': "wacky",
-        'supported_on': [{
-            'platforms': []
-        }]
+        'supported_on': []
     }
     self.writer._AddExample(self.doc_root, policy)
     self.assertEquals(self.doc_root.toxml(), '<root>&quot;wacky&quot;</root>')
@@ -495,7 +506,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         'type': 'list',
         'example_value': ['one', 'two'],
         'supported_on': [{
-            'platforms': ['linux']
+            'platform': 'linux'
         }]
     }
     self.writer._AddExample(self.doc_root, policy)
@@ -516,7 +527,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         'type': 'string-enum-list',
         'example_value': ['one', 'two'],
         'supported_on': [{
-            'platforms': ['linux']
+            'platform': 'linux'
         }]
     }
     self.writer._AddExample(self.doc_root, policy)
@@ -536,9 +547,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         'name': 'PolicyName',
         'type': 'string',
         'example_value': 'awesome-example',
-        'supported_on': [{
-            'platforms': []
-        }]
+        'supported_on': []
     }
     self.writer._AddExample(self.doc_root, policy)
     self.assertEquals(self.doc_root.toxml(),
@@ -547,11 +556,20 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testIntExample(self):
     # Test representation of 'int' example values.
     policy = {
-        'name': 'PolicyName',
-        'type': 'int',
-        'example_value': 26,
+        'name':
+        'PolicyName',
+        'type':
+        'int',
+        'example_value':
+        26,
         'supported_on': [{
-            'platforms': ['win', 'mac', 'linux', 'android']
+            'platform': 'win'
+        }, {
+            'platform': 'mac'
+        }, {
+            'platform': 'linux'
+        }, {
+            'platform': 'android'
         }]
     }
     self.writer._AddExample(self.doc_root, policy)
@@ -577,34 +595,46 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # Test if the definition list (<dl>) of policy details is created correctly.
     policy = {
         'type':
-            'main',
+        'main',
         'name':
-            'TestPolicyName',
+        'TestPolicyName',
         'caption':
-            'TestPolicyCaption',
+        'TestPolicyCaption',
         'desc':
-            'TestPolicyDesc',
+        'TestPolicyDesc',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux'],
+            'platform': 'win',
             'since_version': '8',
             'until_version': '',
         },
                          {
                              'product': 'chrome',
-                             'platforms': ['android'],
+                             'platform': 'mac',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'android',
                              'since_version': '30',
                              'until_version': '',
                          },
                          {
                              'product': 'webview',
-                             'platforms': ['android'],
+                             'platform': 'android',
                              'since_version': '47',
                              'until_version': '',
                          },
                          {
                              'product': 'chrome',
-                             'platforms': ['chrome_os'],
+                             'platform': 'chrome_os',
                              'since_version': '55',
                              'until_version': '',
                          }],
@@ -612,9 +642,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            False,
+        False,
         'arc_support':
-            'TestArcSupportNote'
+        'TestArcSupportNote'
     }
     self.writer._AddPolicyDetails(self.doc_root, policy)
     self.assertEquals(
@@ -636,7 +666,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Linux) ..8..</li>'
+        '<li>Chrome (Windows) ..8..</li>'
+        '<li>Chrome (Mac) ..8..</li>'
+        '<li>Chrome (Linux) ..8..</li>'
         '<li>Chrome (Android) ..30..</li>'
         '<li>WebView (Android) ..47..</li>'
         '<li>Chrome (Chrome OS) ..55..</li>'
@@ -660,16 +692,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # 'arc_support' is not specified.
     policy = {
         'type':
-            'main',
+        'main',
         'name':
-            'TestPolicyName',
+        'TestPolicyName',
         'caption':
-            'TestPolicyCaption',
+        'TestPolicyCaption',
         'desc':
-            'TestPolicyDesc',
+        'TestPolicyDesc',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['linux'],
+            'platform': 'linux',
             'since_version': '8',
             'until_version': '',
         }],
@@ -677,7 +709,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            False
+        False
     }
     self.writer._AddPolicyDetails(self.doc_root, policy)
     self.assertEquals(
@@ -705,13 +737,13 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # for 'dict' policies.
     policy = {
         'type':
-            'dict',
+        'dict',
         'name':
-            'TestPolicyName',
+        'TestPolicyName',
         'caption':
-            'TestPolicyCaption',
+        'TestPolicyCaption',
         'desc':
-            'TestPolicyDesc',
+        'TestPolicyDesc',
         'schema': {
             'properties': {
                 'foo': {
@@ -721,13 +753,31 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'type': 'object'
         },
         'url_schema':
-            'https://example.com/details',
+        'https://example.com/details',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux', 'chrome_os'],
+            'platform': 'win',
             'since_version': '8',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome_os',
+                             'platform': 'chrome_os',
+                             'since_version': '8',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
@@ -751,7 +801,10 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Linux, Chrome OS) ..8..</li>'
+        '<li>Chrome (Windows) ..8..</li>'
+        '<li>Chrome (Mac) ..8..</li>'
+        '<li>Chrome (Linux) ..8..</li>'
+        '<li>Chrome OS (Chrome OS) ..8..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -809,13 +862,13 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # for 'external' policies.
     policy = {
         'type':
-            'external',
+        'external',
         'name':
-            'TestPolicyName',
+        'TestPolicyName',
         'caption':
-            'TestPolicyCaption',
+        'TestPolicyCaption',
         'desc':
-            'TestPolicyDesc',
+        'TestPolicyDesc',
         'description_schema': {
             'properties': {
                 'url': {
@@ -829,10 +882,22 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         },
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux'],
+            'platform': 'win',
             'since_version': '8',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '8',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
@@ -856,7 +921,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Linux) ...8...</li>'
+        '<li>Chrome (Windows) ...8...</li>'
+        '<li>Chrome (Mac) ...8...</li>'
+        '<li>Chrome (Linux) ...8...</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -911,28 +978,40 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicyDetailsRecommendedOnly(self):
     policy = {
         'type':
-            'main',
+        'main',
         'name':
-            'TestPolicyName',
+        'TestPolicyName',
         'caption':
-            'TestPolicyCaption',
+        'TestPolicyCaption',
         'desc':
-            'TestPolicyDesc',
+        'TestPolicyDesc',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux'],
+            'platform': 'win',
             'since_version': '8',
             'until_version': '',
         },
                          {
                              'product': 'chrome',
-                             'platforms': ['android'],
+                             'platform': 'mac',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '8',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'android',
                              'since_version': '30',
                              'until_version': '',
                          },
                          {
                              'product': 'chrome',
-                             'platforms': ['chrome_os'],
+                             'platform': 'chrome_os',
                              'since_version': '53',
                              'until_version': '',
                          }],
@@ -942,7 +1021,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'can_be_recommended': True
         },
         'example_value':
-            False
+        False
     }
     self.writer._AddPolicyDetails(self.doc_root, policy)
     self.assertEquals(
@@ -962,7 +1041,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Linux) ..8..</li>'
+        '<li>Chrome (Windows) ..8..</li>'
+        '<li>Chrome (Mac) ..8..</li>'
+        '<li>Chrome (Linux) ..8..</li>'
         '<li>Chrome (Android) ..30..</li>'
         '<li>Chrome (Chrome OS) ..53..</li>'
         '</ul>'
@@ -979,18 +1060,6 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dd style="style_.monospace;style_.pre-wrap;">&lt;disabled/&gt;</dd></dl>'
         '</dd>'
         '</dl></root>')
-
-  def testAddPolicyNote(self):
-    # TODO(jkummerow): The functionality tested by this test is currently not
-    # used for anything and will probably soon be removed.
-    # Test if nodes are correctly added to policies.
-    policy = {'problem_href': 'http://www.example.com/5'}
-    self.writer.messages['doc_note'] = {'text': '...$6...'}
-    self.writer._AddPolicyNote(self.doc_root, policy)
-    self.assertEquals(
-        self.doc_root.toxml(), '<root><div style="style_div.note;"><p>...'
-        '<a href="http://www.example.com/5">http://www.example.com/5</a>'
-        '...</p></div></root>')
 
   def testAddPolicyRow(self):
     # Test if policies are correctly added to the summary table.
@@ -1027,24 +1096,36 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # Test if policy details are correctly added to the document.
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'string',
+        'string',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'chrome_os'],
+            'platform': 'win',
             'since_version': '7',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '7',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome_os',
+                             'platform': 'chrome_os',
+                             'since_version': '7',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
         'example_value':
-            'False'
+        'False'
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1066,7 +1147,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Chrome OS) ..7..</li>'
+        '<li>Chrome (Windows) ..7..</li>'
+        '<li>Chrome (Mac) ..7..</li>'
+        '<li>Chrome OS (Chrome OS) ..7..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1100,26 +1183,38 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # Test if policy details are correctly added to the document.
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'string',
+        'string',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'chrome_os'],
+            'platform': 'win',
             'since_version': '7',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '7',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome_os',
+                             'platform': 'chrome_os',
+                             'since_version': '7',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
         'example_value':
-            'False',
+        'False',
         'atomic_group':
-            'PolicyGroup'
+        'PolicyGroup'
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1141,7 +1236,9 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome (Windows, Mac, Chrome OS) ..7..</li>'
+        '<li>Chrome (Windows) ..7..</li>'
+        '<li>Chrome (Mac) ..7..</li>'
+        '<li>Chrome OS (Chrome OS) ..7..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1164,16 +1261,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicySectionForWindowsOnly(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win'],
+            'platform': 'win',
             'since_version': '33',
             'until_version': '',
         }],
@@ -1181,7 +1278,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            123
+        123
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1220,16 +1317,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicySectionForWindows7Only(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win7'],
+            'platform': 'win7',
             'since_version': '33',
             'until_version': '',
         }],
@@ -1237,7 +1334,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            123
+        123
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1276,16 +1373,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicySectionForMacOnly(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['mac'],
+            'platform': 'mac',
             'since_version': '33',
             'until_version': '',
         }],
@@ -1293,7 +1390,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            123
+        123
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1326,16 +1423,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicySectionForLinuxOnly(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['linux'],
+            'platform': 'linux',
             'since_version': '33',
             'until_version': '',
         }],
@@ -1343,7 +1440,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            123
+        123
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertEquals(
@@ -1376,16 +1473,16 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddPolicySectionForAndroidOnly(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['android'],
+            'platform': 'android',
             'since_version': '33',
             'until_version': '',
         }],
@@ -1393,7 +1490,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
             'dynamic_refresh': False
         },
         'example_value':
-            123
+        123
     }
     self.writer._AddPolicySection(self.doc_root, policy)
     self.assertTrue(
@@ -1428,19 +1525,31 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddDictionaryExample(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'dict',
+        'dict',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux'],
+            'platform': 'win',
             'since_version': '7',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '7',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '7',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
@@ -1553,19 +1662,31 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testAddExternalExample(self):
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'external',
+        'external',
         'supported_on': [{
             'product': 'chrome',
-            'platforms': ['win', 'mac', 'linux'],
+            'platform': 'win',
             'since_version': '7',
             'until_version': '',
-        }],
+        },
+                         {
+                             'product': 'chrome',
+                             'platform': 'mac',
+                             'since_version': '7',
+                             'until_version': '',
+                         },
+                         {
+                             'product': 'chrome',
+                             'platform': 'linux',
+                             'since_version': '7',
+                             'until_version': '',
+                         }],
         'features': {
             'dynamic_refresh': False
         },
@@ -1613,22 +1734,22 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
   def testGoogleCloudChromeOsPolicies(self):
     # Tests whether Chrome OS policies with management type 'google_cloud'
     # don't print example values etc. since they are managed through Google's
-    # CPanel/DPanel, not Active Directory GPO.
+    # Admin console, not Active Directory GPO.
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'features': {},
         'example_value':
-            42,
+        42,
         'supported_on': [{
             'product': 'chrome_os',
-            'platforms': ['chrome_os'],
+            'platform': 'chrome_os',
             'since_version': '8',
             'until_version': '',
         }],
@@ -1663,19 +1784,19 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
     # print example values etc.
     policy = {
         'name':
-            'PolicyName',
+        'PolicyName',
         'caption':
-            'PolicyCaption',
+        'PolicyCaption',
         'desc':
-            'PolicyDesc',
+        'PolicyDesc',
         'type':
-            'int',
+        'int',
         'features': {},
         'example_value':
-            42,
+        42,
         'supported_on': [{
             'product': 'chrome_os',
-            'platforms': ['chrome_os'],
+            'platform': 'chrome_os',
             'since_version': '8',
             'until_version': '',
         }],

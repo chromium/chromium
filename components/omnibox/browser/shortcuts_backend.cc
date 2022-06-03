@@ -7,26 +7,28 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/shortcuts_database.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace {
 
@@ -34,9 +36,9 @@ namespace {
 // compacting repetitions if necessary.
 std::string StripMatchMarkers(const ACMatchClassifications& matches) {
   ACMatchClassifications unmatched;
-  for (auto i(matches.begin()); i != matches.end(); ++i) {
+  for (const auto& match : matches) {
     AutocompleteMatch::AddLastClassificationIfNecessary(
-        &unmatched, i->offset, i->style & ~ACMatchClassification::MATCH);
+        &unmatched, match.offset, match.style & ~ACMatchClassification::MATCH);
   }
   return AutocompleteMatch::ClassificationsToString(unmatched);
 }
@@ -75,15 +77,14 @@ ShortcutsBackend::ShortcutsBackend(
       search_terms_data_(std::move(search_terms_data)),
       current_state_(NOT_INITIALIZED),
       main_runner_(base::ThreadTaskRunnerHandle::Get()),
-      db_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       no_db_access_(suppress_db) {
   if (!suppress_db)
     db_ = new ShortcutsDatabase(database_path);
   if (history_service)
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
 }
 
 bool ShortcutsBackend::Init() {
@@ -117,27 +118,50 @@ void ShortcutsBackend::RemoveObserver(ShortcutsBackendObserver* obs) {
   observer_list_.RemoveObserver(obs);
 }
 
-void ShortcutsBackend::AddOrUpdateShortcut(const base::string16& text,
+void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
                                            const AutocompleteMatch& match) {
 #if DCHECK_IS_ON()
   match.Validate();
 #endif  // DCHECK_IS_ON()
-  const base::string16 text_lowercase(base::i18n::ToLower(text));
+  const std::u16string text_lowercase(base::i18n::ToLower(text));
   const base::Time now(base::Time::Now());
+
+  // Look for an existing shortcut to `match` prefixed by `text`. If there is
+  // one, it'll be updated. This avoids creating duplicating equivalent
+  // shortcuts (e.g. 'g', 'go', & 'goo') with distributed `number_of_hits`s and
+  // outdated `last_access_time`s. There could be multiple relevant shortcuts;
+  // e.g., the `text` 'wi' could match both shortcuts 'wiki' and 'wild' to
+  // 'wiki.org/wild_west'. We only update the 1st shortcut; this is slightly
+  // arbitrary but seems to be fine. Deduping these shortcuts would stop the
+  // input 'wil' from finding the 2nd shortcut.
   for (ShortcutMap::const_iterator it(
            shortcuts_map_.lower_bound(text_lowercase));
        it != shortcuts_map_.end() &&
-           base::StartsWith(it->first, text_lowercase,
-                            base::CompareCase::SENSITIVE);
+       base::StartsWith(it->first, text_lowercase,
+                        base::CompareCase::SENSITIVE);
        ++it) {
     if (match.destination_url == it->second.match_core.destination_url) {
+      // By default, when a user navigates to a shortcut after typing a prefix
+      // of the shortcut, the shortcut text is replaced with the shorter user
+      // input. If `kPreserveLongerShortcutsText` is enabled, the
+      // shortcut keeps 3 additional chars to avoid unstable shortcuts. E.g. if
+      // the user creates a shortcut with text 'google.com', then navigates
+      // typing 'go', the shortcut should be suggested even if they type 'goo'
+      // next time.
+      auto long_text =
+          base::FeatureList::IsEnabled(omnibox::kPreserveLongerShortcutsText)
+              ? it->second.text.substr(0, text.length() + 3)
+              : text;
       UpdateShortcut(ShortcutsDatabase::Shortcut(
-          it->second.id, text, MatchToMatchCore(match, template_url_service_,
-                                                search_terms_data_.get()),
+          it->second.id, long_text,
+          MatchToMatchCore(match, template_url_service_,
+                           search_terms_data_.get()),
           now, it->second.number_of_hits + 1));
       return;
     }
   }
+
+  // If no shortcuts to `match` prefixed by `text` were found, create one.
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::GenerateGUID(), text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
@@ -168,18 +192,24 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
     normalized_match = &temp;
   }
 
+  auto description = normalized_match->description_for_shortcuts.empty()
+                         ? normalized_match->description
+                         : normalized_match->description_for_shortcuts;
+  auto description_class =
+      normalized_match->description_class_for_shortcuts.empty()
+          ? normalized_match->description_class
+          : normalized_match->description_class_for_shortcuts;
+
   return ShortcutsDatabase::Shortcut::MatchCore(
       normalized_match->fill_into_edit, normalized_match->destination_url,
-      static_cast<int>(normalized_match->document_type),
-      normalized_match->contents,
-      StripMatchMarkers(normalized_match->contents_class),
-      normalized_match->description,
-      StripMatchMarkers(normalized_match->description_class),
-      normalized_match->transition, match_type, normalized_match->keyword);
+      normalized_match->document_type, normalized_match->contents,
+      StripMatchMarkers(normalized_match->contents_class), description,
+      StripMatchMarkers(description_class), normalized_match->transition,
+      match_type, normalized_match->keyword);
 }
 
 void ShortcutsBackend::ShutdownOnUIThread() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ShortcutsBackend::OnURLsDeleted(
@@ -212,8 +242,8 @@ void ShortcutsBackend::InitInternal() {
   db_->Init();
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
-  temp_shortcuts_map_.reset(new ShortcutMap);
-  temp_guid_map_.reset(new GuidMap);
+  temp_shortcuts_map_ = std::make_unique<ShortcutMap>();
+  temp_guid_map_ = std::make_unique<GuidMap>();
   for (ShortcutsDatabase::GuidToShortcutMap::const_iterator it(
            shortcuts.begin());
        it != shortcuts.end(); ++it) {
@@ -277,8 +307,8 @@ bool ShortcutsBackend::DeleteShortcutsWithIDs(
     const ShortcutsDatabase::ShortcutIDs& shortcut_ids) {
   if (!initialized())
     return false;
-  for (size_t i = 0; i < shortcut_ids.size(); ++i) {
-    auto it(guid_map_.find(shortcut_ids[i]));
+  for (const auto& shortcut_id : shortcut_ids) {
+    auto it(guid_map_.find(shortcut_id));
     if (it != guid_map_.end()) {
       shortcuts_map_.erase(it->second);
       guid_map_.erase(it);

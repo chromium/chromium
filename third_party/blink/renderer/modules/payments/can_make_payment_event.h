@@ -7,10 +7,10 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/modules/payments/can_make_payment_event_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_details_modifier.h"
-#include "third_party/blink/renderer/modules/payments/payment_method_data.h"
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -20,7 +20,7 @@ class AtomicString;
 
 namespace blink {
 
-class RespondWithObserver;
+class CanMakePaymentRespondWithObserver;
 class ScriptState;
 
 class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
@@ -31,13 +31,17 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
                                      const CanMakePaymentEventInit*);
   static CanMakePaymentEvent* Create(const AtomicString& type,
                                      const CanMakePaymentEventInit*,
-                                     RespondWithObserver*,
+                                     CanMakePaymentRespondWithObserver*,
                                      WaitUntilObserver*);
 
   CanMakePaymentEvent(const AtomicString& type,
                       const CanMakePaymentEventInit*,
-                      RespondWithObserver*,
+                      CanMakePaymentRespondWithObserver*,
                       WaitUntilObserver*);
+
+  CanMakePaymentEvent(const CanMakePaymentEvent&) = delete;
+  CanMakePaymentEvent& operator=(const CanMakePaymentEvent&) = delete;
+
   ~CanMakePaymentEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -49,7 +53,7 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String top_origin_;
@@ -57,9 +61,7 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
   HeapVector<Member<PaymentMethodData>> method_data_;
   HeapVector<Member<PaymentDetailsModifier>> modifiers_;
 
-  Member<RespondWithObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanMakePaymentEvent);
+  Member<CanMakePaymentRespondWithObserver> observer_;
 };
 
 }  // namespace blink

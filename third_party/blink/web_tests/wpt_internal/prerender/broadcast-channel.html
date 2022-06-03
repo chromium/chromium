@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>Same-origin prerendering can access the BroadcastChannel API</title>
+<meta name="timeout" content="long">
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+
+promise_test(async t => {
+  // The key used for storing a test result in the server.
+  const key = token();
+
+  const bc = new BroadcastChannel('prerender-channel');
+  const testReadText = "initiator writes to the broadcast channel";
+  const testWriteText = "prerender writes to the broadcast channel";
+  const gotMessage = new Promise(resolve => {
+    bc.addEventListener('message', e => {
+      resolve(e.data);
+    });
+  });
+
+  // Start prerendering a page that attempts to access the BroadcastChannel API.
+  startPrerendering(`resources/broadcast-channel-access.html?key=${key}`);
+
+  // Wait until the prerendered page connected to the channel.
+  const value = await nextValueFromServer(key);
+  assert_equals(
+    value, 'channel set up',
+    'Prerendering page should be able to create Broadcast Channel');
+
+  bc.postMessage(testReadText);
+  const testReadResult = await nextValueFromServer(key);
+  assert_equals(
+    testReadResult, testReadText,
+    'Prerendering page should be able to read data from Broadcast Channel'
+  );
+
+  const testWriteResult = await gotMessage;
+  assert_equals(
+    testWriteResult, testWriteText,
+    'Prerendering page should be able to write to Broadcast Channel');
+  bc.close();
+}, 'Prerendering pages should be able to access the BroadcastChannel API');
+
+</script>
+</body>

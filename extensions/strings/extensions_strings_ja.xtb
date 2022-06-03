@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ランダムな RSA 秘密鍵を生成できませんでした。</translation>
 <translation id="1445572445564823378">この拡張機能によって <ph name="PRODUCT_NAME" /> の速度が低下しています。<ph name="PRODUCT_NAME" /> のパフォーマンスを回復するには、この拡張機能を無効にしてください。</translation>
 <translation id="1468038450257740950">WebGL はサポートされていません。</translation>
-<translation id="149347756975725155">拡張機能アイコン「<ph name="ICON" />」を読み込むことができませんでした。</translation>
 <translation id="1803557475693955505">背景ページ「<ph name="BACKGROUND_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="2159915644201199628">画像をデコードできませんでした: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">言語/地域機能は使用されていますが、マニフェストに default_locale が指定されていません。</translation>
@@ -25,7 +24,7 @@
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
 <translation id="388442998277590542">オプション ページ「<ph name="OPTIONS_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="3984413272403535372">拡張機能の署名中にエラーが発生しました。</translation>
-<translation id="39964277676607559">コンテンツ スクリプトの Javascript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
+<translation id="39964277676607559">コンテンツ スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="4115165561519362854">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> バージョン <ph name="EXTENSION_VERSION" /> 以上が要件に指定されています。有効にするにはこのバージョン以上に更新する必要があります。</translation>
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
 <translation id="471800408830181311">秘密鍵を出力できませんでした。</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">秘密鍵を読み取ることができませんでした。</translation>
 <translation id="6391538222494443604">入力ディレクトリが存在している必要があります。</translation>
 <translation id="641087317769093025">拡張機能を解凍できませんでした</translation>
-<translation id="6413453408918378296">アイコン「<ph name="ICON" />」の表示部分が十分ではありません。</translation>
 <translation id="6542618148162044354">「<ph name="APP_NAME" />」が次のデバイスへのアクセスをリクエストしています:</translation>
 <translation id="657064425229075395">バックグラウンド スクリプト「<ph name="BACKGROUND_SCRIPT" />」を読み込めませんでした。</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />、提供元 <ph name="VENDOR_NAME" />（シリアル番号 <ph name="SERIAL_NUMBER" />）</translation>

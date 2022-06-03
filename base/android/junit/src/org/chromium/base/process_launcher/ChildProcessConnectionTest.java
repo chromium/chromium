@@ -4,7 +4,6 @@
 
 package org.chromium.base.process_launcher;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -48,28 +47,27 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChildProcessConnectionTest {
-    private static class ChildServiceConnectionMock
-            implements ChildProcessConnection.ChildServiceConnection {
+    private static class ChildServiceConnectionMock implements ChildServiceConnection {
         private final Intent mBindIntent;
-        private final ChildProcessConnection.ChildServiceConnectionDelegate mDelegate;
+        private final ChildServiceConnectionDelegate mDelegate;
         private boolean mBound;
         private int mGroup;
         private int mImportanceInGroup;
 
         public ChildServiceConnectionMock(
-                Intent bindIntent, ChildProcessConnection.ChildServiceConnectionDelegate delegate) {
+                Intent bindIntent, ChildServiceConnectionDelegate delegate) {
             mBindIntent = bindIntent;
             mDelegate = delegate;
         }
 
         @Override
-        public boolean bind() {
+        public boolean bindServiceConnection() {
             mBound = true;
             return true;
         }
 
         @Override
-        public void unbind() {
+        public void unbindServiceConnection() {
             mBound = false;
         }
 
@@ -82,6 +80,11 @@ public class ChildProcessConnectionTest {
         public void updateGroupImportance(int group, int importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
+        }
+
+        @Override
+        public void retire() {
+            mBound = false;
         }
 
         public void notifyServiceConnected(IBinder service) {
@@ -105,13 +108,11 @@ public class ChildProcessConnectionTest {
         }
     };
 
-    private final ChildProcessConnection.ChildServiceConnectionFactory mServiceConnectionFactory =
-            new ChildProcessConnection.ChildServiceConnectionFactory() {
+    private final ChildServiceConnectionFactory mServiceConnectionFactory =
+            new ChildServiceConnectionFactory() {
                 @Override
-                public ChildProcessConnection.ChildServiceConnection createConnection(
-                        Intent bindIntent, int bindFlags,
-                        ChildProcessConnection.ChildServiceConnectionDelegate delegate,
-                        String instanceName) {
+                public ChildServiceConnection createConnection(Intent bindIntent, int bindFlags,
+                        ChildServiceConnectionDelegate delegate, String instanceName) {
                     ChildServiceConnectionMock connection =
                             spy(new ChildServiceConnectionMock(bindIntent, delegate));
                     if (mFirstServiceConnection == null) {
@@ -128,6 +129,9 @@ public class ChildProcessConnectionTest {
     @Mock
     private ChildProcessConnection.ConnectionCallback mConnectionCallback;
 
+    @Mock
+    private ChildProcessConnection.ZygoteInfoCallback mZygoteInfoCallback;
+
     private IChildProcessService mIChildProcessService;
 
     private Binder mChildProcessServiceBinder;
@@ -138,7 +142,6 @@ public class ChildProcessConnectionTest {
     // Parameters captured from the IChildProcessService.setupConnection() call
     private Bundle mConnectionBundle;
     private IParentProcess mConnectionParentProcess;
-    private IBinder mConnectionIBinderCallback;
 
     @Before
     public void setUp() throws RemoteException {
@@ -151,7 +154,6 @@ public class ChildProcessConnectionTest {
             public Void answer(InvocationOnMock invocation) {
                 mConnectionBundle = (Bundle) invocation.getArgument(0);
                 mConnectionParentProcess = (IParentProcess) invocation.getArgument(1);
-                mConnectionIBinderCallback = (IBinder) invocation.getArgument(2);
                 return null;
             }
         })
@@ -166,16 +168,24 @@ public class ChildProcessConnectionTest {
 
     private ChildProcessConnection createDefaultTestConnection() {
         return createTestConnection(false /* bindToCaller */, false /* bindAsExternalService */,
-                null /* serviceBundle */);
+                null /* serviceBundle */, false /* useFallback */);
     }
 
-    private ChildProcessConnection createTestConnection(
-            boolean bindToCaller, boolean bindAsExternalService, Bundle serviceBundle) {
+    private ChildProcessConnection createTestConnection(boolean bindToCaller,
+            boolean bindAsExternalService, Bundle serviceBundle, boolean useFallback) {
         String packageName = "org.chromium.test";
         String serviceName = "TestService";
+        String fallbackServiceName = "TestFallbackService";
         return new ChildProcessConnection(null /* context */,
-                new ComponentName(packageName, serviceName), bindToCaller, bindAsExternalService,
-                serviceBundle, mServiceConnectionFactory, null /* instanceName */);
+                new ComponentName(packageName, serviceName),
+                useFallback ? new ComponentName(packageName, fallbackServiceName) : null,
+                bindToCaller, bindAsExternalService, serviceBundle, mServiceConnectionFactory,
+                null /* instanceName */);
+    }
+
+    private void sendPid(int pid) throws RemoteException {
+        mConnectionParentProcess.finishSetupConnection(
+                pid, 0 /* zygotePid */, -1 /* zygoteStartupTimeMillis */, null /* relroBundle */);
     }
 
     @Test
@@ -200,8 +210,8 @@ public class ChildProcessConnectionTest {
         String stringValue = "thirty four";
         serviceBundle.putString(stringKey, stringValue);
 
-        ChildProcessConnection connection = createTestConnection(
-                false /* bindToCaller */, false /* bindAsExternalService */, serviceBundle);
+        ChildProcessConnection connection = createTestConnection(false /* bindToCaller */,
+                false /* bindAsExternalService */, serviceBundle, false /* useFallback */);
         // Start the connection without the ChildServiceConnection connecting.
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
         assertNotNull(mFirstServiceConnection);
@@ -234,9 +244,9 @@ public class ChildProcessConnectionTest {
     public void testServiceStartsAndFailsToBind() {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        // Note we use doReturn so the actual bind() method is not called (it would with
-        // when(mFirstServiceConnection.bind()).thenReturn(false).
-        doReturn(false).when(mFirstServiceConnection).bind();
+        // Note we use doReturn so the actual bindServiceConnection() method is not called (it would
+        // with when(mFirstServiceConnection.bindServiceConnection()).thenReturn(false).
+        doReturn(false).when(mFirstServiceConnection).bindServiceConnection();
         connection.start(false /* useStrongBinding */, mServiceCallback);
 
         Assert.assertFalse(connection.isModerateBindingBound());
@@ -272,8 +282,9 @@ public class ChildProcessConnectionTest {
 
     @Test
     public void testNotBoundToCaller() throws RemoteException {
-        ChildProcessConnection connection = createTestConnection(false /* bindToCaller */,
-                false /* bindAsExternalService */, null /* serviceBundle */);
+        ChildProcessConnection connection =
+                createTestConnection(false /* bindToCaller */, false /* bindAsExternalService */,
+                        null /* serviceBundle */, false /* useFallback */);
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
@@ -281,39 +292,41 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, never()).bindToCaller();
+        verify(mIChildProcessService, never()).bindToCaller(any());
     }
 
     @Test
     public void testBoundToCallerSuccess() throws RemoteException {
-        ChildProcessConnection connection = createTestConnection(true /* bindToCaller */,
-                false /* bindAsExternalService */, null /* serviceBundle */);
+        ChildProcessConnection connection =
+                createTestConnection(true /* bindToCaller */, false /* bindAsExternalService */,
+                        null /* serviceBundle */, false /* useFallback */);
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
-        when(mIChildProcessService.bindToCaller()).thenReturn(true);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         // Service is started and bindToCallback is called.
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, times(1)).bindToCaller();
+        verify(mIChildProcessService, times(1)).bindToCaller(any());
     }
 
     @Test
     public void testBoundToCallerFailure() throws RemoteException {
-        ChildProcessConnection connection = createTestConnection(true /* bindToCaller */,
-                false /* bindAsExternalService */, null /* serviceBundle */);
+        ChildProcessConnection connection =
+                createTestConnection(true /* bindToCaller */, false /* bindAsExternalService */,
+                        null /* serviceBundle */, false /* useFallback */);
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
         // Pretend bindToCaller returns false, i.e. the service is already bound to a different
         // service.
-        when(mIChildProcessService.bindToCaller()).thenReturn(false);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(false);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         // Service fails to start.
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, times(1)).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, times(1)).bindToCaller();
+        verify(mIChildProcessService, times(1)).bindToCaller(any());
     }
 
     @Test
@@ -321,13 +334,13 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
-        connection.setupConnection(
-                null /* connectionBundle */, null /* callback */, mConnectionCallback);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
         verify(mConnectionCallback, never()).onConnected(any());
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
-        mConnectionParentProcess.sendPid(34);
+        sendPid(34);
         verify(mConnectionCallback, times(1)).onConnected(connection);
     }
 
@@ -336,17 +349,115 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
-        connection.setupConnection(
-                null /* connectionBundle */, null /* callback */, mConnectionCallback);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
         verify(mConnectionCallback, never()).onConnected(any());
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
 
-        mConnectionParentProcess.sendPid(34);
+        sendPid(34);
         assertEquals(34, connection.getPid());
-        mConnectionParentProcess.sendPid(543);
+        sendPid(543);
         assertEquals(34, connection.getPid());
+    }
+
+    @Test
+    public void testZygotePidSaved() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
+        verify(mConnectionCallback, never()).onConnected(any());
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+
+        mConnectionParentProcess.finishSetupConnection(123 /* pid */, 456 /* zygotePid = */,
+                789 /* zygoteStartupTimeMillis */, null /* relroBundle */);
+        assertTrue(connection.hasUsableZygoteInfo());
+        assertEquals(456, connection.getZygotePid());
+    }
+
+    @Test
+    public void testTwoZygoteInfosOnlyOneValid() throws RemoteException {
+        // Set up |connection1|.
+        ChildProcessConnection connection1 = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection1.start(true /* useStrongBinding */, null /* serviceCallback */);
+        connection1.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+        assertNotNull(mFirstServiceConnection);
+        mConnectionParentProcess.finishSetupConnection(125 /* pid */, 0 /* zygotePid */,
+                -1 /* zygoteStartupTimeMillis */, null /* relroBundle */);
+
+        // Allow the following setupConnection() to create a new service connection for
+        // |connection2|.
+        mFirstServiceConnection = null;
+
+        // Set up |connection2|.
+        ChildProcessConnection connection2 = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection2.start(false /* useStrongBinding */, null /* serviceCallback */);
+        connection2.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+        assertNotNull(mFirstServiceConnection);
+
+        mConnectionParentProcess.finishSetupConnection(126, /* zygotePid = */ 300,
+                /* zygoteStartupTimeMillis = */ -1, /* relroBundle = */ null);
+        assertTrue(connection2.hasUsableZygoteInfo());
+        assertEquals(300, connection2.getZygotePid());
+        assertFalse(connection1.hasUsableZygoteInfo());
+    }
+
+    @Test
+    public void testInvokesZygoteCallback() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, mZygoteInfoCallback);
+        verify(mConnectionCallback, never()).onConnected(any());
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+
+        Bundle relroBundle = new Bundle();
+        mConnectionParentProcess.finishSetupConnection(123 /* pid */, 456 /* zygotePid = */,
+                789 /* zygoteStartupTimeMillis */, relroBundle);
+        assertTrue(connection.hasUsableZygoteInfo());
+        assertEquals(456, connection.getZygotePid());
+        verify(mZygoteInfoCallback, times(1)).onReceivedZygoteInfo(connection, relroBundle);
+
+        connection.consumeZygoteBundle(relroBundle);
+        verify(mIChildProcessService, times(1)).consumeRelroBundle(relroBundle);
+    }
+
+    @Test
+    public void testConsumeZygoteBundle() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, mZygoteInfoCallback);
+        verify(mConnectionCallback, never()).onConnected(any());
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+        Bundle relroBundle = new Bundle();
+        mConnectionParentProcess.finishSetupConnection(123 /* pid */, 456 /* zygotePid = */,
+                789 /* zygoteStartupTimeMillis */, relroBundle);
+
+        verify(mIChildProcessService, never()).consumeRelroBundle(any());
+        connection.consumeZygoteBundle(relroBundle);
+        verify(mIChildProcessService, times(1)).consumeRelroBundle(relroBundle);
     }
 
     @Test
@@ -355,12 +466,12 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
-        connection.setupConnection(
-                null /* connectionBundle */, null /* callback */, mConnectionCallback);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
         verify(mConnectionCallback, never()).onConnected(any());
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
-        mConnectionParentProcess.sendPid(34);
+        sendPid(34);
         verify(mConnectionCallback, times(1)).onConnected(connection);
     }
 
@@ -370,18 +481,18 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
-        connection.setupConnection(
-                null /* connectionBundle */, null /* callback */, mConnectionCallback);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
         verify(mConnectionCallback, never()).onConnected(any());
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
-        mConnectionParentProcess.sendPid(34);
+        sendPid(34);
         verify(mConnectionCallback, times(1)).onConnected(connection);
 
         // Add strong binding so that connection is oom protected.
-        connection.removeModerateBinding();
+        connection.removeModerateBinding(false);
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
-        connection.addModerateBinding();
+        connection.addModerateBinding(false);
         assertEquals(ChildBindingState.MODERATE, connection.bindingStateCurrentOrWhenDied());
         connection.addStrongBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
@@ -394,86 +505,216 @@ public class ChildProcessConnectionTest {
     }
 
     @Test
-    public void testBindingStateCounts() {
-        ChildProcessConnection.resetBindingStateCountsForTesting();
-        ChildProcessConnection connection0 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock0 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-        ChildProcessConnection connection1 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock1 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-        ChildProcessConnection connection2 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock2 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 0});
-
-        connection0.start(false /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 0});
-
-        connection1.start(true /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 1});
-
-        connection2.start(false /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        Binder binder0 = new Binder();
-        Binder binder1 = new Binder();
-        Binder binder2 = new Binder();
-        binder0.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        binder1.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        binder2.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        connectionMock0.notifyServiceConnected(binder0);
-        connectionMock1.notifyServiceConnected(binder1);
-        connectionMock2.notifyServiceConnected(binder2);
-        ShadowLooper.runUiThreadTasks();
-
-        // Add and remove moderate binding works as expected.
-        connection2.removeModerateBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 1, 0, 1});
-        connection2.addModerateBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        // Add and remove strong binding works as expected.
-        connection0.addStrongBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        connection0.removeStrongBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        // Stopped connection should no longe update.
-        connection0.stop();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        assertArrayEquals(
-                connection1.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 0});
-
-        connection2.removeModerateBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        assertArrayEquals(
-                connection1.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 1, 0, 0});
-    }
-
-    @Test
-    public void testUpdateGroupImportanceSmoke() {
+    public void testUpdateGroupImportanceSmoke() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.updateGroupImportance(1, 2);
         assertEquals(1, connection.getGroup());
         assertEquals(2, connection.getImportanceInGroup());
-        // Expect a important, moderate and waived bindings.
-        assertEquals(3, mMockConnections.size());
+        assertEquals(4, mMockConnections.size());
         // Group should be set on the wavied (last) binding.
         ChildServiceConnectionMock mock = mMockConnections.get(mMockConnections.size() - 1);
         assertEquals(1, mock.getGroup());
         assertEquals(2, mock.getImportanceInGroup());
+    }
+
+    @Test
+    public void testExceptionDuringInit() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
+        verify(mConnectionCallback, never()).onConnected(any());
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+        sendPid(34);
+        verify(mConnectionCallback, times(1)).onConnected(connection);
+
+        String exceptionString = "test exception string";
+        mConnectionParentProcess.reportExceptionInInit(exceptionString);
+        ShadowLooper.runUiThreadTasks();
+        Assert.assertEquals(exceptionString, connection.getExceptionDuringInit());
+        Assert.assertFalse(mFirstServiceConnection.isBound());
+    }
+
+    @Test
+    public void testFallback() throws RemoteException {
+        Bundle serviceBundle = new Bundle();
+        final String intKey = "org.chromium.myInt";
+        final int intValue = 34;
+        serviceBundle.putInt(intKey, intValue);
+
+        ChildProcessConnection connection = createTestConnection(false /* bindToCaller */,
+                false /* bindAsExternalService */, serviceBundle, true /* useFallback */);
+        assertNotNull(mFirstServiceConnection);
+        connection.start(false /* useStrongBinding */, mServiceCallback);
+
+        Assert.assertEquals(4, mMockConnections.size());
+        boolean anyServiceConnectionBound = false;
+        for (ChildServiceConnectionMock serviceConnection : mMockConnections) {
+            anyServiceConnectionBound = anyServiceConnectionBound || serviceConnection.isBound();
+        }
+        Assert.assertTrue(anyServiceConnectionBound);
+        verify(mServiceCallback, never()).onChildStarted();
+        verify(mServiceCallback, never()).onChildStartFailed(any());
+        verify(mServiceCallback, never()).onChildProcessDied(any());
+        {
+            Intent bindIntent = mFirstServiceConnection.getBindIntent();
+            assertNotNull(bindIntent);
+            assertEquals(intValue, bindIntent.getIntExtra(intKey, -1));
+            Assert.assertEquals("TestService", bindIntent.getComponent().getClassName());
+        }
+
+        connection.setupConnection(null /* connectionBundle */, null /* callback */,
+                mConnectionCallback, null /* zygoteInfoCallback */);
+
+        // Do not call onServiceConnected. Simulate timeout with ShadowLooper.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mServiceCallback, never()).onChildStarted();
+        verify(mServiceCallback, never()).onChildStartFailed(any());
+        verify(mServiceCallback, never()).onChildProcessDied(any());
+
+        Assert.assertEquals(8, mMockConnections.size());
+        // First 4 should be unbound now.
+        for (int i = 0; i < 4; ++i) {
+            verify(mMockConnections.get(i), times(1)).retire();
+            Assert.assertFalse(mMockConnections.get(i).isBound());
+        }
+        // New connection for fallback service should be bound.
+        ChildServiceConnectionMock boundServiceConnection = null;
+        for (int i = 4; i < 8; ++i) {
+            if (mMockConnections.get(i).isBound()) {
+                boundServiceConnection = mMockConnections.get(i);
+            }
+            Intent bindIntent = mMockConnections.get(i).getBindIntent();
+            assertNotNull(bindIntent);
+            assertEquals(intValue, bindIntent.getIntExtra(intKey, -1));
+            Assert.assertEquals("TestFallbackService", bindIntent.getComponent().getClassName());
+        }
+        Assert.assertNotNull(boundServiceConnection);
+
+        // Complete connection.
+        boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        verify(mServiceCallback, times(1)).onChildStarted();
+        verify(mServiceCallback, never()).onChildStartFailed(any());
+        verify(mServiceCallback, never()).onChildProcessDied(any());
+    }
+
+    @Test
+    public void testModerateWaiveCpuPriority() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        Assert.assertFalse(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        Assert.assertFalse(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+    }
+
+    @Test
+    public void testModerateWaiveCpuPriorityMixedWithModerate() throws RemoteException {
+        // Test that the waive cpu connection should not be bound if the strong or moderate
+        // bindings are bound.
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(false /* waiveCpuPriority */);
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+    }
+
+    @Test
+    public void testModerateWaiveCpuPriorityMixedWithStrong() throws RemoteException {
+        // Test that the waive cpu connection should not be bound if the strong or moderate
+        // bindings are bound.
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+        ChildServiceConnectionMock strongConnection = mMockConnections.get(2);
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addStrongBinding();
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeStrongBinding();
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.addStrongBinding();
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeStrongBinding();
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
     }
 }

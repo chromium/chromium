@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {

@@ -12,7 +12,9 @@
 // boundary point marker "^".
 //
 // |tester| is either name with parameter of execCommand or function taking
-// one parameter |Selection|.
+// up to two parameters: |selection|, and |testRunner|. The |testRunner| is for
+// the frame in which the test is run, and allows the |tester| to inject test
+// behaviour into the frame, such as execCommand().
 //
 // |expectedText| is an HTML fragment text containing at most one focus marker
 // and anchor marker. If resulting selection is none, you don't need to have
@@ -761,8 +763,50 @@ class Sample {
   /** @return {!HTMLDocument} */
   get document() { return this.document_; }
 
+  /** @return {!DomWindow} */
+  get window() { return this.iframe_.contentWindow; }
+
   /** @return {!Selection} */
   get selection() { return this.selection_; }
+
+  /**
+   * @public
+   * Enables or disables the test runner's spell checker.
+   */
+  setMockSpellCheckerEnabled(enabled) {
+    this.iframe_.contentWindow.eval(
+      "testRunner.setMockSpellCheckerEnabled(" + enabled + ");");
+  }
+
+  /**
+   * @public
+   * Sets the callback to run when spell checks are resolved.
+   */
+  setSpellCheckResolvedCallback(resolved_cb) {
+    var add = resolved_cb && !this.listener_;
+    var remove = !resolved_cb && this.listener_;
+    if (add) {
+      this.listener_ = (e) => {
+        if (e.data != "resolved_spellcheck")
+          return;
+        resolved_cb();
+      };
+      window.addEventListener("message", this.listener_, false);
+      this.iframe_.contentWindow.eval(
+         "testRunner.setSpellCheckResolvedCallback(() => { \
+           window.parent.postMessage('resolved_spellcheck', '*'); \
+         });");
+    } else if (remove) {
+      window.removeEventListener("message", this.listener_, false);
+      this.listener_ = null;
+    }
+  }
+
+  /**
+   * @public
+   * @param {string} JS code to run in the Sample's iframe.
+   */
+  eval(string) { this.iframe_.window.eval(string); }
 
   /** @return {string} */
   static get playgroundId() { return 'playground'; }
@@ -845,8 +889,6 @@ class Sample {
    * @public
    */
   reset() {
-    if (window.internals && internals.isOverwriteModeEnabled(this.document_))
-      internals.toggleOverwriteModeEnabled(this.document_);
     this.document_.documentElement.innerHTML = '<head></head><body></body>';
     this.selection.removeAllRanges();
     this.iframe_.style.display = 'none';
@@ -949,28 +991,13 @@ function commonPrefixOf(str1, str2) {
  * @param {function(!Selection)|string} tester
  * @param {string} expectedText
  * @param {Object=} opt_options
- * @return {!Sample}
+ * @return {!Sample|!Promise}
  */
 function assertSelectionAndReturnSample(
     passedInputText, tester, passedExpectedText, opt_options = {}) {
-  const kDescription = 'description';
-  const kDumpAs = 'dumpAs';
-  const kRemoveSampleIfSucceeded = 'removeSampleIfSucceeded';
-  const kDumpFromRoot = 'dumpFromRoot';
   /** @type {!Object} */
   const options = typeof(opt_options) === 'string'
       ? {description: opt_options} : opt_options;
-  /** @type {string} */
-  const description = kDescription in options
-      ? options[kDescription] : assembleDescription();
-  /** @type {boolean} */
-  const removeSampleIfSucceeded = kRemoveSampleIfSucceeded in options
-      ? !!options[kRemoveSampleIfSucceeded] : true;
-  /** @type {DumpAs} */
-  const dumpAs = options[kDumpAs] || DumpAs.DOM_TREE;
-  /** @type {boolean} */
-  const dumpFromRoot = options[kDumpFromRoot] || false;
-
   const inputText = (() => {
     if (typeof(passedInputText) === 'string')
       return passedInputText;
@@ -989,14 +1016,42 @@ function assertSelectionAndReturnSample(
 
   checkExpectedText(expectedText);
   const sample = new Sample(inputText);
-  if (typeof(tester) === 'function') {
-    tester.call(window, sample.selection);
-  } else if (typeof(tester) === 'string') {
-    const strings = tester.split(/ (.+)/);
-    sample.document.execCommand(strings[0], false, strings[1]);
-  } else {
+  const result = (() => {
+    if (typeof(tester) === 'function')
+      return tester.call(window, sample.selection, sample.window.testRunner);
+    if (typeof(tester) === 'string') {
+      const strings = tester.split(/ (.+)/);
+      return sample.document.execCommand(strings[0], false, strings[1]);
+    }
     throw new Error(`Invalid tester: ${tester}`);
-  }
+  })();
+
+  if (result instanceof Promise)
+    return result.then(() => getResult(sample, expectedText, options));
+  return getResult(sample, expectedText, options);
+}
+
+/**
+ * @param {!Sample} Sample
+ * @param {string} expectedText
+ * @param {Object} options
+ * @return {!Sample}
+ */
+function getResult(sample, expectedText, options) {
+  const kDescription = 'description';
+  const kDumpAs = 'dumpAs';
+  const kRemoveSampleIfSucceeded = 'removeSampleIfSucceeded';
+  const kDumpFromRoot = 'dumpFromRoot';
+  /** @type {string} */
+  const description = kDescription in options
+      ? options[kDescription] : assembleDescription();
+  /** @type {boolean} */
+  const removeSampleIfSucceeded = kRemoveSampleIfSucceeded in options
+      ? !!options[kRemoveSampleIfSucceeded] : true;
+  /** @type {DumpAs} */
+  const dumpAs = options[kDumpAs] || DumpAs.DOM_TREE;
+  /** @type {boolean} */
+  const dumpFromRoot = options[kDumpFromRoot] || false;
 
   /** @type {!Traversal} */
   const traversal = (() => {
@@ -1041,7 +1096,8 @@ function assertSelectionAndReturnSample(
  */
 function assertSelection(
   passedInputText, tester, passedExpectedText, opt_options) {
-    assertSelectionAndReturnSample(passedInputText, tester, passedExpectedText, opt_options);
+    assertSelectionAndReturnSample(
+        passedInputText, tester, passedExpectedText, opt_options);
 }
 
 /**
@@ -1056,6 +1112,15 @@ function selectionTest(inputText, tester, expectedText, opt_options,
   const description = typeof(opt_options) === 'string' ? opt_options
                                                        : opt_description;
   const options = typeof(opt_options) === 'string' ? undefined : opt_options;
+
+  if (tester.constructor.name === 'AsyncFunction') {
+    promise_test(
+        () => {
+            return assertSelectionAndReturnSample(
+                inputText, tester, expectedText, options);
+        }, description);
+    return;
+  }
   test(() => assertSelection(inputText, tester, expectedText, options),
        description);
 }

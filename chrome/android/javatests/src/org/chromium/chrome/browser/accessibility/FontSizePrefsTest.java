@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.accessibility;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,10 +15,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs.FontSizePrefsObserver;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -42,10 +43,9 @@ public class FontSizePrefsTest {
     }
 
     private void resetSharedPrefs() {
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        editor.remove(FontSizePrefs.PREF_USER_SET_FORCE_ENABLE_ZOOM);
-        editor.remove(FontSizePrefs.PREF_USER_FONT_SCALE_FACTOR);
-        editor.apply();
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        prefs.removeKey(ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM);
+        prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
     }
 
     @Test
@@ -148,8 +148,8 @@ public class FontSizePrefsTest {
 
         // Delete PREF_USER_FONT_SCALE_FACTOR. This simulates the condition just after upgrading to
         // M51, when userFontScaleFactor was added.
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        editor.remove(FontSizePrefs.PREF_USER_FONT_SCALE_FACTOR).apply();
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
 
         // Intial userFontScaleFactor should be set to fontScaleFactor / systemFontScale.
         Assert.assertEquals(1.5f, getUserFontScaleFactor(), EPSILON);

@@ -8,12 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_violation_reporting_policy.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 
 namespace blink {
 
@@ -31,16 +32,16 @@ class CORE_EXPORT SubresourceFilter final
   ~SubresourceFilter();
 
   bool AllowLoad(const KURL& resource_url,
-                 mojom::RequestContextType,
-                 SecurityViolationReportingPolicy);
+                 mojom::blink::RequestContextType,
+                 ReportingDisposition);
   bool AllowWebSocketConnection(const KURL&);
 
   // Returns if |resource_url| is an ad resource.
-  bool IsAdResource(const KURL& resource_url, mojom::RequestContextType);
+  bool IsAdResource(const KURL& resource_url, mojom::blink::RequestContextType);
   // Reports the resource request id as an ad to the |subresource_filter_|.
   void ReportAdRequestId(int request_id);
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   void ReportLoad(const KURL& resource_url,
@@ -50,7 +51,7 @@ class CORE_EXPORT SubresourceFilter final
   std::unique_ptr<WebDocumentSubresourceFilter> subresource_filter_;
 
   // Save the last resource check's result in the single element cache.
-  std::pair<std::pair<KURL, mojom::RequestContextType>,
+  std::pair<std::pair<KURL, mojom::blink::RequestContextType>,
             WebDocumentSubresourceFilter::LoadPolicy>
       last_resource_check_result_;
 };

@@ -28,37 +28,37 @@
 
 namespace blink {
 
-#define TEST_INSIDE_RECT(r, x, y, w, h)                    \
-  EXPECT_TRUE(r.Contains(IntPoint(x, y)));                 \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w - 1, y)));         \
-  EXPECT_TRUE(r.Contains(IntPoint(x, y + h - 1)));         \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w - 1, y + h - 1))); \
-  EXPECT_TRUE(r.Contains(IntPoint(x, y + h / 2)));         \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w - 1, y + h / 2))); \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w / 2, y)));         \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w / 2, y + h - 1))); \
-  EXPECT_TRUE(r.Contains(IntPoint(x + w / 2, y + h / 2)));
+#define TEST_INSIDE_RECT(r, x, y, w, h)                      \
+  EXPECT_TRUE(r.Contains(gfx::Point(x, y)));                 \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w - 1, y)));         \
+  EXPECT_TRUE(r.Contains(gfx::Point(x, y + h - 1)));         \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w - 1, y + h - 1))); \
+  EXPECT_TRUE(r.Contains(gfx::Point(x, y + h / 2)));         \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w - 1, y + h / 2))); \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w / 2, y)));         \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w / 2, y + h - 1))); \
+  EXPECT_TRUE(r.Contains(gfx::Point(x + w / 2, y + h / 2)));
 
-#define TEST_LEFT_OF_RECT(r, x, y, w, h)        \
-  EXPECT_FALSE(r.Contains(IntPoint(x - 1, y))); \
-  EXPECT_FALSE(r.Contains(IntPoint(x - 1, y + h - 1)));
+#define TEST_LEFT_OF_RECT(r, x, y, w, h)          \
+  EXPECT_FALSE(r.Contains(gfx::Point(x - 1, y))); \
+  EXPECT_FALSE(r.Contains(gfx::Point(x - 1, y + h - 1)));
 
-#define TEST_RIGHT_OF_RECT(r, x, y, w, h)       \
-  EXPECT_FALSE(r.Contains(IntPoint(x + w, y))); \
-  EXPECT_FALSE(r.Contains(IntPoint(x + w, y + h - 1)));
+#define TEST_RIGHT_OF_RECT(r, x, y, w, h)         \
+  EXPECT_FALSE(r.Contains(gfx::Point(x + w, y))); \
+  EXPECT_FALSE(r.Contains(gfx::Point(x + w, y + h - 1)));
 
-#define TEST_TOP_OF_RECT(r, x, y, w, h)         \
-  EXPECT_FALSE(r.Contains(IntPoint(x, y - 1))); \
-  EXPECT_FALSE(r.Contains(IntPoint(x + w - 1, y - 1)));
+#define TEST_TOP_OF_RECT(r, x, y, w, h)           \
+  EXPECT_FALSE(r.Contains(gfx::Point(x, y - 1))); \
+  EXPECT_FALSE(r.Contains(gfx::Point(x + w - 1, y - 1)));
 
-#define TEST_BOTTOM_OF_RECT(r, x, y, w, h)      \
-  EXPECT_FALSE(r.Contains(IntPoint(x, y + h))); \
-  EXPECT_FALSE(r.Contains(IntPoint(x + w - 1, y + h)));
+#define TEST_BOTTOM_OF_RECT(r, x, y, w, h)        \
+  EXPECT_FALSE(r.Contains(gfx::Point(x, y + h))); \
+  EXPECT_FALSE(r.Contains(gfx::Point(x + w - 1, y + h)));
 
 TEST(RegionTest, containsPoint) {
   Region r;
 
-  EXPECT_FALSE(r.Contains(IntPoint(0, 0)));
+  EXPECT_FALSE(r.Contains(gfx::Point(0, 0)));
 
   r.Unite(IntRect(35, 35, 1, 1));
   TEST_INSIDE_RECT(r, 35, 35, 1, 1);
@@ -75,10 +75,10 @@ TEST(RegionTest, containsPoint) {
   TEST_BOTTOM_OF_RECT(r, 30, 30, 10, 10);
 
   r.Unite(IntRect(31, 40, 10, 10));
-  EXPECT_FALSE(r.Contains(IntPoint(30, 40)));
-  EXPECT_TRUE(r.Contains(IntPoint(31, 40)));
-  EXPECT_FALSE(r.Contains(IntPoint(40, 39)));
-  EXPECT_TRUE(r.Contains(IntPoint(40, 40)));
+  EXPECT_FALSE(r.Contains(gfx::Point(30, 40)));
+  EXPECT_TRUE(r.Contains(gfx::Point(31, 40)));
+  EXPECT_FALSE(r.Contains(gfx::Point(40, 39)));
+  EXPECT_TRUE(r.Contains(gfx::Point(40, 40)));
 
   TEST_INSIDE_RECT(r, 30, 30, 10, 10);
   TEST_LEFT_OF_RECT(r, 30, 30, 10, 10);

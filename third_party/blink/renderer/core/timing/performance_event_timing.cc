@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
@@ -15,13 +18,14 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     DOMHighResTimeStamp start_time,
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
-    bool cancelable) {
+    bool cancelable,
+    Node* target) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(start_time, processing_start);
   DCHECK_LE(processing_start, processing_end);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, start_time, processing_start,
-      processing_end, cancelable);
+      processing_end, cancelable, target);
 }
 
 // static
@@ -31,7 +35,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           entry->startTime(), entry->processingStart(), entry->processingEnd(),
-          entry->cancelable());
+          entry->cancelable(), entry->target());
   first_input->SetDuration(entry->duration());
   return first_input;
 }
@@ -42,12 +46,14 @@ PerformanceEventTiming::PerformanceEventTiming(
     DOMHighResTimeStamp start_time,
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
-    bool cancelable)
+    bool cancelable,
+    Node* target)
     : PerformanceEntry(event_type, start_time, 0.0),
       entry_type_(entry_type),
       processing_start_(processing_start),
       processing_end_(processing_end),
-      cancelable_(cancelable) {}
+      cancelable_(cancelable),
+      target_(target) {}
 
 PerformanceEventTiming::~PerformanceEventTiming() = default;
 
@@ -65,6 +71,18 @@ DOMHighResTimeStamp PerformanceEventTiming::processingEnd() const {
   return processing_end_;
 }
 
+Node* PerformanceEventTiming::target() const {
+  return Performance::CanExposeNode(target_) ? target_ : nullptr;
+}
+
+uint32_t PerformanceEventTiming::interactionId() const {
+  return interaction_id_;
+}
+
+void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
+  interaction_id_ = interaction_id;
+}
+
 void PerformanceEventTiming::SetDuration(double duration) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(0, duration);
@@ -78,8 +96,22 @@ void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddBoolean("cancelable", cancelable_);
 }
 
-void PerformanceEventTiming::Trace(blink::Visitor* visitor) {
+void PerformanceEventTiming::Trace(Visitor* visitor) const {
   PerformanceEntry::Trace(visitor);
+  visitor->Trace(target_);
+}
+
+std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetString("type", name());
+  traced_value->SetInteger("timeStamp", startTime());
+  traced_value->SetInteger("processingStart", processingStart());
+  traced_value->SetInteger("processingEnd", processingEnd());
+  traced_value->SetInteger("duration", duration());
+  traced_value->SetBoolean("cancelable", cancelable());
+  // If int overflows occurs, the static_cast may not work correctly.
+  traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
+  return traced_value;
 }
 
 }  // namespace blink

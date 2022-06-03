@@ -1,0 +1,5 @@
+mixins: "//content/browser/web_package/COMMON_METADATA"
+monorail {
+  component: "Blink>Loader>WebPackaging"
+}
+

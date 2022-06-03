@@ -6,17 +6,16 @@
 #define ASH_ASSISTANT_UI_LOGO_VIEW_LOGO_VIEW_IMPL_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/ui/logo_view/shape/mic_part_shape.h"
-#include "base/macros.h"
 #include "chromeos/assistant/internal/logo_view/input_value_provider/sound_level_input_value_provider.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/logo.h"
 #include "chromeos/assistant/internal/logo_view/state_animator.h"
 #include "chromeos/assistant/internal/logo_view/state_animator_timer_delegate.h"
 #include "chromeos/assistant/internal/logo_view/state_model.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 
 namespace chromeos {
@@ -47,16 +46,18 @@ class LogoViewImpl : public LogoView,
                      public chromeos::assistant::StateAnimatorTimerDelegate,
                      public ui::CompositorAnimationObserver {
  public:
+  METADATA_HEADER(LogoViewImpl);
+
   using Dot = chromeos::assistant::Dot;
   using Logo = chromeos::assistant::Logo;
   using StateAnimator = chromeos::assistant::StateAnimator;
   using StateModel = chromeos::assistant::StateModel;
 
   LogoViewImpl();
+  LogoViewImpl(const LogoViewImpl&) = delete;
+  LogoViewImpl& operator=(const LogoViewImpl&) = delete;
   ~LogoViewImpl() override;
 
-  // LogoView:
-  const char* GetClassName() const override;
   void SetState(State state, bool animate) override;
   void SetSpeechLevel(float speech_level) override;
 
@@ -98,8 +99,6 @@ class LogoViewImpl : public LogoView,
 
   chromeos::assistant::SoundLevelInputValueProvider
       sound_level_input_value_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoViewImpl);
 };
 
 }  // namespace ash

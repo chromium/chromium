@@ -1,0 +1,16 @@
+This test passes if it doesn't crash
+
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+window.onload = () => {
+  window.getSelection().selectAllChildren(document.body);
+  document.querySelector('object').remove();
+  window.find(0);
+};
+</script>
+
+<details>
+  <object id='id6'></object>
+</details>

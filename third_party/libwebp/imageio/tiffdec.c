@@ -156,7 +156,8 @@ int ReadTIFF(const uint8_t* const data, size_t data_size,
              Metadata* const metadata) {
   MyData my_data = { data, (toff_t)data_size, 0 };
   TIFF* tif;
-  uint32_t width, height;
+  uint32_t image_width, image_height, tile_width, tile_height;
+  uint64_t stride;
   uint16_t samples_per_px = 0;
   uint16_t extra_samples = 0;
   uint16_t* extra_samples_ptr = NULL;
@@ -189,15 +190,36 @@ int ReadTIFF(const uint8_t* const data, size_t data_size,
   }
   if (samples_per_px < 3 || samples_per_px > 4) goto End;  // not supported
 
-  if (!(TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width) &&
-        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height))) {
+  if (!(TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &image_width) &&
+        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &image_height))) {
     fprintf(stderr, "Error! Cannot retrieve TIFF image dimensions.\n");
     goto End;
   }
-  if (!ImgIoUtilCheckSizeArgumentsOverflow((uint64_t)width * height,
-                                           sizeof(*raster))) {
+  stride = (uint64_t)image_width * sizeof(*raster);
+  if (!ImgIoUtilCheckSizeArgumentsOverflow(stride, image_height)) {
+    fprintf(stderr, "Error! TIFF image dimension (%d x %d) is too large.\n",
+            image_width, image_height);
     goto End;
   }
+
+  // According to spec, a tile can be bigger than the image. However it should
+  // be a multiple of 16 and not way too large, so check that it's not more
+  // than twice the image size, for dimensions above some arbitrary minimum
+  // 32. We also check that they respect WebP's dimension and memory limit.
+  // Note that a tile can be 6byte/px in some cases. Here we assume
+  // 4byte/px with sizeof(*raster), to be conservative.
+  if (TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tile_width) &&
+      TIFFGetField(tif, TIFFTAG_TILELENGTH, &tile_height)) {
+    if ((tile_width > 32 && tile_width / 2 > image_width) ||
+        (tile_height > 32 && tile_height / 2 > image_height) ||
+        ImgIoUtilCheckSizeArgumentsOverflow(
+            (uint64_t)tile_width * sizeof(*raster), tile_height)) {
+      fprintf(stderr, "Error! TIFF tile dimension (%d x %d) is too large.\n",
+              tile_width, tile_height);
+      goto End;
+    }
+  }
+
   if (samples_per_px > 3 && !TIFFGetField(tif, TIFFTAG_EXTRASAMPLES,
                                           &extra_samples, &extra_samples_ptr)) {
     fprintf(stderr, "Error! Cannot retrieve TIFF ExtraSamples info.\n");
@@ -205,33 +227,32 @@ int ReadTIFF(const uint8_t* const data, size_t data_size,
   }
 
   // _Tiffmalloc uses a signed type for size.
-  alloc_size = (int64_t)((uint64_t)width * height * sizeof(*raster));
+  alloc_size = (int64_t)(stride * image_height);
   if (alloc_size < 0 || alloc_size != (tsize_t)alloc_size) goto End;
 
   raster = (uint32*)_TIFFmalloc((tsize_t)alloc_size);
   if (raster != NULL) {
-    if (TIFFReadRGBAImageOriented(tif, width, height, raster,
+    if (TIFFReadRGBAImageOriented(tif, image_width, image_height, raster,
                                   ORIENTATION_TOPLEFT, 1)) {
-      const int stride = width * sizeof(*raster);
-      pic->width = width;
-      pic->height = height;
+      pic->width = image_width;
+      pic->height = image_height;
       // TIFF data is ABGR
 #ifdef WORDS_BIGENDIAN
-      TIFFSwabArrayOfLong(raster, width * height);
+      TIFFSwabArrayOfLong(raster, image_width * image_height);
 #endif
       // if we have an alpha channel, we must un-multiply from rgbA to RGBA
       if (extra_samples == 1 && extra_samples_ptr != NULL &&
           extra_samples_ptr[0] == EXTRASAMPLE_ASSOCALPHA) {
         uint32_t y;
         uint8_t* tmp = (uint8_t*)raster;
-        for (y = 0; y < height; ++y) {
-          MultARGBRow(tmp, width);
+        for (y = 0; y < image_height; ++y) {
+          MultARGBRow(tmp, image_width);
           tmp += stride;
         }
       }
       ok = keep_alpha
-         ? WebPPictureImportRGBA(pic, (const uint8_t*)raster, stride)
-         : WebPPictureImportRGBX(pic, (const uint8_t*)raster, stride);
+         ? WebPPictureImportRGBA(pic, (const uint8_t*)raster, (int)stride)
+         : WebPPictureImportRGBX(pic, (const uint8_t*)raster, (int)stride);
     }
     _TIFFfree(raster);
   } else {

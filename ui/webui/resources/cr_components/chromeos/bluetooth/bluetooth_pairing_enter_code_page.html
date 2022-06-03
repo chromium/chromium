@@ -1,0 +1,72 @@
+<style include="cr-hidden-style iron-flex">
+  span {
+    background-color: var(--cros-bg-color-dropped-elevation-2);
+    border-radius: 4px;
+    font-size: 20px;
+    height: 40px;
+    text-align: center;
+  }
+
+  span.next {
+    background-color: var(--cros-highlight-color);
+    color: var(--cros-button-label-color-secondary);
+  }
+
+  span.typed {
+    background: var(--cros-bg-color-dropped-elevation-1);
+    color: var(--cros-text-color-secondary);
+  }
+
+  #code {
+    display: flex;
+    flex-wrap: wrap;
+    margin-inline: 30px;
+  }
+
+  #message {
+    margin-bottom: 24px;
+  }
+
+  .center {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .enter {
+    font-weight: 500;
+    margin-bottom: 8px;
+    width: 64px;
+  }
+
+  .key {
+    border-radius: 4px;
+    font-weight: 400;
+    margin: 8px 8px 16px 0;
+    width: 40px;
+  }
+</style>
+<bluetooth-base-page
+    on-pair="onPairClicked_"
+    focus-default
+    button-bar-state="[[buttonBarState_]]">
+  <div slot="page-body" id="pageBody" class="center" aria-live="polite">
+    <div id="message">
+      [[getMessage_(device.*)]]
+    </div>
+    <div id="code" class="layout horizontal center center-justified">
+      <dom-repeat items="[[keys_]]">
+        <template>
+          <span class$="center key [[getKeyClass_(index, numKeysEntered)]]">
+            [[getKeyAt_(index)]]
+          </span>
+        </template>
+      </dom-repeat>
+      <span id="enter"
+          class$="center enter [[getEnterClass_(numKeysEntered, keys_)]]">
+        [[i18n('bluetoothEnterKey')]]
+      </span>
+    </div>
+  </div>
+</bluetooth-base-page>

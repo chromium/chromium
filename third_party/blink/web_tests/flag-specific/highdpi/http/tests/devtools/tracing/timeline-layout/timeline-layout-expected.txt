@@ -1,0 +1,79 @@
+Tests the Timeline API instrumentation of a Layout event
+
+Layout Properties:
+{
+    data : {
+        beginData : {
+            dirtyObjects : 3
+            frame : <string>
+            partialLayout : true
+            stackTrace : <object>
+            totalObjects : 8
+        }
+        endData : {
+            layoutRoots : [
+                {
+                    depth : 4
+                    nodeId : <number>
+                    quads : [
+                        [
+                            12
+                            12
+                            162
+                            12
+                            162
+                            162
+                            12
+                            162
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "Layout"
+}
+Text details for Layout: test://evaluations/0/timeline-layout.js:40
+Layout Properties:
+{
+    data : {
+        beginData : {
+            dirtyObjects : 2
+            frame : <string>
+            partialLayout : true
+            stackTrace : <object>
+            totalObjects : 11
+        }
+        endData : {
+            layoutRoots : [
+                {
+                    depth : 4
+                    nodeId : <number>
+                    quads : [
+                        [
+                            12
+                            162
+                            162
+                            162
+                            162
+                            312
+                            12
+                            312
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "Layout"
+}
+Text details for Layout: test://evaluations/0/timeline-layout.js:40
+

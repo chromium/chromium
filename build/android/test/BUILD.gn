@@ -1,0 +1,95 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/android_nocompile.gni")
+import("missing_symbol_test.gni")
+import("nocompile_gn/nocompile_sources.gni")
+
+if (enable_java_templates) {
+  group("android_nocompile_tests") {
+    testonly = true
+
+    # No-compile tests use an output directory dedicated to no-compile tests.
+    # All test suites use targets in nocompile_gn/BUILD.gn in order to share the
+    # same target output directory and avoid running 'gn gen' for each
+    # android_nocompile_test_suite().
+    deps = [
+      ":android_lint_tests",
+      ":android_lookup_dep_tests",
+    ]
+  }
+
+  android_nocompile_test_suite("android_lint_tests") {
+    # Depend on lint script so that the action is re-run whenever the script is  modified.
+    pydeps = [ "//build/android/gyp/lint.pydeps" ]
+
+    tests = [
+      {
+        target = "nocompile_gn:default_locale_lint_test"
+        nocompile_sources =
+            rebase_path(default_locale_lint_test_nocompile_sources,
+                        "",
+                        "nocompile_gn")
+        expected_compile_output_regex = "Warning:.*DefaultLocale"
+      },
+      {
+        target = "nocompile_gn:new_api_lint_test"
+        nocompile_sources =
+            rebase_path(new_api_lint_test_nocompile_sources, "", "nocompile_gn")
+        expected_compile_output_regex = "Error:.*NewApi"
+      },
+    ]
+  }
+
+  android_nocompile_test_suite("android_lookup_dep_tests") {
+    sources = [ rebase_path(
+            missing_symbol_generated_importer_template_nocompile_source,
+            "",
+            "nocompile_gn") ]
+
+    tests = [
+      {
+        target = "nocompile_gn:import_child_missing_symbol_test_java"
+        nocompile_sources =
+            rebase_path(import_child_missing_symbol_test_nocompile_sources,
+                        "",
+                        "nocompile_gn")
+        expected_compile_output_regex = "error: package test\.missing_symbol\.sub does not exist\nPlease add //build/android/test/nocompile_gn:sub_b_java dep to //build/android/test/nocompile_gn:import_child_missing_symbol_test_java\."
+      },
+      {
+        target = "nocompile_gn:import_parent_missing_symbol_test_java"
+        nocompile_sources = []
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.B\nPlease add //build/android/test/nocompile_gn:b_java dep to //build/android/test/nocompile_gn:import_parent_missing_symbol_test_java\."
+      },
+      {
+        target = "nocompile_gn:import_turbine_missing_symbol_test_java"
+        nocompile_sources =
+            rebase_path(import_turbine_missing_symbol_test_nocompile_sources,
+                        "",
+                        "nocompile_gn")
+        expected_compile_output_regex = "error: symbol not found test\.missing_symbol\.B\nPlease add //build/android/test/nocompile_gn:b_java dep to //build/android/test/nocompile_gn:import_turbine_missing_symbol_test_java\."
+      },
+      {
+        target = "nocompile_gn:prebuilt_missing_symbol_test_java"
+        nocompile_sources = []
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.C\nPlease add //build/android/test/nocompile_gn:c_prebuilt_java dep to //build/android/test/nocompile_gn:prebuilt_missing_symbol_test_java\."
+      },
+      {
+        target = "nocompile_gn:cpp_template_missing_symbol_test_java"
+        nocompile_sources = []
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.D\nPlease add //build/android/test/nocompile_gn:d_java dep to //build/android/test/nocompile_gn:cpp_template_missing_symbol_test_java\."
+      },
+    ]
+  }
+
+  # Tests that builds which use incremental javac are valid.
+  junit_binary("incremental_javac_junit_tests") {
+    sources = [ "../java/test/IncrementalJavacTest.java" ]
+    deps = [
+      "incremental_javac_gn:no_signature_change_prebuilt_java",
+      "//base:base_junit_test_support",
+      "//third_party/junit",
+    ]
+  }
+}

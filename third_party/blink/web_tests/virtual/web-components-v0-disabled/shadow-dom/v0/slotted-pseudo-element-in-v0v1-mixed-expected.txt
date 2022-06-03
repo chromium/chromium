@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 10: Uncaught TypeError: v0host.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL slotted-pseudo-element-in-v0v1-mixed Uncaught TypeError: v0host.createShadowRoot is not a function
-Harness: the test ran to completion.
-

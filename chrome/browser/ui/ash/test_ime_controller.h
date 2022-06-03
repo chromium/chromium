@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_info.h"
@@ -27,6 +28,10 @@ class TestImeController : private ImeControllerResetterForTest,
                           public ash::ImeController {
  public:
   TestImeController();
+
+  TestImeController(const TestImeController&) = delete;
+  TestImeController& operator=(const TestImeController&) = delete;
+
   ~TestImeController() override;
 
   // ash::ImeController:
@@ -43,7 +48,7 @@ class TestImeController : private ImeControllerResetterForTest,
                                         bool is_handwriting_enabled,
                                         bool is_voice_enabled) override;
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                         const base::string16& text) override;
+                         const std::u16string& text) override;
 
   // The most recent values received via mojo.
   std::string current_ime_id_;
@@ -58,9 +63,6 @@ class TestImeController : private ImeControllerResetterForTest,
   bool is_emoji_enabled_ = false;
   bool is_handwriting_enabled_ = false;
   bool is_voice_enabled_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestImeController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_IME_CONTROLLER_H_

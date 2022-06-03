@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Setup audio call
+FAIL Inactivate the audio transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
+FAIL Reactivate the audio transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
+PASS Clean-up
+Harness: the test ran to completion.
+

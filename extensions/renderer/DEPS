@@ -4,11 +4,17 @@ include_rules = [
 
   "+gin",
   "+net/base/backoff_entry.h",
+  "+net/base/net_errors.h",
 
   "+third_party/skia/include/core",
   "+third_party/cld_3",
 
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
+  "+third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h",
+  "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",
   "+third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/strings/grit/blink_strings.h",
@@ -24,6 +30,7 @@ include_rules = [
 
   "+storage/common/file_system",
 
+  "+services/metrics/public/cpp",
   "+services/network/public",
   "+services/service_manager/public/cpp",
 ]
@@ -42,4 +49,8 @@ specific_include_rules = {
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",
   ],
+  # Temporarily allow crash_key; see https://crbug.com/1034755
+  "automation_ax_tree_wrapper.cc": [
+    "+components/crash/core/common/crash_key.h",
+  ]
 }

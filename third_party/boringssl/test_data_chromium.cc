@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 
 // BoringSSL requires a GetTestData function to pick up test data files. By

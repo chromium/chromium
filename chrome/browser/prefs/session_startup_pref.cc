@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -30,7 +31,7 @@ int TypeToPrefValue(SessionStartupPref::Type type) {
 
 void URLListToPref(const base::ListValue* url_list, SessionStartupPref* pref) {
   pref->urls.clear();
-  for (size_t i = 0; i < url_list->GetSize(); ++i) {
+  for (size_t i = 0; i < url_list->GetList().size(); ++i) {
     std::string url_text;
     if (url_list->GetString(i, &url_text)) {
       GURL fixed_url = url_formatter::FixupURL(url_text, std::string());
@@ -57,7 +58,7 @@ void SessionStartupPref::RegisterProfilePrefs(
 
 // static
 SessionStartupPref::Type SessionStartupPref::GetDefaultStartupType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return SessionStartupPref::LAST;
 #else
   return SessionStartupPref::DEFAULT;
@@ -87,7 +88,7 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
     ListPrefUpdate update(prefs, prefs::kURLsToRestoreOnStartup);
     base::ListValue* url_pref_list = update.Get();
     DCHECK(url_pref_list);
-    url_pref_list->Clear();
+    url_pref_list->ClearList();
     for (size_t i = 0; i < pref.urls.size(); ++i) {
       url_pref_list->Set(static_cast<int>(i),
                          std::make_unique<base::Value>(pref.urls[i].spec()));
@@ -96,7 +97,7 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
 }
 
 // static
-SessionStartupPref SessionStartupPref::GetStartupPref(Profile* profile) {
+SessionStartupPref SessionStartupPref::GetStartupPref(const Profile* profile) {
   DCHECK(profile);
 
   // Guest sessions should not store any state, therefore they should never
@@ -107,7 +108,8 @@ SessionStartupPref SessionStartupPref::GetStartupPref(Profile* profile) {
 }
 
 // static
-SessionStartupPref SessionStartupPref::GetStartupPref(PrefService* prefs) {
+SessionStartupPref SessionStartupPref::GetStartupPref(
+    const PrefService* prefs) {
   DCHECK(prefs);
 
   SessionStartupPref pref(
@@ -150,7 +152,7 @@ bool SessionStartupPref::TypeHasRecommendedValue(PrefService* prefs) {
 }
 
 // static
-bool SessionStartupPref::TypeIsDefault(PrefService* prefs) {
+bool SessionStartupPref::TypeIsDefault(const PrefService* prefs) {
   DCHECK(prefs);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);

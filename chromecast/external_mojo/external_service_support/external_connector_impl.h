@@ -5,12 +5,14 @@
 #ifndef CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_EXTERNAL_CONNECTOR_IMPL_H_
 #define CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_EXTERNAL_CONNECTOR_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,25 +22,40 @@ namespace chromecast {
 namespace external_service_support {
 
 class ExternalConnectorImpl : public ExternalConnector {
+  class BrokerConnection;
+
  public:
+  explicit ExternalConnectorImpl(const std::string& broker_path);
   explicit ExternalConnectorImpl(
-      mojo::Remote<external_mojo::mojom::ExternalConnector> connector);
+      scoped_refptr<BrokerConnection> broker_connection);
+  // For in-process connectors only.
   explicit ExternalConnectorImpl(
       mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
-          unbound_state);
+          pending_remote);
+
+  ExternalConnectorImpl(const ExternalConnectorImpl&) = delete;
+  ExternalConnectorImpl& operator=(const ExternalConnectorImpl&) = delete;
+
   ~ExternalConnectorImpl() override;
 
   // ExternalConnector implementation:
-  void SetConnectionErrorCallback(base::OnceClosure callback) override;
+  base::CallbackListSubscription AddConnectionErrorCallback(
+      base::RepeatingClosure callback) override;
   void RegisterService(const std::string& service_name,
                        ExternalService* service) override;
   void RegisterService(
       const std::string& service_name,
       mojo::PendingRemote<external_mojo::mojom::ExternalService> service_remote)
       override;
+  void RegisterServices(const std::vector<std::string>& service_names,
+                        const std::vector<ExternalService*>& services) override;
+  void RegisterServices(
+      std::vector<chromecast::external_mojo::mojom::ServiceInstanceInfoPtr>
+          service_instances_info) override;
   void BindInterface(const std::string& service_name,
                      const std::string& interface_name,
-                     mojo::ScopedMessagePipeHandle interface_pipe) override;
+                     mojo::ScopedMessagePipeHandle interface_pipe,
+                     bool async = true) override;
   std::unique_ptr<ExternalConnector> Clone() override;
   void SendChromiumConnectorRequest(
       mojo::ScopedMessagePipeHandle request) override;
@@ -49,16 +66,24 @@ class ExternalConnectorImpl : public ExternalConnector {
           callback) override;
 
  private:
+  void BindInterfaceImmediately(const std::string& service_name,
+                                const std::string& interface_name,
+                                mojo::ScopedMessagePipeHandle interface_pipe);
+  void Connect();
   void OnMojoDisconnect();
-  bool BindConnectorIfNecessary();
+  void BindConnectorIfNecessary();
 
+  const scoped_refptr<BrokerConnection> broker_connection_;
+
+  int64_t connection_token_ = 0;
+  mojo::PendingRemote<external_mojo::mojom::ExternalConnector> pending_remote_;
   mojo::Remote<external_mojo::mojom::ExternalConnector> connector_;
-  mojo::PendingRemote<external_mojo::mojom::ExternalConnector> unbound_state_;
-  base::OnceClosure connection_error_callback_;
+
+  base::RepeatingClosureList error_closures_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(ExternalConnectorImpl);
+  base::WeakPtrFactory<ExternalConnectorImpl> weak_factory_{this};
 };
 
 }  // namespace external_service_support

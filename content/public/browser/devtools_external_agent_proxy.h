@@ -5,8 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DEVTOOLS_EXTERNAL_AGENT_PROXY_H_
 #define CONTENT_PUBLIC_BROWSER_DEVTOOLS_EXTERNAL_AGENT_PROXY_H_
 
-#include <string>
-
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -15,7 +14,7 @@ namespace content {
 class DevToolsExternalAgentProxy {
  public:
   // Sends the message to the client host.
-  virtual void DispatchOnClientHost(const std::string& message) = 0;
+  virtual void DispatchOnClientHost(base::span<const uint8_t> message) = 0;
 
   // Informs the client that the connection has closed.
   virtual void ConnectionClosed() = 0;

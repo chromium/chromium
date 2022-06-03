@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -32,16 +32,16 @@ MessageReader::~MessageReader() {
 void MessageReader::StartReading(
     P2PStreamSocket* socket,
     const MessageReceivedCallback& message_received_callback,
-    const ReadFailedCallback& read_failed_callback) {
+    ReadFailedCallback read_failed_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!socket_);
   DCHECK(socket);
-  DCHECK(!message_received_callback.is_null());
-  DCHECK(!read_failed_callback.is_null());
+  DCHECK(message_received_callback);
+  DCHECK(read_failed_callback);
 
   socket_ = socket;
   message_received_callback_ = message_received_callback;
-  read_failed_callback_ = read_failed_callback;
+  read_failed_callback_ = std::move(read_failed_callback);
   DoRead();
 }
 
@@ -49,15 +49,14 @@ void MessageReader::DoRead() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't try to read again if there is another read pending or we
   // have messages that we haven't finished processing yet.
-  bool read_succeeded = true;
-  while (read_succeeded && !closed_ && !read_pending_) {
+  while (!closed_ && !read_pending_) {
     read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
     int result = socket_->Read(
-        read_buffer_.get(),
-        kReadBufferSize,
-        base::Bind(&MessageReader::OnRead, weak_factory_.GetWeakPtr()));
+        read_buffer_.get(), kReadBufferSize,
+        base::BindOnce(&MessageReader::OnRead, weak_factory_.GetWeakPtr()));
 
-    HandleReadResult(result, &read_succeeded);
+    if (!HandleReadResult(result))
+      break;
   }
 }
 
@@ -67,33 +66,31 @@ void MessageReader::OnRead(int result) {
   read_pending_ = false;
 
   if (!closed_) {
-    bool read_succeeded;
-    HandleReadResult(result, &read_succeeded);
-    if (read_succeeded)
-      DoRead();
+    HandleReadResult(result);
+    DoRead();
   }
 }
 
-void MessageReader::HandleReadResult(int result, bool* read_succeeded) {
+bool MessageReader::HandleReadResult(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (closed_)
-    return;
-
-  *read_succeeded = true;
+  DCHECK(!closed_);
 
   if (result > 0) {
     OnDataReceived(read_buffer_.get(), result);
-    *read_succeeded = true;
-  } else if (result == net::ERR_IO_PENDING) {
-    read_pending_ = true;
-  } else {
-    // Stop reading after any error.
-    closed_ = true;
-    *read_succeeded = false;
-
-    LOG(ERROR) << "Read() returned error " << result;
-    read_failed_callback_.Run(result);
+    return true;
   }
+
+  if (result == net::ERR_IO_PENDING) {
+    read_pending_ = true;
+    return true;
+  }
+
+  // Stop reading after any error.
+  closed_ = true;
+  LOG(ERROR) << "Read() returned error " << result;
+  std::move(read_failed_callback_).Run(result);
+  // |this| may be deleted.
+  return false;
 }
 
 void MessageReader::OnDataReceived(net::IOBuffer* data, int data_size) {
@@ -109,12 +106,12 @@ void MessageReader::OnDataReceived(net::IOBuffer* data, int data_size) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&MessageReader::RunCallback, weak_factory_.GetWeakPtr(),
-                       base::Passed(base::WrapUnique(buffer))));
+                       base::WrapUnique(buffer)));
   }
 }
 
 void MessageReader::RunCallback(std::unique_ptr<CompoundBuffer> message) {
-  if (!message_received_callback_.is_null()) {
+  if (message_received_callback_) {
     message_received_callback_.Run(std::move(message));
   }
 }

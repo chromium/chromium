@@ -7,14 +7,16 @@
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.variations";
 
 package variations;
 
+// NOTE: If you update this proto, you'll also need to rebuild the JS parser for
+// devtools. See //components/variations/proto/devtools/BUILD.gn for details.
 message ClientVariations {
-  // A list of client experiment variation IDs that are active.
+  // Active client experiment variation IDs.
   repeated int32 variation_id = 1;
 
-  // A list of client experiment variation IDs that trigger server side
-  // behavior.
+  // Active client experiment variation IDs that trigger server-side behavior.
   repeated int32 trigger_variation_id = 3;
 }

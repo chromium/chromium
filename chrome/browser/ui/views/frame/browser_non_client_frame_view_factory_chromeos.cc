@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 
 namespace chrome {
 
-BrowserNonClientFrameView* CreateBrowserNonClientFrameView(
+std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
-  BrowserNonClientFrameViewAsh* frame_view =
-      new BrowserNonClientFrameViewAsh(frame, browser_view);
+  auto frame_view =
+      std::make_unique<BrowserNonClientFrameViewChromeOS>(frame, browser_view);
   frame_view->Init();
   return frame_view;
 }

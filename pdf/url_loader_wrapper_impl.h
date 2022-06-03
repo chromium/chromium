@@ -5,26 +5,26 @@
 #ifndef PDF_URL_LOADER_WRAPPER_IMPL_H_
 #define PDF_URL_LOADER_WRAPPER_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "pdf/ppapi_migration/callback.h"
 #include "pdf/url_loader_wrapper.h"
-#include "ppapi/cpp/url_loader.h"
-#include "ppapi/utility/completion_callback_factory.h"
 #include "ui/gfx/range/range.h"
-
-namespace pp {
-class Instance;
-}
 
 namespace chrome_pdf {
 
+class UrlLoader;
+
 class URLLoaderWrapperImpl : public URLLoaderWrapper {
  public:
-  URLLoaderWrapperImpl(pp::Instance* plugin_instance,
-                       const pp::URLLoader& url_loader);
+  explicit URLLoaderWrapperImpl(std::unique_ptr<UrlLoader> url_loader);
+  URLLoaderWrapperImpl(const URLLoaderWrapperImpl&) = delete;
+  URLLoaderWrapperImpl& operator=(const URLLoaderWrapperImpl&) = delete;
   ~URLLoaderWrapperImpl() override;
 
   // URLLoaderWrapper overrides:
@@ -36,31 +36,25 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   int GetStatusCode() const override;
   bool IsMultipart() const override;
   bool GetByteRangeStart(int* start) const override;
-  bool GetDownloadProgress(int64_t* bytes_received,
-                           int64_t* total_bytes_to_be_received) const override;
   void Close() override;
   void OpenRange(const std::string& url,
                  const std::string& referrer_url,
                  uint32_t position,
                  uint32_t size,
-                 const pp::CompletionCallback& cc) override;
+                 ResultCallback callback) override;
   void ReadResponseBody(char* buffer,
                         int buffer_size,
-                        const pp::CompletionCallback& cc) override;
-
-  void SetResponseHeaders(const std::string& response_headers);
+                        ResultCallback callback) override;
 
  private:
   void SetHeadersFromLoader();
-  void ParseHeaders();
-  void DidOpen(int32_t result);
-  void DidRead(int32_t result);
+  void ParseHeaders(const std::string& response_headers);
+  void DidOpen(ResultCallback callback, int32_t result);
+  void DidRead(ResultCallback callback, int32_t result);
 
-  void ReadResponseBodyImpl();
+  void ReadResponseBodyImpl(ResultCallback callback);
 
-  pp::Instance* const plugin_instance_;
-  pp::URLLoader url_loader_;
-  std::string response_headers_;
+  std::unique_ptr<UrlLoader> url_loader_;
 
   int content_length_ = -1;
   bool accept_ranges_bytes_ = false;
@@ -74,13 +68,9 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   uint32_t buffer_size_ = 0;
   bool multi_part_processed_ = false;
 
-  pp::CompletionCallback did_open_callback_;
-  pp::CompletionCallback did_read_callback_;
-  pp::CompletionCallbackFactory<URLLoaderWrapperImpl> callback_factory_;
-
   base::OneShotTimer read_starter_;
 
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderWrapperImpl);
+  base::WeakPtrFactory<URLLoaderWrapperImpl> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf

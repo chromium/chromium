@@ -8,10 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <set>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -26,6 +22,10 @@ class GPU_EXPORT TransferBufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
   explicit TransferBufferManager(MemoryTracker* memory_tracker);
+
+  TransferBufferManager(const TransferBufferManager&) = delete;
+  TransferBufferManager& operator=(const TransferBufferManager&) = delete;
+
   ~TransferBufferManager() override;
 
   // Overridden from base::trace_event::MemoryDumpProvider:
@@ -45,8 +45,6 @@ class GPU_EXPORT TransferBufferManager
   BufferMap registered_buffers_;
   size_t shared_memory_bytes_allocated_;
   MemoryTracker* memory_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransferBufferManager);
 };
 
 }  // namespace gpu

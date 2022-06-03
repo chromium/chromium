@@ -26,7 +26,7 @@ WritableStream* CompressionStream::writable() const {
   return transform_->Writable();
 }
 
-void CompressionStream::Trace(Visitor* visitor) {
+void CompressionStream::Trace(Visitor* visitor) const {
   visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
 }

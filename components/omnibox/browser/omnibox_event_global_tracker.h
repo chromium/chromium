@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EVENT_GLOBAL_TRACKER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EVENT_GLOBAL_TRACKER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
-#include "base/macros.h"
 
 namespace base {
 template <typename T>
@@ -25,14 +22,16 @@ struct OmniboxLog;
 // forwards the event to its registered observers.
 class OmniboxEventGlobalTracker {
  public:
-  typedef base::Callback<void(OmniboxLog*)> OnURLOpenedCallback;
+  using OnURLOpenedCallbackList =
+      base::RepeatingCallbackList<void(OmniboxLog*)>;
+  using OnURLOpenedCallback = OnURLOpenedCallbackList::CallbackType;
 
   // Returns the instance of OmniboxEventGlobalTracker.
   static OmniboxEventGlobalTracker* GetInstance();
 
   // Registers |cb| to be invoked when user open an URL from the omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-  RegisterCallback(const OnURLOpenedCallback& cb);
+  base::CallbackListSubscription RegisterCallback(
+      const OnURLOpenedCallback& cb);
 
   // Called to notify all registered callbacks that an URL was opened from
   // the omnibox.
@@ -43,10 +42,11 @@ class OmniboxEventGlobalTracker {
 
   OmniboxEventGlobalTracker();
   ~OmniboxEventGlobalTracker();
+  OmniboxEventGlobalTracker(const OmniboxEventGlobalTracker&) = delete;
+  OmniboxEventGlobalTracker& operator=(const OmniboxEventGlobalTracker&) =
+      delete;
 
-  base::CallbackList<void(OmniboxLog*)> on_url_opened_callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxEventGlobalTracker);
+  OnURLOpenedCallbackList on_url_opened_callback_list_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EVENT_GLOBAL_TRACKER_H_

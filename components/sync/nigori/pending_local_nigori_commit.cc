@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/engine/sync_engine_switches.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_state.h"
@@ -19,27 +19,15 @@ namespace {
 
 using sync_pb::NigoriSpecifics;
 
-// Returns the key derivation method to be used when a user sets a new
-// custom passphrase.
-KeyDerivationMethod GetDefaultKeyDerivationMethodForCustomPassphrase() {
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncUseScryptForNewCustomPassphrases) &&
-      !base::FeatureList::IsEnabled(
-          switches::kSyncForceDisableScryptForCustomPassphrase)) {
-    return KeyDerivationMethod::SCRYPT_8192_8_11;
-  }
-
-  return KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003;
-}
-
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
-  CustomPassphraseSetter(
-      const std::string& passphrase,
-      const base::RepeatingCallback<std::string()>& random_salt_generator)
+  explicit CustomPassphraseSetter(const std::string& passphrase)
       : passphrase_(passphrase),
-        key_derivation_params_(CreateKeyDerivationParamsForCustomPassphrase(
-            random_salt_generator)) {}
+        key_derivation_params_(KeyDerivationParams::CreateForScrypt(
+            Nigori::GenerateScryptSalt())) {}
+
+  CustomPassphraseSetter(const CustomPassphraseSetter&) = delete;
+  CustomPassphraseSetter& operator=(const CustomPassphraseSetter&) = delete;
 
   ~CustomPassphraseSetter() override = default;
 
@@ -87,18 +75,15 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
                  SyncEncryptionHandler::Observer* observer) override {
     DCHECK(!state.pending_keys.has_value());
 
-    observer->OnPassphraseAccepted();
     observer->OnPassphraseTypeChanged(PassphraseType::kCustomPassphrase,
                                       state.custom_passphrase_time);
     observer->OnCryptographerStateChanged(state.cryptographer.get(),
                                           /*has_pending_keys=*/false);
-    observer->OnEncryptedTypesChanged(EncryptableUserTypes(),
+    observer->OnEncryptedTypesChanged(state.GetEncryptedTypes(),
                                       /*encrypt_everything=*/true);
+    observer->OnPassphraseAccepted();
 
     UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", true);
-
-    // OnLocalSetPassphraseEncryption() is intentionally not called here,
-    // because it's needed only for the Directory implementation unit tests.
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {
@@ -109,13 +94,15 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  private:
   const std::string passphrase_;
   const KeyDerivationParams key_derivation_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomPassphraseSetter);
 };
 
 class KeystoreInitializer : public PendingLocalNigoriCommit {
  public:
   KeystoreInitializer() = default;
+
+  KeystoreInitializer(const KeystoreInitializer&) = delete;
+  KeystoreInitializer& operator=(const KeystoreInitializer&) = delete;
+
   ~KeystoreInitializer() override = default;
 
   bool TryApply(NigoriState* state) const override {
@@ -124,10 +111,12 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
       return false;
     }
 
+    std::unique_ptr<CryptographerImpl> cryptographer =
+        state->keystore_keys_cryptographer->ToCryptographerImpl();
+    DCHECK(!cryptographer->GetDefaultEncryptionKeyName().empty());
+    state->cryptographer->EmplaceKeysAndSelectDefaultKeyFrom(*cryptographer);
     state->passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
     state->keystore_migration_time = base::Time::Now();
-    state->cryptographer =
-        state->keystore_keys_cryptographer->ToCryptographerImpl();
     return true;
   }
 
@@ -141,18 +130,19 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreInitializer);
 };
 
-class KeystoreKeyRotator : public PendingLocalNigoriCommit {
+class KeystoreReencryptor : public PendingLocalNigoriCommit {
  public:
-  KeystoreKeyRotator() = default;
-  ~KeystoreKeyRotator() override = default;
+  KeystoreReencryptor() = default;
+
+  KeystoreReencryptor(const KeystoreReencryptor&) = delete;
+  KeystoreReencryptor& operator=(const KeystoreReencryptor&) = delete;
+
+  ~KeystoreReencryptor() override = default;
 
   bool TryApply(NigoriState* state) const override {
-    if (!state->NeedsKeystoreKeyRotation()) {
+    if (!state->NeedsKeystoreReencryption()) {
       return false;
     }
     // TODO(crbug.com/922900): ensure that |cryptographer| contains all
@@ -171,37 +161,15 @@ class KeystoreKeyRotator : public PendingLocalNigoriCommit {
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreKeyRotator);
 };
 
 }  // namespace
 
-KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase(
-    const base::RepeatingCallback<std::string()>& random_salt_generator) {
-  KeyDerivationMethod method =
-      GetDefaultKeyDerivationMethodForCustomPassphrase();
-  switch (method) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
-      return KeyDerivationParams::CreateForPbkdf2();
-    case KeyDerivationMethod::SCRYPT_8192_8_11:
-      return KeyDerivationParams::CreateForScrypt(random_salt_generator.Run());
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
-  }
-
-  NOTREACHED();
-  return KeyDerivationParams::CreateWithUnsupportedMethod();
-}
-
 // static
 std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForSetCustomPassphrase(
-    const std::string& passphrase,
-    const base::RepeatingCallback<std::string()>& random_salt_generator) {
-  return std::make_unique<CustomPassphraseSetter>(passphrase,
-                                                  random_salt_generator);
+    const std::string& passphrase) {
+  return std::make_unique<CustomPassphraseSetter>(passphrase);
 }
 
 // static
@@ -212,8 +180,8 @@ PendingLocalNigoriCommit::ForKeystoreInitialization() {
 
 // static
 std::unique_ptr<PendingLocalNigoriCommit>
-PendingLocalNigoriCommit::ForKeystoreKeyRotation() {
-  return std::make_unique<KeystoreKeyRotator>();
+PendingLocalNigoriCommit::ForKeystoreReencryption() {
+  return std::make_unique<KeystoreReencryptor>();
 }
 
 }  // namespace syncer

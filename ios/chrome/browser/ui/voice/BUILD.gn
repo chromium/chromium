@@ -27,16 +27,14 @@ source_set("voice") {
     "//ios/web/public",
   ]
 
-  libs = [ "AVFoundation.framework" ]
+  frameworks = [ "AVFoundation.framework" ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
-  sources = [
-    "text_to_speech_player_unittest.mm",
-  ]
+  sources = [ "text_to_speech_player_unittest.mm" ]
 
   deps = [
     ":voice",
@@ -53,11 +51,7 @@ source_set("unit_tests") {
 bundle_data("voice_unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
-  sources = [
-    "//ios/chrome/test/data/voice/test_sound.m4a",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
-        "{{source_file_part}}",
-  ]
+  sources = [ "//ios/chrome/test/data/voice/test_sound.m4a" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
+              "{{source_file_part}}" ]
 }

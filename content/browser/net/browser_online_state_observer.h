@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
 #define CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "net/base/network_change_notifier.h"
@@ -19,6 +18,11 @@ class BrowserOnlineStateObserver
       public content::NotificationObserver {
  public:
   BrowserOnlineStateObserver();
+
+  BrowserOnlineStateObserver(const BrowserOnlineStateObserver&) = delete;
+  BrowserOnlineStateObserver& operator=(const BrowserOnlineStateObserver&) =
+      delete;
+
   ~BrowserOnlineStateObserver() override;
 
   // MaxBandwidthObserver implementation
@@ -33,8 +37,6 @@ class BrowserOnlineStateObserver
 
  private:
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserOnlineStateObserver);
 };
 
 }  // namespace content

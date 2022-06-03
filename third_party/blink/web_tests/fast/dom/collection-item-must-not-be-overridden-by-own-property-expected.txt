@@ -1,0 +1,14 @@
+This test ensures the collection item obtained by named property getter is NOT overridden by object's own property.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.all.foo is document.getElementById('element0')
+PASS document.all.foo is document.getElementById('element0')
+PASS document.styleSheets.link1 is document.styleSheets[0]
+PASS document.styleSheets.link1 is document.styleSheets[0]
+PASS document.body.attributes.style is document.body.attributes['style']
+PASS document.body.attributes.style is document.body.attributes['style']
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

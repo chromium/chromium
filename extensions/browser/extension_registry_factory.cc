@@ -4,7 +4,7 @@
 
 #include "extensions/browser/extension_registry_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"

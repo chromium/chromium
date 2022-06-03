@@ -1,4 +1,5 @@
 rootWebArea
-++genericContainer
-++++staticText name='A piece of computer code'
-++++++inlineTextBox name='A piece of computer code'
+++genericContainer ignored
+++++genericContainer
+++++++staticText name='A piece of computer code'
+++++++++inlineTextBox name='A piece of computer code'

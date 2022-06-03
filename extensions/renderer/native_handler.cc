@@ -4,7 +4,9 @@
 
 #include "extensions/renderer/native_handler.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 
 namespace extensions {
 

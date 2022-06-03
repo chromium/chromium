@@ -20,7 +20,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit test for png.py."""
 
 import unittest
@@ -39,32 +38,37 @@ class PNGCheckerTest(unittest.TestCase):
         def mock_handle_style_error(self):
             pass
 
-        checker = PNGChecker("test/config", mock_handle_style_error, MockSystemHost())
+        checker = PNGChecker("test/config", mock_handle_style_error,
+                             MockSystemHost())
         self.assertEqual(checker._file_path, "test/config")
         self.assertEqual(checker._handle_style_error, mock_handle_style_error)
 
     def test_check(self):
         errors = []
 
-        def mock_handle_style_error(line_number, category, confidence, message):
+        def mock_handle_style_error(line_number, category, confidence,
+                                    message):
             error = (line_number, category, confidence, message)
             errors.append(error)
 
         fs = MockFileSystem()
 
         file_path = "foo.png"
-        fs.write_binary_file(file_path, "Dummy binary data")
+        fs.write_binary_file(file_path, b"Dummy binary data")
         errors = []
-        checker = PNGChecker(file_path, mock_handle_style_error, MockSystemHost(os_name='linux', filesystem=fs))
+        checker = PNGChecker(file_path, mock_handle_style_error,
+                             MockSystemHost(os_name='linux', filesystem=fs))
         checker.check()
         self.assertEqual(len(errors), 0)
 
         file_path = "foo-expected.png"
-        fs.write_binary_file(file_path, "Dummy binary data")
+        fs.write_binary_file(file_path, b"Dummy binary data")
         errors = []
-        checker = PNGChecker(file_path, mock_handle_style_error, MockSystemHost(os_name='linux', filesystem=fs))
+        checker = PNGChecker(file_path, mock_handle_style_error,
+                             MockSystemHost(os_name='linux', filesystem=fs))
         checker.check()
         self.assertEqual(len(errors), 1)
-        self.assertEqual(
-            errors[0],
-            (0, 'image/png', 5, 'Image lacks a checksum. Generate pngs using run_web_tests.py to ensure they have a checksum.'))
+        self.assertEqual(errors[0], (
+            0, 'image/png', 5,
+            'Image lacks a checksum. Generate pngs using run_web_tests.py to ensure they have a checksum.'
+        ))

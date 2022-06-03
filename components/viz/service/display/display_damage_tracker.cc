@@ -63,7 +63,7 @@ void DisplayDamageTracker::DisplayResized() {
   expecting_root_surface_damage_because_of_resize_ = true;
   // Technically we don't have any damage yet, but we need to draw after resize,
   // so we report display damaged here.
-  NotifyDisplayDamaged();
+  NotifyDisplayDamaged(root_surface_id_);
 }
 
 void DisplayDamageTracker::ProcessSurfaceDamage(const SurfaceId& surface_id,
@@ -92,7 +92,7 @@ void DisplayDamageTracker::ProcessSurfaceDamage(const SurfaceId& surface_id,
   }
 
   if (display_damaged) {
-    NotifyDisplayDamaged();
+    NotifyDisplayDamaged(surface_id);
   } else if (valid_ack) {
     NotifyPendingSurfacesChanged();
   }
@@ -214,9 +214,9 @@ void DisplayDamageTracker::RunDrawCallbacks() {
   }
 }
 
-void DisplayDamageTracker::NotifyDisplayDamaged() {
+void DisplayDamageTracker::NotifyDisplayDamaged(SurfaceId surface_id) {
   for (auto& observer : observers_)
-    observer.OnDisplayDamaged();
+    observer.OnDisplayDamaged(surface_id);
 }
 
 void DisplayDamageTracker::NotifyRootFrameMissing(bool missing) {

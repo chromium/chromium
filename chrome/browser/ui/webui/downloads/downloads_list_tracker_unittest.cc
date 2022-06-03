@@ -96,12 +96,12 @@ class DownloadsListTrackerTest : public testing::Test {
 
   MockDownloadItem* CreateNextItem() {
     return CreateMock(mock_items_.size(), base::Time::UnixEpoch() +
-        base::TimeDelta::FromHours(mock_items_.size()));
+                                              base::Hours(mock_items_.size()));
   }
 
   void CreateTracker() {
-    tracker_.reset(
-        new TestDownloadsListTracker(manager(), page_.BindAndGetRemote()));
+    tracker_ = std::make_unique<TestDownloadsListTracker>(
+        manager(), page_.BindAndGetRemote());
   }
 
   TestingProfile* profile() { return &profile_; }

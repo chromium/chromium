@@ -5,6 +5,8 @@
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,12 +21,12 @@ namespace media {
 
 MojoDemuxerStreamAdapter::MojoDemuxerStreamAdapter(
     mojo::PendingRemote<mojom::DemuxerStream> demuxer_stream,
-    const base::Closure& stream_ready_cb)
+    base::OnceClosure stream_ready_cb)
     : demuxer_stream_(std::move(demuxer_stream)),
-      stream_ready_cb_(stream_ready_cb),
+      stream_ready_cb_(std::move(stream_ready_cb)),
       type_(UNKNOWN) {
   DVLOG(1) << __func__;
-  demuxer_stream_->Initialize(base::Bind(
+  demuxer_stream_->Initialize(base::BindOnce(
       &MojoDemuxerStreamAdapter::OnStreamReady, weak_factory_.GetWeakPtr()));
 }
 
@@ -38,12 +40,8 @@ void MojoDemuxerStreamAdapter::Read(ReadCB read_cb) {
   DCHECK(!read_cb_);
 
   read_cb_ = std::move(read_cb);
-  demuxer_stream_->Read(base::Bind(&MojoDemuxerStreamAdapter::OnBufferReady,
-                                   weak_factory_.GetWeakPtr()));
-}
-
-bool MojoDemuxerStreamAdapter::IsReadPending() const {
-  return !read_cb_.is_null();
+  demuxer_stream_->Read(base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferReady,
+                                       weak_factory_.GetWeakPtr()));
 }
 
 AudioDecoderConfig MojoDemuxerStreamAdapter::audio_decoder_config() {
@@ -72,27 +70,27 @@ bool MojoDemuxerStreamAdapter::SupportsConfigChanges() {
 void MojoDemuxerStreamAdapter::OnStreamReady(
     Type type,
     mojo::ScopedDataPipeConsumerHandle consumer_handle,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(1) << __func__;
   DCHECK_EQ(UNKNOWN, type_);
   DCHECK(consumer_handle.is_valid());
 
   type_ = type;
 
-  mojo_decoder_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(consumer_handle)));
+  mojo_decoder_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 
   UpdateConfig(std::move(audio_config), std::move(video_config));
 
-  stream_ready_cb_.Run();
+  std::move(stream_ready_cb_).Run();
 }
 
 void MojoDemuxerStreamAdapter::OnBufferReady(
     Status status,
     mojom::DecoderBufferPtr buffer,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(3) << __func__;
   DCHECK(read_cb_);
   DCHECK_NE(type_, UNKNOWN);
@@ -125,8 +123,8 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
 }
 
 void MojoDemuxerStreamAdapter::UpdateConfig(
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DCHECK_NE(type_, UNKNOWN);
 
   switch(type_) {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync_file_system/sync_operation_type.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace sync_file_system {
 

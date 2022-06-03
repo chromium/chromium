@@ -7,12 +7,9 @@
 
 #include <vector>
 
-#include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/command_buffer/service/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
-#include "gpu/vulkan/vulkan_implementation.h"
 
 namespace gpu {
 
@@ -28,47 +25,25 @@ class ExternalVkImageSkiaRepresentation : public SharedImageRepresentationSkia {
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override;
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
+  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+      std::vector<GrBackendSemaphore>* begin_semaphores,
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndWriteAccess(sk_sp<SkSurface> surface) override;
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override;
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
   void EndReadAccess() override;
 
  private:
-  gpu::VulkanImplementation* vk_implementation() {
-    return backing_impl()
-        ->context_state()
-        ->vk_context_provider()
-        ->GetVulkanImplementation();
-  }
-
-  VkDevice vk_device() {
-    return backing_impl()
-        ->context_state()
-        ->vk_context_provider()
-        ->GetDeviceQueue()
-        ->GetVulkanDevice();
-  }
-
-  VkQueue vk_queue() {
-    return backing_impl()
-        ->context_state()
-        ->vk_context_provider()
-        ->GetDeviceQueue()
-        ->GetVulkanQueue();
-  }
-
-  VulkanFenceHelper* fence_helper() {
-    return backing_impl()
-        ->context_state()
-        ->vk_context_provider()
-        ->GetDeviceQueue()
-        ->GetFenceHelper();
-  }
-
-  ExternalVkImageBacking* backing_impl() {
+  ExternalVkImageBacking* backing_impl() const {
     return static_cast<ExternalVkImageBacking*>(backing());
+  }
+  VulkanFenceHelper* fence_helper() const {
+    return backing_impl()->fence_helper();
   }
 
   sk_sp<SkPromiseImageTexture> BeginAccess(
@@ -84,8 +59,9 @@ class ExternalVkImageSkiaRepresentation : public SharedImageRepresentationSkia {
     kWrite = 2,
   };
   AccessMode access_mode_ = kNone;
-  sk_sp<SkSurface> surface_;
-  VkSemaphore end_access_semaphore_ = VK_NULL_HANDLE;
+  int surface_msaa_count_ = 0;
+  std::vector<ExternalSemaphore> begin_access_semaphores_;
+  ExternalSemaphore end_access_semaphore_;
 };
 
 }  // namespace gpu

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/sequence_checker.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/utility/completion_callback_factory.h"

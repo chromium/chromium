@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FIELD_TRIAL_PARAM_SHOW_CONFIRMATION_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
@@ -19,20 +18,21 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VI
 import androidx.annotation.Px;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.browserservices.Origin;
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
-import org.chromium.chrome.browser.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ class TouchToFillMediator {
         mDesiredIconSize = desiredIconSize;
     }
 
-    void showCredentials(String url, boolean isOriginSecure, List<Credential> credentials) {
+    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials) {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
 
@@ -73,7 +73,8 @@ class TouchToFillMediator {
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(SINGLE_CREDENTIAL, credentials.size() == 1)
                         .with(FORMATTED_URL,
-                                UrlFormatter.formatUrlForSecurityDisplayOmitScheme(url))
+                                UrlFormatter.formatUrlForSecurityDisplay(
+                                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
                         .with(ORIGIN_SECURE, isOriginSecure)
                         .build()));
 
@@ -86,10 +87,11 @@ class TouchToFillMediator {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
         }
+
         mModel.set(VISIBLE, true);
     }
 
-    private void requestIconOrFallbackImage(PropertyModel credentialModel, String url) {
+    private void requestIconOrFallbackImage(PropertyModel credentialModel, GURL url) {
         Credential credential = credentialModel.get(CREDENTIAL);
         final String iconOrigin = getIconOrigin(credential.getOriginUrl(), url);
 
@@ -105,13 +107,13 @@ class TouchToFillMediator {
             }
             setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
         };
-        mLargeIconBridge.getLargeIconForUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
+        mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
-    private String getIconOrigin(String credentialOrigin, String siteUrl) {
+    private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
         final Origin o = Origin.create(credentialOrigin);
         // TODO(crbug.com/1030230): assert o != null as soon as credential Origin must be valid.
-        return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl;
+        return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
     private void onSelectedCredential(Credential credential) {
@@ -151,10 +153,7 @@ class TouchToFillMediator {
      * @return True if a confirmation button should be shown at the end of the bottom sheet.
      */
     private boolean shouldCreateConfirmationButton(List<Credential> credentials) {
-        return credentials.size() == 1
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.TOUCH_TO_FILL_ANDROID,
-                        FIELD_TRIAL_PARAM_SHOW_CONFIRMATION_BUTTON, false);
+        return credentials.size() == 1;
     }
 
     private PropertyModel createModel(Credential credential) {

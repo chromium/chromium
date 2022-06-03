@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 
@@ -22,17 +23,19 @@ uint64_t g_current_sequence_number = 0;
 
 UndoStep::UndoStep(Document* document,
                    const SelectionForUndoStep& starting_selection,
-                   const SelectionForUndoStep& ending_selection,
-                   InputEvent::InputType input_type)
+                   const SelectionForUndoStep& ending_selection)
     : document_(document),
       starting_selection_(starting_selection),
       ending_selection_(ending_selection),
-      starting_root_editable_element_(
-          RootEditableElementOf(starting_selection.Base())),
-      ending_root_editable_element_(
-          RootEditableElementOf(ending_selection.Base())),
-      input_type_(input_type),
-      sequence_number_(++g_current_sequence_number) {}
+      sequence_number_(++g_current_sequence_number) {
+  // Note: Both |starting_selection| and |ending_selection| can be null,
+  // Note: |starting_selection_| can be disconnected when forward-delete.
+  // See |TypingCommand::ForwardDeleteKeyPressed()|
+}
+
+bool UndoStep::IsOwnedBy(const Element& element) const {
+  return EndingRootEditableElement() == &element;
+}
 
 void UndoStep::Unapply() {
   DCHECK(document_);
@@ -44,7 +47,7 @@ void UndoStep::Unapply() {
   // operations, like RemoveNodeCommand, don't require a layout because the high
   // level operations that use them perform one if one is necessary (like for
   // the creation of VisiblePositions).
-  document_->UpdateStyleAndLayout();
+  document_->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   {
     wtf_size_t size = commands_.size();
@@ -86,7 +89,7 @@ void UndoStep::Reapply() {
   // operations, like RemoveNodeCommand, don't require a layout because the high
   // level operations that use them perform one if one is necessary (like for
   // the creation of VisiblePositions).
-  document_->UpdateStyleAndLayout();
+  document_->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   {
     for (const auto& command : commands_)
@@ -117,10 +120,6 @@ void UndoStep::Reapply() {
   editor.RespondToChangedContents(new_selection.Base());
 }
 
-InputEvent::InputType UndoStep::GetInputType() const {
-  return input_type_;
-}
-
 void UndoStep::Append(SimpleEditCommand* command) {
   commands_.push_back(command);
 }
@@ -131,21 +130,17 @@ void UndoStep::Append(UndoStep* undo_step) {
 
 void UndoStep::SetStartingSelection(const SelectionForUndoStep& selection) {
   starting_selection_ = selection;
-  starting_root_editable_element_ = RootEditableElementOf(selection.Base());
 }
 
 void UndoStep::SetEndingSelection(const SelectionForUndoStep& selection) {
   ending_selection_ = selection;
-  ending_root_editable_element_ = RootEditableElementOf(selection.Base());
 }
 
-void UndoStep::Trace(Visitor* visitor) {
+void UndoStep::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(starting_selection_);
   visitor->Trace(ending_selection_);
   visitor->Trace(commands_);
-  visitor->Trace(starting_root_editable_element_);
-  visitor->Trace(ending_root_editable_element_);
 }
 
 }  // namespace blink

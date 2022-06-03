@@ -4,49 +4,164 @@
 
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 
+#include <list>
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "media/gpu/windows/return_on_failure.h"
+#include "gpu/command_buffer/service/shared_image_backing_d3d.h"
+#include "media/base/bind_to_current_loop.h"
+#include "media/base/win/hresult_status_helper.h"
+#include "media/base/win/mf_helpers.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "ui/gl/gl_image.h"
 
 namespace media {
 
-Texture2DWrapper::Texture2DWrapper(ComD3D11Texture2D texture)
-    : texture_(texture) {}
+namespace {
 
-Texture2DWrapper::~Texture2DWrapper() {}
-
-const ComD3D11Texture2D Texture2DWrapper::Texture() const {
-  return texture_;
+bool SupportsFormat(DXGI_FORMAT dxgi_format) {
+  switch (dxgi_format) {
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+      return true;
+    default:
+      return false;
+  }
 }
 
-DefaultTexture2DWrapper::DefaultTexture2DWrapper(ComD3D11Texture2D texture)
-    : Texture2DWrapper(texture) {}
-DefaultTexture2DWrapper::~DefaultTexture2DWrapper() {}
+size_t NumPlanes(DXGI_FORMAT dxgi_format) {
+  switch (dxgi_format) {
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_P010:
+      return 2;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+      return 1;
+    default:
+      NOTREACHED();
+      return 0;
+  }
+}
 
-bool DefaultTexture2DWrapper::ProcessTexture(const D3D11PictureBuffer* owner_pb,
-                                             MailboxHolderArray* mailbox_dest) {
+}  // anonymous namespace
+
+Texture2DWrapper::Texture2DWrapper() = default;
+
+Texture2DWrapper::~Texture2DWrapper() = default;
+
+DefaultTexture2DWrapper::DefaultTexture2DWrapper(const gfx::Size& size,
+                                                 DXGI_FORMAT dxgi_format)
+    : size_(size), dxgi_format_(dxgi_format) {}
+
+DefaultTexture2DWrapper::~DefaultTexture2DWrapper() = default;
+
+D3D11Status DefaultTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
+  // keyed_mutex_acquired_ should be false when calling this API.
+  // For non-shareable resource, the keyed_mutex_acquired_ should
+  // never be reset.
+  // For shareable resource, it lives behind use_single_texture flag
+  // and decoder should always follow acquire-release operation pairs.
+  DCHECK(!keyed_mutex_acquired_);
+
+  // No need to acquire key mutex for non-shared resource.
+  if (!keyed_mutex_) {
+    return D3D11Status::Codes::kOk;
+  }
+
+  // Handled shared resource with no key mutex acquired.
+  HRESULT hr =
+      keyed_mutex_->AcquireSync(gpu::kDXGIKeyedMutexAcquireKey, INFINITE);
+
+  if (FAILED(hr)) {
+    keyed_mutex_acquired_ = false;
+    DPLOG(ERROR) << "Unable to acquire the key mutex, error: " << hr;
+    return D3D11Status(D3D11Status::Codes::kAcquireKeyedMutexFailed)
+        .AddCause(HresultToStatus(hr));
+  }
+
+  // Key mutex has been acquired for shared resource.
+  keyed_mutex_acquired_ = true;
+
+  return D3D11Status::Codes::kOk;
+}
+
+D3D11Status DefaultTexture2DWrapper::ProcessTexture(
+    const gfx::ColorSpace& input_color_space,
+    MailboxHolderArray* mailbox_dest,
+    gfx::ColorSpace* output_color_space) {
+  // If the decoder acquired the key mutex before, it should be released now.
+  if (keyed_mutex_) {
+    DCHECK(keyed_mutex_acquired_);
+    HRESULT hr = keyed_mutex_->ReleaseSync(gpu::kDXGIKeyedMutexAcquireKey);
+    if (FAILED(hr)) {
+      DPLOG(ERROR) << "Unable to release the keyed mutex, error: " << hr;
+      return D3D11Status(D3D11Status::Codes::kReleaseKeyedMutexFailed)
+          .AddCause(HresultToStatus(hr));
+    }
+
+    keyed_mutex_acquired_ = false;
+  }
+
+  // If we've received an error, then return it to our caller.  This is probably
+  // from some previous operation.
+  // TODO(liberato): Return the error.
+  if (received_error_)
+    return D3D11Status::Codes::kProcessTextureFailed;
+
+  // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
+  // case we don't use all the planes.
   for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++)
     (*mailbox_dest)[i] = mailbox_holders_[i];
-  return true;
+
+  // We're just binding, so the output and output color spaces are the same.
+  *output_color_space = input_color_space;
+
+  return D3D11Status::Codes::kOk;
 }
 
-bool DefaultTexture2DWrapper::Init(GetCommandBufferHelperCB get_helper_cb,
-                                   size_t array_slice,
-                                   gfx::Size size) {
-  gpu_resources_ = std::make_unique<GpuResources>();
-  if (!gpu_resources_)
-    return false;
+D3D11Status DefaultTexture2DWrapper::Init(
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    GetCommandBufferHelperCB get_helper_cb,
+    ComD3D11Texture2D texture,
+    size_t array_slice) {
+  if (!SupportsFormat(dxgi_format_))
+    return D3D11Status::Codes::kUnsupportedTextureFormatForBind;
 
-  // We currently only bind NV12, which requires two GL textures.
-  const int textures_per_picture = 2;
+  // Init IDXGIKeyedMutex when using shared handle.
+  if (texture) {
+    // Cannot use shared handle for swap chain output texture.
+    D3D11_TEXTURE2D_DESC desc = {};
+    texture->GetDesc(&desc);
+    if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX) {
+      DCHECK(!keyed_mutex_acquired_);
+      HRESULT hr = texture.As(&keyed_mutex_);
+      if (FAILED(hr)) {
+        DPLOG(ERROR) << "Failed to get key_mutex from output resource, error "
+                     << std::hex << hr;
+        return D3D11Status(D3D11Status::Codes::kGetKeyedMutexFailed)
+            .AddCause(HresultToStatus(hr));
+      }
+    }
+  }
 
   // Generate mailboxes and holders.
+  // TODO(liberato): Verify that this is really okay off the GPU main thread.
+  // The current implementation is.
   std::vector<gpu::Mailbox> mailboxes;
-  for (int texture_idx = 0; texture_idx < textures_per_picture; texture_idx++) {
-    mailboxes.push_back(gpu::Mailbox::Generate());
-    mailbox_holders_[texture_idx] = gpu::MailboxHolder(
-        mailboxes[texture_idx], gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
+  for (size_t plane = 0; plane < NumPlanes(dxgi_format_); plane++) {
+    mailboxes.push_back(gpu::Mailbox::GenerateForSharedImage());
+    mailbox_holders_[plane] = gpu::MailboxHolder(
+        mailboxes[plane], gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
   }
 
   // Start construction of the GpuResources.
@@ -54,120 +169,104 @@ bool DefaultTexture2DWrapper::Init(GetCommandBufferHelperCB get_helper_cb,
   // device for decoding.  Sharing seems not to work very well.  Otherwise, we
   // would create the texture with KEYED_MUTEX and NTHANDLE, then send along
   // a handle that we get from |texture| as an IDXGIResource1.
-  // TODO(liberato): this should happen on the gpu thread.
-  return gpu_resources_->Init(std::move(get_helper_cb), array_slice,
-                              std::move(mailboxes), GL_TEXTURE_EXTERNAL_OES,
-                              size, Texture(), textures_per_picture);
-
-  return true;
+  auto on_error_cb = BindToCurrentLoop(base::BindOnce(
+      &DefaultTexture2DWrapper::OnError, weak_factory_.GetWeakPtr()));
+  gpu_resources_ = base::SequenceBound<GpuResources>(
+      std::move(gpu_task_runner), std::move(on_error_cb),
+      std::move(get_helper_cb), std::move(mailboxes), size_, dxgi_format_,
+      texture, array_slice);
+  return D3D11Status::Codes::kOk;
 }
 
-DefaultTexture2DWrapper::GpuResources::GpuResources() {}
-
-DefaultTexture2DWrapper::GpuResources::~GpuResources() {
-  if (helper_ && helper_->MakeContextCurrent()) {
-    for (uint32_t service_id : service_ids_)
-      helper_->DestroyTexture(service_id);
-  }
+void DefaultTexture2DWrapper::OnError(D3D11Status status) {
+  if (!received_error_)
+    received_error_ = status;
 }
 
-bool DefaultTexture2DWrapper::GpuResources::Init(
+void DefaultTexture2DWrapper::SetStreamHDRMetadata(
+    const gfx::HDRMetadata& stream_metadata) {}
+
+void DefaultTexture2DWrapper::SetDisplayHDRMetadata(
+    const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) {}
+
+DefaultTexture2DWrapper::GpuResources::GpuResources(
+    OnErrorCB on_error_cb,
     GetCommandBufferHelperCB get_helper_cb,
-    int array_slice,
-    const std::vector<gpu::Mailbox> mailboxes,
-    GLenum target,
-    gfx::Size size,
-    ComD3D11Texture2D angle_texture,
-    int textures_per_picture) {
+    const std::vector<gpu::Mailbox>& mailboxes,
+    const gfx::Size& size,
+    DXGI_FORMAT dxgi_format,
+    ComD3D11Texture2D texture,
+    size_t array_slice) {
   helper_ = get_helper_cb.Run();
 
+  if (!helper_ || !helper_->MakeContextCurrent()) {
+    std::move(on_error_cb)
+        .Run(std::move(D3D11Status::Codes::kMakeContextCurrentFailed));
+    return;
+  }
+
+  // Usage flags to allow the display compositor to draw from it, video to
+  // decode, and allow webgl/canvas access.
+  constexpr uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
+      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
+  if (texture) {
+    D3D11_TEXTURE2D_DESC desc = {};
+    texture->GetDesc(&desc);
+    // Create shared handle for shareable output texture.
+    if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
+      Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+      HRESULT hr = texture.As(&dxgi_resource);
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
+                    << std::hex << hr;
+        std::move(on_error_cb)
+            .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
+        return;
+      }
+
+      HANDLE shared_handle = nullptr;
+      hr = dxgi_resource->CreateSharedHandle(
+          nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+          nullptr, &shared_handle);
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "CreateSharedHandle failed with error " << std::hex
+                    << hr;
+        std::move(on_error_cb)
+            .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
+        return;
+      }
+
+      dxgi_shared_handle_state =
+          helper_->GetDXGISharedHandleManager()
+              ->CreateAnonymousSharedHandleState(
+                  base::win::ScopedHandle(shared_handle), texture);
+    }
+  }
+
+  auto shared_image_backings =
+      gpu::SharedImageBackingD3D::CreateFromVideoTexture(
+          mailboxes, dxgi_format, size, usage, texture, array_slice,
+          std::move(dxgi_shared_handle_state));
+  if (shared_image_backings.empty()) {
+    std::move(on_error_cb)
+        .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));
+    return;
+  }
+  DCHECK_EQ(shared_image_backings.size(), NumPlanes(dxgi_format));
+
+  for (auto& backing : shared_image_backings)
+    shared_images_.push_back(helper_->Register(std::move(backing)));
+}
+
+DefaultTexture2DWrapper::GpuResources::~GpuResources() {
+  // Destroy shared images with a current context.
   if (!helper_ || !helper_->MakeContextCurrent())
-    return false;
-
-  // Create the textures and attach them to the mailboxes.
-  for (int texture_idx = 0; texture_idx < textures_per_picture; texture_idx++) {
-    uint32_t service_id =
-        helper_->CreateTexture(target, GL_RGBA, size.width(), size.height(),
-                               GL_RGBA, GL_UNSIGNED_BYTE);
-    service_ids_.push_back(service_id);
-    helper_->ProduceTexture(mailboxes[texture_idx], service_id);
-  }
-
-  // Create the stream for zero-copy use by gl.
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-  const EGLint stream_attributes[] = {
-      EGL_CONSUMER_LATENCY_USEC_KHR,
-      0,
-      EGL_CONSUMER_ACQUIRE_TIMEOUT_USEC_KHR,
-      0,
-      EGL_NONE,
-  };
-  EGLStreamKHR stream = eglCreateStreamKHR(egl_display, stream_attributes);
-  RETURN_ON_FAILURE(!!stream, "Could not create stream", false);
-
-  // |stream| will be destroyed when the GLImage is.
-  // TODO(liberato): for tests, it will be destroyed pretty much at the end of
-  // this function unless |helper_| retains it.  Also, this won't work if we
-  // have a FakeCommandBufferHelper since the service IDs aren't meaningful.
-  scoped_refptr<gl::GLImage> gl_image =
-      base::MakeRefCounted<gl::GLImageDXGI>(size, stream);
-  gl::ScopedActiveTexture texture0(GL_TEXTURE0);
-  gl::ScopedTextureBinder texture0_binder(GL_TEXTURE_EXTERNAL_OES,
-                                          service_ids_[0]);
-  gl::ScopedActiveTexture texture1(GL_TEXTURE1);
-  gl::ScopedTextureBinder texture1_binder(GL_TEXTURE_EXTERNAL_OES,
-                                          service_ids_[1]);
-
-  EGLAttrib consumer_attributes[] = {
-      EGL_COLOR_BUFFER_TYPE,
-      EGL_YUV_BUFFER_EXT,
-      EGL_YUV_NUMBER_OF_PLANES_EXT,
-      2,
-      EGL_YUV_PLANE0_TEXTURE_UNIT_NV,
-      0,
-      EGL_YUV_PLANE1_TEXTURE_UNIT_NV,
-      1,
-      EGL_NONE,
-  };
-  EGLBoolean result = eglStreamConsumerGLTextureExternalAttribsNV(
-      egl_display, stream, consumer_attributes);
-  RETURN_ON_FAILURE(result, "Could not set stream consumer", false);
-
-  EGLAttrib producer_attributes[] = {
-      EGL_NONE,
-  };
-
-  result = eglCreateStreamProducerD3DTextureANGLE(egl_display, stream,
-                                                  producer_attributes);
-  RETURN_ON_FAILURE(result, "Could not create stream", false);
-
-  EGLAttrib frame_attributes[] = {
-      EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE,
-      array_slice,
-      EGL_NONE,
-  };
-
-  result = eglStreamPostD3DTextureANGLE(egl_display, stream,
-                                        static_cast<void*>(angle_texture.Get()),
-                                        frame_attributes);
-  RETURN_ON_FAILURE(result, "Could not post texture", false);
-
-  result = eglStreamConsumerAcquireKHR(egl_display, stream);
-
-  RETURN_ON_FAILURE(result, "Could not post acquire stream", false);
-  gl::GLImageDXGI* gl_image_dxgi =
-      static_cast<gl::GLImageDXGI*>(gl_image.get());
-
-  gl_image_dxgi->SetTexture(angle_texture, array_slice);
-
-  // Bind the image to each texture.
-  for (size_t texture_idx = 0; texture_idx < service_ids_.size();
-       texture_idx++) {
-    helper_->BindImage(service_ids_[texture_idx], gl_image.get(),
-                       false /* client_managed */);
-  }
-
-  return true;
+    return;
+  shared_images_.clear();
 }
 
 }  // namespace media

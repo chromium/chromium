@@ -8,12 +8,12 @@
 #include "base/component_export.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "mojo/public/mojom/base/memory_pressure_level.mojom.h"
+#include "mojo/public/mojom/base/memory_pressure_level.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::MemoryPressureLevel,
                base::MemoryPressureListener::MemoryPressureLevel> {
   static mojo_base::mojom::MemoryPressureLevel ToMojom(

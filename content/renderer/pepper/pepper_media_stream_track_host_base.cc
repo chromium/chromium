@@ -6,12 +6,12 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_math.h"
 #include "content/common/pepper_file_util.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
@@ -53,7 +53,7 @@ bool PepperMediaStreamTrackHostBase::InitBuffers(int32_t number_of_buffers,
     return false;
 
   base::UnsafeSharedMemoryRegion region =
-      mojo::CreateUnsafeSharedMemoryRegion(size.ValueOrDie());
+      base::UnsafeSharedMemoryRegion::Create(size.ValueOrDie());
   if (!region.IsValid())
     return false;
 

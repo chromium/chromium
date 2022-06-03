@@ -11,15 +11,17 @@
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/scroll_offset.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/animation/keyframe/target_property.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
+class Animation;
 class KeyframeEffect;
-class SingleKeyframeEffectAnimation;
 
 class TestLayer {
  public:
@@ -57,8 +59,8 @@ class TestLayer {
     mutated_properties_[TargetProperty::BACKDROP_FILTER] = true;
   }
 
-  gfx::ScrollOffset scroll_offset() const { return scroll_offset_; }
-  void set_scroll_offset(const gfx::ScrollOffset& scroll_offset) {
+  gfx::Vector2dF scroll_offset() const { return scroll_offset_; }
+  void set_scroll_offset(const gfx::Vector2dF& scroll_offset) {
     scroll_offset_ = scroll_offset;
     mutated_properties_[TargetProperty::SCROLL_OFFSET] = true;
   }
@@ -83,6 +85,11 @@ class TestLayer {
     return mutated_properties_[property];
   }
 
+  float maximum_animation_scale() const { return maximum_animation_scale_; }
+  void set_maximum_animation_scale(float scale) {
+    maximum_animation_scale_ = scale;
+  }
+
  private:
   TestLayer();
 
@@ -90,11 +97,12 @@ class TestLayer {
   float opacity_;
   FilterOperations filters_;
   FilterOperations backdrop_filters_;
-  gfx::ScrollOffset scroll_offset_;
+  gfx::Vector2dF scroll_offset_;
 
-  TargetProperties has_potential_animation_;
-  TargetProperties is_currently_animating_;
-  TargetProperties mutated_properties_;
+  gfx::TargetProperties has_potential_animation_;
+  gfx::TargetProperties is_currently_animating_;
+  gfx::TargetProperties mutated_properties_;
+  float maximum_animation_scale_ = kInvalidScale;
 };
 
 class TestHostClient : public MutatorHostClient {
@@ -130,30 +138,28 @@ class TestHostClient : public MutatorHostClient {
   void SetElementScrollOffsetMutated(
       ElementId element_id,
       ElementListType list_type,
-      const gfx::ScrollOffset& scroll_offset) override;
+      const gfx::Vector2dF& scroll_offset) override;
 
   void ElementIsAnimatingChanged(const PropertyToElementIdMap& element_id_map,
                                  ElementListType list_type,
                                  const PropertyAnimationState& mask,
                                  const PropertyAnimationState& state) override;
-  void AnimationScalesChanged(ElementId element_id,
-                              ElementListType list_type,
-                              float maximum_scale,
-                              float starting_scale) override;
+  void MaximumScaleChanged(ElementId element_id,
+                           ElementListType list_type,
+                           float maximum_scale) override;
 
   void ScrollOffsetAnimationFinished() override {}
 
-  void SetScrollOffsetForAnimation(const gfx::ScrollOffset& scroll_offset);
-  gfx::ScrollOffset GetScrollOffsetForAnimation(
+  void SetScrollOffsetForAnimation(const gfx::Vector2dF& scroll_offset);
+  gfx::Vector2dF GetScrollOffsetForAnimation(
       ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
 
   void OnCustomPropertyMutated(
-      ElementId element_id,
-      const std::string& custom_property_name,
-      PaintWorkletInput::PropertyValue custom_property_value) override {}
+      PaintWorkletInput::PropertyKey property_key,
+      PaintWorkletInput::PropertyValue property_value) override {}
 
   bool mutators_need_commit() const { return mutators_need_commit_; }
   void set_mutators_need_commit(bool need) { mutators_need_commit_ = need; }
@@ -177,8 +183,8 @@ class TestHostClient : public MutatorHostClient {
   float GetOpacity(ElementId element_id, ElementListType list_type) const;
   gfx::Transform GetTransform(ElementId element_id,
                               ElementListType list_type) const;
-  gfx::ScrollOffset GetScrollOffset(ElementId element_id,
-                                    ElementListType list_type) const;
+  gfx::Vector2dF GetScrollOffset(ElementId element_id,
+                                 ElementListType list_type) const;
   bool GetHasPotentialTransformAnimation(ElementId element_id,
                                          ElementListType list_type) const;
   bool GetTransformIsCurrentlyAnimating(ElementId element_id,
@@ -221,7 +227,7 @@ class TestHostClient : public MutatorHostClient {
   ElementIdToTestLayer layers_in_active_tree_;
   ElementIdToTestLayer layers_in_pending_tree_;
 
-  gfx::ScrollOffset scroll_offset_;
+  gfx::Vector2dF scroll_offset_;
   bool mutators_need_commit_;
 };
 
@@ -238,12 +244,13 @@ class TestAnimationDelegate : public AnimationDelegate {
   void NotifyAnimationAborted(base::TimeTicks monotonic_time,
                               int target_property,
                               int group) override;
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override;
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override;
   void NotifyLocalTimeUpdated(
-      base::Optional<base::TimeDelta> local_time) override;
+      absl::optional<base::TimeDelta> local_time) override;
 
   bool started() { return started_; }
 
@@ -311,11 +318,11 @@ class AnimationTimelinesTest : public testing::Test {
   int next_test_layer_id_;
 
   scoped_refptr<AnimationTimeline> timeline_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_;
+  scoped_refptr<Animation> animation_;
   scoped_refptr<ElementAnimations> element_animations_;
 
   scoped_refptr<AnimationTimeline> timeline_impl_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_impl_;
+  scoped_refptr<Animation> animation_impl_;
   scoped_refptr<ElementAnimations> element_animations_impl_;
 };
 

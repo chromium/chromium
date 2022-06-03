@@ -22,12 +22,15 @@
 
 #include <chrono>
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 namespace cctz {
 
@@ -39,20 +42,9 @@ using sys_seconds = seconds;  // Deprecated.  Use cctz::seconds instead.
 
 namespace detail {
 template <typename D>
-inline std::pair<time_point<seconds>, D>
-split_seconds(const time_point<D>& tp) {
-  auto sec = std::chrono::time_point_cast<seconds>(tp);
-  auto sub = tp - sec;
-  if (sub.count() < 0) {
-    sec -= seconds(1);
-    sub += seconds(1);
-  }
-  return {sec, std::chrono::duration_cast<D>(sub)};
-}
-inline std::pair<time_point<seconds>, seconds>
-split_seconds(const time_point<seconds>& tp) {
-  return {tp, seconds::zero()};
-}
+std::pair<time_point<seconds>, D> split_seconds(const time_point<D>& tp);
+std::pair<time_point<seconds>, seconds> split_seconds(
+    const time_point<seconds>& tp);
 }  // namespace detail
 
 // cctz::time_zone is an opaque, small, value-type class representing a
@@ -194,22 +186,20 @@ class time_zone {
   bool next_transition(const time_point<seconds>& tp,
                        civil_transition* trans) const;
   template <typename D>
-  bool next_transition(const time_point<D>& tp,
-                       civil_transition* trans) const {
+  bool next_transition(const time_point<D>& tp, civil_transition* trans) const {
     return next_transition(detail::split_seconds(tp).first, trans);
   }
   bool prev_transition(const time_point<seconds>& tp,
                        civil_transition* trans) const;
   template <typename D>
-  bool prev_transition(const time_point<D>& tp,
-                       civil_transition* trans) const {
+  bool prev_transition(const time_point<D>& tp, civil_transition* trans) const {
     return prev_transition(detail::split_seconds(tp).first, trans);
   }
 
   // version() and description() provide additional information about the
   // time zone. The content of each of the returned strings is unspecified,
   // however, when the IANA Time Zone Database is the underlying data source
-  // the version() std::string will be in the familar form (e.g, "2018e") or
+  // the version() string will be in the familar form (e.g, "2018e") or
   // empty when unavailable.
   //
   // Note: These functions are for informational or testing purposes only.
@@ -220,9 +210,7 @@ class time_zone {
   friend bool operator==(time_zone lhs, time_zone rhs) {
     return &lhs.effective_impl() == &rhs.effective_impl();
   }
-  friend bool operator!=(time_zone lhs, time_zone rhs) {
-    return !(lhs == rhs);
-  }
+  friend bool operator!=(time_zone lhs, time_zone rhs) { return !(lhs == rhs); }
 
   template <typename H>
   friend H AbslHashValue(H h, time_zone tz) {
@@ -281,6 +269,20 @@ std::string format(const std::string&, const time_point<seconds>&,
                    const femtoseconds&, const time_zone&);
 bool parse(const std::string&, const std::string&, const time_zone&,
            time_point<seconds>*, femtoseconds*, std::string* err = nullptr);
+template <typename Rep, std::intmax_t Denom>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds& fs,
+    time_point<std::chrono::duration<Rep, std::ratio<1, Denom>>>* tpp);
+template <typename Rep, std::intmax_t Num>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds& fs,
+    time_point<std::chrono::duration<Rep, std::ratio<Num, 1>>>* tpp);
+template <typename Rep>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds& fs,
+    time_point<std::chrono::duration<Rep, std::ratio<1, 1>>>* tpp);
+bool join_seconds(const time_point<seconds>& sec, const femtoseconds&,
+                  time_point<seconds>* tpp);
 }  // namespace detail
 
 // Formats the given time_point in the given cctz::time_zone according to
@@ -294,6 +296,7 @@ bool parse(const std::string&, const std::string&, const time_zone&,
 //   - %E#f - Fractional seconds with # digits of precision
 //   - %E*f - Fractional seconds with full precision (a literal '*')
 //   - %E4Y - Four-character years (-999 ... -001, 0000, 0001 ... 9999)
+//   - %ET  - The RFC3339 "date-time" separator "T"
 //
 // Note that %E0S behaves like %S, and %E0f produces no characters. In
 // contrast %E*f always produces at least one digit, which may be '0'.
@@ -323,7 +326,8 @@ inline std::string format(const std::string& fmt, const time_point<D>& tp,
 // returns the corresponding time_point. Uses strftime()-like formatting
 // options, with the same extensions as cctz::format(), but with the
 // exceptions that %E#S is interpreted as %E*S, and %E#f as %E*f. %Ez
-// and %E*z also accept the same inputs.
+// and %E*z also accept the same inputs, which (along with %z) includes
+// 'z' and 'Z' as synonyms for +00:00.  %ET accepts either 'T' or 't'.
 //
 // %Y consumes as many numeric characters as it can, so the matching data
 // should always be terminated with a non-numeric. %E4Y always consumes
@@ -369,17 +373,87 @@ inline bool parse(const std::string& fmt, const std::string& input,
                   const time_zone& tz, time_point<D>* tpp) {
   time_point<seconds> sec;
   detail::femtoseconds fs;
-  const bool b = detail::parse(fmt, input, tz, &sec, &fs);
-  if (b) {
-    // TODO: Return false if unrepresentable as a time_point<D>.
-    *tpp = std::chrono::time_point_cast<D>(sec);
-    *tpp += std::chrono::duration_cast<D>(fs);
-  }
-  return b;
+  return detail::parse(fmt, input, tz, &sec, &fs) &&
+         detail::join_seconds(sec, fs, tpp);
 }
 
+namespace detail {
+
+// Split a time_point<D> into a time_point<seconds> and a D subseconds.
+// Undefined behavior if time_point<seconds> is not of sufficient range.
+// Note that this means it is UB to call cctz::time_zone::lookup(tp) or
+// cctz::format(fmt, tp, tz) with a time_point that is outside the range
+// of a 64-bit std::time_t.
+template <typename D>
+std::pair<time_point<seconds>, D> split_seconds(const time_point<D>& tp) {
+  auto sec = std::chrono::time_point_cast<seconds>(tp);
+  auto sub = tp - sec;
+  if (sub.count() < 0) {
+    sec -= seconds(1);
+    sub += seconds(1);
+  }
+  return {sec, std::chrono::duration_cast<D>(sub)};
+}
+
+inline std::pair<time_point<seconds>, seconds> split_seconds(
+    const time_point<seconds>& tp) {
+  return {tp, seconds::zero()};
+}
+
+// Join a time_point<seconds> and femto subseconds into a time_point<D>.
+// Floors to the resolution of time_point<D>. Returns false if time_point<D>
+// is not of sufficient range.
+template <typename Rep, std::intmax_t Denom>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds& fs,
+    time_point<std::chrono::duration<Rep, std::ratio<1, Denom>>>* tpp) {
+  using D = std::chrono::duration<Rep, std::ratio<1, Denom>>;
+  // TODO(#199): Return false if result unrepresentable as a time_point<D>.
+  *tpp = std::chrono::time_point_cast<D>(sec);
+  *tpp += std::chrono::duration_cast<D>(fs);
+  return true;
+}
+
+template <typename Rep, std::intmax_t Num>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds&,
+    time_point<std::chrono::duration<Rep, std::ratio<Num, 1>>>* tpp) {
+  using D = std::chrono::duration<Rep, std::ratio<Num, 1>>;
+  auto count = sec.time_since_epoch().count();
+  if (count >= 0 || count % Num == 0) {
+    count /= Num;
+  } else {
+    count /= Num;
+    count -= 1;
+  }
+  if (count > (std::numeric_limits<Rep>::max)()) return false;
+  if (count < (std::numeric_limits<Rep>::min)()) return false;
+  *tpp = time_point<D>() + D{static_cast<Rep>(count)};
+  return true;
+}
+
+template <typename Rep>
+bool join_seconds(
+    const time_point<seconds>& sec, const femtoseconds&,
+    time_point<std::chrono::duration<Rep, std::ratio<1, 1>>>* tpp) {
+  using D = std::chrono::duration<Rep, std::ratio<1, 1>>;
+  auto count = sec.time_since_epoch().count();
+  if (count > (std::numeric_limits<Rep>::max)()) return false;
+  if (count < (std::numeric_limits<Rep>::min)()) return false;
+  *tpp = time_point<D>() + D{static_cast<Rep>(count)};
+  return true;
+}
+
+inline bool join_seconds(const time_point<seconds>& sec, const femtoseconds&,
+                         time_point<seconds>* tpp) {
+  *tpp = sec;
+  return true;
+}
+
+}  // namespace detail
 }  // namespace cctz
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_TIME_INTERNAL_CCTZ_TIME_ZONE_H_

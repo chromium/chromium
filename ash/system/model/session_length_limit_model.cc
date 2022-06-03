@@ -53,12 +53,12 @@ void SessionLengthLimitModel::Update() {
 
   SessionControllerImpl* session = Shell::Get()->session_controller();
   base::TimeDelta time_limit = session->session_length_limit();
-  base::TimeTicks session_start_time = session->session_start_time();
+  base::Time session_start_time = session->session_start_time();
   if (!time_limit.is_zero() && !session_start_time.is_null()) {
     const base::TimeDelta expiring_soon_threshold(
-        base::TimeDelta::FromMinutes(kExpiringSoonThresholdInMinutes));
+        base::Minutes(kExpiringSoonThresholdInMinutes));
     remaining_session_time_ =
-        std::max(time_limit - (base::TimeTicks::Now() - session_start_time),
+        std::max(time_limit - (base::Time::Now() - session_start_time),
                  base::TimeDelta());
     limit_state_ = remaining_session_time_ <= expiring_soon_threshold
                        ? LIMIT_EXPIRING_SOON
@@ -66,10 +66,8 @@ void SessionLengthLimitModel::Update() {
     if (!timer_)
       timer_ = std::make_unique<base::RepeatingTimer>();
     if (!timer_->IsRunning()) {
-      timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kTimerIntervalInMilliseconds), this,
-          &SessionLengthLimitModel::Update);
+      timer_->Start(FROM_HERE, base::Milliseconds(kTimerIntervalInMilliseconds),
+                    this, &SessionLengthLimitModel::Update);
     }
   } else {
     remaining_session_time_ = base::TimeDelta();

@@ -62,7 +62,7 @@ class MIDIConnectionEvent final : public Event {
     return event_interface_names::kMIDIConnectionEvent;
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<MIDIPort> port_;

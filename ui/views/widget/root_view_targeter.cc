@@ -14,8 +14,7 @@ namespace views {
 
 RootViewTargeter::RootViewTargeter(ViewTargeterDelegate* delegate,
                                    internal::RootView* root_view)
-    : ViewTargeter(delegate), root_view_(root_view) {
-}
+    : ViewTargeter(delegate), root_view_(root_view) {}
 
 RootViewTargeter::~RootViewTargeter() = default;
 

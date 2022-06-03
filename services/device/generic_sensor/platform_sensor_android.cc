@@ -12,22 +12,36 @@ using base::android::JavaRef;
 
 namespace device {
 
-PlatformSensorAndroid::PlatformSensorAndroid(
+// static
+scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
     PlatformSensorProvider* provider,
-    const JavaRef<jobject>& java_sensor)
-    : PlatformSensor(type, reading_buffer, provider) {
+    const JavaRef<jobject>& java_provider) {
+  auto sensor = base::MakeRefCounted<PlatformSensorAndroid>(
+      type, reading_buffer, provider);
   JNIEnv* env = AttachCurrentThread();
-  j_object_.Reset(java_sensor);
+  sensor->j_object_.Reset(
+      Java_PlatformSensor_create(env, java_provider, static_cast<jint>(type),
+                                 reinterpret_cast<jlong>(sensor.get())));
+  if (!sensor->j_object_) {
+    return nullptr;
+  }
 
-  Java_PlatformSensor_initPlatformSensorAndroid(env, j_object_,
-                                                reinterpret_cast<jlong>(this));
+  return sensor;
 }
+
+PlatformSensorAndroid::PlatformSensorAndroid(
+    mojom::SensorType type,
+    SensorReadingSharedBuffer* reading_buffer,
+    PlatformSensorProvider* provider)
+    : PlatformSensor(type, reading_buffer, provider) {}
 
 PlatformSensorAndroid::~PlatformSensorAndroid() {
   JNIEnv* env = AttachCurrentThread();
-  Java_PlatformSensor_sensorDestroyed(env, j_object_);
+  if (j_object_) {
+    Java_PlatformSensor_sensorDestroyed(env, j_object_);
+  }
 }
 
 mojom::ReportingMode PlatformSensorAndroid::GetReportingMode() {
@@ -70,7 +84,7 @@ bool PlatformSensorAndroid::CheckSensorConfiguration(
 void PlatformSensorAndroid::NotifyPlatformSensorError(
     JNIEnv*,
     const JavaRef<jobject>& caller) {
-  task_runner_->PostTask(
+  PostTaskToMainSequence(
       FROM_HERE,
       base::BindOnce(&PlatformSensorAndroid::NotifySensorError, this));
 }

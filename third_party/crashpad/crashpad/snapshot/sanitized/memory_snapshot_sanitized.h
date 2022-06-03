@@ -27,7 +27,7 @@ namespace internal {
 //!     another MemorySnapshot.
 //!
 //! This class redacts all data from the wrapped MemorySnapshot unless:
-//! 1. The data is pointer aligned and points into a whitelisted address range.
+//! 1. The data is pointer aligned and points into an allowed address range.
 //! 2. The data is pointer aligned and is a small integer.
 class MemorySnapshotSanitized final : public MemorySnapshot {
  public:
@@ -41,11 +41,14 @@ class MemorySnapshotSanitized final : public MemorySnapshot {
   //! \brief Constructs this object.
   //!
   //! \param[in] snapshot The MemorySnapshot to sanitize.
-  //! \param[in] ranges A set of whitelisted address ranges.
+  //! \param[in] ranges A set of allowed address ranges.
   //! \param[in] is_64_bit `true` if this memory is for a 64-bit process.
   MemorySnapshotSanitized(const MemorySnapshot* snapshot,
                           RangeSet* ranges,
                           bool is_64_bit);
+
+  MemorySnapshotSanitized(const MemorySnapshotSanitized&) = delete;
+  MemorySnapshotSanitized& operator=(const MemorySnapshotSanitized&) = delete;
 
   ~MemorySnapshotSanitized() override;
 
@@ -64,8 +67,6 @@ class MemorySnapshotSanitized final : public MemorySnapshot {
   const MemorySnapshot* snapshot_;
   RangeSet* ranges_;
   bool is_64_bit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotSanitized);
 };
 
 }  // namespace internal

@@ -10,11 +10,14 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using device::mojom::BluetoothSystem;
 using device::mojom::BluetoothDeviceInfo;
@@ -75,11 +78,17 @@ UnifiedBluetoothDetailedViewController::
 
 views::View* UnifiedBluetoothDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::BluetoothDetailedView(
+  view_ = new tray::BluetoothDetailedViewLegacy(
       detailed_view_delegate_.get(),
       Shell::Get()->session_controller()->login_status());
   OnBluetoothSystemStateChanged();
   return view_;
+}
+
+std::u16string UnifiedBluetoothDetailedViewController::GetAccessibleName()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_BLUETOOTH_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }
 
 void UnifiedBluetoothDetailedViewController::OnBluetoothSystemStateChanged() {

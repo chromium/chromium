@@ -4,45 +4,66 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
+#include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_web_state.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using bookmarks::BookmarkModel;
+using java_script_dialog_overlays::JavaScriptDialogRequest;
 
 @interface FakePopupMenuConsumer : NSObject <PopupMenuConsumer>
 @property(nonatomic, strong)
@@ -72,7 +93,12 @@ const int kNumberOfWebStates = 3;
 
 class PopupMenuMediatorTest : public ChromeWebTest {
  public:
-  PopupMenuMediatorTest() : ChromeWebTest(std::make_unique<ChromeWebClient>()) {
+  PopupMenuMediatorTest()
+      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+
+  void SetUp() override {
+    ChromeWebTest::SetUp();
+
     reading_list_model_.reset(new ReadingListModelImpl(
         nullptr, nullptr, base::DefaultClock::GetInstance()));
     popup_menu_ = OCMClassMock([PopupMenuTableViewController class]);
@@ -83,9 +109,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     SetUpWebStateList();
 
     // Set up the TestBrowser.
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_ = browser_state_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get(),
+    browser_ = std::make_unique<TestBrowser>(GetTestChromeBrowserState(),
                                              web_state_list_.get());
     // Set up the OverlayPresenter.
     OverlayPresenter::FromBrowser(browser_.get(),
@@ -93,13 +117,24 @@ class PopupMenuMediatorTest : public ChromeWebTest {
         ->SetPresentationContext(&presentation_context_);
   }
 
-  // Explicitly disconnect the mediator so there won't be any WebStateList
-  // observers when web_state_list_ gets dealloc.
-  ~PopupMenuMediatorTest() override {
+  void TearDown() override {
+    // Explicitly disconnect the mediator so there won't be any WebStateList
+    // observers when web_state_list_ gets dealloc.
     [mediator_ disconnect];
+
+    ChromeWebTest::TearDown();
+  }
+
+  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
+    TestChromeBrowserState::Builder builder;
+    return builder.Build();
   }
 
  protected:
+  TestChromeBrowserState* GetTestChromeBrowserState() {
+    return static_cast<TestChromeBrowserState*>(GetBrowserState());
+  }
+
   PopupMenuMediator* CreateMediator(PopupMenuType type,
                                     BOOL is_incognito,
                                     BOOL trigger_incognito_hint) {
@@ -107,8 +142,38 @@ class PopupMenuMediatorTest : public ChromeWebTest {
         [[PopupMenuMediator alloc] initWithType:type
                                     isIncognito:is_incognito
                                readingListModel:reading_list_model_.get()
-                      triggerNewIncognitoTabTip:trigger_incognito_hint];
+                      triggerNewIncognitoTabTip:trigger_incognito_hint
+                         browserPolicyConnector:nil];
     return mediator_;
+  }
+
+  PopupMenuMediator* CreateMediatorWithBrowserPolicyConnector(
+      PopupMenuType type,
+      BOOL is_incognito,
+      BOOL trigger_incognito_hint,
+      BrowserPolicyConnectorIOS* browser_policy_connector) {
+    mediator_ =
+        [[PopupMenuMediator alloc] initWithType:type
+                                    isIncognito:is_incognito
+                               readingListModel:reading_list_model_.get()
+                      triggerNewIncognitoTabTip:trigger_incognito_hint
+                         browserPolicyConnector:browser_policy_connector];
+    return mediator_;
+  }
+
+  void CreatePrefs() {
+    prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs_->registry()->RegisterBooleanPref(
+        bookmarks::prefs::kEditBookmarksEnabled,
+        /*default_value=*/true);
+  }
+
+  void SetUpBookmarks() {
+    GetTestChromeBrowserState()->CreateBookmarkModel(false);
+    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
+        GetTestChromeBrowserState());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+    mediator_.bookmarkModel = bookmark_model_;
   }
 
   void SetUpWebStateList() {
@@ -135,7 +200,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
   void InsertNewWebState(int index) {
-    auto web_state = std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     GURL url("http://test/" + std::to_string(index));
     web_state->SetCurrentURL(url);
     web_state_list_->InsertWebState(index, std::move(web_state),
@@ -187,12 +252,23 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     return NO;
   }
 
+  bool HasEnterpriseInfoItem(FakePopupMenuConsumer* consumer) {
+    for (NSArray* innerArray in consumer.popupMenuItems) {
+      for (PopupMenuTextItem* item in innerArray) {
+        if (item.accessibilityIdentifier == kTextMenuEnterpriseInfo)
+          return YES;
+      }
+    }
+    return NO;
+  }
+
   FakeOverlayPresentationContext presentation_context_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   PopupMenuMediator* mediator_;
+  BookmarkModel* bookmark_model_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
   ToolbarTestWebState* web_state_;
   ToolbarTestNavigationManager* navigation_manager_;
@@ -225,17 +301,22 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
                  /*trigger_incognito_hint=*/NO);
   NSUInteger number_of_action_items = 7;
   if (ios::GetChromeBrowserProvider()
-          ->GetUserFeedbackProvider()
+          .GetUserFeedbackProvider()
           ->IsUserFeedbackEnabled()) {
     number_of_action_items++;
   }
+
+  if (ios::provider::IsTextZoomEnabled()) {
+    number_of_action_items++;
+  }
+
   // Checks that Tools Menu has the right number of items in each section.
   CheckMediatorSetItems(@[
-    // Stop/Reload, New Tab, New Incognito Tab
+    // Stop/Reload, New Tab, New Incognito Tab.
     @(3),
-    // 4 collections + Settings
-    @(5),
-    // Other actions, depending on configuration
+    // 4 collections, Downloads, Settings.
+    @(6),
+    // Other actions, depending on configuration.
     @(number_of_action_items)
   ]);
 }
@@ -333,11 +414,12 @@ TEST_F(PopupMenuMediatorTest, TestItemsStatusOnNTP) {
   EXPECT_TRUE(HasItem(consumer, kToolsMenuSiteInformation, /*enabled=*/YES));
 }
 
-// Tests that the "Read Later" button is disabled while overlay UI is displayed
-// in OverlayModality::kWebContentArea.
+// Tests that the "Add to Reading List" button is disabled while overlay UI is
+// displayed in OverlayModality::kWebContentArea.
 TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
+  CreatePrefs();
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   mediator_.webStateList = web_state_list_.get();
@@ -345,21 +427,128 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
       browser_.get(), OverlayModality::kWebContentArea);
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
   mediator_.popupMenu = consumer;
+  mediator_.prefService = prefs_.get();
   SetUpActiveWebState();
   ASSERT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/YES));
 
   // Present a JavaScript alert over the WebState and verify that the page is no
   // longer shareable.
-  JavaScriptDialogSource source(web_state_, kUrl, /*is_main_frame=*/true);
-  const std::string kMessage("message");
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kWebContentArea);
-  queue->AddRequest(
-      OverlayRequest::CreateWithConfig<JavaScriptAlertOverlayRequestConfig>(
-          source, kMessage));
+  queue->AddRequest(OverlayRequest::CreateWithConfig<JavaScriptDialogRequest>(
+      web::JAVASCRIPT_DIALOG_TYPE_ALERT, web_state_, kUrl,
+      /*is_main_frame=*/true, @"message",
+      /*default_text_field_value=*/nil));
   EXPECT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/NO));
 
-  // Cancel the request and verify that the "Read Later" button is enabled.
+  // Cancel the request and verify that the "Add to Reading List" button is
+  // enabled.
   queue->CancelAllRequests();
   EXPECT_TRUE(HasItem(consumer, kToolsMenuReadLater, /*enabled=*/YES));
+}
+
+// Tests that the "Text Zoom..." button is disabled on non-HTML pages.
+TEST_F(PopupMenuMediatorTest, TestTextZoomDisabled) {
+  CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
+                 /*trigger_incognito_hint=*/NO);
+  mediator_.webStateList = web_state_list_.get();
+
+  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
+  mediator_.popupMenu = consumer;
+  FontSizeTabHelper::CreateForWebState(web_state_list_->GetWebStateAt(0));
+  SetUpActiveWebState();
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuTextZoom, /*enabled=*/YES));
+
+  web_state_->SetContentIsHTML(false);
+  // Fake a navigationFinished to force the popup menu items to update.
+  web::FakeNavigationContext context;
+  web_state_->OnNavigationFinished(&context);
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuTextZoom, /*enabled=*/NO));
+}
+
+// Tests that the "Managed by..." item is hidden when none of the policies is
+// set.
+TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoHidden) {
+  CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
+                 /*trigger_incognito_hint=*/NO);
+
+  mediator_.webStateList = web_state_list_.get();
+  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
+  mediator_.popupMenu = consumer;
+  SetUpActiveWebState();
+
+  ASSERT_FALSE(HasEnterpriseInfoItem(consumer));
+}
+
+// Tests that the "Managed by..." item is shown.
+TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoShown) {
+  // Set a policy.
+  base::ScopedTempDir state_directory;
+  ASSERT_TRUE(state_directory.CreateUniqueTempDir());
+
+  std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper =
+      std::make_unique<EnterprisePolicyTestHelper>(state_directory.GetPath());
+  BrowserPolicyConnectorIOS* connector =
+      enterprise_policy_helper->GetBrowserPolicyConnector();
+
+  policy::PolicyMap map;
+  map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          base::Value("hello"), nullptr);
+  enterprise_policy_helper->GetPolicyProvider()->UpdateChromePolicy(map);
+
+  CreateMediatorWithBrowserPolicyConnector(
+      PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
+      /*trigger_incognito_hint=*/NO, connector);
+
+  mediator_.webStateList = web_state_list_.get();
+  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
+  mediator_.popupMenu = consumer;
+  SetUpActiveWebState();
+  ASSERT_TRUE(HasEnterpriseInfoItem(consumer));
+}
+
+// Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when
+// the current URL is not in bookmarks 2) the bookmark button changes to an
+// enabled 'Edit bookmark' button when navigating to a bookmarked URL, 3) the
+// bookmark button changes to 'Add to Bookmarks' when the bookmark is removed.
+TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
+  const GURL url("https://bookmarked.url");
+  web_state_->SetCurrentURL(url);
+  CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
+                 /*trigger_incognito_hint=*/NO);
+  CreatePrefs();
+  SetUpBookmarks();
+  bookmarks::AddIfNotBookmarked(bookmark_model_, url,
+                                base::SysNSStringToUTF16(@"Test bookmark"));
+  mediator_.webStateList = web_state_list_.get();
+  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
+  mediator_.popupMenu = consumer;
+  mediator_.prefService = prefs_.get();
+
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
+
+  SetUpActiveWebState();
+  EXPECT_FALSE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));
+
+  bookmark_model_->RemoveAllUserBookmarks();
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_FALSE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));
+}
+
+// Tests that the bookmark button is disabled when EditBookmarksEnabled pref is
+// changed to false.
+TEST_F(PopupMenuMediatorTest, TestDisableBookmarksButton) {
+  CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
+                 /*trigger_incognito_hint=*/NO);
+  CreatePrefs();
+  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
+  mediator_.popupMenu = consumer;
+  mediator_.prefService = prefs_.get();
+
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
+
+  prefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
+  EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/NO));
 }

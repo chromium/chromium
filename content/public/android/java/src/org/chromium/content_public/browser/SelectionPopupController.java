@@ -21,6 +21,9 @@ import org.chromium.ui.base.WindowAndroid;
  * action mode tasks to their requirements.
  */
 public interface SelectionPopupController {
+    // User action of clicking on the Share option within the selection UI.
+    static final String UMA_MOBILE_ACTION_MODE_SHARE = "MobileActionMode.Share";
+
     /**
      * @param webContents {@link WebContents} object.
      * @return {@link SelectionPopupController} object used for the give WebContents.
@@ -28,6 +31,13 @@ public interface SelectionPopupController {
      */
     static SelectionPopupController fromWebContents(WebContents webContents) {
         return SelectionPopupControllerImpl.fromWebContents(webContents);
+    }
+
+    /**
+     * Makes {@link SelectionPopupcontroller} only use the WebContents context when inflating menus.
+     */
+    static void setMustUseWebContentsContext() {
+        SelectionPopupControllerImpl.setMustUseWebContentsContext();
     }
 
     /**

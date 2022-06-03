@@ -31,6 +31,10 @@ class LoopbackHandler {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   LoopbackHandler(scoped_refptr<base::SequencedTaskRunner> io_task_runner,
                   bool use_external_audio_pipeline);
+
+  LoopbackHandler(const LoopbackHandler&) = delete;
+  LoopbackHandler& operator=(const LoopbackHandler&) = delete;
+
   ~LoopbackHandler();
 
   // Adds a new loopback connection.
@@ -75,8 +79,6 @@ class LoopbackHandler {
 
   base::SequenceBound<LoopbackIO> io_;
   std::unique_ptr<ExternalLoopbackHandler, ExternalDeleter> external_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackHandler);
 };
 
 }  // namespace media

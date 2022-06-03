@@ -3,22 +3,20 @@
 // found in the LICENSE file.
 package org.chromium.components.minidump_uploader;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
-import android.os.Build;
 import android.os.PersistableBundle;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.BuildConfig;
 
 /**
  * Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public abstract class MinidumpUploadJobService extends JobService {
     private static final String TAG = "MinidumpJobService";
 
@@ -32,7 +30,7 @@ public abstract class MinidumpUploadJobService extends JobService {
     // Back-off policy for upload-job.
     private static final int JOB_BACKOFF_POLICY = JobInfo.BACKOFF_POLICY_EXPONENTIAL;
 
-    private MinidumpUploader mMinidumpUploader;
+    private MinidumpUploadJob mMinidumpUploadJob;
 
     // Used in Debug builds to assert that this job service never attempts to run more than one job
     // at a time:
@@ -61,41 +59,41 @@ public abstract class MinidumpUploadJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         // Ensure we only run one job at a time.
-        synchronized (mRunningLock) {
-            assert !mRunningJob;
-            mRunningJob = true;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                assert !mRunningJob;
+                mRunningJob = true;
+            }
         }
-        mMinidumpUploader = createMinidumpUploader(params.getExtras());
-        mMinidumpUploader.uploadAllMinidumps(createJobFinishedCallback(params));
+        mMinidumpUploadJob = createMinidumpUploadJob(params.getExtras());
+        mMinidumpUploadJob.uploadAllMinidumps(createJobFinishedCallback(params));
         return true; // true = processing work on a separate thread, false = done already.
     }
 
     @Override
     public boolean onStopJob(JobParameters params) {
         Log.i(TAG, "Canceling pending uploads due to change in networking status.");
-        boolean reschedule = mMinidumpUploader.cancelUploads();
-        synchronized (mRunningLock) {
-            mRunningJob = false;
+        boolean reschedule = mMinidumpUploadJob.cancelUploads();
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                mRunningJob = false;
+            }
         }
         return reschedule;
     }
 
-    @Override
-    public void onDestroy() {
-        mMinidumpUploader = null;
-        super.onDestroy();
-    }
-
-    private MinidumpUploader.UploadsFinishedCallback createJobFinishedCallback(
+    private MinidumpUploadJob.UploadsFinishedCallback createJobFinishedCallback(
             final JobParameters params) {
-        return new MinidumpUploader.UploadsFinishedCallback() {
+        return new MinidumpUploadJob.UploadsFinishedCallback() {
             @Override
             public void uploadsFinished(boolean reschedule) {
                 if (reschedule) {
                     Log.i(TAG, "Some minidumps remain un-uploaded; rescheduling.");
                 }
-                synchronized (mRunningLock) {
-                    mRunningJob = false;
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    synchronized (mRunningLock) {
+                        mRunningJob = false;
+                    }
                 }
                 MinidumpUploadJobService.this.jobFinished(params, reschedule);
             }
@@ -103,8 +101,12 @@ public abstract class MinidumpUploadJobService extends JobService {
     }
 
     /**
+     * Create a MinidumpUploadJob instance that implements required logic for uploading minidumps
+     * based upon data (generally containing permission information) captured at the time the job
+     * was scheduled.
+     *
      * @param extras Any extra data persisted for this job.
-     * @return The minidump uploader that jobs should use.
+     * @return The minidump upload job that jobs should use to manage minidump uploading.
      */
-    protected abstract MinidumpUploader createMinidumpUploader(PersistableBundle extras);
+    protected abstract MinidumpUploadJob createMinidumpUploadJob(PersistableBundle extras);
 }

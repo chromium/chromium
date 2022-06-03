@@ -5,13 +5,12 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/components/tether/connect_tethering_operation.h"
 #include "chromeos/components/tether/host_connection_metrics_logger.h"
 #include "chromeos/components/tether/tether_connector.h"
 #include "chromeos/network/network_connection_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -59,12 +58,15 @@ class TetherConnectorImpl : public TetherConnector,
       HostConnectionMetricsLogger* host_connection_metrics_logger,
       DisconnectTetheringRequestSender* disconnect_tethering_request_sender,
       WifiHotspotDisconnector* wifi_hotspot_disconnector);
+
+  TetherConnectorImpl(const TetherConnectorImpl&) = delete;
+  TetherConnectorImpl& operator=(const TetherConnectorImpl&) = delete;
+
   ~TetherConnectorImpl() override;
 
-  void ConnectToNetwork(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback) override;
+  void ConnectToNetwork(const std::string& tether_network_guid,
+                        base::OnceClosure success_callback,
+                        StringErrorCallback error_callback) override;
 
   // Returns whether the connection attempt was successfully canceled.
   bool CancelConnectionAttempt(const std::string& tether_network_guid) override;
@@ -91,7 +93,7 @@ class TetherConnectorImpl : public TetherConnector,
 
   void OnTetherHostToConnectFetched(
       const std::string& device_id,
-      base::Optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
+      absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
   void OnWifiConnection(const std::string& device_id,
                         const std::string& wifi_network_guid);
   HostConnectionMetricsLogger::ConnectionToHostResult
@@ -116,13 +118,11 @@ class TetherConnectorImpl : public TetherConnector,
 
   bool did_send_successful_request_ = false;
   std::string device_id_pending_connection_;
-  base::Closure success_callback_;
-  network_handler::StringResultCallback error_callback_;
+  base::OnceClosure success_callback_;
+  StringErrorCallback error_callback_;
   std::unique_ptr<ConnectTetheringOperation> connect_tethering_operation_;
   base::Time connect_to_host_start_time_;
   base::WeakPtrFactory<TetherConnectorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherConnectorImpl);
 };
 
 }  // namespace tether

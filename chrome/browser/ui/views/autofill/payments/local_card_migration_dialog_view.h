@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -25,27 +25,21 @@ class LocalCardMigrationOfferView;
 class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
                                      public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(LocalCardMigrationDialogView);
   LocalCardMigrationDialogView(LocalCardMigrationDialogController* controller,
                                content::WebContents* web_contents);
+  LocalCardMigrationDialogView(const LocalCardMigrationDialogView&) = delete;
+  LocalCardMigrationDialogView& operator=(const LocalCardMigrationDialogView&) =
+      delete;
   ~LocalCardMigrationDialogView() override;
 
-  // LocalCardMigrationDialog
+  // LocalCardMigrationDialog:
   void ShowDialog() override;
   void CloseDialog() override;
 
-  // views::BubbleDialogDelegateView
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  int GetDialogButtons() const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  bool Accept() override;
-  bool Cancel() override;
-  bool Close() override;
-  void WindowClosing() override;
-
   // Called by MigratableCardView when the user clicks the trash can button.
   // |guid| is the GUID of the credit card to be deleted.
+  void OnCardCheckboxToggled();
   void DeleteCard(const std::string& guid);
   void UpdateLayout();
 
@@ -53,9 +47,13 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   friend class LocalCardMigrationBrowserTest;
 
   void ConstructView();
+  void OnDialogAccepted();
+  void OnDialogCancelled();
+  void OnWindowClosing();
+  bool GetEnableOkButton() const;
 
-  base::string16 GetOkButtonLabel() const;
-  base::string16 GetCancelButtonLabel() const;
+  std::u16string GetOkButtonLabel() const;
+  std::u16string GetCancelButtonLabel() const;
 
   LocalCardMigrationDialogController* controller_;
 
@@ -68,8 +66,6 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   // The view containing a list of cards. It is the content of the scroll bar.
   // Owned by the LocalCardMigrationOfferView.
   views::View* card_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialogView);
 };
 
 }  // namespace autofill

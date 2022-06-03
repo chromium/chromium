@@ -13,6 +13,8 @@
 #   * assumes that there is only one relevant element with the
 #     IDS_ACCEPT_LANGUAGES attribute
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -40,10 +42,10 @@ FOOTER = "};"
 
 def main():
   with open(sys.argv[1] + "/accept_languages_table.h", "w+") as f:
-    print >>f, HEADER
+    print(HEADER, file=f)
     for (locale, accept_langs) in gen_accept_langs_table().items():
-      print >>f, LINE(locale, accept_langs)
-    print >>f, FOOTER
+      print(LINE(locale, accept_langs), file=f)
+    print(FOOTER, file=f)
 
 if __name__ == "__main__":
   main()

@@ -3,6 +3,14 @@
 # found in the LICENSE file.
 
 
+import sys
+
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+    long = int
+    basestring = str
+
+
 def make_copy(obj, memo=None):
     """
     Creates a copy of the given object, which should be an IR or part of IR.
@@ -48,11 +56,11 @@ def make_copy(obj, memo=None):
     if isinstance(obj, dict):
         return memoize(
             cls([(make_copy(key, memo), make_copy(value, memo))
-                 for key, value in obj.iteritems()]))
+                 for key, value in obj.items()]))
 
     if hasattr(obj, '__dict__'):
         copy = memoize(cls.__new__(cls))
-        for name, value in obj.__dict__.iteritems():
+        for name, value in obj.__dict__.items():
             setattr(copy, name, make_copy(value, memo))
         return copy
 

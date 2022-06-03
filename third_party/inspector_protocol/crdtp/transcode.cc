@@ -26,7 +26,7 @@ int Transcode(const std::string& cmd,
     in += buffer.substr(0, input_file.gcount());
   }
   Status status;
-  std::string out;
+  std::vector<uint8_t> out;
   if (cmd == "--json-to-cbor") {
     status = json::ConvertJSONToCBOR(SpanFrom(in), &out);
   } else if (cmd == "--cbor-to-json") {
@@ -44,7 +44,7 @@ int Transcode(const std::string& cmd,
     std::cerr << "failed to open " << output_file_name << "\n";
     return 1;
   }
-  output_file.write(out.data(), out.size());
+  output_file.write(reinterpret_cast<const char*>(out.data()), out.size());
   return 0;
 }
 }  // namespace

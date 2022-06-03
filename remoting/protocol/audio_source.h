@@ -17,7 +17,7 @@ namespace protocol {
 
 class AudioSource {
  public:
-  typedef base::Callback<void(std::unique_ptr<AudioPacket> packet)>
+  typedef base::RepeatingCallback<void(std::unique_ptr<AudioPacket> packet)>
       PacketCapturedCallback;
 
   virtual ~AudioSource() {}

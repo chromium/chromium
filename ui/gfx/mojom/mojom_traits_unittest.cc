@@ -10,22 +10,22 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/accelerated_widget_mojom_traits.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/selection_bound.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || defined(USE_X11) || defined(OS_MACOSX)
+#if defined(USE_OZONE) || defined(OS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
@@ -35,6 +35,9 @@ gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
 class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
  public:
   StructTraitsTest() {}
+
+  StructTraitsTest(const StructTraitsTest&) = delete;
+  StructTraitsTest& operator=(const StructTraitsTest&) = delete;
 
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
@@ -67,8 +70,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructTraitsTest);
 };
 
 }  // namespace
@@ -138,8 +139,8 @@ TEST_F(StructTraitsTest, Transform) {
 TEST_F(StructTraitsTest, AcceleratedWidget) {
   gfx::AcceleratedWidget input(CastToAcceleratedWidget(1001));
   gfx::AcceleratedWidget output;
-  mojo::test::SerializeAndDeserialize<gfx::mojom::AcceleratedWidget>(&input,
-                                                                     &output);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::AcceleratedWidget>(input,
+                                                                     output);
   EXPECT_EQ(input, output);
 }
 
@@ -170,14 +171,14 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
   EXPECT_TRUE(output_memory.Map().IsValid());
 
-#if defined(OS_LINUX) || defined(USE_OZONE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
   gfx::GpuMemoryBufferHandle handle2;
   const uint64_t kSize = kOffset + kStride;
   handle2.type = gfx::NATIVE_PIXMAP;
   handle2.id = kId;
   handle2.offset = kOffset;
   handle2.stride = kStride;
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const uint64_t kModifier = 2;
   base::ScopedFD buffer_handle;
   handle2.native_pixmap_handle.modifier = kModifier;
@@ -192,7 +193,7 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
                                                    std::move(buffer_handle));
   remote->EchoGpuMemoryBufferHandle(std::move(handle2), &output);
   EXPECT_EQ(gfx::NATIVE_PIXMAP, output.type);
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   EXPECT_EQ(kModifier, output.native_pixmap_handle.modifier);
 #elif defined(OS_FUCHSIA)
   EXPECT_EQ(handle2.native_pixmap_handle.buffer_collection_id,
@@ -239,18 +240,23 @@ TEST_F(StructTraitsTest, BufferUsage) {
 }
 
 TEST_F(StructTraitsTest, PresentationFeedback) {
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(12);
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(23);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Seconds(12);
+  base::TimeDelta interval = base::Milliseconds(23);
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
+  input.available_timestamp = base::TimeTicks() + base::Milliseconds(20);
+  input.ready_timestamp = base::TimeTicks() + base::Milliseconds(21);
+  input.latch_timestamp = base::TimeTicks() + base::Milliseconds(22);
   PresentationFeedback output;
-  mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(
-      &input, &output);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(input,
+                                                                        output);
   EXPECT_EQ(timestamp, output.timestamp);
   EXPECT_EQ(interval, output.interval);
   EXPECT_EQ(flags, output.flags);
+  EXPECT_EQ(input.available_timestamp, output.available_timestamp);
+  EXPECT_EQ(input.ready_timestamp, output.ready_timestamp);
+  EXPECT_EQ(input.latch_timestamp, output.latch_timestamp);
 }
 
 TEST_F(StructTraitsTest, RRectF) {

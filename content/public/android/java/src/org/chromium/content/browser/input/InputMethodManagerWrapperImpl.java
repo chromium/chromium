@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.input;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.IBinder;
@@ -13,9 +14,16 @@ import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.InputMethodManager;
 
-import org.chromium.base.Log;
-import org.chromium.content_public.browser.InputMethodManagerWrapper;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.InputMethodManagerWrapper;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
+
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -28,13 +36,55 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     private final Context mContext;
 
-    public InputMethodManagerWrapperImpl(Context context) {
+    private WindowAndroid mWindowAndroid;
+
+    private Delegate mDelegate;
+
+    private Runnable mPendingRunnableOnInputConnection;
+
+    public InputMethodManagerWrapperImpl(
+            Context context, WindowAndroid windowAndroid, Delegate delegate) {
         if (DEBUG_LOGS) Log.i(TAG, "Constructor");
         mContext = context;
+        mWindowAndroid = windowAndroid;
+        mDelegate = delegate;
+    }
+
+    @Override
+    public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
+        mWindowAndroid = windowAndroid;
+    }
+
+    private Context getContextForMultiDisplay() {
+        Activity activity = getActivityFromWindowAndroid(mWindowAndroid);
+        if (DEBUG_LOGS) {
+            if (activity == null) Log.i(TAG, "activity is null.");
+        }
+        return activity == null ? mContext : activity;
+    }
+
+    /**
+     * Get an Activity from WindowAndroid.
+     *
+     * @param windowAndroid
+     * @return The Activity. May return null if it fails.
+     */
+    private static Activity getActivityFromWindowAndroid(WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+        // Unwrap this when we actually need it.
+        WeakReference<Activity> weakRef = windowAndroid.getActivity();
+        if (weakRef == null) return null;
+        return weakRef.get();
     }
 
     private InputMethodManager getInputMethodManager() {
-        return (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        // For multi-display case, we need to have the correct activity context.
+        // However, for Chrome, we wrap application context as container view's
+        // context in order to prevent leakage. (e.g. see TabImpl.java).
+        // This is a workaround to update mContext with the activity from
+        // ActivityWindowAndroid. https://crbug.com/1021403
+        Context context = getContextForMultiDisplay();
+        return (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
     @Override
@@ -45,13 +95,60 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         manager.restartInput(view);
     }
 
+    @VisibleForTesting
+    protected boolean hasCorrectDisplayId(Context context, Activity activity) {
+        // We did not support multi-display before O.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
+
+        int contextDisplayId = getDisplayId(context);
+        int activityDisplayId = getDisplayId(activity);
+        if (activityDisplayId != contextDisplayId) {
+            Log.w(TAG,
+                    "Activity's display ID(%d) does not match context's display ID(%d). "
+                            + "Using a workaround to show soft input on the correct display...",
+                    activityDisplayId, contextDisplayId);
+            return false;
+        }
+        return true;
+    }
+
+    @VisibleForTesting
+    protected int getDisplayId(Context context) {
+        return DisplayAndroid.getNonMultiDisplay(context).getDisplayId();
+    }
+
     @Override
     public void showSoftInput(View view, int flags, ResultReceiver resultReceiver) {
         if (DEBUG_LOGS) Log.i(TAG, "showSoftInput");
+        mPendingRunnableOnInputConnection = null;
+        Activity activity = getActivityFromWindowAndroid(mWindowAndroid);
+        if (activity != null && !hasCorrectDisplayId(mContext, activity)) {
+            // https://crbug.com/1021403
+            // This is a workaround for multi-display case. We need this as long as
+            // Chrome uses the application context for creating the content view.
+            // Note that this will create a few ms delay in showing keyboard.
+            activity.getWindow().setLocalFocus(true, true);
+
+            if (mDelegate != null && !mDelegate.hasInputConnection()) {
+                // Delay keyboard showing until input connection is established.
+                mPendingRunnableOnInputConnection = () -> {
+                    if (isActive(view)) showSoftInputInternal(view, flags, resultReceiver);
+                };
+                return;
+            }
+            // If we already have InputConnection, then show soft input now.
+        }
+        showSoftInputInternal(view, flags, resultReceiver);
+    }
+
+    private void showSoftInputInternal(View view, int flags, ResultReceiver resultReceiver) {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites(); // crbug.com/616283
         try {
             InputMethodManager manager = getInputMethodManager();
-            if (manager != null) manager.showSoftInput(view, flags, resultReceiver);
+            if (manager != null) {
+                boolean result = manager.showSoftInput(view, flags, resultReceiver);
+                if (DEBUG_LOGS) Log.i(TAG, "showSoftInputInternal: " + view + ", " + result);
+            }
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
@@ -69,6 +166,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     public boolean hideSoftInputFromWindow(
             IBinder windowToken, int flags, ResultReceiver resultReceiver) {
         if (DEBUG_LOGS) Log.i(TAG, "hideSoftInputFromWindow");
+        mPendingRunnableOnInputConnection = null;
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites(); // crbug.com/616283
         try {
             InputMethodManager manager = getInputMethodManager();
@@ -94,11 +192,9 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     @Override
     public void updateCursorAnchorInfo(View view, CursorAnchorInfo cursorAnchorInfo) {
         if (DEBUG_LOGS) Log.i(TAG, "updateCursorAnchorInfo");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            InputMethodManager manager = getInputMethodManager();
-            if (manager == null) return;
-            manager.updateCursorAnchorInfo(view, cursorAnchorInfo);
-        }
+        InputMethodManager manager = getInputMethodManager();
+        if (manager == null) return;
+        manager.updateCursorAnchorInfo(view, cursorAnchorInfo);
     }
 
     @Override
@@ -125,5 +221,13 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
             if (DEBUG_LOGS) Log.i(TAG, "notifyUserAction failed");
             return;
         }
+    }
+
+    @Override
+    public void onInputConnectionCreated() {
+        if (mPendingRunnableOnInputConnection == null) return;
+        Runnable runnable = mPendingRunnableOnInputConnection;
+        mPendingRunnableOnInputConnection = null;
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
     }
 }

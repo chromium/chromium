@@ -24,7 +24,7 @@
  */
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_device_motion_event_rotation_rate_init.h"
 
 namespace blink {
 
@@ -36,9 +36,9 @@ DeviceMotionEventRotationRate::Create(double alpha, double beta, double gamma) {
 
 DeviceMotionEventRotationRate* DeviceMotionEventRotationRate::Create(
     const DeviceMotionEventRotationRateInit* init) {
-  double alpha = init->hasAlpha() ? init->alpha() : NAN;
-  double beta = init->hasBeta() ? init->beta() : NAN;
-  double gamma = init->hasGamma() ? init->gamma() : NAN;
+  double alpha = init->hasAlphaNonNull() ? init->alphaNonNull() : NAN;
+  double beta = init->hasBetaNonNull() ? init->betaNonNull() : NAN;
+  double gamma = init->hasGammaNonNull() ? init->gammaNonNull() : NAN;
   return DeviceMotionEventRotationRate::Create(alpha, beta, gamma);
 }
 
@@ -51,18 +51,21 @@ bool DeviceMotionEventRotationRate::HasRotationData() const {
   return !std::isnan(alpha_) || !std::isnan(beta_) || !std::isnan(gamma_);
 }
 
-double DeviceMotionEventRotationRate::alpha(bool& is_null) const {
-  is_null = std::isnan(alpha_);
+absl::optional<double> DeviceMotionEventRotationRate::alpha() const {
+  if (std::isnan(alpha_))
+    return absl::nullopt;
   return alpha_;
 }
 
-double DeviceMotionEventRotationRate::beta(bool& is_null) const {
-  is_null = std::isnan(beta_);
+absl::optional<double> DeviceMotionEventRotationRate::beta() const {
+  if (std::isnan(beta_))
+    return absl::nullopt;
   return beta_;
 }
 
-double DeviceMotionEventRotationRate::gamma(bool& is_null) const {
-  is_null = std::isnan(gamma_);
+absl::optional<double> DeviceMotionEventRotationRate::gamma() const {
+  if (std::isnan(gamma_))
+    return absl::nullopt;
   return gamma_;
 }
 

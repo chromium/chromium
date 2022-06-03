@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
-#import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +30,9 @@ const CGFloat kUnreadIndicatorViewSpacing = 10.0;
 
 // Height of |unreadIndicatorView|.
 const CGFloat kUnreadIndicatorViewHeight = 6.0;
+
+// Damping ratio of animating a change to the displayed badge.
+const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 }  // namespace
 
@@ -88,14 +91,14 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   self.fullScreenBadge = nil;
   if (displayedBadgeItem) {
     BadgeButton* newButton = [self.buttonFactory
-        getBadgeButtonForBadgeType:displayedBadgeItem.badgeType];
+        badgeButtonForBadgeType:displayedBadgeItem.badgeType];
     [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
                   animated:NO];
     self.displayedBadge = newButton;
   }
   if (fullscreenBadgeItem) {
     self.fullScreenBadge = [self.buttonFactory
-        getBadgeButtonForBadgeType:fullscreenBadgeItem.badgeType];
+        badgeButtonForBadgeType:fullscreenBadgeItem.badgeType];
   }
 }
 
@@ -105,7 +108,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     if (!self.fullScreenBadge ||
         self.fullScreenBadge.badgeType != fullscreenBadgeItem.badgeType) {
       BadgeButton* newButton = [self.buttonFactory
-          getBadgeButtonForBadgeType:fullscreenBadgeItem.badgeType];
+          badgeButtonForBadgeType:fullscreenBadgeItem.badgeType];
       self.fullScreenBadge = newButton;
     }
   } else {
@@ -120,11 +123,14 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
              animated:YES];
     } else {
       BadgeButton* newButton = [self.buttonFactory
-          getBadgeButtonForBadgeType:displayedBadgeItem.badgeType];
+          badgeButtonForBadgeType:displayedBadgeItem.badgeType];
       [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
                     animated:NO];
       self.displayedBadge = newButton;
     }
+    // Disable button if banner is being displayed.
+    [self.displayedBadge
+        setEnabled:!(displayedBadgeItem.badgeState & BadgeStatePresented)];
   } else {
     self.displayedBadge = nil;
   }
@@ -137,8 +143,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     self.unreadIndicatorView = [[UIView alloc] init];
     self.unreadIndicatorView.layer.cornerRadius =
         kUnreadIndicatorViewHeight / 2;
-    self.unreadIndicatorView.backgroundColor =
-        [UIColor colorNamed:kToolbarButtonColor];
+    self.unreadIndicatorView.backgroundColor = [UIColor colorNamed:kBlueColor];
     self.unreadIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     self.unreadIndicatorView.accessibilityIdentifier =
         kBadgeUnreadIndicatorAccessibilityIdentifier;
@@ -173,6 +178,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
                                   kFullScreenProgressThreshold,
                               0);
     self.fullScreenBadge.alpha = alphaValue;
+    self.displayedBadge.hidden = YES;
   } else {
     self.fullScreenBadge.fullScreenOn = NO;
     // Fade in/out the FullScreen badge with the FullScreen off configurations
@@ -181,6 +187,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     CGFloat alphaValue = fmax((progress - kFullScreenProgressThreshold) /
                                   (1 - kFullScreenProgressThreshold),
                               0);
+    self.displayedBadge.hidden = NO;
     self.displayedBadge.alpha = alphaValue;
     self.fullScreenBadge.alpha = alphaValue;
   }
@@ -189,6 +196,10 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 #pragma mark - Getter/Setter
 
 - (void)setDisplayedBadge:(BadgeButton*)badgeButton {
+  if (badgeButton.badgeType == self.displayedBadge.badgeType) {
+    return;
+  }
+
   [self.stackView removeArrangedSubview:_displayedBadge];
   [_displayedBadge removeFromSuperview];
   if (!badgeButton) {
@@ -197,7 +208,21 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
     return;
   }
   _displayedBadge = badgeButton;
+
+  // Configure the initial state of the animation.
+  self.view.alpha = 0;
+  self.view.transform = CGAffineTransformMakeScale(0.1, 0.1);
   [self.stackView addArrangedSubview:_displayedBadge];
+  [UIView animateWithDuration:ios::material::kDuration2
+                        delay:0
+       usingSpringWithDamping:kUpdateDisplayedBadgeAnimationDamping
+        initialSpringVelocity:0
+                      options:UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     self.view.alpha = 1;
+                     self.view.transform = CGAffineTransformIdentity;
+                   }
+                   completion:nil];
   NamedGuide* guide = [NamedGuide guideWithName:kBadgeOverflowMenuGuide
                                            view:_displayedBadge];
   guide.constrainedView = _displayedBadge;

@@ -32,6 +32,10 @@ class FuzzedSocketFactory : public ClientSocketFactory {
   // long as their calls into it are made on the CLientSocketFactory's thread
   // and the calls are deterministic.
   explicit FuzzedSocketFactory(FuzzedDataProvider* data_provider);
+
+  FuzzedSocketFactory(const FuzzedSocketFactory&) = delete;
+  FuzzedSocketFactory& operator=(const FuzzedSocketFactory&) = delete;
+
   ~FuzzedSocketFactory() override;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -42,6 +46,7 @@ class FuzzedSocketFactory : public ClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
       const NetLogSource& source) override;
 
@@ -70,8 +75,6 @@ class FuzzedSocketFactory : public ClientSocketFactory {
  private:
   FuzzedDataProvider* data_provider_;
   bool fuzz_connect_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedSocketFactory);
 };
 
 }  // namespace net

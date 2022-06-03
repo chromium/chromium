@@ -25,6 +25,10 @@ class APIBindingsSystem;
 // The base class to test the APIBindingsSystem. This allows subclasses to
 // retrieve API schemas differently.
 class APIBindingsSystemTest : public APIBindingTest {
+ public:
+  APIBindingsSystemTest(const APIBindingsSystemTest&) = delete;
+  APIBindingsSystemTest& operator=(const APIBindingsSystemTest&) = delete;
+
  protected:
   // A struct representing a "fake" API, including the name and specification.
   // The specification is expected to be a JSON-serializable string that
@@ -54,8 +58,8 @@ class APIBindingsSystemTest : public APIBindingTest {
       v8::Local<v8::Object>* secondary_parent);
 
   // Simulates logging an error to the console.
-  virtual void AddConsoleError(v8::Local<v8::Context> context,
-                               const std::string& error) {}
+  void AddConsoleError(v8::Local<v8::Context> context,
+                       const std::string& error);
 
   // Returns the DictionaryValue representing the schema with the given API
   // name.
@@ -90,6 +94,9 @@ class APIBindingsSystemTest : public APIBindingTest {
   }
   void reset_last_request() { last_request_.reset(); }
   APIBindingsSystem* bindings_system() { return bindings_system_.get(); }
+  const std::vector<std::string>& console_errors() const {
+    return console_errors_;
+  }
 
  private:
   // The API schemas for the fake APIs.
@@ -103,7 +110,8 @@ class APIBindingsSystemTest : public APIBindingTest {
   // there is none.
   std::unique_ptr<APIRequestHandler::Request> last_request_;
 
-  DISALLOW_COPY_AND_ASSIGN(APIBindingsSystemTest);
+  // A list for keeping track of simulated console errors.
+  std::vector<std::string> console_errors_;
 };
 
 }  // namespace extensions

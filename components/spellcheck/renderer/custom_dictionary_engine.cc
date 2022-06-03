@@ -35,7 +35,7 @@ void CustomDictionaryEngine::OnCustomDictionaryChanged(
     dictionary_.erase(base::UTF8ToUTF16(word));
 }
 
-bool CustomDictionaryEngine::SpellCheckWord(const base::string16& text,
+bool CustomDictionaryEngine::SpellCheckWord(const std::u16string& text,
                                             size_t misspelling_start,
                                             size_t misspelling_len) {
   // The text to be checked is empty on OSX(async) right now.

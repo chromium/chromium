@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "net/disk_cache/simple/simple_backend_impl.h"
+#include "base/callback_helpers.h"
+#include "base/task/thread_pool.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -25,12 +27,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/prioritized_task_runner.h"
@@ -46,8 +46,6 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/simple/simple_version_upgrade.h"
 
-using base::Callback;
-using base::Closure;
 using base::FilePath;
 using base::Time;
 using base::DirectoryExists;
@@ -137,13 +135,11 @@ void RunOperationAndCallback(
   if (!backend)
     return;
 
-  base::RepeatingCallback<void(int)> copyable_callback;
-  if (operation_callback)
-    copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(operation_callback));
-  const int operation_result = std::move(operation).Run(copyable_callback);
-  if (operation_result != net::ERR_IO_PENDING && copyable_callback)
-    copyable_callback.Run(operation_result);
+  auto split_callback = base::SplitOnceCallback(std::move(operation_callback));
+  const int operation_result =
+      std::move(operation).Run(std::move(split_callback.first));
+  if (operation_result != net::ERR_IO_PENDING && split_callback.second)
+    std::move(split_callback.second).Run(operation_result);
 }
 
 // Same but for things that work with EntryResult.
@@ -154,13 +150,13 @@ void RunEntryResultOperationAndCallback(
   if (!backend)
     return;
 
-  base::RepeatingCallback<void(EntryResult)> copyable_callback;
-  if (operation_callback)
-    copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(operation_callback));
-  EntryResult operation_result = std::move(operation).Run(copyable_callback);
-  if (operation_result.net_error() != net::ERR_IO_PENDING && copyable_callback)
-    copyable_callback.Run(std::move(operation_result));
+  auto split_callback = base::SplitOnceCallback(std::move(operation_callback));
+  EntryResult operation_result =
+      std::move(operation).Run(std::move(split_callback.first));
+  if (operation_result.net_error() != net::ERR_IO_PENDING &&
+      split_callback.second) {
+    std::move(split_callback.second).Run(std::move(operation_result));
+  }
 }
 
 void RecordIndexLoad(net::CacheType cache_type,
@@ -176,17 +172,18 @@ void RecordIndexLoad(net::CacheType cache_type,
   }
 }
 
+SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
+  return (type == net::DISK_CACHE || type == net::GENERATED_BYTE_CODE_CACHE ||
+          type == net::GENERATED_NATIVE_CODE_CACHE ||
+          type == net::GENERATED_WEBUI_BYTE_CODE_CACHE)
+             ? SimpleEntryImpl::OPTIMISTIC_OPERATIONS
+             : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS;
+}
+
 }  // namespace
 
 const base::Feature SimpleBackendImpl::kPrioritizedSimpleCacheTasks{
-    "PrioritizedSimpleCacheTasks", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Static function which is called by base::trace_event::EstimateMemoryUsage()
-// to estimate the memory of SimpleEntryImpl* type.
-// This needs to be in disk_cache namespace.
-size_t EstimateMemoryUsage(const SimpleEntryImpl* const& entry_impl) {
-  return sizeof(SimpleEntryImpl) + entry_impl->EstimateMemoryUsage();
-}
+    "PrioritizedSimpleCacheTasks", base::FEATURE_ENABLED_BY_DEFAULT};
 
 class SimpleBackendImpl::ActiveEntryProxy
     : public SimpleEntryImpl::ActiveEntryProxy {
@@ -226,16 +223,11 @@ SimpleBackendImpl::SimpleBackendImpl(
       file_tracker_(file_tracker ? file_tracker
                                  : g_simple_file_tracker.Pointer()),
       path_(path),
-      cache_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_BLOCKING,
+      cache_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       orig_max_size_(max_bytes),
-      entry_operations_mode_((cache_type == net::DISK_CACHE ||
-                              cache_type == net::GENERATED_BYTE_CODE_CACHE ||
-                              cache_type == net::GENERATED_NATIVE_CODE_CACHE)
-                                 ? SimpleEntryImpl::OPTIMISTIC_OPERATIONS
-                                 : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS),
+      entry_operations_mode_(CacheTypeToOperationsMode(cache_type)),
       post_doom_waiting_(
           base::MakeRefCounted<SimplePostDoomWaiterTable>(cache_type)),
       net_log_(net_log) {
@@ -259,8 +251,8 @@ void SimpleBackendImpl::SetTaskRunnerForTesting(
 }
 
 net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
-  auto worker_pool = base::CreateTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives(),
+  auto worker_pool = base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
@@ -593,27 +585,26 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
     if (!hashes_to_enumerate_)
       hashes_to_enumerate_ = backend_->index()->GetAllHashes();
 
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
-
     while (!hashes_to_enumerate_->empty()) {
       uint64_t entry_hash = hashes_to_enumerate_->back();
       hashes_to_enumerate_->pop_back();
       if (backend_->index()->Has(entry_hash)) {
-        EntryResultCallback continue_iteration =
-            base::BindOnce(&SimpleIterator::CheckIterationReturnValue,
-                           weak_factory_.GetWeakPtr(), copyable_callback);
+        auto split_callback = base::SplitOnceCallback(std::move(callback));
+        callback = std::move(split_callback.first);
+        EntryResultCallback continue_iteration = base::BindOnce(
+            &SimpleIterator::CheckIterationReturnValue,
+            weak_factory_.GetWeakPtr(), std::move(split_callback.second));
         EntryResult open_result = backend_->OpenEntryFromHash(
             entry_hash, std::move(continue_iteration));
         if (open_result.net_error() == net::ERR_IO_PENDING)
           return;
         if (open_result.net_error() != net::ERR_FAILED) {
-          copyable_callback.Run(std::move(open_result));
+          std::move(callback).Run(std::move(open_result));
           return;
         }
       }
     }
-    copyable_callback.Run(EntryResult::MakeError(net::ERR_FAILED));
+    std::move(callback).Run(EntryResult::MakeError(net::ERR_FAILED));
   }
 
   void CheckIterationReturnValue(EntryResultCallback callback,
@@ -644,21 +635,6 @@ void SimpleBackendImpl::GetStats(base::StringPairs* stats) {
 
 void SimpleBackendImpl::OnExternalCacheHit(const std::string& key) {
   index_->UseIfExists(simple_util::GetEntryHashKey(key));
-}
-
-size_t SimpleBackendImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(parent_absolute_name + "/simple_backend");
-
-  size_t size = base::trace_event::EstimateMemoryUsage(index_) +
-                base::trace_event::EstimateMemoryUsage(active_entries_);
-  // TODO(xunjieli): crbug.com/669108. Track |entries_pending_doom_| once
-  // base::Closure is suppported in memory_usage_estimator.h.
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
-  return size;
 }
 
 uint8_t SimpleBackendImpl::GetEntryInMemoryData(const std::string& key) {

@@ -11,11 +11,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/skia_util.h"
 
 namespace ash {
 namespace {
@@ -70,10 +70,10 @@ void Resize(const gfx::ImageSkia image,
 
           if (vertical_ratio > horizontal_ratio) {
             cropped_size = gfx::Size(
-                gfx::ToRoundedInt(new_width / vertical_ratio), orig_height);
+                base::ClampRound(new_width / vertical_ratio), orig_height);
           } else {
             cropped_size = gfx::Size(
-                orig_width, gfx::ToRoundedInt(new_height / horizontal_ratio));
+                orig_width, base::ClampRound(new_height / horizontal_ratio));
           }
           wallpaper_rect.ClampToCenteredSize(cropped_size);
           SkBitmap sub_image;

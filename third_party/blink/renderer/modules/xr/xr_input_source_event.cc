@@ -31,7 +31,7 @@ const AtomicString& XRInputSourceEvent::InterfaceName() const {
   return event_interface_names::kXRInputSourceEvent;
 }
 
-void XRInputSourceEvent::Trace(blink::Visitor* visitor) {
+void XRInputSourceEvent::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(input_source_);
   Event::Trace(visitor);

@@ -38,7 +38,7 @@ TEST(WebSocketCommonTest, IsValidSubprotocolString) {
                   static_cast<char>(i)) != kValidCharacters + length) {
       continue;
     }
-    char to_check = char{i};
+    char to_check = static_cast<char>(i);
     String s(&to_check, 1u);
     EXPECT_FALSE(WebSocketCommon::IsValidSubprotocolString(s));
   }

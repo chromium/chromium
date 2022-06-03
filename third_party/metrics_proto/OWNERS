@@ -3,6 +3,3 @@ file://base/metrics/OWNERS
 per-file sampled_profile.proto=wittman@chromium.org
 per-file call_stack_profile.proto=wittman@chromium.org
 per-file execution_context.proto=wittman@chromium.org
-
-# COMPONENT: Internals>Metrics
-# TEAM: chromium-dev@chromium.org

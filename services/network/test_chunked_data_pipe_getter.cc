@@ -4,7 +4,7 @@
 
 #include "services/network/test_chunked_data_pipe_getter.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {

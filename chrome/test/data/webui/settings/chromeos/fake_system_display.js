@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FakeChromeEvent} from '../../fake_chrome_event.js';
+// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * @fileoverview Fake implementation of chrome.system.display for testing.
  */
@@ -11,7 +17,7 @@ cr.define('settings', function() {
    * @constructor
    * @implements {SystemDisplay}
    */
-  function FakeSystemDisplay() {
+  /* #export */ function FakeSystemDisplay() {
     /** @type {!Array<!chrome.system.display.DisplayUnitInfo>} */
     this.fakeDisplays = [];
     this.fakeLayouts = [];
@@ -61,16 +67,16 @@ cr.define('settings', function() {
         callback();
       }
 
-      if (info.mirroringSourceId != undefined) {
+      if (info.mirroringSourceId !== undefined) {
         for (const d of this.fakeDisplays) {
           d.mirroringSourceId = info.mirroringSourceId;
         }
       }
 
-      if (info.isPrimary != undefined) {
+      if (info.isPrimary !== undefined) {
         let havePrimary = info.isPrimary;
         for (const d of this.fakeDisplays) {
-          if (d.id == id) {
+          if (d.id === id) {
             d.isPrimary = info.isPrimary;
           } else if (havePrimary) {
             d.isPrimary = false;
@@ -81,7 +87,7 @@ cr.define('settings', function() {
         }
         this.updateLayouts_();
       }
-      if (info.rotation != undefined) {
+      if (info.rotation !== undefined) {
         display.rotation = info.rotation;
       }
     },
@@ -106,7 +112,7 @@ cr.define('settings', function() {
     /** @override */
     setMirrorMode(info, callback) {
       let mirroringSourceId = '';
-      if (info.mode == chrome.system.display.MirrorMode.NORMAL) {
+      if (info.mode === chrome.system.display.MirrorMode.NORMAL) {
         // Select the primary display as the mirroring source.
         for (const d of this.fakeDisplays) {
           if (d.isPrimary) {
@@ -127,7 +133,7 @@ cr.define('settings', function() {
     /** @private */
     getFakeDisplay_(id) {
       const idx = this.fakeDisplays.findIndex(function(display) {
-        return display.id == id;
+        return display.id === id;
       });
       if (idx >= 0) {
         return this.fakeDisplays[idx];
@@ -156,5 +162,6 @@ cr.define('settings', function() {
     }
   };
 
+  // #cr_define_end
   return {FakeSystemDisplay: FakeSystemDisplay};
 });

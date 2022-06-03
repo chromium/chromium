@@ -4,19 +4,19 @@
 
 #include <stddef.h>
 
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/profiles/profile.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
 #endif
 
 namespace chrome {
 
-bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
-#if defined(OS_CHROMEOS)
+bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
     const ash::AcceleratorData& accel_data = ash::kAcceleratorData[i];
     if (accel_data.keycode == accelerator.key_code() &&
@@ -36,16 +36,8 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
   return false;
 }
 
-ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkTab() {
-  std::vector<AcceleratorMapping> accelerators = GetAcceleratorList();
-  for (size_t i = 0; i < accelerators.size(); ++i) {
-    if (accelerators[i].command_id == IDC_BOOKMARK_THIS_TAB) {
-      return ui::Accelerator(accelerators[i].keycode,
-                             accelerators[i].modifiers);
-    }
-  }
-
-  return ui::Accelerator();
+ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
+  return BrowserView::GetBrowserViewForBrowser(browser);
 }
 
 }  // namespace chrome

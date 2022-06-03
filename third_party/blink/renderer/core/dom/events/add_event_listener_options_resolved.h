@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_ADD_EVENT_LISTENER_OPTIONS_RESOLVED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_ADD_EVENT_LISTENER_OPTIONS_RESOLVED_H_
 
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
 
 namespace blink {
 
@@ -32,7 +32,7 @@ class CORE_EXPORT AddEventListenerOptionsResolved
   void SetPassiveSpecified(bool specified) { passive_specified_ = specified; }
   bool PassiveSpecified() const { return passive_specified_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool passive_forced_for_document_target_;

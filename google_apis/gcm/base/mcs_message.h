@@ -64,6 +64,9 @@ class GCM_EXPORT MCSMessage {
     Core(uint8_t tag,
          std::unique_ptr<const google::protobuf::MessageLite> protobuf);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     const google::protobuf::MessageLite& Get() const;
 
    private:
@@ -72,8 +75,6 @@ class GCM_EXPORT MCSMessage {
 
     // The immutable protobuf.
     std::unique_ptr<const google::protobuf::MessageLite> protobuf_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // These are cached separately to avoid having to recompute them.

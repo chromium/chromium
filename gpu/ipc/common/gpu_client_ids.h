@@ -12,9 +12,8 @@ namespace gpu {
 // special constants are used for particular clients that should always be
 // assigned the same ID.
 
-// The ID used by the InProcessCommandBuffer created in the GPU process for viz
-// display compositor.
-constexpr int32_t kInProcessCommandBufferClientId = -1;
+// The ID used by the display compositor running in the GPU process.
+constexpr int32_t kDisplayCompositorClientId = -1;
 
 // The ID used for storing shaders created by skia in the GPU process. Note that
 // this ID doesn't correspond to a real Gpu client/channel, but is required so

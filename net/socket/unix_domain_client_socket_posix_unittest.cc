@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
@@ -36,7 +37,7 @@ const char kSocketFilename[] = "socket_for_testing";
 bool UserCanConnectCallback(
     bool allow_user, const UnixDomainServerSocket::Credentials& credentials) {
   // Here peers are running in same process.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   EXPECT_EQ(getpid(), credentials.process_id);
 #endif
   EXPECT_EQ(getuid(), credentials.user_id);
@@ -45,7 +46,7 @@ bool UserCanConnectCallback(
 }
 
 UnixDomainServerSocket::AuthCallback CreateAuthCallback(bool allow_user) {
-  return base::Bind(&UserCanConnectCallback, allow_user);
+  return base::BindRepeating(&UserCanConnectCallback, allow_user);
 }
 
 // Connects socket synchronously.
@@ -215,7 +216,7 @@ TEST_F(UnixDomainClientSocketTest, ConnectWithAbstractNamespace) {
   UnixDomainClientSocket client_socket(socket_path_, kUseAbstractNamespace);
   EXPECT_FALSE(client_socket.IsConnected());
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   UnixDomainServerSocket server_socket(CreateAuthCallback(true),
                                        kUseAbstractNamespace);
   EXPECT_THAT(server_socket.BindAndListen(socket_path_, /*backlog=*/1), IsOk());
@@ -257,7 +258,7 @@ TEST_F(UnixDomainClientSocketTest,
   EXPECT_FALSE(client_socket.IsConnected());
 
   TestCompletionCallback connect_callback;
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   EXPECT_THAT(ConnectSynchronously(&client_socket),
               IsError(ERR_CONNECTION_REFUSED));
 #else

@@ -10,10 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/sequence_checker.h"
-#include "base/unguessable_token.h"
 #include "device/udev_linux/udev_watcher.h"
-#include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/serial_device_enumerator.h"
 
 namespace device {
@@ -22,13 +19,16 @@ namespace device {
 class SerialDeviceEnumeratorLinux : public SerialDeviceEnumerator,
                                     public UdevWatcher::Observer {
  public:
-  SerialDeviceEnumeratorLinux();
-  ~SerialDeviceEnumeratorLinux() override;
+  static std::unique_ptr<SerialDeviceEnumeratorLinux> Create();
 
-  // SerialDeviceEnumerator
-  std::vector<mojom::SerialPortInfoPtr> GetDevices() override;
-  base::Optional<base::FilePath> GetPathFromToken(
-      const base::UnguessableToken& token) override;
+  explicit SerialDeviceEnumeratorLinux(
+      const base::FilePath& tty_driver_info_path);
+
+  SerialDeviceEnumeratorLinux(const SerialDeviceEnumeratorLinux&) = delete;
+  SerialDeviceEnumeratorLinux& operator=(const SerialDeviceEnumeratorLinux&) =
+      delete;
+
+  ~SerialDeviceEnumeratorLinux() override;
 
   // UdevWatcher::Observer
   void OnDeviceAdded(ScopedUdevDevicePtr device) override;
@@ -39,12 +39,8 @@ class SerialDeviceEnumeratorLinux : public SerialDeviceEnumerator,
   void CreatePort(ScopedUdevDevicePtr device, const std::string& syspath);
 
   std::unique_ptr<UdevWatcher> watcher_;
-  std::map<base::UnguessableToken, mojom::SerialPortInfoPtr> ports_;
+  const base::FilePath tty_driver_info_path_;
   std::map<std::string, base::UnguessableToken> paths_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SerialDeviceEnumeratorLinux);
 };
 
 }  // namespace device

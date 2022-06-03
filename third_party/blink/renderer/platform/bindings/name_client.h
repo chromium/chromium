@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NAME_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NAME_CLIENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "v8/include/cppgc/name-provider.h"
 
 namespace blink {
 
@@ -36,26 +36,20 @@ namespace blink {
 //   Don't:
 //     class Bar : public GarbageCollected<Bar> {...};
 //     class Baz : public Bar, public NameClient {...};
-class PLATFORM_EXPORT NameClient {
+class PLATFORM_EXPORT NameClient : public cppgc::NameProvider {
  public:
-  static constexpr bool HideInternalName() {
-#if BUILDFLAG(RAW_HEAP_SNAPSHOTS) && \
-    (defined(COMPILER_GCC) || defined(__clang__))
-    return false;
-#else
-    return true;
-#endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-  }
-
   NameClient() = default;
-  ~NameClient() = default;
+  NameClient(const NameClient&) = delete;
+  NameClient& operator=(const NameClient&) = delete;
+  ~NameClient() override = default;
 
   // Human-readable name of this object. The DevTools heap snapshot uses
   // this method to show the object.
   virtual const char* NameInHeapSnapshot() const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NameClient);
+  const char* GetHumanReadableName() const final {
+    return NameInHeapSnapshot();
+  }
 };
 
 }  // namespace blink

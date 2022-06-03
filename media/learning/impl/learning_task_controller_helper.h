@@ -12,11 +12,12 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/impl/feature_provider.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -47,7 +48,9 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
   virtual ~LearningTaskControllerHelper();
 
   // See LearningTaskController::BeginObservation.
-  void BeginObservation(base::UnguessableToken id, FeatureVector features);
+  void BeginObservation(base::UnguessableToken id,
+                        FeatureVector features,
+                        absl::optional<ukm::SourceId> source_id);
   void CompleteObservation(base::UnguessableToken id,
                            const ObservationCompletion& completion);
   void CancelObservation(base::UnguessableToken id);

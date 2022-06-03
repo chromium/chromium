@@ -21,13 +21,13 @@ void TestNotifierSettingsController::GetNotifiers() {
   if (!no_notifiers_) {
     notifiers.emplace_back(message_center::NotifierId(
                                message_center::NotifierType::APPLICATION, "id"),
-                           base::ASCIIToUTF16("title"), true /* enabled */,
-                           false /* enforced */, gfx::ImageSkia());
+                           u"title", true /* enabled */, false /* enforced */,
+                           gfx::ImageSkia());
     notifiers.emplace_back(
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "id2"),
-        base::ASCIIToUTF16("other title"), false /* enabled */,
-        false /* enforced */, gfx::ImageSkia());
+        u"other title", false /* enabled */, false /* enforced */,
+        gfx::ImageSkia());
   }
 
   for (auto& observer : observers_)

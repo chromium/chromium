@@ -7,15 +7,17 @@
 
 #include <stdint.h>
 
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
+#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
-namespace url {
-class Origin;
+namespace network {
+struct CrossOriginEmbedderPolicy;
 }
 
 namespace content {
@@ -28,11 +30,13 @@ class CacheStorageContextImpl;
 // from other sequences.
 class CacheStorageDispatcherHost {
  public:
-  CacheStorageDispatcherHost();
-  ~CacheStorageDispatcherHost();
+  explicit CacheStorageDispatcherHost(CacheStorageContextImpl* context);
 
-  // Must be called before AddReceiver().
-  void Init(CacheStorageContextImpl* context);
+  CacheStorageDispatcherHost(const CacheStorageDispatcherHost&) = delete;
+  CacheStorageDispatcherHost& operator=(const CacheStorageDispatcherHost&) =
+      delete;
+
+  ~CacheStorageDispatcherHost();
 
   // Binds the CacheStorage Mojo receiver to this instance.
   // NOTE: The same CacheStorageDispatcherHost instance may be bound to
@@ -40,8 +44,13 @@ class CacheStorageDispatcherHost {
   // BindingSet's context. This guarantees that the browser process uses the
   // origin of the client known at the binding time, instead of relying on the
   // client to provide its origin at every method call.
-  void AddReceiver(mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
-                   const url::Origin& origin);
+  void AddReceiver(
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter,
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
  private:
   class CacheStorageImpl;
@@ -52,16 +61,17 @@ class CacheStorageDispatcherHost {
       std::unique_ptr<CacheImpl> cache_impl,
       mojo::PendingAssociatedReceiver<blink::mojom::CacheStorageCache>
           receiver);
-  CacheStorageHandle OpenCacheStorage(const url::Origin& origin);
+  CacheStorageHandle OpenCacheStorage(const blink::StorageKey& storage_key,
+                                      storage::mojom::CacheStorageOwner owner);
 
-  scoped_refptr<CacheStorageContextImpl> context_;
+  // `this` is owned by `context_`.
+  CacheStorageContextImpl* const context_;
 
   mojo::UniqueReceiverSet<blink::mojom::CacheStorage> receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CacheStorageCache>
       cache_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageDispatcherHost);
 };
 
 }  // namespace content

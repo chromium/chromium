@@ -4,26 +4,61 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_update_component_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+class Waiter : public BrowserListObserver {
+ public:
+  static void WaitForNewBrowser() {
+    base::RunLoop loop;
+    Waiter waiter(loop.QuitClosure());
+    loop.Run();
+  }
+
+ private:
+  explicit Waiter(base::OnceClosure callback) : callback_{std::move(callback)} {
+    BrowserList::AddObserver(this);
+  }
+
+  ~Waiter() override { BrowserList::RemoveObserver(this); }
+
+  void OnBrowserAdded(Browser*) override { std::move(callback_).Run(); }
+
+  base::OnceClosure callback_;
+};
+}  // namespace
 
 class CrostiniUpdateComponentViewBrowserTest
     : public CrostiniDialogBrowserTest {
  public:
   CrostiniUpdateComponentViewBrowserTest()
-      : CrostiniDialogBrowserTest(true /*register_termina*/) {}
+      : CrostiniDialogBrowserTest(true /*register_termina*/) {
+    // TODO(crbug/953544) DLC makes this entire feature redundant, so once we're
+    // committed to it delete all of this.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kCrostiniUseDlc);
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -59,7 +94,7 @@ class CrostiniUpdateComponentViewBrowserTest
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpdateComponentViewBrowserTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test the dialog is actually launched.
@@ -94,28 +129,41 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
                        LaunchAppOnline_UpgradeNeeded) {
   base::HistogramTester histogram_tester;
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->MaybeUpgradeCrostini();
+      ->MaybeUpdateCrostini();
 
   ExpectNoView();
 
   UnregisterTermina();
   crostini::LaunchCrostiniApp(browser()->profile(),
-                              crostini::kCrostiniTerminalId, 0);
+                              crostini::kCrostiniTerminalSystemAppId, 0);
   ExpectNoView();
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
                        LaunchAppOffline_UpgradeNeeded) {
+  // Ensure Terminal System App is installed.
+  web_app::WebAppProvider::GetForTest(browser()->profile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+
   base::HistogramTester histogram_tester;
   SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->MaybeUpgradeCrostini();
+      ->MaybeUpdateCrostini();
 
   ExpectNoView();
 
   UnregisterTermina();
   crostini::LaunchCrostiniApp(browser()->profile(),
-                              crostini::kCrostiniTerminalId, 0);
+                              crostini::kCrostiniTerminalSystemAppId, 0);
+  Waiter::WaitForNewBrowser();
+
+  // For Terminal System App, we must wait for browser to load.
+  Browser* terminal_browser = web_app::FindSystemWebAppBrowser(
+      browser()->profile(), web_app::SystemAppType::TERMINAL);
+  CHECK_NE(nullptr, terminal_browser);
+  WaitForLoadFinished(terminal_browser->tab_strip_model()->GetWebContentsAt(0));
+
   ExpectView();
 
   ActiveView()->AcceptDialog();

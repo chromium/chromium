@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<input type=color id=colorid value="#AAAAAA">
+
+<script>
+promise_test(async () => {
+  await openPickerWithPromise(colorid);
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const formatToggler = popupDocument.querySelector('format-toggler');
+
+  formatToggler.click();
+  const sValueContainer = popupDocument.getElementById('sValueContainer');
+  sValueContainer.click();
+  sValueContainer.select();
+  eventSender.keyDown('4');
+  eventSender.keyDown('2');
+  eventSender.keyDown('Tab');
+  assert_equals(sValueContainer.value, '42%');
+
+  formatToggler.click();
+  const hexValueContainer = popupDocument.getElementById('hexValueContainer');
+  hexValueContainer.click();
+  hexValueContainer.select();
+  eventSender.keyDown('b');
+  eventSender.keyDown('b');
+  eventSender.keyDown('b');
+  eventSender.keyDown('b');
+  eventSender.keyDown('b');
+  eventSender.keyDown('b');
+  eventSender.keyDown('Tab');
+  assert_equals(hexValueContainer.value, '#bbbbbb');
+
+  hexValueContainer.click();
+  hexValueContainer.select();
+  eventSender.keyDown('a');
+  eventSender.keyDown('b');
+  eventSender.keyDown('c');
+  eventSender.keyDown('Tab');
+  assert_equals(hexValueContainer.value, '#000abc');
+});
+</script>

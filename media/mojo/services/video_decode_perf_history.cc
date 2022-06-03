@@ -54,6 +54,17 @@ double VideoDecodePerfHistory::GetMaxSmoothDroppedFramesPercent(bool is_eme) {
   return threshold;
 }
 
+// static
+base::FieldTrialParams VideoDecodePerfHistory::GetFieldTrialParams() {
+  base::FieldTrialParams actual_trial_params;
+
+  const bool result = base::GetFieldTrialParamsByFeature(
+      kMediaCapabilitiesWithParameters, &actual_trial_params);
+  DCHECK(result);
+
+  return actual_trial_params;
+}
+
 VideoDecodePerfHistory::VideoDecodePerfHistory(
     std::unique_ptr<VideoDecodeStatsDB> db,
     learning::FeatureProviderFactoryCB feature_factory_cb)

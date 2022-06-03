@@ -11,28 +11,30 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "build/build_config.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/main_function_params.h"
-#include "content/public/common/page_state.h"
+#include "content/public/test/mock_policy_container_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
 
 namespace blink {
+class PageState;
 namespace scheduler {
 class WebThreadScheduler;
 }
+struct VisualProperties;
+class WebFrameWidget;
 class WebGestureEvent;
 class WebInputElement;
 class WebMouseEvent;
-class WebWidget;
 }
 
 namespace gfx {
@@ -40,17 +42,17 @@ class Rect;
 }
 
 namespace content {
+class AgentSchedulingGroup;
 class ContentBrowserClient;
 class ContentClient;
 class ContentRendererClient;
-class CompositorDependencies;
-class MockRenderProcess;
-class PageState;
+class FakeRenderWidgetHost;
 class RendererMainPlatformDelegate;
 class RendererBlinkPlatformImpl;
 class RendererBlinkPlatformImplTestOverrideImpl;
+class RenderFrame;
+class RenderProcess;
 class RenderView;
-struct VisualProperties;
 
 class RenderViewTest : public testing::Test {
  public:
@@ -75,12 +77,16 @@ class RenderViewTest : public testing::Test {
         blink_platform_impl_;
   };
 
-  RenderViewTest();
+  // If |hook_render_frame_creation| is true then the RenderViewTest will hook
+  // the RenderFrame creation so a TestRenderFrame is always created. If it is
+  // false the subclass is responsible for hooking the create function.
+  explicit RenderViewTest(bool hook_render_frame_creation = true);
   ~RenderViewTest() override;
 
  protected:
   // Returns a pointer to the main frame.
   blink::WebLocalFrame* GetMainFrame();
+  RenderFrame* GetMainRenderFrame();
 
   // Executes the given JavaScript in the context of the main frame. The input
   // is a NULL-terminated UTF-8 string.
@@ -90,14 +96,14 @@ class RenderViewTest : public testing::Test {
   // |result|.
   // Returns true if the JavaScript was evaluated correctly to an int value,
   // false otherwise.
-  bool ExecuteJavaScriptAndReturnIntValue(const base::string16& script,
+  bool ExecuteJavaScriptAndReturnIntValue(const std::u16string& script,
                                           int* result);
 
   // Executes the given JavaScript and sets the number value it evaluates to in
   // |result|.
   // Returns true if the JavaScript was evaluated correctly to an number value,
   // false otherwise.
-  bool ExecuteJavaScriptAndReturnNumberValue(const base::string16& script,
+  bool ExecuteJavaScriptAndReturnNumberValue(const std::u16string& script,
                                              double* result);
 
   // Loads |html| into the main frame as a data: URL and blocks until the
@@ -112,12 +118,12 @@ class RenderViewTest : public testing::Test {
 
   // Returns the current PageState.
   // In OOPIF enabled modes, this returns a PageState object for the main frame.
-  PageState GetCurrentPageState();
+  blink::PageState GetCurrentPageState();
 
   // Navigates the main frame back or forward in session history and commits.
   // The caller must capture a PageState for the target page.
-  void GoBack(const GURL& url, const PageState& state);
-  void GoForward(const GURL& url, const PageState& state);
+  void GoBack(const GURL& url, const blink::PageState& state);
+  void GoForward(const GURL& url, const blink::PageState& state);
 
   // Sends one native key event over IPC.
   void SendNativeKeyEvent(const NativeWebKeyboardEvent& key_event);
@@ -157,6 +163,9 @@ class RenderViewTest : public testing::Test {
   // Simulates |element| being focused.
   void SetFocused(const blink::WebElement& element);
 
+  // Simulates a null element being focused in |document|.
+  void ChangeFocusToNull(const blink::WebDocument& document);
+
   // Simulates a navigation with a type of reload to the given url.
   void Reload(const GURL& url);
 
@@ -182,19 +191,16 @@ class RenderViewTest : public testing::Test {
   // Enables to use zoom for device scale.
   void SetUseZoomForDSFEnabled(bool zoom_for_dsf);
 
-  blink::WebWidget* GetWebWidget();
+  blink::WebFrameWidget* GetWebFrameWidget();
 
   // Allows a subclass to override the various content client implementations.
   virtual ContentClient* CreateContentClient();
   virtual ContentBrowserClient* CreateContentBrowserClient();
   virtual ContentRendererClient* CreateContentRendererClient();
+  virtual std::unique_ptr<FakeRenderWidgetHost> CreateRenderWidgetHost();
 
   // Allows a subclass to customize the initial size of the RenderView.
-  virtual VisualProperties InitialVisualProperties();
-
-  // Override this to change the CompositorDependencies for the test.
-  virtual std::unique_ptr<CompositorDependencies>
-  CreateCompositorDependencies();
+  virtual blink::VisualProperties InitialVisualProperties();
 
   // testing::Test
   void SetUp() override;
@@ -206,16 +212,24 @@ class RenderViewTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<CompositorDependencies> compositor_deps_;
-  std::unique_ptr<MockRenderProcess> mock_process_;
+  std::unique_ptr<RenderProcess> process_;
   // We use a naked pointer because we don't want to expose RenderViewImpl in
   // the embedder's namespace.
   RenderView* view_ = nullptr;
+  // The WebView is owned by `view_` but provided as a raw pointer here. This
+  // will provide a transition of eventually removing RenderView and owning
+  // it directly here. See https://crbug.com/1155202.
+  blink::WebView* web_view_ = nullptr;
   RendererBlinkPlatformImplTestOverride blink_platform_impl_;
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<ContentBrowserClient> content_browser_client_;
   std::unique_ptr<ContentRendererClient> content_renderer_client_;
   std::unique_ptr<MockRenderThread> render_thread_;
+  std::unique_ptr<AgentSchedulingGroup> agent_scheduling_group_;
+  std::unique_ptr<FakeRenderWidgetHost> render_widget_host_;
+
+  // The PolicyContainerHost for the main RenderFrameHost.
+  std::unique_ptr<MockPolicyContainerHost> policy_container_host_;
 
   // Used to setup the process so renderers can run.
   std::unique_ptr<RendererMainPlatformDelegate> platform_;
@@ -227,12 +241,12 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   mojo::BinderMap binders_;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 
  private:
-  void GoToOffset(int offset, const GURL& url, const PageState& state);
+  void GoToOffset(int offset, const GURL& url, const blink::PageState& state);
   void SendInputEvent(const blink::WebInputEvent& input_event);
 };
 

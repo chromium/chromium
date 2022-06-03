@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace crashpad {
 

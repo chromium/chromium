@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
+
+#include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -20,7 +22,7 @@ namespace extensions {
 namespace {
 
 // Create a mock for the UI component of the error alert that is shown for
-// blacklisted extensions. This allows us to test which extensions the alert
+// blocklisted extensions. This allows us to test which extensions the alert
 // is showing, and also eliminates the UI component (since this is a unit
 // test).
 class MockExtensionErrorUI : public ExtensionErrorUI {
@@ -104,13 +106,11 @@ class ExtensionErrorControllerUnitTest : public ExtensionServiceTestBase {
  protected:
   void SetUp() override;
 
-  // Add an extension to chrome, and mark it as blacklisted in the prefs.
-  testing::AssertionResult AddBlacklistedExtension(const Extension* extension);
+  // Add an extension to chrome, and mark it as blocklisted in the prefs.
+  testing::AssertionResult AddBlocklistedExtension(const Extension* extension);
 
   // Return the ExtensionPrefs associated with the test.
   ExtensionPrefs* GetPrefs();
-
-  Profile* profile() { return profile_.get(); }
 };
 
 void ExtensionErrorControllerUnitTest::SetUp() {
@@ -126,17 +126,17 @@ void ExtensionErrorControllerUnitTest::SetUp() {
 }
 
 testing::AssertionResult
-ExtensionErrorControllerUnitTest::AddBlacklistedExtension(
+ExtensionErrorControllerUnitTest::AddBlocklistedExtension(
     const Extension* extension) {
-  GetPrefs()->SetExtensionBlacklistState(extension->id(),
-                                         BLACKLISTED_MALWARE);
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, GetPrefs());
   service_->AddExtension(extension);
 
-  // Make sure the extension is added to the blacklisted set.
-  if (!ExtensionRegistry::Get(profile())->blacklisted_extensions()
-          .Contains(extension->id())) {
+  // Make sure the extension is added to the blocklisted set.
+  if (!ExtensionRegistry::Get(profile())->blocklisted_extensions().Contains(
+          extension->id())) {
     return testing::AssertionFailure()
-        << "Failed to add blacklisted extension.";
+           << "Failed to add blocklisted extension.";
   }
 
   return testing::AssertionSuccess();
@@ -146,62 +146,62 @@ ExtensionPrefs* ExtensionErrorControllerUnitTest::GetPrefs() {
   return ExtensionPrefs::Get(profile());
 }
 
-// Test that closing the extension alert for blacklisted extensions counts
+// Test that closing the extension alert for blocklisted extensions counts
 // as acknowledging them in the prefs.
-TEST_F(ExtensionErrorControllerUnitTest, ClosingAcknowledgesBlacklisted) {
-  // Add a blacklisted extension.
+TEST_F(ExtensionErrorControllerUnitTest, ClosingAcknowledgesBlocklisted) {
+  // Add a blocklisted extension.
   scoped_refptr<const Extension> extension = BuildExtension();
-  ASSERT_TRUE(AddBlacklistedExtension(extension.get()));
+  ASSERT_TRUE(AddBlocklistedExtension(extension.get()));
 
   service_->Init();
 
-  // Make sure that we created an error "ui" to warn about the blacklisted
+  // Make sure that we created an error "ui" to warn about the blocklisted
   // extension.
   ASSERT_TRUE(g_error_ui);
   ExtensionErrorUI::Delegate* delegate = g_error_ui->delegate();
   ASSERT_TRUE(delegate);
 
-  // Make sure that the blacklisted extension is reported (and that no other
+  // Make sure that the blocklisted extension is reported (and that no other
   // extensions are).
-  const ExtensionSet& delegate_blacklisted_extensions =
-      delegate->GetBlacklistedExtensions();
-  EXPECT_EQ(1u, delegate_blacklisted_extensions.size());
-  EXPECT_TRUE(delegate_blacklisted_extensions.Contains(extension->id()));
+  const ExtensionSet& delegate_blocklisted_extensions =
+      delegate->GetBlocklistedExtensions();
+  EXPECT_EQ(1u, delegate_blocklisted_extensions.size());
+  EXPECT_TRUE(delegate_blocklisted_extensions.Contains(extension->id()));
 
   // Close, and verify that the extension ids now acknowledged.
   g_error_ui->CloseUI();
-  EXPECT_TRUE(GetPrefs()->IsBlacklistedExtensionAcknowledged(extension->id()));
+  EXPECT_TRUE(GetPrefs()->IsBlocklistedExtensionAcknowledged(extension->id()));
   // Verify we cleaned up after ourselves.
   EXPECT_FALSE(g_error_ui);
 }
 
 // Test that clicking "accept" on the extension alert counts as acknowledging
-// blacklisted extensions.
-TEST_F(ExtensionErrorControllerUnitTest, AcceptingAcknowledgesBlacklisted) {
-  // Add a blacklisted extension.
+// blocklisted extensions.
+TEST_F(ExtensionErrorControllerUnitTest, AcceptingAcknowledgesBlocklisted) {
+  // Add a blocklisted extension.
   scoped_refptr<const Extension> extension = BuildExtension();
-  ASSERT_TRUE(AddBlacklistedExtension(extension.get()));
+  ASSERT_TRUE(AddBlocklistedExtension(extension.get()));
 
   service_->Init();
 
-  // Make sure that we created an error "ui" to warn about the blacklisted
+  // Make sure that we created an error "ui" to warn about the blocklisted
   // extension.
   ASSERT_TRUE(g_error_ui);
 
   // Accept, and verify that the extension ids now acknowledged.
   g_error_ui->Accept();
-  EXPECT_TRUE(GetPrefs()->IsBlacklistedExtensionAcknowledged(extension->id()));
+  EXPECT_TRUE(GetPrefs()->IsBlocklistedExtensionAcknowledged(extension->id()));
   // Verify we cleaned up after ourselves.
   EXPECT_FALSE(g_error_ui);
 }
 
-// Test that we don't warn for extensions which are blacklisted, but have
+// Test that we don't warn for extensions which are blocklisted, but have
 // already been acknowledged.
-TEST_F(ExtensionErrorControllerUnitTest, DontWarnForAcknowledgedBlacklisted) {
+TEST_F(ExtensionErrorControllerUnitTest, DontWarnForAcknowledgedBlocklisted) {
   scoped_refptr<const Extension> extension = BuildExtension();
-  ASSERT_TRUE(AddBlacklistedExtension(extension.get()));
+  ASSERT_TRUE(AddBlocklistedExtension(extension.get()));
 
-  GetPrefs()->AcknowledgeBlacklistedExtension(extension->id());
+  GetPrefs()->AcknowledgeBlocklistedExtension(extension->id());
 
   service_->Init();
 

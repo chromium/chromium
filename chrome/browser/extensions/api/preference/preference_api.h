@@ -8,16 +8,15 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs_scope.h"
 
 class ExtensionPrefValueMap;
@@ -33,6 +32,10 @@ class ExtensionPrefs;
 class PreferenceEventRouter : public ProfileObserver {
  public:
   explicit PreferenceEventRouter(Profile* profile);
+
+  PreferenceEventRouter(const PreferenceEventRouter&) = delete;
+  PreferenceEventRouter& operator=(const PreferenceEventRouter&) = delete;
+
   ~PreferenceEventRouter() override;
 
  private:
@@ -51,9 +54,8 @@ class PreferenceEventRouter : public ProfileObserver {
   // Weak, owns us (transitively via ExtensionService).
   Profile* profile_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreferenceEventRouter);
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 };
 
 // The class containing the implementation for extension-controlled preference
@@ -107,6 +109,10 @@ class PreferenceAPI : public PreferenceAPIBase,
                       public ContentSettingsStore::Observer {
  public:
   explicit PreferenceAPI(content::BrowserContext* context);
+
+  PreferenceAPI(const PreferenceAPI&) = delete;
+  PreferenceAPI& operator=(const PreferenceAPI&) = delete;
+
   ~PreferenceAPI() override;
 
   // KeyedService implementation.
@@ -147,13 +153,11 @@ class PreferenceAPI : public PreferenceAPIBase,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<PreferenceEventRouter> preference_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreferenceAPI);
 };
 
 class PrefTransformerInterface {
  public:
-  virtual ~PrefTransformerInterface() {}
+  virtual ~PrefTransformerInterface() = default;
 
   // Converts the representation of a preference as seen by the extension
   // into a representation that is used in the pref stores of the browser.
@@ -171,7 +175,8 @@ class PrefTransformerInterface {
   // Returns the extension representation in case of success or NULL otherwise.
   // The ownership of the returned value is passed to the caller.
   virtual std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) = 0;
+      const base::Value* browser_pref,
+      bool is_incognito_profile) = 0;
 };
 
 // A base class to provide functionality common to the other *PreferenceFunction

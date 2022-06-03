@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGINS_RESOURCE_SERVICE_H_
 #define CHROME_BROWSER_PLUGINS_PLUGINS_RESOURCE_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/web_resource/web_resource_service.h"
 
 class PrefService;
@@ -16,6 +15,10 @@ class PrefRegistrySimple;
 class PluginsResourceService : public web_resource::WebResourceService {
  public:
   explicit PluginsResourceService(PrefService* local_state);
+
+  PluginsResourceService(const PluginsResourceService&) = delete;
+  PluginsResourceService& operator=(const PluginsResourceService&) = delete;
+
   ~PluginsResourceService() override;
 
   void Init();
@@ -25,8 +28,6 @@ class PluginsResourceService : public web_resource::WebResourceService {
  private:
   // WebResourceService override to process the parsed information.
   void Unpack(const base::DictionaryValue& parsed_json) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginsResourceService);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGINS_RESOURCE_SERVICE_H_

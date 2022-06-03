@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/prefs/pref_service.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -47,6 +46,10 @@ class SigninInvestigator {
   SigninInvestigator(const std::string& current_email,
                      const std::string& current_id,
                      DependencyProvider* provider);
+
+  SigninInvestigator(const SigninInvestigator&) = delete;
+  SigninInvestigator& operator=(const SigninInvestigator&) = delete;
+
   ~SigninInvestigator();
 
   // Determines the current scenario, wether it is an upgrade, same account, or
@@ -70,8 +73,6 @@ class SigninInvestigator {
 
   // Non-owning pointer.
   DependencyProvider* provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninInvestigator);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_INVESTIGATOR_H_

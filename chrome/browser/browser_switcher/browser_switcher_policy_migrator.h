@@ -17,10 +17,11 @@ class BrowserSwitcherPolicyMigrator
   BrowserSwitcherPolicyMigrator();
   ~BrowserSwitcherPolicyMigrator() override;
 
-  void Migrate(policy::PolicyBundle* bundle) override;
+  BrowserSwitcherPolicyMigrator(const BrowserSwitcherPolicyMigrator&) = delete;
+  BrowserSwitcherPolicyMigrator& operator=(
+      const BrowserSwitcherPolicyMigrator&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSwitcherPolicyMigrator);
+  void Migrate(policy::PolicyBundle* bundle) override;
 };
 
 }  // namespace browser_switcher

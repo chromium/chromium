@@ -4,20 +4,26 @@
 
 #include "third_party/blink/renderer/core/streams/queuing_strategy_common.h"
 
-#include "third_party/blink/renderer/core/streams/queuing_strategy_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
-v8::Local<v8::Value> HighWaterMarkOrUndefined(ScriptState* script_state,
-                                              const QueuingStrategyInit* init) {
-  v8::Local<v8::Value> high_water_mark;
-  if (init->hasHighWaterMark()) {
-    high_water_mark = init->highWaterMark().V8Value();
-  } else {
-    high_water_mark = v8::Undefined(script_state->GetIsolate());
+ScriptValue GetCachedSizeFunction(ScriptState* script_state,
+                                  const V8PrivateProperty::SymbolKey& key,
+                                  SizeFunctionFactory factory) {
+  auto* isolate = script_state->GetIsolate();
+  auto function_cache = V8PrivateProperty::GetSymbol(isolate, key);
+  v8::Local<v8::Object> global_proxy = script_state->GetContext()->Global();
+  v8::Local<v8::Value> function;
+  if (!function_cache.GetOrUndefined(global_proxy).ToLocal(&function) ||
+      function->IsUndefined()) {
+    function = factory(script_state);
+    bool is_set = function_cache.Set(global_proxy, function);
+    DCHECK(is_set || isolate->IsExecutionTerminating());
   }
-  return high_water_mark;
+  return ScriptValue(isolate, function);
 }
 
 }  // namespace blink

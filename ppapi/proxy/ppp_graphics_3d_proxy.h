@@ -17,6 +17,10 @@ namespace proxy {
 class PPP_Graphics3D_Proxy : public InterfaceProxy {
  public:
   explicit PPP_Graphics3D_Proxy(Dispatcher* dispatcher);
+
+  PPP_Graphics3D_Proxy(const PPP_Graphics3D_Proxy&) = delete;
+  PPP_Graphics3D_Proxy& operator=(const PPP_Graphics3D_Proxy&) = delete;
+
   ~PPP_Graphics3D_Proxy() override;
 
   static const PPP_Graphics3D* GetProxyInterface();
@@ -32,8 +36,6 @@ class PPP_Graphics3D_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_Graphics3D* ppp_graphics_3d_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Graphics3D_Proxy);
 };
 
 }  // namespace proxy

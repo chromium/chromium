@@ -2,19 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 group("remoting_all") {
   testonly = true
 
-  deps = [
-    ":remoting_unittests",
-  ]
+  deps = [ ":remoting_unittests" ]
 
   if (is_win) {
     deps += [
-      "//remoting:remoting_breakpad_tester",
       "//remoting/host/win:all",
+      "//remoting/tools:remoting_breakpad_tester",
     ]
 
     if (is_chrome_branded) {
@@ -38,11 +37,11 @@ group("remoting_all") {
 
   if (enable_remoting_host) {
     deps += [
-      "//remoting:remoting_perftests",
+      ":remoting_perftests",
       "//remoting/host",
     ]
 
-    if (!is_chromeos && !is_android) {
+    if (!is_chromeos_ash && !is_android) {
       deps += [
         "//remoting/host:remoting_native_messaging_manifests",
         "//remoting/host:remoting_start_host",
@@ -54,11 +53,11 @@ group("remoting_all") {
       }
     }
 
-    if (is_win || (!is_chromeos && !is_android && !is_ios)) {
+    if (is_win || (!is_chromeos_ash && !is_android && !is_ios)) {
       deps += [ "//remoting/host:remoting_native_messaging_host" ]
     }
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux && !is_chromeos_lacros) {
       deps += [
         "//remoting/host/linux:remoting_dev_me2me_host",
         "//remoting/host/linux:remoting_user_session",
@@ -70,31 +69,6 @@ group("remoting_all") {
     deps += [ "//remoting/host:remoting_me2me_host" ]
     if (is_chrome_branded) {
       deps += [ "//remoting/host:remoting_me2me_host_archive" ]
-    }
-  }
-}
-
-if (is_win) {
-  executable("remoting_breakpad_tester") {
-    deps = [
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//remoting/host",
-    ]
-
-    libs = []
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    sources = [
-      "tools/breakpad_tester_win.cc",
-    ]
-
-    if (is_win) {
-      libs += [
-        "rpcrt4.lib",
-        "wtsapi32.lib",
-      ]
     }
   }
 }
@@ -130,12 +104,7 @@ test("remoting_unittests") {
   defines = []
   libs = []
 
-  configs += [
-    "//remoting/build/config:version",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":test_support",
@@ -180,7 +149,8 @@ test("remoting_unittests") {
     ]
   }
 
-  if (!is_chromeos) {
+  # TODO(crbug.com/1052397): Change to !is_chromeos once lacros-chrome is switched to target_os=chromeos.
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     deps += [ "//remoting/client/display:unit_tests" ]
   }
 }
@@ -202,8 +172,17 @@ if (enable_remoting_host) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
+      "//jingle:webrtc_glue",
       "//net:test_support",
       "//remoting/base",
+      "//remoting/client:client",
+      "//remoting/client/audio:audio",
+      "//remoting/codec:encoder",
+      "//remoting/host:common",
+      "//remoting/host:test_support",
+      "//remoting/protocol:protocol",
+      "//remoting/signaling:test_support",
+      "//remoting/test:test_support",
       "//testing/gtest",
       "//third_party/webrtc_overrides:webrtc_component",
     ]

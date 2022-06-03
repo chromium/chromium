@@ -9,11 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
 
 namespace autofill_assistant {
 class BatchElementChecker;
@@ -22,67 +24,33 @@ class BatchElementChecker;
 class WaitForDomAction : public Action {
  public:
   explicit WaitForDomAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  WaitForDomAction(const WaitForDomAction&) = delete;
+  WaitForDomAction& operator=(const WaitForDomAction&) = delete;
+
   ~WaitForDomAction() override;
 
  private:
-  enum class SelectorPredicate {
-    // The selector matches elements
-    kMatch,
-
-    // The selector doesn't match any elements
-    kNoMatch
-  };
-
-  struct Condition {
-    // Whether the selector should match or not.
-    SelectorPredicate predicate = SelectorPredicate::kMatch;
-
-    // The selector to look for.
-    Selector selector;
-
-    // True if the condition matched.
-    bool match = false;
-
-    // Status proto result associated with this condition.
-    ProcessedActionStatusProto status_proto;
-
-    // A payload to report to the server when this condition match. Empty
-    // payloads are not reported.
-    std::string server_payload;
-  };
-
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  // Initializes |require_all_| and |conditions_| from |proto_|.
-  void AddConditionsFromProto();
-
-  // Adds a single condition to |conditions_|.
-  void AddCondition(const WaitForDomProto::ElementCondition& condition);
-
-  // Adds a single condition to |conditions_|.
-  void AddCondition(SelectorPredicate predicate,
-                    const ElementReferenceProto& selector_proto,
-                    const std::string& server_payload);
-
   // Check all elements using the given BatchElementChecker and reports the
-  // result to |callback|. In case of failure, the last failed status is
-  // returned.
+  // result to |callback|.
   void CheckElements(BatchElementChecker* checker,
                      base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnSingleElementCheckDone(size_t condition_index,
-                                const ClientStatus& element_status);
-  void OnAllElementChecksDone(
-      base::OnceCallback<void(const ClientStatus&)> callback);
+  void OnWaitConditionDone(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status,
+      const std::vector<std::string>& payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& elements);
+  void ReportActionResult(ProcessActionCallback callback,
+                          const ClientStatus& status);
+  void UpdateElementStore();
 
-  void OnCheckDone(ProcessActionCallback callback, const ClientStatus& status);
-
-  bool require_all_ = false;
-  std::vector<Condition> conditions_;
+  std::unique_ptr<ElementPrecondition> wait_condition_;
+  base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<WaitForDomAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForDomAction);
 };
 
 }  // namespace autofill_assistant

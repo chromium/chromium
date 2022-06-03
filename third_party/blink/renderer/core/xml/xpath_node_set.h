@@ -41,7 +41,7 @@ class NodeSet final : public GarbageCollected<NodeSet> {
 
   NodeSet() : is_sorted_(true), subtrees_are_disjoint_(false) {}
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(nodes_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(nodes_); }
 
   wtf_size_t size() const { return nodes_.size(); }
   bool IsEmpty() const { return !nodes_.size(); }

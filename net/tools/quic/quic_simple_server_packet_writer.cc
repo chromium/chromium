@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -30,9 +30,6 @@ void QuicSimpleServerPacketWriter::OnWriteComplete(int rv) {
   write_blocked_ = false;
   quic::WriteResult result(
       rv < 0 ? quic::WRITE_STATUS_ERROR : quic::WRITE_STATUS_OK, rv);
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(result);
-  }
   dispatcher_->OnCanWrite();
 }
 
@@ -88,10 +85,10 @@ bool QuicSimpleServerPacketWriter::IsBatchMode() const {
   return false;
 }
 
-char* QuicSimpleServerPacketWriter::GetNextWriteLocation(
+quic::QuicPacketBuffer QuicSimpleServerPacketWriter::GetNextWriteLocation(
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
-  return nullptr;
+  return {nullptr, nullptr};
 }
 
 quic::WriteResult QuicSimpleServerPacketWriter::Flush() {

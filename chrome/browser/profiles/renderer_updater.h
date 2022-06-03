@@ -5,22 +5,20 @@
 #ifndef CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_
 #define CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_
 
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "chrome/common/renderer_configuration.mojom.h"
+#include "base/scoped_observation.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/common/renderer_configuration.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/variations/variations_http_header_provider.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #endif
 
 class Profile;
@@ -30,15 +28,15 @@ class RenderProcessHost;
 }
 
 // The RendererUpdater is responsible for updating renderers about state change.
-class RendererUpdater
-    : public KeyedService,
-      public signin::IdentityManager::Observer,
-#if defined(OS_CHROMEOS)
-      public chromeos::OAuth2LoginManager::Observer,
+class RendererUpdater : public KeyedService,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                        public ash::OAuth2LoginManager::Observer,
 #endif
-      public variations::VariationsHttpHeaderProvider::Observer {
+                        public signin::IdentityManager::Observer {
  public:
   explicit RendererUpdater(Profile* profile);
+  RendererUpdater(const RendererUpdater&) = delete;
+  RendererUpdater& operator=(const RendererUpdater&) = delete;
   ~RendererUpdater() override;
 
   // KeyedService:
@@ -54,21 +52,16 @@ class RendererUpdater
   mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
   GetRendererConfiguration(content::RenderProcessHost* render_process_host);
 
-#if defined(OS_CHROMEOS)
-  // chromeos::OAuth2LoginManager::Observer:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ash::OAuth2LoginManager::Observer:
   void OnSessionRestoreStateChanged(
       Profile* user_profile,
-      chromeos::OAuth2LoginManager::SessionRestoreState state) override;
+      ash::OAuth2LoginManager::SessionRestoreState state) override;
 #endif
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
-
-  // VariationsHttpHeaderProvider::Observer:
-  void VariationIdsHeaderUpdated(
-      const std::string& variation_ids_header,
-      const std::string& variation_ids_header_signed_in) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // Update all renderers due to a configuration change.
   void UpdateAllRenderers();
@@ -80,27 +73,22 @@ class RendererUpdater
 
   Profile* profile_;
   PrefChangeRegistrar pref_change_registrar_;
-#if defined(OS_CHROMEOS)
-  chromeos::OAuth2LoginManager* oauth2_login_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::OAuth2LoginManager* oauth2_login_manager_;
   bool merge_session_running_;
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;
 #endif
-  variations::VariationsHttpHeaderProvider* variations_http_header_provider_;
 
   // Prefs that we sync to the renderers.
   BooleanPrefMember force_google_safesearch_;
   IntegerPrefMember force_youtube_restrict_;
   StringPrefMember allowed_domains_for_apps_;
 
-  std::string cached_variation_ids_header_;
-  std::string cached_variation_ids_header_signed_in_;
-
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   signin::IdentityManager* identity_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererUpdater);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_

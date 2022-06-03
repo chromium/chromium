@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"

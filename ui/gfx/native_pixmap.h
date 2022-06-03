@@ -6,17 +6,14 @@
 #define UI_GFX_NATIVE_PIXMAP_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
-class Rect;
-class RectF;
+struct OverlayPlaneData;
 class GpuFence;
 
 // This represents a buffer that can be directly imported via GL for
@@ -24,6 +21,9 @@ class GpuFence;
 class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
  public:
   NativePixmap() {}
+
+  NativePixmap(const NativePixmap&) = delete;
+  NativePixmap& operator=(const NativePixmap&) = delete;
 
   virtual bool AreDmaBufFdsValid() const = 0;
   virtual int GetDmaBufFd(size_t plane) const = 0;
@@ -49,26 +49,18 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
   // Sets the overlay plane to switch to at the next page flip.
   // |widget| specifies the screen to display this overlay plane on.
-  // |plane_z_order| specifies the stacking order of the plane relative to the
-  // main framebuffer located at index 0.
-  // |plane_transform| specifies how the buffer is to be transformed during
-  // composition.
-  // |display_bounds| specify where it is supposed to be on the screen.
-  // |crop_rect| specifies the region within the buffer to be placed
-  // inside |display_bounds|. This is specified in texture coordinates, in the
-  // range of [0,1].
-  // |enable_blend| specifies if the plane should be alpha blended, with premul
-  // apha, when scanned out.
-  // |gpu_fence| specifies a gpu fence to wait on before the pixmap is ready
-  // to be displayed.
+  // |acquire_fences| specifies gpu fences to wait on before the pixmap is ready
+  // to be displayed. These fence are fired when the gpu has finished writing to
+  // the pixmap.
+  // |release_fences| specifies gpu fences that are signalled when the pixmap
+  // has been displayed and is ready for reuse.
+  // |overlay_plane_data| specifies overlay data such as opacity, z_order, size,
+  // etc.
   virtual bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
-      std::unique_ptr<gfx::GpuFence> gpu_fence) = 0;
+      const gfx::OverlayPlaneData& overlay_plane_data,
+      std::vector<gfx::GpuFence> acquire_fences,
+      std::vector<gfx::GpuFence> release_fences) = 0;
 
   // Export the buffer for sharing across processes.
   // Any file descriptors in the exported handle are owned by the caller.
@@ -79,8 +71,6 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
  private:
   friend class base::RefCountedThreadSafe<NativePixmap>;
-
-  DISALLOW_COPY_AND_ASSIGN(NativePixmap);
 };
 
 }  // namespace gfx

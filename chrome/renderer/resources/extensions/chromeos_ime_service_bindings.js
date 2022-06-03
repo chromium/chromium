@@ -9,7 +9,10 @@ if ((typeof mojo === 'undefined') || !mojo.bindingsLibraryInitialized) {
 }
 mojo.config.autoLoadMojomDeps = false;
 
+loadScript('chromeos.ime.mojom.ime_service.mojom');
 loadScript('chromeos.ime.mojom.input_engine.mojom');
+loadScript('chromeos.ime.mojom.input_method.mojom');
+loadScript('chromeos.ime.mojom.input_method_host.mojom');
 
 /**
  * Empty result to keep Mojo pipe from disconnection.
@@ -280,7 +283,7 @@ class ImeService {
 
 (function() {
   let ptr = new chromeos.ime.mojom.InputEngineManagerPtr;
-  Mojo.bindInterface(chromeos.ime.mojom.InputEngineManager.name,
-                     mojo.makeRequest(ptr).handle, "context", true);
+  Mojo.bindInterface(
+      chromeos.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
   exports.$set('returnValue', new ImeService(ptr));
 })();

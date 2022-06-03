@@ -16,26 +16,27 @@ namespace blink {
 WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
                                    WakeLockType type,
                                    WakeLockManager* manager)
-    : ContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       manager_(manager),
       type_(type) {}
 
 WakeLockSentinel::~WakeLockSentinel() = default;
 
 ScriptPromise WakeLockSentinel::release(ScriptState* script_state) {
-  // https://w3c.github.io/wake-lock/#the-release-method
-  // 1. Let promise be a new promise.
-  // 2. Run the following steps in parallel:
-  // 2.1. Run release wake lock with lock set to this object and type set to the
-  //      value of this object's type attribute.
-  // 2.2. Resolve promise.
-  // 3. Return promise.
+  // https://w3c.github.io/screen-wake-lock/#the-release-method
+  // 1. If this's [[Released]] is false, then run release a wake lock with lock
+  //    set to this and type set to the value of this's type attribute.
   DoRelease();
+  // 2. Return a promise resolved with undefined.
   return ScriptPromise::CastUndefined(script_state);
 }
 
+bool WakeLockSentinel::released() const {
+  return released_;
+}
+
 String WakeLockSentinel::type() const {
-  // https://w3c.github.io/wake-lock/#dom-wakelocksentinel-type
+  // https://w3c.github.io/screen-wake-lock/#dom-wakelocksentinel-type
   // The type attribute corresponds to the WakeLockSentinel's wake lock type.
   switch (type_) {
     case WakeLockType::kScreen:
@@ -46,17 +47,17 @@ String WakeLockSentinel::type() const {
 }
 
 ExecutionContext* WakeLockSentinel::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 const AtomicString& WakeLockSentinel::InterfaceName() const {
   return event_target_names::kWakeLockSentinel;
 }
 
-void WakeLockSentinel::Trace(blink::Visitor* visitor) {
+void WakeLockSentinel::Trace(Visitor* visitor) const {
   visitor->Trace(manager_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 bool WakeLockSentinel::HasPendingActivity() const {
@@ -66,7 +67,7 @@ bool WakeLockSentinel::HasPendingActivity() const {
   return manager_ && HasEventListeners();
 }
 
-void WakeLockSentinel::ContextDestroyed(ExecutionContext*) {
+void WakeLockSentinel::ContextDestroyed() {
   // Release all event listeners so that HasPendingActivity() does not return
   // true forever once a listener has been added to the object.
   RemoveAllEventListeners();
@@ -74,11 +75,7 @@ void WakeLockSentinel::ContextDestroyed(ExecutionContext*) {
 }
 
 void WakeLockSentinel::DoRelease() {
-  // https://w3c.github.io/wake-lock/#release-wake-lock-algorithm
-  // 1. Let document be the responsible document of the current settings object.
-  // 2. Let record be the platform wake lock's state record associated with
-  // document and type.
-  // 3. If record.[[ActiveLocks]] does not contain lock, abort these steps.
+  // https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
   if (!manager_)
     return;
 
@@ -90,7 +87,10 @@ void WakeLockSentinel::DoRelease() {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  // 6. Queue a task to fire an event named "release" at lock.
+  // 4. Set lock's [[Released]] to true.
+  // 5. Fire an event named "release" at lock.
+  DCHECK(!released_);
+  released_ = true;
   DispatchEvent(*Event::Create(event_type_names::kRelease));
 }
 

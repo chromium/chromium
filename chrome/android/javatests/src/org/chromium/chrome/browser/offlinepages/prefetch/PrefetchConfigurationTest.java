@@ -7,17 +7,20 @@ package org.chromium.chrome.browser.offlinepages.prefetch;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ReducedModeNativeTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -32,6 +35,14 @@ public class PrefetchConfigurationTest {
     @Rule
     public ReducedModeNativeTestRule mNativeTestRule = new ReducedModeNativeTestRule();
 
+    private ProfileKey mProfileKey;
+
+    @Before
+    public void setUp() throws Exception {
+        mProfileKey = ProfileKey.getLastUsedRegularProfileKey();
+        Assert.assertNotNull(mProfileKey);
+    }
+
     @Test
     @MediumTest
     @Feature("OfflinePrefetch")
@@ -42,25 +53,25 @@ public class PrefetchConfigurationTest {
         OfflineTestUtil.setPrefetchingEnabledByServer(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertTrue(isFlagEnabled.get());
         assertTrue(isEnabled.get());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Disable prefetching user setting.
-            PrefetchConfiguration.setPrefetchingEnabledInSettings(false);
+            PrefetchConfiguration.setPrefetchingEnabledInSettings(mProfileKey, false);
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertTrue(isFlagEnabled.get());
         assertFalse(isEnabled.get());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-enable prefetching user setting.
-            PrefetchConfiguration.setPrefetchingEnabledInSettings(true);
+            PrefetchConfiguration.setPrefetchingEnabledInSettings(mProfileKey, true);
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertTrue(isFlagEnabled.get());
         assertTrue(isEnabled.get());
@@ -76,25 +87,25 @@ public class PrefetchConfigurationTest {
         OfflineTestUtil.setPrefetchingEnabledByServer(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertFalse(isFlagEnabled.get());
         assertFalse(isEnabled.get());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Disable prefetching user setting.
-            PrefetchConfiguration.setPrefetchingEnabledInSettings(false);
+            PrefetchConfiguration.setPrefetchingEnabledInSettings(mProfileKey, false);
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertFalse(isFlagEnabled.get());
         assertFalse(isEnabled.get());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-enable prefetching user setting.
-            PrefetchConfiguration.setPrefetchingEnabledInSettings(true);
+            PrefetchConfiguration.setPrefetchingEnabledInSettings(mProfileKey, true);
             isFlagEnabled.set(PrefetchConfiguration.isPrefetchingFlagEnabled());
-            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled());
+            isEnabled.set(PrefetchConfiguration.isPrefetchingEnabled(mProfileKey));
         });
         assertFalse(isFlagEnabled.get());
         assertFalse(isEnabled.get());

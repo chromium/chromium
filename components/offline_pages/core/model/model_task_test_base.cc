@@ -5,7 +5,6 @@
 #include "components/offline_pages/core/model/model_task_test_base.h"
 
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace offline_pages {
@@ -37,7 +36,7 @@ OfflinePageItem ModelTaskTestBase::AddPage() {
 
 OfflinePageItem ModelTaskTestBase::AddPageWithoutFile() {
   OfflinePageItem page = generator_.CreateItemWithTempFile();
-  EXPECT_TRUE(base::DeleteFile(page.file_path, false));
+  EXPECT_TRUE(base::DeleteFile(page.file_path));
   store_test_util_.InsertItem(page);
   return page;
 }

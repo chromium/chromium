@@ -5,8 +5,8 @@
 #include "chromeos/components/tether/network_connection_handler_tether_delegate.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/components/tether/tether_connector.h"
@@ -28,12 +28,13 @@ void OnFailedDisconnectionFromPreviousHost(
 }  // namespace
 
 NetworkConnectionHandlerTetherDelegate::Callbacks::Callbacks(
-    const base::Closure& success_callback,
-    const network_handler::StringResultCallback& error_callback)
-    : success_callback(success_callback), error_callback(error_callback) {}
+    base::OnceClosure success_callback,
+    StringErrorCallback error_callback)
+    : success_callback(std::move(success_callback)),
+      error_callback(std::move(error_callback)) {}
 
-NetworkConnectionHandlerTetherDelegate::Callbacks::Callbacks(
-    const Callbacks& other) = default;
+NetworkConnectionHandlerTetherDelegate::Callbacks::Callbacks(Callbacks&&) =
+    default;
 
 NetworkConnectionHandlerTetherDelegate::Callbacks::~Callbacks() = default;
 
@@ -53,9 +54,9 @@ NetworkConnectionHandlerTetherDelegate::
     ~NetworkConnectionHandlerTetherDelegate() {
   // If there are still pending callbacks, invoke them here. It should never be
   // possible for the Tether component to shut down with pending callbacks.
-  for (const auto& entry : request_num_to_callbacks_map_) {
-    entry.second.error_callback.Run(
-        NetworkConnectionHandler::kErrorConnectFailed);
+  for (auto& entry : request_num_to_callbacks_map_) {
+    std::move(entry.second.error_callback)
+        .Run(NetworkConnectionHandler::kErrorConnectFailed);
   }
 
   network_connection_handler_->SetTetherDelegate(nullptr);
@@ -63,32 +64,33 @@ NetworkConnectionHandlerTetherDelegate::
 
 void NetworkConnectionHandlerTetherDelegate::DisconnectFromNetwork(
     const std::string& tether_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::StringResultCallback& error_callback) {
+    base::OnceClosure success_callback,
+    StringErrorCallback error_callback) {
   int request_num = next_request_num_++;
   request_num_to_callbacks_map_.emplace(
-      request_num, Callbacks(success_callback, error_callback));
+      request_num,
+      Callbacks(std::move(success_callback), std::move(error_callback)));
   tether_disconnector_->DisconnectFromNetwork(
       tether_network_guid,
-      base::Bind(&NetworkConnectionHandlerTetherDelegate::OnRequestSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), request_num),
-      base::Bind(&NetworkConnectionHandlerTetherDelegate::OnRequestError,
-                 weak_ptr_factory_.GetWeakPtr(), request_num),
+      base::BindOnce(&NetworkConnectionHandlerTetherDelegate::OnRequestSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), request_num),
+      base::BindOnce(&NetworkConnectionHandlerTetherDelegate::OnRequestError,
+                     weak_ptr_factory_.GetWeakPtr(), request_num),
       TetherSessionCompletionLogger::SessionCompletionReason::
           USER_DISCONNECTED);
 }
 
 void NetworkConnectionHandlerTetherDelegate::ConnectToNetwork(
     const std::string& tether_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::StringResultCallback& error_callback) {
+    base::OnceClosure success_callback,
+    StringErrorCallback error_callback) {
   if (active_host_->GetActiveHostStatus() ==
       ActiveHost::ActiveHostStatus::CONNECTED) {
     if (active_host_->GetTetherNetworkGuid() == tether_network_guid) {
       PA_LOG(WARNING) << "Received a request to connect to Tether network with "
                       << "GUID " << tether_network_guid << ", but that network "
                       << "is already connected. Ignoring this request.";
-      error_callback.Run(NetworkConnectionHandler::kErrorConnected);
+      std::move(error_callback).Run(NetworkConnectionHandler::kErrorConnected);
       return;
     }
 
@@ -99,25 +101,27 @@ void NetworkConnectionHandlerTetherDelegate::ConnectToNetwork(
                     << ", but there is already an active connection. "
                     << "Disconnecting from network with GUID "
                     << previous_host_guid << ".";
-    DisconnectFromNetwork(
-        previous_host_guid, base::DoNothing(),
-        base::Bind(&OnFailedDisconnectionFromPreviousHost, previous_host_guid));
+    DisconnectFromNetwork(previous_host_guid, base::DoNothing(),
+                          base::BindOnce(&OnFailedDisconnectionFromPreviousHost,
+                                         previous_host_guid));
   }
 
   int request_num = next_request_num_++;
   request_num_to_callbacks_map_.emplace(
-      request_num, Callbacks(success_callback, error_callback));
+      request_num,
+      Callbacks(std::move(success_callback), std::move(error_callback)));
   tether_connector_->ConnectToNetwork(
       tether_network_guid,
-      base::Bind(&NetworkConnectionHandlerTetherDelegate::OnRequestSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), request_num),
-      base::Bind(&NetworkConnectionHandlerTetherDelegate::OnRequestError,
-                 weak_ptr_factory_.GetWeakPtr(), request_num));
+      base::BindOnce(&NetworkConnectionHandlerTetherDelegate::OnRequestSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), request_num),
+      base::BindOnce(&NetworkConnectionHandlerTetherDelegate::OnRequestError,
+                     weak_ptr_factory_.GetWeakPtr(), request_num));
 }
 
 void NetworkConnectionHandlerTetherDelegate::OnRequestSuccess(int request_num) {
   DCHECK(base::Contains(request_num_to_callbacks_map_, request_num));
-  request_num_to_callbacks_map_.at(request_num).success_callback.Run();
+  std::move(request_num_to_callbacks_map_.at(request_num).success_callback)
+      .Run();
   request_num_to_callbacks_map_.erase(request_num);
 }
 
@@ -125,7 +129,8 @@ void NetworkConnectionHandlerTetherDelegate::OnRequestError(
     int request_num,
     const std::string& error_name) {
   DCHECK(base::Contains(request_num_to_callbacks_map_, request_num));
-  request_num_to_callbacks_map_.at(request_num).error_callback.Run(error_name);
+  std::move(request_num_to_callbacks_map_.at(request_num).error_callback)
+      .Run(error_name);
   request_num_to_callbacks_map_.erase(request_num);
 }
 

@@ -10,7 +10,7 @@
 1.  Create a New Virtual Machine
 1.  Do not selecting any OP-sys (other-other-etc)
 1.  Delete your newly created hardisc (lets say you named it as Chrome)
-1.  Move downloaded harddisc to the same folder as othere VMware files for this
+1.  Move downloaded harddisc to the same folder as other VMware files for this
     Virtual Machine
 1.  Rename your downloaded hardisc to newly created Virtual Machine original
     name (in my example it was Chrome)

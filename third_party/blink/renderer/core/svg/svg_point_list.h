@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_point.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -50,27 +51,31 @@ class SVGPointList final
   SVGParsingError SetValueAsString(const String&);
 
   // SVGPropertyBase:
-  String ValueAsString() const override;
-
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from_value,
-                              SVGPropertyBase* to_value,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from_value,
+      const SVGPropertyBase* to_value,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedPoints; }
-  AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(const CharType* ptr, const CharType* end);
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGPointList);
+template <>
+struct DowncastTraits<SVGPointList> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGPointList::ClassType();
+  }
+};
 
 }  // namespace blink
 

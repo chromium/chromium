@@ -58,6 +58,9 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT);
 
+  WebTaskEnvironment(const WebTaskEnvironment&) = delete;
+  WebTaskEnvironment& operator=(const WebTaskEnvironment&) = delete;
+
   ~WebTaskEnvironment() override;
 
  private:
@@ -65,8 +68,6 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
 
   std::unique_ptr<TestWebThread> ui_thread_;
   std::unique_ptr<TestWebThread> io_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTaskEnvironment);
 };
 
 }  // namespace web

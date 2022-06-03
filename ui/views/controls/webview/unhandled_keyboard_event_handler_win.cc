@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
+#include <windows.h>
+
 #include "ui/events/event.h"
 
 namespace views {
@@ -14,8 +16,9 @@ bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
     FocusManager* focus_manager) {
   // Any unhandled keyboard/character messages should be defproced.
   // This allows stuff like F10, etc to work correctly.
-  const MSG& message(event->native_event());
-  DefWindowProc(message.hwnd, message.message, message.wParam, message.lParam);
+  const CHROME_MSG& message(event->native_event());
+  ::DefWindowProc(message.hwnd, message.message, message.wParam,
+                  message.lParam);
   return true;
 }
 

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "sandbox/win/sandbox_poc/main_ui_window.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"

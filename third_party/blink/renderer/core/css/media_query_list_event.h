@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_LIST_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_LIST_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_media_query_list_event_init.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
-#include "third_party/blink/renderer/core/css/media_query_list_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
@@ -65,7 +65,7 @@ class MediaQueryListEvent final : public Event {
     return true;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     Event::Trace(visitor);
     visitor->Trace(media_query_list_);
   }

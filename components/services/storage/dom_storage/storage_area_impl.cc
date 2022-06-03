@@ -4,15 +4,16 @@
 
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
@@ -22,16 +23,6 @@ StorageAreaImpl::Delegate::~Delegate() = default;
 void StorageAreaImpl::Delegate::PrepareToCommit(
     std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
     std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) {}
-
-void StorageAreaImpl::Delegate::MigrateData(
-    base::OnceCallback<void(std::unique_ptr<ValueMap>)> callback) {
-  std::move(callback).Run(nullptr);
-}
-
-std::vector<StorageAreaImpl::Change> StorageAreaImpl::Delegate::FixUpData(
-    const ValueMap& data) {
-  return std::vector<Change>();
-}
 
 void StorageAreaImpl::Delegate::OnMapLoaded(leveldb::Status) {}
 
@@ -81,10 +72,8 @@ StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
       memory_used_(0),
       start_time_(base::TimeTicks::Now()),
       default_commit_delay_(options.default_commit_delay),
-      data_rate_limiter_(options.max_bytes_per_hour,
-                         base::TimeDelta::FromHours(1)),
-      commit_rate_limiter_(options.max_commits_per_hour,
-                           base::TimeDelta::FromHours(1)) {
+      data_rate_limiter_(options.max_bytes_per_hour, base::Hours(1)),
+      commit_rate_limiter_(options.max_commits_per_hour, base::Hours(1)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &StorageAreaImpl::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -156,16 +145,20 @@ void StorageAreaImpl::EnableAggressiveCommitDelay() {
   s_aggressive_flushing_enabled_ = true;
 }
 
-void StorageAreaImpl::ScheduleImmediateCommit() {
+void StorageAreaImpl::ScheduleImmediateCommit(base::OnceClosure callback) {
   if (!on_load_complete_tasks_.empty()) {
     LoadMap(base::BindOnce(&StorageAreaImpl::ScheduleImmediateCommit,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
     return;
   }
 
-  if (!database_ || !commit_batch_)
+  if (!database_ || !commit_batch_) {
+    if (callback)
+      std::move(callback).Run();
     return;
-  CommitChanges();
+  }
+  CommitChanges(std::move(callback));
 }
 
 void StorageAreaImpl::OnMemoryDump(const std::string& name,
@@ -225,8 +218,8 @@ void StorageAreaImpl::SetCacheModeForTesting(CacheMode cache_mode) {
 }
 
 void StorageAreaImpl::AddObserver(
-    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> observer) {
-  mojo::AssociatedRemote<blink::mojom::StorageAreaObserver> observer_remote(
+    mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer) {
+  mojo::Remote<blink::mojom::StorageAreaObserver> observer_remote(
       std::move(observer));
   if (cache_mode_ == CacheMode::KEYS_AND_VALUES)
     observer_remote->ShouldSendOldValueOnMutations(false);
@@ -236,7 +229,7 @@ void StorageAreaImpl::AddObserver(
 void StorageAreaImpl::Put(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& value,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     PutCallback callback) {
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
@@ -249,13 +242,18 @@ void StorageAreaImpl::Put(
   size_t old_item_size = 0;
   size_t old_item_memory = 0;
   size_t new_item_memory = 0;
-  base::Optional<std::vector<uint8_t>> old_value;
+  absl::optional<std::vector<uint8_t>> old_value;
   if (map_state_ == MapState::LOADED_KEYS_ONLY) {
     KeysOnlyMap::const_iterator found = keys_only_map_.find(key);
     if (found != keys_only_map_.end()) {
       if (client_old_value &&
           client_old_value.value().size() == found->second) {
         if (client_old_value == value) {
+          // NOTE: Even though the key is not changing, we have to acknowledge
+          // the change request, as clients may rely on this acknowledgement for
+          // caching behavior.
+          for (const auto& observer : observers_)
+            observer->KeyChanged(key, value, value, source);
           std::move(callback).Run(true);  // Key already has this value.
           return;
         }
@@ -287,6 +285,11 @@ void StorageAreaImpl::Put(
     auto found = keys_values_map_.find(key);
     if (found != keys_values_map_.end()) {
       if (found->second == value) {
+        // NOTE: Even though the key is not changing, we have to acknowledge
+        // the change request, as clients may rely on this acknowledgement for
+        // caching behavior.
+        for (const auto& observer : observers_)
+          observer->KeyChanged(key, value, value, source);
         std::move(callback).Run(true);  // Key already has this value.
         return;
       }
@@ -308,6 +311,8 @@ void StorageAreaImpl::Put(
           "The quota in browser cannot exceed when there is only one "
           "renderer.");
     } else {
+      for (const auto& observer : observers_)
+        observer->KeyChangeFailed(key, source);
       std::move(callback).Run(false);
     }
     return;
@@ -331,21 +336,14 @@ void StorageAreaImpl::Put(
 
   storage_used_ = new_storage_used;
   memory_used_ += new_item_memory - old_item_memory;
-  if (!old_value) {
-    // We added a new key/value pair.
-    for (auto& observer : observers_)
-      observer->KeyAdded(key, value, source);
-  } else {
-    // We changed the value for an existing key.
-    for (auto& observer : observers_)
-      observer->KeyChanged(key, value, old_value.value(), source);
-  }
+  for (const auto& observer : observers_)
+    observer->KeyChanged(key, value, old_value, source);
   std::move(callback).Run(true);
 }
 
 void StorageAreaImpl::Delete(
     const std::vector<uint8_t>& key,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     DeleteCallback callback) {
   // Map upgrade check is required because the cache state could be changed
@@ -366,6 +364,11 @@ void StorageAreaImpl::Delete(
   if (map_state_ == MapState::LOADED_KEYS_ONLY) {
     KeysOnlyMap::const_iterator found = keys_only_map_.find(key);
     if (found == keys_only_map_.end()) {
+      // NOTE: Even though the key is not changing, we have to acknowledge
+      // the change request, as clients may rely on this acknowledgement for
+      // caching behavior.
+      for (const auto& observer : observers_)
+        observer->KeyDeleted(key, absl::nullopt, source);
       std::move(callback).Run(true);
       return;
     }
@@ -397,6 +400,11 @@ void StorageAreaImpl::Delete(
     DCHECK_EQ(map_state_, MapState::LOADED_KEYS_AND_VALUES);
     auto found = keys_values_map_.find(key);
     if (found == keys_values_map_.end()) {
+      // NOTE: Even though the key is not changing, we have to acknowledge
+      // the change request, as clients may rely on this acknowledgement for
+      // caching behavior.
+      for (const auto& observer : observers_)
+        observer->KeyDeleted(key, absl::nullopt, source);
       std::move(callback).Run(true);
       return;
     }
@@ -413,14 +421,16 @@ void StorageAreaImpl::Delete(
   std::move(callback).Run(true);
 }
 
-void StorageAreaImpl::DeleteAll(const std::string& source,
-                                DeleteAllCallback callback) {
+void StorageAreaImpl::DeleteAll(
+    const std::string& source,
+    mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
+    DeleteAllCallback callback) {
   // Don't check if a map upgrade is needed here and instead just create an
   // empty map ourself.
   if (!IsMapLoaded()) {
     LoadMap(base::BindOnce(&StorageAreaImpl::DeleteAll,
                            weak_ptr_factory_.GetWeakPtr(), source,
-                           std::move(callback)));
+                           std::move(new_observer), std::move(callback)));
     return;
   }
 
@@ -432,7 +442,12 @@ void StorageAreaImpl::DeleteAll(const std::string& source,
     map_state_ = MapState::LOADED_KEYS_AND_VALUES;
   }
 
+  if (new_observer)
+    AddObserver(std::move(new_observer));
+
   if (already_empty) {
+    for (const auto& observer : observers_)
+      observer->AllDeleted(/*was_nonempty=*/false, source);
     std::move(callback).Run(true);
     return;
   }
@@ -449,9 +464,9 @@ void StorageAreaImpl::DeleteAll(const std::string& source,
 
   storage_used_ = 0;
   memory_used_ = 0;
-  for (auto& observer : observers_)
-    observer->AllDeleted(source);
-  std::move(callback).Run(true);
+  for (const auto& observer : observers_)
+    observer->AllDeleted(/*was_nonempty=*/true, source);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
@@ -478,17 +493,13 @@ void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
 }
 
 void StorageAreaImpl::GetAll(
-    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-        complete_callback,
+    mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
     GetAllCallback callback) {
   // If the map is keys-only and empty, then no loading is necessary.
   if (IsMapLoadedAndEmpty()) {
-    std::move(callback).Run(true, std::vector<blink::mojom::KeyValuePtr>());
-    if (complete_callback.is_valid()) {
-      mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-          complete_remote(std::move(complete_callback));
-      complete_remote->Complete(true);
-    }
+    std::move(callback).Run(std::vector<blink::mojom::KeyValuePtr>());
+    if (new_observer)
+      AddObserver(std::move(new_observer));
     return;
   }
 
@@ -496,7 +507,7 @@ void StorageAreaImpl::GetAll(
   if (map_state_ != MapState::LOADED_KEYS_AND_VALUES) {
     LoadMap(base::BindOnce(&StorageAreaImpl::GetAll,
                            weak_ptr_factory_.GetWeakPtr(),
-                           std::move(complete_callback), std::move(callback)));
+                           std::move(new_observer), std::move(callback)));
     return;
   }
 
@@ -507,12 +518,9 @@ void StorageAreaImpl::GetAll(
     kv->value = it.second;
     all.push_back(std::move(kv));
   }
-  std::move(callback).Run(true, std::move(all));
-  if (complete_callback.is_valid()) {
-    mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-        complete_remote(std::move(complete_callback));
-    complete_remote->Complete(true);
-  }
+  std::move(callback).Run(std::move(all));
+  if (new_observer)
+    AddObserver(std::move(new_observer));
 }
 
 void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
@@ -593,12 +601,6 @@ void StorageAreaImpl::OnMapLoaded(
   DCHECK(keys_values_map_.empty());
   DCHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
 
-  if (data.empty() && status.ok()) {
-    delegate_->MigrateData(base::BindOnce(&StorageAreaImpl::OnGotMigrationData,
-                                          weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
   keys_only_map_.clear();
   map_state_ = MapState::LOADED_KEYS_AND_VALUES;
 
@@ -611,31 +613,6 @@ void StorageAreaImpl::OnMapLoaded(
   }
   CalculateStorageAndMemoryUsed();
 
-  std::vector<Change> changes = delegate_->FixUpData(keys_values_map_);
-  if (!changes.empty()) {
-    DCHECK(database_);
-    CreateCommitBatchIfNeeded();
-    for (auto& change : changes) {
-      auto it = keys_values_map_.find(change.first);
-      if (!change.second) {
-        DCHECK(it != keys_values_map_.end());
-        keys_values_map_.erase(it);
-      } else {
-        if (it != keys_values_map_.end()) {
-          it->second = std::move(*change.second);
-        } else {
-          keys_values_map_[change.first] = std::move(*change.second);
-        }
-      }
-      // No need to store values in |commit_batch_| if values are already
-      // available in |keys_values_map_|, since CommitChanges() will take values
-      // from there.
-      commit_batch_->changed_keys.insert(std::move(change.first));
-    }
-    CalculateStorageAndMemoryUsed();
-    CommitChanges();
-  }
-
   // We proceed without using a backing store, nothing will be persisted but the
   // class is functional for the lifetime of the object.
   delegate_->OnMapLoaded(status);
@@ -647,23 +624,6 @@ void StorageAreaImpl::OnMapLoaded(
   if (on_load_callback_for_testing_)
     std::move(on_load_callback_for_testing_).Run();
 
-  OnLoadComplete();
-}
-
-void StorageAreaImpl::OnGotMigrationData(std::unique_ptr<ValueMap> data) {
-  keys_only_map_.clear();
-  keys_values_map_ = data ? std::move(*data) : ValueMap();
-  map_state_ = MapState::LOADED_KEYS_AND_VALUES;
-  CalculateStorageAndMemoryUsed();
-  delegate_->OnMapLoaded(leveldb::Status::OK());
-
-  if (database_ && !empty()) {
-    CreateCommitBatchIfNeeded();
-    // CommitChanges() will take values from |keys_values_map_|.
-    for (const auto& it : keys_values_map_)
-      commit_batch_->changed_keys.insert(it.first);
-    CommitChanges();
-  }
   OnLoadComplete();
 }
 
@@ -715,7 +675,7 @@ void StorageAreaImpl::CreateCommitBatchIfNeeded() {
     return;
   DCHECK(database_);
 
-  commit_batch_.reset(new CommitBatch());
+  commit_batch_ = std::make_unique<CommitBatch>();
   StartCommitTimer();
 }
 
@@ -732,13 +692,13 @@ void StorageAreaImpl::StartCommitTimer() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&StorageAreaImpl::CommitChanges,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::OnceClosure()),
       ComputeCommitDelay());
 }
 
 base::TimeDelta StorageAreaImpl::ComputeCommitDelay() const {
   if (s_aggressive_flushing_enabled_)
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
 
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
   base::TimeDelta delay =
@@ -751,11 +711,14 @@ base::TimeDelta StorageAreaImpl::ComputeCommitDelay() const {
   return delay;
 }
 
-void StorageAreaImpl::CommitChanges() {
+void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
   // Note: commit_batch_ may be null if ScheduleImmediateCommit was called
   // after a delayed commit task was scheduled.
-  if (!commit_batch_)
+  if (!commit_batch_) {
+    if (callback)
+      std::move(callback).Run();
     return;
+  }
 
   DCHECK(database_);
   DCHECK(IsMapLoaded()) << static_cast<int>(map_state_);
@@ -768,7 +731,7 @@ void StorageAreaImpl::CommitChanges() {
     bool clear_all_first;
     std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
     std::vector<DomStorageDatabase::Key> keys_to_delete;
-    base::Optional<DomStorageDatabase::Key> copy_to_prefix;
+    absl::optional<DomStorageDatabase::Key> copy_to_prefix;
   };
 
   Commit commit;
@@ -852,10 +815,11 @@ void StorageAreaImpl::CommitChanges() {
           },
           std::move(commit)),
       base::BindOnce(&StorageAreaImpl::OnCommitComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {
+void StorageAreaImpl::OnCommitComplete(base::OnceClosure callback,
+                                       leveldb::Status status) {
   has_committed_data_ = true;
   --commit_batches_in_flight_;
   StartCommitTimer();
@@ -867,6 +831,8 @@ void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {
   UnloadMapIfPossible();
 
   delegate_->DidCommit(status);
+  if (callback)
+    std::move(callback).Run();
 }
 
 void StorageAreaImpl::UnloadMapIfPossible() {

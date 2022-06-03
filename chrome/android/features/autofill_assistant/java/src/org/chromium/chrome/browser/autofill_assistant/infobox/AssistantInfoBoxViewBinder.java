@@ -11,7 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -68,19 +69,21 @@ class AssistantInfoBoxViewBinder
 
     private void setInfoBox(AssistantInfoBox infoBox, ViewHolder viewHolder) {
         String explanation = infoBox.getExplanation();
-        viewHolder.mExplanationView.setText(explanation);
-        viewHolder.mExplanationView.announceForAccessibility(explanation);
+        AssistantTextUtils.applyVisualAppearanceTags(
+                viewHolder.mExplanationView, explanation, null);
+        viewHolder.mExplanationView.announceForAccessibility(viewHolder.mExplanationView.getText());
         if (infoBox.getImagePath().isEmpty()) {
             viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         } else {
-            mImageFetcher.fetchImage(infoBox.getImagePath(),
-                    ImageFetcher.ASSISTANT_INFO_BOX_UMA_CLIENT_NAME, image -> {
-                        if (image != null) {
-                            Drawable d = new BitmapDrawable(mContext.getResources(), image);
-                            viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(
-                                    null, d, null, null);
-                        }
-                    });
+            ImageFetcher.Params params = ImageFetcher.Params.create(
+                    infoBox.getImagePath(), ImageFetcher.ASSISTANT_INFO_BOX_UMA_CLIENT_NAME);
+            mImageFetcher.fetchImage(params, image -> {
+                if (image != null) {
+                    Drawable d = new BitmapDrawable(mContext.getResources(), image);
+                    viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(
+                            null, d, null, null);
+                }
+            });
         }
     }
 }

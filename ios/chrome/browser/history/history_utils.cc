@@ -6,6 +6,7 @@
 
 #include "components/dom_distiller/core/url_constants.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

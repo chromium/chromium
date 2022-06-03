@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Should have green background'",
-          "rect": [8, 8, 197, 20],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 8, 197, 20]
       ]
     }
   ]

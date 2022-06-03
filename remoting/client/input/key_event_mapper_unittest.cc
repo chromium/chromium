@@ -112,7 +112,7 @@ TEST(KeyEventMapperTest, TrapKeys) {
   MockInputStub trap_stub;
   KeyEventMapper event_mapper(&mock_stub);
   KeyEventMapper::KeyTrapCallback callback =
-      base::Bind(&HandleTrappedKey, base::Unretained(&trap_stub));
+      base::BindRepeating(&HandleTrappedKey, base::Unretained(&trap_stub));
   event_mapper.SetTrapCallback(callback);
   event_mapper.TrapKey(4, true);
   event_mapper.TrapKey(5, true);

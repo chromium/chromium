@@ -54,6 +54,25 @@ static ALWAYS_INLINE void Vadd(const float* source1p,
 #endif
 }
 
+static ALWAYS_INLINE void Vsub(const float* source1p,
+                               int source_stride1,
+                               const float* source2p,
+                               int source_stride2,
+                               float* dest_p,
+                               int dest_stride,
+                               uint32_t frames_to_process) {
+  // NOTE: We define Vsub to be source1 - source2, The vDSP routines
+  // do source2 - source1, so swap the args when calling the vDSP
+  // routines.
+#if defined(ARCH_CPU_X86)
+  ::vsub(source2p, source_stride2, source1p, source_stride1, dest_p,
+         dest_stride, frames_to_process);
+#else
+  vDSP_vsub(source2p, source_stride2, source1p, source_stride1, dest_p,
+            dest_stride, frames_to_process);
+#endif
+}
+
 static ALWAYS_INLINE void Vclip(const float* source_p,
                                 int source_stride,
                                 const float* low_threshold_p,
@@ -109,6 +128,36 @@ static ALWAYS_INLINE void Vsmul(const float* source_p,
           frames_to_process);
 #else
   vDSP_vsmul(source_p, source_stride, scale, dest_p, dest_stride,
+             frames_to_process);
+#endif
+}
+
+static ALWAYS_INLINE void Vsadd(const float* source_p,
+                                int source_stride,
+                                const float* addend,
+                                float* dest_p,
+                                int dest_stride,
+                                uint32_t frames_to_process) {
+#if defined(ARCH_CPU_X86)
+  ::vsadd(source_p, source_stride, addend, dest_p, dest_stride,
+          frames_to_process);
+#else
+  vDSP_vsadd(source_p, source_stride, addend, dest_p, dest_stride,
+             frames_to_process);
+#endif
+}
+
+static ALWAYS_INLINE void Vsadd(const float* source_p,
+                                int source_stride,
+                                float addend,
+                                float* dest_p,
+                                int dest_stride,
+                                uint32_t frames_to_process) {
+#if defined(ARCH_CPU_X86)
+  ::vsadd(source_p, source_stride, &addend, dest_p, dest_stride,
+          frames_to_process);
+#else
+  vDSP_vsadd(source_p, source_stride, &addend, dest_p, dest_stride,
              frames_to_process);
 #endif
 }

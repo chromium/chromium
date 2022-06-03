@@ -26,7 +26,8 @@ class FakeEncryptedMedia {
                                   const std::vector<uint8_t>& message,
                                   AesDecryptor* decryptor) = 0;
 
-    virtual void OnSessionClosed(const std::string& session_id) = 0;
+    virtual void OnSessionClosed(const std::string& session_id,
+                                 CdmSessionClosedReason reason) = 0;
 
     virtual void OnSessionKeysChange(const std::string& session_id,
                                      bool has_additional_usable_key,
@@ -41,13 +42,19 @@ class FakeEncryptedMedia {
   };
 
   FakeEncryptedMedia(AppBase* app);
+
+  FakeEncryptedMedia(const FakeEncryptedMedia&) = delete;
+  FakeEncryptedMedia& operator=(const FakeEncryptedMedia&) = delete;
+
   ~FakeEncryptedMedia();
   CdmContext* GetCdmContext();
+
   // Callbacks for firing session events. Delegate to |app_|.
   void OnSessionMessage(const std::string& session_id,
                         CdmMessageType message_type,
                         const std::vector<uint8_t>& message);
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
   void OnSessionKeysChange(const std::string& session_id,
                            bool has_additional_usable_key,
                            CdmKeysInfo keys_info);
@@ -61,7 +68,6 @@ class FakeEncryptedMedia {
    public:
     TestCdmContext(Decryptor* decryptor);
     Decryptor* GetDecryptor() final;
-    int GetCdmId() const final;
 
    private:
     Decryptor* decryptor_;
@@ -70,8 +76,6 @@ class FakeEncryptedMedia {
   scoped_refptr<AesDecryptor> decryptor_;
   TestCdmContext cdm_context_;
   std::unique_ptr<AppBase> app_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEncryptedMedia);
 };
 
 }  // namespace media

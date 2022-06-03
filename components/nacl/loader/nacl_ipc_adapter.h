@@ -10,17 +10,15 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_platform_file.h"
@@ -72,21 +70,22 @@ class NaClIPCAdapter : public base::RefCountedThreadSafe<NaClIPCAdapter>,
   };
 #pragma pack(pop)
 
-  typedef base::Callback<void(IPC::PlatformFileForTransit, base::FilePath)>
+  typedef base::OnceCallback<void(IPC::PlatformFileForTransit, base::FilePath)>
       ResolveFileTokenReplyCallback;
 
-  typedef base::Callback<void(uint64_t,  // file_token_lo
-                              uint64_t,  // file_token_hi
-                              ResolveFileTokenReplyCallback)>
+  typedef base::RepeatingCallback<void(uint64_t,  // file_token_lo
+                                       uint64_t,  // file_token_hi
+                                       ResolveFileTokenReplyCallback)>
       ResolveFileTokenCallback;
 
-  typedef base::Callback<void(const IPC::Message&,
-                              IPC::PlatformFileForTransit,
-                              base::FilePath)> OpenResourceReplyCallback;
+  typedef base::OnceCallback<
+      void(const IPC::Message&, IPC::PlatformFileForTransit, base::FilePath)>
+      OpenResourceReplyCallback;
 
-  typedef base::Callback<bool(const IPC::Message&,
-                              const std::string&,  // key
-                              OpenResourceReplyCallback)> OpenResourceCallback;
+  typedef base::RepeatingCallback<bool(const IPC::Message&,
+                                       const std::string&,  // key
+                                       OpenResourceReplyCallback)>
+      OpenResourceCallback;
 
   // Creates an adapter, using the thread associated with the given task
   // runner for posting messages. In normal use, the task runner will post to
@@ -113,6 +112,9 @@ class NaClIPCAdapter : public base::RefCountedThreadSafe<NaClIPCAdapter>,
   // purposes. This function will take ownership of the given channel.
   NaClIPCAdapter(std::unique_ptr<IPC::Channel> channel,
                  base::TaskRunner* runner);
+
+  NaClIPCAdapter(const NaClIPCAdapter&) = delete;
+  NaClIPCAdapter& operator=(const NaClIPCAdapter&) = delete;
 
   // Connect the channel. This must be called after the constructor that accepts
   // an IPC::ChannelHandle, and causes the Channel to be connected on the IO
@@ -225,8 +227,6 @@ class NaClIPCAdapter : public base::RefCountedThreadSafe<NaClIPCAdapter>,
 
   // To be accessed on the I/O thread (via task runner) only.
   IOThreadData io_thread_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClIPCAdapter);
 };
 
 // Export TranslatePepperFileReadWriteOpenFlags for testing.

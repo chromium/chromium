@@ -4,9 +4,43 @@
 
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace mojo {
+
+chromeos::secure_channel::mojom::ConnectionMedium
+EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
+           chromeos::secure_channel::ConnectionMedium>::
+    ToMojom(chromeos::secure_channel::ConnectionMedium input) {
+  switch (input) {
+    case chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy:
+      return chromeos::secure_channel::mojom::ConnectionMedium::
+          kBluetoothLowEnergy;
+    case chromeos::secure_channel::ConnectionMedium::kNearbyConnections:
+      return chromeos::secure_channel::mojom::ConnectionMedium::
+          kNearbyConnections;
+  }
+
+  NOTREACHED();
+  return chromeos::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy;
+}
+
+bool EnumTraits<chromeos::secure_channel::mojom::ConnectionMedium,
+                chromeos::secure_channel::ConnectionMedium>::
+    FromMojom(chromeos::secure_channel::mojom::ConnectionMedium input,
+              chromeos::secure_channel::ConnectionMedium* out) {
+  switch (input) {
+    case chromeos::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy:
+      *out = chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy;
+      return true;
+    case chromeos::secure_channel::mojom::ConnectionMedium::kNearbyConnections:
+      *out = chromeos::secure_channel::ConnectionMedium::kNearbyConnections;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
 
 chromeos::secure_channel::mojom::ConnectionPriority
 EnumTraits<chromeos::secure_channel::mojom::ConnectionPriority,

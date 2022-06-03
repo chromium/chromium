@@ -15,6 +15,9 @@ namespace win {
 // terminate immediately with a fast fail exception.
 [[noreturn]] BASE_EXPORT void TerminateWithHeapCorruption();
 
+// Creates a CFG violation.
+[[noreturn]] BASE_EXPORT void TerminateWithControlFlowViolation();
+
 }  // namespace win
 }  // namespace debug
 }  // namespace base

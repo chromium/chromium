@@ -19,6 +19,7 @@
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 
 protobuf_mutator::protobuf::LogSilencer log_silencer;
@@ -66,6 +67,6 @@ DEFINE_PROTO_FUZZER(const Input& input) {
   canvas.save();
   canvas.clipRect(SkRect::MakeXYWH(0, 0, SkIntToScalar(kBitmapSize),
                                    SkIntToScalar(kBitmapSize)));
-  canvas.drawBitmap(bitmap, 0, 0, &paint);
+  canvas.drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
   canvas.restore();
 }

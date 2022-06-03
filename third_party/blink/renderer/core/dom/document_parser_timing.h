@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_PARSER_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_PARSER_TIMING_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -17,12 +16,12 @@ namespace blink {
 class DocumentParserTiming final
     : public GarbageCollected<DocumentParserTiming>,
       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(DocumentParserTiming);
-
  public:
   static const char kSupplementName[];
 
   explicit DocumentParserTiming(Document&);
+  DocumentParserTiming(const DocumentParserTiming&) = delete;
+  DocumentParserTiming& operator=(const DocumentParserTiming&) = delete;
   virtual ~DocumentParserTiming() = default;
 
   static DocumentParserTiming& From(Document&);
@@ -97,7 +96,7 @@ class DocumentParserTiming final
     return parser_blocked_on_script_execution_from_document_write_duration_;
   }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void NotifyDocumentParserTimingChanged();
@@ -110,9 +109,8 @@ class DocumentParserTiming final
   base::TimeDelta
       parser_blocked_on_script_execution_from_document_write_duration_;
   bool parser_detached_ = false;
-  DISALLOW_COPY_AND_ASSIGN(DocumentParserTiming);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_PARSER_TIMING_H_

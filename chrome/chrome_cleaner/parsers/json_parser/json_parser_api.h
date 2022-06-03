@@ -6,14 +6,14 @@
 #define CHROME_CHROME_CLEANER_PARSERS_JSON_PARSER_JSON_PARSER_API_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 
 using ParseDoneCallback =
-    base::OnceCallback<void(base::Optional<base::Value>,
-                            const base::Optional<std::string>&)>;
+    base::OnceCallback<void(absl::optional<base::Value>,
+                            const absl::optional<std::string>&)>;
 
 class JsonParserAPI {
  public:

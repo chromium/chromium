@@ -15,7 +15,11 @@ FakeCryptAuthGCMManager::FakeCryptAuthGCMManager(
 FakeCryptAuthGCMManager::~FakeCryptAuthGCMManager() = default;
 
 void FakeCryptAuthGCMManager::StartListening() {
-  has_started_listening_ = true;
+  is_listening_ = true;
+}
+
+bool FakeCryptAuthGCMManager::IsListening() {
+  return is_listening_;
 }
 
 void FakeCryptAuthGCMManager::RegisterWithGCM() {
@@ -45,15 +49,15 @@ void FakeCryptAuthGCMManager::CompleteRegistration(
 }
 
 void FakeCryptAuthGCMManager::PushReenrollMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   for (auto& observer : observers_)
     observer.OnReenrollMessage(session_id, feature_type);
 }
 
 void FakeCryptAuthGCMManager::PushResyncMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   for (auto& observer : observers_)
     observer.OnResyncMessage(session_id, feature_type);
 }

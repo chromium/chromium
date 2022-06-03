@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+
 /**
  * An event handler of the background page for file operations.
  */
-class FileOperationHandler {
+export class FileOperationHandler {
   /**
    * @param {!FileOperationManager} fileOperationManager
    * @param {!ProgressCenter} progressCenter
@@ -43,6 +49,72 @@ class FileOperationHandler {
         'copy-progress', this.onCopyProgress_.bind(this));
     this.fileOperationManager_.addEventListener(
         'delete', this.onDeleteProgress_.bind(this));
+
+    chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
+        this.onIOTaskProgressStatus_.bind(this));
+  }
+
+  /**
+   * Process the IO Task ProgressStatus events.
+   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
+   * @private
+   */
+  async onIOTaskProgressStatus_(event) {
+    const taskId = String(event.taskId);
+    let newItem = false;
+    /** @type {ProgressCenterItem} */
+    let item = this.progressCenter_.getItemById(taskId);
+    if (!item) {
+      item = new ProgressCenterItem();
+      newItem = true;
+      item.id = taskId;
+      item.type = getTypeFromIOTaskType_(event.type);
+      item.itemCount = event.itemCount;
+      item.cancelCallback = () => {
+        chrome.fileManagerPrivate.cancelIOTask(event.taskId);
+      };
+    }
+    item.message = getMessageFromProgressEvent_(event);
+
+    switch (event.state) {
+      case chrome.fileManagerPrivate.IOTaskState.QUEUED:
+        item.sourceMessage = event.sourceName;
+        item.destinationMessage = event.destinationName;
+        item.progressMax = event.totalBytes;
+        item.progressValue = event.bytesTransferred;
+        item.remainingTime = event.remainingSeconds;
+        break;
+
+      case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
+        item.progressMax = event.totalBytes;
+        item.progressValue = event.bytesTransferred;
+        item.remainingTime = event.remainingSeconds;
+        break;
+
+      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
+      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
+      case chrome.fileManagerPrivate.IOTaskState.ERROR:
+        if (newItem) {
+          // ERROR events can be dispatched before BEGIN events.
+          item.progressMax = 1;
+          item.sourceMessage = event.sourceName;
+          item.destinationMessage = event.destinationName;
+        }
+        if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
+          item.state = ProgressItemState.COMPLETED;
+          item.progressValue = item.progressMax;
+          item.remainingTime = event.remainingSeconds;
+        } else if (
+            event.state === chrome.fileManagerPrivate.IOTaskState.CANCELLED) {
+          item.state = ProgressItemState.CANCELED;
+        } else {
+          item.state = ProgressItemState.ERROR;
+        }
+        break;
+      default:
+        console.error(`Invalid IOTaskState: ${event.state}`);
+    }
+    this.progressCenter_.updateItem(item);
   }
 
   /**
@@ -51,7 +123,7 @@ class FileOperationHandler {
    * @private
    */
   onCopyProgress_(event) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     event = /** @type {FileOperationProgressEvent} */ (event);
 
     // Update progress center.
@@ -70,6 +142,7 @@ class FileOperationHandler {
         item.progressValue = event.status.processedBytes;
         item.cancelCallback = this.fileOperationManager_.requestTaskCancel.bind(
             this.fileOperationManager_, event.taskId);
+        item.remainingTime = event.status.remainingTime;
         progressCenter.updateItem(item);
         break;
 
@@ -82,6 +155,7 @@ class FileOperationHandler {
         item.message = FileOperationHandler.getMessage_(event);
         item.progressMax = event.status.totalBytes;
         item.progressValue = event.status.processedBytes;
+        item.remainingTime = event.status.remainingTime;
         progressCenter.updateItem(item);
         break;
 
@@ -100,6 +174,7 @@ class FileOperationHandler {
           item.message = '';
           item.state = ProgressItemState.COMPLETED;
           item.progressValue = item.progressMax;
+          item.remainingTime = event.status.remainingTime;
         } else if (event.reason === EventType.CANCELED) {
           item.message = '';
           item.state = ProgressItemState.CANCELED;
@@ -113,12 +188,14 @@ class FileOperationHandler {
   }
 
   /**
-   * Handles the delete event.
-   * @param {Event} event The delete event.
+   * Handles the delete event, and also the restore event which is similar to
+   * delete in that as items complete, they are removed from the containing
+   * directory.
+   * @param {Event} event The delete or restore event.
    * @private
    */
   onDeleteProgress_(event) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     event = /** @type {FileOperationProgressEvent} */ (event);
 
     // Update progress center.
@@ -130,7 +207,8 @@ class FileOperationHandler {
         item = new ProgressCenterItem();
         item.id = event.taskId;
         item.type = ProgressItemType.DELETE;
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
+        item.itemCount = event.status.numRemainingItems;
         item.progressMax = event.totalBytes;
         item.progressValue = event.processedBytes;
         item.cancelCallback = this.fileOperationManager_.requestTaskCancel.bind(
@@ -149,7 +227,7 @@ class FileOperationHandler {
           console.error('Cannot find deleting item.');
           return;
         }
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
         item.progressMax = event.totalBytes;
         item.progressValue = event.processedBytes;
         if (!pending) {
@@ -170,7 +248,7 @@ class FileOperationHandler {
         }
 
         // Update the item.
-        item.message = FileOperationHandler.getDeleteMessage_(event);
+        item.message = FileOperationHandler.getMessage_(event);
         if (event.reason === EventType.SUCCESS) {
           item.state = ProgressItemState.COMPLETED;
           item.progressValue = item.progressMax;
@@ -213,19 +291,19 @@ class FileOperationHandler {
    * @private
    */
   static getMessage_(event) {
-    if (event.reason === fileOperationUtil.EventRouter.EventType.ERROR) {
+    if (event.reason === FileOperationProgressEvent.EventType.ERROR) {
       switch (event.error.code) {
         case util.FileOperationErrorType.TARGET_EXISTS:
-          var name = event.error.data.name;
+          let name = event.error.data.name;
           if (event.error.data.isDirectory) {
             name += '/';
           }
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_TARGET_EXISTS_ERROR', name);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_TARGET_EXISTS_ERROR', name);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_TARGET_EXISTS_ERROR', name);
             default:
               return strf('TRANSFER_TARGET_EXISTS_ERROR', name);
@@ -234,72 +312,68 @@ class FileOperationHandler {
         case util.FileOperationErrorType.FILESYSTEM_ERROR:
           const detail = util.getFileErrorString(event.error.data.name);
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_FILESYSTEM_ERROR', detail);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_FILESYSTEM_ERROR', detail);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_FILESYSTEM_ERROR', detail);
+            case util.FileOperationType.DELETE:
+              return str('DELETE_ERROR');
+            case util.FileOperationType.RESTORE:
+              return str('RESTORE_FROM_TRASH_ERROR');
             default:
               return strf('TRANSFER_FILESYSTEM_ERROR', detail);
           }
 
         default:
           switch (event.status.operationType) {
-            case 'COPY':
+            case util.FileOperationType.COPY:
               return strf('COPY_UNEXPECTED_ERROR', event.error.code);
-            case 'MOVE':
+            case util.FileOperationType.MOVE:
               return strf('MOVE_UNEXPECTED_ERROR', event.error.code);
-            case 'ZIP':
+            case util.FileOperationType.ZIP:
               return strf('ZIP_UNEXPECTED_ERROR', event.error.code);
+            case util.FileOperationType.DELETE:
+              return str('DELETE_ERROR');
+            case util.FileOperationType.RESTORE:
+              return str('RESTORE_FROM_TRASH_ERROR');
             default:
               return strf('TRANSFER_UNEXPECTED_ERROR', event.error.code);
           }
       }
     } else if (event.status.numRemainingItems === 1) {
-      var name = event.status.processingEntryName;
+      const name = event.status.processingEntryName;
       switch (event.status.operationType) {
-        case 'COPY':
+        case util.FileOperationType.COPY:
           return strf('COPY_FILE_NAME', name);
-        case 'MOVE':
+        case util.FileOperationType.MOVE:
           return strf('MOVE_FILE_NAME', name);
-        case 'ZIP':
+        case util.FileOperationType.ZIP:
           return strf('ZIP_FILE_NAME', name);
+        case util.FileOperationType.DELETE:
+          return strf('DELETE_FILE_NAME', name);
+        case util.FileOperationType.RESTORE:
+          return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
         default:
           return strf('TRANSFER_FILE_NAME', name);
       }
     } else {
       const remainNumber = event.status.numRemainingItems;
       switch (event.status.operationType) {
-        case 'COPY':
+        case util.FileOperationType.COPY:
           return strf('COPY_ITEMS_REMAINING', remainNumber);
-        case 'MOVE':
+        case util.FileOperationType.MOVE:
           return strf('MOVE_ITEMS_REMAINING', remainNumber);
-        case 'ZIP':
+        case util.FileOperationType.ZIP:
           return strf('ZIP_ITEMS_REMAINING', remainNumber);
+        case util.FileOperationType.DELETE:
+          return strf('DELETE_ITEMS_REMAINING', remainNumber);
+        case util.FileOperationType.RESTORE:
+          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
         default:
           return strf('TRANSFER_ITEMS_REMAINING', remainNumber);
       }
-    }
-  }
-
-  /**
-   * Generates a delete message from the event.
-   * @param {Event} event Progress event.
-   * @return {string} message.
-   * @private
-   */
-  static getDeleteMessage_(event) {
-    event = /** @type {FileOperationProgressEvent} */ (event);
-    if (event.reason === fileOperationUtil.EventRouter.EventType.ERROR) {
-      return str('DELETE_ERROR');
-    } else if (event.entries.length == 1) {
-      const fileName = event.entries[0].name;
-      return strf('DELETE_FILE_NAME', fileName);
-    } else if (event.entries.length > 1) {
-      return strf('DELETE_ITEMS_REMAINING', event.entries.length);
-    } else {
-      return '';
     }
   }
 
@@ -311,11 +385,11 @@ class FileOperationHandler {
    */
   static getType_(operationType) {
     switch (operationType) {
-      case 'COPY':
+      case util.FileOperationType.COPY:
         return ProgressItemType.COPY;
-      case 'MOVE':
+      case util.FileOperationType.MOVE:
         return ProgressItemType.MOVE;
-      case 'ZIP':
+      case util.FileOperationType.ZIP:
         return ProgressItemType.ZIP;
       default:
         console.error('Unknown operation type.');
@@ -332,3 +406,57 @@ class FileOperationHandler {
  * @private
  */
 FileOperationHandler.PENDING_TIME_MS_ = 500;
+
+/**
+ * Obtains ProgressItemType from OperationType of ProgressStatus.type.
+ * @param {!chrome.fileManagerPrivate.IOTaskType} type Operation type
+ *     ProgressStatus.
+ * @return {!ProgressItemType} corresponding to the
+ *     specified operation type.
+ * @private
+ */
+function getTypeFromIOTaskType_(type) {
+  switch (type) {
+    case chrome.fileManagerPrivate.IOTaskType.COPY:
+      return ProgressItemType.COPY;
+    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      return ProgressItemType.MOVE;
+    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+      return ProgressItemType.ZIP;
+    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      return ProgressItemType.DELETE;
+    default:
+      console.error('Unknown operation type: ' + type);
+      return ProgressItemType.TRANSFER;
+  }
+}
+
+/**
+ * Generate a progress message from the event.
+ * @param {!chrome.fileManagerPrivate.ProgressStatus} event Progress event.
+ * @return {string} message.
+ * @private
+ */
+function getMessageFromProgressEvent_(event) {
+  // All the non-error states text is managed directly in the
+  // ProgressCenterPanel.
+  if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR) {
+    const detail = util.getFileErrorString(event.errorName);
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.COPY:
+        return strf('COPY_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return strf('MOVE_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.ZIP:
+        return strf('ZIP_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.DELETE:
+        return str('DELETE_ERROR');
+      // case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+      //  return str('RESTORE_FROM_TRASH_ERROR');
+      default:
+        return strf('TRANSFER_FILESYSTEM_ERROR', detail);
+    }
+  }
+
+  return '';
+}

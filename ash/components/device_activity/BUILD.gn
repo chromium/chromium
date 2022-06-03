@@ -1,0 +1,48 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("device_activity") {
+  output_name = "ash_device_activity"
+  defines = [ "IS_ASH_DEVICE_ACTIVITY_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/network",
+    "//components/prefs:prefs",
+  ]
+
+  sources = [
+    "device_activity_client.cc",
+    "device_activity_client.h",
+    "device_activity_controller.cc",
+    "device_activity_controller.h",
+    "fresnel_pref_names.cc",
+    "fresnel_pref_names.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_activity_client_unittest.cc",
+    "device_activity_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":device_activity",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/network",
+    "//chromeos/network:test_support",
+    "//components/prefs:test_support",
+    "//dbus",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+  ]
+}

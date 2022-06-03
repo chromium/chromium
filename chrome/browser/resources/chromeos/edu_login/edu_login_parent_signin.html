@@ -1,0 +1,199 @@
+<style include="edu-login-css">
+  .account-selection-container {
+    align-items: center;
+    border: var(--grey-border);
+    border-radius: 16px;
+    color: var(--google-grey-refresh-700);
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 500;
+    letter-spacing: .25px;
+    margin-bottom: 16px;
+    max-width: 100%;
+    min-width: 240px;
+    padding: 3px 5px;
+  }
+
+  .account-selection-container:hover {
+    background: rgba(60, 64, 67, 0.039); /* google-grey-800 with opacity */
+  }
+
+  .account-selection-container>.parent-email {
+    word-break: break-all;
+  }
+
+  .account-selection-container>iron-icon {
+    --icon-size: 24px;
+    flex-shrink: 0;
+    height: var(--icon-size);
+    margin-inline-start: auto;
+    width: var(--icon-size);
+  }
+
+  .profile-icon {
+    --profile-icon-size: 20px;
+    height: var(--profile-icon-size);
+    margin-inline-end: 5px;
+    width: var(--profile-icon-size);
+  }
+
+  .input-group,
+  .field-wrapper,
+  .field-wrapper input {
+    width: 100%;
+  }
+
+  .input-group {
+    margin-bottom: 40px;
+    margin-top: 32px;
+  }
+
+  .field-wrapper {
+    position: relative;
+  }
+
+  .field-wrapper input {
+    border: var(--grey-border);
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 36px;
+    max-width: 100%;
+    outline: none;
+    padding-bottom: 7px;
+    padding-inline-end: 36px;
+    padding-inline-start: 11px;
+    padding-top: 7px;
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .field-wrapper input:focus {
+    border: 2px solid var(--google-blue-500);
+  }
+
+  .field-wrapper label {
+    --label-margin: 10px;
+    color: var(--google-grey-600);
+    font-size: 14px;
+    left: var(--label-margin);
+    pointer-events: none;
+    position: absolute;
+    top: var(--label-margin);
+    transition: 150ms ease all;
+  }
+
+  :host-context([dir='rtl']) .field-wrapper label {
+    left: auto;
+    right: var(--label-margin);
+  }
+
+  .field-wrapper .password-icon {
+    --icon-size: 36px;
+    color: var(--google-grey-600);
+    cursor: pointer;
+    height: var(--icon-size);
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: var(--icon-size);
+  }
+
+  :host-context([dir='rtl']) .field-wrapper .password-icon {
+    left: 0;
+    right: auto;
+  }
+
+  /* active state */
+  .field-wrapper input:focus~label,
+  .field-wrapper input:valid~label {
+    background-color: white;
+    font-size: 12px;
+    padding: 2px;
+    top: -8px;
+  }
+
+  .field-wrapper input:focus~label {
+    color: var(--google-blue-500);
+  }
+
+  /* error state */
+  .field-wrapper input.error {
+    border: 2px solid var(--google-red-500);
+  }
+
+  .error-message,
+  .field-wrapper input.error~label {
+    color: var(--google-red-500);
+  }
+
+  .gaia-link {
+    color: var(--google-blue-500);
+    font-weight: 500;
+    line-height: 1.4286;
+    text-transform: none;
+  }
+</style>
+
+<edu-login-template>
+  <span slot="main">
+    <div class="main-padding">
+      <if expr="_google_chrome">
+        <img class="google-full-logo"
+            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+      </if>
+      <h1>[[getParentSigninTitle_(parent)]]</h1>
+
+      <div class="account-selection-container"
+          on-click="onBackClicked_"
+          role="button"
+          aria-labelledby="backButton"
+          aria-describedby="parentEmail">
+        <div class="profile-icon" style="background-image:
+                [[getIconImageSet_(parent.profileImage)]]">
+        </div>
+        <div id="parentEmail" class="parent-email">[[parent.email]]</div>
+        <iron-icon icon="cr:expand-more"></iron-icon>
+      </div>
+
+      <p class="secondary">$i18n{parentSigninBody}</p>
+
+      <div class="input-group">
+        <div class="field-wrapper">
+          <input id="passwordField"
+              aria-labelledby="passwordFieldLabel"
+              class$="[[getInputClass_(isWrongPassword_)]]"
+              type$="[[getInputType_(isPasswordVisible_)]]"
+              value="{{password_::input}}" on-keydown="onKeydown_"
+              required>
+          </input>
+          <label id="passwordFieldLabel">
+            $i18n{parentSigninPasswordLabel}
+          </label>
+          <cr-icon-button iron-icon="[[getPasswordIcon_(isPasswordVisible_)]]"
+              class="password-icon"
+              title="[[getPasswordIconLabel_(isPasswordVisible_)]]"
+              aria-label="[[getPasswordIconLabel_(isPasswordVisible_)]]"
+              on-click="onTogglePasswordVisibilityClicked_">
+          </cr-icon-button>
+        </div>
+        <p hidden="[[!isWrongPassword_]]" class="error-message">
+          $i18n{parentSigninPasswordError}
+        </p>
+      </div>
+
+      <a class="gaia-link" href="$i18nRaw{parentSigninAccountRecoveryUrl}"
+          target="_blank">
+        $i18n{parentSigninAccountRecoveryText}
+      </a>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="back" id="backButton"
+        on-go-back="clearState_">
+    </edu-login-button>
+    <edu-login-button button-type="next" id="nextButton"
+        on-go-next="handleGoNext_"
+        disabled="[[isNextDisabled_(password_)]]">
+    </edu-login-button>
+  </span>
+</edu-login-template>

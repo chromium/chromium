@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -42,7 +44,8 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     WebSocketStream::ConnectDelegate* connect_delegate,
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
-    WebSocketStreamRequestAPI* request)
+    WebSocketStreamRequestAPI* request,
+    std::vector<std::string> dns_aliases)
     : result_(HandshakeResult::HTTP2_INCOMPLETE),
       session_(session),
       connect_delegate_(connect_delegate),
@@ -53,7 +56,8 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
       request_info_(nullptr),
       stream_closed_(false),
       stream_error_(OK),
-      response_headers_complete_(false) {
+      response_headers_complete_(false),
+      dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
   DCHECK(request);
 }
@@ -89,8 +93,9 @@ int WebSocketHttp2HandshakeStream::SendRequest(
   DCHECK(headers.HasHeader(websockets::kSecWebSocketVersion));
 
   if (!session_) {
-    OnFailure("Connection closed before sending request.");
-    return ERR_CONNECTION_CLOSED;
+    const int rv = ERR_CONNECTION_CLOSED;
+    OnFailure("Connection closed before sending request.", rv, absl::nullopt);
+    return rv;
   }
 
   http_response_info_ = response;
@@ -98,7 +103,7 @@ int WebSocketHttp2HandshakeStream::SendRequest(
   IPEndPoint address;
   int result = session_->GetPeerAddress(&address);
   if (result != OK) {
-    OnFailure("Error getting IP address.");
+    OnFailure("Error getting IP address.", result, absl::nullopt);
     return result;
   }
   http_response_info_->remote_endpoint = address;
@@ -163,7 +168,17 @@ void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {
     stream_closed_ = true;
     stream_error_ = ERR_CONNECTION_CLOSED;
   }
+
+  // The method needs to be idempotent as it may be called multiple times.
+  if (!stream_adapter_)
+    return;
+
   stream_adapter_.reset();
+
+  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
+  // resolved.
+  CHECK(!stream_adapter_reset_by_close_);
+  stream_adapter_reset_by_close_ = true;
 }
 
 bool WebSocketHttp2HandshakeStream::IsResponseBodyComplete() const {
@@ -234,13 +249,37 @@ HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   return nullptr;
 }
 
+const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
+    const {
+  return dns_aliases_;
+}
+
+base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
+  return {};
+}
+
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
+
+  // These checks are here to find the cause of https://crbug.com/1215989.
+  // TODO(ricea): Remove them once the cause has been determined.
+  CHECK(!stream_adapter_reset_by_onclose_);
+
+  // The above blank line exists because stack traces often have annoying
+  // off-by-one errors in the line numbers.
+  CHECK(!stream_adapter_reset_by_close_);
+
+  // Above blank line is also intentional.
+  CHECK(!stream_adapter_moved_by_upgrade_);
+
+  // This should definitely be true if we get this far.
+  CHECK(stream_adapter_);
 
   stream_adapter_->DetachDelegate();
   std::unique_ptr<WebSocketStream> basic_stream =
       std::make_unique<WebSocketBasicStream>(
           std::move(stream_adapter_), nullptr, sub_protocol_, extensions_);
+  stream_adapter_moved_by_upgrade_ = true;
 
   if (!extension_params_->deflate_enabled)
     return basic_stream;
@@ -260,7 +299,7 @@ void WebSocketHttp2HandshakeStream::OnHeadersSent() {
 }
 
 void WebSocketHttp2HandshakeStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(http_response_info_);
 
@@ -288,7 +327,9 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
 }
 
 void WebSocketHttp2HandshakeStream::OnClose(int status) {
-  DCHECK(stream_adapter_);
+  // TODO(ricea): Change this CHECK back to a DCHECK when
+  // https://crbug.com/1215989 is fixed.
+  CHECK(stream_adapter_);
   DCHECK_GT(ERR_IO_PENDING, status);
 
   stream_closed_ = true;
@@ -297,12 +338,18 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
 
   stream_adapter_.reset();
 
+  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
+  // resolved.
+  CHECK(!stream_adapter_reset_by_close_);
+  stream_adapter_reset_by_close_ = true;
+
   // If response headers have already been received,
   // then ValidateResponse() sets |result_|.
   if (!response_headers_complete_)
     result_ = HandshakeResult::HTTP2_FAILED;
 
-  OnFailure(std::string("Stream closed with error: ") + ErrorToString(status));
+  OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
+            status, absl::nullopt);
 
   if (callback_)
     std::move(callback_).Run(status);
@@ -332,7 +379,6 @@ int WebSocketHttp2HandshakeStream::ValidateResponse() {
   const int response_code = headers->response_code();
   switch (response_code) {
     case HTTP_OK:
-      OnFinishOpeningHandshake();
       return ValidateUpgradeResponse(headers);
 
     // We need to pass these through for authentication to work.
@@ -343,10 +389,11 @@ int WebSocketHttp2HandshakeStream::ValidateResponse() {
     // Other status codes are potentially risky (see the warnings in the
     // WHATWG WebSocket API spec) and so are dropped by default.
     default:
-      OnFailure(base::StringPrintf(
-          "Error during WebSocket handshake: Unexpected response code: %d",
-          headers->response_code()));
-      OnFinishOpeningHandshake();
+      OnFailure(
+          base::StringPrintf(
+              "Error during WebSocket handshake: Unexpected response code: %d",
+              headers->response_code()),
+          ERR_FAILED, headers->response_code());
       result_ = HandshakeResult::HTTP2_INVALID_STATUS;
       return ERR_INVALID_RESPONSE;
   }
@@ -368,19 +415,18 @@ int WebSocketHttp2HandshakeStream::ValidateUpgradeResponse(
     result_ = HandshakeResult::HTTP2_CONNECTED;
     return OK;
   }
-  OnFailure("Error during WebSocket handshake: " + failure_message);
-  return ERR_INVALID_RESPONSE;
+
+  const int rv = ERR_INVALID_RESPONSE;
+  OnFailure("Error during WebSocket handshake: " + failure_message, rv,
+            absl::nullopt);
+  return rv;
 }
 
-void WebSocketHttp2HandshakeStream::OnFinishOpeningHandshake() {
-  DCHECK(http_response_info_);
-  WebSocketDispatchOnFinishOpeningHandshake(
-      connect_delegate_, request_info_->url, http_response_info_->headers,
-      http_response_info_->remote_endpoint, http_response_info_->response_time);
-}
-
-void WebSocketHttp2HandshakeStream::OnFailure(const std::string& message) {
-  stream_request_->OnFailure(message);
+void WebSocketHttp2HandshakeStream::OnFailure(
+    const std::string& message,
+    int net_error,
+    absl::optional<int> response_code) {
+  stream_request_->OnFailure(message, net_error, response_code);
 }
 
 }  // namespace net

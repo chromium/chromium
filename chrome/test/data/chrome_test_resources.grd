@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="test/data/grit/chrome_test_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="chrome_test_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message translateable="false" name="IDS_FEATURE_PROMO_BODY">
+        Use this feature please
+      </message>
+      <message translateable="false" name="IDS_FEATURE_PROMO_BODY_WITH_STRING_PLACEHOLDER">
+        Click <ph name="FOO">$1</ph> to do something
+      </message>
+    </messages>
+  </release>
+</grit>

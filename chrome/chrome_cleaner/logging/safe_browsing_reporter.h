@@ -9,8 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/http/http_agent.h"
 #include "chrome/chrome_cleaner/http/http_agent_factory.h"
@@ -45,6 +44,9 @@ class SafeBrowsingReporter {
                                        const std::string& serialized_report,
                                        std::unique_ptr<ChromeFoilResponse>)>
       OnResultCallback;
+
+  SafeBrowsingReporter(const SafeBrowsingReporter&) = delete;
+  SafeBrowsingReporter& operator=(const SafeBrowsingReporter&) = delete;
 
   virtual ~SafeBrowsingReporter();
 
@@ -119,8 +121,6 @@ class SafeBrowsingReporter {
 
   // The callback by which results are returned.
   OnResultCallback done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingReporter);
 };
 
 }  // namespace chrome_cleaner

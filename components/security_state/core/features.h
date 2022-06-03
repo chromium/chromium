@@ -11,43 +11,22 @@
 namespace security_state {
 namespace features {
 
-// This feature enables more aggressive warnings for nonsecure http:// pages.
-// The exact warning treatment is dependent on the parameter 'treatment' which
-// can have the following values:
-// - 'dangerous': Treat all http:// pages as actively dangerous
-// - 'warning-and-dangerous-on-form-edits': Show a Not Secure warning on all
-//   http:// pages, and treat them as actively dangerous when the user edits
-//   form fields
-// - 'danger-warning': Show a grey triangle icon instead of the info icon on all
-//   http:// pages.
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const base::Feature kMarkHttpAsFeature;
-
-// The parameter name which controls the warning treatment.
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const char kMarkHttpAsFeatureParameterName[];
-
-// The different parameter values, described above.
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const char kMarkHttpAsParameterDangerous[];
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const char kMarkHttpAsParameterWarningAndDangerousOnFormEdits[];
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const char kMarkHttpAsParameterDangerWarning[];
-
-// This feature enables security warning UI treatments for sites that use legacy
-// TLS version (TLS 1.0 or 1.1).
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const base::Feature kLegacyTLSWarnings;
-
 // This feature enables Safety Tip warnings on possibly-risky sites.
 COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
 extern const base::Feature kSafetyTipUI;
 
-// This feature causes passive mixed content to show the not secure warning
-// chip. Does not affect mixed forms.
+// This feature enables Safety Tip warnings on some types of lookalike sites,
+// for the purposes of measuring Simplified Domain Display
+// (https://crbug.com/1090393). It has similar behavior to kSafetyTipUI, but can
+// be enabled independently in a separate experiment.
 COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const base::Feature kPassiveMixedContentWarning;
+extern const base::Feature kSafetyTipUIForSimplifiedDomainDisplay;
+
+// This feature enables Safety Tip warnings on pages where there is a delayed
+// Safe Browsing warning. Has no effect unless safe_browsing::kDelayedWarnings
+// is also enabled. Can be enabled independently of kSafetyTipUI.
+COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
+extern const base::Feature kSafetyTipUIOnDelayedWarning;
 
 }  // namespace features
 }  // namespace security_state

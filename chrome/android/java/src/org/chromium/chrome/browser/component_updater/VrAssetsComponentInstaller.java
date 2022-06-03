@@ -15,6 +15,6 @@ public class VrAssetsComponentInstaller {
     @CalledByNative
     private static boolean shouldRegisterOnStartup() {
         return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.SHOULD_REGISTER_VR_ASSETS_COMPONENT_ON_STARTUP, false);
+                ChromePreferenceKeys.VR_SHOULD_REGISTER_ASSETS_COMPONENT_ON_STARTUP, false);
     }
 }

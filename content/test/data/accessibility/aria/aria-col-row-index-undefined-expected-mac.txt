@@ -1,0 +1,53 @@
+AXWebArea
+++AXTable AXARIAColumnCount=3 AXARIARowCount=3
+++++AXGroup
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=1
+++++++++++AXStaticText AXValue='row1 colheader1'
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=1
+++++++++++AXStaticText AXValue='row1 colheader2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=1
+++++++++++AXStaticText AXValue='row1 colheader3'
+++++AXGroup
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 col1'
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 col3'
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col1'
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col3'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader1'
+++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 col1'
+++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col1'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 col2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col2'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 col3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col3'
+++++AXGroup
+++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader1'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader2'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=1
+++++++++AXStaticText AXValue='row1 colheader3'

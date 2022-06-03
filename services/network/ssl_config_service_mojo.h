@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
       mojom::SSLConfigPtr initial_config,
       mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
       CRLSetDistributor* crl_set_distributor);
+
+  SSLConfigServiceMojo(const SSLConfigServiceMojo&) = delete;
+  SSLConfigServiceMojo& operator=(const SSLConfigServiceMojo&) = delete;
+
   ~SSLConfigServiceMojo() override;
 
   // Sets |cert_verifier| to be configured by certificate-related settings
@@ -61,8 +65,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   // coalescing is allowed when client certs are in use if the hosts being
   // coalesced match this list.
   std::vector<std::string> client_cert_pooling_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLConfigServiceMojo);
 };
 
 }  // namespace network

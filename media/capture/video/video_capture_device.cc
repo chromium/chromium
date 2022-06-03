@@ -4,14 +4,41 @@
 
 #include "media/capture/video/video_capture_device.h"
 
+#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/timezone.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace media {
+
+CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
+    gfx::GpuMemoryBufferHandle handle,
+    VideoCaptureFormat format,
+    gfx::ColorSpace color_space)
+    : handle(std::move(handle)),
+      format(std::move(format)),
+      color_space(std::move(color_space)) {}
+
+CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
+    CapturedExternalVideoBuffer&& other)
+    : handle(std::move(other.handle)),
+      format(std::move(other.format)),
+      color_space(std::move(other.color_space)) {}
+
+CapturedExternalVideoBuffer::~CapturedExternalVideoBuffer() = default;
+
+CapturedExternalVideoBuffer& CapturedExternalVideoBuffer::operator=(
+    CapturedExternalVideoBuffer&& other) {
+  handle = std::move(other.handle);
+  format = std::move(other.format);
+  color_space = std::move(other.color_space);
+  return *this;
+}
 
 VideoCaptureDevice::Client::Buffer::Buffer() : id(0), frame_feedback_id(0) {}
 
@@ -34,6 +61,13 @@ VideoCaptureDevice::Client::Buffer& VideoCaptureDevice::Client::Buffer::
 operator=(VideoCaptureDevice::Client::Buffer&& other) = default;
 
 VideoCaptureDevice::~VideoCaptureDevice() = default;
+
+void VideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
+}
 
 void VideoCaptureDevice::GetPhotoState(GetPhotoStateCallback callback) {}
 

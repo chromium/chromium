@@ -155,6 +155,10 @@ class ChildPortHandshake {
   };
 
   ChildPortHandshake();
+
+  ChildPortHandshake(const ChildPortHandshake&) = delete;
+  ChildPortHandshake& operator=(const ChildPortHandshake&) = delete;
+
   ~ChildPortHandshake();
 
   //! \brief Obtains the “read” side of the pipe, to be used by the client.
@@ -321,8 +325,6 @@ class ChildPortHandshake {
   base::ScopedFD server_write_fd_;
 
   friend class test::ChildPortHandshakeTest;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPortHandshake);
 };
 
 }  // namespace crashpad

@@ -22,12 +22,15 @@ class _Bailout(Exception):
 class ArgumentParser(argparse.ArgumentParser):
     SUPPRESS = argparse.SUPPRESS
 
-    def __init__(self, host, **kwargs):
+    def __init__(self, host, prog, desc, **kwargs):
+        kwargs['prog'] = prog
+        kwargs['description'] = desc
+        kwargs['formatter_class'] = argparse.RawDescriptionHelpFormatter
         super(ArgumentParser, self).__init__(**kwargs)
         self._host = host
         self.exit_status = None
         self.add_argument('-V', '--version', action='store_true',
-                          help='Print the version and exit.')
+                          help='print the version and exit')
 
     def parse_args(self, args=None, namespace=None):
         try:

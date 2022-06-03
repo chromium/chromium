@@ -51,7 +51,8 @@ class PendingLogsServiceTest : public testing::Test {
 
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     // The registry logger must be created after calling OverrideRegistry.
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REMOVER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REMOVER);
 
     // Make sure to clear any previous tests content, e.g., log lines.
     // Individual tests will enable it appropriately.
@@ -101,8 +102,8 @@ class PendingLogsServiceTest : public testing::Test {
     PendingLogsService pending_logs_service;
     pending_logs_service.RetryNextPendingLogsUpload(
         TEST_PRODUCT_SHORTNAME_STRING,
-        base::BindRepeating(&PendingLogsServiceTest::LogsUploadCallback,
-                            base::Unretained(this), run_loop.QuitClosure()),
+        base::BindOnce(&PendingLogsServiceTest::LogsUploadCallback,
+                       base::Unretained(this), run_loop.QuitClosure()),
         registry_logger_.get());
     run_loop.Run();
 
@@ -172,7 +173,7 @@ TEST_F(PendingLogsServiceTest, SuccessfulRegistration) {
 
   // Cleanup.
   EXPECT_FALSE(registry_logger_->RemoveLogFilePath(log_file));
-  EXPECT_TRUE(base::DeleteFile(log_file, false));
+  EXPECT_TRUE(base::DeleteFile(log_file));
 }
 
 TEST_F(PendingLogsServiceTest, FailToRegisterScheduledTask) {
@@ -227,8 +228,8 @@ TEST_F(PendingLogsServiceTest, UploadPendingLogs) {
   base::RunLoop run_loop;
   pending_logs_service.RetryNextPendingLogsUpload(
       TEST_PRODUCT_SHORTNAME_STRING,
-      base::BindRepeating(&PendingLogsServiceTest::LogsUploadCallback,
-                          base::Unretained(this), run_loop.QuitClosure()),
+      base::BindOnce(&PendingLogsServiceTest::LogsUploadCallback,
+                     base::Unretained(this), run_loop.QuitClosure()),
       registry_logger_.get());
   run_loop.Run();
 

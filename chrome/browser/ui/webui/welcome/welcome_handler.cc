@@ -23,15 +23,11 @@ const char kWelcomeReturningUserUrl[] = "chrome://welcome/returning-user";
 
 WelcomeHandler::WelcomeHandler(content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)),
-      login_ui_service_(LoginUIServiceFactory::GetForProfile(profile_)),
       result_(WelcomeResult::DEFAULT),
       is_redirected_welcome_impression_(false) {
-  login_ui_service_->AddObserver(this);
 }
 
 WelcomeHandler::~WelcomeHandler() {
-  login_ui_service_->RemoveObserver(this);
-
   // If this instance is spawned due to being redirected back to welcome page
   // by the onboarding logic, there's no need to log sign-in metrics again.
   if (is_redirected_welcome_impression_) {
@@ -55,27 +51,13 @@ bool WelcomeHandler::isValidRedirectUrl() {
   return current_url == kWelcomeReturningUserUrl;
 }
 
-// Override from LoginUIService::Observer.
-void WelcomeHandler::OnSyncConfirmationUIClosed(
-    LoginUIService::SyncConfirmationUIClosedResult result) {
-  if (result != LoginUIService::ABORT_SIGNIN) {
-    result_ = WelcomeResult::SIGNED_IN;
-
-    // When signed in from welcome flow, it's possible to come back to
-    // chrome://welcome/... after closing sync-confirmation UI. If current URL
-    // matches such a case, do not navigate away.
-    if (!is_redirected_welcome_impression_) {
-      GoToNewTabPage();
-    }
-  }
-}
-
 // Handles backend events necessary when user clicks "Sign in."
 void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
-  result_ = WelcomeResult::ATTEMPTED;
+  result_ = WelcomeResult::STARTED_SIGN_IN;
   base::RecordAction(base::UserMetricsAction("WelcomePage_SignInClicked"));
 
-  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     // In general, this page isn't shown to signed-in users; however, if one
     // should arrive here, then opening the sign-in dialog will likely lead
     // to a crash. Thus, we just act like sign-in was "successful" and whisk
@@ -83,28 +65,22 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
     GoToNewTabPage();
   } else {
     GURL redirect_url = GURL::EmptyGURL();
-    if (args->GetSize() == 1U) {
-      std::string url_string;
-      CHECK(args->GetString(0, &url_string));
+    if (args->GetList().size() == 1U) {
+      const std::string& url_string = args->GetList()[0].GetString();
       redirect_url = GURL(url_string);
       DCHECK(redirect_url.is_valid());
     }
 
     Browser* browser = GetBrowser();
     browser->signin_view_controller()->ShowSignin(
-        profiles::BubbleViewMode::BUBBLE_VIEW_MODE_GAIA_SIGNIN, browser,
+        profiles::BubbleViewMode::BUBBLE_VIEW_MODE_GAIA_SIGNIN,
         signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, redirect_url);
   }
 }
 
-// Handles backend events necessary when user clicks "No thanks."
+// Handles backend events necessary when user clicks "Get started."
 void WelcomeHandler::HandleUserDecline(const base::ListValue* args) {
-  // Set the appropriate decline result, based on whether or not the user
-  // attempted to sign in.
-  result_ = (result_ == WelcomeResult::ATTEMPTED)
-                ? WelcomeResult::ATTEMPTED_DECLINED
-                : WelcomeResult::DECLINED;
-
+  result_ = WelcomeResult::DECLINED_SIGN_IN;
   GoToNewTabPage();
 }
 
@@ -115,11 +91,11 @@ void WelcomeHandler::RegisterMessages() {
   // constructor, because web_ui hasn't loaded yet at that time.
   is_redirected_welcome_impression_ = isValidRedirectUrl();
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleActivateSignIn",
       base::BindRepeating(&WelcomeHandler::HandleActivateSignIn,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleUserDecline",
       base::BindRepeating(&WelcomeHandler::HandleUserDecline,
                           base::Unretained(this)));

@@ -1,0 +1,39 @@
+{
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "extends": [
+    "google",
+    "plugin:vue/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "rules": {
+    "require-jsdoc": ["warn", {
+        "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true,
+            "ArrowFunctionExpression": true,
+            "FunctionExpression": true
+        }
+    }],
+    "arrow-parens": ["warn", "as-needed"],
+    "generator-star-spacing": ["error", "before"],
+    "vue/require-default-prop": "off",
+    "vue/html-indent": ["error", 2, {
+      "attribute": 2
+    }],
+    "vue/html-closing-bracket-newline": ["error", {
+      "multiline": "never"
+    }],
+    "vue/html-closing-bracket-spacing": ["error", {
+      "startTag": "never",
+      "selfClosingTag": "never"
+    }],
+    "vue/html-comment-indent": ["error", 5]
+  }
+}

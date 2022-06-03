@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 
-#include "base/logging.h"
-#include "third_party/blink/public/platform/web_media_stream.h"
+#include "base/check_op.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 
@@ -17,12 +16,9 @@ MockRTCPeerConnectionHandlerClient::MockRTCPeerConnectionHandlerClient() {
       .WillByDefault(testing::Invoke(
           this,
           &MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker));
-  ON_CALL(*this, DidAddReceiverPlanBForMock(_))
+  ON_CALL(*this, DidModifyReceiversPlanBForMock(_, _, _))
       .WillByDefault(testing::Invoke(
-          this, &MockRTCPeerConnectionHandlerClient::didAddReceiverWorker));
-  ON_CALL(*this, DidRemoveReceiverPlanBForMock(_))
-      .WillByDefault(testing::Invoke(
-          this, &MockRTCPeerConnectionHandlerClient::didRemoveReceiverWorker));
+          this, &MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker));
 }
 
 MockRTCPeerConnectionHandlerClient::~MockRTCPeerConnectionHandlerClient() {}
@@ -34,16 +30,19 @@ void MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker(
   candidate_mid_ = candidate->SdpMid().Utf8();
 }
 
-void MockRTCPeerConnectionHandlerClient::didAddReceiverWorker(
-    std::unique_ptr<RTCRtpReceiverPlatform>* web_rtp_receiver) {
-  WebVector<String> stream_ids = (*web_rtp_receiver)->StreamIds();
-  DCHECK_EQ(1u, stream_ids.size());
-  remote_stream_id_ = stream_ids[0];
-}
-
-void MockRTCPeerConnectionHandlerClient::didRemoveReceiverWorker(
-    std::unique_ptr<RTCRtpReceiverPlatform>* web_rtp_receiver) {
-  remote_stream_id_ = String();
+void MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
+    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_added,
+    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed) {
+  // This fake implication is very limited. It is only used as a sanity check
+  // if a stream was added or removed.
+  if (!receivers_added->IsEmpty()) {
+    WebVector<String> stream_ids = (*receivers_added)[0]->StreamIds();
+    DCHECK_EQ(1u, stream_ids.size());
+    remote_stream_id_ = stream_ids[0];
+  } else if (receivers_removed->IsEmpty()) {
+    remote_stream_id_ = String();
+  }
 }
 
 }  // namespace blink

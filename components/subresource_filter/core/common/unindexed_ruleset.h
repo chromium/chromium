@@ -23,7 +23,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_UNINDEXED_RULESET_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_UNINDEXED_RULESET_H_
 
-#include "base/macros.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h"
@@ -36,6 +35,10 @@ class UnindexedRulesetReader {
   // Note: The |stream| should outlive |this| instance.
   explicit UnindexedRulesetReader(
       google::protobuf::io::ZeroCopyInputStream* stream);
+
+  UnindexedRulesetReader(const UnindexedRulesetReader&) = delete;
+  UnindexedRulesetReader& operator=(const UnindexedRulesetReader&) = delete;
+
   ~UnindexedRulesetReader();
 
   // Reads the next ruleset |chunk| from the |input|. Returns false iff reached
@@ -48,8 +51,6 @@ class UnindexedRulesetReader {
 
  private:
   google::protobuf::io::CodedInputStream coded_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnindexedRulesetReader);
 };
 
 // Divides an unindexed ruleset into chunks and writes them into |stream|.
@@ -65,12 +66,16 @@ class UnindexedRulesetWriter {
   explicit UnindexedRulesetWriter(
       google::protobuf::io::ZeroCopyOutputStream* stream,
       int max_rules_per_chunk = 64);
+
+  UnindexedRulesetWriter(const UnindexedRulesetWriter&) = delete;
+  UnindexedRulesetWriter& operator=(const UnindexedRulesetWriter&) = delete;
+
   ~UnindexedRulesetWriter();
 
   int max_rules_per_chunk() const { return max_rules_per_chunk_; }
 
   // Returns whether an I/O error occurred since this object was created.
-  bool had_error() const { return coded_stream_.HadError(); }
+  bool had_error() { return coded_stream_.HadError(); }
 
   // Places the |rule| to the current chunk, and serializes the chunk if it has
   // grown up to |max_rules_per_chunk|.
@@ -93,8 +98,6 @@ class UnindexedRulesetWriter {
 
   const int max_rules_per_chunk_ = 0;
   url_pattern_index::proto::FilteringRules pending_chunk_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnindexedRulesetWriter);
 };
 
 }  // namespace subresource_filter

@@ -50,17 +50,15 @@ function transportType(der) {
   var topLevel = new ByteString(der);
   const tbsCert = topLevel.getASN1(Tag.SEQUENCE).getASN1(Tag.SEQUENCE);
   tbsCert.getOptionalASN1(
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 0);  // version
-  tbsCert.getASN1(Tag.INTEGER);                     // serialNumber
-  tbsCert.getASN1(Tag.SEQUENCE);                    // signature algorithm
-  tbsCert.getASN1(Tag.SEQUENCE);                    // issuer
-  tbsCert.getASN1(Tag.SEQUENCE);                    // validity
-  tbsCert.getASN1(Tag.SEQUENCE);                    // subject
-  tbsCert.getASN1(Tag.SEQUENCE);                    // SPKI
-  tbsCert.getOptionalASN1(                          // issuerUniqueID
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 1);
-  tbsCert.getOptionalASN1(  // subjectUniqueID
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 2);
+      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 0);    // version
+  tbsCert.getASN1(Tag.INTEGER);                       // serialNumber
+  tbsCert.getASN1(Tag.SEQUENCE);                      // signature algorithm
+  tbsCert.getASN1(Tag.SEQUENCE);                      // issuer
+  tbsCert.getASN1(Tag.SEQUENCE);                      // validity
+  tbsCert.getASN1(Tag.SEQUENCE);                      // subject
+  tbsCert.getASN1(Tag.SEQUENCE);                      // SPKI
+  tbsCert.getOptionalASN1(Tag.CONTEXT_SPECIFIC | 1);  // issuerUniqueID
+  tbsCert.getOptionalASN1(Tag.CONTEXT_SPECIFIC | 2);  // subjectUniqueID
   const outerExtensions =
       tbsCert.getOptionalASN1(Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 3);
   if (outerExtensions == null) {
@@ -405,15 +403,21 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
   async function getRegistrationData(
       appId, enrollChallenge, registrationData, opt_clientData) {
     var isDirect = true;
+    var foregroundChecked = false;
 
     if (conveyancePreference(enrollChallenge) == ConveyancePreference.NONE) {
       isDirect = false;
     } else if (chrome.cryptotokenPrivate != null) {
+      // Requesting attestation permission may show a pop-up prompt, which will
+      // cause the window to appear to be unfocused on Windows. Therefore
+      // check if the tab is in the foreground now, before the pop-up.
+      foregroundChecked = await tabInForeground(messageSender.tab.id);
       isDirect = await (new Promise((resolve, reject) => {
         chrome.cryptotokenPrivate.canAppIdGetAttestation(
             {
               'appId': appId,
               'tabId': messageSender.tab.id,
+              'frameId': 0,  // ignored
               'origin': sender.origin,
             },
             resolve);
@@ -432,14 +436,17 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     }
 
     if (isDirect) {
-      return registrationData;
+      return {registrationData, foregroundChecked};
     }
 
     const reg = new Registration(
         registrationData, appId, enrollChallenge['challenge'], opt_clientData);
     const keypair = await makeCertAndKey(reg.certificate);
     const signature = await reg.sign(keypair.privateKey);
-    return reg.withReplacement(keypair.certDER, signature);
+    return {
+      registrationData: reg.withReplacement(keypair.certDER, signature),
+      foregroundChecked,
+    };
   }
 
   /**
@@ -464,11 +471,12 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     getRegistrationData(
         appId, enrollChallenge, registrationData, opt_clientData)
         .then(
-            (registrationData) => {
+            ({registrationData, foregroundChecked}) => {
               var responseData = makeEnrollResponseData(
                   enrollChallenge, u2fVersion, registrationData,
                   opt_clientData);
               var response = makeU2fSuccessResponse(request, responseData);
+              response.foregroundChecked = foregroundChecked;
               sendResponseOnce(sentResponse, closeable, response, sendResponse);
             },
             (err) => {
@@ -491,6 +499,8 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
+
+  chrome.cryptotokenPrivate.recordRegisterRequest(sender.tabId, sender.frameId);
 
   var timeoutValueSeconds = getTimeoutValueFromRequest(request);
   // Attenuate watchdog timeout value less than the enroller's timeout, so the
@@ -860,32 +870,50 @@ const googleCorpAppId =
 Enroller.prototype.doRegisterWebAuthn_ = function(appId, challenge, request) {
   const encodedChallenge = challenge['challenge'];
 
-  if (appId == googleCorpAppId) {
+  if (!chrome.cryptotokenPrivate) {
     this.doRegisterWebAuthnContinue_(
         appId, encodedChallenge, request,
-        WebAuthnAttestationConveyancePreference.ENTERPRISE);
+        WebAuthnAttestationConveyancePreference.DIRECT);
     return;
   }
 
-  const attestationPreference =
-      conveyancePreference(challenge) == ConveyancePreference.DIRECT ?
-      WebAuthnAttestationConveyancePreference.DIRECT :
-      WebAuthnAttestationConveyancePreference.NONE;
-
-  if (!chrome.cryptotokenPrivate) {
-    this.doRegisterWebAuthnContinue_(
-        appId, encodedChallenge, request, attestationPreference);
+  if (appId == googleCorpAppId) {
+    this.checkU2fApiPermission_(
+        appId, encodedChallenge, request,
+        WebAuthnAttestationConveyancePreference.ENTERPRISE);
     return;
   }
 
   chrome.cryptotokenPrivate.isAppIdHashInEnterpriseContext(
       decodeWebSafeBase64ToArray(B64_encode(sha256HashOfString(appId))),
       (enterprise_context) => {
-        this.doRegisterWebAuthnContinue_(
+        this.checkU2fApiPermission_(
             appId, encodedChallenge, request,
             enterprise_context ?
                 WebAuthnAttestationConveyancePreference.ENTERPRISE :
-                attestationPreference);
+                WebAuthnAttestationConveyancePreference.DIRECT);
+      });
+};
+
+Enroller.prototype.checkU2fApiPermission_ = function(
+    appId, challenge, request, attestationMode) {
+  chrome.cryptotokenPrivate.canMakeU2fApiRequest(
+      {
+        tabId: this.sender_.tabId,
+        frameId: this.sender_.frameId,
+        origin: this.sender_.origin,
+        appId: appId
+      },
+      (result) => {
+        if (!result) {
+          this.notifyError_({
+            errorCode: ErrorCodes.BAD_REQUEST,
+            errorMessage: 'The operation was not allowed',
+          });
+          return;
+        }
+        this.doRegisterWebAuthnContinue_(
+            appId, challenge, request, attestationMode);
       });
 };
 

@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,9 +71,9 @@ TEST_F(SpdyBufferTest, Consume) {
   size_t x1 = 0;
   size_t x2 = 0;
   buffer.AddConsumeCallback(
-      base::Bind(&IncrementBy, &x1, SpdyBuffer::CONSUME));
+      base::BindRepeating(&IncrementBy, &x1, SpdyBuffer::CONSUME));
   buffer.AddConsumeCallback(
-      base::Bind(&IncrementBy, &x2, SpdyBuffer::CONSUME));
+      base::BindRepeating(&IncrementBy, &x2, SpdyBuffer::CONSUME));
 
   EXPECT_EQ(std::string(kData, kDataSize), BufferToString(buffer));
 
@@ -96,7 +96,7 @@ TEST_F(SpdyBufferTest, ConsumeOnDestruction) {
   {
     SpdyBuffer buffer(kData, kDataSize);
     buffer.AddConsumeCallback(
-        base::Bind(&IncrementBy, &x, SpdyBuffer::DISCARD));
+        base::BindRepeating(&IncrementBy, &x, SpdyBuffer::DISCARD));
   }
 
   EXPECT_EQ(kDataSize, x);

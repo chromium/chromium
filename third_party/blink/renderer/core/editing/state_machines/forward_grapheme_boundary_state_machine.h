@@ -7,11 +7,10 @@
 
 #include <iosfwd>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -20,6 +19,10 @@ class CORE_EXPORT ForwardGraphemeBoundaryStateMachine {
 
  public:
   ForwardGraphemeBoundaryStateMachine();
+  ForwardGraphemeBoundaryStateMachine(
+      const ForwardGraphemeBoundaryStateMachine&) = delete;
+  ForwardGraphemeBoundaryStateMachine& operator=(
+      const ForwardGraphemeBoundaryStateMachine&) = delete;
 
   // Find boundary offset by feeding preceding text.
   // This method must not be called after feedFollowingCodeUnit().
@@ -69,10 +72,8 @@ class CORE_EXPORT ForwardGraphemeBoundaryStateMachine {
 
   // The internal state.
   InternalState internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardGraphemeBoundaryStateMachine);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_FORWARD_GRAPHEME_BOUNDARY_STATE_MACHINE_H_

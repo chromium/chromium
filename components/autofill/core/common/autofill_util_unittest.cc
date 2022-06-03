@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -36,7 +35,7 @@ TEST_P(FieldIsTokenBoundarySubstringCaseTest,
     // FieldIsSuggestionSubstringStartingOnTokenBoundary should not work yet
     // without a flag.
     EXPECT_FALSE(FieldIsSuggestionSubstringStartingOnTokenBoundary(
-        base::ASCIIToUTF16("ab@cd.b"), base::ASCIIToUTF16("b"), false));
+        u"ab@cd.b", u"b", false));
   }
 
   base::test::ScopedFeatureList features_enabled;
@@ -147,14 +146,14 @@ INSTANTIATE_TEST_SUITE_P(
     GetTextSelectionStartTest,
     testing::Values(
         GetTextSelectionStartCase{"ab@cd.b", "a", false, 1},
-        GetTextSelectionStartCase{"ab@cd.b", "A", true, base::string16::npos},
+        GetTextSelectionStartCase{"ab@cd.b", "A", true, std::u16string::npos},
         GetTextSelectionStartCase{"ab@cd.b", "Ab", false, 2},
-        GetTextSelectionStartCase{"ab@cd.b", "Ab", true, base::string16::npos},
+        GetTextSelectionStartCase{"ab@cd.b", "Ab", true, std::u16string::npos},
         GetTextSelectionStartCase{"ab@cd.b", "cd", false, 5},
         GetTextSelectionStartCase{"ab@cd.b", "ab@c", false, 4},
         GetTextSelectionStartCase{"ab@cd.b", "cd.b", false, 7},
         GetTextSelectionStartCase{"ab@cd.b", "b@cd", false,
-                                  base::string16::npos},
+                                  std::u16string::npos},
         GetTextSelectionStartCase{"ab@cd.b", "b", false, 7},
         GetTextSelectionStartCase{"ba.a.ab", "a.a", false, 6},
         GetTextSelectionStartCase{"texample@example.com", "example", false,
@@ -203,5 +202,10 @@ INSTANTIATE_TEST_SUITE_P(
                                                 std::vector<std::string>()},
         LowercaseAndTokenizeAttributeStringCase{"foO    baR bAz",
                                                 {"foo", "bar", "baz"}}));
+
+TEST(StripAuthAndParamsTest, StripsAll) {
+  GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
+  EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
+}
 
 }  // namespace autofill

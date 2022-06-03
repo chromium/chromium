@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/renderer/render_process.h"
 
 namespace content {
@@ -18,6 +17,9 @@ namespace content {
 // running under certain unit tests.
 class RenderProcessImpl : public RenderProcess {
  public:
+  RenderProcessImpl(const RenderProcessImpl&) = delete;
+  RenderProcessImpl& operator=(const RenderProcessImpl&) = delete;
+
   ~RenderProcessImpl() override;
 
   // Creates and returns a RenderProcessImpl instance.
@@ -26,10 +28,6 @@ class RenderProcessImpl : public RenderProcess {
   // constructor because non-trivial calls must be made to get the arguments
   // required by constructor of the base class.
   static std::unique_ptr<RenderProcess> Create();
-
-  // RenderProcess implementation.
-  void AddBindings(int bindings) override;
-  int GetEnabledBindings() const override;
 
   // Do not use these functions.
   // The browser process is the only one responsible for knowing when to
@@ -41,12 +39,6 @@ class RenderProcessImpl : public RenderProcess {
 
  private:
   RenderProcessImpl();
-
-  // Bitwise-ORed set of extra bindings that have been enabled anywhere in this
-  // process.  See BindingsPolicy for details.
-  int enabled_bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessImpl);
 };
 
 }  // namespace content

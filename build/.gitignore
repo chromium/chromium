@@ -4,13 +4,17 @@
 ciopfs
 /android/bin
 /android/binary_size/apks/**/*.apk
+/args/chromeos/*.gni
+/args/chromeos/rewrapper*
 /config/gclient_args.gni
 /cros_cache/
 /Debug
 /Debug_x64
+/fuchsia/internal/
 /goma
 /gomacc.lock
 /ipch/
+/lacros/prebuilt_ash_chrome/
 /Release
 /Release_x64
 /win_toolchain.json

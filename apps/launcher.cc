@@ -16,8 +16,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,7 +49,9 @@
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -119,6 +123,8 @@ class PlatformAppPathLauncher
     if (!file_path.empty())
       entry_paths_.push_back(file_path);
   }
+  PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
+  PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
   void set_action_data(std::unique_ptr<app_runtime::ActionData> action_data) {
     action_data_ = std::move(action_data);
@@ -156,9 +162,9 @@ class PlatformAppPathLauncher
   }
 
   void LaunchWithRelativePath(const base::FilePath& current_directory) {
-    base::PostTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(&PlatformAppPathLauncher::MakePathAbsolute, this,
                        current_directory));
@@ -174,16 +180,16 @@ class PlatformAppPathLauncher
          it != entry_paths_.end(); ++it) {
       if (!DoMakePathAbsolute(current_directory, &*it)) {
         LOG(WARNING) << "Cannot make absolute path from " << it->value();
-        base::PostTask(
-            FROM_HERE, {BrowserThread::UI},
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
             base::BindOnce(&PlatformAppPathLauncher::LaunchWithBasicData,
                            this));
         return;
       }
     }
 
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&PlatformAppPathLauncher::Launch, this));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PlatformAppPathLauncher::Launch, this));
   }
 
   void OnFilesValid(std::unique_ptr<std::set<base::FilePath>> directory_paths) {
@@ -358,8 +364,6 @@ class PlatformAppPathLauncher
   extensions::app_file_handler_util::MimeTypeCollector mime_type_collector_;
   extensions::app_file_handler_util::IsDirectoryCollector
       is_directory_collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformAppPathLauncher);
 };
 
 }  // namespace
@@ -385,7 +389,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
   // check in case this scenario does occur.
   if (extensions::KioskModeInfo::IsKioskOnly(app)) {
     bool in_kiosk_mode = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
@@ -399,7 +403,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
 
 #if defined(OS_WIN)
   base::CommandLine::StringType about_blank_url(
-      base::ASCIIToUTF16(url::kAboutBlankURL));
+      base::ASCIIToWide(url::kAboutBlankURL));
 #else
   base::CommandLine::StringType about_blank_url(url::kAboutBlankURL);
 #endif
@@ -413,7 +417,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
     std::unique_ptr<app_runtime::LaunchData> launch_data =
         std::make_unique<app_runtime::LaunchData>();
     if (!launch_id.empty())
-      launch_data->id.reset(new std::string(launch_id));
+      launch_data->id = std::make_unique<std::string>(launch_id);
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(context, app, source,
                                                    std::move(launch_data));
     return;
@@ -428,8 +432,17 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
 void LaunchPlatformAppWithPath(content::BrowserContext* context,
                                const Extension* app,
                                const base::FilePath& file_path) {
-  scoped_refptr<PlatformAppPathLauncher> launcher =
-      new PlatformAppPathLauncher(context, app, file_path);
+  auto launcher =
+      base::MakeRefCounted<PlatformAppPathLauncher>(context, app, file_path);
+  launcher->Launch();
+}
+
+void LaunchPlatformAppWithFilePaths(
+    content::BrowserContext* context,
+    const extensions::Extension* app,
+    const std::vector<base::FilePath>& file_paths) {
+  auto launcher =
+      base::MakeRefCounted<PlatformAppPathLauncher>(context, app, file_paths);
   launcher->Launch();
 }
 
@@ -441,7 +454,7 @@ void LaunchPlatformAppWithAction(
   CHECK(!action_data || !action_data->is_lock_screen_action ||
         !*action_data->is_lock_screen_action ||
         app->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kLockScreen))
+            extensions::mojom::APIPermissionID::kLockScreen))
       << "Launching lock screen action handler requires lockScreen permission.";
 
   scoped_refptr<PlatformAppPathLauncher> launcher =
@@ -464,6 +477,12 @@ void LaunchPlatformAppWithFileHandler(
     const Extension* app,
     const std::string& handler_id,
     const std::vector<base::FilePath>& entry_paths) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app->id(), handler_id, entry_paths);
+  full_restore::SaveAppLaunchInfo(context->GetPath(), std::move(launch_info));
+#endif
+
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, entry_paths);
   launcher->LaunchWithHandler(handler_id);

@@ -4,9 +4,11 @@
 
 #include "services/preferences/tracked/tracked_preference_helper.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 
 using ValueState =
@@ -96,8 +98,7 @@ void TrackedPreferenceHelper::ReportValidationResult(
 
   std::string full_histogram_name(histogram_name);
   if (!validation_type_suffix.empty()) {
-    full_histogram_name.push_back('.');
-    validation_type_suffix.AppendToString(&full_histogram_name);
+    base::StrAppend(&full_histogram_name, {".", validation_type_suffix});
   }
 
   // Using FactoryGet to allow dynamic histogram names. This is equivalent to
@@ -124,16 +125,4 @@ void TrackedPreferenceHelper::ReportAction(ResetAction reset_action) const {
           reporting_ids_count_);
       break;
   }
-}
-
-void TrackedPreferenceHelper::ReportSplitPreferenceChangedCount(
-    size_t count) const {
-  // The histogram below is an expansion of the UMA_HISTOGRAM_COUNTS_100 macro
-  // adapted to allow for a dynamically suffixed histogram name.
-  // Note: The factory creates and owns the histogram.
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-      user_prefs::tracked::kTrackedSplitPrefHistogramChanged + pref_path_, 1,
-      100,  // Allow counts up to 100.
-      101, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(count);
 }

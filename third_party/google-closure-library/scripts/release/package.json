@@ -1,0 +1,20 @@
+{
+  "name": "create-closure-releases",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ts-node create_closure_releases",
+    "test": "ts-node $(npm bin)/jasmine *_test.ts"
+  },
+  "dependencies": {
+    "@octokit/rest": "^18.0.6",
+    "simple-git": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.6.0",
+    "jasmine": "^3.6.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5",
+    "@types/node": "^14.11.2"
+  }
+}

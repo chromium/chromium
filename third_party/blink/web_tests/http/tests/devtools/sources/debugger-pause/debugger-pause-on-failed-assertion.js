@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger breaks on failed assertion when pause on exception mode is enabled.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function failAssertion()
@@ -34,8 +34,8 @@
     SourcesTestRunner.waitUntilPaused(step3);
   }
 
-  function step3(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function step3(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

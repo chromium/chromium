@@ -23,7 +23,7 @@ class CC_EXPORT SolidColorLayerImpl : public LayerImpl {
   SolidColorLayerImpl(const SolidColorLayerImpl&) = delete;
   SolidColorLayerImpl& operator=(const SolidColorLayerImpl&) = delete;
 
-  static void AppendSolidQuads(viz::RenderPass* render_pass,
+  static void AppendSolidQuads(viz::CompositorRenderPass* render_pass,
                                const Occlusion& occlusion_in_layer_space,
                                viz::SharedQuadState* shared_quad_state,
                                const gfx::Rect& visible_layer_rect,
@@ -36,7 +36,7 @@ class CC_EXPORT SolidColorLayerImpl : public LayerImpl {
 
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
  protected:

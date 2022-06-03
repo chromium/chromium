@@ -26,8 +26,26 @@ class PerformanceManagerMainThreadObserver : public base::CheckedObserver {
   virtual void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) = 0;
 
+  // Invoked before the PM is torn down on the main thread.
+  virtual void OnBeforePerformanceManagerDestroyed() = 0;
+
  protected:
   PerformanceManagerMainThreadObserver() = default;
+};
+
+// A default implementation of the observer, with all methods stubbed out.
+class PerformanceManagerMainThreadObserverDefaultImpl
+    : public PerformanceManagerMainThreadObserver {
+ public:
+  ~PerformanceManagerMainThreadObserverDefaultImpl() override = default;
+
+  // PerformanceManagerMainThreadObserver implementation:
+  void OnPageNodeCreatedForWebContents(
+      content::WebContents* web_contents) override {}
+  void OnBeforePerformanceManagerDestroyed() override {}
+
+ protected:
+  PerformanceManagerMainThreadObserverDefaultImpl() = default;
 };
 
 }  // namespace performance_manager

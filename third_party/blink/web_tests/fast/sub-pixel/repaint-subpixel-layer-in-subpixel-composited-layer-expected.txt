@@ -2,7 +2,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,17 +10,10 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [100, 50],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [11, 0, 14, 12],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [9, 0, 14, 12],
-          "reason": "geometry"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 12, 12],
+        [10, 0, 12, 12]
       ],
       "transform": 1
     }
@@ -41,7 +34,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -49,17 +42,10 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [100, 50],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [11, 0, 14, 12],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [9, 0, 14, 12],
-          "reason": "geometry"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [11, 0, 13, 12],
+        [9, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -80,7 +66,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -88,17 +74,10 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [100, 50],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [12, 0, 14, 12],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [10, 0, 14, 12],
-          "reason": "geometry"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -119,7 +98,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -127,17 +106,10 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [100, 50],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [11, 0, 14, 12],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [9, 0, 14, 12],
-          "reason": "geometry"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -158,7 +130,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -166,17 +138,10 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [100, 50],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [12, 0, 14, 12],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='test'",
-          "rect": [10, 0, 14, 12],
-          "reason": "geometry"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }

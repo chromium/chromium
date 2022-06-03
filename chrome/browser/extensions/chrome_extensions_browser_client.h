@@ -11,14 +11,16 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace base {
 class CommandLine;
@@ -43,6 +45,11 @@ class ChromeProcessManagerDelegate;
 class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
   ChromeExtensionsBrowserClient();
+
+  ChromeExtensionsBrowserClient(const ChromeExtensionsBrowserClient&) = delete;
+  ChromeExtensionsBrowserClient& operator=(
+      const ChromeExtensionsBrowserClient&) = delete;
+
   ~ChromeExtensionsBrowserClient() override;
 
   // ExtensionsBrowserClient overrides:
@@ -57,7 +64,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;
 #endif
@@ -77,17 +84,17 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) override;
-  bool AllowCrossRendererResourceLoad(const GURL& url,
-                                      content::ResourceType resource_type,
-                                      ui::PageTransition page_transition,
-                                      int child_id,
-                                      bool is_incognito,
-                                      const Extension* extension,
-                                      const ExtensionSet& extensions,
-                                      const ProcessMap& process_map) override;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
+  bool AllowCrossRendererResourceLoad(
+      const network::ResourceRequest& request,
+      network::mojom::RequestDestination destination,
+      ui::PageTransition page_transition,
+      int child_id,
+      bool is_incognito,
+      const Extension* extension,
+      const ExtensionSet& extensions,
+      const ProcessMap& process_map) override;
   PrefService* GetPrefServiceForContext(
       content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
@@ -104,8 +111,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsLoggedInAsPublicAccount() override;
   ExtensionSystemProvider* GetExtensionSystemFactory() override;
   void RegisterBrowserInterfaceBindersForFrame(
-      service_manager::BinderMapWithContext<content::RenderFrameHost*>*
-          binder_map,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
       content::RenderFrameHost* render_frame_host,
       const Extension* extension) const override;
   std::unique_ptr<RuntimeAPIDelegate> CreateRuntimeAPIDelegate(
@@ -127,8 +133,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void CleanUpWebView(content::BrowserContext* browser_context,
                       int embedder_process_id,
                       int view_instance_id) override;
+  void ClearBackForwardCache() override;
   void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
-                                     ViewType view_type) override;
+                                     mojom::ViewType view_type) override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context) override;
   std::unique_ptr<content::BluetoothChooser> CreateBluetoothChooser(
@@ -146,11 +153,19 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   UserScriptListener* GetUserScriptListener() override;
+  void SignalContentScriptsLoaded(content::BrowserContext* context) override;
   std::string GetUserAgent() const override;
   bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const override;
-  bool ShouldForceWebRequestExtraHeaders(
-      content::BrowserContext* context) const override;
+  base::FilePath GetSaveFilePath(content::BrowserContext* context) override;
+  void SetLastSaveFilePath(content::BrowserContext* context,
+                           const base::FilePath& path) override;
+  bool HasIsolatedStorage(const std::string& extension_id,
+                          content::BrowserContext* context) override;
+  bool IsScreenshotRestricted(
+      content::WebContents* web_contents) const override;
+  bool IsValidTabId(content::BrowserContext* context,
+                    int tab_id) const override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 
@@ -170,8 +185,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
 
   UserScriptListener user_script_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsBrowserClient);
 };
 
 }  // namespace extensions

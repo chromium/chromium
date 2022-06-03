@@ -10,16 +10,13 @@ grit("strings") {
   source = "../bluetooth_strings.grd"
   outputs =
       [ "grit/bluetooth_strings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "bluetooth_strings_{{source_name_part}}.pak" ])
 }
 
 repack("bluetooth_test_strings") {
-  sources = [
-    "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
-  ]
+  sources =
+      [ "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak" ]
   output = "$root_out_dir/bluetooth_test_strings.pak"
-  deps = [
-    ":strings",
-  ]
+  deps = [ ":strings" ]
 }

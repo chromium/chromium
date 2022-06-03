@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Images with loading='lazy' can be lazy loaded multiple times assert_unreached: The loading=lazy below-viewport image should lazily load its second image, and not load it eagerly when the `src` attribute is changed Reached unreachable code
+Harness: the test ran to completion.
+

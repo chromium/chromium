@@ -183,10 +183,7 @@ chrome.test.runTests([
 
   // Make sure we don't crash when the index is out of range.
   function moveToInvalidTab() {
-    var expectedJsBindingsError =
-        'Invalid value for argument 2. Property \'index\': ' +
-        'Value must not be less than -1.';
-    var expectedNativeBindingsError =
+    var expectedError =
         'Error in invocation of tabs.move(' +
         '[integer|array] tabIds, object moveProperties, ' +
         'optional function callback): Error at parameter \'moveProperties\': ' +
@@ -197,8 +194,7 @@ chrome.test.runTests([
         chrome.test.fail("Moved a tab to an invalid index");
       });
     } catch (e) {
-      assertTrue(e.message == expectedJsBindingsError ||
-                 e.message == expectedNativeBindingsError, e.message);
+      assertEq(expectedError, e.message);
       caught = true;
     }
     assertTrue(caught);

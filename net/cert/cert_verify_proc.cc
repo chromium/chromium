@@ -12,7 +12,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -32,28 +31,31 @@
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/internal/system_trust_store.h"
 #include "net/cert/known_roots.h"
 #include "net/cert/ocsp_revocation_status.h"
+#include "net/cert/pem.h"
 #include "net/cert/symantec_certs.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_values.h"
+#include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/url_canon.h"
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || \
-    (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
 #include "net/cert/cert_verify_proc_builtin.h"
 #endif
 
-#if defined(USE_NSS_CERTS)
-#include "net/cert/cert_verify_proc_nss.h"
-#elif defined(OS_ANDROID)
+#if defined(OS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
 #elif defined(OS_IOS)
 #include "net/cert/cert_verify_proc_ios.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #elif defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -201,14 +203,14 @@ bool IsUntrustedSymantecCert(const X509Certificate& cert) {
   // Certificates issued on/after 2017-12-01 00:00:00 UTC are no longer
   // trusted.
   const base::Time kSymantecDeprecationDate =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1512086400);
+      base::Time::UnixEpoch() + base::Seconds(1512086400);
   if (start >= kSymantecDeprecationDate)
     return true;
 
   // Certificates issued prior to 2016-06-01 00:00:00 UTC are no longer
   // trusted.
   const base::Time kFirstAcceptedCertDate =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1464739200);
+      base::Time::UnixEpoch() + base::Seconds(1464739200);
   if (start < kFirstAcceptedCertDate)
     return true;
 
@@ -247,31 +249,6 @@ void BestEffortCheckOCSP(const std::string& raw_response,
   verify_result->revocation_status =
       CheckOCSP(raw_response, cert_der, issuer_der, base::Time::Now(),
                 kMaxRevocationLeafUpdateAge, &verify_result->response_status);
-}
-
-// Records histograms indicating whether the certificate |cert|, which
-// is assumed to have been validated chaining to a private root,
-// contains the TLS Feature Extension (https://tools.ietf.org/html/rfc7633) and
-// has valid OCSP information stapled.
-void RecordTLSFeatureExtensionWithPrivateRoot(
-    X509Certificate* cert,
-    const OCSPVerifyResult& ocsp_result) {
-  // This checks only for the presence of the TLS Feature Extension, but
-  // does not check the feature list, and in particular does not verify that
-  // its value is 'status_request' or 'status_request2'. In practice the
-  // only use of the TLS feature extension is for OCSP stapling, so
-  // don't bother to check the value.
-  bool has_extension = asn1::HasTLSFeatureExtension(
-      x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-
-  UMA_HISTOGRAM_BOOLEAN("Net.Certificate.TLSFeatureExtensionWithPrivateRoot",
-                        has_extension);
-  if (!has_extension)
-    return;
-
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.Certificate.TLSFeatureExtensionWithPrivateRootHasOCSP",
-      (ocsp_result.response_status != OCSPVerifyResult::MISSING));
 }
 
 // Records details about the most-specific trust anchor in |hashes|, which is
@@ -451,19 +428,55 @@ WARN_UNUSED_RESULT bool InspectSignatureAlgorithmsInChain(
   return true;
 }
 
+base::Value CertVerifyParams(X509Certificate* cert,
+                             const std::string& hostname,
+                             const std::string& ocsp_response,
+                             const std::string& sct_list,
+                             int flags,
+                             CRLSet* crl_set,
+                             const CertificateList& additional_trust_anchors) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("certificates", NetLogX509CertificateList(cert));
+  if (!ocsp_response.empty()) {
+    dict.SetStringKey("ocsp_response",
+                      PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
+  }
+  if (!sct_list.empty()) {
+    dict.SetStringKey("sct_list", PEMEncode(sct_list, "NETLOG SCT LIST"));
+  }
+  dict.SetKey("host", NetLogStringValue(hostname));
+  dict.SetIntKey("verify_flags", flags);
+  dict.SetKey("crlset_sequence", NetLogNumberValue(crl_set->sequence()));
+  if (crl_set->IsExpired())
+    dict.SetBoolKey("crlset_is_expired", true);
+
+  if (!additional_trust_anchors.empty()) {
+    base::Value certs(base::Value::Type::LIST);
+    for (auto& anchor : additional_trust_anchors) {
+      std::string pem_encoded;
+      if (X509Certificate::GetPEMEncodedFromDER(
+              x509_util::CryptoBufferAsStringPiece(anchor->cert_buffer()),
+              &pem_encoded)) {
+        certs.Append(std::move(pem_encoded));
+      }
+    }
+    dict.SetKey("additional_trust_anchors", std::move(certs));
+  }
+
+  return dict;
+}
+
 }  // namespace
 
-#if !defined(OS_FUCHSIA)
+#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-#if defined(USE_NSS_CERTS)
-  return new CertVerifyProcNSS();
-#elif defined(OS_ANDROID)
+#if defined(OS_ANDROID)
   return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
 #elif defined(OS_IOS)
   return new CertVerifyProcIOS();
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return new CertVerifyProcMac();
 #elif defined(OS_WIN)
   return new CertVerifyProcWin();
@@ -473,14 +486,12 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 }
 #endif
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || \
-    (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-  return CreateCertVerifyProcBuiltin(
-      std::move(cert_net_fetcher),
-      SystemTrustStoreProvider::CreateDefaultForSSL());
+  return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                     CreateSslSystemTrustStore());
 }
 #endif
 
@@ -495,7 +506,12 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            int flags,
                            CRLSet* crl_set,
                            const CertificateList& additional_trust_anchors,
-                           CertVerifyResult* verify_result) {
+                           CertVerifyResult* verify_result,
+                           const NetLogWithSource& net_log) {
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC, [&] {
+    return CertVerifyParams(cert, hostname, ocsp_response, sct_list, flags,
+                            crl_set, additional_trust_anchors);
+  });
   // CertVerifyProc's contract allows ::VerifyInternal() to wait on File I/O
   // (such as the Windows registry or smart cards on all platforms) or may re-
   // enter this code via extension hooks (such as smart card UI). To ensure
@@ -509,8 +525,9 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->verified_cert = cert;
 
   DCHECK(crl_set);
-  int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
-                          crl_set, additional_trust_anchors, verify_result);
+  int rv =
+      VerifyInternal(cert, hostname, ocsp_response, sct_list, flags, crl_set,
+                     additional_trust_anchors, verify_result, net_log);
 
   // Check for mismatched signature algorithms and unknown signature algorithms
   // in the chain. Also fills in the has_* booleans for the digest algorithms
@@ -640,17 +657,14 @@ int CertVerifyProc::Verify(X509Certificate* cert,
       rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
-  // Record a histogram for the presence of the TLS feature extension in
-  // a certificate chaining to a private root.
-  if (rv == OK && !verify_result->is_issued_by_known_root)
-    RecordTLSFeatureExtensionWithPrivateRoot(cert, verify_result->ocsp_result);
-
   // Record a histogram for per-verification usage of root certs.
   if (rv == OK) {
     RecordTrustAnchorHistogram(verify_result->public_key_hashes,
                                verify_result->is_issued_by_known_root);
   }
 
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC,
+                   [&] { return verify_result->NetLogParams(rv); });
   return rv;
 }
 
@@ -841,9 +855,9 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // Not a real certificate - just for testing.
       // net/data/ssl/certificates/name_constraint_*.pem
       {
-          {{0x8e, 0x9b, 0x14, 0x9f, 0x01, 0x45, 0x4c, 0xee, 0xde, 0xfa, 0x5e,
-            0x73, 0x40, 0x36, 0x21, 0xba, 0xd9, 0x1f, 0xee, 0xe0, 0x3e, 0x74,
-            0x25, 0x6c, 0x59, 0xf4, 0x6f, 0xbf, 0x45, 0x03, 0x5f, 0x8d}},
+          {{0x0d, 0x93, 0x13, 0xa7, 0xd7, 0x0d, 0x35, 0x89, 0x33, 0x50, 0x6e,
+            0x9b, 0x68, 0x30, 0x7a, 0x4f, 0x7d, 0x3a, 0x7a, 0x42, 0xd4, 0x60,
+            0x9a, 0x5e, 0x10, 0x4b, 0x58, 0xa5, 0xa7, 0x90, 0xa5, 0x81}},
           kDomainsTest,
       },
   };
@@ -881,26 +895,27 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
   // These dates are derived from the transitions noted in Section 1.2.2
   // (Relevant Dates) of the Baseline Requirements.
   const base::Time time_2012_07_01 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1341100800);
+      base::Time::UnixEpoch() + base::Seconds(1341100800);
   const base::Time time_2015_04_01 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1427846400);
+      base::Time::UnixEpoch() + base::Seconds(1427846400);
   const base::Time time_2018_03_01 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1519862400);
+      base::Time::UnixEpoch() + base::Seconds(1519862400);
   const base::Time time_2019_07_01 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1561939200);
+      base::Time::UnixEpoch() + base::Seconds(1561939200);
+  // From Chrome Root Certificate Policy
+  const base::Time time_2020_09_01 =
+      base::Time::UnixEpoch() + base::Seconds(1598918400);
 
   // Compute the maximally permissive interpretations, accounting for leap
   // years.
   // 10 years - two possible leap years.
-  constexpr base::TimeDelta kTenYears =
-      base::TimeDelta::FromDays((365 * 8) + (366 * 2));
+  constexpr base::TimeDelta kTenYears = base::Days((365 * 8) + (366 * 2));
   // 5 years - two possible leap years (year 0/year 4 or year 1/year 5).
-  constexpr base::TimeDelta kSixtyMonths =
-      base::TimeDelta::FromDays((365 * 3) + (366 * 2));
+  constexpr base::TimeDelta kSixtyMonths = base::Days((365 * 3) + (366 * 2));
   // 39 months - one possible leap year, two at 365 days, and the longest
   // monthly sequence of 31/31/30 days (June/July/August).
   constexpr base::TimeDelta kThirtyNineMonths =
-      base::TimeDelta::FromDays(366 + 365 + 365 + 31 + 31 + 30);
+      base::Days(366 + 365 + 365 + 31 + 31 + 30);
 
   base::TimeDelta validity_duration = cert.valid_expiry() - cert.valid_start();
 
@@ -910,18 +925,22 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
     return true;
   }
 
-  // For certificates issued after the BR effective date of 1 July 2012: 60
-  // months.
+  // For certificates issued on-or-after the BR effective date of 1 July 2012:
+  // 60 months.
   if (start >= time_2012_07_01 && validity_duration > kSixtyMonths)
     return true;
 
-  // For certificates issued after 1 April 2015: 39 months.
+  // For certificates issued on-or-after 1 April 2015: 39 months.
   if (start >= time_2015_04_01 && validity_duration > kThirtyNineMonths)
     return true;
 
-  // For certificates issued after 1 March 2018: 825 days.
-  if (start >= time_2018_03_01 &&
-      validity_duration > base::TimeDelta::FromDays(825)) {
+  // For certificates issued on-or-after 1 March 2018: 825 days.
+  if (start >= time_2018_03_01 && validity_duration > base::Days(825)) {
+    return true;
+  }
+
+  // For certificates issued on-or-after 1 September 2020: 398 days.
+  if (start >= time_2020_09_01 && validity_duration > base::Days(398)) {
     return true;
   }
 

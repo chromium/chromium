@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/history/core/browser",
-  "+components/prefs",
-  "+content/public/test",
-]

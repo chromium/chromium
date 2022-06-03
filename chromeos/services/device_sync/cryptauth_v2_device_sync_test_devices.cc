@@ -4,7 +4,7 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
@@ -19,8 +19,8 @@ namespace device_sync {
 
 const char kGroupPublicKey[] = "group_key";
 const int64_t kGroupPublicKeyHash = 0xf3666041a2db06e4;
+const char kDefaultLocalDeviceBluetoothAddress[] = "01:23:45:67:89:AB";
 
-// TODO(nohle): Add last update time when relevant.
 const CryptAuthDevice& GetLocalDeviceForTest() {
   static const base::NoDestructor<CryptAuthDevice> device([] {
     // Note: The local device's (Instance) ID and PII-free device name are not
@@ -35,6 +35,8 @@ const CryptAuthDevice& GetLocalDeviceForTest() {
     bt_metadata.set_public_key(kLocalDeviceUserPublicKey);
     bt_metadata.set_no_pii_device_name(
         cryptauthv2::GetClientAppMetadataForTest().device_model());
+    bt_metadata.set_bluetooth_public_address(
+        kDefaultLocalDeviceBluetoothAddress);
 
     return CryptAuthDevice(
         cryptauthv2::GetClientAppMetadataForTest().instance_id(),
@@ -57,12 +59,27 @@ const CryptAuthDevice& GetLocalDeviceForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kMessagesForWebClient,
              multidevice::SoftwareFeatureState::kSupported},
+            {multidevice::SoftwareFeature::kPhoneHubHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
 }
 
-// TODO(nohle): Add last update time when relevant.
 const CryptAuthDevice& GetRemoteDeviceNeedsGroupPrivateKeyForTest() {
   static const base::NoDestructor<CryptAuthDevice> device([] {
     const char kRemoteDeviceNeedsGroupPrivateKeyId[] =
@@ -104,12 +121,27 @@ const CryptAuthDevice& GetRemoteDeviceNeedsGroupPrivateKeyForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kMessagesForWebClient,
              multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
 }
 
-// TODO(nohle): Add last update time when relevant.
 const CryptAuthDevice& GetRemoteDeviceHasGroupPrivateKeyForTest() {
   static const base::NoDestructor<CryptAuthDevice> device([] {
     const char kRemoteDeviceHasGroupPrivateKeyId[] =
@@ -150,6 +182,22 @@ const CryptAuthDevice& GetRemoteDeviceHasGroupPrivateKeyForTest() {
             {multidevice::SoftwareFeature::kMessagesForWebHost,
              multidevice::SoftwareFeatureState::kEnabled},
             {multidevice::SoftwareFeature::kMessagesForWebClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kWifiSyncClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
              multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());

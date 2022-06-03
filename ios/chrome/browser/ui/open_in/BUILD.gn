@@ -2,14 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("open_in") {
+source_set("open_in_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "open_in_controller.h",
     "open_in_controller.mm",
     "open_in_controller_testing.h",
-    "open_in_mediator.h",
-    "open_in_mediator.mm",
     "open_in_toolbar.h",
     "open_in_toolbar.mm",
   ]
@@ -17,15 +15,34 @@ source_set("open_in") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/open_in",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("open_in") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "open_in_coordinator.h",
+    "open_in_coordinator.mm",
+    "open_in_mediator.h",
+    "open_in_mediator.mm",
+  ]
+  deps = [
+    ":open_in_ui",
+    "//base",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/open_in",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//net",
     "//services/network/public/cpp",
@@ -45,7 +62,9 @@ source_set("unit_tests") {
   ]
   deps = [
     ":open_in",
+    ":open_in_ui",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/public/test",
@@ -60,19 +79,17 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [
-    "open_in_controller_egtest.mm",
-  ]
+  sources = [ "open_in_controller_egtest.mm" ]
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
@@ -80,5 +97,5 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

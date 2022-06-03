@@ -3,26 +3,26 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
+  /** @type {!CrRadioButtonElement} */
   let radioButton;
 
   setup(function() {
-    PolymerTest.clearBody();
-    document.body.innerHTML = `
-      <cr-radio-button>label</cr-radio-button>
-    `;
-
-    radioButton = document.querySelector('cr-radio-button');
+    document.body.innerHTML = '';
+    radioButton = /** @type {!CrRadioButtonElement} */ (
+        document.createElement('cr-radio-button'));
+    document.body.appendChild(radioButton);
   });
 
   function assertChecked() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.$$('.disc')).backgroundColor !=
+        getComputedStyle(radioButton.$$('.disc')).backgroundColor !==
         'rgba(0, 0, 0, 0)');
   }
 
@@ -38,7 +38,7 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('disabled'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-disabled'));
     assertEquals('none', getComputedStyle(radioButton).pointerEvents);
-    assertTrue('1' != getComputedStyle(radioButton).opacity);
+    assertTrue('1' !== getComputedStyle(radioButton).opacity);
   }
 
   function assertNotDisabled() {

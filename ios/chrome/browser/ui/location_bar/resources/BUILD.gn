@@ -4,55 +4,9 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("omnibox_connection_secure") {
-  sources = [
-    "omnibox_connection_secure.imageset/Contents.json",
-    "omnibox_connection_secure.imageset/omnibox_connection_secure.png",
-    "omnibox_connection_secure.imageset/omnibox_connection_secure@2x.png",
-    "omnibox_connection_secure.imageset/omnibox_connection_secure@3x.png",
-  ]
-}
-
-imageset("omnibox_connection_dangerous") {
-  sources = [
-    "omnibox_connection_dangerous.imageset/Contents.json",
-    "omnibox_connection_dangerous.imageset/omnibox_connection_dangerous.png",
-    "omnibox_connection_dangerous.imageset/omnibox_connection_dangerous@2x.png",
-    "omnibox_connection_dangerous.imageset/omnibox_connection_dangerous@3x.png",
-  ]
-}
-
-imageset("omnibox_connection_insecure") {
-  sources = [
-    "omnibox_connection_insecure.imageset/Contents.json",
-    "omnibox_connection_insecure.imageset/omnibox_connection_insecure.png",
-    "omnibox_connection_insecure.imageset/omnibox_connection_insecure@2x.png",
-    "omnibox_connection_insecure.imageset/omnibox_connection_insecure@3x.png",
-  ]
-}
-
-imageset("omnibox_connection_offline") {
-  sources = [
-    "omnibox_connection_offline.imageset/Contents.json",
-    "omnibox_connection_offline.imageset/omnibox_connection_offline.png",
-    "omnibox_connection_offline.imageset/omnibox_connection_offline@2x.png",
-    "omnibox_connection_offline.imageset/omnibox_connection_offline@3x.png",
-  ]
-}
-
-imageset("omnibox_voice") {
-  sources = [
-    "omnibox_voice.imageset/Contents.json",
-    "omnibox_voice.imageset/omnibox_voice.png",
-    "omnibox_voice.imageset/omnibox_voice@2x.png",
-    "omnibox_voice.imageset/omnibox_voice@3x.png",
-  ]
-}
-
 imageset("location_bar_share") {
   sources = [
     "location_bar_share.imageset/Contents.json",
-    "location_bar_share.imageset/location_bar_share.png",
     "location_bar_share.imageset/location_bar_share@2x.png",
     "location_bar_share.imageset/location_bar_share@3x.png",
   ]
@@ -61,44 +15,39 @@ imageset("location_bar_share") {
 imageset("location_bar_voice") {
   sources = [
     "location_bar_voice.imageset/Contents.json",
-    "location_bar_voice.imageset/location_bar_voice.png",
     "location_bar_voice.imageset/location_bar_voice@2x.png",
     "location_bar_voice.imageset/location_bar_voice@3x.png",
   ]
 }
 
-imageset("location_bar_offline") {
+imageset("location_bar_connection_offline") {
   sources = [
-    "location_bar_offline.imageset/Contents.json",
-    "location_bar_offline.imageset/location_bar_offline.png",
-    "location_bar_offline.imageset/location_bar_offline@2x.png",
-    "location_bar_offline.imageset/location_bar_offline@3x.png",
+    "location_bar_connection_offline.imageset/Contents.json",
+    "location_bar_connection_offline.imageset/location_bar_connection_offline@2x.png",
+    "location_bar_connection_offline.imageset/location_bar_connection_offline@3x.png",
   ]
 }
 
-imageset("location_bar_secure") {
+imageset("location_bar_connection_secure") {
   sources = [
-    "location_bar_secure.imageset/Contents.json",
-    "location_bar_secure.imageset/location_bar_secure.png",
-    "location_bar_secure.imageset/location_bar_secure@2x.png",
-    "location_bar_secure.imageset/location_bar_secure@3x.png",
+    "location_bar_connection_secure.imageset/Contents.json",
+    "location_bar_connection_secure.imageset/location_bar_connection_secure@2x.png",
+    "location_bar_connection_secure.imageset/location_bar_connection_secure@3x.png",
   ]
 }
 
-imageset("location_bar_not_secure_warning") {
+imageset("location_bar_connection_dangerous") {
   sources = [
-    "location_bar_not_secure_warning.imageset/Contents.json",
-    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning.png",
-    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning@2x.png",
-    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning@3x.png",
+    "location_bar_connection_dangerous.imageset/Contents.json",
+    "location_bar_connection_dangerous.imageset/location_bar_connection_dangerous@2x.png",
+    "location_bar_connection_dangerous.imageset/location_bar_connection_dangerous@3x.png",
   ]
 }
 
-imageset("location_bar_info") {
+imageset("location_bar_connection_info") {
   sources = [
-    "location_bar_info.imageset/Contents.json",
-    "location_bar_info.imageset/location_bar_info.png",
-    "location_bar_info.imageset/location_bar_info@2x.png",
-    "location_bar_info.imageset/location_bar_info@3x.png",
+    "location_bar_connection_info.imageset/Contents.json",
+    "location_bar_connection_info.imageset/location_bar_connection_info@2x.png",
+    "location_bar_connection_info.imageset/location_bar_connection_info@3x.png",
   ]
 }

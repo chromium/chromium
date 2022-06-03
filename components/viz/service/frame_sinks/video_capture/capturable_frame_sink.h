@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 
-#include <memory>
-
 #include "base/time/time.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -17,7 +18,6 @@ class Rect;
 namespace viz {
 
 class CompositorFrameMetadata;
-class CopyOutputRequest;
 class LocalSurfaceId;
 
 // Interface for CompositorFrameSink implementations that support frame sink
@@ -41,9 +41,15 @@ class CapturableFrameSink {
         const gfx::Rect& damage_rect,
         base::TimeTicks expected_display_time,
         const CompositorFrameMetadata& frame_metadata) = 0;
+
+    // Called from SurfaceAggregator to get the video capture status on the
+    // surface which is going to be drawn to.
+    virtual bool IsVideoCaptureStarted() = 0;
   };
 
   virtual ~CapturableFrameSink() = default;
+
+  virtual const FrameSinkId& GetFrameSinkId() const = 0;
 
   // Attach/Detach a video capture client to the frame sink. The client will
   // receive frame begin and draw events, and issue copy requests, when
@@ -51,17 +57,28 @@ class CapturableFrameSink {
   virtual void AttachCaptureClient(Client* client) = 0;
   virtual void DetachCaptureClient(Client* client) = 0;
 
-  // Returns the currently-active frame size, or an empty size if there is no
-  // active frame.
-  virtual gfx::Size GetActiveFrameSize() = 0;
+  // Returns the capture region of a render pass, either matching the
+  // |subtree_id| if set, or the root render pass if not set. Returns an empty
+  // rect if (1) there is no active frame, (2) |subtree_id| is valid/set and
+  // no matching render pass could be found, or (3) a valid crop ID is set and
+  // its associated bounds are set to empty or could not be found.
+  // NOTE: only one of |subtree_id| or |crop_id| should be set and valid, not
+  // both.
+  using RegionSpecifier =
+      absl::variant<absl::monostate, SubtreeCaptureId, RegionCaptureCropId>;
+  virtual gfx::Rect GetCopyOutputRequestRegion(
+      const RegionSpecifier& specifier) const = 0;
+
+  // Called when a video capture client starts or stops capturing.
+  virtual void OnClientCaptureStarted() = 0;
+  virtual void OnClientCaptureStopped() = 0;
 
   // Issues a request for a copy of the next composited frame whose
   // LocalSurfaceId is at least |local_surface_id|. Note that if this id is
   // default constructed, then the next surface will provide the copy output
   // regardless of its LocalSurfaceId.
   virtual void RequestCopyOfOutput(
-      const LocalSurfaceId& local_surface_id,
-      std::unique_ptr<CopyOutputRequest> request) = 0;
+      PendingCopyOutputRequest pending_copy_output_request) = 0;
 
   // Returns the CompositorFrameMetadata of the last activated CompositorFrame.
   // Return null if no CompositorFrame has activated yet.

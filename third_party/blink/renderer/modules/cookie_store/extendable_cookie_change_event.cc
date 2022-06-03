@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/modules/cookie_store/extendable_cookie_change_event.h"
 
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/modules/cookie_store/cookie_list_item.h"
-#include "third_party/blink/renderer/modules/cookie_store/extendable_cookie_change_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_cookie_change_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/modules/service_worker/extendable_event_init.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -20,7 +20,7 @@ const AtomicString& ExtendableCookieChangeEvent::InterfaceName() const {
   return event_interface_names::kExtendableCookieChangeEvent;
 }
 
-void ExtendableCookieChangeEvent::Trace(blink::Visitor* visitor) {
+void ExtendableCookieChangeEvent::Trace(Visitor* visitor) const {
   ExtendableEvent::Trace(visitor);
   visitor->Trace(changed_);
   visitor->Trace(deleted_);

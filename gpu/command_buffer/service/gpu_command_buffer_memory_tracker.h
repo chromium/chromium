@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
@@ -24,9 +24,13 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
   GpuCommandBufferMemoryTracker(
       CommandBufferId command_buffer_id,
       uint64_t client_tracing_id,
-      ContextType context_type,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       Observer* observer);
+
+  GpuCommandBufferMemoryTracker(const GpuCommandBufferMemoryTracker&) = delete;
+  GpuCommandBufferMemoryTracker& operator=(
+      const GpuCommandBufferMemoryTracker&) = delete;
+
   ~GpuCommandBufferMemoryTracker() override;
 
   // MemoryTracker implementation.
@@ -37,23 +41,11 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
   uint64_t ContextGroupTracingId() const override;
 
  private:
-  void LogMemoryStatsPeriodic();
-  void LogMemoryStatsShutdown();
-  void LogMemoryStatsPressure(
-      base::MemoryPressureListener::MemoryPressureLevel pressure_level);
-
   uint64_t size_ = 0;
   const CommandBufferId command_buffer_id_;
   const uint64_t client_tracing_id_;
 
-  // Variables used in memory stat histogram logging.
-  const ContextType context_type_;
-  base::RepeatingTimer memory_stats_timer_;
-  base::MemoryPressureListener memory_pressure_listener_;
-
   MemoryTracker::Observer* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuCommandBufferMemoryTracker);
 };
 
 }  // namespace gpu

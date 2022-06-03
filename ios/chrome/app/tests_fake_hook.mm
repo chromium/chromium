@@ -16,17 +16,26 @@ bool DisableAppGroupAccess() {
 bool DisableContentSuggestions() {
   return false;
 }
+bool DisableDiscoverFeed() {
+  return false;
+}
 bool DisableFirstRun() {
   return false;
 }
 bool DisableGeolocation() {
   return false;
 }
-bool DisableSigninRecallPromo() {
+bool DisableUpgradeSigninPromo() {
   return false;
 }
 bool DisableUpdateService() {
   return false;
+}
+bool DisableMainThreadFreezeDetection() {
+  return false;
+}
+policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
+  return nullptr;
 }
 void SetUpTestsIfPresent() {}
 void RunTestsIfPresent() {}

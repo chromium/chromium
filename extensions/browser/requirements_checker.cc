@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,7 +33,7 @@ void RequirementsChecker::Start(ResultCallback callback) {
 
 #if !defined(USE_AURA)
   if (requirements.window_shape)
-    errors_.insert(WINDOW_SHAPE_NOT_SUPPORTED);
+    errors_.insert(Error::kWindowShapeNotSupported);
 #endif
 
   callback_ = std::move(callback);
@@ -50,15 +49,15 @@ void RequirementsChecker::Start(ResultCallback callback) {
   }
 }
 
-base::string16 RequirementsChecker::GetErrorMessage() const {
+std::u16string RequirementsChecker::GetErrorMessage() const {
   // Join the error messages into one string.
   std::vector<std::string> messages;
-  if (errors_.count(WEBGL_NOT_SUPPORTED)) {
+  if (errors_.count(Error::kWebglNotSupported)) {
     messages.push_back(
         l10n_util::GetStringUTF8(IDS_EXTENSION_WEBGL_NOT_SUPPORTED));
   }
 #if !defined(USE_AURA)
-  if (errors_.count(WINDOW_SHAPE_NOT_SUPPORTED)) {
+  if (errors_.count(Error::kWindowShapeNotSupported)) {
     messages.push_back(
         l10n_util::GetStringUTF8(IDS_EXTENSION_WINDOW_SHAPE_NOT_SUPPORTED));
   }
@@ -69,7 +68,7 @@ base::string16 RequirementsChecker::GetErrorMessage() const {
 
 void RequirementsChecker::VerifyWebGLAvailability(bool available) {
   if (!available)
-    errors_.insert(WEBGL_NOT_SUPPORTED);
+    errors_.insert(Error::kWebglNotSupported);
   PostRunCallback();
 }
 
@@ -78,8 +77,8 @@ void RequirementsChecker::PostRunCallback() {
   // to maintain the assumption in
   // ExtensionService::LoadExtensionsFromCommandLineFlag(). Remove these helper
   // functions after crbug.com/708354 is addressed.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&RequirementsChecker::RunCallback,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RequirementsChecker::RunCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 

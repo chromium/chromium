@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RLZ_CHROME_RLZ_TRACKER_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/rlz/rlz_tracker_delegate.h"
 #include "content/public/browser/notification_observer.h"
@@ -24,6 +23,10 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
                                  public content::NotificationObserver {
  public:
   ChromeRLZTrackerDelegate();
+
+  ChromeRLZTrackerDelegate(const ChromeRLZTrackerDelegate&) = delete;
+  ChromeRLZTrackerDelegate& operator=(const ChromeRLZTrackerDelegate&) = delete;
+
   ~ChromeRLZTrackerDelegate() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -41,11 +44,11 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
   bool IsBrandOrganic(const std::string& brand) override;
   bool GetReactivationBrand(std::string* brand) override;
   bool ShouldEnableZeroDelayForTesting() override;
-  bool GetLanguage(base::string16* language) override;
-  bool GetReferral(base::string16* referral) override;
+  bool GetLanguage(std::u16string* language) override;
+  bool GetReferral(std::u16string* referral) override;
   bool ClearReferral() override;
-  void SetOmniboxSearchCallback(const base::Closure& callback) override;
-  void SetHomepageSearchCallback(const base::Closure& callback) override;
+  void SetOmniboxSearchCallback(base::OnceClosure callback) override;
+  void SetHomepageSearchCallback(base::OnceClosure callback) override;
   bool ShouldUpdateExistingAccessPointRlz() override;
 
   // content::NotificationObserver implementation:
@@ -57,15 +60,12 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   content::NotificationRegistrar registrar_;
-  base::Closure on_omnibox_search_callback_;
-  base::Closure on_homepage_search_callback_;
+  base::OnceClosure on_omnibox_search_callback_;
+  base::OnceClosure on_homepage_search_callback_;
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRLZTrackerDelegate);
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 };
 
 #endif  // CHROME_BROWSER_RLZ_CHROME_RLZ_TRACKER_DELEGATE_H_

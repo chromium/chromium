@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.contextmenu;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ public interface ContextMenuUi {
     /**
      * Shows the Context Menu in Chrome.
      * @param window Used to inflate the context menu.
+     * @param webContents The WebContents that this context menu belongs to.
      * @param params The current parameters for the the context menu.
      * @param items The list of items that need to be displayed in the context menu items. This is
      *              taken from the return value of {@link ContextMenuPopulator#buildContextMenu(
@@ -29,10 +33,14 @@ public interface ContextMenuUi {
      * @param onMenuShown After the menu is displayed this method should be called to present a
      *                    full menu.
      * @param onMenuClosed When the menu is closed, this method is called to do any possible final
-     *                     clean up. Boolean here should be true if the menu is closed as a result
-     *                     of clicking an item and false if the menu is abandoned by the user.
+     *                     clean up.
      */
-    void displayMenu(WindowAndroid window, ContextMenuParams params,
-            List<Pair<Integer, List<ContextMenuItem>>> items, Callback<Integer> onItemClicked,
-            Runnable onMenuShown, Callback<Boolean> onMenuClosed);
+    void displayMenu(WindowAndroid window, WebContents webContents, ContextMenuParams params,
+            List<Pair<Integer, ModelList>> items, Callback<Integer> onItemClicked,
+            Runnable onMenuShown, Runnable onMenuClosed);
+
+    /**
+     * Dismiss the context menu.
+     */
+    void dismiss();
 }

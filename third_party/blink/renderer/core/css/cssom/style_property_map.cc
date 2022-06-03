@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -66,7 +67,11 @@ const CSSValue* StyleValueToCSSValue(
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
-    case CSSPropertyID::kBorderTopRightRadius: {
+    case CSSPropertyID::kBorderTopRightRadius:
+    case CSSPropertyID::kBorderEndEndRadius:
+    case CSSPropertyID::kBorderEndStartRadius:
+    case CSSPropertyID::kBorderStartEndRadius:
+    case CSSPropertyID::kBorderStartStartRadius: {
       // level 1 only accept single <length-percentages>, but border-radius-*
       // expects pairs.
       const auto* value = style_value.ToCSSValue();
@@ -127,6 +132,18 @@ const CSSValue* StyleValueToCSSValue(
         CSSValueList* list = CSSValueList::CreateSpaceSeparated();
         list->Append(*style_value.ToCSSValue());
         return list;
+      }
+      break;
+    }
+    case CSSPropertyID::kOverflowX:
+    case CSSPropertyID::kOverflowY: {
+      if (!RuntimeEnabledFeatures::OverflowClipEnabled()) {
+        auto* identifier_value =
+            DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());
+        if (identifier_value &&
+            identifier_value->GetValueID() == CSSValueID::kClip) {
+          return nullptr;
+        }
       }
       break;
     }
@@ -191,35 +208,37 @@ const CSSValue* StyleValueToCSSValue(
 const CSSValue* CoerceStyleValueOrString(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
-    const CSSStyleValueOrString& value,
+    const V8UnionCSSStyleValueOrString* value,
     const ExecutionContext& execution_context) {
   DCHECK(!property.IsRepeated());
   DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
             !custom_property_name.IsNull());
+  DCHECK(value);
 
-  if (value.IsCSSStyleValue()) {
-    if (!value.GetAsCSSStyleValue())
-      return nullptr;
-
-    return StyleValueToCSSValue(property, custom_property_name,
-                                *value.GetAsCSSStyleValue(), execution_context);
-  } else {
-    DCHECK(value.IsString());
-    const auto values = StyleValueFactory::FromString(
-        property.PropertyID(), custom_property_name, value.GetAsString(),
-        MakeGarbageCollected<CSSParserContext>(execution_context));
-    if (values.size() != 1U)
-      return nullptr;
-
-    return StyleValueToCSSValue(property, custom_property_name, *values[0],
-                                execution_context);
+  switch (value->GetContentType()) {
+    case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue:
+      return StyleValueToCSSValue(property, custom_property_name,
+                                  *value->GetAsCSSStyleValue(),
+                                  execution_context);
+    case V8UnionCSSStyleValueOrString::ContentType::kString: {
+      const auto& values = StyleValueFactory::FromString(
+          property.PropertyID(), custom_property_name, value->GetAsString(),
+          MakeGarbageCollected<CSSParserContext>(execution_context));
+      if (values.size() != 1U)
+        return nullptr;
+      return StyleValueToCSSValue(property, custom_property_name, *values[0],
+                                  execution_context);
+    }
   }
+
+  NOTREACHED();
+  return nullptr;
 }
 
 const CSSValue* CoerceStyleValuesOrStrings(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
-    const HeapVector<CSSStyleValueOrString>& values,
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
     const ExecutionContext& execution_context) {
   DCHECK(property.IsRepeated());
   DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
@@ -250,18 +269,28 @@ const CSSValue* CoerceStyleValuesOrStrings(
 
 }  // namespace
 
-void StylePropertyMap::set(const ExecutionContext* execution_context,
-                           const String& property_name,
-                           const HeapVector<CSSStyleValueOrString>& values,
-                           ExceptionState& exception_state) {
-  const CSSPropertyID property_id = cssPropertyID(property_name);
+void StylePropertyMap::set(
+    const ExecutionContext* execution_context,
+    const String& property_name,
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+    ExceptionState& exception_state) {
+  const CSSPropertyID property_id =
+      CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
     return;
   }
 
-  DCHECK(isValidCSSPropertyID(property_id));
+  DCHECK(IsValidCSSPropertyID(property_id));
   const CSSProperty& property = CSSProperty::Get(property_id);
+
+  // Descriptors (like 'src') have CSSProperty instances, but are not
+  // valid properties in this context.
+  if (!property.IsProperty()) {
+    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    return;
+  }
+
   if (property.IsShorthand()) {
     if (values.size() != 1) {
       exception_state.ThrowTypeError("Invalid type for property");
@@ -269,27 +298,32 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
     }
 
     String css_text;
-    if (values[0].IsCSSStyleValue()) {
-      CSSStyleValue* style_value = values[0].GetAsCSSStyleValue();
-      if (style_value &&
-          CSSOMTypes::PropertyCanTake(property_id, g_null_atom, *style_value)) {
-        css_text = style_value->toString();
+    switch (values[0]->GetContentType()) {
+      case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue: {
+        CSSStyleValue* style_value = values[0]->GetAsCSSStyleValue();
+        if (CSSOMTypes::PropertyCanTake(property_id, g_null_atom,
+                                        *style_value)) {
+          css_text = style_value->toString();
+        }
+        break;
       }
-    } else {
-      css_text = values[0].GetAsString();
+      case V8UnionCSSStyleValueOrString::ContentType::kString:
+        css_text = values[0]->GetAsString();
+        break;
     }
 
     if (css_text.IsEmpty() ||
         !SetShorthandProperty(property.PropertyID(), css_text,
-                              execution_context->GetSecureContextMode()))
+                              execution_context->GetSecureContextMode())) {
       exception_state.ThrowTypeError("Invalid type for property");
+    }
 
     return;
   }
 
-  AtomicString custom_property_name = (property_id == CSSPropertyID::kVariable)
-                                          ? AtomicString(property_name)
-                                          : g_null_atom;
+  const AtomicString& custom_property_name =
+      (property_id == CSSPropertyID::kVariable) ? AtomicString(property_name)
+                                                : g_null_atom;
 
   const CSSValue* result = nullptr;
   if (property.IsRepeated()) {
@@ -311,14 +345,16 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
     SetProperty(property_id, *result);
 }
 
-void StylePropertyMap::append(const ExecutionContext* execution_context,
-                              const String& property_name,
-                              const HeapVector<CSSStyleValueOrString>& values,
-                              ExceptionState& exception_state) {
+void StylePropertyMap::append(
+    const ExecutionContext* execution_context,
+    const String& property_name,
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+    ExceptionState& exception_state) {
   if (values.IsEmpty())
     return;
 
-  const CSSPropertyID property_id = cssPropertyID(property_name);
+  const CSSPropertyID property_id =
+      CssPropertyID(execution_context, property_name);
 
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
@@ -360,9 +396,10 @@ void StylePropertyMap::append(const ExecutionContext* execution_context,
   SetProperty(property_id, *current_value);
 }
 
-void StylePropertyMap::remove(const String& property_name,
+void StylePropertyMap::remove(const ExecutionContext* execution_context,
+                              const String& property_name,
                               ExceptionState& exception_state) {
-  CSSPropertyID property_id = cssPropertyID(property_name);
+  CSSPropertyID property_id = CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError("Invalid property name: " + property_name);
     return;

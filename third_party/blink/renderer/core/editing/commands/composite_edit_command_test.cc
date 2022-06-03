@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
@@ -28,6 +30,10 @@ class SampleCommand final : public CompositeEditCommand {
 
   void MoveParagraphContentsToNewBlockIfNecessary(const Position&,
                                                   EditingState*);
+  void MoveParagraphs(const VisiblePosition& start_of_paragraph_to_move,
+                      const VisiblePosition& end_of_paragraph_to_move,
+                      const VisiblePosition& destination,
+                      EditingState* editing_state);
 
   // CompositeEditCommand member implementations
   void DoApply(EditingState*) final {}
@@ -63,6 +69,16 @@ void SampleCommand::MoveParagraphContentsToNewBlockIfNecessary(
       position, editing_state);
 }
 
+void SampleCommand::MoveParagraphs(
+    const VisiblePosition& start_of_paragraph_to_move,
+    const VisiblePosition& end_of_paragraph_to_move,
+    const VisiblePosition& destination,
+    EditingState* editing_state) {
+  CompositeEditCommand::MoveParagraphs(start_of_paragraph_to_move,
+                                       end_of_paragraph_to_move, destination,
+                                       editing_state);
+}
+
 }  // namespace
 
 class CompositeEditCommandTest : public EditingTestBase {};
@@ -77,7 +93,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBefore) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->InnerHTMLAsString());
+  EXPECT_EQ("foo<b></b>", div->innerHTML());
 }
 
 TEST_F(CompositeEditCommandTest, insertNodeBeforeInUneditable) {
@@ -102,7 +118,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeDisconnectedNode) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<b></b>", div->InnerHTMLAsString())
+  EXPECT_EQ("<b></b>", div->innerHTML())
       << "InsertNodeBeforeCommand does nothing for disconnected node";
 }
 
@@ -117,7 +133,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeWithDirtyLayoutTree) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->InnerHTMLAsString());
+  EXPECT_EQ("foo<b></b>", div->innerHTML());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -129,7 +145,7 @@ TEST_F(CompositeEditCommandTest,
   Element* body = GetDocument().body();
   Node* text = body->lastChild();
   body->setAttribute(html_names::kContenteditableAttr, "true");
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   EditingState editing_state;
   sample.MoveParagraphContentsToNewBlockIfNecessary(Position(text, 0),
@@ -139,7 +155,59 @@ TEST_F(CompositeEditCommandTest,
       "<div><br></div>"
       "<style>div{-webkit-user-modify:read-only;user-select:none;}</style>"
       "foo",
-      body->InnerHTMLAsString());
+      body->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithUAShadowDOM1) {
+  SetBodyContent("<object contenteditable><input></object>");
+  base::RunLoop().RunUntilIdle();
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* input = GetDocument().QuerySelector("input");
+  Position pos = Position::BeforeNode(*input);
+  EditingState editing_state;
+
+  // Should not crash
+  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<object contenteditable=\"\"><div><input></div></object>",
+            GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithUAShadowDOM2) {
+  GetDocument().setDesignMode("on");
+  SetBodyContent("<span></span><button><meter></meter></button>");
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* button = GetDocument().QuerySelector("button");
+  Position pos = Position(button, 0);
+  EditingState editing_state;
+
+  // Should not crash
+  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<div></div><span></span><button><meter></meter></button>",
+            GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithButtonAndBr) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("br { content: 'x'; }");
+  SetBodyContent("<button><br></button>");
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* button = GetDocument().QuerySelector("button");
+  Position pos = Position(button, 0);
+  EditingState editing_state;
+
+  // Should not crash
+  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<button><div><br></div><br></button>",
+            GetDocument().body()->innerHTML());
 }
 
 TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
@@ -157,6 +225,66 @@ TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
   // editing state should abort here.
   sample.InsertNodeAfter(insert_child, ref_child, &editing_state_after);
   EXPECT_TRUE(editing_state_after.IsAborted());
+}
+
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
+  SetBodyContent("<ol><li><span><br></span></li></ol><br>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* li = GetDocument().QuerySelector("li");
+  Element* br1 = GetDocument().QuerySelector("ol br");
+  Element* br2 = GetDocument().QuerySelector("ol + br");
+  br1->setTextContent("x");
+  UpdateAllLifecyclePhasesForTest();
+
+  // The start precedes the end, but when using MostFor/BackwardCaretPosition
+  // to constrain the range, the resulting end would precede the start.
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*li);
+  const VisiblePosition& end = VisiblePosition::LastPositionInNode(*li);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br2);
+  EXPECT_EQ(start.DeepEquivalent(), Position::BeforeNode(*br1));
+  EXPECT_EQ(end.DeepEquivalent(), Position(br1, 0));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br2));
+  EXPECT_LT(start.DeepEquivalent(), end.DeepEquivalent());
+  EXPECT_GT(MostForwardCaretPosition(start.DeepEquivalent()),
+            MostBackwardCaretPosition(end.DeepEquivalent()));
+
+  // Should not crash
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<ol><li><span><br></span></li></ol><br>",
+            GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
+  InsertStyleElement("span {display: inline-block; width: 0; height: 10px}");
+  SetBodyContent("<div><span></span><span></span>&#x20;</div><br>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* div = GetDocument().QuerySelector("div");
+  Element* span1 = GetDocument().QuerySelector("span");
+  Element* span2 = GetDocument().QuerySelector("span + span");
+  Element* br = GetDocument().QuerySelector("br");
+
+  // The start precedes the end, but when using MostFor/BackwardCaretPosition
+  // to constrain the range, the resulting end would precede the start.
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*div);
+  const VisiblePosition& end = VisiblePosition::LastPositionInNode(*div);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br);
+  EXPECT_EQ(start.DeepEquivalent(), Position::BeforeNode(*span1));
+  EXPECT_EQ(end.DeepEquivalent(), Position::BeforeNode(*span2));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br));
+  EXPECT_LT(start.DeepEquivalent(), end.DeepEquivalent());
+  EXPECT_GT(MostForwardCaretPosition(start.DeepEquivalent()),
+            MostBackwardCaretPosition(end.DeepEquivalent()));
+
+  // Should not crash
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<div><span></span><span></span> </div><br>",
+            GetDocument().body()->innerHTML());
 }
 
 }  // namespace blink

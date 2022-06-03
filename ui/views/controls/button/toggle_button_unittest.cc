@@ -5,12 +5,14 @@
 #include "ui/views/controls/button/toggle_button.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/macros.h"
+#include "base/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -18,38 +20,41 @@ namespace views {
 
 class TestToggleButton : public ToggleButton {
  public:
-  explicit TestToggleButton(int* counter)
-      : ToggleButton(nullptr), counter_(counter) {}
+  explicit TestToggleButton(int* counter) : counter_(counter) {}
+
+  TestToggleButton(const TestToggleButton&) = delete;
+  TestToggleButton& operator=(const TestToggleButton&) = delete;
+
   ~TestToggleButton() override {
-    // Calling SetInkDropMode() in this subclass allows this class's
-    // implementation of RemoveInkDropLayer() to be called. The same
-    // call is made in ~ToggleButton() so this is testing the general technique.
-    SetInkDropMode(InkDropMode::OFF);
+    // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+    // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+    // access the non-override versions in ~View.
+    views::InkDrop::Remove(this);
+  }
+
+  void AddLayerBeneathView(ui::Layer* layer) override {
+    ++(*counter_);
+    ToggleButton::AddLayerBeneathView(layer);
+  }
+
+  void RemoveLayerBeneathView(ui::Layer* layer) override {
+    --(*counter_);
+    ToggleButton::RemoveLayerBeneathView(layer);
   }
 
   using View::Focus;
 
- protected:
-  // ToggleButton:
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ++(*counter_);
-    ToggleButton::AddInkDropLayer(ink_drop_layer);
-  }
-
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ToggleButton::RemoveInkDropLayer(ink_drop_layer);
-    --(*counter_);
-  }
-
  private:
-  int* counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToggleButton);
+  int* const counter_;
 };
 
 class ToggleButtonTest : public ViewsTestBase {
  public:
   ToggleButtonTest() = default;
+
+  ToggleButtonTest(const ToggleButtonTest&) = delete;
+  ToggleButtonTest& operator=(const ToggleButtonTest&) = delete;
+
   ~ToggleButtonTest() override = default;
 
   void SetUp() override {
@@ -65,8 +70,8 @@ class ToggleButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = new TestToggleButton(&counter_);
-    widget_->SetContentsView(button_);
+    button_ =
+        widget_->SetContentsView(std::make_unique<TestToggleButton>(&counter_));
   }
 
   void TearDown() override {
@@ -83,8 +88,6 @@ class ToggleButtonTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
   TestToggleButton* button_ = nullptr;
   int counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggleButtonTest);
 };
 
 // Starts ink drop animation on a ToggleButton and destroys the button.
@@ -112,6 +115,7 @@ TEST_F(ToggleButtonTest, ShutdownWithFocus) {
 TEST_F(ToggleButtonTest, AcceptEvents) {
   EXPECT_FALSE(button()->GetIsOn());
   ui::test::EventGenerator generator(GetRootWindow(widget()));
+  generator.MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
 
   // Clicking toggles.
   generator.ClickLeftButton();

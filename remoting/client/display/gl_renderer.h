@@ -11,12 +11,12 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/display/gl_cursor.h"
 #include "remoting/client/display/gl_cursor_feedback.h"
 #include "remoting/client/display/gl_desktop.h"
 #include "remoting/proto/control.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc {
 class DesktopFrame;
@@ -40,6 +40,10 @@ class GlRendererTest;
 class GlRenderer {
  public:
   explicit GlRenderer();
+
+  GlRenderer(const GlRenderer&) = delete;
+  GlRenderer& operator=(const GlRenderer&) = delete;
+
   ~GlRenderer();
 
   // The delegate can be set on any hread no more than once before calling any
@@ -76,7 +80,7 @@ class GlRenderer {
   // |done| will be queued up and called on the display thread after the actual
   // rendering happens.
   void OnFrameReceived(std::unique_ptr<webrtc::DesktopFrame> frame,
-                       const base::Closure& done);
+                       base::OnceClosure done);
 
   void OnCursorShapeChanged(const protocol::CursorShapeInfo& shape);
 
@@ -122,7 +126,7 @@ class GlRenderer {
 
   // Done callbacks from OnFrameReceived. Will all be called once rendering
   // takes place.
-  base::queue<base::Closure> pending_done_callbacks_;
+  base::queue<base::OnceClosure> pending_done_callbacks_;
 
   bool render_scheduled_ = false;
 
@@ -136,7 +140,7 @@ class GlRenderer {
   std::unique_ptr<Canvas> canvas_;
 
   // Used to recover the transformation matrix when the canvas is recreated.
-  base::Optional<std::array<float, 9>> transformation_matrix_;
+  absl::optional<std::array<float, 9>> transformation_matrix_;
 
   GlCursor cursor_;
   GlCursorFeedback cursor_feedback_;
@@ -147,8 +151,6 @@ class GlRenderer {
   base::ThreadChecker thread_checker_;
   base::WeakPtr<GlRenderer> weak_ptr_;
   base::WeakPtrFactory<GlRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlRenderer);
 };
 
 }  // namespace remoting

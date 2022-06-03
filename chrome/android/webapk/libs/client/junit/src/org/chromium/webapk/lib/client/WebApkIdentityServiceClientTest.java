@@ -21,8 +21,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 import org.chromium.webapk.test.WebApkTestHelper;
 

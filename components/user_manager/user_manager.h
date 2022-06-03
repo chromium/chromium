@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
@@ -25,6 +23,15 @@ class RemoveUserDelegate;
 // A list pref of the the regular users known on this device, arranged in LRU
 // order, stored in local state.
 USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
+
+enum class UserRemovalReason : int32_t {
+  UNKNOWN = 0,
+  LOCAL_USER_INITIATED = 1,
+  REMOTE_ADMIN_INITIATED = 2,
+  LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE = 3,
+  DEVICE_EPHEMERAL_USERS_ENABLED = 4,
+  GAIA_REMOVED = 5
+};
 
 // Interface for UserManagerBase - that provides base implementation for
 // Chrome OS user management. Typical features:
@@ -56,6 +63,13 @@ class USER_MANAGER_EXPORT UserManager {
     // user sign in are changed.
     virtual void OnUsersSignInConstraintsChanged();
 
+    // Called just before a user of the device will be removed.
+    virtual void OnUserToBeRemoved(const AccountId& account_id);
+
+    // Called just after a user of the device has been removed.
+    virtual void OnUserRemoved(const AccountId& account_id,
+                               UserRemovalReason reason);
+
    protected:
     virtual ~Observer();
   };
@@ -82,20 +96,22 @@ class USER_MANAGER_EXPORT UserManager {
   // Data retrieved from user account.
   class UserAccountData {
    public:
-    UserAccountData(const base::string16& display_name,
-                    const base::string16& given_name,
+    UserAccountData(const std::u16string& display_name,
+                    const std::u16string& given_name,
                     const std::string& locale);
+
+    UserAccountData(const UserAccountData&) = delete;
+    UserAccountData& operator=(const UserAccountData&) = delete;
+
     ~UserAccountData();
-    const base::string16& display_name() const { return display_name_; }
-    const base::string16& given_name() const { return given_name_; }
+    const std::u16string& display_name() const { return display_name_; }
+    const std::u16string& given_name() const { return given_name_; }
     const std::string& locale() const { return locale_; }
 
    private:
-    const base::string16 display_name_;
-    const base::string16 given_name_;
+    const std::u16string display_name_;
+    const std::u16string given_name_;
     const std::string locale_;
-
-    DISALLOW_COPY_AND_ASSIGN(UserAccountData);
   };
 
   // Initializes UserManager instance to this. Normally should be called right
@@ -157,6 +173,9 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Returns account Id of the user that was active in the previous session.
+  virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
+
   // Indicates that a user with the given |account_id| has just logged in. The
   // persistent list is updated accordingly if the user is not ephemeral.
   // |browser_restart| is true when reloading Chrome after crash to distinguish
@@ -178,10 +197,12 @@ class USER_MANAGER_EXPORT UserManager {
   // Invoked by session manager to inform session start.
   virtual void OnSessionStarted() = 0;
 
-  // Removes the user from the device. Note, it will verify that the given user
-  // isn't the owner, so calling this method for the owner will take no effect.
-  // Note, |delegate| can be NULL.
+  // Removes the user from the device while providing a reason for enterprise
+  // reporting. Note, it will verify that the given user isn't the owner, so
+  // calling this method for the owner will take no effect. Note, |delegate|
+  // can be NULL.
   virtual void RemoveUser(const AccountId& account_id,
+                          UserRemovalReason reason,
                           RemoveUserDelegate* delegate) = 0;
 
   // Removes the user from the persistent list only. Also removes the user's
@@ -224,7 +245,7 @@ class USER_MANAGER_EXPORT UserManager {
   // Saves user's displayed name in local state preferences.
   // Ignored If there is no such user.
   virtual void SaveUserDisplayName(const AccountId& account_id,
-                                   const base::string16& display_name) = 0;
+                                   const std::u16string& display_name) = 0;
 
   // Updates data upon User Account download.
   virtual void UpdateUserAccountData(const AccountId& account_id,
@@ -233,7 +254,7 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns the display name for user |account_id| if it is known (was
   // previously set by a |SaveUserDisplayName| call).
   // Otherwise, returns an empty string.
-  virtual base::string16 GetUserDisplayName(
+  virtual std::u16string GetUserDisplayName(
       const AccountId& account_id) const = 0;
 
   // Saves user's displayed (non-canonical) email in local state preferences.
@@ -278,9 +299,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
 
-  // Returns true if we're logged in as a legacy supervised user.
-  virtual bool IsLoggedInAsSupervisedUser() const = 0;
-
   // Returns true if we're logged in as a kiosk app.
   virtual bool IsLoggedInAsKioskApp() const = 0;
 
@@ -319,9 +337,9 @@ class USER_MANAGER_EXPORT UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) = 0;
   virtual void NotifyUsersSignInConstraintsChanged() = 0;
-
-  // Returns true if supervised users allowed.
-  virtual bool AreSupervisedUsersAllowed() const = 0;
+  virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
+  virtual void NotifyUserRemoved(const AccountId& account_id,
+                                 UserRemovalReason reason) = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
@@ -332,8 +350,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsGaiaUserAllowed(const User& user) const = 0;
 
   // Returns true if |user| is allowed depending on device policies.
-  // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-  // USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
+  // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
   // Returns "Local State" PrefService instance.
@@ -361,8 +378,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if |account_id| is Stub user.
   virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
 
-  // Returns true if |account_id| is supervised.
-  virtual bool IsSupervisedAccountId(const AccountId& account_id) const = 0;
+  // Returns true if |account_id| is deprecated supervised.
+  // TODO(crbug/1155729): Check it is not used anymore and remove it.
+  virtual bool IsDeprecatedSupervisedAccountId(
+      const AccountId& account_id) const = 0;
 
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
@@ -375,7 +394,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const = 0;
 
   // Returns string from resources bundle.
-  virtual base::string16 GetResourceStringUTF16(int string_id) const = 0;
+  virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
 
   // Schedules CheckAndResolveLocale using given task runner and
   // |on_resolved_callback| as reply callback.

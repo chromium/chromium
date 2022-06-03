@@ -6,7 +6,36 @@
 
 #include <utility>
 
+namespace {
+
+int BucketWithOffsetAndUnit(int num, int offset, int unit) {
+  // Bucketing raw number with `offset` centered.
+  const int grid = (num - offset) / unit;
+  const int bucketed =
+      grid == 0 ? 0
+                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
+                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
+  return bucketed * unit + offset;
+}
+
+}  // namespace
+
 namespace page_load_metrics {
+
+int GetBucketedViewportInitialScale(const blink::MobileFriendliness& mf) {
+  return mf.viewport_initial_scale_x10 <= -1
+             ? -1
+             : BucketWithOffsetAndUnit(mf.viewport_initial_scale_x10, 10, 2);
+}
+
+int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf) {
+  return mf.viewport_hardcoded_width <= -1
+             ? -1
+             : BucketWithOffsetAndUnit(mf.viewport_hardcoded_width, 500, 10);
+}
+
+MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
+    : routing_id(id), delta_bytes(delta) {}
 
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const url::Origin& origin_of_final_url,
@@ -15,9 +44,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     bool was_cached,
     int64_t raw_body_bytes,
     int64_t original_network_content_length,
-    std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-        data_reduction_proxy_data,
-    content::ResourceType detected_resource_type,
+    network::mojom::RequestDestination request_destination,
     int net_error,
     std::unique_ptr<net::LoadTimingInfo> load_timing_info)
     : origin_of_final_url(origin_of_final_url),
@@ -26,8 +53,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
       was_cached(was_cached),
       raw_body_bytes(raw_body_bytes),
       original_network_content_length(original_network_content_length),
-      data_reduction_proxy_data(std::move(data_reduction_proxy_data)),
-      resource_type(detected_resource_type),
+      request_destination(request_destination),
       net_error(net_error),
       load_timing_info(std::move(load_timing_info)) {}
 
@@ -39,11 +65,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
       was_cached(other.was_cached),
       raw_body_bytes(other.raw_body_bytes),
       original_network_content_length(other.original_network_content_length),
-      data_reduction_proxy_data(
-          other.data_reduction_proxy_data == nullptr
-              ? nullptr
-              : other.data_reduction_proxy_data->DeepCopy()),
-      resource_type(other.resource_type),
+      request_destination(other.request_destination),
       net_error(other.net_error),
       load_timing_info(other.load_timing_info == nullptr
                            ? nullptr
@@ -63,6 +85,13 @@ PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   return CONTINUE_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
 }
 
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnRedirect(
@@ -86,6 +115,14 @@ PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnShown() {
 }
 
 PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserver::OnEnterBackForwardCache(
+    const mojom::PageLoadTiming& timing) {
+  // Invoke OnComplete to ensure that recorded data is dumped.
+  OnComplete(timing);
+  return STOP_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const mojom::PageLoadTiming& timing) {
   return CONTINUE_OBSERVING;
@@ -102,35 +139,6 @@ PageLoadMetricsObserver::ShouldObserveMimeType(
 bool PageLoadMetricsObserver::IsStandardWebPageMimeType(
     const std::string& mime_type) {
   return mime_type == "text/html" || mime_type == "application/xhtml+xml";
-}
-
-// static
-bool PageLoadMetricsObserver::AssignTimeAndSizeForLargestContentfulPaint(
-    const page_load_metrics::mojom::PaintTimingPtr& paint_timing,
-    base::Optional<base::TimeDelta>* largest_content_paint_time,
-    uint64_t* largest_content_paint_size,
-    LargestContentType* largest_content_type) {
-  base::Optional<base::TimeDelta>& text_time = paint_timing->largest_text_paint;
-  base::Optional<base::TimeDelta>& image_time =
-      paint_timing->largest_image_paint;
-  uint64_t text_size = paint_timing->largest_text_paint_size;
-  uint64_t image_size = paint_timing->largest_image_paint_size;
-
-  // Size being 0 means the paint time is not recorded.
-  if (!text_size && !image_size)
-    return false;
-
-  if ((text_size > image_size) ||
-      (text_size == image_size && text_time < image_time)) {
-    *largest_content_paint_time = text_time;
-    *largest_content_paint_size = text_size;
-    *largest_content_type = LargestContentType::kText;
-  } else {
-    *largest_content_paint_time = image_time;
-    *largest_content_paint_size = image_size;
-    *largest_content_type = LargestContentType::kImage;
-  }
-  return true;
 }
 
 const PageLoadMetricsObserverDelegate& PageLoadMetricsObserver::GetDelegate()

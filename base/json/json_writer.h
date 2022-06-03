@@ -37,11 +37,14 @@ class BASE_EXPORT JSONWriter {
     OPTIONS_PRETTY_PRINT = 1 << 2,
   };
 
+  JSONWriter(const JSONWriter&) = delete;
+  JSONWriter& operator=(const JSONWriter&) = delete;
+
   // Given a root node, generates a JSON string and puts it into |json|.
   // The output string is overwritten and not appended.
   //
   // TODO(tc): Should we generate json if it would be invalid json (e.g.,
-  // |node| is not a DictionaryValue/ListValue or if there are inf/-inf float
+  // |node| is not a dictionary/list Value or if there are inf/-inf float
   // values)? Return true on success and false on failure.
   static bool Write(const Value& node,
                     std::string* json,
@@ -78,8 +81,6 @@ class BASE_EXPORT JSONWriter {
 
   // The number of times the writer has recursed (current stack depth).
   size_t stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSONWriter);
 };
 
 }  // namespace base

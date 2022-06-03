@@ -7,26 +7,32 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // The handler for JavaScript messages for chrome://translate-internals.
 class ChromeTranslateInternalsHandler
     : public translate::TranslateInternalsHandler,
-      public content::WebUIMessageHandler,
-      public content::NotificationObserver {
+      public content::WebUIMessageHandler {
  public:
   ChromeTranslateInternalsHandler();
+
+  ChromeTranslateInternalsHandler(const ChromeTranslateInternalsHandler&) =
+      delete;
+  ChromeTranslateInternalsHandler& operator=(
+      const ChromeTranslateInternalsHandler&) = delete;
+
   ~ChromeTranslateInternalsHandler() override;
 
   // translate::TranslateInternalsHandler.
   translate::TranslateClient* GetTranslateClient() override;
   variations::VariationsService* GetVariationsService() override;
   void RegisterMessageCallback(const std::string& message,
-                               const MessageCallback& callback) override;
+                               MessageCallback callback) override;
+  void RegisterDeprecatedMessageCallback(
+      const std::string& message,
+      const DeprecatedMessageCallback& callback) override;
   void CallJavascriptFunction(
       const std::string& function_name,
       const std::vector<const base::Value*>& args) override;
@@ -34,15 +40,10 @@ class ChromeTranslateInternalsHandler
   // content::WebUIMessageHandler methods:
   void RegisterMessages() override;
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void LanguageDetected(const translate::LanguageDetectionDetails& details);
 
  private:
-  content::NotificationRegistrar notification_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTranslateInternalsHandler);
+  base::CallbackListSubscription detection_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_CHROME_TRANSLATE_INTERNALS_HANDLER_H_

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
-<translation id="6312113039770857350">वेबपृष्ठ उपलब्ध छैन</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> मा भएको वेबपृष्ठ लोड गर्न सकिएन किनभने:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />सुझावहरू:<ph name="MARKUP_2" />तपाईँसँग डेटा जडान रहेको निश्चित गर्नुहोस्<ph name="MARKUP_3" />यो वेबपृष्ठ पछि पुन:लोड गर्नुहोस्<ph name="MARKUP_4" />तपाईँले प्रविष्ट गर्नुभएको ठेगानाको जाँच गर्नुहोस्<ph name="MARKUP_5" /></translation>
 </translationbundle>

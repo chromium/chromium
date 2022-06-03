@@ -38,13 +38,13 @@ SharedClipboardUiController::SharedClipboardUiController(
 SharedClipboardUiController::~SharedClipboardUiController() = default;
 
 void SharedClipboardUiController::OnDeviceSelected(
-    const base::string16& text,
+    const std::u16string& text,
     const syncer::DeviceInfo& device) {
   text_ = text;
   OnDeviceChosen(device);
 }
 
-base::string16 SharedClipboardUiController::GetTitle(
+std::u16string SharedClipboardUiController::GetTitle(
     SharingDialogType dialog_type) {
   // Shared clipboard only shows error dialogs.
   DCHECK_EQ(SharingDialogType::kErrorDialog, dialog_type);
@@ -62,8 +62,8 @@ PageActionIconType SharedClipboardUiController::GetIconType() {
 }
 
 sync_pb::SharingSpecificFields::EnabledFeatures
-SharedClipboardUiController::GetRequiredFeature() {
-  return sync_pb::SharingSpecificFields::SHARED_CLIPBOARD;
+SharedClipboardUiController::GetRequiredFeature() const {
+  return sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2;
 }
 
 // No need for apps for shared clipboard feature
@@ -77,18 +77,20 @@ void SharedClipboardUiController::OnDeviceChosen(
   sharing_message.mutable_shared_clipboard_message()->set_text(
       base::UTF16ToUTF8(text_));
 
-  SendMessageToDevice(device, std::move(sharing_message));
+  SendMessageToDevice(device, /*response_timeout=*/absl::nullopt,
+                      std::move(sharing_message),
+                      /*callback=*/absl::nullopt);
 }
 
 void SharedClipboardUiController::OnAppChosen(const SharingApp& app) {
   // Do nothing - there is no apps
 }
 
-base::string16 SharedClipboardUiController::GetContentType() const {
+std::u16string SharedClipboardUiController::GetContentType() const {
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT);
 }
 
-base::string16 SharedClipboardUiController::GetErrorDialogText() const {
+std::u16string SharedClipboardUiController::GetErrorDialogText() const {
   if (send_result() == SharingSendMessageResult::kPayloadTooLarge) {
     return l10n_util::GetStringUTF16(
         IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TEXT_PAYLOAD_TOO_LARGE);
@@ -101,7 +103,7 @@ const gfx::VectorIcon& SharedClipboardUiController::GetVectorIcon() const {
   return kCopyIcon;
 }
 
-base::string16 SharedClipboardUiController::GetTextForTooltipAndAccessibleName()
+std::u16string SharedClipboardUiController::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SHARED_CLIPBOARD);
 }
@@ -111,4 +113,4 @@ SharingFeatureName SharedClipboardUiController::GetFeatureMetricsPrefix()
   return SharingFeatureName::kSharedClipboard;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SharedClipboardUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SharedClipboardUiController);

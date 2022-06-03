@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 11: Uncaught TypeError: host.createShadowRoot is not a function
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: host.createShadowRoot is not a function
-PASS Test that removing an :active v0 shadow host child on mousedown does not crash.
-Harness: the test ran to completion.
-

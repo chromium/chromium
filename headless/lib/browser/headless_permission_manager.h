@@ -18,16 +18,22 @@ namespace headless {
 class HeadlessPermissionManager : public content::PermissionControllerDelegate {
  public:
   explicit HeadlessPermissionManager(content::BrowserContext* browser_context);
+
+  HeadlessPermissionManager(const HeadlessPermissionManager&) = delete;
+  HeadlessPermissionManager& operator=(const HeadlessPermissionManager&) =
+      delete;
+
   ~HeadlessPermissionManager() override;
 
   // PermissionManager implementation.
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<content::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -46,18 +52,17 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
-  int SubscribePermissionStatusChange(
+  SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override;
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPermissionManager);
 };
 
 }  // namespace content

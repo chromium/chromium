@@ -24,9 +24,10 @@ if (enable_openxr) {
       "src/src/common/extra_algorithms.h",
       "src/src/common/filesystem_utils.cpp",
       "src/src/common/filesystem_utils.hpp",
-      "src/src/common/hex_and_handles.cpp",
       "src/src/common/hex_and_handles.h",
       "src/src/common/loader_interfaces.h",
+      "src/src/common/object_info.cpp",
+      "src/src/common/object_info.h",
       "src/src/common/platform_utils.hpp",
       "src/src/common/xr_dependencies.h",
       "src/src/common/xr_linear.h",
@@ -46,7 +47,7 @@ if (enable_openxr) {
       "src/src/loader/runtime_interface.cpp",
       "src/src/loader/runtime_interface.hpp",
       "src/src/loader/xr_generated_loader.cpp",
-      "src/src/loader/xr_generated_loader.h",
+      "src/src/loader/xr_generated_loader.hpp",
       "src/src/xr_generated_dispatch_table.c",
       "src/src/xr_generated_dispatch_table.h",
     ]
@@ -57,9 +58,7 @@ if (enable_openxr) {
       "src/src",
     ]
 
-    deps = [
-      "//third_party/jsoncpp",
-    ]
+    deps = [ "//third_party/jsoncpp" ]
 
     public_configs = [ ":config" ]
 
@@ -73,6 +72,7 @@ if (enable_openxr) {
       "-Wno-microsoft-cast",
       "-Wno-microsoft-include",
       "-Wno-unused-function",
+      "-Wno-extra-semi",
     ]
   }
 
@@ -81,7 +81,7 @@ if (enable_openxr) {
     # constants related to Windows and D3D.
     if (is_win) {
       defines = [
-        "XRLOADER_SILENCE_EXCEPTION_HANDLING_WARNING",
+        "XRLOADER_DISABLE_EXCEPTION_HANDLING",
         "XR_OS_WINDOWS",
         "XR_USE_PLATFORM_WIN32",
         "XR_USE_GRAPHICS_API_D3D11",

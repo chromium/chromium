@@ -1,7 +1,6 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """This script implements a few IntelPowerGadget related helper functions.
 
 This script only works on Windows/Mac with Intel CPU. Intel Power Gadget needs
@@ -19,12 +18,15 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
+from __future__ import print_function
+
 import datetime
 import json
 import logging
 import os
 import subprocess
 import sys
+
 
 def LocateIPG():
   if sys.platform == 'win32':
@@ -40,8 +42,11 @@ def LocateIPG():
   raise Exception("Only supported on Windows/Mac")
 
 
-def GenerateIPGLogFilename(log_prefix='PowerLog', log_dir=None, current_run=1,
-                           total_runs=1, timestamp=False):
+def GenerateIPGLogFilename(log_prefix='PowerLog',
+                           log_dir=None,
+                           current_run=1,
+                           total_runs=1,
+                           timestamp=False):
   # If all args take default value, it is the IPG's default log path.
   log_dir = log_dir or os.getcwd()
   log_dir = os.path.abspath(log_dir)
@@ -60,9 +65,15 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
   if not logfile:
     # It is not necessary but allows to print out the log path for debugging.
     logfile = GenerateIPGLogFilename()
-  command = command + (' -file %s' %logfile)
+  command = command + (' -file %s' % logfile)
   logging.debug("Running: " + command)
-  output = subprocess.check_output(command, shell=True)
+  try:
+    output = subprocess.check_output(command,
+                                     shell=True,
+                                     stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    logging.error('Running Intel Power Gadget failed. Output: %s', e.output)
+    raise
   logging.debug("Running: DONE")
   logging.debug(output)
 
@@ -111,46 +122,68 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
   return results
 
 
-def ProcessResultsFromMultipleIPGRuns(logfiles, skip_in_seconds=0,
-                                      outliers=0, output_json=None):
-  assert len(logfiles) > 1
-  output = {}
-  summary = {}
-  for logfile in logfiles:
-    results = AnalyzeIPGLogFile(logfile, skip_in_seconds)
-    results['log'] = logfile
-    (_, filename) = os.path.split(logfile)
-    (core, _) = os.path.splitext(filename)
-    prefix = 'PowerLog_'
-    if core.startswith(prefix):
-      core = core[len(prefix):]
-    output[core] = results
+def ProcessResultsFromMultipleIPGRuns(logfiles,
+                                      skip_in_seconds=0,
+                                      outliers=0,
+                                      output_json=None):
+  def _ScrapeDataFromIPGLogFiles():
+    """Scrapes data from IPG log files.
 
-    for key in results:
-      if key == 'samples' or key == 'log':
-        continue
-      if not key in summary:
-        summary[key] = [results[key]]
-      else:
-        summary[key].append(results[key])
+    Returns:
+      A tuple (per_core_results, metrics). |output| is a dictionary containing
+      per-core results extracted from the IPG log files. |metrics| is a
+      dictionary mapping metrics found in the logs to all found data points.
+    """
+    per_core_results = {}
+    metrics = {}
+    for logfile in logfiles:
+      results = AnalyzeIPGLogFile(logfile, skip_in_seconds)
+      results['log'] = logfile
+      (_, filename) = os.path.split(logfile)
+      (core, _) = os.path.splitext(filename)
+      prefix = 'PowerLog_'
+      if core.startswith(prefix):
+        core = core[len(prefix):]
+      per_core_results[core] = results
 
-  for key in summary:
-    data = summary[key]
-    assert data and len(data) > 1
-    n = len(data)
-    if outliers > 0:
-      assert outliers * 2 < n
-      data.sort()
-      data = data[outliers:(n - outliers)]
+      for key in results:
+        if key == 'samples' or key == 'log':
+          continue
+        metrics.setdefault(key, []).append(results[key])
+    return per_core_results, metrics
+
+  def _CalculateSummaryStatistics(metrics):
+    """Calculates summary statistics for the given metrics.
+
+    Args:
+      metrics: A dictionary mapping metrics to lists of data points.
+
+    Returns:
+      A dictionary mapping the same metrics in |metrics| to dicts containing
+      the 'mean' and 'stdev' for the metric.
+    """
+    summary = {}
+    for key, data in metrics.items():
+      assert data and len(data) > 1
       n = len(data)
-    logging.debug('%s: valid samples = %d', key, n)
-    mean = sum(data) / float(n)
-    ss = sum((x - mean) ** 2 for x in data)
-    stdev = (ss / float(n)) ** 0.5
-    summary[key] = {
-      'mean': mean,
-      'stdev': stdev,
-    }
+      if outliers > 0:
+        assert outliers * 2 < n
+        data.sort()
+        data = data[outliers:(n - outliers)]
+        n = len(data)
+      logging.debug('%s: valid samples = %d', key, n)
+      mean = sum(data) / float(n)
+      ss = sum((x - mean)**2 for x in data)
+      stdev = (ss / float(n))**0.5
+      summary[key] = {
+          'mean': mean,
+          'stdev': stdev,
+      }
+    return summary
+
+  assert len(logfiles) > 1
+  output, metrics = _ScrapeDataFromIPGLogFiles()
+  summary = _CalculateSummaryStatistics(metrics)
   output['summary'] = summary
 
   if output_json:

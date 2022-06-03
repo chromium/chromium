@@ -40,13 +40,13 @@ class ContextGroupTest : public GpuServiceTest {
  public:
   static const bool kBindGeneratesResource = false;
 
-  ContextGroupTest() = default;
+  ContextGroupTest() : discardable_manager_(gpu_preferences_) {}
 
  protected:
   void SetUp() override {
     GpuServiceTest::SetUp();
-    decoder_.reset(
-        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
+    decoder_ = std::make_unique<MockGLES2Decoder>(
+        &client_, &command_buffer_service_, &outputter_);
     scoped_refptr<FeatureInfo> feature_info = new FeatureInfo;
     group_ = scoped_refptr<ContextGroup>(new ContextGroup(
         gpu_preferences_, false, &mailbox_manager_,
@@ -171,5 +171,3 @@ TEST_F(ContextGroupTest, MultipleContexts) {
 
 }  // namespace gles2
 }  // namespace gpu
-
-

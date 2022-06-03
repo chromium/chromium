@@ -11,7 +11,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -44,11 +43,6 @@ using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
-
-// Whether non-modal dialogs are being used.
-bool AreDialogsNonModal() {
-  return base::FeatureList::IsEnabled(dialogs::kNonModalDialogs);
-}
 
 // Body script for test page that shows an alert with kAlertMessage and returns
 // kAlertResult.
@@ -187,24 +181,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadPageWithLinkToOnLoadPage(
   return GetHttpResponseWithContent(GetLinkPageContents(on_load_page_url));
 }
 
-// Assert that an alert with |alert_text| has been shown or hidden.
-void WaitForAlertWithText(NSString* alert_text, bool visible) {
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    id<GREYMatcher> text_matcher =
-        chrome_test_util::StaticTextWithAccessibilityLabel(alert_text);
-    [[EarlGrey selectElementWithMatcher:text_matcher]
-        assertWithMatcher:visible ? grey_notNil() : grey_nil()
-                    error:&error];
-    return !error;
-  };
-  NSString* error_text_format = visible
-                                    ? @"Dialog with text was not shown: %@"
-                                    : @"Dialog with text was not hidden: %@";
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             error_text_format, alert_text);
-}
-
 // Waits for a JavaScript dialog from |url| with |message| to be shown or
 // hidden.
 void WaitForJavaScriptDialog(const GURL& url,
@@ -228,8 +204,8 @@ void WaitForJavaScriptDialog(const GURL& url,
              error_text);
 
   // Check the title.  Non-modal main-frame dialogs do not have a title label.
-  if (!AreDialogsNonModal() || !is_main_frame) {
-    base::string16 url_string = url_formatter::FormatUrlForSecurityDisplay(
+  if (!is_main_frame) {
+    std::u16string url_string = url_formatter::FormatUrlForSecurityDisplay(
         url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
     NSString* expected_title =
         l10n_util::GetNSStringF(IDS_JAVASCRIPT_MESSAGEBOX_TITLE, url_string);
@@ -469,18 +445,6 @@ void TapSuppressDialogsButton() {
   WaitForJavaScriptDialog(kURL, kAlertLoopMessage, /*visible=*/false,
                           /*is_main_frame=*/true);
 
-  // Modal dialogs have an additional action sheet for dialog suppression.
-  if (!AreDialogsNonModal()) {
-    // Wait for confirmation action sheet to be shown.
-    NSString* alertLabel =
-        l10n_util::GetNSString(IDS_JAVASCRIPT_MESSAGEBOX_SUPPRESS_OPTION);
-    WaitForAlertWithText(alertLabel, /*visible=*/true);
-
-    // Tap the suppress dialogs confirmation button.
-    TapSuppressDialogsButton();
-    WaitForAlertWithText(alertLabel, /*visible=*/false);
-  }
-
   // Wait for the html  to be reset to the loop finished text.
   [ChromeEarlGrey waitForWebStateContainingText:kAlertLoopFinishedText];
 }
@@ -488,7 +452,13 @@ void TapSuppressDialogsButton() {
 // Tests to ensure crbug.com/658260 does not regress.
 // Tests that if an alert should be called when settings are displays, the alert
 // waits for the dismiss of the settings.
-- (void)testShowJavaScriptBehindSettings {
+- (void)MAYBE_testShowJavaScriptBehindSettings {
+// TODO(crbug.com/1209340): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   // Load the alert test page.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);
   [ChromeEarlGrey loadURL:kURL];
@@ -509,12 +479,6 @@ void TapSuppressDialogsButton() {
   // Tap the link to trigger the dialog.
   [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
 
-  // Make sure the alert is not presented modally over settings.
-  if (!AreDialogsNonModal()) {
-    WaitForJavaScriptDialog(kURL, kAlertMessage, /*visible=*/false,
-                            /*is_main_frame=*/true);
-  }
-
   // Close the settings.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -532,11 +496,9 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that an alert is presented after displaying the share menu.
-- (void)testShowJavaScriptAfterShareMenu {
-  // TODO(crbug.com/747622): re-enable this test once earl grey can interact
-  // with the share menu.
-  EARL_GREY_TEST_DISABLED(@"Disabled until EG can use share menu.");
-
+// TODO(crbug.com/747622): re-enable this test once earl grey can interact
+// with the share menu.
+- (void)DISABLED_testShowJavaScriptAfterShareMenu {
   // Load the blank test page.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);
   [ChromeEarlGrey loadURL:kURL];
@@ -562,66 +524,6 @@ void TapSuppressDialogsButton() {
 
   // Wait for the expected text to be added to the test page.
   [ChromeEarlGrey waitForWebStateContainingText:kAlertResult];
-}
-
-// Tests that an alert is presented after a new tab animation is finished.
-- (void)testShowJavaScriptAfterNewTabAnimation {
-  // TODO(crbug.com/1007986) Test flaky on iOS13.
-  if (@available(iOS 13, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.");
-  }
-
-  // This tests is for DialogPresenter behavior, and does not apply to
-  // OverlayPresenter, which is used for the non-modal dialog solution.
-  if (AreDialogsNonModal()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled for non-modal dialogs.");
-  }
-
-  // Load the test page with a link to kOnLoadAlertURL and long tap on the link.
-  const GURL kURL = self.testServer->GetURL(kLinkPageURLPath);
-  [ChromeEarlGrey loadURL:kURL];
-  [ChromeEarlGrey waitForWebStateContainingText:kLinkPageLinkText];
-
-  // TODO(crbug.com/712358): Use method LongPressElementAndTapOnButton once
-  // it is moved out of context_menu_egtests.mm and into a shared location.
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector selectorWithElementID:kLinkID],
-                        true /* menu should appear */)];
-
-  // Tap on the "Open In New Tab" button.
-  id<GREYMatcher> newTabMatcher = ButtonWithAccessibilityLabel(
-      l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB));
-  [[EarlGrey selectElementWithMatcher:newTabMatcher] performAction:grey_tap()];
-
-  // This test case requires that a dialog is presented in the onload event so
-  // that the DialogPresenter attempts to display during a new tab animation.
-  // Because presenting a dialog halts the JavaScript execution on the page,
-  // this prevents the page loaded event from being received until the alert is
-  // closed.  On iPad, this means that there is a loading indicator that
-  // continues to animate until the dialog is closed.  Disabling EarlGrey
-  // synchronization code for iPad allows the test to detect and dismiss the
-  // dialog while this animation is occurring.
-  {
-    std::unique_ptr<ScopedSynchronizationDisabler> disabler =
-        std::make_unique<ScopedSynchronizationDisabler>();
-    if (![ChromeEarlGrey isIPadIdiom]) {
-      disabler.reset();
-    }
-
-    // Wait for the alert to be shown.
-    GURL kOnLoadURL = self.testServer->GetURL(kOnLoadURLPath);
-    WaitForJavaScriptDialog(kURL, kOnLoadAlertMessage, /*visible=*/true,
-                            /*is_main_frame=*/true);
-
-    // Verify that the omnibox shows the correct URL when the dialog is visible.
-    std::string title =
-        base::SysNSStringToUTF8([ChromeEarlGrey displayTitleForURL:kOnLoadURL]);
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(title)]
-        assertWithMatcher:grey_notNil()];
-
-    [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
-  }
 }
 
 @end

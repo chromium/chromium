@@ -30,7 +30,7 @@ class FakePictureLayerImpl : public PictureLayerImpl {
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer_impl) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   gfx::Size CalculateTileSize(const gfx::Size& content_bounds) override;
 
@@ -68,8 +68,8 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   float raster_page_scale() const { return raster_page_scale_; }
   void set_raster_page_scale(float scale) { raster_page_scale_ = scale; }
 
-  float ideal_contents_scale() const { return ideal_contents_scale_; }
-  float raster_contents_scale() const { return raster_contents_scale_; }
+  using PictureLayerImpl::ideal_contents_scale_key;
+  using PictureLayerImpl::raster_contents_scale_key;
 
   PictureLayerTiling* HighResTiling() const;
   PictureLayerTiling* LowResTiling() const;

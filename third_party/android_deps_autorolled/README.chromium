@@ -1,0 +1,31 @@
+Name: Android Deps Autorolled Repository
+Short Name: android_deps_autorolled
+Version: 1
+License: Refer to additional_readme_paths.json
+License Android Compatible: yes
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A gradle-specified repository for autorolled Android and java dependencies.
+
+Local Modifications:
+Everything directly here is chromium code, and third_party code lives under
+`libs`, where each library has its own README.chromium and LICENSE:
+
+```
+third_party/android_deps_autorolled
+├── .gitignore (hand written)
+├── additional_license_paths.json (generated)
+├── BUILD.gn (partly generated)
+├── libs (generated)
+│   ├── dependency_group_name_and_version
+│   │   ├── dependency_name_and_version.jar (third_party)
+│   │   ├── LICENSE (third_party)
+│   │   └── README.chromium (generated)
+│   └── other_dependency_group_name_and_version
+│       ├── other_dependency_name_and_version.jar (third_party)
+│       ├── LICENSE (third_party)
+│       └── README.chromium (generated)
+└── README.chromium (hand written)
+```

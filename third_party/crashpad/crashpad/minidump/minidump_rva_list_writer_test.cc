@@ -16,8 +16,8 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "minidump/test/minidump_rva_list_test_util.h"
@@ -31,15 +31,17 @@ namespace {
 class TestMinidumpRVAListWriter final : public internal::MinidumpRVAListWriter {
  public:
   TestMinidumpRVAListWriter() : MinidumpRVAListWriter() {}
+
+  TestMinidumpRVAListWriter(const TestMinidumpRVAListWriter&) = delete;
+  TestMinidumpRVAListWriter& operator=(const TestMinidumpRVAListWriter&) =
+      delete;
+
   ~TestMinidumpRVAListWriter() override {}
 
   void AddChild(uint32_t value) {
     auto child = std::make_unique<TestUInt32MinidumpWritable>(value);
     MinidumpRVAListWriter::AddChild(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMinidumpRVAListWriter);
 };
 
 TEST(MinidumpRVAListWriter, Empty) {

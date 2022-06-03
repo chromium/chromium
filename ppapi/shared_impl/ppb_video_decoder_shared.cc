@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/ppb_video_decoder_shared.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/ppb_graphics_3d_shared.h"

@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "content/public/test/browser_test.h"
 
 namespace payments {
 namespace {
 
 class PaymentRequestShippingAddressInstanceTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestShippingAddressInstanceTest(
+      const PaymentRequestShippingAddressInstanceTest&) = delete;
+  PaymentRequestShippingAddressInstanceTest& operator=(
+      const PaymentRequestShippingAddressInstanceTest&) = delete;
+
  protected:
   PaymentRequestShippingAddressInstanceTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestShippingAddressInstanceTest);
 };
 
 // If the page creates multiple PaymentRequest objects, it should not crash.
@@ -36,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressInstanceTest,
 
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   WaitForObservedEvent();
 

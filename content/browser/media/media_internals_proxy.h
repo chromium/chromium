@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_PROXY_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_PROXY_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
-#include "base/strings/string16.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -24,6 +24,9 @@ class MediaInternalsProxy
                                         BrowserThread::DeleteOnUIThread> {
  public:
   MediaInternalsProxy();
+
+  MediaInternalsProxy(const MediaInternalsProxy&) = delete;
+  MediaInternalsProxy& operator=(const MediaInternalsProxy&) = delete;
 
   // Register a Handler and start receiving callbacks from MediaInternals.
   void Attach(MediaInternalsMessageHandler* handler);
@@ -42,12 +45,10 @@ class MediaInternalsProxy
   void GetEverythingOnIOThread();
 
   // Callback for MediaInternals to update. Must be called on UI thread.
-  void UpdateUIOnUIThread(const base::string16& update);
+  static void UpdateUIOnUIThread(MediaInternalsMessageHandler* handler,
+                                 const std::u16string& update);
 
-  MediaInternalsMessageHandler* handler_;
   MediaInternals::UpdateCallback update_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsProxy);
 };
 
 }  // namespace content

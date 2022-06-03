@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/loader/navigation_url_loader_factory.h"
 
 namespace content {
@@ -20,6 +19,12 @@ namespace content {
 class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
  public:
   TestNavigationURLLoaderFactory();
+
+  TestNavigationURLLoaderFactory(const TestNavigationURLLoaderFactory&) =
+      delete;
+  TestNavigationURLLoaderFactory& operator=(
+      const TestNavigationURLLoaderFactory&) = delete;
+
   ~TestNavigationURLLoaderFactory() override;
 
   // TestNavigationURLLoaderFactory implementation.
@@ -27,12 +32,9 @@ class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
       StoragePartition* storage_partition,
       std::unique_ptr<NavigationRequestInfo> request_info,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      ServiceWorkerNavigationHandle* service_worker_handle,
+      ServiceWorkerMainResourceHandle* service_worker_handle,
       NavigationURLLoaderDelegate* delegate,
-      bool is_served_from_back_forward_cache) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderFactory);
+      NavigationURLLoader::LoaderType loader_type) override;
 };
 
 }  // namespace content

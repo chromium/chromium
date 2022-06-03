@@ -10,12 +10,15 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
+#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/test_renderer_host.h"
@@ -25,11 +28,16 @@
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-class BrowserWindowDefaultTouchBarUnitTest : public CocoaProfileTest {
+class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    CocoaProfileTest::SetUp();
-    ASSERT_TRUE(browser());
+    BrowserWithTestWindowTest::SetUp();
+
+    // The touch bar can show a search engine prompt, which requires this
+    // service.
+    template_service_util_ =
+        std::make_unique<TemplateURLServiceFactoryTestUtil>(profile());
+    template_service_util_->VerifyLoad();
 
     command_updater_ = browser()->command_controller();
 
@@ -52,11 +60,13 @@ class BrowserWindowDefaultTouchBarUnitTest : public CocoaProfileTest {
       touch_bar_.get().browser = nullptr;
       touch_bar_.reset();
     }
-    CocoaProfileTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
+  CocoaTestHelper cocoa_test_helper_;
   CommandUpdater* command_updater_;  // Weak, owned by Browser.
-  content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_service_util_;
 
   API_AVAILABLE(macos(10.12.2))
   base::scoped_nsobject<BrowserWindowDefaultTouchBar> touch_bar_;

@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 class Rect;
@@ -22,43 +22,51 @@ class Rect;
 namespace views {
 class FlexLayout;
 class MenuRunner;
+class ImageButton;
 }
 
-class CustomTabBarTitleOriginView;
 class BrowserView;
+class CustomTabBarTitleOriginView;
+class WebAppMenuButton;
 
-// A CustomTabBarView displays a read only title and origin for the current page
-// and a security status icon. This is visible if the hosted app window is
-// displaying a page over HTTP or if the current page is outside of the app
-// scope.
+// For Desktop PWAs, a CustomTabBarView displays a read only title and origin
+// for the current page and a security status icon. This is visible if the
+// hosted app window is displaying a page over HTTP or if the current page is
+// outside of the app scope. For Android apps on ChromeOS, CustomTabBarView is
+// additionally used to show a three-dot menu icon.
 class CustomTabBarView : public views::AccessiblePaneView,
                          public TabStripModelObserver,
                          public ui::SimpleMenuModel::Delegate,
                          public views::ContextMenuController,
-                         public LocationIconView::Delegate,
-                         public views::ButtonListener {
+                         public IconLabelBubbleView::Delegate,
+                         public LocationIconView::Delegate {
  public:
-  static const char kViewClassName[];
-
+  METADATA_HEADER(CustomTabBarView);
   CustomTabBarView(BrowserView* browser_view,
                    LocationBarView::Delegate* delegate);
+  CustomTabBarView(const CustomTabBarView&) = delete;
+  CustomTabBarView& operator=(const CustomTabBarView&) = delete;
   ~CustomTabBarView() override;
 
   LocationIconView* location_icon_view() { return location_icon_view_; }
+  AppMenuButton* custom_tab_menu_button() { return web_app_menu_button_; }
 
-  // views::View:
+  // views::AccessiblePaneView:
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  const char* GetClassName() const override;
+  void SetVisible(bool visible) override;
+  gfx::Size CalculatePreferredSize() const override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+  void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // TabstripModelObserver:
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  void ChildPreferredSizeChanged(views::View* child) override;
+  // IconLabelBubbleView::Delegate:
+  SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
+  SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // LocationIconView::Delegate:
   content::WebContents* GetWebContents() override;
@@ -69,17 +77,13 @@ class CustomTabBarView : public views::AccessiblePaneView,
       security_state::SecurityLevel security_level) const override;
   bool ShowPageInfoDialog() override;
   const LocationBarModel* GetLocationBarModel() const override;
-  gfx::ImageSkia GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
+  ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
-  SkColor GetLocationIconInkDropColor() const override;
-
-  // ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Methods for testing.
-  base::string16 title_for_testing() const { return last_title_; }
-  base::string16 location_for_testing() const { return last_location_; }
-  views::Button* close_button_for_testing() const { return close_button_; }
+  std::u16string title_for_testing() const { return last_title_; }
+  std::u16string location_for_testing() const { return last_location_; }
+  views::ImageButton* close_button_for_testing() const { return close_button_; }
   ui::SimpleMenuModel* context_menu_for_testing() const {
     return context_menu_model_.get();
   }
@@ -87,6 +91,9 @@ class CustomTabBarView : public views::AccessiblePaneView,
   bool IsShowingOriginForTesting() const;
 
  private:
+  // Calculate the view's frame color from the current theme provider.
+  SkColor GetDefaultFrameColor() const;
+
   // Takes the web contents for the custom tab bar back to the app scope.
   void GoBackToApp();
 
@@ -103,13 +110,26 @@ class CustomTabBarView : public views::AccessiblePaneView,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
+  // Get the app controller associated with the browser, if any.
+  web_app::AppBrowserController* app_controller() const {
+    return browser_->app_controller();
+  }
+
+  // Convenience method to return the theme color from |app_controller_|.
+  absl::optional<SkColor> GetThemeColor() const;
+
+  // Populates child elements with page details from the current WebContents.
+  void UpdateContents();
+
+  bool GetShowTitle() const;
+
   SkColor title_bar_color_;
   SkColor background_color_;
 
-  base::string16 last_title_;
-  base::string16 last_location_;
+  std::u16string last_title_;
+  std::u16string last_location_;
 
-  views::Button* close_button_ = nullptr;
+  views::ImageButton* close_button_ = nullptr;
   LocationBarView::Delegate* delegate_ = nullptr;
   LocationIconView* location_icon_view_ = nullptr;
   CustomTabBarTitleOriginView* title_origin_view_ = nullptr;
@@ -117,11 +137,13 @@ class CustomTabBarView : public views::AccessiblePaneView,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   Browser* browser_ = nullptr;
 
+  // This remains a nullptr for Desktop PWAs and is non-null for Android apps
+  // on ChromeOS.
+  WebAppMenuButton* web_app_menu_button_ = nullptr;
+
   views::FlexLayout* layout_manager_;
 
   base::WeakPtrFactory<CustomTabBarView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTabBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_

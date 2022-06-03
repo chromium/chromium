@@ -4,14 +4,18 @@
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_key_system_track_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_key_system_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/modules/media_capabilities/audio_configuration.h"
 #include "third_party/blink/renderer/modules/media_capabilities/fuzzer_media_configuration.pb.h"
-#include "third_party/blink/renderer/modules/media_capabilities/key_system_track_configuration.h"
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities.h"
-#include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_key_system_configuration.h"
-#include "third_party/blink/renderer/modules/media_capabilities/media_decoding_configuration.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -140,8 +144,10 @@ DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaDecodingConfigProto& proto) {
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  auto* media_capabilities = MakeGarbageCollected<MediaCapabilities>();
-  media_capabilities->decodingInfo(script_state, config);
+  auto* media_capabilities = MediaCapabilities::mediaCapabilities(
+      *page_holder->GetFrame().DomWindow()->navigator());
+  media_capabilities->decodingInfo(script_state, config,
+                                   IGNORE_EXCEPTION_FOR_TESTING);
 
   // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
   //

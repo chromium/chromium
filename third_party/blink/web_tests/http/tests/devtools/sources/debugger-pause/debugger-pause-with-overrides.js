@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger will stop on "debugger" statement w/ overriden string, etc.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -21,8 +21,8 @@
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step2);
   }
 
-  function step2(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function step2(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

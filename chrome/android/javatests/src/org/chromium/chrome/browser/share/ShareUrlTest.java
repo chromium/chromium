@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.share;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
@@ -49,6 +51,7 @@ public class ShareUrlTest {
             Assert.assertTrue(intent.hasExtra(Intent.EXTRA_TEXT));
             String url = intent.getStringExtra(Intent.EXTRA_TEXT);
             Assert.assertEquals(originalUrl, url);
+            window.destroy();
         });
     }
 
@@ -63,10 +66,10 @@ public class ShareUrlTest {
     @SmallTest
     public void testDistilledUrl() {
         final String DomDistillerScheme = "chrome-distiller";
-        String distilledHttpUrl =
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(DomDistillerScheme, HTTP_URL);
-        String distilledHttpsUrl =
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(DomDistillerScheme, HTTPS_URL);
+        String distilledHttpUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                DomDistillerScheme, HTTP_URL, "Title");
+        String distilledHttpsUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                DomDistillerScheme, HTTPS_URL, "Title");
 
         assertCorrectUrl(HTTP_URL, distilledHttpUrl);
         assertCorrectUrl(HTTPS_URL, distilledHttpsUrl);

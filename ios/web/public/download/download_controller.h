@@ -70,8 +70,7 @@ class WebState;
 //       info.originalHTTPMethod,
 //       info.contentDisposition,
 //       info.totalBytes,
-//       info.MIMEType,
-//       info.pageTransition);
+//       info.MIMEType);
 //   );
 // }
 // - (void)applicationWillTerminate:(UIApplication *)application {
@@ -104,8 +103,7 @@ class DownloadController {
                                   NSString* http_method,
                                   const std::string& content_disposition,
                                   int64_t total_bytes,
-                                  const std::string& mime_type,
-                                  ui::PageTransition page_transition) = 0;
+                                  const std::string& mime_type) = 0;
 
   // Sets DownloadControllerDelegate. Clients must set the delegate to null in
   // DownloadControllerDelegate::OnDownloadControllerDestroyed().
@@ -115,10 +113,11 @@ class DownloadController {
   virtual DownloadControllerDelegate* GetDelegate() const = 0;
 
   DownloadController() = default;
-  virtual ~DownloadController() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
+
+  virtual ~DownloadController() = default;
 };
 
 }  // namespace web

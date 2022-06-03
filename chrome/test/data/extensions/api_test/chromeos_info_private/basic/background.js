@@ -79,66 +79,70 @@ function timezoneSetTest() {
       ));
 }
 
-function prefsTest() {
-  chrome.chromeosInfoPrivate.set('a11yLargeCursorEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11yStickyKeysEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11ySpokenFeedbackEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11yHighContrastEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11yScreenMagnifierEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11yAutoClickEnabled', true);
-  chrome.chromeosInfoPrivate.set('a11yVirtualKeyboardEnabled', true);
-  chrome.chromeosInfoPrivate.set('sendFunctionKeys', true);
-  chrome.chromeosInfoPrivate.set('cameraMediaConsolidated', true);
-  chrome.chromeosInfoPrivate.get(
-      ['a11yLargeCursorEnabled',
-       'a11yStickyKeysEnabled',
-       'a11ySpokenFeedbackEnabled',
-       'a11yHighContrastEnabled',
-       'a11yScreenMagnifierEnabled',
-       'a11yAutoClickEnabled',
-       'a11yVirtualKeyboardEnabled',
-       'sendFunctionKeys',
-       'cameraMediaConsolidated'],
-      pass(
-        function(values) {
-          chrome.test.assertEq(values['a11yLargeCursorEnabled'], true);
-          chrome.test.assertEq(values['a11yStickyKeysEnabled'], true);
-          chrome.test.assertEq(values['a11ySpokenFeedbackEnabled'], true);
-          chrome.test.assertEq(values['a11yHighContrastEnabled'], true);
-          chrome.test.assertEq(values['a11yScreenMagnifierEnabled'], true);
-          chrome.test.assertEq(values['a11yAutoClickEnabled'], true);
-          chrome.test.assertEq(values['a11yVirtualKeyboardEnabled'], true);
-          chrome.test.assertEq(values['sendFunctionKeys'], true);
-          chrome.test.assertEq(values['cameraMediaConsolidated'], true);
-        }
-      ));
+function prefsTest(prefs) {
+  for (const pref of prefs) {
+    chrome.chromeosInfoPrivate.set(pref, true);
+  }
+  chrome.chromeosInfoPrivate.get(prefs, pass(function(values) {
+                                   for (const pref of prefs) {
+                                     chrome.test.assertEq(values[pref], true);
+                                   }
+                                 }));
 }
 
-// Run generated chrome.chromeosInfoPrivate.get() tests.
-var tests = generateTestsForKeys(['hwid',
-                                  'customizationId',
-                                  'homeProvider',
-                                  'initialLocale',
-                                  'board',
-                                  'isOwner',
-                                  'sessionType',
-                                  'playStoreStatus',
-                                  'managedDeviceStatus',
-                                  'clientId',
-                                  'a11yLargeCursorEnabled',
-                                  'a11yStickyKeysEnabled',
-                                  'a11ySpokenFeedbackEnabled',
-                                  'a11yHighContrastEnabled',
-                                  'a11yScreenMagnifierEnabled',
-                                  'a11yAutoClickEnabled',
-                                  'a11yVirtualKeyboardEnabled',
-                                  'sendFunctionKeys',
-                                  'cameraMediaConsolidated',
-                                  'timezone',
-                                  'supportedTimezones'])
+chrome.test.getConfig(function(config) {
+  var tests = [];
+  switch (config.customArg) {
+    case 'dockedMagnifier':
+      tests.push(() => prefsTest(['a11yDockedMagnifierEnabled']));
+      break;
+    case 'screenMagnifier':
+      tests.push(() => prefsTest(['a11yScreenMagnifierEnabled']));
+      break;
+    default:
+      // Generated chrome.chromeosInfoPrivate.get() tests.
+      tests = generateTestsForKeys([
+        'hwid',
+        'customizationId',
+        'homeProvider',
+        'initialLocale',
+        'board',
+        'isOwner',
+        'sessionType',
+        'playStoreStatus',
+        'managedDeviceStatus',
+        'clientId',
+        'a11yLargeCursorEnabled',
+        'a11yStickyKeysEnabled',
+        'a11ySpokenFeedbackEnabled',
+        'a11yHighContrastEnabled',
+        'a11yScreenMagnifierEnabled',
+        'a11yAutoClickEnabled',
+        'a11yVirtualKeyboardEnabled',
+        'a11yCaretHighlightEnabled',
+        'a11yCursorColorEnabled',
+        'a11yFocusHighlightEnabled',
+        'a11ySelectToSpeakEnabled',
+        'a11yCursorColorEnabled',
+        'a11ySwitchAccessEnabled',
+        'a11yDockedMagnifierEnabled',
+        'sendFunctionKeys',
+        'timezone',
+        'supportedTimezones'
+      ]);
 
-// Add chrome.chromeosInfoPrivate.set() test.
-tests.push(timezoneSetTest);
-tests.push(prefsTest);
-
-chrome.test.runTests(tests);
+      // Add chrome.chromeosInfoPrivate.set() test.
+      tests.push(timezoneSetTest);
+      tests.push(() => prefsTest([
+                   'a11yLargeCursorEnabled', 'a11yStickyKeysEnabled',
+                   'a11ySpokenFeedbackEnabled', 'a11yHighContrastEnabled',
+                   'a11yAutoClickEnabled', 'a11yVirtualKeyboardEnabled',
+                   'a11yCaretHighlightEnabled', 'a11yCursorHighlightEnabled',
+                   'a11yFocusHighlightEnabled', 'a11ySelectToSpeakEnabled',
+                   'a11ySwitchAccessEnabled', 'a11yCursorColorEnabled',
+                   'sendFunctionKeys'
+                 ]));
+      break;
+  }
+  chrome.test.runTests(tests);
+});

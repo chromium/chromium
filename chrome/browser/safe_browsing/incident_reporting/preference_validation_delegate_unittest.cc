@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/mock_incident_receiver.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,8 +49,8 @@ class PreferenceValidationDelegateTest : public testing::Test {
         new NiceMock<safe_browsing::MockIncidentReceiver>());
     ON_CALL(*receiver, DoAddIncidentForProfile(IsNull(), _))
         .WillByDefault(WithArg<1>(TakeIncidentToVector(&incidents_)));
-    instance_.reset(new safe_browsing::PreferenceValidationDelegate(
-        nullptr, std::move(receiver)));
+    instance_ = std::make_unique<safe_browsing::PreferenceValidationDelegate>(
+        nullptr, std::move(receiver));
   }
 
   static void ExpectValueStatesEquate(
@@ -101,7 +101,7 @@ class PreferenceValidationDelegateTest : public testing::Test {
 // Tests that a NULL value results in an incident with no value.
 TEST_F(PreferenceValidationDelegateTest, NullValue) {
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, base::nullopt, ValueState::CLEARED, ValueState::UNSUPPORTED,
+      kPrefPath, absl::nullopt, ValueState::CLEARED, ValueState::UNSUPPORTED,
       false /* is_personal */);
   std::unique_ptr<safe_browsing::ClientIncidentReport_IncidentData> incident(
       incidents_.back()->TakePayload());
@@ -208,7 +208,7 @@ class PreferenceValidationDelegateNoIncident
 
 TEST_P(PreferenceValidationDelegateNoIncident, Atomic) {
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, base::make_optional<base::Value>(), value_state_,
+      kPrefPath, absl::make_optional<base::Value>(), value_state_,
       external_validation_value_state_, false /* is_personal */);
   EXPECT_EQ(0U, incidents_.size());
 }
@@ -251,7 +251,7 @@ class PreferenceValidationDelegateWithIncident
 
 TEST_P(PreferenceValidationDelegateWithIncident, Atomic) {
   instance_->OnAtomicPreferenceValidation(
-      kPrefPath, base::make_optional<base::Value>(), value_state_,
+      kPrefPath, absl::make_optional<base::Value>(), value_state_,
       external_validation_value_state_, is_personal_);
   ASSERT_EQ(1U, incidents_.size());
   std::unique_ptr<safe_browsing::ClientIncidentReport_IncidentData> incident(

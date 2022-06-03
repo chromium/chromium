@@ -5,26 +5,26 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_ACTIONS_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_ACTIONS_VIEW_H_
 
-#include <vector>
+#include <list>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/search/search_result.h"
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ash/ash_export.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class SearchResultActionsViewDelegate;
 class SearchResultView;
-class SearchResultImageButton;
 
 // SearchResultActionsView displays a SearchResult::Actions in a button
 // strip. Each action is presented as a button and horizontally laid out.
-class APP_LIST_EXPORT SearchResultActionsView : public views::View,
-                                                public views::ButtonListener {
+class ASH_EXPORT SearchResultActionsView : public views::View {
  public:
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
+
+  SearchResultActionsView(const SearchResultActionsView&) = delete;
+  SearchResultActionsView& operator=(const SearchResultActionsView&) = delete;
+
   ~SearchResultActionsView() override;
 
   void SetActions(const SearchResult::Actions& actions);
@@ -35,9 +35,6 @@ class APP_LIST_EXPORT SearchResultActionsView : public views::View,
 
   // Updates the button UI upon the SearchResultView's UI state change.
   void UpdateButtonsOnStateChanged();
-
-  // Called when one of the action buttons changes state.
-  void ActionButtonStateChanged();
 
   // views::View:
   const char* GetClassName() const override;
@@ -60,8 +57,8 @@ class APP_LIST_EXPORT SearchResultActionsView : public views::View,
   // getting cleared).
   bool SelectNextAction(bool reverse_tab_order);
 
-  // Sends kSelection a11y notification for the selected action button.
-  void NotifyA11yResultSelected();
+  // Returns the selected action button.
+  views::View* GetSelectedView();
 
   // Clears selected action state.
   void ClearSelectedAction();
@@ -81,16 +78,11 @@ class APP_LIST_EXPORT SearchResultActionsView : public views::View,
   // views::View overrides:
   void ChildVisibilityChanged(views::View* child) override;
 
-  // views::ButtonListener overrides:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // If an action is currently selected, the selected action index.
-  base::Optional<int> selected_action_;
+  absl::optional<int> selected_action_;
 
-  SearchResultActionsViewDelegate* delegate_;  // Not owned.
-  std::vector<SearchResultImageButton*> buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultActionsView);
+  SearchResultActionsViewDelegate* const delegate_;  // Not owned.
+  std::list<base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace ash

@@ -4,7 +4,6 @@
 
 #include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
 
-#include "base/strings/stringprintf.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/net/net_util.h"
 

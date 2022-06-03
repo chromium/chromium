@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_services_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -47,12 +49,12 @@
 @interface ProfileMenuTarget : NSObject {
   AppShimController* _controller;
 }
-- (id)initWithController:(AppShimController*)controller;
+- (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
 @end
 
 @implementation ProfileMenuTarget
-- (id)initWithController:(AppShimController*)controller {
+- (instancetype)initWithController:(AppShimController*)controller {
   if (self = [super init])
     _controller = controller;
   return self;
@@ -72,16 +74,46 @@
 }
 @end
 
+// The ApplicationDockMenuTarget bridges between Objective C (as the target for
+// the profile menu NSMenuItems) and C++ (the mojo methods called by
+// AppShimController).
+@interface ApplicationDockMenuTarget : NSObject {
+  AppShimController* _controller;
+}
+- (instancetype)initWithController:(AppShimController*)controller;
+- (void)clearController;
+@end
+
+@implementation ApplicationDockMenuTarget
+- (instancetype)initWithController:(AppShimController*)controller {
+  if (self = [super init])
+    _controller = controller;
+  return self;
+}
+
+- (void)clearController {
+  _controller = nullptr;
+}
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  return YES;
+}
+
+- (void)commandFromDock:(id)sender {
+  if (_controller)
+    _controller->CommandFromDock([sender tag]);
+}
+
+@end
+
 namespace {
 // The maximum amount of time to wait for Chrome's AppShimListener to be
 // ready.
-constexpr base::TimeDelta kPollTimeoutSeconds =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kPollTimeoutSeconds = base::Seconds(60);
 
 // The period in between attempts to check of Chrome's AppShimListener is
 // ready.
-constexpr base::TimeDelta kPollPeriodMsec =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kPollPeriodMsec = base::Milliseconds(100);
 
 }  // namespace
 
@@ -93,8 +125,9 @@ AppShimController::AppShimController(const Params& params)
     : params_(params),
       host_receiver_(host_.BindNewPipeAndPassReceiver()),
       delegate_([[AppShimDelegate alloc] initWithController:this]),
-      profile_menu_target_(
-          [[ProfileMenuTarget alloc] initWithController:this]) {
+      profile_menu_target_([[ProfileMenuTarget alloc] initWithController:this]),
+      application_dock_menu_target_(
+          [[ApplicationDockMenuTarget alloc] initWithController:this]) {
   // Since AppShimController is created before the main message loop starts,
   // NSApp will not be set, so use sharedApplication.
   NSApplication* sharedApplication = [NSApplication sharedApplication];
@@ -106,6 +139,7 @@ AppShimController::~AppShimController() {
   NSApplication* sharedApplication = [NSApplication sharedApplication];
   [sharedApplication setDelegate:nil];
   [profile_menu_target_ clearController];
+  [application_dock_menu_target_ clearController];
 }
 
 void AppShimController::OnAppFinishedLaunching() {
@@ -122,14 +156,14 @@ void AppShimController::OnAppFinishedLaunching() {
 void AppShimController::FindOrLaunchChrome() {
   DCHECK(!chrome_to_connect_to_);
   DCHECK(!chrome_launched_by_app_);
+  const base::CommandLine* app_command_line =
+      base::CommandLine::ForCurrentProcess();
 
   // If this shim was launched by Chrome, only connect to that that specific
   // process.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedByChromeProcessId)) {
-    std::string chrome_pid_string =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            app_mode::kLaunchedByChromeProcessId);
+  if (app_command_line->HasSwitch(app_mode::kLaunchedByChromeProcessId)) {
+    std::string chrome_pid_string = app_command_line->GetSwitchValueASCII(
+        app_mode::kLaunchedByChromeProcessId);
     int chrome_pid;
     if (!base::StringToInt(chrome_pid_string, &chrome_pid))
       LOG(FATAL) << "Invalid PID: " << chrome_pid_string;
@@ -151,17 +185,28 @@ void AppShimController::FindOrLaunchChrome() {
     return;
 
   // In tests, launching Chrome does nothing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedForTest)) {
+  if (app_command_line->HasSwitch(app_mode::kLaunchedForTest)) {
     return;
   }
 
   // Otherwise, launch Chrome.
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(switches::kSilentLaunch);
-  command_line.AppendSwitchPath(switches::kUserDataDir, params_.user_data_dir);
+  base::FilePath chrome_bundle_path = base::mac::OuterBundlePath();
+  LOG(INFO) << "Launching " << chrome_bundle_path.value();
+  base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
+  browser_command_line.AppendSwitchPath(switches::kUserDataDir,
+                                        params_.user_data_dir);
+  if (app_command_line->HasSwitch(switches::kEnableFeatures)) {
+    browser_command_line.AppendSwitchASCII(
+        switches::kEnableFeatures,
+        app_command_line->GetSwitchValueASCII(switches::kEnableFeatures));
+  }
+  if (app_command_line->HasSwitch(switches::kDisableFeatures)) {
+    browser_command_line.AppendSwitchASCII(
+        switches::kDisableFeatures,
+        app_command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  }
   chrome_launched_by_app_.reset(base::mac::OpenApplicationWithPath(
-                                    base::mac::OuterBundlePath(), command_line,
+                                    chrome_bundle_path, browser_command_line,
                                     NSWorkspaceLaunchNewInstance),
                                 base::scoped_policy::RETAIN);
   if (!chrome_launched_by_app_)
@@ -179,6 +224,7 @@ AppShimController::FindChromeFromSingletonLock(
   if (!ParseProcessSingletonLock(lock_symlink_path, &hostname, &pid)) {
     // This indicates that there is no Chrome process running (or that has been
     // running long enough to get the lock).
+    LOG(INFO) << "Singleton lock not found at " << lock_symlink_path.value();
     return base::scoped_nsobject<NSRunningApplication>();
   }
 
@@ -230,8 +276,8 @@ void AppShimController::PollForChromeReady(
 
   // Poll to see if the mojo channel is ready. Of note is that we don't actually
   // verify that |endpoint| is connected to |chrome_to_connect_to_|.
-  mojo::PlatformChannelEndpoint endpoint;
   {
+    mojo::PlatformChannelEndpoint endpoint;
     NSString* browser_bundle_id =
         base::mac::ObjCCast<NSString>([[NSBundle mainBundle]
             objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
@@ -241,10 +287,11 @@ void AppShimController::PollForChromeReady(
         app_mode::kAppShimBootstrapNameFragment,
         base::MD5String(params_.user_data_dir.value()).c_str());
     endpoint = ConnectToBrowser(server_name);
-  }
-  if (endpoint.is_valid()) {
-    SendBootstrapOnShimConnected(std::move(endpoint));
-    return;
+    if (endpoint.is_valid()) {
+      LOG(INFO) << "Connected to " << server_name;
+      SendBootstrapOnShimConnected(std::move(endpoint));
+      return;
+    }
   }
 
   // Otherwise, try again after a brief delay.
@@ -322,18 +369,28 @@ void AppShimController::SendBootstrapOnShimConnected(
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
+  app_shim_info->urls = launch_urls_;
+
+  if (base::mac::WasLaunchedAsHiddenLoginItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kHidden;
+  } else if (base::mac::WasLaunchedAsLoginOrResumeItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kWindowed;
+  } else {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kNone;
+  }
 
   host_bootstrap_->OnShimConnected(
       std::move(host_receiver_), std::move(app_shim_info),
       base::BindOnce(&AppShimController::OnShimConnectedResponse,
                      base::Unretained(this)));
+  LOG(INFO) << "Sent OnShimConnected";
 }
 
 void AppShimController::SetUpMenu() {
   chrome::BuildMainMenu(NSApp, delegate_, params_.app_name, true);
-
-  // Initialize the profiles menu to be empty. It will be updated from the
-  // browser.
   UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>());
 }
 
@@ -343,7 +400,7 @@ void AppShimController::BootstrapChannelError(uint32_t custom_reason,
   // OnShimConnected is received.
   if (init_state_ == InitState::kHasReceivedOnShimConnectedResponse)
     return;
-  LOG(ERROR) << "Channel error custom_reason:" << custom_reason
+  LOG(ERROR) << "Bootstrap Channel error custom_reason:" << custom_reason
              << " description: " << description;
   [NSApp terminate:nil];
 }
@@ -358,6 +415,7 @@ void AppShimController::ChannelError(uint32_t custom_reason,
 void AppShimController::OnShimConnectedResponse(
     chrome::mojom::AppShimLaunchResult result,
     mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
+  LOG(INFO) << "Received OnShimConnected.";
   DCHECK_EQ(init_state_, InitState::kHasSentOnShimConnected);
   init_state_ = InitState::kHasReceivedOnShimConnectedResponse;
 
@@ -365,8 +423,8 @@ void AppShimController::OnShimConnectedResponse(
     switch (result) {
       case chrome::mojom::AppShimLaunchResult::kSuccess:
         break;
-      case chrome::mojom::AppShimLaunchResult::kNoHost:
-        LOG(ERROR) << "No AppShimHost accepted connection.";
+      case chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect:
+        LOG(ERROR) << "Launched successfully, but do not maintain connection.";
         break;
       case chrome::mojom::AppShimLaunchResult::kDuplicateHost:
         LOG(ERROR) << "An AppShimHostBootstrap already exists for this app.";
@@ -432,9 +490,8 @@ void AppShimController::UpdateProfileMenu(
   }
   [cocoa_profile_menu setHidden:NO];
 
-  base::scoped_nsobject<NSMenu> menu(
-      [[NSMenu alloc] initWithTitle:l10n_util::GetNSStringWithFixup(
-                                        IDS_PROFILES_OPTIONS_GROUP_NAME)]);
+  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc]
+      initWithTitle:l10n_util::GetNSStringWithFixup(IDS_PROFILES_MENU_NAME)]);
   [cocoa_profile_menu setSubmenu:menu];
 
   // Note that this code to create menu items is nearly identical to the code
@@ -453,6 +510,11 @@ void AppShimController::UpdateProfileMenu(
     [item setImage:icon.ToNSImage()];
     [menu insertItem:item atIndex:i];
   }
+}
+
+void AppShimController::UpdateApplicationDockMenu(
+    std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items) {
+  dock_menu_items_ = std::move(dock_menu_items);
 }
 
 void AppShimController::SetUserAttention(
@@ -483,4 +545,44 @@ void AppShimController::ProfileMenuItemSelected(uint32_t index) {
       return;
     }
   }
+}
+
+void AppShimController::OpenUrls(const std::vector<GURL>& urls) {
+  if (init_state_ == InitState::kWaitingForAppToFinishLaunch) {
+    launch_urls_ = urls;
+  } else {
+    host_->UrlsOpened(urls);
+  }
+}
+
+void AppShimController::CommandFromDock(uint32_t index) {
+  DCHECK(0 <= index && index < dock_menu_items_.size());
+  DCHECK(init_state_ != InitState::kWaitingForAppToFinishLaunch);
+
+  [NSApp activateIgnoringOtherApps:YES];
+  host_->OpenAppWithOverrideUrl(dock_menu_items_[index]->url);
+}
+
+NSMenu* AppShimController::GetApplicationDockMenu() {
+  if (init_state_ == InitState::kWaitingForAppToFinishLaunch ||
+      dock_menu_items_.size() == 0)
+    return nullptr;
+
+  NSMenu* dockMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+
+  for (size_t i = 0; i < dock_menu_items_.size(); ++i) {
+    const auto& mojo_item = dock_menu_items_[i];
+    NSString* name = base::SysUTF16ToNSString(mojo_item->name);
+    NSMenuItem* item =
+        [[[NSMenuItem alloc] initWithTitle:name
+                                    action:@selector(commandFromDock:)
+                             keyEquivalent:@""] autorelease];
+    [item setTag:i];
+    [item setTarget:application_dock_menu_target_];
+    [item setEnabled:[application_dock_menu_target_
+                         validateUserInterfaceItem:item]];
+    [dockMenu addItem:item];
+  }
+
+  return dockMenu;
 }

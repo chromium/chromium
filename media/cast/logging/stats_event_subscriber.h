@@ -8,10 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/logging/logging_defines.h"
@@ -30,11 +32,14 @@ class StatsEventSubscriberTest;
 
 // A RawEventSubscriber implementation that subscribes to events,
 // and aggregates them into stats.
-class StatsEventSubscriber : public RawEventSubscriber {
+class StatsEventSubscriber final : public RawEventSubscriber {
  public:
   StatsEventSubscriber(EventMediaType event_media_type,
                        const base::TickClock* clock,
                        ReceiverTimeOffsetEstimator* offset_estimator);
+
+  StatsEventSubscriber(const StatsEventSubscriber&) = delete;
+  StatsEventSubscriber& operator=(const StatsEventSubscriber&) = delete;
 
   ~StatsEventSubscriber() final;
 
@@ -279,7 +284,6 @@ class StatsEventSubscriber : public RawEventSubscriber {
   HistogramMap histograms_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(StatsEventSubscriber);
 };
 
 }  // namespace cast

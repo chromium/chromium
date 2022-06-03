@@ -7,15 +7,16 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/common_theme.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace views {
 
@@ -38,7 +39,7 @@ void Throbber::Start() {
 
   start_time_ = base::TimeTicks::Now();
   timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(30),
+      FROM_HERE, base::Milliseconds(30),
       base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
   SchedulePaint();  // paint right away
 }
@@ -68,8 +69,7 @@ gfx::Size Throbber::CalculatePreferredSize() const {
 }
 
 void Throbber::OnPaint(gfx::Canvas* canvas) {
-  SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_ThrobberSpinningColor);
+  SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
 
   if (!IsRunning()) {
     if (checked_) {
@@ -89,16 +89,15 @@ bool Throbber::IsRunning() const {
   return timer_.IsRunning();
 }
 
-BEGIN_METADATA(Throbber)
-METADATA_PARENT_CLASS(View)
-ADD_PROPERTY_METADATA(Throbber, bool, Checked)
-END_METADATA()
+BEGIN_METADATA(Throbber, View)
+ADD_PROPERTY_METADATA(bool, Checked)
+END_METADATA
 
 // Smoothed throbber ---------------------------------------------------------
 
 SmoothedThrobber::SmoothedThrobber()
-    : start_delay_(base::TimeDelta::FromMilliseconds(200)),
-      stop_delay_(base::TimeDelta::FromMilliseconds(50)) {}
+    : start_delay_(base::Milliseconds(200)),
+      stop_delay_(base::Milliseconds(50)) {}
 
 SmoothedThrobber::~SmoothedThrobber() = default;
 
@@ -150,10 +149,9 @@ void SmoothedThrobber::StopDelayOver() {
   Throbber::Stop();
 }
 
-BEGIN_METADATA(SmoothedThrobber)
-METADATA_PARENT_CLASS(Throbber)
-ADD_PROPERTY_METADATA(SmoothedThrobber, base::TimeDelta, StartDelay)
-ADD_PROPERTY_METADATA(SmoothedThrobber, base::TimeDelta, StopDelay)
-END_METADATA()
+BEGIN_METADATA(SmoothedThrobber, Throbber)
+ADD_PROPERTY_METADATA(base::TimeDelta, StartDelay)
+ADD_PROPERTY_METADATA(base::TimeDelta, StopDelay)
+END_METADATA
 
 }  // namespace views

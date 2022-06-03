@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 8: Uncaught TypeError: root.createShadowRoot is not a function
-Element direction details are accessible to shadow root
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

@@ -24,10 +24,14 @@ static std::string StateAsString(const ListSelectionModel& model) {
                        " selection=";
   const ListSelectionModel::SelectedIndices& selection(
       model.selected_indices());
-  for (size_t i = 0; i < selection.size(); ++i) {
-    if (i != 0)
+  bool first = true;
+  for (int index : selection) {
+    if (first) {
+      first = false;
+    } else {
       result += " ";
-    result += base::NumberToString(selection[i]);
+    }
+    result += base::NumberToString(index);
   }
   return result;
 }
@@ -96,6 +100,18 @@ TEST_F(ListSelectionModelTest, AddIndexToSelected) {
 
   model.AddIndexToSelection(4);
   EXPECT_EQ("active=-1 anchor=-1 selection=2 4", StateAsString(model));
+}
+
+TEST_F(ListSelectionModelTest, AddIndexRangeToSelection) {
+  ListSelectionModel model;
+  model.AddIndexRangeToSelection(2, 3);
+  EXPECT_EQ("active=-1 anchor=-1 selection=2 3", StateAsString(model));
+
+  model.AddIndexRangeToSelection(4, 5);
+  EXPECT_EQ("active=-1 anchor=-1 selection=2 3 4 5", StateAsString(model));
+
+  model.AddIndexRangeToSelection(1, 1);
+  EXPECT_EQ("active=-1 anchor=-1 selection=1 2 3 4 5", StateAsString(model));
 }
 
 TEST_F(ListSelectionModelTest, RemoveIndexFromSelection) {

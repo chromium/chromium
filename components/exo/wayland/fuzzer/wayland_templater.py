@@ -12,6 +12,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os
+import subprocess
 import sys
 
 import jinja2
@@ -36,6 +37,53 @@ cpp_type_conversions = {
     'string': 'const char*',
     'uint': 'uint32_t',
 }
+
+
+def GetClangFormatPath():
+    """Returns the path to clang-format, for formatting the output."""
+    if sys.platform.startswith('linux'):
+      platform, exe_suffix = 'linux64', ''
+      exe_suffix = ""
+    elif sys.platform == 'darwin':
+      platform, exe_suffix = 'mac', ''
+    elif sys.platform == 'win32':
+      platform, exe_suffix = 'win', '.exe'
+    else:
+      assert False, 'Unknown platform: ' + sys.platform
+
+    this_dir = os.path.abspath(os.path.dirname(__file__))
+    root_src_dir = os.path.abspath(
+        os.path.join(this_dir, '..', '..', '..', '..'))
+    buildtools_platform_dir = os.path.join(root_src_dir, 'buildtools', platform)
+    return os.path.join(buildtools_platform_dir, 'clang-format' + exe_suffix)
+
+
+def ClangFormat(source, filename):
+  """Runs clang-format on source and returns the result."""
+  # clang-format the output, for better readability and for
+  # -Wmisleading-indentation.
+  clang_format_cmd = [GetClangFormatPath(), '--assume-filename=' + filename]
+  proc = subprocess.Popen(
+      clang_format_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+  stdout_output, stderr_output = proc.communicate(input=source.encode('utf8'))
+  retcode = proc.wait()
+  if retcode != 0:
+      raise CalledProcessError(retcode, 'clang-format error: ' + stderr_output)
+  return stdout_output.decode()
+
+
+def WriteIfChanged(contents, filename):
+  """Writes contents to filename.
+
+  If filename already has the right contents, nothing is written so that
+  the mtime on filename doesn't change.
+  """
+  if os.path.exists(filename):
+    with open(filename, 'r') as in_fi:
+      if in_fi.read() == contents:
+        return
+  with open(filename, 'w') as out_fi:
+    out_fi.write(contents)
 
 
 def GetCppPtrType(interface_name):
@@ -176,8 +224,15 @@ def InstantiateTemplate(in_tmpl, in_ctx, output, in_directory):
       lstrip_blocks=True,
       trim_blocks=True)  # so don't need {%- -%} everywhere
   template = env.get_template(in_tmpl)
-  with open(output, 'w') as out_fi:
-    out_fi.write(template.render(in_ctx))
+  raw_output = template.render(in_ctx)
+
+  # For readability, and for -Wmisleading-indentation.
+  if output.endswith(('.h', '.cc', '.proto')):
+    formatted_output = ClangFormat(raw_output, filename=output)
+  else:
+    formatted_output = raw_output
+
+  WriteIfChanged(formatted_output, filename=output)
 
 
 def main(argv):

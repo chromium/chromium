@@ -16,10 +16,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace cc {
 
 class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
@@ -43,10 +39,10 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
-  std::unique_ptr<base::DictionaryValue> LayerAsJson() const override;
+  void AsValueInto(base::trace_event::TracedValue* state) const override;
 
  protected:
   NinePatchLayerImpl(LayerTreeImpl* tree_impl, int id);

@@ -4,23 +4,26 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace payments {
 
 class PaymentRequestErrorMessageTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestErrorMessageTest(const PaymentRequestErrorMessageTest&) =
+      delete;
+  PaymentRequestErrorMessageTest& operator=(
+      const PaymentRequestErrorMessageTest&) = delete;
+
  protected:
   PaymentRequestErrorMessageTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestErrorMessageTest);
 };
 
 // Testing the use of the complete('fail') JS API and the error message.
@@ -38,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
 
   // Once "Pay" is clicked, the page will call complete('fail') and the error
   // message should be shown.
-  OpenCVCPromptWithCVC(base::ASCIIToUTF16("123"));
+  OpenCVCPromptWithCVC(u"123");
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,

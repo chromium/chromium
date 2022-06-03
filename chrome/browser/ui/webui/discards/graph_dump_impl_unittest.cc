@@ -8,25 +8,28 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
+#include "components/performance_manager/public/graph/node_data_describer.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/test_support/graph_impl.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 using performance_manager::NodeBase;
 
-const std::string kHtmlMimeType = "text/html";
+const char kHtmlMimeType[] = "text/html";
 
 class TestChangeStream : public discards::mojom::GraphChangeStream {
  public:
@@ -139,6 +142,31 @@ class DiscardsGraphDumpImplTest : public testing::Test {
   performance_manager::TestGraphImpl graph_;
 };
 
+class TestNodeDataDescriber : public performance_manager::NodeDataDescriber {
+ public:
+  // NodeDataDescriber implementations:
+  base::Value DescribeFrameNodeData(
+      const performance_manager::FrameNode* node) const override {
+    return base::Value("frame");
+  }
+  base::Value DescribePageNodeData(
+      const performance_manager::PageNode* node) const override {
+    return base::Value("page");
+  }
+  base::Value DescribeProcessNodeData(
+      const performance_manager::ProcessNode* node) const override {
+    return base::Value("process");
+  }
+  base::Value DescribeSystemNodeData(
+      const performance_manager::SystemNode* node) const override {
+    return base::Value("system");
+  }
+  base::Value DescribeWorkerNodeData(
+      const performance_manager::WorkerNode* node) const override {
+    return base::Value("worker");
+  }
+};
+
 }  // namespace
 
 TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
@@ -175,22 +203,37 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   impl->BindWithGraph(&graph_, graph_dump_remote.BindNewPipeAndPassReceiver());
   graph_.PassToGraph(std::move(impl));
 
+  TestNodeDataDescriber describer;
+  graph_.GetNodeDataDescriberRegistry()->RegisterDescriber(&describer, "test");
+
   TestChangeStream change_stream;
   graph_dump_remote->SubscribeToChanges(change_stream.GetRemote());
 
   task_environment.RunUntilIdle();
 
-  // Validate that the initial graph state dump is complete.
-  EXPECT_EQ(0u, change_stream.num_changes());
+  // Validate that the initial graph state dump is complete. Note that there is
+  // an update for each node as part of the initial state dump.
+  EXPECT_EQ(8u, change_stream.num_changes());
   EXPECT_EQ(8u, change_stream.id_set().size());
 
   EXPECT_EQ(2u, change_stream.process_map().size());
   for (const auto& kv : change_stream.process_map()) {
-    EXPECT_NE(0u, kv.second->id);
+    const auto* process_info = kv.second.get();
+    EXPECT_NE(0u, process_info->id);
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":\"process\"}"),
+              base::JSONReader::Read(process_info->description_json));
   }
 
   EXPECT_EQ(3u, change_stream.frame_map().size());
+  for (const auto& kv : change_stream.frame_map()) {
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":\"frame\"}"),
+              base::JSONReader::Read(kv.second->description_json));
+  }
   EXPECT_EQ(1u, change_stream.worker_map().size());
+  for (const auto& kv : change_stream.worker_map()) {
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":\"worker\"}"),
+              base::JSONReader::Read(kv.second->description_json));
+  }
 
   // Count the top-level frames as we go.
   size_t top_level_frames = 0;
@@ -203,7 +246,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
       EXPECT_NE(0u, frame->page_id);
 
       // The page's main frame should have an URL.
-      if (frame->id == NodeBase::GetSerializationId(main_frame))
+      if (frame->id == impl_raw->GetNodeIdForTesting(main_frame))
         EXPECT_EQ(kExampleUrl, frame->url);
     }
     EXPECT_NE(0u, frame->id);
@@ -218,6 +261,8 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
     const auto& page = kv.second;
     EXPECT_NE(0u, page->id);
     EXPECT_EQ(kExampleUrl, page->main_frame_url);
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":\"page\"}"),
+              base::JSONReader::Read(kv.second->description_json));
   }
 
   // Test change notifications.
@@ -226,19 +271,66 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
       false, now, next_navigation_id++, kAnotherURL, kHtmlMimeType);
 
   size_t child_frame_id =
-      NodeBase::GetSerializationId(mock_graph.child_frame.get());
+      impl_raw->GetNodeIdForTesting(mock_graph.child_frame.get());
   mock_graph.child_frame.reset();
 
   task_environment.RunUntilIdle();
 
   // Main frame navigation results in a notification for the url.
-  EXPECT_EQ(1u, change_stream.num_changes());
+  EXPECT_EQ(9u, change_stream.num_changes());
   EXPECT_FALSE(base::Contains(change_stream.id_set(), child_frame_id));
 
   const auto main_page_it = change_stream.page_map().find(
-      NodeBase::GetSerializationId(mock_graph.page.get()));
+      impl_raw->GetNodeIdForTesting(mock_graph.page.get()));
   ASSERT_TRUE(main_page_it != change_stream.page_map().end());
   EXPECT_EQ(kAnotherURL, main_page_it->second->main_frame_url);
+
+  task_environment.RunUntilIdle();
+
+  // Test RequestNodeDescriptions.
+  std::vector<int64_t> descriptions_requested;
+  for (int64_t node_id : change_stream.id_set()) {
+    descriptions_requested.push_back(node_id);
+  }
+  // Increase the last ID by one. As the entries are in increasing order, this
+  // results in a request for all but one nodes, and one non-existent node id.
+  descriptions_requested.back() += 1;
+
+  {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    graph_dump_remote->RequestNodeDescriptions(
+        descriptions_requested,
+        base::BindLambdaForTesting(
+            [&descriptions_requested,
+             &quit_closure](const base::flat_map<int64_t, std::string>&
+                                node_descriptions_json) {
+              std::vector<int64_t> keys_received;
+              // Check that the descriptions make sense.
+              for (auto kv : node_descriptions_json) {
+                keys_received.push_back(kv.first);
+                absl::optional<base::Value> v =
+                    base::JSONReader::Read(kv.second);
+                EXPECT_TRUE(v->is_dict());
+                std::string* str = v->FindStringKey("test");
+                EXPECT_TRUE(str);
+                if (str) {
+                  EXPECT_TRUE(*str == "frame" || *str == "page" ||
+                              *str == "process" || *str == "worker");
+                }
+              }
+
+              EXPECT_THAT(keys_received,
+                          ::testing::UnorderedElementsAreArray(
+                              descriptions_requested.data(),
+                              descriptions_requested.size() - 1));
+
+              quit_closure.Run();
+            }));
+
+    run_loop.Run();
+  }
 
   task_environment.RunUntilIdle();
 
@@ -249,4 +341,6 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   EXPECT_EQ(nullptr, graph_.TakeFromGraph(impl_raw));
 
   worker->RemoveClientFrame(mock_graph.frame.get());
+
+  graph_.GetNodeDataDescriberRegistry()->UnregisterDescriber(&describer);
 }

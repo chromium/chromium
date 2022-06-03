@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.annotation.StringRes;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarContainerObserver;
-import org.chromium.chrome.browser.infobar.InfoBarContainerLayout.Item;
-import org.chromium.chrome.browser.ui.widget.textbubble.TextBubble;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.infobars.InfoBarAnimationListener;
+import org.chromium.components.infobars.InfoBarUiItem;
 
 /**
  * A helper class to managing showing and dismissing in-product help dialogs based on which infobar
@@ -21,9 +23,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
  * becomes front-most.  If that infobar is closed or another infobar comes to the front the window
  * will be dismissed.
  */
-public class IPHInfoBarSupport implements OnDismissListener,
-                                          InfoBarContainer.InfoBarAnimationListener,
-                                          InfoBarContainerObserver {
+public class IPHInfoBarSupport
+        implements OnDismissListener, InfoBarAnimationListener, InfoBarContainerObserver {
     /** Helper class to hold all relevant display parameters for an in-product help window. */
     public static class TrackerParameters {
         public TrackerParameters(
@@ -95,7 +96,7 @@ public class IPHInfoBarSupport implements OnDismissListener,
         mDelegate = delegate;
     }
 
-    // InfoBarContainer.InfoBarAnimationListener implementation.
+    // InfoBarAnimationListener implementation.
     @Override
     public void notifyAnimationFinished(int animationType) {}
 
@@ -105,7 +106,7 @@ public class IPHInfoBarSupport implements OnDismissListener,
     // warning for a field guaranteed to be non-null being checked for null equality needs to be
     // suppressed.
     @Override
-    public void notifyAllAnimationsFinished(Item frontInfoBar) {
+    public void notifyAllAnimationsFinished(InfoBarUiItem frontInfoBar) {
         View view = frontInfoBar == null ? null : frontInfoBar.getView();
 
         if (mCurrentState != null) {
@@ -155,6 +156,4 @@ public class IPHInfoBarSupport implements OnDismissListener,
         mDelegate.onPopupDismissed(mCurrentState);
         mCurrentState = null;
     }
-
-
 }

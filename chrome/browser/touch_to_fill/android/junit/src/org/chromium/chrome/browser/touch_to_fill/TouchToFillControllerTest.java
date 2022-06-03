@@ -28,13 +28,13 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SH
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 
 import android.graphics.Bitmap;
-import android.support.test.espresso.core.deps.guava.collect.ImmutableMap;
 
 import androidx.annotation.Px;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -47,19 +47,22 @@ import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.favicon.IconType;
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,18 +74,20 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class TouchToFillControllerTest {
-    private static final String TEST_URL = "https://www.example.xyz";
+    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false);
+            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false);
+            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", TEST_URL, false, false);
+            new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
@@ -104,14 +109,16 @@ public class TouchToFillControllerTest {
     @Before
     public void setUp() {
         ShadowRecordHistogram.reset();
-        ChromeFeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.TOUCH_TO_FILL_ANDROID, true));
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
         mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitScheme(anyString()))
                 .then(inv -> format(inv.getArgument(0)));
-        when(mUrlFormatterJniMock.formatUrlForSecurityDisplayOmitScheme(anyString()))
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
+        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
         mMediator.initialize(mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE);
@@ -149,7 +156,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsSetsCredentialListAndRequestsFavicons() {
         mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB));
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(4));
+        assertThat(itemList.size(), is(4)); // Header + three Credentials
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -161,33 +168,33 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(3).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
 
         verify(mMockIconBridge)
-                .getLargeIconForUrl(eq(CARL.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForStringUrl(eq(CARL.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
         verify(mMockIconBridge)
-                .getLargeIconForUrl(eq(ANA.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForStringUrl(eq(ANA.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
         verify(mMockIconBridge)
-                .getLargeIconForUrl(eq(BOB.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForStringUrl(eq(BOB.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
     }
 
     @Test
     public void testFetchFaviconUpdatesModel() {
         mMediator.showCredentials(TEST_URL, true, Collections.singletonList(CARL));
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(2));
+        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(CARL));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
 
         // ANA and CARL both have TEST_URL as their origin URL
         verify(mMockIconBridge)
-                .getLargeIconForUrl(
-                        eq(TEST_URL), eq(DESIRED_FAVICON_SIZE), mCallbackArgumentCaptor.capture());
+                .getLargeIconForStringUrl(eq(TEST_URL.getSpec()), eq(DESIRED_FAVICON_SIZE),
+                        mCallbackArgumentCaptor.capture());
         LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
         Bitmap bitmap = Bitmap.createBitmap(
                 DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
         callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
         FaviconOrFallback iconData = itemList.get(1).model.get(FAVICON_OR_FALLBACK);
         assertThat(iconData.mIcon, is(bitmap));
-        assertThat(iconData.mUrl, is(TEST_URL));
+        assertThat(iconData.mUrl, is(TEST_URL.getSpec()));
         assertThat(iconData.mIconSize, is(DESIRED_FAVICON_SIZE));
         assertThat(iconData.mFallbackColor, is(333));
         assertThat(iconData.mIsFallbackColorDefault, is(true));
@@ -197,7 +204,7 @@ public class TouchToFillControllerTest {
     @Test
     public void testShowCredentialsFormatPslOrigins() {
         mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, BOB));
-        assertThat(mModel.get(SHEET_ITEMS).size(), is(3));
+        assertThat(mModel.get(SHEET_ITEMS).size(), is(3)); // Header + two Credentials
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(1).model.get(FORMATTED_ORIGIN),
                 is(format(ANA.getOriginUrl())));
@@ -210,7 +217,7 @@ public class TouchToFillControllerTest {
     public void testClearsCredentialListWhenShowingAgain() {
         mMediator.showCredentials(TEST_URL, true, Collections.singletonList(ANA));
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(2));
+        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -218,7 +225,7 @@ public class TouchToFillControllerTest {
         // Showing the sheet a second time should replace all changed credentials.
         mMediator.showCredentials(TEST_URL, true, Collections.singletonList(BOB));
         itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(2));
+        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -311,7 +318,7 @@ public class TouchToFillControllerTest {
      * @param originUrl A URL {@link String} to "format".
      * @return A "formatted" URL {@link String}.
      */
-    private static String formatForSecurityDisplay(String originUrl) {
-        return "formatted_for_security_" + originUrl + "_formatted_for_security";
+    private static String formatForSecurityDisplay(GURL originUrl) {
+        return "formatted_for_security_" + originUrl.getSpec() + "_formatted_for_security";
     }
 }

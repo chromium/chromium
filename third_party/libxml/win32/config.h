@@ -5,7 +5,8 @@
 #define HAVE_STDARG_H
 #define HAVE_MALLOC_H
 #define HAVE_ERRNO_H
-#define HAVE_STDINT_H
+#define SEND_ARG2_CAST
+#define GETHOSTBYNAME_ARG_CAST
 
 #if defined(_WIN32_WCE)
 #undef HAVE_ERRNO_H
@@ -37,7 +38,7 @@
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 /* MS C-runtime has functions which can be used in order to determine if
    a given floating-point variable contains NaN, (+-)INF. These are 
-   preferred, because floating-point technology is considered propriatary
+   preferred, because floating-point technology is considered proprietary
    by MS and we can assume that their functions know more about their 
    oddities than we do. */
 #include <float.h>
@@ -90,7 +91,7 @@ static int isnan (double d) {
 
 #if defined(_MSC_VER)
 #define mkdir(p,m) _mkdir(p)
-#if _MSC_VER < 1900 // Cannot define this in VS 2015 and above!
+#if _MSC_VER < 1900
 #define snprintf _snprintf
 #endif
 #if _MSC_VER < 1500

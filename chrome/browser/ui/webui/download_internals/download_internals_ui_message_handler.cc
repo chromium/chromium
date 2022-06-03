@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/values.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "content/public/browser/web_ui.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -26,17 +26,17 @@ DownloadInternalsUIMessageHandler::~DownloadInternalsUIMessageHandler() {
 }
 
 void DownloadInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceDownloads",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startDownload",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleStartDownload,
@@ -44,7 +44,7 @@ void DownloadInternalsUIMessageHandler::RegisterMessages() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   download_service_ =
-      DownloadServiceFactory::GetForKey(profile->GetProfileKey());
+      BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
   download_service_->GetLogger()->AddObserver(this);
 }
 
@@ -146,7 +146,7 @@ void DownloadInternalsUIMessageHandler::HandleStartDownload(
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
 
   DCHECK(download_service_);
-  download_service_->StartDownload(params);
+  download_service_->StartDownload(std::move(params));
 }
 
 }  // namespace download_internals

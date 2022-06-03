@@ -5,7 +5,7 @@
 #include "device/fido/win/discovery.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "device/fido/win/webauthn_api.h"
 

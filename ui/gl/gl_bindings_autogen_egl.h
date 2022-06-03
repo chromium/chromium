@@ -141,6 +141,11 @@ typedef EGLBoolean(GL_BINDING_CALL* eglGetFrameTimestampSupportedANDROIDProc)(
     EGLDisplay dpy,
     EGLSurface surface,
     EGLint timestamp);
+typedef EGLBoolean(GL_BINDING_CALL* eglGetMscRateANGLEProc)(
+    EGLDisplay dpy,
+    EGLSurface surface,
+    EGLint* numerator,
+    EGLint* denominator);
 typedef EGLClientBuffer(GL_BINDING_CALL* eglGetNativeClientBufferANDROIDProc)(
     const struct AHardwareBuffer* ahardwarebuffer);
 typedef EGLBoolean(GL_BINDING_CALL* eglGetNextFrameIdANDROIDProc)(
@@ -163,6 +168,7 @@ typedef EGLBoolean(GL_BINDING_CALL* eglGetSyncValuesCHROMIUMProc)(
     EGLuint64CHROMIUM* ust,
     EGLuint64CHROMIUM* msc,
     EGLuint64CHROMIUM* sbc);
+typedef void(GL_BINDING_CALL* eglHandleGPUSwitchANGLEProc)(EGLDisplay dpy);
 typedef EGLBoolean(GL_BINDING_CALL* eglImageFlushExternalEXTProc)(
     EGLDisplay dpy,
     EGLImageKHR image,
@@ -191,7 +197,22 @@ typedef EGLBoolean(GL_BINDING_CALL* eglQueryContextProc)(EGLDisplay dpy,
                                                          EGLint* value);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryDebugKHRProc)(EGLint attribute,
                                                           EGLAttrib* value);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDeviceAttribEXTProc)(
+    EGLDeviceEXT device,
+    EGLint attribute,
+    EGLAttrib* value);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDevicesEXTProc)(
+    EGLint max_devices,
+    EGLDeviceEXT* devices,
+    EGLint* num_devices);
+typedef const char*(GL_BINDING_CALL* eglQueryDeviceStringEXTProc)(
+    EGLDeviceEXT device,
+    EGLint name);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryDisplayAttribANGLEProc)(
+    EGLDisplay dpy,
+    EGLint attribute,
+    EGLAttrib* value);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDisplayAttribEXTProc)(
     EGLDisplay dpy,
     EGLint attribute,
     EGLAttrib* value);
@@ -218,6 +239,11 @@ typedef EGLBoolean(GL_BINDING_CALL* eglQuerySurfacePointerANGLEProc)(
     EGLSurface surface,
     EGLint attribute,
     void** value);
+typedef void(GL_BINDING_CALL* eglReacquireHighPowerGPUANGLEProc)(
+    EGLDisplay dpy,
+    EGLContext ctx);
+typedef void(GL_BINDING_CALL* eglReleaseHighPowerGPUANGLEProc)(EGLDisplay dpy,
+                                                               EGLContext ctx);
 typedef EGLBoolean(GL_BINDING_CALL* eglReleaseTexImageProc)(EGLDisplay dpy,
                                                             EGLSurface surface,
                                                             EGLint buffer);
@@ -272,15 +298,20 @@ typedef EGLint(GL_BINDING_CALL* eglWaitSyncKHRProc)(EGLDisplay dpy,
 
 struct ExtensionsEGL {
   bool b_EGL_ANGLE_feature_control;
+  bool b_EGL_EXT_device_base;
+  bool b_EGL_EXT_device_enumeration;
+  bool b_EGL_EXT_device_query;
   bool b_EGL_KHR_debug;
   bool b_EGL_ANDROID_blob_cache;
   bool b_EGL_ANDROID_get_frame_timestamps;
   bool b_EGL_ANDROID_get_native_client_buffer;
   bool b_EGL_ANDROID_native_fence_sync;
   bool b_EGL_ANGLE_d3d_share_handle_client_buffer;
+  bool b_EGL_ANGLE_power_preference;
   bool b_EGL_ANGLE_query_surface_pointer;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;
   bool b_EGL_ANGLE_surface_d3d_texture_2d_share_handle;
+  bool b_EGL_ANGLE_sync_control_rate;
   bool b_EGL_CHROMIUM_sync_control;
   bool b_EGL_EXT_image_flush_external;
   bool b_EGL_KHR_fence_sync;
@@ -336,12 +367,14 @@ struct ProcsEGL {
   eglGetFrameTimestampsANDROIDProc eglGetFrameTimestampsANDROIDFn;
   eglGetFrameTimestampSupportedANDROIDProc
       eglGetFrameTimestampSupportedANDROIDFn;
+  eglGetMscRateANGLEProc eglGetMscRateANGLEFn;
   eglGetNativeClientBufferANDROIDProc eglGetNativeClientBufferANDROIDFn;
   eglGetNextFrameIdANDROIDProc eglGetNextFrameIdANDROIDFn;
   eglGetPlatformDisplayProc eglGetPlatformDisplayFn;
   eglGetProcAddressProc eglGetProcAddressFn;
   eglGetSyncAttribKHRProc eglGetSyncAttribKHRFn;
   eglGetSyncValuesCHROMIUMProc eglGetSyncValuesCHROMIUMFn;
+  eglHandleGPUSwitchANGLEProc eglHandleGPUSwitchANGLEFn;
   eglImageFlushExternalEXTProc eglImageFlushExternalEXTFn;
   eglInitializeProc eglInitializeFn;
   eglLabelObjectKHRProc eglLabelObjectKHRFn;
@@ -350,13 +383,19 @@ struct ProcsEGL {
   eglQueryAPIProc eglQueryAPIFn;
   eglQueryContextProc eglQueryContextFn;
   eglQueryDebugKHRProc eglQueryDebugKHRFn;
+  eglQueryDeviceAttribEXTProc eglQueryDeviceAttribEXTFn;
+  eglQueryDevicesEXTProc eglQueryDevicesEXTFn;
+  eglQueryDeviceStringEXTProc eglQueryDeviceStringEXTFn;
   eglQueryDisplayAttribANGLEProc eglQueryDisplayAttribANGLEFn;
+  eglQueryDisplayAttribEXTProc eglQueryDisplayAttribEXTFn;
   eglQueryStreamKHRProc eglQueryStreamKHRFn;
   eglQueryStreamu64KHRProc eglQueryStreamu64KHRFn;
   eglQueryStringProc eglQueryStringFn;
   eglQueryStringiANGLEProc eglQueryStringiANGLEFn;
   eglQuerySurfaceProc eglQuerySurfaceFn;
   eglQuerySurfacePointerANGLEProc eglQuerySurfacePointerANGLEFn;
+  eglReacquireHighPowerGPUANGLEProc eglReacquireHighPowerGPUANGLEFn;
+  eglReleaseHighPowerGPUANGLEProc eglReleaseHighPowerGPUANGLEFn;
   eglReleaseTexImageProc eglReleaseTexImageFn;
   eglReleaseThreadProc eglReleaseThreadFn;
   eglSetBlobCacheFuncsANDROIDProc eglSetBlobCacheFuncsANDROIDFn;
@@ -494,6 +533,10 @@ class GL_EXPORT EGLApi {
       EGLDisplay dpy,
       EGLSurface surface,
       EGLint timestamp) = 0;
+  virtual EGLBoolean eglGetMscRateANGLEFn(EGLDisplay dpy,
+                                          EGLSurface surface,
+                                          EGLint* numerator,
+                                          EGLint* denominator) = 0;
   virtual EGLClientBuffer eglGetNativeClientBufferANDROIDFn(
       const struct AHardwareBuffer* ahardwarebuffer) = 0;
   virtual EGLBoolean eglGetNextFrameIdANDROIDFn(EGLDisplay dpy,
@@ -513,6 +556,7 @@ class GL_EXPORT EGLApi {
                                                 EGLuint64CHROMIUM* ust,
                                                 EGLuint64CHROMIUM* msc,
                                                 EGLuint64CHROMIUM* sbc) = 0;
+  virtual void eglHandleGPUSwitchANGLEFn(EGLDisplay dpy) = 0;
   virtual EGLBoolean eglImageFlushExternalEXTFn(
       EGLDisplay dpy,
       EGLImageKHR image,
@@ -540,9 +584,20 @@ class GL_EXPORT EGLApi {
                                        EGLint attribute,
                                        EGLint* value) = 0;
   virtual EGLBoolean eglQueryDebugKHRFn(EGLint attribute, EGLAttrib* value) = 0;
+  virtual EGLBoolean eglQueryDeviceAttribEXTFn(EGLDeviceEXT device,
+                                               EGLint attribute,
+                                               EGLAttrib* value) = 0;
+  virtual EGLBoolean eglQueryDevicesEXTFn(EGLint max_devices,
+                                          EGLDeviceEXT* devices,
+                                          EGLint* num_devices) = 0;
+  virtual const char* eglQueryDeviceStringEXTFn(EGLDeviceEXT device,
+                                                EGLint name) = 0;
   virtual EGLBoolean eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
                                                   EGLint attribute,
                                                   EGLAttrib* value) = 0;
+  virtual EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
+                                                EGLint attribute,
+                                                EGLAttrib* value) = 0;
   virtual EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                          EGLStreamKHR stream,
                                          EGLenum attribute,
@@ -563,6 +618,10 @@ class GL_EXPORT EGLApi {
                                                    EGLSurface surface,
                                                    EGLint attribute,
                                                    void** value) = 0;
+  virtual void eglReacquireHighPowerGPUANGLEFn(EGLDisplay dpy,
+                                               EGLContext ctx) = 0;
+  virtual void eglReleaseHighPowerGPUANGLEFn(EGLDisplay dpy,
+                                             EGLContext ctx) = 0;
   virtual EGLBoolean eglReleaseTexImageFn(EGLDisplay dpy,
                                           EGLSurface surface,
                                           EGLint buffer) = 0;
@@ -658,6 +717,7 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglGetFrameTimestampsANDROIDFn
 #define eglGetFrameTimestampSupportedANDROID \
   ::gl::g_current_egl_context->eglGetFrameTimestampSupportedANDROIDFn
+#define eglGetMscRateANGLE ::gl::g_current_egl_context->eglGetMscRateANGLEFn
 #define eglGetNativeClientBufferANDROID \
   ::gl::g_current_egl_context->eglGetNativeClientBufferANDROIDFn
 #define eglGetNextFrameIdANDROID \
@@ -668,6 +728,8 @@ class GL_EXPORT EGLApi {
 #define eglGetSyncAttribKHR ::gl::g_current_egl_context->eglGetSyncAttribKHRFn
 #define eglGetSyncValuesCHROMIUM \
   ::gl::g_current_egl_context->eglGetSyncValuesCHROMIUMFn
+#define eglHandleGPUSwitchANGLE \
+  ::gl::g_current_egl_context->eglHandleGPUSwitchANGLEFn
 #define eglImageFlushExternalEXT \
   ::gl::g_current_egl_context->eglImageFlushExternalEXTFn
 #define eglInitialize ::gl::g_current_egl_context->eglInitializeFn
@@ -677,8 +739,15 @@ class GL_EXPORT EGLApi {
 #define eglQueryAPI ::gl::g_current_egl_context->eglQueryAPIFn
 #define eglQueryContext ::gl::g_current_egl_context->eglQueryContextFn
 #define eglQueryDebugKHR ::gl::g_current_egl_context->eglQueryDebugKHRFn
+#define eglQueryDeviceAttribEXT \
+  ::gl::g_current_egl_context->eglQueryDeviceAttribEXTFn
+#define eglQueryDevicesEXT ::gl::g_current_egl_context->eglQueryDevicesEXTFn
+#define eglQueryDeviceStringEXT \
+  ::gl::g_current_egl_context->eglQueryDeviceStringEXTFn
 #define eglQueryDisplayAttribANGLE \
   ::gl::g_current_egl_context->eglQueryDisplayAttribANGLEFn
+#define eglQueryDisplayAttribEXT \
+  ::gl::g_current_egl_context->eglQueryDisplayAttribEXTFn
 #define eglQueryStreamKHR ::gl::g_current_egl_context->eglQueryStreamKHRFn
 #define eglQueryStreamu64KHR ::gl::g_current_egl_context->eglQueryStreamu64KHRFn
 #define eglQueryString ::gl::g_current_egl_context->eglQueryStringFn
@@ -686,6 +755,10 @@ class GL_EXPORT EGLApi {
 #define eglQuerySurface ::gl::g_current_egl_context->eglQuerySurfaceFn
 #define eglQuerySurfacePointerANGLE \
   ::gl::g_current_egl_context->eglQuerySurfacePointerANGLEFn
+#define eglReacquireHighPowerGPUANGLE \
+  ::gl::g_current_egl_context->eglReacquireHighPowerGPUANGLEFn
+#define eglReleaseHighPowerGPUANGLE \
+  ::gl::g_current_egl_context->eglReleaseHighPowerGPUANGLEFn
 #define eglReleaseTexImage ::gl::g_current_egl_context->eglReleaseTexImageFn
 #define eglReleaseThread ::gl::g_current_egl_context->eglReleaseThreadFn
 #define eglSetBlobCacheFuncsANDROID \
@@ -712,4 +785,4 @@ class GL_EXPORT EGLApi {
 #define eglWaitNative ::gl::g_current_egl_context->eglWaitNativeFn
 #define eglWaitSyncKHR ::gl::g_current_egl_context->eglWaitSyncKHRFn
 
-#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_EGL_H_
+#endif  // UI_GL_GL_BINDINGS_AUTOGEN_EGL_H_

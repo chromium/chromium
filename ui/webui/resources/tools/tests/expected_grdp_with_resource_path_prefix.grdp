@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+      <include name="IDR_TEST_FOO_JS" file="${root_src_dir}/test_src_dir/foo.js" resource_path="baz/foo.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_BAR_SVG" file="${root_src_dir}/test_src_dir/bar.svg" resource_path="baz/bar.svg" use_base_dir="false" type="BINDATA" />
+</grit-part>

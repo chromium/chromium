@@ -13,8 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -55,7 +54,10 @@ std::string GetRequestBodyAsString(const network::ResourceRequest* request) {
     return "";
   }
   const network::DataElement& elem = request->request_body->elements()->at(0);
-  return std::string(elem.bytes(), elem.length());
+  if (elem.type() != network::DataElement::Tag::kBytes) {
+    return "";
+  }
+  return std::string(elem.As<network::DataElementBytes>().AsStringPiece());
 }
 
 }  // namespace
@@ -355,7 +357,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   std::string header;
   request0.headers.GetHeader("Authorization", &header);
   EXPECT_EQ("MultiBearer id1:token1,id2:token2", header);
-  EXPECT_EQ("source=ChromiumBrowser&mlreuse=0&externalCcResult=cc_result",
+  EXPECT_EQ("source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result",
             request0.url.query());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, std::string());
@@ -367,7 +369,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   ASSERT_TRUE(auth.HasPendingFetch());
 
   const network::ResourceRequest& request1 = received_requests_.at(1);
-  EXPECT_EQ("source=ChromiumBrowser&mlreuse=1&externalCcResult=cc_result",
+  EXPECT_EQ("source=ChromiumBrowser&reuseCookies=1&externalCcResult=cc_result",
             request1.url.query());
 }
 

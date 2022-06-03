@@ -57,10 +57,10 @@ class PickRequestTask : public Task {
 
   ~PickRequestTask() override;
 
+ private:
   // TaskQueue::Task implementation, starts the async chain
   void Run() override;
 
- private:
   // Step 1. get the requests
   void GetRequests();
 

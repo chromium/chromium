@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GENERIC_PLATFORM_SENSOR_AMBIENT_LIGHT_SENSOR_MAC_H_
-#define DEVICE_GENERIC_PLATFORM_SENSOR_AMBIENT_LIGHT_SENSOR_MAC_H_
+#ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_AMBIENT_LIGHT_MAC_H_
+#define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_AMBIENT_LIGHT_MAC_H_
 
 #include <IOKit/IOKitLib.h>
 
@@ -23,6 +23,10 @@ class PlatformSensorAmbientLightMac : public PlatformSensor {
   // to write the result back.
   PlatformSensorAmbientLightMac(SensorReadingSharedBuffer* reading_buffer,
                                 PlatformSensorProvider* provider);
+
+  PlatformSensorAmbientLightMac(const PlatformSensorAmbientLightMac&) = delete;
+  PlatformSensorAmbientLightMac& operator=(
+      const PlatformSensorAmbientLightMac&) = delete;
 
   mojom::ReportingMode GetReportingMode() override;
   // Can only be called once, the first time or after a StopSensor call.
@@ -54,10 +58,8 @@ class PlatformSensorAmbientLightMac : public PlatformSensor {
   // sensor is busy.
   base::mac::ScopedIOObject<io_object_t> light_sensor_busy_notification_;
   double current_lux_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAmbientLightMac);
 };
 
 }  // namespace device
 
-#endif  // DEVICE_GENERIC_PLATFORM_SENSOR_AMBIENT_LIGHT_SENSOR_MAC_H_
+#endif  // SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_AMBIENT_LIGHT_MAC_H_

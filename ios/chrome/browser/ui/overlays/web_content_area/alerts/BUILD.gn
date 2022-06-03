@@ -1,0 +1,51 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("alerts") {
+  sources = [
+    "alert_overlay_coordinator.h",
+    "alert_overlay_coordinator.mm",
+    "alert_overlay_mediator.h",
+    "alert_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/ui/alert_view",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/presenters",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "alert_overlay_coordinator_unittest.mm",
+    "alert_overlay_mediator_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":alerts",
+    "//base/test:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/alert_view",
+    "//ios/chrome/browser/ui/alert_view/test",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

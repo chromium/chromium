@@ -20,8 +20,6 @@ namespace device {
 
 namespace {
 
-constexpr uint16_t kVendorIdSony = 0x054c;
-constexpr uint16_t kProductIdDualShock4 = 0x05c4;
 constexpr size_t kUsbReportLength = 32;
 constexpr size_t kBluetoothReportLength = 78;
 
@@ -39,7 +37,7 @@ static_assert(sizeof(kUsbStopVibration) == kUsbReportLength,
 constexpr uint8_t kUsbStartVibration[] = {
     0x05,  // report ID
     0x01, 0x00, 0x00,
-    0x7f,  // weak magnitude
+    0x80,  // weak magnitude
     0xff,  // strong magnitude
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -66,7 +64,7 @@ static_assert(sizeof(kBtStopVibration) == kBluetoothReportLength,
 constexpr uint8_t kBtStartVibration[] = {
     0x11,  // report ID
     0xc0, 0x20, 0xf1, 0x04, 0x00,
-    0x7f,  // weak magnitude
+    0x80,  // weak magnitude
     0xff,  // strong magnitude
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x43, 0x43, 0x00, 0x4d, 0x85, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -75,7 +73,7 @@ constexpr uint8_t kBtStartVibration[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     // CRC32
-    0xf7, 0x4e, 0xbe, 0x5a};
+    0x1e, 0x67, 0x45, 0xb4};
 static_assert(sizeof(kBtStartVibration) == kBluetoothReportLength,
               "kBtStartVibration has incorrect size");
 
@@ -91,7 +89,7 @@ constexpr double kStrongMagnitude = 1.0;  // 100% intensity
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 class FakeHidWriter : public HidWriter {
  public:
@@ -129,15 +127,17 @@ class Dualshock4ControllerTest : public testing::Test {
     auto usb_writer = std::make_unique<FakeHidWriter>();
     usb_writer_ = usb_writer.get();
     ds4_usb_ = std::make_unique<Dualshock4Controller>(
-        kVendorIdSony, kProductIdDualShock4, GAMEPAD_BUS_USB,
-        std::move(usb_writer));
+        GamepadId::kSonyProduct05c4, GAMEPAD_BUS_USB, std::move(usb_writer));
 
     auto bluetooth_writer = std::make_unique<FakeHidWriter>();
     bluetooth_writer_ = bluetooth_writer.get();
     ds4_bluetooth_ = std::make_unique<Dualshock4Controller>(
-        kVendorIdSony, kProductIdDualShock4, GAMEPAD_BUS_BLUETOOTH,
+        GamepadId::kSonyProduct05c4, GAMEPAD_BUS_BLUETOOTH,
         std::move(bluetooth_writer));
   }
+
+  Dualshock4ControllerTest(const Dualshock4ControllerTest&) = delete;
+  Dualshock4ControllerTest& operator=(const Dualshock4ControllerTest&) = delete;
 
   void TearDown() override {
     ds4_usb_->Shutdown();
@@ -182,8 +182,6 @@ class Dualshock4ControllerTest : public testing::Test {
   std::unique_ptr<Dualshock4Controller> ds4_bluetooth_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(Dualshock4ControllerTest);
 };
 
 TEST_F(Dualshock4ControllerTest, PlayEffectUsb) {

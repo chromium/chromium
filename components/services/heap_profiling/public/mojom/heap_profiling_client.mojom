@@ -12,19 +12,12 @@ enum StackMode {
 
   // Instruction addresses from unwinding the stack.
   NATIVE_WITHOUT_THREAD_NAMES,
-
-  // Uses trace events as identifiers.
-  PSEUDO,
-
-  // Uses a combination of trace events and selective native addresses.
-  MIXED
 };
 
 // Type of the allocator responsible for the allocation sample.
 enum AllocatorType {
   kMalloc,
   kPartitionAlloc,
-  kOilpan
 };
 
 // A wrapper for parameters that affect each client's implementation of
@@ -84,5 +77,10 @@ interface ProfilingClient {
   // There is currently no mechanism to stop recording allocations.
   StartProfiling(ProfilingParams params) => ();
 
+  // Captures and returns a snapshot of the heap profile of the current process.
   RetrieveHeapProfile() => (HeapProfile profile);
+
+  // Captures a snapshot of the heap profile and adds to Perfetto traces in
+  // proto format.
+  AddHeapProfileToTrace() => (bool success);
 };

@@ -1,11 +1,13 @@
 {
     "GUID": "{84391467-dd8b-4c66-9b52-860583038351}",
+    "IPAddressConfigType":"DHCP",
     "Name": "TestOpenVPN",
+    "NameServersConfigType":"DHCP",
     "Type": "VPN",
     "VPN": {
         "Host": "terminus.muc",
         "OpenVPN": {
-            "ClientCertPKCS11Id": "1:123456abcdef",
+            "ClientCertPKCS11Id": "123456abcdef",
             "ClientCertType": "PKCS11Id",
             "SaveCredentials": true,
             "Username": "hans"

@@ -1,0 +1,167 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://scanning/=../../ash/webui/scanning/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":action_toolbar_test",
+    ":color_mode_select_test",
+    ":file_type_select_test",
+    ":loading_page_test",
+    ":multi_page_checkbox_test",
+    ":multi_page_scan_test",
+    ":page_size_select_test",
+    ":resolution_select_test",
+    ":scan_done_section_test",
+    ":scan_preview_test",
+    ":scan_to_select_test",
+    ":scanner_select_test",
+    ":scanning_app_test",
+    ":scanning_app_test_utils",
+    ":scanning_app_unified_test",
+    ":source_select_test",
+    ":test_scanning_browser_proxy",
+  ]
+}
+
+js_library("action_toolbar_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:action_toolbar",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("color_mode_select_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:color_mode_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("file_type_select_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:file_type_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("loading_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:loading_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("multi_page_scan_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:multi_page_scan",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("multi_page_checkbox_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:multi_page_checkbox",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("page_size_select_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:page_size_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("resolution_select_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:resolution_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_done_section_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:scan_done_section",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_preview_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:scan_preview",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_to_select_test") {
+  deps = [
+    ":test_scanning_browser_proxy",
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:scan_to_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scanner_select_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:scanner_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scanning_app_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/scanning/resources:scanning_app",
+    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scanning_app_test_utils") {
+  deps = [ "../..:chai_assert" ]
+}
+
+js_library("scanning_app_unified_test") {
+}
+
+js_library("source_select_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "//ash/webui/scanning/resources:source_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_scanning_browser_proxy") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_browser_proxy",
+    "//ash/webui/scanning/resources:scanning_browser_proxy",
+  ]
+}

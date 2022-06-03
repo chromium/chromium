@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Open HTTPS window: `Sec-CH-UA` header returned by default. assert_not_equals: `Sec-CH-UA` is sent. got disallowed value ""
+FAIL Open HTTPS window: `Sec-CH-UA` header is consistent across versions. assert_not_equals: The `Sec-CH-UA` header is delivered. got disallowed value ""
+FAIL Open HTTPS window: No brand in `Sec-CH-UA` header is > than 32 chars. assert_true: A well-formed Sec-CH-UA header must have version (v=) params expected true got false
+Harness: the test ran to completion.
+

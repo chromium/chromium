@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 
@@ -33,15 +33,17 @@ class BASE_EXPORT SequencedTaskRunnerHandle {
   // Binds |task_runner| to the current thread.
   explicit SequencedTaskRunnerHandle(
       scoped_refptr<SequencedTaskRunner> task_runner);
+
+  SequencedTaskRunnerHandle(const SequencedTaskRunnerHandle&) = delete;
+  SequencedTaskRunnerHandle& operator=(const SequencedTaskRunnerHandle&) =
+      delete;
+
   ~SequencedTaskRunnerHandle();
 
  private:
-  // Friend needed for ThreadTaskRunnerHandle::OverrideForTesting().
-  friend class ThreadTaskRunnerHandle;
+  friend class ThreadTaskRunnerHandleOverride;
 
   scoped_refptr<SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerHandle);
 };
 
 }  // namespace base

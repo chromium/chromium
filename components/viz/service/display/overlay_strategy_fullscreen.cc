@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 
+#include <vector>
+
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -20,17 +22,18 @@ OverlayStrategyFullscreen::OverlayStrategyFullscreen(
 OverlayStrategyFullscreen::~OverlayStrategyFullscreen() {}
 
 bool OverlayStrategyFullscreen::Attempt(
-    const SkMatrix44& output_color_matrix,
+    const skia::Matrix44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
-    RenderPassList* render_pass_list,
+    AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds) {
   // Before we attempt an overlay strategy, the candidate list should be empty.
   DCHECK(candidate_list->empty());
-  RenderPass* render_pass = render_pass_list->back().get();
+  auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
   // First quad of quad_list is the top most quad.
   auto front = quad_list->begin();
@@ -48,8 +51,9 @@ bool OverlayStrategyFullscreen::Attempt(
     return false;
 
   OverlayCandidate candidate;
-  if (!OverlayCandidate::FromDrawQuad(resource_provider, output_color_matrix,
-                                      quad, &candidate)) {
+  if (!OverlayCandidate::FromDrawQuad(
+          resource_provider, surface_damage_rect_list, output_color_matrix,
+          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
     return false;
   }
 
@@ -68,6 +72,77 @@ bool OverlayStrategyFullscreen::Attempt(
 
   candidate_list->swap(new_candidate_list);
 
+  render_pass->quad_list = QuadList();  // Remove all the quads
+  return true;
+}
+
+void OverlayStrategyFullscreen::ProposePrioritized(
+    const skia::Matrix44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const PrimaryPlane* primary_plane,
+    OverlayProposedCandidateList* candidates,
+    std::vector<gfx::Rect>* content_bounds) {
+  auto* render_pass = render_pass_list->back().get();
+  QuadList* quad_list = &render_pass->quad_list;
+
+  // First non invisible quad of quad_list is the top most quad.
+  auto front = quad_list->begin();
+  while (front != quad_list->end()) {
+    if (!OverlayCandidate::IsInvisibleQuad(*front))
+      break;
+    ++front;
+  }
+
+  if (front == quad_list->end())
+    return;
+
+  const DrawQuad* quad = *front;
+  if (quad->ShouldDrawWithBlending())
+    return;
+
+  OverlayCandidate candidate;
+  if (!OverlayCandidate::FromDrawQuad(
+          resource_provider, surface_damage_rect_list, output_color_matrix,
+          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+    return;
+  }
+
+  if (!candidate.display_rect.origin().IsOrigin() ||
+      gfx::ToRoundedSize(candidate.display_rect.size()) !=
+          render_pass->output_rect.size()) {
+    return;
+  }
+  candidate.is_opaque = true;
+  candidate.plane_z_order = 0;
+  candidates->push_back({front, candidate, this});
+}
+
+bool OverlayStrategyFullscreen::AttemptPrioritized(
+    const skia::Matrix44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const PrimaryPlane* primary_plane,
+    OverlayCandidateList* candidate_list,
+    std::vector<gfx::Rect>* content_bounds,
+    OverlayProposedCandidate* proposed_candidate) {
+  // Before we attempt an overlay strategy, the candidate list should be empty.
+  DCHECK(candidate_list->empty());
+
+  OverlayCandidateList new_candidate_list;
+  new_candidate_list.push_back(proposed_candidate->candidate);
+  capability_checker_->CheckOverlaySupport(primary_plane, &new_candidate_list);
+  if (!new_candidate_list.front().overlay_handled)
+    return false;
+
+  candidate_list->swap(new_candidate_list);
+  auto* render_pass = render_pass_list->back().get();
   render_pass->quad_list = QuadList();  // Remove all the quads
   return true;
 }

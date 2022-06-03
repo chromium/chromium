@@ -65,6 +65,10 @@
       "default": "SEARCH_ENGINE_OTHER",
       "optional": true
     },
+    // Whether a connection to search_url should regularly be established when
+    // the engine is set as the "default search engine". "ALLOWED" is the only
+    // value that will enable the pre-connections.
+    { "field": "preconnect_to_search_url", "type": "string", "optional": true },
     // Unique id for this prepopulate engine (corresponds to
     // TemplateURL::prepopulate_id). This ID must be greater than zero and must
     // remain the same for a particular site regardless of how the url changes;

@@ -1,8 +1,11 @@
 rootWebArea
-++genericContainer
-++++image name='pipe'
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++image name='  '
+++genericContainer ignored
+++++genericContainer
+++++++image name='pipe'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++image name='  '
+++++++staticText name=' '
+++++++image name='SVG face'

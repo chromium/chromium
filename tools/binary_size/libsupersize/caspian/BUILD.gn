@@ -9,7 +9,7 @@ if (!defined(is_wasm)) {
   is_wasm = current_os == "wasm"
 }
 
-assert(is_linux || is_wasm)
+assert(is_linux || is_chromeos || is_wasm)
 
 source_set("caspian-lib") {
   sources = [
@@ -33,9 +33,7 @@ source_set("caspian-lib") {
     "//third_party/zlib:zlib",
     "//third_party/zlib/google:compression_utils_portable",
   ]
-  public_deps = [
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  public_deps = [ "//third_party/jsoncpp:jsoncpp" ]
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
 }
@@ -56,21 +54,15 @@ test("caspian_unittests") {
   ]
 }
 
-executable("cli") {
-  sources = [
-    "cli.cc",
-  ]
-  deps = [
-    ":caspian-lib",
-  ]
+executable("caspian_cli") {
+  sources = [ "cli.cc" ]
+  deps = [ ":caspian-lib" ]
   cflags = [ "-Wall" ]
 }
 
 if (is_wasm) {
   executable("caspian_web") {
-    sources = [
-      "caspian_web.cc",
-    ]
+    sources = [ "caspian_web.cc" ]
     deps = [
       ":caspian-lib",
       "//third_party/re2:re2",
@@ -82,15 +74,11 @@ if (is_wasm) {
     }
     ldflags = [
       "-s",
-      "TOTAL_MEMORY=536870912",
-      "-s",
-      "ALLOW_MEMORY_GROWTH=1",
-      "-s",
-      "EXPORTED_FUNCTIONS=['_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_malloc','_free']",
+      "EXPORTED_FUNCTIONS=['_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_QueryProperty','_malloc','_free']",
       "-s",
       "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
     ]
-    if (!is_debug) {
+    if (is_official_build) {
       ldflags += [ "-O3" ]
     }
   }

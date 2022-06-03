@@ -11,9 +11,9 @@
 #import "ios/chrome/app/main_controller.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 
-@class DeviceSharingManager;
 class GURL;
 @protocol TabSwitcher;
+@class FirstRunAppAgent;
 
 // Private methods and protocols that are made visible here for tests.
 @interface MainController ()
@@ -21,28 +21,10 @@ class GURL;
 // YES if the last time the app was launched was with a previous version.
 @property(nonatomic, readonly) BOOL isFirstLaunchAfterUpgrade;
 
-// Presents a promo's navigation controller.
-- (void)showPromo:(UIViewController*)promo;
-
-// Dismisses all modal dialogs, excluding the omnibox if |dismissOmnibox| is
-// NO, then call |completion|.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
 @end
 
 // Methods that only exist for tests.
 @interface MainController (TestingOnly)
-
-@property(nonatomic, readonly) DeviceSharingManager* deviceSharingManager;
-@property(nonatomic, retain) id<TabSwitcher> tabSwitcher;
-
-// The top presented view controller that is not currently being dismissed.
-@property(nonatomic, readonly) UIViewController* topPresentedViewController;
-
-// Tab switcher state.
-@property(nonatomic, getter=isTabSwitcherActive) BOOL tabSwitcherActive;
-@property(nonatomic, readonly) BOOL dismissingTabSwitcher;
 
 // Sets the internal startup state to indicate that the launch was triggered
 // by an external app opening the given URL.

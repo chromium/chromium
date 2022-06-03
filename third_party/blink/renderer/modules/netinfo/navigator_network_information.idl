@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 [
-    ImplementedAs=NavigatorNetworkInformation
+    ImplementedAs=NetworkInformation
 ] partial interface Navigator {
     [MeasureAs=NetInfo] readonly attribute NetworkInformation connection;
 };

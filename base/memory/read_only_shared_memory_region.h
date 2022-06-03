@@ -5,9 +5,6 @@
 #ifndef BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 
-#include <utility>
-
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -32,12 +29,6 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // This means that the caller's process is the only process that can modify
   // the region content. If you need to pass write access to another process,
   // consider using WritableSharedMemoryRegion or UnsafeSharedMemoryRegion.
-  //
-  // This call will fail if the process does not have sufficient permissions to
-  // create a shared memory region itself. See
-  // mojo::CreateReadOnlySharedMemoryRegion in
-  // mojo/public/cpp/base/shared_memory_utils.h for creating a shared memory
-  // region from a an unprivileged process where a broker must be used.
   static MappedReadOnlyRegion Create(size_t size);
   using CreateFunction = decltype(Create);
 
@@ -63,6 +54,10 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // Move operations are allowed.
   ReadOnlySharedMemoryRegion(ReadOnlySharedMemoryRegion&&);
   ReadOnlySharedMemoryRegion& operator=(ReadOnlySharedMemoryRegion&&);
+
+  ReadOnlySharedMemoryRegion(const ReadOnlySharedMemoryRegion&) = delete;
+  ReadOnlySharedMemoryRegion& operator=(const ReadOnlySharedMemoryRegion&) =
+      delete;
 
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
@@ -120,8 +115,6 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedMemoryRegion);
 };
 
 // Helper struct for return value of ReadOnlySharedMemoryRegion::Create().

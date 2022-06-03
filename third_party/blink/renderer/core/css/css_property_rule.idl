@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 [
-    RuntimeEnabled=CSSVariables2AtProperty
+    Exposed=Window
 ] interface CSSPropertyRule : CSSRule {
-    readonly attribute CSSStyleDeclaration style;
+    readonly attribute CSSOMString name;
+    readonly attribute CSSOMString syntax;
+    readonly attribute boolean inherits;
+    readonly attribute CSSOMString? initialValue;
 };

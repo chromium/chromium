@@ -40,9 +40,10 @@ http-equiv=3DContent-Type>
 <BODY>This page contains several frames.<BR><IFRAME=20
 src=3D"http://localhost/frame_0.html"></IFRAME><BR><IFRAME=20
 src=3D"http://localhost/frame_1.html"></IFRAME><BR><IFRAME=20
-src=3D"http://localhost/frame_2.html"></IFRAME><BR>And a red =
+src=3D"http://localhost/frame_2.html"></IFRAME><BR><DIV=20
+style=3D"will-change:transform">And a red =
 square:<BR><IMG=20
-src=3D"http://localhost/resources/red_square.png">=20
+src=3D"http://localhost/resources/red_square.png"></DIV>=20
 </BODY></HTML>
 
 ------=_NextPart_001_0023_01CC157B.AAC41680

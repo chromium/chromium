@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Check trailing events
+FAIL Check result assert_equals: Check log expected "outeronload,activeElement:BODY,willfocusiframe,didfocusiframe,activeElement:IFRAME,willbluriframe,didbluriframe,activeElement:BODY,willspineventloop,innerbodyfocus,innerbodyblur," but got "outeronload,activeElement:BODY,willfocusiframe,didfocusiframe,activeElement:IFRAME,willbluriframe,didbluriframe,activeElement:BODY,willspineventloop,innerbodyblur,"
+Harness: the test ran to completion.
+

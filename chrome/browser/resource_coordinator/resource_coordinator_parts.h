@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_RESOURCE_COORDINATOR_PARTS_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_RESOURCE_COORDINATOR_PARTS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
@@ -28,6 +27,10 @@ class TabLifecycleUnitSource;
 class ResourceCoordinatorParts {
  public:
   ResourceCoordinatorParts();
+
+  ResourceCoordinatorParts(const ResourceCoordinatorParts&) = delete;
+  ResourceCoordinatorParts& operator=(const ResourceCoordinatorParts&) = delete;
+
   ~ResourceCoordinatorParts();
 
   TabMemoryMetricsReporter* tab_memory_metrics_reporter() {
@@ -72,8 +75,6 @@ class ResourceCoordinatorParts {
   TabManager tab_manager_;
   TabLifecycleUnitSource tab_lifecycle_unit_source_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorParts);
 };
 
 }  // namespace resource_coordinator

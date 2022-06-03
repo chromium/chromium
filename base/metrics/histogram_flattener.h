@@ -5,10 +5,6 @@
 #ifndef BASE_METRICS_HISTOGRAM_FLATTENER_H_
 #define BASE_METRICS_HISTOGRAM_FLATTENER_H_
 
-#include <map>
-#include <string>
-
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 
 namespace base {
@@ -19,6 +15,8 @@ class HistogramSamples;
 // handles the logistics of gathering up available histograms for recording.
 class BASE_EXPORT HistogramFlattener {
  public:
+  HistogramFlattener(const HistogramFlattener&) = delete;
+  HistogramFlattener& operator=(const HistogramFlattener&) = delete;
   virtual ~HistogramFlattener() = default;
 
   virtual void RecordDelta(const HistogramBase& histogram,
@@ -26,9 +24,6 @@ class BASE_EXPORT HistogramFlattener {
 
  protected:
   HistogramFlattener() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistogramFlattener);
 };
 
 }  // namespace base

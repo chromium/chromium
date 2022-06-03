@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -107,8 +107,8 @@ class CryptAuthEnrollmentResult {
     kErrorTimeoutWaitingForClientAppMetadata = 34,
     // Failed to create the user key pair to be enrolled.
     kErrorUserKeyPairCreationFailed = 35,
-    // Failed to create the legacy master key to be enrolled.
-    kErrorLegacyMasterKeyCreationFailed = 36,
+    // Failed to create the legacy authzen key to be enrolled.
+    kErrorLegacyAuthzenKeyCreationFailed = 36,
     // Failed to create the DeviceSync:BetterTogether key to be enrolled.
     kErrorDeviceSyncBetterTogetherKeyCreationFailed = 37,
     // Used for UMA logs.
@@ -117,14 +117,14 @@ class CryptAuthEnrollmentResult {
 
   CryptAuthEnrollmentResult(
       ResultCode result_code,
-      const base::Optional<cryptauthv2::ClientDirective>& client_directive);
+      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthEnrollmentResult(const CryptAuthEnrollmentResult& other);
 
   ~CryptAuthEnrollmentResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const base::Optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -135,7 +135,7 @@ class CryptAuthEnrollmentResult {
 
  private:
   ResultCode result_code_;
-  base::Optional<cryptauthv2::ClientDirective> client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

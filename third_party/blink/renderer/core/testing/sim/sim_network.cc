@@ -71,8 +71,8 @@ void SimNetwork::DidFail(WebURLLoaderClient* client,
                          int64_t total_encoded_body_length,
                          int64_t total_decoded_body_length) {
   if (!current_request_) {
-    client->DidFail(error, total_encoded_data_length, total_encoded_body_length,
-                    total_decoded_body_length);
+    client->DidFail(error, base::TimeTicks::Now(), total_encoded_data_length,
+                    total_encoded_body_length, total_decoded_body_length);
     return;
   }
   current_request_->DidFail(error);
@@ -97,6 +97,7 @@ void SimNetwork::AddRequest(SimRequestBase& request) {
   requests_.insert(request.url_.GetString(), &request);
   WebURLResponse response(request.url_);
   response.SetMimeType(request.mime_type_);
+  response.AddHttpHeaderField("Content-Type", request.mime_type_);
 
   if (request.redirect_url_.IsEmpty()) {
     response.SetHttpStatusCode(request.response_http_status_);
@@ -126,6 +127,7 @@ bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   SimRequestBase* request = it->value;
   params->response = WebURLResponse(params->url);
   params->response.SetMimeType(request->mime_type_);
+  params->response.AddHttpHeaderField("Content-Type", request->mime_type_);
   params->response.SetHttpStatusCode(request->response_http_status_);
   for (const auto& http_header : request->response_http_headers_)
     params->response.AddHttpHeaderField(http_header.key, http_header.value);
@@ -133,6 +135,8 @@ bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
   request->UsedForNavigation(body_loader.get());
   params->body_loader = std::move(body_loader);
+  params->referrer = request->referrer_;
+  params->requestor_origin = request->requestor_origin_;
   return true;
 }
 

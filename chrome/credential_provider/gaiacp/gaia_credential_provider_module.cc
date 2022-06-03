@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/credential_provider/gaiacp/dllmain.h"
+#include "chrome/credential_provider/gaiacp/gaia_credential_provider_module.h"
+
+#include <process.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/eventlog/gcp_eventlog_messages.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
+#include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
@@ -20,7 +23,9 @@
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting.h"
 #include "chrome/credential_provider/gaiacp/grit/gaia_static_resources.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "components/crash/content/app/crash_switches.h"
+#include "chrome/credential_provider/gaiacp/mdm_utils.h"
+#include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "components/crash/core/app/crash_switches.h"
 #include "content/public/common/content_switches.h"
 
 namespace credential_provider {
@@ -37,11 +42,27 @@ void InvalidParameterHandler(const wchar_t* expression,
                << " file=" << (file ? file : L"-") << " line=" << line;
 }
 
+unsigned __stdcall CheckGCPWExtensionStatus(void* param) {
+  LOGFN(VERBOSE);
+  if (!credential_provider::extension::IsGCPWExtensionRunning()) {
+    credential_provider::extension::OSServiceManager* service_manager =
+        credential_provider::extension::OSServiceManager::Get();
+
+    DWORD error_code = service_manager->StartGCPWService();
+    if (error_code != ERROR_SUCCESS) {
+      LOGFN(WARNING) << "Unable to start GCPW extension win32=" << error_code;
+    }
+  }
+  return 0;
+}
+
 }  // namespace
 
 CGaiaCredentialProviderModule::CGaiaCredentialProviderModule()
     : ATL::CAtlDllModuleT<CGaiaCredentialProviderModule>(),
-      exit_manager_(nullptr) {}
+      exit_manager_(nullptr),
+      gcpw_extension_check_performed_(0),
+      crashpad_initialized_(0) {}
 
 CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() {}
 
@@ -58,14 +79,14 @@ CGaiaCredentialProviderModule::UpdateRegistryAppId(BOOL do_register) throw() {
       eventlog_path.Append(FILE_PATH_LITERAL("gcp_eventlog_provider.dll"));
 
   auto provider_guid_string =
-      base::win::String16FromGUID(CLSID_GaiaCredentialProvider);
+      base::win::WStringFromGUID(CLSID_GaiaCredentialProvider);
 
   auto filter_guid_string =
-      base::win::String16FromGUID(CLSID_CGaiaCredentialProviderFilter);
+      base::win::WStringFromGUID(CLSID_CGaiaCredentialProviderFilter);
 
   ATL::_ATL_REGMAP_ENTRY regmap[] = {
-      {L"CP_CLASS_GUID", base::as_wcstr(provider_guid_string.c_str())},
-      {L"CP_FILTER_CLASS_GUID", base::as_wcstr(filter_guid_string.c_str())},
+      {L"CP_CLASS_GUID", provider_guid_string.c_str()},
+      {L"CP_FILTER_CLASS_GUID", filter_guid_string.c_str()},
       {L"VERSION", TEXT(CHROME_VERSION_STRING)},
       {L"EVENTLOG_PATH", eventlog_path.value().c_str()},
       {nullptr, nullptr},
@@ -81,6 +102,47 @@ void CGaiaCredentialProviderModule::RefreshTokenHandleValidity() {
         ->StartRefreshingTokenHandleValidity();
     token_handle_validity_refreshed_ = true;
   }
+}
+
+void CGaiaCredentialProviderModule::CheckGCPWExtension() {
+  LOGFN(VERBOSE);
+  if (extension::IsGCPWExtensionEnabled() &&
+      ::InterlockedCompareExchange(&gcpw_extension_check_performed_, 1, 0) ==
+          0) {
+    gcpw_extension_checker_thread_handle_ =
+        reinterpret_cast<HANDLE>(_beginthreadex(
+            nullptr, 0, CheckGCPWExtensionStatus, nullptr, 0, nullptr));
+  }
+}
+
+void CGaiaCredentialProviderModule::InitializeCrashReporting() {
+  // Perform a thread unsafe check to see whether crash reporting is
+  // initialized. Thread safe check is performed right before initializing crash
+  // reporting.
+  if (GetGlobalFlagOrDefault(kRegInitializeCrashReporting, 1) &&
+      !crashpad_initialized_) {
+    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+
+    if (!base::EndsWith(cmd_line->GetProgram().value(), L"gcp_unittests.exe",
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+        cmd_line->GetSwitchValueASCII(switches::kProcessType) !=
+            crash_reporter::switches::kCrashpadHandler &&
+        ::InterlockedCompareExchange(&crashpad_initialized_, 1, 0) == 0) {
+      ConfigureGcpCrashReporting(*cmd_line);
+      LOGFN(VERBOSE) << "Crash reporting was initialized.";
+    }
+  }
+}
+
+void CGaiaCredentialProviderModule::LogProcessDetails() {
+  wchar_t process_name[MAX_PATH] = {0};
+  GetModuleFileName(nullptr, process_name, MAX_PATH);
+
+  LOGFN(INFO) << "GCPW Initialized in " << process_name
+              << " GCPW Version: " << (CHROME_VERSION_STRING)
+              << " Windows Build: "
+              << base::win::OSInfo::GetInstance()->Kernel32BaseVersion()
+              << " Version:" << GetWindowsVersion();
 }
 
 BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
@@ -104,26 +166,12 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
                            true,    // Enable timestamp.
                            false);  // Enable tickcount.
       logging::SetEventSource("GCPW", GCPW_CATEGORY, MSG_LOG_MESSAGE);
-
-      base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-
-      // Don't start the crash handler if the DLL is being loaded in unit
-      // tests. It is possible that the DLL will be loaded by other executables
-      // including gcp_setup.exe, LogonUI.exe, rundll32.exe.
-      if (!base::EndsWith(cmd_line->GetProgram().value(), L"gcp_unittests.exe",
-                          base::CompareCase::INSENSITIVE_ASCII) &&
-          cmd_line->GetSwitchValueASCII(switches::kProcessType) !=
-              crash_reporter::switches::kCrashpadHandler) {
-        credential_provider::ConfigureGcpCrashReporting(*cmd_line);
-      }
-
-      LOGFN(INFO) << "DllMain(DLL_PROCESS_ATTACH) Build: "
-                  << base::win::OSInfo::GetInstance()->Kernel32BaseVersion()
-                  << " Version:" << GetWindowsVersion();
+      if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 0))
+        logging::SetMinLogLevel(logging::LOG_VERBOSE);
       break;
     }
     case DLL_PROCESS_DETACH:
-      LOGFN(INFO) << "DllMain(DLL_PROCESS_DETACH)";
+      LOGFN(VERBOSE) << "DllMain(DLL_PROCESS_DETACH)";
 
       // When this DLL is loaded for testing, don't reset the command line
       // since it causes tests to crash.

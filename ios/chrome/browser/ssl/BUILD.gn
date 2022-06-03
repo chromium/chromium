@@ -9,70 +9,52 @@ source_set("ssl") {
     "captive_portal_detector_tab_helper.mm",
     "captive_portal_detector_tab_helper_delegate.h",
     "captive_portal_metrics.h",
-    "captive_portal_metrics_tab_helper.h",
-    "captive_portal_metrics_tab_helper.mm",
     "ios_captive_portal_blocking_page.h",
     "ios_captive_portal_blocking_page.mm",
     "ios_ssl_blocking_page.h",
     "ios_ssl_blocking_page.mm",
     "ios_ssl_error_handler.h",
     "ios_ssl_error_handler.mm",
-    "ios_ssl_error_tab_helper.h",
-    "ios_ssl_error_tab_helper.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//base:i18n",
     "//components/autofill/ios/form_util",
-    "//components/captive_portal",
+    "//components/captive_portal/core",
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//components/security_state/ios",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/interstitials",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
+    "//ios/components/security_interstitials",
     "//ios/public/provider/chrome/browser",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/security",
+    "//ios/web/public/session",
     "//net",
     "//ui/base",
     "//url",
   ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "captive_portal_features.cc",
-    "captive_portal_features.h",
-  ]
-  deps = [
-    "//base",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "ios_captive_portal_blocking_page_unittest.mm",
-    "ios_ssl_error_handler_unittest.mm",
-    "ios_ssl_error_tab_helper_unittest.mm",
-  ]
+  sources = [ "ios_ssl_error_handler_unittest.mm" ]
   deps = [
-    ":feature_flags",
     ":ssl",
     "//base/test:test_support",
+    "//components/security_interstitials/core",
     "//components/security_state/core",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/interstitials",
     "//ios/chrome/browser/web:test_support",
+    "//ios/components/security_interstitials",
     "//ios/web",
     "//ios/web/public/security",
     "//ios/web/public/test",

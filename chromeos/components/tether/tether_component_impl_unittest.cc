@@ -50,7 +50,7 @@ class FakeAsynchronousShutdownObjectContainerFactory
   ~FakeAsynchronousShutdownObjectContainerFactory() override = default;
 
   // AsynchronousShutdownObjectContainerImpl::Factory:
-  std::unique_ptr<AsynchronousShutdownObjectContainer> BuildInstance(
+  std::unique_ptr<AsynchronousShutdownObjectContainer> CreateInstance(
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       TetherHostFetcher* tether_host_fetcher,
@@ -75,7 +75,7 @@ class FakeSynchronousShutdownObjectContainerFactory
   ~FakeSynchronousShutdownObjectContainerFactory() override = default;
 
   // SynchronousShutdownObjectContainerImpl::Factory:
-  std::unique_ptr<SynchronousShutdownObjectContainer> BuildInstance(
+  std::unique_ptr<SynchronousShutdownObjectContainer> CreateInstance(
       AsynchronousShutdownObjectContainer* asychronous_container,
       NotificationPresenter* notification_presenter,
       GmsCoreNotificationsStateTrackerImpl*
@@ -104,7 +104,7 @@ class FakeCrashRecoveryManagerFactory
   ~FakeCrashRecoveryManagerFactory() override = default;
 
   // CrashRecoveryManagerImpl::Factory:
-  std::unique_ptr<CrashRecoveryManager> BuildInstance(
+  std::unique_ptr<CrashRecoveryManager> CreateInstance(
       NetworkStateHandler* network_state_handler,
       ActiveHost* active_host,
       HostScanCache* host_scan_cache) override {
@@ -118,6 +118,10 @@ class FakeCrashRecoveryManagerFactory
 }  // namespace
 
 class TetherComponentImplTest : public testing::Test {
+ public:
+  TetherComponentImplTest(const TetherComponentImplTest&) = delete;
+  TetherComponentImplTest& operator=(const TetherComponentImplTest&) = delete;
+
  protected:
   TetherComponentImplTest() = default;
   ~TetherComponentImplTest() override = default;
@@ -131,8 +135,8 @@ class TetherComponentImplTest : public testing::Test {
     fake_tether_disconnector_ = std::make_unique<FakeTetherDisconnector>();
 
     fake_synchronous_container_ = new FakeSynchronousShutdownObjectContainer(
-        base::Bind(&TetherComponentImplTest::OnSynchronousContainerDeleted,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherComponentImplTest::OnSynchronousContainerDeleted,
+                       base::Unretained(this)));
     fake_synchronous_container_->set_active_host(fake_active_host_.get());
     fake_synchronous_container_->set_host_scan_scheduler(
         fake_host_scan_scheduler_.get());
@@ -141,25 +145,25 @@ class TetherComponentImplTest : public testing::Test {
     fake_synchronous_container_factory_ =
         base::WrapUnique(new FakeSynchronousShutdownObjectContainerFactory(
             fake_synchronous_container_));
-    SynchronousShutdownObjectContainerImpl::Factory::SetInstanceForTesting(
+    SynchronousShutdownObjectContainerImpl::Factory::SetFactoryForTesting(
         fake_synchronous_container_factory_.get());
 
     fake_asynchronous_container_ = new FakeAsynchronousShutdownObjectContainer(
-        base::Bind(&TetherComponentImplTest::OnAsynchronousContainerDeleted,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherComponentImplTest::OnAsynchronousContainerDeleted,
+                       base::Unretained(this)));
     fake_asynchronous_container_factory_ =
         base::WrapUnique(new FakeAsynchronousShutdownObjectContainerFactory(
             fake_asynchronous_container_));
-    AsynchronousShutdownObjectContainerImpl::Factory::SetInstanceForTesting(
+    AsynchronousShutdownObjectContainerImpl::Factory::SetFactoryForTesting(
         fake_asynchronous_container_factory_.get());
 
     fake_crash_recovery_manager_ = new FakeCrashRecoveryManager();
     fake_crash_recovery_manager_factory_ = base::WrapUnique(
         new FakeCrashRecoveryManagerFactory(fake_crash_recovery_manager_));
-    CrashRecoveryManagerImpl::Factory::SetInstanceForTesting(
+    CrashRecoveryManagerImpl::Factory::SetFactoryForTesting(
         fake_crash_recovery_manager_factory_.get());
 
-    component_ = TetherComponentImpl::Factory::NewInstance(
+    component_ = TetherComponentImpl::Factory::Create(
         nullptr /* device_sync_client */, nullptr /* secure_channel_client */,
         nullptr /* tether_host_fetcher */, nullptr /* notification_presenter */,
         nullptr /* gms_core_notifications_state_tracker */,
@@ -173,17 +177,17 @@ class TetherComponentImplTest : public testing::Test {
   }
 
   void InvokeCrashRecoveryCallback() {
-    base::Closure& on_restoration_finished_callback =
-        fake_crash_recovery_manager_->on_restoration_finished_callback();
+    base::OnceClosure on_restoration_finished_callback =
+        fake_crash_recovery_manager_->TakeOnRestorationFinishedCallback();
     EXPECT_FALSE(on_restoration_finished_callback.is_null());
-    on_restoration_finished_callback.Run();
+    std::move(on_restoration_finished_callback).Run();
   }
 
   void InvokeAsynchronousShutdownCallback() {
-    base::Closure& shutdown_complete_callback =
-        fake_asynchronous_container_->shutdown_complete_callback();
+    base::OnceClosure shutdown_complete_callback =
+        fake_asynchronous_container_->TakeShutdownCompleteCallback();
     EXPECT_FALSE(shutdown_complete_callback.is_null());
-    shutdown_complete_callback.Run();
+    std::move(shutdown_complete_callback).Run();
   }
 
   void OnSynchronousContainerDeleted() {
@@ -216,9 +220,6 @@ class TetherComponentImplTest : public testing::Test {
   std::unique_ptr<TetherComponent> component_;
 
   std::unique_ptr<TestTetherComponentObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherComponentImplTest);
 };
 
 TEST_F(TetherComponentImplTest, TestShutdown_Disconnected) {
@@ -294,7 +295,7 @@ TEST_F(TetherComponentImplTest, TestShutdown_BeforeCrashRecoveryComplete) {
   EXPECT_FALSE(was_synchronous_container_deleted_);
   EXPECT_FALSE(was_asynchronous_container_deleted_);
   EXPECT_TRUE(
-      fake_asynchronous_container_->shutdown_complete_callback().is_null());
+      fake_asynchronous_container_->TakeShutdownCompleteCallback().is_null());
 
   InvokeCrashRecoveryCallback();
   EXPECT_TRUE(was_synchronous_container_deleted_);

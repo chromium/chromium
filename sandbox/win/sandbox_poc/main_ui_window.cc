@@ -29,12 +29,11 @@ const wchar_t MainUIWindow::kDefaultEntryPoint_[] = L"Run";
 const wchar_t MainUIWindow::kDefaultLogFile_[]    = L"";
 
 MainUIWindow::MainUIWindow()
-    : broker_(NULL),
+    : broker_(nullptr),
       spawn_target_(L""),
       instance_handle_(NULL),
       dll_path_(L""),
-      entry_point_(L"") {
-}
+      entry_point_(L"") {}
 
 MainUIWindow::~MainUIWindow() {
 }
@@ -646,8 +645,7 @@ void MainUIWindow::InsertLineInListView(wchar_t* debug_message) {
   struct tm time = {0};
   localtime_s(&time, &time_temp);
 
-  size_t return_code;
-  return_code = wcsftime(message_time, kSizeTime, L"[%H:%M:%S] ", &time);
+  wcsftime(message_time, kSizeTime, L"[%H:%M:%S] ", &time);
 
   wcscat_s(message_time, size_message_with_time, debug_message);
 

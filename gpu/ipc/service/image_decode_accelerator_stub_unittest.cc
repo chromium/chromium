@@ -6,19 +6,31 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/atomicops.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -43,7 +55,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -51,7 +63,7 @@
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 #include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
-#include "ipc/ipc_message.h"
+#include "skia/ext/skia_memory_dump_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -66,6 +78,8 @@
 #include "url/gurl.h"
 
 using testing::InSequence;
+using testing::Mock;
+using testing::NiceMock;
 using testing::StrictMock;
 
 namespace gpu {
@@ -73,18 +87,54 @@ class MemoryTracker;
 
 namespace {
 
+// The size of a decoded buffer to report for a successful decode.
+constexpr size_t kDecodedBufferByteSize = 123u;
+
+// The byte size Skia is expected to report for a buffer object.
+constexpr uint64_t kSkiaBufferObjectSize = 32768;
+
 struct ExpectedCacheEntry {
   uint32_t id = 0u;
   SkISize dimensions;
 };
 
-std::unique_ptr<MemoryTracker> CreateMockMemoryTracker(
-    const GPUCreateCommandBufferConfig& init_params) {
-  return std::make_unique<gles2::MockMemoryTracker>();
+std::unique_ptr<MemoryTracker> CreateMockMemoryTracker() {
+  return std::make_unique<NiceMock<gles2::MockMemoryTracker>>();
 }
 
 scoped_refptr<Buffer> MakeBufferForTesting() {
   return MakeMemoryBuffer(sizeof(base::subtle::Atomic32));
+}
+
+uint64_t GetMemoryDumpByteSize(
+    const base::trace_event::MemoryAllocatorDump* dump,
+    const std::string& entry_name) {
+  DCHECK(dump);
+  auto entry_it = std::find_if(
+      dump->entries().cbegin(), dump->entries().cend(),
+      [&entry_name](
+          const base::trace_event::MemoryAllocatorDump::Entry& entry) {
+        return entry.name == entry_name;
+      });
+  if (entry_it != dump->entries().cend()) {
+    EXPECT_EQ(std::string(base::trace_event::MemoryAllocatorDump::kUnitsBytes),
+              entry_it->units);
+    EXPECT_EQ(base::trace_event::MemoryAllocatorDump::Entry::EntryType::kUint64,
+              entry_it->entry_type);
+    return entry_it->value_uint64;
+  }
+  EXPECT_TRUE(false);
+  return 0u;
+}
+
+base::CheckedNumeric<uint64_t> GetExpectedTotalMippedSizeForPlanarImage(
+    const cc::ServiceImageTransferCacheEntry* decode_entry) {
+  base::CheckedNumeric<uint64_t> safe_total_image_size = 0u;
+  for (const auto& plane_image : decode_entry->plane_images()) {
+    safe_total_image_size +=
+        base::strict_cast<uint64_t>(plane_image->textureSize());
+  }
+  return safe_total_image_size;
 }
 
 // This ImageFactory is defined so that we don't have to generate a real
@@ -99,6 +149,7 @@ class TestImageFactory : public ImageFactory {
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override {
     return base::MakeRefCounted<gl::GLImageStub>();
@@ -107,6 +158,7 @@ class TestImageFactory : public ImageFactory {
   scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
                                                   gfx::BufferFormat format,
                                                   gfx::BufferUsage usage,
+                                                  SurfaceHandle surface_handle,
                                                   bool* is_cleared) override {
     NOTREACHED();
     return nullptr;
@@ -123,6 +175,11 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
  public:
   MockImageDecodeAcceleratorWorker(gfx::BufferFormat format_for_decodes)
       : format_for_decodes_(format_for_decodes) {}
+
+  MockImageDecodeAcceleratorWorker(const MockImageDecodeAcceleratorWorker&) =
+      delete;
+  MockImageDecodeAcceleratorWorker& operator=(
+      const MockImageDecodeAcceleratorWorker&) = delete;
 
   void Decode(std::vector<uint8_t> encoded_data,
               const gfx::Size& output_size,
@@ -151,7 +208,7 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
       }
       decode_result->visible_size = next_decode.output_size;
       decode_result->buffer_format = format_for_decodes_;
-      decode_result->buffer_byte_size = 0u;
+      decode_result->buffer_byte_size = kDecodedBufferByteSize;
       std::move(next_decode.decode_cb).Run(std::move(decode_result));
     } else {
       std::move(next_decode.decode_cb).Run(nullptr);
@@ -170,8 +227,6 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
 
   const gfx::BufferFormat format_for_decodes_;
   base::queue<PendingDecode> pending_decodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockImageDecodeAcceleratorWorker);
 };
 
 const int kChannelId = 1;
@@ -191,6 +246,12 @@ class ImageDecodeAcceleratorStubTest
   ImageDecodeAcceleratorStubTest()
       : GpuChannelTestCommon(false /* use_stub_bindings */),
         image_decode_accelerator_worker_(GetParam()) {}
+
+  ImageDecodeAcceleratorStubTest(const ImageDecodeAcceleratorStubTest&) =
+      delete;
+  ImageDecodeAcceleratorStubTest& operator=(
+      const ImageDecodeAcceleratorStubTest&) = delete;
+
   ~ImageDecodeAcceleratorStubTest() override = default;
 
   SyncPointManager* sync_point_manager() const {
@@ -227,14 +288,19 @@ class ImageDecodeAcceleratorStubTest
     channel_manager()->SetImageDecodeAcceleratorWorkerForTesting(
         &image_decode_accelerator_worker_);
 
+    // Register Skia's memory dump provider so that we can inspect its reported
+    // memory usage.
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+
     // Initialize the GrContext so that texture uploading works.
     ContextResult context_result;
     scoped_refptr<SharedContextState> shared_context_state =
         channel_manager()->GetSharedContextState(&context_result);
     ASSERT_EQ(ContextResult::kSuccess, context_result);
     ASSERT_TRUE(shared_context_state);
-    shared_context_state->InitializeGrContext(GpuDriverBugWorkarounds(),
-                                              nullptr);
+    shared_context_state->InitializeGrContext(
+        GpuPreferences(), GpuDriverBugWorkarounds(), nullptr);
 
     GpuChannel* channel = CreateChannel(kChannelId, false /* is_gpu_host */);
     ASSERT_TRUE(channel);
@@ -248,30 +314,30 @@ class ImageDecodeAcceleratorStubTest
     // would make RunTasksUntilIdle() run forever.
     CommandBufferStub::SetMemoryTrackerFactoryForTesting(
         base::BindRepeating(&CreateMockMemoryTracker));
-    GPUCreateCommandBufferConfig init_params;
-    init_params.surface_handle = kNullSurfaceHandle;
-    init_params.share_group_id = MSG_ROUTING_NONE;
-    init_params.stream_id = 0;
-    init_params.stream_priority = SchedulingPriority::kNormal;
-    init_params.attribs = ContextCreationAttribs();
-    init_params.attribs.enable_gles2_interface = false;
-    init_params.attribs.enable_raster_interface = true;
-    init_params.attribs.bind_generates_resource = false;
-    init_params.active_url = GURL();
+    auto init_params = mojom::CreateCommandBufferParams::New();
+    init_params->surface_handle = kNullSurfaceHandle;
+    init_params->share_group_id = MSG_ROUTING_NONE;
+    init_params->stream_id = 0;
+    init_params->stream_priority = SchedulingPriority::kNormal;
+    init_params->attribs = ContextCreationAttribs();
+    init_params->attribs.enable_gles2_interface = false;
+    init_params->attribs.enable_raster_interface = true;
+    init_params->attribs.bind_generates_resource = false;
+    init_params->active_url = GURL();
     ContextResult result = ContextResult::kTransientFailure;
     Capabilities capabilities;
-    HandleMessage(channel,
-                  new GpuChannelMsg_CreateCommandBuffer(
-                      init_params, kCommandBufferRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities));
+    CreateCommandBuffer(*channel, std::move(init_params), kCommandBufferRouteId,
+                        GetSharedMemoryRegion(), &result, &capabilities);
     ASSERT_EQ(ContextResult::kSuccess, result);
     CommandBufferStub* command_buffer =
         channel->LookupCommandBuffer(kCommandBufferRouteId);
     ASSERT_TRUE(command_buffer);
 
-    // Make sure there are no pending tasks before starting the test.
-    ASSERT_EQ(0u, task_runner()->NumPendingTasks());
-    ASSERT_EQ(0u, io_task_runner()->NumPendingTasks());
+    // Make sure there are no pending tasks before starting the test. Command
+    // buffer creation creates some throw-away Mojo endpoints that will post
+    // some tasks.
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(task_environment().MainThreadIsIdle());
   }
 
   void TearDown() override {
@@ -332,7 +398,8 @@ class ImageDecodeAcceleratorStubTest
   SyncToken SendDecodeRequest(const gfx::Size& output_size,
                               uint64_t decode_release_count,
                               uint32_t transfer_cache_entry_id,
-                              uint64_t handle_release_count) {
+                              uint64_t handle_release_count,
+                              bool needs_mips = false) {
     GpuChannel* channel = channel_manager()->LookupChannel(kChannelId);
     DCHECK(channel);
 
@@ -352,33 +419,20 @@ class ImageDecodeAcceleratorStubTest
       return SyncToken();
 
     // Send the IPC decode request.
-    GpuChannelMsg_ScheduleImageDecode_Params decode_params;
-    decode_params.encoded_data = std::vector<uint8_t>();
-    decode_params.output_size = output_size;
-    decode_params.raster_decoder_route_id = kCommandBufferRouteId;
-    decode_params.transfer_cache_entry_id = transfer_cache_entry_id;
-    decode_params.discardable_handle_shm_id = handle.shm_id();
-    decode_params.discardable_handle_shm_offset = handle.byte_offset();
-    decode_params.discardable_handle_release_count = handle_release_count;
-    decode_params.target_color_space = gfx::ColorSpace();
-    decode_params.needs_mips = false;
-
-    HandleMessage(
-        channel,
-        new GpuChannelMsg_ScheduleImageDecode(
-            static_cast<int32_t>(
-                GpuChannelReservedRoutes::kImageDecodeAccelerator),
-            std::move(decode_params), decode_sync_token.release_count()));
+    auto decode_params = mojom::ScheduleImageDecodeParams::New();
+    decode_params->output_size = output_size;
+    decode_params->raster_decoder_route_id = kCommandBufferRouteId;
+    decode_params->transfer_cache_entry_id = transfer_cache_entry_id;
+    decode_params->discardable_handle_shm_id = handle.shm_id();
+    decode_params->discardable_handle_shm_offset = handle.byte_offset();
+    decode_params->discardable_handle_release_count = handle_release_count;
+    decode_params->needs_mips = needs_mips;
+    channel->GetGpuChannelForTesting().ScheduleImageDecode(
+        std::move(decode_params), decode_sync_token.release_count());
     return decode_sync_token;
   }
 
-  void RunTasksUntilIdle() {
-    while (task_runner()->HasPendingTask() ||
-           io_task_runner()->HasPendingTask()) {
-      task_runner()->RunUntilIdle();
-      io_task_runner()->RunUntilIdle();
-    }
-  }
+  void RunTasksUntilIdle() { task_environment().RunUntilIdle(); }
 
   void CheckTransferCacheEntries(
       const std::vector<ExpectedCacheEntry>& expected_entries) {
@@ -418,6 +472,189 @@ class ImageDecodeAcceleratorStubTest
     }
   }
 
+  cc::ServiceImageTransferCacheEntry* RunSimpleDecode(bool needs_mips) {
+    EXPECT_CALL(image_decode_accelerator_worker_, DoDecode(gfx::Size(100, 100)))
+        .Times(1);
+    const SyncToken decode_sync_token = SendDecodeRequest(
+        gfx::Size(100, 100) /* output_size */, 1u /* decode_release_count */,
+        1u /* transfer_cache_entry_id */, 1u /* handle_release_count */,
+        needs_mips);
+    if (!decode_sync_token.HasData())
+      return nullptr;
+    image_decode_accelerator_worker_.FinishOneDecode(true);
+    RunTasksUntilIdle();
+    if (!sync_point_manager()->IsSyncTokenReleased(decode_sync_token))
+      return nullptr;
+    ServiceTransferCache* transfer_cache = GetServiceTransferCache();
+    if (!transfer_cache)
+      return nullptr;
+    const int raster_decoder_id = GetRasterDecoderId();
+    if (raster_decoder_id < 0)
+      return nullptr;
+    auto* decode_entry = static_cast<cc::ServiceImageTransferCacheEntry*>(
+        transfer_cache->GetEntry(ServiceTransferCache::EntryKey(
+            raster_decoder_id, cc::TransferCacheEntryType::kImage,
+            1u /* entry_id */)));
+    if (!Mock::VerifyAndClear(&image_decode_accelerator_worker_))
+      return nullptr;
+    return decode_entry;
+  }
+
+  // Requests a |detail_level| process memory dump and checks:
+  // - The total memory reported by the transfer cache.
+  // - The total GPU resources memory reported by Skia. Skia memory allocator
+  //   dumps that share a global allocator dump with a transfer cache entry are
+  //   not counted (and we check that the Skia dump importance is less than the
+  //   corresponding transfer cache dump in that case).
+  // - The average transfer cache image entry byte size (this is only checked
+  //   for background-level memory dumps).
+  void ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail detail_level,
+      uint64_t expected_total_transfer_cache_size,
+      uint64_t expected_total_skia_gpu_resources_size,
+      uint64_t expected_avg_image_size) {
+    // Request a process memory dump.
+    base::trace_event::MemoryDumpRequestArgs dump_args{};
+    dump_args.dump_guid = 1234u;
+    dump_args.dump_type =
+        base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED;
+    dump_args.level_of_detail = detail_level;
+    dump_args.determinism = base::trace_event::MemoryDumpDeterminism::FORCE_GC;
+    std::unique_ptr<base::trace_event::ProcessMemoryDump> dump;
+    base::RunLoop run_loop;
+    base::trace_event::MemoryDumpManager::GetInstance()->CreateProcessDump(
+        dump_args,
+        base::BindOnce(
+            [](std::unique_ptr<base::trace_event::ProcessMemoryDump>* out_pmd,
+               base::RepeatingClosure quit_closure, bool success,
+               uint64_t dump_guid,
+               std::unique_ptr<base::trace_event::ProcessMemoryDump> pmd) {
+              if (success)
+                *out_pmd = std::move(pmd);
+              quit_closure.Run();
+            },
+            &dump, run_loop.QuitClosure()));
+    RunTasksUntilIdle();
+    run_loop.Run();
+
+    // Check the transfer cache dumps are as expected.
+    ServiceTransferCache* cache = GetServiceTransferCache();
+    ASSERT_TRUE(cache);
+    // This map will later allow us to answer the following question easily:
+    // which transfer cache entry memory dump points to a given shared global
+    // allocator dump?
+    std::map<
+        base::trace_event::MemoryAllocatorDumpGuid,
+        std::pair<base::trace_event::ProcessMemoryDump::MemoryAllocatorDumpEdge,
+                  base::trace_event::MemoryAllocatorDump*>>
+        shared_dump_to_transfer_cache_entry_dump;
+    std::string transfer_cache_dump_name =
+        base::StringPrintf("gpu/transfer_cache/cache_0x%" PRIXPTR,
+                           reinterpret_cast<uintptr_t>(cache));
+    if (detail_level ==
+        base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      auto transfer_cache_dump_it =
+          dump->allocator_dumps().find(transfer_cache_dump_name);
+      ASSERT_NE(dump->allocator_dumps().end(), transfer_cache_dump_it);
+      EXPECT_EQ(expected_total_transfer_cache_size,
+                GetMemoryDumpByteSize(
+                    transfer_cache_dump_it->second.get(),
+                    base::trace_event::MemoryAllocatorDump::kNameSize));
+
+      std::string avg_image_size_dump_name =
+          transfer_cache_dump_name + "/avg_image_size";
+      auto avg_image_size_dump_it =
+          dump->allocator_dumps().find(avg_image_size_dump_name);
+      ASSERT_NE(dump->allocator_dumps().end(), avg_image_size_dump_it);
+      EXPECT_EQ(expected_avg_image_size,
+                GetMemoryDumpByteSize(avg_image_size_dump_it->second.get(),
+                                      "average_size"));
+    } else {
+      DCHECK_EQ(base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+                detail_level);
+      base::CheckedNumeric<uint64_t> safe_actual_transfer_cache_total_size(0u);
+      std::string entry_dump_prefix =
+          transfer_cache_dump_name + "/gpu/entry_0x";
+      for (const auto& allocator_dump : dump->allocator_dumps()) {
+        if (base::StartsWith(allocator_dump.first, entry_dump_prefix,
+                             base::CompareCase::SENSITIVE)) {
+          ASSERT_TRUE(allocator_dump.second);
+          safe_actual_transfer_cache_total_size += GetMemoryDumpByteSize(
+              allocator_dump.second.get(),
+              base::trace_event::MemoryAllocatorDump::kNameSize);
+
+          // If the dump name for this entry does not end in /dma_buf (i.e., we
+          // haven't requested mipmaps from Skia), the allocator dump for this
+          // cache entry should point to a shared global allocator dump (i.e.,
+          // shared with Skia). Let's save this association in
+          // |shared_dump_to_transfer_cache_entry_dump| for later.
+          ASSERT_FALSE(allocator_dump.second->guid().empty());
+          auto edge_it =
+              dump->allocator_dumps_edges().find(allocator_dump.second->guid());
+          ASSERT_EQ(base::EndsWith(allocator_dump.first, "/dma_buf",
+                                   base::CompareCase::SENSITIVE),
+                    dump->allocator_dumps_edges().end() == edge_it);
+          if (edge_it != dump->allocator_dumps_edges().end()) {
+            ASSERT_FALSE(edge_it->second.target.empty());
+            ASSERT_EQ(shared_dump_to_transfer_cache_entry_dump.end(),
+                      shared_dump_to_transfer_cache_entry_dump.find(
+                          edge_it->second.target));
+            shared_dump_to_transfer_cache_entry_dump[edge_it->second.target] =
+                std::make_pair(edge_it->second, allocator_dump.second.get());
+          }
+        }
+      }
+      ASSERT_TRUE(safe_actual_transfer_cache_total_size.IsValid());
+      EXPECT_EQ(expected_total_transfer_cache_size,
+                safe_actual_transfer_cache_total_size.ValueOrDie());
+    }
+
+    // Check that the Skia dumps are as expected. We won't count Skia dumps that
+    // point to a global allocator dump that's shared with a transfer cache
+    // dump.
+    base::CheckedNumeric<uint64_t> safe_actual_total_skia_gpu_resources_size(
+        0u);
+    for (const auto& allocator_dump : dump->allocator_dumps()) {
+      if (base::StartsWith(allocator_dump.first, "skia/gpu_resources",
+                           base::CompareCase::SENSITIVE)) {
+        ASSERT_TRUE(allocator_dump.second);
+        uint64_t skia_allocator_dump_size = GetMemoryDumpByteSize(
+            allocator_dump.second.get(),
+            base::trace_event::MemoryAllocatorDump::kNameSize);
+
+        // If this dump points to a global allocator dump that's shared with a
+        // transfer cache dump, we won't count it.
+        ASSERT_FALSE(allocator_dump.second->guid().empty());
+        auto edge_it =
+            dump->allocator_dumps_edges().find(allocator_dump.second->guid());
+        if (edge_it != dump->allocator_dumps_edges().end()) {
+          ASSERT_FALSE(edge_it->second.target.empty());
+          auto transfer_cache_dump_it =
+              shared_dump_to_transfer_cache_entry_dump.find(
+                  edge_it->second.target);
+          if (transfer_cache_dump_it !=
+              shared_dump_to_transfer_cache_entry_dump.end()) {
+            // Not counting the Skia dump is only valid if its importance is
+            // less than the transfer cache dump and the values of the dumps are
+            // the same.
+            EXPECT_EQ(skia_allocator_dump_size,
+                      GetMemoryDumpByteSize(
+                          transfer_cache_dump_it->second.second,
+                          base::trace_event::MemoryAllocatorDump::kNameSize));
+            EXPECT_LT(edge_it->second.importance,
+                      transfer_cache_dump_it->second.first.importance);
+            continue;
+          }
+        }
+
+        safe_actual_total_skia_gpu_resources_size += skia_allocator_dump_size;
+      }
+    }
+    ASSERT_TRUE(safe_actual_total_skia_gpu_resources_size.IsValid());
+    EXPECT_EQ(expected_total_skia_gpu_resources_size,
+              safe_actual_total_skia_gpu_resources_size.ValueOrDie());
+  }
+
  protected:
   StrictMock<MockImageDecodeAcceleratorWorker> image_decode_accelerator_worker_;
 
@@ -425,8 +662,6 @@ class ImageDecodeAcceleratorStubTest
   TestImageFactory image_factory_;
   base::test::ScopedFeatureList feature_list_;
   base::WeakPtrFactory<ImageDecodeAcceleratorStubTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorStubTest);
 };
 
 // Tests the following flow: two decode requests are sent. One of the decodes is
@@ -714,6 +949,102 @@ TEST_P(ImageDecodeAcceleratorStubTest, WaitForDiscardableHandleRegistration) {
 
   // Check that the decoded images are in the transfer cache.
   CheckTransferCacheEntries({{1u, SkISize::Make(100, 100)}});
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportDetailedForUnmippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(false /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      base::strict_cast<uint64_t>(
+          kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
+      0u /* expected_total_skia_gpu_resources_size */,
+      0u /* expected_avg_image_size */);
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest,
+       MemoryReportBackgroundForUnmippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(false /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      base::strict_cast<uint64_t>(
+          kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
+      0u /* expected_total_skia_gpu_resources_size */,
+      base::strict_cast<uint64_t>(
+          kDecodedBufferByteSize) /* expected_avg_image_size */);
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportDetailedForMippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(true /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetParam()),
+            decode_entry->plane_images().size());
+  base::CheckedNumeric<uint64_t> safe_expected_total_transfer_cache_size =
+      GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
+  ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      safe_expected_total_transfer_cache_size.ValueOrDie(),
+      kSkiaBufferObjectSize /* expected_total_skia_gpu_resources_size */,
+      0u /* expected_avg_image_size */);
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest, MemoryReportBackgroundForMippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(true /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetParam()),
+            decode_entry->plane_images().size());
+  base::CheckedNumeric<uint64_t> safe_expected_total_transfer_cache_size =
+      GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
+  ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      safe_expected_total_transfer_cache_size.ValueOrDie(),
+      kSkiaBufferObjectSize,
+      safe_expected_total_transfer_cache_size
+          .ValueOrDie() /* expected_avg_image_size */);
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest,
+       MemoryReportDetailedForDeferredMippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(false /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  decode_entry->EnsureMips();
+  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetParam()),
+            decode_entry->plane_images().size());
+  base::CheckedNumeric<uint64_t> safe_expected_total_transfer_cache_size =
+      GetExpectedTotalMippedSizeForPlanarImage(decode_entry);
+  ASSERT_TRUE(safe_expected_total_transfer_cache_size.IsValid());
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+      safe_expected_total_transfer_cache_size.ValueOrDie(),
+      kSkiaBufferObjectSize /* expected_total_skia_gpu_resources_size */,
+      0u /* expected_avg_image_size */);
+}
+
+TEST_P(ImageDecodeAcceleratorStubTest,
+       MemoryReportBackgroundForDeferredMippedDecode) {
+  cc::ServiceImageTransferCacheEntry* decode_entry =
+      RunSimpleDecode(false /* needs_mips */);
+  ASSERT_TRUE(decode_entry);
+  decode_entry->EnsureMips();
+  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetParam()),
+            decode_entry->plane_images().size());
+  // For a deferred mip request, the transfer cache doesn't update its size
+  // computation, so it reports memory as if no mips had been generated.
+  ExpectProcessMemoryDump(
+      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+      base::strict_cast<uint64_t>(
+          kDecodedBufferByteSize) /* expected_total_transfer_cache_size */,
+      kSkiaBufferObjectSize,
+      base::strict_cast<uint64_t>(
+          kDecodedBufferByteSize) /* expected_avg_image_size */);
 }
 
 // TODO(andrescj): test the deletion of transfer cache entries.

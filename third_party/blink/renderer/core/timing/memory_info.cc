@@ -32,7 +32,6 @@
 
 #include <limits>
 
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -43,10 +42,8 @@
 
 namespace blink {
 
-static constexpr base::TimeDelta kTwentyMinutes =
-    base::TimeDelta::FromMinutes(20);
-static constexpr base::TimeDelta kFiftyMs =
-    base::TimeDelta::FromMilliseconds(50);
+static constexpr base::TimeDelta kTwentyMinutes = base::Minutes(20);
+static constexpr base::TimeDelta kFiftyMs = base::Milliseconds(50);
 
 static void GetHeapSize(HeapInfo& info) {
   v8::HeapStatistics heap_statistics;
@@ -63,6 +60,8 @@ class HeapSizeCache {
 
  public:
   HeapSizeCache() : clock_(base::DefaultTickClock::GetInstance()) {}
+  HeapSizeCache(const HeapSizeCache&) = delete;
+  HeapSizeCache& operator=(const HeapSizeCache&) = delete;
 
   void GetCachedHeapSize(HeapInfo& info, MemoryInfo::Precision precision) {
     MaybeUpdate(precision);
@@ -76,7 +75,7 @@ class HeapSizeCache {
   }
 
   void SetTickClockForTesting(const base::TickClock* clock) { clock_ = clock; }
-  void ResetLastUpdateTimeForTesting() { last_update_time_ = base::nullopt; }
+  void ResetLastUpdateTimeForTesting() { last_update_time_ = absl::nullopt; }
 
  private:
   void MaybeUpdate(MemoryInfo::Precision precision) {
@@ -105,11 +104,10 @@ class HeapSizeCache {
     info_.js_heap_size_limit = QuantizeMemorySize(info_.js_heap_size_limit);
   }
 
-  base::Optional<base::TimeTicks> last_update_time_;
+  absl::optional<base::TimeTicks> last_update_time_;
   const base::TickClock* clock_;
 
   HeapInfo info_;
-  DISALLOW_COPY_AND_ASSIGN(HeapSizeCache);
 };
 
 // We quantize the sizes to make it more difficult for an attacker to see

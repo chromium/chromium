@@ -1,0 +1,13 @@
+Name: D8 configuration to desugar desugar_jdk_libs
+Short Name: desugar_jdk_libs_configuration
+URL: http://r8.googlesource.com/r8
+Version: 1.1.1
+License: BSD 3-Clause
+License File: LICENSE
+Security Critical: yes
+
+Description:
+D8 configuration to desugar desugar_jdk_libs.
+
+Local Modifications:
+No modifications.

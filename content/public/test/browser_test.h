@@ -11,10 +11,11 @@
 //
 // InProcessBrowserTest cannot be run more than once in the same address space
 // anyway - otherwise the second test crashes.
-#if defined(HAS_OUT_OF_PROC_TEST_RUNNER)
+#if !defined(HAS_OUT_OF_PROC_TEST_RUNNER)
+#error Can't reliably terminate hanging event tests without OOP test runner.
+#endif
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define IN_PROC_BROWSER_TEST_(                                               \
@@ -68,13 +69,13 @@
       ::testing::UnitTest::GetInstance()                                       \
           ->parameterized_test_registry()                                      \
           .GetTestCasePatternHolder<test_case_name>(                           \
-               #test_case_name,                                                \
-               ::testing::internal::CodeLocation(__FILE__, __LINE__))          \
-          ->AddTestPattern(                                                    \
               #test_case_name,                                                 \
-              #test_name,                                                      \
+              ::testing::internal::CodeLocation(__FILE__, __LINE__))           \
+          ->AddTestPattern(                                                    \
+              #test_case_name, #test_name,                                     \
               new ::testing::internal::TestMetaFactory<GTEST_TEST_CLASS_NAME_( \
-                  test_case_name, test_name)>());                              \
+                  test_case_name, test_name)>(),                               \
+              ::testing::internal::CodeLocation(__FILE__, __LINE__));          \
       return 0;                                                                \
     }                                                                          \
     static int gtest_registering_dummy_;                                       \
@@ -90,21 +91,5 @@
 // evaluated (e.g., if |test_name| is prefixed with MAYBE_).
 #define IN_PROC_BROWSER_TEST_P(test_case_name, test_name) \
   IN_PROC_BROWSER_TEST_P_(test_case_name, test_name)
-
-#else
-
-// Complain if HAS_OUT_OF_PROC_TEST_RUNNER is missing, to save debugging
-// headaches. Includes a hack to generate a uniqueish symbol in the form
-// of an unfinished function defition. The unfinished definition serves to
-// lexcially eat the basic block that often follows this macro's usage.
-// Doing this removes some potential spurious compile errors.
-#define IN_PROC_BROWSER_TEST_F(test_fixture, test_name)            \
-  static_assert(false, "HAS_OUT_OF_PROC_TEST_RUNNER not defined"); \
-  void Eat##test_fixture##test_name(void)
-#define IN_PROC_BROWSER_TEST_P(test_case_name, test_name)          \
-  static_assert(false, "HAS_OUT_OF_PROC_TEST_RUNNER not defined"); \
-  void Eat##test_fixture##test_name(void)
-
-#endif  // defined(HAS_OUT_OF_PROC_TEST_RUNNER)
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_H_

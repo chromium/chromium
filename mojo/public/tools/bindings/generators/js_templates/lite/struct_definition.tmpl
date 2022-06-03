@@ -4,7 +4,7 @@
  * @export
  */
 {{module.namespace}}.{{struct.name}}_{{constant.name}} =
-    {{constant.value|expression_to_text_lite}};
+    {{constant|constant_value}};
 {%  endfor %}
 
 {%- from "lite/enum_definition.tmpl" import enum_def with context %}
@@ -16,7 +16,6 @@
 mojo.internal.Struct(
     {{module.namespace}}.{{struct.name}}Spec.$,
     '{{struct.name}}',
-    {{struct.packed|payload_size}},
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
       mojo.internal.StructField(
@@ -31,6 +30,11 @@ mojo.internal.Struct(
         false /* nullable */),
 {%-   endif %}
 {%- endfor %}
+    ],
+    [
+{%-   for info in struct.versions -%}
+      [{{info.version}}, {{info.num_bytes}}],
+{%-   endfor -%}
     ]);
 
 {% if generate_struct_deserializers %}
@@ -40,18 +44,15 @@ mojo.internal.Struct(
 
 {%  if generate_closure_exports -%}
 goog.provide('{{module.namespace}}.{{struct.name}}');
-
-{% if struct.packed.packed_fields %}
-/**
- * @typedef { {
-{%- for packed_field in struct.packed.packed_fields %}
- *   {{packed_field.field.name}}: {{packed_field.field.kind|lite_closure_field_type}},
-{%-  endfor %}
- * } }
- */
-{% else %}
-/** @typedef {Object} */
-{% endif %}
-{{module.namespace}}.{{struct.name}};
-
 {%- endif %}
+
+/** @record */
+{{module.namespace}}.{{struct.name}} = class {
+  constructor() {
+{%- for packed_field in struct.packed.packed_fields %}
+    /** @export { {{packed_field.field.kind|lite_closure_field_type}} } */
+    this.{{packed_field.field.name}};
+{%-  endfor %}
+  }
+};
+

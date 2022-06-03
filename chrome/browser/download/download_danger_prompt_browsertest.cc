@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,9 +18,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/safe_browsing/db/database_manager.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -51,6 +51,9 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
         test_safe_browsing_factory_(
             std::make_unique<TestSafeBrowsingServiceFactory>()) {}
 
+  DownloadDangerPromptTest(const DownloadDangerPromptTest&) = delete;
+  DownloadDangerPromptTest& operator=(const DownloadDangerPromptTest&) = delete;
+
   ~DownloadDangerPromptTest() override {}
 
   void SetUp() override {
@@ -71,7 +74,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
         browser(), GURL("about:blank"),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-            ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   void SetUpExpectations(
@@ -84,10 +87,8 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
     expected_action_ = expected_action;
     SetUpDownloadItemExpectations(danger_type, token);
     SetUpSafeBrowsingReportExpectations(
-        expected_action == DownloadDangerPrompt::ACCEPT,
-        download_verdict,
-        token,
-        from_download_api);
+        expected_action == DownloadDangerPrompt::ACCEPT, download_verdict,
+        token, from_download_api);
     CreatePrompt(from_download_api);
   }
 
@@ -124,8 +125,8 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   void SetUpDownloadItemExpectations(
       const download::DownloadDangerType& danger_type,
       const std::string& token) {
-    EXPECT_CALL(download_, GetFileNameToReportUser()).WillRepeatedly(Return(
-        base::FilePath(FILE_PATH_LITERAL("evil.exe"))));
+    EXPECT_CALL(download_, GetFileNameToReportUser())
+        .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("evil.exe"))));
     EXPECT_CALL(download_, GetDangerType()).WillRepeatedly(Return(danger_type));
     auto token_obj =
         std::make_unique<DownloadProtectionService::DownloadPingToken>(token);
@@ -155,11 +156,10 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
 
   void CreatePrompt(bool from_download_api) {
     prompt_ = DownloadDangerPrompt::Create(
-        &download_,
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        &download_, browser()->tab_strip_model()->GetActiveWebContents(),
         from_download_api,
-        base::Bind(&DownloadDangerPromptTest::PromptCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&DownloadDangerPromptTest::PromptCallback,
+                       base::Unretained(this)));
     content::RunAllPendingInMessageLoop();
   }
 
@@ -176,8 +176,6 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   bool did_receive_callback_;
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_safe_browsing_factory_;
   std::string expected_serialized_report_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDangerPromptTest);
 };
 
 // Disabled for flaky timeouts on Windows. crbug.com/446696
@@ -297,6 +295,11 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
   enum InvocationType { USER_INITIATED, FROM_DOWNLOAD_API };
   DownloadDangerPromptBrowserTest() : download_url_(kTestDownloadUrl) {}
 
+  DownloadDangerPromptBrowserTest(const DownloadDangerPromptBrowserTest&) =
+      delete;
+  DownloadDangerPromptBrowserTest& operator=(
+      const DownloadDangerPromptBrowserTest&) = delete;
+
   void RunTest(download::DownloadDangerType danger_type,
                InvocationType invocation_type) {
     danger_type_ = danger_type;
@@ -331,8 +334,6 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
   download::DownloadDangerType danger_type_;
   InvocationType invocation_type_;
   download::MockDownloadItem download_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDangerPromptBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,
@@ -368,6 +369,17 @@ IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,
                        InvokeUi_PotentiallyUnwantedFromApi) {
   RunTest(download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+          FROM_DOWNLOAD_API);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,
+                       InvokeUi_AccountCompromise) {
+  RunTest(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+          USER_INITIATED);
+}
+IN_PROC_BROWSER_TEST_F(DownloadDangerPromptBrowserTest,
+                       InvokeUi_AccountCompromiseFromApi) {
+  RunTest(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
           FROM_DOWNLOAD_API);
 }
 

@@ -59,18 +59,31 @@ class JackMatcher {
   uint8_t id_;
 };
 
-int DecodeBcd(uint8_t byte) {
-  DCHECK_LT((byte & 0xf0) >> 4, 0xa);
-  DCHECK_LT(byte & 0x0f, 0xa);
-  return ((byte & 0xf0) >> 4) * 10 + (byte & 0x0f);
+bool DecodeBcd(uint8_t byte, int* decoded) {
+  // Write decoded decimal value from |byte| into |decoded|. If either nibble in
+  // |byte| exceeds decimal 10, returns false.
+  const uint8_t k_nibble_ten = 0xa;
+  const uint8_t nibble_major = (byte & 0xf0) >> 4;
+  const uint8_t nibble_minor = byte & 0x0f;
+  if (nibble_major >= k_nibble_ten || nibble_minor >= k_nibble_ten) {
+    return false;
+  }
+  *decoded = nibble_major * 10 + nibble_minor;
+  return true;
 }
 
 }  // namespace
 
 std::string UsbMidiDescriptorParser::DeviceInfo::BcdVersionToString(
     uint16_t version) {
-  return base::StringPrintf("%d.%02d", DecodeBcd(version >> 8),
-                            DecodeBcd(version & 0xff));
+  const int byte_1 = version >> 8;
+  const int byte_2 = version & 0xff;
+  int version_major, version_minor;
+  if (!DecodeBcd(byte_1, &version_major) ||
+      !DecodeBcd(byte_2, &version_minor)) {
+    return base::StringPrintf("Invalid BCD $%02x.%02x", byte_1, byte_2);
+  }
+  return base::StringPrintf("%d.%02d", version_major, version_minor);
 }
 
 UsbMidiDescriptorParser::UsbMidiDescriptorParser()

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -96,7 +96,7 @@ bool GcmApiFunction::IsGcmApiEnabled(std::string* error) const {
     return false;
   }
 
-  return gcm::GCMProfileService::IsGCMEnabled(profile->GetPrefs());
+  return true;
 }
 
 gcm::GCMDriver* GcmApiFunction::GetGCMDriver() const {
@@ -110,13 +110,12 @@ GcmRegisterFunction::~GcmRegisterFunction() {}
 
 ExtensionFunction::ResponseAction GcmRegisterFunction::Run() {
   std::unique_ptr<api::gcm::Register::Params> params(
-      api::gcm::Register::Params::Create(*args_));
+      api::gcm::Register::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetGCMDriver()->Register(
-      extension()->id(),
-      params->sender_ids,
-      base::Bind(&GcmRegisterFunction::CompleteFunctionWithResult, this));
+      extension()->id(), params->sender_ids,
+      base::BindOnce(&GcmRegisterFunction::CompleteFunctionWithResult, this));
 
   // Register() might have returned synchronously.
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -126,7 +125,7 @@ void GcmRegisterFunction::CompleteFunctionWithResult(
     const std::string& registration_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(registration_id);
+  result->Append(registration_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded
@@ -143,7 +142,7 @@ GcmUnregisterFunction::~GcmUnregisterFunction() {}
 ExtensionFunction::ResponseAction GcmUnregisterFunction::Run() {
   GetGCMDriver()->Unregister(
       extension()->id(),
-      base::Bind(&GcmUnregisterFunction::CompleteFunctionWithResult, this));
+      base::BindOnce(&GcmUnregisterFunction::CompleteFunctionWithResult, this));
 
   // Unregister might have responded already (synchronously).
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -161,7 +160,7 @@ GcmSendFunction::~GcmSendFunction() {}
 
 ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   std::unique_ptr<api::gcm::Send::Params> params(
-      api::gcm::Send::Params::Create(*args_));
+      api::gcm::Send::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   EXTENSION_FUNCTION_VALIDATE(
       ValidateMessageData(params->message.data.additional_properties));
@@ -173,10 +172,8 @@ ExtensionFunction::ResponseAction GcmSendFunction::Run() {
     outgoing_message.time_to_live = *params->message.time_to_live;
 
   GetGCMDriver()->Send(
-      extension()->id(),
-      params->message.destination_id,
-      outgoing_message,
-      base::Bind(&GcmSendFunction::CompleteFunctionWithResult, this));
+      extension()->id(), params->message.destination_id, outgoing_message,
+      base::BindOnce(&GcmSendFunction::CompleteFunctionWithResult, this));
 
   // Send might have already responded synchronously.
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -186,7 +183,7 @@ void GcmSendFunction::CompleteFunctionWithResult(
     const std::string& message_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(message_id);
+  result->Append(message_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded
@@ -222,9 +219,11 @@ void GcmJsEventRouter::OnMessage(const std::string& app_id,
   api::gcm::OnMessage::Message message_arg;
   message_arg.data.additional_properties = message.data;
   if (!message.sender_id.empty())
-    message_arg.from.reset(new std::string(message.sender_id));
-  if (!message.collapse_key.empty())
-    message_arg.collapse_key.reset(new std::string(message.collapse_key));
+    message_arg.from = std::make_unique<std::string>(message.sender_id);
+  if (!message.collapse_key.empty()) {
+    message_arg.collapse_key =
+        std::make_unique<std::string>(message.collapse_key);
+  }
 
   std::unique_ptr<Event> event(
       new Event(events::GCM_ON_MESSAGE, api::gcm::OnMessage::kEventName,
@@ -245,7 +244,8 @@ void GcmJsEventRouter::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {
   api::gcm::OnSendError::Error error;
-  error.message_id.reset(new std::string(send_error_details.message_id));
+  error.message_id =
+      std::make_unique<std::string>(send_error_details.message_id);
   error.error_message = GcmResultToError(send_error_details.result);
   error.details.additional_properties = send_error_details.additional_data;
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,17 +20,19 @@ class RequestFileSystemDialogTest : public DialogBrowserTest {
  public:
   RequestFileSystemDialogTest() {}
 
+  RequestFileSystemDialogTest(const RequestFileSystemDialogTest&) = delete;
+  RequestFileSystemDialogTest& operator=(const RequestFileSystemDialogTest&) =
+      delete;
+
   void ShowUi(const std::string& name) override {
     RequestFileSystemDialogView::ShowDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "RequestFileSystemDialogTest", "TestVolume", true,
-        base::Bind(&RequestFileSystemDialogTest::DialogCallback));
+        base::BindOnce(&RequestFileSystemDialogTest::DialogCallback));
   }
 
  private:
   static void DialogCallback(ui::DialogButton button) {}
-
-  DISALLOW_COPY_AND_ASSIGN(RequestFileSystemDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(RequestFileSystemDialogTest, InvokeUi_default) {

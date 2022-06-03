@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.HAVE_INSTRUMENTS;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.IMMEDIATE_RESPONSE;
-
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -17,10 +14,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,16 +47,19 @@ public class PaymentRequestIncompleteContactDetailsTest implements MainActivityS
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid email address on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "333-333-3333",
-                "jon.doe" /* invalid email address */, "en-US"));
+        helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "333-333-3333", "jon.doe" /* invalid email address */, "en-US"));
 
-        mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /** Attempt to update the contact information with invalid data and cancel the transaction. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteContactAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -89,6 +92,7 @@ public class PaymentRequestIncompleteContactDetailsTest implements MainActivityS
     /** Attempt to add invalid contact info alongside the already invalid info, and cancel. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddIncompleteContactAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -121,6 +125,7 @@ public class PaymentRequestIncompleteContactDetailsTest implements MainActivityS
     /** Update the contact information with valid data and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteContactAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

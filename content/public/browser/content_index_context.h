@@ -9,10 +9,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_index_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 
 class SkBitmap;
@@ -31,10 +30,14 @@ class CONTENT_EXPORT ContentIndexContext {
       base::OnceCallback<void(blink::mojom::ContentIndexError,
                               std::vector<ContentIndexEntry>)>;
   using GetEntryCallback =
-      base::OnceCallback<void(base::Optional<ContentIndexEntry>)>;
+      base::OnceCallback<void(absl::optional<ContentIndexEntry>)>;
   using GetIconsCallback = base::OnceCallback<void(std::vector<SkBitmap>)>;
 
   ContentIndexContext() = default;
+
+  ContentIndexContext(const ContentIndexContext&) = delete;
+  ContentIndexContext& operator=(const ContentIndexContext&) = delete;
+
   virtual ~ContentIndexContext() = default;
 
   // Returns all available icons for the entry identified by
@@ -58,8 +61,6 @@ class CONTENT_EXPORT ContentIndexContext {
   virtual void OnUserDeletedItem(int64_t service_worker_registration_id,
                                  const url::Origin& origin,
                                  const std::string& description_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexContext);
 };
 
 }  // namespace content

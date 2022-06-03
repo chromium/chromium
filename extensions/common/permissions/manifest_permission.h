@@ -9,11 +9,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/pickle.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
 namespace base {
-class PickleIterator;
 class Value;
 }
 
@@ -24,6 +22,10 @@ namespace extensions {
 class ManifestPermission {
  public:
   ManifestPermission();
+
+  ManifestPermission(const ManifestPermission&) = delete;
+  ManifestPermission& operator=(const ManifestPermission&) = delete;
+
   virtual ~ManifestPermission();
 
   // The manifest key this permission applies to.
@@ -59,24 +61,21 @@ class ManifestPermission {
   virtual std::unique_ptr<ManifestPermission> Intersect(
       const ManifestPermission* rhs) const = 0;
 
+  // Returns true if one of the permissions should trigger a permission message
+  // in the management page.  If the permission should trigger a warning message
+  // in chrome://management, set this function to return true.
+  virtual bool RequiresManagementUIWarning() const = 0;
+
+  // Returns true if any of the included permissions should trigger the full
+  // warning on the login screen of the managed-guest session. Reach out to the
+  // privacy team before setting this function to return false.
+  virtual bool RequiresManagedSessionFullLoginWarning() const;
+
   // Returns true if |rhs| is a subset of this.
   bool Contains(const ManifestPermission* rhs) const;
 
   // Returns true if |rhs| is equal to this.
   bool Equal(const ManifestPermission* rhs) const;
-
-  // IPC functions
-  // Writes this into the given IPC message |m|.
-  void Write(base::Pickle* m) const;
-
-  // Reads from the given IPC message |m|.
-  bool Read(const base::Pickle* m, base::PickleIterator* iter);
-
-  // Logs this permission.
-  void Log(std::string* log) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestPermission);
 };
 
 }  // namespace extensions

@@ -9,7 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -30,16 +30,15 @@ struct Env {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-void OnDecodeComplete(const base::Closure& quit_closure,
-                      media::DecodeStatus status) {
-  quit_closure.Run();
+void OnDecodeComplete(base::OnceClosure quit_closure, media::Status status) {
+  std::move(quit_closure).Run();
 }
 
-void OnInitDone(const base::Closure& quit_closure,
+void OnInitDone(base::OnceClosure quit_closure,
                 bool* success_dest,
-                bool success) {
-  *success_dest = success;
-  quit_closure.Run();
+                media::Status status) {
+  *success_dest = status.is_ok();
+  std::move(quit_closure).Run();
 }
 
 void OnOutputComplete(scoped_refptr<media::VideoFrame> frame) {}
@@ -65,11 +64,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   bool has_alpha = false;
   if (rng() & 1) {
-    codec = media::kCodecVP8;
+    codec = media::VideoCodec::kVP8;
     // non-Alpha VP8 decoding isn't supported by VpxVideoDecoder on Linux.
     has_alpha = true;
   } else {
-    codec = media::kCodecVP9;
+    codec = media::VideoCodec::kVP9;
     has_alpha = rng() & 1;
   }
 
@@ -104,8 +103,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     bool success = false;
     decoder.Initialize(
         config, true /* low_delay */, nullptr /* cdm_context */,
-        base::Bind(&OnInitDone, run_loop.QuitClosure(), &success),
-        base::Bind(&OnOutputComplete), base::NullCallback());
+        base::BindOnce(&OnInitDone, run_loop.QuitClosure(), &success),
+        base::BindRepeating(&OnOutputComplete), base::NullCallback());
     run_loop.Run();
     if (!success)
       return 0;
@@ -115,7 +114,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     base::RunLoop run_loop;
     auto buffer = media::DecoderBuffer::CopyFrom(data, size);
     decoder.Decode(buffer,
-                   base::Bind(&OnDecodeComplete, run_loop.QuitClosure()));
+                   base::BindOnce(&OnDecodeComplete, run_loop.QuitClosure()));
     run_loop.Run();
   }
 

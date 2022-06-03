@@ -36,15 +36,6 @@ SyncedTabDelegate* GetSyncedTabDelegateFromWebContents(
 }  // namespace
 
 SyncSessionsWebContentsRouter::SyncSessionsWebContentsRouter(Profile* profile) {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-  if (history_service) {
-    favicon_changed_subscription_ = history_service->AddFaviconsChangedCallback(
-        base::Bind(&SyncSessionsWebContentsRouter::OnFaviconsChanged,
-                   base::Unretained(this)));
-  }
-
 #if !defined(OS_ANDROID)
   browser_list_helper_ =
       std::make_unique<BrowserListRouterHelper>(this, profile);
@@ -90,16 +81,7 @@ void SyncSessionsWebContentsRouter::Stop() {
   handler_ = nullptr;
 }
 
-void SyncSessionsWebContentsRouter::OnFaviconsChanged(
-    const std::set<GURL>& page_urls,
-    const GURL& icon_url) {
-  if (handler_)
-    handler_->OnFaviconsChanged(page_urls, icon_url);
-}
-
 void SyncSessionsWebContentsRouter::Shutdown() {
-  favicon_changed_subscription_.reset();
-
 #if !defined(OS_ANDROID)
   browser_list_helper_.reset();
 #endif  // !defined(OS_ANDROID)

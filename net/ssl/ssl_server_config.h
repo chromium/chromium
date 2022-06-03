@@ -7,11 +7,16 @@
 
 #include <stdint.h>
 
+#include <utility>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {
 
@@ -67,6 +72,20 @@ struct NET_EXPORT SSLServerConfig {
   // If true, causes only ECDHE cipher suites to be enabled.
   bool require_ecdhe;
 
+  // cipher_suite_for_testing, if set, causes the server to only support the
+  // specified cipher suite in TLS 1.2 and below. This should only be used in
+  // unit tests.
+  absl::optional<uint16_t> cipher_suite_for_testing;
+
+  // signature_algorithm_for_testing, if set, causes the server to only support
+  // the specified signature algorithm in TLS 1.2 and below. This should only be
+  // used in unit tests.
+  absl::optional<uint16_t> signature_algorithm_for_testing;
+
+  // curves_for_testing, if not empty, specifies the list of NID values (e.g.
+  // NID_X25519) to configure as supported curves for the TLS connection.
+  std::vector<int> curves_for_testing;
+
   // Sets the requirement for client certificates during handshake.
   ClientCertType client_cert_type;
 
@@ -87,6 +106,47 @@ struct NET_EXPORT SSLServerConfig {
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols
   // will be advertised in this order during TLS handshake.
   NextProtoVector alpn_protos;
+
+  // ALPS TLS extension is enabled and corresponding data is sent to client if
+  // client also enabled ALPS, for each NextProto in |application_settings|.
+  // Data might be empty.
+  base::flat_map<NextProto, std::vector<uint8_t>> application_settings;
+
+  // If non-empty, the DER-encoded OCSP response to staple.
+  std::vector<uint8_t> ocsp_response;
+
+  // If non-empty, the serialized SignedCertificateTimestampList to send in the
+  // handshake.
+  std::vector<uint8_t> signed_cert_timestamp_list;
+
+  // If specified, called at the start of each connection with the ClientHello.
+  base::RepeatingCallback<void(const SSL_CLIENT_HELLO*)>
+      client_hello_callback_for_testing;
+
+  // This is a workaround for BoringSSL's scopers not being copyable. See
+  // https://crbug.com/boringssl/431.
+  class NET_EXPORT ECHKeysContainer {
+   public:
+    ECHKeysContainer();
+    // Intentionally allow implicit conversion from bssl::UniquePtr.
+    ECHKeysContainer(bssl::UniquePtr<SSL_ECH_KEYS> keys);
+    ~ECHKeysContainer();
+
+    ECHKeysContainer(const ECHKeysContainer& other);
+    ECHKeysContainer& operator=(const ECHKeysContainer& other);
+
+    // Forward APIs from bssl::UniquePtr.
+    SSL_ECH_KEYS* get() const { return keys_.get(); }
+    explicit operator bool() const { return static_cast<bool>(keys_); }
+    // This is defined out-of-line to avoid an ssl.h include.
+    void reset(SSL_ECH_KEYS* keys = nullptr);
+
+   private:
+    bssl::UniquePtr<SSL_ECH_KEYS> keys_;
+  };
+
+  // If not nullptr, an ECH configuration to use on the server.
+  ECHKeysContainer ech_keys;
 };
 
 }  // namespace net

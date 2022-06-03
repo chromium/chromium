@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <script>
+'use strict';
+window.onload = () => {
+  // Simulate dragging a bookmark to a cross-site URL.
+  const crossSiteURL = "http://localhost:8000/misc/resources/" +
+                      "notify-success.html";
+  eventSender.beginDragWithStringData(crossSiteURL, "text/uri-list");
+  eventSender.mouseMoveTo(10, 10);
+  eventSender.mouseUp();
+  document.body.appendChild(document.createTextNode('PASS: Dropped bookmark'));
 
-// Simulate dragging a bookmark to a cross-site URL.
-const crossSiteURL = "http://localhost:8000/misc/resources/" +
-                     "drag-bookmark-destination.html";
-eventSender.beginDragWithStringData(crossSiteURL, "text/uri-list");
-eventSender.mouseMoveTo(10, 10);
-eventSender.mouseUp();
-
-// notifyDone will be called once we navigate to the "bookmarked" URL that is
-// being dragged above.
-testRunner.waitUntilDone();
-
+  testRunner.dumpAsText();
+  // notifyDone will be called once we navigate to the "bookmarked" URL that
+  // is being dragged above.
+  testRunner.waitUntilDone();
+};
 </script>

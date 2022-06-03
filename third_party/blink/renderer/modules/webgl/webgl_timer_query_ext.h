@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TIMER_QUERY_EXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TIMER_QUERY_EXT_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 

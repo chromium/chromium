@@ -1,0 +1,103 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# The purpose of these targets is test that |deps| satisfies java compilation
+# dependencies, and that |import_dirs| allows us to deal with various relative
+# imports to other proto dependencies. Although we should strive to avoid using
+# |import_dirs| and relative import paths, preferring to use absolute imports
+# whenever possible. See https://crbug.com/691451. While this target is
+# primarily to test that the Java proto targets build correctly, also build the
+# C++ versions of the protos as well. There are currently some configurations of
+# Java protos that can be built but will not work for C++, see
+# https://crbug.com/1039014, so make sure we don't create any tests that would
+# violate that.
+group("test_build_protos") {
+  deps = [
+    ":absolute_root_proto",
+    ":absolute_root_proto_java",
+    ":relative_root_proto",
+    ":relative_root_proto_java",
+  ]
+}
+
+proto_java_library("absolute_root_proto_java") {
+  proto_path = "//"
+  import_dirs = [ "relative_dep/" ]
+  sources = [
+    "root/absolute_child.proto",
+    "root/absolute_root.proto",
+  ]
+  deps = [
+    ":absolute_dep_proto_java",
+    ":relative_dep_proto_java",
+  ]
+}
+
+proto_java_library("relative_root_proto_java") {
+  proto_path = "root/"
+  import_dirs = [
+    "relative_dep/",
+    "//",
+  ]
+  sources = [
+    "root/relative_child.proto",
+    "root/relative_root.proto",
+  ]
+  deps = [
+    ":absolute_dep_proto_java",
+    ":relative_dep_proto_java",
+  ]
+}
+
+proto_java_library("absolute_dep_proto_java") {
+  proto_path = "//"
+  sources = [ "absolute_dep/absolute_dep.proto" ]
+}
+
+proto_java_library("relative_dep_proto_java") {
+  proto_path = "relative_dep/"
+  sources = [ "relative_dep/relative_dep.proto" ]
+}
+
+proto_library("absolute_root_proto") {
+  proto_in_dir = "//"
+  import_dirs = [ "relative_dep/" ]
+  sources = [
+    "root/absolute_child.proto",
+    "root/absolute_root.proto",
+  ]
+  link_deps = [
+    ":absolute_dep_proto",
+    ":relative_dep_proto",
+  ]
+}
+
+proto_library("relative_root_proto") {
+  proto_in_dir = "root/"
+  import_dirs = [
+    "relative_dep/",
+    "//",
+  ]
+  sources = [
+    "root/relative_child.proto",
+    "root/relative_root.proto",
+  ]
+  link_deps = [
+    ":absolute_dep_proto",
+    ":relative_dep_proto",
+  ]
+}
+
+proto_library("absolute_dep_proto") {
+  proto_in_dir = "//"
+  sources = [ "absolute_dep/absolute_dep.proto" ]
+}
+
+proto_library("relative_dep_proto") {
+  proto_in_dir = "relative_dep/"
+  sources = [ "relative_dep/relative_dep.proto" ]
+}

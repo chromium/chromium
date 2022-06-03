@@ -20,7 +20,7 @@ source_set("native") {
     "//gpu/gles2_conform_support/egl",
     "//ui/gl",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "egl_native_aura.cc",
       "egl_native_x11.cc",

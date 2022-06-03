@@ -17,7 +17,7 @@ enum ImporterTypeMetrics {
 #endif
   IMPORTER_METRICS_FIREFOX2        = 2,  // obsolete
   IMPORTER_METRICS_FIREFOX3        = 3,
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   IMPORTER_METRICS_SAFARI          = 4,
 #endif
   IMPORTER_METRICS_GOOGLE_TOOLBAR5 = 5,  // obsolete
@@ -51,7 +51,7 @@ void LogImporterUseToMetrics(const std::string& metric_postfix,
     case TYPE_FIREFOX:
       metrics_type = IMPORTER_METRICS_FIREFOX3;
       break;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     case TYPE_SAFARI:
       metrics_type = IMPORTER_METRICS_SAFARI;
       break;

@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -64,8 +64,8 @@ void EventRouterForwarder::HandleEvent(
     const GURL& event_url,
     bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&EventRouterForwarder::HandleEvent, this, extension_id,
                        histogram_value, event_name, std::move(event_args),
                        profile_ptr, use_profile_to_restrict_events, event_url,
@@ -94,20 +94,26 @@ void EventRouterForwarder::HandleEvent(
   }
 
   if (dispatch_to_off_the_record_profiles) {
-    for (Profile* profile : profiles_to_dispatch_to) {
-      if (profile->HasOffTheRecordProfile())
-        profiles_to_dispatch_to.insert(profile->GetOffTheRecordProfile());
+    for (Profile* profile_to_dispatch_to : profiles_to_dispatch_to) {
+      if (profile_to_dispatch_to->HasPrimaryOTRProfile())
+        profiles_to_dispatch_to.insert(
+            profile_to_dispatch_to->GetPrimaryOTRProfile(
+                /*create_if_needed=*/true));
     }
   }
 
-  DCHECK_GT(profiles_to_dispatch_to.size(), 0u)
-      << "There should always be at least one profile!";
+  // There should always be at least one profile when running as Chromium.
+  // However, some Chromium embedders are known to run without profiles, in
+  // which case there's nothing to dispatch to.
+  if (profiles_to_dispatch_to.size() == 0u)
+    return;
 
+  // Use the same event_args for each profile (making copies as needed).
   std::vector<std::unique_ptr<base::ListValue>> per_profile_args;
   per_profile_args.reserve(profiles_to_dispatch_to.size());
-  for (size_t i = 0; i < profiles_to_dispatch_to.size() - 1; ++i)
-    per_profile_args.emplace_back(event_args->DeepCopy());
   per_profile_args.emplace_back(std::move(event_args));
+  for (size_t i = 1; i < profiles_to_dispatch_to.size(); ++i)
+    per_profile_args.emplace_back(per_profile_args.front()->CreateDeepCopy());
   DCHECK_EQ(per_profile_args.size(), profiles_to_dispatch_to.size());
 
   size_t profile_args_index = 0;
@@ -129,7 +135,7 @@ void EventRouterForwarder::CallEventRouter(
     std::unique_ptr<base::ListValue> event_args,
     Profile* restrict_to_profile,
     const GURL& event_url) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Extension does not exist for chromeos login.  This needs to be
   // removed once we have an extension service for login screen.
   // crosbug.com/12856.
@@ -137,8 +143,9 @@ void EventRouterForwarder::CallEventRouter(
     return;
 #endif
 
-  auto event = std::make_unique<Event>(
-      histogram_value, event_name, std::move(event_args), restrict_to_profile);
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(*event_args).TakeList(),
+                                       restrict_to_profile);
   event->event_url = event_url;
   if (extension_id.empty()) {
     extensions::EventRouter::Get(profile)->BroadcastEvent(std::move(event));

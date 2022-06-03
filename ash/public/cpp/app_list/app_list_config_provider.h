@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace gfx {
-class Insets;
 class Size;
 }
 
@@ -24,20 +24,25 @@ enum class AppListConfigType;
 // Used to create and keep track of existing AppListConfigs.
 class ASH_PUBLIC_EXPORT AppListConfigProvider {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when a new config is created. Note that this will not be called
     // for AppListConfigType::kShared configs, as they're assumed to always
     // exist.
     // |config_type| - The created config's type.
-    virtual void OnAppListConfigCreated(ash::AppListConfigType config_type) = 0;
+    virtual void OnAppListConfigCreated(AppListConfigType config_type) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   static AppListConfigProvider& Get();
 
   AppListConfigProvider();
+
+  AppListConfigProvider(const AppListConfigProvider&) = delete;
+  AppListConfigProvider& operator=(const AppListConfigProvider&) = delete;
+
   ~AppListConfigProvider();
 
   void AddObserver(Observer* observer);
@@ -48,24 +53,28 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   // is set. Returns nullptr if the config does not exist and cannot be created.
   // NOTE: |can_create| has effect only on config types different than kShared.
   //     A new kShared config will always be created if it does not yet exist.
-  AppListConfig* GetConfigForType(ash::AppListConfigType type, bool can_create);
+  AppListConfig* GetConfigForType(AppListConfigType type, bool can_create);
 
   // Returns the app list config that should be used by an app list instance
   // based on the app list display, and available size for the apps grid.
-  // Returns nullptr if the new app list config is the same as |current_config|.
-  // |work_area_size|: The work area size of the display showing the app list.
-  // |shelf_insets|: The insets added to app list content to accommodate the
-  // shelf.
-  // |current_config|: If not null, the app list config currently used by the
+  // Returns nullptr if the new app list config is the same as `current_config`.
+  // `work_area_size`: The work area size of the display showing the app list.
+  // `grid_rows`: The number of rows the root apps grid has.
+  // `grid_columns`: The number of columns the root apps grid has.
+  // `available_size`: The size of the space available for the root apps grid
+  // layout.
+  // `current_config`: If not null, the app list config currently used by the
   //     app list.
-  // TODO(crbug.com/976947): Once ScalableAppList feature is removed (and
-  // enabled by default), this should return a reference or a pointer to an
-  // AppListConfig owned by |this|, as then the number of possible different
-  // configs will be restricted to the number of supported config types.
-  std::unique_ptr<AppListConfig> CreateForAppListWidget(
+  std::unique_ptr<AppListConfig> CreateForFullscreenAppList(
       const gfx::Size& display_work_area_size,
-      const gfx::Insets& shelf_insets,
+      int grid_rows,
+      int grid_columns,
+      const gfx::Size& available_size,
       const AppListConfig* current_config);
+
+  // Returns all app list config types for which an AppListConfig instance has
+  // been created.
+  std::set<AppListConfigType> GetAvailableConfigTypes();
 
   // Clears the set of configs owned by the provider.
   void ResetForTesting();
@@ -74,11 +83,9 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   const AppListConfig& GetBaseConfigForDisplaySize(
       const gfx::Size& display_work_area_size);
 
-  std::map<ash::AppListConfigType, std::unique_ptr<AppListConfig>> configs_;
+  std::map<AppListConfigType, std::unique_ptr<AppListConfig>> configs_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListConfigProvider);
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

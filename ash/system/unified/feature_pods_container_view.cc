@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_pods_container_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -42,7 +41,7 @@ void FeaturePodsContainerView::SetExpandedAmount(double expanded_amount) {
     // When collapsing from page > 1, each row of buttons fades out one by one
     // and once expanded_amount is less than kCollapseThreshold we begin to
     // fade in the single row of buttons for the collapsed state.
-    if (expanded_amount_ < kCollapseThreshold &&
+    if (expanded_amount_ > 0.0 && expanded_amount_ < kCollapseThreshold &&
         pagination_model_->selected_page() > 0) {
       button->SetExpandedAmount(1.0 - expanded_amount,
                                 true /* fade_icon_button */);
@@ -74,8 +73,7 @@ int FeaturePodsContainerView::GetExpandedHeight() const {
   int number_of_lines = (visible_count + kUnifiedFeaturePodItemsInRow - 1) /
                         kUnifiedFeaturePodItemsInRow;
 
-  if (features::IsUnifiedMessageCenterRefactorEnabled())
-    number_of_lines = std::min(number_of_lines, feature_pod_rows_);
+  number_of_lines = std::min(number_of_lines, feature_pod_rows_);
 
   return kUnifiedFeaturePodBottomPadding +
          (kUnifiedFeaturePodVerticalPadding + kUnifiedFeaturePodSize.height()) *
@@ -354,10 +352,7 @@ void FeaturePodsContainerView::CalculateIdealBoundsForFeaturePods() {
 }
 
 int FeaturePodsContainerView::GetTilesPerPage() const {
-  if (features::IsUnifiedMessageCenterRefactorEnabled())
-    return kUnifiedFeaturePodItemsInRow * feature_pod_rows_;
-  else
-    return children().size();
+  return kUnifiedFeaturePodItemsInRow * feature_pod_rows_;
 }
 
 void FeaturePodsContainerView::UpdateTotalPages() {

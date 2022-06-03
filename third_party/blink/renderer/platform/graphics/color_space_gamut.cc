@@ -4,22 +4,26 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
-#include "third_party/blink/public/platform/web_screen_info.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
 namespace color_space_utilities {
 
-ColorSpaceGamut GetColorSpaceGamut(const WebScreenInfo& screen_info) {
-  const gfx::ColorSpace& color_space = screen_info.color_space;
+ColorSpaceGamut GetColorSpaceGamut(const display::ScreenInfo& screen_info) {
+  const gfx::ColorSpace& color_space =
+      screen_info.display_color_spaces.GetScreenInfoColorSpace();
   if (!color_space.IsValid())
     return ColorSpaceGamut::kUnknown;
 
-  // Return the gamut of the color space used for raster (this will return a
-  // wide gamut for HDR profiles).
-  sk_sp<SkColorSpace> sk_color_space =
-      color_space.GetRasterColorSpace().ToSkColorSpace();
+  // TODO(crbug.com/1049334): Change this function to operate on a
+  // gfx::DisplayColorSpaces structure.
+  if (color_space.IsHDR())
+    return ColorSpaceGamut::BT2020;
+
+  sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
   if (!sk_color_space)
     return ColorSpaceGamut::kUnknown;
 
@@ -42,8 +46,8 @@ ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile* color_profile) {
   in[1][1] = 255;
   in[2][2] = 255;
   bool color_converison_successful = skcms_Transform(
-      in, skcms_PixelFormat_RGB_888, skcms_AlphaFormat_Opaque, color_profile,
-      out, skcms_PixelFormat_RGB_fff, skcms_AlphaFormat_Opaque, &sc_rgb, 3);
+      in, skcms_PixelFormat_RGB_888, skcms_AlphaFormat_Unpremul, color_profile,
+      out, skcms_PixelFormat_RGB_fff, skcms_AlphaFormat_Unpremul, &sc_rgb, 3);
   DCHECK(color_converison_successful);
   float score = out[0][0] * out[1][1] * out[2][2];
 

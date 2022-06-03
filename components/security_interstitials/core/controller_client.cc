@@ -17,10 +17,10 @@ namespace security_interstitials {
 
 const char kBoxChecked[] = "boxchecked";
 const char kDisplayCheckBox[] = "displaycheckbox";
+const char kDisplayEnhancedProtectionMessage[] =
+    "displayEnhancedProtectionMessage";
 const char kOptInLink[] = "optInLink";
-const char kPrivacyLinkHtml[] =
-    "<a id=\"privacy-link\" href=\"#\" onclick=\"sendCommand(%d); "
-    "return false;\" onmousedown=\"return false;\">%s</a>";
+const char kEnhancedProtectionMessage[] = "enhancedProtectionMessage";
 const char kHelpCenterUrl[] = "https://support.google.com/chrome/";
 
 ControllerClient::ControllerClient(

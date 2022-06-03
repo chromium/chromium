@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -7,13 +7,9 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("fade-in-animation-extracted") {
-  deps = [
-    "..:neon-animation-behavior-extracted",
-  ]
+  deps = [ "..:neon-animation-behavior-extracted" ]
 }
 
 js_library("fade-out-animation-extracted") {
-  deps = [
-    "..:neon-animation-behavior-extracted",
-  ]
+  deps = [ "..:neon-animation-behavior-extracted" ]
 }

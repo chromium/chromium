@@ -1,5 +1,0 @@
-Checks url patching for Node.js
-..result.value.url patched: false
-..exceptionDetails.url patched: true
-..stackTrace.callFrames[0].url patched: true
-

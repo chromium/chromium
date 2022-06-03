@@ -9,10 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
 #include "chromeos/services/secure_channel/session_keys.h"
+#include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace chromeos {
 
@@ -46,16 +45,21 @@ class DeviceToDeviceInitiatorHelper {
  public:
   // Callback for operations that create a message. Invoked with the serialized
   // SecureMessage upon success or the empty string upon failure.
-  typedef base::Callback<void(const std::string&)> MessageCallback;
+  typedef base::OnceCallback<void(const std::string&)> MessageCallback;
 
   // Callback for ValidateResponderAuthMessage. The first argument will be
   // called with the validation outcome. If validation succeeded, then the
   // second argument will contain the session symmetric key derived from the
   // [Responder Auth] message.
-  typedef base::Callback<void(bool, const SessionKeys&)>
+  typedef base::OnceCallback<void(bool, const SessionKeys&)>
       ValidateResponderAuthCallback;
 
   DeviceToDeviceInitiatorHelper();
+
+  DeviceToDeviceInitiatorHelper(const DeviceToDeviceInitiatorHelper&) = delete;
+  DeviceToDeviceInitiatorHelper& operator=(
+      const DeviceToDeviceInitiatorHelper&) = delete;
+
   virtual ~DeviceToDeviceInitiatorHelper();
 
   // Creates the [Hello] message, which is the first message that is sent:
@@ -71,7 +75,7 @@ class DeviceToDeviceInitiatorHelper {
       const std::string& session_public_key,
       const std::string& persistent_symmetric_key,
       multidevice::SecureMessageDelegate* secure_message_delegate,
-      const MessageCallback& callback);
+      MessageCallback callback);
 
   // Validates that the [Responder Auth] message, received from the responder,
   // is properly signed and encrypted.
@@ -97,7 +101,7 @@ class DeviceToDeviceInitiatorHelper {
       const std::string& session_private_key,
       const std::string& hello_message,
       multidevice::SecureMessageDelegate* secure_message_delegate,
-      const ValidateResponderAuthCallback& callback);
+      ValidateResponderAuthCallback callback);
 
   // Creates the [Initiator Auth] message, which allows the responder to
   // authenticate the initiator:
@@ -115,7 +119,7 @@ class DeviceToDeviceInitiatorHelper {
       const std::string& persistent_symmetric_key,
       const std::string& responder_auth_message,
       multidevice::SecureMessageDelegate* secure_message_delegate,
-      const MessageCallback& callback);
+      MessageCallback callback);
 
  private:
   // Helper struct containing all the context needed to validate the
@@ -127,8 +131,7 @@ class DeviceToDeviceInitiatorHelper {
         const std::string& persistent_symmetric_key,
         const std::string& session_private_key,
         const std::string& hello_message,
-        multidevice::SecureMessageDelegate* secure_message_delegate,
-        const ValidateResponderAuthCallback& callback);
+        multidevice::SecureMessageDelegate* secure_message_delegate);
     ValidateResponderAuthMessageContext(
         const ValidateResponderAuthMessageContext& other);
     ~ValidateResponderAuthMessageContext();
@@ -139,23 +142,24 @@ class DeviceToDeviceInitiatorHelper {
     std::string session_private_key;
     std::string hello_message;
     multidevice::SecureMessageDelegate* secure_message_delegate;
-    ValidateResponderAuthCallback callback;
     std::string responder_session_public_key;
     std::string session_symmetric_key;
   };
 
   // Begins the [Responder Auth] validation flow by validating the header.
-  void BeginResponderAuthValidation(
-      ValidateResponderAuthMessageContext context);
+  void BeginResponderAuthValidation(ValidateResponderAuthMessageContext context,
+                                    ValidateResponderAuthCallback callback);
 
   // Called after the session symmetric key is derived, so now we can unwrap the
   // outer message of [Responder Auth].
   void OnSessionSymmetricKeyDerived(ValidateResponderAuthMessageContext context,
+                                    ValidateResponderAuthCallback callback,
                                     const std::string& session_symmetric_key);
 
   // Called after the outer-most layer of [Responder Auth] is unwrapped.
   void OnOuterMessageUnwrappedForResponderAuth(
       const ValidateResponderAuthMessageContext& context,
+      ValidateResponderAuthCallback callback,
       bool verified,
       const std::string& payload,
       const securemessage::Header& header);
@@ -163,6 +167,7 @@ class DeviceToDeviceInitiatorHelper {
   // Called after the middle layer of [Responder Auth] is unwrapped.
   void OnMiddleMessageUnwrappedForResponderAuth(
       const ValidateResponderAuthMessageContext& context,
+      ValidateResponderAuthCallback callback,
       bool verified,
       const std::string& payload,
       const securemessage::Header& header);
@@ -171,20 +176,19 @@ class DeviceToDeviceInitiatorHelper {
   void OnInnerMessageCreatedForInitiatorAuth(
       const SessionKeys& session_keys,
       multidevice::SecureMessageDelegate* secure_message_delegate,
-      const DeviceToDeviceInitiatorHelper::MessageCallback& callback,
+      DeviceToDeviceInitiatorHelper::MessageCallback callback,
       const std::string& inner_message);
 
   // Callback for CreateInitiatorAuthMessage(), after the inner message is
   // created.
   void OnInnerMessageUnwrappedForResponderAuth(
       const ValidateResponderAuthMessageContext& context,
+      ValidateResponderAuthCallback callback,
       bool verified,
       const std::string& payload,
       const securemessage::Header& header);
 
   base::WeakPtrFactory<DeviceToDeviceInitiatorHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceInitiatorHelper);
 };
 
 }  // namespace secure_channel

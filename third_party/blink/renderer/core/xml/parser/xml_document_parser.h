@@ -71,13 +71,11 @@ class XMLParserContext : public RefCounted<XMLParserContext> {
 
 class XMLDocumentParser final : public ScriptableDocumentParser,
                                 public XMLParserScriptRunnerHost {
-  USING_GARBAGE_COLLECTED_MIXIN(XMLDocumentParser);
-
  public:
   explicit XMLDocumentParser(Document&, LocalFrameView* = nullptr);
   XMLDocumentParser(DocumentFragment*, Element*, ParserContentPolicy);
   ~XMLDocumentParser() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Exposed for callbacks:
   void HandleError(XMLErrors::ErrorType, const char* message, TextPosition);
@@ -108,6 +106,17 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
    public:
     virtual ~PendingCallback() = default;
     virtual void Call(XMLDocumentParser*) = 0;
+
+    TextPosition GetTextPosition() const { return text_position_; }
+    OrdinalNumber LineNumber() const { return text_position_.line_; }
+    OrdinalNumber ColumnNumber() const { return text_position_.column_; }
+
+   protected:
+    PendingCallback(TextPosition text_position)
+        : text_position_(text_position) {}
+
+   private:
+    TextPosition text_position_;
   };
 
   void SetScriptStartPosition(TextPosition);
@@ -117,11 +126,14 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   void insert(const String&) override { NOTREACHED(); }
   void Append(const String&) override;
   void Finish() override;
+  void ExecuteScriptsWaitingForResources() final;
   bool IsWaitingForScripts() const override;
   void StopParsing() override;
   void Detach() override;
   OrdinalNumber LineNumber() const override;
   OrdinalNumber ColumnNumber() const;
+  void DidAddPendingParserBlockingStylesheet() final;
+  void DidLoadAllPendingParserBlockingStylesheets() final;
 
   // XMLParserScriptRunnerHost
   void NotifyScriptExecuted() override;
@@ -173,6 +185,8 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   void DoWrite(const String&);
   void DoEnd();
 
+  void CheckIfBlockingStyleSheetAdded();
+
   SegmentedString original_source_for_transform_;
 
   xmlParserCtxtPtr Context() const {
@@ -180,6 +194,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   }
   scoped_refptr<XMLParserContext> context_;
   Deque<std::unique_ptr<PendingCallback>> pending_callbacks_;
+  std::unique_ptr<PendingCallback> callback_;
   Vector<xmlChar> buffered_text_;
 
   Member<ContainerNode> current_node_;
@@ -196,9 +211,12 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   bool parser_paused_;
   bool requesting_script_;
   bool finish_called_;
+  bool waiting_for_stylesheets_ = false;
+  bool added_pending_parser_blocking_stylesheet_ = false;
 
   XMLErrors xml_errors_;
 
+  Member<Document> document_;
   Member<XMLParserScriptRunner> script_runner_;
   TextPosition script_start_position_;
 

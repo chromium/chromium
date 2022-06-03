@@ -17,7 +17,7 @@ namespace web {
 
 CRWSessionCertificatePolicyCacheStorage*
 SessionCertificatePolicyCacheStorageBuilder::BuildStorage(
-    SessionCertificatePolicyCacheImpl* cache) const {
+    const SessionCertificatePolicyCacheImpl* cache) const {
   CRWSessionCertificatePolicyCacheStorage* storage =
       [[CRWSessionCertificatePolicyCacheStorage alloc] init];
   storage.certificateStorages = [NSSet setWithSet:cache->GetAllowedCerts()];
@@ -26,9 +26,10 @@ SessionCertificatePolicyCacheStorageBuilder::BuildStorage(
 
 std::unique_ptr<SessionCertificatePolicyCacheImpl>
 SessionCertificatePolicyCacheStorageBuilder::BuildSessionCertificatePolicyCache(
-    CRWSessionCertificatePolicyCacheStorage* cache_storage) const {
+    CRWSessionCertificatePolicyCacheStorage* cache_storage,
+    BrowserState* browser_state) const {
   std::unique_ptr<SessionCertificatePolicyCacheImpl> cache =
-      std::make_unique<SessionCertificatePolicyCacheImpl>();
+      std::make_unique<SessionCertificatePolicyCacheImpl>(browser_state);
   cache->SetAllowedCerts(cache_storage.certificateStorages);
   return cache;
 }

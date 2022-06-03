@@ -4,9 +4,10 @@
 
 #include "chrome/browser/policy/chrome_extension_policy_migrator.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/hashed_extension_id.h"
@@ -41,9 +42,7 @@ void MultiplyByTwo(base::Value* val) {
   *val = base::Value(val->GetInt() * 2);
 }
 
-void SetPolicy(PolicyMap* policy,
-               const char* policy_name,
-               std::unique_ptr<base::Value> value) {
+void SetPolicy(PolicyMap* policy, const char* policy_name, base::Value value) {
   policy->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
               POLICY_SOURCE_CLOUD, std::move(value), nullptr);
 }
@@ -51,7 +50,7 @@ void SetPolicy(PolicyMap* policy,
 class TestingPolicyMigrator : public ChromeExtensionPolicyMigrator {
  public:
   void Migrate(PolicyBundle* bundle) override {
-    using Migration = ExtensionPolicyMigrator::Migration;
+    using Migration = PolicyMigrator::Migration;
     const Migration migrations[] = {
         Migration(kOldPolicy1, kNewPolicy1),
         Migration(kOldPolicy2, kNewPolicy2),
@@ -72,21 +71,15 @@ TEST(ChromeExtensionPolicyMigratorTest, CopyPoliciesIfUnset) {
 
   PolicyMap& chrome_map = bundle.Get(
       PolicyNamespace(POLICY_DOMAIN_CHROME, /* component_id */ std::string()));
-  SetPolicy(&chrome_map, kNewPolicy3,
-            std::make_unique<base::Value>(kNewValue3));
+  SetPolicy(&chrome_map, kNewPolicy3, base::Value(kNewValue3));
 
   PolicyMap& extension_map =
       bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtensionId));
-  SetPolicy(&extension_map, kOldPolicy1,
-            std::make_unique<base::Value>(kOldValue1));
-  SetPolicy(&extension_map, kOldPolicy2,
-            std::make_unique<base::Value>(kOldValue2));
-  SetPolicy(&extension_map, kOldPolicy3,
-            std::make_unique<base::Value>(kOldValue3));
-  SetPolicy(&extension_map, kOldPolicy4,
-            std::make_unique<base::Value>(kOldValue4));
-  SetPolicy(&extension_map, kOldPolicy5,
-            std::make_unique<base::Value>(kOldValue5));
+  SetPolicy(&extension_map, kOldPolicy1, base::Value(kOldValue1));
+  SetPolicy(&extension_map, kOldPolicy2, base::Value(kOldValue2));
+  SetPolicy(&extension_map, kOldPolicy3, base::Value(kOldValue3));
+  SetPolicy(&extension_map, kOldPolicy4, base::Value(kOldValue4));
+  SetPolicy(&extension_map, kOldPolicy5, base::Value(kOldValue5));
 
   TestingPolicyMigrator().Migrate(&bundle);
 
@@ -112,18 +105,19 @@ TEST(ChromeExtensionPolicyMigratorTest, DeprecatedWarnings) {
 
   PolicyMap& extension_map =
       bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtensionId));
-  SetPolicy(&extension_map, kOldPolicy1,
-            std::make_unique<base::Value>(kOldValue1));
+  SetPolicy(&extension_map, kOldPolicy1, base::Value(kOldValue1));
 
   TestingPolicyMigrator().Migrate(&bundle);
 
   // Policies in kMigrations should be renamed + copied into the Chrome domain.
   EXPECT_EQ(1u, chrome_map.size());
   ASSERT_TRUE(chrome_map.GetValue(kNewPolicy1));
-  base::RepeatingCallback<base::string16(int)> l10nlookup =
+  base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
   EXPECT_FALSE(
-      chrome_map.Get(kNewPolicy1)->GetLocalizedErrors(l10nlookup).empty());
+      chrome_map.Get(kNewPolicy1)
+          ->GetLocalizedMessages(PolicyMap::MessageType::kWarning, l10nlookup)
+          .empty());
 }
 
 }  // namespace policy

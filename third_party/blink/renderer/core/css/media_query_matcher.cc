@@ -71,8 +71,10 @@ MediaQueryList* MediaQueryMatcher::MatchMedia(const String& query) {
   if (!document_)
     return nullptr;
 
-  scoped_refptr<MediaQuerySet> media = MediaQuerySet::Create(query);
-  return MakeGarbageCollected<MediaQueryList>(document_, this, media);
+  scoped_refptr<MediaQuerySet> media =
+      MediaQuerySet::Create(query, document_->GetExecutionContext());
+  return MakeGarbageCollected<MediaQueryList>(document_->GetExecutionContext(),
+                                              this, media);
 }
 
 void MediaQueryMatcher::AddMediaQueryList(MediaQueryList* query) {
@@ -104,6 +106,13 @@ void MediaQueryMatcher::MediaFeaturesChanged() {
   if (!document_)
     return;
 
+  // Update favicon and theme color when a media query value has changed.
+  if (document_->GetFrame()) {
+    document_->GetFrame()->UpdateFaviconURL();
+    document_->GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/false);
+  }
+
   HeapVector<Member<MediaQueryListListener>> listeners_to_notify;
   for (const auto& list : media_lists_) {
     if (list->MediaFeaturesChanged(&listeners_to_notify)) {
@@ -126,7 +135,7 @@ void MediaQueryMatcher::ViewportChanged() {
   document_->EnqueueMediaQueryChangeListeners(listeners_to_notify);
 }
 
-void MediaQueryMatcher::Trace(blink::Visitor* visitor) {
+void MediaQueryMatcher::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(evaluator_);
   visitor->Trace(media_lists_);

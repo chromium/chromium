@@ -8,6 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // See ui::RelativeBounds for documentation.
+[Stable, Uuid="fd50f711-47fb-4334-a05a-11365b5db835"]
 struct AXRelativeBounds {
   int32 offset_container_id;
   gfx.mojom.RectF bounds;

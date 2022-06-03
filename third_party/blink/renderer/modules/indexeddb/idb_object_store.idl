@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/IndexedDB/#idl-def-IDBObjectStore
+// https://w3c.github.io/IndexedDB/#object-store-interface
 
 [
     Exposed=(Window,Worker)
@@ -35,10 +35,10 @@
     readonly attribute boolean autoIncrement;
 
     [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
-    IDBRequest put(any value, [DefaultValue=Undefined] optional any key);
+    IDBRequest put(any value, optional any key);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
-    IDBRequest add(any value, [DefaultValue=Undefined] optional any key);
+    IDBRequest add(any value, optional any key);
 
     [
       CallWith=ScriptState,
@@ -58,22 +58,22 @@
     IDBRequest getKey(any key);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest getAll([DefaultValue=Undefined] optional any query,
+    IDBRequest getAll(optional any query = null,
                       optional [EnforceRange] unsigned long count);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest getAllKeys([DefaultValue=Undefined] optional any query,
+    IDBRequest getAllKeys(optional any query = null,
                           optional [EnforceRange] unsigned long count);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest count([DefaultValue=Undefined] optional any key);
+    IDBRequest count(optional any key = null);
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest openCursor([DefaultValue=Undefined] optional any range,
+    IDBRequest openCursor(optional any range = null,
                           optional IDBCursorDirection direction = "next");
 
     [CallWith=ScriptState, MeasureAs=IndexedDBRead, NewObject, RaisesException]
-    IDBRequest openKeyCursor([DefaultValue=Undefined] optional any range,
+    IDBRequest openKeyCursor(optional any range = null,
                              optional IDBCursorDirection direction = "next");
 
     [MeasureAs=IndexedDBRead, RaisesException] IDBIndex index(DOMString name);
@@ -81,7 +81,7 @@
     [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
     IDBIndex createIndex(DOMString name,
                          (DOMString or sequence<DOMString>) keyPath,
-                         optional IDBIndexParameters options);
+                         optional IDBIndexParameters options = {});
 
     [MeasureAs=IndexedDBWrite, RaisesException]
     void deleteIndex(DOMString name);

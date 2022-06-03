@@ -14,33 +14,46 @@ namespace blink {
 XRGripSpace::XRGripSpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-std::unique_ptr<TransformationMatrix> XRGripSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRGripSpace::MojoFromNative() {
   // Grip is only available when using tracked pointer for input.
   if (input_source_->TargetRayMode() !=
       device::mojom::XRTargetRayMode::POINTING) {
-    return nullptr;
+    return absl::nullopt;
   }
 
-  if (!input_source_->MojoFromInput())
-    return nullptr;
-
-  return std::make_unique<TransformationMatrix>(
-      *(input_source_->MojoFromInput()));
-}
-
-std::unique_ptr<TransformationMatrix> XRGripSpace::NativeFromMojo() {
-  return TryInvert(MojoFromNative());
+  return input_source_->MojoFromInput();
 }
 
 bool XRGripSpace::EmulatedPosition() const {
   return input_source_->emulatedPosition();
 }
 
-base::Optional<XRNativeOriginInformation> XRGripSpace::NativeOrigin() const {
-  return input_source_->nativeOrigin();
+device::mojom::blink::XRNativeOriginInformationPtr XRGripSpace::NativeOrigin()
+    const {
+  // Grip space's native origin is valid only when using tracked pointer for
+  // input.
+  if (input_source_->TargetRayMode() !=
+      device::mojom::XRTargetRayMode::POINTING) {
+    return nullptr;
+  }
+
+  return device::mojom::blink::XRNativeOriginInformation::
+      NewInputSourceSpaceInfo(device::mojom::blink::XRInputSourceSpaceInfo::New(
+          input_source_->source_id(),
+          device::mojom::blink::XRInputSourceSpaceType::kGrip));
 }
 
-void XRGripSpace::Trace(blink::Visitor* visitor) {
+bool XRGripSpace::IsStationary() const {
+  // Grip space is a space derived off of input source, so it is not considered
+  // stationary.
+  return false;
+}
+
+std::string XRGripSpace::ToString() const {
+  return "XRGripSpace";
+}
+
+void XRGripSpace::Trace(Visitor* visitor) const {
   visitor->Trace(input_source_);
   XRSpace::Trace(visitor);
 }

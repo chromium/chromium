@@ -1,0 +1,82 @@
+This is a testharness.js-based test.
+Found 78 tests; 73 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS [INPUT in TEXT status] The pattern attribute is not set
+PASS [INPUT in TEXT status] The value attibute is empty string
+PASS [INPUT in TEXT status] The value attribute matches the pattern attribute
+PASS [INPUT in TEXT status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in TEXT status] The value attribute mismatches the pattern attribute
+PASS [INPUT in TEXT status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in TEXT status] Invalid regular expression gets ignored
+PASS [INPUT in TEXT status] The pattern attribute tries to escape a group
+PASS [INPUT in TEXT status] The pattern attribute uses Unicode features
+PASS [INPUT in TEXT status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in TEXT status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in SEARCH status] The pattern attribute is not set
+PASS [INPUT in SEARCH status] The value attibute is empty string
+PASS [INPUT in SEARCH status] The value attribute matches the pattern attribute
+PASS [INPUT in SEARCH status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in SEARCH status] The value attribute mismatches the pattern attribute
+PASS [INPUT in SEARCH status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in SEARCH status] Invalid regular expression gets ignored
+PASS [INPUT in SEARCH status] The pattern attribute tries to escape a group
+PASS [INPUT in SEARCH status] The pattern attribute uses Unicode features
+PASS [INPUT in SEARCH status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in SEARCH status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in TEL status] The pattern attribute is not set
+PASS [INPUT in TEL status] The value attibute is empty string
+PASS [INPUT in TEL status] The value attribute matches the pattern attribute
+PASS [INPUT in TEL status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in TEL status] The value attribute mismatches the pattern attribute
+PASS [INPUT in TEL status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in TEL status] Invalid regular expression gets ignored
+PASS [INPUT in TEL status] The pattern attribute tries to escape a group
+PASS [INPUT in TEL status] The pattern attribute uses Unicode features
+PASS [INPUT in TEL status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in TEL status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in URL status] The pattern attribute is not set
+PASS [INPUT in URL status] The value attibute is empty string
+PASS [INPUT in URL status] The value attribute matches the pattern attribute
+PASS [INPUT in URL status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in URL status] The value attribute mismatches the pattern attribute
+PASS [INPUT in URL status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in URL status] Invalid regular expression gets ignored
+PASS [INPUT in URL status] The pattern attribute tries to escape a group
+PASS [INPUT in URL status] The pattern attribute uses Unicode features
+PASS [INPUT in URL status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in URL status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in EMAIL status] The pattern attribute is not set
+PASS [INPUT in EMAIL status] The value attibute is empty string
+PASS [INPUT in EMAIL status] The value attribute matches the pattern attribute
+PASS [INPUT in EMAIL status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in EMAIL status] The value attribute mismatches the pattern attribute
+PASS [INPUT in EMAIL status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in EMAIL status] Invalid regular expression gets ignored
+PASS [INPUT in EMAIL status] The pattern attribute tries to escape a group
+PASS [INPUT in EMAIL status] The pattern attribute uses Unicode features
+PASS [INPUT in EMAIL status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in EMAIL status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in PASSWORD status] The pattern attribute is not set
+PASS [INPUT in PASSWORD status] The value attibute is empty string
+PASS [INPUT in PASSWORD status] The value attribute matches the pattern attribute
+PASS [INPUT in PASSWORD status] The value(ABC) in unicode attribute matches the pattern attribute
+PASS [INPUT in PASSWORD status] The value attribute mismatches the pattern attribute
+PASS [INPUT in PASSWORD status] The value attribute mismatches the pattern attribute even when a subset matches
+PASS [INPUT in PASSWORD status] Invalid regular expression gets ignored
+PASS [INPUT in PASSWORD status] The pattern attribute tries to escape a group
+PASS [INPUT in PASSWORD status] The pattern attribute uses Unicode features
+PASS [INPUT in PASSWORD status] The value attribute matches JavaScript-specific regular expression
+PASS [INPUT in PASSWORD status] The value attribute mismatches JavaScript-specific regular expression
+PASS [INPUT in EMAIL status] The pattern attribute is not set, if multiple is present
+PASS [INPUT in EMAIL status] The value attibute is empty string, if multiple is present
+FAIL [INPUT in EMAIL status] The value attribute matches the pattern attribute, if multiple is present assert_false: The validity.patternMismatch should be false. expected false got true
+FAIL [INPUT in EMAIL status] The value(ABC) in unicode attribute matches the pattern attribute, if multiple is present assert_false: The validity.patternMismatch should be false. expected false got true
+PASS [INPUT in EMAIL status] The value attribute mismatches the pattern attribute, if multiple is present
+PASS [INPUT in EMAIL status] The value attribute mismatches the pattern attribute even when a subset matches, if multiple is present
+PASS [INPUT in EMAIL status] Invalid regular expression gets ignored, if multiple is present
+PASS [INPUT in EMAIL status] The pattern attribute tries to escape a group, if multiple is present
+FAIL [INPUT in EMAIL status] The pattern attribute uses Unicode features, if multiple is present assert_false: The validity.patternMismatch should be false. expected false got true
+FAIL [INPUT in EMAIL status] The value attribute matches JavaScript-specific regular expression, if multiple is present assert_false: The validity.patternMismatch should be false. expected false got true
+PASS [INPUT in EMAIL status] The value attribute mismatches JavaScript-specific regular expression, if multiple is present
+FAIL [INPUT in EMAIL status] Commas should be stripped from regex input, if multiple is present assert_true: The validity.patternMismatch should be true. expected true got false
+Harness: the test ran to completion.
+

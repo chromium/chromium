@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('resources/extensions-network.html');
   ExtensionsTestRunner.runExtensionTests([
     function extension_testGetHAR(nextTest) {
@@ -16,7 +16,7 @@
         result.entries.sort(compareEntries);
 
         for (var i = 0; i < result.entries.length; ++i)
-            output("resource: " + result.entries[i].request.url);
+          output('resource: ' + result.entries[i].request.url);
       }
       extension_doXHR(function() {
         webInspector.network.getHAR(callbackAndNextTest(onHAR, nextTest));

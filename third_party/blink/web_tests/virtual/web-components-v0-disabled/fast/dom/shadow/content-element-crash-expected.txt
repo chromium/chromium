@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 10: Uncaught TypeError: target.createShadowRoot is not a function
-PASS unless crash.

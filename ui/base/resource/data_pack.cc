@@ -10,13 +10,13 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/sys_byteorder.h"
@@ -41,8 +41,11 @@ static const size_t kHeaderLengthV5 =
 // We're crashing when trying to load a pak file on Windows.  Add some error
 // codes for logging.
 // http://crbug.com/58056
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with "DataPackLoadErrors"
+// in src/tools/metrics/histograms/enums.xml.
 enum LoadErrors {
-  INIT_FAILED = 1,
+  INIT_FAILED_OBSOLETE = 1,
   BAD_VERSION,
   INDEX_TRUNCATED,
   ENTRY_NOT_FOUND,
@@ -50,6 +53,8 @@ enum LoadErrors {
   WRONG_ENCODING,
   INIT_FAILED_FROM_FILE,
   UNZIP_FAILED,
+  OPEN_FAILED,
+  MAP_FAILED,
 
   LOAD_ERRORS_COUNT,
 };
@@ -113,7 +118,7 @@ void MaybePrintResourceId(uint16_t resource_id) {
 class ScopedFileWriter {
  public:
   // Constructor takes a |path| parameter and tries to open the file.
-  // Call valid() to check if the operation was succesful.
+  // Call valid() to check if the operation was successful.
   explicit ScopedFileWriter(const base::FilePath& path)
       : valid_(true), file_(base::OpenFile(path, "wb")) {
     if (!file_) {
@@ -122,10 +127,13 @@ class ScopedFileWriter {
     }
   }
 
+  ScopedFileWriter(const ScopedFileWriter&) = delete;
+  ScopedFileWriter& operator=(const ScopedFileWriter&) = delete;
+
   // Destructor.
   ~ScopedFileWriter() { Close(); }
 
-  // Return true if the last i/o operation was succesful.
+  // Return true if the last i/o operation was successful.
   bool valid() const { return valid_; }
 
   // Try to write |data_size| bytes from |data| into the file, if a previous
@@ -153,8 +161,6 @@ class ScopedFileWriter {
  private:
   bool valid_ = false;
   FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFileWriter);
 };
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
@@ -207,6 +213,9 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
   explicit MemoryMappedDataSource(std::unique_ptr<base::MemoryMappedFile> mmap)
       : mmap_(std::move(mmap)) {}
 
+  MemoryMappedDataSource(const MemoryMappedDataSource&) = delete;
+  MemoryMappedDataSource& operator=(const MemoryMappedDataSource&) = delete;
+
   ~MemoryMappedDataSource() override {}
 
   // DataPack::DataSource:
@@ -215,14 +224,15 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMappedDataSource);
 };
 
 // Takes ownership of a string of uncompressed pack data.
 class DataPack::StringDataSource : public DataPack::DataSource {
  public:
   explicit StringDataSource(std::string&& data) : data_(std::move(data)) {}
+
+  StringDataSource(const StringDataSource&) = delete;
+  StringDataSource& operator=(const StringDataSource&) = delete;
 
   ~StringDataSource() override {}
 
@@ -234,35 +244,33 @@ class DataPack::StringDataSource : public DataPack::DataSource {
 
  private:
   const std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSource);
 };
 
 class DataPack::BufferDataSource : public DataPack::DataSource {
  public:
-  explicit BufferDataSource(base::StringPiece buffer) : buffer_(buffer) {}
+  explicit BufferDataSource(base::span<const uint8_t> buffer)
+      : buffer_(buffer) {}
+
+  BufferDataSource(const BufferDataSource&) = delete;
+  BufferDataSource& operator=(const BufferDataSource&) = delete;
 
   ~BufferDataSource() override {}
 
   // DataPack::DataSource:
-  size_t GetLength() const override { return buffer_.length(); }
-  const uint8_t* GetData() const override {
-    return reinterpret_cast<const uint8_t*>(buffer_.data());
-  }
+  size_t GetLength() const override { return buffer_.size(); }
+  const uint8_t* GetData() const override { return buffer_.data(); }
 
  private:
-  base::StringPiece buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
+  base::span<const uint8_t> buffer_;
 };
 
-DataPack::DataPack(ui::ScaleFactor scale_factor)
+DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
     : resource_table_(nullptr),
       resource_count_(0),
       alias_table_(nullptr),
       alias_count_(0),
       text_encoding_type_(BINARY),
-      scale_factor_(scale_factor) {
+      resource_scale_factor_(resource_scale_factor) {
   // Static assert must be within a DataPack member to appease visiblity rules.
   static_assert(sizeof(Entry) == 6, "size of Entry must be 6");
   static_assert(sizeof(Alias) == 4, "size of Alias must be 4");
@@ -274,9 +282,20 @@ DataPack::~DataPack() {
 bool DataPack::LoadFromPath(const base::FilePath& path) {
   std::unique_ptr<base::MemoryMappedFile> mmap =
       std::make_unique<base::MemoryMappedFile>();
-  if (!mmap->Initialize(path)) {
+  // Open the file for reading; allowing other consumers to also open it for
+  // reading and deleting. Do not allow others to write to it.
+  base::File data_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_EXCLUSIVE_WRITE |
+                                 base::File::FLAG_SHARE_DELETE);
+  if (!data_file.IsValid()) {
+    DLOG(ERROR) << "Failed to open datapack with base::File::Error "
+                << data_file.error_details();
+    LogDataPackError(OPEN_FAILED);
+    return false;
+  }
+  if (!mmap->Initialize(std::move(data_file))) {
     DLOG(ERROR) << "Failed to mmap datapack";
-    LogDataPackError(INIT_FAILED);
+    LogDataPackError(MAP_FAILED);
     return false;
   }
   if (MmapHasGzipHeader(mmap.get())) {
@@ -312,7 +331,7 @@ bool DataPack::LoadFromFileRegion(
   return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
 }
 
-bool DataPack::LoadFromBuffer(base::StringPiece buffer) {
+bool DataPack::LoadFromBuffer(base::span<const uint8_t> buffer) {
   return LoadImpl(std::make_unique<BufferDataSource>(buffer));
 }
 
@@ -447,9 +466,9 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
 
   MaybePrintResourceId(resource_id);
   size_t length = next_entry->file_offset - target->file_offset;
-  data->set(reinterpret_cast<const char*>(data_source_->GetData() +
-                                          target->file_offset),
-            length);
+  *data = base::StringPiece(reinterpret_cast<const char*>(
+                                data_source_->GetData() + target->file_offset),
+                            length);
   return true;
 }
 
@@ -466,8 +485,8 @@ ResourceHandle::TextEncodingType DataPack::GetTextEncodingType() const {
   return text_encoding_type_;
 }
 
-ui::ScaleFactor DataPack::GetScaleFactor() const {
-  return scale_factor_;
+ResourceScaleFactor DataPack::GetResourceScaleFactor() const {
+  return resource_scale_factor_;
 }
 
 #if DCHECK_IS_ON()
@@ -475,9 +494,11 @@ void DataPack::CheckForDuplicateResources(
     const std::vector<std::unique_ptr<ResourceHandle>>& packs) {
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
     const uint16_t resource_id = resource_table_[i].resource_id;
-    const float resource_scale = GetScaleForScaleFactor(scale_factor_);
+    const float resource_scale =
+        GetScaleForResourceScaleFactor(resource_scale_factor_);
     for (const auto& handle : packs) {
-      if (GetScaleForScaleFactor(handle->GetScaleFactor()) != resource_scale)
+      if (GetScaleForResourceScaleFactor(handle->GetResourceScaleFactor()) !=
+          resource_scale)
         continue;
       DCHECK(!handle->HasResource(resource_id)) << "Duplicate resource "
                                                 << resource_id << " with scale "
@@ -561,13 +582,13 @@ bool DataPack::WritePack(const base::FilePath& path,
 
   // We place an extra entry after the last item that allows us to read the
   // size of the last item.
-  const uint16_t resource_id = 0;
-  file.Write(&resource_id, sizeof(resource_id));
+  const uint16_t extra_resource_id = 0;
+  file.Write(&extra_resource_id, sizeof(extra_resource_id));
   file.Write(&data_offset, sizeof(data_offset));
 
   // Write the aliases table, if any. Note: |aliases| is an std::map,
   // ensuring values are written in increasing order.
-  for (const std::pair<uint16_t, uint16_t>& alias : aliases) {
+  for (const std::pair<const uint16_t, uint16_t>& alias : aliases) {
     file.Write(&alias, sizeof(alias));
   }
 

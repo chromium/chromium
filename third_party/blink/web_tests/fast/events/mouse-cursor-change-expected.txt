@@ -7,19 +7,19 @@ Bug 53341
 
 
 Mouse move
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 Mouse down
-Cursor Info: type=Progress hotSpot=0,0
+Cursor Info: type=Progress
 
 
 Mouse hold down, move
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 Mouse up
-Cursor Info: type=Help hotSpot=0,0
+Cursor Info: type=Help
 
 
 PASS successfullyParsed is true

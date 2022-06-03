@@ -28,6 +28,7 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string& GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
+  Status SetUpDevTools() override;
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
@@ -59,6 +60,8 @@ class StubDevToolsClient : public DevToolsClient {
   Status HandleReceivedEvents() override;
   void SetDetached() override;
   void SetOwner(WebViewImpl* owner) override;
+  WebViewImpl* GetOwner() const override;
+  DevToolsClient* GetRootClient() override;
 
  protected:
   const std::string id_;

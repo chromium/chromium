@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGEllipse svg:circle id='circle'",
-          "rect": [27, 27, 62, 62],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGEllipse svg:circle id='circle'",
-          "rect": [51, 51, 14, 14],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [27, 27, 62, 62]
       ]
     }
   ]

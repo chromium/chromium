@@ -17,19 +17,23 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -46,7 +50,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/mock_client_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -105,6 +108,9 @@ class FakeDataChannel {
  public:
   FakeDataChannel()
       : read_buf_len_(0), closed_(false), write_called_after_close_(false) {}
+
+  FakeDataChannel(const FakeDataChannel&) = delete;
+  FakeDataChannel& operator=(const FakeDataChannel&) = delete;
 
   int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback) {
     DCHECK(read_callback_.is_null());
@@ -212,8 +218,6 @@ class FakeDataChannel {
   bool write_called_after_close_;
 
   base::WeakPtrFactory<FakeDataChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDataChannel);
 };
 
 class FakeSocket : public StreamSocket {
@@ -221,6 +225,9 @@ class FakeSocket : public StreamSocket {
   FakeSocket(FakeDataChannel* incoming_channel,
              FakeDataChannel* outgoing_channel)
       : incoming_(incoming_channel), outgoing_(outgoing_channel) {}
+
+  FakeSocket(const FakeSocket&) = delete;
+  FakeSocket& operator=(const FakeSocket&) = delete;
 
   ~FakeSocket() override = default;
 
@@ -296,8 +303,6 @@ class FakeSocket : public StreamSocket {
   NetLogWithSource net_log_;
   FakeDataChannel* incoming_;
   FakeDataChannel* outgoing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSocket);
 };
 
 }  // namespace
@@ -357,7 +362,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
         cert_verifier_(new MockCertVerifier()),
         client_cert_verifier_(new MockClientCertVerifier()),
         transport_security_state_(new TransportSecurityState),
-        ct_verifier_(new DoNothingCTVerifier),
         ct_policy_enforcer_(new MockCTPolicyEnforcer),
         ssl_client_session_cache_(
             new SSLClientSessionCache(SSLClientSessionCache::Config())) {}
@@ -385,8 +389,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     client_context_ = std::make_unique<SSLClientContext>(
         ssl_config_service_.get(), cert_verifier_.get(),
-        transport_security_state_.get(), ct_verifier_.get(),
-        ct_policy_enforcer_.get(), ssl_client_session_cache_.get());
+        transport_security_state_.get(), ct_policy_enforcer_.get(),
+        ssl_client_session_cache_.get(), nullptr);
   }
 
  protected:
@@ -414,8 +418,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   void CreateSockets() {
     client_socket_.reset();
     server_socket_.reset();
-    channel_1_.reset(new FakeDataChannel());
-    channel_2_.reset(new FakeDataChannel());
+    channel_1_ = std::make_unique<FakeDataChannel>();
+    channel_2_ = std::make_unique<FakeDataChannel>();
     std::unique_ptr<StreamSocket> client_connection =
         std::make_unique<FakeSocket>(channel_1_.get(), channel_2_.get());
     std::unique_ptr<StreamSocket> server_socket =
@@ -512,7 +516,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<MockClientCertVerifier> client_cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<DoNothingCTVerifier> ct_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> client_context_;
@@ -523,6 +526,31 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   scoped_refptr<SSLPrivateKey> server_ssl_private_key_;
   scoped_refptr<X509Certificate> server_cert_;
 };
+
+class SSLServerSocketReadTest : public SSLServerSocketTest,
+                                public ::testing::WithParamInterface<bool> {
+ protected:
+  SSLServerSocketReadTest() : read_if_ready_enabled_(GetParam()) {}
+
+  int Read(StreamSocket* socket,
+           IOBuffer* buf,
+           int buf_len,
+           CompletionOnceCallback callback) {
+    if (read_if_ready_enabled()) {
+      return socket->ReadIfReady(buf, buf_len, std::move(callback));
+    }
+    return socket->Read(buf, buf_len, std::move(callback));
+  }
+
+  bool read_if_ready_enabled() const { return read_if_ready_enabled_; }
+
+ private:
+  const bool read_if_ready_enabled_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         SSLServerSocketReadTest,
+                         ::testing::Bool());
 
 // This test only executes creation of client and server sockets. This is to
 // test that creation of sockets doesn't crash and have minimal code to run
@@ -972,7 +1000,7 @@ TEST_F(SSLServerSocketTest, HandshakeWithWrongClientCertSuppliedCached) {
   EXPECT_EQ(ERR_BAD_SSL_CLIENT_AUTH_CERT, client_ret);
 }
 
-TEST_F(SSLServerSocketTest, DataTransfer) {
+TEST_P(SSLServerSocketReadTest, DataTransfer) {
   ASSERT_NO_FATAL_FAILURE(CreateContext());
   ASSERT_NO_FATAL_FAILURE(CreateSockets());
 
@@ -1028,25 +1056,31 @@ TEST_F(SSLServerSocketTest, DataTransfer) {
 
   // Read then write.
   write_buf = base::MakeRefCounted<StringIOBuffer>("hello123");
-  server_ret = server_socket_->Read(
-      read_buf.get(), read_buf->BytesRemaining(), read_callback.callback());
-  EXPECT_TRUE(server_ret > 0 || server_ret == ERR_IO_PENDING);
+  server_ret = Read(server_socket_.get(), read_buf.get(),
+                    read_buf->BytesRemaining(), read_callback.callback());
+  EXPECT_EQ(server_ret, ERR_IO_PENDING);
   client_ret = client_socket_->Write(write_buf.get(), write_buf->size(),
                                      write_callback.callback(),
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_TRUE(client_ret > 0 || client_ret == ERR_IO_PENDING);
 
   server_ret = read_callback.GetResult(server_ret);
-  ASSERT_GT(server_ret, 0);
+  if (read_if_ready_enabled()) {
+    // ReadIfReady signals the data is available but does not consume it.
+    // The data is consumed later below.
+    ASSERT_EQ(server_ret, OK);
+  } else {
+    ASSERT_GT(server_ret, 0);
+    read_buf->DidConsume(server_ret);
+  }
   client_ret = write_callback.GetResult(client_ret);
   EXPECT_GT(client_ret, 0);
 
-  read_buf->DidConsume(server_ret);
   while (read_buf->BytesConsumed() < write_buf->size()) {
-    server_ret = server_socket_->Read(
-        read_buf.get(), read_buf->BytesRemaining(), read_callback.callback());
-    EXPECT_TRUE(server_ret > 0 || server_ret == ERR_IO_PENDING);
-    server_ret = read_callback.GetResult(server_ret);
+    server_ret = Read(server_socket_.get(), read_buf.get(),
+                      read_buf->BytesRemaining(), read_callback.callback());
+    // All the data was written above, so the data should be synchronously
+    // available out of both Read() and ReadIfReady().
     ASSERT_GT(server_ret, 0);
     read_buf->DidConsume(server_ret);
   }
@@ -1106,7 +1140,7 @@ TEST_F(SSLServerSocketTest, ClientWriteAfterServerClose) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(10));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
   run_loop.Run();
 }
 
@@ -1270,6 +1304,116 @@ TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKeyRequireEcdhe) {
 
   ASSERT_THAT(client_ret, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
   ASSERT_THAT(server_ret, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+}
+
+class SSLServerSocketAlpsTest
+    : public SSLServerSocketTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SSLServerSocketAlpsTest()
+      : client_alps_enabled_(std::get<0>(GetParam())),
+        server_alps_enabled_(std::get<1>(GetParam())) {}
+  ~SSLServerSocketAlpsTest() override = default;
+  const bool client_alps_enabled_;
+  const bool server_alps_enabled_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SSLServerSocketAlpsTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+TEST_P(SSLServerSocketAlpsTest, Alps) {
+  const std::string server_data = "server sends some test data";
+  const std::string client_data = "client also sends some data";
+
+  server_ssl_config_.alpn_protos = {kProtoHTTP2};
+  if (server_alps_enabled_) {
+    server_ssl_config_.application_settings[kProtoHTTP2] =
+        std::vector<uint8_t>(server_data.begin(), server_data.end());
+  }
+
+  client_ssl_config_.alpn_protos = {kProtoHTTP2};
+  if (client_alps_enabled_) {
+    client_ssl_config_.application_settings[kProtoHTTP2] =
+        std::vector<uint8_t>(client_data.begin(), client_data.end());
+  }
+
+  ASSERT_NO_FATAL_FAILURE(CreateContext());
+  ASSERT_NO_FATAL_FAILURE(CreateSockets());
+
+  TestCompletionCallback handshake_callback;
+  int server_ret = server_socket_->Handshake(handshake_callback.callback());
+
+  TestCompletionCallback connect_callback;
+  int client_ret = client_socket_->Connect(connect_callback.callback());
+
+  client_ret = connect_callback.GetResult(client_ret);
+  server_ret = handshake_callback.GetResult(server_ret);
+
+  ASSERT_THAT(client_ret, IsOk());
+  ASSERT_THAT(server_ret, IsOk());
+
+  // ALPS is negotiated only if ALPS is enabled both on client and server.
+  const auto alps_data_received_by_client =
+      client_socket_->GetPeerApplicationSettings();
+  const auto alps_data_received_by_server =
+      server_socket_->GetPeerApplicationSettings();
+
+  if (client_alps_enabled_ && server_alps_enabled_) {
+    ASSERT_TRUE(alps_data_received_by_client.has_value());
+    EXPECT_EQ(server_data, alps_data_received_by_client.value());
+    ASSERT_TRUE(alps_data_received_by_server.has_value());
+    EXPECT_EQ(client_data, alps_data_received_by_server.value());
+  } else {
+    EXPECT_FALSE(alps_data_received_by_client.has_value());
+    EXPECT_FALSE(alps_data_received_by_server.has_value());
+  }
+}
+
+// Test that CancelReadIfReady works.
+TEST_F(SSLServerSocketTest, CancelReadIfReady) {
+  ASSERT_NO_FATAL_FAILURE(CreateContext());
+  ASSERT_NO_FATAL_FAILURE(CreateSockets());
+
+  TestCompletionCallback connect_callback;
+  int client_ret = client_socket_->Connect(connect_callback.callback());
+  TestCompletionCallback handshake_callback;
+  int server_ret = server_socket_->Handshake(handshake_callback.callback());
+  ASSERT_THAT(connect_callback.GetResult(client_ret), IsOk());
+  ASSERT_THAT(handshake_callback.GetResult(server_ret), IsOk());
+
+  // Attempt to read from the server socket. There will not be anything to read.
+  // Cancel the read immediately afterwards.
+  TestCompletionCallback read_callback;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(1);
+  int read_ret =
+      server_socket_->ReadIfReady(read_buf.get(), 1, read_callback.callback());
+  ASSERT_THAT(read_ret, IsError(ERR_IO_PENDING));
+  ASSERT_THAT(server_socket_->CancelReadIfReady(), IsOk());
+
+  // After the client writes data, the server should still not pick up a result.
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>("a");
+  TestCompletionCallback write_callback;
+  ASSERT_EQ(write_callback.GetResult(client_socket_->Write(
+                write_buf.get(), write_buf->size(), write_callback.callback(),
+                TRAFFIC_ANNOTATION_FOR_TESTS)),
+            write_buf->size());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(read_callback.have_result());
+
+  // After a canceled read, future reads are still possible.
+  while (true) {
+    TestCompletionCallback read_callback2;
+    read_ret = server_socket_->ReadIfReady(read_buf.get(), 1,
+                                           read_callback2.callback());
+    if (read_ret != ERR_IO_PENDING) {
+      break;
+    }
+    ASSERT_THAT(read_callback2.GetResult(read_ret), IsOk());
+  }
+  ASSERT_EQ(1, read_ret);
+  EXPECT_EQ(read_buf->data()[0], 'a');
 }
 
 }  // namespace net

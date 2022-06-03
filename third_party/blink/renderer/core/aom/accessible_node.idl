@@ -6,6 +6,7 @@
 // Explainer: https://github.com/WICG/aom/blob/master/explainer.md
 // Spec: https://wicg.github.io/aom/spec/
 [
+    Exposed=Window,
     RuntimeEnabled=AccessibilityObjectModel
 ] interface AccessibleNode : EventTarget {
     [CallWith=Document] constructor();
@@ -20,7 +21,7 @@
     attribute AccessibleNodeList? controls;
     attribute DOMString? current;
     attribute AccessibleNodeList? describedBy;
-    attribute AccessibleNode? details;
+    attribute AccessibleNodeList? details;
     attribute boolean? disabled;
     attribute AccessibleNode? errorMessage;
     attribute boolean? expanded;

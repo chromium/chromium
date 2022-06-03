@@ -18,15 +18,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -78,8 +78,9 @@ public class ProxyChangeListener {
             if (proxyInfo == null) {
                 return null;
             }
+            final String host = proxyInfo.getHost();
             final Uri pacFileUrl = proxyInfo.getPacFileUrl();
-            return new ProxyConfig(proxyInfo.getHost(), proxyInfo.getPort(),
+            return new ProxyConfig(host == null ? "" : host, proxyInfo.getPort(),
                     Uri.EMPTY.equals(pacFileUrl) ? null : pacFileUrl.toString(),
                     proxyInfo.getExclusionList());
         }
@@ -233,13 +234,13 @@ public class ProxyChangeListener {
             return ProxyConfig.DIRECT;
         }
 
-        // TODO(laisminchillo): replace '29' with 'Build.VERSION_CODES.Q'
-        // when Android Q is finalized for release
-        if (Build.VERSION.SDK_INT == 29 && proxyInfo.getHost().equals("localhost")
-                && proxyInfo.getPort() == -1) {
-            // There's a bug in Android Q's PAC support. If ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                && "localhost".equals(proxyInfo.getHost()) && proxyInfo.getPort() == -1) {
+            // There's a bug in Android Q+ PAC support. If ConnectivityManager
             // returns localhost:-1 then use the intent from the PROXY_CHANGE_ACTION
             // broadcast to extract the ProxyConfig. See http://crbug.com/993538.
+            // -1 is never a reasonable port so just keep this workaround for future
+            // versions until we're sure it's fixed on the platform side.
             return extractNewProxy(intent);
         }
         return ProxyConfig.fromProxyInfo(proxyInfo);
@@ -292,7 +293,7 @@ public class ProxyChangeListener {
     }
 
     private void assertOnThread() {
-        if (BuildConfig.DCHECK_IS_ON && !onThread()) {
+        if (BuildConfig.ENABLE_ASSERTS && !onThread()) {
             throw new IllegalStateException("Must be called on ProxyChangeListener thread.");
         }
     }

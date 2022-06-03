@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.feed.sections.SectionHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/snippets_article_header_height"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layoutDirection="locale">
+
+    <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
+         the title text view is aligned based on the device locale and not the text content.
+    -->
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:textDirection="locale" />
+
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/header_menu"
+        android:layout_width="@dimen/feed_v2_header_menu_width"
+        android:layout_height="@dimen/snippets_article_header_menu_size"
+        android:scaleType="fitXY"
+        android:paddingVertical="15dp"
+        android:layout_marginStart="15dp"
+        android:background="@null"
+        android:src="@drawable/ic_settings_gear_24dp"
+        android:contentDescription="@string/accessibility_ntp_feed_menu_button"
+        app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+        app:tint="@null" />
+</org.chromium.chrome.browser.feed.sections.SectionHeaderView>

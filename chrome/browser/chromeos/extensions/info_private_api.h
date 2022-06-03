@@ -47,6 +47,22 @@ class ChromeosInfoPrivateSetFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.set", CHROMEOSINFOPRIVATE_SET)
 };
 
+// API function that is called to get the tablet mode enabled status as a
+// boolean.
+class ChromeosInfoPrivateIsTabletModeEnabledFunction
+    : public ExtensionFunction {
+ public:
+  ChromeosInfoPrivateIsTabletModeEnabledFunction();
+
+ protected:
+  ~ChromeosInfoPrivateIsTabletModeEnabledFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.isTabletModeEnabled",
+                             CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_INFO_PRIVATE_API_H_

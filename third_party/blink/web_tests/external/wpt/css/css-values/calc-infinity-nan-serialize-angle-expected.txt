@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+PASS 'rotate(calc(1deg * NaN))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1rad * NaN))' as a specified value should serialize as 'rotate(calc(NaN * 1rad))'.
+PASS 'rotate(calc(1turn * NaN))' as a specified value should serialize as 'rotate(calc(NaN * 1turn))'.
+PASS 'rotate(calc(1grad * nan))' as a specified value should serialize as 'rotate(calc(NaN * 1grad))'.
+PASS 'rotate(calc(1deg * infinity / infinity))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1deg * 0 * infinity))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1deg * (infinity + -infinity)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1deg * (-infinity + infinity)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1deg * (infinity - infinity)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'.
+PASS 'rotate(calc(1deg * infinity))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'.
+PASS 'rotate(calc(1deg * -infinity))' as a specified value should serialize as 'rotate(calc(-infinity * 1deg))'.
+PASS 'rotate(calc(1deg * iNFinIty))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'.
+PASS 'rotate(calc(1deg * (infinity + infinity)))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'.
+PASS 'rotate(calc(1deg * (-infinity + -infinity)))' as a specified value should serialize as 'rotate(calc(-infinity * 1deg))'.
+PASS 'rotate(calc(1deg * 1/infinity))' as a specified value should serialize as 'rotate(calc(0deg))'.
+PASS 'rotate(calc(1deg * infinity * infinity))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'.
+PASS 'rotate(calc(1deg * -infinity * -infinity))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'.
+FAIL 'rotate(calc(1 * max(INFinity*3deg, 0deg)))' as a specified value should serialize as 'rotate(calc(infinity * 1deg))'. assert_equals: 'rotate(calc(1 * max(INFinity*3deg, 0deg)))' and 'rotate(calc(infinity * 1deg))' should serialize the same in specified values. expected "rotate(calc(infinity * 1deg))" but got "rotate(calc(1 * max(infinity * 1deg, 0deg)))"
+FAIL 'rotate(calc(1 * min(inFInity*4deg, 0deg)))' as a specified value should serialize as 'rotate(calc(0deg))'. assert_equals: 'rotate(calc(1 * min(inFInity*4deg, 0deg)))' and 'rotate(calc(0deg))' should serialize the same in specified values. expected "rotate(calc(0deg))" but got "rotate(calc(1 * min(infinity * 1deg, 0deg)))"
+FAIL 'rotate(calc(1 * max(nAn*2deg, 0deg)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1 * max(nAn*2deg, 0deg)))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1 * max(NaN * 1deg, 0deg)))"
+FAIL 'rotate(calc(1 * min(nan*3deg, 0deg)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1 * min(nan*3deg, 0deg)))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1 * min(NaN * 1deg, 0deg)))"
+FAIL 'rotate(calc(1 * clamp(-INFINITY*20deg, 0deg, infiniTY*10deg)))' as a specified value should serialize as 'rotate(calc(0deg))'. assert_equals: 'rotate(calc(1 * clamp(-INFINITY*20deg, 0deg, infiniTY*10deg)))' and 'rotate(calc(0deg))' should serialize the same in specified values. expected "rotate(calc(0deg))" but got "rotate(calc(1 * clamp(-infinity * 1deg, 0deg, infinity * 1deg)))"
+FAIL 'rotate(calc(1deg * max(NaN, min(0,10))))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * max(NaN, min(0,10))))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * max(NaN, min(0, 10))))"
+FAIL 'rotate(calc(1deg * clamp(NaN, 0, 10)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * clamp(NaN, 0, 10)))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * clamp(NaN, 0, 10)))"
+FAIL 'rotate(calc(1deg * max(0, min(10, NaN))))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * max(0, min(10, NaN))))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * max(0, min(10, NaN))))"
+FAIL 'rotate(calc(1deg * clamp(0, 10, NaN)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * clamp(0, 10, NaN)))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * clamp(0, 10, NaN)))"
+FAIL 'rotate(calc(1deg * max(0, min(NaN, 10))))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * max(0, min(NaN, 10))))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * max(0, min(NaN, 10))))"
+FAIL 'rotate(calc(1deg * clamp(0, NaN, 10)))' as a specified value should serialize as 'rotate(calc(NaN * 1deg))'. assert_equals: 'rotate(calc(1deg * clamp(0, NaN, 10)))' and 'rotate(calc(NaN * 1deg))' should serialize the same in specified values. expected "rotate(calc(NaN * 1deg))" but got "rotate(calc(1deg * clamp(0, NaN, 10)))"
+FAIL 'rotate(calc(1deg * clamp(-Infinity, 0, infinity)))' as a specified value should serialize as 'rotate(calc(0deg))'. assert_equals: 'rotate(calc(1deg * clamp(-Infinity, 0, infinity)))' and 'rotate(calc(0deg))' should serialize the same in specified values. expected "rotate(calc(0deg))" but got "rotate(calc(1deg * clamp(-infinity, 0, infinity)))"
+FAIL 'rotate(calc(1deg * clamp(-inFinity, infinity, 10)))' as a specified value should serialize as 'rotate(calc(10deg))'. assert_equals: 'rotate(calc(1deg * clamp(-inFinity, infinity, 10)))' and 'rotate(calc(10deg))' should serialize the same in specified values. expected "rotate(calc(10deg))" but got "rotate(calc(1deg * clamp(-infinity, infinity, 10)))"
+Harness: the test ran to completion.
+

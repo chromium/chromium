@@ -85,9 +85,10 @@ void AppendMatchingCookiesFromCookieListToVector(
     const Extension* extension,
     std::vector<api::cookies::Cookie>* match_vector);
 
-// Same as above except takes a CookieStatusList (and ignores the statuses).
-void AppendMatchingCookiesFromCookieStatusListToVector(
-    const net::CookieStatusList& all_cookies_with_statuses,
+// Same as above except takes a CookieAccessResultList (and ignores the access
+// results).
+void AppendMatchingCookiesFromCookieAccessResultListToVector(
+    const net::CookieAccessResultList& all_cookies_with_access_result,
     const api::cookies::GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<api::cookies::Cookie>* match_vector);

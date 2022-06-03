@@ -1,0 +1,3 @@
+CONSOLE ERROR: Document policy violation: Image bpp (byte per pixel) exceeds max value set in lossy-images-max-bpp.
+CONSOLE ERROR: Document policy violation: Image bpp (byte per pixel) exceeds max value set in lossy-images-max-bpp.
+CONSOLE ERROR: Document policy violation: Image bpp (byte per pixel) exceeds max value set in lossy-images-max-bpp.

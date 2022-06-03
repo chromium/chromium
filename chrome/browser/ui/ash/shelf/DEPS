@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/services/app_service/public",
+  "+components/app_restore/full_restore_utils.h",
+]

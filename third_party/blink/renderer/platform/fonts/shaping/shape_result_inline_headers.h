@@ -83,6 +83,8 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
                                        unsigned start_index,
                                        unsigned num_glyphs,
                                        unsigned num_characters) {
+    CHECK_GT(num_glyphs, 0u);
+    CHECK_GT(num_characters, 0u);
     return base::AdoptRef(new RunInfo(font, dir, canvas_rotation, script,
                                       start_index, num_glyphs, num_characters));
   }
@@ -98,29 +100,30 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
           unsigned start_index,
           unsigned num_glyphs,
           unsigned num_characters)
-      : font_data_(const_cast<SimpleFontData*>(font)),
-        direction_(dir),
-        canvas_rotation_(canvas_rotation),
-        script_(script),
-        glyph_data_(
+      : glyph_data_(
             std::min(num_glyphs, HarfBuzzRunGlyphData::kMaxCharacterIndex + 1)),
+        font_data_(const_cast<SimpleFontData*>(font)),
         start_index_(start_index),
         num_characters_(num_characters),
-        width_(0.0f) {}
+        width_(0.0f),
+        script_(script),
+        direction_(dir),
+        canvas_rotation_(canvas_rotation) {}
 
   RunInfo(const RunInfo& other)
-      : font_data_(other.font_data_),
-        direction_(other.direction_),
-        canvas_rotation_(other.canvas_rotation_),
-        script_(other.script_),
-        glyph_data_(other.glyph_data_),
+      : glyph_data_(other.glyph_data_),
+        font_data_(other.font_data_),
         graphemes_(other.graphemes_),
         start_index_(other.start_index_),
         num_characters_(other.num_characters_),
-        width_(other.width_) {}
+        width_(other.width_),
+        script_(other.script_),
+        direction_(other.direction_),
+        canvas_rotation_(other.canvas_rotation_) {}
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
-  bool Rtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
+  bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
+  bool IsRtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
   bool IsHorizontal() const { return HB_DIRECTION_IS_HORIZONTAL(direction_); }
   CanvasRotationInVertical CanvasRotation() const { return canvas_rotation_; }
   unsigned NextSafeToBreakOffset(unsigned) const;
@@ -163,17 +166,20 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
                                     unsigned end_character_index) const {
     GlyphDataRange range = GetGlyphDataRange().FindGlyphDataRange(
-        Rtl(), start_character_index, end_character_index);
+        IsRtl(), start_character_index, end_character_index);
     return range;
   }
 
   // Creates a new RunInfo instance representing a subset of the current run.
+  // Returns |nullptr| if there are no glyphs in the specified range.
   scoped_refptr<RunInfo> CreateSubRun(unsigned start, unsigned end) {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
     unsigned number_of_glyphs =
         static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
+    if (UNLIKELY(!number_of_glyphs))
+      return nullptr;
 
     auto run =
         Create(font_data_.get(), direction_, canvas_rotation_, script_,
@@ -193,28 +199,75 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     return run;
   }
 
+  // Returns new |RunInfo| if |this| and |other| are merged. Otherwise returns
+  // null.
+  scoped_refptr<RunInfo> MergeIfPossible(const RunInfo& other) const {
+    if (!CanMerge(other))
+      return nullptr;
+    DCHECK_LT(start_index_, other.start_index_);
+    auto run =
+        Create(font_data_.get(), direction_, canvas_rotation_, script_,
+               start_index_, glyph_data_.size() + other.glyph_data_.size(),
+               num_characters_ + other.num_characters_);
+    // Note: We populate |graphemes_| on demand, e.g. hit testing.
+    const int index_adjust = other.start_index_ - start_index_;
+    if (UNLIKELY(IsRtl())) {
+      run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
+      auto* const end = run->glyph_data_.begin() + other.glyph_data_.size();
+      for (auto* it = run->glyph_data_.begin(); it < end; ++it)
+        it->character_index += index_adjust;
+    } else {
+      run->glyph_data_.CopyFrom(glyph_data_, other.glyph_data_);
+      auto* const end = run->glyph_data_.end();
+      for (auto* it = run->glyph_data_.begin() + glyph_data_.size(); it < end;
+           ++it)
+        it->character_index += index_adjust;
+    }
+    run->width_ = width_ + other.width_;
+    return run;
+  }
+
+  // Returns true if |other| can be merged at end of |this|.
+  bool CanMerge(const RunInfo& other) const {
+    return start_index_ + num_characters_ == other.start_index_ &&
+           canvas_rotation_ == other.canvas_rotation_ &&
+           font_data_ == other.font_data_ && direction_ == other.direction_ &&
+           script_ == other.script_ &&
+           glyph_data_.size() + other.glyph_data_.size() <
+               HarfBuzzRunGlyphData::kMaxCharacterIndex + 1;
+  }
+
   void ExpandRangeToIncludePartialGlyphs(int offset, int* from, int* to) const {
-    int start = !Rtl() ? offset : (offset + num_characters_);
     int end = offset + num_characters_;
+    int start;
 
-    for (unsigned i = 0; i < glyph_data_.size(); ++i) {
-      int index = offset + glyph_data_[i].character_index;
-      if (start == index)
-        continue;
-
-      if (!Rtl())
+    if (IsLtr()) {
+      start = offset + num_characters_;
+      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
+        int index = offset + glyph_data_[i].character_index;
+        if (start == index)
+          continue;
         end = index;
-
-      if (end > *from && start < *to) {
-        *from = std::min(*from, start);
-        *to = std::max(*to, end);
+        if (end > *from && start < *to) {
+          *from = std::min(*from, start);
+          *to = std::max(*to, end);
+        }
+        end = offset + num_characters_;
+        start = index;
       }
-
-      if (!Rtl())
-        end = num_characters_;
-      else
+    } else {
+      start = offset + num_characters_;
+      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
+        int index = offset + glyph_data_[i].character_index;
+        if (start == index)
+          continue;
+        if (end > *from && start < *to) {
+          *from = std::min(*from, start);
+          *to = std::max(*to, end);
+        }
         end = start;
-      start = index;
+        start = index;
+      }
     }
 
     if (end > *from && start < *to) {
@@ -263,9 +316,29 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     }
 
     unsigned size() const { return size_; }
+    bool IsEmpty() const { return size() == 0; }
 
     size_t ByteSize() const {
       return storage_ ? size() * sizeof(GlyphOffset) : 0;
+    }
+
+    void CopyFrom(const GlyphOffsetArray& other1,
+                  const GlyphOffsetArray& other2) {
+      SECURITY_CHECK(size() == other1.size() + other2.size());
+      DCHECK(!other1.IsEmpty());
+      DCHECK(!other2.IsEmpty());
+      if (other1.storage_) {
+        if (!storage_)
+          AllocateStorage();
+        std::copy(other1.storage_.get(), other1.storage_.get() + other1.size(),
+                  storage_.get());
+      }
+      if (other2.storage_) {
+        if (!storage_)
+          AllocateStorage();
+        std::copy(other2.storage_.get(), other2.storage_.get() + other2.size(),
+                  storage_.get() + other1.size());
+      }
     }
 
     void CopyFromRange(const GlyphDataRange& range) {
@@ -306,7 +379,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
-      storage_[index].SetHeight(storage_[index].Height() + delta);
+      storage_[index].set_height(storage_[index].height() + delta);
     }
 
     void AddWidthAt(unsigned index, float delta) {
@@ -314,13 +387,13 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
-      storage_[index].SetWidth(storage_[index].Width() + delta);
+      storage_[index].set_width(storage_[index].width() + delta);
     }
 
     void SetAt(unsigned index, GlyphOffset offset) {
       DCHECK_LT(index, size());
       if (!storage_) {
-        if (offset.Width() == 0 && offset.Height() == 0)
+        if (offset.width() == 0 && offset.height() == 0)
           return;
         AllocateStorage();
       }
@@ -379,6 +452,20 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
 
     GlyphOffset* GetMayBeOffsets() const { return offsets_.GetStorage(); }
 
+    // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
+    void CopyFrom(const GlyphDataCollection& other1,
+                  const GlyphDataCollection& other2) {
+      SECURITY_CHECK(size() == other1.size() + other2.size());
+      DCHECK(!other1.IsEmpty());
+      DCHECK(!other2.IsEmpty());
+      std::copy(other1.data_.get(), other1.data_.get() + other1.size(),
+                data_.get());
+      std::copy(other2.data_.get(), other2.data_.get() + other2.size(),
+                data_.get() + other1.size());
+      offsets_.CopyFrom(other1.offsets_, other2.offsets_);
+    }
+
+    // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFromRange(const GlyphDataRange& range) {
       DCHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
       static_assert(base::is_trivially_copyable<HarfBuzzRunGlyphData>::value,
@@ -421,6 +508,15 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     unsigned size() const { return offsets_.size(); }
     bool IsEmpty() const { return size() == 0; }
 
+    const HarfBuzzRunGlyphData& front() const {
+      CHECK(!IsEmpty());
+      return (*this)[0];
+    }
+    const HarfBuzzRunGlyphData& back() const {
+      CHECK(!IsEmpty());
+      return (*this)[size() - 1];
+    }
+
     void Reverse() {
       std::reverse(begin(), end());
       offsets_.Reverse();
@@ -447,13 +543,8 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     GlyphOffsetArray offsets_;
   };
 
-  scoped_refptr<SimpleFontData> font_data_;
-  hb_direction_t direction_;
-  // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
-  // the canvas back 90deg for this RunInfo.
-  CanvasRotationInVertical canvas_rotation_;
-  hb_script_t script_;
   GlyphDataCollection glyph_data_;
+  scoped_refptr<SimpleFontData> font_data_;
 
   // graphemes_[i] is the number of graphemes up to (and including) the ith
   // character in the run.
@@ -462,6 +553,13 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   unsigned start_index_;
   unsigned num_characters_;
   float width_;
+
+  hb_script_t script_;
+  hb_direction_t direction_;
+
+  // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
+  // the canvas back 90deg for this RunInfo.
+  CanvasRotationInVertical canvas_rotation_;
 };
 
 // For non-zero glyph offset array

@@ -1966,7 +1966,7 @@
       "gn_args": "internal_gles2_conform_tests=true"
     }, 
     "java_coverage": {
-      "gn_args": "jacoco_coverage=true"
+      "gn_args": "emma_coverage=true emma_filter=\"org.chromium.*\""
     }, 
     "libfuzzer": {
       "gn_args": "use_libfuzzer=true"

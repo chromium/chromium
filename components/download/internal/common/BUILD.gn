@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -20,7 +22,6 @@ source_set("internal") {
   sources = [
     "all_download_event_notifier.cc",
     "base_file.cc",
-    "base_file_win.cc",
     "download_create_info.cc",
     "download_db_cache.cc",
     "download_db_cache.h",
@@ -30,6 +31,7 @@ source_set("internal") {
     "download_interrupt_reasons_utils.cc",
     "download_item_impl.cc",
     "download_item_impl_delegate.cc",
+    "download_item_rename_handler.cc",
     "download_job.cc",
     "download_job_factory.cc",
     "download_job_impl.cc",
@@ -70,9 +72,11 @@ source_set("internal") {
     "//base",
     "//components/download/database",
     "//components/download/public/common:interfaces",
-    "//components/download/quarantine",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/filename_generation",
     "//components/leveldb_proto",
+    "//components/safe_browsing:buildflags",
+    "//components/services/quarantine",
     "//mojo/public/c/system",
     "//net",
     "//services/device/public/mojom:mojom",
@@ -80,6 +84,11 @@ source_set("internal") {
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp:cpp",
   ]
+
+  # TODO(crbug/1056278): Enable this on Fuchsia
+  if (safe_browsing_mode > 0 && !is_fuchsia) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
 
   if (is_win) {
     deps += [ "//components/services/quarantine/public/cpp:features" ]
@@ -94,6 +103,10 @@ source_set("internal") {
     deps += [ ":jni_headers" ]
   }
 
+  if (is_win) {
+    sources += [ "base_file_win.cc" ]
+  }
+
   if (is_posix || is_fuchsia) {
     sources += [ "base_file_posix.cc" ]
   }
@@ -101,20 +114,22 @@ source_set("internal") {
 
 if (is_android) {
   android_library("internal_java") {
-    java_files = [ "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
+      "android/java/src/org/chromium/components/download/DownloadDelegate.java",
+    ]
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
+      "//third_party/android_provider:android_provider_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [
-      "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
-    ]
+    sources = [ "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java" ]
   }
 }
 
@@ -124,9 +139,7 @@ if (is_android) {
 group("for_tests") {
   visibility = [ ":unit_tests" ]
   if (!is_component_build) {
-    public_deps = [
-      ":internal",
-    ]
+    public_deps = [ ":internal" ]
   }
 }
 
@@ -140,7 +153,6 @@ source_set("unit_tests") {
   sources = [
     "all_download_event_notifier_unittest.cc",
     "base_file_unittest.cc",
-    "base_file_win_unittest.cc",
     "download_db_cache_unittest.cc",
     "download_file_unittest.cc",
     "download_item_impl_unittest.cc",
@@ -155,8 +167,11 @@ source_set("unit_tests") {
   deps = [
     ":for_tests",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//build:chromeos_buildflags",
     "//components/download/database",
     "//components/download/public/common:test_support",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/leveldb_proto",
     "//components/leveldb_proto:test_support",
     "//components/ukm:test_support",

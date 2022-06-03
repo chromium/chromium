@@ -26,7 +26,9 @@ interface SharedWorkerHost {
                        pending_receiver<blink.mojom.DevToolsAgentHost> agent_host);
 
   // Indicates that the script failed to load.
-  OnScriptLoadFailed();
+  // If |error_message| is not empty, it will be ptinted in the creator frame's
+  // console.
+  OnScriptLoadFailed(string error_message);
 
   // Indicates that the shared worker used a feature. This is intended to be
   // logged by the client-side feature logging infrastructure.

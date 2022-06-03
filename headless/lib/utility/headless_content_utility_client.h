@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
-#define HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#ifndef HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#define HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
 
 #include <string>
 
@@ -23,19 +23,22 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
       NetworkBinderCreationCallback callback);
 
   explicit HeadlessContentUtilityClient(const std::string& user_agent);
+
+  HeadlessContentUtilityClient(const HeadlessContentUtilityClient&) = delete;
+  HeadlessContentUtilityClient& operator=(const HeadlessContentUtilityClient&) =
+      delete;
+
   ~HeadlessContentUtilityClient() override;
 
   // content::ContentUtilityClient:
-  mojo::ServiceFactory* GetMainThreadServiceFactory() override;
+  void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
 
  private:
   const std::string user_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentUtilityClient);
 };
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#endif  // HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_

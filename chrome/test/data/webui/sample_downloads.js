@@ -14,7 +14,7 @@ function DISABLED_testAssertFalse() {
 }
 
 function testInitialFocus() {
-  assertTrue(document.activeElement.id == 'term', '');
+  assertTrue(document.activeElement.id === 'term', '');
 }
 
 function testConsoleError() {

@@ -22,10 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+// https://html.spec.whatwg.org/C/#canvaspattern
+
 [
     Exposed=(Window,Worker)
 ] interface CanvasPattern {
 
-    [RaisesException] void setTransform(optional DOMMatrix2DInit transform);
+    [RaisesException] void setTransform(optional DOMMatrix2DInit transform = {});
 
 };

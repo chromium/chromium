@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -69,13 +70,13 @@ void WindowManager::OnConfigurationChanged() {
   }
 
   is_configuring_ = true;
-  delegate_->GetDisplays(base::BindRepeating(&WindowManager::OnDisplaysAquired,
-                                             base::Unretained(this)));
+  delegate_->GetDisplays(base::BindOnce(&WindowManager::OnDisplaysAcquired,
+                                        base::Unretained(this)));
 }
 
 void WindowManager::OnDisplaySnapshotsInvalidated() {}
 
-void WindowManager::OnDisplaysAquired(
+void WindowManager::OnDisplaysAcquired(
     const std::vector<display::DisplaySnapshot*>& displays) {
   windows_.clear();
 
@@ -87,11 +88,15 @@ void WindowManager::OnDisplaysAquired(
       continue;
     }
 
+    display::DisplayConfigurationParams display_config_params(
+        display->display_id(), origin, display->native_mode());
+    std::vector<display::DisplayConfigurationParams> config_request;
+    config_request.push_back(std::move(display_config_params));
     delegate_->Configure(
-        *display, display->native_mode(), origin,
-        base::BindRepeating(&WindowManager::OnDisplayConfigured,
-                            base::Unretained(this),
-                            gfx::Rect(origin, display->native_mode()->size())));
+        config_request,
+        base::BindOnce(&WindowManager::OnDisplayConfigured,
+                       base::Unretained(this), display->display_id(),
+                       gfx::Rect(origin, display->native_mode()->size())));
     origin.Offset(display->native_mode()->size().width(), 0);
   }
   is_configuring_ = false;
@@ -99,13 +104,15 @@ void WindowManager::OnDisplaysAquired(
   if (should_configure_) {
     should_configure_ = false;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindRepeating(&WindowManager::OnConfigurationChanged,
-                                       base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&WindowManager::OnConfigurationChanged,
+                                  base::Unretained(this)));
   }
 }
 
-void WindowManager::OnDisplayConfigured(const gfx::Rect& bounds, bool success) {
-  if (success) {
+void WindowManager::OnDisplayConfigured(const int64_t display_id,
+                                        const gfx::Rect& bounds,
+                                        bool config_success) {
+  if (config_success) {
     std::unique_ptr<DemoWindow> window(
         new DemoWindow(this, renderer_factory_.get(), bounds));
     window->Start();

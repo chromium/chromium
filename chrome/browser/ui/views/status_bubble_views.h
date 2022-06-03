@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_STATUS_BUBBLE_VIEWS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -32,6 +31,8 @@ class Widget;
 // to allow users to see where hovered links point to.
 class StatusBubbleViews : public StatusBubble {
  public:
+  class StatusView;
+
   // How wide the bubble's shadow is.
   static const int kShadowThickness;
 
@@ -40,6 +41,10 @@ class StatusBubbleViews : public StatusBubble {
 
   // |base_view| is the view that this bubble is positioned relative to.
   explicit StatusBubbleViews(views::View* base_view);
+
+  StatusBubbleViews(const StatusBubbleViews&) = delete;
+  StatusBubbleViews& operator=(const StatusBubbleViews&) = delete;
+
   ~StatusBubbleViews() override;
 
   views::View* base_view() { return base_view_; }
@@ -59,13 +64,13 @@ class StatusBubbleViews : public StatusBubble {
   void SetBubbleWidth(int width);
 
   // Gets the width that a bubble should be for a given string
-  int GetWidthForURL(const base::string16& url_string);
+  int GetWidthForURL(const std::u16string& url_string);
 
   // Notifies the bubble's popup that browser's theme is changed.
   void OnThemeChanged();
 
   // Overridden from StatusBubble:
-  void SetStatus(const base::string16& status) override;
+  void SetStatus(const std::u16string& status) override;
   void SetURL(const GURL& url) override;
   void Hide() override;
   void MouseMoved(bool left_content) override;
@@ -79,7 +84,6 @@ class StatusBubbleViews : public StatusBubble {
   void MouseMovedAt(const gfx::Point& location, bool left_content);
 
  private:
-  class StatusView;
   class StatusViewAnimation;
   class StatusViewExpander;
 
@@ -122,10 +126,10 @@ class StatusBubbleViews : public StatusBubble {
   bool IsDestroyPopupTimerRunningForTest();
 
   // The status text we want to display when there are no URLs to display.
-  base::string16 status_text_;
+  std::u16string status_text_;
 
   // The url we want to display when there is no status text to display.
-  base::string16 url_text_;
+  std::u16string url_text_;
 
   // The original, non-elided URL.
   GURL url_;
@@ -169,8 +173,6 @@ class StatusBubbleViews : public StatusBubble {
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusBubbleViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_BUBBLE_VIEWS_H_

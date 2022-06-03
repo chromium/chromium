@@ -8,3 +8,4 @@
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUBindGroupLayout {
 };
+GPUBindGroupLayout includes GPUObjectBase;

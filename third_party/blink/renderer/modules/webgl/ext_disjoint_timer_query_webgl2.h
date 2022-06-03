@@ -28,7 +28,7 @@ class EXTDisjointTimerQueryWebGL2 final : public WebGLExtension {
 
   void queryCounterEXT(WebGLQuery*, GLenum);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

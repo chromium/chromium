@@ -1,8 +1,0 @@
-total 14
-lrwxrwxrwx   1 other          7 Sep  1  2005 bin -> usr/bin
-dr-xr-xr-x   2 other        512 Aug  9  2004 dev
-dr-xr-xr-x   2 other        512 Sep 28  2006 etc
-drwxr-xr-x   2 other        512 Sep 28  2006 msgs
-drwxr-xr-x  53 other       1024 Jun 30 09:52 pub
-dr-xr-xr-x   5 other        512 Aug  9  2004 usr
-drwxr-xr-x   2 other        512 Aug  9  2004 var

@@ -18,13 +18,9 @@
 #include "ppapi/c/ppb_instance.h"
 #include "ppapi/c/ppb_messaging.h"
 #include "ppapi/c/ppb_mouse_lock.h"
-#include "ppapi/proxy/broker_resource.h"
 #include "ppapi/proxy/browser_font_singleton_resource.h"
 #include "ppapi/proxy/enter_proxy.h"
-#include "ppapi/proxy/flash_clipboard_resource.h"
-#include "ppapi/proxy/flash_file_resource.h"
 #include "ppapi/proxy/flash_fullscreen_resource.h"
-#include "ppapi/proxy/flash_resource.h"
 #include "ppapi/proxy/gamepad_resource.h"
 #include "ppapi/proxy/host_dispatcher.h"
 #include "ppapi/proxy/isolated_file_system_private_resource.h"
@@ -34,7 +30,6 @@
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_var.h"
-#include "ppapi/proxy/truetype_font_singleton_resource.h"
 #include "ppapi/proxy/uma_private_resource.h"
 #include "ppapi/shared_impl/array_var.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
@@ -227,13 +222,6 @@ const ViewData* PPB_Instance_Proxy::GetViewData(PP_Instance instance) {
   return &data->view;
 }
 
-PP_Bool PPB_Instance_Proxy::FlashIsFullscreen(PP_Instance instance) {
-  // This function is only used for proxying in the renderer process. It is not
-  // implemented in the plugin process.
-  NOTREACHED();
-  return PP_FALSE;
-}
-
 PP_Var PPB_Instance_Proxy::GetWindowObject(PP_Instance instance) {
   ReceiveSerializedVarReturnValue result;
   dispatcher()->Send(new PpapiHostMsg_PPBInstance_GetWindowObject(
@@ -356,9 +344,6 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
                         static_cast<PluginDispatcher*>(dispatcher())->sender());
 
   switch (id) {
-    case BROKER_SINGLETON_ID:
-      new_singleton = new BrokerResource(connection, instance);
-      break;
     case GAMEPAD_SINGLETON_ID:
       new_singleton = new GamepadResource(connection, instance);
       break;
@@ -369,9 +354,6 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case NETWORK_PROXY_SINGLETON_ID:
       new_singleton = new NetworkProxyResource(connection, instance);
       break;
-    case TRUETYPE_FONT_SINGLETON_ID:
-      new_singleton = new TrueTypeFontSingletonResource(connection, instance);
-      break;
     case UMA_SINGLETON_ID:
       new_singleton = new UMAPrivateResource(connection, instance);
       break;
@@ -380,28 +362,15 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case BROWSER_FONT_SINGLETON_ID:
       new_singleton = new BrowserFontSingletonResource(connection, instance);
       break;
-    case FLASH_CLIPBOARD_SINGLETON_ID:
-      new_singleton = new FlashClipboardResource(connection, instance);
-      break;
-    case FLASH_FILE_SINGLETON_ID:
-      new_singleton = new FlashFileResource(connection, instance);
-      break;
     case FLASH_FULLSCREEN_SINGLETON_ID:
       new_singleton = new FlashFullscreenResource(connection, instance);
-      break;
-    case FLASH_SINGLETON_ID:
-      new_singleton = new FlashResource(connection, instance,
-          static_cast<PluginDispatcher*>(dispatcher()));
       break;
     case PDF_SINGLETON_ID:
       new_singleton = new PDFResource(connection, instance);
       break;
 #else
     case BROWSER_FONT_SINGLETON_ID:
-    case FLASH_CLIPBOARD_SINGLETON_ID:
-    case FLASH_FILE_SINGLETON_ID:
     case FLASH_FULLSCREEN_SINGLETON_ID:
-    case FLASH_SINGLETON_ID:
     case PDF_SINGLETON_ID:
       NOTREACHED();
       break;
@@ -636,7 +605,7 @@ void PPB_Instance_Proxy::SelectionChanged(PP_Instance instance) {
   if (!data->is_request_surrounding_text_pending) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE,
-        RunWhileLocked(base::Bind(&RequestSurroundingText, instance)));
+        RunWhileLocked(base::BindOnce(&RequestSurroundingText, instance)));
     data->is_request_surrounding_text_pending = true;
   }
 }

@@ -1,0 +1,5 @@
+# https://crbug.com/1039873
+-WithWorkarounds/GLVirtualContextsTest.*
+-SetAggressivelyFreeResourcesTest.*
+-GLBGRAMipMapTest.*
+-GpuFenceTest.*

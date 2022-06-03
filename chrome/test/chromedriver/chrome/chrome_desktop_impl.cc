@@ -17,12 +17,10 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/test/chromedriver/chrome/automation_extension.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/chrome/version.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/timeout.h"
@@ -43,8 +41,7 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
 #if defined(OS_POSIX)
   if (!kill_gracefully) {
     kill(process.Pid(), SIGKILL);
-    base::TimeTicks deadline =
-        base::TimeTicks::Now() + base::TimeDelta::FromSeconds(30);
+    base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(30);
     while (base::TimeTicks::Now() < deadline) {
       pid_t pid = HANDLE_EINTR(waitpid(process.Pid(), NULL, WNOHANG));
       if (pid == process.Pid())
@@ -57,7 +54,7 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
         }
         LOG(WARNING) << "Error waiting for process " << process.Pid();
       }
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+      base::PlatformThread::Sleep(base::Milliseconds(50));
     }
     return false;
   }
@@ -123,7 +120,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   Timeout timeout(timeout_raw);
   std::string id;
   WebViewInfo::Type type = WebViewInfo::Type::kPage;
-  while (timeout.GetRemainingTime() > base::TimeDelta()) {
+  while (timeout.GetRemainingTime().is_positive()) {
     WebViewsInfo views_info;
     Status status = devtools_http_client_->GetWebViewsInfo(&views_info);
     if (status.IsError())
@@ -139,7 +136,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
     }
     if (!id.empty())
       break;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
   }
   if (id.empty())
     return Status(kUnknownError, "page could not be found: " + url);
@@ -166,42 +163,6 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   if (status.IsOk())
     *web_view = std::move(web_view_tmp);
   return status;
-}
-
-Status ChromeDesktopImpl::GetAutomationExtension(
-    AutomationExtension** extension,
-    bool w3c_compliant) {
-  if (!automation_extension_) {
-    std::unique_ptr<WebView> web_view;
-    Status status = WaitForPageToLoad(
-        "chrome-extension://aapnijgdinlhnhlmodcfapnahmbfebeb/"
-        "_generated_background_page.html",
-        base::TimeDelta::FromSeconds(10),
-        &web_view,
-        w3c_compliant);
-    if (status.IsError())
-      return Status(kUnknownError, "cannot get automation extension", status);
-
-    // The automation extension page has been loaded, but it might not be
-    // initialized yet. Wait for up to 10 seconds for a function on the page
-    // to become defined, as a signal that the page is initialized.
-    base::TimeTicks deadline =
-        base::TimeTicks::Now() + base::TimeDelta::FromSeconds(10);
-    while (base::TimeTicks::Now() < deadline) {
-      std::unique_ptr<base::Value> result;
-      status = web_view->EvaluateScript(
-          std::string(), "typeof launchApp === 'function'", &result);
-      if (status.IsError())
-        return Status(kUnknownError, "cannot get automation extension", status);
-      if (result->is_bool() && result->GetBool())
-        break;
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
-    }
-
-    automation_extension_.reset(new AutomationExtension(std::move(web_view)));
-  }
-  *extension = automation_extension_.get();
-  return Status(kOk);
 }
 
 Status ChromeDesktopImpl::GetAsDesktop(ChromeDesktopImpl** desktop) {
@@ -234,7 +195,19 @@ Status ChromeDesktopImpl::QuitImpl() {
   bool kill_gracefully = !user_data_dir_.IsValid();
   // If the Chrome session is being run with --log-net-log, send SIGTERM first
   // to allow Chrome to write out all the net logs to the log path.
-  kill_gracefully |= command_.HasSwitch("log-net-log");
+  kill_gracefully = kill_gracefully || command_.HasSwitch("log-net-log");
+  if (kill_gracefully) {
+    Status status = devtools_websocket_client_->ConnectIfNecessary();
+    if (status.IsOk()) {
+      status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
+          "Browser.close", base::DictionaryValue());
+      // If status is not okay, we will try the old method of KillProcess
+      if (status.IsOk() &&
+          process_.WaitForExitWithTimeout(base::Seconds(10), nullptr))
+        return status;
+    }
+  }
+
   if (!KillProcess(process_, kill_gracefully))
     return Status(kUnknownError,
                   base::StringPrintf("cannot kill %s", kBrowserShortName));

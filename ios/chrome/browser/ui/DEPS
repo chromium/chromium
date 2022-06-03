@@ -1,21 +1,4 @@
 specific_include_rules = {
-  # TODO(crbug.com/620489): Remove these exceptions.
-  "^browser_view_controller\.mm$": [
-    "+ios/web/web_state/ui/crw_web_controller.h",
-  ],
-  "^browser_view_controller_unittest\.mm$": [
-    "+ios/web/web_state/ui/crw_web_controller.h",
-    "+ios/web/web_state/web_state_impl.h",
-  ],
-
-  # TODO(crbug.com/620147): Remove these exceptions.
-  "^open_in_controller\.mm$": [
-    "+ios/web/web_state/ui/crw_web_controller.h",
-  ],
-  "^open_in_controller_unittest\.mm$": [
-    "+ios/web/web_state/ui/crw_web_controller.h",
-  ],
-
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "browser_view_controller_egtest\.mm": [

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -14,6 +16,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -26,6 +29,12 @@ namespace payments {
 class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
  public:
   SitePerProcessPaymentsBrowserTest() {}
+
+  SitePerProcessPaymentsBrowserTest(const SitePerProcessPaymentsBrowserTest&) =
+      delete;
+  SitePerProcessPaymentsBrowserTest& operator=(
+      const SitePerProcessPaymentsBrowserTest&) = delete;
+
   ~SitePerProcessPaymentsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -38,8 +47,8 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(https_server_->InitializeAndListen());
     content::SetupCrossSiteRedirector(https_server_.get());
@@ -49,15 +58,12 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPaymentsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
                        IframePaymentRequestDoesNotCrash) {
   GURL url = https_server_->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

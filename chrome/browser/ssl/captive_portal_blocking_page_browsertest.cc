@@ -4,19 +4,20 @@
 
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,11 +28,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/captive_portal/captive_portal_detector.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -39,9 +39,9 @@
 #include "components/security_state/core/security_state.h"
 #include "components/variations/variations_params_manager.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -120,8 +120,9 @@ CaptivePortalTestingNavigationThrottle::WillFailRequest() {
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-  CaptivePortalBlockingPage* blocking_page =
-      ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
+  ChromeSecurityBlockingPageFactory blocking_page_factory;
+  std::unique_ptr<CaptivePortalBlockingPage> blocking_page =
+      blocking_page_factory.CreateCaptivePortalBlockingPage(
           navigation_handle()->GetWebContents(), GURL(kBrokenSSL), login_url_,
           std::move(ssl_cert_reporter_), ssl_info,
           net::ERR_CERT_COMMON_NAME_INVALID);
@@ -131,9 +132,7 @@ CaptivePortalTestingNavigationThrottle::WillFailRequest() {
   // Hand the blocking page back to the WebContents's
   // security_interstitials::SecurityInterstitialTabHelper to own.
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      navigation_handle()->GetWebContents(),
-      navigation_handle()->GetNavigationId(),
-      std::unique_ptr<CaptivePortalBlockingPage>(blocking_page));
+      navigation_handle(), std::move(blocking_page));
   return {CANCEL, net::ERR_CERT_COMMON_NAME_INVALID, html};
 }
 
@@ -187,6 +186,10 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
     CertReportHelper::SetFakeOfficialBuildForTesting();
   }
 
+  CaptivePortalBlockingPageTest(const CaptivePortalBlockingPageTest&) = delete;
+  CaptivePortalBlockingPageTest& operator=(
+      const CaptivePortalBlockingPageTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Setting the sending threshold to 1.0 ensures reporting is enabled.
     variations::testing::VariationParamsManager::AppendVariationParams(
@@ -223,7 +226,6 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestingThrottleInstaller> testing_throttle_installer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalBlockingPageTest);
 };
 
 void CaptivePortalBlockingPageTest::TestInterstitial(
@@ -239,9 +241,9 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents();
   DCHECK(contents);
 
-  testing_throttle_installer_.reset(new TestingThrottleInstaller(
+  testing_throttle_installer_ = std::make_unique<TestingThrottleInstaller>(
       contents, login_url, std::move(ssl_cert_reporter), is_wifi_connection,
-      wifi_ssid));
+      wifi_ssid);
   // We cancel the navigation with ERR_BLOCKED_BY_CLIENT so it doesn't get
   // handled by the normal SSLErrorNavigationThrotttle since this test only
   // checks the behavior of the Blocking Page, not the integration with that
@@ -249,8 +251,8 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   //
   // TODO(https://crbug.com/1003940): Clean this code up now that committed
   // interstitials have shipped.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("https://mock.failed.request/start=-20"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://mock.failed.request/start=-20")));
   content::RenderFrameHost* frame;
   frame = contents->GetMainFrame();
   ASSERT_TRUE(WaitForRenderFrameReady(frame));
@@ -301,9 +303,9 @@ void CaptivePortalBlockingPageTest::TestCertReporting(
 
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter =
       certificate_reporting_test_utils::CreateMockSSLCertReporter(
-          base::Bind(&certificate_reporting_test_utils::
-                         SSLCertReporterCallback::ReportSent,
-                     base::Unretained(&reporter_callback)),
+          base::BindRepeating(&certificate_reporting_test_utils::
+                                  SSLCertReporterCallback::ReportSent,
+                              base::Unretained(&reporter_callback)),
           opt_in == certificate_reporting_test_utils::EXTENDED_REPORTING_OPT_IN
               ? certificate_reporting_test_utils::CERT_REPORT_EXPECTED
               : certificate_reporting_test_utils::CERT_REPORT_NOT_EXPECTED);
@@ -369,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest, WiFi_SSID_LoginURL) {
 }
 
 // Flaky on mac: https://crbug.com/690170
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #define MAYBE_WiFi_NoSSID_LoginURL DISABLED_WiFi_NoSSID_LoginURL
 #else
 #define MAYBE_WiFi_NoSSID_LoginURL WiFi_NoSSID_LoginURL
@@ -384,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest,
 }
 
 // Flaky on mac: https://crbug.com/690125
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #define MAYBE_WiFi_SSID_NoLoginURL DISABLED_WiFi_SSID_NoLoginURL
 #else
 #define MAYBE_WiFi_SSID_NoLoginURL WiFi_SSID_NoLoginURL
@@ -423,12 +425,13 @@ class CaptivePortalBlockingPageIDNTest : public SecurityInterstitialIDNTest {
       const GURL& request_url) const override {
     net::SSLInfo empty_ssl_info;
     // Blocking page is owned by the interstitial.
-    CaptivePortalBlockingPage* blocking_page =
-        ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
+    ChromeSecurityBlockingPageFactory blocking_page_factory;
+    std::unique_ptr<CaptivePortalBlockingPage> blocking_page =
+        blocking_page_factory.CreateCaptivePortalBlockingPage(
             contents, GURL(kBrokenSSL), request_url, nullptr, empty_ssl_info,
             net::ERR_CERT_COMMON_NAME_INVALID);
     blocking_page->OverrideWifiInfoForTesting(false, "");
-    return blocking_page;
+    return blocking_page.release();
   }
 };
 

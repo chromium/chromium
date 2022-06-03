@@ -45,10 +45,14 @@ const html = `
   let frameTimeTicks = 0;
   dp.Emulation.onVirtualTimeBudgetExpired(async e => {
     frameTimeTicks += virtualTimeChunkSize;
-    await dp.HeadlessExperimental.beginFrame({
-        frameTimeTicks: virtualTimeTicksBase + frameTimeTicks,
-        interval: virtualTimeChunkSize,
-        noDisplayUpdates: false});
+    const frameArgs = {
+      frameTimeTicks: virtualTimeTicksBase + frameTimeTicks,
+      interval: virtualTimeChunkSize,
+      noDisplayUpdates: false
+    };
+    if (frameTimeTicks > 500)
+      frameArgs.screenshot = {format: 'png', quality: 100};
+    await dp.HeadlessExperimental.beginFrame(frameArgs);
     await dp.Emulation.setVirtualTimePolicy({
         policy: 'pauseIfNetworkFetchesPending', budget: virtualTimeChunkSize});
   });

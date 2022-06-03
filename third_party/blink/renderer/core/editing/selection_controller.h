@@ -27,13 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/document_shutdown_observer.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -44,17 +43,17 @@ class LocalFrame;
 
 class CORE_EXPORT SelectionController final
     : public GarbageCollected<SelectionController>,
-      public DocumentShutdownObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(SelectionController);
-
+      public ExecutionContextLifecycleObserver {
  public:
   explicit SelectionController(LocalFrame&);
-  virtual ~SelectionController();
-  void Trace(Visitor*) override;
+  SelectionController(const SelectionController&) = delete;
+  SelectionController& operator=(const SelectionController&) = delete;
+  ~SelectionController() override;
+  void Trace(Visitor*) const override;
 
   bool HandleMousePressEvent(const MouseEventWithHitTestResults&);
   void HandleMouseDraggedEvent(const MouseEventWithHitTestResults&,
-                               const IntPoint&,
+                               const gfx::Point&,
                                const PhysicalOffset&,
                                const PhysicalOffset&);
   bool HandleMouseReleaseEvent(const MouseEventWithHitTestResults&,
@@ -62,15 +61,16 @@ class CORE_EXPORT SelectionController final
   bool HandlePasteGlobalSelection(const WebMouseEvent&);
   bool HandleGestureLongPress(const HitTestResult&);
   void HandleGestureTwoFingerTap(const GestureEventWithHitTestResults&);
-  void HandleGestureLongTap(const GestureEventWithHitTestResults&);
 
   void UpdateSelectionForMouseDrag(const PhysicalOffset&,
                                    const PhysicalOffset&);
   void UpdateSelectionForMouseDrag(const HitTestResult&,
                                    const PhysicalOffset&,
                                    const PhysicalOffset&);
-  void SendContextMenuEvent(const MouseEventWithHitTestResults&,
-                            const PhysicalOffset&);
+  template <typename MouseEventObject>
+  void UpdateSelectionForContextMenuEvent(const MouseEventObject* mouse_event,
+                                          const HitTestResult& hit_test_result,
+                                          const PhysicalOffset& position);
   void PassMousePressEventToSubframe(const MouseEventWithHitTestResults&);
 
   void InitializeSelectionState();
@@ -101,11 +101,17 @@ class CORE_EXPORT SelectionController final
   void SelectClosestMisspellingFromHitTestResult(const HitTestResult&,
                                                  AppendTrailingWhitespace);
   // Returns |true| if a word was selected.
-  bool SelectClosestWordFromMouseEvent(const MouseEventWithHitTestResults&);
+  template <typename MouseEventObject>
+  bool SelectClosestWordFromMouseEvent(const MouseEventObject* mouse_event,
+                                       const HitTestResult& result);
+  template <typename MouseEventObject>
   void SelectClosestMisspellingFromMouseEvent(
-      const MouseEventWithHitTestResults&);
+      const MouseEventObject* mouse_event,
+      const HitTestResult& hit_test_result);
+  template <typename MouseEventObject>
   void SelectClosestWordOrLinkFromMouseEvent(
-      const MouseEventWithHitTestResults&);
+      const MouseEventObject* mouse_event,
+      const HitTestResult& hit_test_result);
   void SetNonDirectionalSelectionIfNeeded(const SelectionInFlatTree&,
                                           const SetSelectionOptions&,
                                           EndPointsAdjustmentMode);
@@ -117,10 +123,10 @@ class CORE_EXPORT SelectionController final
 
   FrameSelection& Selection() const;
 
-  // Implements |DocumentShutdownObserver|.
+  // Implements |ExecutionContextLifecycleObserver|.
   // TODO(yosin): We should relocate |original_base_in_flat_tree_| when DOM tree
   // changed.
-  void ContextDestroyed(Document*) final;
+  void ContextDestroyed() final;
 
   bool HandleSingleClick(const MouseEventWithHitTestResults&);
   bool HandleDoubleClick(const MouseEventWithHitTestResults&);
@@ -141,8 +147,6 @@ class CORE_EXPORT SelectionController final
     kExtendedSelection
   };
   SelectionState selection_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionController);
 };
 
 bool IsSelectionOverLink(const MouseEventWithHitTestResults&);

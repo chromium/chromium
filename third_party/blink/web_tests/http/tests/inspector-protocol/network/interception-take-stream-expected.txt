@@ -1,29 +1,33 @@
 Tests that resource bodies can be taken as streams.
 
 Running test: testBasicUsage
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+data: The_quick_brown_fox_jumps_over_the_lazy_dog_0123456789The_quick_brown_fox_jumps_over_the_lazy_dog_01 (100) eof: false
+eof: true
 
 Running test: testLargeRead
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+data: (100000) eof: false
+eof: true
 
 Running test: testSmallNonOverlappingReads
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+data: (10000)
 
 Running test: testSmallOverlappingReads
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+data: (100000)
 
 Running test: testRead0
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+reading 0: Invalid max read size
+data: The_quick_brown_fox_jumps_over_the_lazy_dog_0123456789The_quick_brown_fox_jumps_over_the_lazy_dog_01 (100) eof: false
 
 Running test: testTakeTwice
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+Trying to take stream twice: Can only get response body on requests captured after headers received.
 
 Running test: testReadAfterCancel
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+data: The_quick_brown_fox_jumps_over_the_lazy_dog_0123456789The_quick_brown_fox_jumps_over_the_lazy_dog_01 (100) eof: false
+eof: true
 
 Running test: testContinueAfterBodyTaken
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+Attempting to continue as is after taking request: Unable to continue request as is after body is taken
 
 Running test: testReadAfterClose
-Error taking stream: Network.takeResponseBodyForInterceptionAsStream is only currently supported with --enable-features=NetworkService
+Attempting read after close: Invalid stream handle
 

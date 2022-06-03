@@ -5,6 +5,8 @@
 // The set of scripts to be injected into the web view as early as possible.
 goog.provide('__crWeb.chromeBundleMainFrame');
 
-goog.require('__crWeb.imageFetch');
-goog.require('__crWeb.passwords');
-goog.require('__crWeb.searchEngine');
+// DEPRECATED
+// Do NOT add new features here, but rather add them using an instance of
+// JavaScriptFeature. Please see the documentation at
+// //ios/web/public/js_messaging/README.md
+goog.require('__crWeb.languageDetection');

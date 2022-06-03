@@ -118,10 +118,11 @@ std::string TestHostResolver::ParameterizedTestResolve(
     const PP_HostResolver_Hint& hint) {
   pp::HostResolver host_resolver(instance_);
 
-  ASSERT_SUBTEST_SUCCESS(SyncResolve(&host_resolver, host_, port_, hint));
+  ASSERT_SUBTEST_SUCCESS(
+      SyncResolve(&host_resolver, "host_resolver.test", port_, hint));
 
   size_t size = host_resolver.GetNetAddressCount();
-  ASSERT_TRUE(size >= 1);
+  ASSERT_EQ(1u, size);
 
   pp::NetAddress address;
   for (size_t i = 0; i < size; ++i) {

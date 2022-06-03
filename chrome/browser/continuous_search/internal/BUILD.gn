@@ -1,0 +1,121 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
+  ]
+}
+
+android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImpl.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfiguration.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListener.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducer.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
+  ]
+
+  srcjar_deps = [ "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/continuous_search:data_structures_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.continuous_search"
+}
+
+android_library("junit") {
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImplTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfigurationTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserverTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/continuous_search:data_structures_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
+
+source_set("internal") {
+  sources = [
+    "search_result_extractor_producer.cc",
+    "search_result_extractor_producer.h",
+    "search_result_extractor_producer_interface.h",
+    "search_url_helper.cc",
+    "search_url_helper.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/continuous_search:public",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common/public/mojom",
+    "//components/google/core/common",
+    "//content/public/browser",
+    "//skia",
+    "//url",
+    "//url:gurl_android",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "search_result_extractor_producer_unittest.cc",
+    "search_url_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//chrome/browser/continuous_search:public",
+    "//chrome/test:test_support",
+    "//components/continuous_search/browser/test:test_support",
+    "//components/continuous_search/common/public/mojom",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+    "//url:gurl_android",
+  ]
+}

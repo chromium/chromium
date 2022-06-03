@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "ppapi/c/pp_completion_callback.h"
@@ -23,11 +22,15 @@ namespace content {
 class AudioHelper {
  public:
   AudioHelper();
+
+  AudioHelper(const AudioHelper&) = delete;
+  AudioHelper& operator=(const AudioHelper&) = delete;
+
   virtual ~AudioHelper();
 
   // Called when the stream is created.
   void StreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
-                     base::SyncSocket::Handle socket);
+                     base::SyncSocket::ScopedHandle socket);
 
   void SetCreateCallback(scoped_refptr<ppapi::TrackedCallback> create_callback);
 
@@ -41,7 +44,7 @@ class AudioHelper {
   // To be implemented by subclasses to call their |SetStreamInfo()|.
   virtual void OnSetStreamInfo(
       base::UnsafeSharedMemoryRegion shared_memory_region,
-      base::SyncSocket::Handle socket_handle) = 0;
+      base::SyncSocket::ScopedHandle socket_handle) = 0;
 
  private:
   scoped_refptr<ppapi::TrackedCallback> create_callback_;
@@ -52,8 +55,6 @@ class AudioHelper {
   // invalid all other times.
   base::UnsafeSharedMemoryRegion shared_memory_for_create_callback_;
   std::unique_ptr<base::SyncSocket> socket_for_create_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioHelper);
 };
 
 }  // namespace content

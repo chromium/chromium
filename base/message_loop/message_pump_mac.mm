@@ -10,12 +10,14 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/mac/call_with_eh_frame.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/message_loop/timer_slack.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -29,6 +31,14 @@ const CFStringRef kMessageLoopExclusiveRunLoopMode =
     CFSTR("kMessageLoopExclusiveRunLoopMode");
 
 namespace {
+
+MessagePumpCFRunLoopBase::LudicrousSlackSetting GetLudicrousSlackSetting() {
+  return base::IsLudicrousTimerSlackEnabled()
+             ? MessagePumpCFRunLoopBase::LudicrousSlackSetting::
+                   kLudicrousSlackOn
+             : MessagePumpCFRunLoopBase::LudicrousSlackSetting::
+                   kLudicrousSlackOff;
+}
 
 // Mask that determines which modes to use.
 enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
@@ -51,45 +61,6 @@ bool g_not_using_cr_app = false;
 
 // The MessagePump controlling [NSApp run].
 MessagePumpNSApplication* g_app_pump;
-
-// Various CoreFoundation definitions.
-typedef struct __CFRuntimeBase {
-  uintptr_t _cfisa;
-  uint8_t _cfinfo[4];
-  uint32_t _rc;
-} CFRuntimeBase;
-
-#if defined(__BIG_ENDIAN__)
-#define __CF_BIG_ENDIAN__ 1
-#define __CF_LITTLE_ENDIAN__ 0
-#endif
-
-#if defined(__LITTLE_ENDIAN__)
-#define __CF_LITTLE_ENDIAN__ 1
-#define __CF_BIG_ENDIAN__ 0
-#endif
-
-#define CF_INFO_BITS (!!(__CF_BIG_ENDIAN__)*3)
-
-#define __CFBitfieldMask(N1, N2) \
-  ((((UInt32)~0UL) << (31UL - (N1) + (N2))) >> (31UL - N1))
-#define __CFBitfieldSetValue(V, N1, N2, X)   \
-  ((V) = ((V) & ~__CFBitfieldMask(N1, N2)) | \
-         (((X) << (N2)) & __CFBitfieldMask(N1, N2)))
-
-// Marking timers as invalid at the right time by flipping their valid bit helps
-// significantly reduce power use (see the explanation in
-// RunDelayedWorkTimer()), however there is no public API for doing so.
-// CFRuntime.h states that CFRuntimeBase can change from release to release
-// and should not be accessed directly. The last known change of this struct
-// occurred in 2008 in CF-476 / 10.5; unfortunately the source for 10.11 and
-// 10.12 is not available for inspection at this time.
-// CanInvalidateCFRunLoopTimers() will at least prevent us from invalidating
-// timers if this function starts flipping the wrong bit on a future OS release.
-void __ChromeCFRunLoopTimerSetValid(CFRunLoopTimerRef timer, bool valid) {
-  __CFBitfieldSetValue(((CFRuntimeBase*)timer)->_cfinfo[CF_INFO_BITS], 3, 3,
-                       valid);
-}
 #endif  // !defined(OS_IOS)
 
 }  // namespace
@@ -102,13 +73,16 @@ class MessagePumpScopedAutoreleasePool {
   explicit MessagePumpScopedAutoreleasePool(MessagePumpCFRunLoopBase* pump) :
       pool_(pump->CreateAutoreleasePool()) {
   }
-   ~MessagePumpScopedAutoreleasePool() {
-    [pool_ drain];
-  }
+
+  MessagePumpScopedAutoreleasePool(const MessagePumpScopedAutoreleasePool&) =
+      delete;
+  MessagePumpScopedAutoreleasePool& operator=(
+      const MessagePumpScopedAutoreleasePool&) = delete;
+
+  ~MessagePumpScopedAutoreleasePool() { [pool_ drain]; }
 
  private:
   NSAutoreleasePool* pool_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpScopedAutoreleasePool);
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
@@ -124,6 +98,9 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopAddObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->enter_exit_observer_, mode());
   }
+
+  ScopedModeEnabler(const ScopedModeEnabler&) = delete;
+  ScopedModeEnabler& operator=(const ScopedModeEnabler&) = delete;
 
   ~ScopedModeEnabler() {
     CFRunLoopRef loop = owner_->run_loop_;
@@ -167,8 +144,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  private:
   MessagePumpCFRunLoopBase* const owner_;  // Weak. Owns this.
   const int mode_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModeEnabler);
 };
 
 // Must be called on the run loop thread.
@@ -211,19 +186,37 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
   ScheduleDelayedWorkImpl(delayed_work_time - TimeTicks::Now());
 }
 
-void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
-  // Flip the timer's validation bit just before setting the new fire time. Do
-  // this now because CFRunLoopTimerSetNextFireDate() likely checks the validity
-  // of a timer before proceeding to set its fire date. Making the timer valid
-  // now won't have any side effects (such as a premature firing of the timer)
-  // because we're only flipping a bit.
-  //
-  // Please see the comment in RunDelayedWorkTimer() for more info on the whys
-  // of invalidation.
-  SetDelayedWorkTimerValid(true);
+MessagePumpCFRunLoopBase::LudicrousSlackSetting
+MessagePumpCFRunLoopBase::GetLudicrousSlackState() const {
+  if (ludicrous_slack_setting_ == LudicrousSlackSetting::kLudicrousSlackOn &&
+      IsLudicrousTimerSlackSuspended()) {
+    return LudicrousSlackSetting::kLudicrousSlackSuspended;
+  }
 
+  return ludicrous_slack_setting_;
+}
+
+void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   // The tolerance needs to be set before the fire date or it may be ignored.
-  if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
+
+  // Pickup the ludicrous slack setting as late as possible to work around
+  // initialization issues in base. Note that the main thread won't sleep until
+  // field trial initialization is complete.
+  if (ludicrous_slack_setting_ ==
+      LudicrousSlackSetting::kLudicrousSlackUninitialized) {
+    ludicrous_slack_setting_ = GetLudicrousSlackSetting();
+  } else {
+    // Validate that the setting doesn't change after we cache it.
+    DCHECK_EQ(ludicrous_slack_setting_, GetLudicrousSlackSetting());
+  }
+  DCHECK_NE(ludicrous_slack_setting_,
+            LudicrousSlackSetting::kLudicrousSlackUninitialized);
+
+  if (GetLudicrousSlackState() == LudicrousSlackSetting::kLudicrousSlackOn) {
+    // Specify ludicrous slack when the experiment is enabled and not suspended.
+    CFRunLoopTimerSetTolerance(delayed_work_timer_,
+                               GetLudicrousTimerSlack().InSecondsF());
+  } else if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, delta.InSecondsF() * 0.5);
   } else {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
@@ -251,8 +244,7 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
       deepest_nesting_level_(0),
       keep_running_(true),
       delegateless_work_(false),
-      delegateless_idle_work_(false),
-      allow_timer_invalidation_(true) {
+      delegateless_idle_work_(false) {
   run_loop_ = CFRunLoopGetCurrent();
   CFRetain(run_loop_);
 
@@ -363,96 +355,11 @@ int MessagePumpCFRunLoopBase::GetModeMask() const {
   return mask;
 }
 
-#if !defined(OS_IOS)
-// This function uses private API to modify a test timer's valid state and
-// uses public API to confirm that the private API changed the correct bit.
-// static
-bool MessagePumpCFRunLoopBase::CanInvalidateCFRunLoopTimers() {
-  CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
-  timer_context.info = nullptr;
-  ScopedCFTypeRef<CFRunLoopTimerRef> test_timer(
-      CFRunLoopTimerCreate(NULL,                // allocator
-                           kCFTimeIntervalMax,  // fire time
-                           kCFTimeIntervalMax,  // interval
-                           0,                   // flags
-                           0,                   // priority
-                           nullptr, &timer_context));
-  // Should be valid from the start.
-  if (!CFRunLoopTimerIsValid(test_timer)) {
-    return false;
-  }
-  // Confirm that the private API can mark the timer invalid.
-  __ChromeCFRunLoopTimerSetValid(test_timer, false);
-  if (CFRunLoopTimerIsValid(test_timer)) {
-    return false;
-  }
-  // Confirm that the private API can mark the timer valid.
-  __ChromeCFRunLoopTimerSetValid(test_timer, true);
-  return CFRunLoopTimerIsValid(test_timer);
-}
-#endif  // !defined(OS_IOS)
-
-// static
-void MessagePumpCFRunLoopBase::ChromeCFRunLoopTimerSetValid(
-    CFRunLoopTimerRef timer,
-    bool valid) {
-#if !defined(OS_IOS)
-  static bool can_invalidate_timers = CanInvalidateCFRunLoopTimers();
-  if (can_invalidate_timers) {
-    __ChromeCFRunLoopTimerSetValid(timer, valid);
-  }
-#endif  // !defined(OS_IOS)
-}
-
-void MessagePumpCFRunLoopBase::SetDelayedWorkTimerValid(bool valid) {
-  if (allow_timer_invalidation_) {
-    ChromeCFRunLoopTimerSetValid(delayed_work_timer_, valid);
-  } else {
-    pending_timer_validity_ = valid;
-  }
-}
-
-void MessagePumpCFRunLoopBase::SetTimerInvalidationAllowed(bool allowed) {
-  if (!allowed)
-    ChromeCFRunLoopTimerSetValid(delayed_work_timer_, true);
-  allow_timer_invalidation_ = allowed;
-  if (allowed && pending_timer_validity_.has_value()) {
-    SetDelayedWorkTimerValid(*pending_timer_validity_);
-    pending_timer_validity_ = nullopt;
-  }
-}
-
 // Called from the run loop.
 // static
 void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
                                                    void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-
-  // The message pump's timer needs to fire at changing and unpredictable
-  // intervals. Creating a new timer for each firing time is very expensive, so
-  // the message pump instead uses a repeating timer with a very large repeat
-  // rate. After each firing of the timer, the run loop sets the timer's next
-  // firing time to the distant future, essentially pausing the timer until the
-  // pump sets the next firing time. This is the solution recommended by Apple.
-  //
-  // It turns out, however, that scheduling timers is also quite expensive, and
-  // that every one of the message pump's timer firings incurs two
-  // reschedulings. The first rescheduling occurs in ScheduleDelayedWork(),
-  // which sets the desired next firing time. The second comes after exiting
-  // this method (the timer's callback method), when the run loop sets the
-  // timer's next firing time to far in the future.
-  //
-  // The code in __CFRunLoopDoTimer() inside CFRunLoop.c calls the timer's
-  // callback, confirms that the timer is valid, and then sets its future
-  // firing time based on its repeat frequency. Flipping the valid bit here
-  // causes the __CFRunLoopDoTimer() to skip setting the future firing time.
-  // Note that there's public API to invalidate a timer but it goes beyond
-  // flipping the valid bit, making the timer unusable in the future.
-  //
-  // ScheduleDelayedWork() flips the valid bit back just before setting the
-  // timer's new firing time.
-  self->SetDelayedWorkTimerValid(false);
-
   // The timer fired, assume we have work and let RunWork() figure out what to
   // do and what to schedule after.
   base::mac::CallWithEHFrame(^{
@@ -488,7 +395,7 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   // released promptly even in the absence of UI events.
   MessagePumpScopedAutoreleasePool autorelease_pool(this);
 
-  Delegate::NextWorkInfo next_work_info = delegate_->DoSomeWork();
+  Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
 
   if (next_work_info.is_immediate()) {
     CFRunLoopSourceSignal(work_source_);
@@ -561,6 +468,15 @@ void MessagePumpCFRunLoopBase::RunNestingDeferredWork() {
   }
 }
 
+void MessagePumpCFRunLoopBase::BeforeWait() {
+  if (!delegate_) {
+    // This point can be reached with a nullptr |delegate_| if Run is not on the
+    // stack but foreign code is spinning the CFRunLoop.
+    return;
+  }
+  delegate_->BeforeWait();
+}
+
 // Called before the run loop goes to sleep or exits, or processes sources.
 void MessagePumpCFRunLoopBase::MaybeScheduleNestingDeferredWork() {
   // deepest_nesting_level_ is set as run loops are entered.  If the deepest
@@ -590,6 +506,9 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
     // nesting-deferred work may have accumulated.  Schedule it for processing
     // if appropriate.
     self->MaybeScheduleNestingDeferredWork();
+
+    // Notify the delegate that the loop is about to sleep.
+    self->BeforeWait();
   });
 }
 
@@ -784,14 +703,11 @@ ScopedPumpMessagesInPrivateModes::ScopedPumpMessagesInPrivateModes() {
   if ([NSApp modalWindow])
     return;
   g_app_pump->SetModeMask(kAllModesMask);
-  // Disable timer invalidation to avoid hangs. See crbug.com/912273.
-  g_app_pump->SetTimerInvalidationAllowed(false);
 }
 
 ScopedPumpMessagesInPrivateModes::~ScopedPumpMessagesInPrivateModes() {
   DCHECK(g_app_pump);
   g_app_pump->SetModeMask(kNSApplicationModalSafeModeMask);
-  g_app_pump->SetTimerInvalidationAllowed(true);
 }
 
 int ScopedPumpMessagesInPrivateModes::GetModeMaskForTest() {

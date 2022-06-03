@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "third_party/libaddressinput/chromium/trie.h"
@@ -78,6 +79,10 @@ struct Suggestion {
 class AddressSuggestions {
  public:
   AddressSuggestions() {}
+
+  AddressSuggestions(const AddressSuggestions&) = delete;
+  AddressSuggestions& operator=(const AddressSuggestions&) = delete;
+
   ~AddressSuggestions() {}
 
   // Marks all regions at |address_field| level as matching user input.
@@ -217,8 +222,6 @@ class AddressSuggestions {
 
   // Suggestions at ADMIN_AREA, LOCALITY, and DEPENDENT_LOCALITY levels.
   std::map<AddressField, std::vector<Suggestion> > suggestions_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSuggestions);
 };
 
 }  // namespace
@@ -259,7 +262,7 @@ const std::vector<uint8_t>& InputSuggester::StringCanonicalizer::Canonicalize(
                              static_cast<int32_t>(original.length()));
   int32_t sort_key_size = 0;
   if (collator_)
-    collator_->getSortKey(icu_str, &buffer_[0], buffer_size());
+    sort_key_size = collator_->getSortKey(icu_str, &buffer_[0], buffer_size());
   DCHECK_LT(0, sort_key_size);
 
   if (sort_key_size > buffer_size()) {

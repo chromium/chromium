@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("mojom_js") {
+  public_deps = [
+    "constants:mojom_js",
+    "search:mojo_bindings_js",
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js",
+  ]
+}

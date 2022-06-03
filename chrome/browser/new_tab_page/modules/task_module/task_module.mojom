@@ -1,0 +1,64 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module task_module.mojom;
+
+import "url/mojom/url.mojom";
+
+// Available task modules.
+enum TaskModuleType {
+  kRecipe,
+  kShopping,
+};
+
+// A task item such as recipe or product.
+struct TaskItem {
+  // Human-readable name.
+  string name;
+  // URL to image associated with the task item.
+  url.mojom.Url image_url;
+  // Human-readable product price. Not applicable to recipes.
+  string? price;
+  // Human-readable info.
+  string info;
+  // Website name.
+  string? site_name;
+  // URL of the target page.
+  url.mojom.Url target_url;
+};
+
+// A related search query.
+struct RelatedSearch {
+  // Text of the search query.
+  string text;
+  // URL of the query target page.
+  url.mojom.Url target_url;
+};
+
+// A task search journey that is currently active for the user.
+struct Task {
+  // Human-readable title.
+  string title;
+  // Human-readable name.
+  string name;
+  // Task item associated with the task.
+  array<TaskItem> task_items;
+  // Searches related to the task.
+  array<RelatedSearch> related_searches;
+};
+
+// Interface for handling requests from a task module's JS code.
+// Bound to the NTP WebUI handler.
+interface TaskModuleHandler {
+  // Returns the primary task if available.
+  GetPrimaryTask(TaskModuleType task_module_type) => (Task? task);
+  // Dismisses the task with the given name and remembers that setting.
+  DismissTask(TaskModuleType task_module_type, string task_name);
+  // Restores the task with the given name and remembers that setting.
+  RestoreTask(TaskModuleType task_module_type, string task_name);
+  // Logs that the task item at position |index| has been clicked.
+  OnTaskItemClicked(TaskModuleType task_module_type, uint32 index);
+  // Logs that the related search pill at position |index| has been clicked.
+  OnRelatedSearchClicked(TaskModuleType task_module_type, uint32 index);
+};

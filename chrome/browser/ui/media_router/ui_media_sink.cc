@@ -6,7 +6,8 @@
 
 namespace media_router {
 
-UIMediaSink::UIMediaSink() = default;
+UIMediaSink::UIMediaSink(mojom::MediaRouteProviderId provider)
+    : provider(provider) {}
 
 UIMediaSink::UIMediaSink(const UIMediaSink& other) = default;
 

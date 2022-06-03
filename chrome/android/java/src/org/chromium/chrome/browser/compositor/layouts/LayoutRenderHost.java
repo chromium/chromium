@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import android.content.res.Resources;
 import android.graphics.Rect;
 
 import org.chromium.ui.resources.ResourceManager;
@@ -27,6 +28,12 @@ public interface LayoutRenderHost {
      * Indicates that a previously rendered frame has been swapped to the OS.
      */
     void didSwapFrame(int pendingFrameCount);
+
+    /**
+     * Indicates that the compositor swapped buffers.
+     * @param swappedCurrentSize Whether the swapped buffer size is the same as the current one.
+     */
+    default void didSwapBuffers(boolean swappedCurrentSize) {}
 
     /**
      * Indicates that the rendering surface has just been created.
@@ -54,7 +61,7 @@ public interface LayoutRenderHost {
     /**
      * @return The background color of the toolbar.
      */
-    int getBrowserControlsBackgroundColor();
+    int getBrowserControlsBackgroundColor(Resources resources);
 
     /**
      * @return The {@link ResourceManager}.

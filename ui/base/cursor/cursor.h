@@ -5,56 +5,34 @@
 #ifndef UI_BASE_CURSOR_CURSOR_H_
 #define UI_BASE_CURSOR_CURSOR_H_
 
-#include "build/build_config.h"
+#include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cursor/cursor_size.h"
-#include "ui/base/cursor/types/cursor_types.h"
-#include "ui/base/ui_base_export.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"
-
-#if defined(OS_WIN)
-typedef struct HINSTANCE__* HINSTANCE;
-typedef struct HICON__* HICON;
-typedef HICON HCURSOR;
-#endif
 
 namespace ui {
 
-#if defined(OS_WIN)
-typedef ::HCURSOR PlatformCursor;
-#elif defined(USE_X11)
-typedef unsigned long PlatformCursor;
-#else
-typedef void* PlatformCursor;
-#endif
-
 // Ref-counted cursor that supports both default and custom cursors.
-class UI_BASE_EXPORT Cursor {
+class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {
  public:
   Cursor();
-
-  // Implicit constructor.
-  Cursor(CursorType type);
-
-  // Allow copy.
+  Cursor(mojom::CursorType type);
   Cursor(const Cursor& cursor);
-
   ~Cursor();
 
-  void SetPlatformCursor(const PlatformCursor& platform);
+  void SetPlatformCursor(scoped_refptr<PlatformCursor> platform_cursor);
 
-  void RefCustomCursor();
-  void UnrefCustomCursor();
+  mojom::CursorType type() const { return type_; }
+  scoped_refptr<PlatformCursor> platform() const { return platform_cursor_; }
+  float image_scale_factor() const { return image_scale_factor_; }
+  void set_image_scale_factor(float scale) { image_scale_factor_ = scale; }
 
-  CursorType native_type() const { return native_type_; }
-  PlatformCursor platform() const { return platform_cursor_; }
-  float device_scale_factor() const { return device_scale_factor_; }
-  void set_device_scale_factor(float scale) { device_scale_factor_ = scale; }
-
-  SkBitmap GetBitmap() const;
+  const SkBitmap& custom_bitmap() const { return custom_bitmap_; }
   void set_custom_bitmap(const SkBitmap& bitmap) { custom_bitmap_ = bitmap; }
 
-  gfx::Point GetHotspot() const;
+  const gfx::Point& custom_hotspot() const { return custom_hotspot_; }
   void set_custom_hotspot(const gfx::Point& hotspot) {
     custom_hotspot_ = hotspot;
   }
@@ -63,25 +41,18 @@ class UI_BASE_EXPORT Cursor {
   bool operator==(const Cursor& cursor) const;
   bool operator!=(const Cursor& cursor) const { return !(*this == cursor); }
 
-  bool operator==(CursorType type) const { return native_type_ == type; }
-  bool operator!=(CursorType type) const { return native_type_ != type; }
-
-  void operator=(const Cursor& cursor);
+  bool operator==(mojom::CursorType type) const { return type_ == type; }
+  bool operator!=(mojom::CursorType type) const { return type_ != type; }
 
  private:
-#if defined(USE_AURA)
-  SkBitmap GetDefaultBitmap() const;
-  gfx::Point GetDefaultHotspot() const;
-#endif
-
   // The basic cursor type.
-  CursorType native_type_ = CursorType::kNull;
+  mojom::CursorType type_ = mojom::CursorType::kNull;
 
   // The native platform cursor.
-  PlatformCursor platform_cursor_ = 0;
+  scoped_refptr<PlatformCursor> platform_cursor_;
 
-  // The device scale factor for the cursor.
-  float device_scale_factor_ = 0.0f;
+  // The scale factor for the cursor bitmap.
+  float image_scale_factor_ = 1.0f;
 
   // The hotspot for the cursor. This is only used for the custom cursor type.
   gfx::Point custom_hotspot_;

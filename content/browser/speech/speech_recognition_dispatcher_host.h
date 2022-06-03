@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -23,6 +22,10 @@ namespace network {
 class PendingSharedURLLoaderFactory;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 class SpeechRecognitionSession;
@@ -35,6 +38,12 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
     : public blink::mojom::SpeechRecognizer {
  public:
   SpeechRecognitionDispatcherHost(int render_process_id, int render_frame_id);
+
+  SpeechRecognitionDispatcherHost(const SpeechRecognitionDispatcherHost&) =
+      delete;
+  SpeechRecognitionDispatcherHost& operator=(
+      const SpeechRecognitionDispatcherHost&) = delete;
+
   ~SpeechRecognitionDispatcherHost() override;
   static void Create(
       int render_process_id,
@@ -57,6 +66,7 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
       blink::mojom::StartSpeechRecognitionRequestParamsPtr params,
       int embedder_render_process_id,
       int embedder_render_frame_id,
+      const url::Origin& origin,
       bool filter_profanities,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
@@ -69,8 +79,6 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
   // about this class being destroyed in the meanwhile (due to browser shutdown)
   // since tasks pending on a destroyed WeakPtr are automatically discarded.
   base::WeakPtrFactory<SpeechRecognitionDispatcherHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionDispatcherHost);
 };
 
 // SpeechRecognitionSession implements the

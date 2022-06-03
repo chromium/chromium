@@ -1,6 +1,0 @@
-Tests that uncaught promise rejection messages have line numbers when the inspector is closed and stack traces are not collected.
-
-console-uncaught-pro…no-inspector.html:4 Uncaught (in promise) Error: err1
-console-uncaught-pro…o-inspector.html:23 Uncaught (in promise) Error: err2
-console-uncaught-pro…o-inspector.html:42 Uncaught (in promise) DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
-

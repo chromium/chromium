@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_MOBILE_MANAGEMENT_CSS" file="../management/resources/management.css" preprocess="true" type="BINDATA" />
+  <include name="IDR_MOBILE_MANAGEMENT_HTML" file="../management/resources/management.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+  <include name="IDR_MOBILE_MANAGEMENT_JS" file="../management/resources/management.js" type="BINDATA" compress="gzip" />
+</grit-part>

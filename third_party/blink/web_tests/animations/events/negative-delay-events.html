@@ -31,7 +31,8 @@
 async_test(t => {
   var count = 0;
   document.addEventListener('animationstart', t.step_func((event) => {
-      var pass = event.elapsedTime === [0, 0.05, 0.15][count++];
+      // Elapsed time caps at the animation duration.
+      var pass = event.elapsedTime === [0, 0.05, 0.1][count++];
       assert_true(pass, event.target.id + ': Start event: elapsedTime=' + event.elapsedTime);
   }));
 

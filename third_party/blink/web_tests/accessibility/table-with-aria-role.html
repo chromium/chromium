@@ -3,25 +3,25 @@
     if (window.testRunner)
         testRunner.dumpAsText();
 </script>
-<body id="body">
+<body>
 
-    <table border=1 role="button">
+  <div id="tables">
+    <table id="table1" border=1 role="button">
        <tr><td>test</td><td>test</td><td>test</td></tr>
        <tr><td>test</td><td>test</td><td>test</td></tr>
     </table>
 
-    <table border=1 role="menu">
+    <table id="table2" border=1 role="menu">
        <tr><td>test</td><td>test</td><td>test</td></tr>
        <tr><td>test</td><td>test</td><td>test</td></tr>
     </table>
-
     <div id="result"></div>
-    
+  </div>
+
     <script>
         if (window.accessibilityController) {
-            var body = document.getElementById("body");
-            body.focus();
-            result.innerText += accessibilityController.focusedElement.childAtIndex(0).attributesOfChildren();
+
+            result.innerText += accessibilityController.accessibleElementById("tables").attributesOfChildren();
         }
     </script>
 </body>

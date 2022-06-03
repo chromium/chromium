@@ -5,6 +5,7 @@ include_rules = [
   "+google/protobuf",
   "+third_party/opus",
   "+third_party/webrtc",
+  "+gpu/config/gpu_driver_bug_workarounds.h",
   "+gpu/config/gpu_preferences.h",
   "+media/cast",
   "+media/video",

@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ta">
+<translation id="1006017844123154345">ஆன்லைனில் திற</translation>
+<translation id="1044891598689252897">தளங்கள் இயல்பாகவே செயல்படும்</translation>
+<translation id="1124090076051167250">இதைச் செய்தால் தளங்களோ முகப்புத் திரையில் உள்ள ஆப்ஸோ சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
+<translation id="1178581264944972037">இடைநிறுத்து</translation>
+<translation id="1181037720776840403">அகற்று</translation>
+<translation id="1201402288615127009">அடுத்து</translation>
+<translation id="1242008676835033345"><ph name="WEBSITE_URL" /> இல் உட்பொதியப்பட்டது</translation>
+<translation id="1272079795634619415">நிறுத்து</translation>
+<translation id="1289742167380433257">உங்கள் டேட்டாவைச் சேமிப்பதற்காக, இந்தப் பக்கத்தின் படங்கள் Googleளால் சுருக்கப்பட்டுள்ளன.</translation>
+<translation id="129382876167171263">இணையதளங்கள் சேமித்த ஃபைல்கள்  இங்கே தோன்றும்</translation>
+<translation id="1317194122196776028">இந்தத் தளத்தை அகற்று</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676"><ph name="SITE_NAME" /> தளம் சேர்க்கப்பட்டது</translation>
+<translation id="1383876407941801731">Search</translation>
+<translation id="1384959399684842514">பதிவிறக்கம் இடைநிறுத்தப்பட்டது</translation>
+<translation id="1415402041810619267">URL துண்டிக்கப்பட்டது</translation>
+<translation id="1446450296470737166">MIDI சாதனங்களுக்கு முழுக் கட்டுப்பாட்டை அனுமதி</translation>
+<translation id="1620510694547887537">கேமரா</translation>
+<translation id="1644574205037202324">வரலாறு</translation>
+<translation id="1647582022260550163">அனுமதிகளை மீட்டமைத்து, குக்கீகளையும் தளத் தரவையும் அழிக்க விரும்புகிறீர்களா?</translation>
+<translation id="1660204651932907780">ஒலியை இயக்க, தளங்களை அனுமதிக்கும் (பரிந்துரைக்கப்படுவது)</translation>
+<translation id="1677097821151855053">குக்கீகளும் பிற தளத்தின் தரவும் உங்கள் செயல்பாட்டை நினைவில் வைத்துக்கொள்ளப் பயன்படுத்தப்படுகின்றன. உதாரணமாக, உங்களை உள்நுழையச் செய்வது, விளம்பரங்களைப் பிரத்தியேகமாக்குவது. அனைத்துத் தளங்களுக்கான குக்கீகளையும் நிர்வகிக்க, <ph name="BEGIN_LINK" />அமைப்புகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
+<translation id="1688867105868176567">தளத் தரவை அழிக்கவா?</translation>
+<translation id="169515064810179024">தளங்கள் மோஷன் சென்சார்களை அணுகுவதைத் தடுக்கும்</translation>
+<translation id="1717218214683051432">மோஷன் சென்சார்கள்</translation>
+<translation id="1743802530341753419">சாதனத்தை இணைக்க, தளங்களை அனுமதிப்பதற்கு முன், கேள் (பரிந்துரைக்கப்படுவது)</translation>
+<translation id="1779089405699405702">இமேஜ் டீகோடர்</translation>
+<translation id="1818308510395330587">ARரைப் பயன்படுத்த <ph name="APP_NAME" /> ஆப்ஸை அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> கேமராவிற்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="1864927262126810325">மூலம்: <ph name="SOURCE_NAME" /></translation>
+<translation id="1887786770086287077">இந்தச் சாதனத்திற்கான இருப்பிட அணுகல் முடக்கப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
+<translation id="1919345977826869612">விளம்பரங்கள்</translation>
+<translation id="1919950603503897840">தொடர்புகளைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">அனுமதிக்கப்பட்டது, மூன்றாம் தரப்பைத் தவிர</translation>
+<translation id="1989112275319619282">உலாவு</translation>
+<translation id="1994173015038366702">தள URL</translation>
+<translation id="2004697686368036666">சில தளங்களில் உள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
+<translation id="2025115093177348061">ஆக்மென்ட்டட் ரியாலிட்டி</translation>
+<translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" />க்குச் செல்ல, தட்டவும்</translation>
+<translation id="2079545284768500474">செயல்தவிர்</translation>
+<translation id="2091887806945687916">ஒலி</translation>
+<translation id="2107397443965016585">பாதுகாக்கப்பட்ட உள்ளடக்கத்தை இயக்குவதற்குத் தளங்களை அனுமதிக்கும் முன்பு அனுமதி கோரும் (பரிந்துரைக்கப்படுவது)</translation>
+<translation id="2146738493024040262">இன்ஸ்டண்ட் ஆப்ஸைத் திற</translation>
+<translation id="2148716181193084225">இன்று</translation>
+<translation id="2182457891543959921">உங்களைச் சுற்றியுள்ள இடங்களின் 3D மேப்பை உருவாக்கவோ கேமரா நிலையை டிராக் செய்யவோ தளங்களை அனுமதிப்பதற்கு முன்பாக அனுமதி கேட்கும் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="2212565012507486665">குக்கீகளை அனுமதி</translation>
+<translation id="2228071138934252756">உங்கள் கேமராவை அணுக <ph name="APP_NAME" /> ஆப்ஸை அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> கேமராவிற்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="2241634353105152135">ஒருமுறை மட்டுமே</translation>
+<translation id="2289270750774289114">அருகிலுள்ள புளூடூத் சாதனங்களை வலைதளம் கண்டறிய முயலும்போது கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="2315043854645842844">கிளையன்ட் சார்பாக சான்றிதழ் தேர்ந்தெடுப்பை ஆப்ரேட்டிங் சிஸ்டம் ஆதரிக்கவில்லை.</translation>
+<translation id="2359808026110333948">தொடர்க</translation>
+<translation id="2379925928934107488">Chromeமில் டார்க் தீமினைப் பயன்படுத்தும்போது சாத்தியமான சூழல்களில் தளங்களுக்கும் பயன்படுத்தப்படும்</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> மெ.பை.</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}}</translation>
+<translation id="2434158240863470628">பதிவிறக்கம் முடிந்தது <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">எப்போதும் டெஸ்க்டாப் காட்சியில் காட்டப்படுபவை</translation>
+<translation id="2482878487686419369">அறிவிப்புகள்</translation>
+<translation id="2485422356828889247">நிறுவல் நீக்கு</translation>
+<translation id="2490684707762498678"><ph name="APP_NAME" /> நிர்வகிக்கிறது</translation>
+<translation id="2498359688066513246">உதவி &amp; கருத்து</translation>
+<translation id="2501278716633472235">திரும்பிச் செல்</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 குக்கீ தடுக்கப்பட்டது}other{# குக்கீகள் தடுக்கப்பட்டன}}</translation>
+<translation id="2570922361219980984">இந்தச் சாதனத்திற்கான இருப்பிட அணுகலும் முடக்கப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
+<translation id="257931822824936280">விரிவாக்கப்பட்டது - சுருக்க, கிளிக் செய்யவும்.</translation>
+<translation id="2586657967955657006">கிளிப்போர்டு</translation>
+<translation id="2597457036804169544">தளங்களில் டார்க் தீமினைப் பயன்படுத்த வேண்டாம்</translation>
+<translation id="2621115761605608342">குறிப்பிட்ட தளத்திற்கு JavaScriptஐ அனுமதி.</translation>
+<translation id="2653659639078652383">சமர்ப்பி</translation>
+<translation id="2677748264148917807">வெளியேறு</translation>
+<translation id="2687403674020088961">அனைத்துக் குக்கீகளையும் தடுக்கும் (பரிந்துரைக்கப்படவில்லை)</translation>
+<translation id="2704606927547763573">நகலெடுக்கப்பட்டது</translation>
+<translation id="2717722538473713889">மின்னஞ்சல் முகவரிகள்</translation>
+<translation id="2785051990912111074">இதைச் செய்தால் <ph name="WEBSITE" /> தளத்திற்கான குக்கீகள் அழிக்கப்படும்</translation>
+<translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />க்கான தள அனுமதிகள் அனைத்தையும் நிச்சயமாக மீட்டமைக்க விரும்புகிறீர்களா?</translation>
+<translation id="2870560284913253234">தளம்</translation>
+<translation id="2874939134665556319">முந்தைய டிராக்</translation>
+<translation id="2903493209154104877">முகவரிகள்</translation>
+<translation id="2910701580606108292">பாதுகாக்கப்பட்ட உள்ளடக்கத்தை இயக்குவதற்குத் தளங்களை அனுமதிக்கும் முன்பு அனுமதி கோரும்</translation>
+<translation id="2913331724188855103">குக்கீத் தரவை, தளங்கள் சேமிக்கவும் படிக்கவும் அனுமதி (பரிந்துரைக்கப்பட்டது)</translation>
+<translation id="2932883381142163287">முறைகேடெனப் புகாரளி</translation>
+<translation id="2968755619301702150">சான்றிதழ் வியூவர்</translation>
+<translation id="300526633675317032">இணையதளச் சேமிப்பகத்தில் உள்ள <ph name="SIZE_IN_KB" /> தரவையும் இது அழிக்கும்.</translation>
+<translation id="3008272652534848354">அனுமதிகளை மீட்டமை</translation>
+<translation id="301521992641321250">தானாகத் தடுக்கப்பட்டது</translation>
+<translation id="3114012059975132928">வீடியோ பிளேயர்</translation>
+<translation id="3115898365077584848">தகவலைக் காட்டு</translation>
+<translation id="3123473560110926937">சில தளங்களில் தடுக்கப்பட்டுள்ளன</translation>
+<translation id="3198916472715691905">சேமிக்கப்பட்ட தரவு: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="321187648315454507"><ph name="APP_NAME" /> ஆப்ஸ் உங்களுக்கு அறிவிப்புகளை அனுப்ப அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> அறிவிப்புகளுக்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
+<translation id="3277252321222022663">தளங்கள் சென்சார்களை அணுக அனுமதிக்கும் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="3295602654194328831">தகவலை மறை</translation>
+<translation id="3328801116991980348">தளம் குறித்த தகவல்</translation>
+<translation id="3333961966071413176">எல்லாத் தொடர்புகளும்</translation>
+<translation id="3386292677130313581">எனது இருப்பிடத்தை அறிய தளங்களை அனுமதிக்கும் முன் கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="3538390592868664640">தளங்கள், என்னைச் சுற்றியுள்ள இடங்களின் 3D மேப்பை உருவாக்குவதையும் கேமரா நிலையை டிராக் செய்வதையும் தடு</translation>
+<translation id="3551268116566418498">மறைநிலையில் இருந்து வெளியேறவா?</translation>
+<translation id="3586500876634962664">கேமரா &amp; மைக்ரோஃபோன் பயன்பாடு</translation>
+<translation id="358794129225322306">பல ஃபைல்களைத் தானாகப் பதிவிறக்க தளத்தை அனுமதிக்கும்.</translation>
+<translation id="3594780231884063836">வீடியோவின் ஒலியை முடக்கு</translation>
+<translation id="3596414637720633074">மறைநிலை அம்சத்தில் மூன்றாம் தரப்பு குக்கீகளைத் தடுக்கும்</translation>
+<translation id="3600792891314830896">ஒலியை இயக்கும் தளங்களில் ஒலியடக்கு</translation>
+<translation id="3744111561329211289">பின்புல ஒத்திசைவு</translation>
+<translation id="3763247130972274048">10வி தவிர்க்க, வீடியோவில் இடப்புறம்/வலப்புறம் இருமுறை தட்டுக</translation>
+<translation id="3797520601150691162">குறிப்பிட்ட தளத்திற்கு டார்க் தீமினைப் பயன்படுத்த வேண்டாம்</translation>
+<translation id="381841723434055211">ஃபோன் எண்கள்</translation>
+<translation id="3835233591525155343">உங்கள் சாதன உபயோகம்</translation>
+<translation id="385051799172605136">திரும்பு</translation>
+<translation id="3859306556332390985">முன்செல்</translation>
+<translation id="3955193568934677022">பாதுகாக்கப்பட்ட உள்ளடக்கத்தை இயக்க, தளங்களை அனுமதி (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
+<translation id="3987993985790029246">இணைப்பை நகலெடு</translation>
+<translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="4002066346123236978">தலைப்பு</translation>
+<translation id="4008040567710660924">குறிப்பிட்ட தளத்திற்கு, குக்கீகளை அனுமதிக்கும்.</translation>
+<translation id="4046123991198612571">அடுத்த டிராக்</translation>
+<translation id="4165986682804962316">தள அமைப்புகள்</translation>
+<translation id="4200726100658658164">இருப்பிட அமைப்புகளைத் திறக்கும்</translation>
+<translation id="4226663524361240545">அறிவிப்புகள் வரும் போது சாதனம் அதிர்வுறக்கூடும்</translation>
+<translation id="4259722352634471385">செல்வது தடுக்கப்பட்டது: <ph name="URL" /></translation>
+<translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
+<translation id="429312253194641664">ஒரு தளம் மீடியாவை இயக்குகிறது</translation>
+<translation id="42981349822642051">விரி</translation>
+<translation id="4336434711095810371">அனைத்துத் தரவையும் அழி</translation>
+<translation id="4402755511846832236">இந்தச் சாதனத்தில் நீங்கள் செயலில் இருப்பது குறித்துத் தளங்கள் அறிந்துகொள்வதைத் தடுக்கும்</translation>
+<translation id="4434045419905280838">பாப்-அப்கள் &amp; திசைதிருப்புதல்கள்</translation>
+<translation id="445467742685312942">பாதுகாக்கப்பட்ட உள்ளடக்கத்தை இயக்குவதற்குத் தளங்களை அனுமதிக்கும்</translation>
+<translation id="4468959413250150279">குறிப்பிட்ட தளத்திற்கு ஒலியடக்கு</translation>
+<translation id="4479647676395637221">எனது கேமராவைப் பயன்படுத்தத் தளங்களை அனுமதிக்கும் முன் கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="4505788138578415521">URL விரிவாக்கப்பட்டது</translation>
+<translation id="4534723447064627427"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் மைக்ரோஃபோனை அணுக அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> மைக்ரோஃபோனுக்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="4570913071927164677">விவரங்கள்</translation>
+<translation id="4645575059429386691">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="4670064810192446073">விர்ச்சுவல் ரியாலிட்டி</translation>
+<translation id="4751476147751820511">நகர்வு அல்லது ஒளி உணர்விகள்</translation>
+<translation id="4836046166855586901">இந்தச் சாதனத்தில் நீங்கள் செயலில் இருப்பது குறித்து ஒரு தளம் அறிந்துகொள்ள விரும்பும்போது அனுமதி கேட்கும்</translation>
+<translation id="4883854917563148705">நிர்வகிக்கப்பட்ட அமைப்புகளை மீட்டமைக்க முடியாது</translation>
+<translation id="4887024562049524730">விர்ச்சுவல் ரியாலிட்டி சாதனத்தையும் தரவையும் தளங்கள் பயன்படுத்த அனுமதிப்பதற்கு முன்பாக அனுமதி கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="4962975101802056554">சாதனத்திற்கான அனைத்து அனுமதிகளையும் ரத்துசெய்யும்</translation>
+<translation id="497421865427891073">முன் செல்க</translation>
+<translation id="4976702386844183910">கடைசியாகப் பார்த்தது: <ph name="DATE" /></translation>
+<translation id="4994033804516042629">தொடர்புகள் எதுவும் இல்லை</translation>
+<translation id="4996978546172906250">இதன்வழியாக பகிர்</translation>
+<translation id="5014906230196386306">குக்கீகளை அழிக்கவா?</translation>
+<translation id="5039804452771397117">அனுமதி</translation>
+<translation id="5048398596102334565">மோஷன் சென்சார்களை அணுக தளங்களை அனுமதிக்கும் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="5050380848339752099">இந்தத் தளம் மறைநிலைப் பயன்முறையில் இல்லாத ஆப்ஸுடன் தகவல்களைப் பகிரவிருக்கிறது.</translation>
+<translation id="5063480226653192405">பயன்பாடு</translation>
+<translation id="509133520954049755">டெஸ்க்டாப் காட்சியில் காட்டப்படும்</translation>
+<translation id="5100237604440890931">சுருக்கப்பட்டது - விரிவாக்க, கிளிக் செய்யவும்.</translation>
+<translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
+<translation id="5134599672855298214">மொபைல் காட்சியில் காட்டப்படும் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="5186036860380548585">அதற்கான விருப்பம் திரையின் மேற்பகுதியில் உள்ளது</translation>
+<translation id="5197729504361054390">நீங்கள் தேர்ந்தெடுக்கும் தொடர்புகள் <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> உடன் பகிரப்படும்.</translation>
+<translation id="5216942107514965959">கடைசியாகப் பார்த்தது: இன்று</translation>
+<translation id="528192093759286357">முழுத்திரையிலிருந்து வெளியேற, மேலிருந்து இழுத்து "முந்தையது" பொத்தானைத் தொடவும்.</translation>
+<translation id="5300589172476337783">காண்பி</translation>
+<translation id="5301954838959518834">சரி, புரிந்தது</translation>
+<translation id="5313967007315987356">தளத்தைச் சேர்</translation>
+<translation id="5317780077021120954">சேமி</translation>
+<translation id="5335288049665977812">JavaScriptஐ இயக்குவதற்கு, தளங்களை அனுமதி (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="534295439873310000">NFC சாதனங்கள்</translation>
+<translation id="5354152178998424783">இதைச் செய்தால் தளங்கள் சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
+<translation id="5403592356182871684">பெயர்கள்</translation>
+<translation id="5438097262470833822">இதைச் செய்தால் <ph name="WEBSITE" /> தளத்திற்கான அனுமதிகள் ரீசெட் செய்யப்படும்</translation>
+<translation id="5489227211564503167">முடிந்த நேரம்: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
+<translation id="5494752089476963479">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களைக் காட்டும் தளங்களில் விளம்பரங்களைத் தடு</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" />க்கான அனுமதி வழங்கப்பட்டது, <ph name="PERMISSION_2" />க்கான அனுமதி தடுக்கப்பட்டது</translation>
+<translation id="5505264765875738116">அறிவிப்புகளை அனுப்புவதற்கான அனுமதியைத் தளங்களால் கோர இயலாது</translation>
+<translation id="5516455585884385570">அறிவிப்பு அமைப்புகளைத் திறக்கும்</translation>
+<translation id="5527111080432883924">கிளிப்போர்டிலிருந்து உரையையும் படங்களையும் படிப்பதற்கு, தளங்களை அனுமதிப்பதற்கு முன், கேள் (பரிந்துரைக்கப்படுவது)</translation>
+<translation id="5553374991681107062">சமீபத்தியவை</translation>
+<translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
+<translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
+<translation id="5649053991847567735">தன்னியக்கப் பதிவிறக்கங்கள்</translation>
+<translation id="5677928146339483299">தடுக்கப்பட்டது</translation>
+<translation id="5689516760719285838">இருப்பிடம்</translation>
+<translation id="5690795753582697420">Android அமைப்புகளில் கேமரா முடக்கப்பட்டுள்ளது</translation>
+<translation id="5710871682236653961">நீங்கள் NFC சாதனங்களைத் தட்டும்போது தகவல்களை அனுப்புவதற்கும் பெறுவதற்கும் தளங்களை அனுமதிப்பதற்கு முன்பு அனுமதி கோரும் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="5719847187258001597">இதைச் செய்தால் <ph name="ORIGIN" /> தளமோ உங்கள் முகப்புத் திரையில் உள்ள அதன் ஆப்ஸோ சேமித்துள்ள தரவு, குக்கீகள் ஆகிய அனைத்தும் அழிக்கப்படும்.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" />க்கான அனுமதி தடுக்கப்பட்டது</translation>
+<translation id="5804241973901381774">அனுமதிகள்</translation>
+<translation id="5860033963881614850">ஆஃப்</translation>
+<translation id="5876056640971328065">வீடியோவை இடைநிறுத்து</translation>
+<translation id="5887687176710214216">கடைசியாகப் பார்த்தது: நேற்று</translation>
+<translation id="5916664084637901428">இயக்கு</translation>
+<translation id="5922853908706496913">உங்கள் திரையைப் பகிர்கிறது</translation>
+<translation id="5939518447894949180">மீட்டமை</translation>
+<translation id="5975083100439434680">சிறிதாக்கு</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">உங்கள் சாதனத்தில் இந்தத் தளத்திற்கான அணுகலைக் கட்டுப்படுத்தலாம்</translation>
+<translation id="6040143037577758943">மூடு</translation>
+<translation id="6042308850641462728">மேலும்</translation>
+<translation id="6064125863973209585">நிறைவடைந்த பதிவிறக்கங்கள்</translation>
+<translation id="6165508094623778733">மேலும் அறிக</translation>
+<translation id="6177111841848151710">நடப்புத் தேடல் இன்ஜினுக்குத் தடுக்கப்பட்டுள்ளது</translation>
+<translation id="6177128806592000436">இந்தத் தளத்திற்கான உங்கள் இணைப்பு, பாதுகாப்பாக இல்லை</translation>
+<translation id="6181444274883918285">தள விதிவிலக்கைச் சேர்</translation>
+<translation id="6192792657125177640">விதிவிலக்குகள்</translation>
+<translation id="6196640612572343990">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
+<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> விருப்பத்தேர்வுகள்</translation>
+<translation id="6231752747840485235">'<ph name="APP_NAME" />' ஆப்ஸை நிறுவல் நீக்கவா?</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் தடுக்கப்பட்டன</translation>
+<translation id="6270391203985052864">அறிவிப்புகளை அனுப்புவதற்கான அனுமதியைத் தளங்களால் கோர முடியும்</translation>
+<translation id="6295158916970320988">எல்லா தளங்களும்</translation>
+<translation id="6320088164292336938">அதிர்வுறு</translation>
+<translation id="6388207532828177975">அழித்து, மீட்டமைக்கவும்</translation>
+<translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
+<translation id="6439114592976064011">விர்ச்சுவல் ரியாலிட்டி சாதனத்தையும் தரவையும் தளங்கள் பயன்படுத்துவதைத் தடு</translation>
+<translation id="6447842834002726250">குக்கீகள்</translation>
+<translation id="6527303717912515753">பகிர்</translation>
+<translation id="6545864417968258051">புளூடூத் ஸ்கேனிங்</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}}</translation>
+<translation id="6554732001434021288">கடைசியாகப் பார்த்தது: <ph name="NUM_DAYS" /> நாட்களுக்கு முன்</translation>
+<translation id="6561560012278703671">சத்தமில்லா மெசேஜாகக் காட்டு (குறுக்கீடுகளைத் தவிர்க்க அறிவிப்புகளைத் தடுக்கும்)</translation>
+<translation id="6593061639179217415">டெஸ்க்டாப் தளம்</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> ஜி.பை.</translation>
+<translation id="6612358246767739896">பாதுகாக்கப்பட்ட உள்ளடக்கம்</translation>
+<translation id="662080504995468778">வேண்டாம்</translation>
+<translation id="6643016212128521049">அழி</translation>
+<translation id="6689172468748959065">சுயவிவரப் படங்கள்</translation>
+<translation id="6697925417670533197">செயலிலுள்ள பதிவிறக்கங்கள்</translation>
+<translation id="6746124502594467657">கீழே நகர்த்து</translation>
+<translation id="6749077623962119521">அனுமதிகளை ரீசெட் செய்யவா?</translation>
+<translation id="6766622839693428701">மூடுவதற்கு, கீழே ஸ்வைப் செய்யவும்.</translation>
+<translation id="6790428901817661496">இயக்கு</translation>
+<translation id="6818926723028410516">பட்டியலிலிருந்து தேர்ந்தெடுக்கவும்</translation>
+<translation id="6864395892908308021">இந்தச் சாதனத்தில் NFC ஆதரிக்கப்படவில்லை</translation>
+<translation id="6910211073230771657">நீக்கப்பட்டது</translation>
+<translation id="6912998170423641340">தளங்கள், கிளிப்போர்டிலிருந்து உரையையும் படங்களையும் படிப்பது தடுக்கப்பட்டுள்ளது</translation>
+<translation id="6945221475159498467">தேர்ந்தெடு</translation>
+<translation id="6965382102122355670">சரி</translation>
+<translation id="6992289844737586249">எனது மைக்ரோஃபோனைப் பயன்படுத்தத் தளங்களை அனுமதிக்கும் முன் கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="7000754031042624318">Android அமைப்புகளில் முடக்கப்பட்டுள்ளது</translation>
+<translation id="7016516562562142042">நடப்புத் தேடல் இன்ஜினுக்கு அனுமதிக்கப்பட்டுள்ளது</translation>
+<translation id="7053983685419859001">தடு</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 தேர்ந்தெடுக்கப்பட்டது}other{# தேர்ந்தெடுக்கப்பட்டன}}</translation>
+<translation id="7070090581017165256">இந்தத் தளத்தைப் பற்றி</translation>
+<translation id="7087918508125750058"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன.  திரையின் மேற்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன</translation>
+<translation id="7141896414559753902">தளங்கள் பாப்-அப்களையும் திசைதிருப்புதல்களையும் காட்டாமல் தடு (பரிந்துரைக்கப்படுகிறது)</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> கி.பை.</translation>
+<translation id="723171743924126238">படங்களைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="7243308994586599757">திரையின் கீழ்ப்பகுதிக்கு அருகில் கிடைக்கும் விருப்பங்கள்</translation>
+<translation id="7250468141469952378"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் வழங்கப்பட்டன</translation>
+<translation id="7302486331832100261">பொதுவாக அறிவிப்புகளைத் தடுத்துள்ளீர்கள். அவற்றை அனுமதிக்க 'விவரங்கள்' என்பதைத் தட்டவும்.</translation>
+<translation id="7423098979219808738">முதலில் கேள்</translation>
+<translation id="7423538860840206698">கிளிப்போர்டைப் படிப்பது தடுக்கப்பட்டுள்ளது</translation>
+<translation id="7425915948813553151">தளங்களுக்கான டார்க் தீம்</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">ஒரு தளம் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்துகிறது</translation>
+<translation id="7561196759112975576">எப்போதும்</translation>
+<translation id="7572498721684305250">நீங்கள் NFC சாதனங்களைத் தட்டும்போது தகவல்களை அனுப்புவதிலிருந்தும் பெறுவதிலிருந்தும் தளங்களைத் தடுக்கும்</translation>
+<translation id="757524316907819857">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைத் தளங்கள் இயக்குவதைத் தடுக்கும்</translation>
+<translation id="7649070708921625228">உதவி</translation>
+<translation id="7658239707568436148">ரத்து செய்</translation>
+<translation id="7781829728241885113">நேற்று</translation>
+<translation id="7791543448312431591">சேர்</translation>
+<translation id="780301667611848630">வேண்டாம்</translation>
+<translation id="7804248752222191302">ஒரு தளம் உங்கள் கேமராவைப் பயன்படுத்துகிறது</translation>
+<translation id="7817023149356982970">இந்தத் தளத்தில் இருந்து வெளியேற்றப்படுவீர்கள்.</translation>
+<translation id="7828557259026017104">நீங்கள் பார்வையிடும் தளங்களால் உருவாக்கப்பட்ட கோப்புகளே குக்கீகள். உங்கள் விருப்பங்களை நினைவில் வைத்துக்கொள்ள இணையதளங்கள் இவற்றைப் பயன்படுத்துகின்றன. பிற தளங்களால் மூன்றாம் தரப்புக் குக்கீகள் உருவாக்கப்படுகின்றன. நீங்கள் பார்வையிடும் இணையப் பக்கத்தில் தோன்றக்கூடிய விளம்பரங்கள், படங்கள் போன்ற சில உள்ளடக்கங்கள் இந்தத் தளங்களுடையவையாக இருக்கும்.</translation>
+<translation id="7835852323729233924">மீடியாவைப் பிளே செய்கிறது</translation>
+<translation id="783819812427904514">வீடியோவின் ஒலியை இயக்கு</translation>
+<translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
+<translation id="7846621471902887024">அனைத்துத் தளங்களிலிருந்தும் வெளியேற்றப்படுவீர்கள்.</translation>
+<translation id="7882806643839505685">குறிப்பிட்ட தளத்திற்கு ஒலியை அனுமதி</translation>
+<translation id="7940722705963108451">எனக்கு நினைவூட்டு</translation>
+<translation id="7986741934819883144">தொடர்பைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="7999064672810608036">இந்த இணையதளத்தின் குக்கீகள் உட்பட எல்லா அகத் தரவையும் அழித்து, அதன் எல்லா அனுமதிகளையும் மீட்டமைக்கவா?</translation>
+<translation id="8007176423574883786">இந்தச் சாதனத்திற்கு முடக்கப்பட்டுள்ளது</translation>
+<translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
+<translation id="8042586301629853791">இதன்படி வரிசைப்படுத்து:</translation>
+<translation id="8067883171444229417">வீடியோவை பிளே செய்</translation>
+<translation id="8068648041423924542">சான்றிதழைத் தேர்ந்தெடுக்க முடியவில்லை.</translation>
+<translation id="8087000398470557479">இந்த உள்ளடக்கம் <ph name="DOMAIN_NAME" /> (Google ஆல் வழங்கப்படுவது) இலிருந்து கிடைக்கிறது.</translation>
+<translation id="8116925261070264013">ஒலியடக்கியவை</translation>
+<translation id="813082847718468539">தள விவரங்களைக் காண்க</translation>
+<translation id="8131740175452115882">உறுதிப்படுத்து</translation>
+<translation id="8154912474061769055">பல தளங்களில் உள்ள குறிப்பிட்ட அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" />க்கான அனுமதி வழங்கப்பட்டது</translation>
+<translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
+<translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>
+<translation id="8211406090763984747">இணைப்பு பாதுகாப்பானது</translation>
+<translation id="8249310407154411074">முதலாவதாக நகர்த்து</translation>
+<translation id="8261506727792406068">நீக்கு</translation>
+<translation id="8300705686683892304">ஆப்ஸ் நிர்வகிப்பவை</translation>
+<translation id="8324158725704657629">மீண்டும் கேட்காதே</translation>
+<translation id="8372893542064058268">குறிப்பிட்ட தளத்திற்கு, பின்னணி ஒத்திசைவை அனுமதி.</translation>
+<translation id="8376384591331888629">மூன்றாம் தரப்பின் குக்கீகளை இந்தத் தளத்தில் அனுமதி</translation>
+<translation id="83792324527827022">ஒரு தளம் உங்கள் மைக்ரோஃபோனையும் கேமராவையும் பயன்படுத்துகிறது</translation>
+<translation id="8380167699614421159">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களை இந்தத் தளம் காண்பிக்கிறது</translation>
+<translation id="8394832520002899662">தளத்திற்குச் செல்ல, தட்டவும்</translation>
+<translation id="8425213833346101688">மாற்று</translation>
+<translation id="8441146129660941386">பின்செல்</translation>
+<translation id="8444433999583714703"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் இருப்பிடத் தகவலை அணுக அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> இருப்பிடத்திற்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="8447861592752582886">சாதன அனுமதியை ரத்துசெய்யும்</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 குக்கீ உபயோகத்தில் உள்ளது}other{# குக்கீகள் உபயோகத்தில் உள்ளன}}</translation>
+<translation id="8487700953926739672">ஆஃப்லைனில் இருக்கிறது</translation>
+<translation id="848952951823693243">எப்போதும் மொபைல் காட்சியில் காட்டப்படுபவை</translation>
+<translation id="851751545965956758">சாதனங்களை இணைப்பதிலிருந்து தளங்களைத் தடுக்கும்</translation>
+<translation id="8525306231823319788">முழுத்திரை</translation>
+<translation id="857943718398505171">அனுமதிக்கப்பட்டது (பரிந்துரைத்தது)</translation>
+<translation id="8609465669617005112">மேலே நகர்த்து</translation>
+<translation id="8676374126336081632">உள்ளீட்டை அழி</translation>
+<translation id="868929229000858085">உங்கள் தொடர்புகளில் தேடுக</translation>
+<translation id="8702612070107455751">அனைத்து ஆஃப்லைன் தரவும் அழிக்கப்படும்.</translation>
+<translation id="8712637175834984815">புரிந்தது</translation>
+<translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
+<translation id="8730621377337864115">முடிந்தது</translation>
+<translation id="8737217482364735741">இதைச் செய்தால் <ph name="ORIGIN" /> சேமித்துள்ள அனைத்துத் தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
+<translation id="8751914237388039244">படத்தைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="8801436777607969138">குறிப்பிட்ட தளத்திற்கு JavaScriptடைத் தடுக்கும்.</translation>
+<translation id="8816026460808729765">தளங்கள் சென்சார்களை அணுகுவதைத் தடுக்கும்</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">பெரிதாக்கு</translation>
+<translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
+<translation id="8926666909099850184">இந்தச் சாதனத்தில் NFC ஆஃப் செய்யப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> ஆன் செய்யவும்.</translation>
+<translation id="8941729603749328384">www.example.com</translation>
+<translation id="8958424370300090006">குறிப்பிட்ட தளத்திற்கான குக்கீகளைத் தடுக்கும்.</translation>
+<translation id="8959122750345127698">செல்ல முடியவில்லை: <ph name="URL" /></translation>
+<translation id="8986362086234534611">மற</translation>
+<translation id="9019902583201351841">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="9074739597929991885">புளூடூத்</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}}</translation>
+<translation id="913657688200966289"><ph name="BEGIN_LINK" />Android அமைப்புகளில் <ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதிகளை இயக்கவும்.</translation>
+<translation id="9162462602695099906">இந்தப் பக்கம் ஆபத்தானது</translation>
+<translation id="930525582205581608">இந்தத் தளத்தை அகற்றவா?</translation>
+<translation id="967624055006145463">சேமிக்கப்பட்ட தரவின்படி</translation>
+</translationbundle>

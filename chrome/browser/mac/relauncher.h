@@ -38,14 +38,6 @@ struct MainFunctionParams;
 
 namespace mac_relauncher {
 
-// |wait_for_staged_update| is a boolean that allows the caller to specify
-// whether to wait for a staged update. If there are no other copies of Chrome
-// running, the caller should specify |true|, and always take the staged update.
-// However, in the case where there is a system ticket and Chrome _could_ be
-// updated, but there are other copies of Chrome running, if the user chooses to
-// not disrupt the other running copies with an update, the caller should pass
-// in |false| to not wait for the update.
-
 // Relaunches the application using the helper application associated with the
 // currently running instance of Chrome in the parent browser process as the
 // executable for the relauncher process. |args| is an argv-style vector of
@@ -57,8 +49,7 @@ namespace mac_relauncher {
 // successfully. Returns true on success, although some failures can occur
 // after this function returns true if, for example, they occur within the
 // relauncher process. Returns false when the relaunch definitely failed.
-bool RelaunchApp(const std::vector<std::string>& args,
-                 bool wait_for_staged_update = true);
+bool RelaunchApp(const std::vector<std::string>& args);
 
 // Identical to RelaunchApp, but uses |helper| as the path to the relauncher
 // process, and allows additional arguments to be supplied to the relauncher
@@ -71,14 +62,13 @@ bool RelaunchApp(const std::vector<std::string>& args,
 // location's helper.
 bool RelaunchAppWithHelper(const std::string& helper,
                            const std::vector<std::string>& relauncher_args,
-                           const std::vector<std::string>& args,
-                           bool wait_for_staged_update = true);
+                           const std::vector<std::string>& args);
 
 namespace internal {
 
 // The entry point from ChromeMain into the relauncher process. This is not a
 // user API. Don't call it if your name isn't ChromeMain.
-int RelauncherMain(const content::MainFunctionParams& main_parameters);
+int RelauncherMain(content::MainFunctionParams main_parameters);
 
 }  // namespace internal
 

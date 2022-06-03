@@ -1,14 +1,15 @@
 rootWebArea
-++genericContainer
-++++textField value='aaYYYYbb'
-++++++genericContainer
-++++++++staticText name='aaYYYYbb'
-++++++++++inlineTextBox name='aaYYYYbb'
-++++textField value='aa'
-++++++genericContainer
-++++++++staticText name='aa'
-++++++++++inlineTextBox name='aa'
-++++textField value='After'
-++++++genericContainer
-++++++++staticText name='After'
-++++++++++inlineTextBox name='After'
+++genericContainer ignored
+++++genericContainer
+++++++textField value='aaYYYYbb'
+++++++++genericContainer
+++++++++++staticText name='aaYYYYbb'
+++++++++++++inlineTextBox name='aaYYYYbb'
+++++++textField value='aa'
+++++++++genericContainer
+++++++++++staticText name='aa'
+++++++++++++inlineTextBox name='aa'
+++++++textField value='After'
+++++++++genericContainer
+++++++++++staticText name='After'
+++++++++++++inlineTextBox name='After'

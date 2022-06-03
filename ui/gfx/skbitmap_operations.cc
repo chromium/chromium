@@ -9,20 +9,27 @@
 #include <string.h>
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
+static bool IsUninitializedBitmap(const SkBitmap& bitmap) {
+  return bitmap.isNull() && bitmap.colorType() == kUnknown_SkColorType &&
+         bitmap.alphaType() == kUnknown_SkAlphaType;
+}
+
 // static
 SkBitmap SkBitmapOperations::CreateInvertedBitmap(const SkBitmap& image) {
-  DCHECK(image.colorType() == kN32_SkColorType);
+  if (IsUninitializedBitmap(image))
+    return image;
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
 
   SkBitmap inverted;
   inverted.allocN32Pixels(image.width(), image.height());
@@ -46,10 +53,10 @@ SkBitmap SkBitmapOperations::CreateBlendedBitmap(const SkBitmap& first,
                                                  const SkBitmap& second,
                                                  double alpha) {
   DCHECK((alpha >= 0) && (alpha <= 1));
-  DCHECK(first.width() == second.width());
-  DCHECK(first.height() == second.height());
-  DCHECK(first.bytesPerPixel() == second.bytesPerPixel());
-  DCHECK(first.colorType() == kN32_SkColorType);
+  CHECK_EQ(first.width(), second.width());
+  CHECK_EQ(first.height(), second.height());
+  CHECK_EQ(first.colorType(), kN32_SkColorType);
+  CHECK_EQ(second.colorType(), kN32_SkColorType);
 
   // Optimize for case where we won't need to blend anything.
   static const double alpha_min = 1.0 / 255;
@@ -92,11 +99,10 @@ SkBitmap SkBitmapOperations::CreateBlendedBitmap(const SkBitmap& first,
 // static
 SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
                                                 const SkBitmap& alpha) {
-  DCHECK(rgb.width() == alpha.width());
-  DCHECK(rgb.height() == alpha.height());
-  DCHECK(rgb.bytesPerPixel() == alpha.bytesPerPixel());
-  DCHECK(rgb.colorType() == kN32_SkColorType);
-  DCHECK(alpha.colorType() == kN32_SkColorType);
+  CHECK_EQ(rgb.width(), alpha.width());
+  CHECK_EQ(rgb.height(), alpha.height());
+  CHECK_EQ(rgb.colorType(), kN32_SkColorType);
+  CHECK_EQ(alpha.colorType(), kN32_SkColorType);
 
   SkBitmap masked;
   masked.allocN32Pixels(rgb.width(), rgb.height());
@@ -120,11 +126,8 @@ SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
 SkBitmap SkBitmapOperations::CreateButtonBackground(SkColor color,
                                                     const SkBitmap& image,
                                                     const SkBitmap& mask) {
-  // Despite this assert, it seems like image is actually unpremultiplied.
-  // The math producing dst_row[x] below is a correct SrcOver when
-  // bg_* are premultiplied and img_* are unpremultiplied.
-  DCHECK(image.colorType() == kN32_SkColorType);
-  DCHECK(mask.colorType() == kN32_SkColorType);
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
+  CHECK_EQ(mask.colorType(), kN32_SkColorType);
 
   SkBitmap background;
   background.allocN32Pixels(mask.width(), mask.height());
@@ -476,6 +479,10 @@ const LineProcessor kLineProcessors[kNumHOps][kNumSOps][kNumLOps] = {
 SkBitmap SkBitmapOperations::CreateHSLShiftedBitmap(
     const SkBitmap& bitmap,
     const color_utils::HSL& hsl_shift) {
+  if (IsUninitializedBitmap(bitmap))
+    return bitmap;
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   // Default to NOPs.
   HSLShift::OperationOnH H_op = HSLShift::kOpHNone;
   HSLShift::OperationOnS S_op = HSLShift::kOpSNone;
@@ -520,7 +527,7 @@ SkBitmap SkBitmapOperations::CreateHSLShiftedBitmap(
 SkBitmap SkBitmapOperations::CreateTiledBitmap(const SkBitmap& source,
                                                int src_x, int src_y,
                                                int dst_w, int dst_h) {
-  DCHECK(source.colorType() == kN32_SkColorType);
+  CHECK_EQ(source.colorType(), kN32_SkColorType);
 
   SkBitmap cropped;
   cropped.allocN32Pixels(dst_w, dst_h);
@@ -563,6 +570,10 @@ SkBitmap SkBitmapOperations::DownsampleByTwoUntilSize(const SkBitmap& bitmap,
 
 // static
 SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
+  if (IsUninitializedBitmap(bitmap))
+    return bitmap;
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   // Handle the nop case.
   if ((bitmap.width() <= 1) || (bitmap.height() <= 1))
     return bitmap;
@@ -626,13 +637,15 @@ SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
 
 // static
 SkBitmap SkBitmapOperations::UnPreMultiply(const SkBitmap& bitmap) {
-  if (bitmap.isNull())
+  if (IsUninitializedBitmap(bitmap))
     return bitmap;
-  if (bitmap.isOpaque())
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
+  if (bitmap.alphaType() != kPremul_SkAlphaType)
     return bitmap;
 
   const SkImageInfo& opaque_info =
-      bitmap.info().makeAlphaType(kOpaque_SkAlphaType);
+      bitmap.info().makeAlphaType(kUnpremul_SkAlphaType);
   SkBitmap opaque_bitmap;
   opaque_bitmap.allocPixels(opaque_info);
 
@@ -650,7 +663,9 @@ SkBitmap SkBitmapOperations::UnPreMultiply(const SkBitmap& bitmap) {
 
 // static
 SkBitmap SkBitmapOperations::CreateTransposedBitmap(const SkBitmap& image) {
-  DCHECK(image.colorType() == kN32_SkColorType);
+  if (IsUninitializedBitmap(image))
+    return image;
+  CHECK_EQ(image.colorType(), kN32_SkColorType);
 
   SkBitmap transposed;
   transposed.allocN32Pixels(image.height(), image.width());
@@ -669,17 +684,17 @@ SkBitmap SkBitmapOperations::CreateTransposedBitmap(const SkBitmap& image) {
 // static
 SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
                                              SkColor c) {
-  DCHECK(bitmap.colorType() == kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   SkBitmap color_mask;
   color_mask.allocN32Pixels(bitmap.width(), bitmap.height());
   color_mask.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(color_mask);
+  SkCanvas canvas(color_mask, SkSurfaceProps{});
 
   SkPaint paint;
   paint.setColorFilter(SkColorFilters::Blend(c, SkBlendMode::kSrcIn));
-  canvas.drawBitmap(bitmap, SkIntToScalar(0), SkIntToScalar(0), &paint);
+  canvas.drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
   return color_mask;
 }
 
@@ -687,7 +702,7 @@ SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
 SkBitmap SkBitmapOperations::CreateDropShadow(
     const SkBitmap& bitmap,
     const gfx::ShadowValues& shadows) {
-  DCHECK(bitmap.colorType() == kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   // Shadow margin insets are negative values because they grow outside.
   // Negate them here as grow direction is not important and only pixel value
@@ -699,7 +714,7 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
                                    bitmap.height() + shadow_margin.height());
   image_with_shadow.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(image_with_shadow);
+  SkCanvas canvas(image_with_shadow, SkSurfaceProps{});
   canvas.translate(SkIntToScalar(shadow_margin.left()),
                    SkIntToScalar(shadow_margin.top()));
 
@@ -712,22 +727,24 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
     // The blur is halved to produce a shadow that correctly fits within the
     // |shadow_margin|.
     SkScalar sigma = SkDoubleToScalar(shadow.blur() / 2);
-    paint.setImageFilter(SkBlurImageFilter::Make(sigma, sigma, nullptr));
+    paint.setImageFilter(SkImageFilters::Blur(sigma, sigma, nullptr));
 
     canvas.saveLayer(0, &paint);
-    canvas.drawBitmap(shadow_image,
-                      SkIntToScalar(shadow.x()),
-                      SkIntToScalar(shadow.y()));
+    canvas.drawImage(shadow_image.asImage(), SkIntToScalar(shadow.x()),
+                     SkIntToScalar(shadow.y()));
     canvas.restore();
   }
 
-  canvas.drawBitmap(bitmap, SkIntToScalar(0), SkIntToScalar(0));
+  canvas.drawImage(bitmap.asImage(), 0, 0);
   return image_with_shadow;
 }
 
 // static
 SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
                                     RotationAmount rotation) {
+  if (IsUninitializedBitmap(source))
+    return source;
+  CHECK_EQ(source.colorType(), kN32_SkColorType);
   // SkCanvas::drawBitmap() fails silently with unpremultiplied SkBitmap.
   DCHECK_NE(source.info().alphaType(), kUnpremul_SkAlphaType);
 
@@ -749,7 +766,7 @@ SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
      break;
   }
 
-  SkCanvas canvas(result);
+  SkCanvas canvas(result, SkSurfaceProps{});
   canvas.clear(SkColorSetARGB(0, 0, 0, 0));
 
   canvas.translate(SkFloatToScalar(result.width() * 0.5f),
@@ -757,7 +774,7 @@ SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
   canvas.rotate(angle);
   canvas.translate(-SkFloatToScalar(source.width() * 0.5f),
                    -SkFloatToScalar(source.height() * 0.5f));
-  canvas.drawBitmap(source, 0, 0);
+  canvas.drawImage(source.asImage(), 0, 0);
   canvas.flush();
 
   return result;

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas style="background: red"></canvas>
+<script>
+
+test(function() {
+  var canvas = document.querySelector('canvas');
+  var offscreenCtx = (new OffscreenCanvas(canvas.width, canvas.height)).getContext('2d');
+
+  var imageData = offscreenCtx.createImageData(canvas.width, canvas.height);
+  var data = imageData.data;
+
+  // Set all pixels to [0, 255, 0, 255]
+  for (var i = 0; i < data.length; i += 4) {
+    data[i + 1] = data[i + 3] = 255;
+  }
+
+  offscreenCtx.putImageData(imageData, 0, 0);
+
+  assert_array_equals(offscreenCtx.getImageData(0, 0, 1, 1).data, [0, 255, 0, 255]);
+}, "Verify that imageData is properly set");
+
+</script>

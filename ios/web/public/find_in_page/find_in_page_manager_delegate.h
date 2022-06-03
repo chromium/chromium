@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 #define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 
-#include <string>
 
 #include "base/macros.h"
 
@@ -18,6 +17,10 @@ class WebState;
 class FindInPageManagerDelegate {
  public:
   FindInPageManagerDelegate() = default;
+
+  FindInPageManagerDelegate(const FindInPageManagerDelegate&) = delete;
+  FindInPageManagerDelegate& operator=(const FindInPageManagerDelegate&) =
+      delete;
 
   // Called when a search for |query| finished with |match_count| found and all
   // matches were highlighted after calling FindInPageManager::Find() with
@@ -46,9 +49,6 @@ class FindInPageManagerDelegate {
 
  protected:
   virtual ~FindInPageManagerDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindInPageManagerDelegate);
 };
 
 }  // namespace web

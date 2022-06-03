@@ -1,6 +1,0 @@
-specific_include_rules = {
-  # Allow ash deps for browser test.
-  "display_prefs_browsertest.cc": [
-    "+ash/shell.h",
-  ],
-}

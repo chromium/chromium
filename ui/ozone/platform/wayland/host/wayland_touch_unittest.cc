@@ -18,6 +18,7 @@
 
 using ::testing::_;
 using ::testing::SaveArg;
+using ::testing::Values;
 
 namespace ui {
 
@@ -32,6 +33,9 @@ ACTION_P(CloneEvent, ptr) {
 class WaylandTouchTest : public WaylandTest {
  public:
   WaylandTouchTest() {}
+
+  WaylandTouchTest(const WaylandTouchTest&) = delete;
+  WaylandTouchTest& operator=(const WaylandTouchTest&) = delete;
 
   void SetUp() override {
     WaylandTest::SetUp();
@@ -55,9 +59,6 @@ class WaylandTouchTest : public WaylandTest {
   }
 
   wl::TestTouch* touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouchTest);
 };
 
 TEST_P(WaylandTouchTest, KeypressAndMotion) {
@@ -82,11 +83,87 @@ TEST_P(WaylandTouchTest, KeypressAndMotion) {
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
 }
 
+// Tests that touch focus is correctly set and released.
+TEST_P(WaylandTouchTest, CheckTouchFocus) {
+  uint32_t serial = 0;
+  uint32_t time = 0;
+  constexpr uint32_t touch_id1 = 1;
+  constexpr uint32_t touch_id2 = 2;
+  constexpr uint32_t touch_id3 = 3;
+
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id1, wl_fixed_from_int(50), wl_fixed_from_int(100));
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id1);
+
+  Sync();
+
+  EXPECT_FALSE(window_->has_touch_focus());
+
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id1, wl_fixed_from_int(30), wl_fixed_from_int(40));
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id2, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id3, wl_fixed_from_int(30), wl_fixed_from_int(40));
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id2);
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id1);
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id3);
+
+  Sync();
+
+  EXPECT_FALSE(window_->has_touch_focus());
+
+  // Now send many touches and cancel them.
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id1, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id2, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
+                     touch_id3, wl_fixed_from_int(30), wl_fixed_from_int(40));
+
+  Sync();
+
+  EXPECT_TRUE(window_->has_touch_focus());
+
+  wl_touch_send_cancel(touch_->resource());
+
+  Sync();
+
+  EXPECT_FALSE(window_->has_touch_focus());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandTouchTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandTouchTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

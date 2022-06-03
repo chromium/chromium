@@ -20,6 +20,30 @@ package sync_pb;
 
 // An AutofillProfile.
 message AutofillProfileSpecifics {
+  // Represents the validation status of value stored in the AutofillProfile.
+  enum VerificationStatus {
+    // No verification status assigned.
+    VERIFICATION_STATUS_UNSPECIFIED = 0;
+    // The value token was parsed from a parent token.
+    // For example, the first name was derived by splitting a full name into
+    // its components.
+    PARSED = 1;
+    // Value was built from its subcomponents.
+    // For example, the full name was built from the first, middle and last
+    // name.
+    FORMATTED = 2;
+    // The value was observed in a form transmission.
+    // For example, the user filled a form that contained at NAME_FULL field.
+    // The value of NAME_FULL will be stored as OBSERVED.
+    OBSERVED = 3;
+    // The user used the autofill settings to verify and store this token.
+    // This is currently only applicable to the full name, since users cannot
+    // edit individual components of their name.
+    USER_VERIFIED = 4;
+    // The token was parsed remotely.
+    SERVER_PARSED = 5;
+  }
+
   optional string guid = 15;
   optional string origin = 16;
   optional int64 use_count = 22;
@@ -29,15 +53,53 @@ message AutofillProfileSpecifics {
   // from the Windows epoch.
   optional int64 use_date = 23;
 
-  // Contact info.
+  // A user chosen profile label that is used to identify the profile.
+  // The value of the label can be freely chosen by the user. Two possible label
+  // values are '$HOME$' or '$WORK$' which have a special meaning.
+  optional string profile_label = 62;
+
+  // Contact info name fields.
+  repeated string name_honorific = 26;
   repeated string name_first = 2;
   repeated string name_middle = 3;
   repeated string name_last = 4;
+  // Sometimes the last name is composed of two names as it is common for
+  // Hispanic/Latinx names. In the unstructured representation of the last name,
+  // there may be even a conjunction between the first and the second last
+  // name. For example, the more-complete version of Pablo Picasso's surname is
+  // "Ruiz y Picasso" containing a first last name, a conjunction (the y) and a
+  // second last name.
+  repeated string name_last_first = 27;
+  repeated string name_last_conjunction = 28;
+  repeated string name_last_second = 29;
   repeated string name_full = 21;
+  // This value contains the combination of the full name and the honorific
+  // prefix.
+  repeated string name_full_with_honorific = 60;
+
+  // Validation status records for name fields.
+  repeated VerificationStatus name_honorific_status = 30;
+  repeated VerificationStatus name_first_status = 31;
+  repeated VerificationStatus name_middle_status = 32;
+  repeated VerificationStatus name_last_status = 33;
+  repeated VerificationStatus name_last_first_status = 34;
+  repeated VerificationStatus name_last_conjunction_status = 35;
+  repeated VerificationStatus name_last_second_status = 36;
+  repeated VerificationStatus name_full_status = 37;
+  repeated VerificationStatus name_full_with_honorific_status = 61;
+
+  // Contact info additional fields.
   repeated string email_address = 5;
   optional string company_name = 6;
 
-  // Address.
+  // Address field.
+  // The address_home_line1/2 fields are deprecated and
+  // address_home_street_address should be used instead by
+  // joining address_home_line1/2 with a newline ("\n").
+  // Full deprecation can not be achieved before all sync profiles have been
+  // updated with a M86+ client.
+  // TODO(crbug/1111740): Remove usages of address_home_line1/2 and mark field
+  // as deprecated.
   optional string address_home_line1 = 7;
   optional string address_home_line2 = 8;
   optional string address_home_city = 9;
@@ -50,6 +112,31 @@ message AutofillProfileSpecifics {
   optional string address_home_sorting_code = 18;
   optional string address_home_dependent_locality = 19;
   optional string address_home_language_code = 20;
+  optional string address_home_thoroughfare_name = 38;
+  optional string address_home_thoroughfare_number = 39;
+  optional string address_home_dependent_thoroughfare_name = 40;
+  optional string address_home_premise_name = 41;
+  optional string address_home_subpremise_name = 42;
+  optional string address_home_apt_num = 56;
+  optional string address_home_floor = 57;
+
+  // Validation status records for address fields.
+  optional VerificationStatus address_home_city_status = 43;
+  optional VerificationStatus address_home_state_status = 44;
+  optional VerificationStatus address_home_zip_status = 45;
+  optional VerificationStatus address_home_country_status = 46;
+  optional VerificationStatus address_home_street_address_status = 47;
+  optional VerificationStatus address_home_sorting_code_status = 48;
+  optional VerificationStatus address_home_dependent_locality_status = 49;
+  optional VerificationStatus address_home_language_code_status = 50;
+  optional VerificationStatus address_home_thoroughfare_name_status = 51;
+  optional VerificationStatus address_home_thoroughfare_number_status = 52;
+  optional VerificationStatus address_home_dependent_thoroughfare_name_status =
+      53;
+  optional VerificationStatus address_home_premise_name_status = 54;
+  optional VerificationStatus address_home_subpremise_name_status = 55;
+  optional VerificationStatus address_home_apt_num_status = 58;
+  optional VerificationStatus address_home_floor_status = 59;
 
   // Phone.
   repeated string phone_home_whole_number = 13;
@@ -63,8 +150,14 @@ message AutofillProfileSpecifics {
   // changes in the autofill profile values.
   optional bool is_client_validity_states_updated = 25;
 
+  // The state indicates if the profile qualifies to get merged with a
+  // profile observed in a form submission. If true, the profile can still be
+  // updated silently, but it should not be considered for merges that need to
+  // involve user interactions.
+  optional bool disallow_settings_visible_updates = 63;
+
   // Deprecated.
-  optional string label = 1 [deprecated = true];
+  optional string deprecated_label = 1 [deprecated = true];
   optional string phone_fax_whole_number = 14 [deprecated = true];
 }
 
@@ -106,7 +199,19 @@ message CloudTokenData {
   optional string instrument_token = 5;
 }
 
+message CardIssuer {
+  enum Issuer {
+    ISSUER_UNKNOWN = 0;
+    // Card where the issuer is Google.
+    GOOGLE = 1;
+  }
+  optional Issuer issuer = 1;
+}
+
 message WalletMaskedCreditCard {
+  reserved 9, 14;
+  reserved "card_class";
+
   enum WalletCardStatus {
     VALID = 0;
     EXPIRED = 1;
@@ -125,14 +230,14 @@ message WalletMaskedCreditCard {
     UNIONPAY = 9;
   }
 
-  enum WalletCardClass {
-    UNKNOWN_CARD_CLASS = 0;
-    CREDIT = 1;
-    DEBIT = 2;
-    PREPAID = 3;
+  enum VirtualCardEnrollmentState {
+    UNSPECIFIED = 0;
+    UNENROLLED = 1;
+    ENROLLED = 2;
   }
 
   // Server-generated unique ID string. This is opaque to the client.
+  // This is the legacy version of |instrument_id|.
   optional string id = 1;
 
   // What the server thinks of this card.
@@ -154,9 +259,6 @@ message WalletMaskedCreditCard {
   // The WalletPostalAddress.id of the billing address.
   optional string billing_address_id = 8;
 
-  // Card class: credit, debit, or prepaid.
-  optional WalletCardClass card_class = 9;
-
   // Issuing Bank name which is internationalized (e.g. "Chase", "工商银行")
   optional string bank_name = 10;
 
@@ -165,6 +267,22 @@ message WalletMaskedCreditCard {
   // Use WalletCreditCardCloudTokenData instead. This field will be set if
   // a cloud token is available for the instrument.
   optional CloudTokenData cloud_token_data = 11;
+
+  // The card's nickname, if it exists.
+  optional string nickname = 12;
+
+  // Issuer of the card.
+  optional CardIssuer card_issuer = 13;
+
+  // Server-generated unique ID. This is opaque to the client.
+  // |id| is the legacy version of this.
+  optional int64 instrument_id = 15;
+
+  // The state of virtual card enrollment.
+  optional VirtualCardEnrollmentState virtual_card_enrollment_state = 16;
+
+  // The URL for the client to fetche the card art image.
+  optional string card_art_url = 17;
 }
 
 // Different than an AutofillProfile because this represents some known address

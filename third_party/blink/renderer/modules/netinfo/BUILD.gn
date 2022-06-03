@@ -6,11 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("netinfo") {
   sources = [
-    "navigator_network_information.cc",
-    "navigator_network_information.h",
     "network_information.cc",
     "network_information.h",
-    "worker_navigator_network_information.cc",
-    "worker_navigator_network_information.h",
   ]
 }

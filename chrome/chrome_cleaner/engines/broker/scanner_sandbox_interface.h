@@ -10,15 +10,15 @@
 #include <windows.h>
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/mojom/engine_requests.mojom.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
-#include "chrome/chrome_cleaner/strings/string16_embedded_nulls.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 
 namespace chrome_cleaner_sandbox {
 
@@ -50,10 +50,10 @@ bool SandboxGetProcessImagePath(base::ProcessId pid,
                                 base::FilePath* image_path);
 
 bool SandboxGetLoadedModules(base::ProcessId pid,
-                             std::set<base::string16>* module_names);
+                             std::set<std::wstring>* module_names);
 
 bool SandboxGetProcessCommandLine(base::ProcessId pid,
-                                  base::string16* process_cmd);
+                                  std::wstring* process_cmd);
 
 bool SandboxGetUserInfoFromSID(
     const SID* const sid,
@@ -63,13 +63,13 @@ base::win::ScopedHandle SandboxOpenReadOnlyFile(const base::FilePath& file_name,
                                                 uint32_t dwFlagsAndAttributes);
 
 uint32_t SandboxOpenReadOnlyRegistry(HANDLE root_key,
-                                     const base::string16& sub_key,
+                                     const std::wstring& sub_key,
                                      uint32_t dw_access,
                                      HKEY* registry_handle);
 
 uint32_t SandboxNtOpenReadOnlyRegistry(
     HANDLE root_key,
-    const chrome_cleaner::String16EmbeddedNulls& sub_key,
+    const chrome_cleaner::WStringEmbeddedNulls& sub_key,
     uint32_t dw_access,
     HANDLE* registry_handle);
 

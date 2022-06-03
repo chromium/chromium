@@ -12,8 +12,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+        style="@style/AlertDialogContent"/>
+
     <TextView
         android:id="@+id/no_retry_error_message"
+        android:layout_below="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="23dp"
@@ -67,6 +75,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_marginStart="16dp"
+                  android:minHeight="48dp"
                   android:width="50sp"
                   android:maxLength="2"
                   android:gravity="center_horizontal"
@@ -85,6 +94,7 @@
                   android:id="@+id/expiration_year"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
+                  android:minHeight="48dp"
                   android:width="50sp"
                   android:maxLength="2"
                   android:gravity="center_horizontal"
@@ -97,10 +107,12 @@
             <EditText
                 tools:ignore="Autofill"
                 android:id="@+id/card_unmask_input"
+                android:importantForAutofill="no"
                 android:inputType="number"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="16dp"
+                android:minHeight="48dp"
                 android:ems="5"
                 android:imeOptions="actionDone"
                 android:imeActionLabel="@string/autofill_save_card_prompt_confirm"
@@ -120,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlueLink2"
+                android:textAppearance="@style/TextAppearance.TextMedium.Blue"
                 android:text="@string/autofill_card_unmask_new_card_link"
                 android:visibility="gone" />
         </LinearLayout>
@@ -134,38 +146,6 @@
             android:gravity="start"
             android:textAppearance="@style/TextAppearance.AutofillCardErrorMessage"
             android:visibility="gone" />
-
-        <RelativeLayout
-            android:id="@+id/store_locally_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:id="@+id/store_locally_tooltip_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="12dp"
-                android:src="@drawable/help_outline"
-                android:contentDescription="@string/learn_more" />
-
-           <CheckBox
-                android:id="@+id/store_locally_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/store_locally_tooltip_icon"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="10dp"
-                android:textAppearance="@style/TextAppearance.AutofillCardCheckBoxText"
-                android:text="@string/autofill_card_unmask_prompt_storage_checkbox" />
-
-        </RelativeLayout>
 
         <CheckBox
             android:id="@+id/use_screenlock_checkbox"
@@ -215,6 +195,6 @@
             android:id="@+id/verification_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.BlueTitle2" />
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Blue" />
     </LinearLayout>
 </RelativeLayout>

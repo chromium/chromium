@@ -5,17 +5,19 @@
 #include "chromecast/graphics/accessibility/partial_magnification_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/default_screen_position_client.h"
 
 namespace chromecast {
 
 class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   CastTestWindowDelegate() : key_code_(ui::VKEY_UNKNOWN) {}
+
+  CastTestWindowDelegate(const CastTestWindowDelegate&) = delete;
+  CastTestWindowDelegate& operator=(const CastTestWindowDelegate&) = delete;
+
   ~CastTestWindowDelegate() override {}
 
   // Overridden from TestWindowDelegate:
@@ -27,8 +29,6 @@ class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   ui::KeyboardCode key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTestWindowDelegate);
 };
 
 // Wrapper for PartialMagnificationController that exposes internal state to
@@ -38,6 +38,10 @@ class PartialMagnificationControllerTestApi {
   explicit PartialMagnificationControllerTestApi(
       PartialMagnificationController* controller)
       : controller_(controller) {}
+
+  PartialMagnificationControllerTestApi& operator=(
+      const PartialMagnificationControllerTestApi&) = delete;
+
   ~PartialMagnificationControllerTestApi() = default;
 
   bool is_enabled() const { return controller_->is_enabled_; }
@@ -51,21 +55,22 @@ class PartialMagnificationControllerTestApi {
 
  private:
   PartialMagnificationController* controller_;
-
-  DISALLOW_ASSIGN(PartialMagnificationControllerTestApi);
 };
 
 class PartialMagnificationControllerTest : public views::ViewsTestBase {
  public:
   PartialMagnificationControllerTest() = default;
+
+  PartialMagnificationControllerTest(
+      const PartialMagnificationControllerTest&) = delete;
+  PartialMagnificationControllerTest& operator=(
+      const PartialMagnificationControllerTest&) = delete;
+
   ~PartialMagnificationControllerTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    screen_position_client_.reset(new wm::DefaultScreenPositionClient());
-    aura::client::SetScreenPositionClient(root_window(),
-                                          screen_position_client_.get());
     controller_ =
         std::make_unique<PartialMagnificationController>(root_window());
   }
@@ -97,12 +102,9 @@ class PartialMagnificationControllerTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
 
   CastTestWindowDelegate test_window_delegate_;
   std::unique_ptr<PartialMagnificationController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialMagnificationControllerTest);
 };
 
 // The magnifier should not show up immediately after being enabled.

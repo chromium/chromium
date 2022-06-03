@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+java_binary("unused_resources") {
+  sources = [ "//build/android/unused_resources/UnusedResources.java" ]
+  main_class = "build.android.unused_resources.UnusedResources"
+  deps = [
+    "//third_party/android_deps:com_android_tools_common_java",
+    "//third_party/android_deps:com_android_tools_layoutlib_layoutlib_api_java",
+    "//third_party/android_deps:com_android_tools_sdk_common_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
+    "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_java",
+    "//third_party/r8:r8_java",
+  ]
+  wrapper_script_name = "helper/unused_resources"
+}

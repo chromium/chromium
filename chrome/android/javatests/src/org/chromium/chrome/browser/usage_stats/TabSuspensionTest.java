@@ -10,10 +10,12 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,16 +25,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +49,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -64,7 +67,7 @@ import java.util.concurrent.TimeoutException;
         // Direct all hostnames to EmbeddedTestServer running on 127.0.0.1.
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors",
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
+@MinAndroidSdkLevel(Build.VERSION_CODES.Q)
 public class TabSuspensionTest {
     private static final String STARTING_FQDN = "example.com";
     private static final String DIFFERENT_FQDN = "www.google.com";
@@ -116,8 +119,9 @@ public class TabSuspensionTest {
         mActivity = mActivityTestRule.getActivity();
         mTab = mActivity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageViewObserver = new PageViewObserver(mActivity, mActivity.getTabModelSelector(),
-                    mEventTracker, mTokenTracker, mSuspensionTracker);
+            mPageViewObserver = new PageViewObserver(mActivity, mActivity.getActivityTabProvider(),
+                    mEventTracker, mTokenTracker, mSuspensionTracker,
+                    mActivity.getTabContentManagerSupplier());
         });
     }
 
@@ -185,6 +189,7 @@ public class TabSuspensionTest {
     @MediumTest
     public void testEagerSuspension() {
         mActivityTestRule.loadUrl(mStartingUrl);
+        CriteriaHelper.pollUiThread(() -> !mTab.isLoading());
         suspendDomain(STARTING_FQDN);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
@@ -230,7 +235,9 @@ public class TabSuspensionTest {
     public void testMultiWindow() {
         mActivityTestRule.loadUrl(mStartingUrl);
         Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
+        CriteriaHelper.pollUiThread(() -> !tab2.isLoading());
         suspendDomain(DIFFERENT_FQDN);
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
         waitForSuspendedTabToShow(tab2, DIFFERENT_FQDN);
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
@@ -239,35 +246,41 @@ public class TabSuspensionTest {
                 mActivity, R.id.move_to_other_window_menu_id);
         final ChromeTabbedActivity2 activity2 =
                 MultiWindowTestHelper.waitForSecondChromeTabbedActivity();
-        MultiWindowTestHelper.waitForTabs("CTA", activity2, 1, tab2.getId());
-        waitForSuspendedTabToShow(tab2, DIFFERENT_FQDN);
-
         // Each PageViewObserver is associated with a single ChromeTabbedActivity, so we need to
         // create a new one for the other window. This needs to be done on the UI thread since it
-        // can trigger view maniplation.
+        // can trigger view manipulation.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageViewObserver2 = new PageViewObserver(activity2, activity2.getTabModelSelector(),
-                    mEventTracker, mTokenTracker, mSuspensionTracker);
+            mPageViewObserver2 = new PageViewObserver(activity2, activity2.getActivityTabProvider(),
+                    mEventTracker, mTokenTracker, mSuspensionTracker,
+                    activity2.getTabContentManagerSupplier());
         });
 
+        MultiWindowTestHelper.waitForTabs("CTA", activity2, /* expectedTotalTabCount */ 1,
+                                          tab2.getId());
+        waitForSuspendedTabToShow(tab2, DIFFERENT_FQDN);
+
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         suspendDomain(STARTING_FQDN);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mPageViewObserver2.notifySiteSuspensionChanged(DIFFERENT_FQDN, false); });
         // Suspending and un-suspending should work in both activities/windows.
         assertSuspendedTabHidden(tab2);
+        MultiWindowTestHelper.moveActivityToFront(mActivity);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
     }
 
     @Test
     @MediumTest
     public void testTabAddedFromCustomTab() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), mStartingUrl));
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getTargetContext(), mStartingUrl);
+        IntentUtils.addTrustedIntentExtras(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
 
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 mCustomTabActivityTestRule.getActivity(), R.id.open_in_browser_id);
+
         MultiWindowTestHelper.waitForTabs("CustomTab", mActivity, 2, Tab.INVALID_TAB_ID);
         waitForSuspendedTabToShow(mActivity.getActivityTab(), STARTING_FQDN);
     }
@@ -289,11 +302,10 @@ public class TabSuspensionTest {
     @MediumTest
     public void testTabUnsuspendedInBackground() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
-        mActivityTestRule.loadUrl(mStartingUrl);
+        startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
         final int originalTabIndex =
                 mActivity.getTabModelSelector().getCurrentModel().indexOf(mTab);
-        Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPageViewObserver.notifySiteSuspensionChanged(STARTING_FQDN, false);
@@ -309,28 +321,57 @@ public class TabSuspensionTest {
     @MediumTest
     public void testNavigationFromSuspendedTabToInterstitial() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
-        mActivityTestRule.loadUrl(mStartingUrl);
+        startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
         SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
                 new MockSafeBrowsingApiHandler().getClass());
         MockSafeBrowsingApiHandler.addMockResponse(
                 mDifferentUrl, "{\"matches\":[{\"threat_type\":\"5\"}]}");
-        mActivityTestRule.loadUrl(mDifferentUrl);
+        startLoadingUrl(mTab, mDifferentUrl);
 
-        assertSuspendedTabHidden(mTab);
+        waitForSuspendedTabToHide(mTab);
     }
 
     @Test
     @MediumTest
     public void testRendererCrashOnSuspendedTab() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
-        mActivityTestRule.loadUrl(mStartingUrl);
+        startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabTestUtils.simulateCrash(mTab, true);
             assertSuspendedTabHidden(mTab);
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testSuspendNullCurrentTab() {
+        mActivityTestRule.loadUrl(mStartingUrl);
+        ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);
+
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
+        suspendDomain(STARTING_FQDN);
+
+        // We can't use loadUrlInNewTab because the site being suspended will prevent loading from
+        // completing, and loadUrlInNewTab expects loading to succeed.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab2 = mActivity.getActivityTab();
+
+        startLoadingUrl(tab2, mStartingUrl);
+        waitForSuspendedTabToShow(tab2, STARTING_FQDN);
+    }
+
+    @Test
+    @MediumTest
+    public void testSuspendUninitializedCurrentTab() {
+        mActivityTestRule.loadUrl(mStartingUrl);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
+
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
+        suspendDomain(STARTING_FQDN);
     }
 
     private void startLoadingUrl(Tab tab, String url) {
@@ -348,7 +389,8 @@ public class TabSuspensionTest {
 
     private void assertSuspendedTabState(Tab tab, boolean showing, String fqdn) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SuspendedTab suspendedTab = SuspendedTab.from(tab);
+            SuspendedTab suspendedTab =
+                    SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier());
             assertEquals(suspendedTab.isShowing(), showing);
             assertEquals(suspendedTab.isViewAttached(), showing);
             assertTrue((suspendedTab.getFqdn() == null && fqdn == null)
@@ -368,9 +410,18 @@ public class TabSuspensionTest {
 
     private void waitForSuspendedTabToShow(Tab tab, String fqdn) {
         CriteriaHelper.pollUiThread(() -> {
-            return SuspendedTab.from(tab).isShowing();
+            return SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier()).isShowing();
         }, "Suspended tab should be showing", 10000, 50);
 
         assertSuspendedTabShowing(tab, fqdn);
+    }
+
+    private void waitForSuspendedTabToHide(Tab tab) {
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> !SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier())
+                                    .isShowing(),
+                "Suspended tab should be hidden", 10000, 50);
+        assertSuspendedTabHidden(tab);
     }
 }

@@ -9,10 +9,11 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace IPC {
 
@@ -211,34 +212,6 @@ bool ParamTraits<gfx::RectF>::Read(const base::Pickle* m,
 void ParamTraits<gfx::RectF>::Log(const gfx::RectF& p, std::string* l) {
   l->append(base::StringPrintf("(%f, %f, %f, %f)", p.x(), p.y(), p.width(),
                                p.height()));
-}
-
-void ParamTraits<gfx::ScrollOffset>::Write(base::Pickle* m,
-                                           const param_type& p) {
-  m->WriteDouble(p.x());
-  m->WriteDouble(p.y());
-}
-
-bool ParamTraits<gfx::ScrollOffset>::Read(const base::Pickle* m,
-                                          base::PickleIterator* iter,
-                                          param_type* r) {
-  double x = 0.f;
-  double y = 0.f;
-  if (!iter->ReadDouble(&x))
-    return false;
-  if (!iter->ReadDouble(&y))
-    return false;
-  r->set_x(x);
-  r->set_y(y);
-  return true;
-}
-
-void ParamTraits<gfx::ScrollOffset>::Log(const param_type& p, std::string* l) {
-  l->append("(");
-  LogParam(p.x(), l);
-  l->append(", ");
-  LogParam(p.y(), l);
-  l->append(")");
 }
 
 }  // namespace IPC

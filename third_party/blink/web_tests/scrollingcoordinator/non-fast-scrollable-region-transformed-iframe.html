@@ -15,6 +15,13 @@
   }
 </style>
 
+<script>
+  // Prefer non-composited scrolling because this is a test of non-composited
+  // scrollers.
+  if (window.internals)
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+</script>
+
 <iframe srcdoc="
   <!DOCTYPE html>
   <style>

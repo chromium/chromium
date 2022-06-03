@@ -1,0 +1,258 @@
+Initial
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 939],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "bounds": [1124, 216],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
+      "position": [-6, -6],
+      "bounds": [1136, 228],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "bounds": [150, 150],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 477, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    }
+  ]
+}
+
+After step 1
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 2376],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "bounds": [1124, 216],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutImage IMG class='hidden composited box'",
+      "bounds": [150, 150],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
+      "position": [-6, -6],
+      "bounds": [1136, 228],
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "bounds": [150, 150],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 477, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    }
+  ]
+}
+
+After step 2
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 4144],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "bounds": [1124, 216],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutImage IMG class='hidden composited box'",
+      "bounds": [150, 150],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
+      "position": [-6, -6],
+      "bounds": [1136, 228],
+      "transform": 3
+    },
+    {
+      "name": "LayoutImage IMG class='composited box'",
+      "bounds": [150, 150],
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
+      "position": [-6, -6],
+      "bounds": [1136, 228],
+      "drawsContent": false,
+      "transform": 5
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "bounds": [150, 150],
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 246, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 477, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [30, 30, 0, 1]
+      ]
+    }
+  ]
+}
+

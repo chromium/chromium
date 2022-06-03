@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -91,14 +90,61 @@ namespace {
 
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 
+class ScopedSharedMemoryPtr {
+ public:
+  ScopedSharedMemoryPtr(size_t size,
+                        TransferBufferInterface* transfer_buffer,
+                        MappedMemoryManager* mapped_memory,
+                        RasterCmdHelper* helper) {
+    // Prefer transfer buffer but fall back to MappedMemory if there's not
+    // enough free space.
+    if (transfer_buffer->GetFreeSize() < size) {
+      scoped_mapped_ptr_.emplace(size, helper, mapped_memory);
+    } else {
+      scoped_transfer_ptr_.emplace(size, helper, transfer_buffer);
+    }
+  }
+  ~ScopedSharedMemoryPtr() = default;
+
+  GLuint size() {
+    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->size()
+                                : scoped_mapped_ptr_->size();
+  }
+
+  GLint shm_id() {
+    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->shm_id()
+                                : scoped_mapped_ptr_->shm_id();
+  }
+
+  GLuint offset() {
+    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->offset()
+                                : scoped_mapped_ptr_->offset();
+  }
+
+  void* address() {
+    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->address()
+                                : scoped_mapped_ptr_->address();
+  }
+
+ private:
+  absl::optional<ScopedMappedMemoryPtr> scoped_mapped_ptr_;
+  absl::optional<ScopedTransferBufferPtr> scoped_transfer_ptr_;
+};
+
 }  // namespace
 
 // Helper to copy data to the GPU service over the transfer cache.
-class RasterImplementation::TransferCacheSerializeHelperImpl
+class RasterImplementation::TransferCacheSerializeHelperImpl final
     : public cc::TransferCacheSerializeHelper {
  public:
   explicit TransferCacheSerializeHelperImpl(RasterImplementation* ri)
       : ri_(ri) {}
+
+  TransferCacheSerializeHelperImpl(const TransferCacheSerializeHelperImpl&) =
+      delete;
+  TransferCacheSerializeHelperImpl& operator=(
+      const TransferCacheSerializeHelperImpl&) = delete;
+
   ~TransferCacheSerializeHelperImpl() final = default;
 
   uint32_t take_end_offset_of_last_inlined_entry() {
@@ -178,8 +224,6 @@ class RasterImplementation::TransferCacheSerializeHelperImpl
 
   RasterImplementation* const ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(TransferCacheSerializeHelperImpl);
 };
 
 // Helper to copy PaintOps to the GPU service over the transfer buffer.
@@ -200,17 +244,24 @@ class RasterImplementation::PaintOpSerializer {
         static_cast<char*>(ri_->MapRasterCHROMIUM(initial_size, &free_bytes_));
   }
 
+  PaintOpSerializer(const PaintOpSerializer&) = delete;
+  PaintOpSerializer& operator=(const PaintOpSerializer&) = delete;
+
   ~PaintOpSerializer() {
     // Need to call SendSerializedData;
     DCHECK(!written_bytes_);
   }
 
   size_t Serialize(const cc::PaintOp* op,
-                   const cc::PaintOp::SerializeOptions& options) {
+                   const cc::PaintOp::SerializeOptions& options,
+                   const cc::PaintFlags* flags_to_serialize,
+                   const SkM44& current_ctm,
+                   const SkM44& original_ctm) {
     if (!valid())
       return 0;
 
-    size_t size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options);
+    size_t size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
+                                flags_to_serialize, current_ctm, original_ctm);
     size_t block_size = *max_op_size_hint_;
 
     if (!size) {
@@ -228,7 +279,8 @@ class RasterImplementation::PaintOpSerializer {
           return 0;
         }
 
-        size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options);
+        size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
+                             flags_to_serialize, current_ctm, original_ctm);
         if (size) {
           *max_op_size_hint_ = std::max(size, *max_op_size_hint_);
           break;
@@ -298,8 +350,6 @@ class RasterImplementation::PaintOpSerializer {
   uint32_t free_bytes_ = 0;
 
   size_t* max_op_size_hint_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintOpSerializer);
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(
@@ -313,6 +363,127 @@ RasterImplementation::SingleThreadChecker::~SingleThreadChecker() {
   --raster_implementation_->use_count_;
   CHECK_EQ(0, raster_implementation_->use_count_);
 }
+
+struct RasterImplementation::AsyncARGBReadbackRequest {
+  AsyncARGBReadbackRequest(
+      void* dst_pixels,
+      GLuint dst_size,
+      GLuint pixels_offset,
+      GLuint finished_query,
+      std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> callback)
+      : dst_pixels(dst_pixels),
+        dst_size(dst_size),
+        pixels_offset(pixels_offset),
+        shared_memory(std::move(shared_memory)),
+        callback(std::move(callback)),
+        query(finished_query),
+        done(false),
+        readback_successful(false) {}
+  ~AsyncARGBReadbackRequest() {
+    // RasterDecoder::ReadbackImagePixels always stores the result pixels with
+    // top left origin.
+    std::move(callback).Run(kTopLeft_GrSurfaceOrigin, readback_successful);
+  }
+
+  void* dst_pixels;
+  GLuint dst_size;
+  GLuint pixels_offset;
+  std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
+  base::OnceCallback<void(GrSurfaceOrigin, bool)> callback;
+  GLuint query;
+  bool done;
+  bool readback_successful;
+};
+
+struct RasterImplementation::AsyncYUVReadbackRequest {
+  AsyncYUVReadbackRequest(gfx::Rect output_rect,
+                          GLuint query,
+                          int y_plane_stride,
+                          GLuint y_plane_offset,
+                          uint8_t* y_plane_data,
+                          int u_plane_stride,
+                          GLuint u_plane_offset,
+                          uint8_t* u_plane_data,
+                          int v_plane_stride,
+                          GLuint v_plane_offset,
+                          uint8_t* v_plane_data,
+                          std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
+                          base::OnceCallback<void()> release_mailbox,
+                          base::OnceCallback<void(bool)> readback_done)
+      : output_rect(output_rect),
+        query(query),
+        y_plane_stride(y_plane_stride),
+        y_plane_offset(y_plane_offset),
+        y_plane_data(y_plane_data),
+        u_plane_stride(u_plane_stride),
+        u_plane_offset(u_plane_offset),
+        u_plane_data(u_plane_data),
+        v_plane_stride(v_plane_stride),
+        v_plane_offset(v_plane_offset),
+        v_plane_data(v_plane_data),
+        shared_memory(std::move(shared_memory)),
+        release_mailbox(std::move(release_mailbox)),
+        readback_done(std::move(readback_done)) {}
+  ~AsyncYUVReadbackRequest() {
+    std::move(release_mailbox).Run();
+    std::move(readback_done).Run(readback_successful);
+  }
+
+  void CopyYUVPlanes() {
+    void* shm_address = shared_memory->address();
+    auto* result =
+        static_cast<cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result*>(
+            shm_address);
+    if (!*result)
+      return;
+
+    CopyYUVPlane(output_rect.height(), y_plane_stride, y_plane_offset,
+                 shm_address, y_plane_data);
+
+    // U and V planes are half the size of the Y plane.
+    CopyYUVPlane(output_rect.height() / 2, u_plane_stride, u_plane_offset,
+                 shm_address, u_plane_data);
+    CopyYUVPlane(output_rect.height() / 2, v_plane_stride, v_plane_offset,
+                 shm_address, v_plane_data);
+
+    readback_successful = true;
+  }
+
+  const gfx::Rect output_rect;
+  GLuint query;
+
+  int y_plane_stride;
+  GLuint y_plane_offset;
+  uint8_t* y_plane_data;
+
+  int u_plane_stride;
+  GLuint u_plane_offset;
+  uint8_t* u_plane_data;
+
+  int v_plane_stride;
+  GLuint v_plane_offset;
+  uint8_t* v_plane_data;
+
+  std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
+  base::OnceCallback<void()> release_mailbox;
+  base::OnceCallback<void(bool)> readback_done;
+
+  bool done = false;
+  bool readback_successful = false;
+
+ private:
+  void CopyYUVPlane(GLuint plane_height,
+                    int plane_stride,
+                    GLuint plane_offset,
+                    void* in_buffer,
+                    uint8_t* out_buffer) {
+    // RasterDecoder writes the pixels into |in_buffer| with the requested
+    // stride so we can copy the whole block here.
+    memcpy(out_buffer, static_cast<uint8_t*>(in_buffer) + plane_offset,
+           plane_height * plane_stride);
+  }
+};
 
 RasterImplementation::RasterImplementation(
     RasterCmdHelper* helper,
@@ -361,6 +532,9 @@ RasterImplementation::~RasterImplementation() {
   // shared will fail and abort (ie, it will stop running).
   WaitForCmd();
 
+  // Run callbacks for all pending AsyncReadbackRequests to inform them of the
+  // failure
+  CancelRequests();
   query_tracker_.reset();
 
   // Make sure the commands make it the service.
@@ -401,7 +575,8 @@ void RasterImplementation::OnGpuControlErrorMessage(const char* message,
 }
 
 void RasterImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params) {
+    const SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {
   NOTREACHED();
 }
 
@@ -787,6 +962,9 @@ void RasterImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
 void RasterImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   ImplementationBase::WaitSyncToken(sync_token);
 }
+void RasterImplementation::ShallowFlushCHROMIUM() {
+  IssueShallowFlush();
+}
 
 // ImplementationBase implementation.
 void RasterImplementation::IssueShallowFlush() {
@@ -795,9 +973,6 @@ void RasterImplementation::IssueShallowFlush() {
   FlushHelper();
 }
 
-void RasterImplementation::ShallowFlushCHROMIUM() {
-  IssueShallowFlush();
-}
 
 void RasterImplementation::FlushHelper() {
   // Flush our command buffer
@@ -950,10 +1125,6 @@ void RasterImplementation::GetQueryObjectui64vEXT(GLuint id,
 void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
                                               uint32_t* size_allocated) {
   *size_allocated = 0u;
-  if (size < 0) {
-    SetGLError(GL_INVALID_VALUE, "glMapRasterCHROMIUM", "negative size");
-    return nullptr;
-  }
   if (raster_mapped_buffer_) {
     SetGLError(GL_INVALID_OPERATION, "glMapRasterCHROMIUM", "already mapped");
     return nullptr;
@@ -961,7 +1132,7 @@ void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
   raster_mapped_buffer_.emplace(size, helper_, transfer_buffer_);
   if (!raster_mapped_buffer_->valid()) {
     SetGLError(GL_INVALID_OPERATION, "glMapRasterCHROMIUM", "size too big");
-    raster_mapped_buffer_ = base::nullopt;
+    raster_mapped_buffer_ = absl::nullopt;
     return nullptr;
   }
   *size_allocated = raster_mapped_buffer_->size();
@@ -969,10 +1140,6 @@ void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
 }
 
 void* RasterImplementation::MapFontBuffer(uint32_t size) {
-  if (size < 0) {
-    SetGLError(GL_INVALID_VALUE, "glMapFontBufferCHROMIUM", "negative size");
-    return nullptr;
-  }
   if (font_mapped_buffer_) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM",
                "already mapped");
@@ -987,7 +1154,7 @@ void* RasterImplementation::MapFontBuffer(uint32_t size) {
   font_mapped_buffer_.emplace(size, helper_, mapped_memory_.get());
   if (!font_mapped_buffer_->valid()) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM", "size too big");
-    font_mapped_buffer_ = base::nullopt;
+    font_mapped_buffer_ = absl::nullopt;
     return nullptr;
   }
   return font_mapped_buffer_->address();
@@ -995,11 +1162,6 @@ void* RasterImplementation::MapFontBuffer(uint32_t size) {
 
 void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
                                                uint32_t total_written_size) {
-  if (total_written_size < 0) {
-    SetGLError(GL_INVALID_VALUE, "glUnmapRasterCHROMIUM",
-               "negative written_size");
-    return;
-  }
   if (!raster_mapped_buffer_) {
     SetGLError(GL_INVALID_OPERATION, "glUnmapRasterCHROMIUM", "not mapped");
     return;
@@ -1007,7 +1169,7 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
   DCHECK(raster_mapped_buffer_->valid());
   if (total_written_size == 0) {
     raster_mapped_buffer_->Discard();
-    raster_mapped_buffer_ = base::nullopt;
+    raster_mapped_buffer_ = absl::nullopt;
     return;
   }
   raster_mapped_buffer_->Shrink(total_written_size);
@@ -1027,8 +1189,8 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
         raster_written_size, font_shm_id, font_shm_offset, font_shm_size);
   }
 
-  raster_mapped_buffer_ = base::nullopt;
-  font_mapped_buffer_ = base::nullopt;
+  raster_mapped_buffer_ = absl::nullopt;
+  font_mapped_buffer_ = absl::nullopt;
   CheckGLError();
 }
 
@@ -1045,13 +1207,32 @@ void RasterImplementation::CopySubTexture(const gpu::Mailbox& source_mailbox,
                                           GLint x,
                                           GLint y,
                                           GLsizei width,
-                                          GLsizei height) {
+                                          GLsizei height,
+                                          GLboolean unpack_flip_y,
+                                          GLboolean unpack_premultiply_alpha) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySubTexture("
                      << source_mailbox.ToDebugString() << ", "
                      << dest_mailbox.ToDebugString() << ", " << xoffset << ", "
                      << yoffset << ", " << x << ", " << y << ", " << width
                      << ", " << height << ")");
+  if (!source_mailbox.IsSharedImage()) {
+    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+               "source_mailbox is not a shared image.");
+    // TODO(crbug.com/1229479): This call to NOTREACHED is temporary while we
+    // investigate crbug.com/1229479. The failure with test
+    // WebRtcVideoCaptureServiceBrowserTest.
+    // FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage when OOP-R
+    // Canvas is enabled does not repro on trybots, only on CI bots.
+    // Crashing here will allow us to get a client-side stack trace.
+    NOTREACHED();
+    return;
+  }
+  if (!dest_mailbox.IsSharedImage()) {
+    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+               "dest_mailbox is not a shared image.");
+    return;
+  }
   if (width < 0) {
     SetGLError(GL_INVALID_VALUE, "glCopySubTexture", "width < 0");
     return;
@@ -1065,19 +1246,97 @@ void RasterImplementation::CopySubTexture(const gpu::Mailbox& source_mailbox,
   memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
          sizeof(dest_mailbox.name));
   helper_->CopySubTextureINTERNALImmediate(xoffset, yoffset, x, y, width,
-                                           height, mailboxes);
+                                           height, unpack_flip_y, mailboxes);
   CheckGLError();
+}
+
+void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
+                                       int dst_x_offset,
+                                       int dst_y_offset,
+                                       GLenum texture_target,
+                                       GLuint row_bytes,
+                                       const SkImageInfo& src_info,
+                                       const void* src_pixels) {
+  DCHECK_GE(row_bytes, src_info.minRowBytes());
+
+  // Get the size of the SkColorSpace while maintaining 8-byte alignment.
+  GLuint pixels_offset = 0;
+  if (src_info.colorSpace()) {
+    pixels_offset = base::bits::AlignUp(
+        src_info.colorSpace()->writeToMemory(nullptr), sizeof(uint64_t));
+  }
+
+  GLuint src_size = src_info.computeByteSize(row_bytes);
+  GLuint total_size =
+      pixels_offset + base::bits::AlignUp(src_size, sizeof(uint64_t));
+
+  std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
+                                              mapped_memory_.get(), helper());
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* address = scoped_shared_memory->address();
+
+  if (src_info.colorSpace()) {
+    size_t bytes_written = src_info.colorSpace()->writeToMemory(address);
+    DCHECK_LE(bytes_written, pixels_offset);
+  }
+  memcpy(static_cast<uint8_t*>(address) + pixels_offset, src_pixels, src_size);
+
+  helper_->WritePixelsINTERNALImmediate(
+      dst_x_offset, dst_y_offset, src_info.width(), src_info.height(),
+      row_bytes, src_info.colorType(), src_info.alphaType(), shm_id, shm_offset,
+      pixels_offset, dest_mailbox.name);
+}
+
+namespace {
+constexpr size_t kNumMailboxes = SkYUVAInfo::kMaxPlanes + 1;
+}  // namespace
+
+void RasterImplementation::ConvertYUVAMailboxesToRGB(
+    const gpu::Mailbox& dest_mailbox,
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[]) {
+  gpu::Mailbox mailboxes[kNumMailboxes]{};
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    mailboxes[i] = yuva_plane_mailboxes[i];
+  }
+  mailboxes[kNumMailboxes - 1] = dest_mailbox;
+  helper_->ConvertYUVAMailboxesToRGBINTERNALImmediate(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
+}
+
+void RasterImplementation::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  gpu::Mailbox mailboxes[kNumMailboxes]{};
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    mailboxes[i] = yuva_plane_mailboxes[i];
+  }
+  mailboxes[kNumMailboxes - 1] = source_mailbox;
+  helper_->ConvertRGBAToYUVAMailboxesINTERNALImmediate(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
 }
 
 void RasterImplementation::BeginRasterCHROMIUM(
     GLuint sk_color,
+    GLboolean needs_clear,
     GLuint msaa_sample_count,
+    MsaaMode msaa_mode,
     GLboolean can_use_lcd_text,
     const gfx::ColorSpace& color_space,
     const GLbyte* mailbox) {
   DCHECK(!raster_properties_);
 
-  helper_->BeginRasterCHROMIUMImmediate(sk_color, msaa_sample_count,
+  helper_->BeginRasterCHROMIUMImmediate(sk_color, needs_clear,
+                                        msaa_sample_count, msaa_mode,
                                         can_use_lcd_text, mailbox);
 
   raster_properties_.emplace(sk_color, can_use_lcd_text,
@@ -1090,18 +1349,20 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                           const gfx::Rect& full_raster_rect,
                                           const gfx::Rect& playback_rect,
                                           const gfx::Vector2dF& post_translate,
-                                          GLfloat post_scale,
+                                          const gfx::Vector2dF& post_scale,
                                           bool requires_clear,
-                                          size_t* max_op_size_hint) {
+                                          size_t* max_op_size_hint,
+                                          bool preserve_recording) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
 
-  if (std::abs(post_scale) < std::numeric_limits<float>::epsilon())
+  if (std::abs(post_scale.x()) < std::numeric_limits<float>::epsilon() ||
+      std::abs(post_scale.y()) < std::numeric_limits<float>::epsilon())
     return;
 
-  gfx::Rect query_rect =
-      gfx::ScaleToEnclosingRect(playback_rect, 1.f / post_scale);
+  gfx::Rect query_rect = gfx::ScaleToEnclosingRect(
+      playback_rect, 1.f / post_scale.x(), 1.f / post_scale.y());
   list->rtree_.Search(query_rect, &temp_raster_offsets_);
   // We can early out if we have nothing to draw and we don't need a clear. Note
   // that if there is nothing to draw, but a clear is required, then those
@@ -1120,7 +1381,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   preamble.full_raster_rect = full_raster_rect;
   preamble.playback_rect = playback_rect;
   preamble.post_translation = post_translate;
-  preamble.post_scale = gfx::SizeF(post_scale, post_scale);
+  preamble.post_scale = post_scale;
   preamble.requires_clear = requires_clear;
   preamble.background_color = raster_properties_->background_color;
 
@@ -1133,19 +1394,23 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   PaintOpSerializer op_serializer(free_size, this, &stashing_image_provider,
                                   &transfer_cache_serialize_helper,
                                   &font_manager_, max_op_size_hint);
-  cc::PaintOpBufferSerializer::SerializeCallback serialize_cb =
-      base::BindRepeating(&PaintOpSerializer::Serialize,
-                          base::Unretained(&op_serializer));
 
   cc::PaintOpBufferSerializer serializer(
-      serialize_cb, &stashing_image_provider, &transfer_cache_serialize_helper,
-      GetOrCreatePaintCache(), font_manager_.strike_server(),
-      raster_properties_->color_space, raster_properties_->can_use_lcd_text,
-      capabilities().context_supports_distance_field_text,
-      capabilities().max_texture_size,
-      capabilities().glyph_cache_max_texture_bytes);
-  serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
-                       preamble);
+      base::BindRepeating(&PaintOpSerializer::Serialize,
+                          base::Unretained(&op_serializer)),
+      cc::PaintOp::SerializeOptions(
+          &stashing_image_provider, &transfer_cache_serialize_helper,
+          GetOrCreatePaintCache(), font_manager_.strike_server(),
+          raster_properties_->color_space, raster_properties_->can_use_lcd_text,
+          capabilities().context_supports_distance_field_text,
+          capabilities().max_texture_size));
+  if (preserve_recording) {
+    serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
+                         preamble);
+  } else {
+    auto* buffer = const_cast<cc::PaintOpBuffer*>(&list->paint_op_buffer_);
+    serializer.SerializeAndDestroy(buffer, &temp_raster_offsets_, preamble);
+  }
   // TODO(piman): raise error if !serializer.valid()?
   op_serializer.SendSerializedData();
 }
@@ -1179,6 +1444,297 @@ SyncToken RasterImplementation::ScheduleImageDecode(
                      transfer_cache_entry_id, target_color_space, needs_mips,
                      &decode_sync_token));
   return decode_sync_token;
+}
+
+void RasterImplementation::ReadbackImagePixelsINTERNAL(
+    const gpu::Mailbox& source_mailbox,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    int src_x,
+    int src_y,
+    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
+    void* dst_pixels) {
+  DCHECK_GE(dst_row_bytes, dst_info.minRowBytes());
+
+  // We can't use GetResultAs<>() to store our result because it uses
+  // TransferBuffer under the hood and this function is potentially
+  // asynchronous. Instead, store the result at the beginning of the shared
+  // memory we allocate to transfer pixels.
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+
+  // Add the size of the SkColorSpace while maintaining 8-byte alignment.
+  GLuint pixels_offset = color_space_offset;
+  if (dst_info.colorSpace()) {
+    pixels_offset = base::bits::AlignUp(
+        color_space_offset + dst_info.colorSpace()->writeToMemory(nullptr),
+        sizeof(uint64_t));
+  }
+
+  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint total_size =
+      pixels_offset + base::bits::AlignUp(dst_size, sizeof(uint64_t));
+
+  std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
+                                              mapped_memory_.get());
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* shm_address = scoped_shared_memory->address();
+
+  // Readback success/failure result is stored at the beginning of the shared
+  // memory region. Client is responsible for initialization so we do so here.
+  auto* readback_result =
+      static_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
+          shm_address);
+  *readback_result = 0;
+
+  if (dst_info.colorSpace()) {
+    size_t bytes_written = dst_info.colorSpace()->writeToMemory(
+        static_cast<uint8_t*>(shm_address) + color_space_offset);
+    DCHECK_LE(bytes_written + color_space_offset, pixels_offset);
+  }
+
+  bool is_async = !!readback_done;
+
+  GLuint query;
+  if (is_async) {
+    GenQueriesEXT(1, &query);
+
+    // This query is currently sufficient because the readback implementation in
+    // RasterDecoder is synchronous. If that call is changed to be asynchronous
+    // later we'll need to implement a more sophisticated query.
+    BeginQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM, query);
+  }
+
+  helper_->ReadbackARGBImagePixelsINTERNALImmediate(
+      src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
+      dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
+      color_space_offset, pixels_offset, source_mailbox.name);
+
+  if (is_async) {
+    EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
+
+    auto request = std::make_unique<AsyncARGBReadbackRequest>(
+        dst_pixels, dst_size, pixels_offset, query,
+        std::move(scoped_shared_memory), std::move(readback_done));
+    auto* request_ptr = request.get();
+    argb_request_queue_.push(std::move(request));
+    SignalQuery(query,
+                base::BindOnce(&RasterImplementation::OnAsyncARGBReadbackDone,
+                               base::Unretained(this), request_ptr));
+  } else {
+    WaitForCmd();
+
+    if (!*readback_result)
+      return;
+
+    memcpy(dst_pixels, static_cast<uint8_t*>(shm_address) + pixels_offset,
+           dst_size);
+  }
+}
+
+void RasterImplementation::OnAsyncARGBReadbackDone(
+    AsyncARGBReadbackRequest* finished_request) {
+  finished_request->done = true;
+
+  // Only process requests in the order they were sent, regardless of when they
+  // finish.
+  while (!argb_request_queue_.empty()) {
+    auto& request = argb_request_queue_.front();
+    if (!request->done)
+      break;
+
+    // Readback success/failure is stored at the beginning of the shared memory
+    // region.
+    auto* result =
+        static_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
+            request->shared_memory->address());
+    if (*result) {
+      memcpy(request->dst_pixels,
+             static_cast<uint8_t*>(request->shared_memory->address()) +
+                 request->pixels_offset,
+             request->dst_size);
+      request->readback_successful = true;
+    }
+
+    if (request->query)
+      DeleteQueriesEXT(1, &request->query);
+
+    argb_request_queue_.pop();
+  }
+}
+
+void RasterImplementation::CancelRequests() {
+  while (!argb_request_queue_.empty()) {
+    if (argb_request_queue_.front()->query)
+      DeleteQueriesEXT(1, &argb_request_queue_.front()->query);
+
+    argb_request_queue_.pop();
+  }
+
+  while (!yuv_request_queue_.empty()) {
+    if (yuv_request_queue_.front()->query)
+      DeleteQueriesEXT(1, &yuv_request_queue_.front()->query);
+
+    yuv_request_queue_.pop();
+  }
+}
+
+void RasterImplementation::ReadbackARGBPixelsAsync(
+    const gpu::Mailbox& source_mailbox,
+    GLenum source_target,
+    GrSurfaceOrigin source_origin,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    unsigned char* out,
+    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) {
+  DCHECK(!!readback_done);
+  // Note: It's possible the GL implementation supports other readback
+  // types. However, as of this writing, no caller of this method will
+  // request a different |color_type| (i.e., requiring using some other GL
+  // format).
+  if (dst_info.colorType() != kRGBA_8888_SkColorType &&
+      dst_info.colorType() != kBGRA_8888_SkColorType) {
+    std::move(readback_done)
+        .Run(kTopLeft_GrSurfaceOrigin, /*readback_sucess=*/false);
+    return;
+  }
+
+  ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, 0, 0,
+                              std::move(readback_done), out);
+}
+
+void RasterImplementation::ReadbackImagePixels(
+    const gpu::Mailbox& source_mailbox,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    int src_x,
+    int src_y,
+    void* dst_pixels) {
+  ReadbackImagePixelsINTERNAL(
+      source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
+}
+
+void RasterImplementation::ReadbackYUVPixelsAsync(
+    const gpu::Mailbox& source_mailbox,
+    GLenum source_target,
+    const gfx::Size& source_size,
+    const gfx::Rect& output_rect,
+    bool vertically_flip_texture,
+    int y_plane_row_stride_bytes,
+    unsigned char* y_plane_data,
+    int u_plane_row_stride_bytes,
+    unsigned char* u_plane_data,
+    int v_plane_row_stride_bytes,
+    unsigned char* v_plane_data,
+    const gfx::Point& paste_location,
+    base::OnceCallback<void()> release_mailbox,
+    base::OnceCallback<void(bool)> readback_done) {
+  DCHECK(!!release_mailbox);
+  DCHECK(!!readback_done);
+
+  if (output_rect.width() % 2 != 0 || output_rect.height() % 2 != 0) {
+    SetGLError(GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+               "|output_rect| width and height must be divisible by 2");
+    return;
+  }
+
+  GLuint y_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+
+  if (y_plane_row_stride_bytes < output_rect.width()) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|y_plane_row_stride_bytes| must be >= the width of the y plane.");
+    return;
+  }
+  GLuint y_padded_size = output_rect.height() * y_plane_row_stride_bytes;
+
+  GLuint u_offset =
+      base::bits::AlignUp(y_offset + y_padded_size, sizeof(uint64_t));
+  if (u_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|u_plane_row_stride_bytes| must be >= the width of the u plane.");
+    return;
+  }
+  GLuint u_padded_size =
+      ((output_rect.height() + 1) / 2) * u_plane_row_stride_bytes;
+
+  GLuint v_offset =
+      base::bits::AlignUp(u_offset + u_padded_size, sizeof(uint64_t));
+  if (v_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|v_plane_row_stride_bytes| must be >= the width of the v plane.");
+    return;
+  }
+  GLuint v_padded_size =
+      ((output_rect.height() + 1) / 2) * v_plane_row_stride_bytes;
+
+  size_t total_size =
+      base::bits::AlignUp(v_offset + v_padded_size, sizeof(uint64_t));
+
+  std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
+                                              mapped_memory_.get());
+  if (!scoped_shared_memory->valid()) {
+    SetGLError(GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+               "couldn't allocate shared memory");
+    return;
+  }
+
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* shm_address = scoped_shared_memory->address();
+
+  auto* readback_result =
+      static_cast<cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result*>(
+          shm_address);
+  *readback_result = 0;
+
+  GLuint query;
+  GenQueriesEXT(1, &query);
+  BeginQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM, query);
+  helper_->ReadbackYUVImagePixelsINTERNALImmediate(
+      output_rect.width(), output_rect.height(), shm_id, shm_offset, y_offset,
+      y_plane_row_stride_bytes, u_offset, u_plane_row_stride_bytes, v_offset,
+      v_plane_row_stride_bytes, source_mailbox.name);
+  EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
+
+  auto request = std::make_unique<AsyncYUVReadbackRequest>(
+      output_rect, query, y_plane_row_stride_bytes, y_offset, y_plane_data,
+      u_plane_row_stride_bytes, u_offset, u_plane_data,
+      v_plane_row_stride_bytes, v_offset, v_plane_data,
+      std::move(scoped_shared_memory), std::move(release_mailbox),
+      std::move(readback_done));
+  auto* request_ptr = request.get();
+  yuv_request_queue_.push(std::move(request));
+  SignalQuery(query,
+              base::BindOnce(&RasterImplementation::OnAsyncYUVReadbackDone,
+                             base::Unretained(this), request_ptr));
+}
+
+void RasterImplementation::OnAsyncYUVReadbackDone(
+    AsyncYUVReadbackRequest* finished_request) {
+  finished_request->done = true;
+
+  while (!yuv_request_queue_.empty()) {
+    auto& request = yuv_request_queue_.front();
+    if (!request->done)
+      break;
+
+    request->CopyYUVPlanes();
+
+    if (request->query)
+      DeleteQueriesEXT(1, &request->query);
+
+    yuv_request_queue_.pop();
+  }
 }
 
 void RasterImplementation::IssueImageDecodeCacheEntryCreation(
@@ -1228,6 +1784,20 @@ void RasterImplementation::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
 
 void RasterImplementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   NOTREACHED();
+}
+
+void RasterImplementation::InitializeDiscardableTextureCHROMIUM(
+    GLuint texture) {
+  NOTREACHED();
+}
+
+void RasterImplementation::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
+  NOTREACHED();
+}
+
+bool RasterImplementation::LockDiscardableTextureCHROMIUM(GLuint texture) {
+  NOTREACHED();
+  return false;
 }
 
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,

@@ -4,8 +4,11 @@
 
 #include "components/autofill_assistant/browser/retry_timer.h"
 
+#include <algorithm>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/numerics/clamped_math.h"
 #include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
@@ -21,12 +24,8 @@ void RetryTimer::Start(
   Reset();
   task_ = std::move(task);
   on_done_ = std::move(on_done);
-  if (max_wait_time <= base::TimeDelta::FromSeconds(0)) {
-    remaining_attempts_ = 1;
-  } else {
-    remaining_attempts_ = 1 + max_wait_time / period_;
-  }
-  DCHECK_GE(remaining_attempts_, 1);
+  remaining_attempts_ =
+      base::ClampFloor<int64_t>(std::max(0.0, max_wait_time / period_) + 1.0);
   RunTask();
 }
 

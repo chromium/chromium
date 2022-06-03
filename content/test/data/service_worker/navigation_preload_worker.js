@@ -7,6 +7,19 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.mode == 'navigate')
-    event.respondWith(event.preloadResponse);
+  const params = new URL(event.request.url).searchParams;
+
+  if (event.request.mode == 'navigate') {
+    if (params.has('navpreload_or_offline')) {
+      event.respondWith((async () => {
+        try {
+          return await event.preloadResponse;
+        } catch (e) {
+          return new Response("Hello Offline page");
+        }
+      })());
+    } else {
+      event.respondWith(event.preloadResponse);
+    }
+  }
 });

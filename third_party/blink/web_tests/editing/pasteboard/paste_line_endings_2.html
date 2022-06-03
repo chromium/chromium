@@ -1,0 +1,91 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+function copyAndPaste(selection) {
+ if (!window.testRunner)
+   throw 'This test requires window.testRunner.';
+ selection.document.execCommand('Copy');
+ selection.document.execCommand('Paste');
+}
+
+selection_test(
+    [
+        '<div contenteditable><div>',
+            'line one^<br>',
+            '|line two',
+        '</div></div>',
+    ],
+    copyAndPaste,
+    [
+        '<div contenteditable><div>',
+            'line one<br>',
+            '|line two',
+        '</div></div>',
+    ], '1 one <br> two');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>line one^</div>',
+            '<div>|line two</div>',
+        '</div>',
+    ],
+    copyAndPaste,
+    [
+        '<div contenteditable>',
+            '<div>line one</div>',
+            '<div>|line two</div>',
+        '</div>',
+    ], '2 <div>one</div> <div>two</div>');
+selection_test(
+    [
+        '<div contenteditable><div>',
+            '<div>line one^</div>',
+            '<div>|line two</div>',
+        '</div></div>',
+    ],
+    copyAndPaste,
+    [
+        '<div contenteditable><div>',
+            '<div>line one</div>',
+            '<div>|line two</div>',
+        '</div></div>',
+    ], '3 <div><div>one</div><div>two</div>');
+selection_test(
+    [
+        '<div contenteditable><div>',
+            '<div>',
+                'line one^',
+                '<div>|line two</div>',
+            '</div>',
+        '</div></div>',
+    ],
+    copyAndPaste,
+    [
+        '<div contenteditable><div>',
+            '<div>',
+                'line one',
+                '<div>|line two</div>',
+            '</div>',
+        '</div></div>',
+    ], '4 <div>one<div>two</div></div>');
+selection_test(
+    [
+        '<div contenteditable><div>',
+            '<div><div>',
+                'line one^',
+                '<div>|line two</div>',
+            '</div></div>',
+        '</div></div>',
+    ],
+    copyAndPaste,
+    [
+        '<div contenteditable><div>',
+            '<div><div>',
+                'line one',
+                '<div>|line two</div>',
+            '</div></div>',
+        '</div></div>',
+    ], '5 <div><div>one<div>two</div></div></div>');
+</script>

@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package perfetto.protos;
+
+import "protos/perfetto/metrics/metrics.proto";
+import "protos/perfetto/metrics/custom_options.proto";
+
+// A metric that estimates power consumption by CPU and SoC based on CPU load.
+// Output values are in Amper-hours.
+
+message PowerCpuEstimate {
+  optional float story_power_ah = 1 [(unit) = "Ah_smallerIsBetter"];
+  optional float story_duration_ms = 2 [(unit) = "ms"];
+}
+
+extend TraceMetrics {
+  optional PowerCpuEstimate power_cpu_estimate = 459;
+}

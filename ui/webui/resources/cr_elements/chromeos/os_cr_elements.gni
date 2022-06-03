@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+cr_elements_chromeos_namespace_rewrites = [
+  "cr.png.convertImageSequenceToPng|convertImageSequenceToPng",
+  "cr.png.isEncodedPngDataUrlAnimated|isEncodedPngDataUrlAnimated",
+  "cr.ui.Action|Action",
+]
+
+cr_elements_chromeos_auto_imports = [
+  "ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_types.html|CrPicture",
+  "ui/webui/resources/cr_elements/chromeos/cr_picture/png.html|convertImageSequenceToPng,isEncodedPngDataUrlAnimated",
+  "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorType",
+]

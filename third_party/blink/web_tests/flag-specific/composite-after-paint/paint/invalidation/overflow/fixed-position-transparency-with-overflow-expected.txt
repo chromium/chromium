@@ -5,22 +5,29 @@
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 208, 200, 200],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container' class='relative blue'",
-          "rect": [108, 308, 100, 100],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container' class='relative blue'",
-          "rect": [8, 208, 100, 100],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [108, 308, 100, 100],
+        [8, 208, 100, 100]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container' class='relative blue'",
+      "position": [8, 208],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
+      "position": [108, 308],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 100, 100]
       ]
     },
     {

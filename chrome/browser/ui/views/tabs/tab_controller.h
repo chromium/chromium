@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 
+#include <string>
+
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
-class Browser;
 class Tab;
 class TabSlotView;
 
@@ -21,8 +23,8 @@ class Point;
 class Rect;
 }
 namespace tab_groups {
+enum class TabGroupColorId;
 class TabGroupId;
-class TabGroupVisualData;
 }  // namespace tab_groups
 namespace ui {
 class ListSelectionModel;
@@ -36,13 +38,17 @@ class View;
 // Controller for tabs.
 class TabController {
  public:
+  enum HoverCardUpdateType {
+    kHover,
+    kFocus,
+    kTabDataChanged,
+    kAnimating,
+    kTabRemoved,
+    kSelectionChanged,
+    kEvent
+  };
+
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
-
-  // Returns true if multiple selection is supported.
-  virtual bool SupportsMultipleSelection() = 0;
-
-  // Returns true if the close button for the given tab is forced to be hidden.
-  virtual bool ShouldHideCloseButtonForTab(Tab* tab) const = 0;
 
   // Selects the tab. |event| is the event that causes |tab| to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
@@ -59,11 +65,13 @@ class TabController {
   // Closes the tab.
   virtual void CloseTab(Tab* tab, CloseTabSource source) = 0;
 
-  // Attempts to move the specified tab to the right.
-  virtual void MoveTabRight(Tab* tab) = 0;
+  // Attempts to shift the specified tab towards the end of the tabstrip by one
+  // index.
+  virtual void ShiftTabNext(Tab* tab) = 0;
 
-  // Attempts to move the specified tab to the left.
-  virtual void MoveTabLeft(Tab* tab) = 0;
+  // Attempts to shift the specified tab towards the start of the tabstrip by
+  // one index.
+  virtual void ShiftTabPrevious(Tab* tab) = 0;
 
   // Attempts to move the specified tab to the beginning of the tabstrip (or the
   // beginning of the unpinned tab region if the tab is not pinned).
@@ -88,9 +96,8 @@ class TabController {
   // Returns whether |tab| is pinned.
   virtual bool IsTabPinned(const Tab* tab) const = 0;
 
-  // Returns whether |tab| is the first or last one visible.
-  virtual bool IsFirstVisibleTab(const Tab* tab) const = 0;
-  virtual bool IsLastVisibleTab(const Tab* tab) const = 0;
+  // Returns whether |tab| is the first in the model.
+  virtual bool IsTabFirst(const Tab* tab) const = 0;
 
   // Returns true if any tab or one of its children has focus.
   virtual bool IsFocusInTabs() const = 0;
@@ -122,8 +129,12 @@ class TabController {
 
   // Updates hover-card content, anchoring and visibility based on what tab is
   // hovered and whether the card should be shown. Providing a nullptr for |tab|
-  // will cause the tab hover card to be hidden.
-  virtual void UpdateHoverCard(Tab* tab) = 0;
+  // will cause the tab hover card to be hidden. |update_type| is used to decide
+  // how the show, hide, or update will be processed.
+  virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
+
+  // Returns whether domain/origin should be shown in tab hover cards.
+  virtual bool ShowDomainInHoverCards() const = 0;
 
   // Returns true if the hover card is showing for the given tab.
   virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
@@ -169,7 +180,7 @@ class TabController {
 
   // Returns the background tab image resource ID if the image has been
   // customized, directly or indirectly, by the theme.
-  virtual base::Optional<int> GetCustomBackgroundId(
+  virtual absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const = 0;
 
   // If the given tab is animating to its target destination, this returns the
@@ -178,7 +189,7 @@ class TabController {
   virtual gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) = 0;
 
   // Returns the accessible tab name for this tab.
-  virtual base::string16 GetAccessibleTabName(const Tab* tab) const = 0;
+  virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
   // Returns opacity for hover effect on a tab with |range_parameter| between
   // 0 and 1, where 0 gives the minimum opacity suitable for wider tabs and 1
@@ -188,21 +199,18 @@ class TabController {
   // Returns opacity for use on tab hover radial highlight.
   virtual float GetHoverOpacityForRadialHighlight() const = 0;
 
-  // Returns the tab_groups::TabGroupVisualData instance for the given |group|.
-  virtual const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
-      tab_groups::TabGroupId group) const = 0;
+  // Returns the displayed title of the given |group|.
+  virtual std::u16string GetGroupTitle(
+      const tab_groups::TabGroupId& group) const = 0;
 
-  virtual void SetVisualDataForGroup(
-      tab_groups::TabGroupId group,
-      tab_groups::TabGroupVisualData visual_data) = 0;
+  // Returns the color ID of the given |group|.
+  virtual tab_groups::TabGroupColorId GetGroupColorId(
+      const tab_groups::TabGroupId& group) const = 0;
 
-  virtual void CloseAllTabsInGroup(tab_groups::TabGroupId group) = 0;
-
-  virtual void UngroupAllTabsInGroup(tab_groups::TabGroupId group) = 0;
-
-  virtual void AddNewTabInGroup(tab_groups::TabGroupId group) = 0;
-
-  virtual const Browser* GetBrowser() = 0;
+  // Returns the actual painted color of the given |group|, which depends on the
+  // current theme.
+  virtual SkColor GetPaintedGroupColor(
+      const tab_groups::TabGroupColorId& color_id) const = 0;
 
  protected:
   virtual ~TabController() {}

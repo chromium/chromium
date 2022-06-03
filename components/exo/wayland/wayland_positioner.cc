@@ -4,28 +4,129 @@
 
 #include "components/exo/wayland/wayland_positioner.h"
 
+#include <xdg-shell-unstable-v6-server-protocol.h>
+
 namespace exo {
 namespace wayland {
 
 namespace {
 
-// Represents the 1-dimensional projection of the gravity/anchor values.
-enum Direction { kNegative = -1, kNeutral = 0, kPositive = 1 };
+std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+DecomposeUnstableAnchor(uint32_t anchor) {
+  WaylandPositioner::Direction x, y;
 
-static Direction Flip(Direction d) {
-  return (Direction)-d;
+  if (anchor & ZXDG_POSITIONER_V6_ANCHOR_LEFT) {
+    x = WaylandPositioner::Direction::kNegative;
+  } else if (anchor & ZXDG_POSITIONER_V6_ANCHOR_RIGHT) {
+    x = WaylandPositioner::Direction::kPositive;
+  } else {
+    x = WaylandPositioner::Direction::kNeutral;
+  }
+
+  if (anchor & ZXDG_POSITIONER_V6_ANCHOR_TOP) {
+    y = WaylandPositioner::Direction::kNegative;
+  } else if (anchor & ZXDG_POSITIONER_V6_ANCHOR_BOTTOM) {
+    y = WaylandPositioner::Direction::kPositive;
+  } else {
+    y = WaylandPositioner::Direction::kNeutral;
+  }
+
+  return std::make_pair(x, y);
 }
 
-// Decodes a masked anchor/gravity bitfield to the direction.
-Direction MaskToDirection(uint32_t field,
-                          uint32_t negative_mask,
-                          uint32_t positive_mask) {
-  DCHECK(!((field & negative_mask) && (field & positive_mask)));
-  if (field & negative_mask)
-    return kNegative;
-  if (field & positive_mask)
-    return kPositive;
-  return kNeutral;
+std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+DecomposeStableAnchor(uint32_t anchor) {
+  switch (anchor) {
+    default:
+    case XDG_POSITIONER_ANCHOR_NONE:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_ANCHOR_TOP:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_ANCHOR_BOTTOM:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_ANCHOR_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_ANCHOR_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_ANCHOR_TOP_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_ANCHOR_TOP_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_ANCHOR_BOTTOM_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kPositive);
+  }
+}
+
+std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+DecomposeUnstableGravity(uint32_t gravity) {
+  WaylandPositioner::Direction x, y;
+
+  if (gravity & ZXDG_POSITIONER_V6_GRAVITY_LEFT) {
+    x = WaylandPositioner::Direction::kNegative;
+  } else if (gravity & ZXDG_POSITIONER_V6_GRAVITY_RIGHT) {
+    x = WaylandPositioner::Direction::kPositive;
+  } else {
+    x = WaylandPositioner::Direction::kNeutral;
+  }
+
+  if (gravity & ZXDG_POSITIONER_V6_GRAVITY_TOP) {
+    y = WaylandPositioner::Direction::kNegative;
+  } else if (gravity & ZXDG_POSITIONER_V6_GRAVITY_BOTTOM) {
+    y = WaylandPositioner::Direction::kPositive;
+  } else {
+    y = WaylandPositioner::Direction::kNeutral;
+  }
+
+  return std::make_pair(x, y);
+}
+
+std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+DecomposeStableGravity(uint32_t gravity) {
+  switch (gravity) {
+    default:
+    case XDG_POSITIONER_GRAVITY_NONE:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_GRAVITY_TOP:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_GRAVITY_BOTTOM:
+      return std::make_pair(WaylandPositioner::Direction::kNeutral,
+                            WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_GRAVITY_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_GRAVITY_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNeutral);
+    case XDG_POSITIONER_GRAVITY_TOP_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_GRAVITY_TOP_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNegative);
+    case XDG_POSITIONER_GRAVITY_BOTTOM_LEFT:
+      return std::make_pair(WaylandPositioner::Direction::kNegative,
+                            WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kPositive);
+  }
+}
+
+static WaylandPositioner::Direction Flip(WaylandPositioner::Direction d) {
+  return (WaylandPositioner::Direction)-d;
 }
 
 // Represents the possible/actual positioner adjustments for this window.
@@ -40,7 +141,8 @@ ConstraintAdjustment MaskToConstraintAdjustment(uint32_t field,
                                                 uint32_t flip_mask,
                                                 uint32_t slide_mask,
                                                 uint32_t resize_mask) {
-  return {field & flip_mask, field & slide_mask, field & resize_mask};
+  return {!!(field & flip_mask), !!(field & slide_mask),
+          !!(field & resize_mask)};
 }
 
 // A 1-dimensional projection of a range (a.k.a. a segment), used to solve the
@@ -63,8 +165,8 @@ Range1D Calculate(const ConstraintAdjustment& adjustments,
                   Range1D anchor_range,
                   uint32_t size,
                   int32_t offset,
-                  Direction anchor,
-                  Direction gravity) {
+                  WaylandPositioner::Direction anchor,
+                  WaylandPositioner::Direction gravity) {
   if (adjustments.flip) {
     return Calculate({/*flip=*/false, adjustments.slide, adjustments.resize},
                      work_size, anchor_range, size, -offset, Flip(anchor),
@@ -91,28 +193,28 @@ Range1D Calculate(const ConstraintAdjustment& adjustments,
 
   int32_t start = offset;
   switch (anchor) {
-    case Direction::kNegative:
+    case WaylandPositioner::Direction::kNegative:
       start += anchor_range.start;
       break;
-    case Direction::kNeutral:
+    case WaylandPositioner::Direction::kNeutral:
       start += anchor_range.center();
       break;
-    case Direction::kPositive:
+    case WaylandPositioner::Direction::kPositive:
       start += anchor_range.end;
       break;
   }
 
   switch (gravity) {
-    case Direction::kNegative:
+    case WaylandPositioner::Direction::kNegative:
       start -= size;
       break;
-    case Direction::kNeutral:
+    case WaylandPositioner::Direction::kNeutral:
       start -= size / 2;
       break;
-    case Direction::kPositive:
+    case WaylandPositioner::Direction::kPositive:
       break;
   }
-  return {start, start + size};
+  return {start, static_cast<int32_t>(start + size)};
 }
 
 // Determines which adjustments (subject to them being a subset of the allowed
@@ -124,8 +226,8 @@ std::pair<Range1D, ConstraintAdjustment> DetermineBestConstraintAdjustment(
     const Range1D& anchor_range,
     uint32_t size,
     int32_t offset,
-    Direction anchor,
-    Direction gravity,
+    WaylandPositioner::Direction anchor,
+    WaylandPositioner::Direction gravity,
     const ConstraintAdjustment& valid_adjustments) {
   if (work_area.start != 0) {
     int32_t shift = -work_area.start;
@@ -174,57 +276,62 @@ std::pair<Range1D, ConstraintAdjustment> DetermineBestConstraintAdjustment(
 
 }  // namespace
 
-WaylandPositioner::Result WaylandPositioner::CalculatePosition(
-    const gfx::Rect& work_area,
-    bool flip_x,
-    bool flip_y) const {
-  Direction anchor_x = MaskToDirection(anchor_, ZXDG_POSITIONER_V6_ANCHOR_LEFT,
-                                       ZXDG_POSITIONER_V6_ANCHOR_RIGHT);
-  Direction anchor_y = MaskToDirection(anchor_, ZXDG_POSITIONER_V6_ANCHOR_TOP,
-                                       ZXDG_POSITIONER_V6_ANCHOR_BOTTOM);
-  Direction gravity_x =
-      MaskToDirection(gravity_, ZXDG_POSITIONER_V6_GRAVITY_LEFT,
-                      ZXDG_POSITIONER_V6_GRAVITY_RIGHT);
-  Direction gravity_y =
-      MaskToDirection(gravity_, ZXDG_POSITIONER_V6_GRAVITY_TOP,
-                      ZXDG_POSITIONER_V6_GRAVITY_BOTTOM);
+void WaylandPositioner::SetAnchor(uint32_t anchor) {
+  std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+      decompose;
+  if (version_ == UNSTABLE) {
+    decompose = DecomposeUnstableAnchor(anchor);
+  } else {
+    decompose = DecomposeStableAnchor(anchor);
+  }
+  anchor_x_ = decompose.first;
+  anchor_y_ = decompose.second;
+}
+
+void WaylandPositioner::SetGravity(uint32_t gravity) {
+  std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
+      decompose;
+  if (version_ == UNSTABLE) {
+    decompose = DecomposeUnstableGravity(gravity);
+  } else {
+    decompose = DecomposeStableGravity(gravity);
+  }
+  gravity_x_ = decompose.first;
+  gravity_y_ = decompose.second;
+}
+
+WaylandPositioner::Result WaylandPositioner::CalculateBounds(
+    const gfx::Rect& work_area) const {
+  auto anchor_x = anchor_x_;
+  auto anchor_y = anchor_y_;
+  auto gravity_x = gravity_x_;
+  auto gravity_y = gravity_y_;
 
   ConstraintAdjustment adjustments_x = MaskToConstraintAdjustment(
-      adjustment_, ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_X,
-      ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_X,
-      ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_X);
+      adjustment_, XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X,
+      XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X,
+      XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_X);
   ConstraintAdjustment adjustments_y = MaskToConstraintAdjustment(
-      adjustment_, ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y,
-      ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_Y,
-      ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y);
+      adjustment_, XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y,
+      XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y,
+      XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y);
 
   int32_t offset_x = offset_.x();
   int32_t offset_y = offset_.y();
 
-  // Chrome windows have the behaviour that if a menu needs to be flipped,
-  // its children will be flipped by default. That is not part of the normal
-  // wayland spec but we are doing it here for consistency.
-  if (flip_x) {
-    offset_x = -offset_x;
-    anchor_x = Flip(anchor_x);
-    gravity_x = Flip(gravity_x);
-  }
-  if (flip_y) {
-    offset_y = -offset_y;
-    anchor_y = Flip(anchor_y);
-    gravity_y = Flip(gravity_y);
-  }
-
   // Exo overrides the ability to slide in cases when the orthogonal
-  // anchor+gravity would mean the slide can occlude |anchor_rect_|.
+  // anchor+gravity would mean the slide can occlude |anchor_rect_|, unless it
+  // already is occluded.
   //
   // We are doing this in order to stop a common case of clients allowing
   // dropdown menus to occlude the menu header. Whilst this may cause some
   // popups to avoid sliding where they could, for UX reasons we'd rather that
   // than allowing menus to be occluded.
-  if (!(anchor_x == gravity_x && anchor_x != kNeutral))
+  bool x_occluded = !(anchor_x == gravity_x && anchor_x != kNeutral);
+  bool y_occluded = !(anchor_y == gravity_y && anchor_y != kNeutral);
+  if (x_occluded && !y_occluded)
     adjustments_y.slide = false;
-  if (!(anchor_y == gravity_y && anchor_y != kNeutral))
+  if (y_occluded && !x_occluded)
     adjustments_x.slide = false;
 
   std::pair<Range1D, ConstraintAdjustment> x =
@@ -237,10 +344,10 @@ WaylandPositioner::Result WaylandPositioner::CalculatePosition(
           {work_area.y(), work_area.bottom()},
           {anchor_rect_.y(), anchor_rect_.bottom()}, size_.height(), offset_y,
           anchor_y, gravity_y, adjustments_y);
-  return {{x.first.start, y.first.start},
-          {x.first.end - x.first.start, y.first.end - y.first.start},
-          x.second.flip ? !flip_x : flip_x,
-          y.second.flip ? !flip_y : flip_y};
+  gfx::Point origin(x.first.start, y.first.start);
+  gfx::Size size(std::max(1, x.first.end - x.first.start),
+                 std::max(1, y.first.end - y.first.start));
+  return {origin, size};
 }
 
 }  // namespace wayland

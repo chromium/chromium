@@ -31,6 +31,8 @@ uint64_t XRTransientInputHitTestSource::id() const {
 }
 
 void XRTransientInputHitTestSource::cancel(ExceptionState& exception_state) {
+  DVLOG(2) << __func__;
+
   if (!xr_session_->RemoveHitTestSource(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kCannotCancelHitTestSource);
@@ -60,9 +62,12 @@ void XRTransientInputHitTestSource::Update(
     if (!input_source)
       continue;
 
-    current_frame_results_.push_back(
-        MakeGarbageCollected<XRTransientInputHitTestResult>(
-            input_source, source_id_and_results.value));
+    // If the input source is not visible, ignore it.
+    if (input_source->IsVisible()) {
+      current_frame_results_.push_back(
+          MakeGarbageCollected<XRTransientInputHitTestResult>(
+              input_source, source_id_and_results.value));
+    }
   }
 }
 
@@ -71,7 +76,7 @@ XRTransientInputHitTestSource::Results() {
   return current_frame_results_;
 }
 
-void XRTransientInputHitTestSource::Trace(blink::Visitor* visitor) {
+void XRTransientInputHitTestSource::Trace(Visitor* visitor) const {
   visitor->Trace(current_frame_results_);
   visitor->Trace(xr_session_);
   ScriptWrappable::Trace(visitor);

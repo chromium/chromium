@@ -26,20 +26,20 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 LayoutFieldset::LayoutFieldset(Element* element) : LayoutBlockFlow(element) {}
 
-void LayoutFieldset::ComputePreferredLogicalWidths() {
-  LayoutBlockFlow::ComputePreferredLogicalWidths();
+MinMaxSizes LayoutFieldset::PreferredLogicalWidths() const {
+  NOT_DESTROYED();
+  MinMaxSizes sizes = LayoutBlockFlow::PreferredLogicalWidths();
   // Size-contained elements don't consider their contents for preferred sizing.
   if (ShouldApplySizeContainment())
-    return;
+    return sizes;
 
   if (LayoutBox* legend = FindInFlowLegend()) {
-    int legend_min_width = legend->MinPreferredLogicalWidth().ToInt();
+    int legend_min_width = legend->PreferredLogicalWidths().min_size.ToInt();
 
     const Length& legend_margin_left = legend->StyleRef().MarginLeft();
     const Length& legend_margin_right = legend->StyleRef().MarginRight();
@@ -50,14 +50,16 @@ void LayoutFieldset::ComputePreferredLogicalWidths() {
     if (legend_margin_right.IsFixed())
       legend_min_width += legend_margin_right.Value();
 
-    min_preferred_logical_width_ =
-        max(min_preferred_logical_width_,
-            legend_min_width + BorderAndPaddingWidth());
+    sizes.min_size =
+        max(sizes.min_size, legend_min_width + BorderAndPaddingWidth());
   }
+
+  return sizes;
 }
 
 LayoutObject* LayoutFieldset::LayoutSpecialExcludedChild(bool relayout_children,
                                                          SubtreeLayoutScope&) {
+  NOT_DESTROYED();
   LayoutBox* legend = FindInFlowLegend();
   if (legend) {
     LayoutRect old_legend_frame_rect = legend->FrameRect();
@@ -141,23 +143,10 @@ LayoutObject* LayoutFieldset::LayoutSpecialExcludedChild(bool relayout_children,
 
 LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
   DCHECK(fieldset.IsFieldset() || fieldset.IsLayoutNGFieldset());
-  const LayoutBlock* parent = &fieldset;
-  if (RuntimeEnabledFeatures::LayoutNGFieldsetEnabled()) {
-    if (fieldset.IsLayoutNGFieldset()) {
-      // If there is a rendered legend, it will be found inside the anonymous
-      // fieldset wrapper.
-      parent = To<LayoutBlock>(fieldset.FirstChild());
-      if (!parent)
-        return nullptr;
-    }
-  }
-  for (LayoutObject* legend = parent->FirstChild(); legend;
+  for (LayoutObject* legend = fieldset.FirstChild(); legend;
        legend = legend->NextSibling()) {
-    if (legend->IsFloatingOrOutOfFlowPositioned())
-      continue;
-
-    if (legend->IsHTMLLegendElement())
-      return ToLayoutBox(legend);
+    if (legend->IsRenderedLegendCandidate())
+      return To<LayoutBox>(legend);
   }
   return nullptr;
 }
@@ -165,16 +154,19 @@ LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
 void LayoutFieldset::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
   FieldsetPainter(*this).PaintBoxDecorationBackground(paint_info, paint_offset);
 }
 
 void LayoutFieldset::PaintMask(const PaintInfo& paint_info,
                                const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
   FieldsetPainter(*this).PaintMask(paint_info, paint_offset);
 }
 
 bool LayoutFieldset::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
+  NOT_DESTROYED();
   // If the field set has a legend, then it probably does not completely fill
   // its background.
   if (FindInFlowLegend())

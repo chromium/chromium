@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+PASS Checking align-items: normal
+PASS Checking align-items: stretch
+PASS Checking align-items: start
+PASS Checking align-items: end
+PASS Checking align-items: self-start
+PASS Checking align-items: self-end
+PASS Checking align-items: center
+PASS Checking align-items: flex-start
+PASS Checking align-items: flex-end
+PASS Checking align-items: baseline
+PASS Checking align-items: first baseline
+FAIL Checking align-items: last baseline assert_equals: align-items computed style is not what is should. expected "last baseline" but got "normal"
+PASS Checking align-items: safe flex-end
+PASS Checking align-items: unsafe end
+PASS Checking align-items: safe end
+PASS Checking align-items: unsafe flex-start
+PASS Checking align-items: safe center
+Harness: the test ran to completion.
+

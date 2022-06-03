@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.pagecontroller.tests;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,18 +15,20 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.TOSController;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 
 /**
- * Test the First Run Experience.
+ * Test the First Run Experience pre-MICe. The MICe FRE flow is covered by the test
+ * {@link FirstRunActivitySigninAndSyncTest}.
  */
 @SmallTest
 @RunWith(BaseJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class FirstRunControllerTest {
     public ChromeUiAutomatorTestRule mUiAutomatorRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
@@ -45,7 +47,7 @@ public class FirstRunControllerTest {
                           TOSController.getInstance().isCurrentPageThis());
     }
 
-    @Switches(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     @Test
     public void testDisableFre() {
         Assert.assertTrue(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE + " should work.",

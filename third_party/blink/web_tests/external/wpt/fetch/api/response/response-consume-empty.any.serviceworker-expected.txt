@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Consume response's body as text
+PASS Consume response's body as blob
+PASS Consume response's body as arrayBuffer
+PASS Consume response's body as json (error case)
+PASS Consume response's body as formData with correct multipart type (error case)
+PASS Consume response's body as formData with correct urlencoded type
+PASS Consume response's body as formData without correct type (error case)
+PASS Consume empty blob response body as arrayBuffer
+PASS Consume empty text response body as arrayBuffer
+PASS Consume empty blob response body as text
+PASS Consume empty text response body as text
+PASS Consume empty URLSearchParams response body as text
+FAIL Consume empty FormData response body as text assert_equals: Resolved value should be empty expected 0 but got 44
+PASS Consume empty ArrayBuffer response body as text
+Harness: the test ran to completion.
+

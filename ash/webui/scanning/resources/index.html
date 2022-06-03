@@ -1,0 +1,27 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <title>$i18n{appTitle}</title>
+  </head>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+  <body>
+    <scanning-app></scanning-app>
+
+    <script type="module" src="scanning_app.js"></script>
+    <script type="module" src="mojo_interface_provider.js"></script>
+    <link rel="stylesheet" src="scanning_shared_css.js"></script>
+    <!-- Below mojo script required to run browser tests -->
+    <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js">
+    </script>
+  </body>
+</html>

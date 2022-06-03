@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Tests that setting an impossible constraint in getUserMedia fails
-Harness: the test ran to completion.
-

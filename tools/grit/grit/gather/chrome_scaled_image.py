@@ -16,7 +16,7 @@ from grit import util
 from grit.gather import interface
 
 
-_PNG_SCALE_CHUNK = '\0\0\0\0csCl\xc1\x30\x60\x4d'
+_PNG_SCALE_CHUNK = b'\0\0\0\0csCl\xc1\x30\x60\x4d'
 
 
 def _RescaleImage(data, from_scale, to_scale):
@@ -29,38 +29,38 @@ def _RescaleImage(data, from_scale, to_scale):
   return data
 
 
-_PNG_MAGIC = '\x89PNG\r\n\x1a\n'
+_PNG_MAGIC = b'\x89PNG\r\n\x1a\n'
 
 '''Mandatory first chunk in order for the png to be valid.'''
-_FIRST_CHUNK = 'IHDR'
+_FIRST_CHUNK = b'IHDR'
 
 '''Special chunks to move immediately after the IHDR chunk. (so that the PNG
 remains valid.)
 '''
-_SPECIAL_CHUNKS = frozenset('csCl npTc'.split())
+_SPECIAL_CHUNKS = frozenset(b'csCl npTc'.split())
 
 '''Any ancillary chunk not in this list is deleted from the PNG.'''
 _ANCILLARY_CHUNKS_TO_LEAVE = frozenset(
-    'bKGD cHRM gAMA iCCP pHYs sBIT sRGB tRNS acTL fcTL fdAT'.split())
+    b'bKGD cHRM gAMA iCCP pHYs sBIT sRGB tRNS acTL fcTL fdAT'.split())
 
 
 def _MoveSpecialChunksToFront(data):
   '''Move special chunks immediately after the IHDR chunk (so that the PNG
-  remains valid). Also delete ancillary chunks that are not on our whitelist.
+  remains valid). Also delete ancillary chunks that are not on our allowlist.
   '''
   first = [_PNG_MAGIC]
   special_chunks = []
   rest = []
   for chunk in _ChunkifyPNG(data):
     type = chunk[4:8]
-    critical = type < 'a'
+    critical = type < b'a'
     if type == _FIRST_CHUNK:
       first.append(chunk)
     elif type in _SPECIAL_CHUNKS:
       special_chunks.append(chunk)
     elif critical or type in _ANCILLARY_CHUNKS_TO_LEAVE:
       rest.append(chunk)
-  return ''.join(first + special_chunks + rest)
+  return b''.join(first + special_chunks + rest)
 
 
 def _ChunkifyPNG(data):
@@ -141,7 +141,9 @@ class ChromeScaledImage(interface.GathererBase):
   def GetTextualIds(self):
     return [self.extkey]
 
-  def GetData(self, *args):
+  def GetData(self, lang, encoding):
+    assert encoding == util.BINARY
+
     path, scale, req_scale = self._FindInputFile()
     if path is None:
       return None

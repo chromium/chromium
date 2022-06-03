@@ -69,9 +69,7 @@ static_library("libphonenumber_without_metadata") {
 
   public_configs = [ ":libphonenumber_config" ]
 
-  public_deps = [
-    ":proto",
-  ]
+  public_deps = [ ":proto" ]
   deps = [
     ":proto",
     "//third_party/icu",
@@ -88,9 +86,7 @@ static_library("libphonenumber") {
     #"dist/cpp/src/phonenumbers/metadata.cc",
   ]
 
-  public_deps = [
-    ":libphonenumber_without_metadata",
-  ]
+  public_deps = [ ":libphonenumber_without_metadata" ]
 }
 
 test("libphonenumber_unittests") {

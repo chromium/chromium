@@ -15,11 +15,11 @@ Block
     block1: "block {...}"
     const1: 1
 Local
+    this: undefined
     innerFunctionBlockVar: 2116
     innerFunctionLocalVar: 2016
     negInf: -Infinity
     negZero: -0
-    this: undefined
     x: 2014
 Block
     makeClosureDeeperBlockVar: "block.deep.TextParam"

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/cbor",
+  "+components/sqlite_proto",
+  "+third_party/protobuf/src/google/protobuf",
+  "+sql",
+]

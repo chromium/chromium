@@ -15,6 +15,6 @@ try:
   # Use shortcut Alt+HOME to go to the home page
   app.top_window().type_keys("%{HOME}")
 
-  print 'homepage:%s' % driver.current_url
+  print('homepage:%s' % driver.current_url)
 finally:
   driver.quit()

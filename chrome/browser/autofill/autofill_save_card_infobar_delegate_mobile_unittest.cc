@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/prefs/pref_service.h"
@@ -31,22 +31,26 @@ class AutofillSaveCardInfoBarDelegateMobileTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AutofillSaveCardInfoBarDelegateMobileTest();
+
+  AutofillSaveCardInfoBarDelegateMobileTest(
+      const AutofillSaveCardInfoBarDelegateMobileTest&) = delete;
+  AutofillSaveCardInfoBarDelegateMobileTest& operator=(
+      const AutofillSaveCardInfoBarDelegateMobileTest&) = delete;
+
   ~AutofillSaveCardInfoBarDelegateMobileTest() override;
 
   void SetUp() override;
   void TearDown() override;
 
  protected:
-  std::unique_ptr<ConfirmInfoBarDelegate> CreateDelegate(
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> CreateDelegate(
       bool is_uploading,
-      prefs::PreviousSaveCreditCardPromptUserDecision
-          previous_save_credit_card_prompt_user_decision =
-              prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
-  std::unique_ptr<ConfirmInfoBarDelegate> CreateDelegateWithLegalMessage(
+      CreditCard credit_card = CreditCard());
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
+  CreateDelegateWithLegalMessage(
       bool is_uploading,
       std::string legal_message_string,
-      prefs::PreviousSaveCreditCardPromptUserDecision
-          previous_save_credit_card_prompt_user_decision);
+      CreditCard credit_card = CreditCard());
 
   std::unique_ptr<TestPersonalDataManager> personal_data_;
 
@@ -64,8 +68,6 @@ class AutofillSaveCardInfoBarDelegateMobileTest
   }
 
   CreditCard credit_card_to_save_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBarDelegateMobileTest);
 };
 
 AutofillSaveCardInfoBarDelegateMobileTest::
@@ -80,12 +82,8 @@ void AutofillSaveCardInfoBarDelegateMobileTest::SetUp() {
   PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
-  personal_data_.reset(new TestPersonalDataManager());
+  personal_data_ = std::make_unique<TestPersonalDataManager>();
   personal_data_->SetPrefService(profile()->GetPrefs());
-
-  profile()->GetPrefs()->SetInteger(
-      prefs::kAutofillAcceptSaveCreditCardPromptState,
-      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
 }
 
 void AutofillSaveCardInfoBarDelegateMobileTest::TearDown() {
@@ -93,22 +91,18 @@ void AutofillSaveCardInfoBarDelegateMobileTest::TearDown() {
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
-std::unique_ptr<ConfirmInfoBarDelegate>
+std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
 AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegate(
     bool is_uploading,
-    prefs::PreviousSaveCreditCardPromptUserDecision
-        previous_save_credit_card_prompt_user_decision) {
-  return CreateDelegateWithLegalMessage(
-      is_uploading, "", previous_save_credit_card_prompt_user_decision);
+    CreditCard credit_card) {
+  return CreateDelegateWithLegalMessage(is_uploading, "", credit_card);
 }
 
-std::unique_ptr<ConfirmInfoBarDelegate>
+std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
 AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
     bool is_uploading,
     std::string legal_message_string,
-    prefs::PreviousSaveCreditCardPromptUserDecision
-        previous_save_credit_card_prompt_user_decision) {
-  CreditCard credit_card;
+    CreditCard credit_card) {
   LegalMessageLines legal_message_lines;
   if (!legal_message_string.empty()) {
     std::unique_ptr<base::Value> value(
@@ -117,13 +111,10 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
     LegalMessageLine::Parse(*value, &legal_message_lines,
                             /*escape_apostrophes=*/true);
   }
-  profile()->GetPrefs()->SetInteger(
-      prefs::kAutofillAcceptSaveCreditCardPromptState,
-      previous_save_credit_card_prompt_user_decision);
   if (is_uploading) {
     // Upload save infobar delegate:
     credit_card_to_save_ = credit_card;
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate(
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate(
         new AutofillSaveCardInfoBarDelegateMobile(
             is_uploading, AutofillClient::SaveCreditCardOptions(), credit_card,
             legal_message_lines,
@@ -131,13 +122,12 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
             base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
                                UploadSaveCardPromptCallback,
                            base::Unretained(this)),
-            /*local_save_card_callback=*/{}, profile()->GetPrefs(),
-            /*is_off_the_record=*/false));
+            /*local_save_card_callback=*/{}, AccountInfo()));
     return delegate;
   }
   // Local save infobar delegate:
   credit_card_to_save_ = credit_card;
-  std::unique_ptr<ConfirmInfoBarDelegate> delegate(
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate(
       new AutofillSaveCardInfoBarDelegateMobile(
           is_uploading, AutofillClient::SaveCreditCardOptions(), credit_card,
           legal_message_lines,
@@ -146,7 +136,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
           base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
                              LocalSaveCardPromptCallback,
                          base::Unretained(this)),
-          profile()->GetPrefs(), /*is_off_the_record=*/false));
+          AccountInfo()));
   return delegate;
 }
 
@@ -225,8 +215,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
         "}";
     std::unique_ptr<ConfirmInfoBarDelegate> infobar(
         CreateDelegateWithLegalMessage(
-            /* is_uploading= */ true, std::move(good_legal_message),
-            prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE));
+            /* is_uploading= */ true, std::move(good_legal_message)));
 
     histogram_tester.ExpectUniqueSample("Autofill.CreditCardInfoBar.Server",
                                         AutofillMetrics::INFOBAR_SHOWN, 1);
@@ -268,125 +257,19 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
   }
 }
 
-// Test that local credit card save infobar previous-decision metrics are logged
-// correctly.
-TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
-       Metrics_Local_PreviousDecision) {
-  ::testing::InSequence dummy;
-
-  // NoPreviousDecision
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ false,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.NoPreviousDecision",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.NoPreviousDecision",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
-
-  // PreviouslyAccepted
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ false,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.PreviouslyAccepted",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.PreviouslyAccepted",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
-
-  // PreviouslyDenied
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ false,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.PreviouslyDenied",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Local.PreviouslyDenied",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNickname) {
+  CreditCard card = test::GetCreditCard();
+  card.SetNickname(u"Nickname");
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate(/*is_uploading=*/true, card);
+  EXPECT_EQ(delegate->card_label(), card.NicknameAndLastFourDigitsForTesting());
 }
 
-// Test that server credit card save infobar metrics are logged correctly.
-TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
-       Metrics_Server_PreviousDecision) {
-  ::testing::InSequence dummy;
-
-  // NoPreviousDecision
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ true,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.NoPreviousDecision",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.NoPreviousDecision",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
-
-  // PreviouslyAccepted
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ true,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.PreviouslyAccepted",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.PreviouslyAccepted",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
-
-  // PreviouslyDenied
-  {
-    personal_data_->ClearCreditCards();
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<ConfirmInfoBarDelegate> infobar(CreateDelegate(
-        /* is_uploading= */ true,
-        prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED));
-
-    EXPECT_TRUE(infobar->Accept());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.PreviouslyDenied",
-        AutofillMetrics::INFOBAR_SHOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.CreditCardInfoBar.Server.PreviouslyDenied",
-        AutofillMetrics::INFOBAR_ACCEPTED, 1);
-  }
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNoNickname) {
+  CreditCard card = test::GetCreditCard();
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate(/*is_uploading=*/true, card);
+  EXPECT_EQ(delegate->card_label(), card.NetworkAndLastFourDigits());
 }
 
 }  // namespace autofill

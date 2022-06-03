@@ -8,15 +8,16 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
-#include "gpu/command_buffer/service/path_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
@@ -59,6 +60,7 @@ DisallowedFeatures AdjustDisallowedFeatures(
     adjusted_disallowed_features.ext_texture_filter_anisotropic = true;
     adjusted_disallowed_features.ext_float_blend = true;
     adjusted_disallowed_features.oes_fbo_render_mipmap = true;
+    adjusted_disallowed_features.oes_draw_buffers_indexed = true;
   }
   return adjusted_disallowed_features;
 }
@@ -83,7 +85,7 @@ ContextGroup::ContextGroup(
       mailbox_manager_(mailbox_manager),
       memory_tracker_(std::move(memory_tracker)),
       shader_translator_cache_(shader_translator_cache),
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       // Framebuffer completeness is not cacheable on OS X because of dynamic
       // graphics switching.
       // http://crbug.com/180876
@@ -126,7 +128,8 @@ ContextGroup::ContextGroup(
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
-              memory_tracker_.get())) {
+              memory_tracker_.get())),
+      shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
   DCHECK(mailbox_manager_);
@@ -140,17 +143,17 @@ gpu::ContextResult ContextGroup::Initialize(
     const DisallowedFeatures& disallowed_features) {
   switch (context_type) {
     case CONTEXT_TYPE_WEBGL1:
-      if (kGpuFeatureStatusBlacklisted ==
+      if (kGpuFeatureStatusBlocklisted ==
           gpu_feature_info_.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL]) {
-        LOG(ERROR) << "ContextResult::kFatalFailure: WebGL1 blacklisted";
+        LOG(ERROR) << "ContextResult::kFatalFailure: WebGL1 blocklisted";
         return gpu::ContextResult::kFatalFailure;
       }
       break;
     case CONTEXT_TYPE_WEBGL2:
-      if (kGpuFeatureStatusBlacklisted ==
+      if (kGpuFeatureStatusBlocklisted ==
           gpu_feature_info_
               .status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2]) {
-        LOG(ERROR) << "ContextResult::kFatalFailure: WebGL2 blacklisted";
+        LOG(ERROR) << "ContextResult::kFatalFailure: WebGL2 blocklisted";
         return gpu::ContextResult::kFatalFailure;
       }
       break;
@@ -179,7 +182,7 @@ gpu::ContextResult ContextGroup::Initialize(
        context_type == CONTEXT_TYPE_OPENGLES3) &&
       !feature_info_->IsES3Capable()) {
     LOG(ERROR) << "ContextResult::kFatalFailure: "
-               << "ES3 is blacklisted/disabled/unsupported by driver.";
+               << "ES3 is blocklisted/disabled/unsupported by driver.";
     return gpu::ContextResult::kFatalFailure;
   }
 
@@ -262,13 +265,17 @@ gpu::ContextResult ContextGroup::Initialize(
                 &uniform_buffer_offset_alignment_);
   }
 
-  buffer_manager_ = std::make_unique<BufferManager>(memory_tracker_.get(),
-                                                    feature_info_.get());
-  renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
-      memory_tracker_.get(), max_renderbuffer_size, max_samples,
-      feature_info_.get());
-  shader_manager_ = std::make_unique<ShaderManager>(progress_reporter_);
-  sampler_manager_ = std::make_unique<SamplerManager>(feature_info_.get());
+  // Managers are not used by the passthrough command decoder. Save memory by
+  // not allocating them.
+  if (!use_passthrough_cmd_decoder_) {
+    buffer_manager_ = std::make_unique<BufferManager>(memory_tracker_.get(),
+                                                      feature_info_.get());
+    renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
+        memory_tracker_.get(), max_renderbuffer_size, max_samples,
+        feature_info_.get());
+    shader_manager_ = std::make_unique<ShaderManager>(progress_reporter_);
+    sampler_manager_ = std::make_unique<SamplerManager>(feature_info_.get());
+  }
 
   // Lookup GL things we need to know.
   const GLint kGLES2RequiredMinimumVertexAttribs = 8u;
@@ -388,11 +395,15 @@ gpu::ContextResult ContextGroup::Initialize(
                  feature_info_->workarounds().max_3d_array_texture_size);
   }
 
-  texture_manager_.reset(new TextureManager(
-      memory_tracker_.get(), feature_info_.get(), max_texture_size,
-      max_cube_map_texture_size, max_rectangle_texture_size,
-      max_3d_texture_size, max_array_texture_layers, bind_generates_resource_,
-      progress_reporter_, discardable_manager_));
+  // Managers are not used by the passthrough command decoder. Save memory by
+  // not allocating them.
+  if (!use_passthrough_cmd_decoder_) {
+    texture_manager_ = std::make_unique<TextureManager>(
+        memory_tracker_.get(), feature_info_.get(), max_texture_size,
+        max_cube_map_texture_size, max_rectangle_texture_size,
+        max_3d_texture_size, max_array_texture_layers, bind_generates_resource_,
+        progress_reporter_, discardable_manager_);
+  }
 
   const GLint kMinTextureImageUnits = 8;
   const GLint kMinVertexTextureImageUnits = 0;
@@ -522,14 +533,16 @@ gpu::ContextResult ContextGroup::Initialize(
     }
   }
 
-  path_manager_ = std::make_unique<PathManager>();
+  // Managers are not used by the passthrough command decoder. Save memory by
+  // not allocating them.
+  if (!use_passthrough_cmd_decoder_) {
+    program_manager_ = std::make_unique<ProgramManager>(
+        program_cache_, max_varying_vectors_, max_draw_buffers_,
+        max_dual_source_draw_buffers_, max_vertex_attribs_, gpu_preferences_,
+        feature_info_.get(), progress_reporter_);
 
-  program_manager_ = std::make_unique<ProgramManager>(
-      program_cache_, max_varying_vectors_, max_draw_buffers_,
-      max_dual_source_draw_buffers_, max_vertex_attribs_, gpu_preferences_,
-      feature_info_.get(), progress_reporter_);
-
-  texture_manager_->Initialize();
+    texture_manager_->Initialize();
+  }
 
   decoders_.push_back(decoder->AsWeakPtr());
   return gpu::ContextResult::kSuccess;
@@ -597,12 +610,6 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
     ReportProgress();
   }
 
-  if (path_manager_ != nullptr) {
-    path_manager_->Destroy(have_context);
-    path_manager_.reset();
-    ReportProgress();
-  }
-
   if (program_manager_ != nullptr) {
     program_manager_->Destroy(have_context);
     program_manager_.reset();
@@ -622,7 +629,7 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
   }
 
   if (passthrough_discardable_manager_) {
-    passthrough_discardable_manager_->DeleteContextGroup(this);
+    passthrough_discardable_manager_->DeleteContextGroup(this, have_context);
   }
 
   if (passthrough_resources_) {
@@ -631,7 +638,6 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
     passthrough_resources_.reset();
     ReportProgress();
   }
-  memory_tracker_ = nullptr;
 }
 
 uint32_t ContextGroup::GetMemRepresented() const {

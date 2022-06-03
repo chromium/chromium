@@ -4,52 +4,31 @@
 
 package org.chromium.base.metrics;
 
-import androidx.annotation.VisibleForTesting;
+import android.os.SystemClock;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java API for recording UMA actions.
- *
- * WARNINGS:
- * JNI calls are relatively costly - avoid using in performance-critical code.
- *
- * We use a script (extract_actions.py) to scan the source code and extract actions. A string
- * literal (not a variable) must be passed to record().
+ * <p>
+ * WARNINGS: JNI calls are relatively costly - avoid using in performance-critical code.
+ * <p>
+ * Action names must be documented in {@code actions.xml}. See {@link
+ * https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/actions/README.md} <p>
+ * We use a script ({@code extract_actions.py{}) to scan the source code and extract actions. A
+ * string literal (not a variable) must be passed to {@link #record(String)}.
  */
 @JNINamespace("base::android")
 public class RecordUserAction {
-    private static Throwable sDisabledBy;
-
     /**
-     * Tests may not have native initialized, so they may need to disable metrics. The value should
-     * be reset after the test done, to avoid carrying over state to unrelated tests.
+     * Similar to {@code base::RecordAction()} in C++.
+     * <p>
+     * Record that the user performed an action. See tools/metrics/actions/README.md
      */
-    @VisibleForTesting
-    public static void setDisabledForTests(boolean disabled) {
-        if (disabled && sDisabledBy != null) {
-            throw new IllegalStateException("UserActions are already disabled.", sDisabledBy);
-        }
-        sDisabledBy = disabled ? new Throwable() : null;
-    }
-
     public static void record(final String action) {
-        if (sDisabledBy != null) return;
-
-        if (ThreadUtils.runningOnUiThread()) {
-            RecordUserActionJni.get().recordUserAction(action);
-            return;
-        }
-
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RecordUserActionJni.get().recordUserAction(action);
-            }
-        });
+        UmaRecorderHolder.get().recordUserAction(action, SystemClock.elapsedRealtime());
     }
 
     /**
@@ -83,7 +62,6 @@ public class RecordUserAction {
 
     @NativeMethods
     interface Natives {
-        void recordUserAction(String action);
         long addActionCallbackForTesting(UserActionCallback callback);
         void removeActionCallbackForTesting(long callbackId);
     }

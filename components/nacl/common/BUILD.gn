@@ -29,14 +29,14 @@ if (enable_nacl) {
       ":minimal_content_dummy",
       ":switches",
       "//ipc",
-      "//services/service_manager/sandbox",
+      "//sandbox/policy",
     ]
 
     deps = [
       ":nacl_error_code",
       "//base",
       "//base:base_static",
-      "//content/public/common:service_names",
+      "//content/public/common:content_descriptors",
       "//mojo/core/embedder",
       "//services/service_manager/public/cpp",
     ]
@@ -55,9 +55,7 @@ if (enable_nacl) {
     ]
 
     # Deps required by the above headers.
-    deps = [
-      "//media:media_buildflags",
-    ]
+    deps = [ "//media:media_buildflags" ]
   }
 
   static_library("common") {
@@ -79,11 +77,12 @@ if (enable_nacl) {
 
     deps = [
       "//base",
+      "//build:chromeos_buildflags",
       "//content/public/common",
       "//url",
     ]
 
-    if (is_linux) {
+    if (is_linux || is_chromeos) {
       sources += [
         "nacl_paths.cc",
         "nacl_paths.h",
@@ -94,25 +93,43 @@ if (enable_nacl) {
   }
 
   source_set("debug_exception_handler") {
-    sources = [
-      "nacl_debug_exception_handler_win.cc",
-      "nacl_debug_exception_handler_win.h",
-    ]
+    sources = []
 
-    deps = [
-      "//base",
-    ]
+    deps = [ "//base" ]
+
+    if (is_win) {
+      sources += [
+        "nacl_debug_exception_handler_win.cc",
+        "nacl_debug_exception_handler_win.h",
+      ]
+    }
   }
 
   source_set("nacl_error_code") {
-    sources = [
-      "//native_client/src/trusted/service_runtime/nacl_error_code.h",
-    ]
+    sources =
+        [ "//native_client/src/trusted/service_runtime/nacl_error_code.h" ]
   }
 
   mojom("mojo_bindings") {
-    sources = [
-      "nacl.mojom",
+    sources = [ "nacl.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "nacl.mojom.NaClErrorCode"
+            cpp = "::NaClErrorCode"
+          },
+        ]
+        traits_headers =
+            [ "//native_client/src/trusted/service_runtime/nacl_error_code.h" ]
+        traits_private_headers =
+            [ "//components/nacl/common/nacl_types_param_traits.h" ]
+        traits_public_deps = [
+          ":minimal",
+          ":nacl_error_code",
+        ]
+        traits_deps = [ "//ipc" ]
+      },
     ]
   }
 }
@@ -120,13 +137,9 @@ if (enable_nacl) {
 # Depending on this allows targets to unconditionally include
 # nacl_process_type.h without testing whether nacl is enabled.
 source_set("process_type") {
-  public = [
-    "nacl_process_type.h",
-  ]
+  public = [ "nacl_process_type.h" ]
 
-  deps = [
-    "//content/public/common",
-  ]
+  deps = [ "//content/public/common" ]
 }
 
 static_library("switches") {

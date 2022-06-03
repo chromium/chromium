@@ -6,7 +6,6 @@
 #define NET_HTTP_HTTP_NETWORK_LAYER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -21,12 +20,16 @@ namespace net {
 class HttpNetworkSession;
 
 class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
-                                    public base::PowerObserver {
+                                    public base::PowerSuspendObserver {
  public:
   // Construct a HttpNetworkLayer with an existing HttpNetworkSession which
   // contains a valid ProxyResolutionService. The HttpNetworkLayer must be
   // destroyed before |session|.
   explicit HttpNetworkLayer(HttpNetworkSession* session);
+
+  HttpNetworkLayer(const HttpNetworkLayer&) = delete;
+  HttpNetworkLayer& operator=(const HttpNetworkLayer&) = delete;
+
   ~HttpNetworkLayer() override;
 
   // HttpTransactionFactory methods:
@@ -35,7 +38,7 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
   HttpCache* GetCache() override;
   HttpNetworkSession* GetSession() override;
 
-  // base::PowerObserver methods:
+  // base::PowerSuspendObserver methods:
   void OnSuspend() override;
   void OnResume() override;
 
@@ -44,8 +47,6 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
   bool suspended_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkLayer);
 };
 
 }  // namespace net

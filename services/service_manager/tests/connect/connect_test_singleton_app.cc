@@ -4,14 +4,17 @@
 
 #include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
   service_manager::Service service;
-  service_manager::ServiceBinding binding(&service, std::move(request));
+  service_manager::ServiceReceiver service_receiver(&service,
+                                                    std::move(receiver));
   service.RunUntilTermination();
 }

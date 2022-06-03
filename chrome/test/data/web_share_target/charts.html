@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="manifest" href="charts.json">
+  <link rel="icon" href="basic-48.png">
+</head>
+<body>
+  <h1>Charts web app</h1>
+  <script>
+    window.onload = () => {
+      navigator.serviceWorker.register('/web_share_target/service_worker.js');
+    };
+  </script>
+</body>
+</html>

@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_REGION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_REGION_H_
 
-#include <wayland-server-protocol-core.h>
+#include <wayland-server-protocol.h>
 
 #include "third_party/skia/include/core/SkRegion.h"
 

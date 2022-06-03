@@ -8,7 +8,7 @@
 <meta charset='utf-8'>
 <script>
 window.top.test(function() {
-    window.top.assert_throws({name: 'SecurityError'}, function() {
+    window.top.assert_throws_dom('SecurityError', function() {
         new PaymentRequest([{supportedMethods: ['foo']}], {total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}});
     }, 'If the ancestor iframe does not specify allowpaymentrequest, then throw a SecurityError.');
 });

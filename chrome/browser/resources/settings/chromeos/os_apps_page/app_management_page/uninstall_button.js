@@ -2,11 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shared_style.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction, InstallReason} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getSelectedApp, recordAppManagementUserAction} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-uninstall-button',
 
   behaviors: [
-    app_management.StoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -16,8 +31,8 @@ Polymer({
     app_: Object,
   },
 
-  attached: function() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+  attached() {
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
@@ -28,20 +43,20 @@ Polymer({
    * @return {?boolean}
    * @private
    */
-  getDisableState_: function(app) {
+  getDisableState_(app) {
     if (!app) {
       return true;
     }
 
-    switch (app.installSource) {
-      case InstallSource.kSystem:
-      case InstallSource.kPolicy:
+    switch (app.installReason) {
+      case InstallReason.kSystem:
+      case InstallReason.kPolicy:
         return true;
-      case InstallSource.kOem:
-      case InstallSource.kDefault:
-      case InstallSource.kSync:
-      case InstallSource.kUser:
-      case InstallSource.kUnknown:
+      case InstallReason.kOem:
+      case InstallReason.kDefault:
+      case InstallReason.kSync:
+      case InstallReason.kUser:
+      case InstallReason.kUnknown:
         return false;
       default:
         assertNotReached();
@@ -55,11 +70,11 @@ Polymer({
    * @returns {boolean}
    * @private
    */
-  showPolicyIndicator_: function(app) {
+  showPolicyIndicator_(app) {
     if (!app) {
       return false;
     }
-    return app.installSource === InstallSource.kPolicy;
+    return app.installReason === InstallReason.kPolicy;
   },
 
   /**
@@ -67,19 +82,20 @@ Polymer({
    *
    * @param {App} app
    */
-  showUninstallButton_: function(app) {
+  showUninstallButton_(app) {
     if (!app) {
       return false;
     }
-    return app.installSource !== InstallSource.kSystem;
+    return app.installReason !== InstallReason.kSystem;
   },
 
   /**
    * @private
    */
-  onClick_: function() {
-    app_management.BrowserProxy.getInstance().handler.uninstall(this.app_.id);
-    app_management.util.recordAppManagementUserAction(
+  onClick_() {
+    BrowserProxy.getInstance().handler.uninstall(this.app_.id);
+    recordSettingChange();
+    recordAppManagementUserAction(
         this.app_.type, AppManagementUserAction.UninstallDialogLaunched);
   },
 });

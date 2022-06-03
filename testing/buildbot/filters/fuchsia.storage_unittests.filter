@@ -1,0 +1,20 @@
+# AmountOfFreeDiskSpace not implemented for Fuchsia.
+-All/BlobMemoryControllerTest.FullEviction/0
+-All/BlobMemoryControllerTest.MultipleFilesPaged/0
+-All/BlobMemoryControllerTest.OnMemoryPressure/0
+-All/BlobMemoryControllerTest.PageToDisk/0
+-All/BlobMemoryControllerTest.PagingStopsWhenFull/0
+
+-All/BlobMemoryControllerTest.FullEviction/1
+-All/BlobMemoryControllerTest.MultipleFilesPaged/1
+-All/BlobMemoryControllerTest.OnMemoryPressure/1
+-All/BlobMemoryControllerTest.PageToDisk/1
+-All/BlobMemoryControllerTest.PagingStopsWhenFull/1
+
+# crbug.com/1077456
+-All/ObfuscatedFileUtilTest.TestTouch/0
+-DraggedFileUtilTest.TouchTest
+-FileSystemOperationImplTest.TestTouchFile
+-LocalFileUtilTest.TouchDirectory
+-LocalFileUtilTest.TouchFile
+-NativeFileUtilTest.TouchFileAndGetFileInfo

@@ -9,12 +9,10 @@
 #define COMPONENTS_SAFE_BROWSING_ANDROID_SAFE_BROWSING_API_HANDLER_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "components/safe_browsing/db/util.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -29,8 +27,6 @@ class SafeBrowsingApiHandler {
                                   const ThreatMetadata& metadata)>
       URLCheckCallbackMeta;
 
-  // Returns the Safety Net ID of the device.
-  virtual std::string GetSafetyNetId() = 0;
   // Makes Native->Java call and invokes callback when check is done.
   virtual void StartURLCheck(std::unique_ptr<URLCheckCallbackMeta> callback,
                              const GURL& url,

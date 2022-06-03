@@ -1,16 +1,18 @@
 rootWebArea
 ++genericContainer ignored
-++++layoutTable
-++++++layoutTableRow
-++++++++layoutTableCell name='Cats'
-++++++++++staticText name='Cats'
-++++++++++++inlineTextBox name='Cats'
-++++++++layoutTableCell name='Dogs'
-++++++++++staticText name='Dogs'
-++++++++++++inlineTextBox name='Dogs'
-++++++++layoutTableCell name='Iguanas'
-++++++++++staticText name='Iguanas'
-++++++++++++inlineTextBox name='Iguanas'
-++++++++layoutTableCell name='Fish'
-++++++++++staticText name='Fish'
-++++++++++++inlineTextBox name='Fish'
+++++genericContainer ignored
+++++++layoutTable
+++++++++genericContainer ignored
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Cats'
+++++++++++++++staticText name='Cats'
+++++++++++++++++inlineTextBox name='Cats'
+++++++++++++layoutTableCell name='Dogs'
+++++++++++++++staticText name='Dogs'
+++++++++++++++++inlineTextBox name='Dogs'
+++++++++++++layoutTableCell name='Iguanas'
+++++++++++++++staticText name='Iguanas'
+++++++++++++++++inlineTextBox name='Iguanas'
+++++++++++++layoutTableCell name='Fish'
+++++++++++++++staticText name='Fish'
+++++++++++++++++inlineTextBox name='Fish'

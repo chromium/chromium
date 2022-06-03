@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
@@ -24,12 +23,12 @@ RemoteDeviceV2LoaderImpl::Factory*
     RemoteDeviceV2LoaderImpl::Factory::test_factory_ = nullptr;
 
 // static
-RemoteDeviceV2LoaderImpl::Factory* RemoteDeviceV2LoaderImpl::Factory::Get() {
+std::unique_ptr<RemoteDeviceV2Loader>
+RemoteDeviceV2LoaderImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<RemoteDeviceV2LoaderImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new RemoteDeviceV2LoaderImpl());
 }
 
 // static
@@ -40,14 +39,9 @@ void RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(
 
 RemoteDeviceV2LoaderImpl::Factory::~Factory() = default;
 
-std::unique_ptr<RemoteDeviceV2Loader>
-RemoteDeviceV2LoaderImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new RemoteDeviceV2LoaderImpl());
-}
-
 RemoteDeviceV2LoaderImpl::RemoteDeviceV2LoaderImpl()
     : secure_message_delegate_(
-          multidevice::SecureMessageDelegateImpl::Factory::NewInstance()) {}
+          multidevice::SecureMessageDelegateImpl::Factory::Create()) {}
 
 RemoteDeviceV2LoaderImpl::~RemoteDeviceV2LoaderImpl() = default;
 
@@ -87,8 +81,9 @@ void RemoteDeviceV2LoaderImpl::Load(
     secure_message_delegate_->DeriveKey(
         user_private_key,
         id_device_pair.second.better_together_device_metadata->public_key(),
-        base::Bind(&RemoteDeviceV2LoaderImpl::OnPskDerived,
-                   base::Unretained(this), id_device_pair.second, user_email));
+        base::BindOnce(&RemoteDeviceV2LoaderImpl::OnPskDerived,
+                       base::Unretained(this), id_device_pair.second,
+                       user_email));
   }
 }
 
@@ -104,7 +99,7 @@ void RemoteDeviceV2LoaderImpl::OnPskDerived(const CryptAuthDevice& device,
 void RemoteDeviceV2LoaderImpl::AddRemoteDevice(const CryptAuthDevice& device,
                                                const std::string& user_email,
                                                const std::string& psk) {
-  const base::Optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+  const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
       beto_metadata = device.better_together_device_metadata;
   remote_devices_.emplace_back(
       user_email, device.instance_id(), device.device_name,
@@ -113,7 +108,9 @@ void RemoteDeviceV2LoaderImpl::AddRemoteDevice(const CryptAuthDevice& device,
       device.last_update_time.ToJavaTime(), device.feature_states,
       beto_metadata ? multidevice::FromCryptAuthV2SeedRepeatedPtrField(
                           beto_metadata->beacon_seeds())
-                    : std::vector<multidevice::BeaconSeed>());
+                    : std::vector<multidevice::BeaconSeed>(),
+      beto_metadata ? beto_metadata->bluetooth_public_address()
+                    : std::string());
 
   remaining_ids_to_process_.erase(device.instance_id());
 

@@ -1,0 +1,11 @@
+<body>
+<meta content=origin name=referrer>
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+i.contentDocument.documentElement.appendChild(document.body);
+document.documentElement.appendChild(document.createTextNode("PASS if no crash."));
+</script>
+</body>

@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_LOCAL_SESSION_EVENT_ROUTER_H_
 #define COMPONENTS_SYNC_SESSIONS_LOCAL_SESSION_EVENT_ROUTER_H_
 
-#include <set>
-
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace sync_sessions {
@@ -20,6 +17,9 @@ class SyncedTabDelegate;
 // via ProcessSyncChanges, just with a more granular breakdown.
 class LocalSessionEventHandler {
  public:
+  LocalSessionEventHandler(const LocalSessionEventHandler&) = delete;
+  LocalSessionEventHandler& operator=(const LocalSessionEventHandler&) = delete;
+
   virtual ~LocalSessionEventHandler() {}
 
   // Called when asynchronous session restore has completed. On Android, this
@@ -31,20 +31,8 @@ class LocalSessionEventHandler {
   // for this instance of Chrome.
   virtual void OnLocalTabModified(SyncedTabDelegate* modified_tab) = 0;
 
-  // A local navigation occurred that triggered updates to favicon data for
-  // each page URL in |page_urls| (e.g. http://www.google.com) and the icon URL
-  // |icon_url| (e.g. http://www.google.com/favicon.ico). This is routed through
-  // Sessions Sync so that we can filter (exclude) favicon updates for pages
-  // that aren't currently part of the set of local open tabs, and pass relevant
-  // updates on to FaviconCache for out-of-band favicon syncing.
-  virtual void OnFaviconsChanged(const std::set<GURL>& page_urls,
-                                 const GURL& icon_url) = 0;
-
  protected:
   LocalSessionEventHandler() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalSessionEventHandler);
 };
 
 // The LocalSessionEventRouter is responsible for hooking itself up to various
@@ -52,15 +40,15 @@ class LocalSessionEventHandler {
 // events to a handler as defined in the LocalSessionEventHandler contract.
 class LocalSessionEventRouter {
  public:
+  LocalSessionEventRouter(const LocalSessionEventRouter&) = delete;
+  LocalSessionEventRouter& operator=(const LocalSessionEventRouter&) = delete;
+
   virtual ~LocalSessionEventRouter() {}
   virtual void StartRoutingTo(LocalSessionEventHandler* handler) = 0;
   virtual void Stop() = 0;
 
  protected:
   LocalSessionEventRouter() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalSessionEventRouter);
 };
 
 }  // namespace sync_sessions

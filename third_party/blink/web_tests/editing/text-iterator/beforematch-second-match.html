@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+</style>
+<div class="spacer"></div>
+<div id=matchOne>match</div>
+<div class="spacer"></div>
+<div id=matchTwo>match</div>
+
+<script>
+
+async_test(t => {
+  matchOne.addEventListener('beforematch', () => {
+    matchOne.remove();
+  });
+
+  testRunner.findString('match', ['Async']);
+
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      // Schedule another double rAF for the second async step
+      requestAnimationFrame(t.step_func(() => {
+        requestAnimationFrame(t.step_func_done(() => {
+          // verify that matchTwo is scrolled into view
+          const offsetBeforeScroll = window.pageYOffset;
+          matchTwo.scrollIntoView();
+          const offsetAfterScroll = window.pageYOffset;
+
+          assert_not_equals(window.pageYOffset, 0, 'find-in-page should scroll after two rAFs.');
+          assert_equals(offsetAfterScroll, offsetBeforeScroll,
+            `scrollIntoView shouldn't affect the scroll offset because the element should already be scrolled into view.`);
+        }));
+      }));
+    }));
+  }));
+}, `Removing the target element in the beforematch handler should make find-in-page scroll to the next match in the page.`);
+
+</script>

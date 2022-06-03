@@ -35,7 +35,7 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     // Optional. Wait until the callback from MakeCallback() is called.
     void Wait() { loop_.Run(); }
 
-    const base::Optional<mojom::Geoposition>& position() const {
+    const absl::optional<mojom::Geoposition>& position() const {
       return position_;
     }
 
@@ -46,7 +46,7 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     }
 
     base::RunLoop loop_;
-    base::Optional<mojom::Geoposition> position_;
+    absl::optional<mojom::Geoposition> position_;
   };
 
   PublicIpAddressLocationNotifierTest()
@@ -108,14 +108,14 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
 
   // Expects a non-empty and valid Geoposition, including the specified
   // |latitude|.
-  void ExpectValidPosition(const base::Optional<mojom::Geoposition>& position,
+  void ExpectValidPosition(const absl::optional<mojom::Geoposition>& position,
                            const float latitude) {
     ASSERT_TRUE(position);
     EXPECT_TRUE(ValidateGeoposition(*position));
     EXPECT_FLOAT_EQ(position->latitude, latitude);
   }
 
-  void ExpectError(const base::Optional<mojom::Geoposition>& position) {
+  void ExpectError(const absl::optional<mojom::Geoposition>& position) {
     ASSERT_TRUE(position);
     EXPECT_THAT(position->error_code,
                 mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE);
@@ -164,7 +164,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, OlderQueryReturnsCached) {
 
   // Second query for an earlier time.
   TestPositionQuery query_2;
-  notifier_.QueryNextPosition(time - base::TimeDelta::FromMinutes(5),
+  notifier_.QueryNextPosition(time - base::Minutes(5),
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_2.MakeCallback());
   // Expect a cached result, so no new network request.
@@ -230,7 +230,7 @@ TEST_F(PublicIpAddressLocationNotifierTest,
   for (int i = 0; i < 10; ++i) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_UNKNOWN);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+    task_environment_.FastForwardBy(base::Seconds(5));
   }
   // Expect still no network request or callback.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());

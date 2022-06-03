@@ -1,10 +1,17 @@
-CONSOLE WARNING: line 124: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
-CONSOLE WARNING: line 124: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Tests property access on a cached DOMWindow after the associated frame is removed from a web page and garbage collected. Test should not crash and properties should be set to sane defaults.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS childWindow.appHistory.canGoBack is false
+PASS childWindow.appHistory.canGoForward is false
+PASS childWindow.appHistory.current is null
+PASS childWindow.appHistory.oncurrentchange is null
+PASS childWindow.appHistory.onnavigate is null
+PASS childWindow.appHistory.onnavigateerror is null
+PASS childWindow.appHistory.onnavigatesuccess is null
+PASS childWindow.appHistory.transition is null
 PASS childWindow.closed is true
+PASS childWindow.crossOriginIsolated is false
 PASS childWindow.defaultStatus is ''
 PASS childWindow.defaultstatus is ''
 PASS childWindow.devicePixelRatio is 0
@@ -12,6 +19,7 @@ PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
 PASS childWindow.isSecureContext is false
 PASS childWindow.length is 0
+FAIL childWindow.location.href should be about:blank (of type string). Was undefined (of type undefined).
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
@@ -23,9 +31,8 @@ PASS childWindow.navigator.doNotTrack is null
 PASS childWindow.navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
 PASS childWindow.navigator.language is window.navigator.language
 PASS childWindow.navigator.maxTouchPoints is 0
-PASS childWindow.navigator.mediaSession.metadata is null
-PASS childWindow.navigator.mediaSession.playbackState is 'none'
 PASS childWindow.navigator.onLine is window.navigator.onLine
+PASS childWindow.navigator.pdfViewerEnabled is false
 PASS childWindow.navigator.platform is window.navigator.platform
 PASS childWindow.navigator.product is window.navigator.product
 PASS childWindow.navigator.productSub is window.navigator.productSub
@@ -34,8 +41,8 @@ PASS childWindow.navigator.userActivation.isActive is false
 PASS childWindow.navigator.userAgent is ''
 PASS childWindow.navigator.vendor is window.navigator.vendor
 PASS childWindow.navigator.vendorSub is ''
+PASS childWindow.navigator.webdriver is false
 PASS childWindow.onabort is null
-PASS childWindow.onactivateinvisible is null
 PASS childWindow.onafterprint is null
 PASS childWindow.onanimationend is null
 PASS childWindow.onanimationiteration is null
@@ -45,6 +52,7 @@ PASS childWindow.onauxclick is null
 PASS childWindow.onbeforeinstallprompt is null
 PASS childWindow.onbeforeprint is null
 PASS childWindow.onbeforeunload is null
+PASS childWindow.onbeforexrselect is null
 PASS childWindow.onblur is null
 PASS childWindow.oncancel is null
 PASS childWindow.oncanplay is null
@@ -112,32 +120,36 @@ PASS childWindow.onpointerover is null
 PASS childWindow.onpointerrawupdate is null
 PASS childWindow.onpointerup is null
 PASS childWindow.onpopstate is null
-PASS childWindow.onportalactivate is null
 PASS childWindow.onprogress is null
 PASS childWindow.onratechange is null
 PASS childWindow.onrejectionhandled is null
-PASS childWindow.onrendersubtreeactivation is null
 PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
 PASS childWindow.onsearch is null
+PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
 PASS childWindow.onseeking is null
 PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
+PASS childWindow.onslotchange is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null
 PASS childWindow.onsuspend is null
 PASS childWindow.ontimeupdate is null
+PASS childWindow.ontimezonechange is null
 PASS childWindow.ontoggle is null
 PASS childWindow.ontouchcancel is null
 PASS childWindow.ontouchend is null
 PASS childWindow.ontouchmove is null
 PASS childWindow.ontouchstart is null
+PASS childWindow.ontransitioncancel is null
 PASS childWindow.ontransitionend is null
+PASS childWindow.ontransitionrun is null
+PASS childWindow.ontransitionstart is null
 PASS childWindow.onunhandledrejection is null
 PASS childWindow.onunload is null
 PASS childWindow.onvolumechange is null
@@ -149,26 +161,20 @@ PASS childWindow.onwebkittransitionend is null
 PASS childWindow.onwheel is null
 PASS childWindow.opener is null
 PASS childWindow.origin is 'file://'
+PASS childWindow.originAgentCluster is false
 PASS childWindow.outerHeight is 0
 PASS childWindow.outerWidth is 0
 PASS childWindow.pageXOffset is 0
 PASS childWindow.pageYOffset is 0
 PASS childWindow.performance.onresourcetimingbufferfull is null
 PASS childWindow.personalbar.visible is false
-PASS childWindow.portalHost is null
 PASS childWindow.screen.availHeight is 0
 PASS childWindow.screen.availLeft is 0
 PASS childWindow.screen.availTop is 0
 PASS childWindow.screen.availWidth is 0
 PASS childWindow.screen.colorDepth is 0
 PASS childWindow.screen.height is 0
-PASS childWindow.screen.internal is false
-PASS childWindow.screen.left is 0
-PASS childWindow.screen.name is ''
 PASS childWindow.screen.pixelDepth is 0
-PASS childWindow.screen.primary is false
-PASS childWindow.screen.scaleFactor is 0
-PASS childWindow.screen.top is 0
 PASS childWindow.screen.width is 0
 PASS childWindow.screenLeft is 0
 PASS childWindow.screenTop is 0
@@ -186,6 +192,7 @@ PASS childWindow.statusbar.visible is false
 PASS childWindow.styleMedia.type is ''
 PASS childWindow.toolbar.visible is false
 PASS childWindow.trustedTypes.defaultPolicy is null
+PASS childWindow.trustedTypes.onbeforecreatepolicy is null
 PASS childWindow.visualViewport.height is 0
 PASS childWindow.visualViewport.offsetLeft is 0
 PASS childWindow.visualViewport.offsetTop is 0
@@ -194,6 +201,7 @@ PASS childWindow.visualViewport.onscroll is null
 PASS childWindow.visualViewport.pageLeft is 0
 PASS childWindow.visualViewport.pageTop is 0
 PASS childWindow.visualViewport.scale is 0
+PASS childWindow.visualViewport.segments is null
 PASS childWindow.visualViewport.width is 0
 PASS successfullyParsed is true
 

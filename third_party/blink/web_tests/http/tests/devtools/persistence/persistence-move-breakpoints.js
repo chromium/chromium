@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that breakpoints are moved appropriately\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 
@@ -21,7 +21,7 @@
     async function setBreakpointInFileSystemUISourceCode(next) {
       var uiSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
       var sourceFrame = await SourcesTestRunner.showUISourceCodePromise(uiSourceCode);
-      SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
       await SourcesTestRunner.waitBreakpointSidebarPane();
       dumpBreakpointSidebarPane();
       next();
@@ -53,13 +53,12 @@
   ]);
 
   function dumpBreakpointSidebarPane() {
-    var paneElement = self.runtime.sharedInstance(Sources.JavaScriptBreakpointsSidebarPane).contentElement;
-    var empty = paneElement.querySelector('.gray-info-message');
-    if (empty)
-      return TestRunner.textContentWithLineBreaks(empty);
-    var entries = Array.from(paneElement.querySelectorAll('.breakpoint-entry'));
+    var pane = Sources.JavaScriptBreakpointsSidebarPane.instance();
+    if (!pane.emptyElement.classList.contains('hidden'))
+      return TestRunner.textContentWithLineBreaks(pane.emptyElement);
+    var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
-      var uiLocation = entry[Sources.JavaScriptBreakpointsSidebarPane._locationSymbol];
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);
       TestRunner.addResult('    ' + uiLocation.uiSourceCode.url() + ':' + uiLocation.lineNumber);
     }
   }

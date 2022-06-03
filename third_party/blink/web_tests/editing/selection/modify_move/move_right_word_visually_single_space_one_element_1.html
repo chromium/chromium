@@ -27,7 +27,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc| def hij opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def |hij opq rst</div>',
+  '<div contenteditable dir="ltr">abc |def hij opq rst</div>',
   '1-3 right word');
 
 selection_test(
@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def| hij opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def hij |opq rst</div>',
+  '<div contenteditable dir="ltr">abc def |hij opq rst</div>',
   '1-7 right word');
 
 selection_test(
@@ -75,7 +75,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def hij| opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def hij opq |rst</div>',
+  '<div contenteditable dir="ltr">abc def hij |opq rst</div>',
   '1-11 right word');
 
 selection_test(
@@ -99,7 +99,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def hij opq| rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def hij opq rst|</div>',
+  '<div contenteditable dir="ltr">abc def hij opq |rst</div>',
   '1-15 right word');
 
 selection_test(

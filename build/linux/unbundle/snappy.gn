@@ -15,8 +15,6 @@ shim_headers("snappy_shim") {
 }
 
 source_set("snappy") {
-  deps = [
-    ":snappy_shim",
-  ]
+  deps = [ ":snappy_shim" ]
   libs = [ "snappy" ]
 }

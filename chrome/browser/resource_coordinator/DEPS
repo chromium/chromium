@@ -1,6 +1,7 @@
 include_rules = [
   # resource_coordinator can include files from performance_manager.
   "+chrome/browser/performance_manager",
+  "+components/performance_manager",
 
   "+services/resource_coordinator/public",
   # No inclusion of blink from the browser, other than strictly enum/POD,
@@ -9,7 +10,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(mash): Fix. https://crbug.com/723881
   "tab_manager_delegate_chromeos\.cc": [
     "+ash/shell.h",
   ],

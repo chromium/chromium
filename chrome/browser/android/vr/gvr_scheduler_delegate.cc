@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/vr/gvr_scheduler_delegate.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -14,13 +15,14 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
 #include "chrome/browser/android/vr/metrics_util_android.h"
 #include "chrome/browser/android/vr/scoped_gpu_trace.h"
 #include "chrome/browser/vr/scheduler_browser_renderer_interface.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "content/public/common/content_features.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
+#include "device/vr/android/gvr/gvr_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
@@ -29,13 +31,24 @@
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 
 namespace {
+
+// Default downscale factor for computing the recommended WebXR
+// render_width/render_height from the 1:1 pixel mapped size. Using a rather
+// aggressive downscale due to the high overhead of copying pixels
+// twice before handing off to GVR. For comparison, the polyfill
+// uses approximately 0.55 on a Pixel XL.
+static constexpr float kRecommendedResolutionScale = 0.7;
+
+// The scale factor for WebXR on devices that don't have shared buffer
+// support. (Android N and earlier.)
+static constexpr float kNoSharedBufferResolutionScale = 0.5;
+
 constexpr int kWebVrInitialFrameTimeoutSeconds = 5;
 constexpr int kWebVrSpinnerTimeoutSeconds = 2;
 
 // Heuristic time limit to detect overstuffed GVR buffers for a
 // >60fps capable web app.
-constexpr base::TimeDelta kWebVrSlowAcquireThreshold =
-    base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kWebVrSlowAcquireThreshold = base::Milliseconds(2);
 
 // If running too fast, allow dropping frames occasionally to let GVR catch up.
 // Drop at most one frame in MaxDropRate.
@@ -43,14 +56,13 @@ constexpr int kWebVrUnstuffMaxDropRate = 7;
 
 // Timeout for checking for the WebVR rendering GL fence. If the timeout is
 // reached, yield to let other tasks execute before rechecking.
-constexpr base::TimeDelta kWebVRFenceCheckTimeout =
-    base::TimeDelta::FromMicroseconds(2000);
+constexpr base::TimeDelta kWebVRFenceCheckTimeout = base::Microseconds(2000);
 
 // Polling interval for checking for the WebVR rendering GL fence. Used as
 // an alternative to kWebVRFenceCheckTimeout if the GPU workaround is active.
 // The actual interval may be longer due to PostDelayedTask's resolution.
 constexpr base::TimeDelta kWebVRFenceCheckPollInterval =
-    base::TimeDelta::FromMicroseconds(500);
+    base::Microseconds(500);
 
 bool ValidateRect(const gfx::RectF& bounds) {
   // Bounds should be between 0 and 1, with positive width/height.
@@ -91,7 +103,7 @@ GvrSchedulerDelegate::~GvrSchedulerDelegate() {
   ClosePresentationBindings();
   webxr_.EndPresentation();
   if (webxr_use_shared_buffer_draw_) {
-    std::vector<std::unique_ptr<WebXrSharedBuffer>> buffers =
+    std::vector<std::unique_ptr<device::WebXrSharedBuffer>> buffers =
         webxr_.TakeSharedBuffers();
     for (auto& buffer : buffers) {
       if (!buffer->mailbox_holder.mailbox.IsZero()) {
@@ -167,9 +179,14 @@ void GvrSchedulerDelegate::ConnectPresentingService(
     device::mojom::XRRuntimeSessionOptionsPtr options) {
   ClosePresentationBindings();
 
-  gfx::Size webxr_size(display_info->left_eye->render_width +
-                           display_info->right_eye->render_width,
-                       display_info->left_eye->render_height);
+  int width = 0;
+  int height = 0;
+  for (const auto& view : display_info->views) {
+    width += view->viewport.width();
+    height = std::max(height, view->viewport.height());
+  }
+
+  gfx::Size webxr_size(width, height);
   DVLOG(1) << __func__ << ": resize initial to " << webxr_size.width() << "x"
            << webxr_size.height();
 
@@ -199,6 +216,42 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
   session->display_info = std::move(display_info);
+
+  // Currently, the initial filtering of supported devices happens on the
+  // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
+  // reached this point, it is safe to assume that all requested features are
+  // enabled.
+  // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
+  session->enabled_features.insert(session->enabled_features.end(),
+                                   options->required_features.begin(),
+                                   options->required_features.end());
+  session->enabled_features.insert(session->enabled_features.end(),
+                                   options->optional_features.begin(),
+                                   options->optional_features.end());
+
+  DVLOG(3) << __func__ << ": options->required_features.size()="
+           << options->required_features.size()
+           << ", options->optional_features.size()="
+           << options->optional_features.size()
+           << ", session->enabled_features.size()="
+           << session->enabled_features.size();
+
+  session->device_config = device::mojom::XRSessionDeviceConfig::New();
+  auto* config = session->device_config.get();
+
+  config->supports_viewport_scaling = true;
+  session->enviroment_blend_mode =
+      device::mojom::XREnvironmentBlendMode::kOpaque;
+  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
+
+  // This scalar will be applied in the renderer to the recommended render
+  // target sizes. For WebVR it will always be applied, for WebXR it can be
+  // overridden.
+  if (base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
+    config->default_framebuffer_scale = kRecommendedResolutionScale;
+  } else {
+    config->default_framebuffer_scale = kNoSharedBufferResolutionScale;
+  }
 
   if (CanSendWebXrVSync())
     ScheduleWebXrFrameTimeout();
@@ -282,7 +335,7 @@ void GvrSchedulerDelegate::CreateSurfaceBridge(
     gl::SurfaceTexture* surface_texture) {
   DCHECK(!mailbox_bridge_);
   DCHECK(!webxr_.mailbox_bridge_ready());
-  mailbox_bridge_ = std::make_unique<MailboxToSurfaceBridge>();
+  mailbox_bridge_ = std::make_unique<webxr::MailboxToSurfaceBridgeImpl>();
   if (surface_texture)
     mailbox_bridge_->CreateSurface(surface_texture);
   mailbox_bridge_->CreateAndBindContextProvider(
@@ -310,7 +363,7 @@ void GvrSchedulerDelegate::OnWebXrFrameAvailable() {
 
   // LIFECYCLE: we should be in processing state.
   DCHECK(webxr_.HaveProcessingFrame());
-  WebXrFrame* processing_frame = webxr_.GetProcessingFrame();
+  device::WebXrFrame* processing_frame = webxr_.GetProcessingFrame();
 
   // Frame should be locked. Unlock it.
   DCHECK(processing_frame->state_locked);
@@ -367,11 +420,9 @@ void GvrSchedulerDelegate::OnVSync(base::TimeTicks frame_time) {
   // since we seem to be >1ms behind the vsync time when we receive this call.
   //
   // See third_party/catapult/tracing/tracing/extras/vsync/vsync_auditor.html
-  std::unique_ptr<base::trace_event::TracedValue> args =
-      std::make_unique<base::trace_event::TracedValue>();
-  args->SetDouble(
-      "frame_time_us",
-      static_cast<double>((frame_time - base::TimeTicks()).InMicroseconds()));
+  auto args = std::make_unique<base::trace_event::TracedValue>();
+  args->SetDouble("frame_time_us",
+                  (frame_time - base::TimeTicks()).InMicrosecondsF());
   TRACE_EVENT_INSTANT1("viz", "DisplayScheduler::BeginFrame",
                        TRACE_EVENT_SCOPE_THREAD, "args", std::move(args));
 
@@ -489,9 +540,9 @@ void GvrSchedulerDelegate::DrawFrame(int16_t frame_index,
 void GvrSchedulerDelegate::UpdatePendingBounds(int16_t frame_index) {
   // Process all pending_bounds_ changes targeted for before this frame, being
   // careful of wrapping frame indices.
-  static constexpr unsigned max =
-      std::numeric_limits<WebXrPresentationState::FrameIndexType>::max();
-  static_assert(max > WebXrPresentationState::kWebXrFrameCount * 2,
+  static constexpr unsigned max = std::numeric_limits<
+      device::WebXrPresentationState::FrameIndexType>::max();
+  static_assert(max > device::WebXrPresentationState::kWebXrFrameCount * 2,
                 "To detect wrapping, kPoseRingBufferSize must be smaller "
                 "than half of next_frame_index_ range.");
   while (!pending_bounds_.empty()) {
@@ -505,7 +556,7 @@ void GvrSchedulerDelegate::UpdatePendingBounds(int16_t frame_index) {
     // that even if we miss many frames, the queue can't fill up with stale
     // bounds.
     if (index > frame_index &&
-        index <= frame_index + WebXrPresentationState::kWebXrFrameCount)
+        index <= frame_index + device::WebXrPresentationState::kWebXrFrameCount)
       break;
 
     const WebVrBounds& bounds = pending_bounds_.front().second;
@@ -520,7 +571,7 @@ void GvrSchedulerDelegate::UpdatePendingBounds(int16_t frame_index) {
 
 void GvrSchedulerDelegate::SubmitDrawnFrame(FrameType frame_type,
                                             const gfx::Transform& head_pose) {
-  std::unique_ptr<gl::GLFenceEGL> fence = nullptr;
+  std::unique_ptr<gl::GLFenceEGL> fence;
   if (frame_type == kWebXrFrame && graphics_->DoesSurfacelessRendering()) {
     webxr_.GetProcessingFrame()->time_copied = base::TimeTicks::Now();
     if (webxr_use_gpu_fence_) {
@@ -545,11 +596,11 @@ void GvrSchedulerDelegate::SubmitDrawnFrame(FrameType frame_type,
   }
   if (fence) {
     webxr_delayed_gvr_submit_.Reset(
-        base::BindRepeating(&GvrSchedulerDelegate::DrawFrameSubmitWhenReady,
-                            base::Unretained(this)));
+        base::BindOnce(&GvrSchedulerDelegate::DrawFrameSubmitWhenReady,
+                       base::Unretained(this)));
     task_runner()->PostTask(
         FROM_HERE, base::BindOnce(webxr_delayed_gvr_submit_.callback(),
-                                  frame_type, head_pose, base::Passed(&fence)));
+                                  frame_type, head_pose, std::move(fence)));
   } else {
     // Continue with submit immediately.
     DrawFrameSubmitNow(frame_type, head_pose);
@@ -574,8 +625,8 @@ void GvrSchedulerDelegate::DrawFrameSubmitWhenReady(
     }
     if (!fence->HasCompleted()) {
       webxr_delayed_gvr_submit_.Reset(
-          base::BindRepeating(&GvrSchedulerDelegate::DrawFrameSubmitWhenReady,
-                              base::Unretained(this)));
+          base::BindOnce(&GvrSchedulerDelegate::DrawFrameSubmitWhenReady,
+                         base::Unretained(this)));
       if (use_polling) {
         // Poll the fence status at a short interval. This burns some CPU, but
         // avoids excessive waiting on devices which don't handle timeouts
@@ -584,13 +635,12 @@ void GvrSchedulerDelegate::DrawFrameSubmitWhenReady(
         task_runner()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(webxr_delayed_gvr_submit_.callback(), frame_type,
-                           head_pose, base::Passed(&fence)),
+                           head_pose, std::move(fence)),
             kWebVRFenceCheckPollInterval);
       } else {
         task_runner()->PostTask(
-            FROM_HERE,
-            base::BindOnce(webxr_delayed_gvr_submit_.callback(), frame_type,
-                           head_pose, base::Passed(&fence)));
+            FROM_HERE, base::BindOnce(webxr_delayed_gvr_submit_.callback(),
+                                      frame_type, head_pose, std::move(fence)));
       }
       return;
     }
@@ -611,7 +661,7 @@ void GvrSchedulerDelegate::AddWebVrRenderTimeEstimate(
   if (!webxr_.HaveRenderingFrame())
     return;
 
-  WebXrFrame* rendering_frame = webxr_.GetRenderingFrame();
+  device::WebXrFrame* rendering_frame = webxr_.GetRenderingFrame();
   base::TimeTicks prev_js_submit = rendering_frame->time_js_submit;
   if (webxr_use_gpu_fence_ && !prev_js_submit.is_null() &&
       !fence_complete_time.is_null()) {
@@ -675,7 +725,7 @@ void GvrSchedulerDelegate::DrawFrameSubmitNow(FrameType frame_type,
   // After saving the timestamp, fps will be available via GetFPS().
   // TODO(vollick): enable rendering of this framerate in a HUD.
   vr_ui_fps_meter_.AddFrame(base::TimeTicks::Now());
-  DVLOG(1) << "fps: " << vr_ui_fps_meter_.GetFPS();
+  DVLOG(2) << "fps: " << vr_ui_fps_meter_.GetFPS();
   TRACE_COUNTER1("gpu", "VR UI FPS", vr_ui_fps_meter_.GetFPS());
 
   if (frame_type == kWebXrFrame) {
@@ -814,7 +864,7 @@ void GvrSchedulerDelegate::WebVrSendRenderNotification(bool was_rendered) {
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence = gl_fence->GetGpuFence();
     submit_client_->OnSubmitFrameGpuFence(
-        gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle()));
+        gpu_fence->GetGpuFenceHandle().Clone());
   } else {
     // Renderer is waiting for the previous frame to render, unblock it now.
     submit_client_->OnSubmitFrameRendered();
@@ -882,7 +932,7 @@ bool GvrSchedulerDelegate::WebVrHasOverstuffedBuffers() {
 
 device::mojom::VRPosePtr GvrSchedulerDelegate::GetHeadPose(
     gfx::Transform* head_mat_out) {
-  int64_t prediction_nanos = GetPredictedFrameTime().InMicroseconds() * 1000;
+  int64_t prediction_nanos = GetPredictedFrameTime().InNanoseconds();
 
   TRACE_EVENT_BEGIN0("gpu", "GvrSchedulerDelegate::GetVRPosePtrWithNeckModel");
   device::mojom::VRPosePtr pose =
@@ -921,7 +971,8 @@ void GvrSchedulerDelegate::SendVSync(device::mojom::VRPosePtr pose,
 
     CHECK(webxr_.mailbox_bridge_ready());
     CHECK(webxr_.HaveAnimatingFrame());
-    WebXrSharedBuffer* buffer = webxr_.GetAnimatingFrame()->shared_buffer.get();
+    device::WebXrSharedBuffer* buffer =
+        webxr_.GetAnimatingFrame()->shared_buffer.get();
     DCHECK(buffer);
     DCHECK(buffer->mailbox_holder.sync_token.verified_flush());
     frame_data->buffer_holder = buffer->mailbox_holder;
@@ -933,12 +984,14 @@ void GvrSchedulerDelegate::SendVSync(device::mojom::VRPosePtr pose,
     frame_data->mojo_space_reset |= last_event.type == GVR_EVENT_RECENTER;
   }
 
+  frame_data->views = device::gvr_utils::CreateViews(gvr_api_, pose.get());
+
   TRACE_EVENT0("gpu", "GvrSchedulerDelegate::XRInput");
   frame_data->input_state = std::move(input_states_);
 
-  frame_data->pose = std::move(pose);
+  frame_data->mojo_from_viewer = std::move(pose);
 
-  WebXrFrame* frame = webxr_.GetAnimatingFrame();
+  device::WebXrFrame* frame = webxr_.GetAnimatingFrame();
   frame->head_pose = head_mat;
   frame->time_pose = base::TimeTicks::Now();
 
@@ -956,14 +1009,14 @@ void GvrSchedulerDelegate::WebXrPrepareSharedBuffer() {
   CHECK(webxr_.mailbox_bridge_ready());
   CHECK(webxr_.HaveAnimatingFrame());
 
-  WebXrSharedBuffer* buffer;
+  device::WebXrSharedBuffer* buffer;
   if (webxr_.GetAnimatingFrame()->shared_buffer) {
     buffer = webxr_.GetAnimatingFrame()->shared_buffer.get();
   } else {
     // Create buffer and do one-time setup for resources that stay valid after
     // size changes.
     webxr_.GetAnimatingFrame()->shared_buffer =
-        std::make_unique<WebXrSharedBuffer>();
+        std::make_unique<device::WebXrSharedBuffer>();
     buffer = webxr_.GetAnimatingFrame()->shared_buffer.get();
 
     // Local resources
@@ -980,7 +1033,7 @@ void GvrSchedulerDelegate::WebXrPrepareSharedBuffer() {
 }
 
 void GvrSchedulerDelegate::WebXrCreateOrResizeSharedBufferImage(
-    WebXrSharedBuffer* buffer,
+    device::WebXrSharedBuffer* buffer,
     const gfx::Size& size) {
   TRACE_EVENT0("gpu", __func__);
   // Unbind previous image (if any).
@@ -1068,7 +1121,7 @@ void GvrSchedulerDelegate::GetFrameData(
   TRACE_EVENT0("gpu", __func__);
   if (!get_frame_data_callback_.is_null()) {
     DLOG(WARNING) << ": previous get_frame_data_callback_ was not used yet";
-    mojo::ReportBadMessage(
+    frame_data_receiver_.ReportBadMessage(
         "Requested VSync before waiting for response to previous request.");
     ClosePresentationBindings();
     return;
@@ -1091,7 +1144,8 @@ void GvrSchedulerDelegate::SubmitFrameMissing(
     // Renderer didn't submit a frame. Stash the sync token in the mailbox
     // holder, so that we use the dependency before destroying or recycling the
     // shared image.
-    WebXrSharedBuffer* buffer = webxr_.GetAnimatingFrame()->shared_buffer.get();
+    device::WebXrSharedBuffer* buffer =
+        webxr_.GetAnimatingFrame()->shared_buffer.get();
     DCHECK(buffer);
     DCHECK(sync_token.verified_flush());
     buffer->mailbox_holder.sync_token = sync_token;
@@ -1121,7 +1175,7 @@ void GvrSchedulerDelegate::SubmitFrame(int16_t frame_index,
 
 void GvrSchedulerDelegate::SubmitFrameWithTextureHandle(
     int16_t frame_index,
-    mojo::ScopedHandle texture_handle) {
+    mojo::PlatformHandle texture_handle) {
   NOTREACHED();
 }
 
@@ -1136,12 +1190,13 @@ void GvrSchedulerDelegate::SubmitFrameDrawnIntoTexture(
     // Renderer submitted a frame. Stash the sync token in the mailbox
     // holder, so that we use the dependency before destroying or recycling the
     // shared image.
-    WebXrSharedBuffer* buffer = webxr_.GetAnimatingFrame()->shared_buffer.get();
+    device::WebXrSharedBuffer* buffer =
+        webxr_.GetAnimatingFrame()->shared_buffer.get();
     DCHECK(buffer);
     DCHECK(sync_token.verified_flush());
     buffer->mailbox_holder.sync_token = sync_token;
   } else {
-    mojo::ReportBadMessage(
+    presentation_receiver_.ReportBadMessage(
         "SubmitFrameDrawnIntoTexture called while using the wrong transport "
         "mode");
     ClosePresentationBindings();
@@ -1158,14 +1213,16 @@ void GvrSchedulerDelegate::UpdateLayerBounds(int16_t frame_index,
                                              const gfx::RectF& right_bounds,
                                              const gfx::Size& source_size) {
   if (!ValidateRect(left_bounds) || !ValidateRect(right_bounds)) {
-    mojo::ReportBadMessage("UpdateLayerBounds called with invalid bounds");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called with invalid bounds");
     ClosePresentationBindings();
     return;
   }
 
   if (frame_index >= 0 && !webxr_.HaveAnimatingFrame()) {
     // The optional UpdateLayerBounds call must happen before SubmitFrame.
-    mojo::ReportBadMessage("UpdateLayerBounds called without animating frame");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called without animating frame");
     ClosePresentationBindings();
     return;
   }
@@ -1190,12 +1247,13 @@ bool GvrSchedulerDelegate::IsSubmitFrameExpected(int16_t frame_index) {
   if (!submit_client_.get() || !webxr_.HaveAnimatingFrame())
     return false;
 
-  WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
+  device::WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
 
   if (animating_frame->index != frame_index) {
     DVLOG(1) << __func__ << ": wrong frame index, got " << frame_index
              << ", expected " << animating_frame->index;
-    mojo::ReportBadMessage("SubmitFrame called with wrong frame index");
+    presentation_receiver_.ReportBadMessage(
+        "SubmitFrame called with wrong frame index");
     ClosePresentationBindings();
     return false;
   }
@@ -1215,16 +1273,16 @@ bool GvrSchedulerDelegate::SubmitFrameCommon(int16_t frame_index,
 
   // If we get here, treat as a valid submit.
   DCHECK(webxr_.HaveAnimatingFrame());
-  WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
+  device::WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
 
   animating_frame->time_js_submit = base::TimeTicks::Now();
 
   // The JavaScript wait time is supplied externally and not trustworthy. Clamp
   // to a reasonable range to avoid math errors.
-  if (time_waited < base::TimeDelta())
+  if (time_waited.is_negative())
     time_waited = base::TimeDelta();
-  if (time_waited > base::TimeDelta::FromSeconds(1))
-    time_waited = base::TimeDelta::FromSeconds(1);
+  if (time_waited > base::Seconds(1))
+    time_waited = base::Seconds(1);
   webvr_js_wait_time_.AddSample(time_waited);
   TRACE_COUNTER1("gpu", "WebVR JS wait (ms)",
                  webvr_js_wait_time_.GetAverage().InMilliseconds());
@@ -1318,14 +1376,15 @@ void GvrSchedulerDelegate::GetEnvironmentIntegrationProvider(
         device::mojom::XREnvironmentIntegrationProvider> environment_provider) {
   // Environment integration is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Environment integration is not supported.");
+  frame_data_receiver_.ReportBadMessage(
+      "Environment integration is not supported.");
 }
 
 void GvrSchedulerDelegate::SetInputSourceButtonListener(
     mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
   // Input eventing is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Input eventing is not supported.");
+  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 }  // namespace vr

@@ -1,10 +1,10 @@
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,unnecessary-lambda
 
 import sys
 
 
 if sys.version_info[0] < 3:
-    # pylint: disable=redefined-builtin
+    # pylint: disable=redefined-builtin,invalid-name
     chr = unichr
     range = xrange
     str = unicode
@@ -100,6 +100,8 @@ class Parser(object):
             rule()
             if self.failed:
                 self._rewind(p)
+                if p < self.errpos:
+                    self.errpos = p
                 break
             else:
                 vs.append(self.val)
@@ -127,12 +129,12 @@ class Parser(object):
         else:
             self._fail()
 
-    def _str(self, s, l):
-        p = self.pos
-        if (p + l <= self.end) and self.msg[p:p + l] == s:
-            self._succeed(s, self.pos + l)
-        else:
-            self._fail()
+    def _str(self, s):
+        for ch in s:
+            self._ch(ch)
+            if self.failed:
+                return
+        self.val = s
 
     def _range(self, i, j):
         p = self.pos
@@ -191,7 +193,7 @@ class Parser(object):
         self._ch('\f')
 
     def _ws__c6_(self):
-        self._ch('\u00a0')
+        self._ch(u'\xa0')
 
     def _ws__c7_(self):
         self._ch(u'\ufeff')
@@ -232,21 +234,21 @@ class Parser(object):
         self._choose([self._comment__c0_, self._comment__c1_])
 
     def _comment__c0_(self):
-        self._seq([lambda: self._str('//', 2),
+        self._seq([lambda: self._str('//'),
                    lambda: self._star(self._comment__c0__s1_p_)])
 
     def _comment__c0__s1_p_(self):
         self._seq([lambda: self._not(self._eol_), self._anything_])
 
     def _comment__c1_(self):
-        self._seq([lambda: self._str('/*', 2), self._comment__c1__s1_,
-                   lambda: self._str('*/', 2)])
+        self._seq([lambda: self._str('/*'), self._comment__c1__s1_,
+                   lambda: self._str('*/')])
 
     def _comment__c1__s1_(self):
         self._star(lambda: self._seq([self._comment__c1__s1_p__s0_, self._anything_]))
 
     def _comment__c1__s1_p__s0_(self):
-        self._not(lambda: self._str('*/', 2))
+        self._not(lambda: self._str('*/'))
 
     def _value_(self):
         self._choose([self._value__c0_, self._value__c1_, self._value__c2_,
@@ -254,14 +256,13 @@ class Parser(object):
                       self._value__c6_])
 
     def _value__c0_(self):
-        self._seq([lambda: self._str('null', 4), lambda: self._succeed('None')])
+        self._seq([lambda: self._str('null'), lambda: self._succeed('None')])
 
     def _value__c1_(self):
-        self._seq([lambda: self._str('true', 4), lambda: self._succeed('True')])
+        self._seq([lambda: self._str('true'), lambda: self._succeed('True')])
 
     def _value__c2_(self):
-        self._seq([lambda: self._str('false', 5),
-                   lambda: self._succeed('False')])
+        self._seq([lambda: self._str('false'), lambda: self._succeed('False')])
 
     def _value__c3_(self):
         self._push('value__c3')
@@ -393,7 +394,8 @@ class Parser(object):
                       self._esc_char__c4_, self._esc_char__c5_,
                       self._esc_char__c6_, self._esc_char__c7_,
                       self._esc_char__c8_, self._esc_char__c9_,
-                      self._esc_char__c10_])
+                      self._esc_char__c10_, self._esc_char__c11_,
+                      self._esc_char__c12_])
 
     def _esc_char__c0_(self):
         self._seq([lambda: self._ch('b'), lambda: self._succeed('\b')])
@@ -402,10 +404,20 @@ class Parser(object):
         self._seq([lambda: self._ch('f'), lambda: self._succeed('\f')])
 
     def _esc_char__c10_(self):
-        self._push('esc_char__c10')
+        self._seq([lambda: self._ch('0'), lambda: self._not(self._digit_),
+                   lambda: self._succeed('\x00')])
+
+    def _esc_char__c11_(self):
+        self._push('esc_char__c11')
+        self._seq([lambda: self._bind(self._hex_esc_, 'c'),
+                   lambda: self._succeed(self._get('c'))])
+        self._pop('esc_char__c11')
+
+    def _esc_char__c12_(self):
+        self._push('esc_char__c12')
         self._seq([lambda: self._bind(self._unicode_esc_, 'c'),
                    lambda: self._succeed(self._get('c'))])
-        self._pop('esc_char__c10')
+        self._pop('esc_char__c12')
 
     def _esc_char__c2_(self):
         self._seq([lambda: self._ch('n'), lambda: self._succeed('\n')])
@@ -430,9 +442,25 @@ class Parser(object):
 
     def _esc_char__c9_(self):
         self._push('esc_char__c9')
-        self._seq([lambda: self._bind(self._hex_esc_, 'c'),
+        self._seq([self._esc_char__c9__s0_,
+                   lambda: self._bind(self._anything_, 'c'),
                    lambda: self._succeed(self._get('c'))])
         self._pop('esc_char__c9')
+
+    def _esc_char__c9__s0_(self):
+        self._not(lambda: (self._esc_char__c9__s0_n_g_)())
+
+    def _esc_char__c9__s0_n_g_(self):
+        self._choose([self._esc_char__c9__s0_n_g__c0_,
+                      self._esc_char__c9__s0_n_g__c1_,
+                      lambda: self._seq([self._digit_]),
+                      lambda: self._seq([self._eol_])])
+
+    def _esc_char__c9__s0_n_g__c0_(self):
+        self._seq([lambda: self._ch('x')])
+
+    def _esc_char__c9__s0_n_g__c1_(self):
+        self._seq([lambda: self._ch('u')])
 
     def _hex_esc_(self):
         self._push('hex_esc')
@@ -500,22 +528,6 @@ class Parser(object):
                    lambda: self._bind(self._value_, 'v'),
                    lambda: self._succeed([self._get('k'), self._get('v')])])
         self._pop('member__c1')
-
-    def _member_list_(self):
-        self._push('member_list')
-        self._seq([lambda: self._bind(self._member_, 'm'),
-                   self._member_list__s1_, self._sp_, self._member_list__s3_,
-                   lambda: self._succeed([self._get('m')] + self._get('ms'))])
-        self._pop('member_list')
-
-    def _member_list__s1_(self):
-        self._bind(lambda: self._star(self._member_list__s1_l_p_), 'ms')
-
-    def _member_list__s1_l_p_(self):
-        self._seq([self._sp_, lambda: self._ch(','), self._sp_, self._member_])
-
-    def _member_list__s3_(self):
-        self._opt(lambda: self._ch(','))
 
     def _ident_(self):
         self._push('ident')
@@ -734,10 +746,10 @@ class Parser(object):
         self._opt(lambda: self._ch('+'))
 
     def _num_literal__c3_(self):
-        self._str('Infinity', 8)
+        self._str('Infinity')
 
     def _num_literal__c4_(self):
-        self._str('NaN', 3)
+        self._str('NaN')
 
     def _dec_literal_(self):
         self._choose([self._dec_literal__c0_, self._dec_literal__c1_,
@@ -815,7 +827,7 @@ class Parser(object):
         self._pop('hex_literal')
 
     def _hex_literal__s0_(self):
-        self._choose([lambda: self._str('0x', 2), lambda: self._str('0X', 2)])
+        self._choose([lambda: self._str('0x'), lambda: self._str('0X')])
 
     def _hex_literal__s1_(self):
         self._bind(lambda: self._plus(self._hex_), 'hs')
@@ -828,25 +840,6 @@ class Parser(object):
 
     def _hex__c1_(self):
         self._range('A', 'F')
-
-    def _hex_esc_(self):
-        self._push('hex_esc')
-        self._seq([lambda: self._ch('x'), lambda: self._bind(self._hex_, 'h1'),
-                   lambda: self._bind(self._hex_, 'h2'),
-                   lambda: self._succeed(self._xtou(self._get('h1') + self._get('h2')))])
-        self._pop('hex_esc')
-
-    def _hex_literal_(self):
-        self._push('hex_literal')
-        self._seq([self._hex_literal__s0_, self._hex_literal__s1_,
-                   lambda: self._succeed('0x' + self._join('', self._get('hs')))])
-        self._pop('hex_literal')
-
-    def _hex_literal__s0_(self):
-        self._choose([lambda: self._str('0x', 2), lambda: self._str('0X', 2)])
-
-    def _hex_literal__s1_(self):
-        self._bind(lambda: self._plus(self._hex_), 'hs')
 
     def _frac_(self):
         self._push('frac')

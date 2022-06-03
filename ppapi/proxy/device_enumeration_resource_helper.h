@@ -38,6 +38,12 @@ class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
  public:
   // |owner| must outlive this object.
   explicit DeviceEnumerationResourceHelper(PluginResource* owner);
+
+  DeviceEnumerationResourceHelper(const DeviceEnumerationResourceHelper&) =
+      delete;
+  DeviceEnumerationResourceHelper& operator=(
+      const DeviceEnumerationResourceHelper&) = delete;
+
   ~DeviceEnumerationResourceHelper();
 
   int32_t EnumerateDevices(const PP_ArrayOutput& output,
@@ -74,8 +80,6 @@ class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
   std::unique_ptr<ThreadAwareCallback<PP_MonitorDeviceChangeCallback>>
       monitor_callback_;
   void* monitor_user_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEnumerationResourceHelper);
 };
 
 }  // namespace proxy

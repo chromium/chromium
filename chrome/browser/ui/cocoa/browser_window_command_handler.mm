@@ -4,8 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"

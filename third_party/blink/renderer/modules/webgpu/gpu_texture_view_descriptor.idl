@@ -8,10 +8,10 @@ dictionary GPUTextureViewDescriptor : GPUObjectDescriptorBase {
     GPUTextureFormat format;
     GPUTextureViewDimension dimension;
     GPUTextureAspect aspect = "all";
-    unsigned long baseMipLevel = 0;
-    unsigned long mipLevelCount = 0;
-    unsigned long baseArrayLayer = 0;
-    unsigned long arrayLayerCount = 0;
+    GPUIntegerCoordinate baseMipLevel = 0;
+    GPUIntegerCoordinate mipLevelCount;
+    GPUIntegerCoordinate baseArrayLayer = 0;
+    GPUIntegerCoordinate arrayLayerCount;
 };
 
 enum GPUTextureViewDimension {

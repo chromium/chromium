@@ -4,14 +4,19 @@
 
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
+#include <list>
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -67,7 +72,7 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        MenuItemView* menu,
                                                        int menu_index,
                                                        int item_id) {
-  base::Optional<MenuItemView::Type> type;
+  absl::optional<MenuItemView::Type> type;
   ui::MenuModel::ItemType menu_type = model->GetTypeAt(model_index);
   switch (menu_type) {
     case ui::MenuModel::TYPE_TITLE:
@@ -98,20 +103,32 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   }
 
   if (*type == MenuItemView::Type::kSeparator) {
-    return menu->AddMenuItemAt(menu_index, item_id, base::string16(),
-                               base::string16(), nullptr, gfx::ImageSkia(),
-                               nullptr, *type,
+    return menu->AddMenuItemAt(menu_index, item_id, std::u16string(),
+                               std::u16string(), std::u16string(),
+                               ui::ImageModel(), ui::ImageModel(), *type,
                                model->GetSeparatorTypeAt(model_index));
   }
 
-  gfx::Image icon;
-  model->GetIconAt(model_index, &icon);
-  return menu->AddMenuItemAt(
-      menu_index, item_id, model->GetLabelAt(model_index),
-      model->GetMinorTextAt(model_index), model->GetMinorIconAt(model_index),
-      icon.IsEmpty() ? gfx::ImageSkia() : *icon.ToImageSkia(),
-      icon.IsEmpty() ? model->GetVectorIconAt(model_index) : nullptr, *type,
-      ui::NORMAL_SEPARATOR);
+  ui::ImageModel icon = model->GetIconAt(model_index);
+  ui::ImageModel minor_icon = model->GetMinorIconAt(model_index);
+  auto* menu_item_view =
+      menu->AddMenuItemAt(menu_index, item_id, model->GetLabelAt(model_index),
+                          model->GetSecondaryLabelAt(model_index),
+                          model->GetMinorTextAt(model_index), minor_icon, icon,
+                          *type, ui::NORMAL_SEPARATOR);
+
+  if (model->IsAlertedAt(model_index))
+    menu_item_view->SetAlerted();
+  menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
+  menu_item_view->set_may_have_mnemonics(
+      model->MayHaveMnemonicsAt(model_index));
+  menu_item_view->set_accessible_name(model->GetAccessibleNameAt(model_index));
+  const ui::ElementIdentifier element_id =
+      model->GetElementIdentifierAt(model_index);
+  if (element_id)
+    menu_item_view->SetProperty(kElementIdentifierKey, element_id);
+
+  return menu_item_view;
 }
 
 // Static.
@@ -120,10 +137,11 @@ MenuItemView* MenuModelAdapter::AppendMenuItemFromModel(ui::MenuModel* model,
                                                         MenuItemView* menu,
                                                         int item_id) {
   const int menu_index =
-      menu->HasSubmenu() ? int{menu->GetSubmenu()->children().size()} : 0;
+      menu->HasSubmenu()
+          ? static_cast<int>(menu->GetSubmenu()->children().size())
+          : 0;
   return AddMenuItemFromModelAt(model, model_index, menu, menu_index, item_id);
 }
-
 
 MenuItemView* MenuModelAdapter::AppendMenuItem(MenuItemView* menu,
                                                ui::MenuModel* model,
@@ -174,29 +192,27 @@ bool MenuModelAdapter::GetAccelerator(int id,
   return false;
 }
 
-base::string16 MenuModelAdapter::GetLabel(int id) const {
+std::u16string MenuModelAdapter::GetLabel(int id) const {
   ui::MenuModel* model = menu_model_;
   int index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->GetLabelAt(index);
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-void MenuModelAdapter::GetLabelStyle(int id, LabelStyle* style) const {
+const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
   ui::MenuModel* model = menu_model_;
   int index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
     const gfx::FontList* font_list = model->GetLabelFontListAt(index);
-    if (font_list) {
-      style->font_list = *font_list;
-      return;
-    }
+    if (font_list)
+      return font_list;
   }
 
   // This line may be reached for the empty menu item.
-  return MenuDelegate::GetLabelStyle(id, style);
+  return MenuDelegate::GetLabelFontList(id);
 }
 
 bool MenuModelAdapter::IsCommandEnabled(int id) const {

@@ -6,15 +6,12 @@
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_REMOVER_HELPER_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
-
 class ReadingListDownloadService;
 
 namespace reading_list {
@@ -24,7 +21,11 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
  public:
   using Callback = base::OnceCallback<void(bool)>;
 
-  explicit ReadingListRemoverHelper(ios::ChromeBrowserState* browser_state);
+  explicit ReadingListRemoverHelper(ChromeBrowserState* browser_state);
+
+  ReadingListRemoverHelper(const ReadingListRemoverHelper&) = delete;
+  ReadingListRemoverHelper& operator=(const ReadingListRemoverHelper&) = delete;
+
   ~ReadingListRemoverHelper() override;
 
   // Removes all Reading list items and asynchronously invoke |completion| with
@@ -44,12 +45,10 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   Callback completion_;
   ReadingListModel* reading_list_model_ = nullptr;
   ReadingListDownloadService* reading_list_download_service_ = nullptr;
-  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      scoped_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListRemoverHelper);
 };
 
 }  // namespace reading_list

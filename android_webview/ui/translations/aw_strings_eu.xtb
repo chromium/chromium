@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
-<translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera behin betiko aldatu izatea.</translation>
-<translation id="6312113039770857350">Ez dago erabilgarri web-orria</translation>
-<translation id="8681531050781943054">Ezin izan da kargatu <ph name="PAGE" /> helbideko web-orria, arrazoi honengatik:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Iradokizunak:<ph name="MARKUP_2" />Ziurtatu datu-konexioa duzula.<ph name="MARKUP_3" />Kargatu web-orria berriro geroago<ph name="MARKUP_4" />Egiaztatu idatzitako helbidea zuzena dela.<ph name="MARKUP_5" /></translation>
 </translationbundle>

@@ -1,8 +1,0 @@
-yoavweiss@chromium.org
-tbansal@chromium.org
-ryansturm@chromium.org
-
-# For IPC security review
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-# COMPONENT: Blink>Loader

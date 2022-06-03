@@ -6,10 +6,9 @@ group("polymer_tools_python_unittests") {
   testonly = true
 
   data = [
-    "//testing/scripts/common.py",
     "//testing/scripts/run_isolated_script_test.py",
-    "//testing/xvfb.py",
     "//tools/polymer/",
     "//third_party/catapult/third_party/typ/",
   ]
+  data_deps = [ "//testing:test_scripts_shared" ]
 }

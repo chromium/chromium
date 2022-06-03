@@ -4,8 +4,8 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_byte_range.h"
 

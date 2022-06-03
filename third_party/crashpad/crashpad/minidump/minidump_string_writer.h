@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_rva_list_writer.h"
 #include "minidump/minidump_writable.h"
@@ -35,7 +33,7 @@ namespace internal {
 //! \cond
 
 struct MinidumpStringWriterUTF16Traits {
-  using StringType = base::string16;
+  using StringType = std::u16string;
   using MinidumpStringType = MINIDUMP_STRING;
 };
 
@@ -56,6 +54,10 @@ template <typename Traits>
 class MinidumpStringWriter : public MinidumpWritable {
  public:
   MinidumpStringWriter();
+
+  MinidumpStringWriter(const MinidumpStringWriter&) = delete;
+  MinidumpStringWriter& operator=(const MinidumpStringWriter&) = delete;
+
   ~MinidumpStringWriter() override;
 
  protected:
@@ -79,8 +81,6 @@ class MinidumpStringWriter : public MinidumpWritable {
  private:
   std::unique_ptr<MinidumpStringType> string_base_;
   StringType string_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpStringWriter);
 };
 
 //! \brief Writes a variable-length UTF-16-encoded MINIDUMP_STRING to a minidump
@@ -92,6 +92,11 @@ class MinidumpUTF16StringWriter final
     : public MinidumpStringWriter<MinidumpStringWriterUTF16Traits> {
  public:
   MinidumpUTF16StringWriter() : MinidumpStringWriter() {}
+
+  MinidumpUTF16StringWriter(const MinidumpUTF16StringWriter&) = delete;
+  MinidumpUTF16StringWriter& operator=(const MinidumpUTF16StringWriter&) =
+      delete;
+
   ~MinidumpUTF16StringWriter() override;
 
   //! \brief Converts a UTF-8 string to UTF-16 and sets it as the string to be
@@ -99,9 +104,6 @@ class MinidumpUTF16StringWriter final
   //!
   //! \note Valid in #kStateMutable.
   void SetUTF8(const std::string& string_utf8);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUTF16StringWriter);
 };
 
 //! \brief Writes a variable-length UTF-8-encoded MinidumpUTF8String to a
@@ -113,6 +115,10 @@ class MinidumpUTF8StringWriter final
     : public MinidumpStringWriter<MinidumpStringWriterUTF8Traits> {
  public:
   MinidumpUTF8StringWriter() : MinidumpStringWriter() {}
+
+  MinidumpUTF8StringWriter(const MinidumpUTF8StringWriter&) = delete;
+  MinidumpUTF8StringWriter& operator=(const MinidumpUTF8StringWriter&) = delete;
+
   ~MinidumpUTF8StringWriter() override;
 
   //! \brief Sets the string to be written.
@@ -124,9 +130,6 @@ class MinidumpUTF8StringWriter final
   //!
   //! \note Valid in any state.
   const std::string& UTF8() const { return string(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUTF8StringWriter);
 };
 
 //! \brief The writer for a MinidumpRVAList object in a minidump file,
@@ -135,6 +138,10 @@ template <typename MinidumpStringWriterType>
 class MinidumpStringListWriter final : public MinidumpRVAListWriter {
  public:
   MinidumpStringListWriter();
+
+  MinidumpStringListWriter(const MinidumpStringListWriter&) = delete;
+  MinidumpStringListWriter& operator=(const MinidumpStringListWriter&) = delete;
+
   ~MinidumpStringListWriter() override;
 
   //! \brief Adds a new \a Traits::MinidumpStringWriterType for each element in
@@ -167,9 +174,6 @@ class MinidumpStringListWriter final : public MinidumpRVAListWriter {
   //!
   //! \return `true` if the object is useful, `false` otherwise.
   bool IsUseful() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpStringListWriter);
 };
 
 }  // namespace internal

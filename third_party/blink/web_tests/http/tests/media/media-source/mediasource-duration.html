@@ -277,7 +277,7 @@
                   mediaSource.duration = fullDuration + 1;
 
                   // Reducing duration to below the highest buffered PTS should trigger exception.
-                  assert_throws('InvalidStateError',
+                  assert_throws_dom('InvalidStateError',
                       function() { mediaSource.duration = fullDuration - 0.05; },
                       'Duration reduction that truncates at least one whole coded frame throws an exception.');
 

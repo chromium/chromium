@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,8 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -35,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Tests for {@link TabSelectionEditorActionProvider}.
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSelectionEditorActionProviderUnitTest {
@@ -73,8 +72,6 @@ public class TabSelectionEditorActionProviderUnitTest {
 
     @Before
     public void setUp() {
-        RecordUserAction.setDisabledForTests(true);
-        RecordHistogram.setDisabledForTests(true);
 
         MockitoAnnotations.initMocks(this);
 
@@ -90,12 +87,6 @@ public class TabSelectionEditorActionProviderUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-    }
-
-    @After
-    public void tearDown() {
-        RecordUserAction.setDisabledForTests(false);
-        RecordHistogram.setDisabledForTests(false);
     }
 
     @Test
@@ -159,7 +150,7 @@ public class TabSelectionEditorActionProviderUnitTest {
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         doReturn(id).when(tab).getId();
-        doReturn("").when(tab).getUrl();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         doReturn(title).when(tab).getTitle();
         doReturn(false).when(tab).isClosing();
         return tab;

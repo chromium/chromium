@@ -37,12 +37,16 @@ component("public") {
     "download_item_factory.h",
     "download_item_impl.h",
     "download_item_impl_delegate.h",
+    "download_item_rename_handler.h",
+    "download_item_rename_progress_update.h",
     "download_job.h",
     "download_job_factory.h",
     "download_path_reservation_tracker.h",
     "download_response_handler.h",
     "download_save_info.cc",
     "download_save_info.h",
+    "download_schedule.cc",
+    "download_schedule.h",
     "download_source.h",
     "download_start_observer.h",
     "download_stats.h",
@@ -60,6 +64,8 @@ component("public") {
     "resume_mode.h",
     "simple_download_manager.h",
     "simple_download_manager_coordinator.h",
+    "storage_partition_config.cc",
+    "storage_partition_config.h",
     "stream_handle_input_stream.h",
     "url_download_handler_factory.h",
     "url_download_request_handle.h",
@@ -73,9 +79,11 @@ component("public") {
     "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
   ]
 
   deps = [
@@ -94,6 +102,10 @@ component("public") {
     "//components/download/internal/common:internal",
     "//components/download/database",
   ]
+
+  if (is_win && is_component_build) {
+    ldflags = [ "/IGNORE:4217" ]
+  }
 }
 
 if (is_android) {
@@ -102,7 +114,8 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//components/download/internal/common:internal_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -115,9 +128,7 @@ if (is_android) {
 }
 
 mojom("interfaces") {
-  sources = [
-    "download_stream.mojom",
-  ]
+  sources = [ "download_stream.mojom" ]
 
   export_class_attribute = "COMPONENTS_DOWNLOAD_EXPORT"
   export_define = "COMPONENTS_DOWNLOAD_IMPLEMENTATION=1"
@@ -151,9 +162,7 @@ source_set("test_support") {
   ]
 
   if (is_android) {
-    deps = [
-      "//components/download/internal/common:internal_java",
-    ]
+    deps = [ "//components/download/internal/common:internal_java" ]
   }
 }
 
@@ -162,6 +171,8 @@ source_set("unit_tests") {
 
   sources = [
     "auto_resumption_handler_unittest.cc",
+    "download_schedule_unittest.cc",
+    "storage_partition_config_unittest.cc",
   ]
 
   deps = [

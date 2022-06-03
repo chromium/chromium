@@ -74,6 +74,7 @@ class CORE_EXPORT StepRange {
             const Decimal& minimum,
             const Decimal& maximum,
             bool has_range_limitations,
+            bool supports_reversed_range,
             const Decimal& step,
             const StepDescription&);
 
@@ -85,6 +86,8 @@ class CORE_EXPORT StepRange {
   Decimal Minimum() const { return minimum_; }
   // https://html.spec.whatwg.org/C/#have-range-limitations
   bool HasRangeLimitations() const { return has_range_limitations_; }
+  // https://html.spec.whatwg.org/C/#has-a-reversed-range
+  bool HasReversedRange() const;
   static Decimal ParseStep(AnyStepHandling,
                            const StepDescription&,
                            const String&);
@@ -123,6 +126,7 @@ class CORE_EXPORT StepRange {
   const StepDescription step_description_;
   const bool has_step_;
   const bool has_range_limitations_;
+  const bool supports_reversed_range_;
 };
 
 }  // namespace blink

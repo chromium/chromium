@@ -1,0 +1,23 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_TABLE layout-guess:true table_rows=3 table_columns=3
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_CELL name='a' table-cell-index:0
+++++++++ROLE_SYSTEM_STATICTEXT name='a'
+++++++ROLE_SYSTEM_CELL name='b' table-cell-index:1
+++++++++ROLE_SYSTEM_STATICTEXT name='b'
+++++++ROLE_SYSTEM_CELL name='c' table-cell-index:2
+++++++++ROLE_SYSTEM_STATICTEXT name='c'
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_CELL name='a' table-cell-index:3
+++++++++ROLE_SYSTEM_STATICTEXT name='a'
+++++++ROLE_SYSTEM_CELL name='b' table-cell-index:4
+++++++++ROLE_SYSTEM_STATICTEXT name='b'
+++++++ROLE_SYSTEM_CELL name='c' table-cell-index:5
+++++++++ROLE_SYSTEM_STATICTEXT name='c'
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_CELL name='a' table-cell-index:6
+++++++++ROLE_SYSTEM_STATICTEXT name='a'
+++++++ROLE_SYSTEM_CELL name='b' table-cell-index:7
+++++++++ROLE_SYSTEM_STATICTEXT name='b'
+++++++ROLE_SYSTEM_CELL name='c' table-cell-index:8
+++++++++ROLE_SYSTEM_STATICTEXT name='c'

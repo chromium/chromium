@@ -22,6 +22,10 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceOffscreen : public GLOutputSurface {
  public:
   explicit GLOutputSurfaceOffscreen(
       scoped_refptr<VizProcessContextProvider> context_provider);
+
+  GLOutputSurfaceOffscreen(const GLOutputSurfaceOffscreen&) = delete;
+  GLOutputSurfaceOffscreen& operator=(const GLOutputSurfaceOffscreen&) = delete;
+
   ~GLOutputSurfaceOffscreen() override;
 
   // OutputSurface implementation.
@@ -31,7 +35,7 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceOffscreen : public GLOutputSurface {
   void Reshape(const gfx::Size& size,
                float scale_factor,
                const gfx::ColorSpace& color_space,
-               bool alpha,
+               gfx::BufferFormat format,
                bool stencil) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
 
@@ -46,8 +50,6 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceOffscreen : public GLOutputSurface {
   gfx::ColorSpace color_space_;
 
   base::WeakPtrFactory<GLOutputSurfaceOffscreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceOffscreen);
 };
 
 }  // namespace viz

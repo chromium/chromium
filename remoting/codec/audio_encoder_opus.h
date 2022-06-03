@@ -26,6 +26,10 @@ class AudioPacket;
 class AudioEncoderOpus : public AudioEncoder {
  public:
   AudioEncoderOpus();
+
+  AudioEncoderOpus(const AudioEncoderOpus&) = delete;
+  AudioEncoderOpus& operator=(const AudioEncoderOpus&) = delete;
+
   ~AudioEncoderOpus() override;
 
   // AudioEncoder interface.
@@ -59,8 +63,6 @@ class AudioEncoderOpus : public AudioEncoder {
   std::unique_ptr<int16_t[]> leftover_buffer_;
   int leftover_buffer_size_;
   int leftover_samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoderOpus);
 };
 
 }  // namespace remoting

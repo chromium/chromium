@@ -38,7 +38,7 @@ String CSSFontStyleRangeValue::CustomCSSText() const {
   builder.Append(font_style_value_->CssText());
   builder.Append(" ");
   builder.Append(oblique_values_->CssText());
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool CSSFontStyleRangeValue::Equals(const CSSFontStyleRangeValue& other) const {
@@ -48,7 +48,7 @@ bool CSSFontStyleRangeValue::Equals(const CSSFontStyleRangeValue& other) const {
          *oblique_values_ == *other.oblique_values_;
 }
 
-void CSSFontStyleRangeValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSFontStyleRangeValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(font_style_value_);
   visitor->Trace(oblique_values_);
   CSSValue::TraceAfterDispatch(visitor);

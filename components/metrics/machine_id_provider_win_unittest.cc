@@ -8,7 +8,7 @@
 
 namespace metrics {
 
-TEST(MachineIdProviderTest, GetId) {
+TEST(MachineIdProviderWinTest, GetId) {
   EXPECT_TRUE(MachineIdProvider::HasId());
 
   const std::string id1 = MachineIdProvider::GetMachineId();

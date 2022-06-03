@@ -5,16 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_UI_OPEN_IN_OPEN_IN_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_OPEN_IN_OPEN_IN_MEDIATOR_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 
-class WebStateList;
+class Browser;
 
 // Mediator which mediates between openIn views and openIn tab helpers.
 @interface OpenInMediator : NSObject <OpenInTabHelperDelegate>
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+// Creates a mediator that uses a |viewController| and a |browser|.
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Disables all registered openInControllers.
 - (void)disableAll;
 

@@ -23,7 +23,7 @@ const char kSmartLockFeatureName[] = "easy_unlock";
 
 RemoteDeviceLifeCycleImpl::RemoteDeviceLifeCycleImpl(
     chromeos::multidevice::RemoteDeviceRef remote_device,
-    base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device,
+    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
     chromeos::secure_channel::SecureChannelClient* secure_channel_client)
     : remote_device_(remote_device),
       local_device_(local_device),
@@ -80,6 +80,7 @@ void RemoteDeviceLifeCycleImpl::TransitionToState(
 void RemoteDeviceLifeCycleImpl::FindConnection() {
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
       remote_device_, *local_device_, kSmartLockFeatureName,
+      chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy,
       chromeos::secure_channel::ConnectionPriority::kHigh);
   connection_attempt_->SetDelegate(this);
 
@@ -89,7 +90,7 @@ void RemoteDeviceLifeCycleImpl::FindConnection() {
 void RemoteDeviceLifeCycleImpl::CreateMessenger() {
   DCHECK(state_ == RemoteDeviceLifeCycle::State::AUTHENTICATING);
 
-  messenger_.reset(new MessengerImpl(std::move(channel_)));
+  messenger_ = std::make_unique<MessengerImpl>(std::move(channel_));
   messenger_->AddObserver(this);
 
   TransitionToState(RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);

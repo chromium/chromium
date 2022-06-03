@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "components/cronet/android/cronet_tests_jni_headers/MockUrlRequestJobFactory_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
+#include "components/cronet/android/test/url_request_intercepting_job_factory.h"
 #include "net/test/url_request/ssl_certificate_error_job.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_hanging_read_job.h"
 #include "net/test/url_request/url_request_mock_data_job.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_filter.h"
-#include "net/url_request/url_request_intercepting_job_factory.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -30,8 +30,8 @@ class UrlInterceptorJobFactoryHandle {
       : jcontext_adapter_(jcontext_adapter) {
     TestUtil::RunAfterContextInit(
         jcontext_adapter,
-        base::Bind(&UrlInterceptorJobFactoryHandle::InitOnNetworkThread,
-                   base::Unretained(this)));
+        base::BindOnce(&UrlInterceptorJobFactoryHandle::InitOnNetworkThread,
+                       base::Unretained(this)));
   }
   // Should only be called on network thread; other threads should use
   // ShutDown().
@@ -45,8 +45,8 @@ class UrlInterceptorJobFactoryHandle {
   void ShutDown() {
     TestUtil::RunAfterContextInit(
         jcontext_adapter_,
-        base::Bind(&UrlInterceptorJobFactoryHandle::ShutdownOnNetworkThread,
-                   base::Unretained(this)));
+        base::BindOnce(&UrlInterceptorJobFactoryHandle::ShutdownOnNetworkThread,
+                       base::Unretained(this)));
   }
 
  private:
@@ -54,7 +54,7 @@ class UrlInterceptorJobFactoryHandle {
     net::URLRequestContext* request_context =
         TestUtil::GetURLRequestContext(jcontext_adapter_);
     old_job_factory_ = request_context->job_factory();
-    new_job_factory_.reset(new net::URLRequestInterceptingJobFactory(
+    new_job_factory_.reset(new URLRequestInterceptingJobFactory(
         const_cast<net::URLRequestJobFactory*>(old_job_factory_),
         net::URLRequestFilter::GetInstance()));
     request_context->set_job_factory(new_job_factory_.get());
@@ -68,7 +68,7 @@ class UrlInterceptorJobFactoryHandle {
   const net::URLRequestJobFactory* old_job_factory_;
   // URLRequestJobFactory inserted during tests to intercept URLRequests with
   // libcronet's URLRequestFilter.
-  std::unique_ptr<net::URLRequestInterceptingJobFactory> new_job_factory_;
+  std::unique_ptr<URLRequestInterceptingJobFactory> new_job_factory_;
 };
 
 // URL interceptors are registered with the URLRequestFilter in

@@ -1,0 +1,6 @@
+{
+  "app_url": "https://www.chromestatus.com/features",
+  "hide_from_user": true,
+  "launch_container": "tab",
+  "user_type": ["unmanaged"]
+}

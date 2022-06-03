@@ -19,7 +19,7 @@ enum IdleState {
 };
 
 // For MacOSX, InitIdleMonitor needs to be called first to setup the monitor.
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 COMPONENT_EXPORT(UI_BASE_IDLE) void InitIdleMonitor();
 #endif
 

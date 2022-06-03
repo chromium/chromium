@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -29,7 +30,7 @@ class OverscrollBehaviorTest : public SimTest {
 void OverscrollBehaviorTest::SetUp() {
   SimTest::SetUp();
   v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -70,7 +71,7 @@ void OverscrollBehaviorTest::SetInnerOverscrollBehavior(EOverscrollBehavior x,
 }
 
 void OverscrollBehaviorTest::ScrollBegin(double hint_x, double hint_y) {
-  WebGestureEvent event(WebInputEvent::kGestureScrollBegin,
+  WebGestureEvent event(WebInputEvent::Type::kGestureScrollBegin,
                         WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen);
   event.SetPositionInWidget(gfx::PointF(20, 20));
@@ -83,7 +84,7 @@ void OverscrollBehaviorTest::ScrollBegin(double hint_x, double hint_y) {
 }
 
 void OverscrollBehaviorTest::ScrollUpdate(double delta_x, double delta_y) {
-  WebGestureEvent event(WebInputEvent::kGestureScrollUpdate,
+  WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                         WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen);
   event.SetPositionInWidget(gfx::PointF(20, 20));
@@ -95,7 +96,7 @@ void OverscrollBehaviorTest::ScrollUpdate(double delta_x, double delta_y) {
 }
 
 void OverscrollBehaviorTest::ScrollEnd() {
-  WebGestureEvent event(WebInputEvent::kGestureScrollEnd,
+  WebGestureEvent event(WebInputEvent::Type::kGestureScrollEnd,
                         WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen);
   event.SetPositionInWidget(gfx::PointF(20, 20));

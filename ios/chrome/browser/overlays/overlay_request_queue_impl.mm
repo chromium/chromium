@@ -6,9 +6,10 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overlays/default_overlay_request_cancel_handler.h"
+#include "ios/chrome/browser/overlays/overlay_request_impl.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
@@ -21,9 +22,7 @@
 OverlayRequestQueue* OverlayRequestQueue::FromWebState(
     web::WebState* web_state,
     OverlayModality modality) {
-  OverlayRequestQueueImpl::Container::CreateForWebState(web_state);
-  return OverlayRequestQueueImpl::Container::FromWebState(web_state)
-      ->QueueForModality(modality);
+  return OverlayRequestQueueImpl::FromWebState(web_state, modality);
 }
 
 #pragma mark - OverlayRequestQueueImpl::Container
@@ -44,11 +43,33 @@ OverlayRequestQueueImpl* OverlayRequestQueueImpl::Container::QueueForModality(
 
 #pragma mark - OverlayRequestQueueImpl
 
+OverlayRequestQueueImpl* OverlayRequestQueueImpl::FromWebState(
+    web::WebState* web_state,
+    OverlayModality modality) {
+  OverlayRequestQueueImpl::Container::CreateForWebState(web_state);
+  return OverlayRequestQueueImpl::Container::FromWebState(web_state)
+      ->QueueForModality(modality);
+}
+
 OverlayRequestQueueImpl::OverlayRequestQueueImpl(web::WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {}
-OverlayRequestQueueImpl::~OverlayRequestQueueImpl() = default;
+
+OverlayRequestQueueImpl::~OverlayRequestQueueImpl() {
+  for (auto& observer : observers_) {
+    observer.OverlayRequestQueueDestroyed(this);
+  }
+  CancelAllRequests();
+}
 
 #pragma mark Public
+
+void OverlayRequestQueueImpl::SetDelegate(Delegate* delegate) {
+  if (delegate_ == delegate)
+    return;
+  if (delegate_)
+    delegate_->OverlayRequestQueueWillReplaceDelegate(this);
+  delegate_ = delegate;
+}
 
 void OverlayRequestQueueImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -62,20 +83,8 @@ base::WeakPtr<OverlayRequestQueueImpl> OverlayRequestQueueImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-std::unique_ptr<OverlayRequest> OverlayRequestQueueImpl::PopFrontRequest() {
-  DCHECK(size());
-  std::unique_ptr<OverlayRequest> request =
-      std::move(request_storages_.front().request);
-  request_storages_.pop_front();
-  return request;
-}
-
-std::unique_ptr<OverlayRequest> OverlayRequestQueueImpl::PopBackRequest() {
-  DCHECK(size());
-  std::unique_ptr<OverlayRequest> request =
-      std::move(request_storages_.back().request);
-  request_storages_.pop_back();
-  return request;
+void OverlayRequestQueueImpl::PopFrontRequest() {
+  RemoveRequest(/*index=*/0, /*cancelled=*/false);
 }
 
 #pragma mark OverlayRequestQueue
@@ -105,10 +114,13 @@ void OverlayRequestQueueImpl::InsertRequest(
     std::unique_ptr<OverlayRequestCancelHandler> cancel_handler) {
   DCHECK_LE(index, size());
   DCHECK(request.get());
+  // Create the cancel handler if necessary.
   if (!cancel_handler) {
     cancel_handler = std::make_unique<DefaultOverlayRequestCancelHandler>(
         request.get(), this, web_state_);
   }
+  static_cast<OverlayRequestImpl*>(request.get())
+      ->set_queue_web_state(web_state_);
   request_storages_.emplace(request_storages_.begin() + index,
                             std::move(request), std::move(cancel_handler));
   for (auto& observer : observers_) {
@@ -121,31 +133,28 @@ void OverlayRequestQueueImpl::CancelAllRequests() {
   while (size()) {
     // Requests are cancelled in reverse order to prevent attempting to present
     // subsequent requests after the dismissal of the front request's UI.
-    for (auto& observer : observers_) {
-      observer.QueuedRequestCancelled(this,
-                                      request_storages_.back().request.get());
-    }
-    PopBackRequest();
+    RemoveRequest(/*index=*/size() - 1, /*cancelled=*/true);
   }
 }
 
 void OverlayRequestQueueImpl::CancelRequest(OverlayRequest* request) {
-  // Find the iterator for the storage holding |request|.
-  auto storage_iter = request_storages_.begin();
-  auto end = request_storages_.end();
-  while (storage_iter != end) {
-    if ((*storage_iter).request.get() == request)
-      break;
-    ++storage_iter;
+  for (size_t index = 0; index < size(); ++index) {
+    if (request_storages_[index].request.get() == request) {
+      RemoveRequest(index, /*cancelled=*/true);
+      return;
+    }
   }
-  if (storage_iter == end)
-    return;
+}
 
-  // Notify observers of cancellation and remove the storage.
-  for (auto& observer : observers_) {
-    observer.QueuedRequestCancelled(this, request);
-  }
-  request_storages_.erase(storage_iter);
+#pragma mark Private
+
+void OverlayRequestQueueImpl::RemoveRequest(size_t index, bool cancelled) {
+  DCHECK_LT(index, size());
+  auto iter = request_storages_.begin() + index;
+  std::unique_ptr<OverlayRequest> request = std::move((*iter).request);
+  request_storages_.erase(iter);
+  if (delegate_)
+    delegate_->OverlayRequestRemoved(this, std::move(request), cancelled);
 }
 
 #pragma mark OverlayRequestStorage

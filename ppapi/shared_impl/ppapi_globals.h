@@ -46,6 +46,9 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   struct PerThreadForTest {};
   explicit PpapiGlobals(PerThreadForTest);
 
+  PpapiGlobals(const PpapiGlobals&) = delete;
+  PpapiGlobals& operator=(const PpapiGlobals&) = delete;
+
   virtual ~PpapiGlobals();
 
   // Getter for the global singleton.
@@ -117,14 +120,6 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   // in-process plugins.
   virtual base::TaskRunner* GetFileTaskRunner() = 0;
 
-  // Returns the command line for the process.
-  virtual std::string GetCmdLine() = 0;
-
-  // Preloads the font on Windows, does nothing on other platforms.
-  // TODO(brettw) remove this by passing the instance into the API so we don't
-  // have to have it on the globals.
-  virtual void PreCacheFontForFlash(const void* logfontw) = 0;
-
   virtual bool IsHostGlobals() const;
   virtual bool IsPluginGlobals() const;
 
@@ -135,8 +130,6 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   static PpapiGlobals* GetThreadLocalPointer();
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiGlobals);
 };
 
 }  // namespace ppapi

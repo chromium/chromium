@@ -5,7 +5,7 @@
 import {Dialog, NavigationHelper, Page} from 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {MockMethod} from '../mock_controller.m.js';
+import {MockMethod} from '../mock_controller.js';
 
 window.extension_navigation_helper_tests = {};
 extension_navigation_helper_tests.suiteName = 'ExtensionNavigationHelperTest';
@@ -35,7 +35,7 @@ suite(extension_navigation_helper_tests.suiteName, function() {
   let navigationHelper;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     navigationHelper = new NavigationHelper();
   });
 

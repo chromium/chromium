@@ -1,0 +1,71 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++table ariaColumnCount=5 ariaRowCount=6
+++++++++rowGroup
+++++++++++row ariaCellRowIndex=2
+++++++++++++columnHeader name='row2 colheader2' ariaCellColumnIndex=2 ariaCellRowIndex=2
+++++++++++++++staticText name='row2 colheader2'
+++++++++++++++++inlineTextBox name='row2 colheader2'
+++++++++++++columnHeader name='row2 colheader3' ariaCellColumnIndex=3 ariaCellRowIndex=2
+++++++++++++++staticText name='row2 colheader3'
+++++++++++++++++inlineTextBox name='row2 colheader3'
+++++++++++++columnHeader name='row2 colheader4' ariaCellColumnIndex=4 ariaCellRowIndex=2
+++++++++++++++staticText name='row2 colheader4'
+++++++++++++++++inlineTextBox name='row2 colheader4'
+++++++++++++columnHeader name='row2 colheader5' ariaCellColumnIndex=5 ariaCellRowIndex=2
+++++++++++++++staticText name='row2 colheader5'
+++++++++++++++++inlineTextBox name='row2 colheader5'
+++++++++rowGroup
+++++++++++row ariaCellRowIndex=3
+++++++++++++cell name='row3 col2' ariaCellColumnIndex=2 ariaCellRowIndex=3
+++++++++++++++staticText name='row3 col2'
+++++++++++++++++inlineTextBox name='row3 col2'
+++++++++++++cell name='row3 col3' ariaCellColumnIndex=3 ariaCellRowIndex=3
+++++++++++++++staticText name='row3 col3'
+++++++++++++++++inlineTextBox name='row3 col3'
+++++++++++++cell name='row3 col4' ariaCellColumnIndex=4 ariaCellRowIndex=3
+++++++++++++++staticText name='row3 col4'
+++++++++++++++++inlineTextBox name='row3 col4'
+++++++++++++cell name='row3 col5' ariaCellColumnIndex=5 ariaCellRowIndex=3
+++++++++++++++staticText name='row3 col5'
+++++++++++++++++inlineTextBox name='row3 col5'
+++++++++++row ariaCellRowIndex=4
+++++++++++++cell name='row4 col2' ariaCellColumnIndex=2 ariaCellRowIndex=4
+++++++++++++++staticText name='row4 col2'
+++++++++++++++++inlineTextBox name='row4 col2'
+++++++++++++cell name='row4 col3' ariaCellColumnIndex=3 ariaCellRowIndex=4
+++++++++++++++staticText name='row4 col3'
+++++++++++++++++inlineTextBox name='row4 col3'
+++++++++++++cell name='row4 col4' ariaCellColumnIndex=4 ariaCellRowIndex=4
+++++++++++++++staticText name='row4 col4'
+++++++++++++++++inlineTextBox name='row4 col4'
+++++++++++++cell name='row4 col5' ariaCellColumnIndex=5 ariaCellRowIndex=4
+++++++++++++++staticText name='row4 col5'
+++++++++++++++++inlineTextBox name='row4 col5'
+++++++++++row ariaCellRowIndex=5
+++++++++++++cell name='row5 col2' ariaCellColumnIndex=2 ariaCellRowIndex=5
+++++++++++++++staticText name='row5 col2'
+++++++++++++++++inlineTextBox name='row5 col2'
+++++++++++++cell name='row5 col3' ariaCellColumnIndex=3 ariaCellRowIndex=5
+++++++++++++++staticText name='row5 col3'
+++++++++++++++++inlineTextBox name='row5 col3'
+++++++++++++cell name='row5 col4' ariaCellColumnIndex=4 ariaCellRowIndex=5
+++++++++++++++staticText name='row5 col4'
+++++++++++++++++inlineTextBox name='row5 col4'
+++++++++++++cell name='row5 col5' ariaCellColumnIndex=5 ariaCellRowIndex=5
+++++++++++++++staticText name='row5 col5'
+++++++++++++++++inlineTextBox name='row5 col5'
+++++++++++row ariaCellRowIndex=6
+++++++++++++cell name='row6 col2' ariaCellColumnIndex=2 ariaCellRowIndex=6
+++++++++++++++staticText name='row6 col2'
+++++++++++++++++inlineTextBox name='row6 col2'
+++++++++++++cell name='row6 col3' ariaCellColumnIndex=3 ariaCellRowIndex=6
+++++++++++++++staticText name='row6 col3'
+++++++++++++++++inlineTextBox name='row6 col3'
+++++++++++++cell name='row6 col4' ariaCellColumnIndex=4 ariaCellRowIndex=6
+++++++++++++++staticText name='row6 col4'
+++++++++++++++++inlineTextBox name='row6 col4'
+++++++++++++cell name='row6 col5' ariaCellColumnIndex=5 ariaCellRowIndex=6
+++++++++++++++staticText name='row6 col5'
+++++++++++++++++inlineTextBox name='row6 col5'

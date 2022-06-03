@@ -1,7 +1,0 @@
-include_rules = [
-  # Do not add chrome here (use a delegate instead).
-  "+chromeos/grit/chromeos_help_app_resources.h",
-  "+content/public/browser",
-  "+ui/resources/grit/webui_resources.h",
-  "+ui/webui",
-]

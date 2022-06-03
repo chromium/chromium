@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 
+#include "base/check.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
 

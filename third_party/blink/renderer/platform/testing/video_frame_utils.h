@@ -15,6 +15,13 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type);
 
+scoped_refptr<media::VideoFrame> CreateTestFrame(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    media::VideoFrame::StorageType storage_type,
+    media::VideoPixelFormat pixel_format);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_VIDEO_FRAME_UTILS_H_

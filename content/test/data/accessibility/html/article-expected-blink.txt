@@ -1,5 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++article
-++++++staticText name='This is an article element.'
-++++++++inlineTextBox name='This is an article element.'
+++++genericContainer ignored
+++++++article
+++++++++staticText name='This is an article element.'
+++++++++++inlineTextBox name='This is an article element.'

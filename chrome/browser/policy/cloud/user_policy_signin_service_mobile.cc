@@ -4,12 +4,14 @@
 
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -22,7 +24,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/network_change_notifier.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -78,9 +79,8 @@ void UserPolicySigninService::RegisterForPolicyWithAccountId(
 
   // Fire off the registration process. Callback keeps the CloudPolicyClient
   // alive for the length of the registration process.
-  registration_helper_.reset(new CloudPolicyClientRegistrationHelper(
-      policy_client.get(),
-      kCloudPolicyRegistrationType));
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_client.get(), kCloudPolicyRegistrationType);
 
   // Using a raw pointer to |this| is okay, because we own the
   // |registration_helper_|.
@@ -116,10 +116,10 @@ void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
 
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
-  base::TimeDelta retry_delay = base::TimeDelta::FromDays(3);
+  base::TimeDelta retry_delay = base::Days(3);
   if (connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
       connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
-    retry_delay = base::TimeDelta::FromDays(1);
+    retry_delay = base::Days(1);
   }
 
   base::Time last_check_time = base::Time::FromInternalValue(
@@ -130,7 +130,7 @@ void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
   // Check immediately if no check was ever done before (last_check_time == 0),
   // or if the last check was in the future (?), or if we're already past the
   // next check time. Otherwise, delay checking until the next check time.
-  base::TimeDelta try_registration_delay = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta try_registration_delay = base::Seconds(5);
   if (now > last_check_time && now < next_check_time)
     try_registration_delay = next_check_time - now;
 
@@ -145,7 +145,7 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
   // If the user signed-out while this task was waiting then Shutdown() would
   // have been called, which would have invalidated this task. Since we're here
   // then the user must still be signed-in.
-  DCHECK(identity_manager()->HasPrimaryAccount());
+  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   DCHECK(!policy_manager()->IsClientRegistered());
   DCHECK(policy_manager()->core()->client());
 
@@ -153,11 +153,11 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
   profile_prefs_->SetInt64(prefs::kLastPolicyCheckTime,
                            base::Time::Now().ToInternalValue());
 
-  registration_helper_.reset(new CloudPolicyClientRegistrationHelper(
-      policy_manager()->core()->client(),
-      kCloudPolicyRegistrationType));
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
   registration_helper_->StartRegistration(
-      identity_manager(), identity_manager()->GetPrimaryAccountId(),
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
       base::BindOnce(&UserPolicySigninService::OnRegistrationDone,
                      base::Unretained(this)));
 }

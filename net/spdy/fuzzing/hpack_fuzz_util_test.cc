@@ -7,11 +7,11 @@
 #include <map>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_string_utils.h"
+#include "net/base/hex_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +32,7 @@ TEST(HpackFuzzUtilTest, GeneratorContextInitialization) {
 TEST(HpackFuzzUtil, GeneratorContextExpansion) {
   HpackFuzzUtil::GeneratorContext context;
 
-  SpdyHeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
+  Http2HeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
   // Headers were generated, and the generator context was expanded.
   EXPECT_LT(0u, headers.size());
@@ -71,7 +71,7 @@ TEST(HpackFuzzUtilTest, ParsesSequenceOfHeaderBlocks) {
   HpackFuzzUtil::Input input;
   input.input.assign(fixture, base::size(fixture) - 1);
 
-  SpdyStringPiece block;
+  absl::string_view block;
 
   EXPECT_TRUE(HpackFuzzUtil::NextHeaderBlock(&input, &block));
   EXPECT_EQ("aaaaa", block);
@@ -100,7 +100,7 @@ TEST(HpackFuzzUtilTest, SerializedHeaderBlockPrefixes) {
 
 TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   // Example lifted from HpackDecoderTest.SectionD4RequestHuffmanExamples.
-  std::string input = SpdyHexDecode("828684418cf1e3c2e5f23a6ba0ab90f4ff");
+  std::string input = net::HexDecode("828684418cf1e3c2e5f23a6ba0ab90f4ff");
 
   HpackFuzzUtil::FuzzerContext context;
   HpackFuzzUtil::InitializeFuzzerContext(&context);
@@ -108,7 +108,7 @@ TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   EXPECT_TRUE(
       HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(&context, input));
 
-  SpdyHeaderBlock expect;
+  Http2HeaderBlock expect;
   expect[":method"] = "GET";
   expect[":scheme"] = "http";
   expect[":path"] = "/";
@@ -132,7 +132,7 @@ TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
   HpackFuzzUtil::FuzzerContext context;
   HpackFuzzUtil::InitializeFuzzerContext(&context);
 
-  SpdyStringPiece block;
+  absl::string_view block;
   while (HpackFuzzUtil::NextHeaderBlock(&input, &block)) {
     // As these are valid examples, all fuzz stages should succeed.
     EXPECT_TRUE(

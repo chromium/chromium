@@ -7,12 +7,12 @@
 
 #include <windows.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // The size, in pixels, of the non-client frame around a window on |monitor|.
-UI_BASE_EXPORT int GetFrameThickness(HMONITOR monitor);
+COMPONENT_EXPORT(UI_BASE) int GetFrameThickness(HMONITOR monitor);
 
 }  // namespace ui
 

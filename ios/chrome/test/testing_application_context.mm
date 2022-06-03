@@ -4,12 +4,16 @@
 
 #include "ios/chrome/test/testing_application_context.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "components/network_time/network_time_tracker.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -140,11 +144,6 @@ TestingApplicationContext::GetVariationsService() {
   return nullptr;
 }
 
-rappor::RapporServiceImpl* TestingApplicationContext::GetRapporServiceImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return nullptr;
-}
-
 net::NetLog* TestingApplicationContext::GetNetLog() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return nullptr;
@@ -184,8 +183,35 @@ TestingApplicationContext::GetComponentUpdateService() {
   return nullptr;
 }
 
+SafeBrowsingService* TestingApplicationContext::GetSafeBrowsingService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!fake_safe_browsing_service_) {
+    fake_safe_browsing_service_ =
+        base::MakeRefCounted<FakeSafeBrowsingService>();
+  }
+  return fake_safe_browsing_service_.get();
+}
+
 network::NetworkConnectionTracker*
 TestingApplicationContext::GetNetworkConnectionTracker() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return test_network_connection_tracker_.get();
+}
+
+BrowserPolicyConnectorIOS*
+TestingApplicationContext::GetBrowserPolicyConnector() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (!browser_policy_connector_.get()) {
+    browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
+        base::BindRepeating(&BuildPolicyHandlerList, true));
+  }
+
+  return browser_policy_connector_.get();
+}
+
+breadcrumbs::BreadcrumbPersistentStorageManager*
+TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
 }

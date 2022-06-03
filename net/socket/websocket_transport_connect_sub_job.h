@@ -40,6 +40,11 @@ class WebSocketTransportConnectSubJob
       SubJobType type,
       WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
 
+  WebSocketTransportConnectSubJob(const WebSocketTransportConnectSubJob&) =
+      delete;
+  WebSocketTransportConnectSubJob& operator=(
+      const WebSocketTransportConnectSubJob&) = delete;
+
   ~WebSocketTransportConnectSubJob() override;
 
   // Start connecting.
@@ -91,8 +96,6 @@ class WebSocketTransportConnectSubJob
   WebSocketEndpointLockManager* const websocket_endpoint_lock_manager_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTransportConnectSubJob);
 };
 
 }  // namespace net

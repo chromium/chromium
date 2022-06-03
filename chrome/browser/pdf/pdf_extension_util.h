@@ -7,11 +7,16 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
 #error "PDF must be enabled"
 #endif
+
+namespace base {
+class Value;
+}
 
 namespace pdf_extension_util {
 
@@ -19,6 +24,21 @@ namespace pdf_extension_util {
 // browser_resources.grd and certain fields are replaced based on what chrome
 // flags are enabled.
 std::string GetManifest();
+
+// Represents the context within which the PDF Viewer runs.
+enum class PdfViewerContext {
+  kPdfViewer,
+  kPrintPreview,
+  kAll,
+};
+
+// Adds all strings used by the PDF Viewer depending on the provided `context`.
+void AddStrings(PdfViewerContext context, base::Value* dict);
+
+// Adds additional data used by the PDF Viewer UI in `dict`, for example
+// whether certain features are enabled/disabled.
+// `enable_annotations` only applies on platforms that supports annotations.
+void AddAdditionalData(bool enable_annotations, base::Value* dict);
 
 }  // namespace pdf_extension_util
 

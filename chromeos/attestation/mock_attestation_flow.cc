@@ -20,13 +20,20 @@ FakeServerProxy::FakeServerProxy() : result_(true) {}
 FakeServerProxy::~FakeServerProxy() = default;
 
 void FakeServerProxy::SendEnrollRequest(const std::string& request,
-                                        const DataCallback& callback) {
-  callback.Run(result_, request + "_response");
+                                        DataCallback callback) {
+  std::move(callback).Run(result_, enroll_response_.empty()
+                                       ? request + "_response"
+                                       : enroll_response_);
 }
 
 void FakeServerProxy::SendCertificateRequest(const std::string& request,
-                                             const DataCallback& callback) {
-  callback.Run(result_, request + "_response");
+                                             DataCallback callback) {
+  std::move(callback).Run(
+      result_, cert_response_.empty() ? request + "_response" : cert_response_);
+}
+
+void FakeServerProxy::CheckIfAnyProxyPresent(ProxyPresenceCallback callback) {
+  std::move(callback).Run(true);
 }
 
 MockServerProxy::MockServerProxy() {
@@ -48,7 +55,7 @@ MockObserver::MockObserver() = default;
 MockObserver::~MockObserver() = default;
 
 MockAttestationFlow::MockAttestationFlow()
-    : AttestationFlow(NULL, NULL, std::unique_ptr<ServerProxy>()) {}
+    : AttestationFlow(std::unique_ptr<ServerProxy>()) {}
 
 MockAttestationFlow::~MockAttestationFlow() = default;
 

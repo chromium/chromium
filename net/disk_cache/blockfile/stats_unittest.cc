@@ -58,7 +58,7 @@ TEST(DiskCacheStatsTest, SaveRestore) {
   EXPECT_GE(required_len, real_len);
   EXPECT_EQ(out_addr, addr);
 
-  stats.reset(new disk_cache::Stats);
+  stats = std::make_unique<disk_cache::Stats>();
   ASSERT_TRUE(stats->Init(storage.get(), real_len, addr));
   EXPECT_EQ(1, stats->GetCounter(disk_cache::Stats::MIN_COUNTER));
   EXPECT_EQ(1, stats->GetCounter(disk_cache::Stats::TRIM_ENTRY));
@@ -71,7 +71,7 @@ TEST(DiskCacheStatsTest, SaveRestore) {
 
   // Now pass the whole buffer. It shoulod not matter that there is unused
   // space at the end.
-  stats.reset(new disk_cache::Stats);
+  stats = std::make_unique<disk_cache::Stats>();
   ASSERT_TRUE(stats->Init(storage.get(), required_len, addr));
   EXPECT_EQ(1, stats->GetCounter(disk_cache::Stats::MIN_COUNTER));
   EXPECT_EQ(1, stats->GetCounter(disk_cache::Stats::TRIM_ENTRY));

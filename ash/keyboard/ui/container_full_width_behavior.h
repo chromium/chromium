@@ -35,6 +35,8 @@ class KEYBOARD_EXPORT ContainerFullWidthBehavior : public ContainerBehavior {
                     const gfx::Size& screen_size) override;
   bool HandlePointerEvent(const ui::LocatedEvent& event,
                           const display::Display& current_display) override;
+  bool HandleGestureEvent(const ui::GestureEvent& event,
+                          const gfx::Rect& bounds_in_screen) override;
   void SetCanonicalBounds(aura::Window* container,
                           const gfx::Rect& display_bounds) override;
   ContainerType GetType() const override;

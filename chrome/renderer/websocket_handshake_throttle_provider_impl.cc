@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/safe_browsing/renderer/websocket_sb_handshake_throttle.h"
-#include "content/public/common/service_names.mojom.h"
+#include "base/memory/ptr_util.h"
+#include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
@@ -30,7 +30,7 @@ WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
       safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebSocketHandshakeThrottleProviderImpl::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

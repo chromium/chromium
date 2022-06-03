@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 
@@ -37,6 +36,7 @@ namespace ui {
 enum COMPONENT_EXPORT(EVDEV) EventDeviceType {
   DT_KEYBOARD,
   DT_MOUSE,
+  DT_POINTING_STICK,
   DT_TOUCHPAD,
   DT_TOUCHSCREEN,
   DT_MULTITOUCH,
@@ -51,6 +51,10 @@ enum COMPONENT_EXPORT(EVDEV) EventDeviceType {
 class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
  public:
   EventDeviceInfo();
+
+  EventDeviceInfo(const EventDeviceInfo&) = delete;
+  EventDeviceInfo& operator=(const EventDeviceInfo&) = delete;
+
   ~EventDeviceInfo();
 
   // Initialize device information from an open device.
@@ -64,6 +68,7 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   void SetMscEvents(const unsigned long* msc_bits, size_t len);
   void SetSwEvents(const unsigned long* sw_bits, size_t len);
   void SetLedEvents(const unsigned long* led_bits, size_t len);
+  void SetFfEvents(const unsigned long* ff_bits, size_t len);
   void SetProps(const unsigned long* prop_bits, size_t len);
   void SetAbsInfo(unsigned int code, const input_absinfo& absinfo);
   void SetAbsMtSlots(unsigned int code, const std::vector<int32_t>& values);
@@ -80,6 +85,7 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   bool HasMscEvent(unsigned int code) const;
   bool HasSwEvent(unsigned int code) const;
   bool HasLedEvent(unsigned int code) const;
+  bool HasFfEvent(unsigned int code) const;
 
   // Properties of absolute axes.
   int32_t GetAbsMinimum(unsigned int code) const;
@@ -133,8 +139,12 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a keyboard on this device.
   bool HasKeyboard() const;
 
-  // Determine whether there's a mouse on this device.
+  // Determine whether there's a mouse on this device. Excludes pointing sticks.
   bool HasMouse() const;
+
+  // Determine whether there's a pointing stick (such as a TrackPoint) on this
+  // device.
+  bool HasPointingStick() const;
 
   // Determine whether there's a touchpad on this device.
   bool HasTouchpad() const;
@@ -145,14 +155,44 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a touchscreen on this device.
   bool HasTouchscreen() const;
 
+  // Determine whether there's a stylus garage switch on this device.
+  bool HasStylusSwitch() const;
+
+  // Determine whether there are numberpad keys on this device.
+  bool HasNumberpad() const;
+
   // Determine whether there's a gamepad on this device.
   bool HasGamepad() const;
+
+  // Determine whether horizontal and vertical resolutions are reported by the
+  // device.
+  bool HasValidMTAbsXY() const;
+
+  // Determine whether the device supports rumble.
+  bool SupportsRumble() const;
+
+  // Determine whether it's semi-multitouch device.
+  bool IsSemiMultitouch() const;
+
+  // Determine if this is a dedicated device for a stylus button.
+  bool IsStylusButtonDevice() const;
+
+  // Determine whether this is a dedicated device for microphone mute hw switch
+  // on Chrome OS. The switch disables the internal microphone feed. The input
+  // device is used to track the mute switch state.
+  bool IsMicrophoneMuteSwitchDevice() const;
+
+  // Determine if this device uses libinput for touchpad.
+  bool UseLibinput() const;
 
   // The device type (internal or external.)
   InputDeviceType device_type() const { return device_type_; }
 
   // Determines InputDeviceType from device identification.
   static InputDeviceType GetInputDeviceTypeFromId(input_id id);
+
+  // Determines if device is within a limited set of internal USB devices.
+  static bool IsInternalUSB(input_id id);
 
  private:
   enum class LegacyAbsoluteDeviceType {
@@ -174,6 +214,7 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   unsigned long sw_bits_[EVDEV_BITS_TO_LONGS(SW_CNT)];
   unsigned long led_bits_[EVDEV_BITS_TO_LONGS(LED_CNT)];
   unsigned long prop_bits_[EVDEV_BITS_TO_LONGS(INPUT_PROP_CNT)];
+  unsigned long ff_bits_[EVDEV_BITS_TO_LONGS(FF_CNT)];
 
   struct input_absinfo abs_info_[ABS_CNT];
 
@@ -190,8 +231,6 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
 
   // Whether this is an internal or external device.
   InputDeviceType device_type_ = InputDeviceType::INPUT_DEVICE_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(EventDeviceInfo);
 };
 
 }  // namspace ui

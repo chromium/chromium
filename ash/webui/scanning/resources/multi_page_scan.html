@@ -1,0 +1,69 @@
+<style include="scanning-fonts">
+  .label,
+  #buttonContainer {
+    width: 272px;
+  }
+
+  .container {
+    align-items: center;
+    color: var(--scanning-done-section-option-text-color);
+    display: flex;
+    font-family: var(--scanning-done-section-option-font-family);
+    font-size: var(--scanning-done-section-option-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    height: 36px;
+    line-height: var(--scanning-done-section-option-line-height);
+    margin-bottom: 8px;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
+    margin-top: 8px;
+    padding-inline-end: 16px;
+  }
+
+  #buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
+    margin-top: 32px;
+    padding-inline-end: 16px;
+  }
+
+  .label {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  #scanButton {
+    margin-inline-start: 8px;
+  }
+</style>
+<div id="multiPageScanText" class="container">
+  <span class="label" hidden$="[[showCancelButton_]]">
+    [[i18n('multiPageScanInstructionsText')]]
+  </span>
+  <div hidden$="[[!showCancelButton_]]">
+    <span class="label" hidden$="[[showCancelingText_]]">
+      [[getProgressText_(pageNumber)]]
+    </span>
+    <span class="label" hidden$="[[!showCancelingText_]]">
+      [[i18n('multiPageCancelingScanningText')]]
+    </span>
+  </div>
+</div>
+<div id="buttonContainer">
+  <div hidden$="[[showCancelButton_]]">
+    <cr-button id="saveButton" on-click="onSaveClick_">
+      [[i18n('saveButtonLabel')]]
+    </cr-button>
+    <cr-button id="scanButton" class="action-button" on-click="onScanClick_">
+      [[scanButtonText_]]
+    </cr-button>
+  </div>
+  <cr-button id="cancelButton" on-click="onCancelClick_"
+      hidden$="[[!showCancelButton_]]"
+      disabled$="[[cancelButtonDisabled_]]">
+    [[i18n('cancelButtonText')]]
+  </cr-button>
+</div>

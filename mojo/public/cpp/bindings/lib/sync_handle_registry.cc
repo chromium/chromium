@@ -5,31 +5,55 @@
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
 
 #include <algorithm>
+#include <utility>
 
-#include "base/logging.h"
+#include "base/auto_reset.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/c/system/core.h"
 
 namespace mojo {
 
+SyncHandleRegistry::Subscription::Subscription(base::OnceClosure remove_closure,
+                                               EventCallbackList* callbacks,
+                                               EventCallback event_callback)
+    : remove_runner_(std::move(remove_closure)),
+      subscription_(callbacks->Add(std::move(event_callback))) {}
+
+SyncHandleRegistry::Subscription::Subscription(Subscription&&) = default;
+
+SyncHandleRegistry::Subscription& SyncHandleRegistry::Subscription::operator=(
+    Subscription&&) = default;
+
+SyncHandleRegistry::Subscription::~Subscription() = default;
+
 // static
 scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>>
+  static base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>
       g_current_sync_handle_watcher;
 
   // SyncMessageFilter can be used on threads without sequence-local storage
   // being available. Those receive a unique, standalone SyncHandleRegistry.
-  if (!base::SequencedTaskRunnerHandle::IsSet())
-    return new SyncHandleRegistry();
+  if (!base::SequencedTaskRunnerHandle::IsSet()) {
+    return base::MakeRefCounted<SyncHandleRegistry>(
+        base::PassKey<SyncHandleRegistry>());
+  }
 
-  if (!*g_current_sync_handle_watcher)
-    g_current_sync_handle_watcher->emplace(new SyncHandleRegistry());
-  return *g_current_sync_handle_watcher->GetValuePointer();
+  if (!g_current_sync_handle_watcher) {
+    g_current_sync_handle_watcher.emplace(
+        base::MakeRefCounted<SyncHandleRegistry>(
+            base::PassKey<SyncHandleRegistry>()));
+  }
+  return *g_current_sync_handle_watcher.GetValuePointer();
 }
+
+SyncHandleRegistry::SyncHandleRegistry(base::PassKey<SyncHandleRegistry>) {}
 
 bool SyncHandleRegistry::RegisterHandle(const Handle& handle,
                                         MojoHandleSignals handle_signals,
@@ -57,11 +81,12 @@ void SyncHandleRegistry::UnregisterHandle(const Handle& handle) {
   handles_.erase(handle);
 }
 
-void SyncHandleRegistry::RegisterEvent(base::WaitableEvent* event,
-                                       base::RepeatingClosure callback) {
+SyncHandleRegistry::EventCallbackSubscription SyncHandleRegistry::RegisterEvent(
+    base::WaitableEvent* event,
+    EventCallback callback) {
   auto it = events_.find(event);
   if (it == events_.end()) {
-    auto result = events_.emplace(event, EventCallbackList{});
+    auto result = events_.emplace(event, std::make_unique<EventCallbackList>());
     it = result.first;
   }
 
@@ -70,43 +95,29 @@ void SyncHandleRegistry::RegisterEvent(base::WaitableEvent* event,
   // callbacks to see if any are valid.
   wait_set_.AddEvent(event);
 
-  it->second.container().push_back(std::move(callback));
-}
-
-void SyncHandleRegistry::UnregisterEvent(base::WaitableEvent* event,
-                                         base::RepeatingClosure callback) {
-  auto it = events_.find(event);
-  if (it == events_.end())
-    return;
-
-  bool has_valid_callbacks = false;
-  auto& callbacks = it->second.container();
-  if (is_dispatching_event_callbacks_) {
-    // Not safe to remove any elements from |callbacks| here since an outer
-    // stack frame is currently iterating over it in Wait().
-    for (auto& cb : callbacks) {
-      if (cb == callback)
-        cb.Reset();
-      else if (cb)
-        has_valid_callbacks = true;
+  // Return an object that will synchronously clear the entry for |event| when
+  // its last callback is destroyed.
+  const auto remove_closure = [](EventCallbackList* callbacks,
+                                 WaitSet* wait_set,
+                                 base::WaitableEvent* event) {
+    // |callbacks| is guaranteed to be valid here. The callbacks are repeating
+    // and are thus only removed by their subscriptions being destroyed, so it's
+    // impossible for empty() to be true until the last subscription has been
+    // destroyed.  Since Wait() only deletes a callback list once it's empty,
+    // and this callback runs synchronously with subscription destruction, it's
+    // impossible for |callbacks| to be deleted before this gets to run at the
+    // destruction of the last remaining subscription.
+    if (callbacks->empty()) {
+      // If this was the last callback registered for |event|, ensure that it's
+      // removed from the WaitSet before returning. Otherwise a nested Wait()
+      // call inside the scope that destroys the subscription will fail.
+      const MojoResult rv = wait_set->RemoveEvent(event);
+      DCHECK_EQ(MOJO_RESULT_OK, rv);
     }
-    remove_invalid_event_callbacks_after_dispatch_ = true;
-  } else {
-    callbacks.erase(std::remove(callbacks.begin(), callbacks.end(), callback),
-                    callbacks.end());
-    if (callbacks.empty())
-      events_.erase(it);
-    else
-      has_valid_callbacks = true;
-  }
-
-  if (!has_valid_callbacks) {
-    // Regardless of whether or not we're nested within a Wait(), we need to
-    // ensure that |event| is removed from the WaitSet before returning if this
-    // was the last callback registered for it.
-    MojoResult rv = wait_set_.RemoveEvent(event);
-    DCHECK_EQ(MOJO_RESULT_OK, rv);
-  }
+  };
+  return std::make_unique<Subscription>(
+      base::BindOnce(remove_closure, it->second.get(), &wait_set_, event),
+      it->second.get(), std::move(callback));
 }
 
 bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
@@ -138,52 +149,23 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
     if (ready_event) {
       const auto iter = events_.find(ready_event);
       DCHECK(iter != events_.end());
-      bool was_dispatching_event_callbacks = is_dispatching_event_callbacks_;
-      is_dispatching_event_callbacks_ = true;
 
-      // NOTE: It's possible for the container to be extended by any of these
-      // callbacks if they call RegisterEvent, so we are careful to iterate by
-      // index. Also note that conversely, elements cannot be *removed* from the
-      // container, by any of these callbacks, so it is safe to assume the size
-      // only stays the same or increases, with no elements changing position.
-      auto& callbacks = iter->second.container();
-      for (size_t i = 0; i < callbacks.size(); ++i) {
-        auto& callback = callbacks[i];
-        if (callback)
-          callback.Run();
+      {
+        base::AutoReset<bool> in_nested_wait(&in_nested_wait_, true);
+        iter->second->Notify();
       }
 
-      is_dispatching_event_callbacks_ = was_dispatching_event_callbacks;
-      if (!was_dispatching_event_callbacks &&
-          remove_invalid_event_callbacks_after_dispatch_) {
-        // If we've had events unregistered within any callback dispatch, now is
-        // a good time to prune them from the map.
-        RemoveInvalidEventCallbacks();
-        remove_invalid_event_callbacks_after_dispatch_ = false;
+      // Notify() above may have both added and removed event registrations, for
+      // any event.  If we're in the outermost frame, prune any empty map
+      // entries to avoid unbounded growth.
+      if (!in_nested_wait_) {
+        base::EraseIf(events_,
+                      [](const auto& entry) { return entry.second->empty(); });
       }
     }
-  };
-
-  return false;
-}
-
-SyncHandleRegistry::SyncHandleRegistry() = default;
-
-SyncHandleRegistry::~SyncHandleRegistry() = default;
-
-void SyncHandleRegistry::RemoveInvalidEventCallbacks() {
-  for (auto it = events_.begin(); it != events_.end();) {
-    auto& callbacks = it->second.container();
-    callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
-                                   [](const base::RepeatingClosure& callback) {
-                                     return !callback;
-                                   }),
-                    callbacks.end());
-    if (callbacks.empty())
-      events_.erase(it++);
-    else
-      ++it;
   }
 }
+
+SyncHandleRegistry::~SyncHandleRegistry() = default;
 
 }  // namespace mojo

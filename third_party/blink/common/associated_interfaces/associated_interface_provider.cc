@@ -20,11 +20,13 @@ class AssociatedInterfaceProvider::LocalProvider
   explicit LocalProvider(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     associated_interface_provider_receiver_.Bind(
-        remote_.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        remote_.BindNewEndpointAndPassDedicatedReceiver(),
         std::move(task_runner));
   }
+  LocalProvider(const LocalProvider&) = delete;
+  LocalProvider& operator=(const LocalProvider&) = delete;
 
-  ~LocalProvider() override {}
+  ~LocalProvider() override = default;
 
   void SetBinderForName(const std::string& name, const Binder& binder) {
     binders_[name] = binder;
@@ -56,14 +58,13 @@ class AssociatedInterfaceProvider::LocalProvider
   mojo::AssociatedReceiver<mojom::AssociatedInterfaceProvider>
       associated_interface_provider_receiver_{this};
   mojo::AssociatedRemote<mojom::AssociatedInterfaceProvider> remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalProvider);
 };
 
 AssociatedInterfaceProvider::AssociatedInterfaceProvider(
     mojo::PendingAssociatedRemote<mojom::AssociatedInterfaceProvider> proxy,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : proxy_(std::move(proxy)), task_runner_(std::move(task_runner)) {
+    : proxy_(std::move(proxy), task_runner),
+      task_runner_(std::move(task_runner)) {
   DCHECK(proxy_.is_bound());
 }
 

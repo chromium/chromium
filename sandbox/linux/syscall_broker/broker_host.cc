@@ -20,9 +20,11 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_permission_list.h"
 #include "sandbox/linux/syscall_broker/broker_simple_message.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 namespace sandbox {
@@ -96,7 +98,7 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
                     const std::string& requested_filename,
                     int flags,
                     BrokerSimpleMessage* reply,
-                    int* opened_file) {
+                    base::ScopedFD* opened_file) {
   const char* file_to_open = NULL;
   bool unlink_after_open = false;
   if (!CommandOpenIsSafe(allowed_command_set, permission_list,
@@ -107,8 +109,8 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
   }
 
   CHECK(file_to_open);
-  int opened_fd = sys_open(file_to_open, flags);
-  if (opened_fd < 0) {
+  opened_file->reset(sys_open(file_to_open, flags));
+  if (!opened_file->is_valid()) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
   }
@@ -116,7 +118,6 @@ void OpenFileForIPC(const BrokerCommandSet& allowed_command_set,
   if (unlink_after_open)
     unlink(file_to_open);
 
-  *opened_file = opened_fd;
   RAW_CHECK(reply->AddIntToMessage(0));
 }
 
@@ -194,10 +195,12 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(reply->AddIntToMessage(-permission_list.denied_errno()));
     return;
   }
+
   if (command_type == COMMAND_STAT) {
-    struct stat sb;
-    int sts =
-        follow_links ? stat(file_to_access, &sb) : lstat(file_to_access, &sb);
+    struct kernel_stat sb;
+
+    int sts = follow_links ? sandbox::sys_stat(file_to_access, &sb)
+                           : sandbox::sys_lstat(file_to_access, &sb);
     if (sts < 0) {
       RAW_CHECK(reply->AddIntToMessage(-errno));
       return;
@@ -206,16 +209,12 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
   } else {
+#if defined(__NR_fstatat64)
     DCHECK(command_type == COMMAND_STAT64);
-#if defined(__ANDROID_API__) && __ANDROID_API__ < 21
-    // stat64 is not defined for older Android API versions in newer NDK
-    // versions.
-    RAW_CHECK(reply->AddIntToMessage(-ENOSYS));
-    return;
-#else
-    struct stat64 sb;
-    int sts = follow_links ? stat64(file_to_access, &sb)
-                           : lstat64(file_to_access, &sb);
+    struct kernel_stat64 sb;
+
+    int sts = sandbox::sys_fstatat64(AT_FDCWD, file_to_access, &sb,
+                                     follow_links ? 0 : AT_SYMLINK_NOFOLLOW);
     if (sts < 0) {
       RAW_CHECK(reply->AddIntToMessage(-errno));
       return;
@@ -223,7 +222,11 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(reply->AddIntToMessage(0));
     RAW_CHECK(
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
-#endif  // defined(__ANDROID_API__) && __ANDROID_API__ < 21
+#else  // defined(__NR_fstatat64)
+    // We should not reach here on 64-bit systems, as the *stat*64() are only
+    // necessary on 32-bit.
+    RAW_CHECK(false);
+#endif
   }
 }
 
@@ -250,7 +253,7 @@ bool HandleRemoteCommand(const BrokerCommandSet& allowed_command_set,
                          const BrokerPermissionList& permission_list,
                          BrokerSimpleMessage* message,
                          BrokerSimpleMessage* reply,
-                         int* opened_file) {
+                         base::ScopedFD* opened_file) {
   // Message structure:
   //   int:    command type
   //   char[]: pathname
@@ -346,54 +349,50 @@ bool HandleRemoteCommand(const BrokerCommandSet& allowed_command_set,
 
 }  // namespace
 
-BrokerHost::BrokerHost(const BrokerPermissionList& broker_permission_list,
-                       const BrokerCommandSet& allowed_command_set,
+BrokerHost::BrokerHost(const BrokerSandboxConfig& policy,
                        BrokerChannel::EndPoint ipc_channel)
-    : broker_permission_list_(broker_permission_list),
-      allowed_command_set_(allowed_command_set),
-      ipc_channel_(std::move(ipc_channel)) {}
+    : policy_(policy), ipc_channel_(std::move(ipc_channel)) {}
 
-BrokerHost::~BrokerHost() {}
+BrokerHost::~BrokerHost() = default;
 
 // Handle a request on the IPC channel ipc_channel_.
 // A request should have a file descriptor attached on which we will reply and
 // that we will then close.
 // A request should start with an int that will be used as the command type.
-BrokerHost::RequestStatus BrokerHost::HandleRequest() const {
-  BrokerSimpleMessage message;
-  errno = 0;
-  base::ScopedFD temporary_ipc;
-  const ssize_t msg_len =
-      message.RecvMsgWithFlags(ipc_channel_.get(), 0, &temporary_ipc);
+void BrokerHost::LoopAndHandleRequests() {
+  for (;;) {
+    BrokerSimpleMessage message;
+    errno = 0;
+    base::ScopedFD temporary_ipc;
+    const ssize_t msg_len =
+        message.RecvMsgWithFlags(ipc_channel_.get(), 0, &temporary_ipc);
 
-  if (msg_len == 0 || (msg_len == -1 && errno == ECONNRESET)) {
-    // EOF from the client, or the client died, we should die.
-    return RequestStatus::LOST_CLIENT;
+    if (msg_len == 0 || (msg_len == -1 && errno == ECONNRESET)) {
+      // EOF from the client, or the client died, we should finish looping.
+      return;
+    }
+
+    // The client sends exactly one file descriptor, on which we
+    // will write the reply.
+    if (msg_len < 0) {
+      PLOG(ERROR) << "Error reading message from the client";
+      continue;
+    }
+
+    BrokerSimpleMessage reply;
+    base::ScopedFD opened_file;
+    if (!HandleRemoteCommand(policy_.allowed_command_set,
+                             *policy_.file_permissions, &message, &reply,
+                             &opened_file)) {
+      // Does not exit if we received a malformed message.
+      LOG(ERROR) << "Received malformed message from the client";
+      continue;
+    }
+
+    ssize_t sent = reply.SendMsg(temporary_ipc.get(), opened_file.get());
+    if (sent < 0)
+      LOG(ERROR) << "sent failed";
   }
-
-  // The client sends exactly one file descriptor, on which we
-  // will write the reply.
-  if (msg_len < 0) {
-    PLOG(ERROR) << "Error reading message from the client";
-    return RequestStatus::FAILURE;
-  }
-
-  BrokerSimpleMessage reply;
-  int opened_file = -1;
-  bool result =
-      HandleRemoteCommand(allowed_command_set_, broker_permission_list_,
-                          &message, &reply, &opened_file);
-
-  ssize_t sent = reply.SendMsg(temporary_ipc.get(), opened_file);
-  if (sent < 0)
-    LOG(ERROR) << "sent failed";
-
-  if (opened_file >= 0) {
-    int ret = IGNORE_EINTR(close(opened_file));
-    DCHECK(!ret) << "Could not close file descriptor";
-  }
-
-  return result ? RequestStatus::SUCCESS : RequestStatus::FAILURE;
 }
 
 }  // namespace syscall_broker

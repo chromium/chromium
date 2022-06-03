@@ -11,8 +11,9 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
+
+import androidx.webkit.WebViewClientCompat;
 
 /**
  * This activity always has at most one live webview. Any previously exisisting
@@ -62,7 +63,7 @@ public class WebViewCreateDestroyActivity extends Activity {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
-        sWebView.setWebViewClient(new WebViewClient() {
+        sWebView.setWebViewClient(new WebViewClientCompat() {
             @SuppressWarnings("deprecation") // because we support api level 19 and up.
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {

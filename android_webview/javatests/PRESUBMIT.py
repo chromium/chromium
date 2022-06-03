@@ -6,6 +6,9 @@
 Runs various style checks before upload.
 """
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckAwJUnitTestRunner(input_api, output_api))
@@ -29,8 +32,8 @@ def _CheckAwJUnitTestRunner(input_api, output_api):
   def _FilterFile(affected_file):
     return input_api.FilterSourceFile(
         affected_file,
-        black_list=input_api.DEFAULT_BLACK_LIST,
-        white_list=[r'.*\.java$'])
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+        files_to_check=[r'.*\.java$'])
 
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_num, line in f.ChangedContents():
@@ -66,8 +69,8 @@ def _CheckNoSkipCommandLineAnnotation(input_api, output_api):
   def _FilterFile(affected_file):
     return input_api.FilterSourceFile(
         affected_file,
-        black_list=input_api.DEFAULT_BLACK_LIST,
-        white_list=[r'.*\.java$'])
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+        files_to_check=[r'.*\.java$'])
 
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_num, line in f.ChangedContents():
@@ -102,8 +105,8 @@ def _CheckNoSandboxedRendererSwitch(input_api, output_api):
   def _FilterFile(affected_file):
     return input_api.FilterSourceFile(
         affected_file,
-        black_list=input_api.DEFAULT_BLACK_LIST,
-        white_list=[r'.*\.java$'])
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+        files_to_check=[r'.*\.java$'])
 
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_num, line in f.ChangedContents():

@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/test/cert_test_util.h"
@@ -14,10 +16,12 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_util.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -83,6 +87,7 @@ void MakeMockReferrerPolicyTransaction(const char* original_url,
   transaction->response_headers = response_headers;
   transaction->response_time = base::Time();
   transaction->data = "hello";
+  transaction->dns_aliases = {};
   transaction->test_mode = TEST_MODE_NORMAL;
   transaction->handler = nullptr;
   transaction->read_handler = nullptr;
@@ -103,11 +108,13 @@ const MockTransaction kNoFilterTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Cache-Control: max-age=10000\n"
     "Content-Length: 30\n",  // Intentionally wrong.
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -123,11 +130,13 @@ const MockTransaction kNoFilterTransactionWithInvalidLength = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Cache-Control: max-age=10000\n"
     "Content-Length: +30\n",  // Invalid
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -143,12 +152,14 @@ const MockTransaction kGZipTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Cache-Control: max-age=10000\n"
     "Content-Encoding: gzip\n"
     "Content-Length: 30\n",  // Intentionally wrong.
     base::Time(),
     "",
+    {},
     TEST_MODE_NORMAL,
     &GZipServer,
     nullptr,
@@ -165,11 +176,13 @@ const MockTransaction kGzipSlowTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Cache-Control: max-age=10000\n"
     "Content-Encoding: gzip\n",
     base::Time(),
     "",
+    {},
     TEST_MODE_SLOW_READ,
     &GZipHelloServer,
     nullptr,
@@ -186,12 +199,14 @@ const MockTransaction kRedirectTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 302 Found",
     "Cache-Control: max-age=10000\n"
     "Location: http://www.google.com/destination\n"
     "Content-Length: 5\n",
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -208,10 +223,12 @@ const MockTransaction kEmptyBodyGzipTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Content-Encoding: gzip\n",
     base::Time(),
     "",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -228,11 +245,13 @@ const MockTransaction kInvalidContentGZipTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Content-Encoding: gzip\n"
     "Content-Length: 21\n",
     base::Time(),
     "not a valid gzip body",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -249,12 +268,14 @@ const MockTransaction kBrotliSlowTransaction = {
     base::Time(),
     "",
     LOAD_NORMAL,
+    DefaultTransportInfo(),
     "HTTP/1.1 200 OK",
     "Cache-Control: max-age=10000\n"
     "Content-Encoding: br\n"
     "Content-Length: 230\n",  // Intentionally wrong.
     base::Time(),
     "",
+    {},
     TEST_MODE_SLOW_READ,
     &BrotliHelloServer,
     nullptr,
@@ -436,8 +457,8 @@ TEST_F(URLRequestJobTest, RedirectTransactionWithReferrerPolicyHeader) {
     const char* original_url;
     const char* original_referrer;
     const char* response_headers;
-    URLRequest::ReferrerPolicy original_referrer_policy;
-    URLRequest::ReferrerPolicy expected_final_referrer_policy;
+    ReferrerPolicy original_referrer_policy;
+    ReferrerPolicy expected_final_referrer_policy;
     const char* expected_final_referrer;
   };
 
@@ -450,8 +471,8 @@ TEST_F(URLRequestJobTest, RedirectTransactionWithReferrerPolicyHeader) {
        "Location: http://foo.test/test\n"
        "Referrer-Policy: no-referrer\n",
        // original policy
-       URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-       URLRequest::NO_REFERRER /* expected final policy */,
+       ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+       ReferrerPolicy::NO_REFERRER /* expected final policy */,
        "" /* expected final referrer */},
 
       // A redirect response without Referrer-Policy header should not affect
@@ -460,9 +481,9 @@ TEST_F(URLRequestJobTest, RedirectTransactionWithReferrerPolicyHeader) {
        "http://foo.test/one" /* original referrer */,
        "Location: http://foo.test/test\n",
        // original policy
-       URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+       ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
        // expected final policy
-       URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+       ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
        "http://foo.test/one" /* expected final referrer */},
   };
 
@@ -637,7 +658,7 @@ TEST_F(URLRequestJobTest, SlowBrotliRead) {
 TEST(URLRequestJobComputeReferrer, SetsSameOriginForMetricsOnSameOrigin) {
   bool same_origin = false;
   URLRequestJob::ComputeReferrerForPolicy(
-      URLRequest::ReferrerPolicy(),
+      ReferrerPolicy(),
       /*original_referrer=*/GURL("http://google.com"),
       /*destination=*/GURL("http://google.com"), &same_origin);
   EXPECT_TRUE(same_origin);
@@ -646,7 +667,7 @@ TEST(URLRequestJobComputeReferrer, SetsSameOriginForMetricsOnSameOrigin) {
 TEST(URLRequestJobComputeReferrer, SetsSameOriginForMetricsOnCrossOrigin) {
   bool same_origin = true;
   URLRequestJob::ComputeReferrerForPolicy(
-      URLRequest::ReferrerPolicy(),
+      ReferrerPolicy(),
       /*original_referrer=*/GURL("http://google.com"),
       /*destination=*/GURL("http://boggle.com"), &same_origin);
   EXPECT_FALSE(same_origin);
@@ -654,8 +675,119 @@ TEST(URLRequestJobComputeReferrer, SetsSameOriginForMetricsOnCrossOrigin) {
 
 TEST(URLRequestJobComputeReferrer, AcceptsNullptrInput) {
   // Shouldn't segfault.
-  URLRequestJob::ComputeReferrerForPolicy(URLRequest::ReferrerPolicy(), GURL(),
-                                          GURL(), nullptr);
+  URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy(), GURL(), GURL(),
+                                          nullptr);
+}
+
+TEST(URLRequestJobComputeReferrer, FilesystemDestination) {
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(
+                ReferrerPolicy::NEVER_CLEAR, GURL("https://referrer.example"),
+                GURL("filesystem:https://destination.example"), nullptr),
+            GURL("https://referrer.example"));
+}
+
+TEST(URLRequestJobComputeReferrer, TruncatesLongReferrer) {
+  std::string original_spec = "https://referrer.example/";
+  original_spec.resize(4097, 'a');
+  const GURL kOriginalReferrer(original_spec);
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            GURL("https://referrer.example/"));
+}
+
+TEST(URLRequestJobComputeReferrer, DoesntTruncateShortReferrer) {
+  std::string original_spec = "https://referrer.example/";
+  original_spec.resize(4096, 'a');
+  const GURL kOriginalReferrer(original_spec);
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            kOriginalReferrer);
+}
+
+TEST(URLRequestJobComputeReferrer, DoesntTruncateEvenShorterReferrer) {
+  std::string original_spec = "https://referrer.example/";
+  original_spec.resize(4095, 'a');
+  const GURL kOriginalReferrer(original_spec);
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            kOriginalReferrer);
+}
+
+TEST(URLRequestJobComputeReferrer, DoesntTruncateReferrerWithLongRef) {
+  // Because the "is the length greater than 4096?" check comes *after*
+  // stripping the ref in the Referrer Policy spec, a URL that is short except
+  // for having a very long ref should not be stripped to an origin by the "if
+  // the length is too long, strip to the origin" check.
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(
+                ReferrerPolicy::NEVER_CLEAR,
+                GURL(std::string("https://referrer.example/path#") +
+                     std::string(5000, 'a')),
+                GURL("https://google.com")),
+            GURL("https://referrer.example/path"));
+}
+
+TEST(URLRequestJobComputeReferrer, InvalidSchemeReferrer) {
+  const GURL kOriginalReferrer("about:blank");
+  ASSERT_FALSE(url::IsReferrerScheme(
+      kOriginalReferrer.spec().data(),
+      kOriginalReferrer.parsed_for_possibly_invalid_spec().scheme));
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            GURL());
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::ORIGIN,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            GURL());
+}
+
+TEST(URLRequestJobComputeReferrer, CapReferrerOnCrossOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kCapReferrerToOriginOnCrossOrigin);
+
+  const GURL kOriginalReferrer("https://boggle.com/path");
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            GURL("https://boggle.com/"));
+}
+
+TEST(URLRequestJobComputeReferrer,
+     CapReferrerOnCrossOriginRespectsStricterPolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kCapReferrerToOriginOnCrossOrigin);
+
+  const GURL kOriginalReferrer("https://boggle.com/path");
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NO_REFERRER,
+                                                    kOriginalReferrer,
+                                                    GURL("https://google.com")),
+            GURL());
+}
+
+TEST(URLRequestJobComputeReferrer,
+     CapReferrerOnCrossOriginDoesntCapOnSameOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kCapReferrerToOriginOnCrossOrigin);
+
+  const GURL kOriginalReferrer("https://boggle.com/path");
+
+  EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
+                                                    kOriginalReferrer,
+                                                    GURL("https://boggle.com")),
+            kOriginalReferrer);
 }
 
 }  // namespace net

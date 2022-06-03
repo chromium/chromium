@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "components/sync/driver/sync_service.h"
 #include "crypto/ec_private_key.h"
@@ -26,38 +25,28 @@ crypto::ECPrivateKey* VapidKeyManager::GetOrCreateKey() {
 }
 
 bool VapidKeyManager::RefreshCachedKey() {
-  if (base::FeatureList::IsEnabled(kSharingDeriveVapidKey)) {
-    auto derived_key = sync_service_->GetExperimentalAuthenticationKey();
-    if (!derived_key)
-      return InitWithPreference();
+  if (InitWithPreference())
+    return true;
 
-    return UpdateCachedKey(std::move(derived_key));
-  } else {
-    if (InitWithPreference())
-      return true;
+  if (vapid_key_)
+    return false;
 
-    if (vapid_key_)
-      return false;
+  // Don't generate keys if preferences is not syncing to avoid isolated keys.
+  if (!sync_service_->GetActiveDataTypes().Has(syncer::PREFERENCES))
+    return false;
 
-    auto generated_key = crypto::ECPrivateKey::Create();
-    if (!generated_key) {
-      LogSharingVapidKeyCreationResult(
-          SharingVapidKeyCreationResult::kGenerateECKeyFailed);
-      return false;
-    }
+  auto generated_key = crypto::ECPrivateKey::Create();
+  if (!generated_key)
+    return false;
 
-    return UpdateCachedKey(std::move(generated_key));
-  }
+  return UpdateCachedKey(std::move(generated_key));
 }
 
 bool VapidKeyManager::UpdateCachedKey(
     std::unique_ptr<crypto::ECPrivateKey> new_key) {
   std::vector<uint8_t> new_key_info;
-  if (!new_key->ExportPrivateKey(&new_key_info)) {
-    LogSharingVapidKeyCreationResult(
-        SharingVapidKeyCreationResult::kExportPrivateKeyFailed);
+  if (!new_key->ExportPrivateKey(&new_key_info))
     return false;
-  }
 
   if (vapid_key_info_ == new_key_info)
     return false;
@@ -65,12 +54,11 @@ bool VapidKeyManager::UpdateCachedKey(
   vapid_key_ = std::move(new_key);
   vapid_key_info_ = std::move(new_key_info);
   sharing_sync_preference_->SetVapidKey(vapid_key_info_);
-  LogSharingVapidKeyCreationResult(SharingVapidKeyCreationResult::kSuccess);
   return true;
 }
 
 bool VapidKeyManager::InitWithPreference() {
-  base::Optional<std::vector<uint8_t>> preference_key_info =
+  absl::optional<std::vector<uint8_t>> preference_key_info =
       sharing_sync_preference_->GetVapidKey();
   if (!preference_key_info || vapid_key_info_ == *preference_key_info)
     return false;

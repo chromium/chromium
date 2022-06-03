@@ -36,7 +36,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_document.h"
-#include "third_party/blink/public/web/web_widget_client.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -62,10 +62,14 @@ void FindInPage::Find(int request_id,
                       const String& search_text,
                       mojom::blink::FindOptionsPtr options) {
   DCHECK(!search_text.IsEmpty());
+
+  // Record the fact that we have a find-in-page request.
+  frame_->GetFrame()->GetDocument()->MarkHasFindInPageRequest();
+
   blink::WebPlugin* plugin = GetWebPluginForFind();
   // Check if the plugin still exists in the document.
   if (plugin) {
-    if (options->find_next) {
+    if (!options->new_session) {
       // Just navigate back/forward.
       plugin->SelectFindResult(options->forward, request_id);
       LocalFrame* core_frame = frame_->GetFrame();
@@ -90,14 +94,18 @@ void FindInPage::Find(int request_id,
   bool result = false;
   bool active_now = false;
 
-  // Search for an active match only if this frame is focused or if this is a
-  // find next
-  if (frame_->IsFocused() || options->find_next) {
+  if (options->new_session)
+    EnsureTextFinder().InitNewSession(*options);
+
+  // Search for an active match only if this frame is focused or if this is an
+  // existing session.
+  if (options->find_match &&
+      (frame_->IsFocused() || !options->new_session)) {
     result = FindInternal(request_id, search_text, *options,
                           false /* wrap_within_frame */, &active_now);
   }
 
-  if (result && !options->find_next) {
+  if (result && options->new_session) {
     // Indicate that at least one match has been found. 1 here means
     // possibly more matches could be coming.
     ReportFindInPageMatchCount(request_id, 1 /* count */,
@@ -106,8 +114,7 @@ void FindInPage::Find(int request_id,
 
   // There are three cases in which scoping is needed:
   //
-  // (1) This is an initial find request (|options.findNext| is false). This
-  // will be the first scoping effort for this find session.
+  // (1) This is a new find session. This will be its first scoping effort.
   //
   // (2) Something has been selected since the last search. This means that we
   // cannot just increment the current match ordinal; we need to re-generate
@@ -122,7 +129,7 @@ void FindInPage::Find(int request_id,
   //
   // If none of these cases are true, then we just report the current match
   // count without scoping.
-  if (/* (1) */ options->find_next && /* (2) */ current_selection.IsNull() &&
+  if (/* (1) */ !options->new_session && /* (2) */ current_selection.IsNull() &&
       /* (3) */ !(result && !active_now)) {
     // Force report of the actual count.
     EnsureTextFinder().IncreaseMatchCount(request_id, 0);
@@ -139,15 +146,16 @@ bool WebLocalFrameImpl::FindForTesting(int identifier,
                                        const WebString& search_text,
                                        bool match_case,
                                        bool forward,
-                                       bool find_next,
+                                       bool new_session,
                                        bool force,
-                                       bool wrap_within_frame) {
+                                       bool wrap_within_frame,
+                                       bool async) {
   auto options = mojom::blink::FindOptions::New();
   options->match_case = match_case;
   options->forward = forward;
-  options->find_next = find_next;
+  options->new_session = new_session;
   options->force = force;
-  options->run_synchronously_for_testing = true;
+  options->run_synchronously_for_testing = !async;
   bool result = find_in_page_->FindInternal(identifier, search_text, *options,
                                             wrap_within_frame, nullptr);
   find_in_page_->StopFinding(
@@ -166,9 +174,15 @@ bool FindInPage::FindInternal(int identifier,
   // Unlikely, but just in case we try to find-in-page on a detached frame.
   DCHECK(frame_->GetFrame()->GetPage());
 
+  auto forced_activatable_locks = frame_->GetFrame()
+                                      ->GetDocument()
+                                      ->GetDisplayLockDocumentState()
+                                      .GetScopedForceActivatableLocks();
+
   // Up-to-date, clean tree is required for finding text in page, since it
   // relies on TextIterator to look over the text.
-  frame_->GetFrame()->GetDocument()->UpdateStyleAndLayout();
+  frame_->GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kFindInPage);
 
   return EnsureTextFinder().Find(identifier, search_text, options,
                                  wrap_within_frame, active_now);
@@ -209,15 +223,15 @@ int FindInPage::FindMatchMarkersVersion() const {
   return 0;
 }
 
-WebFloatRect FindInPage::ActiveFindMatchRect() {
+gfx::RectF FindInPage::ActiveFindMatchRect() {
   if (GetTextFinder())
     return GetTextFinder()->ActiveFindMatchRect();
-  return WebFloatRect();
+  return gfx::RectF();
 }
 
 void FindInPage::ActivateNearestFindResult(int request_id,
-                                           const WebFloatPoint& point) {
-  WebRect active_match_rect;
+                                           const gfx::PointF& point) {
+  gfx::Rect active_match_rect;
   const int ordinal =
       EnsureTextFinder().SelectNearestFindMatch(point, &active_match_rect);
   if (ordinal == -1) {
@@ -239,17 +253,17 @@ void FindInPage::SetClient(
   client_.Bind(std::move(remote));
 }
 
-void FindInPage::GetNearestFindResult(const WebFloatPoint& point,
+void FindInPage::GetNearestFindResult(const gfx::PointF& point,
                                       GetNearestFindResultCallback callback) {
   float distance;
-  EnsureTextFinder().NearestFindMatch(point, &distance);
+  EnsureTextFinder().NearestFindMatch(FloatPoint(point), &distance);
   std::move(callback).Run(distance);
 }
 
 void FindInPage::FindMatchRects(int current_version,
                                 FindMatchRectsCallback callback) {
   int rects_version = FindMatchMarkersVersion();
-  Vector<WebFloatRect> rects;
+  Vector<gfx::RectF> rects;
   if (current_version != rects_version)
     rects = EnsureTextFinder().FindMatchRects();
   std::move(callback).Run(rects_version, rects, ActiveFindMatchRect());
@@ -261,17 +275,24 @@ void FindInPage::ClearActiveFindMatch() {
   EnsureTextFinder().ClearActiveFindMatch();
 }
 
-void WebLocalFrameImpl::SetTickmarks(const WebVector<WebRect>& tickmarks) {
-  find_in_page_->SetTickmarks(tickmarks);
+void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
+                                     const WebVector<gfx::Rect>& tickmarks) {
+  find_in_page_->SetTickmarks(target, tickmarks);
 }
 
-void FindInPage::SetTickmarks(const WebVector<WebRect>& tickmarks) {
-  if (LayoutView* layout_view = frame_->GetFrame()->ContentLayoutObject()) {
-    Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
-    for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-      tickmarks_converted[i] = tickmarks[i];
-    layout_view->OverrideTickmarks(tickmarks_converted);
-  }
+void FindInPage::SetTickmarks(const WebElement& target,
+                              const WebVector<gfx::Rect>& tickmarks) {
+  Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
+  for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
+    tickmarks_converted[i] = IntRect(tickmarks[i]);
+
+  LayoutBox* box;
+  if (target.IsNull())
+    box = frame_->GetFrame()->ContentLayoutObject();
+  else
+    box = target.ConstUnwrap<Element>()->GetLayoutBoxForScrolling();
+  if (box)
+    box->OverrideTickmarks(std::move(tickmarks_converted));
 }
 
 TextFinder* WebLocalFrameImpl::GetTextFinder() const {
@@ -333,7 +354,7 @@ void FindInPage::ReportFindInPageMatchCount(int request_id,
 
 void FindInPage::ReportFindInPageSelection(int request_id,
                                            int active_match_ordinal,
-                                           const blink::WebRect& selection_rect,
+                                           const gfx::Rect& selection_rect,
                                            bool final_update) {
   // In tests, |client_| might not be set.
   if (!client_)

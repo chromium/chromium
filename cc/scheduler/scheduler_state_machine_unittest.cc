@@ -11,6 +11,7 @@
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Macro to compare two enum values and get nice output.
@@ -21,7 +22,7 @@
 //   Value of: actual()      Actual: "ACTION_DRAW"
 //   Expected: expected()  Which is: "ACTION_NONE"
 #define EXPECT_ENUM_EQ(enum_tostring, expected, actual) \
-  EXPECT_EQ(enum_tostring(expected), enum_tostring(actual))
+  EXPECT_THAT(enum_tostring(actual), testing::Eq(enum_tostring(expected)))
 
 #define EXPECT_IMPL_FRAME_STATE(expected)               \
   EXPECT_ENUM_EQ(BeginImplFrameStateToString, expected, \
@@ -2239,8 +2240,7 @@ TEST(SchedulerStateMachineTest,
   // Abort the commit, since that is what we expect the main thread to do if the
   // LayerTreeFrameSink was lost due to a synchronous call from the main thread
   // to release the LayerTreeFrameSink.
-  state.BeginMainFrameAborted(
-      CommitEarlyOutReason::ABORTED_LAYER_TREE_FRAME_SINK_LOST);
+  state.BeginMainFrameAborted(CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
 
   // The scheduler should begin the LayerTreeFrameSink creation now.
   EXPECT_ACTION_UPDATE_STATE(
@@ -2899,6 +2899,51 @@ TEST(SchedulerStateMachineTest,
   state.NotifyPaintWorkletStateChange(
       SchedulerStateMachine::PaintWorkletState::IDLE);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+}
+
+TEST(SchedulerStateMachineTest, TestFullPipelineModeDoesntBlockAfterCommit) {
+  SchedulerSettings settings;
+  settings.wait_for_all_pipeline_stages_before_draw = true;
+  StateMachine state(settings);
+  SET_UP_STATE(state);
+
+  const bool needs_first_draw_on_activation = true;
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsBeginMainFrame();
+  state.SetNeedsRedraw(true);
+
+  viz::BeginFrameId frame_id = viz::BeginFrameId(0, 10);
+  state.OnBeginImplFrame(frame_id, kAnimateOnly);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+  state.NotifyReadyToDraw();
+
+  EXPECT_TRUE(state.active_tree_needs_first_draw());
+  EXPECT_IMPL_FRAME_STATE(
+      SchedulerStateMachine::BeginImplFrameState::INSIDE_BEGIN_FRAME);
+  // Go all the way until ready to draw, but make sure we're not within
+  // the frame deadline, so actual draw doesn't happen...
+  EXPECT_FALSE(state.ShouldDraw());
+
+  // ... then have another commit ...
+  state.SetNeedsBeginMainFrame();
+  frame_id.sequence_number++;
+  state.OnBeginImplFrame(frame_id, kAnimateOnly);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  // ... and make sure we're in a state where we can proceed,
+  // rather than draw being blocked by the pending tree.
+  state.OnBeginImplFrameDeadline();
+  EXPECT_TRUE(state.ShouldDraw());
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
 }
 
 }  // namespace

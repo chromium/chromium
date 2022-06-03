@@ -14,13 +14,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner_helpers.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
 #include "components/download/public/common/download_job.h"
@@ -36,6 +33,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace download {
@@ -43,6 +41,21 @@ class DownloadFileFactory;
 class DownloadItemFactory;
 class DownloadItemImpl;
 }
+
+// These values are persisted to logs (Download.InitiatedByWindowOpener).
+// Entries should not be renumbered and numeric values should never be reused.
+// Openee is the tab over which the download is initiated.
+// Opener is the tab that opened the openee tab and initiated a download on it.
+enum class InitiatedByWindowOpenerType {
+  kSameOrigin = 0,
+  // Openee and opener are cross origin.
+  kCrossOrigin = 1,
+  // Openee and opener are cross origin but same site (i.e. same eTLD+1).
+  kSameSite = 2,
+  // Either the openee or the opener is not HTTP or HTTPS, e.g. about:blank.
+  kNonHTTPOrHTTPS = 3,
+  kMaxValue = kNonHTTPOrHTTPS
+};
 
 namespace content {
 class CONTENT_EXPORT DownloadManagerImpl
@@ -56,6 +69,10 @@ class CONTENT_EXPORT DownloadManagerImpl
   // Caller guarantees that |net_log| will remain valid
   // for the lifetime of DownloadManagerImpl (until Shutdown() is called).
   explicit DownloadManagerImpl(BrowserContext* browser_context);
+
+  DownloadManagerImpl(const DownloadManagerImpl&) = delete;
+  DownloadManagerImpl& operator=(const DownloadManagerImpl&) = delete;
+
   ~DownloadManagerImpl() override;
 
   // Implementation functions (not part of the DownloadManager interface).
@@ -102,7 +119,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -118,8 +135,8 @@ class CONTENT_EXPORT DownloadManagerImpl
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
   void PostInitialization(DownloadInitializationDependency dependency) override;
   bool IsManagerInitialized() override;
   int InProgressCount() override;
@@ -153,7 +170,13 @@ class CONTENT_EXPORT DownloadManagerImpl
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       net::CertStatus cert_status,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      bool from_download_cross_origin_redirect);
+
+  // DownloadItemImplDelegate overrides.
+  download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
+      override;
+  std::string GetApplicationClientIdForFileScanning() const override;
 
  private:
   using DownloadSet = std::set<download::DownloadItem*>;
@@ -215,11 +238,13 @@ class CONTENT_EXPORT DownloadManagerImpl
                                DownloadTargetCallback callback) override;
   bool ShouldCompleteDownload(download::DownloadItemImpl* item,
                               base::OnceClosure complete_callback) override;
-  bool ShouldOpenFileBasedOnExtension(const base::FilePath& path) override;
+  bool ShouldAutomaticallyOpenFile(const GURL& url,
+                                   const base::FilePath& path) override;
+  bool ShouldAutomaticallyOpenFileByPolicy(const GURL& url,
+                                           const base::FilePath& path) override;
   bool ShouldOpenDownload(download::DownloadItemImpl* item,
                           ShouldOpenDownloadCallback callback) override;
   void CheckForFileRemoval(download::DownloadItemImpl* download_item) override;
-  std::string GetApplicationClientIdForFileScanning() const override;
   void ResumeInterruptedDownload(
       std::unique_ptr<download::DownloadUrlParameters> params,
       const GURL& site_url) override;
@@ -231,8 +256,9 @@ class CONTENT_EXPORT DownloadManagerImpl
   void ReportBytesWasted(download::DownloadItemImpl* download) override;
   void BindWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
-  download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
-      override;
+  std::unique_ptr<download::DownloadItemRenameHandler>
+  GetRenameHandlerForDownload(
+      download::DownloadItemImpl* download_item) override;
 
   // Drops a download before it is created.
   void DropDownload();
@@ -245,7 +271,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       const GURL& site_url);
 
   void InterceptNavigationOnChecksComplete(
-      WebContents::Getter web_contents_getter,
+      int frame_tree_node_id,
       std::unique_ptr<network::ResourceRequest> resource_request,
       std::vector<GURL> url_chain,
       net::CertStatus cert_status,
@@ -341,8 +367,6 @@ class CONTENT_EXPORT DownloadManagerImpl
 
   // The download GUIDs that are cleared up on startup.
   std::set<std::string> cleared_download_guids_on_startup_;
-  int cancelled_download_cleared_from_history_;
-  int interrupted_download_cleared_from_history_;
 
   // In progress downloads returned by |in_progress_manager_| that are not yet
   // added to |downloads_|. If a download was started without launching full
@@ -364,8 +388,6 @@ class CONTENT_EXPORT DownloadManagerImpl
   std::set<uint32_t> pending_disk_access_query_;
 
   base::WeakPtrFactory<DownloadManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerImpl);
 };
 
 }  // namespace content

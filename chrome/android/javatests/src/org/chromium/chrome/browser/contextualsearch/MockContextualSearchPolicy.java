@@ -9,8 +9,8 @@ package org.chromium.chrome.browser.contextualsearch;
  * TODO(mdjones): Allow the return values of these function to be set.
  */
 public class MockContextualSearchPolicy extends ContextualSearchPolicy {
-    public MockContextualSearchPolicy() {
-        super(null, null);
+    public MockContextualSearchPolicy(ContextualSearchSelectionController selectionController) {
+        super(selectionController, null);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     }
 
     @Override
-    public boolean maySendBasePageUrl() {
+    public boolean doSendBasePageUrl() {
         return false;
     }
 
@@ -31,5 +31,20 @@ public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     @Override
     public boolean isPromoAvailable() {
         return false;
+    }
+
+    @Override
+    public boolean isUserUndecided() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldPreviousGestureResolve() {
+        return true;
+    }
+
+    @Override
+    public boolean canSendSurroundings() {
+        return true;
     }
 }

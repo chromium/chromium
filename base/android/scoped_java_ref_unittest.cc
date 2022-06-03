@@ -274,9 +274,6 @@ TEST_F(JavaObjectArrayReaderTest, ZeroLengthArray) {
   EXPECT_TRUE(zero_length.empty());
   EXPECT_EQ(zero_length.size(), 0);
   EXPECT_EQ(zero_length.begin(), zero_length.end());
-  for (auto element : zero_length) {
-    FAIL() << "Loop body should not execute";
-  }
 }
 
 // Verify that we satisfy the C++ "InputIterator" named requirements.

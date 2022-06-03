@@ -15,8 +15,9 @@
 #include "util/synchronization/semaphore.h"
 
 #include <cmath>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace crashpad {
 

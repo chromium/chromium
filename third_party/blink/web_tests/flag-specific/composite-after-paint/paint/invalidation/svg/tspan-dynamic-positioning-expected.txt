@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'This text should be at visible at 200,200'",
-          "rect": [200, 185, 251, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'This text should be at visible at 200,200'",
-          "rect": [20, 5, 251, 19],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [200, 185, 251, 19],
+        [20, 5, 251, 19]
       ]
     }
   ]

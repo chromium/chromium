@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that adding a new rule does not crash the renderer and modifying an inline style does not report errors when forbidden by Content-Security-Policy.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
@@ -30,7 +30,7 @@
 
       function successCallback(section) {
         rule = section.style().parentRule;
-        matchedStyles = section._matchedStyles;
+        matchedStyles = section.matchedStyles;
         TestRunner.addResult('=== Rule added ===');
         TestRunner.addResult(rule.selectorText() + ' {' + rule.style.cssText + '}');
         TestRunner.addResult(
@@ -48,7 +48,7 @@
           TestRunner.addResult('[!] No valid rule style received');
           TestRunner.completeTest();
         } else {
-          dumpProperties(rule.style);
+          ElementsTestRunner.dumpCSSStyleDeclaration(rule.style);
           rule.setSelectorText('body').then(onSelectorUpdated).then(successCallback);
         }
       }
@@ -98,17 +98,9 @@
           return;
         }
 
-        dumpProperties(inlineStyle);
+        ElementsTestRunner.dumpCSSStyleDeclaration(inlineStyle);
         next();
       }
     }
   ]);
-
-  function dumpProperties(style) {
-    if (!style)
-      return;
-    var allProperties = style.allProperties();
-    for (var i = 0; i < allProperties.length; ++i)
-      TestRunner.addResult(allProperties[i].text);
-  }
 })();

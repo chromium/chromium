@@ -50,6 +50,10 @@ class NavigationContextImpl : public NavigationContext {
   NSError* GetError() const override;
   net::HttpResponseHeaders* GetResponseHeaders() const override;
   bool IsRendererInitiated() const override;
+
+  NavigationContextImpl(const NavigationContextImpl&) = delete;
+  NavigationContextImpl& operator=(const NavigationContextImpl&) = delete;
+
   ~NavigationContextImpl() override;
 
   // Setters for navigation context data members.
@@ -84,10 +88,6 @@ class NavigationContextImpl : public NavigationContext {
   // exclusive.
   bool IsLoadingHtmlString() const;
   void SetLoadingHtmlString(bool is_loading_html);
-
-  // true if this navigation context is a placeholder navigation.
-  bool IsPlaceholderNavigation() const;
-  void SetPlaceholderNavigation(bool flag);
 
   // MIMEType of the navigation.
   void SetMimeType(NSString* mime_type);
@@ -129,7 +129,6 @@ class NavigationContextImpl : public NavigationContext {
   WKNavigationType wk_navigation_type_ = WKNavigationTypeOther;
   bool is_loading_error_page_ = false;
   bool is_loading_html_string_ = false;
-  bool is_placeholder_navigation_ = false;
   NSString* mime_type_ = nil;
   base::ElapsedTimer elapsed_timer_;
 
@@ -138,8 +137,6 @@ class NavigationContextImpl : public NavigationContext {
   // NavigationManager if the navigated was requested, but context does not yet
   // exist or when navigation was aborted.
   std::unique_ptr<NavigationItemImpl> item_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationContextImpl);
 };
 
 }  // namespace web

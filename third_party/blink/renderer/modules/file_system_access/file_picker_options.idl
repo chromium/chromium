@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum WellKnownDirectory {
+  "desktop",
+  "documents",
+  "downloads",
+  "music",
+  "pictures",
+  "videos",
+};
+
+// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions
+dictionary FilePickerOptions {
+  sequence<FilePickerAcceptType> types;
+  boolean excludeAcceptAllOption = false;
+  DOMString id;
+  (WellKnownDirectory or FileSystemHandle) startIn;
+};

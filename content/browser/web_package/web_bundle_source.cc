@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
@@ -80,8 +81,7 @@ std::unique_ptr<base::File> WebBundleSource::OpenFile() const {
       file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
-bool WebBundleSource::IsNavigationPathRestrictionSatisfied(
-    const GURL& url) const {
+bool WebBundleSource::IsPathRestrictionSatisfied(const GURL& url) const {
   DCHECK(is_network());
   return base::StartsWith(url.spec(), url_.GetWithoutFilename().spec(),
                           base::CompareCase::SENSITIVE);

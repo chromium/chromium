@@ -20,11 +20,6 @@ class AuthenticatorListObserver {
       const AuthenticatorReference& added_authenticator) = 0;
   virtual void OnAuthenticatorRemoved(
       const AuthenticatorReference& removed_authenticator) = 0;
-  virtual void OnAuthenticatorIdChanged(
-      const AuthenticatorReference& changed_authenticator,
-      base::StringPiece previous_id) = 0;
-  virtual void OnAuthenticatorPairingModeChanged(
-      const AuthenticatorReference& changed_authenticator) = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_LIST_OBSERVER_H_

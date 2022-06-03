@@ -7,9 +7,10 @@
 #import <WebKit/WebKit.h>
 
 #include "base/memory/ptr_util.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/test/fakes/fake_wk_configuration_provider_observer.h"
@@ -21,13 +22,29 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Returns the WKUserScript from |user_scripts| which contains |script_string|
+// or null if no such script is found.
+WKUserScript* FindWKUserScriptContaining(NSArray<WKUserScript*>* user_scripts,
+                                         NSString* script_string) {
+  for (WKUserScript* user_script in user_scripts) {
+    if ([user_script.source containsString:script_string]) {
+      return user_script;
+    }
+  }
+  return nil;
+}
+
+}  // namespace
+
 namespace web {
 namespace {
 
 class WKWebViewConfigurationProviderTest : public PlatformTest {
  public:
   WKWebViewConfigurationProviderTest()
-      : web_client_(base::WrapUnique(new web::WebClient)) {}
+      : web_client_(std::make_unique<FakeWebClient>()) {}
 
  protected:
   // Returns WKWebViewConfigurationProvider associated with |browser_state_|.
@@ -39,9 +56,14 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
       BrowserState* browser_state) const {
     return WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   }
+
+  FakeWebClient* GetWebClient() {
+    return static_cast<FakeWebClient*>(web_client_.Get());
+  }
+
   // BrowserState required for WKWebViewConfigurationProvider creation.
   web::ScopedTestingWebClient web_client_;
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests that each WKWebViewConfigurationProvider has own, non-nil
@@ -58,7 +80,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationOwnerhip) {
             provider.GetWebViewConfiguration().processPool);
 
   // Different WKProcessPools for different providers.
-  TestBrowserState other_browser_state;
+  FakeBrowserState other_browser_state;
   WKWebViewConfigurationProvider& other_provider =
       GetProvider(&other_browser_state);
   EXPECT_NE(provider.GetWebViewConfiguration().processPool,
@@ -91,7 +113,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
       [config userContentController];
 
   // Change the properties of returned configuration object.
-  TestBrowserState other_browser_state;
+  FakeBrowserState other_browser_state;
   WKWebViewConfiguration* other_wk_web_view_configuration =
       GetProvider(&other_browser_state).GetWebViewConfiguration();
   ASSERT_TRUE(other_wk_web_view_configuration);
@@ -110,66 +132,104 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
             provider.GetWebViewConfiguration().userContentController);
 }
 
-// Tests that script message router is bound to correct user content controller.
-TEST_F(WKWebViewConfigurationProviderTest, ScriptMessageRouter) {
-  ASSERT_TRUE(GetProvider().GetWebViewConfiguration().userContentController);
-  EXPECT_EQ(GetProvider().GetWebViewConfiguration().userContentController,
-            GetProvider().GetScriptMessageRouter().userContentController);
-}
-
-// Tests that both configuration and script message router are deallocated after
-// |Purge| call.
+// Tests that the configuration are deallocated after |Purge| call.
 TEST_F(WKWebViewConfigurationProviderTest, Purge) {
   __weak id config;
-  __weak id router;
   @autoreleasepool {  // Make sure that resulting copy is deallocated.
     id strong_config = GetProvider().GetWebViewConfiguration();
     config = strong_config;
-    router = GetProvider().GetScriptMessageRouter();
     ASSERT_TRUE(config);
-    ASSERT_TRUE(router);
   }
 
-  // No configuration and router after |Purge| call.
+  // No configuration after |Purge| call.
   GetProvider().Purge();
   EXPECT_FALSE(config);
-  EXPECT_FALSE(router);
 }
 
 // Tests that configuration's userContentController has only one script with the
 // same content as web::GetDocumentStartScriptForMainFrame() returns.
 TEST_F(WKWebViewConfigurationProviderTest, UserScript) {
-  WKWebViewConfiguration* config = GetProvider().GetWebViewConfiguration();
-  NSArray* scripts = config.userContentController.userScripts;
-  ASSERT_EQ(4U, scripts.count);
-  EXPECT_FALSE(((WKUserScript*)[scripts objectAtIndex:0]).isForMainFrameOnly);
-  EXPECT_TRUE(((WKUserScript*)[scripts objectAtIndex:1]).isForMainFrameOnly);
-  EXPECT_FALSE(((WKUserScript*)[scripts objectAtIndex:2]).isForMainFrameOnly);
-  EXPECT_TRUE(((WKUserScript*)[scripts objectAtIndex:3]).isForMainFrameOnly);
-  NSString* early_all_frames_script =
-      GetDocumentStartScriptForAllFrames(&browser_state_);
-  NSString* main_frame_script =
+  WKUserContentController* user_content_controller =
+      GetProvider().GetWebViewConfiguration().userContentController;
+
+  WKUserScript* early_all_user_script = FindWKUserScriptContaining(
+      user_content_controller.userScripts,
+      GetDocumentStartScriptForAllFrames(&browser_state_));
+  ASSERT_TRUE(early_all_user_script);
+  EXPECT_FALSE(early_all_user_script.isForMainFrameOnly);
+
+  WKUserScript* main_frame_script = FindWKUserScriptContaining(
+      user_content_controller.userScripts,
+      GetDocumentStartScriptForMainFrame(&browser_state_));
+  ASSERT_TRUE(main_frame_script);
+  EXPECT_TRUE(main_frame_script.isForMainFrameOnly);
+}
+
+// Tests that configuration's userContentController has different scripts after
+// the scripts are updated.
+TEST_F(WKWebViewConfigurationProviderTest, UpdateScripts) {
+  FakeWebClient* client = GetWebClient();
+  client->SetEarlyPageScript(@"var test = 4;");
+
+  WKUserContentController* user_content_controller =
+      GetProvider().GetWebViewConfiguration().userContentController;
+
+  NSString* initial_main_frame_script =
       GetDocumentStartScriptForMainFrame(&browser_state_);
-  NSString* late_all_frames_script =
-      GetDocumentEndScriptForAllFrames(&browser_state_);
-  NSString* late_main_frame_script =
-      GetDocumentEndScriptForMainFrame(&browser_state_);
-  // The scripts in |userScrips| are wrapped with a "if (!injected)" check to
-  // avoid double injections, so a substring check is necessary.
-  EXPECT_LT(0U,
-            [[scripts[0] source] rangeOfString:early_all_frames_script].length);
-  EXPECT_LT(0U, [[scripts[1] source] rangeOfString:main_frame_script].length);
-  EXPECT_LT(0U,
-            [[scripts[2] source] rangeOfString:late_all_frames_script].length);
-  EXPECT_LT(0U,
-            [[scripts[3] source] rangeOfString:late_main_frame_script].length);
+  WKUserScript* initial_script = FindWKUserScriptContaining(
+      user_content_controller.userScripts, initial_main_frame_script);
+  EXPECT_TRUE(initial_script);
+
+  client->SetEarlyPageScript(@"var test = 3;");
+  GetProvider().UpdateScripts();
+
+  NSString* updated_main_frame_script =
+      GetDocumentStartScriptForMainFrame(&browser_state_);
+  WKUserScript* updated_script = FindWKUserScriptContaining(
+      user_content_controller.userScripts, updated_main_frame_script);
+  EXPECT_TRUE(updated_script);
+
+  EXPECT_NE(updated_main_frame_script, initial_main_frame_script);
+  EXPECT_NE(initial_script.source, updated_script.source);
+  EXPECT_LT(
+      0U,
+      [updated_script.source rangeOfString:updated_main_frame_script].length);
+  EXPECT_EQ(
+      0U,
+      [initial_script.source rangeOfString:updated_main_frame_script].length);
+}
+
+// Tests that configuration's userContentController has additional scripts
+// injected for JavaScriptFeatures configured through the WebClient.
+TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
+  FakeWebClient* client = GetWebClient();
+
+  WKUserContentController* user_content_controller =
+      GetProvider().GetWebViewConfiguration().userContentController;
+  unsigned long original_script_count =
+      [user_content_controller.userScripts count];
+
+  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "all_frames_web_bundle",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
+
+  std::unique_ptr<web::JavaScriptFeature> feature =
+      std::make_unique<web::JavaScriptFeature>(
+          web::JavaScriptFeature::ContentWorld::kPageContentWorld,
+          feature_scripts);
+
+  client->SetJavaScriptFeatures({feature.get()});
+  GetProvider().UpdateScripts();
+
+  EXPECT_GT([user_content_controller.userScripts count], original_script_count);
 }
 
 // Tests that observers methods are correctly triggered when observing the
 // WKWebViewConfigurationProvider
 TEST_F(WKWebViewConfigurationProviderTest, Observers) {
-  std::unique_ptr<TestBrowserState> browser_state =
-      std::make_unique<TestBrowserState>();
+  auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
   FakeWKConfigurationProviderObserver observer(provider);
@@ -185,8 +245,7 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
 // initialization logic to the |config| that passed into that method
 TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
-  std::unique_ptr<TestBrowserState> browser_state =
-      std::make_unique<TestBrowserState>();
+  auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
   FakeWKConfigurationProviderObserver observer(provider);
@@ -209,6 +268,13 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   // Compares the POINTERS to make sure the |config| has been shallow cloned
   // inside the |provider|.
   EXPECT_NE(config, actual);
+}
+
+TEST_F(WKWebViewConfigurationProviderTest, GetContentRuleListProvider) {
+  auto browser_state = std::make_unique<FakeBrowserState>();
+  WKWebViewConfigurationProvider& provider = GetProvider(browser_state.get());
+
+  EXPECT_NE(nil, provider.GetContentRuleListProvider());
 }
 
 }  // namespace

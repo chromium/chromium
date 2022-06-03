@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
@@ -25,6 +24,10 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
  public:
   ExtensionIconPlaceholder(extension_misc::ExtensionIcons size,
                            const std::string& name);
+
+  ExtensionIconPlaceholder(const ExtensionIconPlaceholder&) = delete;
+  ExtensionIconPlaceholder& operator=(const ExtensionIconPlaceholder&) = delete;
+
   ~ExtensionIconPlaceholder() override;
 
   // Creates an image backed by an ImageSkia with the ExtensionIconPlaceholder
@@ -40,12 +43,10 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
   extension_misc::ExtensionIcons icon_size_;
 
   // The first letter of the extension's name.
-  base::string16 letter_;
+  std::u16string letter_;
 
   // The gray background image, on top of which the letter is drawn.
   gfx::Image base_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconPlaceholder);
 };
 
 }  // namespace extensions

@@ -87,19 +87,29 @@ $ adb logcat
 
 ### Layout tests and page cycler tests
 
-WebView's layout tests and page cycler tests exercise the WebView installed on
-the system, instrumenting the WebView shell (`system_webview_shell_apk`,
-`org.chromium.webview_shell`). These test cases are defined in
+WebView's layout tests and page cycler tests exercise the **WebView installed on
+the system** and instrument the [system WebView shell app](webview-shell.md)
+(`system_webview_shell_apk`). These test cases are defined in
 `//android_webview/tools/system_webview_shell/`.
 
+*** note
+**Important:** because these tests run against the WebView installed on the
+system, both these test targets automatically compile and install
+`system_webview_apk` and switch the WebView provider. This means you need to
+configure this target to be compatible with your system by following the
+[full build instructions](build-instructions.md).
+
+**Note:** we do not currently support running these tests on the emulator due to
+signing key mismatches with the preinstalled WebView shell
+(https://crbug.com/1205665 tracks supporting this).
+***
+
 ```sh
-# Build
+# Build (this also compiles system_webview_shell_apk and system_webview_apk)
 $ autoninja -C out/Default system_webview_shell_layout_test_apk
 
-# Install the desired WebView APK
-...
-
-# Run layout tests (installs WebView shell):
+# Run layout tests (installs the test APK, WebView shell, and
+# system_webview_apk, and also switches your WebView provider)
 $ out/Default/bin/run_system_webview_shell_layout_test_apk
 
 # Print both Java and C++ log messages to the console (optional):
@@ -109,6 +119,29 @@ $ adb logcat
 To run page cycler tests instead, use the `system_webview_shell_page_cycler_apk`
 target and test runner in the steps above.
 
+### UI tests
+
+Like [layout and page cycler tests](#Layout-tests-and-page-cycler-tests),
+WebView UI tests use the WebView installed on the system (and will automatically
+compile and install the `system_webview_apk` target). Unlike those tests
+however, this test suite _does not_ depend on the system WebView shell app, so
+the setup is simpler. You will still need to follow the [full build
+instructions](build-instructions.md) to correctly configure the
+`system_webview_apk` target, but will not need to worry about compiling the
+WebView shell (and do not need to worry about https://crbug.com/1205665).
+
+```sh
+# Build (this also compiles system_webview_apk)
+$ autoninja -C out/Default webview_ui_test_app_test_apk
+
+# Run layout tests (installs the test APK and system_webview_apk and also
+# switches your WebView provider)
+$ out/Default/bin/run_webview_ui_test_app_test_apk
+
+# Print both Java and C++ log messages to the console (optional):
+$ adb logcat
+```
+
 ### Useful test runner options
 
 #### Debugging flaky tests
@@ -116,7 +149,7 @@ target and test runner in the steps above.
 ```sh
 $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     --num_retries=0 \ # Tests normally retry-on-failure; disable for easier repo
-    --repeat=1000 \ # Repeat up to 1000 times for a failure
+    --repeat=100 \ # Repeat up to 100 times for a failure
     --break-on-failure \ # Stop repeating once we see the first failure
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
@@ -129,6 +162,42 @@ $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     --enable-features="MyFeature,MyOtherFeature" \
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
+
+#### Debugging hangs in instrumentation tests
+
+If an instrumentation test is hanging, it's possible to get a callstack from the
+browser process. This requires running on a device with root.
+
+It's not possible to get a callstack from the renderer because the sandbox will
+prevent the trace file from being written. A workaround if you want to see the
+renderer threads is to run in single-process mode by adding
+`@OnlyRunIn(SINGLE_PROCESS)` above the test.
+
+##### conventions
+
+| Label     |                                                                |
+|-----------|----------------------------------------------------------------|
+|  (shell)  | in your workstation's shell                                    |
+|  (phone)  | inside the phone's shell which you entered through `adb shell` |
+
+```sh
+# Find the pid
+$ (shell) adb root
+$ (shell) adb shell
+
+# Get the main WebView Shell pid, e.g. org.chromium.android_webview.shell and
+# not org.chromium.android_webview.shell:sandboxed_process0
+$ (phone) ps -A | grep org.chromium.android_webview.shell
+# Generate a callstack (this won't kill the process)
+$ (phone) kill -3 pid
+# Look for the latest trace
+$ (phone) ls /data/anr/ -l
+# Copy the trace locally
+$ (shell) adb pull /data/anr/trace_01 /tmp/t1
+# Generate a callstack. Run this from the source directory.
+$ (shell) third_party/android_platform/development/scripts/stack --output-directory=out/Release /tmp/t1
+```
+
 
 ## External tests
 
@@ -164,6 +233,11 @@ $ android_webview/tools/run_cts.py \
 # Print both Java and C++ log messages to the console (optional):
 $ adb logcat
 ```
+
+*** promo
+**Tip:** make sure your device locale is **English (United States)** per
+[CTS setup requirements](https://source.android.com/compatibility/cts/setup).
+***
 
 To disable failing CTS tests, please see the cts_config
 [README](../tools/cts_config/README.md) file.

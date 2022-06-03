@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -29,6 +30,9 @@ class DeviceDescriptionFetcher {
       base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
       base::OnceCallback<void(const std::string&)> error_cb);
 
+  DeviceDescriptionFetcher(const DeviceDescriptionFetcher&) = delete;
+  DeviceDescriptionFetcher& operator=(const DeviceDescriptionFetcher&) = delete;
+
   virtual ~DeviceDescriptionFetcher();
 
   const GURL& device_description_url() { return device_description_url_; }
@@ -44,7 +48,8 @@ class DeviceDescriptionFetcher {
   void ProcessResponse(const std::string& response);
 
   // Runs |error_cb_| with |message| and clears it.
-  void ReportError(int response_code, const std::string& message);
+  void ReportError(const std::string& message,
+                   absl::optional<int> response_code = absl::nullopt);
 
   const GURL device_description_url_;
 
@@ -53,7 +58,6 @@ class DeviceDescriptionFetcher {
   std::unique_ptr<DialURLFetcher> fetcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DeviceDescriptionFetcher);
 };
 
 }  // namespace media_router

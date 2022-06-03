@@ -27,18 +27,18 @@ LoginScreenStorageExtensionFunction::~LoginScreenStorageExtensionFunction() =
     default;
 
 void LoginScreenStorageExtensionFunction::OnDataStored(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : NoArguments());
 }
 
 void LoginScreenStorageExtensionFunction::OnDataRetrieved(
-    base::Optional<std::string> data,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> data,
+    absl::optional<std::string> error) {
   if (error) {
     Respond(Error(*error));
     return;
   }
-  Respond(OneArgument(data ? std::make_unique<base::Value>(*data) : nullptr));
+  Respond(OneArgument(data ? base::Value(*data) : base::Value()));
 }
 
 LoginScreenStorageStorePersistentDataFunction::
@@ -49,7 +49,7 @@ LoginScreenStorageStorePersistentDataFunction::
 ExtensionFunction::ResponseAction
 LoginScreenStorageStorePersistentDataFunction::Run() {
   std::unique_ptr<login_screen_storage::StorePersistentData::Params> params =
-      login_screen_storage::StorePersistentData::Params::Create(*args_);
+      login_screen_storage::StorePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   login_manager::LoginScreenStorageMetadata metadata;
   metadata.set_clear_on_session_exit(false);
@@ -62,7 +62,7 @@ void LoginScreenStorageStorePersistentDataFunction::OnDataStored(
     std::vector<std::string> extension_ids,
     const login_manager::LoginScreenStorageMetadata& metadata,
     const std::string& data,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   if (error) {
     Respond(Error(*error));
     return;
@@ -101,7 +101,7 @@ LoginScreenStorageRetrievePersistentDataFunction::
 ExtensionFunction::ResponseAction
 LoginScreenStorageRetrievePersistentDataFunction::Run() {
   std::unique_ptr<login_screen_storage::RetrievePersistentData::Params> params =
-      login_screen_storage::RetrievePersistentData::Params::Create(*args_);
+      login_screen_storage::RetrievePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   chromeos::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
@@ -121,7 +121,7 @@ LoginScreenStorageStoreCredentialsFunction::
 ExtensionFunction::ResponseAction
 LoginScreenStorageStoreCredentialsFunction::Run() {
   std::unique_ptr<login_screen_storage::StoreCredentials::Params> params =
-      login_screen_storage::StoreCredentials::Params::Create(*args_);
+      login_screen_storage::StoreCredentials::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   login_manager::LoginScreenStorageMetadata metadata;
   metadata.set_clear_on_session_exit(true);

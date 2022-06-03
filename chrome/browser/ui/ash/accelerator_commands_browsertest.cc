@@ -5,9 +5,7 @@
 #include "ash/accelerators/accelerator_commands.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,10 +16,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/common/service_manager_connection.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -34,20 +32,8 @@ using testing::WithParamInterface;
 
 namespace {
 
-// WidgetDelegateView which allows the widget to be maximized.
-class MaximizableWidgetDelegate : public views::WidgetDelegateView {
- public:
-  MaximizableWidgetDelegate() {}
-  ~MaximizableWidgetDelegate() override {}
-
-  bool CanMaximize() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MaximizableWidgetDelegate);
-};
-
 bool IsInImmersive(aura::Window* window) {
-  return window->GetProperty(ash::kImmersiveIsActive);
+  return window->GetProperty(chromeos::kImmersiveIsActive);
 }
 
 }  // namespace
@@ -58,6 +44,12 @@ class AcceleratorCommandsFullscreenBrowserTest
  public:
   AcceleratorCommandsFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsFullscreenBrowserTest(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
 
   // Sets |widget|'s show state to |initial_show_state_|.
@@ -80,8 +72,6 @@ class AcceleratorCommandsFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsFullscreenBrowserTest);
 };
 
 // Test that toggling window fullscreen works properly.
@@ -115,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
                                           gfx::Rect(), browser()->profile(),
                                           true));
 
-  Browser* app_host_browser = new Browser(browser_create_params);
+  Browser* app_host_browser = Browser::Create(browser_create_params);
   ASSERT_FALSE(app_host_browser->is_type_popup());
   ASSERT_TRUE(app_host_browser->is_type_app());
   AddBlankTabAndShow(app_host_browser);
@@ -135,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   // 4) Popup browser windows.
   browser_create_params =
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true);
-  Browser* popup_browser = new Browser(browser_create_params);
+  Browser* popup_browser = Browser::Create(browser_create_params);
   ASSERT_TRUE(popup_browser->is_type_popup());
   ASSERT_FALSE(popup_browser->is_type_app());
   AddBlankTabAndShow(popup_browser);
@@ -154,7 +144,8 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
 
   // 5) Miscellaneous windows (e.g. task manager).
   views::Widget::InitParams params;
-  params.delegate = new MaximizableWidgetDelegate();
+  params.delegate = new views::WidgetDelegateView;
+  params.delegate->SetCanMaximize(true);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   views::Widget misc_widget;
   widget = &misc_widget;
@@ -191,6 +182,12 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
  public:
   AcceleratorCommandsPlatformAppFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() {}
 
   // Sets |app_window|'s show state to |initial_show_state_|.
@@ -211,8 +208,6 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsPlatformAppFullscreenBrowserTest);
 };
 
 // Test the behavior of platform apps when ToggleFullscreen() is called.

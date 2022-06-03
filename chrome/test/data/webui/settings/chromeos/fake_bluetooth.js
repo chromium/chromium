@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FakeChromeEvent} from 'chrome://test/fake_chrome_event.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * @fileoverview Fake implementation of chrome.bluetooth for testing.
  */
@@ -11,7 +14,7 @@ cr.define('settings', function() {
    * @constructor
    * @implements {Bluetooth}
    */
-  function FakeBluetooth() {
+  /* #export */ function FakeBluetooth() {
     /** @type {!chrome.bluetooth.AdapterState} */ this.adapterState_ = {
       address: '00:11:22:33:44:55:66',
       name: 'Fake Adapter',
@@ -56,7 +59,7 @@ cr.define('settings', function() {
       // Make sure the new devices don't already exist.
       for (const d of newDevices) {
         const found = this.devices.find(element => {
-          return element.address == d.address;
+          return element.address === d.address;
         });
         assert(
             !found,
@@ -86,7 +89,7 @@ cr.define('settings', function() {
     simulateDevicesRemovedForTest: function(deviceAddresses) {
       for (const deviceAddress of deviceAddresses) {
         const removedDeviceIndex = this.devices.findIndex(element => {
-          return element.address == deviceAddress;
+          return element.address === deviceAddress;
         });
         assert(
             removedDeviceIndex !== -1,
@@ -114,7 +117,7 @@ cr.define('settings', function() {
      */
     getDeviceForTest: function(address) {
       return this.devices.find(function(d) {
-        return d.address == address;
+        return d.address === address;
       });
     },
 
@@ -136,11 +139,29 @@ cr.define('settings', function() {
 
     /** @override */
     startDiscovery: function(callback) {
+      assertTrue(
+          this.adapterState_.available && this.adapterState_.powered,
+          'Adapter should be available and powered on before discovering.');
+      assertFalse(
+          this.adapterState_.discovering, 'Adapter is already discovering.');
+      this.simulateAdapterStateChangedForTest({
+        available: true,
+        powered: true,
+        discovering: true,
+      });
       callback();
     },
 
     /** @override */
-    stopDiscovery: assertNotReached,
+    stopDiscovery: function(callback) {
+      assertTrue(this.adapterState_.discovering, 'Adapter is not discovering.');
+      this.simulateAdapterStateChangedForTest({
+        available: true,
+        powered: true,
+        discovering: false,
+      });
+      callback();
+    },
 
     /** @override */
     onAdapterStateChanged: new FakeChromeEvent(),
@@ -155,5 +176,6 @@ cr.define('settings', function() {
     onDeviceRemoved: new FakeChromeEvent(),
   };
 
+  // #cr_define_end
   return {FakeBluetooth: FakeBluetooth};
 });

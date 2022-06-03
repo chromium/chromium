@@ -37,6 +37,13 @@ class GESTURE_DETECTION_EXPORT MotionEvent {
 
   enum class ToolType { UNKNOWN, FINGER, STYLUS, MOUSE, ERASER, LAST = ERASER };
 
+  enum class Classification {
+    NONE,
+    AMBIGUOUS_GESTURE,
+    DEEP_PRESS,
+    LAST = DEEP_PRESS
+  };
+
   enum ButtonType {
     BUTTON_PRIMARY = 1 << 0,
     BUTTON_SECONDARY = 1 << 1,
@@ -77,6 +84,8 @@ class GESTURE_DETECTION_EXPORT MotionEvent {
   virtual int GetButtonState() const = 0;
   virtual int GetFlags() const = 0;
   virtual base::TimeTicks GetEventTime() const = 0;
+
+  virtual Classification GetClassification() const;
 
   // Optional historical data, default implementation provides an empty history.
   virtual size_t GetHistorySize() const;

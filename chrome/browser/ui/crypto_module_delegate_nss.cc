@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -31,12 +31,15 @@ std::string ChromeNSSCryptoModuleDelegate::RequestPassword(
   DCHECK(!event_.IsSignaled());
   event_.Reset();
 
-  if (base::PostTask(
-          FROM_HERE, {BrowserThread::UI},
+  if (content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(&ChromeNSSCryptoModuleDelegate::ShowDialog,
                          // This method blocks on |event_| until the task
                          // completes, so there's no need to ref-count.
                          base::Unretained(this), slot_name, retry))) {
+    // This should always be invoked on a worker sequence with the
+    // base::MayBlock() trait.
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
     event_.Wait();
   }
   *cancelled = cancelled_;
@@ -48,11 +51,11 @@ void ChromeNSSCryptoModuleDelegate::ShowDialog(const std::string& slot_name,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ShowCryptoModulePasswordDialog(
       slot_name, retry, reason_, server_.host(),
-      NULL,  // TODO(mattm): Supply parent window.
-      base::Bind(&ChromeNSSCryptoModuleDelegate::GotPassword,
-                 // RequestPassword is blocked on |event_| until GotPassword is
-                 // called, so there's no need to ref-count.
-                 base::Unretained(this)));
+      nullptr,  // TODO(mattm): Supply parent window.
+      base::BindOnce(&ChromeNSSCryptoModuleDelegate::GotPassword,
+                     // RequestPassword is blocked on |event_| until GotPassword
+                     // is called, so there's no need to ref-count.
+                     base::Unretained(this)));
 }
 
 void ChromeNSSCryptoModuleDelegate::GotPassword(const std::string& password) {

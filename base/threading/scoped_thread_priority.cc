@@ -6,20 +6,31 @@
 
 #include "base/location.h"
 #include "base/threading/platform_thread.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace internal {
 
 ScopedMayLoadLibraryAtBackgroundPriority::
-    ScopedMayLoadLibraryAtBackgroundPriority(const Location& from_here) {
-  TRACE_EVENT_BEGIN2("base", "ScopedMayLoadLibraryAtBackgroundPriority",
-                     "file_name", from_here.file_name(), "function_name",
-                     from_here.function_name());
-}
-
-bool ScopedMayLoadLibraryAtBackgroundPriority::OnScopeFirstEntered() {
+    ScopedMayLoadLibraryAtBackgroundPriority(const Location& from_here,
+                                             std::atomic_bool* already_loaded)
 #if defined(OS_WIN)
+    : already_loaded_(already_loaded)
+#endif  // OS_WIN
+{
+  TRACE_EVENT_BEGIN(
+      "base", "ScopedMayLoadLibraryAtBackgroundPriority",
+      [&](perfetto::EventContext ctx) {
+        ctx.event()->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+      });
+
+#if defined(OS_WIN)
+  if (already_loaded_ && already_loaded_->load(std::memory_order_relaxed))
+    return;
+
   const base::ThreadPriority priority =
       PlatformThread::GetCurrentThreadPriority();
   if (priority == base::ThreadPriority::BACKGROUND) {
@@ -31,13 +42,12 @@ bool ScopedMayLoadLibraryAtBackgroundPriority::OnScopeFirstEntered() {
         "ScopedMayLoadLibraryAtBackgroundPriority : Priority Increased");
   }
 #endif  // OS_WIN
-
-  return true;
 }
 
 ScopedMayLoadLibraryAtBackgroundPriority::
     ~ScopedMayLoadLibraryAtBackgroundPriority() {
-  TRACE_EVENT_END0("base", "ScopedMayLoadLibraryAtBackgroundPriority");
+  // Trace events must be closed in reverse order of opening so that they nest
+  // correctly.
 #if defined(OS_WIN)
   if (original_thread_priority_) {
     TRACE_EVENT_END0(
@@ -45,7 +55,11 @@ ScopedMayLoadLibraryAtBackgroundPriority::
         "ScopedMayLoadLibraryAtBackgroundPriority : Priority Increased");
     PlatformThread::SetCurrentThreadPriority(original_thread_priority_.value());
   }
+
+  if (already_loaded_)
+    already_loaded_->store(true, std::memory_order_relaxed);
 #endif  // OS_WIN
+  TRACE_EVENT_END0("base", "ScopedMayLoadLibraryAtBackgroundPriority");
 }
 
 }  // namespace internal

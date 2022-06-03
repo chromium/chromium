@@ -44,10 +44,8 @@ typedef NS_ENUM(NSInteger, CopiedContentType);
 // Gets the height of the widget.
 - (CGFloat)widgetHeight;
 
-// Sets the copied content type. |copiedText| should be provided if the content
-// type requires textual data, otherwise it should be nil.
-- (void)setCopiedContentType:(CopiedContentType)type
-                  copiedText:(NSString*)copiedText;
+// Sets the copied content type.
+- (void)setCopiedContentType:(CopiedContentType)type;
 
 @end
 

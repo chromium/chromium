@@ -14,7 +14,7 @@ PASS __proto__ = anotherObject; __proto__ threw exception TypeError: Immutable p
 PASS __proto__ = originalWindowPrototype; __proto__ is originalWindowPrototype
 PASS anotherObject.__proto__ = window; anotherObject.__proto__ is window
 PASS __proto__ = null; __proto__ threw exception TypeError: Immutable prototype object '#<Window>' cannot have their prototype set.
-PASS location.__proto__.__proto__ = location threw exception TypeError: Cyclic __proto__ value.
+PASS location.__proto__.__proto__ = location threw exception TypeError: Immutable prototype object '#<Location>' cannot have their prototype set.
 PASS successfullyParsed is true
 
 TEST COMPLETE

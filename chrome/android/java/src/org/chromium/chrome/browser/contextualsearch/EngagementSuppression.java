@@ -9,7 +9,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
- * Provides a ContextualSearchHeuristic for Engagement with the feature.
+ * Provides a {@link ContextualSearchHeuristic} for user engagement with the feature.
  */
 public class EngagementSuppression extends ContextualSearchHeuristic {
     private final SharedPreferencesManager mPreferenceManager;

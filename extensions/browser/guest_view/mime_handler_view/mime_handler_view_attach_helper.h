@@ -10,18 +10,19 @@
 #include <map>
 #include <string>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "extensions/common/mojom/guest_view.mojom.h"
 
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
 }  // namespace content
+
+class GURL;
 
 namespace extensions {
 
@@ -57,6 +58,10 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
       uint32_t* data_pipe_size,
       base::OnceClosure resume_load = base::DoNothing());
 
+  MimeHandlerViewAttachHelper(const MimeHandlerViewAttachHelper&) = delete;
+  MimeHandlerViewAttachHelper& operator=(const MimeHandlerViewAttachHelper&) =
+      delete;
+
   ~MimeHandlerViewAttachHelper() override;
 
   // content::RenderProcessHostObserver overrides.
@@ -86,11 +91,11 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // SiteInstance) has been created.
   static void CreateFullPageMimeHandlerView(int32_t frame_tree_node_id,
                                             const GURL& resource_url,
-                                            const std::string& mime_type,
                                             const std::string& stream_id,
                                             const std::string& token);
 
-  MimeHandlerViewAttachHelper(content::RenderProcessHost* render_process_host);
+  explicit MimeHandlerViewAttachHelper(
+      content::RenderProcessHost* render_process_host);
 
   // From the time the MimeHandlerViewGuest starts the attach process
   // (AttachToOuterWebContents) to when the inner WebContents of GuestView
@@ -103,8 +108,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   content::RenderProcessHost* const render_process_host_;
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewAttachHelper);
 };
 
 }  // namespace extensions

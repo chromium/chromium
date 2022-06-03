@@ -16,7 +16,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/common/sandbox_init.h"

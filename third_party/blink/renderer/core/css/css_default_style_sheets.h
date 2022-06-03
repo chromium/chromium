@@ -24,15 +24,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_DEFAULT_STYLE_SHEETS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_DEFAULT_STYLE_SHEETS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class Document;
 class Element;
+class RuleFeatureSet;
 class RuleSet;
 class StyleSheetContents;
 
@@ -41,17 +43,32 @@ class CSSDefaultStyleSheets final
  public:
   CORE_EXPORT static CSSDefaultStyleSheets& Instance();
 
+  static StyleSheetContents* ParseUASheet(const String&);
+
   CSSDefaultStyleSheets();
+  CSSDefaultStyleSheets(const CSSDefaultStyleSheets&) = delete;
+  CSSDefaultStyleSheets& operator=(const CSSDefaultStyleSheets&) = delete;
 
   bool EnsureDefaultStyleSheetsForElement(const Element&);
+  bool EnsureDefaultStyleSheetsForPseudoElement(PseudoId);
+  bool EnsureDefaultStyleSheetForXrOverlay();
   void EnsureDefaultStyleSheetForFullscreen();
+  bool EnsureDefaultStyleSheetForForcedColors();
 
-  RuleSet* DefaultStyle() { return default_style_.Get(); }
-  RuleSet* DefaultQuirksStyle() { return default_quirks_style_.Get(); }
+  RuleSet* DefaultHtmlStyle() { return default_html_style_.Get(); }
+  RuleSet* DefaultMathMLStyle() { return default_mathml_style_.Get(); }
+  RuleSet* DefaultSVGStyle() { return default_svg_style_.Get(); }
+  RuleSet* DefaultHtmlQuirksStyle() { return default_html_quirks_style_.Get(); }
   RuleSet* DefaultPrintStyle() { return default_print_style_.Get(); }
   RuleSet* DefaultViewSourceStyle();
   RuleSet* DefaultForcedColorStyle() {
     return default_forced_color_style_.Get();
+  }
+  RuleSet* DefaultPseudoElementStyleOrNull() {
+    return default_pseudo_element_style_.Get();
+  }
+  RuleSet* DefaultMediaControlsStyle() {
+    return default_media_controls_style_.Get();
   }
 
   StyleSheetContents* EnsureMobileViewportStyleSheet();
@@ -60,6 +77,7 @@ class CSSDefaultStyleSheets final
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
+  StyleSheetContents* PopupStyleSheet() { return popup_style_sheet_.Get(); }
   StyleSheetContents* SvgStyleSheet() { return svg_style_sheet_.Get(); }
   StyleSheetContents* MathmlStyleSheet() { return mathml_style_sheet_.Get(); }
   StyleSheetContents* MediaControlsStyleSheet() {
@@ -67,6 +85,10 @@ class CSSDefaultStyleSheets final
   }
   StyleSheetContents* FullscreenStyleSheet() {
     return fullscreen_style_sheet_.Get();
+  }
+  StyleSheetContents* MarkerStyleSheet() { return marker_style_sheet_.Get(); }
+  StyleSheetContents* ForcedColorsStyleSheet() {
+    return forced_colors_style_sheet_.Get();
   }
 
   CORE_EXPORT void PrepareForLeakDetection();
@@ -76,10 +98,10 @@ class CSSDefaultStyleSheets final
   class CORE_EXPORT UAStyleSheetLoader {
    public:
     UAStyleSheetLoader() = default;
+    UAStyleSheetLoader(const UAStyleSheetLoader&) = delete;
+    UAStyleSheetLoader& operator=(const UAStyleSheetLoader&) = delete;
     virtual ~UAStyleSheetLoader() = default;
     virtual String GetUAStyleSheet() = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(UAStyleSheetLoader);
   };
   CORE_EXPORT void SetMediaControlsStyleSheetLoader(
       std::unique_ptr<UAStyleSheetLoader>);
@@ -87,16 +109,31 @@ class CSSDefaultStyleSheets final
     return media_controls_style_sheet_loader_.get();
   }
 
-  void Trace(blink::Visitor*);
+  void CollectFeaturesTo(const Document&, RuleFeatureSet&);
+
+  void Trace(Visitor*) const;
 
  private:
   void InitializeDefaultStyles();
 
-  Member<RuleSet> default_style_;
-  Member<RuleSet> default_quirks_style_;
+  enum class NamespaceType {
+    kHTML,
+    kMathML,
+    kSVG,
+    kMediaControls,  // Not exactly a namespace
+  };
+  void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
+                                    NamespaceType type);
+
+  Member<RuleSet> default_html_style_;
+  Member<RuleSet> default_mathml_style_;
+  Member<RuleSet> default_svg_style_;
+  Member<RuleSet> default_html_quirks_style_;
   Member<RuleSet> default_print_style_;
   Member<RuleSet> default_view_source_style_;
   Member<RuleSet> default_forced_color_style_;
+  Member<RuleSet> default_pseudo_element_style_;
+  Member<RuleSet> default_media_controls_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
   Member<StyleSheetContents> mobile_viewport_style_sheet_;
@@ -108,9 +145,12 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> media_controls_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
+  Member<StyleSheetContents> popup_style_sheet_;
+  Member<StyleSheetContents> webxr_overlay_style_sheet_;
+  Member<StyleSheetContents> marker_style_sheet_;
+  Member<StyleSheetContents> forced_colors_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
-  DISALLOW_COPY_AND_ASSIGN(CSSDefaultStyleSheets);
 };
 
 }  // namespace blink

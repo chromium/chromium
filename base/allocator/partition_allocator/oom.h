@@ -5,35 +5,26 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 
-#include "base/allocator/partition_allocator/oom_callback.h"
-#include "base/logging.h"
-#include "base/process/memory.h"
-#include "build/build_config.h"
+#include <stddef.h>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
+#include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/base_export.h"
+#include "base/compiler_specific.h"
 
-namespace {
 // The crash is generated in a NOINLINE function so that we can classify the
-// crash as an OOM solely by analyzing the stack trace.
-NOINLINE void OnNoMemory() {
-  base::internal::RunPartitionAllocOomCallback();
-#if defined(OS_WIN)
-  ::RaiseException(base::win::kOomExceptionCode, EXCEPTION_NONCONTINUABLE, 0,
-                   nullptr);
-#endif
-  IMMEDIATE_CRASH();
-}
-}  // namespace
+// crash as an OOM solely by analyzing the stack trace. It is tagged as
+// NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
+[[noreturn]] BASE_EXPORT void NOT_TAIL_CALLED OnNoMemory(size_t size);
 
-// OOM_CRASH() - Specialization of IMMEDIATE_CRASH which will raise a custom
+// OOM_CRASH(size) - Specialization of IMMEDIATE_CRASH which will raise a custom
 // exception on Windows to signal this is OOM and not a normal assert.
-// OOM_CRASH() is called by users of PageAllocator (including PartitionAlloc) to
-// signify an allocation failure from the platform.
-#define OOM_CRASH() \
-  do {              \
-    OnNoMemory();   \
+// OOM_CRASH(size) is called by users of PageAllocator (including
+// PartitionAlloc) to signify an allocation failure from the platform.
+#define OOM_CRASH(size)                                     \
+  do {                                                      \
+    /* Raising an exception might allocate, allow that.  */ \
+    base::internal::ScopedAllowAllocations guard{};         \
+    OnNoMemory(size);                                       \
   } while (0)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_

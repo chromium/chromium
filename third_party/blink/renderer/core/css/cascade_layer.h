@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYER_H_
+
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+namespace blink {
+
+// A CascadeLayer object represents a node in the ordered tree of cascade layers
+// in the sorted layer ordering.
+// https://www.w3.org/TR/css-cascade-5/#layer-ordering
+class CORE_EXPORT CascadeLayer final : public GarbageCollected<CascadeLayer> {
+ public:
+  explicit CascadeLayer(const AtomicString& name = g_empty_atom)
+      : name_(name) {}
+  ~CascadeLayer() = default;
+
+  const AtomicString& GetName() const { return name_; }
+  const HeapVector<Member<CascadeLayer>>& GetDirectSubLayers() const {
+    return direct_sub_layers_;
+  }
+
+  CascadeLayer* GetOrAddSubLayer(const StyleRuleBase::LayerName& name);
+
+  void Trace(blink::Visitor*) const;
+
+ private:
+  friend class CascadeLayerTest;
+  friend class RuleSetCascadeLayerTest;
+
+  String ToStringForTesting() const;
+  void ToStringInternal(StringBuilder&, const String&) const;
+
+  CascadeLayer* FindDirectSubLayer(const AtomicString&) const;
+  void ComputeLayerOrderInternal(unsigned* next);
+
+  AtomicString name_;
+  HeapVector<Member<CascadeLayer>> direct_sub_layers_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CASCADE_LAYER_H_

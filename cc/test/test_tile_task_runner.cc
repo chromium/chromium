@@ -4,7 +4,7 @@
 
 #include "cc/test/test_tile_task_runner.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace cc {
 

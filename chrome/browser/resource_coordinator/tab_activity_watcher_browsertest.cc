@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
@@ -23,6 +22,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -56,7 +57,7 @@ const UkmMetricMap kBasicMetricValues({
 
 // These parameters don't affect logging.
 const bool kCheckNavigationSuccess = true;
-const int64_t kIdShift = 1 << 13;
+const int64_t kIdShift = 1 << 16;
 
 }  // namespace
 
@@ -67,6 +68,10 @@ const int64_t kIdShift = 1 << 13;
 // that window and browser commands are really triggering the paths that lead
 // to UKM logs.
 class TabActivityWatcherTest : public InProcessBrowserTest {
+ public:
+  TabActivityWatcherTest(const TabActivityWatcherTest&) = delete;
+  TabActivityWatcherTest& operator=(const TabActivityWatcherTest&) = delete;
+
  protected:
   TabActivityWatcherTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -179,8 +184,6 @@ class TabActivityWatcherTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabActivityWatcherTest);
 };
 
 class TabActivityWatcherTestWithBackgroundLogDisabled
@@ -202,23 +205,23 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogDisabled,
   // Use test clock so tabs have non-zero backgrounded times.
   base::SimpleTestTickClock test_clock;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing(&test_clock);
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
 
   AddTabAtIndex(1, test_urls_[0], ui::PAGE_TRANSITION_LINK);
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
 
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
 
   // A background tab is scored successfully.
-  base::Optional<float> background_score =
+  absl::optional<float> background_score =
       TabActivityWatcher::GetInstance()->CalculateReactivationScore(
           browser()->tab_strip_model()->GetWebContentsAt(1));
   EXPECT_TRUE(background_score.has_value());
 
   // Foreground tabs are not modeled by the tab ranker and should not be scored.
-  base::Optional<float> foreground_score =
+  absl::optional<float> foreground_score =
       TabActivityWatcher::GetInstance()->CalculateReactivationScore(
           browser()->tab_strip_model()->GetWebContentsAt(0));
   EXPECT_FALSE(foreground_score.has_value());
@@ -317,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, SwitchWindows) {
 IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, BeforeUnloadHandler) {
   // Navigate to a page with a beforeunload handler.
   GURL url(embedded_test_server()->GetURL("/beforeunload.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Log metrics for the first tab by switching to a new tab.
   AddTabAtIndex(1, test_urls_[0], ui::PAGE_TRANSITION_LINK);
@@ -349,8 +352,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, TabDrag) {
 
   Browser* browser_2 = CreateBrowser(browser()->profile());
 
-  ui_test_utils::NavigateToURL(browser(), kBrowserStartUrl);
-  ui_test_utils::NavigateToURL(browser_2, kBrowser2StartUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kBrowserStartUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, kBrowser2StartUrl));
 
   // Adding a tab backgrounds the original tab in the window.
   AddTabAtIndexToBrowser(browser(), 1, kDraggedTabUrl, ui::PAGE_TRANSITION_LINK,
@@ -367,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, TabDrag) {
   content::WebContents* dragged_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   std::unique_ptr<content::WebContents> owned_dragged_contents =
-      browser()->tab_strip_model()->DetachWebContentsAt(1);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(1);
   dragged_contents->WasHidden();
   // The other tab in the browser is now foregrounded.
   ExpectNewForegroundedEntry(kBrowserStartUrl);
@@ -421,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogEnabled,
   ukm::SourceId ukm_source_id_for_tab_0 = 0;
   ukm::SourceId ukm_source_id_for_tab_1 = 0;
 
-  ui_test_utils::NavigateToURL(browser(), test_urls_[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
   EXPECT_EQ(0u, ukm_entry_checker_->NumEntries(kTabMetricsEntryName));
 
   // Adding a new foreground tab logs the previously active tab.
@@ -442,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogEnabled,
       browser()->tab_strip_model()->GetWebContentsAt(0);
   resource_coordinator::GetTabLifecycleUnitSource()
       ->GetTabLifecycleUnitExternal(first_contents)
-      ->DiscardTab();
+      ->DiscardTab(LifecycleUnitDiscardReason::URGENT);
 
   // Logs tab@0.
   LogTabFeaturesAt(0);
@@ -493,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogEnabled,
       browser()->tab_strip_model()->GetWebContentsAt(1);
   resource_coordinator::GetTabLifecycleUnitSource()
       ->GetTabLifecycleUnitExternal(second_content)
-      ->DiscardTab();
+      ->DiscardTab(LifecycleUnitDiscardReason::URGENT);
 
   CloseBrowserSynchronously(browser());
   {
@@ -510,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogEnabled,
 // Tests that all window metrics are logged with correct value which are
 // different from their default values in TabFeatures.
 IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, AllWindowMetricsArePopulated) {
-  ui_test_utils::NavigateToURL(browser(), test_urls_[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
 
   // Adding a new foreground tab logs the previously active tab.
   AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
@@ -552,22 +555,30 @@ IN_PROC_BROWSER_TEST_F(
   // Use test clock so tabs have non-zero backgrounded times.
   base::SimpleTestTickClock test_clock;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing(&test_clock);
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
 
-  ui_test_utils::NavigateToURL(browser(), test_urls_[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
   // Insert the tab@1.
   AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
   // Insert the tab@2.
   AddTabAtIndex(2, test_urls_[2], ui::PAGE_TRANSITION_LINK);
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
   // Activate tab@0.
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
 
-  // No tab metrics should be logged till now.
+  // TabManager_TabMetrics should not have been logged yet.
   EXPECT_EQ(0, ukm_entry_checker_->NumNewEntriesRecorded(kTabMetricsEntryName));
+
+  // TabManager_Background_ForegroundedOrClosed should have been logged when
+  // tab@0 was activated.
+  ukm_entry_checker_->ExpectNewEntry(
+      kFOCEntryName, test_urls_[0],
+      {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 1},
+       {TabManager_Background_ForegroundedOrClosed::kLabelIdName, 0},
+       {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
 
   // Logs tab@1.
   LogTabFeaturesAt(1);
@@ -593,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(
   // label_id_1.
   browser()->tab_strip_model()->ActivateTabAt(
       1, {TabStripModel::GestureType::kOther});
-  test_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock.Advance(base::Minutes(1));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(
@@ -628,13 +639,22 @@ IN_PROC_BROWSER_TEST_F(
   CloseBrowserSynchronously(browser());
   {
     SCOPED_TRACE("");
-    // Close Browser should log a ForegroundedOrClosed event for tab@2 with
-    // correct label_id.
+    // No ForegroundedOrClosed event is logged for tab@1 because it was
+    // foregrounded. The event should be logged for tab@0 and tab@2.
+
+    // tab@2
     ukm_entry_checker_->ExpectNewEntry(
         kFOCEntryName, test_urls_[2],
         {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 0},
          {TabManager_Background_ForegroundedOrClosed::kLabelIdName,
           4 * kIdShift},
+         {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
+
+    // tab@0
+    ukm_entry_checker_->ExpectNewEntry(
+        kFOCEntryName, test_urls_[0],
+        {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 0},
+         {TabManager_Background_ForegroundedOrClosed::kLabelIdName, 0},
          {TabManager_Background_ForegroundedOrClosed::kIsDiscardedName, 0}});
   }
 }
@@ -643,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TabActivityWatcherTestWithBackgroundLogDisabledAndOnlyOneOldestTab,
     DiscardedTabGetsCorrectLabelId) {
-  ui_test_utils::NavigateToURL(browser(), test_urls_[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
   AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
   // No TabMetrics events are logged till now.
   EXPECT_EQ(0u, ukm_entry_checker_->NumEntries(kTabMetricsEntryName));
@@ -666,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetWebContentsAt(0);
   resource_coordinator::GetTabLifecycleUnitSource()
       ->GetTabLifecycleUnitExternal(first_contents)
-      ->DiscardTab();
+      ->DiscardTab(LifecycleUnitDiscardReason::URGENT);
 
   // Switching to first tab logs a forgrounded event for test_urls_[0].
   browser()->tab_strip_model()->ActivateTabAt(
@@ -700,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetWebContentsAt(1);
   resource_coordinator::GetTabLifecycleUnitSource()
       ->GetTabLifecycleUnitExternal(second_content)
-      ->DiscardTab();
+      ->DiscardTab(LifecycleUnitDiscardReason::URGENT);
 
   CloseBrowserSynchronously(browser());
   {
@@ -721,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TabActivityWatcherTestWithBackgroundLogDisabledAndOnlyOneOldestTab,
     TabsAlreadyHaveLabelIdGetIncrementalLabelIds) {
-  ui_test_utils::NavigateToURL(browser(), test_urls_[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
   AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
   // No TabMetrics events are logged till now.
   EXPECT_EQ(0u, ukm_entry_checker_->NumEntries(kTabMetricsEntryName));
@@ -750,6 +770,97 @@ IN_PROC_BROWSER_TEST_F(
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[0],
                                        expected_metrics);
   }
+}
+
+class TabActivityWatcherPrerenderingTest : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherPrerenderingTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &TabActivityWatcherPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~TabActivityWatcherPrerenderingTest() override = default;
+
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    TabActivityWatcherTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+// Tests that all tabs metrics are logged with correct value and should not be
+// logged in prerendering.
+IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
+                       SwitchTabsWithPrerendering) {
+  ukm::SourceId ukm_source_id_for_tab_0 = 0;
+  ukm::SourceId ukm_source_id_for_activated_page = 0;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
+  EXPECT_EQ(0u, ukm_entry_checker_->NumEntries(kTabMetricsEntryName));
+
+  // Load a page in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Adding a new foreground tab logs the previously active tab.
+  AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
+  {
+    SCOPED_TRACE("");
+    ukm_entry_checker_->ExpectNewEntry(
+        kTabMetricsEntryName, test_urls_[0],
+        {{TabManager_TabMetrics::kNavigationEntryCountName, 2}});
+
+    ukm_source_id_for_tab_0 = ExpectNewEntryWithSourceId(
+        test_urls_[0], kTabMetricsEntryName, 1,
+        {{TabManager_TabMetrics::kNavigationEntryCountName, 2}});
+  }
+
+  // Switching to another tab logs the previously active tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, {TabStripModel::GestureType::kOther});
+  {
+    SCOPED_TRACE("");
+    ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[1],
+                                       kBasicMetricValues);
+
+    ExpectNewEntryWithSourceId(test_urls_[1], kTabMetricsEntryName, 2,
+                               kBasicMetricValues);
+
+    ExpectNewEntryWithSourceId(
+        test_urls_[0], kFOCEntryName, 1,
+        {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 1}},
+        ukm_source_id_for_tab_0);
+  }
+  // Activating the prerendered page on the current active tab.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Switching to another tab logs the previously active tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      1, {TabStripModel::GestureType::kOther});
+  {
+    SCOPED_TRACE("");
+    UkmMetricMap expected_metrics = kBasicMetricValues;
+    expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName] = 3;
+
+    // A new entry should be added by the prerendering activation.
+    ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, prerender_url,
+                                       expected_metrics);
+
+    ukm_source_id_for_activated_page = ExpectNewEntryWithSourceId(
+        prerender_url, kTabMetricsEntryName, 3, expected_metrics);
+  }
+
+  // ukm::SourceId is updated when the prerendered page is activated.
+  EXPECT_NE(ukm_source_id_for_tab_0, ukm_source_id_for_activated_page);
 }
 
 }  // namespace resource_coordinator

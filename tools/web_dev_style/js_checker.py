@@ -7,7 +7,7 @@
 See chrome/browser/PRESUBMIT.py
 """
 
-import regex_check
+from . import regex_check
 
 
 class JSChecker(object):
@@ -21,8 +21,9 @@ class JSChecker(object):
         self.input_api.re, line_number, line, regex, message)
 
   def BindThisCheck(self, i, line):
-    return self.RegexCheck(i, line, r"(\.bind\(this)[^)]*\)",
-        "Prefer arrow (=>) functions over bind(this)");
+    """Checks for usages of bind(this) with inlined functions."""
+    return self.RegexCheck(i, line, r"\)(\.bind\(this)[^)]*\)",
+                           "Prefer arrow (=>) functions over bind(this)")
 
   def ChromeSendCheck(self, i, line):
     """Checks for a particular misuse of "chrome.send"."""
@@ -36,6 +37,10 @@ class JSChecker(object):
         '    // <include src="...">\n' +
         '    // <if expr="chromeos">\n' +
         "    // </if>\n")
+
+  def DebuggerCheck(self, i, line):
+    return self.RegexCheck(i, line, r"^\s*(debugger);",
+                           "Debugger statements should be removed")
 
   def EndJsDocCommentCheck(self, i, line):
     msg = "End JSDoc comments with */ instead of **/"
@@ -70,10 +75,10 @@ class JSChecker(object):
 
     from os import isatty as os_isatty
     args = ["--color"] if os_isatty(self.input_api.sys.stdout.fileno()) else []
-    args += ["--format", format, "--ignore-pattern '!.eslintrc.js'"]
+    args += ["--format", format, "--ignore-pattern", "!.eslintrc.js"]
     args += affected_js_files_paths
 
-    import eslint
+    from . import eslint
     output = eslint.Run(os_path=os_path, args=args)
 
     return [self.output_api.PresubmitError(output)] if output else []
@@ -92,14 +97,15 @@ class JSChecker(object):
 
   def RunChecks(self):
     """Check for violations of the Chromium JavaScript style guide. See
-       https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript
+       https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md#JavaScript
     """
     results = []
 
     affected_files = self.input_api.AffectedFiles(file_filter=self.file_filter,
                                                   include_deletes=False)
-    affected_js_files = filter(lambda f: f.LocalPath().endswith(".js"),
-                               affected_files)
+    affected_js_files = [
+        f for f in affected_files if f.LocalPath().endswith((".js", "ts"))
+    ]
 
     if affected_js_files:
       results += self.RunEsLintChecks(affected_js_files)
@@ -107,16 +113,20 @@ class JSChecker(object):
     for f in affected_js_files:
       error_lines = []
 
-      for i, line in enumerate(f.NewContents(), start=1):
-        error_lines += filter(None, [
-            self.ChromeSendCheck(i, line),
-            self.CommentIfAndIncludeCheck(i, line),
-            self.EndJsDocCommentCheck(i, line),
-            self.ExtraDotInGenericCheck(i, line),
-            self.InheritDocCheck(i, line),
-            self.PolymerLocalIdCheck(i, line),
-            self.VariableNameCheck(i, line),
-        ])
+      for i, line in f.ChangedContents():
+        error_lines += [
+            _f for _f in [
+                self.BindThisCheck(i, line),
+                self.ChromeSendCheck(i, line),
+                self.CommentIfAndIncludeCheck(i, line),
+                self.DebuggerCheck(i, line),
+                self.EndJsDocCommentCheck(i, line),
+                self.ExtraDotInGenericCheck(i, line),
+                self.InheritDocCheck(i, line),
+                self.PolymerLocalIdCheck(i, line),
+                self.VariableNameCheck(i, line),
+            ] if _f
+        ]
 
       if error_lines:
         error_lines = [
@@ -127,6 +137,6 @@ class JSChecker(object):
     if results:
       results.append(self.output_api.PresubmitNotifyResult(
           "See the JavaScript style guide at "
-          "https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript"))
+          "https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md#JavaScript"))
 
     return results

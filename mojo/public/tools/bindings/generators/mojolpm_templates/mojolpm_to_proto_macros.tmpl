@@ -1,0 +1,378 @@
+{% import "mojolpm_macros.tmpl" as util %}
+
+
+{%- macro declare_array(type, kind) %}
+{%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+bool ToProto(
+{%-   if kind.kind|is_move_only_kind %}
+  std::vector<{{mojom_type}}>&& input,
+{%-   else %}
+  const std::vector<{{mojom_type}}>& input,
+{%-   endif %}
+  {{type}}& output);{{"\n"-}}
+{%-   if kind.kind|is_array_kind %}
+{{declare_array(type ~ "Entry", kind.kind)}}
+{%-   elif kind.kind|is_map_kind %}
+{{declare_map(type ~ "Entry", kind.kind)}}
+{%-   else %}
+bool ToProto(
+  {{maybe_mojom_type}} input,
+  {{type}}Entry& output);{{"\n"-}}
+{%-   endif %}
+{%- endmacro %}
+
+{%- macro declare_map(type, kind) %}
+{%-   set mojom_key_type = kind.key_kind|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
+{%-   set mojom_value_type = kind.value_kind|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
+bool ToProto(
+{%-   if kind.key_kind|is_move_only_kind or kind.value_kind|is_move_only_kind %}
+  base::flat_map<{{mojom_key_type}},
+                 {{mojom_value_type}}>&& input,
+{%-   else %}
+  const base::flat_map<{{mojom_key_type}},
+                 {{mojom_value_type}}>& input,
+{%-   endif %}
+  {{type}}& output);{{"\n"-}}
+{%-   if kind.key_kind|is_array_kind %}
+{{- declare_array(type ~ "Key", kind.key_kind)}}
+{%-   elif kind.key_kind|is_map_kind %}
+{{- declare_map(type ~ "Key", kind.key_kind)}}
+{%-   else %}
+bool ToProto(
+  {{mojom_key_type}} input,
+  {{type}}Key& output);{{"\n"-}}
+{%-   endif %}
+{%-   if kind.value_kind|is_array_kind %}
+{{- declare_array(type ~ "Value", kind.value_kind)}}
+{%-   elif kind.value_kind|is_map_kind %}
+{{- declare_map(type ~ "Value", kind.value_kind)}}
+{%-   elif kind.value_kind|is_nullable_kind %}
+bool ToProto(
+  {{mojom_value_type}} input,
+  {{type}}Value& output);{{"\n"-}}
+{%-   else %}
+bool ToProto(
+  {{mojom_value_type}} input,
+  {{type}}Value& output);{{"\n"-}}
+{%-   endif %}
+{%- endmacro %}
+
+
+{%- macro declare(parent_name, kind, name) %}
+{%-   if kind|is_array_kind %}
+{%-     set array_type = parent_name ~ "::" ~ name|under_to_camel ~ "_Array" %}
+{{- declare_array(array_type, kind)}}
+{%-   elif kind|is_map_kind %}
+{%-     set map_type = parent_name ~ "::" ~ name|under_to_camel ~ "_Map" %}
+{{- declare_map(map_type, kind)}}
+{%-   endif %}
+{%- endmacro %}
+
+
+{%- macro define_array(type, kind) %}
+{%-   set maybe_const = "const " if not kind.kind|is_move_only_kind else "" %}
+{%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+bool ToProto(
+{%-   if kind.kind|is_move_only_kind %}
+  std::vector<{{mojom_type}}>&& input,
+{%-   else %}
+  const std::vector<{{mojom_type}}>& input,
+{%-   endif %}
+  {{type}}& output) {
+  bool result = true;
+
+  for (auto&& in_value : input) {
+{%-   if kind.kind|is_nullable_kind %}
+    {{type}}Entry* out_value = output.mutable_values()->Add();
+    if ({{util.not_null(kind.kind, 'in_value')}}) {
+{%-     if kind.kind|is_move_only_kind %}
+      ToProto(std::move({{util.value(kind.kind, 'in_value')}}), *out_value);
+{%-     else %}
+      ToProto({{util.value(kind.kind, 'in_value')}}, *out_value);
+{%-     endif %}
+    }
+{%-   else %}
+    {{type}}Entry* out_value = output.mutable_values()->Add();
+{%-     if kind.kind|is_move_only_kind %}
+    ToProto(std::move({{util.value(kind.kind, 'in_value')}}), *out_value);
+{%-     else %}
+    ToProto({{util.value(kind.kind, 'in_value')}}, *out_value);
+{%-     endif %}
+{%-   endif %}
+  }
+
+  return result;
+}{{"\n"-}}
+{%-   if kind.kind|is_array_kind %}
+{{- define_array(type ~ "Entry", kind.kind)}}
+{%-   elif kind.kind|is_map_kind %}
+{{- define_map(type ~ "Entry", kind.kind)}}
+{%-   elif kind.kind|is_nullable_kind %}
+bool ToProto(
+    {{maybe_const}}{{maybe_mojom_type}} input,
+    {{type}}Entry& output) {
+{%-     if kind.kind|is_move_only_kind %}
+  return ToProto(std::move(input), *output.mutable_value());
+{%-     else %}
+  return ToProto(input, *output.mutable_value());
+{%-     endif %}
+}{{"\n"-}}
+{%-   else %}
+bool ToProto(
+    {{maybe_const}}{{mojom_type}} input,
+    {{type}}Entry& output) {
+{%-     if kind.kind|is_integral_kind or kind.kind|is_enum_kind or kind.kind|is_float_kind or kind.kind|is_double_kind %}
+  bool mojolpm_result;
+  {{kind.kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  mojolpm_result = ToProto(input, value);
+  output.set_value(value);
+  return mojolpm_result;
+{%-     elif kind.kind|is_any_interface_kind %}
+  bool mojolpm_result;
+  {{kind.kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  mojolpm_result = ToProto(std::move(input), value);
+  output.set_value(value);
+  return mojolpm_result;
+{%-     elif kind.kind|is_move_only_kind %}
+  return ToProto(std::move(input), *output.mutable_value());
+{%-     else %}
+  return ToProto(input, *output.mutable_value());
+{%-     endif %}
+}{{"\n"-}}
+{%-   endif %}
+{%- endmacro %}
+
+
+{%- macro define_map(type, kind) %}
+{%-   set maybe_const_key = "const " if not kind.key_kind|is_move_only_kind else "" %}
+{%-   set mojom_key_type = kind.key_kind|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
+{%-   set maybe_const_value = "const " if not kind.key_kind|is_move_only_kind else "" %}
+{%-   set mojom_value_type = kind.value_kind|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
+bool ToProto(
+{%-   if kind.key_kind|is_move_only_kind or kind.value_kind|is_move_only_kind %}
+    base::flat_map<{{mojom_key_type}},
+                   {{mojom_value_type}}>&& input,
+{%-   else %}
+    const base::flat_map<{{mojom_key_type}},
+                         {{mojom_value_type}}>& input,
+{%-   endif %}
+    {{type}}& output) {
+  bool result = true;
+
+  for (auto& in_entry : input) {
+    auto out_entry = output.mutable_values()->Add();
+{%-   if kind.key_kind|is_move_only_kind %}
+    result = ToProto(std::move(in_entry.first), *out_entry->mutable_key());
+{%-   else %}
+    result = ToProto(in_entry.first, *out_entry->mutable_key());
+{%-   endif %}
+    if (!result) {
+      break;
+    }
+{%-   if kind.value_kind|is_nullable_kind %}
+    if ({{util.not_null(kind.value_kind, 'in_entry.second')}}) {
+{%-     if kind.value_kind|is_move_only_kind %}
+      result = ToProto(std::move(*in_entry.second), *out_entry->mutable_value());
+{%-     else %}
+      result = ToProto(*in_entry.second, *out_entry->mutable_value());
+{%-     endif %}
+    }
+{%-   elif kind.value_kind|is_move_only_kind %}
+    result = ToProto(std::move(in_entry.second), *out_entry->mutable_value());
+{%-   else %}
+    result = ToProto(in_entry.second, *out_entry->mutable_value());
+{%-   endif %}
+    if (!result) {
+      break;
+    }
+  }
+
+  return result;
+}{{"\n"-}}
+{%-   if kind.key_kind|is_array_kind %}
+{{define_array(type ~ "Key", kind.key_kind)}}
+{%-   elif kind.key_kind|is_map_kind %}
+{{define_map(type ~ "Key", kind.key_kind)}}
+{%-   else %}
+bool ToProto(
+    {{mojom_key_type}} input,
+    {{type}}Key& output) {
+{%-     if kind.key_kind|is_integral_kind or kind.key_kind|is_enum_kind or kind.key_kind|is_float_kind or kind.key_kind|is_double_kind %}
+  bool mojolpm_result;
+  {{kind.key_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  mojolpm_result = ToProto(input, value);
+  output.set_value(value);
+  return mojolpm_result;
+{%-     elif kind.key_kind|is_move_only_kind %}
+  return ToProto(std::move(input), *output.mutable_value());
+{%-     else %}
+  return ToProto(input, *output.mutable_value());
+{%-     endif %}
+}{{"\n"-}}
+{%-   endif %}
+{%-   if kind.value_kind|is_array_kind %}
+{{- define_array(type ~ "Value", kind.value_kind)}}
+{%-   elif kind.value_kind|is_map_kind %}
+{{- define_map(type ~ "Value", kind.value_kind)}}
+{%-   else %}
+bool ToProto(
+    {{mojom_value_type}} input,
+    {{type}}Value& output) {
+{%-     if kind.value_kind|is_integral_kind or kind.value_kind|is_enum_kind or kind.value_kind|is_float_kind or kind.value_kind|is_double_kind %}
+  bool mojolpm_result;
+  {{kind.value_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  mojolpm_result = ToProto(input, value);
+  output.set_value(value);
+  return mojolpm_result;
+{%-     elif kind.value_kind|is_any_interface_kind %}
+  bool mojolpm_result;
+  {{kind.value_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  mojolpm_result = ToProto(std::move(input), value);
+  output.set_value(value);
+  return mojolpm_result;
+{%-     elif kind.value_kind|is_move_only_kind %}
+  return ToProto(std::move(input), *output.mutable_value());
+{%-     else %}
+  return ToProto(input, *output.mutable_value());
+{%-     endif %}
+}{{"\n"-}}
+{%-   endif %}
+{%- endmacro %}
+
+
+{%- macro define(parent_name, kind, name) %}
+{%-   if kind|is_array_kind %}
+{%-     set array_type = parent_name ~ "::" ~ name|under_to_camel ~ "_Array" %}
+{{- define_array(array_type, kind)}}
+{%-   elif kind|is_map_kind %}
+{%-     set map_type = parent_name ~ "::" ~ name|under_to_camel ~ "_Map" %}
+{{- define_map(map_type, kind)}}
+{%-   endif %}
+{%- endmacro %}
+
+
+{%- macro define_enum(enum) -%}
+{%-   set mojom_type = enum|cpp_wrapper_call_type(add_same_module_namespaces=true) %}
+{%-   set proto_type = "::mojolpm" ~ (enum|get_qualified_name_for_kind(flatten_nested_kind=True)) %}
+{%-   set enum_type = enum|get_qualified_name_for_kind(flatten_nested_kind=True) %}
+bool ToProto(
+  const {{mojom_type}}& input,
+  {{proto_type}}& output) {
+{%-   if enum|is_native_only_kind or not enum|is_typemapped_kind %}
+  // This ignores IPC_PARAM_TRAITS for native IPC enums, but internal to the
+  // fuzzer we don't want the overhead of the serialization layer if we don't
+  // need it. This doesn't change the actual checks on the receiving end.
+  output = static_cast<{{proto_type}}>(input);
+  return true;
+{%-   else %}
+  output = static_cast<{{proto_type}}>(
+    mojo::EnumTraits<{{enum_type}}, {{mojom_type}}>::ToMojom(input));
+  return true;
+{%-   endif %}
+}{{"\n"-}}
+{%- endmacro %}
+
+
+{%- macro define_struct(struct) -%}
+{%-   set mojom_type = struct|cpp_wrapper_param_type(add_same_module_namespaces=true) %}
+{%-   set proto_type = "::mojolpm" ~ (struct|get_qualified_name_for_kind(flatten_nested_kind=True)) %}
+{%-   set struct_type = proto_type ~ "_ProtoStruct" %}
+bool ToProto(
+    {{mojom_type}} input,
+    {{proto_type}}& output) {
+{%-   if struct|is_native_only_kind %}
+  {{struct_type}}* new_instance = output.mutable_new_();
+  new_instance->mutable_native_bytes()->resize(sizeof({{mojom_type}}), 0);
+  memcpy(&new_instance->mutable_native_bytes()[0], (void*)&input, sizeof({{mojom_type}}));
+  return true;
+{%-   elif struct|is_typemapped_kind %}
+  // TODO(markbrand): ToProto for typemapped struct kind
+  return false;
+{%-   elif struct.fields %}
+   {{struct_type}}* new_instance = output.mutable_new_();
+  bool mojolpm_result = true;
+{%-     for field in struct.fields -%}
+{%-       set raw_name = field.name %}
+{%-       set name = field.name|camel_to_under %}
+{%-       set kind = field.kind %}
+{%-       if kind|is_integral_kind or kind|is_enum_kind or kind|is_float_kind or kind|is_double_kind %}
+  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+  mojolpm_result &= ToProto(input->{{raw_name}}, tmp_{{name}});
+  new_instance->set_m_{{name}}(tmp_{{name}});
+{%-       elif kind|is_any_interface_kind %}
+  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+  mojolpm_result &= ToProto(std::move(input->{{raw_name}}), tmp_{{name}});
+  new_instance->set_m_{{name}}(tmp_{{name}});
+{%-       elif kind|is_nullable_kind %}
+  if ({{util.not_null(kind, 'input->' ~ raw_name)}}) {
+{%-         if kind|is_move_only_kind %}
+    mojolpm_result &= ToProto(std::move({{util.value(kind, 'input->' ~ raw_name)}}), *new_instance->mutable_m_{{name}}());
+{%-         else %}
+    mojolpm_result &= ToProto({{util.value(kind, 'input->' ~ raw_name)}}, *new_instance->mutable_m_{{name}}());
+{%-         endif %}
+  }
+{%-       elif kind|is_move_only_kind %}
+  mojolpm_result &= ToProto(std::move(input->{{raw_name}}), *new_instance->mutable_m_{{name}}());
+{%-       else %}
+  mojolpm_result &= ToProto(input->{{raw_name}}, *new_instance->mutable_m_{{name}}());
+{%-       endif %}
+{%-     endfor %}
+  return mojolpm_result;
+{%-   else %}
+  output.new_();
+  return true;
+{%-   endif %}
+}{{"\n"-}}
+{%- endmacro %}
+
+
+{%- macro define_union(union) %}
+{%-   set mojom_type = union|cpp_wrapper_param_type(add_same_module_namespaces=true) %}
+{%-   set proto_type = "::mojolpm" ~ (union|get_qualified_name_for_kind(flatten_nested_kind=True)) %}
+{%-   set union_type = proto_type ~ "_ProtoUnion" %}
+bool ToProto(
+    {{mojom_type}} input,
+    {{proto_type}}& output) {
+{%-   if union|is_typemapped_kind %}
+  // TODO(markbrand): ToProto for typemapped union kind.
+  return false;
+{%-   else %}
+{%-     set enum_name = (union|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) ~ "::" ~ union.name ~ "_Tag" %}
+  {{union_type}}* new_instance = output.mutable_new_();
+  bool mojolpm_result = true;
+  switch (input->which()) {
+{%-     for field in union.fields %}
+{%-       set raw_name = field.name %}
+{%-       set name = field.name|camel_to_under %}
+{%-       set kind = field.kind %}
+    case {{enum_name}}::{{field.name|upper}}: {
+{%-       if kind|is_integral_kind or kind|is_enum_kind or kind|is_float_kind or kind|is_double_kind %}
+  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+  mojolpm_result &= ToProto(input->get_{{raw_name}}(), tmp_{{name}});
+  new_instance->set_m_{{name}}(tmp_{{name}});
+{%-       elif kind|is_any_interface_kind %}
+  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+  mojolpm_result &= ToProto(std::move(input->get_{{raw_name}}()), tmp_{{name}});
+  new_instance->set_m_{{name}}(tmp_{{name}});
+{%-       elif kind|is_nullable_kind %}
+  if ({{util.not_null(kind, 'input->get_' ~ raw_name ~ '()')}}) {
+{%-         if kind|is_move_only_kind %}
+    mojolpm_result &= ToProto(std::move({{util.value(kind, 'input->get_' ~ raw_name ~ '()')}}), *new_instance->mutable_m_{{name}}());
+{%-         else %}
+    mojolpm_result &= ToProto({{util.value(kind, 'input->get_' ~ raw_name ~ '()')}}, *new_instance->mutable_m_{{name}}());
+{%-         endif %}
+  }
+{%-       elif kind|is_move_only_kind %}
+  mojolpm_result &= ToProto(std::move(input->get_{{raw_name}}()), *new_instance->mutable_m_{{name}}());
+{%-       else %}
+  mojolpm_result &= ToProto(input->get_{{raw_name}}(), *new_instance->mutable_m_{{name}}());
+{%-       endif %}
+    } break;
+{%-     endfor %}
+  }
+  return mojolpm_result;
+{%-   endif %}
+}{{"\n"-}}
+{%- endmacro %}

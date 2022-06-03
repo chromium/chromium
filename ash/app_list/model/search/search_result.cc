@@ -5,31 +5,38 @@
 #include "ash/app_list/model/search/search_result.h"
 
 #include <map>
+#include <utility>
 
 #include "ash/app_list/model/search/search_result_observer.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
 namespace ash {
 
 SearchResult::SearchResult()
-    : metadata_(std::make_unique<ash::SearchResultMetadata>()) {}
+    : metadata_(std::make_unique<SearchResultMetadata>()) {}
 
 SearchResult::~SearchResult() {
   for (auto& observer : observers_)
     observer.OnResultDestroying();
 }
 
-void SearchResult::SetMetadata(
-    std::unique_ptr<ash::SearchResultMetadata> metadata) {
+void SearchResult::SetMetadata(std::unique_ptr<SearchResultMetadata> metadata) {
   metadata_ = std::move(metadata);
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetIcon(const gfx::ImageSkia& icon) {
+void SearchResult::SetIcon(const IconInfo& icon) {
   metadata_->icon = icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
+}
+
+size_t SearchResult::IconDimension() const {
+  return metadata_->icon.dimension.value_or(
+      SharedAppListConfig::instance().search_list_icon_dimension());
 }
 
 void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
@@ -38,13 +45,13 @@ void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::set_title(const base::string16& title) {
+void SearchResult::set_title(const std::u16string& title) {
   metadata_->title = title;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
+void SearchResult::SetBadgeIcon(const ui::ImageModel& badge_icon) {
   metadata_->badge_icon = badge_icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
@@ -56,7 +63,7 @@ void SearchResult::SetRating(float rating) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetFormattedPrice(const base::string16& formatted_price) {
+void SearchResult::SetFormattedPrice(const std::u16string& formatted_price) {
   metadata_->formatted_price = formatted_price;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
@@ -66,29 +73,6 @@ void SearchResult::SetActions(const Actions& sets) {
   metadata_->actions = sets;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
-}
-
-void SearchResult::SetIsInstalling(bool is_installing) {
-  if (is_installing_ == is_installing)
-    return;
-
-  is_installing_ = is_installing;
-  for (auto& observer : observers_)
-    observer.OnIsInstallingChanged();
-}
-
-void SearchResult::SetPercentDownloaded(int percent_downloaded) {
-  if (percent_downloaded_ == percent_downloaded)
-    return;
-
-  percent_downloaded_ = percent_downloaded;
-  for (auto& observer : observers_)
-    observer.OnPercentDownloadedChanged();
-}
-
-void SearchResult::NotifyItemInstalled() {
-  for (auto& observer : observers_)
-    observer.OnItemInstalled();
 }
 
 void SearchResult::AddObserver(SearchResultObserver* observer) {

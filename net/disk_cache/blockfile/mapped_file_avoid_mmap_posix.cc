@@ -6,15 +6,15 @@
 
 #include <stdlib.h>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 
 namespace disk_cache {
 
 void* MappedFile::Init(const base::FilePath& name, size_t size) {
   DCHECK(!init_);
   if (init_ || !File::Init(name))
-    return NULL;
+    return nullptr;
 
   if (!size)
     size = GetLength();
@@ -26,7 +26,8 @@ void* MappedFile::Init(const base::FilePath& name, size_t size) {
   } else {
     free(buffer_);
     free(snapshot_);
-    buffer_ = snapshot_ = 0;
+    buffer_ = nullptr;
+    snapshot_ = nullptr;
   }
 
   init_ = true;

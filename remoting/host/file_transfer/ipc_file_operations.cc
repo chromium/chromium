@@ -18,6 +18,10 @@ namespace remoting {
 class IpcFileOperations::IpcReader : public FileOperations::Reader {
  public:
   IpcReader(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+
+  IpcReader(const IpcReader&) = delete;
+  IpcReader& operator=(const IpcReader&) = delete;
+
   ~IpcReader() override;
 
   // FileOperations::Reader implementation.
@@ -36,18 +40,20 @@ class IpcFileOperations::IpcReader : public FileOperations::Reader {
   base::FilePath filename_;
   std::uint64_t size_ = 0;
   base::WeakPtr<SharedState> shared_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcReader);
 };
 
 class IpcFileOperations::IpcWriter : public FileOperations::Writer {
  public:
   IpcWriter(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+
+  IpcWriter(const IpcWriter&) = delete;
+  IpcWriter& operator=(const IpcWriter&) = delete;
+
   ~IpcWriter() override;
 
   // FileOperations::Writer implementation.
   void Open(const base::FilePath& filename, Callback callback) override;
-  void WriteChunk(std::string data, Callback callback) override;
+  void WriteChunk(std::vector<std::uint8_t> data, Callback callback) override;
   void Close(Callback callback) override;
   State state() const override;
 
@@ -58,8 +64,6 @@ class IpcFileOperations::IpcWriter : public FileOperations::Writer {
   State state_ = kCreated;
   std::uint64_t file_id_;
   base::WeakPtr<SharedState> shared_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcWriter);
 };
 
 IpcFileOperations::IpcFileOperations(base::WeakPtr<SharedState> shared_state)
@@ -301,7 +305,7 @@ void IpcFileOperations::IpcWriter::Open(const base::FilePath& filename,
   shared_state_->request_handler->WriteFile(file_id_, filename);
 }
 
-void IpcFileOperations::IpcWriter::WriteChunk(std::string data,
+void IpcFileOperations::IpcWriter::WriteChunk(std::vector<std::uint8_t> data,
                                               Callback callback) {
   DCHECK_EQ(kReady, state_);
   if (!shared_state_) {
@@ -314,7 +318,7 @@ void IpcFileOperations::IpcWriter::WriteChunk(std::string data,
   shared_state_->result_callbacks.emplace(
       file_id_, base::BindOnce(&IpcWriter::OnOperationResult,
                                base::Unretained(this), std::move(callback)));
-  shared_state_->request_handler->WriteChunk(file_id_, data);
+  shared_state_->request_handler->WriteChunk(file_id_, std::move(data));
 }
 
 void IpcFileOperations::IpcWriter::Close(Callback callback) {

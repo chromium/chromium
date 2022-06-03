@@ -72,7 +72,7 @@ bool BluetoothLowEnergyWrapperFake::
     for (auto& service : device.second->primary_services) {
       auto device_info = std::make_unique<BluetoothLowEnergyDeviceInfo>();
       *device_info = *(device.second->device_info);
-      base::string16 path = GenerateGattServiceDevicePath(
+      std::wstring path = GenerateGattServiceDevicePath(
           device.second->device_info->path.value(),
           service.second->service_info->AttributeHandle);
       device_info->path = base::FilePath(path);
@@ -91,7 +91,7 @@ bool BluetoothLowEnergyWrapperFake::EnumerateKnownBluetoothLowEnergyServices(
     return false;
   }
 
-  base::string16 device_address =
+  std::wstring device_address =
       ExtractDeviceAddressFromDevicePath(device_path.value());
   std::vector<std::string> service_attribute_handles =
       ExtractServiceAttributeHandlesFromDevicePath(device_path.value());
@@ -130,7 +130,7 @@ HRESULT BluetoothLowEnergyWrapperFake::ReadCharacteristicsOfAService(
     const PBTH_LE_GATT_SERVICE service,
     std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC>* out_included_characteristics,
     USHORT* out_counts) {
-  base::string16 device_address =
+  std::wstring device_address =
       ExtractDeviceAddressFromDevicePath(service_path.value());
   BLEDevice* target_device = GetSimulatedBLEDevice(
       std::string(device_address.begin(), device_address.end()));
@@ -216,7 +216,15 @@ HRESULT BluetoothLowEnergyWrapperFake::ReadCharacteristicValue(
 HRESULT BluetoothLowEnergyWrapperFake::WriteCharacteristicValue(
     base::FilePath& service_path,
     const PBTH_LE_GATT_CHARACTERISTIC characteristic,
-    PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value) {
+    PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value,
+    ULONG flags) {
+  // Web Bluetooth implementation currently only supports no flags or write
+  // without response flag even if Windows supports other flags
+  if (flags != BLUETOOTH_GATT_FLAG_NONE &&
+      flags != BLUETOOTH_GATT_FLAG_WRITE_WITHOUT_RESPONSE) {
+    return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+  }
+
   GattCharacteristic* target_characteristic =
       GetSimulatedGattCharacteristic(service_path, characteristic);
   if (target_characteristic == nullptr)
@@ -536,7 +544,7 @@ GattCharacteristic*
 BluetoothLowEnergyWrapperFake::GetSimulatedGattCharacteristic(
     base::FilePath& service_path,
     const PBTH_LE_GATT_CHARACTERISTIC characteristic) {
-  base::string16 device_address =
+  std::wstring device_address =
       ExtractDeviceAddressFromDevicePath(service_path.value());
   BLEDevice* target_device = GetSimulatedBLEDevice(
       std::string(device_address.begin(), device_address.end()));
@@ -583,24 +591,23 @@ USHORT BluetoothLowEnergyWrapperFake::GenerateAUniqueAttributeHandle(
   return smallest_att_handle;
 }
 
-base::string16 BluetoothLowEnergyWrapperFake::GenerateBLEDevicePath(
+std::wstring BluetoothLowEnergyWrapperFake::GenerateBLEDevicePath(
     std::string device_address) {
-  return base::string16(device_address.begin(), device_address.end());
+  return std::wstring(device_address.begin(), device_address.end());
 }
 
-base::string16 BluetoothLowEnergyWrapperFake::GenerateGattServiceDevicePath(
-    base::string16 resident_device_path,
+std::wstring BluetoothLowEnergyWrapperFake::GenerateGattServiceDevicePath(
+    std::wstring resident_device_path,
     USHORT service_attribute_handle) {
   std::string sub_path = std::to_string(service_attribute_handle);
-  return resident_device_path + STRING16_LITERAL("/") +
-         base::string16(sub_path.begin(), sub_path.end());
+  return resident_device_path + L"/" +
+         std::wstring(sub_path.begin(), sub_path.end());
 }
 
-base::string16
-BluetoothLowEnergyWrapperFake::ExtractDeviceAddressFromDevicePath(
-    base::string16 path) {
+std::wstring BluetoothLowEnergyWrapperFake::ExtractDeviceAddressFromDevicePath(
+    std::wstring path) {
   std::size_t found = path.find_first_of('/');
-  if (found != base::string16::npos) {
+  if (found != std::wstring::npos) {
     return path.substr(0, found);
   }
   return path;
@@ -608,22 +615,22 @@ BluetoothLowEnergyWrapperFake::ExtractDeviceAddressFromDevicePath(
 
 std::vector<std::string>
 BluetoothLowEnergyWrapperFake::ExtractServiceAttributeHandlesFromDevicePath(
-    base::string16 path) {
+    std::wstring path) {
   std::size_t found = path.find('/');
-  if (found == base::string16::npos)
+  if (found == std::wstring::npos)
     return std::vector<std::string>();
 
   std::vector<std::string> chain_of_att_handle;
   while (true) {
     std::size_t next_found = path.find(path, found + 1);
-    if (next_found == base::string16::npos)
+    if (next_found == std::wstring::npos)
       break;
-    base::string16 att_handle = path.substr(found + 1, next_found);
+    std::wstring att_handle = path.substr(found + 1, next_found);
     chain_of_att_handle.push_back(
         std::string(att_handle.begin(), att_handle.end()));
     found = next_found;
   }
-  base::string16 att_handle = path.substr(found + 1);
+  std::wstring att_handle = path.substr(found + 1);
   chain_of_att_handle.push_back(
       std::string(att_handle.begin(), att_handle.end()));
   return chain_of_att_handle;

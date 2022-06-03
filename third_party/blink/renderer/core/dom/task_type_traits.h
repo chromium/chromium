@@ -25,4 +25,4 @@ struct TaskTypeTraits : WTF::GenericHashTraits<TaskType> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TASK_TYPE_TRAITS_H_

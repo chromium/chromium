@@ -1,0 +1,669 @@
+Tests name sources in images and figures.
+{
+    childIds : <object>
+    domNode : figure#figure1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : figcaption
+                type : relatedElement
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : figure
+    }
+}
+{
+    childIds : <object>
+    domNode : figure#figure2
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : figcaption
+                type : relatedElement
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure2-title
+                }
+            }
+        ]
+        type : computedString
+        value : figure2-title
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : figure
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : figure3-title
+    }
+    domNode : figure#figure3
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : figcaption
+                nativeSourceValue : {
+                    relatedNodes : [
+                        [0] : {
+                            backendDOMNodeId : <number>
+                            text : figcaption3
+                        }
+                    ]
+                    type : nodeList
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : figcaption3
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure3-title
+                }
+            }
+        ]
+        type : computedString
+        value : figcaption3
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : figcaption
+                        text : figcaption3
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : figure
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : figure4-title
+    }
+    domNode : figure#figure4
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : figure4-aria-label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure4-aria-label
+                }
+            }
+            [2] : {
+                nativeSource : figcaption
+                nativeSourceValue : {
+                    relatedNodes : [
+                        [0] : {
+                            backendDOMNodeId : <number>
+                            text : figcaption4
+                        }
+                    ]
+                    type : nodeList
+                }
+                superseded : true
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : figcaption4
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure4-title
+                }
+            }
+        ]
+        type : computedString
+        value : figure4-aria-label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : figure
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : figure5-title
+    }
+    domNode : figure#figure5
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : figure-labelledby5
+                            nodeResult : span#figure-labelledby5
+                            text : figure5-aria-labelledby
+                        }
+                    ]
+                    type : idrefList
+                    value : figure-labelledby5
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : figure5-aria-labelledby
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : figure5-aria-label
+                }
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure5-aria-label
+                }
+            }
+            [2] : {
+                nativeSource : figcaption
+                nativeSourceValue : {
+                    relatedNodes : [
+                        [0] : {
+                            backendDOMNodeId : <number>
+                            text : figcaption5
+                        }
+                    ]
+                    type : nodeList
+                }
+                superseded : true
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : figcaption5
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : figure5-title
+                }
+            }
+        ]
+        type : computedString
+        value : figure5-aria-labelledby
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : figure-labelledby5
+                        nodeResult : span#figure-labelledby5
+                        text : figure5-aria-labelledby
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : figure
+    }
+}
+{
+    childIds : <object>
+    domNode : img#img1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : alt
+                type : attribute
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+{
+    childIds : <object>
+    domNode : img#img2
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : alt
+                type : attribute
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img2-title
+                }
+            }
+        ]
+        type : computedString
+        value : img2-title
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : img3-title
+    }
+    domNode : img#img3
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : alt
+                attributeValue : {
+                    type : string
+                    value : img3-alt
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img3-alt
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img3-title
+                }
+            }
+        ]
+        type : computedString
+        value : img3-alt
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : img4-title
+    }
+    domNode : img#img4
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : img4-aria-label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img4-aria-label
+                }
+            }
+            [2] : {
+                attribute : alt
+                attributeValue : {
+                    type : string
+                    value : img4-alt
+                }
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img4-alt
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img4-title
+                }
+            }
+        ]
+        type : computedString
+        value : img4-aria-label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+{
+    childIds : <object>
+    description : {
+        type : computedString
+        value : img5-title
+    }
+    domNode : img#img5
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : img-labelledby5
+                            nodeResult : span#img-labelledby5
+                            text : img5-aria-labelledby
+                        }
+                    ]
+                    type : idrefList
+                    value : img-labelledby5
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : img5-aria-labelledby
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : img5-aria-label
+                }
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img5-aria-label
+                }
+            }
+            [2] : {
+                attribute : alt
+                attributeValue : {
+                    type : string
+                    value : img5-alt
+                }
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img5-alt
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : img5-title
+                }
+            }
+        ]
+        type : computedString
+        value : img5-aria-labelledby
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : img-labelledby5
+                        nodeResult : span#img-labelledby5
+                        text : img5-aria-labelledby
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+{
+    childIds : <object>
+    domNode : div#link1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : I  like ice cream.
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : I like ice cream.
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : link
+    }
+}
+{
+    childIds : <object>
+    domNode : svg#svg1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : title
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : svg1-title
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : svg1-title
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : img
+    }
+}
+

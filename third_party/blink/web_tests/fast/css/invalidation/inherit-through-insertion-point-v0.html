@@ -15,7 +15,7 @@
 </div>
 <script>
     test(() => {
-        var root = host.createShadowRoot();
+        var root = host.attachShadow({mode: 'open'});
         root.innerHTML = '<div id="shadowDiv"><content></content></div>';
         host.offsetTop;
         root.querySelector("#shadowDiv").style.color = "red";

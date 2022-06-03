@@ -4,11 +4,11 @@
 
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 
+#include <string>
 #include <utility>
 
 #include <memory>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -52,21 +52,21 @@ std::string GetIdForIcon(ScreenlockBridge::UserPodCustomIcon icon) {
 
 }  // namespace
 
-ScreenlockBridge::UserPodCustomIconOptions::UserPodCustomIconOptions()
+ScreenlockBridge::UserPodCustomIconInfo::UserPodCustomIconInfo()
     : autoshow_tooltip_(false), hardlock_on_click_(false) {}
 
-ScreenlockBridge::UserPodCustomIconOptions::~UserPodCustomIconOptions() {}
+ScreenlockBridge::UserPodCustomIconInfo::~UserPodCustomIconInfo() {}
 
 std::unique_ptr<base::DictionaryValue>
-ScreenlockBridge::UserPodCustomIconOptions::ToDictionaryValue() const {
+ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetString("id", GetIDString());
 
   if (!tooltip_.empty()) {
-    auto tooltip_options = std::make_unique<base::DictionaryValue>();
-    tooltip_options->SetString("text", tooltip_);
-    tooltip_options->SetBoolean("autoshow", autoshow_tooltip_);
-    result->Set("tooltip", std::move(tooltip_options));
+    base::DictionaryValue tooltip_options;
+    tooltip_options.SetString("text", tooltip_);
+    tooltip_options.SetBoolean("autoshow", autoshow_tooltip_);
+    result->SetKey("tooltip", std::move(tooltip_options));
   }
 
   if (!aria_label_.empty())
@@ -78,28 +78,28 @@ ScreenlockBridge::UserPodCustomIconOptions::ToDictionaryValue() const {
   return result;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetIcon(
+void ScreenlockBridge::UserPodCustomIconInfo::SetIcon(
     ScreenlockBridge::UserPodCustomIcon icon) {
   icon_ = icon;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetTooltip(
-    const base::string16& tooltip,
+void ScreenlockBridge::UserPodCustomIconInfo::SetTooltip(
+    const std::u16string& tooltip,
     bool autoshow) {
   tooltip_ = tooltip;
   autoshow_tooltip_ = autoshow;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetAriaLabel(
-    const base::string16& aria_label) {
+void ScreenlockBridge::UserPodCustomIconInfo::SetAriaLabel(
+    const std::u16string& aria_label) {
   aria_label_ = aria_label;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetHardlockOnClick() {
+void ScreenlockBridge::UserPodCustomIconInfo::SetHardlockOnClick() {
   hardlock_on_click_ = true;
 }
 
-std::string ScreenlockBridge::UserPodCustomIconOptions::GetIDString() const {
+std::string ScreenlockBridge::UserPodCustomIconInfo::GetIDString() const {
   return GetIdForIcon(icon_);
 }
 

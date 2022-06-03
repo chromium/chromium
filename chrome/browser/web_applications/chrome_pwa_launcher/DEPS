@@ -1,0 +1,13 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+  "+chrome/install_static",
+  "+chrome/installer/util",
+  "+chrome/test/base",
+  "+components/version_info",
+  "+content/public/test",
+  "+testing/gtest/include/gtest",
+]

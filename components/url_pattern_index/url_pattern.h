@@ -7,10 +7,9 @@
 
 #include <iosfwd>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
@@ -35,6 +34,10 @@ class UrlPattern {
    public:
     // The |url| must outlive this instance.
     UrlInfo(const GURL& url);
+
+    UrlInfo(const UrlInfo&) = delete;
+    UrlInfo& operator=(const UrlInfo&) = delete;
+
     ~UrlInfo();
 
     base::StringPiece spec() const { return spec_; }
@@ -47,12 +50,10 @@ class UrlPattern {
     // String to hold the lazily computed lower cased spec.
     mutable std::string lower_case_spec_owner_;
     // Reference to the lower case spec. Computed lazily.
-    mutable base::Optional<base::StringPiece> lower_case_spec_cached_;
+    mutable absl::optional<base::StringPiece> lower_case_spec_cached_;
 
     // The url host component.
     const url::Component host_;
-
-    DISALLOW_COPY_AND_ASSIGN(UrlInfo);
   };
 
   UrlPattern();
@@ -69,6 +70,9 @@ class UrlPattern {
 
   // The passed in |rule| must outlive the created instance.
   explicit UrlPattern(const flat::UrlRule& rule);
+
+  UrlPattern(const UrlPattern&) = delete;
+  UrlPattern& operator=(const UrlPattern&) = delete;
 
   ~UrlPattern();
 
@@ -97,8 +101,6 @@ class UrlPattern {
   proto::AnchorType anchor_right_ = proto::ANCHOR_TYPE_NONE;
 
   MatchCase match_case_ = MatchCase::kTrue;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPattern);
 };
 
 // Allow pretty-printing URLPatterns when they are used in GTest assertions.

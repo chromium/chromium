@@ -4,7 +4,8 @@
 
 #include "ui/events/test/keyboard_layout.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace ui {
 

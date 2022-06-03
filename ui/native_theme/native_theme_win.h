@@ -13,9 +13,9 @@
 #include <windows.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/sys_color_change_listener.h"
@@ -50,6 +50,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
     LAST
   };
 
+  NativeThemeWin(const NativeThemeWin&) = delete;
+  NativeThemeWin& operator=(const NativeThemeWin&) = delete;
+
   // Closes cached theme handles so we can unload the DLL or update our UI
   // for a theme change.
   static void CloseHandles();
@@ -63,32 +66,35 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme) const override;
-  SkColor GetSystemColor(
-      ColorId color_id,
-      ColorScheme color_scheme = ColorScheme::kDefault) const override;
+             ColorScheme color_scheme,
+             const absl::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
-  bool SystemDarkModeSupported() const override;
   PreferredColorScheme CalculatePreferredColorScheme() const override;
+  PreferredContrast CalculatePreferredContrast() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeWin>;
-  // Gets our singleton instance.
-  static NativeThemeWin* instance();
 
-  NativeThemeWin();
+  // NativeTheme:
+  void ConfigureWebInstance() override;
+  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override;
+
+  NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
   ~NativeThemeWin() override;
 
  private:
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 
-  // gfx::SysColorChangeListener implementation:
+  // gfx::SysColorChangeListener:
   void OnSysColorChange() override;
 
   // Update the locally cached set of system colors.
@@ -197,7 +203,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // Returns the platform provided high contrast color for the given
   // |color_id|.
-  SkColor GetPlatformHighContrastColor(ColorId color_id) const;
+  absl::optional<SkColor> GetPlatformHighContrastColor(ColorId color_id) const;
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
@@ -209,11 +215,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::ScopedSysColorChangeListener color_change_listener_;
 
   // Used to notify the web native theme of changes to dark mode, high
-  // contrast, and preferred color scheme.
+  // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeWin);
 };
 
 }  // namespace ui

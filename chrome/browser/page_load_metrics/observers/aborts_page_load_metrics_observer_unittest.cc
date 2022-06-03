@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -36,7 +37,13 @@ class AbortsPageLoadMetricsObserverTest
   }
 };
 
-TEST_F(AbortsPageLoadMetricsObserverTest, NewNavigationBeforeCommit) {
+// Disabled due to flakiness: https://crbug.com/1092598
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_NewNavigationBeforeCommit DISABLED_NewNavigationBeforeCommit
+#else
+#define MAYBE_NewNavigationBeforeCommit NewNavigationBeforeCommit
+#endif
+TEST_F(AbortsPageLoadMetricsObserverTest, MAYBE_NewNavigationBeforeCommit) {
   tester()->StartNavigation(GURL("https://www.google.com"));
   // Simulate the user performing another navigation before commit.
   NavigateAndCommit(GURL("https://www.example.com"));
@@ -44,7 +51,13 @@ TEST_F(AbortsPageLoadMetricsObserverTest, NewNavigationBeforeCommit) {
       internal::kHistogramAbortNewNavigationBeforeCommit, 1);
 }
 
-TEST_F(AbortsPageLoadMetricsObserverTest, ReloadBeforeCommit) {
+// Disabled due to flakiness: https://crbug.com/1092598
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_ReloadBeforeCommit DISABLED_ReloadBeforeCommit
+#else
+#define MAYBE_ReloadBeforeCommit ReloadBeforeCommit
+#endif
+TEST_F(AbortsPageLoadMetricsObserverTest, MAYBE_ReloadBeforeCommit) {
   tester()->StartNavigation(GURL("https://www.google.com"));
   // Simulate the user performing another navigation before commit.
   tester()->NavigateWithPageTransitionAndCommit(GURL("https://www.example.com"),
@@ -73,8 +86,16 @@ TEST_F(AbortsPageLoadMetricsObserverTest, BackgroundBeforeCommit) {
   EXPECT_EQ(1, CountTotalAbortMetricsRecorded());
 }
 
+// Disabled due to flakiness: https://crbug.com/1092598
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_NewProvisionalNavigationBeforeCommit \
+  DISABLED_NewProvisionalNavigationBeforeCommit
+#else
+#define MAYBE_NewProvisionalNavigationBeforeCommit \
+  NewProvisionalNavigationBeforeCommit
+#endif
 TEST_F(AbortsPageLoadMetricsObserverTest,
-       NewProvisionalNavigationBeforeCommit) {
+       MAYBE_NewProvisionalNavigationBeforeCommit) {
   tester()->StartNavigation(GURL("https://www.google.com"));
   tester()->StartNavigation(GURL("https://www.example.com"));
   tester()->histogram_tester().ExpectTotalCount(
@@ -252,7 +273,7 @@ TEST_F(AbortsPageLoadMetricsObserverTest, NoAbortNewNavigationAfterPaint) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.paint_timing->first_paint = base::TimeDelta::FromMicroseconds(1);
+  timing.paint_timing->first_paint = base::Microseconds(1);
   PopulateRequiredTimingFields(&timing);
   NavigateAndCommit(GURL("https://www.google.com"));
   tester()->SimulateTimingUpdate(timing);

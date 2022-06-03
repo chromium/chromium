@@ -21,35 +21,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/context_menu_params.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
 using content::BrowserThread;
-
-namespace {
-
-// These enums are logged and must match AccessibilityImageLabelMode in
-// enums.xml.
-enum class AccessibilityImageLabelMode {
-  kModeEnabled = 1,
-  kModeEnabledOnce = 2,
-  kModeDisabled = 3,
-  kMaxValue = kModeDisabled,
-};
-
-// Static
-void RecordContextMenuOptionSelected(AccessibilityImageLabelMode option) {
-  UMA_HISTOGRAM_ENUMERATION("Accessibility.ImageLabels.ContextMenuOption",
-                            option);
-}
-
-}  // namespace
 
 AccessibilityLabelsMenuObserver::AccessibilityLabelsMenuObserver(
     RenderViewContextMenuProxy* proxy)
@@ -108,13 +88,9 @@ void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
       // Always show the confirm bubble when enabling the full feature,
       // regardless of whether it's been shown before.
       ShowConfirmBubble(profile, true /* enable always */);
-      RecordContextMenuOptionSelected(
-          AccessibilityImageLabelMode::kModeEnabled);
     } else {
       profile->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                       false);
-      RecordContextMenuOptionSelected(
-          AccessibilityImageLabelMode::kModeDisabled);
     }
   } else if (command_id ==
              IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) {
@@ -126,15 +102,18 @@ void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
       AccessibilityLabelsServiceFactory::GetForProfile(profile)
           ->EnableLabelsServiceOnce();
     }
-    RecordContextMenuOptionSelected(
-        AccessibilityImageLabelMode::kModeEnabledOnce);
   }
 }
 
 bool AccessibilityLabelsMenuObserver::ShouldShowLabelsItem() {
-  // Hidden behind a feature flag.
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
+  // Disabled by policy.
+  Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kAccessibilityImageLabelsEnabled) &&
+      profile->GetPrefs()->IsManagedPreference(
+          prefs::kAccessibilityImageLabelsEnabled)) {
     return false;
+  }
 
   return accessibility_state_utils::IsScreenReaderEnabled();
 }

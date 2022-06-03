@@ -6,10 +6,10 @@
 #define COMPONENTS_VARIATIONS_NET_VARIATIONS_HTTP_HEADERS_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "components/variations/variations.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -27,16 +27,38 @@ class GURL;
 
 namespace variations {
 
+// Denotes whether the top frame of a request-initiating frame is a Google-
+// owned web property, e.g. YouTube.
+//
+// kUnknownFromRenderer is used only in WebURLLoaderImpl::Context::Start() on
+// the render thread and kUnknown is used elsewhere. This distinction allows us
+// to tell how many non-render-thread-initiated subframe requests, if any, lack
+// TrustedParams.
+//
+// This enum is used to record UMA histogram values, and should not be
+// reordered.
+enum class Owner {
+  kUnknownFromRenderer = 0,
+  kUnknown = 1,
+  kNotGoogle = 2,
+  kGoogle = 3,
+  kMaxValue = kGoogle,
+};
+
 enum class InIncognito { kNo, kYes };
 
 enum class SignedIn { kNo, kYes };
+
+extern const char kClientDataHeader[];
 
 // Adds Chrome experiment and metrics state as custom headers to |request|.
 // The content of the headers will depend on |incognito| and |signed_in|
 // parameters. It is fine to pass SignedIn::NO if the state is not known to the
 // caller. This will prevent addition of ids of type
 // GOOGLE_WEB_PROPERTIES_SIGNED_IN, which is not the case for any ids that come
-// from the variations server. These headers are never transmitted to non-Google
+// from the variations server. The |incognito| param must be the actual
+// Incognito state. It is not correct to pass InIncognito:kNo if the state is
+// unknown. These headers are never transmitted to non-Google
 // web sites, which is checked based on the destination |url|.
 // Returns true if custom headers are added. Returns false otherwise.
 bool AppendVariationsHeader(const GURL& url,
@@ -44,12 +66,17 @@ bool AppendVariationsHeader(const GURL& url,
                             SignedIn signed_in,
                             network::ResourceRequest* request);
 
-// Similar to AppendVariationsHeader, but uses specified |variations_header| as
-// the custom header value. You should not generally need to use this.
-bool AppendVariationsHeaderWithCustomValue(const GURL& url,
-                                           InIncognito incognito,
-                                           const std::string& variations_header,
-                                           network::ResourceRequest* request);
+// Similar to AppendVariationsHeader, but takes multiple appropriate headers,
+// one of which may be appended. It also uses |owner|, which indicates whether
+// the request-initiating frame's top frame is a Google-owned web property.
+//
+// You should not generally need to use this.
+bool AppendVariationsHeaderWithCustomValue(
+    const GURL& url,
+    InIncognito incognito,
+    variations::mojom::VariationsHeadersPtr variations_headers,
+    Owner owner,
+    network::ResourceRequest* request);
 
 // Adds Chrome experiment and metrics state as a custom header to |request|
 // when the signed-in state is not known to the caller; See above for details.
@@ -66,7 +93,10 @@ void RemoveVariationsHeaderIfNeeded(
 
 // Creates a SimpleURLLoader that will include the variations header for
 // requests to Google and ensures they're removed if a redirect to a non-Google
-// URL occurs.
+// URL occurs.  The content of the headers will depend on |incognito| and
+// |signed_in| parameters. It is fine to pass SignedIn::NO if the state is not
+// known to the caller. The |incognito| param must be the actual Incognito
+// state. It is not correct to pass InIncognito:kNo if the state is unknown.
 std::unique_ptr<network::SimpleURLLoader>
 CreateSimpleURLLoaderWithVariationsHeader(
     std::unique_ptr<network::ResourceRequest> request,
@@ -76,21 +106,23 @@ CreateSimpleURLLoaderWithVariationsHeader(
 
 // Creates a SimpleURLLoader that will include the variations header for
 // requests to Google when the signed-in state is unknown and ensures they're
-// removed if a redirect to a non-Google URL occurs.
+// removed if a redirect to a non-Google URL occurs. The content of the headers
+// will depend on |incognito| parameters. The |incognito| param must be the
+// actual Incognito state. It is not correct to pass InIncognito:kNo if the
+// state is unknown.
 std::unique_ptr<network::SimpleURLLoader>
 CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
     std::unique_ptr<network::ResourceRequest> request,
     InIncognito incognito,
     const net::NetworkTrafficAnnotationTag& annotation_tag);
 
-// Checks if |header_name| is one for the variations header.
-bool IsVariationsHeader(const std::string& header_name);
-
 // Checks if |request| contains the variations header.
 bool HasVariationsHeader(const network::ResourceRequest& request);
 
 // Calls the internal ShouldAppendVariationsHeader() for testing.
-bool ShouldAppendVariationsHeaderForTesting(const GURL& url);
+bool ShouldAppendVariationsHeaderForTesting(
+    const GURL& url,
+    const std::string& histogram_suffix);
 
 // Updates |cors_exempt_header_list| field of the given |param| to register the
 // variation headers.

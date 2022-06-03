@@ -7,8 +7,6 @@
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
@@ -24,7 +22,7 @@
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/test/mock_chrome_application_mac.h"
 #endif
@@ -35,6 +33,10 @@ namespace {
 class TestInitializationListener : public testing::EmptyTestEventListener {
  public:
   TestInitializationListener() : test_content_client_initializer_(nullptr) {}
+
+  TestInitializationListener(const TestInitializationListener&) = delete;
+  TestInitializationListener& operator=(const TestInitializationListener&) =
+      delete;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
     test_content_client_initializer_ =
@@ -47,8 +49,6 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
 
  private:
   content::TestContentClientInitializer* test_content_client_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInitializationListener);
 };
 
 }  // namespace
@@ -60,7 +60,7 @@ ContentTestSuite::ContentTestSuite(int argc, char** argv)
 ContentTestSuite::~ContentTestSuite() = default;
 
 void ContentTestSuite::Initialize() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
   mock_cr_app::RegisterMockCrApp();
 #endif
@@ -91,9 +91,21 @@ void ContentTestSuite::Initialize() {
         gpu_feature_info->disabled_extensions);
     gl::init::InitializeExtensionSettingsOneOffPlatform();
   }
-  testing::TestEventListeners& listeners =
-      testing::UnitTest::GetInstance()->listeners();
-  listeners.Append(new TestInitializationListener);
+  // TestEventListeners repeater event propagation is disabled in death test
+  // child process.
+  if (command_line->HasSwitch("gtest_internal_run_death_test")) {
+    test_content_client_initializer_ =
+        std::make_unique<TestContentClientInitializer>();
+  } else {
+    testing::TestEventListeners& listeners =
+        testing::UnitTest::GetInstance()->listeners();
+    listeners.Append(new TestInitializationListener);
+  }
+}
+
+void ContentTestSuite::Shutdown() {
+  test_content_client_initializer_.reset();
+  ContentTestSuiteBase::Shutdown();
 }
 
 }  // namespace content

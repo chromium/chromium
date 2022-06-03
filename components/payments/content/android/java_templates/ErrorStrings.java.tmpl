@@ -18,8 +18,6 @@ public abstract class ErrorStrings {{
 
     public static final String INVALID_PAYMENT_METHODS_OR_DATA = "Invalid payment methods or data.";
 
-    public static final String INVALID_PAYMENT_DETAILS = "Invalid payment details.";
-
     public static final String INVALID_VALIDATION_ERRORS = "Invalid payment validation errors.";
 
     public static final String TAB_OVERVIEW_MODE =
@@ -30,12 +28,20 @@ public abstract class ErrorStrings {{
 
     public static final String ACTIVITY_NOT_FOUND = "Unable to find Chrome activity.";
 
+    public static final String CONTEXT_NOT_FOUND = "Unable to find Chrome context.";
+
+    public static final String TAB_NOT_FOUND = "Unable to find Chrome tab.";
+
+    public static final String WINDOW_NOT_FOUND = "Unable to find Chrome window.";
+
     public static final String PAYMENT_APP_INVALID_RESPONSE = "Payment app response is not valid.";
 
     public static final String PAYMENT_APP_LAUNCH_FAIL = "Unable to invoke the payment app.";
 
     public static final String PAYMENT_APP_PRIVATE_ACTIVITY =
             "Payment app does not have android:exported=\"true\" on the PAY activity.";
+
+    public static final String PAYMENT_REQUEST_IS_ABORTING = "Payment request is aborting.";
 
     public static final String MISSING_INTENT_DATA =
             "Payment app returned an invalid result. Missing intent data.";
@@ -50,7 +56,15 @@ public abstract class ErrorStrings {{
     public static final String UNRECOGNIZED_ACTIVITY_RESULT  =
             "Payment app returned unrecognized activity result %d.";
 
-    public static final String MICROTRANSACTION_UI_SUPPRESSED = "Microtransaction UI suppressed.";
+    public static final String SPC_AUTHN_UI_SUPPRESSED = "Secure Payment Confirmation Authn UI suppressed.";
+
+    public static final String UNATHORIZED_SERVICE_REQUEST =
+            "Caller's signature or package name does not match invoked app's.";
+
+    public static final String FAIL_TO_SHOW_PAYMENT_REQUEST_UI =
+        "Fails to show payment request UI. Please try again.";
+
+    public static final String NO_FRAME = "The frame that initiated payment is gone.";
 
     // Prevent instantiation.
     private ErrorStrings() {{}}

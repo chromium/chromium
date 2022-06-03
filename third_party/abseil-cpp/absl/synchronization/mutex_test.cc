@@ -26,10 +26,12 @@
 #include <random>
 #include <string>
 #include <thread>  // NOLINT(build/c++11)
+#include <type_traits>
 #include <vector>
 
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/sysinfo.h"
 #include "absl/memory/memory.h"
@@ -706,6 +708,40 @@ TEST(Mutex, LockWhen) {
   t.join();
 }
 
+TEST(Mutex, LockWhenGuard) {
+  absl::Mutex mu;
+  int n = 30;
+  bool done = false;
+
+  // We don't inline the lambda because the conversion is ambiguous in MSVC.
+  bool (*cond_eq_10)(int *) = [](int *p) { return *p == 10; };
+  bool (*cond_lt_10)(int *) = [](int *p) { return *p < 10; };
+
+  std::thread t1([&mu, &n, &done, cond_eq_10]() {
+    absl::ReaderMutexLock lock(&mu, absl::Condition(cond_eq_10, &n));
+    done = true;
+  });
+
+  std::thread t2[10];
+  for (std::thread &t : t2) {
+    t = std::thread([&mu, &n, cond_lt_10]() {
+      absl::WriterMutexLock lock(&mu, absl::Condition(cond_lt_10, &n));
+      ++n;
+    });
+  }
+
+  {
+    absl::MutexLock lock(&mu);
+    n = 0;
+  }
+
+  for (std::thread &t : t2) t.join();
+  t1.join();
+
+  EXPECT_TRUE(done);
+  EXPECT_EQ(n, 10);
+}
+
 // --------------------------------------------------------
 // The following test requires Mutex::ReaderLock to be a real shared
 // lock, which is not the case in all builds.
@@ -815,7 +851,7 @@ TEST(Mutex, MutexReaderDecrementBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 
 // Test that we correctly handle the situation when a lock is
 // held and then destroyed (w/o unlocking).
-#ifdef THREAD_SANITIZER
+#ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
 TEST(Mutex, DISABLED_LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
@@ -833,33 +869,6 @@ TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
       }
     }
   }
-}
-
-// --------------------------------------------------------
-// Test for bug with pattern of readers using a condvar.  The bug was that if a
-// reader went to sleep on a condition variable while one or more other readers
-// held the lock, but there were no waiters, the reader count (held in the
-// mutex word) would be lost.  (This is because Enqueue() had at one time
-// always placed the thread on the Mutex queue.  Later (CL 4075610), to
-// tolerate re-entry into Mutex from a Condition predicate, Enqueue() was
-// changed so that it could also place a thread on a condition-variable.  This
-// introduced the case where Enqueue() returned with an empty queue, and this
-// case was handled incorrectly in one place.)
-
-static void ReaderForReaderOnCondVar(absl::Mutex *mu, absl::CondVar *cv,
-                                     int *running) {
-  std::random_device dev;
-  std::mt19937 gen(dev());
-  std::uniform_int_distribution<int> random_millis(0, 15);
-  mu->ReaderLock();
-  while (*running == 3) {
-    absl::SleepFor(absl::Milliseconds(random_millis(gen)));
-    cv->WaitWithTimeout(mu, absl::Milliseconds(random_millis(gen)));
-  }
-  mu->ReaderUnlock();
-  mu->Lock();
-  (*running)--;
-  mu->Unlock();
 }
 
 struct True {
@@ -908,6 +917,33 @@ TEST(Mutex, FunctorCondition) {
     value = 0;
     EXPECT_TRUE(c.Eval());
   }
+}
+
+// --------------------------------------------------------
+// Test for bug with pattern of readers using a condvar.  The bug was that if a
+// reader went to sleep on a condition variable while one or more other readers
+// held the lock, but there were no waiters, the reader count (held in the
+// mutex word) would be lost.  (This is because Enqueue() had at one time
+// always placed the thread on the Mutex queue.  Later (CL 4075610), to
+// tolerate re-entry into Mutex from a Condition predicate, Enqueue() was
+// changed so that it could also place a thread on a condition-variable.  This
+// introduced the case where Enqueue() returned with an empty queue, and this
+// case was handled incorrectly in one place.)
+
+static void ReaderForReaderOnCondVar(absl::Mutex *mu, absl::CondVar *cv,
+                                     int *running) {
+  std::random_device dev;
+  std::mt19937 gen(dev());
+  std::uniform_int_distribution<int> random_millis(0, 15);
+  mu->ReaderLock();
+  while (*running == 3) {
+    absl::SleepFor(absl::Milliseconds(random_millis(gen)));
+    cv->WaitWithTimeout(mu, absl::Milliseconds(random_millis(gen)));
+  }
+  mu->ReaderUnlock();
+  mu->Lock();
+  (*running)--;
+  mu->Unlock();
 }
 
 static bool IntIsZero(int *x) { return *x == 0; }
@@ -1001,9 +1037,6 @@ TEST(Mutex, AcquireFromCondition) {
   x.mu0.Unlock();
 }
 
-// The deadlock detector is not part of non-prod builds, so do not test it.
-#if !defined(ABSL_INTERNAL_USE_NONPROD_MUTEX)
-
 TEST(Mutex, DeadlockDetector) {
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
 
@@ -1067,7 +1100,7 @@ class ScopedDisableBazelTestWarnings {
 const char ScopedDisableBazelTestWarnings::kVarName[] =
     "TEST_WARNINGS_OUTPUT_FILE";
 
-#ifdef THREAD_SANITIZER
+#ifdef ABSL_HAVE_THREAD_SANITIZER
 // This test intentionally creates deadlocks to test the deadlock detector.
 TEST(Mutex, DISABLED_DeadlockDetectorBazelWarning) {
 #else
@@ -1097,11 +1130,11 @@ TEST(Mutex, DeadlockDetectorBazelWarning) {
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
 }
 
-// This test is tagged with ABSL_NO_THREAD_SAFETY_ANALYSIS because the
+// This test is tagged with NO_THREAD_SAFETY_ANALYSIS because the
 // annotation-based static thread-safety analysis is not currently
 // predicate-aware and cannot tell if the two for-loops that acquire and
 // release the locks have the same predicates.
-TEST(Mutex, DeadlockDetectorStessTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DeadlockDetectorStressTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   // Stress test: Here we create a large number of locks and use all of them.
   // If a deadlock detector keeps a full graph of lock acquisition order,
   // it will likely be too slow for this test to pass.
@@ -1119,7 +1152,7 @@ TEST(Mutex, DeadlockDetectorStessTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   }
 }
 
-#ifdef THREAD_SANITIZER
+#ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
 TEST(Mutex, DISABLED_DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
@@ -1157,7 +1190,6 @@ TEST(Mutex, DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   c.Lock();
   c.Unlock();
 }
-#endif  // !defined(ABSL_INTERNAL_USE_NONPROD_MUTEX)
 
 // --------------------------------------------------------
 // Test for timeouts/deadlines on condition waits that are specified using

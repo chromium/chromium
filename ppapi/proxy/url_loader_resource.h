@@ -40,6 +40,9 @@ class PPAPI_PROXY_EXPORT URLLoaderResource : public PluginResource,
                     int pending_main_document_loader_id,
                     const URLResponseInfoData& data);
 
+  URLLoaderResource(const URLLoaderResource&) = delete;
+  URLLoaderResource& operator=(const URLLoaderResource&) = delete;
+
   ~URLLoaderResource() override;
 
   // Resource override.
@@ -139,8 +142,6 @@ class PPAPI_PROXY_EXPORT URLLoaderResource : public PluginResource,
 
   // The response info if we've received it.
   scoped_refptr<URLResponseInfoResource> response_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderResource);
 };
 
 }  // namespace proxy

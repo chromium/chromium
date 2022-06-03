@@ -5,6 +5,7 @@
 package org.chromium.chromecast.shell;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -12,22 +13,23 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
 import org.chromium.chromecast.base.Observers;
 import org.chromium.chromecast.base.Unit;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Activity for displaying a WebContents in CastShell.
@@ -42,14 +44,40 @@ public class CastWebContentsActivity extends Activity {
     private static final String TAG = "CastWebActivity";
     private static final boolean DEBUG = true;
 
+    // JavaScript to execute on WebContents when the back key is pressed.
+    // This will return a value that indicates whether or not the default
+    // Android behavior for the back key should be disabled or not.
+    private static final String BACK_PRESSED_JAVASCRIPT = "{"
+            + "  let getActiveElement = function() {"
+            + "    let activeElement = document.activeElement;"
+            + "    while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {"
+            + "      activeElement = activeElement.shadowRoot.activeElement;"
+            + "    }"
+            + "    return activeElement;"
+            + "  };"
+            + "  let backPressEvent = new KeyboardEvent("
+            + "     \"keydown\", {"
+            + "      bubbles: true,"
+            + "      key: \"BrowserBack\","
+            + "      cancelable: true,"
+            + "      composed: true"
+            + "     }"
+            + "  );"
+            + "  let activeElement = getActiveElement();"
+            + "  if (activeElement) {"
+            + "    activeElement.dispatchEvent(backPressEvent);"
+            + "  } else {"
+            + "    document.dispatchEvent(backPressEvent);"
+            + "  }"
+            + "  backPressEvent.defaultPrevented;"
+            + "};";
+
     // Tracks whether this Activity is between onCreate() and onDestroy().
     private final Controller<Unit> mCreatedState = new Controller<>();
     // Tracks whether this Activity is between onResume() and onPause().
     private final Controller<Unit> mResumedState = new Controller<>();
     // Tracks whether this Activity is between onStart() and onStop().
     private final Controller<Unit> mStartedState = new Controller<>();
-    // Tracks whether the user has left according to onUserLeaveHint().
-    private final Controller<Unit> mUserLeftState = new Controller<>();
     // Tracks the most recent Intent for the Activity.
     private final Controller<Intent> mGotIntentState = new Controller<>();
     // Set this to cause the Activity to finish.
@@ -79,12 +107,7 @@ public class CastWebContentsActivity extends Activity {
         });
         createdAndNotTestingState.subscribe(Observers.onEnter(x -> {
             // Do this in onCreate() only if not testing.
-            if (!CastBrowserHelper.initializeBrowser(getApplicationContext())) {
-                Toast.makeText(this, R.string.browser_process_initialization_failed,
-                             Toast.LENGTH_SHORT)
-                        .show();
-                mIsFinishingState.set("Failed to initialize browser");
-            }
+            CastBrowserHelper.initializeBrowser(getApplicationContext());
 
             setContentView(R.layout.cast_web_contents_activity);
 
@@ -109,24 +132,18 @@ public class CastWebContentsActivity extends Activity {
         mCreatedState.map(x -> getWindow())
                 .and(mGotIntentState)
                 .subscribe(Observers.onEnter(Both.adapt((Window window, Intent intent) -> {
-                    // Set flags to both exit sleep mode when this activity starts and
-                    // avoid entering sleep mode while playing media. If an app that shouldn't turn
-                    // on the screen is launching, we don't add TURN_SCREEN_ON.
-                    if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent)) turnScreenOn();
-                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    // Set flag to exit sleep mode when this activity starts. If an app that
+                    // shouldn't turn on the screen is launching, we don't add TURN_SCREEN_ON.
+                    if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent)) {
+                        Log.i(TAG, "Setting FLAG_TURN_SCREEN_ON.");
+                        turnScreenOn();
+                    }
                 })));
 
         // Initialize the audio manager in onCreate() if tests haven't already.
         mCreatedState.and(Observable.not(mAudioManagerState)).subscribe(Observers.onEnter(x -> {
             mAudioManagerState.set(CastAudioManager.getAudioManager(this));
         }));
-
-        // Clean up stream mute state on pause events.
-        mAudioManagerState.andThen(Observable.not(mResumedState))
-                .map(Both::getFirst)
-                .subscribe(Observers.onEnter((CastAudioManager audioManager) -> {
-                    audioManager.releaseStreamMuteIfNecessary(AudioManager.STREAM_MUSIC);
-                }));
 
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
@@ -146,6 +163,20 @@ public class CastWebContentsActivity extends Activity {
             finish();
         }));
 
+        mStartedState.subscribe(x -> {
+            Context ctx = getApplicationContext();
+            Intent intent = getIntent();
+            String instanceId = CastWebContentsIntentUtils.getSessionId(intent.getExtras());
+            Intent visible = CastWebContentsIntentUtils.onVisibilityChange(
+                    instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN);
+            LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(visible);
+            return () -> {
+                Intent hidden = CastWebContentsIntentUtils.onVisibilityChange(
+                        instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
+                LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(hidden);
+            };
+        });
+
         // If a new Intent arrives after finishing, start a new Activity instead of recycling this.
         gotIntentAfterFinishingState.subscribe(Observers.onEnter((Intent intent) -> {
             Log.d(TAG, "Got intent while finishing current activity, so start new activity.");
@@ -154,11 +185,6 @@ public class CastWebContentsActivity extends Activity {
             intent.setFlags(flags);
             startActivity(intent);
         }));
-
-        Observable<?> stoppingBecauseUserLeftState =
-                Observable.not(mStartedState).and(mUserLeftState);
-        stoppingBecauseUserLeftState.subscribe(
-                Observers.onEnter(x -> mIsFinishingState.set("User left and activity stopped.")));
     }
 
     @Override
@@ -211,14 +237,23 @@ public class CastWebContentsActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (DEBUG) Log.d(TAG, "onDestroy");
+
         mCreatedState.reset();
         super.onDestroy();
     }
 
     @Override
-    protected void onUserLeaveHint() {
-        mUserLeftState.set(Unit.unit());
-        super.onUserLeaveHint();
+    public void onBackPressed() {
+        WebContents webContents = CastWebContentsIntentUtils.getWebContents(getIntent());
+        if (webContents == null) {
+            super.onBackPressed();
+            return;
+        }
+        webContents.evaluateJavaScript(BACK_PRESSED_JAVASCRIPT, defaultPrevented -> {
+            if (!"true".equals(defaultPrevented)) {
+                super.onBackPressed();
+            }
+        });
     }
 
     @Override
@@ -251,22 +286,18 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
-    @RemovableInRelease
     public void finishForTesting() {
         mIsFinishingState.set("Finish for testing");
     }
 
-    @RemovableInRelease
     public void testingModeForTesting() {
         mIsTestingState.set(Unit.unit());
     }
 
-    @RemovableInRelease
     public void setAudioManagerForTesting(CastAudioManager audioManager) {
         mAudioManagerState.set(audioManager);
     }
 
-    @RemovableInRelease
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
         mSurfaceHelperState.set(surfaceHelper);
     }

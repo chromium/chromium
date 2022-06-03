@@ -5,7 +5,7 @@
   }
 </style>
 <select class="md-select" disabled$="[[disabled]]"
-    value="{{selectedValue::change}}">
+    aria-label$="[[ariaLabel]]" value="{{selectedValue::change}}">
   <template is="dom-repeat" items="[[capability.option]]">
     <option selected="[[isSelected_(item, selectedValue)]]"
         value="[[getValue_(item)]]">

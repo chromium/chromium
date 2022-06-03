@@ -17,15 +17,15 @@
 
 using autofill::LogRouter;
 
-AutofillInternalsUIIOS::AutofillInternalsUIIOS(web::WebUIIOS* web_ui)
-    : web::WebUIIOSController(web_ui) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui);
+AutofillInternalsUIIOS::AutofillInternalsUIIOS(web::WebUIIOS* web_ui,
+                                               const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
+  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
   web::WebUIIOSDataSource::Add(
       browser_state,
       autofill::CreateInternalsHTMLSource(kChromeUIAutofillInternalsHost));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
-      "setUpAutofillInternals",
+      "setup-autofill-internals",
       base::BindRepeating(
           &autofill::AutofillLogRouterFactory::GetForBrowserState)));
 }

@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
@@ -21,13 +21,10 @@ const char kClipboardFormatString[] = "chromium/x-browser-actions";
 }
 
 BrowserActionDragData::BrowserActionDragData()
-    : profile_(NULL), index_(static_cast<size_t>(-1)) {
-}
+    : profile_(nullptr), index_(static_cast<size_t>(-1)) {}
 
-BrowserActionDragData::BrowserActionDragData(
-    const std::string& id, int index)
-    : profile_(NULL), id_(id), index_(index) {
-}
+BrowserActionDragData::BrowserActionDragData(const std::string& id, int index)
+    : profile_(nullptr), id_(id), index_(index) {}
 
 bool BrowserActionDragData::GetDropFormats(
     std::set<ui::ClipboardFormatType>* format_types) {
@@ -49,7 +46,6 @@ bool BrowserActionDragData::IsFromProfile(const Profile* profile) const {
   return profile_ == profile;
 }
 
-#if defined(TOOLKIT_VIEWS)
 void BrowserActionDragData::Write(
     Profile* profile, ui::OSExchangeData* data) const {
   DCHECK(data);
@@ -80,7 +76,6 @@ BrowserActionDragData::GetBrowserActionFormatType() {
 
   return *format;
 }
-#endif
 
 void BrowserActionDragData::WriteToPickle(Profile* profile,
                                           base::Pickle* pickle) const {

@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -27,7 +25,7 @@ bool ConsoleLevelToLogLevel(const std::string& name, Log::Level *out_level) {
     *out_level = Log::kInfo;
   else if (name == "warning")
     *out_level = Log::kWarning;
-  else if (name == "error")
+  else if (name == "error" || name == "assert")
     *out_level = Log::kError;
   else
     return false;
@@ -43,17 +41,8 @@ Status ConsoleLogger::OnConnected(DevToolsClient* client) {
   base::DictionaryValue params;
   Status status = client->SendCommand("Log.enable", params);
   if (status.IsError()) {
-    std::string message = status.message();
-    if (message.find("'Log.enable' wasn't found") != std::string::npos) {
-      // If the Log.enable command doesn't exist, then we're on Chrome 53 or
-      // earlier. Enable the Console domain so we can listen for
-      // Console.messageAdded events.
-      return client->SendCommand("Console.enable", params);
-    }
     return status;
   }
-  // Otherwise, we're on Chrome 54+. Enable the Log and Runtime domains so we
-  // can listen for Log.entryAdded and Runtime.exceptionThrown events.
   return client->SendCommand("Runtime.enable", params);
 }
 
@@ -61,66 +50,12 @@ Status ConsoleLogger::OnEvent(
     DevToolsClient* client,
     const std::string& method,
     const base::DictionaryValue& params) {
-  if (method == "Console.messageAdded")
-    return OnConsoleMessageAdded(params);
   if (method == "Log.entryAdded")
     return OnLogEntryAdded(params);
   if (method == "Runtime.consoleAPICalled")
     return OnRuntimeConsoleApiCalled(params);
   if (method == "Runtime.exceptionThrown")
     return OnRuntimeExceptionThrown(params);
-  return Status(kOk);
-}
-
-Status ConsoleLogger::OnConsoleMessageAdded(
-    const base::DictionaryValue& params) {
-  // If the event has proper structure and fields, log formatted.
-  // Else it's a weird message that we don't know how to format, log full JSON.
-  const base::DictionaryValue* message_dict = nullptr;
-  if (params.GetDictionary("message", &message_dict)) {
-    std::string text;
-    std::string level_name;
-    Log::Level level = Log::kInfo;
-    if (message_dict->GetString("text", &text) && !text.empty() &&
-        message_dict->GetString("level", &level_name) &&
-        ConsoleLevelToLogLevel(level_name, &level)) {
-      const char* origin_cstr = "unknown";
-      std::string origin;
-      if ((message_dict->GetString("url", &origin) && !origin.empty()) ||
-          (message_dict->GetString("source", &origin) && !origin.empty())) {
-        origin_cstr = origin.c_str();
-      }
-
-      std::string line_column;
-      int line = -1;
-      if (message_dict->GetInteger("line", &line)) {
-        int column = -1;
-        if (message_dict->GetInteger("column", &column)) {
-          base::SStringPrintf(&line_column, "%d:%d", line, column);
-        } else {
-          base::SStringPrintf(&line_column, "%d", line);
-        }
-      } else {
-        // No line number, but print anyway, just to maintain the number of
-        // fields in the formatted message in case someone wants to parse it.
-        line_column = "-";
-      }
-
-      std::string source;
-      message_dict->GetString("source", &source);
-      log_->AddEntry(level, source, base::StringPrintf("%s %s %s",
-                                                       origin_cstr,
-                                                       line_column.c_str(),
-                                                       text.c_str()));
-
-      return Status(kOk);
-    }
-  }
-
-  // Don't know how to format, log full JSON.
-  std::string message_json;
-  base::JSONWriter::Write(params, &message_json);
-  log_->AddEntry(Log::kWarning, message_json);
   return Status(kOk);
 }
 
@@ -180,18 +115,20 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     const base::ListValue* call_frames = nullptr;
     if (!stack_trace->GetList("callFrames", &call_frames))
       return Status(kUnknownError, "missing or invalid callFrames");
-    const base::DictionaryValue* call_frame = nullptr;
-    if (call_frames->GetDictionary(0, &call_frame)) {
+    const base::Value& call_frame_value = call_frames->GetList()[0];
+    if (call_frame_value.is_dict()) {
+      const base::DictionaryValue& call_frame =
+          base::Value::AsDictionaryValue(call_frame_value);
       std::string url;
-      if (!call_frame->GetString("url", &url))
+      if (!call_frame.GetString("url", &url))
         return Status(kUnknownError, "missing or invalid url");
       if (!url.empty())
         origin = url;
       int line = -1;
-      if (!call_frame->GetInteger("lineNumber", &line))
+      if (!call_frame.GetInteger("lineNumber", &line))
         return Status(kUnknownError, "missing or invalid lineNumber");
       int column = -1;
-      if (!call_frame->GetInteger("columnNumber", &column))
+      if (!call_frame.GetInteger("columnNumber", &column))
         return Status(kUnknownError, "missing or invalid columnNumber");
       line_column = base::StringPrintf("%d:%d", line, column);
     }
@@ -200,25 +137,26 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   std::string text;
   const base::ListValue* args = nullptr;
 
-  std::string arg_type;
-  if (!params.GetList("args", &args) || args->GetSize() < 1) {
-       return Status(kUnknownError, "missing or invalid args");
+  if (!params.GetList("args", &args) || args->GetList().size() < 1) {
+    return Status(kUnknownError, "missing or invalid args");
   }
 
-  int arg_count = args->GetSize();
-  const base::DictionaryValue* current_arg = nullptr;
+  int arg_count = args->GetList().size();
   for (int i = 0; i < arg_count; i++) {
-    if (!args->GetDictionary(i, &current_arg)) {
+    const base::Value& current_arg_value = args->GetList()[i];
+    if (!current_arg_value.is_dict()) {
       std::string error_message = base::StringPrintf("Argument %d is missing or invalid", i);
       return Status(kUnknownError, error_message );
     }
+    const base::DictionaryValue& current_arg =
+        base::Value::AsDictionaryValue(current_arg_value);
     std::string temp_text;
     std::string arg_type;
-    if (current_arg->GetString("type", &arg_type) && arg_type == "undefined") {
+    if (current_arg.GetString("type", &arg_type) && arg_type == "undefined") {
       temp_text = "undefined";
-    } else if (!current_arg->GetString("description", &temp_text)) {
+    } else if (!current_arg.GetString("description", &temp_text)) {
       const base::Value* value = nullptr;
-      if (!current_arg->Get("value", &value)) {
+      if (!current_arg.Get("value", &value)) {
         return Status(kUnknownError, "missing or invalid arg value");
       }
       if (!base::JSONWriter::Write(*value, &temp_text)) {
@@ -241,12 +179,8 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
 Status ConsoleLogger::OnRuntimeExceptionThrown(
     const base::DictionaryValue& params) {
   const base::DictionaryValue* exception_details = nullptr;
-  // In Chrome 54, |url|, |lineNumber| and |columnNumber| are properties of the
-  // |details| dictionary. In Chrome 55+, they are inside the |exceptionDetails|
-  // dictionary.
-  // TODO(samuong): Stop looking at |details| once we stop supporting Chrome 54.
+
   if (!params.GetDictionary("exceptionDetails", &exception_details))
-    if (!params.GetDictionary("details", &exception_details))
       return Status(kUnknownError, "missing or invalid exception details");
 
   std::string origin;
@@ -261,13 +195,6 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
     return Status(kUnknownError, "missing or invalid columnNumber");
   std::string line_column = base::StringPrintf("%d:%d", line, column);
 
-  // In Chrome 54, the exception object is serialized as a dictionary called
-  // |exception|. In Chrome 55+, the exception object properties are in the
-  // |exceptionDetails| object.
-  // TODO(samuong): Delete this once we stop supporting Chrome 54.
-  if (!params.GetDictionary("exceptionDetails", &exception_details))
-    exception_details = &params;
-
   std::string text;
   const base::DictionaryValue* exception = nullptr;
   const base::DictionaryValue* preview = nullptr;
@@ -277,12 +204,13 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
       preview->GetList("properties", &properties)) {
     // If the event contains an object which is an instance of the JS Error
     // class, attempt to get the message property for the exception.
-    for (size_t i = 0; i < properties->GetSize(); i++) {
-      const base::DictionaryValue* property = nullptr;
-      if (properties->GetDictionary(i, &property)) {
+    for (const base::Value& property_value : properties->GetList()) {
+      if (property_value.is_dict()) {
+        const base::DictionaryValue& property =
+            base::Value::AsDictionaryValue(property_value);
         std::string name;
-        if (property->GetString("name", &name) && name == "message") {
-          if (property->GetString("value", &text)) {
+        if (property.GetString("name", &name) && name == "message") {
+          if (property.GetString("value", &text)) {
             std::string class_name;
             if (exception->GetString("className", &class_name))
               text = "Uncaught " + class_name + ": " + text;

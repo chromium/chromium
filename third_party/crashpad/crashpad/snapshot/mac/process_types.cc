@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/process/process_memory_mac.h"
 
@@ -219,7 +219,7 @@ inline void Assign<UInt64Array4, UInt32Array4>(UInt64Array4* destination,
                                           size_t count,                        \
                                           struct_name<Traits>* specific) {     \
     return process_reader->Memory()->Read(                                     \
-        address, sizeof(struct_name<Traits>[count]), specific);                \
+        address, count * sizeof(struct_name<Traits>), specific);               \
   }                                                                            \
                                                                                \
   } /* namespace internal */                                                   \

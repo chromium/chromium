@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that inspector figures out overloaded properties correctly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -34,8 +34,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspect', step2);
 
-  function step2() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, false);
+  async function step2() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false);
     TestRunner.completeTest();
   }
 })();

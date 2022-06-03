@@ -7,10 +7,12 @@
  * sign-in.
  */
 
+(function() {
+
 Polymer({
   is: 'security-token-pin',
 
-  behaviors: [OobeDialogHostBehavior, I18nBehavior],
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
 
   properties: {
     /**
@@ -27,21 +29,20 @@ Polymer({
     },
 
     /**
-     * The i18n string ID containing the error label to be shown to the user.
-     * Is undefined when there's no error label.
-     * @private
-     */
-    errorLabelId_: {
-      type: String,
-      computed: 'computeErrorLabelId_(parameters)',
-    },
-
-    /**
      * Whether the current state is the wait for the processing completion
      * (i.e., the backend is verifying the entered PIN).
      * @private
      */
     processingCompletion_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether the input is currently non-empty.
+     * @private
+     */
+    hasValue_: {
       type: Boolean,
       value: false,
     },
@@ -57,56 +58,61 @@ Polymer({
     },
 
     /**
+     * Whether the user can change the value in the input field.
+     * @private
+     */
+    canEdit_: {
+      type: Boolean,
+      computed:
+          'computeCanEdit_(parameters.enableUserInput, processingCompletion_)',
+    },
+
+    /**
      * Whether the user can submit a login request.
      * @private
      */
     canSubmit_: {
       type: Boolean,
-      computed:
-          'computeCanSubmit_(parameters.attemptsLeft, processingCompletion_)',
+      computed: 'computeCanSubmit_(parameters.enableUserInput, ' +
+          'hasValue_, processingCompletion_)',
     },
   },
 
-  /**
-   * Returns the i18n string ID for the current error label.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @return {string|undefined}
-   * @private
-   */
-  computeErrorLabelId_: function(parameters) {
-    if (!parameters)
-      return;
-    switch (parameters.errorLabel) {
-      case OobeTypes.SecurityTokenPinDialogErrorType.NONE:
-        return;
-      case OobeTypes.SecurityTokenPinDialogErrorType.UNKNOWN:
-        return 'securityTokenPinDialogUnknownError';
-      case OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN:
-        return 'securityTokenPinDialogUnknownInvalidPin';
-      case OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PUK:
-        return 'securityTokenPinDialogUnknownInvalidPuk';
-      case OobeTypes.SecurityTokenPinDialogErrorType.MAX_ATTEMPTS_EXCEEDED:
-        return 'securityTokenPinDialogUnknownMaxAttemptsExceeded';
-      default:
-        assertNotReached(`Unexpected enum value: ${parameters.errorLabel}`);
-    }
+  focus() {
+    // Note: setting the focus synchronously, to avoid flakiness in tests due to
+    // racing between the asynchronous caret positioning and the PIN characters
+    // input.
+    this.$.pinKeyboard.focusInputSynchronously();
   },
 
   /**
-   * Returns whether the user can make more attempts to log in.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
+   * Computes the value of the canEdit_ property.
+   * @param {boolean} enableUserInput
+   * @param {boolean} processingCompletion
    * @return {boolean}
    * @private
    */
-  computeCanSubmit_: function(attemptsLeft, processingCompletion) {
-    return attemptsLeft != 0 && !processingCompletion;
+  computeCanEdit_(enableUserInput, processingCompletion) {
+    return enableUserInput && !processingCompletion;
+  },
+
+  /**
+   * Computes the value of the canSubmit_ property.
+   * @param {boolean} enableUserInput
+   * @param {boolean} hasValue
+   * @param {boolean} processingCompletion
+   * @return {boolean}
+   * @private
+   */
+  computeCanSubmit_(enableUserInput, hasValue, processingCompletion) {
+    return enableUserInput && hasValue && !processingCompletion;
   },
 
   /**
    * Invoked when the "Back" button is clicked.
    * @private
    */
-  onBackClicked_: function() {
+  onBackClicked_() {
     this.fire('cancel');
   },
 
@@ -114,11 +120,10 @@ Polymer({
    * Invoked when the "Next" button is clicked or Enter is pressed.
    * @private
    */
-  onSubmit_: function() {
-    if (this.processingCompletion_) {
-      // Race condition: This could happen if the previous request has not yet
-      // been completed before the next one is sent (for example by pressing
-      // Enter twice)
+  onSubmit_() {
+    if (!this.canSubmit_) {
+      // Disallow submitting when it's not allowed or while proceeding the
+      // previous submission.
       return;
     }
     this.processingCompletion_ = true;
@@ -129,19 +134,23 @@ Polymer({
    * Observer that is called when the |parameters| property gets changed.
    * @private
    */
-  onParametersChanged_: function() {
+  onParametersChanged_() {
     // Reset the dialog to the initial state.
     this.$.pinKeyboard.value = '';
     this.processingCompletion_ = false;
+    this.hasValue_ = false;
     this.userEdited_ = false;
-    this.$.pinKeyboard.focusInput();
+
+    this.focus();
   },
 
   /**
    * Observer that is called when the user changes the PIN input field.
+   * @param {!CustomEvent<{pin: string}>} e
    * @private
    */
-  onPinChange_: function() {
+  onPinChange_(e) {
+    this.hasValue_ = e.detail.pin.length > 0;
     this.userEdited_ = true;
   },
 
@@ -152,22 +161,8 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isErrorLabelVisible_: function(parameters, userEdited) {
-    return parameters &&
-        parameters.errorLabel !==
-        OobeTypes.SecurityTokenPinDialogErrorType.NONE &&
-        !userEdited;
-  },
-
-  /**
-   * Returns a string for a11y whether there is an error.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {boolean} userEdited
-   * @return {string}
-   * @private
-   */
-  isAriaInvalid_: function(parameters, userEdited) {
-    return this.isErrorLabelVisible_(parameters, userEdited) ? 'true' : 'false';
+  isErrorLabelVisible_(parameters, userEdited) {
+    return parameters && parameters.hasError && !userEdited;
   },
 
   /**
@@ -176,8 +171,8 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isAttemptsLeftVisible_: function(parameters) {
-    return parameters && parameters.attemptsLeft != -1;
+  isAttemptsLeftVisible_(parameters) {
+    return parameters && parameters.formattedAttemptsLeft !== '';
   },
 
   /**
@@ -187,38 +182,29 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isLabelVisible_: function(parameters, userEdited) {
+  isLabelVisible_(parameters, userEdited) {
     return this.isErrorLabelVisible_(parameters, userEdited) ||
         this.isAttemptsLeftVisible_(parameters);
   },
 
   /**
    * Returns the label to be used for the PIN input field.
-   * @param {string} locale
    * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {string} errorLabelId
    * @param {boolean} userEdited
    * @return {string}
    * @private
    */
-  getLabel_: function(locale, parameters, errorLabelId, userEdited) {
+  getLabel_(parameters, userEdited) {
     if (!this.isLabelVisible_(parameters, userEdited)) {
+      // Neither error nor the number of left attempts are to be displayed.
       return '';
     }
     if (!this.isErrorLabelVisible_(parameters, userEdited) &&
         this.isAttemptsLeftVisible_(parameters)) {
-      return this.i18n(
-          'securityTokenPinDialogAttemptsLeft', parameters.attemptsLeft);
+      // There's no error, but the number of left attempts has to be displayed.
+      return parameters.formattedAttemptsLeft;
     }
-    if (parameters && !parameters.enableUserInput) {
-      return this.i18n(errorLabelId);
-    }
-    if (!this.isAttemptsLeftVisible_(parameters)) {
-      return this.i18nRecursive(
-          locale, 'securityTokenPinDialogErrorRetry', errorLabelId);
-    }
-    return this.i18n(
-        'securityTokenPinDialogErrorRetryAttempts', this.i18n(errorLabelId),
-        parameters.attemptsLeft);
+    return parameters.formattedError;
   },
 });
+})();

@@ -23,10 +23,6 @@ namespace {
 // Preferred bytes per sample when get interleaved data from AudioBus.
 constexpr int kBytesPerSample = 2;
 
-void OnError(bool* succeeded) {
-  *succeeded = false;
-}
-
 }  // namespace
 
 AssistantAudioDecoder::AssistantAudioDecoder(
@@ -37,6 +33,7 @@ AssistantAudioDecoder::AssistantAudioDecoder(
       data_source_(std::make_unique<IPCDataSource>(std::move(data_source))),
       media_thread_(std::make_unique<base::Thread>("media_thread")),
       weak_factory_(this) {
+  weak_this_ = weak_factory_.GetWeakPtr();
   CHECK(media_thread_->Start());
   client_.set_disconnect_handler(base::BindOnce(
       &AssistantAudioDecoder::OnConnectionError, base::Unretained(this)));
@@ -68,13 +65,18 @@ void AssistantAudioDecoder::CloseDecoder(CloseDecoderCallback callback) {
                      base::Unretained(this)));
 }
 
+void AssistantAudioDecoder::OnDataReadError() {
+  read_error_ = true;
+}
+
 void AssistantAudioDecoder::OpenDecoderOnMediaThread() {
-  bool read_ok = true;
   protocol_ = std::make_unique<media::BlockingUrlProtocol>(
-      data_source_.get(), base::BindRepeating(&OnError, &read_ok));
+      data_source_.get(),
+      base::BindRepeating(&AssistantAudioDecoder::OnDataReadError,
+                          base::Unretained(this)));
   decoder_ = std::make_unique<media::AudioFileReader>(protocol_.get());
 
-  if (closed_ || !decoder_->Open() || !read_ok) {
+  if (closed_ || !decoder_->Open() || read_error_) {
     CloseDecoderOnMediaThread();
     return;
   }
@@ -82,7 +84,7 @@ void AssistantAudioDecoder::OpenDecoderOnMediaThread() {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AssistantAudioDecoder::OnDecoderInitializedOnThread,
-                     weak_factory_.GetWeakPtr(), decoder_->sample_rate(),
+                     weak_this_, decoder_->sample_rate(),
                      decoder_->channels()));
 }
 
@@ -99,8 +101,7 @@ void AssistantAudioDecoder::DecodeOnMediaThread() {
 
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AssistantAudioDecoder::OnBufferDecodedOnThread,
-                                weak_factory_.GetWeakPtr(),
-                                std::move(decoded_audio_packets)));
+                                weak_this_, std::move(decoded_audio_packets)));
 }
 
 void AssistantAudioDecoder::CloseDecoderOnMediaThread() {
@@ -110,8 +111,8 @@ void AssistantAudioDecoder::CloseDecoderOnMediaThread() {
 
   closed_ = true;
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AssistantAudioDecoder::RunCallbacksAsClosed,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&AssistantAudioDecoder::RunCallbacksAsClosed, weak_this_));
 }
 
 void AssistantAudioDecoder::OnDecoderInitializedOnThread(

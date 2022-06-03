@@ -1,0 +1,11 @@
+<html>
+  <head><title>OK</title></head>
+  <script>
+    x.postMessage("from page");
+    x.addEventListener("message", function(event) {
+        x.postMessage("bouncing " + event.data);
+    });
+  </script>
+<body>
+</body>
+</html>

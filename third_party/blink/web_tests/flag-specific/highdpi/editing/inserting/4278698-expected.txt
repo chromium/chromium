@@ -1,0 +1,24 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 1125x53
+          text run at (0,0) width 1125: "This tests to see if inserting a space inside normal whitespace inside of a whitespace:pre element will collapse other"
+          text run at (0,27) width 211: "spaces surrounding it."
+      LayoutNGBlockFlow {P} at (0,78) size 1176x27
+        LayoutText {#text} at (0,0) size 676x26
+          text run at (0,0) width 676: "If successful, you should see 'a' followed by 10 spaces followed by 'b'."
+      LayoutNGBlockFlow {DIV} at (0,144) size 1176x34 [border: (3px solid #FFAAAA)]
+        LayoutNGBlockFlow {PRE} at (3,3) size 1170x28 [border: (3px solid #AAAAFF)]
+          LayoutText {#text} at (3,3) size 144x22
+            text run at (3,3) width 144: "a          b"
+layer at (12,141) size 1176x3 clip at (0,0) size 0x0
+  LayoutNGBlockFlow {HR} at (0,129) size 1176x3 [border: (1.50px inset #EEEEEE)]
+caret: position 3 of child 0 {#text} of child 1 {PRE} of child 7 {DIV} of body

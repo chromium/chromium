@@ -5,60 +5,45 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_OWNER_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_OWNER_PROPERTIES_H_
 
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
+#include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
-
-#if INSIDE_BLINK
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"  // nogncheck
-#endif
 
 namespace blink {
 
 struct WebFrameOwnerProperties {
-  enum class ScrollingMode {
-    kAuto,
-    kAlwaysOff,
-    kAlwaysOn,
-    kMaxValue = kAlwaysOn
-  };
-
   WebString name;  // browsing context container's name
-  ScrollingMode scrolling_mode;
-  int margin_width;
-  int margin_height;
-  bool allow_fullscreen;
-  bool allow_payment_request;
-  bool is_display_none;
-  WebString required_csp;
+  mojom::ScrollbarMode scrollbar_mode{mojom::ScrollbarMode::kAuto};
+  int margin_width{-1};
+  int margin_height{-1};
+  bool allow_fullscreen{false};
+  bool allow_payment_request{false};
+  bool is_display_none{false};
+  mojom::ColorScheme color_scheme{mojom::ColorScheme::kLight};
 
  public:
-  WebFrameOwnerProperties()
-      : scrolling_mode(ScrollingMode::kAuto),
-        margin_width(-1),
-        margin_height(-1),
-        allow_fullscreen(false),
-        allow_payment_request(false),
-        is_display_none(false) {}
+  WebFrameOwnerProperties() = default;
 
 #if INSIDE_BLINK
   WebFrameOwnerProperties(const WebString& name,
-                          ScrollbarMode scrolling_mode,
+                          mojom::ScrollbarMode scrollbar_mode,
                           int margin_width,
                           int margin_height,
                           bool allow_fullscreen,
                           bool allow_payment_request,
                           bool is_display_none,
-                          const WebString& required_csp)
+                          mojom::ColorScheme color_scheme)
       : name(name),
-        scrolling_mode(static_cast<ScrollingMode>(scrolling_mode)),
+        scrollbar_mode(scrollbar_mode),
         margin_width(margin_width),
         margin_height(margin_height),
         allow_fullscreen(allow_fullscreen),
         allow_payment_request(allow_payment_request),
         is_display_none(is_display_none),
-        required_csp(required_csp) {}
+        color_scheme(color_scheme) {}
 #endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_OWNER_PROPERTIES_H_

@@ -1,0 +1,59 @@
+<html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+input,
+textarea {
+    font: 20px Arial;
+    padding: 5px;
+    margin: 5px;
+}
+
+input.emulated-input-suggested::placeholder,
+textarea.emulated-input-suggested::placeholder {
+    /* Emulate a built-in style change in a normal browser. */
+    font: -webkit-small-control;
+}
+
+body {
+    /* Add an expander margin to get scrolling. */
+    margin-bottom: 2000px;
+}
+</style>
+<body>
+<div><input id="previewInput" placeholder="Name"></div>
+<div><textarea id="previewTextArea" rows="1" placeholder="Address"></textarea></div>
+
+<script>
+function scrollToPartiallyHide(preview) {
+    const previewRect = preview.getBoundingClientRect();
+    preview.offsetParent.scrollTop += previewRect.top + previewRect.height / 2;
+}
+
+function setSuggestedValue(preview, text) {
+    if (window.internals) {
+        internals.setSuggestedValue(preview, text);
+    } else {
+        preview.classList.add('emulated-input-suggested');
+        preview.placeholder = text;
+    }
+}
+
+for (const id of ['previewInput', 'previewTextArea']) {
+    test(() => {
+        const preview = document.getElementById(id);
+        scrollToPartiallyHide(preview);
+
+        const expectedTop = preview.offsetParent.scrollTop;
+        setSuggestedValue(preview, 'Foooooooooooooooooooooooooooooooooooo');
+
+        const actualTop = preview.offsetParent.scrollTop;
+        assert_equals(actualTop, expectedTop,
+                      'Element should have the same scrolling position');
+    }, 'Testing that a partially hidden #' + id + ' field does not cause' +
+        ' a scrolling adjustment when a value is previewed.\n');
+}
+
+</script>
+</body>
+</html>

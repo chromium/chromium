@@ -41,6 +41,10 @@ class NET_EXPORT HttpRequestHeaders {
   class NET_EXPORT Iterator {
    public:
     explicit Iterator(const HttpRequestHeaders& headers);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     // Advances the iterator to the next header, if any.  Returns true if there
@@ -56,12 +60,20 @@ class NET_EXPORT HttpRequestHeaders {
     bool started_;
     HttpRequestHeaders::HeaderVector::const_iterator curr_;
     const HttpRequestHeaders::HeaderVector::const_iterator end_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
+  static const char kConnectMethod[];
+  static const char kDeleteMethod[];
   static const char kGetMethod[];
+  static const char kHeadMethod[];
+  static const char kOptionsMethod[];
+  static const char kPatchMethod[];
+  static const char kPostMethod[];
+  static const char kPutMethod[];
+  static const char kTraceMethod[];
+  static const char kTrackMethod[];
 
+  static const char kAccept[];
   static const char kAcceptCharset[];
   static const char kAcceptEncoding[];
   static const char kAcceptLanguage[];
@@ -83,7 +95,6 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kProxyConnection[];
   static const char kRange[];
   static const char kReferer[];
-  static const char kSecOriginPolicy[];
   static const char kTransferEncoding[];
   static const char kUserAgent[];
 
@@ -124,6 +135,9 @@ class NET_EXPORT HttpRequestHeaders {
   // Sets the header value pair for |key| and |value|, if |key| does not exist.
   // If |key| already exists, the call is a no-op.
   // When comparing |key|, case is ignored.
+  //
+  // The caller must ensure that |key| passes HttpUtil::IsValidHeaderName() and
+  // |value| passes HttpUtil::IsValidHeaderValue().
   void SetHeaderIfMissing(const base::StringPiece& key,
                           const base::StringPiece& value);
 
@@ -157,13 +171,9 @@ class NET_EXPORT HttpRequestHeaders {
   void MergeFrom(const HttpRequestHeaders& other);
 
   // Copies from |other| to |this|.
-  void CopyFrom(const HttpRequestHeaders& other) {
-    *this = other;
-  }
+  void CopyFrom(const HttpRequestHeaders& other) { *this = other; }
 
-  void Swap(HttpRequestHeaders* other) {
-    headers_.swap(other->headers_);
-  }
+  void Swap(HttpRequestHeaders* other) { headers_.swap(other->headers_); }
 
   // Serializes HttpRequestHeaders to a string representation.  Joins all the
   // header keys and values with ": ", and inserts "\r\n" between each header

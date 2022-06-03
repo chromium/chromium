@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 9: Uncaught TypeError: h.createShadowRoot is not a function

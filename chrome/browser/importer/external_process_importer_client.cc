@@ -13,9 +13,11 @@
 #include "chrome/browser/importer/in_process_importer_bridge.h"
 #include "chrome/common/importer/firefox_importer_utils.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
+#include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/child_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExternalProcessImporterClient::ExternalProcessImporterClient(
@@ -41,7 +43,12 @@ void ExternalProcessImporterClient::Start() {
       profile_import_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_PROFILE_IMPORTER_NAME)
-          .WithSandboxType(service_manager::SandboxType::kNoSandbox)
+#if defined(OS_MAC)
+          // Importing from Firefox involves loading a Firefox dylib into the
+          // importer service process. Use the child process that doesn't
+          // enforce library validation so that this will work.
+          .WithChildFlags(content::ChildProcessHost::CHILD_PLUGIN)
+#endif
           .Pass());
   profile_import_.set_disconnect_handler(
       base::BindOnce(&ExternalProcessImporterClient::OnProcessCrashed, this));
@@ -161,7 +168,7 @@ void ExternalProcessImporterClient::OnHomePageImportReady(
 }
 
 void ExternalProcessImporterClient::OnBookmarksImportStart(
-    const base::string16& first_folder_name,
+    const std::u16string& first_folder_name,
     uint32_t total_bookmarks_count) {
   if (cancelled_)
     return;
@@ -205,7 +212,7 @@ void ExternalProcessImporterClient::OnFaviconsImportGroup(
 }
 
 void ExternalProcessImporterClient::OnPasswordFormImportReady(
-    const autofill::PasswordForm& form) {
+    const importer::ImportedPasswordForm& form) {
   if (cancelled_)
     return;
 
@@ -218,13 +225,6 @@ void ExternalProcessImporterClient::OnKeywordsImportReady(
   if (cancelled_)
     return;
   bridge_->SetKeywords(search_engines, unique_on_host_and_path);
-}
-
-void ExternalProcessImporterClient::OnFirefoxSearchEngineDataReceived(
-    const std::vector<std::string>& search_engine_data) {
-  if (cancelled_)
-    return;
-  bridge_->SetFirefoxSearchEnginesXMLData(search_engine_data);
 }
 
 void ExternalProcessImporterClient::OnAutofillFormDataImportStart(

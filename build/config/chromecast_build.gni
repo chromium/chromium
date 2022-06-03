@@ -25,6 +25,9 @@ declare_args() {
   # If non empty, rpath of executables is set to this.
   # If empty, default value is used.
   target_rpath = ""
+
+  # Set true to enable modular_updater.
+  enable_modular_updater = false
 }
 
 # Note(slan): This arg depends on the value of is_chromecast, and thus must be
@@ -43,15 +46,37 @@ declare_args() {
 declare_args() {
   # True to enable the cast renderer.  It is enabled by default for linux and
   # android audio only builds.
-  enable_cast_renderer =
-      is_chromecast && (is_linux || (is_cast_audio_only && is_android))
+  enable_cast_renderer = is_chromecast && (is_linux || is_chromeos ||
+                                           (is_cast_audio_only && is_android))
+}
+
+declare_args() {
+  # True to enable the cast audio renderer.
+  enable_cast_audio_renderer = false
 }
 
 # Configures media options for cast.  See media/media_options.gni
 cast_mojo_media_services = []
-cast_mojo_media_host = "none"
+cast_mojo_media_host = ""
 
-if (enable_cast_renderer) {
+if (enable_cast_audio_renderer) {
+  if (is_android) {
+    cast_mojo_media_services = [
+      "cdm",
+      "audio_decoder",
+    ]
+  }
+
+  if (!is_cast_audio_only) {
+    cast_mojo_media_services += [ "video_decoder" ]
+  }
+
+  if (is_android && is_cast_audio_only) {
+    cast_mojo_media_host = "browser"
+  } else {
+    cast_mojo_media_host = "gpu"
+  }
+} else if (enable_cast_renderer) {
   # In this path, mojo media services are hosted in two processes:
   # 1. "renderer" and "cdm" run in browser process. This is hard coded in the
   # code.
@@ -60,26 +85,30 @@ if (enable_cast_renderer) {
     "cdm",
     "renderer",
   ]
-
   if (!is_cast_audio_only) {
     cast_mojo_media_services += [ "video_decoder" ]
   }
 
   cast_mojo_media_host = "gpu"
-} else if (is_android && !is_cast_audio_only) {
+} else if (is_android) {
   # On Android, all the enabled mojo media services run in the process specified
   # by "cast_mojo_media_host".
   cast_mojo_media_services = [
     "cdm",
     "audio_decoder",
-    "video_decoder",
   ]
-
-  cast_mojo_media_host = "gpu"
+  if (!is_cast_audio_only) {
+    # These are Cast/Android devices with Video capabilities (and GPU)
+    cast_mojo_media_services += [ "video_decoder" ]
+    cast_mojo_media_host = "gpu"
+  } else {
+    # These are Cast/Android devices with only Audio capabilities (no GPU)
+    cast_mojo_media_host = "browser"
+  }
 }
 
 # Assert that Chromecast is being built for a supported platform.
-assert(is_linux || is_android || is_fuchsia || !is_chromecast,
+assert(is_linux || is_chromeos || is_android || is_fuchsia || !is_chromecast,
        "Chromecast builds are not supported on $target_os")
 
 # Assert that is_cast_audio_only and is_cast_desktop_build are both false on a

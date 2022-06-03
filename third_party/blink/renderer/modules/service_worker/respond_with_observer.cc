@@ -66,9 +66,7 @@ void RespondWithObserver::RespondWith(ScriptState* script_state,
       script_state, script_promise, exception_state,
       WTF::BindRepeating(&RespondWithObserver::ResponseWasFulfilled,
                          WrapPersistent(this), WrapPersistent(script_state),
-                         exception_state.Context(),
-                         WTF::Unretained(exception_state.InterfaceName()),
-                         WTF::Unretained(exception_state.PropertyName())),
+                         exception_state.GetContext()),
       WTF::BindRepeating(&RespondWithObserver::ResponseWasRejected,
                          WrapPersistent(this),
                          ServiceWorkerResponseError::kPromiseRejected));
@@ -89,26 +87,23 @@ void RespondWithObserver::ResponseWasRejected(ServiceWorkerResponseError error,
 
 void RespondWithObserver::ResponseWasFulfilled(
     ScriptState* script_state,
-    ExceptionState::ContextType context_type,
-    const char* interface_name,
-    const char* property_name,
+    const ExceptionContext& exception_context,
     const ScriptValue& value) {
-  OnResponseFulfilled(script_state, value, context_type, interface_name,
-                      property_name);
+  OnResponseFulfilled(script_state, value, exception_context);
   state_ = kDone;
 }
 
 RespondWithObserver::RespondWithObserver(ExecutionContext* context,
                                          int event_id,
                                          WaitUntilObserver* observer)
-    : ContextClient(context),
+    : ExecutionContextClient(context),
       event_id_(event_id),
       state_(kInitial),
       observer_(observer) {}
 
-void RespondWithObserver::Trace(blink::Visitor* visitor) {
+void RespondWithObserver::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

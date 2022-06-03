@@ -8,11 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/ble_scanner.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -24,7 +23,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class BleServiceDataHelper;
+class BluetoothHelper;
 class BleSynchronizerBase;
 
 // Concrete BleScanner implementation.
@@ -33,17 +32,25 @@ class BleScannerImpl : public BleScanner,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual std::unique_ptr<BleScanner> BuildInstance(
-        Delegate* delegate,
-        BleServiceDataHelper* service_data_helper,
+    static std::unique_ptr<BleScanner> Create(
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         scoped_refptr<device::BluetoothAdapter> adapter);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<BleScanner> CreateInstance(
+        BluetoothHelper* bluetooth_helper,
+        BleSynchronizerBase* ble_synchronizer,
+        scoped_refptr<device::BluetoothAdapter> adapter) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  BleScannerImpl(const BleScannerImpl&) = delete;
+  BleScannerImpl& operator=(const BleScannerImpl&) = delete;
 
   ~BleScannerImpl() override;
 
@@ -60,13 +67,12 @@ class BleScannerImpl : public BleScanner,
         device::BluetoothDevice* bluetooth_device);
   };
 
-  BleScannerImpl(Delegate* delegate,
-                 BleServiceDataHelper* service_data_helper,
+  BleScannerImpl(BluetoothHelper* bluetooth_helper,
                  BleSynchronizerBase* ble_synchronizer,
                  scoped_refptr<device::BluetoothAdapter> adapter);
 
   // BleScanner:
-  void HandleScanFilterChange() override;
+  void HandleScanRequestChange() override;
 
   // device::BluetoothAdapter::Observer:
   void DeviceAdvertisementReceived(device::BluetoothAdapter* adapter,
@@ -90,13 +96,13 @@ class BleScannerImpl : public BleScanner,
   void HandleDeviceUpdated(device::BluetoothDevice* bluetooth_device);
   void HandlePotentialScanResult(
       const std::string& service_data,
-      const BleServiceDataHelper::DeviceWithBackgroundBool& potential_result,
+      const BluetoothHelper::DeviceWithBackgroundBool& potential_result,
       device::BluetoothDevice* bluetooth_device);
 
   void SetServiceDataProviderForTesting(
       std::unique_ptr<ServiceDataProvider> service_data_provider);
 
-  BleServiceDataHelper* service_data_helper_;
+  BluetoothHelper* bluetooth_helper_;
   BleSynchronizerBase* ble_synchronizer_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
@@ -110,8 +116,6 @@ class BleScannerImpl : public BleScanner,
       discovery_session_weak_ptr_factory_;
 
   base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleScannerImpl);
 };
 
 }  // namespace secure_channel

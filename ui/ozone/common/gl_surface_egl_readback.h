@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -25,14 +24,17 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  public:
   GLSurfaceEglReadback();
 
+  GLSurfaceEglReadback(const GLSurfaceEglReadback&) = delete;
+  GLSurfaceEglReadback& operator=(const GLSurfaceEglReadback&) = delete;
+
   // GLSurface implementation.
   bool Resize(const gfx::Size& size,
               float scale_factor,
-              ColorSpace color_space,
+              const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  bool FlipsVertically() const override;
+  gfx::SurfaceOrigin GetOrigin() const override;
 
   // TODO(kylechar): Implement SupportsPostSubBuffer() and PostSubBuffer().
 
@@ -44,11 +46,12 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
   // failure.
   virtual bool HandlePixels(uint8_t* pixels);
 
+  // Reads pixels with glReadPixels from fbo to |buffer|.
+  void ReadPixels(void* buffer);
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<uint8_t[]> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceEglReadback);
 };
 
 }  // namespace ui

@@ -83,24 +83,20 @@ executed in parallel.
 Try bots are bots which test proposed patches which are not yet committed.
 
 Request [try job access] in order to trigger try jobs against your patch. The
-relevant try bots for an iOS patch are `ios-device`, `ios-device-xcode-clang`,
-`ios-simulator`, and `ios-simulator-xcode-clang`. These bots can be found on
-the Mac-specific [try server]. A try job is said to succeed when the build
-passes (i.e. when the bot successfully compiles and tests the patch).
+relevant try bots for an iOS patch are `ios-device` and `ios-simulator`. These
+bots can be found on the Mac-specific [try server]. A try job is said to succeed
+when the build passes (i.e. when the bot successfully compiles and tests the
+patch).
 
-`ios-device` and `ios-device-xcode-clang` both compile for the iOS device
-architecture (ARM), and neither run any tests. A build is considered successful
-so long as compilation is successful.
+`ios-device` compiles for the iOS device architecture (ARM) and runs no tests.
+A build is considered successful so long as compilation is successful.
 
-`ios-simulator` and `ios-simulator-xcode-clang` both compile for the iOS
-simulator architecture (x86), and run tests in the iOS [simulator]. A build is
-considered successful when both compilation and all configured test succeed.
+`ios-simulator` compiles for the iOS simulator architecture (x86), and runs
+tests in the iOS [simulator]. A build is considered successful when both
+compilation and all configured tests succeed.
 
 `ios-device` and `ios-simulator` both compile using the version of [clang]
 defined by the `CLANG_REVISION` in the Chromium tree.
-
-`ios-device-xcode-clang` and `ios-simulator-xcode-clang` both compile using the
-version of clang that ships with Xcode.
 
 ### Scheduling try jobs using buildbucket
 
@@ -376,14 +372,14 @@ If `artifact` is a directory, you must specify `"compress": true`.
 [gitiles]: https://gerrit.googlesource.com/gitiles
 [GN]: ../../tools/gn
 [instructions]: ./build_instructions.md
-[iOS recipes]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipes/ios
+[iOS recipes]: https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipes/ios
 [iOS simulator]: ../../testing/iossim
-[recipe module]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/ios
+[recipe module]: https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipe_modules/ios
 [recipes]: https://chromium.googlesource.com/infra/infra/+/HEAD/doc/users/recipes.md
 [simulator]: https://developer.apple.com/library/content/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html
 [src/ios/build/bots]: ../../ios/build/bots
 [src/ios/build/bots/scripts]: ../../ios/build/bots/scripts
-[swarming]: https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/
+[swarming]: https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/
 [swarming server]: https://chromium-swarm.appspot.com
 [test runner]: ../../ios/build/bots/scripts/test_runner.py
 [tools/build]: https://chromium.googlesource.com/chromium/tools/build

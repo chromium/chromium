@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
-#include <vector>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
@@ -26,36 +27,8 @@
 #include "net/nqe/network_quality_estimator.h"
 
 #if defined(OS_ANDROID)
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
-#include "net/android/network_library.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
-
-#if defined(OS_CHROMEOS)
-#include "components/metrics/net/wifi_access_point_info_provider_chromeos.h"
-#endif  // OS_CHROMEOS
-
-namespace {
-
-#if defined(OS_ANDROID)
-// Log the |NCN.NetworkOperatorMCCMNC| histogram.
-void LogOperatorCodeHistogram(network::mojom::ConnectionType type) {
-  // On a connection type change to cellular, log the network operator MCC/MNC.
-  // Log zero in other cases.
-  unsigned mcc_mnc = 0;
-  if (network::NetworkConnectionTracker::IsConnectionCellular(type)) {
-    // Log zero if not perfectly converted.
-    if (!base::StringToUint(net::android::GetTelephonyNetworkOperator(),
-                            &mcc_mnc)) {
-      mcc_mnc = 0;
-    }
-  }
-  base::UmaHistogramSparse("NCN.NetworkOperatorMCCMNC", mcc_mnc);
-}
-#endif
-
-}  // namespace
 
 namespace metrics {
 
@@ -141,7 +114,6 @@ void NetworkMetricsProvider::FinalizingMetricsLogRecord() {
   // yet clear if these metrics are generally useful enough to warrant being
   // added to the SystemProfile proto, so they are logged here as histograms for
   // now.
-  LogOperatorCodeHistogram(connection_type_);
   if (network::NetworkConnectionTracker::IsConnectionCellular(
           connection_type_)) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -198,21 +170,6 @@ void NetworkMetricsProvider::ProvideSystemProfileMetrics(
   wifi_phy_layer_protocol_is_ambiguous_ = false;
   min_effective_connection_type_ = effective_connection_type_;
   max_effective_connection_type_ = effective_connection_type_;
-
-  if (!wifi_access_point_info_provider_) {
-#if defined(OS_CHROMEOS)
-    wifi_access_point_info_provider_.reset(
-        new WifiAccessPointInfoProviderChromeos());
-#else
-    wifi_access_point_info_provider_.reset(
-        new WifiAccessPointInfoProvider());
-#endif  // OS_CHROMEOS
-  }
-
-  // Connected wifi access point information.
-  WifiAccessPointInfoProvider::WifiAccessPointInfo info;
-  if (wifi_access_point_info_provider_->GetInfo(&info))
-    WriteWifiAccessPointProto(info, network);
 }
 
 void NetworkMetricsProvider::OnConnectionChanged(
@@ -268,6 +225,8 @@ NetworkMetricsProvider::GetConnectionType() const {
       return SystemProfileProto::Network::CONNECTION_3G;
     case network::mojom::ConnectionType::CONNECTION_4G:
       return SystemProfileProto::Network::CONNECTION_4G;
+    case network::mojom::ConnectionType::CONNECTION_5G:
+      return SystemProfileProto::Network::CONNECTION_5G;
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }
@@ -291,6 +250,12 @@ NetworkMetricsProvider::GetWifiPHYLayerProtocol() const {
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_G;
     case net::WIFI_PHY_LAYER_PROTOCOL_N:
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_N;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AC:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AC;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AD:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AD;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AX:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AX;
     case net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
   }
@@ -300,9 +265,9 @@ NetworkMetricsProvider::GetWifiPHYLayerProtocol() const {
 
 void NetworkMetricsProvider::ProbeWifiPHYLayerProtocol() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&net::GetWifiPHYLayerProtocol),
       base::BindOnce(&NetworkMetricsProvider::OnWifiPHYLayerProtocolResult,
@@ -317,85 +282,6 @@ void NetworkMetricsProvider::OnWifiPHYLayerProtocolResult(
     wifi_phy_layer_protocol_is_ambiguous_ = true;
   }
   wifi_phy_layer_protocol_ = mode;
-}
-
-void NetworkMetricsProvider::WriteWifiAccessPointProto(
-    const WifiAccessPointInfoProvider::WifiAccessPointInfo& info,
-    SystemProfileProto::Network* network_proto) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SystemProfileProto::Network::WifiAccessPoint* access_point_info =
-      network_proto->mutable_access_point_info();
-  SystemProfileProto::Network::WifiAccessPoint::SecurityMode security =
-      SystemProfileProto::Network::WifiAccessPoint::SECURITY_UNKNOWN;
-  switch (info.security) {
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_NONE:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_NONE;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_WPA:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_WPA;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_WEP:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_WEP;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_RSN:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_RSN;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_802_1X:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_802_1X;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_PSK:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_PSK;
-      break;
-    case WifiAccessPointInfoProvider::WIFI_SECURITY_UNKNOWN:
-      security = SystemProfileProto::Network::WifiAccessPoint::SECURITY_UNKNOWN;
-      break;
-  }
-  access_point_info->set_security_mode(security);
-
-  // |bssid| is xx:xx:xx:xx:xx:xx, extract the first three components and
-  // pack into a uint32_t.
-  std::string bssid = info.bssid;
-  if (bssid.size() == 17 && bssid[2] == ':' && bssid[5] == ':' &&
-      bssid[8] == ':' && bssid[11] == ':' && bssid[14] == ':') {
-    std::string vendor_prefix_str;
-    uint32_t vendor_prefix;
-
-    base::RemoveChars(bssid.substr(0, 9), ":", &vendor_prefix_str);
-    DCHECK_EQ(6U, vendor_prefix_str.size());
-    if (base::HexStringToUInt(vendor_prefix_str, &vendor_prefix))
-      access_point_info->set_vendor_prefix(vendor_prefix);
-    else
-      NOTREACHED();
-  }
-
-  // Return if vendor information is not provided.
-  if (info.model_number.empty() && info.model_name.empty() &&
-      info.device_name.empty() && info.oui_list.empty())
-    return;
-
-  SystemProfileProto::Network::WifiAccessPoint::VendorInformation* vendor =
-      access_point_info->mutable_vendor_info();
-  if (!info.model_number.empty())
-    vendor->set_model_number(info.model_number);
-  if (!info.model_name.empty())
-    vendor->set_model_name(info.model_name);
-  if (!info.device_name.empty())
-    vendor->set_device_name(info.device_name);
-
-  // Return if OUI list is not provided.
-  if (info.oui_list.empty())
-    return;
-
-  // Parse OUI list.
-  for (const base::StringPiece& oui_str : base::SplitStringPiece(
-           info.oui_list, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    uint32_t oui;
-    if (base::HexStringToUInt(oui_str, &oui)) {
-      vendor->add_element_identifier(oui);
-    } else {
-      DLOG(WARNING) << "Error when parsing OUI list of the WiFi access point";
-    }
-  }
 }
 
 void NetworkMetricsProvider::LogAggregatedMetrics() {

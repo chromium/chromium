@@ -5,8 +5,8 @@
 #include "content/renderer/pepper/pepper_in_process_resource_creation.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "content/child/browser_font_resource_trusted.h"
 #include "content/renderer/pepper/pepper_in_process_router.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -32,6 +32,7 @@
 #include "ppapi/shared_impl/ppapi_permissions.h"
 #include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/var.h"
+#include "third_party/blink/public/web/web_view.h"
 
 // Note that the code in the creation functions in this file should generally
 // be the same as that in ppapi/proxy/resource_creation_proxy.cc. See
@@ -58,7 +59,9 @@ PP_Resource PepperInProcessResourceCreation::CreateBrowserFont(
   // GPU process whether these features are blacklisted or not.
   gpu::GpuFeatureInfo gpu_feature_info;
   ppapi::Preferences prefs(PpapiPreferencesBuilder::Build(
-      host_impl_->GetRenderViewForInstance(instance)->GetWebkitPreferences(),
+      host_impl_->GetRenderFrameForInstance(instance)
+          ->GetWebView()
+          ->GetWebPreferences(),
       gpu_feature_info));
   return (new BrowserFontResource_Trusted(
               host_impl_->in_process_router()->GetPluginConnection(instance),
@@ -122,13 +125,6 @@ PP_Resource PepperInProcessResourceCreation::CreatePrinting(
   return (new ppapi::proxy::PrintingResource(
               host_impl_->in_process_router()->GetPluginConnection(instance),
               instance))->GetReference();
-}
-
-PP_Resource PepperInProcessResourceCreation::CreateTrueTypeFont(
-    PP_Instance instance,
-    const PP_TrueTypeFontDesc_Dev* desc) {
-  NOTIMPLEMENTED();
-  return 0;
 }
 
 PP_Resource PepperInProcessResourceCreation::CreateURLLoader(

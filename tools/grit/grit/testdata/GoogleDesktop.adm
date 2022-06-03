@@ -7,140 +7,140 @@ CLASS MACHINE
         KEYNAME "Software\Policies\Google\Google Desktop\Preferences"
 
         CATEGORY !!Cat_IndexAndCaptureControl
-          POLICY !!Blacklist_Email
-            EXPLAIN !!Explain_Blacklist_Email
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Email
+            EXPLAIN !!Explain_Blocklist_Email
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             VALUENAME "1"
           END POLICY
 
-          POLICY !!Blacklist_Gmail
-            EXPLAIN !!Explain_Blacklist_Gmail
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-pop"
+          POLICY !!Blocklist_Gmail
+            EXPLAIN !!Explain_Blocklist_Gmail
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-pop"
             VALUENAME "gmail"
           END POLICY
 
-          POLICY !!Blacklist_WebHistory
-            EXPLAIN !!Explain_Blacklist_WebHistory
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_WebHistory
+            EXPLAIN !!Explain_Blocklist_WebHistory
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             VALUENAME "2"
           END POLICY
 
-          POLICY !!Blacklist_Chat
-            EXPLAIN !!Explain_Blacklist_Chat
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Chat
+            EXPLAIN !!Explain_Blocklist_Chat
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "3"    VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Text
-            EXPLAIN !!Explain_Blacklist_Text
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Text
+            EXPLAIN !!Explain_Blocklist_Text
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "4"    VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Media
-            EXPLAIN !!Explain_Blacklist_Media
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Media
+            EXPLAIN !!Explain_Blocklist_Media
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "5"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Contact
-            EXPLAIN !!Explain_Blacklist_Contact
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Contact
+            EXPLAIN !!Explain_Blocklist_Contact
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "9"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Calendar
-            EXPLAIN !!Explain_Blacklist_Calendar
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Calendar
+            EXPLAIN !!Explain_Blocklist_Calendar
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "10"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Task
-            EXPLAIN !!Explain_Blacklist_Task
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Task
+            EXPLAIN !!Explain_Blocklist_Task
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "11"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Note
-            EXPLAIN !!Explain_Blacklist_Note
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Note
+            EXPLAIN !!Explain_Blocklist_Note
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "12"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Journal
-            EXPLAIN !!Explain_Blacklist_Journal
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Journal
+            EXPLAIN !!Explain_Blocklist_Journal
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "13"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Word
-            EXPLAIN !!Explain_Blacklist_Word
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Word
+            EXPLAIN !!Explain_Blocklist_Word
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "DOC"
           END POLICY
 
-          POLICY !!Blacklist_Excel
-            EXPLAIN !!Explain_Blacklist_Excel
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Excel
+            EXPLAIN !!Explain_Blocklist_Excel
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "XLS"
           END POLICY
 
-          POLICY !!Blacklist_Powerpoint
-            EXPLAIN !!Explain_Blacklist_Powerpoint
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Powerpoint
+            EXPLAIN !!Explain_Blocklist_Powerpoint
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "PPT"
           END POLICY
 
-          POLICY !!Blacklist_PDF
-            EXPLAIN !!Explain_Blacklist_PDF
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_PDF
+            EXPLAIN !!Explain_Blocklist_PDF
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "PDF"
           END POLICY
 
-          POLICY !!Blacklist_ZIP
-            EXPLAIN !!Explain_Blacklist_ZIP
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_ZIP
+            EXPLAIN !!Explain_Blocklist_ZIP
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "ZIP"
           END POLICY
 
-          POLICY !!Blacklist_HTTPS
-            EXPLAIN !!Explain_Blacklist_HTTPS
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-3"
+          POLICY !!Blocklist_HTTPS
+            EXPLAIN !!Explain_Blocklist_HTTPS
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-3"
             VALUENAME "HTTPS"
           END POLICY
 
-          POLICY !!Blacklist_PasswordProtectedOffice
-            EXPLAIN !!Explain_Blacklist_PasswordProtectedOffice
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-13"
+          POLICY !!Blocklist_PasswordProtectedOffice
+            EXPLAIN !!Explain_Blocklist_PasswordProtectedOffice
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-13"
             VALUENAME "SECUREOFFICE"
           END POLICY
 
-          POLICY !!Blacklist_URI_Contains
-            EXPLAIN !!Explain_Blacklist_URI_Contains
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-6"
-            PART !!Blacklist_URI_Contains LISTBOX
+          POLICY !!Blocklist_URI_Contains
+            EXPLAIN !!Explain_Blocklist_URI_Contains
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-6"
+            PART !!Blocklist_URI_Contains LISTBOX
             END PART
           END POLICY
 
-          POLICY !!Blacklist_Extensions
-            EXPLAIN !!Explain_Blacklist_Extensions
-            PART !!Blacklist_Extensions EDITTEXT
+          POLICY !!Blocklist_Extensions
+            EXPLAIN !!Explain_Blocklist_Extensions
+            PART !!Blocklist_Extensions EDITTEXT
               VALUENAME "file_extensions_to_skip"
             END PART
           END POLICY
@@ -151,10 +151,10 @@ CLASS MACHINE
             VALUEON NUMERIC 1
           END POLICY
 
-          POLICY !!Pol_Search_Location_Whitelist
-            EXPLAIN !!Explain_Search_Location_Whitelist
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\policy_search_location_whitelist"
-            PART !!Search_Locations_Whitelist LISTBOX
+          POLICY !!Pol_Search_Location_Allowlist
+            EXPLAIN !!Explain_Search_Location_Allowlist
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\policy_search_location_allowlist"
+            PART !!Search_Locations_Allowlist LISTBOX
             END PART
           END POLICY
 
@@ -330,17 +330,17 @@ CLASS MACHINE
           END PART
         END POLICY
 
-        POLICY !!Pol_Gadget_Whitelist
-          EXPLAIN !!Explain_Gadget_Whitelist
-          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\gadget_whitelist"
-          PART !!Pol_Gadget_Whitelist LISTBOX
+        POLICY !!Pol_Gadget_Allowlist
+          EXPLAIN !!Explain_Gadget_Allowlist
+          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\gadget_allowlist"
+          PART !!Pol_Gadget_Allowlist LISTBOX
           END PART
         END POLICY
 
-        POLICY !!Pol_Gadget_Install_Confirmation_Whitelist
-          EXPLAIN !!Explain_Gadget_Install_Confirmation_Whitelist
-          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\install_confirmation_whitelist"
-          PART !!Pol_Gadget_Install_Confirmation_Whitelist LISTBOX
+        POLICY !!Pol_Gadget_Install_Confirmation_Allowlist
+          EXPLAIN !!Explain_Gadget_Install_Confirmation_Allowlist
+          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\install_confirmation_allowlist"
+          PART !!Pol_Gadget_Install_Confirmation_Allowlist LISTBOX
           END PART
         END POLICY
 
@@ -407,140 +407,140 @@ CLASS USER
         KEYNAME "Software\Policies\Google\Google Desktop\Preferences"
 
         CATEGORY !!Cat_IndexAndCaptureControl
-          POLICY !!Blacklist_Email
-            EXPLAIN !!Explain_Blacklist_Email
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Email
+            EXPLAIN !!Explain_Blocklist_Email
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             VALUENAME "1"
           END POLICY
 
-          POLICY !!Blacklist_Gmail
-            EXPLAIN !!Explain_Blacklist_Gmail
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-pop"
+          POLICY !!Blocklist_Gmail
+            EXPLAIN !!Explain_Blocklist_Gmail
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-pop"
             VALUENAME "gmail"
           END POLICY
 
-          POLICY !!Blacklist_WebHistory
-            EXPLAIN !!Explain_Blacklist_WebHistory
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_WebHistory
+            EXPLAIN !!Explain_Blocklist_WebHistory
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             VALUENAME "2"
           END POLICY
 
-          POLICY !!Blacklist_Chat
-            EXPLAIN !!Explain_Blacklist_Chat
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Chat
+            EXPLAIN !!Explain_Blocklist_Chat
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "3"    VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Text
-            EXPLAIN !!Explain_Blacklist_Text
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Text
+            EXPLAIN !!Explain_Blocklist_Text
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "4"    VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Media
-            EXPLAIN !!Explain_Blacklist_Media
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Media
+            EXPLAIN !!Explain_Blocklist_Media
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "5"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Contact
-            EXPLAIN !!Explain_Blacklist_Contact
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Contact
+            EXPLAIN !!Explain_Blocklist_Contact
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "9"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Calendar
-            EXPLAIN !!Explain_Blacklist_Calendar
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Calendar
+            EXPLAIN !!Explain_Blocklist_Calendar
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "10"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Task
-            EXPLAIN !!Explain_Blacklist_Task
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Task
+            EXPLAIN !!Explain_Blocklist_Task
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "11"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Note
-            EXPLAIN !!Explain_Blacklist_Note
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Note
+            EXPLAIN !!Explain_Blocklist_Note
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "12"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Journal
-            EXPLAIN !!Explain_Blacklist_Journal
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-1"
+          POLICY !!Blocklist_Journal
+            EXPLAIN !!Explain_Blocklist_Journal
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-1"
             ACTIONLISTON
               VALUENAME "13"   VALUE NUMERIC 1
             END ACTIONLISTON
           END POLICY
 
-          POLICY !!Blacklist_Word
-            EXPLAIN !!Explain_Blacklist_Word
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Word
+            EXPLAIN !!Explain_Blocklist_Word
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "DOC"
           END POLICY
 
-          POLICY !!Blacklist_Excel
-            EXPLAIN !!Explain_Blacklist_Excel
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Excel
+            EXPLAIN !!Explain_Blocklist_Excel
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "XLS"
           END POLICY
 
-          POLICY !!Blacklist_Powerpoint
-            EXPLAIN !!Explain_Blacklist_Powerpoint
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_Powerpoint
+            EXPLAIN !!Explain_Blocklist_Powerpoint
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "PPT"
           END POLICY
 
-          POLICY !!Blacklist_PDF
-            EXPLAIN !!Explain_Blacklist_PDF
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_PDF
+            EXPLAIN !!Explain_Blocklist_PDF
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "PDF"
           END POLICY
 
-          POLICY !!Blacklist_ZIP
-            EXPLAIN !!Explain_Blacklist_ZIP
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-2"
+          POLICY !!Blocklist_ZIP
+            EXPLAIN !!Explain_Blocklist_ZIP
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-2"
             VALUENAME "ZIP"
           END POLICY
 
-          POLICY !!Blacklist_HTTPS
-            EXPLAIN !!Explain_Blacklist_HTTPS
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-3"
+          POLICY !!Blocklist_HTTPS
+            EXPLAIN !!Explain_Blocklist_HTTPS
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-3"
             VALUENAME "HTTPS"
           END POLICY
 
-          POLICY !!Blacklist_PasswordProtectedOffice
-            EXPLAIN !!Explain_Blacklist_PasswordProtectedOffice
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-13"
+          POLICY !!Blocklist_PasswordProtectedOffice
+            EXPLAIN !!Explain_Blocklist_PasswordProtectedOffice
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-13"
             VALUENAME "SECUREOFFICE"
           END POLICY
 
-          POLICY !!Blacklist_URI_Contains
-            EXPLAIN !!Explain_Blacklist_URI_Contains
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blacklist-6"
-            PART !!Blacklist_URI_Contains LISTBOX
+          POLICY !!Blocklist_URI_Contains
+            EXPLAIN !!Explain_Blocklist_URI_Contains
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\blocklist-6"
+            PART !!Blocklist_URI_Contains LISTBOX
             END PART
           END POLICY
 
-          POLICY !!Blacklist_Extensions
-            EXPLAIN !!Explain_Blacklist_Extensions
-            PART !!Blacklist_Extensions EDITTEXT
+          POLICY !!Blocklist_Extensions
+            EXPLAIN !!Explain_Blocklist_Extensions
+            PART !!Blocklist_Extensions EDITTEXT
               VALUENAME "file_extensions_to_skip"
             END PART
           END POLICY
@@ -551,10 +551,10 @@ CLASS USER
             VALUEON NUMERIC 1
           END POLICY
 
-          POLICY !!Pol_Search_Location_Whitelist
-            EXPLAIN !!Explain_Search_Location_Whitelist
-            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\policy_search_location_whitelist"
-            PART !!Search_Locations_Whitelist LISTBOX
+          POLICY !!Pol_Search_Location_Allowlist
+            EXPLAIN !!Explain_Search_Location_Allowlist
+            KEYNAME "Software\Policies\Google\Google Desktop\Preferences\policy_search_location_allowlist"
+            PART !!Search_Locations_Allowlist LISTBOX
             END PART
           END POLICY
 
@@ -710,17 +710,17 @@ CLASS USER
           END PART
         END POLICY
 
-        POLICY !!Pol_Gadget_Whitelist
-          EXPLAIN !!Explain_Gadget_Whitelist
-          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\gadget_whitelist"
-          PART !!Pol_Gadget_Whitelist LISTBOX
+        POLICY !!Pol_Gadget_Allowlist
+          EXPLAIN !!Explain_Gadget_Allowlist
+          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\gadget_allowlist"
+          PART !!Pol_Gadget_Allowlist LISTBOX
           END PART
         END POLICY
 
-        POLICY !!Pol_Gadget_Install_Confirmation_Whitelist
-          EXPLAIN !!Explain_Gadget_Install_Confirmation_Whitelist
-          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\install_confirmation_whitelist"
-          PART !!Pol_Gadget_Install_Confirmation_Whitelist LISTBOX
+        POLICY !!Pol_Gadget_Install_Confirmation_Allowlist
+          EXPLAIN !!Explain_Gadget_Install_Confirmation_Allowlist
+          KEYNAME "Software\Policies\Google\Google Desktop\Enterprise\install_confirmation_allowlist"
+          PART !!Pol_Gadget_Install_Confirmation_Allowlist LISTBOX
           END PART
         END POLICY
 
@@ -792,51 +792,51 @@ Explain_Preferences="Controls Google Desktop preferences"
 Cat_IndexAndCaptureControl="Indexing and Capture Control"
 Explain_IndexAndCaptureControl="Controls what files, web pages, and other content will be indexed by Google Desktop."
 
-Blacklist_Email="Prevent indexing of email"
-Explain_Blacklist_Email="Enabling this policy will prevent Google Desktop from indexing emails.\n\nIf this policy is not configured, the user can choose whether or not to index emails."
-Blacklist_Gmail="Prevent indexing of Gmail"
-Explain_Blacklist_Gmail="Enabling this policy prevents Google Desktop from indexing Gmail messages.\n\nThis policy is in effect only when the policy "Prevent indexing of email" is disabled. When that policy is enabled, all email indexing is disabled, including Gmail indexing.\n\nIf both this policy and "Prevent indexing of email" are disabled or not configured, a user can choose whether or not to index Gmail messages."
-Blacklist_WebHistory="Prevent indexing of web pages"
-Explain_Blacklist_WebHistory="Enabling this policy will prevent Google Desktop from indexing web pages.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index web pages."
-Blacklist_Text="Prevent indexing of text files"
-Explain_Blacklist_Text="Enabling this policy will prevent Google Desktop from indexing text files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index text files."
-Blacklist_Media="Prevent indexing of media files"
-Explain_Blacklist_Media="Enabling this policy will prevent Google Desktop from indexing media files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index media files."
-Blacklist_Contact="Prevent indexing of contacts"
-Explain_Blacklist_Contact="Enabling this policy will prevent Google Desktop from indexing contacts.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index contacts."
-Blacklist_Calendar="Prevent indexing of calendar entries"
-Explain_Blacklist_Calendar="Enabling this policy will prevent Google Desktop from indexing calendar entries.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index calendar entries."
-Blacklist_Task="Prevent indexing of tasks"
-Explain_Blacklist_Task="Enabling this policy will prevent Google Desktop from indexing tasks.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index tasks."
-Blacklist_Note="Prevent indexing of notes"
-Explain_Blacklist_Note="Enabling this policy will prevent Google Desktop from indexing notes.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index notes."
-Blacklist_Journal="Prevent indexing of journal entries"
-Explain_Blacklist_Journal="Enabling this policy will prevent Google Desktop from indexing journal entries.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index journal entries."
-Blacklist_Word="Prevent indexing of Word documents"
-Explain_Blacklist_Word="Enabling this policy will prevent Google Desktop from indexing Word documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index Word documents."
-Blacklist_Excel="Prevent indexing of Excel documents"
-Explain_Blacklist_Excel="Enabling this policy will prevent Google Desktop from indexing Excel documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index Excel documents."
-Blacklist_Powerpoint="Prevent indexing of PowerPoint documents"
-Explain_Blacklist_Powerpoint="Enabling this policy will prevent Google Desktop from indexing PowerPoint documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index PowerPoint documents."
-Blacklist_PDF="Prevent indexing of PDF documents"
-Explain_Blacklist_PDF="Enabling this policy will prevent Google Desktop from indexing PDF documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index PDF documents."
-Blacklist_ZIP="Prevent indexing of ZIP files"
-Explain_Blacklist_ZIP="Enabling this policy will prevent Google Desktop from indexing ZIP files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index ZIP files."
-Blacklist_HTTPS="Prevent indexing of secure web pages"
-Explain_Blacklist_HTTPS="Enabling this policy will prevent Google Desktop from indexing secure web pages (pages with HTTPS in the URL).\n\nIf this policy is disabled or not configured, the user can choose whether or not to index secure web pages."
-Blacklist_URI_Contains="Prevent indexing of specific web sites and folders"
-Explain_Blacklist_URI_Contains="This policy allows you to prevent Google Desktop from indexing specific websites or folders.  If an item's URL or path name contains any of these specified strings, it will not be indexed.  These restrictions will be applied in addition to any websites or folders that the user has specified.\n\nThis policy has no effect when disabled or not configured."
-Blacklist_Chat="Prevent indexing of IM chats"
-Explain_Blacklist_Chat="Enabling this policy will prevent Google Desktop from indexing IM chat conversations.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index IM chat conversations."
-Blacklist_PasswordProtectedOffice="Prevent indexing of password-protected Office documents (Word, Excel)"
-Explain_Blacklist_PasswordProtectedOffice="Enabling this policy will prevent Google Desktop from indexing password-protected office documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index password-protected office documents."
-Blacklist_Extensions="Prevent indexing of specific file extensions"
-Explain_Blacklist_Extensions="This policy allows you to prevent Google Desktop from indexing files with specific extensions.  Enter a list of file extensions, separated by commas, that you wish to exclude from indexing.\n\nThis policy has no effect when disabled or not configured."
+Blocklist_Email="Prevent indexing of email"
+Explain_Blocklist_Email="Enabling this policy will prevent Google Desktop from indexing emails.\n\nIf this policy is not configured, the user can choose whether or not to index emails."
+Blocklist_Gmail="Prevent indexing of Gmail"
+Explain_Blocklist_Gmail="Enabling this policy prevents Google Desktop from indexing Gmail messages.\n\nThis policy is in effect only when the policy "Prevent indexing of email" is disabled. When that policy is enabled, all email indexing is disabled, including Gmail indexing.\n\nIf both this policy and "Prevent indexing of email" are disabled or not configured, a user can choose whether or not to index Gmail messages."
+Blocklist_WebHistory="Prevent indexing of web pages"
+Explain_Blocklist_WebHistory="Enabling this policy will prevent Google Desktop from indexing web pages.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index web pages."
+Blocklist_Text="Prevent indexing of text files"
+Explain_Blocklist_Text="Enabling this policy will prevent Google Desktop from indexing text files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index text files."
+Blocklist_Media="Prevent indexing of media files"
+Explain_Blocklist_Media="Enabling this policy will prevent Google Desktop from indexing media files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index media files."
+Blocklist_Contact="Prevent indexing of contacts"
+Explain_Blocklist_Contact="Enabling this policy will prevent Google Desktop from indexing contacts.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index contacts."
+Blocklist_Calendar="Prevent indexing of calendar entries"
+Explain_Blocklist_Calendar="Enabling this policy will prevent Google Desktop from indexing calendar entries.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index calendar entries."
+Blocklist_Task="Prevent indexing of tasks"
+Explain_Blocklist_Task="Enabling this policy will prevent Google Desktop from indexing tasks.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index tasks."
+Blocklist_Note="Prevent indexing of notes"
+Explain_Blocklist_Note="Enabling this policy will prevent Google Desktop from indexing notes.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index notes."
+Blocklist_Journal="Prevent indexing of journal entries"
+Explain_Blocklist_Journal="Enabling this policy will prevent Google Desktop from indexing journal entries.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index journal entries."
+Blocklist_Word="Prevent indexing of Word documents"
+Explain_Blocklist_Word="Enabling this policy will prevent Google Desktop from indexing Word documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index Word documents."
+Blocklist_Excel="Prevent indexing of Excel documents"
+Explain_Blocklist_Excel="Enabling this policy will prevent Google Desktop from indexing Excel documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index Excel documents."
+Blocklist_Powerpoint="Prevent indexing of PowerPoint documents"
+Explain_Blocklist_Powerpoint="Enabling this policy will prevent Google Desktop from indexing PowerPoint documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index PowerPoint documents."
+Blocklist_PDF="Prevent indexing of PDF documents"
+Explain_Blocklist_PDF="Enabling this policy will prevent Google Desktop from indexing PDF documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index PDF documents."
+Blocklist_ZIP="Prevent indexing of ZIP files"
+Explain_Blocklist_ZIP="Enabling this policy will prevent Google Desktop from indexing ZIP files.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index ZIP files."
+Blocklist_HTTPS="Prevent indexing of secure web pages"
+Explain_Blocklist_HTTPS="Enabling this policy will prevent Google Desktop from indexing secure web pages (pages with HTTPS in the URL).\n\nIf this policy is disabled or not configured, the user can choose whether or not to index secure web pages."
+Blocklist_URI_Contains="Prevent indexing of specific web sites and folders"
+Explain_Blocklist_URI_Contains="This policy allows you to prevent Google Desktop from indexing specific websites or folders.  If an item's URL or path name contains any of these specified strings, it will not be indexed.  These restrictions will be applied in addition to any websites or folders that the user has specified.\n\nThis policy has no effect when disabled or not configured."
+Blocklist_Chat="Prevent indexing of IM chats"
+Explain_Blocklist_Chat="Enabling this policy will prevent Google Desktop from indexing IM chat conversations.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index IM chat conversations."
+Blocklist_PasswordProtectedOffice="Prevent indexing of password-protected Office documents (Word, Excel)"
+Explain_Blocklist_PasswordProtectedOffice="Enabling this policy will prevent Google Desktop from indexing password-protected office documents.\n\nIf this policy is disabled or not configured, the user can choose whether or not to index password-protected office documents."
+Blocklist_Extensions="Prevent indexing of specific file extensions"
+Explain_Blocklist_Extensions="This policy allows you to prevent Google Desktop from indexing files with specific extensions.  Enter a list of file extensions, separated by commas, that you wish to exclude from indexing.\n\nThis policy has no effect when disabled or not configured."
 Pol_Disallow_UserSearchLocations="Disallow adding search locations for indexing"
 Explain_Disallow_UserSearchLocations="Enabling this policy will prevent the user from specifying additional drives or networked folders to be indexed by Google Desktop.\n\nIf this policy is disabled or not configured, users may specify additional drives and networked folders to be indexed."
-Pol_Search_Location_Whitelist="Allow indexing of specific folders"
-Explain_Search_Location_Whitelist="This policy allows you to add additional drives and networked folders to index."
-Search_Locations_Whitelist="Search these locations"
+Pol_Search_Location_Allowlist="Allow indexing of specific folders"
+Explain_Search_Location_Allowlist="This policy allows you to add additional drives and networked folders to index."
+Search_Locations_Allowlist="Search these locations"
 Email_Retention="Only retain emails that are less than x days old"
 Explain_Email_Retention="This policy allows you to configure Google Desktop to only retain emails that are less than the specified number of days old in the index.  Enter the number of days to retain emails for\n\nThis policy has no effect when disabled or not configured."
 Email_Retention_Edit="Number of days to retain emails"
@@ -914,14 +914,14 @@ Pol_MaximumAllowedVersion="Maximum allowed version"
 Explain_MaximumAllowedVersion="This policy allows you to prevent installation and/or execution of newer versions of Google Desktop by specifying the maximum version you wish to allow.\n\nThis policy has no effect when disabled or not configured."
 
 Pol_Disallow_Gadgets="Disallow gadgets and indexing plug-ins"
-Explain_Disallow_Gadgets="This policy prevents the use of all Google Desktop gadgets and indexing plug-ins. The policy applies to gadgets that are included in the Google Desktop installation package (built-in gadgets), built-in indexing plug-ins (currently only the Lotus Notes plug-in), and to gadgets or indexing plug-ins that a user might want to add later (non-built-in gadgets and indexing plug-ins).\n\nYou can prohibit use of all non-built-in gadgets and indexing plug-ins, but allow use of built-in gadgets and indexing plug-ins. To do so, enable this policy and then select the option "Disallow only non-built-in gadgets and indexing plug-ins.\n\nYou can supersede this policy to allow specified built-in and non-built-in gadgets and indexing plug-ins. To do so, enable this policy and then specify the gadgets and/or indexing plug-ins you want to allow under "Gadget and Plug-in Whitelist.""
+Explain_Disallow_Gadgets="This policy prevents the use of all Google Desktop gadgets and indexing plug-ins. The policy applies to gadgets that are included in the Google Desktop installation package (built-in gadgets), built-in indexing plug-ins (currently only the Lotus Notes plug-in), and to gadgets or indexing plug-ins that a user might want to add later (non-built-in gadgets and indexing plug-ins).\n\nYou can prohibit use of all non-built-in gadgets and indexing plug-ins, but allow use of built-in gadgets and indexing plug-ins. To do so, enable this policy and then select the option "Disallow only non-built-in gadgets and indexing plug-ins.\n\nYou can supersede this policy to allow specified built-in and non-built-in gadgets and indexing plug-ins. To do so, enable this policy and then specify the gadgets and/or indexing plug-ins you want to allow under "Gadget and Plug-in Allowlist.""
 Disallow_Only_Non_Builtin_Gadgets="Disallow only non-built-in gadgets and indexing plug-ins"
 
-Pol_Gadget_Whitelist="Gadget and plug-in whitelist"
-Explain_Gadget_Whitelist="This policy specifies a list of Google Desktop gadgets and indexing plug-ins that you want to allow, as exceptions to the "Disallow gadgets and indexing plug-ins" policy. This policy is valid only when the "Disallow gadgets and indexing plug-ins" policy is enabled.\n\nFor each gadget or indexing plug-in you wish to allow, add the CLSID or PROGID of the gadget or indexing plug-in (see the administrator's guide for more details).\n\nThis policy has no effect when disabled or not configured."
+Pol_Gadget_Allowlist="Gadget and plug-in allowlist"
+Explain_Gadget_Allowlist="This policy specifies a list of Google Desktop gadgets and indexing plug-ins that you want to allow, as exceptions to the "Disallow gadgets and indexing plug-ins" policy. This policy is valid only when the "Disallow gadgets and indexing plug-ins" policy is enabled.\n\nFor each gadget or indexing plug-in you wish to allow, add the CLSID or PROGID of the gadget or indexing plug-in (see the administrator's guide for more details).\n\nThis policy has no effect when disabled or not configured."
 
-Pol_Gadget_Install_Confirmation_Whitelist="Allow silent installation of gadgets"
-Explain_Gadget_Install_Confirmation_Whitelist="Enabling this policy lets you specify a list of Google Desktop gadgets or indexing plug-ins that can be installed without confirmation from the user.\n\nAdd a gadget or indexing plug-in by placing its class ID (CLSID) or program identifier (PROGID) in the list, surrounded with curly braces ({ }).\n\nThis policy has no effect when disabled or not configured."
+Pol_Gadget_Install_Confirmation_Allowlist="Allow silent installation of gadgets"
+Explain_Gadget_Install_Confirmation_Allowlist="Enabling this policy lets you specify a list of Google Desktop gadgets or indexing plug-ins that can be installed without confirmation from the user.\n\nAdd a gadget or indexing plug-in by placing its class ID (CLSID) or program identifier (PROGID) in the list, surrounded with curly braces ({ }).\n\nThis policy has no effect when disabled or not configured."
 
 Pol_Alternate_User_Data_Dir="Alternate user data directory"
 Explain_Alternate_User_Data_Dir="This policy allows you to specify a directory to be used to store user data for Google Desktop (such as index data and cached documents).\n\nYou may use [USER_NAME] or [DOMAIN_NAME] in the path to specify the current user's name or domain. If [USER_NAME] is not specified, the user name will be appended at the end of the path.\n\nThis policy has no effect when disabled or not configured."

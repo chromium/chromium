@@ -5,6 +5,8 @@
 #include "extensions/renderer/extension_url_loader_throttle.h"
 
 #include "extensions/renderer/extension_throttle_manager.h"
+#include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace extensions {
 
@@ -35,7 +37,8 @@ void ExtensionURLLoaderThrottle::WillRedirectRequest(
     const network::mojom::URLResponseHead& /* response_head */,
     bool* /* defer */,
     std::vector<std::string>* /* to_be_removed_request_headers */,
-    net::HttpRequestHeaders* /* modified_request_headers */) {
+    net::HttpRequestHeaders* /* modified_request_headers */,
+    net::HttpRequestHeaders* /* modified_cors_exempt_request_headers */) {
   if (manager_->ShouldRejectRedirect(start_request_url_, *redirect_info)) {
     delegate_->CancelWithError(net::ERR_TEMPORARILY_THROTTLED, kCancelReason);
   }

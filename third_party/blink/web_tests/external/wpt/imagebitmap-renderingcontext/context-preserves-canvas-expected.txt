@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that ctx.canvas on a ImageBitmapRenderingContext returns the original canvas assert_object_equals: unexpected property "width"
-Harness: the test ran to completion.
-

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -19,7 +20,6 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 
 namespace ash {
@@ -63,7 +63,7 @@ void DrawTriangle(int x_offset,
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
   rotate_transform.ConcatTransform(move_transform);
-  base_path.transform(rotate_transform.matrix(), &path);
+  base_path.transform(SkMatrix(rotate_transform.matrix()), &path);
 
   canvas->DrawPath(path, content_flags);
   canvas->DrawPath(path, border_flags);
@@ -94,7 +94,8 @@ gfx::Insets ConvertToDisplay(const display::Display& display,
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display.id());
   return RotateInsets(
       display.rotation(),
-      insets.Scale(info.device_scale_factor() / display.device_scale_factor()));
+      gfx::ScaleToFlooredInsets(
+          insets, info.device_scale_factor() / display.device_scale_factor()));
 }
 
 gfx::Insets ConvertToHost(const display::Display& display,
@@ -106,7 +107,8 @@ gfx::Insets ConvertToHost(const display::Display& display,
           (4 - static_cast<int>(display.rotation())) % 4);
   return RotateInsets(
       inverted_rotation,
-      insets.Scale(display.device_scale_factor() / info.device_scale_factor()));
+      gfx::ScaleToFlooredInsets(
+          insets, display.device_scale_factor() / info.device_scale_factor()));
 }
 
 }  // namespace
@@ -119,24 +121,22 @@ OverscanCalibrator::OverscanCalibrator(const display::Display& target_display,
       committed_(false) {
   // Undo the overscan calibration temporarily so that the user can see
   // dark boundary and current overscan region.
-  ash::Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
-      display_.id(), gfx::Insets());
+  Shell::Get()->window_tree_host_manager()->SetOverscanInsets(display_.id(),
+                                                              gfx::Insets());
   UpdateUILayer();
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OverscanCalibrator::~OverscanCalibrator() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   // Overscan calibration has finished without commit, so the display has to
   // be the original offset.
   if (!committed_) {
-    ash::Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
+    Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
         display_.id(), initial_insets_);
   }
 }
 
 void OverscanCalibrator::Commit() {
-  ash::Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
+  Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
       display_.id(), ConvertToHost(display_, insets_));
   committed_ = true;
 }
@@ -188,13 +188,12 @@ void OverscanCalibrator::OnDisplayMetricsChanged(
 
 void OverscanCalibrator::UpdateUILayer() {
   display::ManagedDisplayInfo info =
-      ash::Shell::Get()->display_manager()->GetDisplayInfo(display_.id());
+      Shell::Get()->display_manager()->GetDisplayInfo(display_.id());
 
-  aura::Window* root = ash::Shell::GetRootWindowForDisplayId(display_.id());
+  aura::Window* root = Shell::GetRootWindowForDisplayId(display_.id());
   ui::Layer* parent_layer =
-      ash::Shell::GetContainer(root, ash::kShellWindowId_OverlayContainer)
-          ->layer();
-  calibration_layer_.reset(new ui::Layer());
+      Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer();
+  calibration_layer_ = std::make_unique<ui::Layer>();
   calibration_layer_->SetOpacity(0.5f);
   calibration_layer_->SetBounds(parent_layer->bounds());
   calibration_layer_->set_delegate(this);

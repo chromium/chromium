@@ -14,8 +14,7 @@ namespace views {
 StaticSizedView::StaticSizedView(const gfx::Size& preferred_size)
     // Default GetMinimumSize() is GetPreferredSize(). Default GetMaximumSize()
     // is 0x0.
-    : preferred_size_(preferred_size),
-      minimum_size_(preferred_size) {}
+    : preferred_size_(preferred_size), minimum_size_(preferred_size) {}
 
 StaticSizedView::~StaticSizedView() = default;
 
@@ -52,8 +51,7 @@ gfx::Size ProportionallySizedView::CalculatePreferredSize() const {
 }
 
 CloseWidgetView::CloseWidgetView(ui::EventType event_type)
-    : event_type_(event_type) {
-}
+    : event_type_(event_type) {}
 
 void CloseWidgetView::OnEvent(ui::Event* event) {
   if (event->type() == event_type_) {

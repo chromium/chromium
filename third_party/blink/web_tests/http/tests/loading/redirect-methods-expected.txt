@@ -1,16 +1,13 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
-frame "0" - didReceiveTitle: 
 frame "0" - BeginNavigation request to 'about:blank', http method GET
 frame "0" - DidStartNavigation
 frame "0" - ReadyToCommitNavigation
 frame "0" - didCommitLoadForFrame
-frame "0" - didReceiveTitle: 
 frame "0" - didFinishDocumentLoadForFrame
 frame "0" - didHandleOnloadEventsForFrame
 frame "0" - didFinishLoadForFrame
@@ -18,22 +15,18 @@ frame "0" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/
 frame "0" - DidStartNavigation
 frame "0" - ReadyToCommitNavigation
 frame "0" - didCommitLoadForFrame
-frame "0" - didReceiveTitle: 
 frame "0" - didFinishDocumentLoadForFrame
-frame "0" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
-frame "0" - didFinishLoadForFrame
-frame "0" - DidStartNavigation
 frame "0" - didHandleOnloadEventsForFrame
+frame "0" - didFinishLoadForFrame
+frame "0" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
+frame "0" - DidStartNavigation
 frame "0" - ReadyToCommitNavigation
 frame "0" - didCommitLoadForFrame
-frame "0" - didReceiveTitle: 
 frame "0" - didFinishDocumentLoadForFrame
-frame "1" - didReceiveTitle: 
 frame "1" - BeginNavigation request to 'about:blank', http method GET
 frame "1" - DidStartNavigation
 frame "1" - ReadyToCommitNavigation
 frame "1" - didCommitLoadForFrame
-frame "1" - didReceiveTitle: 
 frame "1" - didFinishDocumentLoadForFrame
 frame "1" - didHandleOnloadEventsForFrame
 frame "1" - didFinishLoadForFrame
@@ -43,22 +36,18 @@ frame "0" - didHandleOnloadEventsForFrame
 frame "0" - didFinishLoadForFrame
 frame "1" - ReadyToCommitNavigation
 frame "1" - didCommitLoadForFrame
-frame "1" - didReceiveTitle: 
 frame "1" - didFinishDocumentLoadForFrame
-frame "1" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
-frame "1" - didFinishLoadForFrame
-frame "1" - DidStartNavigation
 frame "1" - didHandleOnloadEventsForFrame
+frame "1" - didFinishLoadForFrame
+frame "1" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
+frame "1" - DidStartNavigation
 frame "1" - ReadyToCommitNavigation
 frame "1" - didCommitLoadForFrame
-frame "1" - didReceiveTitle: 
 frame "1" - didFinishDocumentLoadForFrame
-frame "2" - didReceiveTitle: 
 frame "2" - BeginNavigation request to 'about:blank', http method GET
 frame "2" - DidStartNavigation
 frame "2" - ReadyToCommitNavigation
 frame "2" - didCommitLoadForFrame
-frame "2" - didReceiveTitle: 
 frame "2" - didFinishDocumentLoadForFrame
 frame "2" - didHandleOnloadEventsForFrame
 frame "2" - didFinishLoadForFrame
@@ -68,22 +57,18 @@ frame "1" - didHandleOnloadEventsForFrame
 frame "1" - didFinishLoadForFrame
 frame "2" - ReadyToCommitNavigation
 frame "2" - didCommitLoadForFrame
-frame "2" - didReceiveTitle: 
 frame "2" - didFinishDocumentLoadForFrame
-frame "2" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
-frame "2" - didFinishLoadForFrame
-frame "2" - DidStartNavigation
 frame "2" - didHandleOnloadEventsForFrame
+frame "2" - didFinishLoadForFrame
+frame "2" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
+frame "2" - DidStartNavigation
 frame "2" - ReadyToCommitNavigation
 frame "2" - didCommitLoadForFrame
-frame "2" - didReceiveTitle: 
 frame "2" - didFinishDocumentLoadForFrame
-frame "3" - didReceiveTitle: 
 frame "3" - BeginNavigation request to 'about:blank', http method GET
 frame "3" - DidStartNavigation
 frame "3" - ReadyToCommitNavigation
 frame "3" - didCommitLoadForFrame
-frame "3" - didReceiveTitle: 
 frame "3" - didFinishDocumentLoadForFrame
 frame "3" - didHandleOnloadEventsForFrame
 frame "3" - didFinishLoadForFrame
@@ -93,15 +78,13 @@ frame "2" - didHandleOnloadEventsForFrame
 frame "2" - didFinishLoadForFrame
 frame "3" - ReadyToCommitNavigation
 frame "3" - didCommitLoadForFrame
-frame "3" - didReceiveTitle: 
 frame "3" - didFinishDocumentLoadForFrame
-frame "3" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
-frame "3" - didFinishLoadForFrame
-frame "3" - DidStartNavigation
 frame "3" - didHandleOnloadEventsForFrame
+frame "3" - didFinishLoadForFrame
+frame "3" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/redirect-methods-result.php', http method POST
+frame "3" - DidStartNavigation
 frame "3" - ReadyToCommitNavigation
 frame "3" - didCommitLoadForFrame
-frame "3" - didReceiveTitle: 
 frame "3" - didFinishDocumentLoadForFrame
 frame "3" - didHandleOnloadEventsForFrame
 frame "3" - didFinishLoadForFrame

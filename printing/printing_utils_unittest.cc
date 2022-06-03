@@ -38,7 +38,10 @@ TEST(PrintingUtilsTest, SimplifyDocumentTitle) {
   EXPECT_EQ("abcdefgh", Simplify("abcdefgh"));
   EXPECT_EQ("abc...ij", Simplify("abcdefghij"));
   EXPECT_EQ("Controls", Simplify("C\ron\nt\15rols"));
-  EXPECT_EQ("C:_foo_", Simplify("C:\\foo\\"));
+  EXPECT_EQ("C__foo_", Simplify("C:\\foo\\"));
+  EXPECT_EQ("C__foo_", Simplify("C:/foo/"));
+  EXPECT_EQ("a_b_c", Simplify("a<b\"c"));
+  EXPECT_EQ("d_e_f_", Simplify("d*e?f~"));
   EXPECT_EQ("", Simplify("\n\r\n\r\t\r"));
 }
 

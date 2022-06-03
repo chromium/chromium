@@ -35,19 +35,19 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
 struct SameSizeAsFloatingObject {
-  void* pointers[2];
+  Member<void*> members[2];
   LayoutRect rect;
   uint32_t bitfields : 8;
 };
 
-static_assert(sizeof(FloatingObject) == sizeof(SameSizeAsFloatingObject),
-              "FloatingObject should stay small");
+ASSERT_SIZE(FloatingObject, SameSizeAsFloatingObject);
 
-FloatingObject::FloatingObject(LayoutBox* layout_object, Type type)
+FloatingObject::FloatingObject(PassKey key, LayoutBox* layout_object, Type type)
     : layout_object_(layout_object),
       originating_line_(nullptr),
       type_(type),
@@ -63,7 +63,8 @@ FloatingObject::FloatingObject(LayoutBox* layout_object, Type type)
 {
 }
 
-FloatingObject::FloatingObject(LayoutBox* layout_object,
+FloatingObject::FloatingObject(PassKey key,
+                               LayoutBox* layout_object,
                                Type type,
                                const LayoutRect& frame_rect,
                                bool should_paint,
@@ -86,10 +87,14 @@ FloatingObject::FloatingObject(LayoutBox* layout_object,
 {
 }
 
-std::unique_ptr<FloatingObject> FloatingObject::Create(LayoutBox* layout_object,
-                                                       Type type) {
-  std::unique_ptr<FloatingObject> new_obj =
-      base::WrapUnique(new FloatingObject(layout_object, type));
+void FloatingObject::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+  visitor->Trace(originating_line_);
+}
+
+FloatingObject* FloatingObject::Create(LayoutBox* layout_object, Type type) {
+  FloatingObject* new_obj =
+      MakeGarbageCollected<FloatingObject>(PassKey(), layout_object, type);
 
   // If a layer exists, the float will paint itself. Otherwise someone else
   // will.
@@ -109,20 +114,19 @@ std::unique_ptr<FloatingObject> FloatingObject::Create(LayoutBox* layout_object,
   return new_obj;
 }
 
-std::unique_ptr<FloatingObject> FloatingObject::CopyToNewContainer(
-    LayoutSize offset,
-    bool should_paint,
-    bool is_descendant) const {
-  return base::WrapUnique(new FloatingObject(
-      GetLayoutObject(), GetType(),
+FloatingObject* FloatingObject::CopyToNewContainer(LayoutSize offset,
+                                                   bool should_paint,
+                                                   bool is_descendant) const {
+  return MakeGarbageCollected<FloatingObject>(
+      PassKey(), GetLayoutObject(), GetType(),
       LayoutRect(FrameRect().Location() - offset, FrameRect().Size()),
-      should_paint, is_descendant, IsLowestNonOverhangingFloatInChild()));
+      should_paint, is_descendant, IsLowestNonOverhangingFloatInChild());
 }
 
-std::unique_ptr<FloatingObject> FloatingObject::UnsafeClone() const {
-  std::unique_ptr<FloatingObject> clone_object = base::WrapUnique(
-      new FloatingObject(GetLayoutObject(), GetType(), frame_rect_,
-                         should_paint_, is_descendant_, false));
+FloatingObject* FloatingObject::UnsafeClone() const {
+  FloatingObject* clone_object = MakeGarbageCollected<FloatingObject>(
+      PassKey(), GetLayoutObject(), GetType(), frame_rect_, should_paint_,
+      is_descendant_, false);
   clone_object->is_placed_ = is_placed_;
 #if DCHECK_IS_ON()
   clone_object->has_geometry_ = has_geometry_;
@@ -132,6 +136,8 @@ std::unique_ptr<FloatingObject> FloatingObject::UnsafeClone() const {
 
 template <FloatingObject::Type FloatTypeValue>
 class ComputeFloatOffsetAdapter {
+  STACK_ALLOCATED();
+
  public:
   typedef FloatingObjectInterval IntervalType;
 
@@ -142,8 +148,7 @@ class ComputeFloatOffsetAdapter {
       : layout_object_(layout_object),
         line_top_(line_top),
         line_bottom_(line_bottom),
-        offset_(offset),
-        outermost_float_(nullptr) {}
+        offset_(offset) {}
 
   virtual ~ComputeFloatOffsetAdapter() = default;
 
@@ -156,11 +161,11 @@ class ComputeFloatOffsetAdapter {
  protected:
   virtual bool UpdateOffsetIfNeeded(const FloatingObject&) = 0;
 
-  const LayoutBlockFlow* layout_object_;
+  const LayoutBlockFlow* layout_object_ = nullptr;
   LayoutUnit line_top_;
   LayoutUnit line_bottom_;
   LayoutUnit offset_;
-  const FloatingObject* outermost_float_;
+  const FloatingObject* outermost_float_ = nullptr;
 };
 
 template <FloatingObject::Type FloatTypeValue>
@@ -204,12 +209,14 @@ class ComputeFloatOffsetForLineLayoutAdapter
 };
 
 class FindNextFloatLogicalBottomAdapter {
+  STACK_ALLOCATED();
+
  public:
   typedef FloatingObjectInterval IntervalType;
 
   FindNextFloatLogicalBottomAdapter(const LayoutBlockFlow& renderer,
                                     LayoutUnit below_logical_height)
-      : layout_object_(renderer),
+      : layout_object_(&renderer),
         below_logical_height_(below_logical_height),
         above_logical_height_(LayoutUnit::Max()),
         next_logical_bottom_(),
@@ -223,7 +230,7 @@ class FindNextFloatLogicalBottomAdapter {
   LayoutUnit NextShapeLogicalBottom() { return next_shape_logical_bottom_; }
 
  private:
-  const LayoutBlockFlow& layout_object_;
+  const LayoutBlockFlow* layout_object_ = nullptr;
   LayoutUnit below_logical_height_;
   LayoutUnit above_logical_height_;
   LayoutUnit next_logical_bottom_;
@@ -262,18 +269,18 @@ inline void FindNextFloatLogicalBottomAdapter::CollectIfNeeded(
 
   // All the objects returned from the tree should be already placed.
   DCHECK(floating_object.IsPlaced());
-  DCHECK(RangesIntersect(layout_object_.LogicalTopForFloat(floating_object),
-                         layout_object_.LogicalBottomForFloat(floating_object),
+  DCHECK(RangesIntersect(layout_object_->LogicalTopForFloat(floating_object),
+                         layout_object_->LogicalBottomForFloat(floating_object),
                          below_logical_height_, above_logical_height_));
 
   LayoutUnit float_bottom =
-      layout_object_.LogicalBottomForFloat(floating_object);
+      layout_object_->LogicalBottomForFloat(floating_object);
 
   if (ShapeOutsideInfo* shape_outside =
           floating_object.GetLayoutObject()->GetShapeOutsideInfo()) {
     LayoutUnit shape_bottom =
-        layout_object_.LogicalTopForFloat(floating_object) +
-        layout_object_.MarginBeforeForChild(
+        layout_object_->LogicalTopForFloat(floating_object) +
+        layout_object_->MarginBeforeForChild(
             *floating_object.GetLayoutObject()) +
         shape_outside->ShapeLogicalBottom();
     // Use the shapeBottom unless it extends outside of the margin box, in which
@@ -330,6 +337,13 @@ FloatingObjects::FloatingObjects(const LayoutBlockFlow* layout_object,
       layout_object_(layout_object),
       cached_horizontal_writing_mode_(false) {}
 
+void FloatingObjects::Trace(Visitor* visitor) const {
+  visitor->Trace(set_);
+  visitor->Trace(layout_object_);
+  visitor->Trace(lowest_float_bottom_cache_[0]);
+  visitor->Trace(lowest_float_bottom_cache_[1]);
+}
+
 void FloatingObjects::Clear() {
   set_.clear();
   placed_floats_tree_.Clear();
@@ -366,7 +380,7 @@ LayoutUnit FloatingObjects::LowestFloatLogicalBottom(
     LayoutUnit lowest_float_bottom_right;
     for (FloatingObjectSetIterator it = floating_object_set.begin(); it != end;
          ++it) {
-      FloatingObject& floating_object = *it->get();
+      FloatingObject& floating_object = *it->Get();
       if (floating_object.IsPlaced()) {
         FloatingObject::Type cur_type = floating_object.GetType();
         LayoutUnit cur_float_logical_bottom =
@@ -395,7 +409,7 @@ LayoutUnit FloatingObjects::LowestFloatLogicalBottom(
     FloatingObject* lowest_floating_object = nullptr;
     for (FloatingObjectSetIterator it = floating_object_set.begin(); it != end;
          ++it) {
-      FloatingObject& floating_object = *it->get();
+      FloatingObject& floating_object = *it->Get();
       if (floating_object.IsPlaced() &&
           floating_object.GetType() == float_type) {
         if (layout_object_->LogicalBottomForFloat(floating_object) >
@@ -486,7 +500,8 @@ void FloatingObjects::MarkLowestFloatLogicalBottomCacheAsDirty() {
 
 void FloatingObjects::MoveAllToFloatInfoMap(LayoutBoxToFloatInfoMap& map) {
   while (!set_.IsEmpty()) {
-    std::unique_ptr<FloatingObject> floating_object = set_.TakeFirst();
+    FloatingObject* floating_object = set_.front();
+    set_.RemoveFirst();
     LayoutBox* layout_object = floating_object->GetLayoutObject();
     map.insert(layout_object, std::move(floating_object));
   }
@@ -550,20 +565,22 @@ void FloatingObjects::RemovePlacedObject(FloatingObject& floating_object) {
   MarkLowestFloatLogicalBottomCacheAsDirty();
 }
 
-FloatingObject* FloatingObjects::Add(
-    std::unique_ptr<FloatingObject> floating_object) {
-  FloatingObject* new_object = floating_object.release();
-  IncreaseObjectsCount(new_object->GetType());
-  set_.insert(base::WrapUnique(new_object));
-  if (new_object->IsPlaced())
-    AddPlacedObject(*new_object);
+FloatingObject* FloatingObjects::Add(FloatingObject* floating_object) {
+  IncreaseObjectsCount(floating_object->GetType());
+  set_.insert(floating_object);
+  if (floating_object->IsPlaced())
+    AddPlacedObject(*floating_object);
   MarkLowestFloatLogicalBottomCacheAsDirty();
-  return new_object;
+  return floating_object;
 }
 
 void FloatingObjects::Remove(FloatingObject* to_be_removed) {
   DecreaseObjectsCount(to_be_removed->GetType());
-  std::unique_ptr<FloatingObject> floating_object = set_.Take(to_be_removed);
+  auto it = set_.find(to_be_removed);
+  FloatingObject* floating_object = *it;
+  if (it != set_.end()) {
+    set_.erase(it);
+  }
   DCHECK(floating_object->IsPlaced() || !floating_object->IsInPlacedTree());
   if (floating_object->IsPlaced())
     RemovePlacedObject(*floating_object);
@@ -579,7 +596,7 @@ void FloatingObjects::ComputePlacedFloatsTree() {
   FloatingObjectSetIterator it = set_.begin();
   FloatingObjectSetIterator end = set_.end();
   for (; it != end; ++it) {
-    FloatingObject& floating_object = *it->get();
+    FloatingObject& floating_object = *it->Get();
     if (floating_object.IsPlaced())
       placed_floats_tree_.Add(IntervalForFloatingObject(floating_object));
   }
@@ -655,8 +672,7 @@ LayoutUnit FloatingObjects::LogicalRightOffsetForAvoidingFloats(
   return std::min(fixed_offset, adapter.Offset());
 }
 
-FloatingObjects::FloatBottomCachedValue::FloatBottomCachedValue()
-    : floating_object(nullptr), dirty(true) {}
+FloatingObjects::FloatBottomCachedValue::FloatBottomCachedValue() = default;
 
 template <>
 inline bool ComputeFloatOffsetForFloatLayoutAdapter<
@@ -669,6 +685,10 @@ inline bool ComputeFloatOffsetForFloatLayoutAdapter<
     return true;
   }
   return false;
+}
+
+void FloatingObjects::FloatBottomCachedValue::Trace(Visitor* visitor) const {
+  visitor->Trace(floating_object);
 }
 
 template <>

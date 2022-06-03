@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SYNC_FILE_SYSTEM_INTERNALS_EXTENSION_STATUSES_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -21,25 +20,28 @@ namespace syncfs_internals {
 class ExtensionStatusesHandler : public content::WebUIMessageHandler {
  public:
   explicit ExtensionStatusesHandler(Profile* profile);
+
+  ExtensionStatusesHandler(const ExtensionStatusesHandler&) = delete;
+  ExtensionStatusesHandler& operator=(const ExtensionStatusesHandler&) = delete;
+
   ~ExtensionStatusesHandler() override;
 
   // Shared by Extension Statuses Tab and also File Metadata Tab to generate the
   // extension drop down.
   static void GetExtensionStatusesAsDictionary(
       Profile* profile,
-      const base::Callback<void(const base::ListValue&)>& callback);
+      base::OnceCallback<void(const base::ListValue&)> callback);
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
  private:
-  void GetExtensionStatuses(const base::ListValue* args);
-  void DidGetExtensionStatuses(const base::ListValue& list);
+  void HandleGetExtensionStatuses(const base::ListValue* args);
+  void DidGetExtensionStatuses(std::string callback_id,
+                               const base::ListValue& list);
 
   Profile* profile_;
   base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionStatusesHandler);
 };
 
 }  // namespace syncfs_internals

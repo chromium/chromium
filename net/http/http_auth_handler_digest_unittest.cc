@@ -4,10 +4,11 @@
 
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
@@ -64,8 +65,9 @@ bool RespondToChallenge(HttpAuth::Target target,
   SSLInfo null_ssl_info;
   GURL url_origin(target == HttpAuth::AUTH_SERVER ? request_url : proxy_name);
   int rv_create = factory->CreateAuthHandlerFromString(
-      challenge, target, null_ssl_info, url_origin.GetOrigin(),
-      NetLogWithSource(), host_resolver.get(), &handler);
+      challenge, target, null_ssl_info, NetworkIsolationKey(),
+      url_origin.DeprecatedGetOriginAsURL(), NetLogWithSource(),
+      host_resolver.get(), &handler);
   if (rv_create != OK || handler.get() == nullptr) {
     ADD_FAILURE() << "Unable to create auth handler.";
     return false;
@@ -78,8 +80,7 @@ bool RespondToChallenge(HttpAuth::Target target,
   TestCompletionCallback callback;
   std::unique_ptr<HttpRequestInfo> request(new HttpRequestInfo());
   request->url = GURL(request_url);
-  AuthCredentials credentials(base::ASCIIToUTF16("foo"),
-                              base::ASCIIToUTF16("bar"));
+  AuthCredentials credentials(u"foo", u"bar");
   int rv_generate = handler->GenerateAuthToken(
       &credentials, request.get(), callback.callback(), token);
   if (rv_generate != OK) {
@@ -366,8 +367,9 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-        NetLogWithSource(), host_resolver.get(), &handler);
+        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
+        &handler);
     if (tests[i].parsed_success) {
       EXPECT_THAT(rv, IsOk());
     } else {
@@ -531,8 +533,9 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-        NetLogWithSource(), host_resolver.get(), &handler);
+        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
+        &handler);
     EXPECT_THAT(rv, IsOk());
     ASSERT_TRUE(handler != nullptr);
 
@@ -561,8 +564,9 @@ TEST(HttpAuthHandlerDigest, HandleAnotherChallenge) {
   GURL origin("intranet.google.com");
   SSLInfo null_ssl_info;
   int rv = factory->CreateAuthHandlerFromString(
-      default_challenge, HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-      NetLogWithSource(), host_resolver.get(), &handler);
+      default_challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+      NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
+      &handler);
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handler.get() != nullptr);
   HttpAuthChallengeTokenizer tok_default(default_challenge.begin(),

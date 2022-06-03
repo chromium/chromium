@@ -46,9 +46,7 @@ if (!is_ios) {
   executable("subresource_filter_tool") {
     # Production code should not depend on this.
     testonly = true
-    sources = [
-      "filter_tool_main.cc",
-    ]
+    sources = [ "filter_tool_main.cc" ]
     deps = [
       ":tools_lib",
       "//base",
@@ -58,9 +56,7 @@ if (!is_ios) {
   executable("subresource_indexing_tool") {
     # Production code should not depend on this.
     testonly = true
-    sources = [
-      "indexing_tool_main.cc",
-    ]
+    sources = [ "indexing_tool_main.cc" ]
     deps = [
       ":tools_lib",
       "../core/common",
@@ -69,9 +65,7 @@ if (!is_ios) {
   }
 
   executable("ruleset_converter") {
-    sources = [
-      "ruleset_converter/main.cc",
-    ]
+    sources = [ "ruleset_converter/main.cc" ]
     deps = [
       "ruleset_converter:support",
       "//base",
@@ -101,12 +95,8 @@ if (!is_ios) {
       "$target_gen_dir/default_local_state.json",
     ]
 
-    inputs = [
-      "//third_party/subresource-filter-ruleset/data/UnindexedRules",
-    ]
-    deps = [
-      ":subresource_indexing_tool",
-    ]
+    inputs = [ "//third_party/subresource-filter-ruleset/data/UnindexedRules" ]
+    deps = [ ":subresource_indexing_tool" ]
 
     args = [
       rebase_path(inputs[0], root_build_dir),

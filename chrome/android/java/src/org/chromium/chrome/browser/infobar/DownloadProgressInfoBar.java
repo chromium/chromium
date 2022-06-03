@@ -5,14 +5,14 @@
 package org.chromium.chrome.browser.infobar;
 
 import android.graphics.drawable.Drawable;
-import android.support.graphics.drawable.Animatable2Compat;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -20,7 +20,10 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadInfoBarController;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -36,7 +39,8 @@ public class DownloadProgressInfoBar extends InfoBar {
          * Called when a link is clicked by the user.
          * @param itemId The ContentId of the item currently being shown in the InfoBar.
          */
-        void onLinkClicked(@Nullable ContentId itemId);
+        void onLinkClicked(
+                @Nullable ContentId itemId, @Nullable final OfflineItemSchedule schedule);
 
         /**
          * Called when the InfoBar is closed either implicitly or explicitly by the user.
@@ -84,7 +88,7 @@ public class DownloadProgressInfoBar extends InfoBar {
 
     @Override
     public void onLinkClicked() {
-        mClient.onLinkClicked(mInfo.id);
+        mClient.onLinkClicked(mInfo.id, mInfo.schedule);
     }
 
     /**
@@ -170,8 +174,8 @@ public class DownloadProgressInfoBar extends InfoBar {
     public void updateInfoBar(DownloadInfoBarController.DownloadProgressInfoBarData info) {
         if (getView() == null) return;
 
-        mInfo = info;
-        setLayoutProperties((InfoBarLayout) getView(), info);
+        mInfo.update(info);
+        setLayoutProperties((InfoBarLayout) getView(), mInfo);
     }
 
     @Override

@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Testing both hit testing'",
-          "rect": [774, 38, 18, 79],
-          "reason": "selection"
-        }
+      "invalidations": [
+        [774, 8, 18, 147]
       ]
     }
   ]

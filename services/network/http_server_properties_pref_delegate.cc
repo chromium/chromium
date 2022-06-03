@@ -27,13 +27,13 @@ void HttpServerPropertiesPrefDelegate::RegisterPrefs(
   pref_registry->RegisterDictionaryPref(kPrefPath);
 }
 
-const base::DictionaryValue*
-HttpServerPropertiesPrefDelegate::GetServerProperties() const {
-  return pref_service_->GetDictionary(kPrefPath);
+const base::Value* HttpServerPropertiesPrefDelegate::GetServerProperties()
+    const {
+  return pref_service_->Get(kPrefPath);
 }
 
 void HttpServerPropertiesPrefDelegate::SetServerProperties(
-    const base::DictionaryValue& value,
+    const base::Value& value,
     base::OnceClosure callback) {
   pref_service_->Set(kPrefPath, value);
   if (callback)

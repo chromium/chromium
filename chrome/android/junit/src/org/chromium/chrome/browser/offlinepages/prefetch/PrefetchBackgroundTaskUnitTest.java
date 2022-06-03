@@ -34,14 +34,15 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.DeviceConditions;
-import org.chromium.chrome.browser.ShadowDeviceConditions;
-import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
+import org.chromium.chrome.browser.background_task_scheduler.ChromeNativeBackgroundTaskDelegate;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
@@ -70,6 +71,11 @@ public class PrefetchBackgroundTaskUnitTest {
         @Override
         public void cancel(Context context, int taskId) {
             mTaskInfos.remove(taskId);
+        }
+
+        @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTaskInfos.get(taskId) != null);
         }
 
         @Override
@@ -108,8 +114,12 @@ public class PrefetchBackgroundTaskUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mPrefetchBackgroundTask.setDelegate(new ChromeNativeBackgroundTaskDelegate());
+
         mocker.mock(PrefetchBackgroundTaskJni.TEST_HOOKS, mPrefetchBackgroundTaskJniMock);
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {

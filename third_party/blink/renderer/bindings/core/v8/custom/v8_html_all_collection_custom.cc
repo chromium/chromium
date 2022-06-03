@@ -30,7 +30,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_all_collection.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 
 namespace blink {
 
@@ -55,14 +57,19 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
           ->ToArrayIndex(info.GetIsolate()->GetCurrentContext())
           .ToLocal(&index)) {
     Element* result = impl->AnonymousIndexedGetter(index->Value());
-    V8SetReturnValue(info, result);
+    bindings::V8SetReturnValue(info, result, impl);
     return;
   }
 
   TOSTRING_VOID(V8StringResource<>, name, info[0]);
-  HTMLCollectionOrElement result;
-  impl->NamedGetter(name, result);
-  V8SetReturnValue(info, result);
+  ScriptState* script_state = ScriptState::From(info.This()->CreationContext());
+  v8::Local<v8::Value> v8_value;
+  if (!ToV8Traits<IDLNullable<V8UnionElementOrHTMLCollection>>::ToV8(
+           script_state, impl->NamedGetter(name))
+           .ToLocal(&v8_value)) {
+    return;
+  }
+  bindings::V8SetReturnValue(info, v8_value);
 }
 
 void V8HTMLAllCollection::LegacyCallCustom(

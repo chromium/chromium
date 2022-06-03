@@ -6,6 +6,7 @@
 #define SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_MEDIA_TO_MOJO_ADAPTER_H_
 
 #include <map>
+#include "build/chromeos_buildflags.h"
 
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_system.h"
@@ -15,9 +16,9 @@
 #include "services/video_capture/device_factory.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace video_capture {
 
@@ -29,7 +30,7 @@ class DeviceMediaToMojoAdapter;
 // same media::VideoCaptureDevice at the same time.
 class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
  public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DeviceFactoryMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureSystem> capture_system,
       media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -37,7 +38,13 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
 #else
   DeviceFactoryMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureSystem> capture_system);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  DeviceFactoryMediaToMojoAdapter(const DeviceFactoryMediaToMojoAdapter&) =
+      delete;
+  DeviceFactoryMediaToMojoAdapter& operator=(
+      const DeviceFactoryMediaToMojoAdapter&) = delete;
+
   ~DeviceFactoryMediaToMojoAdapter() override;
 
   // DeviceFactory implementation.
@@ -54,6 +61,10 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
   void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<mojom::TextureVirtualDevice>
+          virtual_device_receiver) override;
+  void AddGpuMemoryBufferVirtualDevice(
+      const media::VideoCaptureDeviceInfo& device_info,
+      mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
           virtual_device_receiver) override;
   void RegisterVirtualDevicesChangedObserver(
       mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
@@ -82,16 +93,14 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
   const std::unique_ptr<media::VideoCaptureSystem> capture_system_;
   std::map<std::string, ActiveDeviceEntry> active_devices_by_id_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const media::MojoMjpegDecodeAcceleratorFactoryCB
       jpeg_decoder_factory_callback_;
   scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool has_called_get_device_infos_;
   base::WeakPtrFactory<DeviceFactoryMediaToMojoAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceFactoryMediaToMojoAdapter);
 };
 
 }  // namespace video_capture

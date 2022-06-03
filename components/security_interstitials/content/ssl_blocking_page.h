@@ -6,10 +6,8 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -40,12 +38,17 @@ const char kSymantecSupportUrl[] =
 class SSLBlockingPage : public SSLBlockingPageBase {
  public:
   // Interstitial type, used in tests.
-  static const InterstitialPageDelegate::TypeID kTypeForTesting;
+  static const security_interstitials::SecurityInterstitialPage::TypeID
+      kTypeForTesting;
+
+  SSLBlockingPage(const SSLBlockingPage&) = delete;
+  SSLBlockingPage& operator=(const SSLBlockingPage&) = delete;
 
   ~SSLBlockingPage() override;
 
   // InterstitialPageDelegate method:
-  InterstitialPageDelegate::TypeID GetTypeForTesting() override;
+  security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
+      override;
 
   // Returns true if |options_mask| refers to a soft-overridable SSL error.
   static bool IsOverridable(int options_mask);
@@ -60,19 +63,15 @@ class SSLBlockingPage : public SSLBlockingPageBase {
       const GURL& support_url,
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overrideable,
+      bool can_show_enhanced_protection_message,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
 
  protected:
-  // InterstitialPageDelegate implementation.
-  void CommandReceived(const std::string& command) override;
-  void OverrideEntry(content::NavigationEntry* entry) override;
-
   // SecurityInterstitialPage implementation:
-  bool ShouldCreateNewNavigation() const override;
-  void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) override;
+  void CommandReceived(const std::string& command) override;
+  void PopulateInterstitialStrings(base::Value* load_time_data) override;
 
  private:
   friend class policy::PolicyTest_SSLErrorOverridingDisallowed_Test;
@@ -86,8 +85,6 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   const bool overridable_;  // The UI allows the user to override the error.
 
   const std::unique_ptr<security_interstitials::SSLErrorUI> ssl_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_

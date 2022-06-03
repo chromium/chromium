@@ -9,7 +9,10 @@
 
 #include <stddef.h>         // For size_t
 
+#include <string>
+
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -23,21 +26,6 @@ CONTENT_EXPORT extern const base::FilePath::CharType kPepperDataDirname[];
 
 // The MIME type used for the browser plugin.
 CONTENT_EXPORT extern const char kBrowserPluginMimeType[];
-
-CONTENT_EXPORT extern const char kFlashPluginName[];
-CONTENT_EXPORT extern const char kFlashPluginSwfMimeType[];
-CONTENT_EXPORT extern const char kFlashPluginSwfExtension[];
-CONTENT_EXPORT extern const char kFlashPluginSwfDescription[];
-CONTENT_EXPORT extern const char kFlashPluginSplMimeType[];
-CONTENT_EXPORT extern const char kFlashPluginSplExtension[];
-CONTENT_EXPORT extern const char kFlashPluginSplDescription[];
-
-// The maximum number of session history entries per tab.
-constexpr int kMaxSessionHistoryEntries = 50;
-
-// The maximum number of characters of the document's title that we're willing
-// to accept in the browser process.
-extern const size_t kMaxTitleChars;
 
 // The maximum number of characters in the URL that we're willing to accept
 // in the browser process. It is set low enough to avoid damage to the browser
@@ -66,7 +54,23 @@ CONTENT_EXPORT extern const int kDefaultDetachableCancelDelayMs;
 // in content need to know the name to manage the header stored in
 // network::ResourceRequest::cors_exempt_headers.
 CONTENT_EXPORT extern const char kCorsExemptPurposeHeaderName[];
-CONTENT_EXPORT extern const char kCorsExemptRequestedWithHeaderName[];
+// This should just be a constant string, but there is evidence of malware
+// overwriting the value of the constant so try to confirm by constructing
+// it at run time.
+CONTENT_EXPORT std::string GetCorsExemptRequestedWithHeaderName();
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// The OOM score adj constants
+// The highest and lowest assigned OOM score adjustment (oom_score_adj) for
+// renderers and extensions used by the OomPriority Manager.
+CONTENT_EXPORT extern const int kLowestRendererOomScore;
+CONTENT_EXPORT extern const int kHighestRendererOomScore;
+
+CONTENT_EXPORT extern const int kZygoteOomScore;
+CONTENT_EXPORT extern const int kMiscOomScore;
+CONTENT_EXPORT extern const int kPluginOomScore;
+
+#endif
 
 }  // namespace content
 

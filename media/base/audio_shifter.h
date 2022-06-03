@@ -82,9 +82,6 @@ class MEDIA_EXPORT AudioShifter {
   void Pull(AudioBus* output, base::TimeTicks playout_time);
 
 private:
-  void Zero(AudioBus* output);
-  void ResamplerCallback(int frame_delay, AudioBus* destination);
-
   struct AudioQueueEntry {
     AudioQueueEntry(base::TimeTicks target_playout_time,
                     std::unique_ptr<AudioBus> audio);
@@ -94,11 +91,16 @@ private:
     std::unique_ptr<AudioBus> audio;
   };
 
+  void Zero(AudioBus* output);
+  void ResamplerCallback(int frame_delay, AudioBus* destination);
+
   // Set from constructor.
   const base::TimeDelta max_buffer_size_;
   const base::TimeDelta clock_accuracy_;
   const base::TimeDelta adjustment_time_;
-  const int rate_;
+  // Kept as a double to make it easier to preserve precision in frame count ->
+  // total time conversions .
+  const double rate_;
   const int channels_;
 
   // The clock smoothers are used to smooth out timestamps
@@ -119,7 +121,7 @@ private:
   base::TimeTicks previous_playout_time_;
 
   // Number of frames requested in last Pull call.
-  size_t previous_requested_samples_;
+  int previous_requested_samples_;
 
   // Timestamp at the end of last audio bus
   // consumed by resampler.

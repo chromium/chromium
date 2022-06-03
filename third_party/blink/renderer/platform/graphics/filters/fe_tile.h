@@ -40,6 +40,7 @@ class PLATFORM_EXPORT FETile final : public FilterEffect {
   }
 
   FloatRect MapInputs(const FloatRect&) const final;
+  FloatRect GetSourceRect() const;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 };

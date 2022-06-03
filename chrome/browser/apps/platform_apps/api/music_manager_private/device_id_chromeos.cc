@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/platform_apps/api/music_manager_private/device_id.h"
 
+#include <utility>
+
 #include "base/callback.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 
@@ -11,8 +13,8 @@ namespace chrome_apps {
 namespace api {
 
 // static
-void DeviceId::GetRawDeviceId(const IdCallback& callback) {
-  chromeos::SystemSaltGetter::Get()->GetSystemSalt(callback);
+void DeviceId::GetRawDeviceId(IdCallback callback) {
+  chromeos::SystemSaltGetter::Get()->GetSystemSalt(std::move(callback));
 }
 
 }  // namespace api

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_api.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate.h"
@@ -21,7 +21,7 @@ namespace {
 
 class SettingsPrivateGuestModeTest : public MixinBasedInProcessBrowserTest {
  protected:
-  chromeos::GuestSessionMixin guest_session_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
 };
 
 // Regression test for https://crbug.com/887383.

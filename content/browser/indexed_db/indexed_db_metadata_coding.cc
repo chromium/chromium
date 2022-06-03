@@ -45,13 +45,16 @@ using indexed_db::PutVarInt;
 namespace {
 
 std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
-    TransactionalLevelDBDatabase* database) {
-  return database->CreateIterator(database->DefaultReadOptions());
+    TransactionalLevelDBDatabase& database,
+    Status& status) {
+  status = Status();
+  return database.CreateIterator(database.DefaultReadOptions());
 }
 
 std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
-    TransactionalLevelDBTransaction* transaction) {
-  return transaction->CreateIterator();
+    TransactionalLevelDBTransaction& transaction,
+    Status& status) {
+  return transaction.CreateIterator(status);
 }
 
 // Reads all indexes for the given database and object store in |indexes|.
@@ -71,9 +74,14 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
 
   DCHECK(indexes->empty());
 
+  Status s;
   std::unique_ptr<TransactionalLevelDBIterator> it =
-      CreateIterator(db_or_transaction);
-  Status s = it->Seek(start_key);
+      CreateIterator(*db_or_transaction, s);
+  if (!s.ok()) {
+    INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
+    return s;
+  }
+  s = it->Seek(start_key);
   while (s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0) {
     IndexMetaDataKey meta_data_key;
     {
@@ -82,7 +90,7 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
       DCHECK(ok);
     }
     if (meta_data_key.meta_data_type() != IndexMetaDataKey::NAME) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+      INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       // Possible stale metadata due to http://webkit.org/b/85557 but don't fail
       // the load.
       s = it->Next();
@@ -94,11 +102,11 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
     // TODO(jsbell): Do this by direct key lookup rather than iteration, to
     // simplify.
     int64_t index_id = meta_data_key.IndexId();
-    base::string16 index_name;
+    std::u16string index_name;
     {
       StringPiece slice(it->Value());
       if (!DecodeString(&slice, &index_name) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+        INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
     }
 
     s = it->Next();  // unique flag
@@ -106,14 +114,14 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
       break;
     if (!CheckIndexAndMetaDataKey(it.get(), stop_key, index_id,
                                   IndexMetaDataKey::UNIQUE)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+      INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       break;
     }
     bool index_unique;
     {
       StringPiece slice(it->Value());
       if (!DecodeBool(&slice, &index_unique) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+        INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
     }
 
     s = it->Next();  // key_path
@@ -121,14 +129,14 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
       break;
     if (!CheckIndexAndMetaDataKey(it.get(), stop_key, index_id,
                                   IndexMetaDataKey::KEY_PATH)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+      INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
       break;
     }
     IndexedDBKeyPath key_path;
     {
       StringPiece slice(it->Value());
       if (!DecodeIDBKeyPath(&slice, &key_path) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+        INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
     }
 
     s = it->Next();  // [optional] multi_entry flag
@@ -139,7 +147,7 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
                                  IndexMetaDataKey::MULTI_ENTRY)) {
       StringPiece slice(it->Value());
       if (!DecodeBool(&slice, &index_multi_entry) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_INDEXES);
+        INTERNAL_CONSISTENCY_ERROR(GET_INDEXES);
 
       s = it->Next();
       if (!s.ok())
@@ -151,7 +159,7 @@ Status ReadIndexes(DatabaseOrTransaction* db_or_transaction,
   }
 
   if (!s.ok())
-    INTERNAL_READ_ERROR_UNTESTED(GET_INDEXES);
+    INTERNAL_READ_ERROR(GET_INDEXES);
 
   return s;
 }
@@ -174,9 +182,14 @@ Status ReadObjectStores(
 
   DCHECK(object_stores->empty());
 
+  Status s;
   std::unique_ptr<TransactionalLevelDBIterator> it =
-      CreateIterator(db_or_transaction);
-  Status s = it->Seek(start_key);
+      CreateIterator(*db_or_transaction, s);
+  if (!s.ok()) {
+    INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
+    return s;
+  }
+  s = it->Seek(start_key);
   while (s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0) {
     ObjectStoreMetaDataKey meta_data_key;
     {
@@ -185,7 +198,7 @@ Status ReadObjectStores(
                 slice.empty();
       DCHECK(ok);
       if (!ok || meta_data_key.MetaDataType() != ObjectStoreMetaDataKey::NAME) {
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
         // Possible stale metadata, but don't fail the load.
         s = it->Next();
         if (!s.ok())
@@ -198,11 +211,11 @@ Status ReadObjectStores(
 
     // TODO(jsbell): Do this by direct key lookup rather than iteration, to
     // simplify.
-    base::string16 object_store_name;
+    std::u16string object_store_name;
     {
       StringPiece slice(it->Value());
       if (!DecodeString(&slice, &object_store_name) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
     }
 
     s = it->Next();
@@ -210,14 +223,14 @@ Status ReadObjectStores(
       break;
     if (!CheckObjectStoreAndMetaDataType(it.get(), stop_key, object_store_id,
                                          ObjectStoreMetaDataKey::KEY_PATH)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+      INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       break;
     }
     IndexedDBKeyPath key_path;
     {
       StringPiece slice(it->Value());
       if (!DecodeIDBKeyPath(&slice, &key_path) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
     }
 
     s = it->Next();
@@ -226,14 +239,14 @@ Status ReadObjectStores(
     if (!CheckObjectStoreAndMetaDataType(
             it.get(), stop_key, object_store_id,
             ObjectStoreMetaDataKey::AUTO_INCREMENT)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+      INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       break;
     }
     bool auto_increment;
     {
       StringPiece slice(it->Value());
       if (!DecodeBool(&slice, &auto_increment) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
     }
 
     s = it->Next();  // Is evictable.
@@ -241,7 +254,7 @@ Status ReadObjectStores(
       break;
     if (!CheckObjectStoreAndMetaDataType(it.get(), stop_key, object_store_id,
                                          ObjectStoreMetaDataKey::EVICTABLE)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+      INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       break;
     }
 
@@ -251,7 +264,7 @@ Status ReadObjectStores(
     if (!CheckObjectStoreAndMetaDataType(
             it.get(), stop_key, object_store_id,
             ObjectStoreMetaDataKey::LAST_VERSION)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+      INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       break;
     }
 
@@ -261,14 +274,14 @@ Status ReadObjectStores(
     if (!CheckObjectStoreAndMetaDataType(
             it.get(), stop_key, object_store_id,
             ObjectStoreMetaDataKey::MAX_INDEX_ID)) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+      INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       break;
     }
     int64_t max_index_id;
     {
       StringPiece slice(it->Value());
       if (!DecodeInt(&slice, &max_index_id) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
     }
 
     s = it->Next();  // [optional] has key path (is not null)
@@ -280,7 +293,7 @@ Status ReadObjectStores(
       {
         StringPiece slice(it->Value());
         if (!DecodeBool(&slice, &has_key_path))
-          INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+          INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
       }
       // This check accounts for two layers of legacy coding:
       // (1) Initially, has_key_path was added to distinguish null vs. string.
@@ -289,7 +302,7 @@ Status ReadObjectStores(
       if (!has_key_path &&
           (key_path.type() == blink::mojom::IDBKeyPathType::String &&
            !key_path.string().empty())) {
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
         break;
       }
       if (!has_key_path)
@@ -305,7 +318,7 @@ Status ReadObjectStores(
             ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER)) {
       StringPiece slice(it->Value());
       if (!DecodeInt(&slice, &key_generator_current_number) || !slice.empty())
-        INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_OBJECT_STORES);
+        INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
 
       // TODO(jsbell): Return key_generator_current_number, cache in
       // object store, and write lazily to backing store.  For now,
@@ -328,7 +341,7 @@ Status ReadObjectStores(
   }
 
   if (!s.ok())
-    INTERNAL_READ_ERROR_UNTESTED(GET_OBJECT_STORES);
+    INTERNAL_READ_ERROR(GET_OBJECT_STORES);
 
   return s;
 }
@@ -344,9 +357,13 @@ Status ReadDatabaseNamesAndVersionsInternal(
       DatabaseNameKey::EncodeStopKeyForOrigin(origin_identifier);
 
   DCHECK(names_and_versions->empty());
-  std::unique_ptr<TransactionalLevelDBIterator> it =
-      CreateIterator(db_or_transaction);
   Status s;
+  std::unique_ptr<TransactionalLevelDBIterator> it =
+      CreateIterator(*db_or_transaction, s);
+  if (!s.ok()) {
+    INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
+    return s;
+  }
   for (s = it->Seek(start_key);
        s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
        s = it->Next()) {
@@ -356,7 +373,7 @@ Status ReadDatabaseNamesAndVersionsInternal(
     if (!DatabaseNameKey::Decode(&slice, &database_name_key) ||
         !slice.empty()) {
       // TODO(dmurph): Change UMA name to ReadDatabaseNamesAndVersionsInternal.
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_DATABASE_NAMES);
+      INTERNAL_CONSISTENCY_ERROR(GET_DATABASE_NAMES);
       continue;
     }
 
@@ -364,7 +381,7 @@ Status ReadDatabaseNamesAndVersionsInternal(
     int64_t database_id = 0;
     StringPiece value_slice(it->Value());
     if (!DecodeInt(&value_slice, &database_id) || !value_slice.empty()) {
-      INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_DATABASE_NAMES);
+      INTERNAL_CONSISTENCY_ERROR(GET_DATABASE_NAMES);
       continue;
     }
 
@@ -398,7 +415,7 @@ template <typename DatabaseOrTransaction>
 Status ReadMetadataForDatabaseNameInternal(
     DatabaseOrTransaction* db_or_transaction,
     const std::string& origin_identifier,
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBDatabaseMetadata* metadata,
     bool* found) {
   IDB_TRACE("IndexedDBMetadataCoding::ReadMetadataForDatabaseName");
@@ -418,11 +435,11 @@ Status ReadMetadataForDatabaseNameInternal(
                                             DatabaseMetaDataKey::USER_VERSION),
                 &metadata->version, found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(GET_IDBDATABASE_METADATA);
     return s;
   }
   if (!*found) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_IDBDATABASE_METADATA);
+    INTERNAL_CONSISTENCY_ERROR(GET_IDBDATABASE_METADATA);
     return InternalInconsistencyStatus();
   }
 
@@ -432,7 +449,7 @@ Status ReadMetadataForDatabaseNameInternal(
   s = indexed_db::GetMaxObjectStoreId(db_or_transaction, metadata->id,
                                       &metadata->max_object_store_id);
   if (!s.ok())
-    INTERNAL_READ_ERROR_UNTESTED(GET_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(GET_IDBDATABASE_METADATA);
 
   // We don't cache this, we just check it if it's there.
   int64_t blob_number_generator_current_number =
@@ -444,7 +461,7 @@ Status ReadMetadataForDatabaseNameInternal(
           metadata->id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER),
       &blob_number_generator_current_number, found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(GET_IDBDATABASE_METADATA);
     return s;
   }
   if (!*found) {
@@ -452,7 +469,7 @@ Status ReadMetadataForDatabaseNameInternal(
     *found = true;
   } else if (!DatabaseMetaDataKey::IsValidBlobNumber(
                  blob_number_generator_current_number)) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_IDBDATABASE_METADATA);
+    INTERNAL_CONSISTENCY_ERROR(GET_IDBDATABASE_METADATA);
     return InternalInconsistencyStatus();
   }
 
@@ -477,7 +494,7 @@ Status IndexedDBMetadataCoding::ReadDatabaseNamesAndVersions(
 Status IndexedDBMetadataCoding::ReadDatabaseNames(
     TransactionalLevelDBDatabase* db,
     const std::string& origin_identifier,
-    std::vector<base::string16>* names) {
+    std::vector<std::u16string>* names) {
   std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   Status s = ReadDatabaseNamesAndVersionsInternal(db, origin_identifier,
                                                   &names_and_versions);
@@ -490,7 +507,7 @@ Status IndexedDBMetadataCoding::ReadDatabaseNames(
 Status IndexedDBMetadataCoding::ReadDatabaseNames(
     TransactionalLevelDBTransaction* transaction,
     const std::string& origin_identifier,
-    std::vector<base::string16>* names) {
+    std::vector<std::u16string>* names) {
   std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   Status s = ReadDatabaseNamesAndVersionsInternal(
       transaction, origin_identifier, &names_and_versions);
@@ -503,7 +520,7 @@ Status IndexedDBMetadataCoding::ReadDatabaseNames(
 Status IndexedDBMetadataCoding::ReadMetadataForDatabaseName(
     TransactionalLevelDBDatabase* db,
     const std::string& origin_identifier,
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBDatabaseMetadata* metadata,
     bool* found) {
   return ReadMetadataForDatabaseNameInternal(db, origin_identifier, name,
@@ -513,7 +530,7 @@ Status IndexedDBMetadataCoding::ReadMetadataForDatabaseName(
 Status IndexedDBMetadataCoding::ReadMetadataForDatabaseName(
     TransactionalLevelDBTransaction* transaction,
     const std::string& origin_identifier,
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBDatabaseMetadata* metadata,
     bool* found) {
   return ReadMetadataForDatabaseNameInternal(transaction, origin_identifier,
@@ -523,7 +540,7 @@ Status IndexedDBMetadataCoding::ReadMetadataForDatabaseName(
 Status IndexedDBMetadataCoding::CreateDatabase(
     TransactionalLevelDBDatabase* db,
     const std::string& origin_identifier,
-    const base::string16& name,
+    const std::u16string& name,
     int64_t version,
     IndexedDBDatabaseMetadata* metadata) {
   // TODO(jsbell): Don't persist metadata if open fails. http://crbug.com/395472
@@ -542,7 +559,7 @@ Status IndexedDBMetadataCoding::CreateDatabase(
   s = PutInt(transaction.get(),
              DatabaseNameKey::Encode(origin_identifier, name), row_id);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(CREATE_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
     return s;
   }
   s = PutVarInt(
@@ -550,7 +567,7 @@ Status IndexedDBMetadataCoding::CreateDatabase(
       DatabaseMetaDataKey::Encode(row_id, DatabaseMetaDataKey::USER_VERSION),
       version);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(CREATE_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
     return s;
   }
   s = PutVarInt(
@@ -559,13 +576,13 @@ Status IndexedDBMetadataCoding::CreateDatabase(
           row_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER),
       DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(CREATE_IDBDATABASE_METADATA);
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
     return s;
   }
 
   s = transaction->Commit();
   if (!s.ok()) {
-    INTERNAL_WRITE_ERROR_UNTESTED(CREATE_IDBDATABASE_METADATA);
+    INTERNAL_WRITE_ERROR(CREATE_IDBDATABASE_METADATA);
     return s;
   }
 
@@ -595,7 +612,7 @@ leveldb::Status IndexedDBMetadataCoding::SetDatabaseVersion(
 Status IndexedDBMetadataCoding::FindDatabaseId(
     TransactionalLevelDBDatabase* db,
     const std::string& origin_identifier,
-    const base::string16& name,
+    const std::u16string& name,
     int64_t* id,
     bool* found) {
   const std::string key = DatabaseNameKey::Encode(origin_identifier, name);
@@ -611,7 +628,7 @@ Status IndexedDBMetadataCoding::CreateObjectStore(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id,
-    base::string16 name,
+    std::u16string name,
     IndexedDBKeyPath key_path,
     bool auto_increment,
     IndexedDBObjectStoreMetadata* metadata) {
@@ -689,7 +706,7 @@ Status IndexedDBMetadataCoding::DeleteObjectStore(
   if (!KeyPrefix::ValidIds(database_id, object_store.id))
     return InvalidDBKeyStatus();
 
-  base::string16 object_store_name;
+  std::u16string object_store_name;
   bool found = false;
   Status s =
       GetString(transaction,
@@ -697,11 +714,11 @@ Status IndexedDBMetadataCoding::DeleteObjectStore(
                                                ObjectStoreMetaDataKey::NAME),
                 &object_store_name, &found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
     return s;
   }
   if (!found) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_CONSISTENCY_ERROR(DELETE_OBJECT_STORE);
     return InternalInconsistencyStatus();
   }
 
@@ -714,7 +731,7 @@ Status IndexedDBMetadataCoding::DeleteObjectStore(
     s = transaction->Remove(
         ObjectStoreNamesKey::Encode(database_id, object_store_name));
     if (!s.ok()) {
-      INTERNAL_WRITE_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+      INTERNAL_WRITE_ERROR(DELETE_OBJECT_STORE);
       return s;
     }
 
@@ -732,15 +749,15 @@ Status IndexedDBMetadataCoding::DeleteObjectStore(
   }
 
   if (!s.ok())
-    INTERNAL_WRITE_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_WRITE_ERROR(DELETE_OBJECT_STORE);
   return s;
 }
 
 Status IndexedDBMetadataCoding::RenameObjectStore(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
-    base::string16 new_name,
-    base::string16* old_name,
+    std::u16string new_name,
+    std::u16string* old_name,
     IndexedDBObjectStoreMetadata* metadata) {
   if (!KeyPrefix::ValidIds(database_id, metadata->id))
     return InvalidDBKeyStatus();
@@ -750,16 +767,16 @@ Status IndexedDBMetadataCoding::RenameObjectStore(
   const std::string new_names_key =
       ObjectStoreNamesKey::Encode(database_id, new_name);
 
-  base::string16 old_name_check;
+  std::u16string old_name_check;
   bool found = false;
   Status s = GetString(transaction, name_key, &old_name_check, &found);
   // TODO(dmurph): Change DELETE_OBJECT_STORE to RENAME_OBJECT_STORE & fix UMA.
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
     return s;
   }
   if (!found || old_name_check != metadata->name) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_CONSISTENCY_ERROR(DELETE_OBJECT_STORE);
     return InternalInconsistencyStatus();
   }
   const std::string old_names_key =
@@ -767,17 +784,17 @@ Status IndexedDBMetadataCoding::RenameObjectStore(
 
   s = PutString(transaction, name_key, new_name);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
     return s;
   }
   s = PutInt(transaction, new_names_key, metadata->id);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
     return s;
   }
   s = transaction->Remove(old_names_key);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(DELETE_OBJECT_STORE);
+    INTERNAL_READ_ERROR(DELETE_OBJECT_STORE);
     return s;
   }
   *old_name = std::move(metadata->name);
@@ -790,7 +807,7 @@ Status IndexedDBMetadataCoding::CreateIndex(
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
-    base::string16 name,
+    std::u16string name,
     IndexedDBKeyPath key_path,
     bool is_unique,
     bool is_multi_entry,
@@ -856,8 +873,8 @@ Status IndexedDBMetadataCoding::RenameIndex(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id,
-    base::string16 new_name,
-    base::string16* old_name,
+    std::u16string new_name,
+    std::u16string* old_name,
     IndexedDBIndexMetadata* metadata) {
   if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata->id))
     return InvalidDBKeyStatus();

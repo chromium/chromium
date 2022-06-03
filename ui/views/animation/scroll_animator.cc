@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 namespace {
@@ -30,12 +30,12 @@ float GetDelta(float v0, float a, float t1, float t2) {
 namespace views {
 
 ScrollAnimator::ScrollAnimator(ScrollDelegate* delegate)
-  : delegate_(delegate),
-    velocity_x_(0.0f),
-    velocity_y_(0.0f),
-    last_t_(0.0f),
-    duration_(0.0f),
-    acceleration_(kDefaultAcceleration) {
+    : delegate_(delegate),
+      velocity_x_(0.0f),
+      velocity_y_(0.0f),
+      last_t_(0.0f),
+      duration_(0.0f),
+      acceleration_(kDefaultAcceleration) {
   DCHECK(delegate);
 }
 
@@ -50,9 +50,9 @@ void ScrollAnimator::Start(float velocity_x, float velocity_y) {
   last_t_ = 0.0f;
   velocity_x_ = velocity_x;
   velocity_y_ = velocity_y;
-  duration_ = -v / acceleration_; // in seconds
+  duration_ = -v / acceleration_;  // in seconds
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  animation_->SetSlideDuration(base::TimeDelta::FromSecondsD(duration_));
+  animation_->SetSlideDuration(base::Seconds(duration_));
   animation_->Show();
 }
 
@@ -63,6 +63,7 @@ void ScrollAnimator::Stop() {
 
 void ScrollAnimator::AnimationEnded(const gfx::Animation* animation) {
   Stop();
+  delegate_->OnFlingScrollEnded();
 }
 
 void ScrollAnimator::AnimationProgressed(const gfx::Animation* animation) {

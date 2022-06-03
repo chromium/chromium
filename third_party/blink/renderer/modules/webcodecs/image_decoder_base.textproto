@@ -1,0 +1,28 @@
+config: {
+  data: '$generated',
+  type: '$generated',
+  prefer_animation: false,
+},
+invocations: [
+  {
+    decode_metadata {}
+  },
+  {
+    decode_image {
+      frame_index: 0,
+      complete_frames_only: true
+    }
+  },
+  {
+    select_track {
+      track_id: 0,
+      selected: true
+    }
+  },
+  {
+    decode_image {
+      frame_index: 0,
+      complete_frames_only: true
+    }
+  }
+]

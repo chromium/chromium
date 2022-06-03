@@ -8,20 +8,17 @@
 
 #include "base/bind.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
 #include "components/viz/client/frame_eviction_manager.h"
-#include "components/viz/common/features.h"
-#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
@@ -44,7 +41,7 @@ void BrowserGpuChannelHostFactorySetApplicationVisible(bool is_visible) {
 void SendOnBackgroundedToGpuService() {
   content::GpuProcessHost::CallOnIO(
       content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindRepeating([](content::GpuProcessHost* host) {
+      base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnBackgrounded();
         }
@@ -54,7 +51,7 @@ void SendOnBackgroundedToGpuService() {
 void SendOnForegroundedToGpuService() {
   content::GpuProcessHost::CallOnIO(
       content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindRepeating([](content::GpuProcessHost* host) {
+      base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnForegrounded();
         }
@@ -82,17 +79,13 @@ CompositorDependenciesAndroid::CompositorDependenciesAndroid()
     : frame_sink_id_allocator_(kDefaultClientId) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  bool enable_viz = features::IsVizDisplayCompositorEnabled();
-  if (!enable_viz) {
-    // The SharedBitmapManager can be null as software compositing is not
-    // supported or used on Android.
-    frame_sink_manager_impl_ = std::make_unique<viz::FrameSinkManagerImpl>(
-        /*shared_bitmap_manager=*/nullptr);
-    surface_utils::ConnectWithLocalFrameSinkManager(
-        &host_frame_sink_manager_, frame_sink_manager_impl_.get());
-  } else {
-    CreateVizFrameSinkManager();
-  }
+  // Set up a callback to automatically re-connect if we lose our connection.
+  // Unretained is safe due to base::NoDestructor.
+  host_frame_sink_manager_.SetConnectionLostCallback(base::BindRepeating(
+      &CompositorDependenciesAndroid::CreateVizFrameSinkManager,
+      base::Unretained(this)));
+
+  CreateVizFrameSinkManager();
 }
 
 CompositorDependenciesAndroid::~CompositorDependenciesAndroid() = default;
@@ -113,18 +106,13 @@ void CompositorDependenciesAndroid::CreateVizFrameSinkManager() {
       std::move(frame_sink_manager_client_receiver),
       base::ThreadTaskRunnerHandle::Get(), std::move(frame_sink_manager));
 
-  // Set up a callback to automatically re-connect if we lose our
-  // connection.
-  host_frame_sink_manager_.SetConnectionLostCallback(base::BindRepeating([]() {
-    CompositorDependenciesAndroid::Get().CreateVizFrameSinkManager();
-  }));
-
   // Set up a pending request which will be run once we've successfully
   // connected to the GPU process.
-  pending_connect_viz_on_io_thread_ = base::BindOnce(
-      &CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnIOThread,
+  pending_connect_viz_on_main_thread_ = base::BindOnce(
+      &CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread,
       std::move(frame_sink_manager_receiver),
-      std::move(frame_sink_manager_client));
+      std::move(frame_sink_manager_client),
+      host_frame_sink_manager_.debug_renderer_settings());
 }
 
 cc::TaskGraphRunner* CompositorDependenciesAndroid::GetTaskGraphRunner() {
@@ -138,25 +126,26 @@ viz::FrameSinkId CompositorDependenciesAndroid::AllocateFrameSinkId() {
 }
 
 void CompositorDependenciesAndroid::TryEstablishVizConnectionIfNeeded() {
-  if (!pending_connect_viz_on_io_thread_)
+  if (!pending_connect_viz_on_main_thread_)
     return;
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 std::move(pending_connect_viz_on_io_thread_));
+  std::move(pending_connect_viz_on_main_thread_).Run();
 }
 
-// Called on IO thread, after a GPU connection has already been established.
-// |gpu_process_host| should only be invalid if a channel has been
+// Called on the GpuProcessHost thread, after a GPU connection has already been
+// established. |gpu_process_host| should only be invalid if a channel has been
 // established and lost. In this case the ConnectionLost callback will be
 // re-run when the request is deleted (goes out of scope).
 // static
-void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnIOThread(
+void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread(
     mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
-    mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client) {
+    mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
+    const viz::DebugRendererSettings& debug_renderer_settings) {
   auto* gpu_process_host = GpuProcessHost::Get();
   if (!gpu_process_host)
     return;
-  gpu_process_host->gpu_host()->ConnectFrameSinkManager(std::move(receiver),
-                                                        std::move(client));
+
+  gpu_process_host->gpu_host()->ConnectFrameSinkManager(
+      std::move(receiver), std::move(client), debug_renderer_settings);
 }
 
 void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
@@ -166,7 +155,7 @@ void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
         base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, low_end_background_cleanup_task_.callback(),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
   }
 }
 
@@ -180,7 +169,7 @@ void CompositorDependenciesAndroid::DoLowEndBackgroundCleanup() {
   // lose all renderer contexts.
   content::GpuProcessHost::CallOnIO(
       content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindRepeating([](content::GpuProcessHost* host) {
+      base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnBackgroundCleanup();
         }

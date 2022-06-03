@@ -13,7 +13,7 @@
        see http://crbug.com/121785 -->
   <?if $(var.Branding) ~= Chrome ?>
     <?define ChromotingHost = "Chrome Remote Desktop Host" ?>
-    <?define Manufacturer = "Google Inc." ?>
+    <?define Manufacturer = "Google LLC" ?>
   <?else?>
     <?define ChromotingHost = "Chromoting Host" ?>
     <?define Manufacturer = "The Chromium Authors" ?>
@@ -27,8 +27,12 @@
 
   <?if $(var.OfficialBuild) != 0 ?>
     <?define ChromotingKeyPath = "Google\Chrome Remote Desktop" ?>
+    <?define UrlForwarderName = "Chrome Remote Desktop URL Forwarder" ?>
+    <?define UrlForwarderProgId = "ChromeRemoteDesktopUrlForwarder" ?>
   <?else?>
     <?define ChromotingKeyPath = "Chromoting" ?>
+    <?define UrlForwarderName = "Chromoting URL Forwarder" ?>
+    <?define UrlForwarderProgId = "ChromotingUrlForwarder" ?>
   <?endif?>
 
   <?define FirewallName = "$(var.ChromotingHost)" ?>
@@ -111,24 +115,14 @@
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion IncludeMinimum="no"
                       Minimum="$(var.Version)"
-                      OnlyDetect="yes"
+                      OnlyDetect="no"
                       Property="NEWERVERSIONDETECTED" />
       <UpgradeVersion IncludeMaximum="yes"
                       IncludeMinimum="yes"
                       Maximum="$(var.Version)"
                       Minimum="0.0.0.0"
                       Property="OLDERVERSIONBEINGUPGRADED" />
-      <!-- Detect versions that didn't handle the usagestats value properly. -->
-      <UpgradeVersion IncludeMaximum="yes"
-                      IncludeMinimum="yes"
-                      Maximum="24.0.1312.29"
-                      Minimum="0.0.0.0"
-                      Property="BROKENUSAGESTATSVERSION" />
     </Upgrade>
-
-    <Condition Message="A later version of [ProductName] is already installed. Setup will now exit.">
-      NOT NEWERVERSIONDETECTED
-    </Condition>
 
     <Media Id="1" Cabinet="chromoting.cab" EmbedCab="yes"/>
 
@@ -179,7 +173,8 @@
                           CategoryMessageFile="[#$(var.CoreBinary)]"
                           EventMessageFile="[#$(var.CoreBinary)]"
                           SupportsErrors="yes"
-                          SupportsInformationals="yes"/>
+                          SupportsInformationals="yes"
+                          SupportsWarnings="yes"/>
       </Component>
 
       <Component Id="remoting_desktop" Guid="*">
@@ -220,6 +215,68 @@
               KeyPath="yes"
               Name="remote_assistance_host_uiaccess.exe"
               Vital="yes"/>
+      </Component>
+
+      <Component Id="remote_open_url" Guid="*">
+        <File Id="remote_open_url.exe"
+              DiskId="1"
+              KeyPath="yes"
+              Name="remote_open_url.exe"
+              Vital="yes"/>
+      </Component>
+
+      <Component Id="remote_open_url_registration" Guid="*">
+        <!-- ProgID -->
+        <RegistryKey Id="remote_open_url_prog_id_reg_key"
+                    Root="HKLM"
+                    Key="SOFTWARE\Classes\$(var.UrlForwarderProgId)"
+                    Action="create">
+          <RegistryKey Key="Application">
+            <RegistryValue Type="string"
+                          Name="ApplicationCompany"
+                          Value="$(var.Manufacturer)"/>
+            <RegistryValue Type="string"
+                          Name="ApplicationName"
+                          Value="@[binaries]$(var.CoreBinary),-119"/>
+            <RegistryValue Type="string"
+                          Name="ApplicationDescription"
+                          Value="@[binaries]$(var.CoreBinary),-120"/>
+            <RegistryValue Type="string"
+                          Name="ApplicationIcon"
+                          Value="[binaries]$(var.CoreBinary),-112"/>
+          </RegistryKey>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string"
+                          Value="[binaries]$(var.CoreBinary),-112"/>
+          </RegistryKey>
+
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string"
+                          Value='"[binaries]remote_open_url.exe" %1'/>
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Capabilities -->
+        <RegistryKey Id="remote_open_url_capabilities_reg_key"
+                    Root="HKLM"
+                    Key="SOFTWARE\$(var.ChromotingKeyPath)\UrlForwarder\Capabilities"
+                    Action="create">
+          <RegistryValue Type="string"
+                        Name="ApplicationDescription"
+                        Value="@[binaries]$(var.CoreBinary),-120"/>
+
+          <RegistryKey Key="URLAssociations">
+            <RegistryValue Type="string"
+                          Name="http"
+                          Value="$(var.UrlForwarderProgId)"/>
+            <RegistryValue Type="string"
+                          Name="https"
+                          Value="$(var.UrlForwarderProgId)"/>
+            <RegistryValue Type="string"
+                          Name="mailto"
+                          Value="$(var.UrlForwarderProgId)"/>
+          </RegistryKey>
+        </RegistryKey>
       </Component>
 
       <Component Id="native_messaging_host_manifest" Guid="*">
@@ -280,9 +337,7 @@
                         Account="LocalSystem"
                         ErrorControl="ignore"
                         Interactive="no">
-          <!-- Configure the service to restart after one minute when it
-               crashes.
-          -->
+          <!-- Configure the service to restart after 1 minute if it crashes -->
           <util:ServiceConfig
               xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
               FirstFailureActionType="restart"
@@ -503,7 +558,7 @@
             <!-- Gives full access to SYSTEM only. -->
             <!-- Cannot use the builtin PermissionEx element because it maps
                  to the MsiLockPermissionsEx table which is not supported on
-                 Windows Installer version 4.5 or lower. Also Cannot use
+                 Windows Installer version 4.5 or lower. Also cannot use
                  PermissionEx in WixUtilExtension because it automatically
                  inherits all the ACLs from the parent. -->
             <Permission User="[WIX_ACCOUNT_LOCALSYSTEM]"
@@ -613,17 +668,13 @@
         <CreateFolder/>
       </Component>
 
-      <!-- Delete the usagestats flag to reset the crash dump reporting settings
-           for existing users. -->
-      <Component Id="delete_usagestats"
-                 Guid="5c73f2b9-b865-426f-81cc-90a27ebb54aa"
-                 KeyPath="yes">
-        <Condition>BROKENUSAGESTATSVERSION</Condition>
-        <RemoveRegistryValue
-            Id="usagestats"
-            Key="SOFTWARE\Google\Update\ClientStateMedium\$(var.OmahaAppid)"
-            Name="usagestats"
-            Root="HKLM" />
+      <Component Id="remoting_logging_registry"
+                 Guid="b640a025-18dd-49b9-b26d-b31252a12f8a">
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\$(var.ChromotingKeyPath)\logging"
+                     Action="create">
+        </RegistryKey>
+        <CreateFolder/>
       </Component>
 
     </DirectoryRef>
@@ -648,16 +699,6 @@
             </RegistryKey>
           </RegistryKey>
         </RegistryKey>
-      </Component>
-    </DirectoryRef>
-
-    <DirectoryRef Id="config_files">
-      <!-- Delete debug.log from previous versions -->
-      <Component Id="delete_debug_log"
-                 Guid="b309082a-e6fa-4dc7-98e4-3d83c896561d">
-        <RemoveFile Id="debug.log"
-                    Name="debug.log"
-                    On="both" />
       </Component>
     </DirectoryRef>
 
@@ -706,8 +747,6 @@
 
     <Feature Id="chromoting_host" Level="1" Title="$(var.ChromotingHost)">
       <ComponentRef Id="credits"/>
-      <ComponentRef Id="delete_debug_log"/>
-      <ComponentRef Id="delete_usagestats"/>
       <?if $(var.OfficialBuild) != 0 ?>
         <ComponentRef Id="omaha_registration"/>
       <?endif?>
@@ -724,6 +763,10 @@
       <ComponentRef Id="remote_assistance_host_manifest"/>
       <ComponentRef Id="remote_assistance_host_registry"/>
       <ComponentRef Id="remote_assistance_host_uiaccess"/>
+
+      <ComponentRef Id="remote_open_url"/>
+      <ComponentRef Id="remote_open_url_registration"/>
+
       <ComponentRef Id="remote_security_key"/>
       <ComponentRef Id="remote_security_key_registration"/>
       <ComponentRef Id="remoting_native_messaging_host"/>
@@ -731,6 +774,7 @@
       <ComponentRef Id="remoting_desktop"/>
       <ComponentRef Id="remoting_host"/>
       <ComponentRef Id="remoting_lib"/>
+      <ComponentRef Id="remoting_logging_registry"/>
       <ComponentRef Id="remoting_pairing_registry"/>
       <ComponentRef Id="remoting_start_host"/>
       <ComponentRef Id="sawbuck_provider"/>
@@ -751,6 +795,42 @@
     <CustomAction Id="set_reinstallmode_property"
                   Property="REINSTALLMODE"
                   Value="amus" />
+
+    <CustomAction Id="make_symbolic_link"
+      Directory="chromoting"
+      ExeCommand='cmd /c mklink /d CurrentVersion ".\$(var.Version)\"'
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
+
+    <CustomAction Id="remove_symbolic_link"
+       Directory="chromoting"
+       ExeCommand='cmd /c rmdir CurrentVersion'
+       Execute="deferred"
+       Impersonate="no"
+       Return="ignore"/>
+
+    <CustomAction Id="remove_logs"
+      Directory="binaries"
+      ExeCommand='cmd /c del /f *.log'
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
+
+    <!-- Prevents errors during installation time when the website client has an
+         active native messaging host instance running. -->
+    <CustomAction Id="kill_me2me_native_message_host"
+      Directory="binaries"
+      ExeCommand='cmd /c taskkill /F /IM remoting_native_messaging_host.exe'
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
+    <CustomAction Id="kill_it2me_native_message_host"
+      Directory="binaries"
+      ExeCommand='cmd /c taskkill /T /F /IM remote_assistance_host.exe'
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
 
     <InstallExecuteSequence>
       <!-- Set REINSTALL=all and REINSTALLMODE=amus if the user reruns the
@@ -778,6 +858,22 @@
       <!-- Schedule RemoveExistingProducts before installing any files.
            See http://msdn.microsoft.com/en-us/library/aa371197.aspx. -->
       <RemoveExistingProducts After="InstallInitialize" />
+
+      <Custom Action="remove_logs" Before="RemoveFiles">
+        Installed AND (NOT MAINTENANCE)
+      </Custom>
+      <Custom Action="remove_symbolic_link" Before="RemoveFiles">
+        Installed AND (NOT MAINTENANCE)
+      </Custom>
+      <Custom Action="kill_it2me_native_message_host" After="InstallInitialize">
+        Installed
+      </Custom>
+      <Custom Action="kill_me2me_native_message_host" After="InstallInitialize">
+        Installed
+      </Custom>
+      <Custom Action="make_symbolic_link" After="InstallFiles">
+        NOT Installed
+      </Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

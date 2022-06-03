@@ -34,13 +34,15 @@ class NET_EXPORT_PRIVATE RTTAndThroughputEstimatesObserver {
       base::TimeDelta transport_rtt,
       int32_t downstream_throughput_kbps) = 0;
 
+  RTTAndThroughputEstimatesObserver(const RTTAndThroughputEstimatesObserver&) =
+      delete;
+  RTTAndThroughputEstimatesObserver& operator=(
+      const RTTAndThroughputEstimatesObserver&) = delete;
+
   virtual ~RTTAndThroughputEstimatesObserver() {}
 
  protected:
   RTTAndThroughputEstimatesObserver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RTTAndThroughputEstimatesObserver);
 };
 
 }  // namespace net

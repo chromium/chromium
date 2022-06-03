@@ -6,12 +6,14 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_IMPL_H_
 
 #include <memory>
+#include <string>
 
-#include "base/containers/flat_map.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_base.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "url/gurl.h"
@@ -32,7 +34,6 @@ class AndroidSmsAppHelperDelegate;
 class AndroidSmsAppInstallingStatusObserver;
 class AndroidSmsPairingStateTracker;
 class AuthTokenValidator;
-class DeviceReenroller;
 class EligibleHostDevicesProvider;
 class GrandfatheredEasyUnlockHostDisabler;
 class HostBackendDelegate;
@@ -48,21 +49,35 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<MultiDeviceSetupBase> BuildInstance(
+    static std::unique_ptr<MultiDeviceSetupBase> Create(
         PrefService* pref_service,
         device_sync::DeviceSyncClient* device_sync_client,
         AuthTokenValidator* auth_token_validator,
         OobeCompletionTracker* oobe_completion_tracker,
         AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider);
+        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+        bool is_secondary_user);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<MultiDeviceSetupBase> CreateInstance(
+        PrefService* pref_service,
+        device_sync::DeviceSyncClient* device_sync_client,
+        AuthTokenValidator* auth_token_validator,
+        OobeCompletionTracker* oobe_completion_tracker,
+        AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
+        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+        bool is_secondary_user) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  MultiDeviceSetupImpl(const MultiDeviceSetupImpl&) = delete;
+  MultiDeviceSetupImpl& operator=(const MultiDeviceSetupImpl&) = delete;
 
   ~MultiDeviceSetupImpl() override;
 
@@ -76,7 +91,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider);
+      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      bool is_secondary_user);
 
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
@@ -89,14 +105,14 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void GetEligibleActiveHostDevices(
       GetEligibleActiveHostDevicesCallback callback) override;
-  void SetHostDevice(const std::string& host_device_id,
+  void SetHostDevice(const std::string& host_instance_id_or_legacy_device_id,
                      const std::string& auth_token,
                      SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void GetHostStatus(GetHostStatusCallback callback) override;
   void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
-                              const base::Optional<std::string>& auth_token,
+                              const absl::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
@@ -106,7 +122,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
-      const std::string& host_device_id,
+      const std::string& host_instance_id_or_legacy_device_id,
       mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
       override;
 
@@ -120,7 +136,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   // Attempts to set the host device, returning a boolean of whether the attempt
   // was successful.
-  bool AttemptSetHost(const std::string& host_device_id);
+  bool AttemptSetHost(const std::string& host_instance_id_or_legacy_device_id);
   bool IsAuthTokenRequiredForFeatureStateChange(mojom::Feature feature,
                                                 bool enabled);
 
@@ -132,18 +148,16 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   std::unique_ptr<HostStatusProvider> host_status_provider_;
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;
-  std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
-  std::unique_ptr<DeviceReenroller> device_reenroller_;
+  std::unique_ptr<WifiSyncFeatureManager> wifi_sync_feature_manager_;
+  std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<AndroidSmsAppInstallingStatusObserver>
       android_sms_app_installing_host_observer_;
   AuthTokenValidator* auth_token_validator_;
 
   mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
   mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupImpl);
 };
 
 }  // namespace multidevice_setup

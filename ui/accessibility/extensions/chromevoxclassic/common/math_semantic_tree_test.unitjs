@@ -26,7 +26,7 @@ CvoxSemanticTreeUnitTest.prototype = {
   /** @override */
   setUp: function() {
     this.nodeCounter = 0;
-    this.xpathBlacklist = [];
+    this.xpathDenylist = [];
     this.brief = true;
     this.setupAttributes();
   },
@@ -57,11 +57,11 @@ CvoxSemanticTreeUnitTest.prototype = {
   },
 
   /**
-   * Removes XML nodes according to the XPath elements in the blacklist.
+   * Removes XML nodes according to the XPath elements in the denylist.
    * @param {Node} xml Xml representation of the semantic node.
    */
   customizeXml: function(xml) {
-    this.xpathBlacklist.forEach(
+    this.xpathDenylist.forEach(
         function(xpath) {
           var removes = cvox.XpathUtil.evalXPath(xpath, xml);
           removes.forEach(
@@ -1133,7 +1133,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedFences', function() {
  */
 TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedFencesWithBars', function() {
   this.brief = true;
-  this.xpathBlacklist = ['descendant::punctuated/content'];
+  this.xpathDenylist = ['descendant::punctuated/content'];
   // Set notation.
   this.executeTreeTest(
       '<mrow><mo>{</mo><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo>' +
@@ -1358,7 +1358,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedFencesWithBars', function() {
       '<identifier>z</identifier>' +
       '</children>' +
       '</punctuated>');
-  this.xpathBlacklist = [];
+  this.xpathDenylist = [];
 });
 
 
@@ -1367,7 +1367,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedFencesWithBars', function() {
  */
 TEST_F('CvoxSemanticTreeUnitTest', 'StreeOpeningFencesOnly', function() {
   this.brief = true;
-  this.xpathBlacklist = ['descendant::punctuated/content'];
+  this.xpathDenylist = ['descendant::punctuated/content'];
   // Single.
   this.executeTreeTest(
       '<mrow><mo>[</mo></mrow>',
@@ -1460,7 +1460,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeOpeningFencesOnly', function() {
       '<identifier>f</identifier>' +
       '</children>' +
       '</punctuated>');
-  this.xpathBlacklist = [];
+  this.xpathDenylist = [];
 });
 
 
@@ -1469,7 +1469,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeOpeningFencesOnly', function() {
  */
 TEST_F('CvoxSemanticTreeUnitTest', 'StreeClosingFencesOnly', function() {
   this.brief = true;
-  this.xpathBlacklist = ['descendant::punctuated/content'];
+  this.xpathDenylist = ['descendant::punctuated/content'];
   // Single.
   this.executeTreeTest(
       '<mrow><mo>]</mo></mrow>',
@@ -1555,7 +1555,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeClosingFencesOnly', function() {
       '<identifier>f</identifier>' +
       '</children>' +
       '</punctuated>');
-  this.xpathBlacklist = [];
+  this.xpathDenylist = [];
 });
 
 
@@ -1564,7 +1564,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeClosingFencesOnly', function() {
  */
 TEST_F('CvoxSemanticTreeUnitTest', 'StreeNeutralFencesOnly', function() {
   this.brief = true;
-  this.xpathBlacklist = ['descendant::punctuated/content'];
+  this.xpathDenylist = ['descendant::punctuated/content'];
   // Single.
   this.executeTreeTest(
       '<mrow><mo>|</mo></mrow>',
@@ -1662,7 +1662,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeNeutralFencesOnly', function() {
       '<identifier>z</identifier>' +
       '</children>' +
       '</punctuated>');
-  this.xpathBlacklist = [];
+  this.xpathDenylist = [];
 });
 
 
@@ -1671,7 +1671,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeNeutralFencesOnly', function() {
  */
 TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedUnmatchedFences', function() {
   this.brief = true;
-  this.xpathBlacklist = ['descendant::punctuated/content'];
+  this.xpathDenylist = ['descendant::punctuated/content'];
   // Close, neutral, open.
   this.executeTreeTest(
       '<mrow><mo>]</mo><mo>&#x2016;</mo><mi>b</mi><mo>|</mo><mi>c</mi>' +
@@ -1908,7 +1908,7 @@ TEST_F('CvoxSemanticTreeUnitTest', 'StreeMixedUnmatchedFences', function() {
       '</prefixop>' +
       '</children>' +
       '</punctuated>');
-  this.xpathBlacklist = [];
+  this.xpathDenylist = [];
 });
 
 

@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/frame_paint_timing.h"
@@ -19,6 +21,21 @@
 
 namespace blink {
 
+namespace {
+
+FloatQuad GetQuadForTraceEvent(const LocalFrameView& frame_view,
+                               const CullRect& cull_rect) {
+  FloatQuad quad(FloatRect(IntRect(cull_rect.Rect())));
+  if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+    quad.Move(FloatSize(owner->PhysicalContentBoxOffset()));
+    owner->LocalToAbsoluteQuad(
+        quad, kTraverseDocumentBoundaries | kUseGeometryMapperMode);
+  }
+  return quad;
+}
+
+}  // namespace
+
 bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context,
@@ -29,9 +46,9 @@ void FramePainter::Paint(GraphicsContext& context,
 
   GetFrameView().NotifyPageThatContentAreaWillPaint();
 
-  CullRect document_cull_rect(
-      Intersection(cull_rect.Rect(), GetFrameView().FrameRect()));
-  document_cull_rect.MoveBy(-GetFrameView().Location());
+  CullRect document_cull_rect(gfx::IntersectRects(
+      cull_rect.Rect(), ToGfxRect(GetFrameView().FrameRect())));
+  document_cull_rect.Move(-GetFrameView().Location().OffsetFromOrigin());
 
   if (document_cull_rect.Rect().IsEmpty())
     return;
@@ -61,12 +78,14 @@ void FramePainter::PaintContents(GraphicsContext& context,
   // TODO(wangxianzhu): The following check should be stricter, but currently
   // this is blocked by the svg root issue (crbug.com/442939).
   DCHECK(document->Lifecycle().GetState() >=
-         DocumentLifecycle::kCompositingClean);
+         DocumentLifecycle::kCompositingAssignmentsClean);
 
   FramePaintTiming frame_paint_timing(context, &GetFrameView().GetFrame());
-  TRACE_EVENT1("devtools.timeline,rail", "Paint", "data",
-               inspector_paint_event::Data(
-                   layout_view, PhysicalRect(cull_rect.Rect()), nullptr));
+
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+      "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
+      &GetFrameView().GetFrame(), layout_view,
+      GetQuadForTraceEvent(GetFrameView(), cull_rect), /*layer_id=*/0);
 
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;
@@ -74,9 +93,8 @@ void FramePainter::PaintContents(GraphicsContext& context,
   FontCachePurgePreventer font_cache_purge_preventer;
 
   PaintLayerFlags root_layer_paint_flags = 0;
-  // This will prevent clipping the root PaintLayer to its visible content
-  // rect when root layer scrolling is enabled.
-  if (document->IsCapturingLayout())
+  // This will prevent clipping the root PaintLayer to its visible content rect.
+  if (document->IsPrintingOrPaintingPreview())
     root_layer_paint_flags = kPaintLayerPaintingOverflowContents;
 
   PaintLayer* root_layer = layout_view->Layer();

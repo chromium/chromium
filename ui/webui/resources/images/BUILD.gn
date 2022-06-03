@@ -1,0 +1,69 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_images"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    # Component apps common image resources - 1x
+    "apps/topbar_button_close.png",
+    "apps/topbar_button_maximize.png",
+    "apps/topbar_button_minimize.png",
+
+    # Component apps common image resources - 2x
+    "2x/apps/topbar_button_close.png",
+    "2x/apps/topbar_button_maximize.png",
+    "2x/apps/topbar_button_minimize.png",
+
+    # Non-apps images
+    "add.svg",
+    "cancel_red.svg",
+    "check_circle_green.svg",
+    "check.png",
+    "checkbox_black.png",
+    "checkbox_white.png",
+    "disabled_select.png",
+    "error.svg",
+    "icon_copy_content.svg",
+    "icon_cancel.svg",
+    "icon_file.png",
+    "icon_search.svg",
+    "icon_refresh.svg",
+    "open_in_new.svg",
+    "select.png",
+    "throbber_medium.svg",
+    "throbber_small.svg",
+    "dark/icon_search.svg",
+  ]
+
+  if (!is_android && !is_ios) {
+    input_files += [
+      "200-logo_googleg.png",
+      "arrow_down.svg",
+      "arrow_right.svg",
+      "business.svg",
+      "chrome_logo_dark.svg",
+      "dark/arrow_down.svg",
+      "icon_arrow_back.svg",
+      "icon_arrow_dropdown.svg",
+      "icon_bookmark.svg",
+      "icon_clear.svg",
+      "icon_clock.svg",
+      "icon_delete_gray.svg",
+      "icon_edit.svg",
+      "icon_expand_less.svg",
+      "icon_expand_more.svg",
+      "icon_more_vert.svg",
+      "icon_picture_delete.svg",
+      "icon_settings.svg",
+      "icon_visibility_off.svg",
+      "icon_visibility.svg",
+    ]
+  }
+  resource_path_prefix = "images"
+}

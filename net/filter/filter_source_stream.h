@@ -30,6 +30,9 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
   // |upstream| cannot be null.
   FilterSourceStream(SourceType type, std::unique_ptr<SourceStream> upstream);
 
+  FilterSourceStream(const FilterSourceStream&) = delete;
+  FilterSourceStream& operator=(const FilterSourceStream&) = delete;
+
   ~FilterSourceStream() override;
 
   // SourceStream implementation.
@@ -113,8 +116,6 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
 
   // Reading from |upstream_| has returned 0 byte or an error code.
   bool upstream_end_reached_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterSourceStream);
 };
 
 }  // namespace net

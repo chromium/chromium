@@ -5,12 +5,11 @@
 // https://streams.spec.whatwg.org/#blqs-class
 
 [
-    Exposed=(Window,Worker,Worklet),
-    MeasureAs=ByteLengthQueuingStrategyConstructor
+    Exposed=(Window,Worker,Worklet)
 ] interface ByteLengthQueuingStrategy {
-    [CallWith=ScriptState] constructor([PermissiveDictionaryConversion] QueuingStrategyInit init);
-    [CallWith=ScriptState] readonly attribute any highWaterMark;
+    [CallWith=ScriptState, MeasureAs=ByteLengthQueuingStrategyConstructor] constructor(QueuingStrategyInit init);
+    readonly attribute unrestricted double highWaterMark;
 
-    // size is an accessor that returns a function.
+    // The standard specifies "Function" but the IDL compiler doesn't like it.
     [CallWith=ScriptState] readonly attribute any size;
 };

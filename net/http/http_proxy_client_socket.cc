@@ -4,10 +4,10 @@
 
 #include "net/http/http_proxy_client_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -15,6 +15,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/proxy_server.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -382,8 +383,8 @@ int HttpProxyClientSocket::DoSendRequest() {
 
     if (proxy_delegate_) {
       HttpRequestHeaders proxy_delegate_headers;
-      proxy_delegate_->OnBeforeHttp1TunnelRequest(proxy_server_,
-                                                  &proxy_delegate_headers);
+      proxy_delegate_->OnBeforeTunnelRequest(proxy_server_,
+                                             &proxy_delegate_headers);
       extra_headers.MergeFrom(proxy_delegate_headers);
     }
 
@@ -401,8 +402,8 @@ int HttpProxyClientSocket::DoSendRequest() {
   }
 
   parser_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
-  http_stream_parser_.reset(new HttpStreamParser(
-      socket_.get(), is_reused_, &request_, parser_buf_.get(), net_log_));
+  http_stream_parser_ = std::make_unique<HttpStreamParser>(
+      socket_.get(), is_reused_, &request_, parser_buf_.get(), net_log_);
   return http_stream_parser_->SendRequest(request_line_, request_headers_,
                                           traffic_annotation_, &response_,
                                           io_callback_);
@@ -434,8 +435,8 @@ int HttpProxyClientSocket::DoReadHeadersComplete(int result) {
       response_.headers.get());
 
   if (proxy_delegate_) {
-    int rv = proxy_delegate_->OnHttp1TunnelHeadersReceived(proxy_server_,
-                                                           *response_.headers);
+    int rv = proxy_delegate_->OnTunnelHeadersReceived(proxy_server_,
+                                                      *response_.headers);
     if (rv != OK) {
       DCHECK_NE(ERR_IO_PENDING, rv);
       return rv;
@@ -463,8 +464,7 @@ int HttpProxyClientSocket::DoReadHeadersComplete(int result) {
       // authentication code is smart enough to avoid being tricked by an
       // active network attacker.
       // The next state is intentionally not set as it should be STATE_NONE;
-      if (!SanitizeProxyAuth(&response_))
-        return ERR_TUNNEL_CONNECTION_FAILED;
+      SanitizeProxyAuth(response_);
       return HandleProxyAuthChallenge(auth_.get(), &response_, net_log_);
 
     default:

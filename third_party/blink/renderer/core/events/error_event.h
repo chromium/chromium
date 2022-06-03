@@ -34,15 +34,18 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/error_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class ErrorEventInit;
 
 class CORE_EXPORT ErrorEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -103,7 +106,7 @@ class CORE_EXPORT ErrorEvent final : public Event {
 
   void SetUnsanitizedMessage(const String&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String unsanitized_message_;
@@ -113,7 +116,10 @@ class CORE_EXPORT ErrorEvent final : public Event {
   scoped_refptr<DOMWrapperWorld> world_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(ErrorEvent);
+template <>
+struct DowncastTraits<ErrorEvent> {
+  static bool AllowFrom(const Event& event) { return event.IsErrorEvent(); }
+};
 
 }  // namespace blink
 

@@ -64,7 +64,7 @@ namespace {
 // cannot be acquired. Use the latest Android release with a higher bug fix
 // version to avoid unnecessarily comparison errors with the latest release.
 // This should be manually kept up to date on each Android release.
-const int kDefaultAndroidMajorVersion = 10;
+const int kDefaultAndroidMajorVersion = 12;
 const int kDefaultAndroidMinorVersion = 0;
 const int kDefaultAndroidBugfixVersion = 99;
 
@@ -213,6 +213,12 @@ std::string SysInfo::GetAndroidBuildID() {
   char os_build_id_str[PROP_VALUE_MAX];
   __system_property_get("ro.build.id", os_build_id_str);
   return std::string(os_build_id_str);
+}
+
+std::string SysInfo::GetAndroidHardwareEGL() {
+  char os_hardware_egl_str[PROP_VALUE_MAX];
+  __system_property_get("ro.hardware.egl", os_hardware_egl_str);
+  return std::string(os_hardware_egl_str);
 }
 
 int SysInfo::DalvikHeapSizeMB() {

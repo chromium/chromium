@@ -21,7 +21,8 @@ struct CapabilityWin {
       : media_type_index(media_type_index),
         supported_format(format),
         info_header(),
-        stream_index(0) {}
+        stream_index(0),
+        source_pixel_format(format.pixel_format) {}
 
   // Used by VideoCaptureDeviceWin.
   CapabilityWin(int media_type_index,
@@ -30,16 +31,19 @@ struct CapabilityWin {
       : media_type_index(media_type_index),
         supported_format(format),
         info_header(info_header),
-        stream_index(0) {}
+        stream_index(0),
+        source_pixel_format(format.pixel_format) {}
 
   // Used by VideoCaptureDeviceMFWin.
   CapabilityWin(int media_type_index,
                 const VideoCaptureFormat& format,
-                int stream_index)
+                int stream_index,
+                VideoPixelFormat source_format)
       : media_type_index(media_type_index),
         supported_format(format),
         info_header(),
-        stream_index(stream_index) {}
+        stream_index(stream_index),
+        source_pixel_format(source_format) {}
 
   const int media_type_index;
   const VideoCaptureFormat supported_format;
@@ -49,6 +53,10 @@ struct CapabilityWin {
 
   // |stream_index| is only valid if MediaFoundation is used.
   const int stream_index;
+
+  // |source_pixel_format| may differ from |supported_format|
+  // if MediaFoundation is used.
+  VideoPixelFormat source_pixel_format;
 };
 
 typedef std::list<CapabilityWin> CapabilityList;

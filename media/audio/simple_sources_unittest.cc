@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/test_data.h"

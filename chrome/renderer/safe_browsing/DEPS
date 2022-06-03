@@ -1,8 +1,13 @@
 include_rules = [
-  "+components/safe_browsing/common",
-  "+components/safe_browsing/proto/csd.pb.h",
-  "+components/safe_browsing/renderer",
-  "+components/safe_browsing/features.h",
+  "+components/paint_preview/common",
+  "+components/safe_browsing/content/renderer",
+  "+components/safe_browsing/content/password_protection/visual_utils.h",
+  "+components/safe_browsing/core/common",
+  "+components/safe_browsing/core/fbs/client_model_generated.h",
+  "+components/safe_browsing/core/common/proto/csd.pb.h",
+  "+components/safe_browsing/core/common/proto/client_model.pb.h",
+  "+components/safe_browsing/core/common/features.h",
+  "+cc/paint",
   "+third_party/smhasher",
 ]
 

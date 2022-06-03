@@ -15,8 +15,8 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/logging.h"
 #include "base/win/winrt_foundation_helpers.h"
 
 namespace base {
@@ -77,14 +77,24 @@ class VectorIterator
   }
 
   IFACEMETHODIMP MoveNext(boolean* has_current) override {
-    ++current_index_;
     *has_current = FALSE;
-
-    HRESULT hr = get_HasCurrent(has_current);
+    unsigned size;
+    HRESULT hr = view_->get_Size(&size);
     if (FAILED(hr))
       return hr;
 
-    return *has_current ? hr : E_BOUNDS;
+    // Check if we're already past the last item.
+    if (current_index_ >= size)
+      return E_BOUNDS;
+
+    // Move to the next item.
+    current_index_++;
+
+    // Set |has_current| to TRUE if we're still on a valid item.
+    if (current_index_ < size)
+      *has_current = TRUE;
+
+    return hr;
   }
 
   IFACEMETHODIMP GetMany(unsigned capacity,
@@ -142,7 +152,7 @@ class VectorView
     vector_->add_VectorChanged(this, &vector_changed_token_);
   }
 
-  ~VectorView() {
+  ~VectorView() override {
     if (vector_)
       vector_->remove_VectorChanged(vector_changed_token_);
   }
@@ -374,7 +384,7 @@ class Vector
  private:
   ~Vector() override {
     // Handlers should not outlive the Vector. Furthermore, they must ensure
-    // they are unregistered before the the handler is destroyed. This implies
+    // they are unregistered before the handler is destroyed. This implies
     // there should be no handlers left when the Vector is destructed.
     DCHECK(handlers_.empty());
   }

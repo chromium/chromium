@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_CAN_MAKE_PAYMENT_RESPOND_WITH_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_CAN_MAKE_PAYMENT_RESPOND_WITH_OBSERVER_H_
 
+#include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
@@ -25,15 +26,22 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
                                     WaitUntilObserver*);
   ~CanMakePaymentRespondWithObserver() override = default;
 
-  void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
+  void OnResponseRejected(mojom::blink::ServiceWorkerResponseError) override;
   void OnResponseFulfilled(ScriptState*,
                            const ScriptValue&,
-                           ExceptionState::ContextType,
-                           const char* interface_name,
-                           const char* property_name) override;
+                           const ExceptionContext&) override;
   void OnNoResponse() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
+
+  // Observes the given promise and calls OnResponseRejected() or
+  // OnResponseFulfilled().
+  void ObservePromiseResponse(ScriptState*, ScriptPromise, ExceptionState&);
+
+ private:
+  void Respond(
+      payments::mojom::blink::CanMakePaymentEventResponseType response_type,
+      bool can_make_payment);
 };
 
 }  // namespace blink

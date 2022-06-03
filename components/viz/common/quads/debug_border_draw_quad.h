@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_DEBUG_BORDER_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_DEBUG_BORDER_DRAW_QUAD_H_
 
-#include <memory>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -20,15 +18,15 @@ class VIZ_COMMON_EXPORT DebugBorderDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              SkColor color,
-              int width);
+              SkColor c,
+              int w);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              SkColor color,
-              int width);
+              SkColor c,
+              int w);
 
   SkColor color = SK_ColorTRANSPARENT;
   int width = 0;

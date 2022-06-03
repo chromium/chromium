@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -13,15 +14,14 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
@@ -37,6 +37,7 @@
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/cert/pem.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/ssl_server_socket.h"
@@ -118,6 +119,9 @@ class MockTCPSocket : public net::MockTCPClientSocket {
     set_enable_read_if_ready(true);
   }
 
+  MockTCPSocket(const MockTCPSocket&) = delete;
+  MockTCPSocket& operator=(const MockTCPSocket&) = delete;
+
   int Connect(net::CompletionOnceCallback callback) override {
     if (do_nothing_) {
       // Stall the I/O event loop.
@@ -128,20 +132,19 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 
  private:
   bool do_nothing_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTCPSocket);
 };
 
 class CompleteHandler {
  public:
   CompleteHandler() {}
+
+  CompleteHandler(const CompleteHandler&) = delete;
+  CompleteHandler& operator=(const CompleteHandler&) = delete;
+
   MOCK_METHOD1(OnCloseComplete, void(int result));
   MOCK_METHOD1(OnConnectComplete, void(CastSocket* socket));
   MOCK_METHOD1(OnWriteComplete, void(int result));
   MOCK_METHOD1(OnReadComplete, void(int result));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompleteHandler);
 };
 
 class TestCastSocketBase : public CastSocketImpl {
@@ -163,6 +166,10 @@ class TestCastSocketBase : public CastSocketImpl {
     SetPeerCertForTesting(
         net::ImportCertFromFile(GetTestCertsDirectory(), "self_signed.pem"));
   }
+
+  TestCastSocketBase(const TestCastSocketBase&) = delete;
+  TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
+
   ~TestCastSocketBase() override {}
 
   void SetVerifyChallengeResult(bool value) {
@@ -190,9 +197,6 @@ class TestCastSocketBase : public CastSocketImpl {
   bool verify_challenge_result_;
   bool verify_challenge_disallow_;
   std::unique_ptr<base::MockOneShotTimer> mock_timer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCastSocketBase);
 };
 
 class MockTestCastSocket : public TestCastSocketBase {
@@ -201,8 +205,8 @@ class MockTestCastSocket : public TestCastSocketBase {
       network::mojom::NetworkContext* network_context,
       const CastSocketOpenParams& open_params,
       Logger* logger) {
-    return std::unique_ptr<MockTestCastSocket>(
-        new MockTestCastSocket(network_context, open_params, logger));
+    return std::make_unique<MockTestCastSocket>(network_context, open_params,
+                                                logger);
   }
 
   using TestCastSocketBase::TestCastSocketBase;
@@ -211,6 +215,9 @@ class MockTestCastSocket : public TestCastSocketBase {
                      const CastSocketOpenParams& open_params,
                      Logger* logger)
       : TestCastSocketBase(network_context, open_params, logger) {}
+
+  MockTestCastSocket(const MockTestCastSocket&) = delete;
+  MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
   ~MockTestCastSocket() override {}
 
@@ -232,22 +239,24 @@ class MockTestCastSocket : public TestCastSocketBase {
 
  private:
   MockCastTransport* mock_transport_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTestCastSocket);
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(net::IPEndPoint ip) : ip_(ip) {}
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   // Socket connection helpers.
   void SetupTcpConnect(net::IoMode mode, int result) {
-    tcp_connect_data_.reset(new net::MockConnect(mode, result, ip_));
+    tcp_connect_data_ = std::make_unique<net::MockConnect>(mode, result, ip_);
   }
   void SetupSslConnect(net::IoMode mode, int result) {
-    ssl_connect_data_.reset(new net::MockConnect(mode, result, ip_));
+    ssl_connect_data_ = std::make_unique<net::MockConnect>(mode, result, ip_);
   }
 
   // Socket I/O helpers.
@@ -298,6 +307,7 @@ class TestSocketFactory : public net::ClientSocketFactory {
   std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
       const net::AddressList&,
       std::unique_ptr<net::SocketPerformanceWatcher>,
+      net::NetworkQualityEstimator*,
       net::NetLog*,
       const net::NetLogSource&) override {
     if (tcp_client_socket_)
@@ -367,8 +377,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
   bool tcp_unresponsive_ = false;
   std::unique_ptr<net::TransportClientSocket> tcp_client_socket_;
   base::OnceClosure tls_socket_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 class CastSocketTestBase : public testing::Test {
@@ -378,10 +386,13 @@ class CastSocketTestBase : public testing::Test {
         url_request_context_(true),
         logger_(new Logger()),
         observer_(new MockCastSocketObserver()),
-        socket_open_params_(
-            CreateIPEndPointForTest(),
-            base::TimeDelta::FromMilliseconds(kDistantTimeoutMillis)),
+        socket_open_params_(CreateIPEndPointForTest(),
+                            base::Milliseconds(kDistantTimeoutMillis)),
         client_socket_factory_(socket_open_params_.ip_endpoint) {}
+
+  CastSocketTestBase(const CastSocketTestBase&) = delete;
+  CastSocketTestBase& operator=(const CastSocketTestBase&) = delete;
+
   ~CastSocketTestBase() override {}
 
   void SetUp() override {
@@ -412,12 +423,13 @@ class CastSocketTestBase : public testing::Test {
   std::unique_ptr<MockCastSocketObserver> observer_;
   CastSocketOpenParams socket_open_params_;
   TestSocketFactory client_socket_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastSocketTestBase);
 };
 
 class MockCastSocketTest : public CastSocketTestBase {
+ public:
+  MockCastSocketTest(const MockCastSocketTest&) = delete;
+  MockCastSocketTest& operator=(const MockCastSocketTest&) = delete;
+
  protected:
   MockCastSocketTest() {}
 
@@ -438,7 +450,7 @@ class MockCastSocketTest : public CastSocketTestBase {
     socket_->SetupMockTransport();
     CastMessage challenge_proto = CreateAuthChallenge();
     EXPECT_CALL(*socket_->GetMockTransport(),
-                SendMessage(EqualsProto(challenge_proto), _))
+                SendMessage_(EqualsProto(challenge_proto), _))
         .WillOnce(PostCompletionCallbackTask<1>(net::OK));
     EXPECT_CALL(*socket_->GetMockTransport(), Start());
     EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -452,12 +464,13 @@ class MockCastSocketTest : public CastSocketTestBase {
   }
 
   std::unique_ptr<MockTestCastSocket> socket_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastSocketTest);
 };
 
 class SslCastSocketTest : public CastSocketTestBase {
+ public:
+  SslCastSocketTest(const SslCastSocketTest&) = delete;
+  SslCastSocketTest& operator=(const SslCastSocketTest&) = delete;
+
  protected:
   SslCastSocketTest() {}
 
@@ -481,15 +494,15 @@ class SslCastSocketTest : public CastSocketTestBase {
     server_context_ = CreateSSLServerContext(
         server_cert_.get(), *server_private_key_, server_ssl_config_);
 
-    tcp_server_socket_.reset(
-        new net::TCPServerSocket(nullptr, net::NetLogSource()));
+    tcp_server_socket_ =
+        std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
     ASSERT_EQ(net::OK,
               tcp_server_socket_->ListenWithAddressAndPort("127.0.0.1", 0, 1));
     net::IPEndPoint server_address;
     ASSERT_EQ(net::OK, tcp_server_socket_->GetLocalAddress(&server_address));
-    tcp_client_socket_.reset(
-        new net::TCPClientSocket(net::AddressList(server_address), nullptr,
-                                 nullptr, net::NetLogSource()));
+    tcp_client_socket_ = std::make_unique<net::TCPClientSocket>(
+        net::AddressList(server_address), nullptr, nullptr, nullptr,
+        net::NetLogSource());
 
     std::unique_ptr<net::StreamSocket> accepted_socket;
     accept_result_ = tcp_server_socket_->Accept(
@@ -532,11 +545,12 @@ class SslCastSocketTest : public CastSocketTestBase {
   std::unique_ptr<crypto::RSAPrivateKey> ReadTestKeyFromPEM(
       const base::StringPiece& name) {
     base::FilePath key_path = GetTestCertsDirectory().AppendASCII(name);
-    std::vector<std::string> headers({"PRIVATE KEY"});
     std::string pem_data;
     if (!base::ReadFileToString(key_path, &pem_data)) {
       return nullptr;
     }
+
+    const std::vector<std::string> headers({"PRIVATE KEY"});
     net::PEMTokenizer pem_tokenizer(pem_data, headers);
     if (!pem_tokenizer.GetNext()) {
       return nullptr;
@@ -600,9 +614,6 @@ class SslCastSocketTest : public CastSocketTestBase {
   std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SslCastSocketTest);
 };
 
 }  // namespace
@@ -654,7 +665,7 @@ TEST_F(MockCastSocketTest, TestConnectAuthMessageCorrupted) {
 
   CastMessage challenge_proto = CreateAuthChallenge();
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(challenge_proto), _))
+              SendMessage_(EqualsProto(challenge_proto), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   EXPECT_CALL(*socket_->GetMockTransport(), Start());
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -822,7 +833,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeSendError) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::ERR_CONNECTION_RESET));
 
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -842,7 +853,7 @@ TEST_F(MockCastSocketTest, TestConnectDestroyedAfterChallengeSent) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::ERR_CONNECTION_RESET));
   socket_->Connect(base::BindOnce(&CompleteHandler::OnConnectComplete,
                                   base::Unretained(&handler_)));
@@ -859,7 +870,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeReplyReceiveError) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   client_socket_factory()->AddReadResult(net::SYNCHRONOUS, net::ERR_FAILED);
   EXPECT_CALL(*observer_, OnError(_, ChannelError::CAST_SOCKET_ERROR));
@@ -887,7 +898,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeVerificationFails) {
   EXPECT_CALL(*observer_, OnError(_, ChannelError::AUTHENTICATION_ERROR));
   CastMessage challenge_proto = CreateAuthChallenge();
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(challenge_proto), _))
+              SendMessage_(EqualsProto(challenge_proto), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
   EXPECT_CALL(*socket_->GetMockTransport(), Start());
@@ -1054,7 +1065,7 @@ TEST_F(MockCastSocketTest, TestOpenChannelClosedSocket) {
 }
 
 // https://crbug.com/874491, flaky on Win and Mac
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_APPLE)
 #define MAYBE_TestConnectEndToEndWithRealSSL \
   DISABLED_TestConnectEndToEndWithRealSSL
 #else

@@ -24,9 +24,14 @@ namespace remoting {
 // webapp.
 class NativeMessagingReader {
  public:
-  typedef base::Callback<void(std::unique_ptr<base::Value>)> MessageCallback;
+  typedef base::RepeatingCallback<void(std::unique_ptr<base::Value>)>
+      MessageCallback;
 
   explicit NativeMessagingReader(base::File file);
+
+  NativeMessagingReader(const NativeMessagingReader&) = delete;
+  NativeMessagingReader& operator=(const NativeMessagingReader&) = delete;
+
   ~NativeMessagingReader();
 
   // Begin reading messages from the Native Messaging client webapp, calling
@@ -34,7 +39,8 @@ class NativeMessagingReader {
   // EOF or error is encountered. This method is asynchronous - the callbacks
   // will be run on the same thread via PostTask. The caller should be prepared
   // for these callbacks to be invoked right up until this object is destroyed.
-  void Start(MessageCallback message_callback, base::Closure eof_callback);
+  void Start(const MessageCallback& message_callback,
+             base::OnceClosure eof_callback);
 
  private:
   class Core;
@@ -53,7 +59,7 @@ class NativeMessagingReader {
 
   // Caller-supplied message and end-of-file callbacks.
   MessageCallback message_callback_;
-  base::Closure eof_callback_;
+  base::OnceClosure eof_callback_;
 
   // Separate thread used to read from the stream without blocking the main
   // thread. net::FileStream's async API cannot be used here because, on
@@ -64,8 +70,6 @@ class NativeMessagingReader {
   // Allows the reader to be deleted safely even when tasks may be pending on
   // it.
   base::WeakPtrFactory<NativeMessagingReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingReader);
 };
 
 }  // namespace remoting

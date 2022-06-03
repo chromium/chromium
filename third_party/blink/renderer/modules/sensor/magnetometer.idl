@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/magnetometer/#magnetometer-interface
 
 [
     Exposed=Window,
     RuntimeEnabled=SensorExtraClasses,
-    SecureContext,
-    MeasureAs=MagnetometerConstructor
+    SecureContext
 ] interface Magnetometer : Sensor {
-    [CallWith=ExecutionContext, RaisesException] constructor(optional SpatialSensorOptions sensorOptions);
+    [CallWith=ExecutionContext, RaisesException, MeasureAs=MagnetometerConstructor] constructor(optional SpatialSensorOptions sensorOptions = {});
     readonly attribute unrestricted double? x;
     readonly attribute unrestricted double? y;
     readonly attribute unrestricted double? z;

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
@@ -30,6 +29,8 @@ class CORE_EXPORT CSSMatrixComponent final : public CSSTransformComponent {
 
   CSSMatrixComponent(DOMMatrixReadOnly* matrix, bool is2D)
       : CSSTransformComponent(is2D), matrix_(DOMMatrix::Create(matrix)) {}
+  CSSMatrixComponent(const CSSMatrixComponent&) = delete;
+  CSSMatrixComponent& operator=(const CSSMatrixComponent&) = delete;
 
   // Getters and setters for attributes defined in the IDL.
   DOMMatrix* matrix() { return matrix_.Get(); }
@@ -41,16 +42,15 @@ class CORE_EXPORT CSSMatrixComponent final : public CSSTransformComponent {
   TransformComponentType GetType() const final { return kMatrixType; }
   const CSSFunctionValue* ToCSSValue() const final;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(matrix_);
     CSSTransformComponent::Trace(visitor);
   }
 
  private:
   Member<DOMMatrix> matrix_;
-  DISALLOW_COPY_AND_ASSIGN(CSSMatrixComponent);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_

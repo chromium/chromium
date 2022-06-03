@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+
+<meta name="color-scheme" content="dark">
+
+<!-- no style for reference -->
+<ul>
+  <li>Text: <input type="text" value="example text"/></li>
+  <li>Number: <input type="number" value="12345"/></li>
+  <li>Search: <input type="search" value="example text"/></li>
+  <li>Email: <input type="email" value="example text"/></li>
+  <li>Password: <input type="password" value="example text"/></li>
+  <li>TextArea: <textarea>example text</textarea> </li>
+</ul>
+
+<!-- disabled -->
+<ul>
+  <li>Text disabled: <input type="text" style="color-scheme: dark" value="example text" disabled/></li>
+</ul>
+
+<ul>
+  <li>Text input -webkit-appearance none: <input type="text" style="color-scheme: dark; -webkit-appearance: none;" value="example text"/></li>
+</ul>
+
+<ul>
+  <li>TextArea -webkit-appearance none: <textarea style="color-scheme: dark; -webkit-appearance: none;" value="example text">example text</textarea></li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Text hover: <input type="text" style="color-scheme: dark" id="hoverTarget" value="example text"/></li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Text zoom: 1.5: <input type="text" style="color-scheme: dark; zoom: 1.5;" value="example text"/></li>
+  <li>Text zoom: 4: <input type="text" style="color-scheme: dark; zoom: 4;" value="example text"/></li>
+</ul>
+
+<div style="background-color: blue">
+  <br>
+  <ul>
+    <li>Text: <input type="text /" style="color-scheme: dark" value="example text"></li>
+  </ul>
+  <br>
+</div>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>

@@ -8,9 +8,7 @@ import("//testing/test.gni")
 
 source_set("connect") {
   testonly = true
-  sources = [
-    "connect_unittest.cc",
-  ]
+  sources = [ "connect_unittest.cc" ]
   deps = [
     ":interfaces",
     "//base",
@@ -33,9 +31,7 @@ source_set("connect") {
 
 mojom("interfaces") {
   testonly = true
-  sources = [
-    "connect.test-mojom",
-  ]
+  sources = [ "connect.test-mojom" ]
   deps = [
     "//mojo/public/mojom/base",
     "//services/service_manager/public/mojom",
@@ -44,9 +40,7 @@ mojom("interfaces") {
 
 service_executable("connect_test_package") {
   testonly = true
-  sources = [
-    "connect_test_package.cc",
-  ]
+  sources = [ "connect_test_package.cc" ]
   deps = [
     ":interfaces",
     "//base",
@@ -58,9 +52,7 @@ service_executable("connect_test_package") {
 
 service_executable("connect_test_app") {
   testonly = true
-  sources = [
-    "connect_test_app.cc",
-  ]
+  sources = [ "connect_test_app.cc" ]
   deps = [
     ":interfaces",
     "//base",
@@ -72,9 +64,7 @@ service_executable("connect_test_app") {
 
 service_executable("connect_test_class_app") {
   testonly = true
-  sources = [
-    "connect_test_class_app.cc",
-  ]
+  sources = [ "connect_test_class_app.cc" ]
   deps = [
     ":interfaces",
     "//base",
@@ -86,9 +76,7 @@ service_executable("connect_test_class_app") {
 
 service_executable("connect_test_singleton_app") {
   testonly = true
-  sources = [
-    "connect_test_singleton_app.cc",
-  ]
+  sources = [ "connect_test_singleton_app.cc" ]
   deps = [
     "//base",
     "//mojo/public/cpp/system",
@@ -99,9 +87,7 @@ service_executable("connect_test_singleton_app") {
 executable("connect_test_exe") {
   testonly = true
 
-  sources = [
-    "connect_test_exe.cc",
-  ]
+  sources = [ "connect_test_exe.cc" ]
 
   deps = [
     ":interfaces",

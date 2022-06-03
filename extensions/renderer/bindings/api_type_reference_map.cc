@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 
+#include <ostream>
+
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 
@@ -75,18 +77,10 @@ bool APITypeReferenceMap::HasTypeMethodSignature(
   return type_methods_.find(name) != type_methods_.end();
 }
 
-void APITypeReferenceMap::AddCallbackSignature(
-    const std::string& name,
-    std::unique_ptr<APISignature> signature) {
-  DCHECK(callback_signatures_.find(name) == callback_signatures_.end())
-      << "Cannot re-register signature for: " << name;
-  callback_signatures_[name] = std::move(signature);
-}
-
-const APISignature* APITypeReferenceMap::GetCallbackSignature(
+const APISignature* APITypeReferenceMap::GetAsyncResponseSignature(
     const std::string& name) const {
-  auto iter = callback_signatures_.find(name);
-  return iter == callback_signatures_.end() ? nullptr : iter->second.get();
+  auto iter = api_methods_.find(name);
+  return iter == api_methods_.end() ? nullptr : iter->second.get();
 }
 
 void APITypeReferenceMap::AddCustomSignature(

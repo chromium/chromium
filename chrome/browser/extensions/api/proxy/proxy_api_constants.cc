@@ -5,7 +5,7 @@
 // Constants for the Chrome Extensions Proxy Settings API.
 
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace extensions {
 namespace proxy_api_constants {

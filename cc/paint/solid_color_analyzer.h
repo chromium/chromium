@@ -7,19 +7,20 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
+class PaintOpBuffer;
 
 class CC_PAINT_EXPORT SolidColorAnalyzer {
  public:
   SolidColorAnalyzer() = delete;
 
-  static base::Optional<SkColor> DetermineIfSolidColor(
+  static absl::optional<SkColor> DetermineIfSolidColor(
       const PaintOpBuffer* buffer,
       const gfx::Rect& rect,
       int max_ops_to_analyze,

@@ -5,15 +5,16 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_canvas_element_capture.h"
 
 #include <memory>
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_media_stream.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 const double kDefaultFrameRate = 60.0;
@@ -56,17 +57,23 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   }
 
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-  WebMediaStreamTrack track;
-  const WebSize size(element.width(), element.height());
+  MediaStreamComponent* component = nullptr;
+  const gfx::Size size(element.width(), element.height());
+  if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current canvas size is not supported by "
+                                      "CanvasCaptureMediaStreamTrack.");
+    return nullptr;
+  }
   std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
         frame, size, frame_rate, Platform::Current()->GetIOTaskRunner(),
-        &track);
+        &component);
   } else {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
         frame, size, kDefaultFrameRate, Platform::Current()->GetIOTaskRunner(),
-        &track);
+        &component);
   }
 
   if (!handler) {
@@ -81,10 +88,10 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   CanvasCaptureMediaStreamTrack* canvas_track;
   if (given_frame_rate) {
     canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(
-        track, &element, context, std::move(handler), frame_rate);
+        component, &element, context, std::move(handler), frame_rate);
   } else {
     canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(
-        track, &element, context, std::move(handler));
+        component, &element, context, std::move(handler));
   }
   // We want to capture a frame in the beginning.
   canvas_track->requestFrame();

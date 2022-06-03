@@ -11,7 +11,7 @@ namespace blink {
 
 class A : public GarbageCollected<A> {
 public:
-    virtual void Trace(Visitor*) = 0;
+ virtual void Trace(Visitor*) const = 0;
 };
 
 }

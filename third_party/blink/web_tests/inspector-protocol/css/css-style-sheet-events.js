@@ -13,8 +13,9 @@
   await cssHelper.requestDocumentNodeId();
 
   // Add Event
-  dp.CSS.enable();
-  const addEvent = await dp.CSS.onceStyleSheetAdded();
+  const addEventPromise = dp.CSS.onceStyleSheetAdded();
+  await dp.CSS.enable();
+  const addEvent = await addEventPromise;
   testRunner.log(addEvent, '', [ ...TestRunner.stabilizeNames, 'length' ]);
   const styleSheetId = addEvent.params.header.styleSheetId;
 
@@ -31,10 +32,15 @@
   const changedEvent = await dp.CSS.onceStyleSheetChanged();
   testRunner.log(changedEvent);
 
+  await dp.CSS.disable();
+  const addEventAfterChangePromise = dp.CSS.onceStyleSheetAdded();
+  await dp.CSS.enable();
+  const addEventAfterChange = await addEventAfterChangePromise;
+  testRunner.log(addEventAfterChange, '', [ ...TestRunner.stabilizeNames, 'length' ]);
+
   // Remove event
   await dp.Page.navigate({url: 'about:blank'});
   const removeEvent = await dp.CSS.onceStyleSheetRemoved();
   testRunner.log(removeEvent);
   testRunner.completeTest();
 });
-

@@ -5,8 +5,9 @@
 #ifndef EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_API_HELPER_H_
 #define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_API_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "content/public/renderer/render_frame_observer.h"
 
 namespace extensions {
@@ -16,6 +17,10 @@ namespace extensions {
 class AutomationApiHelper : public content::RenderFrameObserver {
  public:
   explicit AutomationApiHelper(content::RenderFrame* render_frame);
+
+  AutomationApiHelper(const AutomationApiHelper&) = delete;
+  AutomationApiHelper& operator=(const AutomationApiHelper&) = delete;
+
   ~AutomationApiHelper() override;
 
  private:
@@ -25,9 +30,7 @@ class AutomationApiHelper : public content::RenderFrameObserver {
 
   void OnQuerySelector(int acc_obj_id,
                        int request_id,
-                       const base::string16& selector);
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationApiHelper);
+                       const std::u16string& selector);
 };
 
 }  // namespace extensions

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 
 class NativeWindowTracker;
@@ -28,6 +27,11 @@ class ExtensionInstallPromptShowParams {
   // The most recently active browser window (or a new browser window if there
   // are no browser windows) is used if a new tab needs to be opened.
   ExtensionInstallPromptShowParams(Profile* profile, gfx::NativeWindow window);
+
+  ExtensionInstallPromptShowParams(const ExtensionInstallPromptShowParams&) =
+      delete;
+  ExtensionInstallPromptShowParams& operator=(
+      const ExtensionInstallPromptShowParams&) = delete;
 
   virtual ~ExtensionInstallPromptShowParams();
 
@@ -60,8 +64,6 @@ class ExtensionInstallPromptShowParams {
       web_contents_destruction_observer_;
 
   std::unique_ptr<NativeWindowTracker> native_window_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPromptShowParams);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_SHOW_PARAMS_H_

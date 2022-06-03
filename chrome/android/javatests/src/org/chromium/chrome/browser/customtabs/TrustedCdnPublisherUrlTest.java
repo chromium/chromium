@@ -8,19 +8,20 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,20 +29,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -50,17 +54,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offlinepages.SavePageResult;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -77,6 +80,9 @@ import java.util.concurrent.TimeoutException;
 public class TrustedCdnPublisherUrlTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private static final String PAGE_WITH_TITLE =
             "<!DOCTYPE html><html><head><title>Example title</title></head></html>";
@@ -167,24 +173,7 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private int getDefaultSecurityIcon() {
-        // On tablets an info icon is shown for ConnectionSecurityLevel.NONE pages,
-        // on smaller form factors nothing.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    InstrumentationRegistry.getTargetContext())) {
-            return org.chromium.chrome.R.drawable.omnibox_info;
-        }
-
-        return 0;
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
-    public void testUntrustedClient() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.someoneelse.bla", null, getDefaultSecurityIcon());
+        return org.chromium.chrome.R.drawable.omnibox_info;
     }
 
     @Test
@@ -204,16 +193,6 @@ public class TrustedCdnPublisherUrlTest {
     public void testMalformedHeader() throws Exception {
         runTrustedCdnPublisherUrlTest(
                 "garbage", "com.example.test", null, getDefaultSecurityIcon());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
-    @Features.DisableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
-    public void testDisabled() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.example.test", null, getDefaultSecurityIcon());
     }
 
     @Test
@@ -256,7 +235,8 @@ public class TrustedCdnPublisherUrlTest {
         String otherTestUrl = mWebServer.setResponse("/other.html", PAGE_WITH_TITLE, null);
         mCustomTabActivityTestRule.loadUrl(otherTestUrl);
 
-        verifyUrl(UrlFormatter.formatUrlForSecurityDisplayOmitScheme(otherTestUrl));
+        verifyUrl(UrlFormatter.formatUrlForSecurityDisplay(
+                otherTestUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
         // TODO(bauerb): The security icon is updated via an animation. Find a way to reliably
         // disable animations and verify the icon.
     }
@@ -301,10 +281,10 @@ public class TrustedCdnPublisherUrlTest {
         String testUrl = mWebServer.getResponseUrl("/test.html");
         String expectedUrl = UrlFormatter.formatUrlForDisplayOmitScheme(testUrl);
 
-        CriteriaHelper.pollUiThread(Criteria.equals(expectedUrl, () -> {
+        CriteriaHelper.pollUiThread(() -> {
             UrlBar urlBar = newActivity.findViewById(R.id.url_bar);
-            return urlBar.getText().toString();
-        }));
+            Criteria.checkThat(urlBar.getText().toString(), Matchers.is(expectedUrl));
+        });
 
         verifySecurityIcon(getDefaultSecurityIcon());
     }
@@ -319,9 +299,10 @@ public class TrustedCdnPublisherUrlTest {
         runTrustedCdnPublisherUrlTest(
                 publisherUrl, "com.example.test", "example.com", R.drawable.omnibox_https_valid);
 
+        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    Profile profile = Profile.getLastUsedProfile();
+                    Profile profile = Profile.getLastUsedRegularProfile();
                     return OfflinePageBridge.getForProfile(profile);
                 });
 
@@ -346,7 +327,7 @@ public class TrustedCdnPublisherUrlTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
             Tab tab = customTabActivity.getActivityTab();
-            String pageUrl = tab.getUrl();
+            String pageUrl = tab.getUrl().getSpec();
             offlinePageBridge.savePage(tab.getWebContents(),
                     new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234"),
                     (savePageResult, url, offlineId) -> {
@@ -365,7 +346,8 @@ public class TrustedCdnPublisherUrlTest {
         // succeed, but not show a publisher URL.
         String testUrl = mWebServer.getResponseUrl("/test.html");
         mCustomTabActivityTestRule.loadUrl(testUrl);
-        verifyUrl(UrlFormatter.formatUrlForSecurityDisplayOmitScheme(testUrl));
+        verifyUrl(UrlFormatter.formatUrlForSecurityDisplay(
+                testUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
         verifySecurityIcon(R.drawable.ic_offline_pin_24dp);
     }
 
@@ -392,7 +374,8 @@ public class TrustedCdnPublisherUrlTest {
 
         final String expectedUrl;
         if (expectedPublisher == null) {
-            expectedUrl = UrlFormatter.formatUrlForSecurityDisplayOmitScheme(testUrl);
+            expectedUrl = UrlFormatter.formatUrlForSecurityDisplay(
+                    testUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         } else {
             expectedUrl =
                     String.format(Locale.US, "From %s – delivered by Google", expectedPublisher);
@@ -409,15 +392,24 @@ public class TrustedCdnPublisherUrlTest {
     private void verifySecurityIcon(int expectedSecurityIcon) {
         ImageView securityButton =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
+
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
+            Assert.assertEquals(org.chromium.chrome.R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
-            Bitmap expectedIcon = BitmapFactory.decodeResource(
-                    InstrumentationRegistry.getTargetContext().getResources(),
-                    expectedSecurityIcon);
-            Assert.assertTrue(expectedIcon.sameAs(
-                    ((BitmapDrawable) securityButton.getDrawable()).getBitmap()));
+
+            ColorStateList colorStateList =
+                    AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
+                            R.color.default_icon_color_light_tint_list);
+            ImageView expectedSecurityButton =
+                    new ImageView(InstrumentationRegistry.getTargetContext());
+            expectedSecurityButton.setImageResource(expectedSecurityIcon);
+            ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+
+            BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
+            BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();
+            Assert.assertTrue(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap()));
         }
     }
 }

@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/traced_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace viz {
@@ -20,26 +21,24 @@ SharedQuadState::~SharedQuadState() {
                                      "viz::SharedQuadState", this);
 }
 
-void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
-                             const gfx::Rect& quad_layer_rect,
-                             const gfx::Rect& visible_quad_layer_rect,
-                             const gfx::RRectF& rounded_corner_bounds,
-                             const gfx::Rect& clip_rect,
-                             bool is_clipped,
-                             bool are_contents_opaque,
-                             float opacity,
-                             SkBlendMode blend_mode,
-                             int sorting_context_id) {
-  this->quad_to_target_transform = quad_to_target_transform;
-  this->quad_layer_rect = quad_layer_rect;
-  this->visible_quad_layer_rect = visible_quad_layer_rect;
-  this->rounded_corner_bounds = rounded_corner_bounds;
-  this->clip_rect = clip_rect;
-  this->is_clipped = is_clipped;
-  this->are_contents_opaque = are_contents_opaque;
-  this->opacity = opacity;
-  this->blend_mode = blend_mode;
-  this->sorting_context_id = sorting_context_id;
+void SharedQuadState::SetAll(const gfx::Transform& transform,
+                             const gfx::Rect& layer_rect,
+                             const gfx::Rect& visible_layer_rect,
+                             const gfx::MaskFilterInfo& filter_info,
+                             const absl::optional<gfx::Rect>& clip,
+                             bool contents_opaque,
+                             float opacity_f,
+                             SkBlendMode blend,
+                             int sorting_context) {
+  quad_to_target_transform = transform;
+  quad_layer_rect = layer_rect;
+  visible_quad_layer_rect = visible_layer_rect;
+  mask_filter_info = filter_info;
+  clip_rect = clip;
+  are_contents_opaque = contents_opaque;
+  opacity = opacity_f;
+  blend_mode = blend;
+  sorting_context_id = sorting_context;
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
@@ -47,15 +46,22 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("layer_content_rect", quad_layer_rect, value);
   cc::MathUtil::AddToTracedValue("layer_visible_content_rect",
                                  visible_quad_layer_rect, value);
-  cc::MathUtil::AddToTracedValue("rounded_corner_bounds", rounded_corner_bounds,
-                                 value);
+  cc::MathUtil::AddToTracedValue("mask_filter_bounds",
+                                 mask_filter_info.bounds(), value);
+  cc::MathUtil::AddCornerRadiiToTracedValue(
+      "mask_filter_rounded_corners_radii",
+      mask_filter_info.rounded_corner_bounds(), value);
 
-  value->SetBoolean("is_clipped", is_clipped);
-  cc::MathUtil::AddToTracedValue("clip_rect", clip_rect, value);
+  if (clip_rect) {
+    cc::MathUtil::AddToTracedValue("clip_rect", *clip_rect, value);
+  }
 
   value->SetBoolean("are_contents_opaque", are_contents_opaque);
   value->SetDouble("opacity", opacity);
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
+  value->SetInteger("sorting_context_id", sorting_context_id);
+  value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
+  value->SetDouble("de_jelly_delta_y", de_jelly_delta_y);
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
       this);

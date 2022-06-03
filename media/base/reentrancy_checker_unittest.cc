@@ -4,7 +4,7 @@
 
 #include "media/base/reentrancy_checker.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

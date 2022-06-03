@@ -8,9 +8,9 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.os.Handler;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
 import android.webkit.WebView;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +18,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.webview_shell.WebPlatformTestsActivity;
 
 import java.util.ArrayList;
@@ -62,16 +64,18 @@ public class WebPlatformTestsActivityTest {
     private WebPlatformTestsActivity mTestActivity;
 
     @Rule
-    public ActivityTestRule<WebPlatformTestsActivity> mActivityTestRule =
-            new ActivityTestRule<>(WebPlatformTestsActivity.class, false, true);
+    public BaseActivityTestRule<WebPlatformTestsActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(WebPlatformTestsActivity.class);
 
     @Before
     public void setUp() {
+        mActivityTestRule.launchActivity(null);
         mTestActivity = mActivityTestRule.getActivity();
     }
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1096214")
     public void testOpenCloseWindow() throws Exception {
         final BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
 

@@ -8,6 +8,7 @@
 // https://wicg.github.io/webhid/index.html#device-usage
 
 [
+    ActiveScriptWrappable,
     Exposed(Window WebHID),
     SecureContext
 ] interface HIDDevice : EventTarget {
@@ -43,7 +44,8 @@
     [
         CallWith=ScriptState,
         MeasureAs=HidDeviceSendReport
-    ] Promise<void> sendReport(octet reportId, BufferSource data);
+    ] Promise<void> sendReport(
+        [EnforceRange] octet reportId, BufferSource data);
 
     // Send a feature report to the device. Set |reportId| to the first byte of
     // the report and |data| to the remaining bytes. Set |reportId| to zero if
@@ -52,7 +54,8 @@
     [
         CallWith=ScriptState,
         MeasureAs=HidDeviceSendFeatureReport
-    ] Promise<void> sendFeatureReport(octet reportId, BufferSource data);
+    ] Promise<void> sendFeatureReport(
+        [EnforceRange] octet reportId, BufferSource data);
 
     // Request a feature report from the device. Set |reportId| to the ID of the
     // feature report to request, or zero if the device does not use report IDs.
@@ -61,5 +64,6 @@
     [
         CallWith=ScriptState,
         MeasureAs=HidDeviceReceiveFeatureReport
-    ] Promise<DataView> receiveFeatureReport(octet reportId);
+    ] Promise<DataView> receiveFeatureReport(
+        [EnforceRange] octet reportId);
 };

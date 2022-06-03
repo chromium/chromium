@@ -6,7 +6,7 @@
  * @fileoverview Public APIs to enable web applications to communicate
  * with ChromeVox.
  */
-if (typeof (goog) != 'undefined' && goog.provide) {
+if (typeof (goog) !== 'undefined' && goog.provide) {
 goog.provide('cvox.Api');
 }
 
@@ -21,7 +21,7 @@ goog.provide('cvox.Api');
  * @type {string}
  * @const
  */
-var PORT_NAME = 'cvox.Port';
+const PORT_NAME = 'cvox.Port';
 
 /**
  * The name of the message between the page and content script that sets
@@ -29,7 +29,7 @@ var PORT_NAME = 'cvox.Port';
  * @type {string}
  * @const
  */
-var PORT_SETUP_MSG = 'cvox.PortSetup';
+const PORT_SETUP_MSG = 'cvox.PortSetup';
 
 /**
  * The message between content script and the page that indicates the
@@ -37,31 +37,31 @@ var PORT_SETUP_MSG = 'cvox.PortSetup';
  * @type {string}
  * @const
  */
-var DISCONNECT_MSG = 'cvox.Disconnect';
+const DISCONNECT_MSG = 'cvox.Disconnect';
 
 /**
  * The channel between the page and content script.
  * @type {MessageChannel}
  */
-var channel;
+let channel;
 
 /**
  * Tracks whether or not the ChromeVox API should be considered active.
  * @type {boolean}
  */
-var isActive = false;
+let isActive = false;
 
 /**
  * The next id to use for async callbacks.
  * @type {number}
  */
-var nextCallbackId = 1;
+let nextCallbackId = 1;
 
 /**
  * Map from callback ID to callback function.
  * @type {Object<number, function(*)>}
  */
-var callbackMap = {};
+const callbackMap = {};
 
 /**
  * Internal function to connect to the content script.
@@ -76,15 +76,15 @@ function connect_() {
 
   channel = new MessageChannel();
   channel.port1.onmessage = function(event) {
-    if (event.data == DISCONNECT_MSG) {
+    if (event.data === DISCONNECT_MSG) {
       channel = null;
-      var event = document.createEvent('UIEvents');
+      const event = document.createEvent('UIEvents');
       event.initEvent('chromeVoxUnloaded', true, false);
       document.dispatchEvent(event);
       return;
     }
     try {
-      var message = JSON.parse(event.data);
+      const message = JSON.parse(event.data);
       if (message['id'] && callbackMap[message['id']]) {
         callbackMap[message['id']](message);
         delete callbackMap[message['id']];
@@ -92,7 +92,8 @@ function connect_() {
     } catch (e) {
     }
   };
-  window.postMessage(PORT_SETUP_MSG, '*', [channel.port2]);
+  window.postMessage(
+      PORT_SETUP_MSG, '*' /* target origin */, [channel.port2] /* transfer */);
 }
 
 /**
@@ -103,7 +104,7 @@ function connect_() {
  *     with the response message.
  */
 function callAsync_(message, callback) {
-  var id = nextCallbackId;
+  const id = nextCallbackId;
   nextCallbackId++;
   if (message['args'] === undefined) {
     message['args'] = [];
@@ -120,7 +121,7 @@ function callAsync_(message, callback) {
  * @private
  */
 function callSpeakAsync_(message, properties) {
-  var callback = null;
+  let callback = null;
   /* Use the user supplied callback as callAsync_'s callback. */
   if (properties && properties['endCallback']) {
     callback = properties['endCallback'];
@@ -134,9 +135,9 @@ function callSpeakAsync_(message, properties) {
  * @return {*}
  */
 function getObjectByName(path) {
-  var pieces = path.split('.');
-  var resolved = window;
-  for (var i = 0; i < pieces.length; i++) {
+  const pieces = path.split('.');
+  let resolved = window;
+  for (let i = 0; i < pieces.length; i++) {
     resolved = resolved[pieces[i]];
     if (!resolved) {
       return null;
@@ -158,7 +159,7 @@ function maybeEnableMathJaX() {
   MathJax.Hub.Register.LoadHook('[a11y]/explorer.js', function() {
     // |explorer| is an object instance, so we get it to call an instance
     // |method.
-    var explorer = getObjectByName('MathJax.Extension.explorer');
+    const explorer = getObjectByName('MathJax.Extension.explorer');
     if (explorer.Enable) {
       explorer.Enable(true, true);
     }
@@ -174,7 +175,7 @@ function maybeEnableMathJaX() {
 if (!window['cvox']) {
   window['cvox'] = {};
 }
-var cvox = window.cvox;
+const cvox = window.cvox;
 
 
 /**
@@ -189,7 +190,7 @@ cvox.Api = function() {};
 cvox.Api.internalEnable = function() {
   isActive = true;
   connect_();
-  var event = document.createEvent('UIEvents');
+  const event = document.createEvent('UIEvents');
   event.initEvent('chromeVoxLoaded', true, false);
   document.dispatchEvent(event);
 };
@@ -220,7 +221,7 @@ cvox.Api.speak = function(textString, queueMode, properties) {
     return;
   }
 
-  var message = {'cmd': 'speak', 'args': [textString, queueMode, properties]};
+  const message = {'cmd': 'speak', 'args': [textString, queueMode, properties]};
   callSpeakAsync_(message, properties);
 };
 

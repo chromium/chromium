@@ -18,7 +18,8 @@ import sys
 # is regenerated, which causes a race condition and breaks concurrent build,
 # since some compile processes will try to read the partially written cache.
 _MODULE_PATH, _ = os.path.split(os.path.realpath(__file__))
-_THIRD_PARTY_DIR = os.path.normpath(os.path.join(_MODULE_PATH, os.pardir, os.pardir, os.pardir, os.pardir))
+_THIRD_PARTY_DIR = os.path.normpath(
+    os.path.join(_MODULE_PATH, os.pardir, os.pardir, os.pardir, os.pardir))
 # jinja2 is in chromium's third_party directory.
 # Insert at 1 so at front to override system libraries, and
 # after path[0] == invoking script dir
@@ -57,16 +58,22 @@ def agent_config(config, agent_name, field):
 def agent_name_to_class(config, agent_name):
     return agent_config(config, agent_name, "class") or agent_name
 
+
 def agent_name_to_include(config, agent_name):
-    include_path = agent_config(config, agent_name, "include_path") or config["settings"]["include_path"]
+    include_path = agent_config(
+        config, agent_name,
+        "include_path") or config["settings"]["include_path"]
     agent_class = agent_name_to_class(config, agent_name)
-    include_file = os.path.join(include_path, NameStyleConverter(agent_class).to_snake_case() + ".h")
+    include_file = os.path.join(
+        include_path,
+        NameStyleConverter(agent_class).to_snake_case() + ".h")
     return include_file.replace("dev_tools", "devtools")
 
 
 def initialize_jinja_env(config, cache_dir):
     jinja_env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(os.path.join(_MODULE_PATH, "templates")),
+        loader=jinja2.FileSystemLoader(
+            os.path.join(_MODULE_PATH, "templates")),
         # Bytecode cache is not concurrency-safe unless pre-cached:
         # if pre-cached this is read-only, but writing creates a race condition.
         bytecode_cache=jinja2.FileSystemBytecodeCache(cache_dir),
@@ -74,10 +81,15 @@ def initialize_jinja_env(config, cache_dir):
         lstrip_blocks=True,  # so can indent control flow tags
         trim_blocks=True)
     jinja_env.filters.update({
-        "to_snake_case": to_snake_case,
-        "to_singular": to_singular,
-        "agent_name_to_class": partial(agent_name_to_class, config),
-        "agent_name_to_include": partial(agent_name_to_include, config)})
+        "to_snake_case":
+        to_snake_case,
+        "to_singular":
+        to_singular,
+        "agent_name_to_class":
+        partial(agent_name_to_class, config),
+        "agent_name_to_include":
+        partial(agent_name_to_include, config)
+    })
     jinja_env.add_extension('jinja2.ext.loopcontrols')
     return jinja_env
 
@@ -91,12 +103,15 @@ def match_and_consume(pattern, source):
 
 def load_model_from_idl(source):
     source = re.sub(r"//.*", "", source)  # Remove line comments
-    source = re.sub(r"/\*(.|\n)*?\*/", "", source, re.MULTILINE)  # Remove block comments
-    source = re.sub(r"\]\s*?\n\s*", "] ", source)  # Merge the method annotation with the next line
+    # Remove block comments
+    source = re.sub(r"/\*(.|\n)*?\*/", "", source, re.MULTILINE)
+    # Merge the method annotation with the next line
+    source = re.sub(r"\]\s*?\n\s*", "] ", source)
     source = source.strip()
     model = []
     while len(source):
-        match, source = match_and_consume(r"interface\s(\w*)\s?\{([^\{]*)\}", source)
+        match, source = match_and_consume(r"interface\s(\w*)\s?\{([^\{]*)\}",
+                                          source)
         if not match:
             sys.stderr.write("Cannot parse %s\n" % source[:100])
             sys.exit(1)
@@ -133,8 +148,11 @@ class Method(object):
         if not self.is_scoped and match.group(1) != "void":
             raise Exception("Instant probe must return void: %s" % self.name)
 
-        # Splitting parameters by a comma, assuming that attribute lists contain no more than one attribute.
-        self.params = map(Parameter, map(str.strip, match.group(3).split(",")))
+        # Splitting parameters by a comma, assuming that attribute
+        # lists contain no more than one attribute.
+        self.params = list(
+            map(Parameter, map(str.strip,
+                               match.group(3).split(","))))
 
 
 class Parameter(object):
@@ -144,11 +162,12 @@ class Parameter(object):
         if match:
             self.options.append(match.group(1))
 
-        parts = map(str.strip, source.split("="))
+        parts = list(map(str.strip, source.split("=")))
         self.default_value = parts[1] if len(parts) != 1 else None
 
         param_decl = parts[0]
-        min_type_tokens = 2 if re.match("(const|unsigned long) ", param_decl) else 1
+        min_type_tokens = 2 if re.match("(const|unsigned long) ",
+                                        param_decl) else 1
 
         if len(param_decl.split(" ")) > min_type_tokens:
             parts = param_decl.split(" ")
@@ -165,14 +184,13 @@ class Parameter(object):
 
 
 def build_param_name(param_type):
-    return "param_" + NameStyleConverter(re.match(r"(const |scoped_refptr<)?(\w*)", param_type).group(2)).to_snake_case()
+    return "param_" + NameStyleConverter(
+        re.match(r"(const |scoped_refptr<)?(\w*)",
+                 param_type).group(2)).to_snake_case()
 
 
 def load_config(file_name):
-    default_config = {
-        "settings": {},
-        "observers": {}
-    }
+    default_config = {"settings": {}, "observers": {}}
     if not file_name:
         return default_config
     with open(file_name) as config_file:
@@ -184,7 +202,8 @@ def build_observers(config, files):
     for f in files:
         probes = set([probe.name for probe in f.declarations])
         if all_pidl_probes & probes:
-            raise Exception("Multiple probe declarations: %s" % all_pidl_probes & probes)
+            raise Exception(
+                "Multiple probe declarations: %s" % all_pidl_probes & probes)
         all_pidl_probes |= probes
 
     all_observers = set()
@@ -196,7 +215,8 @@ def build_observers(config, files):
         for probe in observer["probes"]:
             unused_probes.discard(probe)
             if probe not in all_pidl_probes:
-                raise Exception('Probe %s is not declared in PIDL file' % probe)
+                raise Exception(
+                    'Probe %s is not declared in PIDL file' % probe)
             observers_by_probe.setdefault(probe, set()).add(observer_name)
     if unused_probes:
         raise Exception("Unused probes: %s" % unused_probes)
@@ -215,7 +235,8 @@ def main():
     try:
         arg_options, arg_values = cmdline_parser.parse_args()
         if len(arg_values) != 1:
-            raise ValueError("Exactly one plain argument expected (found %s)" % len(arg_values))
+            raise ValueError("Exactly one plain argument expected (found %s)" %
+                             len(arg_values))
         input_path = arg_values[0]
         output_dirpath = arg_options.output_dir
         if not output_dirpath:
@@ -224,7 +245,8 @@ def main():
     except ValueError:
         # Work with python 2 and 3 http://docs.python.org/py3k/howto/pyporting.html
         exc = sys.exc_info()[1]
-        sys.stderr.write("Failed to parse command-line arguments: %s\n\n" % exc)
+        sys.stderr.write(
+            "Failed to parse command-line arguments: %s\n\n" % exc)
         sys.stderr.write("Usage: <script> [options] <probes.pidl>\n")
         sys.stderr.write("Options:\n")
         sys.stderr.write("\t--config <config_file.json5>\n")
@@ -233,7 +255,8 @@ def main():
 
     match = re.search(r"\bgen[\\/]", output_dirpath)
     if match:
-        output_path_in_gen_dir = output_dirpath[match.end():].replace(os.path.sep, '/') + '/'
+        output_path_in_gen_dir = output_dirpath[match.end():].replace(
+            os.path.sep, '/') + '/'
     else:
         output_path_in_gen_dir = ''
 
@@ -249,7 +272,8 @@ def main():
         "files": files,
         "agents": build_observers(config, files),
         "config": config,
-        "method_name": lambda name: NameStyleConverter(name).to_function_name(),
+        "method_name":
+        lambda name: NameStyleConverter(name).to_function_name(),
         "name": NameStyleConverter(base_name).to_upper_camel_case(),
         "header": base_name,
         "input_files": [os.path.basename(input_path)],
@@ -266,18 +290,21 @@ def main():
     sink_h_template = jinja_env.get_template(template_context["template_file"])
     sink_h_file_name = to_singular(base_name) + "_sink.h"
     sink_h_file = open(output_dirpath + "/" + sink_h_file_name, "w")
-    template_context["header_guard"] = NameStyleConverter(output_path_in_gen_dir + "/" + sink_h_file_name).to_header_guard()
+    template_context["header_guard"] = NameStyleConverter(
+        output_path_in_gen_dir + "/" + sink_h_file_name).to_header_guard()
     sink_h_file.write(sink_h_template.render(template_context))
     sink_h_file.close()
 
     for f in files:
         template_context["file"] = f
         template_context["template_file"] = "/instrumenting_probes_inl.h.tmpl"
-        template_context["header_guard"] = NameStyleConverter(output_path_in_gen_dir + "/" + f.header_name).to_header_guard()
+        template_context["header_guard"] = NameStyleConverter(
+            output_path_in_gen_dir + "/" + f.header_name).to_header_guard()
         h_template = jinja_env.get_template(template_context["template_file"])
         h_file = open(output_dirpath + "/" + f.header_name, "w")
         h_file.write(h_template.render(template_context))
         h_file.close()
+
 
 if __name__ == "__main__":
     main()

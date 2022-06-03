@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "courgette/base_test_unittest.h"
 #include "courgette/image_utils.h"
 #include "courgette/rel32_finder_x64.h"

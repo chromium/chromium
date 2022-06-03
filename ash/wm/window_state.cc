@@ -7,23 +7,26 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
-#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -31,15 +34,22 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -50,17 +60,34 @@
 namespace ash {
 namespace {
 
+using ::chromeos::kHideShelfWhenFullscreenKey;
+using ::chromeos::kImmersiveIsActive;
+using ::chromeos::kWindowManagerManagesOpacityKey;
+using ::chromeos::WindowStateType;
+
 bool IsTabletModeEnabled() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 bool IsToplevelContainer(aura::Window* window) {
   DCHECK(window);
-  int container_id = window->id();
+  int container_id = window->GetId();
   // ArcVirtualKeyboard is implemented as a exo window which requires
   // WindowState to manage its state.
   return IsActivatableShellWindowId(container_id) ||
          container_id == kShellWindowId_ArcVirtualKeyboardContainer;
+}
+
+// ARC windows will not be in a top level container until they are associated
+// with a task. We still want a WindowState created for these windows and their
+// transient children as they will be moved to a top level container soon.
+bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
+    return true;
+
+  auto* transient_parent = wm::GetTransientParent(window);
+  return transient_parent && transient_parent->GetProperty(
+                                 app_restore::kParentToHiddenContainerKey);
 }
 
 // A tentative class to set the bounds on the window.
@@ -69,6 +96,10 @@ bool IsToplevelContainer(aura::Window* window) {
 class BoundsSetter : public aura::LayoutManager {
  public:
   BoundsSetter() = default;
+
+  BoundsSetter(const BoundsSetter&) = delete;
+  BoundsSetter& operator=(const BoundsSetter&) = delete;
+
   ~BoundsSetter() override = default;
 
   // aura::LayoutManager overrides:
@@ -84,28 +115,6 @@ class BoundsSetter : public aura::LayoutManager {
   void SetBounds(aura::Window* window, const gfx::Rect& bounds) {
     SetChildBoundsDirect(window, bounds);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BoundsSetter);
-};
-
-// Animation metrics reporter which reports animation smoothness percentages for
-// the given histogram name, and then self destructs.
-class WindowAnimationMetricsReporter : public ui::AnimationMetricsReporter {
- public:
-  explicit WindowAnimationMetricsReporter(const std::string& histogram_name)
-      : histogram_name_(histogram_name) {}
-  ~WindowAnimationMetricsReporter() override = default;
-
-  // ui::AnimationMetricsReporter:
-  void Report(int value) override {
-    base::UmaHistogramPercentage(histogram_name_, value);
-    delete this;
-  }
-
- private:
-  const std::string histogram_name_;
-  DISALLOW_COPY_AND_ASSIGN(WindowAnimationMetricsReporter);
 };
 
 WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
@@ -129,24 +138,15 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
   return WM_EVENT_NORMAL;
 }
 
-WMEventType WMEventTypeFromWindowPinType(ash::WindowPinType type) {
-  switch (type) {
-    case ash::WindowPinType::kNone:
-      return WM_EVENT_NORMAL;
-    case ash::WindowPinType::kPinned:
-      return WM_EVENT_PIN;
-    case ash::WindowPinType::kTrustedPinned:
-      return WM_EVENT_TRUSTED_PIN;
-  }
-  NOTREACHED() << "No WMEvent defined for the window pin type:" << type;
-  return WM_EVENT_NORMAL;
-}
-
-float GetCurrentSnappedWidthRatio(aura::Window* window) {
+float GetCurrentSnapRatio(aura::Window* window) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
-  return static_cast<float>(window->bounds().width()) /
-         static_cast<float>(maximized_bounds.width());
+  if (SplitViewController::IsLayoutHorizontal(window)) {
+    return static_cast<float>(window->GetTargetBounds().width()) /
+           static_cast<float>(maximized_bounds.width());
+  }
+  return static_cast<float>(window->GetTargetBounds().height()) /
+         static_cast<float>(maximized_bounds.height());
 }
 
 // Move all transient children to |dst_root|, including the ones in the child
@@ -156,7 +156,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
   for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
     if (!transient_child->parent())
       continue;
-    const int container_id = transient_child->parent()->id();
+    const int container_id = transient_child->parent()->GetId();
     DCHECK_GE(container_id, 0);
     aura::Window* container = dst_root->GetChildById(container_id);
     if (container->Contains(transient_child))
@@ -182,8 +182,17 @@ void ReportAshPipEvents(AshPipEvents event) {
 
 void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(kAshPipAndroidPipUseTimeHistogramName, duration,
-                             base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromHours(10), 50);
+                             base::Seconds(1), base::Hours(10), 50);
+}
+
+// Notifies the window restore controller to write to file.
+void SaveWindowForWindowRestore(WindowState* window_state) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return;
+
+  auto* controller = WindowRestoreController::Get();
+  if (controller)
+    controller->SaveWindow(window_state);
 }
 
 }  // namespace
@@ -237,7 +246,7 @@ WindowStateType WindowState::GetStateType() const {
 }
 
 bool WindowState::IsMinimized() const {
-  return GetStateType() == WindowStateType::kMinimized;
+  return IsMinimizedWindowStateType(GetStateType());
 }
 
 bool WindowState::IsMaximized() const {
@@ -249,13 +258,12 @@ bool WindowState::IsFullscreen() const {
 }
 
 bool WindowState::IsMaximizedOrFullscreenOrPinned() const {
-  return GetStateType() == WindowStateType::kMaximized ||
-         GetStateType() == WindowStateType::kFullscreen || IsPinned();
+  return IsMaximizedOrFullscreenOrPinnedWindowStateType(GetStateType());
 }
 
 bool WindowState::IsSnapped() const {
-  return GetStateType() == WindowStateType::kLeftSnapped ||
-         GetStateType() == WindowStateType::kRightSnapped;
+  return GetStateType() == WindowStateType::kPrimarySnapped ||
+         GetStateType() == WindowStateType::kSecondarySnapped;
 }
 
 bool WindowState::IsPinned() const {
@@ -272,8 +280,7 @@ bool WindowState::IsPip() const {
 }
 
 bool WindowState::IsNormalStateType() const {
-  return GetStateType() == WindowStateType::kNormal ||
-         GetStateType() == WindowStateType::kDefault;
+  return IsNormalWindowStateType(GetStateType());
 }
 
 bool WindowState::IsNormalOrSnapped() const {
@@ -297,13 +304,16 @@ bool WindowState::HasMaximumWidthOrHeight() const {
 }
 
 bool WindowState::CanMaximize() const {
-  // Window must allow maximization and have no maximum width or height.
-  if ((window_->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanMaximize) == 0) {
-    return false;
+  bool can_maximize = (window_->GetProperty(aura::client::kResizeBehaviorKey) &
+                       aura::client::kResizeBehaviorCanMaximize) != 0;
+#if DCHECK_IS_ON()
+  if (window_->delegate() && can_maximize) {
+    const gfx::Size max_size = window_->delegate()->GetMaximumSize();
+    DCHECK(max_size.IsEmpty() || max_size.width() > kAllowMaximizeThreshold ||
+           max_size.height() > kAllowMaximizeThreshold);
   }
-
-  return !HasMaximumWidthOrHeight();
+#endif
+  return can_maximize;
 }
 
 bool WindowState::CanMinimize() const {
@@ -321,13 +331,7 @@ bool WindowState::CanActivate() const {
 }
 
 bool WindowState::CanSnap() const {
-  if (!CanResize() || IsPip())
-    return false;
-
-  // Allow windows with no maximum width or height to be snapped.
-  // TODO(oshima): We should probably snap if the maximum size is defined
-  // and greater than the snapped size.
-  return !HasMaximumWidthOrHeight();
+  return !IsPip() && CanResize() && CanMaximize();
 }
 
 bool WindowState::HasRestoreBounds() const {
@@ -395,7 +399,12 @@ void WindowState::RestoreZOrdering() {
 void WindowState::OnWMEvent(const WMEvent* event) {
   current_state_->OnWMEvent(this, event);
 
-  UpdateSnappedWidthRatio(event);
+  UpdateSnapRatio(event);
+
+  PersistentDesksBarController* bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  if (bar_controller)
+    bar_controller->UpdateBarOnWindowStateChanges(window_);
 }
 
 void WindowState::SaveCurrentBoundsForRestore() {
@@ -431,6 +440,52 @@ void WindowState::ClearRestoreBounds() {
   window_->ClearProperty(::wm::kVirtualKeyboardRestoreBoundsKey);
 }
 
+bool WindowState::VerticallyShrinkWindow(const gfx::Rect& work_area) {
+  if (!HasRestoreBounds())
+    return false;
+  // Check if window is not work area vertical maximized.
+  gfx::Rect bounds = window_->bounds();
+  if (bounds.height() != work_area.height() || bounds.y() != work_area.y())
+    return false;
+
+  gfx::Rect restore_bounds = GetRestoreBoundsInParent();
+  gfx::Rect new_bounds = restore_bounds;
+
+  // Shrink from work area maximized window.
+  if (bounds == work_area) {
+    new_bounds = gfx::Rect(work_area.x(), restore_bounds.y(), work_area.width(),
+                           restore_bounds.height());
+    // Restore bounds is not cleared here in case a 2nd shrink is called next.
+  } else {
+    ClearRestoreBounds();
+  }
+
+  SetBoundsDirectCrossFade(new_bounds);
+  return true;
+}
+
+bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
+  if (!HasRestoreBounds())
+    return false;
+  // Check if window is not work area horizontal maximized.
+  gfx::Rect bounds = window_->bounds();
+  if (bounds.width() != work_area.width() || bounds.x() != work_area.x())
+    return false;
+
+  gfx::Rect restore_bounds = GetRestoreBoundsInParent();
+  gfx::Rect new_bounds = restore_bounds;
+
+  // Shrink from work area maximized window.
+  if (bounds == work_area) {
+    new_bounds = gfx::Rect(restore_bounds.x(), work_area.y(),
+                           restore_bounds.width(), work_area.height());
+  } else {
+    ClearRestoreBounds();
+  }
+  SetBoundsDirectCrossFade(new_bounds);
+  return true;
+}
+
 std::unique_ptr<WindowState::State> WindowState::SetStateObject(
     std::unique_ptr<WindowState::State> new_state) {
   current_state_->DetachState(this);
@@ -440,45 +495,49 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
   return old_object;
 }
 
-void WindowState::UpdateSnappedWidthRatio(const WMEvent* event) {
+void WindowState::UpdateSnapRatio(const WMEvent* event) {
   if (!IsSnapped()) {
-    snapped_width_ratio_.reset();
+    snap_ratio_.reset();
     return;
   }
 
   const WMEventType type = event->type();
-  // Initializes |snapped_width_ratio_| whenever |event| is snapping event.
-  if (type == WM_EVENT_SNAP_LEFT || type == WM_EVENT_SNAP_RIGHT ||
-      type == WM_EVENT_CYCLE_SNAP_LEFT || type == WM_EVENT_CYCLE_SNAP_RIGHT) {
-    // Since |UpdateSnappedWidthRatio()| is called post WMEvent taking effect,
+  // Initializes |snap_ratio_| whenever |event| is snapping event.
+  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY ||
+      type == WM_EVENT_CYCLE_SNAP_PRIMARY ||
+      type == WM_EVENT_CYCLE_SNAP_SECONDARY) {
+    // Since |UpdateSnapRatio()| is called post WMEvent taking effect,
     // |window_|'s bounds is in a correct state for ratio update.
-    snapped_width_ratio_ =
-        base::make_optional(GetCurrentSnappedWidthRatio(window_));
+    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
     return;
   }
 
-  // |snapped_width_ratio_| under snapped state may change due to bounds event.
+  // |snap_ratio_| under snapped state may change due to bounds event.
   if (event->IsBoundsEvent()) {
-    snapped_width_ratio_ =
-        base::make_optional(GetCurrentSnappedWidthRatio(window_));
+    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
   }
 }
 
 void WindowState::SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
-  pre_auto_manage_window_bounds_ = base::make_optional(bounds);
+  pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
 }
 
 void WindowState::SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
-  pre_added_to_workspace_window_bounds_ = base::make_optional(bounds);
+  pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
 }
 
-void WindowState::SetPersistentWindowInfo(
-    const PersistentWindowInfo& persistent_window_info) {
-  persistent_window_info_ = base::make_optional(persistent_window_info);
+void WindowState::SetPersistentWindowInfoOfDisplayRemoval(
+    const PersistentWindowInfo& info) {
+  persistent_window_info_of_display_removal_ = absl::make_optional(info);
 }
 
-void WindowState::ResetPersistentWindowInfo() {
-  persistent_window_info_.reset();
+void WindowState::ResetPersistentWindowInfoOfDisplayRemoval() {
+  persistent_window_info_of_display_removal_.reset();
+}
+
+void WindowState::SetPersistentWindowInfoOfScreenRotation(
+    const PersistentWindowInfo& info) {
+  persistent_window_info_of_screen_rotation_ = absl::make_optional(info);
 }
 
 void WindowState::AddObserver(WindowStateObserver* observer) {
@@ -523,7 +582,8 @@ void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
   if (bounds_changed_by_user) {
     pre_auto_manage_window_bounds_.reset();
     pre_added_to_workspace_window_bounds_.reset();
-    persistent_window_info_.reset();
+    persistent_window_info_of_display_removal_.reset();
+    persistent_window_info_of_screen_rotation_.reset();
   }
 }
 
@@ -533,13 +593,14 @@ void WindowState::OnDragStarted(int window_component) {
     delegate_->OnDragStarted(window_component);
 }
 
-void WindowState::OnCompleteDrag(const gfx::Point& location) {
+void WindowState::OnCompleteDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
   if (delegate_)
     delegate_->OnDragFinished(/*canceled=*/false, location);
+  SaveWindowForWindowRestore(this);
 }
 
-void WindowState::OnRevertDrag(const gfx::Point& location) {
+void WindowState::OnRevertDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
   if (delegate_)
     delegate_->OnDragFinished(/*canceled=*/true, location);
@@ -557,7 +618,7 @@ display::Display WindowState::GetDisplay() {
   return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
 }
 
-void WindowState::CreateDragDetails(const gfx::Point& point_in_parent,
+void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
                                     int window_component,
                                     ::wm::WindowMoveSource source) {
   drag_details_ = std::make_unique<DragDetails>(window_, point_in_parent,
@@ -583,7 +644,8 @@ WindowState::WindowState(aura::Window* window)
       autohide_shelf_when_maximized_or_fullscreen_(false),
       cached_z_order_(ui::ZOrderLevel::kNormal),
       ignore_property_change_(false),
-      current_state_(new DefaultState(ToWindowStateType(GetShowState()))) {
+      current_state_(
+          new DefaultState(chromeos::ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);
   UpdateWindowPropertiesFromStateType();
   OnPrePipStateChange(WindowStateType::kDefault);
@@ -597,10 +659,6 @@ ui::WindowShowState WindowState::GetShowState() const {
   return window_->GetProperty(aura::client::kShowStateKey);
 }
 
-ash::WindowPinType WindowState::GetPinType() const {
-  return window_->GetProperty(kWindowPinTypeKey);
-}
-
 void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
   gfx::Rect bounds_in_parent = bounds_in_screen;
   ::wm::ConvertRectFromScreen(window_->parent(), &bounds_in_parent);
@@ -608,20 +666,44 @@ void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
 }
 
 void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
-  if (is_dragged() || !IsSnapped())
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  const bool in_tablet =
+      tablet_mode_controller && tablet_mode_controller->InTabletMode();
+
+  // Tablet mode should use bounds calculation in SplitViewController.
+  // However, transient state from transitioning clamshell to tablet mode
+  // might end up calling this function during work area changes, so we avoid
+  // unnecessary task in that case when it will be overwritten by tablet mode
+  // work.
+  if (is_dragged() || !IsSnapped() || in_tablet)
     return;
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
-  if (snapped_width_ratio_) {
-    bounds->set_width(
-        static_cast<int>(*snapped_width_ratio_ * maximized_bounds.width()));
-  }
-  if (GetStateType() == WindowStateType::kLeftSnapped)
-    bounds->set_x(maximized_bounds.x());
-  else if (GetStateType() == WindowStateType::kRightSnapped)
-    bounds->set_x(maximized_bounds.right() - bounds->width());
-  bounds->set_y(maximized_bounds.y());
-  bounds->set_height(maximized_bounds.height());
+
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+
+  // For snapped window, `GetSnappedWindowBounds` computes bounds position
+  // from snap type and size from |snap_ratio|.
+  gfx::Rect snapped_bounds =
+      snap_ratio_ ? GetSnappedWindowBounds(
+                        maximized_bounds, display, window_,
+                        GetStateType() == WindowStateType::kPrimarySnapped
+                            ? ash::SnapViewType::kPrimary
+                            : ash::SnapViewType::kSecondary,
+                        *snap_ratio_)
+                  : maximized_bounds;
+  bounds->set_origin(snapped_bounds.origin());
+
+  // If |snap_ratio_| exists adjust the size of the window. Otherwise only
+  // maximize it vertically for horizontal screen and maximize horizontally for
+  // vertical screen.
+  if (snap_ratio_)
+    bounds->set_size(snapped_bounds.size());
+  else if (SplitViewController::IsLayoutHorizontal(display))
+    bounds->set_height(snapped_bounds.height());
+  else
+    bounds->set_width(snapped_bounds.width());
 }
 
 void WindowState::UpdateWindowPropertiesFromStateType() {
@@ -638,20 +720,22 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
     window_->SetProperty(aura::client::kShowStateKey, new_window_state);
   }
 
-  if (GetStateType() != window_->GetProperty(kWindowStateTypeKey)) {
+  if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
-    window_->SetProperty(kWindowStateTypeKey, GetStateType());
+    window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
   }
 
-  // sync up current window show state with PinType property.
-  ash::WindowPinType pin_type = ash::WindowPinType::kNone;
-  if (GetStateType() == WindowStateType::kPinned)
-    pin_type = ash::WindowPinType::kPinned;
-  else if (GetStateType() == WindowStateType::kTrustedPinned)
-    pin_type = ash::WindowPinType::kTrustedPinned;
-  if (pin_type != GetPinType()) {
-    base::AutoReset<bool> resetter(&ignore_property_change_, true);
-    window_->SetProperty(kWindowPinTypeKey, pin_type);
+  if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
+    const gfx::Size& size = window_->bounds().size();
+    // WindowManager manages the window opacity. Make it opaque unless
+    // the window is in normal state whose frame has rounded corners.
+    if (IsNormalStateType()) {
+      window_->SetTransparent(true);
+      window_->SetOpaqueRegionsForOcclusion({gfx::Rect(size)});
+    } else {
+      window_->SetOpaqueRegionsForOcclusion({});
+      window_->SetTransparent(false);
+    }
   }
 }
 
@@ -667,6 +751,7 @@ void WindowState::NotifyPostStateTypeChange(
   for (auto& observer : observer_list_)
     observer.OnPostWindowStateTypeChange(this, old_window_state_type);
   OnPostPipStateChange(old_window_state_type);
+  SaveWindowForWindowRestore(this);
 }
 
 void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
@@ -695,6 +780,17 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
         std::max(min_size.width(), actual_new_bounds.width()));
     actual_new_bounds.set_height(
         std::max(min_size.height(), actual_new_bounds.height()));
+
+    // Changing the size of the PIP window can detach it from one of the edges
+    // of the screen, which makes the snap fraction logic fail. Ensure to snap
+    // it again.
+    if (IsPip() && !is_dragged()) {
+      ::wm::ConvertRectToScreen(window_->GetRootWindow(), &actual_new_bounds);
+      actual_new_bounds = CollisionDetectionUtils::GetRestingPosition(
+          display, actual_new_bounds,
+          CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+      ::wm::ConvertRectFromScreen(window_->GetRootWindow(), &actual_new_bounds);
+    }
   }
   BoundsSetter().SetBounds(window_, actual_new_bounds);
 }
@@ -720,11 +816,6 @@ void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   slide_settings.SetTweenType(tween_type);
   slide_settings.SetTransitionDuration(duration);
-  if (animation_smoothness_histogram_name_) {
-    slide_settings.SetAnimationMetricsReporter(
-        new WindowAnimationMetricsReporter(
-            *animation_smoothness_histogram_name_));
-  }
   SetBoundsDirect(bounds);
 }
 
@@ -778,11 +869,18 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     // There may already be a system ui window on the initial position.
     UpdatePipBounds();
     if (!was_pip) {
-      window()->SetProperty(ash::kPrePipWindowStateTypeKey,
-                            old_window_state_type);
+      window()->SetProperty(kPrePipWindowStateTypeKey, old_window_state_type);
+
+      if (widget && widget->GetContentsView()) {
+        widget->GetContentsView()->GetViewAccessibility().AnnounceText(
+            l10n_util::GetStringUTF16(IDS_ENTER_PIP_A11Y_NOTIFICATION));
+      }
     }
 
     CollectPipEnterExitMetrics(/*enter=*/true);
+
+    // PIP window shouldn't be tracked in MruWindowTracker.
+    window()->SetProperty(ash::kExcludeInMruKey, true);
   } else if (was_pip) {
     if (widget) {
       widget->widget_delegate()->SetCanActivate(true);
@@ -792,11 +890,13 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
         window(), ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
 
     CollectPipEnterExitMetrics(/*enter=*/false);
+    window()->ClearProperty(ash::kExcludeInMruKey);
   }
-  // PIP uses restore bounds in its own special context. Reset it in PIP
-  // enter/exit transition so that it won't be used wrongly.
+  // PIP uses the snap fraction to place the PIP window at the correct position
+  // after screen rotation, system UI area change, etc. Make sure to reset this
+  // when the window enters/exits PIP so the obsolete fraction won't be used.
   if (IsPip() || was_pip)
-    ClearRestoreBounds();
+    ash::PipPositioner::ClearSnapFraction(this);
 }
 
 void WindowState::UpdatePipBounds() {
@@ -810,7 +910,7 @@ void WindowState::UpdatePipBounds() {
 }
 
 void WindowState::CollectPipEnterExitMetrics(bool enter) {
-  const bool is_arc = window_util::IsArcWindow(window());
+  const bool is_arc = IsArcWindow(window());
   if (enter) {
     pip_start_time_ = base::TimeTicks::Now();
 
@@ -840,13 +940,18 @@ WindowState* WindowState::Get(aura::Window* window) {
   if (state)
     return state;
 
-  if (window->type() == aura::client::WINDOW_TYPE_CONTROL)
+  if (window->GetType() == aura::client::WINDOW_TYPE_CONTROL)
     return nullptr;
 
   DCHECK(window->parent());
 
-  if (!IsToplevelContainer(window->parent()))
+  // WindowState is only for windows in top level container, unless they are
+  // temporarily hidden when launched by window restore. The will be reparented
+  // to a top level container soon, and need a WindowState.
+  if (!IsToplevelContainer(window->parent()) &&
+      !IsTemporarilyHiddenForFullrestore(window)) {
     return nullptr;
+  }
 
   state = new WindowState(window);
   window->SetProperty(kWindowStateKey, state);
@@ -875,13 +980,6 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == kWindowPinTypeKey) {
-    if (!ignore_property_change_) {
-      WMEvent event(WMEventTypeFromWindowPinType(GetPinType()));
-      OnWMEvent(&event);
-    }
-    return;
-  }
   if (key == kWindowPipTypeKey) {
     if (window->GetProperty(kWindowPipTypeKey)) {
       WMEvent event(WM_EVENT_PIP);
@@ -892,19 +990,35 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == kWindowStateTypeKey) {
+  if (key == chromeos::kWindowStateTypeKey) {
     if (!ignore_property_change_) {
       // This change came from somewhere else. Revert it.
-      window->SetProperty(kWindowStateTypeKey, GetStateType());
+      window->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
     }
     return;
   }
-  if (key == kHideShelfWhenFullscreenKey || key == kImmersiveIsActive) {
-    if (!ignore_property_change_) {
-      // This change came from outside ash. Update our shelf visibility based
-      // on our changed state.
-      ash::Shell::Get()->UpdateShelfVisibility();
-    }
+  if (key == aura::client::kWindowWorkspaceKey) {
+    // Save the window for window restore purposes unless
+    // |ignore_property_change_| is true. Note that moving windows across
+    // displays will also trigger a kWindowWorkspaceKey change, even if the
+    // value stays the same, so we do not need to save the window when it
+    // changes root windows (OnWindowAddedToRootWindow).
+    if (!ignore_property_change_)
+      SaveWindowForWindowRestore(this);
+    return;
+  }
+
+  // The shelf visibility should be updated if kHideShelfWhenFullscreenKey or
+  // kImmersiveIsActive change - these property affect the shelf behavior, and
+  // the shelf is expected to be hidden when fullscreen or immersive mode start.
+  const bool requires_shelf_visibility_update =
+      (key == kHideShelfWhenFullscreenKey &&
+       old != window->GetProperty(kHideShelfWhenFullscreenKey)) ||
+      (key == kImmersiveIsActive &&
+       old != window->GetProperty(kImmersiveIsActive));
+
+  if (requires_shelf_visibility_update && !ignore_property_change_) {
+    Shell::Get()->UpdateShelfVisibility();
     return;
   }
 }
@@ -919,6 +1033,11 @@ void WindowState::OnWindowAddedToRootWindow(aura::Window* window) {
 void WindowState::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
 
+  PersistentDesksBarController* bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  if (bar_controller)
+    bar_controller->UpdateBarOnWindowDestroying(window_);
+
   // If the window is destroyed during PIP, count that as exiting.
   if (IsPip())
     CollectPipEnterExitMetrics(/*enter=*/false);
@@ -929,6 +1048,21 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
 
   current_state_->OnWindowDestroying(this);
   delegate_.reset();
+}
+
+
+void WindowState::OnWindowBoundsChanged(aura::Window* window,
+                                        const gfx::Rect& old_bounds,
+                                        const gfx::Rect& new_bounds,
+                                        ui::PropertyChangeReason reason) {
+  DCHECK_EQ(this->window(), window);
+  if (window_->GetTransparent() && IsNormalStateType() &&
+      window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
+    window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
+  }
+
+  if (reason != ui::PropertyChangeReason::FROM_ANIMATION && !is_dragged())
+    SaveWindowForWindowRestore(this);
 }
 
 }  // namespace ash

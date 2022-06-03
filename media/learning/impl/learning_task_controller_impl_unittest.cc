@@ -23,7 +23,7 @@ class LearningTaskControllerImplTest : public testing::Test {
         : DistributionReporter(task) {}
 
     // protected => public
-    const base::Optional<std::set<int>>& feature_indices() const {
+    const absl::optional<std::set<int>>& feature_indices() const {
       return DistributionReporter::feature_indices();
     }
 
@@ -35,11 +35,13 @@ class LearningTaskControllerImplTest : public testing::Test {
       dist += info.observed;
       if (dist == predicted)
         num_correct_++;
+      most_recent_source_id_ = info.source_id;
     }
 
    public:
     int num_reported_ = 0;
     int num_correct_ = 0;
+    ukm::SourceId most_recent_source_id_;
   };
 
   // Model that always predicts a constant.
@@ -130,11 +132,27 @@ class LearningTaskControllerImplTest : public testing::Test {
     controller_->SetTrainerForTesting(std::move(fake_trainer));
   }
 
-  void AddExample(const LabelledExample& example) {
+  void AddExample(const LabelledExample& example,
+                  absl::optional<ukm::SourceId> source_id = absl::nullopt) {
     base::UnguessableToken id = base::UnguessableToken::Create();
-    controller_->BeginObservation(id, example.features, base::nullopt);
+    controller_->BeginObservation(id, example.features, absl::nullopt,
+                                  source_id);
     controller_->CompleteObservation(
         id, ObservationCompletion(example.target_value, example.weight));
+  }
+
+  void VerifyPrediction(const FeatureVector& features,
+                        absl::optional<TargetHistogram> expectation) {
+    absl::optional<TargetHistogram> observed_prediction;
+    controller_->PredictDistribution(
+        features, base::BindOnce(
+                      [](absl::optional<TargetHistogram>* test_storage,
+                         const absl::optional<TargetHistogram>& predicted) {
+                        *test_storage = predicted;
+                      },
+                      &observed_prediction));
+    task_environment_.RunUntilIdle();
+    EXPECT_EQ(observed_prediction, expectation);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -256,6 +274,30 @@ TEST_F(LearningTaskControllerImplTest, FeatureSubsetsWork) {
   // Verify that the training data has the adjusted features.
   EXPECT_EQ(trainer_raw_->training_data().size(), 1u);
   EXPECT_EQ(trainer_raw_->training_data()[0].features, expected_features);
+}
+
+TEST_F(LearningTaskControllerImplTest, PredictDistribution) {
+  CreateController();
+
+  // Predictions should be absl::nullopt until we have a model.
+  LabelledExample example;
+  VerifyPrediction(example.features, absl::nullopt);
+
+  AddExample(example);
+  TargetHistogram expected_histogram;
+  expected_histogram += predicted_target_;
+  VerifyPrediction(example.features, expected_histogram);
+}
+
+TEST_F(LearningTaskControllerImplTest,
+       SourceIdIsProvidedToDistributionReporter) {
+  CreateController();
+  LabelledExample example;
+  ukm::SourceId source_id(123);
+  // Add two examples, so that the second causes a prediction to be reported.
+  AddExample(example, source_id);
+  AddExample(example, source_id);
+  EXPECT_EQ(reporter_raw_->most_recent_source_id_, source_id);
 }
 
 }  // namespace learning

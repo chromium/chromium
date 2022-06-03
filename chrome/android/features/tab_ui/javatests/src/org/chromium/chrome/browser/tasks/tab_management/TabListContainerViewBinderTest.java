@@ -6,16 +6,19 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
 import android.graphics.drawable.ColorDrawable;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.MediumTest;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,15 +27,17 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
+import org.chromium.base.MathUtils;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.base.test.util.FlakyTest;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -43,6 +48,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
  * Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
     /**
      * DummyUiActivityTestCase also needs {@link ChromeFeatureList}'s
@@ -53,6 +59,7 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int CONTAINER_HEIGHT = 56;
+    private static final int INCREASED_CONTAINER_HEIGHT = 76;
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
     private TabListRecyclerView mRecyclerView;
@@ -95,7 +102,6 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        FeatureUtilities.setGridTabSwitcherEnabledForTesting(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mRecyclerView = getActivity().findViewById(R.id.tab_list_view); });
@@ -105,10 +111,12 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
         mStartedHidingCallback = new CallbackHelper();
         mFinishedHidingCallback = new CallbackHelper();
 
-        mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
-        mMCP = PropertyModelChangeProcessor.create(
-                mContainerModel, mRecyclerView, TabListContainerViewBinder::bind);
+            mMCP = PropertyModelChangeProcessor.create(
+                    mContainerModel, mRecyclerView, TabListContainerViewBinder::bind);
+        });
     }
 
     @Test
@@ -133,12 +141,8 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
         }
         assertThat(mIsAnimating, equalTo(true));
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mRecyclerView.getAlpha() == 1.0f;
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mRecyclerView.getAlpha(), Matchers.is(1.0f)));
     }
 
     @Test
@@ -162,6 +166,7 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @FlakyTest(message = "https://crbug.com/1182554")
     public void testHidesWithAnimation() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContainerModel.set(
@@ -185,13 +190,9 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
             assertThat(mRecyclerView.getAlpha(), equalTo(1.0f));
         }
         assertThat(mIsAnimating, equalTo(true));
-
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                // Invisibility signals the end of the animation, not alpha being zero.
-                return mRecyclerView.getVisibility() == View.INVISIBLE;
-            }
+        // Invisibility signals the end of the animation, not alpha being zero.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mRecyclerView.getVisibility(), Matchers.is(View.INVISIBLE));
         });
         assertThat(mRecyclerView.getAlpha(), equalTo(0.0f));
     }
@@ -227,24 +228,24 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
         assertThat(mRecyclerView.getBackground(), instanceOf(ColorDrawable.class));
         assertThat(((ColorDrawable) mRecyclerView.getBackground()).getColor(),
                 equalTo(ApiCompatibilityUtils.getColor(
-                        mRecyclerView.getResources(), R.color.dark_primary_color)));
+                        mRecyclerView.getResources(), R.color.default_bg_color_dark)));
 
         mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, false);
         assertThat(mRecyclerView.getBackground(), instanceOf(ColorDrawable.class));
         assertThat(((ColorDrawable) mRecyclerView.getBackground()).getColor(),
                 equalTo(ApiCompatibilityUtils.getColor(
-                        mRecyclerView.getResources(), R.color.modern_primary_color)));
+                        mRecyclerView.getResources(), R.color.default_bg_color)));
     }
 
     @Test
     @MediumTest
     @UiThreadTest
-    public void testTopContainerHeightSetsTopMargin() {
+    public void testTopMarginSetsTopMargin() {
         assertThat(mRecyclerView.getLayoutParams(), instanceOf(FrameLayout.LayoutParams.class));
         assertThat(
                 ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin, equalTo(0));
 
-        mContainerModel.set(TabListContainerProperties.TOP_CONTROLS_HEIGHT, CONTAINER_HEIGHT);
+        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT);
         assertThat(((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
                 equalTo(CONTAINER_HEIGHT));
     }
@@ -262,9 +263,39 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
                 equalTo(CONTAINER_HEIGHT));
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetShadowTopOffsetUpdatesTranslation() {
+        mContainerModel.set(
+                TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
+
+        mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
+        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
+
+        ImageView shadowImageView = mRecyclerView.getShadowImageViewForTesting();
+
+        assertEquals(0, shadowImageView.getTranslationY(), MathUtils.EPSILON);
+
+        mContainerModel.set(
+                TabListContainerProperties.SHADOW_TOP_OFFSET, INCREASED_CONTAINER_HEIGHT);
+        assertEquals(
+                INCREASED_CONTAINER_HEIGHT, shadowImageView.getTranslationY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testBottomPaddingSetsBottomPadding() {
+        assertThat(mRecyclerView.getPaddingBottom(), equalTo(0));
+
+        mContainerModel.set(TabListContainerProperties.BOTTOM_PADDING, CONTAINER_HEIGHT);
+        assertThat(mRecyclerView.getPaddingBottom(), equalTo(CONTAINER_HEIGHT));
+    }
+
     @Override
     public void tearDownTest() throws Exception {
-        mMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 }

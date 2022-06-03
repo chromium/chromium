@@ -26,48 +26,48 @@
 
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
-#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/text_control_single_line_painter.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
 namespace blink {
 
-LayoutTextControlSingleLine::LayoutTextControlSingleLine(
-    HTMLInputElement* element)
-    : LayoutTextControl(element), should_draw_caps_lock_indicator_(false) {}
+LayoutTextControlSingleLine::LayoutTextControlSingleLine(Element* element)
+    : LayoutTextControl(To<TextControlElement>(element)) {
+  DCHECK(IsA<HTMLInputElement>(element));
+}
 
 LayoutTextControlSingleLine::~LayoutTextControlSingleLine() = default;
 
 inline Element* LayoutTextControlSingleLine::ContainerElement() const {
+  NOT_DESTROYED();
   return InputElement()->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::TextFieldContainer());
+      shadow_element_names::kIdTextFieldContainer);
 }
 
 inline Element* LayoutTextControlSingleLine::EditingViewPortElement() const {
+  NOT_DESTROYED();
   return InputElement()->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::EditingViewPort());
+      shadow_element_names::kIdEditingViewPort);
 }
 
 inline HTMLElement* LayoutTextControlSingleLine::InnerSpinButtonElement()
     const {
+  NOT_DESTROYED();
   return To<HTMLElement>(InputElement()->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SpinButton()));
+      shadow_element_names::kIdSpinButton));
 }
 
 void LayoutTextControlSingleLine::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   TextControlSingleLinePainter(*this).Paint(paint_info);
 }
 
 void LayoutTextControlSingleLine::UpdateLayout() {
-  LayoutAnalyzer::Scope analyzer(*this);
+  NOT_DESTROYED();
 
   LayoutBlockFlow::UpdateBlockLayout(true);
 
@@ -141,6 +141,7 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
+  NOT_DESTROYED();
   if (!LayoutTextControl::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action))
     return false;
@@ -168,147 +169,30 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
             container->GetLayoutBox()->PhysicalLocation();
       }
     }
-    HitInnerEditorElement(result, hit_test_location, accumulated_offset);
+    HitInnerEditorElement(*this, *InnerEditorElement(), result,
+                          hit_test_location, accumulated_offset);
   }
   return true;
-}
-
-void LayoutTextControlSingleLine::CapsLockStateMayHaveChanged() {
-  if (!GetNode())
-    return;
-
-  // Only draw the caps lock indicator if these things are true:
-  // 1) The field is a password field
-  // 2) The frame is active
-  // 3) The element is focused
-  // 4) The caps lock is on
-  bool should_draw_caps_lock_indicator = false;
-
-  if (LocalFrame* frame = GetDocument().GetFrame())
-    should_draw_caps_lock_indicator =
-        InputElement()->type() == input_type_names::kPassword &&
-        frame->Selection().FrameIsFocusedAndActive() &&
-        GetDocument().FocusedElement() == GetNode() &&
-        KeyboardEventManager::CurrentCapsLockState();
-
-  if (should_draw_caps_lock_indicator != should_draw_caps_lock_indicator_) {
-    should_draw_caps_lock_indicator_ = should_draw_caps_lock_indicator;
-    SetShouldDoFullPaintInvalidation();
-  }
-}
-
-bool LayoutTextControlSingleLine::HasControlClip() const {
-  return true;
-}
-
-PhysicalRect LayoutTextControlSingleLine::ControlClipRect(
-    const PhysicalOffset& additional_offset) const {
-  PhysicalRect clip_rect = PhysicalPaddingBoxRect();
-  clip_rect.offset += additional_offset;
-  return clip_rect;
-}
-
-LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(
-    float char_width) const {
-  int factor;
-  bool includes_decoration =
-      InputElement()->SizeShouldIncludeDecoration(factor);
-  if (factor <= 0)
-    factor = 20;
-
-  LayoutUnit result = LayoutUnit::FromFloatCeil(char_width * factor);
-
-  float max_char_width = 0.f;
-  const Font& font = StyleRef().GetFont();
-  AtomicString family = font.GetFontDescription().Family().Family();
-  if (HasValidAvgCharWidth(font.PrimaryFont(), family))
-    max_char_width = roundf(font.PrimaryFont()->MaxCharWidth());
-
-  // For text inputs, IE adds some extra width.
-  if (max_char_width > 0.f)
-    result += max_char_width - char_width;
-
-  if (includes_decoration) {
-    HTMLElement* spin_button = InnerSpinButtonElement();
-    if (LayoutBox* spin_layout_object =
-            spin_button ? spin_button->GetLayoutBox() : nullptr) {
-      result += spin_layout_object->BorderAndPaddingLogicalWidth();
-      // Since the width of spin_layout_object is not calculated yet,
-      // spin_layout_object->LogicalWidth() returns 0. Use the computed logical
-      // width instead.
-      result += spin_layout_object->StyleRef().LogicalWidth().Value();
-    }
-  }
-
-  return result;
-}
-
-LayoutUnit LayoutTextControlSingleLine::ComputeControlLogicalHeight(
-    LayoutUnit line_height,
-    LayoutUnit non_content_height) const {
-  return line_height + non_content_height;
-}
-
-void LayoutTextControlSingleLine::Autoscroll(const PhysicalOffset& position) {
-  LayoutBox* layout_object = InnerEditorElement()->GetLayoutBox();
-  if (!layout_object)
-    return;
-
-  layout_object->Autoscroll(position);
-}
-
-LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
-  // If in preview state, fake the scroll width to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientWidth();
-
-  if (LayoutBox* inner = InnerEditorElement()
-                             ? InnerEditorElement()->GetLayoutBox()
-                             : nullptr) {
-    // Adjust scrollWidth to inculde input element horizontal paddings and
-    // decoration width
-    LayoutUnit adjustment = ClientWidth() - inner->ClientWidth();
-    return inner->ScrollWidth() + adjustment;
-  }
-  return LayoutBlockFlow::ScrollWidth();
-}
-
-LayoutUnit LayoutTextControlSingleLine::ScrollHeight() const {
-  // If in preview state, fake the scroll height to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientHeight();
-
-  if (LayoutBox* inner = InnerEditorElement()
-                             ? InnerEditorElement()->GetLayoutBox()
-                             : nullptr) {
-    // Adjust scrollHeight to include input element vertical paddings and
-    // decoration height
-    LayoutUnit adjustment = ClientHeight() - inner->ClientHeight();
-    return inner->ScrollHeight() + adjustment;
-  }
-  return LayoutBlockFlow::ScrollHeight();
 }
 
 HTMLInputElement* LayoutTextControlSingleLine::InputElement() const {
+  NOT_DESTROYED();
   return To<HTMLInputElement>(GetNode());
 }
 
-void LayoutTextControlSingleLine::ComputeVisualOverflow(
-    bool recompute_floats) {
+void LayoutTextControlSingleLine::ComputeVisualOverflow(bool recompute_floats) {
+  NOT_DESTROYED();
   LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();
-
   AddVisualEffectOverflow();
-  AddVisualOverflowFromTheme();
 
   if (recompute_floats || CreatesNewFormattingContext() ||
       HasSelfPaintingLayer())
     AddVisualOverflowFromFloats();
 
   if (VisualOverflowRect() != previous_visual_overflow_rect) {
+    InvalidateIntersectionObserverCachedRects();
     SetShouldCheckForPaintInvalidation();
     GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
   }

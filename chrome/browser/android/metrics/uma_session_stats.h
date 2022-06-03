@@ -13,15 +13,12 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 
 // The native part of java UmaSessionStats class. This is a singleton.
 class UmaSessionStats {
  public:
-  static UmaSessionStats* GetInstance();
-
   void UmaResumeSession(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
   void UmaEndSession(JNIEnv* env,
@@ -30,20 +27,26 @@ class UmaSessionStats {
   // Called before an UMA log is completed to record associated metrics.
   void ProvideCurrentSessionData();
 
+  static UmaSessionStats* GetInstance();
+
+  UmaSessionStats(const UmaSessionStats&) = delete;
+  UmaSessionStats& operator=(const UmaSessionStats&) = delete;
+
+  // Returns true if there is a visible activity. Android Chrome only.
+  static bool HasVisibleActivity();
+
   // Called once on browser startup.
   static void OnStartup();
 
   static void RegisterSyntheticFieldTrial(const std::string& trial_name,
                                           const std::string& group_name);
 
-  static void RegisterSyntheticMultiGroupFieldTrial(
-      const std::string& trial_name,
-      const std::vector<uint32_t>& group_name_hashes);
+  static bool IsBackgroundSessionStartForTesting();
 
  private:
   friend class base::NoDestructor<UmaSessionStats>;
-  UmaSessionStats();
-  ~UmaSessionStats();
+  UmaSessionStats() = default;
+  ~UmaSessionStats() = default;
 
   class SessionTimeTracker {
    public:
@@ -66,6 +69,9 @@ class UmaSessionStats {
     void BeginBackgroundSession();
 
     base::TimeTicks session_start_time() const { return session_start_time_; }
+    base::TimeTicks background_session_start_time() const {
+      return background_session_start_time_;
+    }
 
    private:
     // Start of the current session.
@@ -79,8 +85,6 @@ class UmaSessionStats {
 
   SessionTimeTracker session_time_tracker_;
   int active_session_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UmaSessionStats);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_METRICS_UMA_SESSION_STATS_H_

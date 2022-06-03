@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
@@ -44,6 +43,8 @@ class HTMLMetaCharsetParser {
 
  public:
   HTMLMetaCharsetParser();
+  HTMLMetaCharsetParser(const HTMLMetaCharsetParser&) = delete;
+  HTMLMetaCharsetParser& operator=(const HTMLMetaCharsetParser&) = delete;
   ~HTMLMetaCharsetParser();
 
   // Returns true if done checking, regardless whether an encoding is found.
@@ -62,9 +63,7 @@ class HTMLMetaCharsetParser {
 
   bool done_checking_;
   WTF::TextEncoding encoding_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLMetaCharsetParser);
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_META_CHARSET_PARSER_H_

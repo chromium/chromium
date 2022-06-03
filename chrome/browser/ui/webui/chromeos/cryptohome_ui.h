@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CRYPTOHOME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CRYPTOHOME_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace chromeos {
@@ -14,10 +13,11 @@ namespace chromeos {
 class CryptohomeUI : public content::WebUIController {
  public:
   explicit CryptohomeUI(content::WebUI* web_ui);
-  ~CryptohomeUI() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeUI);
+  CryptohomeUI(const CryptohomeUI&) = delete;
+  CryptohomeUI& operator=(const CryptohomeUI&) = delete;
+
+  ~CryptohomeUI() override {}
 };
 
 }  // namespace chromeos

@@ -30,7 +30,7 @@ source_set("material_internationalization_ios") {
     "src/Sources/UIView+MaterialRTL.h",
   ]
 
-  libs = [
+  frameworks = [
     "CoreImage.framework",
     "UIKit.framework",
   ]

@@ -7,7 +7,6 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/logging.h"
 #include "chrome/android/chrome_jni_headers/ApplicationLifetime_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"

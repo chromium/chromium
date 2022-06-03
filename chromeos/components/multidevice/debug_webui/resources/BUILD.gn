@@ -19,9 +19,7 @@ js_library("webui") {
 }
 
 js_library("logs") {
-  deps = [
-    ":webui",
-  ]
+  deps = [ ":webui" ]
 }
 
 js_library("proximity_auth") {

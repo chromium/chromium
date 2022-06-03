@@ -50,4 +50,4 @@ inline bool IsOverride(UnicodeBidi unicode_bidi) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_UNICODE_BIDI_H_

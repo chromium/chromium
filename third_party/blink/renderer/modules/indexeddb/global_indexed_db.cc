@@ -18,8 +18,6 @@ template <typename T>
 class GlobalIndexedDBImpl final
     : public GarbageCollected<GlobalIndexedDBImpl<T>>,
       public Supplement<T> {
-  USING_GARBAGE_COLLECTED_MIXIN(GlobalIndexedDBImpl);
-
  public:
   static const char kSupplementName[];
 
@@ -27,13 +25,14 @@ class GlobalIndexedDBImpl final
     GlobalIndexedDBImpl* supplement =
         Supplement<T>::template From<GlobalIndexedDBImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>();
+      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>(supplementable);
       Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalIndexedDBImpl() = default;
+  explicit GlobalIndexedDBImpl(T& supplementable)
+      : Supplement<T>(supplementable) {}
 
   IDBFactory* IdbFactory(T& fetching_scope) {
     if (!idb_factory_)
@@ -41,7 +40,7 @@ class GlobalIndexedDBImpl final
     return idb_factory_;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(idb_factory_);
     Supplement<T>::Trace(visitor);
   }

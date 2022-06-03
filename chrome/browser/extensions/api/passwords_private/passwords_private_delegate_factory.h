@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace context {
@@ -27,18 +26,13 @@ class PasswordsPrivateDelegateFactory
   static PasswordsPrivateDelegateFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<PasswordsPrivateDelegateFactory>;
-
+  friend class base::NoDestructor<PasswordsPrivateDelegateFactory>;
   PasswordsPrivateDelegateFactory();
   ~PasswordsPrivateDelegateFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateDelegateFactory);
 };
 
 }  // namespace extensions

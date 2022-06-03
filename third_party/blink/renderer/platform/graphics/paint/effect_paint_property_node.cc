@@ -11,28 +11,15 @@ namespace blink {
 const EffectPaintPropertyNode& EffectPaintPropertyNode::Root() {
   DEFINE_STATIC_REF(EffectPaintPropertyNode, root,
                     base::AdoptRef(new EffectPaintPropertyNode(
-                        nullptr,
-                        State{&TransformPaintPropertyNode::Root(),
-                              &ClipPaintPropertyNode::Root()},
-                        true /* is_parent_alias */)));
+                        nullptr, State{&TransformPaintPropertyNode::Root(),
+                                       &ClipPaintPropertyNode::Root()})));
   return *root;
 }
 
-FloatRect EffectPaintPropertyNode::MapRect(const FloatRect& input_rect) const {
-  if (state_.filter.IsEmpty())
-    return input_rect;
-
-  FloatRect rect = input_rect;
-  rect.MoveBy(-state_.filters_origin);
-  FloatRect result = state_.filter.MapRect(rect);
-  result.MoveBy(state_.filters_origin);
-  return result;
-}
-
-bool EffectPaintPropertyNode::Changed(
+bool EffectPaintPropertyNodeOrAlias::Changed(
     PaintPropertyChangeType change,
     const PropertyTreeState& relative_to_state,
-    const TransformPaintPropertyNode* transform_not_to_check) const {
+    const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const {
   const auto& relative_effect = relative_to_state.Effect();
   const auto& relative_transform = relative_to_state.Transform();
 
@@ -48,8 +35,9 @@ bool EffectPaintPropertyNode::Changed(
     if (node->IsParentAlias())
       continue;
 
-    const auto& local_transform = node->LocalTransformSpace();
-    if (node->HasFilterThatMovesPixels() &&
+    const auto* unaliased = static_cast<const EffectPaintPropertyNode*>(node);
+    const auto& local_transform = unaliased->LocalTransformSpace();
+    if (unaliased->HasFilterThatMovesPixels() &&
         &local_transform != transform_not_to_check &&
         local_transform.Changed(change, relative_transform)) {
       return true;
@@ -61,21 +49,21 @@ bool EffectPaintPropertyNode::Changed(
   return false;
 }
 
+gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
+  if (state_.filter.IsEmpty())
+    return rect;
+  return state_.filter.MapRect(rect);
+}
+
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
-  auto json = std::make_unique<JSONObject>();
-  if (Parent())
-    json->SetString("parent", String::Format("%p", Parent()));
-  if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
-    json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
+  auto json = ToJSONBase();
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
   json->SetString("outputClip", String::Format("%p", state_.output_clip.get()));
-  if (state_.color_filter != kColorFilterNone)
-    json->SetInteger("colorFilter", state_.color_filter);
   if (!state_.filter.IsEmpty())
     json->SetString("filter", state_.filter.ToString());
-  if (!state_.backdrop_filter.IsEmpty())
-    json->SetString("backdrop_filter", state_.backdrop_filter.ToString());
+  if (auto* backdrop_filter = BackdropFilter())
+    json->SetString("backdrop_filter", backdrop_filter->ToString());
   if (state_.opacity != 1.0f)
     json->SetDouble("opacity", state_.opacity);
   if (state_.blend_mode != SkBlendMode::kSrcOver)
@@ -89,8 +77,6 @@ std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
     json->SetString("compositorElementId",
                     state_.compositor_element_id.ToString().c_str());
   }
-  if (state_.filters_origin != FloatPoint())
-    json->SetString("filtersOrigin", state_.filters_origin.ToString());
   return json;
 }
 

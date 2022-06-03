@@ -19,12 +19,12 @@ test(() => {
     assert_equals(Object.getPrototypeOf(root2), ShadowRoot.prototype,
         'ShadowRoot object should be returned by attachShadow({mode:"closed"}).');
 
-    assert_throws({name: 'TypeError'}, () => { host3.attachShadow({mode: 'illegal'}); },
+    assert_throws_js(TypeError, () => { host3.attachShadow({mode: 'illegal'}); },
         'Attach shadow root whose mode is neither open nor closed should throw TypeError.');
 
-    assert_throws({name: 'NotSupportedError'}, () => { host1.attachShadow({mode: 'open'}); },
+    assert_throws_dom('NotSupportedError', () => { host1.attachShadow({mode: 'open'}); },
         'Attach shadow on a host which has open shadow root will raise NotSupportedError exception.');
-    assert_throws({name: 'NotSupportedError'}, () => { host2.attachShadow({mode: 'open'}); },
+    assert_throws_dom('NotSupportedError', () => { host2.attachShadow({mode: 'open'}); },
         'Attach shadow on a host wich has closed shadow root will raise NotSupportedError exception.');
 }, 'Test for Element.attachShadow() with mode parameter.');
 </script>

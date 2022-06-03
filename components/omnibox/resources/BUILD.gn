@@ -7,10 +7,16 @@ import("//tools/grit/grit_rule.gni")
 
 grit("omnibox_resources") {
   source = "omnibox_resources.grd"
-  outputs = [
-    "grit/omnibox_resources.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/omnibox_resources.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "omnibox_resources_$locale.pak" ]
+  }
+}
+
+grit("omnibox_pedal_synonyms") {
+  source = "omnibox_pedal_synonyms.grd"
+  outputs = [ "grit/omnibox_pedal_synonyms.h" ]
+  foreach(locale, locales_with_pseudolocales) {
+    outputs += [ "omnibox_pedal_synonyms_$locale.pak" ]
   }
 }

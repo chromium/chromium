@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
@@ -18,21 +18,19 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/size.h"
 
-// TODO(crbug.com/879012): Remove the build flag. OffscreenTab should not only
-// be defined when extension is enabled.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/media/offscreen_tab.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+namespace base {
+class UnguessableToken;
+}
 
 namespace content {
-class AudioLoopbackStreamCreator;
 class BrowserContext;
 struct DesktopMediaID;
 class WebContents;
@@ -48,9 +46,7 @@ namespace mirroring {
 // Service, and provides the resources to the Mirroring Service as requested.
 class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
                                        public mojom::ResourceProvider,
-#if BUILDFLAG(ENABLE_EXTENSIONS)
                                        public OffscreenTab::Owner,
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
                                        public content::WebContentsObserver {
  public:
   static void GetForTab(
@@ -77,6 +73,9 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // |source_media_id| indicates the mirroring source.
   explicit CastMirroringServiceHost(content::DesktopMediaID source_media_id);
 
+  CastMirroringServiceHost(const CastMirroringServiceHost&) = delete;
+  CastMirroringServiceHost& operator=(const CastMirroringServiceHost&) = delete;
+
   ~CastMirroringServiceHost() override;
 
   // mojom::MirroringServiceHost implementation.
@@ -90,6 +89,8 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   friend class CastMirroringServiceHostBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CastMirroringServiceHostTest,
                            TestGetClampedResolution);
+  friend class CastV2PerformanceTest;
+  FRIEND_TEST_ALL_PREFIXES(CastV2PerformanceTest, Performance);
 
   static gfx::Size GetCaptureResolutionConstraint();
   // Clamp resolution constraint to the screen size.
@@ -102,12 +103,22 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   void GetNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override;
   void CreateAudioStream(
-      mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
+      mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
       const media::AudioParameters& params,
       uint32_t total_segments) override;
   void ConnectToRemotingSource(
       mojo::PendingRemote<media::mojom::Remoter> remoter,
       mojo::PendingReceiver<media::mojom::RemotingSource> receiver) override;
+
+  void CreateAudioStreamForTab(
+      mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+      const media::AudioParameters& params,
+      uint32_t total_segments,
+      const base::UnguessableToken& group_id);
+  void CreateAudioStreamForDesktop(
+      mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+      const media::AudioParameters& params,
+      uint32_t total_segments);
 
   // content::WebContentsObserver implementation.
   void WebContentsDestroyed() override;
@@ -118,9 +129,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
-  void RequestMediaAccessPermission(
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
   void DestroyTab(OffscreenTab* tab) override;
 
   // Creates and starts a new OffscreenTab.
@@ -142,8 +150,14 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // any.
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 
-  // Used to create an audio loopback stream through the Audio Service.
-  std::unique_ptr<content::AudioLoopbackStreamCreator> audio_stream_creator_;
+  // Used to create WebContents loopback capture streams, or system-wide desktop
+  // capture streams, from the Audio Service.
+  mojo::Remote<media::mojom::AudioStreamFactory> audio_stream_factory_;
+
+  // Used to mute local audio from the WebContents being mirrored (in the tab
+  // mirrorng case). See the comments in the implementation of
+  // CreateAudioStream() for further explanation.
+  mojo::AssociatedRemote<media::mojom::LocalMuter> web_contents_audio_muter_;
 
   // The lifetime of the capture indicator icon on the tabstrip is tied to that
   // of |media_stream_ui_|.
@@ -152,8 +166,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<OffscreenTab> offscreen_tab_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHost);
 };
 
 }  // namespace mirroring

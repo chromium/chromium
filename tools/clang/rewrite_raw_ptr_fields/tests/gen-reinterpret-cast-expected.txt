@@ -1,0 +1,13 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-reinterpret-cast-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-reinterpret-cast-actual.cc:::1000:::5:::raw_ptr<int>
+r:::gen-reinterpret-cast-actual.cc:::1072:::5:::raw_ptr<int>
+r:::gen-reinterpret-cast-actual.cc:::1459:::5:::raw_ptr<int>
+r:::gen-reinterpret-cast-actual.cc:::2317:::5:::raw_ptr<int>
+r:::gen-reinterpret-cast-actual.cc:::2570:::5:::raw_ptr<int>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+ReinterpretedClass1::ptr2_  # reinterpret-cast-trivial-type
+ReinterpretedClass1::ptr_  # reinterpret-cast-trivial-type
+ReinterpretedClass2::ptr_  # reinterpret-cast-trivial-type
+==== END FIELD FILTERS ====

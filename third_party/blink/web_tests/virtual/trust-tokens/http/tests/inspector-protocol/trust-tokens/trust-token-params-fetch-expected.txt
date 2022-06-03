@@ -1,0 +1,27 @@
+Check that TrustTokenParams are included in the basic Trust Token operations on 'fetch'
+Sending request: 
+    fetch('https://trusttoken.test', {
+      trustToken: {
+        type: 'token-request'
+      }
+    });
+  
+Included trustTokenParams in request: {"type":"Issuance","refreshPolicy":"UseCached"}
+Sending request: 
+    fetch('https://trusttoken.test', {
+      trustToken: {
+        type: 'token-redemption'
+      }
+    });
+  
+Included trustTokenParams in request: {"type":"Redemption","refreshPolicy":"UseCached"}
+Sending request: 
+    fetch('https://destination.test', {
+      trustToken: {
+        type: 'send-redemption-record',
+        issuers: ['https://issuer.test']
+      }
+    });
+  
+Included trustTokenParams in request: {"type":"Signing","refreshPolicy":"UseCached","issuers":["https://issuer.test"]}
+

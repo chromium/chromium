@@ -1,0 +1,23 @@
+# crbug.com/1054841
+-org.chromium.content.browser.ContentViewScrollingTest.testFling
+
+# crbug.com/1081514
+-org.chromium.content.browser.VideoFullscreenOrientationLockTest.*
+
+# crbug.com/1081511
+-org.chromium.content.browser.MediaSessionTest.testShortVideoIsTransient
+
+# crbug.com/1081509
+-org.chromium.net.AndroidProxySelectorTest.testSocksExplicitPort
+
+# crbug.com/1099949
+-org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
+
+# crbug.com/1099954
+-org.chromium.content.browser.MediaSessionTest.testDontStopEachOther
+
+# crbug.com/1105214
+-org.chromium.content.browser.input.ImeTest.testSelectActionBarClearedOnTappingInput
+
+# crbug.com/1240750
+-org.chromium.content.browser.MediaSessionTest.testLongVideoAfterShortGainsFocus

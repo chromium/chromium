@@ -4,17 +4,21 @@
 
 #include "net/socket/tcp_client_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -29,6 +33,7 @@ class NetLogWithSource;
 TCPClientSocket::TCPClientSocket(
     const AddressList& addresses,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetworkQualityEstimator* network_quality_estimator,
     net::NetLog* net_log,
     const net::NetLogSource& source)
     : TCPClientSocket(
@@ -37,29 +42,34 @@ TCPClientSocket::TCPClientSocket(
                                       source),
           addresses,
           -1 /* current_address_index */,
-          nullptr /* bind_address */) {}
+          nullptr /* bind_address */,
+          network_quality_estimator) {}
 
 TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                                  const IPEndPoint& peer_address)
     : TCPClientSocket(std::move(connected_socket),
                       AddressList(peer_address),
                       0 /* current_address_index */,
-                      nullptr /* bind_address */) {}
+                      nullptr /* bind_address */,
+                      // TODO(https://crbug.com/1123197: Pass non-null
+                      // NetworkQualityEstimator
+                      nullptr /* network_quality_estimator */) {}
 
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 
 std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
     std::unique_ptr<TCPSocket> bound_socket,
     const AddressList& addresses,
-    const IPEndPoint& bound_address) {
+    const IPEndPoint& bound_address,
+    NetworkQualityEstimator* network_quality_estimator) {
   return base::WrapUnique(new TCPClientSocket(
       std::move(bound_socket), addresses, -1 /* current_address_index */,
-      std::make_unique<IPEndPoint>(bound_address)));
+      std::make_unique<IPEndPoint>(bound_address), network_quality_estimator));
 }
 
 int TCPClientSocket::Bind(const IPEndPoint& address) {
@@ -80,7 +90,7 @@ int TCPClientSocket::Bind(const IPEndPoint& address) {
   if (result != OK)
     return result;
 
-  bind_address_.reset(new IPEndPoint(address));
+  bind_address_ = std::make_unique<IPEndPoint>(address);
   return OK;
 }
 
@@ -130,24 +140,27 @@ int TCPClientSocket::Connect(CompletionOnceCallback callback) {
   return rv;
 }
 
-TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> socket,
-                                 const AddressList& addresses,
-                                 int current_address_index,
-                                 std::unique_ptr<IPEndPoint> bind_address)
+TCPClientSocket::TCPClientSocket(
+    std::unique_ptr<TCPSocket> socket,
+    const AddressList& addresses,
+    int current_address_index,
+    std::unique_ptr<IPEndPoint> bind_address,
+    NetworkQualityEstimator* network_quality_estimator)
     : socket_(std::move(socket)),
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
-      current_address_index_(-1),
+      current_address_index_(current_address_index),
       next_connect_state_(CONNECT_STATE_NONE),
       previously_disconnected_(false),
       total_received_bytes_(0),
       was_ever_used_(false),
-      was_disconnected_on_suspend_(false) {
+      was_disconnected_on_suspend_(false),
+      network_quality_estimator_(network_quality_estimator) {
   DCHECK(socket_);
   if (socket_->IsValid())
     socket_->SetDefaultOptionsForClient();
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 }
 
@@ -247,10 +260,28 @@ int TCPClientSocket::DoConnect() {
   if (socket_->socket_performance_watcher() && current_address_index_ != 0)
     socket_->socket_performance_watcher()->OnConnectionChanged();
 
+  start_connect_attempt_ = base::TimeTicks::Now();
+
+  // Start a timer to fail the connect attempt if it takes too long.
+  base::TimeDelta attempt_timeout = GetConnectAttemptTimeout();
+  if (!attempt_timeout.is_max()) {
+    DCHECK(!connect_attempt_timer_.IsRunning());
+    connect_attempt_timer_.Start(
+        FROM_HERE, attempt_timeout,
+        base::BindOnce(&TCPClientSocket::OnConnectAttemptTimeout,
+                       base::Unretained(this)));
+  }
+
   return ConnectInternal(endpoint);
 }
 
 int TCPClientSocket::DoConnectComplete(int result) {
+  if (start_connect_attempt_) {
+    EmitConnectAttemptHistograms(result);
+    start_connect_attempt_ = absl::nullopt;
+    connect_attempt_timer_.Stop();
+  }
+
   if (result == OK)
     return OK;  // Done!
 
@@ -273,6 +304,10 @@ int TCPClientSocket::DoConnectComplete(int result) {
 
   // Otherwise there is nothing to fall back to, so give up.
   return result;
+}
+
+void TCPClientSocket::OnConnectAttemptTimeout() {
+  DidCompleteConnect(ERR_TIMED_OUT);
 }
 
 int TCPClientSocket::ConnectInternal(const IPEndPoint& endpoint) {
@@ -298,6 +333,12 @@ void TCPClientSocket::Disconnect() {
 }
 
 void TCPClientSocket::DoDisconnect() {
+  if (start_connect_attempt_) {
+    EmitConnectAttemptHistograms(ERR_ABORTED);
+    start_connect_attempt_ = absl::nullopt;
+    connect_attempt_timer_.Stop();
+  }
+
   total_received_bytes_ = 0;
   EmitTCPMetricsHistogramsOnDisconnect();
 
@@ -526,9 +567,84 @@ void TCPClientSocket::EmitTCPMetricsHistogramsOnDisconnect() {
   base::TimeDelta rtt;
   if (socket_->GetEstimatedRoundTripTime(&rtt)) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.TcpRtt.AtDisconnect", rtt,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               base::Milliseconds(1), base::Minutes(10), 100);
   }
+}
+
+void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
+  // This should only be called in response to completing a connect attempt.
+  DCHECK(start_connect_attempt_);
+
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - start_connect_attempt_.value();
+
+  // Histogram the total time the connect attempt took, grouped by success and
+  // failure. Note that failures also include cases when the connect attempt
+  // was cancelled by the client before the handshake completed.
+  if (result == OK) {
+    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Success",
+                               duration);
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
+  }
+
+  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
+  if (network_quality_estimator_)
+    transport_rtt = network_quality_estimator_->GetTransportRTT();
+
+  // In cases where there is an estimated transport RTT, histogram the attempt
+  // duration as a percentage of the transport RTT. The histogram range can
+  // record fractions up to 1,000x RTT.
+  if (transport_rtt) {
+    int percent_rtt = 0;
+
+    if (transport_rtt.value().InMilliseconds() != 0) {
+      // Convert the percentage to an int, saturating to 100000.
+      float percent_rtt_float =
+          100.f * (duration.InMillisecondsF() /
+                   transport_rtt.value().InMillisecondsF());
+      if (percent_rtt_float > 100000) {
+        percent_rtt = 100000;
+      } else if (percent_rtt_float > 0) {
+        percent_rtt = static_cast<int>(percent_rtt_float);
+      }
+    }
+
+    if (result == OK) {
+      UMA_HISTOGRAM_COUNTS_100000(
+          "Net.TcpConnectAttempt.LatencyPercentRTT.Success", percent_rtt);
+    } else {
+      UMA_HISTOGRAM_COUNTS_100000(
+          "Net.TcpConnectAttempt.LatencyPercentRTT.Error", percent_rtt);
+    }
+  }
+}
+
+base::TimeDelta TCPClientSocket::GetConnectAttemptTimeout() {
+  if (!base::FeatureList::IsEnabled(features::kTimeoutTcpConnectAttempt))
+    return base::TimeDelta::Max();
+
+  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
+  if (network_quality_estimator_)
+    transport_rtt = network_quality_estimator_->GetTransportRTT();
+
+  base::TimeDelta min_timeout = features::kTimeoutTcpConnectAttemptMin.Get();
+  base::TimeDelta max_timeout = features::kTimeoutTcpConnectAttemptMax.Get();
+
+  if (!transport_rtt)
+    return max_timeout;
+
+  base::TimeDelta adaptive_timeout =
+      transport_rtt.value() *
+      features::kTimeoutTcpConnectAttemptRTTMultiplier.Get();
+
+  if (adaptive_timeout <= min_timeout)
+    return min_timeout;
+
+  if (adaptive_timeout >= max_timeout)
+    return max_timeout;
+
+  return adaptive_timeout;
 }
 
 }  // namespace net

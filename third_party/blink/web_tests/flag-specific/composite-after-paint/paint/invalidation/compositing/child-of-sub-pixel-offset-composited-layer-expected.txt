@@ -7,15 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='target' class='green'",
       "position": [-1, 0],
       "bounds": [15, 14],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='target' class='green'",
-          "rect": [0, 0, 15, 14],
-          "reason": "style change"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 15, 14]
       ],
       "transform": 1
     }

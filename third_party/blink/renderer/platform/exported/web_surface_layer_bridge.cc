@@ -11,10 +11,11 @@ namespace blink {
 
 std::unique_ptr<WebSurfaceLayerBridge> WebSurfaceLayerBridge::Create(
     viz::FrameSinkId parent_frame_sink_id,
+    ContainsVideo contains_video,
     WebSurfaceLayerBridgeObserver* observer,
     cc::UpdateSubmissionStateCB update_submission_state_callback) {
   return std::make_unique<SurfaceLayerBridge>(
-      parent_frame_sink_id, observer,
+      parent_frame_sink_id, contains_video, observer,
       std::move(update_submission_state_callback));
 }
 

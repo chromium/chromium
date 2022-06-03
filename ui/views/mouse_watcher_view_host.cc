@@ -12,9 +12,7 @@ namespace views {
 
 MouseWatcherViewHost::MouseWatcherViewHost(View* view,
                                            const gfx::Insets& hot_zone_insets)
-    : view_(view),
-      hot_zone_insets_(hot_zone_insets) {
-}
+    : view_(view), hot_zone_insets_(hot_zone_insets) {}
 
 MouseWatcherViewHost::~MouseWatcherViewHost() = default;
 

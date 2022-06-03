@@ -1,0 +1,43 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: User-Agent Client Hints (https://wicg.github.io/ua-client-hints/)
+
+dictionary NavigatorUABrandVersion {
+  DOMString brand;
+  DOMString version;
+};
+
+dictionary UADataValues {
+  sequence<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString architecture;
+  DOMString bitness;
+  DOMString model;
+  DOMString platform;
+  DOMString platformVersion;
+  DOMString uaFullVersion; // deprecated in favor of fullVersionList
+  sequence<NavigatorUABrandVersion> fullVersionList;
+};
+
+dictionary UALowEntropyJSON {
+  sequence<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString platform;
+};
+
+[Exposed=(Window,Worker)]
+interface NavigatorUAData {
+  readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
+  readonly attribute boolean mobile;
+  readonly attribute DOMString platform;
+  Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  UALowEntropyJSON toJSON();
+};
+
+interface mixin NavigatorUA {
+  [SecureContext] readonly attribute NavigatorUAData userAgentData;
+};
+
+Navigator includes NavigatorUA;
+WorkerNavigator includes NavigatorUA;

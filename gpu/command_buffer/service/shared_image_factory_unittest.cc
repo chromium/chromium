@@ -41,7 +41,8 @@ class SharedImageFactoryTest : public testing::Test {
     factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
         &shared_image_manager_, &image_factory_, nullptr,
-        /*enable_wrapped_sk_image=*/false);
+        /*enable_wrapped_sk_image=*/false,
+        /*is_for_display_compositor=*/false);
   }
 
   void TearDown() override {
@@ -63,9 +64,11 @@ TEST_F(SharedImageFactoryTest, Basic) {
   auto format = viz::ResourceFormat::RGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  EXPECT_TRUE(
-      factory_->CreateSharedImage(mailbox, format, size, color_space, usage));
+  EXPECT_TRUE(factory_->CreateSharedImage(
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, surface_handle, usage));
   TextureBase* texture_base = mailbox_manager_.ConsumeTexture(mailbox);
   // Validation of the produced backing/mailbox is handled in individual backing
   // factory unittests.
@@ -79,11 +82,14 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto format = viz::ResourceFormat::RGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  EXPECT_TRUE(
-      factory_->CreateSharedImage(mailbox, format, size, color_space, usage));
-  EXPECT_FALSE(
-      factory_->CreateSharedImage(mailbox, format, size, color_space, usage));
+  EXPECT_TRUE(factory_->CreateSharedImage(
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, surface_handle, usage));
+  EXPECT_FALSE(factory_->CreateSharedImage(
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, surface_handle, usage));
 
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
@@ -91,9 +97,10 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto other_factory = std::make_unique<SharedImageFactory>(
       preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
       &shared_image_manager_, &image_factory_, nullptr,
-      /*enable_wrapped_sk_image=*/false);
-  EXPECT_FALSE(other_factory->CreateSharedImage(mailbox, format, size,
-                                                color_space, usage));
+      /*enable_wrapped_sk_image=*/false, /*is_for_display_compositor=*/false);
+  EXPECT_FALSE(other_factory->CreateSharedImage(
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, surface_handle, usage));
 }
 
 TEST_F(SharedImageFactoryTest, DestroyInexistentMailbox) {

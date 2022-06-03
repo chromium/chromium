@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">චික්! අහඹු RSA පුද්ගලික යතුර සෑදීම අසාර්ථකයි.</translation>
 <translation id="1445572445564823378">මෙම දිගුව <ph name="PRODUCT_NAME" /> හි වේගය අඩාල කරයි. <ph name="PRODUCT_NAME" /> හි කාර්යක්ෂමතාව සඳහා එය අක්‍රීය කිරීමට සිදුවේ.</translation>
 <translation id="1468038450257740950">WebGLට සහාය නොවේ.</translation>
-<translation id="149347756975725155">දිගු අයිකනය '<ph name="ICON" />' ප්‍රවේශනය කළ නොහැකි විය.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">පුද්ගලික යතුර කියවීම අසාර්ථක විය.</translation>
 <translation id="6391538222494443604">ආදාන නාමාවලිය පැවතිය යුතුය.</translation>
 <translation id="641087317769093025">දිගුව දිගහැරිය නොහැක</translation>
-<translation id="6413453408918378296">නිරූපකය ප්‍රමාණවත්ව දෘශ්‍යමාන නොවේ '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ඔබේ උපාංගවලින් එකකට හෝ කිහිපයකට ප්‍රවේශය ඉල්ලයි:</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' පසුබිම් ස්ක්‍රිප්ටය පූර්ණය කළ නොහැක.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> ගේ <ph name="PRODUCT_NAME" />නිශ්පාදනය (ඛන්ඩාංකය <ph name="SERIAL_NUMBER" />)</translation>

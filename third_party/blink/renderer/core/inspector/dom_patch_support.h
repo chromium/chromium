@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_PATCH_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_PATCH_SUPPORT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -50,6 +49,8 @@ class DOMPatchSupport final {
 
  public:
   DOMPatchSupport(DOMEditor*, Document&);
+  DOMPatchSupport(const DOMPatchSupport&) = delete;
+  DOMPatchSupport& operator=(const DOMPatchSupport&) = delete;
 
   void PatchDocument(const String& markup);
   Node* PatchNode(Node*, const String& markup, ExceptionState&);
@@ -58,7 +59,7 @@ class DOMPatchSupport final {
   class Digest final : public GarbageCollected<Digest> {
    public:
     explicit Digest(Node* node) : node_(node) {}
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
     String sha1_;
     String attrs_sha1_;
@@ -86,14 +87,12 @@ class DOMPatchSupport final {
   void MarkNodeAsUsed(Digest*);
   Document& GetDocument() const { return *document_; }
 
-  Member<DOMEditor> dom_editor_;
-  Member<Document> document_;
+  DOMEditor* dom_editor_;
+  Document* document_;
 
   UnusedNodesMap unused_nodes_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMPatchSupport);
 };
 
 }  // namespace blink
 
-#endif  // !defined(DOMPatchSupport_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_PATCH_SUPPORT_H_

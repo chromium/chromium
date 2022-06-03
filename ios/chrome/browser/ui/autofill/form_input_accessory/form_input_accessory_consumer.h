@@ -11,7 +11,6 @@
 
 @class FormSuggestion;
 @protocol FormInputAccessoryViewDelegate;
-@protocol FormSuggestionClient;
 
 @protocol FormInputAccessoryConsumer <NSObject>
 
@@ -34,32 +33,9 @@
 // Enables or disables the previous button if any.
 @property(nonatomic) BOOL formInputPreviousButtonEnabled;
 
-// Removes the animations on the custom keyboard view.
-- (void)removeAnimationsOnKeyboardView;
-
-// Removes the presented keyboard view and the input accessory view.
-- (void)restoreOriginalKeyboardView;
-
-// Removes the presented keyboard view and the input accessory view until
-// |continueCustomKeyboardView| is called.
-- (void)pauseCustomKeyboardView;
-
-// Adds the previously presented views to the keyboard. If they have not been
-// reset.
-- (void)continueCustomKeyboardView;
-
-// Tells the consumer that suggestions are being fetched. The fetching is
-// asynchronous, so this call gives the opportunity to do any view preparation
-// that doesn't need the suggestions.
-- (void)prepareToShowSuggestions;
-
 // Replace the keyboard accessory view with one showing the passed suggestions.
-// And form navigation buttons if not an iPad (which already includes those).
-- (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions
-                suggestionClient:(id<FormSuggestionClient>)suggestionClient;
-
-// Indicates that the keyboard state changed.
-- (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
+// And form navigation buttons on iPhone (iPad already includes those).
+- (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
 @end
 

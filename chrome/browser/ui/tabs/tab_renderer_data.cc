@@ -6,12 +6,37 @@
 
 #include "base/process/kill.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
+
+namespace {
+
+bool ShouldThemifyFaviconForEntryUrl(const GURL& url) {
+  // Themify favicon for the default NTP and incognito NTP.
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         (url.host_piece() == chrome::kChromeUINewTabPageHost ||
+          url.host_piece() == chrome::kChromeUINewTabHost);
+}
+
+bool ShouldThemifyFaviconForVisibleUrl(const GURL& visible_url) {
+  return visible_url.SchemeIs(content::kChromeUIScheme) &&
+         visible_url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
+         visible_url.host_piece() != chrome::kChromeUIHelpHost &&
+         visible_url.host_piece() != chrome::kChromeUIVersionHost &&
+         visible_url.host_piece() != chrome::kChromeUINetExportHost &&
+         visible_url.host_piece() != chrome::kChromeUINewTabHost;
+}
+
+}  // namespace
 
 // static
 TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
@@ -28,20 +53,26 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();
+  // Allow empty title for chrome-untrusted:// URLs.
+  if (data.title.empty() &&
+      data.visible_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    data.should_render_empty_title = true;
+  }
   data.last_committed_url = contents->GetLastCommittedURL();
   data.crashed_status = contents->GetCrashedStatus();
   data.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   data.pinned = model->IsTabPinned(index);
-  data.show_icon = data.pinned || favicon::ShouldDisplayFavicon(contents);
+  data.show_icon =
+      data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
+  data.alert_state = chrome::GetTabAlertStatesForContents(contents);
 
-  // TODO(crbug.com/1004983): provide all current alerts in
-  // TabRendererData. Consumers that can only display 1 should handle
-  // this themselves.
-  auto alerts = chrome::GetTabAlertStatesForContents(contents);
-  data.alert_state =
-      alerts.empty() ? base::Optional<TabAlertState>() : alerts[0];
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  data.should_themify_favicon =
+      (entry && ShouldThemifyFaviconForEntryUrl(entry->GetURL())) ||
+      ShouldThemifyFaviconForVisibleUrl(contents->GetVisibleURL());
 
   return data;
 }
@@ -70,7 +101,7 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
 
 bool TabRendererData::IsCrashed() const {
   return (crashed_status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           crashed_status ==
               base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
 #endif

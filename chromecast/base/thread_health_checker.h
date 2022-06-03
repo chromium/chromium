@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
-#define CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
+#ifndef CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
+#define CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -40,6 +39,10 @@ class ThreadHealthChecker {
       base::TimeDelta interval,
       base::TimeDelta timeout,
       base::RepeatingClosure on_failure);
+
+  ThreadHealthChecker(const ThreadHealthChecker&) = delete;
+  ThreadHealthChecker& operator=(const ThreadHealthChecker&) = delete;
+
   ~ThreadHealthChecker();
 
  private:
@@ -73,10 +76,8 @@ class ThreadHealthChecker {
 
   scoped_refptr<base::SequencedTaskRunner> doctor_task_runner_;
   scoped_refptr<Internal> internal_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadHealthChecker);
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
+#endif  // CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_

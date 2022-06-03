@@ -34,4 +34,4 @@ class ServerTimingHeader {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_SERVER_TIMING_HEADER_H_

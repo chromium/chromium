@@ -1,0 +1,9 @@
+% Copyright (C) 2007 Karl Ove Hufthammer.
+% Copying and distribution of this file, with or without modification,
+% are permitted in any medium without royalty, provided the copyright
+% notice and this notice are preserved.
+%
+% This file contains hyphenation patterns for Norwegian Bokmal.
+% It uses the Norwegian hyphenation patterns from nohyphbx.tex,
+% created by Rune Kleveland and Ole Michael Selberg. Please see
+% that file for copyright information on those patterns.

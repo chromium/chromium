@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/macros.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/border.h"
@@ -30,6 +30,20 @@ TeleportWarningDialog::TeleportWarningDialog(OnAcceptCallback callback)
           l10n_util::GetStringUTF16(IDS_ASH_DIALOG_DONT_SHOW_AGAIN))),
       on_accept_(std::move(callback)) {
   never_show_again_checkbox_->SetChecked(true);
+  SetShowCloseButton(false);
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetTitle(l10n_util::GetStringUTF16(IDS_ASH_TELEPORT_WARNING_TITLE));
+  SetAcceptCallback(base::BindOnce(
+      [](TeleportWarningDialog* dialog) {
+        std::move(dialog->on_accept_)
+            .Run(true, dialog->never_show_again_checkbox_->GetChecked());
+      },
+      base::Unretained(this)));
+  SetCancelCallback(base::BindOnce(
+      [](TeleportWarningDialog* dialog) {
+        std::move(dialog->on_accept_).Run(false, false);
+      },
+      base::Unretained(this)));
 }
 
 TeleportWarningDialog::~TeleportWarningDialog() = default;
@@ -46,28 +60,6 @@ void TeleportWarningDialog::Show(OnAcceptCallback callback) {
   widget->Show();
 }
 
-bool TeleportWarningDialog::Cancel() {
-  std::move(on_accept_).Run(false, false);
-  return true;
-}
-
-bool TeleportWarningDialog::Accept() {
-  std::move(on_accept_).Run(true, never_show_again_checkbox_->GetChecked());
-  return true;
-}
-
-ui::ModalType TeleportWarningDialog::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
-base::string16 TeleportWarningDialog::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_ASH_TELEPORT_WARNING_TITLE);
-}
-
-bool TeleportWarningDialog::ShouldShowCloseButton() const {
-  return false;
-}
-
 gfx::Size TeleportWarningDialog::CalculatePreferredSize() const {
   return gfx::Size(
       kDefaultWidth,
@@ -76,8 +68,8 @@ gfx::Size TeleportWarningDialog::CalculatePreferredSize() const {
 
 void TeleportWarningDialog::InitDialog() {
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL)));
+  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kControl)));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

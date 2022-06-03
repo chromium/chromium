@@ -52,7 +52,7 @@ void SVGAnimatedEnumerationBase::setBaseVal(uint16_t value,
     return;
   }
 
-  SVGAnimatedProperty<SVGEnumerationBase>::setBaseVal(value, exception_state);
+  SVGAnimatedProperty<SVGEnumeration>::setBaseVal(value, exception_state);
 }
 
 }  // namespace blink

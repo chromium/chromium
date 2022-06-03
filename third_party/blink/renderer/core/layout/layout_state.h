@@ -26,10 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_STATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -47,7 +48,7 @@ class LayoutView;
 // LayoutState incurs some memory overhead and is pretty intrusive (see next
 // paragraphs about those downsides).
 //
-// To use LayoutState, the layout() functions have to allocate a new LayoutSTate
+// To use LayoutState, the layout() functions have to allocate a new LayoutState
 // object on the stack whenever the LayoutObject creates a new coordinate system
 // (which is pretty much all objects but LayoutTableRow).
 //
@@ -71,6 +72,8 @@ class LayoutState {
   explicit LayoutState(LayoutObject& root);
 
   LayoutState(LayoutBox&, bool containing_block_logical_width_changed = false);
+  LayoutState(const LayoutState&) = delete;
+  LayoutState& operator=(const LayoutState&) = delete;
 
   ~LayoutState();
 
@@ -90,6 +93,12 @@ class LayoutState {
     height_offset_for_table_footers_ = offset;
   }
 
+  // The input page name is the name specified by the element itself, if any. If
+  // the element doesn't specify one, but an ancestor does, return that.
+  // Otherwise it's an empty string. This is the page name that will be used on
+  // all descendants if none of them override it.
+  const AtomicString& InputPageName() const { return input_page_name_; }
+
   const LayoutSize& PaginationOffset() const { return pagination_offset_; }
   bool ContainingBlockLogicalWidthChanged() const {
     return containing_block_logical_width_changed_;
@@ -102,7 +111,9 @@ class LayoutState {
 
   LayoutFlowThread* FlowThread() const { return flow_thread_; }
 
-  LayoutObject& GetLayoutObject() const { return layout_object_; }
+  LayoutObject& GetLayoutObject() const { return *layout_object_; }
+
+  void Trace(Visitor*) const;
 
  private:
   // Do not add anything apart from bitfields until after m_flowThread. See
@@ -112,7 +123,7 @@ class LayoutState {
   bool containing_block_logical_width_changed_ : 1;
   bool pagination_state_changed_ : 1;
 
-  LayoutFlowThread* flow_thread_;
+  WeakMember<LayoutFlowThread> flow_thread_;
 
   LayoutState* next_;
 
@@ -128,8 +139,9 @@ class LayoutState {
   // paginated layout.
   LayoutUnit height_offset_for_table_footers_;
 
-  LayoutObject& layout_object_;
-  DISALLOW_COPY_AND_ASSIGN(LayoutState);
+  AtomicString input_page_name_;
+
+  const Member<LayoutObject> layout_object_;
 };
 
 }  // namespace blink

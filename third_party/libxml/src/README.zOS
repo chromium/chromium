@@ -7,7 +7,7 @@ Notes for compiling on zOS:
 
 - since the name of files (or qualifier) in PDS are limited to 8 I had to
   rename xmlschemas.c and xmlschemastypes.c in (resp.) xmlsche.c xmlschet.c
-  (and I had to modify all occurences of these files accordingly in the
+  (and I had to modify all occurrences of these files accordingly in the
   rest of the Makefile !!!).
 
 - in order to copy objects to PDS, I had the cp command at line 860

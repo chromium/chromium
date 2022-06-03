@@ -6,5 +6,8 @@ PASS e.style['stroke-width'] = "calc(2em + 3ex)" should set the property value
 PASS e.style['stroke-width'] = "4%" should set the property value
 PASS e.style['stroke-width'] = "5vmin" should set the property value
 PASS e.style['stroke-width'] = "calc(50% + 60px)" should set the property value
+PASS e.style['stroke-width'] = "calc(3)" should set the property value
+PASS e.style['stroke-width'] = "calc(2 + 1)" should set the property value
+PASS e.style['stroke-width'] = "calc(2 + (7 - 5))" should set the property value
 Harness: the test ran to completion.
 

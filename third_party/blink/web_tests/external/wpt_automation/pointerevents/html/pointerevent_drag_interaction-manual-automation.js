@@ -1,5 +1,3 @@
-importAutomationScript('/pointerevents/pointerevent_common_input.js');
-
 function inject_input() {
   return new Promise(function(resolve, reject) {
       for (var i=0; i<3; i++) {
@@ -13,5 +11,13 @@ function inject_input() {
           eventSender.mouseUp();
       }
       resolve();
+  });
+}
+
+{
+  var pointerevent_automation = async_test("PointerEvent Automation");
+  // Defined in every test and should return a promise that gets resolved when input is finished.
+  inject_input().then(function() {
+    pointerevent_automation.done();
   });
 }

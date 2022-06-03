@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("url_pattern") {
+  sources = [
+    "url_pattern.cc",
+    "url_pattern.h",
+    "url_pattern_canon.cc",
+    "url_pattern_canon.h",
+    "url_pattern_component.cc",
+    "url_pattern_component.h",
+    "url_pattern_parser.cc",
+    "url_pattern_parser.h",
+  ]
+
+  public_deps = [
+    "//third_party/blink/renderer/platform",
+    "//third_party/liburlpattern",
+  ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("url_pattern_fuzzer") {
+    sources = [ "url_pattern_fuzzer.cc" ]
+    deps = [
+      "//third_party/blink/renderer/modules:modules",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    ]
+    seed_corpus = "fuzzer_seed_corpus"
+    libfuzzer_options = [ "max_len=4096" ]
+  }
+}

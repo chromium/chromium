@@ -4,8 +4,12 @@
 
 #include "components/offline_items_collection/core/offline_item.h"
 
+#include <utility>
+
 namespace offline_items_collection {
 
+// -----------------------------------------------------------------------------
+// ContentId.
 ContentId::ContentId() = default;
 
 ContentId::ContentId(const ContentId& other) = default;
@@ -26,6 +30,26 @@ bool ContentId::operator<(const ContentId& content_id) const {
          std::tie(content_id.name_space, content_id.id);
 }
 
+// -----------------------------------------------------------------------------
+// OfflineItemSchedule.
+OfflineItemSchedule::OfflineItemSchedule(bool only_on_wifi,
+                                         absl::optional<base::Time> start_time)
+    : only_on_wifi(only_on_wifi), start_time(std::move(start_time)) {}
+
+OfflineItemSchedule::OfflineItemSchedule(const OfflineItemSchedule& other) =
+    default;
+
+OfflineItemSchedule& OfflineItemSchedule::operator=(
+    const OfflineItemSchedule& other) = default;
+
+OfflineItemSchedule::~OfflineItemSchedule() = default;
+
+bool OfflineItemSchedule::operator==(const OfflineItemSchedule& other) const {
+  return only_on_wifi == other.only_on_wifi && start_time == other.start_time;
+}
+
+// -----------------------------------------------------------------------------
+// OfflineItem.
 OfflineItem::Progress::Progress()
     : value(0), unit(OfflineItemProgressUnit::BYTES) {}
 
@@ -62,6 +86,8 @@ OfflineItem::OfflineItem()
 
 OfflineItem::OfflineItem(const OfflineItem& other) = default;
 
+OfflineItem& OfflineItem::operator=(const OfflineItem& other) = default;
+
 OfflineItem::OfflineItem(const ContentId& id) : OfflineItem() {
   this->id = id;
 }
@@ -86,10 +112,10 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          last_accessed_time == offline_item.last_accessed_time &&
          is_openable == offline_item.is_openable &&
          file_path == offline_item.file_path &&
-         mime_type == offline_item.mime_type &&
-         page_url == offline_item.page_url &&
+         mime_type == offline_item.mime_type && url == offline_item.url &&
          original_url == offline_item.original_url &&
          is_off_the_record == offline_item.is_off_the_record &&
+         otr_profile_id == offline_item.otr_profile_id &&
          attribution == offline_item.attribution &&
          state == offline_item.state && fail_state == offline_item.fail_state &&
          pending_state == offline_item.pending_state &&
@@ -98,7 +124,8 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          received_bytes == offline_item.received_bytes &&
          progress == offline_item.progress &&
          time_remaining_ms == offline_item.time_remaining_ms &&
-         is_dangerous == offline_item.is_dangerous;
+         is_dangerous == offline_item.is_dangerous &&
+         schedule == offline_item.schedule;
 }
 
 OfflineItemVisuals::OfflineItemVisuals() = default;

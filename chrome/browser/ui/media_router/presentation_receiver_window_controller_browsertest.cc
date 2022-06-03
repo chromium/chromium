@@ -8,24 +8,26 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/media/router/presentation/local_presentation_manager.h"
-#include "chrome/browser/media/router/presentation/local_presentation_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/media_router/browser/presentation/local_presentation_manager.h"
+#include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/script_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -66,24 +68,6 @@ base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path) {
   return full_path;
 }
 
-// This class waits for a WebContents it is assigned via Observe to be destroyed
-// and then quits a RunLoop it is given.  This is used in tests to wait for the
-// receiver page to be torn down in the presentation window.
-class CloseObserver final : public content::WebContentsObserver {
- public:
-  explicit CloseObserver(base::RunLoop* run_loop) : run_loop_(run_loop) {}
-
-  // content::WebContentsObserver overrides.
-  void WebContentsDestroyed() override { run_loop_->Quit(); }
-
-  using content::WebContentsObserver::Observe;
-
- private:
-  base::RunLoop* const run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseObserver);
-};
-
 // This class imitates a presentation controller page from a messaging
 // standpoint.  It is registered as a controller connection for the appropriate
 // presentation ID with the LocalPresentationManager to facilitate a
@@ -92,6 +76,9 @@ class FakeControllerConnection final
     : public blink::mojom::PresentationConnection {
  public:
   FakeControllerConnection() {}
+
+  FakeControllerConnection(const FakeControllerConnection&) = delete;
+  FakeControllerConnection& operator=(const FakeControllerConnection&) = delete;
 
   void SendTextMessage(const std::string& message) {
     ASSERT_TRUE(receiver_connection_remote_.is_bound());
@@ -123,8 +110,6 @@ class FakeControllerConnection final
       receiver_connection_receiver_{this};
   mojo::Remote<blink::mojom::PresentationConnection>
       receiver_connection_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeControllerConnection);
 };
 
 // This class is used to wait for Terminate to finish before destroying a
@@ -262,13 +247,11 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   receiver_window->Start(kPresentationId, presentation_url);
   ASSERT_TRUE(content::WaitForLoadStop(receiver_window->web_contents()));
 
-  base::RunLoop run_loop;
-  CloseObserver close_observer(&run_loop);
-  close_observer.Observe(receiver_window->web_contents());
-
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      receiver_window->web_contents());
   ASSERT_TRUE(content::ExecuteScript(receiver_window->web_contents(),
                                      "window.location = 'about:blank'"));
-  run_loop.Run();
+  destroyed_watcher.Wait();
 
   destroyer.AwaitTerminate(std::move(receiver_window));
 }
@@ -298,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
       browser()->profile())
       ->RegisterLocalPresentationController(
           blink::mojom::PresentationInfo(presentation_url, kPresentationId),
-          content::GlobalFrameRoutingId(0, 0), std::move(controller_ptr),
+          content::GlobalRenderFrameHostId(0, 0), std::move(controller_ptr),
           controller_connection.MakeConnectionRequest(),
           media_router::MediaRoute("route",
                                    media_router::MediaSource(presentation_url),
@@ -339,12 +322,10 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   receiver_window->Start(kPresentationId, GURL("about:blank"));
   ASSERT_TRUE(content::WaitForLoadStop(receiver_window->web_contents()));
 
-  base::RunLoop run_loop;
-  CloseObserver close_observer(&run_loop);
-  close_observer.Observe(receiver_window->web_contents());
-
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      receiver_window->web_contents());
   CloseWindow(receiver_window.get());
-  run_loop.Run();
+  destroyed_watcher.Wait();
 
   destroyer.AwaitTerminate(std::move(receiver_window));
 }

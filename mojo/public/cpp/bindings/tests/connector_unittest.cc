@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -75,7 +75,7 @@ class ReentrantMessageAccumulator : public MessageAccumulator {
       return false;
     number_of_calls_++;
     if (number_of_calls_ == 1) {
-      return connector_->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+      return connector_->WaitForIncomingMessage();
     }
     return true;
   }
@@ -151,7 +151,7 @@ TEST_F(ConnectorTest, Basic_Synchronous) {
   MessageAccumulator accumulator;
   connector1.set_incoming_receiver(&accumulator);
 
-  connector1.WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+  connector1.WaitForIncomingMessage();
 
   ASSERT_FALSE(accumulator.IsEmpty());
 
@@ -236,7 +236,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
   MessageAccumulator accumulator;
   connector1.set_incoming_receiver(&accumulator);
 
-  connector1.WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+  connector1.WaitForIncomingMessage();
 
   ASSERT_FALSE(accumulator.IsEmpty());
 
@@ -341,7 +341,7 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithError) {
                        base::ThreadTaskRunnerHandle::Get());
   // Close the other end of the pipe.
   handle1_.reset();
-  ASSERT_FALSE(connector0.WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE));
+  ASSERT_FALSE(connector0.WaitForIncomingMessage());
 }
 
 TEST_F(ConnectorTest, WaitForIncomingMessageWithDeletion) {
@@ -358,7 +358,7 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithDeletion) {
   ConnectorDeletingMessageAccumulator accumulator(&connector1);
   connector1->set_incoming_receiver(&accumulator);
 
-  connector1->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+  connector1->WaitForIncomingMessage();
 
   ASSERT_FALSE(connector1);
   ASSERT_FALSE(accumulator.IsEmpty());

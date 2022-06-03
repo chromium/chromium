@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -13,7 +14,7 @@
 #include "base/base64url.h"
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -64,7 +65,7 @@ class GCMEncryptionProviderTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
-    encryption_provider_.reset(new GCMEncryptionProvider);
+    encryption_provider_ = std::make_unique<GCMEncryptionProvider>();
     encryption_provider_->Init(scoped_temp_dir_.GetPath(),
                                base::ThreadTaskRunnerHandle::Get());
   }
@@ -101,8 +102,8 @@ class GCMEncryptionProviderTest : public ::testing::Test {
   void Decrypt(const IncomingMessage& message) {
     encryption_provider_->DecryptMessage(
         kExampleAppId, message,
-        base::Bind(&GCMEncryptionProviderTest::DidDecryptMessage,
-                   base::Unretained(this)));
+        base::BindOnce(&GCMEncryptionProviderTest::DidDecryptMessage,
+                       base::Unretained(this)));
 
     // The encryption keys will be read asynchronously.
     base::RunLoop().RunUntilIdle();
@@ -180,10 +181,9 @@ class GCMEncryptionProviderTest : public ::testing::Test {
                             const std::string& authorized_entity);
 
  private:
-  void DidDecryptMessage(GCMDecryptionResult result,
-                         const IncomingMessage& message) {
+  void DidDecryptMessage(GCMDecryptionResult result, IncomingMessage message) {
     decryption_result_ = result;
-    decrypted_message_ = message;
+    decrypted_message_ = std::move(message);
   }
 
   void DidEncryptMessage(GCMEncryptionResult result, std::string message) {

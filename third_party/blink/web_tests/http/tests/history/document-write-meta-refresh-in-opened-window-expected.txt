@@ -1,0 +1,9 @@
+
+
+============== Back Forward List ==============
+curr->  http://127.0.0.1:8000/history/document-write-meta-refresh-in-opened-window.html
+===============================================
+
+============== Back Forward List ==============
+curr->  http://127.0.0.1:8000/history/document-write-meta-refresh-in-opened-window.html
+===============================================

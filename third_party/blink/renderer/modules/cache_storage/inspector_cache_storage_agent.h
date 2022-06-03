@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/CacheStorage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/cache_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -25,8 +25,13 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   using CachesMap = HashMap<String, mojo::Remote<mojom::blink::CacheStorage>>;
 
   explicit InspectorCacheStorageAgent(InspectedFrames*);
+
+  InspectorCacheStorageAgent(const InspectorCacheStorageAgent&) = delete;
+  InspectorCacheStorageAgent& operator=(const InspectorCacheStorageAgent&) =
+      delete;
+
   ~InspectorCacheStorageAgent() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void requestCacheNames(const String& security_origin,
                          std::unique_ptr<RequestCacheNamesCallback>) override;
@@ -51,8 +56,6 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   Member<InspectedFrames> frames_;
 
   CachesMap caches_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorCacheStorageAgent);
 };
 
 }  // namespace blink

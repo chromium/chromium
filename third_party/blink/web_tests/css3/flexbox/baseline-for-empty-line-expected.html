@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<style>
+.b {
+  display: inline-block;
+  border: 1px solid rgba(255,0,0,0.5);
+}
+
+*[contenteditable=true] {
+  display: inline-block;
+  background: #ddf;
+  min-width: 20px;
+  margin: 2px;
+}
+</style>
+<body>
+<p>abc
+<span class=b><span contenteditable=true></span></span>
+<span class=b><span contenteditable=true>a</span></span>
+<span class=b><span contenteditable=true>a</span><span contenteditable=true></span><span>non-editable</span></span>
+def</p>
+</body>

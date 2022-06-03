@@ -25,6 +25,36 @@ third_party/libaddressinput/BUILD.gn.
     <!-- Chromium language packs. -->
     <if expr="is_android">
       <output filename="address_input_strings_af.pak" type="data_package" lang="af" />
+      <output filename="address_input_strings_as.pak" type="data_package" lang="as" />
+      <output filename="address_input_strings_az.pak" type="data_package" lang="az" />
+      <output filename="address_input_strings_be.pak" type="data_package" lang="be" />
+      <output filename="address_input_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="address_input_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="address_input_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="address_input_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="address_input_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="address_input_strings_is.pak" type="data_package" lang="is" />
+      <output filename="address_input_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="address_input_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="address_input_strings_km.pak" type="data_package" lang="km" />
+      <output filename="address_input_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="address_input_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="address_input_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="address_input_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="address_input_strings_my.pak" type="data_package" lang="my" />
+      <output filename="address_input_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="address_input_strings_or.pak" type="data_package" lang="or" />
+      <output filename="address_input_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="address_input_strings_si.pak" type="data_package" lang="si" />
+      <output filename="address_input_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="address_input_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="address_input_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="address_input_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="address_input_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="address_input_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="address_input_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="address_input_strings_am.pak" type="data_package" lang="am" />
     <output filename="address_input_strings_ar.pak" type="data_package" lang="ar" />
@@ -47,7 +77,6 @@ third_party/libaddressinput/BUILD.gn.
     </if>
     <output filename="address_input_strings_et.pak" type="data_package" lang="et" />
     <output filename="address_input_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="address_input_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="address_input_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="address_input_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="address_input_strings_fr.pak" type="data_package" lang="fr" />
@@ -94,6 +123,10 @@ third_party/libaddressinput/BUILD.gn.
     <output filename="address_input_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="address_input_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="address_input_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="address_input_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="address_input_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
 
   <!-- Chromium translations. -->
@@ -164,6 +197,7 @@ third_party/libaddressinput/BUILD.gn.
     <file path="resources/address_input_strings_sl.xtb" lang="sl" />
     <file path="resources/address_input_strings_sq.xtb" lang="sq" />
     <file path="resources/address_input_strings_sr.xtb" lang="sr" />
+    <file path="resources/address_input_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="resources/address_input_strings_sv.xtb" lang="sv" />
     <file path="resources/address_input_strings_sw.xtb" lang="sw" />
     <file path="resources/address_input_strings_ta.xtb" lang="ta" />
@@ -179,7 +213,7 @@ third_party/libaddressinput/BUILD.gn.
     <file path="resources/address_input_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/address_input_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Chromium name for the file with original strings to work well with
            translation tools. -->

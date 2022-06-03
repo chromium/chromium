@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
@@ -17,6 +18,11 @@
 
 namespace mojo {
 namespace internal {
+
+struct StructVersionSize {
+  uint32_t version;
+  uint32_t num_bytes;
+};
 
 // Calls ReportValidationError() with a constructed error string.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
@@ -56,6 +62,22 @@ bool ValidatePointer(const Pointer<T>& input,
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool ValidateStructHeaderAndClaimMemory(const void* data,
                                         ValidationContext* validation_context);
+
+// Same as above, but also validates the struct's purported size and version to
+// ensure they match expectations from the mojom definition.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateStructHeaderAndVersionSizeAndClaimMemory(
+    const void* data,
+    base::span<const StructVersionSize> version_sizes,
+    ValidationContext* validation_context);
+
+// Same as above, but for the simplest and most common case where a struct only
+// defines a single version (0) with expected size of `v0_size`.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateUnversionedStructHeaderAndSizeAndClaimMemory(
+    const void* data,
+    size_t v0_size,
+    ValidationContext* validation_context);
 
 // Validates that |data| contains a valid union header, in terms of alignment
 // and size. It checks that the memory range [data, data + kUnionDataSize) is
@@ -162,8 +184,6 @@ template <typename T>
 bool ValidateContainer(const Pointer<T>& input,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-
   return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, validate_params);
 }
@@ -180,7 +200,6 @@ bool ValidateStruct(const Pointer<T>& input,
 template <typename T>
 bool ValidateInlinedUnion(const T& input,
                           ValidationContext* validation_context) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
   if (validation_context->ExceedsMaxDepth()) {
     ReportValidationError(validation_context,
                           VALIDATION_ERROR_MAX_RECURSION_DEPTH);
@@ -192,8 +211,6 @@ bool ValidateInlinedUnion(const T& input,
 template <typename T>
 bool ValidateNonInlinedUnion(const Pointer<T>& input,
                              ValidationContext* validation_context) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-
   return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, false);
 }

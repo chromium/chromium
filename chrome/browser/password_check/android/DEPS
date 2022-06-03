@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/android",
+  "+chrome/browser/ui/android",
+  "+content/public/android",
+]

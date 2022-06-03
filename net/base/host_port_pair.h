@@ -10,9 +10,14 @@
 #include <string>
 #include <tuple>
 
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 class GURL;
+
+namespace url {
+class SchemeHostPort;
+}  // namespace url
 
 namespace net {
 
@@ -22,17 +27,20 @@ class NET_EXPORT HostPortPair {
  public:
   HostPortPair();
   // If |in_host| represents an IPv6 address, it should not bracket the address.
-  HostPortPair(const std::string& in_host, uint16_t in_port);
+  HostPortPair(base::StringPiece in_host, uint16_t in_port);
 
   // Creates a HostPortPair for the origin of |url|.
   static HostPortPair FromURL(const GURL& url);
+
+  static HostPortPair FromSchemeHostPort(
+      const url::SchemeHostPort& scheme_host_port);
 
   // Creates a HostPortPair from an IPEndPoint.
   static HostPortPair FromIPEndPoint(const IPEndPoint& ipe);
 
   // Creates a HostPortPair from a string formatted in same manner as
   // ToString().
-  static HostPortPair FromString(const std::string& str);
+  static HostPortPair FromString(base::StringPiece str);
 
   // TODO(willchan): Define a functor instead.
   // Comparator function so this can be placed in a std::map.
@@ -69,9 +77,6 @@ class NET_EXPORT HostPortPair {
 
   // Returns |host_|, adding IPv6 brackets if needed.
   std::string HostForURL() const;
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
  private:
   // If |host_| represents an IPv6 address, this string will not contain

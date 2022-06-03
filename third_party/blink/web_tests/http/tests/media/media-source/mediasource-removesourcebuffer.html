@@ -27,7 +27,7 @@
 
           mediasource_test(function(test, mediaElement, mediaSource)
           {
-              assert_throws(new TypeError(),
+              assert_throws_js(TypeError,
                           function() { mediaSource.removeSourceBuffer(null); },
                           "removeSourceBuffer() threw an exception when passed null.");
               test.done();
@@ -40,7 +40,7 @@
 
               mediaSource.removeSourceBuffer(sourceBuffer);
 
-              assert_throws("NotFoundError",
+              assert_throws_dom("NotFoundError",
                   function() { mediaSource.removeSourceBuffer(sourceBuffer); },
                   "removeSourceBuffer() threw an exception when a SourceBuffer that was already removed.");
 

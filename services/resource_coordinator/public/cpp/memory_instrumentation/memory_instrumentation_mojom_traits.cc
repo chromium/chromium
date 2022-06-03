@@ -4,6 +4,8 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits.h"
 
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+
 namespace mojo {
 
 // static

@@ -60,6 +60,11 @@ void DisplayInfoProvider::InitializeForTesting(
 }
 
 // static
+void DisplayInfoProvider::ResetForTesting() {
+  g_display_info_provider = nullptr;
+}
+
+// static
 // Creates new DisplayUnitInfo struct for |display|.
 api::system_display::DisplayUnitInfo DisplayInfoProvider::CreateDisplayUnitInfo(
     const display::Display& display,
@@ -128,15 +133,11 @@ void DisplayInfoProvider::GetDisplayLayout(
 }
 
 void DisplayInfoProvider::StartObserving() {
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->AddObserver(this);
+  display_observer_.emplace(this);
 }
 
 void DisplayInfoProvider::StopObserving() {
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->RemoveObserver(this);
+  display_observer_.reset();
 }
 
 bool DisplayInfoProvider::OverscanCalibrationStart(const std::string& id) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_browsertest.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -29,7 +29,7 @@ gfx::NativeViewAccessible AccessibilityBrowserTest::GetRendererAccessible() {
   return web_contents->GetRenderWidgetHostView()->GetNativeViewAccessible();
 }
 
-void AccessibilityBrowserTest::ExecuteScript(const base::string16& script) {
+void AccessibilityBrowserTest::ExecuteScript(const std::u16string& script) {
   shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
       script, base::NullCallback());
 }
@@ -101,15 +101,15 @@ void AccessibilityBrowserTest::LoadSampleParagraphInScrollableEditable() {
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
-  ExecuteScript(base::UTF8ToUTF16(
-      "let selection=document.getSelection();"
-      "let range=document.createRange();"
-      "let editable=document.querySelector('p[contenteditable=\"true\"]');"
-      "editable.focus();"
-      "range.setStart(editable.lastChild, 0);"
-      "range.setEnd(editable.lastChild, 0);"
-      "selection.removeAllRanges();"
-      "selection.addRange(range);"));
+  ExecuteScript(
+      u"let selection=document.getSelection();"
+      u"let range=document.createRange();"
+      u"let editable=document.querySelector('p[contenteditable=\"true\"]');"
+      u"editable.focus();"
+      u"range.setStart(editable.lastChild, 0);"
+      u"range.setEnd(editable.lastChild, 0);"
+      u"selection.removeAllRanges();"
+      u"selection.addRange(range);");
   selection_waiter.WaitForNotification();
 }
 

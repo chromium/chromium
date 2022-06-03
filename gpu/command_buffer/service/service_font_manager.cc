@@ -6,7 +6,9 @@
 
 #include <inttypes.h>
 
+#include "base/bits.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -58,19 +60,19 @@ class Deserializer {
  private:
   bool AlignMemory(uint32_t size, size_t alignment) {
     // Due to the math below, alignment must be a power of two.
-    DCHECK_GT(alignment, 0u);
-    DCHECK_EQ(alignment & (alignment - 1), 0u);
+    DCHECK(base::bits::IsPowerOfTwo(alignment));
 
-    uintptr_t memory = reinterpret_cast<uintptr_t>(memory_);
-    size_t padding = ((memory + alignment - 1) & ~(alignment - 1)) - memory;
+    size_t memory = reinterpret_cast<size_t>(memory_);
+    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
 
     base::CheckedNumeric<uint32_t> checked_padded_size = bytes_read_;
     checked_padded_size += padding;
     checked_padded_size += size;
     uint32_t padded_size = 0;
     if (!checked_padded_size.AssignIfValid(&padded_size) ||
-        padded_size > memory_size_)
+        padded_size > memory_size_) {
       return false;
+    }
 
     memory_ += padding;
     bytes_read_ += padding;
@@ -86,7 +88,8 @@ class Deserializer {
 class ServiceFontManager::SkiaDiscardableManager
     : public SkStrikeClient::DiscardableHandleManager {
  public:
-  SkiaDiscardableManager(scoped_refptr<ServiceFontManager> font_manager)
+  explicit SkiaDiscardableManager(
+      scoped_refptr<ServiceFontManager> font_manager)
       : font_manager_(std::move(font_manager)) {}
   ~SkiaDiscardableManager() override = default;
 
@@ -98,7 +101,8 @@ class ServiceFontManager::SkiaDiscardableManager
     return font_manager_->DeleteHandle(handle_id);
   }
 
-  void notifyCacheMiss(SkStrikeClient::CacheMissType type) override {
+  void notifyCacheMiss(SkStrikeClient::CacheMissType type,
+                       int fontSize) override {
     UMA_HISTOGRAM_ENUMERATION("GPU.OopRaster.GlyphCacheMiss", type,
                               SkStrikeClient::CacheMissType::kLast + 1);
     // In general, Skia analysis of glyphs should find all cases.
@@ -106,13 +110,14 @@ class ServiceFontManager::SkiaDiscardableManager
     // it can be fixed.
     NOTREACHED();
 
-    const bool no_fallback = (type == SkStrikeClient::kGlyphMetrics ||
-                              type == SkStrikeClient::kGlyphPath ||
-                              type == SkStrikeClient::kGlyphImage);
-
-    if (no_fallback && dump_count_ < kMaxDumps && base::RandInt(1, 100) == 1) {
-      ++dump_count_;
+    if (dump_count_ < kMaxDumps && base::RandInt(1, 100) == 1 &&
+        !font_manager_->disable_oopr_debug_crash_dump()) {
+      static crash_reporter::CrashKeyString<64> crash_key("oop_cache_miss");
+      crash_reporter::ScopedCrashKeyString auto_clear(
+          &crash_key, base::StringPrintf("type: %" PRIu32 ", fontSize: %d",
+                                         type, fontSize));
       base::debug::DumpWithoutCrashing();
+      ++dump_count_;
     }
   }
 
@@ -138,11 +143,13 @@ class ServiceFontManager::SkiaDiscardableManager
   scoped_refptr<ServiceFontManager> font_manager_;
 };
 
-ServiceFontManager::ServiceFontManager(Client* client)
+ServiceFontManager::ServiceFontManager(Client* client,
+                                       bool disable_oopr_debug_crash_dump)
     : client_(client),
       client_thread_id_(base::PlatformThread::CurrentId()),
       strike_client_(std::make_unique<SkStrikeClient>(
-          sk_make_sp<SkiaDiscardableManager>(this))) {}
+          sk_make_sp<SkiaDiscardableManager>(this))),
+      disable_oopr_debug_crash_dump_(disable_oopr_debug_crash_dump) {}
 
 ServiceFontManager::~ServiceFontManager() {
   DCHECK(destroyed_);

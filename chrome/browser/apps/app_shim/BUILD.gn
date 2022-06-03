@@ -12,20 +12,21 @@ source_set("app_shim") {
     "app_shim_host_mac.h",
     "app_shim_listener.h",
     "app_shim_listener.mm",
+    "app_shim_manager_mac.cc",
+    "app_shim_manager_mac.h",
     "app_shim_termination_manager.cc",
     "app_shim_termination_manager.h",
-    "extension_app_shim_handler_mac.cc",
-    "extension_app_shim_handler_mac.h",
     "mach_bootstrap_acceptor.cc",
     "mach_bootstrap_acceptor.h",
+    "web_app_shim_manager_delegate_mac.cc",
+    "web_app_shim_manager_delegate_mac.h",
   ]
 
   deps = [
     "//apps",
-    "//chrome/browser/apps/platform_apps",
-    "//chrome/browser/extensions",
-    "//chrome/browser/web_applications/components",
-    "//chrome/browser/web_applications/extensions",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications:web_applications",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
@@ -36,8 +37,7 @@ source_set("app_shim") {
     "//components/version_info",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/browser",
-    "//extensions/common",
+    "//services/preferences/public/cpp:cpp",
     "//ui/views:views",
   ]
 }

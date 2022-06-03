@@ -4,7 +4,7 @@
 
 #include "cronet_c.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/cronet/native/test/test_util.h"
 #include "components/grpc_support/test/get_stream_engine.h"
 

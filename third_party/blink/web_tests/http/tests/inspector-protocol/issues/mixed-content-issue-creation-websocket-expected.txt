@@ -1,0 +1,19 @@
+Verifies that mixed content issue is created from mixed content websocket.
+
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : ws://devtools.test:8000/websocket
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-websocket.html
+                resolutionStatus : MixedContentBlocked
+                resourceType : Resource
+            }
+        }
+    }
+}
+

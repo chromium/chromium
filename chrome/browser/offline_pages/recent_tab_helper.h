@@ -47,13 +47,18 @@ class RecentTabHelper
     kMaxValue = kSamePageSameQuality,
   };
 
+  RecentTabHelper(const RecentTabHelper&) = delete;
+  RecentTabHelper& operator=(const RecentTabHelper&) = delete;
+
   ~RecentTabHelper() override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame() override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
@@ -183,8 +188,6 @@ class RecentTabHelper
   base::WeakPtrFactory<RecentTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabHelper);
 };
 
 }  // namespace offline_pages

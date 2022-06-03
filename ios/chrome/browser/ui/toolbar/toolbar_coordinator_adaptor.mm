@@ -47,6 +47,15 @@
   }
 }
 
+- (UIResponder<UITextInput>*)fakeboxScribbleForwardingTarget {
+  for (id<NewTabPageControllerDelegate> coordinator in self.coordinators) {
+    if (coordinator.fakeboxScribbleForwardingTarget) {
+      return coordinator.fakeboxScribbleForwardingTarget;
+    }
+  }
+  return nil;
+}
+
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolsMenuButtonAnimation {

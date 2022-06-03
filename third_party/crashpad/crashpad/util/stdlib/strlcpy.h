@@ -17,37 +17,33 @@
 
 #include <sys/types.h>
 
-#include "base/strings/string16.h"
-
 namespace crashpad {
 
-//! \brief Copy a `NUL`-terminated char16-based string to a fixed-size buffer.
+//! \brief Copy a `NUL`-terminated char16_t-based string to a fixed-size buffer.
 //!
-//! This function behaves identically to `strlcpy()`, but it operates on char16
-//! data instead of `char` data. It copies the `NUL`-terminated string in the
-//! buffer beginning at \a source to the buffer of size \a length at \a
+//! This function behaves identically to `strlcpy()`, but it operates on
+//! char16_t data instead of `char` data. It copies the `NUL`-terminated string
+//! in the buffer beginning at \a source to the buffer of size \a length at \a
 //! destination, ensuring that the destination buffer is `NUL`-terminated. No
 //! data will be written outside of the \a destination buffer, but if \a length
 //! is smaller than the length of the string at \a source, the string will be
 //! truncated.
 //!
 //! \param[out] destination A pointer to a buffer of at least size \a length
-//!     char16 units (not bytes). The string will be copied to this buffer,
+//!     char16_t units (not bytes). The string will be copied to this buffer,
 //!     possibly with truncation, and `NUL`-terminated. Nothing will be written
 //!     following the `NUL` terminator.
-//! \param[in] source A pointer to a `NUL`-terminated string of char16 data. The
-//!     `NUL` terminator must be a `NUL` value in a char16 unit, not just a
-//!     single `NUL` byte.
-//! \param[in] length The length of the \a destination buffer in char16 units,
-//!     not bytes. A maximum of \a `length - 1` char16 units from \a source will
-//!     be copied to \a destination.
+//! \param[in] source A pointer to a `NUL`-terminated string of char16_t data.
+//!     The `NUL` terminator must be a `NUL` value in a char16_t unit, not just
+//!     a single `NUL` byte.
+//! \param[in] length The length of the \a destination buffer in char16_t units,
+//!     not bytes. A maximum of \a `length - 1` char16_t units from \a source
+//!     will be copied to \a destination.
 //!
-//! \return The length of the \a source string in char16 units, not including
+//! \return The length of the \a source string in char16_t units, not including
 //!     its `NUL` terminator. When truncation occurs, the return value will be
 //!     equal to or greater than than the \a length parameter.
-size_t c16lcpy(base::char16* destination,
-               const base::char16* source,
-               size_t length);
+size_t c16lcpy(char16_t* destination, const char16_t* source, size_t length);
 
 }  // namespace crashpad
 

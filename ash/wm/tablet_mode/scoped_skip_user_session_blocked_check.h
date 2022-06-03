@@ -5,8 +5,6 @@
 #ifndef ASH_WM_TABLET_MODE_SCOPED_SKIP_USER_SESSION_BLOCKED_CHECK_H_
 #define ASH_WM_TABLET_MODE_SCOPED_SKIP_USER_SESSION_BLOCKED_CHECK_H_
 
-#include "base/macros.h"
-
 namespace ash {
 
 // ScopedSkipUserSessionBlockedCheck allows for skipping checks for if the user
@@ -15,10 +13,13 @@ namespace ash {
 class ScopedSkipUserSessionBlockedCheck {
  public:
   ScopedSkipUserSessionBlockedCheck();
-  ~ScopedSkipUserSessionBlockedCheck();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSkipUserSessionBlockedCheck);
+  ScopedSkipUserSessionBlockedCheck(const ScopedSkipUserSessionBlockedCheck&) =
+      delete;
+  ScopedSkipUserSessionBlockedCheck& operator=(
+      const ScopedSkipUserSessionBlockedCheck&) = delete;
+
+  ~ScopedSkipUserSessionBlockedCheck();
 };
 
 }  // namespace ash

@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"
 
 namespace chromeos {
@@ -21,6 +19,12 @@ class FakeDisconnectTetheringRequestSender
     : public DisconnectTetheringRequestSender {
  public:
   FakeDisconnectTetheringRequestSender();
+
+  FakeDisconnectTetheringRequestSender(
+      const FakeDisconnectTetheringRequestSender&) = delete;
+  FakeDisconnectTetheringRequestSender& operator=(
+      const FakeDisconnectTetheringRequestSender&) = delete;
+
   ~FakeDisconnectTetheringRequestSender() override;
 
   void NotifyPendingDisconnectRequestsComplete();
@@ -40,8 +44,6 @@ class FakeDisconnectTetheringRequestSender
  private:
   bool has_pending_requests_ = false;
   std::vector<std::string> device_ids_sent_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDisconnectTetheringRequestSender);
 };
 
 }  // namespace tether

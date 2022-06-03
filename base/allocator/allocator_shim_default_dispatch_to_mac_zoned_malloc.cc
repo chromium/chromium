@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.h"
-
 #include <utility>
 
 #include "base/allocator/allocator_interception_mac.h"
@@ -88,12 +86,9 @@ void FreeDefiniteSizeImpl(const AllocatorDispatch* self,
 
 }  // namespace
 
-void InitializeDefaultDispatchToMacAllocator() {
-  StoreFunctionsForAllZones();
-}
-
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &MallocImpl,           /* alloc_function */
+    &MallocImpl,           /* alloc_unchecked_function */
     &CallocImpl,           /* alloc_zero_initialized_function */
     &MemalignImpl,         /* alloc_aligned_function */
     &ReallocImpl,          /* realloc_function */

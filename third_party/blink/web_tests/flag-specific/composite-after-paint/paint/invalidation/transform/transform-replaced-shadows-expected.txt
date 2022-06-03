@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutImage IMG id='box' class='smaller'",
-          "rect": [0, 8, 288, 320],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutImage IMG id='box' class='smaller'",
-          "rect": [0, 18, 158, 160],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [0, 8, 288, 320]
       ]
     }
   ]

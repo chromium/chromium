@@ -23,6 +23,7 @@
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // Barrier
 //
@@ -73,5 +74,6 @@ class Barrier {
   int num_to_exit_ ABSL_GUARDED_BY(lock_);
 };
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 #endif  // ABSL_SYNCHRONIZATION_BARRIER_H_

@@ -4,10 +4,10 @@
 
 #include "content/common/input/touch_event_stream_validator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/input/web_touch_event_traits.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
 using base::StringPrintf;
@@ -50,7 +50,7 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
   error_msg->clear();
 
   // TouchScrollStarted is not part of a regular touch event stream.
-  if (event.GetType() == WebInputEvent::kTouchScrollStarted)
+  if (event.GetType() == WebInputEvent::Type::kTouchScrollStarted)
     return true;
 
   WebTouchEvent previous_event = previous_event_;
@@ -75,8 +75,8 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
   // Unreleased points from the previous event should exist in the latest event.
   for (unsigned i = 0; i < previous_event.touches_length; ++i) {
     const WebTouchPoint& previous_point = previous_event.touches[i];
-    if (previous_point.state == WebTouchPoint::kStateCancelled ||
-        previous_point.state == WebTouchPoint::kStateReleased)
+    if (previous_point.state == WebTouchPoint::State::kStateCancelled ||
+        previous_point.state == WebTouchPoint::State::kStateReleased)
       continue;
 
     const WebTouchPoint* point = FindTouchPoint(event, previous_point.id);
@@ -95,14 +95,14 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
 
     // The point should exist in the previous event if it is not a new point.
     if (!previous_point) {
-      if (point.state != WebTouchPoint::kStatePressed)
+      if (point.state != WebTouchPoint::State::kStatePressed)
         error_msg->append(StringPrintf(
             "Active touch point (id=%d) not in previous event (ids=%s).\n",
             point.id, TouchPointIdsToString(previous_event).c_str()));
     } else {
-      if (point.state == WebTouchPoint::kStatePressed &&
-          previous_point->state != WebTouchPoint::kStateCancelled &&
-          previous_point->state != WebTouchPoint::kStateReleased) {
+      if (point.state == WebTouchPoint::State::kStatePressed &&
+          previous_point->state != WebTouchPoint::State::kStateCancelled &&
+          previous_point->state != WebTouchPoint::State::kStateReleased) {
         error_msg->append(StringPrintf(
             "Pressed touch point (id=%d) already exists in previous event "
             "(ids=%s).\n",
@@ -111,13 +111,13 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
     }
 
     switch (point.state) {
-      case WebTouchPoint::kStateUndefined:
+      case WebTouchPoint::State::kStateUndefined:
         error_msg->append(
             StringPrintf("Undefined touch point state (id=%d).\n", point.id));
         break;
 
-      case WebTouchPoint::kStateReleased:
-        if (event.GetType() != WebInputEvent::kTouchEnd) {
+      case WebTouchPoint::State::kStateReleased:
+        if (event.GetType() != WebInputEvent::Type::kTouchEnd) {
           error_msg->append(StringPrintf(
               "Released touch point (id=%d) outside touchend.\n", point.id));
         } else {
@@ -125,8 +125,8 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
         }
         break;
 
-      case WebTouchPoint::kStatePressed:
-        if (event.GetType() != WebInputEvent::kTouchStart) {
+      case WebTouchPoint::State::kStatePressed:
+        if (event.GetType() != WebInputEvent::Type::kTouchStart) {
           error_msg->append(StringPrintf(
               "Pressed touch point (id=%d) outside touchstart.\n", point.id));
         } else {
@@ -134,8 +134,8 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
         }
         break;
 
-      case WebTouchPoint::kStateMoved:
-        if (event.GetType() != WebInputEvent::kTouchMove) {
+      case WebTouchPoint::State::kStateMoved:
+        if (event.GetType() != WebInputEvent::Type::kTouchMove) {
           error_msg->append(StringPrintf(
               "Moved touch point (id=%d) outside touchmove.\n", point.id));
         } else {
@@ -143,11 +143,11 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
         }
         break;
 
-      case WebTouchPoint::kStateStationary:
+      case WebTouchPoint::State::kStateStationary:
         break;
 
-      case WebTouchPoint::kStateCancelled:
-        if (event.GetType() != WebInputEvent::kTouchCancel) {
+      case WebTouchPoint::State::kStateCancelled:
+        if (event.GetType() != WebInputEvent::Type::kTouchCancel) {
           error_msg->append(StringPrintf(
               "Cancelled touch point (id=%d) outside touchcancel.\n",
               point.id));

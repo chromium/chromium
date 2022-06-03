@@ -21,15 +21,18 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
     Feature::Context context_type,
     const Extension* extension,
     const GURL& url) {
-  DCHECK_NE(context_type == Feature::WEBUI_CONTEXT, !!extension)
+  bool is_webui_or_untrusted_webui =
+      context_type == Feature::WEBUI_CONTEXT ||
+      context_type == Feature::WEBUI_UNTRUSTED_CONTEXT;
+  DCHECK_NE(is_webui_or_untrusted_webui, !!extension)
       << "WebUI contexts shouldn't have extensions.";
   DCHECK_NE(Feature::WEB_PAGE_CONTEXT, context_type)
       << "FeatureCache shouldn't be used for web contexts.";
   DCHECK_NE(Feature::UNSPECIFIED_CONTEXT, context_type)
       << "FeatureCache shouldn't be used for unspecified contexts.";
 
-  const FeatureVector& features =
-      GetFeaturesFromCache(context_type, extension, url.GetOrigin());
+  const FeatureVector& features = GetFeaturesFromCache(
+      context_type, extension, url.DeprecatedGetOriginAsURL());
   FeatureNameVector names;
   names.reserve(features.size());
   for (const Feature* feature : features) {
@@ -62,7 +65,8 @@ const FeatureCache::FeatureVector& FeatureCache::GetFeaturesFromCache(
     Feature::Context context_type,
     const Extension* extension,
     const GURL& origin) {
-  if (context_type == Feature::WEBUI_CONTEXT) {
+  if (context_type == Feature::WEBUI_CONTEXT ||
+      context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
     auto iter = webui_cache_.find(origin);
     if (iter != webui_cache_.end())
       return iter->second;
@@ -85,17 +89,19 @@ FeatureCache::FeatureVector FeatureCache::CreateCacheEntry(
     Feature::Context context_type,
     const Extension* extension,
     const GURL& origin) {
-  bool is_webui = context_type == Feature::WEBUI_CONTEXT;
   FeatureVector features;
   const FeatureProvider* api_feature_provider =
       FeatureProvider::GetAPIFeatures();
   GURL empty_url;
   // We ignore the URL if this is an extension context in order to maximize
-  // cache hits. For WebUI, we key on origin.
+  // cache hits. For WebUI and untrusted WebUI, we key on origin.
   // Note: Currently, we only ever have matches based on origin, so this is
   // okay. If this changes, we'll have to get more creative about our WebUI
   // caching.
-  const GURL& url_to_use = is_webui ? origin : empty_url;
+  const bool should_use_url =
+      (context_type == Feature::WEBUI_CONTEXT ||
+       context_type == Feature::WEBUI_UNTRUSTED_CONTEXT);
+  const GURL& url_to_use = should_use_url ? origin : empty_url;
   for (const auto& map_entry : api_feature_provider->GetAllFeatures()) {
     const Feature* feature = map_entry.second.get();
     // Exclude internal APIs.

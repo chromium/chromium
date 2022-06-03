@@ -17,7 +17,7 @@
 #if defined(OS_WIN)
 typedef unsigned long DWORD;
 typedef struct tagPOINT POINT;
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
 typedef struct CGPoint CGPoint;
 #endif
 
@@ -35,13 +35,13 @@ class GEOMETRY_EXPORT Point {
   explicit Point(DWORD point);
   explicit Point(const POINT& point);
   Point& operator=(const POINT& point);
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   explicit Point(const CGPoint& point);
 #endif
 
 #if defined(OS_WIN)
   POINT ToPOINT() const;
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   CGPoint ToCGPoint() const;
 #endif
 
@@ -95,7 +95,7 @@ class GEOMETRY_EXPORT Point {
   int y_;
 };
 
-inline bool operator==(const Point& lhs, const Point& rhs) {
+constexpr bool operator==(const Point& lhs, const Point& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 

@@ -3,6 +3,7 @@
 <head>
 <title>Stringifying a PushSubscription object includes all object members</title>
 <link rel="manifest" href="resources/push_manifest.json">
+<script src="resources/push-constants.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="../serviceworker/resources/test-helpers.js"></script>
@@ -36,9 +37,12 @@ async_test(function(test) {
             assert_own_property(reflectedObject, 'endpoint');
             assert_equals(reflectedObject.endpoint, pushSubscription.endpoint);
 
+            // Expiration time should be in the expected window
             assert_own_property(reflectedObject, 'expirationTime');
-            assert_equals(reflectedObject.expirationTime, null);
-
+            assert_true(typeof pushSubscription.expirationTime === 'number');
+            assert_approx_equals(pushSubscription.expirationTime, Date.now() +
+                                 EXPIRATION_WINDOW, EXPIRATION_TIME_TOLERANCE,
+                                 `Expiration time should be in expected window: ${EXPIRATION_TIME_TOLERANCE} ms`);
             assert_own_property(reflectedObject, 'keys');
             assert_own_property(reflectedObject.keys, 'p256dh');
             assert_own_property(reflectedObject.keys, 'auth');

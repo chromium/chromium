@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.verify;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,12 +26,12 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+/** Test for the password manager dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordGenerationDialogTest {
@@ -43,8 +43,7 @@ public class PasswordGenerationDialogTest {
     private Callback<Boolean> mOnPasswordAcceptedOrRejectedCallback;
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -52,10 +51,13 @@ public class PasswordGenerationDialogTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mDialog = new PasswordGenerationDialogCoordinator(mActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mDialog.showDialog(mGeneratedPassword, mExplanationString,
-                                mOnPasswordAcceptedOrRejectedCallback));
+        mDialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            PasswordGenerationDialogCoordinator dialog = new PasswordGenerationDialogCoordinator(
+                    mActivityTestRule.getActivity().getWindowAndroid());
+            dialog.showDialog(
+                    mGeneratedPassword, mExplanationString, mOnPasswordAcceptedOrRejectedCallback);
+            return dialog;
+        });
     }
 
     @Test

@@ -2,94 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":add_languages_dialog",
-    ":languages",
-    ":languages_browser_proxy",
-    ":languages_page",
-    ":languages_types",
-  ]
+assert(!is_chromeos_ash)
 
-  if (is_chromeos) {
-    deps += [ ":manage_input_methods_page" ]
-  }
-}
-
-js_library("languages_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages") {
-  deps = [
-    ":languages_browser_proxy",
-    ":languages_types",
-    "../prefs",
-    "../prefs:prefs_types",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:promise_resolver",
-  ]
-  externs_list = [
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages_page") {
-  deps = [
-    ":languages",
-    ":languages_types",
-    "..:lifetime_browser_proxy",
-    "..:route",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("languages_types") {
-  deps = []
-  externs_list = [ "$externs_path/language_settings_private.js" ]
-}
-
-js_library("manage_input_methods_page") {
-  deps = [
-    ":languages_types",
-    "../prefs",
-  ]
-  externs_list = [ "$externs_path/language_settings_private.js" ]
-}
-
-js_library("add_languages_dialog") {
-  deps = [
-    ":languages",
-    ":languages_types",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-    "//ui/webui/resources/js:find_shortcut_behavior",
+html_to_js("web_components") {
+  js_files = [
+    "add_languages_dialog.ts",
+    "edit_dictionary_page.ts",
+    "languages_page.ts",
+    "languages_subpage.ts",
   ]
 }

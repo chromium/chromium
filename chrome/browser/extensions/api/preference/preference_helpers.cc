@@ -54,13 +54,24 @@ bool StringToScope(const std::string& s,
   return true;
 }
 
+PrefService* GetProfilePrefService(Profile* profile, bool incognito) {
+  if (incognito) {
+    if (profile->HasPrimaryOTRProfile()) {
+      return profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+          ->GetPrefs();
+    }
+    return profile->GetReadOnlyOffTheRecordPrefs();
+  }
+
+  return profile->GetPrefs();
+}
+
 const char* GetLevelOfControl(
     Profile* profile,
     const std::string& extension_id,
     const std::string& browser_pref,
     bool incognito) {
-  PrefService* prefs = incognito ? profile->GetOffTheRecordPrefs()
-                                 : profile->GetPrefs();
+  PrefService* prefs = GetProfilePrefService(profile, incognito);
   bool from_incognito = false;
   bool* from_incognito_ptr = incognito ? &from_incognito : nullptr;
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
@@ -87,7 +98,7 @@ void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
                                base::ListValue* args,
-                               APIPermission::ID permission,
+                               mojom::APIPermissionID permission,
                                bool incognito,
                                const std::string& browser_pref) {
   EventRouter* router = EventRouter::Get(profile);
@@ -101,12 +112,13 @@ void DispatchEventToExtensions(Profile* profile,
         extension->permissions_data()->HasAPIPermission(permission) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
-      base::DictionaryValue* dict;
-      bool rv = args->GetDictionary(0, &dict);
-      DCHECK(rv);
+      base::Value::ListView args_list = args->GetList();
+      DCHECK(!args_list.empty());
+      DCHECK(args_list[0].is_dict());
+
       std::string level_of_control =
           GetLevelOfControl(profile, extension->id(), browser_pref, incognito);
-      dict->SetString(kLevelOfControlKey, level_of_control);
+      args_list[0].SetStringKey(kLevelOfControlKey, level_of_control);
 
       // If the extension is in incognito split mode,
       // a) incognito pref changes are visible only to the incognito tabs
@@ -118,14 +130,14 @@ void DispatchEventToExtensions(Profile* profile,
           // If off the record profile does not exist, there should be no
           // extensions running in incognito at this time, and consequentially
           // no need to dispatch an event restricted to an incognito extension.
-          // Furthermore, avoid calling GetOffTheRecordProfile() in this case -
-          // this method creates off the record profile if one does not exist.
-          // Unnecessarily creating off the record profile is undesirable, and
-          // can lead to a crash if incognito is disallowed for the current
-          // profile (see https://crbug.com/796814).
-          if (!profile->HasOffTheRecordProfile())
+          // Furthermore, avoid calling GetPrimaryOTRProfile() if the profile
+          // does not exist. Unnecessarily creating off the record profile is
+          // undesirable, and can lead to a crash if incognito is disallowed for
+          // the current profile (see https://crbug.com/796814).
+          if (!profile->HasPrimaryOTRProfile())
             continue;
-          restrict_to_profile = profile->GetOffTheRecordProfile();
+          restrict_to_profile =
+              profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
         } else {  // Handle case b).
           bool controlled_from_incognito = false;
           bool controlled_by_extension =
@@ -136,10 +148,10 @@ void DispatchEventToExtensions(Profile* profile,
         }
       }
 
-      std::unique_ptr<base::ListValue> args_copy(args->DeepCopy());
-      auto event =
-          std::make_unique<Event>(histogram_value, event_name,
-                                  std::move(args_copy), restrict_to_profile);
+      base::Value args_copy = args->Clone();
+      auto event = std::make_unique<Event>(histogram_value, event_name,
+                                           std::move(args_copy).TakeList(),
+                                           restrict_to_profile);
       router->DispatchEventToExtension(extension->id(), std::move(event));
     }
   }

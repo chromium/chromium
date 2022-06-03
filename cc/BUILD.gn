@@ -1,10 +1,15 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2014 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
 
 import("//cc/cc.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 cc_component("cc") {
   sources = [
@@ -28,10 +33,16 @@ cc_component("cc") {
     "benchmarks/unittest_only_benchmark.h",
     "benchmarks/unittest_only_benchmark_impl.cc",
     "benchmarks/unittest_only_benchmark_impl.h",
+    "document_transition/document_transition_request.cc",
+    "document_transition/document_transition_request.h",
+    "document_transition/document_transition_shared_element_id.cc",
+    "document_transition/document_transition_shared_element_id.h",
+    "input/actively_scrolling_type.h",
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_client.h",
-    "input/input_handler.cc",
+    "input/browser_controls_state.h",
+    "input/compositor_input_interfaces.h",
     "input/input_handler.h",
     "input/layer_selection_bound.cc",
     "input/layer_selection_bound.h",
@@ -48,6 +59,9 @@ cc_component("cc") {
     "input/scroll_state.h",
     "input/scroll_state_data.cc",
     "input/scroll_state_data.h",
+    "input/scroll_utils.cc",
+    "input/scroll_utils.h",
+    "input/scrollbar.h",
     "input/scrollbar_animation_controller.cc",
     "input/scrollbar_animation_controller.h",
     "input/scrollbar_controller.cc",
@@ -60,6 +74,8 @@ cc_component("cc") {
     "input/snap_fling_curve.h",
     "input/snap_selection_strategy.cc",
     "input/snap_selection_strategy.h",
+    "input/threaded_input_handler.cc",
+    "input/threaded_input_handler.h",
     "input/touch_action.h",
     "layers/append_quads_data.cc",
     "layers/append_quads_data.h",
@@ -100,20 +116,24 @@ cc_component("cc") {
     "layers/painted_scrollbar_layer.h",
     "layers/painted_scrollbar_layer_impl.cc",
     "layers/painted_scrollbar_layer_impl.h",
-    "layers/picture_image_layer.cc",
-    "layers/picture_image_layer.h",
     "layers/picture_layer.cc",
     "layers/picture_layer.h",
     "layers/picture_layer_impl.cc",
     "layers/picture_layer_impl.h",
     "layers/recording_source.cc",
     "layers/recording_source.h",
+    "layers/region_capture_bounds.cc",
+    "layers/region_capture_bounds.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",
     "layers/scrollbar_layer_impl_base.h",
+    "layers/shared_element_layer.cc",
+    "layers/shared_element_layer.h",
+    "layers/shared_element_layer_impl.cc",
+    "layers/shared_element_layer_impl.h",
     "layers/solid_color_layer.cc",
     "layers/solid_color_layer.h",
     "layers/solid_color_layer_impl.cc",
@@ -148,6 +168,10 @@ cc_component("cc") {
     "layers/video_layer_impl.h",
     "layers/viewport.cc",
     "layers/viewport.h",
+    "metrics/average_lag_tracker.cc",
+    "metrics/average_lag_tracker.h",
+    "metrics/average_lag_tracking_manager.cc",
+    "metrics/average_lag_tracking_manager.h",
     "metrics/begin_main_frame_metrics.cc",
     "metrics/begin_main_frame_metrics.h",
     "metrics/compositor_frame_reporter.cc",
@@ -156,14 +180,44 @@ cc_component("cc") {
     "metrics/compositor_frame_reporting_controller.h",
     "metrics/compositor_timing_history.cc",
     "metrics/compositor_timing_history.h",
+    "metrics/dropped_frame_counter.cc",
+    "metrics/dropped_frame_counter.h",
+    "metrics/event_metrics.cc",
+    "metrics/event_metrics.h",
+    "metrics/events_metrics_manager.cc",
+    "metrics/events_metrics_manager.h",
+    "metrics/frame_sequence_metrics.cc",
+    "metrics/frame_sequence_metrics.h",
     "metrics/frame_sequence_tracker.cc",
     "metrics/frame_sequence_tracker.h",
+    "metrics/frame_sequence_tracker_collection.cc",
+    "metrics/frame_sequence_tracker_collection.h",
+    "metrics/frame_sorter.cc",
+    "metrics/frame_sorter.h",
+    "metrics/jank_injector.cc",
+    "metrics/jank_injector.h",
+    "metrics/jank_metrics.cc",
+    "metrics/jank_metrics.h",
+    "metrics/latency_ukm_reporter.cc",
+    "metrics/latency_ukm_reporter.h",
+    "metrics/lcd_text_metrics_reporter.cc",
+    "metrics/lcd_text_metrics_reporter.h",
+    "metrics/shared_metrics_buffer.h",
     "metrics/throughput_ukm_reporter.cc",
     "metrics/throughput_ukm_reporter.h",
+    "metrics/total_frame_counter.cc",
+    "metrics/total_frame_counter.h",
+    "metrics/ukm_smoothness_data.h",
+    "metrics/video_playback_roughness_reporter.cc",
+    "metrics/video_playback_roughness_reporter.h",
+    "metrics/web_vital_metrics.cc",
+    "metrics/web_vital_metrics.h",
     "raster/bitmap_raster_buffer_provider.cc",
     "raster/bitmap_raster_buffer_provider.h",
     "raster/gpu_raster_buffer_provider.cc",
     "raster/gpu_raster_buffer_provider.h",
+    "raster/lcd_text_disallowed_reason.cc",
+    "raster/lcd_text_disallowed_reason.h",
     "raster/one_copy_raster_buffer_provider.cc",
     "raster/one_copy_raster_buffer_provider.h",
     "raster/paint_worklet_image_provider.cc",
@@ -174,6 +228,8 @@ cc_component("cc") {
     "raster/raster_buffer.h",
     "raster/raster_buffer_provider.cc",
     "raster/raster_buffer_provider.h",
+    "raster/raster_query_queue.cc",
+    "raster/raster_query_queue.h",
     "raster/raster_source.cc",
     "raster/raster_source.h",
     "raster/scoped_gpu_raster.cc",
@@ -247,6 +303,7 @@ cc_component("cc") {
     "tiles/picture_layer_tiling_set.h",
     "tiles/prioritized_tile.cc",
     "tiles/prioritized_tile.h",
+    "tiles/raster_dark_mode_filter.h",
     "tiles/raster_tile_priority_queue.cc",
     "tiles/raster_tile_priority_queue.h",
     "tiles/raster_tile_priority_queue_all.cc",
@@ -284,6 +341,10 @@ cc_component("cc") {
     "trees/clip_expander.h",
     "trees/clip_node.cc",
     "trees/clip_node.h",
+    "trees/commit_state.cc",
+    "trees/commit_state.h",
+    "trees/compositor_commit_data.cc",
+    "trees/compositor_commit_data.h",
     "trees/compositor_mode.h",
     "trees/damage_tracker.cc",
     "trees/damage_tracker.h",
@@ -295,8 +356,8 @@ cc_component("cc") {
     "trees/draw_property_utils.h",
     "trees/effect_node.cc",
     "trees/effect_node.h",
-    "trees/frame_rate_counter.cc",
-    "trees/frame_rate_counter.h",
+    "trees/frame_rate_estimator.cc",
+    "trees/frame_rate_estimator.h",
     "trees/image_animation_controller.cc",
     "trees/image_animation_controller.h",
     "trees/latency_info_swap_promise.cc",
@@ -320,13 +381,17 @@ cc_component("cc") {
     "trees/layer_tree_settings.h",
     "trees/managed_memory_policy.cc",
     "trees/managed_memory_policy.h",
+    "trees/mobile_optimized_viewport_util.cc",
+    "trees/mobile_optimized_viewport_util.h",
     "trees/mutator_host.h",
     "trees/mutator_host_client.h",
     "trees/occlusion.cc",
     "trees/occlusion.h",
     "trees/occlusion_tracker.cc",
     "trees/occlusion_tracker.h",
+    "trees/paint_holding_commit_trigger.cc",
     "trees/paint_holding_commit_trigger.h",
+    "trees/paint_holding_reason.h",
     "trees/presentation_time_callback_buffer.cc",
     "trees/presentation_time_callback_buffer.h",
     "trees/property_animation_state.cc",
@@ -346,8 +411,6 @@ cc_component("cc") {
     "trees/render_frame_metadata.h",
     "trees/render_frame_metadata_observer.h",
     "trees/scoped_abort_remaining_swap_promises.h",
-    "trees/scroll_and_scale_set.cc",
-    "trees/scroll_and_scale_set.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
     "trees/single_thread_proxy.cc",
@@ -357,12 +420,12 @@ cc_component("cc") {
     "trees/swap_promise.h",
     "trees/swap_promise_manager.cc",
     "trees/swap_promise_manager.h",
-    "trees/swap_promise_monitor.cc",
-    "trees/swap_promise_monitor.h",
     "trees/target_property.cc",
     "trees/target_property.h",
     "trees/task_runner_provider.cc",
     "trees/task_runner_provider.h",
+    "trees/throttle_decider.cc",
+    "trees/throttle_decider.h",
     "trees/transform_node.cc",
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
@@ -371,20 +434,22 @@ cc_component("cc") {
     "trees/ukm_manager.h",
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
+    "trees/viewport_property_ids.h",
   ]
 
   public_deps = [
     "//cc/base",
     "//cc/paint",
     "//components/viz/common",
-    "//services/tracing/public/cpp:cpp",
     "//skia",
   ]
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//components/ukm",
+    "//build:chromeos_buildflags",
+    "//components/power_scheduler",
     "//components/viz/client",
+    "//device/base/synchronization",
     "//gpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:raster_interface",
@@ -393,8 +458,11 @@ cc_component("cc") {
     "//media",  # For VideoLayerImpl.
     "//mojo/public/cpp/bindings:struct_traits",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom",
+    "//services/tracing/public/cpp:cpp",
     "//ui/events:events_base",
     "//ui/gfx",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/latency",
@@ -445,6 +513,8 @@ cc_test_static_library("test_support") {
     "test/fake_proxy.h",
     "test/fake_raster_buffer_provider.cc",
     "test/fake_raster_buffer_provider.h",
+    "test/fake_raster_query_queue.cc",
+    "test/fake_raster_query_queue.h",
     "test/fake_raster_source.cc",
     "test/fake_raster_source.h",
     "test/fake_recording_source.cc",
@@ -464,8 +534,6 @@ cc_test_static_library("test_support") {
     "test/fake_ui_resource_layer_tree_host_impl.h",
     "test/fake_video_frame_provider.cc",
     "test/fake_video_frame_provider.h",
-    "test/geometry_test_utils.cc",
-    "test/geometry_test_utils.h",
     "test/layer_test_common.cc",
     "test/layer_test_common.h",
     "test/layer_tree_impl_test_base.cc",
@@ -478,8 +546,13 @@ cc_test_static_library("test_support") {
     "test/layer_tree_pixel_test.h",
     "test/layer_tree_test.cc",
     "test/layer_tree_test.h",
+    "test/lottie_test_data.h",
+    "test/mock_latency_info_swap_promise_monitor.cc",
+    "test/mock_latency_info_swap_promise_monitor.h",
     "test/mock_layer_tree_mutator.cc",
     "test/mock_layer_tree_mutator.h",
+    "test/mock_mutator_host.cc",
+    "test/mock_mutator_host.h",
     "test/mock_occlusion_tracker.h",
     "test/paint_op_helper.h",
     "test/pixel_comparator.cc",
@@ -535,6 +608,8 @@ cc_test_static_library("test_support") {
     "test/test_tile_priorities.h",
     "test/test_tile_task_runner.cc",
     "test/test_tile_task_runner.h",
+    "test/test_types.cc",
+    "test/test_types.h",
     "test/test_ukm_recorder_factory.cc",
     "test/test_ukm_recorder_factory.h",
     "test/transfer_cache_test_helper.cc",
@@ -568,8 +643,10 @@ cc_test_static_library("test_support") {
     "//services/viz/privileged/mojom",
     "//skia",
     "//testing/gtest",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -579,13 +656,13 @@ cc_test_static_library("test_support") {
     deps += [ "//gpu/vulkan/init" ]
   }
   if (!is_android) {
-    data_deps = [
-      "//third_party/mesa_headers",
-    ]
+    data_deps = [ "//third_party/mesa_headers" ]
   }
 }
 
 cc_test("cc_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "base/delayed_unique_notifier_unittest.cc",
     "base/float_quad_unittest.cc",
@@ -602,6 +679,7 @@ cc_test("cc_unittests") {
     "base/unique_notifier_unittest.cc",
     "benchmarks/micro_benchmark_controller_unittest.cc",
     "debug/rendering_stats_unittest.cc",
+    "document_transition/document_transition_request_unittest.cc",
     "input/browser_controls_offset_manager_unittest.cc",
     "input/main_thread_scrolling_reason_unittest.cc",
     "input/scroll_snap_data_unittest.cc",
@@ -623,7 +701,6 @@ cc_test("cc_unittests") {
     "layers/painted_overlay_scrollbar_layer_unittest.cc",
     "layers/painted_scrollbar_layer_impl_unittest.cc",
     "layers/painted_scrollbar_layer_unittest.cc",
-    "layers/picture_image_layer_unittest.cc",
     "layers/picture_layer_impl_unittest.cc",
     "layers/picture_layer_unittest.cc",
     "layers/recording_source_unittest.cc",
@@ -642,12 +719,22 @@ cc_test("cc_unittests") {
     "layers/video_frame_provider_client_impl_unittest.cc",
     "layers/video_layer_impl_unittest.cc",
     "layers/viewport_unittest.cc",
+    "metrics/average_lag_tracker_unittest.cc",
+    "metrics/average_lag_tracking_manager_unittest.cc",
     "metrics/compositor_frame_reporter_unittest.cc",
     "metrics/compositor_frame_reporting_controller_unittest.cc",
     "metrics/compositor_timing_history_unittest.cc",
+    "metrics/dropped_frame_counter_unittest.cc",
+    "metrics/events_metrics_manager_unittest.cc",
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
+    "metrics/frame_sorter_unittest.cc",
+    "metrics/jank_injector_unittest.cc",
+    "metrics/jank_metrics_unittest.cc",
+    "metrics/total_frame_counter_unittest.cc",
+    "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
+    "paint/clear_for_opaque_raster_unittest.cc",
     "paint/discardable_image_map_unittest.cc",
     "paint/display_item_list_unittest.cc",
     "paint/filter_operations_unittest.cc",
@@ -659,6 +746,7 @@ cc_test("cc_unittests") {
     "paint/paint_op_buffer_unittest.cc",
     "paint/paint_op_helper_unittest.cc",
     "paint/paint_shader_unittest.cc",
+    "paint/paint_worklet_input_unittest.cc",
     "paint/scoped_raster_flags_unittest.cc",
     "paint/skia_paint_canvas_unittest.cc",
     "paint/solid_color_analyzer_unittest.cc",
@@ -674,6 +762,7 @@ cc_test("cc_unittests") {
     "resources/resource_pool_unittest.cc",
     "scheduler/scheduler_state_machine_unittest.cc",
     "scheduler/scheduler_unittest.cc",
+    "test/mock_mutator_host_unittest.cc",
     "tiles/checker_image_tracker_unittest.cc",
     "tiles/decoded_image_tracker_unittest.cc",
     "tiles/gpu_image_decode_cache_unittest.cc",
@@ -687,6 +776,7 @@ cc_test("cc_unittests") {
     "tiles/tile_priority_unittest.cc",
     "trees/damage_tracker_unittest.cc",
     "trees/draw_properties_unittest.cc",
+    "trees/frame_rate_estimator_unittest.cc",
     "trees/image_animation_controller_unittest.cc",
     "trees/layer_tree_frame_sink_unittest.cc",
     "trees/layer_tree_host_impl_unittest.cc",
@@ -700,6 +790,7 @@ cc_test("cc_unittests") {
     "trees/layer_tree_host_pixeltest_tiles.cc",
     "trees/layer_tree_host_unittest.cc",
     "trees/layer_tree_host_unittest_animation.cc",
+    "trees/layer_tree_host_unittest_capture.cc",
     "trees/layer_tree_host_unittest_capture_content.cc",
     "trees/layer_tree_host_unittest_checkerimaging.cc",
     "trees/layer_tree_host_unittest_context.cc",
@@ -719,6 +810,7 @@ cc_test("cc_unittests") {
     "trees/property_tree_builder_unittest.cc",
     "trees/property_tree_unittest.cc",
     "trees/swap_promise_manager_unittest.cc",
+    "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
     "trees/ukm_manager_unittest.cc",
 
@@ -727,11 +819,10 @@ cc_test("cc_unittests") {
     "animation/animation_timeline_unittest.cc",
     "animation/animation_unittest.cc",
     "animation/element_animations_unittest.cc",
+    "animation/filter_animation_curve_unittest.cc",
     "animation/keyframe_model_unittest.cc",
-    "animation/keyframed_animation_curve_unittest.cc",
     "animation/scroll_offset_animation_curve_unittest.cc",
     "animation/scroll_timeline_unittest.cc",
-    "animation/transform_operations_unittest.cc",
     "animation/worklet_animation_unittest.cc",
 
     # Setup.
@@ -740,25 +831,24 @@ cc_test("cc_unittests") {
     "test/run_all_unittests.cc",
   ]
 
-  if (!is_android) {
-    data = [
-      "//components/viz/test/data/",
+  if (skia_support_skottie) {
+    data = [ "//components/viz/test/data/" ]
+    sources += [
+      "paint/skottie_mru_resource_provider_unittest.cc",
+      "paint/skottie_resource_metadata_unittest.cc",
+      "paint/skottie_transfer_cache_entry_unittest.cc",
+      "paint/skottie_wrapper_unittest.cc",
     ]
-  }
-
-  if (is_win) {
-    # TODO(vmpstr): Some SoftwareImageDecodeCacheTests use virtual inheritance,
-    # which MSVC doesn't like. Suppress "Foo inherits Bar via dominance"
-    # warnings for now.
-    cflags = [ "/wd4250" ]
   }
 
   deps = [
     ":cc",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc/mojo_embedder",
     "//cc/paint",
+    "//components/power_scheduler",
     "//components/ukm:test_support",
     "//components/viz/client",
     "//components/viz/common",
@@ -775,31 +865,39 @@ cc_test("cc_unittests") {
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
+    "//skia:buildflags",
+    "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/events:events_base",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
   data_deps = [
+    "//testing/buildbot/filters:cc_unittests_filters",
     "//third_party/mesa_headers",
   ]
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
+  }
 
   if (enable_vulkan) {
     deps += [
       "//gpu/vulkan:test_support",
       "//gpu/vulkan/init",
     ]
-
-    # TODO(samans): Support more configurations.
-    # CFI issue: https://crbug.com/967819
-    # LSAN issue: https://crbug.com/971325
-    if (use_x11 && !is_cfi && !is_lsan) {
-      defines = [ "ENABLE_CC_VULKAN_TESTS" ]
-    }
   }
 }
 
@@ -837,7 +935,7 @@ cc_test("cc_perftests") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/ipc:gl_in_process_context",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
@@ -855,12 +953,26 @@ cc_test("cc_perftests") {
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
 
-  data = [
-    "//components/viz/test/data/",
-  ]
+  data = [ "//components/viz/test/data/" ]
 
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("cc_android_java_enums_srcjar") {
+    sources = [ "//cc/input/browser_controls_state.h" ]
+  }
+
+  android_library("cc_java") {
+    # Right now, this only includes the Java switches. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
 }

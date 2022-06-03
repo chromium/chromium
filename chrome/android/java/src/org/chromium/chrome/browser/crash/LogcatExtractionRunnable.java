@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.crash;
 
-import android.os.Build;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -70,21 +68,15 @@ public class LogcatExtractionRunnable implements Runnable {
         // the minidump with logcat data, the service can still upload the unaugmented minidump.
         try {
             if (uploadNow) {
-                MinidumpUploadService.tryUploadCrashDumpNow(fileToUpload);
-            } else if (MinidumpUploadService.shouldUseJobSchedulerForUploads()) {
-                MinidumpUploadService.scheduleUploadJob();
+                MinidumpUploadServiceImpl.tryUploadCrashDumpNow(fileToUpload);
+            } else if (MinidumpUploadServiceImpl.shouldUseJobSchedulerForUploads()) {
+                MinidumpUploadServiceImpl.scheduleUploadJob();
             } else {
-                MinidumpUploadService.tryUploadCrashDump(fileToUpload);
+                MinidumpUploadServiceImpl.tryUploadCrashDump(fileToUpload);
             }
         } catch (SecurityException e) {
-            // For KitKat and below, there was a framework bug which causes us to not be able to
-            // find our own crash uploading service. Ignore a SecurityException here on older
-            // OS versions since the crash will eventually get uploaded on next start.
-            // crbug/542533
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Log.w(TAG, e.toString());
-                if (!uploadNow) throw e;
-            }
+            Log.w(TAG, e.toString());
+            if (!uploadNow) throw e;
         }
     }
 

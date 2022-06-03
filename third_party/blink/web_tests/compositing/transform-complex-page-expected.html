@@ -1,0 +1,23 @@
+<!doctype HTML>
+<style>
+  #target .child::before {
+    content: "";
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    will-change: transform;
+    background-color: green;
+  }
+  #target.Slider_pressed .child::before {
+    transform: translateZ(0);
+    }
+</style>
+<div class="ContextualPopup" style="opacity: 0.9">
+  <div id=target tabindex="-1" >
+    <div class=child></div>
+  </div>
+  <div style="position: relative; z-index: 0">
+    <div style=" position: absolute; z-index: -1; will-change: transform;"></div>
+  </div>
+<div style="position: absolute; height: 30px; width: 30px; left: 100px; background-color: green;">
+</div>

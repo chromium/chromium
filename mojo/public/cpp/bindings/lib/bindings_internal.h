@@ -9,10 +9,13 @@
 
 #include <functional>
 #include <type_traits>
+#include <utility>
 
+#include "base/template_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
@@ -269,6 +272,14 @@ struct MojomTypeTraits<ScopedHandleBase<T>, false> {
   static const MojomTypeCategory category = MojomTypeCategory::kHandle;
 };
 
+template <>
+struct MojomTypeTraits<PlatformHandle, false> {
+  using Data = Handle_Data;
+  using DataAsArrayElement = Data;
+
+  static const MojomTypeCategory category = MojomTypeCategory::kHandle;
+};
+
 template <typename T>
 struct MojomTypeTraits<InterfacePtrDataView<T>, false> {
   using Data = Interface_Data;
@@ -325,6 +336,23 @@ T ConvertEnumValue(MojomType input) {
   bool result = EnumTraits<MojomType, T>::FromMojom(input, &output);
   DCHECK(result);
   return output;
+}
+
+template <typename MojomType, typename SFINAE = void>
+struct EnumKnownValueTraits {
+  static MojomType ToKnownValue(MojomType in) { return in; }
+};
+
+template <typename MojomType>
+struct EnumKnownValueTraits<
+    MojomType,
+    base::void_t<decltype(ToKnownEnumValue(std::declval<MojomType>()))>> {
+  static MojomType ToKnownValue(MojomType in) { return ToKnownEnumValue(in); }
+};
+
+template <typename MojomType>
+MojomType ToKnownEnumValueHelper(MojomType in) {
+  return EnumKnownValueTraits<MojomType>::ToKnownValue(in);
 }
 
 }  // namespace internal

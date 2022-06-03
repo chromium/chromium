@@ -1,30 +1,25 @@
-ALERT: Running test #6
-
-CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?6' because it violates the following Content Security Policy directive: "img-src 'none'".
-
-ALERT: BLOCKED
-ALERT: Running test #5
-
-CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?5' because it violates the following Content Security Policy directive: "img-src 'none'".
-
-ALERT: BLOCKED
 ALERT: Running test #4
 
-ALERT: Starting to bypass main world's CSP:
-ALERT: LOADED
-ALERT: Running test #3
-
-ALERT: LOADED
-ALERT: Running test #2
-
-CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?2' because it violates the following Content Security Policy directive: "img-src 'none'".
+ALERT: Test in main world.
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?4' because it violates the following Content Security Policy directive: "img-src 'none'".
 
 ALERT: BLOCKED
+ALERT: Running test #3
+
+ALERT: Test in isolated world without a CSP.
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?3' because it violates the following Content Security Policy directive: "img-src 'none'".
+
+ALERT: BLOCKED
+ALERT: Running test #2
+
+ALERT: Test in isolated world with lax CSP
+ALERT: LOADED
 ALERT: Running test #1
 
-CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?1' because it violates the following Content Security Policy directive: "img-src 'none'".
+ALERT: Test in isolated world with restrictive CSP
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?0' because it violates the following Content Security Policy directive: "img-src 'self'".
 
 ALERT: BLOCKED
 ALERT: Running test #0
 
- This test ensures that scripts run in isolated worlds marked with their own Content Security Policy aren't affected by the page's content security policy. Extensions, for example, should be able to load any resource they like.
+ This test ensures that img-src checks respect the isolated world CSP when the IsolatedWorldCSP feature is enabled and bypass the main world CSP checks otherwise.

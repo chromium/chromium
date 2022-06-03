@@ -3,6 +3,10 @@
 The following is a collection of scheduling-related documentation about the
 Blink Scheduler as well as other schedulers in Chrome.
 
+## 2020
+* [Code reading: SequenceManager](https://docs.google.com/document/d/1VRaKEqqyiLOSrjASnJEKNuEIk0_WTBI913Ir36749bI/edit?usp=sharing)
+* [MBI: IsolateScheduler](https://docs.google.com/document/d/1y-vHkrD1z2RtyWYwT6rJkSLHClYNjDDpUbTtBU7l95A/edit?usp=sharing)
+
 ## 2018
 * [Browser-side scheduling roadmap](https://docs.google.com/document/d/1yxjka3kyKieEWP6gRlLyXVy72DJ5Gc22Nqp9vehFj14/edit)
 * [Browser UI thread scheduler](https://docs.google.com/document/d/1z1BDq9vzcEpkhN9LSPF5XMnZ0kLJ8mWWkNAi4OI7cos/edit)

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that calling getter on prototype will call it on the object.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -36,7 +36,7 @@
 
   function expandTreeElementFilter(treeElement) {
     var name = treeElement.nameElement && treeElement.nameElement.textContent;
-    return name === '__proto__';
+    return name === '[[Prototype]]';
   }
 
   function step3() {
@@ -44,11 +44,15 @@
   }
 
   function step4() {
-    ConsoleTestRunner.expandGettersInConsoleMessages(step5);
+    ConsoleTestRunner.expandConsoleMessages(step5, expandTreeElementFilter);
   }
 
   function step5() {
-    ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+    ConsoleTestRunner.expandGettersInConsoleMessages(step6);
+  }
+
+  async function step6() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }
 })();

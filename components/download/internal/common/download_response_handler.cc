@@ -11,6 +11,8 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace download {
 
@@ -75,6 +77,7 @@ DownloadResponseHandler::DownloadResponseHandler(
       request_origin_(request_origin),
       download_source_(download_source),
       has_strong_validators_(false),
+      credentials_mode_(resource_request->credentials_mode),
       is_partial_request_(save_info_->offset > 0),
       completed_(false),
       abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE),
@@ -84,12 +87,15 @@ DownloadResponseHandler::DownloadResponseHandler(
   }
   if (resource_request->request_initiator.has_value())
     request_initiator_ = resource_request->request_initiator;
-  if (resource_request->trusted_params.has_value())
-    network_isolation_key_ =
-        resource_request->trusted_params->network_isolation_key;
+
+  if (resource_request->trusted_params)
+    isolation_info_ = resource_request->trusted_params->isolation_info;
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
+
+void DownloadResponseHandler::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
 
 void DownloadResponseHandler::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
@@ -97,13 +103,10 @@ void DownloadResponseHandler::OnReceiveResponse(
   cert_status_ = head->cert_status;
 
   // TODO(xingliu): Do not use http cache.
-  // Sets page transition type correctly and call
-  // |RecordDownloadSourcePageTransitionType| here.
   if (head->headers) {
     has_strong_validators_ = head->headers->HasStrongValidators();
     RecordDownloadHttpResponseCode(head->headers->response_code(),
                                    is_background_mode_);
-    RecordDownloadContentDisposition(create_info_->content_disposition);
   }
 
   // Blink verifies that the requester of this download is allowed to set a
@@ -153,7 +156,8 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->request_origin = request_origin_;
   create_info->download_source = download_source_;
   create_info->request_initiator = request_initiator_;
-  create_info->network_isolation_key = network_isolation_key_;
+  create_info->credentials_mode = credentials_mode_;
+  create_info->isolation_info = isolation_info_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;
@@ -246,16 +250,6 @@ void DownloadResponseHandler::OnComplete(
   if (client_remote_) {
     client_remote_->OnStreamCompleted(
         ConvertInterruptReasonToMojoNetworkRequestStatus(reason));
-  }
-
-  if (reason == DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED) {
-    base::UmaHistogramSparse("Download.MapErrorNetworkFailed.NetworkService",
-                             std::abs(status.error_code));
-    if (is_background_mode_) {
-      base::UmaHistogramSparse(
-          "Download.MapErrorNetworkFailed.NetworkService.BackgroundDownload",
-          std::abs(status.error_code));
-    }
   }
 
   if (started_) {

@@ -7,7 +7,7 @@
 
 namespace chrome {
 
-bool IsIncognitoSessionActive();
+bool IsOffTheRecordSessionActive();
 
 }  // namespace chrome
 

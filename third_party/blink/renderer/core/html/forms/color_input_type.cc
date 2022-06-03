@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -78,7 +80,7 @@ ColorInputType::ColorInputType(HTMLInputElement& element)
 
 ColorInputType::~ColorInputType() = default;
 
-void ColorInputType::Trace(Visitor* visitor) {
+void ColorInputType::Trace(Visitor* visitor) const {
   visitor->Trace(chooser_);
   KeyboardClickableInputTypeView::Trace(visitor);
   ColorChooserClient::Trace(visitor);
@@ -150,21 +152,36 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
     return;
 
   ChromeClient* chrome_client = GetChromeClient();
-  if (chrome_client && !chooser_) {
+  if (chrome_client && !HasOpenedPopup()) {
     UseCounter::Count(
         document,
         (event.UnderlyingEvent() && event.UnderlyingEvent()->isTrusted())
             ? WebFeature::kColorInputTypeChooserByTrustedClick
             : WebFeature::kColorInputTypeChooserByUntrustedClick);
-    chooser_ = chrome_client->OpenColorChooser(document.GetFrame(), this,
-                                               ValueAsColor());
+    OpenPopupView();
   }
 
   event.SetDefaultHandled();
 }
 
+void ColorInputType::OpenPopupView() {
+  ChromeClient* chrome_client = GetChromeClient();
+  Document& document = GetElement().GetDocument();
+  chooser_ = chrome_client->OpenColorChooser(document.GetFrame(), this,
+                                             ValueAsColor());
+  if (GetElement().GetLayoutObject()) {
+    // Invalidate paint to ensure that the focus ring is removed.
+    GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  }
+}
+
 void ColorInputType::ClosePopupView() {
-  EndColorChooser();
+  if (chooser_)
+    chooser_->EndChooser();
+}
+
+bool ColorInputType::HasOpenedPopup() const {
+  return chooser_;
 }
 
 bool ColorInputType::ShouldRespectListAttribute() {
@@ -176,7 +193,7 @@ bool ColorInputType::TypeMismatchFor(const String& value) const {
 }
 
 void ColorInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (!DeprecatedEqualIgnoringCase(value, GetElement().SanitizeValue(value)))
+  if (!EqualIgnoringASCIICase(value, GetElement().SanitizeValue(value)))
     AddWarningToConsole(
         "The specified value %s does not conform to the required format.  The "
         "format is \"#rrggbb\" where rr, gg, bb are two-digit hexadecimal "
@@ -190,24 +207,21 @@ void ColorInputType::ValueAttributeChanged() {
 }
 
 void ColorInputType::DidChooseColor(const Color& color) {
-  if (GetElement().IsDisabledFormControl() || color == ValueAsColor())
+  if (will_be_destroyed_ || GetElement().IsDisabledFormControl() ||
+      color == ValueAsColor())
     return;
   EventQueueScope scope;
   GetElement().SetValueFromRenderer(color.Serialized());
   GetElement().UpdateView();
-  if (!LayoutTheme::GetTheme().IsModalColorChooser())
-    GetElement().DispatchFormControlChangeEvent();
 }
 
 void ColorInputType::DidEndChooser() {
-  if (LayoutTheme::GetTheme().IsModalColorChooser())
-    GetElement().EnqueueChangeEvent();
+  GetElement().EnqueueChangeEvent();
   chooser_.Clear();
-}
-
-void ColorInputType::EndColorChooser() {
-  if (chooser_)
-    chooser_->EndChooser();
+  if (GetElement().GetLayoutObject()) {
+    // Invalidate paint to ensure that the focus ring is shown.
+    GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  }
 }
 
 void ColorInputType::UpdateView() {
@@ -274,5 +288,6 @@ AXObject* ColorInputType::PopupRootAXObject() {
 ColorChooserClient* ColorInputType::GetColorChooserClient() {
   return this;
 }
+
 
 }  // namespace blink

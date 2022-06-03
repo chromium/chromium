@@ -4,9 +4,51 @@
 
 #include "cc/paint/paint_worklet_input.h"
 
-#include <utility>
-
 namespace cc {
+
+PaintWorkletInput::PropertyKey::PropertyKey(
+    const std::string& custom_property_name,
+    ElementId element_id)
+    : custom_property_name(custom_property_name), element_id(element_id) {}
+
+PaintWorkletInput::PropertyKey::PropertyKey(
+    NativePropertyType native_property_type,
+    ElementId element_id)
+    : native_property_type(native_property_type), element_id(element_id) {}
+
+PaintWorkletInput::PropertyKey::PropertyKey(const PropertyKey& other) = default;
+
+PaintWorkletInput::PropertyKey::~PropertyKey() = default;
+
+bool PaintWorkletInput::PropertyKey::operator==(
+    const PropertyKey& other) const {
+  return custom_property_name == other.custom_property_name &&
+         native_property_type == other.native_property_type &&
+         element_id == other.element_id;
+}
+
+bool PaintWorkletInput::PropertyKey::operator!=(
+    const PropertyKey& other) const {
+  return !(*this == other);
+}
+
+bool PaintWorkletInput::PropertyKey::operator<(const PropertyKey& other) const {
+  if (custom_property_name.has_value() &&
+      !other.custom_property_name.has_value())
+    return true;
+  if (!custom_property_name.has_value() &&
+      other.custom_property_name.has_value())
+    return false;
+  if (custom_property_name.has_value() &&
+      other.custom_property_name.has_value()) {
+    if (custom_property_name.value() == other.custom_property_name.value())
+      return element_id < other.element_id;
+    return custom_property_name.value() < other.custom_property_name.value();
+  }
+  if (native_property_type.value() == other.native_property_type.value())
+    return element_id < other.element_id;
+  return native_property_type.value() < other.native_property_type.value();
+}
 
 PaintWorkletInput::PropertyValue::PropertyValue() = default;
 
@@ -30,6 +72,10 @@ bool PaintWorkletInput::PropertyValue::has_value() const {
 void PaintWorkletInput::PropertyValue::reset() {
   float_value.reset();
   color_value.reset();
+}
+
+bool PaintWorkletInput::KnownToBeOpaque() const {
+  return false;
 }
 
 }  // namespace cc

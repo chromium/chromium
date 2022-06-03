@@ -4,20 +4,31 @@
 
 #include "components/tab_groups/tab_group_visual_data.h"
 
-#include "base/strings/string_number_conversions.h"
+#include <string>
+
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/skia/include/utils/SkRandom.h"
+#include "components/tab_groups/tab_group_color.h"
 
 namespace tab_groups {
 
-TabGroupVisualData::TabGroupVisualData() {
-  title_ = base::ASCIIToUTF16("");
+TabGroupVisualData::TabGroupVisualData()
+    : TabGroupVisualData(std::u16string(), TabGroupColorId::kGrey, false) {}
 
-  static SkRandom rand;
-  color_ = rand.nextU() | 0xff000000;
+TabGroupVisualData::TabGroupVisualData(std::u16string title,
+                                       tab_groups::TabGroupColorId color,
+                                       bool is_collapsed)
+    : title_(std::move(title)), color_(color), is_collapsed_(is_collapsed) {}
+
+TabGroupVisualData::TabGroupVisualData(std::u16string title,
+                                       uint32_t color_int,
+                                       bool is_collapsed)
+    : title_(std::move(title)),
+      color_(TabGroupColorId::kGrey),
+      is_collapsed_(is_collapsed) {
+  auto color_id = static_cast<tab_groups::TabGroupColorId>(color_int);
+  if (base::Contains(tab_groups::GetTabGroupColorLabelMap(), color_id))
+    color_ = color_id;
 }
-
-TabGroupVisualData::TabGroupVisualData(base::string16 title, SkColor color)
-    : title_(title), color_(color) {}
 
 }  // namespace tab_groups

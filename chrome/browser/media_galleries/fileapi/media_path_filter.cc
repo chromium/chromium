@@ -4,19 +4,19 @@
 
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 #include <algorithm>
 #include <string>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
 
 namespace {
 

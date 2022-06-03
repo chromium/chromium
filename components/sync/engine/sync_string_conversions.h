@@ -15,12 +15,7 @@ enum class PassphraseType;
 
 const char* ConnectionStatusToString(ConnectionStatus status);
 
-// Returns the string representation of a PassphraseRequiredReason value.
-const char* PassphraseRequiredReasonToString(PassphraseRequiredReason reason);
-
 const char* PassphraseTypeToString(PassphraseType type);
-
-const char* BootstrapTokenTypeToString(BootstrapTokenType type);
 
 const char* KeyDerivationMethodToString(KeyDerivationMethod method);
 

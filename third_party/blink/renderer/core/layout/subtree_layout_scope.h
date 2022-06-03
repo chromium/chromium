@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -66,10 +67,10 @@ class SubtreeLayoutScope {
   LayoutObject& root_;
 
 #if DCHECK_IS_ON()
-  HashSet<LayoutObject*> layout_objects_to_layout_;
+  HeapHashSet<Member<LayoutObject>> layout_objects_to_layout_;
 #endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_

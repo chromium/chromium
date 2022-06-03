@@ -27,8 +27,8 @@ enum class GpuPreference;
 }
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
-extern "C" typedef struct _GLColorSpace* GLColorSpace;
 extern "C" typedef struct _ClientGpuFence* ClientGpuFence;
+extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 namespace gles2 {

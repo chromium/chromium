@@ -5,7 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_MATRIX3_F_H_
 #define UI_GFX_GEOMETRY_MATRIX3_F_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace gfx {
@@ -86,20 +86,6 @@ class GEOMETRY_EXPORT Matrix3F {
         data_[MatrixToArrayCoords(1, 1)] +
         data_[MatrixToArrayCoords(2, 2)];
   }
-
-  // Compute eigenvalues and (optionally) normalized eigenvectors of
-  // a positive defnite matrix *this. Eigenvectors are computed only if
-  // non-null |eigenvectors| matrix is passed. If it is NULL, the routine
-  // will not attempt to compute eigenvectors but will still return eigenvalues
-  // if they can be computed.
-  // If eigenvalues cannot be computed (the matrix does not meet constraints)
-  // the 0-vector is returned. Note that to retrieve eigenvalues, the matrix
-  // only needs to be symmetric while eigenvectors require it to be
-  // positive-definite. Passing a non-positive definite matrix will result in
-  // NaNs in vectors which cannot be computed.
-  // Eigenvectors are placed as column in |eigenvectors| in order corresponding
-  // to eigenvalues.
-  Vector3dF SolveEigenproblem(Matrix3F* eigenvectors) const;
 
   std::string ToString() const;
 

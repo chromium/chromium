@@ -7,53 +7,78 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/task/test_task.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
+namespace {
 using TaskState = TestTask::TaskState;
+
+class ClosureStub {
+ public:
+  base::OnceClosure Bind() {
+    return base::BindOnce(&ClosureStub::Done, base::Unretained(this));
+  }
+  bool called() const { return called_; }
+
+ private:
+  void Done() { called_ = true; }
+  bool called_ = false;
+};
+
+class NestingTask : public Task {
+ public:
+  explicit NestingTask(NestingTask* child) : child_(child) {}
+  void Run() override {
+    if (child_) {
+      child_->Execute(
+          base::BindOnce(&NestingTask::NestedTaskDone, base::Unretained(this)));
+    } else {
+      completed_ = true;
+      TaskComplete();
+    }
+  }
+
+  bool completed() const { return completed_; }
+
+ private:
+  void NestedTaskDone() {
+    completed_ = true;
+    TaskComplete();
+  }
+
+  NestingTask* child_ = nullptr;
+  bool completed_ = false;
+};
 
 class OfflineTaskTest : public testing::Test {
  public:
   OfflineTaskTest();
 
-  void TaskCompleted(Task* task);
   void PumpLoop();
-
-  Task* completed_task() const { return completed_task_; }
-
  private:
-  Task* completed_task_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
 };
 
 OfflineTaskTest::OfflineTaskTest()
-    : completed_task_(nullptr),
-      task_runner_(new base::TestSimpleTaskRunner),
+    : task_runner_(new base::TestSimpleTaskRunner),
       task_runner_handle_(task_runner_) {}
 
 void OfflineTaskTest::PumpLoop() {
   task_runner_->RunUntilIdle();
 }
 
-void OfflineTaskTest::TaskCompleted(Task* task) {
-  auto set_task_callback = [](Task** t_ptr, Task* t) { *t_ptr = t; };
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(set_task_callback, &completed_task_, task));
-}
-
 TEST_F(OfflineTaskTest, RunTaskStepByStep) {
   ConsumedResource resource;
   TestTask task(&resource);
-  task.SetTaskCompletionCallbackForTesting(
-      base::BindOnce(&OfflineTaskTest::TaskCompleted, base::Unretained(this)));
 
   EXPECT_EQ(TaskState::NOT_STARTED, task.state());
-  task.Run();
+  ClosureStub complete;
+  task.Execute(complete.Bind());
   EXPECT_EQ(TaskState::STEP_1, task.state());
   EXPECT_TRUE(resource.HasNextStep());
   resource.CompleteStep();
@@ -62,14 +87,14 @@ TEST_F(OfflineTaskTest, RunTaskStepByStep) {
   resource.CompleteStep();
   EXPECT_EQ(TaskState::COMPLETED, task.state());
   PumpLoop();
-  EXPECT_EQ(completed_task(), &task);
+  EXPECT_TRUE(complete.called());
 }
 
 TEST_F(OfflineTaskTest, LeaveEarly) {
   ConsumedResource resource;
   TestTask task(&resource, true /* leave early */);
   EXPECT_EQ(TaskState::NOT_STARTED, task.state());
-  task.Run();
+  task.Execute(base::DoNothing());
   EXPECT_EQ(TaskState::STEP_1, task.state());
   EXPECT_TRUE(resource.HasNextStep());
   resource.CompleteStep();
@@ -79,4 +104,14 @@ TEST_F(OfflineTaskTest, LeaveEarly) {
   EXPECT_FALSE(resource.HasNextStep());
 }
 
+TEST_F(OfflineTaskTest, RunNestedTask) {
+  NestingTask child(nullptr);
+  NestingTask parent(&child);
+
+  parent.Execute(base::DoNothing());
+  EXPECT_TRUE(child.completed());
+  EXPECT_TRUE(parent.completed());
+}
+
+}  // namespace
 }  // namespace offline_pages

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: addEventListener assert_equals: expected 7 but got 1
+Harness: the test ran to completion.
+

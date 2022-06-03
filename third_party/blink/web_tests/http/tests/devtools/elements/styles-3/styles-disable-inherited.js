@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that disabling inherited style property does not break further style inspection.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container" style="font-weight:bold">
@@ -14,10 +14,10 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('nested', step1);
 
-  function step1() {
+  async function step1() {
     var treeItem = ElementsTestRunner.getElementStylePropertyTreeItem('font-weight');
     TestRunner.addResult('Before disable');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     ElementsTestRunner.selectNodeAndWaitForStyles('container', step2);
   }
@@ -27,9 +27,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('nested', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('After disable:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

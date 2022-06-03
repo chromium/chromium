@@ -33,14 +33,21 @@ class CSSValueKeywordsWriter(json5_generator.Writer):
                     'value keywords should have the prefix "-internal-".'
         self._keyword_count = len(self._value_keywords) + first_keyword_id
 
-    @template_expander.use_jinja('core/css/templates/css_value_keywords.h.tmpl')
+    @template_expander.use_jinja(
+        'core/css/templates/css_value_keywords.h.tmpl')
     def generate_header(self):
         return {
-            'value_keywords': self._value_keywords,
-            'value_keywords_count': self._keyword_count,
+            'value_keywords':
+            self._value_keywords,
+            'value_keywords_count':
+            self._keyword_count,
             'max_value_keyword_length':
-                max(len(keyword['name'].original) for keyword in self._value_keywords),
-            'header_guard': self.make_header_guard(self._relative_output_dir + self._FILE_BASENAME + '.h')
+            max(
+                len(keyword['name'].original)
+                for keyword in self._value_keywords),
+            'header_guard':
+            self.make_header_guard(self._relative_output_dir +
+                                   self._FILE_BASENAME + '.h')
         }
 
     def _value_keywords_with_mode(self, mode):
@@ -60,14 +67,18 @@ class CSSValueKeywordsWriter(json5_generator.Writer):
             current_offset += len(keyword["name"].original) + 1
 
         return {
-            'value_keywords': self._value_keywords,
-            'value_keyword_offsets': keyword_offsets,
+            'value_keywords':
+            self._value_keywords,
+            'value_keyword_offsets':
+            keyword_offsets,
             'ua_sheet_mode_values_keywords':
-                self._value_keywords_with_mode('UASheet'),
+            self._value_keywords_with_mode('UASheet'),
             'quirks_mode_or_ua_sheet_mode_values_keywords':
-                self._value_keywords_with_mode('QuirksOrUASheet'),
-            'gperf_path': self.gperf_path,
+            self._value_keywords_with_mode('QuirksOrUASheet'),
+            'gperf_path':
+            self.gperf_path,
         }
+
 
 if __name__ == "__main__":
     json5_generator.Maker(CSSValueKeywordsWriter).main()

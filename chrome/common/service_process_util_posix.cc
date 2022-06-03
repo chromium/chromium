@@ -12,9 +12,10 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/current_thread.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/multi_process_lock.h"
 
@@ -25,7 +26,7 @@
 namespace {
 int g_signal_socket = -1;
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 bool FilePathForMemoryName(const std::string& mem_name, base::FilePath* path) {
   // mem_name will be used for a filename; make sure it doesn't
@@ -46,11 +47,11 @@ bool FilePathForMemoryName(const std::string& mem_name, base::FilePath* path) {
   return true;
 }
 
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_MAC)
 
 }  // namespace
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 // static
 base::WritableSharedMemoryRegion
@@ -164,33 +165,21 @@ bool ServiceProcessState::DeleteServiceProcessDataRegion() {
     return false;
 
   if (PathExists(path))
-    return DeleteFile(path, false);
+    return base::DeleteFile(path);
 
   // Doesn't exist, so success.
   return true;
 }
 
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_MAC)
 
-// Attempts to take a lock named |name|. If |waiting| is true then this will
-// make multiple attempts to acquire the lock.
-// Caller is responsible for ownership of the MultiProcessLock.
-MultiProcessLock* TakeNamedLock(const std::string& name, bool waiting) {
+// Attempts to take a lock named |name|. Returns the lock if successful, or
+// nullptr if not.
+std::unique_ptr<MultiProcessLock> TakeNamedLock(const std::string& name) {
   std::unique_ptr<MultiProcessLock> lock = MultiProcessLock::Create(name);
-  if (lock == NULL) return NULL;
-  bool got_lock = false;
-  for (int i = 0; i < 10; ++i) {
-    if (lock->TryLock()) {
-      got_lock = true;
-      break;
-    }
-    if (!waiting) break;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100 * i));
-  }
-  if (!got_lock) {
+  if (!lock->TryLock())
     lock.reset();
-  }
-  return lock.release();
+  return lock;
 }
 
 ServiceProcessTerminateMonitor::ServiceProcessTerminateMonitor(
@@ -243,7 +232,7 @@ void ServiceProcessState::StateData::SignalReady(base::WaitableEvent* signal,
   DCHECK(task_runner->BelongsToCurrentThread());
   DCHECK_EQ(g_signal_socket, -1);
   DCHECK(!signal->IsSignaled());
-  *success = base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+  *success = base::CurrentIOThread::Get()->WatchFileDescriptor(
       sockets[0], true, base::MessagePumpForIO::WATCH_READ, &watcher,
       terminate_monitor.get());
   if (!*success) {
@@ -272,7 +261,7 @@ void ServiceProcessState::StateData::SignalReady(base::WaitableEvent* signal,
   DCHECK_EQ(old_action.sa_handler, SIG_DFL);
   set_action = true;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   *success = WatchExecutable();
   if (!*success) {
     DLOG(ERROR) << "WatchExecutable";
@@ -323,9 +312,9 @@ bool ServiceProcessState::SignalReady(
   DCHECK(task_runner);
   DCHECK(state_);
 
-#if !defined(OS_MACOSX)
-  state_->running_lock.reset(TakeServiceRunningLock(true));
-  if (state_->running_lock.get() == NULL) {
+#if !defined(OS_MAC)
+  state_->running_lock = TakeServiceRunningLock();
+  if (!state_->running_lock.get()) {
     return false;
   }
 #endif

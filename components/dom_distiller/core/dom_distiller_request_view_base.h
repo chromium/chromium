@@ -8,7 +8,6 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -40,9 +39,8 @@ class DomDistillerRequestViewBase : public ViewRequestDelegate,
 
  protected:
   // DistilledPagePrefs::Observer implementation:
-  void OnChangeTheme(DistilledPagePrefs::Theme new_theme) override;
-  void OnChangeFontFamily(
-      DistilledPagePrefs::FontFamily new_font_family) override;
+  void OnChangeTheme(mojom::Theme new_theme) override;
+  void OnChangeFontFamily(mojom::FontFamily new_font_family) override;
   void OnChangeFontScaling(float scaling) override;
 
   // Sends JavaScript to the attached Viewer, buffering data if the viewer isn't

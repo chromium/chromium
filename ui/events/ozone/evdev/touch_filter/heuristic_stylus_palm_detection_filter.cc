@@ -18,7 +18,13 @@ void HeuristicStylusPalmDetectionFilter::Filter(
   base::TimeTicks latest_stylus_time =
       shared_palm_state_->latest_stylus_touch_time;
   uint32_t active_touches = 0;
-  for (int i = 0; i < kNumTouchEvdevSlots; ++i) {
+  const size_t events_size =
+      std::min(touches.size(), static_cast<size_t>(kNumTouchEvdevSlots));
+  DCHECK_LE(touches.size(), static_cast<size_t>(kNumTouchEvdevSlots))
+      << "heuristic filtering only expected to work on devices with "
+         "kNumTouchEvdevSlots or fewer slots. Proceeding safely anyway, but "
+         "unexpected.";
+  for (size_t i = 0; i < events_size; ++i) {
     const auto& touch = touches[i];
     if (touch.tool_code == BTN_TOOL_PEN) {
       // We detect BTN_TOOL_PEN whenever a pen is even hovering. This is
@@ -82,6 +88,13 @@ base::TimeDelta HeuristicStylusPalmDetectionFilter::HoldTime() const {
 
 base::TimeDelta HeuristicStylusPalmDetectionFilter::CancelTime() const {
   return time_after_stylus_to_cancel_;
+}
+
+bool HeuristicStylusPalmDetectionFilter::
+    CompatibleWithHeuristicStylusPalmDetectionFilter(
+        const EventDeviceInfo& device_info) {
+  // Only internal devices are used for heuristics.
+  return device_info.device_type() == INPUT_DEVICE_INTERNAL;
 }
 
 }  // namespace ui

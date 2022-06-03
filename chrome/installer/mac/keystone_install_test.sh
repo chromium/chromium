@@ -18,9 +18,9 @@ if [ ! -f "${INSTALLER}" ]; then
 fi
 
 # What I test
-PRODNAME="Google Chrome"
-APPNAME="${PRODNAME}.app"
-FWKNAME="${PRODNAME} Framework.framework"
+APPNAME_STABLE="Google Chrome.app"
+APPNAME_CANARY="Google Chrome Canary.app"
+FWKNAME="Google Chrome Framework.framework"
 
 # The version number for fake ksadmin to pretend to be
 KSADMIN_VERSION_LIE="1.0.7.1306"
@@ -38,16 +38,21 @@ function cleanup_tempdir() {
 # Run the installer and make sure it fails.
 # If it succeeds, we fail.
 # Arg0: string to print
+# Arg1: expected error code
 function fail_installer() {
   echo $1
   "${INSTALLER}" "${TEMPDIR}" >& /dev/null
   RETURN=$?
   if [ $RETURN -eq 0 ]; then
-    echo "Did not fail (which is a failure)" >& 2
+    echo "  Did not fail (which is a failure)" >& 2
+    cleanup_tempdir
+    exit 1
+  elif [[ $RETURN -ne $2 ]]; then
+    echo "  Failed with unexpected return code ${RETURN} rather than $2" >& 2
     cleanup_tempdir
     exit 1
   else
-    echo "Returns $RETURN"
+    echo "  Successfully failed with return code ${RETURN}"
   fi
 }
 
@@ -58,11 +63,11 @@ function pass_installer() {
   "${INSTALLER}" "${TEMPDIR}" >& /dev/null
   RETURN=$?
   if [ $RETURN -ne 0 ]; then
-    echo "FAILED; returned $RETURN but should have worked" >& 2
+    echo "  FAILED; returned $RETURN but should have worked" >& 2
     cleanup_tempdir
     exit 1
   else
-    echo "worked"
+    echo "  Succeeded"
   fi
 }
 
@@ -113,49 +118,62 @@ EOF
 }
 
 # Make a simple source directory - the update that is to be applied
+# Arg0: the name of the application directory
 function make_src() {
+  local appname="${1}"
+
   chmod ugo+w "${TEMPDIR}"
-  rm -rf "${TEMPDIR}/${APPNAME}"
-  RSRCDIR="${TEMPDIR}/${APPNAME}/Contents/Versions/1/${FWKNAME}/Resources"
+  rm -rf "${TEMPDIR}/${APPNAME_STABLE}"
+  rm -rf "${TEMPDIR}/${APPNAME_CANARY}"
+  RSRCDIR="${TEMPDIR}/${appname}/Contents/Versions/1/${FWKNAME}/Resources"
   mkdir -p "${RSRCDIR}"
-  defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" \
+  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
       CFBundleShortVersionString "1"
-  defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" \
+  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
       KSProductID "com.google.Chrome"
-  defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" \
+  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
       KSVersion "2"
 }
 
 function make_basic_src_and_dest() {
-  make_src
+  make_src "${APPNAME_STABLE}"
   make_new_dest
 }
 
-fail_installer "No source anything"
+fail_installer "No source anything" 2
 
-mkdir "${TEMPDIR}"/"${APPNAME}"
-fail_installer "No source bundle"
+mkdir "${TEMPDIR}"/"${APPNAME_STABLE}"
+fail_installer "No source bundle" 2
 
 make_basic_src_and_dest
 chmod ugo-w "${TEMPDIR}"
-fail_installer "Writable dest directory"
+fail_installer "Writable dest directory" 9
 
 make_basic_src_and_dest
-fail_installer "Was no KSUpdateURL in dest after copy"
+fail_installer "Was no KSUpdateURL in dest after copy" 9
 
 make_basic_src_and_dest
-defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" KSUpdateURL "http://foobar"
+defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
+    KSUpdateURL "http://foobar"
 export FAKE_SYSTEM_TICKET=1
-fail_installer "User and system ticket both present"
+fail_installer "User and system ticket both present" 4
 export -n FAKE_SYSTEM_TICKET
 
-make_src
+make_src "${APPNAME_STABLE}"
 make_old_dest
-defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" KSUpdateURL "http://foobar"
+defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
+    KSUpdateURL "http://foobar"
 pass_installer "Old-style update"
 
 make_basic_src_and_dest
-defaults write "${TEMPDIR}/${APPNAME}/Contents/Info" KSUpdateURL "http://foobar"
-pass_installer "ALL"
+defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
+    KSUpdateURL "http://foobar"
+pass_installer "New-style Stable"
+
+make_src "${APPNAME_CANARY}"
+make_new_dest
+defaults write "${TEMPDIR}/${APPNAME_CANARY}/Contents/Info" \
+    KSUpdateURL "http://foobar"
+pass_installer "New-style Canary"
 
 cleanup_tempdir

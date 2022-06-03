@@ -30,48 +30,55 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "third_party/blink/public/platform/web_vector.h"
+#include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h"
 #include "ui/base/ime/text_input_action.h"
 
 namespace blink {
 
 struct WebTextInputInfo {
-  WebTextInputType type;
-  int flags;
+  // Identifier for the currently focused input field, or 0 if there is no
+  // focus. This identifier is unique for nodes within the same document.
+  int node_id = 0;
+
+  WebTextInputType type = kWebTextInputTypeNone;
+
+  // Bitfield of WebTextInputFlags values.
+  int flags = kWebTextInputFlagNone;
 
   // The value of the currently focused input field.
   WebString value;
 
   // The cursor position of the current selection start, or the caret position
   // if nothing is selected.
-  int selection_start;
+  int selection_start = 0;
 
   // The cursor position of the current selection end, or the caret position
   // if nothing is selected.
-  int selection_end;
+  int selection_end = 0;
 
   // The start position of the current composition, or -1 if there is none.
-  int composition_start;
+  int composition_start = -1;
 
   // The end position of the current composition, or -1 if there is none.
-  int composition_end;
+  int composition_end = -1;
 
   // The inputmode attribute value of the currently focused input field.
-  WebTextInputMode input_mode;
+  WebTextInputMode input_mode = kWebTextInputModeDefault;
 
   // The enterkeyhint attribute value of the currently focused input field.
-  ui::TextInputAction action;
+  ui::TextInputAction action = ui::TextInputAction::kDefault;
+
+  // The virtualkeyboardpolicy attribute value of the currently focused editable
+  // element.
+  ui::mojom::VirtualKeyboardPolicy virtual_keyboard_policy =
+      ui::mojom::VirtualKeyboardPolicy::AUTO;
+
+  // The array of ime_text_spans at the current caret position.
+  WebVector<ui::ImeTextSpan> ime_text_spans;
 
   BLINK_PLATFORM_EXPORT bool Equals(const WebTextInputInfo&) const;
-
-  WebTextInputInfo()
-      : type(kWebTextInputTypeNone),
-        flags(kWebTextInputFlagNone),
-        selection_start(0),
-        selection_end(0),
-        composition_start(-1),
-        composition_end(-1),
-        input_mode(kWebTextInputModeDefault),
-        action(ui::TextInputAction::kDefault) {}
 };
 
 inline bool operator==(const WebTextInputInfo& a, const WebTextInputInfo& b) {
@@ -84,4 +91,4 @@ inline bool operator!=(const WebTextInputInfo& a, const WebTextInputInfo& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_INFO_H_

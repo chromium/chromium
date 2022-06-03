@@ -4,7 +4,6 @@
 
 #include "components/update_client/crx_downloader.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,15 +12,17 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,9 +59,9 @@ class CrxDownloaderTest : public testing::Test {
   void RunThreads();
   void RunThreadsUntilIdle();
 
-  void DownloadComplete(int crx_context, const CrxDownloader::Result& result);
+  void DownloadComplete(const CrxDownloader::Result& result);
 
-  void DownloadProgress(int crx_context);
+  void DownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
   int GetInterceptorCount() { return interceptor_count_; }
 
@@ -69,26 +70,23 @@ class CrxDownloaderTest : public testing::Test {
                    int net_error);
 
  protected:
-  std::unique_ptr<CrxDownloader> crx_downloader_;
+  scoped_refptr<CrxDownloader> crx_downloader_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   CrxDownloader::DownloadCallback callback_;
   CrxDownloader::ProgressCallback progress_callback_;
 
-  int crx_context_;
-
-  int num_download_complete_calls_;
-  CrxDownloader::Result download_complete_result_;
+  int num_download_complete_calls_ = 0;
+  CrxDownloader::Result download_complete_result_ = {};
 
   // These members are updated by DownloadProgress.
-  int num_progress_calls_;
+  int num_progress_calls_ = 0;
+  int64_t downloaded_bytes_ = -1;
+  int64_t total_bytes_ = -1;
 
   // Accumulates the number of loads triggered.
   int interceptor_count_ = 0;
-
-  // A magic value for the context to be used in the tests.
-  static const int kExpectedContext = 0xaabb;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -97,36 +95,27 @@ class CrxDownloaderTest : public testing::Test {
   base::OnceClosure quit_closure_;
 };
 
-const int CrxDownloaderTest::kExpectedContext;
-
 CrxDownloaderTest::CrxDownloaderTest()
     : callback_(base::BindOnce(&CrxDownloaderTest::DownloadComplete,
-                               base::Unretained(this),
-                               kExpectedContext)),
+                               base::Unretained(this))),
       progress_callback_(
           base::BindRepeating(&CrxDownloaderTest::DownloadProgress,
-                              base::Unretained(this),
-                              kExpectedContext)),
-      crx_context_(0),
-      num_download_complete_calls_(0),
-      num_progress_calls_(0),
+                              base::Unretained(this))),
       task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
       test_shared_url_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)) {}
 
-CrxDownloaderTest::~CrxDownloaderTest() {}
+CrxDownloaderTest::~CrxDownloaderTest() = default;
 
 void CrxDownloaderTest::SetUp() {
-  num_download_complete_calls_ = 0;
-  download_complete_result_ = CrxDownloader::Result();
-  num_progress_calls_ = 0;
-
   // Do not use the background downloader in these tests.
-  crx_downloader_ = CrxDownloader::Create(
-      false, base::MakeRefCounted<NetworkFetcherChromiumFactory>(
-                 test_shared_url_loader_factory_,
-                 base::BindRepeating([](const GURL& url) { return false; })));
+  crx_downloader_ =
+      MakeCrxDownloaderFactory(
+          base::MakeRefCounted<NetworkFetcherChromiumFactory>(
+              test_shared_url_loader_factory_,
+              base::BindRepeating([](const GURL& url) { return false; })))
+          ->MakeCrxDownloader(false);
   crx_downloader_->set_progress_callback(progress_callback_);
 
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
@@ -134,7 +123,7 @@ void CrxDownloaderTest::SetUp() {
 }
 
 void CrxDownloaderTest::TearDown() {
-  crx_downloader_.reset();
+  crx_downloader_ = nullptr;
 }
 
 void CrxDownloaderTest::Quit() {
@@ -142,15 +131,18 @@ void CrxDownloaderTest::Quit() {
     std::move(quit_closure_).Run();
 }
 
-void CrxDownloaderTest::DownloadComplete(int crx_context,
-                                         const CrxDownloader::Result& result) {
+void CrxDownloaderTest::DownloadComplete(const CrxDownloader::Result& result) {
   ++num_download_complete_calls_;
-  crx_context_ = crx_context;
   download_complete_result_ = result;
   Quit();
 }
 
-void CrxDownloaderTest::DownloadProgress(int crx_context) {
+void CrxDownloaderTest::DownloadProgress(int64_t downloaded_bytes,
+                                         int64_t total_bytes) {
+  if (downloaded_bytes != -1 && total_bytes != -1)
+    DCHECK_LE(downloaded_bytes, total_bytes);
+  downloaded_bytes_ = downloaded_bytes;
+  total_bytes_ = total_bytes;
   ++num_progress_calls_;
 }
 
@@ -186,6 +178,7 @@ void CrxDownloaderTest::RunThreads() {
   RunThreadsUntilIdle();
 }
 
+// TODO(crbug.com/1104691): rewrite the tests to not use RunUntilIdle().
 void CrxDownloaderTest::RunThreadsUntilIdle() {
   task_environment_.RunUntilIdle();
   base::RunLoop().RunUntilIdle();
@@ -199,7 +192,6 @@ TEST_F(CrxDownloaderTest, NoUrl) {
   RunThreadsUntilIdle();
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::NO_URL),
             download_complete_result_.error);
   EXPECT_TRUE(download_complete_result_.response.empty());
@@ -214,7 +206,6 @@ TEST_F(CrxDownloaderTest, NoHash) {
   RunThreadsUntilIdle();
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::NO_HASH),
             download_complete_result_.error);
   EXPECT_TRUE(download_complete_result_.response.empty());
@@ -236,7 +227,6 @@ TEST_F(CrxDownloaderTest, OneUrl) {
   EXPECT_EQ(1, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(0, download_complete_result_.error);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
@@ -244,6 +234,7 @@ TEST_F(CrxDownloaderTest, OneUrl) {
       DeleteFileAndEmptyParentDirectory(download_complete_result_.response));
 
   EXPECT_LE(1, num_progress_calls_);
+  EXPECT_EQ(total_bytes_, 1015);
 }
 
 // Tests that downloading from one url fails if the actual hash of the file
@@ -265,7 +256,6 @@ TEST_F(CrxDownloaderTest, OneUrlBadHash) {
   EXPECT_EQ(1, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::BAD_HASH),
             download_complete_result_.error);
   EXPECT_TRUE(download_complete_result_.response.empty());
@@ -293,7 +283,6 @@ TEST_F(CrxDownloaderTest, TwoUrls) {
   EXPECT_EQ(1, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(0, download_complete_result_.error);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
@@ -325,7 +314,6 @@ TEST_F(CrxDownloaderTest, TwoUrls_FirstInvalid) {
   EXPECT_EQ(2, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(0, download_complete_result_.error);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
@@ -370,7 +358,6 @@ TEST_F(CrxDownloaderTest, TwoUrls_SecondInvalid) {
   EXPECT_EQ(1, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_EQ(0, download_complete_result_.error);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
@@ -400,7 +387,6 @@ TEST_F(CrxDownloaderTest, TwoUrls_BothInvalid) {
   EXPECT_EQ(2, GetInterceptorCount());
 
   EXPECT_EQ(1, num_download_complete_calls_);
-  EXPECT_EQ(kExpectedContext, crx_context_);
   EXPECT_NE(0, download_complete_result_.error);
   EXPECT_TRUE(download_complete_result_.response.empty());
 

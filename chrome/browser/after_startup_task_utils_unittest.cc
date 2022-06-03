@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -81,9 +82,9 @@ class AfterStartupTaskTest : public testing::Test {
  public:
   AfterStartupTaskTest() {
     ui_thread_ = base::MakeRefCounted<WrappedTaskRunner>(
-        base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}));
+        content::GetUIThreadTaskRunner({}));
     background_sequence_ = base::MakeRefCounted<WrappedTaskRunner>(
-        base::CreateSequencedTaskRunner(base::TaskTraits(base::ThreadPool())));
+        base::ThreadPool::CreateSequencedTaskRunner({}));
     AfterStartupTaskUtils::UnsafeResetForTesting();
   }
 
@@ -93,9 +94,9 @@ class AfterStartupTaskTest : public testing::Test {
     bool is_complete;
     base::PostTaskAndReplyWithResult(
         background_sequence_->real_runner(), FROM_HERE,
-        base::Bind(&AfterStartupTaskUtils::IsBrowserStartupComplete),
-        base::Bind(&AfterStartupTaskTest::GotIsOnBrowserStartupComplete,
-                   &run_loop, &is_complete));
+        base::BindOnce(&AfterStartupTaskUtils::IsBrowserStartupComplete),
+        base::BindOnce(&AfterStartupTaskTest::GotIsOnBrowserStartupComplete,
+                       &run_loop, &is_complete));
     run_loop.Run();
     return is_complete;
   }

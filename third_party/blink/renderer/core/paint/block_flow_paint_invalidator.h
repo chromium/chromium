@@ -37,4 +37,4 @@ class BlockFlowPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BLOCK_FLOW_PAINT_INVALIDATOR_H_

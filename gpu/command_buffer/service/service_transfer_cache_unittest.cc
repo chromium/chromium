@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -21,7 +22,7 @@ std::unique_ptr<cc::ServiceTransferCacheEntry> CreateEntry(size_t size) {
 }
 
 TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
-  ServiceTransferCache cache;
+  ServiceTransferCache cache{GpuPreferences()};
   uint32_t entry_id = 0u;
   size_t entry_size = 1024u;
   uint32_t number_of_entry = 4u;
@@ -57,7 +58,7 @@ TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
 }
 
 TEST(ServiceTransferCache, MultipleDecoderUse) {
-  ServiceTransferCache cache;
+  ServiceTransferCache cache{GpuPreferences()};
   const uint32_t entry_id = 0u;
   const size_t entry_size = 1024u;
 
@@ -84,7 +85,7 @@ TEST(ServiceTransferCache, MultipleDecoderUse) {
 }
 
 TEST(ServiceTransferCache, DeleteEntriesForDecoder) {
-  ServiceTransferCache cache;
+  ServiceTransferCache cache{GpuPreferences()};
   const size_t entry_size = 1024u;
   const size_t cache_size = 4 * entry_size;
   cache.SetCacheSizeLimitForTesting(cache_size);

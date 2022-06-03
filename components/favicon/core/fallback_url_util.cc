@@ -15,9 +15,9 @@ const char* kFallbackIconTextForIP = "IP";
 
 namespace favicon {
 
-base::string16 GetFallbackIconText(const GURL& url) {
+std::u16string GetFallbackIconText(const GURL& url) {
   if (url.is_empty())
-    return base::string16();
+    return std::u16string();
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   if (domain.empty()) {  // E.g., http://localhost/ or http://192.168.0.1/
@@ -26,7 +26,7 @@ base::string16 GetFallbackIconText(const GURL& url) {
     domain = url.host();
   }
   if (domain.empty())
-    return base::string16();
+    return std::u16string();
   // TODO(huangs): Handle non-ASCII ("xn--") domain names.
   return base::i18n::ToUpper(base::ASCIIToUTF16(domain.substr(0, 1)));
 }

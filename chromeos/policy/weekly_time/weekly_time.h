@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/chromeos_export.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -21,9 +20,16 @@ namespace policy {
 // beginning of the day.
 class CHROMEOS_EXPORT WeeklyTime {
  public:
+  // Dictionary value key constants for testing.
+  static const char kDayOfWeek[];
+  static const char kTime[];
+  static const char kTimezoneOffset[];
+  // Dictionary value constants for testing.
+  static const std::vector<std::string> kWeekDays;
+
   WeeklyTime(int day_of_week,
              int milliseconds,
-             base::Optional<int> timezone_offset);
+             absl::optional<int> timezone_offset);
 
   WeeklyTime(const WeeklyTime& rhs);
 
@@ -34,6 +40,8 @@ class CHROMEOS_EXPORT WeeklyTime {
            milliseconds_ == rhs.milliseconds() &&
            timezone_offset_ == rhs.timezone_offset();
   }
+
+  bool operator!=(const WeeklyTime& rhs) const { return !operator==(rhs); }
 
   // Return DictionaryValue in format:
   // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
@@ -46,7 +54,7 @@ class CHROMEOS_EXPORT WeeklyTime {
 
   int milliseconds() const { return milliseconds_; }
 
-  base::Optional<int> timezone_offset() const { return timezone_offset_; }
+  absl::optional<int> timezone_offset() const { return timezone_offset_; }
 
   // Return duration from |start| till |end| week times. |end| time
   // is always after |start| time. It's possible because week time is cyclic.
@@ -75,13 +83,23 @@ class CHROMEOS_EXPORT WeeklyTime {
   // WeeklyTime structure isn't correct.
   static std::unique_ptr<WeeklyTime> ExtractFromProto(
       const enterprise_management::WeeklyTimeProto& container,
-      base::Optional<int> timezone_offset);
+      absl::optional<int> timezone_offset);
 
-  // Return the current time in GMT in WeeklyTime structure.
-  static WeeklyTime GetCurrentGmtWeeklyTime(base::Clock* clock);
+  // Return WeeklyTime structure from Value in format:
+  // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
+  // etc.)
+  //   "time" : int # in milliseconds from the beginning of the day.
+  // }.
+  // Return nullptr if WeeklyTime structure isn't correct.
+  static std::unique_ptr<WeeklyTime> ExtractFromValue(
+      const base::Value* value,
+      absl::optional<int> timezone_offset);
 
-  // Return the current time in the system's local time in WeeklyTime structure.
-  static WeeklyTime GetCurrentLocalWeeklyTime(base::Clock* clock);
+  // Return the |time| in GMT in WeeklyTime structure.
+  static WeeklyTime GetGmtWeeklyTime(base::Time time);
+
+  // Return the system's local |time| in WeeklyTime structure.
+  static WeeklyTime GetLocalWeeklyTime(base::Time time);
 
  private:
   // Number of weekday (1 = Monday, 2 = Tuesday, etc.)
@@ -96,8 +114,13 @@ class CHROMEOS_EXPORT WeeklyTime {
   // considered to be in the timezone corresponding to that offset. If
   // |timezone_offset_| is |nullopt|, then it will be interpreted to be in the
   // system's local timezone.
-  base::Optional<int> timezone_offset_;
+  absl::optional<int> timezone_offset_;
 };
+
+// Constructs a WeeklyTime from an exploded base::Time.
+CHROMEOS_EXPORT WeeklyTime
+GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
+                          const absl::optional<int> timezone_offset);
 
 }  // namespace policy
 

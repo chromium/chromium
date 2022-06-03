@@ -10,8 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace visitedlink {
@@ -59,6 +57,10 @@ class VisitedLinkCommon {
   static const Hash null_hash_;
 
   VisitedLinkCommon();
+
+  VisitedLinkCommon(const VisitedLinkCommon&) = delete;
+  VisitedLinkCommon& operator=(const VisitedLinkCommon&) = delete;
+
   virtual ~VisitedLinkCommon();
 
   // Returns the fingerprint for the given URL.
@@ -132,9 +134,6 @@ class VisitedLinkCommon {
 
   // salt used for each URL when computing the fingerprint
   uint8_t salt_[LINK_SALT_LENGTH];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkCommon);
 };
 
 }  // namespace visitedlink

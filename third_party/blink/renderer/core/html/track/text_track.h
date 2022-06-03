@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -47,7 +48,6 @@ class TextTrackList;
 class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
                               public TrackBase {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(TextTrack);
 
  public:
   enum TextTrackType { kTrackElement, kAddTrack, kInBand };
@@ -126,7 +126,7 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   const HeapVector<Member<CSSStyleSheet>>& GetCSSStyleSheets() const {
     return style_sheets_;
@@ -154,7 +154,12 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   bool has_been_configured_;
 };
 
-DEFINE_TRACK_TYPE_CASTS(TextTrack, WebMediaPlayer::kTextTrack);
+template <>
+struct DowncastTraits<TextTrack> {
+  static bool AllowFrom(const TrackBase& track) {
+    return track.GetType() == WebMediaPlayer::kTextTrack;
+  }
+};
 
 }  // namespace blink
 

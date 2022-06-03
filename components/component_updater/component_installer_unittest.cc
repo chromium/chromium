@@ -9,11 +9,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -34,7 +33,6 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,10 +70,11 @@ base::FilePath test_file(const char* file) {
 
 class MockUpdateClient : public UpdateClient {
  public:
-  MockUpdateClient() {}
+  MockUpdateClient() = default;
 
   void Install(const std::string& id,
                CrxDataCallback crx_data_callback,
+               CrxStateChangeCallback crx_state_change_callback,
                Callback callback) override {
     DoInstall(id, std::move(crx_data_callback));
     std::move(callback).Run(update_client::Error::NONE);
@@ -83,17 +82,23 @@ class MockUpdateClient : public UpdateClient {
 
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
+              CrxStateChangeCallback crx_state_change_callback,
               bool is_foreground,
               Callback callback) override {
     DoUpdate(ids, std::move(crx_data_callback));
     std::move(callback).Run(update_client::Error::NONE);
   }
 
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback callback) override {
-    DoSendUninstallPing(id, version, reason);
+    DoSendUninstallPing(crx_component, reason);
+    std::move(callback).Run(update_client::Error::NONE);
+  }
+
+  void SendRegistrationPing(const CrxComponent& crx_component,
+                            Callback callback) override {
+    DoSendRegistrationPing(crx_component);
     std::move(callback).Run(update_client::Error::NONE);
   }
 
@@ -109,21 +114,20 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD3(DoSendUninstallPing,
-               void(const std::string& id,
-                    const base::Version& version,
-                    int reason));
+  MOCK_METHOD2(DoSendUninstallPing,
+               void(const CrxComponent& crx_component, int reason));
+  MOCK_METHOD1(DoSendRegistrationPing, void(const CrxComponent& crx_component));
 
  private:
-  ~MockUpdateClient() override {}
+  ~MockUpdateClient() override = default;
 };
 
 class MockInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  MockInstallerPolicy() {}
-  ~MockInstallerPolicy() override {}
+  MockInstallerPolicy() = default;
+  ~MockInstallerPolicy() override = default;
 
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& dir) const override {
     return true;
   }
@@ -135,17 +139,16 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return true; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
 
   void OnCustomUninstall() override {}
 
-  void ComponentReady(
-      const base::Version& version,
-      const base::FilePath& install_dir,
-      std::unique_ptr<base::DictionaryValue> manifest) override {}
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::Value manifest) override {}
 
   base::FilePath GetRelativeInstallDir() const override {
     return base::FilePath(relative_install_dir);
@@ -160,10 +163,6 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
     installer_attributes["ap"] = "fake-ap";
     installer_attributes["is-enterprise"] = "1";
     return installer_attributes;
-  }
-
-  std::vector<std::string> GetMimeTypes() const override {
-    return std::vector<std::string>();
   }
 
  private:
@@ -351,7 +350,7 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallSuccess) {
   base_dir = base_dir.Append(relative_install_dir);
   EXPECT_TRUE(base::CreateDirectory(base_dir));
   installer->Install(
-      unpack_path, update_client::jebg_public_key,
+      unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
         EXPECT_EQ(0, result.error);
       }));
@@ -380,7 +379,7 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
 
   // Calling |Install| fails since DIR_COMPONENT_USER does not exist.
   installer->Install(
-      unpack_path, update_client::jebg_public_key,
+      unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
         EXPECT_EQ(static_cast<int>(
                       update_client::InstallError::NO_DIR_COMPONENT_USER),

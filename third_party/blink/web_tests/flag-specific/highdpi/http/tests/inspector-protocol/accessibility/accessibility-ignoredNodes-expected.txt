@@ -1,0 +1,635 @@
+Tests accessibility values of ignored nodes.
+
+RootWebArea
+  *none
+{
+    domNode : html
+    ignored : true
+    ignoredReasons : [
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  img
+    *SvgRoot
+{
+    domNode : svg
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : title
+                type : relatedElement
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : internalRole
+        value : SvgRoot
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : div
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : ariaHiddenElement
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : div
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : ariaHiddenSubtree
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : div
+                    }
+                ]
+                type : idref
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : ol
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : presentationalRole
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : li
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : presentationalRole
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *generic
+    StaticText "Div in list isn't presentational"
+{
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : generic
+    }
+}
+
+RootWebArea
+  *LabelText
+    StaticText "Content within label refers to label container"
+{
+    domNode : label
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : internalRole
+        value : LabelText
+    }
+}
+
+RootWebArea
+  LabelText
+    *none
+{
+    domNode : span
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : uninteresting
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : div
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : span
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : canvas
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : uninteresting
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : canvas
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : presentationalRole
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *combobox
+    MenuListPopup
+      menuitem "Options should be"
+      menuitem "sent down even though"
+      menuitem "they are grandchildren"
+{
+    domNode : select
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : expanded
+            value : {
+                type : booleanOrUndefined
+                value : false
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : combobox
+    }
+    value : {
+        type : string
+        value : Options should be
+    }
+}
+
+RootWebArea
+  combobox
+    MenuListPopup
+      *menuitem "Options should be"
+{
+    domNode : option
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Options should be
+                }
+            }
+        ]
+        type : computedString
+        value : Options should be
+    }
+    nodeId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : selected
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : menuitem
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : button
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : inertElement
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : button
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : inertSubtree
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : inert-root
+                        nodeResult : div#inert-root
+                    }
+                ]
+                type : idref
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *generic "span with ARIA label"
+    StaticText "should not be ignored"
+{
+    domNode : span
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : span with ARIA label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : span with ARIA label
+                }
+            }
+            [2] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : span with ARIA label
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : generic
+    }
+}
+
+RootWebArea
+  *none
+{
+    domNode : div
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+
+RootWebArea
+  *generic
+    StaticText "summary element without details parent is ignored"
+{
+    description : {
+        type : computedString
+        value : summary element without details parent is ignored
+    }
+    domNode : summary
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : generic
+    }
+}
+
+RootWebArea
+  *button "Ignored parent shouldn't cause descendant to be missing from the tree"
+    StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
+{
+    domNode : button
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Ignored parent shouldn't cause descendant to be missing from the tree
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Ignored parent shouldn't cause descendant to be missing from the tree
+    }
+    nodeId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+

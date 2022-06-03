@@ -142,7 +142,6 @@ make_patch_fs() {
   readonly APP_NAME_RE="${product_name}\\.app"
   readonly APP_PLIST="Contents/Info"
   readonly APP_VERSION_KEY="CFBundleShortVersionString"
-  readonly APP_BUNDLEID_KEY="CFBundleIdentifier"
   readonly KS_VERSION_KEY="KSVersion"
   readonly KS_PRODUCT_KEY="KSProductID"
   readonly KS_CHANNEL_KEY="KSChannelID"
@@ -152,10 +151,22 @@ make_patch_fs() {
 
   local versions_dir_new
   local product_url
-  if [[ "${product_name}" = "Google Chrome Canary" ]]; then
+  local is_sxs_capable
+  if [[ "${product_name}" = "Google Chrome Beta" ]]; then
+    versions_dir_new=\
+"Contents/Frameworks/Google Chrome Framework.framework/Versions"
+    product_url="https://www.google.com/chrome/beta/"
+    is_sxs_capable="y"
+  elif [[ "${product_name}" = "Google Chrome Dev" ]]; then
+    versions_dir_new=\
+"Contents/Frameworks/Google Chrome Framework.framework/Versions"
+    product_url="https://www.google.com/chrome/dev/"
+    is_sxs_capable="y"
+  elif [[ "${product_name}" = "Google Chrome Canary" ]]; then
     versions_dir_new=\
 "Contents/Frameworks/Google Chrome Framework.framework/Versions"
     product_url="https://www.google.com/chrome/canary/"
+    is_sxs_capable="y"
   else
     versions_dir_new=\
 "Contents/Frameworks/${product_name} Framework.framework/Versions"
@@ -175,13 +186,6 @@ make_patch_fs() {
     exit 10
   fi
   local old_app_version_build="${BASH_REMATCH[1]}"
-
-  local old_app_bundleid
-  if ! old_app_bundleid="$(defaults read "${old_app_plist}" \
-                                         "${APP_BUNDLEID_KEY}")"; then
-    err "could not read old app bundle ID"
-    exit 10
-  fi
 
   local old_ks_plist="${old_app_plist}"
   local old_ks_version
@@ -230,13 +234,15 @@ make_patch_fs() {
   new_ks_channel="$(defaults read "${new_app_plist}" \
                     "${KS_CHANNEL_KEY}" 2> /dev/null || true)"
 
+  # Side-by-side flavors have the channel already baked into the app name; non
+  # side-by-side beta and dev flavors need the channel name tacked on later.
   local name_extra
-  if [[ "${new_ks_channel}" = "beta" ]]; then
+  if [[ -n "${is_sxs_capable}" ]]; then
+    name_extra=
+  elif [[ "${new_ks_channel}" = "beta" ]]; then
     name_extra=" Beta"
   elif [[ "${new_ks_channel}" = "dev" ]]; then
     name_extra=" Dev"
-  elif [[ "${new_ks_channel}" = "canary" ]]; then
-    name_extra=
   elif [[ -n "${new_ks_channel}" ]]; then
     name_extra=" ${new_ks_channel}"
   fi

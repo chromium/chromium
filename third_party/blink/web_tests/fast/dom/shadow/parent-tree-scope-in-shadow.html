@@ -11,13 +11,13 @@
   document.body.appendChild(div);
 
   debug("Creating shadow dom subtrees from top to bottom.");
-  var shadow1 = div.createShadowRoot();
+  var shadow1 = div.attachShadow({mode: 'open'});
   shadow1.innerHTML = "<div id='E'>/div>";
   var e = shadow1.getElementById("E");
-  var shadow2 = e.createShadowRoot();
+  var shadow2 = e.attachShadow({mode: 'open'});
   shadow2.innerHTML = "<div id='F'></div>";
   var f = shadow2.getElementById("F");
-  var shadow3 = f.createShadowRoot();
+  var shadow3 = f.attachShadow({mode: 'open'});
   shadow3.innerHTML = "<div id='G'></div>";
 
   shouldBe("internals.parentTreeScope(shadow1)", "document");
@@ -28,13 +28,13 @@
 
   debug("Creating multiple shadow dom subtrees from bottom to top.");
   f = document.createElement("div");
-  shadow3 = f.createShadowRoot();
+  shadow3 = f.attachShadow({mode: 'open'});
   shadow3.innerHTML = "<div id='G'></div>";
   e = document.createElement("div");
-  shadow2 = e.createShadowRoot();
+  shadow2 = e.attachShadow({mode: 'open'});
   shadow2.appendChild(f);
   div = document.createElement("div");
-  shadow1 = div.createShadowRoot();
+  shadow1 = div.attachShadow({mode: 'open'});
   shadow1.appendChild(e);
   document.body.appendChild(div);
 

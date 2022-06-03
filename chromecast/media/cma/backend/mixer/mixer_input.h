@@ -14,6 +14,7 @@
 #include "chromecast/media/base/slew_volume.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"
+#include "media/base/channel_layout.h"
 
 namespace media {
 class AudioBus;
@@ -46,12 +47,13 @@ class MixerInput {
       kInternalError,
     };
 
-    // TODO(b/139311908) Track channel layout.
-    virtual int num_channels() = 0;
-    virtual int input_samples_per_second() = 0;
+    virtual size_t num_channels() const = 0;
+    virtual ::media::ChannelLayout channel_layout() const = 0;
+    virtual int sample_rate() const = 0;
     virtual bool primary() = 0;
     virtual const std::string& device_id() = 0;
     virtual AudioContentType content_type() = 0;
+    virtual AudioContentType focus_type() = 0;
     virtual int desired_read_size() = 0;
     virtual int playout_channel() = 0;
     // Returns true if the source is currently providing audio to be mixed.
@@ -78,6 +80,9 @@ class MixerInput {
     // source.
     virtual void OnAudioPlaybackError(MixerError error) = 0;
 
+    // Called when an underrun error occurs on mixer output.
+    virtual void OnOutputUnderrun() {}
+
     // Called when the mixer has finished removing this input. The source may be
     // deleted at this point.
     virtual void FinalizeAudioPlayback() = 0;
@@ -87,17 +92,23 @@ class MixerInput {
   };
 
   MixerInput(Source* source, FilterGroup* filter_group);
+
+  MixerInput(const MixerInput&) = delete;
+  MixerInput& operator=(const MixerInput&) = delete;
+
   ~MixerInput();
 
   void SetFilterGroup(FilterGroup* filter_group);
 
   Source* source() const { return source_; }
   int num_channels() const { return num_channels_; }
+  ::media::ChannelLayout channel_layout() const { return channel_layout_; }
   int input_samples_per_second() const { return input_samples_per_second_; }
   int output_samples_per_second() const { return output_samples_per_second_; }
   bool primary() const { return primary_; }
   const std::string& device_id() const { return device_id_; }
   AudioContentType content_type() const { return content_type_; }
+  AudioContentType focus_type() const { return source_->focus_type(); }
 
   // Adds/removes an output redirector. When the mixer asks for more audio data,
   // the lowest-ordered redirector (based on redirector->GetOrder()) is passed
@@ -128,9 +139,19 @@ class MixerInput {
 
   // Sets the multiplier based on this stream's content type. The resulting
   // output volume should be the content type volume * the per-stream volume
-  // multiplier. If |fade_ms| is >= 0, the volume change should be faded over
-  // that many milliseconds; otherwise, the default fade time should be used.
-  void SetContentTypeVolume(float volume, int fade_ms);
+  // multiplier.
+  void SetContentTypeVolume(float volume);
+
+  // Sets min/max output volume for this stream (ie, limits the product of
+  // content type volume and per-stream volume multiplier). Note that mute
+  // and runtime output limits (for ducking) are applied after these limits.
+  void SetVolumeLimits(float volume_min, float volume_max);
+
+  // Limits the output volume for this stream to below |limit|. Used for
+  // ducking. If |fade_ms| is >= 0, the resulting volume change should be
+  // faded over that many milliseconds; otherwise, the default fade time should
+  // be used.
+  void SetOutputLimit(float limit, int fade_ms);
 
   // Sets whether or not this stream should be muted.
   void SetMuted(bool muted);
@@ -153,6 +174,7 @@ class MixerInput {
 
   Source* const source_;
   const int num_channels_;
+  const ::media::ChannelLayout channel_layout_;
   const int input_samples_per_second_;
   const int output_samples_per_second_;
   const bool primary_;
@@ -163,9 +185,12 @@ class MixerInput {
   std::unique_ptr<::media::AudioBus> fill_buffer_;
   std::unique_ptr<::media::ChannelMixer> channel_mixer_;
 
-  float stream_volume_multiplier_;
-  float type_volume_multiplier_;
-  float mute_volume_multiplier_;
+  float stream_volume_multiplier_ = 1.0f;
+  float type_volume_multiplier_ = 1.0f;
+  float volume_min_ = 0.0f;
+  float volume_max_ = 1.0f;
+  float output_volume_limit_ = 1.0f;
+  float mute_volume_multiplier_ = 1.0f;
   SlewVolume slew_volume_;
   // True if volume scale-accumulate has already been applied for at least
   // one channel of the current buffer.
@@ -175,13 +200,14 @@ class MixerInput {
 
   RenderingDelay mixer_rendering_delay_;
   double resampler_buffered_frames_;
+  int filled_for_resampler_;
+  bool tried_to_fill_resampler_;
+  int resampled_silence_count_ = 0;
   std::unique_ptr<::media::MultiChannelResampler> resampler_;
 
   std::vector<AudioOutputRedirectorInput*> audio_output_redirectors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerInput);
 };
 
 }  // namespace media

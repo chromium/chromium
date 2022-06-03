@@ -18,9 +18,7 @@ if (!is_android) {
       "vibration_manager_impl_default.cc",
     ]
 
-    public_deps = [
-      "//services/device/public/mojom",
-    ]
+    public_deps = [ "//services/device/public/mojom" ]
 
     deps = [
       "//base",

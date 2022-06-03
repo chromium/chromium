@@ -34,10 +34,10 @@ namespace gcm {
 // messages can be sent/received again.
 class GCM_EXPORT ConnectionHandler {
  public:
-  typedef base::Callback<void(std::unique_ptr<google::protobuf::MessageLite>)>
-      ProtoReceivedCallback;
-  typedef base::Closure ProtoSentCallback;
-  typedef base::Callback<void(int)> ConnectionChangedCallback;
+  using ProtoReceivedCallback = base::RepeatingCallback<void(
+      std::unique_ptr<google::protobuf::MessageLite>)>;
+  using ProtoSentCallback = base::RepeatingClosure;
+  using ConnectionChangedCallback = base::RepeatingCallback<void(int)>;
 
   ConnectionHandler();
   virtual ~ConnectionHandler();

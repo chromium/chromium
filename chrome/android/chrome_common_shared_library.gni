@@ -33,28 +33,36 @@ template("chrome_common_shared_library") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
   _export_java_symbols = _is_monochrome || _is_webview
+  _collect_inputs_only =
+      defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
-  _linker_script = "$target_gen_dir/${target_name}_linker_script.txt"
-  _linker_script_target = "${target_name}_linker_script"
+  # When _collect_inputs_only && !(!_is_webview && enable_vr).
+  not_needed([ "_export_java_symbols" ])
 
   # Create a partitioned libraries if the build config supports it, and the
   # invoker has supplied module descriptors.
-  _generate_partitions = defined(invoker.module_descs) && use_native_partitions
+  _generate_partitions = defined(invoker.module_descs) &&
+                         use_native_partitions && !_collect_inputs_only
   _module_descs = []
   if (defined(invoker.module_descs)) {
     _module_descs = invoker.module_descs
   }
 
-  # Create a custom linker script based on JNI and feature module requirements.
-  generate_linker_version_script(_linker_script_target) {
-    linker_script = _linker_script
-    export_java_symbols = _export_java_symbols
-    export_feature_registrations = true
-    if (_generate_partitions) {
-      export_symbol_whitelist_files = []
-      foreach(_module_desc, invoker.module_descs) {
-        if (defined(_module_desc.native_entrypoints)) {
-          export_symbol_whitelist_files += [ _module_desc.native_entrypoints ]
+  if (!_collect_inputs_only) {
+    _linker_script_target = "${target_name}_linker_script"
+    _linker_script = "$target_gen_dir/${target_name}_linker_script.txt"
+
+    # Create a custom linker script based on JNI and feature module requirements.
+    generate_linker_version_script(_linker_script_target) {
+      linker_script = _linker_script
+      export_java_symbols = _export_java_symbols
+      export_feature_registrations = true
+      if (_generate_partitions) {
+        export_symbol_allowlist_files = []
+        foreach(_module_desc, invoker.module_descs) {
+          if (defined(_module_desc.native_entrypoints)) {
+            export_symbol_allowlist_files += [ _module_desc.native_entrypoints ]
+          }
         }
       }
     }
@@ -73,19 +81,28 @@ template("chrome_common_shared_library") {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
+    if (!(defined(invoker.testonly) && invoker.testonly)) {
+      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    }
+
     configs += [ "//build/config/compiler:chrome_orderfile_config" ]
 
     # Use a dynamically-generated linker script.
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    deps += [ ":$_linker_script_target" ]
-    inputs = [
-      "$_linker_script",
-    ]
     if (!defined(ldflags)) {
       ldflags = []
     }
-    ldflags += [ "-Wl,--version-script=" +
-                 rebase_path(_linker_script, root_build_dir) ]
+    if (_collect_inputs_only) {
+      metadata = {
+      }
+      ldflags += [ "--collect-inputs-only" ]
+    } else {
+      deps += [ ":$_linker_script_target" ]
+      inputs = [ "$_linker_script" ]
+      ldflags += [ "-Wl,--version-script=" +
+                   rebase_path(_linker_script, root_build_dir) ]
+    }
 
     # Handle VR JNI registration and dependencies.
     if (!_is_webview && enable_vr) {
@@ -106,6 +123,12 @@ template("chrome_common_shared_library") {
       foreach(_module_desc, _module_descs) {
         if (defined(_module_desc.native_deps)) {
           partitions += [ _module_desc.name ]
+          deps += _module_desc.native_deps
+        }
+      }
+    } else if (_collect_inputs_only) {
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.native_deps)) {
           deps += _module_desc.native_deps
         }
       }
@@ -134,7 +157,7 @@ template("chrome_common_shared_library") {
     }
   }
 
-  if (!_generate_partitions) {
+  if (!_generate_partitions && !_collect_inputs_only) {
     # Make helper targets so that we always have module native targets no matter
     # whether partitions are enabled.
     foreach(_module_desc, _module_descs) {

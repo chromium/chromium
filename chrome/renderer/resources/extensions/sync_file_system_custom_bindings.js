@@ -94,7 +94,7 @@ bindingUtil.registerEventArgumentMassager('syncFileSystem.onFileStatusChanged',
   var fileInfo = new Object();
   fileInfo.fileEntry = fileEntry;
   fileInfo.status = args[1];
-  if (fileInfo.status == "synced") {
+  if (fileInfo.status === 'synced') {
     fileInfo.action = args[2];
     fileInfo.direction = args[3];
   }

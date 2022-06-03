@@ -11,7 +11,7 @@
 
 """
 
-import ConfigParser
+import configparser
 import glob
 import optparse
 import os
@@ -52,13 +52,15 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
   RunSystemCommand(cmd, verbose)
 
 
-def CopyAllFilesToStagingDir(config, staging_dir, build_dir):
+def CopyAllFilesToStagingDir(config, staging_dir, build_dir, timestamp):
   """Copies the files required for installer archive.
   """
-  CopySectionFilesToStagingDir(config, 'GENERAL', staging_dir, build_dir)
+  CopySectionFilesToStagingDir(config, 'GENERAL', staging_dir, build_dir,
+                               timestamp)
 
 
-def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir):
+def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
+                                 timestamp):
   """Copies installer archive files specified in section from src_dir to
   staging_dir. This method reads section from config and copies all the
   files specified from src_dir to staging dir.
@@ -68,13 +70,18 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir):
     dst_dir = os.path.join(staging_dir, config.get(section, option))
     dst_dir = dst_dir.replace('\\', os.sep)
     src_paths = glob.glob(os.path.join(src_dir, src_subdir))
-    if src_paths and not os.path.exists(dst_dir):
-      os.makedirs(dst_dir)
     for src_path in src_paths:
-      dst_path = os.path.join(dst_dir, os.path.basename(src_path))
+      if dst_dir.endswith(os.sep):
+        dst_path = os.path.join(dst_dir, os.path.basename(src_path))
+      else:
+        dst_path = dst_dir
       if not os.path.exists(dst_path):
+        if not os.path.exists(os.path.dirname(dst_path)):
+          os.makedirs(os.path.dirname(dst_dir))
         g_archive_inputs.append(src_path)
-        shutil.copy(src_path, dst_dir)
+        shutil.copy(src_path, dst_path)
+        os.utime(dst_path, (os.stat(dst_path).st_atime, timestamp))
+    os.utime(dst_dir, (os.stat(dst_dir).st_atime, timestamp))
 
 def GetLZMAExec(build_dir):
   if sys.platform == 'win32':
@@ -100,7 +107,7 @@ def Readconfig(input_file):
   """
   variables = {}
   variables['UpdaterDir'] = UPDATER_DIR
-  config = ConfigParser.SafeConfigParser(variables)
+  config = configparser.ConfigParser(variables)
   config.read(input_file)
   return config
 
@@ -109,21 +116,21 @@ def RunSystemCommand(cmd, verbose):
   captures its output and only emits it on failure.
   """
   if verbose:
-    print 'Running', cmd
+    print('Running', cmd)
 
   try:
     # Run |cmd|, redirecting stderr to stdout in order for captured errors to be
     # inline with corresponding stdout.
     output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     if verbose:
-      print output
+      print(output)
   except subprocess.CalledProcessError as e:
     raise Exception("Error while running cmd: %s\n"
                     "Exit code: %s\n"
                     "Command output:\n%s" %
                     (e.cmd, e.returncode, e.output))
 
-def CreateArchiveFile(options, staging_dir):
+def CreateArchiveFile(options, staging_dir, timestamp):
   """Creates a new installer archive file after deleting any existing old file.
   """
   # First create an uncompressed archive file for the current build (updater.7z)
@@ -199,6 +206,7 @@ def CreateArchiveFile(options, staging_dir):
   compressed_archive_file = options.output_name + COMPRESSED_ARCHIVE_SUFFIX
   compressed_archive_file_path = os.path.join(options.output_dir,
                                               compressed_archive_file)
+  os.utime(archive_file, (os.stat(archive_file).st_atime, timestamp))
   CompressUsingLZMA(options.build_dir, compressed_archive_file_path,
                     archive_file, options.verbose)
 
@@ -265,14 +273,15 @@ def main(options):
   staging_dir = MakeStagingDirectory(options.staging_dir)
 
   # Copy the files from the build dir.
-  CopyAllFilesToStagingDir(config, staging_dir, options.build_dir)
+  CopyAllFilesToStagingDir(config, staging_dir, options.build_dir,
+                           options.timestamp)
 
   if options.component_build == '1':
     DoComponentBuildTasks(staging_dir, options.build_dir,
                           options.setup_runtime_deps)
 
   # Name of the archive file built (for example - updater.7z)
-  archive_file = CreateArchiveFile(options, staging_dir)
+  archive_file = CreateArchiveFile(options, staging_dir, options.timestamp)
   CreateResourceInputFile(options.output_dir,
                           archive_file, options.resource_file_path,
                           options.component_build == '1', staging_dir)
@@ -309,6 +318,10 @@ def _ParseOptions():
            'used to get a list of DLLs to archive in a component build.')
   parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                     default=False)
+  parser.add_option(
+      '--timestamp',
+      type='int',
+      help='Timestamp to set archive entry modified times to.')
 
   options, _ = parser.parse_args()
   if not options.build_dir:
@@ -335,5 +348,5 @@ def _ParseOptions():
 if '__main__' == __name__:
   options = _ParseOptions()
   if options.verbose:
-    print sys.argv
+    print(sys.argv)
   sys.exit(main(options))

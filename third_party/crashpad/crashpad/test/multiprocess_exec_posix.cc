@@ -26,11 +26,11 @@
 #include "util/misc/scoped_forbid_return.h"
 #include "util/posix/close_multiple.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <stdio_ext.h>
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "util/mach/task_for_pid.h"
 #endif
 
@@ -90,7 +90,7 @@ void MultiprocessExec::MultiprocessChild() {
 
   int rv;
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   __fpurge(stdin);
 #else
   rv = fpurge(stdin);
@@ -107,7 +107,7 @@ void MultiprocessExec::MultiprocessChild() {
   ASSERT_EQ(fileno(stdout), STDOUT_FILENO);
 
   // Make a copy of the original stdout file descriptor so that in case there’s
-  // an execv() failure, the original stdout can be restored so that gtest
+  // an execv() failure, the original stdout can be restored so that Google Test
   // messages directed to stdout go to the right place. Mark it as
   // close-on-exec, so that the child won’t see it after a successful exec(),
   // but it will still be available in this process after an unsuccessful
@@ -154,7 +154,7 @@ void MultiprocessExec::MultiprocessChild() {
 }
 
 ProcessType MultiprocessExec::ChildProcess() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   return TaskForPID(ChildPID());
 #else
   return ChildPID();

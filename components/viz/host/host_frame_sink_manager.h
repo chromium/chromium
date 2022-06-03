@@ -12,23 +12,24 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/viz_host_export.h"
-#include "components/viz/service/frame_sinks/compositor_frame_sink_support_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -36,8 +37,6 @@ class SingleThreadTaskRunner;
 
 namespace viz {
 
-class CompositorFrameSinkSupport;
-class FrameSinkManagerImpl;
 class SurfaceInfo;
 
 enum class ReportFirstSurfaceActivation { kYes, kNo };
@@ -46,13 +45,16 @@ enum class ReportFirstSurfaceActivation { kYes, kNo };
 // UI thread. Manages frame sinks and is intended to replace all usage of
 // FrameSinkManagerImpl.
 class VIZ_HOST_EXPORT HostFrameSinkManager
-    : public mojom::FrameSinkManagerClient,
-      public CompositorFrameSinkSupportManager {
+    : public mojom::FrameSinkManagerClient {
  public:
   using DisplayHitTestQueryMap =
       base::flat_map<FrameSinkId, std::unique_ptr<HitTestQuery>>;
 
   HostFrameSinkManager();
+
+  HostFrameSinkManager(const HostFrameSinkManager&) = delete;
+  HostFrameSinkManager& operator=(const HostFrameSinkManager&) = delete;
+
   ~HostFrameSinkManager() override;
 
   const DisplayHitTestQueryMap& display_hit_test_query() const {
@@ -60,7 +62,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   }
 
   // Sets a local FrameSinkManagerImpl instance and connects directly to it.
-  void SetLocalManager(FrameSinkManagerImpl* frame_sink_manager_impl);
+  void SetLocalManager(mojom::FrameSinkManager* frame_sink_manager);
 
   // Binds |this| as a FrameSinkManagerClient for |receiver| on |task_runner|.
   // On Mac |task_runner| will be the resize helper task runner. May only be
@@ -74,9 +76,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // Sets a callback to be notified when the connection to the FrameSinkManager
   // on |frame_sink_manager_remote_| is lost.
   void SetConnectionLostCallback(base::RepeatingClosure callback);
-
-  // Sets a callback to be notified after Viz sent bad message to Viz host.
-  void SetBadMessageReceivedFromGpuCallback(base::RepeatingClosure callback);
 
   // Registers |frame_sink_id| so that a client can submit CompositorFrames
   // using it. This must be called before creating a CompositorFrameSink or
@@ -102,14 +101,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // code. If the same client wants to submit CompositorFrames later a new
   // FrameSinkId should be allocated.
   void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id);
-
-  // Tells FrameSinkManger to report when a synchronization event completes via
-  // tracing and UMA and the duration of that event. A synchronization event
-  // occurs when a CompositorFrame submitted to the CompositorFrameSink
-  // specified by |frame_sink_id| activates after having been blocked by
-  // unresolved dependencies.
-  void EnableSynchronizationReporting(const FrameSinkId& frame_sink_id,
-                                      const std::string& reporting_label);
 
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
@@ -137,6 +128,31 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
+  // Creates a connection to control a set of related frame sinks through
+  // batched IPCs on the FrameSinkBundle and FrameSinkBundleClient interfaces.
+  // Frame sinks are added to the bundle at frame sink creation time by using
+  // CreateBundledCompositorFrameSink with the same `bundle_id` value, rather
+  // than using CreateCompositorFrameSink.
+  void CreateFrameSinkBundle(
+      const FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+      mojo::PendingRemote<mojom::FrameSinkBundleClient> client);
+
+  // Similar to CreateCompositorFrameSink, but the new viz-side
+  // CompositorFrameSink object will be associated with the identified
+  // FrameSinkBundle. This means that it will receive OnBeginFrames() and a few
+  // other client notifications in batch with other frame sinks in the bundle
+  // via the corresponding FrameSinkBundleClient, rather than through `client`
+  // (though `client` is still used to send some notifications), and that its
+  // CompositorFrames (or DidNotSubmitFrame calls) MAY be submitted in batch
+  // through the corresponding FrameSinkBundle, rather than being sent directly
+  // to `receiver`.
+  void CreateBundledCompositorFrameSink(
+      const FrameSinkId& frame_sink_id,
+      const FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
+
   // Registers FrameSink hierarchy. It's expected that the parent will embed
   // the child. If |parent_frame_sink_id| is registered then it will be added as
   // a parent of |child_frame_sink_id| and the function will return true. If
@@ -149,16 +165,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // hierarchy before unregistering.
   void UnregisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
                                     const FrameSinkId& child_frame_sink_id);
-
-  // Returns true if RegisterFrameSinkHierarchy() was called with the supplied
-  // arguments.
-  bool IsFrameSinkHierarchyRegistered(
-      const FrameSinkId& parent_frame_sink_id,
-      const FrameSinkId& child_frame_sink_id) const;
-
-  // Returns the first ancestor of |start| (including |start|) that is a root.
-  base::Optional<FrameSinkId> FindRootFrameSinkId(
-      const FrameSinkId& start) const;
 
   // Asks viz to send updates regarding video activity to |observer|.
   void AddVideoDetectorObserver(
@@ -186,19 +192,12 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request);
 
+  void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
+
   // Add/Remove an observer to receive notifications of when the host receives
   // new hit test data.
   void AddHitTestRegionObserver(HitTestRegionObserver* observer);
   void RemoveHitTestRegionObserver(HitTestRegionObserver* observer);
-
-  // CompositorFrameSinkSupportManager:
-  std::unique_ptr<CompositorFrameSinkSupport> CreateCompositorFrameSinkSupport(
-      mojom::CompositorFrameSinkClient* client,
-      const FrameSinkId& frame_sink_id,
-      bool is_root) override;
-
-  void OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
-                           uint32_t frame_token) override;
 
   void SetHitTestAsyncQueriedDebugRegions(
       const FrameSinkId& root_frame_sink_id,
@@ -210,22 +209,38 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   uint32_t CacheBackBufferForRootSink(const FrameSinkId& root_sink_id);
   void EvictCachedBackBuffer(uint32_t cache_id);
 
+  void CreateHitTestQueryForSynchronousCompositor(
+      const FrameSinkId& frame_sink_id);
+  void EraseHitTestQueryForSynchronousCompositor(
+      const FrameSinkId& frame_sink_id);
+
+  void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
+
+  const DebugRendererSettings& debug_renderer_settings() const {
+    return debug_renderer_settings_;
+  }
+
  private:
+  friend class HostFrameSinkManagerTest;
   friend class HostFrameSinkManagerTestApi;
-  friend class HostFrameSinkManagerTestBase;
 
   struct FrameSinkData {
     FrameSinkData();
+
+    FrameSinkData(const FrameSinkData&) = delete;
+    FrameSinkData& operator=(const FrameSinkData&) = delete;
+
     FrameSinkData(FrameSinkData&& other);
-    ~FrameSinkData();
     FrameSinkData& operator=(FrameSinkData&& other);
+
+    ~FrameSinkData();
 
     bool IsFrameSinkRegistered() const { return client != nullptr; }
 
     // Returns true if there is nothing in FrameSinkData and it can be deleted.
     bool IsEmpty() const {
       return !IsFrameSinkRegistered() && !has_created_compositor_frame_sink &&
-             parents.empty() && children.empty();
+             children.empty();
     }
 
     // The client to be notified of changes to this FrameSink.
@@ -236,27 +251,28 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     ReportFirstSurfaceActivation report_activation =
         ReportFirstSurfaceActivation::kYes;
 
-    // The label to use whether this client would like reporting for
-    // synchronization events.
-    std::string synchronization_reporting_label;
-
     // The name of the HostFrameSinkClient used for debug purposes.
     std::string debug_label;
 
     // If the frame sink is a root that corresponds to a Display.
     bool is_root = false;
 
+    // If we should wait on synchronous destruction.
+    bool wait_on_destruction = false;
+
     // If a mojom::CompositorFrameSink was created for this FrameSinkId. This
     // will always be false if not using Mojo.
     bool has_created_compositor_frame_sink = false;
 
-    // Track frame sink hierarchy in both directions.
-    std::vector<FrameSinkId> parents;
+    // Track frame sink hierarchy.
     std::vector<FrameSinkId> children;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FrameSinkData);
   };
+
+  void CreateFrameSink(
+      const FrameSinkId& frame_sink_id,
+      absl::optional<FrameSinkBundleId> bundle_id,
+      mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
   // Handles connection loss to |frame_sink_manager_remote_|. This should only
   // happen when the GPU process crashes.
@@ -266,27 +282,24 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void RegisterAfterConnectionLoss();
 
   // mojom::FrameSinkManagerClient:
+  void OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
+                           uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
 
-  // This will point to |frame_sink_manager_remote_| if using Mojo or
-  // |frame_sink_manager_impl_| if directly connected. Use this to make function
+  const bool enable_sync_window_destruction_;
+
+  // This will point to |frame_sink_manager_remote_| if using mojo or it may
+  // point directly at FrameSinkManagerImpl in tests. Use this to make function
   // calls.
   mojom::FrameSinkManager* frame_sink_manager_ = nullptr;
 
-  // Mojo connection to the FrameSinkManager. If this is bound then
-  // |frame_sink_manager_impl_| must be null.
+  // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
-
-  // Mojo connection back from the FrameSinkManager.
   mojo::Receiver<mojom::FrameSinkManagerClient> receiver_{this};
-
-  // A direct connection to FrameSinkManagerImpl. If this is set then
-  // |frame_sink_manager_remote_| must be unbound. For use in browser process
-  // only, viz process should not set this.
-  FrameSinkManagerImpl* frame_sink_manager_impl_ = nullptr;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>
@@ -306,9 +319,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   uint32_t next_cache_back_buffer_id_ = 1;
   uint32_t min_valid_cache_back_buffer_id_ = 1;
 
-  base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_{this};
+  // This is kept in sync with implementation.
+  DebugRendererSettings debug_renderer_settings_;
 
-  DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManager);
+  base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

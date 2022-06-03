@@ -64,8 +64,10 @@ Input before setting suggested values:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -87,7 +89,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -104,7 +106,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -119,7 +121,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -135,7 +137,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -153,8 +155,10 @@ Input after setting suggestedValue:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       "TX"
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -240,8 +244,10 @@ After resetting suggestedValue value:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

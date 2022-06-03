@@ -22,7 +22,10 @@ import "third_party/blink/public/mojom/service_worker/service_worker_installed_s
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
+import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "url/mojom/url.mojom";
 
@@ -52,18 +55,16 @@ struct EmbeddedWorkerStartParams {
   // The string used for "user-agent" HTTP header.
   string user_agent;
 
+  // The metadata for userAgentData and the UA-CH headers.
+  // See https://wicg.github.io/ua-client-hints/ for more details.
+  UserAgentMetadata ua_metadata;
+
   // The id this service worker uses as render_frame_id in
   // network::ResourceRequests it makes.
   int32 service_worker_route_id;
 
   // Unique token identifying this worker for DevTools.
   mojo_base.mojom.UnguessableToken devtools_worker_token;
-
-  // When true, worker script evaluation is blocked until
-  // EmbeddedWorkerInstanceClient::ResumeAfterDownload() is called.
-  // This isn't used when off-the-main-thread script fetch is enabled. The
-  // browser process is responsible for delaying execution.
-  bool pause_after_download;
 
   // The URL of the service worker script that should skip throttles when
   // loaded, because the browser process has already started loading it and
@@ -115,6 +116,22 @@ struct EmbeddedWorkerStartParams {
 
   // Used for updating subresource loaders after NetworkService crash etc.
   pending_receiver<SubresourceLoaderUpdater> subresource_loader_updater;
+
+  // A unique token identifying this ServiceWorker. In can be used to identify
+  // this particular ServiceWorker in subsequent renderer -> browser messages
+  // that aren't on the EmbeddedWorkerInstanceHost interface. This is not
+  // persistent across worker restarts.
+  ServiceWorkerToken service_worker_token;
+
+  // The UKM SourceId associated with the service worker. This persists across
+  // service worker restarts, but not browser restarts. It is distinct from the
+  // IDs associated with the connected clients.
+  int64 ukm_source_id;
+
+  // Information of the worker's main script.
+  // Valid only when the service worker is new and the script needs to be loaded
+  // from the network.
+  WorkerMainScriptLoadParams? main_script_load_params;
 };
 
 // Holds timing information about the start worker sequence for UMA.
@@ -144,7 +161,6 @@ interface EmbeddedWorkerInstanceClient {
   StartWorker(EmbeddedWorkerStartParams params);
   // The response is sent back via EmbeddedWorkerInstanceHost.OnStopped().
   StopWorker();
-  ResumeAfterDownload();
 };
 
 // EmbeddedWorkerInstanceHost is the browser-side ("Host") of
@@ -193,8 +209,10 @@ interface EmbeddedWorkerInstanceHost {
   // for the browser process to start enforcing timeouts on script execution.
   OnScriptEvaluationStart();
   // Indicates that the worker has started. |thread_id| is the platform
-  // thread id the worker runs on.
+  // thread id the worker runs on. |has_fetch_handler| is true when the fetch
+  // event handler exists after initial script evaluation.
   OnStarted(ServiceWorkerStartStatus status,
+            bool has_fetch_handler,
             int32 thread_id,
             EmbeddedWorkerStartTiming start_timing);
 

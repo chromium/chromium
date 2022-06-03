@@ -4,11 +4,12 @@
 
 #include "components/spellcheck/common/spellcheck_common.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/metrics/field_trial.h"
-#include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/urename.h"
@@ -29,6 +30,7 @@ struct LanguageVersion {
 static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     // Several languages are not to be included in the spellchecker list:
     // th-TH, vi-VI.
+    // clang-format off
     {"af", "af-ZA"},
     {"bg", "bg-BG"},
     {"ca", "ca-ES"},
@@ -36,10 +38,12 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"cy", "cy-GB"},
     {"da", "da-DK"},
     {"de", "de-DE"},
+    {"de-DE", "de-DE"},
     {"el", "el-GR"},
     {"en-AU", "en-AU"},
     {"en-CA", "en-CA"},
     {"en-GB", "en-GB"},
+    {"en-GB-oxendict", "en-GB-oxendict"},
     {"en-US", "en-US"},
     {"es", "es-ES"},
     {"es-419", "es-ES"},
@@ -51,6 +55,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"fa", "fa-IR"},
     {"fo", "fo-FO"},
     {"fr", "fr-FR"},
+    {"fr-FR", "fr-FR"},
     {"he", "he-IL"},
     {"hi", "hi-IN"},
     {"hr", "hr-HR"},
@@ -58,12 +63,14 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"hy", "hy"},
     {"id", "id-ID"},
     {"it", "it-IT"},
+    {"it-IT", "it-IT"},
     {"ko", "ko"},
     {"lt", "lt-LT"},
     {"lv", "lv-LV"},
     {"nb", "nb-NO"},
     {"nl", "nl-NL"},
     {"pl", "pl-PL"},
+    {"pt", "pt-BR"}, // based on kAliasMap from ui/base/l10n/l10n_util.cc
     {"pt-BR", "pt-BR"},
     {"pt-PT", "pt-PT"},
     {"ro", "ro-RO"},
@@ -79,6 +86,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"tr", "tr-TR"},
     {"uk", "uk-UA"},
     {"vi", "vi-VN"},
+    // clang-format on
 };
 
 bool IsValidRegion(const std::string& region) {
@@ -97,7 +105,7 @@ std::string GetSpellCheckLanguageRegion(base::StringPiece input_language) {
       return lang_region.language_region;
   }
 
-  return input_language.as_string();
+  return std::string(input_language);
 }
 
 base::FilePath GetVersionedFileName(base::StringPiece input_language,
@@ -117,24 +125,28 @@ base::FilePath GetVersionedFileName(base::StringPiece input_language,
       // Mar 4, 2014: Add Tajik dictionary.
       {"tg-TG", "-5-0"},
 
-      // October 2017: Update from upstream.
-      {"en-AU", "-8-0"},
-      {"en-CA", "-8-0"},
-      {"en-GB", "-8-0"},
-      {"en-US", "-8-0"},
-
       // Feb 2019: Initial check-in of Welsh.
       {"cy-GB", "-1-0"},
 
       // April 2019: Initial check-in of Armenian.
       {"hy", "-1-0"},
 
-      // April 2019: Update Persian
-      {"fa-IR", "-8-0"},
-
       // November 2019: Update Serbian-Latin and Serbian-Cyrillic
       {"sh", "-4-0"},
       {"sr", "-4-0"},
+
+      // January 2020: Update en-* and fa-IR dictionaries from upstream.
+      {"en-AU", "-9-0"},
+      {"en-CA", "-9-0"},
+      {"en-GB", "-9-0"},
+      {"en-US", "-9-0"},
+      {"fa-IR", "-9-0"},
+
+      // March 2020: Update uk-UA dictionary from upstream.
+      {"uk-UA", "-4-0"},
+
+      // June 2020: Add the en-GB-oxendict dictionary.
+      {"en-GB-oxendict", "-9-0"},
   };
 
   // Generate the bdict file name using default version string or special
@@ -157,7 +169,7 @@ std::string GetCorrespondingSpellCheckLanguage(base::StringPiece language) {
   for (const auto& lang_region : kSupportedSpellCheckerLanguages) {
     // First look for exact match in the language region of the list.
     if (lang_region.language == language)
-      return language.as_string();
+      return std::string(language);
 
     // Next, look for exact match in the language_region part of the list.
     if (lang_region.language_region == language) {
@@ -197,8 +209,8 @@ void GetISOLanguageCountryCodeFromLocale(const std::string& locale,
 }
 
 void FillSuggestions(
-    const std::vector<std::vector<base::string16>>& suggestions_list,
-    std::vector<base::string16>* optional_suggestions) {
+    const std::vector<std::vector<std::u16string>>& suggestions_list,
+    std::vector<std::u16string>* optional_suggestions) {
   DCHECK(optional_suggestions);
   size_t num_languages = suggestions_list.size();
 
@@ -214,7 +226,7 @@ void FillSuggestions(
     if (suggestions_list[language].size() <= index)
       continue;
 
-    const base::string16& suggestion = suggestions_list[language][index];
+    const std::u16string& suggestion = suggestions_list[language][index];
     // Only add the suggestion if it's unique.
     if (!base::Contains(*optional_suggestions, suggestion)) {
       optional_suggestions->push_back(suggestion);

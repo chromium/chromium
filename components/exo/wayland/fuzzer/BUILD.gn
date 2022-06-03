@@ -14,6 +14,7 @@ kDefaultWaylandProtocols = [
   "//third_party/wayland/src/protocol/wayland.xml",
   "//third_party/wayland-protocols/src/stable/presentation-time/presentation-time.xml",
   "//third_party/wayland-protocols/src/stable/viewporter/viewporter.xml",
+  "//third_party/wayland-protocols/src/stable/xdg-shell/xdg-shell.xml",
   "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",
@@ -29,6 +30,7 @@ kDefaultWaylandProtocols = [
   "//third_party/wayland-protocols/unstable/keyboard/keyboard-extension-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/notification-shell/notification-shell-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v2.xml",
   "//third_party/wayland-protocols/unstable/secure-output/secure-output-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml",
   "//third_party/wayland-protocols/unstable/stylus-tools/stylus-tools-unstable-v1.xml",
@@ -36,62 +38,46 @@ kDefaultWaylandProtocols = [
 ]
 
 wayland_templater("protocol_dump") {
-  sources = [
-    "misc/dump.tmpl",
-  ]
+  sources = [ "misc/dump.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 wayland_templater("protocol_graph") {
-  sources = [
-    "misc/graph.dot.tmpl",
-  ]
+  sources = [ "misc/graph.dot.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 wayland_templater("protocol_docs") {
-  sources = [
-    "misc/docs.md.tmpl",
-  ]
+  sources = [ "misc/docs.md.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 wayland_templater("actions_tmpl") {
-  sources = [
-    "actions.proto.tmpl",
-  ]
+  sources = [ "actions.proto.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 wayland_templater("harness_h_tmpl") {
-  sources = [
-    "harness.h.tmpl",
-  ]
+  sources = [ "harness.h.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 wayland_templater("harness_cc_tmpl") {
-  sources = [
-    "harness.cc.tmpl",
-  ]
+  sources = [ "harness.cc.tmpl" ]
   protocols = kDefaultWaylandProtocols
 }
 
 # We make the seed corpus by enumerating call sequences to all requests
 # using the wayland_sequencer script.
 wayland_templater("corpus") {
-  sources = [
-    "corpus.tmpl",
-  ]
+  sources = [ "corpus.tmpl" ]
   protocols = kDefaultWaylandProtocols
   script_override = "wayland_sequencer.py"
 }
 
 if (use_libfuzzer) {
   fuzzer_test("wayland_fuzzer") {
-    sources = [
-      "fuzzer.cc",
-    ]
+    sources = [ "fuzzer.cc" ]
 
     deps = [
       ":actions",
@@ -112,14 +98,13 @@ if (use_libfuzzer) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "harness_unittest.cc",
-  ]
+  sources = [ "harness_unittest.cc" ]
 
   deps = [
     ":actions",
     ":harness",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland",
@@ -191,7 +176,5 @@ fuzzable_proto_library("actions") {
   # output directory to rebase under the source root.
   proto_out_dir = rebase_path(".", "//")
 
-  deps = [
-    ":actions_tmpl",
-  ]
+  deps = [ ":actions_tmpl" ]
 }

@@ -4,7 +4,6 @@
 
 #include <AppKit/AppKit.h>
 
-#include "base/logging.h"
 #include "ui/base/cocoa/defaults_utils.h"
 
 namespace ui {
@@ -32,10 +31,9 @@ bool TextInsertionCaretBlinkPeriod(base::TimeDelta* delta) {
       period_ms > kMaximumReasonableIntervalMs) {
     *delta = base::TimeDelta();
   } else if (on_period_ms || off_period_ms) {
-    *delta = base::TimeDelta::FromMillisecondsD(
-        (on_period_ms + off_period_ms) / 2);
+    *delta = base::Milliseconds((on_period_ms + off_period_ms) / 2);
   } else {
-    *delta = base::TimeDelta::FromMilliseconds(period_ms);
+    *delta = base::Milliseconds(period_ms);
   }
   return true;
 }

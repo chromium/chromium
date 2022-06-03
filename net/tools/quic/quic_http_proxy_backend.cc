@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
 #include "net/base/load_flags.h"
@@ -53,7 +54,7 @@ bool QuicHttpProxyBackend::InitializeBackend(const std::string& backend_url) {
     proxy_thread_ = std::make_unique<base::Thread>("quic proxy thread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    bool result = proxy_thread_->StartWithOptions(options);
+    bool result = proxy_thread_->StartWithOptions(std::move(options));
     proxy_task_runner_ = proxy_thread_->task_runner();
     CHECK(result);
   }
@@ -81,7 +82,7 @@ bool QuicHttpProxyBackend::IsBackendInitialized() const {
 }
 
 void QuicHttpProxyBackend::FetchResponseFromBackend(
-    const spdy::SpdyHeaderBlock& request_headers,
+    const spdy::Http2HeaderBlock& request_headers,
     const std::string& incoming_body,
     QuicSimpleServerBackend::RequestHandler* quic_server_stream) {
   QuicHttpProxyBackendStream* proxy_backend_stream =
@@ -91,8 +92,7 @@ void QuicHttpProxyBackend::FetchResponseFromBackend(
   if (proxy_backend_stream == nullptr ||
       proxy_backend_stream->SendRequestToBackend(&request_headers,
                                                  incoming_body) != true) {
-    std::list<quic::QuicBackendResponse::ServerPushInfo> empty_resources;
-    quic_server_stream->OnResponseBackendComplete(nullptr, empty_resources);
+    quic_server_stream->OnResponseBackendComplete(nullptr);
   }
 }
 
@@ -161,7 +161,7 @@ void QuicHttpProxyBackend::InitializeURLRequestContext() {
   // Enable HTTP2, but disable QUIC on the backend
   context_builder.SetSpdyAndQuicEnabled(true /* http2 */, false /* quic */);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // On Linux, use a fixed ProxyConfigService, since the default one
   // depends on glib.
   context_builder.set_proxy_config_service(

@@ -19,7 +19,6 @@ namespace base {
 class TimeDelta;
 }
 
-class AutomationExtension;
 class DevToolsClient;
 class DevToolsHttpClient;
 class Status;
@@ -46,10 +45,6 @@ class ChromeDesktopImpl : public ChromeImpl {
                            std::unique_ptr<WebView>* web_view,
                            bool w3c_compliant);
 
-  // Gets the installed automation extension.
-  Status GetAutomationExtension(AutomationExtension** extension,
-                                bool w3c_compliant);
-
   // Overridden from Chrome:
   Status GetAsDesktop(ChromeDesktopImpl** desktop) override;
   std::string GetOperatingSystemName() override;
@@ -73,9 +68,6 @@ class ChromeDesktopImpl : public ChromeImpl {
   ScopedTempDirWithRetry extension_dir_;
   bool network_connection_enabled_;
   int network_connection_;
-
-  // Lazily initialized, may be null.
-  std::unique_ptr<AutomationExtension> automation_extension_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CHROME_DESKTOP_IMPL_H_

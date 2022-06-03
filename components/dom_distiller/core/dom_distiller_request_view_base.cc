@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -26,7 +25,7 @@ DomDistillerRequestViewBase::DomDistillerRequestViewBase(
       distilled_page_prefs_(distilled_page_prefs),
       is_error_page_(false) {}
 
-DomDistillerRequestViewBase::~DomDistillerRequestViewBase() {}
+DomDistillerRequestViewBase::~DomDistillerRequestViewBase() = default;
 
 void DomDistillerRequestViewBase::FlagAsErrorPage() {
   // Viewer handle is not passed to this in the case of error pages
@@ -54,6 +53,8 @@ void DomDistillerRequestViewBase::OnArticleReady(
     SendJavaScript(viewer::GetSetTitleJs(article_proto->title()));
     SendJavaScript(viewer::GetSetTextDirectionJs(text_direction));
     SendJavaScript(viewer::GetUnsafeArticleContentJs(article_proto));
+    SendJavaScript(viewer::GetDistilledPageFontScalingJs(
+        distilled_page_prefs_->GetFontScaling()));
   } else {
     // It's possible that we didn't get some incremental updates from the
     // distiller. Ensure all remaining pages are flushed to the viewer.
@@ -85,17 +86,18 @@ void DomDistillerRequestViewBase::OnArticleUpdated(
       // client.
       SendJavaScript(viewer::GetSetTitleJs(page.title()));
       SendJavaScript(viewer::GetSetTextDirectionJs(page.text_direction()));
+      SendJavaScript(viewer::GetDistilledPageFontScalingJs(
+          distilled_page_prefs_->GetFontScaling()));
     }
   }
 }
 
-void DomDistillerRequestViewBase::OnChangeTheme(
-    DistilledPagePrefs::Theme new_theme) {
+void DomDistillerRequestViewBase::OnChangeTheme(mojom::Theme new_theme) {
   SendJavaScript(viewer::GetDistilledPageThemeJs(new_theme));
 }
 
 void DomDistillerRequestViewBase::OnChangeFontFamily(
-    DistilledPagePrefs::FontFamily new_font) {
+    mojom::FontFamily new_font) {
   SendJavaScript(viewer::GetDistilledPageFontFamilyJs(new_font));
 }
 

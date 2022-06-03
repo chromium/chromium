@@ -15,7 +15,14 @@
 @protocol BrowserCoordinatorCommands
 
 // Prints the currently active tab.
-- (void)printTab;
+// Print preview will be presented on top of |baseViewController|.
+- (void)printTabWithBaseViewController:(UIViewController*)baseViewController;
+
+// Prints an image.
+// Print preview will be presented on top of |baseViewController|.
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController;
 
 // Shows the downloads folder.
 - (void)showDownloadsFolder;
@@ -31,6 +38,14 @@
 
 // Displays the Badge popup menu showing |badgeItems|.
 - (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
+
+// Dismisses the Badge popup menu.
+- (void)dismissPopupMenu;
+
+#if !defined(NDEBUG)
+// Inserts a new tab showing the HTML source of the current page.
+- (void)viewSource;
+#endif
 
 @end
 

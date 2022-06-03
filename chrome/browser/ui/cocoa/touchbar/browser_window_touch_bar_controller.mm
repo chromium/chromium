@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/mac/availability.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
 #include "chrome/browser/ui/browser.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"

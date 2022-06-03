@@ -4,19 +4,19 @@
 
 #include "net/http/http_network_layer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/strings/stringprintf.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_pool.h"
@@ -41,28 +41,28 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
       : ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()) {}
 
   void SetUp() override {
-    ConfigureTestDependencies(ProxyResolutionService::CreateDirect());
+    ConfigureTestDependencies(ConfiguredProxyResolutionService::CreateDirect());
   }
 
   void ConfigureTestDependencies(
-      std::unique_ptr<ProxyResolutionService> proxy_resolution_service) {
-    cert_verifier_.reset(new MockCertVerifier);
-    transport_security_state_.reset(new TransportSecurityState);
+      std::unique_ptr<ConfiguredProxyResolutionService>
+          proxy_resolution_service) {
+    cert_verifier_ = std::make_unique<MockCertVerifier>();
+    transport_security_state_ = std::make_unique<TransportSecurityState>();
     proxy_resolution_service_ = std::move(proxy_resolution_service);
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.client_socket_factory = &mock_socket_factory_;
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = cert_verifier_.get();
     session_context.transport_security_state = transport_security_state_.get();
-    session_context.cert_transparency_verifier = &ct_verifier_;
     session_context.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
-    network_session_.reset(
-        new HttpNetworkSession(HttpNetworkSession::Params(), session_context));
-    factory_.reset(new HttpNetworkLayer(network_session_.get()));
+    network_session_ = std::make_unique<HttpNetworkSession>(
+        HttpNetworkSessionParams(), session_context);
+    factory_ = std::make_unique<HttpNetworkLayer>(network_session_.get());
   }
 
   void ExecuteRequestExpectingContentAndHeader(const std::string& method,
@@ -265,10 +265,11 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   MockClientSocketFactory mock_socket_factory_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{
+      /*default_result=*/
+      MockHostResolverBase::RuleResolver::GetLocalhostResult()};
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  MultiLogCTVerifier ct_verifier_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;

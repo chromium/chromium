@@ -15,7 +15,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 
 namespace base {

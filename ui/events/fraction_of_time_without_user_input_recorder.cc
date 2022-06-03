@@ -10,10 +10,8 @@
 
 namespace {
 
-constexpr base::TimeDelta DEFAULT_WINDOW_SIZE =
-    base::TimeDelta::FromSecondsD(10);
-constexpr base::TimeDelta DEFAULT_IDLE_TIMEOUT =
-    base::TimeDelta::FromSecondsD(0.05);
+constexpr base::TimeDelta DEFAULT_WINDOW_SIZE = base::Seconds(10);
+constexpr base::TimeDelta DEFAULT_IDLE_TIMEOUT = base::Seconds(0.05);
 
 }  // namespace
 
@@ -63,8 +61,7 @@ void FractionOfTimeWithoutUserInputRecorder::RecordActiveInterval(
     if (end_time < window_end_time)
       break;
 
-    RecordToUma(current_window_active_time_.InMillisecondsF() /
-                window_size_.InMillisecondsF());
+    RecordToUma(current_window_active_time_ / window_size_);
 
     current_window_active_time_ = base::TimeDelta();
     window_start_time_ = window_end_time;

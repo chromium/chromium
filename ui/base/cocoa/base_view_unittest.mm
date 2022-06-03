@@ -25,7 +25,12 @@ class BaseViewTest : public ui::CocoaTest {
   BaseView* view_;  // weak
 };
 
-TEST_VIEW(BaseViewTest, view_)
+TEST_F(BaseViewTest, RemoveFromSuperviewWorks) {
+  base::scoped_nsobject<NSView> view([view_ retain]);
+  EXPECT_EQ([test_window() contentView], [view superview]);
+  [view removeFromSuperview];
+  EXPECT_FALSE([view superview]);
+}
 
 // Convert a rect in |view_|'s Cocoa coordinate system to gfx::Rect's top-left
 // coordinate system. Repeat the process in reverse and make sure we come out

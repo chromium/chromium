@@ -21,6 +21,10 @@ class WebSubThread : public base::Thread {
  public:
   // Constructs a WebSubThread for |identifier|.
   explicit WebSubThread(WebThread::ID identifier);
+
+  WebSubThread(const WebSubThread&) = delete;
+  WebSubThread& operator=(const WebSubThread&) = delete;
+
   ~WebSubThread() override;
 
   // Registers this thread to represent |identifier_| in the web_thread.h
@@ -65,8 +69,6 @@ class WebSubThread : public base::Thread {
   std::unique_ptr<WebThreadImpl> web_thread_;
 
   THREAD_CHECKER(web_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WebSubThread);
 };
 
 }  // namespace web

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/simple_test_clock.h"
@@ -19,6 +18,7 @@
 #include "base/values.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace em = enterprise_management;
@@ -49,18 +49,18 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
 
 constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
+constexpr base::TimeDelta kWeek = base::Days(7);
 
 }  // namespace
 
 class SingleWeeklyTimeTest
-    : public testing::TestWithParam<std::tuple<int, int, base::Optional<int>>> {
+    : public testing::TestWithParam<std::tuple<int, int, absl::optional<int>>> {
  public:
   int day_of_week() const { return std::get<0>(GetParam()); }
   int minutes() const { return std::get<1>(GetParam()); }
-  base::Optional<int> timezone_offset() const {
+  absl::optional<int> timezone_offset() const {
     return std::get<2>(GetParam());
   }
 };
@@ -79,10 +79,11 @@ TEST_P(SingleWeeklyTimeTest, ToValue) {
   std::unique_ptr<base::DictionaryValue> weekly_time_value =
       weekly_time.ToValue();
   base::DictionaryValue expected_weekly_time;
-  expected_weekly_time.SetInteger("day_of_week", day_of_week());
-  expected_weekly_time.SetInteger("time", minutes() * kMinute.InMilliseconds());
+  expected_weekly_time.SetInteger(WeeklyTime::kDayOfWeek, day_of_week());
+  expected_weekly_time.SetInteger(WeeklyTime::kTime,
+                                  minutes() * kMinute.InMilliseconds());
   if (timezone_offset()) {
-    expected_weekly_time.SetInteger("timezone_offset",
+    expected_weekly_time.SetInteger(WeeklyTime::kTimezoneOffset,
                                     timezone_offset().value());
   }
   EXPECT_EQ(*weekly_time_value, expected_weekly_time);
@@ -117,10 +118,54 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
   EXPECT_EQ(result->timezone_offset(), timezone_offset());
 }
 
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_UnspecifiedDay) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidDay) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(
+      value.SetStringKey(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek, ""));
+  result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidTime) {
+  base::DictionaryValue value;
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[day_of_week()]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, -1));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_Valid) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[day_of_week()]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->day_of_week(), day_of_week());
+  EXPECT_EQ(result->milliseconds(), milliseconds);
+  EXPECT_EQ(result->timezone_offset(), timezone_offset());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TheSmallestCase,
     SingleWeeklyTimeTest,
-    testing::Values(std::make_tuple(kMonday, 0, base::nullopt)));
+    testing::Values(std::make_tuple(kMonday, 0, absl::nullopt)));
 
 INSTANTIATE_TEST_SUITE_P(
     TheBiggestCase,
@@ -178,25 +223,23 @@ INSTANTIATE_TEST_SUITE_P(
                         15 * kMinutesInHour + 30,
                         kFriday,
                         17 * kMinutesInHour + 45,
-                        base::TimeDelta::FromDays(6) +
-                            base::TimeDelta::FromHours(2) +
-                            base::TimeDelta::FromMinutes(15))));
+                        base::Days(6) + base::Hours(2) + base::Minutes(15))));
 
 class TwoWeeklyTimesAndDurationInDifferentTimezonesTest
     : public testing::TestWithParam<std::tuple<int,
                                                int,
-                                               base::Optional<int>,
+                                               absl::optional<int>,
                                                int,
                                                int,
-                                               base::Optional<int>,
+                                               absl::optional<int>,
                                                base::TimeDelta>> {
  public:
   int day1() const { return std::get<0>(GetParam()); }
   int minutes1() const { return std::get<1>(GetParam()); }
-  base::Optional<int> offset1() const { return std::get<2>(GetParam()); }
+  absl::optional<int> offset1() const { return std::get<2>(GetParam()); }
   int day2() const { return std::get<3>(GetParam()); }
   int minutes2() const { return std::get<4>(GetParam()); }
-  base::Optional<int> offset2() const { return std::get<5>(GetParam()); }
+  absl::optional<int> offset2() const { return std::get<5>(GetParam()); }
   base::TimeDelta expected_duration() const { return std::get<6>(GetParam()); }
 };
 
@@ -217,7 +260,7 @@ INSTANTIATE_TEST_SUITE_P(
                                     kMonday,
                                     kMinutesInHour,
                                     5 * kMillisecondsInHour,
-                                    kWeek - base::TimeDelta::FromHours(4))));
+                                    kWeek - base::Hours(4))));
 
 INSTANTIATE_TEST_SUITE_P(
     TimezoneMakesDurationWrapAround,
@@ -228,18 +271,17 @@ INSTANTIATE_TEST_SUITE_P(
                                     kMonday,
                                     kMinutesInHour,
                                     4 * kMillisecondsInHour,
-                                    base::TimeDelta::FromHours(1))));
+                                    base::Hours(1))));
 
-INSTANTIATE_TEST_SUITE_P(
-    TwoAgnosticTimezones,
-    TwoWeeklyTimesAndDurationInDifferentTimezonesTest,
-    testing::Values(std::make_tuple(kMonday,
-                                    10 * kMinutesInHour,
-                                    base::nullopt,
-                                    kTuesday,
-                                    5 * kMinutesInHour,
-                                    base::nullopt,
-                                    base::TimeDelta::FromHours(19))));
+INSTANTIATE_TEST_SUITE_P(TwoAgnosticTimezones,
+                         TwoWeeklyTimesAndDurationInDifferentTimezonesTest,
+                         testing::Values(std::make_tuple(kMonday,
+                                                         10 * kMinutesInHour,
+                                                         absl::nullopt,
+                                                         kTuesday,
+                                                         5 * kMinutesInHour,
+                                                         absl::nullopt,
+                                                         base::Hours(19))));
 
 class TwoWeeklyTimesAndOffsetTest
     : public testing::TestWithParam<std::tuple<int, int, int, int, int>> {
@@ -379,4 +421,11 @@ INSTANTIATE_TEST_SUITE_P(
                                     9 * kMinutesInHour,
                                     -4 * kMillisecondsInHour)));
 
+TEST(WeeklyTimeConversion, CorrectFromExploded) {
+  base::Time now = base::Time::Now();
+  base::Time::Exploded exploded;
+  now.UTCExplode(&exploded);
+  EXPECT_EQ(WeeklyTime::GetGmtWeeklyTime(now),
+            GetWeeklyTimeFromExploded(exploded, 0));
+}
 }  // namespace policy

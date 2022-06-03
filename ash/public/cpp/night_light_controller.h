@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NIGHT_LIGHT_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -61,10 +60,16 @@ class ASH_PUBLIC_EXPORT NightLightController {
 
   static NightLightController* GetInstance();
 
+  NightLightController(const NightLightController&) = delete;
+  NightLightController& operator=(const NightLightController&) = delete;
+
   // Provides the NightLightController with the user's geoposition so that it
   // can calculate the sunset and sunrise times. This should only be called when
   // the schedule type is set to "Sunset to Sunrise".
   virtual void SetCurrentGeoposition(const SimpleGeoposition& position) = 0;
+
+  // Whether Night Light is enabled.
+  virtual bool GetEnabled() const = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -74,9 +79,6 @@ class ASH_PUBLIC_EXPORT NightLightController {
   virtual ~NightLightController();
 
   base::ObserverList<Observer>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NightLightController);
 };
 
 }  // namespace ash

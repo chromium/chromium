@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "third_party/blink/public/platform/web_rect.h"
+#include "cc/trees/render_frame_metadata_observer.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -28,32 +28,26 @@ SimCompositor::~SimCompositor() = default;
 
 void SimCompositor::SetWebView(
     WebViewImpl& web_view,
-    cc::LayerTreeHost& layer_tree_host,
-    frame_test_helpers::TestWebViewClient& view_client,
-    frame_test_helpers::TestWebWidgetClient& widget_client) {
+    frame_test_helpers::TestWebViewClient& view_client) {
   web_view_ = &web_view;
-  layer_tree_host_ = &layer_tree_host;
   test_web_view_client_ = &view_client;
-  test_web_widget_client_ = &widget_client;
 }
 
-SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
+SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
+                                              bool raster) {
   DCHECK(web_view_);
-  DCHECK(!layer_tree_host_->defer_main_frame_update());
+  DCHECK(!LayerTreeHost()->defer_main_frame_update());
   // Verify that the need for a BeginMainFrame has been registered, and would
   // have caused the compositor to schedule one if we were using its scheduler.
   DCHECK(NeedsBeginFrame());
   DCHECK_GT(time_delta_in_seconds, 0);
 
-  test_web_widget_client_->ClearAnimationScheduled();
-
-  last_frame_time_ += base::TimeDelta::FromSecondsD(time_delta_in_seconds);
+  last_frame_time_ += base::Seconds(time_delta_in_seconds);
 
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
 
-  layer_tree_host_->Composite(last_frame_time_,
-                              /*raster=*/false);
+  LayerTreeHost()->CompositeForTest(last_frame_time_, raster);
 
   paint_commands_ = nullptr;
   return commands;
@@ -62,38 +56,34 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
 SimCanvas::Commands SimCompositor::PaintFrame() {
   DCHECK(web_view_);
 
+  if (!web_view_->MainFrameImpl())
+    return SimCanvas::Commands();
+
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      frame->GetDocument()->Lifecycle());
-  frame->View()->UpdateAllLifecyclePhases(DocumentLifecycle::kTest);
-  PaintRecordBuilder builder;
-  frame->View()->PaintOutsideOfLifecycle(builder.Context(),
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  frame->View()->PaintOutsideOfLifecycle(builder->Context(),
                                          kGlobalPaintFlattenCompositingLayers);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
-  SimCanvas canvas(infinite_rect.Width(), infinite_rect.Height());
-  builder.EndRecording()->Playback(&canvas);
+  SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
+  builder->EndRecording()->Playback(&canvas);
   return canvas.GetCommands();
 }
 
-void SimCompositor::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
-  web_view_->MainFrameWidget()->ApplyViewportChanges(args);
-}
-
-void SimCompositor::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  // Make a valid LayerTreeFrameSink so the compositor will generate begin main
-  // frames.
-  std::move(callback).Run(cc::FakeLayerTreeFrameSink::Create3d());
-}
-
-void SimCompositor::BeginMainFrame(base::TimeTicks frame_time) {
-  // There is no WebWidget like RenderWidget would have..? So go right to the
-  // WebViewImpl.
-  web_view_->MainFrameWidget()->BeginFrame(last_frame_time_, false);
-  web_view_->MainFrameWidget()->UpdateAllLifecyclePhases(
-      WebWidget::LifecycleUpdateReason::kTest);
+void SimCompositor::DidBeginMainFrame() {
+  // Note that this will run *before* LocalFrameView::RunPostLifecycleSteps,
+  // due to the calling conventions of PageWidgetDelegate::DidBeginFrame(). As a
+  // result, frame throttling status has not been updated yet, and will be in
+  // the same state as when the lifecycle steps ran.
   *paint_commands_ = PaintFrame();
+}
+
+void SimCompositor::SetLayerTreeHost(cc::LayerTreeHost* layer_tree_host) {
+  layer_tree_host_ = layer_tree_host;
+}
+
+cc::LayerTreeHost* SimCompositor::LayerTreeHost() const {
+  return layer_tree_host_;
 }
 
 }  // namespace blink

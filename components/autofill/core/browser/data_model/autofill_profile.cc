@@ -11,29 +11,31 @@
 #include <ostream>
 #include <set>
 
+#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -56,17 +58,30 @@ using ::i18n::addressinput::AddressData;
 using ::i18n::addressinput::AddressField;
 
 namespace autofill {
+
+using structured_address::VerificationStatus;
+
 namespace {
+
+// Stores the data types that are relevant for the structured address/name.
+const std::array<ServerFieldType, 7> kStructuredDataTypes = {
+    NAME_FIRST,
+    NAME_MIDDLE,
+    NAME_LAST,
+    NAME_LAST_FIRST,
+    NAME_LAST_SECOND,
+    ADDRESS_HOME_STREET_NAME,
+    ADDRESS_HOME_HOUSE_NUMBER};
 
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types
 // similarly.
 ServerFieldType GetStorableTypeCollapsingGroups(ServerFieldType type) {
   ServerFieldType storable_type = AutofillType(type).GetStorableType();
-  if (AutofillType(storable_type).group() == NAME)
+  if (AutofillType(storable_type).group() == FieldTypeGroup::kName)
     return NAME_FULL;
 
-  if (AutofillType(storable_type).group() == PHONE_HOME)
+  if (AutofillType(storable_type).group() == FieldTypeGroup::kPhoneHome)
     return PHONE_HOME_WHOLE_NUMBER;
 
   return storable_type;
@@ -163,7 +178,7 @@ void GetFieldsForDistinguishingProfiles(
 
   // Keep track of which fields we've seen so that we avoid duplicate entries.
   // Always ignore fields of unknown type and the excluded field.
-  std::set<ServerFieldType> seen_fields;
+  ServerFieldTypeSet seen_fields;
   seen_fields.insert(UNKNOWN_TYPE);
   seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
 
@@ -218,7 +233,8 @@ static_assert(kNumSupportedTypesForValidation * kValidityBitsPerType <= 64,
 // main stored type for used to mark field validity .
 ServerFieldType NormalizeTypeForValidityCheck(ServerFieldType type) {
   auto field_type_group = AutofillType(type).group();
-  if (field_type_group == PHONE_HOME || field_type_group == PHONE_BILLING)
+  if (field_type_group == FieldTypeGroup::kPhoneHome ||
+      field_type_group == FieldTypeGroup::kPhoneBilling)
     return PHONE_HOME_WHOLE_NUMBER;
   return type;
 }
@@ -257,12 +273,14 @@ AutofillProfile::AutofillProfile(const AutofillProfile& profile)
   operator=(profile);
 }
 
-AutofillProfile::~AutofillProfile() {}
+AutofillProfile::~AutofillProfile() = default;
 
 AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   if (this == &profile)
     return *this;
 
+  set_disallow_settings_visible_updates(
+      profile.disallow_settings_visible_updates());
   set_use_count(profile.use_count());
   set_use_date(profile.use_date());
   set_previous_use_date(profile.previous_use_date());
@@ -270,6 +288,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   set_guid(profile.guid());
   set_origin(profile.origin());
+
+  set_profile_label(profile.profile_label());
 
   record_type_ = profile.record_type_;
 
@@ -317,12 +337,11 @@ bool AutofillProfile::IsDeletable() const {
 }
 
 void AutofillProfile::GetMatchingTypes(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types) const {
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -333,7 +352,7 @@ void AutofillProfile::GetMatchingTypes(
 }
 
 void AutofillProfile::GetMatchingTypesAndValidities(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types,
     ServerFieldTypeValidityStateMap* matching_types_validities) const {
@@ -341,8 +360,7 @@ void AutofillProfile::GetMatchingTypesAndValidities(
     return;
 
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -358,28 +376,29 @@ void AutofillProfile::GetMatchingTypesAndValidities(
   }
 }
 
-base::string16 AutofillProfile::GetRawInfo(ServerFieldType type) const {
+std::u16string AutofillProfile::GetRawInfo(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetRawInfo(type);
 }
 
-void AutofillProfile::SetRawInfo(ServerFieldType type,
-                                 const base::string16& value) {
+void AutofillProfile::SetRawInfoWithVerificationStatus(
+    ServerFieldType type,
+    const std::u16string& value,
+    VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
   if (form_group) {
     is_client_validity_states_updated_ &=
         !IsClientValidationSupportedForType(type);
-    form_group->SetRawInfo(type, value);
+    form_group->SetRawInfoWithVerificationStatus(type, value, status);
   }
 }
 
 void AutofillProfile::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetSupportedTypes(supported_types);
   }
 }
@@ -392,7 +411,7 @@ bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
 
 bool AutofillProfile::IsPresentButInvalid(ServerFieldType type) const {
   std::string country = UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  base::string16 data = GetRawInfo(type);
+  std::u16string data = GetRawInfo(type);
   if (data.empty())
     return false;
 
@@ -417,10 +436,15 @@ bool AutofillProfile::IsPresentButInvalid(ServerFieldType type) const {
 
 int AutofillProfile::Compare(const AutofillProfile& profile) const {
   const ServerFieldType types[] = {
+      // TODO(crbug.com/1113617): Honorifics are temporally disabled.
+      // NAME_HONORIFIC_PREFIX,
       NAME_FULL,
       NAME_FIRST,
       NAME_MIDDLE,
       NAME_LAST,
+      NAME_LAST_FIRST,
+      NAME_LAST_SECOND,
+      NAME_LAST_CONJUNCTION,
       COMPANY_NAME,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -437,6 +461,62 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
     if (comparison != 0) {
       return comparison;
+    }
+  }
+
+  for (ServerFieldType type : types) {
+    // If the value is empty, the verification status can be ambiguous because
+    // the value could be either build from its empty child nodes or parsed
+    // from its parent. Therefore, it should not be considered when evaluating
+    // the similarity of two profiles.
+    if (profile.GetRawInfo(type).empty())
+      continue;
+
+    if (structured_address::IsLessSignificantVerificationStatus(
+            GetVerificationStatus(type), profile.GetVerificationStatus(type))) {
+      return -1;
+    }
+    if (structured_address::IsLessSignificantVerificationStatus(
+            profile.GetVerificationStatus(type), GetVerificationStatus(type))) {
+      return 1;
+    }
+  }
+
+  // TODO(crbug.com/1130194): Remove feature check once structured addresses are
+  // fully launched.
+  if (structured_address::StructuredAddressesEnabled()) {
+    const ServerFieldType new_types[] = {
+        ADDRESS_HOME_HOUSE_NUMBER,
+        ADDRESS_HOME_STREET_NAME,
+        ADDRESS_HOME_DEPENDENT_STREET_NAME,
+        ADDRESS_HOME_PREMISE_NAME,
+        ADDRESS_HOME_SUBPREMISE,
+    };
+    for (ServerFieldType type : new_types) {
+      int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
+      if (comparison != 0) {
+        return comparison;
+      }
+    }
+
+    for (ServerFieldType type : types) {
+      // If the value is empty, the verification status can be ambiguous because
+      // the value could be either build from its empty child nodes or parsed
+      // from its parent. Therefore, it should not be considered when evaluating
+      // the similarity of two profiles.
+      if (profile.GetRawInfo(type).empty())
+        continue;
+
+      if (structured_address::IsLessSignificantVerificationStatus(
+              GetVerificationStatus(type),
+              profile.GetVerificationStatus(type))) {
+        return -1;
+      }
+      if (structured_address::IsLessSignificantVerificationStatus(
+              profile.GetVerificationStatus(type),
+              GetVerificationStatus(type))) {
+        return 1;
+      }
     }
   }
 
@@ -493,7 +573,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     // profile's first and last names are set but its full name is not set.
     // GetInfo for the NAME_FULL type returns the constituent name parts;
     // however, GetRawInfo returns an empty string.
-    const base::string16 value = GetInfo(type, app_locale);
+    const std::u16string value = GetInfo(type, app_locale);
 
     if (value.empty() || type == ADDRESS_HOME_STREET_ADDRESS ||
         type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
@@ -521,7 +601,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         // conditions that follow.
         return false;
       }
-    } else if (AutofillType(type).group() == PHONE_HOME) {
+    } else if (AutofillType(type).group() == FieldTypeGroup::kPhoneHome) {
       // Phone numbers should be canonicalized before comparing.
       if (type != PHONE_HOME_WHOLE_NUMBER &&
           type != PHONE_HOME_CITY_AND_NUMBER) {
@@ -548,7 +628,18 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   // values.
   std::string language_code_value = language_code();
   std::string origin_value = origin();
-  base::string16 name_full_value = GetRawInfo(NAME_FULL);
+
+  // Structured names should not be simply overwritten but it should be
+  // attempted to merge the names.
+  bool use_structured_name = base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+  bool is_structured_name_mergeable = false;
+  NameInfo name_info = GetNameInfo();
+  if (use_structured_name) {
+    is_structured_name_mergeable =
+        name_info.IsStructuredNameMergeable(profile.GetNameInfo());
+    name_info.MergeStructuredName(profile.GetNameInfo());
+  }
 
   *this = profile;
 
@@ -556,14 +647,81 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
     set_origin(origin_value);
   if (language_code().empty())
     set_language_code(language_code_value);
-  if (!HasRawInfo(NAME_FULL))
-    SetRawInfo(NAME_FULL, name_full_value);
+
+  // For structured names, use the merged name if possible.
+  if (is_structured_name_mergeable) {
+    name_ = name_info;
+    return;
+  }
+  // For structured names, if the full name of |profile| is empty, maintain the
+  // complete name structure. Note, this should only happen if the complete name
+  // is empty.  For the legacy implementation, set the full name if |profile|
+  // does not contain a full name.
+  if (!HasRawInfo(NAME_FULL)) {
+    if (use_structured_name) {
+      name_ = name_info;
+    } else {
+      SetRawInfo(NAME_FULL, name_info.GetRawInfo(NAME_FULL));
+    }
+  }
+}
+
+bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
+                                              const std::string& app_locale) {
+  // Should only be called if the profile is already verified.
+  DCHECK(IsVerified());
+
+  AutofillProfileComparator comparator(app_locale);
+
+  DVLOG(1) << "Merging profile structure information :\nSource = " << profile
+           << "\nDest = " << *this;
+
+  bool merged = false;
+
+  // It is already verified upstream that the profiles and therefore also the
+  // names and addresses are mergeable.
+  // However, the structure should only be merged if the full names or addresses
+  // are token equivalent.
+  if (structured_address::StructuredNamesEnabled() &&
+      structured_address::AreStringTokenEquivalent(
+          GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL))) {
+    NameInfo name;
+    if (!comparator.MergeNames(profile, *this, &name)) {
+      NOTREACHED();
+      return false;
+    }
+    if (name_ != name) {
+      name_ = name;
+      merged = true;
+    }
+  }
+
+  if (structured_address::StructuredAddressesEnabled() &&
+      structured_address::AreStringTokenEquivalent(
+          GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+          profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
+    Address address;
+    if (!comparator.MergeAddresses(profile, *this, &address)) {
+      NOTREACHED();
+      return false;
+    }
+    if (address_ != address) {
+      address_ = address;
+      merged = true;
+    }
+  }
+
+  return merged;
 }
 
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
                                     const std::string& app_locale) {
   // Verified profiles should never be overwritten with unverified data.
-  DCHECK(!IsVerified() || profile.IsVerified());
+  // This is not true anymore when explicit save prompts are used.
+  DCHECK(!IsVerified() || profile.IsVerified() ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAddressProfileSavePrompt));
+
   AutofillProfileComparator comparator(app_locale);
   DCHECK(comparator.AreMergeable(*this, profile));
 
@@ -654,7 +812,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
   DCHECK(comparator.AreMergeable(*this, profile));
 
   // We don't replace verified profile data with unverified profile data. But,
-  // we can merge two verified profiles or merge verified profile data into an
+  // we can merge two unverified profiles or merge verified profile data into an
   // unverified profile.
   if (!IsVerified() || profile.IsVerified()) {
     if (MergeDataFrom(profile, app_locale)) {
@@ -664,6 +822,16 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
       AutofillMetrics::LogProfileActionOnFormSubmitted(
           AutofillMetrics::EXISTING_PROFILE_USED);
     }
+    return true;
+  }
+  // If the profile is verified, only the structured name information should be
+  // merged.
+  if (MergeStructuredDataFrom(profile, app_locale)) {
+    AutofillMetrics::LogProfileActionOnFormSubmitted(
+        AutofillMetrics::EXISTING_PROFILE_UPDATED);
+  } else {
+    AutofillMetrics::LogProfileActionOnFormSubmitted(
+        AutofillMetrics::EXISTING_PROFILE_USED);
   }
   return true;
 }
@@ -672,7 +840,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
 void AutofillProfile::CreateDifferentiatingLabels(
     const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
   CreateInferredLabels(profiles, nullptr, UNKNOWN_TYPE, kMinimalFieldsShown,
                        app_locale, labels);
@@ -686,7 +854,7 @@ void AutofillProfile::CreateInferredLabels(
     ServerFieldType excluded_field,
     size_t minimal_fields_shown,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   std::vector<ServerFieldType> fields_to_use;
   GetFieldsForDistinguishingProfiles(suggested_fields, excluded_field,
                                      &fields_to_use);
@@ -694,9 +862,9 @@ void AutofillProfile::CreateInferredLabels(
   // Construct the default label for each profile. Also construct a map that
   // associates each label with the profiles that have this label. This map is
   // then used to detect which labels need further differentiating fields.
-  std::map<base::string16, std::list<size_t>> labels_to_profiles;
+  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
-    base::string16 label = profiles[i]->ConstructInferredLabel(
+    std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use.data(), fields_to_use.size(), minimal_fields_shown,
         app_locale);
     labels_to_profiles[label].push_back(i);
@@ -706,7 +874,7 @@ void AutofillProfile::CreateInferredLabels(
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      base::string16 label = it.first;
+      std::u16string label = it.first;
       size_t profile_index = it.second.front();
       (*labels)[profile_index] = label;
     } else {
@@ -718,17 +886,17 @@ void AutofillProfile::CreateInferredLabels(
   }
 }
 
-base::string16 AutofillProfile::ConstructInferredLabel(
+std::u16string AutofillProfile::ConstructInferredLabel(
     const ServerFieldType* included_fields,
     const size_t included_fields_size,
     size_t num_fields_to_use,
     const std::string& app_locale) const {
   // TODO(estade): use libaddressinput?
-  base::string16 separator =
+  std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
 
   AutofillType region_code_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const base::string16& profile_region_code =
+  const std::u16string& profile_region_code =
       GetInfo(region_code_type, app_locale);
   std::string address_region_code = UTF16ToUTF8(profile_region_code);
 
@@ -750,7 +918,7 @@ base::string16 AutofillProfile::ConstructInferredLabel(
     }
 
     AutofillType autofill_type(included_fields[i]);
-    base::string16 field_value = GetInfo(autofill_type, app_locale);
+    std::u16string field_value = GetInfo(autofill_type, app_locale);
     if (field_value.empty())
       continue;
 
@@ -763,12 +931,12 @@ base::string16 AutofillProfile::ConstructInferredLabel(
   std::string address_line;
   ::i18n::addressinput::GetFormattedNationalAddressLine(*address_data,
                                                         &address_line);
-  base::string16 label = base::UTF8ToUTF16(address_line);
+  std::u16string label = base::UTF8ToUTF16(address_line);
 
   for (std::vector<ServerFieldType>::const_iterator it =
            remaining_fields.begin();
        it != remaining_fields.end() && num_fields_to_use > 0; ++it) {
-    base::string16 field_value;
+    std::u16string field_value;
     // Special case whole numbers: we want the user-formatted (raw) version, not
     // the canonicalized version we'll fill into the page.
     if (*it == PHONE_HOME_WHOLE_NUMBER)
@@ -788,14 +956,14 @@ base::string16 AutofillProfile::ConstructInferredLabel(
   // If country code is missing, libaddressinput won't be used to format the
   // address. In this case the suggestion might include a multi-line street
   // address which needs to be flattened.
-  base::ReplaceChars(label, base::ASCIIToUTF16("\n"), separator, &label);
+  base::ReplaceChars(label, u"\n", separator, &label);
 
   return label;
 }
 
 void AutofillProfile::GenerateServerProfileIdentifier() {
   DCHECK_EQ(SERVER_PROFILE, record_type());
-  base::string16 contents = GetRawInfo(NAME_FIRST);
+  std::u16string contents = GetRawInfo(NAME_FIRST);
   contents.append(GetRawInfo(NAME_MIDDLE));
   contents.append(GetRawInfo(NAME_LAST));
   contents.append(GetRawInfo(EMAIL_ADDRESS));
@@ -818,6 +986,12 @@ void AutofillProfile::RecordAndLogUse() {
   UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
                             (AutofillClock::Now() - use_date()).InDays());
   RecordUse();
+  LogVerificationStatuses();
+}
+
+void AutofillProfile::LogVerificationStatuses() {
+  AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(*this);
+  AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(*this);
 }
 
 bool AutofillProfile::HasGreaterFrescocencyThan(
@@ -873,14 +1047,15 @@ bool AutofillProfile::IsAnInvalidPhoneNumber(ServerFieldType type) const {
     return true;
 
   ServerFieldTypeSet types;
-  if (GroupTypeOfServerFieldType(type) == PHONE_HOME) {
+  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPhoneHome) {
     types = {PHONE_HOME_NUMBER, PHONE_HOME_CITY_CODE,
              PHONE_HOME_CITY_AND_NUMBER};
     if (type == PHONE_HOME_WHOLE_NUMBER) {
       types.insert(PHONE_HOME_WHOLE_NUMBER);
       types.insert(PHONE_HOME_COUNTRY_CODE);
     }
-  } else if (GroupTypeOfServerFieldType(type) == PHONE_BILLING) {
+  } else if (GroupTypeOfServerFieldType(type) ==
+             FieldTypeGroup::kPhoneBilling) {
     types = {PHONE_BILLING_NUMBER, PHONE_BILLING_CITY_CODE,
              PHONE_BILLING_CITY_AND_NUMBER};
     if (type == PHONE_BILLING_WHOLE_NUMBER) {
@@ -889,7 +1064,7 @@ bool AutofillProfile::IsAnInvalidPhoneNumber(ServerFieldType type) const {
     }
   }
 
-  for (const auto& cur_type : types) {
+  for (auto cur_type : types) {
     if (GetValidityState(cur_type, SERVER) == INVALID)
       return true;
   }
@@ -934,7 +1109,8 @@ void AutofillProfile::UpdateServerValidityMap(
   server_validity_states_.clear();
   const auto& field_validity_states = validity_map.field_validity_states();
   for (const auto& current_pair : field_validity_states) {
-    const auto field_type = static_cast<ServerFieldType>(current_pair.first);
+    const auto field_type =
+        ToSafeServerFieldType(current_pair.first, UNKNOWN_TYPE);
     const auto field_validity = static_cast<ValidityState>(current_pair.second);
     server_validity_states_[field_type] = field_validity;
   }
@@ -1002,7 +1178,7 @@ bool AutofillProfile::ShouldSkipFillingOrSuggesting(
           autofill::features::kAutofillProfileClientValidation) &&
       GetValidityState(type, AutofillProfile::CLIENT) ==
           AutofillProfile::INVALID &&
-      (GroupTypeOfServerFieldType(type) != ADDRESS_HOME ||
+      (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kAddressHome ||
        !GetRawInfo(ADDRESS_HOME_COUNTRY).empty())) {
     return true;
   }
@@ -1010,14 +1186,23 @@ bool AutofillProfile::ShouldSkipFillingOrSuggesting(
   return false;
 }
 
-base::string16 AutofillProfile::GetInfoImpl(
+VerificationStatus AutofillProfile::GetVerificationStatusImpl(
+    const ServerFieldType type) const {
+  const FormGroup* form_group = FormGroupForType(AutofillType(type));
+  if (!form_group)
+    return VerificationStatus::kNoStatus;
+
+  return form_group->GetVerificationStatus(type);
+}
+
+std::u16string AutofillProfile::GetInfoImpl(
     const AutofillType& type,
     const std::string& app_locale) const {
   if (type.html_type() == HTML_TYPE_FULL_ADDRESS) {
     std::unique_ptr<AddressData> address_data =
         i18n::CreateAddressDataFromAutofillProfile(*this, app_locale);
     if (!addressinput::HasAllRequiredFields(*address_data))
-      return base::string16();
+      return std::u16string();
 
     std::vector<std::string> lines;
     ::i18n::addressinput::GetFormattedNationalAddress(*address_data, &lines);
@@ -1026,14 +1211,16 @@ base::string16 AutofillProfile::GetInfoImpl(
 
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetInfoImpl(type, app_locale);
 }
 
-bool AutofillProfile::SetInfoImpl(const AutofillType& type,
-                                  const base::string16& value,
-                                  const std::string& app_locale) {
+bool AutofillProfile::SetInfoWithVerificationStatusImpl(
+    const AutofillType& type,
+    const std::u16string& value,
+    const std::string& app_locale,
+    VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
   if (!form_group)
     return false;
@@ -1041,9 +1228,11 @@ bool AutofillProfile::SetInfoImpl(const AutofillType& type,
   is_client_validity_states_updated_ &=
       !IsClientValidationSupportedForType(type.GetStorableType());
 
-  base::string16 trimmed_value;
+  std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
-  return form_group->SetInfoImpl(type, trimmed_value, app_locale);
+
+  return form_group->SetInfoWithVerificationStatusImpl(type, trimmed_value,
+                                                       app_locale, status);
 }
 
 // static
@@ -1053,18 +1242,18 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<ServerFieldType>& fields,
     size_t num_fields_to_include,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
-  std::map<ServerFieldType, std::map<base::string16, size_t>>
+  std::map<ServerFieldType, std::map<std::u16string, size_t>>
       field_text_frequencies_by_field;
   for (const ServerFieldType& field : fields) {
-    std::map<base::string16, size_t>& field_text_frequencies =
+    std::map<std::u16string, size_t>& field_text_frequencies =
         field_text_frequencies_by_field[field];
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(field), app_locale);
 
       // If this label is not already in the map, add it with frequency 0.
@@ -1090,15 +1279,15 @@ void AutofillProfile::CreateInferredLabelsHelper(
     bool found_differentiating_field = false;
     for (auto field = fields.begin(); field != fields.end(); ++field) {
       // Skip over empty fields.
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(*field), app_locale);
       if (field_text.empty())
         continue;
 
-      std::map<base::string16, size_t>& field_text_frequencies =
+      std::map<std::u16string, size_t>& field_text_frequencies =
           field_text_frequencies_by_field[*field];
       found_differentiating_field |=
-          !field_text_frequencies.count(base::string16()) &&
+          !field_text_frequencies.count(std::u16string()) &&
           (field_text_frequencies[field_text] == 1);
 
       // Once we've found enough non-empty fields, skip over any remaining
@@ -1122,16 +1311,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
   }
 }
 
-AutofillProfile::FormGroupList AutofillProfile::FormGroups() const {
-  FormGroupList v(5);
-  v[0] = &name_;
-  v[1] = &email_;
-  v[2] = &company_;
-  v[3] = &phone_number_;
-  v[4] = &address_;
-  return v;
-}
-
 const FormGroup* AutofillProfile::FormGroupForType(
     const AutofillType& type) const {
   return const_cast<AutofillProfile*>(this)->MutableFormGroupForType(type);
@@ -1139,30 +1318,30 @@ const FormGroup* AutofillProfile::FormGroupForType(
 
 FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
   switch (type.group()) {
-    case NAME:
-    case NAME_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
       return &name_;
 
-    case EMAIL:
+    case FieldTypeGroup::kEmail:
       return &email_;
 
-    case COMPANY:
+    case FieldTypeGroup::kCompany:
       return &company_;
 
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       return &phone_number_;
 
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
       return &address_;
 
-    case NO_GROUP:
-    case CREDIT_CARD:
-    case PASSWORD_FIELD:
-    case USERNAME_FIELD:
-    case TRANSACTION:
-    case UNFILLABLE:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUnfillable:
       return nullptr;
   }
 
@@ -1172,35 +1351,80 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
   return origin() == profile.origin() &&
-         language_code() == profile.language_code() && Compare(profile) == 0;
+         disallow_settings_visible_updates() ==
+             profile.disallow_settings_visible_updates() &&
+         language_code() == profile.language_code() &&
+         profile_label() == profile.profile_label() && Compare(profile) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
-  return os << (profile.record_type() == AutofillProfile::LOCAL_PROFILE
-                    ? profile.guid()
-                    : base::HexEncode(profile.server_id().data(),
-                                      profile.server_id().size()))
-            << " " << profile.origin() << " "
-            << UTF16ToUTF8(profile.GetRawInfo(NAME_FULL)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(NAME_FIRST)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(NAME_MIDDLE)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(NAME_LAST)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(COMPANY_NAME)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE1)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE2)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE3)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))
-            << " " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_CITY)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_ZIP)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE)) << " "
-            << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)) << " "
-            << profile.language_code() << " "
-            << UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)) << " "
-            << profile.GetClientValidityBitfieldValue() << " "
-            << profile.has_converted() << " " << profile.use_count() << " "
-            << profile.use_date();
+  os << (profile.record_type() == AutofillProfile::LOCAL_PROFILE
+             ? profile.guid()
+             : base::HexEncode(profile.server_id().data(),
+                               profile.server_id().size()))
+     << " " << profile.origin() << " "
+     << "label: " << profile.profile_label() << " "
+     << profile.GetClientValidityBitfieldValue() << " "
+     << profile.has_converted() << " " << profile.use_count() << " "
+     << profile.use_date() << " " << profile.language_code() << std::endl;
+
+  // Lambda to print the value and verification status for |type|.
+  auto print_values_lambda = [&os, &profile](ServerFieldType type) {
+    os << AutofillType::ServerFieldTypeToString(type) << ": "
+       << profile.GetRawInfo(type) << "(" << profile.GetVerificationStatus(type)
+       << ")" << std::endl;
+  };
+
+  // Use a helper function to print the values of the stored types.
+  const ServerFieldType field_types_to_print[] = {
+      NAME_FULL,
+      NAME_HONORIFIC_PREFIX,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      EMAIL_ADDRESS,
+      COMPANY_NAME,
+      ADDRESS_HOME_ADDRESS,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      PHONE_HOME_WHOLE_NUMBER};
+
+  base::ranges::for_each(field_types_to_print, print_values_lambda);
+
+  return os;
 }
 
+bool AutofillProfile::FinalizeAfterImport() {
+  bool success = true;
+  if (!name_.FinalizeAfterImport(IsVerified()))
+    success = false;
+  if (!address_.FinalizeAfterImport(IsVerified()))
+    success = false;
+
+  return success;
+}
+
+bool AutofillProfile::HasStructuredData() {
+  return base::ranges::any_of(kStructuredDataTypes, [this](auto type) {
+    return !this->GetRawInfo(type).empty();
+  });
+}
 }  // namespace autofill

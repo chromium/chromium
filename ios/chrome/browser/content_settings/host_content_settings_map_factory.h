@@ -10,20 +10,22 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 class HostContentSettingsMap;
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all HostContentSettingsMaps and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class HostContentSettingsMapFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
   static HostContentSettingsMap* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static HostContentSettingsMapFactory* GetInstance();
+
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
 
  private:
   friend class base::NoDestructor<HostContentSettingsMapFactory>;
@@ -36,8 +38,6 @@ class HostContentSettingsMapFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 }  // namespace ios

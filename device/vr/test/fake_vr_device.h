@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/vr_device_base.h"
-#include "device/vr/vr_device_provider.h"
 #include "device/vr/vr_export.h"
 
 namespace device {
@@ -18,6 +18,10 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
                                       public mojom::XRSessionController {
  public:
   explicit FakeVRDevice(mojom::XRDeviceId id);
+
+  FakeVRDevice(const FakeVRDevice&) = delete;
+  FakeVRDevice& operator=(const FakeVRDevice&) = delete;
+
   ~FakeVRDevice() override;
 
   void RequestSession(
@@ -35,11 +39,12 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
   void OnPresentingControllerMojoConnectionError();
 
   mojom::VRDisplayInfoPtr InitBasicDevice();
-  mojom::VREyeParametersPtr InitEye(float fov, float offset, uint32_t size);
+  mojom::XRViewPtr InitView(mojom::XREye eye,
+                            float fov,
+                            float offset,
+                            uint32_t size);
 
   mojom::VRPosePtr pose_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVRDevice);
 };
 
 }  // namespace device

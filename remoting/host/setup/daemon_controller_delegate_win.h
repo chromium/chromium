@@ -13,22 +13,24 @@ namespace remoting {
 class DaemonControllerDelegateWin : public DaemonController::Delegate {
  public:
   DaemonControllerDelegateWin();
+
+  DaemonControllerDelegateWin(const DaemonControllerDelegateWin&) = delete;
+  DaemonControllerDelegateWin& operator=(const DaemonControllerDelegateWin&) =
+      delete;
+
   ~DaemonControllerDelegateWin() override;
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
   std::unique_ptr<base::DictionaryValue> GetConfig() override;
   void CheckPermission(bool it2me, DaemonController::BoolCallback) override;
-  void SetConfigAndStart(
-      std::unique_ptr<base::DictionaryValue> config,
-      bool consent,
-      const DaemonController::CompletionCallback& done) override;
+  void SetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+                         bool consent,
+                         DaemonController::CompletionCallback done) override;
   void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
-                    const DaemonController::CompletionCallback& done) override;
-  void Stop(const DaemonController::CompletionCallback& done) override;
+                    DaemonController::CompletionCallback done) override;
+  void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonControllerDelegateWin);
 };
 
 }  // namespace remoting

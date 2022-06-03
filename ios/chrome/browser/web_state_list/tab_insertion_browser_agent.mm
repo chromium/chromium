@@ -26,7 +26,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     web::WebState* parent,
     bool opened_by_dom,
     int index,
-    bool in_background) {
+    bool in_background,
+    bool inherit_opener) {
   DCHECK(index == TabInsertion::kPositionAutomatically ||
          (index >= 0 && index <= web_state_list_->count()));
 
@@ -44,6 +45,10 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
 
   if (!in_background) {
     insertion_flags |= WebStateList::INSERT_ACTIVATE;
+  }
+
+  if (inherit_opener) {
+    insertion_flags |= WebStateList::INSERT_INHERIT_OPENER;
   }
 
   web::WebState::CreateParams create_params(browser_state_);

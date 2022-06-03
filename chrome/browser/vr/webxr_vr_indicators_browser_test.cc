@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -63,14 +63,13 @@ void SetMultipleContentSetting(
     host_content_settings_map->SetContentSettingDefaultScope(
         t->GetCurrentWebContents()->GetLastCommittedURL(),
         t->GetCurrentWebContents()->GetLastCommittedURL(),
-        s.content_setting_type, std::string(), s.content_setting);
+        s.content_setting_type, s.content_setting);
 }
 
 void LoadGenericPageChangeDefaultPermissionAndEnterVr(
     WebXrVrBrowserTestBase* t,
     const std::vector<TestContentSettings>& test_settings) {
-  t->LoadUrlAndAwaitInitialization(
-      t->GetEmbeddedServerUrlForHtmlTestFile("generic_webxr_page"));
+  t->LoadFileAndAwaitInitialization("generic_webxr_page");
   SetMultipleContentSetting(t, test_settings);
   t->EnterSessionWithUserGestureOrFail();
 }
@@ -95,7 +94,7 @@ void TestIndicatorOnAccessForContentType(
   auto utils = UiUtils::Create();
   // Check if the location indicator shows.
   utils->PerformActionAndWaitForVisibilityStatus(element_name, true,
-                                                 base::DoNothing::Once());
+                                                 base::DoNothing());
 
   t->EndSessionOrFail();
 }
@@ -112,9 +111,9 @@ void TestForInitialIndicatorForContentType(
 
   auto utils = UiUtils::Create();
   // Check if the location indicator shows.
-  for (const TestIndicatorSetting& t : test_indicator_settings)
+  for (const TestIndicatorSetting& setting : test_indicator_settings)
     utils->PerformActionAndWaitForVisibilityStatus(
-        t.element_name, t.element_visibility, base::DoNothing::Once());
+        setting.element_name, setting.element_visibility, base::DoNothing());
 
   t->EndSessionOrFail();
 }
@@ -160,11 +159,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
            UserFriendlyElementName::kWebXrLocationPermissionIndicator, false}});
 }
 
-// TODO(crbug.com/986621) - Enable for OpenXR
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(
-    WebXrVrOpenVrBrowserTest,
-    WebXrVrWmrBrowserTest,
-    WebXrVrBrowserTestBase,
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestLocationIndicatorWhenUserAskedToPrompt) {
   TestForInitialIndicatorForContentType(
       t, {{ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK,
@@ -186,12 +181,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
       });
 }
 
-// TODO(crbug.com/986621) - Enable for OpenXR
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(
-    WebXrVrOpenVrBrowserTest,
-    WebXrVrWmrBrowserTest,
-    WebXrVrBrowserTestBase,
-
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestMultipleInitialIndicators_OneDeviceAllowed) {
   TestForInitialIndicatorForContentType(
       t,

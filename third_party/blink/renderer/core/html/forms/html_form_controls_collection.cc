@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/radio_node_list_or_element.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -172,24 +172,26 @@ void HTMLFormControlsCollection::UpdateIdNameCache() const {
   SetNamedItemCache(cache);
 }
 
-void HTMLFormControlsCollection::namedGetter(
-    const AtomicString& name,
-    RadioNodeListOrElement& return_value) {
+V8UnionElementOrRadioNodeList* HTMLFormControlsCollection::namedGetter(
+    const AtomicString& name) {
   HeapVector<Member<Element>> named_items;
   NamedItems(name, named_items);
 
   if (named_items.IsEmpty())
-    return;
+    return nullptr;
 
   if (named_items.size() == 1) {
-    if (!IsA<HTMLImageElement>(*named_items[0]))
-      return_value.SetElement(named_items.at(0));
-    return;
+    if (!IsA<HTMLImageElement>(*named_items[0])) {
+      return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
+          named_items[0]);
+    }
+    return nullptr;
   }
 
   // This path never returns a RadioNodeList for <img> because
   // onlyMatchingImgElements flag is false by default.
-  return_value.SetRadioNodeList(ownerNode().GetRadioNodeList(name));
+  return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
+      ownerNode().GetRadioNodeList(name));
 }
 
 void HTMLFormControlsCollection::SupportedPropertyNames(Vector<String>& names) {
@@ -221,7 +223,7 @@ void HTMLFormControlsCollection::SupportedPropertyNames(Vector<String>& names) {
   }
 }
 
-void HTMLFormControlsCollection::Trace(Visitor* visitor) {
+void HTMLFormControlsCollection::Trace(Visitor* visitor) const {
   visitor->Trace(cached_element_);
   HTMLCollection::Trace(visitor);
 }

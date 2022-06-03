@@ -131,15 +131,15 @@ bool TypedURLSyncMetadataDatabase::
       "SELECT storage_key FROM typed_url_sync_metadata ORDER BY storage_key"));
   while (sorted_metadata_rowids.Step()) {
     URLID metadata_rowid = sorted_metadata_rowids.ColumnInt64(0);
-    // Both collections are sorted, we check whether |metadata_rowid| is valid
+    // Both collections are sorted, we check whether `metadata_rowid` is valid
     // by iterating both at the same time.
 
-    // First, skip all valid IDs that are omitted in |sorted_metadata_rowids|.
+    // First, skip all valid IDs that are omitted in `sorted_metadata_rowids`.
     while (valid_rowids_iter != sorted_valid_rowids.end() &&
            *valid_rowids_iter < metadata_rowid) {
       valid_rowids_iter++;
     }
-    // Now, is |metadata_rowid| invalid?
+    // Now, is `metadata_rowid` invalid?
     if (valid_rowids_iter == sorted_valid_rowids.end() ||
         *valid_rowids_iter != metadata_rowid) {
       invalid_metadata_rowids.push_back(metadata_rowid);

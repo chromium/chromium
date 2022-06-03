@@ -91,7 +91,7 @@ int ImgIoUtilReadFile(const char* const file_name,
   file_size = ftell(in);
   fseek(in, 0, SEEK_SET);
   // we allocate one extra byte for the \0 terminator
-  file_data = (uint8_t*)malloc(file_size + 1);
+  file_data = (uint8_t*)WebPMalloc(file_size + 1);
   if (file_data == NULL) {
     fclose(in);
     WFPRINTF(stderr, "memory allocation failure when reading file %s\n",
@@ -104,7 +104,7 @@ int ImgIoUtilReadFile(const char* const file_name,
   if (!ok) {
     WFPRINTF(stderr, "Could not read %d bytes of data from file %s\n",
              (int)file_size, (const W_CHAR*)file_name);
-    free(file_data);
+    WebPFree(file_data);
     return 0;
   }
   file_data[file_size] = '\0';  // convenient 0-terminator
@@ -148,9 +148,11 @@ void ImgIoUtilCopyPlane(const uint8_t* src, int src_stride,
 
 // -----------------------------------------------------------------------------
 
-int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t nmemb, size_t size) {
-  const uint64_t total_size = nmemb * size;
+int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t stride, size_t height) {
+  const uint64_t total_size = stride * height;
   int ok = (total_size == (size_t)total_size);
+  // check that 'stride' is representable as int:
+  ok = ok && ((uint64_t)(int)stride == stride);
 #if defined(WEBP_MAX_IMAGE_SIZE)
   ok = ok && (total_size <= (uint64_t)WEBP_MAX_IMAGE_SIZE);
 #endif

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL mediaDevices.enumerateDevices() is present and working - before capture assert_equals: mediaInfo's deviceId should exist and be empty if getUserMedia was never called successfully. expected "" but got "default"
+PASS mediaDevices.enumerateDevices() is present and working - after capture
+PASS InputDeviceInfo is supported
+Harness: the test ran to completion.
+

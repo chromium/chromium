@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_HTTP_SERVER_RESPONSE_PROVIDER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
@@ -74,10 +75,11 @@ class ResponseProvider {
       const net::HttpStatusCode& http_status);
 
   ResponseProvider();
-  virtual ~ResponseProvider() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResponseProvider);
+  ResponseProvider(const ResponseProvider&) = delete;
+  ResponseProvider& operator=(const ResponseProvider&) = delete;
+
+  virtual ~ResponseProvider() {}
 };
 
 }  // namspace web

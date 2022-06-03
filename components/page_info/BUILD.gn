@@ -1,0 +1,108 @@
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/about_this_site_metadata.proto" ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [ "proto/about_this_site_metadata.proto" ]
+
+    deps = [
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
+    ]
+  }
+}
+
+static_library("page_info") {
+  sources = [
+    "about_this_site_service.cc",
+    "about_this_site_service.h",
+    "about_this_site_validation.cc",
+    "about_this_site_validation.h",
+    "features.cc",
+    "features.h",
+    "page_info.cc",
+    "page_info.h",
+    "page_info_delegate.h",
+    "page_info_ui.cc",
+    "page_info_ui.h",
+    "page_info_ui_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/browsing_data/content",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
+    "//components/page_info:proto",
+    "//components/password_manager/core/browser",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser/password_protection",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_state/core",
+    "//components/signin/public/identity_manager",
+    "//components/ssl_errors:ssl_errors",
+    "//components/strings:components_chromium_strings_grit",
+    "//components/strings:components_strings_grit",
+    "//components/subresource_filter/core/browser",
+    "//components/ukm/content",
+    "//components/url_formatter",
+    "//components/vector_icons:vector_icons",
+    "//content/public/browser:browser",
+    "//services/device/public/cpp:device_features",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//components/browser_ui/util/android",
+      "//components/password_manager/core/browser:password_manager_java_enums_srcjar",
+      "//components/resources:android_resources",
+    ]
+  } else {
+    deps += [ "//ui/native_theme" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("page_info_action_javagen") {
+    sources = [ "page_info.h" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "about_this_site_service_unittest.cc",
+    "about_this_site_validation_unittest.cc",
+  ]
+
+  deps = [
+    ":page_info",
+    ":proto",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

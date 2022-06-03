@@ -9,18 +9,18 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace content {
@@ -38,23 +38,32 @@ class DragDownloadFile::DragDownloadFileUI
   DragDownloadFileUI(const GURL& url,
                      const Referrer& referrer,
                      const std::string& referrer_encoding,
-                     WebContents* web_contents,
+                     int render_process_id,
+                     int render_frame_id,
                      OnCompleted on_completed)
       : on_completed_(std::move(on_completed)),
         url_(url),
         referrer_(referrer),
         referrer_encoding_(referrer_encoding),
-        web_contents_(web_contents) {
+        render_process_id_(render_process_id),
+        render_frame_id_(render_frame_id) {
     DCHECK(on_completed_);
-    DCHECK(web_contents_);
+    DCHECK_GE(render_frame_id_, 0);
     // May be called on any thread.
     // Do not call weak_ptr_factory_.GetWeakPtr() outside the UI thread.
   }
+
+  DragDownloadFileUI(const DragDownloadFileUI&) = delete;
+  DragDownloadFileUI& operator=(const DragDownloadFileUI&) = delete;
 
   void InitiateDownload(base::File file,
                         const base::FilePath& file_path) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+    RenderFrameHost* host =
+        RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+    if (!host)
+      return;
     // TODO(https://crbug.com/614134) This should use the frame actually
     // containing the link being dragged rather than the main frame of the tab.
     net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -80,9 +89,8 @@ class DragDownloadFile::DragDownloadFileUI
             }
           }
         })");
-    std::unique_ptr<download::DownloadUrlParameters> params(
-        DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-            web_contents_, url_, traffic_annotation));
+    auto params = std::make_unique<download::DownloadUrlParameters>(
+        url_, render_process_id_, render_frame_id_, traffic_annotation);
     params->set_referrer(referrer_.url);
     params->set_referrer_policy(
         Referrer::ReferrerPolicyForUrlRequest(referrer_.policy));
@@ -92,8 +100,8 @@ class DragDownloadFile::DragDownloadFileUI
     params->set_file_path(file_path);
     params->set_file(std::move(file));  // Nulls file.
     params->set_download_source(download::DownloadSource::DRAG_AND_DROP);
-    BrowserContext::GetDownloadManager(web_contents_->GetBrowserContext())
-        ->DownloadUrl(std::move(params));
+    host->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
+        std::move(params));
   }
 
   void Cancel() {
@@ -120,8 +128,8 @@ class DragDownloadFile::DragDownloadFileUI
     if (!item || item->GetState() != download::DownloadItem::IN_PROGRESS) {
       DCHECK(!item ||
              item->GetLastReason() != download::DOWNLOAD_INTERRUPT_REASON_NONE);
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     base::BindOnce(std::move(on_completed_), false));
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(std::move(on_completed_), false));
       return;
     }
     DCHECK_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
@@ -138,8 +146,8 @@ class DragDownloadFile::DragDownloadFileUI
         state == download::DownloadItem::CANCELLED ||
         state == download::DownloadItem::INTERRUPTED) {
       if (on_completed_) {
-        base::PostTask(
-            FROM_HERE, {BrowserThread::UI},
+        GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
             base::BindOnce(std::move(on_completed_),
                            state == download::DownloadItem::COMPLETE));
       }
@@ -155,8 +163,8 @@ class DragDownloadFile::DragDownloadFileUI
     if (on_completed_) {
       const bool is_complete =
           download_item_->GetState() == download::DownloadItem::COMPLETE;
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     base::BindOnce(std::move(on_completed_), is_complete));
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(std::move(on_completed_), is_complete));
     }
     download_item_->RemoveObserver(this);
     download_item_ = nullptr;
@@ -166,13 +174,12 @@ class DragDownloadFile::DragDownloadFileUI
   GURL url_;
   Referrer referrer_;
   std::string referrer_encoding_;
-  WebContents* web_contents_;
+  int render_process_id_;
+  int render_frame_id_;
   download::DownloadItem* download_item_ = nullptr;
 
   // Only used in the callback from DownloadManager::DownloadUrl().
   base::WeakPtrFactory<DragDownloadFileUI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFileUI);
 };
 
 DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
@@ -183,8 +190,10 @@ DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
                                    WebContents* web_contents)
     : file_path_(file_path), file_(std::move(file)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHost* host = web_contents->GetMainFrame();
   drag_ui_ = new DragDownloadFileUI(
-      url, referrer, referrer_encoding, web_contents,
+      url, referrer, referrer_encoding, host->GetProcess()->GetID(),
+      host->GetRoutingID(),
       base::BindOnce(&DragDownloadFile::DownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!file_path_.empty());
@@ -197,8 +206,8 @@ DragDownloadFile::~DragDownloadFile() {
   // the UI thread so that it calls RemoveObserver on the right thread, and so
   // that this task will run after the InitiateDownload task runs on the UI
   // thread.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&DragDownloadFileUI::Delete, base::Unretained(drag_ui_)));
   drag_ui_ = nullptr;
 }
@@ -214,8 +223,8 @@ void DragDownloadFile::Start(ui::DownloadFileObserver* observer) {
   observer_ = observer;
   DCHECK(observer_.get());
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&DragDownloadFileUI::InitiateDownload,
                      base::Unretained(drag_ui_), std::move(file_), file_path_));
 }
@@ -232,8 +241,8 @@ bool DragDownloadFile::Wait() {
 void DragDownloadFile::Stop() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (drag_ui_) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&DragDownloadFileUI::Cancel,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DragDownloadFileUI::Cancel,
                                   base::Unretained(drag_ui_)));
   }
 }

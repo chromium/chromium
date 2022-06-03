@@ -80,6 +80,14 @@ td.detection-logs-url {
   width: 10%;
 }
 
+.detection-logs-detection-model-version {
+  width: 10%;
+}
+
+.detection-logs-model-reliability {
+  width: 10%;
+}
+
 .detection-logs-is-cld-reliable {
   width: 5%;
 }

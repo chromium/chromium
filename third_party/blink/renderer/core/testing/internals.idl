@@ -36,9 +36,9 @@
     boolean isLoadingFromMemoryCache(DOMString url);
 
     // Call this function with the URL of a resource that has not yet been
-    // fetched. It returns a promise that resolves with the priority of the
-    // request, once it has been made.
-    [CallWith=ScriptState] Promise<unsigned long> getResourcePriority(DOMString url, Document document);
+    // fetched. It returns a promise that resolves with the initial priority
+    // of the request, once it has been made.
+    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, Document document);
 
     DOMString getResourceHeader(DOMString url, DOMString header, Document document);
 
@@ -56,16 +56,14 @@
     Node effectiveRootScroller(Document document);
 
     [RaisesException] DOMString shadowRootType(Node root);
-    [RaisesException] boolean hasShadowInsertionPoint(Node root);
-    [RaisesException] boolean hasContentElement(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
-    [RaisesException] boolean isValidContentSelect(Element contentElement);
     Node treeScopeRootNode(Node node);
     Node parentTreeScope(Node node);
     [RaisesException] unsigned short compareTreeScopePosition(Node treeScope1, Node treeScope2);
     [RaisesException] unsigned long updateStyleAndReturnAffectedElementCount();
     [RaisesException] unsigned long needsLayoutCount();
+    [RaisesException] unsigned long layoutCountForTesting();
     [RaisesException] unsigned long hitTestCount(Document document);
     [RaisesException] unsigned long hitTestCacheHits(Document document);
     [RaisesException] Element? elementFromPoint(Document document, double x, double y, boolean ignoreClipping, boolean allowChildFrameContent);
@@ -78,7 +76,6 @@
     [RaisesException] void pauseAnimations(double pauseTime);
     boolean isCompositedAnimation(Animation animation);
     void disableCompositedAnimation(Animation animation);
-    void disableCSSAdditiveAnimations();
 
     // Advances an animated image. For BitmapImage (e.g., animated gifs) this
     // will advance to the next frame. For SVGImage, this will trigger an
@@ -107,14 +104,14 @@
     DOMRectReadOnly boundingBox(Element element);
 
     [RaisesException] void setMarker(Document document, Range range, DOMString markerType);
-    [RaisesException] unsigned long markerCountForNode(Node node, DOMString markerType);
-    unsigned long activeMarkerCountForNode(Node node);
-    [RaisesException] Range markerRangeForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] DOMString markerDescriptionForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] unsigned long markerBackgroundColorForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] unsigned long markerUnderlineColorForNode(Node node, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerCountForNode(Text text, DOMString markerType);
+    unsigned long activeMarkerCountForNode(Text text);
+    [RaisesException] Range markerRangeForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] DOMString markerDescriptionForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerBackgroundColorForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerUnderlineColorForNode(Text text, DOMString markerType, unsigned long index);
     [RaisesException] void addTextMatchMarker(Range range, DOMString matchStatus);
-    [RaisesException] void addCompositionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
+    [RaisesException] void addCompositionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString underlineStyleValue, DOMString textColorValue, DOMString backgroundColorValue);
     [RaisesException] void addActiveSuggestionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     [RaisesException] void addSuggestionMarker(Range range, sequence<DOMString> suggestions, DOMString suggestionHighlightColorValue, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     void setTextMatchMarkersActive(Node node, unsigned long startOffset, unsigned long endOffset, boolean active);
@@ -131,6 +128,7 @@
     [RaisesException] void setAutofilledValue(Element inputElement, DOMString value);
     [RaisesException] void setEditingValue(Element inputElement, DOMString value);
     [RaisesException] void setAutofilled(Element inputElement, boolean enabled);
+    [RaisesException] void setSelectionRangeForNumberType(Element inputElement, unsigned long start, unsigned long end);
 
     Range rangeFromLocationAndLength(Element scope, long rangeLocation, long rangeLength);
     unsigned long locationFromRange(Element scope, Range range);
@@ -150,10 +148,10 @@
 
     sequence<DOMString> userPreferredLanguages();
     void setUserPreferredLanguages(sequence<DOMString> languages);
+    void setSystemTimeZone(DOMString timezone);
 
     unsigned long mediaKeysCount();
     unsigned long mediaKeySessionCount();
-    unsigned long contextLifecycleStateObserverObjectCount(Document document);
     unsigned long wheelEventHandlerCount(Document document);
     unsigned long scrollEventHandlerCount(Document document);
     unsigned long touchStartOrMoveEventHandlerCount(Document document);
@@ -162,6 +160,8 @@
     [RaisesException] HitTestLayerRectList touchEventTargetLayerRects(Document document);
 
     [RaisesException] boolean executeCommand(Document document, DOMString name, DOMString value);
+
+    void triggerTestInspectorIssue(Document document);
 
     DOMString htmlNamespace();
     sequence<DOMString> htmlTags();
@@ -179,9 +179,6 @@
     boolean canHyphenate(DOMString locale);
     void setMockHyphenation(DOMString locale);
 
-    boolean isOverwriteModeEnabled(Document document);
-    void toggleOverwriteModeEnabled(Document document);
-
     unsigned long numberOfScrollableAreas(Document document);
 
     boolean isPageBoxVisible(Document document, long pageNumber);
@@ -190,10 +187,11 @@
     readonly attribute InternalRuntimeFlags runtimeFlags;
     readonly attribute unsigned long workerThreadCount;
 
-    // Flag for layerTreeAsText.
-    // The value must be kept in sync with the value of LayerTreeFlags in layers_as_json.h.
+    // Flag for layerTreeAsText. The value must be kept in sync with the value
+    // of LayerTreeFlags in layers_as_json.h.
     // Other flags in LayerTreeFlags are not supported in internals API.
-    const unsigned short LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS = 2;
+    const unsigned short LAYER_TREE_INCLUDES_INVALIDATIONS = 2;
+    const unsigned short LAYER_TREE_INCLUDES_DETAILED_INVALIDATIONS = 4;
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
@@ -202,7 +200,6 @@
     DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
     [RaisesException] DOMRectList nonFastScrollableRects(Document document);
-    [RaisesException] void markGestureScrollRegionDirty(Document document);
 
     void evictAllResources();
 
@@ -214,14 +211,17 @@
     sequence<DOMString> shortcutIconURLs(Document document);
     sequence<DOMString> allIconURLs(Document document);
     [RaisesException] long numberOfPages(optional double pageWidthInPixels = 800, optional double pageHeightInPixels = 600);
-    [RaisesException] DOMString pageProperty(DOMString propertyName, long pageNumber);
-    [RaisesException] DOMString pageSizeAndMarginsInPixels(long pageIndex, long width, long height, long marginTop, long marginRight, long marginBottom, long marginLeft);
+    [RaisesException] DOMString pageProperty(DOMString propertyName, unsigned long pageNumber);
+    [RaisesException] DOMString pageSizeAndMarginsInPixels(unsigned long pageIndex, long width, long height, long marginTop, long marginRight, long marginBottom, long marginLeft);
 
     [RaisesException] float pageScaleFactor();
     [RaisesException] void setPageScaleFactor(float scaleFactor);
     [RaisesException] void setPageScaleFactorLimits(float minScaleFactor, float maxScaleFactor);
 
+    [RaisesException] float pageZoomFactor();
+
     [RaisesException] void setIsCursorVisible(Document document, boolean isVisible);
+    void setMaxNumberOfFramesToTen(boolean enable);
 
     // HTMLMediaElement, HTMLAudioElement and HTMLVideoElement.
     DOMString effectivePreload(HTMLMediaElement mediaElement);
@@ -239,6 +239,9 @@
     TypeConversions typeConversions();
 
     sequence<DOMString> getReferencedFilePaths();
+    // This should be called if <input type=file> refers to files selected
+    // without the browser process.
+    void disableReferencedFilePathsVerification();
 
     // These functions both reset the tracked repaint rects. They are intended to be used in the following order:
     //  startTrackingRepaints(), repaintRectsAsText(), stopTrackingRepaints().
@@ -260,16 +263,11 @@
     DOMString getCurrentCursorInfo();
 
     readonly attribute boolean cursorUpdatePending;
-    readonly attribute boolean fakeMouseMovePending;
 
     DOMString markerTextForListItem(Element element);
 
-    SerializedScriptValue deserializeBuffer(ArrayBuffer buffer);
-    ArrayBuffer serializeObject(SerializedScriptValue obj);
-
-    [CallWith=ScriptState] any deserializeBufferContainingWasm(ArrayBuffer buffer);
-    ArrayBuffer serializeWithInlineWasm(any obj);
-
+    [CallWith=Isolate, RaisesException] ArrayBuffer serializeObject(any obj);
+    [CallWith=Isolate] any deserializeBuffer(ArrayBuffer buffer);
 
     void forceReload(boolean endToEnd);
 
@@ -293,9 +291,9 @@
     [RaisesException] DOMRect selectionBounds();
     readonly attribute DOMString textAffinity;
 
-    boolean loseSharedGraphicsContext3D();
-
     [RaisesException] void forceCompositingUpdate(Document document);
+
+    void setForcedColorsAndDarkPreferredColorScheme(Document document);
 
     [RaisesException] void setShouldRevealPassword(Element element, boolean reveal);
 
@@ -319,11 +317,14 @@
     // attribute returns the currently interested element on the page.
     readonly attribute Element? interestedElement;
 
-    // This function is for testing HitRegions on Canvas2D.
-    unsigned long countHitRegions(CanvasRenderingContext2D context);
+    // Returns true if page associated with current internals object is
+    // active.
+    boolean isActivated();
 
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
+    void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
+    void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();
@@ -331,7 +332,6 @@
     UnionTypesTest unionTypesTest();
     CallbackFunctionTest callbackFunctionTest();
     [RaisesException] void setScrollChain(ScrollState scrollState, sequence<Element> elements);
-    void scheduleBlinkGC();
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();
@@ -369,13 +369,16 @@
     boolean setScrollbarVisibilityInScrollableArea(Node node, boolean visible);
 
     [RaisesException] double monotonicTimeToZeroBasedDocumentTime(double platformTime);
+
+    // Translate an event's DOMHighResTimeStamp in seconds into a monotonic time
+    // in milliseconds.
+    long long zeroBasedDocumentTimeToMonotonicTime(double domHighResTimeStamp);
+
     long long currentTimeTicks();
 
     DOMString getScrollAnimationState(Node node);
 
     DOMString getProgrammaticScrollAnimationState(Node node);
-
-    DOMRect visualRect(Node node);
 
     OriginTrialsTest originTrialsTest();
 
@@ -429,12 +432,24 @@
     // Sets the scale for devtools device emulation.
     [RaisesException] void setDeviceEmulationScale(float scale);
 
-    // Return a string that identifies |document|'s WindowAgent. You can use it
+    // Return a string that identifies |window|'s WindowAgent. You can use it
     // to distinguish different Agent instances (perhaps in a remote process).
     // The returned string is composed of the process ID and the memory address
     // of the Agent object.
-    DOMString getDocumentAgentId(Document document);
+    DOMString getAgentId(Window window);
 
     void useMockOverlayScrollbars();
     readonly attribute boolean overlayScrollbarsEnabled;
+
+    // Request generation of a Reporting report.
+    void generateTestReport(DOMString message);
+
+    [RaisesException] void setIsAdSubframe(HTMLIFrameElement iframe);
+
+    [RaisesException, CallWith=ScriptState] ReadableStream createReadableStream(long queueSize, DOMString optimizer);
+    // The return value consists of a WritableStream (.stream) and a promise of
+    // a sink object (.sink).
+    [RaisesException, CallWith=ScriptState] any createWritableStreamAndSink(long queueSize, DOMString optimizer);
+
+    void setAllowPerChunkTransferring(ReadableStream stream);
 };

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="color-scheme" content="light dark">
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../resources/picker-common.js"></script>
+</head>
+<body style="background-color: #eeffff;">
+<input type=week id=week value="10000-W12" list="suggestions" style="width: 200px;">
+<datalist id=suggestions>
+    <option>2012-W00</option> <!--invalid-->
+    <option>2012-01-01</option> <!--invalid-->
+    <option>foo</option> <!--invalid-->
+    <option label="This Week">2012-W01</option>
+    <option>2012-W02</option>
+    <option>2012-W03</option>
+    <option>2012-W04</option>
+    <option>2012-W05</option>
+    <option>2012-W06</option>
+    <option>2012-W07</option>
+    <option>2012-W08</option>
+    <option>2012-W09</option>
+</datalist>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('week'), finishTest);
+
+function finishTest() {
+  popupWindow.focus();
+  eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

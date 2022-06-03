@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>BackgroundSyncBrowserTest helper page</title>
+    <script>
+      window.onload = async () => {
+        let registration = await navigator.serviceWorker.register('/background_sync_sw.js');
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.sync.register('test-tag');
+        });
+      }
+    </script>
+  </head>
+  <body>
+    BackgroundSyncBrowserTest helper page
+  </body>
+</html>

@@ -17,7 +17,9 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -41,6 +43,10 @@ class SSLInfo;
 class NET_EXPORT_PRIVATE HttpStream {
  public:
   HttpStream() {}
+
+  HttpStream(const HttpStream&) = delete;
+  HttpStream& operator=(const HttpStream&) = delete;
+
   virtual ~HttpStream() {}
 
   // Initialize stream.  Must be called before calling SendRequest().
@@ -187,8 +193,19 @@ class NET_EXPORT_PRIVATE HttpStream {
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpStream);
+  // Set the idempotency of the request. No-op by default.
+  virtual void SetRequestIdempotency(Idempotency idempotency) {}
+
+  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  virtual const std::vector<std::string>& GetDnsAliases() const = 0;
+
+  // The value in the ACCEPT_CH frame received during TLS handshake via the
+  // ALPS extension, or the empty string if the server did not send one.  Unlike
+  // Accept-CH header fields received in HTTP responses, this value is available
+  // before any requests are made.
+  virtual base::StringPiece GetAcceptChViaAlps() const = 0;
 };
 
 }  // namespace net

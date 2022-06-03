@@ -1,6 +1,8 @@
 select {
     display: block;
     overflow-y: auto;
+    border-radius: 0px;
+    outline: none;
 }
 
 select hr {

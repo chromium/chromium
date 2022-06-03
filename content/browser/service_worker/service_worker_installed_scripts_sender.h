@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 
-#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"
@@ -16,7 +15,6 @@
 
 namespace content {
 
-struct HttpResponseInfoIOBuffer;
 class ServiceWorkerVersion;
 
 // ServiceWorkerInstalledScriptsSender serves the service worker's installed
@@ -39,6 +37,11 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
  public:
   // |owner| must be an installed service worker.
   explicit ServiceWorkerInstalledScriptsSender(ServiceWorkerVersion* owner);
+
+  ServiceWorkerInstalledScriptsSender(
+      const ServiceWorkerInstalledScriptsSender&) = delete;
+  ServiceWorkerInstalledScriptsSender& operator=(
+      const ServiceWorkerInstalledScriptsSender&) = delete;
 
   ~ServiceWorkerInstalledScriptsSender() override;
 
@@ -76,7 +79,8 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
       ServiceWorkerInstalledScriptReader::FinishedReason reason);
 
   // Implements ServiceWorkerInstalledScriptReader::Client.
-  void OnStarted(scoped_refptr<HttpResponseInfoIOBuffer> http_info,
+  void OnStarted(network::mojom::URLResponseHeadPtr response_head,
+                 absl::optional<mojo_base::BigBuffer> metadata,
                  mojo::ScopedDataPipeConsumerHandle body_handle,
                  mojo::ScopedDataPipeConsumerHandle meta_data_handle) override;
   void OnFinished(
@@ -102,8 +106,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
 
   GURL current_sending_url_;
   base::queue<std::pair<int64_t /* resource_id */, GURL>> pending_scripts_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptsSender);
 };
 
 }  // namespace content

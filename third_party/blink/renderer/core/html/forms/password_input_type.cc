@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,9 +44,9 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -88,7 +89,7 @@ void PasswordInputType::CreateShadowSubtree() {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     Element* container = ContainerElement();
     Element* view_port = GetElement().UserAgentShadowRoot()->getElementById(
-        shadow_element_names::EditingViewPort());
+        shadow_element_names::kIdEditingViewPort);
     DCHECK(container);
     DCHECK(view_port);
     container->InsertBefore(MakeGarbageCollected<PasswordRevealButtonElement>(
@@ -126,9 +127,33 @@ void PasswordInputType::UpdateView() {
     UpdatePasswordRevealButton();
 }
 
+void PasswordInputType::CapsLockStateMayHaveChanged() {
+  auto& document = GetElement().GetDocument();
+  LocalFrame* frame = document.GetFrame();
+  // Only draw the caps lock indicator if these things are true:
+  // 1) The field is a password field
+  // 2) The frame is active
+  // 3) The element is focused
+  // 4) The caps lock is on
+  const bool should_draw_caps_lock_indicator =
+      frame && frame->Selection().FrameIsFocusedAndActive() &&
+      document.FocusedElement() == GetElement() &&
+      KeyboardEventManager::CurrentCapsLockState();
+
+  if (should_draw_caps_lock_indicator != should_draw_caps_lock_indicator_) {
+    should_draw_caps_lock_indicator_ = should_draw_caps_lock_indicator;
+    if (auto* layout_object = GetElement().GetLayoutObject())
+      layout_object->SetShouldDoFullPaintInvalidation();
+  }
+}
+
+bool PasswordInputType::ShouldDrawCapsLockIndicator() const {
+  return should_draw_caps_lock_indicator_;
+}
+
 void PasswordInputType::UpdatePasswordRevealButton() {
   Element* button = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::PasswordRevealButton());
+      shadow_element_names::kIdPasswordRevealButton);
 
   // Update the glyph.
   const AtomicString reveal("reveal");
@@ -161,6 +186,16 @@ void PasswordInputType::UpdatePasswordRevealButton() {
     // (ex. out of focus)
     GetElement().SetShouldRevealPassword(false);
   }
+}
+
+void PasswordInputType::ForwardEvent(Event& event) {
+  BaseTextInputType::ForwardEvent(event);
+
+  if (GetElement().GetLayoutObject() &&
+      !GetElement().GetForceReattachLayoutTree() &&
+      (event.type() == event_type_names::kBlur ||
+       event.type() == event_type_names::kFocus))
+    CapsLockStateMayHaveChanged();
 }
 
 void PasswordInputType::HandleBlurEvent() {
@@ -200,4 +235,9 @@ void PasswordInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (!event.DefaultHandled())
     BaseTextInputType::HandleKeydownEvent(event);
 }
+
+bool PasswordInputType::SupportsInputModeAttribute() const {
+  return true;
+}
+
 }  // namespace blink

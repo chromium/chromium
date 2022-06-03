@@ -8,11 +8,15 @@
 
 namespace blink {
 
+namespace {
+constexpr char kOtpCredentialType[] = "otp";
+}
+
 Credential::~Credential() = default;
 
 Credential::Credential(const String& id, const String& type)
     : id_(id), type_(type) {
-  DCHECK(!id_.IsEmpty());
+  DCHECK(!id_.IsEmpty() || type == kOtpCredentialType);
   DCHECK(!type_.IsEmpty());
 }
 
@@ -28,7 +32,7 @@ KURL Credential::ParseStringAsURLOrThrow(const String& url,
   return parsed_url;
 }
 
-void Credential::Trace(blink::Visitor* visitor) {
+void Credential::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 

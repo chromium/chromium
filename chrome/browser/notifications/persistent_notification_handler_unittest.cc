@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -40,6 +40,10 @@ class TestingProfileWithPermissionManager : public TestingProfile {
       : permission_manager_(
             std::make_unique<
                 testing::NiceMock<content::MockPermissionManager>>()) {}
+  TestingProfileWithPermissionManager(
+      const TestingProfileWithPermissionManager&) = delete;
+  TestingProfileWithPermissionManager& operator=(
+      const TestingProfileWithPermissionManager&) = delete;
 
   ~TestingProfileWithPermissionManager() override = default;
 
@@ -59,8 +63,6 @@ class TestingProfileWithPermissionManager : public TestingProfile {
 
  private:
   std::unique_ptr<content::MockPermissionManager> permission_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingProfileWithPermissionManager);
 };
 
 }  // namespace
@@ -69,11 +71,18 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
  public:
   PersistentNotificationHandlerTest()
       : display_service_tester_(&profile_), origin_(kExampleOrigin) {}
+  PersistentNotificationHandlerTest(const PersistentNotificationHandlerTest&) =
+      delete;
+  PersistentNotificationHandlerTest& operator=(
+      const PersistentNotificationHandlerTest&) = delete;
 
   ~PersistentNotificationHandlerTest() override = default;
 
   // ::testing::Test overrides:
   void SetUp() override {
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, HistoryServiceFactory::GetDefaultFactory());
+
     mock_logger_ = static_cast<MockNotificationMetricsLogger*>(
         NotificationMetricsLoggerFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -95,9 +104,6 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
   // Owned by the |profile_| as a keyed service.
   MockNotificationMetricsLogger* mock_logger_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentNotificationHandlerTest);
 };
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
@@ -109,7 +115,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
       std::make_unique<PersistentNotificationHandler>();
 
   handler->OnClick(&profile_, origin_, kExampleNotificationId,
-                   base::nullopt /* action_index */, base::nullopt /* reply */,
+                   absl::nullopt /* action_index */, absl::nullopt /* reply */,
                    base::DoNothing());
 }
 
@@ -144,7 +150,7 @@ TEST_F(PersistentNotificationHandlerTest,
 
     display_service_tester_.SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, kExampleNotificationId,
-        base::nullopt /* action_index */, base::nullopt /* reply */);
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
   }
 
   EXPECT_FALSE(display_service_tester_.GetNotification(kExampleNotificationId));

@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.bookmarks;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * A class representing the UI state of the {@link BookmarkManager}. All
@@ -63,7 +63,7 @@ class BookmarkUIState {
         state.mUrl = uri.toString();
 
         if (state.mUrl.equals(UrlConstants.BOOKMARKS_URL)) {
-            return createFolderState(bookmarkModel.getDefaultFolder(), bookmarkModel);
+            return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         } else if (state.mUrl.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
             String path = uri.getLastPathSegment();
             if (!path.isEmpty()) {
@@ -73,7 +73,7 @@ class BookmarkUIState {
         }
 
         if (!state.isValid(bookmarkModel)) {
-            state = createFolderState(bookmarkModel.getDefaultFolder(), bookmarkModel);
+            state = createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         }
 
         return state;

@@ -6,8 +6,9 @@
 #define SQL_RECOVER_MODULE_BTREE_H_
 
 #include <cstdint>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/sequence_checker.h"
 
 namespace sql {

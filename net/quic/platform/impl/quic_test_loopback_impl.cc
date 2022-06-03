@@ -23,7 +23,7 @@ QuicIpAddress TestLoopbackImpl() {
 }
 
 QuicIpAddress TestLoopbackImpl(int index) {
-  const char kLocalhostIPv4[] = {127, 0, 0, index};
+  const char kLocalhostIPv4[] = {127, 0, 0, static_cast<char>(index)};
   QuicIpAddress address;
   address.FromPackedString(kLocalhostIPv4, 4);
   return address;

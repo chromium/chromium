@@ -6,7 +6,7 @@
 
 namespace device {
 
-bool IsProtected(const mojom::HidUsageAndPage& hid_usage_and_page) {
+bool IsAlwaysProtected(const mojom::HidUsageAndPage& hid_usage_and_page) {
   const uint16_t usage = hid_usage_and_page.usage;
   const uint16_t usage_page = hid_usage_and_page.usage_page;
 

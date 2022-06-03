@@ -44,6 +44,7 @@
   background-position: left center;
   background-repeat: no-repeat;
   background-size: 16px 16px;
+  padding-top: 1px;
   z-index: 1;
 }
 
@@ -52,10 +53,16 @@ html[dir='rtl'] .dialog-header .combobutton > .button > .action {
 }
 
 .dialog-header .combobutton > .button > .trigger {
-  -webkit-margin-end: -8px;
-  -webkit-margin-start: 2px;
+  margin-inline-end: -8px;
+  margin-inline-start: 2px;
   margin-top: -1px;
   width: 22px;
+}
+
+.dialog-header.files-ng .combobutton > .button > .trigger {
+  left: 2px;
+  position: relative;
+  right: 2px;
 }
 
 /* This pseudo element expands clickable area of the .trigger */

@@ -4,8 +4,8 @@
 
 // Definition of PreamblePatcher
 
-#ifndef SANDBOX_SRC_SIDESTEP_PREAMBLE_PATCHER_H__
-#define SANDBOX_SRC_SIDESTEP_PREAMBLE_PATCHER_H__
+#ifndef SANDBOX_WIN_SRC_SIDESTEP_PREAMBLE_PATCHER_H_
+#define SANDBOX_WIN_SRC_SIDESTEP_PREAMBLE_PATCHER_H_
 
 #include <stddef.h>
 
@@ -109,4 +109,4 @@ class PreamblePatcher {
 
 }  // namespace sidestep
 
-#endif  // SANDBOX_SRC_SIDESTEP_PREAMBLE_PATCHER_H__
+#endif  // SANDBOX_WIN_SRC_SIDESTEP_PREAMBLE_PATCHER_H_

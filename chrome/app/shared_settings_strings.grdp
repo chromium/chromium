@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings-specific strings shared by Browser and Chrome OS settings -->
+<grit-part>
+  <!-- All subpages -->
+  <message name="IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button. If the back button is activated, it will navigate to the previous page. This text will only be announced by ChromeVox and will not be visible in the UI.">
+    <ph name="SUBPAGE_TITLE">$1<ex>Bluetooth</ex></ph> subpage back button
+  </message>
+  <message name="IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the settings page to navigate away from the currently displaying subpage to the previous visited page. This text will only be announced by ChromeVox and will not be visible in the UI.">
+    Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Bluetooth</ex> subpage</ph>.
+  </message>
+
+  <!-- Caption Subpage (strings used by the <settings-captions> element) -->
+  <message name="IDS_SETTINGS_CAPTIONS" desc="Title of the subpage for settings related to captions">
+    Captions
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_PREFERENCES_TITLE" desc="Section title for caption style setting that is supported by some apps and sites">
+    Caption preferences
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_PREFERENCES_SUBTITLE" desc="Section subtitle for Caption preferences for Live Caption. Some apps and sites also use the system caption style, but others don't use the web captioning standard and have their own captioning platform.">
+    Customize caption size and style for Live Caption. Some apps and sites will also use this setting.
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference.">
+    Text size
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_FONT" desc="Name of the caption text font preference.">
+    Text font
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_COLOR" desc="Name of the caption text color preference.">
+    Text color
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_OPACITY" desc="Name of the caption text opacity preference.">
+    Text opacity
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_BACKGROUND_OPACITY" desc="Name of the caption background opacity preference.">
+    Background opacity
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_OPACITY_OPAQUE" desc="Name of the opaque opacity preference.">
+    Opaque
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_OPACITY_SEMI_TRANSPARENT" desc="Name of the semi-transparent opacity preference.">
+    Semi-transparent
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_OPACITY_TRANSPARENT" desc="Name of the transparent opacity preference.">
+    Transparent
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW" desc="Name of the caption text shadow preference.">
+    Text shadow
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW_NONE" desc="Name of the None option for the caption text shadow.">
+    None
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW_RAISED" desc="Name of the Raised option for the caption text shadow.">
+    Raised
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW_DEPRESSED" desc="Name of the Depressed option for the caption text shadow.">
+    Depressed
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW_UNIFORM" desc="Name of the Uniform option for the caption text shadow.">
+    Uniform
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SHADOW_DROP_SHADOW" desc="Name of the Drop shadow option for the caption text shadow.">
+    Drop shadow
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_BACKGROUND_COLOR" desc="Name of the caption background color preference.">
+    Background color
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_BLACK" desc="Name of the Black color for the caption text or background.">
+    Black
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_WHITE" desc="Name of the White color for the caption text or background.">
+    White
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_RED" desc="Name of the Red color for the caption text or background.">
+    Red
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_GREEN" desc="Name of the Green color for the caption text or background.">
+    Green
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_BLUE" desc="Name of the Blue color for the caption text or background.">
+    Blue
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_YELLOW" desc="Name of the Yellow color for the caption text or background.">
+    Yellow
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_CYAN" desc="Name of the Cyan color for the caption text or background.">
+    Cyan
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_COLOR_MAGENTA" desc="Name of the Magenta color for the caption text or background.">
+    Magenta
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_DEFAULT_SETTING" desc="Name of the default setting for the caption text.">
+    Default
+  </message>
+
+  <!-- Nearby Share -->
+  <message name="IDS_SETTINGS_NEARBY_SHARE_TITLE" desc="Name of the settings page for the Nearby Share feature">
+    Nearby Share
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_SET_UP_BUTTON_TITLE" desc="Title of the button that lets the user set up and enable the Nearby Share feature for the first time.">
+    Set up
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ROW_TITLE" desc="Text for the row in settings which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+    Device name
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_TITLE" desc="Title for the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+    Change device name
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_FIELD_LABEL" desc="Label for the input field where a user can set the name of their device which is shown to other devices for the Nearby Share feature.">
+    New device name
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME" desc="Label for the button that opens the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
+    Change device name
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE" desc="Title for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+    Show notification
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION" desc="Description for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+    When devices are sharing nearby
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current device name which is shown to other devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_CONFIRM_DEVICE_NAME" desc="Label for the button that allows a user to confirm their device name which is shown to other devices for the Nearby Share feature.">
+    Rename
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL" desc="Label for the button that opens contacts management when configuring visibility of their device with their contacts for the Nearby Share feature.">
+    Manage contacts
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE" desc="Text for row in settings that allows user to manage contacts for the Nearby Share feature.">
+    Contacts
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE" desc="Label for the button that brings up a dialog to allow a user to edit the data usage setting for the Nearby Share feature.">
+    Edit
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE" desc="Label for the button that allows a user to confirm their choice of data usage setting for the Nearby Share feature.">
+    Save
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_TITLE" desc="Title for the dialog where a user can select the data usage setting for the Nearby Share feature.">
+    Data usage
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_LABEL" desc="Label for the data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature.">
+    Wi-Fi only
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_DESCRIPTION" desc="Description of the data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature.">
+    Never use mobile data to transfer
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_LABEL" desc="Label for the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    Mobile Data
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION" desc="Description of the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    May incur mobile data charges
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP" desc="Explanation of when the mobile data usage setting applies. When selected, Mobile data means that Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL" desc="Label for the data usage setting where transfers will only take place offline for the Nearby Share feature.">
+    Without internet
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_DESCRIPTION" desc="Description of the data usage setting where transfers will only take place offline for the Nearby Share feature.">
+    Files will always be shared offline
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_DATA_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current data usage setting is Mobile Data
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_WIFI_ONLY_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current data usage setting is Wi-Fi only
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current data usage setting where transfers will only take place offline for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current data usage setting is Without internet
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE" desc="Text for the row in settings which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    Device visibility
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY" desc="Label for the button that opens the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    Change visibility
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE" desc="Title for the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    Device visibility
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE" desc="Label for the button that saves a user's preference for the visibility of their device with their contacts for the Nearby Share feature. ">
+    Save
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION" desc="A description of nearby share that helps users understand what the feature is used for.">
+    Share files with people around you. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TITLE" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
+    Visible to everyone
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON" desc="Subtitle shown indicating that the device is visible to all devices around it for the Nearby Share feature and the nearest number of whole minutes it is on until it is turned off.">
+    Visibility is on for <ph name="MINUTES">$1<ex>5</ex></ph> minutes
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
+    You will be visible to everyone for <ph name="MINUTES">$1<ex>5</ex></ph> minutes. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+
+ <!-- Personalization Options SubPage (strings used by the <settings-personalization-options> element) -->
+  <message name="IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION" desc="The label of the checkbox to enable/disable url keyed anonymized data collection.">
+    Make searches and browsing better
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION_DESC" desc="The description of the checkbox to enable/disable url keyed anonymized data collection.">
+    Sends URLs of pages you visit to Google
+  </message>
+  <message name="IDS_SETTINGS_SPELLING_PREF" desc="The documentation string of the 'Use Spelling' preference">
+    Enhanced spell check
+  </message>
+  <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The documentation string of the 'Use Suggest' preference">
+    Autocomplete searches and URLs
+  </message>
+  <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the 'Use Suggest' preference">
+    Sends some cookies and searches from the address bar and search box to your default search engine
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF" desc="The label of the checkbox to enable/disable crash and user metrics logging. This string does not need a Chromium counter-part because it will only be visible if Google-branded.">
+    Help improve Chrome's features and performance
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
+    Automatically sends usage statistics and crash reports to Google
+  </message>
+  <message name="IDS_SETTINGS_LINKDOCTOR_PREF" desc="The documentation string of the 'Use Link Doctor' preference to help with navigation errors.">
+    Show suggestions for similar pages when a page can't be found
+  </message>
+  <message name="IDS_SETTINGS_LINKDOCTOR_PREF_DESC" desc="The description of the 'Use Link Doctor' preference to help with navigation errors.">
+    Sends the web address of the page you're trying to reach to Google
+  </message>
+  <message name="IDS_DRIVE_SUGGEST_PREF" desc="The documentation string of the 'Show Drive Results in Omnibox' preference - short description">
+    Google Drive search suggestions
+  </message>
+
+  <!-- Sync Accounts page (used by the <settings-sync-account-control> element) -->
+  <message name="IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT" desc="The text displayed to the user that the profile is currently syncing to a specific account.">
+    Syncing to <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SYNC_PAUSED" desc="The label informing the user that sync is currently paused.">
+    Sync is paused
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT" desc="The text displayed to prompt users to sign in to chrome.">
+    Get Google smarts in Chrome
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF" desc="The label for the button that lets the user turn off profile syncing with their gaia account.">
+    Turn off
+  </message>
+  <message name="IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing settings between multiple browser instances.">
+    Settings
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING" desc="The label informing the user that sync is currently not working.">
+    Sync isn't working
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING" desc="The label informing the user that password sync is currently not working.">
+    Password sync isn't working
+  </message>
+  <message name="IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE" desc="Name of the settings page which manages data used by sync.">
+    Manage sync
+  </message>
+  <message name="IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE" desc="Name of the settings page which manages data used by sync.">
+    Manage what you sync
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT" desc="The label for the button that lets the user choose another account to sync with.">
+    Use another account
+  </message>
+
+  <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->
+  <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">
+    Clear and Sign Out
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_SIGN_OUT" desc="The label of the button that lets user sign-out of Chrome.">
+    Sign out
+  </message>
+  <!-- Sync Control Subpage (strings used by the <settings-sync-controls> element) -->
+  <message name="IDS_SETTINGS_AUTOFILL_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing autofill settings between multiple browser instances.">
+    Addresses and more
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing history between multiple browser instances.">
+    History
+  </message>
+  <message name="IDS_SETTINGS_EXTENSIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing extensions between multiple browser instances.">
+    Extensions
+  </message>
+  <message name="IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing open tabs between multiple browser instances.">
+    Open tabs
+  </message>
+  <message name="IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of Wi-Fi networks across devices.">
+    Wi-Fi networks
+  </message>
+  <message name="IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL" desc="Label for the checkbox which causes all properties to be synced.">
+    Sync everything
+  </message>
+  <message name="IDS_SETTINGS_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing apps between multiple browser instances.">
+    Apps
+  </message>
+  <message name="IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL" desc="Title for a section that shows options for various Google services">
+    Other Google services
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_SYNC" desc="Label for the radio button to customize sync data types.">
+    Customize sync
+  </message>
+  <message name="IDS_SETTINGS_SYNC_DATA" desc="Title for sync data types list.">
+    Sync data
+  </message>
+
+  <!-- Sync page (strings used by the <settings-sync-page> element) -->
+  <message name="IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing passwords between multiple browser instances.">
+    Passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSPHRASE_PLACEHOLDER" desc="Placeholder for the passphrase field.">
+    Passphrase
+  </message>
+  <message name="IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE" desc="Title for the section where the user enters the passphrase.">
+    Encryption options
+  </message>
+  <message name="IDS_SETTINGS_SUBMIT_PASSPHRASE" desc="Text for the button which, when clicked, submits a sync password for verification.">
+    Submit
+  </message>
+  <message name="IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with the Google login for the current browser profile.">
+    Encrypt synced passwords with your Google Account
+  </message>
+  <message name="IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing bookmarks between multiple browser instances.">
+    Bookmarks
+  </message>
+  <message name="IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing reading list between multiple browser instances.">
+    Reading list
+  </message>
+  <message name="IDS_SETTINGS_ENCRYPTION_OPTIONS" desc="Title for the section which includes options for encrypting sync settings.">
+    Encryption options
+  </message>
+  <message name="IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR" desc="Error message when the passphrase and confirmation don't match.">
+    You must enter the same passphrase twice
+  </message>
+  <message name="IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR" desc="Error message when the passphrase is empty.">
+    Empty passphrase is not allowed
+  </message>
+  <message name="IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR" desc="Message when the passphrase is incorrect.">
+    The passphrase you entered is incorrect
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT" desc="Title for the link to manage Chrome Sync data via Google Dashboard when unified consent is enabled.">
+    Data from Chrome sync
+  </message>
+  <message name="IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT" desc="Title for the link to manage Chrome Sync data via Google Dashboard when unified consent is enabled.">
+    Review your synced data
+  </message>
+  <message name="IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES" desc="The name of the settings page and the label of the button that takes the user to manage their sync and non-personalized services settings.">
+    Sync and Google services
+  </message>
+  <message name="IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER" desc="Placeholder for the confirm-passphrase field.">
+    Confirm passphrase
+  </message>
+  <message name="IDS_SETTINGS_SYNC_LOADING" desc="The message shown when waiting for the sync backend to start up.">
+    Please wait...
+  </message>
+  <message name="IDS_SETTINGS_SYNC_TIMEOUT" desc="Text explaining what to do if sync times out.">
+    Check your internet connection. If the problem continues, try signing out and signing in again.
+  </message>
+  <message name="IDS_SETTINGS_SYNC" desc="Name of the sync service.">
+    Sync
+  </message>
+  <message name="IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC" desc="The label of button that allows user to cancel sync.">
+    Cancel sync
+  </message>
+  <message name="IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE" desc="The title of the dialog to confirm the sync cancellation.">
+    Cancel sync?
+  </message>
+  <message name="IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY" desc="The body text of the dialog to confirm the sync cancellation.">
+    You can turn on sync anytime in settings
+  </message>
+    <if expr="chromeos">
+    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.
+    </message>
+  </if>
+
+  <if expr="lacros">
+    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.
+    </message>
+  </if>
+
+  <!-- About Subpage-->
+  <message name="IDS_SETTINGS_ABOUT_UPGRADE_CHECK_STARTED" desc="Status label: About to start checking for updates">
+    Checking for updates
+  </message>
+
+  <if expr="chromeos">
+    <message name="IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes and wallpapers between multiple browser instances.">
+        Theme &amp; Wallpaper
+      </message>
+    </if>
+  <if expr="not chromeos">
+      <message name="IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes and wallpapers between multiple browser instances.">
+        Theme
+    </message>
+  </if>
+
+  <!-- Password Prompt Dialog -->
+  <if expr="chromeos or lacros">
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
+      Confirm your password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
+      Password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
+      Invalid password
+    </message>
+  </if>
+</grit-part>

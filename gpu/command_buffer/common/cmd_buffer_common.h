@@ -10,9 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
-#include "gpu/command_buffer/common/bitfield_helpers.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {

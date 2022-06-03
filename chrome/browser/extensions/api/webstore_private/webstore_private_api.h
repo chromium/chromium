@@ -10,14 +10,23 @@
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/webstore_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+// TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
+// flag to #if defined(OS_CHROMEOS)
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
+#include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+class Profile;
 
 namespace content {
 class GpuFeatureChecker;
@@ -40,6 +49,9 @@ class WebstorePrivateApi {
   static std::unique_ptr<WebstoreInstaller::Approval> PopApprovalForTesting(
       Profile* profile,
       const std::string& extension_id);
+
+  // Clear the pending approvals. This should be used for testing only.
+  static void ClearPendingApprovalsForTesting();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
@@ -50,6 +62,11 @@ class WebstorePrivateBeginInstallWithManifest3Function
                              WEBSTOREPRIVATE_BEGININSTALLWITHMANIFEST3)
 
   WebstorePrivateBeginInstallWithManifest3Function();
+
+  std::u16string GetBlockedByPolicyErrorMessageForTesting() const;
+  bool GetFrictionDialogShownForTesting() const {
+    return friction_dialog_shown_;
+  }
 
  private:
   using Params = api::webstore_private::BeginInstallWithManifest3::Params;
@@ -68,7 +85,26 @@ class WebstorePrivateBeginInstallWithManifest3Function
                               InstallHelperResultCode result,
                               const std::string& error_message) override;
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  void OnParentPermissionDone(ParentPermissionDialog::Result result);
+
+  void OnParentPermissionReceived();
+
+  void OnParentPermissionCanceled();
+
+  void OnParentPermissionFailed();
+
+  // Returns true if the parental approval prompt was shown, false if there was
+  // an error showing it.
+  bool PromptForParentApproval();
+
+  void OnBlockedByParentDialogDone();
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+  void OnFrictionPromptDone(bool result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnRequestPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnBlockByPolicyPromptDone();
 
   void HandleInstallProceed();
   void HandleInstallAbort(bool user_initiated);
@@ -76,14 +112,30 @@ class WebstorePrivateBeginInstallWithManifest3Function
   ExtensionFunction::ResponseValue BuildResponse(
       api::webstore_private::Result result,
       const std::string& error);
-  std::unique_ptr<base::ListValue> CreateResults(
-      api::webstore_private::Result result) const;
+
+  bool ShouldShowFrictionDialog(Profile* profile);
+  void ShowInstallFrictionDialog(content::WebContents* contents);
+  void ShowInstallDialog(content::WebContents* contents);
+
+  // Shows block dialog when |extension| is blocked by policy on the Window that
+  // |contents| belongs to. |done_callback| will be invoked once the dialog is
+  // closed by user.
+  // Custom error message will be appended if it's set by the policy.
+  void ShowBlockedByPolicyDialog(const Extension* extension,
+                                 const SkBitmap& icon,
+                                 content::WebContents* contents,
+                                 base::OnceClosure done_callback);
+
+  // Adds friction accepted events to Safe Browsing metrics collector for
+  // further metrics logging. Called when a user decides to accept the friction
+  // prompt. Note that the extension may not be eventually installed.
+  void ReportFrictionAcceptedEvent();
 
   const Params::Details& details() const { return params_->details; }
 
-  ChromeExtensionFunctionDetails chrome_details_;
-
   std::unique_ptr<Params> params_;
+
+  Profile* profile_ = nullptr;
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
@@ -94,7 +146,17 @@ class WebstorePrivateBeginInstallWithManifest3Function
   // ExtensionInstallPrompt to prompt for confirmation of the install.
   scoped_refptr<Extension> dummy_extension_;
 
+  std::u16string blocked_by_policy_error_message_;
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
+  SupervisedUserExtensionsMetricsRecorder
+      supervised_user_extensions_metrics_recorder_;
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
+
+  bool friction_dialog_shown_ = false;
 };
 
 class WebstorePrivateCompleteInstallFunction
@@ -121,8 +183,6 @@ class WebstorePrivateCompleteInstallFunction
 
   void OnInstallSuccess(const std::string& id);
 
-  ChromeExtensionFunctionDetails chrome_details_;
-
   std::unique_ptr<WebstoreInstaller::Approval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 };
@@ -139,8 +199,6 @@ class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetBrowserLoginFunction : public ExtensionFunction {
@@ -155,8 +213,6 @@ class WebstorePrivateGetBrowserLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetStoreLoginFunction : public ExtensionFunction {
@@ -171,8 +227,6 @@ class WebstorePrivateGetStoreLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateSetStoreLoginFunction : public ExtensionFunction {
@@ -187,8 +241,6 @@ class WebstorePrivateSetStoreLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetWebGLStatusFunction : public ExtensionFunction {
@@ -237,8 +289,6 @@ class WebstorePrivateIsInIncognitoModeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
@@ -260,8 +310,6 @@ class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
   ExtensionFunction::ResponseValue BuildResponse(
       api::webstore_private::Result result,
       const std::string& error);
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetEphemeralAppsEnabledFunction
@@ -294,8 +342,6 @@ class WebstorePrivateIsPendingCustodianApprovalFunction
   ExtensionFunction::ResponseAction Run() override;
 
   ExtensionFunction::ResponseValue BuildResponse(bool result);
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
@@ -305,15 +351,16 @@ class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
 
   WebstorePrivateGetReferrerChainFunction();
 
+  WebstorePrivateGetReferrerChainFunction(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+  WebstorePrivateGetReferrerChainFunction& operator=(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+
  private:
   ~WebstorePrivateGetReferrerChainFunction() override;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetReferrerChainFunction);
 };
 
 class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
@@ -323,15 +370,21 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
 
   WebstorePrivateGetExtensionStatusFunction();
 
+  WebstorePrivateGetExtensionStatusFunction(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
+  WebstorePrivateGetExtensionStatusFunction& operator=(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
+
  private:
   ~WebstorePrivateGetExtensionStatusFunction() override;
 
+  ExtensionFunction::ResponseValue BuildResponseWithoutManifest(
+      const ExtensionId& extension_id);
+  void OnManifestParsed(const ExtensionId& extension_id,
+                        data_decoder::DataDecoder::ValueOrError result);
+
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetExtensionStatusFunction);
 };
 
 class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
@@ -340,15 +393,16 @@ class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
                              WEBSTOREPRIVATE_REQUESTEXTENSION)
   WebstorePrivateRequestExtensionFunction();
 
+  WebstorePrivateRequestExtensionFunction(
+      const WebstorePrivateRequestExtensionFunction&) = delete;
+  WebstorePrivateRequestExtensionFunction& operator=(
+      const WebstorePrivateRequestExtensionFunction&) = delete;
+
  private:
   ~WebstorePrivateRequestExtensionFunction() override;
 
   // Extensionfunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  void AddExtensionToPendingList(const ExtensionId& id);
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateRequestExtensionFunction);
 };
 
 }  // namespace extensions

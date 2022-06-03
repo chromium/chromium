@@ -11,4 +11,8 @@ class BaseChromePreferenceKeyChecker {
     void checkIsKeyInUse(String key) {
         // No-op.
     }
+
+    void checkIsPrefixInUse(KeyPrefix prefix) {
+        // No-op.
+    }
 }

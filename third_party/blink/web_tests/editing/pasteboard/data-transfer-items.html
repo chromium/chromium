@@ -51,7 +51,7 @@ t.step(() => {
 
           // Check that an exception is properly raised when attempting to
           // add a duplicate string type.
-          assert_throws('NotSupportedError',
+          assert_throws_dom('NotSupportedError', selection.window.DOMException,
               () => items.add('Moo', 'text/plain'),
               'Adding another text/plain data');
         });

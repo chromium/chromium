@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/logging.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {
@@ -21,41 +20,52 @@ void FakeModemMessagingClient::SetSmsReceivedHandler(
     const std::string& service_name,
     const dbus::ObjectPath& object_path,
     const SmsReceivedHandler& handler) {
-  sms_received_handler_ = handler;
+  sms_received_handlers_.insert(
+      std::pair<dbus::ObjectPath, SmsReceivedHandler>(object_path, handler));
+  message_paths_map_.insert(
+      std::pair<dbus::ObjectPath, std::vector<dbus::ObjectPath>>(object_path,
+                                                                 {}));
 }
 
 void FakeModemMessagingClient::ResetSmsReceivedHandler(
     const std::string& service_name,
     const dbus::ObjectPath& object_path) {
-  sms_received_handler_.Reset();
+  sms_received_handlers_[object_path].Reset();
 }
 
 void FakeModemMessagingClient::Delete(const std::string& service_name,
                                       const dbus::ObjectPath& object_path,
                                       const dbus::ObjectPath& sms_path,
                                       VoidDBusMethodCallback callback) {
-  std::vector<dbus::ObjectPath>::iterator it(
-      find(message_paths_.begin(), message_paths_.end(), sms_path));
-  if (it != message_paths_.end())
-    message_paths_.erase(it);
+  std::vector<dbus::ObjectPath> message_paths = message_paths_map_[object_path];
+  auto iter = find(message_paths.begin(), message_paths.end(), sms_path);
+  if (iter != message_paths.end())
+    message_paths.erase(iter);
   std::move(callback).Run(true);
 }
 
 void FakeModemMessagingClient::List(const std::string& service_name,
                                     const dbus::ObjectPath& object_path,
                                     ListCallback callback) {
-  // This entire FakeModemMessagingClient is for testing.
-  // Calling List with |service_name| equal to "AddSMS" allows unit
-  // tests to confirm that the sms_received_handler is functioning.
-  if (service_name == "AddSMS") {
-    const dbus::ObjectPath kSmsPath("/SMS/0");
-    message_paths_.push_back(kSmsPath);
-    if (!sms_received_handler_.is_null())
-      sms_received_handler_.Run(kSmsPath, true);
-    std::move(callback).Run({});
-  } else {
-    std::move(callback).Run(message_paths_);
+  std::move(callback).Run(message_paths_map_[object_path]);
+}
+
+ModemMessagingClient::TestInterface*
+FakeModemMessagingClient::GetTestInterface() {
+  return this;
+}
+
+// ModemMessagingClient::TestInterface overrides.
+
+void FakeModemMessagingClient::ReceiveSms(const dbus::ObjectPath& object_path,
+                                          const dbus::ObjectPath& sms_path) {
+  if (message_paths_map_.find(object_path) == message_paths_map_.end()) {
+    NOTREACHED() << "object_path not found!";
+    return;
   }
+
+  message_paths_map_[object_path].push_back(sms_path);
+  sms_received_handlers_[object_path].Run(sms_path, true);
 }
 
 }  // namespace chromeos

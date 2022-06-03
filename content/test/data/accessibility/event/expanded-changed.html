@@ -13,9 +13,15 @@
   <li aria-label="list item 3">ListItem 3</li>
 </ul>
 <script>
+  var go_passes = [
+    () => document.getElementById('list').style.visibility = 'visible',
+    () => document.getElementById('title').setAttribute('aria-expanded', 'true'),
+  ];
+
+  let current_pass = 0;
   function go() {
-    document.getElementById('list').style.visibility = 'visible';
-    document.getElementById('title').setAttribute('aria-expanded', 'true');
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
   }
 </script>
 </body>

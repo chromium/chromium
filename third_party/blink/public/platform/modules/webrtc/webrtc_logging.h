@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_WEBRTC_WEBRTC_LOGGING_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_WEBRTC_WEBRTC_LOGGING_H_
 
+#include <stdarg.h>
+
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -35,10 +38,30 @@ BLINK_PLATFORM_EXPORT void InitWebRtcLogging();
 // Otherwise it will be ignored. Note that this log may be uploaded to a
 // server by the embedder - no sensitive information should be logged. May be
 // called on any thread.
-// TODO(grunell): Create a macro for adding log messages. Messages should
-// probably also go to the ordinary logging stream.
 void BLINK_PLATFORM_EXPORT WebRtcLogMessage(const std::string& message);
 
+// Helper methods which wraps calls to WebRtcLogMessage() using different
+// printf-like inputs allowing the user to create log messages with a similar
+// syntax as for printf format specifiers. These mathods use different versions
+// of base::StringPrintf() internally and can also prepend the logged string
+// with a |prefix| string and/or append a formated this pointer in |thiz|.
+
+// Example: WebRtcLog("%s({foo=%d})", "Foo", 10) <=>
+// WebRtcLogMessage("Foo({foo=10})")
+void BLINK_PLATFORM_EXPORT WebRtcLog(const char* format, ...)
+    PRINTF_FORMAT(1, 2);
+
+// Example: WebRtcLog(this, "%s({foo=%d})", "Foo", 10) <=>
+// WebRtcLogMessage("Foo({foo=10}) [this=0x24514CB47A0]")
+void BLINK_PLATFORM_EXPORT WebRtcLog(void* thiz, const char* format, ...)
+    PRINTF_FORMAT(2, 3);
+
+// Example: WebRtcLog("RTC::", this, "%s({foo=%d})", "Foo", 10) <=>
+// WebRtcLogMessage("RTC::Foo({foo=10}) [this=0x24514CB47A0]")
+void BLINK_PLATFORM_EXPORT WebRtcLog(const char* prefix,
+                                     void* thiz,
+                                     const char* format,
+                                     ...) PRINTF_FORMAT(3, 4);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_WEBRTC_WEBRTC_LOGGING_H_

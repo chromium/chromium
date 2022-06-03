@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Create a dedicated worker in a data url frame assert_equals: expected "PASS" but got "Worker construction unexpectedly synchronously failed"
+FAIL Create a dedicated worker in a data url dedicated worker assert_equals: expected "PASS" but got "Worker construction unexpectedly synchronously failed"
+PASS Create a data url dedicated worker in a data url frame
+PASS Create a data url dedicated worker in a data url dedicated worker
+Harness: the test ran to completion.
+

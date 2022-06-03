@@ -16,12 +16,19 @@ RenderProcessHostProxy& RenderProcessHostProxy::operator=(
     const RenderProcessHostProxy& other) = default;
 
 content::RenderProcessHost* RenderProcessHostProxy::Get() const {
-  return content::RenderProcessHost::FromID(render_process_host_id_);
+  return content::RenderProcessHost::FromID(render_process_host_id_.value());
 }
 
-RenderProcessHostProxy::RenderProcessHostProxy(int render_process_host_id)
+RenderProcessHostProxy::RenderProcessHostProxy(
+    RenderProcessHostId render_process_host_id)
     : render_process_host_id_(render_process_host_id) {
-  DCHECK(render_process_host_id_ >= 0);
+  DCHECK(render_process_host_id_.value() >= 0);
+}
+
+// static
+RenderProcessHostProxy RenderProcessHostProxy::CreateForTesting(
+    RenderProcessHostId render_process_host_id) {
+  return RenderProcessHostProxy(render_process_host_id);
 }
 
 }  // namespace performance_manager

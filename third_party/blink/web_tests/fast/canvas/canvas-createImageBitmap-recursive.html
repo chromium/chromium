@@ -70,19 +70,19 @@ function imageLoaded() {
 function checkBitmaps(bitmapFromImage, bitmapFromCanvas) {
     var funcs = [];
     var p1 = createImageBitmap(bitmapFromImage).then(function(imageBitmap) {
-        funcs[0] = checkDrawnToRect(imageBitmap, 0, 0, 10, 10);
+        funcs[0] = checkDrawnToRect(imageBitmap, 10, 10, 10, 10);
     });
     var p2 = createImageBitmap(bitmapFromImage, -10, -10, 30, 30).then(function(imageBitmap) {
-        funcs[1] = checkDrawnToRect(imageBitmap, 0, 0, 10, 10);
+        funcs[1] = checkDrawnToRect(imageBitmap, 20, 20, 10, 10);
     });
     var p3 = createImageBitmap(bitmapFromImage, 5, 5, 20, 20).then(function(imageBitmap) {
-        funcs[2] = checkDrawnToRect(imageBitmap, 0, 0, 5, 5);
+        funcs[2] = checkDrawnToRect(imageBitmap, 5, 5, 10, 10);
     });
     var p4 = createImageBitmap(bitmapFromCanvas).then(function(imageBitmap) {
         funcs[3] = checkDrawnToRect(imageBitmap, 0, 0, 10, 10);
     });
     var p5 = createImageBitmap(bitmapFromCanvas, -15, -10, 35, 40).then(function(imageBitmap) {
-        funcs[4] = checkDrawnToRect(imageBitmap, 0, 0, 10, 10);
+        funcs[4] = checkDrawnToRect(imageBitmap, 15, 10, 10, 10);
     });
     var p6 = createImageBitmap(bitmapFromCanvas, 5, 5, 10, 10).then(function(imageBitmap) {
         funcs[5] = checkDrawnToRect(imageBitmap, 0, 0, 5, 5);

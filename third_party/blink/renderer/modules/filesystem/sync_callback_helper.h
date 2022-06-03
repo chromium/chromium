@@ -46,7 +46,7 @@ class DOMFileSystemCallbacksSyncHelper final
  public:
   DOMFileSystemCallbacksSyncHelper() = default;
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(result_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(result_); }
 
   // Simple/new success and error callback wrappers.
   void OnSuccess(CallbackArg* arg) {

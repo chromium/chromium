@@ -1,0 +1,15 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("user_activity_ukm_logger_helpers") {
+  public = [ "user_activity_ukm_logger_helpers.h" ]
+
+  sources = [ "user_activity_ukm_logger_helpers.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/chromeos:user_activity_event_proto",
+    "//ui/base",
+  ]
+}

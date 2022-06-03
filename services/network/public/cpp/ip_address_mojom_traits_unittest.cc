@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/mojom/ip_address.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -15,7 +16,7 @@ TEST(IPAddressStructTraitsTest, Ipv4) {
 
   IPAddress deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -25,7 +26,7 @@ TEST(IPAddressStructTraitsTest, Ipv6) {
 
   IPAddress deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }
@@ -39,7 +40,7 @@ TEST(IPAddressStructTraitsTest, InvalidAddress) {
 
   IPAddress deserialized;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::IPAddress>(
-      &original, &deserialized));
+      original, deserialized));
 }
 
 }  // namespace

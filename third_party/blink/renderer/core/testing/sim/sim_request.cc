@@ -12,13 +12,15 @@
 
 namespace blink {
 
-SimRequestBase::SimRequestBase(String url,
+SimRequestBase::SimRequestBase(KURL url,
                                String mime_type,
                                bool start_immediately,
                                Params params)
-    : url_(url),
+    : url_(std::move(url)),
       redirect_url_(params.redirect_url),
-      mime_type_(mime_type),
+      mime_type_(std::move(mime_type)),
+      referrer_(params.referrer),
+      requestor_origin_(params.requestor_origin),
       start_immediately_(start_immediately),
       started_(false),
       client_(nullptr),
@@ -81,25 +83,26 @@ void SimRequestBase::WriteInternal(base::span<const char> data) {
   if (navigation_body_loader_)
     navigation_body_loader_->Write(data.data(), data.size());
   else
-    client_->DidReceiveData(data.data(), data.size());
+    client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
-void SimRequestBase::Finish() {
+void SimRequestBase::Finish(bool body_loader_finished) {
   if (!started_)
     ServePending();
   DCHECK(started_);
   if (error_) {
     DCHECK(!navigation_body_loader_);
-    client_->DidFail(*error_, total_encoded_data_length_,
-                     total_encoded_data_length_, total_encoded_data_length_);
+    client_->DidFail(*error_, base::TimeTicks::Now(),
+                     total_encoded_data_length_, total_encoded_data_length_,
+                     total_encoded_data_length_);
   } else {
     if (navigation_body_loader_) {
-      navigation_body_loader_->Finish();
+      if (!body_loader_finished)
+        navigation_body_loader_->Finish();
     } else {
-      // TODO(esprehn): Is claiming a request time of 0 okay for tests?
-      client_->DidFinishLoading(base::TimeTicks(), total_encoded_data_length_,
-                                total_encoded_data_length_,
-                                total_encoded_data_length_, false);
+      client_->DidFinishLoading(
+          base::TimeTicks::Now(), total_encoded_data_length_,
+          total_encoded_data_length_, total_encoded_data_length_, false);
     }
   }
   Reset();
@@ -136,15 +139,29 @@ void SimRequestBase::ServePending() {
   SimNetwork::Current().ServePendingRequests();
 }
 
+SimRequest::SimRequest(KURL url, String mime_type, Params params)
+    : SimRequestBase(std::move(url),
+                     std::move(mime_type),
+                     /* start_immediately=*/true,
+                     params) {}
+
 SimRequest::SimRequest(String url, String mime_type, Params params)
-    : SimRequestBase(url, mime_type, true /* start_immediately */, params) {}
+    : SimRequest(KURL(url), std::move(mime_type), params) {}
 
 SimRequest::~SimRequest() = default;
+
+SimSubresourceRequest::SimSubresourceRequest(KURL url,
+                                             String mime_type,
+                                             Params params)
+    : SimRequestBase(std::move(url),
+                     std::move(mime_type),
+                     /* start_immediately=*/false,
+                     params) {}
 
 SimSubresourceRequest::SimSubresourceRequest(String url,
                                              String mime_type,
                                              Params params)
-    : SimRequestBase(url, mime_type, false /* start_immediately */, params) {}
+    : SimSubresourceRequest(KURL(url), std::move(mime_type), params) {}
 
 SimSubresourceRequest::~SimSubresourceRequest() = default;
 

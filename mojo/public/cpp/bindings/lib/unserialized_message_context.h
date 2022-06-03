@@ -9,11 +9,9 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 
 namespace mojo {
 namespace internal {
@@ -25,6 +23,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
   UnserializedMessageContext(const Tag* tag,
                              uint32_t message_name,
                              uint32_t message_flags);
+
+  UnserializedMessageContext(const UnserializedMessageContext&) = delete;
+  UnserializedMessageContext& operator=(const UnserializedMessageContext&) =
+      delete;
+
   virtual ~UnserializedMessageContext();
 
   template <typename MessageType>
@@ -40,8 +43,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
 
   MessageHeaderV1* header() { return &header_; }
 
-  virtual void Serialize(SerializationContext* serialization_context,
-                         Buffer* buffer) = 0;
+  virtual void Serialize(Message& message) = 0;
 
  private:
   // The |tag_| is used for run-time type identification of specific
@@ -53,8 +55,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
   // Message implementation which needs to query such metadata for both
   // serialized and unserialized message objects.
   MessageHeaderV1 header_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnserializedMessageContext);
 };
 
 }  // namespace internal

@@ -4,7 +4,7 @@
 
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 
 namespace ui {

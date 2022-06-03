@@ -1,0 +1,13 @@
+Name: Backport of JSR 166
+Short Name: backport-util-concurrent
+URL: http://backport-jsr166.sourceforge.net/
+Version: 3.1
+License: CC0 1.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Dawid Kurzyniec's backport of JSR 166
+
+Local Modifications:
+No modifications.

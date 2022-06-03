@@ -19,19 +19,19 @@ TestServiceManager::TestServiceManager(const std::vector<Manifest>& manifests)
 
 TestServiceManager::~TestServiceManager() = default;
 
-mojom::ServiceRequest TestServiceManager::RegisterTestInstance(
+mojo::PendingReceiver<mojom::Service> TestServiceManager::RegisterTestInstance(
     const std::string& service_name) {
   return RegisterInstance(Identity{service_name, base::Token::CreateRandom(),
                                    base::Token{}, base::Token::CreateRandom()});
 }
 
-mojom::ServiceRequest TestServiceManager::RegisterInstance(
+mojo::PendingReceiver<mojom::Service> TestServiceManager::RegisterInstance(
     const Identity& identity) {
   mojo::PendingRemote<mojom::Service> service;
   auto receiver = service.InitWithNewPipeAndPassReceiver();
   background_service_manager_->RegisterService(identity, std::move(service),
                                                mojo::NullReceiver());
-  return std::move(receiver);
+  return receiver;
 }
 
 }  // namespace service_manager

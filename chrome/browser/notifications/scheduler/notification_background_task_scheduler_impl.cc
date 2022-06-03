@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_impl.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 NotificationBackgroundTaskSchedulerImpl::
     NotificationBackgroundTaskSchedulerImpl() = default;

@@ -59,13 +59,11 @@ TrackDefault* TrackDefaultList::item(unsigned index) const {
   return track_defaults_[index].Get();
 }
 
-TrackDefaultList::TrackDefaultList() = default;
-
 TrackDefaultList::TrackDefaultList(
     const HeapVector<Member<TrackDefault>>& track_defaults)
     : track_defaults_(track_defaults) {}
 
-void TrackDefaultList::Trace(blink::Visitor* visitor) {
+void TrackDefaultList::Trace(Visitor* visitor) const {
   visitor->Trace(track_defaults_);
   ScriptWrappable::Trace(visitor);
 }

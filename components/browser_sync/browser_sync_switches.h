@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace switches {
@@ -15,14 +16,14 @@ extern const char kEnableLocalSyncBackend[];
 extern const char kLocalSyncBackendDir[];
 
 #if defined(OS_ANDROID)
-extern const base::Feature kSyncManualStartAndroid;
 extern const base::Feature kSyncUseSessionsUnregisterDelay;
-extern const base::Feature kSyncErrorInfoBarAndroid;
 #endif
 
-#if defined(OS_CHROMEOS)
-extern const base::Feature kSyncManualStartChromeOS;
-#endif
+// Sync invalidation switches.
+extern const base::Feature kSyncUseFCMRegistrationTokensList;
+extern const base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize;
+extern const base::Feature kSyncFilterOutInactiveDevicesForSingleClient;
+extern const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin;
 
 }  // namespace switches
 

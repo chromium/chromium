@@ -46,12 +46,8 @@
 <translation id="IDS_STATIC_ENCODING_LIST">windows-1252</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_WIDTH_CHARS">150</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_HEIGHT_LINES">40</translation>
-<translation id="IDS_DOWNLOAD_BIG_PROGRESS_SIZE">52</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_WIDTH_CHARS">60</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_HEIGHT_LINES">5</translation>
-<translation id="IDS_FLASH_STORAGE_URL">http://www.adobe.com/go/settmgr_storage_nl</translation>
-<translation id="IDS_FLASH_GLOBAL_PRIVACY_URL">http://www.macromedia.com/support/documentation/nl/flashplayer/help/settings_manager02.html</translation>
-<translation id="IDS_FLASH_WEBSITE_PRIVACY_URL">http://www.macromedia.com/support/documentation/nl/flashplayer/help/settings_manager06.html</translation>
 <translation id="IDS_NEW_PROFILE_DIALOG_WIDTH_CHARS">60</translation>
 <translation id="IDS_SYNC_SETUP_WIZARD_WIDTH_CHARS">46</translation>
 <translation id="IDS_SYNC_SETUP_WIZARD_HEIGHT_LINES">16</translation>
@@ -65,6 +61,4 @@
 <translation id="IDS_CONTENT_EXCEPTION_DIALOG_WIDTH_CHARS">97</translation>
 <translation id="IDS_CONTENT_SETTINGS_DIALOG_WIDTH_CHARS">84</translation>
 <translation id="IDS_CONTENT_SETTINGS_DIALOG_LISTBOX_WIDTH_CHARS">21</translation>
-<translation id="IDS_HELP_APP_DIALOG_WIDTH_PIXELS">720</translation>
-<translation id="IDS_HELP_APP_DIALOG_HEIGHT_PIXELS">405</translation>
 </translationbundle>

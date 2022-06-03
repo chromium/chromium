@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS web-share enabled for self on URL: resources/feature-policy-web-share.html with allowWebShare = false
+PASS web-share enabled for self on URL: resources/feature-policy-web-share.html with allowWebShare = true
+FAIL web-share enabled for self on URL: http://localhost:8000/feature-policy/resources/feature-policy-web-share.html with allowWebShare = false assert_false: expected false got true
+PASS web-share enabled for self on URL: http://localhost:8000/feature-policy/resources/feature-policy-web-share.html with allowWebShare = true
+Harness: the test ran to completion.
+

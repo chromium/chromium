@@ -1,10 +1,16 @@
-document
-++group IsControlElement=false
-++++group IsControlElement=false
-++++++description Name='a'
-++++++description Name='2'
-++++group IsControlElement=false
-++++++description Name='+'
-++++group IsControlElement=false
-++++++description Name='b'
-++++++description Name='2'
+Document
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='%F0%9D%90%B4'
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='2'
+++++++++Group IsControlElement=false
+++++++++++Text Name='+'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='%F0%9D%90%B5'
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='2'

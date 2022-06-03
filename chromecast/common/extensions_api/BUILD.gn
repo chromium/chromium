@@ -21,6 +21,7 @@ schema_sources = [
   "history.json",
   "i18n.json",
   "identity.idl",
+  "login_state.idl",
   "notifications.idl",
   "settings_private.idl",
   "tabs.json",
@@ -36,9 +37,7 @@ generated_json_strings("generated_api_json_strings") {
   bundle_name = "Cast"
   schema_include_rules = extensions_api_schema_include_rules
 
-  deps = [
-    "//extensions/common/api",
-  ]
+  deps = [ "//extensions/common/api" ]
   visibility = [ ":api" ]
 }
 
@@ -58,34 +57,26 @@ generated_types("generated_api_types") {
   sources = schema_sources
   schema_include_rules = extensions_api_schema_include_rules
 
-  deps = [
-    "//extensions/common/api",
-  ]
+  deps = [ "//extensions/common/api" ]
   visibility = [ ":api" ]
 }
 
 json_features("cast_api_features") {
   feature_type = "APIFeature"
   method_name = "AddCastAPIFeatures"
-  sources = [
-    "_api_features.json",
-  ]
+  sources = [ "_api_features.json" ]
 }
 
 json_features("cast_permission_features") {
   feature_type = "PermissionFeature"
   method_name = "AddCastPermissionFeatures"
-  sources = [
-    "_permission_features.json",
-  ]
+  sources = [ "_permission_features.json" ]
 }
 
 json_features("cast_manifest_features") {
   feature_type = "ManifestFeature"
   method_name = "AddCastManifestFeatures"
-  sources = [
-    "_manifest_features.json",
-  ]
+  sources = [ "_manifest_features.json" ]
 }
 
 # Public Targets

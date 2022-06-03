@@ -11,11 +11,14 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.website.SettingsNavigationSource;
-import org.chromium.chrome.browser.settings.website.SingleCategoryPreferences;
-import org.chromium.chrome.browser.settings.website.SingleWebsitePreferences;
-import org.chromium.chrome.browser.settings.website.SiteSettingsCategory;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.SettingsNavigationSource;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,13 +35,8 @@ public class TrustedWebActivitySettingsLauncher {
      * able to work with each of them.
      */
     public static void launchForPackageName(Context context, String packageName) {
-        int applicationUid;
-        try {
-            applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "Package " + packageName + " not found");
-            return;
-        }
+        Integer applicationUid = getApplicationUid(context, packageName);
+        if (applicationUid == null) return;
 
         ClientAppDataRegister register = new ClientAppDataRegister();
         Collection<String> domains = register.getDomainsForRegisteredUid(applicationUid);
@@ -51,12 +49,39 @@ public class TrustedWebActivitySettingsLauncher {
     }
 
     /**
+     * Launches site-settings for a WebApk with a given package name and associated url.
+     */
+    public static void launchForWebApkPackageName(
+            Context context, String packageName, String webApkUrl) {
+        // Handle the case when settings are selected but Chrome was not running.
+        ChromeWebApkHost.init();
+        if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl)) {
+            Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
+            return;
+        }
+        if (getApplicationUid(context, packageName) == null) return;
+
+        openSingleWebsitePrefs(context, webApkUrl);
+    }
+
+    private static Integer getApplicationUid(Context context, String packageName) {
+        int applicationUid;
+        try {
+            applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "Package " + packageName + " not found");
+            return null;
+        }
+        return applicationUid;
+    }
+
+    /**
      * Same as above, but with list of associated origins and domains already retrieved.
      */
     public static void launch(Context context, Collection<String> origins,
             Collection<String> domains) {
         if (origins.size() == 1) {
-            // When launched with EXTRA_SITE_ADDRESS, SingleWebsitePreferences will merge the
+            // When launched with EXTRA_SITE_ADDRESS, SingleWebsiteSettings will merge the
             // settings for top-level origin, so that given https://peconn.github.io and
             // peconn.github.io, we'll get the permission and data settings of both.
             openSingleWebsitePrefs(context, origins.iterator().next());
@@ -75,16 +100,16 @@ public class TrustedWebActivitySettingsLauncher {
 
     private static void openFilteredAllSiteSettings(Context context, Collection<String> domains) {
         Bundle extras = new Bundle();
-        extras.putString(SingleCategoryPreferences.EXTRA_CATEGORY,
+        extras.putString(AllSiteSettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ALL_SITES));
-        extras.putString(SingleCategoryPreferences.EXTRA_TITLE,
+        extras.putString(AllSiteSettings.EXTRA_TITLE,
                 context.getString(R.string.twa_clear_data_site_selection_title));
-        extras.putStringArrayList(
-                SingleCategoryPreferences.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
+        extras.putStringArrayList(AllSiteSettings.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
         extras.putInt(SettingsNavigationSource.EXTRA_KEY,
                 SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG);
 
-        SettingsLauncher.launchSettingsPage(context, SingleCategoryPreferences.class, extras);
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, extras);
     }
 
     /**
@@ -92,9 +117,10 @@ public class TrustedWebActivitySettingsLauncher {
      */
     private static Intent createIntentForSingleWebsitePreferences(
             Context context, String url, @SettingsNavigationSource int navigationSource) {
-        Bundle args = SingleWebsitePreferences.createFragmentArgsForSite(url);
+        Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
         args.putInt(SettingsNavigationSource.EXTRA_KEY, navigationSource);
-        return SettingsLauncher.createIntentForSettingsPage(
-                context, SingleWebsitePreferences.class.getName(), args);
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        return settingsLauncher.createSettingsActivityIntent(
+                context, SingleWebsiteSettings.class.getName(), args);
     }
 }

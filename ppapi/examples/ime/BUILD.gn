@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("ime") {
   output_name = "ppapi_example_ime"
-  sources = [
-    "ime.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "ime.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "components/assist_ranker/quantized_nn_classifier.h"
 
-#include "base/logging.h"
 #include "components/assist_ranker/nn_classifier.h"
 
 namespace assist_ranker {

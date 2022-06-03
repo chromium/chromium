@@ -1,0 +1,27 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom";
+import "third_party/blink/public/mojom/frame/color_scheme.mojom";
+
+struct FrameOwnerProperties {
+  // Browsing context container's name
+  string name;
+  // Scroll bar mode
+  ScrollbarMode scrollbar_mode;
+  // Frame margin width
+  int32 margin_width;
+  // Frame margin height
+  int32 margin_height;
+  // True if the frame allows fullscreen.
+  bool allow_fullscreen;
+  // True if the frame allows payment request.
+  bool allow_payment_request;
+  // True if the frame is display:none.
+  bool is_display_none;
+  // The used value of color-scheme for the frame element.
+  ColorScheme color_scheme = ColorScheme.kLight;
+};

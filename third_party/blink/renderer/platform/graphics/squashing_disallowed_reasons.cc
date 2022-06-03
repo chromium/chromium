@@ -37,6 +37,10 @@ constexpr SquashingDisallowedReasonStringMap
          "squashingTransformAncestorMismatch",
          "Cannot be squashed because this layer has a different transform "
          "ancestor than the squashing layer"},
+        {SquashingDisallowedReason::kPreserve3DSortingContextMismatch,
+         "squashingPreserve3DSortingContextMismatch",
+         "Cannot be squashed because this layer is part of a different 3-D"
+         "Rendering Context than the squashing layer"},
         {SquashingDisallowedReason::kFilterMismatch,
          "squashingFilterAncestorMismatch",
          "Cannot be squashed because this layer has a different filter "
@@ -56,10 +60,6 @@ constexpr SquashingDisallowedReasonStringMap
          "squashingNearestFixedPositionMismatch",
          "Cannot be squashed because this layer has a different nearest fixed "
          "position layer than the squashing layer"},
-        {SquashingDisallowedReason::kScrollChildWithCompositedDescendants,
-         "scrollChildWithCompositedDescendants",
-         "Squashing a scroll child with composited descendants is not "
-         "supported."},
         {SquashingDisallowedReason::kSquashingLayerIsAnimating,
          "squashingLayerIsAnimating",
          "Cannot squash into a layer that is animating."},
@@ -77,7 +77,11 @@ constexpr SquashingDisallowedReasonStringMap
          "Cannot squash layers across mask boundaries."},
         {SquashingDisallowedReason::kCrossesLayoutContainmentBoundary,
          "SquashingDisallowedReasonCrossesLayoutContainmentBoundary",
-         "Cannot squash layer across layout containment boundary."}};
+         "Cannot squash layer across layout containment boundary."},
+        {SquashingDisallowedReason::kDisabled,
+         "SquashingDisallowedReasonDisabled",
+         "Squashing is disabled by runtime flag."},
+};
 
 }  // anonymous namespace
 

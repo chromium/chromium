@@ -8,17 +8,48 @@
 
 namespace blink {
 
-v8::Local<v8::Object> DOMSharedArrayBuffer::Wrap(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> creation_context) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
+// Construction of WrapperTypeInfo may require non-trivial initialization due
+// to cross-component address resolution in order to load the pointer to the
+// parent interface's WrapperTypeInfo.  We ignore this issue because the issue
+// happens only on component builds and the official release builds
+// (statically-linked builds) are never affected by this issue.
+#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
 
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
-  v8::Local<v8::SharedArrayBuffer> wrapper =
-      v8::SharedArrayBuffer::New(isolate, Buffer()->Content()->BackingStore());
-  wrapper->Externalize(Buffer()->Content()->BackingStore());
+const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
+    gin::kEmbedderBlink,
+    nullptr,
+    nullptr,
+    "SharedArrayBuffer",
+    nullptr,
+    WrapperTypeInfo::kWrapperTypeObjectPrototype,
+    WrapperTypeInfo::kObjectClassId,
+    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
+    WrapperTypeInfo::kIdlBufferSourceType,
+};
 
-  return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
+const WrapperTypeInfo& DOMSharedArrayBuffer::wrapper_type_info_ =
+    DOMSharedArrayBuffer::wrapper_type_info_body_;
+
+#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
+v8::MaybeLocal<v8::Value> DOMSharedArrayBuffer::Wrap(
+    ScriptState* script_state) {
+  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
+  v8::Local<v8::SharedArrayBuffer> wrapper;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    wrapper = v8::SharedArrayBuffer::New(script_state->GetIsolate(),
+                                         Content()->BackingStore());
+  }
+  return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
+                              wrapper);
 }
 
 }  // namespace blink

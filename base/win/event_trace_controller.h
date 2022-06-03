@@ -41,6 +41,9 @@ class BASE_EXPORT EtwTraceProperties {
  public:
   EtwTraceProperties();
 
+  EtwTraceProperties(const EtwTraceProperties&) = delete;
+  EtwTraceProperties& operator=(const EtwTraceProperties&) = delete;
+
   EVENT_TRACE_PROPERTIES* get() { return &properties_; }
 
   const EVENT_TRACE_PROPERTIES* get() const {
@@ -78,8 +81,6 @@ class BASE_EXPORT EtwTraceProperties {
     // The actual size of the buffer is forced by this member.
     char buffer_[kBufSize];
   };
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceProperties);
 };
 
 // This class implements an ETW controller, which knows how to start and
@@ -88,6 +89,10 @@ class BASE_EXPORT EtwTraceProperties {
 class BASE_EXPORT EtwTraceController {
  public:
   EtwTraceController();
+
+  EtwTraceController(const EtwTraceController&) = delete;
+  EtwTraceController& operator=(const EtwTraceController&) = delete;
+
   ~EtwTraceController();
 
   // Start a session with given name and properties.
@@ -98,7 +103,8 @@ class BASE_EXPORT EtwTraceController {
                            const wchar_t* logfile_path,
                            bool realtime = false);
 
-  // Starts a realtime session with some default properties.
+  // Starts a realtime session with some default properties.  |buffer_size| is
+  // in KB.  A default value for |buffer_size| is used if 0 is passed in.
   HRESULT StartRealtimeSession(const wchar_t* session_name, size_t buffer_size);
 
   // Enables "provider" at "level" for this session.
@@ -141,9 +147,7 @@ class BASE_EXPORT EtwTraceController {
 
  private:
   std::wstring session_name_;
-  TRACEHANDLE session_;
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceController);
+  TRACEHANDLE session_ = NULL;
 };
 
 }  // namespace win

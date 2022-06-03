@@ -5,47 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [7, 7, 183, 40],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [7, 7, 183, 40],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 8, 181, 38],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [9, 9, 179, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [9, 11, 179, 16],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "HorizontalScrollbar",
-          "rect": [9, 30, 164, 15],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [173, 30, 15, 15],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "Scroll corner of LayoutTextControl TEXTAREA id='editor'",
-          "rect": [173, 30, 15, 15],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [7, 7, 183, 40]
       ]
     }
   ]

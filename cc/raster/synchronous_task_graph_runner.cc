@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/threading/simple_thread.h"
+#include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {

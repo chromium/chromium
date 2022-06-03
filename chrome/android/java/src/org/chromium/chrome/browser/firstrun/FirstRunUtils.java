@@ -16,11 +16,18 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
     private static Boolean sHasGoogleAccountAuthenticator;
+    private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
+    private static final int A11Y_DELAY_FACTOR = 2;
+
+    private static boolean sDisableDelayOnExitFreForTest;
 
     /**
      * Synchronizes first run native and Java preferences.
@@ -33,16 +40,13 @@ public class FirstRunUtils {
         //   - Old versions only set native pref, so this syncs Java pref.
         //   - Backup & restore does not restore native pref, so this needs to update it.
         //   - checkAnyUserHasSeenToS() may be true which needs to sync its state to the prefs.
-        boolean javaPrefValue = javaPrefs.readBoolean(
-                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED_PREF, false);
+        boolean javaPrefValue =
+                javaPrefs.readBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
         boolean nativePrefValue = isFirstRunEulaAccepted();
-        boolean userHasSeenTos =
-                ToSAckedReceiver.checkAnyUserHasSeenToS();
         boolean isFirstRunComplete = FirstRunStatus.getFirstRunFlowComplete();
-        if (javaPrefValue || nativePrefValue || userHasSeenTos || isFirstRunComplete) {
+        if (javaPrefValue || nativePrefValue || isFirstRunComplete) {
             if (!javaPrefValue) {
-                javaPrefs.writeBoolean(
-                        ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED_PREF, true);
+                javaPrefs.writeBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
             }
             if (!nativePrefValue) {
                 setEulaAccepted();
@@ -57,18 +61,17 @@ public class FirstRunUtils {
         // Note: Does not check FirstRunUtils.isFirstRunEulaAccepted() because this may be called
         // before native is initialized.
         return SharedPreferencesManager.getInstance().readBoolean(
-                       ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED_PREF, false)
-                || ToSAckedReceiver.checkAnyUserHasSeenToS();
+                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
     }
 
     /**
      * Sets the EULA/Terms of Services state as "ACCEPTED".
      * @param allowCrashUpload True if the user allows to upload crash dumps and collect stats.
      */
-    public static void acceptTermsOfService(boolean allowCrashUpload) {
+    static void acceptTermsOfService(boolean allowCrashUpload) {
         UmaSessionStats.changeMetricsReportingConsent(allowCrashUpload);
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED_PREF, true);
+                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
     }
 
@@ -83,7 +86,7 @@ public class FirstRunUtils {
     @VisibleForTesting
     static boolean hasGoogleAccountAuthenticator() {
         if (sHasGoogleAccountAuthenticator == null) {
-            AccountManagerFacade accountHelper = AccountManagerFacade.get();
+            AccountManagerFacade accountHelper = AccountManagerFacadeProvider.getInstance();
             sHasGoogleAccountAuthenticator = accountHelper.hasGoogleAccountAuthenticator();
         }
         return sHasGoogleAccountAuthenticator;
@@ -91,7 +94,10 @@ public class FirstRunUtils {
 
     @VisibleForTesting
     static boolean hasGoogleAccounts() {
-        return AccountManagerFacade.get().hasGoogleAccounts();
+        return !AccountUtils
+                        .getAccountsIfFulfilledOrEmpty(
+                                AccountManagerFacadeProvider.getInstance().getAccounts())
+                        .isEmpty();
     }
 
     @SuppressLint("InlinedApi")
@@ -112,13 +118,45 @@ public class FirstRunUtils {
     /**
      * Sets the preference that signals when the user has accepted the EULA.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setEulaAccepted() {
         FirstRunUtilsJni.get().setEulaAccepted();
+    }
+
+    /**
+     * @return Whether the ToS should be shown during the first-run for CCTs/PWAs.
+     */
+    public static boolean isCctTosDialogEnabled() {
+        return FirstRunUtilsJni.get().getCctTosDialogEnabled();
+    }
+
+    /**
+     * The the number of ms delay before exiting FRE with policy. By default the delay would be
+     * {@link #DEFAULT_SKIP_TOS_EXIT_DELAY_MS}, while in a11y mode it will be extended by a factor
+     * of {@link #A11Y_DELAY_FACTOR}. This is intended to avoid screen reader being interrupted, but
+     * it is likely not going to work perfectly for all languages.
+     *
+     * @return The number of ms delay before exiting FRE with policy.
+     */
+    static int getSkipTosExitDelayMs() {
+        if (sDisableDelayOnExitFreForTest) return 0;
+
+        int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+            durationMs *= A11Y_DELAY_FACTOR;
+        }
+        return durationMs;
+    }
+
+    @VisibleForTesting
+    public static void setDisableDelayOnExitFreForTest(boolean isDisable) {
+        sDisableDelayOnExitFreForTest = isDisable;
     }
 
     @NativeMethods
     public interface Natives {
         boolean getFirstRunEulaAccepted();
         void setEulaAccepted();
+        boolean getCctTosDialogEnabled();
     }
 }

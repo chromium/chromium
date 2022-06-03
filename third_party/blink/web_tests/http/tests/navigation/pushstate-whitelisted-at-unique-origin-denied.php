@@ -10,7 +10,7 @@ test(function () {
 }, 'testRunner.addOriginAccessAllowListEntry is required for this test');
 
 test(function () {
-    assert_throws('SecurityError', function () {
+    assert_throws_dom('SecurityError', function () {
         history.pushState(null, null, orginURL + "/path");
     });
 }, 'pushState at unique origin should fail with SecurityError (even with whitelisted origins)');

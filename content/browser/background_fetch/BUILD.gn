@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("background_fetch_proto") {
-  sources = [
-    "background_fetch.proto",
-  ]
+  sources = [ "background_fetch.proto" ]
 }

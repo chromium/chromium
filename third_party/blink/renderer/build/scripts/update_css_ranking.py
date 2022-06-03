@@ -7,13 +7,15 @@
 #        Run `python update_css_ranking.py <ranking_file> <ranking_api_link>`
 #        to update the ranking from <ranking_api_link> API to <ranking_file>
 
-import urllib2
 import json
 import sys
 import cluster
 import json5_generator
 import math
-
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 CSS_RANKING_API = "http://www.chromestatus.com/data/csspopularity"
 CSS_RANKING_FILE = "../../core/css/css_properties_ranking.json5"
@@ -37,20 +39,29 @@ def update_css_ranking(css_ranking_file, css_ranking_api):
         css_ranking_api: url to CSS ranking api
 
     """
-    css_ranking = json.loads(urllib2.urlopen(css_ranking_api).read())
+    css_ranking = json.loads(urlopen(css_ranking_api).read())
     css_ranking_content = {"properties": {}, "data": []}
-    css_ranking_content["data"] = [property_["property_name"] for property_ in
-                                   sorted(css_ranking, key=lambda x: -float(x["day_percentage"]))]
+    css_ranking_content["data"] = [
+        property_["property_name"] for property_ in sorted(
+            css_ranking, key=lambda x: -float(x["day_percentage"]))
+    ]
 
     reformat_properties_name(css_ranking_content["data"])
 
     with open(css_ranking_file, "w") as fw:
-        fw.write("// The popularity ranking of all css properties the first properties is the most\n")
-        fw.write("// used property according to: https://www.chromestatus.com/metrics/css/popularity\n")
+        fw.write(
+            "// The popularity ranking of all css properties the first properties is the most\n"
+        )
+        fw.write(
+            "// used property according to: https://www.chromestatus.com/metrics/css/popularity\n"
+        )
         json.dump(css_ranking_content, fw, indent=4, sort_keys=False)
 
 
-def find_partition_rule(css_property_set, all_properties, n_cluster, transform=lambda x: x):
+def find_partition_rule(css_property_set,
+                        all_properties,
+                        n_cluster,
+                        transform=lambda x: x):
     """Find partition rule for a set of CSS property based on its popularity
 
     Args:
@@ -64,9 +75,13 @@ def find_partition_rule(css_property_set, all_properties, n_cluster, transform=l
     Returns:
         partition rule for css_property_set
     """
-    _, cluster_alloc, _ = cluster.k_means([transform(p[1]) for p in css_property_set], n_cluster=n_cluster)
-    return [all_properties[css_property_set[i][0]] for i in range(len(cluster_alloc) - 1)
-            if cluster_alloc[i] != cluster_alloc[i + 1]] + [1.0]
+    _, cluster_alloc, _ = cluster.k_means(
+        [transform(p[1]) for p in css_property_set], n_cluster=n_cluster)
+    return [
+        all_properties[css_property_set[i][0]]
+        for i in range(len(cluster_alloc) - 1)
+        if cluster_alloc[i] != cluster_alloc[i + 1]
+    ] + [1.0]
 
 
 def produce_partition_rule(config_file, css_ranking_api):
@@ -77,42 +92,60 @@ def produce_partition_rule(config_file, css_ranking_api):
         css_ranking_api: url to CSS ranking api
 
     """
-    css_ranking = sorted(json.loads(urllib2.urlopen(css_ranking_api).read()),
+    css_ranking = sorted(json.loads(urlopen(css_ranking_api).read()),
                          key=lambda x: -x["day_percentage"])
     total_css_properties = len(css_ranking)
-    css_ranking_dictionary = dict([(x["property_name"], x["day_percentage"] * 100) for x in css_ranking])
-    css_ranking_cdf = dict(zip([x["property_name"] for x in css_ranking],
-                               [float(i) / total_css_properties for i in range(total_css_properties)]))
-    css_properties = json5_generator.Json5File.load_from_files([CSS_PROPERTIES]).name_dictionaries
+    css_ranking_dictionary = dict(
+        [(x["property_name"], x["day_percentage"] * 100) for x in css_ranking])
+    css_ranking_cdf = dict(
+        zip([x["property_name"] for x in css_ranking], [
+            float(i) / total_css_properties
+            for i in range(total_css_properties)
+        ]))
+    css_properties = json5_generator.Json5File.load_from_files(
+        [CSS_PROPERTIES]).name_dictionaries
 
-    rare_non_inherited_properties = sorted([(x["name"].original, css_ranking_dictionary[x["name"].original])
-                                            for x in css_properties if not x["inherited"]
-                                            and x["field_group"] is not None
-                                            and "*" in x["field_group"]
-                                            and x["name"].original in css_ranking_dictionary],
-                                           key=lambda x: -x[1])
-    rare_inherited_properties = sorted([(x["name"].original, css_ranking_dictionary[x["name"].original])
-                                        for x in css_properties if x["inherited"]
-                                        and x["field_group"] is not None
-                                        and "*" in x["field_group"]
-                                        and x["name"].original in css_ranking_dictionary],
-                                       key=lambda x: -x[1])
+    rare_non_inherited_properties = sorted(
+        [(x["name"].original, css_ranking_dictionary[x["name"].original])
+         for x in css_properties
+         if not x["inherited"] and x["field_group"] is not None and "*" in
+         x["field_group"] and x["name"].original in css_ranking_dictionary],
+        key=lambda x: -x[1])
+    rare_inherited_properties = sorted(
+        [(x["name"].original, css_ranking_dictionary[x["name"].original])
+         for x in css_properties
+         if x["inherited"] and x["field_group"] is not None and "*" in
+         x["field_group"] and x["name"].original in css_ranking_dictionary],
+        key=lambda x: -x[1])
 
-    rni_properties_rule = find_partition_rule(rare_non_inherited_properties,
-                                              css_ranking_cdf, n_cluster=3)
+    rni_properties_rule = find_partition_rule(
+        rare_non_inherited_properties, css_ranking_cdf, n_cluster=3)
 
-    ri_properties_rule = find_partition_rule(rare_inherited_properties,
-                                             css_ranking_cdf,
-                                             n_cluster=2, transform=lambda x: math.log(x + 10e-6))
+    ri_properties_rule = find_partition_rule(
+        rare_inherited_properties,
+        css_ranking_cdf,
+        n_cluster=2,
+        transform=lambda x: math.log(x + 10e-6))
 
     with open(config_file, 'w') as fw:
-        fw.write("// The grouping parameter is a cumulative distribution over the whole set of ranked\n")
+        fw.write(
+            "// The grouping parameter is a cumulative distribution " \
+            "over the whole set of ranked\n"
+        )
         fw.write("// CSS properties.\n")
         json.dump({
             "parameters": {},
-            "data": [{"name": "rare_non_inherited_properties_rule", "cumulative_distribution": rni_properties_rule},
-                     {"name": "rare_inherited_properties_rule", "cumulative_distribution": ri_properties_rule}]
-        }, fw, indent=4)
+            "data": [{
+                "name": "rare_non_inherited_properties_rule",
+                "cumulative_distribution": rni_properties_rule
+            },
+                     {
+                         "name": "rare_inherited_properties_rule",
+                         "cumulative_distribution": ri_properties_rule
+                     }]
+        },
+                  fw,
+                  indent=4)
 
 
 if __name__ == '__main__':

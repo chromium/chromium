@@ -13,7 +13,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -94,7 +94,7 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
 
     struct stat s;
     // It's OK to use proc_self_fd here, fstatat won't modify it.
-    CHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
+    PCHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
     if (S_ISDIR(s.st_mode)) {
       return true;
     }

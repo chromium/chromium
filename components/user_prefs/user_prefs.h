@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_PREFS_USER_PREFS_H_
 #define COMPONENTS_USER_PREFS_USER_PREFS_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/user_prefs/user_prefs_export.h"
 
@@ -20,6 +19,9 @@ namespace user_prefs {
 // base::SupportsUserData using the UserPrefs::Set() function.
 class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
  public:
+  UserPrefs(const UserPrefs&) = delete;
+  UserPrefs& operator=(const UserPrefs&) = delete;
+
   ~UserPrefs() override;
 
   // Retrieves the PrefService for a given context, or null if none is attached.
@@ -34,8 +36,6 @@ class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
 
   // Non-owning; owned by embedder.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPrefs);
 };
 
 }  // namespace user_prefs

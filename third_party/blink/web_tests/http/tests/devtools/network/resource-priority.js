@@ -141,7 +141,7 @@
     TestRunner.evaluateInPage(actions[nextAction++].fn + '()');
   }
   function onRequestStarted(event) {
-    var request = event.data;
+    var request = event.data.request;
     TestRunner.addResult('Request: ' + request.name() + ' priority: ' + request.initialPriority());
     expectedRequestCount--;
     if (expectedRequestCount < 1)

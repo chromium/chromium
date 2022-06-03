@@ -9,11 +9,11 @@
 namespace blink {
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
-  return value_ == ToInterpolableNumber(other).value_;
+  return value_ == To<InterpolableNumber>(other).value_;
 }
 
 bool InterpolableList::Equals(const InterpolableValue& other) const {
-  const InterpolableList& other_list = ToInterpolableList(other);
+  const auto& other_list = To<InterpolableList>(other);
   if (length() != other_list.length())
     return false;
   for (wtf_size_t i = 0; i < length(); i++) {
@@ -31,8 +31,8 @@ void InterpolableNumber::AssertCanInterpolateWith(
 void InterpolableNumber::Interpolate(const InterpolableValue& to,
                                      const double progress,
                                      InterpolableValue& result) const {
-  const InterpolableNumber& to_number = ToInterpolableNumber(to);
-  InterpolableNumber& result_number = ToInterpolableNumber(result);
+  const auto& to_number = To<InterpolableNumber>(to);
+  auto& result_number = To<InterpolableNumber>(result);
 
   if (progress == 0 || value_ == to_number.value_)
     result_number.value_ = value_;
@@ -46,14 +46,14 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
 void InterpolableList::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   DCHECK(other.IsList());
-  DCHECK_EQ(ToInterpolableList(other).length(), length());
+  DCHECK_EQ(To<InterpolableList>(other).length(), length());
 }
 
 void InterpolableList::Interpolate(const InterpolableValue& to,
                                    const double progress,
                                    InterpolableValue& result) const {
-  const InterpolableList& to_list = ToInterpolableList(to);
-  InterpolableList& result_list = ToInterpolableList(result);
+  const auto& to_list = To<InterpolableList>(to);
+  auto& result_list = To<InterpolableList>(result);
 
   for (wtf_size_t i = 0; i < length(); i++) {
     DCHECK(values_[i]);
@@ -80,11 +80,11 @@ void InterpolableList::Scale(double scale) {
 }
 
 void InterpolableNumber::Add(const InterpolableValue& other) {
-  value_ += ToInterpolableNumber(other).value_;
+  value_ += To<InterpolableNumber>(other).value_;
 }
 
 void InterpolableList::Add(const InterpolableValue& other) {
-  const InterpolableList& other_list = ToInterpolableList(other);
+  const auto& other_list = To<InterpolableList>(other);
   DCHECK_EQ(other_list.length(), length());
   for (wtf_size_t i = 0; i < length(); i++)
     values_[i]->Add(*other_list.values_[i]);
@@ -92,7 +92,7 @@ void InterpolableList::Add(const InterpolableValue& other) {
 
 void InterpolableList::ScaleAndAdd(double scale,
                                    const InterpolableValue& other) {
-  const InterpolableList& other_list = ToInterpolableList(other);
+  const auto& other_list = To<InterpolableList>(other);
   DCHECK_EQ(other_list.length(), length());
   for (wtf_size_t i = 0; i < length(); i++)
     values_[i]->ScaleAndAdd(scale, *other_list.values_[i]);

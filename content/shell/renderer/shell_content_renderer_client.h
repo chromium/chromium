@@ -27,21 +27,16 @@ class ShellContentRendererClient : public ContentRendererClient {
   // ContentRendererClient implementation.
   void RenderThreadStarted() override;
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
-  void RenderViewCreated(RenderView* render_view) override;
-  bool HasErrorPage(int http_status_code) override;
+  void RenderFrameCreated(RenderFrame* render_frame) override;
   void PrepareErrorPage(RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,
                         std::string* error_html) override;
   void PrepareErrorPageForHttpStatusError(content::RenderFrame* render_frame,
-                                          const GURL& unreachable_url,
+                                          const blink::WebURLError& error,
                                           const std::string& http_method,
                                           int http_status,
                                           std::string* error_html) override;
-
-  // TODO(mkwst): These toggle based on the kEnablePepperTesting flag. Do we
-  // need that outside of web tests?
-  bool IsPluginAllowedToUseDevChannelAPIs() override;
 
   void DidInitializeWorkerContextOnWorkerThread(
       v8::Local<v8::Context> context) override;

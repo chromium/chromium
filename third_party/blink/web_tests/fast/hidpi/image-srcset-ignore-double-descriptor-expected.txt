@@ -1,11 +1,11 @@
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "resources/blue-100-px-square.png"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "resources/blue-100-px-square.png"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "resources/blue-100-px-square.png"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "resources/blue-100-px-square.png"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "resources/blue-100-px-square.png"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "resources/blue-100-px-square.png"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "resources/blue-100-px-square.png"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'x' descriptors or a mix of 'x' and 'w'/'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "resources/blue-100-px-square.png"
 PASS successfullyParsed is true
 
 TEST COMPLETE

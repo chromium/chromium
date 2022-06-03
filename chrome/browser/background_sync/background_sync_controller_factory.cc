@@ -4,11 +4,12 @@
 
 #include "chrome/browser/background_sync/background_sync_controller_factory.h"
 
-#include "chrome/browser/background_sync/background_sync_controller_impl.h"
+#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/background_sync/background_sync_controller_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
@@ -29,14 +30,16 @@ BackgroundSyncControllerFactory::BackgroundSyncControllerFactory()
           "BackgroundSyncService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 BackgroundSyncControllerFactory::~BackgroundSyncControllerFactory() = default;
 
 KeyedService* BackgroundSyncControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BackgroundSyncControllerImpl(Profile::FromBrowserContext(context));
+  return new BackgroundSyncControllerImpl(
+      context, std::make_unique<BackgroundSyncDelegateImpl>(
+                   Profile::FromBrowserContext(context)));
 }
 
 content::BrowserContext*

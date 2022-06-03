@@ -9,13 +9,15 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "remoting/base/grpc_support/grpc_authenticated_executor.h"
-#include "remoting/client/jni/jni_oauth_token_getter.h"
-#include "remoting/proto/remoting/v1/directory_service.grpc.pb.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
+#include "remoting/base/directory_service_client.h"
 
 namespace remoting {
+
+class ProtobufHttpStatus;
 
 class JniDirectoryService {
  public:
@@ -42,18 +44,19 @@ class JniDirectoryService {
   void Destroy(JNIEnv* env);
 
  private:
-  void OnHostListRetrieved(base::android::ScopedJavaGlobalRef<jobject> callback,
-                           const grpc::Status& status,
-                           const apis::v1::GetHostListResponse& response);
+  void OnHostListRetrieved(
+      base::android::ScopedJavaGlobalRef<jobject> callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::GetHostListResponse> response);
   void OnHostDeleted(base::android::ScopedJavaGlobalRef<jobject> callback,
-                     const grpc::Status& status,
-                     const apis::v1::DeleteHostResponse& response);
+                     const ProtobufHttpStatus& status,
+                     std::unique_ptr<apis::v1::DeleteHostResponse> response);
 
-  JniOAuthTokenGetter token_getter_;
-  GrpcAuthenticatedExecutor grpc_executor_;
-  std::unique_ptr<apis::v1::RemotingDirectoryService::Stub> stub_;
+  base::SequenceBound<DirectoryServiceClient> client_;
   scoped_refptr<base::SequencedTaskRunner> sequence_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<JniDirectoryService> weak_factory_{this};
 };
 
 }  // namespace remoting

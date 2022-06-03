@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="week" id="week-0" value="2019-W33">
+<input type="week" id="week-1" value="2019-W37">
+<input type="week" id="week-2" value="2019-W30">
+<input type="week" id="week-3" value="2019-W52">
+<script>
+
+promise_test(() => {
+  let weekElement = document.getElementById('week-0');
+  return openPickerWithPromise(weekElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(weekElement.value, "2019-W37", "Month chooser button should have changed month");
+
+    clickDayCellAt(1, 2);
+    assert_equals(weekElement.value, "2019-W38", "Clicking week should have changed week");
+    assert_equals(internals.pagePopupWindow, null, "Clicking week should have dismissed popup");
+  });
+}, "Week picker: Next month button should advance to next month and change selection to same week in that month when doing so.");
+
+promise_test(() => {
+  let weekElement = document.getElementById('week-1');
+  return openPickerWithPromise(weekElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickPrevMonthButton();
+    assert_equals(weekElement.value, "2019-W33", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(1, 1);
+    assert_equals(weekElement.value, "2019-W32", "Clicking week should have changed week");
+    assert_equals(internals.pagePopupWindow, null, "Clicking week should have dismissed popup");
+  });
+}, "Week picker: Prev month button should advance to previous month and change selection to same week in that month when doing so.");
+
+promise_test(() => {
+  let weekElement = document.getElementById('week-2');
+  return openPickerWithPromise(weekElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    // Arrow down to week 5 (if we started the control there, it would just open to the
+    // following month).
+    eventSender.keyDown('ArrowDown');
+    assert_equals(weekElement.value, "2019-W31", "Arrow key should have changed week");
+
+    clickNextMonthButton();
+    assert_equals(weekElement.value, "2019-W35", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(1, 3);
+    assert_equals(weekElement.value, "2019-W34", "Clicking week should have changed week");
+    assert_equals(internals.pagePopupWindow, null, "Clicking week should have dismissed popup");
+  });
+}, "Week picker: Next month button should clip week if next month has fewer weeks");
+
+promise_test(() => {
+  let weekElement = document.getElementById('week-3');
+  return openPickerWithPromise(weekElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    // Arrow down to week 5 (if we started the control there, it would just open to the
+    // following month).
+    eventSender.keyDown('ArrowDown');
+    assert_equals(weekElement.value, "2020-W01", "Arrow key should have changed week");
+
+    clickPrevMonthButton();
+    assert_equals(weekElement.value, "2019-W48", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(1, 3);
+    assert_equals(weekElement.value, "2019-W47", "Clicking week should have changed week");
+    assert_equals(internals.pagePopupWindow, null, "Clicking week should have dismissed popup");
+  });
+}, "Week picker: Previous month button should clip week if prev month has fewer days");   
+
+</script>
+</body>
+</html>

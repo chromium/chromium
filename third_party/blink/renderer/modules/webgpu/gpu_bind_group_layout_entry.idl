@@ -1,0 +1,30 @@
+
+
+dictionary GPUBindGroupLayoutEntry {
+    required GPUIndex32 binding;
+    required GPUShaderStageFlags visibility;
+
+    GPUBufferBindingLayout buffer;
+    GPUSamplerBindingLayout sampler;
+    GPUTextureBindingLayout texture;
+    GPUStorageTextureBindingLayout storageTexture;
+    GPUExternalTextureBindingLayout externalTexture;
+};
+
+enum GPUBindingType {
+    "uniform-buffer",
+    "storage-buffer",
+    "readonly-storage-buffer",
+    "sampler",
+    "comparison-sampler",
+    "sampled-texture",
+    "multisampled-texture",
+    "writeonly-storage-texture",
+};
+
+enum GPUTextureComponentType {
+    "float",
+    "sint",
+    "uint",
+    "depth-comparison"
+};

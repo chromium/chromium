@@ -5,15 +5,24 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_PLATFORM_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_PLATFORM_H_
 
+#include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
+#include "ui/views/widget/desktop_aura/window_move_client_platform.h"
+
+namespace ui {
+class PaintContext;
+}  // namespace ui
 
 namespace views {
 
@@ -25,7 +34,20 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   DesktopWindowTreeHostPlatform(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostPlatform(const DesktopWindowTreeHostPlatform&) = delete;
+  DesktopWindowTreeHostPlatform& operator=(
+      const DesktopWindowTreeHostPlatform&) = delete;
+
   ~DesktopWindowTreeHostPlatform() override;
+
+  // A way of converting a |widget| into the content_window()
+  // of the associated DesktopNativeWidgetAura.
+  static aura::Window* GetContentWindowForWidget(gfx::AcceleratedWidget widget);
+
+  // A way of converting a |widget| into this object.
+  static DesktopWindowTreeHostPlatform* GetHostForWidget(
+      gfx::AcceleratedWidget widget);
 
   // Accessor for DesktopNativeWidgetAura::content_window().
   aura::Window* GetContentWindow();
@@ -37,8 +59,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnWidgetInitDone() override;
   void OnActiveWindowChanged(bool active) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
-  std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient(
-      DesktopNativeCursorManager* cursor_manager) override;
+  std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
   void CloseNow() override;
   aura::WindowTreeHost* AsWindowTreeHost() override;
@@ -70,7 +91,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
   bool IsVisibleOnAllWorkspaces() const override;
-  bool SetWindowTitle(const base::string16& title) override;
+  bool SetWindowTitle(const std::u16string& title) override;
   void ClearNativeFocus() override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
@@ -78,7 +99,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       Widget::MoveLoopEscapeBehavior escape_behavior) override;
   void EndMoveLoop() override;
   void SetVisibilityChangedAnimationsEnabled(bool value) override;
-  NonClientFrameView* CreateNonClientFrameView() override;
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
@@ -96,6 +117,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUpdateWindowTransparency() const override;
   bool ShouldUseDesktopNativeCursorManager() const override;
   bool ShouldCreateVisibilityController() const override;
+  void UpdateWindowShapeIfNeeded(const ui::PaintContext& context) override;
 
   // WindowTreeHost:
   gfx::Transform GetRootTransform() const override;
@@ -104,35 +126,37 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   // PlatformWindowDelegate:
   void OnClosed() override;
-  void OnWindowStateChanged(ui::PlatformWindowState new_state) override;
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override;
   void OnCloseRequest() override;
+  void OnWillDestroyAcceleratedWidget() override;
   void OnActivationChanged(bool active) override;
-  base::Optional<gfx::Size> GetMinimumSizeForWindow() override;
-  base::Optional<gfx::Size> GetMaximumSizeForWindow() override;
+  absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
+  absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
+  SkPath GetWindowMaskForWindowShapeInPixels() override;
+  absl::optional<ui::MenuType> GetMenuType() override;
+  absl::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx()
+      override;
 
   // ui::WorkspaceExtensionDelegate:
   void OnWorkspaceChanged() override;
 
  protected:
-  // TODO(https://crbug.com/990756): move these methods back to private
-  // once DWTHX11 stops using them.
-  internal::NativeWidgetDelegate* native_widget_delegate() {
-    return native_widget_delegate_;
-  }
-  DesktopNativeWidgetAura* desktop_native_widget_aura() {
-    return desktop_native_widget_aura_;
-  }
-
   // These are not general purpose methods and must be used with care. Please
   // make sure you understand the rounding direction before using.
   gfx::Rect ToDIPRect(const gfx::Rect& rect_in_pixels) const;
   gfx::Rect ToPixelRect(const gfx::Rect& rect_in_dip) const;
 
- private:
-  void Relayout();
-
   Widget* GetWidget();
   const Widget* GetWidget() const;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
+                           UpdateWindowShapeFromWindowMask);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
+                           MakesParentChildRelationship);
+
+  void ScheduleRelayout();
 
   // Set visibility and fire OnNativeWidgetVisibilityChanged() if it changed.
   void SetVisible(bool visible);
@@ -142,27 +166,35 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties);
 
+  // Returns window mask to clip canvas to update window shape of
+  // the content window.
+  virtual SkPath GetWindowMaskForClipping() const;
+
+  // Helper method that returns the display for the |window()|.
+  display::Display GetDisplayNearestRootWindow() const;
+
   internal::NativeWidgetDelegate* const native_widget_delegate_;
   DesktopNativeWidgetAura* const desktop_native_widget_aura_;
 
   bool is_active_ = false;
 
-  base::string16 window_title_;
+  std::u16string window_title_;
 
   // We can optionally have a parent which can order us to close, or own
   // children who we're responsible for closing when we CloseNow().
   DesktopWindowTreeHostPlatform* window_parent_ = nullptr;
   std::set<DesktopWindowTreeHostPlatform*> window_children_;
 
-  // Keep track of PlatformWindow state so that we would react correctly and set
-  // visibility only if the window was minimized or was unminimized from the
-  // normal state.
-  ui::PlatformWindowState old_state_ = ui::PlatformWindowState::kUnknown;
+  // Used for tab dragging in move loop requests.
+  WindowMoveClientPlatform window_move_client_;
+
+  // The content window shape can be set from either SetShape or default window
+  // mask. When explicitly setting from SetShape, |explicitly_set_shape_:true|
+  // to prevent clipping the canvas before painting for default window mask.
+  bool is_shape_explicitly_set_ = false;
 
   base::WeakPtrFactory<DesktopWindowTreeHostPlatform> close_widget_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostPlatform);
 };
 
 }  // namespace views

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -27,8 +28,46 @@ TrayContainer::TrayContainer(Shelf* shelf) : shelf_(shelf) {
 TrayContainer::~TrayContainer() {
 }
 
-void TrayContainer::UpdateAfterShelfChange() {
-  UpdateLayout();
+void TrayContainer::CalculateTargetBounds() {
+  const LayoutInputs new_layout_inputs = GetLayoutInputs();
+  const bool is_horizontal = new_layout_inputs.shelf_alignment_is_horizontal;
+
+  // Adjust the size of status tray dark background by adding additional
+  // empty border.
+  views::BoxLayout::Orientation orientation =
+      is_horizontal ? views::BoxLayout::Orientation::kHorizontal
+                    : views::BoxLayout::Orientation::kVertical;
+
+  gfx::Insets insets(
+      is_horizontal
+          ? gfx::Insets(0, new_layout_inputs.status_area_hit_region_padding)
+          : gfx::Insets(new_layout_inputs.status_area_hit_region_padding, 0));
+  border_ = views::CreateEmptyBorder(insets);
+
+  int horizontal_margin = new_layout_inputs.main_axis_margin;
+  int vertical_margin = new_layout_inputs.cross_axis_margin;
+  if (!is_horizontal)
+    std::swap(horizontal_margin, vertical_margin);
+
+  layout_manager_ = std::make_unique<views::BoxLayout>(
+      orientation, gfx::Insets(vertical_margin, horizontal_margin),
+      kUnifiedTraySpacingBetweenIcons);
+  layout_manager_->set_minimum_cross_axis_size(kTrayItemSize);
+}
+
+void TrayContainer::UpdateLayout() {
+  const LayoutInputs new_layout_inputs = GetLayoutInputs();
+  if (layout_inputs_ == new_layout_inputs)
+    return;
+
+  if (border_)
+    SetBorder(std::move(border_));
+
+  if (layout_manager_)
+    views::View::SetLayoutManager(std::move(layout_manager_));
+
+  Layout();
+  layout_inputs_ = new_layout_inputs;
 }
 
 void TrayContainer::SetMargin(int main_axis_margin, int cross_axis_margin) {
@@ -38,10 +77,14 @@ void TrayContainer::SetMargin(int main_axis_margin, int cross_axis_margin) {
 }
 
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {
+  if (layout_manager_)
+    UpdateLayout();
   PreferredSizeChanged();
 }
 
 void TrayContainer::ChildVisibilityChanged(View* child) {
+  if (layout_manager_)
+    UpdateLayout();
   PreferredSizeChanged();
 }
 
@@ -68,34 +111,10 @@ const char* TrayContainer::GetClassName() const {
   return "TrayContainer";
 }
 
-void TrayContainer::UpdateLayout() {
-  const bool is_horizontal = shelf_->IsHorizontalAlignment();
-
-  // Adjust the size of status tray dark background by adding additional
-  // empty border.
-  views::BoxLayout::Orientation orientation =
-      is_horizontal ? views::BoxLayout::Orientation::kHorizontal
-                    : views::BoxLayout::Orientation::kVertical;
-
-  gfx::Insets insets(
-      is_horizontal
-          ? gfx::Insets(0, ShelfConfig::Get()->status_area_hit_region_padding())
-          : gfx::Insets(ShelfConfig::Get()->status_area_hit_region_padding(),
-                        0));
-  SetBorder(views::CreateEmptyBorder(insets));
-
-  int horizontal_margin = main_axis_margin_;
-  int vertical_margin = cross_axis_margin_;
-  if (!is_horizontal)
-    std::swap(horizontal_margin, vertical_margin);
-
-  auto layout = std::make_unique<views::BoxLayout>(
-      orientation, gfx::Insets(vertical_margin, horizontal_margin),
-      kUnifiedTraySpacingBetweenIcons);
-  layout->set_minimum_cross_axis_size(kTrayItemSize);
-  views::View::SetLayoutManager(std::move(layout));
-
-  PreferredSizeChanged();
+TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
+  return {shelf_->IsHorizontalAlignment(),
+          ShelfConfig::Get()->status_area_hit_region_padding(),
+          GetAnchorBoundsInScreen(), main_axis_margin_, cross_axis_margin_};
 }
 
 }  // namespace ash

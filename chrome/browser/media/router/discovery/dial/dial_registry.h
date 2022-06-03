@@ -13,13 +13,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "url/gurl.h"
 
 namespace base {
 class Clock;
@@ -62,6 +61,9 @@ class DialRegistry
   };
 
   static DialRegistry* GetInstance();
+
+  DialRegistry(const DialRegistry&) = delete;
+  DialRegistry& operator=(const DialRegistry&) = delete;
 
   // Sets the NetLog object used for logging. Should be called right after
   // GetInstance(). If the registry already has a NetLog, does nothing. The
@@ -224,7 +226,6 @@ class DialRegistry
   FRIEND_TEST_ALL_PREFIXES(DialRegistryTest, TestNetworkEventConnectionLost);
   FRIEND_TEST_ALL_PREFIXES(DialRegistryTest,
                            TestNetworkEventConnectionRestored);
-  DISALLOW_COPY_AND_ASSIGN(DialRegistry);
 };
 
 }  // namespace media_router

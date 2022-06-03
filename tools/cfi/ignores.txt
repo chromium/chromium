@@ -1,0 +1,248 @@
+# This file defines which warnings should be ignored while running clang's
+# control flow integrity sanitizer, as run by the cfi_flags build target.
+
+[cfi-unrelated-cast|cfi-derived-cast]
+
+# e.g. RolloverProtectedTickClock
+fun:*MutableInstance*
+
+# WTF allocators. See https://crbug.com/713293.
+fun:*Allocate*Backing*
+
+# WTF::ThreadSpecific
+fun:*ThreadSpecific*
+
+# LLVM's allocator
+src:*llvm/Support/Allocator.h
+
+# Deliberate bad cast to derived class to hide functions.
+type:*BlockIUnknownMethods*
+type:*BlockRefType*
+type:*SkAutoTUnref*
+type:*SkBlockComRef*
+type:*RemoveIUnknown*
+src:*atlcomcli.h
+
+# src/base/win/event_trace_provider_unittest.cc
+type:*EtwTraceProvider*
+
+# b/64003142
+fun:*internal_default_instance*
+
+# CAtlArray<T> casts to uninitialized T*.
+src:*atlcoll.h
+
+# https://github.com/grpc/grpc/issues/19375
+src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
+
+# https://crbug.com/994752
+src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
+
+# Vulkan memory allocator
+src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
+
+#############################################################################
+# Base class's constructor accesses a derived class.
+
+fun:*DoublyLinkedListNode*
+
+# RenderFrameObserverTracker<T>::RenderFrameObserverTracker()
+fun:*content*RenderFrameObserverTracker*RenderFrame*
+
+# RenderViewObserverTracker<T>::RenderViewObserverTracker()
+fun:*content*RenderViewObserverTracker*RenderView*
+
+fun:*RefCountedGarbageCollected*makeKeepAlive*
+fun:*ThreadSafeRefCountedGarbageCollected*makeKeepAlive*
+
+#############################################################################
+# Base class's destructor accesses a derived class.
+
+fun:*DatabaseContext*contextDestroyed*
+
+# FIXME: Cannot handle template function LifecycleObserver<>::setContext,
+# so exclude source file for now.
+src:*lifecycle_observer.h*
+
+#############################################################################
+# Methods disabled due to perf considerations.
+
+[cfi-vcall]
+
+# Skia
+
+# https://crbug.com/638056#c1
+fun:*SkCanvas*onDrawRect*
+
+# https://crbug.com/638064
+fun:*SkCanvas*drawPicture*
+
+# https://crbug.com/638060
+fun:*SkCanvas*onDrawPicture*
+
+# https://crbug.com/638064#c2
+fun:*SkBaseDevice*accessPixels*
+
+# https://crbug.com/638056
+fun:*call_hline_blitter*
+fun:*do_scanline*
+fun:*antifilldot8*
+
+# Unclear what could be done here
+fun:*SkCanvas*drawRect*
+fun:*SkPictureGpuAnalyzer*analyzePicture*
+fun:*SkScalerContext*MakeRec*
+
+# CC
+
+# https://crbug.com/638056
+fun:*LayerTreeHost*NotifySwapPromiseMonitorsOfSetNeedsCommit*
+
+# WebKit
+# The entries below have not been categorized
+
+# cc::DisplayItemList::Inputs::~Inputs
+fun:*cc*DisplayItemList*Inputs*
+
+fun:*PaintInvalidationState*computePaintInvalidationRectInBacking*
+fun:*AdjustAndMarkTrait*mark*
+fun:*TraceTrait*trace*
+fun:*ChromeClientImpl*scheduleAnimation*
+fun:*hasAspectRatio*
+fun:*nextBreakablePosition*
+fun:*supportsCachedOffsets*
+fun:*traceImpl*
+
+#############################################################################
+# Cross-DSO vcalls
+
+[cfi-vcall|cfi-unrelated-cast|cfi-derived-cast]
+
+# These classes are used to communicate between chrome.exe and
+# chrome_child.dll (see src/sandbox/win/src/sandbox.h,
+# src/chrome/app/chrome_main.cc).
+type:sandbox::BrokerServices
+type:sandbox::TargetPolicy
+type:sandbox::TargetServices
+
+#############################################################################
+# Disabled indirect calls
+
+[cfi-icall]
+
+######### Cross-DSO icalls using dynamically resolved symbols crbug.com/771365
+
+# ANGLE
+src:*third_party/angle/src/libANGLE/*
+src:*third_party/angle/src/libEGL/*
+src:*third_party/angle/src/third_party/libXNVCtrl/NVCtrl.c
+# third_party/angle/src/gpu_info_util/SystemInfo_libpci.cpp
+fun:*GetPCIDevicesWithLibPCI*
+# third_party/angle/src/common/event_tracer.cpp
+fun:*GetTraceCategoryEnabledFlag*
+fun:*AddTraceEvent*
+
+# Dawn, calls to OpenGL and Vulkan function pointers from shared library.
+src:*third_party/dawn/src/dawn_native/*
+
+# PPAPI
+src:*ppapi/*
+src:*content/renderer/pepper*
+fun:*PpapiThread*
+fun:*BrokerProcessDispatcher*
+# Ignore base::{Once, Repeating}Callback due to https://crbug.com/845855
+fun:*FunctorTraits*
+
+# PipeWire due to https://crbug.com/926115
+src:*/include/spa/*
+src:*third_party/webrtc/modules/desktop_capture/linux/pipewire_stubs.cc
+src:*third_party/webrtc/modules/desktop_capture/linux/base_capturer_pipewire.cc
+
+# Calls to auto-generated stubs by generate_stubs.py
+src:*audio/pulse/pulse_stubs.cc
+src:*media/gpu/vaapi/va_stubs.cc
+
+# Calls to auto-generated stubs by generate_library_loader.py
+src:*content/browser/speech/tts_linux.cc
+src:*device/udev_linux/udev0_loader.cc
+src:*device/udev_linux/udev1_loader.cc
+
+# Calls to auto-generated stubs by ui/gl/generate_bindings.py
+src:*ui/gl/gl_bindings_autogen_*
+
+# Calls to vulkan function pointers from shared library.
+src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
+src:*third_party/angle/third_party/vulkan-loader/src/loader*
+src:*third_party/vulkan-deps/vulkan-loader/src/loader*
+src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
+
+src:*components/os_crypt/*
+
+src:*content/browser/accessibility/browser_accessibility_auralinux.cc
+src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
+src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc
+src:*ui/accessibility/platform/ax_platform_node_auralinux_unittest.cc
+
+src:*chrome/browser/ui/zoom/chrome_zoom_level_prefs.cc
+src:*third_party/webrtc/modules/desktop_capture/linux/x_server_pixel_buffer.cc
+src:*media/cdm/*
+src:*third_party/swiftshader/*
+src:*base/native_library_unittest.cc
+src:*ui/gtk/app_indicator_icon.cc
+src:*ui/gtk/unity_service.cc
+src:*components/cronet/native/*
+src:*third_party/breakpad/breakpad/src/client/linux/handler/exception_handler_unittest.cc
+
+# chrome/browser/ui/views/frame/dbus_appmenu.cc
+fun:*dbus_appmenu*
+
+# third_party/skia/include/gpu/gl/GrGLFunctions.h
+fun:*GrGLFunction*
+
+# Call to libcurl.so from the symupload utility
+src:*third_party/breakpad/breakpad/src/common/linux/http_upload.cc
+
+# Indirect call to Xlib.
+fun:*XImageDeleter*
+
+src:*mojo/public/c/system/thunks.cc
+
+# Call to vulkan function pointers from shared library.
+src:*/third_party/skia/src/gpu/vk/*
+src:*/third_party/skia/third_party/vulkanmemoryallocator/*
+
+# The follow entries are speculatively disabled. They're included in the
+# chromium build and include calls to dynamically resolved symbols; however,
+# they do not trigger cfi-icall failures in unit tests or normal chrome usage.
+# They're disabled to avoid failing in uncommon code paths. Be careful removing.
+src:*net/http/http_auth_gssapi_posix.cc
+src:*third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.cc
+src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
+src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
+
+######### Function pointers cast to incorrect type signatures
+
+# libicu is currently compiled such that in libicu the 'UChar' type is a
+# defined as a char16_t internally, but for the rest of chromium it's an
+# unsigned short, causing mismatched type signatures for icalls to/from icu
+# https://crbug.com/732026
+src:*third_party/icu/source/common/*
+src:*third_party/blink/renderer/platform/wtf/*
+# v8/src/intl.cc
+fun:*LocaleConvertCase*
+
+# PropertyCallbackArguments::Call methods cast function pointers
+src:*v8/src/api-arguments-inl.h
+src:*v8/src/api/api-arguments-inl.h
+
+# v8 callback that casts argument template parameters
+fun:*PendingPhantomCallback*Invoke*
+
+# weak_callback_ is cast from original type.
+fun:*GlobalHandles*PostGarbageCollectionProcessing*
+
+fun:*InvokeAccessorGetterCallback*
+
+######### Uncategorized
+
+src:*native_client/*

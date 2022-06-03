@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -46,18 +45,21 @@ class CryptAuthKey;
 class CryptAuthKeyProofComputer {
  public:
   CryptAuthKeyProofComputer() = default;
+
+  CryptAuthKeyProofComputer(const CryptAuthKeyProofComputer&) = delete;
+  CryptAuthKeyProofComputer& operator=(const CryptAuthKeyProofComputer&) =
+      delete;
+
   virtual ~CryptAuthKeyProofComputer() = default;
 
   // Returns null if key proof computation failed.
   // Note: The parameter |info| must be non-null for symmetric keys, but it is
   // not used for asymmetric keys.
-  virtual base::Optional<std::string> ComputeKeyProof(
+  virtual absl::optional<std::string> ComputeKeyProof(
       const CryptAuthKey& key,
       const std::string& payload,
       const std::string& salt,
-      const base::Optional<std::string>& info) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyProofComputer);
+      const absl::optional<std::string>& info) = 0;
 };
 
 }  // namespace device_sync

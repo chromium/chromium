@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "network_diagnostics.mojom",
+    "network_health.mojom",
+  ]
+
+  public_deps = [
+    "//chromeos/services/network_config/public/mojom:network_types",
+    "//mojo/public/mojom/base",
+  ]
+}

@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_root_store;
+
+// These structures are currently very simple, but more fields may be added in
+// future to support extra metadata about each trust anchor.
+
+message TrustAnchor {
+  // The human-editable textproto version of the root store uses the filename
+  // field for convenience. It is converted to the DER representation as part of
+  // the build process.
+  oneof certificate {
+    bytes der = 1;
+
+    // This filename is a relative path to a PEM file that stores the
+    // certificate.
+    string filename = 2;
+  }
+}
+
+message RootStore {
+  repeated TrustAnchor trust_anchors = 1;
+}

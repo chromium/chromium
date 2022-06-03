@@ -5,23 +5,35 @@
 import("//build/config/android/rules.gni")
 
 _jni_sources = [
-  "java/src/org/chromium/policy/CombinedPolicyProvider.java",
-  "java/src/org/chromium/policy/PolicyConverter.java",
+  "java/src/org/chromium/components/policy/CombinedPolicyProvider.java",
+  "java/src/org/chromium/components/policy/PolicyCacheUpdater.java",
+  "java/src/org/chromium/components/policy/PolicyConverter.java",
+  "java/src/org/chromium/components/policy/PolicyMap.java",
+  "java/src/org/chromium/components/policy/PolicyService.java",
 ]
+
+java_cpp_strings("java_switches_srcjar") {
+  # External code should depend on ":policy_java" instead.
+  visibility = [ ":*" ]
+  sources = [ "//components/policy/core/common/policy_switches.cc" ]
+  template = "java_templates/PolicySwitches.java.tmpl"
+}
 
 android_library("policy_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  srcjar_deps = [ ":java_switches_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  java_files =
-      _jni_sources + [
-        "java/src/org/chromium/policy/AbstractAppRestrictionsProvider.java",
-        "java/src/org/chromium/policy/AppRestrictionsProvider.java",
-        "java/src/org/chromium/policy/PolicyProvider.java",
-      ]
+  sources = _jni_sources + [
+              "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/AppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/PolicyCache.java",
+              "java/src/org/chromium/components/policy/PolicyCacheProvider.java",
+              "java/src/org/chromium/components/policy/PolicyProvider.java",
+            ]
 }
 
 android_library("policy_java_test_support") {
@@ -30,11 +42,13 @@ android_library("policy_java_test_support") {
     ":policy_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
-  java_files = [
-    "javatests/src/org/chromium/policy/test/annotations/Policies.java",
-    "javatests/src/org/chromium/policy/test/PolicyData.java",
+  sources = [
+    "javatests/src/org/chromium/components/policy/test/PolicyData.java",
+    "javatests/src/org/chromium/components/policy/test/annotations/Policies.java",
   ]
 }
 
@@ -43,18 +57,52 @@ generate_jni("jni_headers") {
   sources = _jni_sources
 }
 
-junit_binary("components_policy_junit_tests") {
-  java_files = [
-    "junit/src/org/chromium/policy/AbstractAppRestrictionsProviderTest.java",
-    "junit/src/org/chromium/policy/CombinedPolicyProviderTest.java",
-    "junit/src/org/chromium/policy/PolicyConverterTest.java",
-    "junit/src/org/chromium/policy/test/annotations/PoliciesTest.java",
+java_library("components_policy_junit_tests") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
+    "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyCacheProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyCacheTest.java",
+    "junit/src/org/chromium/components/policy/PolicyConverterTest.java",
+    "junit/src/org/chromium/components/policy/test/annotations/PoliciesTest.java",
   ]
   deps = [
     ":policy_java",
     ":policy_java_test_support",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
+}
+
+_test_jni_sources = [
+  "javatests/src/org/chromium/components/policy/test/PolicyCacheUpdaterTestSupporter.java",
+  "javatests/src/org/chromium/components/policy/test/PolicyMapTestSupporter.java",
+  "javatests/src/org/chromium/components/policy/test/PolicyServiceTestSupporter.java",
+]
+
+android_library("native_test_support_java") {
+  testonly = true
+  deps = [
+    ":policy_java",
+    "//base:base_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  sources = _test_jni_sources
+}
+
+generate_jni("test_jni_headers") {
+  testonly = true
+  visibility = [ "//components/policy/*" ]
+  sources = _test_jni_sources
 }

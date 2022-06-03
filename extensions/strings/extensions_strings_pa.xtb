@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Yikes! ਬੇਤਰਤੀਬ RSA ਨਿੱਜੀ ਕੁੰਜੀ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="1445572445564823378">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="PRODUCT_NAME" /> ਨੂੰ ਹੌਲਾ ਕਰ ਰਿਹਾ ਹੈ। <ph name="PRODUCT_NAME" /> ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="1468038450257740950">WebGL ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
-<translation id="149347756975725155">ਐਕਸਟੈਂਸ਼ਨ ਪ੍ਰਤੀਕ '<ph name="ICON" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="1803557475693955505">ਬੈਕਗ੍ਰਾਊਂਡ ਪੰਨਾ '<ph name="BACKGROUND_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ਨਿੱਜੀ ਕੁੰਜੀ ਪੜ੍ਹਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="6391538222494443604">ਇਨਪੁਟ ਡਾਇਰੈਕਟਰੀ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="641087317769093025">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਜ਼ਿਪ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
-<translation id="6413453408918378296">ਪ੍ਰਤੀਕ ਪੂਰੀ ਤਰ੍ਹਾਂ ਦਿਖਣਯੋਗ ਨਹੀਂ ਹੈ '<ph name="ICON" />'।</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੀਆਂ ਇੱਕ ਜਾਂ ਵਧੇਰੇ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ:</translation>
 <translation id="657064425229075395">ਬੈਕਗ੍ਰਾਊਂਡ ਸਕ੍ਰਿਪਟ '<ph name="BACKGROUND_SCRIPT" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> ਦਾ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>

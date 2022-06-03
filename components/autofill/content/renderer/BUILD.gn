@@ -2,14 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_static_library("renderer") {
+static_library("renderer") {
   sources = [
     "autofill_agent.cc",
     "autofill_agent.h",
-    "field_data_manager.cc",
-    "field_data_manager.h",
+    "autofill_assistant_agent.cc",
+    "autofill_assistant_agent.h",
     "form_autofill_util.cc",
     "form_autofill_util.h",
     "form_cache.cc",
@@ -41,6 +39,7 @@ jumbo_static_library("renderer") {
     "//base:i18n",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
+    "//components/password_manager/core/common:common",
     "//components/safe_browsing:buildflags",
     "//components/strings",
     "//content/public/common",
@@ -55,16 +54,19 @@ jumbo_static_library("renderer") {
     "//third_party/re2",
     "//ui/base",
   ]
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
+    "autofill_agent_test_api.h",
+    "focus_test_utils.cc",
+    "focus_test_utils.h",
+    "form_cache_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
+    "test_utils.cc",
+    "test_utils.h",
   ]
 
   public_deps = [
@@ -73,8 +75,12 @@ jumbo_static_library("test_support") {
   ]
   deps = [
     "//components/autofill/content/renderer",
+    "//components/autofill/core/common",
+    "//content/public/renderer",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
     "//third_party/blink/public:blink",
   ]
 }
@@ -82,7 +88,6 @@ jumbo_static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "form_cache_unittest.cc",
     "prefilled_values_detector_unittest.cc",
     "renderer_save_password_progress_logger_unittest.cc",
   ]

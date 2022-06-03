@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 
 // This bit of chaos ensures that kAllowlistKey is an arbitrary but
@@ -33,14 +34,6 @@ LookalikeUrlTabStorage* LookalikeUrlTabStorage::GetOrCreate(
     web_contents->SetUserData(kAllowlistKey, base::WrapUnique(storage));
   }
   return storage;
-}
-
-bool LookalikeUrlTabStorage::IsDomainAllowed(const std::string& domain) {
-  return allowed_domains_.count(domain) > 0;
-}
-
-void LookalikeUrlTabStorage::AllowDomain(const std::string& domain) {
-  allowed_domains_.insert(domain);
 }
 
 void LookalikeUrlTabStorage::OnLookalikeInterstitialShown(

@@ -1,0 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/file-system-access/#filesystemwritablefilestream
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=FileSystemAccess
+ ] interface FileSystemWritableFileStream : WritableStream {
+   [CallWith=ScriptState, RaisesException] Promise<void> write((BufferSource or Blob or USVString or WriteParams) data);
+   [CallWith=ScriptState, RaisesException] Promise<void> truncate(unsigned long long size);
+   [CallWith=ScriptState, RaisesException] Promise<void> seek(unsigned long long offset);
+ };

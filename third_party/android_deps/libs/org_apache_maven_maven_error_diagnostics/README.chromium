@@ -1,0 +1,13 @@
+Name: Maven Error Diagnostics
+Short Name: maven-error-diagnostics
+URL: https://maven.apache.org/
+Version: 2.2.1
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Provides a manager component which will process a given Throwable instance through a set of diagnostic sub-components, and return a String message with user-friendly information about the error and possibly how to fix it.
+
+Local Modifications:
+No modifications.

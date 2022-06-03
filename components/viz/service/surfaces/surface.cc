@@ -8,12 +8,16 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <limits>
+#include <utility>
 
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "base/trace_event/traced_value.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -26,6 +30,26 @@
 #include "ui/gfx/swap_result.h"
 
 namespace viz {
+
+namespace {
+
+// Adds the given |request| to the requests of the given |render_pass|, removing
+// any duplicate requests made by the same source.
+void RequestCopyOfOutputOnRenderPass(std::unique_ptr<CopyOutputRequest> request,
+                                     CompositorRenderPass& render_pass) {
+  if (request->has_source()) {
+    const base::UnguessableToken& source = request->source();
+    // Remove existing CopyOutputRequests made on the Surface by the same
+    // source.
+    base::EraseIf(render_pass.copy_requests,
+                  [&source](const std::unique_ptr<CopyOutputRequest>& x) {
+                    return x->has_source() && x->source() == source;
+                  });
+  }
+  render_pass.copy_requests.push_back(std::move(request));
+}
+
+}  // namespace
 
 Surface::PresentationHelper::PresentationHelper(
     base::WeakPtr<SurfaceClient> surface_client,
@@ -102,16 +126,6 @@ void Surface::SetDependencyDeadline(
 void Surface::SetPreviousFrameSurface(Surface* surface) {
   DCHECK(surface && (HasActiveFrame() || HasPendingFrame()));
   previous_frame_surface_id_ = surface->surface_id();
-}
-
-void Surface::RefResources(const std::vector<TransferableResource>& resources) {
-  if (surface_client_)
-    surface_client_->RefResources(resources);
-}
-
-void Surface::UnrefResources(const std::vector<ReturnedResource>& resources) {
-  if (surface_client_)
-    surface_client_->UnrefResources(resources);
 }
 
 void Surface::UpdateSurfaceReferences() {
@@ -225,7 +239,7 @@ Surface::QueueFrameResult Surface::QueueFrame(
 
   TakePendingLatencyInfo(&frame.metadata.latency_info);
 
-  base::Optional<FrameData> previous_pending_frame_data =
+  absl::optional<FrameData> previous_pending_frame_data =
       std::move(pending_frame_data_);
   pending_frame_data_.reset();
 
@@ -237,14 +251,29 @@ Surface::QueueFrameResult Surface::QueueFrame(
 
   if (activation_dependencies_.empty()) {
     // If there are no blockers, then immediately activate the frame.
-    ActivateFrame(FrameData(std::move(frame), frame_index), base::nullopt);
+    ActivateFrame(FrameData(std::move(frame), frame_index));
   } else {
     pending_frame_data_ = FrameData(std::move(frame), frame_index);
+
+    auto traced_value = std::make_unique<base::trace_event::TracedValue>();
+    traced_value->BeginArray("Pending");
+    for (auto& it : activation_dependencies_)
+      traced_value->AppendString(it.ToString());
+    traced_value->EndArray();
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+        "viz", "SurfaceQueuedPending", TRACE_ID_LOCAL(this), "LocalSurfaceId",
+        surface_info_.id().ToString(), "ActivationDependencies",
+        std::move(traced_value));
 
     deadline_->Set(ResolveFrameDeadline(pending_frame_data_->frame));
     if (deadline_->HasDeadlinePassed()) {
       ActivatePendingFrameForDeadline();
     } else {
+      // If we are blocked on another Surface, and its latest frame is unacked,
+      // we send the Ack now. This will allow frame production to continue for
+      // that client, leading to the group being unblocked.
+      for (auto* it : blocking_allocation_groups_)
+        it->AckLastestActiveUnAckedFrame();
       result = QueueFrameResult::ACCEPTED_PENDING;
     }
   }
@@ -260,23 +289,59 @@ Surface::QueueFrameResult Surface::QueueFrame(
 }
 
 void Surface::RequestCopyOfOutput(
+    PendingCopyOutputRequest pending_copy_output_request) {
+  TRACE_EVENT1("viz", "Surface::RequestCopyOfOutput", "has_active_frame_data",
+               !!active_frame_data_);
+
+  if (!pending_copy_output_request.subtree_capture_id.is_valid()) {
+    RequestCopyOfOutputOnRootRenderPass(
+        std::move(pending_copy_output_request.copy_output_request));
+    return;
+  }
+
+  if (!active_frame_data_)
+    return;
+
+  for (auto& render_pass : GetActiveOrInterpolatedFrame().render_pass_list) {
+    if (render_pass->subtree_capture_id ==
+        pending_copy_output_request.subtree_capture_id) {
+      RequestCopyOfOutputOnRenderPass(
+          std::move(pending_copy_output_request.copy_output_request),
+          *render_pass);
+      return;
+    }
+  }
+}
+
+void Surface::RequestCopyOfOutputOnRootRenderPass(
     std::unique_ptr<CopyOutputRequest> copy_request) {
+  TRACE_EVENT1("viz", "Surface::RequestCopyOfOutputOnRootRenderPass",
+               "has_active_frame_data", !!active_frame_data_);
   if (!active_frame_data_)
     return;  // |copy_request| auto-sends empty result on out-of-scope.
 
-  std::vector<std::unique_ptr<CopyOutputRequest>>& copy_requests =
-      active_frame_data_->frame.render_pass_list.back()->copy_requests;
+  RequestCopyOfOutputOnRenderPass(
+      std::move(copy_request),
+      *GetActiveOrInterpolatedFrame().render_pass_list.back());
+}
 
-  if (copy_request->has_source()) {
-    const base::UnguessableToken& source = copy_request->source();
-    // Remove existing CopyOutputRequests made on the Surface by the same
-    // source.
-    base::EraseIf(copy_requests,
-                  [&source](const std::unique_ptr<CopyOutputRequest>& x) {
-                    return x->has_source() && x->source() == source;
-                  });
+bool Surface::RequestCopyOfOutputOnActiveFrameRenderPassId(
+    std::unique_ptr<CopyOutputRequest> copy_request,
+    CompositorRenderPassId render_pass_id) {
+  TRACE_EVENT1("viz", "Surface::RequestCopyOfOurpurRenderPassId",
+               "has_active_frame_data", !!active_frame_data_);
+  if (!active_frame_data_)
+    return false;
+
+  // Find a render pass with a given id, and attach the copy output request on
+  // it.
+  for (auto& render_pass : GetActiveOrInterpolatedFrame().render_pass_list) {
+    if (render_pass->id == render_pass_id) {
+      RequestCopyOfOutputOnRenderPass(std::move(copy_request), *render_pass);
+      return true;
+    }
   }
-  copy_requests.push_back(std::move(copy_request));
+  return false;
 }
 
 void Surface::OnActivationDependencyResolved(
@@ -294,6 +359,11 @@ void Surface::OnActivationDependencyResolved(
 void Surface::ActivatePendingFrameForDeadline() {
   if (!pending_frame_data_)
     return;
+
+  if (!activation_dependencies_.empty()) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("viz", "SurfaceQueuedPending",
+                                    TRACE_ID_LOCAL(this));
+  }
 
   // If a frame is being activated because of a deadline, then clear its set
   // of blockers.
@@ -316,9 +386,15 @@ void Surface::ActivatePendingFrame() {
   FrameData frame_data = std::move(*pending_frame_data_);
   pending_frame_data_.reset();
 
-  base::Optional<base::TimeDelta> duration = deadline_->Cancel();
+  absl::optional<base::TimeDelta> duration = deadline_->Cancel();
+  if (duration.has_value()) {
+    TRACE_EVENT_INSTANT2("viz", "SurfaceSynchronizationEvent",
+                         TRACE_EVENT_SCOPE_THREAD, "surface_id",
+                         surface_info_.id().ToString(), "duration_ms",
+                         duration.value().InMilliseconds());
+  }
 
-  ActivateFrame(std::move(frame_data), std::move(duration));
+  ActivateFrame(std::move(frame_data));
 }
 
 void Surface::UpdateReferencedAllocationGroups(
@@ -354,7 +430,7 @@ void Surface::RecomputeActiveReferencedSurfaces() {
       active_referenced_surfaces_.insert(surface->surface_id());
       last_surface_id_for_range_.push_back(surface->surface_id());
     } else {
-      last_surface_id_for_range_.push_back(SurfaceId());
+      last_surface_id_for_range_.emplace_back();
     }
     // The allocation group for the end of the SurfaceRange should always be
     // referenced.
@@ -385,15 +461,15 @@ void Surface::RecomputeActiveReferencedSurfaces() {
   UpdateSurfaceReferences();
 }
 
-// A frame is activated if all its Surface ID dependences are active or a
-// deadline has hit and the frame was forcibly activated. |duration| is a
-// measure of the time the frame has spent waiting on dependencies to arrive.
-// If |duration| is base::nullopt, then that indicates that this frame was not
-// blocked on dependencies.
-void Surface::ActivateFrame(FrameData frame_data,
-                            base::Optional<base::TimeDelta> duration) {
-  TRACE_EVENT1("viz", "Surface::ActivateFrame", "FrameSinkId",
-               surface_id().frame_sink_id().ToString());
+// A frame is activated if all its Surface ID dependencies are active or a
+// deadline has hit and the frame was forcibly activated.
+void Surface::ActivateFrame(FrameData frame_data) {
+  TRACE_EVENT1("viz", "Surface::ActivateFrame", "SurfaceId",
+               surface_id().ToString());
+
+  // The interpolated frame is based off of the active frame. If we're
+  // activating a new frame we need to do interpolation again (if needed).
+  interpolated_frame_.reset();
 
   // Save root pass copy requests.
   std::vector<std::unique_ptr<CopyOutputRequest>> old_copy_requests;
@@ -406,7 +482,7 @@ void Surface::ActivateFrame(FrameData frame_data,
 
   TakeActiveLatencyInfo(&frame_data.frame.metadata.latency_info);
 
-  base::Optional<FrameData> previous_frame_data = std::move(active_frame_data_);
+  absl::optional<FrameData> previous_frame_data = std::move(active_frame_data_);
 
   active_frame_data_ = std::move(frame_data);
 
@@ -419,7 +495,7 @@ void Surface::ActivateFrame(FrameData frame_data,
   RecomputeActiveReferencedSurfaces();
 
   for (auto& copy_request : old_copy_requests)
-    RequestCopyOfOutput(std::move(copy_request));
+    RequestCopyOfOutputOnRootRenderPass(std::move(copy_request));
 
   UnrefFrameResourcesAndRunCallbacks(std::move(previous_frame_data));
 
@@ -443,11 +519,11 @@ void Surface::ActivateFrame(FrameData frame_data,
     surface_manager_->FirstSurfaceActivation(surface_info_);
   }
 
-  surface_manager_->SurfaceActivated(this, duration);
+  surface_manager_->SurfaceActivated(this);
 
   // Defer notifying the embedder of an updated token until the frame has been
   // completely processed.
-  const auto& metadata = GetActiveFrame().metadata;
+  const auto& metadata = GetActiveFrameMetadata();
   if (surface_client_ && metadata.send_frame_token_to_embedder)
     surface_client_->OnFrameTokenChanged(metadata.frame_token);
 }
@@ -469,7 +545,7 @@ FrameDeadline Surface::ResolveFrameDeadline(
     return FrameDeadline::MakeZero();
   }
 
-  const base::Optional<uint32_t>& default_deadline =
+  const absl::optional<uint32_t>& default_deadline =
       surface_manager_->activation_deadline_in_frames();
   const FrameDeadline& deadline = current_frame.metadata.deadline;
   uint32_t deadline_in_frames = deadline.deadline_in_frames();
@@ -538,7 +614,8 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
   if (!active_frame_data_)
     return;
 
-  for (const auto& render_pass : active_frame_data_->frame.render_pass_list) {
+  for (const auto& render_pass :
+       GetActiveOrInterpolatedFrame().render_pass_list) {
     for (auto& request : render_pass->copy_requests) {
       copy_requests->insert(
           std::make_pair(render_pass->id, std::move(request)));
@@ -551,26 +628,54 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
 void Surface::TakeCopyOutputRequestsFromClient() {
   if (!surface_client_)
     return;
-  for (std::unique_ptr<CopyOutputRequest>& request :
+  for (PendingCopyOutputRequest& request_params :
        surface_client_->TakeCopyOutputRequests(
            surface_id().local_surface_id())) {
-    RequestCopyOfOutput(std::move(request));
+    RequestCopyOfOutput(std::move(request_params));
   }
 }
 
-bool Surface::HasCopyOutputRequests() {
-  if (!active_frame_data_)
-    return false;
-  for (const auto& render_pass : active_frame_data_->frame.render_pass_list) {
-    if (!render_pass->copy_requests.empty())
-      return true;
-  }
-  return false;
+bool Surface::HasCopyOutputRequests() const {
+  return active_frame_data_ &&
+         GetActiveOrInterpolatedFrame().HasCopyOutputRequests();
 }
 
 const CompositorFrame& Surface::GetActiveFrame() const {
   DCHECK(active_frame_data_);
   return active_frame_data_->frame;
+}
+
+const CompositorFrame& Surface::GetActiveOrInterpolatedFrame() const {
+  DCHECK(active_frame_data_);
+  if (interpolated_frame_.has_value())
+    return *interpolated_frame_;
+  return active_frame_data_->frame;
+}
+
+bool Surface::HasInterpolatedFrame() const {
+  return interpolated_frame_.has_value();
+}
+
+const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
+  DCHECK(active_frame_data_);
+  return active_frame_data_->frame.metadata;
+}
+
+void Surface::ResetInterpolatedFrame() {
+  interpolated_frame_.reset();
+  has_damage_from_interpolated_frame_ = true;
+}
+
+void Surface::SetInterpolatedFrame(CompositorFrame frame) {
+  interpolated_frame_.emplace(std::move(frame));
+}
+
+bool Surface::HasSurfaceAnimationDamage() const {
+  return interpolated_frame_.has_value() || has_damage_from_interpolated_frame_;
+}
+
+void Surface::DidAggregate() {
+  has_damage_from_interpolated_frame_ = false;
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {
@@ -628,8 +733,15 @@ void Surface::NotifyAggregatedDamage(const gfx::Rect& damage_rect,
       damage_rect, expected_display_time);
 }
 
+bool Surface::IsVideoCaptureOnFromClient() {
+  if (!surface_client_)
+    return false;
+
+  return surface_client_->IsVideoCaptureStarted();
+}
+
 void Surface::UnrefFrameResourcesAndRunCallbacks(
-    base::Optional<FrameData> frame_data) {
+    absl::optional<FrameData> frame_data) {
   if (!frame_data || !surface_client_)
     return;
 
@@ -638,22 +750,29 @@ void Surface::UnrefFrameResourcesAndRunCallbacks(
   // No point in returning same sync token to sender.
   for (auto& resource : resources)
     resource.sync_token.Clear();
-  surface_client_->UnrefResources(resources);
+  surface_client_->UnrefResources(std::move(resources));
 
   if (!frame_data->frame_acked)
     surface_client_->OnSurfaceProcessed(this);
 
   // If we won't be getting a presented notification, we'll notify the client
   // when the frame is unref'd.
-  if (!frame_data->will_be_notified_of_presentation && surface_client_)
+  if (!frame_data->will_be_notified_of_presentation && surface_client_) {
     surface_client_->OnSurfacePresented(frame_data->frame.metadata.frame_token,
                                         base::TimeTicks(), gfx::SwapTimings(),
                                         gfx::PresentationFeedback::Failure());
+  }
+
+  // Usually the LatencyInfo was already taken during aggregation or when the
+  // surface was replaced. If neither happened, terminate the LatencyInfo now.
+  for (ui::LatencyInfo& info : frame_data->frame.metadata.latency_info)
+    info.Terminate();
 }
 
 void Surface::ClearCopyRequests() {
   if (active_frame_data_) {
-    for (const auto& render_pass : active_frame_data_->frame.render_pass_list) {
+    for (const auto& render_pass :
+         GetActiveOrInterpolatedFrame().render_pass_list) {
       // When the container is cleared, all copy requests within it will
       // auto-send an empty result as they are being destroyed.
       render_pass->copy_requests.clear();
@@ -693,21 +812,6 @@ void Surface::OnWillBeDrawn() {
   if (!seen_first_surface_embedding_) {
     seen_first_surface_embedding_ = true;
 
-    // Tests may not be sending valid time stamps.
-    // Additionally since the allocation time is not a member of LocalSurfaceId
-    // it has to be added to each new site that is sneding LocalSurfaceIds to
-    // Viz. Due to this, new embedders may initially be sending invalid time
-    // stamps. Do not calculate metrics for those.
-    if (!active_frame_data_->frame.metadata.local_surface_id_allocation_time
-             .is_null()) {
-      // Only send UMAs if we can calculate a valid delta.
-      base::TimeDelta delta =
-          base::TimeTicks::Now() -
-          active_frame_data_->frame.metadata.local_surface_id_allocation_time;
-      base::UmaHistogramTimes("Viz.DisplayCompositor.SurfaceEmbeddingTime",
-                              delta);
-    }
-
     TRACE_EVENT_WITH_FLOW2(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Embed.Flow",
@@ -725,6 +829,15 @@ void Surface::ActivatePendingFrameForInheritedDeadline() {
   // so there shouldn't be an active frame.
   DCHECK(!HasActiveFrame());
   ActivatePendingFrameForDeadline();
+}
+
+std::unique_ptr<gfx::DelegatedInkMetadata> Surface::TakeDelegatedInkMetadata() {
+  DCHECK(active_frame_data_);
+  return active_frame_data_->TakeDelegatedInkMetadata();
+}
+
+SurfaceSavedFrameStorage* Surface::GetSurfaceSavedFrameStorage() {
+  return &surface_saved_frame_storage_;
 }
 
 }  // namespace viz

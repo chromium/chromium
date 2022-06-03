@@ -3,29 +3,31 @@
 <head>
 <script src="../resources/js-test.js"></script>
 </head>
-<body id="body">
+<body>
 
-<div role="list">
-<div role="listitem" aria-label="item 1"><img src='#' width=100 height=100></div>
-<div role="listitem" aria-label="item 2"><img src='#' width=100 height=100></div>
+  <div id="container">
+    <div role="list">
+      <div role="listitem" aria-label="item 1">
+        <img src='#' width=100 height=100>
+      </div>
+      <div role="listitem" aria-label="item 2">
+        <img src='#' width=100 height=100>
+      </div>
+    </div>
+  </div>
 </div>
-
-<p id="description"></p>
-<div id="console"></div>
 
 <script>
 
-    description("This tests that the ARIA roles of list and listitem map correctly to Mac accessibility roles.");
+    description("This tests that the ARIA roles of list and listitem map correctly to accessibility roles.");
 
     if (window.accessibilityController) {
 
-          // this text field should be required.
-          document.getElementById("body").focus();
-          var obj = accessibilityController.focusedElement;
+        var container = accessibilityController.accessibleElementById("container");
 
-          debug("obj.childAtIndex(0).childAtIndex(0).role = " + obj.childAtIndex(0).childAtIndex(0).role);
-          debug("obj.childAtIndex(0).childAtIndex(0).childAtIndex(0).role = " + obj.childAtIndex(0).childAtIndex(0).childAtIndex(0).role);
-          debug("obj.childAtIndex(0).childAtIndex(0).childAtIndex(1).role = " + obj.childAtIndex(0).childAtIndex(0).childAtIndex(1).role);
+        debug("container.childAtIndex(0).role = " + container.childAtIndex(0).role);
+        debug("container.childAtIndex(0).childAtIndex(0).role = " + container.childAtIndex(0).childAtIndex(0).role);
+        debug("container.childAtIndex(0).childAtIndex(1).role = " + container.childAtIndex(0).childAtIndex(1).role);
     }
 
 </script>

@@ -18,7 +18,7 @@ TrackableMockInvalidation::TrackableMockInvalidation(
       tracker_(tracker),
       tracking_id_(tracking_id) {}
 
-TrackableMockInvalidation::~TrackableMockInvalidation() {}
+TrackableMockInvalidation::~TrackableMockInvalidation() = default;
 
 void TrackableMockInvalidation::Acknowledge() {
   if (tracker_) {

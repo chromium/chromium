@@ -6,11 +6,10 @@
 #define CHROME_TEST_CHROMEDRIVER_SESSION_COMMANDS_H_
 
 #include <memory>
-#include <string>
 
-#include "base/callback_forward.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
+#include "chrome/test/chromedriver/session_connection_map.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace base {
@@ -24,15 +23,20 @@ struct Session;
 class Status;
 
 struct InitSessionParams {
-  InitSessionParams(network::mojom::URLLoaderFactory* factory,
-                    const SyncWebSocketFactory& socket_factory,
-                    DeviceManager* device_manager);
+  InitSessionParams(
+      network::mojom::URLLoaderFactory* factory,
+      const SyncWebSocketFactory& socket_factory,
+      DeviceManager* device_manager,
+      const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+      SessionConnectionMap* session_map);
   InitSessionParams(const InitSessionParams& other);
   ~InitSessionParams();
 
   network::mojom::URLLoaderFactory* url_loader_factory;
   SyncWebSocketFactory socket_factory;
   DeviceManager* device_manager;
+  scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner;
+  SessionConnectionMap* session_map;
 };
 
 bool GetW3CSetting(const base::DictionaryValue& params);
@@ -109,10 +113,6 @@ Status ExecuteIsLoading(Session* session,
                         const base::DictionaryValue& params,
                         std::unique_ptr<base::Value>* value);
 
-Status ExecuteLaunchApp(Session* session,
-                        const base::DictionaryValue& params,
-                        std::unique_ptr<base::Value>* value);
-
 Status ExecuteGetLocation(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value);
@@ -161,9 +161,17 @@ Status ExecuteUnimplementedCommand(Session* session,
                                    const base::DictionaryValue& params,
                                    std::unique_ptr<base::Value>* value);
 
+Status ExecuteSetSPCTransactionMode(Session* session,
+                                    const base::DictionaryValue& params,
+                                    std::unique_ptr<base::Value>* value);
+
 Status ExecuteGenerateTestReport(Session* session,
                                  const base::DictionaryValue& params,
                                  std::unique_ptr<base::Value>* value);
+
+Status ExecuteSetTimeZone(Session* session,
+                          const base::DictionaryValue& params,
+                          std::unique_ptr<base::Value>* value);
 
 namespace internal {
 Status ConfigureHeadlessSession(Session* session,

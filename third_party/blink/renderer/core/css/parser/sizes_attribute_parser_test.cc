@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
@@ -82,8 +83,7 @@ TEST(SizesAttributeParserTest, Basic) {
   data.device_pixel_ratio = 2.0;
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = kPointerTypeFine;
-  data.default_font_size = 16;
+  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
@@ -91,7 +91,7 @@ TEST(SizesAttributeParserTest, Basic) {
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
-    SizesAttributeParser parser(media_values, test_cases[i].input);
+    SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
     ASSERT_EQ(test_cases[i].effective_size, parser.length());
   }
 }
@@ -163,8 +163,7 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
   data.device_pixel_ratio = 2.0;
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = kPointerTypeFine;
-  data.default_font_size = 16;
+  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
@@ -172,7 +171,7 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
-    SizesAttributeParser parser(media_values, test_cases[i].input);
+    SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
     ASSERT_EQ(test_cases[i].effective_size, parser.length());
   }
 }

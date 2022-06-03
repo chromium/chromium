@@ -29,6 +29,10 @@ class VectorWorkerIdListImpl {
  public:
   explicit VectorWorkerIdListImpl(const std::vector<WorkerId> worker_ids)
       : workers_(worker_ids) {}
+
+  VectorWorkerIdListImpl(const VectorWorkerIdListImpl&) = delete;
+  VectorWorkerIdListImpl& operator=(const VectorWorkerIdListImpl&) = delete;
+
   ~VectorWorkerIdListImpl() = default;
 
   std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
@@ -50,8 +54,6 @@ class VectorWorkerIdListImpl {
 
  private:
   std::vector<WorkerId> workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorWorkerIdListImpl);
 };
 
 std::vector<WorkerId> GenerateWorkerIds(
@@ -87,6 +89,9 @@ class WorkerIdSetTest : public testing::Test {
  public:
   WorkerIdSetTest() = default;
 
+  WorkerIdSetTest(const WorkerIdSetTest&) = delete;
+  WorkerIdSetTest& operator=(const WorkerIdSetTest&) = delete;
+
   bool AreWorkerIdsEqual(const std::vector<WorkerId>& expected,
                          const std::vector<WorkerId>& actual) {
     if (expected.size() != actual.size())
@@ -98,9 +103,6 @@ class WorkerIdSetTest : public testing::Test {
     std::sort(actual_copy.begin(), actual_copy.end());
     return expected_copy == actual_copy;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerIdSetTest);
 };
 
 TEST_F(WorkerIdSetTest, GetAllForExtension) {
@@ -153,7 +155,18 @@ TEST_F(WorkerIdSetTest, RemoveAllForExtension) {
   size_t expected_entries_removed = 0u;
   auto test_removal = [&](const std::string& extension_id_to_remove,
                           size_t expected_removal_count) {
-    worker_id_set->RemoveAllForExtension(extension_id_to_remove);
+    std::vector<WorkerId> worker_ids_to_remove =
+        worker_id_set->GetAllForExtension(extension_id_to_remove);
+    for (const auto& worker_id : worker_ids_to_remove) {
+      if (!worker_id_set->Remove(worker_id)) {
+        return ::testing::AssertionFailure()
+               << "WorkerId not found to Remove: "
+               << "{" << worker_id.extension_id
+               << ", rph = " << worker_id.render_process_id
+               << ", version_id = " << worker_id.version_id
+               << ", thread = " << worker_id.thread_id << "}";
+      }
+    }
     expected_entries_removed += expected_removal_count;
 
     const size_t num_expected_entries =

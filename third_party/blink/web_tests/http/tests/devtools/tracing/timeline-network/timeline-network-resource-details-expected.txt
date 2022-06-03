@@ -7,13 +7,13 @@ Priority: Low
 Mime Type: string
 Encoded Data: string
 Decoded Body: 223 B
-Initiator: timeline-network-resource-details.js:18
+Initiator: timeline-network-resource-details.js:19:25
 URL: anImage.png
 Duration: string
 Request Method: GET
 Priority: Low
 Mime Type: string
 Encoded Data: string
-Decoded Body: 12.9 KB
-Preview: 
+Decoded Body: 13.3 kB
+Preview: File size:13.3 kBCurrent source:http://127.0.0.1:8000/devtools/tracing/resources/anImage.png
 

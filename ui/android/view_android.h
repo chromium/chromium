@@ -12,13 +12,14 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
-
-class SkBitmap;
 
 namespace cc {
 class Layer;
@@ -34,6 +35,7 @@ class CopyOutputRequest;
 }
 
 namespace ui {
+class Cursor;
 class DragEventAndroid;
 class EventForwarder;
 class EventHandlerAndroid;
@@ -104,6 +106,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
   explicit ViewAndroid(LayoutType layout_type);
 
   ViewAndroid();
+
+  ViewAndroid(const ViewAndroid&) = delete;
+  ViewAndroid& operator=(const ViewAndroid&) = delete;
+
   virtual ~ViewAndroid();
 
   void UpdateFrameInfo(const FrameInfo& frame_info);
@@ -153,15 +159,25 @@ class UI_ANDROID_EXPORT ViewAndroid {
   gfx::Rect bounds() const { return bounds_; }
 
   void OnSizeChanged(int width, int height);
-  void OnPhysicalBackingSizeChanged(const gfx::Size& size);
-  void OnCursorChanged(int type,
-                       const SkBitmap& custom_image,
-                       const gfx::Point& hotspot);
+  // |deadline_override| if not nullopt will be used as the cc::DeadlinePolicy
+  // timeout for this resize.
+  void OnPhysicalBackingSizeChanged(
+      const gfx::Size& size,
+      absl::optional<base::TimeDelta> deadline_override = absl::nullopt);
+  void OnCursorChanged(const Cursor& cursor);
   void OnBackgroundColorChanged(unsigned int color);
   void OnTopControlsChanged(float top_controls_offset,
-                            float top_content_offset);
+                            float top_content_offset,
+                            float top_controls_min_height_offset);
   void OnBottomControlsChanged(float bottom_controls_offset,
-                               float bottom_content_offset);
+                               float bottom_controls_min_height_offset);
+  void OnBrowserControlsHeightChanged();
+  // |current_scroll_ratio| is the ratio of vertical scroll in [0, 1] range.
+  // Scroll at top of page is 0, and bottom of page is 1. It is defined as 0
+  // if page is not scrollable, though this should not be called in that case.
+  void OnVerticalScrollDirectionChanged(bool direction_up,
+                                        float current_scroll_ratio);
+  void OnControlsResizeViewChanged(bool controls_resize_view);
 
   // Gets the Visual Viewport inset to apply in physical pixels.
   int GetViewportInsetBottom();
@@ -197,13 +213,15 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   ViewAndroid* parent() const { return parent_; }
 
+  absl::optional<gfx::Rect> GetDisplayFeature();
+
   bool OnTouchEventForTesting(const MotionEventAndroid& event) {
     return OnTouchEvent(event);
   }
 
-  bool OnUnconsumedKeyboardEventAck(int native_code);
-  void FallbackCursorModeLockCursor(bool left, bool right, bool up, bool down);
-  void FallbackCursorModeSetCursorVisibility(bool visible);
+  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+
+  void SetLayoutForTesting(int x, int y, int width, int height);
 
  protected:
   void RemoveAllChildren(bool attached_to_window);
@@ -236,8 +254,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void OnAttachedToWindow();
   void OnDetachedFromWindow();
-
-  void SetLayoutForTesting(int x, int y, int width, int height);
 
   template <typename E>
   using EventHandlerCallback =
@@ -272,8 +288,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void OnSizeChangedInternal(const gfx::Size& size);
   void DispatchOnSizeChanged();
 
-  bool HasTouchlessEventHandler();
-
   // Returns the Java delegate for this view. This is used to delegate work
   // up to the embedding view (or the embedder that can deal with the
   // implementation details).
@@ -302,7 +316,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // Copy output of View rather than window.
   CopyViewCallback copy_view_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(ViewAndroid);
+  bool controls_resize_view_ = false;
 };
 
 }  // namespace ui

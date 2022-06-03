@@ -6,15 +6,16 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
 
 namespace nacl {
 
 bool IsNonSFIModeEnabled() {
-#if defined(OS_CHROMEOS) && \
+#if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL))
   return true;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableNaClNonSfiMode);
 #else

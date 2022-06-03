@@ -5,14 +5,10 @@
 // This is only used when the new C++ implementation is enabled.
 
 // https://streams.spec.whatwg.org/#rs-default-controller-class-definition
-[
-    Exposed=(Window,Worker,Worklet),
-    NoInterfaceObject,
-    RaisesException=Constructor
-] interface TransformStreamDefaultController {
-    [NotEnumerable] readonly attribute double? desiredSize;
-    [CallWith=ScriptState, NotEnumerable, RaisesException] void enqueue(
+interface TransformStreamDefaultController {
+    readonly attribute double? desiredSize;
+    [CallWith=ScriptState, RaisesException] void enqueue(
         optional any chunk);
-    [CallWith=ScriptState, NotEnumerable] void error(optional any reason);
-    [CallWith=ScriptState, NotEnumerable] void terminate();
+    [CallWith=ScriptState] void error(optional any reason);
+    [CallWith=ScriptState] void terminate();
 };

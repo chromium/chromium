@@ -4,30 +4,21 @@
 
 package org.chromium.weblayer;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
-import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
-import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
-import org.chromium.weblayer_private.interfaces.ObjectWrapper;
-import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 /**
- * WebLayer's fragment implementation.
+ * WebLayer's browser fragment implementation.
  *
  * This class is an implementation detail and will eventually be hidden. Use
  * {@link Browser#fromFragment} to get the Browser from a
@@ -47,126 +38,9 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * attaches the fragment immediately on activity's onCreate event, so there is currently no way to
  * asynchronously init WebLayer in that case.
  */
-public final class BrowserFragment extends Fragment {
-    private final IRemoteFragmentClient mClientImpl = new IRemoteFragmentClient.Stub() {
-        @Override
-        public void superOnCreate(IObjectWrapper savedInstanceState) {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onCreate(ObjectWrapper.unwrap(savedInstanceState, Bundle.class));
-        }
-
-        @Override
-        public void superOnAttach(IObjectWrapper context) {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onAttach(ObjectWrapper.unwrap(context, Context.class));
-        }
-
-        @Override
-        public void superOnActivityCreated(IObjectWrapper savedInstanceState) {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onCreate(ObjectWrapper.unwrap(savedInstanceState, Bundle.class));
-        }
-
-        @Override
-        public void superOnStart() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onStart();
-        }
-
-        @Override
-        public void superOnResume() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onResume();
-        }
-
-        @Override
-        public void superOnPause() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onPause();
-        }
-
-        @Override
-        public void superOnStop() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onStop();
-        }
-
-        @Override
-        public void superOnDestroyView() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onDestroyView();
-        }
-
-        @Override
-        public void superOnDetach() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onDetach();
-        }
-
-        @Override
-        public void superOnDestroy() {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onDestroy();
-        }
-
-        @Override
-        public void superOnSaveInstanceState(IObjectWrapper outState) {
-            StrictModeWorkaround.apply();
-            BrowserFragment.super.onSaveInstanceState(ObjectWrapper.unwrap(outState, Bundle.class));
-        }
-
-        @Override
-        public IObjectWrapper getActivity() {
-            StrictModeWorkaround.apply();
-            return ObjectWrapper.wrap(BrowserFragment.this.getActivity());
-        }
-
-        @Override
-        public boolean startActivityForResult(
-                IObjectWrapper intent, int requestCode, IObjectWrapper options) {
-            StrictModeWorkaround.apply();
-            try {
-                BrowserFragment.this.startActivityForResult(
-                        ObjectWrapper.unwrap(intent, Intent.class), requestCode,
-                        ObjectWrapper.unwrap(options, Bundle.class));
-            } catch (ActivityNotFoundException e) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public boolean startIntentSenderForResult(IObjectWrapper intent, int requestCode,
-                IObjectWrapper fillInIntent, int flagsMask, int flagsValues, int extraFlags,
-                IObjectWrapper options) {
-            StrictModeWorkaround.apply();
-            try {
-                BrowserFragment.this.startIntentSenderForResult(
-                        ObjectWrapper.unwrap(intent, IntentSender.class), requestCode,
-                        ObjectWrapper.unwrap(fillInIntent, Intent.class), flagsMask, flagsValues,
-                        extraFlags, ObjectWrapper.unwrap(options, Bundle.class));
-            } catch (SendIntentException e) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public boolean shouldShowRequestPermissionRationale(String permission) {
-            StrictModeWorkaround.apply();
-            return BrowserFragment.this.shouldShowRequestPermissionRationale(permission);
-        }
-
-        @Override
-        public void requestPermissions(String[] permissions, int requestCode) {
-            StrictModeWorkaround.apply();
-            BrowserFragment.this.requestPermissions(permissions, requestCode);
-        }
-    };
-
+public final class BrowserFragment extends RemoteFragment {
     // Nonnull after first onAttach().
     private IBrowserFragment mImpl;
-    private IRemoteFragment mRemoteFragment;
     private WebLayer mWebLayer;
 
     // Nonnull between onCreate() and onDestroy().
@@ -177,8 +51,6 @@ public final class BrowserFragment extends Fragment {
      * {@link WebLayer#createBrowserFragment}.
      */
     public BrowserFragment() {
-        super();
-        ThreadCheck.ensureOnUiThread();
     }
 
     /**
@@ -196,183 +68,136 @@ public final class BrowserFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnActivityResult(
-                    requestCode, resultCode, ObjectWrapper.wrap(data));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, String[] permissions, int[] grantResults) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnRequestPermissionsResult(
-                    requestCode, permissions, grantResults);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onAttach(Context context) {
-        ThreadCheck.ensureOnUiThread();
-        // This is the first lifecycle event and also the first time we can get app context (unless
-        // the embedder has already called getBrowser()). So it's the latest and at the same time
-        // the earliest moment when we can initialize WebLayer without missing any lifecycle events.
-        ensureConnectedToWebLayer(context.getApplicationContext());
-        try {
-            mRemoteFragment.handleOnAttach(ObjectWrapper.wrap(context));
-            // handleOnAttach results in creating BrowserImpl on the other side.
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    private void ensureConnectedToWebLayer(Context appContext) {
-        if (mImpl != null) {
-            return; // Already initialized.
-        }
+    protected IRemoteFragment createRemoteFragment(Context appContext) {
         Bundle args = getArguments();
         if (args == null) {
             throw new RuntimeException("BrowserFragment was created without arguments.");
         }
+        // If there is saved state, then it should be used and this method should not be called.
+        assert !(new ViewModelProvider(this)).get(BrowserViewModel.class).hasSavedState();
         try {
             mWebLayer = WebLayer.loadSync(appContext);
-            mImpl = mWebLayer.connectFragment(mClientImpl, args);
-            mRemoteFragment = mImpl.asRemoteFragment();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize WebLayer", e);
+        }
+        // Ideally this would be in WebLayer when the fragment is created, but at that time we don't
+        // want to trigger loading WebLayer.
+        if (args.getBoolean(BrowserFragmentArgs.IS_INCOGNITO, false)) {
+            String name = args.getString(BrowserFragmentArgs.PROFILE_NAME);
+        }
+        try {
+            mImpl = mWebLayer.connectFragment(getRemoteFragmentClient(), args);
+            return mImpl.asRemoteFragment();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize WebLayer", e);
         }
     }
 
-    @SuppressWarnings("MissingSuperCall")
+    @Override
+    public void onAttach(Context context) {
+        ThreadCheck.ensureOnUiThread();
+        BrowserViewModel browserViewModel = new ViewModelProvider(this).get(BrowserViewModel.class);
+        if (browserViewModel.hasSavedState()) {
+            configureFromViewModel(browserViewModel);
+        }
+        super.onAttach(context);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        ThreadCheck.ensureOnUiThread();
+        super.onCreate(savedInstanceState);
+        if (mBrowser != null) {
+            // If mBrowser is non-null, it means mBrowser came from a ViewModel.
+            return;
+        }
         try {
-            mRemoteFragment.handleOnCreate(ObjectWrapper.wrap(savedInstanceState));
-            mBrowser = new Browser(mImpl.getBrowser());
+            mBrowser = new Browser(mImpl.getBrowser(), this);
         } catch (RemoteException e) {
             throw new APICallException(e);
+        }
+        if (useViewModel()) {
+            saveToViewModel(new ViewModelProvider(this).get(BrowserViewModel.class));
         }
     }
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            return ObjectWrapper.unwrap(mRemoteFragment.handleOnCreateView(), View.class);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnActivityCreated(ObjectWrapper.wrap(savedInstanceState));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onStart() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnStart();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onResume() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnResume();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnSaveInstanceState(ObjectWrapper.wrap(outState));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onPause() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnPause();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onStop() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnStop();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
-    public void onDestroyView() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnDestroyView();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @SuppressWarnings("MissingSuperCall")
-    @Override
+    @SuppressWarnings("ReferenceEquality")
     public void onDestroy() {
         ThreadCheck.ensureOnUiThread();
-        mBrowser.prepareForDestroy();
-        try {
-            mRemoteFragment.handleOnDestroy();
-            // The other side does the clean up automatically in handleOnDestroy()
-        } catch (RemoteException e) {
-            throw new APICallException(e);
+        // If a ViewModel is used, then the Browser is destroyed from the ViewModel, not here
+        // (RemoteFragment won't call destroy on Browser either in this case).
+        if (useViewModel()) {
+            if (mBrowser.getFragment() == this) {
+                // The browser is no long associated with this fragment. Null out the reference to
+                // ensure BrowserFragment can be gc'd.
+                mBrowser.setFragment(null);
+            }
+            super.onDestroy();
+        } else {
+            mBrowser.prepareForDestroy();
+            super.onDestroy();
+            mBrowser.onDestroyed();
         }
         mBrowser = null;
     }
 
-    @SuppressWarnings("MissingSuperCall")
     @Override
-    public void onDetach() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnDetach();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
+    void saveToViewModel(@NonNull ViewModelImpl model) {
+        super.saveToViewModel(model);
+
+        BrowserViewModel browserViewModel = (BrowserViewModel) model;
+        browserViewModel.mImpl = mImpl;
+        browserViewModel.mWebLayer = mWebLayer;
+        browserViewModel.mBrowser = mBrowser;
+    }
+
+    @Override
+    void configureFromViewModel(@NonNull ViewModelImpl model) {
+        super.configureFromViewModel(model);
+
+        BrowserViewModel browserViewModel = (BrowserViewModel) model;
+        mBrowser = browserViewModel.mBrowser;
+        mWebLayer = browserViewModel.mWebLayer;
+        mImpl = browserViewModel.mImpl;
+        mBrowser.setFragment(this);
+    }
+
+    private boolean useViewModel() {
+        Bundle args = getArguments();
+        return args == null ? false : args.getBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
+    }
+
+    /**
+     * This class is an implementation detail and not intended for public use. It may change at any
+     * time in incompatible ways, including being removed.
+     * <p>
+     * This class stores BrowserFragment specific state to a ViewModel so that it can reused if a
+     * new Fragment is created that should share the same state. See RemoteFragment for details on
+     * this.
+     */
+    public static final class BrowserViewModel extends RemoteFragment.ViewModelImpl {
+        @Nullable
+        private IBrowserFragment mImpl;
+        @Nullable
+        private WebLayer mWebLayer;
+        @Nullable
+        private Browser mBrowser;
+
+        boolean hasSavedState() {
+            return mBrowser != null;
+        }
+
+        @Override
+        protected void onCleared() {
+            ThreadCheck.ensureOnUiThread();
+            if (mBrowser != null) {
+                mBrowser.prepareForDestroy();
+                super.onCleared();
+                mBrowser.onDestroyed();
+                mBrowser = null;
+            } else {
+                super.onCleared();
+            }
         }
     }
 }

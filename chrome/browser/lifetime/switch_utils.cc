@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 
@@ -26,12 +25,14 @@ constexpr const char* kSwitchesToRemoveOnAutorestart[] = {
     switches::kApp,
     switches::kAppId,
     switches::kForceFirstRun,
+#if defined(OS_WIN)
+    switches::kFromInstaller,
+#endif
     switches::kGuest,
     switches::kIncognito,
     switches::kMakeDefaultBrowser,
     switches::kNoStartupWindow,
     switches::kRestoreLastSession,
-    switches::kShowAppList,
     switches::kWinJumplistAction};
 
 }  // namespace

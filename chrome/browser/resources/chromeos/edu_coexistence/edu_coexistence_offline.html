@@ -1,0 +1,30 @@
+<style include="edu-coexistence-css"></style>
+
+<edu-coexistence-template>
+  <div slot="main" class="column-layout content-container">
+    <div class="column-layout title-area">
+      <div>
+        <img class="google-full-logo"
+            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+      </div>
+      <div>
+        <h1>$i18n{eduCoexistenceNetworkDownHeading}</h1>
+      </div>
+      <div>
+        <p class="secondary">$i18n{eduCoexistenceNetworkDownDescription}</p>
+      </div>
+    </div>
+    <div class="content-area">
+      <img src="no_network.svg">
+    </div>
+  </div>
+  <div slot="buttons" class="footer">
+    <div class="new-oobe-buttons-layout">
+      <span>
+        <edu-coexistence-button button-type="action">
+        </edu-coexistence-button>
+      </span>
+    </div>
+  </div>
+
+</edu-coexistence-template>

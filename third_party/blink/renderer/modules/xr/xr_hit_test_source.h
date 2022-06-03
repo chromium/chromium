@@ -5,12 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_SOURCE_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
 
@@ -35,13 +32,13 @@ class XRHitTestSource : public ScriptWrappable {
   void Update(
       const Vector<device::mojom::blink::XRHitResultPtr>& hit_test_results);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   const uint64_t id_;
   Member<XRSession> xr_session_;
 
-  Vector<std::unique_ptr<TransformationMatrix>> last_frame_results_;
+  Vector<device::mojom::blink::XRHitResultPtr> last_frame_results_;
 };
 
 }  // namespace blink

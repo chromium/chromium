@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef RLZ_VALUE_STORE_H_
-#define RLZ_VALUE_STORE_H_
+#ifndef RLZ_LIB_RLZ_VALUE_STORE_H_
+#define RLZ_LIB_RLZ_VALUE_STORE_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +19,7 @@
 #include "rlz/win/lib/lib_mutex.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -103,7 +103,7 @@ class ScopedRlzValueStoreLock {
   std::unique_ptr<RlzValueStore> store_;
 #if defined(OS_WIN)
   LibMutex lock_;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   base::mac::ScopedNSAutoreleasePool autorelease_pool_;
 #endif
 };
@@ -120,4 +120,4 @@ std::string RlzStoreFilenameStr();
 
 }  // namespace rlz_lib
 
-#endif  // RLZ_VALUE_STORE_H_
+#endif  // RLZ_LIB_RLZ_VALUE_STORE_H_

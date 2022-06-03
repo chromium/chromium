@@ -21,6 +21,7 @@ const char kExecutionModeSwitch[] = "execution-mode";
 const char kExtendedSafeBrowsingEnabledSwitch[] =
     "extended-safebrowsing-enabled";
 const char kRegistrySuffixSwitch[] = "registry-suffix";
+const char kResetShortcutsSwitch[] = "reset-shortcuts";
 const char kSessionIdSwitch[] = "session-id";
 const char kSRTPromptFieldTrialGroupNameSwitch[] = "srt-field-trial-group-name";
 const char kUmaUserSwitch[] = "uma-user";

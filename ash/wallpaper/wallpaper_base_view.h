@@ -5,7 +5,6 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_BASE_VIEW_H_
 #define ASH_WALLPAPER_WALLPAPER_BASE_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/view.h"
 
@@ -18,7 +17,11 @@ namespace ash {
 // wallpaper without any extra effects.
 class WallpaperBaseView : public views::View {
  public:
+  METADATA_HEADER(WallpaperBaseView);
+
   WallpaperBaseView() = default;
+  WallpaperBaseView(const WallpaperBaseView&) = delete;
+  WallpaperBaseView& operator=(const WallpaperBaseView&) = delete;
   ~WallpaperBaseView() override = default;
 
   void set_centered_layout_image_scale(const gfx::Vector2dF& value) {
@@ -26,7 +29,6 @@ class WallpaperBaseView : public views::View {
   }
 
   // views::View:
-  const char* GetClassName() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  protected:
@@ -44,8 +46,6 @@ class WallpaperBaseView : public views::View {
   // down by the same factor by which we scale down the desk in the its
   // mini_view.
   gfx::Vector2dF centered_layout_image_scale_ = gfx::Vector2dF(1.0f, 1.0f);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperBaseView);
 };
 
 }  // namespace ash

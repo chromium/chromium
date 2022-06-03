@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1412240523210238692">Текст сонголт</translation>
-<translation id="1542044944667958430">Вэб хайлт</translation>
+<translation id="1542044944667958430">Веб хайлт</translation>
 <translation id="1768717197362323622">Миллисекунд</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="2094750046714988961">Гадаад хадгалалтын сан бэлэн биш байгаа учраас хувийн мэдээлэл үүсгэгчийг эхлүүлж чадахгүй</translation>
@@ -22,6 +22,7 @@
 <translation id="6015796118275082299">Жил</translation>
 <translation id="6444070574980481588">Огноо ба цагийг тохируулах</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
+<translation id="660254432468400466">Google ярианы үйлчилгээг олох боломжгүй</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6727102863431372879">Тохируул</translation>
 <translation id="6849295950938417341">Танилцуулгыг эхлүүлж чадсангүй.</translation>

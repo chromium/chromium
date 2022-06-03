@@ -11,9 +11,7 @@ template("cronet_consumer_template") {
   ios_app_bundle(_target_name) {
     info_plist = "cronet-consumer-Info.plist"
 
-    deps = [
-      "//base:base",
-    ]
+    deps = [ "//base:base" ]
 
     deps += invoker.deps
 
@@ -28,8 +26,7 @@ template("cronet_consumer_template") {
     forward_variables_from(invoker,
                            [
                              "bundle_deps",
-                             "cflags",
-                             "ldflags",
+                             "framework_dirs",
                            ])
 
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -37,9 +34,7 @@ template("cronet_consumer_template") {
 }
 
 cronet_consumer_template("cronet_consumer") {
-  deps = [
-    "//components/cronet/ios:cronet_framework+link",
-  ]
+  deps = [ "//components/cronet/ios:cronet_framework+link" ]
   bundle_deps = [ "//components/cronet/ios:cronet_framework+bundle" ]
 }
 
@@ -48,18 +43,7 @@ cronet_consumer_template("cronet_consumer") {
 # duplicate architecture (e.g. arm64+arm64) and breaks the build.
 if (!defined(additional_target_cpus) || additional_target_cpus == []) {
   cronet_consumer_template("cronet_consumer_static") {
-    deps = [
-      "//components/cronet/ios:cronet_static_framework",
-    ]
-
-    cflags = [
-      "-F",
-      "Static",
-    ]
-
-    ldflags = [
-      "-F",
-      "Static",
-    ]
+    deps = [ "//components/cronet/ios:cronet_static_framework" ]
+    framework_dirs = [ "$root_out_dir/Static" ]
   }
 }

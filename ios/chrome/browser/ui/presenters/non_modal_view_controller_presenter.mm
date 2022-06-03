@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,7 +70,10 @@ constexpr CGFloat kAnimationOutDuration = 0.1;
   auto completion = ^void(UIViewAnimatingPosition) {
     [weakSelf.presentedViewController
         didMoveToParentViewController:weakSelf.baseViewController];
-    [weakSelf.delegate containedPresenterDidPresent:weakSelf];
+    if ([weakSelf.delegate
+            respondsToSelector:@selector(containedPresenterDidPresent:)]) {
+      [weakSelf.delegate containedPresenterDidPresent:weakSelf];
+    }
   };
 
   if (animated) {
@@ -98,7 +103,10 @@ constexpr CGFloat kAnimationOutDuration = 0.1;
     [weakSelf.presentedViewController.view removeFromSuperview];
     [weakSelf.presentedViewController removeFromParentViewController];
     [weakSelf.containerView removeFromSuperview];
-    [weakSelf.delegate containedPresenterDidDismiss:weakSelf];
+    if ([weakSelf.delegate
+            respondsToSelector:@selector(containedPresenterDidDismiss:)]) {
+      [weakSelf.delegate containedPresenterDidDismiss:weakSelf];
+    }
   };
 
   if (animated) {

@@ -14,9 +14,8 @@ namespace chrome {
 namespace {
 
 constexpr base::TimeDelta kMinTimeSinceLastLogBufferSend =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kSendLogBufferDelay =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(100);
+constexpr base::TimeDelta kSendLogBufferDelay = base::Milliseconds(200);
 
 // There can be only one registered WebRtcLogMessageDelegate, and so this class
 // abstracts away that detail, so that we can set callbacks more than once. It
@@ -82,6 +81,7 @@ void WebRtcLoggingAgentImpl::AddReceiver(
 void WebRtcLoggingAgentImpl::Start(
     mojo::PendingRemote<mojom::WebRtcLoggingClient> pending_client) {
   // We only support one client at a time. OK to drop any existing client.
+  client_.reset();
   client_.Bind(std::move(pending_client));
 
   WebRtcLogMessageDelegateImpl::GetInstance()->Start(base::BindRepeating(

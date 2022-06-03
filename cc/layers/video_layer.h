@@ -5,6 +5,8 @@
 #ifndef CC_LAYERS_VIDEO_LAYER_H_
 #define CC_LAYERS_VIDEO_LAYER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
@@ -21,7 +23,7 @@ class VideoLayerImpl;
 class CC_EXPORT VideoLayer : public Layer {
  public:
   static scoped_refptr<VideoLayer> Create(VideoFrameProvider* provider,
-                                          media::VideoRotation video_rotation);
+                                          media::VideoTransformation transform);
 
   VideoLayer(const VideoLayer&) = delete;
   VideoLayer& operator=(const VideoLayer&) = delete;
@@ -34,14 +36,15 @@ class CC_EXPORT VideoLayer : public Layer {
   void StopUsingProvider();
 
  private:
-  VideoLayer(VideoFrameProvider* provider, media::VideoRotation video_rotation);
+  VideoLayer(VideoFrameProvider* provider,
+             media::VideoTransformation transform);
   ~VideoLayer() override;
 
   // This pointer is only for passing to VideoLayerImpl's constructor. It should
   // never be dereferenced by this class.
   VideoFrameProvider* provider_;
 
-  media::VideoRotation video_rotation_;
+  media::VideoTransformation transform_;
 };
 
 }  // namespace cc

@@ -12,8 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -61,6 +59,8 @@ NET_EXPORT GURL AppendOrReplaceQueryParameter(const GURL& url,
 class NET_EXPORT QueryIterator {
  public:
   explicit QueryIterator(const GURL& url);
+  QueryIterator(const QueryIterator&) = delete;
+  QueryIterator& operator=(const QueryIterator&) = delete;
   ~QueryIterator();
 
   std::string GetKey() const;
@@ -77,8 +77,6 @@ class NET_EXPORT QueryIterator {
   url::Component key_;
   url::Component value_;
   std::string unescaped_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryIterator);
 };
 
 // Looks for |search_key| in the query portion of |url|. Returns true if the
@@ -114,6 +112,29 @@ NET_EXPORT std::string TrimEndingDot(base::StringPiece host);
 
 // Returns either the host from |url|, or, if the host is empty, the full spec.
 NET_EXPORT std::string GetHostOrSpecFromURL(const GURL& url);
+
+// Returns the given domain minus its leftmost label, or the empty string if the
+// given domain is just a single label. For normal domain names (not IP
+// addresses), this represents the "superdomain" of the given domain.
+// Note that this does not take into account anything like the Public Suffix
+// List, so the superdomain may end up being a bare eTLD. The returned string is
+// not guaranteed to be a valid or canonical hostname, or to make any sense at
+// all.
+//
+// Examples:
+//
+// GetSuperdomain("assets.example.com") -> "example.com"
+// GetSuperdomain("example.net") -> "net"
+// GetSuperdomain("littlebox") -> ""
+// GetSuperdomain("127.0.0.1") -> "0.0.1"
+NET_EXPORT std::string GetSuperdomain(base::StringPiece domain);
+
+// Returns whether |subdomain| is a subdomain of (or identical to)
+// |superdomain|, if both are hostnames (not IP addresses -- for which this
+// function is nonsensical). Does not consider the Public Suffix List.
+// Returns true if both input strings are empty.
+NET_EXPORT bool IsSubdomainOf(base::StringPiece subdomain,
+                              base::StringPiece superdomain);
 
 // Canonicalizes |host| and returns it.  Also fills |host_info| with
 // IP address information.  |host_info| must not be NULL.
@@ -162,11 +183,16 @@ NET_EXPORT GURL SimplifyUrlForRequest(const GURL& url);
 // than "ws" or "wss".
 NET_EXPORT GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url);
 
+// Returns whether the given url scheme is of a standard scheme type that can
+// have hostnames representing domains (i.e. network hosts).
+// See url::SchemeType.
+NET_EXPORT bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme);
+
 // Extracts the unescaped username/password from |url|, saving the results
 // into |*username| and |*password|.
 NET_EXPORT_PRIVATE void GetIdentityFromURL(const GURL& url,
-                                           base::string16* username,
-                                           base::string16* password);
+                                           std::u16string* username,
+                                           std::u16string* password);
 
 // Returns true if the url's host is a Google server. This should only be used
 // for histograms and shouldn't be used to affect behavior.
@@ -176,16 +202,9 @@ NET_EXPORT_PRIVATE bool HasGoogleHost(const GURL& url);
 // be used for histograms and shouldn't be used to affect behavior.
 NET_EXPORT_PRIVATE bool IsGoogleHost(base::StringPiece host);
 
-// This function tests |host| to see if its one used in the initial TLS 1.3
-// deployment. TLS connections to them form the basis of our comparisons.
-NET_EXPORT_PRIVATE bool IsTLS13ExperimentHost(base::StringPiece host);
-
 // This function tests |host| to see if it is of any local hostname form.
-// |host| is normalized before being tested and if |is_local6| is not NULL then
-// it it will be set to true if the localhost name implies an IPv6 interface (
-// for instance localhost6.localdomain6).
-NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host,
-                                        bool* is_local6);
+// |host| is normalized before being tested.
+NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host);
 
 }  // namespace net
 

@@ -15,9 +15,11 @@
 #ifndef ABSL_TIME_INTERNAL_CCTZ_CIVIL_TIME_H_
 #define ABSL_TIME_INTERNAL_CCTZ_CIVIL_TIME_H_
 
+#include "absl/base/config.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time_detail.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 namespace cctz {
 
@@ -150,7 +152,7 @@ namespace cctz {
 //
 // All civil-time types have accessors for all six of the civil-time fields:
 // year, month, day, hour, minute, and second. Recall that fields inferior to
-// the type's aligment will be set to their minimum valid value.
+// the type's alignment will be set to their minimum valid value.
 //
 //   civil_day d(2015, 6, 28);
 //   // d.year() == 2015
@@ -324,6 +326,7 @@ using detail::get_yearday;
 
 }  // namespace cctz
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_TIME_INTERNAL_CCTZ_CIVIL_TIME_H_

@@ -4,8 +4,9 @@
 
 #include "third_party/libxml/chromium/xml_writer.h"
 
+#include <libxml/xmlwriter.h>
+
 #include "third_party/libxml/chromium/libxml_utils.h"
-#include "third_party/libxml/src/include/libxml/xmlwriter.h"
 
 XmlWriter::XmlWriter() : writer_(nullptr), buffer_(nullptr) {}
 

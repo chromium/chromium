@@ -9,7 +9,7 @@ function test()
 
     var host = document.createElement('div');
     document.body.appendChild(host);
-    var shadow = host.createShadowRoot();
+    var shadow = host.attachShadow({mode: 'open'});
 
     var ul = document.createElement('ul');
     var li = document.createElement('li');

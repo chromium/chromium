@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 9: Uncaught TypeError: host.createShadowRoot is not a function
-This test should not crash.

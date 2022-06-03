@@ -5,11 +5,12 @@
 #include "chromeos/network/network_connection_handler.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -62,6 +63,18 @@ const char NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable[] =
     "not-available";
 const char NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate[] =
     "tether-with-no-delegate";
+const char NetworkConnectionHandler::kErrorCellularInhibitFailure[] =
+    "cellular-inhibit-failure";
+const char NetworkConnectionHandler::kErrorCellularOutOfCredits[] =
+    "cellular-out-of-credits";
+const char NetworkConnectionHandler::kErrorESimProfileIssue[] =
+    "esim-profile-issue";
+const char NetworkConnectionHandler::kErrorSimLocked[] = "sim-locked";
+const char NetworkConnectionHandler::kErrorCellularDeviceBusy[] =
+    "cellular-device-busy";
+const char NetworkConnectionHandler::kErrorConnectTimeout[] = "connect-timeout";
+const char NetworkConnectionHandler::kConnectableCellularTimeout[] =
+    "connectable-timeout";
 
 NetworkConnectionHandler::NetworkConnectionHandler()
     : tether_delegate_(nullptr) {}
@@ -85,53 +98,54 @@ void NetworkConnectionHandler::SetTetherDelegate(
 
 void NetworkConnectionHandler::InvokeConnectSuccessCallback(
     const std::string& service_path,
-    const base::Closure& success_callback) {
-  NET_LOG_EVENT("Connect Request Succeeded", service_path);
+    base::OnceClosure success_callback) {
+  NET_LOG(EVENT) << "Connect Request Succeeded" << NetworkPathId(service_path);
   if (!success_callback.is_null())
-    success_callback.Run();
+    std::move(success_callback).Run();
   for (auto& observer : observers_)
     observer.ConnectSucceeded(service_path);
 }
 
 void NetworkConnectionHandler::InvokeConnectErrorCallback(
     const std::string& service_path,
-    const network_handler::ErrorCallback& error_callback,
+    network_handler::ErrorCallback error_callback,
     const std::string& error_name) {
-  NET_LOG_ERROR("Connect Failure: " + error_name, service_path);
-  network_handler::RunErrorCallback(error_callback, service_path, error_name,
-                                    "");
+  NET_LOG(ERROR) << "Connect Failure: " << error_name << " for "
+                 << NetworkPathId(service_path);
+  network_handler::RunErrorCallback(std::move(error_callback), service_path,
+                                    error_name, "");
   for (auto& observer : observers_)
     observer.ConnectFailed(service_path, error_name);
 }
 
 void NetworkConnectionHandler::InitiateTetherNetworkConnection(
     const std::string& tether_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::ErrorCallback& error_callback) {
+    base::OnceClosure success_callback,
+    network_handler::ErrorCallback error_callback) {
   DCHECK(tether_delegate_);
   tether_delegate_->ConnectToNetwork(
       tether_network_guid,
-      base::Bind(&NetworkConnectionHandler::InvokeConnectSuccessCallback,
-                 weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
-                 success_callback),
-      base::Bind(&NetworkConnectionHandler::InvokeConnectErrorCallback,
-                 weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
-                 error_callback));
+      base::BindOnce(&NetworkConnectionHandler::InvokeConnectSuccessCallback,
+                     weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
+                     std::move(success_callback)),
+      base::BindOnce(&NetworkConnectionHandler::InvokeConnectErrorCallback,
+                     weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
+                     std::move(error_callback)));
 }
 
 void NetworkConnectionHandler::InitiateTetherNetworkDisconnection(
     const std::string& tether_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::ErrorCallback& error_callback) {
+    base::OnceClosure success_callback,
+    network_handler::ErrorCallback error_callback) {
   DCHECK(tether_delegate_);
   tether_delegate_->DisconnectFromNetwork(
       tether_network_guid,
-      base::Bind(&NetworkConnectionHandler::InvokeConnectSuccessCallback,
-                 weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
-                 success_callback),
-      base::Bind(&NetworkConnectionHandler::InvokeConnectErrorCallback,
-                 weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
-                 error_callback));
+      base::BindOnce(&NetworkConnectionHandler::InvokeConnectSuccessCallback,
+                     weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
+                     std::move(success_callback)),
+      base::BindOnce(&NetworkConnectionHandler::InvokeConnectErrorCallback,
+                     weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
+                     std::move(error_callback)));
 }
 
 // static
@@ -139,10 +153,12 @@ std::unique_ptr<NetworkConnectionHandler>
 NetworkConnectionHandler::InitializeForTesting(
     NetworkStateHandler* network_state_handler,
     NetworkConfigurationHandler* network_configuration_handler,
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+    CellularConnectionHandler* cellular_connection_handler) {
   NetworkConnectionHandlerImpl* handler = new NetworkConnectionHandlerImpl();
   handler->Init(network_state_handler, network_configuration_handler,
-                managed_network_configuration_handler);
+                managed_network_configuration_handler,
+                cellular_connection_handler);
   return base::WrapUnique(handler);
 }
 

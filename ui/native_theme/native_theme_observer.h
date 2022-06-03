@@ -18,6 +18,9 @@ class NATIVE_THEME_EXPORT NativeThemeObserver {
   // observers may handle changes to their associated native theme instances.
   virtual void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) = 0;
 
+  // Called when the caption style changes.
+  virtual void OnCaptionStyleUpdated() {}
+
  protected:
   virtual ~NativeThemeObserver();
 };

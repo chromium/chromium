@@ -13,22 +13,18 @@ WorkletModulatorImpl::WorkletModulatorImpl(ScriptState* script_state)
     : ModulatorImplBase(script_state) {}
 
 ModuleScriptFetcher* WorkletModulatorImpl::CreateModuleScriptFetcher(
-    ModuleScriptCustomFetchType custom_fetch_type) {
+    ModuleScriptCustomFetchType custom_fetch_type,
+    base::PassKey<ModuleScriptLoader> pass_key) {
   DCHECK_EQ(ModuleScriptCustomFetchType::kWorkletAddModule, custom_fetch_type);
   WorkletGlobalScope* global_scope =
       To<WorkletGlobalScope>(GetExecutionContext());
   return MakeGarbageCollected<WorkletModuleScriptFetcher>(
-      global_scope->GetModuleResponsesMap());
+      global_scope->GetModuleResponsesMap(), pass_key);
 }
 
 bool WorkletModulatorImpl::IsDynamicImportForbidden(String* reason) {
   *reason = "import() is disallowed on WorkletGlobalScope.";
   return true;
-}
-
-V8CacheOptions WorkletModulatorImpl::GetV8CacheOptions() const {
-  auto* scope = To<WorkletGlobalScope>(GetExecutionContext());
-  return scope->GetV8CacheOptions();
 }
 
 }  // namespace blink

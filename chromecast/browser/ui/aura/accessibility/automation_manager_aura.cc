@@ -7,17 +7,19 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_event_bundle_sink.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
-#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -156,7 +158,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
   } else {
     current_tree_serializer_ =
         std::make_unique<AuraAXTreeSerializer>(current_tree_.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::Shell* shell = ash::Shell::Get();
     // Windows within the overlay container get moved to the new monitor when
     // the primary display gets swapped.
@@ -164,7 +166,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
         shell->GetContainer(shell->GetPrimaryRootWindow(),
                             ash::kShellWindowId_OverlayContainer),
         views::AXAuraObjCache::GetInstance());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 
@@ -212,8 +214,8 @@ void AutomationManagerAura::SendEvent(views::AXAuraObjWrapper* aura_obj,
     events.push_back(event);
   }
 
-  if (event_bundle_sink_) {
-    event_bundle_sink_->DispatchAccessibilityEvents(
+  if (automation_event_router_interface_) {
+    automation_event_router_interface_->DispatchAccessibilityEvents(
         ax_tree_id(), std::move(tree_updates),
         aura::Env::GetInstance()->last_mouse_location(), std::move(events));
   }

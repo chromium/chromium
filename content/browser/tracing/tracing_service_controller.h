@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/traced_process.mojom.h"
@@ -27,7 +27,7 @@ class TracingServiceController {
   // the tracing service.
   class ClientRegistration {
    public:
-    ClientRegistration(util::PassKey<TracingServiceController>,
+    ClientRegistration(base::PassKey<TracingServiceController>,
                        base::OnceClosure unregister);
     ~ClientRegistration();
 

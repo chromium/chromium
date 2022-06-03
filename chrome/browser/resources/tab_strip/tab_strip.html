@@ -29,10 +29,41 @@
         padding: 0;
         width: 100%;
       }
+
+<if expr="not chromeos">
+      /* ChromeOS is the only platform that can be guaranteed to have overlay
+       * scrollbars, so override the styles of native scrollbars for other
+       * platforms. */
+      html ::-webkit-scrollbar {
+        display: block;
+        height: 4px;
+      }
+
+      ::-webkit-scrollbar-track,
+      ::-webkit-scrollbar,
+      ::-webkit-scrollbar-track-piece {
+        background: var(--tabstrip-background-color);
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(var(--tabstrip-scrollbar-thumb-color-rgb), .7);
+        border-inline-end: solid 16px var(--tabstrip-background-color);
+        border-inline-start: solid 16px var(--tabstrip-background-color);
+      }
+</if>
     </style>
   </head>
   <body>
-    <tabstrip-tab-list role="tablist"></tabstrip-tab-list>
+    <!--
+        The CSS variables defined inside of TabList's style tag are also
+        made available through TabList's class object in JavaScript.
+    -->
+    <tabstrip-tab-list role="tablist">
+    </tabstrip-tab-list>
     <script src="tab_list.js" type="module"></script>
   </body>
 </html>

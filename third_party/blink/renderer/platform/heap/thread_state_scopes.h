@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_SCOPES_H_
 
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-
-#if defined(LEAK_SANITIZER)
-#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
-#endif
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/cppgc/heap-consistency.h"
 
 namespace blink {
 
@@ -17,104 +15,48 @@ namespace blink {
 // allocations. E.g. allocations during GC.
 class ThreadState::NoAllocationScope final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(NoAllocationScope);
 
  public:
-  explicit NoAllocationScope(ThreadState* state) : state_(state) {
-    state_->EnterNoAllocationScope();
-  }
-  ~NoAllocationScope() { state_->LeaveNoAllocationScope(); }
+  explicit NoAllocationScope(ThreadState* state)
+      : disallow_gc_(state->cpp_heap().GetHeapHandle()) {}
+
+  NoAllocationScope(const NoAllocationScope&) = delete;
+  NoAllocationScope& operator=(const NoAllocationScope&) = delete;
 
  private:
-  ThreadState* const state_;
+  const cppgc::subtle::DisallowGarbageCollectionScope disallow_gc_;
 };
 
-class ThreadState::SweepForbiddenScope final {
-  STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(SweepForbiddenScope);
-
- public:
-  explicit SweepForbiddenScope(ThreadState* state) : state_(state) {
-    DCHECK(!state_->sweep_forbidden_);
-    state_->sweep_forbidden_ = true;
-  }
-  ~SweepForbiddenScope() {
-    DCHECK(state_->sweep_forbidden_);
-    state_->sweep_forbidden_ = false;
-  }
-
- private:
-  ThreadState* const state_;
-};
-
-class ThreadState::MainThreadGCForbiddenScope final {
-  STACK_ALLOCATED();
-
- public:
-  MainThreadGCForbiddenScope() : thread_state_(ThreadState::MainThreadState()) {
-    thread_state_->EnterGCForbiddenScope();
-  }
-  ~MainThreadGCForbiddenScope() { thread_state_->LeaveGCForbiddenScope(); }
-
- private:
-  ThreadState* const thread_state_;
-};
-
+// The GCForbiddenScope class is used to prevent GC finalization
+// when it is not safe to do so.
 class ThreadState::GCForbiddenScope final {
   STACK_ALLOCATED();
 
  public:
-  explicit GCForbiddenScope(ThreadState* thread_state)
-      : thread_state_(thread_state) {
-    thread_state_->EnterGCForbiddenScope();
-  }
-  ~GCForbiddenScope() { thread_state_->LeaveGCForbiddenScope(); }
+  explicit GCForbiddenScope(ThreadState* state)
+      : no_gc_(state->cpp_heap().GetHeapHandle()) {}
+
+  GCForbiddenScope(const NoAllocationScope&) = delete;
+  GCForbiddenScope& operator=(const NoAllocationScope&) = delete;
 
  private:
-  ThreadState* const thread_state_;
-};
-
-// Used to mark when we are in an atomic pause for GC.
-class ThreadState::AtomicPauseScope final {
-  STACK_ALLOCATED();
-
- public:
-  explicit AtomicPauseScope(ThreadState* thread_state)
-      : thread_state_(thread_state), gc_forbidden_scope(thread_state) {
-    thread_state_->EnterAtomicPause();
-  }
-  ~AtomicPauseScope() { thread_state_->LeaveAtomicPause(); }
-
- private:
-  ThreadState* const thread_state_;
-  GCForbiddenScope gc_forbidden_scope;
+  const cppgc::subtle::NoGarbageCollectionScope no_gc_;
 };
 
 #if defined(LEAK_SANITIZER)
-class ThreadState::LsanDisabledScope final {
+class LsanDisabledScope final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(LsanDisabledScope);
 
  public:
-  explicit LsanDisabledScope(ThreadState* thread_state)
-      : thread_state_(thread_state) {
-    __lsan_disable();
-    if (thread_state_)
-      thread_state_->EnterStaticReferenceRegistrationDisabledScope();
-  }
+  explicit LsanDisabledScope() { __lsan_disable(); }
 
-  ~LsanDisabledScope() {
-    __lsan_enable();
-    if (thread_state_)
-      thread_state_->LeaveStaticReferenceRegistrationDisabledScope();
-  }
+  ~LsanDisabledScope() { __lsan_enable(); }
 
- private:
-  ThreadState* const thread_state_;
+  LsanDisabledScope(const LsanDisabledScope&) = delete;
+  LsanDisabledScope& operator=(const LsanDisabledScope&) = delete;
 };
 
-#define LEAK_SANITIZER_DISABLED_SCOPE \
-  ThreadState::LsanDisabledScope lsan_disabled_scope(ThreadState::Current())
+#define LEAK_SANITIZER_DISABLED_SCOPE LsanDisabledScope lsan_disabled_scope
 #else
 #define LEAK_SANITIZER_DISABLED_SCOPE
 #endif

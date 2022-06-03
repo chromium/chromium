@@ -10,9 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/image_loader.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/canvas.h"
@@ -58,6 +56,10 @@ class BlankImageSource : public gfx::CanvasImageSource {
  public:
   explicit BlankImageSource(const gfx::Size& size_in_dip)
       : CanvasImageSource(size_in_dip) {}
+
+  BlankImageSource(const BlankImageSource&) = delete;
+  BlankImageSource& operator=(const BlankImageSource&) = delete;
+
   ~BlankImageSource() override {}
 
  private:
@@ -65,8 +67,6 @@ class BlankImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     canvas->DrawColor(SkColorSetARGB(0, 0, 0, 0));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BlankImageSource);
 };
 
 }  // namespace
@@ -79,6 +79,10 @@ namespace extensions {
 class IconImage::Source : public gfx::ImageSkiaSource {
  public:
   Source(IconImage* host, const gfx::Size& size_in_dip);
+
+  Source(const Source&) = delete;
+  Source& operator=(const Source&) = delete;
+
   ~Source() override;
 
   void ResetHost();
@@ -87,15 +91,13 @@ class IconImage::Source : public gfx::ImageSkiaSource {
   // gfx::ImageSkiaSource overrides:
   gfx::ImageSkiaRep GetImageForScale(float scale) override;
 
-  // Used to load images, possibly asynchronously. NULLed out when the IconImage
-  // is destroyed.
+  // Used to load images, possibly asynchronously. nullptr'ed out when the
+  // IconImage is destroyed.
   IconImage* host_;
 
   // Image whose representations will be used until |host_| loads the real
   // representations for the image.
   gfx::ImageSkia blank_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(Source);
 };
 
 IconImage::Source::Source(IconImage* host, const gfx::Size& size_in_dip)
@@ -107,7 +109,7 @@ IconImage::Source::~Source() {
 }
 
 void IconImage::Source::ResetHost() {
-  host_ = NULL;
+  host_ = nullptr;
 }
 
 gfx::ImageSkiaRep IconImage::Source::GetImageForScale(float scale) {
@@ -132,7 +134,7 @@ IconImage::IconImage(content::BrowserContext* context,
       resource_size_in_dip_(resource_size_in_dip),
       keep_original_size_(keep_original_size),
       did_complete_initial_load_(false),
-      source_(NULL),
+      source_(nullptr),
       default_icon_(gfx::ImageSkiaOperations::CreateResizedImage(
           default_icon,
           skia::ImageOperations::RESIZE_BEST,
@@ -144,9 +146,7 @@ IconImage::IconImage(content::BrowserContext* context,
   image_skia_ = gfx::ImageSkia(base::WrapUnique(source_), resource_size);
   image_ = gfx::Image(image_skia_);
 
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_REMOVED,
-                 content::NotificationService::AllSources());
+  registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
 IconImage::IconImage(content::BrowserContext* context,
@@ -254,15 +254,18 @@ void IconImage::OnImageRepLoaded(const gfx::ImageSkiaRep& rep) {
     observer.OnExtensionIconImageChanged(this);
 }
 
-void IconImage::Observe(int type,
-                        const content::NotificationSource& source,
-                        const content::NotificationDetails& details) {
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_REMOVED);
-
-  const Extension* extension = content::Details<const Extension>(details).ptr();
-
-  if (extension_.get() == extension)
+void IconImage::OnExtensionUnloaded(content::BrowserContext* browser_context,
+                                    const Extension* extension,
+                                    UnloadedExtensionReason reason) {
+  if (extension == extension_)
     extension_ = nullptr;
+}
+
+void IconImage::OnShutdown(ExtensionRegistry* extension_registry) {
+  // UI shutdown has historically been racy with profiles. Be sure to clean
+  // up the registration so that the ScopedObservation doesn't call
+  // RemoveObserver() on ExtensionRegistry after it's freed.
+  registry_observation_.Reset();
 }
 
 }  // namespace extensions

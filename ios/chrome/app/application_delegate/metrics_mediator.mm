@@ -7,43 +7,75 @@
 #include <sys/sysctl.h>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/ios/features.h"
+#import "components/previous_session_info/previous_session_info.h"
+#include "components/ukm/ios/ukm_reporting_ios_util.h"
+#import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
+#include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/net/connection_type_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/main/connection_information.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/widget_kit/features.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
+#import "ios/chrome/common/credential_provider/constants.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
+#import "ios/chrome/browser/widget_kit/widget_metrics_util.h"  // nogncheck
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+// The key to a NSUserDefaults entry logging the number of times classes are
+// loaded before a scene is attached.
+NSString* const kLoadTimePreferenceKey = @"LoadTimePreferenceKey";
+
+// The time when Objective C objects are loaded.
+base::TimeTicks g_load_time;
+
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
+
+// Histograms fired in extensions that need to be re-fired from the main app.
+const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
+    {
+        @"IOS.CredentialExtension.PasswordCreated",
+        static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
+    },
+    {
+        @"IOS.CredentialExtension.NewCredentialUsername",
+        static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
+    }};
 
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.
@@ -58,13 +90,161 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
   const NSTimeInterval time_since_1970 =
       time.tv_sec + (time.tv_usec / (double)USEC_PER_SEC);
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time_since_1970];
-  return base::TimeDelta::FromSecondsD(-date.timeIntervalSinceNow);
+  return base::Seconds(-date.timeIntervalSinceNow);
 }
+
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+void DumpEnvironment(id<StartupInformation> startup_information) {
+  if (![[NSUserDefaults standardUserDefaults]
+          boolForKey:@"EnableDumpEnvironment"]) {
+    return;
+  }
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                       NSUserDomainMask, YES);
+  NSError* error = nil;
+  NSString* document_directory = [paths objectAtIndex:0];
+  NSString* environment_directory =
+      [document_directory stringByAppendingPathComponent:@"environment"];
+  if (![[NSFileManager defaultManager]
+          fileExistsAtPath:environment_directory]) {
+    [[NSFileManager defaultManager] createDirectoryAtPath:environment_directory
+                              withIntermediateDirectories:NO
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+      return;
+    }
+  }
+  NSDate* now_date = [NSDate date];
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  formatter.dateFormat = @"yyyyMMdd-HHmmss";
+  formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+
+  NSString* file_name = [formatter stringFromDate:now_date];
+
+  NSDictionary* environment = [[NSProcessInfo processInfo] environment];
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
+      TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startup_information appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startup_information didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startup_information firstSceneConnectionTime];
+
+  NSDictionary* dict = @{
+    @"environment" : environment,
+    @"now" : file_name,
+    @"processStartToNowTime" : @(processStartToNowTime.InMilliseconds()),
+    @"loadToNowTime" : @(loadToNowTime.InMilliseconds()),
+    @"mainToNowTime" : @(mainToNowTime.InMilliseconds()),
+    @"didFinishLaunchingToNowTime" :
+        @(didFinishLaunchingToNowTime.InMilliseconds()),
+    @"sceneConnectionToNowTime" : @(sceneConnectionToNowTime.InMilliseconds()),
+  };
+
+  NSData* data =
+      [NSJSONSerialization dataWithJSONObject:dict
+                                      options:NSJSONWritingPrettyPrinted
+
+                                        error:&error];
+  if (error) {
+    return;
+  }
+
+  NSString* file_path =
+      [environment_directory stringByAppendingPathComponent:file_name];
+  [data writeToFile:file_path atomically:YES];
+}
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }  // namespace
+
+// A class to log the "load" time in uma.
+@interface ObjectLoadTimeLogger : NSObject
+@end
+
+@implementation ObjectLoadTimeLogger
++ (void)load {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:[defaults integerForKey:kLoadTimePreferenceKey] + 1
+                forKey:kLoadTimePreferenceKey];
+  g_load_time = base::TimeTicks::Now();
+}
+@end
 
 namespace metrics_mediator {
 NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
-}  // namespace metrics_mediator_constants
+
+void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
+  using base::SysNSStringToUTF8;
+
+  // Dictionary containing the respective metric for each NSUserDefault's key.
+  NSDictionary<NSString*, NSString*>* keyMetric = @{
+    app_group::
+    kContentExtensionDisplayCount : @"IOS.ContentExtension.DisplayCount",
+    app_group::
+    kSearchExtensionDisplayCount : @"IOS.SearchExtension.DisplayCount",
+    app_group::
+    kCredentialExtensionDisplayCount : @"IOS.CredentialExtension.DisplayCount",
+    app_group::
+    kCredentialExtensionReauthCount : @"IOS.CredentialExtension.ReauthCount",
+    app_group::
+    kCredentialExtensionCopyURLCount : @"IOS.CredentialExtension.CopyURLCount",
+    app_group::kCredentialExtensionCopyUsernameCount :
+        @"IOS.CredentialExtension.CopyUsernameCount",
+    app_group::kCredentialExtensionCopyPasswordCount :
+        @"IOS.CredentialExtension.CopyPasswordCount",
+    app_group::kCredentialExtensionShowPasswordCount :
+        @"IOS.CredentialExtension.ShowPasswordCount",
+    app_group::
+    kCredentialExtensionSearchCount : @"IOS.CredentialExtension.SearchCount",
+    app_group::kCredentialExtensionPasswordUseCount :
+        @"IOS.CredentialExtension.PasswordUseCount",
+    app_group::kCredentialExtensionQuickPasswordUseCount :
+        @"IOS.CredentialExtension.QuickPasswordUseCount",
+    app_group::kCredentialExtensionFetchPasswordFailureCount :
+        @"IOS.CredentialExtension.FetchPasswordFailure",
+    app_group::kCredentialExtensionFetchPasswordNilArgumentCount :
+        @"IOS.CredentialExtension.FetchPasswordNilArgument",
+    app_group::kCredentialExtensionKeychainSavePasswordFailureCount :
+        @"IOS.CredentialExtension.KeychainSavePasswordFailureCount",
+    app_group::kCredentialExtensionSaveCredentialFailureCount :
+        @"IOS.CredentialExtension.SaveCredentialFailureCount",
+  };
+
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  for (NSString* key in keyMetric) {
+    int count = [shared_defaults integerForKey:key];
+    if (count != 0) {
+      base::UmaHistogramCounts1000(SysNSStringToUTF8(keyMetric[key]), count);
+      [shared_defaults setInteger:0 forKey:key];
+      if ([key isEqual:app_group::kCredentialExtensionPasswordUseCount] ||
+          [key isEqual:app_group::kCredentialExtensionQuickPasswordUseCount]) {
+        LogLikelyInterestedDefaultBrowserUserActivity(
+            DefaultPromoTypeMadeForIOS);
+      }
+    }
+  }
+
+  for (const HistogramNameCountPair& pair : histograms) {
+    int maxSamples = pair.buckets;
+    // Check each possible bucket to see if it has any events to emit.
+    for (int bucket = 0; bucket < maxSamples; ++bucket) {
+      NSString* key = app_group::HistogramCountKey(pair.name, bucket);
+      int count = [shared_defaults integerForKey:key];
+      if (count != 0) {
+        [shared_defaults setInteger:0 forKey:key];
+        std::string histogramName = SysNSStringToUTF8(pair.name);
+        for (int emitCount = 0; emitCount < count; ++emitCount) {
+          base::UmaHistogramExactLinear(histogramName, bucket, maxSamples + 1);
+        }
+      }
+    }
+  }
+}
+}  // namespace metrics_mediator
 
 using metrics_mediator::kAppEnteredBackgroundDateKey;
 
@@ -106,6 +286,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)recordNumTabAtStartup:(int)numTabs;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordNumTabAtResume:(int)numTabs;
+// Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
++ (void)recordNumNTPTabAtStartup:(int)numTabs;
+// Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
++ (void)recordNumNTPTabAtResume:(int)numTabs;
 
 @end
 
@@ -113,25 +297,50 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 #pragma mark - Public methods.
 
-+ (void)logStartupDuration:(id<StartupInformation>)startupInformation {
++ (void)logStartupDuration:(id<StartupInformation>)startupInformation
+     connectionInformation:(id<ConnectionInformation>)connectionInformation {
   if (![startupInformation isColdStart])
     return;
 
-  const base::TimeDelta startDuration =
-      base::TimeTicks::Now() - [startupInformation appLaunchTime];
-
-  const base::TimeDelta startDurationFromProcess =
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
       TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startupInformation appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startupInformation didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startupInformation firstSceneConnectionTime];
 
-  UMA_HISTOGRAM_TIMES("Startup.ColdStartFromProcessCreationTime",
-                      startDurationFromProcess);
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
+  [defaults removeObjectForKey:kLoadTimePreferenceKey];
 
-  if ([startupInformation startupParameters]) {
-    UMA_HISTOGRAM_TIMES("Startup.ColdStartWithExternalURLTime", startDuration);
+  base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
+                          processStartToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToLoad",
+                          processStartToNowTime - loadToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToMainCall",
+                          processStartToNowTime - mainToNowTime);
+  base::UmaHistogramTimes(
+      "Startup.TimeFromProcessCreationToDidFinishLaunchingCall",
+      processStartToNowTime - didFinishLaunchingToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToSceneConnection",
+                          processStartToNowTime - sceneConnectionToNowTime);
+  base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
+                              consecutiveLoads);
+
+  if ([connectionInformation startupParameters]) {
+    base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
+                            mainToNowTime);
   } else {
-    UMA_HISTOGRAM_TIMES("Startup.ColdStartWithoutExternalURLTime",
-                        startDuration);
+    base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
+                            mainToNowTime);
   }
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+  DumpEnvironment(startupInformation);
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }
 
 + (void)logDateInUserDefaults {
@@ -142,20 +351,46 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 + (void)logLaunchMetricsWithStartupInformation:
             (id<StartupInformation>)startupInformation
-                             interfaceProvider:(id<BrowserInterfaceProvider>)
-                                                   interfaceProvider {
-  int numTabs =
-      static_cast<int>(interfaceProvider.mainInterface.tabModel.count);
+                               connectedScenes:(NSArray<SceneState*>*)scenes {
+  RecordAndResetUkmLogSizeOnSuccessCounter();
+
+  int numTabs = 0;
+  int numNTPTabs = 0;
+  for (SceneState* scene in scenes) {
+    if (!scene.interfaceProvider) {
+      // The scene might not yet be initiated.
+      // TODO(crbug.com/1064611): This will not be an issue when the tabs are
+      // counted in sessions instead of scenes.
+      continue;
+    }
+
+    const WebStateList* web_state_list =
+        scene.interfaceProvider.mainInterface.browser->GetWebStateList();
+    numTabs += web_state_list->count();
+    for (int i = 0; i < web_state_list->count(); i++) {
+      if (IsURLNewTabPage(web_state_list->GetWebStateAt(i)->GetVisibleURL())) {
+        numNTPTabs++;
+      }
+    }
+  }
+
   if (startupInformation.isColdStart) {
     [self recordNumTabAtStartup:numTabs];
+    [self recordNumNTPTabAtStartup:numNTPTabs];
   } else {
     [self recordNumTabAtResume:numTabs];
+    [self recordNumNTPTabAtResume:numNTPTabs];
   }
 
   if (UIAccessibilityIsVoiceOverRunning()) {
     base::RecordAction(
         base::UserMetricsAction("MobileVoiceOverActiveOnLaunch"));
   }
+
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
+  [WidgetMetricsUtil logInstalledWidgets];
+
+#endif
 
   // Create the first user action recorder and schedule a task to expire it
   // after some timeout. If unable to determine the last time the app entered
@@ -168,15 +403,27 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     [startupInformation
         activateFirstUserActionRecorderWithBackgroundTime:interval];
 
-    web::WebState* currentWebState = interfaceProvider.currentInterface.tabModel
-                                         .webStateList->GetActiveWebState();
-    if (currentWebState &&
-        currentWebState->GetLastCommittedURL() == kChromeUINewTabURL) {
-      startupInformation.firstUserActionRecorder->RecordStartOnNTP();
-      [startupInformation resetFirstUserActionRecorder];
-    } else {
-      [startupInformation
-          expireFirstUserActionRecorderAfterDelay:kFirstUserActionTimeout];
+    SceneState* activeScene = nil;
+    for (SceneState* scene in scenes) {
+      if (scene.activationLevel == SceneActivationLevelForegroundActive) {
+        activeScene = scene;
+        break;
+      }
+    }
+
+    if (activeScene) {
+      web::WebState* currentWebState =
+          activeScene.interfaceProvider.currentInterface.browser
+              ->GetWebStateList()
+              ->GetActiveWebState();
+      if (currentWebState &&
+          currentWebState->GetLastCommittedURL() == kChromeUINewTabURL) {
+        startupInformation.firstUserActionRecorder->RecordStartOnNTP();
+        [startupInformation resetFirstUserActionRecorder];
+      } else {
+        [startupInformation
+            expireFirstUserActionRecorderAfterDelay:kFirstUserActionTimeout];
+      }
     }
     // Remove the value so it's not reused if the app crashes.
     [[NSUserDefaults standardUserDefaults]
@@ -187,18 +434,13 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered {
   BOOL optIn = [self areMetricsEnabled];
   BOOL allowUploading = [self isUploadingEnabled];
-  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
-    BOOL wifiOnly = GetApplicationContext()->GetLocalState()->GetBoolean(
-        prefs::kMetricsReportingWifiOnly);
-    optIn = optIn && wifiOnly;
-  }
-
   if (isUserTriggered)
     [self updateMetricsPrefsOnPermissionChange:optIn];
   [self setMetricsEnabled:optIn withUploading:allowUploading];
   [self setBreakpadEnabled:optIn withUploading:allowUploading];
   [self setWatchWWANEnabled:optIn];
   [self setAppGroupMetricsEnabled:optIn];
+  [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
 }
 
 - (BOOL)areMetricsEnabled {
@@ -216,19 +458,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (BOOL)isUploadingEnabled {
-  BOOL optIn = [self areMetricsEnabled];
-  if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    return optIn;
-  }
-  BOOL wifiOnly = GetApplicationContext()->GetLocalState()->GetBoolean(
-      prefs::kMetricsReportingWifiOnly);
-  BOOL allowUploading = optIn;
-  if (optIn && wifiOnly) {
-    BOOL usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
-        net::NetworkChangeNotifier::GetConnectionType());
-    allowUploading = !usingWWAN;
-  }
-  return allowUploading;
+  return [self areMetricsEnabled];
 }
 
 #pragma mark - Internal methods.
@@ -254,13 +484,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (void)setAppGroupMetricsEnabled:(BOOL)enabled {
-  app_group::ProceduralBlockWithData callback;
   if (enabled) {
     PrefService* prefs = GetApplicationContext()->GetLocalState();
     NSString* brandCode =
-        base::SysUTF8ToNSString(ios::GetChromeBrowserProvider()
-                                    ->GetAppDistributionProvider()
-                                    ->GetDistributionBrandCode());
+        base::SysUTF8ToNSString(ios::provider::GetBrandCode());
 
     app_group::main_app::EnableMetrics(
         base::SysUTF8ToNSString(
@@ -269,23 +496,11 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
         prefs->GetInt64(metrics::prefs::kMetricsReportingEnabledTimestamp));
 
     // If metrics are enabled, process the logs. Otherwise, just delete them.
-    callback = ^(NSData* log_content) {
-      std::string log(static_cast<const char*>([log_content bytes]),
-                      static_cast<size_t>([log_content length]));
-      base::PostTask(
-          FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-            GetApplicationContext()->GetMetricsService()->PushExternalLog(log);
-          }));
-    };
+    // TODO(crbug.com/782685): remove related code.
   } else {
     app_group::main_app::DisableMetrics();
   }
-
-  app_group::main_app::RecordWidgetUsage();
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&app_group::main_app::ProcessPendingLogs, callback));
+  metrics_mediator::RecordWidgetUsage(kHistogramsFromExtension);
 }
 
 - (void)processCrashReportsPresentAtStartup {
@@ -293,9 +508,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (void)setBreakpadEnabled:(BOOL)enabled withUploading:(BOOL)allowUploading {
-  breakpad_helper::SetUserEnabledUploading(enabled);
+  crash_helper::SetUserEnabledUploading(enabled);
   if (enabled) {
-    breakpad_helper::SetEnabled(true);
+    crash_helper::SetEnabled(true);
 
     // Do some processing of the crash reports present at startup. Note that
     // this processing must be done before uploading is enabled because once
@@ -310,7 +525,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
                                            isFirstSessionAfterUpgrade] &&
                                        allowUploading)];
   } else {
-    breakpad_helper::SetEnabled(false);
+    crash_helper::SetEnabled(false);
   }
 }
 
@@ -352,7 +567,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 + (void)disableReporting {
-  breakpad_helper::SetUploadingEnabled(false);
+  crash_helper::SetUploadingEnabled(false);
   metrics::MetricsService* metrics =
       GetApplicationContext()->GetMetricsService();
   DCHECK(metrics);
@@ -361,8 +576,19 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount {
   base::RecordAction(base::UserMetricsAction("MobileEnteredBackground"));
-  UMA_HISTOGRAM_COUNTS_100("MemoryWarning.OccurrencesPerSession",
-                           memoryWarningCount);
+  base::UmaHistogramCounts100("MemoryWarning.OccurrencesPerSession",
+                              memoryWarningCount);
+
+  task_vm_info task_info_data;
+  mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);
+  kern_return_t result =
+      task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&task_info_data), &count);
+  if (result == KERN_SUCCESS) {
+    mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
+    base::UmaHistogramMemoryLargeMB(
+        "Memory.Browser.MemoryFootprint.OnBackground", footprint_mb);
+  }
 }
 
 #pragma mark - CRConnectionTypeObserverBridge implementation
@@ -392,15 +618,23 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 #pragma mark - interfaces methods
 
 + (void)recordNumTabAtStartup:(int)numTabs {
-  UMA_HISTOGRAM_COUNTS_100("Tabs.CountAtStartup", numTabs);
+  base::UmaHistogramCounts100("Tabs.CountAtStartup", numTabs);
 }
 
 + (void)recordNumTabAtResume:(int)numTabs {
-  UMA_HISTOGRAM_COUNTS_100("Tabs.CountAtResume", numTabs);
+  base::UmaHistogramCounts100("Tabs.CountAtResume", numTabs);
+}
+
++ (void)recordNumNTPTabAtStartup:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.NTPCountAtStartup", numTabs);
+}
+
++ (void)recordNumNTPTabAtResume:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.NTPCountAtResume", numTabs);
 }
 
 - (void)setBreakpadUploadingEnabled:(BOOL)enableUploading {
-  breakpad_helper::SetUploadingEnabled(enableUploading);
+  crash_helper::SetUploadingEnabled(enableUploading);
 }
 
 - (void)setReporting:(BOOL)enableReporting {
@@ -412,13 +646,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 }
 
 - (BOOL)isMetricsReportingEnabledWifiOnly {
-  BOOL optIn = GetApplicationContext()->GetLocalState()->GetBoolean(
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled);
-  if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    return optIn;
-  }
-  return optIn && GetApplicationContext()->GetLocalState()->GetBoolean(
-                      prefs::kMetricsReportingWifiOnly);
 }
 
 @end

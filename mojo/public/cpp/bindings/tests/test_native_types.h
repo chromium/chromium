@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_BINDINGS_TEST_NATIVE_TYPES_H_
-#define MOJO_PUBLIC_CPP_BINDINGS_TESTS_BINDINGS_TEST_NATIVE_TYPES_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_TEST_NATIVE_TYPES_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_TESTS_TEST_NATIVE_TYPES_H_
 
 #include <string>
 
@@ -41,6 +41,12 @@ class TestNativeStructWithAttachments {
   TestNativeStructWithAttachments(TestNativeStructWithAttachments&& other);
   TestNativeStructWithAttachments(const std::string& message,
                                   ScopedMessagePipeHandle pipe);
+
+  TestNativeStructWithAttachments(const TestNativeStructWithAttachments&) =
+      delete;
+  TestNativeStructWithAttachments& operator=(
+      const TestNativeStructWithAttachments&) = delete;
+
   ~TestNativeStructWithAttachments();
 
   TestNativeStructWithAttachments& operator=(
@@ -55,8 +61,6 @@ class TestNativeStructWithAttachments {
  private:
   std::string message_;
   mutable mojo::ScopedMessagePipeHandle pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeStructWithAttachments);
 };
 
 }  // namespace test
@@ -86,4 +90,4 @@ struct ParamTraits<mojo::test::TestNativeStructWithAttachments> {
 
 }  // namespace IPC
 
-#endif  // MOJO_PUBLIC_CPP_BINDINGS_TESTS_BINDINGS_TEST_NATIVE_TYPES_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_TESTS_TEST_NATIVE_TYPES_H_

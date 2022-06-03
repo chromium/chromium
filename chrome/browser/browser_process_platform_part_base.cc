@@ -4,11 +4,9 @@
 
 #include "chrome/browser/browser_process_platform_part_base.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 
 BrowserProcessPlatformPartBase::BrowserProcessPlatformPartBase() {
 }
@@ -19,6 +17,8 @@ BrowserProcessPlatformPartBase::~BrowserProcessPlatformPartBase() {
 void BrowserProcessPlatformPartBase::PlatformSpecificCommandLineProcessing(
     const base::CommandLine& /* command_line */) {
 }
+
+void BrowserProcessPlatformPartBase::BeginStartTearDown() {}
 
 void BrowserProcessPlatformPartBase::StartTearDown() {
 }
@@ -35,9 +35,4 @@ void BrowserProcessPlatformPartBase::AttemptExit(bool try_to_quit_application) {
 }
 
 void BrowserProcessPlatformPartBase::PreMainMessageLoopRun() {
-}
-
-std::unique_ptr<policy::ChromeBrowserPolicyConnector>
-BrowserProcessPlatformPartBase::CreateBrowserPolicyConnector() {
-  return std::make_unique<policy::ChromeBrowserPolicyConnector>();
 }

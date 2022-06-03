@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_FRONTEND_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_FRONTEND_CLIENT_H_
 
+#include "base/values.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -40,9 +41,9 @@ class InspectorFrontendClient : public GarbageCollectedMixin {
  public:
   virtual ~InspectorFrontendClient() = default;
 
-  virtual void SendMessageToEmbedder(const String&) = 0;
+  virtual void SendMessageToEmbedder(base::Value) = 0;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_FRONTEND_CLIENT_H_

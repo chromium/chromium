@@ -65,7 +65,7 @@ class NamedNodeMap final : public ScriptWrappable {
   void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&) const;
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Element> element_;

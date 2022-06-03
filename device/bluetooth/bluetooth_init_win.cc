@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/bluetooth_init_win.h"
 
-#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_thread_priority.h"
 
 namespace {
 
@@ -28,8 +28,10 @@ bool HasBluetoothStack() {
   } has_bluetooth_stack = HBS_UNKNOWN;
 
   if (has_bluetooth_stack == HBS_UNKNOWN) {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+
     HRESULT hr = E_FAIL;
     __try {
       hr = __HrLoadAllImportsForDll("bthprops.cpl");

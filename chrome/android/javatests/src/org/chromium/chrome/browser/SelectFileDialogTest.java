@@ -9,8 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,18 +20,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
 
 /**
@@ -39,8 +42,7 @@ import org.chromium.ui.base.SelectFileDialog;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SelectFileDialogTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String DATA_URL = UrlUtils.encodeHtmlDataUri(
             "<html><head><meta name=\"viewport\""
@@ -58,11 +60,10 @@ public class SelectFileDialogTest {
     private static class ActivityWindowAndroidForTest extends ActivityWindowAndroid {
         public Intent lastIntent;
         public IntentCallback lastCallback;
-        /**
-         * @param activity
-         */
+
         public ActivityWindowAndroidForTest(Activity activity) {
-            super(activity);
+            super(activity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(activity));
         }
 
         @Override
@@ -78,15 +79,11 @@ public class SelectFileDialogTest {
         }
     }
 
-    private class IntentSentCriteria extends Criteria {
-        public IntentSentCriteria() {
-            super("SelectFileDialog never sent an intent.");
-        }
-
-        @Override
-        public boolean isSatisfied() {
-            return mActivityWindowAndroidForTest.lastIntent != null;
-        }
+    private void verifyIntentSent() {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("SelectFileDialog never sent an intent.",
+                    mActivityWindowAndroidForTest.lastIntent, Matchers.notNullValue());
+        });
     }
 
     private WebContents mWebContents;
@@ -115,12 +112,11 @@ public class SelectFileDialogTest {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @MediumTest
     @Feature({"TextInput", "Main"})
-    @RetryOnFailure
     @DisabledTest(message = "https://crbug.com/724163")
     public void testSelectFileAndCancelRequest() throws Throwable {
         {
             DOMUtils.clickNode(mWebContents, "input_file");
-            CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+            verifyIntentSent();
             Assert.assertEquals(
                     Intent.ACTION_CHOOSER, mActivityWindowAndroidForTest.lastIntent.getAction());
             Intent contentIntent =
@@ -133,7 +129,7 @@ public class SelectFileDialogTest {
 
         {
             DOMUtils.clickNode(mWebContents, "input_text");
-            CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+            verifyIntentSent();
             Assert.assertEquals(
                     Intent.ACTION_CHOOSER, mActivityWindowAndroidForTest.lastIntent.getAction());
             Intent contentIntent =
@@ -146,7 +142,7 @@ public class SelectFileDialogTest {
 
         {
             DOMUtils.clickNode(mWebContents, "input_any");
-            CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+            verifyIntentSent();
             Assert.assertEquals(
                     Intent.ACTION_CHOOSER, mActivityWindowAndroidForTest.lastIntent.getAction());
             Intent contentIntent =
@@ -159,7 +155,7 @@ public class SelectFileDialogTest {
 
         {
             DOMUtils.clickNode(mWebContents, "input_file_multiple");
-            CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+            verifyIntentSent();
             Assert.assertEquals(
                     Intent.ACTION_CHOOSER, mActivityWindowAndroidForTest.lastIntent.getAction());
             Intent contentIntent =
@@ -174,13 +170,13 @@ public class SelectFileDialogTest {
         }
 
         DOMUtils.clickNode(mWebContents, "input_image");
-        CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+        verifyIntentSent();
         Assert.assertEquals(MediaStore.ACTION_IMAGE_CAPTURE,
                 mActivityWindowAndroidForTest.lastIntent.getAction());
         resetActivityWindowAndroidForTest();
 
         DOMUtils.clickNode(mWebContents, "input_audio");
-        CriteriaHelper.pollInstrumentationThread(new IntentSentCriteria());
+        verifyIntentSent();
         Assert.assertEquals(MediaStore.Audio.Media.RECORD_SOUND_ACTION,
                 mActivityWindowAndroidForTest.lastIntent.getAction());
         resetActivityWindowAndroidForTest();
@@ -188,8 +184,9 @@ public class SelectFileDialogTest {
 
     private void resetActivityWindowAndroidForTest() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityWindowAndroidForTest.lastCallback.onIntentCompleted(
-                                mActivityWindowAndroidForTest, Activity.RESULT_CANCELED, null));
+                ()
+                        -> mActivityWindowAndroidForTest.lastCallback.onIntentCompleted(
+                                Activity.RESULT_CANCELED, null));
         mActivityWindowAndroidForTest.lastCallback = null;
         mActivityWindowAndroidForTest.lastIntent = null;
     }

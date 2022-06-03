@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/autofill/autofill_popup_layout_model.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -37,18 +37,18 @@ class MockAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
   MockAccessoryView() {}
-  MOCK_METHOD2(Initialize, void(unsigned int, bool));
+
+  MockAccessoryView(const MockAccessoryView&) = delete;
+  MockAccessoryView& operator=(const MockAccessoryView&) = delete;
+
+  MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
   MOCK_METHOD3(ConfirmDeletion,
-               void(const base::string16&,
-                    const base::string16&,
+               void(const std::u16string&,
+                    const std::u16string&,
                     base::OnceClosure));
-  MOCK_METHOD1(GetElidedValueWidthForRow, int(int));
-  MOCK_METHOD1(GetElidedLabelWidthForRow, int(int));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAccessoryView);
 };
 
 Suggestion createPasswordEntry(std::string password,
@@ -116,7 +116,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
 
     autofill_accessory_adapter_ =
         std::make_unique<AutofillKeyboardAccessoryAdapter>(
-            popup_controller_->GetWeakPtr(), 0, false);
+            popup_controller_->GetWeakPtr());
     autofill_accessory_adapter_->SetAccessoryView(std::move(view));
   }
 
@@ -151,11 +151,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
 };
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ShowingInitializesAndUpdatesView) {
-  {
-    ::testing::Sequence s;
-    EXPECT_CALL(*view(), Initialize(_, _));
-    EXPECT_CALL(*view(), Show());
-  }
+  EXPECT_CALL(*view(), Show());
   adapter_as_view()->Show();
 }
 
@@ -186,18 +182,17 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_EQ(adapter_as_controller()->GetElidedLabelAt(0), base::string16());
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_EQ(adapter_as_controller()->GetElidedLabelAt(1),
-            ASCIIToUTF16("********"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1), u"********");
 
   // If the label is empty, use the additional label:
-  EXPECT_EQ(adapter_as_controller()->GetElidedLabelAt(2),
-            ASCIIToUTF16("psl.origin.eg ********"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(2),
+            u"psl.origin.eg ********");
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_EQ(adapter_as_controller()->GetElidedLabelAt(3), ASCIIToUTF16("***"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3), u"***");
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {
@@ -232,14 +227,11 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, MapSelectedLineToChangedIndices) {
   controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
   NotifyAboutSuggestions();
 
-  EXPECT_CALL(*controller(), SetSelectedLine(base::Optional<int>(0)));
+  EXPECT_CALL(*controller(), SetSelectedLine(absl::optional<int>(0)));
   adapter_as_controller()->SetSelectedLine(1);
 
   EXPECT_CALL(*controller(), selected_line()).WillRepeatedly(Return(0));
   EXPECT_EQ(adapter_as_controller()->selected_line(), 1);
-
-  EXPECT_CALL(*controller(), AcceptSelectedLine());
-  adapter_as_controller()->AcceptSelectedLine();
 }
 
 }  // namespace autofill

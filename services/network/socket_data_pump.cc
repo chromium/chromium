@@ -7,17 +7,17 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "services/network/tls_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -79,8 +79,8 @@ void SocketDataPump::ReceiveMore() {
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int read_result = socket_->ReadIfReady(
       buf.get(), base::saturated_cast<int>(num_bytes),
-      base::BindRepeating(&SocketDataPump::OnNetworkReadIfReadyCompleted,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&SocketDataPump::OnNetworkReadIfReadyCompleted,
+                     weak_factory_.GetWeakPtr()));
   DCHECK_NE(net::ERR_READ_IF_READY_NOT_IMPLEMENTED, read_result);
   receive_stream_ =
       pending_receive_buffer->Complete(read_result >= 0 ? read_result : 0);
@@ -172,11 +172,11 @@ void SocketDataPump::SendMore() {
   scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::WrappedIOBuffer>(
       pending_send_buffer_->buffer());
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
-  int write_result = socket_->Write(
-      buf.get(), static_cast<int>(num_bytes),
-      base::BindRepeating(&SocketDataPump::OnNetworkWriteCompleted,
-                          weak_factory_.GetWeakPtr()),
-      traffic_annotation_);
+  int write_result =
+      socket_->Write(buf.get(), static_cast<int>(num_bytes),
+                     base::BindOnce(&SocketDataPump::OnNetworkWriteCompleted,
+                                    weak_factory_.GetWeakPtr()),
+                     traffic_annotation_);
   if (write_result == net::ERR_IO_PENDING)
     return;
   OnNetworkWriteCompleted(write_result);

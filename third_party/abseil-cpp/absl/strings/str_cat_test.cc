@@ -162,7 +162,7 @@ TEST(StrCat, Basics) {
   EXPECT_EQ(result, "12345678910, 10987654321!");
 
   std::string one =
-      "1";  // Actually, it's the size of this std::string that we want; a
+      "1";  // Actually, it's the size of this string that we want; a
             // 64-bit build distinguishes between size_t and uint64_t,
             // even though they're both unsigned 64-bit values.
   result = absl::StrCat("And a ", one.size(), " and a ",
@@ -193,6 +193,21 @@ TEST(StrCat, Basics) {
   result = absl::StrCat(1, 2, 333, 4444, 55555, 666666, 7777777, 88888888,
                         999999999);
   EXPECT_EQ(result, "12333444455555666666777777788888888999999999");
+}
+
+TEST(StrCat, CornerCases) {
+  std::string result;
+
+  result = absl::StrCat("");  // NOLINT
+  EXPECT_EQ(result, "");
+  result = absl::StrCat("", "");
+  EXPECT_EQ(result, "");
+  result = absl::StrCat("", "", "");
+  EXPECT_EQ(result, "");
+  result = absl::StrCat("", "", "", "");
+  EXPECT_EQ(result, "");
+  result = absl::StrCat("", "", "", "", "");
+  EXPECT_EQ(result, "");
 }
 
 // A minimal allocator that uses malloc().
@@ -360,7 +375,7 @@ TEST(StrAppend, Basics) {
   EXPECT_EQ(result.substr(old_size), "12345678910, 10987654321!");
 
   std::string one =
-      "1";  // Actually, it's the size of this std::string that we want; a
+      "1";  // Actually, it's the size of this string that we want; a
             // 64-bit build distinguishes between size_t and uint64_t,
             // even though they're both unsigned 64-bit values.
   old_size = result.size();
@@ -433,10 +448,34 @@ TEST(StrAppend, Death) {
 }
 #endif  // GTEST_HAS_DEATH_TEST
 
-TEST(StrAppend, EmptyString) {
-  std::string s = "";
-  absl::StrAppend(&s, s);
-  EXPECT_EQ(s, "");
+TEST(StrAppend, CornerCases) {
+  std::string result;
+  absl::StrAppend(&result, "");
+  EXPECT_EQ(result, "");
+  absl::StrAppend(&result, "", "");
+  EXPECT_EQ(result, "");
+  absl::StrAppend(&result, "", "", "");
+  EXPECT_EQ(result, "");
+  absl::StrAppend(&result, "", "", "", "");
+  EXPECT_EQ(result, "");
+  absl::StrAppend(&result, "", "", "", "", "");
+  EXPECT_EQ(result, "");
+}
+
+TEST(StrAppend, CornerCasesNonEmptyAppend) {
+  for (std::string result : {"hello", "a string too long to fit in the SSO"}) {
+    const std::string expected = result;
+    absl::StrAppend(&result, "");
+    EXPECT_EQ(result, expected);
+    absl::StrAppend(&result, "", "");
+    EXPECT_EQ(result, expected);
+    absl::StrAppend(&result, "", "", "");
+    EXPECT_EQ(result, expected);
+    absl::StrAppend(&result, "", "", "", "");
+    EXPECT_EQ(result, expected);
+    absl::StrAppend(&result, "", "", "", "", "");
+    EXPECT_EQ(result, expected);
+  }
 }
 
 template <typename IntType>

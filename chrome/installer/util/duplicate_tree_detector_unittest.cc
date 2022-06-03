@@ -5,10 +5,10 @@
 #include <windows.h>
 
 #include <fstream>
+#include <string>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "chrome/installer/util/duplicate_tree_detector.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +24,7 @@ class DuplicateTreeDetectorTest : public testing::Test {
 
   // Simple function to dump some text into a new file.
   void CreateTextFile(const std::string& filename,
-                      const base::string16& contents) {
+                      const std::wstring& contents) {
     std::wofstream file;
     file.open(filename.c_str());
     ASSERT_TRUE(file.is_open());
@@ -69,8 +69,7 @@ class DuplicateTreeDetectorTest : public testing::Test {
 
 const wchar_t DuplicateTreeDetectorTest::text_content_1_[] =
     L"Gooooooooooooooooooooogle";
-const wchar_t DuplicateTreeDetectorTest::text_content_2_[] =
-    L"Overwrite Me";
+const wchar_t DuplicateTreeDetectorTest::text_content_2_[] = L"Overwrite Me";
 const wchar_t DuplicateTreeDetectorTest::text_content_3_[] =
     L"I'd rather see your watermelon and raise you ham and a half.";
 
@@ -122,9 +121,8 @@ TEST_F(DuplicateTreeDetectorTest, TestIdenticalDirsDifferentFiles) {
                                 temp_dest_dir_.GetPath());
 
   base::FilePath existing_file(temp_dest_dir_.GetPath());
-  existing_file = existing_file.AppendASCII("D1")
-                               .AppendASCII("D2")
-                               .AppendASCII("F2");
+  existing_file =
+      existing_file.AppendASCII("D1").AppendASCII("D2").AppendASCII("F2");
   CreateTextFile(existing_file.MaybeAsASCII(), text_content_3_);
 
   EXPECT_FALSE(installer::IsIdenticalFileHierarchy(temp_source_dir_.GetPath(),

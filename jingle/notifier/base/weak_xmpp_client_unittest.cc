@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "jingle/glue/task_pump.h"
 #include "testing/gmock/include/gmock/gmock.h"

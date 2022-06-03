@@ -4,13 +4,15 @@
 
 #include "base/no_destructor.h"
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -28,6 +30,17 @@ struct CheckOnDestroy {
 TEST(NoDestructorTest, SkipsDestructors) {
   NoDestructor<CheckOnDestroy> destructor_should_not_run;
 }
+
+struct UncopyableUnmovable {
+  UncopyableUnmovable() = default;
+  explicit UncopyableUnmovable(int value) : value(value) {}
+
+  UncopyableUnmovable(const UncopyableUnmovable&) = delete;
+  UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
+
+  int value = 1;
+  std::string something_with_a_nontrivial_destructor;
+};
 
 struct CopyOnly {
   CopyOnly() = default;
@@ -51,7 +64,17 @@ struct MoveOnly {
 
 struct ForwardingTestStruct {
   ForwardingTestStruct(const CopyOnly&, MoveOnly&&) {}
+
+  std::string something_with_a_nontrivial_destructor;
 };
+
+TEST(NoDestructorTest, UncopyableUnmovable) {
+  static NoDestructor<UncopyableUnmovable> default_constructed;
+  EXPECT_EQ(1, default_constructed->value);
+
+  static NoDestructor<UncopyableUnmovable> constructed_with_arg(-1);
+  EXPECT_EQ(-1, constructed_with_arg->value);
+}
 
 TEST(NoDestructorTest, ForwardsArguments) {
   CopyOnly copy_only;
@@ -67,6 +90,11 @@ TEST(NoDestructorTest, Accessors) {
   EXPECT_EQ("awesome", *awesome);
   EXPECT_EQ(0, awesome->compare("awesome"));
   EXPECT_EQ(0, awesome.get()->compare("awesome"));
+}
+
+TEST(NoDestructorTest, AllowForTriviallyDestructibleType) {
+  static NoDestructor<bool, AllowForTriviallyDestructibleType>
+      trivially_destructible_type;
 }
 
 // Passing initializer list to a NoDestructor like in this test
@@ -93,7 +121,8 @@ class BlockingConstructor {
       PlatformThread::YieldCurrentThread();
     done_construction_ = true;
   }
-
+  BlockingConstructor(const BlockingConstructor&) = delete;
+  BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() = delete;
 
   // Returns true if BlockingConstructor() was entered.
@@ -106,7 +135,7 @@ class BlockingConstructor {
     subtle::NoBarrier_Store(&complete_construction_, 1);
   }
 
-  bool done_construction() { return done_construction_; }
+  bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
@@ -114,8 +143,6 @@ class BlockingConstructor {
   static subtle::Atomic32 complete_construction_;
 
   bool done_construction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructor);
 };
 
 // static
@@ -132,6 +159,9 @@ class BlockingConstructorThread : public SimpleThread {
                             OnceClosure before_get)
       : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
         before_get_(std::move(before_get)) {}
+  BlockingConstructorThread(const BlockingConstructorThread&) = delete;
+  BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
+      delete;
 
   void Run() override {
     if (before_get_)
@@ -143,8 +173,6 @@ class BlockingConstructorThread : public SimpleThread {
 
  private:
   OnceClosure before_get_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructorThread);
 };
 
 }  // namespace
@@ -165,7 +193,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   background_getter.Start();
 
   while (!BlockingConstructor::WasConstructorCalled())
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+    PlatformThread::Sleep(Milliseconds(1));
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction NoDestructor. When they are all running and poking at it :
@@ -190,7 +218,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a
   // Z840 without r527445 but is expected to be fast (~30ms) with the fix).
-  EXPECT_LT(TimeTicks::Now() - test_begin, TimeDelta::FromSeconds(5));
+  EXPECT_LT(TimeTicks::Now() - test_begin, Seconds(5));
 }
 
 }  // namespace base

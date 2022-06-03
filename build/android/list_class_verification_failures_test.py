@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,16 +7,13 @@ import unittest
 
 import list_class_verification_failures as list_verification
 
-from pylib.constants import host_paths
-
 import devil_chromium  # pylint: disable=unused-import
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 
-with host_paths.SysPath(host_paths.PYMOCK_PATH):
-  import mock  # pylint: disable=import-error
+import mock  # pylint: disable=import-error
 
 
 def _CreateOdexLine(java_class_name, type_idx, verification_status):
@@ -40,7 +38,9 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         return_value=fake_attached_devices)
     result = list_verification.DetermineDeviceToUse(user_specified_devices)
     self.assertEqual(result, fake_attached_devices[0])
+    # pylint: disable=no-member
     device_utils.DeviceUtils.HealthyDevices.assert_called_with(device_arg=None)
+    # pylint: enable=no-member
 
   def testDetermineDeviceToUse_emptyListWithNoAttachedDevices(self):
     user_specified_devices = []
@@ -48,7 +48,9 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         side_effect=device_errors.NoDevicesError())
     with self.assertRaises(device_errors.NoDevicesError) as _:
       list_verification.DetermineDeviceToUse(user_specified_devices)
+    # pylint: disable=no-member
     device_utils.DeviceUtils.HealthyDevices.assert_called_with(device_arg=None)
+    # pylint: enable=no-member
 
   def testDetermineDeviceToUse_oneElementListWithOneAttachedDevice(self):
     user_specified_devices = ['123']
@@ -57,8 +59,10 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         return_value=fake_attached_devices)
     result = list_verification.DetermineDeviceToUse(user_specified_devices)
     self.assertEqual(result, fake_attached_devices[0])
+    # pylint: disable=no-member
     device_utils.DeviceUtils.HealthyDevices.assert_called_with(
         device_arg=user_specified_devices)
+    # pylint: enable=no-member
 
 
 class _ListClassVerificationFailuresTest(unittest.TestCase):
@@ -73,7 +77,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
 
     with self.assertRaises(list_verification.DeviceOSError) as cm:
-      list_verification.PathToDexForPlatformVersion(device, package_name)
+      list_verification.FindOdexFiles(device, package_name)
     message = str(cm.exception)
     self.assertIn('Could not find data directory', message)
 
@@ -86,10 +90,11 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device = mock.Mock(build_version_sdk=sdk_int, product_cpu_abi=arch)
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
 
-    with self.assertRaises(list_verification.DeviceOSError) as cm:
-      list_verification.PathToDexForPlatformVersion(device, package_name)
-    message = str(cm.exception)
-    self.assertIn('Expected exactly one path for', message)
+    odex_files = list_verification.FindOdexFiles(device, package_name)
+    self.assertEqual(odex_files, [
+        '/data/dalvik-cache/arm64/data@app@first@base.apk@classes.dex',
+        '/data/dalvik-cache/arm64/data@app@second@base.apk@classes.dex'
+    ])
 
   def testPathToDexForPlatformVersion_dalvikApiLevel(self):
     sdk_int = version_codes.KITKAT
@@ -101,7 +106,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
 
     with self.assertRaises(list_verification.UnsupportedDeviceError) as _:
-      list_verification.PathToDexForPlatformVersion(device, package_name)
+      list_verification.FindOdexFiles(device, package_name)
 
   def testPathToDexForPlatformVersion_lollipopArm(self):
     sdk_int = version_codes.LOLLIPOP
@@ -113,11 +118,10 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
     device.FileExists = mock.MagicMock(return_value=True)
 
-    odex_file = list_verification.PathToDexForPlatformVersion(device,
-                                                              package_name)
-    self.assertEqual(odex_file,
-                     ('/data/dalvik-cache/arm/data@app'
-                      '@package.name-1@base.apk@classes.dex'))
+    odex_files = list_verification.FindOdexFiles(device, package_name)
+    self.assertEqual(
+        odex_files,
+        ['/data/dalvik-cache/arm/data@app@package.name-1@base.apk@classes.dex'])
 
   def testPathToDexForPlatformVersion_mashmallowArm(self):
     sdk_int = version_codes.MARSHMALLOW
@@ -129,10 +133,9 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
     device.FileExists = mock.MagicMock(return_value=True)
 
-    odex_file = list_verification.PathToDexForPlatformVersion(device,
-                                                              package_name)
-    self.assertEqual(odex_file,
-                     '/some/path/package.name-1/oat/arm/base.odex')
+    odex_files = list_verification.FindOdexFiles(device, package_name)
+    self.assertEqual(odex_files,
+                     ['/some/path/package.name-1/oat/arm/base.odex'])
 
   def testPathToDexForPlatformVersion_mashmallowArm64(self):
     sdk_int = version_codes.MARSHMALLOW
@@ -144,10 +147,9 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.GetApplicationPaths = mock.MagicMock(return_value=paths_to_apk)
     device.FileExists = mock.MagicMock(return_value=True)
 
-    odex_file = list_verification.PathToDexForPlatformVersion(device,
-                                                              package_name)
-    self.assertEqual(odex_file,
-                     '/some/path/package.name-1/oat/arm64/base.odex')
+    odex_files = list_verification.FindOdexFiles(device, package_name)
+    self.assertEqual(odex_files,
+                     ['/some/path/package.name-1/oat/arm64/base.odex'])
 
   def testPathToDexForPlatformVersion_pieNoOdexFile(self):
     sdk_int = version_codes.PIE
@@ -160,7 +162,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.FileExists = mock.MagicMock(return_value=False)
 
     with self.assertRaises(list_verification.DeviceOSError) as cm:
-      list_verification.PathToDexForPlatformVersion(device, package_name)
+      list_verification.FindOdexFiles(device, package_name)
     message = str(cm.exception)
     self.assertIn('you must run dex2oat on debuggable apps on >= P', message)
 
@@ -175,7 +177,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
     device.FileExists = mock.MagicMock(return_value=False)
 
     with self.assertRaises(list_verification.DeviceOSError) as _:
-      list_verification.PathToDexForPlatformVersion(device, package_name)
+      list_verification.FindOdexFiles(device, package_name)
 
   def testListClasses_noProguardMap(self):
     oatdump_output = [
@@ -184,8 +186,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
                         'StatusRetryVerificationAtRuntime'),
     ]
 
-    classes = list_verification.ListClassesAndVerificationStatus(oatdump_output,
-                                                                 None)
+    classes = list_verification.ParseOatdump(oatdump_output, None)
     self.assertEqual(2, len(classes))
     java_class_1 = _ClassForName('a.b.JavaClass1', classes)
     java_class_2 = _ClassForName('a.b.JavaClass2', classes)
@@ -204,8 +205,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
         'a.b.ObfuscatedJavaClass1': 'a.b.JavaClass1',
         'a.b.ObfuscatedJavaClass2': 'a.b.JavaClass2',
     }
-    classes = list_verification.ListClassesAndVerificationStatus(oatdump_output,
-                                                                 mapping)
+    classes = list_verification.ParseOatdump(oatdump_output, mapping)
     self.assertEqual(2, len(classes))
     java_class_1 = _ClassForName('a.b.JavaClass1', classes)
     java_class_2 = _ClassForName('a.b.JavaClass2', classes)
@@ -219,8 +219,7 @@ class _ListClassVerificationFailuresTest(unittest.TestCase):
         _CreateOdexLine('a.b.JavaClass2', 7, 'RetryVerificationAtRuntime'),
     ]
 
-    classes = list_verification.ListClassesAndVerificationStatus(oatdump_output,
-                                                                 None)
+    classes = list_verification.ParseOatdump(oatdump_output, None)
     self.assertEqual(2, len(classes))
     java_class_1 = _ClassForName('a.b.JavaClass1', classes)
     java_class_2 = _ClassForName('a.b.JavaClass2', classes)

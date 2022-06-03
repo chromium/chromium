@@ -38,6 +38,11 @@ class CastStabilityMetricsProvider
 
   CastStabilityMetricsProvider(::metrics::MetricsService* metrics_service,
                                PrefService* pref_service);
+
+  CastStabilityMetricsProvider(const CastStabilityMetricsProvider&) = delete;
+  CastStabilityMetricsProvider& operator=(const CastStabilityMetricsProvider&) =
+      delete;
+
   ~CastStabilityMetricsProvider() override;
 
   // metrics::MetricsDataProvider implementation:
@@ -80,8 +85,6 @@ class CastStabilityMetricsProvider
   ::metrics::MetricsService* metrics_service_;
 
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastStabilityMetricsProvider);
 };
 
 }  // namespace metrics

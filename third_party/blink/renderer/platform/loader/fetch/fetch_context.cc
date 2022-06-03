@@ -45,7 +45,7 @@ mojom::FetchCacheMode FetchContext::ResourceRequestCachePolicy(
 }
 
 void FetchContext::PrepareRequest(ResourceRequest&,
-                                  const FetchInitiatorInfo&,
+                                  ResourceLoaderOptions&,
                                   WebScopedVirtualTimePauser&,
                                   ResourceType) {}
 
@@ -55,7 +55,8 @@ void FetchContext::PopulateResourceRequest(
     ResourceType,
     const ClientHintsPreferences&,
     const FetchParameters::ResourceWidth&,
-    ResourceRequest&) {}
+    ResourceRequest&,
+    const ResourceLoaderOptions&) {}
 
 mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
 FetchContext::TakePendingWorkerTimingReceiver(int request_id) {

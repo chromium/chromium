@@ -4,6 +4,7 @@
 
 #include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
 
+#include "base/task/thread_pool.h"
 #include "string.h"
 
 #include <utility>
@@ -15,8 +16,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"
@@ -40,17 +41,6 @@ bool IsJpegImage(base::span<const uint8_t> encoded_data) {
   if (encoded_data.size() < 3u)
     return false;
   return memcmp("\xFF\xD8\xFF", encoded_data.data(), 3u) == 0;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class VAJDAWorkerDecoderFailure {
-  kVaapiError = 0,
-  kMaxValue = kVaapiError,
-};
-
-void ReportToVAJDAWorkerDecoderFailureUMA(VAJDAWorkerDecoderFailure failure) {
-  UMA_HISTOGRAM_ENUMERATION("Media.VAJDAWorker.DecoderFailure", failure);
 }
 
 // Uses |decoder| to decode the image corresponding to |encoded_data|.
@@ -119,11 +109,12 @@ void DecodeTask(
 // static
 std::unique_ptr<VaapiImageDecodeAcceleratorWorker>
 VaapiImageDecodeAcceleratorWorker::Create() {
-  // TODO(crbug.com/988123): revisit the Media.VAJDAWorker.DecoderFailure UMA
-  // to be able to record WebP and JPEG failures separately.
+  // TODO(crbug.com/988123): revisit the
+  // Media.VaapiImageDecodeAcceleratorWorker.VAAPIError UMA to be able to record
+  // WebP and JPEG failures separately.
   const auto uma_cb =
-      base::BindRepeating(&ReportToVAJDAWorkerDecoderFailureUMA,
-                          VAJDAWorkerDecoderFailure::kVaapiError);
+      base::BindRepeating(&ReportVaapiErrorToUMA,
+                          "Media.VaapiImageDecodeAcceleratorWorker.VAAPIError");
   VaapiImageDecoderVector decoders;
 
   auto jpeg_decoder = std::make_unique<VaapiJpegDecoder>();
@@ -150,7 +141,7 @@ VaapiImageDecodeAcceleratorWorker::Create() {
 VaapiImageDecodeAcceleratorWorker::VaapiImageDecodeAcceleratorWorker(
     VaapiImageDecoderVector decoders) {
   DETACH_FROM_SEQUENCE(io_sequence_checker_);
-  decoder_task_runner_ = base::CreateSequencedTaskRunner({base::ThreadPool()});
+  decoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
   DCHECK(decoder_task_runner_);
 
   DCHECK(!decoders.empty());

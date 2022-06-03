@@ -6,11 +6,17 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -38,68 +44,88 @@ viz::ResourceId CreateAndImportResource(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
       false /* is_overlay_candidate */);
   transfer_resource.color_space = std::move(color_space);
-  return resource_provider->ImportResource(
-      transfer_resource, viz::SingleReleaseCallback::Create(base::DoNothing()));
+  return resource_provider->ImportResource(transfer_resource,
+                                           base::DoNothing());
 }
 
 }  // anonymous namespace
 
-viz::RenderPass* AddRenderPass(viz::RenderPassList* pass_list,
-                               int render_pass_id,
-                               const gfx::Rect& output_rect,
-                               const gfx::Transform& root_transform,
-                               const FilterOperations& filters) {
-  std::unique_ptr<viz::RenderPass> pass(viz::RenderPass::Create());
+viz::CompositorRenderPass* AddRenderPass(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, output_rect, root_transform);
   pass->filters = filters;
-  viz::RenderPass* saved = pass.get();
+  viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
 }
 
-viz::RenderPass* AddRenderPassWithDamage(viz::RenderPassList* pass_list,
-                                         int render_pass_id,
-                                         const gfx::Rect& output_rect,
-                                         const gfx::Rect& damage_rect,
-                                         const gfx::Transform& root_transform,
-                                         const FilterOperations& filters) {
-  std::unique_ptr<viz::RenderPass> pass(viz::RenderPass::Create());
+viz::AggregatedRenderPass* AddRenderPass(
+    viz::AggregatedRenderPassList* pass_list,
+    viz::AggregatedRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = std::make_unique<viz::AggregatedRenderPass>();
+  pass->SetNew(render_pass_id, output_rect, output_rect, root_transform);
+  pass->filters = filters;
+  auto* saved = pass.get();
+  pass_list->push_back(std::move(pass));
+  return saved;
+}
+
+viz::CompositorRenderPass* AddRenderPassWithDamage(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, damage_rect, root_transform);
   pass->filters = filters;
-  viz::RenderPass* saved = pass.get();
+  viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
 }
 
-viz::SolidColorDrawQuad* AddQuad(viz::RenderPass* pass,
-                                 const gfx::Rect& rect,
-                                 SkColor color) {
-  viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
-                       false, 1, SkBlendMode::kSrcOver, 0);
-  auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_state, rect, rect, color, false);
-  return quad;
+viz::AggregatedRenderPass* AddRenderPassWithDamage(
+    viz::AggregatedRenderPassList* pass_list,
+    viz::AggregatedRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = std::make_unique<viz::AggregatedRenderPass>();
+  pass->SetNew(render_pass_id, output_rect, damage_rect, root_transform);
+  pass->filters = filters;
+  auto* saved = pass.get();
+  pass_list->push_back(std::move(pass));
+  return saved;
 }
 
-viz::SolidColorDrawQuad* AddClippedQuad(viz::RenderPass* pass,
+viz::SolidColorDrawQuad* AddClippedQuad(viz::AggregatedRenderPass* pass,
                                         const gfx::Rect& rect,
                                         SkColor color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, true,
-                       false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                       rect, false, 1, SkBlendMode::kSrcOver, 0);
   auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);
   return quad;
 }
 
-viz::SolidColorDrawQuad* AddTransformedQuad(viz::RenderPass* pass,
+viz::SolidColorDrawQuad* AddTransformedQuad(viz::AggregatedRenderPass* pass,
                                             const gfx::Rect& rect,
                                             SkColor color,
                                             const gfx::Transform& transform) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(transform, rect, rect, gfx::RRectF(), rect, false, false,
-                       1,
+  shared_state->SetAll(transform, rect, rect, gfx::MaskFilterInfo(),
+                       absl::nullopt, false, 1,
 
                        SkBlendMode::kSrcOver, 0);
   auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -107,32 +133,48 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::RenderPass* pass,
   return quad;
 }
 
-viz::RenderPassDrawQuad* AddRenderPassQuad(viz::RenderPass* to_pass,
-                                           viz::RenderPass* contributing_pass) {
+template <typename QuadType, typename RenderPassType>
+QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
+                                    RenderPassType* contributing_pass) {
   gfx::Rect output_rect = contributing_pass->output_rect;
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
-                       gfx::RRectF(), output_rect, false, false, 1,
+                       gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                        SkBlendMode::kSrcOver, 0);
-  auto* quad = to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id, 0,
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+  auto* quad = to_pass->template CreateAndAppendDrawQuad<QuadType>();
+  quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
+               viz::kInvalidResourceId, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(), false, 1.0f);
   return quad;
 }
 
-void AddRenderPassQuad(viz::RenderPass* to_pass,
-                       viz::RenderPass* contributing_pass,
+viz::CompositorRenderPassDrawQuad* AddRenderPassQuad(
+    viz::CompositorRenderPass* to_pass,
+    viz::CompositorRenderPass* contributing_pass) {
+  return AddRenderPassQuadInternal<viz::CompositorRenderPassDrawQuad>(
+      to_pass, contributing_pass);
+}
+viz::AggregatedRenderPassDrawQuad* AddRenderPassQuad(
+    viz::AggregatedRenderPass* to_pass,
+    viz::AggregatedRenderPass* contributing_pass) {
+  return AddRenderPassQuadInternal<viz::AggregatedRenderPassDrawQuad>(
+      to_pass, contributing_pass);
+}
+
+void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
+                       viz::AggregatedRenderPass* contributing_pass,
                        viz::ResourceId mask_resource_id,
                        gfx::Transform transform,
                        SkBlendMode blend_mode) {
   gfx::Rect output_rect = contributing_pass->output_rect;
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(transform, output_rect, output_rect, gfx::RRectF(),
-                       output_rect, false, false, 1, blend_mode, 0);
-  auto* quad = to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+  shared_state->SetAll(transform, output_rect, output_rect,
+                       gfx::MaskFilterInfo(), absl::nullopt, false, 1,
+                       blend_mode, 0);
+  auto* quad =
+      to_pass->CreateAndAppendDrawQuad<viz::AggregatedRenderPassDrawQuad>();
   gfx::Size arbitrary_nonzero_size(1, 1);
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
                mask_resource_id, gfx::RectF(output_rect),
@@ -141,9 +183,9 @@ void AddRenderPassQuad(viz::RenderPass* to_pass,
 }
 
 std::vector<viz::ResourceId> AddOneOfEveryQuadType(
-    viz::RenderPass* to_pass,
+    viz::CompositorRenderPass* to_pass,
     viz::ClientResourceProvider* resource_provider,
-    viz::RenderPassId child_pass_id) {
+    viz::CompositorRenderPassId child_pass_id) {
   gfx::Rect rect(0, 0, 100, 100);
   gfx::Rect visible_rect(0, 0, 100, 100);
   bool needs_blending = true;
@@ -176,8 +218,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
-                       false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
 
   auto* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
@@ -185,7 +227,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   if (child_pass_id) {
     auto* render_pass_quad =
-        to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+        to_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
     render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
                              resource5, gfx::RectF(rect), gfx::Size(73, 26),
                              gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
@@ -237,8 +279,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
-                       false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
 
   auto* tile_quad = to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
@@ -259,16 +301,15 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
           plane_resources[2], plane_resources[3]};
 }
 
-static void CollectResources(
-    std::vector<viz::ReturnedResource>* array,
-    const std::vector<viz::ReturnedResource>& returned) {}
+static void CollectResources(std::vector<viz::ReturnedResource>* array,
+                             std::vector<viz::ReturnedResource> returned) {}
 
 void AddOneOfEveryQuadTypeInDisplayResourceProvider(
-    viz::RenderPass* to_pass,
+    viz::AggregatedRenderPass* to_pass,
     viz::DisplayResourceProvider* resource_provider,
     viz::ClientResourceProvider* child_resource_provider,
     viz::ContextProvider* child_context_provider,
-    viz::RenderPassId child_pass_id,
+    viz::AggregatedRenderPassId child_pass_id,
     gpu::SyncToken* sync_token_for_mailbox_tebxture) {
   gfx::Rect rect(0, 0, 100, 100);
   gfx::Rect visible_rect(0, 0, 100, 100);
@@ -321,7 +362,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   std::vector<viz::ReturnedResource> returned_to_child;
   int child_id = resource_provider->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
+      base::BindRepeating(&CollectResources, &returned_to_child),
+      viz::SurfaceId());
 
   // Transfer resource to the parent.
   std::vector<viz::TransferableResource> list;
@@ -337,8 +379,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   // Before create DrawQuad in viz::DisplayResourceProvider's namespace, get the
   // mapped resource id first.
-  std::unordered_map<viz::ResourceId, viz::ResourceId> resource_map =
-      resource_provider->GetChildToParentMap(child_id);
+  std::unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>
+      resource_map = resource_provider->GetChildToParentMap(child_id);
   viz::ResourceId mapped_resource1 = resource_map[resource1];
   viz::ResourceId mapped_resource2 = resource_map[resource2];
   viz::ResourceId mapped_resource3 = resource_map[resource3];
@@ -353,15 +395,15 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
-                       false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
 
   viz::DebugBorderDrawQuad* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
   debug_border_quad->SetNew(shared_state, rect, visible_rect, SK_ColorRED, 1);
   if (child_pass_id) {
-    viz::RenderPassDrawQuad* render_pass_quad =
-        to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+    auto* render_pass_quad =
+        to_pass->CreateAndAppendDrawQuad<viz::AggregatedRenderPassDrawQuad>();
     render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
                              mapped_resource5, gfx::RectF(rect),
                              gfx::Size(73, 26), gfx::Vector2dF(), gfx::PointF(),
@@ -414,8 +456,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state2->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect,
-                        false, false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state2->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                        absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
 
   viz::TileDrawQuad* tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();

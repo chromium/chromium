@@ -5,13 +5,12 @@
 #include "extensions/renderer/bindings/api_last_error.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "gin/converter.h"
 #include "gin/public/context_holder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -90,8 +89,8 @@ TEST_F(APILastErrorTest, ReportIfUnchecked) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  base::Optional<std::string> console_error;
-  auto log_error = [](base::Optional<std::string>* console_error,
+  absl::optional<std::string> console_error;
+  auto log_error = [](absl::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
@@ -154,8 +153,8 @@ TEST_F(APILastErrorTest, ReportUncheckedError) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  base::Optional<std::string> console_error;
-  auto log_error = [](base::Optional<std::string>* console_error,
+  absl::optional<std::string> console_error;
+  auto log_error = [](absl::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
@@ -270,8 +269,8 @@ TEST_F(APILastErrorTest, SecondaryParent) {
     return primary_parent;
   };
 
-  base::Optional<std::string> console_error;
-  auto log_error = [](base::Optional<std::string>* console_error,
+  absl::optional<std::string> console_error;
+  auto log_error = [](absl::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 

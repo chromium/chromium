@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [ "cr_grid.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":cr_grid" ]
+}
+
+js_library("cr_grid") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}

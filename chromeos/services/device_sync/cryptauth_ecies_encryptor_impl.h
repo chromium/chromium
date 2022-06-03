@@ -8,9 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_ecies_encryptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace securemessage {
 class Header;
@@ -56,14 +55,20 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<CryptAuthEciesEncryptor> Create();
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthEciesEncryptor> BuildInstance();
+    virtual std::unique_ptr<CryptAuthEciesEncryptor> CreateInstance() = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthEciesEncryptorImpl(const CryptAuthEciesEncryptorImpl&) = delete;
+  CryptAuthEciesEncryptorImpl& operator=(const CryptAuthEciesEncryptorImpl&) =
+      delete;
 
   ~CryptAuthEciesEncryptorImpl() override;
 
@@ -75,7 +80,7 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
   void OnBatchDecryptionStarted() override;
 
   void OnSingleOutputFinished(const std::string& id,
-                              const base::Optional<std::string>& output);
+                              const absl::optional<std::string>& output);
   void OnSessionKeyPairGenerated(const std::string& session_public_key,
                                  const std::string& session_private_key);
   void OnDiffieHellmanEncryptionKeyDerived(
@@ -97,8 +102,6 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
   size_t remaining_batch_size_ = 0;
   IdToOutputMap id_to_output_map_;
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEciesEncryptorImpl);
 };
 
 }  // namespace device_sync

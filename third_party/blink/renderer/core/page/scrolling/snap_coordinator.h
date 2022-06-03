@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 
-#include "base/macros.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -35,8 +34,10 @@ class CORE_EXPORT SnapCoordinator final
     : public GarbageCollected<SnapCoordinator> {
  public:
   explicit SnapCoordinator();
+  SnapCoordinator(const SnapCoordinator&) = delete;
+  SnapCoordinator& operator=(const SnapCoordinator&) = delete;
   ~SnapCoordinator();
-  void Trace(blink::Visitor* visitor) {}
+  void Trace(Visitor* visitor) const;
 
   void AddSnapContainer(LayoutBox& snap_container);
   void RemoveSnapContainer(LayoutBox& snap_container);
@@ -49,15 +50,23 @@ class CORE_EXPORT SnapCoordinator final
   cc::SnapAreaData CalculateSnapAreaData(const LayoutBox& snap_area,
                                          const LayoutBox& snap_container);
 
-  // Called by LocalFrameView::PerformPostLayoutTasks(), so that the snap data
-  // are updated whenever a layout happens.
-  void UpdateAllSnapContainerData();
-  void UpdateSnapContainerData(LayoutBox&);
+  bool AnySnapContainerDataNeedsUpdate() const {
+    return any_snap_container_data_needs_update_;
+  }
+  void SetAnySnapContainerDataNeedsUpdate(bool needs_update) {
+    any_snap_container_data_needs_update_ = needs_update;
+  }
+  // Called by Document::PerformScrollSnappingTasks() whenever a style or layout
+  // change happens. This will update all snap container data that was affected
+  // by the style/layout change.
+  void UpdateAllSnapContainerDataIfNeeded();
 
   // Resnaps all snap containers to their current snap target, or to the
   // closest snap point if there is no target (e.g. on the initial layout or if
   // the previous snapped target was removed).
-  void ReSnapAllContainers();
+  void ResnapAllContainersIfNeeded();
+
+  void UpdateSnapContainerData(LayoutBox&);
 
 #ifndef NDEBUG
   void ShowSnapAreaMap();
@@ -68,13 +77,12 @@ class CORE_EXPORT SnapCoordinator final
  private:
   friend class SnapCoordinatorTest;
 
-  HashSet<LayoutBox*> snap_containers_;
+  HeapHashSet<Member<LayoutBox>> snap_containers_;
+  bool any_snap_container_data_needs_update_ = true;
 
   // Used for reporting to UMA when snapping on the initial layout affects the
   // initial scroll position.
-  bool did_first_resnap_all_containers_{false};
-
-  DISALLOW_COPY_AND_ASSIGN(SnapCoordinator);
+  bool did_first_resnap_all_containers_ = false;
 };
 
 }  // namespace blink

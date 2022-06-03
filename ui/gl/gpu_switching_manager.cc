@@ -29,4 +29,19 @@ void GpuSwitchingManager::NotifyGpuSwitched(
     observer.OnGpuSwitched(active_gpu_heuristic);
 }
 
+void GpuSwitchingManager::NotifyDisplayAdded() {
+  for (GpuSwitchingObserver& observer : observer_list_)
+    observer.OnDisplayAdded();
+}
+
+void GpuSwitchingManager::NotifyDisplayRemoved() {
+  for (GpuSwitchingObserver& observer : observer_list_)
+    observer.OnDisplayRemoved();
+}
+
+void GpuSwitchingManager::NotifyDisplayMetricsChanged() {
+  for (GpuSwitchingObserver& observer : observer_list_)
+    observer.OnDisplayMetricsChanged();
+}
+
 }  // namespace ui

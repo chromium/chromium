@@ -5,7 +5,7 @@
 #include "media/cast/net/rtp/rtp_parser.h"
 
 #include "base/big_endian.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 

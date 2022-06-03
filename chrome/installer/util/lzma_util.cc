@@ -4,6 +4,7 @@
 
 #include "chrome/installer/util/lzma_util.h"
 
+#include <ntstatus.h>
 #include <windows.h>
 
 #include <stddef.h>
@@ -15,8 +16,10 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/memory/free_deleter.h"
+#include "base/process/memory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern "C" {
 #include "third_party/lzma_sdk/7z.h"
@@ -27,6 +30,9 @@ extern "C" {
 
 namespace {
 
+// define NTSTATUS to avoid including winternl.h
+using NTSTATUS = LONG;
+
 SRes LzmaReadFile(HANDLE file, void* data, size_t* size) {
   if (*size == 0)
     return SZ_OK;
@@ -35,7 +41,7 @@ SRes LzmaReadFile(HANDLE file, void* data, size_t* size) {
   DWORD maxSize = *size;
   do {
     DWORD processedLoc = 0;
-    BOOL res = ReadFile(file, data, maxSize, &processedLoc, NULL);
+    BOOL res = ReadFile(file, data, maxSize, &processedLoc, nullptr);
     data = (void*)((unsigned char*)data + processedLoc);
     maxSize -= processedLoc;
     processedSize += processedLoc;
@@ -51,8 +57,8 @@ SRes LzmaReadFile(HANDLE file, void* data, size_t* size) {
   return SZ_OK;
 }
 
-SRes SzFileSeekImp(void* object, Int64* pos, ESzSeek origin) {
-  CFileInStream* s = (CFileInStream*)object;
+SRes SzFileSeekImp(const ISeekInStream* object, Int64* pos, ESzSeek origin) {
+  CFileInStream* s = CONTAINER_FROM_VTBL(object, CFileInStream, vt);
   LARGE_INTEGER value;
   value.LowPart = (DWORD)*pos;
   value.HighPart = (LONG)((UInt64)*pos >> 32);
@@ -78,8 +84,8 @@ SRes SzFileSeekImp(void* object, Int64* pos, ESzSeek origin) {
              : SZ_OK;
 }
 
-SRes SzFileReadImp(void* object, void* buffer, size_t* size) {
-  CFileInStream* s = (CFileInStream*)object;
+SRes SzFileReadImp(const ISeekInStream* object, void* buffer, size_t* size) {
+  CFileInStream* s = CONTAINER_FROM_VTBL(object, CFileInStream, vt);
   return LzmaReadFile(s->file.handle, buffer, size);
 }
 
@@ -111,9 +117,7 @@ DWORD FilterPageError(const base::MemoryMappedFile& mapped_file,
 
 UnPackStatus UnPackArchive(const base::FilePath& archive,
                            const base::FilePath& output_dir,
-                           base::FilePath* output_file,
-                           base::Optional<DWORD>* error_code,
-                           base::Optional<int32_t>* ntstatus) {
+                           base::FilePath* output_file) {
   VLOG(1) << "Opening archive " << archive.value();
   LzmaUtilImpl lzma_util;
   UnPackStatus status;
@@ -124,10 +128,15 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
     if ((status = lzma_util.UnPack(output_dir, output_file)) != UNPACK_NO_ERROR)
       PLOG(ERROR) << "Unable to uncompress archive: " << archive.value();
   }
-  if (error_code)
-    *error_code = lzma_util.GetErrorCode();
-  if (ntstatus)
-    *ntstatus = lzma_util.GetNTSTATUSCode();
+
+  if (status != UNPACK_NO_ERROR) {
+    absl::optional<DWORD> error_code = lzma_util.GetErrorCode();
+    if (error_code.value_or(ERROR_SUCCESS) == ERROR_DISK_FULL)
+      return UNPACK_DISK_FULL;
+    if (error_code.value_or(ERROR_SUCCESS) == ERROR_IO_DEVICE)
+      return UNPACK_IO_DEVICE_ERROR;
+  }
+
   return status;
 }
 
@@ -140,7 +149,8 @@ UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archivePath) {
 
   archive_file_.Initialize(archivePath, base::File::FLAG_OPEN |
                                             base::File::FLAG_READ |
-                                            base::File::FLAG_EXCLUSIVE_WRITE);
+                                            base::File::FLAG_EXCLUSIVE_WRITE |
+                                            base::File::FLAG_SHARE_DELETE);
   if (archive_file_.IsValid())
     return UNPACK_NO_ERROR;
   error_code_ = ::GetLastError();
@@ -150,7 +160,7 @@ UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archivePath) {
 }
 
 UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location) {
-  return UnPack(location, NULL);
+  return UnPack(location, nullptr);
 }
 
 UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
@@ -159,13 +169,20 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
   CFileInStream archiveStream;
   archiveStream.file.handle = archive_file_.GetPlatformFile();
-  archiveStream.s.Read = SzFileReadImp;
-  archiveStream.s.Seek = SzFileSeekImp;
+  archiveStream.vt.Read = SzFileReadImp;
+  archiveStream.vt.Seek = SzFileSeekImp;
 
-  CLookToRead lookStream;
-  LookToRead_CreateVTable(&lookStream, false);
-  LookToRead_Init(&lookStream);
-  lookStream.realStream = &archiveStream.s;
+  CLookToRead2 lookStream;
+  LookToRead2_CreateVTable(&lookStream, /*lookahead=*/False);
+  const size_t kStreamBufferSize = 1 << 14;
+  if (!base::UncheckedMalloc(kStreamBufferSize,
+                             reinterpret_cast<void**>(&lookStream.buf))) {
+    return UNPACK_ALLOCATE_ERROR;
+  }
+  std::unique_ptr<uint8_t, base::FreeDeleter> stream_buffer(lookStream.buf);
+  lookStream.bufSize = kStreamBufferSize;
+  LookToRead2_Init(&lookStream);
+  lookStream.realStream = &archiveStream.vt;
 
   CrcGenerateTable();
 
@@ -174,7 +191,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
   ISzAlloc allocImp = {SzAlloc, SzFree};
   ISzAlloc allocTempImp = {SzAllocTemp, SzFreeTemp};
-  SRes sz_res = SzArEx_Open(&db, &lookStream.s, &allocImp, &allocTempImp);
+  SRes sz_res = SzArEx_Open(&db, &lookStream.vt, &allocImp, &allocTempImp);
   if (sz_res != SZ_OK) {
     LOG(ERROR) << "Error returned by SzArchiveOpen: " << sz_res;
     auto error_code = ::GetLastError();
@@ -190,7 +207,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
   size_t last_folder_index = -1;
   // A mapping of either the target file (if the file exactly fits within a
   // folder) or a temporary file into which a folder is decompressed.
-  base::Optional<base::MemoryMappedFile> mapped_file;
+  absl::optional<base::MemoryMappedFile> mapped_file;
   for (size_t file_index = 0; file_index < db.NumFiles; ++file_index) {
     size_t file_name_length = SzArEx_GetFileNameUtf16(&db, file_index, nullptr);
     if (file_name_length < 1) {
@@ -203,7 +220,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
         SzArEx_GetFileNameUtf16(&db, file_index, file_name.data());
     DCHECK_EQ(file_name_length, file_name.size());
 
-    // |file_name| is NULL-terminated.
+    // |file_name| has a string terminator.
     base::FilePath file_path = location.Append(
         base::FilePath::StringType(file_name.begin(), --file_name.end()));
 
@@ -280,11 +297,13 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
                   base::File::FLAG_DELETE_ON_CLOSE |
                   base::File::FLAG_SHARE_DELETE);
           mapped_file_ok = mapped_file->Initialize(
-              std::move(temp_file), {0, folder_unpack_size},
+              std::move(temp_file),
+              {0, static_cast<size_t>(folder_unpack_size)},
               base::MemoryMappedFile::READ_WRITE_EXTEND);
         } else {
           mapped_file_ok = mapped_file->Initialize(
-              target_file.Duplicate(), {0, folder_unpack_size},
+              target_file.Duplicate(),
+              {0, static_cast<size_t>(folder_unpack_size)},
               base::MemoryMappedFile::READ_WRITE_EXTEND);
         }
         if (!mapped_file_ok) {
@@ -295,9 +314,9 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
         int32_t ntstatus = 0;  // STATUS_SUCCESS
         ::SetLastError(ERROR_SUCCESS);
         __try {
-          SRes sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.s,
-                                          db.dataPos, mapped_file->data(),
-                                          folder_unpack_size, &allocTempImp);
+          sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.vt,
+                                     db.dataPos, mapped_file->data(),
+                                     folder_unpack_size, &allocTempImp);
           if (sz_res != SZ_OK) {
             LOG(ERROR) << "Error returned by SzExtract: " << sz_res;
             auto error_code = ::GetLastError();
@@ -305,14 +324,31 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
               error_code_ = error_code;
             return UNPACK_EXTRACT_ERROR;
           }
-        } __except(FilterPageError(*mapped_file, GetExceptionCode(),
+        } __except (FilterPageError(*mapped_file, GetExceptionCode(),
                                     GetExceptionInformation(), &ntstatus)) {
           LOG(ERROR)
               << "EXCEPTION_IN_PAGE_ERROR while accessing mapped memory; "
                  "NTSTATUS = "
               << ntstatus;
-          ntstatus_ = ntstatus;
-          return UNPACK_EXTRACT_EXCEPTION;
+          // Return IO_DEVICE_ERROR for all known error except DISK_FULL,
+          // IN_PAGE_ERROR and ACCESS_DENIED.
+          switch (ntstatus) {
+            case STATUS_DEVICE_DATA_ERROR:
+            case STATUS_DEVICE_HARDWARE_ERROR:
+            case STATUS_DEVICE_NOT_CONNECTED:
+            case STATUS_INVALID_DEVICE_REQUEST:
+            case STATUS_INVALID_LEVEL:
+            case STATUS_IO_DEVICE_ERROR:
+            case STATUS_IO_TIMEOUT:
+            case STATUS_NO_SUCH_DEVICE:
+              return UNPACK_IO_DEVICE_ERROR;
+            case STATUS_DISK_FULL:
+              return UNPACK_DISK_FULL;
+            default:
+              // This error indicates an unexpected error. Spikes in this are
+              // worth investigation.
+              return UNPACK_EXTRACT_EXCEPTION;
+          }
         }
       }
 
@@ -342,9 +378,21 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
           total_written += written;
         }
       } else {
+        // Modified pages are not written to disk until they're evicted from the
+        // working set. Explicitly kick off the write to disk now
+        // (asynchronously) to improve the odds that the file's contents are
+        // on-disk when another process (such as chrome.exe) would like to use
+        // them.
+        ::FlushViewOfFile(mapped_file->data(), 0);
         // Unmap the target file from the process's address space.
         mapped_file.reset();
         last_folder_index = -1;
+        // Flush to avoid odd behavior, such as the bug in Windows 7 through
+        // Windows 10 1809 for PE files described in
+        // https://randomascii.wordpress.com/2018/02/25/compiler-bug-linker-bug-windows-kernel-bug/.
+        // We've also observed oddly empty files on other Windows versions, so
+        // this is unconditional.
+        target_file.Flush();
       }
     }
 
@@ -365,8 +413,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
 void LzmaUtilImpl::CloseArchive() {
   archive_file_.Close();
-  error_code_ = base::nullopt;
-  ntstatus_ = base::nullopt;
+  error_code_ = absl::nullopt;
 }
 
 bool LzmaUtilImpl::CreateDirectory(const base::FilePath& dir) {

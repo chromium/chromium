@@ -29,7 +29,7 @@ void SetCrashKeysFromCommandLine(const base::CommandLine& command_line);
 
 // Sets a crash key recording the version of the product which was present
 // before the installer was run.
-void SetCurrentVersionCrashKey(const base::Version* current_version);
+void SetCurrentVersionCrashKey(const base::Version& current_version);
 
 }  // namespace installer
 

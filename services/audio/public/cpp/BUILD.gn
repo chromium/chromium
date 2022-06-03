@@ -29,6 +29,7 @@ source_set("cpp") {
   public_deps = [
     "//base",
     "//media",
+    "//media/mojo/common",
     "//services/audio/public/mojom",
   ]
 }
@@ -43,9 +44,7 @@ source_set("test_support") {
     "fake_system_info.h",
   ]
 
-  deps = [
-    "//testing/gmock",
-  ]
+  deps = [ "//testing/gmock" ]
 
   public_deps = [
     "//base",

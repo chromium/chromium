@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -19,7 +18,7 @@
 class PrefRegistrySimple;
 
 namespace base {
-class DictionaryValue;
+class Value;
 class FilePath;
 class Version;
 }
@@ -34,48 +33,52 @@ class ComponentUpdateService;
 
 constexpr char kSwReporterComponentId[] = "gkmgaooipdjhmangpemjhigmamcehddo";
 
-// These MUST match the values for SoftwareReporterExperimentError in
-// histograms.xml. Exposed for testing.
-enum SoftwareReporterExperimentError {
-  SW_REPORTER_EXPERIMENT_ERROR_BAD_TAG = 0,
-  SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS = 1,
-  SW_REPORTER_EXPERIMENT_ERROR_MISSING_PARAMS = 2,
-  SW_REPORTER_EXPERIMENT_ERROR_MAX,
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "SoftwareReporterConfigurationError" in
+// src/tools/metrics/histograms/enums.xml.
+enum SoftwareReporterConfigurationError {
+  kBadTag = 0,
+  kBadParams = 1,
+  kMissingParams = 2,
+  kMaxValue = kMissingParams
 };
 
 // Callback for running the software reporter after it is downloaded.
-using OnComponentReadyCallback = base::Callback<void(
+using OnComponentReadyCallback = base::RepeatingCallback<void(
     safe_browsing::SwReporterInvocationSequence&& invocations)>;
 
 class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit SwReporterInstallerPolicy(const OnComponentReadyCallback& callback);
+  explicit SwReporterInstallerPolicy(OnComponentReadyCallback callback);
+
+  SwReporterInstallerPolicy(const SwReporterInstallerPolicy&) = delete;
+  SwReporterInstallerPolicy& operator=(const SwReporterInstallerPolicy&) =
+      delete;
+
   ~SwReporterInstallerPolicy() override;
 
   // ComponentInstallerPolicy implementation.
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
  private:
   friend class SwReporterInstallerTest;
 
   OnComponentReadyCallback on_component_ready_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwReporterInstallerPolicy);
 };
 
 // Forces an update of the reporter component.
@@ -88,6 +91,11 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
  public:
   SwReporterOnDemandFetcher(ComponentUpdateService* cus,
                             base::OnceClosure on_error_callback);
+
+  SwReporterOnDemandFetcher(const SwReporterOnDemandFetcher&) = delete;
+  SwReporterOnDemandFetcher& operator=(const SwReporterOnDemandFetcher&) =
+      delete;
+
   ~SwReporterOnDemandFetcher() override;
 
   // ServiceObserver implementation.
@@ -97,8 +105,6 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
   // Will outlive this object.
   ComponentUpdateService* cus_;
   base::OnceClosure on_error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwReporterOnDemandFetcher);
 };
 
 // Call once during startup to make the component update service aware of the

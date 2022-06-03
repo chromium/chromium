@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -19,6 +20,16 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+namespace {
+
+void LogUserNightLightEvent(const bool enabled) {
+  auto* logger = ml::UserSettingsEventLogger::Get();
+  if (logger) {
+    logger->LogNightLightUkmEvent(enabled);
+  }
+}
+
+}  // namespace
 
 NightLightFeaturePodController::NightLightFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
@@ -44,6 +55,7 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
 
 void NightLightFeaturePodController::OnIconPressed() {
   Shell::Get()->night_light_controller()->Toggle();
+  LogUserNightLightEvent(Shell::Get()->night_light_controller()->GetEnabled());
   UpdateButton();
 
   if (Shell::Get()->night_light_controller()->GetEnabled()) {
@@ -75,7 +87,7 @@ void NightLightFeaturePodController::UpdateButton() {
       is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE));
 
-  base::string16 tooltip_state = l10n_util::GetStringUTF16(
+  std::u16string tooltip_state = l10n_util::GetStringUTF16(
       is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(

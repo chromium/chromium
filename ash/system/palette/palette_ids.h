@@ -5,10 +5,6 @@
 #ifndef ASH_SYSTEM_PALETTE_PALETTE_IDS_H_
 #define ASH_SYSTEM_PALETTE_PALETTE_IDS_H_
 
-#include <string>
-
-#include "ash/ash_export.h"
-
 namespace ash {
 
 // Palette tools are grouped into different categories. Each tool corresponds to
@@ -21,11 +17,10 @@ enum class PaletteGroup { ACTION, MODE };
 enum class PaletteToolId {
   NONE,
   CREATE_NOTE,
-  CAPTURE_REGION,
-  CAPTURE_SCREEN,
   LASER_POINTER,
   MAGNIFY,
   METALAYER,
+  ENTER_CAPTURE_MODE,
 };
 
 // Usage of each pen palette option. This enum is used to back an UMA histogram
@@ -40,6 +35,7 @@ enum PaletteTrayOptions {
   PALETTE_MAGNIFY,
   PALETTE_LASER_POINTER,
   PALETTE_METALAYER,
+  PALETTE_ENTER_CAPTURE_MODE,
   PALETTE_OPTIONS_COUNT
 };
 
@@ -59,17 +55,13 @@ enum class PaletteInvocationMethod {
   SHORTCUT,
 };
 
-// Helper functions that convert PaletteToolIds and PaletteGroups to strings.
-ASH_EXPORT std::string PaletteToolIdToString(PaletteToolId tool_id);
-ASH_EXPORT std::string PaletteGroupToString(PaletteGroup group);
-
 // Helper functions that convert PaletteToolIds to PaletteTrayOptions.
-ASH_EXPORT PaletteTrayOptions
-PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id);
+PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id);
 
 // Helper functions that convert PaletteToolIds to PaletteModeCancelType.
-ASH_EXPORT PaletteModeCancelType
-PaletteToolIdToPaletteModeCancelType(PaletteToolId tool_id, bool is_switched);
+PaletteModeCancelType PaletteToolIdToPaletteModeCancelType(
+    PaletteToolId tool_id,
+    bool is_switched);
 
 }  // namespace ash
 

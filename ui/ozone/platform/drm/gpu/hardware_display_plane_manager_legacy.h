@@ -6,22 +6,32 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_HARDWARE_DISPLAY_PLANE_MANAGER_LEGACY_H_
 
 #include <stdint.h>
-#include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
+
+namespace gfx {
+struct GpuFenceHandle;
+}  // namespace gfx
 
 namespace ui {
 
 class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
  public:
-  HardwareDisplayPlaneManagerLegacy(DrmDevice* device);
+  explicit HardwareDisplayPlaneManagerLegacy(DrmDevice* device);
+
+  HardwareDisplayPlaneManagerLegacy(const HardwareDisplayPlaneManagerLegacy&) =
+      delete;
+  HardwareDisplayPlaneManagerLegacy& operator=(
+      const HardwareDisplayPlaneManagerLegacy&) = delete;
+
   ~HardwareDisplayPlaneManagerLegacy() override;
 
   // HardwareDisplayPlaneManager:
+  bool Commit(CommitRequest commit_request, uint32_t flags) override;
+
   bool Commit(HardwareDisplayPlaneList* plane_list,
               scoped_refptr<PageFlipRequest> page_flip_request,
-              std::unique_ptr<gfx::GpuFence>* out_fence) override;
+              gfx::GpuFenceHandle* release_fence) override;
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
   bool SetColorCorrectionOnAllCrtcPlanes(
@@ -41,16 +51,12 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
                     HardwareDisplayPlane* hw_plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id,
-                    const gfx::Rect& src_rect,
-                    CrtcController* crtc) override;
+                    const gfx::Rect& src_rect) override;
   bool IsCompatible(HardwareDisplayPlane* plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_index) const override;
   bool CommitColorMatrix(const CrtcProperties& crtc_props) override;
   bool CommitGammaCorrection(const CrtcProperties& crtc_props) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManagerLegacy);
 };
 
 }  // namespace ui

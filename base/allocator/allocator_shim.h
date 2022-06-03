@@ -6,9 +6,17 @@
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#endif
 
 namespace base {
 namespace allocator {
@@ -49,6 +57,9 @@ struct AllocatorDispatch {
   using AllocFn = void*(const AllocatorDispatch* self,
                         size_t size,
                         void* context);
+  using AllocUncheckedFn = void*(const AllocatorDispatch* self,
+                                 size_t size,
+                                 void* context);
   using AllocZeroInitializedFn = void*(const AllocatorDispatch* self,
                                        size_t n,
                                        size_t size,
@@ -64,10 +75,8 @@ struct AllocatorDispatch {
   using FreeFn = void(const AllocatorDispatch* self,
                       void* address,
                       void* context);
-  // Returns the best available estimate for the actual amount of memory
-  // consumed by the allocation |address|. If possible, this should include
-  // heap overhead or at least a decent estimate of the full cost of the
-  // allocation. If no good estimate is possible, returns zero.
+  // Returns the allocated size of user data (not including heap overhead).
+  // Can be larger than the requested size.
   using GetSizeEstimateFn = size_t(const AllocatorDispatch* self,
                                    void* address,
                                    void* context);
@@ -98,6 +107,7 @@ struct AllocatorDispatch {
                              void* context);
 
   AllocFn* const alloc_function;
+  AllocUncheckedFn* const alloc_unchecked_function;
   AllocZeroInitializedFn* const alloc_zero_initialized_function;
   AllocAlignedFn* const alloc_aligned_function;
   ReallocFn* const realloc_function;
@@ -141,10 +151,39 @@ BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 // in malloc(), which we really don't want.
 BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
-#if defined(OS_MACOSX)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_WIN)
+// Configures the allocator for the caller's allocation domain. Allocations that
+// take place prior to this configuration step will succeed, but will not
+// benefit from its one-time mitigations. As such, this function must be called
+// as early as possible during startup.
+BASE_EXPORT void ConfigurePartitionAlloc();
+#endif  // defined(OS_WIN)
+
+#if defined(OS_APPLE)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void InitializeDefaultAllocatorPartitionRoot();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // On macOS, the allocator shim needs to be turned on during runtime.
 BASE_EXPORT void InitializeAllocatorShim();
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
+
+BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
+
+using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
+using ForceSplitPartitions =
+    base::StrongAlias<class ForceSplitPartitionsTag, bool>;
+
+BASE_EXPORT void ConfigurePartitions(
+    EnableBrp enable_brp,
+    ForceSplitPartitions force_split_partitions);
+
+#if defined(PA_ALLOW_PCSCAN)
+BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);
+#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator
 }  // namespace base

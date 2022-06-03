@@ -25,25 +25,27 @@ NetLogEntry::NetLogEntry(NetLogEntry&& entry) = default;
 NetLogEntry& NetLogEntry::operator=(NetLogEntry&& entry) = default;
 
 base::Value NetLogEntry::ToValue() const {
-  base::DictionaryValue entry_dict;
+  base::Value entry_dict(base::Value::Type::DICTIONARY);
 
-  entry_dict.SetString("time", NetLog::TickCountToString(time));
+  entry_dict.SetStringKey("time", NetLog::TickCountToString(time));
 
   // Set the entry source.
-  base::DictionaryValue source_dict;
-  source_dict.SetInteger("id", source.id);
-  source_dict.SetInteger("type", static_cast<int>(source.type));
+  base::Value source_dict(base::Value::Type::DICTIONARY);
+  source_dict.SetIntKey("id", source.id);
+  source_dict.SetIntKey("type", static_cast<int>(source.type));
+  source_dict.SetStringKey("start_time",
+                           NetLog::TickCountToString(source.start_time));
   entry_dict.SetKey("source", std::move(source_dict));
 
   // Set the event info.
-  entry_dict.SetInteger("type", static_cast<int>(type));
-  entry_dict.SetInteger("phase", static_cast<int>(phase));
+  entry_dict.SetIntKey("type", static_cast<int>(type));
+  entry_dict.SetIntKey("phase", static_cast<int>(phase));
 
   // Set the event-specific parameters.
   if (!params.is_none())
     entry_dict.SetKey("params", params.Clone());
 
-  return std::move(entry_dict);
+  return entry_dict;
 }
 
 NetLogEntry NetLogEntry::Clone() const {

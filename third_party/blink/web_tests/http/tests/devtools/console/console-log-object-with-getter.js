@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps object values defined by getters and allows to expand it.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     var obj = {}
@@ -34,8 +34,8 @@
   `);
 
   TestRunner.evaluateInPage('logObject()', step2);
-  function step2() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step2() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     step3();
   }
   function step3() {
@@ -44,8 +44,8 @@
   function step4() {
     ConsoleTestRunner.expandGettersInConsoleMessages(step5);
   }
-  function step5() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step5() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

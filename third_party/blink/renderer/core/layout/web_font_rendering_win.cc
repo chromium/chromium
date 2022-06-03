@@ -14,24 +14,29 @@ void WebFontRendering::SetSkiaFontManager(sk_sp<SkFontMgr> font_mgr) {
 }
 
 // static
+void WebFontRendering::SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
+  FontCache::SetFontPrewarmer(prewarmer);
+}
+
+// static
 void WebFontRendering::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
   FontCache::AddSideloadedFontForTesting(std::move(typeface));
 }
 
 // static
-void WebFontRendering::SetMenuFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetMenuFontMetrics(const WebString& family_name,
                                           int32_t font_height) {
   FontCache::SetMenuFontMetrics(family_name, font_height);
 }
 
 // static
-void WebFontRendering::SetSmallCaptionFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetSmallCaptionFontMetrics(const WebString& family_name,
                                                   int32_t font_height) {
   FontCache::SetSmallCaptionFontMetrics(family_name, font_height);
 }
 
 // static
-void WebFontRendering::SetStatusFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetStatusFontMetrics(const WebString& family_name,
                                             int32_t font_height) {
   FontCache::SetStatusFontMetrics(family_name, font_height);
 }

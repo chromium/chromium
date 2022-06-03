@@ -5,9 +5,6 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_ICON_ANIMATION_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_ICON_ANIMATION_H_
 
-#include <set>
-#include <string>
-
 #include "ash/ash_export.h"
 #include "base/observer_list.h"
 #include "ui/gfx/animation/animation_delegate.h"

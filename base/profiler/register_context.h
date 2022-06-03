@@ -15,9 +15,9 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 #include <mach/machine/thread_status.h>
-#elif defined(OS_ANDROID) || defined(OS_LINUX)
+#elif defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <sys/ucontext.h>
 #endif
 
@@ -69,8 +69,9 @@ inline uintptr_t& RegisterContextInstructionPointer(::CONTEXT* context) {
 #endif
 }
 
-#elif defined(OS_MACOSX) && !defined(OS_IOS)  // #if defined(OS_WIN)
+#elif defined(OS_MAC) || defined(OS_IOS)  // #if defined(OS_WIN)
 
+#if defined(ARCH_CPU_X86_64)
 using RegisterContext = x86_thread_state64_t;
 
 inline uintptr_t& RegisterContextStackPointer(x86_thread_state64_t* context) {
@@ -86,7 +87,50 @@ inline uintptr_t& RegisterContextInstructionPointer(
   return AsUintPtr(&context->__rip);
 }
 
-#elif defined(OS_ANDROID) || defined(OS_LINUX)  // #if defined(OS_WIN)
+#elif defined(ARCH_CPU_ARM64)  // defined(ARCH_CPU_X86_64)
+using RegisterContext = arm_thread_state64_t;
+
+// TODO(thakis): Have getter/setter functions instead of returning a ref to
+// prepare for arm64e. See __DARWIN_OPAQUE_ARM_THREAD_STATE6 in
+// mach/arm/_structs.h
+inline uintptr_t& RegisterContextStackPointer(arm_thread_state64_t* context) {
+  return AsUintPtr(&context->__sp);
+}
+
+inline uintptr_t& RegisterContextFramePointer(arm_thread_state64_t* context) {
+  return AsUintPtr(&context->__fp);
+}
+
+inline uintptr_t& RegisterContextInstructionPointer(
+    arm_thread_state64_t* context) {
+  return AsUintPtr(&context->__pc);
+}
+
+#else  // defined(ARCH_CPU_ARM64)
+
+// Placeholders for other cpus.
+struct RegisterContext {
+  uintptr_t stack_pointer;
+  uintptr_t frame_pointer;
+  uintptr_t instruction_pointer;
+};
+
+inline uintptr_t& RegisterContextStackPointer(RegisterContext* context) {
+  return context->stack_pointer;
+}
+
+inline uintptr_t& RegisterContextFramePointer(RegisterContext* context) {
+  return context->frame_pointer;
+}
+
+inline uintptr_t& RegisterContextInstructionPointer(RegisterContext* context) {
+  return context->instruction_pointer;
+}
+
+#endif
+
+#elif defined(OS_ANDROID) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)  // #if defined(OS_WIN)
 
 using RegisterContext = mcontext_t;
 
@@ -101,7 +145,7 @@ inline uintptr_t& RegisterContextFramePointer(mcontext_t* context) {
 }
 
 inline uintptr_t& RegisterContextInstructionPointer(mcontext_t* context) {
-  return AsUintPtr(&context->arm_ip);
+  return AsUintPtr(&context->arm_pc);
 }
 
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)

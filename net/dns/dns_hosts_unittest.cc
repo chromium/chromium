@@ -4,7 +4,7 @@
 
 #include "net/dns/dns_hosts.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +33,7 @@ void PopulateExpectedHosts(const ExpectedHostsEntry* entries,
 
 TEST(DnsHostsTest, ParseHosts) {
   const std::string kContents =
-      "127.0.0.1       localhost\tlocalhost.localdomain # standard\n"
+      "127.0.0.1       localhost # standard\n"
       "\n"
       "1.0.0.1 localhost # ignored, first hit above\n"
       "fe00::x example company # ignored, malformed IPv6\n"
@@ -56,7 +56,6 @@ TEST(DnsHostsTest, ParseHosts) {
 
   const ExpectedHostsEntry kEntries[] = {
       {"localhost", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
-      {"localhost.localdomain", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
       {"company", ADDRESS_FAMILY_IPV4, "1.0.0.1"},
       {"localhost", ADDRESS_FAMILY_IPV6, "::1"},
       {"ip6-localhost", ADDRESS_FAMILY_IPV6, "::1"},
@@ -112,7 +111,7 @@ TEST(DnsHostsTest, ParseHosts_CommaModeByPlatform) {
   DnsHosts actual_hosts;
   ParseHosts(kContents, &actual_hosts);
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   const ExpectedHostsEntry kEntries[] = {
     { "comma1", ADDRESS_FAMILY_IPV4, "127.0.0.1" },
     { "comma2", ADDRESS_FAMILY_IPV4, "127.0.0.1" },

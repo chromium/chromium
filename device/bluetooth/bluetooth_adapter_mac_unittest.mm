@@ -10,13 +10,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
@@ -166,7 +165,7 @@ class BluetoothAdapterMacTest : public testing::Test {
   NSDictionary* AdvertisementData() {
     NSDictionary* advertisement_data = @{
       CBAdvertisementDataIsConnectable : @(YES),
-      CBAdvertisementDataServiceDataKey : [NSDictionary dictionary],
+      CBAdvertisementDataServiceDataKey : @{},
     };
     return [advertisement_data retain];
   }
@@ -279,11 +278,11 @@ TEST_F(BluetoothAdapterMacTest, AddDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
-      base::BindRepeating(
-          &BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
-          base::Unretained(this)),
-      base::BindRepeating(&BluetoothAdapterMacTest::ErrorCallback,
-                          base::Unretained(this)));
+      /*client_name=*/std::string(),
+      base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
+                     base::Unretained(this)));
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
   ui_task_runner_->RunPendingTasks();
   EXPECT_EQ(1, callback_count_);
@@ -311,11 +310,11 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
   discovery_filter->AddDeviceFilter(device_filter);
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
-      base::BindRepeating(
-          &BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
-          base::Unretained(this)),
-      base::BindRepeating(&BluetoothAdapterMacTest::ErrorCallback,
-                          base::Unretained(this)));
+      /*client_name=*/std::string(),
+      base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
+                     base::Unretained(this)));
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
   ui_task_runner_->RunPendingTasks();
   EXPECT_EQ(1, callback_count_);
@@ -328,11 +327,11 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter2),
-      base::BindRepeating(
-          &BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
-          base::Unretained(this)),
-      base::BindRepeating(&BluetoothAdapterMacTest::ErrorCallback,
-                          base::Unretained(this)));
+      /*client_name=*/std::string(),
+      base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
+                     base::Unretained(this)));
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
   ui_task_runner_->RunPendingTasks();
   EXPECT_EQ(2, [mock_central_manager_ scanForPeripheralsCallCount]);
@@ -350,11 +349,11 @@ TEST_F(BluetoothAdapterMacTest, RemoveDiscoverySessionWithLowEnergyFilter) {
       new BluetoothDiscoveryFilter(BLUETOOTH_TRANSPORT_LE));
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
-      base::BindRepeating(
-          &BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
-          base::Unretained(this)),
-      base::BindRepeating(&BluetoothAdapterMacTest::ErrorCallback,
-                          base::Unretained(this)));
+      /*client_name=*/std::string(),
+      base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
+                     base::Unretained(this)));
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
   ui_task_runner_->RunPendingTasks();
   EXPECT_EQ(1, callback_count_);
@@ -363,10 +362,10 @@ TEST_F(BluetoothAdapterMacTest, RemoveDiscoverySessionWithLowEnergyFilter) {
 
   EXPECT_EQ(0, [mock_central_manager_ stopScanCallCount]);
   active_sessions_[0]->Stop(
-      base::BindRepeating(&BluetoothAdapterMacTest::Callback,
-                          base::Unretained(this)),
-      base::BindRepeating(&BluetoothAdapterMacTest::ErrorCallback,
-                          base::Unretained(this)));
+      base::BindOnce(&BluetoothAdapterMacTest::Callback,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
+                     base::Unretained(this)));
   EXPECT_EQ(2, callback_count_);
   EXPECT_EQ(0, error_callback_count_);
   EXPECT_EQ(0, NumDiscoverySessions());

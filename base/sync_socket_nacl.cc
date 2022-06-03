@@ -10,58 +10,26 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace base {
-
-const SyncSocket::Handle SyncSocket::kInvalidHandle = -1;
-
-SyncSocket::SyncSocket() : handle_(kInvalidHandle) {
-}
-
-SyncSocket::~SyncSocket() {
-  Close();
-}
 
 // static
 bool SyncSocket::CreatePair(SyncSocket* socket_a, SyncSocket* socket_b) {
   return false;
 }
 
-// static
-SyncSocket::Handle SyncSocket::UnwrapHandle(
-    const SyncSocket::TransitDescriptor& descriptor) {
-  // TODO(xians): Still unclear how NaCl uses SyncSocket.
-  // See http://crbug.com/409656
-  NOTIMPLEMENTED();
-  return SyncSocket::kInvalidHandle;
-}
-
-bool SyncSocket::PrepareTransitDescriptor(
-    ProcessHandle peer_process_handle,
-    SyncSocket::TransitDescriptor* descriptor) {
-  // TODO(xians): Still unclear how NaCl uses SyncSocket.
-  // See http://crbug.com/409656
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool SyncSocket::Close() {
-  if (handle_ != kInvalidHandle) {
-    if (close(handle_) < 0)
-      DPLOG(ERROR) << "close";
-    handle_ = kInvalidHandle;
-  }
-  return true;
+void SyncSocket::Close() {
+  handle_.reset();
 }
 
 size_t SyncSocket::Send(const void* buffer, size_t length) {
-  const ssize_t bytes_written = write(handle_, buffer, length);
+  const ssize_t bytes_written = write(handle(), buffer, length);
   return bytes_written > 0 ? bytes_written : 0;
 }
 
 size_t SyncSocket::Receive(void* buffer, size_t length) {
-  const ssize_t bytes_read = read(handle_, buffer, length);
+  const ssize_t bytes_read = read(handle(), buffer, length);
   return bytes_read > 0 ? bytes_read : 0;
 }
 
@@ -75,17 +43,16 @@ size_t SyncSocket::Peek() {
   return 0;
 }
 
+bool SyncSocket::IsValid() const {
+  return handle_.is_valid();
+}
+
+SyncSocket::Handle SyncSocket::handle() const {
+  return handle_.get();
+}
+
 SyncSocket::Handle SyncSocket::Release() {
-  Handle r = handle_;
-  handle_ = kInvalidHandle;
-  return r;
-}
-
-CancelableSyncSocket::CancelableSyncSocket() {
-}
-
-CancelableSyncSocket::CancelableSyncSocket(Handle handle)
-    : SyncSocket(handle) {
+  return handle_.release();
 }
 
 size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
@@ -93,7 +60,8 @@ size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
 }
 
 bool CancelableSyncSocket::Shutdown() {
-  return SyncSocket::Close();
+  Close();
+  return true;
 }
 
 // static

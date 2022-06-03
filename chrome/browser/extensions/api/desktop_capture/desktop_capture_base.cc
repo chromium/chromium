@@ -10,9 +10,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -68,15 +71,15 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::Cancel() {
   // If this picker dialog is open, this will close it.
   picker_controller_.reset();
 
-  SetResultList(Create(std::string(), Options()));
-  SendResponse(true);
+  Respond(ArgumentList(Create(std::string(), Options())));
 }
 
-bool DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
+ExtensionFunction::ResponseAction
+DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::vector<api::desktop_capture::DesktopCaptureSourceType>& sources,
     content::WebContents* web_contents,
     const GURL& origin,
-    const base::string16 target_name) {
+    const std::u16string target_name) {
   DCHECK(!picker_controller_);
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
@@ -92,23 +95,22 @@ bool DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   }
 
   bool request_audio = false;
-  std::vector<content::DesktopMediaID::Type> media_types;
+  std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_NONE: {
-        error_ = kInvalidSourceNameError;
-        return false;
+        return RespondNow(Error(kInvalidSourceNameError));
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_SCREEN: {
-        media_types.push_back(content::DesktopMediaID::TYPE_SCREEN);
+        media_types.push_back(DesktopMediaList::Type::kScreen);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_WINDOW: {
-        media_types.push_back(content::DesktopMediaID::TYPE_WINDOW);
+        media_types.push_back(DesktopMediaList::Type::kWindow);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_TAB: {
-        media_types.push_back(content::DesktopMediaID::TYPE_WEB_CONTENTS);
+        media_types.push_back(DesktopMediaList::Type::kWebContents);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_AUDIO: {
@@ -119,6 +121,21 @@ bool DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         break;
       }
     }
+  }
+
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(origin, web_contents);
+
+  capture_policy::FilterMediaList(media_types, capture_level);
+  DesktopMediaList::WebContentsFilter includable_web_contents_filter =
+      capture_policy::GetIncludableWebContentsFilter(origin, capture_level);
+
+  // Avoid offering window-capture as a separate source, since PipeWire's
+  // content-picker will offer both screen and window sources.
+  // See crbug.com/1157006.
+  if (content::desktop_capture::CanUsePipeWire() &&
+      base::Contains(media_types, DesktopMediaList::Type::kScreen)) {
+    base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
@@ -133,15 +150,17 @@ bool DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.request_audio = request_audio;
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
+  picker_params.restricted_by_policy =
+      (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_controller_->Show(picker_params, std::move(media_types),
-                           std::move(callback));
-  return true;
+                           includable_web_contents_filter, std::move(callback));
+  return RespondLater();
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunctionBase::GetCallerDisplayName()
     const {
-  if (extension()->location() == Manifest::COMPONENT ||
-      extension()->location() == Manifest::EXTERNAL_COMPONENT) {
+  if (extension()->location() == mojom::ManifestLocation::kComponent ||
+      extension()->location() == mojom::ManifestLocation::kExternalComponent) {
     return l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
   } else {
     return extension()->name();
@@ -156,15 +175,13 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults(
   picker_controller_.reset();
 
   if (!err.empty()) {
-    SetError(err);
-    SendResponse(false);
+    Respond(Error(err));
     return;
   }
 
   if (source.is_null()) {
     DLOG(ERROR) << "Sending empty results.";
-    SetResultList(Create(std::string(), Options()));
-    SendResponse(true);
+    Respond(ArgumentList(Create(std::string(), Options())));
     return;
   }
 
@@ -184,8 +201,7 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults(
 
   Options options;
   options.can_request_audio_track = source.audio_share;
-  results_ = Create(result, options);
-  SendResponse(true);
+  Respond(ArgumentList(Create(result, options)));
 }
 
 DesktopCaptureRequestsRegistry::RequestId::RequestId(int process_id,
@@ -206,8 +222,9 @@ DesktopCaptureCancelChooseDesktopMediaFunctionBase::
 
 ExtensionFunction::ResponseAction
 DesktopCaptureCancelChooseDesktopMediaFunctionBase::Run() {
-  int request_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_int());
+  int request_id = args()[0].GetInt();
 
   DesktopCaptureRequestsRegistry::GetInstance()->CancelRequest(
       source_process_id(), request_id);

@@ -20,7 +20,7 @@ int FuzzTokenizer(const uint8_t* data, size_t size) {
 
   // Use the first byte of fuzz data to randomize the tokenizer options.
   HTMLParserOptions options;
-  options.script_enabled = fuzzed_data_provider.ConsumeBool();
+  options.scripting_flag = fuzzed_data_provider.ConsumeBool();
 
   std::unique_ptr<HTMLTokenizer> tokenizer =
       std::make_unique<HTMLTokenizer>(options);

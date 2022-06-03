@@ -6,9 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {

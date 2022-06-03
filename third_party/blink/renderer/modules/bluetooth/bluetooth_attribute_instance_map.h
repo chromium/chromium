@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_ATTRIBUTE_INSTANCE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_ATTRIBUTE_INSTANCE_MAP_H_
 
-#include <memory>
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
@@ -68,7 +67,7 @@ class BluetoothAttributeInstanceMap final
   // TODO(crbug.com/654950): Remove descriptors when implemented.
   void Clear();
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   // BluetoothDevice that owns this map.

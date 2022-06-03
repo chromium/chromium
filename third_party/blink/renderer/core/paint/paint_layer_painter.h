@@ -15,9 +15,7 @@
 namespace blink {
 
 class CullRect;
-class ClipRect;
 class ComputedStyle;
-class DisplayItemClient;
 class GraphicsContext;
 struct PhysicalOffset;
 
@@ -37,7 +35,7 @@ class CORE_EXPORT PaintLayerPainter {
   void Paint(GraphicsContext&,
              const CullRect&,
              const GlobalPaintFlags = kGlobalPaintNormalPhase,
-             PaintLayerFlags = 0);
+             PaintLayerFlags = kPaintLayerNoFlag);
   // Paint() assumes that the caller will clip to the bounds of the painting
   // dirty if necessary.
   PaintResult Paint(GraphicsContext&,
@@ -57,6 +55,9 @@ class CORE_EXPORT PaintLayerPainter {
   // invisible and therefore can't impact painted output.
   static bool PaintedOutputInvisible(const ComputedStyle&);
 
+  // For CullRectUpdate.
+  bool ShouldUseInfiniteCullRect();
+
  private:
   friend class PaintLayerPainterTest;
 
@@ -72,43 +73,30 @@ class CORE_EXPORT PaintLayerPainter {
   void PaintFragmentWithPhase(PaintPhase,
                               const PaintLayerFragment&,
                               GraphicsContext&,
-                              const ClipRect&,
+                              const CullRect&,
                               const PaintLayerPaintingInfo&,
                               PaintLayerFlags);
-  void PaintBackgroundForFragments(const PaintLayerFragments&,
-                                   GraphicsContext&,
-                                   const PaintLayerPaintingInfo&,
-                                   PaintLayerFlags);
+  void PaintBackgroundForFragmentsWithPhase(PaintPhase,
+                                            const PaintLayerFragments&,
+                                            GraphicsContext&,
+                                            const PaintLayerPaintingInfo&,
+                                            PaintLayerFlags);
   void PaintForegroundForFragments(const PaintLayerFragments&,
                                    GraphicsContext&,
                                    const PaintLayerPaintingInfo&,
-                                   bool selection_only,
-                                   bool force_paint_chunks,
                                    PaintLayerFlags);
   void PaintForegroundForFragmentsWithPhase(PaintPhase,
                                             const PaintLayerFragments&,
                                             GraphicsContext&,
                                             const PaintLayerPaintingInfo&,
                                             PaintLayerFlags);
-  void PaintSelfOutlineForFragments(const PaintLayerFragments&,
-                                    GraphicsContext&,
-                                    const PaintLayerPaintingInfo&,
-                                    PaintLayerFlags);
   void PaintOverlayOverflowControlsForFragments(const PaintLayerFragments&,
                                                 GraphicsContext&,
                                                 const PaintLayerPaintingInfo&,
                                                 PaintLayerFlags);
-  void PaintMaskForFragments(const PaintLayerFragments&,
-                             GraphicsContext&,
-                             const PaintLayerPaintingInfo&,
-                             PaintLayerFlags);
 
-  void FillMaskingFragment(GraphicsContext&,
-                           const ClipRect&,
-                           const DisplayItemClient&);
-
-  void PaintEmptyContentForFilters(GraphicsContext&);
-
+  bool ShouldUseInfiniteCullRectInternal(GlobalPaintFlags,
+                                         bool for_cull_rect_update);
   void AdjustForPaintProperties(const GraphicsContext&,
                                 PaintLayerPaintingInfo&,
                                 PaintLayerFlags&);

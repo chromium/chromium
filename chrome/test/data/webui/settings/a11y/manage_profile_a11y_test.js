@@ -1,41 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview Define accessibility tests for the MANAGE_PROFILE route.
+ * @fileoverview Accessibility tests for the MANAGE_PROFILE route.
  * Non-Chrome OS only.
  */
 
-// SettingsAccessibilityTest fixture.
-GEN_INCLUDE([
-  'settings_accessibility_test.js',
-]);
+import 'chrome://settings/lazy_load.js';
 
-AccessibilityTest.define('SettingsAccessibilityTest', {
-  /** @override */
-  name: 'MANAGE_PROFILE',
-  /** @override */
-  axeOptions: SettingsAccessibilityTest.axeOptions,
-  /** @override */
-  setup: function() {
-    settings.navigateTo(settings.routes.MANAGE_PROFILE);
-    Polymer.dom.flush();
-  },
-  /** @override */
-  tests: {'Accessible with No Changes': function() {}},
-  /** @override */
-  violationFilter:
-      Object.assign({}, SettingsAccessibilityTest.violationFilter, {
-        // Excuse custom input elements.
-        'aria-valid-attr-value': function(nodeResult) {
-          const describerId =
-              nodeResult.element.getAttribute('aria-describedby');
-          return describerId === '' && nodeResult.element.tagName == 'INPUT';
-        },
-        'tabindex': function(nodeResult) {
-          // TODO(crbug.com/808276): remove this exception when bug is fixed.
-          return nodeResult.element.getAttribute('tabindex') == '0';
-        },
-      }),
-});
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Router, routes} from 'chrome://settings/settings.js';
+
+const settingsUi = document.createElement('settings-ui');
+document.body.appendChild(settingsUi);
+Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
+flush();
+document.dispatchEvent(new CustomEvent('a11y-setup-complete'));

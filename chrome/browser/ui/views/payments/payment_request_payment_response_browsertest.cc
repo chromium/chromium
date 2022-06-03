@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -14,17 +14,21 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace payments {
 
 class PaymentRequestPaymentResponseAutofillPaymentAppTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseAutofillPaymentAppTest(
+      const PaymentRequestPaymentResponseAutofillPaymentAppTest&) = delete;
+  PaymentRequestPaymentResponseAutofillPaymentAppTest& operator=(
+      const PaymentRequestPaymentResponseAutofillPaymentAppTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseAutofillPaymentAppTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseAutofillPaymentAppTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for an
@@ -42,13 +46,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAutofillPaymentAppTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the card details were sent to the merchant.
-  ExpectBodyContains({"\"cardNumber\": \"4111111111111111\"",
-                      "\"cardSecurityCode\": \"123\"",
-                      "\"cardholderName\": \"Test User\"",
-                      "\"expiryMonth\": \"11\"", "\"expiryYear\": \"2022\""});
+  ExpectBodyContains(
+      {"\"cardNumber\": \"4111111111111111\"", "\"cardSecurityCode\": \"123\"",
+       "\"cardholderName\": \"Test User\"",
+       base::StringPrintf(
+           "\"expiryMonth\": \"%s\"",
+           base::UTF16ToUTF8(card.Expiration2DigitMonthAsString()).c_str()),
+       base::StringPrintf(
+           "\"expiryYear\": \"%s\"",
+           base::UTF16ToUTF8(card.Expiration4DigitYearAsString()).c_str())});
 
   // Test that the billing address was sent to the merchant.
   ExpectBodyContains(
@@ -62,11 +71,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAutofillPaymentAppTest,
 
 class PaymentRequestPaymentResponseShippingAddressTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseShippingAddressTest(
+      const PaymentRequestPaymentResponseShippingAddressTest&) = delete;
+  PaymentRequestPaymentResponseShippingAddressTest& operator=(
+      const PaymentRequestPaymentResponseShippingAddressTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseShippingAddressTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseShippingAddressTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for a
@@ -91,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the shipping address was sent to the merchant.
   ExpectBodyContains(
@@ -107,11 +119,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
 
 class PaymentRequestPaymentResponseAllContactDetailsTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseAllContactDetailsTest(
+      const PaymentRequestPaymentResponseAllContactDetailsTest&) = delete;
+  PaymentRequestPaymentResponseAllContactDetailsTest& operator=(
+      const PaymentRequestPaymentResponseAllContactDetailsTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseAllContactDetailsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseAllContactDetailsTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for contact
@@ -129,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAllContactDetailsTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the contact details were sent to the merchant.
   ExpectBodyContains({"\"payerName\": \"John H. Doe\"",
@@ -156,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   ExpectBodyContains({"\"payerName\": \"John H. Doe\"",
                       "\"payerEmail\": \"johndoe@hades.com\"",
                       "\"payerPhone\": \"+16502111111\""});
@@ -177,11 +192,14 @@ IN_PROC_BROWSER_TEST_F(
 
 class PaymentRequestPaymentResponseOneContactDetailTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseOneContactDetailTest(
+      const PaymentRequestPaymentResponseOneContactDetailTest&) = delete;
+  PaymentRequestPaymentResponseOneContactDetailTest& operator=(
+      const PaymentRequestPaymentResponseOneContactDetailTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseOneContactDetailTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseOneContactDetailTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for contact
@@ -199,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseOneContactDetailTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the contact details were sent to the merchant.
   ExpectBodyContains({"\"payerName\": null",

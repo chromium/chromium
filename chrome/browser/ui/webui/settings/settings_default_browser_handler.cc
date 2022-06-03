@@ -22,24 +22,22 @@ bool DefaultBrowserIsDisabledByPolicy() {
       g_browser_process->local_state()->FindPreference(
           prefs::kDefaultBrowserSettingEnabled);
   DCHECK(pref);
-  bool may_set_default_browser;
-  bool success = pref->GetValue()->GetAsBoolean(&may_set_default_browser);
-  DCHECK(success);
-  return pref->IsManaged() && !may_set_default_browser;
+  DCHECK(pref->GetValue()->is_bool());
+  return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
 
 }  // namespace
 
-DefaultBrowserHandler::DefaultBrowserHandler() {}
+DefaultBrowserHandler::DefaultBrowserHandler() = default;
 
-DefaultBrowserHandler::~DefaultBrowserHandler() {}
+DefaultBrowserHandler::~DefaultBrowserHandler() = default;
 
 void DefaultBrowserHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestDefaultBrowserState",
       base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setAsDefaultBrowser",
       base::BindRepeating(&DefaultBrowserHandler::SetAsDefaultBrowser,
                           base::Unretained(this)));
@@ -50,11 +48,9 @@ void DefaultBrowserHandler::OnJavascriptAllowed() {
   local_state_pref_registrar_.Init(prefs);
   local_state_pref_registrar_.Add(
       prefs::kDefaultBrowserSettingEnabled,
-      base::Bind(&DefaultBrowserHandler::RequestDefaultBrowserState,
-                 base::Unretained(this), nullptr));
-  default_browser_worker_ = new shell_integration::DefaultBrowserWorker(
-      base::Bind(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
+                          base::Unretained(this), nullptr));
+  default_browser_worker_ = new shell_integration::DefaultBrowserWorker();
 }
 
 void DefaultBrowserHandler::OnJavascriptDisallowed() {
@@ -67,10 +63,12 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(args->GetSize(), 1U);
-  CHECK(args->GetString(0, &check_default_callback_id_));
+  CHECK_EQ(args->GetList().size(), 1U);
+  check_default_callback_id_ = args->GetList()[0].GetString();
 
-  default_browser_worker_->StartCheckIsDefault();
+  default_browser_worker_->StartCheckIsDefault(
+      base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DefaultBrowserHandler::SetAsDefaultBrowser(const base::ListValue* args) {
@@ -78,7 +76,9 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::ListValue* args) {
   AllowJavascript();
   RecordSetAsDefaultUMA();
 
-  default_browser_worker_->StartSetAsDefault();
+  default_browser_worker_->StartSetAsDefault(
+      base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // If the user attempted to make Chrome the default browser, notify
   // them when this changes.

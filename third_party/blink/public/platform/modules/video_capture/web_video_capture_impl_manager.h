@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -23,6 +24,7 @@
 
 namespace blink {
 
+class BrowserInterfaceBrokerProxy;
 class VideoCaptureImpl;
 class WebString;
 
@@ -42,6 +44,9 @@ class WebString;
 class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
  public:
   WebVideoCaptureImplManager();
+  WebVideoCaptureImplManager(const WebVideoCaptureImplManager&) = delete;
+  WebVideoCaptureImplManager& operator=(const WebVideoCaptureImplManager&) =
+      delete;
   virtual ~WebVideoCaptureImplManager();
 
   // Open a device associated with the session ID.
@@ -49,7 +54,9 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // is used.
   // Returns a callback that should be used to release the acquired
   // resources.
-  base::OnceClosure UseDevice(const media::VideoCaptureSessionId& id);
+  base::OnceClosure UseDevice(
+      const media::VideoCaptureSessionId& id,
+      BrowserInterfaceBrokerProxy* browser_interface_broker);
 
   // Start receiving video frames for the given session ID.
   //
@@ -82,6 +89,14 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void Suspend(const media::VideoCaptureSessionId& id);
   void Resume(const media::VideoCaptureSessionId& id);
 
+  // Start/stop cropping a video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  void Crop(const media::VideoCaptureSessionId& id,
+            const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+
   // Get supported formats supported by the device for the given session
   // ID. |callback| will be called on the IO thread.
   void GetDeviceSupportedFormats(const media::VideoCaptureSessionId& id,
@@ -107,9 +122,21 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImplForTesting(
       const media::VideoCaptureSessionId& session_id) const;
 
+  // Get the feedback callback for the corresponding capture session.
+  // Consumers may call the returned callback in any thread to provide
+  // the capturer with feedback information.
+  VideoCaptureFeedbackCB GetFeedbackCallback(
+      const media::VideoCaptureSessionId& id) const;
+
  private:
   // Holds bookkeeping info for each VideoCaptureImpl shared by clients.
   struct DeviceEntry;
+
+  static void ProcessFeedback(VideoCaptureFeedbackCB callback_to_io_thread,
+                              const media::VideoCaptureFeedback& feedback);
+
+  void ProcessFeedbackInternal(const media::VideoCaptureSessionId& id,
+                               const media::VideoCaptureFeedback& feedback);
 
   void StopCapture(int client_id, const media::VideoCaptureSessionId& id);
   void UnrefDevice(const media::VideoCaptureSessionId& id);
@@ -133,8 +160,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // Bound to the render thread.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<WebVideoCaptureImplManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebVideoCaptureImplManager);
 };
 
 }  // namespace blink

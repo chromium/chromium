@@ -40,10 +40,8 @@ GURL GetStartupURL() {
 }  // namespace
 
 CastServiceSimple::CastServiceSimple(content::BrowserContext* browser_context,
-                                     PrefService* pref_service,
                                      CastWindowManager* window_manager)
-    : CastService(browser_context, pref_service),
-      web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
+    : web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
       web_service_(std::make_unique<CastWebService>(browser_context,
                                                     web_view_factory_.get(),
                                                     window_manager)) {
@@ -66,42 +64,23 @@ void CastServiceSimple::StartInternal() {
     return;
   }
 
-  CastWebView::CreateParams params;
-  params.delegate = weak_factory_.GetWeakPtr();
-  params.web_contents_params.delegate = weak_factory_.GetWeakPtr();
-  params.web_contents_params.enabled_for_dev = true;
-  params.window_params.delegate = weak_factory_.GetWeakPtr();
-  cast_web_view_ =
-      web_service_->CreateWebView(params, nullptr, /* site_instance */
-                                  GURL() /* initial_url */);
-  cast_web_view_->LoadUrl(startup_url_);
-  cast_web_view_->GrantScreenAccess();
-  cast_web_view_->InitializeWindow(
+  ::chromecast::mojom::CastWebViewParamsPtr params =
+      ::chromecast::mojom::CastWebViewParams::New();
+  params->enabled_for_dev = true;
+
+  cast_web_view_ = web_service_->CreateWebViewInternal(std::move(params));
+  cast_web_view_->cast_web_contents()->LoadUrl(startup_url_);
+  cast_web_view_->window()->GrantScreenAccess();
+  cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 }
 
 void CastServiceSimple::StopInternal() {
   if (cast_web_view_) {
-    cast_web_view_->ClosePage();
+    cast_web_view_->cast_web_contents()->ClosePage();
   }
   cast_web_view_.reset();
-}
-
-void CastServiceSimple::OnWindowDestroyed() {}
-
-bool CastServiceSimple::CanHandleGesture(GestureType gesture_type) {
-  return false;
-}
-
-bool CastServiceSimple::ConsumeGesture(GestureType gesture_type) {
-  return false;
-}
-
-void CastServiceSimple::OnVisibilityChange(VisibilityType visibility_type) {}
-
-std::string CastServiceSimple::GetId() {
-  return "";
 }
 
 }  // namespace shell

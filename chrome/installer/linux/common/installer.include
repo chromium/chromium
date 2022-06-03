@@ -75,6 +75,7 @@ process_template() (
     -e "s#@@PACKAGE@@#${PACKAGE}#g" \
     -e "s#@@PACKAGE_ORIG@@#${PACKAGE_ORIG}#g" \
     -e "s#@@PACKAGE_FILENAME@@#${PACKAGE_FILENAME}#g" \
+    -e "s#@@SNAPNAME@@#${SNAPNAME}#g" \
     -e "s#@@PROGNAME@@#${PROGNAME}#g" \
     -e "s#@@CHANNEL@@#${CHANNEL}#g" \
     -e "s#@@COMPANY_FULLNAME@@#${COMPANY_FULLNAME}#g" \
@@ -82,7 +83,7 @@ process_template() (
     -e "s#@@PACKAGE_RELEASE@@#${PACKAGE_RELEASE}#g" \
     -e "s#@@VERSIONFULL@@#${VERSIONFULL}#g" \
     -e "s#@@INSTALLDIR@@#${INSTALLDIR}#g" \
-    -e "s#@@BUILDDIR@@#${BUILDDIR}#g" \
+    -e "s#@@BUILDDIR@@#${OUTPUTDIR}#g" \
     -e "s#@@STAGEDIR@@#${STAGEDIR}#g" \
     -e "s#@@SCRIPTDIR@@#${SCRIPTDIR}#g" \
     -e "s#@@MENUNAME@@#${MENUNAME}#g" \
@@ -101,10 +102,11 @@ process_template() (
     -e "s#@@USR_BIN_SYMLINK_NAME@@#${USR_BIN_SYMLINK_NAME:-}#g" \
     -e "s#@@LOGO_RESOURCES_PNG@@#${LOGO_RESOURCES_PNG}#g" \
     -e "s#@@LOGO_RESOURCE_XPM@@#${LOGO_RESOURCE_XPM}#g" \
+    -e "s#@@DATE_RFC5322@@#$(date --rfc-email)#g" \
     > "$TMPLOUT" <<< "$TMPLINCL"
 )
 
-# Setup the installation directory hierachy in the package staging area.
+# Setup the installation directory hierarchy in the package staging area.
 prep_staging_common() {
   install -m 755 -d "${STAGEDIR}/${INSTALLDIR}" \
     "${STAGEDIR}/usr/bin" \
@@ -115,7 +117,7 @@ prep_staging_common() {
 }
 
 get_version_info() {
-  source "${BUILDDIR}/installer/version.txt"
+  source "${OUTPUTDIR}/installer/version.txt"
   VERSION="${MAJOR}.${MINOR}.${BUILD}.${PATCH}"
   # TODO(phajdan.jr): Provide a mechanism to pass a different package
   # release number if needed. The meaning of it is to bump it for
@@ -137,41 +139,41 @@ stage_install_common() {
   # is_component_build flag is true.
 
   # app
-  STRIPPEDFILE="${BUILDDIR}/${PROGNAME}.stripped"
+  STRIPPEDFILE="${OUTPUTDIR}/${PROGNAME}.stripped"
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
   # crashpad
-  buildfile="${BUILDDIR}/crashpad_handler"
+  buildfile="${OUTPUTDIR}/chrome_crashpad_handler"
   strippedfile="${buildfile}.stripped"
   debugfile="${buildfile}.debug"
-  "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/crashpad_handler"
+  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
 
   # resources
-  install -m 644 "${BUILDDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
+  install -m 644 "${OUTPUTDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
   # TODO(mmoss): This has broken a couple times on adding new .pak files. Maybe
   # we should flag all installer files in FILES.cfg and get them from there, so
   # there's only one place people need to keep track of such things (and in
   # only the public repository).
-  if [ -r "${BUILDDIR}/chrome_100_percent.pak" ]; then
-    install -m 644 "${BUILDDIR}/chrome_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
-    install -m 644 "${BUILDDIR}/chrome_200_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -r "${OUTPUTDIR}/chrome_100_percent.pak" ]; then
+    install -m 644 "${OUTPUTDIR}/chrome_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/chrome_200_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
   else
-    install -m 644 "${BUILDDIR}/theme_resources_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
-    install -m 644 "${BUILDDIR}/ui_resources_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/theme_resources_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/ui_resources_100_percent.pak" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # ICU data file; Necessary when the GN icu_use_data_file flag is true.
-  install -m 644 "${BUILDDIR}/icudtl.dat" "${STAGEDIR}/${INSTALLDIR}/"
+  install -m 644 "${OUTPUTDIR}/icudtl.dat" "${STAGEDIR}/${INSTALLDIR}/"
 
   # V8 snapshot files; Necessary when the GN v8_use_external_startup_data flag
   # is true.
   # Use v8_context_snapshot.bin instead of snapshot_blob.bin if it is available.
   # TODO(crbug.com/764576): Unship snapshot_blob.bin on ChromeOS and drop this branch
-  if [ -f "${BUILDDIR}/v8_context_snapshot.bin" ]; then
-    install -m 644 "${BUILDDIR}/v8_context_snapshot.bin" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${OUTPUTDIR}/v8_context_snapshot.bin" ]; then
+    install -m 644 "${OUTPUTDIR}/v8_context_snapshot.bin" "${STAGEDIR}/${INSTALLDIR}/"
   else
-    install -m 644 "${BUILDDIR}/snapshot_blob.bin" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/snapshot_blob.bin" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # sandbox
@@ -180,29 +182,35 @@ stage_install_common() {
   # where it did not support hyphens, so this is stuck as is to avoid breaking
   # anyone who expects the build artifact to have the underscore.
   # the code looks for, but the build targets can't use hyphens (scons bug?)
-  buildfile="${BUILDDIR}/${PROGNAME}_sandbox"
+  buildfile="${OUTPUTDIR}/${PROGNAME}_sandbox"
   strippedfile="${buildfile}.stripped"
   debugfile="${buildfile}.debug"
-  "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-  install -m 4755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}-sandbox"
+  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  install -m 4755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome-sandbox"
 
   # l10n paks
   install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/locales/"
-  find "${BUILDDIR}/locales" -type f -name '*.pak' -exec \
+  find "${OUTPUTDIR}/locales" -type f -name '*.pak' -exec \
     cp -a '{}' "${STAGEDIR}/${INSTALLDIR}/locales/" \;
   find "${STAGEDIR}/${INSTALLDIR}/locales" -type f -exec chmod 644 '{}' \;
 
+  # TODO(https://crbug.com/1077934): The below conditions check for the
+  # existence of files to determine if they should be copied to the staging
+  # directory.  However, these may be stale if the build config no longer
+  # builds these files.  The build config should be obtained from gn rather than
+  # guessed based on the presence of files.
+
   # MEI Preload
-  if [ -f "${BUILDDIR}/MEIPreload/manifest.json" ]; then
+  if [ -f "${OUTPUTDIR}/MEIPreload/manifest.json" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/MEIPreload/"
-    install -m 644 "${BUILDDIR}/MEIPreload/manifest.json" "${STAGEDIR}/${INSTALLDIR}/MEIPreload/"
-    install -m 644 "${BUILDDIR}/MEIPreload/preloaded_data.pb" "${STAGEDIR}/${INSTALLDIR}/MEIPreload/"
+    install -m 644 "${OUTPUTDIR}/MEIPreload/manifest.json" "${STAGEDIR}/${INSTALLDIR}/MEIPreload/"
+    install -m 644 "${OUTPUTDIR}/MEIPreload/preloaded_data.pb" "${STAGEDIR}/${INSTALLDIR}/MEIPreload/"
   fi
 
   # Widevine CDM.
-  if [ -d "${BUILDDIR}/WidevineCdm" ]; then
+  if [ -d "${OUTPUTDIR}/WidevineCdm" ]; then
     # No need to strip; libwidevinecdm.so starts out stripped.
-    cp -a "${BUILDDIR}/WidevineCdm" "${STAGEDIR}/${INSTALLDIR}/"
+    cp -a "${OUTPUTDIR}/WidevineCdm" "${STAGEDIR}/${INSTALLDIR}/"
     find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -type d -exec chmod 755 '{}' \;
     find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -type f -exec chmod 644 '{}' \;
     find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -name libwidevinecdm.so \
@@ -210,34 +218,55 @@ stage_install_common() {
   fi
 
   # ANGLE
-  if [ -f "${BUILDDIR}/libEGL.so" ]; then
-    if [ "${CHANNEL}" != "stable" ]; then
-      for file in libEGL.so libGLESv2.so; do
-        buildfile="${BUILDDIR}/${file}"
-        strippedfile="${buildfile}.stripped"
-        debugfile="${buildfile}.debug"
-        "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-        install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-      done
-    fi
-  fi
-
-  # SwiftShader
-  if [ -f "${BUILDDIR}/swiftshader/libEGL.so" ]; then
-    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
+  if [ -f "${OUTPUTDIR}/libEGL.so" ]; then
     for file in libEGL.so libGLESv2.so; do
-      buildfile="${BUILDDIR}/swiftshader/${file}"
+      buildfile="${OUTPUTDIR}/${file}"
       strippedfile="${buildfile}.stripped"
       debugfile="${buildfile}.debug"
-      "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+    done
+  fi
+
+  # ANGLE's libvulkan library
+  if [ -f "${OUTPUTDIR}/libvulkan.so.1" ]; then
+    file="libvulkan.so.1"
+    buildfile="${OUTPUTDIR}/${file}"
+    strippedfile="${buildfile}.stripped"
+    debugfile="${buildfile}.debug"
+    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
+
+  # SwiftShader ES
+  if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
+    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
+    for file in libEGL.so libGLESv2.so; do
+      buildfile="${OUTPUTDIR}/swiftshader/${file}"
+      strippedfile="${buildfile}.stripped"
+      debugfile="${buildfile}.debug"
+      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/swiftshader/${file}"
     done
   fi
 
+  # SwiftShader VK
+  if [ -f "${OUTPUTDIR}/libvk_swiftshader.so" ]; then
+    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/"
+    file="libvk_swiftshader.so"
+    buildfile="${OUTPUTDIR}/${file}"
+    strippedfile="${buildfile}.stripped"
+    debugfile="${buildfile}.debug"
+    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+    # Install the ICD json file to point ANGLE to libvk_swiftshader.so
+    install -m 644 "${OUTPUTDIR}/vk_swiftshader_icd.json" "${STAGEDIR}/${INSTALLDIR}/"
+  fi
+
   # libc++
-  if [ -f "${BUILDDIR}/lib/libc++.so" ]; then
+  if [ -f "${OUTPUTDIR}/lib/libc++.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/lib/"
-    install -m ${SHLIB_PERMS} -s "${BUILDDIR}/lib/libc++.so" "${STAGEDIR}/${INSTALLDIR}/lib/"
+    install -m ${SHLIB_PERMS} -s "${OUTPUTDIR}/lib/libc++.so" "${STAGEDIR}/${INSTALLDIR}/lib/"
   fi
 
   # nacl_helper and nacl_helper_bootstrap
@@ -245,11 +274,11 @@ stage_install_common() {
   # mangles the special ELF program headers of nacl_helper_bootstrap.
   # Explicitly use eu-strip instead, because it doesn't have that problem.
   for file in nacl_helper nacl_helper_bootstrap; do
-    buildfile="${BUILDDIR}/${file}"
+    buildfile="${OUTPUTDIR}/${file}"
     if [ -f "${buildfile}" ]; then
       strippedfile="${buildfile}.stripped"
       debugfile="${buildfile}.debug"
-      "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     fi
   done
@@ -258,7 +287,7 @@ stage_install_common() {
   # certainly resets the OSABI and ABIVERSION fields to non-NaCl values,
   # although the NaCl IRT loader doesn't care about these fields.  In any
   # case, the IRT binaries are already stripped by NaCl's build process.
-  for filename in ${BUILDDIR}/nacl_irt_*.nexe; do
+  for filename in ${OUTPUTDIR}/nacl_irt_*.nexe; do
     # Re-check the filename in case globbing matched nothing.
     if [ -f "$filename" ]; then
       install -m 644 "$filename" "${STAGEDIR}/${INSTALLDIR}/`basename "$filename"`"
@@ -266,22 +295,26 @@ stage_install_common() {
   done
 
   # default apps
-  if [ -d "${BUILDDIR}/default_apps" ]; then
-    cp -a "${BUILDDIR}/default_apps" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -d "${OUTPUTDIR}/default_apps" ]; then
+    cp -a "${OUTPUTDIR}/default_apps" "${STAGEDIR}/${INSTALLDIR}/"
     find "${STAGEDIR}/${INSTALLDIR}/default_apps" -type d -exec chmod 755 '{}' \;
     find "${STAGEDIR}/${INSTALLDIR}/default_apps" -type f -exec chmod 644 '{}' \;
   fi
 
   # launcher script and symlink
-  process_template "${BUILDDIR}/installer/common/wrapper" \
+  process_template "${OUTPUTDIR}/installer/common/wrapper" \
     "${STAGEDIR}/${INSTALLDIR}/${PACKAGE}"
   chmod 755 "${STAGEDIR}/${INSTALLDIR}/${PACKAGE}"
-  if [ ! -f "${STAGEDIR}/${INSTALLDIR}/${PACKAGE_ORIG}" ]; then
-    ln -sn "${INSTALLDIR}/${PACKAGE}" \
-      "${STAGEDIR}/${INSTALLDIR}/${PACKAGE_ORIG}"
+  if [ ! -z "${PACKAGE_ORIG}" ]; then
+    if [ ! -f "${STAGEDIR}/${INSTALLDIR}/${PACKAGE_ORIG}" ]; then
+      ln -sn "${INSTALLDIR}/${PACKAGE}" \
+        "${STAGEDIR}/${INSTALLDIR}/${PACKAGE_ORIG}"
+    fi
   fi
-  ln -snf "${INSTALLDIR}/${PACKAGE}" \
-    "${STAGEDIR}/usr/bin/${USR_BIN_SYMLINK_NAME}"
+  if [ ! -z "${USR_BIN_SYMLINK_NAME}" ]; then
+    ln -snf "${INSTALLDIR}/${PACKAGE}" \
+      "${STAGEDIR}/usr/bin/${USR_BIN_SYMLINK_NAME}"
+  fi
 
   # app icons
   local icon_regex=".*product_logo_[0-9]\+\."
@@ -292,41 +325,41 @@ stage_install_common() {
       icon_regex=".*product_logo_[0-9]\+_dev\."
     fi
   fi
-  LOGO_RESOURCES_PNG=$(find "${BUILDDIR}/installer/theme/" \
+  LOGO_RESOURCES_PNG=$(find "${OUTPUTDIR}/installer/theme/" \
     -regextype sed -regex "${icon_regex}png" -printf "%f ")
-  LOGO_RESOURCE_XPM=$(find "${BUILDDIR}/installer/theme/" \
+  LOGO_RESOURCE_XPM=$(find "${OUTPUTDIR}/installer/theme/" \
     -regextype sed -regex "${icon_regex}xpm" -printf "%f")
   for logo in ${LOGO_RESOURCES_PNG} ${LOGO_RESOURCE_XPM}; do
     install -m 644 \
-      "${BUILDDIR}/installer/theme/${logo}" \
+      "${OUTPUTDIR}/installer/theme/${logo}" \
       "${STAGEDIR}/${INSTALLDIR}/"
   done
 
   # desktop integration
-  install -m 755 "${BUILDDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"
-  install -m 755 "${BUILDDIR}/xdg-settings" "${STAGEDIR}${INSTALLDIR}/"
+  install -m 755 "${OUTPUTDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"
+  install -m 755 "${OUTPUTDIR}/xdg-settings" "${STAGEDIR}${INSTALLDIR}/"
 
   if [ ${PACKAGE:0:6} = google ]; then
-    process_template "${BUILDDIR}/installer/common/google-chrome.appdata.xml.template" \
+    process_template "${OUTPUTDIR}/installer/common/google-chrome.appdata.xml.template" \
       "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
     chmod 644 "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
   else
-    install -m 644 "${BUILDDIR}/installer/common/chromium-browser.appdata.xml" \
+    install -m 644 "${OUTPUTDIR}/installer/common/chromium-browser.appdata.xml" \
       "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
   fi
 
-  process_template "${BUILDDIR}/installer/common/desktop.template" \
+  process_template "${OUTPUTDIR}/installer/common/desktop.template" \
     "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop"
   chmod 644 "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop"
-  process_template "${BUILDDIR}/installer/common/default-app.template" \
+  process_template "${OUTPUTDIR}/installer/common/default-app.template" \
     "${STAGEDIR}/usr/share/gnome-control-center/default-apps/${PACKAGE}.xml"
   chmod 644 "${STAGEDIR}/usr/share/gnome-control-center/default-apps/${PACKAGE}.xml"
-  process_template "${BUILDDIR}/installer/common/default-app-block.template" \
+  process_template "${OUTPUTDIR}/installer/common/default-app-block.template" \
     "${STAGEDIR}${INSTALLDIR}/default-app-block"
   chmod 644 "${STAGEDIR}${INSTALLDIR}/default-app-block"
 
   # documentation
-  process_template "${BUILDDIR}/installer/common/manpage.1.in" \
+  process_template "${OUTPUTDIR}/installer/common/manpage.1.in" \
     "${STAGEDIR}/usr/share/man/man1/${USR_BIN_SYMLINK_NAME}.1"
   gzip -9n "${STAGEDIR}/usr/share/man/man1/${USR_BIN_SYMLINK_NAME}.1"
   chmod 644 "${STAGEDIR}/usr/share/man/man1/${USR_BIN_SYMLINK_NAME}.1.gz"

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -50,7 +51,7 @@ bool ignore_user_gesture_for_tests = false;
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
   std::unique_ptr<api::permissions::Contains::Params> params(
-      api::permissions::Contains::Params::Create(*args_));
+      api::permissions::Contains::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -64,7 +65,7 @@ ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
           &error);
 
   if (!unpack_result)
-    return RespondNow(Error(error));
+    return RespondNow(Error(std::move(error)));
 
   const PermissionSet& active_permissions =
       extension()->permissions_data()->active_permissions();
@@ -109,7 +110,7 @@ ExtensionFunction::ResponseAction PermissionsGetAllFunction::Run() {
 
 ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
   std::unique_ptr<api::permissions::Remove::Params> params(
-      api::permissions::Remove::Params::Create(*args_));
+      api::permissions::Remove::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -123,7 +124,7 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
           &error);
 
   if (!unpack_result)
-    return RespondNow(Error(error));
+    return RespondNow(Error(std::move(error)));
 
   // We can't remove any permissions that weren't specified in the manifest.
   if (!unpack_result->unlisted_apis.empty() ||
@@ -190,9 +191,8 @@ PermissionsRequestFunction::PermissionsRequestFunction() {}
 PermissionsRequestFunction::~PermissionsRequestFunction() {}
 
 ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
-  if (!user_gesture() &&
-      !ignore_user_gesture_for_tests &&
-      extension_->location() != Manifest::COMPONENT) {
+  if (!user_gesture() && !ignore_user_gesture_for_tests &&
+      extension_->location() != mojom::ManifestLocation::kComponent) {
     return RespondNow(Error(kUserGestureRequiredError));
   }
 
@@ -202,7 +202,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return RespondNow(Error("Could not find an active window."));
 
   std::unique_ptr<api::permissions::Request::Params> params(
-      api::permissions::Request::Params::Create(*args_));
+      api::permissions::Request::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -216,7 +216,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           &error);
 
   if (!unpack_result)
-    return RespondNow(Error(error));
+    return RespondNow(Error(std::move(error)));
 
   // Don't allow the extension to request any permissions that weren't specified
   // in the manifest.
@@ -258,7 +258,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   // If all permissions are already active, nothing left to do.
   if (total_new_permissions->IsEmpty()) {
     constexpr bool granted = true;
-    return RespondNow(OneArgument(std::make_unique<base::Value>(granted)));
+    return RespondNow(OneArgument(base::Value(granted)));
   }
 
   // Automatically declines api permissions requests, which are blocked by
@@ -299,8 +299,10 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           ->GetPermissionMessages(message_provider->GetAllPermissionIDs(
               *total_new_permissions, extension()->GetType()))
           .empty();
-  if (has_no_warnings || extension_->location() == Manifest::COMPONENT) {
-    OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+  if (has_no_warnings ||
+      extension_->location() == mojom::ManifestLocation::kComponent) {
+    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ACCEPTED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -309,17 +311,19 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (auto_confirm_for_tests != DO_NOT_SKIP) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
     if (auto_confirm_for_tests == PROCEED)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
     else if (auto_confirm_for_tests == ABORT)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
-  install_ui_.reset(new ExtensionInstallPrompt(
-      Profile::FromBrowserContext(browser_context()), native_window));
+  install_ui_ = std::make_unique<ExtensionInstallPrompt>(
+      Profile::FromBrowserContext(browser_context()), native_window);
   install_ui_->ShowDialog(
-      base::Bind(&PermissionsRequestFunction::OnInstallPromptDone,
-                 base::RetainedRef(this)),
+      base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone,
+                     base::RetainedRef(this)),
       extension(), nullptr,
       std::make_unique<ExtensionInstallPrompt::Prompt>(
           ExtensionInstallPrompt::PERMISSIONS_PROMPT),
@@ -331,27 +335,28 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 }
 
 void PermissionsRequestFunction::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result != ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
     Respond(ArgumentList(api::permissions::Request::Results::Create(false)));
     return;
   }
   PermissionsUpdater permissions_updater(browser_context());
-  if (!requested_withheld_->IsEmpty()) {
-    requesting_withheld_permissions_ = true;
+  requesting_withheld_permissions_ = !requested_withheld_->IsEmpty();
+  requesting_optional_permissions_ = !requested_optional_->IsEmpty();
+  if (requesting_withheld_permissions_) {
     permissions_updater.GrantRuntimePermissions(
         *extension(), *requested_withheld_,
         base::BindOnce(&PermissionsRequestFunction::OnRuntimePermissionsGranted,
                        base::RetainedRef(this)));
   }
-  if (!requested_optional_->IsEmpty()) {
-    requesting_optional_permissions_ = true;
+  if (requesting_optional_permissions_) {
     permissions_updater.GrantOptionalPermissions(
         *extension(), *requested_optional_,
         base::BindOnce(
             &PermissionsRequestFunction::OnOptionalPermissionsGranted,
             base::RetainedRef(this)));
   }
+
   // Grant{Runtime|Optional}Permissions calls above can finish synchronously.
   if (!did_respond())
     RespondIfRequestsFinished();

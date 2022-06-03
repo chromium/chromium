@@ -6,7 +6,7 @@ import {navigation, Page} from 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 window.extension_manager_tests = {};
 extension_manager_tests.suiteName = 'ExtensionManagerTest';
@@ -20,7 +20,7 @@ extension_manager_tests.TestNames = {
 
 function getDataByName(list, name) {
   return assert(list.find(function(el) {
-    return el.name == name;
+    return el.name === name;
   }));
 }
 
@@ -34,7 +34,7 @@ suite(extension_manager_tests.suiteName, function() {
   }
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);
 
@@ -52,7 +52,7 @@ suite(extension_manager_tests.suiteName, function() {
 
         const list = manager.$['items-list'];
         const listHasItemWithName = (name) =>
-            !!list.extensions.find(el => el.name == name);
+            !!list.extensions.find(el => el.name === name);
 
         expectEquals(manager.extensions_, manager.$['items-list'].extensions);
         expectTrue(listHasItemWithName('My extension 1'));
@@ -69,7 +69,7 @@ suite(extension_manager_tests.suiteName, function() {
   test(assert(extension_manager_tests.TestNames.SplitItems), function() {
     const sectionHasItemWithName = function(section, name) {
       return !!manager[section].find(function(el) {
-        return el.name == name;
+        return el.name === name;
       });
     };
 
@@ -82,33 +82,45 @@ suite(extension_manager_tests.suiteName, function() {
   });
 
   test(assert(extension_manager_tests.TestNames.ChangePages), function() {
-    manager.$$('extensions-toolbar').$$('cr-toolbar').$$('#menuButton').click();
+    manager.shadowRoot.querySelector('extensions-toolbar')
+        .shadowRoot.querySelector('cr-toolbar')
+        .shadowRoot.querySelector('#menuButton')
+        .click();
     flush();
 
     // We start on the item list.
-    manager.$$('#sidebar').$['sections-extensions'].click();
+    manager.shadowRoot.querySelector('#sidebar')
+        .$['sections-extensions']
+        .click();
     flush();
     assertViewActive('extensions-item-list');
 
     // Switch: item list -> keyboard shortcuts.
-    manager.$$('#sidebar').$['sections-shortcuts'].click();
+    manager.shadowRoot.querySelector('#sidebar')
+        .$['sections-shortcuts']
+        .click();
     flush();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // Switch: item list -> detail view.
-    const item = manager.$['items-list'].$$('extensions-item');
+    const item =
+        manager.$['items-list'].shadowRoot.querySelector('extensions-item');
     assert(item);
     item.onDetailsTap_();
     flush();
     assertViewActive('extensions-detail-view');
 
     // Switch: detail view -> keyboard shortcuts.
-    manager.$$('#sidebar').$['sections-shortcuts'].click();
+    manager.shadowRoot.querySelector('#sidebar')
+        .$['sections-shortcuts']
+        .click();
     flush();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // We get back on the item list.
-    manager.$$('#sidebar').$['sections-extensions'].click();
+    manager.shadowRoot.querySelector('#sidebar')
+        .$['sections-extensions']
+        .click();
     flush();
     assertViewActive('extensions-item-list');
   });

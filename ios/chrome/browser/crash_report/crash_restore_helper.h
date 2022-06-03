@@ -7,30 +7,42 @@
 
 #import <Foundation/Foundation.h>
 
-namespace ios {
-class ChromeBrowserState;
-}
+#include "base/files/file_path.h"
 
-@protocol SessionWindowRestoring;
-namespace web {
-class WebState;
-}
+class Browser;
+class ChromeBrowserState;
 
 // Helper class for handling session restoration after a crash.
 @interface CrashRestoreHelper : NSObject
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState;
+- (instancetype)initWithBrowser:(Browser*)browser;
 
-// Saves the session information stored on disk in temporary files and will
-// then delete those from their default location. This will ensure that the
-// user will then start from scratch, while allowing restoring their old
-// sessions.
-- (void)moveAsideSessionInformation;
+// Returns YES if a backup file for sessionID can be found on disk.
++ (BOOL)isBackedUpSessionID:(NSString*)sessionID
+               browserState:(ChromeBrowserState*)browserState;
 
-// Shows an infobar on the currently selected tab of the given |tabModel|. This
-// infobar lets the user restore its session after a crash.
-- (void)showRestoreIfNeededUsingWebState:(web::WebState*)webState
-                         sessionRestorer:(id<SessionWindowRestoring>)restorer;
+// Saves the session information stored on disk for sessions with |sessionIDs|
+// in temporary files and will then delete those from their default location.
+// This will ensure that the user will then start from scratch, while allowing
+// restoring their old sessions. This method has to be called before the browser
+// is created, or the session information will be overwritten.
+// |sessionIDs| can be nil when multiple windows are not supported, and in that
+// case only the default session will be moved.
+// Returns |YES| if the  at least one session deletion was successful.
++ (BOOL)moveAsideSessions:(NSSet<NSString*>*)sessionIDs
+          forBrowserState:(ChromeBrowserState*)browserState;
+
+// Shows an infobar on the currently active tab of the browser. This infobar
+// lets the user restore its session after a crash.
+- (void)showRestorePrompt;
+
+@end
+
+@interface CrashRestoreHelper (Testing)
+
+// Returns the path for back of session |sessionID| relative in |directory|.
++ (NSString*)backupPathForSessionID:(NSString*)sessionID
+                          directory:(const base::FilePath&)directory;
 
 @end
 

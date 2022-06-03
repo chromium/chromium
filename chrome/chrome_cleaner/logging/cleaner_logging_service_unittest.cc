@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -142,7 +143,7 @@ void CompareUwSData(const PUPData::PUP& uws, const UwS& log_uws) {
   int folders_index = 0;
   for (const auto& file_path : uws.expanded_disk_footprints.file_paths()) {
     // The path will be sanitized in the logs.
-    std::string sanitized_path = base::UTF16ToUTF8(SanitizePath(file_path));
+    std::string sanitized_path = base::WideToUTF8(SanitizePath(file_path));
     if (base::DirectoryExists(file_path)) {
       ASSERT_TRUE(folders_index < log_uws.folders_size());
       EXPECT_EQ(sanitized_path,
@@ -174,7 +175,7 @@ void ExpectFileInformationEqualToProtoObj(
     const internal::FileInformation& file_information,
     const FileInformation& proto_file_information) {
   EXPECT_EQ(proto_file_information.path(),
-            base::UTF16ToUTF8(file_information.path));
+            base::WideToUTF8(file_information.path));
   EXPECT_EQ(proto_file_information.creation_date(),
             file_information.creation_date);
   EXPECT_EQ(proto_file_information.last_modified_date(),
@@ -182,21 +183,21 @@ void ExpectFileInformationEqualToProtoObj(
   EXPECT_EQ(proto_file_information.sha256(), file_information.sha256);
   EXPECT_EQ(proto_file_information.size(), file_information.size);
   EXPECT_EQ(proto_file_information.company_name(),
-            base::UTF16ToUTF8(file_information.company_name));
+            base::WideToUTF8(file_information.company_name));
   EXPECT_EQ(proto_file_information.company_short_name(),
-            base::UTF16ToUTF8(file_information.company_short_name));
+            base::WideToUTF8(file_information.company_short_name));
   EXPECT_EQ(proto_file_information.product_name(),
-            base::UTF16ToUTF8(file_information.product_name));
+            base::WideToUTF8(file_information.product_name));
   EXPECT_EQ(proto_file_information.product_short_name(),
-            base::UTF16ToUTF8(file_information.product_short_name));
+            base::WideToUTF8(file_information.product_short_name));
   EXPECT_EQ(proto_file_information.internal_name(),
-            base::UTF16ToUTF8(file_information.internal_name));
+            base::WideToUTF8(file_information.internal_name));
   EXPECT_EQ(proto_file_information.original_filename(),
-            base::UTF16ToUTF8(file_information.original_filename));
+            base::WideToUTF8(file_information.original_filename));
   EXPECT_EQ(proto_file_information.file_description(),
-            base::UTF16ToUTF8(file_information.file_description));
+            base::WideToUTF8(file_information.file_description));
   EXPECT_EQ(proto_file_information.file_version(),
-            base::UTF16ToUTF8(file_information.file_version));
+            base::WideToUTF8(file_information.file_version));
   EXPECT_EQ(proto_file_information.active_file(), file_information.active_file);
 }
 
@@ -204,11 +205,10 @@ void ExpectRegistryValueEqualToProtoObj(
     const internal::RegistryValue& registry_value,
     const RegistryValue& proto_registry_value) {
   EXPECT_EQ(proto_registry_value.key_path(),
-            base::UTF16ToUTF8(registry_value.key_path));
+            base::WideToUTF8(registry_value.key_path));
   EXPECT_EQ(proto_registry_value.value_name(),
-            base::UTF16ToUTF8(registry_value.value_name));
-  EXPECT_EQ(proto_registry_value.data(),
-            base::UTF16ToUTF8(registry_value.data));
+            base::WideToUTF8(registry_value.value_name));
+  EXPECT_EQ(proto_registry_value.data(), base::WideToUTF8(registry_value.data));
 }
 
 void NoSleep(base::TimeDelta) {}
@@ -235,7 +235,8 @@ class CleanerLoggingServiceTest : public testing::TestWithParam<ExecutionMode> {
 
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     // The registry logger must be created after calling OverrideRegistry.
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REMOVER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REMOVER);
 
     // By default, tests use the NoOpLoggingService, so individual tests that
     // need logging need to enable it.
@@ -666,7 +667,7 @@ TEST_P(CleanerLoggingServiceTest, CompleteFailure) {
   // Now forget about the scheduled logs upload retry.
   registry_logger_->GetNextLogFilePath(&log_file);
   ASSERT_FALSE(log_file.empty());
-  bool success = base::DeleteFile(log_file, false);
+  bool success = base::DeleteFile(log_file);
   EXPECT_TRUE(success) << "Failed to delete " << log_file.value();
   bool more_log_files = registry_logger_->RemoveLogFilePath(log_file);
   EXPECT_FALSE(more_log_files);
@@ -778,28 +779,28 @@ TEST_P(CleanerLoggingServiceTest, AppendMatchedFile) {
   MatchedFile matched_file;
   FileInformation* proto_file_information =
       matched_file.mutable_file_information();
-  proto_file_information->set_path(base::UTF16ToUTF8(kFileInformation1.path));
+  proto_file_information->set_path(base::WideToUTF8(kFileInformation1.path));
   proto_file_information->set_creation_date(kFileInformation1.creation_date);
   proto_file_information->set_last_modified_date(
       kFileInformation1.last_modified_date);
   proto_file_information->set_sha256(kFileInformation1.sha256);
   proto_file_information->set_size(kFileInformation1.size);
   proto_file_information->set_company_name(
-      base::UTF16ToUTF8(kFileInformation1.company_name));
+      base::WideToUTF8(kFileInformation1.company_name));
   proto_file_information->set_company_short_name(
-      base::UTF16ToUTF8(kFileInformation1.company_short_name));
+      base::WideToUTF8(kFileInformation1.company_short_name));
   proto_file_information->set_product_name(
-      base::UTF16ToUTF8(kFileInformation1.product_name));
+      base::WideToUTF8(kFileInformation1.product_name));
   proto_file_information->set_product_short_name(
-      base::UTF16ToUTF8(kFileInformation1.product_short_name));
+      base::WideToUTF8(kFileInformation1.product_short_name));
   proto_file_information->set_internal_name(
-      base::UTF16ToUTF8(kFileInformation1.internal_name));
+      base::WideToUTF8(kFileInformation1.internal_name));
   proto_file_information->set_original_filename(
-      base::UTF16ToUTF8(kFileInformation1.original_filename));
+      base::WideToUTF8(kFileInformation1.original_filename));
   proto_file_information->set_file_description(
-      base::UTF16ToUTF8(kFileInformation1.file_description));
+      base::WideToUTF8(kFileInformation1.file_description));
   proto_file_information->set_file_version(
-      base::UTF16ToUTF8(kFileInformation1.file_version));
+      base::WideToUTF8(kFileInformation1.file_version));
   proto_file_information->set_active_file(kFileInformation1.active_file);
   MessageBuilder builder;
   AppendMatchedFile(matched_file, &builder);
@@ -831,11 +832,11 @@ TEST_P(CleanerLoggingServiceTest, AppendFolderInformation) {
 TEST_P(CleanerLoggingServiceTest, AppendMatchedRegistryEntry) {
   MatchedRegistryEntry matched_registry_entry;
   matched_registry_entry.set_key_path(
-      base::UTF16ToUTF8(kMatchedRegistryEntryKey));
+      base::WideToUTF8(kMatchedRegistryEntryKey));
   matched_registry_entry.set_value_name(
-      base::UTF16ToUTF8(kMatchedRegistryEntryValueName));
+      base::WideToUTF8(kMatchedRegistryEntryValueName));
   matched_registry_entry.set_value_substring(
-      base::UTF16ToUTF8(kMatchedRegistryEntryValueSubstring));
+      base::WideToUTF8(kMatchedRegistryEntryValueSubstring));
   MessageBuilder builder;
   AppendMatchedRegistryEntry(matched_registry_entry, &builder);
   EXPECT_EQ(kMatchedRegistryEntryToStringExpectedString, builder.content());
@@ -923,8 +924,8 @@ TEST_P(CleanerLoggingServiceTest, AddInstalledProgram) {
   FolderInformation folder_information =
       report.system_report().installed_programs(0).folder_information();
 
-  const base::string16 sanitized_path = SanitizePath(installed_program_path);
-  EXPECT_EQ(base::UTF16ToUTF8(sanitized_path), folder_information.path());
+  const std::wstring sanitized_path = SanitizePath(installed_program_path);
+  EXPECT_EQ(base::WideToUTF8(sanitized_path), folder_information.path());
   EXPECT_FALSE(folder_information.creation_date().empty());
   EXPECT_FALSE(folder_information.last_modified_date().empty());
 }
@@ -994,7 +995,7 @@ TEST_P(CleanerLoggingServiceTest, AddLayeredServiceProvider) {
   ASSERT_TRUE(report.ParseFromString(logging_service_->RawReportContent()));
   ASSERT_EQ(0, report.system_report().layered_service_providers_size());
 
-  std::vector<base::string16> guids;
+  std::vector<std::wstring> guids;
   guids.push_back(kGuid1);
   guids.push_back(kGuid2);
   logging_service_->AddLayeredServiceProvider(guids, kFileInformation1);
@@ -1008,8 +1009,8 @@ TEST_P(CleanerLoggingServiceTest, AddLayeredServiceProvider) {
 
   ASSERT_EQ(2, layered_service_provider.guids_size());
 
-  EXPECT_EQ(base::UTF16ToUTF8(guids.at(0)), layered_service_provider.guids(0));
-  EXPECT_EQ(base::UTF16ToUTF8(guids.at(1)), layered_service_provider.guids(1));
+  EXPECT_EQ(base::WideToUTF8(guids.at(0)), layered_service_provider.guids(0));
+  EXPECT_EQ(base::WideToUTF8(guids.at(1)), layered_service_provider.guids(1));
 
   ExpectFileInformationEqualToProtoObj(
       kFileInformation1, layered_service_provider.file_information());
@@ -1076,8 +1077,8 @@ TEST_P(CleanerLoggingServiceTest, AddInstalledExtension) {
   ASSERT_EQ(report.system_report().installed_extensions_size(), 0);
 
   internal::FileInformation file1, file2;
-  const base::string16 kFilePath1 = L"path/file1";
-  const base::string16 kFilePath2 = L"path/file2";
+  const std::wstring kFilePath1 = L"path/file1";
+  const std::wstring kFilePath2 = L"path/file2";
   file1.path = kFilePath1;
   file2.path = kFilePath2;
   logging_service_->AddInstalledExtension(
@@ -1097,7 +1098,7 @@ TEST_P(CleanerLoggingServiceTest, AddInstalledExtension) {
             installed_extension.install_method());
   ASSERT_EQ(installed_extension.extension_files().size(), 1);
   EXPECT_EQ(installed_extension.extension_files(0).path(),
-            base::UTF16ToUTF8(kFilePath1));
+            base::WideToUTF8(kFilePath1));
 
   installed_extension = report.system_report().installed_extensions(1);
   EXPECT_EQ(base::WideToUTF8(kExtensionId2),
@@ -1110,8 +1111,8 @@ TEST_P(CleanerLoggingServiceTest, AddInstalledExtension) {
       installed_extension.extension_files(0).path(),
       installed_extension.extension_files(1).path()};
   EXPECT_THAT(reported_files, testing::UnorderedElementsAreArray(
-                                  {base::UTF16ToUTF8(kFilePath1),
-                                   base::UTF16ToUTF8(kFilePath2)}));
+                                  {base::WideToUTF8(kFilePath1),
+                                   base::WideToUTF8(kFilePath2)}));
 }
 
 TEST_P(CleanerLoggingServiceTest, AddScheduledTask) {
@@ -1154,8 +1155,8 @@ TEST_P(CleanerLoggingServiceTest, LogProcessInformation) {
   io_counters.ReadTransferCount = 4;
   io_counters.WriteTransferCount = 5;
   io_counters.OtherTransferCount = 6;
-  SystemResourceUsage usage = {io_counters, base::TimeDelta::FromSeconds(10),
-                               base::TimeDelta::FromSeconds(20), 123456};
+  SystemResourceUsage usage = {io_counters, base::Seconds(10),
+                               base::Seconds(20), 123456};
 
   logging_service_->EnableUploads(true, registry_logger_.get());
   logging_service_->LogProcessInformation(SandboxType::kNonSandboxed, usage);
@@ -1180,7 +1181,7 @@ namespace {
 void AddFileToUwS(const base::FilePath& path, UwS* uws) {
   MatchedFile* file = uws->add_files();
   file->mutable_file_information()->set_path(
-      base::UTF16ToUTF8(SanitizePath(path)));
+      base::WideToUTF8(SanitizePath(path)));
   file->mutable_file_information()->set_active_file(
       PathHasActiveExtension(path));
   file->set_removal_status(REMOVAL_STATUS_MATCHED_ONLY);
@@ -1192,7 +1193,7 @@ void AddFileToUwS(const base::FilePath& path, UwS* uws) {
 void AddFolderToUwS(const base::FilePath& path, UwS* uws) {
   MatchedFolder* folder = uws->add_folders();
   folder->mutable_folder_information()->set_path(
-      base::UTF16ToUTF8(SanitizePath(path)));
+      base::WideToUTF8(SanitizePath(path)));
   folder->set_removal_status(REMOVAL_STATUS_MATCHED_ONLY);
 }
 
@@ -1227,7 +1228,7 @@ void ExpectUnknownRemovalStatus(const ChromeCleanerReport& report,
                                 const base::FilePath& path,
                                 RemovalStatus expected_status) {
   bool found = false;
-  std::string normalized_path = base::UTF16ToUTF8(SanitizePath(path));
+  std::string normalized_path = base::WideToUTF8(SanitizePath(path));
   for (const auto& file : report.unknown_uws().files()) {
     if (file.file_information().path() == normalized_path) {
       EXPECT_EQ(file.removal_status(), expected_status);
@@ -1509,12 +1510,11 @@ TEST_P(CleanerLoggingServiceTest, AllExpectedRemovalsConfirmed) {
 }
 
 TEST_P(CleanerLoggingServiceTest, AddShortcutData) {
-  const base::string16 kLnkPath = L"C:\\Users\\SomeUser";
-  const base::string16 kExecutablePath1 =
-      L"C:\\executable_path\\executable.exe";
-  const base::string16 kExecutablePath2 = L"C:\\executable_path\\bad_file.exe";
+  const std::wstring kLnkPath = L"C:\\Users\\SomeUser";
+  const std::wstring kExecutablePath1 = L"C:\\executable_path\\executable.exe";
+  const std::wstring kExecutablePath2 = L"C:\\executable_path\\bad_file.exe";
   const std::string kHash = "HASHSTRING";
-  const std::vector<base::string16> kCommandLineArguments = {
+  const std::vector<std::wstring> kCommandLineArguments = {
       L"some-argument", L"-ha", L"-ha", L"-ha"};
 
   logging_service_->AddShortcutData(kLnkPath, kExecutablePath1, kHash, {});
@@ -1528,10 +1528,10 @@ TEST_P(CleanerLoggingServiceTest, AddShortcutData) {
   shortcut1 = report.system_report().shortcut_data(0);
   shortcut2 = report.system_report().shortcut_data(1);
 
-  EXPECT_EQ(shortcut1.lnk_path(), base::UTF16ToUTF8(kLnkPath));
-  EXPECT_EQ(shortcut2.lnk_path(), base::UTF16ToUTF8(kLnkPath));
-  EXPECT_EQ(shortcut1.executable_path(), base::UTF16ToUTF8(kExecutablePath1));
-  EXPECT_EQ(shortcut2.executable_path(), base::UTF16ToUTF8(kExecutablePath2));
+  EXPECT_EQ(shortcut1.lnk_path(), base::WideToUTF8(kLnkPath));
+  EXPECT_EQ(shortcut2.lnk_path(), base::WideToUTF8(kLnkPath));
+  EXPECT_EQ(shortcut1.executable_path(), base::WideToUTF8(kExecutablePath1));
+  EXPECT_EQ(shortcut2.executable_path(), base::WideToUTF8(kExecutablePath2));
   EXPECT_EQ(shortcut1.executable_hash(), kHash);
   EXPECT_EQ(shortcut2.executable_hash(), kHash);
   EXPECT_EQ(shortcut1.command_line_arguments().size(), 0);

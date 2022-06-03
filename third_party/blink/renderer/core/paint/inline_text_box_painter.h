@@ -20,10 +20,11 @@ class Font;
 class GraphicsContext;
 class InlineTextBox;
 class LayoutObject;
-class LayoutPoint;
 class LayoutTextCombine;
 class StyleableMarker;
 class TextMarkerBase;
+struct PhysicalOffset;
+struct PhysicalRect;
 
 enum class DocumentMarkerPaintPhase { kForeground, kBackground };
 
@@ -34,7 +35,7 @@ class InlineTextBoxPainter {
   InlineTextBoxPainter(const InlineTextBox& inline_text_box)
       : inline_text_box_(inline_text_box) {}
 
-  void Paint(const PaintInfo&, const LayoutPoint& paint_offset);
+  void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   // We don't paint composition or spelling markers that overlap a suggestion
   // marker (to match the native Android behavior). This method lets us throw
@@ -44,23 +45,23 @@ class InlineTextBoxPainter {
 
   void PaintDocumentMarkers(const DocumentMarkerVector& markers_to_paint,
                             const PaintInfo&,
-                            const LayoutPoint& box_origin,
+                            const PhysicalOffset& box_origin,
                             const ComputedStyle&,
                             const Font&,
                             DocumentMarkerPaintPhase);
-  void PaintDocumentMarker(GraphicsContext&,
-                           const LayoutPoint& box_origin,
+  void PaintDocumentMarker(const PaintInfo&,
+                           const PhysicalOffset& box_origin,
                            const DocumentMarker&,
                            const ComputedStyle&,
                            const Font&,
                            bool grammar);
   void PaintTextMarkerForeground(const PaintInfo&,
-                                 const LayoutPoint& box_origin,
+                                 const PhysicalOffset& box_origin,
                                  const TextMarkerBase&,
                                  const ComputedStyle&,
                                  const Font&);
   void PaintTextMarkerBackground(const PaintInfo&,
-                                 const LayoutPoint& box_origin,
+                                 const PhysicalOffset& box_origin,
                                  const TextMarkerBase&,
                                  const ComputedStyle&,
                                  const Font&);
@@ -69,29 +70,32 @@ class InlineTextBoxPainter {
   enum class PaintOptions { kNormal, kCombinedText };
 
   void PaintSingleMarkerBackgroundRun(GraphicsContext&,
-                                      const LayoutPoint& box_origin,
+                                      const PhysicalOffset& box_origin,
                                       const ComputedStyle&,
                                       const Font&,
                                       Color background_color,
                                       int start_pos,
                                       int end_pos);
-  template <PaintOptions>
-  void PaintSelection(GraphicsContext&,
-                      const LayoutRect& box_rect,
-                      const ComputedStyle&,
-                      const Font&,
-                      Color text_color,
-                      LayoutTextCombine* = nullptr);
 
+  // Returns the selection rect.
   template <PaintOptions>
-  LayoutRect GetSelectionRect(GraphicsContext&,
-                              const LayoutRect& box_rect,
+  PhysicalRect PaintSelection(GraphicsContext&,
+                              const PhysicalRect& box_rect,
                               const ComputedStyle&,
                               const Font&,
+                              Color text_color,
                               LayoutTextCombine* = nullptr);
 
+  template <PaintOptions>
+  PhysicalRect GetSelectionRect(GraphicsContext&,
+                                const PhysicalRect& box_rect,
+                                const ComputedStyle&,
+                                const Font&,
+                                LayoutTextCombine* = nullptr,
+                                bool allow_empty_selection = false);
+
   void PaintStyleableMarkerUnderline(GraphicsContext&,
-                                     const LayoutPoint& box_origin,
+                                     const PhysicalOffset& box_origin,
                                      const StyleableMarker&,
                                      const ComputedStyle&,
                                      const Font&);
@@ -104,8 +108,7 @@ class InlineTextBoxPainter {
   // text match markers, which do draw over said ellipsis)
   PaintOffsets MarkerPaintStartAndEnd(const DocumentMarker&);
 
-  bool ShouldPaintTextBox(const PaintInfo&);
-  void ExpandToIncludeNewlineForSelection(LayoutRect&);
+  void ExpandToIncludeNewlineForSelection(PhysicalRect&);
   LayoutObject& InlineLayoutObject() const;
 
   const InlineTextBox& inline_text_box_;

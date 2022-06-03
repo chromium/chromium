@@ -9,7 +9,8 @@
 
 #include "base/atomicops.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"

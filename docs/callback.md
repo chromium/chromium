@@ -1,12 +1,13 @@
-# Callback<> and Bind()
+# OnceCallback<> and BindOnce(), RepeatingCallback<> and BindRepeating()
 
 [TOC]
 
 ## Introduction
 
-The templated `base::Callback<>` class is a generalized function object.
-Together with the `base::Bind()` function in base/bind.h, they provide a
-type-safe method for performing partial application of functions.
+The templated `base::{Once, Repeating}Callback<>` classes are generalized
+function objects. Together with the `base::Bind{Once, Repeating}()` functions in
+base/bind.h, they provide a type-safe method for performing partial application
+of functions.
 
 Partial application is the process of binding a subset of a function's arguments
 to produce another function that takes fewer arguments. This can be used to pass
@@ -14,15 +15,13 @@ around a unit of delayed execution, much like lexical closures are used in other
 languages. For example, it is used in Chromium code to schedule tasks on
 different MessageLoops.
 
-A callback with no unbound input parameters (`base::Callback<void()>`) is
-called a `base::Closure`. Note that this is NOT the same as what other
-languages refer to as a closure -- it does not retain a reference to its
-enclosing environment.
+A callback with no unbound input parameters (`base::OnceCallback<void()>`) is
+called a `base::OnceClosure`. The same pattern exists for
+base::RepeatingCallback, as base::RepeatingClosure. Note that this is NOT the
+same as what other languages refer to as a closure -- it does not retain a
+reference to its enclosing environment.
 
 ### OnceCallback<> And RepeatingCallback<>
-
-`base::OnceCallback<>` and `base::RepeatingCallback<>` are next gen callback
-classes, which are under development.
 
 `base::OnceCallback<>` is created by `base::BindOnce()`. This is a callback
 variant that is a move-only type and can be run only once. This moves out bound
@@ -37,11 +36,8 @@ internal ref-counting to make copies cheap. However, since ownership is shared,
 it is harder to reason about when the callback and the bound state are
 destroyed, especially when the callback is passed between threads.
 
-The legacy `base::Callback<>` is currently aliased to
-`base::RepeatingCallback<>`. In new code, prefer `base::OnceCallback<>` where
-possible, and use `base::RepeatingCallback<>` otherwise. Once the migration is
-complete, the type alias will be removed and `base::OnceCallback<>` will be renamed
-to `base::Callback<>` to emphasize that it should be preferred.
+Prefer `base::OnceCallback<>` where possible, and use `base::RepeatingCallback<>`
+otherwise.
 
 `base::RepeatingCallback<>` is convertible to `base::OnceCallback<>` by the
 implicit conversion.
@@ -84,6 +80,197 @@ moved-from `base::{Once,Repeating}Callback` becomes null, as if its `Reset()`
 method had been called. Afterward, its `is_null()` method will return true and
 its `operator bool()` will return false.
 
+### Chaining callbacks
+
+When you have 2 callbacks that you wish to run in sequence, they can be joined
+together into a single callback through the use of `Then()`.
+
+Calling `Then()` on a `base::OnceCallback` joins a second callback that will be
+run together with, but after, the first callback. The return value from the
+first callback is passed along to the second, and the return value from the
+second callback is returned at the end. More concretely, calling `a.Then(b)`
+produces a new `base::OnceCallback` that will run `b(a());`, returning the
+result from `b`.
+
+This example uses `Then()` to join 2 `base::OnceCallback`s together:
+```cpp
+int Floor(float f) { return std::floor(f); }
+std::string IntToString(int i) { return base::NumberToString(i); }
+
+base::OnceCallback<int(float)> first = base::BindOnce(&Floor);
+base::OnceCallback<std::string(int)> second = base::BindOnce(&IntToString);
+
+// This will run |first|, run and pass the result to |second|, then return
+// the result from |second|.
+std::string r = std::move(first).Then(std::move(second)).Run(3.5f);
+// |r| will be "3". |first| and |second| are now both null, as they were
+// consumed to perform the join operation.
+```
+
+Similarly, `Then()` also works with `base::RepeatingCallback`; however, the
+joined callback must also be a `base::RepeatingCallback` to ensure the resulting
+callback can be invoked multiple times.
+
+This example uses `Then()` to join 2 `base::RepeatingCallback`s together:
+```cpp
+int Floor(float f) { return std::floor(f); }
+std::string IntToString(int i) { return base::NumberToString(i); }
+
+base::RepeatingCallback<int(float)> first = base::BindRepeating(&Floor);
+base::RepeatingCallback<std::string(int)> second = base::BindRepeating(&IntToString);
+
+// This creates a RepeatingCallback that will run |first|, run and pass the
+// result to |second|, then return the result from |second|.
+base::RepeatingCallback<std::string(float)> joined =
+    std::move(first).Then(std::move(second));
+// |first| and |second| are now both null, as they were consumed to perform
+// the join operation.
+
+// This runs the functor that was originally bound to |first|, then |second|.
+std::string r = joined.Run(3.5);
+// |r| will be "3".
+
+// It's valid to call it multiple times since all callbacks involved are
+// base::RepeatingCallbacks.
+r = joined.Run(2.5);
+// |r| is set to "2".
+```
+
+In the above example, casting the `base::RepeatingCallback` to an r-value with
+`std::move()` causes `Then()` to destroy the original callback, in the same way
+that occurs for joining `base::OnceCallback`s. However since a
+`base::RepeatingCallback` can be run multiple times, it can be joined
+non-destructively as well.
+```cpp
+int Floor(float f) { return std::floor(f); }
+std::string IntToString(int i) { return base::NumberToString(i); }
+
+base::RepeatingCallback<int(float)> first = base::BindRepeating(&Floor);
+base::RepeatingCallback<std::string(int)> second = base::BindRepeating(&IntToString);
+
+// This creates a RepeatingCallback that will run |first|, run and pass the
+// result to |second|, then return the result from |second|.
+std::string r = first.Then(second).Run(3.5f);
+// |r| will be 3, and |first| and |second| are still valid to use.
+
+// Runs Floor().
+int i = first.Run(5.5);
+// Runs IntToString().
+std::string s = second.Run(9);
+```
+
+If the second callback does not want to receive a value from the first callback,
+you may use `base::IgnoreResult` to drop the return value in between running the
+two.
+
+```cpp
+// Returns an integer.
+base::RepeatingCallback<int()> first = base::BindRepeating([](){ return 5; });
+// Does not want to receive an integer.
+base::RepeatingClosure second = base::BindRepeating([](){});
+
+// This will not compile, because |second| can not receive the return value from
+// |first|.
+//   first.Then(second).Run();
+
+// We can drop the result from |first| before running second.
+base::BindRepeating(base::IgnoreResult(first)).Then(second).Run();
+// This will effectively create a callback that when Run() will call
+// `first(); second();` instead of `second(first());`.
+```
+
+Note that the return value from |first| will be lost in the above example, and
+would be destroyed before |second| is run. If you want the return value from
+|first| to be preserved and ultimately returned after running both |first| and
+|second|, then you would need a primitive such as the  `base::PassThrough<T>()`
+helper in the [base::PassThrough CL](https://chromium-review.googlesource.com/c/chromium/src/+/2493243).
+If this would be helpful for you, please let danakj@chromium.org know or ping
+the CL.
+
+### Chaining callbacks across different task runners
+
+```cpp
+// The task runner for a different thread.
+scoped_refptr<base::SequencedTaskRunner> other_task_runner = ...;
+
+// A function to compute some interesting result, except it can only be run
+// safely from `other_task_runner` and not the current thread.
+int ComputeResult();
+
+base::OnceCallback<int()> compute_result_cb = base::BindOnce(&ComputeResult);
+
+// Task runner for the current thread.
+scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+    base::SequencedTaskRunnerHandle::Get();
+
+// A function to accept the result, except it can only be run safely from the
+// current thread.
+void ProvideResult(int result);
+
+base::OnceCallback<void(int)> provide_result_cb =
+    base::BindOnce(&ProvideResult);
+```
+
+Using `Then()` to join `compute_result_cb` and `provide_result_cb` directly
+would be inappropriate. `ComputeResult()` and `ProvideResult()` would run on the
+same thread which isn't safe. However, `base::BindPostTask()` can be used to
+ensure `provide_result_cb` will run on `current_task_runner`.
+
+```cpp
+// The following two statements post a task to `other_task_runner` to run
+// `task`. This will invoke ComputeResult() on a different thread to get the
+// result value then post a task back to `current_task_runner` to invoke
+// ProvideResult() with the result.
+OnceClosure task =
+    std::move(compute_result_cb)
+        .Then(base::BindPostTask(current_task_runner,
+                                 std::move(provide_result_cb)));
+other_task_runner->PostTask(FROM_HERE, std::move(task));
+```
+
+### Splitting a OnceCallback in two
+
+If a callback is only run once, but two references need to be held to the
+callback, using a `base::OnceCallback` can be clearer than a
+`base::RepeatingCallback`, from an intent and semantics point of view.
+`base::SplitOnceCallback()` takes a `base::OnceCallback` and returns a pair of
+callbacks with the same signature. When either of the returned callback is run,
+the original callback is invoked. Running the leftover callback will result in a
+crash.
+This can be useful when passing a `base::OnceCallback` to a function that may or
+may not take ownership of the callback. E.g, when an object creation could fail:
+
+```cpp
+std::unique_ptr<FooTask> CreateFooTask(base::OnceClosure task) {
+  std::pair<base::OnceClosure,base::OnceClosure> split
+                                    = base::SplitOnceCallback(std::move(task));
+
+  std::unique_ptr<FooTask> foo = TryCreateFooTask(std::move(split.first));
+  if (foo)
+    return foo;
+
+  return CreateFallbackFooTask(std::move(split.second));
+}
+```
+
+While it is best to use a single callback to report success/failure, some APIs
+already take multiple callbacks. `base::SplitOnceCallback()` can be used to
+split a completion callback and help in such a case:
+
+```cpp
+using StatusCallback = base::OnceCallback<void(FooStatus)>;
+void DoOperation(StatusCallback done_cb) {
+  std::pair<StatusCallback, StatusCallback> split
+                                 = base::SplitOnceCallback(std::move(done_cb));
+
+  InnerWork(BindOnce(std::move(split.first), STATUS_OK),
+            BindOnce(std::move(split.second), STATUS_ABORTED));
+}
+
+void InnerWork(base::OnceClosure work_done_cb,
+               base::OnceClosure work_aborted_cb);
+```
+
 ## Quick reference for basic stuff
 
 ### Binding A Bare Function
@@ -103,11 +290,20 @@ LOG(INFO) << func_cb.Run();  // Prints 5.
 ### Binding A Captureless Lambda
 
 ```cpp
-base::Callback<int()> lambda_cb = base::Bind([] { return 4; });
+base::RepeatingCallback<int()> lambda_cb = base::BindRepeating([] { return 4; });
 LOG(INFO) << lambda_cb.Run();  // Print 4.
 
 base::OnceCallback<int()> lambda_cb2 = base::BindOnce([] { return 3; });
 LOG(INFO) << std::move(lambda_cb2).Run();  // Print 3.
+
+base::OnceCallback<int()> lambda_cb3 = base::BindOnce([] { return 2; });
+base::OnceCallback<int(base::OnceCallback<int()>)> lambda_cb4 =
+    base::BindOnce(
+        [](base::OnceCallback<int()> callback) {
+            return std::move(callback).Run(); },
+        std::move(lambda_cb3));
+LOG(INFO) << std::move(lambda_cb4).Run();  // Print 2.
+
 ```
 
 ### Binding A Capturing Lambda (In Tests)
@@ -116,10 +312,10 @@ When writing tests, it is often useful to capture arguments that need to be
 modified in a callback.
 
 ``` cpp
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 
 int i = 2;
-base::Callback<void()> lambda_cb = base::BindLambdaForTesting([&]() { i++; });
+base::RepeatingCallback<void()> lambda_cb = base::BindLambdaForTesting([&]() { i++; });
 lambda_cb.Run();
 LOG(INFO) << i;  // Print 3;
 ```
@@ -135,7 +331,7 @@ class Ref : public base::RefCountedThreadSafe<Ref> {
   int Foo() { return 3; }
 };
 scoped_refptr<Ref> ref = new Ref();
-base::Callback<void()> ref_cb = base::Bind(&Ref::Foo, ref);
+base::RepeatingCallback<void()> ref_cb = base::BindRepeating(&Ref::Foo, ref);
 LOG(INFO) << ref_cb.Run();  // Prints out 3.
 ```
 
@@ -151,7 +347,7 @@ the template argument to the callback. Note that `base::OnceCallback::Run`
 consumes the callback object and can only be invoked on a callback rvalue.
 
 ```cpp
-void DoSomething(const base::Callback<void(int, std::string)>& callback) {
+void DoSomething(const base::RepeatingCallback<void(int, std::string)>& callback) {
   callback.Run(5, "hello");
 }
 
@@ -172,9 +368,9 @@ void DoSomething(const base::RepeatingCallback<double(double)>& callback) {
 
 If running a callback could result in its own destruction (e.g., if the callback
 recipient deletes the object the callback is a member of), the callback should
-be moved before it can be safely invoked. (Note that this is only an issue for
-RepeatingCallbacks, because a OnceCallback always has to be moved for
-execution.)
+be moved or copied onto the stack before it can be safely invoked. (Note that
+this is only an issue for RepeatingCallbacks, because a OnceCallback always has
+to be moved for execution.)
 
 ```cpp
 void Foo::RunCallback() {
@@ -220,44 +416,45 @@ compile), you can instantiate directly:
 ```cpp
 // Binds |foo_ptr| to a no-op OnceCallback takes a scoped_refptr<Foo>.
 // ANTIPATTERN WARNING: This should likely be changed to ReleaseSoon()!
-base::Bind(base::DoNothing::Once<scoped_refptr<Foo>>(), foo_ptr);
+base::BindOnce(base::DoNothing::Once<scoped_refptr<Foo>>(), foo_ptr);
 ```
 
 ### Passing Unbound Input Parameters
 
 Unbound parameters are specified at the time a callback is `Run()`. They are
-specified in the `base::Callback` template type:
+specified in the `base::{Once, Repeating}Callback` template type:
 
 ```cpp
 void MyFunc(int i, const std::string& str) {}
-base::Callback<void(int, const std::string&)> cb = base::Bind(&MyFunc);
+base::RepeatingCallback<void(int, const std::string&)> cb = base::BindRepeating(&MyFunc);
 cb.Run(23, "hello, world");
 ```
 
 ### Passing Bound Input Parameters
 
 Bound parameters are specified when you create the callback as arguments to
-`base::Bind()`. They will be passed to the function and the `Run()`ner of the
+`base::Bind{Once, Repeating}()`. They will be passed to the function and the `Run()`ner of the
 callback doesn't see those values or even know that the function it's calling.
 
 ```cpp
 void MyFunc(int i, const std::string& str) {}
-base::Callback<void()> cb = base::Bind(&MyFunc, 23, "hello world");
+base::RepeatingCallback<void()> cb = base::BindRepeating(&MyFunc, 23, "hello world");
 cb.Run();
 ```
 
-A callback with no unbound input parameters (`base::Callback<void()>`) is
-called a `base::Closure`. So we could have also written:
+As described earlier, a callback with no unbound input parameters
+(`base::RepeatingCallback<void()>`) is called a `base::RepeatingClosure`. So we
+could have also written:
 
 ```cpp
-base::Closure cb = base::Bind(&MyFunc, 23, "hello world");
+base::RepeatingClosure cb = base::BindRepeating(&MyFunc, 23, "hello world");
 ```
 
 When calling member functions, bound parameters just go after the object
 pointer.
 
 ```cpp
-base::Closure cb = base::Bind(&MyClass::MyFunc, this, 23, "hello world");
+base::RepeatingClosure cb = base::BindRepeating(&MyClass::MyFunc, this, 23, "hello world");
 ```
 
 ### Partial Binding Of Parameters
@@ -296,12 +493,12 @@ internal storage if it is passed as a rvalue.
 ```cpp
 std::vector<int> v = {1, 2, 3};
 // |v| is moved into the internal storage without copy.
-base::Bind(&Foo, std::move(v));
+base::BindOnce(&Foo, std::move(v));
 ```
 
 ```cpp
 // The vector is moved into the internal storage without copy.
-base::Bind(&Foo, std::vector<int>({1, 2, 3}));
+base::BindOnce(&Foo, std::vector<int>({1, 2, 3}));
 ```
 
 Arguments bound with `base::BindOnce()` are always moved, if possible, to the
@@ -327,7 +524,7 @@ same thing and is more familiar.
 void Foo(std::unique_ptr<int>) {}
 auto p = std::make_unique<int>(42);
 
-// |p| is moved into the internal storage of Bind(), and moved out to |Foo|.
+// |p| is moved into the internal storage of BindOnce(), and moved out to |Foo|.
 base::BindOnce(&Foo, std::move(p));
 base::BindRepeating(&Foo, base::Passed(&p)); // Ok, but subtle.
 base::BindRepeating(&Foo, base::Passed(std::move(p))); // Ok, but subtle.
@@ -341,7 +538,7 @@ If `MyClass` has a `base::WeakPtr<MyClass> weak_this_` member (see below)
 then a class method can be bound with:
 
 ```cpp
-base::Bind(&MyClass::Foo, weak_this_);
+base::BindOnce(&MyClass::Foo, weak_this_);
 ```
 
 The callback will not be run if the object has already been destroyed.
@@ -350,7 +547,8 @@ Note that class method callbacks bound to `base::WeakPtr`s may only be
 run on the same sequence on which the object will be destroyed, since otherwise
 execution of the callback might race with the object's deletion.
 
-To use `base::WeakPtr` with `base::Bind()`, `MyClass` will typically look like:
+To use `base::WeakPtr` with `base::Bind{Once, Repeating}()` as the `this`
+pointer to a method bound in a callback, `MyClass` will typically look like:
 
 ```cpp
 class MyClass {
@@ -369,15 +567,15 @@ private:
 destroyed first. This ensures that if any class methods bound to `weak_this_`
 are `Run()` during teardown, then they will not actually be executed.
 
-If `MyClass` only ever `base::Bind()`s and executes callbacks on the same
-sequence, then it is generally safe to call `weak_factory_.GetWeakPtr()` at the
-`base::Bind()` call, rather than taking a separate `weak_this_` during
-construction.
+If `MyClass` only ever binds and executes callbacks on the same sequence, then
+it is generally safe to call `weak_factory_.GetWeakPtr()` at the
+`base::Bind{Once, Repeating}()` call, rather than taking a separate `weak_this_`
+during construction.
 
 ### Binding A Class Method With Manual Lifetime Management
 
 ```cpp
-base::Bind(&MyClass::Foo, base::Unretained(this));
+base::BindOnce(&MyClass::Foo, base::Unretained(this));
 ```
 
 This disables all lifetime management on the object. You're responsible for
@@ -388,7 +586,7 @@ it!
 
 ```cpp
 MyClass* myclass = new MyClass;
-base::Bind(&MyClass::Foo, base::Owned(myclass));
+base::BindOnce(&MyClass::Foo, base::Owned(myclass));
 ```
 
 The object will be deleted when the callback is destroyed, even if it's not run
@@ -399,7 +597,7 @@ Smart pointers (e.g. `std::unique_ptr<>`) are also supported as the receiver.
 
 ```cpp
 std::unique_ptr<MyClass> myclass(new MyClass);
-base::Bind(&MyClass::Foo, std::move(myclass));
+base::BindOnce(&MyClass::Foo, std::move(myclass));
 ```
 
 ### Ignoring Return Values
@@ -408,24 +606,33 @@ Sometimes you want to call a function that returns a value in a callback that
 doesn't expect a return value.
 
 ```cpp
-int DoSomething(int arg) { cout << arg << endl; }
-base::Callback<void(int)> cb =
-    base::Bind(IgnoreResult(&DoSomething));
+int DoSomething(int arg) {
+  cout << arg << endl;
+  return arg;
+}
+base::RepeatingCallback<void(int)> cb =
+    base::BindRepeating(IgnoreResult(&DoSomething));
 ```
 
-## Quick reference for binding parameters to Bind()
+Similarly, you may want to use an existing callback that returns a value in a
+place that expects a void return type.
 
-Bound parameters are specified as arguments to `base::Bind()` and are passed to
-the function. A callback with no parameters or no unbound parameters is called
-a `base::Closure` (`base::Callback<void()>` and `base::Closure` are the same
-thing).
+```cpp
+base::RepeatingCallback<int()> cb = base::BindRepeating([](){ return 5; });
+base::RepeatingClosure void_cb = base::BindRepeating(base::IgnoreResult(cb));
+```
+
+## Quick reference for binding parameters to BindOnce() and BindRepeating()
+
+Bound parameters are specified as arguments to `base::Bind{Once, Repeating}()`
+and are passed to the functions.
 
 ### Passing Parameters Owned By The Callback
 
 ```cpp
 void Foo(int* arg) { cout << *arg << endl; }
 int* pn = new int(1);
-base::Closure foo_callback = base::Bind(&foo, base::Owned(pn));
+base::RepeatingClosure foo_callback = base::BindRepeating(&foo, base::Owned(pn));
 ```
 
 The parameter will be deleted when the callback is destroyed, even if it's not
@@ -450,7 +657,7 @@ when it's destroyed.
 ```cpp
 void TakesOneRef(scoped_refptr<Foo> arg) {}
 scoped_refptr<Foo> f(new Foo);
-base::Closure cb = base::Bind(&TakesOneRef, f);
+base::RepeatingClosure cb = base::BindRepeating(&TakesOneRef, f);
 ```
 
 This should "just work." The closure will take a reference as long as it is
@@ -459,39 +666,87 @@ alive, and another reference will be taken for the called function.
 ```cpp
 void DontTakeRef(Foo* arg) {}
 scoped_refptr<Foo> f(new Foo);
-base::Closure cb = base::Bind(&DontTakeRef, base::RetainedRef(f));
+base::RepeatingClosure cb = base::BindRepeating(&DontTakeRef, base::RetainedRef(f));
 ```
 
 `base::RetainedRef` holds a reference to the object and passes a raw pointer to
 the object when the Callback is run.
 
-### Passing Parameters By Reference
+### Binding Const Reference Parameters
 
-References are *copied* unless `std::ref` or `std::cref` is used. Example:
+If the callback function takes a const reference parameter then the value is
+*copied* when bound unless `std::ref` or `std::cref` is used. Example:
 
 ```cpp
 void foo(const int& arg) { printf("%d %p\n", arg, &arg); }
 int n = 1;
-base::Closure has_copy = base::Bind(&foo, n);
-base::Closure has_ref = base::Bind(&foo, std::cref(n));
+base::OnceClosure has_copy = base::BindOnce(&foo, n);
+base::OnceClosure has_ref = base::BindOnce(&foo, std::cref(n));
 n = 2;
-foo(n);                        // Prints "2 0xaaaaaaaaaaaa"
-has_copy.Run();                // Prints "1 0xbbbbbbbbbbbb"
-has_ref.Run();                 // Prints "2 0xaaaaaaaaaaaa"
+foo(n);                                   // Prints "2 0xaaaaaaaaaaaa"
+std::move(has_copy).Run();                // Prints "1 0xbbbbbbbbbbbb"
+std::move(has_ref).Run();                 // Prints "2 0xaaaaaaaaaaaa"
 ```
 
-Normally parameters are copied in the closure.
-**DANGER**: `std::ref` and `std::cref` store a (const) reference instead,
-referencing the original parameter. This means that you must ensure the object
-outlives the callback!
+Normally parameters are copied in the closure. **DANGER**: `std::ref` and
+`std::cref` store a (const) reference instead, referencing the original
+parameter. This means that you must ensure the object outlives the callback!
+
+### Binding Non-Const Reference Parameters
+
+If the callback function takes a non-const reference then the bind statement
+must specify what behavior is desired. If a reference that can mutate the
+original value is desired then `std::ref` is used. If the callback should take
+ownership of the value, either by making a copy or moving an existing value,
+then `base::OwnedRef` is used. If neither is used the bind statement will fail
+to compile. Example:
+
+```cpp
+void foo(int& arg) {
+  printf("%d\n", arg);
+  ++arg;
+}
+
+int n = 0;
+base::RepeatingClosure has_ref = base::BindRepeating(&foo, std::ref(n));
+base::RepeatingClosure has_copy = base::BindRepeating(&foo, base::OwnedRef(n));
+
+foo(n);                        // Prints "0"
+has_ref.Run();                 // Prints "1"
+has_ref.Run();                 // Prints "2"
+foo(n);                        // Prints "3"
+
+has_copy.Run();                // Prints "0"
+has_copy.Run();                // Prints "1"
+
+// This will fail to compile.
+base::RepeatingClosure cb = base::BindRepeating(&foo, n);
+```
+
+Normally parameters are copied in the closure. **DANGER**: `std::ref` stores a
+reference instead, referencing the original parameter. This means that you must
+ensure the object outlives the callback!
+
+If the callback function has an output reference parameter but the output value
+isn't needed then `base::OwnedRef()` is a convenient way to handle it. The
+callback owned value will be mutated by the callback function and then deleted
+along with the callback. Example:
+
+```cpp
+bool Compute(size_t index, int& output);
+
+// The `output` parameter isn't important for the callback, it only cares about
+// the return value.
+base::OnceClosure cb = base::BindOnce(&Compute, index, base::OwnedRef(0));
+bool success = std::move(cb).Run();
+```
 
 ## Implementation notes
 
 ### Where Is This Design From:
 
-The design of `base::Callback` and `base::Bind` is heavily influenced by C++'s
-`tr1::function` / `tr1::bind`, and by the "Google Callback" system used inside
-Google.
+The design is heavily influenced by C++'s `tr1::function` / `tr1::bind`, and by
+the "Google Callback" system used inside Google.
 
 ### Customizing the behavior
 
@@ -522,35 +777,35 @@ If `base::IsWeakReceiver<Receiver>::value` is true on a receiver of a method,
 if it's evaluated to false. You can specialize `base::IsWeakReceiver` to make
 an external smart pointer as a weak pointer.
 
-`base::UnwrapTraits<BoundObject>::Unwrap()` is called for each bound arguments
-right before `base::Callback` calls the target function. You can specialize this
-to define an argument wrapper such as `base::Unretained`, `base::Owned`,
+`base::UnwrapTraits<BoundObject>::Unwrap()` is called for each bound argument
+right before the callback calls the target function. You can specialize this to
+define an argument wrapper such as `base::Unretained`, `base::Owned`,
 `base::RetainedRef` and `base::Passed`.
 
 ### How The Implementation Works:
 
 There are three main components to the system:
-  1) The `base::Callback<>` classes.
-  2) The `base::Bind()` functions.
+  1) The `base::{Once, Repeating}Callback<>` classes.
+  2) The `base::BindOnce() and base::BindRepeating()` functions.
   3) The arguments wrappers (e.g., `base::Unretained()` and `base::Owned()`).
 
 The Callback classes represent a generic function pointer. Internally, it
 stores a refcounted piece of state that represents the target function and all
-its bound parameters. The `base::Callback` constructor takes a
+its bound parameters. The `base::{Once, Repeating}Callback` constructor takes a
 `base::BindStateBase*`, which is upcasted from a `base::BindState<>`. In the
 context of the constructor, the static type of this `base::BindState<>` pointer
 uniquely identifies the function it is representing, all its bound parameters,
 and a `Run()` method that is capable of invoking the target.
 
-`base::Bind()` creates the `base::BindState<>` that has the full static type,
-and erases the target function type as well as the types of the bound
-parameters. It does this by storing a pointer to the specific `Run()` function,
-and upcasting the state of `base::BindState<>*` to a `base::BindStateBase*`.
-This is safe as long as this `BindStateBase` pointer is only used with the
-stored `Run()` pointer.
+base::BindOnce() or base::BindRepeating() creates the `base::BindState<>` that
+has the full static type, and erases the target function type as well as the
+types of the bound parameters. It does this by storing a pointer to the specific
+`Run()` function, and upcasting the state of `base::BindState<>*` to a
+`base::BindStateBase*`.  This is safe as long as this `BindStateBase` pointer is
+only used with the stored `Run()` pointer.
 
-To `base::BindState<>` objects are created inside the `base::Bind()` functions.
-These functions, along with a set of internal templates, are responsible for
+These bind functions, along with a set of internal templates, are responsible
+for
 
  - Unwrapping the function signature into return type, and parameters
  - Determining the number of parameters that are bound
@@ -563,18 +818,18 @@ These functions, along with a set of internal templates, are responsible for
 The `base::Bind` functions do the above using type-inference and variadic
 templates.
 
-By default `base::Bind()` will store copies of all bound parameters, and
+By default `base::Bind{Once, Repeating}()` will store copies of all bound parameters, and
 attempt to refcount a target object if the function being bound is a class
 method. These copies are created even if the function takes parameters as const
 references. (Binding to non-const references is forbidden, see bind.h.)
 
 To change this behavior, we introduce a set of argument wrappers (e.g.,
 `base::Unretained()`).  These are simple container templates that are passed by
-value, and wrap a pointer to argument.  See the file-level comment in
-base/bind_helpers.h for more info.
+value, and wrap a pointer to argument.  Each helper has a comment describing it
+in base/bind.h.
 
 These types are passed to the `Unwrap()` functions to modify the behavior of
-`base::Bind()`.  The `Unwrap()` functions change behavior by doing partial
+`base::Bind{Once, Repeating}()`.  The `Unwrap()` functions change behavior by doing partial
 specialization based on whether or not a parameter is a wrapper type.
 
 `base::Unretained()` is specific to Chromium.
@@ -585,15 +840,15 @@ specialization based on whether or not a parameter is a wrapper type.
 ```cpp
 void Foo(const char* ptr);
 void Bar(char* ptr);
-base::Bind(&Foo, "test");
-base::Bind(&Bar, "test");  // This fails because ptr is not const.
+base::BindOnce(&Foo, "test");
+base::BindOnce(&Bar, "test");  // This fails because ptr is not const.
 ```
  - In case of partial binding of parameters a possibility of having unbound
    parameters before bound parameters. Example:
 ```cpp
 void Foo(int x, bool y);
-base::Bind(&Foo, _1, false); // _1 is a placeholder.
+base::BindOnce(&Foo, _1, false); // _1 is a placeholder.
 ```
 
-If you are thinking of forward declaring `base::Callback` in your own header
+If you are thinking of forward declaring `base::{Once, Repeating}Callback` in your own header
 file, please include "base/callback_forward.h" instead.

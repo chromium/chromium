@@ -6,8 +6,6 @@
 
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 
 namespace ash {
 

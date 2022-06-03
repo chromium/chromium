@@ -1,4 +1,4 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
 // META: script=/wasm/jsapi/assertions.js
 
 function test_operations(object, object_name, operations) {
@@ -63,11 +63,11 @@ test(() => {
 }, "WebAssembly: property descriptor");
 
 test(() => {
-  assert_throws(new TypeError(), () => WebAssembly());
+  assert_throws_js(TypeError, () => WebAssembly());
 }, "WebAssembly: calling");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly());
+  assert_throws_js(TypeError, () => new WebAssembly());
 }, "WebAssembly: constructing");
 
 const interfaces = [

@@ -7,9 +7,6 @@
 
 #include <string>
 
-#include "components/prefs/pref_service.h"
-#include "ui/native_theme/native_theme.h"
-
 namespace pref_names_util {
 
 // Prefs prefix for all font types. Ends in a period.
@@ -21,9 +18,6 @@ extern const char kWebKitFontPrefPrefix[];
 bool ParseFontNamePrefPath(const std::string& pref_path,
                            std::string* generic_family,
                            std::string* script);
-
-// Constructs the CaptionStyle struct from the caption-related preferences.
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs);
 
 }  // namespace pref_names_util
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 
@@ -87,6 +87,8 @@ def validate(spec_json, details):
 
     details['object'] = spec_json
     assert_contains_only_fields(spec_json, [
+        "selection_pattern", "test_file_path_pattern",
+        "test_description_template", "test_page_title_template",
         "specification", "delivery_key", "subresource_schema",
         "source_context_schema", "source_context_list_schema",
         "test_expansion_schema", "excluded_tests"
@@ -99,19 +101,21 @@ def validate(spec_json, details):
     test_expansion_schema = spec_json['test_expansion_schema']
     excluded_tests = spec_json['excluded_tests']
 
-    valid_test_expansion_fields = ['name'] + test_expansion_schema.keys()
+    valid_test_expansion_fields = test_expansion_schema.keys()
 
     # Should be consistent with `sourceContextMap` in
     # `/common/security-features/resources/common.sub.js`.
     valid_source_context_names = [
         "top", "iframe", "iframe-blank", "srcdoc", "worker-classic",
-        "worker-module", "worker-classic-data", "worker-module-data"
+        "worker-module", "worker-classic-data", "worker-module-data",
+        "sharedworker-classic", "sharedworker-module",
+        "sharedworker-classic-data", "sharedworker-module-data"
     ]
 
     valid_subresource_names = [
         "a-tag", "area-tag", "audio-tag", "form-tag", "iframe-tag", "img-tag",
         "link-css-tag", "link-prefetch-tag", "object-tag", "picture-tag",
-        "script-tag", "video-tag"
+        "script-tag", "script-tag-dynamic-import", "video-tag"
     ] + ["beacon", "fetch", "xhr", "websocket"] + [
         "worker-classic", "worker-module", "worker-import",
         "worker-import-data", "sharedworker-classic", "sharedworker-module",
@@ -132,24 +136,15 @@ def validate(spec_json, details):
 
         # Validate required fields for a single spec.
         assert_contains_only_fields(spec, [
-            'name', 'title', 'description', 'specification_url',
-            'test_expansion'
+            'title', 'description', 'specification_url', 'test_expansion'
         ])
-        assert_non_empty_string(spec, 'name')
         assert_non_empty_string(spec, 'title')
         assert_non_empty_string(spec, 'description')
         assert_non_empty_string(spec, 'specification_url')
         assert_non_empty_list(spec, 'test_expansion')
 
-        # Validate spec's test expansion.
-        used_spec_names = {}
-
         for spec_exp in spec['test_expansion']:
             details['object'] = spec_exp
-            assert_non_empty_string(spec_exp, 'name')
-            # The name is unique in same expansion group.
-            assert_value_unique_in((spec_exp['expansion'], spec_exp['name']),
-                                   used_spec_names)
             assert_contains_only_fields(spec_exp, valid_test_expansion_fields)
 
             for artifact in test_expansion_schema:

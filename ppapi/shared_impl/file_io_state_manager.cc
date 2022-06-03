@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/file_io_state_manager.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ppapi/c/pp_errors.h"
 
 namespace ppapi {

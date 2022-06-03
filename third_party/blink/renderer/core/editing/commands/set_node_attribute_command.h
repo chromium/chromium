@@ -37,7 +37,7 @@ class SetNodeAttributeCommand final : public SimpleEditCommand {
                           const QualifiedName& attribute,
                           const AtomicString& value);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

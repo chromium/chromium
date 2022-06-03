@@ -16,6 +16,10 @@ extern const char kAppPackageVersionCode[];
 
 extern const char kAndroidSdkInt[];
 
+extern const char kWeblayerWebViewCompatMode[];
+
+extern const char* const kWebLayerCrashKeyAllowList[];
+
 }  // namespace crash_keys
 
 void SetWebLayerCrashKeys();

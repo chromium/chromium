@@ -4,8 +4,8 @@
 
 #include "ash/system/power/power_button_menu_item_view.h"
 
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
@@ -25,39 +25,35 @@ constexpr int kIconSize = 24;
 // Top padding of the image icon to the top of the item view.
 constexpr int kIconTopPadding = 17;
 
-// Top padding of the label of title to the top of the item view.
-constexpr int kTitleTopPadding = 52;
+// The distance from one line title's bottom to the top of the item view.
+constexpr int kTitleTopPaddingIncludesOneLineHeight =
+    kIconTopPadding + kIconSize + 22;
 
 // The amount of rounding applied to the corners of the focused menu item.
 constexpr int kFocusedItemRoundRectRadiusDp = 8;
 
+// Line height of the label.
+constexpr int kLineHeight = 20;
+
 }  // namespace
 
 PowerButtonMenuItemView::PowerButtonMenuItemView(
-    views::ButtonListener* listener,
+    PressedCallback callback,
     const gfx::VectorIcon& icon,
-    const base::string16& title_text)
-    : views::ImageButton(listener),
-      icon_view_(new views::ImageView),
-      title_(new views::Label) {
+    const std::u16string& title_text)
+    : views::ImageButton(std::move(callback)), icon_(icon) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   SetFocusPainter(nullptr);
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
 
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  icon_view_->SetImage(gfx::CreateVectorIcon(
-      icon, color_provider->DeprecatedGetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconPrimary,
-                kPowerButtonMenuItemIconColor)));
-  AddChildView(icon_view_);
-
+  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title_->SetEnabledColor(color_provider->DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextPrimary,
-      kPowerButtonMenuItemTitleColor));
   title_->SetText(title_text);
-  AddChildView(title_);
+  title_->SetVerticalAlignment(gfx::ALIGN_TOP);
+  title_->SetLineHeight(kLineHeight);
+  title_->SetMultiLine(true);
+  title_->SetMaxLines(2);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().OverrideName(title_->GetText());
 
@@ -80,11 +76,10 @@ void PowerButtonMenuItemView::Layout() {
   icon_rect.set_y(kIconTopPadding);
   icon_view_->SetBoundsRect(icon_rect);
 
-  gfx::Rect title_rect(rect);
-  title_rect.ClampToCenteredSize(
-      gfx::Size(kMenuItemWidth, title_->font_list().GetHeight()));
-  title_rect.set_y(kTitleTopPadding);
-  title_->SetBoundsRect(title_rect);
+  const int kTitleTopPadding =
+      kTitleTopPaddingIncludesOneLineHeight - title_->font_list().GetHeight();
+  title_->SetBoundsRect(gfx::Rect(0, kTitleTopPadding, kMenuItemWidth,
+                                  kMenuItemHeight - kTitleTopPadding));
 }
 
 gfx::Size PowerButtonMenuItemView::CalculatePreferredSize() const {
@@ -100,6 +95,17 @@ void PowerButtonMenuItemView::OnFocus() {
 
 void PowerButtonMenuItemView::OnBlur() {
   SchedulePaint();
+}
+
+void PowerButtonMenuItemView::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  const auto* color_provider = AshColorProvider::Get();
+  icon_view_->SetImage(gfx::CreateVectorIcon(
+      icon_, color_provider->GetContentLayerColor(
+                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  title_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
@@ -118,9 +124,9 @@ void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(gfx::Insets(kItemBorderThickness));
   // Stroke.
-  flags.setColor(AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRing,
-      kPowerButtonMenuItemFocusColor));
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
   flags.setStrokeWidth(kItemBorderThickness);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
   canvas->DrawRoundRect(bounds, kFocusedItemRoundRectRadiusDp, flags);

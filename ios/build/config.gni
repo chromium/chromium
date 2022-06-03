@@ -23,8 +23,9 @@ _ios_transient_bad_dependencies = []
 
 # Global list of dependencies that should never be added to extensions.
 ios_extension_assert_no_deps = [
-  "//ios/chrome/browser",
   "//ios/chrome/browser/*",
+  "//net/*",
+  "//url/*",
 ]
 
 ios_assert_no_deps =

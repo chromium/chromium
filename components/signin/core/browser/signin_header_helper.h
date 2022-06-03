@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -20,10 +21,12 @@ class CookieSettings;
 }
 
 namespace net {
-class URLRequest;
+class HttpRequestHeaders;
 }
 
 namespace signin {
+
+enum class Tribool;
 
 // Profile mode flags.
 enum ProfileMode {
@@ -35,21 +38,32 @@ enum ProfileMode {
 };
 
 extern const char kChromeConnectedHeader[];
+extern const char kChromeManageAccountsHeader[];
 extern const char kDiceRequestHeader[];
 extern const char kDiceResponseHeader[];
+
+// The X-Auto-Login header detects when a user is prompted to enter their
+// credentials on the Gaia sign-in page. It is sent with an empty email if the
+// user is on the Gaia sign-in email page or a pre-filled email if the user has
+// selected an account on the AccountChooser. X-Auto-Login is not sent following
+// a reauth request.
+extern const char kAutoLoginHeader[];
 
 // The ServiceType specified by Gaia in the response header accompanying the 204
 // response. This indicates the action Chrome is supposed to lead the user to
 // perform.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin
+// NOTE: This enum is persisted to histograms. Do not change or reorder
+// values.
 enum GAIAServiceType : int {
   GAIA_SERVICE_TYPE_NONE = 0,    // No Gaia response header.
   GAIA_SERVICE_TYPE_SIGNOUT,     // Logout all existing sessions.
   GAIA_SERVICE_TYPE_INCOGNITO,   // Open an incognito tab.
-  GAIA_SERVICE_TYPE_ADDSESSION,  // Add a secondary account.
+  GAIA_SERVICE_TYPE_ADDSESSION,  // Add or re-authenticate an account.
   GAIA_SERVICE_TYPE_SIGNUP,      // Create a new account.
   GAIA_SERVICE_TYPE_DEFAULT,     // All other cases.
+  kMaxValue = GAIA_SERVICE_TYPE_DEFAULT
 };
 
 enum class DiceAction {
@@ -62,19 +76,24 @@ enum class DiceAction {
 // Struct describing the parameters received in the manage account header.
 struct ManageAccountsParams {
   // The requested service type such as "ADDSESSION".
-  GAIAServiceType service_type;
+  GAIAServiceType service_type = GAIA_SERVICE_TYPE_NONE;
   // The prefilled email.
   std::string email;
   // Whether |email| is a saml account.
-  bool is_saml;
+  bool is_saml = false;
   // The continue URL after the requested service is completed successfully.
   // Defaults to the current URL if empty.
   std::string continue_url;
   // Whether the continue URL should be loaded in the same tab.
-  bool is_same_tab;
+  bool is_same_tab = false;
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  // Whether to show consistency promo.
+  bool show_consistency_promo = false;
+#endif
 
   ManageAccountsParams();
   ManageAccountsParams(const ManageAccountsParams& other);
+  ManageAccountsParams& operator=(const ManageAccountsParams& other);
 };
 
 // Struct describing the parameters received in the Dice response header.
@@ -105,6 +124,9 @@ struct DiceResponseParams {
     AccountInfo account_info;
     // Authorization code to fetch a refresh token.
     std::string authorization_code;
+    // Whether Dice response contains the 'no_authorization_code' header value.
+    // If true then LSO was unavailable for provision of auth code.
+    bool no_authorization_code = false;
   };
 
   // Parameters for the SIGNOUT action.
@@ -128,9 +150,14 @@ struct DiceResponseParams {
   };
 
   DiceResponseParams();
-  ~DiceResponseParams();
+
+  DiceResponseParams(const DiceResponseParams&) = delete;
+  DiceResponseParams& operator=(const DiceResponseParams&) = delete;
+
   DiceResponseParams(DiceResponseParams&&);
   DiceResponseParams& operator=(DiceResponseParams&&);
+
+  ~DiceResponseParams();
 
   DiceAction user_intention = DiceAction::NONE;
 
@@ -142,32 +169,38 @@ struct DiceResponseParams {
 
   // Populated when |user_intention| is ENABLE_SYNC.
   std::unique_ptr<EnableSyncInfo> enable_sync_info;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiceResponseParams);
 };
 
 class RequestAdapter {
  public:
-  explicit RequestAdapter(net::URLRequest* request);
+  RequestAdapter(const GURL& url,
+                 const net::HttpRequestHeaders& original_headers,
+                 net::HttpRequestHeaders* modified_headers,
+                 std::vector<std::string>* headers_to_remove);
+
+  RequestAdapter(const RequestAdapter&) = delete;
+  RequestAdapter& operator=(const RequestAdapter&) = delete;
+
   virtual ~RequestAdapter();
 
-  virtual const GURL& GetUrl();
-  virtual bool HasHeader(const std::string& name);
-  virtual void RemoveRequestHeaderByName(const std::string& name);
-  virtual void SetExtraHeaderByName(const std::string& name,
-                                    const std::string& value);
-
- protected:
-  net::URLRequest* const request_;
+  const GURL& GetUrl();
+  bool HasHeader(const std::string& name);
+  void RemoveRequestHeaderByName(const std::string& name);
+  void SetExtraHeaderByName(const std::string& name, const std::string& value);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RequestAdapter);
+  const GURL url_;
+  const net::HttpRequestHeaders& original_headers_;
+  net::HttpRequestHeaders* const modified_headers_;
+  std::vector<std::string>* const headers_to_remove_;
 };
 
 // Base class for managing the signin headers (Dice and Chrome-Connected).
 class SigninHeaderHelper {
  public:
+  SigninHeaderHelper(const SigninHeaderHelper&) = delete;
+  SigninHeaderHelper& operator=(const SigninHeaderHelper&) = delete;
+
   // Appends or remove the header to a network request if necessary.
   // Returns whether the request has the request header.
   bool AppendOrRemoveRequestHeader(RequestAdapter* request,
@@ -181,10 +214,6 @@ class SigninHeaderHelper {
       const GURL& url,
       const content_settings::CookieSettings* cookie_settings) = 0;
 
- protected:
-  SigninHeaderHelper();
-  virtual ~SigninHeaderHelper();
-
   // Dictionary of fields in a account consistency response header.
   using ResponseHeaderDictionary = std::multimap<std::string, std::string>;
 
@@ -193,13 +222,17 @@ class SigninHeaderHelper {
   static ResponseHeaderDictionary ParseAccountConsistencyResponseHeader(
       const std::string& header_value);
 
- private:
+ protected:
+  SigninHeaderHelper();
+  virtual ~SigninHeaderHelper();
+
   // Returns whether the url is eligible for the request header.
   virtual bool IsUrlEligibleForRequestHeader(const GURL& url) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninHeaderHelper);
 };
 
+// Returns whether the url is eligible for account consistency on Google
+// domains.
+bool IsUrlEligibleForMirrorCookie(const GURL& url);
 
 // Returns the CHROME_CONNECTED cookie, or an empty string if it should not be
 // added to the request to |url|.
@@ -213,13 +246,18 @@ std::string BuildMirrorRequestCookieIfPossible(
 // Adds the mirror header to all Gaia requests from a connected profile, with
 // the exception of requests from gaia webview.
 // Removes the header in case it should not be transfered to a redirected url.
+// If |force_account_consistency| is true, the mirror header will still be added
+// in cases where |gaia_id| is empty.
 void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
     const std::string& gaia_id,
+    Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
-    int profile_mode_mask);
+    int profile_mode_mask,
+    const std::string& source,
+    bool force_account_consistency);
 
 // Adds the Dice to all Gaia requests from a connected profile, with the
 // exception of requests from gaia webview.

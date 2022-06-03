@@ -10,10 +10,24 @@
 
 namespace content {
 
-// Binds a mojom::ReportingServiceProxy to |request| that queues reports using
-// |render_process_id|'s NetworkContext. This must be called on the UI thread.
-void CreateReportingServiceProxy(
-    int render_process_id,
+class DedicatedWorkerHost;
+class RenderFrameHost;
+class ServiceWorkerHost;
+class SharedWorkerHost;
+
+// These methods method bind a mojom::ReportingServiceProxy for the specified
+// object type. They must be called on the UI thread.
+void CreateReportingServiceProxyForFrame(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
+void CreateReportingServiceProxyForServiceWorker(
+    ServiceWorkerHost* service_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
+void CreateReportingServiceProxyForSharedWorker(
+    SharedWorkerHost* shared_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
+void CreateReportingServiceProxyForDedicatedWorker(
+    DedicatedWorkerHost* dedicated_worker_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
 
 }  // namespace content

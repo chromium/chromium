@@ -19,7 +19,7 @@
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
-#include "sandbox/win/src/win2k_threadpool.h"
+#include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -35,6 +35,9 @@ class BrokerServicesBase final : public BrokerServices,
                                  public SingletonBase<BrokerServicesBase> {
  public:
   BrokerServicesBase();
+
+  BrokerServicesBase(const BrokerServicesBase&) = delete;
+  BrokerServicesBase& operator=(const BrokerServicesBase&) = delete;
 
   ~BrokerServicesBase();
 
@@ -52,10 +55,6 @@ class BrokerServicesBase final : public BrokerServices,
       std::unique_ptr<PolicyDiagnosticsReceiver> receiver) override;
 
  private:
-  // The routine that the worker thread executes. It is in charge of
-  // notifications and cleanup-related tasks.
-  static DWORD WINAPI TargetEventsThread(PVOID param);
-
   // The completion port used by the job objects to communicate events to
   // the worker thread.
   base::win::ScopedHandle job_port_;
@@ -68,9 +67,8 @@ class BrokerServicesBase final : public BrokerServices,
   base::win::ScopedHandle job_thread_;
 
   // Provides a pool of threads that are used to wait on the IPC calls.
-  std::unique_ptr<ThreadProvider> thread_pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerServicesBase);
+  // Owned by TargetEventsThread which is alive until our destructor.
+  ThreadPool* thread_pool_ = nullptr;
 };
 
 }  // namespace sandbox

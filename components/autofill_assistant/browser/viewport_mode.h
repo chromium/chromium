@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_VIEWPORT_MODE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_VIEWPORT_MODE_H_
 
-#include <string>
-
 #include "base/callback.h"
 
 namespace autofill_assistant {

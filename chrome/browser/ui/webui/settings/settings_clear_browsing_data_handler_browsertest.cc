@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 
 #include "base/values.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,7 +42,7 @@ class ClearBrowsingDataHandlerBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
   ClearBrowsingDataHandlerBrowserTest() = default;
-  ~ClearBrowsingDataHandlerBrowserTest() = default;
+  ~ClearBrowsingDataHandlerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -50,7 +51,6 @@ class ClearBrowsingDataHandlerBrowserTest
         web_ui(), browser()->profile());
     handler_->AllowJavascriptForTesting();
     handler_->RegisterMessages();
-    ASSERT_TRUE(https_server()->Start());
   }
 
   void TearDownOnMainThread() override { handler_.reset(); }
@@ -79,14 +79,15 @@ class ClearBrowsingDataHandlerBrowserTest
   content::TestWebUI web_ui_;
 };
 
-IN_PROC_BROWSER_TEST_P(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
-  GURL url(https_server()->GetURL("/"));
+IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
+  GURL url(https_server()->GetURL("/title1.html"));
   InstallAndLaunchApp(url);
-  base::ListValue args;
-  args.AppendString(kWebUiFunctionName);
-  args.AppendInteger(1U);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kWebUiFunctionName);
+  args.Append(1);
 
-  web_ui()->HandleReceivedMessage(kGetInstalledApps, &args);
+  web_ui()->HandleReceivedMessage(kGetInstalledApps,
+                                  &base::Value::AsListValue(args));
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ(kWebUiFunctionName, call_data.arg1()->GetString());
@@ -98,14 +99,5 @@ IN_PROC_BROWSER_TEST_P(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
   auto& installed_app = result.back();
   ASSERT_EQ(url.host(), *(installed_app.FindStringKey("registerableDomain")));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ClearBrowsingDataHandlerBrowserTest,
-    ::testing::Values(
-        web_app::ControllerType::kHostedAppController,
-        web_app::ControllerType::kUnifiedControllerWithBookmarkApp,
-        web_app::ControllerType::kUnifiedControllerWithWebApp),
-    web_app::ControllerTypeParamToString);
 
 }  // namespace settings

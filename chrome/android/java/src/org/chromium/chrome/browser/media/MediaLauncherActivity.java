@@ -13,9 +13,10 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.metrics.CachedMetrics;
+import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.util.IntentUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,6 +27,8 @@ import java.util.Locale;
  * content:// URI from the Intent and properly routes it to a media-viewing CustomTabActivity.
  */
 public class MediaLauncherActivity extends Activity {
+    private static final String TAG = "MediaLauncher";
+
     // UMA histogram values for media types the user can open.
     // Keep in sync with MediaLauncherActivityMediaType enum in enums.xml.
     @IntDef({MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO})
@@ -38,10 +41,6 @@ public class MediaLauncherActivity extends Activity {
         int NUM_ENTRIES = 4;
     }
 
-    private static CachedMetrics.EnumeratedHistogramSample sMediaTypeHistogram =
-            new CachedMetrics.EnumeratedHistogramSample(
-                    "MediaLauncherActivity.MediaType", MediaType.NUM_ENTRIES);
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +50,8 @@ public class MediaLauncherActivity extends Activity {
         String mimeType = getMIMEType(contentUri);
         int mediaType = MediaViewerUtils.getMediaTypeFromMIMEType(mimeType);
 
-        sMediaTypeHistogram.record(mediaType);
+        RecordHistogram.recordEnumeratedHistogram(
+                "MediaLauncherActivity.MediaType", mediaType, MediaType.NUM_ENTRIES);
 
         if (mediaType == MediaType.UNKNOWN) {
             // With our intent-filter, we should only receive implicit intents with media MIME
@@ -63,11 +63,20 @@ public class MediaLauncherActivity extends Activity {
 
         // TODO(https://crbug.com/800880): Determine file:// URI when possible.
         Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                contentUri, contentUri, mimeType, false /* allowExternalAppHandlers */);
+                contentUri, contentUri, mimeType, false /* allowExternalAppHandlers */, this);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
                 CustomTabIntentDataProvider.LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY);
-        startActivity(intent);
+
+        boolean success = false;
+        try {
+            startActivity(intent);
+            success = true;
+        } catch (SecurityException e) {
+            Log.w(TAG, "Cannot open content URI: " + contentUri.toString(), e);
+        }
+
+        RecordHistogram.recordBooleanHistogram("MediaLauncherActivity.LaunchResult", success);
 
         finish();
     }

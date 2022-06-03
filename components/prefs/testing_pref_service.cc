@@ -17,6 +17,7 @@
 template <>
 TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
     TestingPrefStore* managed_prefs,
+    TestingPrefStore* supervised_user_prefs,
     TestingPrefStore* extension_prefs,
     TestingPrefStore* user_prefs,
     TestingPrefStore* recommended_prefs,
@@ -25,9 +26,9 @@ TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
     : PrefService(
           std::unique_ptr<PrefNotifierImpl>(pref_notifier),
           std::make_unique<PrefValueStore>(managed_prefs,
-                                           nullptr,
+                                           supervised_user_prefs,
                                            extension_prefs,
-                                           nullptr,
+                                           /*command_line_prefs=*/nullptr,
                                            user_prefs,
                                            recommended_prefs,
                                            pref_registry->defaults().get(),
@@ -39,16 +40,18 @@ TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
                                       PrefRegistry>::HandleReadError),
           false),
       managed_prefs_(managed_prefs),
+      supervised_user_prefs_(supervised_user_prefs),
       extension_prefs_(extension_prefs),
       user_prefs_(user_prefs),
       recommended_prefs_(recommended_prefs) {}
 
 TestingPrefServiceSimple::TestingPrefServiceSimple()
     : TestingPrefServiceBase<PrefService, PrefRegistry>(
-          new TestingPrefStore(),
-          new TestingPrefStore(),
-          new TestingPrefStore(),
-          new TestingPrefStore(),
+          /*managed_prefs=*/new TestingPrefStore(),
+          /*supervised_user_prefs=*/new TestingPrefStore(),
+          /*extension_prefs=*/new TestingPrefStore(),
+          /*user_prefs=*/new TestingPrefStore(),
+          /*recommended_prefs=*/new TestingPrefStore(),
           new PrefRegistrySimple(),
           new PrefNotifierImpl()) {}
 

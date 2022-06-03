@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule works after switching nodes.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>
@@ -46,15 +46,15 @@
     }
   }
 
-  function step4() {
+  async function step4() {
     TestRunner.addResult('After adding new rule (inspected):');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true, true);
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step5);
   }
 
-  function step5() {
+  async function step5() {
     TestRunner.addResult('After adding new rule (other):');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     testFinished = true;
     maybeCompleteTest();
   }

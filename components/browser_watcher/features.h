@@ -9,17 +9,13 @@
 
 namespace browser_watcher {
 
-// Enables recording persistent stability information, which can later be
-// collected in the event of an unclean shutdown.
-extern const base::Feature kStabilityDebuggingFeature;
+// Enables activity tracking and extending crash reports with structured
+// high-level program state.
+extern const base::Feature kExtendedCrashReportingFeature;
 
-// Name of an experiment parameter that controls whether to perform an initial
-// flush.
-extern const char kInitFlushParam[];
-
-// Name of an experiment parameter that controls whether to collect postmortem
-// reports.
-extern const char kCollectPostmortemParam[];
+// Name of an experiment parameter that controls whether to record browser
+// activity in-memory only.
+extern const char kInMemoryOnlyParam[];
 
 }  // namespace browser_watcher
 

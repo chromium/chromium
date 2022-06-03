@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var source = HeapProfilerTestRunner.createHeapSnapshotMockRaw();
@@ -18,7 +18,7 @@
 
     var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
 
-    TestRunner.override(TestRunner.HeapProfilerAgent, 'takeHeapSnapshot', takeHeapSnapshotMock);
+    TestRunner.override(TestRunner.HeapProfilerAgent, 'invoke_takeHeapSnapshot', takeHeapSnapshotMock);
     function takeHeapSnapshotMock(reportProgress) {
       if (reportProgress) {
         profileType._reportHeapSnapshotProgress({data: {done: 50, total: 100, finished: false}});

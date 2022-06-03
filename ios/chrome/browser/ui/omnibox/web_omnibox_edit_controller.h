@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_SHARED_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
-#define IOS_SHARED_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
 
 #include "base/macros.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
@@ -15,6 +15,9 @@ class WebState;
 // iOS-specific extension of the OmniboxEditController base class.
 class WebOmniboxEditController : public OmniboxEditController {
  public:
+  WebOmniboxEditController(const WebOmniboxEditController&) = delete;
+  WebOmniboxEditController& operator=(const WebOmniboxEditController&) = delete;
+
   // Returns the WebState of the currently active tab.
   virtual web::WebState* GetWebState() = 0;
 
@@ -28,9 +31,6 @@ class WebOmniboxEditController : public OmniboxEditController {
  protected:
   WebOmniboxEditController();
   ~WebOmniboxEditController() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebOmniboxEditController);
 };
 
-#endif  // IOS_SHARED_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_

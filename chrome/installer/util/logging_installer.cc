@@ -13,18 +13,22 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
-#include "chrome/installer/util/master_preferences.h"
-#include "chrome/installer/util/master_preferences_constants.h"
+#include "chrome/installer/util/initial_preferences.h"
+#include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
 
 // {93BCE0BF-3FAF-43b1-9E28-BEB6FAB5ECE7}
-static const GUID kSetupTraceProvider = { 0x93bce0bf, 0x3faf, 0x43b1,
-    { 0x9e, 0x28, 0xbe, 0xb6, 0xfa, 0xb5, 0xec, 0xe7 } };
+static const GUID kSetupTraceProvider = {
+    0x93bce0bf,
+    0x3faf,
+    0x43b1,
+    {0x9e, 0x28, 0xbe, 0xb6, 0xfa, 0xb5, 0xec, 0xe7}};
 
 namespace installer {
 
@@ -51,17 +55,16 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
       if (base::Move(log_file, tmp_log)) {
         int64_t offset = log_size - kTruncatedInstallerLogFileSize;
         std::string old_log_data(kTruncatedInstallerLogFileSize, 0);
-        int bytes_read = old_log_file.Read(offset,
-                                           &old_log_data[0],
+        int bytes_read = old_log_file.Read(offset, &old_log_data[0],
                                            kTruncatedInstallerLogFileSize);
         if (bytes_read > 0 &&
-            (bytes_read == base::WriteFile(log_file, &old_log_data[0],
-                                           bytes_read) ||
+            (bytes_read ==
+                 base::WriteFile(log_file, &old_log_data[0], bytes_read) ||
              base::PathExists(log_file))) {
           result = LOGFILE_TRUNCATED;
         }
       }
-    } else if (base::DeleteFile(log_file, false)) {
+    } else if (base::DeleteFile(log_file)) {
       // Couldn't get sufficient access to the log file, optimistically try to
       // delete it.
       result = LOGFILE_DELETED;
@@ -71,16 +74,15 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
   return result;
 }
 
-
-void InitInstallerLogging(const installer::MasterPreferences& prefs) {
+void InitInstallerLogging(const installer::InitialPreferences& prefs) {
   if (installer_logging_)
     return;
 
   installer_logging_ = true;
 
   bool value = false;
-  if (prefs.GetBool(installer::master_preferences::kDisableLogging,
-                    &value) && value) {
+  if (prefs.GetBool(installer::initial_preferences::kDisableLogging, &value) &&
+      value) {
     return;
   }
 
@@ -92,8 +94,8 @@ void InitInstallerLogging(const installer::MasterPreferences& prefs) {
   settings.log_file_path = log_file_path.value().c_str();
   logging::InitLogging(settings);
 
-  if (prefs.GetBool(installer::master_preferences::kVerboseLogging,
-                    &value) && value) {
+  if (prefs.GetBool(installer::initial_preferences::kVerboseLogging, &value) &&
+      value) {
     logging::SetMinLogLevel(logging::LOG_VERBOSE);
   } else {
     logging::SetMinLogLevel(logging::LOG_ERROR);
@@ -109,9 +111,9 @@ void EndInstallerLogging() {
   installer_logging_ = false;
 }
 
-base::FilePath GetLogFilePath(const installer::MasterPreferences& prefs) {
+base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
   std::string path;
-  prefs.GetString(installer::master_preferences::kLogFile, &path);
+  prefs.GetString(installer::initial_preferences::kLogFile, &path);
   if (!path.empty())
     return base::FilePath(base::UTF8ToWide(path));
 

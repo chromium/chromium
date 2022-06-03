@@ -9,9 +9,8 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/win/windows_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The error status of LzmaUtil::Unpack which is used to publish metrics. Do not
 // change the order.
@@ -29,26 +28,28 @@ enum UnPackStatus {
   // UNPACK_CLOSE_FILE_ERROR = 10, Deprecated.
   UNPACK_ALLOCATE_ERROR = 11,
   UNPACK_CRC_ERROR = 12,
+  UNPACK_DISK_FULL = 13,
+  UNPACK_IO_DEVICE_ERROR = 14,
   UNPACK_STATUS_COUNT,
 };
 
 // Unpacks the contents of |archive| into |output_dir|. |output_file|, if not
 // null, is populated with the name of the last (or only) member extracted from
 // the archive. Returns UNPACK_NO_ERROR on success. Otherwise, returns a status
-// value indicating the operation that failed, populates |error_code| (if not
-// null) with a Windows error code and |ntstatus| with an exception code, if
-// any.
+// value indicating the operation that failed.
 UnPackStatus UnPackArchive(const base::FilePath& archive,
                            const base::FilePath& output_dir,
-                           base::FilePath* output_file,
-                           base::Optional<DWORD>* error_code,
-                           base::Optional<int32_t>* ntstatus);
+                           base::FilePath* output_file);
 
 // A utility class that wraps LZMA SDK library. Prefer UnPackArchive over using
 // this class directly.
 class LzmaUtilImpl {
  public:
   LzmaUtilImpl();
+
+  LzmaUtilImpl(const LzmaUtilImpl&) = delete;
+  LzmaUtilImpl& operator=(const LzmaUtilImpl&) = delete;
+
   ~LzmaUtilImpl();
 
   UnPackStatus OpenArchive(const base::FilePath& archivePath);
@@ -61,10 +62,9 @@ class LzmaUtilImpl {
   UnPackStatus UnPack(const base::FilePath& location,
                       base::FilePath* output_file);
 
-  void CloseArchive();
+  absl::optional<DWORD> GetErrorCode() { return error_code_; }
 
-  base::Optional<DWORD> GetErrorCode() { return error_code_; }
-  base::Optional<int32_t> GetNTSTATUSCode() { return ntstatus_; }
+  void CloseArchive();
 
  protected:
   bool CreateDirectory(const base::FilePath& dir);
@@ -72,11 +72,7 @@ class LzmaUtilImpl {
  private:
   base::File archive_file_;
   std::set<base::FilePath> directories_created_;
-  base::Optional<DWORD> error_code_;
-  // Can't include ntstatus.h as it's conflicted with winnt.h
-  base::Optional<int32_t> ntstatus_;
-
-  DISALLOW_COPY_AND_ASSIGN(LzmaUtilImpl);
+  absl::optional<DWORD> error_code_;
 };
 
 #endif  // CHROME_INSTALLER_UTIL_LZMA_UTIL_H_

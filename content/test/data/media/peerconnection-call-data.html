@@ -20,64 +20,11 @@
 
   var gRemoteStreams = {};
 
-  // When using external SDES, the crypto key is chosen by javascript.
-  var EXTERNAL_SDES_LINES = {
-    'audio': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR',
-    'video': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:d0RmdmcmVCspeEc3QGZiNWpVLFJhQX1cfHAwJSoj',
-    'data': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:NzB4d1BINUAvLEw6UzF3WSJ+PSdFcGdUJShpX1Zj'
-  };
-
-  // Test that we can setup call with legacy settings.
-  function callWithLegacySdp() {
-    setOfferSdpTransform(function(sdp) {
-      return removeBundle(useGice(useExternalSdes(sdp)));
-    });
-    createConnections({
-      'mandatory': {'RtpDataChannels': true, 'DtlsSrtpKeyAgreement': false}
-    });
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
-      hasExchanged,
-      detectVideoPlaying('remote-view-1'),
-      detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
-  }
-
-  // Test only a data channel.
-  function callWithDataOnly() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    promiseDataChannelExchange({reliable: false})
-        .then(reportTestSuccess);
-    negotiate();
-  }
-
   function callWithSctpDataOnly() {
     createConnections({optional: [{DtlsSrtpKeyAgreement: true}]});
     promiseSctpDataChannelExchange({reliable: true})
         .then(reportTestSuccess);
     negotiate();
-  }
-
-  // Test call with audio, video and a data channel.
-  function callWithDataAndMedia() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
-      hasExchanged,
-      detectVideoPlaying('remote-view-1'),
-      detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
   }
 
   function callWithSctpDataAndMedia() {
@@ -92,27 +39,6 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ]).then(reportTestSuccess);
-  }
-
-  // Test call with a data channel and later add audio and video.
-  function callWithDataAndLaterAddMedia() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
-    negotiate();
-
-    // Set an event handler for when the data channel has been closed.
-    hasExchanged.then(() => {
-      // When the video is flowing the test is done.
-      return navigator.mediaDevices.getUserMedia({audio: true, video: true})
-          .then(addStreamToBothConnectionsAndNegotiate);
-    }).then(() => {
-      return Promise.all([
-        detectVideoPlaying('remote-view-1'),
-        detectVideoPlaying('remote-view-2')
-      ]);
-    })
-    .then(reportTestSuccess)
-    .catch(failTest);
   }
 
   // This function is used for setting up a test that:
@@ -283,24 +209,6 @@
 
   function removeBundle(sdp) {
     return sdp.replace(/a=group:BUNDLE .*\r\n/g, '');
-  }
-
-  function useGice(sdp) {
-    sdp = sdp.replace(/t=.*\r\n/g, function(subString) {
-      return subString + 'a=ice-options:google-ice\r\n';
-    });
-    return sdp;
-  }
-
-  function useExternalSdes(sdp) {
-    // Remove current crypto specification.
-    sdp = sdp.replace(/a=crypto.*\r\n/g, '');
-    sdp = sdp.replace(/a=fingerprint.*\r\n/g, '');
-    // Add external crypto.  This is not compatible with |removeMsid|.
-    sdp = sdp.replace(/a=mid:(\w+)\r\n/g, function(subString, group) {
-      return subString + EXTERNAL_SDES_LINES[group] + '\r\n';
-    });
-    return sdp;
   }
 
   </script>

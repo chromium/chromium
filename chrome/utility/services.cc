@@ -7,46 +7,64 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"  // nogncheck
+#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"  // nogncheck
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/services/language_detection/language_detection_service_impl.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
+#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/utility/utility_thread.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
 #if defined(OS_WIN)
+#include "chrome/services/util_win/processor_metrics.h"
+#include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
+#include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #endif  // defined(OS_WIN)
 
+#if defined(OS_MAC)
+#include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
+#endif  // defined(OS_MAC)
+
 #if !defined(OS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
+#include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "chrome/utility/importer/profile_import_impl.h"
-#include "components/mirroring/service/features.h"
 #include "components/mirroring/service/mirroring_service.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #endif  // !defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PRINTING) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || defined(OS_CHROMEOS)
+#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+#include "chrome/services/file_util/document_analysis_service.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -59,34 +77,43 @@
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
-#include "chrome/services/isolated_xr_device/xr_device_service.h"  // nogncheck
-#include "device/vr/public/mojom/isolated_xr_service.mojom.h"      // nogncheck
-#endif
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
 #include "chrome/services/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "components/services/pdf_compositor/pdf_compositor_impl.h"  // nogncheck
-#include "components/services/pdf_compositor/public/mojom/pdf_compositor.mojom.h"  // nogncheck
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/services/printing/print_backend_service_impl.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/services/print_compositor/print_compositor_impl.h"  // nogncheck
+#include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #include "components/services/paint_preview_compositor/paint_preview_compositor_collection_impl.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/services/ime/ime_service.h"
+#include "ash/services/ime/public/mojom/input_engine.mojom.h"
+#include "ash/services/quick_pair/quick_pair_service.h"
+#include "ash/services/recording/recording_service.h"
+#include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
-#include "chromeos/services/ime/ime_service.h"
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
+#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
+#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
+#include "chromeos/services/tts/tts_service.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
+#include "chromeos/services/libassistant/libassistant_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -98,7 +125,33 @@ auto RunUnzipper(mojo::PendingReceiver<unzip::mojom::Unzipper> receiver) {
   return std::make_unique<unzip::UnzipperImpl>(std::move(receiver));
 }
 
+auto RunLanguageDetectionService(
+    mojo::PendingReceiver<language_detection::mojom::LanguageDetectionService>
+        receiver) {
+  return std::make_unique<language_detection::LanguageDetectionServiceImpl>(
+      std::move(receiver));
+}
+
+auto RunQRCodeGeneratorService(
+    mojo::PendingReceiver<qrcode_generator::mojom::QRCodeGeneratorService>
+        receiver) {
+  return std::make_unique<qrcode_generator::QRCodeGeneratorServiceImpl>(
+      std::move(receiver));
+}
+
+auto RunWebAppOriginAssociationParser(
+    mojo::PendingReceiver<webapps::mojom::WebAppOriginAssociationParser>
+        receiver) {
+  return std::make_unique<webapps::WebAppOriginAssociationParserImpl>(
+      std::move(receiver));
+}
+
 #if defined(OS_WIN)
+auto RunProcessorMetrics(
+    mojo::PendingReceiver<chrome::mojom::ProcessorMetrics> receiver) {
+  return std::make_unique<ProcessorMetricsImpl>(std::move(receiver));
+}
+
 auto RunQuarantineService(
     mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
   DCHECK(base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine));
@@ -108,7 +161,21 @@ auto RunQuarantineService(
 auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
   return std::make_unique<UtilWinImpl>(std::move(receiver));
 }
+
+auto RunWindowsIconReader(
+    mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver) {
+  return std::make_unique<UtilReadIcon>(std::move(receiver));
+}
 #endif  // defined(OS_WIN)
+
+#if defined(OS_MAC)
+auto RunMacNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+        receiver) {
+  return std::make_unique<mac_notifications::MacNotificationProviderImpl>(
+      std::move(receiver));
+}
+#endif  // defined(OS_MAC)
 
 #if !defined(OS_ANDROID)
 auto RunProxyResolver(
@@ -125,20 +192,32 @@ auto RunProfileImporter(
 
 auto RunMirroringService(
     mojo::PendingReceiver<mirroring::mojom::MirroringService> receiver) {
-  DCHECK(base::FeatureList::IsEnabled(mirroring::features::kMirroringService));
   return std::make_unique<mirroring::MirroringService>(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
+
+auto RunSpeechRecognitionService(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver) {
+  return std::make_unique<speech::SpeechRecognitionServiceImpl>(
+      std::move(receiver));
+}
 #endif  // !defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PRINTING) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunCupsIppParser(
     mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
   return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
 }
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || defined(OS_CHROMEOS)
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+auto RunDocumentAnalysis(
+    mojo::PendingReceiver<chrome::mojom::DocumentAnalysisService> receiver) {
+  return std::make_unique<DocumentAnalysisService>(std::move(receiver));
+}
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunFileUtil(
     mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver) {
   return std::make_unique<FileUtilService>(std::move(receiver));
@@ -159,13 +238,6 @@ auto RunMediaParserFactory(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
-auto RunXrDeviceService(
-    mojo::PendingReceiver<device::mojom::XRDeviceService> receiver) {
-  return std::make_unique<device::XrDeviceService>(std::move(receiver));
-}
-#endif
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
 auto RunPrintingService(
@@ -184,19 +256,62 @@ auto RunPaintPreviewCompositor(
 }
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW)
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+auto RunPrintingSandboxedPrintBackendHost(
+    mojo::PendingReceiver<printing::mojom::SandboxedPrintBackendHost>
+        receiver) {
+  return std::make_unique<printing::SandboxedPrintBackendHostImpl>(
+      std::move(receiver));
+}
+auto RunPrintingUnsandboxedPrintBackendHost(
+    mojo::PendingReceiver<printing::mojom::UnsandboxedPrintBackendHost>
+        receiver) {
+  return std::make_unique<printing::UnsandboxedPrintBackendHostImpl>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
 #if BUILDFLAG(ENABLE_PRINTING)
-auto RunPdfCompositor(
-    mojo::PendingReceiver<printing::mojom::PdfCompositor> receiver) {
-  return std::make_unique<printing::PdfCompositorImpl>(
+auto RunPrintCompositor(
+    mojo::PendingReceiver<printing::mojom::PrintCompositor> receiver) {
+  return std::make_unique<printing::PrintCompositorImpl>(
       std::move(receiver), true /* initialize_environment */,
       content::UtilityThread::Get()->GetIOTaskRunner());
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunImeService(
     mojo::PendingReceiver<chromeos::ime::mojom::ImeService> receiver) {
   return std::make_unique<chromeos::ime::ImeService>(std::move(receiver));
+}
+
+auto RunRecordingService(
+    mojo::PendingReceiver<recording::mojom::RecordingService> receiver) {
+  return std::make_unique<recording::RecordingService>(std::move(receiver));
+}
+
+auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
+  return std::make_unique<sharing::SharingImpl>(
+      std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
+}
+
+auto RunTtsService(
+    mojo::PendingReceiver<chromeos::tts::mojom::TtsService> receiver) {
+  return std::make_unique<chromeos::tts::TtsService>(std::move(receiver));
+}
+
+auto RunLocalSearchService(
+    mojo::PendingReceiver<
+        chromeos::local_search_service::mojom::LocalSearchService> receiver) {
+  return std::make_unique<chromeos::local_search_service::LocalSearchService>(
+      std::move(receiver));
+}
+
+auto RunQuickPairService(
+    mojo::PendingReceiver<ash::quick_pair::mojom::QuickPairService> receiver) {
+  return std::make_unique<ash::quick_pair::QuickPairService>(
+      std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -206,93 +321,106 @@ auto RunAssistantAudioDecoder(
   return std::make_unique<chromeos::assistant::AssistantAudioDecoderFactory>(
       std::move(receiver));
 }
-#endif
-#endif
+
+auto RunLibassistantService(
+    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+        receiver) {
+  return std::make_unique<chromeos::libassistant::LibassistantService>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
-mojo::ServiceFactory* GetElevatedMainThreadServiceFactory() {
+void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
   // NOTE: This ServiceFactory is only used in utility processes which are run
   // with elevated system privileges.
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_WIN)
-    // On non-Windows, this service runs in a regular utility process.
-    RunRemovableStorageWriter,
+  // On non-Windows, this service runs in a regular utility process.
+  services.Add(RunRemovableStorageWriter);
 #endif
-  };
-  // clang-format on
-  return factory.get();
 }
 
-mojo::ServiceFactory* GetMainThreadServiceFactory() {
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
-    RunFilePatcher,
-    RunUnzipper,
+void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+  services.Add(RunFilePatcher);
+  services.Add(RunUnzipper);
+  services.Add(RunLanguageDetectionService);
+  services.Add(RunQRCodeGeneratorService);
+  services.Add(RunWebAppOriginAssociationParser);
 
 #if !defined(OS_ANDROID)
-    RunProfileImporter,
-    RunMirroringService,
+  services.Add(RunProfileImporter);
+  services.Add(RunMirroringService);
+  services.Add(RunSpeechRecognitionService);
 #endif
 
 #if defined(OS_WIN)
-    RunQuarantineService,
-    RunWindowsUtility,
+  services.Add(RunProcessorMetrics);
+  services.Add(RunQuarantineService);
+  services.Add(RunWindowsUtility);
+  services.Add(RunWindowsIconReader);
 #endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_PRINTING) && defined(OS_CHROMEOS)
-    RunCupsIppParser,
+#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
+  services.Add(RunCupsIppParser);
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || defined(OS_CHROMEOS)
-    RunFileUtil,
+#if defined(OS_MAC)
+  services.Add(RunMacNotificationService);
+#endif  // defined(OS_MAC)
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+  services.Add(RunFileUtil);
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+  services.Add(RunDocumentAnalysis);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_WIN)
-    // On Windows, this service runs in an elevated utility process.
-    RunRemovableStorageWriter,
+  // On Windows, this service runs in an elevated utility process.
+  services.Add(RunRemovableStorageWriter);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
-    RunMediaParserFactory,
-#endif
-
-#if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
-    RunXrDeviceService,
+  services.Add(RunMediaParserFactory);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
-    RunPrintingService,
+  services.Add(RunPrintingService);
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  services.Add(RunPrintingSandboxedPrintBackendHost);
+  services.Add(RunPrintingUnsandboxedPrintBackendHost);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
-    RunPdfCompositor,
+  services.Add(RunPrintCompositor);
 #endif
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
-    RunPaintPreviewCompositor,
+  services.Add(RunPaintPreviewCompositor);
 #endif
 
-#if defined(OS_CHROMEOS)
-    RunImeService,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  services.Add(RunImeService);
+  services.Add(RunRecordingService);
+  services.Add(RunSharing);
+  services.Add(RunTtsService);
+  services.Add(RunLocalSearchService);
+  services.Add(RunQuickPairService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    RunAssistantAudioDecoder,
-#endif
-#endif
-  };
-  // clang-format on
-  return factory.get();
+  services.Add(RunAssistantAudioDecoder);
+  services.Add(RunLibassistantService);
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-mojo::ServiceFactory* GetIOThreadServiceFactory() {
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
+void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 #if !defined(OS_ANDROID)
-    RunProxyResolver,
-#endif  // !defined(OS_ANDROID)
-  };
-  // clang-format on
-  return factory.get();
+  services.Add(RunProxyResolver);
+#endif
 }

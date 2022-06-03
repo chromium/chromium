@@ -9,12 +9,17 @@
 // API scheme compiler.
 // See also chrome/common/extensions/api/file_manager_private.idl.
 
+#include "chrome/browser/chromeos/extensions/file_manager/fmpi_get_volume_root_function.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_dialog.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_drive.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_file_system.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_holding_space.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_media_parser.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_misc.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_mount.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_sharesheet.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_strings.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_tasks.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_thumbnail.h"
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FILE_MANAGER_PRIVATE_API_FUNCTIONS_H_

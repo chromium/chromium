@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -183,10 +182,9 @@ void BluetoothSocketEventDispatcher::StartReceive(const SocketParams& params) {
     buffer_size = kDefaultBufferSize;
   socket->Receive(
       buffer_size,
-      base::Bind(
-          &BluetoothSocketEventDispatcher::ReceiveCallback, params),
-      base::Bind(
-          &BluetoothSocketEventDispatcher::ReceiveErrorCallback, params));
+      base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveCallback, params),
+      base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveErrorCallback,
+                     params));
 }
 
 // static
@@ -200,8 +198,7 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
   bluetooth_socket::ReceiveInfo receive_info;
   receive_info.socket_id = params.socket_id;
   receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnReceive::Create(receive_info);
+  auto args = bluetooth_socket::OnReceive::Create(receive_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE,
                 bluetooth_socket::OnReceive::kEventName, std::move(args)));
@@ -209,9 +206,10 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
 
   // Post a task to delay the read until the socket is available, as
   // calling StartReceive at this point would error with ERR_IO_PENDING.
-  base::PostTask(
-      FROM_HERE, {params.thread_id},
-      base::BindOnce(&BluetoothSocketEventDispatcher::StartReceive, params));
+  content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&BluetoothSocketEventDispatcher::StartReceive,
+                                params));
 }
 
 // static
@@ -234,8 +232,7 @@ void BluetoothSocketEventDispatcher::ReceiveErrorCallback(
   receive_error_info.socket_id = params.socket_id;
   receive_error_info.error_message = error;
   receive_error_info.error = MapReceiveErrorReason(error_reason);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnReceiveError::Create(receive_error_info);
+  auto args = bluetooth_socket::OnReceiveError::Create(receive_error_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE_ERROR,
                 bluetooth_socket::OnReceiveError::kEventName, std::move(args)));
@@ -268,10 +265,9 @@ void BluetoothSocketEventDispatcher::StartAccept(const SocketParams& params) {
     return;
 
   socket->Accept(
-      base::Bind(
-          &BluetoothSocketEventDispatcher::AcceptCallback, params),
-      base::Bind(
-          &BluetoothSocketEventDispatcher::AcceptErrorCallback, params));
+      base::BindOnce(&BluetoothSocketEventDispatcher::AcceptCallback, params),
+      base::BindOnce(&BluetoothSocketEventDispatcher::AcceptErrorCallback,
+                     params));
 }
 
 // static
@@ -296,8 +292,7 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
   bluetooth_socket::AcceptInfo accept_info;
   accept_info.socket_id = params.socket_id;
   accept_info.client_socket_id = client_socket_id;
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnAccept::Create(accept_info);
+  auto args = bluetooth_socket::OnAccept::Create(accept_info);
   std::unique_ptr<Event> event(new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT,
                                          bluetooth_socket::OnAccept::kEventName,
                                          std::move(args)));
@@ -305,9 +300,10 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
 
   // Post a task to delay the accept until the socket is available, as
   // calling StartAccept at this point would error with ERR_IO_PENDING.
-  base::PostTask(
-      FROM_HERE, {params.thread_id},
-      base::BindOnce(&BluetoothSocketEventDispatcher::StartAccept, params));
+  content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BluetoothSocketEventDispatcher::StartAccept, params));
 }
 
 // static
@@ -330,8 +326,7 @@ void BluetoothSocketEventDispatcher::AcceptErrorCallback(
   accept_error_info.socket_id = params.socket_id;
   accept_error_info.error_message = error;
   accept_error_info.error = MapAcceptErrorReason(error_reason);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnAcceptError::Create(accept_error_info);
+  auto args = bluetooth_socket::OnAcceptError::Create(accept_error_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT_ERROR,
                 bluetooth_socket::OnAcceptError::kEventName, std::move(args)));
@@ -351,8 +346,8 @@ void BluetoothSocketEventDispatcher::PostEvent(const SocketParams& params,
                                                std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DispatchEvent, params.browser_context_id,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
                                 params.extension_id, std::move(event)));
 }
 

@@ -8,18 +8,18 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/display/fake/fake_display_delegate.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/windows/windows_surface_factory.h"
 #include "ui/ozone/platform/windows/windows_window.h"
 #include "ui/ozone/platform/windows/windows_window_manager.h"
-#include "ui/ozone/public/cursor_factory_ozone.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -35,16 +35,21 @@ namespace {
 class WindowsPlatformEventSource : public ui::PlatformEventSource {
  public:
   WindowsPlatformEventSource() = default;
-  ~WindowsPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowsPlatformEventSource);
+  WindowsPlatformEventSource(const WindowsPlatformEventSource&) = delete;
+  WindowsPlatformEventSource& operator=(const WindowsPlatformEventSource&) =
+      delete;
+
+  ~WindowsPlatformEventSource() override = default;
 };
 
 // OzonePlatform for Windows
 class OzonePlatformWindows : public OzonePlatform {
  public:
   OzonePlatformWindows() {}
+
+  OzonePlatformWindows(const OzonePlatformWindows&) = delete;
+  OzonePlatformWindows& operator=(const OzonePlatformWindows&) = delete;
 
   ~OzonePlatformWindows() override {}
 
@@ -55,9 +60,7 @@ class OzonePlatformWindows : public OzonePlatform {
   OverlayManagerOzone* GetOverlayManager() override {
     return overlay_manager_.get();
   }
-  CursorFactoryOzone* GetCursorFactoryOzone() override {
-    return cursor_factory_ozone_.get();
-  }
+  CursorFactory* GetCursorFactory() override { return cursor_factory_.get(); }
   InputController* GetInputController() override {
     return input_controller_.get();
   }
@@ -77,7 +80,8 @@ class OzonePlatformWindows : public OzonePlatform {
     return std::make_unique<display::FakeDisplayDelegate>();
   }
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate) override {
+      internal::InputMethodDelegate* delegate,
+      gfx::AcceleratedWidget) override {
     NOTREACHED();
     return nullptr;
   }
@@ -94,7 +98,7 @@ class OzonePlatformWindows : public OzonePlatform {
 
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = CreateStubInputController();
-    cursor_factory_ozone_ = std::make_unique<BitmapCursorFactoryOzone>();
+    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
   }
 
@@ -108,12 +112,10 @@ class OzonePlatformWindows : public OzonePlatform {
   std::unique_ptr<WindowsWindowManager> window_manager_;
   std::unique_ptr<WindowsSurfaceFactory> surface_factory_;
   std::unique_ptr<PlatformEventSource> platform_event_source_;
-  std::unique_ptr<CursorFactoryOzone> cursor_factory_ozone_;
+  std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformWindows);
 };
 
 }  // namespace

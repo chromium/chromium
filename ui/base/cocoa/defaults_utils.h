@@ -5,15 +5,15 @@
 #ifndef UI_BASE_COCOA_DEFAULTS_UTILS_H_
 #define UI_BASE_COCOA_DEFAULTS_UTILS_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
 // Returns the text insertion caret blink period, if one is configured in
 // NSUserDefaults.
-UI_BASE_EXPORT bool TextInsertionCaretBlinkPeriod(base::TimeDelta* period);
-
+COMPONENT_EXPORT(UI_BASE)
+bool TextInsertionCaretBlinkPeriod(base::TimeDelta* period);
 }
 
-#endif
+#endif  // UI_BASE_COCOA_DEFAULTS_UTILS_H_

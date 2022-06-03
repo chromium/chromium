@@ -7,9 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

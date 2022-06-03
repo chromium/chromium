@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_start_observer.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/context_menu_params.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -68,8 +68,7 @@ class DownloadControllerBase : public download::DownloadItem::Observer,
   virtual void StartContextMenuDownload(
       const content::ContextMenuParams& params,
       content::WebContents* web_contents,
-      bool is_link,
-      const std::string& extra_headers) = 0;
+      bool is_link) = 0;
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired.

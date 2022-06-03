@@ -6,7 +6,8 @@
   TestRunner.addResult(
       `Test that checks location resolving mechanics for TimerInstall TimerRemove and FunctionCall events with scriptId.
        It expects two FunctionCall for InjectedScript, two TimerInstall events, two FunctionCall events and one TimerRemove event to be logged with performActions.js script name and some line number.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('timeline');
 
   function performActions() {
@@ -32,19 +33,21 @@
   const recordTypes = new Set(['TimerInstall', 'TimerRemove', 'FunctionCall']);
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
-  PerformanceTestRunner.walkTimelineEventTree(formatter);
+  await PerformanceTestRunner.walkTimelineEventTree(formatter);
   TestRunner.completeTest();
 
-  function formatter(event) {
+  async function formatter(event) {
     if (!recordTypes.has(event.name))
       return;
 
-    var detailsText = Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(
+    var detailsText = await Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(
         event, PerformanceTestRunner.timelineModel().targetByEvent(event));
+    await TestRunner.waitForPendingLiveLocationUpdates();
     TestRunner.addResult('detailsTextContent for ' + event.name + ' event: \'' + detailsText + '\'');
 
-    var details = Timeline.TimelineUIUtils.buildDetailsNodeForTraceEvent(
+    var details = await Timeline.TimelineUIUtils.buildDetailsNodeForTraceEvent(
         event, PerformanceTestRunner.timelineModel().targetByEvent(event), linkifier);
+    await TestRunner.waitForPendingLiveLocationUpdates();
     if (!details)
       return;
     TestRunner.addResult(

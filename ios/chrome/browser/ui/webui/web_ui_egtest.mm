@@ -13,10 +13,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/device_form_factor.h"
@@ -30,6 +32,7 @@ using base::TrimPositions;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::OmniboxText;
+using chrome_test_util::OmniboxContainingText;
 
 namespace {
 
@@ -41,21 +44,27 @@ GURL WebUIPageUrlWithHost(const std::string& host) {
   return GURL(base::StringPrintf("%s://%s", kChromeUIScheme, host.c_str()));
 }
 
-// Waits for omnibox text to equal |URL| and returns true if it was found or
-// false on timeout. Strips trailing URL slash if present as the omnibox does
-// not display them.
-bool WaitForOmniboxURLString(std::string URL) {
-  const std::string trimmed_URL =
-      base::TrimString(URL, "/", TrimPositions::TRIM_TRAILING).as_string();
+// Waits for omnibox text to equal (if |exact_match|) or contain (else) |URL|
+// and returns true if it was found or false on timeout. Strips trailing URL
+// slash if present as the omnibox does not display them.
+bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {
+  const std::string trimmed_URL(
+      base::TrimString(URL, "/", TrimPositions::TRIM_TRAILING));
 
   // TODO(crbug.com/642207): Unify with the omniboxText matcher or move to the
   // same location with the omniboxText matcher.
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
         NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:OmniboxText(trimmed_URL)]
-            assertWithMatcher:grey_notNil()
-                        error:&error];
+        if (exact_match) {
+          [[EarlGrey selectElementWithMatcher:OmniboxText(trimmed_URL)]
+              assertWithMatcher:grey_notNil()
+                          error:&error];
+        } else {
+          [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+              assertWithMatcher:OmniboxContainingText(trimmed_URL)
+                          error:&error];
+        }
         return error == nil;
       });
 }
@@ -113,7 +122,7 @@ bool WaitForOmniboxURLString(std::string URL) {
   // Verify that the resulting page is chrome://terms.
   GREYAssert(WaitForOmniboxURLString(kChromeUITermsURL),
              @"Omnibox does not contain URL.");
-  const std::string kTermsText = "Google Chrome Terms of Service";
+  const std::string kTermsText = "Terms of Service";
   [ChromeEarlGrey waitForWebStateContainingText:kTermsText];
 }
 
@@ -130,7 +139,9 @@ bool WaitForOmniboxURLString(std::string URL) {
   // Verify that the resulting page is chrome://version.
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
              @"Omnibox did not contain URL.");
-  [ChromeEarlGrey waitForWebStateContainingText:"The Chromium Authors"];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_IOS_ABOUT_VERSION_COMPANY_NAME)];
 
   // Tap the back button in the toolbar and verify that the resulting page is
   // the previously visited page chrome://chrome-urls.
@@ -211,14 +222,15 @@ bool WaitForOmniboxURLString(std::string URL) {
 - (void)testBackForwardFromWebURL {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
-  const char kChromeVersionWebText[] = "The Chromium Authors";
+  std::string chromeVersionWebText =
+      l10n_util::GetStringUTF8(IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
   const char kWebPageText[] = "pony";
 
   [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
 
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
              @"Omnibox did not contain URL.");
-  [ChromeEarlGrey waitForWebStateContainingText:kChromeVersionWebText];
+  [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 
   GURL webURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:webURL];
@@ -227,7 +239,7 @@ bool WaitForOmniboxURLString(std::string URL) {
   [ChromeEarlGrey goBack];
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
              @"Omnibox did not contain URL.");
-  [ChromeEarlGrey waitForWebStateContainingText:kChromeVersionWebText];
+  [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:kWebPageText];
@@ -235,7 +247,7 @@ bool WaitForOmniboxURLString(std::string URL) {
   [ChromeEarlGrey goBack];
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
              @"Omnibox did not contain URL.");
-  [ChromeEarlGrey waitForWebStateContainingText:kChromeVersionWebText];
+  [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 }
 
 - (void)testChromeFlagsOnNTP {
@@ -297,7 +309,9 @@ bool WaitForOmniboxURLString(std::string URL) {
   GURL URL = WebUIPageUrlWithHost(kChromeUIAutofillInternalsHost);
   [ChromeEarlGrey loadURL:URL];
 
-  GREYAssert(WaitForOmniboxURLString(URL.spec()),
+  // Autofill-Internals stores the log filter configuration in the URL's
+  // fragment identifier (after the hash).
+  GREYAssert(WaitForOmniboxURLString(URL.spec(), false),
              @"Omnibox did not contain URL.");
 
   // Validates that some of the expected text on the page exists.

@@ -21,7 +21,8 @@ class BASE_EXPORT BundleUtils {
   // Helper function asking Java to resolve a library path. This is required for
   // resolving a module library made available via SplitCompat, rather than in
   // its eventual fully-installed state.
-  static std::string ResolveLibraryPath(const std::string& library_name);
+  static std::string ResolveLibraryPath(const std::string& library_name,
+                                        const std::string& split_name);
 
   // dlopen wrapper that works for partitioned native libraries in dynamic
   // feature modules. This routine looks up the partition's address space in a
@@ -33,7 +34,8 @@ class BASE_EXPORT BundleUtils {
   // time, and the code is linked into multiple libraries (eg. Chrome vs
   // Monochrome), they may not be.
   static void* DlOpenModuleLibraryPartition(const std::string& library_name,
-                                            const std::string& partition);
+                                            const std::string& partition,
+                                            const std::string& split_name);
 };
 
 }  // namespace android

@@ -4,7 +4,7 @@
 
 #import "ui/base/cocoa/find_pasteboard.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
 NSString* kFindPasteboardChangedNotification =
@@ -76,6 +76,6 @@ NSString* kFindPasteboardChangedNotification =
 
 @end
 
-base::string16 GetFindPboardText() {
+std::u16string GetFindPboardText() {
   return base::SysNSStringToUTF16([[FindPasteboard sharedInstance] findText]);
 }

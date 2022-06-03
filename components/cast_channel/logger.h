@@ -9,9 +9,7 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/cast_channel/cast_channel_enum.h"
@@ -44,6 +42,9 @@ class Logger : public base::RefCountedThreadSafe<Logger> {
  public:
   Logger();
 
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
   // For events that involves socket / crypto operations that returns a value.
   void LogSocketEventWithRv(int channel_id, ChannelEvent channel_event, int rv);
 
@@ -72,8 +73,6 @@ class Logger : public base::RefCountedThreadSafe<Logger> {
   std::map<int, LastError> last_errors_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Logger);
 };
 }  // namespace cast_channel
 

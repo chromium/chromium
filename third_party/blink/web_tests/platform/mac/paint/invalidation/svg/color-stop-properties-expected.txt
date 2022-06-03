@@ -1,149 +1,52 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [808, 620],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect id='r12'",
-          "rect": [608, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r6'",
-          "rect": [608, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r12'",
-          "rect": [608, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r6'",
-          "rect": [608, 8, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r11'",
-          "rect": [488, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r5'",
-          "rect": [488, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r11'",
-          "rect": [488, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r5'",
-          "rect": [488, 8, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r10'",
-          "rect": [368, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r4'",
-          "rect": [368, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r10'",
-          "rect": [368, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r4'",
-          "rect": [368, 8, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r9'",
-          "rect": [248, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r3'",
-          "rect": [248, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r9'",
-          "rect": [248, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r3'",
-          "rect": [248, 8, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r8'",
-          "rect": [128, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r2'",
-          "rect": [128, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r8'",
-          "rect": [128, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r2'",
-          "rect": [128, 8, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r7'",
-          "rect": [8, 368, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r1'",
-          "rect": [8, 248, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r7'",
-          "rect": [8, 128, 100, 100],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='r1'",
-          "rect": [8, 8, 100, 100],
-          "reason": "SVG resource change"
-        }
+      "invalidations": [
+        [608, 368, 100, 100],
+        [608, 248, 100, 100],
+        [608, 128, 100, 100],
+        [608, 8, 100, 100],
+        [488, 368, 100, 100],
+        [488, 248, 100, 100],
+        [488, 128, 100, 100],
+        [488, 8, 100, 100],
+        [368, 368, 100, 100],
+        [368, 248, 100, 100],
+        [368, 128, 100, 100],
+        [368, 8, 100, 100],
+        [248, 368, 100, 100],
+        [248, 248, 100, 100],
+        [248, 128, 100, 100],
+        [248, 8, 100, 100],
+        [128, 368, 100, 100],
+        [128, 248, 100, 100],
+        [128, 128, 100, 100],
+        [128, 8, 100, 100],
+        [8, 368, 100, 100],
+        [8, 248, 100, 100],
+        [8, 128, 100, 100],
+        [8, 8, 100, 100]
       ]
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [785, 15],
-      "contentsOpaque": true
+      "bounds": [785, 15]
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 585],
-      "contentsOpaque": true
+      "bounds": [15, 585]
     },
     {
-      "name": "Scroll Corner Layer",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaqueForText": true
     }
   ]
 }

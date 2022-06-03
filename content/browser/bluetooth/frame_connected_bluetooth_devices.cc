@@ -4,12 +4,14 @@
 
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 
-#include "base/optional.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -80,16 +82,17 @@ void FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithId(
   }
   CHECK(device_address_to_id_map_.erase(
       connection_iter->second->gatt_connection->GetDeviceAddress()));
+  connection_iter->second->server_client->GATTServerDisconnected();
   device_id_to_connection_map_.erase(connection_iter);
   DecrementDevicesConnectedCount();
 }
 
-base::Optional<blink::WebBluetoothDeviceId>
+absl::optional<blink::WebBluetoothDeviceId>
 FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithAddress(
     const std::string& device_address) {
   auto device_address_iter = device_address_to_id_map_.find(device_address);
   if (device_address_iter == device_address_to_id_map_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   blink::WebBluetoothDeviceId device_id = device_address_iter->second;
   auto device_id_iter = device_id_to_connection_map_.find(device_id);
@@ -98,7 +101,20 @@ FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithAddress(
   CHECK(device_address_to_id_map_.erase(device_address));
   device_id_to_connection_map_.erase(device_id);
   DecrementDevicesConnectedCount();
-  return base::make_optional(device_id);
+  return absl::make_optional(device_id);
+}
+
+void FrameConnectedBluetoothDevices::CloseConnectionsToDevicesNotInList(
+    const std::set<blink::WebBluetoothDeviceId>& permitted_ids) {
+  std::set<blink::WebBluetoothDeviceId> ids_to_delete;
+
+  for (const auto& device_pair : device_id_to_connection_map_) {
+    if (!base::Contains(permitted_ids, device_pair.first))
+      ids_to_delete.insert(device_pair.first);
+  }
+
+  for (const auto& device_id : ids_to_delete)
+    CloseConnectionToDeviceWithId(device_id);
 }
 
 void FrameConnectedBluetoothDevices::IncrementDevicesConnectedCount() {

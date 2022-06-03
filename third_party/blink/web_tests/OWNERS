@@ -1,1 +1,4 @@
 *
+
+per-file VirtualTestSuites=set noparent
+per-file VirtualTestSuites=file://third_party/blink/web_tests/VIRTUAL_OWNERS

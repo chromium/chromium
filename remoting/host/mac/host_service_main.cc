@@ -48,8 +48,7 @@ constexpr char kNativeMessagingHostPath[] =
 constexpr int kSigtermExitCode = 128 + SIGTERM;
 
 // Constants controlling the host process relaunch throttling.
-constexpr base::TimeDelta kMinimumRelaunchInterval =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMinimumRelaunchInterval = base::Minutes(1);
 constexpr int kMaximumHostFailures = 10;
 
 // Exit code 126 is defined by Posix to mean "Command found, but not
@@ -153,19 +152,7 @@ int HostService::RunHost() {
     return RunHostFromOldScript();
   }
 
-  // Run the config-upgrade tool, but only if running as root, as normal users
-  // don't have permission to write the config file.
-  if (geteuid() == 0) {
-    HOST_LOG << "Attempting to upgrade token";
-    base::CommandLine cmdline(host_exe_file_);
-    cmdline.AppendSwitch("upgrade-token");
-    cmdline.AppendSwitchPath("host-config", config_file_);
-    std::string output;
-    base::GetAppOutputAndError(cmdline, &output);
-    if (!output.empty()) {
-      HOST_LOG << "Message from host --upgrade-token: " << output;
-    }
-  } else if (HostIsEnabled()) {
+  if (geteuid() != 0 && HostIsEnabled()) {
     // Only check for non-root users, as the permission wizard is not actionable
     // at the login screen. Also, permission is only needed when host is
     // enabled - the launchd service should exit immediately if the host is
@@ -256,17 +243,15 @@ int HostService::RunHost() {
     HOST_LOG << "Host returned non-permanent exit code " << exit_code_string
              << " at " << base::Time::Now();
   }
-
-  return 0;
 }
 
 bool HostService::Disable() {
-  return base::DeleteFile(enabled_file_, false);
+  return base::DeleteFile(enabled_file_);
 }
 
 bool HostService::Enable() {
   // Ensure the config file is private whilst being written.
-  base::DeleteFile(config_file_, false);
+  base::DeleteFile(config_file_);
   if (!WriteStdinToConfig()) {
     return false;
   }
@@ -280,7 +265,7 @@ bool HostService::Enable() {
   // uses the chmod binary to do so.
   base::CommandLine chmod_cmd(base::FilePath("/bin/chmod"));
   chmod_cmd.AppendArg("+a");
-  chmod_cmd.AppendArg(GetUsername() + ":allow:read");
+  chmod_cmd.AppendArg("user:" + GetUsername() + ":allow:read");
   chmod_cmd.AppendArgPath(config_file_);
   std::string output;
   if (!base::GetAppOutputAndError(chmod_cmd, &output)) {

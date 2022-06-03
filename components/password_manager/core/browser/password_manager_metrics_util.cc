@@ -4,48 +4,110 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-#include "url/gurl.h"
 
 using autofill::password_generation::PasswordGenerationType;
-using base::ListValue;
-using base::Value;
 
 namespace password_manager {
 
 namespace metrics_util {
+
+std::string GetPasswordAccountStorageUserStateHistogramSuffix(
+    PasswordAccountStorageUserState user_state) {
+  switch (user_state) {
+    case PasswordAccountStorageUserState::kSignedOutUser:
+      return "SignedOutUser";
+    case PasswordAccountStorageUserState::kSignedOutAccountStoreUser:
+      return "SignedOutAccountStoreUser";
+    case PasswordAccountStorageUserState::kSignedInUser:
+      return "SignedInUser";
+    case PasswordAccountStorageUserState::kSignedInUserSavingLocally:
+      return "SignedInUserSavingLocally";
+    case PasswordAccountStorageUserState::kSignedInAccountStoreUser:
+      return "SignedInAccountStoreUser";
+    case PasswordAccountStorageUserState::
+        kSignedInAccountStoreUserSavingLocally:
+      return "SignedInAccountStoreUserSavingLocally";
+    case PasswordAccountStorageUserState::kSyncUser:
+      return "SyncUser";
+  }
+  NOTREACHED();
+  return std::string();
+}
+
+std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
+    PasswordAccountStorageUsageLevel usage_level) {
+  switch (usage_level) {
+    case PasswordAccountStorageUsageLevel::kNotUsingAccountStorage:
+      return "NotUsingAccountStorage";
+    case PasswordAccountStorageUsageLevel::kUsingAccountStorage:
+      return "UsingAccountStorage";
+    case PasswordAccountStorageUsageLevel::kSyncing:
+      return "Syncing";
+  }
+  NOTREACHED();
+  return std::string();
+}
 
 void LogGeneralUIDismissalReason(UIDismissalReason reason) {
   base::UmaHistogramEnumeration("PasswordManager.UIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 }
 
-void LogSaveUIDismissalReason(UIDismissalReason reason) {
+void LogSaveUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event,
+    absl::optional<PasswordAccountStorageUserState> user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
+
+  if (user_state.has_value()) {
+    std::string suffix =
+        GetPasswordAccountStorageUserStateHistogramSuffix(user_state.value());
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SaveUIDismissalReason." + suffix, reason,
+        NUM_UI_RESPONSES);
+  }
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
-void LogUpdateUIDismissalReason(UIDismissalReason reason) {
+void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveUIDismissalReasonAfterUnblacklisting", reason,
+      NUM_UI_RESPONSES);
+}
+
+void LogUpdateUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event) {
   base::UmaHistogramEnumeration("PasswordManager.UpdateUIDismissalReason",
                                 reason, NUM_UI_RESPONSES);
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
-void LogPresavedUpdateUIDismissalReason(UIDismissalReason reason) {
+void LogMoveUIDismissalReason(UIDismissalReason reason,
+                              PasswordAccountStorageUserState user_state) {
+  base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
+                                NUM_UI_RESPONSES);
+
+  std::string suffix =
+      GetPasswordAccountStorageUserStateHistogramSuffix(user_state);
   base::UmaHistogramEnumeration(
-      "PasswordManager.PresavedUpdateUIDismissalReason", reason,
+      "PasswordManager.MoveUIDismissalReason." + suffix, reason,
       NUM_UI_RESPONSES);
 }
 
@@ -61,31 +123,14 @@ void LogLeakDialogTypeAndDismissalReason(LeakDialogType type,
         return "Change";
       case LeakDialogType::kCheckupAndChange:
         return "CheckupAndChange";
+      case LeakDialogType::kChangeAutomatically:
+        return "ChangeAutomatically";
     }
   };
 
   base::UmaHistogramEnumeration(kHistogram, reason);
   base::UmaHistogramEnumeration(base::StrCat({kHistogram, ".", GetSuffix()}),
                                 reason);
-}
-
-void LogOnboardingState(OnboardingState state) {
-  base::UmaHistogramEnumeration("PasswordManager.Onboarding.State", state);
-}
-
-void LogOnboardingUIDismissalReason(OnboardingUIDismissalReason reason) {
-  base::UmaHistogramEnumeration("PasswordManager.Onboarding.UIDismissalReason",
-                                reason);
-}
-
-void LogResultOfSavingFlow(OnboardingResultOfSavingFlow result) {
-  base::UmaHistogramEnumeration("PasswordManager.Onboarding.ResultOfSavingFlow",
-                                result);
-}
-
-void LogResultOfOnboardingSavingFlow(OnboardingResultOfSavingFlow result) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.Onboarding.ResultOfSavingFlowAfterOnboarding", result);
 }
 
 void LogUIDisplayDisposition(UIDisplayDisposition disposition) {
@@ -140,16 +185,6 @@ void LogAccountChooserUserActionManyAccounts(AccountChooserUserAction action) {
       ACCOUNT_CHOOSER_ACTION_COUNT);
 }
 
-void LogCountHttpMigratedPasswords(int count) {
-  base::UmaHistogramCounts100("PasswordManager.HttpPasswordMigrationCount",
-                              count);
-}
-
-void LogHttpPasswordMigrationMode(HttpPasswordMigrationMode mode) {
-  base::UmaHistogramEnumeration("PasswordManager.HttpPasswordMigrationMode",
-                                mode, HTTP_PASSWORD_MIGRATION_MODE_COUNT);
-}
-
 void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation) {
   switch (mediation) {
@@ -167,13 +202,10 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
   }
 }
 
-void LogPasswordReuse(int password_length,
-                      int saved_passwords,
+void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,
                       PasswordType reused_password_type) {
-  base::UmaHistogramCounts100("PasswordManager.PasswordReuse.PasswordLength",
-                              password_length);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.TotalPasswords",
                                saved_passwords);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.NumberOfMatches",
@@ -185,20 +217,6 @@ void LogPasswordReuse(int password_length,
   base::UmaHistogramEnumeration("PasswordManager.ReusedPasswordType",
                                 reused_password_type,
                                 PasswordType::PASSWORD_TYPE_COUNT);
-}
-
-void LogContextOfShowAllSavedPasswordsShown(
-    ShowAllSavedPasswordsContext context) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.ShowAllSavedPasswordsShownContext", context,
-      SHOW_ALL_SAVED_PASSWORDS_CONTEXT_COUNT);
-}
-
-void LogContextOfShowAllSavedPasswordsAccepted(
-    ShowAllSavedPasswordsContext context) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.ShowAllSavedPasswordsAcceptedContext", context,
-      SHOW_ALL_SAVED_PASSWORDS_CONTEXT_COUNT);
 }
 
 void LogPasswordDropdownShown(PasswordDropdownState state,
@@ -234,24 +252,47 @@ void LogSubmittedFormFrame(SubmittedFormFrame frame) {
                                 SubmittedFormFrame::SUBMITTED_FORM_FRAME_COUNT);
 }
 
+void LogPasswordsCountFromAccountStoreAfterUnlock(
+    int account_store_passwords_count) {
+  base::UmaHistogramCounts100(
+      "PasswordManager.CredentialsCountFromAccountStoreAfterUnlock",
+      account_store_passwords_count);
+}
+
+void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
+    int account_store_passwords_count) {
+  base::UmaHistogramCounts100(
+      "PasswordManager.AccountStoreCredentialsAfterOptIn",
+      account_store_passwords_count);
+}
+
+void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
+    int blocklist_entries_count) {
+  base::UmaHistogramCounts100(
+      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn",
+      blocklist_entries_count);
+}
+
+void LogPasswordSettingsReauthResult(ReauthResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ReauthToAccessPasswordInSettings", result);
+}
+
 void LogDeleteUndecryptableLoginsReturnValue(
     DeleteCorruptedPasswordsResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", result);
 }
 
-void LogDeleteCorruptedPasswordsResult(DeleteCorruptedPasswordsResult result) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.DeleteCorruptedPasswordsResult", result);
-}
-
-void LogNewlySavedPasswordIsGenerated(bool value) {
+void LogNewlySavedPasswordIsGenerated(
+    bool value,
+    PasswordAccountStorageUsageLevel account_storage_usage_level) {
   base::UmaHistogramBoolean("PasswordManager.NewlySavedPasswordIsGenerated",
                             value);
-}
-
-void LogGenerationPresaveConflict(GenerationPresaveConflict value) {
-  base::UmaHistogramEnumeration("PasswordGeneration.PresaveConflict", value);
+  std::string suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(
+      account_storage_usage_level);
+  base::UmaHistogramBoolean(
+      "PasswordManager.NewlySavedPasswordIsGenerated." + suffix, value);
 }
 
 void LogGenerationDialogChoice(GenerationDialogChoice choice,
@@ -268,7 +309,6 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
   };
 }  // namespace metrics_util
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
                                bool is_sync_password) {
   if (is_sync_password) {
@@ -292,26 +332,42 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 }
 
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    size_t enterprise_hash_count,
-                                    bool does_primary_account_exists) {
+                                    bool does_primary_account_exists,
+                                    bool is_signed_in) {
   base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount",
                               static_cast<int>(gaia_hash_count));
-  base::UmaHistogramCounts100(
-      "PasswordManager.SavedEnterprisePasswordHashCount",
-      static_cast<int>(enterprise_hash_count));
 
   // Log parallel metrics for sync and signed-in non-sync accounts in addition
   // to above to be able to tell what fraction of signed-in non-sync users we
   // are protecting compared to syncing users.
-  base::UmaHistogramCounts100(
-      does_primary_account_exists
-          ? "PasswordManager.SavedGaiaPasswordHashCount.Sync"
-          : "PasswordManager.SavedGaiaPasswordHashCount.SignedInNonSync",
-      static_cast<int>(gaia_hash_count));
+  if (does_primary_account_exists) {
+    base::UmaHistogramCounts100(
+        "PasswordManager.SavedGaiaPasswordHashCount.Sync",
+        static_cast<int>(gaia_hash_count));
+  } else if (is_signed_in) {
+    base::UmaHistogramCounts100(
+        "PasswordManager.SavedGaiaPasswordHashCount.SignedInNonSync",
+        static_cast<int>(gaia_hash_count));
+  }
 }
 
 void LogProtectedPasswordReuse(PasswordType reused_password_type) {}
-#endif
+
+void LogPasswordEditResult(IsUsernameChanged username_changed,
+                           IsPasswordChanged password_changed) {
+  PasswordEditUpdatedValues values;
+  if (username_changed && password_changed) {
+    values = PasswordEditUpdatedValues::kBoth;
+  } else if (username_changed) {
+    values = PasswordEditUpdatedValues::kUsername;
+  } else if (password_changed) {
+    values = PasswordEditUpdatedValues::kPassword;
+  } else {
+    values = PasswordEditUpdatedValues::kNone;
+  }
+  base::UmaHistogramEnumeration("PasswordManager.PasswordEditUpdatedValues",
+                                values);
+}
 
 }  // namespace metrics_util
 

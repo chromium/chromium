@@ -21,6 +21,10 @@ class FileSystemOperationContext;
 class COMPONENT_EXPORT(STORAGE_BROWSER) DraggedFileUtil : public LocalFileUtil {
  public:
   DraggedFileUtil();
+
+  DraggedFileUtil(const DraggedFileUtil&) = delete;
+  DraggedFileUtil& operator=(const DraggedFileUtil&) = delete;
+
   ~DraggedFileUtil() override {}
 
   // FileSystemFileUtil overrides.
@@ -32,9 +36,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DraggedFileUtil : public LocalFileUtil {
       FileSystemOperationContext* context,
       const FileSystemURL& root_url,
       bool recursive) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DraggedFileUtil);
 };
 
 }  // namespace storage

@@ -9,26 +9,31 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/browser/ui/webui/about_ui.h"
 #include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 #include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
 #include "ios/chrome/browser/ui/webui/crashes_ui.h"
+#include "ios/chrome/browser/ui/webui/download_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/flags_ui.h"
 #include "ios/chrome/browser/ui/webui/gcm/gcm_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
+#include "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
+#include "ios/chrome/browser/ui/webui/management/management_ui.h"
 #include "ios/chrome/browser/ui/webui/net_export/net_export_ui.h"
 #include "ios/chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/omaha_ui.h"
+#include "ios/chrome/browser/ui/webui/policy/policy_ui.h"
 #include "ios/chrome/browser/ui/webui/prefs_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/signin_internals_ui_ios.h"
-#include "ios/chrome/browser/ui/webui/suggestions_ui.h"
-#include "ios/chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/terms_ui.h"
 #include "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/user_actions_ui.h"
 #include "ios/chrome/browser/ui/webui/version_ui.h"
+#include "ios/components/webui/sync_internals/sync_internals_ui.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,12 +53,6 @@ using WebUIIOSFactoryFunction =
 template <class T>
 std::unique_ptr<WebUIIOSController> NewWebUIIOS(WebUIIOS* web_ui,
                                                 const GURL& url) {
-  return std::make_unique<T>(web_ui);
-}
-
-template <class T>
-std::unique_ptr<WebUIIOSController> NewWebUIIOSWithHost(WebUIIOS* web_ui,
-                                                        const GURL& url) {
   return std::make_unique<T>(web_ui, url.host());
 }
 
@@ -73,15 +72,21 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<AutofillInternalsUIIOS>;
   if (url_host == kChromeUIChromeURLsHost ||
       url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost)
-    return &NewWebUIIOSWithHost<AboutUI>;
+    return &NewWebUIIOS<AboutUI>;
   if (url_host == kChromeUICrashesHost)
     return &NewWebUIIOS<CrashesUI>;
+  if (url_host == kChromeUIDownloadInternalsHost)
+    return &NewWebUIIOS<DownloadInternalsUI>;
   if (url_host == kChromeUIFlagsHost)
     return &NewWebUIIOS<FlagsUI>;
   if (url_host == kChromeUIGCMInternalsHost)
     return &NewWebUIIOS<GCMInternalsUI>;
   if (url_host == kChromeUIInspectHost)
     return &NewWebUIIOS<InspectUI>;
+  if (url_host == kChromeUIIntersitialsHost)
+    return &NewWebUIIOS<InterstitialUI>;
+  if (url_host == kChromeUIManagementHost)
+    return &NewWebUIIOS<ManagementUI>;
   if (url_host == kChromeUINetExportHost)
     return &NewWebUIIOS<NetExportUI>;
   if (url_host == kChromeUINTPTilesInternalsHost)
@@ -94,8 +99,6 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<PrefsInternalsUI>;
   if (url_host == kChromeUISignInInternalsHost)
     return &NewWebUIIOS<SignInInternalsUIIOS>;
-  if (url.host_piece() == kChromeUISuggestionsHost)
-    return &NewWebUIIOS<suggestions::SuggestionsUI>;
   if (url.host_piece() == kChromeUITranslateInternalsHost)
     return &NewWebUIIOS<TranslateInternalsUI>;
   if (url_host == kChromeUIURLKeyedMetricsHost)
@@ -105,9 +108,13 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUISyncInternalsHost)
     return &NewWebUIIOS<SyncInternalsUI>;
   if (url_host == kChromeUITermsHost)
-    return &NewWebUIIOSWithHost<TermsUI>;
+    return &NewWebUIIOS<TermsUI>;
   if (url_host == kChromeUIVersionHost)
     return &NewWebUIIOS<VersionUI>;
+
+  if (IsEnterprisePolicyEnabled() && url_host == kChromeUIPolicyHost) {
+    return &NewWebUIIOS<PolicyUI>;
+  }
 
   return nullptr;
 }

@@ -7,19 +7,18 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #include "base/bind.h"
-#include "build/branding_buildflags.h"
-#include "components/bookmarks/browser/startup_task_runner_service.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
-#include "ios/chrome/app/intents/SearchInChromeIntent.h"
-#include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/bookmarks/startup_task_runner_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
+#include "ios/chrome/common/intents/SearchInChromeIntent.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,7 +38,7 @@ NSString* const kStartProfileStartupTaskRunners =
 // Performs browser state initialization tasks that don't need to happen
 // synchronously at startup.
 + (void)performDeferredInitializationForBrowserState:
-    (ios::ChromeBrowserState*)browserState;
+    (ChromeBrowserState*)browserState;
 // Called when UIApplicationWillResignActiveNotification is received.
 - (void)applicationWillResignActiveNotification:(NSNotification*)notification;
 
@@ -50,7 +49,7 @@ NSString* const kStartProfileStartupTaskRunners =
 #pragma mark - Public methods.
 
 + (void)scheduleDeferredBrowserStateInitialization:
-    (ios::ChromeBrowserState*)browserState {
+    (ChromeBrowserState*)browserState {
   DCHECK(browserState);
   // Schedule the start of the profile deferred task runners.
   [[DeferredInitializationRunner sharedInstance]
@@ -62,16 +61,11 @@ NSString* const kStartProfileStartupTaskRunners =
 }
 
 - (void)initializeOmaha {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (tests_hook::DisableUpdateService())
-    return;
-  // Start omaha service. We only do this on official builds.
   OmahaService::Start(
       GetApplicationContext()->GetSharedURLLoaderFactory()->Clone(),
       base::BindRepeating(^(const UpgradeRecommendedDetails& details) {
         [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
       }));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 - (void)registerForApplicationWillResignActiveNotification {
@@ -82,23 +76,30 @@ NSString* const kStartProfileStartupTaskRunners =
            object:nil];
 }
 
-- (void)donateIntents {
-  SearchInChromeIntent* searchInChromeIntent =
-      [[SearchInChromeIntent alloc] init];
-  searchInChromeIntent.suggestedInvocationPhrase = l10n_util::GetNSString(
-      IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
-  INInteraction* interaction =
-      [[INInteraction alloc] initWithIntent:searchInChromeIntent response:nil];
-  [interaction donateInteractionWithCompletion:^(NSError* _Nullable error){
-  }];
+- (void)logSiriShortcuts {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(^{
+        [[INVoiceShortcutCenter sharedCenter]
+            getAllVoiceShortcutsWithCompletion:^(
+                NSArray<INVoiceShortcut*>* voiceShortcuts, NSError* error) {
+              if (error || !voiceShortcuts) {
+                return;
+              }
+
+              // The 20 shortcuts cap is arbitrary but seems like a reasonable
+              // limit.
+              base::UmaHistogramExactLinear(
+                  "IOS.SiriShortcuts.Count",
+                  base::saturated_cast<int>([voiceShortcuts count]), 20);
+            }];
+      }));
 }
 
 #pragma mark - Private methods.
 
 + (void)performDeferredInitializationForBrowserState:
-    (ios::ChromeBrowserState*)browserState {
-  ios::StartupTaskRunnerServiceFactory::GetForBrowserState(browserState)
-      ->StartDeferredTaskRunners();
+    (ChromeBrowserState*)browserState {
   ReadingListDownloadServiceFactory::GetForBrowserState(browserState)
       ->Initialize();
 }

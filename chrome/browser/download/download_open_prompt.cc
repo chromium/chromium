@@ -27,12 +27,18 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
       const std::string& extension_name,
       const base::FilePath& file_path,
       DownloadOpenPrompt::OpenCallback open_callback);
+
+  DownloadOpenConfirmationDialog(const DownloadOpenConfirmationDialog&) =
+      delete;
+  DownloadOpenConfirmationDialog& operator=(
+      const DownloadOpenConfirmationDialog&) = delete;
+
   ~DownloadOpenConfirmationDialog() override;
 
-  base::string16 GetTitle() override;
-  base::string16 GetDialogMessage() override;
-  base::string16 GetAcceptButtonTitle() override;
-  base::string16 GetCancelButtonTitle() override;
+  std::u16string GetTitle() override;
+  std::u16string GetDialogMessage() override;
+  std::u16string GetAcceptButtonTitle() override;
+  std::u16string GetCancelButtonTitle() override;
 
  private:
   void OnAccepted() override;
@@ -44,8 +50,6 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
   std::string extension_name_;
 
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOpenConfirmationDialog);
 };
 
 DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
@@ -63,22 +67,22 @@ DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
 
 DownloadOpenConfirmationDialog::~DownloadOpenConfirmationDialog() = default;
 
-base::string16 DownloadOpenConfirmationDialog::GetTitle() {
+std::u16string DownloadOpenConfirmationDialog::GetTitle() {
   return l10n_util::GetStringUTF16(IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_TITLE);
 }
 
-base::string16 DownloadOpenConfirmationDialog::GetDialogMessage() {
+std::u16string DownloadOpenConfirmationDialog::GetDialogMessage() {
   return l10n_util::GetStringFUTF16(
       IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE,
       base::UTF8ToUTF16(extension_name_),
       file_path_.BaseName().AsUTF16Unsafe());
 }
 
-base::string16 DownloadOpenConfirmationDialog::GetAcceptButtonTitle() {
+std::u16string DownloadOpenConfirmationDialog::GetAcceptButtonTitle() {
   return l10n_util::GetStringUTF16(IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL);
 }
 
-base::string16 DownloadOpenConfirmationDialog::GetCancelButtonTitle() {
+std::u16string DownloadOpenConfirmationDialog::GetCancelButtonTitle() {
   return l10n_util::GetStringUTF16(IDS_CONFIRM_MESSAGEBOX_NO_BUTTON_LABEL);
 }
 

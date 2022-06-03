@@ -45,8 +45,8 @@ longhands_custom.cc).
 ### Aliases
 
 Aliases are properties that share most of their logic with another property,
-somtimes with the exception of some minor differences in parsing logic due to
-legacy reasons. Many aliases are -webit prefixed properties that have since
+sometimes with the exception of some minor differences in parsing logic due to
+legacy reasons. Many aliases are -webkit prefixed properties that have since
 been implemented without the prefix. Aliases define the alias_for member in
 [css_properties.json5](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/css/css_properties.json5)).
 
@@ -63,14 +63,15 @@ e.g. ParseShorthand.
 
 ### Descriptors
 
-Descriptors define the characteristics of an at-rule. For example, @viewport is
-an at-rule, and width is a valid descriptor for @viewport. Within the context of
-@viewport, width is a shorthand comprising the min-width and max-width of the
-viewport. From this example we can see that a descriptor is not the same as a
-CSS property with the same name. Sometimes descriptors and CSS properties with
-the same name are handled together, but that should not be taken to mean that
-they are the same thing. Fixing this possible source of confusion is an open
-issue crbug.com/752745.
+Descriptors define the characteristics of an at-rule. For example, @font-face
+is an at-rule, and font-family is a valid descriptor for @font-face. Within the
+context of @font-face, font-family names a web font associated with a url src
+descriptor, but the font-family property is used to select a font among the
+available local fonts or web fonts. From this example we can see that a
+descriptor is not the same as a CSS property with the same name. Sometimes
+descriptors and CSS properties with the same name are handled together, but
+that should not be taken to mean that they are the same thing. Fixing this
+possible source of confusion is an open issue crbug.com/752745.
 
 ### Variable
 

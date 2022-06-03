@@ -15,11 +15,10 @@ namespace blink {
 class CORE_EXPORT TextMarkerBase : public DocumentMarker {
  public:
   TextMarkerBase(unsigned start_offset, unsigned end_offset);
+  TextMarkerBase(const TextMarkerBase&) = delete;
+  TextMarkerBase& operator=(const TextMarkerBase&) = delete;
 
   virtual bool IsActiveMatch() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextMarkerBase);
 };
 
 bool CORE_EXPORT IsTextMarker(const DocumentMarker&);

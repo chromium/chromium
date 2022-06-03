@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MOJO_PROVISION_FETCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/provision_fetcher.h"
 #include "media/mojo/mojom/provision_fetcher.mojom.h"
@@ -17,14 +16,18 @@
 namespace media {
 
 // A ProvisionFetcher that proxies to a Remote<mojom::ProvisionFetcher>.
-class MEDIA_MOJO_EXPORT MojoProvisionFetcher : public ProvisionFetcher {
+class MEDIA_MOJO_EXPORT MojoProvisionFetcher final : public ProvisionFetcher {
  public:
   explicit MojoProvisionFetcher(
       mojo::PendingRemote<mojom::ProvisionFetcher> provision_fetcher);
+
+  MojoProvisionFetcher(const MojoProvisionFetcher&) = delete;
+  MojoProvisionFetcher& operator=(const MojoProvisionFetcher&) = delete;
+
   ~MojoProvisionFetcher() final;
 
   // ProvisionFetcher implementation:
-  void Retrieve(const std::string& default_url,
+  void Retrieve(const GURL& default_url,
                 const std::string& request_data,
                 ResponseCB response_cb) final;
 
@@ -37,8 +40,6 @@ class MEDIA_MOJO_EXPORT MojoProvisionFetcher : public ProvisionFetcher {
   mojo::Remote<mojom::ProvisionFetcher> provision_fetcher_;
 
   base::WeakPtrFactory<MojoProvisionFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoProvisionFetcher);
 };
 
 }  // namespace media

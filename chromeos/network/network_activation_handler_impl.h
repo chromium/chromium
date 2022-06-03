@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
@@ -21,30 +20,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
     : public NetworkActivationHandler,
       public base::SupportsWeakPtr<NetworkActivationHandlerImpl> {
  public:
+  NetworkActivationHandlerImpl(const NetworkActivationHandlerImpl&) = delete;
+  NetworkActivationHandlerImpl& operator=(const NetworkActivationHandlerImpl&) =
+      delete;
+
   ~NetworkActivationHandlerImpl() override;
 
  private:
   // NetworkActivationHandler:
-  void Activate(const std::string& service_path,
-                const std::string& carrier,
-                const base::Closure& success_callback,
-                const network_handler::ErrorCallback& error_callback) override;
   void CompleteActivation(
       const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) override;
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback) override;
 
  private:
   friend class NetworkHandler;
 
   NetworkActivationHandlerImpl();
 
-  // Handle success from Shill.Service.ActivateCellularModem or
-  // Shill.Service.CompleteCellularActivation.
-  void HandleShillSuccess(const std::string& service_path,
-                          const base::Closure& success_callback);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkActivationHandlerImpl);
+  void HandleShillSuccess(base::OnceClosure success_callback);
 };
 
 }  // namespace chromeos

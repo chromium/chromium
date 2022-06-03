@@ -11,3 +11,9 @@
 const CGFloat kiPhoneLocationBarPlaceholderColorBrightness = 150 / 255.0;
 
 NSString* const kDotComTLD = @".com";
+
+NSString* const kOmniboxShareButtonIdentifier =
+    @"kOmniboxShareButtonIdentifier";
+
+NSString* const kOmniboxVoiceSearchButtonIdentifier =
+    @"kOmniboxVoiceSearchButtonIdentifier";

@@ -9,13 +9,10 @@
 #include <numeric>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/android/jni_headers/InstanceIDBridge_jni.h"
@@ -70,22 +67,21 @@ InstanceIDAndroid::~InstanceIDAndroid() {
   Java_InstanceIDBridge_destroy(env, java_ref_);
 }
 
-void InstanceIDAndroid::GetID(const GetIDCallback& callback) {
+void InstanceIDAndroid::GetID(GetIDCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  int32_t request_id =
-      get_id_callbacks_.Add(std::make_unique<GetIDCallback>(callback));
+  int32_t request_id = get_id_callbacks_.Add(
+      std::make_unique<GetIDCallback>(std::move(callback)));
 
   JNIEnv* env = AttachCurrentThread();
   Java_InstanceIDBridge_getId(env, java_ref_, request_id);
 }
 
-void InstanceIDAndroid::GetCreationTime(
-    const GetCreationTimeCallback& callback) {
+void InstanceIDAndroid::GetCreationTime(GetCreationTimeCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   int32_t request_id = get_creation_time_callbacks_.Add(
-      std::make_unique<GetCreationTimeCallback>(callback));
+      std::make_unique<GetCreationTimeCallback>(std::move(callback)));
 
   JNIEnv* env = AttachCurrentThread();
   Java_InstanceIDBridge_getCreationTime(env, java_ref_, request_id);
@@ -94,21 +90,18 @@ void InstanceIDAndroid::GetCreationTime(
 void InstanceIDAndroid::GetToken(
     const std::string& authorized_entity,
     const std::string& scope,
-    const std::map<std::string, std::string>& options,
+    base::TimeDelta time_to_live,
     std::set<Flags> flags,
     GetTokenCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  UMA_HISTOGRAM_COUNTS_100("InstanceID.GetToken.OptionsCount", options.size());
+  if (!time_to_live.is_zero()) {
+    LOG(WARNING) << "Non-zero TTL requested for InstanceID token, while TTLs"
+                    " are not supported by Android Firebase IID API.";
+  }
 
   int32_t request_id = get_token_callbacks_.Add(
       std::make_unique<GetTokenCallback>(std::move(callback)));
-
-  std::vector<std::string> options_strings;
-  for (const auto& entry : options) {
-    options_strings.push_back(entry.first);
-    options_strings.push_back(entry.second);
-  }
 
   int java_flags = std::accumulate(
       flags.begin(), flags.end(), 0,
@@ -118,8 +111,7 @@ void InstanceIDAndroid::GetToken(
   Java_InstanceIDBridge_getToken(
       env, java_ref_, request_id,
       ConvertUTF8ToJavaString(env, authorized_entity),
-      ConvertUTF8ToJavaString(env, scope),
-      base::android::ToJavaArrayOfStrings(env, options_strings), java_flags);
+      ConvertUTF8ToJavaString(env, scope), java_flags);
 }
 
 void InstanceIDAndroid::ValidateToken(const std::string& authorized_entity,
@@ -165,7 +157,7 @@ void InstanceIDAndroid::DidGetID(
 
   GetIDCallback* callback = get_id_callbacks_.Lookup(request_id);
   DCHECK(callback);
-  callback->Run(ConvertJavaStringToUTF8(jid));
+  std::move(*callback).Run(ConvertJavaStringToUTF8(jid));
   get_id_callbacks_.Remove(request_id);
 }
 
@@ -180,14 +172,14 @@ void InstanceIDAndroid::DidGetCreationTime(
   // If the InstanceID's getId, getToken and deleteToken methods have never been
   // called, or deleteInstanceID has cleared it since, creation time will be 0.
   if (creation_time_unix_ms) {
-    creation_time = base::Time::UnixEpoch() +
-                    base::TimeDelta::FromMilliseconds(creation_time_unix_ms);
+    creation_time =
+        base::Time::UnixEpoch() + base::Milliseconds(creation_time_unix_ms);
   }
 
   GetCreationTimeCallback* callback =
       get_creation_time_callbacks_.Lookup(request_id);
   DCHECK(callback);
-  callback->Run(creation_time);
+  std::move(*callback).Run(creation_time);
   get_creation_time_callbacks_.Remove(request_id);
 }
 

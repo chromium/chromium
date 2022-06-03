@@ -4,8 +4,6 @@
 
 package org.chromium.android.commands.unzip;
 
-import org.chromium.base.Log;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -28,8 +26,7 @@ public class Unzip {
         try {
             (new Unzip()).run(args);
         } catch (RuntimeException e) {
-            Log.e(TAG, "unzip failed", e);
-            System.err.println(e.toString());
+            e.printStackTrace();
             System.exit(1);
         }
     }

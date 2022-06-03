@@ -5,6 +5,7 @@
     <script src="../resources/testharness.js"></script>
     <script src="../resources/testharnessreport.js"></script>
     <script src="../resources/permissions-helper.js"></script>
+    <script src="../resources/user-gesture-utils.js"></script>
   </head>
   <body>
     <script>
@@ -12,8 +13,24 @@
       // their onclick event. When the test is being run manually, grant
       // Notification permission and click on the notification.
       if (window.testRunner) {
-          testRunner.setCanOpenWindows();
-          testRunner.setCloseRemainingWindowsWhenComplete();
+          testRunner.setPopupBlockingEnabled(false);
+      }
+
+      function simulateUserClick(x, y) {
+          if (window.eventSender) {
+              eventSender.mouseMoveTo(x, y);
+              eventSender.mouseDown();
+              eventSender.mouseUp();
+	  }
+      }
+      function focusWithUserGesture(w) {
+          var focus_w = document.createElement('a');
+          focus_w.onclick = () => { w.focus(); };
+          focus_w.innerText = 'focus_w';
+          document.body.appendChild(focus_w);
+          simulateUserClick(focus_w.getBoundingClientRect().x,
+                            focus_w.getBoundingClientRect().y);
+          document.body.removeChild(focus_w);
       }
 
       async_test(function(test) {
@@ -28,7 +45,7 @@
               }));
 
               var childWindow = window.open('about:blank');
-              childWindow.focus();
+              focusWithUserGesture(childWindow);
 
               var notification = new Notification('My Notification');
               notification.addEventListener('show', test.step_func(function() {
@@ -46,6 +63,5 @@
           }));
       }, 'Clicking on a notification enables it to focus the window it was created from.');
     </script>
-    <script src="resources/click-focus-test.js"></script>
   </body>
 </html>

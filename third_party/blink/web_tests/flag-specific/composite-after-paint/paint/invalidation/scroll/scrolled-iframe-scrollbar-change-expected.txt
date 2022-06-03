@@ -4,28 +4,31 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [804, 604],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
-          "rect": [2, 2, 800, 600],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [10, 2, 784, 592],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [10, 2, 769, 592],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "VerticalScrollbar",
-          "rect": [787, 2, 15, 600],
-          "reason": "chunk disappeared"
-        }
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [787, 2, 15, 600],
+        [779, 2, 15, 592]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 800, 600]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
       ]
     }
   ]

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/arc/test/fake_clipboard_instance.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 
@@ -11,13 +11,15 @@ FakeClipboardInstance::FakeClipboardInstance() = default;
 
 FakeClipboardInstance::~FakeClipboardInstance() = default;
 
-void FakeClipboardInstance::Init(mojom::ClipboardHostPtr host_ptr,
-                                 InitCallback callback) {
+void FakeClipboardInstance::Init(
+    mojo::PendingRemote<mojom::ClipboardHost> host_remote,
+    InitCallback callback) {
   std::move(callback).Run();
 }
 
-void FakeClipboardInstance::InitDeprecated(mojom::ClipboardHostPtr host_ptr) {
-  Init(std::move(host_ptr), base::DoNothing());
+void FakeClipboardInstance::InitDeprecated(
+    mojo::PendingRemote<mojom::ClipboardHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
 void FakeClipboardInstance::OnHostClipboardUpdated() {

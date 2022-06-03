@@ -51,10 +51,11 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
-#include "third_party/blink/public/platform/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #endif
 
 using guest_view::GuestViewManager;
@@ -75,13 +76,14 @@ static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
     const GURL& redirect_target,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   auto it = request.headers.find("User-Agent");
   EXPECT_TRUE(it != request.headers.end());
   if (!base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -93,11 +95,14 @@ static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
 class WebContentsHiddenObserver : public content::WebContentsObserver {
  public:
   WebContentsHiddenObserver(content::WebContents* web_contents,
-                            const base::Closure& hidden_callback)
+                            base::RepeatingClosure hidden_callback)
       : WebContentsObserver(web_contents),
-        hidden_callback_(hidden_callback),
-        hidden_observed_(false) {
-  }
+        hidden_callback_(std::move(hidden_callback)),
+        hidden_observed_(false) {}
+
+  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
+  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
+      delete;
 
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -110,10 +115,8 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
   bool hidden_observed() { return hidden_observed_; }
 
  private:
-  base::Closure hidden_callback_;
+  base::RepeatingClosure hidden_callback_;
   bool hidden_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
 };
 
 // Handles |request| by serving a redirect response.
@@ -122,8 +125,9 @@ std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
     const GURL& redirect_target,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -142,7 +146,7 @@ std::unique_ptr<net::test_server::HttpResponse> EmptyResponseHandler(
         new net::test_server::RawHttpResponse("", ""));
   }
 
-  return std::unique_ptr<net::test_server::HttpResponse>();
+  return nullptr;
 }
 
 }  // namespace
@@ -202,7 +206,8 @@ void WebViewAPITest::RunTest(const std::string& test_name,
 
 void WebViewAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   AppShellTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(::switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebViewAPITest::SetUpOnMainThread() {
@@ -226,19 +231,16 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
   test_data_dir = test_data_dir.AppendASCII(app_location.c_str());
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&RedirectResponseHandler,
-                 kRedirectResponsePath,
-                 embedded_test_server()->GetURL(kRedirectResponseFullPath)));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &RedirectResponseHandler, kRedirectResponsePath,
+      embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&EmptyResponseHandler, kEmptyResponsePath));
+      base::BindRepeating(&EmptyResponseHandler, kEmptyResponsePath));
 
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(
-          &UserAgentResponseHandler,
-          kUserAgentRedirectResponsePath,
-          embedded_test_server()->GetURL(kRedirectResponseFullPath)));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &UserAgentResponseHandler, kUserAgentRedirectResponsePath,
+      embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 
@@ -293,8 +295,10 @@ void WebViewAPITest::SendMessageToGuestAndWait(
     const std::string& message,
     const std::string& wait_message) {
   std::unique_ptr<ExtensionTestMessageListener> listener;
-  if (!wait_message.empty())
-    listener.reset(new ExtensionTestMessageListener(wait_message, false));
+  if (!wait_message.empty()) {
+    listener =
+        std::make_unique<ExtensionTestMessageListener>(wait_message, false);
+  }
 
   EXPECT_TRUE(
       content::ExecuteScript(
@@ -468,11 +472,11 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   content::WebContents* guest_web_contents = GetGuestWebContents();
   content::WaitForHitTestData(guest_web_contents);
 
-  // Register a ContextMenuFilter to wait for the context menu event to be sent.
-  content::RenderProcessHost* guest_process_host =
-      guest_web_contents->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<content::ContextMenuFilter>();
-  guest_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor =
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_web_contents->GetMainFrame());
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
@@ -483,10 +487,10 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   gfx::Point guest_context_menu_position(5, 5);
   gfx::Point root_context_menu_position =
       guest_view->TransformPointToRootCoordSpace(guest_context_menu_position);
-  content::SimulateRoutedMouseClickAt(
+  content::SimulateMouseClickAt(
       root_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kRight, root_context_menu_position);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 }
 #endif
 
@@ -665,6 +669,13 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest,
 
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNavOnSrcAttributeChange) {
   RunTest("testNavOnSrcAttributeChange", "web_view/apitest");
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestLoadCommitUrlsWithIframe) {
+  const std::string app_location = "web_view/apitest";
+  StartTestServer(app_location);
+  RunTest("testLoadCommitUrlsWithIframe", app_location);
+  StopTestServer();
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNewWindow) {

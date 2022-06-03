@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <video src="../tulip2.webm" loop=true />
+  </body>
+
+  <script>
+    const video = document.querySelector('video');
+
+    function addPictureInPictureEventListeners() {
+      video.addEventListener('enterpictureinpicture', _ => {
+        document.title = 'enterpictureinpicture';
+      });
+      video.addEventListener('leavepictureinpicture', _ => {
+        document.title = 'leavepictureinpicture';
+      });
+    }
+
+    function addPlayEventListener() {
+      video.addEventListener('play', _ => {
+        document.title = 'play';
+      }, { once: true });
+    }
+
+    function addPauseEventListener() {
+      video.addEventListener('pause', _ => {
+        document.title = 'pause';
+      }, { once: true });
+    }
+
+    async function play() {
+      await video.play();
+      return true;
+    }
+
+    async function playToEnd() {
+      video.loop = false;
+      await video.play();
+      video.currentTime = video.duration;
+      await _waitForEnded();
+      return true;
+    }
+
+    function _waitForEnded() {
+      return new Promise(resolve => {
+        if (video.ended) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('ended', _ => {
+          resolve();
+        }, { once: true });
+      });
+    }
+
+    async function updateVideoSrcAndPlay() {
+      video.src = "../tulip2.webm";
+      await video.play();
+      return true;
+    }
+
+    async function resetVideo() {
+      video.src = "";
+      await _waitForEmptied();
+      return true;
+    }
+
+    function _waitForEmptied() {
+      return new Promise((resolve, _) => {
+        if (video.networkState == HTMLMediaElement.NETWORK_EMPTY) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('emptied', _ => {
+          resolve();
+        }, { once: true });
+      });
+    }
+
+    async function enterPictureInPicture() {
+      await _waitForMetadata();
+      await video.requestPictureInPicture();
+      return true;
+    }
+
+    function _waitForMetadata() {
+      return new Promise(resolve => {
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('loadedmetadata', _ => {
+          resolve();
+        }, { once: true });
+      });
+    }
+
+    async function enterFullscreen() {
+      await video.requestFullscreen();
+      return true;
+    }
+
+    function setMediaSessionPlayActionHandler() {
+      navigator.mediaSession.setActionHandler("play", _ => {
+        video.play();
+      });
+    }
+
+    function setMediaSessionPauseActionHandler() {
+      navigator.mediaSession.setActionHandler("pause", _ => {
+        video.pause();
+      });
+    }
+
+    function setMediaSessionNextTrackActionHandler() {
+      navigator.mediaSession.setActionHandler("nexttrack", _ => {
+        // Simulates a playlist functionality (in this case the playlist has
+        // just one item).
+        video.src = "../tulip2.webm";
+        video.play();
+      });
+    }
+  </script>
+</html>

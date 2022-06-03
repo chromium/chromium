@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/stl_util.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
@@ -217,6 +217,9 @@ class MockNSEventClassMethods {
     }
   }
 
+  MockNSEventClassMethods(const MockNSEventClassMethods&) = delete;
+  MockNSEventClassMethods& operator=(const MockNSEventClassMethods&) = delete;
+
  private:
   MockNSEventClassMethods()
       : mouse_location_swizzler_([NSEvent class],
@@ -228,8 +231,6 @@ class MockNSEventClassMethods {
 
   base::mac::ScopedObjCClassSwizzler mouse_location_swizzler_;
   base::mac::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNSEventClassMethods);
 };
 
 }  // namespace
@@ -266,7 +267,7 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool command,
                                 base::OnceClosure task) {
   CHECK(g_ui_controls_enabled);
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
 
   std::vector<NSEvent*> events;
   SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, control, shift,
@@ -289,7 +290,7 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   return true;
 }
 
-bool SendMouseMove(long x, long y) {
+bool SendMouseMove(int x, int y) {
   CHECK(g_ui_controls_enabled);
   return SendMouseMoveNotifyWhenDone(x, y, base::OnceClosure());
 }
@@ -298,7 +299,7 @@ bool SendMouseMove(long x, long y) {
 // events require them window-relative, so we adjust.  We *DO* flip
 // the coordinate space, so input events can be the same for all
 // platforms.  E.g. (0,0) is upper-left.
-bool SendMouseMoveNotifyWhenDone(long x, long y, base::OnceClosure task) {
+bool SendMouseMoveNotifyWhenDone(int x, int y, base::OnceClosure task) {
   CHECK(g_ui_controls_enabled);
   g_mouse_location = gfx::ScreenPointToNSPoint(gfx::Point(x, y));  // flip!
 

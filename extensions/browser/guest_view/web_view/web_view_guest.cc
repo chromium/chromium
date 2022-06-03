@@ -37,6 +37,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
@@ -49,6 +50,8 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
@@ -86,6 +89,11 @@ using zoom::ZoomController;
 namespace extensions {
 
 namespace {
+
+// Strings used to encode blob url fallback mode in site URLs.
+constexpr char kNoFallback[] = "nofallback";
+constexpr char kInMemoryFallback[] = "inmemoryfallback";
+constexpr char kOnDiskFallback[] = "ondiskfallback";
 
 // Returns storage partition removal mask from web_view clearData mask. Note
 // that storage partition mask is a subset of webview's data removal mask.
@@ -213,6 +221,13 @@ using WebViewKeyToIDMap = std::map<WebViewKey, int>;
 static base::LazyInstance<WebViewKeyToIDMap>::DestructorAtExit
     web_view_key_to_id_map = LAZY_INSTANCE_INITIALIZER;
 
+bool IsInWebViewMainFrame(content::NavigationHandle* navigation_handle) {
+  // TODO(1261928): Due to the use of inner WebContents, a WebView's main frame
+  // is considered primary. This will no longer be the case once we migrate
+  // guest views to MPArch.
+  return navigation_handle->IsInPrimaryMainFrame();
+}
+
 }  // namespace
 
 WebViewGuest::NewWindowInfo::NewWindowInfo(const GURL& url,
@@ -263,10 +278,9 @@ GuestViewBase* WebViewGuest::Create(WebContents* owner_web_contents) {
 
 // static
 bool WebViewGuest::GetGuestPartitionConfigForSite(
+    content::BrowserContext* browser_context,
     const GURL& site,
-    std::string* partition_domain,
-    std::string* partition_name,
-    bool* in_memory) {
+    content::StoragePartitionConfig* storage_partition_config) {
   if (!site.SchemeIs(content::kGuestScheme))
     return false;
 
@@ -274,32 +288,73 @@ bool WebViewGuest::GetGuestPartitionConfigForSite(
   // URL was created, so it needs to be decoded. Since it was created via
   // EscapeQueryParamValue(), it should have no path separators or control codes
   // when unescaped, but safest to check for that and fail if it does.
+  std::string partition_name;
   if (!net::UnescapeBinaryURLComponentSafe(site.query_piece(),
                                            true /* fail_on_path_separators */,
-                                           partition_name)) {
+                                           &partition_name)) {
     return false;
   }
 
   // Since guest URLs are only used for packaged apps, there must be an app
   // id in the URL.
   CHECK(site.has_host());
-  *partition_domain = site.host();
   // Since persistence is optional, the path must either be empty or the
   // literal string.
-  *in_memory = (site.path() != "/persist");
+  bool in_memory = (site.path() != "/persist");
+
+  *storage_partition_config = content::StoragePartitionConfig::Create(
+      browser_context, site.host(), partition_name, in_memory);
+  // A <webview> inside a chrome app needs to be able to resolve Blob URLs that
+  // were created by the chrome app. The chrome app has the same
+  // partition_domain but empty partition_name. Setting this flag on the
+  // partition config causes it to be used as fallback for the purpose of
+  // resolving blob URLs.
+
+  // Default to having the fallback partition on disk, as that matches most
+  // closely what we would have done before fallback behavior started being
+  // encoded in the site URL.
+  content::StoragePartitionConfig::FallbackMode fallback_mode =
+      content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  if (site.ref() == kNoFallback) {
+    fallback_mode = content::StoragePartitionConfig::FallbackMode::kNone;
+  } else if (site.ref() == kInMemoryFallback) {
+    fallback_mode = content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionInMemory;
+  } else if (site.ref() == kOnDiskFallback) {
+    fallback_mode =
+        content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  }
+
+  storage_partition_config->set_fallback_to_partition_domain_for_blob_urls(
+      fallback_mode);
   return true;
 }
 
 // static
 GURL WebViewGuest::GetSiteForGuestPartitionConfig(
-    const std::string& partition_domain,
-    const std::string& partition_name,
-    bool in_memory) {
-  std::string url_encoded_partition =
-      net::EscapeQueryParamValue(partition_name, false);
-  return GURL(base::StringPrintf(
-      "%s://%s/%s?%s", content::kGuestScheme, partition_domain.c_str(),
-      in_memory ? "" : "persist", url_encoded_partition.c_str()));
+    const content::StoragePartitionConfig& storage_partition_config) {
+  std::string url_encoded_partition = net::EscapeQueryParamValue(
+      storage_partition_config.partition_name(), false);
+  const char* fallback = "";
+  switch (
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
+    case content::StoragePartitionConfig::FallbackMode::kNone:
+      fallback = kNoFallback;
+      break;
+    case content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionOnDisk:
+      fallback = kOnDiskFallback;
+      break;
+    case content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionInMemory:
+      fallback = kInMemoryFallback;
+      break;
+  }
+  return GURL(
+      base::StringPrintf("%s://%s/%s?%s#%s", content::kGuestScheme,
+                         storage_partition_config.partition_domain().c_str(),
+                         storage_partition_config.in_memory() ? "" : "persist",
+                         url_encoded_partition.c_str(), fallback));
 }
 
 // static
@@ -342,6 +397,8 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
                                      WebContentsCreatedCallback callback) {
   RenderProcessHost* owner_render_process_host =
       owner_web_contents()->GetMainFrame()->GetProcess();
+  DCHECK_EQ(browser_context(), owner_render_process_host->GetBrowserContext());
+
   std::string storage_partition_id;
   bool persist_storage = false;
   ParsePartitionParam(create_params, &storage_partition_id, &persist_storage);
@@ -356,27 +413,46 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     return;
   }
   std::string partition_domain = GetOwnerSiteURL().host();
-  GURL guest_site(
-      GetSiteForGuestPartitionConfig(partition_domain, storage_partition_id,
-                                     !persist_storage /* in_memory */));
+  auto partition_config = content::StoragePartitionConfig::Create(
+      browser_context(), partition_domain, storage_partition_id,
+      !persist_storage /* in_memory */);
+
+  if (GetOwnerSiteURL().SchemeIs(extensions::kExtensionScheme)) {
+    auto owner_config =
+        extensions::util::GetStoragePartitionConfigForExtensionId(
+            GetOwnerSiteURL().host(), browser_context());
+    if (browser_context()->IsOffTheRecord()) {
+      DCHECK(owner_config.in_memory());
+    }
+    if (!owner_config.is_default()) {
+      partition_config.set_fallback_to_partition_domain_for_blob_urls(
+          owner_config.in_memory()
+              ? content::StoragePartitionConfig::FallbackMode::
+                    kFallbackPartitionInMemory
+              : content::StoragePartitionConfig::FallbackMode::
+                    kFallbackPartitionOnDisk);
+      DCHECK(owner_config == partition_config.GetFallbackForBlobUrls().value());
+    }
+  }
+
+  GURL guest_site = GetSiteForGuestPartitionConfig(partition_config);
 
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and
   // the new tag can script each other.
-  auto* guest_view_manager = GuestViewManager::FromBrowserContext(
-      owner_render_process_host->GetBrowserContext());
+  auto* guest_view_manager =
+      GuestViewManager::FromBrowserContext(browser_context());
   scoped_refptr<content::SiteInstance> guest_site_instance =
       guest_view_manager->GetGuestSiteInstance(guest_site);
   if (!guest_site_instance) {
     // Create the SiteInstance in a new BrowsingInstance, which will ensure
     // that webview tags are also not allowed to send messages across
     // different partitions.
-    guest_site_instance = content::SiteInstance::CreateForGuest(
-        owner_render_process_host->GetBrowserContext(), guest_site);
+    guest_site_instance =
+        content::SiteInstance::CreateForGuest(browser_context(), guest_site);
   }
-  WebContents::CreateParams params(
-      owner_render_process_host->GetBrowserContext(),
-      std::move(guest_site_instance));
+  WebContents::CreateParams params(browser_context(),
+                                   std::move(guest_site_instance));
   params.guest_delegate = this;
   // TODO(erikchen): Fix ownership semantics for guest views.
   // https://crbug.com/832879.
@@ -399,13 +475,6 @@ void WebViewGuest::DidAttachToEmbedder() {
   ApplyAttributes(*attach_params());
 }
 
-void WebViewGuest::DidDropLink(const GURL& url) {
-  auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, url.spec());
-  DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventDropLink,
-                                                       std::move(args)));
-}
-
 void WebViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
   script_executor_ = std::make_unique<ScriptExecutor>(web_contents());
 
@@ -426,15 +495,14 @@ void WebViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
 
 void WebViewGuest::ClearCodeCache(base::Time remove_since,
                                   uint32_t removal_mask,
-                                  const base::Closure& callback) {
+                                  base::OnceClosure callback) {
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents()->GetBrowserContext(),
+      web_contents()->GetBrowserContext()->GetStoragePartition(
           web_contents()->GetSiteInstance());
   DCHECK(partition);
   base::OnceClosure code_cache_removal_done_callback = base::BindOnce(
       &WebViewGuest::ClearDataInternal, weak_ptr_factory_.GetWeakPtr(),
-      remove_since, removal_mask, callback);
+      remove_since, removal_mask, std::move(callback));
   partition->ClearCodeCaches(remove_since, base::Time::Now(),
                              base::RepeatingCallback<bool(const GURL&)>(),
                              std::move(code_cache_removal_done_callback));
@@ -442,11 +510,11 @@ void WebViewGuest::ClearCodeCache(base::Time remove_since,
 
 void WebViewGuest::ClearDataInternal(base::Time remove_since,
                                      uint32_t removal_mask,
-                                     const base::Closure& callback) {
+                                     base::OnceClosure callback) {
   uint32_t storage_partition_removal_mask =
       GetStoragePartitionRemovalMask(removal_mask);
   if (!storage_partition_removal_mask) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
@@ -475,15 +543,14 @@ void WebViewGuest::ClearDataInternal(base::Time remove_since,
   bool perform_cleanup = remove_since.is_null();
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents()->GetBrowserContext(),
+      web_contents()->GetBrowserContext()->GetStoragePartition(
           web_contents()->GetSiteInstance());
   partition->ClearData(
       storage_partition_removal_mask,
       content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
       content::StoragePartition::OriginMatcherFunction(),
       std::move(cookie_delete_filter), perform_cleanup, remove_since,
-      base::Time::Max(), callback);
+      base::Time::Max(), std::move(callback));
 }
 
 void WebViewGuest::GuestViewDidStopLoading() {
@@ -516,16 +583,20 @@ int WebViewGuest::GetTaskPrefix() const {
 
 void WebViewGuest::GuestDestroyed() {
   WebViewRendererState::GetInstance()->RemoveGuest(
-      web_contents()->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents()->GetRenderViewHost()->GetRoutingID());
+      web_contents()
+          ->GetMainFrame()
+          ->GetRenderViewHost()
+          ->GetProcess()
+          ->GetID(),
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID());
 }
 
 void WebViewGuest::GuestReady() {
   // The guest RenderView should always live in an isolated guest process.
   CHECK(web_contents()->GetMainFrame()->GetProcess()->IsForGuestsOnly());
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  main_frame->Send(
-      new ExtensionMsg_SetFrameName(main_frame->GetRoutingID(), name_));
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(web_contents()->GetMainFrame())
+      ->SetFrameName(name_);
 
   // We don't want to accidentally set the opacity of an interstitial page.
   // WebContents::GetRenderWidgetHostView will return the RWHV of an
@@ -555,8 +626,8 @@ void WebViewGuest::GuestZoomChanged(double old_zoom_level,
   double old_zoom_factor = ConvertZoomLevelToZoomFactor(old_zoom_level);
   double new_zoom_factor = ConvertZoomLevelToZoomFactor(new_zoom_level);
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetDouble(webview::kOldZoomFactor, old_zoom_factor);
-  args->SetDouble(webview::kNewZoomFactor, new_zoom_factor);
+  args->SetDoubleKey(webview::kOldZoomFactor, old_zoom_factor);
+  args->SetDoubleKey(webview::kNewZoomFactor, new_zoom_factor);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventZoomChange, std::move(args)));
 }
@@ -595,10 +666,10 @@ ZoomController::ZoomMode WebViewGuest::GetZoomMode() {
 }
 
 bool WebViewGuest::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return web_view_guest_delegate_ &&
-         web_view_guest_delegate_->HandleContextMenu(params);
+         web_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
 }
 
 bool WebViewGuest::HandleKeyboardEvent(
@@ -640,12 +711,10 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
   base::DictionaryValue create_params;
   create_params.SetString(webview::kStoragePartitionId, storage_partition_id);
 
-  guest_manager->CreateGuest(WebViewGuest::Type,
-                             embedder_web_contents(),
-                             create_params,
-                             base::Bind(&WebViewGuest::NewGuestWebViewCallback,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        params));
+  guest_manager->CreateGuest(
+      WebViewGuest::Type, embedder_web_contents(), create_params,
+      base::BindOnce(&WebViewGuest::NewGuestWebViewCallback,
+                     weak_ptr_factory_.GetWeakPtr(), params));
 }
 
 void WebViewGuest::NewGuestWebViewCallback(const content::OpenURLParams& params,
@@ -660,7 +729,6 @@ void WebViewGuest::NewGuestWebViewCallback(const content::OpenURLParams& params,
   // Request permission to show the new window.
   RequestNewWindowPermission(params.disposition,
                              gfx::Rect(),
-                             params.user_gesture,
                              new_guest->web_contents());
 }
 
@@ -688,7 +756,7 @@ void WebViewGuest::RendererUnresponsive(
 }
 
 void WebViewGuest::StartFind(
-    const base::string16& search_text,
+    const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options,
     scoped_refptr<WebViewInternalFindFunction> find_function) {
   find_helper_.Find(web_contents(), search_text, std::move(options),
@@ -722,7 +790,8 @@ void WebViewGuest::SetUserAgentOverride(
   if (is_overriding_user_agent_) {
     base::RecordAction(UserMetricsAction("WebView.Guest.OverrideUA"));
   }
-  web_contents()->SetUserAgentOverride(user_agent_override, false);
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly(user_agent_override), false);
 }
 
 void WebViewGuest::Stop() {
@@ -741,11 +810,10 @@ void WebViewGuest::Terminate() {
 
 bool WebViewGuest::ClearData(base::Time remove_since,
                              uint32_t removal_mask,
-                             const base::Closure& callback) {
+                             base::OnceClosure callback) {
   base::RecordAction(UserMetricsAction("WebView.Guest.ClearData"));
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents()->GetBrowserContext(),
+      web_contents()->GetBrowserContext()->GetStoragePartition(
           web_contents()->GetSiteInstance());
 
   if (!partition)
@@ -763,7 +831,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
 
     base::OnceClosure cache_removal_done_callback = base::BindOnce(
         &WebViewGuest::ClearCodeCache, weak_ptr_factory_.GetWeakPtr(),
-        remove_since, removal_mask, callback);
+        remove_since, removal_mask, std::move(callback));
 
     // We cannot use |BrowsingDataRemover| here since it doesn't support
     // non-default StoragePartition.
@@ -773,7 +841,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
     return true;
   }
 
-  ClearDataInternal(remove_since, removal_mask, callback);
+  ClearDataInternal(remove_since, removal_mask, std::move(callback));
   return true;
 }
 
@@ -800,39 +868,6 @@ WebViewGuest::WebViewGuest(WebContents* owner_web_contents)
 WebViewGuest::~WebViewGuest() {
 }
 
-void WebViewGuest::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Return early if no declarative content scripts are present.
-  //
-  // Note - more granular checks (e.g. against URL patterns) are desirable for
-  // performance (to avoid creating unnecessary URLLoaderFactory), but not
-  // necessarily for security (because there are anyway no OOPIFs inside the
-  // GuestView process - https://crbug.com/614463).  At the same time, more
-  // granular checks are difficult to achieve, because the UserScript objects
-  // are not retained (i.e. only UserScriptIDs are available) by
-  // WebViewContentScriptManager.
-  WebViewContentScriptManager* script_manager =
-      WebViewContentScriptManager::Get(browser_context());
-  int embedder_process_id =
-      owner_web_contents()->GetMainFrame()->GetProcess()->GetID();
-  std::set<int> script_ids = script_manager->GetContentScriptIDSet(
-      embedder_process_id, view_instance_id());
-  if (script_ids.empty())
-    return;
-
-  // At ReadyToCommitNavigation time there is no need to trigger an explicit
-  // push of URLLoaderFactoryBundle to the renderer - it is sufficient if the
-  // factories are pushed slightly later - during the commit.
-  constexpr bool kPushToRendererNow = false;
-
-  // Content scripts run in an isolated world associated with the origin of the
-  // <webview> embedder.
-  navigation_handle->GetRenderFrameHost()
-      ->MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-          {owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin()},
-          kPushToRendererNow);
-}
-
 void WebViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsErrorPage() || !navigation_handle->HasCommitted()) {
@@ -847,8 +882,8 @@ void WebViewGuest::DidFinishNavigation(
       int error_code = navigation_handle->GetNetErrorCode();
       if (error_code == net::OK)
         error_code = net::ERR_BLOCKED_BY_CLIENT;
-      LoadAbort(navigation_handle->IsInMainFrame(), navigation_handle->GetURL(),
-                error_code);
+      LoadAbort(IsInWebViewMainFrame(navigation_handle),
+                navigation_handle->GetURL(), error_code);
     }
     // Originally, on failed navigations the webview we would fire a loadabort
     // (for the failed navigation) and a loadcommit (for the error page).
@@ -856,19 +891,18 @@ void WebViewGuest::DidFinishNavigation(
       return;
   }
 
-  if (navigation_handle->IsInMainFrame()) {
-    // For LoadDataWithBaseURL loads, |url| contains the data URL, but the
-    // virtual URL is needed in that case. So use WebContents::GetURL instead.
-    src_ = web_contents()->GetURL();
+  if (IsInWebViewMainFrame(navigation_handle) && pending_zoom_factor_) {
     // Handle a pending zoom if one exists.
-    if (pending_zoom_factor_) {
-      SetZoom(pending_zoom_factor_);
-      pending_zoom_factor_ = 0.0;
-    }
+    SetZoom(pending_zoom_factor_);
+    pending_zoom_factor_ = 0.0;
   }
+
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, src_.spec());
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
+  args->SetString(webview::kInternalVisibleUrl,
+                  web_contents()->GetVisibleURL().spec());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   args->SetString(webview::kInternalBaseURLForDataURL,
                   web_contents()
                       ->GetController()
@@ -890,12 +924,13 @@ void WebViewGuest::DidFinishNavigation(
 void WebViewGuest::LoadProgressChanged(double progress) {
   auto args = std::make_unique<base::DictionaryValue>();
   args->SetString(guest_view::kUrl, web_contents()->GetURL().spec());
-  args->SetDouble(webview::kProgress, progress);
+  args->SetDoubleKey(webview::kProgress, progress);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadProgress, std::move(args)));
 }
 
-void WebViewGuest::DocumentOnLoadCompletedInMainFrame() {
+void WebViewGuest::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   auto args = std::make_unique<base::DictionaryValue>();
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContentLoad, std::move(args)));
@@ -904,7 +939,7 @@ void WebViewGuest::DocumentOnLoadCompletedInMainFrame() {
 void WebViewGuest::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   WebViewGuest* opener = GetOpener();
-  if (opener && navigation_handle->IsInMainFrame()) {
+  if (opener && IsInWebViewMainFrame(navigation_handle)) {
     auto it = opener->pending_new_windows_.find(this);
     if (it != opener->pending_new_windows_.end()) {
       NewWindowInfo& info = it->second;
@@ -918,7 +953,8 @@ void WebViewGuest::DidStartNavigation(
 
   auto args = std::make_unique<base::DictionaryValue>();
   args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventLoadStart,
                                                        std::move(args)));
 }
@@ -926,7 +962,8 @@ void WebViewGuest::DidStartNavigation(
 void WebViewGuest::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   args->SetString(webview::kNewURL, navigation_handle->GetURL().spec());
   auto redirect_chain = navigation_handle->GetRedirectChain();
   DCHECK_GE(redirect_chain.size(), 2u);
@@ -936,7 +973,8 @@ void WebViewGuest::DidRedirectNavigation(
       webview::kEventLoadRedirect, std::move(args)));
 }
 
-void WebViewGuest::RenderProcessGone(base::TerminationStatus status) {
+void WebViewGuest::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Cancel all find sessions in progress.
   find_helper_.CancelAllFindSessions();
 
@@ -948,12 +986,13 @@ void WebViewGuest::RenderProcessGone(base::TerminationStatus status) {
       std::make_unique<GuestViewEvent>(webview::kEventExit, std::move(args)));
 }
 
-void WebViewGuest::UserAgentOverrideSet(const std::string& user_agent) {
+void WebViewGuest::UserAgentOverrideSet(
+    const blink::UserAgentOverride& ua_override) {
   content::NavigationController& controller = web_contents()->GetController();
   content::NavigationEntry* entry = controller.GetVisibleEntry();
   if (!entry)
     return;
-  entry->SetIsOverridingUserAgent(!user_agent.empty());
+  entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
@@ -976,10 +1015,12 @@ void WebViewGuest::OnAudioStateChanged(bool audible) {
 }
 
 void WebViewGuest::OnDidAddMessageToConsole(
+    content::RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id,
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   auto args = std::make_unique<base::DictionaryValue>();
   // Log levels are from base/logging.h: LogSeverity.
   args->SetInteger(webview::kLevel,
@@ -1001,11 +1042,10 @@ void WebViewGuest::ReportFrameNameChange(const std::string& name) {
 
 void WebViewGuest::PushWebViewStateToIOThread() {
   const GURL& site_url = web_contents()->GetSiteInstance()->GetSiteURL();
-  std::string partition_domain;
-  std::string partition_id;
-  bool in_memory;
-  if (!GetGuestPartitionConfigForSite(
-          site_url, &partition_domain, &partition_id, &in_memory)) {
+  content::StoragePartitionConfig storage_partition_config =
+      content::StoragePartitionConfig::CreateDefault(browser_context());
+  if (!GetGuestPartitionConfigForSite(browser_context(), site_url,
+                                      &storage_partition_config)) {
     NOTREACHED();
     return;
   }
@@ -1014,7 +1054,7 @@ void WebViewGuest::PushWebViewStateToIOThread() {
   web_view_info.embedder_process_id =
       owner_web_contents()->GetMainFrame()->GetProcess()->GetID();
   web_view_info.instance_id = view_instance_id();
-  web_view_info.partition_id = partition_id;
+  web_view_info.partition_id = storage_partition_config.partition_name();
   web_view_info.owner_host = owner_host();
   web_view_info.rules_registry_id = rules_registry_id_;
 
@@ -1026,8 +1066,13 @@ void WebViewGuest::PushWebViewStateToIOThread() {
       web_view_info.embedder_process_id, web_view_info.instance_id);
 
   WebViewRendererState::GetInstance()->AddGuest(
-      web_contents()->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents()->GetRenderViewHost()->GetRoutingID(), web_view_info);
+      web_contents()
+          ->GetMainFrame()
+          ->GetRenderViewHost()
+          ->GetProcess()
+          ->GetID(),
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID(),
+      web_view_info);
 }
 
 void WebViewGuest::RequestMediaAccessPermission(
@@ -1053,17 +1098,9 @@ void WebViewGuest::CanDownload(const GURL& url,
                                            std::move(callback));
 }
 
-void WebViewGuest::RequestPointerLockPermission(
-    bool user_gesture,
-    bool last_unlocked_by_target,
-    base::OnceCallback<void(bool)> callback) {
-  web_view_permission_helper_->RequestPointerLockPermission(
-      user_gesture, last_unlocked_by_target, std::move(callback));
-}
-
 void WebViewGuest::SignalWhenReady(base::OnceClosure callback) {
   auto* manager = WebViewContentScriptManager::Get(browser_context());
-  manager->SignalOnScriptsLoaded(std::move(callback));
+  manager->SignalOnScriptsUpdated(std::move(callback));
 }
 
 void WebViewGuest::WillAttachToEmbedder() {
@@ -1094,9 +1131,9 @@ void WebViewGuest::NavigateGuest(const std::string& src,
   // content scripts will be ready.
   if (force_navigation) {
     SignalWhenReady(
-        base::Bind(&WebViewGuest::LoadURLWithParams,
-                   weak_ptr_factory_.GetWeakPtr(), url, content::Referrer(),
-                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL, force_navigation));
+        base::BindOnce(&WebViewGuest::LoadURLWithParams,
+                       weak_ptr_factory_.GetWeakPtr(), url, content::Referrer(),
+                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, force_navigation));
     return;
   }
   LoadURLWithParams(url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -1111,17 +1148,18 @@ bool WebViewGuest::HandleKeyboardShortcuts(
     return false;
   }
 
-  if (event.GetType() != blink::WebInputEvent::kRawKeyDown)
+  if (event.GetType() != blink::WebInputEvent::Type::kRawKeyDown)
     return false;
 
   // If the user hits the escape key without any modifiers then unlock the
   // mouse if necessary.
   if ((event.windows_key_code == ui::VKEY_ESCAPE) &&
       !(event.GetModifiers() & blink::WebInputEvent::kInputModifiers)) {
-    return web_contents()->GotResponseToLockMouseRequest(false);
+    return web_contents()->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kUserRejected);
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (event.GetModifiers() != blink::WebInputEvent::kMetaKey)
     return false;
 
@@ -1165,20 +1203,22 @@ void WebViewGuest::ApplyAttributes(const base::DictionaryValue& params) {
   params.GetString(webview::kParameterUserAgentOverride, &user_agent_override);
   SetUserAgentOverride(user_agent_override);
 
-  bool allow_transparency = false;
-  if (params.GetBoolean(webview::kAttributeAllowTransparency,
-      &allow_transparency)) {
+  absl::optional<bool> allow_transparency =
+      params.FindBoolKey(webview::kAttributeAllowTransparency);
+  if (allow_transparency) {
     // We need to set the background opaque flag after navigation to ensure that
     // there is a RenderWidgetHostView available.
-    SetAllowTransparency(allow_transparency);
+    SetAllowTransparency(*allow_transparency);
   }
 
-  bool allow_scaling = false;
-  if (params.GetBoolean(webview::kAttributeAllowScaling, &allow_scaling))
-    SetAllowScaling(allow_scaling);
+  absl::optional<bool> allow_scaling =
+      params.FindBoolKey(webview::kAttributeAllowScaling);
+  if (allow_scaling)
+    SetAllowScaling(*allow_scaling);
 
   // Check for a pending zoom from before the first navigation.
-  params.GetDouble(webview::kInitialZoomFactor, &pending_zoom_factor_);
+  pending_zoom_factor_ = params.FindDoubleKey(webview::kInitialZoomFactor)
+                             .value_or(pending_zoom_factor_);
 
   bool is_pending_new_window = false;
   WebViewGuest* opener = GetOpener();
@@ -1222,19 +1262,22 @@ void WebViewGuest::SetName(const std::string& name) {
     return;
   name_ = name;
 
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  main_frame->Send(
-      new ExtensionMsg_SetFrameName(main_frame->GetRoutingID(), name_));
+  // Return early if this method is called before RenderFrameCreated().
+  // In that case, we still have a chance to update the name at GuestReady().
+  if (!web_contents()->GetMainFrame()->IsRenderFrameLive())
+    return;
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(web_contents()->GetMainFrame())
+      ->SetFrameName(name_);
 }
 
 void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
   if (is_spatial_navigation_enabled_ == enabled)
     return;
   is_spatial_navigation_enabled_ = enabled;
-
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  main_frame->Send(new ExtensionMsg_SetSpatialNavigationEnabled(
-      main_frame->GetRoutingID(), enabled));
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(web_contents()->GetMainFrame())
+      ->SetSpatialNavigationEnabled(enabled);
 }
 
 bool WebViewGuest::IsSpatialNavigationEnabled() const {
@@ -1258,14 +1301,22 @@ void WebViewGuest::SetAllowTransparency(bool allow) {
     return;
 
   allow_transparency_ = allow;
-  if (!web_contents()->GetRenderViewHost()->GetWidget()->GetView())
+  if (!web_contents()
+           ->GetMainFrame()
+           ->GetRenderViewHost()
+           ->GetWidget()
+           ->GetView())
     return;
 
   SetTransparency();
 }
 
 void WebViewGuest::SetTransparency() {
-  auto* view = web_contents()->GetRenderViewHost()->GetWidget()->GetView();
+  auto* view = web_contents()
+                   ->GetMainFrame()
+                   ->GetRenderViewHost()
+                   ->GetWidget()
+                   ->GetView();
   if (allow_transparency_)
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   else
@@ -1276,51 +1327,53 @@ void WebViewGuest::SetAllowScaling(bool allow) {
   allow_scaling_ = allow;
 }
 
-bool WebViewGuest::LoadDataWithBaseURL(const std::string& data_url,
-                                       const std::string& base_url,
-                                       const std::string& virtual_url,
+bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
+                                       const GURL& base_url,
+                                       const GURL& virtual_url,
                                        std::string* error) {
-  // Make GURLs from URLs.
-  const GURL data_gurl = GURL(data_url);
-  const GURL base_gurl = GURL(base_url);
-  const GURL virtual_gurl = GURL(virtual_url);
-
   // Check that the provided URLs are valid.
   // |data_url| must be a valid data URL.
-  if (!data_gurl.is_valid() || !data_gurl.SchemeIs(url::kDataScheme)) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidDataURL, data_url.c_str());
+  if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme)) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidDataURL,
+                        data_url.possibly_invalid_spec().c_str());
     return false;
   }
-  // |base_url| must be a valid URL.
-  if (!base_gurl.is_valid()) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidBaseURL, base_url.c_str());
+  const url::Origin& owner_origin =
+      owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+  const bool base_in_owner_origin =
+      owner_origin.IsSameOriginWith(url::Origin::Create(base_url));
+  // |base_url| must be a valid URL. It is also limited to URLs that the owner
+  // is trusted to have control over.
+  if (!base_url.is_valid() ||
+      (!base_url.SchemeIsHTTPOrHTTPS() && !base_in_owner_origin)) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidBaseURL,
+                        base_url.possibly_invalid_spec().c_str());
     return false;
   }
   // |virtual_url| must be a valid URL.
-  if (!virtual_gurl.is_valid()) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidVirtualURL, virtual_url.c_str());
+  if (!virtual_url.is_valid()) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidVirtualURL,
+                        virtual_url.possibly_invalid_spec().c_str());
     return false;
   }
 
   // Set up the parameters to load |data_url| with the specified |base_url|.
-  content::NavigationController::LoadURLParams load_params(data_gurl);
+  content::NavigationController::LoadURLParams load_params(data_url);
   load_params.load_type = content::NavigationController::LOAD_TYPE_DATA;
-  load_params.base_url_for_data_url = base_gurl;
-  load_params.virtual_url_for_data_url = virtual_gurl;
+  load_params.base_url_for_data_url = base_url;
+  load_params.virtual_url_for_data_url = virtual_url;
   load_params.override_user_agent =
       content::NavigationController::UA_OVERRIDE_INHERIT;
 
   // Navigate to the data URL.
-  GuestViewBase::LoadURLWithParams(load_params);
+  web_contents()->GetController().LoadURLWithParams(load_params);
 
   return true;
 }
 
 void WebViewGuest::AddNewContents(WebContents* source,
                                   std::unique_ptr<WebContents> new_contents,
+                                  const GURL& target_url,
                                   WindowOpenDisposition disposition,
                                   const gfx::Rect& initial_rect,
                                   bool user_gesture,
@@ -1329,8 +1382,7 @@ void WebViewGuest::AddNewContents(WebContents* source,
   // https://crbug.com/832879.
   if (was_blocked)
     *was_blocked = false;
-  RequestNewWindowPermission(disposition, initial_rect, user_gesture,
-                             new_contents.release());
+  RequestNewWindowPermission(disposition, initial_rect, new_contents.release());
 }
 
 WebContents* WebViewGuest::OpenURLFromTab(
@@ -1413,16 +1465,17 @@ void WebViewGuest::WebContentsCreated(WebContents* source_contents,
 }
 
 void WebViewGuest::EnterFullscreenModeForTab(
-    WebContents* web_contents,
-    const GURL& origin,
+    content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   // Ask the embedder for permission.
   base::DictionaryValue request_info;
+  const GURL& origin =
+      requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   request_info.SetString(webview::kOrigin, origin.spec());
   web_view_permission_helper_->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, request_info,
-      base::Bind(&WebViewGuest::OnFullscreenPermissionDecided,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&WebViewGuest::OnFullscreenPermissionDecided,
+                     weak_ptr_factory_.GetWeakPtr()),
       false /* allowed_by_default */);
 
   // TODO(lazyboy): Right now the guest immediately goes fullscreen within its
@@ -1446,10 +1499,10 @@ bool WebViewGuest::IsFullscreenForTabOrPending(
 void WebViewGuest::RequestToLockMouse(WebContents* web_contents,
                                       bool user_gesture,
                                       bool last_unlocked_by_target) {
-  RequestPointerLockPermission(
+  web_view_permission_helper_->RequestPointerLockPermission(
       user_gesture, last_unlocked_by_target,
-      base::Bind(
-          base::IgnoreResult(&WebContents::GotResponseToLockMouseRequest),
+      base::BindOnce(
+          base::IgnoreResult(&WebContents::GotLockMousePermissionResponse),
           base::Unretained(web_contents)));
 }
 
@@ -1479,8 +1532,13 @@ void WebViewGuest::LoadURLWithParams(
     return;
   }
 
-  if (!force_navigation && (src_ == url))
-    return;
+  if (!force_navigation) {
+    content::NavigationEntry* last_committed_entry =
+        web_contents()->GetController().GetLastCommittedEntry();
+    if (last_committed_entry && last_committed_entry->GetURL() == url) {
+      return;
+    }
+  }
 
   GURL validated_url(url);
   web_contents()->GetMainFrame()->GetProcess()->FilterURL(false,
@@ -1497,14 +1555,11 @@ void WebViewGuest::LoadURLWithParams(
     load_url_params.override_user_agent =
         content::NavigationController::UA_OVERRIDE_TRUE;
   }
-  GuestViewBase::LoadURLWithParams(load_url_params);
-
-  src_ = validated_url;
+  web_contents()->GetController().LoadURLWithParams(load_url_params);
 }
 
 void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
                                               const gfx::Rect& initial_bounds,
-                                              bool user_gesture,
                                               WebContents* new_contents) {
   auto* guest = WebViewGuest::FromWebContents(new_contents);
   if (!guest)
@@ -1530,13 +1585,12 @@ void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
   request_info.SetString(webview::kWindowOpenDisposition,
                          WindowOpenDispositionToString(disposition));
 
-  web_view_permission_helper_->
-      RequestPermission(WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW,
-                        request_info,
-                        base::Bind(&WebViewGuest::OnWebViewNewWindowResponse,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   guest->guest_instance_id()),
-                                   false /* allowed_by_default */);
+  web_view_permission_helper_->RequestPermission(
+      WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW, request_info,
+      base::BindOnce(&WebViewGuest::OnWebViewNewWindowResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     guest->guest_instance_id()),
+      false /* allowed_by_default */);
 }
 
 GURL WebViewGuest::ResolveURL(const std::string& src) {
@@ -1595,6 +1649,7 @@ void WebViewGuest::SetFullscreenState(bool is_fullscreen) {
   // Since we changed fullscreen state, sending a SynchronizeVisualProperties
   // message ensures that renderer/ sees the change.
   web_contents()
+      ->GetMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->SynchronizeVisualProperties();

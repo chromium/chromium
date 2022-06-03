@@ -17,10 +17,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 
-namespace content {
-class SandboxDirectoryDatabaseTest;
-}
-
 namespace base {
 class Location;
 }
@@ -64,6 +60,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
 
   SandboxDirectoryDatabase(const base::FilePath& filesystem_data_directory,
                            leveldb::Env* env_override);
+
+  SandboxDirectoryDatabase(const SandboxDirectoryDatabase&) = delete;
+  SandboxDirectoryDatabase& operator=(const SandboxDirectoryDatabase&) = delete;
+
   ~SandboxDirectoryDatabase();
 
   bool GetChildWithName(FileId parent_id,
@@ -108,8 +108,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
     FAIL_ON_CORRUPTION,
   };
 
-  friend class content::SandboxDirectoryDatabaseTest;
   friend class ObfuscatedFileUtil;
+  friend class SandboxDirectoryDatabaseTest;
 
   bool Init(RecoveryOption recovery_option);
   bool RepairDatabase(const std::string& db_path);
@@ -129,7 +129,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
   leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   base::Time last_reported_time_;
-  DISALLOW_COPY_AND_ASSIGN(SandboxDirectoryDatabase);
 };
 
 }  // namespace storage

@@ -5,13 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/graphics/contiguous_container.h"
-#include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -20,6 +22,7 @@
 
 namespace blink {
 
+class PaintArtifact;
 enum class PaintPhase;
 
 class PLATFORM_EXPORT DisplayItem {
@@ -52,6 +55,8 @@ class PLATFORM_EXPORT DisplayItem {
   // - DEFINE_PAINT_PHASE_CONVERSION_METHOD(<Category>[<Subset>]) to define
   //   paintPhaseTo<Category>[<Subset>]Type(PaintPhase) method.
   enum Type {
+    kUninitializedType,
+
     kDrawingFirst,
     kDrawingPaintPhaseFirst = kDrawingFirst,
     kDrawingPaintPhaseLast = kDrawingFirst + kPaintPhaseMax,
@@ -61,10 +66,10 @@ class PLATFORM_EXPORT DisplayItem {
     kClippingMask,
     kColumnRules,
     kDebugDrawing,
+    kDocumentRootBackdrop,
     kDocumentBackground,
     kDragImage,
     kDragCaret,
-    kEmptyContentForFilters,
     kForcedColorsModeBackplate,
     kSVGImage,
     kLinkHighlight,
@@ -79,7 +84,6 @@ class PLATFORM_EXPORT DisplayItem {
     kReflectionMask,
     kResizer,
     kSVGClip,
-    kSVGFilter,
     kSVGMask,
     kScrollCorner,
     // The following 3 types are used during cc::Scrollbar::PaintPart() only.
@@ -100,12 +104,13 @@ class PLATFORM_EXPORT DisplayItem {
     kForeignLayerDevToolsOverlay,
     kForeignLayerPlugin,
     kForeignLayerVideo,
-    kForeignLayerWrapper,
+    kForeignLayerRemoteFrame,
     kForeignLayerContentsWrapper,
     kForeignLayerLinkHighlight,
     kForeignLayerViewportScroll,
     kForeignLayerViewportScrollbar,
-    kForeignLayerLast = kForeignLayerViewportScrollbar,
+    kForeignLayerDocumentTransitionContent,
+    kForeignLayerLast = kForeignLayerDocumentTransitionContent,
 
     kClipPaintPhaseFirst,
     kClipPaintPhaseLast = kClipPaintPhaseFirst + kPaintPhaseMax,
@@ -119,107 +124,106 @@ class PLATFORM_EXPORT DisplayItem {
     kSVGEffectPaintPhaseFirst,
     kSVGEffectPaintPhaseLast = kSVGEffectPaintPhaseFirst + kPaintPhaseMax,
 
+    // The following hit test types are for paint chunks containing hit test
+    // data, when we don't have an previously set explicit chunk id when
+    // creating the paint chunk, or we need dedicated paint chunk for the hit
+    // test data.
+
     // Compositor hit testing requires that layers are created and sized to
-    // include content that does not paint. Hit test display items ensure
-    // a layer exists and is sized properly even if no content would otherwise
-    // be painted.
+    // include content that does not paint. Hit test data ensure a layer exists
+    // and is sized properly even if no content would otherwise be painted.
     kHitTest,
 
+    // Used for paint chunks that contain region capture data.
+    kRegionCapture,
+
     // Used both for specifying the paint-order scroll location, and for non-
-    // composited scroll hit testing (see: scroll_hit_test_display_item.h).
+    // composited scroll hit testing (see: hit_test_data.h).
     kScrollHitTest,
     // Used to prevent composited scrolling on the resize handle.
     kResizerScrollHitTest,
     // Used to prevent composited scrolling on plugins with wheel handlers.
     kPluginScrollHitTest,
+    // Used to prevent composited scrolling on custom scrollbars.
+    kCustomScrollbarHitTest,
 
-    kLayerChunkBackground,
-    kLayerChunkNegativeZOrderChildren,
-    kLayerChunkDescendantBackgrounds,
-    kLayerChunkFloat,
+    // These are for paint chunks that are forced for layers.
+    kLayerChunk,
+    // This is used if a layer has any negative-z-index children. Otherwise the
+    // foreground is in the kLayerChunk chunk.
     kLayerChunkForeground,
-    kLayerChunkNormalFlowAndPositiveZOrderChildren,
 
     // The following 2 types are For ScrollbarDisplayItem.
     kScrollbarHorizontal,
     kScrollbarVertical,
 
-    kUninitializedType,
-    kTypeLast = kUninitializedType
+    kTypeLast = kScrollbarVertical,
   };
 
-  // Some fields are copied from |client|, because we need to access them in
-  // later paint cycles when |client| may have been destroyed.
-  DisplayItem(const DisplayItemClient& client,
-              Type type,
-              size_t derived_size,
-              bool draws_content = false)
-      : client_(&client),
-        visual_rect_(client.VisualRect()),
-        outset_for_raster_effects_(client.VisualRectOutsetForRasterEffects()),
-        type_(type),
-        draws_content_(draws_content),
-        fragment_(0),
-        is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false) {
-    // |derived_size| must fit in |derived_size_|.
-    // If it doesn't, enlarge |derived_size_| and fix this assert.
-    SECURITY_DCHECK(derived_size < (1 << 8));
-    SECURITY_DCHECK(derived_size >= sizeof(*this));
-    derived_size_ = static_cast<unsigned>(derived_size);
-  }
+  static_assert(kTypeLast < (1 << 8),
+                "DisplayItem::Type should fit in uint8_t");
 
-  virtual ~DisplayItem() = default;
+  DisplayItem(const DisplayItem&) = delete;
+  DisplayItem(DisplayItem&&) = delete;
+  DisplayItem& operator=(const DisplayItem&) = delete;
+  DisplayItem& operator=(DisplayItem&&) = delete;
 
   // Ids are for matching new DisplayItems with existing DisplayItems.
   struct Id {
     DISALLOW_NEW();
-    Id(const DisplayItemClient& client, const Type type, unsigned fragment = 0)
-        : client(client), type(type), fragment(fragment) {}
-    Id(const Id& id, unsigned fragment)
-        : client(id.client), type(id.type), fragment(fragment) {}
+    Id(DisplayItemClientId client_id, Type type, wtf_size_t fragment = 0)
+        : client_id(client_id), type(type), fragment(fragment) {}
+    Id(const Id& id, wtf_size_t fragment)
+        : client_id(id.client_id), type(id.type), fragment(fragment) {}
 
+    // The no-argument version is for operator<< which is used in DCHECK and
+    // unit tests.
     String ToString() const;
+    // This version will output the debug name of the client.
+    String ToString(const PaintArtifact&) const;
 
-    const DisplayItemClient& client;
+    const DisplayItemClientId client_id;
     const Type type;
-    const unsigned fragment;
+    const wtf_size_t fragment;
+
+    struct HashKey {
+      HashKey() = default;
+      explicit HashKey(const DisplayItem::Id& id)
+          : client_id(id.client_id), type(id.type), fragment(id.fragment) {}
+      bool operator==(const HashKey& other) const {
+        return client_id == other.client_id && type == other.type &&
+               fragment == other.fragment;
+      }
+
+      DisplayItemClientId client_id = kInvalidDisplayItemClientId;
+      DisplayItem::Type type = static_cast<DisplayItem::Type>(0);
+      wtf_size_t fragment = 0;
+    };
+
+    HashKey AsHashKey() const { return HashKey(*this); }
   };
 
-  Id GetId() const { return Id(*client_, GetType(), fragment_); }
+  Id GetId() const { return Id(client_id_, GetType(), fragment_); }
 
-  const DisplayItemClient& Client() const {
-    DCHECK(client_);
-    return *client_;
+  DisplayItemClientId ClientId() const {
+    DCHECK_NE(client_id_, kInvalidDisplayItemClientId);
+    return client_id_;
   }
 
-  // This equals to Client().VisualRect() as long as the client is alive and is
-  // not invalidated. Otherwise it saves the previous visual rect of the client.
-  // See DisplayItemClient::VisualRect() about its coordinate space.
-  const IntRect& VisualRect() const { return visual_rect_; }
-  float OutsetForRasterEffects() const { return outset_for_raster_effects_; }
+  // The bounding box of all pixels of this display item, in the transform space
+  // of the containing paint chunk.
+  const gfx::Rect& VisualRect() const { return visual_rect_; }
 
-  // Visual rect can change without needing invalidation of the client, e.g.
-  // when ancestor clip changes. This is called from PaintController::
-  // UseCachedItemIfPossible() to update the visual rect of a cached display
-  // item.
-  void UpdateVisualRect() { visual_rect_ = client_->VisualRect(); }
+  RasterEffectOutset GetRasterEffectOutset() const {
+    return static_cast<RasterEffectOutset>(raster_effect_outset_);
+  }
 
   Type GetType() const { return static_cast<Type>(type_); }
 
-  // Size of this object in memory, used to move it with memcpy.
-  // This is not sizeof(*this), because it needs to account for the size of
-  // the derived class (i.e. runtime type). Derived classes are expected to
-  // supply this to the DisplayItem constructor.
-  size_t DerivedSize() const { return derived_size_; }
-
   // The fragment is part of the id, to uniquely identify display items in
   // different fragments for the same client and type.
-  unsigned Fragment() const { return fragment_; }
-  void SetFragment(unsigned fragment) {
-    DCHECK(fragment < (1 << 14));
-    fragment_ = fragment;
-  }
+  wtf_size_t Fragment() const { return fragment_; }
+  void SetFragment(wtf_size_t fragment) { fragment_ = fragment; }
 
 // See comments of enum Type for usage of the following macros.
 #define DEFINE_CATEGORY_METHODS(Category)                           \
@@ -249,69 +253,103 @@ class PLATFORM_EXPORT DisplayItem {
   DEFINE_PAINT_PHASE_CONVERSION_METHOD(SVGTransform)
   DEFINE_PAINT_PHASE_CONVERSION_METHOD(SVGEffect)
 
-  bool IsHitTest() const { return type_ == kHitTest; }
-  bool IsScrollHitTest() const {
-    return type_ == kScrollHitTest || IsResizerScrollHitTest() ||
-           IsPluginScrollHitTest();
-  }
-  bool IsResizerScrollHitTest() const { return type_ == kResizerScrollHitTest; }
-  bool IsPluginScrollHitTest() const { return type_ == kPluginScrollHitTest; }
-
   bool IsScrollbar() const {
     return type_ == kScrollbarHorizontal || type_ == kScrollbarVertical;
   }
 
-  bool IsCacheable() const { return is_cacheable_; }
-  void SetUncacheable() { is_cacheable_ = false; }
-
-  virtual bool Equals(const DisplayItem& other) const {
-    // Failure of this DCHECK would cause bad casts in subclasses.
-    SECURITY_CHECK(!is_tombstone_);
-    return client_ == other.client_ && type_ == other.type_ &&
-           fragment_ == other.fragment_ && derived_size_ == other.derived_size_;
+  PaintInvalidationReason GetPaintInvalidationReason() const {
+    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_);
+  }
+  void SetPaintInvalidationReason(PaintInvalidationReason reason) {
+    paint_invalidation_reason_ = static_cast<unsigned>(reason);
+  }
+  bool IsCacheable() const {
+    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_) !=
+           PaintInvalidationReason::kUncacheable;
   }
 
+  bool EqualsForUnderInvalidation(const DisplayItem& other) const;
+
   // True if this DisplayItem is the tombstone/"dead display item" as part of
-  // moving an item from one list to another. See the default constructor of
-  // DisplayItem.
-  bool IsTombstone() const { return is_tombstone_; }
+  // moving an item from one list to another. See CreateTombstone().
+  bool IsTombstone() const { return !is_not_tombstone_; }
 
   bool DrawsContent() const { return draws_content_; }
 
 #if DCHECK_IS_ON()
-  static WTF::String TypeAsDebugString(DisplayItem::Type);
-  WTF::String AsDebugString() const;
-  virtual void PropertiesAsJSON(JSONObject&) const;
+  // A subsequence tombstone is full of zeros set by memset(0);
+  bool IsSubsequenceTombstone() const {
+    return !is_not_tombstone_ && client_id_ == kInvalidDisplayItemClientId;
+  }
+  static String TypeAsDebugString(DisplayItem::Type);
+  String AsDebugString(const PaintArtifact&) const;
+  String IdAsString(const PaintArtifact&) const;
+  void PropertiesAsJSON(JSONObject&,
+                        const PaintArtifact&,
+                        bool client_known_to_be_alive = false) const;
 #endif
 
+ protected:
+  // Some fields are copied from |client|, because we need to access them in
+  // later paint cycles when |client| may have been destroyed.
+  DisplayItem(const DisplayItemClientId client_id,
+              Type type,
+              const gfx::Rect& visual_rect,
+              RasterEffectOutset raster_effect_outset,
+              PaintInvalidationReason paint_invalidation_reason,
+              bool draws_content = false)
+      : client_id_(client_id),
+        visual_rect_(visual_rect),
+        fragment_(0),
+        paint_invalidation_reason_(
+            static_cast<unsigned>(paint_invalidation_reason)),
+        type_(type),
+        raster_effect_outset_(static_cast<unsigned>(raster_effect_outset)),
+        draws_content_(draws_content),
+        is_not_tombstone_(true),
+        opaqueness_(0) {}
+
+  ~DisplayItem() = default;
+
  private:
-  template <typename T, unsigned alignment>
-  friend class ContiguousContainer;
   friend class DisplayItemList;
 
-  // The default DisplayItem constructor is only used by ContiguousContainer::
-  // AppendByMoving() where a tombstone DisplayItem is constructed at the source
-  // location. Only set draws_content_ to false and is_tombstone_ to true,
-  // leaving other fields as-is so that we can get their original values.
-  // |visual_rect_| and |outset_for_raster_effects_| are special, see
-  // DisplayItemList::AppendByMoving().
-  DisplayItem() : draws_content_(false), is_tombstone_(true) {}
+  // DisplayItemList calls this method to destruct a DisplayItem in place.
+  // It knows how to destruct subclasses.
+  void Destruct();
 
-  const DisplayItemClient* client_;
-  IntRect visual_rect_;
-  float outset_for_raster_effects_;
+  // Used by DisplayItemList::AppendByMoving() and ReplaceLastByMoving() where
+  // a tombstone DisplayItem is constructed at the source location. Only set
+  // draws_content_ and is_not_tombstone_ to false, leaving other fields as-is
+  // so that we can get their original values for debugging and raster
+  // invalidation.
+  void CreateTombstone() {
+    draws_content_ = false;
+    is_not_tombstone_ = false;
+  }
 
-  static_assert(kTypeLast < (1 << 7), "DisplayItem::Type should fit in 7 bits");
-  unsigned type_ : 7;
+  DisplayItemClientId client_id_;
+  gfx::Rect visual_rect_;
+  wtf_size_t fragment_;
+  // paint_invalidation_reason_ is set during construction (or, in the case of a
+  // DisplayItem copied from the cache, shortly thereafter). Once set, it is
+  // never modified. It is used to inform raster invalidation.
+  unsigned paint_invalidation_reason_ : 8;
+  unsigned type_ : 8;
+  unsigned raster_effect_outset_ : 2;
   unsigned draws_content_ : 1;
-  unsigned derived_size_ : 8;  // size of the actual derived class
-  unsigned fragment_ : 14;
-  unsigned is_cacheable_ : 1;
-  unsigned is_tombstone_ : 1;
+  // This is not |is_tombstone_| to allow memset(0) to clear a display item to
+  // be a tombstone.
+  unsigned is_not_tombstone_ : 1;
+
+ protected:
+  // For DrawingDisplayItem to save memory.
+  mutable unsigned opaqueness_ : 2;
 };
 
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {
-  return a.client == b.client && a.type == b.type && a.fragment == b.fragment;
+  return a.client_id == b.client_id && a.type == b.type &&
+         a.fragment == b.fragment;
 }
 
 inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
@@ -319,9 +357,43 @@ inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
+// These are mainly for DCHECK and unit tests. They don't output debug names of
+// DisplayItemClients. Use the argumented version of DisplayItem::Id::ToString()
+// or DisplayItem::AsDebugString() if you want to see debug names.
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct HashTraits<blink::DisplayItem::Id::HashKey>
+    : GenericHashTraits<blink::DisplayItem::Id::HashKey> {
+  using Key = blink::DisplayItem::Id::HashKey;
+  static void ConstructDeletedValue(Key& slot, bool) {
+    const_cast<wtf_size_t&>(slot.fragment) = kNotFound;
+  }
+  static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }
+};
+
+template <>
+struct DefaultHash<blink::DisplayItem::Id::HashKey> {
+  struct Hash {
+    STATIC_ONLY(Hash);
+    using Key = blink::DisplayItem::Id::HashKey;
+    static unsigned GetHash(const Key& id) {
+      unsigned hash =
+          IntHash<blink::DisplayItemClientId>::GetHash(id.client_id);
+      WTF::AddIntToHash(hash, id.type);
+      WTF::AddIntToHash(hash, id.fragment);
+      return hash;
+    }
+    static bool Equal(const Key& a, const Key& b) { return a == b; }
+    static const bool safe_to_compare_to_empty_or_deleted = false;
+  };
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_

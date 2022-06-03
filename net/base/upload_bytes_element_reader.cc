@@ -4,7 +4,7 @@
 
 #include "net/base/upload_bytes_element_reader.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -12,8 +12,7 @@ namespace net {
 
 UploadBytesElementReader::UploadBytesElementReader(const char* bytes,
                                                    uint64_t length)
-    : bytes_(bytes), length_(length), offset_(0) {
-}
+    : bytes_(bytes), length_(length) {}
 
 UploadBytesElementReader::~UploadBytesElementReader() = default;
 

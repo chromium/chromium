@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "google_apis/google_api_keys.h"
@@ -26,13 +25,14 @@ namespace safe_search_api {
 // via a callback.
 class SafeSearchURLCheckerClient : public URLCheckerClient {
  public:
-  // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
-  // "us". Optional
   SafeSearchURLCheckerClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      const std::string& country = std::string(),
       const std::string& api_key = google_apis::GetAPIKey());
+
+  SafeSearchURLCheckerClient(const SafeSearchURLCheckerClient&) = delete;
+  SafeSearchURLCheckerClient& operator=(const SafeSearchURLCheckerClient&) =
+      delete;
 
   ~SafeSearchURLCheckerClient() override;
 
@@ -52,12 +52,9 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  const std::string country_;
   const std::string api_key_;
 
   CheckList checks_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeSearchURLCheckerClient);
 };
 
 }  // namespace safe_search_api

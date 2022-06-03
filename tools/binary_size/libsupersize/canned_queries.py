@@ -5,17 +5,18 @@
 """Contains a set of Chrome-specific size queries."""
 
 import logging
+import re
 
 import models
 
 
-class _Grouper(object):
+class _Grouper:
   def __init__(self):
     self.groups = []
 
   def Add(self, name, group):
     logging.debug('Computed %s (%d syms)', name, len(group))
-    if len(group):
+    if group:
       sorted_group = group.Sorted()
       sorted_group.SetName(name)
       self.groups.append(sorted_group)
@@ -125,16 +126,18 @@ def _CategorizeGenerated(symbols):
       symbols.WherePathMatches('gl_bindings_autogen'))
 
   symbols = symbols.WhereSourceIsGenerated()
-  symbols = g.Add('Java Protocol Buffers', symbols.Filter(lambda s: (
-      s.source_path.endswith('Proto.java'))))
+  symbols = g.Add(
+      'Java Protocol Buffers',
+      symbols.Filter(lambda s: '__protoc_java.srcjar' in s.source_path))
   symbols = g.Add('C++ Protocol Buffers', symbols.Filter(lambda s: (
       '/protobuf/' in s.object_path or
       s.object_path.endswith('.pbzero.o') or
       s.object_path.endswith('.pb.o'))))
-  symbols = g.Add('Mojo', symbols.Filter(lambda s: (
-      '.mojom' in s.source_path or  # Blink uses .mojom-blink.cc
-      s.source_path.startswith('mojo/') or
-      s.name.startswith('mojo::'))))
+  mojo_pattern = re.compile(r'\bmojom?\b')
+  symbols = g.Add(
+      'Mojo',
+      symbols.Filter(lambda s: (s.full_name.startswith('mojo::') or mojo_pattern
+                                .search(s.source_path))))
   symbols = g.Add('DevTools', symbols.WhereSourcePathMatches(
       r'\b(?:protocol|devtools)\b'))
   symbols = g.Add('Blink (bindings)', symbols.WherePathMatches(
@@ -155,7 +158,7 @@ def _CategorizeGenerated(symbols):
   return g.Finalize(symbols)
 
 
-class CannedQueries(object):
+class CannedQueries:
   """A set of pre-written queries."""
 
   def __init__(self, size_infos):

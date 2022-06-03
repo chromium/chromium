@@ -5,13 +5,8 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("json_proto") {
-  sources = [
-    "json.proto",
-  ]
-
-  # This way json.pb.h header goes into "$root_gen_dir" directory precisely,
-  # otherwise it goes into "$root_gen_dir" + "/testing/libfuzzer/proto/".
-  proto_out_dir = ""
+  proto_in_dir = "//"
+  sources = [ "json.proto" ]
 }
 
 source_set("json_proto_converter") {
@@ -19,9 +14,7 @@ source_set("json_proto_converter") {
     "json_proto_converter.cc",
     "json_proto_converter.h",
   ]
-  deps = [
-    ":json_proto",
-  ]
+  deps = [ ":json_proto" ]
 }
 
 static_library("skia_image_filter_converter") {
@@ -45,8 +38,19 @@ static_library("skia_image_filter_converter") {
     all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
 }
-proto_library("skia_image_filter_proto") {
+
+source_set("url_proto_converter") {
   sources = [
-    "skia_image_filter.proto",
+    "url_proto_converter.cc",
+    "url_proto_converter.h",
   ]
+  deps = [ ":url_proto" ]
+}
+
+proto_library("skia_image_filter_proto") {
+  sources = [ "skia_image_filter.proto" ]
+}
+
+proto_library("url_proto") {
+  sources = [ "url.proto" ]
 }

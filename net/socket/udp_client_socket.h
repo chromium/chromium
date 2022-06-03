@@ -24,6 +24,10 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   UDPClientSocket(DatagramSocket::BindType bind_type,
                   net::NetLog* net_log,
                   const net::NetLogSource& source);
+
+  UDPClientSocket(const UDPClientSocket&) = delete;
+  UDPClientSocket& operator=(const UDPClientSocket&) = delete;
+
   ~UDPClientSocket() override;
 
   // DatagramClientSocket implementation.
@@ -73,12 +77,11 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   void SetSendmmsgEnabled(bool enabled) override;
   void SetWriteBatchingActive(bool active) override;
   int SetMulticastInterface(uint32_t interface_index) override;
+  void SetIOSNetworkServiceType(int ios_network_service_type) override;
 
  private:
   UDPSocket socket_;
   NetworkChangeNotifier::NetworkHandle network_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPClientSocket);
 };
 
 }  // namespace net

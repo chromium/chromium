@@ -19,12 +19,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,8 +56,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PopularUrlsTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "PopularUrlsTest";
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -236,7 +237,7 @@ public class PopularUrlsTest {
 
         tab.addObserver(new EmptyTabObserver() {
             @Override
-            public void onPageLoadFinished(Tab tab, String url) {
+            public void onPageLoadFinished(Tab tab, GURL url) {
                 loadedCallback.notifyCalled();
             }
 
@@ -355,7 +356,8 @@ public class PopularUrlsTest {
                 loadUrl(page, failureWriter);
                 long stopTime = System.currentTimeMillis();
 
-                String currentUrl = mActivityTestRule.getActivity().getActivityTab().getUrl();
+                String currentUrl =
+                        mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec();
                 Log.i(TAG, "Finish: " + currentUrl);
                 logToStream(page + "|" + (stopTime - startTime) + NEW_LINE, outputWriter);
                 mStatus.incrementPage();

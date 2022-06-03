@@ -19,11 +19,9 @@ void HttpsEngagementMetricsProvider::ProvideCurrentSessionData(
   if (!profile_manager)
     return;
 
-  // Do not try to create profile here if it does not exist,
-  // because this method can be called during browser shutdown.
-  Profile* profile = profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(
-          profile_manager->user_data_dir()));
+  // Do not try to create profile here if it does not exist, because this method
+  // can be called during browser shutdown.
+  Profile* profile = profile_manager->GetLastUsedProfileIfLoaded();
   if (!profile)
     return;
 

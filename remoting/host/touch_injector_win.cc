@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "base/notreached.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -113,7 +114,7 @@ std::unique_ptr<TouchInjectorWinDelegate> TouchInjectorWinDelegate::Create() {
   base::ScopedNativeLibrary library(base::FilePath(L"User32.dll"));
   if (!library.is_valid()) {
     PLOG(INFO) << "Failed to get library module for touch injection functions.";
-    return std::unique_ptr<TouchInjectorWinDelegate>();
+    return nullptr;
   }
 
   InitializeTouchInjectionFunction init_func =
@@ -121,7 +122,7 @@ std::unique_ptr<TouchInjectorWinDelegate> TouchInjectorWinDelegate::Create() {
           library.GetFunctionPointer("InitializeTouchInjection"));
   if (!init_func) {
     PLOG(INFO) << "Failed to get InitializeTouchInjection function handle.";
-    return std::unique_ptr<TouchInjectorWinDelegate>();
+    return nullptr;
   }
 
   InjectTouchInputFunction inject_touch_func =
@@ -129,7 +130,7 @@ std::unique_ptr<TouchInjectorWinDelegate> TouchInjectorWinDelegate::Create() {
           library.GetFunctionPointer("InjectTouchInput"));
   if (!inject_touch_func) {
     PLOG(INFO) << "Failed to get InjectTouchInput.";
-    return std::unique_ptr<TouchInjectorWinDelegate>();
+    return nullptr;
   }
 
   return std::unique_ptr<TouchInjectorWinDelegate>(new TouchInjectorWinDelegate(

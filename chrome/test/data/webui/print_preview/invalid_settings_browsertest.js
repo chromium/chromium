@@ -2,34 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, makeRecentDestination, NativeLayer, PluginProxy, ScalingType, setCloudPrintInterfaceForTesting, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, makeRecentDestination, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, PrintPreviewSidebarElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {PDFPluginStub} from 'chrome://test/print_preview/plugin_stub.js';
-import {createDestinationWithCertificateStatus, getCddTemplate, getDefaultMediaSize, getDefaultOrientation} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+
+import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
+// <if expr="chromeos or lacros">
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+// </if>
+import {NativeLayerStub} from './native_layer_stub.js';
+import {createDestinationWithCertificateStatus, getCddTemplate, getDefaultMediaSize, getDefaultOrientation} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.invalid_settings_browsertest = {};
+const invalid_settings_browsertest = window.invalid_settings_browsertest;
 invalid_settings_browsertest.suiteName = 'InvalidSettingsBrowserTest';
 /** @enum {string} */
 invalid_settings_browsertest.TestNames = {
-  NoPDFPluginError: 'no pdf plugin error',
   InvalidSettingsError: 'invalid settings error',
   InvalidCertificateError: 'invalid certificate error',
   InvalidCertificateErrorReselectDestination: 'invalid certificate reselect',
 };
 
 suite(invalid_settings_browsertest.suiteName, function() {
-  /** @type {?PrintPreviewAppElement} */
-  let page = null;
+  /** @type {!PrintPreviewAppElement} */
+  let page;
 
-  /** @type {?NativeLayer} */
-  let nativeLayer = null;
+  /** @type {!NativeLayerStub} */
+  let nativeLayer;
 
-  /** @type {?CloudPrintInterface} */
-  let cloudPrintInterface = null;
+  /** @type {!CloudPrintInterfaceStub} */
+  let cloudPrintInterface;
 
   /** @type {!NativeInitialSettings} */
   const initialSettings = {
@@ -37,12 +44,16 @@ suite(invalid_settings_browsertest.suiteName, function() {
     isInAppKioskMode: false,
     thousandsDelimiter: ',',
     decimalDelimiter: '.',
-    unitType: 1,
+    unitType: MeasurementSystemUnitType.IMPERIAL,
     previewIsPdf: false,
     previewModifiable: true,
+    destinationsManaged: false,
+    previewIsFromArc: false,
+    syncAvailable: true,
     documentTitle: 'title',
     documentHasSelection: true,
     shouldPrintSelectionOnly: false,
+    uiLocale: 'en-us',
     printerName: 'FooDevice',
     pdfPrinterDisabled: false,
     serializedAppStateStr: null,
@@ -58,10 +69,13 @@ suite(invalid_settings_browsertest.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayer.setInstance(nativeLayer);
+    NativeLayerImpl.setInstance(nativeLayer);
+    // <if expr="chromeos or lacros">
+    setNativeLayerCrosInstance();
+    // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
-    setCloudPrintInterfaceForTesting(cloudPrintInterface);
-    PolymerTest.clearBody();
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
+    document.body.innerHTML = '';
   });
 
   /**
@@ -69,24 +83,18 @@ suite(invalid_settings_browsertest.suiteName, function() {
    * given by |initialSettings| and |localDestinationInfos|. Also creates
    * the fake plugin. Moved out of setup so tests can set those parameters
    * differently.
-   * @param {boolean} pluginCompatible Whether the plugin should be set to
-   *     appear compatible.
    */
-  function createPage(pluginCompatible) {
+  function createPage() {
     nativeLayer.setInitialSettings(initialSettings);
     nativeLayer.setLocalDestinations(localDestinationInfos);
-    if (initialSettings.printerName) {
-      nativeLayer.setLocalDestinationCapabilities(
-          getCddTemplate(initialSettings.printerName));
-    }
-    const pluginProxy = new PDFPluginStub();
-    pluginProxy.setPluginCompatible(pluginCompatible);
-    PluginProxy.setInstance(pluginProxy);
+    PluginProxyImpl.setInstance(new TestPluginProxy());
 
-    page = document.createElement('print-preview-app');
+    page = /** @type {!PrintPreviewAppElement} */ (
+        document.createElement('print-preview-app'));
     document.body.appendChild(page);
-    page.$.documentInfo.init(true, false, false, 'title', false);
-    const previewArea = page.$.previewArea;
+    page.shadowRoot.querySelector('#documentInfo')
+        .init(true, false, false, 'title', false);
+    const previewArea = page.shadowRoot.querySelector('#previewArea');
   }
 
   /**
@@ -110,38 +118,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
     localDestinationInfos = [];
 
     loadTimeData.overrideValues({isEnterpriseManaged: false});
-    createPage(true);
+    createPage();
 
     printers.forEach(printer => cloudPrintInterface.setPrinter(printer));
   }
-
-  // Test that error message is displayed when plugin doesn't exist.
-  // TODO (rbpotter): Fix this test so that it works again with calling
-  // appendChild() before setting checkPluginCompatibility.
-  test(
-      assert(invalid_settings_browsertest.TestNames.NoPDFPluginError),
-      function() {
-        createPage(false);
-        const previewArea = page.$.previewArea;
-
-        return nativeLayer.whenCalled('getInitialSettings').then(function() {
-          const overlayEl = previewArea.$$('.preview-area-overlay-layer');
-          const messageEl = previewArea.$$('.preview-area-message');
-          assertEquals(State.FATAL_ERROR, page.state);
-
-          // Make sure the overlay is visible.
-          assertFalse(overlayEl.classList.contains('invisible'));
-
-          // Make sure the correct text is shown.
-          const expectedMessageChromium = 'Chromium cannot show the print ' +
-              'preview when the built-in PDF viewer is missing.';
-          const expectedMessageChrome = 'Google Chrome cannot show the print ' +
-              'preview when the built-in PDF viewer is missing.';
-          assertTrue(
-              messageEl.textContent.includes(expectedMessageChromium) ||
-              messageEl.textContent.includes(expectedMessageChrome));
-        });
-      });
 
   // Tests that when a printer cannot be communicated with correctly the
   // preview area displays an invalid printer error message and printing
@@ -150,7 +130,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
   test(
       assert(invalid_settings_browsertest.TestNames.InvalidSettingsError),
       function() {
-        createPage(true);
+        createPage();
         const barDevice = getCddTemplate('BarDevice');
         nativeLayer.setLocalDestinationCapabilities(barDevice);
 
@@ -165,18 +145,26 @@ suite(invalid_settings_browsertest.suiteName, function() {
             'printer.';
 
         // Get references to relevant elements.
-        const previewAreaEl = page.$.previewArea;
-        const overlay = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
-        const sidebar = page.$$('print-preview-sidebar');
+        const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
+            page.shadowRoot.querySelector('#previewArea'));
+        const overlay = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
+        const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
-            sidebar.$$('print-preview-destination-settings');
+            /** @type {!PrintPreviewDestinationSettingsElement} */ (
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
 
               return Promise.all([
                 whenReady(),
@@ -184,7 +172,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
               ]);
             })
             .then(function() {
-              destinationSettings.destinationStore_.startLoadAllDestinations();
+              destinationSettings.getDestinationStoreForTest()
+                  .startLoadAllDestinations();
               // Wait for the preview request.
               return Promise.all([
                 nativeLayer.whenCalled('getPrinterCapabilities'),
@@ -203,17 +192,20 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Select should still be enabled so that the user can select a
               // new printer.
-              assertFalse(destinationSettings.$.destinationSelect.disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Reset
               nativeLayer.reset();
 
               // Select a new destination
               const barDestination =
-                  destinationSettings.destinationStore_.destinations().find(
-                      d => d.id == 'BarDevice');
-              destinationSettings.destinationStore_.selectDestination(
-                  barDestination);
+                  destinationSettings.getDestinationStoreForTest()
+                      .destinations()
+                      .find(d => d.id === 'BarDevice');
+              destinationSettings.getDestinationStoreForTest()
+                  .selectDestination(assert(barDestination));
 
               // Wait for the preview to be updated.
               return nativeLayer.whenCalled('getPreview');
@@ -240,7 +232,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
                   const ticket = JSON.parse(printTicket);
                   assertEquals(barDevice.printer.deviceName, ticket.deviceName);
                   assertEquals(
-                      getDefaultOrientation(barDevice) == 'LANDSCAPE',
+                      getDefaultOrientation(barDevice) === 'LANDSCAPE',
                       ticket.landscape);
                   assertEquals(1, ticket.copies);
                   const mediaDefault = getDefaultMediaSize(barDevice);
@@ -275,22 +267,36 @@ suite(invalid_settings_browsertest.suiteName, function() {
             'computer\'s system settings.';
 
         // Get references to relevant elements.
-        const previewAreaEl = page.$.previewArea;
-        const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
-        const sidebar = page.$$('print-preview-sidebar');
+        const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
+            page.shadowRoot.querySelector('#previewArea'));
+        const overlayEl = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
+        const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
-            sidebar.$$('print-preview-destination-settings');
+            /** @type {!PrintPreviewDestinationSettingsElement} */ (
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
         const scalingSettings =
-            sidebar.$$('print-preview-scaling-settings')
-                .$$('print-preview-number-settings-section');
-        const layoutSettings = sidebar.$$('print-preview-layout-settings');
+            /** @type {!PrintPreviewNumberSettingsSectionElement} */ (
+                sidebar.shadowRoot
+                    .querySelector('print-preview-scaling-settings')
+                    .shadowRoot.querySelector(
+                        'print-preview-number-settings-section'));
+        const layoutSettings =
+            /** @type {!PrintPreviewLayoutSettingsElement} */ (
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-layout-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([
                 whenReady(),
                 nativeLayer.whenCalled('getInitialSettings'),
@@ -300,9 +306,14 @@ suite(invalid_settings_browsertest.suiteName, function() {
               // Set this to enable the scaling input.
               page.setSetting('scalingType', ScalingType.CUSTOM);
 
-              destinationSettings.destinationStore_
+              destinationSettings.getDestinationStoreForTest()
                   .startLoadCloudDestinations();
 
+              return eventToPromise(
+                  CloudPrintInterfaceEventType.PRINTER_DONE,
+                  cloudPrintInterface.getEventTarget());
+            })
+            .then(function() {
               // FooDevice will be selected since it is the most recently used
               // printer, so the invalid certificate error should be shown.
               // The overlay must be visible for the message to be seen.
@@ -318,19 +329,23 @@ suite(invalid_settings_browsertest.suiteName, function() {
               // Verify the state is invalid and that some settings sections are
               // also disabled, so there is no way to regenerate the preview.
               assertEquals(State.ERROR, page.state);
-              assertTrue(layoutSettings.$$('select').disabled);
-              assertTrue(scalingSettings.$$('cr-input').disabled);
+              assertTrue(
+                  layoutSettings.shadowRoot.querySelector('select').disabled);
+              assertTrue(scalingSettings.shadowRoot.querySelector('cr-input')
+                             .disabled);
 
               // The destination select dropdown should be enabled, so that the
               // user can select a new printer.
-              assertFalse(destinationSettings.$.destinationSelect.disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Reset
               nativeLayer.reset();
 
               // Select a new, valid cloud destination.
-              destinationSettings.destinationStore_.selectDestination(
-                  validPrinter);
+              destinationSettings.getDestinationStoreForTest()
+                  .selectDestination(validPrinter);
 
               return nativeLayer.whenCalled('getPreview');
             })
@@ -340,11 +355,15 @@ suite(invalid_settings_browsertest.suiteName, function() {
               assertEquals(State.READY, page.state);
 
               // Settings sections are now active.
-              assertFalse(layoutSettings.$$('select').disabled);
-              assertFalse(scalingSettings.$$('cr-input').disabled);
+              assertFalse(
+                  layoutSettings.shadowRoot.querySelector('select').disabled);
+              assertFalse(scalingSettings.shadowRoot.querySelector('cr-input')
+                              .disabled);
 
               // The destination select dropdown should still be enabled.
-              assertFalse(destinationSettings.$.destinationSelect.disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Message text should have changed and overlay should be
               // invisible.
@@ -368,18 +387,26 @@ suite(invalid_settings_browsertest.suiteName, function() {
         setupInvalidCertificateTest([validPrinter, invalidPrinter]);
 
         // Get references to relevant elements.
-        const previewAreaEl = page.$.previewArea;
-        const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
-        const sidebar = page.$$('print-preview-sidebar');
+        const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
+            page.shadowRoot.querySelector('#previewArea'));
+        const overlayEl = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
+        const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
-            sidebar.$$('print-preview-destination-settings');
+            /** @type {!PrintPreviewDestinationSettingsElement} */ (
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([
                 whenReady(),
                 nativeLayer.whenCalled('getInitialSettings'),
@@ -388,7 +415,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
             .then(function() {
               // Start loading cloud destinations so that the printer
               // capabilities arrive.
-              destinationSettings.destinationStore_
+              destinationSettings.getDestinationStoreForTest()
                   .startLoadCloudDestinations();
               return nativeLayer.whenCalled('getPreview');
             })
@@ -401,10 +428,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Select the invalid destination and wait for the event.
               const whenInvalid = eventToPromise(
-                  DestinationStore.EventType.ERROR,
-                  destinationSettings.destinationStore_);
-              destinationSettings.destinationStore_.selectDestination(
-                  invalidPrinter);
+                  DestinationStoreEventType.ERROR,
+                  destinationSettings.getDestinationStoreForTest());
+              destinationSettings.getDestinationStoreForTest()
+                  .selectDestination(invalidPrinter);
               return whenInvalid;
             })
             .then(function() {
@@ -417,10 +444,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Reselect the valid cloud destination.
               const whenSelected = eventToPromise(
-                  DestinationStore.EventType.DESTINATION_SELECT,
-                  destinationSettings.destinationStore_);
-              destinationSettings.destinationStore_.selectDestination(
-                  validPrinter);
+                  DestinationStoreEventType.DESTINATION_SELECT,
+                  destinationSettings.getDestinationStoreForTest());
+              destinationSettings.getDestinationStoreForTest()
+                  .selectDestination(validPrinter);
               return whenSelected;
             })
             .then(function() {

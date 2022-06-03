@@ -3,30 +3,34 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-link-row', function() {
+  /** @type {!CrLinkRowElement} */
   let linkRow;
 
   setup(() => {
-    PolymerTest.clearBody();
     document.body.innerHTML = '<cr-link-row></cr-link-row>';
-    linkRow = document.body.querySelector('cr-link-row');
+    linkRow = /** @type {!CrLinkRowElement} */ (
+        document.body.querySelector('cr-link-row'));
   });
 
   test('check label visibility', () => {
-    assertTrue(linkRow.$.labelWrapper.hidden);
+    assertTrue(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
     linkRow.usingSlottedLabel = true;
-    assertFalse(linkRow.$.labelWrapper.hidden);
+    assertFalse(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
     linkRow.usingSlottedLabel = false;
-    assertTrue(linkRow.$.labelWrapper.hidden);
+    assertTrue(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
     linkRow.label = 'label';
-    assertFalse(linkRow.$.labelWrapper.hidden);
+    assertFalse(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
   });
 
   test('icon', () => {
-    const iconButton = linkRow.$.icon;
+    const iconButton =
+        /** @type {!CrIconButtonElement} */ (
+            linkRow.shadowRoot.querySelector('#icon'));
     assertFalse(linkRow.external);
     assertEquals('cr:arrow-right', iconButton.ironIcon);
     linkRow.external = true;
@@ -34,7 +38,7 @@ suite('cr-link-row', function() {
   });
 
   test('role description', () => {
-    const iconButton = linkRow.$.icon;
+    const iconButton = linkRow.shadowRoot.querySelector('#icon');
     assertEquals(undefined, linkRow.roleDescription);
     assertEquals(null, iconButton.getAttribute('aria-roledescription'));
     const description = 'self destruct button';

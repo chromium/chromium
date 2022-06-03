@@ -54,5 +54,5 @@ int main(int argc, char** argv) {
 
   return base::LaunchUnitTests(
       argc, argv,
-      base::Bind(&TestSuiteNoAtExit::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&TestSuiteNoAtExit::Run, base::Unretained(&test_suite)));
 }

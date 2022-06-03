@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Tests that animation works, if changing begin to contain an event-base trigger.</title>
-<script src=../../resources/testharness.js></script>
-<script src=../../resources/testharnessreport.js></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <svg>
     <rect id="rect" width="100" height="100">
         <set id="anim"
@@ -15,9 +15,8 @@
 <script>
     var anim = document.getElementById("anim");
     var t = async_test(document.title);
-    anim.onbegin = t.step_func(function() {
-       assert_equals(document.getElementById("rect").getAttribute("width"), "50");
-       t.done();
+    anim.onbegin = t.step_func_done(function() {
+        assert_equals(anim.targetElement.getBBox().width, 50);
     });
 
     anim.setAttribute("begin","rect.click");

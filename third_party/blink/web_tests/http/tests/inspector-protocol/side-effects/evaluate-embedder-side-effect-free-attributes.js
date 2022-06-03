@@ -19,6 +19,8 @@
     var shadowRoot = shadowContainer.attachShadow({mode: 'open'});
     var divInShadow = document.createElement('div');
     shadowRoot.appendChild(divInShadow);
+
+    var url = new URL('http://localhost:12345');
   `);
 
   // Sanity check: test that setters are not allowed on whitelisted accessors.
@@ -85,6 +87,19 @@
     await checkHasNoSideEffect(`${node}.firstElementChild`);
     await checkHasNoSideEffect(`${node}.lastElementChild`);
   }
+
+  // URL
+  await checkHasNoSideEffect('url.hash');
+  await checkHasNoSideEffect('url.host');
+  await checkHasNoSideEffect('url.hostname');
+  await checkHasNoSideEffect('url.origin');
+  await checkHasNoSideEffect('url.password');
+  await checkHasNoSideEffect('url.pathname');
+  await checkHasNoSideEffect('url.port');
+  await checkHasNoSideEffect('url.protocol');
+  await checkHasNoSideEffect('url.search');
+  await checkHasNoSideEffect('url.searchParams');
+  await checkHasNoSideEffect('url.username');
 
   // Window
   await checkHasNoSideEffect(`devicePixelRatio`);

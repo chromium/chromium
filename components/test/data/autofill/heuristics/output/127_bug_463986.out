@@ -30,28 +30,28 @@ CREDIT_CARD_NAME_FULL | ccHolder | Card holder |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | accountExpiryMonth | Expiration Date | - | credit-card-cc
 CREDIT_CARD_EXP_4_DIGIT_YEAR | accountExpiryYear | Expiration Date | - | credit-card-cc
 CREDIT_CARD_VERIFICATION_CODE | accountVerification | Verification Number * |  | credit-card-cc
-ADDRESS_HOME_COUNTRY | accountCountry | Country |  | accountCountry_1-default
-UNKNOWN_TYPE | bankAccHolder | Account holder |  | accountCountry_1-default
-UNKNOWN_TYPE | accountNo | Account Number |  | accountCountry_1-default
-UNKNOWN_TYPE | accountClearing | Bank Clearing |  | accountCountry_1-default
-UNKNOWN_TYPE | accountBank | Bank Code |  | accountCountry_1-default
-UNKNOWN_TYPE | checkingAccountNumber | Bank Name |  | accountCountry_1-default
-UNKNOWN_TYPE | codeCIN | Code CIN |  | accountCountry_1-default
-UNKNOWN_TYPE | codeABI | Code ABI |  | accountCountry_1-default
-UNKNOWN_TYPE | codeCAB | Code CAB |  | accountCountry_1-default
-ADDRESS_HOME_ZIP | codigoEntidad | Codigo de Entidad |  | accountCountry_1-default
-ADDRESS_HOME_ZIP | codigoOficina | Codigo de Oficina |  | accountCountry_1-default
-UNKNOWN_TYPE | controlDigits | Digitos de Control |  | accountCountry_1-default
-UNKNOWN_TYPE | identificationPaper | Digitos de Control | IDCARD | accountCountry_1-default
-UNKNOWN_TYPE | identificationValue | Digitos de Control |  | accountCountry_1-default
-UNKNOWN_TYPE | virtualAccountBrand | Provider |  | accountCountry_1-default
-UNKNOWN_TYPE | virtualAccountId | Username / Id |  | accountCountry_1-default
-UNKNOWN_TYPE | userAccountBrand | Provider |  | accountCountry_1-default
-UNKNOWN_TYPE | userAccountId | Username / Id |  | accountCountry_1-default
-UNKNOWN_TYPE | userAccountPassword | Password |  | accountCountry_1-default
-UNKNOWN_TYPE | userAccountPasswordReType | Re-type password |  | accountCountry_1-default
-ADDRESS_HOME_COUNTRY | onlineTransferCountry | Country | US | accountCountry_1-default
-UNKNOWN_TYPE | onlineTransferInstitute | Bank | ACHSECUR | accountCountry_1-default
-UNKNOWN_TYPE | otAccountNumber | Account No. |  | accountCountry_1-default
-UNKNOWN_TYPE | otBankCode | Bank Code |  | accountCountry_1-default
+ADDRESS_HOME_COUNTRY | accountCountry | Country |  | accountCountry_3-default
+UNKNOWN_TYPE | bankAccHolder | Account holder |  | accountCountry_3-default
+UNKNOWN_TYPE | accountNo | Account Number |  | accountCountry_3-default
+UNKNOWN_TYPE | accountClearing | Bank Clearing |  | accountCountry_3-default
+UNKNOWN_TYPE | accountBank | Bank Code |  | accountCountry_3-default
+UNKNOWN_TYPE | checkingAccountNumber | Bank Name |  | accountCountry_3-default
+UNKNOWN_TYPE | codeCIN | Code CIN |  | accountCountry_3-default
+UNKNOWN_TYPE | codeABI | Code ABI |  | accountCountry_3-default
+UNKNOWN_TYPE | codeCAB | Code CAB |  | accountCountry_3-default
+ADDRESS_HOME_ZIP | codigoEntidad | Codigo de Entidad |  | accountCountry_3-default
+ADDRESS_HOME_ZIP | codigoOficina | Codigo de Oficina |  | accountCountry_3-default
+UNKNOWN_TYPE | controlDigits | Digitos de Control |  | accountCountry_3-default
+UNKNOWN_TYPE | identificationPaper | Digitos de Control | IDCARD | accountCountry_3-default
+UNKNOWN_TYPE | identificationValue | Digitos de Control |  | accountCountry_3-default
+UNKNOWN_TYPE | virtualAccountBrand | Provider |  | accountCountry_3-default
+UNKNOWN_TYPE | virtualAccountId | Username / Id |  | accountCountry_3-default
+UNKNOWN_TYPE | userAccountBrand | Provider |  | accountCountry_3-default
+UNKNOWN_TYPE | userAccountId | Username / Id |  | accountCountry_3-default
+UNKNOWN_TYPE | userAccountPassword | Password |  | accountCountry_3-default
+UNKNOWN_TYPE | userAccountPasswordReType | Re-type password |  | accountCountry_3-default
+ADDRESS_HOME_COUNTRY | onlineTransferCountry | Country | US | accountCountry_3-default
+UNKNOWN_TYPE | onlineTransferInstitute | Bank | ACHSECUR | accountCountry_3-default
+UNKNOWN_TYPE | otAccountNumber | Account No. |  | accountCountry_3-default
+UNKNOWN_TYPE | otBankCode | Bank Code |  | accountCountry_3-default
 UNKNOWN_TYPE | accept | I read and understood and I accept the terms in force in                                         IKEA | on | salutation_1-default

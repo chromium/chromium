@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that adding a new rule creates inspector stylesheet resource and allows its live editing.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
@@ -39,8 +39,8 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', dumpStyles);
     }
 
-    function dumpStyles() {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function dumpStyles() {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
       TestRunner.completeTest();
     }
   }

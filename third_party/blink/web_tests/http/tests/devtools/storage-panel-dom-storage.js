@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that storage panel is present and that it contains correct data for local and session DOM storages.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -37,7 +37,7 @@
     for (var i = 0; i < nodes.length; ++i) {
       var node = nodes[i];
       if (!node.isCreationNode)
-        rows.push(node._data.key + node._data.value);
+        rows.push(node.data.key + node.data.value);
     }
     rows.sort();
     TestRunner.addResult('KeyValue pairs: ' + rows.join(''));
@@ -54,8 +54,8 @@
     TestRunner.addResult('Did show: ' + name(storage));
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
-      var view = UI.panels.resources._domStorageView;
-      dumpDataGridContent(view._dataGrid);
+      var view = UI.panels.resources.domStorageView;
+      dumpDataGridContent(view.dataGrid);
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });
   }

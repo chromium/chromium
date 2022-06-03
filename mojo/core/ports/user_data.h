@@ -15,7 +15,7 @@ class UserData : public base::RefCountedThreadSafe<UserData> {
  protected:
   friend class base::RefCountedThreadSafe<UserData>;
 
-  virtual ~UserData() {}
+  virtual ~UserData() = default;
 };
 
 }  // namespace ports

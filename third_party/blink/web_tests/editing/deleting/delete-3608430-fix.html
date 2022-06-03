@@ -1,41 +1,18 @@
 <!DOCTYPE html>
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    for (i = 0; i < 28; i++) {
-        moveSelectionForwardByCharacterCommand();    
-    }
-    for (i = 0; i < 28; i++) {
-        deleteCommand(); 
-    }
-}
-
+// This test makes sure that deletion of an element auto-removes a blank element
+// before it.
+selection_test(
+    '<div contenteditable>ab <i> </i> <img src="../resources/abe.png">|',
+    'delete',
+    '<div contenteditable>ab\u00A0|</div>',
+    'A space in <i> is collapsed.');
+selection_test(
+    '<div contenteditable>ab<i> </i> <img src="../resources/abe.png">|',
+    'delete',
+    '<div contenteditable>ab<i>\u00A0|</i></div>',
+    'A space in <i> is not collapsed.');
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body>
-<p>This test makes sure that deletion of an element auto-removes a blank element before it. Below, you should see "start-deleting", followed by several lines showing the states of the content-editable div over time, ending with 'start-deleting' inside a span id'd as "test".</p>
-<div contenteditable id="root" class="editing">
-<span id="test">foo 
-<br>foo <i>  </i> <img src="../resources/abe.png"> select-in-me-and-start-deleting</span>
-</div>
-
-<script>
-runDumpAsTextEditingTest();
-</script>
-
-</body>
-</html>

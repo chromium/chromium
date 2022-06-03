@@ -9,8 +9,7 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -21,6 +20,10 @@ class ASH_EXPORT LockScreenNoteLauncher : public TrayActionObserver {
   using LaunchCallback = base::OnceCallback<void(bool success)>;
 
   LockScreenNoteLauncher();
+
+  LockScreenNoteLauncher(const LockScreenNoteLauncher&) = delete;
+  LockScreenNoteLauncher& operator=(const LockScreenNoteLauncher&) = delete;
+
   ~LockScreenNoteLauncher() override;
 
   // Whether the lock screen note state indicates that a note action launch can
@@ -48,9 +51,8 @@ class ASH_EXPORT LockScreenNoteLauncher : public TrayActionObserver {
   // The callback provided to |Run|.
   LaunchCallback callback_;
 
-  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteLauncher);
+  base::ScopedObservation<TrayAction, TrayActionObserver>
+      tray_action_observation_{this};
 };
 
 }  // namespace ash

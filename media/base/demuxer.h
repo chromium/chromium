@@ -10,9 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "media/base/container_names.h"
 #include "media/base/data_source.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/eme_constants.h"
@@ -21,6 +20,7 @@
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/ranges.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -57,14 +57,14 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // First parameter - The type of initialization data.
   // Second parameter - The initialization data associated with the stream.
   using EncryptedMediaInitDataCB =
-      base::Callback<void(EmeInitDataType type,
-                          const std::vector<uint8_t>& init_data)>;
+      base::RepeatingCallback<void(EmeInitDataType type,
+                                   const std::vector<uint8_t>& init_data)>;
 
   // Notifies demuxer clients that media track configuration has been updated
   // (e.g. the initial stream metadata has been parsed successfully, or a new
   // init segment has been parsed successfully in MSE case).
   using MediaTracksUpdatedCB =
-      base::Callback<void(std::unique_ptr<MediaTracks>)>;
+      base::RepeatingCallback<void(std::unique_ptr<MediaTracks>)>;
 
   // Called once the demuxer has finished enabling or disabling tracks. The type
   // argument is required because the vector may be empty.
@@ -72,7 +72,17 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
       base::OnceCallback<void(DemuxerStream::Type type,
                               const std::vector<DemuxerStream*>&)>;
 
+  enum DemuxerTypes {
+    kChunkDemuxer,
+    kFFmpegDemuxer,
+    kMediaUrlDemuxer,
+  };
+
   Demuxer();
+
+  Demuxer(const Demuxer&) = delete;
+  Demuxer& operator=(const Demuxer&) = delete;
+
   ~Demuxer() override;
 
   // Returns the name of the demuxer for logging purpose.
@@ -138,6 +148,13 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // Returns the memory usage in bytes for the demuxer.
   virtual int64_t GetMemoryUsage() const = 0;
 
+  // Returns the container name to use for metrics.
+  // Implementations where this is not meaningful will return an empty value.
+  // Implementations that do provide values should always provide a value,
+  // returning CONTAINER_UNKNOWN in cases where the container is not known.
+  virtual absl::optional<container_names::MediaContainerName>
+  GetContainerForMetrics() const = 0;
+
   // The |track_ids| vector has either 1 track, or is empty, indicating that
   // all tracks should be disabled. |change_completed_cb| is fired after the
   // demuxer streams are disabled, however this callback should then notify
@@ -151,9 +168,6 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
       const std::vector<MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
       TrackChangeCB change_completed_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };
 
 }  // namespace media

@@ -4,47 +4,36 @@
 
 #include "third_party/blink/renderer/core/events/animation_playback_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_playback_event_init.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
 
 AnimationPlaybackEvent::AnimationPlaybackEvent(const AtomicString& type,
-                                               double current_time,
-                                               double timeline_time)
-    : Event(type, Bubbles::kNo, Cancelable::kNo) {
-  if (!std::isnan(current_time))
-    current_time_ = current_time;
-  if (!std::isnan(timeline_time))
-    timeline_time_ = timeline_time;
-}
+                                               V8CSSNumberish* current_time,
+                                               V8CSSNumberish* timeline_time)
+    : Event(type, Bubbles::kNo, Cancelable::kNo),
+      current_time_(current_time),
+      timeline_time_(timeline_time) {}
 
 AnimationPlaybackEvent::AnimationPlaybackEvent(
     const AtomicString& type,
     const AnimationPlaybackEventInit* initializer)
-    : Event(type, initializer) {
-  if (initializer->hasCurrentTime())
-    current_time_ = initializer->currentTime();
-  if (initializer->hasTimelineTime())
-    timeline_time_ = initializer->timelineTime();
-}
+    : Event(type, initializer),
+      current_time_(initializer->currentTime()),
+      timeline_time_(initializer->timelineTime()) {}
 
 AnimationPlaybackEvent::~AnimationPlaybackEvent() = default;
-
-double AnimationPlaybackEvent::currentTime(bool& is_null) const {
-  is_null = !current_time_.has_value();
-  return current_time_.value_or(0);
-}
-
-double AnimationPlaybackEvent::timelineTime(bool& is_null) const {
-  is_null = !timeline_time_.has_value();
-  return timeline_time_.value_or(0);
-}
 
 const AtomicString& AnimationPlaybackEvent::InterfaceName() const {
   return event_interface_names::kAnimationPlaybackEvent;
 }
 
-void AnimationPlaybackEvent::Trace(blink::Visitor* visitor) {
+void AnimationPlaybackEvent::Trace(Visitor* visitor) const {
+  TraceIfNeeded<Member<V8CSSNumberish>>::Trace(visitor, current_time_);
+  TraceIfNeeded<Member<V8CSSNumberish>>::Trace(visitor, timeline_time_);
   Event::Trace(visitor);
 }
 

@@ -19,12 +19,16 @@ class ServiceWorkerRegistration;
 class PaymentAppServiceWorkerRegistration final
     : public GarbageCollected<PaymentAppServiceWorkerRegistration>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(PaymentAppServiceWorkerRegistration);
-
  public:
   static const char kSupplementName[];
 
   explicit PaymentAppServiceWorkerRegistration(ServiceWorkerRegistration*);
+
+  PaymentAppServiceWorkerRegistration(
+      const PaymentAppServiceWorkerRegistration&) = delete;
+  PaymentAppServiceWorkerRegistration& operator=(
+      const PaymentAppServiceWorkerRegistration&) = delete;
+
   virtual ~PaymentAppServiceWorkerRegistration();
 
   static PaymentAppServiceWorkerRegistration& From(ServiceWorkerRegistration&);
@@ -33,13 +37,10 @@ class PaymentAppServiceWorkerRegistration final
                                         ServiceWorkerRegistration&);
   PaymentManager* paymentManager(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<PaymentManager> payment_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppServiceWorkerRegistration);
 };
 
 }  // namespace blink

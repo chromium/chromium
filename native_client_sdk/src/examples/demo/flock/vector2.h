@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef VECTOR2_H_
-#define VECTOR2_H_
+#ifndef EXAMPLES_DEMO_FLOCK_VECTOR2_H_
+#define EXAMPLES_DEMO_FLOCK_VECTOR2_H_
 
 #include <stdlib.h>
 #include <cmath>
@@ -78,4 +78,4 @@ class Vector2 {
   double y_;
 };
 
-#endif  // VECTOR2_H_
+#endif  // EXAMPLES_DEMO_FLOCK_VECTOR2_H_

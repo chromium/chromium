@@ -3,10 +3,13 @@
       'resources/service-worker.html',
       `Tests reading cached response from the protocol.`);
 
+  function trimErrorMessage(message) {
+    return message.replace(/at position \d+/, "<somewhere>");
+  }
   async function dumpResponse(cacheId, entry) {
     var {error, result} = await dp.CacheStorage.requestCachedResponse({cacheId, requestURL: entry ? entry.requestURL : null, requestHeaders: []});
     if (error) {
-      testRunner.log(`Error: ${error.message} ${error.data || ""}`);
+      testRunner.log(`Error: ${error.message} ${trimErrorMessage(error.data || "")}`);
       return;
     }
     var header = entry.responseHeaders.find(header => header.name.toLowerCase() === 'content-type');

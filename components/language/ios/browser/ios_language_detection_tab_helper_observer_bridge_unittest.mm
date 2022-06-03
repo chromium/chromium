@@ -5,11 +5,11 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/common/language_detection_details.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -60,7 +60,7 @@ class IOSLanguageDetectionTabHelperObserverBridgeTest : public PlatformTest {
   TestIOSLanguageDetectionTabHelperObserver* observer() { return observer_; }
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   language::IOSLanguageDetectionTabHelper* tab_helper_;
   TestIOSLanguageDetectionTabHelperObserver* observer_;
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
@@ -73,12 +73,12 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
   const std::string kContentLanguage = "fr";
   const std::string kAdoptedLanguage = "es";
   const std::string kUndefined = "und";
-  const base::string16 kContents = base::ASCIIToUTF16("Bonjour");
+  const std::u16string kContents = u"Bonjour";
 
   translate::LanguageDetectionDetails details;
   details.content_language = kContentLanguage;
-  details.cld_language = kUndefined;
-  details.is_cld_reliable = true;
+  details.model_detected_language = kUndefined;
+  details.is_model_reliable = true;
   details.has_notranslate = true;
   details.html_root_language = kRootLanguage;
   details.adopted_language = kAdoptedLanguage;
@@ -89,8 +89,8 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
   const translate::LanguageDetectionDetails& forwarded_details =
       observer().languageDetectionDetails;
   EXPECT_EQ(kContentLanguage, forwarded_details.content_language);
-  EXPECT_EQ(kUndefined, forwarded_details.cld_language);
-  EXPECT_TRUE(forwarded_details.is_cld_reliable);
+  EXPECT_EQ(kUndefined, forwarded_details.model_detected_language);
+  EXPECT_TRUE(forwarded_details.is_model_reliable);
   EXPECT_TRUE(forwarded_details.has_notranslate);
   EXPECT_EQ(kRootLanguage, forwarded_details.html_root_language);
   EXPECT_EQ(kAdoptedLanguage, forwarded_details.adopted_language);

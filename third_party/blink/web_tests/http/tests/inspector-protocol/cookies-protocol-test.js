@@ -2,9 +2,7 @@
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that cookies are set, updated and removed.`);
 
-  async function logCookies(success) {
-    if (success !== undefined)
-      testRunner.log('Success: ' + success);
+  async function logCookies() {
     var data = (await dp.Network.getAllCookies()).result;
     testRunner.log('Num of cookies ' + data.cookies.length);
     data.cookies.sort((a, b) => a.name.localeCompare(b.name));
@@ -27,7 +25,9 @@
   async function setCookie(cookie) {
     testRunner.log('Setting Cookie');
     var response = await dp.Network.setCookie(cookie);
-    await logCookies(response.result.success);
+    if (response.error)
+      testRunner.log(`setCookie failed: ${response.error.message}`);
+    await logCookies();
   }
 
   async function deleteCookie(cookie) {
@@ -129,6 +129,18 @@
 
     async function invalidCookieAddName() {
       await setCookie({url: 'http://127.0.0.1', name: 'foo\0\r\na', value: 'bar9'});
+    },
+
+    deleteAllCookies,
+
+    async function invalidCookieSourceScheme() {
+      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourceScheme: "SomeInvalidValue"});
+    },
+
+    deleteAllCookies,
+
+    async function invalidCookieSourcePort() {
+      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourcePort: -1234});
     },
 
     deleteAllCookies,

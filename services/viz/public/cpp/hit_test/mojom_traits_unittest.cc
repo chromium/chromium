@@ -27,8 +27,8 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
   AggregatedHitTestRegion input(frame_sink_id, flags, rect, transform,
                                 child_count, async_hit_test_reasons);
   AggregatedHitTestRegion output;
-  mojo::test::SerializeAndDeserialize<mojom::AggregatedHitTestRegion>(&input,
-                                                                      &output);
+  mojo::test::SerializeAndDeserialize<mojom::AggregatedHitTestRegion>(input,
+                                                                      output);
   EXPECT_EQ(input.frame_sink_id, output.frame_sink_id);
   EXPECT_EQ(input.flags, output.flags);
   EXPECT_EQ(input.async_hit_test_reasons, output.async_hit_test_reasons);
@@ -38,7 +38,7 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
 }
 
 TEST(StructTraitsTest, HitTestRegionList) {
-  base::Optional<HitTestRegionList> input(base::in_place);
+  absl::optional<HitTestRegionList> input(absl::in_place);
   input->flags = HitTestRegionFlags::kHitTestAsk;
   input->async_hit_test_reasons = AsyncHitTestReasons::kOverlappedRegion;
   input->bounds = gfx::Rect(1, 2, 3, 4);
@@ -52,9 +52,8 @@ TEST(StructTraitsTest, HitTestRegionList) {
   input_region1.transform.Scale(1.2f, 1.3f);
   input->regions.push_back(input_region1);
 
-  base::Optional<HitTestRegionList> output;
-  mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(&input,
-                                                                &output);
+  absl::optional<HitTestRegionList> output;
+  mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
   EXPECT_TRUE(output);
   EXPECT_EQ(input->flags, output->flags);
   EXPECT_EQ(input->async_hit_test_reasons, output->async_hit_test_reasons);

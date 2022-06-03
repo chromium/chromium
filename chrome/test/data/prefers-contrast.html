@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>FAIL</title>
+<script>
+  if (window.matchMedia("(prefers-contrast: more)").matches) {
+    document.title = "more";
+  } else if (window.matchMedia("(prefers-contrast: less)").matches) {
+    document.title = "less";
+  } else if (window.matchMedia("(prefers-contrast: no-preference)").matches) {
+    document.title = "no-preference";
+  } else if (window.matchMedia("(prefers-contrast: custom)").matches) {
+    document.title = "custom";
+  }
+</script>

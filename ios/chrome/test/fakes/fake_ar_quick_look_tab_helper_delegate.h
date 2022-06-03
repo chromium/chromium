@@ -17,6 +17,10 @@
 // cannot be nil.
 @property(nonatomic, readonly) NSArray* fileURLs;
 
+// The value of |allowsContentScaling| for the most recent file URL downloaded
+// by ARQuickLookTabHelper.
+@property(nonatomic, readonly) BOOL allowsContentScaling;
+
 @end
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_AR_QUICK_LOOK_TAB_HELPER_DELEGATE_H_

@@ -4,6 +4,7 @@
 
 #include "chromecast/public/cast_media_shlib.h"
 
+#include "base/notreached.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/video_plane.h"

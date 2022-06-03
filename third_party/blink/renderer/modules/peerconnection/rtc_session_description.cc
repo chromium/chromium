@@ -32,9 +32,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -72,8 +72,9 @@ String RTCSessionDescription::type() const {
   return platform_session_description_->GetType();
 }
 
-void RTCSessionDescription::setType(const String& type) {
-  platform_session_description_->SetType(type);
+void RTCSessionDescription::setType(absl::optional<V8RTCSdpType> type) {
+  platform_session_description_->SetType(
+      type.has_value() ? type.value().AsString() : String());
 }
 
 String RTCSessionDescription::sdp() const {
@@ -95,7 +96,7 @@ RTCSessionDescriptionPlatform* RTCSessionDescription::WebSessionDescription() {
   return platform_session_description_;
 }
 
-void RTCSessionDescription::Trace(blink::Visitor* visitor) {
+void RTCSessionDescription::Trace(Visitor* visitor) const {
   visitor->Trace(platform_session_description_);
   ScriptWrappable::Trace(visitor);
 }

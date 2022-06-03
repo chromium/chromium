@@ -3,14 +3,29 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "components/exo/wayland/clients/blur.h"
 #include "components/exo/wayland/clients/simple.h"
 #include "components/exo/wayland/clients/test/wayland_client_test.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace {
 
 using WaylandClientPerfTests = exo::WaylandClientTest;
+
+constexpr char kMetricPrefixWaylandClient[] = "WaylandClient.";
+constexpr char kMetricFramerate[] = "framerate";
+constexpr char kMetricPresentationLatency[] = "presentation_latency";
+constexpr char kStorySimple[] = "simple";
+constexpr char kStoryPrefixBlurSigma[] = "blur_sigma_%d";
+constexpr char kStoryPrefixBlurSigmaY[] = "blur_sigma_y_%d";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixWaylandClient, story);
+  reporter.RegisterImportantMetric(kMetricFramerate, "fps");
+  reporter.RegisterImportantMetric(kMetricPresentationLatency, "us");
+  return reporter;
+}
 
 // Test simple double-buffered client performance.
 TEST_F(WaylandClientPerfTests, Simple) {
@@ -32,15 +47,14 @@ TEST_F(WaylandClientPerfTests, Simple) {
   client.Run(kTestFrames, false, &feedback);
   auto time_delta = base::Time::Now() - start_time;
   float fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "SimpleFrameRate", fps,
-                         "frames/s", true);
+  auto reporter = SetUpReporter(kStorySimple);
+  reporter.AddResult(kMetricFramerate, fps);
+
   auto average_latency =
       feedback.num_frames_presented
           ? feedback.total_presentation_latency / feedback.num_frames_presented
           : base::TimeDelta::Max();
-  perf_test::PrintResult(
-      "WaylandClientPerfTests", "", "SimplePresentationLatency",
-      static_cast<size_t>(average_latency.InMicroseconds()), "us", true);
+  reporter.AddResult(kMetricPresentationLatency, average_latency);
 }
 
 class WaylandClientBlurPerfTests
@@ -48,12 +62,14 @@ class WaylandClientBlurPerfTests
       public ::testing::WithParamInterface<double> {
  public:
   WaylandClientBlurPerfTests() = default;
+
+  WaylandClientBlurPerfTests(const WaylandClientBlurPerfTests&) = delete;
+  WaylandClientBlurPerfTests& operator=(const WaylandClientBlurPerfTests&) =
+      delete;
+
   ~WaylandClientBlurPerfTests() override = default;
 
   double max_sigma() const { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandClientBlurPerfTests);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -74,40 +90,16 @@ TEST_P(WaylandClientBlurPerfTests, BlurSigma) {
 
   client.Run(0, 0, 0, false, kWarmUpFrames);
 
-  auto start_time = base::Time::Now();
-  client.Run(0, 0, max_sigma(), kOffscreen, kTestFrames);
-  auto time_delta = base::Time::Now() - start_time;
-  float fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigma0", fps,
-                         "frames/s", true);
+  constexpr int blur_values[] = {0, 5, 15, 30, 50};
 
-  start_time = base::Time::Now();
-  client.Run(5, 5, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigma5", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(15, 15, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigma15", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(30, 30, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigma30", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(50, 50, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigma50", fps,
-                         "frames/s", true);
+  for (int bv : blur_values) {
+    auto start_time = base::Time::Now();
+    client.Run(bv, bv, max_sigma(), kOffscreen, kTestFrames);
+    auto time_delta = base::Time::Now() - start_time;
+    float fps = kTestFrames / time_delta.InSecondsF();
+    SetUpReporter(base::StringPrintf(kStoryPrefixBlurSigma, bv))
+        .AddResult(kMetricFramerate, fps);
+  }
 }
 
 TEST_P(WaylandClientBlurPerfTests, BlurSigmaY) {
@@ -124,40 +116,16 @@ TEST_P(WaylandClientBlurPerfTests, BlurSigmaY) {
 
   client.Run(0, 0, 0, false, kWarmUpFrames);
 
-  auto start_time = base::Time::Now();
-  client.Run(0, 0, max_sigma(), kOffscreen, kTestFrames);
-  auto time_delta = base::Time::Now() - start_time;
-  float fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigmaY0", fps,
-                         "frames/s", true);
+  constexpr int blur_values[] = {0, 5, 10, 25, 50};
 
-  start_time = base::Time::Now();
-  client.Run(0, 5, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigmaY5", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(0, 10, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigmaY10", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(0, 25, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigmaY25", fps,
-                         "frames/s", true);
-
-  start_time = base::Time::Now();
-  client.Run(0, 50, max_sigma(), kOffscreen, kTestFrames);
-  time_delta = base::Time::Now() - start_time;
-  fps = kTestFrames / time_delta.InSecondsF();
-  perf_test::PrintResult("WaylandClientPerfTests", "", "BlurSigmaY50", fps,
-                         "frames/s", true);
+  for (int bv : blur_values) {
+    auto start_time = base::Time::Now();
+    client.Run(0, bv, max_sigma(), kOffscreen, kTestFrames);
+    auto time_delta = base::Time::Now() - start_time;
+    float fps = kTestFrames / time_delta.InSecondsF();
+    SetUpReporter(base::StringPrintf(kStoryPrefixBlurSigmaY, bv))
+        .AddResult(kMetricFramerate, fps);
+  }
 }
 
 }  // namespace

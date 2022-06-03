@@ -5,11 +5,10 @@
 #include "third_party/blink/renderer/modules/geolocation/geolocation_watchers.h"
 
 #include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-void GeolocationWatchers::Trace(blink::Visitor* visitor) {
+void GeolocationWatchers::Trace(Visitor* visitor) const {
   visitor->Trace(id_to_notifier_map_);
   visitor->Trace(notifier_to_id_map_);
 }

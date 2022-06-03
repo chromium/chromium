@@ -25,9 +25,7 @@ component("media_analytics") {
 }
 
 proto_library("media_perception_proto") {
-  sources = [
-    "media_perception.proto",
-  ]
+  sources = [ "media_perception.proto" ]
 
   proto_out_dir = "chromeos/dbus/media_perception"
 }

@@ -34,6 +34,12 @@
             android:checked="false"
             android:text="@string/layer_button" />
     </LinearLayout>
+    <CheckBox
+        android:id="@+id/use_stencil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/stencil_button" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -56,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1">
-        <WebView
+        <org.chromium.webview_shell.WebViewWithClipPath
             android:id="@+id/webview"
             android:layout_width="300dp"
             android:layout_height="300dp"

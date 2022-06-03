@@ -19,9 +19,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 
-#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 
@@ -41,54 +40,147 @@ LocalSVGResource* ResourceForContainer(
 
 LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
     : LayoutSVGHiddenContainer(node),
-      is_in_layout_(false),
       completed_invalidations_mask_(0),
       is_invalidating_(false) {}
 
 LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
 void LayoutSVGResourceContainer::UpdateLayout() {
-  // FIXME: Investigate a way to detect and break resource layout dependency
-  // cycles early. Then we can remove this method altogether, and fall back onto
-  // LayoutSVGHiddenContainer::layout().
+  NOT_DESTROYED();
+  // TODO(fs): This is only here to clear the invalidation mask, without that
+  // we wouldn't need to override LayoutSVGHiddenContainer::UpdateLayout().
   DCHECK(NeedsLayout());
-  if (is_in_layout_)
-    return;
-
-  base::AutoReset<bool> in_layout_change(&is_in_layout_, true);
-
   LayoutSVGHiddenContainer::UpdateLayout();
-
   ClearInvalidationMask();
 }
 
+void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
+  NOT_DESTROYED();
+  // Avoid doing unnecessary work if the document is being torn down.
+  if (DocumentBeingDestroyed())
+    return;
+  // If this is the 'active' resource (the first element with the specified 'id'
+  // in tree order), notify any clients that they need to reevaluate the
+  // resource's contents.
+  const LocalSVGResource* resource = ResourceForContainer(*this);
+  if (!resource || resource->Target() != GetElement())
+    return;
+  // Pass all available flags. This may be performing unnecessary invalidations
+  // in some cases.
+  MarkAllClientsForInvalidation(kInvalidateAll);
+}
+
 void LayoutSVGResourceContainer::WillBeDestroyed() {
-  LayoutSVGHiddenContainer::WillBeDestroyed();
+  NOT_DESTROYED();
   // The resource is being torn down.
-  // TODO(fs): Remove this when SVGResources is gone.
-  if (LocalSVGResource* resource = ResourceForContainer(*this))
-    resource->NotifyResourceDestroyed(*this);
+  InvalidateClientsIfActiveResource();
+  LayoutSVGHiddenContainer::WillBeDestroyed();
 }
 
 void LayoutSVGResourceContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutSVGHiddenContainer::StyleDidChange(diff, old_style);
-  // The resource has been attached. Notify any pending clients that
-  // they can now try to add themselves as clients to the resource.
-  // TODO(fs): Remove this when SVGResources is gone.
   if (old_style)
     return;
-  if (LocalSVGResource* resource = ResourceForContainer(*this))
-    resource->NotifyResourceAttached(*this);
+  // The resource has been attached.
+  InvalidateClientsIfActiveResource();
+}
+
+bool LayoutSVGResourceContainer::FindCycle() const {
+  NOT_DESTROYED();
+  return FindCycleFromSelf();
+}
+
+static HeapVector<Member<SVGResource>> CollectResources(
+    const LayoutObject& layout_object) {
+  const ComputedStyle& style = layout_object.StyleRef();
+  HeapVector<Member<SVGResource>> resources;
+  if (auto* reference_clip =
+          DynamicTo<ReferenceClipPathOperation>(style.ClipPath())) {
+    resources.push_back(reference_clip->Resource());
+  }
+  for (const auto& operation : style.Filter().Operations()) {
+    if (auto* reference_operation =
+            DynamicTo<ReferenceFilterOperation>(*operation))
+      resources.push_back(reference_operation->Resource());
+  }
+  if (auto* masker = style.MaskerResource())
+    resources.push_back(masker->Resource());
+  if (auto* marker = style.MarkerStartResource())
+    resources.push_back(marker->Resource());
+  if (auto* marker = style.MarkerMidResource())
+    resources.push_back(marker->Resource());
+  if (auto* marker = style.MarkerEndResource())
+    resources.push_back(marker->Resource());
+  if (auto* paint_resource = style.FillPaint().Resource())
+    resources.push_back(paint_resource->Resource());
+  if (auto* paint_resource = style.StrokePaint().Resource())
+    resources.push_back(paint_resource->Resource());
+  return resources;
+}
+
+bool LayoutSVGResourceContainer::FindCycleInResources(
+    const LayoutObject& layout_object) {
+  if (!layout_object.IsSVG() || layout_object.IsText())
+    return false;
+  SVGResourceClient* client = SVGResources::GetClient(layout_object);
+  // Without an associated client, we will not reference any resources.
+  if (!client)
+    return false;
+  // Fetch all the referenced resources.
+  HeapVector<Member<SVGResource>> resources = CollectResources(layout_object);
+  // This performs a depth-first search for a back-edge in all the
+  // (potentially disjoint) graphs formed by the referenced resources.
+  for (const auto& local_resource : resources) {
+    // The resource can be null if the reference is external but external
+    // references are not allowed.
+    if (local_resource && local_resource->FindCycle(*client))
+      return true;
+  }
+  return false;
+}
+
+bool LayoutSVGResourceContainer::FindCycleFromSelf() const {
+  NOT_DESTROYED();
+  // Resources don't generally apply to other resources, so require
+  // the specific cases that do (like <clipPath>) to implement an
+  // override.
+  return FindCycleInDescendants(*this);
+}
+
+bool LayoutSVGResourceContainer::FindCycleInDescendants(
+    const LayoutObject& root) {
+  LayoutObject* node = root.SlowFirstChild();
+  while (node) {
+    // Skip subtrees which are themselves resources. (They will be
+    // processed - if needed - when they are actually referenced.)
+    if (node->IsSVGResourceContainer()) {
+      node = node->NextInPreOrderAfterChildren(&root);
+      continue;
+    }
+    if (FindCycleInResources(*node))
+      return true;
+    node = node->NextInPreOrder(&root);
+  }
+  return false;
+}
+
+bool LayoutSVGResourceContainer::FindCycleInSubtree(
+    const LayoutObject& root) {
+  if (FindCycleInResources(root))
+    return true;
+  return FindCycleInDescendants(root);
 }
 
 void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
     InvalidationModeMask invalidation_mask) {
+  NOT_DESTROYED();
   if (is_invalidating_)
     return;
   LocalSVGResource* resource = ResourceForContainer(*this);
-  if (!resource || !resource->HasClients())
+  if (!resource)
     return;
   // Remove modes for which invalidations have already been
   // performed. If no modes remain we are done.
@@ -100,38 +192,15 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   is_invalidating_ = true;
 
   // Invalidate clients registered via an SVGResource.
-  if (resource)
-    resource->NotifyContentChanged(invalidation_mask);
+  resource->NotifyContentChanged();
 
   is_invalidating_ = false;
-}
-
-void LayoutSVGResourceContainer::MarkClientForInvalidation(
-    LayoutObject& client,
-    InvalidationModeMask invalidation_mask) {
-  if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
-    // Since LayoutSVGInlineTexts don't have SVGResources (they use their
-    // parent's), they will not be notified of changes to paint servers. So
-    // if the client is one that could have a LayoutSVGInlineText use a
-    // paint invalidation reason that will force paint invalidation of the
-    // entire <text>/<tspan>/... subtree.
-    client.SetSubtreeShouldDoFullPaintInvalidation(
-        PaintInvalidationReason::kSVGResource);
-    client.InvalidateClipPathCache();
-    // Invalidate paint properties to update effects if any.
-    client.SetNeedsPaintPropertyUpdate();
-  }
-
-  if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
-    client.SetNeedsBoundariesUpdate();
 }
 
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     LayoutInvalidationReasonForTracing reason,
     SubtreeLayoutScope* layout_scope) {
-  if (SelfNeedsLayout())
-    return;
-
+  NOT_DESTROYED();
   SetNeedsLayoutAndFullPaintInvalidation(reason, kMarkContainerChain,
                                          layout_scope);
 
@@ -141,6 +210,7 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
 
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     SubtreeLayoutScope* layout_scope) {
+  NOT_DESTROYED();
   InvalidateCacheAndMarkForLayout(
       layout_invalidation_reason::kSvgResourceInvalidated, layout_scope);
 }
@@ -152,15 +222,10 @@ static inline void RemoveFromCacheAndInvalidateDependencies(
   if (!element)
     return;
 
-  if (SVGResources* resources =
-          SVGResourcesCache::CachedResourcesForLayoutObject(object)) {
-    SVGResourceClient* client = element->GetSVGResourceClient();
-    if (InvalidationModeMask invalidation_mask =
-            resources->RemoveClientFromCacheAffectingObjectBounds(*client)) {
-      LayoutSVGResourceContainer::MarkClientForInvalidation(object,
-                                                            invalidation_mask);
-    }
-  }
+  // TODO(fs): Do we still need this? (If bounds are invalidated on a leaf
+  // LayoutObject, we will propagate that during the required layout and
+  // invalidate effects of self and any ancestors at that time.)
+  SVGResourceInvalidator(object).InvalidateEffects();
 
   element->NotifyIncomingReferences([needs_layout](SVGElement& element) {
     DCHECK(element.GetLayoutObject());
@@ -188,12 +253,33 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
 
     if (current->IsSVGResourceContainer()) {
       // This will process the rest of the ancestors.
-      ToLayoutSVGResourceContainer(current)->RemoveAllClientsFromCache();
+      To<LayoutSVGResourceContainer>(current)->RemoveAllClientsFromCache();
       break;
     }
 
     current = current->Parent();
   }
+}
+
+static inline bool IsLayoutObjectOfResourceContainer(
+    const LayoutObject& layout_object) {
+  const LayoutObject* current = &layout_object;
+  while (current) {
+    if (current->IsSVGResourceContainer())
+      return true;
+    current = current->Parent();
+  }
+  return false;
+}
+
+void LayoutSVGResourceContainer::StyleChanged(LayoutObject& object,
+                                              StyleDifference diff) {
+  // If this LayoutObject is the child of a resource container and
+  // it requires repainting because of changes to CSS properties
+  // such as 'visibility', upgrade to invalidate layout.
+  bool needs_layout = diff.NeedsPaintInvalidation() &&
+                      IsLayoutObjectOfResourceContainer(object);
+  MarkForLayoutAndParentResourceInvalidation(object, needs_layout);
 }
 
 }  // namespace blink

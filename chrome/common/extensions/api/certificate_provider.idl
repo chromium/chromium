@@ -5,6 +5,93 @@
 // Use this API to expose certificates to the platform which can use these
 // certificates for TLS authentications.
 namespace certificateProvider {
+
+  // Types of supported cryptographic signature algorithms.
+  enum Algorithm {
+    // RSASSA PKCS#1 v1.5 signature algorithm with the MD5-SHA-1 hashing. The
+    // extension must not prepend a DigestInfo prefix but only add PKCS#1
+    // padding.
+    RSASSA_PKCS1_v1_5_MD5_SHA1,
+    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-1 hash function.
+    RSASSA_PKCS1_v1_5_SHA1,
+    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-256 hashing function.
+    RSASSA_PKCS1_v1_5_SHA256,
+    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-384 hashing function.
+    RSASSA_PKCS1_v1_5_SHA384,
+    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-512 hashing function.
+    RSASSA_PKCS1_v1_5_SHA512,
+    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-256 hashing
+    // function, MGF1 mask generation function and the salt of the same size as
+    // the hash.
+    RSASSA_PSS_SHA256,
+    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-384 hashing
+    // function, MGF1 mask generation function and the salt of the same size as
+    // the hash.
+    RSASSA_PSS_SHA384,
+    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-512 hashing
+    // function, MGF1 mask generation function and the salt of the same size as
+    // the hash.
+    RSASSA_PSS_SHA512
+  };
+
+  // Types of errors that the extension can report.
+  enum Error {
+    // General error that cannot be represented by other more specific error
+    // codes.
+    GENERAL_ERROR
+  };
+
+  // Information about a client certificate.
+  [noinline_doc] dictionary ClientCertificateInfo {
+    // The array must contain the DER encoding of the X.509 client certificate
+    // as its first element.
+    // <p>This must include exactly one certificate.</p>
+    ArrayBuffer[] certificateChain;
+    // All algorithms supported for this certificate. The extension will only be
+    // asked for signatures using one of these algorithms.
+    Algorithm[] supportedAlgorithms;
+  };
+
+  dictionary SetCertificatesDetails {
+    // When called in response to $(ref:onCertificatesUpdateRequested), should
+    // contain the received <code>certificatesRequestId</code> value. Otherwise,
+    // should be unset.
+    long? certificatesRequestId;
+    // Error that occurred while extracting the certificates, if any. This error
+    // will be surfaced to the user when appropriate.
+    Error? error;
+    // List of currently available client certificates.
+    ClientCertificateInfo[] clientCertificates;
+  };
+
+  dictionary CertificatesUpdateRequest {
+    // Request identifier to be passed to $(ref:setCertificates).
+    long certificatesRequestId;
+  };
+
+  dictionary SignatureRequest {
+    // Request identifier to be passed to $(ref:reportSignature).
+    long signRequestId;
+    // Data to be signed. Note that the data is not hashed.
+    ArrayBuffer input;
+    // Signature algorithm to be used.
+    Algorithm algorithm;
+    // The DER encoding of a X.509 certificate. The extension must sign
+    // <code>input</code> using the associated private key.
+    ArrayBuffer certificate;
+  };
+
+  dictionary ReportSignatureDetails {
+    // Request identifier that was received via the $(ref:onSignatureRequested)
+    // event.
+    long signRequestId;
+    // Error that occurred while generating the signature, if any.
+    Error? error;
+    // The signature, if successfully generated.
+    ArrayBuffer? signature;
+  };
+
+  // Deprecated. Replaced by $(ref:Algorithm).
   enum Hash {
     MD5_SHA1,
     SHA1,
@@ -28,7 +115,8 @@ namespace certificateProvider {
     UNKNOWN_ERROR
   };
 
-  [noinline_doc] dictionary CertificateInfo {
+  // Deprecated. Replaced by $(ref:ClientCertificateInfo).
+  dictionary CertificateInfo {
     // Must be the DER encoding of a X.509 certificate. Currently, only
     // certificates of RSA keys are supported.
     ArrayBuffer certificate;
@@ -39,7 +127,8 @@ namespace certificateProvider {
     Hash[] supportedHashes;
   };
 
-  [noinline_doc] dictionary SignRequest {
+  // Deprecated. Replaced by $(ref:SignatureRequest).
+  dictionary SignRequest {
     // The unique ID to be used by the extension should it need to call a method
     // that requires it, e.g. requestPin.
     long signRequestId;
@@ -94,6 +183,10 @@ namespace certificateProvider {
 
   callback StopPinRequestCallback = void ();
 
+  callback SetCertificatesCallback = void ();
+
+  callback ReportSignatureCallback = void ();
+
   // The callback provided by the extension that Chrome uses to report back
   // rejected certificates. See <code>CertificatesCallback</code>.
   callback ResultCallback = void (ArrayBuffer[] rejectedCertificates);
@@ -117,20 +210,36 @@ namespace certificateProvider {
       void (CertificateInfo[] certificates, ResultCallback callback);
 
   interface Events {
-    // This event fires every time the browser requests the current list of
-    // certificates provided by this extension. The extension must call
-    // <code>reportCallback</code> exactly once with the current list of
-    // certificates.
-    static void onCertificatesRequested(CertificatesCallback reportCallback);
+    // This event fires if the certificates set via $(ref:setCertificates)
+    // are insufficient or the browser requests updated information. The
+    // extension must call $(ref:setCertificates) with the updated list of
+    // certificates and the received <code>certificatesRequestId</code>.
+    static void onCertificatesUpdateRequested(
+        CertificatesUpdateRequest request);
 
     // This event fires every time the browser needs to sign a message using a
-    // certificate provided by this extension in reply to an
+    // certificate provided by this extension via $(ref:setCertificates).
+    // <p>The extension must sign the input data from <code>request</code> using
+    // the appropriate algorithm and private key and return it by calling
+    // $(ref:reportSignature) with the received <code>signRequestId</code>.</p>
+    static void onSignatureRequested(SignatureRequest request);
+
+    // <p>This event fires every time the browser requests the current list of
+    // certificates provided by this extension. The extension must call
+    // <code>reportCallback</code> exactly once with the current list of
+    // certificates.</p>
+    [deprecated="Use $(ref:onCertificatesUpdateRequested) instead."]
+    static void onCertificatesRequested(CertificatesCallback reportCallback);
+
+    // This event fires every time the browser needs to sign a message using
+    // a certificate provided by this extension in reply to an
     // $(ref:onCertificatesRequested) event.
     // The extension must sign the data in <code>request</code> using the
     // appropriate algorithm and private key and return it by calling
     // <code>reportCallback</code>. <code>reportCallback</code> must be called
     // exactly once.
     // |request|: Contains the details about the sign request.
+    [deprecated="Use $(ref:onSignatureRequested) instead."]
     static void onSignDigestRequested(SignRequest request,
                                       SignCallback reportCallback);
   };
@@ -144,15 +253,37 @@ namespace certificateProvider {
     // |callback|: Is called when the dialog is resolved with the user input, or
     // when the dialog request finishes unsuccessfully (e.g. the dialog was
     // canceled by the user or was not allowed to be shown).
-    static void requestPin(RequestPinDetails details,
-                           RequestPinCallback callback);
+    [supportsPromises] static void requestPin(RequestPinDetails details,
+                                              RequestPinCallback callback);
 
     // Stops the pin request started by the $(ref:requestPin) function.
     // |details|: Contains the details about the reason for stopping the
     // request flow.
     // |callback|: To be used by Chrome to send to the extension the status from
     // their request to close PIN dialog for user.
-    static void stopPinRequest(StopPinRequestDetails details,
-                               StopPinRequestCallback callback);
+    [supportsPromises] static void stopPinRequest(
+        StopPinRequestDetails details,
+        StopPinRequestCallback callback);
+
+    // Sets a list of certificates to use in the browser.
+    // <p>The extension should call this function after initialization and on
+    // every change in the set of currently available certificates. The
+    // extension should also call this function in response to
+    // $(ref:onCertificatesUpdateRequested) every time this event is
+    // received.</p>
+    // |details|: The certificates to set. Invalid certificates will be ignored.
+    // |callback|: Called upon completion.
+    [supportsPromises] static void setCertificates(
+        SetCertificatesDetails details,
+        optional SetCertificatesCallback callback);
+
+    // Should be called as a response to $(ref:onSignatureRequested).
+    // <p>The extension must eventually call this function for every
+    // $(ref:onSignatureRequested) event; the API implementation will stop
+    // waiting for this call after some time and respond with a timeout
+    // error when this function is called.</p>
+    [supportsPromises] static void reportSignature(
+        ReportSignatureDetails details,
+        optional ReportSignatureCallback callback);
   };
 };

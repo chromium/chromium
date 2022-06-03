@@ -10,7 +10,7 @@
 
 namespace test {
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Returns [window alphaValue]. Widget doesn't offer a GetOpacity(), only
 // SetOpacity(). Currently this is only defined for Mac. Obtaining this for
 // other platforms is convoluted.

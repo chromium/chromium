@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Using the same SpeechSynthesisUtterance with two SpeechSynthesis instances assert_throws: function "() => {
-      iframe.contentWindow.speechSynthesis.speak(utter);
-    }" did not throw
-Harness: the test ran to completion.
-

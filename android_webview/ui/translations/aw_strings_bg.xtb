@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
-<translation id="6106989379647458772">Уеб страницата на адрес <ph name="PAGE" /> може временно да не е налице или да е била преместена на нов уеб адрес.</translation>
-<translation id="6312113039770857350">Уеб страницата не е налице</translation>
-<translation id="8681531050781943054">Уеб страницата на адрес <ph name="PAGE" /> не можа да бъде заредена, защото:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Предложения:<ph name="MARKUP_2" />Уверете се, че имате връзка за данни.<ph name="MARKUP_3" />Презаредете тази уеб страница по-късно.<ph name="MARKUP_4" />Проверете въведения от вас адрес.<ph name="MARKUP_5" /></translation>
 </translationbundle>

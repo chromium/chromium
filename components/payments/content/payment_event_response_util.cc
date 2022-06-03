@@ -10,6 +10,34 @@
 
 namespace payments {
 
+base::StringPiece ConvertCanMakePaymentEventResponseTypeToErrorString(
+    mojom::CanMakePaymentEventResponseType response_type) {
+  switch (response_type) {
+    case mojom::CanMakePaymentEventResponseType::BOOLEAN_CONVERSION_ERROR:
+      return errors::kCanMakePaymentEventBooleanConversionError;
+    case mojom::CanMakePaymentEventResponseType::BROWSER_ERROR:
+      return errors::kCanMakePaymentEventBrowserError;
+    case mojom::CanMakePaymentEventResponseType::INTERNAL_ERROR:
+      return errors::kCanMakePaymentEventInternalError;
+    case mojom::CanMakePaymentEventResponseType::NO_EXPLICITLY_VERIFIED_METHODS:
+      return errors::kCanMakePaymentEventNoExplicitlyVerifiedMethods;
+    case mojom::CanMakePaymentEventResponseType::NO_RESPONSE:
+      return errors::kCanMakePaymentEventNoResponse;
+    case mojom::CanMakePaymentEventResponseType::NOT_INSTALLED:
+      return errors::kCanMakePaymentEventNotInstalled;
+    case mojom::CanMakePaymentEventResponseType::NO_URL_BASED_PAYMENT_METHODS:
+      return errors::kCanMakePaymentEventNoUrlBasedPaymentMethods;
+    case mojom::CanMakePaymentEventResponseType::REJECT:
+      return errors::kCanMakePaymentEventRejected;
+    case mojom::CanMakePaymentEventResponseType::TIMEOUT:
+      return errors::kCanMakePaymentEventTimeout;
+    case mojom::CanMakePaymentEventResponseType::INCOGNITO:
+    // Intentionally fallthrough.
+    case mojom::CanMakePaymentEventResponseType::SUCCESS:
+      return "";
+  }
+}
+
 base::StringPiece ConvertPaymentEventResponseTypeToErrorString(
     mojom::PaymentEventResponseType response_type) {
   switch (response_type) {
@@ -39,6 +67,13 @@ base::StringPiece ConvertPaymentEventResponseTypeToErrorString(
       return errors::kPaymentEventTimeout;
     case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSECURE_NAVIGATION:
       return errors::kPaymentHandlerInsecureNavigation;
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED:
+      return errors::kPaymentHandlerInstallFailed;
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_ACTIVITY_DIED:
+      return errors::kPaymentHandlerActivityDied;
+    case mojom::PaymentEventResponseType::
+        PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME:
+      return errors::kPaymentHandlerFailToLoadMainFrame;
     case mojom::PaymentEventResponseType::PAYER_NAME_EMPTY:
       return errors::kPayerNameEmpty;
     case mojom::PaymentEventResponseType::PAYER_EMAIL_EMPTY:

@@ -1,2 +1,0 @@
-p { background-color : lime }
-p:not(:not(p)) { background-color : red }

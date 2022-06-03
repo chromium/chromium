@@ -4,44 +4,49 @@
 
 #include "pdf/url_loader_wrapper_impl.h"
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/callback.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_util.h"
-#include "ppapi/c/pp_errors.h"
-#include "ppapi/cpp/logging.h"
-#include "ppapi/cpp/url_request_info.h"
-#include "ppapi/cpp/url_response_info.h"
+#include "pdf/ppapi_migration/url_loader.h"
+#include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
 
 namespace {
 
 // We should read with delay to prevent block UI thread, and reduce CPU usage.
-constexpr base::TimeDelta kReadDelayMs = base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kReadDelayMs = base::Milliseconds(2);
 
-pp::URLRequestInfo MakeRangeRequest(pp::Instance* plugin_instance,
-                                    const std::string& url,
-                                    const std::string& referrer_url,
-                                    uint32_t position,
-                                    uint32_t size) {
-  pp::URLRequestInfo request(plugin_instance);
-  request.SetURL(url);
-  request.SetMethod("GET");
-  request.SetFollowRedirects(false);
-  request.SetCustomReferrerURL(referrer_url);
+UrlRequest MakeRangeRequest(const std::string& url,
+                            const std::string& referrer_url,
+                            uint32_t position,
+                            uint32_t size) {
+  UrlRequest request;
+  request.url = url;
+  request.method = "GET";
+  request.ignore_redirects = true;
+  request.custom_referrer_url = referrer_url;
 
   // According to rfc2616, byte range specifies position of the first and last
   // bytes in the requested range inclusively. Therefore we should subtract 1
   // from the position + size, to get index of the last byte that needs to be
   // downloaded.
-  std::string str_header =
+  request.headers =
       base::StringPrintf("Range: bytes=%d-%d", position, position + size - 1);
-  pp::Var header(str_header.c_str());
-  request.SetHeaders(header);
 
   return request;
 }
@@ -97,23 +102,14 @@ bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
 
 }  // namespace
 
-URLLoaderWrapperImpl::URLLoaderWrapperImpl(pp::Instance* plugin_instance,
-                                           const pp::URLLoader& url_loader)
-    : plugin_instance_(plugin_instance),
-      url_loader_(url_loader),
-      callback_factory_(this) {
+URLLoaderWrapperImpl::URLLoaderWrapperImpl(
+    std::unique_ptr<UrlLoader> url_loader)
+    : url_loader_(std::move(url_loader)) {
   SetHeadersFromLoader();
 }
 
 URLLoaderWrapperImpl::~URLLoaderWrapperImpl() {
   Close();
-  // We should call callbacks to prevent memory leaks.
-  // The callbacks don't do anything, because the objects that created the
-  // callbacks have been destroyed.
-  if (!did_open_callback_.IsOptional())
-    did_open_callback_.RunAndClear(-1);
-  if (!did_read_callback_.IsOptional())
-    did_read_callback_.RunAndClear(-1);
 }
 
 int URLLoaderWrapperImpl::GetContentLength() const {
@@ -136,7 +132,7 @@ std::string URLLoaderWrapperImpl::GetContentDisposition() const {
 }
 
 int URLLoaderWrapperImpl::GetStatusCode() const {
-  return url_loader_.GetResponseInfo().GetStatusCode();
+  return url_loader_->response().status_code;
 }
 
 bool URLLoaderWrapperImpl::IsMultipart() const {
@@ -149,15 +145,8 @@ bool URLLoaderWrapperImpl::GetByteRangeStart(int* start) const {
   return byte_range_.IsValid();
 }
 
-bool URLLoaderWrapperImpl::GetDownloadProgress(
-    int64_t* bytes_received,
-    int64_t* total_bytes_to_be_received) const {
-  return url_loader_.GetDownloadProgress(bytes_received,
-                                         total_bytes_to_be_received);
-}
-
 void URLLoaderWrapperImpl::Close() {
-  url_loader_.Close();
+  url_loader_->Close();
   read_starter_.Stop();
 }
 
@@ -165,45 +154,32 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
                                      const std::string& referrer_url,
                                      uint32_t position,
                                      uint32_t size,
-                                     const pp::CompletionCallback& cc) {
-  did_open_callback_ = cc;
-  pp::CompletionCallback callback =
-      callback_factory_.NewCallback(&URLLoaderWrapperImpl::DidOpen);
-  int rv = url_loader_.Open(
-      MakeRangeRequest(plugin_instance_, url, referrer_url, position, size),
-      callback);
-  if (rv != PP_OK_COMPLETIONPENDING)
-    callback.Run(rv);
+                                     ResultCallback callback) {
+  url_loader_->Open(
+      MakeRangeRequest(url, referrer_url, position, size),
+      base::BindOnce(&URLLoaderWrapperImpl::DidOpen, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void URLLoaderWrapperImpl::ReadResponseBody(char* buffer,
                                             int buffer_size,
-                                            const pp::CompletionCallback& cc) {
-  did_read_callback_ = cc;
+                                            ResultCallback callback) {
   buffer_ = buffer;
   buffer_size_ = buffer_size;
   read_starter_.Start(
       FROM_HERE, kReadDelayMs,
-      base::BindRepeating(&URLLoaderWrapperImpl::ReadResponseBodyImpl,
-                          base::Unretained(this)));
+      base::BindOnce(&URLLoaderWrapperImpl::ReadResponseBodyImpl,
+                     base::Unretained(this), std::move(callback)));
 }
 
-void URLLoaderWrapperImpl::ReadResponseBodyImpl() {
-  pp::CompletionCallback callback =
-      callback_factory_.NewCallback(&URLLoaderWrapperImpl::DidRead);
-  int rv = url_loader_.ReadResponseBody(buffer_, buffer_size_, callback);
-  if (rv != PP_OK_COMPLETIONPENDING) {
-    callback.Run(rv);
-  }
+void URLLoaderWrapperImpl::ReadResponseBodyImpl(ResultCallback callback) {
+  url_loader_->ReadResponseBody(
+      base::make_span(buffer_, buffer_size_),
+      base::BindOnce(&URLLoaderWrapperImpl::DidRead, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
-void URLLoaderWrapperImpl::SetResponseHeaders(
-    const std::string& response_headers) {
-  response_headers_ = response_headers;
-  ParseHeaders();
-}
-
-void URLLoaderWrapperImpl::ParseHeaders() {
+void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   content_length_ = -1;
   accept_ranges_bytes_ = false;
   content_encoded_ = false;
@@ -213,11 +189,11 @@ void URLLoaderWrapperImpl::ParseHeaders() {
   byte_range_ = gfx::Range::InvalidRange();
   is_multipart_ = false;
 
-  if (response_headers_.empty())
+  if (response_headers.empty())
     return;
 
-  net::HttpUtil::HeadersIterator it(response_headers_.begin(),
-                                    response_headers_.end(), "\n");
+  net::HttpUtil::HeadersIterator it(response_headers.begin(),
+                                    response_headers.end(), "\n");
   while (it.GetNext()) {
     base::StringPiece name = it.name_piece();
     if (base::LowerCaseEqualsASCII(name, "content-length")) {
@@ -255,12 +231,12 @@ void URLLoaderWrapperImpl::ParseHeaders() {
   }
 }
 
-void URLLoaderWrapperImpl::DidOpen(int32_t result) {
+void URLLoaderWrapperImpl::DidOpen(ResultCallback callback, int32_t result) {
   SetHeadersFromLoader();
-  did_open_callback_.RunAndClear(result);
+  std::move(callback).Run(result);
 }
 
-void URLLoaderWrapperImpl::DidRead(int32_t result) {
+void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
   if (multi_part_processed_) {
     // Reset this flag so we look inside the buffer in calls of DidRead for this
     // response only once.  Note that this code DOES NOT handle multi part
@@ -269,12 +245,12 @@ void URLLoaderWrapperImpl::DidRead(int32_t result) {
     is_multipart_ = false;
   }
   if (result <= 0 || !is_multipart_) {
-    did_read_callback_.RunAndClear(result);
+    std::move(callback).Run(result);
     return;
   }
   if (result <= 2) {
     // TODO(art-snake): Accumulate data for parse headers.
-    did_read_callback_.RunAndClear(result);
+    std::move(callback).Run(result);
     return;
   }
 
@@ -297,19 +273,16 @@ void URLLoaderWrapperImpl::DidRead(int32_t result) {
   result = length;
   if (result == 0) {
     // Continue receiving.
-    return ReadResponseBodyImpl();
+    return ReadResponseBodyImpl(std::move(callback));
   }
   DCHECK_GT(result, 0);
   memmove(buffer_, start, result);
 
-  did_read_callback_.RunAndClear(result);
+  std::move(callback).Run(result);
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {
-  pp::URLResponseInfo response = url_loader_.GetResponseInfo();
-  pp::Var headers_var = response.GetHeaders();
-
-  SetResponseHeaders(headers_var.is_string() ? headers_var.AsString() : "");
+  ParseHeaders(url_loader_->response().headers);
 }
 
 }  // namespace chrome_pdf

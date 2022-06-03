@@ -1,0 +1,108 @@
+<style include="settings-shared">
+  #disk-labels {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #resize-block {
+    align-items: stretch;
+    margin-inline-end: 10px;
+    margin-inline-start: 10px;
+  }
+
+  .error {
+    color: var(--cros-text-color-alert);
+  }
+
+  #errorIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    display: inline-block;
+  }
+
+  #warningIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
+  }
+
+  #message {
+    margin-inline-end: auto;
+  }
+
+</style>
+<cr-dialog id="diskResizeDialog" close-text="$i18n{close}">
+  <!-- The title gets read out multiple times. This was a deliberate
+       tradeoff made by cr-dialog so for now that's what we're stuck with:
+       https://chromium-review.googlesource.com/c/chromium/src/+/1906254
+  -->
+  <div slot="title">$i18n{crostiniDiskResizeTitle}</div>
+  <div slot="body">
+    <template is="dom-if" if="[[eq_(displayState_, DisplayState.RESIZE)]]">
+      <div>
+        <div hidden="[[isLowSpaceAvailable_]]" id="recommended-size">
+          $i18n{crostiniDiskResizeRecommended}
+        </div>
+        <div hidden="[[!isLowSpaceAvailable_]]"
+            id="recommended-size-warning">
+          <iron-icon id="warningIcon" icon="cr:warning"></iron-icon>
+          $i18n{crostiniDiskResizeRecommendedWarning}
+        </div>
+      </div>
+      <div id="resize-block">
+        <cr-slider id="diskSlider" pin="true"
+            value="[[defaultDiskSizeTick_]]" ticks="[[diskSizeTicks_]]"
+            disabled="[[resizing_]]" max="[[maxDiskSizeTick_]]">
+        </cr-slider>
+        <div id="disk-labels" aria-hidden="true">
+          <div id="label-begin">[[minDiskSize_]]</div>
+          <div id="label-end">[[maxDiskSize_]]</div>
+        </div>
+      </div>
+    </template>
+    <template is="dom-if"
+        if="[[eq_(displayState_, DisplayState.UNSUPPORTED)]]">
+      <div id="unsupported">
+        $i18n{crostiniDiskResizeUnsupported}
+      </div>
+    </template>
+    <template is="dom-if" if="[[eq_(displayState_, DisplayState.LOADING)]]">
+      <div id="loading">
+        $i18n{crostiniDiskResizeLoading}
+      </div>
+    </template>
+    <template is="dom-if" if="[[eq_(displayState_, DisplayState.ERROR)]]">
+      <span id="error" aria-hidden="true">
+        $i18n{crostiniDiskResizeError}
+      </span>
+      <cr-button id="retry" on-click="onRetryClick_"
+          aria-describedby="error">
+        $i18n{crostiniDiskResizeErrorRetry}
+      </cr-button>
+    </template>
+  </div>
+  <div slot="button-container">
+    <div id="message" aria-live="assertive">
+      <span id="resizing"
+          hidden="[[!eq_(resizeState_, ResizeState.RESIZING)]]">
+        $i18n{crostiniDiskResizeInProgress}
+      </span>
+      <template is="dom-if" if="[[eq_(resizeState_, ResizeState.ERROR)]]">
+        <span id="resize-error" class="error">
+          <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+          $i18n{crostiniDiskResizeResizingError}
+        </span>
+      </template>
+      <span id="done" hidden="[[!eq_(resizeState_, ResizeState.DONE)]]">
+        $i18n{crostiniDiskResizeDone}
+      </span>
+    </div>
+    <cr-button id="cancel" class="cancel-button"
+        disabled="[[eq_(resizeState_, ResizeState.RESIZING)]]"
+        on-click="onCancelClick_">
+      $i18n{crostiniDiskResizeCancel}
+    </cr-button>
+    <cr-button id="resize" class="action-button"
+        disabled="[[resizeDisabled_(displayState_, resizeState_)]]"
+        on-click="onResizeClick_">
+      $i18n{crostiniDiskResizeGoButton}
+    </cr-button>
+  </div>
+</cr-dialog>

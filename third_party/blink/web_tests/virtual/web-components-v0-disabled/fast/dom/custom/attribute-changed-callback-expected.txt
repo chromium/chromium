@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL transfer attribute changed callback document.registerElement is not a function
-FAIL add, change and remove an attribute document.registerElement is not a function
-Harness: the test ran to completion.
-

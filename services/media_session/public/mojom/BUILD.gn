@@ -11,7 +11,6 @@ mojom("mojom") {
     "constants.mojom",
     "media_controller.mojom",
     "media_session.mojom",
-    "media_session_service.mojom",
   ]
 
   public_deps = [
@@ -27,4 +26,42 @@ mojom("mojom") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media_session.mojom.MediaImage"
+          cpp = "::media_session::MediaImage"
+        },
+        {
+          mojom = "media_session.mojom.MediaImageBitmap"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "media_session.mojom.MediaMetadata"
+          cpp = "::media_session::MediaMetadata"
+        },
+        {
+          mojom = "media_session.mojom.MediaPosition"
+          cpp = "::media_session::MediaPosition"
+        },
+      ]
+      traits_headers =
+          [ "//services/media_session/public/cpp/media_session_mojom_traits.h" ]
+      traits_sources = [
+        "//services/media_session/public/cpp/media_session_mojom_traits.cc",
+      ]
+      traits_public_deps = [
+        "//base",
+        "//services/media_session/public/cpp:base_cpp",
+        "//skia",
+      ]
+      traits_deps = [
+        "//mojo/public/mojom/base",
+        "//ui/gfx/geometry/mojom",
+      ]
+    },
+  ]
 }

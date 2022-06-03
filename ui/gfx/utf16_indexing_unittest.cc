@@ -11,9 +11,8 @@ namespace gfx {
 
 TEST(UTF16IndexingTest, IndexOffsetConversions) {
   // Valid surrogate pair surrounded by unpaired surrogates
-  const base::char16 foo[] =
-      {0xDC00, 0xD800, 0xD800, 0xDFFF, 0xDFFF, 0xDBFF, 0};
-  const base::string16 s(foo);
+  const char16_t foo[] = {0xDC00, 0xD800, 0xD800, 0xDFFF, 0xDFFF, 0xDBFF, 0};
+  const std::u16string s(foo);
   const size_t the_invalid_index = 3;
   for (size_t i = 0; i <= s.length(); ++i)
     EXPECT_EQ(i != the_invalid_index, IsValidCodePointIndex(s, i));

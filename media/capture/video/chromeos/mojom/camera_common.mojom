@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 3
+// Next min version: 4
 
 module cros.mojom;
 
@@ -13,11 +13,21 @@ enum CameraFacing {
   CAMERA_FACING_BACK = 0,
   CAMERA_FACING_FRONT = 1,
   CAMERA_FACING_EXTERNAL = 2,
+  CAMERA_FACING_VIRTUAL_BACK = 3,
+  CAMERA_FACING_VIRTUAL_FRONT = 4,
+  CAMERA_FACING_VIRTUAL_EXTERNAL = 5,
 };
 
 struct CameraResourceCost {
   uint32 resource_cost;
 };
+
+const uint32 CAMERA_DEVICE_API_VERSION_3_0 = 0x300;
+const uint32 CAMERA_DEVICE_API_VERSION_3_1 = 0x301;
+const uint32 CAMERA_DEVICE_API_VERSION_3_2 = 0x302;
+const uint32 CAMERA_DEVICE_API_VERSION_3_3 = 0x303;
+const uint32 CAMERA_DEVICE_API_VERSION_3_4 = 0x304;
+const uint32 CAMERA_DEVICE_API_VERSION_3_5 = 0x305;
 
 struct CameraInfo {
   CameraFacing facing;
@@ -87,12 +97,12 @@ interface VendorTagOps {
 // (https://goo.gl/8Hf8S8).  CameraModule is the interface to interact with a
 // camera HAL to query device info and open camera devices.
 //
-// Next method ID: 7
+// Next method ID: 8
 interface CameraModule {
   // Opens the camera device specified by |camera_id|.  On success, the camera
   // device is accessible through the |device_ops| returned.
   OpenDevice@0(int32 camera_id,
-               pending_receiver<Camera3DeviceOps> device_ops_request)
+               pending_receiver<Camera3DeviceOps> device_ops_receiver)
       => (int32 result);
 
   // Gets the number of cameras currently present on the system.
@@ -101,6 +111,7 @@ interface CameraModule {
   // Gets various info about the camera specified by |camera_id|.
   GetCameraInfo@2(int32 camera_id) => (int32 result, CameraInfo? camera_info);
 
+  // [Deprecated in version 3]
   // Registers the CameraModuleCallbacks interface with the camera HAL.
   SetCallbacks@3(pending_remote<CameraModuleCallbacks> callbacks)
       => (int32 result);
@@ -120,6 +131,13 @@ interface CameraModule {
   // should fill in all the vendor tag operation methods, or leave ops unchanged
   // if no vendor tags are defined.
   [MinVersion=2]
-  GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_request)
+  GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_receiver)
       => ();
+
+  // Registers the CameraModuleCallbacks associated interface with the camera
+  // HAL. TODO(b/169324225): Migrate all camera HAL clients to use this.
+  [MinVersion=3]
+  SetCallbacksAssociated@7(
+      pending_associated_remote<CameraModuleCallbacks> callbacks)
+      => (int32 result);
 };

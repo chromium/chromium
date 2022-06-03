@@ -24,7 +24,8 @@ void GeolocationContext::Create(
 }
 
 void GeolocationContext::BindGeolocation(
-    mojo::PendingReceiver<mojom::Geolocation> receiver) {
+    mojo::PendingReceiver<mojom::Geolocation> receiver,
+    const GURL& requesting_origin) {
   GeolocationImpl* impl = new GeolocationImpl(std::move(receiver), this);
   impls_.push_back(base::WrapUnique<GeolocationImpl>(impl));
   if (geoposition_override_)

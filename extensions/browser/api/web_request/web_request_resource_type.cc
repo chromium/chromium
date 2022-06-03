@@ -4,10 +4,13 @@
 
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -29,6 +32,8 @@ constexpr struct {
     {"csp_report", WebRequestResourceType::CSP_REPORT},
     {"media", WebRequestResourceType::MEDIA},
     {"websocket", WebRequestResourceType::WEB_SOCKET},
+    {"webtransport", WebRequestResourceType::WEB_TRANSPORT},
+    {"webbundle", WebRequestResourceType::WEBBUNDLE},
     {"other", WebRequestResourceType::OTHER},
 };
 
@@ -40,45 +45,60 @@ static_assert(kResourceTypesLength ==
 
 }  // namespace
 
-WebRequestResourceType ToWebRequestResourceType(content::ResourceType type) {
-  switch (type) {
-    case content::ResourceType::kMainFrame:
-    case content::ResourceType::kNavigationPreloadMainFrame:
+WebRequestResourceType ToWebRequestResourceType(
+    const network::ResourceRequest& request,
+    bool is_download) {
+  if (request.url.SchemeIsWSOrWSS())
+    return WebRequestResourceType::WEB_SOCKET;
+  if (is_download)
+    return WebRequestResourceType::OTHER;
+  if (request.is_fetch_like_api) {
+    // This must be checked before `request.keepalive` check below, because
+    // currently Fetch keepAlive is not reported as ping.
+    // See https://crbug.com/611453 for more details.
+    return WebRequestResourceType::XHR;
+  }
+
+  switch (request.destination) {
+    case network::mojom::RequestDestination::kDocument:
       return WebRequestResourceType::MAIN_FRAME;
-    case content::ResourceType::kSubFrame:
-    case content::ResourceType::kNavigationPreloadSubFrame:
+    case network::mojom::RequestDestination::kIframe:
+    case network::mojom::RequestDestination::kFrame:
+    case network::mojom::RequestDestination::kFencedframe:
       return WebRequestResourceType::SUB_FRAME;
-    case content::ResourceType::kStylesheet:
+    case network::mojom::RequestDestination::kStyle:
+    case network::mojom::RequestDestination::kXslt:
       return WebRequestResourceType::STYLESHEET;
-    case content::ResourceType::kScript:
+    case network::mojom::RequestDestination::kScript:
       return WebRequestResourceType::SCRIPT;
-    case content::ResourceType::kImage:
+    case network::mojom::RequestDestination::kImage:
       return WebRequestResourceType::IMAGE;
-    case content::ResourceType::kFontResource:
+    case network::mojom::RequestDestination::kFont:
       return WebRequestResourceType::FONT;
-    case content::ResourceType::kSubResource:
-      return WebRequestResourceType::OTHER;
-    case content::ResourceType::kObject:
+    case network::mojom::RequestDestination::kObject:
+    case network::mojom::RequestDestination::kEmbed:
       return WebRequestResourceType::OBJECT;
-    case content::ResourceType::kMedia:
+    case network::mojom::RequestDestination::kAudio:
+    case network::mojom::RequestDestination::kTrack:
+    case network::mojom::RequestDestination::kVideo:
       return WebRequestResourceType::MEDIA;
-    case content::ResourceType::kWorker:
-    case content::ResourceType::kSharedWorker:
+    case network::mojom::RequestDestination::kWorker:
+    case network::mojom::RequestDestination::kSharedWorker:
+    case network::mojom::RequestDestination::kServiceWorker:
       return WebRequestResourceType::SCRIPT;
-    case content::ResourceType::kPrefetch:
-      return WebRequestResourceType::OTHER;
-    case content::ResourceType::kFavicon:
-      return WebRequestResourceType::IMAGE;
-    case content::ResourceType::kXhr:
-      return WebRequestResourceType::XHR;
-    case content::ResourceType::kPing:
-      return WebRequestResourceType::PING;
-    case content::ResourceType::kServiceWorker:
-      return WebRequestResourceType::SCRIPT;
-    case content::ResourceType::kCspReport:
+    case network::mojom::RequestDestination::kReport:
       return WebRequestResourceType::CSP_REPORT;
-    case content::ResourceType::kPluginResource:
-      return WebRequestResourceType::OBJECT;
+    case network::mojom::RequestDestination::kEmpty:
+      // https://fetch.spec.whatwg.org/#concept-request-destination
+      if (request.keepalive)
+        return WebRequestResourceType::PING;
+      return WebRequestResourceType::OTHER;
+    case network::mojom::RequestDestination::kWebBundle:
+      return WebRequestResourceType::WEBBUNDLE;
+    case network::mojom::RequestDestination::kAudioWorklet:
+    case network::mojom::RequestDestination::kManifest:
+    case network::mojom::RequestDestination::kPaintWorklet:
+      return WebRequestResourceType::OTHER;
   }
   NOTREACHED();
   return WebRequestResourceType::OTHER;

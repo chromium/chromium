@@ -5,9 +5,8 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
-import("//tools/generate_stubs/rules.gni")
+import("//media/media_options.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 
 assert(is_mac)
 
@@ -18,15 +17,17 @@ source_set("mac") {
   visibility = [ "//media/gpu" ]
 
   sources = [
+    "vp9_super_frame_bitstream_filter.cc",
+    "vp9_super_frame_bitstream_filter.h",
+    "vt_config_util.h",
+    "vt_config_util.mm",
     "vt_video_decode_accelerator_mac.cc",
     "vt_video_decode_accelerator_mac.h",
     "vt_video_encode_accelerator_mac.cc",
     "vt_video_encode_accelerator_mac.h",
   ]
-  public_deps = [
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-  libs = [
+  public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
+  frameworks = [
     "CoreFoundation.framework",
     "CoreMedia.framework",
     "Foundation.framework",
@@ -37,10 +38,33 @@ source_set("mac") {
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media",
     "//media/gpu:common",
     "//ui/gfx/geometry",
     "//ui/gl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  frameworks = [
+    "CoreFoundation.framework",
+    "CoreMedia.framework",
+  ]
+  deps = [
+    "//media:test_support",
+    "//media/gpu:test_support",
+    "//testing/gtest",
+  ]
+
+  if (media_use_ffmpeg) {
+    deps += [ "//third_party/ffmpeg" ]
+  }
+
+  sources = [
+    "vp9_super_frame_bitstream_filter_unittest.cc",
+    "vt_config_util_unittest.cc",
   ]
 }

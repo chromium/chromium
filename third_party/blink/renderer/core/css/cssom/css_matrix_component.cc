@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_matrix_component.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_matrix_component_options.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_matrix_component_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 

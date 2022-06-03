@@ -60,6 +60,11 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     }
 
     @Override
+    public int getContentOffsetYPixInt() {
+        return (int) Math.floor(getContentOffsetYPix());
+    }
+
+    @Override
     public int getContentWidthPixInt() {
         return (int) Math.ceil(getContentWidthPix());
     }
@@ -98,13 +103,9 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
         mDeviceScaleFactor = dipScale;
     }
 
-    public void updateFrameInfo(float scrollXCss, float scrollYCss, float contentWidthCss,
-            float contentHeightCss, float viewportWidthCss, float viewportHeightCss,
-            float pageScaleFactor, float minPageScaleFactor, float maxPageScaleFactor,
-            float contentOffsetYPix) {
-        mScrollXCss = scrollXCss;
-        mScrollYCss = scrollYCss;
-        mPageScaleFactor = pageScaleFactor;
+    public void updateFrameInfo(float contentWidthCss, float contentHeightCss,
+            float viewportWidthCss, float viewportHeightCss, float minPageScaleFactor,
+            float maxPageScaleFactor, float contentOffsetYPix) {
         mMinPageScaleFactor = minPageScaleFactor;
         mMaxPageScaleFactor = maxPageScaleFactor;
         mTopContentOffsetYPix = contentOffsetYPix;
@@ -112,6 +113,12 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
         updateContentSizeCss(contentWidthCss, contentHeightCss);
         mLastFrameViewportWidthCss = viewportWidthCss;
         mLastFrameViewportHeightCss = viewportHeightCss;
+    }
+
+    public void updateScrollInfo(float pageScaleFactor, float scrollXCss, float scrollYCss) {
+        mPageScaleFactor = pageScaleFactor;
+        mScrollXCss = scrollXCss;
+        mScrollYCss = scrollYCss;
     }
 
     /**
@@ -166,13 +173,23 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     /**
      * @return Current page scale factor (maps CSS pixels to DIP pixels).
      */
+    @Override
     public float getPageScaleFactor() {
         return mPageScaleFactor;
     }
 
     /**
+     * @return Current page scale factor (approx, integer).
+     */
+    @Override
+    public int getPageScaleFactorInt() {
+        return (int) Math.floor(mPageScaleFactor);
+    }
+
+    /**
      * @return Minimum page scale factor to be used with the content.
      */
+    @Override
     public float getMinPageScaleFactor() {
         return mMinPageScaleFactor;
     }

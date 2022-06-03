@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Test when fillText doesn't respect browser minimal font size.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+</style>
+
+<canvas id="target" width="300" height="300"></canvas>
+<script>
+  var target = document.getElementById("target");
+  var targetCtx = target.getContext("2d");
+  targetCtx.fillStyle = "black";
+  targetCtx.font = "8px Arial";
+  targetCtx.fillText("Hello", 10, 10);
+  targetCtx.fillText("Hello", 10, 30);
+  targetCtx.fillText("Hello", 10, 50);
+</script>

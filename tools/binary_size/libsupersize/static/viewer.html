@@ -8,6 +8,8 @@
 
 <head>
   <title>Super Size Tiger View</title>
+  <script src="auth-consts.js"></script>
+  <script src="auth.js"></script>
   <script src="start-worker.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4285f4">
@@ -20,11 +22,15 @@
   <script defer src="state.js"></script>
   <script defer src="infocard-ui.js"></script>
   <script defer src="tree-ui.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js"
+     onload="this.onload=function(){};handleClientLoad()"
+     onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
   <script defer async>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-      .catch(() => console.warn('ServiceWorker not loaded.'));
-}
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+          .catch(() => console.warn('ServiceWorker not loaded.'));
+    }
   </script>
 </head>
 
@@ -45,7 +51,7 @@ if ('serviceWorker' in navigator) {
         </svg>
         <span class="label-text">Upload data</span>
       </label>
-      <a href="https://chromium.googlesource.com/chromium/src/+/master/tools/binary_size/html_report_faq.md" class="icon-button"
+      <a href="https://chromium.googlesource.com/chromium/src/+/main/tools/binary_size/html_report_faq.md" class="icon-button"
           title="FAQ" id="faq" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
             <path d="M11,18h2v-2h-2V18z M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8
@@ -115,20 +121,39 @@ if ('serviceWorker' in navigator) {
     <fieldset>
       <legend class="subhead">Group symbols by</legend>
       <div class="radio-wrapper">
-        <input type="radio" id="sourcepath" name="group_by" value="source_path" checked>
-        <label class="radio-label" for="sourcepath">Nothing</label>
+        <input type="radio"
+               id="group-by-sourcepath"
+               name="group_by"
+               value="source_path" checked>
+        <label class="radio-label" for="group-by-sourcepath">Nothing</label>
+      </div>
+      <div class="radio-wrapper show-if-multi-container">
+        <input type="radio"
+               id="group-by-container"
+               name="group_by"
+               value="container">
+        <label class="radio-label" for="group-by-container">Container</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="component" name="group_by" value="component">
-        <label class="radio-label" for="component">Component</label>
+        <input type="radio"
+               id="group-by-component"
+               name="group_by"
+               value="component">
+        <label class="radio-label" for="group-by-component">Component</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="template" name="group_by" value="template">
-        <label class="radio-label" for="template">Template</label>
+        <input type="radio"
+               id="group-by-template"
+               name="group_by"
+               value="template">
+        <label class="radio-label" for="group-by-template">Template</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="generated_type" name="group_by" value="generated_type">
-        <label class="radio-label" for="generated_type">Generated type</label>
+        <input type="radio"
+               id="group-by-generated_type"
+               name="group_by"
+               value="generated_type">
+        <label class="radio-label" for="group-by-generated_type">Generated type</label>
       </div>
     </fieldset>
 
@@ -216,7 +241,7 @@ if ('serviceWorker' in navigator) {
       <button type="button" class="text-button" id="type-none">Select none</button>
     </fieldset>
 
-    <fieldset id="flag-container">
+    <fieldset id="flag-view">
       <legend class="subhead">Filter symbols</legend>
       <div class="radio-wrapper">
         <input type="radio" id="clearflag" name="flag_filter" value="clear" checked>
@@ -336,8 +361,8 @@ if ('serviceWorker' in navigator) {
       </svg>
     </div>
     <!-- Template for trees and leaves -->
-    <template id="treenode-container">
-      <li role="treeitem" aria-expanded="false" aria-describedby="infocard-container">
+    <template id="treenode-template">
+      <li role="treeitem" aria-expanded="false" aria-describedby="infocard-artifact">
         <a class="node" href="#" tabindex="-1" role="presentation">
           <span class="symbol-name"></span>
           <span class="size"></span>
@@ -354,25 +379,25 @@ if ('serviceWorker' in navigator) {
       </li>
     </template>
     <!-- Tree view -->
-    <main class="tree-container">
+    <main class="tree-view">
       <header class="tree-header">
         <span class="subtitle">Name</span>
         <span class="subtitle size-header" id="size-header">Size</span>
       </header>
       <ul id="symboltree" class="tree" role="tree" aria-labelledby="headline"></ul>
     </main>
-    <!-- Symbol and container breakdown cards -->
+    <!-- Symbol and artifact breakdown cards -->
     <link href="infocard.css" rel="stylesheet">
     <footer class="infocards">
-      <div class="infocard infocard-container open" id="infocard-container" hidden>
-        <div class="icon-info container-icon-info">
+      <div class="infocard infocard-artifact open" id="infocard-artifact" hidden>
+        <div class="icon-info artifact-icon-info">
           <canvas class="type-pie-info" height="80" width="80"></canvas>
           <div></div>
         </div>
         <header class="header-info">
           <h4 class="subhead size-info"></h4>
           <p class="body-2 path-info"></p>
-          <p class="caption type-info-container">
+          <p class="caption type-info-artifact">
             <span class="type-info"></span>
             <span class="flags-info"></span>
           </p>
@@ -554,12 +579,19 @@ if ('serviceWorker' in navigator) {
           <h4 class="subhead size-info"></h4>
           <p class="body-2 path-info"></p>
         </header>
-        <p class="caption type-info-container">
+        <p class="caption type-info-artifact">
           <span class="type-info"></span>
           <span class="flags-info"></span>
         </p>
       </div>
     </footer>
+  </div>
+  <!-- Modal Sign in Dialog -->
+  <div id="signin-modal" class="modal">
+    <div class="modal-content">
+      <p>You are trying to access a private size file. Please sign in with your @google.com account.</p>
+      <button type="button" class="signin text-button filled-button">Sign Me In</button>
+    </div>
   </div>
 </body>
 

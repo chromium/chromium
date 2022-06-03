@@ -5,7 +5,9 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
+#include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -16,11 +18,17 @@ class MessageView;
 class Notification;
 
 // The widget delegate of a notification popup. The view is owned by the widget.
-class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
-                                               public views::WidgetObserver {
+class MESSAGE_CENTER_EXPORT MessagePopupView
+    : public views::FocusChangeListener,
+      public views::WidgetDelegateView {
  public:
-  MessagePopupView(const Notification& notification,
-                   MessagePopupCollection* popup_collection);
+  METADATA_HEADER(MessagePopupView);
+
+  MessagePopupView(MessageView* message_view,
+                   MessagePopupCollection* popup_collection,
+                   bool a11y_feedback_on_init);
+  MessagePopupView(const MessagePopupView&) = delete;
+  MessagePopupView& operator=(const MessagePopupView&) = delete;
   ~MessagePopupView() override;
 
   // Update notification contents to |notification|. Virtual for unit testing.
@@ -47,25 +55,28 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   // in such case MessagePopupView should be deleted. Virtual for unit testing.
   virtual void Close();
 
+  void OnWillChangeFocus(views::View* before, views::View* now) override {}
+  void OnDidChangeFocus(views::View* before, views::View* now) override;
+
   // views::WidgetDelegateView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
-
-  // views::WidgetObserver:
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   bool is_hovered() const { return is_hovered_; }
-  bool is_active() const { return is_active_; }
+  bool is_focused() const { return is_focused_; }
+
+  MessageView* message_view() { return message_view_; }
 
  protected:
   // For unit testing.
-  MessagePopupView(MessagePopupCollection* popup_collection);
+  explicit MessagePopupView(MessagePopupCollection* popup_collection);
 
  private:
   // True if the view has a widget and the widget is not closed.
@@ -79,9 +90,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
 
   const bool a11y_feedback_on_init_;
   bool is_hovered_ = false;
-  bool is_active_ = false;
+  bool is_focused_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupView);
+  // Owned by the widget associated with this view.
+  views::FocusManager* focus_manager_ = nullptr;
 };
 
 }  // namespace message_center

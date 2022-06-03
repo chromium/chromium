@@ -21,6 +21,11 @@ class IdPathLens : public BaseLens {
   std::string_view ParentName(const BaseSymbol& symbol) override;
 };
 
+class ContainerLens : public BaseLens {
+ public:
+  std::string_view ParentName(const BaseSymbol& symbol) override;
+};
+
 class ComponentLens : public BaseLens {
  public:
   std::string_view ParentName(const BaseSymbol& symbol) override;

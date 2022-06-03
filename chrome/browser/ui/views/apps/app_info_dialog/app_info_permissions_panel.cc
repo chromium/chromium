@@ -10,7 +10,6 @@
 #include "apps/saved_files_service.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,12 +22,12 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -49,11 +48,12 @@ const int kIndentationBeforeNestedBullet = 13;
 // Creates a close button that calls |callback| on click and can be placed to
 // the right of a bullet in the permissions list. The alt-text is set to a
 // revoke message containing the given |permission_message|.
-class RevokeButton : public views::ImageButton, public views::ButtonListener {
+class RevokeButton : public views::ImageButton {
  public:
-  explicit RevokeButton(const base::Closure& callback,
-                        base::string16 permission_message)
-      : views::ImageButton(this), callback_(callback) {
+  METADATA_HEADER(RevokeButton);
+  explicit RevokeButton(PressedCallback callback,
+                        std::u16string permission_message)
+      : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     SetImage(views::Button::STATE_NORMAL,
              rb.GetImageNamed(IDR_DISABLE).ToImageSkia());
@@ -66,49 +66,43 @@ class RevokeButton : public views::ImageButton, public views::ButtonListener {
 
     // Make the button focusable & give it alt-text so permissions can be
     // revoked using only the keyboard.
-    SetFocusForPlatform();
-    set_request_focus_on_press(true);
+    SetRequestFocusOnPress(true);
     SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_APPLICATION_INFO_REVOKE_PERMISSION_ALT_TEXT, permission_message));
   }
-  ~RevokeButton() override {}
-
- private:
-  // Overridden from views::ButtonListener.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(this, sender);
-    if (!callback_.is_null())
-      callback_.Run();
-  }
-
-  const base::Closure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeButton);
+  RevokeButton(const RevokeButton&) = delete;
+  RevokeButton& operator=(const RevokeButton&) = delete;
+  ~RevokeButton() override = default;
 };
+
+BEGIN_METADATA(RevokeButton, views::ImageButton)
+END_METADATA
 
 // A bulleted list of permissions.
 // TODO(sashab): Fix BoxLayout to correctly display multi-line strings and then
 // remove this class (since the GridLayout will no longer be needed).
 class BulletedPermissionsList : public views::View {
  public:
+  METADATA_HEADER(BulletedPermissionsList);
   BulletedPermissionsList() {
     layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
 
+    using ColumnSize = views::GridLayout::ColumnSize;
     // Create 3 columns: the bullet, the bullet text, and the revoke button.
     views::ColumnSet* column_set = layout_->AddColumnSet(kBulletColumnSetId);
     column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
                           views::GridLayout::kFixedSize,
-                          views::GridLayout::USE_PREF, 0, 0);
+                          ColumnSize::kUsePreferred, 0, 0);
     column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
                                  kSpacingBetweenBulletAndStartOfText);
     column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
                           1.0 /* stretch to fill space */,
-                          views::GridLayout::USE_PREF, 0, 0);
+                          ColumnSize::kUsePreferred, 0, 0);
     column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
                                  kSpacingBetweenTextAndRevokeButton);
     column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
                           views::GridLayout::kFixedSize,
-                          views::GridLayout::USE_PREF, 0, 0);
+                          ColumnSize::kUsePreferred, 0, 0);
 
     views::ColumnSet* nested_column_set =
         layout_->AddColumnSet(kNestedBulletColumnSetId);
@@ -116,29 +110,31 @@ class BulletedPermissionsList : public views::View {
                                         kIndentationBeforeNestedBullet);
     nested_column_set->AddColumn(
         views::GridLayout::FILL, views::GridLayout::LEADING,
-        views::GridLayout::kFixedSize, views::GridLayout::USE_PREF, 0, 0);
+        views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
     nested_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
                                         kSpacingBetweenBulletAndStartOfText);
     nested_column_set->AddColumn(
         views::GridLayout::FILL, views::GridLayout::LEADING,
-        1.0 /* stretch to fill space */, views::GridLayout::USE_PREF, 0, 0);
+        1.0 /* stretch to fill space */, ColumnSize::kUsePreferred, 0, 0);
     nested_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
                                         kSpacingBetweenTextAndRevokeButton);
     nested_column_set->AddColumn(
         views::GridLayout::FILL, views::GridLayout::LEADING,
-        views::GridLayout::kFixedSize, views::GridLayout::USE_PREF, 0, 0);
+        views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
   }
-  ~BulletedPermissionsList() override {}
+  BulletedPermissionsList(const BulletedPermissionsList&) = delete;
+  BulletedPermissionsList& operator=(const BulletedPermissionsList&) = delete;
+  ~BulletedPermissionsList() override = default;
 
   // Given a set of strings for a given permission (|message| for the topmost
   // bullet and a potentially-empty |submessages| for sub-bullets), adds these
   // bullets to the given BulletedPermissionsList. If |revoke_callback| is
   // provided, also adds an X button next to the bullet which calls the callback
   // when clicked.
-  void AddPermissionBullets(base::string16 message,
-                            std::vector<base::string16> submessages,
+  void AddPermissionBullets(std::u16string message,
+                            std::vector<std::u16string> submessages,
                             gfx::ElideBehavior elide_behavior_for_submessages,
-                            const base::Closure& revoke_callback) {
+                            base::RepeatingClosure revoke_callback) {
     std::unique_ptr<RevokeButton> revoke_button;
     if (!revoke_callback.is_null())
       revoke_button = std::make_unique<RevokeButton>(revoke_callback, message);
@@ -166,9 +162,9 @@ class BulletedPermissionsList : public views::View {
                                  views::DISTANCE_RELATED_CONTROL_VERTICAL));
     }
 
-    const base::char16 bullet_point[] = {0x2022, 0};
+    const char16_t bullet_point[] = {0x2022, 0};
     auto bullet_label =
-        std::make_unique<views::Label>(base::string16(bullet_point));
+        std::make_unique<views::Label>(std::u16string(bullet_point));
 
     layout_->StartRow(
         1.0, is_nested ? kNestedBulletColumnSetId : kBulletColumnSetId);
@@ -182,9 +178,10 @@ class BulletedPermissionsList : public views::View {
   }
 
   views::GridLayout* layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(BulletedPermissionsList);
 };
+
+BEGIN_METADATA(BulletedPermissionsList, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -223,29 +220,25 @@ void AppInfoPermissionsPanel::CreatePermissionsList() {
 
   // Add regular and host permission messages.
   for (const auto& message : GetActivePermissionMessages()) {
-    permissions_list->AddPermissionBullets(message.message(),
-                                           message.submessages(),
-                                           gfx::ELIDE_MIDDLE, base::Closure());
+    permissions_list->AddPermissionBullets(
+        message.message(), message.submessages(), gfx::ELIDE_MIDDLE,
+        base::RepeatingClosure());
   }
 
   // Add USB devices, if the app has any.
   if (GetRetainedDeviceCount() > 0) {
     permissions_list->AddPermissionBullets(
-        GetRetainedDeviceHeading(),
-        GetRetainedDevices(),
-        gfx::ELIDE_TAIL,
-        base::Bind(&AppInfoPermissionsPanel::RevokeDevicePermissions,
-                   base::Unretained(this)));
+        GetRetainedDeviceHeading(), GetRetainedDevices(), gfx::ELIDE_TAIL,
+        base::BindRepeating(&AppInfoPermissionsPanel::RevokeDevicePermissions,
+                            base::Unretained(this)));
   }
 
   // Add retained files, if the app has any.
   if (GetRetainedFileCount() > 0) {
     permissions_list->AddPermissionBullets(
-        GetRetainedFileHeading(),
-        GetRetainedFilePaths(),
-        gfx::ELIDE_MIDDLE,
-        base::Bind(&AppInfoPermissionsPanel::RevokeFilePermissions,
-                   base::Unretained(this)));
+        GetRetainedFileHeading(), GetRetainedFilePaths(), gfx::ELIDE_MIDDLE,
+        base::BindRepeating(&AppInfoPermissionsPanel::RevokeFilePermissions,
+                            base::Unretained(this)));
   }
 
   AddChildView(std::move(permissions_list));
@@ -262,7 +255,7 @@ AppInfoPermissionsPanel::GetActivePermissionMessages() const {
 
 int AppInfoPermissionsPanel::GetRetainedFileCount() const {
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles. See
     // http://crbug.com/467795.
@@ -272,16 +265,16 @@ int AppInfoPermissionsPanel::GetRetainedFileCount() const {
   return 0;
 }
 
-base::string16 AppInfoPermissionsPanel::GetRetainedFileHeading() const {
+std::u16string AppInfoPermissionsPanel::GetRetainedFileHeading() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_APPLICATION_INFO_RETAINED_FILES, GetRetainedFileCount());
 }
 
-const std::vector<base::string16>
+const std::vector<std::u16string>
 AppInfoPermissionsPanel::GetRetainedFilePaths() const {
-  std::vector<base::string16> retained_file_paths;
+  std::vector<std::u16string> retained_file_paths;
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles.
     if (service) {
@@ -313,12 +306,12 @@ int AppInfoPermissionsPanel::GetRetainedDeviceCount() const {
       .size();
 }
 
-base::string16 AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
+std::u16string AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_APPLICATION_INFO_RETAINED_DEVICES, GetRetainedDeviceCount());
 }
 
-const std::vector<base::string16> AppInfoPermissionsPanel::GetRetainedDevices()
+const std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
     const {
   return extensions::DevicePermissionsManager::Get(profile_)
       ->GetPermissionMessageStrings(app_->id());
@@ -330,3 +323,6 @@ void AppInfoPermissionsPanel::RevokeDevicePermissions() {
 
   Close();
 }
+
+BEGIN_METADATA(AppInfoPermissionsPanel, AppInfoPanel)
+END_METADATA

@@ -5,17 +5,22 @@
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h"
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #import "testing/gtest_mac.h"
 
 class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
  public:
   RenderViewContextMenuMacCocoaBrowserTest() {}
+
+  RenderViewContextMenuMacCocoaBrowserTest(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
+  RenderViewContextMenuMacCocoaBrowserTest& operator=(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -42,9 +47,6 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
 
   base::scoped_nsobject<NSMutableArray> filteredItems_;
   base::scoped_nsobject<NSTextField> textField_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuMacCocoaBrowserTest);
 };
 
 // Confirm that the private classes used to filter Safari's redundant Services
@@ -95,12 +97,6 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacCocoaBrowserTest,
                    forView:firstResponder];
 
   // Confirm that Services items were removed from the contextual menu.
-
-  // Note that in macOS 10.10, a subset of the services are added directly to
-  // the contextual menu, none of which are the removed ones, so this test isn't
-  // applicable to that version.
-  if (base::mac::IsOS10_10())
-    return;
 
   bool was_safari_item_removed = false;
   bool was_open_url_item_removed = false;

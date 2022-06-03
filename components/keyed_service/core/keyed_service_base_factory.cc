@@ -4,6 +4,8 @@
 
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 
+#include <type_traits>
+
 #include "base/supports_user_data.h"
 #include "base/trace_event/trace_event.h"
 #include "components/keyed_service/core/dependency_manager.h"
@@ -14,6 +16,15 @@ KeyedServiceBaseFactory::KeyedServiceBaseFactory(const char* service_name,
                                                  DependencyManager* manager,
                                                  Type type)
     : dependency_manager_(manager), service_name_(service_name), type_(type) {
+  static_assert(
+      std::is_same<decltype(KeyedServiceBaseFactory::service_name_),
+                   const char*>::value,
+      "This string is logged in plaintext via UMA trace events uploads, so "
+      "must be static as a privacy requirement. See //third_party/perfetto/"
+      "protos/perfetto/trace/track_event/chrome_keyed_service.proto. "
+      "Contact tracing@chromium.org and base/metrics/OWNERS if this needs to "
+      "change.");
+
   dependency_manager_->AddComponent(this);
 }
 
@@ -34,9 +45,7 @@ void KeyedServiceBaseFactory::DependsOn(KeyedServiceBaseFactory* rhs) {
 }
 
 void KeyedServiceBaseFactory::AssertContextWasntDestroyed(void* context) const {
-  // TODO(crbug.com/701326): We should DCHECK(CalledOnValidThread()) here, but
-  // currently some code doesn't do service getting on the main thread.
-  // This needs to be fixed and DCHECK should be restored here.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dependency_manager_->AssertContextWasntDestroyed(context);
 }
 

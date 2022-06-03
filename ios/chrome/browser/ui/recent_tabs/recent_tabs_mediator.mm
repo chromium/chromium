@@ -44,7 +44,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
 - (SessionsSyncUserState)userSignedInState;
 // Utility functions for -userSignedInState so these can be mocked out
 // easily for unit tests.
-- (BOOL)isSignedIn;
+- (BOOL)hasSyncConsent;
 - (BOOL)isSyncTabsEnabled;
 - (BOOL)hasForeignSessions;
 - (BOOL)isSyncCompleted;
@@ -187,12 +187,12 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
 #pragma mark - Private
 
-- (BOOL)isSignedIn {
-  return _syncedSessionsObserver->IsSignedIn();
+- (BOOL)hasSyncConsent {
+  return _syncedSessionsObserver->HasSyncConsent();
 }
 
 - (BOOL)isSyncTabsEnabled {
-  DCHECK([self isSignedIn]);
+  DCHECK([self hasSyncConsent]);
   SyncSetupService* service =
       SyncSetupServiceFactory::GetForBrowserState(_browserState);
   return !service->UserActionIsRequiredToHaveTabSyncWork();
@@ -200,7 +200,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
 // Returns whether this profile has any foreign sessions to sync.
 - (SessionsSyncUserState)userSignedInState {
-  if (![self isSignedIn])
+  if (![self hasSyncConsent])
     return SessionsSyncUserState::USER_SIGNED_OUT;
   if (![self isSyncTabsEnabled])
     return SessionsSyncUserState::USER_SIGNED_IN_SYNC_OFF;

@@ -11,7 +11,6 @@
 #include <windows.h>
 #endif
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/common/main_function_params.h"
 
@@ -21,6 +20,11 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
  public:
   explicit RendererMainPlatformDelegate(
       const MainFunctionParams& parameters);
+
+  RendererMainPlatformDelegate(const RendererMainPlatformDelegate&) = delete;
+  RendererMainPlatformDelegate& operator=(const RendererMainPlatformDelegate&) =
+      delete;
+
   ~RendererMainPlatformDelegate();
 
   // Called first thing and last thing in the process' lifecycle, i.e. before
@@ -35,8 +39,6 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
 #if defined(OS_WIN)
   const MainFunctionParams& parameters_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RendererMainPlatformDelegate);
 };
 
 }  // namespace content

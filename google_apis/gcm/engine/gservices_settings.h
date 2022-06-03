@@ -31,6 +31,10 @@ class GCM_EXPORT GServicesSettings {
   static std::string CalculateDigest(const SettingsMap& settings);
 
   GServicesSettings();
+
+  GServicesSettings(const GServicesSettings&) = delete;
+  GServicesSettings& operator=(const GServicesSettings&) = delete;
+
   ~GServicesSettings();
 
   // Updates the settings based on |checkin_response|.
@@ -71,8 +75,6 @@ class GCM_EXPORT GServicesSettings {
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GServicesSettings> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GServicesSettings);
 };
 
 }  // namespace gcm

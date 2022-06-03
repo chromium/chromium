@@ -5,12 +5,14 @@
 #ifndef CONTENT_COMMON_MAC_FONT_LOADER_H_
 #define CONTENT_COMMON_MAC_FONT_LOADER_H_
 
-#include <CoreGraphics/CoreGraphics.h>
+#include <CoreText/CoreText.h>
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -44,29 +46,29 @@ class FontLoader {
   // sending over IPC. On failure, zeroes and an invalid handle are reported
   // to the callback.
   CONTENT_EXPORT
-  static void LoadFont(const base::string16& font_name,
+  static void LoadFont(const std::u16string& font_name,
                        float font_point_size,
                        LoadedCallback callback);
 
   // Given a shared memory buffer containing the raw data for a font file, load
-  // the font and return a CGFontRef.
+  // the font and turn them into a CTFontDescriptor.
   //
   // |data| - A shared memory handle pointing to the raw data from a font file.
   // |data_size| - Size of |data|.
   //
   // On return:
   //  returns true on success, false on failure.
-  //  |out| - A CGFontRef corresponding to the designated font.
-  //  The caller is responsible for releasing this value via CGFontRelease()
-  //  when done.
+  //  |out| - A CTFontDescriptorRef corresponding to the designated font buffer.
+  //  The caller is responsible for releasing this value via CFRelease().
   CONTENT_EXPORT
-  static bool CGFontRefFromBuffer(mojo::ScopedSharedBufferHandle font_data,
-                                  uint32_t font_data_size,
-                                  CGFontRef* out);
+  static bool CTFontDescriptorFromBuffer(
+      mojo::ScopedSharedBufferHandle font_data,
+      uint32_t font_data_size,
+      base::ScopedCFTypeRef<CTFontDescriptorRef>* out_descriptor);
 
   CONTENT_EXPORT
   static std::unique_ptr<ResultInternal> LoadFontForTesting(
-      const base::string16& font_name,
+      const std::u16string& font_name,
       float font_point_size);
 };
 

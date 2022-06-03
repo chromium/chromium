@@ -1,0 +1,37 @@
+module mojo.test.mojom_types_downgrader_unittest.mojom;
+
+interface Foo {
+  DummyMethod();
+};
+
+interface DowngradedTestInterface {
+  // Old Mojo Types
+  InterfaceRequest(Foo& request);
+  InterfacePtr(Foo ptr);
+  AssociatedInterfacePtrInfo(associated Foo associated_ptr_info);
+  AssociatedInterfaceRequest(associated Foo& associated_request);
+
+  // New Mojo types
+  PendingReceiver(pending_receiver<Foo> receiver);
+  PendingRemote(pending_remote<Foo> remote);
+  PendingAssociatedReceiver(pending_associated_receiver<Foo> associated_remote);
+  PendingAssociatedRemote(pending_associated_remote<Foo> associated_receiver);
+
+  // Multiple parameters in both one line or across multiple lines
+  MultipleParams2(pending_remote<Foo> remote, pending_receiver<Foo> receiver);
+  MultipleParams3(pending_remote<Foo> remote, pending_receiver<Foo> receiver,
+                  pending_associated_remote<Foo> associated_remote);
+  MultipleParams4(pending_remote<Foo> remote, pending_receiver<Foo> receiver,
+                  pending_associated_remote<Foo> associated_remote,
+                  pending_associated_receiver<Foo> associated_receiver);
+
+  // Methods with a response callback defined
+  MethodWithResponseCallbackOneLine(pending_remote<Foo> data) => ();
+  MethodWithResponseCallbackTwoLines(pending_remote<Foo> data)
+      => (pending_receiver<Foo> receiver);
+
+  // Odd number of spaces and line breaks and
+  OddSpaces( pending_remote  < Foo  >  remote, pending_receiver<Foo > receiver);
+  OddSpacesAndLineBreak( pending_remote  < Foo  >  remote, pending_receiver<
+                                                             Foo > receiver);
+};

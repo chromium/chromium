@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "net/base/hash_value.h"

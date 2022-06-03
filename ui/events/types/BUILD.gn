@@ -4,6 +4,8 @@
 
 source_set("headers") {
   sources = [
+    "event_type.h",
+    "scroll_input_type.h",
     "scroll_types.h",
   ]
 }

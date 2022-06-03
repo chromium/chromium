@@ -5,5 +5,5 @@
 // https://wicg.github.io/portals/#the-portalactivateevent-interface
 
 dictionary PortalActivateEventInit : EventInit {
-    any data;
+    any data = null;
 };

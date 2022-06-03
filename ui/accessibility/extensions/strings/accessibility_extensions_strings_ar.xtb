@@ -9,7 +9,7 @@
 <translation id="1591070050619849194">أوقف جميع صور الرسوم المتحركة.</translation>
 <translation id="1703735871906654364">التصفح النصي بالمؤشر</translation>
 <translation id="1791496371305830581">اسمح بجميع الصور المتحركة.</translation>
-<translation id="1996252509865389616">هل تريد التمكين؟</translation>
+<translation id="1996252509865389616">هل تريد التفعيل؟</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2179565792157161713">فتح وصف مفصل في علامة تبويب جديدة</translation>
 <translation id="2223143012868735942">تم تطبيق فلتر لون قابل للتخصيص إلى صفحات الويب لتحسين إدراك اللون.</translation>
@@ -20,7 +20,7 @@
 <translation id="2808027189040546825">الخطوة الأولى: تحدد الصف مع النجوم الأضعف:</translation>
 <translation id="2965611304828530558">‏&lt;p&gt;عندما تصل إلى رابط أو عنصر تحكم فإنه يتم التركيز عليه تلقائيًا. انقر على &lt;span class='key'&gt;Enter&lt;/span&gt; للنقر على رابط أو زر. &lt;/ P&gt; &lt;p&gt; عندما يقوم عنصر تحكم مُركز عليه بالتقاط مفاتيح الأسهم (مثل مربع نص أو مربع قائمة)، اضغط على &lt;span class='key'&gt;Esc&lt;/span&gt; SPAN&gt; تليها السهم الأيمن أو الأيسر لمواصلة التصفح النصي بالمؤشر &lt;/ P&gt; &lt;P&gt; وبدلاً من ذلك، اضغط &lt;span class='key'&gt;Tab&lt;/span&gt; للانتقال إلى عنصر التحكم التالي القابل للتركيز عليه &lt;/ P&gt;</translation>
 <translation id="3252573918265662711">الإعداد</translation>
-<translation id="3410969471888629217">نسيان تخصيصات موقع الويب</translation>
+<translation id="3410969471888629217">نسيان تخصيصات الموقع الإلكتروني</translation>
 <translation id="3435896845095436175">تفعيل الإضافات</translation>
 <translation id="3622586652998721735">تعيين كمخطط تلقائي</translation>
 <translation id="3812541808639806898">‏عارض النص "Alt" للصورة</translation>
@@ -40,7 +40,7 @@
 <translation id="5331422999063554397">لون معكوس</translation>
 <translation id="5555153510860501336">التباين العالي غير مفعّل</translation>
 <translation id="5558600050691192317">أوامر لوحة المفاتيح</translation>
-<translation id="5594989420907487559">شغّل الصور المتحركة مرة واحدة فقط، أو أوقف الصور المتحركة تمامًا.</translation>
+<translation id="5594989420907487559">فعِّل الصور المتحركة مرة واحدة فقط، أو أوقف الصور المتحركة تمامًا.</translation>
 <translation id="5631241868147802353">مخطط اللون التلقائي:</translation>
 <translation id="5650358096585648000">التعليقات البصرية</translation>
 <translation id="5710185147685935461">تغيير أو عكس نظام الألوان لتسهيل قراءة صفحات الويب.</translation>
@@ -53,7 +53,7 @@
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6838518108677880446">الإعداد:</translation>
 <translation id="690628312087070417">عندما يقفز مؤشر النص لمسافة كبيرة:</translation>
-<translation id="6965382102122355670">موافق</translation>
+<translation id="6965382102122355670">حسنًا</translation>
 <translation id="7379645913608427028">درجة</translation>
 <translation id="7384431257964758081">تم تفعيل التباين العالي</translation>
 <translation id="7586636300921797327">الخطوة الثانية: ضبط شريط التمرير؛ حتى تكون جميع النجوم مرئية في
@@ -64,6 +64,6 @@
 <translation id="8260673944985561857">خيارات التصفح النصي بالمؤشر</translation>
 <translation id="8321034316479930120">سياسة الصور المتحركة</translation>
 <translation id="8480209185614411573">تباين مرتفع</translation>
-<translation id="8609925175482059018">‏لتشغيل التصفح النصي بالمؤشر انقر فوق &lt;span class='key'&gt;F7&lt;/span&gt; ولإيقاف تشغيله انقر فوقه مرة أخرى.</translation>
+<translation id="8609925175482059018">‏لتفعيل التصفح النصي بالمؤشر انقر على &lt;span class='key'&gt;F7&lt;/span&gt; ولإيقاف تشغيله انقر علىه مرة أخرى.</translation>
 <translation id="894241283505723656">وصف مفصل في قائمة السياقات</translation>
 </translationbundle>

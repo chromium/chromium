@@ -5,27 +5,29 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
-#include "content/public/renderer/render_view_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 
 namespace content {
 
-class CommitObserver : public RenderViewObserver {
+class CommitObserver : public blink::WebViewObserver {
  public:
-  CommitObserver(RenderView* render_view)
-      : RenderViewObserver(render_view), quit_closures_(), commit_count_(0) {}
+  explicit CommitObserver(blink::WebView* web_view)
+      : blink::WebViewObserver(web_view) {}
 
   void DidCommitCompositorFrame() override {
     commit_count_++;
@@ -53,11 +55,11 @@ class CommitObserver : public RenderViewObserver {
   int GetCommitCount() { return commit_count_; }
 
  private:
-  // RenderViewObserver implementation.
+  // blink::WebViewObserver implementation.
   void OnDestruct() override { delete this; }
 
   base::flat_map<int, base::RepeatingClosure> quit_closures_;
-  int commit_count_;
+  int commit_count_ = 0;
 };
 
 class VisualStateTest : public ContentBrowserTest {
@@ -74,7 +76,7 @@ class VisualStateTest : public ContentBrowserTest {
   }
 
   void AssertIsIdle() {
-    ASSERT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
+    ASSERT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
   }
 
   void InvokeVisualStateCallback(bool result) {
@@ -104,8 +106,11 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
   // with a high level of confidence if we used a timeout, but that's
   // discouraged (see https://codereview.chromium.org/939673002).
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  CommitObserver observer(RenderView::FromRoutingID(
-      shell()->web_contents()->GetRenderViewHost()->GetRoutingID()));
+  CommitObserver observer(
+      RenderFrame::FromRoutingID(
+          shell()->web_contents()->GetMainFrame()->GetRoutingID())
+          ->GetWebFrame()
+          ->View());
 
   // Wait for the commit corresponding to the load.
 

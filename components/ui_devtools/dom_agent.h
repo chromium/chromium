@@ -31,6 +31,10 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       public UIElementDelegate {
  public:
   DOMAgent();
+
+  DOMAgent(const DOMAgent&) = delete;
+  DOMAgent& operator=(const DOMAgent&) = delete;
+
   ~DOMAgent() override;
 
   // DOM::Backend:
@@ -52,6 +56,12 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
   protocol::Response discardSearchResults(
       const protocol::String& search_id) override;
+  protocol::Response dispatchMouseEvent(
+      int node_id,
+      std::unique_ptr<protocol::DOM::MouseEvent> event) override;
+  protocol::Response dispatchKeyEvent(
+      int node_id,
+      std::unique_ptr<protocol::DOM::KeyEvent> event) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;
@@ -107,8 +117,6 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   SearchResults search_results_;
 
   bool is_document_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgent);
 };
 
 }  // namespace ui_devtools

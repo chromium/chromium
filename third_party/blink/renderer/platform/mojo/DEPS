@@ -6,14 +6,11 @@ include_rules = [
     "+third_party/blink/renderer/platform/mojo",
 
     # Dependencies.
-    "+base/callback.h",
     "+base/containers/span.h",
-    "+base/message_loop/message_loop_current.h",
     "+base/observer_list.h",
     "+base/strings/latin1_string_conversions.h",
-    "+base/strings/string16.h",
+    "+base/task/current_thread.h",
     "+mojo/public/cpp/base/time_mojom_traits.h",
-    "+mojo/public/cpp/bindings/binding.h",
     "+mojo/public/mojom/base/string16.mojom-blink.h",
     "+skia/public/mojom/bitmap_skbitmap_mojom_traits.h",
 
@@ -22,6 +19,12 @@ include_rules = [
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
+    "+third_party/blink/renderer/platform/context_lifecycle_observer.h",
+    "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
+    "+third_party/blink/renderer/platform/heap_observer_set.h",
+    "+third_party/blink/renderer/platform/heap",
+    "+third_party/blink/renderer/platform/supplementable.h",
+    "+third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h",
 ]
 
 specific_include_rules = {

@@ -10,12 +10,12 @@ Example usage in a browsertest, explained:
 When you navigate to the above URL, the outer document (on a.com) will create a
 single iframe:
 
-  <iframe src="http://b.com:1234/cross_site_iframe_factory.html?b(c(),d())">
+  <iframe id="child-0" src="http://b.com:1234/cross_site_iframe_factory.html?b(c(),d())">
 
 Inside of which, then, are created the two leaf iframes:
 
-  <iframe src="http://c.com:1234/cross_site_iframe_factory.html?c()">
-  <iframe src="http://d.com:1234/cross_site_iframe_factory.html?d()">
+  <iframe id="child-0" src="http://c.com:1234/cross_site_iframe_factory.html?c()">
+  <iframe id="child-1" src="http://d.com:1234/cross_site_iframe_factory.html?d()">
 
 Add iframe options by enclosing them in '{' and '}' characters after the
 hostname (multiple options can be separated with commas):
@@ -24,13 +24,14 @@ hostname (multiple options can be separated with commas):
 
 Will create two iframes:
 
-  <iframe src="http://a.com:1234/cross_site_iframe_factory.html?b()" allowfullscreen>
-  <iframe src="http://c.com:1234/cross_site_iframe_factory.html?c{sandbox-allow-scripts}(d())" sandbox="allow-scripts">
+  <iframe id="child-0" src="http://a.com:1234/cross_site_iframe_factory.html?b()" allowfullscreen>
+  <iframe id="child-1" src="http://c.com:1234/cross_site_iframe_factory.html?c{sandbox-allow-scripts}(d())" sandbox="allow-scripts">
 
 To specify the site for each iframe, you can use a simple identifier like "a"
 or "b", and ".com" will be automatically appended. You can also specify a port
 number to use for each site by using a label like "a:12345". If no port number
 is given, the port will default to the port number of the top level frame.
+You can also specify an arbitrary full URL for any bottommost leaf frame.
 
 These options are supported:
 
@@ -102,6 +103,15 @@ function borderColorForSite(site) {
   return pastelColorForFirstCharacter(site, .32);
 }
 
+function isUrl(siteString) {
+  try {
+    var url = new URL(siteString);
+  } catch (e) {
+    if (e instanceof TypeError)
+      return false;
+  }
+  return true;
+}
 
 /**
  * Extract the specified port number, if any. Returns empty string if not
@@ -161,6 +171,33 @@ function applyIFrameOptions(element, options) {
 }
 
 /**
+ * Determines whether or not text should be rendered by checking whether
+ * "no-text-render" is among the list of attributes.
+ */
+function shouldRenderText(attributes) {
+  for (var attribute of attributes) {
+    if (attribute == "no-text-render") {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Determines whether or not the frame should be positioned outside of
+ * its parent frame by checking whether "out-of-view" is among the list
+ * of attributes.
+ */
+function renderOutsideParentView(attributes) {
+  for (var attribute of attributes) {
+    if (attribute == "out-of-view") {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Simple recursive layout heuristic, since frames can't size themselves.
  * This scribbles .layoutX and .layoutY properties into |tree|.
  */
@@ -201,11 +238,19 @@ function main() {
   var goCrossSite = !window.location.protocol.startsWith('file');
   var queryString = decodeURIComponent(window.location.search.substring(1));
   var frameTree = TreeParserUtil.parse(queryString);
-  var currentSite = canonicalizeSiteAndPort(frameTree.value, "");
+  var currentSite = isUrl(frameTree.value)
+                      ? frameTree.value
+                      : canonicalizeSiteAndPort(frameTree.value, "");
+
+  // Render text unless the attribute "no-text-render" is specified, in which
+  // case load some bytes anyway in order to trigger histogram recording for
+  // ad metrics tests.
+  if (shouldRenderText(frameTree.attributes)) {
+      document.getElementById('siteNameHeading').appendChild(
+          document.createTextNode(currentSite));
+  }
 
   // Apply style to the current document.
-  document.getElementById('siteNameHeading').appendChild(
-      document.createTextNode(currentSite));
   document.body.style.backgroundColor = backgroundColorForSite(currentSite);
 
   // Determine how big the children should be (using a very rough heuristic).
@@ -213,13 +258,17 @@ function main() {
 
   for (var i = 0; i < frameTree.children.length; i++) {
     // Compute the URL for this iframe.
-    var siteAndPort = canonicalizeSiteAndPort(frameTree.children[i].value, window.location.port);
-    var subtreeString = TreeParserUtil.flatten(frameTree.children[i]);
-    var url = '';
-    url += window.location.protocol + '//';              // scheme (preserved)
-    url += goCrossSite ? siteAndPort : window.location.host;    // host and port
-    url += window.location.pathname;                     // path (preserved)
-    url += '?' + encodeURIComponent(subtreeString);      // query
+    let url = frameTree.children[i].value;
+    let siteAndPort = url;
+    if (!isUrl(url)) {
+      siteAndPort = canonicalizeSiteAndPort(url, window.location.port);
+      const subtreeString = TreeParserUtil.flatten(frameTree.children[i]);
+      url = '';
+      url += window.location.protocol + '//';              // scheme (preserved)
+      url += goCrossSite ? siteAndPort : window.location.host;    // host and port
+      url += window.location.pathname;                     // path (preserved)
+      url += '?' + encodeURIComponent(subtreeString);      // query
+    }
 
     // Construct the iframe.
     var iframe = document.createElement('iframe');
@@ -228,6 +277,14 @@ function main() {
     iframe.style.borderColor = borderColorForSite(siteAndPort);
     iframe.width = frameTree.children[i].layoutX;
     iframe.height = frameTree.children[i].layoutY;
+
+    // If needed, position the iframe.
+    if (renderOutsideParentView(frameTree.children[i].attributes)) {
+        iframe.style.position = "fixed";
+        iframe.style.top = "150%";
+        iframe.style.left = "150%";
+    }
+
     // Apply any additional attributes.
     applyIFrameOptions(iframe, frameTree.children[i].attributes);
 

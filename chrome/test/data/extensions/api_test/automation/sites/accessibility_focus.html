@@ -1,0 +1,19 @@
+<!--
+ * Copyright 2020 The Chromium Authors. All rights reserved.  Use of this
+ * source code is governed by a BSD-style license that can be found in the
+ * LICENSE file.
+-->
+<html>
+<body>
+  <div style="position: absolute; top: 0; left: 0;">
+    <p>Text</p>
+  </div>
+  <button>Move</button>
+
+  <script>
+    document.querySelector('button').addEventListener('click', function () {
+      document.querySelector('div').style.left = 100;
+    });
+  </script>
+</body>
+</html>

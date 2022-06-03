@@ -1,0 +1,20 @@
+{
+    "0": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            },
+            "system_health.scroll_jank_mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 4,
+        "predicted_min_shard_time": 318.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 318.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 318.0
+    }
+}

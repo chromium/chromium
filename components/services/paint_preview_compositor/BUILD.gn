@@ -28,7 +28,7 @@ static_library("paint_preview_compositor") {
     "//url",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//components/services/font/public/cpp" ]
   }
 
@@ -36,9 +36,8 @@ static_library("paint_preview_compositor") {
     deps += [ "//content/public/child" ]
   }
 
-  public_deps = [
-    "//components/services/paint_preview_compositor/public/mojom",
-  ]
+  public_deps =
+      [ "//components/services/paint_preview_compositor/public/mojom" ]
 }
 
 source_set("unit_tests") {
@@ -54,10 +53,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/paint_preview/common",
+    "//components/paint_preview/common:test_utils",
     "//components/paint_preview/common/proto",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 }
 

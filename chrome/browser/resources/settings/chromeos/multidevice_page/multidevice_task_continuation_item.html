@@ -1,0 +1,35 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
+<link rel="import" href="multidevice_task_continuation_disabled_link.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="multidevice_constants.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../people_page/sync_browser_proxy.html">
+
+<dom-module id="settings-multidevice-task-continuation-item">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-multidevice-feature-item id="phoneHubTaskContinuationItem"
+        feature="[[MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION]]"
+        page-content-data="[[pageContentData]]" is-sub-feature>
+      <template is="dom-if" if="[[!isChromeTabsSyncEnabled_]]" restamp>
+        <settings-multidevice-task-continuation-disabled-link
+            class="secondary"
+            id="featureSecondary"
+            slot="feature-summary">
+        </settings-multidevice-task-continuation-disabled-link>
+        <!-- Replace the standard feature-controller with an always disabled and
+          off cr-toggle when Chrome Sync Open Tabs is disabled. When Chrome Sync
+          is enabled the standard feature-controller is used. -->
+        <cr-toggle disabled slot="feature-controller">
+        </cr-toggle>
+      </template>
+    </settings-multidevice-feature-item>
+  </template>
+  <script src="multidevice_task_continuation_item.js"></script>
+</dom-module>

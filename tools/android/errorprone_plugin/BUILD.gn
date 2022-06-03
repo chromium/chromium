@@ -4,8 +4,12 @@
 
 import("//build/config/android/rules.gni")
 
-java_library("errorprone_plugin_java") {
-  java_files = [
+java_binary("errorprone_plugin") {
+  # main_class and wrapper script are not actually used.
+  # This target is referenced directly from java_library_impl().
+  main_class = "<ignore>"
+  wrapper_script_name = "bin/helper/errorprone_plugin"
+  sources = [
     # Turned off because of existing code which fails the check
     # "src/org/chromium/tools/errorprone/plugin/NoContextGetApplicationContext.java",
     "src/org/chromium/tools/errorprone/plugin/AndroidNullableCheck.java",
@@ -19,15 +23,15 @@ java_library("errorprone_plugin_java") {
 
   # Necessary to avoid dependency cycle
   enable_errorprone = false
-  enable_bytecode_rewriter = false
-
-  # So that we don't need to inject jacoco runtime into the compiler's classpath.
-  jacoco_never_instrument = true
+  enable_bytecode_checks = false
 
   annotation_processor_deps =
       [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
     "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotation_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_check_api_java",
     "//third_party/android_deps:com_google_errorprone_error_prone_core_java",
+    "//third_party/android_deps:com_google_errorprone_javac_java",
   ]
 }

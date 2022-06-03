@@ -28,7 +28,7 @@ ExtensionFunction::ResponseAction TopSitesGetFunction::Run() {
     return RespondNow(Error(kUnknownErrorDoNotUse));
 
   ts->GetMostVisitedURLs(
-      base::Bind(&TopSitesGetFunction::OnMostVisitedURLsAvailable, this));
+      base::BindOnce(&TopSitesGetFunction::OnMostVisitedURLsAvailable, this));
 
   // GetMostVisitedURLs() will invoke the callback synchronously if the URLs are
   // already populated.
@@ -52,7 +52,7 @@ void TopSitesGetFunction::OnMostVisitedURLsAvailable(
     }
   }
 
-  Respond(OneArgument(std::move(pages_value)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(pages_value))));
 }
 
 }  // namespace extensions

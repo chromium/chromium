@@ -5,25 +5,17 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='box' class='green drop-shadowed box'",
-          "rect": [8, 8, 330, 330],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [8, 8, 330, 330]
       ]
     },
     {
       "name": "LayoutNGBlockFlow DIV id='box' class='green box blurry'",
-      "position": [-30, -30],
-      "bounds": [260, 260],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='box' class='green box blurry'",
-          "rect": [0, 0, 260, 260],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 200, 200]
       ],
       "transform": 1
     }

@@ -7,20 +7,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/exo/wm_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/events/event_constants.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -38,6 +37,7 @@ namespace exo {
 class PointerConstraintDelegate;
 class PointerDelegate;
 class PointerGesturePinchDelegate;
+class PointerStylusDelegate;
 class RelativePointerDelegate;
 class Seat;
 class Surface;
@@ -48,11 +48,14 @@ class SurfaceTreeHost;
 class Pointer : public SurfaceTreeHost,
                 public SurfaceObserver,
                 public ui::EventHandler,
-                public aura::client::CaptureClientObserver,
                 public aura::client::CursorClientObserver,
                 public aura::client::FocusChangeObserver {
  public:
   Pointer(PointerDelegate* delegate, Seat* seat);
+
+  Pointer(const Pointer&) = delete;
+  Pointer& operator=(const Pointer&) = delete;
+
   ~Pointer() override;
 
   PointerDelegate* delegate() const { return delegate_; }
@@ -65,8 +68,8 @@ class Pointer : public SurfaceTreeHost,
   void SetCursor(Surface* surface, const gfx::Point& hotspot);
 
   // Set the pointer cursor type. This is similar to SetCursor, but this method
-  // accepts ui::CursorType instead of the surface for the pointer image.
-  void SetCursorType(ui::CursorType cursor_type);
+  // accepts ui::mojom::CursorType instead of the surface for the pointer image.
+  void SetCursorType(ui::mojom::CursorType cursor_type);
 
   // Set delegate for pinch events.
   void SetGesturePinchDelegate(PointerGesturePinchDelegate* delegate);
@@ -82,10 +85,6 @@ class Pointer : public SurfaceTreeHost,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Overridden from aura::client::CaptureClientObserver:
-  void OnCaptureChanged(aura::Window* lost_capture,
-                        aura::Window* gained_capture) override;
-
   // Overridden from aura::client::CursorClientObserver:
   void OnCursorSizeChanged(ui::CursorSize cursor_size) override;
   void OnCursorDisplayChanged(const display::Display& display) override;
@@ -97,17 +96,6 @@ class Pointer : public SurfaceTreeHost,
   // Relative motion registration.
   void RegisterRelativePointerDelegate(RelativePointerDelegate* delegate);
   void UnregisterRelativePointerDelegate(RelativePointerDelegate* delegate);
-
-  // Capture the pointer for the top-most surface. Returns true iff the capture
-  // succeeded.
-  //
-  // TODO(b/124059008): Historically, exo needed to guess what the correct
-  // capture window was, as it did not implement wayland's pointer capture
-  // protocol.
-  bool EnablePointerCapture();
-
-  // Remove the currently active pointer capture (if there is one).
-  void DisablePointerCapture();
 
   // Enable the pointer constraint on the given surface. Returns true if the
   // lock was granted, false otherwise.
@@ -122,13 +110,20 @@ class Pointer : public SurfaceTreeHost,
   // delegate.
   void UnconstrainPointer();
 
+  // Set the stylus delegate for handling stylus events.
+  void SetStylusDelegate(PointerStylusDelegate* delegate);
+  bool HasStylusDelegate() const;
+
  private:
   // Capture the pointer for the given surface. Returns true iff the capture
   // succeeded.
   bool EnablePointerCapture(Surface* capture_surface);
 
+  // Remove the currently active pointer capture (if there is one).
+  void DisablePointerCapture();
+
   // Returns the effective target for |event|.
-  Surface* GetEffectiveTargetForEvent(ui::LocatedEvent* event) const;
+  Surface* GetEffectiveTargetForEvent(const ui::LocatedEvent* event) const;
 
   // Change pointer focus to |surface|.
   void SetFocus(Surface* surface,
@@ -161,9 +156,14 @@ class Pointer : public SurfaceTreeHost,
   // Moves the cursor to center of the active display.
   void MoveCursorToCenterOfActiveDisplay();
 
-  // Process the delta for relative pointer motion.
-  void HandleRelativePointerMotion(base::TimeTicks time_stamp,
-                                   gfx::PointF location_in_target);
+  // Process the delta for relative pointer motion. Returns true if relative
+  // motion was sent to the delegate, false otherwise. If |ordinal_motion| is
+  // supplied, it will be used for determining physical motion, otherwise
+  // physical motion will be the relative delta.
+  bool HandleRelativePointerMotion(
+      base::TimeTicks time_stamp,
+      gfx::PointF location_in_target,
+      const absl::optional<gfx::Vector2dF>& ordinal_motion);
 
   // The delegate instance that all events are dispatched to.
   PointerDelegate* const delegate_;
@@ -179,6 +179,9 @@ class Pointer : public SurfaceTreeHost,
   // The delegate instance that controls when to lock/unlock this pointer.
   PointerConstraintDelegate* pointer_constraint_delegate_ = nullptr;
 
+  // The delegate instance that stylus/pen events are dispatched to.
+  PointerStylusDelegate* stylus_delegate_ = nullptr;
+
   // The current focus surface for the pointer.
   Surface* focus_surface_ = nullptr;
 
@@ -186,13 +189,13 @@ class Pointer : public SurfaceTreeHost,
   gfx::PointF location_;
 
   // The location of the pointer when pointer capture is first enabled.
-  base::Optional<gfx::Point> location_when_pointer_capture_enabled_;
+  absl::optional<gfx::Point> location_when_pointer_capture_enabled_;
 
   // If this is not nullptr, a synthetic move was sent and this points to the
   // location of a generated move that was sent which should not be forwarded.
-  base::Optional<gfx::Point> location_synthetic_move_;
+  absl::optional<gfx::Point> location_synthetic_move_;
 
-  // The window with input capture. Pointer capture is enabled if and only if
+  // The window with pointer capture. Pointer capture is enabled if and only if
   // this is not null.
   aura::Window* capture_window_ = nullptr;
 
@@ -211,20 +214,19 @@ class Pointer : public SurfaceTreeHost,
   // Scale at which cursor snapshot is captured.
   float capture_scale_;
 
-  // Density ratio of the cursor snapshot. The bitmap is scaled on displays with
-  // a different ratio.
-  float capture_ratio_;
-
   // Source used for cursor capture copy output requests.
   const base::UnguessableToken cursor_capture_source_id_;
 
   // Last received event type.
   ui::EventType last_event_type_ = ui::ET_UNKNOWN;
 
+  // Last reported stylus values.
+  ui::EventPointerType last_pointer_type_ = ui::EventPointerType::kUnknown;
+  float last_force_ = std::numeric_limits<float>::quiet_NaN();
+  gfx::Vector2dF last_tilt_;
+
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Pointer);
 };
 
 }  // namespace exo

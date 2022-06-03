@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/public/c/system/macros.h"
 

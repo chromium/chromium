@@ -6,11 +6,14 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/container_finder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_state.h"
+#include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -26,19 +29,34 @@ TEST_F(WindowFinderTest, RealTopmostCanBeNullptr) {
   EXPECT_EQ(window1.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
 }
 
+TEST_F(WindowFinderTest, ToplevelCanBeNotDrawn) {
+  aura::test::TestWindowDelegate delegate;
+  auto window = std::make_unique<aura::Window>(&delegate,
+                                               aura::client::WINDOW_TYPE_POPUP);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  gfx::Rect bounds(0, 0, 100, 100);
+  window->SetBounds(bounds);
+  auto* parent = GetDefaultParentForWindow(window.get(), bounds);
+  parent->AddChild(window.get());
+  window->Show();
+
+  std::set<aura::Window*> ignore;
+  EXPECT_EQ(window.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
+}
+
 TEST_F(WindowFinderTest, MultipleDisplays) {
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
 
   std::unique_ptr<aura::Window> window1 =
       CreateTestWindow(gfx::Rect(0, 0, 100, 100));
   std::unique_ptr<aura::Window> window2 =
-      CreateTestWindow(gfx::Rect(200, 0, 100, 100));
+      CreateTestWindow(gfx::Rect(300, 0, 100, 100));
   ASSERT_NE(window1->GetRootWindow(), window2->GetRootWindow());
 
   std::set<aura::Window*> ignore;
   EXPECT_EQ(window1.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
   EXPECT_EQ(window2.get(),
-            GetTopmostWindowAtPoint(gfx::Point(210, 10), ignore));
+            GetTopmostWindowAtPoint(gfx::Point(310, 10), ignore));
   EXPECT_EQ(nullptr, GetTopmostWindowAtPoint(gfx::Point(10, 210), ignore));
 }
 
@@ -64,14 +82,14 @@ TEST_F(WindowFinderTest, WindowTargeterWithHitTestRects) {
 // the window in overview that contains the specified screen point, even though
 // it might be a minimized window.
 TEST_F(WindowFinderTest, TopmostWindowWithOverviewActive) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window1 =
       CreateTestWindow(gfx::Rect(0, 0, 100, 100));
   std::unique_ptr<aura::Window> window2 =
       CreateTestWindow(gfx::Rect(0, 0, 100, 100));
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // Get |window1| and |window2|'s transformed bounds in overview.
@@ -92,6 +110,62 @@ TEST_F(WindowFinderTest, TopmostWindowWithOverviewActive) {
   WindowState::Get(window1.get())->Minimize();
   EXPECT_EQ(window1.get(),
             GetTopmostWindowAtPoint(bounds1.CenterPoint(), ignore));
+}
+
+namespace {
+
+// Defines an observer that tries to get the top-most window while the window it
+// observes is being destroyed. This is to verify that the destroying window
+// cannot be found and returned as the top-most one.
+class WindowDestroyingObserver : public aura::WindowObserver {
+ public:
+  WindowDestroyingObserver(const gfx::Point& screen_point, aura::Window* window)
+      : screen_point_(screen_point), window_being_observed_(window) {
+    window_being_observed_->AddObserver(this);
+  }
+
+  aura::Window* top_most_window_while_destroying() const {
+    return top_most_window_while_destroying_;
+  }
+
+  ~WindowDestroyingObserver() override { StopObserving(); }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    StopObserving();
+    top_most_window_while_destroying_ =
+        GetTopmostWindowAtPoint(screen_point_, /*ignore=*/{});
+  }
+
+ private:
+  void StopObserving() {
+    if (window_being_observed_) {
+      window_being_observed_->RemoveObserver(this);
+      window_being_observed_ = nullptr;
+    }
+  }
+
+  // The point in screen coordinates at which we'll get the top-most window when
+  // `window_being_observed_` is destroying.
+  const gfx::Point screen_point_;
+
+  aura::Window* window_being_observed_;
+
+  // This is the window we find as the top-most window while
+  // `window_being_observed_` is being destroyed.
+  aura::Window* top_most_window_while_destroying_ = nullptr;
+};
+
+}  // namespace
+
+TEST_F(WindowFinderTest, WindowBeingDestroyedCannotBeReturned) {
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 100, 100));
+  auto* window_ptr = window.get();
+  WindowDestroyingObserver observer{window->GetBoundsInScreen().CenterPoint(),
+                                    window_ptr};
+  window.reset();
+  EXPECT_NE(window_ptr, observer.top_most_window_while_destroying());
 }
 
 }  // namespace ash

@@ -11,12 +11,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
@@ -28,7 +27,7 @@ AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
                                      content::WebContents* web_contents,
                                      bool first_auth_attempt,
                                      LoginAuthRequiredCallback callback)
-    : WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       host_(auth_info.challenger.host()),
       realm_(auth_info.realm),
       callback_(std::move(callback)) {
@@ -37,8 +36,8 @@ AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
   http_auth_handler_.Reset(Java_AwHttpAuthHandler_create(
       env, reinterpret_cast<intptr_t>(this), first_auth_attempt));
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&AwHttpAuthHandler::Start, weak_factory_.GetWeakPtr()));
 }
 
@@ -63,24 +62,23 @@ void AwHttpAuthHandler::Proceed(JNIEnv* env,
 void AwHttpAuthHandler::Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (callback_) {
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
   }
 }
 
 void AwHttpAuthHandler::Start() {
-  DCHECK(web_contents());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The WebContents may have been destroyed during the PostTask.
-  if (!web_contents()) {
-    std::move(callback_).Run(base::nullopt);
+  if (!web_contents_) {
+    std::move(callback_).Run(absl::nullopt);
     return;
   }
 
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents());
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents_.get());
   if (!aw_contents->OnReceivedHttpAuthRequest(http_auth_handler_, host_,
                                               realm_)) {
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
   }
 }
 

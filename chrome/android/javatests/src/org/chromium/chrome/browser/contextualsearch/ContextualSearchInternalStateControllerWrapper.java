@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import org.chromium.base.CollectionUtil;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,13 +15,16 @@ import java.util.List;
 class ContextualSearchInternalStateControllerWrapper
         extends ContextualSearchInternalStateController {
     static final List<Integer> EXPECTED_TAP_RESOLVE_SEQUENCE =
-            CollectionUtil.newArrayList(InternalState.TAP_RECOGNIZED,
-                    InternalState.TAP_GESTURE_COMMIT, InternalState.GATHERING_SURROUNDINGS,
-                    InternalState.DECIDING_SUPPRESSION, InternalState.START_SHOWING_TAP_UI,
-                    InternalState.SHOW_RESOLVING_UI, InternalState.RESOLVING);
+            Arrays.asList(InternalState.TAP_RECOGNIZED, InternalState.TAP_GESTURE_COMMIT,
+                    InternalState.GATHERING_SURROUNDINGS, InternalState.DECIDING_SUPPRESSION,
+                    InternalState.START_SHOWING_TAP_UI, InternalState.SHOW_RESOLVING_UI,
+                    InternalState.RESOLVING);
     static final List<Integer> EXPECTED_LONGPRESS_SEQUENCE =
-            CollectionUtil.newArrayList(InternalState.LONG_PRESS_RECOGNIZED,
-                    InternalState.GATHERING_SURROUNDINGS, InternalState.SHOWING_LONGPRESS_SEARCH);
+            Arrays.asList(InternalState.LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
+                    InternalState.SHOWING_LITERAL_SEARCH);
+    static final List<Integer> EXPECTED_LONGPRESS_RESOLVE_SEQUENCE = Arrays.asList(
+            InternalState.RESOLVING_LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
+            InternalState.SHOW_RESOLVING_UI, InternalState.RESOLVING);
 
     private List<Integer> mStartedStates = new ArrayList<Integer>();
     private List<Integer> mFinishedStates = new ArrayList<Integer>();

@@ -32,8 +32,8 @@ class CORE_EXPORT BoxPaintInvalidator {
 
   bool HasEffectiveBackground();
   bool BackgroundGeometryDependsOnLayoutOverflowRect();
-  bool BackgroundPaintsOntoScrollingContentsLayer();
-  bool BackgroundPaintsOntoMainGraphicsLayer();
+  bool BackgroundPaintsInContentsSpace();
+  bool BackgroundPaintsInBorderBoxSpace();
   bool ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
       const PhysicalRect& old_layout_overflow,
       const PhysicalRect& new_layout_overflow);
@@ -46,7 +46,8 @@ class CORE_EXPORT BoxPaintInvalidator {
 
   PaintInvalidationReason ComputePaintInvalidationReason();
 
-  bool NeedsToSavePreviousContentBoxRectOrLayoutOverflowRect();
+  bool NeedsToSavePreviousContentBoxRect();
+  bool NeedsToSavePreviousOverflowData();
   void SavePreviousBoxGeometriesIfNeeded();
 
   const LayoutBox& box_;
@@ -55,4 +56,4 @@ class CORE_EXPORT BoxPaintInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINT_INVALIDATOR_H_

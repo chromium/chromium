@@ -26,6 +26,18 @@ NSString* const kBadgeButtonIncognitoAccessibilityIdentifier =
 NSString* const kBadgeButtonOverflowAccessibilityIdentifier =
     @"badgeButtonOverflowAXID";
 
+NSString* const kBadgeButtonReadingListAccessibilityIdentifier =
+    @"badgeButtonReadingListAXID";
+
+NSString* const kBadgeButtonReadingListAcceptedAccessibilityIdentifier =
+    @"badgeButtonReadingListAcceptedAXID";
+
+NSString* const kBadgeButtonSaveAddressProfileAccessibilityIdentifier =
+    @"badgeButtonSaveAddressProfileAXID";
+
+NSString* const kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier =
+    @"badgeButtonSaveAddressProfileAcceptedAXID";
+
 NSString* const kBadgeButtonSaveCardAccessibilityIdentifier =
     @"badgeButtonSaveCardAXID";
 

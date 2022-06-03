@@ -6,15 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_CONTROLLER_WITH_SCRIPT_SCOPE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class ReadableStreamDefaultController;
 class ScriptState;
-class Visitor;
 
 class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
     : public GarbageCollected<ReadableStreamDefaultControllerWithScriptScope> {
@@ -48,7 +48,11 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
     Error(js_error);
   }
 
-  void Trace(Visitor*);
+  ReadableStreamDefaultController* GetOriginalController() {
+    return controller_;
+  }
+
+  void Trace(Visitor*) const;
 
  private:
   const Member<ScriptState> script_state_;

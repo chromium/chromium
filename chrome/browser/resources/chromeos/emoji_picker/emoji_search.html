@@ -1,0 +1,137 @@
+<style>
+  :host {
+    --emoji-picker-search-margins: 14px;
+    --emoji-picker-search-height: 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+  }
+  cr-search-field {
+    --cr-search-field-clear-icon-fill: var(--cros-icon-color-primary);
+    --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
+    --cr-search-field-clear-icon-size: 20px;
+    --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-min-height: var(--emoji-picker-search-height);
+    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-input-padding-start: 8px;
+    --cr-search-field-input-padding-top: 0;
+    --cr-search-field-input-width: 100%;
+    --cr-search-field-placeholder-color: var(--cros-text-color-disabled);
+    --cr-search-field-search-icon-display: none;
+    --cr-search-field-search-icon-fill: var(--cros-text-color-secondary);
+    --cr-search-field-search-icon-inline-display: block;
+    --cr-search-field-search-icon-inline-margin-start:
+      var(--emoji-picker-search-margins);
+    --cr-search-field-underline-display: none;
+    align-items: center;
+    background-color: var(--cros-toolbar-search-bg-color);
+    border: 2px solid transparent;
+    border-radius: 40px;
+    height: var(--emoji-picker-search-height);
+    margin-bottom: 8px;
+  }
+
+  cr-search-field:focus-within {
+    border: 2px solid var(--cros-focus-ring-color);
+  }
+
+  .result {
+    border: 2px solid transparent;
+    border-radius: 40px;
+    display: flex;
+    margin-inline-end: var(--emoji-picker-search-margins);
+  }
+  .result:focus,
+  .result:active {
+    border-color: var(--cros-focus-ring-color);
+    border-style: solid;
+    border-width: 2px;
+    outline-style: none;
+  }
+
+  .result:hover {
+    background-color: var(--cros-ripple-color);
+  }
+
+  emoji-button {
+    --emoji-hover-background: transparent;
+    margin-inline-end: 12px;
+  }
+
+  .name {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    line-height: var(--emoji-size);
+    user-select: none;
+  }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    user-select: none;
+    z-index: -2;
+  }
+
+  .no-result {
+    color: var(--cros-button-label-color-secondary-disabled);
+    font-family: 'Google Sans';
+    left: 50%;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #search-shadow {
+    background-color: var(--cros-bg-color);
+    margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
+    margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
+    padding-inline-end: var(--emoji-picker-side-padding);
+    padding-inline-start: var(--emoji-picker-side-padding);
+    position: sticky;
+    top:0;
+    width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+  }
+
+  #results {
+    flex-grow: 1;
+    margin-inline-end: var(--emoji-picker-side-padding);
+    overflow-y: scroll;
+    padding-bottom: var(--emoji-picker-bottom-padding);
+  }
+
+  #no-emoji-image {
+    display: block;
+  }
+</style>
+
+<div id="search-shadow">
+<cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+</div>
+
+<template is="dom-if" if="[[search]]">
+  <div id="results" on-scroll="onSearchScroll">
+    <div class="sr-only" role="heading" aria-level="1">
+      Emoji Search Results
+    </div>
+    <template is="dom-repeat" items="[[results]]">
+      <div class="result" tabindex="0" on-click="onResultClick">
+        <emoji-button tabindex="-1"
+            emoji="[[item.item.base.string]]"
+            variants="[[item.item.alternates]]">
+        </emoji-button>
+        <div class="name">[[item.item.base.name]]</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!results.length]]">
+      <div class="no-result">
+        <picture>
+          <source srcset="no_results_dark.svg"
+              media="(prefers-color-scheme: dark)">
+          <img src="no_results.svg" id = "no-emoji-image">
+        </picture>
+        No emoji found
+        </div>
+    </template>
+  </div>
+</template>

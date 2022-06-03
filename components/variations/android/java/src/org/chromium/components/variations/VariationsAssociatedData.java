@@ -34,9 +34,22 @@ public final class VariationsAssociatedData {
         return map;
     }
 
+    /**
+     * Returns the list of Google App variations from active finch field trials.
+     * @return A space separated list of ids with leading and trailing space.
+     * For example, " 123 456 ".
+     * IMPORTANT: This string is only approved for integrations with the Android
+     * Google App and must receive a privacy review before extending to other apps.
+     */
+    public static String getGoogleAppVariations() {
+        String variations = VariationsAssociatedDataJni.get().getGoogleAppVariations();
+        return variations;
+    }
+
     @NativeMethods
     interface Natives {
         String getVariationParamValue(String trialName, String paramName);
         String getFeedbackVariations();
+        String getGoogleAppVariations();
     }
 }

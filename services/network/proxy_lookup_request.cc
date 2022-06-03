@@ -7,14 +7,16 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/log/net_log_with_source.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -34,7 +36,7 @@ ProxyLookupRequest::~ProxyLookupRequest() {
   // down.
   if (request_)
     proxy_lookup_client_->OnProxyLookupComplete(net::ERR_ABORTED,
-                                                base::nullopt);
+                                                absl::nullopt);
 }
 
 void ProxyLookupRequest::Start(const GURL& url) {
@@ -57,9 +59,9 @@ void ProxyLookupRequest::Start(const GURL& url) {
 void ProxyLookupRequest::OnResolveComplete(int result) {
   if (result == net::OK) {
     proxy_lookup_client_->OnProxyLookupComplete(
-        net::OK, base::Optional<net::ProxyInfo>(std::move(proxy_info_)));
+        net::OK, absl::optional<net::ProxyInfo>(std::move(proxy_info_)));
   } else {
-    proxy_lookup_client_->OnProxyLookupComplete(result, base::nullopt);
+    proxy_lookup_client_->OnProxyLookupComplete(result, absl::nullopt);
   }
   DestroySelf();
 }

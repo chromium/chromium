@@ -21,6 +21,11 @@ class SerializedVarReturnValue;
 class PPP_Instance_Private_Proxy : public InterfaceProxy {
  public:
   explicit PPP_Instance_Private_Proxy(Dispatcher* dispatcher);
+
+  PPP_Instance_Private_Proxy(const PPP_Instance_Private_Proxy&) = delete;
+  PPP_Instance_Private_Proxy& operator=(const PPP_Instance_Private_Proxy&) =
+      delete;
+
   ~PPP_Instance_Private_Proxy() override;
 
   static const PPP_Instance_Private* GetProxyInterface();
@@ -37,8 +42,6 @@ class PPP_Instance_Private_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_Instance_Private* ppp_instance_private_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Instance_Private_Proxy);
 };
 
 }  // namespace proxy

@@ -35,6 +35,7 @@ class Group(object):
         fields: List of Field instances stored directly under this group.
         parent: The parent group, or None if this is the root group.
     """
+
     def __init__(self, name, subgroups, fields):
         self.name = name
         self.subgroups = subgroups
@@ -45,12 +46,11 @@ class Group(object):
         self.type_name = converter.to_class_name(prefix='style', suffix='data')
         self.member_name = converter.to_class_data_member(suffix='data')
         self.num_32_bit_words_for_bit_fields = _num_32_bit_words_for_bit_fields(
-            field for field in fields if field.is_bit_field
-        )
+            field for field in fields if field.is_bit_field)
 
         # Recursively get all the fields in the subgroups as well
-        self.all_fields = _flatten_list(
-            subgroup.all_fields for subgroup in subgroups) + fields
+        self.all_fields = _flatten_list(subgroup.all_fields
+                                        for subgroup in subgroups) + fields
 
         # Ensure that all fields/subgroups on this group link to it
         for field in fields:
@@ -75,10 +75,12 @@ class Group(object):
 
 class Enum(object):
     """Represents a generated enum in ComputedStyleBaseConstants."""
+
     def __init__(self, type_name, keywords, is_set):
         self.type_name = type_name
-        self.values = [NameStyleConverter(keyword).to_enum_value()
-                       for keyword in keywords]
+        self.values = [
+            NameStyleConverter(keyword).to_enum_value() for keyword in keywords
+        ]
         self.is_set = is_set
 
 
@@ -92,6 +94,7 @@ class DiffGroup(object):
         expressions: List of expression that are on this group that need to
             be diffed.
     """
+
     def __init__(self, group):
         self.group = group
         self.subgroups = []
@@ -155,11 +158,15 @@ class Field(object):
         # Method names
         self.getter_method_name = getter_method_name
         self.setter_method_name = setter_method_name
-        self.internal_getter_method_name = name_source.to_function_name(suffix='internal')
-        self.internal_mutable_method_name = name_source.to_function_name(prefix='mutable', suffix='internal')
-        self.internal_setter_method_name = NameStyleConverter(setter_method_name).to_function_name(suffix='internal')
+        self.internal_getter_method_name = name_source.to_function_name(
+            suffix='internal')
+        self.internal_mutable_method_name = name_source.to_function_name(
+            prefix='mutable', suffix='internal')
+        self.internal_setter_method_name = NameStyleConverter(
+            setter_method_name).to_function_name(suffix='internal')
         self.initial_method_name = initial_method_name
-        self.resetter_method_name = name_source.to_function_name(prefix='reset')
+        self.resetter_method_name = name_source.to_function_name(
+            prefix='reset')
         self.computed_style_custom_functions = computed_style_custom_functions
         # Only bitfields have sizes.
         self.is_bit_field = self.size is not None
@@ -173,9 +180,12 @@ class Field(object):
         if not self.is_inherited_flag:
             self.is_inherited = kwargs.pop('inherited')
             self.is_independent = kwargs.pop('independent')
+            self.is_semi_independent_variable = kwargs.pop(
+                'semi_independent_variable')
             assert self.is_inherited or not self.is_independent, \
                 'Only inherited fields can be independent'
 
-            self.is_inherited_method_name = name_source.to_function_name(suffix=['is', 'inherited'])
+            self.is_inherited_method_name = name_source.to_function_name(
+                suffix=['is', 'inherited'])
         assert len(kwargs) == 0, \
             'Unexpected arguments provided to Field: ' + str(kwargs)

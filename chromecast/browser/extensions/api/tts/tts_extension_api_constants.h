@@ -2,21 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// PLEASE NOTE: this is a copy with modifications from
-// /chrome/browser/speech/extension_api
-// It is temporary until a refactoring to move the chrome TTS implementation up
-// into components and extensions/components can be completed.
-
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_TTS_TTS_EXTENSION_API_CONSTANTS_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_TTS_TTS_EXTENSION_API_CONSTANTS_H_
-
-#include <string>
-
-#include "base/values.h"
 
 namespace tts_extension_api_constants {
 
 extern const char kCharIndexKey[];
+extern const char kLengthKey[];
 extern const char kDesiredEventTypesKey[];
 extern const char kEnqueueKey[];
 extern const char kErrorMessageKey[];
@@ -35,9 +27,6 @@ extern const char kSrcIdKey[];
 extern const char kVoiceNameKey[];
 extern const char kVolumeKey[];
 
-extern const char kGenderFemale[];
-extern const char kGenderMale[];
-
 extern const char kEventTypeCancelled[];
 extern const char kEventTypeEnd[];
 extern const char kEventTypeError[];
@@ -50,7 +39,6 @@ extern const char kEventTypeStart[];
 extern const char kEventTypeWord[];
 
 extern const char kErrorExtensionIdMismatch[];
-extern const char kErrorInvalidGender[];
 extern const char kErrorInvalidLang[];
 extern const char kErrorInvalidPitch[];
 extern const char kErrorInvalidRate[];

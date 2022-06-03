@@ -1,21 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGText text id='bounce'",
-          "rect": [80, 0, 550, 117],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [30, 0, 403, 59],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [80, 0, 550, 117],
+        [30, 0, 403, 59]
       ]
     }
   ]

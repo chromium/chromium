@@ -8,20 +8,15 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 
-#if defined(OS_WIN)
-#include <memory>
-#include "ui/gfx/win/singleton_hwnd_observer.h"
-#endif
-
 namespace content {
+
+struct FocusedNodeDetails;
 
 // The BrowserAccessibilityState class is used to determine if Chrome should be
 // customized for users with assistive technology, such as screen readers. We
@@ -41,14 +36,29 @@ namespace content {
 // improvement over reading defaults preference values (which has no callback
 // mechanism).
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
-    : public base::RefCountedThreadSafe<BrowserAccessibilityStateImpl>,
-      public BrowserAccessibilityState,
+    : public BrowserAccessibilityState,
       public ui::AXModeObserver {
  public:
   BrowserAccessibilityStateImpl();
 
+  BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
+  BrowserAccessibilityStateImpl& operator=(
+      const BrowserAccessibilityStateImpl&) = delete;
+
+  ~BrowserAccessibilityStateImpl() override;
+
   static BrowserAccessibilityStateImpl* GetInstance();
 
+  // This needs to be called explicitly by content::BrowserMainLoop during
+  // initialization, in order to schedule tasks that need to be done, but
+  // don't need to block the main thread.
+  //
+  // This is called explicitly and not automatically just by
+  // instantiating this class so that tests can use
+  // BrowserAccessibilityState without worrying about threading.
+  virtual void InitBackgroundTasks();
+
+  // BrowserAccessibilityState implementation.
   void EnableAccessibility() override;
   void DisableAccessibility() override;
   bool IsRendererAccessibilityEnabled() override;
@@ -60,19 +70,29 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
-
+  void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
+  void SetCaretBrowsingState(bool enabled) override;
+#if defined(OS_ANDROID)
+  void SetImageLabelsModeForProfile(bool enabled,
+                                    BrowserContext* profile) override;
+#endif
+  base::CallbackListSubscription RegisterFocusChangedCallback(
+      FocusChangedCallback callback) override;
 
-  // Returns whether caret browsing is enabled for this browser session.
+  // Returns whether caret browsing is enabled for the most recently
+  // used profile.
   bool IsCaretBrowsingEnabled() const;
 
   // AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
 
-  // Fire frequent metrics signals to ensure users keeping browser open multiple
-  // days are counted each day, not only at launch. This is necessary, because
-  // UMA only aggregates uniques on a daily basis,
-  void UpdateUniqueUserHistograms();
+  // The global accessibility mode is automatically enabled based on
+  // usage of accessibility APIs. When we detect a significant amount
+  // of user inputs within a certain time period, but no accessibility
+  // API usage, we automatically disable accessibility.
+  void OnUserInputEvent();
+  void OnAccessibilityApiUsage();
 
   // Accessibility objects can have the "hot tracked" state set when
   // the mouse is hovering over them, but this makes tests flaky because
@@ -86,40 +106,77 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
     return disable_hot_tracking_;
   }
 
- private:
-  friend class base::RefCountedThreadSafe<BrowserAccessibilityStateImpl>;
-  friend struct base::DefaultSingletonTraits<BrowserAccessibilityStateImpl>;
+  // Calls InitBackgroundTasks with short delays for scheduled tasks,
+  // and then calls the given completion callback when done.
+  void CallInitBackgroundTasksForTesting(base::RepeatingClosure done_callback);
 
-  // Resets accessibility_mode_ to the default value.
-  void ResetAccessibilityModeValue();
+  // Notifies listeners that the focused element changed inside a WebContents.
+  void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
+ protected:
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
   // Two variants - one for things that must be run on the UI thread, and
   // another that can be run on another thread.
-  void UpdateHistogramsOnUIThread();
-  void UpdateHistogramsOnOtherThread();
+  virtual void UpdateHistogramsOnUIThread();
+  virtual void UpdateHistogramsOnOtherThread();
 
-  // Leaky singleton, destructor generally won't be called.
-  ~BrowserAccessibilityStateImpl() override;
+ private:
+  // Resets accessibility_mode_ to the default value.
+  void ResetAccessibilityModeValue();
 
-  void PlatformInitialize();
-  void UpdatePlatformSpecificHistogramsOnUIThread();
-  void UpdatePlatformSpecificHistogramsOnOtherThread();
+  void OnOtherThreadDone();
+
+  void UpdateAccessibilityActivityTask();
 
   ui::AXMode accessibility_mode_;
+
+  base::TimeDelta histogram_delay_;
 
   std::vector<base::OnceClosure> ui_thread_histogram_callbacks_;
   std::vector<base::OnceClosure> other_thread_histogram_callbacks_;
 
-  bool disable_hot_tracking_;
+  bool ui_thread_done_ = false;
+  bool other_thread_done_ = false;
+  base::RepeatingClosure background_thread_done_callback_;
 
-#if defined(OS_WIN)
-  // Only used on Windows
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
-#endif
+  // Whether there is a pending task to run UpdateAccessibilityActivityTask.
+  bool accessibility_update_task_pending_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityStateImpl);
+  // Whether the force-renderer-accessibility flag is enabled.
+  // Cached here so that we don't have to check base::CommandLine in
+  // a function that's called frequently.
+  bool force_renderer_accessibility_ = false;
+
+  // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
+  bool disable_hot_tracking_ = false;
+
+  // Keeps track of whether caret browsing is enabled for the most
+  // recently used profile.
+  bool caret_browsing_enabled_ = false;
+
+  // The time of the first user input event; if we receive multiple
+  // user input events within a 30-second period and no
+  base::TimeTicks first_user_input_event_time_;
+  int user_input_event_count_ = 0;
+
+  // The time accessibility became active, used to calculate active time.
+  base::TimeTicks accessibility_active_start_time_;
+
+  // The time accessibility became inactive, used to calculate inactive time.
+  base::TimeTicks accessibility_inactive_start_time_;
+
+  // The last time accessibility was active, used to calculate active time.
+  base::TimeTicks accessibility_last_usage_time_;
+
+  // The time accessibility was enabled, for statistics.
+  base::TimeTicks accessibility_enabled_time_;
+
+  // The time accessibility was auto-disabled, for statistics.
+  base::TimeTicks accessibility_disabled_time_;
+
+  base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
+      focus_changed_callbacks_;
 };
 
 }  // namespace content

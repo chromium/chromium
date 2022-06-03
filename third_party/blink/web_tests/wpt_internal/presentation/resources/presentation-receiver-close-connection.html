@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script type="module">
+import {PresentationServiceMock} from './presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+
+// Parent window sets parameter for this page.
+assert_not_equals(shouldCallClose, null);
+
+internals.settings.setPresentationReceiver(true);
+
+const pageUrl = 'https://example.com/a.html';
+const id = 'fakeSessionId';
+
+mock.onSetReceiver = () => {
+  mock.onReceiverConnectionAvailable(
+      pageUrl, id, controllerConnectionPtr, receiverConnectionRequest);
+};
+
+navigator.presentation.receiver.connectionList.then(list => {
+  assert_equals(list.connections.length, 1);
+  const connection = list.connections[0];
+  connection.onclose = () => {
+    assert_equals(connection.state, 'closed');
+    setTimeout(() => {
+      assert_equals(list.connections.length, 0);
+      opener.postMessage('receiver connection closed', '*');
+    }, 0);
+  };
+  opener.postMessage('receiver connection ready', '*');
+  if (shouldCallClose) {
+    list.connections.forEach(theConnection => {
+      theConnection.close();
+      assert_equals(theConnection.state, 'closed');
+    });
+  }
+});
+
+window.onunload = () => {
+  internals.settings.setPresentationReceiver(false);
+};
+
+</script>
+</body>
+</html>

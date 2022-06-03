@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/formats/mp2t/descriptors.h"
 #include "media/formats/mp2t/ts_section_psi.h"
 
@@ -18,10 +17,14 @@ class TsSectionPmt : public TsSectionPsi {
  public:
   // |stream_type| is defined in "Table 2-34 – Stream type assignments" in H.222
   // TODO(damienv): add the program number.
-  using RegisterPesCb = base::Callback<
+  using RegisterPesCB = base::RepeatingCallback<
       void(int pes_pid, int stream_type, const Descriptors& descriptors)>;
 
-  explicit TsSectionPmt(const RegisterPesCb& register_pes_cb);
+  explicit TsSectionPmt(RegisterPesCB register_pes_cb);
+
+  TsSectionPmt(const TsSectionPmt&) = delete;
+  TsSectionPmt& operator=(const TsSectionPmt&) = delete;
+
   ~TsSectionPmt() override;
 
   // Mpeg2TsPsiParser implementation.
@@ -29,9 +32,7 @@ class TsSectionPmt : public TsSectionPsi {
   void ResetPsiSection() override;
 
  private:
-  RegisterPesCb register_pes_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionPmt);
+  const RegisterPesCB register_pes_cb_;
 };
 
 }  // namespace mp2t

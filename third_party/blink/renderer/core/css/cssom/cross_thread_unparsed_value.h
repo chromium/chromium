@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNPARSED_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_UNPARSED_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -19,6 +18,8 @@ class CORE_EXPORT CrossThreadUnparsedValue final
     : public CrossThreadStyleValue {
  public:
   explicit CrossThreadUnparsedValue(const String& value) : value_(value) {}
+  CrossThreadUnparsedValue(const CrossThreadUnparsedValue&) = delete;
+  CrossThreadUnparsedValue& operator=(const CrossThreadUnparsedValue&) = delete;
   ~CrossThreadUnparsedValue() override = default;
 
   StyleValueType GetType() const override {
@@ -34,7 +35,6 @@ class CORE_EXPORT CrossThreadUnparsedValue final
   friend class CrossThreadStyleValueTest;
 
   String value_;
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadUnparsedValue);
 };
 
 template <>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Feature-Policy web-share</title>
+<div>web-share</div>
+<script>
+
+const WebSharePolicyAllow = 3368; // From web_feature.mojom
+const WebSharePolicyDisallow = 3369; // From web_feature.mojom
+
+document.addEventListener('keypress', function() {
+  internals.clearUseCounter(document, WebSharePolicyAllow);
+  internals.clearUseCounter(document, WebSharePolicyDisallow);
+
+  navigator.share({}).catch(error => {
+    if (internals.isUseCounted(document, WebSharePolicyAllow))
+      parent.postMessage({ type: 'result', enabled: true }, '*');
+    else if (internals.isUseCounted(document, WebSharePolicyDisallow))
+      parent.postMessage({ type: 'result', enabled: false }, '*');
+  });
+});
+
+window.onload = function() {
+  focus();
+  eventSender.keyDown('a', []);
+}
+</script>

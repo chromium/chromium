@@ -8,13 +8,19 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
-#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
+#include "ui/events/ozone/evdev/event_device_util.h"
+#include "ui/events/ozone/evdev/numberpad_metrics.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/events/ozone/evdev/numberpad_metrics.h"
+#endif
 
 namespace ui {
 
@@ -25,7 +31,7 @@ const int kKeyReleaseValue = 0;
 const int kKeyRepeatValue = 2;
 
 // Values for the EV_SW code.
-const int kSwitchStylusInserted = 15;
+const int kSwitchStylusInserted = SW_PEN_INSERTED;
 
 }  // namespace
 
@@ -48,12 +54,23 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       input_device_fd_(std::move(fd)),
       has_keyboard_(devinfo.HasKeyboard()),
       has_touchpad_(devinfo.HasTouchpad()),
+      has_numberpad_(devinfo.HasNumberpad()),
+      has_stylus_switch_(devinfo.HasStylusSwitch()),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
-      dispatcher_(dispatcher) {}
+      dispatcher_(dispatcher) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (has_numberpad_)
+    NumberpadMetricsRecorder::GetInstance()->AddDevice(input_device_);
+#endif
+}
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (has_numberpad_)
+    NumberpadMetricsRecorder::GetInstance()->RemoveDevice(input_device_);
+#endif
 }
 
 void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
@@ -90,6 +107,10 @@ bool EventConverterEvdevImpl::HasCapsLockLed() const {
   return has_caps_lock_led_;
 }
 
+bool EventConverterEvdevImpl::HasStylusSwitch() const {
+  return has_stylus_switch_;
+}
+
 void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
                                            std::vector<DomCode> allowed_keys) {
   if (!enable_filter) {
@@ -98,10 +119,8 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
   }
 
   blocked_keys_.set();
-  for (const DomCode& it : allowed_keys) {
-    int evdev_code =
-        NativeCodeToEvdevCode(KeycodeConverter::DomCodeToNativeKeycode(it));
-    blocked_keys_.reset(evdev_code);
+  for (const DomCode& code : allowed_keys) {
+    blocked_keys_.reset(KeycodeConverter::DomCodeToEvdevCode(code));
   }
 
   // Release any pressed blocked keys.
@@ -117,13 +136,34 @@ void EventConverterEvdevImpl::OnDisabled() {
   ReleaseMouseButtons();
 }
 
+ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {
+  if (!HasStylusSwitch()) {
+    return ui::StylusState::REMOVED;
+  }
+
+  // Prepare storage for SW_MAX bits
+  unsigned long array[EVDEV_BITS_TO_LONGS(SW_MAX)] = {0};
+  int result = ioctl(input_device_fd_.get(), EVIOCGSW(SW_MAX), array);
+  if (result == -1) {
+    return ui::StylusState::REMOVED;
+  }
+
+  return EvdevBitIsSet(array, kSwitchStylusInserted) ? ui::StylusState::INSERTED
+                                                     : ui::StylusState::REMOVED;
+}
+
 void EventConverterEvdevImpl::ProcessEvents(const input_event* inputs,
                                             int count) {
   for (int i = 0; i < count; ++i) {
     const input_event& input = inputs[i];
     switch (input.type) {
+      case EV_MSC:
+        if (input.code == MSC_SCAN)
+          last_scan_code_ = input.value;
+        break;
       case EV_KEY:
         ConvertKeyEvent(input);
+        last_scan_code_ = 0;
         break;
       case EV_REL:
         ConvertMouseMoveEvent(input);
@@ -133,6 +173,7 @@ void EventConverterEvdevImpl::ProcessEvents(const input_event* inputs,
           OnLostSync();
         else if (input.code == SYN_REPORT)
           FlushEvents(input);
+        last_scan_code_ = 0;
         break;
       case EV_SW:
         if (input.code == kSwitchStylusInserted) {
@@ -190,9 +231,19 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // State transition: !(down) -> (down)
   key_state_.set(key, down);
 
-  dispatcher_->DispatchKeyEvent(KeyEventParams(input_device_.id, key, down,
-                                               false /* suppress_auto_repeat */,
-                                               timestamp));
+  GenerateKeyMetrics(key, down);
+
+  dispatcher_->DispatchKeyEvent(
+      KeyEventParams(input_device_.id, ui::EF_NONE, key, last_scan_code_, down,
+                     false /* suppress_auto_repeat */, timestamp));
+}
+
+void EventConverterEvdevImpl::GenerateKeyMetrics(unsigned int key, bool down) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!has_numberpad_)
+    return;
+  NumberpadMetricsRecorder::GetInstance()->ProcessKey(key, down, input_device_);
+#endif
 }
 
 void EventConverterEvdevImpl::ReleaseKeys() {
@@ -239,8 +290,8 @@ void EventConverterEvdevImpl::OnButtonChange(int code,
 
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
       input_device_.id, EF_NONE, cursor_->GetLocation(), code, down,
-      /* allow_remap */ true,
-      PointerDetails(EventPointerType::POINTER_TYPE_MOUSE), timestamp));
+      MouseButtonMapType::kMouse, PointerDetails(EventPointerType::kMouse),
+      timestamp));
 }
 
 void EventConverterEvdevImpl::FlushEvents(const input_event& input) {
@@ -249,10 +300,10 @@ void EventConverterEvdevImpl::FlushEvents(const input_event& input) {
 
   cursor_->MoveCursor(gfx::Vector2dF(x_offset_, y_offset_));
 
-  dispatcher_->DispatchMouseMoveEvent(
-      MouseMoveEventParams(input_device_.id, EF_NONE, cursor_->GetLocation(),
-                           PointerDetails(EventPointerType::POINTER_TYPE_MOUSE),
-                           TimeTicksFromInputEvent(input)));
+  dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
+      input_device_.id, EF_NONE, cursor_->GetLocation(),
+      nullptr /* ordinal_delta*/, PointerDetails(EventPointerType::kMouse),
+      TimeTicksFromInputEvent(input)));
 
   x_offset_ = 0;
   y_offset_ = 0;

@@ -1,0 +1,362 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/eche_app_ui/eche_app_ui.gni")
+import("//ash/webui/help_app_ui/help_app_ui.gni")
+import("//ash/webui/media_app_ui/media_app_ui.gni")
+import("//ash/webui/projector_app/projector_app.gni")
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+# Convenience template for WebUIs using generate_grd.
+# TODO(calamity): Further deduplicate with non-generated grit targets.
+template("ash_generated_grit") {
+  grit(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "source",
+                           ])
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    outputs = [
+      "ash_$target_name.pak",
+      "grit/ash_$target_name.h",
+      "grit/ash_${target_name}_map.cc",
+      "grit/ash_${target_name}_map.h",
+    ]
+    output_dir = "$root_gen_dir/ash"
+  }
+}
+
+# Resources used by chrome://camera-app.
+ash_generated_grit("camera_app_resources") {
+  source = "$root_gen_dir/ash/webui/camera_app_ui/ash_camera_app_resources.grd"
+  deps = [ "//ash/webui/camera_app_ui:build_grd" ]
+}
+
+# Resources used by chrome://os-feedback
+ash_generated_grit("os_feedback_resources") {
+  os_feedback_gen_dir = "$root_gen_dir/ash/webui/os_feedback_ui/resources"
+  source = "$os_feedback_gen_dir/ash_os_feedback_resources.grd"
+  deps = [
+    "//ash/webui/os_feedback_ui/resources:build_grd",
+    "//ash/webui/os_feedback_ui/resources:web_components",
+  ]
+}
+
+ash_generated_grit("shortcut_customization_app_resources") {
+  shortcut_customization_app_gen_dir =
+      "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"
+  source = "$shortcut_customization_app_gen_dir/ash_shortcut_customization_app_resources.grd"
+  deps = [ "//ash/webui/shortcut_customization_ui/resources:build_grd" ]
+}
+
+# Resources used by shimless rma flow
+ash_generated_grit("shimless_rma_resources") {
+  shimless_rma_resource_gen_dir =
+      "$root_gen_dir/ash/webui/shimless_rma/resources"
+  source = "$shimless_rma_resource_gen_dir/ash_shimless_rma_resources.grd"
+  deps = [ "//ash/webui/shimless_rma/resources:build_grd" ]
+}
+
+# Resources used by chrome://personalization SWA.
+ash_generated_grit("personalization_app_resources") {
+  source = "$root_gen_dir/ash/webui/personalization_app/resources/ash_personalization_app_resources.grd"
+  deps = [ "//ash/webui/personalization_app/resources:build_grd" ]
+}
+
+ash_generated_grit("firmware_update_app_resources") {
+  firmware_update_app_gen_dir =
+      "$root_gen_dir/ash/webui/firmware_update_ui/resources"
+  source = "$firmware_update_app_gen_dir/ash_firmware_update_app_resources.grd"
+  deps = [ "//ash/webui/firmware_update_ui/resources:build_grd" ]
+}
+
+if (!is_official_build) {
+  # Resources used by chrome://demo-mode-app
+  ash_generated_grit("demo_mode_app_resources") {
+    source = "$root_gen_dir/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd"
+    deps = [ "//ash/webui/demo_mode_app_ui:build_grd" ]
+  }
+
+  # Resources used by chrome://sample-system-web-app
+  ash_generated_grit("sample_system_web_app_resources") {
+    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_resources.grd"
+    deps = [ "//ash/webui/sample_system_web_app_ui:build_trusted_grd" ]
+  }
+
+  # Resources used by chrome-untrusted://sample-system-web-app
+  ash_generated_grit("sample_system_web_app_untrusted_resources") {
+    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_untrusted_resources.grd"
+    deps = [ "//ash/webui/sample_system_web_app_ui:build_untrusted_grd" ]
+  }
+}
+
+grit("scanning_app_resources") {
+  source = "//ash/webui/scanning/resources/scanning_app_resources.grd"
+
+  deps = [
+    "//ash/webui/common/mojom:mojom_js",
+    "//ash/webui/scanning/mojom:mojom_js",
+    "//ash/webui/scanning/resources:web_components",
+  ]
+
+  outputs = [
+    "ash_scanning_app_resources.pak",
+    "grit/ash_scanning_app_resources.h",
+    "grit/ash_scanning_app_resources_map.cc",
+    "grit/ash_scanning_app_resources_map.h",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
+
+grit("diagnostics_app_resources") {
+  source = "//ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd"
+
+  deps = [
+    "//ash/webui/diagnostics_ui/mojom:mojom_js",
+    "//ash/webui/diagnostics_ui/resources:web_components",
+  ]
+
+  outputs = [
+    "ash_diagnostics_app_resources.pak",
+    "grit/ash_diagnostics_app_resources.h",
+    "grit/ash_diagnostics_app_resources_map.cc",
+    "grit/ash_diagnostics_app_resources_map.h",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
+
+# Resources used by chrome://telemetry-extension
+grit("telemetry_extension_resources") {
+  source = "//ash/webui/telemetry_extension_ui/resources/telemetry_extension_resources.grd"
+
+  deps = [ "//ash/webui/telemetry_extension_ui/mojom:mojom_js" ]
+
+  outputs = [
+    "grit/ash_telemetry_extension_resources.h",
+    "grit/ash_telemetry_extension_resources_map.cc",
+    "grit/ash_telemetry_extension_resources_map.h",
+    "ash_telemetry_extension_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
+
+# Resources used by chrome://help-app, and parts of the sandboxed app it hosts
+# that do not come from the app bundle (below).
+grit("help_app_resources") {
+  source = "//ash/webui/help_app_ui/resources/help_app_resources.grd"
+
+  outputs = [
+    "grit/ash_help_app_resources.h",
+    "grit/ash_help_app_resources_map.cc",
+    "grit/ash_help_app_resources_map.h",
+    "ash_help_app_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash"
+
+  deps = [
+    "//ash/webui/help_app_ui:mojo_bindings_js",
+    "//ash/webui/help_app_ui/resources:browser_proxy_rollup",
+    "//ash/webui/help_app_ui/resources:receiver_rollup",
+    "//ash/webui/help_app_ui/search:mojo_bindings_js",
+    "//chromeos/components/local_search_service/public/mojom:mojom_js",
+  ]
+}
+
+# Resources automatically served by the chrome://help-app bundle, obtained via DEPS.
+grit("help_app_bundle_resources") {
+  if (enable_cros_help_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source =
+        "//ash/webui/help_app_ui/resources/prod/help_app_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_help_app_bundle_resources.h",
+    "grit/chromeos_help_app_bundle_resources_map.cc",
+    "grit/chromeos_help_app_bundle_resources_map.h",
+    "chromeos_help_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+grit("help_app_kids_magazine_bundle_resources") {
+  if (enable_cros_help_app) {
+    source = "//ash/webui/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_help_app_kids_magazine_bundle_resources.h",
+    "grit/chromeos_help_app_kids_magazine_bundle_resources_map.cc",
+    "grit/chromeos_help_app_kids_magazine_bundle_resources_map.h",
+    "chromeos_help_app_kids_magazine_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://media-app, and parts of the sandboxed app it hosts
+# that do not come from the app bundle (below).
+grit("media_app_resources") {
+  source = "//ash/webui/media_app_ui/resources/media_app_resources.grd"
+
+  outputs = [
+    "grit/ash_media_app_resources.h",
+    "ash_media_app_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash"
+
+  use_brotli = true
+
+  deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//ash/webui/media_app_ui/resources/js:launch_rollup",
+    "//ash/webui/media_app_ui/resources/js:piex_rollup",
+    "//ash/webui/media_app_ui/resources/js:receiver_rollup",
+  ]
+}
+
+# Resources automatically served by the chrome://media-app bundle, obtained via DEPS.
+grit("media_app_bundle_resources") {
+  if (enable_cros_media_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source =
+        "//ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_media_app_bundle_resources.h",
+    "grit/chromeos_media_app_bundle_resources_map.cc",
+    "grit/chromeos_media_app_bundle_resources_map.h",
+    "chromeos_media_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+grit("print_management_resources") {
+  source =
+      "//ash/webui/print_management/resources/print_management_resources.grd"
+
+  deps = [
+    "//ash/webui/print_management/mojom:mojom_js",
+    "//ash/webui/print_management/resources:web_components",
+  ]
+
+  outputs = [
+    "grit/ash_print_management_resources.h",
+    "grit/ash_print_management_resources_map.cc",
+    "grit/ash_print_management_resources_map.h",
+    "ash_print_management_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
+
+# Resources used by chrome-untrusted://projector SWA.
+ash_generated_grit("projector_app_untrusted_resources") {
+  source = "$root_gen_dir/ash/webui/projector_app/resources/ash_projector_app_untrusted_resources.grd"
+  deps = [ "//ash/webui/projector_app/resources:build_untrusted_grd" ]
+}
+
+# Resources used by chrome://projector SWA.
+ash_generated_grit("projector_app_trusted_resources") {
+  source = "$root_gen_dir/ash/webui/projector_app/resources/ash_projector_app_trusted_resources.grd"
+  deps = [ "//ash/webui/projector_app/resources:build_trusted_grd" ]
+}
+
+# Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
+grit("projector_app_bundle_resources") {
+  if (enable_cros_projector_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source = "//ash/webui/projector_app/resources/prod/projector_app_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_projector_app_bundle_resources.h",
+    "grit/chromeos_projector_app_bundle_resources_map.cc",
+    "grit/chromeos_projector_app_bundle_resources_map.h",
+    "chromeos_projector_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://eche-app
+ash_generated_grit("eche_app_resources") {
+  source = "$root_gen_dir/ash/webui/eche_app_ui/ash_eche_app_resources.grd"
+  deps = [ "//ash/webui/eche_app_ui:build_grd" ]
+}
+
+# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
+grit("eche_bundle_resources") {
+  # Obtained via an internal CIPD package in src/DEPS.
+  if (enable_cros_eche_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source = "//ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd"
+  } else {
+    source =
+        "//ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_eche_bundle_resources.h",
+    "grit/chromeos_eche_bundle_resources_map.cc",
+    "grit/chromeos_eche_bundle_resources_map.h",
+    "chromeos_eche_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://connectivity-diagnostics
+grit("connectivity_diagnostics_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  conn_diag_gen_dir =
+      "$root_gen_dir/ash/webui/connectivity_diagnostics/resources"
+  source = "$conn_diag_gen_dir/connectivity_diagnostics_resources.grd"
+
+  deps = [ "//ash/webui/connectivity_diagnostics/resources:build_grd" ]
+
+  outputs = [
+    "connectivity_diagnostics_resources.pak",
+    "grit/connectivity_diagnostics_resources.h",
+    "grit/connectivity_diagnostics_resources_map.cc",
+    "grit/connectivity_diagnostics_resources_map.h",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

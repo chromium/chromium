@@ -4,4 +4,3 @@ rsesek@chromium.org
 # For ResourceRequestAllowedNotifier and EulaAcceptedNotifier:
 per-file eula_accepted_notifier*=file://components/variations/OWNERS
 per-file resource_request_allowed_notifier*=file://components/variations/OWNERS
-# COMPONENT: UI>Shell

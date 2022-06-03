@@ -8,6 +8,8 @@ working Android selection dialog.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
+      setup({single_test: true});
+
       function onSelectChange(newValue) {
         assert_not_equals(newValue, "initial_option",
             "Newly selected value is the starting value");

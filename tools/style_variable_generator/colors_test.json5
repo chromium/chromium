@@ -1,0 +1,30 @@
+{
+  options: {
+    CSS: {
+      prefix: 'cros'
+    },
+    proto: {
+      field_name: 'test_colors',
+      field_id: 2,
+    },
+  },
+  colors: {
+    text_color_primary: {
+      light: "$google_grey_900",
+      dark: "$white",
+      debug: "$toggle_color",
+    },
+    toggle_color: {
+      light: "rgba($text_color_primary_rgb, 0.1)",
+      dark: "rgba($text_color_primary_rgb, $disabled_opacity)",
+      debug: "$white",
+    }
+  },
+  opacities: {
+    disabled_opacity: 0.38,
+    reference_opacity: {
+        light: '$disabled_opacity',
+        dark: 1,
+    },
+  },
+}

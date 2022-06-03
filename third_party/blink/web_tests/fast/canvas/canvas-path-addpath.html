@@ -71,13 +71,13 @@ test(function(t) {
 
     var p9 = new Path2D();
     p9.rect(0,0,100,100);
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       p7.addPath(null, m);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       p7.addPath([], m);
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       p7.addPath({}, m);
     });
 }, "Test addPath() method.");

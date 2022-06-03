@@ -9206,7 +9206,7 @@ interface <dfn id=propertynodelist>PropertyNodeList</dfn> : <a href=#nodelist>No
   particular to transfer ownership of unsharable or expensive
   resources across worker boundaries.</p>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=transferable>Transferable</dfn> { };</pre>
 
   <div class=impl>
@@ -9528,7 +9528,7 @@ interface <dfn id=transferable>Transferable</dfn> { };</pre>
   simply being the primary interface of the document object, it is no
   longer defined as inheriting from <code><a href=#document>Document</a></code>.</p>
 
-  <pre class=idl>[OverrideBuiltins]
+  <pre class=idl>[LegacyOverrideBuiltIns]
 interface <dfn id=htmldocument>HTMLDocument</dfn> {
   // <a href=#resource-metadata-management>resource metadata management</a>
   [PutForwards=<a href=#dom-location-href title=dom-location-href>href</a>] readonly attribute <a href=#location>Location</a>? <a href=#dom-document-location title=dom-document-location>location</a>;
@@ -10222,7 +10222,7 @@ interface <dfn id=htmldocument>HTMLDocument</dfn> {
   <!--
   Note that this named getter overrides built-in properties, as in:
      http://software.hixie.ch/utilities/js/live-dom-viewer/?%3C!DOCTYPE%20html%3E%0D%0A...%3Ciframe%20name%3Dbody%3E%3C%2Fiframe%3E%3Cscript%3Ew(document.body)%3C%2Fscript%3E
-  This is what the "OverrideBuiltins" bit means in the IDL.
+  This is what the "LegacyOverrideBuiltIns" bit means in the IDL.
   -->
 
   </ol><p><dfn id=dom-document-nameditem-filter title=dom-document-nameditem-filter>Named elements</dfn>
@@ -10263,7 +10263,7 @@ interface <dfn id=htmldocument>HTMLDocument</dfn> {
   factory method must also implement the
   <code><a href=#xmldocumentloader>XMLDocumentLoader</a></code> interface:</p>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=xmldocumentloader>XMLDocumentLoader</dfn> {
 <!--SYNCLOAD           attribute boolean <span title="dom-XMLDocumentLoader-async">async</span>;
 -->  boolean <a href=#dom-xmldocumentloader-load title=dom-XMLDocumentLoader-load>load</a>(DOMString url);
@@ -42582,7 +42582,7 @@ the cell that corresponds to the values of the two dice.
    <dd><code title=attr-fs-target><a href=#attr-fs-target>target</a></code></dd>
    <dt>DOM interface:</dt>
    <dd>
-<pre class=idl>[OverrideBuiltins]
+<pre class=idl>[LegacyOverrideBuiltIns]
 interface <dfn id=htmlformelement>HTMLFormElement</dfn> : <a href=#htmlelement>HTMLElement</a> {
            attribute DOMString <a href=#dom-form-acceptcharset title=dom-form-acceptCharset>acceptCharset</a>;
            attribute DOMString <a href=#dom-fs-action title=dom-fs-action>action</a>;
@@ -62450,11 +62450,11 @@ END:VCARD</pre>
   <pre class=idl>[ReplaceableNamedProperties]
 interface <dfn id=window>Window</dfn> : <a href=#eventtarget>EventTarget</a> {
   // the current browsing context
-  [Unforgeable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-window title=dom-window>window</a>;
+  [LegacyUnforgeable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-window title=dom-window>window</a>;
   [Replaceable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-self title=dom-self>self</a>;
-  [Unforgeable] readonly attribute <a href=#document>Document</a> <a href=#dom-document title=dom-document>document</a>;
+  [LegacyUnforgeable] readonly attribute <a href=#document>Document</a> <a href=#dom-document title=dom-document>document</a>;
            attribute DOMString <a href=#dom-name title=dom-name>name</a>; <!-- not [Replaceable] per WebKit and IE8 -->
-  [PutForwards=<a href=#dom-location-href title=dom-location-href>href</a>, Unforgeable] readonly attribute <a href=#location>Location</a> <a href=#dom-location title=dom-location>location</a>;
+  [PutForwards=<a href=#dom-location-href title=dom-location-href>href</a>, LegacyUnforgeable] readonly attribute <a href=#location>Location</a> <a href=#dom-location title=dom-location>location</a>;
   readonly attribute <a href=#history-0>History</a> <a href=#dom-history title=dom-history>history</a>;
 <!--FIND-->
   boolean <a href=#dom-find title=dom-find>find</a>(optional DOMString aString, optional boolean aCaseSensitive, optional boolean aBackwards, optional boolean aWrapAround, optional boolean aWholeWord, optional boolean aSearchInFrames, optional boolean aShowDialog);
@@ -62475,7 +62475,7 @@ interface <dfn id=window>Window</dfn> : <a href=#eventtarget>EventTarget</a> {
   // other browsing contexts
   [Replaceable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-frames title=dom-frames>frames</a>;
   [Replaceable] readonly attribute unsigned long <a href=#dom-length title=dom-length>length</a>;
-  [Unforgeable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-top title=dom-top>top</a>;
+  [LegacyUnforgeable] readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-top title=dom-top>top</a>;
            attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-opener title=dom-opener>opener</a>;
   readonly attribute <a href=#windowproxy>WindowProxy</a> <a href=#dom-parent title=dom-parent>parent</a>;
   readonly attribute <a href=#element>Element</a>? <a href=#dom-frameelement title=dom-frameElement>frameElement</a>;
@@ -68270,7 +68270,7 @@ NETWORK:
 
   <h4 id=browser-state><span class=secno>6.6.10 </span>Browser state</h4>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=navigatoronline>NavigatorOnLine</dfn> {
   readonly attribute boolean <a href=#dom-navigator-online title=dom-navigator-onLine>onLine</a>;
 };</pre>
@@ -69429,7 +69429,7 @@ currently this is unnecessary: http://www.w3.org/Bugs/Public/show_bug.cgi?id=119
   scripting language being used. It is represented in IDL as
   follows:</p>
 
-  <pre class=idl>[Callback=FunctionOnly, NoInterfaceObject]
+  <pre class=idl>[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=function>Function</dfn> {
   any <a href=#dom-function-call title=dom-function-call>call</a>(any... arguments);
 };</pre>
@@ -69648,7 +69648,7 @@ interface <dfn id=function>Function</dfn> {
 
   <!-- v2: actual binary support -->
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=windowbase64>WindowBase64</dfn> {
   DOMString <a href=#dom-windowbase64-btoa title=dom-windowbase64-btoa>btoa</a>(DOMString btoa);
   DOMString <a href=#dom-windowbase64-atob title=dom-windowbase64-atob>atob</a>(DOMString atob);
@@ -69882,7 +69882,7 @@ interface <dfn id=windowbase64>WindowBase64</dfn> {
   and <code title=dom-windowtimers-setInterval><a href=#dom-windowtimers-setinterval>setInterval()</a></code>
   methods allow authors to schedule timer-based callbacks.</p>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=windowtimers>WindowTimers</dfn> {
   long <a href=#dom-windowtimers-settimeout title=dom-windowtimers-setTimeout>setTimeout</a>(Function handler, optional float timeout, any... args);
   long <a href=#dom-windowtimers-settimeout title=dom-windowtimers-setTimeout>setTimeout</a>([AllowAny] DOMString handler, optional float timeout, any... args);
@@ -70569,7 +70569,7 @@ setTimeout({ toString: function () {
 
   </div>
 
-  <pre class=idl>[NoInterfaceObject] interface <dfn id=windowmodal>WindowModal</dfn> {
+  <pre class=idl>[LegacyNoInterfaceObject] interface <dfn id=windowmodal>WindowModal</dfn> {
   readonly attribute any <a href=#dom-windowmodal-dialogarguments title=dom-WindowModal-dialogArguments>dialogArguments</a>;
            attribute DOMString <a href=#dom-windowmodal-returnvalue title=dom-WindowModal-returnValue>returnValue</a>;
 };</pre>
@@ -70680,7 +70680,7 @@ setTimeout({ toString: function () {
 
   <h5 id=client-identification><span class=secno>7.5.1.1 </span>Client identification</h5>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=navigatorid>NavigatorID</dfn> {<!--
   readonly attribute DOMString <span title="dom-navigator-appCodeName">appCodeName</span>;-->
   readonly attribute DOMString <a href=#dom-navigator-appname title=dom-navigator-appName>appName</a>;
@@ -70765,7 +70765,7 @@ interface <dfn id=navigatorid>NavigatorID</dfn> {<!--
 
   <h5 id=custom-handlers><span class=secno>7.5.1.2 </span>Custom scheme and content handlers</h5>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=navigatorcontentutils>NavigatorContentUtils</dfn> {
   // content handler registration
   void <a href=#dom-navigator-registerprotocolhandler title=dom-navigator-registerProtocolHandler>registerProtocolHandler</a>(DOMString scheme, DOMString url, DOMString title);
@@ -71348,7 +71348,7 @@ interface <dfn id=navigatorcontentutils>NavigatorContentUtils</dfn> {
 
   <h5 id=manually-releasing-the-storage-mutex><span class=secno>7.5.1.5 </span>Manually releasing the storage mutex</h5>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=navigatorstorageutils>NavigatorStorageUtils</dfn> {
   void <a href=#dom-navigator-yieldforstorageupdates title=dom-navigator-yieldForStorageUpdates>yieldForStorageUpdates</a>();
 };</pre>
@@ -73564,13 +73564,13 @@ DND-v3:  <span>Blob</span> <span title="dom-DataTransferItem-getAsBlob">getAsBlo
 DND-v4:  void <span title="dom-DataTransferItem-getAsObject">getAsObject</span>(<span>FunctionObjectCallback</span> callback);-->
 };
 
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=functionstringcallback>FunctionStringCallback</dfn> {
   void <span title=dom-FunctionStringCallback-handleEvent>handleEvent</span>(DOMString data);
 };<!--
 
 // DND-v4:
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn>FunctionObjectCallback</dfn> {
   void <span title="dom-FunctionObjectCallback-handleEvent">handleEvent</span>(DOMString data);
 };--></pre>
@@ -75140,18 +75140,18 @@ dictionary <dfn id=drageventinit>DragEventInit</dfn> : <a href=#mouseeventinit>M
 
   <h3 id=obtaining-local-multimedia-content><span class=secno>9.2 </span>Obtaining local multimedia content</h3>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=navigatorusermedia>NavigatorUserMedia</dfn> {
   void <a href=#dom-navigator-getusermedia title=dom-navigator-getUserMedia>getUserMedia</a>(DOMString options, <a href=#navigatorusermediasuccesscallback>NavigatorUserMediaSuccessCallback</a>? successCallback, optional <a href=#navigatorusermediaerrorcallback>NavigatorUserMediaErrorCallback</a>? errorCallback);
 };
 <a href=#navigator>Navigator</a> implements <a href=#navigatorusermedia>NavigatorUserMedia</a>;
 
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=navigatorusermediasuccesscallback>NavigatorUserMediaSuccessCallback</dfn> {
   void <span title=dom-NavigatorUserMediaSuccessCallback-handleEvent>handleEvent</span>(<a href=#localmediastream>LocalMediaStream</a> stream);
 };
 
-[NoInterfaceObject]<!-- this is based on PositionError in geolocation -->
+[LegacyNoInterfaceObject]<!-- this is based on PositionError in geolocation -->
 interface <dfn id=navigatorusermediaerror>NavigatorUserMediaError</dfn> {
   const unsigned short <a href=#dom-navigatorusermediaerror-permission_denied title=dom-NavigatorUserMediaError-PERMISSION_DENIED>PERMISSION_DENIED</a> = 1;<!--
   const unsigned short <span title="dom-NavigatorUserMediaError-UNAVAILABLE">UNAVAILABLE</span> = 2;
@@ -75160,7 +75160,7 @@ interface <dfn id=navigatorusermediaerror>NavigatorUserMediaError</dfn> {
   readonly attribute DOMString <span title="dom-NavigatorUserMediaError-message">message</span>;-->
 };
 
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=navigatorusermediaerrorcallback>NavigatorUserMediaErrorCallback</dfn> {
   void <span title=dom-NavigatorUserMediaSuccessCallback-handleEvent>handleEvent</span>(<a href=#navigatorusermediaerror>NavigatorUserMediaError</a> error);
 };</pre>
@@ -76086,7 +76086,7 @@ interface <dfn id=mediastreamtrack>MediaStreamTrack</dfn> {
   void <a href=#dom-mediastreamrecorder-getrecordeddata title=dom-MediaStreamRecorder-getRecordedData>getRecordedData</a>(<a href=#blobcallback>BlobCallback</a>? callback);
 };
 
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=blobcallback>BlobCallback</dfn> {
   void <span title=dom-BlobCallback-handleEvent>handleEvent</span>(<a href=#blob>Blob</a> blob);
 };</pre>
@@ -76380,7 +76380,7 @@ interface <dfn id=peerconnection>PeerConnection</dfn> : <a href=#eventtarget>Eve
   [TreatNonCallableAsNull] attribute <a href=#function>Function</a>? <a href=#handler-peerconnection-onremovestream title=handler-PeerConnection-onremovestream>onremovestream</a>;
 };
 
-[Callback=FunctionOnly, NoInterfaceObject]
+[Callback=FunctionOnly, LegacyNoInterfaceObject]
 interface <dfn id=signalingcallback>SignalingCallback</dfn> {
   void <span title=dom-SignalingCallback-handleEvent>handleEvent</span>(DOMString message, <a href=#peerconnection>PeerConnection</a> source);
 };</pre>
@@ -78641,7 +78641,7 @@ worker.port.postMessage({ foo: 'structured'; bar: ['data', 'also', 'possible']})
 
   <h5 id=dedicated-workers-and-the-dedicatedworkerglobalscope-interface><span class=secno>10.2.1.2 </span>Dedicated workers and the <code><a href=#dedicatedworkerglobalscope>DedicatedWorkerGlobalScope</a></code> interface</h5>
 
-  <pre class=idl>[Supplemental, NoInterfaceObject]
+  <pre class=idl>[Supplemental, LegacyNoInterfaceObject]
 interface <dfn id=dedicatedworkerglobalscope>DedicatedWorkerGlobalScope</dfn> : <a href=#workerglobalscope>WorkerGlobalScope</a> {
   void <a href=#dom-dedicatedworkerglobalscope-postmessage title=dom-DedicatedWorkerGlobalScope-postMessage>postMessage</a>(any message, optional sequence&lt;<a href=#transferable>Transferable</a>&gt; transfer);<!--
   <span>MessagePort</span> <span title="dom-DedicatedWorkerGlobalScope-startConversation">startConversation</span>(any message);-->
@@ -78682,7 +78682,7 @@ interface <dfn id=dedicatedworkerglobalscope>DedicatedWorkerGlobalScope</dfn> : 
 
   <h5 id=shared-workers-and-the-sharedworkerglobalscope-interface><span class=secno>10.2.1.3 </span>Shared workers and the <code><a href=#sharedworkerglobalscope>SharedWorkerGlobalScope</a></code> interface</h5>
 
-  <pre class=idl>[Supplemental, NoInterfaceObject]
+  <pre class=idl>[Supplemental, LegacyNoInterfaceObject]
 interface <dfn id=sharedworkerglobalscope>SharedWorkerGlobalScope</dfn> : <a href=#workerglobalscope>WorkerGlobalScope</a> {
   readonly attribute DOMString <a href=#dom-sharedworkerglobalscope-name title=dom-SharedWorkerGlobalScope-name>name</a>;
   readonly attribute <a href=#applicationcache>ApplicationCache</a> <a href=#dom-sharedworkerglobalscope-applicationcache title=dom-SharedWorkerGlobalScope-applicationCache>applicationCache</a>;
@@ -79180,7 +79180,7 @@ dictionary <dfn id=erroreventinit>ErrorEventInit</dfn> : <a href=#eventinit>Even
 
   <h5 id=the-abstractworker-abstract-interface><span class=secno>10.2.7.1 </span>The <code><a href=#abstractworker>AbstractWorker</a></code> abstract interface</h5>
 
-  <pre class=idl>[Supplemental, NoInterfaceObject]
+  <pre class=idl>[Supplemental, LegacyNoInterfaceObject]
 interface <dfn id=abstractworker>AbstractWorker</dfn> : <a href=#eventtarget>EventTarget</a> {
   [TreatNonCallableAsNull] attribute <a href=#function>Function</a>? <a href=#handler-abstractworker-onerror title=handler-AbstractWorker-onerror>onerror</a>;
 <!-- v2-onclose  [TreatNonCallableAsNull] attribute <span>Function</span>? <span title="handler-AbstractWorker-onclose">onclose</span>; -->
@@ -79560,7 +79560,7 @@ interface <dfn id=sharedworker>SharedWorker</dfn> : <a href=#abstractworker>Abst
 
   <h3 id=apis-available-to-workers><span class=secno>10.3 </span>APIs available to workers</h3>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=workerutils>WorkerUtils</dfn> {
   void <a href=#dom-workerglobalscope-importscripts title=dom-WorkerGlobalScope-importScripts>importScripts</a>(DOMString... urls);
   readonly attribute <a href=#workernavigator>WorkerNavigator</a> <a href=#dom-worker-navigator title=dom-worker-navigator>navigator</a>;
@@ -79719,7 +79719,7 @@ interface <dfn id=workerutils>WorkerUtils</dfn> {
 
   </ul><p class=note>These requirements do not override the requirements
   defined by the Web IDL specification, in particular concerning the
-  visibility of interfaces annotated with the <code title="">[NoInterfaceObject]</code> extended attribute.</p>
+  visibility of interfaces annotated with the <code title="">[LegacyNoInterfaceObject]</code> extended attribute.</p>
 
 
   <h4 id=worker-locations><span class=secno>10.3.4 </span>Worker locations</h4>
@@ -82370,7 +82370,7 @@ interface <dfn id=messagechannel>MessageChannel</dfn> {
 
   <h4 id=the-sessionstorage-attribute><span class=secno>12.2.2 </span>The <code title=dom-sessionStorage><a href=#dom-sessionstorage>sessionStorage</a></code> attribute</h4>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=windowsessionstorage>WindowSessionStorage</dfn> {
   readonly attribute <a href=#storage-0>Storage</a> <a href=#dom-sessionstorage title=dom-sessionStorage>sessionStorage</a>;
 };
@@ -82445,7 +82445,7 @@ interface <dfn id=windowsessionstorage>WindowSessionStorage</dfn> {
 
   <h4 id=the-localstorage-attribute><span class=secno>12.2.3 </span>The <code title=dom-localStorage><a href=#dom-localstorage>localStorage</a></code> attribute</h4>
 
-  <pre class=idl>[NoInterfaceObject]
+  <pre class=idl>[LegacyNoInterfaceObject]
 interface <dfn id=windowlocalstorage>WindowLocalStorage</dfn> {
   readonly attribute <a href=#storage-0>Storage</a> <a href=#dom-localstorage title=dom-localStorage>localStorage</a>;
 };

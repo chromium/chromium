@@ -1,0 +1,101 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/android/test/missing_symbol_test.gni")
+import("//build/config/android/android_nocompile.gni")
+import("//build/config/android/rules.gni")
+import("nocompile_sources.gni")
+
+template("lint_test") {
+  _library_target_name = "${target_name}_test_java"
+  _apk_target_name = "${target_name}_apk"
+
+  android_library(_library_target_name) {
+    sources = [ "//tools/android/errorprone_plugin/test/src/org/chromium/tools/errorprone/plugin/Empty.java" ]
+    not_needed(invoker, [ "sources" ])
+    if (enable_android_nocompile_tests) {
+      sources += invoker.sources
+    }
+  }
+
+  android_apk(_apk_target_name) {
+    # This cannot be marked testonly since lint has special ignores for testonly
+    # targets. We need to test linting a normal apk target.
+    apk_name = _apk_target_name
+    deps = [ ":$_library_target_name" ]
+    android_manifest = "//build/android/AndroidManifest.xml"
+  }
+
+  android_lint(target_name) {
+    _apk_target = ":${_apk_target_name}"
+    deps = [ "${_apk_target}__java" ]
+    build_config_dep = "$_apk_target$build_config_target_suffix"
+    build_config = get_label_info(_apk_target, "target_gen_dir") + "/" +
+                   get_label_info(_apk_target, "name") + ".build_config.json"
+    if (enable_android_nocompile_tests) {
+      skip_build_server = true
+    }
+  }
+}
+
+lint_test("default_locale_lint_test") {
+  sources = default_locale_lint_test_nocompile_sources
+}
+
+lint_test("new_api_lint_test") {
+  sources = new_api_lint_test_nocompile_sources
+}
+
+missing_symbol_generated_importer_test(
+    "import_parent_missing_symbol_test_java") {
+  importer_package = "test.missing_symbol.child_missing"
+  imported_package = "test.missing_symbol"
+  imported_class_name = "B"
+  deps = [ ":b_java" ]
+}
+
+missing_symbol_test("import_child_missing_symbol_test_java") {
+  sources = import_child_missing_symbol_test_nocompile_sources
+  deps = [ ":sub_b_java" ]
+}
+
+missing_symbol_test("import_turbine_missing_symbol_test_java") {
+  sources = import_turbine_missing_symbol_test_nocompile_sources
+  deps = [ ":b_java" ]
+}
+
+missing_symbol_generated_importer_test("prebuilt_missing_symbol_test_java") {
+  importer_package = "test.missing_symbol.prebuilt_missing"
+  imported_package = "test.missing_symbol"
+  imported_class_name = "C"
+  deps = [ ":c_prebuilt_java" ]
+}
+
+missing_symbol_generated_importer_test(
+    "cpp_template_missing_symbol_test_java") {
+  importer_package = "test.missing_symbol.cpp_template_missing"
+  imported_package = "test.missing_symbol"
+  imported_class_name = "D"
+  deps = [ ":d_java" ]
+}
+
+android_library("b_java") {
+  sources = [ "../../java/test/missing_symbol/B.java" ]
+}
+
+android_library("sub_b_java") {
+  sources = [ "../../java/test/missing_symbol/sub/SubB.java" ]
+}
+
+android_java_prebuilt("c_prebuilt_java") {
+  jar_path = "../../java/test/missing_symbol/c.jar"
+}
+
+android_library("d_java") {
+  srcjar_deps = [ ":d_template_javagen" ]
+}
+
+java_cpp_template("d_template_javagen") {
+  sources = [ "../../java/test/missing_symbol/D.template" ]
+}

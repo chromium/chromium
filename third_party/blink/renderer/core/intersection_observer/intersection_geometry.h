@@ -17,8 +17,9 @@ namespace blink {
 
 class Element;
 class LayoutObject;
+class Node;
 
-// Computes the intersection between an ancestor (root) element and a
+// Computes the intersection between an ancestor (root) node and a
 // descendant (target) element, with overflow and CSS clipping applied.
 // Optionally also checks whether the target is occluded or has visual
 // effects applied.
@@ -34,10 +35,15 @@ class CORE_EXPORT IntersectionGeometry {
     kShouldTrackFractionOfRoot = 1 << 2,
     kShouldUseReplacedContentRect = 1 << 3,
     kShouldConvertToCSSPixels = 1 << 4,
+    kShouldUseCachedRects = 1 << 5,
+    // Applies to boxes. If true, OverflowClipRect() is used if necessary
+    // instead of BorderBoundingBox().
+    kUseOverflowClipEdge = 1 << 6,
 
     // These flags will be computed
-    kRootIsImplicit = 1 << 5,
-    kIsVisible = 1 << 6
+    kRootIsImplicit = 1 << 7,
+    kDidComputeGeometry = 1 << 8,
+    kIsVisible = 1 << 9
   };
 
   struct RootGeometry {
@@ -52,21 +58,41 @@ class CORE_EXPORT IntersectionGeometry {
     TransformationMatrix root_to_document_transform;
   };
 
-  static const LayoutObject* GetRootLayoutObjectForTarget(
-      const Element* root_element,
-      LayoutObject* target);
+  struct CachedRects {
+    // Target's bounding rect in the target's coordinate space
+    PhysicalRect local_target_rect;
+    // Target rect mapped up to the root's space, with intermediate clips
+    // applied, but without applying the root's clip or scroll offset.
+    PhysicalRect unscrolled_unclipped_intersection_rect;
+    // True iff unscrolled_unclipped_intersection_rect actually intersects the
+    // root, as defined by edge-inclusive intersection rules.
+    bool does_intersect;
+    // True iff the target rect before any margins were applied was empty
+    bool pre_margin_target_rect_is_empty;
+    // Invalidation flag
+    bool valid;
+  };
 
-  IntersectionGeometry(const Element* root,
+  static const LayoutObject* GetRootLayoutObjectForTarget(
+      const Node* root_node,
+      LayoutObject* target,
+      bool check_containing_block_chain);
+
+  IntersectionGeometry(const Node* root,
                        const Element& target,
                        const Vector<Length>& root_margin,
                        const Vector<float>& thresholds,
-                       unsigned flags);
+                       const Vector<Length>& target_margin,
+                       unsigned flags,
+                       CachedRects* cached_rects = nullptr);
 
   IntersectionGeometry(const RootGeometry& root_geometry,
-                       const Element& explicit_root,
+                       const Node& explicit_root,
                        const Element& target,
                        const Vector<float>& thresholds,
-                       unsigned flags);
+                       const Vector<Length>& target_margin,
+                       unsigned flags,
+                       CachedRects* cached_rects = nullptr);
 
   IntersectionGeometry(const IntersectionGeometry&) = default;
 
@@ -82,6 +108,12 @@ class CORE_EXPORT IntersectionGeometry {
 
   PhysicalRect TargetRect() const { return target_rect_; }
   PhysicalRect IntersectionRect() const { return intersection_rect_; }
+
+  // The intersection rect without applying viewport clipping.
+  PhysicalRect UnclippedIntersectionRect() const {
+    return unclipped_intersection_rect_;
+  }
+
   PhysicalRect RootRect() const { return root_rect_; }
 
   IntRect IntersectionIntRect() const {
@@ -94,25 +126,32 @@ class CORE_EXPORT IntersectionGeometry {
   unsigned ThresholdIndex() const { return threshold_index_; }
 
   bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
+  bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 
  private:
+  bool ShouldUseCachedRects() const { return flags_ & kShouldUseCachedRects; }
   void ComputeGeometry(const RootGeometry& root_geometry,
                        const LayoutObject* root,
                        const LayoutObject* target,
-                       const Vector<float>& thresholds);
+                       const Vector<float>& thresholds,
+                       const Vector<Length>& target_margin,
+                       CachedRects* cached_rects);
   // Map intersection_rect from the coordinate system of the target to the
   // coordinate system of the root, applying intervening clips.
   bool ClipToRoot(const LayoutObject* root,
                   const LayoutObject* target,
                   const PhysicalRect& root_rect,
-                  PhysicalRect& intersection_rect);
+                  PhysicalRect& unclipped_intersection_rect,
+                  PhysicalRect& intersection_rect,
+                  CachedRects* cached_rects = nullptr);
   unsigned FirstThresholdGreaterThan(float ratio,
                                      const Vector<float>& thresholds) const;
 
   PhysicalRect target_rect_;
   PhysicalRect intersection_rect_;
+  PhysicalRect unclipped_intersection_rect_;
   PhysicalRect root_rect_;
   unsigned flags_;
   double intersection_ratio_;

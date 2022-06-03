@@ -16,19 +16,20 @@ const GpuControlList::Conditions kExceptionsForEntry4[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // os_version
-        0x10de,                                 // vendor_id
-        0,                                      // DeviceIDs size
-        nullptr,                                // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x10de,                                                    // vendor_id
+        0,                                      // Devices size
+        nullptr,                                // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         nullptr,                                // driver info
         nullptr,                                // GL strings
         nullptr,                                // machine model info
-        0,                                      // gpu_series size
-        nullptr,                                // gpu_series
+        0,                                      // intel_gpu_series size
+        nullptr,                                // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                    // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                             // intel_gpu_generation
         &kMoreForEntry4_1440601243Exception0,  // more data
     },
 };
@@ -37,19 +38,20 @@ const GpuControlList::Conditions kExceptionsForEntry5[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // os_version
-        0x8086,                                 // vendor_id
-        0,                                      // DeviceIDs size
-        nullptr,                                // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x8086,                                                    // vendor_id
+        0,                                      // Devices size
+        nullptr,                                // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         nullptr,                                // driver info
         nullptr,                                // GL strings
         nullptr,                                // machine model info
-        0,                                      // gpu_series size
-        nullptr,                                // gpu_series
+        0,                                      // intel_gpu_series size
+        nullptr,                                // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                    // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                             // intel_gpu_generation
         &kMoreForEntry5_1440601243Exception0,  // more data
     },
 };
@@ -58,19 +60,20 @@ const GpuControlList::Conditions kExceptionsForEntry21[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                                // os_version
-        0x00,                                              // vendor_id
-        0,                                                 // DeviceIDs size
-        nullptr,                                           // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                                 // Devices size
+        nullptr,                                           // Devices
         GpuControlList::kMultiGpuCategoryNone,             // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,                // multi_gpu_style
         nullptr,                                           // driver info
         &kGLStringsForGpuControlTestingEntry21Exception0,  // GL strings
         nullptr,                                           // machine model info
-        0,                                                 // gpu_series size
-        nullptr,                                           // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry21_1440601243Exception0,  // more data
     },
 };
@@ -79,19 +82,20 @@ const GpuControlList::Conditions kExceptionsForEntry27[1] = {
     {
         GpuControlList::kOsAndroid,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                      // os_version
-        0x00,                                    // vendor_id
-        0,                                       // DeviceIDs size
-        nullptr,                                 // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                       // Devices size
+        nullptr,                                 // Devices
         GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
         nullptr,                                 // driver info
         nullptr,                                 // GL strings
         &kMachineModelInfoForEntry27Exception0,  // machine model info
-        0,                                       // gpu_series size
-        nullptr,                                 // gpu_series
+        0,                                       // intel_gpu_series size
+        nullptr,                                 // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry27_1440601243Exception0,  // more data
     },
 };
@@ -100,19 +104,20 @@ const GpuControlList::Conditions kExceptionsForEntry29[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                      // os_version
-        0x00,                                    // vendor_id
-        0,                                       // DeviceIDs size
-        nullptr,                                 // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                       // Devices size
+        nullptr,                                 // Devices
         GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
         nullptr,                                 // driver info
         nullptr,                                 // GL strings
         &kMachineModelInfoForEntry29Exception0,  // machine model info
-        0,                                       // gpu_series size
-        nullptr,                                 // gpu_series
+        0,                                       // intel_gpu_series size
+        nullptr,                                 // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry29_1440601243Exception0,  // more data
     },
 };
@@ -121,39 +126,41 @@ const GpuControlList::Conditions kExceptionsForEntry44[2] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},  // os_version
-        0x8086,              // vendor_id
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x8086,                                                    // vendor_id
         base::size(
-            kDeviceIDsForGpuControlTestingEntry44Exception0),  // DeviceIDs size
-        kDeviceIDsForGpuControlTestingEntry44Exception0,       // DeviceIDs
+            kDevicesForGpuControlTestingEntry44Exception0),  // Devices size
+        kDevicesForGpuControlTestingEntry44Exception0,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry44Exception0,  // driver info
         nullptr,                                            // GL strings
         nullptr,  // machine model info
-        0,        // gpu_series size
-        nullptr,  // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry44_1440601243Exception0,  // more data
     },
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},  // os_version
-        0x8086,              // vendor_id
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x8086,                                                    // vendor_id
         base::size(
-            kDeviceIDsForGpuControlTestingEntry44Exception1),  // DeviceIDs size
-        kDeviceIDsForGpuControlTestingEntry44Exception1,       // DeviceIDs
+            kDevicesForGpuControlTestingEntry44Exception1),  // Devices size
+        kDevicesForGpuControlTestingEntry44Exception1,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry44Exception1,  // driver info
         nullptr,                                            // GL strings
         nullptr,  // machine model info
-        0,        // gpu_series size
-        nullptr,  // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry44_1440601243Exception1,  // more data
     },
 };
@@ -162,19 +169,20 @@ const GpuControlList::Conditions kExceptionsForEntry51[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                                // os_version
-        0x00,                                              // vendor_id
-        0,                                                 // DeviceIDs size
-        nullptr,                                           // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                                 // Devices size
+        nullptr,                                           // Devices
         GpuControlList::kMultiGpuCategoryNone,             // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,                // multi_gpu_style
         nullptr,                                           // driver info
         &kGLStringsForGpuControlTestingEntry51Exception0,  // GL strings
         nullptr,                                           // machine model info
-        0,                                                 // gpu_series size
-        nullptr,                                           // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry51_1440601243Exception0,  // more data
     },
 };
@@ -183,19 +191,21 @@ const GpuControlList::Conditions kExceptionsForEntry65[1] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                          // os_version
-        0x00,                                        // vendor_id
-        0,                                           // DeviceIDs size
-        nullptr,                                     // DeviceIDs
-        GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
-        GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
-        nullptr,                                     // driver info
-        nullptr,                                     // GL strings
-        nullptr,                                     // machine model info
-        base::size(kGpuSeriesForEntry65Exception0),  // gpu_series size
-        kGpuSeriesForEntry65Exception0,              // gpu_series
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                      // Devices size
+        nullptr,                                // Devices
+        GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+        GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+        nullptr,                                // driver info
+        nullptr,                                // GL strings
+        nullptr,                                // machine model info
+        base::size(
+            kIntelGpuSeriesForEntry65Exception0),  // intel_gpu_series size
+        kIntelGpuSeriesForEntry65Exception0,       // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry65_1440601243Exception0,  // more data
     },
 };
@@ -204,56 +214,102 @@ const GpuControlList::Conditions kExceptionsForEntry73[3] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                                // os_version
-        0x00,                                              // vendor_id
-        0,                                                 // DeviceIDs size
-        nullptr,                                           // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                                 // Devices size
+        nullptr,                                           // Devices
         GpuControlList::kMultiGpuCategoryNone,             // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,                // multi_gpu_style
         nullptr,                                           // driver info
         &kGLStringsForGpuControlTestingEntry73Exception0,  // GL strings
         nullptr,                                           // machine model info
-        0,                                                 // gpu_series size
-        nullptr,                                           // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry73_1440601243Exception0,  // more data
     },
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                                // os_version
-        0x00,                                              // vendor_id
-        0,                                                 // DeviceIDs size
-        nullptr,                                           // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                                 // Devices size
+        nullptr,                                           // Devices
         GpuControlList::kMultiGpuCategoryNone,             // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,                // multi_gpu_style
         nullptr,                                           // driver info
         &kGLStringsForGpuControlTestingEntry73Exception1,  // GL strings
         nullptr,                                           // machine model info
-        0,                                                 // gpu_series size
-        nullptr,                                           // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry73_1440601243Exception1,  // more data
     },
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                                // os_version
-        0x00,                                              // vendor_id
-        0,                                                 // DeviceIDs size
-        nullptr,                                           // DeviceIDs
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x00,                                                      // vendor_id
+        0,                                                 // Devices size
+        nullptr,                                           // Devices
         GpuControlList::kMultiGpuCategoryNone,             // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,                // multi_gpu_style
         nullptr,                                           // driver info
         &kGLStringsForGpuControlTestingEntry73Exception2,  // GL strings
         nullptr,                                           // machine model info
-        0,                                                 // gpu_series size
-        nullptr,                                           // gpu_series
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         nullptr, nullptr},                     // intel_gpu_generation
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
         &kMoreForEntry73_1440601243Exception2,  // more data
+    },
+};
+
+const GpuControlList::Conditions kExceptionsForEntry77[2] = {
+    {
+        GpuControlList::kOsAny,  // os_type
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x1002,                                                    // vendor_id
+        base::size(
+            kDevicesForGpuControlTestingEntry77Exception0),  // Devices size
+        kDevicesForGpuControlTestingEntry77Exception0,       // Devices
+        GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+        GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+        &kDriverInfoForGpuControlTestingEntry77Exception0,  // driver info
+        nullptr,                                            // GL strings
+        nullptr,  // machine model info
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
+        &kMoreForEntry77_1440601243Exception0,  // more data
+    },
+    {
+        GpuControlList::kOsAny,  // os_type
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
+        0x1002,                                                    // vendor_id
+        base::size(
+            kDevicesForGpuControlTestingEntry77Exception1),  // Devices size
+        kDevicesForGpuControlTestingEntry77Exception1,       // Devices
+        GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+        GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+        &kDriverInfoForGpuControlTestingEntry77Exception1,  // driver info
+        nullptr,                                            // GL strings
+        nullptr,  // machine model info
+        0,        // intel_gpu_series size
+        nullptr,  // intel_gpu_series
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},                              // intel_gpu_generation
+        &kMoreForEntry77_1440601243Exception1,  // more data
     },
 };
 

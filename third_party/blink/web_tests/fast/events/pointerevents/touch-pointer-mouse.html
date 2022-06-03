@@ -16,6 +16,7 @@ div.box {
 description("Verifies that canceling pointerdowns for touches correctly suppresses mouseevents.");
 
 var preventDefaultPrimary = false;
+var uniqueId = 1233;
 
 function init() {
   var events = [
@@ -53,7 +54,7 @@ function testTapWithPairedGE() {
   var x = rect.left + 50;
   var y = rect.top + 50;
 
-  var uniqueId = 1234;
+  uniqueId++;
   var tapWidth = 30;
   var tapHeight = 30;
 
@@ -71,7 +72,7 @@ function testTapWithoutPairedGE() {
   var x = rect.left + 50;
   var y = rect.top + 50;
 
-  var uniqueId = 1234;
+  uniqueId++;
   var tapWidth = 30;
   var tapHeight = 30;
 
@@ -81,14 +82,16 @@ function testTapWithoutPairedGE() {
   eventSender.touchEnd();
 
   eventSender.addTouchPoint(x, y);
-  eventSender.touchStart(uniqueId+1);
+  uniqueId++;
+  eventSender.touchStart(uniqueId);
   eventSender.releaseTouchPoint(0);
   eventSender.touchEnd();
 
-  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId+1);
+  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId);
   eventSender.gestureTap(x, y);
+  uniqueId++;
 
-  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId+2);
+  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId);
   eventSender.gestureTap(x, y);
 }
 
@@ -97,7 +100,7 @@ function testLongPressWithPairedGE() {
   var x = rect.left + 50;
   var y = rect.top + 50;
 
-  var uniqueId = 1234;
+  uniqueId++;
   var tapWidth = 30;
   var tapHeight = 30;
 
@@ -109,7 +112,8 @@ function testLongPressWithPairedGE() {
   eventSender.touchCancel();
 
   eventSender.gestureLongPress(x, y, tapWidth, tapHeight, uniqueId);
-  eventSender.gestureLongTap(x, y, tapWidth, tapHeight, uniqueId + 1);
+  uniqueId++;
+  eventSender.gestureLongTap(x, y, tapWidth, tapHeight, uniqueId);
 }
 
 function testLongPressWithoutPairedGE() {
@@ -117,7 +121,7 @@ function testLongPressWithoutPairedGE() {
   var x = rect.left + 50;
   var y = rect.top + 50;
 
-  var uniqueId = 1234;
+  uniqueId++;
   var tapWidth = 30;
   var tapHeight = 30;
 
@@ -126,11 +130,13 @@ function testLongPressWithoutPairedGE() {
   eventSender.cancelTouchPoint(0);
   eventSender.touchCancel();
 
-  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId+1);
+  uniqueId++;
+  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId);
   eventSender.gestureLongPress(x, y);
   eventSender.gestureLongTap(x, y);
 
-  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId+2);
+  uniqueId++;
+  eventSender.gestureTapDown(x, y, tapWidth, tapHeight, uniqueId);
   eventSender.gestureLongPress(x, y);
   eventSender.gestureLongTap(x, y);
 }

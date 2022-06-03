@@ -4,8 +4,7 @@
 
 #include "components/feature_engagement/public/feature_list.h"
 
-#include "base/stl_util.h"
-#include "components/feature_engagement/buildflags.h"
+#include "base/cxx17_backports.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {
@@ -17,37 +16,81 @@ namespace {
 const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if defined(OS_ANDROID)
+    &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature,
+    &kIPHAddToHomescreenMessageFeature,
+    &kIPHAddToHomescreenTextBubbleFeature,
+    &kIPHAutoDarkOptOutFeature,
+    &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHDataSaverDetailFeature,
     &kIPHDataSaverMilestonePromoFeature,
     &kIPHDataSaverPreviewFeature,
     &kIPHDownloadHomeFeature,
+    &kIPHDownloadIndicatorFeature,
     &kIPHDownloadPageFeature,
     &kIPHDownloadPageScreenshotFeature,
-    &kIPHChromeDuetHomeButtonFeature,
-    &kIPHChromeDuetSearchFeature,
-    &kIPHChromeDuetTabSwitcherFeature,
     &kIPHChromeHomeExpandFeature,
     &kIPHChromeHomePullToRefreshFeature,
+    &kIPHChromeReengagementNotification1Feature,
+    &kIPHChromeReengagementNotification2Feature,
+    &kIPHChromeReengagementNotification3Feature,
+    &kIPHContextualSearchTranslationEnableFeature,
     &kIPHContextualSearchWebSearchFeature,
     &kIPHContextualSearchPromoteTapFeature,
     &kIPHContextualSearchPromotePanelOpenFeature,
     &kIPHContextualSearchOptInFeature,
+    &kIPHContextualSearchTappedButShouldLongpressFeature,
+    &kIPHContextualSearchInPanelHelpFeature,
     &kIPHDownloadSettingsFeature,
     &kIPHDownloadInfoBarDownloadContinuingFeature,
     &kIPHDownloadInfoBarDownloadsAreFasterFeature,
+    &kIPHEphemeralTabFeature,
     &kIPHFeedCardMenuFeature,
+    &kIPHHomepagePromoCardFeature,
     &kIPHIdentityDiscFeature,
+    &kIPHInstanceSwitcherFeature,
     &kIPHKeyboardAccessoryAddressFillingFeature,
+    &kIPHKeyboardAccessoryBarSwipingFeature,
     &kIPHKeyboardAccessoryPasswordFillingFeature,
     &kIPHKeyboardAccessoryPaymentFillingFeature,
+    &kIPHKeyboardAccessoryPaymentOfferFeature,
+    &kIPHKeyboardAccessoryPaymentVirtualCardFeature,
+    &kIPHMicToolbarFeature,
+    &kIPHNewTabPageHomeButtonFeature,
+    &kIPHPageInfoFeature,
+    &kIPHPageInfoStoreInfoFeature,
     &kIPHPreviewsOmniboxUIFeature,
+    &kIPHPwaInstallAvailableFeature,
     &kIPHQuietNotificationPromptsFeature,
+    &kIPHReadLaterContextMenuFeature,
+    &kIPHReadLaterAppMenuBookmarkThisPageFeature,
+    &kIPHReadLaterAppMenuBookmarksFeature,
+    &kIPHReadLaterBottomSheetFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
+    &kIPHTabSwitcherButtonFeature,
     &kIPHTranslateMenuButtonFeature,
+    &kIPHVideoTutorialNTPChromeIntroFeature,
+    &kIPHVideoTutorialNTPDownloadFeature,
+    &kIPHVideoTutorialNTPSearchFeature,
+    &kIPHVideoTutorialNTPVoiceSearchFeature,
+    &kIPHVideoTutorialNTPSummaryFeature,
+    &kIPHVideoTutorialTryNowFeature,
     &kIPHExploreSitesTileFeature,
+    &kIPHFeedHeaderMenuFeature,
+    &kIPHFeedSwipeRefresh,
+    &kIPHShareScreenshotFeature,
+    &kIPHSharingHubLinkToggleFeature,
+    &kIPHWebFeedFollowFeature,
+    &kIPHWebFeedPostFollowDialogFeature,
+    &kIPHSharedHighlightingBuilder,
+    &kIPHSharedHighlightingReceiverFeature,
+    &kIPHStartSurfaceTabSwitcherHomeButton,
+    &kIPHUpdatedConnectionSecurityIndicatorsFeature,
+    &kIPHSharingHubWebnotesStylizeFeature,
 #endif  // defined(OS_ANDROID)
 #if defined(OS_IOS)
     &kIPHBottomToolbarTipFeature,
@@ -55,21 +98,30 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHNewTabTipFeature,
     &kIPHNewIncognitoTabTipFeature,
     &kIPHBadgedReadingListFeature,
+    &kIPHReadingListMessagesFeature,
     &kIPHBadgedTranslateManualTriggerFeature,
+    &kIPHDiscoverFeedHeaderFeature,
 #endif  // defined(OS_IOS)
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-    &kIPHFocusModeFeature,
-    &kIPHGlobalMediaControlsFeature,
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+    &kIPHDesktopTabGroupsNewGroupFeature,
+    &kIPHFocusHelpBubbleScreenReaderPromoFeature,
+    &kIPHGMCCastStartStopFeature,
+    &kIPHLiveCaptionFeature,
+    &kIPHPasswordsAccountStorageFeature,
+    &kIPHReadingListDiscoveryFeature,
+    &kIPHReadingListEntryPointFeature,
+    &kIPHReadingListInSidePanelFeature,
     &kIPHReopenTabFeature,
+    &kIPHSideSearchFeature,
+    &kIPHTabSearchFeature,
     &kIPHWebUITabStripFeature,
-#if BUILDFLAG(ENABLE_LEGACY_DESKTOP_IN_PRODUCT_HELP)
-    &kIPHBookmarkFeature,
-    &kIPHIncognitoWindowFeature,
-    &kIPHNewTabFeature,
-#endif  // BUILDFLAG(ENABLE_LEGACY_DESKTOP_IN_PRODUCT_HELP)
-#endif  // defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+    &kIPHDesktopPwaInstallFeature,
+    &kIPHProfileSwitchFeature,
+    &kIPHUpdatedConnectionSecurityIndicatorsFeature,
+    &kIPHDesktopSharedHighlightingFeature,
+#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 };
 }  // namespace
 

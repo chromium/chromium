@@ -4,12 +4,8 @@
 
 if (is_win) {
   copy("default_extensions") {
-    sources = [
-      "external_extensions.json",
-    ]
-    outputs = [
-      "$root_out_dir/extensions/{{source_file_part}}",
-    ]
+    sources = [ "external_extensions.json" ]
+    outputs = [ "$root_out_dir/extensions/{{source_file_part}}" ]
   }
 } else {
   # No-op on non-Windows.

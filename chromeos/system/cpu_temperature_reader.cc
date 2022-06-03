@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -70,6 +71,26 @@ std::string GetLabelFromPath(const base::FilePath& label_path) {
   return label_path.value();
 }
 
+void ReadTemperaturesFromDirectory(const base::FilePath& hwmon_path,
+                                   std::vector<CPUTemperatureInfo>* result) {
+  base::FileEnumerator enumerator(
+      hwmon_path, false, base::FileEnumerator::FILES, kCPUTempFilePattern);
+  for (base::FilePath temperature_path = enumerator.Next();
+       !temperature_path.empty(); temperature_path = enumerator.Next()) {
+    CPUTemperatureInfo info;
+    if (!ReadTemperatureFromPath(temperature_path, &info.temp_celsius)) {
+      DLOG(WARNING) << "Unable to read CPU temperature from "
+                    << temperature_path.value();
+      continue;
+    }
+    // Get appropriate temp*_label file.
+    std::string label_path = temperature_path.value();
+    base::ReplaceSubstringsAfterOffset(&label_path, 0, "input", "label");
+    info.label = GetLabelFromPath(base::FilePath(label_path));
+    result->push_back(info);
+  }
+}
+
 }  // namespace
 
 CPUTemperatureReader::CPUTemperatureInfo::CPUTemperatureInfo() = default;
@@ -89,25 +110,14 @@ std::vector<CPUTemperatureInfo> CPUTemperatureReader::GetCPUTemperatures() {
                                         kHwmonDirectoryPattern);
   for (base::FilePath hwmon_path = hwmon_enumerator.Next(); !hwmon_path.empty();
        hwmon_path = hwmon_enumerator.Next()) {
-    // Get temp*_input files in hwmon*/ and hwmon*/device/.
+    // Get temp*_input files in hwmon*/ and hwmon*/device/. A survey of DUTs
+    // suggests that temp values are contained in hwmon*/device on kernel 3.14
+    // and earlier and directly in hwmon*/ in kernel 3.18 and later. When no
+    // device subdirectory is present, the temp values are always contained
+    // directly within the hwmon directory.
+    ReadTemperaturesFromDirectory(hwmon_path, &result);
     if (base::PathExists(hwmon_path.Append(kDeviceDir))) {
-      hwmon_path = hwmon_path.Append(kDeviceDir);
-    }
-    base::FileEnumerator enumerator(
-        hwmon_path, false, base::FileEnumerator::FILES, kCPUTempFilePattern);
-    for (base::FilePath temperature_path = enumerator.Next();
-         !temperature_path.empty(); temperature_path = enumerator.Next()) {
-      CPUTemperatureInfo info;
-      if (!ReadTemperatureFromPath(temperature_path, &info.temp_celsius)) {
-        LOG(WARNING) << "Unable to read CPU temperature from "
-                     << temperature_path.value();
-        continue;
-      }
-      // Get appropriate temp*_label file.
-      std::string label_path = temperature_path.value();
-      base::ReplaceSubstringsAfterOffset(&label_path, 0, "input", "label");
-      info.label = GetLabelFromPath(base::FilePath(label_path));
-      result.push_back(info);
+      ReadTemperaturesFromDirectory(hwmon_path.Append(kDeviceDir), &result);
     }
   }
   return result;

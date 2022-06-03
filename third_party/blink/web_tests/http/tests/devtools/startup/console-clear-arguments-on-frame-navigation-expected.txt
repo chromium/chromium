@@ -1,6 +1,0 @@
-Tests that Web Inspector will get the console message's all arguments.
-
-Message: "A message with first argument string Second argument which should not be discarded", arguments: [string]
-Message: "2011 A message with first argument integer", arguments: [string]
-Message: "[object Window] A message with first argument window", arguments: [string]
-

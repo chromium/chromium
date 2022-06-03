@@ -42,7 +42,7 @@ public class GCMBackgroundTask implements BackgroundTask {
             return false;
         }
 
-        ChromeGcmListenerService.dispatchMessageToDriver(message);
+        ChromeGcmListenerServiceImpl.dispatchMessageToDriver(message);
         return false;
     }
 

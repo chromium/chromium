@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test styles defined in forced-colors media query while printing in forced colors mode.</title>
+<style>
+  div::before {
+    content: "PASS";
+    font-size: 100px;
+  }
+</style>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+</script>
+<p>You should see a PASS below when printing in forced colors mode.</p>
+<div></div>

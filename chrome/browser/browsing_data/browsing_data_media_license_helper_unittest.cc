@@ -9,18 +9,15 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -36,22 +33,16 @@ using content::BrowserThread;
 
 namespace {
 
-// We'll use these three distinct origins for testing, both as strings and as
-// GURLs in appropriate contexts.
-const char kTestOrigin1[] = "http://host1:1/";
-const char kTestOrigin2[] = "http://host2:2/";
-const char kTestOrigin3[] = "http://host3:1/";
-
-const GURL kOrigin1(kTestOrigin1);
-const GURL kOrigin2(kTestOrigin2);
-const GURL kOrigin3(kTestOrigin3);
-
 const char kWidevineCdmPluginId[] = "application_x-ppapi-widevine-cdm";
 const char kClearKeyCdmPluginId[] = "application_x-ppapi-clearkey-cdm";
 
 class AwaitCompletionHelper {
  public:
   AwaitCompletionHelper() : start_(false), already_quit_(false) {}
+
+  AwaitCompletionHelper(const AwaitCompletionHelper&) = delete;
+  AwaitCompletionHelper& operator=(const AwaitCompletionHelper&) = delete;
+
   virtual ~AwaitCompletionHelper() {}
 
   void BlockUntilNotified() {
@@ -65,8 +56,9 @@ class AwaitCompletionHelper {
     }
   }
 
-  base::Closure NotifyClosure() {
-    return base::Bind(&AwaitCompletionHelper::Notify, base::Unretained(this));
+  base::OnceClosure NotifyClosure() {
+    return base::BindOnce(&AwaitCompletionHelper::Notify,
+                          base::Unretained(this));
   }
 
  private:
@@ -85,8 +77,6 @@ class AwaitCompletionHelper {
   // immediately.
   bool start_;
   bool already_quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwaitCompletionHelper);
 };
 
 // The FileSystem APIs are all asynchronous; this testing class wraps up the
@@ -97,13 +87,17 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
  public:
   BrowsingDataMediaLicenseHelperTest() {
     now_ = base::Time::Now();
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     filesystem_context_ =
-        BrowserContext::GetDefaultStoragePartition(profile_.get())
-            ->GetFileSystemContext();
+        profile_->GetDefaultStoragePartition()->GetFileSystemContext();
     helper_ = BrowsingDataMediaLicenseHelper::Create(filesystem_context_);
     base::RunLoop().RunUntilIdle();
   }
+
+  BrowsingDataMediaLicenseHelperTest(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
+  BrowsingDataMediaLicenseHelperTest& operator=(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
 
   ~BrowsingDataMediaLicenseHelperTest() override {
     // Avoid memory leaks.
@@ -115,55 +109,56 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   // object, then blocks until the callback is executed.
   void FetchMediaLicenses() {
     AwaitCompletionHelper await_completion;
-    helper_->StartFetching(
-        base::Bind(&BrowsingDataMediaLicenseHelperTest::OnFetchMediaLicenses,
-                   base::Unretained(this), await_completion.NotifyClosure()));
+    helper_->StartFetching(base::BindOnce(
+        &BrowsingDataMediaLicenseHelperTest::OnFetchMediaLicenses,
+        base::Unretained(this), await_completion.NotifyClosure()));
     await_completion.BlockUntilNotified();
   }
 
   // Callback that should be executed in response to StartFetching(), and stores
   // found file systems locally so that they are available via GetFileSystems().
   void OnFetchMediaLicenses(
-      const base::Closure& done_cb,
+      base::OnceClosure done_cb,
       const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
           media_license_info_list) {
-    media_license_info_list_.reset(
-        new std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>(
-            media_license_info_list));
-    done_cb.Run();
+    media_license_info_list_ = std::make_unique<
+        std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>(
+
+        media_license_info_list);
+    std::move(done_cb).Run();
   }
 
   // Add some files to the PluginPrivateFileSystem. They are created as follows:
-  //   kOrigin1 - ClearKey - 1 file - timestamp 10 days ago
-  //   kOrigin2 - Widevine - 2 files - timestamps now and 60 days ago
-  //   kOrigin3 - Widevine - 2 files - timestamps 20 and 30 days ago
-  virtual void PopulateTestMediaLicenseData() {
-    const base::Time ten_days_ago = now_ - base::TimeDelta::FromDays(10);
-    const base::Time twenty_days_ago = now_ - base::TimeDelta::FromDays(20);
-    const base::Time thirty_days_ago = now_ - base::TimeDelta::FromDays(30);
-    const base::Time sixty_days_ago = now_ - base::TimeDelta::FromDays(60);
+  //   |origin1| - ClearKey - 1 file - timestamp 10 days ago
+  //   |origin2| - Widevine - 2 files - timestamps now and 60 days ago
+  //   |origin3| - Widevine - 2 files - timestamps 20 and 30 days ago
+  virtual void PopulateTestMediaLicenseData(const GURL& origin1,
+                                            const GURL& origin2,
+                                            const GURL& origin3) {
+    const base::Time ten_days_ago = now_ - base::Days(10);
+    const base::Time twenty_days_ago = now_ - base::Days(20);
+    const base::Time thirty_days_ago = now_ - base::Days(30);
+    const base::Time sixty_days_ago = now_ - base::Days(60);
 
-    std::string clearkey_fsid =
-        CreateFileSystem(kClearKeyCdmPluginId, kOrigin1);
+    std::string clearkey_fsid = CreateFileSystem(kClearKeyCdmPluginId, origin1);
     storage::FileSystemURL clearkey_file =
-        CreateFile(kOrigin1, clearkey_fsid, "foo");
+        CreateFile(origin1, clearkey_fsid, "foo");
     SetFileTimestamp(clearkey_file, ten_days_ago);
 
-    std::string widevine_fsid =
-        CreateFileSystem(kWidevineCdmPluginId, kOrigin2);
+    std::string widevine_fsid = CreateFileSystem(kWidevineCdmPluginId, origin2);
     storage::FileSystemURL widevine_file1 =
-        CreateFile(kOrigin2, widevine_fsid, "bar1");
+        CreateFile(origin2, widevine_fsid, "bar1");
     storage::FileSystemURL widevine_file2 =
-        CreateFile(kOrigin2, widevine_fsid, "bar2");
+        CreateFile(origin2, widevine_fsid, "bar2");
     SetFileTimestamp(widevine_file1, now_);
     SetFileTimestamp(widevine_file2, sixty_days_ago);
 
     std::string widevine_fsid2 =
-        CreateFileSystem(kWidevineCdmPluginId, kOrigin3);
+        CreateFileSystem(kWidevineCdmPluginId, origin3);
     storage::FileSystemURL widevine_file3 =
-        CreateFile(kOrigin3, widevine_fsid2, "test1");
+        CreateFile(origin3, widevine_fsid2, "test1");
     storage::FileSystemURL widevine_file4 =
-        CreateFile(kOrigin3, widevine_fsid2, "test2");
+        CreateFile(origin3, widevine_fsid2, "test2");
     SetFileTimestamp(widevine_file3, twenty_days_ago);
     SetFileTimestamp(widevine_file4, thirty_days_ago);
   }
@@ -186,24 +181,25 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   std::string CreateFileSystem(const std::string& plugin_name,
                                const GURL& origin) {
     AwaitCompletionHelper await_completion;
-    std::string fsid = storage::IsolatedContext::GetInstance()
-                           ->RegisterFileSystemForVirtualPath(
-                               storage::kFileSystemTypePluginPrivate,
-                               ppapi::kPluginPrivateRootName, base::FilePath());
+    std::string fsid =
+        storage::IsolatedContext::GetInstance()
+            ->RegisterFileSystemForVirtualPath(
+                storage::kFileSystemTypePluginPrivate,
+                storage::kPluginPrivateRootName, base::FilePath());
     EXPECT_TRUE(storage::ValidateIsolatedFileSystemId(fsid));
     filesystem_context_->OpenPluginPrivateFileSystem(
-        origin, storage::kFileSystemTypePluginPrivate, fsid, plugin_name,
-        storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-        base::Bind(&BrowsingDataMediaLicenseHelperTest::OnFileSystemOpened,
-                   base::Unretained(this), await_completion.NotifyClosure()));
+        url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate,
+        fsid, plugin_name, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+        base::BindOnce(&BrowsingDataMediaLicenseHelperTest::OnFileSystemOpened,
+                       base::Unretained(this),
+                       await_completion.NotifyClosure()));
     await_completion.BlockUntilNotified();
     return fsid;
   }
 
-  void OnFileSystemOpened(const base::Closure& done_cb,
-                          base::File::Error result) {
+  void OnFileSystemOpened(base::OnceClosure done_cb, base::File::Error result) {
     EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    done_cb.Run();
+    std::move(done_cb).Run();
   }
 
   // Creates a file named |file_name| in the PluginPrivateFileSystem identified
@@ -215,30 +211,32 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
                                     const std::string& file_name) {
     AwaitCompletionHelper await_completion;
     std::string root = storage::GetIsolatedFileSystemRootURIString(
-        origin, fsid, ppapi::kPluginPrivateRootName);
+        origin, fsid, storage::kPluginPrivateRootName);
     storage::FileSystemURL file_url =
-        filesystem_context_->CrackURL(GURL(root + file_name));
+        filesystem_context_->CrackURLInFirstPartyContext(
+            GURL(root + file_name));
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        base::WrapUnique(
-            new storage::FileSystemOperationContext(filesystem_context_));
+    std::unique_ptr<storage::FileSystemOperationContext> operation_context(
+        std::make_unique<storage::FileSystemOperationContext>(
+            filesystem_context_));
     operation_context->set_allowed_bytes_growth(
         storage::QuotaManager::kNoLimit);
     file_util->EnsureFileExists(
         std::move(operation_context), file_url,
-        base::Bind(&BrowsingDataMediaLicenseHelperTest::OnFileCreated,
-                   base::Unretained(this), await_completion.NotifyClosure()));
+        base::BindOnce(&BrowsingDataMediaLicenseHelperTest::OnFileCreated,
+                       base::Unretained(this),
+                       await_completion.NotifyClosure()));
     await_completion.BlockUntilNotified();
     return file_url;
   }
 
-  void OnFileCreated(const base::Closure& done_cb,
+  void OnFileCreated(base::OnceClosure done_cb,
                      base::File::Error result,
                      bool created) {
     EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
     EXPECT_TRUE(created);
-    done_cb.Run();
+    std::move(done_cb).Run();
   }
 
   // Sets the last_access_time and last_modified_time to |time_stamp| on the
@@ -248,19 +246,20 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     AwaitCompletionHelper await_completion;
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        base::WrapUnique(
-            new storage::FileSystemOperationContext(filesystem_context_));
+    std::unique_ptr<storage::FileSystemOperationContext> operation_context(
+        std::make_unique<storage::FileSystemOperationContext>(
+            filesystem_context_));
     file_util->Touch(
         std::move(operation_context), file_url, time_stamp, time_stamp,
-        base::Bind(&BrowsingDataMediaLicenseHelperTest::OnFileTouched,
-                   base::Unretained(this), await_completion.NotifyClosure()));
+        base::BindOnce(&BrowsingDataMediaLicenseHelperTest::OnFileTouched,
+                       base::Unretained(this),
+                       await_completion.NotifyClosure()));
     await_completion.BlockUntilNotified();
   }
 
-  void OnFileTouched(const base::Closure& done_cb, base::File::Error result) {
+  void OnFileTouched(base::OnceClosure done_cb, base::File::Error result) {
     EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    done_cb.Run();
+    std::move(done_cb).Run();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -276,8 +275,6 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   // Storage to pass information back from callbacks.
   std::unique_ptr<std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>
       media_license_info_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataMediaLicenseHelperTest);
 };
 
 // Verifies that the BrowsingDataMediaLicenseHelper correctly handles an empty
@@ -290,7 +287,10 @@ TEST_F(BrowsingDataMediaLicenseHelperTest, Empty) {
 // Verifies that the BrowsingDataMediaLicenseHelper correctly finds the test
 // data, and that each media license returned contains the expected data.
 TEST_F(BrowsingDataMediaLicenseHelperTest, FetchData) {
-  PopulateTestMediaLicenseData();
+  const GURL kOrigin1("http://host1:1");
+  const GURL kOrigin2("http://host2:1");
+  const GURL kOrigin3("http://host3:1");
+  PopulateTestMediaLicenseData(kOrigin1, kOrigin2, kOrigin3);
 
   FetchMediaLicenses();
   EXPECT_EQ(3u, ReturnedMediaLicenseInfo()->size());
@@ -302,33 +302,36 @@ TEST_F(BrowsingDataMediaLicenseHelperTest, FetchData) {
       EXPECT_FALSE(test_hosts_found[0]);
       test_hosts_found[0] = true;
       EXPECT_EQ(0u, info.size);
-      // Single file for origin1 should be 10 days ago.
+      // Single file for |origin1| should be 10 days ago.
       EXPECT_EQ(10, (Now() - info.last_modified_time).InDays());
     } else if (info.origin == kOrigin2) {
       EXPECT_FALSE(test_hosts_found[1]);
       test_hosts_found[1] = true;
       EXPECT_EQ(0u, info.size);
-      // Files for origin2 are now and 60 days ago, so it should report now.
+      // Files for |origin2| are now and 60 days ago, so it should report now.
       EXPECT_EQ(0, (Now() - info.last_modified_time).InDays());
     } else if (info.origin == kOrigin3) {
       EXPECT_FALSE(test_hosts_found[2]);
       test_hosts_found[2] = true;
       EXPECT_EQ(0u, info.size);
-      // Files for origin3 are 20 and 30 days ago, so it should report 20.
+      // Files for |origin3| are 20 and 30 days ago, so it should report 20.
       EXPECT_EQ(20, (Now() - info.last_modified_time).InDays());
     } else {
       ADD_FAILURE() << info.origin.spec() << " isn't an origin we added.";
     }
   }
-  for (size_t i = 0; i < base::size(test_hosts_found); i++) {
-    EXPECT_TRUE(test_hosts_found[i]);
+  for (const auto found : test_hosts_found) {
+    EXPECT_TRUE(found);
   }
 }
 
 // Verifies that the BrowsingDataMediaLicenseHelper correctly deletes media
 // licenses via DeleteMediaLicenseOrigin().
 TEST_F(BrowsingDataMediaLicenseHelperTest, DeleteData) {
-  PopulateTestMediaLicenseData();
+  const GURL kOrigin1("http://host1:1");
+  const GURL kOrigin2("http://host2:1");
+  const GURL kOrigin3("http://host3:1");
+  PopulateTestMediaLicenseData(kOrigin1, kOrigin2, kOrigin3);
 
   DeleteMediaLicenseOrigin(kOrigin1);
   DeleteMediaLicenseOrigin(kOrigin2);

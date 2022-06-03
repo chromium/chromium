@@ -41,6 +41,10 @@ enum class KeyboardEnableFlag {
   // Enabled via the "--enable-virtual-keyboard" command line switch.
   // Used for development and debugging.
   kCommandLineEnabled,
+
+  // Enabled via the "--disable-virtual-keyboard" command line switch,
+  // or chrome flag. Used as workaround when VK keeps popping up.
+  kCommandLineDisabled,
 };
 
 // Container types used to set and identify container behavior. Used in UMA

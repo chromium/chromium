@@ -55,12 +55,9 @@ void BookmarksBrowserTest::SetupExtensionAPIEditDisabledTest() {
       BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* bar = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* folder =
-      model->AddFolder(bar, 0, base::ASCIIToUTF16("Folder"));
-  model->AddURL(bar, 1, base::ASCIIToUTF16("AAA"),
-                GURL("http://aaa.example.com"));
-  model->AddURL(folder, 0, base::ASCIIToUTF16("BBB"),
-                GURL("http://bbb.example.com"));
+  const bookmarks::BookmarkNode* folder = model->AddFolder(bar, 0, u"Folder");
+  model->AddURL(bar, 1, u"AAA", GURL("http://aaa.example.com"));
+  model->AddURL(folder, 0, u"BBB", GURL("http://bbb.example.com"));
 
   PrefService* prefs = user_prefs::UserPrefs::Get(profile);
   prefs->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);

@@ -4,21 +4,27 @@
 
 #include "crypto/scoped_test_system_nss_key_slot.h"
 
+#include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
 
 namespace crypto {
 
-ScopedTestSystemNSSKeySlot::ScopedTestSystemNSSKeySlot()
+ScopedTestSystemNSSKeySlot::ScopedTestSystemNSSKeySlot(
+    bool simulate_token_loader)
     : test_db_(new ScopedTestNSSDB) {
   if (!test_db_->is_open())
     return;
-  SetSystemKeySlotForTesting(
+
+  PrepareSystemSlotForTesting(  // IN-TEST
       ScopedPK11Slot(PK11_ReferenceSlot(test_db_->slot())));
+
+  if (simulate_token_loader)
+    FinishInitializingTPMTokenAndSystemSlot();
 }
 
 ScopedTestSystemNSSKeySlot::~ScopedTestSystemNSSKeySlot() {
-  SetSystemKeySlotForTesting(ScopedPK11Slot());
+  ResetSystemSlotForTesting();  // IN-TEST
 }
 
 bool ScopedTestSystemNSSKeySlot::ConstructedSuccessfully() const {

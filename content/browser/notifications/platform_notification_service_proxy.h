@@ -6,15 +6,19 @@
 #define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_PROXY_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 
 class GURL;
+
+namespace base {
+class Time;
+}
 
 namespace blink {
 enum class ServiceWorkerStatusCode;
@@ -38,6 +42,11 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       BrowserContext* browser_context);
 
+  PlatformNotificationServiceProxy(const PlatformNotificationServiceProxy&) =
+      delete;
+  PlatformNotificationServiceProxy& operator=(
+      const PlatformNotificationServiceProxy&) = delete;
+
   ~PlatformNotificationServiceProxy();
 
   // To be called when the |browser_context_| has been shutdown. This
@@ -52,8 +61,8 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
   void DisplayNotification(const NotificationDatabaseData& data,
                            DisplayResultCallback callback);
 
-  // Closes the notification with |notification_id|.
-  void CloseNotification(const std::string& notification_id);
+  // Closes the notifications with |notification_ids|.
+  void CloseNotifications(const std::set<std::string>& notification_ids);
 
   // Schedules a notification trigger for |timestamp|.
   void ScheduleTrigger(base::Time timestamp);
@@ -82,9 +91,9 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
                              const GURL& service_worker_scope,
                              DisplayResultCallback callback);
 
-  // Actually closes the notification with |notification_id|. Must be called on
-  // the UI thread.
-  void DoCloseNotification(const std::string& notification_id);
+  // Actually closes the notifications with |notification_ids|. Must be called
+  // on the UI thread.
+  void DoCloseNotifications(const std::set<std::string>& notification_ids);
 
   // Actually calls |notification_service_| to schedule a trigger. Must be
   // called on the UI thread.
@@ -113,8 +122,6 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       this};
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_io_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformNotificationServiceProxy);
 };
 
 }  // namespace content

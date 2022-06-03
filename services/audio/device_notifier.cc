@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
@@ -39,8 +39,8 @@ void DeviceNotifier::RegisterListener(
   auto& new_listener = listeners_[listener_id];
   new_listener.Bind(std::move(listener));
   new_listener.set_disconnect_handler(
-      base::BindRepeating(&DeviceNotifier::RemoveListener,
-                          weak_factory_.GetWeakPtr(), listener_id));
+      base::BindOnce(&DeviceNotifier::RemoveListener,
+                     weak_factory_.GetWeakPtr(), listener_id));
 }
 
 void DeviceNotifier::OnDevicesChanged(
@@ -50,8 +50,8 @@ void DeviceNotifier::OnDevicesChanged(
 
   TRACE_EVENT0("audio", "audio::DeviceNotifier::OnDevicesChanged");
   task_runner_->PostTask(FROM_HERE,
-                         base::BindRepeating(&DeviceNotifier::UpdateListeners,
-                                             weak_factory_.GetWeakPtr()));
+                         base::BindOnce(&DeviceNotifier::UpdateListeners,
+                                        weak_factory_.GetWeakPtr()));
 }
 
 void DeviceNotifier::UpdateListeners() {

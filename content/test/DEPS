@@ -11,7 +11,7 @@ include_rules = [
   "+services/viz/public/mojom",
 
   # For WebRTC tests.
-  "+chromeos/audio",
+  "+ash/components/audio",
   "+chromeos/dbus/audio",
   "+chromeos/network/network_handler.h",
   "+chromeos/network/network_state.h",
@@ -23,6 +23,7 @@ include_rules = [
   # For loading V8's initial snapshot from external files.
   "+gin/v8_initializer.h",
   "+services/device/public/cpp/generic_sensor",
+  "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
@@ -45,13 +46,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "web_test_support.cc": [
-    "+content/shell/test_runner",
-    "+content/shell/common/shell_switches.h",
-    "+services/viz/public/cpp/gpu",
-  ],
   "gpu_browsertest_helpers.cc": [
     "+services/viz/public/cpp/gpu/command_buffer_metrics.h",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   ],
+  "content_browser_test_test.cc": [
+    "+ui/ozone/public/ozone_switches.h",
+  ]
 }

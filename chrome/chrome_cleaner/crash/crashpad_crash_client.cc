@@ -13,12 +13,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,7 +132,7 @@ CrashClient* CrashClient::GetInstance() {
 }
 
 // static
-void CrashClient::GetClientId(base::string16* client_id) {
+void CrashClient::GetClientId(std::wstring* client_id) {
   CrashpadCrashClient::GetClientId(client_id);
 }
 
@@ -216,11 +215,11 @@ bool CrashpadCrashClient::InitializeCrashReporting(Mode mode,
                   ? "1"
                   : "0");
 
-  base::string16 chrome_version;
+  std::wstring chrome_version;
   bool chrome_system_install;
   RetrieveChromeVersionAndInstalledDomain(&chrome_version,
                                           &chrome_system_install);
-  SetCrashKey("ChromeVersion", base::UTF16ToUTF8(chrome_version));
+  SetCrashKey("ChromeVersion", base::WideToUTF8(chrome_version));
   SetCrashKey("ChromeSystemInstall", chrome_system_install ? "1" : "0");
 
   SetCrashKeysFromCommandLine();
@@ -329,7 +328,7 @@ CrashpadCrashClient* CrashpadCrashClient::GetInstance() {
 }
 
 // static
-void CrashpadCrashClient::GetClientId(base::string16* client_id) {
+void CrashpadCrashClient::GetClientId(std::wstring* client_id) {
   DCHECK(client_id);
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance()->sequence_checker_);
   DCHECK(GetInstance()->database_) << "Crash reporting not initialized";
@@ -339,7 +338,7 @@ void CrashpadCrashClient::GetClientId(base::string16* client_id) {
   crashpad::UUID uuid;
   if (!settings->GetClientID(&uuid)) {
     LOG(ERROR) << "Unable to retrieve client ID from Crashpad database";
-    *client_id = base::string16();
+    *client_id = std::wstring();
     return;
   }
 

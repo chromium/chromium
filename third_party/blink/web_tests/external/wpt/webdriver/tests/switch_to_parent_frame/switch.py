@@ -1,9 +1,8 @@
 import pytest
 
-from webdriver import StaleElementReferenceException
+from webdriver import NoSuchElementException
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline, iframe
 
 
 def switch_to_parent_frame(session):
@@ -11,7 +10,7 @@ def switch_to_parent_frame(session):
         "POST", "session/{session_id}/frame/parent".format(**vars(session)))
 
 
-def test_null_response_value(session):
+def test_null_response_value(session, inline, iframe):
     session.url = inline(iframe("<p>foo"))
     frame_element = session.find.css("iframe", all=False)
     session.switch_frame(frame_element)
@@ -21,19 +20,66 @@ def test_null_response_value(session):
     assert value is None
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, url):
+    session.window_handle = session.new_window()
+
+    session.url = url("/webdriver/tests/support/html/frames.html")
+
+    subframe = session.find.css("#sub-frame", all=False)
+    session.switch_frame(subframe)
+
+    session.window.close()
+
     response = switch_to_parent_frame(session)
     assert_error(response, "no such window")
 
 
-def test_stale_element_from_iframe(session):
+def test_no_parent_browsing_context(session, url):
+    session.url = url("/webdriver/tests/support/html/frames.html")
+
+    subframe = session.find.css("#sub-frame", all=False)
+    session.switch_frame(subframe)
+
+    deleteframe = session.find.css("#delete-frame", all=False)
+    session.switch_frame(deleteframe)
+
+    button = session.find.css("#remove-top", all=False)
+    button.click()
+
+    response = switch_to_parent_frame(session)
+    assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = switch_to_parent_frame(session)
+    assert_success(response)
+
+    session.find.css("#delete", all=False)
+
+
+def test_no_browsing_context_when_already_top_level(session, closed_window):
+    response = switch_to_parent_frame(session)
+    assert_error(response, "no such window")
+
+
+def test_switch_from_iframe(session, inline, iframe):
     session.url = inline(iframe("<p>foo"))
     frame_element = session.find.css("iframe", all=False)
     session.switch_frame(frame_element)
-    stale_element = session.find.css("p", all=False)
+    element = session.find.css("p", all=False)
 
     result = switch_to_parent_frame(session)
     assert_success(result)
 
-    with pytest.raises(StaleElementReferenceException):
-        stale_element.text
+    with pytest.raises(NoSuchElementException):
+        element.text
+
+
+def test_switch_from_top_level(session, inline):
+    session.url = inline("<p>foo")
+    element = session.find.css("p", all=False)
+
+    result = switch_to_parent_frame(session)
+    assert_success(result)
+
+    assert element.text == "foo"

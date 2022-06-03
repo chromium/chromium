@@ -48,7 +48,7 @@ class CheckEventListenerCallback final : public NativeEventListener {
 };
 
 TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -61,19 +61,19 @@ TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
                                          callback);
 
   GetEventHandler().HandlePointerEvent(
-      CreateTouchPointerEvent(WebInputEvent::kPointerDown),
+      CreateTouchPointerEvent(WebInputEvent::Type::kPointerDown),
       Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
   GetDocument().getElementById("target")->remove();
 
   GetEventHandler().HandlePointerEvent(
-      CreateTouchPointerEvent(WebInputEvent::kPointerUp),
+      CreateTouchPointerEvent(WebInputEvent::Type::kPointerUp),
       Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
   GetEventHandler().HandlePointerEvent(
-      CreateTouchPointerEvent(WebInputEvent::kPointerDown),
+      CreateTouchPointerEvent(WebInputEvent::Type::kPointerDown),
       Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
@@ -81,7 +81,7 @@ TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
 }
 
 TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -94,7 +94,7 @@ TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
   Window().scrollTo(100, 100);
 
   GetEventHandler().HandlePointerEvent(
-      CreateTouchPointerEvent(WebInputEvent::kPointerDown),
+      CreateTouchPointerEvent(WebInputEvent::Type::kPointerDown),
       Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 

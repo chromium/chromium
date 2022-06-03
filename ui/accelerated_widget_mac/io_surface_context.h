@@ -7,8 +7,6 @@
 
 #include <OpenGL/OpenGL.h>
 
-#include <map>
-#include <memory>
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"

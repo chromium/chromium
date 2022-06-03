@@ -14,7 +14,6 @@
 
 #include "util/misc/capture_context_test_util.h"
 
-#include "base/logging.h"
 #include "gtest/gtest.h"
 #include "util/misc/from_pointer_cast.h"
 

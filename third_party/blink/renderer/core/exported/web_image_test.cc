@@ -32,9 +32,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -44,17 +45,20 @@ static scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
   return test::ReadFromFile(file_path);
 }
 
-TEST(WebImageTest, PNGImage) {
+class WebImageTest : public testing::Test,
+                     private ScopedMockOverlayScrollbars {};
+
+TEST_F(WebImageTest, PNGImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("white-1x1.png");
   ASSERT_TRUE(data.get());
 
-  SkBitmap image = WebImage::FromData(WebData(data), WebSize());
+  SkBitmap image = WebImage::FromData(WebData(data), gfx::Size());
   EXPECT_EQ(image.width(), 1);
   EXPECT_EQ(image.height(), 1);
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), image.getColor(0, 0));
 }
 
-TEST(WebImageTest, ICOImage) {
+TEST_F(WebImageTest, ICOImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("black-and-white.ico");
   ASSERT_TRUE(data.get());
 
@@ -68,7 +72,7 @@ TEST(WebImageTest, ICOImage) {
   EXPECT_EQ(SkColorSetARGB(255, 0, 0, 0), images[1].getColor(0, 0));
 }
 
-TEST(WebImageTest, ICOValidHeaderMissingBitmap) {
+TEST_F(WebImageTest, ICOValidHeaderMissingBitmap) {
   scoped_refptr<SharedBuffer> data =
       ReadFile("valid_header_missing_bitmap.ico");
   ASSERT_TRUE(data.get());
@@ -77,32 +81,32 @@ TEST(WebImageTest, ICOValidHeaderMissingBitmap) {
   ASSERT_TRUE(images.empty());
 }
 
-TEST(WebImageTest, BadImage) {
+TEST_F(WebImageTest, BadImage) {
   const char kBadImage[] = "hello world";
   WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(kBadImage));
   ASSERT_EQ(0u, images.size());
 
-  SkBitmap image = WebImage::FromData(WebData(kBadImage), WebSize());
+  SkBitmap image = WebImage::FromData(WebData(kBadImage), gfx::Size());
   EXPECT_TRUE(image.empty());
   EXPECT_TRUE(image.isNull());
 }
 
-TEST(WebImageTest, DecodeSVGDesiredSize) {
+TEST_F(WebImageTest, DecodeSVGDesiredSize) {
   const char kImage[] =
       "<svg xmlns='http://www.w3.org/2000/svg' width='32'"
       " height='32'></svg>";
-  SkBitmap image = WebImage::DecodeSVG(WebData(kImage), WebSize(16, 16));
+  SkBitmap image = WebImage::DecodeSVG(WebData(kImage), gfx::Size(16, 16));
   EXPECT_FALSE(image.empty());
   EXPECT_FALSE(image.isNull());
   EXPECT_EQ(image.width(), 16);
   EXPECT_EQ(image.height(), 16);
 }
 
-TEST(WebImageTest, DecodeSVGDesiredSizeAspectRatioOnly) {
+TEST_F(WebImageTest, DecodeSVGDesiredSizeAspectRatioOnly) {
   const char kImageAspectRatioOne[] =
       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'></svg>";
   SkBitmap image =
-      WebImage::DecodeSVG(WebData(kImageAspectRatioOne), WebSize(16, 16));
+      WebImage::DecodeSVG(WebData(kImageAspectRatioOne), gfx::Size(16, 16));
   EXPECT_FALSE(image.empty());
   EXPECT_FALSE(image.isNull());
   EXPECT_EQ(image.width(), 16);
@@ -111,32 +115,33 @@ TEST(WebImageTest, DecodeSVGDesiredSizeAspectRatioOnly) {
   const char kImageAspectRatioNotOne[] =
       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'></svg>";
   image =
-      WebImage::DecodeSVG(WebData(kImageAspectRatioNotOne), WebSize(16, 16));
+      WebImage::DecodeSVG(WebData(kImageAspectRatioNotOne), gfx::Size(16, 16));
   EXPECT_FALSE(image.empty());
   EXPECT_FALSE(image.isNull());
   EXPECT_EQ(image.width(), 16);
   EXPECT_EQ(image.height(), 16);
 }
 
-TEST(WebImageTest, DecodeSVGDesiredSizeEmpty) {
+TEST_F(WebImageTest, DecodeSVGDesiredSizeEmpty) {
   const char kImage[] =
       "<svg xmlns='http://www.w3.org/2000/svg' width='32'"
       " height='32'></svg>";
-  SkBitmap image = WebImage::DecodeSVG(WebData(kImage), WebSize());
+  SkBitmap image = WebImage::DecodeSVG(WebData(kImage), gfx::Size());
   EXPECT_FALSE(image.empty());
   EXPECT_FALSE(image.isNull());
   EXPECT_EQ(image.width(), 32);
   EXPECT_EQ(image.height(), 32);
 }
 
-TEST(WebImageTest, DecodeSVGInvalidImage) {
+TEST_F(WebImageTest, DecodeSVGInvalidImage) {
   const char kBogusImage[] = "bogus";
-  SkBitmap image = WebImage::DecodeSVG(WebData(kBogusImage), WebSize(16, 16));
+  SkBitmap image = WebImage::DecodeSVG(WebData(kBogusImage), gfx::Size(16, 16));
   EXPECT_TRUE(image.empty());
   EXPECT_TRUE(image.isNull());
 
   const char kWellformedXMLBadImage[] = "<foo xmlns='some:namespace'></foo>";
-  image = WebImage::DecodeSVG(WebData(kWellformedXMLBadImage), WebSize(16, 16));
+  image =
+      WebImage::DecodeSVG(WebData(kWellformedXMLBadImage), gfx::Size(16, 16));
   EXPECT_TRUE(image.empty());
   EXPECT_TRUE(image.isNull());
 }

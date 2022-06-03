@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview Provides utility methods used by the cellular activation flow.
- * Current: chrome://mobilesetup (mobile_setup.html/mobile_setup_portal.html)
- * New UI: chrome://cellular-setup (cellular_setup_dialog.html)
+ *  Current: chrome://mobilesetup (mobile_setup.html/mobile_setup_portal.html)
+ *  New UI: cr_components/chromeos/cellular_setup/cellular_setup.html
  */
 cr.define('webviewPost.util', function() {
   /**
@@ -37,9 +37,9 @@ cr.define('webviewPost.util', function() {
       '  var pairs = postData.split(\'&\');' +
       '  pairs.forEach(pairStr => {' +
       '    var pair = pairStr.split(\'=\');' +
-      '    if (pair.length == 2)' +
+      '    if (pair.length === 2)' +
       '      addInputElement(form, pair[0], pair[1]);' +
-      '    else if (pair.length == 1)' +
+      '    else if (pair.length === 1)' +
       '      addInputElement(form, pair[0], true);' +
       '  });' +
       '}' +
@@ -76,7 +76,7 @@ cr.define('webviewPost.util', function() {
    */
   function initializeWebviewRedirectForm(
       webview, paymentUrl, postData, webviewSrc, commitEvent) {
-    if (!commitEvent.isTopLevel || commitEvent.url != webviewSrc) {
+    if (!commitEvent.isTopLevel || commitEvent.url !== webviewSrc) {
       return;
     }
 
@@ -95,7 +95,8 @@ cr.define('webviewPost.util', function() {
    * @param {string} paymentUrl URL to load.
    * @param {string} postData Data to pass.
    */
-  function postDeviceDataToWebview(webview, paymentUrl, postData) {
+  /* #export */ function postDeviceDataToWebview(
+      webview, paymentUrl, postData) {
     const webviewSrc = 'data:text/html;charset=utf-8,' +
         encodeURIComponent(WEBVIEW_REDIRECT_HTML);
     webview.addEventListener(
@@ -105,5 +106,6 @@ cr.define('webviewPost.util', function() {
     webview.src = webviewSrc;
   }
 
+  // #cr_define_end
   return {postDeviceDataToWebview: postDeviceDataToWebview};
 });

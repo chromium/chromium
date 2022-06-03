@@ -6,11 +6,13 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_winrt_initializer.h"
+#include "base/win/windows_version.h"
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace {
@@ -59,11 +61,11 @@ class TestingLocationProviderWinrt : public LocationProviderWinrt {
 
   bool IsHighAccuracyEnabled() { return enable_high_accuracy_; }
 
-  base::Optional<EventRegistrationToken> GetStatusChangedToken() {
+  absl::optional<EventRegistrationToken> GetStatusChangedToken() {
     return status_changed_token_;
   }
 
-  base::Optional<EventRegistrationToken> GetPositionChangedToken() {
+  absl::optional<EventRegistrationToken> GetPositionChangedToken() {
     return position_changed_token_;
   }
 
@@ -80,17 +82,20 @@ class TestingLocationProviderWinrt : public LocationProviderWinrt {
 };
 
 class LocationProviderWinrtTest : public testing::Test {
- public:
-  static void SetUpTestSuite() {
-    base::win::RoInitialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED);
-  }
-
  protected:
   LocationProviderWinrtTest()
       : observer_(
             std::make_unique<MockLocationObserver>(run_loop_.QuitClosure())),
         callback_(base::BindRepeating(&MockLocationObserver::OnLocationUpdate,
                                       base::Unretained(observer_.get()))) {}
+
+  void SetUp() override {
+    if (base::win::GetVersion() < base::win::Version::WIN8)
+      GTEST_SKIP();
+
+    winrt_initializer_.emplace();
+    ASSERT_TRUE(winrt_initializer_->Succeeded());
+  }
 
   void InitializeProvider(
       PositionStatus position_status = PositionStatus::PositionStatus_Ready) {
@@ -112,6 +117,7 @@ class LocationProviderWinrtTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
+  absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   const std::unique_ptr<MockLocationObserver> observer_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
   std::unique_ptr<TestingLocationProviderWinrt> provider_;

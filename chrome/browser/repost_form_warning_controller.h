@@ -6,32 +6,32 @@
 #define CHROME_BROWSER_REPOST_FORM_WARNING_CONTROLLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 
 // This class is used to continue or cancel a pending reload when the
 // repost form warning is shown. It is owned by the platform-specific
 // |TabModalConfirmDialog{Gtk, Mac, Views, WebUI}| classes.
-class RepostFormWarningController : public TabModalConfirmDialogDelegate,
-                                    public content::WebContentsObserver {
+class RepostFormWarningController : public TabModalConfirmDialogDelegate {
  public:
   explicit RepostFormWarningController(content::WebContents* web_contents);
+
+  RepostFormWarningController(const RepostFormWarningController&) = delete;
+  RepostFormWarningController& operator=(const RepostFormWarningController&) =
+      delete;
+
   ~RepostFormWarningController() override;
 
  private:
   // TabModalConfirmDialogDelegate methods:
-  base::string16 GetTitle() override;
-  base::string16 GetDialogMessage() override;
-  base::string16 GetAcceptButtonTitle() override;
+  std::u16string GetTitle() override;
+  std::u16string GetDialogMessage() override;
+  std::u16string GetAcceptButtonTitle() override;
   void OnAccepted() override;
   void OnCanceled() override;
   void OnClosed() override;
 
-  // content::WebContentsObserver methods:
+  // content::WebContentsObserver methods via TabModalConfirmDialogDelegate:
   void BeforeFormRepostWarningShow() override;
-
-  DISALLOW_COPY_AND_ASSIGN(RepostFormWarningController);
 };
 
 #endif  // CHROME_BROWSER_REPOST_FORM_WARNING_CONTROLLER_H_

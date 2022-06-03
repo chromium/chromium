@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/events/event_observer.h"
@@ -19,11 +18,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
-class WidgetDelegateView;
-
-namespace test {
-class WidgetTestInteractive;
-}
 
 // Touch specific implementation of TouchEditingControllerDeprecated.
 // Responsible for displaying selection handles and menu elements relevant in a
@@ -38,16 +32,18 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
 
   // Use ui::TouchEditingControllerFactory::Create() instead.
   explicit TouchSelectionControllerImpl(ui::TouchEditable* client_view);
+  TouchSelectionControllerImpl(const TouchSelectionControllerImpl&) = delete;
+  TouchSelectionControllerImpl& operator=(const TouchSelectionControllerImpl&) =
+      delete;
   ~TouchSelectionControllerImpl() override;
 
   // ui::TouchEditingControllerDeprecated:
   void SelectionChanged() override;
-  bool IsHandleDragInProgress() override;
-  void HideHandles(bool quick) override;
+
+  void ShowQuickMenuImmediatelyForTesting();
 
  private:
   friend class TouchSelectionControllerImplTest;
-  friend class test::WidgetTestInteractive;
 
   void SetDraggingHandle(EditingHandleView* handle);
 
@@ -76,7 +72,7 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
   bool ShouldShowQuickMenu() override;
-  base::string16 GetSelectedText() override;
+  std::u16string GetSelectedText() override;
 
   // WidgetObserver:
   void OnWidgetClosing(Widget* widget) override;
@@ -111,14 +107,16 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   bool IsSelectionHandle2Visible();
   bool IsCursorHandleVisible();
   gfx::Rect GetExpectedHandleBounds(const gfx::SelectionBound& bound);
-  WidgetDelegateView* GetHandle1View();
-  WidgetDelegateView* GetHandle2View();
+  View* GetHandle1View();
+  View* GetHandle2View();
 
   ui::TouchEditable* client_view_;
   Widget* client_widget_ = nullptr;
-  std::unique_ptr<EditingHandleView> selection_handle_1_;
-  std::unique_ptr<EditingHandleView> selection_handle_2_;
-  std::unique_ptr<EditingHandleView> cursor_handle_;
+  // Non-owning pointers to EditingHandleViews. These views are owned by their
+  // Widget and cleaned up when their Widget closes.
+  EditingHandleView* selection_handle_1_;
+  EditingHandleView* selection_handle_2_;
+  EditingHandleView* cursor_handle_;
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
@@ -141,8 +139,6 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // Selection bounds, clipped to client view's boundaries.
   gfx::SelectionBound selection_bound_1_clipped_;
   gfx::SelectionBound selection_bound_2_clipped_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerImpl);
 };
 
 }  // namespace views

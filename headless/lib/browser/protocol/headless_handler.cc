@@ -4,6 +4,8 @@
 
 #include "headless/lib/browser/protocol/headless_handler.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -12,7 +14,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -58,7 +60,7 @@ void OnBeginFrameFinished(
     std::unique_ptr<SkBitmap> bitmap,
     std::string error_message) {
   if (!error_message.empty()) {
-    callback->sendFailure(Response::Error(std::move(error_message)));
+    callback->sendFailure(Response::ServerError(std::move(error_message)));
     return;
   }
   if (!bitmap || bitmap->drawsNothing()) {
@@ -77,18 +79,19 @@ HeadlessHandler::HeadlessHandler(HeadlessBrowserImpl* browser,
 HeadlessHandler::~HeadlessHandler() {}
 
 void HeadlessHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new HeadlessExperimental::Frontend(dispatcher->channel()));
+  frontend_ =
+      std::make_unique<HeadlessExperimental::Frontend>(dispatcher->channel());
   HeadlessExperimental::Dispatcher::wire(dispatcher, this);
 }
 
 Response HeadlessHandler::Enable() {
   if (frontend_)
     frontend_->NeedsBeginFramesChanged(true);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response HeadlessHandler::Disable() {
-  return Response::OK();
+  return Response::Success();
 }
 
 void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
@@ -99,7 +102,7 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   HeadlessWebContentsImpl* headless_contents =
       HeadlessWebContentsImpl::From(browser_, web_contents_);
   if (!headless_contents->begin_frame_control_enabled()) {
-    callback->sendFailure(Response::Error(
+    callback->sendFailure(Response::ServerError(
         "Command is only supported if BeginFrameControl is enabled."));
     return;
   }
@@ -107,9 +110,9 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRunAllCompositorStagesBeforeDraw)) {
     callback->sendFailure(
-        Response::Error("Command is only supported with "
-                        "--run-all-compositor-stages-before-draw, see "
-                        "https://goo.gl/3zHXhB for more info."));
+        Response::ServerError("Command is only supported with "
+                              "--run-all-compositor-stages-before-draw, see "
+                              "https://goo.gl/3zHXhB for more info."));
     return;
   }
 
@@ -118,8 +121,8 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   bool no_display_updates = in_no_display_updates.fromMaybe(false);
 
   if (in_frame_time_ticks.isJust()) {
-    frame_time_ticks = base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
-                                               in_frame_time_ticks.fromJust());
+    frame_time_ticks =
+        base::TimeTicks() + base::Milliseconds(in_frame_time_ticks.fromJust());
   } else {
     frame_time_ticks = base::TimeTicks::Now();
   }
@@ -131,7 +134,7 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
           Response::InvalidParams("interval has to be greater than 0"));
       return;
     }
-    interval = base::TimeDelta::FromMillisecondsD(interval_double);
+    interval = base::Milliseconds(interval_double);
   } else {
     interval = viz::BeginFrameArgs::DefaultInterval();
   }

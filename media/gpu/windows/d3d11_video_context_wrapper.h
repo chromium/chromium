@@ -9,7 +9,6 @@
 #include <wrl/client.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 
@@ -18,6 +17,10 @@ namespace media {
 class MEDIA_GPU_EXPORT VideoContextWrapper {
  public:
   VideoContextWrapper() = default;
+
+  VideoContextWrapper(const VideoContextWrapper&) = delete;
+  VideoContextWrapper& operator=(const VideoContextWrapper&) = delete;
+
   virtual ~VideoContextWrapper();
   // D3D11_VIDEO_DECODER_BUFFER_DESC1 and D3D11_VIDEO_DECODER_BUFFER_DESC
   // have radically different sets of member variables, which means that in
@@ -73,8 +76,6 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
   virtual HRESULT SubmitDecoderBuffers(ID3D11VideoDecoder* video_decoder,
                                        UINT num_buffers,
                                        const VideoBufferWrapper* buffers) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoContextWrapper);
 };  // VideoContextWrapper
 
 }  // namespace media

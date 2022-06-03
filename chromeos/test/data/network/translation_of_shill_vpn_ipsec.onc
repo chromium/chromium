@@ -2,6 +2,8 @@
     "GUID": "{84391467-dd8b-4c66-9b52-860583038351}",
     "Name": "TestIpsecVPN",
     "Type": "VPN",
+    "IPAddressConfigType":"DHCP",
+    "NameServersConfigType":"DHCP",
     "VPN": {
         "Host": "terminus.muc",
         "IPsec": {

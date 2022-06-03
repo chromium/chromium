@@ -22,10 +22,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_
 
+#include <string.h>
+
 #include <limits>
 #include <memory>
 #include <type_traits>
 #include <utility>
+
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -43,24 +46,14 @@ template <typename T>
 struct HashTraits;
 
 namespace {
-template <typename T, bool use_atomic_writes = IsTraceable<T>::value>
-void ClearMemoryAtomically(T* slot, size_t size) {
-  size_t* address = reinterpret_cast<size_t*>(slot);
-  // This method is called for clearing hash table entires that are removed. In
-  // case Oilpan concurrent marking is tracing the hash table at the same time,
-  // there might be a data race between the marker reading the entry and zeroing
-  // the entry. Using atomic reads here resolves any possible races.
-  // Note that sizeof(T) might not be a multiple of sizeof(size_t). The last
-  // sizeof(T)%sizeof(size_t) bytes don't require atomic write as it cannot hold
-  // a pointer (i.e it will not be traceable).
-  if (use_atomic_writes) {
-    for (; size >= sizeof(size_t); size -= sizeof(size_t), ++address) {
-      WTF::AsAtomicPtr(address)->store(0, std::memory_order_relaxed);
-    }
-  }
-  DCHECK(!use_atomic_writes || (size < sizeof(size_t)));
-  memset(address, 0, size);
-}
+template <typename T, bool = IsTraceable<T>::value>
+struct ClearMemoryAtomicallyIfNeeded {
+  static void Clear(T* slot) { memset(static_cast<void*>(slot), 0, sizeof(T)); }
+};
+template <typename T>
+struct ClearMemoryAtomicallyIfNeeded<T, true> {
+  static void Clear(T* slot) { AtomicMemzero<sizeof(T)>(slot); }
+};
 }  // namespace
 
 template <typename T>
@@ -108,11 +101,10 @@ struct GenericHashTraitsBase<false, T> {
 
   static constexpr bool kCanHaveDeletedValue = true;
 
-  // The kHasMovingCallback value is only used for HashTable backing stores.
-  // Currently it is needed for LinkedHashSet to register moving callback on
-  // write barrier. Users of this value have to provide RegisterMovingCallback
-  // function.
-  static constexpr bool kHasMovingCallback = false;
+  // The kCanTraceConcurrently value is used by Oilpan concurrent marking. Only
+  // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
+  // on a concurrent thread.
+  static constexpr bool kCanTraceConcurrently = false;
 };
 
 // Default integer traits disallow both 0 and -1 as keys (max value instead of
@@ -216,7 +208,7 @@ struct HashTraits<P*> : GenericHashTraits<P*> {
   static void ConstructDeletedValue(P*& slot, bool) {
     slot = reinterpret_cast<P*>(-1);
   }
-  static bool IsDeletedValue(P* value) {
+  static bool IsDeletedValue(const P* value) {
     return value == reinterpret_cast<P*>(-1);
   }
 };
@@ -229,12 +221,18 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
     static const bool value = false;
   };
   static void ConstructDeletedValue(T& slot, bool) {
-    new (NotNull, &slot) T(kHashTableDeletedValue);
+    new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
     return value.IsHashTableDeletedValue();
   }
 };
+
+// Default traits disallow both 0 and max as keys -- use these traits to allow
+// all values as keys.
+template <typename T>
+struct HashTraits<IntegralWithAllKeys<T>>
+    : SimpleClassHashTraits<IntegralWithAllKeys<T>> {};
 
 template <typename P>
 struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
@@ -315,7 +313,8 @@ struct HashTraits<std::unique_ptr<T>>
   static void ConstructDeletedValue(std::unique_ptr<T>& slot, bool) {
     // Dirty trick: implant an invalid pointer to unique_ptr. Destructor isn't
     // called for deleted buckets, so this is okay.
-    new (NotNull, &slot) std::unique_ptr<T>(reinterpret_cast<T*>(1u));
+    new (NotNullTag::kNotNull, &slot)
+        std::unique_ptr<T>(reinterpret_cast<T*>(1u));
   }
   static bool IsDeletedValue(const std::unique_ptr<T>& value) {
     return value.get() == reinterpret_cast<T*>(1u);
@@ -395,7 +394,8 @@ struct PairHashTraits
     // hold as they did at the initial allocation.  Therefore we zero the
     // value part of the slot here for GC collections.
     if (zero_value) {
-      ClearMemoryAtomically(&slot.second, sizeof(slot.second));
+      ClearMemoryAtomicallyIfNeeded<typename SecondTraits::TraitType>::Clear(
+          &slot.second);
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
@@ -468,12 +468,18 @@ struct KeyValuePairHashTraits
     KeyTraits::ConstructDeletedValue(slot.key, zero_value);
     // See similar code in this file for why we need to do this.
     if (zero_value) {
-      ClearMemoryAtomically(&slot.value, sizeof(slot.value));
+      ClearMemoryAtomicallyIfNeeded<typename ValueTraits::TraitType>::Clear(
+          &slot.value);
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
     return KeyTraits::IsDeletedValue(value.key);
   }
+
+  static constexpr bool kCanTraceConcurrently =
+      KeyTraitsArg::kCanTraceConcurrently &&
+      (ValueTraitsArg::kCanTraceConcurrently ||
+       !IsTraceable<typename ValueTraitsArg::TraitType>::value);
 };
 
 template <typename Key, typename Value>

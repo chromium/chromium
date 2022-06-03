@@ -25,6 +25,10 @@ class HostWindowProxy : public HostWindow {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       std::unique_ptr<HostWindow> host_window);
+
+  HostWindowProxy(const HostWindowProxy&) = delete;
+  HostWindowProxy& operator=(const HostWindowProxy&) = delete;
+
   ~HostWindowProxy() override;
 
   // HostWindow overrides.
@@ -35,8 +39,6 @@ class HostWindowProxy : public HostWindow {
   // All thread switching logic is implemented in the ref-counted |Core| class.
   class Core;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostWindowProxy);
 };
 
 }  // namespace remoting

@@ -1,0 +1,16 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer
+++++++button focusable name='Before'
+++++++++staticText name='Before'
+++++++++++inlineTextBox name='Before'
+++++++iframe focusable invisible
+++++++++rootWebArea focusable
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++button focusable name='Inner'
+++++++++++++++++staticText name='Inner'
+++++++++++++++++++inlineTextBox name='Inner'
+++++++button focusable name='After'
+++++++++staticText name='After'
+++++++++++inlineTextBox name='After'

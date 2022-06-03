@@ -187,19 +187,19 @@ The CommandLineFlags annonations are more fully documented in the [CommandLineFl
     -   When using @UiThreadTest, **it would cause `setUp` and `tearDown` to
         run in Ui Thread** as well. Avoid that by calling [`runOnUiThread`][9]
         or [`runOnMainSync`][10] with a Runnable.
-    
+
     ```java
     // Wrong test
     public class Test {
         @Rule
         public ActivityTestRule<MyActivity> mRule = new ActivityTestRule<>(
-                MyActivity.class>
+                MyActivity.class);
 
         @Before
         public void setUp() {
             // Cause failure because this also runs on Ui Thread, while it
             // is intended for Instrumentation worker thread
-            mRule.launchActivity() 
+            mRule.launchActivity();
         }
 
         @UiThreadTest
@@ -216,11 +216,11 @@ The CommandLineFlags annonations are more fully documented in the [CommandLineFl
     public class Test {
         @Rule
         public ActivityTestRule<MyActivity> mRule = new ActivityTestRule<>(
-                MyActivity.class>
+                MyActivity.class);
 
         @Before
         public void setUp() {
-            mRule.launchActivity()
+            mRule.launchActivity();
         }
 
         public void test() {
@@ -241,7 +241,7 @@ The CommandLineFlags annonations are more fully documented in the [CommandLineFl
 
 1.  Errorprone expects all public methods starting with `test...` to be
     annotated with `@Test`. Failure to meet that expectation will cause
-    errorprone to fail with something like this: 
+    errorprone to fail with something like this:
 
         [JUnit4TestNotRun] Test method will not be run; please add @Test annotation
 
@@ -250,8 +250,8 @@ The CommandLineFlags annonations are more fully documented in the [CommandLineFl
 
 ## Common questions
 
--   Q: Are `@Test` and `@LargeTest/@MediumTest/@SmallTest` annotation both
-    necessary?
+-   Q: Are `@Test` and `@LargeTest/@MediumTest/@SmallTest` annotation
+    both necessary?
     -   A: Yes, both are required for now. We plan to refactor this in the
         future.
 -   Q: Isn't the inheritance of the Test classes just migrated to inheritance

@@ -4,17 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.content.Context;
 import android.util.Pair;
-import android.view.ContextMenu;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.chrome.browser.contextmenu.ContextMenuHelper;
-import org.chromium.chrome.browser.contextmenu.ContextMenuItem;
-import org.chromium.chrome.browser.contextmenu.ContextMenuParams;
+import org.chromium.chrome.browser.contextmenu.ChipDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
@@ -38,26 +35,37 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public void onDestroy() {
-        // |mPopulator| can be null for activities that do not use context menu. Following
-        // methods are not called, but |onDestroy| is.
-        if (mPopulator != null) mPopulator.onDestroy();
-    }
-
-    @Override
-    public List<Pair<Integer, List<ContextMenuItem>>> buildContextMenu(
-            ContextMenu menu, Context context, ContextMenuParams params) {
-        List<Pair<Integer, List<ContextMenuItem>>> itemGroups =
-                mPopulator.buildContextMenu(menu, context, params);
+    public List<Pair<Integer, ModelList>> buildContextMenu() {
+        List<Pair<Integer, ModelList>> itemGroups = mPopulator.buildContextMenu();
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) {
-            observers.next().onContextMenuShown(mTab, menu);
+            observers.next().onContextMenuShown(mTab);
         }
         return itemGroups;
     }
 
     @Override
-    public boolean onItemSelected(ContextMenuHelper helper, ContextMenuParams params, int itemId) {
-        return mPopulator.onItemSelected(helper, params, itemId);
+    public boolean onItemSelected(int itemId) {
+        return mPopulator.onItemSelected(itemId);
+    }
+
+    @Override
+    public void onMenuClosed() {
+        mPopulator.onMenuClosed();
+    }
+
+    @Override
+    public boolean isIncognito() {
+        return mPopulator.isIncognito();
+    }
+
+    @Override
+    public String getPageTitle() {
+        return mPopulator.getPageTitle();
+    }
+
+    @Override
+    public @Nullable ChipDelegate getChipDelegate() {
+        return mPopulator.getChipDelegate();
     }
 }

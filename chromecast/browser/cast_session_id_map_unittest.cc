@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
@@ -26,6 +25,9 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
  public:
   CastSessionIdMapTest() : task_runner_(new base::TestSimpleTaskRunner) {}
 
+  CastSessionIdMapTest(const CastSessionIdMapTest&) = delete;
+  CastSessionIdMapTest& operator=(const CastSessionIdMapTest&) = delete;
+
   void SetUp() override {
     // Required for creating TestWebContents.
     gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -33,44 +35,44 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::SetUp();
 
     // Create the map.
-    CastSessionIdMap::GetInstance(task_runner_.get());
+    cast_session_id_map_ = CastSessionIdMap::GetInstance(task_runner_.get());
   }
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastSessionIdMapTest);
+  CastSessionIdMap* cast_session_id_map_;
 };
 
 TEST_F(CastSessionIdMapTest, DefaultsToEmptyString) {
-  std::string saved_session_id = CastSessionIdMap::GetSessionId("");
+  std::string saved_session_id = cast_session_id_map_->GetSessionId("");
   EXPECT_EQ(saved_session_id, "");
 }
 
 TEST_F(CastSessionIdMapTest, CanRetrieveSessionId) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetSessionId(kTestSessionId, web_contents.get());
+  cast_session_id_map_->SetAppProperties(
+      kTestSessionId, false /* is_audio_app */, web_contents.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id =
-      CastSessionIdMap::GetSessionId(group_id.ToString());
+      cast_session_id_map_->GetSessionId(group_id.ToString());
   EXPECT_EQ(saved_session_id, kTestSessionId);
 }
 
 TEST_F(CastSessionIdMapTest, RemovesMappingOnWebContentsDestroyed) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetSessionId(kTestSessionId, web_contents.get());
+  cast_session_id_map_->SetAppProperties(
+      kTestSessionId, false /* is_audio_app */, web_contents.get());
   task_runner_->RunUntilIdle();
 
   web_contents.reset();
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id =
-      CastSessionIdMap::GetSessionId(group_id.ToString());
+      cast_session_id_map_->GetSessionId(group_id.ToString());
   EXPECT_EQ(saved_session_id, "");
 }
 
@@ -81,28 +83,30 @@ TEST_F(CastSessionIdMapTest, CanHoldMultiple) {
   auto web_contents_1 = CreateTestWebContents();
   auto web_contents_2 = CreateTestWebContents();
   auto web_contents_3 = CreateTestWebContents();
-  CastSessionIdMap::SetSessionId(test_session_id_1, web_contents_1.get());
-  CastSessionIdMap::SetSessionId(test_session_id_2, web_contents_2.get());
-  CastSessionIdMap::SetSessionId(test_session_id_3, web_contents_3.get());
+  cast_session_id_map_->SetAppProperties(
+      test_session_id_1, false /* is_audio_app */, web_contents_1.get());
+  cast_session_id_map_->SetAppProperties(
+      test_session_id_2, false /* is_audio_app */, web_contents_2.get());
+  cast_session_id_map_->SetAppProperties(
+      test_session_id_3, false /* is_audio_app */, web_contents_3.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id = "";
   base::UnguessableToken group_id = web_contents_1->GetAudioGroupId();
   if (group_id) {
-    std::string saved_session_id =
-        CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_1);
   }
 
   group_id = web_contents_2->GetAudioGroupId();
   if (group_id) {
-    saved_session_id = CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_2);
   }
 
   group_id = web_contents_3->GetAudioGroupId();
   if (group_id) {
-    saved_session_id = CastSessionIdMap::GetSessionId(group_id.ToString());
+    saved_session_id = cast_session_id_map_->GetSessionId(group_id.ToString());
     EXPECT_EQ(saved_session_id, test_session_id_3);
   }
 }

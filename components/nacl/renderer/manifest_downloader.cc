@@ -23,10 +23,10 @@ ManifestDownloader::ManifestDownloader(
     Callback cb)
     : url_loader_(std::move(url_loader)),
       is_installed_(is_installed),
-      cb_(cb),
+      cb_(std::move(cb)),
       status_code_(-1),
       pp_nacl_error_(PP_NACL_ERROR_LOAD_SUCCESS) {
-  CHECK(!cb.is_null());
+  CHECK(!cb_.is_null());
 }
 
 ManifestDownloader::~ManifestDownloader() { }
@@ -60,7 +60,7 @@ void ManifestDownloader::Close() {
                       "NaCl.HttpStatusCodeClass.Manifest.NotInstalledApp",
       status_code_);
 
-  cb_.Run(pp_nacl_error_, buffer_);
+  std::move(cb_).Run(pp_nacl_error_, buffer_);
   delete this;
 }
 

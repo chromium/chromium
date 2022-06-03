@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client_registrar.h"
 #include "chrome/browser/notifications/scheduler/public/user_action_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 namespace {
@@ -40,13 +41,16 @@ class InitHelper {
  public:
   using InitCallback = base::OnceCallback<void(bool)>;
   InitHelper() : context_(nullptr) {}
-
+  InitHelper(const InitHelper&) = delete;
+  InitHelper& operator=(const InitHelper&) = delete;
   ~InitHelper() = default;
 
   // Initializes subsystems in notification scheduler, |callback| will be
   // invoked if all initializations finished or anyone of them failed. The
   // object should be destroyed along with the |callback|.
-  void Init(NotificationSchedulerContext* context, InitCallback callback) {
+  void Init(NotificationSchedulerContext* context,
+            ImpressionHistoryTracker::Delegate* delegate,
+            InitCallback callback) {
     // TODO(xingliu): Initialize the databases in parallel, we currently
     // initialize one by one to work around a shared db issue. See
     // https://crbug.com/978680.
@@ -54,8 +58,8 @@ class InitHelper {
     callback_ = std::move(callback);
 
     context_->impression_tracker()->Init(
-        base::BindOnce(&InitHelper::OnImpressionTrackerInitialized,
-                       weak_ptr_factory_.GetWeakPtr()));
+        delegate, base::BindOnce(&InitHelper::OnImpressionTrackerInitialized,
+                                 weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
@@ -78,7 +82,6 @@ class InitHelper {
   InitCallback callback_;
 
   base::WeakPtrFactory<InitHelper> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitHelper);
 };
 
 // Helper class to display multiple notifications, and invoke a callback when
@@ -107,6 +110,8 @@ class DisplayHelper {
     }
   }
 
+  DisplayHelper(const DisplayHelper&) = delete;
+  DisplayHelper& operator=(const DisplayHelper&) = delete;
   ~DisplayHelper() = default;
 
  private:
@@ -155,7 +160,7 @@ class DisplayHelper {
     context_->impression_tracker()->AddImpression(
         entry->type, entry->guid, entry->schedule_params.impression_mapping,
         updated_notification_data->custom_data,
-        entry->schedule_params.custom_suppression_duration);
+        entry->schedule_params.ignore_timeout_duration);
 
     stats::LogNotificationShow(*updated_notification_data, entry->type);
 
@@ -186,24 +191,26 @@ class DisplayHelper {
   FinishCallback finish_callback_;
   int shown_count_;
   base::WeakPtrFactory<DisplayHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayHelper);
 };
 
 // Implementation of NotificationScheduler.
-class NotificationSchedulerImpl : public NotificationScheduler {
+class NotificationSchedulerImpl : public NotificationScheduler,
+                                  public ImpressionHistoryTracker::Delegate {
  public:
-  NotificationSchedulerImpl(
+  explicit NotificationSchedulerImpl(
       std::unique_ptr<NotificationSchedulerContext> context)
       : context_(std::move(context)) {}
 
+  NotificationSchedulerImpl(const NotificationSchedulerImpl&) = delete;
+  NotificationSchedulerImpl& operator=(const NotificationSchedulerImpl&) =
+      delete;
   ~NotificationSchedulerImpl() override = default;
 
  private:
   // NotificationScheduler implementation.
   void Init(InitCallback init_callback) override {
     init_helper_ = std::make_unique<InitHelper>();
-    init_helper_->Init(context_.get(),
+    init_helper_->Init(context_.get(), this,
                        base::BindOnce(&NotificationSchedulerImpl::OnInitialized,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       std::move(init_callback)));
@@ -354,8 +361,8 @@ class NotificationSchedulerImpl : public NotificationScheduler {
     auto client_action_data = action_data;
 
     // Attach custom data if the impression is not expired.
-    const auto* impression =
-        context_->impression_tracker()->GetImpression(action_data.guid);
+    const auto* impression = context_->impression_tracker()->GetImpression(
+        action_data.client_type, action_data.guid);
     if (impression) {
       client_action_data.custom_data = impression->custom_data;
     }
@@ -363,12 +370,21 @@ class NotificationSchedulerImpl : public NotificationScheduler {
     client->OnUserAction(client_action_data);
   }
 
+  void GetThrottleConfig(SchedulerClientType type,
+                         ThrottleConfigCallback callback) override {
+    auto* client = context_->client_registrar()->GetClient(type);
+    if (client) {
+      client->GetThrottleConfig(std::move(callback));
+    } else {
+      std::move(callback).Run(nullptr);
+    }
+  }
+
   std::unique_ptr<NotificationSchedulerContext> context_;
   std::unique_ptr<InitHelper> init_helper_;
   std::unique_ptr<DisplayHelper> display_helper_;
 
   base::WeakPtrFactory<NotificationSchedulerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NotificationSchedulerImpl);
 };
 
 }  // namespace

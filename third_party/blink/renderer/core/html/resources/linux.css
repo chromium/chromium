@@ -30,6 +30,12 @@
 
 /* These styles override other user-agent styles for Chromium on Linux. */
 
+/* This sheet is appended to html.css before parsing which means the selectors
+   below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
 select:not(:-internal-list-box) {
     /* Selects with popup menus look like buttons with a drop down triangle on Linux. */
     background-color: ButtonFace;

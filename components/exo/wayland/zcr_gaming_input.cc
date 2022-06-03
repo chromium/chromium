@@ -8,9 +8,12 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include <memory>
+
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "components/exo/gamepad.h"
 #include "components/exo/gamepad_delegate.h"
+#include "components/exo/gamepad_observer.h"
 #include "components/exo/gaming_seat.h"
 #include "components/exo/gaming_seat_delegate.h"
 #include "components/exo/wayland/server_util.h"
@@ -34,11 +37,90 @@ unsigned int GetGamepadBusType(ui::InputDeviceType type) {
 ////////////////////////////////////////////////////////////////////////////////
 // gaming_input_interface:
 
+// Handles the vibration requests sent by the client for a gamepad.
+class WaylandGamepadVibratorImpl : public GamepadObserver {
+ public:
+  explicit WaylandGamepadVibratorImpl(Gamepad* gamepad) : gamepad_(gamepad) {
+    gamepad_->AddObserver(this);
+  }
+
+  WaylandGamepadVibratorImpl(const WaylandGamepadVibratorImpl& other) = delete;
+  WaylandGamepadVibratorImpl& operator=(
+      const WaylandGamepadVibratorImpl& other) = delete;
+
+  ~WaylandGamepadVibratorImpl() override {
+    if (gamepad_)
+      gamepad_->RemoveObserver(this);
+  }
+
+  void OnVibrate(wl_array* duration_millis,
+                 wl_array* amplitudes,
+                 int32_t repeat) {
+    std::vector<int64_t> extracted_durations;
+    int64_t* p;
+    const uint8_t* duration_millis_end =
+        static_cast<uint8_t*>(duration_millis->data) + duration_millis->size;
+    for (p = static_cast<int64_t*>(duration_millis->data);
+         (const uint8_t*)p < duration_millis_end; p++) {
+      extracted_durations.emplace_back(*p);
+    }
+
+    const uint8_t* amplitudes_start = static_cast<uint8_t*>(amplitudes->data);
+    size_t amplitude_size = amplitudes->size / sizeof(uint8_t);
+    const uint8_t* amplitudes_end = amplitudes_start + amplitude_size;
+    std::vector<uint8_t> extracted_amplitudes(amplitudes_start, amplitudes_end);
+
+    if (gamepad_)
+      gamepad_->Vibrate(extracted_durations, extracted_amplitudes, repeat);
+  }
+
+  void OnCancelVibration() {
+    if (gamepad_)
+      gamepad_->CancelVibration();
+  }
+
+  // Overridden from GamepadObserver
+  void OnGamepadDestroying(Gamepad* gamepad) override {
+    DCHECK_EQ(gamepad_, gamepad);
+    gamepad_ = nullptr;
+  }
+
+ private:
+  Gamepad* gamepad_;
+};
+
+void gamepad_vibrator_vibrate(wl_client* client,
+                              wl_resource* resource,
+                              wl_array* duration_millis,
+                              wl_array* amplitudes,
+                              int32_t repeat) {
+  GetUserDataAs<WaylandGamepadVibratorImpl>(resource)->OnVibrate(
+      duration_millis, amplitudes, repeat);
+}
+
+void gamepad_vibrator_cancel_vibration(wl_client* client,
+                                       wl_resource* resource) {
+  GetUserDataAs<WaylandGamepadVibratorImpl>(resource)->OnCancelVibration();
+}
+
+void gamepad_vibrator_destroy(wl_client* client, wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+const struct zcr_gamepad_vibrator_v2_interface gamepad_vibrator_implementation =
+    {gamepad_vibrator_vibrate, gamepad_vibrator_cancel_vibration,
+     gamepad_vibrator_destroy};
+
 // Gamepad delegate class that forwards gamepad events to the client resource.
 class WaylandGamepadDelegate : public GamepadDelegate {
  public:
   explicit WaylandGamepadDelegate(wl_resource* gamepad_resource)
       : gamepad_resource_(gamepad_resource) {}
+
+  WaylandGamepadDelegate(const WaylandGamepadDelegate&) = delete;
+  WaylandGamepadDelegate& operator=(const WaylandGamepadDelegate&) = delete;
+
+  ~WaylandGamepadDelegate() override = default;
 
   // If gamepad_resource_ is destroyed first, ResetGamepadResource will
   // be called to remove the resource from delegate, and delegate won't
@@ -62,36 +144,61 @@ class WaylandGamepadDelegate : public GamepadDelegate {
     wl_client_flush(client());
     // Reset the user data in gamepad_resource.
     wl_resource_set_user_data(gamepad_resource_, nullptr);
-    delete this;
   }
-  void OnAxis(int axis, double value) override {
+  void OnAxis(int axis, double value, base::TimeTicks time_stamp) override {
     if (!gamepad_resource_) {
       return;
     }
-    zcr_gamepad_v2_send_axis(gamepad_resource_, NowInMilliseconds(), axis,
+    zcr_gamepad_v2_send_axis(gamepad_resource_,
+                             TimeTicksToMilliseconds(time_stamp), axis,
                              wl_fixed_from_double(value));
   }
-  void OnButton(int button, bool pressed) override {
+  void OnButton(int button, bool pressed, base::TimeTicks time_stamp) override {
     if (!gamepad_resource_) {
       return;
     }
     uint32_t state = pressed ? ZCR_GAMEPAD_V2_BUTTON_STATE_PRESSED
                              : ZCR_GAMEPAD_V2_BUTTON_STATE_RELEASED;
-    zcr_gamepad_v2_send_button(gamepad_resource_, NowInMilliseconds(), button,
+    zcr_gamepad_v2_send_button(gamepad_resource_,
+                               TimeTicksToMilliseconds(time_stamp), button,
                                state, wl_fixed_from_double(0));
   }
-  void OnFrame() override {
+  void OnFrame(base::TimeTicks time_stamp) override {
     if (!gamepad_resource_) {
       return;
     }
-    zcr_gamepad_v2_send_frame(gamepad_resource_, NowInMilliseconds());
+    zcr_gamepad_v2_send_frame(gamepad_resource_,
+                              TimeTicksToMilliseconds(time_stamp));
     wl_client_flush(client());
   }
 
- private:
-  // The object should be deleted by OnRemoved().
-  ~WaylandGamepadDelegate() override {}
+  void ConfigureDevice(Gamepad* gamepad) {
+    for (const auto& axis : gamepad->device.axes) {
+      zcr_gamepad_v2_send_axis_added(gamepad_resource_, axis.code,
+                                     axis.min_value, axis.max_value, axis.flat,
+                                     axis.fuzz, axis.resolution);
+    }
 
+    if (gamepad->device.supports_vibration_rumble &&
+        wl_resource_get_version(gamepad_resource_) >=
+            ZCR_GAMEPAD_V2_VIBRATOR_ADDED_SINCE_VERSION) {
+      wl_resource* gamepad_vibrator_resource =
+          wl_resource_create(wl_resource_get_client(gamepad_resource_),
+                             &zcr_gamepad_vibrator_v2_interface,
+                             wl_resource_get_version(gamepad_resource_), 0);
+
+      SetImplementation(gamepad_vibrator_resource,
+                        &gamepad_vibrator_implementation,
+                        std::make_unique<WaylandGamepadVibratorImpl>(gamepad));
+
+      zcr_gamepad_v2_send_vibrator_added(gamepad_resource_,
+                                         gamepad_vibrator_resource);
+    }
+
+    zcr_gamepad_v2_send_activated(gamepad_resource_);
+  }
+
+ private:
   // The client who own this gamepad instance.
   wl_client* client() const {
     return wl_resource_get_client(gamepad_resource_);
@@ -99,8 +206,6 @@ class WaylandGamepadDelegate : public GamepadDelegate {
 
   // The gamepad resource associated with the gamepad.
   wl_resource* gamepad_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandGamepadDelegate);
 };
 
 void gamepad_destroy(wl_client* client, wl_resource* resource) {
@@ -116,6 +221,10 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
   explicit WaylandGamingSeatDelegate(wl_resource* gaming_seat_resource)
       : gaming_seat_resource_{gaming_seat_resource} {}
 
+  WaylandGamingSeatDelegate(const WaylandGamingSeatDelegate&) = delete;
+  WaylandGamingSeatDelegate& operator=(const WaylandGamingSeatDelegate&) =
+      delete;
+
   // Override from GamingSeatDelegate:
   void OnGamingSeatDestroying(GamingSeat*) override { delete this; }
   bool CanAcceptGamepadEventsForSurface(Surface* surface) const override {
@@ -124,40 +233,33 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
            wl_resource_get_client(surface_resource) ==
                wl_resource_get_client(gaming_seat_resource_);
   }
-  GamepadDelegate* GamepadAdded(const ui::GamepadDevice& device) override {
+  void GamepadAdded(Gamepad& gamepad) override {
     wl_resource* gamepad_resource =
         wl_resource_create(wl_resource_get_client(gaming_seat_resource_),
                            &zcr_gamepad_v2_interface,
                            wl_resource_get_version(gaming_seat_resource_), 0);
 
-    GamepadDelegate* gamepad_delegate =
-        new WaylandGamepadDelegate(gamepad_resource);
+    zcr_gaming_seat_v2_send_gamepad_added_with_device_info(
+        gaming_seat_resource_, gamepad_resource, gamepad.device.name.c_str(),
+        GetGamepadBusType(gamepad.device.type), gamepad.device.vendor_id,
+        gamepad.device.product_id, gamepad.device.version);
+
+    std::unique_ptr<WaylandGamepadDelegate> gamepad_delegate =
+        std::make_unique<WaylandGamepadDelegate>(gamepad_resource);
 
     wl_resource_set_implementation(
-        gamepad_resource, &gamepad_implementation, gamepad_delegate,
+        gamepad_resource, &gamepad_implementation, gamepad_delegate.get(),
         &WaylandGamepadDelegate::ResetGamepadResource);
 
-    zcr_gaming_seat_v2_send_gamepad_added_with_device_info(
-        gaming_seat_resource_, gamepad_resource, device.name.c_str(),
-        GetGamepadBusType(device.type), device.vendor_id, device.product_id,
-        device.version);
+    gamepad_delegate->ConfigureDevice(&gamepad);
+    gamepad.SetDelegate(std::move(gamepad_delegate));
 
-    for (const auto& axis : device.axes) {
-      zcr_gamepad_v2_send_axis_added(gamepad_resource, axis.code,
-                                     axis.min_value, axis.max_value, axis.flat,
-                                     axis.fuzz, axis.resolution);
-    }
-    zcr_gamepad_v2_send_activated(gamepad_resource);
     wl_client_flush(wl_resource_get_client(gaming_seat_resource_));
-
-    return gamepad_delegate;
   }
 
  private:
   // The gaming seat resource associated with the gaming seat.
   wl_resource* const gaming_seat_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandGamingSeatDelegate);
 };
 
 void gaming_seat_destroy(wl_client* client, wl_resource* resource) {

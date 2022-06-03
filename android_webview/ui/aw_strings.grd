@@ -7,8 +7,12 @@
     <output filename="aw_strings_af.pak" type="data_package" lang="af" />
     <output filename="aw_strings_am.pak" type="data_package" lang="am" />
     <output filename="aw_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="aw_strings_as.pak" type="data_package" lang="as" />
+    <output filename="aw_strings_az.pak" type="data_package" lang="az" />
+    <output filename="aw_strings_be.pak" type="data_package" lang="be" />
     <output filename="aw_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="aw_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="aw_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="aw_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="aw_strings_cs.pak" type="data_package" lang="cs" />
     <output filename="aw_strings_da.pak" type="data_package" lang="da" />
@@ -19,37 +23,56 @@
     <output filename="aw_strings_es.pak" type="data_package" lang="es" />
     <output filename="aw_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="aw_strings_et.pak" type="data_package" lang="et" />
+    <output filename="aw_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="aw_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="aw_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="aw_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="aw_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="aw_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="aw_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="aw_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="aw_strings_he.pak" type="data_package" lang="he" />
     <output filename="aw_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="aw_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="aw_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="aw_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="aw_strings_id.pak" type="data_package" lang="id" />
+    <output filename="aw_strings_is.pak" type="data_package" lang="is" />
     <output filename="aw_strings_it.pak" type="data_package" lang="it" />
     <output filename="aw_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="aw_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="aw_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="aw_strings_km.pak" type="data_package" lang="km" />
     <output filename="aw_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="aw_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="aw_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="aw_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="aw_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="aw_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="aw_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="aw_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="aw_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="aw_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="aw_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="aw_strings_my.pak" type="data_package" lang="my" />
+    <output filename="aw_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="aw_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="aw_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="aw_strings_or.pak" type="data_package" lang="or" />
+    <output filename="aw_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="aw_strings_pl.pak" type="data_package" lang="pl" />
     <output filename="aw_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
     <output filename="aw_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
     <output filename="aw_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="aw_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="aw_strings_si.pak" type="data_package" lang="si" />
     <output filename="aw_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="aw_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="aw_strings_sq.pak" type="data_package" lang="sq" />
     <output filename="aw_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="aw_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="aw_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="aw_strings_sw.pak" type="data_package" lang="sw" />
     <output filename="aw_strings_ta.pak" type="data_package" lang="ta" />
@@ -57,9 +80,17 @@
     <output filename="aw_strings_th.pak" type="data_package" lang="th" />
     <output filename="aw_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="aw_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="aw_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="aw_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="aw_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="aw_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="aw_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="aw_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="aw_strings_zu.pak" type="data_package" lang="zu" />
+
+    <!-- Pseudolocales -->
+    <output filename="aw_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="aw_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/aw_strings_af.xtb" lang="af" />
@@ -128,6 +159,7 @@
     <file path="translations/aw_strings_sl.xtb" lang="sl" />
     <file path="translations/aw_strings_sq.xtb" lang="sq" />
     <file path="translations/aw_strings_sr.xtb" lang="sr" />
+    <file path="translations/aw_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="translations/aw_strings_sv.xtb" lang="sv" />
     <file path="translations/aw_strings_sw.xtb" lang="sw" />
     <file path="translations/aw_strings_ta.xtb" lang="ta" />
@@ -143,19 +175,4 @@
     <file path="translations/aw_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/aw_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1">
-    <messages fallback_to_english="true">
-      <message name="IDS_AW_WEBPAGE_NOT_AVAILABLE" desc="The title of the webpage shown when the requested URL in unavailable">
-        Webpage not available
-      </message>
-      <message name="IDS_AW_WEBPAGE_CAN_NOT_BE_LOADED" desc="Message informing the user that the page can not be loaded">
-        The webpage at <ph name="PAGE">&lt;strong&gt;$1&lt;/strong&gt;<ex>page.html</ex></ph> could not be loaded because:
-      </message>
-      <message name="IDS_AW_WEBPAGE_TEMPORARILY_DOWN" desc="Message informing the user that it is not possible to contact the server">
-        The webpage at <ph name="PAGE">&lt;strong&gt;$1&lt;/strong&gt;<ex>page.html</ex></ph> might be temporarily down or it may have moved permanently to a new web address.
-      </message>
-      <message name="IDS_AW_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS" desc="Suggestions provided to the user when it is not possible to contact the server"><ph name="MARKUP_1">&lt;strong&gt;<ex>_</ex></ph>Suggestions:<ph name="MARKUP_2">&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;<ex>_</ex></ph>Make sure you have a data connection<ph name="MARKUP_3">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Reload this webpage later<ph name="MARKUP_4">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Check the address you entered<ph name="MARKUP_5">&lt;/li&gt;&lt;/ul&gt;<ex>_</ex></ph>
-      </message>
-    </messages>
-  </release>
 </grit>

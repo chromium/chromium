@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -18,7 +18,7 @@ static const int64_t kBufferTimestampUs = 31;
 scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer() {
   scoped_refptr<media::DecoderBuffer> buffer =
       media::DecoderBuffer::CopyFrom(kBufferData, kBufferDataSize);
-  buffer->set_timestamp(base::TimeDelta::FromMicroseconds(kBufferTimestampUs));
+  buffer->set_timestamp(base::Microseconds(kBufferTimestampUs));
   return buffer;
 }
 }  // namespace
@@ -37,7 +37,6 @@ TEST(DecoderBufferAdapterTest, Default) {
   EXPECT_EQ(kBufferDataSize, buffer_adapter->data_size());
   EXPECT_EQ(nullptr, buffer_adapter->decrypt_config());
   EXPECT_FALSE(buffer_adapter->end_of_stream());
-  EXPECT_EQ(buffer, buffer_adapter->ToMediaBuffer());
 }
 
 TEST(DecoderBufferAdapterTest, Secondary) {
@@ -52,8 +51,7 @@ TEST(DecoderBufferAdapterTest, Timestamp) {
   EXPECT_EQ(kBufferTimestampUs, buffer_adapter->timestamp());
 
   const int64_t kTestTimestampUs = 62;
-  buffer_adapter->set_timestamp(
-      base::TimeDelta::FromMicroseconds(kTestTimestampUs));
+  buffer_adapter->set_timestamp(base::Microseconds(kTestTimestampUs));
   EXPECT_EQ(kTestTimestampUs, buffer_adapter->timestamp());
 }
 

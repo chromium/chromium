@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// require cr.js
-// require cr/event_target.js
-// require cr/ui.js
-// require cr/ui/tabs.js
-// require cr/ui/tree.js
-// require cr/util.js
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-(function() {
-'use strict';
+import {requestInfo, triggerStoragePressure} from './message_dispatcher.js';
 
 /**
  * @param {Object} object Object to be checked.
@@ -160,7 +158,7 @@ let availableSpace = undefined;
 /**
  * Root of the quota data tree,
  * holding userdata as |treeViewObject.detail|.
- * @type {cr.ui.Tree}
+ * @type {Tree}
  */
 let treeViewObject;
 
@@ -174,12 +172,12 @@ const statistics = {};
 
 /**
  * Initialize and return |treeViewObject|.
- * @return {!cr.ui.Tree} Initialized |treeViewObject|.
+ * @return {!Tree} Initialized |treeViewObject|.
  */
 function getTreeViewObject() {
   if (!treeViewObject) {
-    treeViewObject = /** @type {!cr.ui.Tree} */ ($('tree-view'));
-    cr.ui.decorate(treeViewObject, cr.ui.Tree);
+    treeViewObject = /** @type {!Tree} */ ($('tree-view'));
+    decorate(treeViewObject, Tree);
     treeViewObject.detail = {payload: {}, children: {}};
     treeViewObject.addEventListener('change', updateDescription);
   }
@@ -189,14 +187,14 @@ function getTreeViewObject() {
 /**
  * Initialize and return a tree item, that represents specified storage type.
  * @param {!string} type Storage type.
- * @return {cr.ui.TreeItem} Initialized |storageObject|.
+ * @return {TreeItem} Initialized |storageObject|.
  */
 function getStorageObject(type) {
   const treeViewObject = getTreeViewObject();
   let storageObject = treeViewObject.detail.children[type];
   if (!storageObject) {
     storageObject =
-        new cr.ui.TreeItem({label: type, detail: {payload: {}, children: {}}});
+        new TreeItem({label: type, detail: {payload: {}, children: {}}});
     storageObject.mayHaveChildren_ = true;
     treeViewObject.detail.children[type] = storageObject;
     treeViewObject.add(storageObject);
@@ -209,14 +207,14 @@ function getStorageObject(type) {
  *  storage type and hostname.
  * @param {!string} type Storage type.
  * @param {!string} host Hostname.
- * @return {cr.ui.TreeItem} Initialized |hostObject|.
+ * @return {TreeItem} Initialized |hostObject|.
  */
 function getHostObject(type, host) {
   const storageObject = getStorageObject(type);
   let hostObject = storageObject.detail.children[host];
   if (!hostObject) {
     hostObject =
-        new cr.ui.TreeItem({label: host, detail: {payload: {}, children: {}}});
+        new TreeItem({label: host, detail: {payload: {}, children: {}}});
     hostObject.mayHaveChildren_ = true;
     storageObject.detail.children[host] = hostObject;
     storageObject.add(hostObject);
@@ -230,14 +228,14 @@ function getHostObject(type, host) {
  * @param {!string} type Storage type.
  * @param {!string} host Hostname.
  * @param {!string} origin Origin URL.
- * @return {cr.ui.TreeItem} Initialized |originObject|.
+ * @return {TreeItem} Initialized |originObject|.
  */
 function getOriginObject(type, host, origin) {
   const hostObject = getHostObject(type, host);
   let originObject = hostObject.detail.children[origin];
   if (!originObject) {
-    originObject = new cr.ui.TreeItem(
-        {label: origin, detail: {payload: {}, children: {}}});
+    originObject =
+        new TreeItem({label: origin, detail: {payload: {}, children: {}}});
     originObject.mayHaveChildren_ = false;
     hostObject.detail.children[origin] = originObject;
     hostObject.add(originObject);
@@ -245,20 +243,14 @@ function getOriginObject(type, host, origin) {
   return originObject;
 }
 
-/**
- * Event Handler for |cr.quota.onAvailableSpaceUpdated|.
- * |event.detail| contains |availableSpace|.
- * |availableSpace| represents total available disk space.
- * @param {!CustomEvent<number>} event AvailableSpaceUpdated event.
- */
-function handleAvailableSpace(event) {
-  availableSpace = event.detail;
-  $('diskspace-entry').innerHTML = numBytesToText_(availableSpace);
+/** @param {number} space Total available disk space. */
+function handleAvailableSpace(space) {
+  availableSpace = space;
+  $('diskspace-entry').textContent = numBytesToText_(availableSpace);
 }
 
 /**
- * Event Handler for |cr.quota.onGlobalInfoUpdated|.
- * |event.detail| contains a record which has:
+ * |data| contains a record which has:
  *   |type|:
  *     Storage type, that is either 'temporary' or 'persistent'.
  *   |usage|:
@@ -270,15 +262,14 @@ function handleAvailableSpace(event) {
  *
  *  |usage|, |unlimitedUsage| and |quota| can be missing,
  *  and some additional fields can be included.
- * @param {!CustomEvent<!{
+ * @param {!{
  *     type: string,
  *     usage: ?number,
  *     unlimitedUsage: ?number,
  *     quota: ?string
- * }>} event GlobalInfoUpdated event.
+ * }} data
  */
-function handleGlobalInfo(event) {
-  const data = event.detail;
+function handleGlobalInfo(data) {
   const storageObject = getStorageObject(data.type);
   copyAttributes_(data, storageObject.detail.payload);
   storageObject.reveal();
@@ -288,8 +279,7 @@ function handleGlobalInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onPerHostInfoUpdated|.
- * |event.detail| contains records which have:
+ * |dataArray| contains records which have:
  *   |host|:
  *     Hostname of the entry. (e.g. 'example.com')
  *   |type|:
@@ -301,16 +291,14 @@ function handleGlobalInfo(event) {
  *
  * |usage| and |quota| can be missing,
  * and some additional fields can be included.
- * @param {!CustomEvent<!Array<{
+ * @param {!Array<{
  *     host: string,
  *     type: string,
  *     usage: ?number,
  *     quota: ?number
- * }>>} event PerHostInfoUpdated event.
+ * }>} dataArray
  */
-function handlePerHostInfo(event) {
-  const dataArray = event.detail;
-
+function handlePerHostInfo(dataArray) {
   for (let i = 0; i < dataArray.length; ++i) {
     const data = dataArray[i];
     const hostObject = getHostObject(data.type, data.host);
@@ -323,16 +311,13 @@ function handlePerHostInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onPerOriginInfoUpdated|.
- * |event.detail| contains records which have:
+ * |dataArray| contains records which have:
  *   |origin|:
  *     Origin URL of the entry.
  *   |type|:
  *     Storage type of the entry. 'temporary' or 'persistent'.
  *   |host|:
  *     Hostname of the entry.
- *   |inUse|:
- *     true if the origin is in use.
  *   |usedCount|:
  *     Used count of the storage from the origin.
  *   |lastAccessTime|:
@@ -342,21 +327,18 @@ function handlePerHostInfo(event) {
  *     Last modified time of the storage from the origin.
  *     Number of milliseconds since UNIX epoch.
  *
- * |inUse|, |usedCount|, |lastAccessTime| and |lastModifiedTime| can be missing,
+ * |usedCount|, |lastAccessTime| and |lastModifiedTime| can be missing,
  * and some additional fields can be included.
- * @param {!CustomEvent<!Array<!{
+ * @param {!Array<!{
  *     origin: string,
  *     type: string,
  *     host: string,
- *     inUse: ?boolean,
  *     usedCount: ?number,
  *     lastAccessTime: ?number,
  *     lastModifiedTime: ?number
- * }>>} event PerOriginInfoUpdated event.
+ * }>} dataArray
  */
-function handlePerOriginInfo(event) {
-  const dataArray = event.detail;
-
+function handlePerOriginInfo(dataArray) {
   for (let i = 0; i < dataArray.length; ++i) {
     const data = dataArray[i];
     const originObject = getOriginObject(data.type, data.host, data.origin);
@@ -369,22 +351,35 @@ function handlePerOriginInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onStatisticsUpdated|.
- * |event.detail| contains misc statistics data as dictionary.
- * @param {!CustomEvent<!Object>} event StatisticsUpdated event.
+ * |data| contains misc statistics data as dictionary.
+ * @param {!Object} data
  */
-function handleStatistics(event) {
-  const data = event.detail;
+function handleStatistics(data) {
   for (const key in data) {
     let entry = statistics[key];
     if (!entry) {
-      entry = document.createElement('tr');
+      const template = document.querySelector('#table-row-template');
+      entry = template.content.cloneNode(true).querySelector('tr');
       $('stat-entries').appendChild(entry);
       statistics[key] = entry;
     }
     entry.detail = data[key];
-    entry.innerHTML = '<td>' + stringToText_(key) + '</td>' +
-        '<td>' + stringToText_(entry.detail) + '</td>';
+
+    entry.querySelectorAll('td')[0].textContent = stringToText_(key);
+    entry.querySelectorAll('td')[1].textContent = stringToText_(entry.detail);
+  }
+}
+
+/**
+ * @param {!{isStoragePressureEnabled: boolean}} data Contains a boolean
+ *     representing whether or not to show the storage pressure UI.
+ */
+function handleStoragePressureFlagInfo(data) {
+  $('storage-pressure-loading').hidden = true;
+  if (data.isStoragePressureEnabled) {
+    $('storage-pressure-outer').hidden = false;
+  } else {
+    $('storage-pressure-disabled').hidden = false;
   }
 }
 
@@ -395,15 +390,14 @@ function handleStatistics(event) {
 function updateDescription() {
   const item = getTreeViewObject().selectedItem;
   const tbody = $('tree-item-description');
-  tbody.innerHTML = '';
+  tbody.innerHTML = trustedTypes.emptyHTML;
 
   if (item) {
     const keyAndLabel = [
       ['type', 'Storage Type'], ['host', 'Host Name'], ['origin', 'Origin URL'],
       ['usage', 'Total Storage Usage', numBytesToText_],
       ['unlimitedUsage', 'Usage of Unlimited Origins', numBytesToText_],
-      ['quota', 'Quota', numBytesToText_], ['inUse', 'Origin is in use?'],
-      ['usedCount', 'Used count'],
+      ['quota', 'Quota', numBytesToText_], ['usedCount', 'Used count'],
       ['lastAccessTime', 'Last Access Time', dateToText],
       ['lastModifiedTime', 'Last Modified Time', dateToText]
     ];
@@ -417,9 +411,10 @@ function updateDescription() {
 
       const normalize = keyAndLabel[i][2] || stringToText_;
 
-      const row = document.createElement('tr');
-      row.innerHTML = '<td>' + label + '</td>' +
-          '<td>' + normalize(entry) + '</td>';
+      const template = document.querySelector('#table-row-template');
+      const row = template.content.cloneNode(true).querySelector('tr');
+      row.querySelectorAll('td')[0].textContent = label;
+      row.querySelectorAll('td')[1].textContent = normalize(entry);
       tbody.appendChild(row);
     }
   }
@@ -427,7 +422,7 @@ function updateDescription() {
 
 /**
  * Dump |treeViewObject| or subtree to a object.
- * @param {(cr.ui.Tree|cr.ui.TreeItem)=} opt_treeitem
+ * @param {(Tree|TreeItem)=} opt_treeitem
  * @return {Object} Dump result object from |treeViewObject|.
  */
 function dumpTreeToObj(opt_treeitem) {
@@ -478,20 +473,23 @@ function dump() {
 }
 
 function onLoad() {
-  cr.ui.decorate('tabbox', cr.ui.TabBox);
+  decorate('tabbox', TabBox);
 
-  cr.quota.onAvailableSpaceUpdated.addEventListener(
-      'update', handleAvailableSpace);
-  cr.quota.onGlobalInfoUpdated.addEventListener('update', handleGlobalInfo);
-  cr.quota.onPerHostInfoUpdated.addEventListener('update', handlePerHostInfo);
-  cr.quota.onPerOriginInfoUpdated.addEventListener(
-      'update', handlePerOriginInfo);
-  cr.quota.onStatisticsUpdated.addEventListener('update', handleStatistics);
-  cr.quota.requestInfo();
+  addWebUIListener('AvailableSpaceUpdated', handleAvailableSpace);
+  addWebUIListener('GlobalInfoUpdated', handleGlobalInfo);
+  addWebUIListener('PerHostInfoUpdated', handlePerHostInfo);
+  addWebUIListener('PerOriginInfoUpdated', handlePerOriginInfo);
+  addWebUIListener('StatisticsUpdated', handleStatistics);
+  addWebUIListener('StoragePressureFlagUpdated', handleStoragePressureFlagInfo);
 
-  $('refresh-button').addEventListener('click', cr.quota.requestInfo, false);
+  requestInfo();
+
+  $('refresh-button').addEventListener('click', requestInfo, false);
   $('dump-button').addEventListener('click', dump, false);
+  $('trigger-notification').addEventListener('click', () => {
+    const origin = $('storage-pressure-origin').value;
+    triggerStoragePressure(origin);
+  }, false);
 }
 
 document.addEventListener('DOMContentLoaded', onLoad, false);
-})();

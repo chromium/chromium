@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,14 +17,14 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/download/public/common/download_item.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -63,6 +64,9 @@ const base::FilePath::CharType kDownloadMetadataBasename[] =
 // it is in progress.
 class DownloadItemData : public base::SupportsUserData::Data {
  public:
+  DownloadItemData(const DownloadItemData&) = delete;
+  DownloadItemData& operator=(const DownloadItemData&) = delete;
+
   ~DownloadItemData() override {}
 
   // Sets the ClientDownloadRequest for a given DownloadItem.
@@ -82,8 +86,6 @@ class DownloadItemData : public base::SupportsUserData::Data {
       : request_(std::move(request)) {}
 
   std::unique_ptr<ClientDownloadRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemData);
 };
 
 // Make the key's value unique by setting it to its own location.
@@ -186,18 +188,19 @@ void WriteMetadataInBackground(const base::FilePath& metadata_path,
 
 // Deletes |metadata_path|.
 void DeleteMetadataInBackground(const base::FilePath& metadata_path) {
-  bool success = base::DeleteFile(metadata_path, false /* not recursive */);
+  bool success = base::DeleteFile(metadata_path);
   UMA_HISTOGRAM_BOOLEAN("SBIRS.DownloadMetadata.DeleteSuccess", success);
 }
 
 // Runs |callback| with the DownloadDetails in |download_metadata|.
-void ReturnResults(
-    const DownloadMetadataManager::GetDownloadDetailsCallback& callback,
-    std::unique_ptr<DownloadMetadata> download_metadata) {
+void ReturnResults(DownloadMetadataManager::GetDownloadDetailsCallback callback,
+                   std::unique_ptr<DownloadMetadata> download_metadata) {
   if (!download_metadata->has_download_id())
-    callback.Run(std::unique_ptr<ClientIncidentReport_DownloadDetails>());
+    std::move(callback).Run(
+        std::unique_ptr<ClientIncidentReport_DownloadDetails>());
   else
-    callback.Run(base::WrapUnique(download_metadata->release_download()));
+    std::move(callback).Run(
+        base::WrapUnique(download_metadata->release_download()));
 }
 
 }  // namespace
@@ -219,6 +222,9 @@ class DownloadMetadataManager::ManagerContext
   ManagerContext(scoped_refptr<base::SequencedTaskRunner> task_runner,
                  content::DownloadManager* download_manager);
 
+  ManagerContext(const ManagerContext&) = delete;
+  ManagerContext& operator=(const ManagerContext&) = delete;
+
   // Detaches this context from its owner. The owner must not access the context
   // following this call. The context will be deleted immediately if it is not
   // waiting for a metadata load with either recorded operations or pending
@@ -237,7 +243,7 @@ class DownloadMetadataManager::ManagerContext
   // Gets the persisted DownloadDetails. |callback| will be run immediately if
   // the data is available. Otherwise, it will be run later on the caller's
   // thread.
-  void GetDownloadDetails(const GetDownloadDetailsCallback& callback);
+  void GetDownloadDetails(GetDownloadDetailsCallback callback);
 
  protected:
   // download::DownloadItem::Observer methods.
@@ -331,16 +337,14 @@ class DownloadMetadataManager::ManagerContext
   std::list<GetDownloadDetailsCallback> get_details_callbacks_;
 
   base::WeakPtrFactory<ManagerContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagerContext);
 };
 
 
 // DownloadMetadataManager -----------------------------------------------------
 
 DownloadMetadataManager::DownloadMetadataManager()
-    : task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
            base::MayBlock()})) {}
 
@@ -376,7 +380,7 @@ void DownloadMetadataManager::SetRequest(download::DownloadItem* item,
 
 void DownloadMetadataManager::GetDownloadDetails(
     content::BrowserContext* browser_context,
-    const GetDownloadDetailsCallback& callback) {
+    GetDownloadDetailsCallback callback) {
   DCHECK(browser_context);
   // The DownloadManager for |browser_context| may not have been created yet. In
   // this case, asking for it would cause history to load in the background and
@@ -385,7 +389,7 @@ void DownloadMetadataManager::GetDownloadDetails(
   std::unique_ptr<ClientIncidentReport_DownloadDetails> download_details;
   for (const auto& manager_context_pair : contexts_) {
     if (manager_context_pair.first->GetBrowserContext() == browser_context) {
-      manager_context_pair.second->GetDownloadDetails(callback);
+      manager_context_pair.second->GetDownloadDetails(std::move(callback));
       return;
     }
   }
@@ -396,13 +400,14 @@ void DownloadMetadataManager::GetDownloadDetails(
       FROM_HERE,
       base::BindOnce(&ReadMetadataInBackground,
                      GetMetadataPath(browser_context), metadata),
-      base::BindOnce(&ReturnResults, callback, base::WrapUnique(metadata)));
+      base::BindOnce(&ReturnResults, std::move(callback),
+                     base::WrapUnique(metadata)));
 }
 
 content::DownloadManager*
 DownloadMetadataManager::GetDownloadManagerForBrowserContext(
     content::BrowserContext* context) {
-  return content::BrowserContext::GetDownloadManager(context);
+  return context->GetDownloadManager();
 }
 
 void DownloadMetadataManager::OnDownloadCreated(
@@ -476,14 +481,15 @@ void DownloadMetadataManager::ManagerContext::SetRequest(
 }
 
 void DownloadMetadataManager::ManagerContext::GetDownloadDetails(
-    const GetDownloadDetailsCallback& callback) {
+    GetDownloadDetailsCallback callback) {
   if (state_ != LOAD_COMPLETE) {
-    get_details_callbacks_.push_back(callback);
+    get_details_callbacks_.push_back(std::move(callback));
   } else {
-    callback.Run(download_metadata_
-                     ? std::make_unique<ClientIncidentReport_DownloadDetails>(
-                           download_metadata_->download())
-                     : nullptr);
+    std::move(callback).Run(
+        download_metadata_
+            ? std::make_unique<ClientIncidentReport_DownloadDetails>(
+                  download_metadata_->download())
+            : nullptr);
   }
 }
 
@@ -534,7 +540,7 @@ void DownloadMetadataManager::ManagerContext::CommitRequest(
     ClearPendingItems();
   }
   // Take the request.
-  download_metadata_.reset(new DownloadMetadata);
+  download_metadata_ = std::make_unique<DownloadMetadata>();
   download_metadata_->set_download_id(item->GetId());
   download_metadata_->mutable_download()->set_allocated_download(
       request.release());
@@ -587,11 +593,11 @@ void DownloadMetadataManager::ManagerContext::ClearPendingItems() {
 
 void DownloadMetadataManager::ManagerContext::RunCallbacks() {
   while (!get_details_callbacks_.empty()) {
-    const auto& callback = get_details_callbacks_.front();
-    callback.Run(download_metadata_
-                     ? std::make_unique<ClientIncidentReport_DownloadDetails>(
-                           download_metadata_->download())
-                     : nullptr);
+    std::move(get_details_callbacks_.front())
+        .Run(download_metadata_
+                 ? std::make_unique<ClientIncidentReport_DownloadDetails>(
+                       download_metadata_->download())
+                 : nullptr);
     get_details_callbacks_.pop_front();
   }
 }

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_HISTORY_NOTICE_UTILS_H_
 #define COMPONENTS_BROWSING_DATA_CORE_HISTORY_NOTICE_UTILS_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 
 namespace history {
@@ -29,7 +27,7 @@ namespace browsing_data {
 void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
     const syncer::SyncService* sync_service,
     history::WebHistoryService* history_service,
-    base::Callback<void(bool)> callback);
+    base::OnceCallback<void(bool)> callback);
 
 // Whether the Clear Browsing Data UI should popup a dialog with information
 // about the existence of other forms of browsing history stored in user's
@@ -41,7 +39,7 @@ void ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
     const syncer::SyncService* sync_service,
     history::WebHistoryService* history_service,
     version_info::Channel channel,
-    base::Callback<void(bool)> callback);
+    base::OnceCallback<void(bool)> callback);
 
 }  // namespace browsing_data
 

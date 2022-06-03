@@ -32,28 +32,33 @@
 
 enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 
+enum ReplaceState { "active", "removed", "persisted" };
+
 [
     Exposed=Window,
     ActiveScriptWrappable
 ] interface Animation : EventTarget {
     [CallWith=ExecutionContext, RaisesException] constructor(optional AnimationEffect? effect = null, optional AnimationTimeline? timeline);
     [Measure] attribute AnimationEffect? effect;
-    // TODO(suzyh): Make timeline mutable.
-    [RuntimeEnabled=WebAnimationsAPI] readonly attribute AnimationTimeline? timeline;
-    [Measure, RaisesException=Setter] attribute double?    startTime;
-    [Measure, RaisesException=Setter] attribute double?    currentTime;
-    [Measure, RaisesException=Setter] attribute double     playbackRate;
+    [RuntimeEnabled=WebAnimationsAPI] attribute AnimationTimeline? timeline;
+    [Measure, RaisesException=Setter] attribute CSSNumberish? startTime;
+    [Measure, RaisesException=Setter] attribute CSSNumberish? currentTime;
+    [Measure, RaisesException=Setter] attribute double playbackRate;
     [Measure] readonly attribute AnimationPlayState playState;
+    [RuntimeEnabled=WebAnimationsAPI, Measure] readonly attribute ReplaceState replaceState;
     [Measure] readonly attribute boolean pending;
+    [RuntimeEnabled=WebAnimationsAPI, Measure, RaisesException] void commitStyles();
     [Measure, RaisesException] void finish();
     [Measure, RaisesException] void play();
     [Measure, RaisesException] void pause();
     [Measure, RaisesException] void reverse();
     [Measure, RaisesException] void updatePlaybackRate(double playback_rate);
+    [RuntimeEnabled=WebAnimationsAPI, Measure] void persist();
     [Measure] attribute DOMString id;
     [Measure] void cancel();
     [Measure] attribute EventHandler onfinish;
     [Measure] attribute EventHandler oncancel;
+    [RuntimeEnabled=WebAnimationsAPI, Measure] attribute EventHandler onremove;
     [RuntimeEnabled=WebAnimationsAPI, CallWith=ScriptState] readonly attribute Promise<Animation> finished;
     [RuntimeEnabled=WebAnimationsAPI, CallWith=ScriptState] readonly attribute Promise<Animation> ready;
 };

@@ -4,39 +4,23 @@
 
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
 
 namespace blink {
 
-LayoutNGMathMLBlock::LayoutNGMathMLBlock(MathMLElement* element)
+LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {
-  DCHECK(element);
 }
 
 void LayoutNGMathMLBlock::UpdateBlockLayout(bool relayout_children) {
-  LayoutAnalyzer::BlockScope analyzer(*this);
-
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;
   }
 
-  NGConstraintSpace constraint_space =
-      NGConstraintSpace::CreateFromLayoutObject(
-          *this, !View()->GetLayoutState()->Next() /* is_layout_root */);
-
-  scoped_refptr<const NGLayoutResult> result =
-      NGBlockNode(this).Layout(constraint_space);
-
-  for (const auto& descendant :
-       result->PhysicalFragment().OutOfFlowPositionedDescendants())
-    descendant.node.UseLegacyOutOfFlowPositioning();
+  UpdateInFlowBlockLayout();
 }
 
 bool LayoutNGMathMLBlock::IsOfType(LayoutObjectType type) const {
@@ -48,7 +32,25 @@ bool LayoutNGMathMLBlock::IsOfType(LayoutObjectType type) const {
 
 bool LayoutNGMathMLBlock::IsChildAllowed(LayoutObject* child,
                                          const ComputedStyle&) const {
-  return child->GetNode() && child->GetNode()->IsMathMLElement();
+  return child->GetNode() && IsA<MathMLElement>(child->GetNode());
+}
+
+bool LayoutNGMathMLBlock::CanHaveChildren() const {
+  if (GetNode() && GetNode()->HasTagName(mathml_names::kMspaceTag))
+    return false;
+  return LayoutNGMixin<LayoutBlock>::CanHaveChildren();
+}
+
+void LayoutNGMathMLBlock::StyleDidChange(StyleDifference diff,
+                                         const ComputedStyle* old_style) {
+  LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
+  if (!old_style)
+    return;
+  if (IsA<MathMLUnderOverElement>(GetNode()) &&
+      old_style->MathStyle() != StyleRef().MathStyle()) {
+    SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+        layout_invalidation_reason::kAttributeChanged);
+  }
 }
 
 }  // namespace blink

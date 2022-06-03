@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -16,7 +17,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/public/cpp/device_factory.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
-#include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,11 +50,10 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc,
-      mojo::ScopedSharedBufferHandle key_press_count_buffer,
-      mojom::AudioProcessingConfigPtr processing_config,
+      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       CreateInputStreamCallback created_callback) {
     if (should_fail_) {
-      std::move(created_callback).Run(nullptr, initially_muted_, base::nullopt);
+      std::move(created_callback).Run(nullptr, initially_muted_, absl::nullopt);
       return;
     }
 
@@ -69,11 +68,10 @@ class TestStreamFactory : public audio::FakeStreamFactory {
 
     base::SyncSocket socket1, socket2;
     base::SyncSocket::CreatePair(&socket1, &socket2);
-    auto h = mojo::SharedBufferHandle::Create(kShMemSize);
     std::move(created_callback)
         .Run({base::in_place,
               base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
-              mojo::WrapPlatformFile(socket1.Release())},
+              mojo::PlatformHandle(socket1.Take())},
              initially_muted_, base::UnguessableToken::Create());
   }
 
@@ -81,7 +79,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
                void(const base::UnguessableToken& input_stream_id,
                     const std::string& output_device_id));
 
-  mojo::PendingRemote<audio::mojom::StreamFactory> MakeRemote() {
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
@@ -94,18 +92,17 @@ class TestStreamFactory : public audio::FakeStreamFactory {
 
 class MockDelegate : public media::AudioInputIPCDelegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion mem_handle,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override {
-    base::SyncSocket socket(socket_handle);  // Releases the socket descriptor.
     GotOnStreamCreated(initially_muted);
   }
 
   MOCK_METHOD1(GotOnStreamCreated, void(bool initially_muted));
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(media::AudioCapturerSource::ErrorCode));
   MOCK_METHOD1(OnMuted, void(bool));
   MOCK_METHOD0(OnIPCClosed, void());
 };
@@ -234,7 +231,9 @@ TEST_F(InputIPCTest, SetOutputDeviceForAec_AssociatesInputAndOutputForAec) {
 
 TEST_F(InputIPCTest, FailedStreamCreationNullCallback) {
   StrictMock<MockDelegate> delegate;
-  EXPECT_CALL(delegate, OnError()).Times(2);
+  EXPECT_CALL(delegate,
+              OnError(media::AudioCapturerSource::ErrorCode::kUnknown))
+      .Times(2);
   factory_->should_fail_ = true;
   ipc->CreateStream(&delegate, audioParameters, false, 0);
   task_environment.RunUntilIdle();
@@ -242,7 +241,8 @@ TEST_F(InputIPCTest, FailedStreamCreationNullCallback) {
 
 TEST_F(InputIPCTest, FailedStreamCreationDestuctedFactory) {
   StrictMock<MockDelegate> delegate;
-  EXPECT_CALL(delegate, OnError());
+  EXPECT_CALL(delegate,
+              OnError(media::AudioCapturerSource::ErrorCode::kUnknown));
   factory_ = nullptr;
   ipc->CreateStream(&delegate, audioParameters, false, 0);
   task_environment.RunUntilIdle();

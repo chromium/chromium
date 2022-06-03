@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/proximity_auth/remote_device_life_cycle.h"
@@ -18,7 +17,12 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
  public:
   explicit FakeRemoteDeviceLifeCycle(
       chromeos::multidevice::RemoteDeviceRef remote_device,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+
+  FakeRemoteDeviceLifeCycle(const FakeRemoteDeviceLifeCycle&) = delete;
+  FakeRemoteDeviceLifeCycle& operator=(const FakeRemoteDeviceLifeCycle&) =
+      delete;
+
   ~FakeRemoteDeviceLifeCycle() override;
 
   // RemoteDeviceLifeCycle:
@@ -49,14 +53,12 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
 
  private:
   chromeos::multidevice::RemoteDeviceRef remote_device_;
-  base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
+  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;
   chromeos::secure_channel::ClientChannel* channel_;
   Messenger* messenger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRemoteDeviceLifeCycle);
 };
 
 }  // namespace proximity_auth

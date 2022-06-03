@@ -25,9 +25,7 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "google_util_unittest.cc",
-  ]
+  sources = [ "google_util_unittest.cc" ]
 
   deps = [
     ":common",

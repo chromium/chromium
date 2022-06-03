@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/gtest_prod_util.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -15,7 +14,9 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace blink {
 
@@ -34,7 +35,6 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
     : public GarbageCollected<ScrollAnimatorCompositorCoordinator>,
       private CompositorAnimationClient,
       CompositorAnimationDelegate {
-  DISALLOW_COPY_AND_ASSIGN(ScrollAnimatorCompositorCoordinator);
   USING_PRE_FINALIZER(ScrollAnimatorCompositorCoordinator, Dispose);
 
  public:
@@ -82,6 +82,10 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
     kRunningOnCompositorButNeedsAdjustment,
   };
 
+  ScrollAnimatorCompositorCoordinator(
+      const ScrollAnimatorCompositorCoordinator&) = delete;
+  ScrollAnimatorCompositorCoordinator& operator=(
+      const ScrollAnimatorCompositorCoordinator&) = delete;
   ~ScrollAnimatorCompositorCoordinator() override;
 
   bool HasAnimationThatRequiresService() const;
@@ -96,27 +100,22 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // and continues it on the main thread. This should only be called when in
   // DocumentLifecycle::LifecycleState::CompositingClean state.
   virtual void TakeOverCompositorAnimation();
-  // Updates the scroll offset of the animator's ScrollableArea by
-  // adjustment and update the target of an ongoing scroll offset animation.
-  virtual void AdjustAnimationAndSetScrollOffset(const ScrollOffset&,
-                                                 ScrollType);
   virtual void UpdateCompositorAnimations();
 
   virtual ScrollableArea* GetScrollableArea() const = 0;
-  virtual void TickAnimation(double monotonic_time) = 0;
+  virtual void TickAnimation(base::TimeTicks monotonic_time) = 0;
   virtual void NotifyCompositorAnimationFinished(int group_id) = 0;
   virtual void NotifyCompositorAnimationAborted(int group_id) = 0;
-  virtual void LayerForCompositedScrollingDidChange(
-      CompositorAnimationTimeline*) = 0;
+  virtual void MainThreadScrollingDidChange() = 0;
 
   RunState RunStateForTesting() { return run_state_; }
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
  protected:
   explicit ScrollAnimatorCompositorCoordinator();
 
-  void ScrollOffsetChanged(const ScrollOffset&, ScrollType);
+  void ScrollOffsetChanged(const ScrollOffset&, mojom::blink::ScrollType);
 
   void AdjustImplOnlyScrollOffsetAnimation(const IntSize& adjustment);
   IntSize ImplOnlyAnimationAdjustmentForTesting() {
@@ -147,12 +146,15 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   bool ReattachCompositorAnimationIfNeeded(CompositorAnimationTimeline*);
 
   // CompositorAnimationDelegate implementation.
-  void NotifyAnimationStarted(double monotonic_time, int group) override;
-  void NotifyAnimationFinished(double monotonic_time, int group) override;
-  void NotifyAnimationAborted(double monotonic_time, int group) override;
+  void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                              int group) override;
+  void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                               int group) override;
+  void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                              int group) override;
   void NotifyAnimationTakeover(double monotonic_time,
                                double animation_start_time,
-                               std::unique_ptr<cc::AnimationCurve>) override {}
+                               std::unique_ptr<gfx::AnimationCurve>) override {}
 
   // CompositorAnimationClient implementation.
   CompositorAnimation* GetCompositorAnimation() const override;

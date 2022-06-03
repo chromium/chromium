@@ -1,5 +1,6 @@
 include_rules = [
   "+services/network/test",
+  "+components/security_state/core/android/security_state_model_delegate.h",
 ]
 
 specific_include_rules = {

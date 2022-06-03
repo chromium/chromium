@@ -29,31 +29,43 @@ static_library("network") {
 
     deps += [ ":jni_headers" ]
   }
-
-  if (is_mac) {
-    sources += [
-      "network_status_listener_mac.cc",
-      "network_status_listener_mac.h",
-    ]
-  }
 }
 
 if (is_android) {
   android_library("network_java") {
-    java_files = [ "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/download/BackgroundNetworkStatusListener.java",
+      "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java",
+    ]
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [
-      "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java",
+    sources = [ "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java" ]
+  }
+
+  android_library("javatests") {
+    bypass_platform_checks = true
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroidTest.java" ]
+
+    deps = [
+      ":network_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
     ]
   }
 }

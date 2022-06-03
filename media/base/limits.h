@@ -31,8 +31,11 @@ enum {
   //   - Vorbis used to be limited to 96 kHz, but no longer has that
   //     restriction.
   //   - Most PC audio hardware is limited to 192 kHz, some specialized DAC
-  //     devices will use 384 kHz though.
-  kMaxSampleRate = 384000,
+  //     devices will use 768 kHz though.
+  //
+  // kMaxSampleRate should be updated with
+  // blink::audio_utilities::MaxAudioBufferSampleRate()
+  kMaxSampleRate = 768000,
   kMinSampleRate = 3000,
   kMaxChannels = 32,
   kMaxBytesPerSample = 4,
@@ -62,7 +65,7 @@ enum {
   kMaxKeySystemLength = 256,
 
 // Minimum and maximum buffer sizes for certain audio platforms.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   kMinAudioBufferSize = 128,
   kMaxAudioBufferSize = 4096,
 #elif defined(USE_CRAS)

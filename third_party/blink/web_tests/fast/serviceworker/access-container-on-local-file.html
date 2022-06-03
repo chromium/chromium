@@ -9,8 +9,8 @@ async_test(function(t) {
       .then(function() {
           assert_unreached('register() should fail');
         }, function(e) {
-          assert_throws(
-            new TypeError, function() { throw e; },
+          assert_throws_js(
+            TypeError, function() { throw e; },
             'register() on local file should fail');
           assert_equals(
             e.message,
@@ -30,7 +30,7 @@ async_test(function(t) {
       .then(function() {
           assert_unreached('getRegistration() should fail')
         }, function(e) {
-          assert_throws(
+          assert_throws_dom(
             'SecurityError', function() { throw e; },
             'getRegistration() on local file should fail');
           assert_equals(

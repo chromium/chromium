@@ -12,23 +12,32 @@ package chrome_browser_sharing;
 // Required in Chrome.
 option optimize_for = LITE_RUNTIME;
 
-// Used to send offer and answer for signalling process of webRTC.
-message SignallingMessage {
-  // Required.
-  string session_description_message = 1;
-
-  // Required.
-  string session_type = 2;
+// Used to send an initial offer to a remote device as part of the signalling
+// mechanism of WebRTC.
+message PeerConnectionOfferMessage {
+  // required
+  string sdp = 1;
 }
 
-// Used to exchange ice candidate messages between peers for webRTC connection.
-message IceCandidateMessage {
-  // Required.
-  string sdp_message = 1;
+// Used to send the answer to a received offer as part of the signalling
+// mechanism of WebRTC.
+message PeerConnectionAnswerMessage {
+  // required
+  string sdp = 1;
+}
 
-  // Required.
-  int32 sdp_mline_index = 2;
+// Represents an ICE candidate for a WebRTC connection.
+message PeerConnectionIceCandidate {
+  // required
+  string candidate = 1;
+  // required
+  string sdp_mid = 2;
+  // required
+  int32 sdp_mline_index = 3;
+}
 
-  // Required.
-  string sdp_mid = 3;
+// Used to exchange ice candidate messages between peers for WebRTC connection.
+message PeerConnectionIceCandidatesMessage {
+  // required
+  repeated PeerConnectionIceCandidate ice_candidates = 1;
 }

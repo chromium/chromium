@@ -29,6 +29,12 @@ class BluetoothRemoteGattServiceCast : public BluetoothRemoteGattService {
   BluetoothRemoteGattServiceCast(
       BluetoothDeviceCast* device,
       scoped_refptr<chromecast::bluetooth::RemoteService> remote_service);
+
+  BluetoothRemoteGattServiceCast(const BluetoothRemoteGattServiceCast&) =
+      delete;
+  BluetoothRemoteGattServiceCast& operator=(
+      const BluetoothRemoteGattServiceCast&) = delete;
+
   ~BluetoothRemoteGattServiceCast() override;
 
   // BluetoothGattService implementation:
@@ -43,8 +49,6 @@ class BluetoothRemoteGattServiceCast : public BluetoothRemoteGattService {
  private:
   BluetoothDeviceCast* const device_;
   scoped_refptr<chromecast::bluetooth::RemoteService> remote_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceCast);
 };
 
 }  // namespace device

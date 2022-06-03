@@ -21,7 +21,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/history/core/test/history_backend_db_base_test.h"
 
 namespace history {

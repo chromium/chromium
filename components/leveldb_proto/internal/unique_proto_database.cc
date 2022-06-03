@@ -7,7 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/sequenced_task_runner.h"
+#include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 
@@ -129,6 +130,13 @@ void UniqueProtoDatabase::LoadKeysAndEntriesInRange(
     const std::string& end,
     typename Callbacks::LoadKeysAndEntriesCallback callback) {
   db_wrapper_->LoadKeysAndEntriesInRange(start, end, std::move(callback));
+}
+
+void UniqueProtoDatabase::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const KeyIteratorController& controller,
+    typename Callbacks::LoadKeysAndEntriesCallback callback) {
+  db_wrapper_->LoadKeysAndEntriesWhile(start, controller, std::move(callback));
 }
 
 void UniqueProtoDatabase::LoadKeys(Callbacks::LoadKeysCallback callback) {

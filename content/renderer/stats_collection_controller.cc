@@ -10,7 +10,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
 #include "content/common/renderer_host.mojom.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "v8/include/v8-context.h"
 
 namespace content {
 

@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/scoped_nsobject.h"
 
 namespace base {

@@ -6,7 +6,7 @@ package org.chromium.android_webview.test.common.variations;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import com.google.protobuf.ByteString;
 
@@ -19,6 +19,7 @@ import org.chromium.android_webview.proto.AwVariationsSeedOuterClass.AwVariation
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;
@@ -30,7 +31,8 @@ import java.util.Arrays;
  * Test reading and writing variations seeds.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@Batch(Batch.UNIT_TESTS)
 public class VariationsUtilsTest {
     @Test
     @MediumTest

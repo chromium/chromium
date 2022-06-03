@@ -111,7 +111,7 @@ UrlHandlersParser::~UrlHandlersParser() {
 bool ParseUrlHandler(const std::string& handler_id,
                      const base::DictionaryValue& handler_info,
                      std::vector<UrlHandlerInfo>* url_handlers,
-                     base::string16* error,
+                     std::u16string* error,
                      Extension* extension) {
   DCHECK(error);
 
@@ -125,22 +125,22 @@ bool ParseUrlHandler(const std::string& handler_id,
 
   const base::ListValue* manif_patterns = NULL;
   if (!handler_info.GetList(mkeys::kMatches, &manif_patterns) ||
-      manif_patterns->GetSize() == 0) {
+      manif_patterns->GetList().size() == 0) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         merrors::kInvalidURLHandlerPattern, handler_id);
     return false;
   }
 
-  for (auto it = manif_patterns->begin(); it != manif_patterns->end(); ++it) {
-    std::string str_pattern;
-    it->GetAsString(&str_pattern);
+  for (const auto& entry : manif_patterns->GetList()) {
+    std::string str_pattern =
+        entry.is_string() ? entry.GetString() : std::string();
     // TODO(sergeygs): Limit this to non-top-level domains.
     // TODO(sergeygs): Also add a verification to the CWS installer that the
     // URL patterns claimed here belong to the app's author verified sites.
     URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS);
     // System Web Apps are bookmark apps that point to chrome:// URLs.
     // TODO(calamity): Remove once Bookmark Apps are no longer on Extensions.
-    if (extension->location() == Manifest::EXTERNAL_COMPONENT &&
+    if (extension->location() == mojom::ManifestLocation::kExternalComponent &&
         extension->from_bookmark()) {
       pattern = URLPattern(URLPattern::SCHEME_CHROMEUI);
     }
@@ -158,12 +158,7 @@ bool ParseUrlHandler(const std::string& handler_id,
   return true;
 }
 
-bool UrlHandlersParser::Parse(Extension* extension, base::string16* error) {
-  if (extension->GetType() == Manifest::TYPE_HOSTED_APP &&
-      !extension->from_bookmark()) {
-    *error = base::ASCIIToUTF16(merrors::kUrlHandlersInHostedApps);
-    return false;
-  }
+bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<UrlHandlers> info(new UrlHandlers);
   const base::DictionaryValue* all_handlers = NULL;
   if (!extension->manifest()->GetDictionary(
@@ -172,7 +167,7 @@ bool UrlHandlersParser::Parse(Extension* extension, base::string16* error) {
     return false;
   }
 
-  DCHECK(extension->is_platform_app() || extension->from_bookmark());
+  DCHECK(extension->is_platform_app());
 
   for (base::DictionaryValue::Iterator iter(*all_handlers); !iter.IsAtEnd();
        iter.Advance()) {

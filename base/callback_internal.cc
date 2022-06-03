@@ -4,7 +4,8 @@
 
 #include "base/callback_internal.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace base {
 namespace internal {

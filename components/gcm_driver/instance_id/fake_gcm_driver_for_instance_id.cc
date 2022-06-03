@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/gcm_client.h"
 
@@ -44,7 +44,7 @@ void FakeGCMDriverForInstanceID::RemoveInstanceIDData(
 
 void FakeGCMDriverForInstanceID::GetInstanceIDData(
     const std::string& app_id,
-    const GetInstanceIDDataCallback& callback) {
+    GetInstanceIDDataCallback callback) {
   auto iter = instance_id_data_.find(app_id);
   std::string instance_id;
   std::string extra_data;
@@ -53,14 +53,14 @@ void FakeGCMDriverForInstanceID::GetInstanceIDData(
     extra_data = iter->second.second;
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, instance_id, extra_data));
+      FROM_HERE, base::BindOnce(std::move(callback), instance_id, extra_data));
 }
 
 void FakeGCMDriverForInstanceID::GetToken(
     const std::string& app_id,
     const std::string& authorized_entity,
     const std::string& scope,
-    const std::map<std::string, std::string>& options,
+    base::TimeDelta time_to_live,
     GetTokenCallback callback) {
   std::string key = app_id + authorized_entity + scope;
   auto iter = tokens_.find(key);

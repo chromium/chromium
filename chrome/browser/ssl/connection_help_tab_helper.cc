@@ -6,8 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
+#include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -19,9 +18,7 @@ const char kHelpCenterConnectionHelpUrl[] =
     "https://support.google.com/chrome/answer/6098869";
 const char kBundledConnectionHelpUrl[] = "chrome://connection-help";
 
-void MaybeRedirectToBundledHelp(content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(features::kBundledConnectionHelpFeature))
-    return;
+void RedirectToBundledHelp(content::WebContents* web_contents) {
   GURL::Replacements replacements;
   std::string error_code = web_contents->GetURL().ref();
   replacements.SetRefStr(error_code);
@@ -36,30 +33,13 @@ ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
 
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame() &&
+  // Ignore pre-rendering navigations.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       (web_contents()->GetURL().EqualsIgnoringRef(GetHelpCenterURL()) ||
-       web_contents()->GetURL().EqualsIgnoringRef(
-           GURL(chrome::kSymantecSupportUrl)))) {
-    LearnMoreClickResult histogram_value;
-    if (navigation_handle->IsErrorPage()) {
-      if (net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
-        // When committed interstitials are enabled, DidAttachInterstitialPage
-        // does not get called, so check if this navigation resulted in an SSL
-        // error.
-        histogram_value = ConnectionHelpTabHelper::LearnMoreClickResult::
-            kFailedWithInterstitial;
-        MaybeRedirectToBundledHelp(web_contents());
-      } else {
-        histogram_value =
-            ConnectionHelpTabHelper::LearnMoreClickResult::kFailedOther;
-      }
-    } else {
-      histogram_value =
-          ConnectionHelpTabHelper::LearnMoreClickResult::kSucceeded;
-    }
-    UMA_HISTOGRAM_ENUMERATION(
-        "SSL.CertificateErrorHelpCenterVisited", histogram_value,
-        ConnectionHelpTabHelper::LearnMoreClickResult::kLearnMoreResultCount);
+       web_contents()->GetURL().EqualsIgnoringRef(GURL(kSymantecSupportUrl))) &&
+      navigation_handle->IsErrorPage() &&
+      net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
+    RedirectToBundledHelp(web_contents());
   }
 }
 
@@ -77,4 +57,4 @@ GURL ConnectionHelpTabHelper::GetHelpCenterURL() {
   return GURL(kHelpCenterConnectionHelpUrl);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ConnectionHelpTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ConnectionHelpTabHelper);

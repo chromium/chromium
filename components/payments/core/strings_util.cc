@@ -4,39 +4,17 @@
 
 #include "components/payments/core/strings_util.h"
 
-#include <vector>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace payments {
-namespace {
 
-constexpr size_t kNone = 0;
-constexpr size_t kCredit = 1;
-constexpr size_t kDebit = 2;
-constexpr size_t kPrepaid = 4;
-
-size_t getCardTypeBitmask(
-    const std::set<autofill::CreditCard::CardType>& types) {
-  return (types.find(autofill::CreditCard::CARD_TYPE_CREDIT) != types.end()
-              ? kCredit
-              : kNone) |
-         (types.find(autofill::CreditCard::CARD_TYPE_DEBIT) != types.end()
-              ? kDebit
-              : kNone) |
-         (types.find(autofill::CreditCard::CARD_TYPE_PREPAID) != types.end()
-              ? kPrepaid
-              : kNone);
-}
-
-}  // namespace
-
-base::string16 GetShippingAddressLabelFormAutofillProfile(
+std::u16string GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
   // Name, phone number, and country are not included in the shipping address
@@ -55,7 +33,7 @@ base::string16 GetShippingAddressLabelFormAutofillProfile(
                                         base::size(kLabelFields), locale);
 }
 
-base::string16 GetBillingAddressLabelFromAutofillProfile(
+std::u16string GetBillingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
   // Name, company, phone number, and country are not included in the billing
@@ -73,7 +51,7 @@ base::string16 GetBillingAddressLabelFromAutofillProfile(
                                         base::size(kLabelFields), locale);
 }
 
-base::string16 GetShippingAddressSelectorInfoMessage(
+std::u16string GetShippingAddressSelectorInfoMessage(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case payments::PaymentShippingType::DELIVERY:
@@ -87,11 +65,11 @@ base::string16 GetShippingAddressSelectorInfoMessage(
           IDS_PAYMENTS_SELECT_SHIPPING_ADDRESS_FOR_SHIPPING_METHODS);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetShippingAddressSectionString(
+std::u16string GetShippingAddressSectionString(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -102,12 +80,12 @@ base::string16 GetShippingAddressSectionString(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
 #if defined(OS_IOS)
-base::string16 GetChooseShippingAddressButtonLabel(
+std::u16string GetChooseShippingAddressButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -121,11 +99,11 @@ base::string16 GetChooseShippingAddressButtonLabel(
           IDS_PAYMENTS_CHOOSE_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetAddShippingAddressButtonLabel(
+std::u16string GetAddShippingAddressButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -136,11 +114,11 @@ base::string16 GetAddShippingAddressButtonLabel(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetChooseShippingOptionButtonLabel(
+std::u16string GetChooseShippingOptionButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -153,12 +131,12 @@ base::string16 GetChooseShippingOptionButtonLabel(
           IDS_PAYMENTS_CHOOSE_SHIPPING_OPTION_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 #endif  // defined(OS_IOS)
 
-base::string16 GetShippingOptionSectionString(
+std::u16string GetShippingOptionSectionString(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -169,51 +147,8 @@ base::string16 GetShippingOptionSectionString(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
-}
-
-base::string16 GetAcceptedCardTypesText(
-    const std::set<autofill::CreditCard::CardType>& types) {
-  int string_ids[8];
-
-  string_ids[kNone] = IDS_PAYMENTS_ACCEPTED_CARDS_LABEL;
-  string_ids[kCredit | kDebit | kPrepaid] = IDS_PAYMENTS_ACCEPTED_CARDS_LABEL;
-
-  string_ids[kCredit] = IDS_PAYMENTS_ACCEPTED_CREDIT_CARDS_LABEL;
-  string_ids[kDebit] = IDS_PAYMENTS_ACCEPTED_DEBIT_CARDS_LABEL;
-  string_ids[kPrepaid] = IDS_PAYMENTS_ACCEPTED_PREPAID_CARDS_LABEL;
-
-  string_ids[kCredit | kDebit] = IDS_PAYMENTS_ACCEPTED_CREDIT_DEBIT_CARDS_LABEL;
-  string_ids[kCredit | kPrepaid] =
-      IDS_PAYMENTS_ACCEPTED_CREDIT_PREPAID_CARDS_LABEL;
-  string_ids[kDebit | kPrepaid] =
-      IDS_PAYMENTS_ACCEPTED_DEBIT_PREPAID_CARDS_LABEL;
-
-  return l10n_util::GetStringUTF16(string_ids[getCardTypeBitmask(types)]);
-}
-
-base::string16 GetCardTypesAreAcceptedText(
-    const std::set<autofill::CreditCard::CardType>& types) {
-  int string_ids[8];
-
-  string_ids[kNone] = 0;
-  string_ids[kCredit | kDebit | kPrepaid] = 0;
-
-  string_ids[kCredit] = IDS_PAYMENTS_CREDIT_CARDS_ARE_ACCEPTED_LABEL;
-  string_ids[kDebit] = IDS_PAYMENTS_DEBIT_CARDS_ARE_ACCEPTED_LABEL;
-  string_ids[kPrepaid] = IDS_PAYMENTS_PREPAID_CARDS_ARE_ACCEPTED_LABEL;
-
-  string_ids[kCredit | kDebit] =
-      IDS_PAYMENTS_CREDIT_DEBIT_CARDS_ARE_ACCEPTED_LABEL;
-  string_ids[kCredit | kPrepaid] =
-      IDS_PAYMENTS_CREDIT_PREPAID_CARDS_ARE_ACCEPTED_LABEL;
-  string_ids[kDebit | kPrepaid] =
-      IDS_PAYMENTS_DEBIT_PREPAID_CARDS_ARE_ACCEPTED_LABEL;
-
-  int string_id = string_ids[getCardTypeBitmask(types)];
-  return string_id == 0 ? base::string16()
-                        : l10n_util::GetStringUTF16(string_id);
 }
 
 }  // namespace payments

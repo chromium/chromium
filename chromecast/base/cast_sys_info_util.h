@@ -6,9 +6,7 @@
 #define CHROMECAST_BASE_CAST_SYS_INFO_UTIL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
-
 
 namespace chromecast {
 

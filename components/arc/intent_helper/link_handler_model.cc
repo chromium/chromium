@@ -4,16 +4,17 @@
 
 #include "components/arc/intent_helper/link_handler_model.h"
 
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/google/core/common/google_util.h"
 #include "url/url_util.h"
 
@@ -25,7 +26,7 @@ constexpr int kMaxValueLen = 2048;
 
 bool GetQueryValue(const GURL& url,
                    const std::string& key_to_find,
-                   base::string16* out) {
+                   std::u16string* out) {
   const std::string str(url.query());
 
   url::Component query(0, str.length());
@@ -42,7 +43,7 @@ bool GetQueryValue(const GURL& url,
       url::DecodeURLEscapeSequences(str.c_str() + value.begin, value.len,
                                     url::DecodeURLMode::kUTF8OrIsomorphic,
                                     &output);
-      *out = base::string16(output.data(), output.length());
+      *out = std::u16string(output.data(), output.length());
       return true;
     }
   }
@@ -79,9 +80,8 @@ void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
     return;
   instance->HandleUrl(url_.spec(), handlers_[handler_id]->package_name);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Arc.UserInteraction",
-      arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
+  ArcMetricsService::RecordArcUserInteraction(
+      context_, arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
 }
 
 LinkHandlerModel::LinkHandlerModel() = default;
@@ -155,7 +155,8 @@ void LinkHandlerModel::NotifyObserver(
     if (it != icons_.end())
       icon = it->second.icon16;
     // Use the handler's index as an ID.
-    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i]->name), icon, i};
+    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i]->name), icon,
+                               static_cast<uint32_t>(i)};
     handlers.push_back(handler);
   }
   for (auto& observer : observer_list_)
@@ -180,7 +181,7 @@ GURL LinkHandlerModel::RewriteUrlFromQueryIfAvailable(const GURL& url) {
   if (!url.has_path() || url.path() != kPathToFind)
     return url;
 
-  base::string16 value;
+  std::u16string value;
   if (!GetQueryValue(url, kKeyToFind, &value))
     return url;
 

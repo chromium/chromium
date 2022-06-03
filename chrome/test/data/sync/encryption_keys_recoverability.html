@@ -1,0 +1,16 @@
+<html>
+<head>
+<script>
+window.onload = function() {
+  setTimeout(function() {
+    // A second page is loaded as part of user action, such that Blink sees a
+    // non-empty navigation history when determining whether closing the tab via
+    // Javascript is allowed.
+    this.document.location.href =
+        "/sync/encryption_keys_recoverability_complete.html" +
+        location.search + location.hash;
+  }, 0);
+}
+</script>
+</head>
+</html>

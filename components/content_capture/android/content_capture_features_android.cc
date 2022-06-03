@@ -8,3 +8,9 @@
 static jboolean JNI_ContentCaptureFeatures_IsEnabled(JNIEnv* env) {
   return content_capture::features::IsContentCaptureEnabled();
 }
+
+static jboolean
+JNI_ContentCaptureFeatures_ShouldTriggerContentCaptureForExperiment(
+    JNIEnv* env) {
+  return content_capture::features::ShouldTriggerContentCaptureForExperiment();
+}

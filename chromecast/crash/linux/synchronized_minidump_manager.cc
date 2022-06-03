@@ -15,15 +15,17 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "chromecast/base/path_utils.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/crash/linux/dump_info.h"
 
 // if |cond| is false, returns |retval|.
@@ -38,6 +40,9 @@ namespace chromecast {
 
 namespace {
 
+// Allows overriding default placement of minidumps in $HOME.
+const char kMinidumpPathSwitch[] = "minidump-path";
+
 const char kLockfileName[] = "lockfile";
 const char kMetadataName[] = "metadata";
 const char kMinidumpsDir[] = "minidumps";
@@ -46,6 +51,16 @@ const char kLockfileRatelimitKey[] = "ratelimit";
 const char kLockfileRatelimitPeriodStartKey[] = "period_start";
 const char kLockfileRatelimitPeriodDumpsKey[] = "period_dumps";
 const uint64_t kLockfileNumRatelimitParams = 2;
+
+base::FilePath GetMinidumpPath() {
+  base::FilePath result =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kMinidumpPathSwitch);
+  if (result.empty()) {
+    result = GetHomePathASCII(kMinidumpsDir);
+  }
+  return result;
+}
 
 // Gets the ratelimit parameter dictionary given a deserialized |metadata|.
 // Returns nullptr if invalid.
@@ -66,14 +81,13 @@ base::Time GetRatelimitPeriodStart(base::Value* metadata) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
   RCHECK(ratelimit_params, base::Time());
 
-  double seconds = 0.0;
-  RCHECK(
-      ratelimit_params->GetDouble(kLockfileRatelimitPeriodStartKey, &seconds),
-      base::Time());
+  absl::optional<double> seconds =
+      ratelimit_params->FindDoubleKey(kLockfileRatelimitPeriodStartKey);
+  RCHECK(seconds, base::Time());
 
   // Return value of 0 indicates "not initialized", so we need to explicitly
   // check for it and return time_t = 0 equivalent.
-  return seconds ? base::Time::FromDoubleT(seconds) : base::Time::UnixEpoch();
+  return *seconds ? base::Time::FromDoubleT(*seconds) : base::Time::UnixEpoch();
 }
 
 // Sets the time of the current ratelimit period's start in |metadata| to
@@ -84,8 +98,8 @@ bool SetRatelimitPeriodStart(base::Value* metadata, base::Time period_start) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
   RCHECK(ratelimit_params, false);
 
-  ratelimit_params->SetDouble(kLockfileRatelimitPeriodStartKey,
-                              period_start.ToDoubleT());
+  ratelimit_params->SetDoubleKey(kLockfileRatelimitPeriodStartKey,
+                                 period_start.ToDoubleT());
   return true;
 }
 
@@ -125,7 +139,7 @@ bool ValidateMetadata(base::Value* metadata) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
 
   return ratelimit_params &&
-         ratelimit_params->size() == kLockfileNumRatelimitParams &&
+         ratelimit_params->DictSize() == kLockfileNumRatelimitParams &&
          !GetRatelimitPeriodStart(metadata).is_null() &&
          GetRatelimitPeriodDumps(metadata) >= 0;
 }
@@ -167,7 +181,7 @@ const int SynchronizedMinidumpManager::kRatelimitPeriodSeconds = 24 * 3600;
 const int SynchronizedMinidumpManager::kRatelimitPeriodMaxDumps = 100;
 
 SynchronizedMinidumpManager::SynchronizedMinidumpManager()
-    : dump_path_(GetHomePathASCII(kMinidumpsDir)),
+    : dump_path_(GetMinidumpPath()),
       lockfile_path_(dump_path_.Append(kLockfileName).value()),
       metadata_path_(dump_path_.Append(kMetadataName).value()),
       lockfile_fd_(-1) {}
@@ -202,7 +216,7 @@ int SynchronizedMinidumpManager::GetNumDumps(bool delete_all_dumps) {
       if (delete_all_dumps) {
         LOG(INFO) << "Removing " << reader.name()
                   << "which was not in the lockfile";
-        if (!base::DeleteFile(dump_file, false))
+        if (!base::DeleteFile(dump_file))
           PLOG(INFO) << "Removing " << dump_file.value() << " failed";
       }
     }
@@ -247,13 +261,18 @@ bool SynchronizedMinidumpManager::AcquireLockFile() {
 
   // The lockfile is open and locked. Parse it to provide subclasses with a
   // record of all the current dumps.
-  if (!ParseFiles()) {
+  bool create_lockfiles = false;
+  if (!base::PathExists(metadata_path_)) {
+    LOG(INFO) << "Metadata doesn't exist.";
+    create_lockfiles = true;
+  } else if (!ParseFiles()) {
     LOG(ERROR) << "Lockfile did not parse correctly. ";
-    if (!InitializeFiles() || !ParseFiles()) {
-      LOG(ERROR) << "Failed to create a new lock file!";
-      ReleaseLockFile();
-      return false;
-    }
+    create_lockfiles = true;
+  }
+  if (create_lockfiles && (!InitializeFiles() || !ParseFiles())) {
+    LOG(ERROR) << "Failed to create a new lock file!";
+    ReleaseLockFile();
+    return false;
   }
 
   DCHECK(dumps_);
@@ -280,14 +299,20 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    std::unique_ptr<base::Value> dump_info = DeserializeFromJson(line);
-    DumpInfo info(dump_info.get());
+    absl::optional<base::Value> dump_info = base::JSONReader::Read(line);
+    RCHECK(dump_info.has_value(), false);
+    DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);
-    dumps->Append(std::move(dump_info));
+    dumps->Append(std::move(dump_info.value()));
   }
 
+  JSONFileValueDeserializer deserializer(metadata_path_);
+  int error_code = -1;
+  std::string error_msg;
   std::unique_ptr<base::Value> metadata =
-      DeserializeJsonFromFile(metadata_path_);
+      deserializer.Deserialize(&error_code, &error_msg);
+  DLOG_IF(ERROR, !metadata) << "JSON error " << error_code << ":" << error_msg;
+  RCHECK(metadata, false);
   RCHECK(ValidateMetadata(metadata.get()), false);
 
   dumps_ = std::move(dumps);
@@ -301,10 +326,11 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
   DCHECK(metadata);
   std::string lockfile;
 
-  for (const auto& elem : *dumps) {
-    base::Optional<std::string> dump_info = SerializeToJson(elem);
-    RCHECK(dump_info, false);
-    lockfile += *dump_info;
+  for (const auto& elem : dumps->GetList()) {
+    std::string dump_info;
+    bool ret = base::JSONWriter::Write(elem, &dump_info);
+    RCHECK(ret, false);
+    lockfile += dump_info;
     lockfile += "\n";  // Add line seperatators
   }
 
@@ -312,7 +338,8 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
     return false;
   }
 
-  return SerializeJsonToFile(metadata_path_, *metadata);
+  JSONFileValueSerializer serializer(metadata_path_);
+  return serializer.Serialize(*metadata);
 }
 
 bool SynchronizedMinidumpManager::InitializeFiles() {
@@ -320,7 +347,7 @@ bool SynchronizedMinidumpManager::InitializeFiles() {
       std::make_unique<base::DictionaryValue>();
 
   auto ratelimit_fields = std::make_unique<base::DictionaryValue>();
-  ratelimit_fields->SetDouble(kLockfileRatelimitPeriodStartKey, 0.0);
+  ratelimit_fields->SetDoubleKey(kLockfileRatelimitPeriodStartKey, 0.0);
   ratelimit_fields->SetInteger(kLockfileRatelimitPeriodDumpsKey, 0);
   metadata->Set(kLockfileRatelimitKey, std::move(ratelimit_fields));
 
@@ -345,7 +372,10 @@ bool SynchronizedMinidumpManager::AddEntryToLockFile(
 }
 
 bool SynchronizedMinidumpManager::RemoveEntryFromLockFile(int index) {
-  return dumps_->Remove(static_cast<uint64_t>(index), nullptr);
+  base::Value::ListView dumps_view = dumps_->GetList();
+  if (index < 0 || static_cast<size_t>(index) >= dumps_view.size())
+    return false;
+  return dumps_->EraseListIter(dumps_view.begin() + index);
 }
 
 void SynchronizedMinidumpManager::ReleaseLockFile() {
@@ -366,7 +396,7 @@ void SynchronizedMinidumpManager::ReleaseLockFile() {
 std::vector<std::unique_ptr<DumpInfo>> SynchronizedMinidumpManager::GetDumps() {
   std::vector<std::unique_ptr<DumpInfo>> dumps;
 
-  for (const auto& elem : *dumps_) {
+  for (const auto& elem : dumps_->GetList()) {
     dumps.push_back(std::unique_ptr<DumpInfo>(new DumpInfo(&elem)));
   }
 
@@ -375,7 +405,7 @@ std::vector<std::unique_ptr<DumpInfo>> SynchronizedMinidumpManager::GetDumps() {
 
 bool SynchronizedMinidumpManager::SetCurrentDumps(
     const std::vector<std::unique_ptr<DumpInfo>>& dumps) {
-  dumps_->Clear();
+  dumps_->ClearList();
 
   for (auto& dump : dumps)
     dumps_->Append(dump->GetAsValue());
@@ -389,6 +419,20 @@ bool SynchronizedMinidumpManager::IncrementNumDumpsInCurrentPeriod() {
   RCHECK(last_dumps >= 0, false);
 
   return SetRatelimitPeriodDumps(metadata_.get(), last_dumps + 1);
+}
+
+bool SynchronizedMinidumpManager::DecrementNumDumpsInCurrentPeriod() {
+  DCHECK(metadata_);
+  int last_dumps = GetRatelimitPeriodDumps(metadata_.get());
+  if (last_dumps > 0) {
+    return SetRatelimitPeriodDumps(metadata_.get(), last_dumps - 1);
+  }
+  return true;
+}
+
+void SynchronizedMinidumpManager::ResetRateLimitPeriod() {
+  SetRatelimitPeriodStart(metadata_.get(), base::Time::Now());
+  SetRatelimitPeriodDumps(metadata_.get(), 0);
 }
 
 bool SynchronizedMinidumpManager::CanUploadDump() {
@@ -405,10 +449,8 @@ bool SynchronizedMinidumpManager::CanUploadDump() {
       (cur_time < period_start &&
        cur_time.ToDoubleT() > kRatelimitPeriodSeconds) ||
       (cur_time - period_start).InSeconds() >= kRatelimitPeriodSeconds) {
-    period_start = cur_time;
-    period_dumps_count = 0;
-    SetRatelimitPeriodStart(metadata_.get(), period_start);
-    SetRatelimitPeriodDumps(metadata_.get(), period_dumps_count);
+    ResetRateLimitPeriod();
+    return true;
   }
 
   return period_dumps_count < kRatelimitPeriodMaxDumps;
@@ -423,7 +465,7 @@ bool SynchronizedMinidumpManager::HasDumps() {
   // Check if any files are in minidump directory
   base::DirReaderPosix reader(dump_path_.value().c_str());
   if (!reader.IsValid()) {
-    DLOG(FATAL) << "Could not open minidump dir: " << dump_path_.value();
+    DLOG(ERROR) << "Could not open minidump dir: " << dump_path_.value();
     return false;
   }
 

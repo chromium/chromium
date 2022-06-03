@@ -4,9 +4,9 @@
 
 #include "ui/views/corewm/cursor_height_provider_win.h"
 
-#include <windows.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <windows.h>
 
 #include <algorithm>
 #include <map>
@@ -46,13 +46,9 @@ PixelData GetBitmapData(HBITMAP handle, const BITMAPINFO& info, HDC hdc) {
   data = std::make_unique<uint32_t[]>(info.bmiHeader.biSizeImage /
                                       sizeof(uint32_t));
 
-  int result = GetDIBits(hdc,
-                         handle,
-                         0,
-                         info.bmiHeader.biHeight,
-                         data.get(),
-                         reinterpret_cast<BITMAPINFO*>(header.get()),
-                         DIB_RGB_COLORS);
+  int result =
+      GetDIBits(hdc, handle, 0, info.bmiHeader.biHeight, data.get(),
+                reinterpret_cast<BITMAPINFO*>(header.get()), DIB_RGB_COLORS);
 
   if (result == 0)
     data.reset();
@@ -94,7 +90,8 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   // Rows are padded to full DWORDs. OR with this mask will set them to 1
   // to simplify matching with |transparent_mask|.
   uint32_t last_byte_mask = 0xFFFFFFFF;
-  const unsigned char bits_to_shift = sizeof(last_byte_mask) * 8 -
+  const unsigned char bits_to_shift =
+      sizeof(last_byte_mask) * 8 -
       (bitmap_info.bmiHeader.biWidth % kBitsPeruint32);
   if (bits_to_shift != kBitsPeruint32)
     last_byte_mask = (last_byte_mask << bits_to_shift);

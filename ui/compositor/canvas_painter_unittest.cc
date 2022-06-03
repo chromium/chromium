@@ -4,7 +4,6 @@
 
 #include "ui/compositor/canvas_painter.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -36,6 +35,9 @@ void CheckPaintedShape(const SkBitmap& bitmap,
 class CanvasPainterTest : public ::testing::TestWithParam<float> {
  public:
   CanvasPainterTest() : device_scale_factor_(GetParam()) {}
+
+  CanvasPainterTest(const CanvasPainterTest&) = delete;
+  CanvasPainterTest& operator=(const CanvasPainterTest&) = delete;
 
   float device_scale_factor() const { return device_scale_factor_; }
 
@@ -71,8 +73,6 @@ class CanvasPainterTest : public ::testing::TestWithParam<float> {
 
  private:
   float device_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasPainterTest);
 };
 
 TEST_P(CanvasPainterTest, Initialization) {

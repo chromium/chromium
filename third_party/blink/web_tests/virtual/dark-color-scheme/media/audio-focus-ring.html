@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="dark">
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+
+<body>
+  <li>Focus: <audio controls
+      src="../../../webaudio/resources/media/128kbps-44khz.mp3"></audio></li>
+  <br><br>
+  <li>Non-Focus: <audio controls
+      src="../../../webaudio/resources/media/128kbps-44khz.mp3"></audio></li>
+  <script>
+    runAfterLayoutAndPaint(function () {
+      eventSender.keyDown('Tab');
+    }, true);
+  </script>
+</body>

@@ -10,12 +10,13 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -30,12 +31,14 @@ class PushSubscriptionOptions;
 
 class PushProvider final : public GarbageCollected<PushProvider>,
                            public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(PushProvider);
-
  public:
   static const char kSupplementName[];
 
   explicit PushProvider(ServiceWorkerRegistration& registration);
+
+  PushProvider(const PushProvider&) = delete;
+  PushProvider& operator=(const PushProvider&) = delete;
+
   ~PushProvider() = default;
 
   static PushProvider* From(ServiceWorkerRegistration* registration);
@@ -45,6 +48,8 @@ class PushProvider final : public GarbageCollected<PushProvider>,
                  std::unique_ptr<PushSubscriptionCallbacks> callbacks);
   void Unsubscribe(std::unique_ptr<PushUnsubscribeCallbacks> callbacks);
   void GetSubscription(std::unique_ptr<PushSubscriptionCallbacks> callbacks);
+
+  void Trace(Visitor*) const override;
 
  private:
   // Returns an initialized PushMessaging service. A connection will be
@@ -64,9 +69,7 @@ class PushProvider final : public GarbageCollected<PushProvider>,
                           mojom::blink::PushGetRegistrationStatus status,
                           mojom::blink::PushSubscriptionPtr subscription);
 
-  mojo::Remote<mojom::blink::PushMessaging> push_messaging_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushProvider);
+  HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
 };
 
 }  // namespace blink

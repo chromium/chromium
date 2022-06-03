@@ -6,10 +6,11 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -19,16 +20,16 @@ struct ExtensionBuilder::ManifestData {
   Type type;
   std::string name;
   std::vector<std::string> permissions;
-  base::Optional<ActionType> action;
-  base::Optional<BackgroundContext> background_context;
-  base::Optional<std::string> version;
+  absl::optional<ActionType> action;
+  absl::optional<BackgroundContext> background_context;
+  absl::optional<std::string> version;
 
   // A ContentScriptEntry includes a string name, and a vector of string
   // match patterns.
   using ContentScriptEntry = std::pair<std::string, std::vector<std::string>>;
   std::vector<ContentScriptEntry> content_scripts;
 
-  base::Optional<base::Value> extra;
+  absl::optional<base::Value> extra;
 
   std::unique_ptr<base::DictionaryValue> GetValue() const {
     DictionaryBuilder manifest;
@@ -66,13 +67,16 @@ struct ExtensionBuilder::ManifestData {
         case ActionType::BROWSER_ACTION:
           action_key = manifest_keys::kBrowserAction;
           break;
+        case ActionType::ACTION:
+          action_key = manifest_keys::kAction;
+          break;
       }
       manifest.Set(action_key, std::make_unique<base::DictionaryValue>());
     }
 
     if (background_context) {
       DictionaryBuilder background;
-      base::Optional<bool> persistent;
+      absl::optional<bool> persistent;
       switch (*background_context) {
         case BackgroundContext::BACKGROUND_PAGE:
           background.Set("page", "background_page.html");
@@ -96,16 +100,17 @@ struct ExtensionBuilder::ManifestData {
       ListBuilder scripts_value;
       for (const auto& script : content_scripts) {
         ListBuilder matches;
-        for (const auto& match : script.second)
-          matches.Append(match);
+        matches.Append(script.second.begin(), script.second.end());
         scripts_value.Append(
             DictionaryBuilder()
-                .Set(manifest_keys::kJs,
+                .Set(api::content_scripts::ContentScript::kJs,
                      ListBuilder().Append(script.first).Build())
-                .Set(manifest_keys::kMatches, matches.Build())
+                .Set(api::content_scripts::ContentScript::kMatches,
+                     matches.Build())
                 .Build());
       }
-      manifest.Set(manifest_keys::kContentScripts, scripts_value.Build());
+      manifest.Set(api::content_scripts::ManifestKeys::kContentScripts,
+                   scripts_value.Build());
     }
 
     std::unique_ptr<base::DictionaryValue> result = manifest.Build();
@@ -126,7 +131,8 @@ struct ExtensionBuilder::ManifestData {
 };
 
 ExtensionBuilder::ExtensionBuilder()
-    : location_(Manifest::UNPACKED), flags_(Extension::NO_FLAGS) {}
+    : location_(mojom::ManifestLocation::kUnpacked),
+      flags_(Extension::NO_FLAGS) {}
 
 ExtensionBuilder::ExtensionBuilder(const std::string& name, Type type)
     : ExtensionBuilder() {
@@ -206,7 +212,8 @@ ExtensionBuilder& ExtensionBuilder::SetPath(const base::FilePath& path) {
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetLocation(Manifest::Location location) {
+ExtensionBuilder& ExtensionBuilder::SetLocation(
+    mojom::ManifestLocation location) {
   location_ = location;
   return *this;
 }

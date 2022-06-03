@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_PENDING_USER_INPUT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_PENDING_USER_INPUT_H_
 
-#include <array>
-
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/renderer/platform/scheduler/public/pending_user_input_type.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/attribution_group.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace scheduler {
@@ -24,24 +25,38 @@ class PLATFORM_EXPORT PendingUserInput {
     DISALLOW_NEW();
 
    public:
-    Monitor() { this->counters_.fill(0); }
-    void OnEnqueue(WebInputEvent::Type);
-    void OnDequeue(WebInputEvent::Type);
+    Monitor() = default;
+    Monitor(const Monitor&) = delete;
+    Monitor& operator=(const Monitor&) = delete;
 
-    PendingUserInputInfo Info() const;
+    void OnEnqueue(WebInputEvent::Type, const WebInputEventAttribution&);
+    void OnDequeue(WebInputEvent::Type, const WebInputEventAttribution&);
+
+    // Returns a list of all unique attributions that are marked for event
+    // dispatch. If |include_continuous| is true, include event types from
+    // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
+    Vector<WebInputEventAttribution> Info(bool include_continuous) const;
 
    private:
-    std::array<size_t, WebInputEvent::kTypeLast + 1> counters_;
+    struct EventCounter {
+      EventCounter() = default;
 
-    DISALLOW_COPY_AND_ASSIGN(Monitor);
+      size_t num_discrete = 0;
+      size_t num_continuous = 0;
+    };
+
+    // A mapping between attributions to pending events.
+    HashMap<AttributionGroup, EventCounter> pending_events_;
   };
 
   PendingUserInput() = delete;
+  PendingUserInput(const PendingUserInput&) = delete;
+  PendingUserInput& operator=(const PendingUserInput&) = delete;
 
-  static PendingUserInputType TypeFromString(const AtomicString&);
-  static PendingUserInputType TypeFromWebInputEventType(WebInputEvent::Type);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingUserInput);
+  // Returns true if the given blink event type is considered to be sampled
+  // from a continuous source.
+  // https://wicg.github.io/is-input-pending/#continuousevents
+  static bool IsContinuousEventType(WebInputEvent::Type);
 };
 
 }  // namespace scheduler

@@ -8,9 +8,9 @@
 The test PASSES if it did not crash.</p>
 <div id="elem"></div>
 <script>
-if (window.testRunner)
+if (window.testRunner) {
     testRunner.dumpAsText();
-if (window.eventSender)
-    eventSender.zoomPageIn();
+    testRunner.zoomPageIn();
+}
 document.getElementById('elem').style.setProperty('zoom', 2);
 </script>

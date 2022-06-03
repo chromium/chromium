@@ -1,0 +1,11 @@
+In file included from layout_object_methods.cpp:5:
+./layout_object_methods.h:26:3: warning: [layout] LayoutObject's method 'ShouldFail1' in 'LayoutObject' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail1() {
+  ^~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:39:3: warning: [layout] LayoutObject's method 'ShouldFail2' in 'LayoutBoxModelObject' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail2() {
+  ^~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:52:3: warning: [layout] LayoutObject's method 'ShouldFail3' in 'LayoutBox' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail3() {
+  ^~~~~~~~~~~~~~~~~~~
+3 warnings generated.

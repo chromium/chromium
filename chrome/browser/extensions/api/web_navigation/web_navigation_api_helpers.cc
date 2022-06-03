@@ -126,25 +126,26 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
     transition_type_string = "start_page";
   dict->SetString(web_navigation_api_constants::kTransitionTypeKey,
                   transition_type_string);
-  auto qualifiers = std::make_unique<base::ListValue>();
+  base::Value qualifiers(base::Value::Type::LIST);
   if (transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT)
-    qualifiers->AppendString("client_redirect");
+    qualifiers.Append("client_redirect");
   if (transition_type & ui::PAGE_TRANSITION_SERVER_REDIRECT)
-    qualifiers->AppendString("server_redirect");
+    qualifiers.Append("server_redirect");
   if (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK)
-    qualifiers->AppendString("forward_back");
+    qualifiers.Append("forward_back");
   if (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)
-    qualifiers->AppendString("from_address_bar");
-  dict->Set(web_navigation_api_constants::kTransitionQualifiersKey,
-            std::move(qualifiers));
-  dict->SetDouble(web_navigation_api_constants::kTimeStampKey,
-                  MilliSecondsFromTime(base::Time::Now()));
+    qualifiers.Append("from_address_bar");
+  dict->SetKey(web_navigation_api_constants::kTransitionQualifiersKey,
+               std::move(qualifiers));
+  dict->SetDoubleKey(web_navigation_api_constants::kTimeStampKey,
+                     MilliSecondsFromTime(base::Time::Now()));
   args->Append(std::move(dict));
 
   content::BrowserContext* browser_context =
       navigation_handle->GetWebContents()->GetBrowserContext();
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(args), browser_context);
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name,
+                              std::move(*args).TakeList(), browser_context);
   DispatchEvent(browser_context, std::move(event), url);
 }
 

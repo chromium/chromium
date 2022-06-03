@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/test_event_router.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs.h"
 

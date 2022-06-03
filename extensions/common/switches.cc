@@ -4,6 +4,8 @@
 
 #include "extensions/common/switches.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace extensions {
 
 namespace switches {
@@ -15,6 +17,13 @@ const char kAllowHTTPBackgroundPage[] = "allow-http-background-page";
 // would otherwise be forbidden.
 const char kAllowLegacyExtensionManifests[] =
     "allow-legacy-extension-manifests";
+
+// Adds the given extension ID to all the permission allowlists.
+const char kAllowlistedExtensionID[] = "allowlisted-extension-id";
+// Provides the same functionality as kAllowlistedExtensionID.
+// TODO(b/204179234): Remove at the end of the deprecation period. Deprecated on
+// 10/2021.
+const char kDEPRECATED_AllowlistedExtensionID[] = "whitelisted-extension-id";
 
 // Enables extension options to be embedded in chrome://extensions rather than
 // a new tab.
@@ -30,17 +39,10 @@ const char kDisableDesktopCaptureAudio[] =
 const char kEnableExperimentalExtensionApis[] =
     "enable-experimental-extension-apis";
 
-// Enables extensions to hide bookmarks UI elements.
-const char kEnableOverrideBookmarksUI[] = "enable-override-bookmarks-ui";
-
 // Disable the net::URLRequestThrottlerManager functionality for
 // requests originating from extensions.
 const char kDisableExtensionsHttpThrottling[] =
     "disable-extensions-http-throttling";
-
-// Allows the ErrorConsole to collect runtime and manifest errors, and display
-// them in the chrome:extensions page.
-const char kErrorConsole[] = "error-console";
 
 // Marks a renderer as extension process.
 const char kExtensionProcess[] = "extension-process";
@@ -53,18 +55,23 @@ const char kExtensionsOnChromeURLs[] = "extensions-on-chrome-urls";
 // Whether to force developer mode extensions highlighting.
 const char kForceDevModeHighlighting[] = "force-dev-mode-highlighting";
 
-// Whether |extensions_features::kBypassCorbAllowlistParamName| should always be
-// empty (i.e. ignoring hardcoded allowlist and the field trial param).  This
-// switch is useful for manually verifying if an extension would continue to
-// work fine after removing it from the allowlist.
-const char kForceEmptyCorbAllowlist[] = "force-empty-corb-allowlist";
-
 // Comma-separated list of paths to apps to load at startup. The first app in
 // the list will be launched.
 const char kLoadApps[] = "load-apps";
 
 // Comma-separated list of paths to extensions to load at startup.
 const char kLoadExtension[] = "load-extension";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Path to the unpacked test extension to load into the signin profile. The ID
+// extension loaded must match kTestSigninProfileExtensionId.
+const char kLoadSigninProfileTestExtension[] =
+    "load-signin-profile-test-extension";
+
+// Path to the unpacked test extension to load into guest mode. The extension ID
+// must match kGuestModeTestExtensionId.
+const char kLoadGuestModeTestExtension[] = "load-guest-mode-test-extension";
+#endif
 
 // Set the parameters for ExtensionURLLoaderThrottleBrowserTest.
 const char kSetExtensionThrottleTestParams[] =
@@ -74,15 +81,15 @@ const char kSetExtensionThrottleTestParams[] =
 const char kShowComponentExtensionOptions[] =
     "show-component-extension-options";
 
-// Adds the given extension ID to all the permission whitelists.
-const char kWhitelistedExtensionID[] = "whitelisted-extension-id";
-
 // Pass launch source to platform apps.
 const char kTraceAppSource[] = "enable-trace-app-source";
 
 // Enable package hash check: the .crx file sha256 hash sum should be equal to
 // the one received from update manifest.
 const char kEnableCrxHashCheck[] = "enable-crx-hash-check";
+
+// Mute extension errors while working with new manifest version.
+const char kAllowFutureManifestVersion[] = "allow-future-manifest-version";
 
 }  // namespace switches
 

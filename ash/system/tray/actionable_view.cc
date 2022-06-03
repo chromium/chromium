@@ -5,12 +5,14 @@
 #include "ash/system/tray/actionable_view.h"
 
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
@@ -22,17 +24,26 @@ namespace ash {
 const char ActionableView::kViewClassName[] = "tray/ActionableView";
 
 ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
-    : views::Button(this),
-      destroyed_(nullptr),
+    : views::Button(base::BindRepeating(&ActionableView::ButtonPressed,
+                                        base::Unretained(this))),
       ink_drop_style_(ink_drop_style) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_has_ink_drop_action_on_click(false);
-  set_notify_enter_exit_on_child(true);
+  SetHasInkDropActionOnClick(false);
+  SetNotifyEnterExitOnChild(true);
   // TODO(pbos): Replace the use of FocusPainter with the FocusRing (using the
   // below HighlightPathGenerator).
   SetInstallFocusRingOnFocus(false);
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
+  views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
+      [](Button* host) { return TrayPopupUtils::CreateInkDrop(host); }, this));
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+      &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+      [](ActionableView* host) {
+        return TrayPopupUtils::CreateInkDropRipple(host->ink_drop_style_, host);
+      },
+      this));
 }
 
 ActionableView::~ActionableView() {
@@ -42,9 +53,10 @@ ActionableView::~ActionableView() {
 
 void ActionableView::HandlePerformActionResult(bool action_performed,
                                                const ui::Event& event) {
-  AnimateInkDrop(action_performed ? views::InkDropState::ACTION_TRIGGERED
-                                  : views::InkDropState::HIDDEN,
-                 ui::LocatedEvent::FromIfValid(&event));
+  views::InkDrop::Get(this)->AnimateToState(
+      action_performed ? views::InkDropState::ACTION_TRIGGERED
+                       : views::InkDropState::HIDDEN,
+      ui::LocatedEvent::FromIfValid(&event));
 }
 
 const char* ActionableView::GetClassName() const {
@@ -52,7 +64,7 @@ const char* ActionableView::GetClassName() const {
 }
 
 bool ActionableView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (state() != STATE_DISABLED && event.key_code() == ui::VKEY_SPACE) {
+  if (GetState() != STATE_DISABLED && event.key_code() == ui::VKEY_SPACE) {
     NotifyClick(event);
     return true;
   }
@@ -64,27 +76,8 @@ void ActionableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleName());
 }
 
-std::unique_ptr<views::InkDrop> ActionableView::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
 
-std::unique_ptr<views::InkDropRipple> ActionableView::CreateInkDropRipple()
-    const {
-  // TODO(minch): Do not hard code the background color. Add it as a constructor
-  // argument to ActionableView.
-  return TrayPopupUtils::CreateInkDropRipple(
-      ink_drop_style_, this, GetInkDropCenterBasedOnLastEvent(), SK_ColorWHITE);
-}
-
-std::unique_ptr<views::InkDropHighlight>
-ActionableView::CreateInkDropHighlight() const {
-  // TODO(minch): Do not hard code the background color. Add it as a constructor
-  // argument to ActionableView.
-  return TrayPopupUtils::CreateInkDropHighlight(ink_drop_style_, this,
-                                                SK_ColorWHITE);
-}
-
-void ActionableView::ButtonPressed(Button* sender, const ui::Event& event) {
+void ActionableView::ButtonPressed(const ui::Event& event) {
   bool destroyed = false;
   destroyed_ = &destroyed;
   const bool action_performed = PerformAction(event);

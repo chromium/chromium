@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ANDROID_VR_SCOPED_GPU_TRACE_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace gl {
@@ -29,6 +27,9 @@ class ScopedGpuTrace {
  public:
   explicit ScopedGpuTrace(const char* name);
 
+  ScopedGpuTrace(const ScopedGpuTrace&) = delete;
+  ScopedGpuTrace& operator=(const ScopedGpuTrace&) = delete;
+
   virtual ~ScopedGpuTrace();
 
   gl::GLFenceAndroidNativeFenceSync* fence() { return fence_.get(); }
@@ -40,8 +41,6 @@ class ScopedGpuTrace {
   std::unique_ptr<gl::GLFenceAndroidNativeFenceSync> fence_;
   const char* const name_;
   uint32_t trace_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGpuTrace);
 };
 
 }  // namespace vr

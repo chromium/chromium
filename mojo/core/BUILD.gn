@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
+import("//chrome/process_version_rc_template.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -12,13 +15,12 @@ if (is_mac) {
 
 component("embedder_internal") {
   output_name = "mojo_core_embedder_internal"
-  public_deps = [
-    ":impl_for_embedder",
-  ]
+  public_deps = [ ":impl_for_embedder" ]
   visibility = [
     ":test_sources",
     "//mojo:*",
     "//mojo/core/embedder",
+    "//mojo/core/test:test_support",
   ]
 }
 
@@ -58,13 +60,13 @@ template("core_impl_source_set") {
       "handle_table.h",
       "invitation_dispatcher.h",
       "message_pipe_dispatcher.h",
+      "node_channel.h",
       "node_controller.h",
       "options_validation.h",
       "platform_handle_dispatcher.h",
       "platform_handle_utils.h",
       "platform_shared_memory_mapping.h",
       "request_context.h",
-      "scoped_process_handle.h",
       "shared_buffer_dispatcher.h",
       "user_message_impl.h",
     ]
@@ -72,9 +74,7 @@ template("core_impl_source_set") {
     sources = [
       "atomic_flag.h",
       "broker.h",
-      "broker_win.cc",
       "channel.cc",
-      "channel_win.cc",
       "configuration.cc",
       "connection_params.cc",
       "core.cc",
@@ -87,7 +87,6 @@ template("core_impl_source_set") {
       "invitation_dispatcher.cc",
       "message_pipe_dispatcher.cc",
       "node_channel.cc",
-      "node_channel.h",
       "node_controller.cc",
       "platform_handle_dispatcher.cc",
       "platform_handle_in_transit.cc",
@@ -95,7 +94,6 @@ template("core_impl_source_set") {
       "platform_handle_utils.cc",
       "platform_shared_memory_mapping.cc",
       "request_context.cc",
-      "scoped_process_handle.cc",
       "shared_buffer_dispatcher.cc",
       "user_message_impl.cc",
       "watch.cc",
@@ -108,6 +106,7 @@ template("core_impl_source_set") {
 
     public_deps = [
       "//base",
+      "//mojo/core/embedder:features",
       "//mojo/core/ports",
       "//mojo/public/c/system:headers",
       "//mojo/public/cpp/platform",
@@ -116,7 +115,7 @@ template("core_impl_source_set") {
     if (is_fuchsia) {
       sources += [ "channel_fuchsia.cc" ]
 
-      public_deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
+      public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fdio" ]
     }
 
     if (is_posix && !is_mac) {
@@ -124,7 +123,17 @@ template("core_impl_source_set") {
         sources += [
           "broker_posix.cc",
           "channel_posix.cc",
+          "channel_posix.h",
         ]
+      }
+
+      if ((is_linux || is_chromeos || is_android) && !is_nacl) {
+        sources += [
+          "channel_linux.cc",
+          "channel_linux.h",
+        ]
+
+        public += [ "channel_linux.h" ]
       }
     }
 
@@ -155,22 +164,36 @@ template("core_impl_source_set") {
     }
 
     if (is_win) {
-      cflags = [ "/wd4324" ]  # Structure was padded due to __declspec(align()),
-                              # which is uninteresting.
+      sources += [
+        "broker_win.cc",
+        "channel_win.cc",
+      ]
     }
 
     # Use target_os == "chromeos" instead of is_chromeos because we need to
     # build NaCl targets (i.e. IRT) for ChromeOS the same as the rest of ChromeOS.
-    if (is_android || target_os == "chromeos") {
+    if (is_android || target_os == "chromeos" ||
+        (target_os == "linux" && chromeos_is_browser_only)) {
       defines += [ "MOJO_CORE_LEGACY_PROTOCOL" ]
     }
 
     configs += [ "//build/config/compiler:noshadowing" ]
+    if (!is_debug && !optimize_for_size) {
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+    }
   }
 }
 
 core_impl_source_set("impl_for_embedder") {
   for_shared_library = false
+}
+
+if (is_win) {
+  process_version_rc_template("mojo_core_version") {
+    sources = [ "mojo_core.ver" ]
+    output = "$target_gen_dir/mojo_core_version.rc"
+  }
 }
 
 if (is_chromeos || is_linux || is_android || is_win) {
@@ -180,22 +203,22 @@ if (is_chromeos || is_linux || is_android || is_win) {
 
   shared_library("shared_library") {
     output_name = "mojo_core"
-    sources = [
-      "mojo_core.cc",
-    ]
+    sources = [ "mojo_core.cc" ]
     defines = [ "MOJO_CORE_SHARED_LIBRARY" ]
     deps = [
       ":impl_for_shared_library",
+      "//base:base_static",
       "//mojo/public/c/system:headers",
     ]
     if (is_win) {
       sources += [ "mojo_core.def" ]
+      deps += [ ":mojo_core_version" ]
     } else {
       configs += [ ":export_only_thunks_api" ]
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     if (target_cpu == "arm" || target_cpu == "arm64") {
       android32_toolchain = "android_clang_arm"
       android64_toolchain = "android_clang_arm64"
@@ -212,24 +235,16 @@ if (is_chromeos || is_linux || is_android || is_win) {
     }
 
     copy("shared_library_arc32") {
-      sources = [
-        "${root_out_dir}/${android32_toolchain}/libmojo_core.so",
-      ]
-      outputs = [
-        "${root_out_dir}/libmojo_core_arc32.so",
-      ]
+      sources = [ "${root_build_dir}/${android32_toolchain}/libmojo_core.so" ]
+      outputs = [ "${root_build_dir}/libmojo_core_arc32.so" ]
       deps = [
         ":shared_library(//build/toolchain/android:${android32_toolchain})",
       ]
     }
 
     copy("shared_library_arc64") {
-      sources = [
-        "${root_out_dir}/${android64_toolchain}/libmojo_core.so",
-      ]
-      outputs = [
-        "${root_out_dir}/libmojo_core_arc64.so",
-      ]
+      sources = [ "${root_build_dir}/${android64_toolchain}/libmojo_core.so" ]
+      outputs = [ "${root_build_dir}/libmojo_core_arc64.so" ]
       deps = [
         ":shared_library(//build/toolchain/android:${android64_toolchain})",
       ]
@@ -237,9 +252,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
   }
 
   config("export_only_thunks_api") {
-    inputs = [
-      "export_only_thunks_api.lst",
-    ]
+    inputs = [ "export_only_thunks_api.lst" ]
     ldflags = [ "-Wl,--version-script=" +
                 rebase_path("//mojo/core/export_only_thunks_api.lst",
                             root_build_dir) ]
@@ -249,6 +262,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
     test("mojo_core_unittests") {
       sources = [
         "mojo_core_unittest.cc",
+        "mojo_core_unittest.h",
         "run_all_core_unittests.cc",
       ]
 
@@ -261,32 +275,9 @@ if (is_chromeos || is_linux || is_android || is_win) {
         "//testing/gtest",
       ]
 
-      data_deps = [
-        ":shared_library",
-      ]
+      data_deps = [ ":shared_library" ]
     }
   }
-}
-
-source_set("test_utils") {
-  testonly = true
-
-  sources = [
-    "test_utils.cc",
-    "test_utils.h",
-  ]
-
-  public_deps = [
-    "//mojo/public/c/system",
-    "//mojo/public/cpp/system",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/test:test_support",
-    "//testing/gtest:gtest",
-  ]
 }
 
 source_set("test_sources") {
@@ -300,6 +291,7 @@ source_set("test_sources") {
     "handle_table_unittest.cc",
     "message_pipe_unittest.cc",
     "message_unittest.cc",
+    "node_channel_unittest.cc",
     "options_validation_unittest.cc",
     "platform_handle_dispatcher_unittest.cc",
     "quota_unittest.cc",
@@ -314,12 +306,12 @@ source_set("test_sources") {
       "data_pipe_unittest.cc",
       "invitation_unittest.cc",
       "multiprocess_message_pipe_unittest.cc",
+      "node_controller_unittest.cc",
       "platform_wrapper_unittest.cc",
     ]
   }
 
   deps = [
-    ":test_utils",
     "//base",
     "//base/test:test_support",
     "//mojo/core:embedder_internal",
@@ -334,15 +326,11 @@ source_set("test_sources") {
 }
 
 group("core_impl_for_fuzzers") {
-  public_deps = [
-    ":impl_for_embedder",
-  ]
+  public_deps = [ ":impl_for_embedder" ]
 }
 
 fuzzer_test("mojo_core_channel_fuzzer") {
-  sources = [
-    "channel_fuzzer.cc",
-  ]
+  sources = [ "channel_fuzzer.cc" ]
   deps = [
     ":core_impl_for_fuzzers",
     "//base",
@@ -377,17 +365,13 @@ if (is_mac) {
     args = [
       "--encode=mojo_fuzzer.ChannelMac",
       "-I",
-      rebase_path("//testing/libfuzzer/fuzzers/mach"),
-      "-I",
-      rebase_path("//mojo/core/test/data/channel_mac"),
-      "channel_mac.proto",
+      rebase_path("//"),
+      "mojo/core/test/data/channel_mac/channel_mac.proto",
     ]
   }
 
   fuzzer_test("mojo_core_channel_mac_fuzzer") {
-    sources = [
-      "channel_mac_fuzzer.cc",
-    ]
+    sources = [ "channel_mac_fuzzer.cc" ]
     seed_corpus = "$target_gen_dir/mojo_core_channel_mac_corpus"
     seed_corpus_deps = [ ":mojo_core_channel_mac_fuzzer_convert_corpus" ]
     deps = [
@@ -402,20 +386,17 @@ if (is_mac) {
 }
 
 fuzzer_test("mojo_core_node_channel_fuzzer") {
-  sources = [
-    "node_channel_fuzzer.cc",
-  ]
+  sources = [ "node_channel_fuzzer.cc" ]
   deps = [
     ":core_impl_for_fuzzers",
     "//base",
+    "//mojo/core/test:test_support",
     "//mojo/public/cpp/platform",
   ]
 }
 
 fuzzer_test("mojo_core_port_event_fuzzer") {
-  sources = [
-    "port_event_fuzzer.cc",
-  ]
+  sources = [ "port_event_fuzzer.cc" ]
   deps = [
     ":core_impl_for_fuzzers",
     "//base",
@@ -423,9 +404,7 @@ fuzzer_test("mojo_core_port_event_fuzzer") {
 }
 
 fuzzer_test("mojo_core_user_message_fuzzer") {
-  sources = [
-    "user_message_fuzzer.cc",
-  ]
+  sources = [ "user_message_fuzzer.cc" ]
   deps = [
     ":core_impl_for_fuzzers",
     "//base",

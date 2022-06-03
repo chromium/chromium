@@ -16,8 +16,8 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/system_export.h"
@@ -55,13 +55,6 @@ class MOJO_CPP_SYSTEM_EXPORT SharedBufferHandle : public Handle {
   // Copying and assignment allowed.
 
   // Creates a new SharedBufferHandle. Returns an invalid handle on failure.
-  //
-  // Note for those converting legacy shared memory to the
-  // base::*SharedMemoryRegion API: if SharedBufferHandle::Create is used for
-  // your shared memory regions, the mojo::Create*SharedMemoryRegion methods in
-  // mojo/public/cpp/base/shared_memory_utils.h should be used. These know how
-  // to use a broker to create regions in unprivileged contexts in the same way
-  // as this SharedBufferHandle::Create method.
   static ScopedSharedBufferHandle Create(uint64_t num_bytes);
 
   // Clones this shared buffer handle. If |access_mode| is READ_ONLY or this is

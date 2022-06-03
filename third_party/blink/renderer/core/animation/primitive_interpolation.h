@@ -10,10 +10,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
-#include "third_party/blink/renderer/platform/animation/animation_utilities.h"
+#include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -25,6 +24,8 @@ class PrimitiveInterpolation {
   USING_FAST_MALLOC(PrimitiveInterpolation);
 
  public:
+  PrimitiveInterpolation(const PrimitiveInterpolation&) = delete;
+  PrimitiveInterpolation& operator=(const PrimitiveInterpolation&) = delete;
   virtual ~PrimitiveInterpolation() = default;
 
   virtual void InterpolateValue(
@@ -37,7 +38,6 @@ class PrimitiveInterpolation {
 
  protected:
   PrimitiveInterpolation() = default;
-  DISALLOW_COPY_AND_ASSIGN(PrimitiveInterpolation);
 };
 
 // Represents a pair of keyframes that are compatible for "smooth" interpolation

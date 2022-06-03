@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 class GURL;
 
 // WebApkUkmRecorder is the C++ counterpart of
@@ -19,6 +17,10 @@ class GURL;
 // avoid having to instantiate this class and deal with object lifetimes.
 class WebApkUkmRecorder {
  public:
+  WebApkUkmRecorder() = delete;
+  WebApkUkmRecorder(const WebApkUkmRecorder&) = delete;
+  WebApkUkmRecorder& operator=(const WebApkUkmRecorder&) = delete;
+
   static void RecordInstall(const GURL& manifest_url, int version_code);
 
   static void RecordSessionDuration(const GURL& manifest_url,
@@ -37,8 +39,14 @@ class WebApkUkmRecorder {
                               int64_t launch_count,
                               int64_t install_duration);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebApkUkmRecorder);
+  // RecordWebApkableVisit records a visit to an installable PWA from a
+  // non-installed surface on Android (ie, if an installable site is visited
+  // from within a regular browser tab).
+  //
+  // Note that the metric will be recorded whether or not the PWA is actually
+  // installed - all that matters is that it is being visited from a
+  // "non-installed experience" (ie, as a normal browser tab).
+  static void RecordWebApkableVisit(const GURL& manifest_url);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UKM_RECORDER_H_

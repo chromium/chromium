@@ -1,0 +1,10 @@
+PASS if no crash.
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+new Document().createElementNS('http://www.w3.org/1999/xhtml', 'canvas').toBlob(
+  () => { if (window.testRunner) testRunner.notifyDone(); });
+</script>

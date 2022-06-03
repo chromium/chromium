@@ -4,19 +4,19 @@
 <style>
 .test { width: 100px; height: 100px; }
 </style>
-<div class="test"></div>
-<div class="test"></div>
+<div id="test1" class="test"></div>
+<div id="test2" class="test"></div>
 <script>
-function insertIntoShadowRoot(element) {
-  var shadowRoot = element.createShadowRoot();
+function insertIntoShadowRoot(id) {
+  let element = document.getElementById(id);
+  var shadowRoot = element.attachShadow({mode: 'open'});
   shadowRoot.innerHTML = '<div style="all: initial; display: block; width:100%; height: 100%; background: black"></div>';
+  return element;
 }
-var tests = document.querySelectorAll('.test');
-insertIntoShadowRoot(tests[0]);
-insertIntoShadowRoot(tests[1]);
+let test1 = insertIntoShadowRoot('test1');
+let test2 = insertIntoShadowRoot('test2');
 
 description('Test for issue 432257: Matched properties cache should work for all property.');
-var targets = document.querySelectorAll('.test::shadow > div');
-shouldBe('window.getComputedStyle(targets[0]).width', '"100px"');
-shouldBe('window.getComputedStyle(targets[1]).width', '"100px"');
+shouldBe('window.getComputedStyle(test1.shadowRoot.firstChild).width', '"100px"');
+shouldBe('window.getComputedStyle(test2.shadowRoot.firstChild).width', '"100px"');
 </script>

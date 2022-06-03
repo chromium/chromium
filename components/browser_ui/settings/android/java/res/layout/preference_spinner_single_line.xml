@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Layout used by SpinnerPreference if singleLine is set to true and the device's smallest width
+     is less than 360dp. This layout doesn't actually use a single line for text and spinner but is
+     used as a fallback for small devices. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PreferenceLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:paddingTop="6dp" />
+
+</LinearLayout>

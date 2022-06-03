@@ -1,0 +1,71 @@
+From 59477dae6f2c68f0ebd9ccca18e737b67408bc11 Mon Sep 17 00:00:00 2001
+From: Tom Anderson <thomasanderson@chromium.org>
+Date: Wed, 8 Jan 2020 10:55:20 -0800
+Subject: [PATCH 1/2] dkpg-shlibdeps: Add option to ignore weak undefined
+ symbols
+
+Weak undefined symbols can be used to test feature support. For example:
+
+__attribute__((weak)) uint64_t gbm_bo_get_modifier(struct gbm_bo* bo);
+void foo(gbm_bo* bo) {
+    // gbm_create_device is a strong undefined symbol. The dynamic linker will
+    // fail if this is not available.
+    gbm_create_device(1234);
+    // gbm_bo_get_modifier is a weak undefined symbol. It will be NULL if it's
+    // not available.
+    if (gbm_bo_get_modifier)
+        gbm_bo_get_modifier(bo);
+}
+
+However currently, dpkg-shlibdeps would consider gbm_bo_get_modifier in the
+example to be a required symbol (and would increase the minimum required library
+version), even though the intention is to use it only if it is available.
+
+To address this, this change skips weak undefined symbols when checking for
+dependencies. Out of an abundance of caution, this behavior is guarded behind a
+new flag: --ignore-weak-undefined.
+---
+ scripts/dpkg-shlibdeps.pl | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/scripts/dpkg-shlibdeps.pl b/scripts/dpkg-shlibdeps.pl
+index 8142c85b4..e3d8c7200 100755
+--- a/scripts/dpkg-shlibdeps.pl
++++ b/scripts/dpkg-shlibdeps.pl
+@@ -67,6 +67,7 @@ my $varlistfile = 'debian/substvars';
+ my $varlistfilenew;
+ my $varnameprefix = 'shlibs';
+ my $ignore_missing_info = 0;
++my $ignore_weak_undefined = 0;
+ my $warnings = WARN_SYM_NOT_FOUND | WARN_DEP_AVOIDABLE;
+ my $debug = 0;
+ my @exclude = ();
+@@ -120,6 +121,8 @@ foreach (@ARGV) {
+ 	}
+     } elsif (m/^--ignore-missing-info$/) {
+ 	$ignore_missing_info = 1;
++    } elsif (m/^--ignore-weak-undefined$/) {
++	$ignore_weak_undefined = 1;
+     } elsif (m/^--warnings=(\d+)$/) {
+ 	$warnings = $1;
+     } elsif (m/^-t(.*)$/) {
+@@ -365,6 +368,7 @@ foreach my $file (keys %exec) {
+     }
+     debug(2, 'Analyzing all undefined symbols');
+     foreach my $sym ($obj->get_undefined_dynamic_symbols()) {
++	next if $ignore_weak_undefined && $sym->{weak};
+ 	my $name = $sym->{name};
+ 	if ($sym->{version}) {
+ 	    $name .= '@' . "$sym->{version}";
+@@ -610,6 +614,8 @@ sub usage {
+                              in the given build directory.
+   -v                       enable verbose mode (can be used multiple times).
+   --ignore-missing-info    don't fail if dependency information can't be found.
++  --ignore-weak-undefined  only allow strong undefined symbols to introduce
++                             dependencies.
+   --warnings=<value>       define set of active warnings (see manual page).
+   --admindir=<directory>   change the administrative directory.
+   -?, --help               show this help message.
+-- 
+2.25.0.rc1.283.g88dfdc4193-goog
+

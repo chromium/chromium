@@ -4,7 +4,8 @@
 """Methods for converting model objects to human-readable formats."""
 
 import abc
-import cStringIO
+import data_quality
+import io
 import collections
 import csv
 import datetime
@@ -23,9 +24,9 @@ def _PrettySize(size):
   size /= 1024.0
   if abs(size) < 10:
     return '%.2fkb' % size
-  elif abs(size) < 100:
+  if abs(size) < 100:
     return '%.1fkb' % size
-  elif abs(size) < 1024:
+  if abs(size) < 1024:
     return '%dkb' % size
   size /= 1024.0
   if abs(size) < 10:
@@ -51,32 +52,29 @@ def _Divide(a, b):
   return float(a) / b if b else 0
 
 
-def _IncludeInTotals(section_name):
-  return section_name not in models.BSS_SECTIONS and '(' not in section_name
+def _GetSectionSizeInfo(unsummed_sections, summed_sections, section_sizes):
+  sizes = [v for k, v in section_sizes.items() if k in summed_sections]
+  total_bytes = sum(sizes)
+  max_bytes = max(sizes)
 
-
-def _GetSectionSizeInfo(section_sizes):
-  total_bytes = sum(v for k, v in section_sizes.iteritems()
-                    if _IncludeInTotals(k))
-  max_bytes = max(abs(v) for k, v in section_sizes.iteritems()
-                  if _IncludeInTotals(k))
+  maybe_significant_sections = unsummed_sections | summed_sections
 
   def is_significant_section(name, size):
     # Show all sections containing symbols, plus relocations.
     # As a catch-all, also include any section that comprises > 4% of the
     # largest section. Use largest section rather than total so that it still
     # works out when showing a diff containing +100, -100 (total=0).
-    return (name in models.SECTION_TO_SECTION_NAME.values() or
-            name in ('.rela.dyn', '.rel.dyn') or
-            _IncludeInTotals(name) and abs(_Divide(size, max_bytes)) > .04)
+    return (name in maybe_significant_sections
+            or name in ['.rela.dyn', '.rel.dyn']
+            or abs(_Divide(size, max_bytes)) > .04)
 
-  section_names = sorted(k for k, v  in section_sizes.iteritems()
-                         if is_significant_section(k, v))
+  section_names = sorted(
+      k for k, v in section_sizes.items() if is_significant_section(k, v))
 
   return (total_bytes, section_names)
 
 
-class Histogram(object):
+class Histogram:
   BUCKET_NAMES_FOR_SMALL_VALUES = {-1: '(-1,0)', 0: '{0}', 1: '(0,1)'}
 
   def __init__(self):
@@ -109,26 +107,27 @@ class Histogram(object):
     bucket_values = [str(self.data[k]) for k in keys]
     num_items = len(keys)
     num_cols = 6
-    num_rows = (num_items + num_cols - 1) / num_cols  # Divide and round up.
-    # Needed for xrange to not throw due to step by 0.
+    num_rows = (num_items + num_cols - 1) // num_cols  # Divide and round up.
+    # Needed for range() to not throw due to step by 0.
     if num_rows == 0:
       return
     # Spaces needed by items in each column, to align on ':'.
     name_col_widths = []
     value_col_widths = []
-    for i in xrange(0, num_items, num_rows):
+    for i in range(0, num_items, num_rows):
       name_col_widths.append(max(len(s) for s in bucket_names[i:][:num_rows]))
       value_col_widths.append(max(len(s) for s in bucket_values[i:][:num_rows]))
 
     yield 'Histogram of symbols based on PSS:'
-    for r in xrange(num_rows):
-      row = zip(bucket_names[r::num_rows], name_col_widths,
-                bucket_values[r::num_rows], value_col_widths)
+    for r in range(num_rows):
+      row = list(
+          zip(bucket_names[r::num_rows], name_col_widths,
+              bucket_values[r::num_rows], value_col_widths))
       line = '    ' + '   '.join('{:>{}}: {:<{}}'.format(*t) for t in row)
       yield line.rstrip()
 
 
-class Describer(object):
+class Describer:
   def __init__(self):
     pass
 
@@ -174,40 +173,55 @@ class Describer(object):
 
 class DescriberText(Describer):
   def __init__(self, verbose=False, recursive=False, summarize=True):
-    super(DescriberText, self).__init__()
+    super().__init__()
     self.verbose = verbose
     self.recursive = recursive
     self.summarize = summarize
 
-  def _DescribeSectionSizes(self, section_sizes):
-    total_bytes, section_names = _GetSectionSizeInfo(section_sizes)
+  def _DescribeSectionSizes(self,
+                            unsummed_sections,
+                            summed_sections,
+                            section_sizes,
+                            indent=''):
+    total_bytes, section_names = _GetSectionSizeInfo(unsummed_sections,
+                                                     summed_sections,
+                                                     section_sizes)
     yield ''
-    yield 'Section Sizes (Total={} ({} bytes)):'.format(
-        _PrettySize(total_bytes), total_bytes)
+    yield '{}Section Sizes (Total={} ({} bytes)):'.format(
+        indent, _PrettySize(total_bytes), total_bytes)
     for name in section_names:
       size = section_sizes[name]
-      if not _IncludeInTotals(name):
-        yield '    {}: {} ({} bytes) (not included in totals)'.format(
-            name, _PrettySize(size), size)
+      if name in unsummed_sections:
+        yield '{}    {}: {} ({} bytes) (not included in totals)'.format(
+            indent, name, _PrettySize(size), size)
       else:
+        notes = ''
+        if name not in summed_sections:
+          notes = ' (counted in .other)'
         percent = _Divide(size, total_bytes)
-        yield '    {}: {} ({} bytes) ({:.1%})'.format(
-            name, _PrettySize(size), size, percent)
+        yield '{}    {}: {} ({} bytes) ({:.1%}){}'.format(
+            indent, name, _PrettySize(size), size, percent, notes)
 
     if self.verbose:
       yield ''
-      yield 'Other section sizes:'
-      section_names = sorted(k for k in section_sizes.iterkeys()
-                             if k not in section_names)
+      yield '{}Other section sizes:'.format(indent)
+      section_names = sorted(
+          k for k in section_sizes.keys() if k not in section_names)
       for name in section_names:
-        not_included_part = ''
-        if not _IncludeInTotals(name):
-          not_included_part = ' (not included in totals)'
-        yield '    {}: {} ({} bytes){}'.format(
-            name, _PrettySize(section_sizes[name]), section_sizes[name],
-            not_included_part)
+        notes = ''
+        if name in unsummed_sections:
+          notes = ' (not included in totals)'
+        elif name not in summed_sections:
+          notes = ' (counted in .other)'
+        yield '{}    {}: {} ({} bytes){}'.format(
+            indent, name, _PrettySize(section_sizes[name]), section_sizes[name],
+            notes)
 
   def _DescribeSymbol(self, sym, single_line=False):
+    container_str = sym.container_short_name
+    if container_str:
+      container_str = '<{}>'.format(container_str)
+
     address = 'Group' if sym.IsGroup() else hex(sym.address)
 
     last_field = ''
@@ -235,11 +249,13 @@ class DescriberText(Describer):
       if last_field:
         last_field = '  ' + last_field
       if sym.IsDelta():
-        yield '{}@{:<9s}  {}{}'.format(
-            sym.section, address, pss_field, last_field)
+        yield '{}{}@{:<9s}  {}{}'.format(container_str, sym.section, address,
+                                         pss_field, last_field)
       else:
-        l = '{}@{:<9s}  pss={}  padding={}{}'.format(
-            sym.section, address, pss_field, sym.padding, last_field)
+        l = '{}{}@{:<9s}  pss={}  padding={}{}'.format(container_str,
+                                                       sym.section, address,
+                                                       pss_field, sym.padding,
+                                                       last_field)
         yield l
       yield '    source_path={} \tobject_path={}'.format(
           sym.source_path, sym.object_path)
@@ -258,16 +274,17 @@ class DescriberText(Describer):
       else:
         pss_field = '{:<14}'.format(pss_field)
       if single_line:
-        yield '{}@{:<9s}  {}  {}{}'.format(
-            sym.section, address, pss_field, sym.name, last_field)
+        yield '{}{}@{:<9s}  {}  {}{}'.format(container_str, sym.section,
+                                             address, pss_field, sym.name,
+                                             last_field)
       else:
         path = sym.source_path or sym.object_path
         if path and sym.generated_source:
           path = '$root_gen_dir/' + path
         path = path or '{no path}'
 
-        yield '{}@{:<9s}  {} {}'.format(
-            sym.section, address, pss_field, path)
+        yield '{}{}@{:<9s}  {} {}'.format(container_str, sym.section, address,
+                                          pss_field, path)
         if sym.name:
           yield '    {}{}'.format(sym.name, last_field)
 
@@ -287,7 +304,7 @@ class DescriberText(Describer):
       #   * Accounts for < .5% of PSS
       #   * Symbols are smaller than 1.0 byte (by PSS)
       #   * Always show at least 50 symbols.
-      min_remaining_pss_to_show = max(1024, total / 1000 * 5)
+      min_remaining_pss_to_show = max(1024.0, total / 1000.0 * 5)
       min_symbol_pss_to_show = 1.0
       min_symbols_to_show = 50
 
@@ -323,8 +340,8 @@ class DescriberText(Describer):
   @staticmethod
   def _RelevantSections(section_names):
     relevant_sections = [
-        s for s in models.SECTION_TO_SECTION_NAME.itervalues()
-        if s in section_names]
+        s for s in models.SECTION_TO_SECTION_NAME.values() if s in section_names
+    ]
     if models.SECTION_MULTIPLE in relevant_sections:
       relevant_sections.remove(models.SECTION_MULTIPLE)
     return relevant_sections
@@ -387,13 +404,20 @@ class DescriberText(Describer):
     else:
       summary_desc = ()
 
-    if self.verbose:
-      titles = 'Index | Running Total | Section@Address | ...'
-    elif group.IsDelta():
-      titles = (u'Index | Running Total | Section@Address | \u0394 PSS '
-                u'(\u0394 size_without_padding) | Path').encode('utf-8')
+    title_parts = ['Index', 'Running Total']
+    if group.container_name == '':
+      title_parts.append('Section@Address')
     else:
-      titles = ('Index | Running Total | Section@Address | PSS | Path')
+      title_parts.append('<Container>Section@Address')
+    if self.verbose:
+      title_parts.append('...')
+    else:
+      if group.IsDelta():
+        title_parts.append(u'\u0394 PSS (\u0394 size_without_padding)')
+      else:
+        title_parts.append('PSS')
+      title_parts.append('Path')
+    titles = ' | '.join(title_parts)
 
     header_desc = (titles, '-' * 60)
 
@@ -422,15 +446,15 @@ class DescriberText(Describer):
     yield '{} paths added, {} removed, {} changed'.format(
         len(added), len(removed), len(changed))
 
-    if self.verbose and len(added):
+    if self.verbose and added:
       yield 'Added files:'
       for p in sorted(added):
         yield '  ' + p
-    if self.verbose and len(removed):
+    if self.verbose and removed:
       yield 'Removed files:'
       for p in sorted(removed):
         yield '  ' + p
-    if self.verbose and len(changed):
+    if self.verbose and changed:
       yield 'Changed files:'
       for p in sorted(changed):
         yield '  ' + p
@@ -483,149 +507,117 @@ class DescriberText(Describer):
     group_desc = self._DescribeSymbolGroup(delta_group)
     return itertools.chain(diff_summary_desc, path_delta_desc, group_desc)
 
+  def _DescribeDeltaDict(self, data_name, before_dict, after_dict, indent=''):
+    common_items = {
+        k: v
+        for k, v in before_dict.items() if after_dict.get(k) == v
+    }
+    before_items = {
+        k: v
+        for k, v in before_dict.items() if k not in common_items
+    }
+    after_items = {k: v for k, v in after_dict.items() if k not in common_items}
+    return itertools.chain(
+        (indent + 'Common %s:' % data_name, ),
+        (indent + '    %s' % line for line in DescribeDict(common_items)),
+        (indent + 'Old %s:' % data_name, ),
+        (indent + '    %s' % line for line in DescribeDict(before_items)),
+        (indent + 'New %s:' % data_name, ),
+        (indent + '    %s' % line for line in DescribeDict(after_items)))
+
   def _DescribeDeltaSizeInfo(self, diff):
-    common_metadata = {k: v for k, v in diff.before.metadata.iteritems()
-                       if diff.after.metadata.get(k) == v}
-    before_metadata = {k: v for k, v in diff.before.metadata.iteritems()
-                       if k not in common_metadata}
-    after_metadata = {k: v for k, v in diff.after.metadata.iteritems()
-                      if k not in common_metadata}
-    metadata_desc = itertools.chain(
-        ('Common Metadata:',),
-        ('    %s' % line for line in DescribeMetadata(common_metadata)),
-        ('Old Metadata:',),
-        ('    %s' % line for line in DescribeMetadata(before_metadata)),
-        ('New Metadata:',),
-        ('    %s' % line for line in DescribeMetadata(after_metadata)))
-    section_desc = self._DescribeSectionSizes(diff.section_sizes)
-    group_desc = self.GenerateLines(diff.symbols)
-    return itertools.chain(metadata_desc, section_desc, ('',), group_desc)
+    desc_list = []
+    # Describe |build_config| and each container. If there is only one container
+    # then support legacy output by reporting |build_config| as part of the
+    # first container's metadata.
+    if len(diff.containers) > 1:
+      desc_list.append(
+          self._DescribeDeltaDict('Build config', diff.before.build_config,
+                                  diff.after.build_config))
+      for c in diff.containers:
+        name = c.name
+        desc_list.append(('', ))
+        desc_list.append(('Container: <%s>' % name, ))
+        desc_list.append(
+            self._DescribeDeltaDict('Metadata',
+                                    c.before.metadata,
+                                    c.after.metadata,
+                                    indent='    '))
+        unsummed_sections, summed_sections = c.ClassifySections()
+        desc_list.append(
+            self._DescribeSectionSizes(unsummed_sections,
+                                       summed_sections,
+                                       c.section_sizes,
+                                       indent='    '))
+    else:  # Legacy output for single Container case.
+      desc_list.append(
+          self._DescribeDeltaDict('Metadata', diff.before.metadata_legacy,
+                                  diff.after.metadata_legacy))
+      c = diff.containers[0]
+      unsummed_sections, summed_sections = c.ClassifySections()
+      desc_list.append(
+          self._DescribeSectionSizes(unsummed_sections, summed_sections,
+                                     c.section_sizes))
+    desc_list.append(('', ))
+    desc_list.append(self.GenerateLines(diff.symbols))
+    return itertools.chain.from_iterable(desc_list)
 
   def _DescribeSizeInfo(self, size_info):
-    metadata_desc = itertools.chain(
-        ('Metadata:',),
-        ('    %s' % line for line in DescribeMetadata(size_info.metadata)))
-    section_desc = self._DescribeSectionSizes(size_info.section_sizes)
-    coverage_desc = ()
+    desc_list = []
+    # Describe |build_config| and each container. If there is only one container
+    # then support legacy output by reporting |build_config| as part of the
+    # first container's metadata.
+    if len(size_info.containers) > 1:
+      desc_list.append(('Build Configs:', ))
+      desc_list.append('    %s' % line
+                       for line in DescribeDict(size_info.build_config))
+      containers = size_info.containers
+    else:
+      containers = [
+          models.Container(name='',
+                           metadata=size_info.metadata_legacy,
+                           section_sizes=size_info.containers[0].section_sizes)
+      ]
+    for c in containers:
+      if c.name:
+        desc_list.append(('', ))
+        desc_list.append(('Container <%s>' % c.name, ))
+      desc_list.append(('Metadata:', ))
+      desc_list.append('    %s' % line for line in DescribeDict(c.metadata))
+      unsummed_sections, summed_sections = c.ClassifySections()
+      desc_list.append(
+          self._DescribeSectionSizes(unsummed_sections, summed_sections,
+                                     c.section_sizes))
+
     if self.verbose:
-      coverage_desc = itertools.chain(
-          ('',), DescribeSizeInfoCoverage(size_info))
-    group_desc = self.GenerateLines(size_info.symbols)
-    return itertools.chain(metadata_desc, section_desc, coverage_desc, ('',),
-                           group_desc)
-
-
-def DescribeSizeInfoCoverage(size_info):
-  """Yields lines describing how accurate |size_info| is."""
-  for section, section_name in models.SECTION_TO_SECTION_NAME.iteritems():
-    expected_size = size_info.section_sizes.get(section_name)
-    in_section = size_info.raw_symbols.WhereInSection(section_name)
-    actual_size = in_section.size
-
-    if expected_size is None:
-      yield 'Section {}: {} bytes from {} symbols.'.format(
-          section_name, actual_size, len(in_section))
-    else:
-      size_percent = _Divide(actual_size, expected_size)
-      yield ('Section {}: has {:.1%} of {} bytes accounted for from '
-             '{} symbols. {} bytes are unaccounted for.').format(
-                 section_name, size_percent, actual_size, len(in_section),
-                 expected_size - actual_size)
-
-    padding = in_section.padding
-    yield '* Padding accounts for {} bytes ({:.1%})'.format(
-        padding, _Divide(padding, actual_size))
-
-    def size_msg(syms, padding=False):
-      size = syms.size if not padding else syms.size_without_padding
-      size_msg = 'Accounts for {} bytes ({:.1%}).'.format(
-          size, _Divide(size, actual_size))
-      if padding:
-        size_msg = size_msg[:-1] + ' padding is {} bytes.'.format(syms.padding)
-      return size_msg
-
-    syms = in_section.Filter(lambda s: s.source_path)
-    yield '* {} have source paths. {}'.format(len(syms), size_msg(syms))
-    syms = in_section.WhereHasComponent()
-    yield '* {} have a component assigned. {}'.format(len(syms), size_msg(syms))
-
-    syms = in_section.WhereNameMatches(r'^\*')
-    if len(syms):
-      yield '* {} placeholders exist (symbols that start with **). {}'.format(
-          len(syms), size_msg(syms))
-
-    syms = syms.Inverted().WhereHasAnyAttribution().Inverted()
-    if syms:
-      yield '* {} symbols have no name or path. {}'.format(
-          len(syms), size_msg(syms))
-
-    if section == 'r':
-      syms = in_section.Filter(lambda s: s.IsStringLiteral())
-      yield '* {} string literals exist. {}'.format(
-          len(syms), size_msg(syms, padding=True))
-
-    syms = in_section.Filter(lambda s: s.aliases)
-    if len(syms):
-      uniques = sum(1 for s in syms.IterUniqueSymbols())
-      saved = sum(s.size_without_padding * (s.num_aliases - 1)
-                  for s in syms.IterUniqueSymbols())
-      yield ('* {} aliases exist, mapped to {} unique addresses '
-             '({} bytes saved)').format(len(syms), uniques, saved)
-
-    syms = in_section.WhereObjectPathMatches('{shared}')
-    if len(syms):
-      yield '* {} symbols have shared ownership. {}'.format(
-          len(syms), size_msg(syms))
-    else:
-      yield '* 0 symbols have shared ownership.'
-
-    for flag, desc in (
-        (models.FLAG_HOT, 'marked as "hot"'),
-        (models.FLAG_UNLIKELY, 'marked as "unlikely"'),
-        (models.FLAG_STARTUP, 'marked as "startup"'),
-        (models.FLAG_CLONE, 'clones'),
-        (models.FLAG_GENERATED_SOURCE, 'from generated sources')):
-      syms = in_section.WhereHasFlag(flag)
-      if len(syms):
-        yield '* {} symbols are {}. {}'.format(len(syms), desc, size_msg(syms))
-
-    # These thresholds were found by experimenting with arm32 Chrome.
-    # E.g.: Set them to 0 and see what warnings get logged, then take max value.
-    spam_counter = 0
-    for i in xrange(len(in_section) - 1):
-      sym = in_section[i + 1]
-      if (not sym.full_name.startswith('*')
-          and not sym.source_path.endswith('.S')  # Assembly symbol are iffy.
-          and not sym.IsStringLiteral()
-          and ((sym.section in 'rd' and sym.padding >= 256) or
-               (sym.section in 't' and sym.padding >= 64))):
-        # TODO(crbug.com/959906): We should synthesize symbols for these gaps
-        #     rather than attribute them as padding.
-        spam_counter += 1
-        if spam_counter <= 5:
-          yield 'Large padding of {} between:'.format(sym.padding)
-          yield '  A) ' + repr(in_section[i])
-          yield '  B) ' + repr(sym)
+      desc_list.append(('', ))
+      desc_list.append(data_quality.DescribeSizeInfoCoverage(size_info))
+    desc_list.append(('', ))
+    desc_list.append(self.GenerateLines(size_info.symbols))
+    return itertools.chain.from_iterable(desc_list)
 
 
 class DescriberCsv(Describer):
   def __init__(self, verbose=False):
-    super(DescriberCsv, self).__init__()
+    super().__init__()
     self.verbose = verbose
-    self.stringio = cStringIO.StringIO()
+    self.stringio = io.StringIO()
     self.csv_writer = csv.writer(self.stringio)
 
   def _RenderCsv(self, data):
     self.stringio.truncate(0)
+    self.stringio.seek(0)
     self.csv_writer.writerow(data)
     return self.stringio.getvalue().rstrip()
 
-  def _DescribeSectionSizes(self, section_sizes):
-    significant_section_names = _GetSectionSizeInfo(section_sizes)[1]
-
+  def _DescribeSectionSizes(self, unsummed_sections, summed_section,
+                            section_sizes):
+    _, significant_section_names = _GetSectionSizeInfo(unsummed_sections,
+                                                       summed_section,
+                                                       section_sizes)
     if self.verbose:
       significant_set = set(significant_section_names)
-      section_names = sorted(section_sizes.iterkeys())
+      section_names = sorted(section_sizes.keys())
       yield self._RenderCsv(['Name', 'Size', 'IsSignificant'])
       for name in section_names:
         size = section_sizes[name]
@@ -637,14 +629,26 @@ class DescriberCsv(Describer):
         yield self._RenderCsv([name, size])
 
   def _DescribeDeltaSizeInfo(self, diff):
-    section_desc = self._DescribeSectionSizes(diff.section_sizes)
-    group_desc = self.GenerateLines(diff.symbols)
-    return itertools.chain(section_desc, ('',), group_desc)
+    desc_list = []
+    for c in diff.containers:
+      unsummed_sections, summed_sections = c.ClassifySections()
+      desc_list.append(
+          self._DescribeSectionSizes(unsummed_sections, summed_sections,
+                                     c.section_sizes))
+    desc_list.append(('', ))
+    desc_list.append(self.GenerateLines(diff.symbols))
+    return itertools.chain.from_iterable(desc_list)
 
   def _DescribeSizeInfo(self, size_info):
-    section_desc = self._DescribeSectionSizes(size_info.section_sizes)
-    group_desc = self.GenerateLines(size_info.symbols)
-    return itertools.chain(section_desc, ('',), group_desc)
+    desc_list = []
+    for c in size_info.containers:
+      unsummed_sections, summed_sections = c.ClassifySections()
+      desc_list.append(
+          self._DescribeSectionSizes(unsummed_sections, summed_sections,
+                                     c.section_sizes))
+    desc_list.append(('', ))
+    desc_list.append(self.GenerateLines(size_info.symbols))
+    return itertools.chain.from_iterable(desc_list)
 
   def _DescribeDeltaSymbolGroup(self, delta_group):
     yield self._RenderSymbolHeader(True);
@@ -716,17 +720,26 @@ def _UtcToLocal(utc):
   return utc + offset
 
 
-def DescribeMetadata(metadata):
-  display_dict = metadata.copy()
-  timestamp = display_dict.get(models.METADATA_ELF_MTIME)
-  if timestamp:
-    timestamp_obj = datetime.datetime.utcfromtimestamp(timestamp)
-    display_dict[models.METADATA_ELF_MTIME] = (
-        _UtcToLocal(timestamp_obj).strftime('%Y-%m-%d %H:%M:%S'))
-  gn_args = display_dict.get(models.METADATA_GN_ARGS)
-  if gn_args:
-    display_dict[models.METADATA_GN_ARGS] = ' '.join(gn_args)
-  return sorted('%s=%s' % t for t in display_dict.iteritems())
+def DescribeDict(input_dict):
+  display_dict = {}
+  for k, v in input_dict.items():
+    if k == models.METADATA_ELF_MTIME:
+      timestamp_obj = datetime.datetime.utcfromtimestamp(v)
+      display_dict[k] = (
+          _UtcToLocal(timestamp_obj).strftime('%Y-%m-%d %H:%M:%S'))
+    elif isinstance(v, str):
+      display_dict[k] = v
+    elif isinstance(v, list):
+      if v:
+        if isinstance(v[0], str):
+          display_dict[k] = ' '.join(str(t) for t in v)
+        else:
+          display_dict[k] = repr(v)
+      else:
+        display_dict[k] = ''
+    else:
+      display_dict[k] = repr(v)
+  return sorted('%s=%s' % t for t in display_dict.items())
 
 
 def GenerateLines(obj, verbose=False, recursive=False, summarize=True,

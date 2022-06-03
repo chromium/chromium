@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Test that computing the initiator graph works for service worker request.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
@@ -15,7 +15,8 @@
   var requests = NetworkTestRunner.networkRequests();
   requests.forEach((request) => {
     TestRunner.addResult('\n' + request.url());
-    var graph = SDK.networkLog.initiatorGraphForRequest(request);
+    var graph =
+        NetworkTestRunner.networkLog().initiatorGraphForRequest(request);
     TestRunner.addResult('Initiators ' + Array.from(graph.initiators).map(request => request._url));
     TestRunner.addResult('Initiated ' + Array.from(graph.initiated.keys()).map(request => request._url));
   });

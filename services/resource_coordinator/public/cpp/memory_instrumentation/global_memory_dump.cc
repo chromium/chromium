@@ -32,18 +32,18 @@ GlobalMemoryDump::ProcessDump::ProcessDump(
     : raw_dump_(std::move(process_dump)) {}
 GlobalMemoryDump::ProcessDump::~ProcessDump() = default;
 
-base::Optional<uint64_t> GlobalMemoryDump::ProcessDump::GetMetric(
+absl::optional<uint64_t> GlobalMemoryDump::ProcessDump::GetMetric(
     const std::string& dump_name,
     const std::string& metric_name) const {
   auto dump_it = raw_dump_->chrome_allocator_dumps.find(dump_name);
   if (dump_it == raw_dump_->chrome_allocator_dumps.cend())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto metric_it = dump_it->second->numeric_entries.find(metric_name);
   if (metric_it == dump_it->second->numeric_entries.cend())
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::Optional<uint64_t>(metric_it->second);
+  return absl::optional<uint64_t>(metric_it->second);
 }
 
 GlobalMemoryDump::AggregatedMetrics::AggregatedMetrics(

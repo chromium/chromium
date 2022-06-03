@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 
@@ -28,16 +27,13 @@ class BASE_EXPORT MemoryPressureMonitor {
   using DispatchCallback =
       base::RepeatingCallback<void(MemoryPressureLevel level)>;
 
+  MemoryPressureMonitor(const MemoryPressureMonitor&) = delete;
+  MemoryPressureMonitor& operator=(const MemoryPressureMonitor&) = delete;
+
   virtual ~MemoryPressureMonitor();
 
   // Return the singleton MemoryPressureMonitor.
   static MemoryPressureMonitor* Get();
-
-  // Record memory pressure UMA statistic. A tick is 5 seconds.
-  static void RecordMemoryPressure(MemoryPressureLevel level, int ticks);
-
-  // Defines the time between UMA events, currently 5s.
-  static const base::TimeDelta kUMAMemoryPressureLevelPeriod;
 
   // Returns the currently observed memory pressure.
   virtual MemoryPressureLevel GetCurrentPressureLevel() const = 0;
@@ -48,9 +44,6 @@ class BASE_EXPORT MemoryPressureMonitor {
 
  protected:
   MemoryPressureMonitor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureMonitor);
 };
 
 }  // namespace base

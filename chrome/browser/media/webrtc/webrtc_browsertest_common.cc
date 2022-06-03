@@ -11,6 +11,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/chrome_paths.h"
@@ -43,17 +44,17 @@ const char kAdviseOnGclientSolution[] =
 
 #if defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kDefaultPollIntervalMsec = 2000;
 #else
 const int kDefaultPollIntervalMsec = 1000;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #else
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kDefaultPollIntervalMsec = 500;
 #else
 const int kDefaultPollIntervalMsec = 250;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif
 
 bool IsErrorResult(const std::string& result) {
@@ -76,9 +77,9 @@ base::FilePath GetToolForPlatform(const std::string& tool_name) {
       .Append(FILE_PATH_LITERAL("win"))
       .AppendASCII(tool_name)
       .AddExtension(FILE_PATH_LITERAL("exe"));
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return tools_dir.Append(FILE_PATH_LITERAL("mac")).AppendASCII(tool_name);
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   return tools_dir.Append(FILE_PATH_LITERAL("linux")).AppendASCII(tool_name);
 #else
   CHECK(false) << "Can't retrieve tool " << tool_name << " on this platform.";
@@ -149,7 +150,6 @@ bool PollingWaitUntil(const std::string& javascript,
   std::string result;
 
   while (base::Time::Now() - start_time < timeout) {
-    std::string result;
     if (!content::ExecuteScriptAndExtractString(tab_contents, javascript,
                                                 &result)) {
       LOG(ERROR) << "Failed to execute javascript " << javascript;

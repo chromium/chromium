@@ -10,11 +10,11 @@
 <body>
     <script>
         promise_test(function (t) {
-            return promise_rejects(t, new TypeError(), fetch(preflightURL('fail-with-500', 'json')));
+            return promise_rejects_js(t, TypeError, fetch(preflightURL('fail-with-500', 'json')));
         }, "'fetch()' should fail on failed preflight: 500 status");
 
         promise_test(function (t) {
-            return promise_rejects(t, new TypeError(), fetch(preflightURL('fail-without-allow', 'json')));
+            return promise_rejects_js(t, TypeError, fetch(preflightURL('fail-without-allow', 'json')));
         }, "'fetch()' should fail on failed preflight: no allow-external");
 
         promise_test(function (t) {

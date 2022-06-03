@@ -28,7 +28,7 @@ void TabManager::WebContentsData::DidStartNavigation(
   // Only change to the loading state if there is a navigation in the main
   // frame. DidStartLoading() happens before this, but at that point we don't
   // know if the load is happening in the main frame or an iframe.
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -41,7 +41,6 @@ void TabManager::WebContentsData::DidStartNavigation(
 void TabManager::WebContentsData::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   SetIsInSessionRestore(false);
-  g_browser_process->GetTabManager()->OnDidFinishNavigation(navigation_handle);
 }
 
 void TabManager::WebContentsData::WebContentsDestroyed() {
@@ -79,6 +78,6 @@ bool TabManager::WebContentsData::Data::operator!=(const Data& right) const {
   return !(*this == right);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabManager::WebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabManager::WebContentsData);
 
 }  // namespace resource_coordinator

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <group>
+    <clip-path
+        android:pathData="M19,10H15V4H9V10H5L12,17L19,10V10ZM5,19V21H19V19H5V19Z"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M0,0h24v24h-24z"
+        android:fillColor="@color/modern_blue_600"/>
+  </group>
+  <group>
+    <clip-path
+        android:pathData="M10,8h14v14h-14z"/>
+    <path
+        android:pathData="M17.5,15.5m-7.5,0a7.5,7.5 0,1 1,15 0a7.5,7.5 0,1 1,-15 0"
+        android:fillColor="@color/infobar_background_color"/>
+    <path
+        android:pathData="M17.4945,10.0834C14.5045,10.0834 12.0833,12.51 12.0833,15.5C12.0833,18.49 14.5045,20.9167 17.4945,20.9167C20.4899,20.9167 22.9166,18.49 22.9166,15.5C22.9166,12.51 20.4899,10.0834 17.4945,10.0834ZM17.4999,19.8334C15.1058,19.8334 13.1666,17.8942 13.1666,15.5C13.1666,13.1059 15.1058,11.1667 17.4999,11.1667C19.8941,11.1667 21.8333,13.1059 21.8333,15.5C21.8333,17.8942 19.8941,19.8334 17.4999,19.8334ZM20.3328,17.0925L19.6503,17.9321L16.9583,16.0417V12.25H18.0416V15.5L20.3328,17.0925Z"
+        android:fillColor="@color/modern_blue_600"/>
+  </group>
+</vector>

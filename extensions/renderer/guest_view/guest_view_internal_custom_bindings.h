@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 #define EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 
-#include <map>
-
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {
@@ -78,7 +76,7 @@ class GuestViewInternalCustomBindings : public ObjectBackedNativeHandler {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Runs a JavaScript function that may use window.customElements.define
-  // with whitelisted custom element names.
+  // with allowlisted custom element names.
   void AllowGuestViewElementDefinition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 };

@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import './click_control_buttons.js';
+import './open_audio_files.js';
+
+import {RemoteCall} from '../remote_call.js';
+import {addEntries, RootPath, sendBrowserTestCommand, testPromiseAndApps} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+/* eslint-disable no-var */
 
 /**
  * Extension ID of audio player.
  * @type {string}
  * @const
  */
-var AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
+export const AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
 
-var remoteCallAudioPlayer = new RemoteCall(AUDIO_PLAYER_APP_ID);
+export const remoteCallAudioPlayer = new RemoteCall(AUDIO_PLAYER_APP_ID);
 
 /**
  * Launches the audio player with the given entries.
@@ -25,7 +32,7 @@ var remoteCallAudioPlayer = new RemoteCall(AUDIO_PLAYER_APP_ID);
  *     be a sub-set of the entries argument.
  * @return {Promise} Promise to be fulfilled with the audio player element.
  */
-function launch(testVolumeName, volumeType, entries, opt_selected) {
+export function launch(testVolumeName, volumeType, entries, opt_selected) {
   var entriesPromise = addEntries([testVolumeName], entries).then(function() {
     var selectedEntries = opt_selected || entries;
     var selectedEntryNames = selectedEntries.map(function(entry) {
@@ -51,11 +58,6 @@ function launch(testVolumeName, volumeType, entries, opt_selected) {
     return [appWindow, args[0]];
   });
 }
-
-/**
- * Namespace for test cases.
- */
-var testcase = {};
 
 /**
  * When the FileManagerBrowserTest harness loads this test extension, request

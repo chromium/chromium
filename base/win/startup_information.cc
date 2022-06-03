@@ -4,7 +4,6 @@
 
 #include "base/win/startup_information.h"
 
-#include "base/logging.h"
 
 namespace base {
 namespace win {

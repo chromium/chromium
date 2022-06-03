@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites_observer.h"
@@ -24,7 +23,7 @@ namespace history {
 struct PrepopulatedPage {
   PrepopulatedPage();
   PrepopulatedPage(const GURL& url,
-                   const base::string16& title,
+                   const std::u16string& title,
                    int favicon_id,
                    SkColor color);
 
@@ -45,37 +44,39 @@ class TopSites : public RefcountedKeyedService {
  public:
   TopSites();
 
-  typedef base::Callback<void(const MostVisitedURLList&)>
-      GetMostVisitedURLsCallback;
+  TopSites(const TopSites&) = delete;
+  TopSites& operator=(const TopSites&) = delete;
+
+  using GetMostVisitedURLsCallback =
+      base::OnceCallback<void(const MostVisitedURLList&)>;
 
   // Returns a list of most visited URLs via a callback. This may be invoked on
   // any thread. NOTE: The callback is called immediately if we have the data
   // cached. If data is not available yet, callback will later be posted to the
   // thread that called this function.
-  virtual void GetMostVisitedURLs(
-      const GetMostVisitedURLsCallback& callback) = 0;
+  virtual void GetMostVisitedURLs(GetMostVisitedURLsCallback callback) = 0;
 
   // Asks TopSites to refresh what it thinks the top sites are. This may do
   // nothing. Should be called from the UI thread.
   virtual void SyncWithHistory() = 0;
 
-  // Blacklisted URLs
+  // Blocked Urls.
 
-  // Returns true if there is at least one item in the blacklist.
-  virtual bool HasBlacklistedItems() const = 0;
+  // Returns true if there is at least one blocked url.
+  virtual bool HasBlockedUrls() const = 0;
 
-  // Add a URL to the blacklist. Should be called from the UI thread.
-  virtual void AddBlacklistedURL(const GURL& url) = 0;
+  // Add a URL to the set of urls that will not be shown. Should be called from
+  // the UI thread.
+  virtual void AddBlockedUrl(const GURL& url) = 0;
 
-  // Removes a URL from the blacklist. Should be called from the UI thread.
-  virtual void RemoveBlacklistedURL(const GURL& url) = 0;
+  // Removes a previously blocked url. Should be called from the UI thread.
+  virtual void RemoveBlockedUrl(const GURL& url) = 0;
 
-  // Returns true if the URL is blacklisted. Should be called from the UI
-  // thread.
-  virtual bool IsBlacklisted(const GURL& url) = 0;
+  // Returns true if the URL is blocked. Should be called from the UI thread.
+  virtual bool IsBlocked(const GURL& url) = 0;
 
-  // Clear the blacklist. Should be called from the UI thread.
-  virtual void ClearBlacklistedURLs() = 0;
+  // Removes all blocked urls. Should be called from the UI thread.
+  virtual void ClearBlockedUrls() = 0;
 
   // Returns true if the top sites list is full (i.e. we already have the
   // maximum number of top sites).  This function also returns false if TopSites
@@ -87,7 +88,7 @@ class TopSites : public RefcountedKeyedService {
   // Returns the set of prepopulated pages.
   virtual PrepopulatedPageList GetPrepopulatedPages() = 0;
 
-  // Called when user has navigated to |url|.
+  // Called when user has navigated to `url`.
   virtual void OnNavigationCommitted(const GURL& url) = 0;
 
   // Add Observer to the list.
@@ -105,8 +106,6 @@ class TopSites : public RefcountedKeyedService {
   friend class base::RefCountedThreadSafe<TopSites>;
 
   base::ObserverList<TopSitesObserver, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSites);
 };
 
 }  // namespace history

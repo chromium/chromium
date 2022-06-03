@@ -133,7 +133,7 @@ void WebGLTransformFeedback::UnbindBuffer(WebGLBuffer* buffer) {
   }
 }
 
-void WebGLTransformFeedback::Trace(blink::Visitor* visitor) {
+void WebGLTransformFeedback::Trace(Visitor* visitor) const {
   visitor->Trace(bound_indexed_transform_feedback_buffers_);
   visitor->Trace(program_);
   WebGLContextObject::Trace(visitor);

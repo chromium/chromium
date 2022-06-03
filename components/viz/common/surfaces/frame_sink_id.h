@@ -37,8 +37,8 @@ class VIZ_COMMON_EXPORT FrameSinkId {
  public:
   constexpr FrameSinkId() : client_id_(0), sink_id_(0) {}
 
-  constexpr FrameSinkId(const FrameSinkId& other)
-      : client_id_(other.client_id_), sink_id_(other.sink_id_) {}
+  constexpr FrameSinkId(const FrameSinkId& other) = default;
+  constexpr FrameSinkId& operator=(const FrameSinkId& other) = default;
 
   constexpr FrameSinkId(uint32_t client_id, uint32_t sink_id)
       : client_id_(client_id), sink_id_(sink_id) {}

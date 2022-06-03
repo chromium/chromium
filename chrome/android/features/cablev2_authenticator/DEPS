@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/cbor",
+  "+components/device_event_log",
+  "+device/fido",
+  "+third_party/boringssl",
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

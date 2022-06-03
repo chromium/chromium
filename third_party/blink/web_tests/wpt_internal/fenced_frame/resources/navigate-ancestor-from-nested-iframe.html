@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Navigate ancestor helper from nested fenced frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+
+<body>
+<script>
+(async () => {
+  // This document is loaded into a fenced frame by
+  // `navigate-ancestor-test-runner.html`. It creates a nested iframe and
+  // navigates it to `navigate-ancestor-helper.html`.
+  const ancestor_type = new URL(location.href).searchParams.get('ancestor_type');
+
+  // Sent by us to our embedder to indicate either:
+  //   - PASS: The nested iframe correctly navigated its ancestor (this) frame
+  //           when it tried to navigate either "_parent" or "_top"
+  //   - FAIL: The nested iframe navigated *itself* when it tried to navigate
+  //           its ancestor frame
+  const navigate_ancestor_from_nested_key = KEYS["navigate_ancestor_from_nested"];
+  // We listen to messages on this key, but we should never hear messages from
+  // it.
+  const navigate_ancestor_key = KEYS["navigate_ancestor"];
+
+  window.onbeforeunload = e => {
+    writeValueToServer(navigate_ancestor_from_nested_key, "PASS nested iframe " + ancestor_type);
+  }
+
+  // When the iframe tries to navigate its ancestor frame, it should navigate
+  // *this* frame
+  const iframe = document.createElement('iframe');
+  iframe.src = `navigate-ancestor-helper.html?ancestor_type=${ancestor_type}`;
+  document.body.append(iframe);
+
+  await nextValueFromServer(navigate_ancestor_key);
+  // We should never get here, because we should be unloaded first.
+  writeValueToServer(navigate_ancestor_from_nested_key, "FAIL");
+})();
+</script>
+</body>

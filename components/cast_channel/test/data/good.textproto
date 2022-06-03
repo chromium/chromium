@@ -1,0 +1,37 @@
+authenticate_challenge_reply_input {
+  cast_message {
+    protocol_version: CASTV2_1_0
+    source_id: ""
+    destination_id: ""
+    namespace: ""
+    payload_type: BINARY
+  }
+  nonce: ""
+  start_case: VALID
+  expiry_case: VALID
+  nonce_ok: true
+  response_certs_ok: true
+  crl_certs_ok: true
+  crl_signatures_ok: true
+
+  auth_message {
+    response {
+      signature: ""
+      signature_algorithm: RSASSA_PKCS1v15
+      hash_algorithm: SHA1
+      client_auth_certificate: ""
+    }
+  }
+
+  tbs_crls {
+    revoked_public_key_hashes: ""
+    revoked_serial_number_ranges {
+      issuer_public_key_hash: ""
+      first_serial_number: 0
+      last_serial_number: 0
+    }
+    version: 0
+    not_before_seconds: 0
+    not_after_seconds: 0
+  }
+}

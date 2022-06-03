@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/scroll-animations/#scrolltimeline-interface
+typedef (CSSNumericValue or CSSKeywordish) ScrollTimelineContainerBasedOffset;
+typedef (ScrollTimelineContainerBasedOffset or ScrollTimelineElementBasedOffset) ScrollTimelineOffset;
 
+// https://wicg.github.io/scroll-animations/#scrolltimeline-interface
 [
-    MeasureAs=ScrollTimelineConstructor,
     RuntimeEnabled=ScrollTimeline,
     Exposed=Window
 ] interface ScrollTimeline : AnimationTimeline {
-    [CallWith=Document, RaisesException] constructor(optional ScrollTimelineOptions options);
-    readonly attribute Element? scrollSource;
+    [CallWith=Document, RaisesException, MeasureAs=ScrollTimelineConstructor] constructor(optional ScrollTimelineOptions options = {});
+    readonly attribute Element? source;
     readonly attribute ScrollDirection orientation;
-    readonly attribute DOMString startScrollOffset;
-    readonly attribute DOMString endScrollOffset;
-    readonly attribute (double or ScrollTimelineAutoKeyword) timeRange;
-    readonly attribute FillMode fill;
+    readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
 };

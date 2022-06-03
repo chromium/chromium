@@ -42,6 +42,12 @@ class WebContentsProxy {
   // on the UI thread.
   int64_t LastNavigationId() const;
 
+  // Similar to the above, but for the last non same-document navigation
+  // associated with this WebContents. This is always for a navigation that is
+  // older or equal to "LastNavigationId". This must only be called on the UI
+  // thread.
+  int64_t LastNewDocNavigationId() const;
+
  protected:
   friend class PerformanceManagerTabHelper;
 

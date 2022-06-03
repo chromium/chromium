@@ -19,12 +19,8 @@
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='target'",
-          "rect": [0, 0, 200, 200],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [0, 0, 200, 200]
       ]
     },
     {
@@ -32,12 +28,8 @@
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='target'",
-          "rect": [0, 0, 200, 200],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 200, 200]
       ],
       "transform": 2
     }

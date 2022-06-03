@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace variations {

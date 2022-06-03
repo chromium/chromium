@@ -15,18 +15,10 @@
 
   // Duplicate names test
   test(t => {
-    assert_throws(new TypeError(), _ => {
+    assert_throws_js(TypeError, _ => {
      trustedTypes.createPolicy('SomeName', {} );
     });
   }, "duplicate policy name attempt throws");
-
-  // Retrieve policy names tests
-  test(t => {
-    let policy = trustedTypes.createPolicy('SomeOtherName', {} );
-    let names = trustedTypes.getPolicyNames();
-    assert_true(names.includes('SomeName'));
-    assert_true(names.includes('SomeOtherName'));
-  }, "Retrieving policy names");
 
   // Check error messages.
   test(t => {

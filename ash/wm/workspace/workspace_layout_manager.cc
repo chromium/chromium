@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/autoclick/autoclick_controller.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -18,7 +18,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/always_on_top_controller.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -30,6 +33,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "base/command_line.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -40,44 +44,45 @@
 
 namespace ash {
 
-WorkspaceLayoutManager::BubbleWindowObserver::BubbleWindowObserver(
+using ::chromeos::WindowStateType;
+
+WorkspaceLayoutManager::FloatingWindowObserver::FloatingWindowObserver(
     WorkspaceLayoutManager* workspace_layout_manager)
     : workspace_layout_manager_(workspace_layout_manager) {}
 
-WorkspaceLayoutManager::BubbleWindowObserver::~BubbleWindowObserver() {
-  for (auto* window : windows_)
-    window->RemoveObserver(this);
+WorkspaceLayoutManager::FloatingWindowObserver::~FloatingWindowObserver() {
+  for (auto window : observed_windows_)
+    window.first->RemoveObserver(this);
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::ObserveWindow(
+void WorkspaceLayoutManager::FloatingWindowObserver::ObserveWindow(
     aura::Window* window) {
-  if (!windows_.count(window)) {
-    windows_.insert(window);
+  if (!observed_windows_.count(window)) {
+    observed_windows_[window] = window->parent();
     window->AddObserver(this);
   }
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowHierarchyChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
-  if (params.new_parent &&
-      params.new_parent !=
-          workspace_layout_manager_->settings_bubble_container_) {
+  auto* old_parent = observed_windows_[params.target];
+  if (params.new_parent && params.new_parent != old_parent) {
     StopOberservingWindow(params.target);
   }
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowVisibilityChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   workspace_layout_manager_->NotifySystemUiAreaChanged();
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowDestroying(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowDestroying(
     aura::Window* window) {
   StopOberservingWindow(window);
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowBoundsChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
@@ -85,9 +90,9 @@ void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowBoundsChanged(
   workspace_layout_manager_->NotifySystemUiAreaChanged();
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::StopOberservingWindow(
+void WorkspaceLayoutManager::FloatingWindowObserver::StopOberservingWindow(
     aura::Window* window) {
-  windows_.erase(window);
+  observed_windows_.erase(window);
   window->RemoveObserver(this);
 }
 
@@ -95,21 +100,21 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
     : window_(window),
       root_window_(window->GetRootWindow()),
       root_window_controller_(RootWindowController::ForWindow(root_window_)),
-      settings_bubble_window_observer_(this),
-      autoclick_bubble_window_observer_(this),
+      floating_window_observer_(this),
       work_area_in_parent_(
           screen_util::GetDisplayWorkAreaBoundsInParent(window_)),
       is_fullscreen_(GetWindowForFullscreenModeForContext(window) != nullptr) {
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   root_window_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
   backdrop_controller_ = std::make_unique<BackdropController>(window_);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   settings_bubble_container_ = window->GetRootWindow()->GetChildById(
       kShellWindowId_SettingBubbleContainer);
-  autoclick_bubble_container_ =
-      window->GetRootWindow()->GetChildById(kShellWindowId_AutoclickContainer);
+  accessibility_bubble_container_ = window->GetRootWindow()->GetChildById(
+      kShellWindowId_AccessibilityBubbleContainer);
+  shelf_container_ =
+      window->GetRootWindow()->GetChildById(kShellWindowId_ShelfContainer);
   root_window_controller_->shelf()->AddObserver(this);
 }
 
@@ -117,16 +122,11 @@ WorkspaceLayoutManager::~WorkspaceLayoutManager() {
   root_window_controller_->shelf()->RemoveObserver(this);
   if (root_window_)
     root_window_->RemoveObserver(this);
-  if (settings_bubble_container_)
-    settings_bubble_container_->RemoveObserver(this);
-  if (autoclick_bubble_container_)
-    autoclick_bubble_container_->RemoveObserver(this);
   for (aura::Window* window : windows_) {
     WindowState* window_state = WindowState::Get(window);
     window_state->RemoveObserver(this);
     window->RemoveObserver(this);
   }
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
@@ -138,7 +138,7 @@ WorkspaceLayoutManager::~WorkspaceLayoutManager() {
 void WorkspaceLayoutManager::OnWindowResized() {}
 
 void WorkspaceLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
-  DCHECK_NE(aura::client::WINDOW_TYPE_CONTROL, child->type());
+  DCHECK_NE(aura::client::WINDOW_TYPE_CONTROL, child->GetType());
   WindowState* window_state = WindowState::Get(child);
   WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
   window_state->OnWMEvent(&event);
@@ -147,8 +147,9 @@ void WorkspaceLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
   window_state->AddObserver(this);
   UpdateShelfVisibility();
   UpdateFullscreenState();
+  UpdateWindowWorkspace(child);
 
-  backdrop_controller_->OnWindowAddedToLayout();
+  backdrop_controller_->OnWindowAddedToLayout(child);
   WindowPositioner::RearrangeVisibleWindowOnShow(child);
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     WindowState::Get(child)->DisableZOrdering(nullptr);
@@ -178,7 +179,7 @@ void WorkspaceLayoutManager::OnWillRemoveWindowFromLayout(aura::Window* child) {
 void WorkspaceLayoutManager::OnWindowRemovedFromLayout(aura::Window* child) {
   UpdateShelfVisibility();
   UpdateFullscreenState();
-  backdrop_controller_->OnWindowRemovedFromLayout();
+  backdrop_controller_->OnWindowRemovedFromLayout(child);
 }
 
 void WorkspaceLayoutManager::OnChildWindowVisibilityChanged(aura::Window* child,
@@ -194,7 +195,7 @@ void WorkspaceLayoutManager::OnChildWindowVisibilityChanged(aura::Window* child,
     WindowPositioner::RearrangeVisibleWindowOnHideOrRemove(child);
   UpdateFullscreenState();
   UpdateShelfVisibility();
-  backdrop_controller_->OnChildWindowVisibilityChanged();
+  backdrop_controller_->OnChildWindowVisibilityChanged(child);
 }
 
 void WorkspaceLayoutManager::SetChildBounds(aura::Window* child,
@@ -202,15 +203,6 @@ void WorkspaceLayoutManager::SetChildBounds(aura::Window* child,
   WindowState* window_state = WindowState::Get(child);
   SetBoundsWMEvent event(requested_bounds);
   window_state->OnWMEvent(&event);
-
-  // Setting bounds shouldn't trigger UpdateShelfVisibility(), especially for
-  // PIP because it can cause an unexpected call of updatePipBounds(). So avoid
-  // calling this for PIP windows for now.
-  // TODO(takise): Remove UpdateShelfVisibility() completely, which may be
-  // obsolete now.
-  if (!window_state->IsPip()) {
-    UpdateShelfVisibility();
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -269,10 +261,11 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.new_parent) {
-    if (params.new_parent == settings_bubble_container_)
-      settings_bubble_window_observer_.ObserveWindow(params.target);
-    if (params.new_parent == autoclick_bubble_container_)
-      autoclick_bubble_window_observer_.ObserveWindow(params.target);
+    if (params.new_parent == settings_bubble_container_ ||
+        params.new_parent == accessibility_bubble_container_ ||
+        IsPopupNotificationWindow(params.target)) {
+      floating_window_observer_.ObserveWindow(params.target);
+    }
   }
   // The window should have a parent (unless it's being removed), so we can
   // create WindowState, which requires its parent. (crbug.com/924305)
@@ -301,10 +294,11 @@ void WorkspaceLayoutManager::OnWindowHierarchyChanged(
 }
 
 void WorkspaceLayoutManager::OnWindowAdded(aura::Window* window) {
-  if (window->parent() == settings_bubble_container_)
-    settings_bubble_window_observer_.ObserveWindow(window);
-  if (window->parent() == autoclick_bubble_container_)
-    autoclick_bubble_window_observer_.ObserveWindow(window);
+  if (window->parent() == settings_bubble_container_ ||
+      window->parent() == accessibility_bubble_container_ ||
+      IsPopupNotificationWindow(window)) {
+    floating_window_observer_.ObserveWindow(window);
+  }
 }
 
 void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
@@ -319,15 +313,18 @@ void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
       if (window->parent() != container)
         container->AddChild(window);
     }
-  } else if (key == kBackdropWindowMode) {
-    backdrop_controller_->UpdateBackdrop();
+  } else if (key == kWindowBackdropKey) {
+    // kWindowBackdropKey is not supposed to be cleared.
+    DCHECK(window->GetProperty(kWindowBackdropKey));
+  } else if (key == aura::client::kWindowWorkspaceKey) {
+    UpdateWindowWorkspace(window);
   }
 }
 
 void WorkspaceLayoutManager::OnWindowStackingChanged(aura::Window* window) {
   UpdateShelfVisibility();
   UpdateFullscreenState();
-  backdrop_controller_->OnWindowStackingChanged();
+  backdrop_controller_->OnWindowStackingChanged(window);
 }
 
 void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
@@ -337,16 +334,18 @@ void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
   }
   if (settings_bubble_container_ == window)
     settings_bubble_container_ = nullptr;
-  if (autoclick_bubble_container_ == window)
-    autoclick_bubble_container_ = nullptr;
+  if (accessibility_bubble_container_ == window)
+    accessibility_bubble_container_ = nullptr;
+  if (shelf_container_ == window)
+    shelf_container_ = nullptr;
+  Shell::Get()->desks_controller()->MaybeRemoveVisibleOnAllDesksWindow(window);
 }
 
 void WorkspaceLayoutManager::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
-    ui::PropertyChangeReason reason) {
-}
+    ui::PropertyChangeReason reason) {}
 
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, wm::ActivationChangeObserver implementation:
@@ -359,7 +358,6 @@ void WorkspaceLayoutManager::OnWindowActivating(ActivationReason reason,
   if (window_state && window_state->IsMinimized() &&
       !gaining_active->IsVisible()) {
     window_state->Unminimize();
-    DCHECK(!window_state->IsMinimized());
   }
 }
 
@@ -386,7 +384,7 @@ void WorkspaceLayoutManager::OnPostWindowStateTypeChange(
   }
 
   UpdateShelfVisibility();
-  backdrop_controller_->OnPostWindowStateTypeChange();
+  backdrop_controller_->OnPostWindowStateTypeChange(window_state->window());
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -469,6 +467,11 @@ void WorkspaceLayoutManager::OnAutoHideStateChanged(
   NotifySystemUiAreaChanged();
 }
 
+void WorkspaceLayoutManager::OnHotseatStateChanged(HotseatState old_state,
+                                                   HotseatState new_state) {
+  NotifySystemUiAreaChanged();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, private:
 
@@ -479,17 +482,19 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
 
   work_area_in_parent_ = screen_util::GetDisplayWorkAreaBoundsInParent(window_);
 
-  // Don't do any adjustments of the insets while we are in screen locked mode.
-  // This would happen if the launcher was auto hidden before the login screen
-  // was shown and then gets shown when the login screen gets presented.
+  // Do not do any adjustments when session state is being changed. This would
+  // ensure window bounds not being incorrectly set by shelf alignment change to
+  // kBottomLocked.
+  // See bugs: https://crbug.com/173127 & https://crbug.com/1177572.
   if (event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED &&
-      Shell::Get()->session_controller()->IsScreenLocked())
+      Shell::Get()->session_controller()->session_state_change_in_progress()) {
     return;
+  }
 
-  // The PIP avoids the autoclick bubble, so here we update the autoclick
-  // position before sending the WMEvent, so that if the PIP is
+  // The PIP avoids the accessibility bubbles, so here we update the
+  // accessibility position before sending the WMEvent, so that if the PIP is
   // also being shown the PIPs calculation does not need to take place twice.
-  NotifyAutoclickWorkspaceChanged();
+  NotifyAccessibilityWorkspaceChanged();
 
   // If a user plugs an external display into a laptop running Aura the
   // display size will change.  Maximized windows need to resize to match.
@@ -526,10 +531,25 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   // of |windows_| to avoid invalidating an iterator. Since both workspace and
   // always_on_top containers' layouts are managed by this class all the
   // appropriate windows will be included in the iteration.
-  WindowSet windows(windows_);
-  for (aura::Window* window : windows) {
+  // Use an `aura::WindowTracker` since `OnWillRemoveWindowFromLayout()` may
+  // remove windows from `windows_`.
+  std::vector<aura::Window*> windows(windows_.begin(), windows_.end());
+  aura::WindowTracker tracker(windows);
+  while (!tracker.windows().empty()) {
+    aura::Window* window = tracker.Pop();
     if (window == active_desk_fullscreen_window)
       continue;
+
+    // TODO(crbug.com/1200594): Remove after fix.
+    int window_id = window->GetId();
+    int window_width = window->bounds().width();
+    int window_height = window->bounds().height();
+    base::debug::Alias(&window_id);
+    base::debug::Alias(&window_width);
+    base::debug::Alias(&window_height);
+    DEBUG_ALIAS_FOR_CSTR(window_name, window->GetName().c_str(), 128);
+    DEBUG_ALIAS_FOR_CSTR(window_title,
+                         base::UTF16ToUTF8(window->GetTitle()).c_str(), 128);
 
     WindowState* window_state = WindowState::Get(window);
     if (active_desk_fullscreen_window)
@@ -539,23 +559,45 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   }
 }
 
-void WorkspaceLayoutManager::NotifySystemUiAreaChanged() {
-  // The PIP avoids the autoclick bubble, so here we update the autoclick
-  // position before sending the WMEvent, so that if the PIP is
-  // also being shown the PIPs calculation does not need to take place twice.
-  NotifyAutoclickWorkspaceChanged();
+void WorkspaceLayoutManager::NotifySystemUiAreaChanged() const {
+  // The PIP avoids the accessibility bubble, so here we update the
+  // accessibility bubble position before sending the WMEvent, so that if the
+  // PIP is also being shown the PIPs calculation does not need to take place
+  // twice.
+  NotifyAccessibilityWorkspaceChanged();
   for (auto* window : windows_) {
     WMEvent event(WM_EVENT_SYSTEM_UI_AREA_CHANGED);
     WindowState::Get(window)->OnWMEvent(&event);
   }
 }
 
-void WorkspaceLayoutManager::NotifyAutoclickWorkspaceChanged() {
-  if (Shell::Get()->accessibility_controller()->autoclick_enabled()) {
+void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() const {
+  if (Shell::Get()->accessibility_controller()->autoclick().enabled()) {
     Shell::Get()
         ->accessibility_controller()
         ->UpdateAutoclickMenuBoundsIfNeeded();
   }
+}
+
+void WorkspaceLayoutManager::UpdateWindowWorkspace(aura::Window* window) {
+  if (window->GetType() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
+      window->GetProperty(aura::client::kZOrderingKey) !=
+          ui::ZOrderLevel::kNormal) {
+    return;
+  }
+
+  auto* desks_controller = Shell::Get()->desks_controller();
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+    desks_controller->AddVisibleOnAllDesksWindow(window);
+  else
+    desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
+}
+
+bool WorkspaceLayoutManager::IsPopupNotificationWindow(
+    aura::Window* window) const {
+  return window->parent() == shelf_container_ &&
+         window->GetName() ==
+             AshMessagePopupCollection::kMessagePopupWidgetName;
 }
 
 }  // namespace ash

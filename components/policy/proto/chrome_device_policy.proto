@@ -10,6 +10,8 @@ import "policy_common_definitions.proto";
 
 package enterprise_management;
 
+option go_package="chromium/policy/enterprise_management_proto";
+
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 
@@ -24,10 +26,16 @@ message UserWhitelistProto {
   repeated string user_whitelist = 1;
 }
 
+message UserAllowlistProto {
+  // If a UserAllowlistProto is included in the ChromeDeviceSettingsProto but
+  // the user_whitelist field is empty then no user can sign-in.
+  repeated string user_allowlist = 1;
+}
+
 message AllowNewUsersProto {
   // Determines whether we allow arbitrary users to log into the device.
-  // This interacts with the UserWhitelistProto as follows:
-  // allow_new_users | user_whitelist     | anyone can log in
+  // This interacts with the UserAllowlistProto as follows:
+  // allow_new_users | user_allowlist     | anyone can log in
   //-----------------+--------------------+------------------
   //  present, true  | not present        | Yes
   //-----------------+--------------------+------------------
@@ -83,10 +91,13 @@ message ReleaseChannelProto {
   // One of "stable-channel", "beta-channel", or "dev-channel"
   optional string release_channel = 1;
 
-  // If |release_channel_delegated| is set to true and the |release_channel|
-  // field is not set or left empty, the user can select the channel. If the
-  // |release_channel| is specified it will always override users choice!
+  // The user can select the channel if |release_channel_delegated| is true.
+  // The value of |release_channel| is only taken into account if
+  // |release_channel_delegated| is set to false.
   optional bool release_channel_delegated = 2;
+
+  // |release_lts_tag| is forwarded as the "ltshint" attribute to Omaha.
+  optional string release_lts_tag = 3;
 }
 
 message DeviceOpenNetworkConfigurationProto {
@@ -102,7 +113,16 @@ message NetworkHostnameProto {
   optional string device_hostname_template = 1;
 }
 
+message HostnameUserConfigurableProto {
+  // Determines if user is allowed to configure the device hostname
+  optional bool device_hostname_user_configurable = 1 [default = false];
+}
+
 // Policies to turn on portions of the device status reports.
+// If changed, the default values have to be updated in
+// chrome/browser/ash/policy/status_collector/device_status_collector.cc
+// and
+// chrome/browser/ash/policy/status_collector/child_status_collector.cc.
 message DeviceReportingProto {
   optional bool report_version_info = 1 [default = true];
   optional bool report_activity_times = 2 [default = true];
@@ -118,9 +138,37 @@ message DeviceReportingProto {
   optional bool report_storage_status = 13 [default = false];
   optional bool report_board_status = 14 [default = false];
   optional bool report_cpu_info = 15 [default = false];
+  optional bool report_graphics_status = 16 [default = false];
+  optional bool report_crash_report_info = 17 [default = false];
+  optional bool report_timezone_info = 18 [default = false];
+  optional bool report_memory_info = 19 [default = false];
+  optional bool report_backlight_info = 20 [default = false];
+  optional bool report_app_info = 21 [default = false];
+  optional bool report_bluetooth_info = 22 [default = false];
+  optional bool report_fan_info = 23 [default = false];
+  optional bool report_vpd_info = 24 [default = false];
+  optional bool report_system_info = 25 [default = false];
+  optional bool report_print_jobs = 26 [default = false];
+  optional bool report_login_logout = 27 [default = false];
+  optional bool report_audio_status = 28 [default = true];
+  optional bool report_network_configuration = 29 [default = true];
+  optional bool report_network_status = 30 [default = true];
+  optional bool report_security_status = 31 [default = false];
 
   // Frequency to report device status, default to 3 hours.
+  // If changed, the default value has to be updated in
+  // chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.cc.
   optional int64 device_status_frequency = 9 [default = 10800000];
+
+  // This is a internal flag that will be used to control whether enable
+  // granular device reporting is enabled
+  optional bool enable_granular_reporting = 32 [default = true];
+
+  // Network telemetry policies.
+  optional int64 report_network_telemetry_collection_rate_ms = 33
+      [default = 600000];
+  optional int64 report_network_telemetry_event_checking_rate_ms = 34
+      [default = 60000];
 }
 
 message EphemeralUsersEnabledProto {
@@ -297,7 +345,36 @@ message AutoUpdateSettingsProto {
 
   // This token is forwarded to omaha by update_engine. If it is set, omaha may
   // serve a quick fix build identified by the token.
+  //
+  // This field is primarily used for quick fixes, but it is also used by the
+  // Hotrod team to subdivide the Stable channel into cohorts.
   optional string device_quick_fix_build_token = 15;
+
+  // Types of channel downgrade behavior.
+  enum ChannelDowngradeBehavior {
+    // Channel downgrade behavior unspecified. Default is
+    // WAIT_FOR_VERSION_CATCH_UP.
+    CHANNEL_DOWNGRADE_BEHAVIOR_UNSPECIFIED = 0;
+    // On a channel downgrade, e.g. beta to stable, wait for the device's
+    // version to become available on the new channel. No updates happen until
+    // then. This is the default.
+    WAIT_FOR_VERSION_CATCH_UP = 1;
+    // Roll back and reset the device on a channel downgrade. This does a full
+    // powerwash and tries to preserve wifi and enrollment.
+    ROLLBACK = 2;
+    // Allow the user to decide whether to wait or roll back and reset on a
+    // user-initiated channel downgrade.
+    ALLOW_USER_TO_CONFIGURE = 3;
+  }
+
+  // Specifies what should happen if the device channel is downgraded.
+  optional ChannelDowngradeBehavior channel_downgrade_behavior = 16
+      [default = WAIT_FOR_VERSION_CATCH_UP];
+
+  // |target_version_selector| is forwarded as the "targetversionselector"
+  // attribute to Omaha and is used by it if for minor version pinning. The
+  // field is not and shall not be processed by the client.
+  optional string target_version_selector = 17;
 }
 
 message OBSOLETE_StartUpUrlsProto {
@@ -390,6 +467,18 @@ message WebKioskAppInfoProto {
   // In case it is the only field provided, title and icon will be deduced
   // during first app launch.
   optional string url = 1;
+
+  // Title (optional).
+  // User-friendly app name that should be used in Chrome UI where kiosk app
+  // name is shown. Chrome side could override the string with an updated
+  // value that it will get during actual app launch.
+  optional string title = 2;
+
+  // Icon url (optional).
+  // Is not used in the current Implementation. Will be used instead of the
+  // placeholder icon that is displayed before the first successful app
+  // launch.
+  optional string icon_url = 3;
 }
 
 // Describes a single device-local account.
@@ -407,6 +496,7 @@ message DeviceLocalAccountInfoProto {
   // configured accounts on a device must have unique identifiers.
   optional string account_id = 2;
 
+  // LINT.IfChange
   // Indicates the type of device-local account.
   enum AccountType {
     // A login-less, policy-configured browsing session.
@@ -422,6 +512,9 @@ message DeviceLocalAccountInfoProto {
     // Web App.
     ACCOUNT_TYPE_WEB_KIOSK_APP = 4;
   }
+  // Should keep ChromeServletUtil.toDimensionAccountType logic in sync with
+  // AccountType enum.
+  // LINT.ThenChange(//depot/google3/java/com/google/chrome/cros/dmserver/chrome/ChromeServletUtil.java)
 
   // The account type.
   optional AccountType type = 3;
@@ -470,6 +563,15 @@ message DeviceLocalAccountsProto {
   optional bool prompt_for_network_when_offline = 5 [default = true];
 }
 
+message ManagedGuestSessionPrivacyWarningsProto {
+  // Enable the privacy warnings on both; the login screen of the managed-guest
+  // session & inside the auto-launched managed-guest sessions.
+  // If this policy is set to false, all the privacy warnings are deactivated.
+  // If it's set to true or not set, then the privacy warnings will be shown by
+  // default.
+  optional bool enabled = 1 [default = true];
+}
+
 message AllowRedeemChromeOsRegistrationOffersProto {
   // Chrome OS Registration service provides way for chromeos device users
   // to redeem electronic offers provided by service provider.
@@ -478,11 +580,25 @@ message AllowRedeemChromeOsRegistrationOffersProto {
   optional bool allow_redeem_offers = 1 [default = true];
 }
 
-message StartUpFlagsProto {
-  // Specifies the flags that should be applied to Google Chrome when it starts.
-  // The specified flags are applied on the login screen only. Flags set via
-  // this policy do not propagate into user sessions.
-  repeated string flags = 1;
+message FeatureFlagsProto {
+  // Specifies switches that should be passed to Google Chrome when it starts.
+  // The specified switches are applied on the login screen only. Switches set
+  // via this policy do not propagate into user sessions.
+  // This is deprecated because it turned out that storing raw switches is
+  // problematic since Chrome can't easily tie switches back to feature flags to
+  // validate them. The |feature_flags| field below works in terms of feature
+  // flag names (i.e. chrome://flags items) instead and supersedes |switches|.
+  repeated string switches = 1 [deprecated = true];
+
+  // Specifies feature flags (i.e. chrome://flags items) that should be enabled
+  // when Chrome starts. The format of the individual entries matches the format
+  // chrome://flags uses for internal bookkeeping, i.e. either the flag name as
+  // listed on chrome://flags (for flags that only have a single choice besides
+  // the default) or the flag name followed by the index of the chosen option,
+  // separated by an '@' character (for flags with multiple choices). The
+  // specified feature flags are applied on the login screen only and don't
+  // propagate into the user session.
+  repeated string feature_flags = 2;
 }
 
 message UptimeLimitProto {
@@ -829,11 +945,20 @@ message AccessibilitySettingsProto {
   optional bool login_screen_show_options_in_system_tray_menu_enabled = 32;
   optional PolicyOptions
       login_screen_show_options_in_system_tray_menu_enabled_options = 33;
+
+  // Sets whether all the accessibility features shortcuts are being enabled or
+  // not on the login screen. If this policy is set to true, the accessibility
+  // shortcuts are going to be enabled when the login screen is shown. If this
+  // policy is set to false, the accessibility shortcuts are going to be
+  // disabled when the login screen is shown. If this policy is left unset, the
+  // accessibility shortcuts are going to be enabled on the login screen.
+  optional bool login_screen_shortcuts_enabled = 34;
+  optional PolicyOptions login_screen_shortcuts_enabled_options = 35;
 }
 
-message SupervisedUsersSettingsProto {
+message OBSOLETE_SupervisedUsersSettingsProto {
   // Defines whether supervised users can be created on the device.
-  optional bool supervised_users_enabled = 1;
+  optional bool OBSOLETE_supervised_users_enabled = 1 [deprecated = true];
 }
 
 message LoginScreenPowerManagementProto {
@@ -1012,6 +1137,12 @@ message DisplayRotationDefaultProto {
   optional Rotation display_rotation_default = 1;
 }
 
+// This setting is controlled by the device policy
+// DeviceLoginScreenPrivacyScreenEnabled.
+message DeviceLoginScreenPrivacyScreenEnabledProto {
+  optional bool enabled = 1 [default = false];
+}
+
 // This setting is configured by the device policy DeviceDisplayResolution.
 // If |device_display_resolution| contains a value, then it's treated as a JSON
 // object that uses the schema defined for DeviceDisplayResolution policy.
@@ -1062,6 +1193,21 @@ message UsbDeviceIdProto {
 // The list is used by the permission_broker daemon.
 message UsbDetachableWhitelistProto {
   repeated UsbDeviceIdProto id = 1;
+}
+
+// Identifiers of a USB device or device family.
+message UsbDeviceIdInclusiveProto {
+  // USB Vendor Identifier (aka idVendor).
+  optional int32 vendor_id = 1;
+  // USB Product Identifier (aka idProduct).
+  optional int32 product_id = 2;
+}
+
+// This setting contains the list of USB devices to detach from the kernel
+// drivers in order to use them in web applications.
+// The list is used by the permission_broker daemon.
+message UsbDetachableAllowlistProto {
+  repeated UsbDeviceIdInclusiveProto id = 1;
 }
 
 message AllowBluetoothProto {
@@ -1194,7 +1340,6 @@ message DeviceOffHoursProto {
   // are in the timezone specified by the timezone string.
   repeated WeeklyTimeIntervalProto intervals = 1;
   // Timezone in the same format as SystemTimezoneProto.timezone.
-  // If timezone isn't set then "GMT" will be used
   optional string timezone = 2;
   // List of policy proto tags which settings are ignored during OffHours
   // mode. List contains policy proto tags from ChromeDeviceSettingsProto
@@ -1238,6 +1383,55 @@ message DeviceNativePrintersWhitelistProto {
   repeated string whitelist = 1;
 }
 
+// The url and hash specified in JSON format that can be used to retrieve
+// the device-level printers configuration file.
+message DevicePrintersProto {
+  // External policy blob encoded as JSON.
+  optional string external_policy = 1;
+}
+
+// A collection of ids for the list of print servers which are accessible.
+// The policy which determines the type of access restriction that is applied to
+// the devicel-level printers list.
+message DevicePrintersAccessModeProto {
+  enum AccessMode {
+    ACCESS_MODE_BLOCKLIST = 0;  // Use DevicePrintersBlocklistProto.
+    ACCESS_MODE_ALLOWLIST = 1;  // Use DevicePrintersAllowlistProto.
+    ACCESS_MODE_ALL = 2;        // Allow access to all specified printers.
+  }
+
+  // The type of access which is applied to the device-level printer list.
+  optional AccessMode access_mode = 1;
+}
+
+// A collection of ids defining the printers which are explicitly disallowed for
+// the device.
+message DevicePrintersBlocklistProto {
+  // A collection of ids for which are explicitly disallowed.
+  repeated string blocklist = 1;
+}
+
+// A collection of ids defining the printers which are explicitly allowed for
+// the device.
+message DevicePrintersAllowlistProto {
+  // A collection of ids for the list of printers which are accessible.
+  repeated string allowlist = 1;
+}
+
+// The url and hash specified in JSON format that can be used to retrieve
+// the device-level external print servers configuration file.
+message DeviceExternalPrintServersProto {
+  // External policy blob encoded as JSON.
+  optional string external_policy = 1;
+}
+
+// A collection of ids defining the external print servers which are explicitly
+// allowed for the device.
+message DeviceExternalPrintServersAllowlistProto {
+  // A collection of ids for the list of print servers which are accessible.
+  repeated string allowlist = 1;
+}
+
 // Settings to control the behavior of the TPM firmware update functionality.
 message TPMFirmwareUpdateSettingsProto {
   // Whether the user is allowed to invoke the update via powerwash. This flow
@@ -1270,12 +1464,12 @@ message TPMFirmwareUpdateSettingsProto {
 }
 
 // Settings to control the minimum version that is allowed to sign in / stay
-// in session.
-message MinimumRequiredVersionProto {
+// in session. This is now deprecated from M82 onwards.
+message OBSOLETE_MinimumRequiredVersionProto {
   // Value is chrome_version string, e.g. 61.0.3163.120
   // The client will use prefix matching to compare its version against the
   // value of this field.
-  optional string chrome_version = 1;
+  optional string OBSOLETE_chrome_version = 1 [deprecated = true];
 }
 
 // Specifies a list of rules to automatically select certificates on SAML IdP
@@ -1328,22 +1522,22 @@ message DeviceUserPolicyLoopbackProcessingModeProto {
 
 // Specifies a list of origins. Each of the specified origins will run in its
 // own process on the sign-in screen.
-message DeviceLoginScreenIsolateOriginsProto {
+message OBSOLETE_DeviceLoginScreenIsolateOriginsProto {
   // A comma-separated list of the origins to be run in a separate process on
   // the sign-in screen.
   // If the value of this policy does not match the value of the user policy
   // IsolateOrigins, the chrome process will be restarted on user sign-in to
   // apply the value specified by the user policy.
-  optional string isolate_origins = 1;
+  optional string OBSOLETE_isolate_origins = 1 [deprecated = true];
 }
 
 // Specifies if each site should run in its own process on the sign-in screen.
-message DeviceLoginScreenSitePerProcessProto {
+message OBSOLETE_DeviceLoginScreenSitePerProcessProto {
   // If true, each site will run in its own process on the sign-in screen.
   // If the value of this policy does not match the value of the user policy
   // SitePerProcess, the chrome process will be restarted on user sign-in to
   // apply the value specified by the user policy.
-  optional bool site_per_process = 1;
+  optional bool OBSOLETE_site_per_process = 1 [deprecated = true];
 }
 
 // Setting to control if running virtual machines on Chrome OS is allowed.
@@ -1539,6 +1733,110 @@ message DeviceLoginScreenWebUsbAllowDevicesForUrlsProto {
   optional string device_login_screen_webusb_allow_devices_for_urls = 1;
 }
 
+// Settings that control the availability of System-proxy service and the web
+// proxy credentials for system services connecting through System-proxy.
+message SystemProxySettingsProto {
+  // This is a JSON string, for details see "SystemProxySettings" in
+  // policy_templates.json.
+  optional string system_proxy_settings = 1;
+}
+
+// Settings that control what certificates should be privisioned via DM server.
+message RequiredClientCertificateForDeviceProto {
+  // This is a JSON string, for details see
+  // "RequiredClientCertificateForDevice" in policy_templates.json.
+  optional string required_client_certificate_for_device = 1;
+}
+
+// Setting that controls whether ARC ADB sideloading is allowed for the device.
+message DeviceCrostiniArcAdbSideloadingAllowedProto {
+  enum AllowanceMode {
+    DISALLOW = 0;
+    DISALLOW_WITH_POWERWASH = 1;
+    ALLOW_FOR_AFFILIATED_USERS = 2;
+    // Next ID to use: 3
+  }
+
+  optional AllowanceMode mode = 1 [default = DISALLOW];
+}
+
+message DeviceShowLowDiskSpaceNotificationProto {
+  optional bool device_show_low_disk_space_notification = 1;
+}
+
+// Setting that controls whether all Family Link accounts are allowed on the
+// device additionally to the accounts listed in UserAllowlistProto.
+message DeviceFamilyLinkAccountsAllowedProto {
+  optional bool family_link_accounts_allowed = 1 [default = false];
+}
+
+// Setting that controls whether ARC data snapshotting is enabled for the device
+// and time intervals of updating ARC data snapshot.
+message DeviceArcDataSnapshotHoursProto {
+  // This is a JSON string, for details see
+  // "DeviceArcDataSnapshotHours" in policy_template.json
+  optional string arc_data_snapshot_hours = 1;
+}
+
+// Setting that controls whether system-wide trace collection using the Perfetto
+// system tracing service is allowed.
+message DeviceSystemWideTracingEnabledProto {
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals. This proto is no longer being used, please use
+// DevicePciPeripheralDataAccessEnabledProtoV2.
+message DevicePciPeripheralDataAccessEnabledProto {
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals. This replaces DevicePciPeripheralDataAccessEnabledProto. Used
+// only for the associated CrosSetting.
+message DevicePciPeripheralDataAccessEnabledProtoV2 {
+  optional bool enabled = 1;
+}
+
+// Setting that controls whether Borealis will be allowed on the device.
+message DeviceBorealisAllowedProto {
+  optional bool allowed = 1 [default = true];
+}
+
+message DeviceAllowedBluetoothServicesProto {
+  // Policy which controls which service UUID is available.
+  repeated string allowlist = 1;
+}
+
+// Policy that controls whether packet captures will be allowed on the device.
+message DeviceDebugPacketCaptureAllowedProto {
+  optional bool allowed = 1;
+}
+
+// Settings that control when a device will reboot. The reboots are
+// recurring. In order to disable scheduled reboots the policy must be
+// removed.
+message DeviceScheduledRebootProto {
+  // This is a JSON string, for details see "DeviceScheduledReboot" in
+  // policy_templates.json.
+  optional string device_scheduled_reboot_settings = 1;
+}
+
+// Setting that controls whether restricted managed guest session is enabled on
+// the device.
+message DeviceRestrictedManagedGuestSessionEnabledProto {
+  // If this policy is set to true, it will forcefully override certain
+  // policies. If it's set to false or not set, then no policies will be
+  // overridden.
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether keyboard shortcuts mapping are consistent
+// across all international keyboard layouts.
+message DeviceI18nShortcutsEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1566,12 +1864,13 @@ message ChromeDeviceSettingsProto {
   optional SystemTimezoneProto system_timezone = 20;
   optional DeviceLocalAccountsProto device_local_accounts = 21;
   optional AllowRedeemChromeOsRegistrationOffersProto allow_redeem_offers = 22;
-  optional StartUpFlagsProto start_up_flags = 23;
+  optional FeatureFlagsProto feature_flags = 23;
   optional UptimeLimitProto uptime_limit = 24;
   optional VariationsParameterProto variations_parameter = 25;
   optional AttestationSettingsProto attestation_settings = 26;
   optional AccessibilitySettingsProto accessibility_settings = 27;
-  optional SupervisedUsersSettingsProto supervised_users_settings = 28;
+  optional OBSOLETE_SupervisedUsersSettingsProto supervised_users_settings = 28
+      [deprecated = true];
   optional LoginScreenPowerManagementProto login_screen_power_management = 29;
   optional SystemUse24HourClockProto use_24hour_clock = 30;
   optional AutoCleanupSettigsProto auto_clean_up_settings = 31;
@@ -1611,7 +1910,8 @@ message ChromeDeviceSettingsProto {
   optional DeviceNativePrintersWhitelistProto native_device_printers_whitelist =
       58;
   optional TPMFirmwareUpdateSettingsProto tpm_firmware_update_settings = 59;
-  optional MinimumRequiredVersionProto minimum_required_version = 60;
+  optional OBSOLETE_MinimumRequiredVersionProto minimum_required_version = 60
+      [deprecated = true];
   optional DeviceLoginScreenAutoSelectCertificateForUrls
       device_login_screen_auto_select_certificate_for_urls = 62;
   optional UnaffiliatedArcAllowedProto unaffiliated_arc_allowed = 63;
@@ -1620,10 +1920,10 @@ message ChromeDeviceSettingsProto {
       65;
   optional DeviceUserPolicyLoopbackProcessingModeProto
       device_user_policy_loopback_processing_mode = 66;
-  optional DeviceLoginScreenIsolateOriginsProto
-      device_login_screen_isolate_origins = 67;
-  optional DeviceLoginScreenSitePerProcessProto
-      device_login_screen_site_per_process = 68;
+  optional OBSOLETE_DeviceLoginScreenIsolateOriginsProto
+      device_login_screen_isolate_origins = 67 [deprecated = true];
+  optional OBSOLETE_DeviceLoginScreenSitePerProcessProto
+      device_login_screen_site_per_process = 68 [deprecated = true];
   optional VirtualMachinesAllowedProto virtual_machines_allowed = 69;
   optional DeviceMachinePasswordChangeRateProto
       device_machine_password_change_rate = 70;
@@ -1657,4 +1957,51 @@ message ChromeDeviceSettingsProto {
   optional StringListPolicyProto device_web_based_attestation_allowed_urls = 94;
   optional BooleanPolicyProto device_show_numeric_keyboard_for_password = 95;
   optional BooleanPolicyProto login_screen_primary_mouse_button_switch = 96;
+  optional StringPolicyProto device_minimum_version = 97;
+  optional SystemProxySettingsProto system_proxy_settings = 98;
+  optional IntegerPolicyProto device_chrome_variations_type = 99;
+  optional DeviceLoginScreenPrivacyScreenEnabledProto
+      device_login_screen_privacy_screen_enabled = 100;
+  optional RequiredClientCertificateForDeviceProto
+      required_client_certificate_for_device = 101;
+  optional DeviceCrostiniArcAdbSideloadingAllowedProto
+      device_crostini_arc_adb_sideloading_allowed = 102;
+  optional StringPolicyProto device_minimum_version_aue_message = 103;
+  optional ManagedGuestSessionPrivacyWarningsProto
+      managed_guest_session_privacy_warnings = 104;
+  optional DeviceExternalPrintServersProto external_print_servers = 105;
+  optional DeviceExternalPrintServersAllowlistProto
+      external_print_servers_allowlist = 106;
+  optional DevicePrintersAccessModeProto device_printers_access_mode = 107;
+  optional DevicePrintersBlocklistProto device_printers_blocklist = 108;
+  optional DevicePrintersAllowlistProto device_printers_allowlist = 109;
+  optional DevicePrintersProto device_printers = 110;
+  optional DeviceShowLowDiskSpaceNotificationProto
+      device_show_low_disk_space_notification = 111;
+  optional UserAllowlistProto user_allowlist = 112;
+  optional UsbDetachableAllowlistProto usb_detachable_allowlist = 113;
+  optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
+      114;
+  optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
+  optional BooleanPolicyProto device_allow_mgs_to_store_display_properties =
+      116;
+  optional DeviceSystemWideTracingEnabledProto
+      device_system_wide_tracing_enabled = 117;
+  optional DevicePciPeripheralDataAccessEnabledProto
+      device_pci_peripheral_data_access_enabled = 118;
+  optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
+  optional DeviceAllowedBluetoothServicesProto
+      device_allowed_bluetooth_services = 120;
+  optional DeviceDebugPacketCaptureAllowedProto
+      device_debug_packet_capture_allowed = 121;
+  optional DeviceScheduledRebootProto device_scheduled_reboot = 122;
+  optional DevicePciPeripheralDataAccessEnabledProtoV2
+      device_pci_peripheral_data_access_enabled_v2 = 123;
+  optional DeviceRestrictedManagedGuestSessionEnabledProto
+      device_restricted_managed_guest_session_enabled = 124;
+  optional HostnameUserConfigurableProto hostname_user_configurable = 125;
+  optional BooleanPolicyProto
+      login_screen_prompt_on_multiple_matching_certificates = 126;
+  optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
+  optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
 }

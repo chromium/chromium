@@ -16,12 +16,17 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission_set.h"
+#include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8-exception.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-script.h"
 
 namespace blink {
 class WebDocumentLoader;
@@ -45,7 +50,8 @@ class Extension;
 // functionality as those bound to the main RenderThread.
 class ScriptContext {
  public:
-  using RunScriptExceptionHandler = base::Callback<void(const v8::TryCatch&)>;
+  using RunScriptExceptionHandler =
+      base::OnceCallback<void(const v8::TryCatch&)>;
 
   ScriptContext(const v8::Local<v8::Context>& context,
                 blink::WebLocalFrame* frame,
@@ -53,6 +59,10 @@ class ScriptContext {
                 Feature::Context context_type,
                 const Extension* effective_extension,
                 Feature::Context effective_context_type);
+
+  ScriptContext(const ScriptContext&) = delete;
+  ScriptContext& operator=(const ScriptContext&) = delete;
+
   ~ScriptContext();
 
   // Returns whether |url| from any Extension in |extension_set| is sandboxed,
@@ -117,11 +127,10 @@ class ScriptContext {
   void SafeCallFunction(const v8::Local<v8::Function>& function,
                         int argc,
                         v8::Local<v8::Value> argv[]);
-  void SafeCallFunction(
-      const v8::Local<v8::Function>& function,
-      int argc,
-      v8::Local<v8::Value> argv[],
-      const ScriptInjectionCallback::CompleteCallback& callback);
+  void SafeCallFunction(const v8::Local<v8::Function>& function,
+                        int argc,
+                        v8::Local<v8::Value> argv[],
+                        ScriptInjectionCallback::CompleteCallback callback);
 
   // Returns the availability of the API |api_name|.
   Feature::Availability GetAvailability(const std::string& api_name);
@@ -184,13 +193,21 @@ class ScriptContext {
    public:
     ScopedFrameDocumentLoader(blink::WebLocalFrame* frame,
                               blink::WebDocumentLoader* document_loader);
+
+    ScopedFrameDocumentLoader(const ScopedFrameDocumentLoader&) = delete;
+    ScopedFrameDocumentLoader& operator=(const ScopedFrameDocumentLoader&) =
+        delete;
+
     ~ScopedFrameDocumentLoader();
 
    private:
     blink::WebLocalFrame* frame_;
     blink::WebDocumentLoader* document_loader_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedFrameDocumentLoader);
   };
+
+  // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
+  // vaguely ScriptContext related, there's enough here that they probably
+  // warrant another class or utility file.
 
   // Utility to get the URL we will match against for a frame. If the frame has
   // committed, this is the commited URL. Otherwise it is the provisional URL.
@@ -204,12 +221,31 @@ class ScriptContext {
   // this instead of GetDocumentLoaderURLForFrame.
   static GURL GetAccessCheckedFrameURL(const blink::WebLocalFrame* frame);
 
-  // Returns the first non-about:-URL in the document hierarchy above and
-  // including |frame|. The document hierarchy is only traversed if
-  // |document_url| is an about:-URL and if |match_about_blank| is true.
-  static GURL GetEffectiveDocumentURL(blink::WebLocalFrame* frame,
-                                      const GURL& document_url,
-                                      bool match_about_blank);
+  // Used to determine the "effective" URL in context classification, such as to
+  // associate an about:blank frame in an extension context with its extension.
+  // If |document_url| is an about: or data: URL, returns the URL of the first
+  // frame without an about: or data: URL that matches the initiator origin.
+  // This may not be the immediate parent. Returns |document_url| if it is not
+  // an about: URL, if |match_about_blank| is false, or if a suitable parent
+  // cannot be found.
+  // Will not check parent contexts that cannot be accessed (as is the case
+  // for sandboxed frames).
+  static GURL GetEffectiveDocumentURLForContext(blink::WebLocalFrame* frame,
+                                                const GURL& document_url,
+                                                bool match_about_blank);
+
+  // Used to determine the "effective" URL for extension script injection.
+  // If |document_url| is an about: or data: URL, returns the URL of the first
+  // frame without an about: or data: URL that matches the initiator origin.
+  // This may not be the immediate parent. Returns |document_url| if it is not
+  // an about: or data: URL, if |match_origin_as_fallback| is set to not match,
+  // or if a suitable parent cannot be found.
+  // Considers parent contexts that cannot be accessed (as is the case for
+  // sandboxed frames).
+  static GURL GetEffectiveDocumentURLForInjection(
+      blink::WebLocalFrame* frame,
+      const GURL& document_url,
+      MatchOriginAsFallbackBehavior match_origin_as_fallback);
 
   // Grants a set of content capabilities to this context.
   void set_content_capabilities(APIPermissionSet capabilities) {
@@ -220,7 +256,7 @@ class ScriptContext {
   // a context for an extension which has that permission, or by being a web
   // context which has been granted the corresponding capability by an
   // extension.
-  bool HasAPIPermission(APIPermission::ID permission) const;
+  bool HasAPIPermission(mojom::APIPermissionID permission) const;
 
   // Throws an Error in this context's JavaScript context, if this context does
   // not have access to |name|. Returns true if this context has access (i.e.
@@ -239,7 +275,7 @@ class ScriptContext {
   v8::Local<v8::Value> RunScript(
       v8::Local<v8::String> name,
       v8::Local<v8::String> code,
-      const RunScriptExceptionHandler& exception_handler,
+      RunScriptExceptionHandler exception_handler,
       v8::ScriptCompiler::NoCacheReason no_cache_reason =
           v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
 
@@ -299,8 +335,6 @@ class ScriptContext {
   int64_t service_worker_version_id_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptContext);
 };
 
 }  // namespace extensions

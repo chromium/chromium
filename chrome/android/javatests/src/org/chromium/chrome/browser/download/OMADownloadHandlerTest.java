@@ -8,32 +8,35 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadQueryResult;
 import org.chromium.chrome.browser.download.OMADownloadHandler.OMAInfo;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -46,11 +49,11 @@ import java.util.Set;
  * Tests for OMADownloadHandler class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class OMADownloadHandlerTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @ClassRule
+    public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
 
-    private static final String PENDING_OMA_DOWNLOADS = "PendingOMADownloads";
     private static final String INSTALL_NOTIFY_URI = "http://test/test";
 
     private TestInfoBarController mTestInfoBarController;
@@ -69,14 +72,13 @@ public class OMADownloadHandlerTest {
     }
 
     /**
-     * Mock implementation of the DownloadInfoBarController.
+     * Mock implementation of the DownloadMessageUiController.
      */
-    static class TestInfoBarController extends DownloadInfoBarController {
+    static class TestInfoBarController implements DownloadMessageUiController {
         public boolean mDownloadStarted;
         public OfflineItem mLastUpdatedItem;
 
         public TestInfoBarController() {
-            super(false);
         }
 
         @Override
@@ -85,8 +87,22 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
+        public void onItemsAdded(List<OfflineItem> items) {}
+
+        @Override
         public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
             mLastUpdatedItem = item;
+        }
+
+        @Override
+        public void onItemRemoved(ContentId id) {}
+
+        @Override
+        public void onNotificationShown(ContentId id, int notificationId) {}
+
+        @Override
+        public boolean isShowing() {
+            return false;
         }
 
         public OfflineItem getLastUpdatedItem() {
@@ -129,12 +145,7 @@ public class OMADownloadHandlerTest {
     }
 
     private void waitForQueryCompletion(final DownloadQueryResultVerifier verifier) {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return verifier.mQueryCompleted;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> verifier.mQueryCompleted);
     }
 
     /**
@@ -307,7 +318,6 @@ public class OMADownloadHandlerTest {
      */
     @Test
     @MediumTest
-    @RetryOnFailure
     @Feature({"Download"})
     public void testClearPendingOMADownloads() {
         Context context = getTestContext();
@@ -322,27 +332,28 @@ public class OMADownloadHandlerTest {
         // Write a few pending downloads into shared preferences.
         Set<String> pendingOmaDownloads = new HashSet<>();
         pendingOmaDownloads.add(String.valueOf(downloadId1) + "," + INSTALL_NOTIFY_URI);
-        DownloadManagerService.storeDownloadInfo(ContextUtils.getAppSharedPreferences(),
-                PENDING_OMA_DOWNLOADS, pendingOmaDownloads, false /* forceCommit */);
+        DownloadManagerService.storeDownloadInfo(SharedPreferencesManager.getInstance(),
+                ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS, pendingOmaDownloads,
+                false /* forceCommit */);
 
-        pendingOmaDownloads = DownloadManagerService.getStoredDownloadInfo(
-                ContextUtils.getAppSharedPreferences(), PENDING_OMA_DOWNLOADS);
+        pendingOmaDownloads =
+                DownloadManagerService.getStoredDownloadInfo(SharedPreferencesManager.getInstance(),
+                        ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS);
         Assert.assertEquals(1, pendingOmaDownloads.size());
 
         omaHandler.clearPendingOMADownloads();
 
         // Wait for OMADownloadHandler to clear the pending downloads.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                OfflineItem item = mTestInfoBarController.getLastUpdatedItem();
-                return item != null && item.state == OfflineItemState.COMPLETE;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            OfflineItem item = mTestInfoBarController.getLastUpdatedItem();
+            Criteria.checkThat(item, Matchers.notNullValue());
+            Criteria.checkThat(item.state, Matchers.is(OfflineItemState.COMPLETE));
         });
 
         // The pending downloads set in the shared prefs should be empty now.
-        pendingOmaDownloads = DownloadManagerService.getStoredDownloadInfo(
-                ContextUtils.getAppSharedPreferences(), PENDING_OMA_DOWNLOADS);
+        pendingOmaDownloads =
+                DownloadManagerService.getStoredDownloadInfo(SharedPreferencesManager.getInstance(),
+                        ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS);
         Assert.assertEquals(0, pendingOmaDownloads.size());
         Assert.assertEquals(omaHandler.mNofityURI, INSTALL_NOTIFY_URI);
 
@@ -370,24 +381,26 @@ public class OMADownloadHandlerTest {
 
         try {
             DownloadInfo info = new DownloadInfo.Builder().build();
-            final OMADownloadHandlerForTest omaHandler = new OMADownloadHandlerForTest(context) {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    // Ignore all the broadcasts.
-                }
-            };
+            final OMADownloadHandlerForTest omaHandler =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                        return new OMADownloadHandlerForTest(context) {
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                // Ignore all the broadcasts.
+                            }
+                        };
+                    });
 
             omaHandler.clearPendingOMADownloads();
             omaHandler.downloadOMAContent(0, info, omaInfo);
-            CriteriaHelper.pollUiThread(new Criteria() {
-                @Override
-                public boolean isSatisfied() {
-                    return omaHandler.mDownloadId != 0 && mTestInfoBarController.mDownloadStarted;
-                }
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat(omaHandler.mDownloadId, Matchers.not(0));
+                Criteria.checkThat(mTestInfoBarController.mDownloadStarted, Matchers.is(true));
             });
 
             Set<String> downloads = DownloadManagerService.getStoredDownloadInfo(
-                    ContextUtils.getAppSharedPreferences(), PENDING_OMA_DOWNLOADS);
+                    SharedPreferencesManager.getInstance(),
+                    ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS);
             Assert.assertEquals(1, downloads.size());
             OMADownloadHandler.OMAEntry entry =
                     OMADownloadHandler.OMAEntry.parseOMAEntry((String) (downloads.toArray()[0]));

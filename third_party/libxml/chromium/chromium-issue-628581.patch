@@ -57,7 +57,7 @@ diff --git a/parser.c b/parser.c
 index ca9fde2c..4264445a 100644
 --- a/parser.c
 +++ b/parser.c
-@@ -137,18 +137,24 @@ xmlParserEntityCheck(xmlParserCtxtPtr ctxt, size_t size,
+@@ -143,18 +143,25 @@ xmlParserEntityCheck(xmlParserCtxtPtr ctxt, size_t size,
       * This may look absurd but is needed to detect
       * entities problems
       */
@@ -65,10 +65,11 @@ index ca9fde2c..4264445a 100644
 +        xmlFatalErr(ctxt, XML_ERR_ENTITY_LOOP, NULL);
 +        return (1);
 +    }
++
      if ((ent != NULL) && (ent->etype != XML_INTERNAL_PREDEFINED_ENTITY) &&
  	(ent->content != NULL) && (ent->checked == 0) &&
  	(ctxt->errNo != XML_ERR_ENTITY_LOOP)) {
- 	unsigned long oldnbent = ctxt->nbentities;
+ 	unsigned long oldnbent = ctxt->nbentities, diff;
  	xmlChar *rep;
  
 +        ent->guard = XML_ENTITY_BEING_CHECKED;
@@ -82,7 +83,7 @@ index ca9fde2c..4264445a 100644
  	if ((rep == NULL) || (ctxt->errNo == XML_ERR_ENTITY_LOOP)) {
  	    ent->content[0] = 0;
  	}
-@@ -7105,23 +7111,28 @@ xmlParseReference(xmlParserCtxtPtr ctxt) {
+@@ -7116,23 +7123,28 @@ xmlParseReference(xmlParserCtxtPtr ctxt) {
  	 * if its replacement text matches the production labeled
  	 * content.
  	 */
@@ -128,7 +129,7 @@ index ca9fde2c..4264445a 100644
  
  	/*
  	 * Store the number of entities needing parsing for this entity
-@@ -7229,23 +7240,29 @@ xmlParseReference(xmlParserCtxtPtr ctxt) {
+@@ -7239,23 +7251,29 @@ xmlParseReference(xmlParserCtxtPtr ctxt) {
  	    else
  		user_data = ctxt->userData;
  

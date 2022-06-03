@@ -11,6 +11,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/completion_repeating_callback.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -112,7 +113,7 @@ class IOThreadCacheCounter {
 
 }  // namespace
 
-CacheCounter::CacheCounter(ios::ChromeBrowserState* browser_state)
+CacheCounter::CacheCounter(ChromeBrowserState* browser_state)
     : browser_state_(browser_state), weak_ptr_factory_(this) {}
 
 CacheCounter::~CacheCounter() = default;

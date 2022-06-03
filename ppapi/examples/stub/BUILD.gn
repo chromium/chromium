@@ -14,20 +14,12 @@ group("stub") {
 
 ppapi_example("c_stub") {
   output_name = "ppapi_example_c_stub"
-  sources = [
-    "stub.c",
-  ]
-  deps = [
-    "//ppapi/c",
-  ]
+  sources = [ "stub.c" ]
+  deps = [ "//ppapi/c" ]
 }
 
 ppapi_example("cc_stub") {
   output_name = "ppapi_example_cc_stub"
-  sources = [
-    "stub.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "stub.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

@@ -2,6 +2,7 @@ if (self.importScripts) {
   importScripts('../resources/fetch-test-helpers.js');
 }
 
+var {BASE_ORIGIN, OTHER_ORIGIN} = get_fetch_test_options();
 var URL = 'https://www.example.com/test.html';
 
 test(function() {
@@ -158,7 +159,7 @@ test(function() {
           function(name) { return {cache: name}; }))
       .concat(INVALID_TOKENS.map(
           function(name) { return {redirect: name}; }))
-      .forEach((init) => assert_throws(TypeError(), () => new Request(URL, init)),
+      .forEach((init) => assert_throws_js(TypeError, () => new Request(URL, init)),
         'Invalid Request.{mode, credentials, cache, redirect} should throw a TypeError');
   }, 'Request invalid value test');
 
@@ -212,9 +213,9 @@ test(function() {
                   'Request.headers should match');
     assert_equals(request6.headers.get('X-Fetch-Bar').split(', ')[0], 'bar',
                   'Request.headers should match');
-    assert_throws(new TypeError(),
-                  () => { new Request(request, {headers: null}) },
-                  'null cannot be converted to a HeaderInit');
+    assert_throws_js(TypeError,
+                     () => { new Request(request, {headers: null}) },
+                     'null cannot be converted to a HeaderInit');
   }, 'Request header test');
 
 test(function() {
@@ -238,8 +239,8 @@ test(function() {
             if (method1 != undefined) { init1['method'] = method1; }
             if (mode1 != undefined) { init1['mode'] = mode1; }
             if (!isSimpleMethod(method1) && mode1 == 'no-cors') {
-              assert_throws(
-                {name: 'TypeError'},
+              assert_throws_js(
+                TypeError,
                 function() { request1 = new Request(URL, init1); },
                 'new no-cors Request with non simple method (' + method1 +
                 ') should throw');
@@ -266,8 +267,8 @@ test(function() {
                     if (mode2 != undefined) { init2['mode'] = mode2; }
                     if (!isSimpleMethod(effectiveMethod(method1, method2)) &&
                         effectiveMode(mode1, mode2) == 'no-cors') {
-                      assert_throws(
-                        {name: 'TypeError'},
+                      assert_throws_js(
+                        TypeError,
                         function() { request2 = new Request(request1, init2); },
                         'new no-cors Request with non simple method should ' +
                         'throw');
@@ -359,8 +360,8 @@ test(function() {
 test(function() {
     ['same-origin', 'cors', 'no-cors'].forEach(function(mode) {
         FORBIDDEN_METHODS.forEach(function(method) {
-            assert_throws(
-              {name: 'TypeError'},
+            assert_throws_js(
+              TypeError,
               function() {
                 var request = new Request(URL, {mode: mode, method: method});
               },
@@ -368,8 +369,8 @@ test(function() {
               'throw');
           });
         INVALID_METHOD_NAMES.forEach(function(name) {
-            assert_throws(
-              {name: 'TypeError'},
+            assert_throws_js(
+              TypeError,
               function() {
                 var request = new Request(URL, {mode: mode, method: name});
               },
@@ -379,8 +380,8 @@ test(function() {
   }, 'Request method name throw test');
 
 test(function() {
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() {
         var request = new Request(URL, {mode: 'navigate'});
       },
@@ -412,12 +413,12 @@ test(function() {
   }, 'Request: valid method names and normalize test');
 
 test(function() {
-    assert_throws(new TypeError(),
-                  function() { new Request('http://user@localhost/'); },
-                  'Request with a URL with username must throw.');
-    assert_throws(new TypeError(),
-                  function() { new Request('http://user:pass@localhost/'); },
-                  'Request with a URL with username and password must throw.');
+    assert_throws_js(TypeError,
+                     function() { new Request('http://user@localhost/'); },
+                     'Request with a URL with username must throw.');
+    assert_throws_js(TypeError,
+                     function() { new Request('http://user:pass@localhost/'); },
+                     'Request with a URL with username and password must throw.');
   }, 'Request construction with URLs with credentials.');
 
 test(function() {
@@ -446,8 +447,8 @@ test(function() {
                  'Request should not be flagged as used if it has not been ' +
                  'consumed.');
     // See https://crbug.com/501195.
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() { new Request(req); },
       'Request construction should throw if used.');
   }, 'POST Request construction without body behavior regardning "bodyUsed"');
@@ -457,15 +458,15 @@ test(function() {
     assert_false(req.bodyUsed,
                  'Request should not be flagged as used if it has not been ' +
                  'consumed.');
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() { new Request(req, {method: 'GET'}); },
       'A get request may not have body.');
 
     assert_false(req.bodyUsed, 'After the GET case');
 
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() { new Request(req, {method: 'CONNECT'}); },
       'Request() with a forbidden method must throw.');
 
@@ -553,7 +554,7 @@ test(function() {
 
 test(function() {
     var referrer = 'invali\0d';
-    assert_throws({name: 'TypeError'},
+    assert_throws_js(TypeError,
         () => new Request(URL, {referrer: referrer}));
   }, 'Request with an invalid referrer');
 
@@ -577,8 +578,8 @@ test(() => {
         .referrerPolicy, 'origin-when-cross-origin');
     assert_equals(new Request('/', {referrerPolicy: 'unsafe-url'})
         .referrerPolicy, 'unsafe-url');
-    assert_throws(
-        {name: 'TypeError'},
+    assert_throws_js(
+        TypeError,
         () => new Request('/', {referrerPolicy: 'invalid'}),
         'Setting invalid referrer policy should be thrown.');
   }, 'Referrer policy settings');
@@ -634,7 +635,7 @@ test(() => {
      {referrerPolicy: 'UNSAFE-URL'},
      {referrerPolicy: '\0'.repeat(100000)},
      {referrerPolicy: 'x'.repeat(100000)}]
-      .forEach((init) => assert_throws(TypeError(), () => new Request(URL, init)),
+      .forEach((init) => assert_throws_js(TypeError, () => new Request(URL, init)),
         'Invalid Request.referrerPolicy should throw a TypeError');
   }, 'Request invalid referrer policy test');
 
@@ -657,8 +658,8 @@ test(function() {
     var headers = new Headers;
     headers.set('Content-Language', 'ja');
     ['GET', 'HEAD'].forEach(function(method) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Request(URL,
                         {method: method,
@@ -673,7 +674,7 @@ test(() => {
     var req = new Request(URL, {method: 'POST', body: 'hello'});
     req.text();
     assert_true(req.bodyUsed);
-    assert_throws({name: 'TypeError'}, () => { req.clone(); });
+    assert_throws_js(TypeError, () => { req.clone(); });
   }, 'Used => clone');
 
 test(() => {
@@ -714,33 +715,33 @@ test(() => {
   // functionality here. We now generate RequestInit with the IDL compiler,
   // but it's still good to keep these around.
   const e = Error();
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get method() { throw e; }})}, 'method');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get headers() { throw e; }})}, 'headers');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get body() { throw e; }})}, 'body');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get referrer() { throw e; }})}, 'referrer');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get referrerPolicy() { throw e; }})}, 'referrerPolicy');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get mode() { throw e; }})}, 'mode');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get credentials() { throw e; }})}, 'credentials');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get cache() { throw e; }})}, 'cache');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get redirect() { throw e; }})}, 'redirect');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get integrity() { throw e; }})}, 'integrity');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get keepalive() { throw e; }})}, 'keepalive');
-  assert_throws(e, () => {
+  assert_throws_exactly(e, () => {
     new Request('/', {get signal() { throw e; }})}, 'signal');
 
   // Not implemented
-  // assert_throws(e, () => {
+  // assert_throws_exactly(e, () => {
   //  new Request('/', {get window() { throw e; }})}, 'window');
 }, 'Getter exceptions should not be silently ignored');
 
@@ -752,14 +753,13 @@ test(() => {
   // instead of `AbortSignal` due to a bug in the IDL compiler, and performed
   // conversions manually. This test ensures that conversion were carried out
   // properly.
-  const e = TypeError();
-  assert_throws(e, () => {
+  assert_throws_js(TypeError, () => {
     new Request('/', {signal: {}})},
     'An empty object as RequestInit\'s signal member should fail type conversion');
-  assert_throws(e, () => {
+  assert_throws_js(TypeError, () => {
     new Request('/', {signal: new Request('/')})},
     'A Request object as RequestInit\'s signal member should fail type conversion');
-  assert_throws(e, () => {
+  assert_throws_js(TypeError, () => {
     new Request('/', {signal: new Response('/')})},
     'A Response object as RequestInit\'s signal member should fail type conversion');
 }, 'TypeError should be thrown when RequestInit\'s signal member does not implement the AbortSignal interface');
@@ -921,8 +921,8 @@ test(function() {
     // Step 32:
     // Fill r's Headers object with headers. Rethrow any exceptions.
     INVALID_HEADER_NAMES.forEach(function(name) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             var obj = {};
             obj[name] = 'a';
@@ -930,8 +930,8 @@ test(function() {
           },
           'new Request with headers with an invalid name (' + name +
           ') should throw');
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Request('http://localhost/', {headers: [[name, 'a']]});
           },
@@ -940,15 +940,15 @@ test(function() {
       });
 
     INVALID_HEADER_VALUES.forEach(function(value) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Request('http://localhost/',
                          {headers: {'X-Fetch-Test': value}});
           },
           'new Request with headers with an invalid value should throw');
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Request('http://localhost/',
                          {headers: [['X-Fetch-Test', value]]});

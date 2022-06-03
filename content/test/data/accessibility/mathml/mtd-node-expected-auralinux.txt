@@ -1,0 +1,1 @@
+[table cell] tag:mtd (row=-1, col=-1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)

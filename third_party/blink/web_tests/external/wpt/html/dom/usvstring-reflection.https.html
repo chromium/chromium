@@ -118,16 +118,13 @@ test(() => {
   var w = window.open("about:blank#\uD800");
   assert_equals(w.document.URL, 'about:blank#%EF%BF%BD');
   assert_equals(w.document.documentURI, 'about:blank#%EF%BF%BD');
-  // TODO(gyuyoung): How to test document.origin? When opening a URL with an
-  // unpaired surrogate codepoint, invalid URL exception happens.
-  //   e.g) var w = window.open("http://test.com\uDB89");
 }, "Document URLs: unpaired surrogate codepoint should be replaced with U+FFFD")
 
 promise_test(t => {
   const sendString = 'hello\uD999';
   const receiveString = 'hello\uFFFD';
 
-  return createDataChannelPair()
+  return createDataChannelPair(t)
   .then(([channel1, channel2]) => {
     channel1.send(sendString);
     return awaitMessage(channel2)

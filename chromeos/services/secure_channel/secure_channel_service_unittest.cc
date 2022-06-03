@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -16,26 +15,37 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/active_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/ble_connection_manager_impl.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
+#include "chromeos/services/secure_channel/ble_scanner_impl.h"
+#include "chromeos/services/secure_channel/ble_synchronizer.h"
+#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/fake_active_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_connection_manager.h"
-#include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/fake_ble_scanner.h"
+#include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
+#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
+#include "chromeos/services/secure_channel/fake_nearby_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_manager.h"
+#include "chromeos/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
+#include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -48,13 +58,17 @@ const size_t kNumTestDevices = 6;
 class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
  public:
   FakeTimerFactoryFactory() = default;
+
+  FakeTimerFactoryFactory(const FakeTimerFactoryFactory&) = delete;
+  FakeTimerFactoryFactory& operator=(const FakeTimerFactoryFactory&) = delete;
+
   ~FakeTimerFactoryFactory() override = default;
 
   FakeTimerFactory* instance() { return instance_; }
 
  private:
   // TimerFactoryImpl::Factory:
-  std::unique_ptr<TimerFactory> BuildInstance() override {
+  std::unique_ptr<TimerFactory> CreateInstance() override {
     EXPECT_FALSE(instance_);
     auto instance = std::make_unique<FakeTimerFactory>();
     instance_ = instance.get();
@@ -62,61 +76,155 @@ class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
   }
 
   FakeTimerFactory* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerFactoryFactory);
 };
 
 class TestRemoteDeviceCacheFactory
     : public multidevice::RemoteDeviceCache::Factory {
  public:
   TestRemoteDeviceCacheFactory() = default;
+
+  TestRemoteDeviceCacheFactory(const TestRemoteDeviceCacheFactory&) = delete;
+  TestRemoteDeviceCacheFactory& operator=(const TestRemoteDeviceCacheFactory&) =
+      delete;
+
   ~TestRemoteDeviceCacheFactory() override = default;
 
   multidevice::RemoteDeviceCache* instance() { return instance_; }
 
  private:
   // multidevice::RemoteDeviceCache::Factory:
-  std::unique_ptr<multidevice::RemoteDeviceCache> BuildInstance() override {
+  std::unique_ptr<multidevice::RemoteDeviceCache> CreateInstance() override {
     EXPECT_FALSE(instance_);
-    auto instance = multidevice::RemoteDeviceCache::Factory::BuildInstance();
+    // Silly hack to avoid infinite recursion: this factory really just wants to
+    // save a pointer to the created object.
+    multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(nullptr);
+    auto instance = multidevice::RemoteDeviceCache::Factory::Create();
+    multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(this);
     instance_ = instance.get();
     return instance;
   }
 
   multidevice::RemoteDeviceCache* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRemoteDeviceCacheFactory);
 };
 
-class FakeBleServiceDataHelperFactory
-    : public BleServiceDataHelperImpl::Factory {
+class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
  public:
-  FakeBleServiceDataHelperFactory(
+  FakeBluetoothHelperFactory(
       TestRemoteDeviceCacheFactory* test_remote_device_cache_factory)
       : test_remote_device_cache_factory_(test_remote_device_cache_factory) {}
 
-  ~FakeBleServiceDataHelperFactory() override = default;
+  FakeBluetoothHelperFactory(const FakeBluetoothHelperFactory&) = delete;
+  FakeBluetoothHelperFactory& operator=(const FakeBluetoothHelperFactory&) =
+      delete;
 
-  FakeBleServiceDataHelper* instance() { return instance_; }
+  ~FakeBluetoothHelperFactory() override = default;
+
+  FakeBluetoothHelper* instance() { return instance_; }
 
  private:
-  // BleServiceDataHelperImpl::Factory:
-  std::unique_ptr<BleServiceDataHelper> BuildInstance(
+  // BluetoothHelperImpl::Factory:
+  std::unique_ptr<BluetoothHelper> CreateInstance(
       multidevice::RemoteDeviceCache* remote_device_cache) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(test_remote_device_cache_factory_->instance(),
               remote_device_cache);
 
-    auto instance = std::make_unique<FakeBleServiceDataHelper>();
+    auto instance = std::make_unique<FakeBluetoothHelper>();
     instance_ = instance.get();
     return instance;
   }
 
   TestRemoteDeviceCacheFactory* test_remote_device_cache_factory_;
 
-  FakeBleServiceDataHelper* instance_ = nullptr;
+  FakeBluetoothHelper* instance_ = nullptr;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(FakeBleServiceDataHelperFactory);
+class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
+ public:
+  FakeBleSynchronizerFactory() = default;
+
+  FakeBleSynchronizerFactory(const FakeBleSynchronizerFactory&) = delete;
+  FakeBleSynchronizerFactory& operator=(const FakeBleSynchronizerFactory&) =
+      delete;
+
+  ~FakeBleSynchronizerFactory() override = default;
+
+  FakeBleSynchronizer* instance() { return instance_; }
+
+ private:
+  // BleSynchronizer::Factory:
+  std::unique_ptr<BleSynchronizerBase> CreateInstance(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override {
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeBleSynchronizer>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeBleSynchronizer* instance_ = nullptr;
+};
+
+class FakeBleScannerFactory : public BleScannerImpl::Factory {
+ public:
+  FakeBleScannerFactory(
+      FakeBluetoothHelperFactory* fake_bluetooth_helper_factory,
+      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory)
+      : fake_bluetooth_helper_factory_(fake_bluetooth_helper_factory),
+        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory) {}
+
+  FakeBleScannerFactory(const FakeBleScannerFactory&) = delete;
+  FakeBleScannerFactory& operator=(const FakeBleScannerFactory&) = delete;
+
+  ~FakeBleScannerFactory() override = default;
+
+  FakeBleScanner* instance() { return instance_; }
+
+ private:
+  // BleScannerImpl::Factory:
+  std::unique_ptr<BleScanner> CreateInstance(
+      BluetoothHelper* bluetooth_helper,
+      BleSynchronizerBase* ble_synchronizer_base,
+      scoped_refptr<device::BluetoothAdapter> adapter) override {
+    EXPECT_EQ(fake_bluetooth_helper_factory_->instance(), bluetooth_helper);
+    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(),
+              ble_synchronizer_base);
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeBleScanner>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeBleScanner* instance_ = nullptr;
+
+  FakeBluetoothHelperFactory* fake_bluetooth_helper_factory_;
+  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
+};
+
+class FakeSecureChannelDisconnectorFactory
+    : public SecureChannelDisconnectorImpl::Factory {
+ public:
+  FakeSecureChannelDisconnectorFactory() = default;
+
+  FakeSecureChannelDisconnectorFactory(
+      const FakeSecureChannelDisconnectorFactory&) = delete;
+  FakeSecureChannelDisconnectorFactory& operator=(
+      const FakeSecureChannelDisconnectorFactory&) = delete;
+
+  ~FakeSecureChannelDisconnectorFactory() override = default;
+
+  FakeSecureChannelDisconnector* instance() { return instance_; }
+
+ private:
+  // SecureChannelDisconnectorImpl::Factory:
+  std::unique_ptr<SecureChannelDisconnector> CreateInstance() override {
+    auto instance = std::make_unique<FakeSecureChannelDisconnector>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeSecureChannelDisconnector* instance_ = nullptr;
 };
 
 class FakeBleConnectionManagerFactory
@@ -124,12 +232,24 @@ class FakeBleConnectionManagerFactory
  public:
   FakeBleConnectionManagerFactory(
       device::BluetoothAdapter* expected_bluetooth_adapter,
-      FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory,
+      FakeBluetoothHelperFactory* fake_bluetooth_helper_factory,
+      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory,
+      FakeBleScannerFactory* fake_ble_scanner_factory,
+      FakeSecureChannelDisconnectorFactory*
+          fake_secure_channel_disconnector_factory,
       FakeTimerFactoryFactory* fake_timer_factory_factory)
       : expected_bluetooth_adapter_(expected_bluetooth_adapter),
-        fake_ble_service_data_helper_factory_(
-            fake_ble_service_data_helper_factory),
+        fake_bluetooth_helper_factory_(fake_bluetooth_helper_factory),
+        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory),
+        fake_ble_scanner_factory_(fake_ble_scanner_factory),
+        fake_secure_channel_disconnector_factory_(
+            fake_secure_channel_disconnector_factory),
         fake_timer_factory_factory_(fake_timer_factory_factory) {}
+
+  FakeBleConnectionManagerFactory(const FakeBleConnectionManagerFactory&) =
+      delete;
+  FakeBleConnectionManagerFactory& operator=(
+      const FakeBleConnectionManagerFactory&) = delete;
 
   ~FakeBleConnectionManagerFactory() override = default;
 
@@ -137,15 +257,21 @@ class FakeBleConnectionManagerFactory
 
  private:
   // BleConnectionManagerImpl::Factory:
-  std::unique_ptr<BleConnectionManager> BuildInstance(
+  std::unique_ptr<BleConnectionManager> CreateInstance(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      BleServiceDataHelper* ble_service_data_helper,
+      BluetoothHelper* bluetooth_helper,
+      BleSynchronizerBase* ble_synchronizer,
+      BleScanner* ble_scanner,
+      SecureChannelDisconnector* secure_channel_disconnector,
       TimerFactory* timer_factory,
       base::Clock* clock) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_bluetooth_adapter_, bluetooth_adapter.get());
-    EXPECT_EQ(fake_ble_service_data_helper_factory_->instance(),
-              ble_service_data_helper);
+    EXPECT_EQ(fake_bluetooth_helper_factory_->instance(), bluetooth_helper);
+    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(), ble_synchronizer);
+    EXPECT_EQ(fake_ble_scanner_factory_->instance(), ble_scanner);
+    EXPECT_EQ(fake_secure_channel_disconnector_factory_->instance(),
+              secure_channel_disconnector);
     EXPECT_EQ(fake_timer_factory_factory_->instance(), timer_factory);
 
     auto instance = std::make_unique<FakeBleConnectionManager>();
@@ -154,21 +280,74 @@ class FakeBleConnectionManagerFactory
   }
 
   device::BluetoothAdapter* expected_bluetooth_adapter_;
-  FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory_;
+  FakeBluetoothHelperFactory* fake_bluetooth_helper_factory_;
+  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
+  FakeBleScannerFactory* fake_ble_scanner_factory_;
+  FakeSecureChannelDisconnectorFactory*
+      fake_secure_channel_disconnector_factory_;
   FakeTimerFactoryFactory* fake_timer_factory_factory_;
 
   FakeBleConnectionManager* instance_ = nullptr;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(FakeBleConnectionManagerFactory);
+class FakeNearbyConnectionManagerFactory
+    : public NearbyConnectionManagerImpl::Factory {
+ public:
+  FakeNearbyConnectionManagerFactory(
+      FakeBleScannerFactory* fake_ble_scanner_factory,
+      FakeSecureChannelDisconnectorFactory*
+          fake_secure_channel_disconnector_factory)
+      : fake_ble_scanner_factory_(fake_ble_scanner_factory),
+        fake_secure_channel_disconnector_factory_(
+            fake_secure_channel_disconnector_factory) {}
+
+  FakeNearbyConnectionManagerFactory(
+      const FakeNearbyConnectionManagerFactory&) = delete;
+  FakeNearbyConnectionManagerFactory& operator=(
+      const FakeNearbyConnectionManagerFactory&) = delete;
+
+  ~FakeNearbyConnectionManagerFactory() override = default;
+
+  FakeNearbyConnectionManager* instance() { return instance_; }
+
+ private:
+  // NearbyConnectionManagerImpl::Factory:
+  std::unique_ptr<NearbyConnectionManager> CreateInstance(
+      BleScanner* ble_scanner,
+      SecureChannelDisconnector* secure_channel_disconnector) override {
+    EXPECT_EQ(fake_ble_scanner_factory_->instance(), ble_scanner);
+    EXPECT_EQ(fake_secure_channel_disconnector_factory_->instance(),
+              secure_channel_disconnector);
+
+    EXPECT_FALSE(instance_);
+    auto instance = std::make_unique<FakeNearbyConnectionManager>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeBleScannerFactory* fake_ble_scanner_factory_;
+  FakeSecureChannelDisconnectorFactory*
+      fake_secure_channel_disconnector_factory_;
+
+  FakeNearbyConnectionManager* instance_ = nullptr;
 };
 
 class FakePendingConnectionManagerFactory
     : public PendingConnectionManagerImpl::Factory {
  public:
   FakePendingConnectionManagerFactory(
-      FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory)
+      FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory,
+      FakeNearbyConnectionManagerFactory*
+          fake_nearby_connection_manager_factory)
       : fake_ble_connection_manager_factory_(
-            fake_ble_connection_manager_factory) {}
+            fake_ble_connection_manager_factory),
+        fake_nearby_connection_manager_factory_(
+            fake_nearby_connection_manager_factory) {}
+
+  FakePendingConnectionManagerFactory(
+      const FakePendingConnectionManagerFactory&) = delete;
+  FakePendingConnectionManagerFactory& operator=(
+      const FakePendingConnectionManagerFactory&) = delete;
 
   ~FakePendingConnectionManagerFactory() override = default;
 
@@ -176,13 +355,16 @@ class FakePendingConnectionManagerFactory
 
  private:
   // PendingConnectionManagerImpl::Factory:
-  std::unique_ptr<PendingConnectionManager> BuildInstance(
+  std::unique_ptr<PendingConnectionManager> CreateInstance(
       PendingConnectionManager::Delegate* delegate,
       BleConnectionManager* ble_connection_manager,
+      NearbyConnectionManager* nearby_connection_manager,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(fake_ble_connection_manager_factory_->instance(),
               ble_connection_manager);
+    EXPECT_EQ(fake_nearby_connection_manager_factory_->instance(),
+              nearby_connection_manager);
 
     auto instance = std::make_unique<FakePendingConnectionManager>(delegate);
     instance_ = instance.get();
@@ -190,23 +372,28 @@ class FakePendingConnectionManagerFactory
   }
 
   FakeBleConnectionManagerFactory* fake_ble_connection_manager_factory_;
+  FakeNearbyConnectionManagerFactory* fake_nearby_connection_manager_factory_;
 
   FakePendingConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionManagerFactory);
 };
 
 class FakeActiveConnectionManagerFactory
     : public ActiveConnectionManagerImpl::Factory {
  public:
   FakeActiveConnectionManagerFactory() = default;
+
+  FakeActiveConnectionManagerFactory(
+      const FakeActiveConnectionManagerFactory&) = delete;
+  FakeActiveConnectionManagerFactory& operator=(
+      const FakeActiveConnectionManagerFactory&) = delete;
+
   ~FakeActiveConnectionManagerFactory() override = default;
 
   FakeActiveConnectionManager* instance() { return instance_; }
 
  private:
   // ActiveConnectionManagerImpl::Factory:
-  std::unique_ptr<ActiveConnectionManager> BuildInstance(
+  std::unique_ptr<ActiveConnectionManager> CreateInstance(
       ActiveConnectionManager::Delegate* delegate) override {
     EXPECT_FALSE(instance_);
     auto instance = std::make_unique<FakeActiveConnectionManager>(delegate);
@@ -215,8 +402,6 @@ class FakeActiveConnectionManagerFactory
   }
 
   FakeActiveConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeActiveConnectionManagerFactory);
 };
 
 class TestSecureChannelInitializerFactory
@@ -226,15 +411,24 @@ class TestSecureChannelInitializerFactory
       scoped_refptr<base::TestSimpleTaskRunner> test_task_runner)
       : test_task_runner_(test_task_runner) {}
 
+  TestSecureChannelInitializerFactory(
+      const TestSecureChannelInitializerFactory&) = delete;
+  TestSecureChannelInitializerFactory& operator=(
+      const TestSecureChannelInitializerFactory&) = delete;
+
   ~TestSecureChannelInitializerFactory() override = default;
 
  private:
   // SecureChannelInitializer::Factory:
-  std::unique_ptr<SecureChannelBase> BuildInstance(
+  std::unique_ptr<SecureChannelBase> CreateInstance(
       scoped_refptr<base::TaskRunner> task_runner) override {
     EXPECT_FALSE(instance_);
+    // Silly hack to avoid infinite recursion: this factory really just wants to
+    // save a pointer to the created object.
+    SecureChannelInitializer::Factory::SetFactoryForTesting(nullptr);
     auto instance =
-        SecureChannelInitializer::Factory::BuildInstance(test_task_runner_);
+        SecureChannelInitializer::Factory::Create(test_task_runner_);
+    SecureChannelInitializer::Factory::SetFactoryForTesting(this);
     instance_ = instance.get();
     return instance;
   }
@@ -242,14 +436,18 @@ class TestSecureChannelInitializerFactory
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 
   SecureChannelBase* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSecureChannelInitializerFactory);
 };
 
 class FakeClientConnectionParametersFactory
     : public ClientConnectionParametersImpl::Factory {
  public:
   FakeClientConnectionParametersFactory() = default;
+
+  FakeClientConnectionParametersFactory(
+      const FakeClientConnectionParametersFactory&) = delete;
+  FakeClientConnectionParametersFactory& operator=(
+      const FakeClientConnectionParametersFactory&) = delete;
+
   ~FakeClientConnectionParametersFactory() override = default;
 
   const base::UnguessableToken& last_created_instance_id() {
@@ -265,7 +463,7 @@ class FakeClientConnectionParametersFactory
 
   const std::unordered_map<
       base::UnguessableToken,
-      base::Optional<mojom::ConnectionAttemptFailureReason>,
+      absl::optional<mojom::ConnectionAttemptFailureReason>,
       base::UnguessableTokenHash>&
   id_to_failure_reason_when_deleted_map() {
     return id_to_failure_reason_when_deleted_map_;
@@ -273,7 +471,7 @@ class FakeClientConnectionParametersFactory
 
  private:
   // ClientConnectionParametersImpl::Factory:
-  std::unique_ptr<ClientConnectionParameters> BuildInstance(
+  std::unique_ptr<ClientConnectionParameters> CreateInstance(
       const std::string& feature,
       mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote)
       override {
@@ -303,16 +501,18 @@ class FakeClientConnectionParametersFactory
       id_to_active_client_parameters_map_;
 
   std::unordered_map<base::UnguessableToken,
-                     base::Optional<mojom::ConnectionAttemptFailureReason>,
+                     absl::optional<mojom::ConnectionAttemptFailureReason>,
                      base::UnguessableTokenHash>
       id_to_failure_reason_when_deleted_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientConnectionParametersFactory);
 };
 
 }  // namespace
 
 class SecureChannelServiceTest : public testing::Test {
+ public:
+  SecureChannelServiceTest(const SecureChannelServiceTest&) = delete;
+  SecureChannelServiceTest& operator=(const SecureChannelServiceTest&) = delete;
+
  protected:
   SecureChannelServiceTest()
       : test_devices_(
@@ -321,6 +521,8 @@ class SecureChannelServiceTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    bluez::BluezDBusManager::GetSetterForTesting();
+    bluez::BluezDBusManager::InitializeFake();
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     is_adapter_powered_ = true;
@@ -335,6 +537,8 @@ class SecureChannelServiceTest : public testing::Test {
 
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
+    fake_nearby_connector_ = std::make_unique<FakeNearbyConnector>();
+
     fake_timer_factory_factory_ = std::make_unique<FakeTimerFactoryFactory>();
     TimerFactoryImpl::Factory::SetFactoryForTesting(
         fake_timer_factory_factory_.get());
@@ -344,22 +548,49 @@ class SecureChannelServiceTest : public testing::Test {
     multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(
         test_remote_device_cache_factory_.get());
 
-    fake_ble_service_data_helper_factory_ =
-        std::make_unique<FakeBleServiceDataHelperFactory>(
+    fake_bluetooth_helper_factory_ =
+        std::make_unique<FakeBluetoothHelperFactory>(
             test_remote_device_cache_factory_.get());
-    BleServiceDataHelperImpl::Factory::SetFactoryForTesting(
-        fake_ble_service_data_helper_factory_.get());
+    BluetoothHelperImpl::Factory::SetFactoryForTesting(
+        fake_bluetooth_helper_factory_.get());
+
+    fake_ble_synchronizer_factory_ =
+        std::make_unique<FakeBleSynchronizerFactory>();
+    BleSynchronizer::Factory::SetFactoryForTesting(
+        fake_ble_synchronizer_factory_.get());
+
+    fake_ble_scanner_factory_ = std::make_unique<FakeBleScannerFactory>(
+        fake_bluetooth_helper_factory_.get(),
+        fake_ble_synchronizer_factory_.get());
+    BleScannerImpl::Factory::SetFactoryForTesting(
+        fake_ble_scanner_factory_.get());
+
+    fake_secure_channel_disconnector_factory_ =
+        std::make_unique<FakeSecureChannelDisconnectorFactory>();
+    SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(
+        fake_secure_channel_disconnector_factory_.get());
 
     fake_ble_connection_manager_factory_ =
         std::make_unique<FakeBleConnectionManagerFactory>(
-            mock_adapter_.get(), fake_ble_service_data_helper_factory_.get(),
+            mock_adapter_.get(), fake_bluetooth_helper_factory_.get(),
+            fake_ble_synchronizer_factory_.get(),
+            fake_ble_scanner_factory_.get(),
+            fake_secure_channel_disconnector_factory_.get(),
             fake_timer_factory_factory_.get());
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_ble_connection_manager_factory_.get());
 
+    fake_nearby_connection_manager_factory_ =
+        std::make_unique<FakeNearbyConnectionManagerFactory>(
+            fake_ble_scanner_factory_.get(),
+            fake_secure_channel_disconnector_factory_.get());
+    NearbyConnectionManagerImpl::Factory::SetFactoryForTesting(
+        fake_nearby_connection_manager_factory_.get());
+
     fake_pending_connection_manager_factory_ =
         std::make_unique<FakePendingConnectionManagerFactory>(
-            fake_ble_connection_manager_factory_.get());
+            fake_ble_connection_manager_factory_.get(),
+            fake_nearby_connection_manager_factory_.get());
     PendingConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_pending_connection_manager_factory_.get());
 
@@ -379,7 +610,7 @@ class SecureChannelServiceTest : public testing::Test {
     ClientConnectionParametersImpl::Factory::SetFactoryForTesting(
         fake_client_connection_parameters_factory_.get());
 
-    service_ = SecureChannelInitializer::Factory::Get()->BuildInstance();
+    service_ = SecureChannelInitializer::Factory::Create();
     service_->BindReceiver(secure_channel_remote_.BindNewPipeAndPassReceiver());
     secure_channel_remote_.FlushForTesting();
   }
@@ -387,8 +618,12 @@ class SecureChannelServiceTest : public testing::Test {
   void TearDown() override {
     TimerFactoryImpl::Factory::SetFactoryForTesting(nullptr);
     multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(nullptr);
-    BleServiceDataHelperImpl::Factory::SetFactoryForTesting(nullptr);
+    BluetoothHelperImpl::Factory::SetFactoryForTesting(nullptr);
+    BleSynchronizer::Factory::SetFactoryForTesting(nullptr);
+    BleScannerImpl::Factory::SetFactoryForTesting(nullptr);
+    SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(nullptr);
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
+    NearbyConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     PendingConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     ActiveConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     SecureChannelInitializer::Factory::SetFactoryForTesting(nullptr);
@@ -399,9 +634,10 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     AttemptConnectionPreInitialization(device_to_connect, local_device, feature,
-                                       connection_priority,
+                                       connection_medium, connection_priority,
                                        true /* is_listener */);
   }
 
@@ -409,9 +645,10 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     AttemptConnectionPreInitialization(device_to_connect, local_device, feature,
-                                       connection_priority,
+                                       connection_medium, connection_priority,
                                        false /* is_listener */);
   }
 
@@ -419,62 +656,68 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojom::ConnectionAttemptFailureReason expected_failure_reason) {
     AttemptConnectionAndVerifyRejection(
-        device_to_connect, local_device, feature, connection_priority,
-        expected_failure_reason, true /* is_listener */);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, expected_failure_reason, true /* is_listener */);
   }
 
   void CallInitiateConnectionToDeviceAndVerifyRejection(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojom::ConnectionAttemptFailureReason expected_failure_reason) {
     AttemptConnectionAndVerifyRejection(
-        device_to_connect, local_device, feature, connection_priority,
-        expected_failure_reason, false /* is_listener */);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, expected_failure_reason, false /* is_listener */);
   }
 
   void CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
-    AttemptConnectionAndVerifyPendingConnection(device_to_connect, local_device,
-                                                feature, connection_priority,
-                                                true /* is_listener */);
+    AttemptConnectionAndVerifyPendingConnection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, true /* is_listener */);
   }
 
   void CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
-    AttemptConnectionAndVerifyPendingConnection(device_to_connect, local_device,
-                                                feature, connection_priority,
-                                                false /* is_listener */);
+    AttemptConnectionAndVerifyPendingConnection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, false /* is_listener */);
   }
 
   void CallListenForConnectionFromDeviceAndVerifyActiveConnection(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
-    AttemptConnectionAndVerifyActiveConnection(device_to_connect, local_device,
-                                               feature, connection_priority,
-                                               true /* is_listener */);
+    AttemptConnectionAndVerifyActiveConnection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, true /* is_listener */);
   }
 
   void CallInitiateConnectionToDeviceAndVerifyActiveConnection(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
-    AttemptConnectionAndVerifyActiveConnection(device_to_connect, local_device,
-                                               feature, connection_priority,
-                                               false /* is_listener */);
+    AttemptConnectionAndVerifyActiveConnection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, false /* is_listener */);
   }
 
   base::UnguessableToken
@@ -482,10 +725,11 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     return AttemptConnectionAndVerifyStillDisconnecting(
-        device_to_connect, local_device, feature, connection_priority,
-        true /* is_listener */);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, true /* is_listener */);
   }
 
   base::UnguessableToken
@@ -493,15 +737,16 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     return AttemptConnectionAndVerifyStillDisconnecting(
-        device_to_connect, local_device, feature, connection_priority,
-        false /* is_listener */);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, false /* is_listener */);
   }
 
-  void SimulateSuccessfulConnection(const std::string& device_id) {
-    ConnectionDetails connection_details(device_id,
-                                         ConnectionMedium::kBluetoothLowEnergy);
+  void SimulateSuccessfulConnection(const std::string& device_id,
+                                    ConnectionMedium connection_medium) {
+    ConnectionDetails connection_details(device_id, connection_medium);
 
     auto fake_authenticated_channel =
         std::make_unique<FakeAuthenticatedChannel>();
@@ -523,14 +768,17 @@ class SecureChannelServiceTest : public testing::Test {
       EXPECT_EQ(moved_client_list[i], std::get<2>(metadata)[i].get());
   }
 
-  void SimulateConnectionStartingDisconnecting(const std::string& device_id) {
+  void SimulateConnectionStartingDisconnecting(
+      const std::string& device_id,
+      ConnectionMedium connection_medium) {
     fake_active_connection_manager()->SetDisconnecting(
-        ConnectionDetails(device_id, ConnectionMedium::kBluetoothLowEnergy));
+        ConnectionDetails(device_id, connection_medium));
   }
 
-  void SimulateConnectionBecomingDisconnected(const std::string& device_id) {
-    ConnectionDetails connection_details(device_id,
-                                         ConnectionMedium::kBluetoothLowEnergy);
+  void SimulateConnectionBecomingDisconnected(
+      const std::string& device_id,
+      ConnectionMedium connection_medium) {
+    ConnectionDetails connection_details(device_id, connection_medium);
 
     // If the connection was previously disconnected, there may have been
     // pending metadata corresponding to any connection attempts which were
@@ -546,7 +794,7 @@ class SecureChannelServiceTest : public testing::Test {
     }
 
     fake_active_connection_manager()->SetDisconnected(
-        ConnectionDetails(device_id, ConnectionMedium::kBluetoothLowEnergy));
+        ConnectionDetails(device_id, connection_medium));
 
     // If there were no pending metadata, there is no need to make additional
     // verifications.
@@ -575,9 +823,15 @@ class SecureChannelServiceTest : public testing::Test {
         ->CancelClientRequest();
   }
 
-  void FinishInitialization() {
+  void FinishInitialization(bool set_nearby_connector = true) {
     // The PendingConnectionManager should not have yet been created.
     EXPECT_FALSE(fake_pending_connection_manager());
+
+    if (set_nearby_connector) {
+      secure_channel_remote_->SetNearbyConnector(
+          fake_nearby_connector_->GeneratePendingRemote());
+      secure_channel_remote_.FlushForTesting();
+    }
 
     EXPECT_TRUE(test_task_runner_->HasPendingTask());
     test_task_runner_->RunUntilIdle();
@@ -601,6 +855,7 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     // If this is the first time the Mojo service will be accessed,
@@ -611,9 +866,9 @@ class SecureChannelServiceTest : public testing::Test {
             ? fake_pending_connection_manager()->handled_requests().size()
             : 0;
 
-    auto id = AttemptConnectionWithoutRejection(device_to_connect, local_device,
-                                                feature, connection_priority,
-                                                is_listener);
+    auto id = AttemptConnectionWithoutRejection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, is_listener);
 
     FakePendingConnectionManager::HandledRequestsList& handled_requests =
         fake_pending_connection_manager()->handled_requests();
@@ -624,8 +879,7 @@ class SecureChannelServiceTest : public testing::Test {
                          id,
                          is_listener ? ConnectionRole::kListenerRole
                                      : ConnectionRole::kInitiatorRole,
-                         connection_priority,
-                         ConnectionMedium::kBluetoothLowEnergy,
+                         connection_priority, connection_medium,
                          handled_requests.size() - 1);
   }
 
@@ -633,10 +887,11 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     ConnectionDetails connection_details(device_to_connect.GetDeviceId(),
-                                         ConnectionMedium::kBluetoothLowEnergy);
+                                         connection_medium);
 
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         clients_for_active_connection =
@@ -646,9 +901,9 @@ class SecureChannelServiceTest : public testing::Test {
                             ->second);
     size_t num_clients_before_call = clients_for_active_connection.size();
 
-    auto id = AttemptConnectionWithoutRejection(device_to_connect, local_device,
-                                                feature, connection_priority,
-                                                true /* is_listener */);
+    auto id = AttemptConnectionWithoutRejection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, true /* is_listener */);
 
     EXPECT_EQ(num_clients_before_call + 1u,
               clients_for_active_connection.size());
@@ -659,15 +914,16 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     FakePendingConnectionManager::HandledRequestsList& handled_requests =
         fake_pending_connection_manager()->handled_requests();
     size_t num_handled_requests_before_call = handled_requests.size();
 
-    auto id = AttemptConnectionWithoutRejection(device_to_connect, local_device,
-                                                feature, connection_priority,
-                                                is_listener);
+    auto id = AttemptConnectionWithoutRejection(
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, is_listener);
 
     // Since the channel is expected to be disconnecting, no additional
     // pending request should have been sent.
@@ -678,7 +934,7 @@ class SecureChannelServiceTest : public testing::Test {
     // fully disconnected, this entry will be verified in
     // SimulateConnectionBecomingDisconnected().
     ConnectionDetails connection_details(device_to_connect.GetDeviceId(),
-                                         ConnectionMedium::kBluetoothLowEnergy);
+                                         connection_medium);
     disconnecting_details_to_requests_map_[connection_details].push_back(
         std::make_tuple(id, local_device.GetDeviceId(),
                         is_listener ? ConnectionRole::kListenerRole
@@ -711,16 +967,17 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojom::ConnectionAttemptFailureReason expected_failure_reason,
       bool is_listener) {
     auto id = AttemptConnectionPostInitialization(
-        device_to_connect, local_device, feature, connection_priority,
-        is_listener);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, is_listener);
     EXPECT_EQ(expected_failure_reason, GetFailureReasonForRequest(id));
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetFailureReasonForRequest(const base::UnguessableToken& id) {
     return fake_client_connection_parameters_factory_
         ->id_to_failure_reason_when_deleted_map()
@@ -734,21 +991,24 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     auto id = AttemptConnectionPostInitialization(
-        device_to_connect, local_device, feature, connection_priority,
-        is_listener);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, is_listener);
 
     // |device_to_connect| should be in the cache.
     EXPECT_TRUE(multidevice::IsSameDevice(
-        device_to_connect, *remote_device_cache()->GetRemoteDevice(
-                               device_to_connect.GetDeviceId())));
+        device_to_connect,
+        *remote_device_cache()->GetRemoteDevice(
+            device_to_connect.instance_id, device_to_connect.GetDeviceId())));
 
     // |local_device| should also be in the cache.
     EXPECT_TRUE(multidevice::IsSameDevice(
         local_device,
-        *remote_device_cache()->GetRemoteDevice(local_device.GetDeviceId())));
+        *remote_device_cache()->GetRemoteDevice(local_device.instance_id,
+                                                local_device.GetDeviceId())));
 
     return id;
   }
@@ -757,13 +1017,14 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     base::UnguessableToken last_id_before_call =
         fake_client_connection_parameters_factory_->last_created_instance_id();
 
     AttemptConnection(device_to_connect, local_device, feature,
-                      connection_priority, is_listener);
+                      connection_medium, connection_priority, is_listener);
 
     base::UnguessableToken id_generated_by_call =
         fake_client_connection_parameters_factory_->last_created_instance_id();
@@ -779,6 +1040,7 @@ class SecureChannelServiceTest : public testing::Test {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       bool is_listener) {
     // Should not have been any ClientConnectionParameters before the attempt.
@@ -787,7 +1049,7 @@ class SecureChannelServiceTest : public testing::Test {
             .is_empty());
 
     AttemptConnection(device_to_connect, local_device, feature,
-                      connection_priority, is_listener);
+                      connection_medium, connection_priority, is_listener);
 
     // Should still not have been any after the attempt.
     EXPECT_TRUE(
@@ -800,18 +1062,19 @@ class SecureChannelServiceTest : public testing::Test {
   void AttemptConnection(const multidevice::RemoteDevice& device_to_connect,
                          const multidevice::RemoteDevice& local_device,
                          const std::string& feature,
+                         ConnectionMedium connection_medium,
                          ConnectionPriority connection_priority,
                          bool is_listener) {
     FakeConnectionDelegate fake_connection_delegate;
 
     if (is_listener) {
       secure_channel_remote_->ListenForConnectionFromDevice(
-          device_to_connect, local_device, feature, connection_priority,
-          fake_connection_delegate.GenerateRemote());
+          device_to_connect, local_device, feature, connection_medium,
+          connection_priority, fake_connection_delegate.GenerateRemote());
     } else {
       secure_channel_remote_->InitiateConnectionToDevice(
-          device_to_connect, local_device, feature, connection_priority,
-          fake_connection_delegate.GenerateRemote());
+          device_to_connect, local_device, feature, connection_medium,
+          connection_priority, fake_connection_delegate.GenerateRemote());
     }
 
     secure_channel_remote_.FlushForTesting();
@@ -834,14 +1097,20 @@ class SecureChannelServiceTest : public testing::Test {
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
+  std::unique_ptr<FakeNearbyConnector> fake_nearby_connector_;
 
   std::unique_ptr<FakeTimerFactoryFactory> fake_timer_factory_factory_;
   std::unique_ptr<TestRemoteDeviceCacheFactory>
       test_remote_device_cache_factory_;
-  std::unique_ptr<FakeBleServiceDataHelperFactory>
-      fake_ble_service_data_helper_factory_;
+  std::unique_ptr<FakeBluetoothHelperFactory> fake_bluetooth_helper_factory_;
+  std::unique_ptr<FakeBleSynchronizerFactory> fake_ble_synchronizer_factory_;
+  std::unique_ptr<FakeBleScannerFactory> fake_ble_scanner_factory_;
+  std::unique_ptr<FakeSecureChannelDisconnectorFactory>
+      fake_secure_channel_disconnector_factory_;
   std::unique_ptr<FakeBleConnectionManagerFactory>
       fake_ble_connection_manager_factory_;
+  std::unique_ptr<FakeNearbyConnectionManagerFactory>
+      fake_nearby_connection_manager_factory_;
   std::unique_ptr<FakePendingConnectionManagerFactory>
       fake_pending_connection_manager_factory_;
   std::unique_ptr<FakeActiveConnectionManagerFactory>
@@ -868,8 +1137,6 @@ class SecureChannelServiceTest : public testing::Test {
   bool is_adapter_present_;
 
   mojo::Remote<mojom::SecureChannel> secure_channel_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelServiceTest);
 };
 
 TEST_F(SecureChannelServiceTest, ListenForConnection_MissingPublicKey) {
@@ -879,7 +1146,8 @@ TEST_F(SecureChannelServiceTest, ListenForConnection_MissingPublicKey) {
   device_to_connect.public_key.clear();
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      device_to_connect, test_devices()[1], "feature", ConnectionPriority::kLow,
+      device_to_connect, test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::REMOTE_DEVICE_INVALID_PUBLIC_KEY);
 }
 
@@ -890,7 +1158,8 @@ TEST_F(SecureChannelServiceTest, InitiateConnection_MissingPublicKey) {
   device_to_connect.public_key.clear();
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      device_to_connect, test_devices()[1], "feature", ConnectionPriority::kLow,
+      device_to_connect, test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::REMOTE_DEVICE_INVALID_PUBLIC_KEY);
 }
 
@@ -901,7 +1170,8 @@ TEST_F(SecureChannelServiceTest, ListenForConnection_MissingPsk) {
   device_to_connect.persistent_symmetric_key.clear();
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      device_to_connect, test_devices()[1], "feature", ConnectionPriority::kLow,
+      device_to_connect, test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::REMOTE_DEVICE_INVALID_PSK);
 }
 
@@ -912,7 +1182,8 @@ TEST_F(SecureChannelServiceTest, InitiateConnection_MissingPsk) {
   device_to_connect.persistent_symmetric_key.clear();
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      device_to_connect, test_devices()[1], "feature", ConnectionPriority::kLow,
+      device_to_connect, test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::REMOTE_DEVICE_INVALID_PSK);
 }
 
@@ -924,7 +1195,8 @@ TEST_F(SecureChannelServiceTest,
   local_device.public_key.clear();
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      test_devices()[0], local_device, "feature", ConnectionPriority::kLow,
+      test_devices()[0], local_device, "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::LOCAL_DEVICE_INVALID_PUBLIC_KEY);
 }
 
@@ -936,7 +1208,8 @@ TEST_F(SecureChannelServiceTest,
   local_device.public_key.clear();
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      test_devices()[0], local_device, "feature", ConnectionPriority::kLow,
+      test_devices()[0], local_device, "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::LOCAL_DEVICE_INVALID_PUBLIC_KEY);
 }
 
@@ -947,7 +1220,8 @@ TEST_F(SecureChannelServiceTest, ListenForConnection_MissingLocalDevicePsk) {
   local_device.persistent_symmetric_key.clear();
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      test_devices()[0], local_device, "feature", ConnectionPriority::kLow,
+      test_devices()[0], local_device, "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::LOCAL_DEVICE_INVALID_PSK);
 }
 
@@ -958,7 +1232,8 @@ TEST_F(SecureChannelServiceTest, InitiateConnection_MissingLocalDevicePsk) {
   local_device.persistent_symmetric_key.clear();
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      test_devices()[0], local_device, "feature", ConnectionPriority::kLow,
+      test_devices()[0], local_device, "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::LOCAL_DEVICE_INVALID_PSK);
 }
 
@@ -969,7 +1244,8 @@ TEST_F(SecureChannelServiceTest,
   set_is_adapter_present(false);
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      test_devices()[0], test_devices()[1], "feature", ConnectionPriority::kLow,
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::ADAPTER_NOT_PRESENT);
 }
 
@@ -980,7 +1256,8 @@ TEST_F(SecureChannelServiceTest,
   set_is_adapter_present(false);
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      test_devices()[0], test_devices()[1], "feature", ConnectionPriority::kLow,
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::ADAPTER_NOT_PRESENT);
 }
 
@@ -990,7 +1267,8 @@ TEST_F(SecureChannelServiceTest, ListenForConnection_BluetoothAdapterDisabled) {
   set_is_adapter_powered(false);
 
   CallListenForConnectionFromDeviceAndVerifyRejection(
-      test_devices()[0], test_devices()[1], "feature", ConnectionPriority::kLow,
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::ADAPTER_DISABLED);
 }
 
@@ -1000,17 +1278,51 @@ TEST_F(SecureChannelServiceTest, InitiateConnection_BluetoothAdapterDisabled) {
   set_is_adapter_powered(false);
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      test_devices()[0], test_devices()[1], "feature", ConnectionPriority::kLow,
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow,
       mojom::ConnectionAttemptFailureReason::ADAPTER_DISABLED);
+}
+
+TEST_F(SecureChannelServiceTest,
+       InitiateConnection_Nearby_RemoteDeviceMissingBluetoothAddress) {
+  FinishInitialization();
+
+  multidevice::RemoteDevice device_to_connect = test_devices()[0];
+  device_to_connect.bluetooth_public_address.clear();
+
+  CallInitiateConnectionToDeviceAndVerifyRejection(
+      device_to_connect, test_devices()[1], "feature",
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kLow,
+      mojom::ConnectionAttemptFailureReason::
+          REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS);
+}
+
+TEST_F(SecureChannelServiceTest,
+       InitiateConnection_Nearby_MissingNearbyConnector) {
+  FinishInitialization(/*set_nearby_connector=*/false);
+
+  CallInitiateConnectionToDeviceAndVerifyRejection(
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kLow,
+      mojom::ConnectionAttemptFailureReason::MISSING_NEARBY_CONNECTOR);
+}
+
+TEST_F(SecureChannelServiceTest, ListenForConnection_Nearby) {
+  FinishInitialization();
+
+  CallListenForConnectionFromDeviceAndVerifyRejection(
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kLow,
+      mojom::ConnectionAttemptFailureReason::UNSUPPORTED_ROLE_FOR_MEDIUM);
 }
 
 TEST_F(SecureChannelServiceTest, CallsQueuedBeforeInitializationComplete) {
   CallInitiateConnectionToDeviceAndVerifyInitializationNotComplete(
       test_devices()[4], test_devices()[5], "feature",
-      ConnectionPriority::kLow);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
   CallListenForConnectionFromDeviceAndVerifyInitializationNotComplete(
       test_devices()[4], test_devices()[5], "feature",
-      ConnectionPriority::kLow);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
   FinishInitialization();
 }
 
@@ -1019,10 +1331,13 @@ TEST_F(SecureChannelServiceTest, ListenForConnection_OneDevice) {
 
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest, InitiateConnection_OneDevice) {
@@ -1030,10 +1345,27 @@ TEST_F(SecureChannelServiceTest, InitiateConnection_OneDevice) {
 
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
+}
+
+TEST_F(SecureChannelServiceTest, InitiateConnection_OneDevice_Nearby) {
+  FinishInitialization();
+
+  CallInitiateConnectionToDeviceAndVerifyPendingConnection(
+      test_devices()[0], test_devices()[1], "feature",
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kNearbyConnections);
+  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId(),
+                                          ConnectionMedium::kNearbyConnections);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kNearbyConnections);
 }
 
 TEST_F(SecureChannelServiceTest,
@@ -1042,10 +1374,13 @@ TEST_F(SecureChannelServiceTest,
 
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest,
@@ -1054,10 +1389,13 @@ TEST_F(SecureChannelServiceTest,
 
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest, OneDevice_TwoConnectionRequests) {
@@ -1066,14 +1404,17 @@ TEST_F(SecureChannelServiceTest, OneDevice_TwoConnectionRequests) {
   // Two pending connection requests for the same device.
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature1",
-      ConnectionPriority::kLow);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature2",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
 
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest,
@@ -1083,16 +1424,19 @@ TEST_F(SecureChannelServiceTest,
   // First request is successful.
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature1",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
 
   // Second request is added to the existing channel.
   CallInitiateConnectionToDeviceAndVerifyActiveConnection(
       test_devices()[0], test_devices()[1], "feature2",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
 
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest,
@@ -1102,26 +1446,32 @@ TEST_F(SecureChannelServiceTest,
   // First request is successful.
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature1",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
 
   // Connection starts disconnecting.
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
 
   // Second request is added before disconnecting is complete.
   CallInitiateConnectionToDeviceAndVerifyStillDisconnecting(
       test_devices()[0], test_devices()[1], "feature2",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
 
   // Complete the disconnection; this should cause the second request to be
   // delivered to PendingConnectionManager.
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 
   // The second attempt succeeds.
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
 
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest,
@@ -1131,22 +1481,25 @@ TEST_F(SecureChannelServiceTest,
   // First request is successful.
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature1",
-      ConnectionPriority::kLow);
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
 
   // Connection starts disconnecting.
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
 
   // Second request is added before disconnecting is complete, but the request
   // is canceled before the disconnection completes.
   auto id = CallInitiateConnectionToDeviceAndVerifyStillDisconnecting(
       test_devices()[0], test_devices()[1], "feature2",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
   CancelPendingRequest(id);
 
   // Complete the disconnection; even though the request was canceled, it should
   // still have been added to PendingConnectionManager.
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 TEST_F(SecureChannelServiceTest, ThreeDevices) {
@@ -1155,34 +1508,43 @@ TEST_F(SecureChannelServiceTest, ThreeDevices) {
   // Two requests for each device.
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature1",
-      ConnectionPriority::kLow);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[0], test_devices()[1], "feature2",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[2], test_devices()[1], "feature3",
-      ConnectionPriority::kHigh);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kHigh);
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[2], test_devices()[1], "feature4",
-      ConnectionPriority::kLow);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kLow);
   CallListenForConnectionFromDeviceAndVerifyPendingConnection(
       test_devices()[3], test_devices()[1], "feature5",
-      ConnectionPriority::kMedium);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kMedium);
   CallInitiateConnectionToDeviceAndVerifyPendingConnection(
       test_devices()[3], test_devices()[1], "feature6",
-      ConnectionPriority::kHigh);
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionPriority::kHigh);
 
-  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId());
-  SimulateSuccessfulConnection(test_devices()[2].GetDeviceId());
-  SimulateSuccessfulConnection(test_devices()[3].GetDeviceId());
+  SimulateSuccessfulConnection(test_devices()[0].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateSuccessfulConnection(test_devices()[2].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
+  SimulateSuccessfulConnection(test_devices()[3].GetDeviceId(),
+                               ConnectionMedium::kBluetoothLowEnergy);
 
-  SimulateConnectionStartingDisconnecting(test_devices()[0].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[2].GetDeviceId());
-  SimulateConnectionStartingDisconnecting(test_devices()[3].GetDeviceId());
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[0].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[2].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionStartingDisconnecting(
+      test_devices()[3].GetDeviceId(), ConnectionMedium::kBluetoothLowEnergy);
 
-  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[2].GetDeviceId());
-  SimulateConnectionBecomingDisconnected(test_devices()[3].GetDeviceId());
+  SimulateConnectionBecomingDisconnected(test_devices()[0].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[2].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
+  SimulateConnectionBecomingDisconnected(test_devices()[3].GetDeviceId(),
+                                         ConnectionMedium::kBluetoothLowEnergy);
 }
 
 }  // namespace secure_channel

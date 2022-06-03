@@ -104,3 +104,51 @@ browser window.
 Also called the "Layout Viewport" in web/Blink terminology. This is the main
 "content scroller" in a given page, typically the document (`<html>`) element.
 This is the scroller to which position: fixed elements remain fixed to.
+
+## Compositor threaded scrollbar scrolling
+Contact: arakeri@microsoft.com
+
+### Introduction
+Scrollbar scrolling using the mouse happens on the main thread in Chromium. If
+the main thread is busy (due to reasons like long running JS, etc), scrolling
+by clicking on the scrollbar will appear to be janky. To provide a better user
+experience, we have enabled off-main-thread scrollbar interaction for composited
+scrollers. This frees up the main thread to perform other tasks like processing
+javascript, etc. The core principal here is that MouseEvent(s) are converted to
+GestureEvent(s) and dispatched in a VSync aligned manner. Choosing this design
+also helps with the grand scrolling unification.
+
+### High-level design:
+
+![Image has moved. Contact arakeri@microsoft.com](https://github.com/rahul8805/CompositorThreadedScrollbarDocs/blob/master/designDiag.PNG?raw=true)
+
+### Core Implementation Details:
+This is the basic principle:
+- A new class called "cc::ScrollbarController" manages the state and behavior
+ related to translating Mouse events into GestureScrolls.
+- When a kMouseDown arrives at InputHandlerProxy::RouteToTypeSpecificHandler,
+ it gets passed to the ScrollbarController to determine if this event will cause
+ scrollbar manipulation.
+- The ScrollbarController returns enough data to the InputHandlerProxy to inject
+ gesture events to the CompositorThreadEventQueue (CTEQ). For example, in the
+ case of a mouse down, a GestureScrollBegin(GSB) and a GestureScrollUpdate(GSU)
+ are added to the CTEQ.
+- Depending on the action, there can be more synthetic GSUs that get added to
+ the CTEQ. (For eg: thumb drags).
+- The WebInputEvent::kMouseUp is responsible for cleaning up the scroll state.
+- GestureScrollBegin gets dispatched first. This sets up the scroll_node and
+ other state necessary to begin scrolling in LayerTreeHostImpl::ScrollBegin.
+ This is as usual for all gesture based scrolls.
+- GestureScrollUpdate(s) get handled next. Scroll deltas get applied to the node
+ that was set up during GestureScrollBegin. Depending on the type of scroll,
+ this may lead to an animated scroll (eg: LayerTreeHostImpl::ScrollAnimated for
+ autoscroll/mouse clicks) or a regular scroll. (eg: LayerTreeHostImpl::ScrollBy
+ for thumb drags)
+- Finally, the GestureScrollEnd is dispatched and it clears the scrolling state
+ (like the CurrentlyScrollingNode) and calls SetNeedsCommitOnImplThread().
+
+### Miscellaneous resources.
+- [Demo page](https://rahul8805.github.io/DemoPages/BouncyMoon.html)
+- [Lightning talk](https://www.youtube.com/watch?v=FOCHCuGA_MA&t=1150s)
+- [input-dev thread](https://groups.google.com/a/chromium.org/forum/#!topic/input-dev/6ACOSDoAik4)
+- [Full design doc](https://docs.google.com/document/d/1JqykSXnCkqwA1E3bUhhIi-IgEvM9HZdKtIu_S4Ncm6o/edit#heading=h.agf18oiankjh)

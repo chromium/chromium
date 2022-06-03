@@ -11,8 +11,6 @@
 #include "base/strings/string_util.h"
 
 namespace {
-constexpr char kWebContentsCaptureScheme[] = "web-contents-media-stream://";
-constexpr char kEnableThrottlingFlag[] = "throttling=auto";
 constexpr char kDisableLocalEchoFlag[] = "local_echo=false";
 constexpr char kOptionStart = '?';
 constexpr char kOptionSeparator = '&';
@@ -20,7 +18,7 @@ constexpr char kOptionSeparator = '&';
 bool ExtractTabCaptureTarget(const std::string& device_id_param,
                              int* render_process_id,
                              int* main_render_frame_id) {
-  const std::string device_scheme = kWebContentsCaptureScheme;
+  const std::string device_scheme = content::kWebContentsCaptureScheme;
   if (!base::StartsWith(device_id_param, device_scheme,
                         base::CompareCase::SENSITIVE))
     return false;
@@ -43,12 +41,8 @@ bool ExtractTabCaptureTarget(const std::string& device_id_param,
 }
 
 bool ExtractOptions(const std::string& device_id,
-                    bool* auto_throttling,
                     bool* disable_local_echo) {
-  DCHECK(auto_throttling);
   DCHECK(disable_local_echo);
-
-  *auto_throttling = false;
   *disable_local_echo = false;
 
   // Find the option part of the string and just do a naive string compare since
@@ -66,9 +60,7 @@ bool ExtractOptions(const std::string& device_id,
     const base::StringPiece component(device_id.data() + option_pos + 1,
                                       option_pos_end - option_pos - 1);
 
-    if (component.compare(kEnableThrottlingFlag) == 0)
-      *auto_throttling = true;
-    else if (component.compare(kDisableLocalEchoFlag) == 0)
+    if (component.compare(kDisableLocalEchoFlag) == 0)
       *disable_local_echo = true;
     else  // Some unknown parameter is specified, and thus this ID is invalid.
       return false;
@@ -82,20 +74,21 @@ bool ExtractOptions(const std::string& device_id,
 
 namespace content {
 
+const char kWebContentsCaptureScheme[] = "web-contents-media-stream://";
+
 bool WebContentsMediaCaptureId::operator<(
     const WebContentsMediaCaptureId& other) const {
-  return std::tie(render_process_id, main_render_frame_id,
-                  enable_auto_throttling, disable_local_echo) <
+  return std::tie(render_process_id, main_render_frame_id, disable_local_echo) <
          std::tie(other.render_process_id, other.main_render_frame_id,
-                  other.enable_auto_throttling, other.disable_local_echo);
+                  other.disable_local_echo);
 }
 
 bool WebContentsMediaCaptureId::operator==(
     const WebContentsMediaCaptureId& other) const {
   return std::tie(render_process_id, main_render_frame_id,
-                  enable_auto_throttling, disable_local_echo) ==
-         std::tie(other.render_process_id, other.main_render_frame_id,
-                  other.enable_auto_throttling, other.disable_local_echo);
+                  disable_local_echo) == std::tie(other.render_process_id,
+                                                  other.main_render_frame_id,
+                                                  other.disable_local_echo);
 }
 
 bool WebContentsMediaCaptureId::is_null() const {
@@ -108,17 +101,9 @@ std::string WebContentsMediaCaptureId::ToString() const {
   s.append(":");
   s.append(base::NumberToString(main_render_frame_id));
 
-  char connector = kOptionStart;
-  if (enable_auto_throttling) {
-    s += connector;
-    s.append(kEnableThrottlingFlag);
-    connector = kOptionSeparator;
-  }
-
   if (disable_local_echo) {
-    s += connector;
+    s += kOptionStart;
     s.append(kDisableLocalEchoFlag);
-    connector = kOptionSeparator;
   }
 
   return s;
@@ -132,14 +117,13 @@ bool WebContentsMediaCaptureId::Parse(const std::string& str,
   if (!ExtractTabCaptureTarget(str, &render_process_id, &main_render_frame_id))
     return false;
 
-  bool auto_throttling, disable_local_echo;
-  if (!ExtractOptions(str, &auto_throttling, &disable_local_echo))
+  bool disable_local_echo;
+  if (!ExtractOptions(str, &disable_local_echo))
     return false;
 
   if (output_id) {
     output_id->render_process_id = render_process_id;
     output_id->main_render_frame_id = main_render_frame_id;
-    output_id->enable_auto_throttling = auto_throttling;
     output_id->disable_local_echo = disable_local_echo;
   }
 

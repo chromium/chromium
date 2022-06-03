@@ -4,12 +4,15 @@
 
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -19,6 +22,7 @@
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -65,9 +69,8 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowSizeTest) {
 
   // On Linux we test this with popup windows because the WM may ignore the size
   // suggestion for normal windows.
-#if defined(OS_LINUX)
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
 #else
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -158,7 +161,7 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowShowFrameless) {
 #endif  // OS_WIN
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
 #define MAYBE_GlobalCursorState DISABLED_GlobalCursorState
 #else
@@ -220,14 +223,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
 
   // Verify that setting the cursor using one cursor client
   // will set it for all root windows.
-  EXPECT_EQ(ui::CursorType::kNone, cursor_client_a->GetCursor().native_type());
-  EXPECT_EQ(ui::CursorType::kNone, cursor_client_b->GetCursor().native_type());
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client_a->GetCursor().type());
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client_b->GetCursor().type());
 
-  cursor_client_b->SetCursor(ui::CursorType::kPointer);
-  EXPECT_EQ(ui::CursorType::kPointer,
-            cursor_client_a->GetCursor().native_type());
-  EXPECT_EQ(ui::CursorType::kPointer,
-            cursor_client_b->GetCursor().native_type());
+  cursor_client_b->SetCursor(ui::mojom::CursorType::kPointer);
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            cursor_client_a->GetCursor().type());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            cursor_client_b->GetCursor().type());
 
   // Verify that hiding the cursor using one cursor client will
   // hide it for all root windows. Note that hiding the cursor
@@ -283,8 +286,8 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
   Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent;
-  params.native_widget = CreatePlatformNativeWidgetImpl(params, widget.get(),
-                                                        kStubCapture, nullptr);
+  params.native_widget =
+      CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
   widget->Show();
   return widget;
@@ -292,7 +295,7 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
 #define MAYBE_ReorderDoesntRecomputeOcclusion \
   DISABLED_ReorderDoesntRecomputeOcclusion
@@ -366,6 +369,12 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   run_loop.Run();
 }
 
+using DesktopAuraWidgetTest = DesktopWidgetTest;
+
+#if !defined(OS_FUCHSIA)
+// TODO(crbug.com/1236997): Under Fuchsia pop-up and fullscreen windows are not
+// reparented to be top-level, so the following tests are not valid.
+
 // This class provides functionality to create fullscreen and top level popup
 // windows. It additionally tests whether the destruction of these windows
 // occurs correctly in desktop AURA without crashing.
@@ -376,6 +385,10 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
 class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
  public:
   DesktopAuraTopLevelWindowTest() = default;
+
+  DesktopAuraTopLevelWindowTest(const DesktopAuraTopLevelWindowTest&) = delete;
+  DesktopAuraTopLevelWindowTest& operator=(
+      const DesktopAuraTopLevelWindowTest&) = delete;
 
   ~DesktopAuraTopLevelWindowTest() override {
     EXPECT_TRUE(owner_destroyed_);
@@ -405,8 +418,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     }
     owned_window_->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(
-        owned_window_,
-        widget_.GetNativeView()->GetRootWindow(),
+        owned_window_, widget_.GetNativeView()->GetRootWindow(),
         gfx::Rect(0, 0, 1900, 1600));
     owned_window_->Show();
     owned_window_->AddObserver(this);
@@ -447,17 +459,11 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     }
   }
 
-  aura::Window* owned_window() {
-    return owned_window_;
-  }
+  aura::Window* owned_window() { return owned_window_; }
 
-  views::Widget* top_level_widget() {
-    return top_level_widget_;
-  }
+  views::Widget* top_level_widget() { return top_level_widget_; }
 
-  void set_use_async_mode(bool async_mode) {
-    use_async_mode_ = async_mode;
-  }
+  void set_use_async_mode(bool async_mode) { use_async_mode_ = async_mode; }
 
  private:
   views::Widget widget_;
@@ -469,16 +475,12 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   // This flag controls whether we need to wait for the destruction to complete
   // before finishing the test. Defaults to true.
   bool use_async_mode_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopAuraTopLevelWindowTest);
 };
-
-using DesktopAuraWidgetTest = DesktopWidgetTest;
 
 TEST_F(DesktopAuraWidgetTest, FullscreenWindowDestroyedBeforeOwnerTest) {
   DesktopAuraTopLevelWindowTest fullscreen_window;
-  ASSERT_NO_FATAL_FAILURE(fullscreen_window.CreateTopLevelWindow(
-      gfx::Rect(0, 0, 200, 200), true));
+  ASSERT_NO_FATAL_FAILURE(
+      fullscreen_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), true));
 
   RunPendingMessages();
   ASSERT_NO_FATAL_FAILURE(fullscreen_window.DestroyOwnedWindow());
@@ -487,8 +489,8 @@ TEST_F(DesktopAuraWidgetTest, FullscreenWindowDestroyedBeforeOwnerTest) {
 
 TEST_F(DesktopAuraWidgetTest, FullscreenWindowOwnerDestroyed) {
   DesktopAuraTopLevelWindowTest fullscreen_window;
-  ASSERT_NO_FATAL_FAILURE(fullscreen_window.CreateTopLevelWindow(
-      gfx::Rect(0, 0, 200, 200), true));
+  ASSERT_NO_FATAL_FAILURE(
+      fullscreen_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), true));
 
   RunPendingMessages();
   ASSERT_NO_FATAL_FAILURE(fullscreen_window.DestroyOwnerWindow());
@@ -497,8 +499,8 @@ TEST_F(DesktopAuraWidgetTest, FullscreenWindowOwnerDestroyed) {
 
 TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupTest) {
   DesktopAuraTopLevelWindowTest popup_window;
-  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
-      gfx::Rect(0, 0, 200, 200), false));
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
 
   RunPendingMessages();
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
@@ -512,8 +514,8 @@ TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupResizeTest) {
 
   popup_window.set_use_async_mode(false);
 
-  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
-      gfx::Rect(0, 0, 200, 200), false));
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
 
   gfx::Rect new_size(0, 0, 400, 400);
   popup_window.owned_window()->SetBounds(new_size);
@@ -531,8 +533,8 @@ TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupRepositionTest) {
 
   popup_window.set_use_async_mode(false);
 
-  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
-      gfx::Rect(0, 0, 200, 200), false));
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
 
   gfx::Rect new_pos(10, 10, 400, 400);
   popup_window.owned_window()->SetBoundsInScreen(
@@ -544,6 +546,8 @@ TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupRepositionTest) {
 
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }
+
+#endif  // !defined(OS_FUCHSIA)
 
 // The following code verifies we can correctly destroy a Widget from a mouse
 // enter/exit. We could test move/drag/enter/exit but in general we don't run
@@ -596,7 +600,7 @@ void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
       test->CreateParams(Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 50, 100);
   widget->Init(std::move(params));
-  widget->SetContentsView(new CloseWidgetView(last_event_type));
+  widget->SetContentsView(std::make_unique<CloseWidgetView>(last_event_type));
   widget->Show();
   GenerateMouseEvents(widget, last_event_type);
 }
@@ -611,24 +615,7 @@ TEST_F(DesktopAuraWidgetTest, CloseWidgetDuringMouseReleased) {
   RunCloseWidgetDuringDispatchTest(this, ui::ET_MOUSE_RELEASED);
 }
 
-namespace {
-
-// Provides functionality to create a window modal dialog.
-class ModalDialogDelegate : public DialogDelegateView {
- public:
-  ModalDialogDelegate() = default;
-  ~ModalDialogDelegate() override = default;
-
-  // WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModalDialogDelegate);
-};
-
-}  // namespace
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
 #define MAYBE_WindowMouseModalityTest DISABLED_WindowMouseModalityTest
 #else
@@ -670,10 +657,11 @@ TEST_F(DesktopWidgetTest, MAYBE_WindowMouseModalityTest) {
   // the main view within the dialog.
 
   // This instance will be destroyed when the dialog is destroyed.
-  ModalDialogDelegate* dialog_delegate = new ModalDialogDelegate;
+  auto dialog_delegate = std::make_unique<DialogDelegateView>();
+  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate, nullptr, top_level_widget.GetNativeView());
+      dialog_delegate.release(), nullptr, top_level_widget.GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   EventCountView* dialog_widget_view = new EventCountView();
   dialog_widget_view->SetBounds(0, 0, 50, 50);
@@ -719,23 +707,21 @@ TEST_F(DesktopWidgetTest, WindowModalityActivationTest) {
   HWND win32_window = views::HWNDForWidget(top_level_widget);
   EXPECT_TRUE(::IsWindow(win32_window));
 
-  // This instance will be destroyed when the dialog is destroyed.
-  ModalDialogDelegate* dialog_delegate = new ModalDialogDelegate;
-
   // We should be able to activate the window even if the WidgetDelegate
   // says no, when a modal dialog is active.
   widget_delegate.SetCanActivate(false);
 
+  auto dialog_delegate = std::make_unique<DialogDelegateView>();
+  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate, nullptr, top_level_widget->GetNativeView());
+      dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   modal_dialog_widget->Show();
   EXPECT_TRUE(modal_dialog_widget->IsVisible());
 
   LRESULT activate_result = ::SendMessage(
-      win32_window,
-      WM_MOUSEACTIVATE,
-      reinterpret_cast<WPARAM>(win32_window),
+      win32_window, WM_MOUSEACTIVATE, reinterpret_cast<WPARAM>(win32_window),
       MAKELPARAM(WM_LBUTTONDOWN, HTCLIENT));
   EXPECT_EQ(activate_result, MA_ACTIVATE);
 

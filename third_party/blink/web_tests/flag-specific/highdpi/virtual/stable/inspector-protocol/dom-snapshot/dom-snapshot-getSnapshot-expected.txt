@@ -1,0 +1,2167 @@
+Tests DOMSnapshot.getSnapshot method.
+{
+    computedStyles : [
+        [0] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 392.667px 567.438px
+                }
+                [2] : {
+                    name : height
+                    value : 1134.88px
+                }
+                [3] : {
+                    name : width
+                    value : 785.333px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [1] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 384.667px 559.438px
+                }
+                [2] : {
+                    name : height
+                    value : 1118.88px
+                }
+                [3] : {
+                    name : width
+                    value : 769.333px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [2] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 100px 100px
+                }
+                [2] : {
+                    name : height
+                    value : 200px
+                }
+                [3] : {
+                    name : width
+                    value : 200px
+                }
+                [4] : {
+                    name : display
+                    value : inline
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [3] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 0px 0px
+                }
+                [2] : {
+                    name : height
+                    value : auto
+                }
+                [3] : {
+                    name : width
+                    value : auto
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [4] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 384.667px 459.438px
+                }
+                [2] : {
+                    name : height
+                    value : 918.875px
+                }
+                [3] : {
+                    name : width
+                    value : 769.333px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [5] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 384.667px 8px
+                }
+                [2] : {
+                    name : height
+                    value : 16px
+                }
+                [3] : {
+                    name : width
+                    value : 769.333px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [6] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 100px 288px
+                }
+                [2] : {
+                    name : height
+                    value : 576px
+                }
+                [3] : {
+                    name : width
+                    value : 200px
+                }
+                [4] : {
+                    name : display
+                    value : inline-block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [7] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 100px 240px
+                }
+                [2] : {
+                    name : height
+                    value : 480px
+                }
+                [3] : {
+                    name : width
+                    value : 200px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [8] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 100px 24px
+                }
+                [2] : {
+                    name : height
+                    value : 48px
+                }
+                [3] : {
+                    name : width
+                    value : 160px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [9] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 80px 8px
+                }
+                [2] : {
+                    name : height
+                    value : 16px
+                }
+                [3] : {
+                    name : width
+                    value : 160px
+                }
+                [4] : {
+                    name : display
+                    value : list-item
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [10] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 0px 0px
+                }
+                [2] : {
+                    name : height
+                    value : auto
+                }
+                [3] : {
+                    name : width
+                    value : auto
+                }
+                [4] : {
+                    name : display
+                    value : inline
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [11] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : matrix(6.12323e-17, 1, -1, 6.12323e-17, 0, 0)
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 100px 16px
+                }
+                [2] : {
+                    name : height
+                    value : 32px
+                }
+                [3] : {
+                    name : width
+                    value : 200px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [12] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : matrix(6.12323e-17, 1, -1, 6.12323e-17, 0, 0)
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 0px 0px
+                }
+                [2] : {
+                    name : height
+                    value : auto
+                }
+                [3] : {
+                    name : width
+                    value : 200px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [13] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 202px 102px
+                }
+                [2] : {
+                    name : height
+                    value : 200px
+                }
+                [3] : {
+                    name : width
+                    value : 400px
+                }
+                [4] : {
+                    name : display
+                    value : inline
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [14] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 200px 100px
+                }
+                [2] : {
+                    name : height
+                    value : 200px
+                }
+                [3] : {
+                    name : width
+                    value : 400px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [15] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 192px 92px
+                }
+                [2] : {
+                    name : height
+                    value : 184px
+                }
+                [3] : {
+                    name : width
+                    value : 384px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [16] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 192px 8px
+                }
+                [2] : {
+                    name : height
+                    value : 16px
+                }
+                [3] : {
+                    name : width
+                    value : 384px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [17] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 384.667px 16px
+                }
+                [2] : {
+                    name : height
+                    value : 32px
+                }
+                [3] : {
+                    name : width
+                    value : 769.333px
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(255, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(255, 0, 0)
+                }
+            ]
+        }
+        [18] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 0px 0px
+                }
+                [2] : {
+                    name : height
+                    value : auto
+                }
+                [3] : {
+                    name : width
+                    value : auto
+                }
+                [4] : {
+                    name : display
+                    value : block
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(255, 0, 0)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(255, 0, 0)
+                }
+            ]
+        }
+        [19] : {
+            properties : [
+                [0] : {
+                    name : transform
+                    value : none
+                }
+                [1] : {
+                    name : transform-origin
+                    value : 0px 0px
+                }
+                [2] : {
+                    name : height
+                    value : auto
+                }
+                [3] : {
+                    name : width
+                    value : auto
+                }
+                [4] : {
+                    name : display
+                    value : inline
+                }
+                [5] : {
+                    name : outline-color
+                    value : rgb(0, 0, 238)
+                }
+                [6] : {
+                    name : color
+                    value : rgb(0, 0, 238)
+                }
+            ]
+        }
+    ]
+    domNodes : [
+        [0] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 1
+            ]
+            contentLanguage : de
+            documentEncoding : windows-1252
+            documentURL : <string>
+            eventListeners : [
+                [0] : {
+                    columnNumber : 46
+                    lineNumber : 43
+                    once : false
+                    passive : false
+                    scriptId : <string>
+                    type : documentListener
+                    useCapture : false
+                }
+            ]
+            frameId : <string>
+            layoutNodeIndex : 0
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+        }
+        [1] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 2
+                [1] : 8
+                [2] : 9
+            ]
+            frameId : <string>
+            layoutNodeIndex : 1
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [2] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 3
+                [1] : 4
+                [2] : 6
+                [3] : 7
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [3] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [4] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 5
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [5] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      @font-face {       font-family: 'ahem';       src: url(../../resources/Ahem.ttf);     }   
+        }
+        [6] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [7] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [8] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [9] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : body-class
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 10
+                [1] : 11
+                [2] : 12
+                [3] : 13
+                [4] : 63
+                [5] : 64
+                [6] : 65
+                [7] : 66
+                [8] : 68
+            ]
+            layoutNodeIndex : 2
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [10] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [11] : {
+            attributes : [
+                [0] : {
+                    name : srcset
+                    value : 1x.png 1x, 2x.png 2x
+                }
+            ]
+            backendNodeId : <number>
+            currentSourceURL : <string>inspector-protocol/resources/2x.png
+            layoutNodeIndex : 3
+            nodeName : IMG
+            nodeType : 1
+            nodeValue : 
+        }
+        [12] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 4
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [13] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : font-family: ahem;
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 14
+                [1] : 15
+                [2] : 17
+                [3] : 18
+                [4] : 31
+                [5] : 32
+                [6] : 34
+                [7] : 35
+                [8] : 49
+                [9] : 50
+                [10] : 59
+                [11] : 60
+                [12] : 62
+            ]
+            layoutNodeIndex : 5
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [14] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [15] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : class1
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 16
+            ]
+            layoutNodeIndex : 6
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [16] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 7
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Some Text
+        }
+        [17] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 8
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  And More Text   
+        }
+        [18] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : display:inline-block; width: 200px
+                }
+                [1] : {
+                    name : id
+                    value : A
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 19
+                [1] : 20
+                [2] : 22
+                [3] : 23
+                [4] : 30
+            ]
+            eventListeners : [
+                [0] : {
+                    columnNumber : 59
+                    lineNumber : 40
+                    once : false
+                    passive : false
+                    scriptId : <string>
+                    type : listenerA
+                    useCapture : false
+                }
+            ]
+            layoutNodeIndex : 9
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [19] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [20] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 21
+            ]
+            layoutNodeIndex : 10
+            nodeName : P
+            nodeType : 1
+            nodeValue : 
+        }
+        [21] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 11
+            nodeName : #text
+            nodeType : 3
+            nodeValue :        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sit amet est sem.       Aenean ut neque volutpat, posuere odio at, mollis nibh. Aenean sodales nulla et       ligula efficitur sollicitudin blandit sed lectus. Duis orci enim, sodales ac lectus sed,       hendrerit efficitur est. Quisque gravida facilisis viverra.     
+        }
+        [22] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [23] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : class3
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 24
+                [1] : 25
+                [2] : 26
+                [3] : 27
+                [4] : 29
+            ]
+            layoutNodeIndex : 12
+            nodeName : UL
+            nodeType : 1
+            nodeValue : 
+        }
+        [24] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :        
+        }
+        [25] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : class4
+                }
+            ]
+            backendNodeId : <number>
+            layoutNodeIndex : 13
+            nodeName : LI
+            nodeType : 1
+            nodeValue : 
+        }
+        [26] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :        
+        }
+        [27] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : B
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 28
+            ]
+            eventListeners : [
+                [0] : {
+                    columnNumber : 59
+                    lineNumber : 41
+                    once : false
+                    passive : false
+                    scriptId : <string>
+                    type : listenerB
+                    useCapture : false
+                }
+            ]
+            layoutNodeIndex : 14
+            nodeName : SPAN
+            nodeType : 1
+            nodeValue : 
+        }
+        [28] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 15
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Lets have a span
+        }
+        [29] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 16
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [30] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [31] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 17
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [32] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : transform: rotateZ(90deg); width: 200px
+                }
+                [1] : {
+                    name : id
+                    value : C
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 33
+            ]
+            eventListeners : [
+                [0] : {
+                    columnNumber : 59
+                    lineNumber : 42
+                    once : false
+                    passive : false
+                    scriptId : <string>
+                    type : listenerC
+                    useCapture : false
+                }
+            ]
+            layoutNodeIndex : 18
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [33] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 19
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Rotated text!
+        }
+        [34] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [35] : {
+            attributes : [
+                [0] : {
+                    name : src
+                    value : ./simple-iframe.html
+                }
+                [1] : {
+                    name : width
+                    value : 400
+                }
+                [2] : {
+                    name : height
+                    value : 200
+                }
+            ]
+            backendNodeId : <number>
+            contentDocumentIndex : 36
+            frameId : <string>
+            layoutNodeIndex : 20
+            nodeName : IFRAME
+            nodeType : 1
+            nodeValue : 
+        }
+        [36] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 37
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 21
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+        }
+        [37] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 38
+                [1] : 43
+                [2] : 44
+            ]
+            frameId : <string>
+            layoutNodeIndex : 22
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [38] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 39
+                [1] : 40
+                [2] : 42
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [39] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [40] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 41
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [41] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  @font-face {   font-family: 'ahem';   src: url(../../resources/Ahem.ttf); } 
+        }
+        [42] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [43] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [44] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 45
+                [1] : 46
+                [2] : 48
+            ]
+            layoutNodeIndex : 23
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [45] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [46] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : font-family: ahem;
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 47
+            ]
+            layoutNodeIndex : 24
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [47] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 25
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  Hello from the iframe. 
+        }
+        [48] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [49] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 26
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [50] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : shadow-host
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 51
+                [1] : 52
+                [2] : 54
+                [3] : 55
+                [4] : 58
+            ]
+            layoutNodeIndex : 27
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [51] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+            shadowRootType : open
+        }
+        [52] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 53
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : open
+        }
+        [53] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :        :host {         color: red;       }     
+            shadowRootType : open
+        }
+        [54] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+            shadowRootType : open
+        }
+        [55] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : font-family: ahem;
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 56
+            ]
+            layoutNodeIndex : 28
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : open
+        }
+        [56] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 57
+            ]
+            layoutNodeIndex : 29
+            nodeName : H1
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : open
+        }
+        [57] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 30
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Hi!
+            shadowRootType : open
+        }
+        [58] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+            shadowRootType : open
+        }
+        [59] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [60] : {
+            attributes : [
+                [0] : {
+                    name : href
+                    value : https://www.google.com/
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 61
+            ]
+            isClickable : true
+            layoutNodeIndex : 31
+            nodeName : A
+            nodeType : 1
+            nodeValue : 
+        }
+        [61] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 32
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Click ME!
+        }
+        [62] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 33
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [63] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [64] : {
+            attributes : [
+                [0] : {
+                    name : http-equiv
+                    value : content-language
+                }
+                [1] : {
+                    name : content
+                    value : de
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : META
+            nodeType : 1
+            nodeValue : 
+        }
+        [65] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [66] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 67
+            ]
+            nodeName : SCRIPT
+            nodeType : 1
+            nodeValue : 
+        }
+        [67] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  document.getElementById('A').addEventListener('listenerA', () => {}); document.getElementById('B').addEventListener('listenerB', () => {}); document.getElementById('C').addEventListener('listenerC', () => {}); document.addEventListener('documentListener', () => {}); 
+        }
+        [68] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+    ]
+    layoutTreeNodes : [
+        [0] : {
+            boundingBox : {
+                height : 900
+                width : 1200
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 0
+            isStackingContext : true
+        }
+        [1] : {
+            boundingBox : {
+                height : 1702.3125
+                width : 1178
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 1
+            isStackingContext : true
+            styleIndex : 0
+        }
+        [2] : {
+            boundingBox : {
+                height : 1678.3125
+                width : 1154
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 9
+            styleIndex : 1
+        }
+        [3] : {
+            boundingBox : {
+                height : 300
+                width : 300
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 11
+            styleIndex : 2
+        }
+        [4] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 12
+            layoutText :  
+            styleIndex : 3
+        }
+        [5] : {
+            boundingBox : {
+                height : 1378.3125
+                width : 1154
+                x : 12
+                y : 312
+            }
+            domNodeIndex : 13
+            styleIndex : 4
+        }
+        [6] : {
+            boundingBox : {
+                height : 24
+                width : 1154
+                x : 12
+                y : 312
+            }
+            domNodeIndex : 15
+            styleIndex : 5
+        }
+        [7] : {
+            boundingBox : {
+                height : 24
+                width : 216
+                x : 12
+                y : 312
+            }
+            domNodeIndex : 16
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 12
+                        y : 312
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : Some Text
+            styleIndex : 3
+        }
+        [8] : {
+            boundingBox : {
+                height : 24
+                width : 336
+                x : 12
+                y : 1152
+            }
+            domNodeIndex : 17
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 336
+                        x : 12
+                        y : 1152
+                    }
+                    numCharacters : 14
+                    startCharacterIndex : 1
+                }
+            ]
+            layoutText :  And More Text   
+            styleIndex : 3
+        }
+        [9] : {
+            boundingBox : {
+                height : 864
+                width : 300
+                x : 348
+                y : 336
+            }
+            domNodeIndex : 18
+            styleIndex : 6
+        }
+        [10] : {
+            boundingBox : {
+                height : 720
+                width : 300
+                x : 348
+                y : 360
+            }
+            domNodeIndex : 20
+            styleIndex : 7
+        }
+        [11] : {
+            boundingBox : {
+                height : 720
+                width : 288
+                x : 348
+                y : 360
+            }
+            domNodeIndex : 21
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 264
+                        x : 348
+                        y : 360
+                    }
+                    numCharacters : 11
+                    startCharacterIndex : 7
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 384
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 19
+                }
+                [2] : {
+                    boundingBox : {
+                        height : 24
+                        width : 120
+                        x : 348
+                        y : 408
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 29
+                }
+                [3] : {
+                    boundingBox : {
+                        height : 24
+                        width : 264
+                        x : 348
+                        y : 432
+                    }
+                    numCharacters : 11
+                    startCharacterIndex : 35
+                }
+                [4] : {
+                    boundingBox : {
+                        height : 24
+                        width : 240
+                        x : 348
+                        y : 456
+                    }
+                    numCharacters : 10
+                    startCharacterIndex : 47
+                }
+                [5] : {
+                    boundingBox : {
+                        height : 24
+                        width : 120
+                        x : 348
+                        y : 480
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 58
+                }
+                [6] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 504
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 64
+                }
+                [7] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 528
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 77
+                }
+                [8] : {
+                    boundingBox : {
+                        height : 24
+                        width : 120
+                        x : 348
+                        y : 552
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 90
+                }
+                [9] : {
+                    boundingBox : {
+                        height : 24
+                        width : 144
+                        x : 468
+                        y : 552
+                    }
+                    numCharacters : 6
+                    startCharacterIndex : 101
+                }
+                [10] : {
+                    boundingBox : {
+                        height : 24
+                        width : 192
+                        x : 348
+                        y : 576
+                    }
+                    numCharacters : 8
+                    startCharacterIndex : 108
+                }
+                [11] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 600
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 117
+                }
+                [12] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 624
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 127
+                }
+                [13] : {
+                    boundingBox : {
+                        height : 24
+                        width : 240
+                        x : 348
+                        y : 648
+                    }
+                    numCharacters : 10
+                    startCharacterIndex : 140
+                }
+                [14] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 672
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 151
+                }
+                [15] : {
+                    boundingBox : {
+                        height : 24
+                        width : 168
+                        x : 348
+                        y : 696
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 164
+                }
+                [16] : {
+                    boundingBox : {
+                        height : 24
+                        width : 192
+                        x : 348
+                        y : 720
+                    }
+                    numCharacters : 8
+                    startCharacterIndex : 172
+                }
+                [17] : {
+                    boundingBox : {
+                        height : 24
+                        width : 144
+                        x : 348
+                        y : 744
+                    }
+                    numCharacters : 6
+                    startCharacterIndex : 187
+                }
+                [18] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 768
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 194
+                }
+                [19] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 792
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 204
+                }
+                [20] : {
+                    boundingBox : {
+                        height : 24
+                        width : 264
+                        x : 348
+                        y : 816
+                    }
+                    numCharacters : 11
+                    startCharacterIndex : 217
+                }
+                [21] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 840
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 229
+                }
+                [22] : {
+                    boundingBox : {
+                        height : 24
+                        width : 240
+                        x : 348
+                        y : 864
+                    }
+                    numCharacters : 10
+                    startCharacterIndex : 242
+                }
+                [23] : {
+                    boundingBox : {
+                        height : 24
+                        width : 240
+                        x : 348
+                        y : 888
+                    }
+                    numCharacters : 10
+                    startCharacterIndex : 253
+                }
+                [24] : {
+                    boundingBox : {
+                        height : 24
+                        width : 264
+                        x : 348
+                        y : 912
+                    }
+                    numCharacters : 11
+                    startCharacterIndex : 264
+                }
+                [25] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 936
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 282
+                }
+                [26] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 960
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 292
+                }
+                [27] : {
+                    boundingBox : {
+                        height : 24
+                        width : 288
+                        x : 348
+                        y : 984
+                    }
+                    numCharacters : 12
+                    startCharacterIndex : 302
+                }
+                [28] : {
+                    boundingBox : {
+                        height : 24
+                        width : 168
+                        x : 348
+                        y : 1008
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 315
+                }
+                [29] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 348
+                        y : 1032
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 323
+                }
+                [30] : {
+                    boundingBox : {
+                        height : 24
+                        width : 192
+                        x : 348
+                        y : 1056
+                    }
+                    numCharacters : 8
+                    startCharacterIndex : 333
+                }
+            ]
+            layoutText :        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sit amet est sem.       Aenean ut neque volutpat, posuere odio at, mollis nibh. Aenean sodales nulla et       ligula efficitur sollicitudin blandit sed lectus. Duis orci enim, sodales ac lectus sed,       hendrerit efficitur est. Quisque gravida facilisis viverra.     
+            styleIndex : 3
+        }
+        [12] : {
+            boundingBox : {
+                height : 72
+                width : 300
+                x : 348
+                y : 1104
+            }
+            domNodeIndex : 23
+            styleIndex : 8
+        }
+        [13] : {
+            boundingBox : {
+                height : 24
+                width : 240
+                x : 408
+                y : 1104
+            }
+            domNodeIndex : 25
+            styleIndex : 9
+        }
+        [14] : {
+            boundingBox : {
+                height : 48
+                width : 216
+                x : 408
+                y : 1128
+            }
+            domNodeIndex : 27
+            styleIndex : 10
+        }
+        [15] : {
+            boundingBox : {
+                height : 48
+                width : 216
+                x : 408
+                y : 1128
+            }
+            domNodeIndex : 28
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 408
+                        y : 1128
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 0
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 24
+                        width : 144
+                        x : 408
+                        y : 1152
+                    }
+                    numCharacters : 6
+                    startCharacterIndex : 10
+                }
+            ]
+            layoutText : Lets have a span
+            styleIndex : 10
+        }
+        [16] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 29
+            layoutText :      
+            styleIndex : 3
+        }
+        [17] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 31
+            layoutText :    
+            styleIndex : 3
+        }
+        [18] : {
+            boundingBox : {
+                height : 300
+                width : 48
+                x : 138
+                y : 1074
+            }
+            domNodeIndex : 32
+            isStackingContext : true
+            styleIndex : 11
+        }
+        [19] : {
+            boundingBox : {
+                height : 168
+                width : 48
+                x : 138
+                y : 1074
+            }
+            domNodeIndex : 33
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 168
+                        width : 24
+                        x : 162
+                        y : 1074
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 0
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 120
+                        width : 24
+                        x : 138
+                        y : 1074
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 8
+                }
+            ]
+            isStackingContext : true
+            layoutText : Rotated text!
+            styleIndex : 12
+        }
+        [20] : {
+            boundingBox : {
+                height : 306
+                width : 606
+                x : 12
+                y : 1248
+            }
+            domNodeIndex : 35
+            styleIndex : 13
+        }
+        [21] : {
+            boundingBox : {
+                height : 300
+                width : 600
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 36
+            isStackingContext : true
+        }
+        [22] : {
+            boundingBox : {
+                height : 300
+                width : 600
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 37
+            isStackingContext : true
+            styleIndex : 14
+        }
+        [23] : {
+            boundingBox : {
+                height : 276
+                width : 576
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 44
+            styleIndex : 15
+        }
+        [24] : {
+            boundingBox : {
+                height : 24
+                width : 576
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 46
+            styleIndex : 16
+        }
+        [25] : {
+            boundingBox : {
+                height : 24
+                width : 528
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 47
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 528
+                        x : 12
+                        y : 12
+                    }
+                    numCharacters : 22
+                    startCharacterIndex : 1
+                }
+            ]
+            layoutText :  Hello from the iframe. 
+            styleIndex : 3
+        }
+        [26] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 49
+            layoutText :    
+            styleIndex : 3
+        }
+        [27] : {
+            boundingBox : {
+                height : 48
+                width : 1154
+                x : 12
+                y : 1586.15625
+            }
+            domNodeIndex : 50
+            styleIndex : 17
+        }
+        [28] : {
+            boundingBox : {
+                height : 48
+                width : 1154
+                x : 12
+                y : 1586.15625
+            }
+            domNodeIndex : 55
+            styleIndex : 17
+        }
+        [29] : {
+            boundingBox : {
+                height : 48
+                width : 1154
+                x : 12
+                y : 1586.15625
+            }
+            domNodeIndex : 56
+            styleIndex : 17
+        }
+        [30] : {
+            boundingBox : {
+                height : 48
+                width : 144
+                x : 12
+                y : 1586.15625
+            }
+            domNodeIndex : 57
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 48
+                        width : 144
+                        x : 12
+                        y : 1586.15625
+                    }
+                    numCharacters : 3
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : Hi!
+            styleIndex : 18
+        }
+        [31] : {
+            boundingBox : {
+                height : 24
+                width : 216
+                x : 12
+                y : 1666.3125
+            }
+            domNodeIndex : 60
+            styleIndex : 19
+        }
+        [32] : {
+            boundingBox : {
+                height : 24
+                width : 216
+                x : 12
+                y : 1666.3125
+            }
+            domNodeIndex : 61
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 216
+                        x : 12
+                        y : 1666.3125
+                    }
+                    numCharacters : 9
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : Click ME!
+            styleIndex : 19
+        }
+        [33] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 62
+            layoutText :  
+            styleIndex : 3
+        }
+    ]
+}
+

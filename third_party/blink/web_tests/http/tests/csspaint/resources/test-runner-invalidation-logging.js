@@ -76,24 +76,19 @@ function registerTest(imageType, test) {
                 runAfterLayoutAndPaint(function() {
                     // Check that the we got the correct paint invalidation.
                     if (window.internals) {
-                        const layers = JSON.parse(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS));
+                        const layers = JSON.parse(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS));
                         // Collect paint invalidations from all layers.
-                        var paintInvalidations = [];
-                        for (var layer_index in layers['layers']) {
-                            var layer = layers['layers'][layer_index];
-                            if (layer['paintInvalidations']) {
-                                for (var invalidation_index in layer['paintInvalidations'])
-                                    paintInvalidations.push(layer['paintInvalidations'][invalidation_index]);
-                            }
-                        }
-                        var hasNoInvalidations = paintInvalidations.length === 0;
+                        var invalidations = [];
+                        layers.layers.forEach(layer => {
+                          if (layer.invalidations)
+                            invalidations.push.apply(invalidations, layer.invalidations);
+                        });
+                        var hasNoInvalidations = invalidations.length === 0;
                         assert_equals(hasNoInvalidations, !!test.noInvalidation);
                         if (!hasNoInvalidations) {
-                            assert_equals(paintInvalidations.length, 1, 'There should be only one paint invalidation.');
-                            assert_array_equals(
-                                    paintInvalidations[0]['rect'],
-                                    [rect.left, rect.top, rect.width, rect.height],
-                                    'The paint invalidation should cover the entire element.');
+                            assert_equals(invalidations.length, 1, 'There should be only one invalidation.');
+                            assert_array_equals(invalidations[0], [rect.left, rect.top, rect.width, rect.height],
+                                                'The paint invalidation should cover the entire element.');
                         }
                         internals.stopTrackingRepaints(document);
                     }

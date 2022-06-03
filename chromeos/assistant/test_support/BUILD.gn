@@ -1,0 +1,10 @@
+static_library("test_support") {
+  testonly = true
+  sources = [ "expect_utils.h" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

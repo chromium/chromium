@@ -1,0 +1,7 @@
+afakhry@chromium.org
+jimmyxgong@chromium.org
+wutao@chromium.org
+zentaro@chromium.org
+
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org

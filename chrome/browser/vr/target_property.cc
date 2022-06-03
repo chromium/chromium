@@ -4,12 +4,12 @@
 
 #include "chrome/browser/vr/target_property.h"
 
-#include "cc/trees/target_property.h"
+#include "ui/gfx/animation/keyframe/target_property.h"
 
 namespace vr {
 
 static_assert(TargetProperty::NUM_TARGET_PROPERTIES - 1 <
-                  cc::kMaxTargetPropertyIndex,
+                  gfx::kMaxTargetPropertyIndex,
               "The number of vr target properties has exceeded the capacity of"
               " TargetProperties");
 

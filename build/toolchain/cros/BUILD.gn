@@ -4,28 +4,53 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sysroot.gni")
-import("//build/toolchain/gcc_toolchain.gni")
 import("//build/toolchain/cros_toolchain.gni")
+import("//build/toolchain/gcc_toolchain.gni")
+
+# This is mostly identical to gcc_toolchain, but handles relativizing toolchain
+# paths. This is needed for CrOS since these paths often change based on the
+# environment. For example, cxx is a relative path picked up on $PATH in the
+# chroot. But in Simple Chrome, cxx is a system-absolute path.
+template("cros_toolchain") {
+  gcc_toolchain(target_name) {
+    forward_variables_from(invoker, "*")
+
+    # CrOS's target toolchain wrapper prefers to invoke gomacc itself, so pass
+    # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
+    # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
+    # prepend gomacc like normal.
+    if (use_goma && toolchain_args.needs_gomacc_path_arg) {
+      extra_cppflags += " --gomacc-path $goma_dir/gomacc"
+    }
+    if (use_remoteexec && toolchain_args.needs_gomacc_path_arg) {
+      extra_cppflags += " --gomacc-path $rbe_cros_cc_wrapper"
+    }
+
+    # Relativize path if compiler is specified such that not to lookup from $PATH
+    # and cc/cxx does not contain additional flags.
+    if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
+      cc = rebase_path(cc, root_build_dir)
+    }
+    if (cxx != get_path_info(cxx, "file") &&
+        string_replace(cxx, " ", "") == cxx) {
+      cxx = rebase_path(cxx, root_build_dir)
+    }
+    if (ar != get_path_info(ar, "file") && string_replace(ar, " ", "") == ar) {
+      ar = rebase_path(ar, root_build_dir)
+    }
+    if (ld != get_path_info(ld, "file") && string_replace(ld, " ", "") == ld) {
+      ld = rebase_path(ld, root_build_dir)
+    }
+  }
+}
 
 # This is the normal toolchain for most targets.
-gcc_toolchain("target") {
+cros_toolchain("target") {
   ar = cros_target_ar
   cc = cros_target_cc
   cxx = cros_target_cxx
+  ld = cros_target_ld
 
-  # Relativize path if compiler is specified such that not to lookup from $PATH
-  # and cc/cxx does not contain additional flags.
-  if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
-    cc = rebase_path(cc, root_build_dir)
-  }
-  if (cxx != get_path_info(cxx, "file") && string_replace(cxx, " ", "") == cxx) {
-    cxx = rebase_path(cxx, root_build_dir)
-  }
-
-  ld = cxx
-  if (cros_target_ld != "") {
-    ld = cros_target_ld
-  }
   if (cros_target_nm != "") {
     nm = cros_target_nm
   }
@@ -39,6 +64,7 @@ gcc_toolchain("target") {
 
   toolchain_args = {
     cc_wrapper = ""
+    needs_gomacc_path_arg = true
     clang_use_chrome_plugins = false
     current_cpu = target_cpu
     current_os = "chromeos"
@@ -46,6 +72,7 @@ gcc_toolchain("target") {
     use_debug_fission = use_debug_fission
     use_gold = use_gold
     use_sysroot = use_sysroot
+    sysroot = target_sysroot
   }
 }
 
@@ -53,23 +80,12 @@ gcc_toolchain("target") {
 # //native_client/src/trusted/service_runtime/linux. It is identical
 # to ":target" except that it forces use_debug_fission, use_gold, and
 # use_sysroot off, and allows the user to set different sets of extra flags.
-gcc_toolchain("nacl_bootstrap") {
+cros_toolchain("nacl_bootstrap") {
   ar = cros_target_ar
   cc = cros_target_cc
   cxx = cros_target_cxx
+  ld = cros_target_ld
 
-  # Relativize path if compiler is specified such that not to lookup from $PATH
-  # and cc/cxx does not contain additional flags.
-  if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
-    cc = rebase_path(cc, root_build_dir)
-  }
-  if (cxx != get_path_info(cxx, "file") && string_replace(cxx, " ", "") == cxx) {
-    cxx = rebase_path(cxx, root_build_dir)
-  }
-  ld = cxx
-  if (cros_target_ld != "") {
-    ld = cros_target_ld
-  }
   if (cros_target_nm != "") {
     nm = cros_target_nm
   }
@@ -83,6 +99,7 @@ gcc_toolchain("nacl_bootstrap") {
 
   toolchain_args = {
     cc_wrapper = ""
+    needs_gomacc_path_arg = true
     clang_use_chrome_plugins = false
     current_cpu = target_cpu
     current_os = "chromeos"
@@ -93,24 +110,13 @@ gcc_toolchain("nacl_bootstrap") {
   }
 }
 
-gcc_toolchain("host") {
+cros_toolchain("host") {
   # These are args for the template.
   ar = cros_host_ar
   cc = cros_host_cc
   cxx = cros_host_cxx
+  ld = cros_host_ld
 
-  # Relativize path if compiler is specified such that not to lookup from $PATH
-  # and cc/cxx does not contain additional flags.
-  if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
-    cc = rebase_path(cc, root_build_dir)
-  }
-  if (cxx != get_path_info(cxx, "file") && string_replace(cxx, " ", "") == cxx) {
-    cxx = rebase_path(cxx, root_build_dir)
-  }
-  ld = cxx
-  if (cros_host_ld != "") {
-    ld = cros_host_ld
-  }
   if (cros_host_nm != "") {
     nm = cros_host_nm
   }
@@ -124,32 +130,23 @@ gcc_toolchain("host") {
 
   toolchain_args = {
     cc_wrapper = ""
+    needs_gomacc_path_arg = false
     clang_use_chrome_plugins = false
     is_clang = cros_host_is_clang
     current_cpu = host_cpu
     current_os = "linux"
     use_sysroot = use_sysroot
+    sysroot = cros_host_sysroot
   }
 }
 
-gcc_toolchain("v8_snapshot") {
+cros_toolchain("v8_snapshot") {
   # These are args for the template.
   ar = cros_v8_snapshot_ar
   cc = cros_v8_snapshot_cc
   cxx = cros_v8_snapshot_cxx
+  ld = cros_v8_snapshot_ld
 
-  # Relativize path if compiler is specified such that not to lookup from $PATH
-  # and cc/cxx does not contain additional flags.
-  if (cc != get_path_info(cc, "file") && string_replace(cc, " ", "") == cc) {
-    cc = rebase_path(cc, root_build_dir)
-  }
-  if (cxx != get_path_info(cxx, "file") && string_replace(cxx, " ", "") == cxx) {
-    cxx = rebase_path(cxx, root_build_dir)
-  }
-  ld = cxx
-  if (cros_v8_snapshot_ld != "") {
-    ld = cros_v8_snapshot_ld
-  }
   if (cros_v8_snapshot_nm != "") {
     nm = cros_v8_snapshot_nm
   }
@@ -163,6 +160,7 @@ gcc_toolchain("v8_snapshot") {
 
   toolchain_args = {
     cc_wrapper = ""
+    needs_gomacc_path_arg = false
     clang_use_chrome_plugins = false
     is_clang = cros_v8_snapshot_is_clang
     if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
@@ -173,5 +171,6 @@ gcc_toolchain("v8_snapshot") {
     v8_current_cpu = v8_target_cpu
     current_os = "linux"
     use_sysroot = use_sysroot
+    sysroot = cros_v8_snapshot_sysroot
   }
 }

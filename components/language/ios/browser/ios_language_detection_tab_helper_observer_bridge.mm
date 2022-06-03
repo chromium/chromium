@@ -4,7 +4,7 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

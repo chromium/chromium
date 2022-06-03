@@ -8,5 +8,5 @@ dictionary RTCIceCandidateInit {
     DOMString candidate = "";
     DOMString? sdpMid = null;
     unsigned short? sdpMLineIndex = null;
-    DOMString usernameFragment;
+    DOMString? usernameFragment = null;
 };

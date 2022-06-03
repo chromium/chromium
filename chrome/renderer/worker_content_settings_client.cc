@@ -4,8 +4,9 @@
 
 #include "chrome/renderer/worker_content_settings_client.h"
 
-#include "chrome/common/render_messages.h"
-#include "chrome/renderer/content_settings_agent_impl.h"
+#include "base/memory/ptr_util.h"
+#include "components/content_settings/renderer/content_settings_agent_impl.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -31,7 +32,8 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
   content::ChildThread::Get()->BindHostReceiver(
       pending_content_settings_manager_.InitWithNewPipeAndPassReceiver());
 
-  ContentSettingsAgentImpl* agent = ContentSettingsAgentImpl::Get(render_frame);
+  content_settings::ContentSettingsAgentImpl* agent =
+      content_settings::ContentSettingsAgentImpl::Get(render_frame);
   allow_running_insecure_content_ = agent->allow_running_insecure_content();
   content_setting_rules_ = agent->GetContentSettingRules();
 }
@@ -57,24 +59,37 @@ WorkerContentSettingsClient::Clone() {
   return base::WrapUnique(new WorkerContentSettingsClient(*this));
 }
 
-bool WorkerContentSettingsClient::RequestFileSystemAccessSync() {
-  return AllowStorageAccess(
-      chrome::mojom::ContentSettingsManager::StorageType::FILE_SYSTEM);
+void WorkerContentSettingsClient::AllowStorageAccess(
+    StorageType storage_type,
+    base::OnceCallback<void(bool)> callback) {
+  if (is_unique_origin_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  EnsureContentSettingsManager();
+
+  content_settings_manager_->AllowStorageAccess(
+      render_frame_id_,
+      content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
+          storage_type),
+      document_origin_, site_for_cookies_, top_frame_origin_,
+      std::move(callback));
 }
 
-bool WorkerContentSettingsClient::AllowIndexedDB() {
-  return AllowStorageAccess(
-      chrome::mojom::ContentSettingsManager::StorageType::INDEXED_DB);
-}
+bool WorkerContentSettingsClient::AllowStorageAccessSync(
+    StorageType storage_type) {
+  if (is_unique_origin_)
+    return false;
 
-bool WorkerContentSettingsClient::AllowCacheStorage() {
-  return AllowStorageAccess(
-      chrome::mojom::ContentSettingsManager::StorageType::CACHE);
-}
+  EnsureContentSettingsManager();
 
-bool WorkerContentSettingsClient::AllowWebLocks() {
-  return AllowStorageAccess(
-      chrome::mojom::ContentSettingsManager::StorageType::WEB_LOCKS);
+  bool result = false;
+  content_settings_manager_->AllowStorageAccess(
+      render_frame_id_,
+      content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
+          storage_type),
+      document_origin_, site_for_cookies_, top_frame_origin_, &result);
+  return result;
 }
 
 bool WorkerContentSettingsClient::AllowRunningInsecureContent(
@@ -96,6 +111,9 @@ bool WorkerContentSettingsClient::AllowScriptFromSource(
   bool allow = enabled_per_settings;
   if (allow && content_setting_rules_) {
     GURL top_frame_origin_url = top_frame_origin_.GetURL();
+    // Allow DevTools to run worker scripts.
+    if (top_frame_origin_url.SchemeIs(content::kChromeDevToolsScheme))
+      return true;
     for (const auto& rule : content_setting_rules_->script_rules) {
       if (rule.primary_pattern.Matches(top_frame_origin_url) &&
           rule.secondary_pattern.Matches(script_url)) {
@@ -126,22 +144,8 @@ bool WorkerContentSettingsClient::ShouldAutoupgradeMixedContent() {
   return false;
 }
 
-bool WorkerContentSettingsClient::AllowStorageAccess(
-    chrome::mojom::ContentSettingsManager::StorageType storage_type) {
-  if (is_unique_origin_)
-    return false;
-
-  EnsureContentSettingsManager();
-
-  bool result = false;
-  content_settings_manager_->AllowStorageAccess(
-      render_frame_id_, storage_type, document_origin_, site_for_cookies_,
-      top_frame_origin_, &result);
-  return result;
-}
-
 void WorkerContentSettingsClient::EnsureContentSettingsManager() const {
-  // Lazily bind |content_settings_manager_| so it is bound on the right thread.
+  // Lazily bind `content_settings_manager_` so it is bound on the right thread.
   if (content_settings_manager_)
     return;
   DCHECK(pending_content_settings_manager_);

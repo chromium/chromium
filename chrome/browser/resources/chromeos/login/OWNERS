@@ -1,10 +1,9 @@
 # (in PST)
-achuith@chromium.org
 alemate@chromium.org
-tbarzic@chromium.org
 
 # (in CET)
 antrim@chromium.org
 rsorokin@chromium.org
+raleksandrov@google.com
 
-# COMPONENT: UI>Shell>OOBE
+per-file *security_token*=emaxx@chromium.org

@@ -173,7 +173,7 @@ class Clustering(object):
     neighbors = []
     for sym_list in sym_lists:
       for i, s in enumerate(sym_list):
-        for j in xrange(i + 1, min(i + self.NEIGHBOR_DISTANCE, len(sym_list))):
+        for j in range(i + 1, min(i + self.NEIGHBOR_DISTANCE, len(sym_list))):
           if s == sym_list[j]:
             # Free functions that are static inline seem to be the only
             # source of these duplicates.
@@ -265,7 +265,7 @@ def _GetOffsetSymbolName(processor, dump_offset):
   dump_offset_to_symbol_info = \
       processor.GetDumpOffsetToSymboInfolIncludingWhitelist()
   offset_to_primary = processor.OffsetToPrimaryMap()
-  idx = dump_offset / 2
+  idx = dump_offset // 2
   assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
       'Dump offset out of binary range')
   symbol_info = dump_offset_to_symbol_info[idx]
@@ -294,17 +294,17 @@ def _GetSymbolsCallGraph(profiles, processor):
   # |process_type| can be : browser, renderer, gpu-process, etc.
   for process_type in offsets_graph:
     for process in offsets_graph[process_type]:
-      process = sorted(process, key=lambda k: long(k['index']))
+      process = sorted(process, key=lambda k: int(k['index']))
       graph_list = []
       for el in process:
-        index = long(el['index'])
+        index = int(el['index'])
         callee_symbol = _GetOffsetSymbolName(processor,
-                                             long(el['callee_offset']))
+                                             int(el['callee_offset']))
         misses = 0
         caller_and_count = []
         for bucket in el['caller_and_count']:
-          caller_offset = long(bucket['caller_offset'])
-          count = long(bucket['count'])
+          caller_offset = int(bucket['caller_offset'])
+          count = int(bucket['count'])
           if caller_offset == 0:
             misses += count
             continue

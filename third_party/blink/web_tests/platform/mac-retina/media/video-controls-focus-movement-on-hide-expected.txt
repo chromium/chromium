@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that focus moves to "body" when controls fade out with a button focused. assert_equals: expected Element node <body><video controls="" src="content/test.ogv"></video>
-... but got Element node <video controls="" src="content/test.ogv"></video>
-Harness: the test ran to completion.
-

@@ -144,12 +144,12 @@ TEST_F(DownloadManagerViewControllerTest, Start) {
 }
 
 // Tests that tapping Open In... button calls
-// downloadManagerViewController:presentOpenInMenuWithLayoutGuide:.
+// presentOpenInForDownloadManagerViewController:.
 TEST_F(DownloadManagerViewControllerTest, OpenIn) {
   id delegate =
       OCMStrictProtocolMock(@protocol(DownloadManagerViewControllerDelegate));
-  OCMExpect([delegate downloadManagerViewController:view_controller_
-                   presentOpenInMenuWithLayoutGuide:[OCMArg any]]);
+  OCMExpect([delegate
+      presentOpenInForDownloadManagerViewController:view_controller_]);
 
   view_controller_.state = kDownloadManagerStateSucceeded;
   view_controller_.delegate = delegate;

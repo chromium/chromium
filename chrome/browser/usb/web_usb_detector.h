@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,6 +17,8 @@
 class WebUsbDetector : public device::mojom::UsbDeviceManagerClient {
  public:
   WebUsbDetector();
+  WebUsbDetector(const WebUsbDetector&) = delete;
+  WebUsbDetector& operator=(const WebUsbDetector&) = delete;
   ~WebUsbDetector() override;
 
   // Initializes the WebUsbDetector.
@@ -32,7 +33,6 @@ class WebUsbDetector : public device::mojom::UsbDeviceManagerClient {
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device_info) override;
 
-  void OnDeviceManagerConnectionError();
   bool IsDisplayingNotification(const GURL& url);
 
   std::map<std::string, GURL> open_notifications_by_id_;
@@ -43,8 +43,6 @@ class WebUsbDetector : public device::mojom::UsbDeviceManagerClient {
       client_receiver_{this};
 
   base::WeakPtrFactory<WebUsbDetector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbDetector);
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_DETECTOR_H_

@@ -8,6 +8,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
+
 import sys
 
 def _CreateHistogramValueChecker(input_api, output_api, path):

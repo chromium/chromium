@@ -4,7 +4,7 @@
 
 #include "remoting/client/input/normalizing_input_filter_cros.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace remoting {

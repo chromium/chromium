@@ -4,13 +4,13 @@
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
 <script src="resources/webxr_test_asserts.js"></script>
-<canvas id="webgl-canvas"></canvas>
 
 <script>
 let testName = "Creating XRReferenceSpace origin offset off of `viewer` space works.";
 
 let fakeDeviceInitParams = {
   supportsImmersive: true,
+  supportedModes: ["inline", "immersive-vr"],
   viewerOrigin: VALID_POSE_TRANSFORM,
   views: VALID_VIEWS,
   supportedFeatures: ALL_FEATURES

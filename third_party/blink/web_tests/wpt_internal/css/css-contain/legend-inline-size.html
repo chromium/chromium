@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<!-- Merge these tests into upstream wpt test if/when added to the css-contain spec -->
+<link rel="help" href="https://drafts.csswg.org/css-contain/#contain-property">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/1031">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5796">
+<link rel="match" href="legend-inline-size-ref.html">
+<p>There should be blue square (legend), and a yellow square below it (fieldset
+  content).</p>
+<fieldset style="width:fit-content; min-width:0;">
+  <legend style="contain:inline-size; border:solid blue; border-width:0 50px; padding:0; background:red;">
+    <div style="width:500px; height:100px;"></div>
+  </legend>
+  <div style="height:100px; background:yellow;"></div>
+</fieldset>

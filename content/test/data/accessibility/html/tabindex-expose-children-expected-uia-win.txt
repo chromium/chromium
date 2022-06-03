@@ -1,0 +1,14 @@
+Document
+++Table Grid.ColumnCount=2 Grid.RowCount=1 Table.RowOrColumnMajor='RowMajor'
+++++DataItem IsControlElement=false
+++++++DataItem Name='1.' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='1.' IsControlElement=false
+++++++DataItem Name='2.' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='2.' IsControlElement=false
+++Group Name='3. 4.'
+++++Table Grid.ColumnCount=2 Grid.RowCount=1 Table.RowOrColumnMajor='RowMajor'
+++++++DataItem IsControlElement=false
+++++++++DataItem Name='3.' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='3.' IsControlElement=false
+++++++++DataItem Name='4.' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='4.' IsControlElement=false

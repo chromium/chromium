@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <!-- This single-child FrameLayout is needed for its top padding. -->
-<org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/history_navigation"
     android:layout_width="match_parent"
@@ -15,8 +15,8 @@
         android:id="@+id/recent_tabs_root"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:paddingTop="@dimen/toolbar_height_no_shadow"
-        android:background="@color/modern_primary_color"
+        android:layout_marginTop="@dimen/toolbar_height_no_shadow"
+        android:background="@color/default_bg_color"
         android:focusable="true"
         android:focusableInTouchMode="true" >
 
@@ -25,12 +25,12 @@
             android:paddingTop="@dimen/recent_tabs_group_view_vertical_padding"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:cacheColorHint="@color/modern_primary_color"
+            android:cacheColorHint="@color/default_bg_color"
             android:childDivider="@null"
             android:divider="@null"
-            android:background="@color/modern_primary_color"
+            android:background="@color/default_bg_color"
             android:listSelector="@android:color/transparent"
             android:scrollbarStyle="outsideOverlay" />
 
     </org.chromium.chrome.browser.ntp.NativePageRootFrameLayout>
-</org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout>
+</FrameLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/min_touch_target_size"
+    app:chipColor="@color/filled_button_bg"
+    app:rippleColor="@color/filled_button_ripple_color"
+    app:cornerRadius="@dimen/autofill_assistant_button_corner_radius"
+    app:primaryTextAppearance="@style/TextAppearance.Button.Text.Filled"
+    app:iconWidth="24dp"
+    app:iconHeight="24dp"
+    app:chipBorderWidth="@dimen/autofill_assistant_filled_button_border_width"
+    app:verticalInset="@dimen/autofill_assistant_button_bg_vertical_inset" />

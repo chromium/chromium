@@ -4,7 +4,7 @@
 
 #include "chrome/browser/net/prediction_options.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -25,8 +25,8 @@ NetworkPredictionStatus CanPrefetchAndPrerender(
     case NETWORK_PREDICTION_WIFI_ONLY:
       if (base::FeatureList::IsEnabled(
               features::kPredictivePrefetchingAllowedOnAllConnectionTypes) ||
-          !net::NetworkChangeNotifier::IsConnectionCellular(
-              net::NetworkChangeNotifier::GetConnectionType())) {
+          (net::NetworkChangeNotifier::GetConnectionCost() !=
+           net::NetworkChangeNotifier::CONNECTION_COST_METERED)) {
         return NetworkPredictionStatus::ENABLED;
       }
       return NetworkPredictionStatus::DISABLED_DUE_TO_NETWORK;

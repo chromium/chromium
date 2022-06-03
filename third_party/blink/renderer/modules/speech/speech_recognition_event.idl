@@ -26,12 +26,12 @@
 // https://w3c.github.io/speech-api/#speechrecognitionevent
 
 [
-    NoInterfaceObject
+    LegacyWindowAlias=webkitSpeechRecognitionEvent,
+    LegacyWindowAlias_Measure,
+    LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
+    LegacyNoInterfaceObject
 ] interface SpeechRecognitionEvent : Event {
-    constructor(DOMString type, optional SpeechRecognitionEventInit initDict);
+    constructor(DOMString type, optional SpeechRecognitionEventInit initDict = {});
     readonly attribute unsigned long resultIndex;
     readonly attribute SpeechRecognitionResultList? results;
-
-    [Measure] readonly attribute Document? interpretation;
-    [Measure] readonly attribute Document? emma;
 };

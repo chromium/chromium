@@ -14,16 +14,17 @@ class HeapObject;
 class PartObject {
     DISALLOW_NEW();
 private:
-    RefPtr<HeapObject> m_obj;
+    scoped_refptr<HeapObject> m_obj;
+    WeakPtr<HeapObject> m_obj2;
 };
 
 class HeapObject : public GarbageCollected<HeapObject> {
  public:
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   PartObject m_part;
-  Vector<RefPtr<HeapObject>> m_objs;
+  Vector<scoped_refptr<HeapObject>> m_objs;
 };
 }
 

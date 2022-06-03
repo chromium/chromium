@@ -15,13 +15,13 @@ test(function(t) {
         if (window.chrome && chrome.gpuBenchmarking) {
         var exception;
         try {
-            chrome.gpuBenchmarking.smoothScrollBy(300, function() {}, -1, -1);
+            chrome.gpuBenchmarking.smoothScrollByXY(0, 300, function() {}, -1, -1);
         } catch(e) {
           exception = e;
         }
         assert_not_equals(exception, undefined);
     }
-}, 'Test that chrome.gpuBenchmarking.smoothScrollBy throws an exception on invalid input values.');
+}, 'Test that chrome.gpuBenchmarking.smoothScrollByXY throws an exception on invalid input values.');
 
 test(function(t) {
         if (window.chrome && chrome.gpuBenchmarking) {

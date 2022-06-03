@@ -20,7 +20,7 @@
                   test.waitForExpectedEvents(function()
                   {
                       if (expectTypeError) {
-                          assert_throws({name: "TypeError"},
+                          assert_throws_js(TypeError,
                               function() { mediaSource.duration = testDurationValue; },
                               "mediaSource.duration assignment throws an exception for " + testDurationValue);
                           test.done();

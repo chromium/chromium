@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 44: The specified value "undefined" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
+CONSOLE WARNING: The specified value "undefined" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
 Multiple fields UI of time input type with keyboard events
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -55,7 +55,7 @@ PASS input.value is "15:00"
 PASS input.value is "15:03"
 PASS document.activeElement.id is "before"
 == Up key on maximum value ==
-PASS input.value is "13:00"
+PASS input.value is "13:00:00.000"
 == Down key on minimum value ==
 PASS input.value is "00:59:59.999"
 == Backspace key ==
@@ -70,6 +70,9 @@ The tests in this block fail on platforms without the lang-attribute-aware-form-
 PASS input.value is "01:56"
 PASS input.value is "01:02"
 PASS input.value is "03:02"
+== Reversed range ==
+PASS input.value is "23:30"
+PASS input.value is "00:30"
 PASS successfullyParsed is true
 
 TEST COMPLETE

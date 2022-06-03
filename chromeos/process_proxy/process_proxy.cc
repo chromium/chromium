@@ -22,7 +22,7 @@
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
@@ -161,10 +161,7 @@ bool ProcessProxy::Write(const std::string& text) {
   if (!process_launched_)
     return false;
 
-  // We don't want to write '\0' to the pipe.
-  size_t data_size = text.length() * sizeof(*text.c_str());
-  return base::WriteFileDescriptor(
-             pt_pair_[PT_MASTER_FD], text.c_str(), data_size);
+  return base::WriteFileDescriptor(pt_pair_[PT_MASTER_FD], text);
 }
 
 bool ProcessProxy::OnTerminalResize(int width, int height) {
@@ -282,8 +279,8 @@ void ProcessProxy::ClearFdPair(int* pipe) {
   pipe[PT_SLAVE_FD] = base::kInvalidFd;
 }
 
-base::ProcessHandle ProcessProxy::GetProcessHandleForTesting() {
-  return process_.IsValid() ? process_.Handle() : base::kNullProcessHandle;
+const base::Process* ProcessProxy::GetProcessForTesting() {
+  return &process_;
 }
 
 }  // namespace chromeos

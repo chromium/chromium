@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 13: MutationObserver callback
+CONSOLE MESSAGE: MutationObserver callback
 Test passes if it does not crash

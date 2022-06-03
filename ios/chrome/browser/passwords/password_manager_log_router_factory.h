@@ -9,21 +9,26 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
+
 namespace autofill {
 class LogRouter;
 }
 
 namespace ios {
-class ChromeBrowserState;
-
 // Singleton that owns all PasswordStores and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
   static autofill::LogRouter* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static PasswordManagerLogRouterFactory* GetInstance();
+
+  PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =
+      delete;
+  PasswordManagerLogRouterFactory& operator=(
+      const PasswordManagerLogRouterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<PasswordManagerLogRouterFactory>;
@@ -34,8 +39,6 @@ class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerLogRouterFactory);
 };
 
 }  // namespace ios

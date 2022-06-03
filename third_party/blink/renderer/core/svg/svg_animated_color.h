@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -46,15 +47,17 @@ class SVGColorProperty final : public SVGPropertyBase {
   SVGPropertyBase* CloneForAnimation(const String&) const override;
   String ValueAsString() const override;
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedColor; }
   AnimatedPropertyType GetType() const override { return ClassType(); }
@@ -63,7 +66,12 @@ class SVGColorProperty final : public SVGPropertyBase {
   StyleColor style_color_;
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGColorProperty);
+template <>
+struct DowncastTraits<SVGColorProperty> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGColorProperty::ClassType();
+  }
+};
 
 }  // namespace blink
 

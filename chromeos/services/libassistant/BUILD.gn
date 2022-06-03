@@ -1,0 +1,291 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chromeos/assistant/assistant.gni")
+
+assert(enable_cros_libassistant)
+
+component("constants") {
+  output_name = "libassistant_constants"
+  defines = [ "IS_LIBASSISTANT_CONSTANTS_IMPL" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+}
+
+component("libassistant") {
+  sources = [
+    "libassistant_service.cc",
+    "libassistant_service.h",
+  ]
+
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/services/libassistant/public/mojom",
+  ]
+
+  deps = [
+    ":internal",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+  ]
+
+  defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+
+  # The default output name of this service, `libassistant_service.so`, already
+  # exists (as build target of //chromeos/services/assistant), so we have to
+  # use `lib_libassistant_service.so`.
+  output_name = "lib_libassistant_service"
+}
+
+source_set("sandbox_hook") {
+  sources = [
+    "libassistant_sandbox_hook.cc",
+    "libassistant_sandbox_hook.h",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//sandbox/linux:sandbox_services",
+    "//sandbox/policy",
+  ]
+}
+
+source_set("callback_utils") {
+  sources = [ "callback_utils.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("internal") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "abortable_task_list.cc",
+    "abortable_task_list.h",
+    "audio_input_controller.cc",
+    "audio_input_controller.h",
+    "chromium_api_delegate.cc",
+    "chromium_api_delegate.h",
+    "chromium_http_connection.cc",
+    "chromium_http_connection.h",
+    "conversation_controller.cc",
+    "conversation_controller.h",
+    "conversation_state_listener_impl.cc",
+    "conversation_state_listener_impl.h",
+    "device_settings_controller.cc",
+    "device_settings_controller.h",
+    "display_connection.cc",
+    "display_connection.h",
+    "display_controller.cc",
+    "display_controller.h",
+    "fake_auth_provider.cc",
+    "fake_auth_provider.h",
+    "file_provider_impl.cc",
+    "file_provider_impl.h",
+    "libassistant_factory.h",
+    "media_controller.cc",
+    "media_controller.h",
+    "network_provider_impl.cc",
+    "network_provider_impl.h",
+    "platform_api.cc",
+    "platform_api.h",
+    "power_manager_provider_impl.cc",
+    "power_manager_provider_impl.h",
+    "service_controller.cc",
+    "service_controller.h",
+    "settings_controller.cc",
+    "settings_controller.h",
+    "speaker_id_enrollment_controller.cc",
+    "speaker_id_enrollment_controller.h",
+    "system_provider_impl.cc",
+    "system_provider_impl.h",
+    "timer_controller.cc",
+    "timer_controller.h",
+    "util.cc",
+    "util.h",
+  ]
+
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
+
+  deps = [
+    ":audio",
+    ":callback_utils",
+    ":constants",
+    "./grpc:assistant_client",
+    "./grpc:grpc_service",
+    "./grpc/external_services:grpc_services_initializer",
+    "./grpc/external_services:grpc_services_observer",
+    "//build/util:chromium_git_revision",
+    "//chromeos/assistant:buildflags",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:buildflags",
+    "//chromeos/assistant/internal:libassistant",
+    "//chromeos/assistant/internal:support",
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/dbus",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/util:util",
+    "//chromeos/resources:resources_grit",
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/assistant/public/proto",
+    "//chromeos/services/libassistant/public/mojom",
+    "//chromeos/strings:strings_grit",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/internal_api:fuchsia_api_helper",
+    "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
+    "//libassistant/shared/public",
+    "//libassistant/shared/public:export",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//ui/base",
+  ]
+
+  defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+}
+
+source_set("audio") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "audio/audio_device_owner.cc",
+    "audio/audio_device_owner.h",
+    "audio/audio_input_impl.cc",
+    "audio/audio_input_impl.h",
+    "audio/audio_input_provider_impl.cc",
+    "audio/audio_input_provider_impl.h",
+    "audio/audio_input_stream.cc",
+    "audio/audio_input_stream.h",
+    "audio/audio_media_data_source.cc",
+    "audio/audio_media_data_source.h",
+    "audio/audio_output_provider_impl.cc",
+    "audio/audio_output_provider_impl.h",
+    "audio/audio_stream_handler.cc",
+    "audio/audio_stream_handler.h",
+    "audio/volume_control_impl.cc",
+    "audio/volume_control_impl.h",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":fake_input_device",
+    "//ash/public/mojom",
+    "//base",
+    "//chromeos/assistant/internal:buildflags",
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/libassistant/grpc:assistant_client",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
+    "//libassistant/shared/public",
+    "//libassistant/shared/public:export",
+    "//media",
+    "//media/mojo/mojom",
+    "//services/audio/public/cpp",
+    "//services/media_session/public/mojom",
+  ]
+}
+
+source_set("fake_input_device") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "audio/fake_input_device.cc",
+    "audio/fake_input_device.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/fake_assistant_client.cc",
+    "test_support/fake_assistant_client.h",
+    "test_support/fake_libassistant_factory.cc",
+    "test_support/fake_libassistant_factory.h",
+    "test_support/fake_platform_delegate.cc",
+    "test_support/fake_platform_delegate.h",
+    "test_support/libassistant_service_tester.cc",
+    "test_support/libassistant_service_tester.h",
+  ]
+
+  deps = [
+    ":callback_utils",
+    ":internal",
+    ":libassistant",
+    "//base/test:test_support",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/services/libassistant/grpc:assistant_client",
+    "//chromeos/services/libassistant/public/mojom",
+    "//services/network:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "audio/audio_output_provider_impl_unittest.cc",
+    "audio_input_controller_unittest.cc",
+    "authentication_state_observer_unittest.cc",
+    "conversation_controller_unittest.cc",
+    "conversation_observer_unittest.cc",
+    "device_settings_controller_unittest.cc",
+    "display_controller_unittest.cc",
+    "media_controller_unittest.cc",
+    "network_provider_impl_unittest.cc",
+    "notification_delegate_unittest.cc",
+    "power_manager_provider_impl_unittest.cc",
+    "service_controller_unittest.cc",
+    "settings_controller_unittest.cc",
+    "speaker_id_enrollment_controller_unittest.cc",
+    "speech_recognition_observer_unittest.cc",
+    "system_provider_impl_unittest.cc",
+    "timer_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":audio",
+    ":internal",
+    ":libassistant",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:buildflags",
+    "//chromeos/assistant/internal:support",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/test_support:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/libassistant/grpc:assistant_client",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/internal_api/c:api_wrappers",
+    "//services/audio/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags =
+      [ "ENABLE_FAKE_ASSISTANT_MICROPHONE=$enable_fake_assistant_microphone" ]
+}

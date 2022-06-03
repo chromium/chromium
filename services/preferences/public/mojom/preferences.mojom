@@ -32,8 +32,7 @@ struct TrackedPreferenceMetadata {
     // Atomic preferences are tracked as a whole.
     ATOMIC,
     // Split preferences are dictionaries for which each top-level entry is
-    // tracked independently. Note: preferences using this strategy must be kept
-    // in sync with TrackedSplitPreferences in histograms.xml.
+    // tracked independently.
     SPLIT,
   };
 

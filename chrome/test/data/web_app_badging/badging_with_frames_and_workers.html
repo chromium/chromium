@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>This is a badging test page with iframes and service workers</title>
+</head>
+<body>
+  <iframe name="in-scope" src="/web_app_badging/blank.html" id="in-scope"></iframe>
+  <iframe name="sub-app" src="/web_app_badging/blank.html" id="sub-app"></iframe>
+  <iframe name="cross-site" id="cross-site"></iframe>
+  <script type="text/javascript">
+    'use strict';
+
+    // Note: The url for the cross site frame is embedded in the query string.
+    const crossFrame = document.getElementById('cross-site');
+    const crossSiteUrl = new URLSearchParams(location.search).get('url');
+    crossFrame.src = crossSiteUrl;
+
+    // Copy of //content/test/data/service_worker/create_service_worker.html.
+
+    // Simulates navigator.serviceWorker.ready, which can't be used since this
+    // document may not be in-scope.
+    async function whenReady(registration) {
+      if (registration.active)
+        return;
+      // If there's no .active, .waiting will activate before .installing.
+      const nextActiveWorker = registration.waiting || registration.installing;
+      return new Promise((resolve, reject) => {
+        nextActiveWorker.addEventListener('statechange', event => {
+          if (nextActiveWorker.state == 'activated')
+            resolve();
+          if (nextActiveWorker.state == 'redundant')
+            reject('worker became redundant');
+        });
+      });
+    }
+    // BrowserTests should use EvalJs() to call registerServiceWorker().
+    // EvalJs() provides this function's return value, which enables the
+    // BrowserTest to verify successful service worker registration.
+    // For example:
+    //     ASSERT_EQ("OK", EvalJs(main_frame_,
+    //               "registerServiceWorker(script, scope);"));
+    async function registerServiceWorker(script, scope) {
+      try {
+        const init = scope ? {scope} : {};
+        const registration =
+            await navigator.serviceWorker.register(script, init);
+        // wait for serviceworker to be active, otherwise
+        // navigator.serviceWorker.getRegistration might get serviceworker of
+        // parent scope
+        await whenReady(registration);
+        return 'OK';
+      } catch (error) {
+        return `EXCEPTION: ${error}`;
+      }
+    }
+
+    async function postMessageToServiceWorker(scope, message) {
+      const registration = await navigator.serviceWorker.getRegistration(scope);
+      if (!registration) {
+        return `ERROR: No service worker registration exists for scope: '${scope}.'`;
+      }
+      const serviceWorker = registration.active || registration.waiting || registration.installing;
+      serviceWorker.postMessage(message);
+      return await waitForMessageFromServiceWorker();
+    }
+
+    function waitForMessageFromServiceWorker() {
+      return new Promise(resolve => {
+        navigator.serviceWorker.addEventListener('message', event => {
+          resolve(event.data);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTMLMediaElement.srcObject blob assert_unreached: TypeError: Failed to set the 'srcObject' property on 'HTMLMediaElement': Failed to convert value to 'MediaStream'. Reached unreachable code
+Harness: the test ran to completion.
+

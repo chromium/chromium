@@ -11,11 +11,14 @@ import os
 import re
 
 
+USE_PYTHON3 = True
+
+
 def _CheckFilterFileFormat(input_api, output_api):
   """This ensures all modified filter files are free of common syntax errors.
 
   See the following for the correct syntax of these files:
-  https://chromium.googlesource.com/chromium/src/+/master/testing/buildbot/filters/README.md#file-syntax
+  https://chromium.googlesource.com/chromium/src/+/main/testing/buildbot/filters/README.md#file-syntax
   As well as:
   https://bit.ly/chromium-test-list-format
   """
@@ -31,7 +34,8 @@ def _CheckFilterFileFormat(input_api, output_api):
     exclusions = 0
     for line_num, line in enumerate(f.NewContents()):
       # Implicitly allow for trailing (but not leading) whitespace.
-      line = line.rstrip()
+      # Allow nocheck comments
+      line = line.rstrip().replace('# nocheck', '')
       if not line:
         # Empty line. Ignore these.
         continue

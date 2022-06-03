@@ -8,17 +8,24 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
-#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
+#include "gpu/ipc/service/gpu_channel_manager.h"
 #include "media/gpu/gles2_decoder_helper.h"
 #include "ui/gl/gl_context.h"
+
+#if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#endif
 
 namespace media {
 
@@ -29,15 +36,30 @@ class CommandBufferHelperImpl
       public gpu::CommandBufferStub::DestructionObserver {
  public:
   explicit CommandBufferHelperImpl(gpu::CommandBufferStub* stub)
-      : CommandBufferHelper(stub->channel()->task_runner()), stub_(stub) {
+      : CommandBufferHelper(stub->channel()->task_runner()),
+        stub_(stub),
+        memory_tracker_(this),
+        memory_type_tracker_(&memory_tracker_) {
     DVLOG(1) << __func__;
     DCHECK(stub_->channel()->task_runner()->BelongsToCurrentThread());
 
     stub_->AddDestructionObserver(this);
     wait_sequence_id_ = stub_->channel()->scheduler()->CreateSequence(
-        gpu::SchedulingPriority::kNormal);
+#if defined(OS_MAC)
+        // Workaround for crbug.com/1035750.
+        // TODO(sandersd): Investigate whether there is a deeper scheduling
+        // problem that can be resolved.
+        gpu::SchedulingPriority::kHigh
+#else
+        gpu::SchedulingPriority::kNormal
+#endif  // defined(OS_MAC)
+        ,
+        stub_->channel()->task_runner());
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
   }
+
+  CommandBufferHelperImpl(const CommandBufferHelperImpl&) = delete;
+  CommandBufferHelperImpl& operator=(const CommandBufferHelperImpl&) = delete;
 
   gl::GLContext* GetGLContext() override {
     DVLOG(2) << __func__;
@@ -48,6 +70,29 @@ class CommandBufferHelperImpl
 
     return decoder_helper_->GetGLContext();
   }
+
+  gpu::SharedImageStub* GetSharedImageStub() override {
+    return shared_image_stub();
+  }
+
+  // Const variant of above method for internal callers.
+  gpu::SharedImageStub* shared_image_stub() const {
+    if (!stub_)
+      return nullptr;
+    return stub_->channel()->shared_image_stub();
+  }
+
+#if defined(OS_WIN)
+  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override {
+    if (!stub_)
+      return nullptr;
+    return stub_->channel()
+        ->gpu_channel_manager()
+        ->shared_image_manager()
+        ->dxgi_shared_handle_manager()
+        .get();
+  }
+#endif
 
   bool HasStub() override {
     DVLOG(4) << __func__;
@@ -61,6 +106,24 @@ class CommandBufferHelperImpl
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     return decoder_helper_ && decoder_helper_->MakeContextCurrent();
+  }
+
+  std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
+      std::unique_ptr<gpu::SharedImageBacking> backing) override {
+    DVLOG(2) << __func__;
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return stub_->channel()
+        ->gpu_channel_manager()
+        ->shared_image_manager()
+        ->Register(std::move(backing), &memory_type_tracker_);
+  }
+
+  gpu::TextureBase* GetTexture(GLuint service_id) const override {
+    DVLOG(2) << __func__ << "(" << service_id << ")";
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(stub_->decoder_context()->GetGLContext()->IsCurrent(nullptr));
+    DCHECK(textures_.count(service_id));
+    return textures_.at(service_id)->GetTextureBase();
   }
 
   GLuint CreateTexture(GLenum target,
@@ -154,7 +217,69 @@ class CommandBufferHelperImpl
     will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
   }
 
+  bool IsPassthrough() const override {
+    if (!stub_)
+      return false;
+    return stub_->decoder_context()
+        ->GetFeatureInfo()
+        ->is_passthrough_cmd_decoder();
+  }
+
+  bool SupportsTextureRectangle() const override {
+    if (!stub_)
+      return false;
+    return stub_->decoder_context()
+        ->GetFeatureInfo()
+        ->feature_flags()
+        .arb_texture_rectangle;
+  }
+
  private:
+  // Helper class to forward memory tracking calls to shared image stub.
+  // Necessary because the underlying stub and channel can get destroyed before
+  // the CommandBufferHelper and its clients.
+  class MemoryTrackerImpl : public gpu::MemoryTracker {
+   public:
+    explicit MemoryTrackerImpl(CommandBufferHelperImpl* helper)
+        : helper_(helper) {
+      if (auto* stub = helper_->shared_image_stub()) {
+        // We assume these don't change after initialization.
+        client_id_ = stub->ClientId();
+        client_tracing_id_ = stub->ClientTracingId();
+        context_group_tracing_id_ = stub->ContextGroupTracingId();
+      }
+    }
+    ~MemoryTrackerImpl() override = default;
+
+    MemoryTrackerImpl(const MemoryTrackerImpl&) = delete;
+    MemoryTrackerImpl& operator=(const MemoryTrackerImpl&) = delete;
+
+    void TrackMemoryAllocatedChange(int64_t delta) override {
+      if (auto* stub = helper_->shared_image_stub())
+        stub->TrackMemoryAllocatedChange(delta);
+    }
+
+    uint64_t GetSize() const override {
+      if (auto* stub = helper_->shared_image_stub())
+        return stub->GetSize();
+      return 0;
+    }
+
+    int ClientId() const override { return client_id_; }
+
+    uint64_t ClientTracingId() const override { return client_tracing_id_; }
+
+    uint64_t ContextGroupTracingId() const override {
+      return context_group_tracing_id_;
+    }
+
+   private:
+    CommandBufferHelperImpl* const helper_;
+    int client_id_ = 0;
+    uint64_t client_tracing_id_ = 0;
+    uint64_t context_group_tracing_id_ = 0;
+  };
+
   ~CommandBufferHelperImpl() override {
     DVLOG(1) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -203,8 +328,10 @@ class CommandBufferHelperImpl
 
   WillDestroyStubCB will_destroy_stub_cb_;
 
+  MemoryTrackerImpl memory_tracker_;
+  gpu::MemoryTypeTracker memory_type_tracker_;
+
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelperImpl);
 };
 
 }  // namespace

@@ -8,9 +8,9 @@
 <body>
 <script>
 test(function() {
-    assert_throws(new TypeError(), function() { document.body.appendChild() })
-    assert_throws(new TypeError(), function() { document.body.appendChild(null) })
-    assert_throws(new TypeError(), function() { document.body.appendChild({'a':'b'}) })
+    assert_throws_js(TypeError, function() { document.body.appendChild() })
+    assert_throws_js(TypeError, function() { document.body.appendChild(null) })
+    assert_throws_js(TypeError, function() { document.body.appendChild({'a':'b'}) })
 })
 </script>
 </body>

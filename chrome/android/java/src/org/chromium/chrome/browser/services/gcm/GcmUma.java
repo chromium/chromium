@@ -8,13 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,66 +38,28 @@ public class GcmUma {
     }
 
     public static void recordDataMessageReceived(Context context, final boolean hasCollapseKey) {
-        onNativeLaunched(context, new Runnable() {
-            @Override public void run() {
-                // There is no equivalent of the GCM Store on Android in which we can fail to find a
-                // registered app. It's not clear whether Google Play Services doesn't check for
-                // registrations, or only gives us messages that have one, but in either case we
-                // should log true here.
-                RecordHistogram.recordBooleanHistogram(
-                        "GCM.DataMessageReceivedHasRegisteredApp", true);
-                RecordHistogram.recordCountHistogram(
-                        "GCM.DataMessageReceived", 1);
-                RecordHistogram.recordBooleanHistogram(
-                        "GCM.DataMessageReceivedHasCollapseKey", hasCollapseKey);
-            }
-        });
+        // There is no equivalent of the GCM Store on Android in which we can fail to find a
+        // registered app. It's not clear whether Google Play Services doesn't check for
+        // registrations, or only gives us messages that have one, but in either case we
+        // should log true here.
+        RecordHistogram.recordBooleanHistogram("GCM.DataMessageReceivedHasRegisteredApp", true);
+        RecordHistogram.recordCountHistogram("GCM.DataMessageReceived", 1);
+        RecordHistogram.recordBooleanHistogram(
+                "GCM.DataMessageReceivedHasCollapseKey", hasCollapseKey);
     }
 
     public static void recordGcmUpstreamHistogram(Context context, final int value) {
-        onNativeLaunched(context, new Runnable() {
-            @Override public void run() {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Invalidations.GCMUpstreamRequest", value, UMA_UPSTREAM_COUNT);
-            }
-        });
+        RecordHistogram.recordEnumeratedHistogram(
+                "Invalidations.GCMUpstreamRequest", value, UMA_UPSTREAM_COUNT);
     }
 
     public static void recordDeletedMessages(Context context) {
-        onNativeLaunched(context, new Runnable() {
-            @Override public void run() {
-                RecordHistogram.recordCount1000Histogram(
-                        "GCM.DeletedMessagesReceived", 0 /* unknown deleted count */);
-            }
-        });
+        RecordHistogram.recordCount1000Histogram(
+                "GCM.DeletedMessagesReceived", 0 /* unknown deleted count */);
     }
 
     public static void recordWebPushReceivedDeviceState(@WebPushDeviceState int state) {
-        // Use {@link CachedMetrics} so this gets reported when native is loaded instead of calling
-        // native right away.
-        new CachedMetrics
-                .EnumeratedHistogramSample(
-                        "GCM.WebPushReceived.DeviceState", WebPushDeviceState.NUM_ENTRIES)
-                .record(state);
-    }
-
-    private static void onNativeLaunched(final Context context, final Runnable task) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                        .addStartupCompletedObserver(new StartupCallback() {
-                            @Override
-                            public void onSuccess() {
-                                task.run();
-                            }
-
-                            @Override
-                            public void onFailure() {
-                                // Startup failed.
-                            }
-                        });
-            }
-        });
+        RecordHistogram.recordEnumeratedHistogram(
+                "GCM.WebPushReceived.DeviceState", state, WebPushDeviceState.NUM_ENTRIES);
     }
 }

@@ -1,79 +1,102 @@
 <!DOCTYPE html>
-<html charset="utf-8">
-<body>
-<p>This tests clicking on the left of RTL text puts the caret at the end of the line.</p>
-<pre id="console"></pre>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
+// This tests clicking on the left of RTL text puts the caret at the end of the
+// line.
+const kStyle = [
+    'font-family: monospace;',
+    'width: 2ch',
+].join(' ');
 
-if (window.testRunner)
-  testRunner.dumpAsText();
+// 2 lines
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC|</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A| BC</bdo>',
+        '</div>',
+    ], '2 lines');
 
-var tests = [
-  {content: "&#1498; &#1500;&#1499;", expected: [2, 4]},
-  {content: "&#1499; &#1499;&#1499; &#1499;&#1499;&#1499;", expected: [2, 5, 8]},
-  {content: "&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;",
-    expected: [3, 6, 10, 14, 18]},
-];
+// 3 lines
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE|</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC| DE</bdo>',
+        '</div>',
+    ], '3 lines-1');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC |DE</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A |BC DE</bdo>',
+        '</div>',
+    ], '3 lines-2');
 
-function failed(message) {
-  document.getElementById('console').innerHTML += 'FAIL: ' + message + '\n';
-}
-
-function passed(message) {
-  document.getElementById('console').innerHTML += 'PASS: ' + message + '\n';
-}
-
-function runTest(container, test) {
-  container.style.width = '100%';
-  container.innerHTML = test.content;
-
-  // Starting from 5px, slowly increase the width until each word fits in one
-  // line.
-  var heightOfLine = container.offsetHeight;
-  var width = 5;
-  do {
-    container.style.width = width + 'px';
-    width++;
-  } while (
-    Math.floor(container.offsetHeight / heightOfLine) > test.expected.length);
-  container.style.width = (width + 1) + 'px';
-
-  window.getSelection().collapse(container.lastChild,
-    container.lastChild.length);
-
-  for (var i = 0; i < test.expected.length; i++) {
-    if (!window.getSelection().isCollapsed)
-      return failed('the selection was not collapsed');
-
-    var range = window.getSelection().getRangeAt(0);
-    if (range.startContainer != container.firstChild)
-      return failed('caret was at a wrong container');
-
-    var action = 'on ' + test.content + ', caret is at ' + range.startOffset;
-    if (i == 0) action += ' initially';
-    else if (i == 1) action += ' after moving upwards once';
-    else if (i == 2) action += ' after moving upwards twice';
-    else action += ' after moving upwards ' + i + ' times';
-    if (range.startOffset != test.expected[test.expected.length - i - 1]) {
-      return failed(action + ' but expected at ' +
-        test.expected[test.expected.length - i - 1]);
-    }
-    passed(action);
-    window.getSelection().modify('move', 'backward', 'line')
-  }
-}
-
-var container = document.createElement('div');
-container.contentEditable = true;
-container.setAttribute('dir', 'rtl');
-document.body.appendChild(container);
-
-for (var i = 0; i < tests.length; i++) {
-  runTest(container, tests[i]);
-}
-
-document.body.removeChild(container);
-
+// 5 lines
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE FG HI|</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE FG| HI</bdo>',
+        '</div>',
+    ], '5 lines-1');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE FG |HI</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE |FG HI</bdo>',
+        '</div>',
+    ], '5 lines-2');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC DE |FG HI</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC |DE FG HI</bdo>',
+        '</div>',
+    ], '5 lines-3');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A BC |DE FG HI</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">A |BC DE FG HI</bdo>',
+        '</div>',
+    ], '5 lines-4');
 </script>
-</body>
-</html>

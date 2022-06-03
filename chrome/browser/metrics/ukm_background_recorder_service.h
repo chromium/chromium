@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_METRICS_UKM_BACKGROUND_RECORDER_SERVICE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class UkmBackgroundRecorderBrowserTest;
@@ -40,10 +39,15 @@ namespace ukm {
 class UkmBackgroundRecorderService : public KeyedService {
  public:
   using GetBackgroundSourceIdCallback =
-      base::OnceCallback<void(base::Optional<ukm::SourceId>)>;
+      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
 
   // |profile| is needed to access the appropriate services |this| depends on.
   explicit UkmBackgroundRecorderService(Profile* profile);
+
+  UkmBackgroundRecorderService(const UkmBackgroundRecorderService&) = delete;
+  UkmBackgroundRecorderService& operator=(const UkmBackgroundRecorderService&) =
+      delete;
+
   ~UkmBackgroundRecorderService() override;
 
   void Shutdown() override;
@@ -73,8 +77,6 @@ class UkmBackgroundRecorderService : public KeyedService {
   base::CancelableTaskTracker task_tracker_;
 
   base::WeakPtrFactory<UkmBackgroundRecorderService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBackgroundRecorderService);
 };
 
 class UkmBackgroundRecorderFactory : public BrowserContextKeyedServiceFactory {

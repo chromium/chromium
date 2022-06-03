@@ -10,14 +10,26 @@
 
 namespace blink {
 
+// static
+LayoutShift* LayoutShift::Create(double start_time,
+                                 double value,
+                                 bool input_detected,
+                                 double input_timestamp,
+                                 AttributionList sources) {
+  return MakeGarbageCollected<LayoutShift>(start_time, value, input_detected,
+                                           input_timestamp, sources);
+}
+
 LayoutShift::LayoutShift(double start_time,
                          double value,
                          bool input_detected,
-                         double input_timestamp)
+                         double input_timestamp,
+                         AttributionList sources)
     : PerformanceEntry(g_empty_atom, start_time, start_time),
       value_(value),
       had_recent_input_(input_detected),
-      most_recent_input_timestamp_(input_timestamp) {}
+      most_recent_input_timestamp_(input_timestamp),
+      sources_(sources) {}
 
 LayoutShift::~LayoutShift() = default;
 
@@ -34,10 +46,15 @@ void LayoutShift::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.Add("value", value_);
   builder.Add("hadRecentInput", had_recent_input_);
   builder.Add("lastInputTime", most_recent_input_timestamp_);
+
+  ScriptState* script_state = builder.GetScriptState();
+  builder.Add("sources", FreezeV8Object(ToV8(sources_, script_state),
+                                        script_state->GetIsolate()));
 }
 
-void LayoutShift::Trace(blink::Visitor* visitor) {
+void LayoutShift::Trace(Visitor* visitor) const {
   PerformanceEntry::Trace(visitor);
+  visitor->Trace(sources_);
 }
 
 }  // namespace blink

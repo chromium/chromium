@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local-0" value="2019-02-14T13:02">
+<input type="datetime-local" id="datetime-local-1" value="2019-02-14T13:02">
+<input type="datetime-local" id="datetime-local-2">
+<script>
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-0');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('Enter');
+    assert_equals(dateTimeElement.value, "2019-07-14T13:02", "Month chooser button should have changed month");
+
+    clickDayCellAt(2, 3);
+    assert_equals(dateTimeElement.value, "2019-07-23T13:02", "Clicking date should have changed date");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Month chooser should allow user to chooser month and push value to in-page control");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-1');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('Escape');
+    clickDayCellAt(2, 3);
+
+    assert_equals(dateTimeElement.value, "2019-02-19T13:02", "Escape key should have dismissed month chooser without changing month.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Month chooser should dismiss on Escape key");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-2');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    clickMonthPopupButton();
+    eventSender.keyDown('Enter');
+
+    let actualTodayDateString = new Date(dateTimeElement.value).toDateString();
+    let expectedTodayDateString = new Date().toDateString();
+
+    assert_equals(actualTodayDateString, expectedTodayDateString, "Opening month switcher should push value to in-page control if it has no initial value.");
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Opening month chooser should push value to in-page control -- no initial value");
+
+</script>
+</body>
+</html>

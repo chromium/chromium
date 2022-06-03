@@ -9,13 +9,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/limits.h"
-#include "third_party/blink/public/platform/modules/mediastream/media_stream_audio_deliverer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_deliverer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -28,6 +26,7 @@ namespace blink {
 PLATFORM_EXPORT extern const int kFallbackAudioLatencyMs;
 
 class MediaStreamAudioTrack;
+class MediaStreamComponent;
 
 // Represents a source of audio, and manages the delivery of audio data between
 // the source implementation and one or more MediaStreamAudioTracks. This is a
@@ -42,24 +41,24 @@ class MediaStreamAudioTrack;
 // needed, and/or calls to DeliverDataToTracks() must be made at very specific
 // times.
 //
-// An instance of this class is owned by WebMediaStreamSource.
+// An instance of this class is owned by MediaStreamSource.
 //
 // Usage example:
 //
 //   class MyAudioSource : public MediaStreamAudioSource { ... };
 //
-//   WebMediaStreamSource blink_source = ...;
-//   WebMediaStreamTrack blink_track = ...;
-//   blink_source.setExtraData(new MyAudioSource());  // Takes ownership.
-//   if (MediaStreamAudioSource::From(blink_source)
-//           ->ConnectToTrack(blink_track)) {
+//   MediaStreamSource* media_stream_source = ...;
+//   MediaStreamComponent* media_stream_track = ...;
+//   source->setExtraData(new MyAudioSource());  // Takes ownership.
+//   if (MediaStreamAudioSource::From(media_stream_source)
+//           ->ConnectToTrack(media_stream_track)) {
 //     LOG(INFO) << "Success!";
 //   } else {
 //     LOG(ERROR) << "Failed!";
 //   }
 //   // Regardless of whether ConnectToTrack() succeeds, there will always be a
 //   // MediaStreamAudioTrack instance created.
-//   CHECK(MediaStreamAudioTrack::From(blink_track));
+//   CHECK(MediaStreamAudioTrack::From(media_stream_track));
 class PLATFORM_EXPORT MediaStreamAudioSource
     : public WebPlatformMediaStreamSource {
  public:
@@ -70,11 +69,13 @@ class PLATFORM_EXPORT MediaStreamAudioSource
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool is_local_source,
       bool disable_local_echo);
+  MediaStreamAudioSource(const MediaStreamAudioSource&) = delete;
+  MediaStreamAudioSource& operator=(const MediaStreamAudioSource&) = delete;
   ~MediaStreamAudioSource() override;
 
   // Returns the MediaStreamAudioSource instance owned by the given blink
   // |source| or null.
-  static MediaStreamAudioSource* From(const WebMediaStreamSource& source);
+  static MediaStreamAudioSource* From(MediaStreamSource* source);
 
   // Provides a weak reference to this MediaStreamAudioSource. The weak pointer
   // may only be dereferenced on the main thread.
@@ -91,7 +92,7 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // implementation of the content::MediaStreamAudioTrack interface, which
   // becomes associated with and owned by |track|. Returns true if the source
   // was successfully started.
-  bool ConnectToTrack(const WebMediaStreamTrack& track);
+  bool ConnectToTrack(MediaStreamComponent* component);
 
   // Returns the current format of the audio passing through this source to the
   // sinks. This can return invalid parameters if the source has not yet been
@@ -101,6 +102,9 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // These accessors return properties that are controlled via constraints.
   bool disable_local_echo() const { return disable_local_echo_; }
   bool RenderToAssociatedSinkEnabled() const;
+
+  // Checks all tracks acting as consumers and returns true if all are disabled.
+  bool AllTracksAreDisabled();
 
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
@@ -120,9 +124,14 @@ class PLATFORM_EXPORT MediaStreamAudioSource
 
   // Returns the audio processing properties associated to this source if any,
   // or nullopt otherwise.
-  virtual base::Optional<blink::AudioProcessingProperties>
+  virtual absl::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const {
-    return base::nullopt;
+    return absl::nullopt;
+  }
+
+  absl::optional<media::AudioCapturerSource::ErrorCode> ErrorCode() {
+    DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+    return error_code_;
   }
 
  protected:
@@ -167,13 +176,15 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Called by subclasses when capture error occurs.
   // Note: This can be called on any thread, and will post a task to the main
   // thread to stop the source soon.
-  void StopSourceOnError(const std::string& why);
+  void StopSourceOnError(media::AudioCapturerSource::ErrorCode code,
+                         const std::string& why);
 
   // Sets muted state and notifies it to all registered tracks.
   void SetMutedState(bool state);
 
-  // Gets the TaskRunner for the main thread, for subclasses that need it.
-  base::SingleThreadTaskRunner* GetTaskRunner() const;
+  // Maximum number of channels preferred by any connected track or -1 if
+  // unknown.
+  int NumPreferredChannels() const;
 
  private:
   // MediaStreamSource override.
@@ -184,6 +195,20 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // audio data. The "stop callback" that was provided to the track calls
   // this.
   void StopAudioDeliveryTo(MediaStreamAudioTrack* track);
+
+  // Number of MediaStreamAudioTracks added as consumers.
+  int NumConsumers() const;
+
+  void LogMessage(const std::string& message);
+
+  void SetErrorCode(media::AudioCapturerSource::ErrorCode code) {
+    DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+    error_code_ = code;
+  }
+
+  // The portion of StopSourceOnError processing carried out on the main thread.
+  void StopSourceOnErrorOnTaskRunner(
+      media::AudioCapturerSource::ErrorCode code);
 
   // True if the source of audio is a local device. False if the source is
   // remote (e.g., streamed-in from a server).
@@ -198,16 +223,12 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Manages tracks connected to this source and the audio format and data flow.
   MediaStreamAudioDeliverer<MediaStreamAudioTrack> deliverer_;
 
-  // The task runner for main thread. Also used to check that all methods that
-  // could cause object graph or data flow changes are being called on the main
-  // thread.
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // Code set if this source was closed due to an error.
+  absl::optional<media::AudioCapturerSource::ErrorCode> error_code_;
 
   // Provides weak pointers so that MediaStreamAudioTracks won't call
   // StopAudioDeliveryTo() if this instance dies first.
   base::WeakPtrFactory<MediaStreamAudioSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioSource);
 };
 
 }  // namespace blink

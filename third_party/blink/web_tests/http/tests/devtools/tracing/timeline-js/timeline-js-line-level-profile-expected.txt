@@ -1,5 +1,6 @@
 Tests that a line-level CPU profile is shown in the text editor.
 
+0 CodeMirror-gutter-breakpoints  
 .../devtools/tracing/resources/empty.js
 99 CodeMirror-gutter-performance 10.0ms rgba(255, 187, 0, 0.4)
 101 CodeMirror-gutter-performance 1900.0ms rgba(255, 187, 0, 0.855)

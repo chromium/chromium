@@ -4,40 +4,40 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity.FirstRunActivityObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.sync.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -46,7 +46,6 @@ import java.util.concurrent.TimeoutException;
  * Tests for the first run experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class FirstRunTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule() {
@@ -84,7 +83,7 @@ public class FirstRunTest {
             mActivity = (FirstRunActivity) activity;
 
             try {
-                mTestObserver.flowIsKnownCallback.waitForCallback(0);
+                mTestObserver.createPostNativeAndPoliciesPageSequence.waitForCallback(0);
             } catch (TimeoutException e) {
                 Assert.fail();
             }
@@ -96,28 +95,37 @@ public class FirstRunTest {
     private static final String TEST_ACTION = "com.artificial.package.TEST_ACTION";
 
     private static final class TestObserver implements FirstRunActivityObserver {
-        public final CallbackHelper flowIsKnownCallback = new CallbackHelper();
+        public final CallbackHelper createPostNativeAndPoliciesPageSequence = new CallbackHelper();
 
         @Override
-        public void onFlowIsKnown(Bundle freProperties) {
-            flowIsKnownCallback.notifyCalled();
+        public void onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity caller) {
+            createPostNativeAndPoliciesPageSequence.notifyCalled();
         }
 
         @Override
-        public void onAcceptTermsOfService() {}
+        public void onAcceptTermsOfService(FirstRunActivity caller) {}
 
         @Override
-        public void onJumpToPage(int position) {}
+        public void onJumpToPage(FirstRunActivity caller, int position) {}
 
         @Override
-        public void onUpdateCachedEngineName() {}
+        public void onUpdateCachedEngineName(FirstRunActivity caller) {}
 
         @Override
-        public void onAbortFirstRunExperience() {}
+        public void onAbortFirstRunExperience(FirstRunActivity caller) {}
+
+        @Override
+        public void onExitFirstRun(FirstRunActivity caller) {}
     }
 
     private final TestObserver mTestObserver = new TestObserver();
     private FirstRunActivity mActivity;
+
+    @Before
+    public void setUp() {
+        Assert.assertFalse(
+                CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE));
+    }
 
     @After
     public void tearDown() {
@@ -132,13 +140,13 @@ public class FirstRunTest {
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
     public void testSignIn() {
-        Account testAccount = SigninTestUtil.addTestAccount();
-        Assert.assertNull(SigninTestUtil.getCurrentAccount());
+        CoreAccountInfo testAccountInfo = mSyncTestRule.addTestAccount();
+        Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
-        processFirstRun(testAccount.name, false /* ShowSettings */);
-        Assert.assertEquals(testAccount, SigninTestUtil.getCurrentAccount());
-        SyncTestUtil.waitForSyncActive();
+        processFirstRun(testAccountInfo.getEmail(), false /* ShowSettings */);
+        Assert.assertEquals(testAccountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        SyncTestUtil.waitForSyncFeatureActive();
     }
 
     // Test that signing in and opening settings through FirstRun signs in and doesn't fully start
@@ -150,15 +158,15 @@ public class FirstRunTest {
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
     public void testSignInWithOpenSettings() {
-        final Account testAccount = SigninTestUtil.addTestAccount();
+        CoreAccountInfo testAccountInfo = mSyncTestRule.addTestAccount();
         final SettingsActivity settingsActivity =
-                processFirstRun(testAccount.name, true /* ShowSettings */);
+                processFirstRun(testAccountInfo.getEmail(), true /* ShowSettings */);
 
         // User should be signed in and the sync backend should initialize, but sync should not
         // become fully active until the settings page is closed.
-        Assert.assertEquals(testAccount, SigninTestUtil.getCurrentAccount());
+        Assert.assertEquals(testAccountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         SyncTestUtil.waitForEngineInitialized();
-        Assert.assertFalse(SyncTestUtil.isSyncActive());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureActive());
 
         // Close the settings fragment.
         AccountManagementFragment fragment =
@@ -167,7 +175,7 @@ public class FirstRunTest {
         settingsActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
         // Sync should immediately become active.
-        Assert.assertTrue(SyncTestUtil.isSyncActive());
+        Assert.assertTrue(SyncTestUtil.isSyncFeatureActive());
     }
 
     // Test that not signing in through FirstRun does not sign in sync.
@@ -176,10 +184,10 @@ public class FirstRunTest {
     @Feature({"Sync"})
     @DisabledTest // https://crbug.com/901488
     public void testNoSignIn() {
-        SigninTestUtil.addTestAccount();
+        mSyncTestRule.addTestAccount();
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         processFirstRun(null, false /* ShowSettings */);
-        Assert.assertNull(SigninTestUtil.getCurrentAccount());
+        Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
     }
 
@@ -197,7 +205,7 @@ public class FirstRunTest {
         SettingsActivity settingsActivity = null;
         if (showSettings) {
             settingsActivity =
-                    ActivityUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                    ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                             SettingsActivity.class, new Runnable() {
                                 @Override
                                 public void run() {
@@ -209,12 +217,8 @@ public class FirstRunTest {
             processFirstRunOnUiThread();
         }
 
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return FirstRunSignInProcessor.getFirstRunFlowSignInComplete();
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> FirstRunSignInProcessor.getFirstRunFlowSignInComplete());
         return settingsActivity;
     }
 

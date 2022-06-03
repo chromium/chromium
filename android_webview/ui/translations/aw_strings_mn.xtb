@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="6106989379647458772"><ph name="PAGE" />-ын вэб хуудас түр хугацаанд ажиллахгүй, эсвэл шинэ хуудас болон бүрмөсөн солигдсон байж болзошгүй.</translation>
-<translation id="6312113039770857350">Вэб хуудас боломжгүй байна</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />-ын вэб хуудсыг дараах шалтгааны улмаас ачаалж чадсангүй:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Зөвлөмж:<ph name="MARKUP_2" />Ta датанд холбогдсон эсэхээ шалгана уу<ph name="MARKUP_3" />Энэ вэв хуудсыг дараа дахин ачаална уу<ph name="MARKUP_4" />Оруулсан хаягаа шалгана уу<ph name="MARKUP_5" /></translation>
 </translationbundle>

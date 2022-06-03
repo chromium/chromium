@@ -28,15 +28,13 @@
 [
     Exposed=Window
 ] interface CompositionEvent : UIEvent {
-    constructor(DOMString type, optional CompositionEventInit eventInitDict);
+    constructor(DOMString type, optional CompositionEventInit eventInitDict = {});
     readonly attribute DOMString data;
 
     // https://w3c.github.io/uievents/#idl-interface-CompositionEvent-initializers
-    // TODO(foolip): None of the initCompositionEvent() arguments should be
-    // optional, and the spec has a locale argument after data.
-    [Measure] void initCompositionEvent([DefaultValue=Undefined] optional DOMString type,
-                                        [DefaultValue=Undefined] optional boolean bubbles,
-                                        [DefaultValue=Undefined] optional boolean cancelable,
-                                        [DefaultValue=Undefined] optional Window? view,
-                                        [DefaultValue=Undefined] optional DOMString data);
+    [Measure] void initCompositionEvent(DOMString type,
+                                        optional boolean bubbles = false,
+                                        optional boolean cancelable = false,
+                                        optional Window? view = null,
+                                        optional DOMString data = "undefined");
 };

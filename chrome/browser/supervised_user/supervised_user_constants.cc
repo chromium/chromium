@@ -6,13 +6,6 @@
 
 namespace supervised_users {
 
-#if defined(OS_CHROMEOS)
-const char kAccountConsistencyMirrorRequired[] =
-    "AccountConsistencyMirrorRequired";
-#endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char kApprovedExtensions[] = "ApprovedExtensions";
-#endif
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kCameraMicDisabled[] = "CameraMicDisabled";
 const char kContentPackDefaultFilteringBehavior[] =

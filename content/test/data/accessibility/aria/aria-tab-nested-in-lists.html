@@ -1,0 +1,47 @@
+<!--
+@MAC-ALLOW:AXRoleDescription
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXARIAPosInSet
+@MAC-DENY:AXARIASetSize=0
+@MAC-DENY:AXARIAPosInSet=0
+@WIN-ALLOW:xml-roles*
+@WIN-ALLOW:level*
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@WIN-DENY:setsize:0
+@WIN-DENY:posinset:0
+@BLINK-ALLOW:hierarchicalLevel*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-DENY:posinset:0
+@AURALINUX-DENY:setsize:0
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-DENY:setSize=0
+@BLINK-DENY:posInSet=0
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <ul role="tablist">
+    <li>
+      <div role="tab" aria-posinset="2" aria-setsize="5">tab1</div>
+    </li>
+    <li>
+      <div role="tab" aria-posinset="3" aria-setsize="5">tab2</div>
+    </li>
+    <li>
+      <div role="tab" aria-posinset="4" aria-setsize="5">tab3</div>
+    </li>
+    <li>
+      <div role="tab" aria-posinset="5" aria-setsize="5">tab4</div>
+    </li>
+  </ul>
+
+  <style>
+    li {
+      list-style-type: none;
+    }
+  </style>
+</body>
+</html>

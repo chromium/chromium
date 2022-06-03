@@ -5,9 +5,6 @@
 #ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_FRAME_RENDERER_H_
 #define MEDIA_GPU_TEST_VIDEO_PLAYER_FRAME_RENDERER_H_
 
-#include <vector>
-
-#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"

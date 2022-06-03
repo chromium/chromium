@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Кездейсоқ RSA жеке кілтін жасау сәтсіз аяқталды.</translation>
 <translation id="1445572445564823378">Бұл кеңейтім <ph name="PRODUCT_NAME" /> жұмысын баяулатады. <ph name="PRODUCT_NAME" /> жұмысын қалпына келтіру үшін кеңейтімді өшіруіңіз керек.</translation>
 <translation id="1468038450257740950">WebGL қолдау көрсетілмеген.</translation>
-<translation id="149347756975725155">Кеңейтім белгішесін "<ph name="ICON" />" жүктеу мүмкін болмады.</translation>
 <translation id="1803557475693955505">"<ph name="BACKGROUND_PAGE" />" фондық бетін жүктеу мүмкін болмады.</translation>
 <translation id="2159915644201199628">Кескінді шифрсыздандыру мүмкін емес: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Локализациялау пайдаланылды, бірақ default_locale манифестте көрсетілмеген.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Жеке кілтті оқу әрекеті сәтсіз аяқталды.</translation>
 <translation id="6391538222494443604">Кіріс каталогі бар болуы керек.</translation>
 <translation id="641087317769093025">Кеңейтімді мұрағаттан шығару мүмкін болмады</translation>
-<translation id="6413453408918378296">"<ph name="ICON" />" белгішесі дұрыс көрінбейді.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" бір не бірнеше құрылғыға кіруге рұқсат сұрауда:</translation>
 <translation id="657064425229075395">"<ph name="BACKGROUND_SCRIPT" />" фондық сценарийін жүктеу мүмкін болмады.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі: <ph name="SERIAL_NUMBER" />)</translation>

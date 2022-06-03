@@ -1,0 +1,400 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+function getCanvas2DContext(name)
+{
+  var title = document.createElement("b");
+  title.innerText = name;
+  document.body.appendChild(title);
+  var canvas = document.createElement("canvas");
+  canvas.setAttribute("width", 100);
+  canvas.setAttribute("style", "border: 1px solid black; display:block;");
+  canvas.setAttribute("height", 30);
+  document.body.appendChild(canvas);
+  var context = canvas.getContext("2d", { alpha: false });
+  context.clearRect(0,0, 100, 60);
+  context.fillStyle = "#FFFFFF";
+  context.fillRect(0,0,100, 60);
+  context.fillStyle = "#000000";
+  context.clearRect(0,0,100, 30);
+  context.font = "10px Arial";
+  return context;
+}
+
+/*
+  This method checks to see if something was rendered on the canvas
+  at the passed in location. The purposed of these tests are not to 
+  accuratley validate rendering results but to check that mutations
+  on the CanvasFormattedText succeed, hence the all sanity check 
+  validates is that there are expected number of rendered pixels.
+
+  After checking, this method also draws a line over the pixels that 
+  we tested for visual diagnostics.
+*/
+function sanity_check_rendering(context, x, y, expect_content=true)
+{
+   var pixels = context.getImageData(x, y, 1, 10);
+   context.fillStyle = "#008800";
+   context.fillRect(x, y, 1, 10);
+   context.fillStyle = "#000000";
+   var transparent_pixels = 0;
+   for (var i = 0; i < 10; i++)
+   {
+     if (pixels.data[i*4+3] == 0)
+      transparent_pixels++
+   }
+   // Atleast 20% of the pixels in the test patch should have content.
+   if (expect_content)
+   {
+      assert_less_than(transparent_pixels,
+       8,
+       "Missing content. ["+ pixels.data + "] #Unfilled pixels");
+   }
+   else
+   {
+      assert_equals(transparent_pixels,
+       10,
+       "Unexpected content.[" + pixels.data + "] #Unfilled pixels");
+   }
+}
+
+function assert_exception(f, exception_name, error_message)
+{
+  try {
+    assert_equals(f(), null, message);
+  }
+  catch (e) {
+    assert_equals(e.name, exception_name,
+    "Exception Type mismatch for " + error_message)
+  }
+}
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  text.appendRun(new CanvasFormattedTextRun("A"));
+  text.appendRun(new CanvasFormattedTextRun("B"));
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 10, 0);
+  assert_equals(text.length, 2, "Unexpected length for CanvasFormattedText");
+}, 'Append: before fillFormattedText');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  text.appendRun(new CanvasFormattedTextRun("A"));
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 10, 0, false);
+  text.appendRun(new CanvasFormattedTextRun("B"));
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 10, 0);
+
+  assert_equals(text.length, 2, "Unexpected length for CanvasFormattedText");
+}, 'Append: after fillFormattedText');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var run = new CanvasFormattedTextRun("B");
+  text.appendRun(run);
+  assert_exception(()=> { text.appendRun(run); },
+   "InvalidModificationError",
+   "Expect that an already inserted run cant be appended.");
+
+   // Check the the canvas formatted text can still render the existing run.
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+  // Ensure second run is not rendered.
+  sanity_check_rendering(context, 10, 0, false);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+}, 'Append: Ensure duplicate appends fail');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  text.appendRun(runA);
+
+  assert_exception(()=> { var c = text[-1]; },
+   "ReferenceError",
+   "can't get runs at  -1.");
+   assert_exception(()=> { var c = text[100]; },
+   "ReferenceError",
+   "can't get runs at 100.");
+  assert_equals(text[0], runA, "Getter should return the same object.");
+}, 'GetRun: Test getRun range checks');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+
+  assert_exception(()=> { text[0] = run; },
+   "ReferenceError",
+   "can't set runs at 0.");
+  text.appendRun(runA);
+
+  var runB = new CanvasFormattedTextRun("B");
+  assert_exception(()=> { text[-1] = runB; },
+   "ReferenceError",
+   "can't set runs at  -1.");
+   assert_exception(()=> { text[100] = runB; },
+   "IndexSizeError",
+   "can't set runs at 100.");
+  text[0] = runB;
+  assert_equals(text[0], runB, "Getter should return the same object.");
+
+   // Check the the canvas formatted text can still render the new run.
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+
+  // Check that we can go back to the previous run that was removed.
+  text[0] = runA;
+  context.fillFormattedText(text, 0, 15, 100);
+  sanity_check_rendering(context, 2, 15);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+}, 'SetRun: Test setRun functionality');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  var runB = new CanvasFormattedTextRun("B");
+  text.appendRun(runA);
+
+  assert_exception(()=> { text[0] = runA; },
+   "InvalidModificationError",
+   "can't set any parented run.");
+
+   var text2 = new CanvasFormattedText();
+   text2.appendRun(runB);
+   assert_exception(()=> { text2[0] = text[0]; },
+   "InvalidModificationError",
+   "can't set any parented run from another canvas formatted text.");
+   
+   assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+   assert_equals(text2.length, 1,
+    "Unexpected length for CanvasFormattedText text2");
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+}, 'SetRun: Test that parented runs can\'t be set');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  var runB = new CanvasFormattedTextRun("E");
+  text.appendRun(runA);
+   assert_exception(()=> { text.deleteRun(-1); },
+   "IndexSizeError",
+   "can't delete run at  -1.");
+   assert_exception(()=> { text.deleteRun(100); },
+   "IndexSizeError",
+   "can't delete run at 100.");
+   // Similar check for delete with range
+   assert_exception(()=> { text.deleteRun(-1, 1); },
+   "IndexSizeError",
+   "can't delete runs at  -1.");
+   assert_exception(()=> { text.deleteRun(100, 1); },
+   "IndexSizeError",
+   "can't delete runs at 100.");
+
+   assert_exception(()=> { text.deleteRun(0, -1); },
+   "IndexSizeError",
+   "can't delete -ve number of runs");
+   assert_exception(()=> { text.deleteRun(0, 0); },
+   "ReferenceError",
+   "can't delete 0 number of runs");
+   assert_exception(()=> { text.deleteRun(0, 2); },
+   "IndexSizeError",
+   "can't delete 2 number of runs.");
+   text.appendRun(runB);
+   assert_exception(()=> { text.deleteRun(2, -1); },
+   "IndexSizeError",
+   "can't delete -ve number of runs");
+   assert_exception(()=> { text.deleteRun(1, -1); },
+   "IndexSizeError",
+   "can't delete -ve number of runs");
+}, 'DeleteRun: Verify index checks');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  var runB = new CanvasFormattedTextRun("E");
+  text.appendRun(runA);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+
+  text.deleteRun(0);
+  assert_equals(text.length, 0, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 100);
+  sanity_check_rendering(context, 2, 10, false);
+}, 'DeleteRun: Verify delete operation');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  var runB = new CanvasFormattedTextRun("S");
+  text.appendRun(runA);
+  text.appendRun(runB);
+  assert_equals(text.length, 2, "Unexpected length for CanvasFormattedText");
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+
+  text.deleteRun(1);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 100);
+  sanity_check_rendering(context, 10, 10, false);
+}, 'DeleteRun: Verify delete operation with 2 runs');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E1");
+  var runB = new CanvasFormattedTextRun("E2");
+  text.appendRun(runA);
+  text.appendRun(runB);  
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+
+  text.deleteRun(0);
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 100);
+  sanity_check_rendering(context, 14, 10, false);
+}, 'DeleteRun: Verify delete operation with 2 runs deleting the first');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("ERun1");
+  var runB = new CanvasFormattedTextRun("Run2");
+  var runC = new CanvasFormattedTextRun("Run3");
+  var runD = new CanvasFormattedTextRun("ERun4");
+  text.appendRun(runA);
+  text.appendRun(runB);
+  text.appendRun(runC);
+  text.appendRun(runD);
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+
+  text.deleteRun(1, 2);
+  assert_equals(text.length, 2, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 100);
+  sanity_check_rendering(context, 80, 10, false);
+}, 'DeleteRun: Delete Range');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun(".");
+  var runB = new CanvasFormattedTextRun(".");
+  var runC = new CanvasFormattedTextRun("EIns");
+  text.appendRun(runA);
+  text.appendRun(runB);
+
+  assert_exception(()=> { text.insertRun(-1, runC); },
+   "IndexSizeError",
+   "can't insert run at  -1.");
+   assert_exception(()=> { text.insertRun(100, runC); },
+   "IndexSizeError",
+   "can't insert run at 100.");
+  assert_exception(()=> { text.insertRun(3, runC); },
+   "IndexSizeError",
+   "can't insert run at 3.");
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 6, 0, false);
+
+  text.insertRun(1, runC);
+  assert_equals(text.length, 3, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 200);
+  sanity_check_rendering(context, 6, 10);
+}, 'InsertRun: Validate Insertion Index');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun(".");
+  var runB = new CanvasFormattedTextRun(".");
+  var runC = new CanvasFormattedTextRun("EIns");
+  text.appendRun(runA);
+  text.appendRun(runB);
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 6, 0, false);
+
+  text.insertRun(0, runC);
+  assert_equals(text.length, 3, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 200);
+  sanity_check_rendering(context, 4, 10);
+}, 'InsertRun: Insert at Index 0');
+
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun("E");
+  text.insertRun(0, runA);
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0, true);
+
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+}, 'InsertRun: Insert behaves like append');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  var runA = new CanvasFormattedTextRun(".");
+  var runB = new CanvasFormattedTextRun(".");
+  var runC = new CanvasFormattedTextRun("EIns");
+  text.appendRun(runA);
+  text.appendRun(runB);
+
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 6, 0, false);
+
+  assert_exception(()=> { text.insertRun(0, runA); },
+   "InvalidModificationError",
+   "can't set any parented run from another canvas formatted text.");
+  assert_equals(text.length, 2, "Unexpected length for CanvasFormattedText");
+
+  text.insertRun(1, runC);
+  assert_equals(text.length, 3, "Unexpected length for CanvasFormattedText");
+  assert_equals(text[2], runB,
+   "Verify that runB that was at index 1 was shifted.");
+  context.fillFormattedText(text, 0, 10, 200);
+  sanity_check_rendering(context, 6, 10);
+}, 'InsertRun: Insert at last Index');
+
+test(function(t) {
+  var text = new CanvasFormattedText();
+  assert_exception(()=> { text.appendRun(null); },
+   "TypeError",
+   "cant append a null run.");
+  assert_exception(()=> { text[0] = null; },
+   "TypeError",
+   "cant set a null run.");
+   assert_exception(()=> { text.insertRun(0, null); },
+   "TypeError",
+   "cant insert a null run.");
+}, 'NullRun: Check that append,insert,set are protected against null run');
+
+test(function(t) {
+  var text = new CanvasFormattedText("ERun1");
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+  var context = getCanvas2DContext(t.name);
+  context.fillFormattedText(text, 0, 0, 100);
+  sanity_check_rendering(context, 2, 0);
+
+  var text = new CanvasFormattedText(new CanvasFormattedTextRun("ERun2"));
+  assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
+  context.fillFormattedText(text, 0, 10, 100);
+  sanity_check_rendering(context, 3, 10);
+}, 'Constructor Variants');
+</script>

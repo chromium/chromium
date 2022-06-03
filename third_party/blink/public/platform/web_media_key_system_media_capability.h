@@ -14,6 +14,8 @@ struct WebMediaKeySystemMediaCapability {
     kNotSpecified,
     kCenc,
     kCbcs,
+    kCbcs_1_9,  // CBCS with a specific encrypt:skip pattern of 1:9.
+    kUnrecognized
   };
 
   WebMediaKeySystemMediaCapability() = default;

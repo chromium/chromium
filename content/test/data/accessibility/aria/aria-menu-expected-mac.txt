@@ -1,6 +1,6 @@
 AXWebArea
 ++AXMenuBar
-++++AXMenuItem AXTitle='File' AXLinkedUIElements=["AXMenu File"]
+++++AXMenuItem AXLinkedUIElements=[:6] AXTitle='File'
 ++++AXMenuItem AXTitle='Edit'
 ++++AXMenuItem AXTitle='View'
 ++AXMenu AXDescription='File'

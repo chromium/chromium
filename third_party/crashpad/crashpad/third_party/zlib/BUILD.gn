@@ -18,8 +18,10 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia || crashpad_is_in_dart) {
   zlib_source = "external"
 } else if (!crashpad_is_win && !crashpad_is_fuchsia) {
   zlib_source = "system"
-} else {
+} else if (crashpad_is_standalone) {
   zlib_source = "embedded"
+} else if (crashpad_is_external) {
+  zlib_source = "external_with_embedded_build"
 }
 
 config("zlib_config") {
@@ -30,52 +32,58 @@ config("zlib_config") {
   } else if (zlib_source == "embedded") {
     defines = [ "CRASHPAD_ZLIB_SOURCE_EMBEDDED" ]
     include_dirs = [ "zlib" ]
+  } else if (zlib_source == "external_with_embedded_build") {
+    defines = [ "CRASHPAD_ZLIB_SOURCE_EXTERNAL_WITH_EMBEDDED_BUILD" ]
+    include_dirs = [ "../../../../zlib/src" ]
   }
 }
 
 if (zlib_source == "external") {
   group("zlib") {
     public_configs = [ ":zlib_config" ]
-    public_deps = [
-      "//third_party/zlib",
-    ]
+    public_deps = [ "//third_party/zlib" ]
   }
 } else if (zlib_source == "system") {
   source_set("zlib") {
     public_configs = [ ":zlib_config" ]
     libs = [ "z" ]
   }
-} else if (zlib_source == "embedded") {
+} else if (zlib_source == "embedded" ||
+           zlib_source == "external_with_embedded_build") {
   static_library("zlib") {
+    if (zlib_source == "embedded") {
+      zlib_dir = "zlib"
+    } else if (zlib_source == "external_with_embedded_build") {
+      zlib_dir = "../../../../zlib/src"
+    }
     sources = [
-      "zlib/adler32.c",
-      "zlib/compress.c",
-      "zlib/crc32.c",
-      "zlib/crc32.h",
-      "zlib/deflate.c",
-      "zlib/deflate.h",
-      "zlib/gzclose.c",
-      "zlib/gzguts.h",
-      "zlib/gzlib.c",
-      "zlib/gzread.c",
-      "zlib/gzwrite.c",
-      "zlib/infback.c",
-      "zlib/inffast.c",
-      "zlib/inffast.h",
-      "zlib/inffixed.h",
-      "zlib/inflate.c",
-      "zlib/inflate.h",
-      "zlib/inftrees.c",
-      "zlib/inftrees.h",
-      "zlib/names.h",
-      "zlib/trees.c",
-      "zlib/trees.h",
-      "zlib/uncompr.c",
-      "zlib/zconf.h",
-      "zlib/zlib.h",
-      "zlib/zlib_crashpad.h",
-      "zlib/zutil.c",
-      "zlib/zutil.h",
+      "$zlib_dir/adler32.c",
+      "$zlib_dir/compress.c",
+      "$zlib_dir/crc32.c",
+      "$zlib_dir/crc32.h",
+      "$zlib_dir/deflate.c",
+      "$zlib_dir/deflate.h",
+      "$zlib_dir/gzclose.c",
+      "$zlib_dir/gzguts.h",
+      "$zlib_dir/gzlib.c",
+      "$zlib_dir/gzread.c",
+      "$zlib_dir/gzwrite.c",
+      "$zlib_dir/infback.c",
+      "$zlib_dir/inffast.c",
+      "$zlib_dir/inffast.h",
+      "$zlib_dir/inffixed.h",
+      "$zlib_dir/inflate.c",
+      "$zlib_dir/inflate.h",
+      "$zlib_dir/inftrees.c",
+      "$zlib_dir/inftrees.h",
+      "$zlib_dir/trees.c",
+      "$zlib_dir/trees.h",
+      "$zlib_dir/uncompr.c",
+      "$zlib_dir/zconf.h",
+      "$zlib_dir/zlib.h",
+      "$zlib_dir/zutil.c",
+      "$zlib_dir/zutil.h",
+      "zlib_crashpad.h",
     ]
 
     cflags = []
@@ -104,28 +112,34 @@ if (zlib_source == "external") {
       ]
     }
 
-    configs -= [
-      "//third_party/mini_chromium/mini_chromium/build:Wimplicit_fallthrough",
-    ]
+    if (crashpad_is_standalone) {
+      configs -= [ "//third_party/mini_chromium/mini_chromium/build/config:Wimplicit_fallthrough" ]
+    } else if (crashpad_is_external) {
+      configs -= [ "//../../mini_chromium/mini_chromium/build/config:Wimplicit_fallthrough" ]
+    }
 
-    if (current_cpu == "x86" || current_cpu == "x64") {
-      sources += [
-        "zlib/crc_folding.c",
-        "zlib/fill_window_sse.c",
-        "zlib/x86.c",
-        "zlib/x86.h",
-      ]
-      if (!crashpad_is_win || crashpad_is_clang) {
-        cflags += [
-          "-msse4.2",
-          "-mpclmul",
+    if (zlib_source == "embedded") {
+      sources += [ "$zlib_dir/names.h" ]
+
+      if (current_cpu == "x86" || current_cpu == "x64") {
+        sources += [
+          "$zlib_dir/crc_folding.c",
+          "$zlib_dir/fill_window_sse.c",
+          "$zlib_dir/x86.c",
+          "$zlib_dir/x86.h",
         ]
+        if (!crashpad_is_win || crashpad_is_clang) {
+          cflags += [
+            "-msse4.2",
+            "-mpclmul",
+          ]
+        }
+        if (crashpad_is_clang) {
+          cflags += [ "-Wno-incompatible-pointer-types" ]
+        }
+      } else {
+        sources += [ "$zlib_dir/simd_stub.c" ]
       }
-      if (crashpad_is_clang) {
-        cflags += [ "-Wno-incompatible-pointer-types" ]
-      }
-    } else {
-      sources += [ "zlib/simd_stub.c" ]
     }
   }
 }

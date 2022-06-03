@@ -34,6 +34,8 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
 
     // Accepts everything that kStrong does, plus SHA1.
     kWeakAllowSha1,
+
+    kMaxValue = kWeakAllowSha1
   };
 
   // Error emitted when a public key is rejected because it is an RSA key with a

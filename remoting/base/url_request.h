@@ -40,7 +40,7 @@ class UrlRequest {
     std::string response_body;
   };
 
-  typedef base::Callback<void(const Result& result)> OnResultCallback;
+  typedef base::OnceCallback<void(const Result& result)> OnResultCallback;
 
   virtual ~UrlRequest() {}
 
@@ -53,7 +53,7 @@ class UrlRequest {
 
   // Sends a request to the server. |on_response_callback| will be called to
   // return result of the request.
-  virtual void Start(const OnResultCallback& on_result_callback) = 0;
+  virtual void Start(OnResultCallback on_result_callback) = 0;
 };
 
 // Factory for UrlRequest instances.

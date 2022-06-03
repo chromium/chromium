@@ -4,10 +4,11 @@
 
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/fake_shortcut_parser.h"
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"

@@ -1,5 +1,5 @@
 [document web]
-++[section]
+++[menu] xml-roles:menu
 ++++[check box] name='Checkbox1' checkable:true
 ++++[check box] name='Checkbox2' checked checkable:true
 ++[menu] xml-roles:menu

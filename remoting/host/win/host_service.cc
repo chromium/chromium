@@ -18,13 +18,14 @@
 #include "base/files/file_path.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_com_initializer.h"
 #include "remoting/base/auto_thread.h"
+#include "remoting/base/cpu_utils.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/daemon_process.h"
@@ -212,9 +213,8 @@ void HostService::CreateLauncher(
   }
 
   daemon_process_ = DaemonProcess::Create(
-      task_runner,
-      io_task_runner,
-      base::Bind(&HostService::StopDaemonProcess, weak_ptr_));
+      task_runner, io_task_runner,
+      base::BindOnce(&HostService::StopDaemonProcess, weak_ptr_));
 }
 
 int HostService::RunAsService() {
@@ -260,8 +260,25 @@ void HostService::RunAsServiceImpl() {
                                       SERVICE_ACCEPT_SESSIONCHANGE;
   service_status.dwWin32ExitCode = kSuccessExitCode;
   if (!SetServiceStatus(service_status_handle_, &service_status)) {
-    PLOG(ERROR)
-        << "Failed to report service status to the service control manager";
+    PLOG(ERROR) << "Failed to report service status to the service control "
+                << "manager";
+    return;
+  }
+
+  // Query for supported hardware as soon as the Windows service is started. This greatly reduces
+  // the risk of hitting a crash due to an unsupported CPU instruction since very little
+  // specialized code has been executed at this point (e.g. connecting to the network, capturing
+  // video, etc.).
+  if (!IsCpuSupported()) {
+    LOG(ERROR) << "CPU not supported, shutting down to prevent random crashes";
+    service_status.dwCurrentState = SERVICE_STOPPED;
+    service_status.dwControlsAccepted = 0;
+    service_status.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
+    service_status.dwServiceSpecificExitCode = kCpuNotSupported;
+    if (!SetServiceStatus(service_status_handle_, &service_status)) {
+      PLOG(ERROR) << "Failed to report service status to the service control "
+                  << "manager";
+    }
     return;
   }
 
@@ -288,8 +305,8 @@ void HostService::RunAsServiceImpl() {
   service_status.dwCurrentState = SERVICE_STOPPED;
   service_status.dwControlsAccepted = 0;
   if (!SetServiceStatus(service_status_handle_, &service_status)) {
-    PLOG(ERROR)
-        << "Failed to report service status to the service control manager";
+    PLOG(ERROR) << "Failed to report service status to the service control "
+                << "manager";
     return;
   }
 }
@@ -321,8 +338,8 @@ int HostService::RunInConsole() {
 
   // Create a window for receiving session change notifications.
   base::win::MessageWindow window;
-  if (!window.Create(base::Bind(&HostService::HandleMessage,
-                                base::Unretained(this)))) {
+  if (!window.Create(base::BindRepeating(&HostService::HandleMessage,
+                                         base::Unretained(this)))) {
     PLOG(ERROR) << "Failed to create the session notification window";
     goto cleanup;
   }

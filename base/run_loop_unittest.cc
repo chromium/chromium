@@ -5,20 +5,21 @@
 #include "base/run_loop.h"
 
 #include <functional>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -48,7 +49,7 @@ void RunNestedLoopTask(int* counter) {
                           Unretained(counter)));
 
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   nested_run_loop.Run();
 
@@ -61,11 +62,14 @@ void RunNestedLoopTask(int* counter) {
 class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
  public:
   SimpleSingleThreadTaskRunner() = default;
+  SimpleSingleThreadTaskRunner(const SimpleSingleThreadTaskRunner&) = delete;
+  SimpleSingleThreadTaskRunner& operator=(const SimpleSingleThreadTaskRunner&) =
+      delete;
 
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        base::TimeDelta delay) override {
-    if (delay > base::TimeDelta())
+    if (delay.is_positive())
       return false;
     AutoLock auto_lock(tasks_lock_);
     pending_tasks_.push(std::move(task));
@@ -107,8 +111,6 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
   // ThreadCheckerImpl to be able to reliably provide that signal even in
   // non-dcheck builds.
   ThreadCheckerImpl origin_thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleSingleThreadTaskRunner);
 };
 
 // The basis of all TestDelegates, allows safely injecting a OnceClosure to be
@@ -208,7 +210,7 @@ enum class RunLoopTestType {
 // so it can be instantiated on the stack in the RunLoopTest fixture.
 class RunLoopTestEnvironment {
  public:
-  RunLoopTestEnvironment(RunLoopTestType type) {
+  explicit RunLoopTestEnvironment(RunLoopTestType type) {
     switch (type) {
       case RunLoopTestType::kRealEnvironment: {
         task_environment_ = std::make_unique<test::TaskEnvironment>();
@@ -230,14 +232,15 @@ class RunLoopTestEnvironment {
 };
 
 class RunLoopTest : public testing::TestWithParam<RunLoopTestType> {
+ public:
+  RunLoopTest(const RunLoopTest&) = delete;
+  RunLoopTest& operator=(const RunLoopTest&) = delete;
+
  protected:
   RunLoopTest() : test_environment_(GetParam()) {}
 
   RunLoopTestEnvironment test_environment_;
   RunLoop run_loop_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RunLoopTest);
 };
 
 }  // namespace
@@ -250,7 +253,7 @@ TEST_P(RunLoopTest, QuitWhenIdle) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
   EXPECT_EQ(1, counter);
@@ -266,7 +269,7 @@ TEST_P(RunLoopTest, QuitWhenIdleNestedLoop) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
   EXPECT_EQ(3, counter);
@@ -278,7 +281,7 @@ TEST_P(RunLoopTest, QuitWhenIdleClosure) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
 }
@@ -464,27 +467,65 @@ TEST_P(RunLoopTest, IsNestedOnCurrentThread) {
   run_loop_.Run();
 }
 
+TEST_P(RunLoopTest, CannotRunMoreThanOnce) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+  EXPECT_DCHECK_DEATH({ run_loop_.Run(); });
+}
+
+TEST_P(RunLoopTest, CanRunUntilIdleMoreThanOnce) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+  run_loop_.RunUntilIdle();
+}
+
+TEST_P(RunLoopTest, CanRunUntilIdleThenRunIfNotQuit) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+}
+
+TEST_P(RunLoopTest, CannotRunUntilIdleThenRunIfQuit) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  EXPECT_DCHECK_DEATH({ run_loop_.Run(); });
+}
+
+TEST_P(RunLoopTest, CannotRunAgainIfQuitWhenIdle) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                          run_loop_.QuitWhenIdleClosure());
+  run_loop_.RunUntilIdle();
+
+  EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
+}
+
 namespace {
 
 class MockNestingObserver : public RunLoop::NestingObserver {
  public:
   MockNestingObserver() = default;
+  MockNestingObserver(const MockNestingObserver&) = delete;
+  MockNestingObserver& operator=(const MockNestingObserver&) = delete;
 
   // RunLoop::NestingObserver:
   MOCK_METHOD0(OnBeginNestedRunLoop, void());
   MOCK_METHOD0(OnExitNestedRunLoop, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNestingObserver);
 };
 
 class MockTask {
  public:
   MockTask() = default;
-  MOCK_METHOD0(Task, void());
+  MockTask(const MockTask&) = delete;
+  MockTask& operator=(const MockTask&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTask);
+  MOCK_METHOD0(Task, void());
 };
 
 }  // namespace
@@ -530,13 +571,13 @@ TEST_P(RunLoopTest, NestingObservers) {
   RunLoop::RemoveNestingObserverOnCurrentThread(&nesting_observer);
 }
 
-TEST_P(RunLoopTest, DisallowRunningForTesting) {
-  RunLoop::ScopedDisallowRunningForTesting disallow_running;
+TEST_P(RunLoopTest, DisallowRunning) {
+  RunLoop::ScopedDisallowRunning disallow_running;
   EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
 }
 
-TEST_P(RunLoopTest, ExpiredDisallowRunningForTesting) {
-  { RunLoop::ScopedDisallowRunningForTesting disallow_running; }
+TEST_P(RunLoopTest, ExpiredDisallowRunning) {
+  { RunLoop::ScopedDisallowRunning disallow_running; }
   // Running should be fine after |disallow_running| goes out of scope.
   run_loop_.RunUntilIdle();
 }
@@ -547,49 +588,6 @@ INSTANTIATE_TEST_SUITE_P(Real,
 INSTANTIATE_TEST_SUITE_P(Mock,
                          RunLoopTest,
                          testing::Values(RunLoopTestType::kTestDelegate));
-
-TEST(ScopedRunTimeoutForTestTest, TimesOut) {
-  test::TaskEnvironment task_environment;
-  RunLoop run_loop;
-
-  static constexpr auto kArbitraryTimeout =
-      base::TimeDelta::FromMilliseconds(10);
-  RunLoop::ScopedRunTimeoutForTest run_timeout(
-      kArbitraryTimeout, MakeExpectedRunAtLeastOnceClosure(FROM_HERE));
-
-  // Since the delayed task will be posted only after the message pump starts
-  // running, the ScopedRunTimeoutForTest will already have started to elapse,
-  // so if Run() exits at the correct time then our delayed task will not run.
-  SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&SequencedTaskRunner::PostDelayedTask),
-                     SequencedTaskRunnerHandle::Get(), FROM_HERE,
-                     MakeExpectedNotRunClosure(FROM_HERE), kArbitraryTimeout));
-
-  // This task should get to run before Run() times-out.
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
-
-  run_loop.Run();
-}
-
-TEST(ScopedRunTimeoutForTestTest, RunTasksUntilTimeout) {
-  test::TaskEnvironment task_environment;
-  RunLoop run_loop;
-
-  static constexpr auto kArbitraryTimeout =
-      base::TimeDelta::FromMilliseconds(10);
-  RunLoop::ScopedRunTimeoutForTest run_timeout(
-      kArbitraryTimeout, MakeExpectedRunAtLeastOnceClosure(FROM_HERE));
-
-  // Posting a task with the same delay as our timeout, immediately before
-  // calling Run(), means it should get to run. Since this uses QuitWhenIdle(),
-  // the Run() timeout callback should also get to run.
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
-
-  run_loop.Run();
-}
 
 TEST(RunLoopDeathTest, MustRegisterBeforeInstantiating) {
   TestBoundDelegate unbound_test_delegate_;

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_NATIVE_MESSAGIN_LOG_HANDLER_H_
-#define REMOTING_HOST_NATIVE_MESSAGIN_LOG_HANDLER_H_
+#ifndef REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_
+#define REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_
 
 #include <stddef.h>
 
 #include <memory>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -25,7 +26,8 @@ namespace remoting {
 // over a Native Messaging channel.
 class LogMessageHandler {
  public:
-  typedef base::Callback<void(std::unique_ptr<base::Value> message)> Delegate;
+  typedef base::RepeatingCallback<void(std::unique_ptr<base::Value> message)>
+      Delegate;
 
   explicit LogMessageHandler(const Delegate& delegate);
   ~LogMessageHandler();
@@ -52,4 +54,4 @@ class LogMessageHandler {
 
 }  // namespace remoting
 
-#endif
+#endif  // REMOTING_HOST_NATIVE_MESSAGING_LOG_MESSAGE_HANDLER_H_

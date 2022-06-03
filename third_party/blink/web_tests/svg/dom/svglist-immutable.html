@@ -25,13 +25,13 @@ var root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     var item = testItem.constructItem(element);
     test(function() {
         assert_equals(list.length, 2);
-        assert_throws('NoModificationAllowedError', function() { list.clear(); });
-        assert_throws('NoModificationAllowedError', function() { list.initialize(item); });
-        assert_throws('NoModificationAllowedError', function() { list[0] = item; });
-        assert_throws('NoModificationAllowedError', function() { list.insertItemBefore(item, 0); });
-        assert_throws('NoModificationAllowedError', function() { list.replaceItem(item, 0); });
-        assert_throws('NoModificationAllowedError', function() { list.removeItem(0); });
-        assert_throws('NoModificationAllowedError', function() { list.appendItem(item); });
+        assert_throws_dom('NoModificationAllowedError', function() { list.clear(); });
+        assert_throws_dom('NoModificationAllowedError', function() { list.initialize(item); });
+        assert_throws_dom('NoModificationAllowedError', function() { list[0] = item; });
+        assert_throws_dom('NoModificationAllowedError', function() { list.insertItemBefore(item, 0); });
+        assert_throws_dom('NoModificationAllowedError', function() { list.replaceItem(item, 0); });
+        assert_throws_dom('NoModificationAllowedError', function() { list.removeItem(0); });
+        assert_throws_dom('NoModificationAllowedError', function() { list.appendItem(item); });
     }, document.title + ', ' + testItem.listName);
 });
 </script>

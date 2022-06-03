@@ -31,7 +31,7 @@ function hoverElement(element) {
 }
 
 // Add and remove a ":hover *" rule from a shadow tree.
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = "<style>:hover * { background-color: pink }</style>";
 hover.offsetTop;
 root.innerHTML = "";

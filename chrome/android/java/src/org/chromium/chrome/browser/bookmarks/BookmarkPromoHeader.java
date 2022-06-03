@@ -5,68 +5,55 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.signin.ProfileDataCache;
-import org.chromium.chrome.browser.signin.SigninManager;
-import org.chromium.chrome.browser.signin.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.signin.SigninPromoController;
-import org.chromium.chrome.browser.signin.SigninPromoUtil;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncPromoView;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.ChromeSigninController;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.sync.AndroidSyncSettings;
-import org.chromium.components.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Class that manages all the logic and UI behind the signin promo header in the bookmark
  * content UI. The header is shown only on certain situations, (e.g., not signed in).
  */
-class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObserver,
+class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignInStateObserver,
                                      ProfileDataCache.Observer, AccountsChangeObserver {
-    /**
-     * Specifies the various states in which the Bookmarks promo can be.
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PromoState.PROMO_NONE, PromoState.PROMO_SIGNIN_PERSONALIZED, PromoState.PROMO_SYNC})
-    @interface PromoState {
-        int PROMO_NONE = 0;
-        int PROMO_SIGNIN_PERSONALIZED = 1;
-        int PROMO_SYNC = 2;
-    }
-
     // TODO(kkimlabs): Figure out the optimal number based on UMA data.
     private static final int MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT = 10;
 
-    private static @Nullable @PromoState Integer sPromoStateForTests;
+    private static @Nullable @SyncPromoState Integer sPromoStateForTests;
 
     private final Context mContext;
     private final SigninManager mSignInManager;
+    private final AccountManagerFacade mAccountManagerFacade;
     private final Runnable mPromoHeaderChangeAction;
 
-    private final @Nullable ProfileDataCache mProfileDataCache;
+    private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SigninPromoController mSigninPromoController;
-    private @PromoState int mPromoState;
+    private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
+    private final @Nullable SyncService mSyncService;
 
     /**
      * Initializes the class. Note that this will start listening to signin related events and
@@ -76,39 +63,36 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
         mContext = context;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
 
-        AndroidSyncSettings.get().registerObserver(this);
+        mSyncService = SyncService.get();
+        if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
 
-        if (SigninPromoController.hasNotReachedImpressionLimit(
-                    SigninAccessPoint.BOOKMARK_MANAGER)) {
-            int imageSize =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.user_picture_size);
-            mProfileDataCache = new ProfileDataCache(mContext, imageSize);
+        mSignInManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        mSignInManager.addSignInStateObserver(this);
+
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+
+        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
+            mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
-            mSigninPromoController = new SigninPromoController(SigninAccessPoint.BOOKMARK_MANAGER);
-            AccountManagerFacade.get().addObserver(this);
+            mSigninPromoController = new SigninPromoController(
+                    SigninAccessPoint.BOOKMARK_MANAGER, SyncConsentActivityLauncherImpl.get());
+            mAccountManagerFacade.addObserver(this);
         } else {
             mProfileDataCache = null;
             mSigninPromoController = null;
         }
-
-        mSignInManager = IdentityServicesProvider.get().getSigninManager();
-        mSignInManager.addSignInStateObserver(this);
-
-        mPromoState = calculatePromoState();
-        if (mPromoState == PromoState.PROMO_SYNC) {
-            SharedPreferencesManager.getInstance().incrementInt(
-                    ChromePreferenceKeys.PREF_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
-        }
+        updatePromoState();
     }
 
     /**
      * Clean ups the class. Must be called once done using this class.
      */
     void destroy() {
-        AndroidSyncSettings.get().unregisterObserver(this);
+        if (mSyncService != null) mSyncService.removeSyncStateChangedListener(this);
 
         if (mSigninPromoController != null) {
-            AccountManagerFacade.get().removeObserver(this);
+            mAccountManagerFacade.removeObserver(this);
             mProfileDataCache.removeObserver(this);
             mSigninPromoController.onPromoDestroyed();
         }
@@ -119,7 +103,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
     /**
      * @return The current state of the promo.
      */
-    @PromoState
+    @SyncPromoState
     int getPromoState() {
         return mPromoState;
     }
@@ -128,8 +112,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @return Personalized signin promo header {@link ViewHolder} instance that can be used with
      *         {@link RecyclerView}.
      */
-    // TODO(crbug.com/160194): Clean up after bookmark reordering launches.
-    ViewHolder createPersonalizedSigninPromoHolder(ViewGroup parent) {
+    ViewHolder createPersonalizedSigninAndSyncPromoHolder(ViewGroup parent) {
         View view = LayoutInflater.from(mContext).inflate(
                 R.layout.personalized_signin_promo_view_bookmarks, parent, false);
 
@@ -141,7 +124,6 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @return Sync promo header {@link ViewHolder} instance that can be used with
      *         {@link RecyclerView}.
      */
-    // TODO(crbug.com/160194): Clean up after bookmark reordering launches.
     ViewHolder createSyncPromoHolder(ViewGroup parent) {
         SyncPromoView view = SyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
 
@@ -150,12 +132,11 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
     }
 
     /**
-     * Configures the personalized signin promo and records promo impressions.
-     * @param view The view to be configured.
+     * Sets up the sync promo view.
      */
-    void setupPersonalizedSigninPromo(PersonalizedSigninPromoView view) {
-        SigninPromoUtil.setupPromoViewFromCache(mSigninPromoController, mProfileDataCache, view,
-                this::setPersonalizedSigninPromoDeclined);
+    void setUpSyncPromoView(PersonalizedSigninPromoView view) {
+        mSigninPromoController.setUpSyncPromoView(
+                mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }
 
     /**
@@ -169,75 +150,96 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * Saves that the personalized signin promo was declined and updates the UI.
      */
     private void setPersonalizedSigninPromoDeclined() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PREF_PERSONALIZED_SIGNIN_PROMO_DECLINED, true);
         mPromoState = calculatePromoState();
         triggerPromoUpdate();
     }
 
     /**
-     * @return Whether the user declined the personalized signin promo.
+     * @return Whether the personalized signin promo should be shown to user.
      */
-    private boolean wasPersonalizedSigninPromoDeclined() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.PREF_PERSONALIZED_SIGNIN_PROMO_DECLINED, false);
+    private boolean shouldShowBookmarkSigninPromo() {
+        return mSignInManager.isSignInAllowed()
+                && SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER);
     }
 
-    private @PromoState int calculatePromoState() {
+    private @SyncPromoState int calculatePromoState() {
         if (sPromoStateForTests != null) {
             return sPromoStateForTests;
         }
 
-        if (!AndroidSyncSettings.get().isMasterSyncEnabled()) {
-            return PromoState.PROMO_NONE;
+        if (mSyncService == null) {
+            // |mSyncService| will remain null until the next browser startup, so no sense in
+            // offering any promo.
+            return SyncPromoState.NO_PROMO;
         }
 
-        if (!ChromeSigninController.get().isSignedIn()) {
-            boolean impressionLimitReached = !SigninPromoController.hasNotReachedImpressionLimit(
-                    SigninAccessPoint.BOOKMARK_MANAGER);
-            if (!mSignInManager.isSignInAllowed() || impressionLimitReached
-                    || wasPersonalizedSigninPromoDeclined()) {
-                return PromoState.PROMO_NONE;
+        if (!mSyncService.isSyncAllowedByPlatform()) {
+            return SyncPromoState.NO_PROMO;
+        }
+
+        if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
+            if (!shouldShowBookmarkSigninPromo()) {
+                return SyncPromoState.NO_PROMO;
             }
-            return PromoState.PROMO_SIGNIN_PERSONALIZED;
+
+            return mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)
+                    ? SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
+                    : SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
         }
 
         boolean impressionLimitNotReached =
                 SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.PREF_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
+                        ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
                 < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
-        if (!AndroidSyncSettings.get().isChromeSyncEnabled() && impressionLimitNotReached) {
-            return PromoState.PROMO_SYNC;
+        if (!mSyncService.isSyncRequested() && impressionLimitNotReached) {
+            return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
         }
-        return PromoState.PROMO_NONE;
+        return SyncPromoState.NO_PROMO;
     }
 
-    // AndroidSyncSettingsObserver implementation.
+    private void updatePromoState() {
+        final @SyncPromoState int newState = calculatePromoState();
+        if (newState == mPromoState) return;
+
+        // PROMO_SYNC state and it's impression counts is not tracked by SigninPromoController.
+        final boolean hasSyncPromoStateChangedtoShown =
+                (mPromoState == SyncPromoState.NO_PROMO
+                        || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
+                && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
+                        || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
+        if (mSigninPromoController != null && hasSyncPromoStateChangedtoShown) {
+            mSigninPromoController.increasePromoShowCount();
+        }
+        if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
+            SharedPreferencesManager.getInstance().incrementInt(
+                    ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
+        }
+        mPromoState = newState;
+    }
+
+    // SyncService.SyncStateChangedListener implementation.
     @Override
-    public void androidSyncSettingsChanged() {
-        // AndroidSyncSettings calls this method from non-UI threads.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mPromoState = calculatePromoState();
-            triggerPromoUpdate();
-        });
+    public void syncStateChanged() {
+        updatePromoState();
+        triggerPromoUpdate();
     }
 
     // SignInStateObserver implementation.
     @Override
     public void onSignedIn() {
-        mPromoState = calculatePromoState();
+        updatePromoState();
         triggerPromoUpdate();
     }
 
     @Override
     public void onSignedOut() {
-        mPromoState = calculatePromoState();
+        updatePromoState();
         triggerPromoUpdate();
     }
 
     // ProfileDataCache.Observer implementation.
     @Override
-    public void onProfileDataUpdated(String accountId) {
+    public void onProfileDataUpdated(String accountEmail) {
         triggerPromoUpdate();
     }
 
@@ -257,13 +259,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @param promoState The promo state to which the header will be set to.
      */
     @VisibleForTesting
-    static void forcePromoStateForTests(@Nullable @PromoState Integer promoState) {
+    static void forcePromoStateForTests(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
-    }
-
-    @VisibleForTesting
-    static void setPrefPersonalizedSigninPromoDeclinedForTests(boolean isDeclined) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PREF_PERSONALIZED_SIGNIN_PROMO_DECLINED, isDeclined);
     }
 }

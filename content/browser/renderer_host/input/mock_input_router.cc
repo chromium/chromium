@@ -30,33 +30,29 @@ void MockInputRouter::SendTouchEvent(
     const TouchEventWithLatencyInfo& touch_event) {
   send_touch_event_not_cancelled_ =
       client_->FilterInputEvent(touch_event.event, touch_event.latency) ==
-      INPUT_EVENT_ACK_STATE_NOT_CONSUMED;
+      blink::mojom::InputEventResultState::kNotConsumed;
 }
 
 bool MockInputRouter::HasPendingEvents() const {
   return false;
 }
 
-base::Optional<cc::TouchAction> MockInputRouter::AllowedTouchAction() {
+absl::optional<cc::TouchAction> MockInputRouter::AllowedTouchAction() {
   return cc::TouchAction::kAuto;
 }
 
-base::Optional<cc::TouchAction> MockInputRouter::ActiveTouchAction() {
+absl::optional<cc::TouchAction> MockInputRouter::ActiveTouchAction() {
   return cc::TouchAction::kAuto;
 }
 
-mojo::PendingRemote<mojom::WidgetInputHandlerHost>
-MockInputRouter::BindNewHost() {
+mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost>
+MockInputRouter::BindNewHost(scoped_refptr<base::SequencedTaskRunner>) {
   return mojo::NullRemote();
 }
 
-mojo::PendingRemote<mojom::WidgetInputHandlerHost>
-MockInputRouter::BindNewFrameHost() {
-  return mojo::NullRemote();
-}
-
-void MockInputRouter::OnHasTouchEventHandlers(bool has_handlers) {
-  has_handlers_ = has_handlers;
+void MockInputRouter::OnHasTouchEventConsumers(
+    blink::mojom::TouchEventConsumersPtr consumers) {
+  has_handlers_ = consumers->has_touch_event_handlers;
 }
 
 }  // namespace content

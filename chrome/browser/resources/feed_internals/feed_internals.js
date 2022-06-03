@@ -23,20 +23,30 @@ function updatePageWithProperties() {
     $('is-feed-visible').textContent = properties.isFeedVisible;
     $('is-feed-allowed').textContent = properties.isFeedAllowed;
     $('is-prefetching-enabled').textContent = properties.isPrefetchingEnabled;
+    $('load-stream-status').textContent = properties.loadStreamStatus;
     $('feed-fetch-url').textContent = properties.feedFetchUrl.url;
-  });
-}
+    $('feed-actions-url').textContent = properties.feedActionsUrl.url;
+    $('enable-webfeed-follow-intro-debug').checked =
+        properties.isWebFeedFollowIntroDebugEnabled;
+    $('enable-webfeed-follow-intro-debug').disabled = false;
+    $('use-feed-query-requests-for-web-feeds').checked =
+        properties.useFeedQueryRequestsForWebFeeds;
 
-/**
- * Get and display user classifier properties.
- */
-function updatePageWithUserClass() {
-  pageHandler.getUserClassifierProperties().then(response => {
-    /** @type {!feedInternals.mojom.UserClassifier} */
-    const properties = response.properties;
-    $('user-class-description').textContent = properties.userClassDescription;
-    $('avg-hours-between-views').textContent = properties.avgHoursBetweenViews;
-    $('avg-hours-between-uses').textContent = properties.avgHoursBetweenUses;
+    switch (properties.followingFeedOrder) {
+      case feedInternals.mojom.FeedOrder.kUnspecified:
+        $('following-feed-order-unset').checked = true;
+        break;
+      case feedInternals.mojom.FeedOrder.kGrouped:
+        $('following-feed-order-grouped').checked = true;
+        break;
+      case feedInternals.mojom.FeedOrder.kReverseChron:
+        $('following-feed-order-reverse-chron').checked = true;
+        break;
+    }
+    $('following-feed-order-grouped').disabled = false;
+    $('following-feed-order-reverse-chron').disabled = false;
+    $('following-feed-order-unset').disabled = false;
+
   });
 }
 
@@ -53,37 +63,10 @@ function updatePageWithLastFetchProperties() {
     $('refresh-suppress-time').textContent =
         toDateString(properties.refreshSuppressTime);
     $('last-fetch-bless-nonce').textContent = properties.lastBlessNonce;
-  });
-}
-
-/**
- * Get and display last known content.
- */
-function updatePageWithCurrentContent() {
-  pageHandler.getCurrentContent().then(response => {
-    const before = $('current-content');
-    const after = before.cloneNode(false);
-
-    /** @type {!Array<feedInternals.mojom.Suggestion>} */
-    const suggestions = response.suggestions;
-
-    for (const suggestion of suggestions) {
-      // Create new content item from template.
-      const item = document.importNode($('suggestion-template').content, true);
-
-      // Populate template with text metadata.
-      item.querySelector('.title').textContent = suggestion.title;
-      item.querySelector('.publisher').textContent = suggestion.publisherName;
-
-      // Populate template with link metadata.
-      setLinkNode(item.querySelector('a.url'), suggestion.url.url);
-      setLinkNode(item.querySelector('a.image'), suggestion.imageUrl.url);
-      setLinkNode(item.querySelector('a.favicon'), suggestion.faviconUrl.url);
-
-      after.appendChild(item);
-    }
-
-    before.replaceWith(after);
+    $('last-action-upload-status').textContent =
+        properties.lastActionUploadStatus;
+    $('last-action-upload-time').textContent =
+        toDateString(properties.lastActionUploadTime);
   });
 }
 
@@ -99,42 +82,31 @@ function setLinkNode(node, url) {
 }
 
 /**
- * Convert time to string for display.
+ * Convert timeSinceEpoch to string for display.
  *
- * @param {feedInternals.mojom.Time|undefined} time
+ * @param {mojoBase.mojom.TimeDelta} timeSinceEpoch
  * @return {string}
  */
-function toDateString(time) {
-  return time == null ? '' : new Date(time.msSinceEpoch).toLocaleString();
-}
-
-/**
- * Update last fetch properties and current content following a Feed refresh.
- */
-function updateAfterRefresh() {
-  // TODO(crbug.com/939907): Listen for Feed update events rather than waiting
-  // an arbitrary period of time.
-  setTimeout(updatePageWithLastFetchProperties, 1000);
-  setTimeout(updatePageWithCurrentContent, 1000);
+function toDateString(timeSinceEpoch) {
+  const microseconds = Number(timeSinceEpoch.microseconds);
+  return microseconds === 0 ? '' :
+                              new Date(microseconds / 1000).toLocaleString();
 }
 
 /**
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  $('clear-user-classification').addEventListener('click', function() {
-    pageHandler.clearUserClassifierProperties();
-    updatePageWithUserClass();
+  $('refresh-for-you').addEventListener('click', function() {
+    pageHandler.refreshForYouFeed();
   });
 
-  $('clear-cached-data').addEventListener('click', function() {
-    pageHandler.clearCachedDataAndRefreshFeed();
-    updateAfterRefresh();
+  $('refresh-following').addEventListener('click', function() {
+    pageHandler.refreshFollowingFeed();
   });
 
-  $('refresh-feed').addEventListener('click', function() {
-    pageHandler.refreshFeed();
-    updateAfterRefresh();
+  $('refresh-webfeed-suggestions').addEventListener('click', () => {
+    pageHandler.refreshWebFeedSuggestions();
   });
 
   $('dump-feed-process-scope').addEventListener('click', function() {
@@ -152,19 +124,71 @@ function setupEventListeners() {
   });
 
   $('feed-host-override-apply').addEventListener('click', function() {
-    pageHandler.overrideFeedHost($('feed-host-override').value);
+    pageHandler.overrideFeedHost({url: $('feed-host-override').value});
   });
+
+  $('discover-api-override-apply').addEventListener('click', function() {
+    pageHandler.overrideFeedHost({url: $('discover-api-override').value});
+  });
+
+  $('feed-stream-data-override').addEventListener('click', function() {
+    const file = $('feed-stream-data-file').files[0];
+    if (file && typeof pageHandler.overrideFeedStreamData == 'function') {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function(e) {
+        const typedArray = new Uint8Array(e.target.result);
+        pageHandler.overrideFeedStreamData([...typedArray]);
+      };
+    }
+  });
+
+  $('enable-webfeed-follow-intro-debug').addEventListener('click', function() {
+    pageHandler.setWebFeedFollowIntroDebugEnabled(
+        $('enable-webfeed-follow-intro-debug').checked);
+    $('enable-webfeed-follow-intro-debug').disabled = true;
+  });
+
+  $('use-feed-query-requests-for-web-feeds')
+      .addEventListener('click', function() {
+        pageHandler.setUseFeedQueryRequestsForWebFeeds(
+            $('use-feed-query-requests-for-web-feeds').checked);
+      });
+
+  const orderRadioClickListener = function(order) {
+    $('following-feed-order-grouped').disabled = true;
+    $('following-feed-order-reverse-chron').disabled = true;
+    $('following-feed-order-unset').disabled = true;
+    pageHandler.setFollowingFeedOrder(order);
+  };
+  $('following-feed-order-unset')
+      .addEventListener(
+          'click',
+          () => orderRadioClickListener(
+              feedInternals.mojom.FeedOrder.kUnspecified));
+  $('following-feed-order-grouped')
+      .addEventListener(
+          'click',
+          () =>
+              orderRadioClickListener(feedInternals.mojom.FeedOrder.kGrouped));
+  $('following-feed-order-reverse-chron')
+      .addEventListener(
+          'click',
+          () => orderRadioClickListener(
+              feedInternals.mojom.FeedOrder.kReverseChron));
+}
+
+function updatePage() {
+  updatePageWithProperties();
+  updatePageWithLastFetchProperties();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup backend mojo.
-  pageHandler = feedInternals.mojom.PageHandler.getRemote(
-      /*useBrowserInterfaceBroker=*/ true);
+  pageHandler = feedInternals.mojom.PageHandler.getRemote();
 
-  updatePageWithProperties();
-  updatePageWithUserClass();
-  updatePageWithLastFetchProperties();
-  updatePageWithCurrentContent();
+  setInterval(updatePage, 2000);
+  updatePage();
 
   setupEventListeners();
 });

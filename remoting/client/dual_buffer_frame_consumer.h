@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
@@ -31,12 +31,16 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   // RenderCallback(decoded_frame, done)
   // |done| should be run after it is rendered. Can be called on any thread.
   using RenderCallback =
-      base::Callback<void(std::unique_ptr<webrtc::DesktopFrame>,
-                          const base::Closure&)>;
+      base::RepeatingCallback<void(std::unique_ptr<webrtc::DesktopFrame>,
+                                   base::OnceClosure)>;
   DualBufferFrameConsumer(
-      const RenderCallback& callback,
+      RenderCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       PixelFormat format);
+
+  DualBufferFrameConsumer(const DualBufferFrameConsumer&) = delete;
+  DualBufferFrameConsumer& operator=(const DualBufferFrameConsumer&) = delete;
+
   ~DualBufferFrameConsumer() override;
 
   // Feeds the callback on the right thread with a BasicDesktopFrame that merges
@@ -48,14 +52,14 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   std::unique_ptr<webrtc::DesktopFrame> AllocateFrame(
       const webrtc::DesktopSize& size) override;
   void DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
-                 const base::Closure& done) override;
+                 base::OnceClosure done) override;
   PixelFormat GetPixelFormat() override;
 
   base::WeakPtr<DualBufferFrameConsumer> GetWeakPtr();
 
  private:
   void RunRenderCallback(std::unique_ptr<webrtc::DesktopFrame> frame,
-                 const base::Closure& done);
+                         base::OnceClosure done);
 
   std::unique_ptr<webrtc::SharedDesktopFrame> buffers_[2];
 
@@ -71,8 +75,6 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   base::ThreadChecker thread_checker_;
   base::WeakPtr<DualBufferFrameConsumer> weak_ptr_;
   base::WeakPtrFactory<DualBufferFrameConsumer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DualBufferFrameConsumer);
 };
 
 }  // namespace remoting

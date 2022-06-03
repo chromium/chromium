@@ -5,8 +5,8 @@
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
@@ -26,6 +26,11 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
  public:
   BluetoothAgentManagerClientImpl() {}
 
+  BluetoothAgentManagerClientImpl(const BluetoothAgentManagerClientImpl&) =
+      delete;
+  BluetoothAgentManagerClientImpl& operator=(
+      const BluetoothAgentManagerClientImpl&) = delete;
+
   ~BluetoothAgentManagerClientImpl() override = default;
 
   // BluetoothAgentManagerClient override.
@@ -44,8 +49,8 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
   // BluetoothAgentManagerClient override.
   void RegisterAgent(const dbus::ObjectPath& agent_path,
                      const std::string& capability,
-                     const base::Closure& callback,
-                     const ErrorCallback& error_callback) override {
+                     base::OnceClosure callback,
+                     ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_agent_manager::kBluetoothAgentManagerInterface,
         bluetooth_agent_manager::kRegisterAgent);
@@ -57,15 +62,16 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
   }
 
   // BluetoothAgentManagerClient override.
   void UnregisterAgent(const dbus::ObjectPath& agent_path,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override {
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_agent_manager::kBluetoothAgentManagerInterface,
         bluetooth_agent_manager::kUnregisterAgent);
@@ -76,15 +82,16 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
   }
 
   // BluetoothAgentManagerClient override.
   void RequestDefaultAgent(const dbus::ObjectPath& agent_path,
-                           const base::Closure& callback,
-                           const ErrorCallback& error_callback) override {
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_agent_manager::kBluetoothAgentManagerInterface,
         bluetooth_agent_manager::kRequestDefaultAgent);
@@ -95,9 +102,10 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothAgentManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
   }
 
  protected:
@@ -144,14 +152,13 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
   }
 
   // Called when a response for successful method call is received.
-  void OnSuccess(const base::Closure& callback, dbus::Response* response) {
+  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
     DCHECK(response);
-    callback.Run();
+    std::move(callback).Run();
   }
 
   // Called when a response for a failed method call is received.
-  void OnError(const ErrorCallback& error_callback,
-               dbus::ErrorResponse* response) {
+  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
     // Error response has optional error message argument.
     std::string error_name;
     std::string error_message;
@@ -163,7 +170,7 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
       error_name = kNoResponseError;
       error_message = "";
     }
-    error_callback.Run(error_name, error_message);
+    std::move(error_callback).Run(error_name, error_message);
   }
 
   dbus::ObjectProxy* object_proxy_;
@@ -178,8 +185,6 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAgentManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAgentManagerClientImpl);
 };
 
 BluetoothAgentManagerClient::BluetoothAgentManagerClient() = default;

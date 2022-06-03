@@ -7,8 +7,9 @@ package org.chromium.android_webview.test;
 import static org.junit.Assert.assertEquals;
 
 import android.os.SystemClock;
-import android.support.test.filters.SmallTest;
 import android.view.KeyEvent;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils;
@@ -92,7 +94,7 @@ public class AwPageLoadMetricsTest {
         int navigationToFirstContentfulPaint = RecordHistogram.getHistogramTotalCountForTesting(
                 "PageLoad.PaintTiming.NavigationToFirstContentfulPaint");
         int navigationToLargestContentfulPaint = RecordHistogram.getHistogramTotalCountForTesting(
-                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint");
+                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2");
         loadUrlSync(url);
         AwActivityTestRule.pollInstrumentationThread(
                 () -> (1 + navigationToFirstPaint
@@ -105,9 +107,10 @@ public class AwPageLoadMetricsTest {
         // Flush NavigationToLargestContentfulPaint.
         loadUrlSync("about:blank");
         AwActivityTestRule.pollInstrumentationThread(
-                () -> (1 + navigationToLargestContentfulPaint
-                        == RecordHistogram.getHistogramTotalCountForTesting(
-                                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint")));
+                ()
+                        -> (1 + navigationToLargestContentfulPaint
+                                == RecordHistogram.getHistogramTotalCountForTesting(
+                                        "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2")));
     }
 
     /**
@@ -117,7 +120,9 @@ public class AwPageLoadMetricsTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testFirstInputDelay4() throws Throwable {
-        final String data = "<html><head></head><body><input type='text' id='text1'></body></html>";
+        final String data = "<html><head></head><body>"
+                + "<p>Hello World</p><input type='text' id='text1'>"
+                + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
         int firstInputDelay4 = RecordHistogram.getHistogramTotalCountForTesting(
                 "PageLoad.InteractiveTiming.FirstInputDelay4");
@@ -128,6 +133,25 @@ public class AwPageLoadMetricsTest {
                 () -> (1 + firstInputDelay4
                         == RecordHistogram.getHistogramTotalCountForTesting(
                                 "PageLoad.InteractiveTiming.FirstInputDelay4")));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPageLoadMetricsProvider() throws Throwable {
+        final String data = "<html><head></head><body><input type='text' id='text1'></body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
+        int foregroundDuration = RecordHistogram.getHistogramTotalCountForTesting(
+                "PageLoad.PageTiming.ForegroundDuration");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AwMetricsServiceClient.setConsentSetting(mRule.getActivity(), true); });
+        loadUrlSync(url);
+        // Remove the WebView from the container, to simulate app going to background.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mRule.getActivity().removeAllViews(); });
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> (1 + foregroundDuration
+                        == RecordHistogram.getHistogramTotalCountForTesting(
+                                "PageLoad.PageTiming.ForegroundDuration")));
     }
 
     private String executeJavaScriptAndWaitForResult(String code) throws Throwable {

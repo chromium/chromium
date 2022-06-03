@@ -27,7 +27,11 @@
 
 #define HAVE_ASM 1
 
+#define HAVE_AVX512ICL 1
+
 #define HAVE_CLOCK_GETTIME 1
+
+#define HAVE_DLSYM 1
 
 #define HAVE_POSIX_MEMALIGN 1
 

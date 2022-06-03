@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that unresolvable cycles lead to SyntaxError events on window and load events on script assert_array_equals: property 2, expected "Uncaught SyntaxError: Detected cycle while resolving name 'x' in './cycle-unresolvable-a.js'" but got "Uncaught SyntaxError: Detected cycle while resolving name 'x' in './cycle-unresolvable.js'"
-Harness: the test ran to completion.
-

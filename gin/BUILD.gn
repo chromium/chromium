@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/allocator.gni")
+import("//base/allocator/allocator.gni")
 import("//testing/test.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
@@ -16,6 +16,7 @@ component("gin") {
     "context_holder.cc",
     "converter.cc",
     "converter.h",
+    "cppgc.cc",
     "data_object_builder.cc",
     "data_object_builder.h",
     "debug_impl.cc",
@@ -40,6 +41,7 @@ component("gin") {
     "per_isolate_data.cc",
     "per_isolate_data.h",
     "public/context_holder.h",
+    "public/cppgc.h",
     "public/debug.h",
     "public/gin_embedders.h",
     "public/isolate_holder.h",
@@ -70,33 +72,42 @@ component("gin") {
     "wrapper_info.cc",
   ]
 
-  if (v8_use_external_startup_data) {
-    data = [
-      "$root_out_dir/snapshot_blob.bin",
+  if (use_partition_alloc) {
+    sources += [
+      "v8_platform_page_allocator.cc",
+      "v8_platform_page_allocator.h",
     ]
+  }
+
+  if (v8_use_external_startup_data) {
+    data = [ "$root_out_dir/snapshot_blob.bin" ]
+    sources += [ "public/v8_snapshot_file_type.h" ]
   }
 
   defines = [ "GIN_IMPLEMENTATION" ]
 
   public_deps = [
     "//base",
+    "//base/allocator:buildflags",
     "//v8",
   ]
   deps = [
     "//base/third_party/dynamic_annotations",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_mac) {
-    libs = [ "CoreFoundation.framework" ]
+    frameworks = [ "CoreFoundation.framework" ]
   }
 
-  configs += [ "//v8:external_startup_data" ]
+  configs += [
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
 }
 
 executable("gin_shell") {
-  sources = [
-    "shell/gin_main.cc",
-  ]
+  sources = [ "shell/gin_main.cc" ]
 
   deps = [
     ":gin",
@@ -152,14 +163,19 @@ test("gin_unittests") {
     "//v8",
   ]
 
+  if (use_partition_alloc) {
+    sources += [ "v8_platform_page_allocator_unittest.cc" ]
+    if (target_cpu == "arm64" && (is_linux || is_android)) {
+      deps += [ "//base:arm_bti_testfunctions" ]
+    }
+  }
+
   configs += [
     "//tools/v8_context_snapshot:use_v8_context_snapshot",
     "//v8:external_startup_data",
   ]
 
-  data_deps = [
-    "//tools/v8_context_snapshot:v8_context_snapshot",
-  ]
+  data_deps = [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
   data = []
 
   # gin_shell is not an Android app.
@@ -172,10 +188,13 @@ test("gin_unittests") {
 
   # On Android, the APK must bundle the startup data.
   if (is_android) {
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    ]
   }
 }

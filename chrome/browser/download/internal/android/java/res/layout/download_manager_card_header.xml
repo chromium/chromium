@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/group_card_item_border"
+    android:paddingStart="@dimen/card_padding"
+    android:paddingEnd="@dimen/card_padding"
+    android:paddingBottom="@dimen/card_padding">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/favicon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_globe_24dp"/>
+
+    <TextView
+        android:id="@+id/domain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/favicon"
+        android:gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+</RelativeLayout>

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBUI_CONTENT_WEB_UI_CONTROLLER_FACTORY_H_
 #define CONTENT_BROWSER_WEBUI_CONTENT_WEB_UI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller_factory.h"
@@ -17,13 +16,15 @@ class CONTENT_EXPORT ContentWebUIControllerFactory
  public:
   static ContentWebUIControllerFactory* GetInstance();
 
+  ContentWebUIControllerFactory(const ContentWebUIControllerFactory&) = delete;
+  ContentWebUIControllerFactory& operator=(
+      const ContentWebUIControllerFactory&) = delete;
+
   // WebUIControllerFactory:
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
                              const GURL& url) override;
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override;
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
       const GURL& url) override;
@@ -34,8 +35,6 @@ class CONTENT_EXPORT ContentWebUIControllerFactory
 
  private:
   friend struct base::DefaultSingletonTraits<ContentWebUIControllerFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentWebUIControllerFactory);
 };
 
 }  // namespace content

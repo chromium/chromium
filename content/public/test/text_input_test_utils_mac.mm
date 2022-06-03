@@ -6,72 +6,62 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/memory/ref_counted.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/strings/utf_string_conversions.h"
+#include "content/browser/browser_thread_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
-#include "content/browser/site_instance_impl.h"
-#include "content/common/mac/attributed_string_coder.h"
-#include "content/common/text_input_client_messages.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/test/test_utils.h"
-#include "ipc/ipc_message_macros.h"
+#include "ui/base/mojom/attributed_string.mojom.h"
 
 namespace content {
 
-TestTextInputClientMessageFilter::TestTextInputClientMessageFilter(
-    RenderProcessHost* host)
-    : BrowserMessageFilter(TextInputClientMsgStart),
-      host_(host),
-      received_string_from_range_(false) {
-  host->AddFilter(this);
+TextInputTestLocalFrame::TextInputTestLocalFrame() = default;
+
+TextInputTestLocalFrame::~TextInputTestLocalFrame() = default;
+
+void TextInputTestLocalFrame::SetUp(
+    content::RenderFrameHost* render_frame_host) {
+  local_frame_ = std::move(
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->local_frame_);
+  FakeLocalFrame::Init(render_frame_host->GetRemoteAssociatedInterfaces());
 }
 
-TestTextInputClientMessageFilter::~TestTextInputClientMessageFilter() {}
-
-void TestTextInputClientMessageFilter::WaitForStringFromRange() {
-  if (received_string_from_range_)
-    return;
-  message_loop_runner_ = new MessageLoopRunner();
-  message_loop_runner_->Run();
+void TextInputTestLocalFrame::WaitForGetStringForRange() {
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
 }
 
-bool TestTextInputClientMessageFilter::OnMessageReceived(
-    const IPC::Message& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (message.type() == TextInputClientReplyMsg_GotStringForRange::ID) {
-    if (!string_for_range_callback_.is_null()) {
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     string_for_range_callback_);
-    }
-
-    received_string_from_range_ = true;
-
-    // Now decode the string to get the word.
-    TextInputClientReplyMsg_GotStringForRange::Param params;
-    TextInputClientReplyMsg_GotStringForRange::Read(&message, &params);
-    const mac::AttributedStringCoder::EncodedString& encoded_string =
-        std::get<0>(params);
-    NSAttributedString* decoded =
-        mac::AttributedStringCoder::Decode(&encoded_string);
-    string_from_range_ = base::SysNSStringToUTF8([decoded string]);
-
-    // Stop the message loop if it is running.
-    if (message_loop_runner_) {
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     message_loop_runner_->QuitClosure());
-    }
-  }
-
-  // unhandled - leave it for the actual TextInputClientMessageFilter to handle.
-  return false;
-}
-
-void TestTextInputClientMessageFilter::SetStringForRangeCallback(
+void TextInputTestLocalFrame::SetStringForRangeCallback(
     base::RepeatingClosure callback) {
   string_for_range_callback_ = std::move(callback);
+}
+
+void TextInputTestLocalFrame::GetStringForRange(
+    const gfx::Range& range,
+    GetStringForRangeCallback callback) {
+  local_frame_->GetStringForRange(
+      range,
+      base::BindOnce(
+          [](TextInputTestLocalFrame* frame, GetStringForRangeCallback callback,
+             ui::mojom::AttributedStringPtr attributed_string,
+             const gfx::Point& point) {
+            // If |string_for_range_callback_| is set, it should be called
+            // first.
+            if (!frame->string_for_range_callback_.is_null())
+              std::move(frame->string_for_range_callback_).Run();
+
+            // Updates the string from the range and calls |callback|.
+            frame->SetStringFromRange(
+                base::UTF16ToUTF8(attributed_string ? attributed_string->string
+                                                    : std::u16string()));
+            std::move(callback).Run(std::move(attributed_string), gfx::Point());
+
+            // Calls |quit_closure_|.
+            if (frame->quit_closure_)
+              std::move(frame->quit_closure_).Run();
+          },
+          base::Unretained(this), std::move(callback)));
 }
 
 void AskForLookUpDictionaryForRange(RenderWidgetHostView* tab_view,
@@ -79,10 +69,6 @@ void AskForLookUpDictionaryForRange(RenderWidgetHostView* tab_view,
   RenderWidgetHostViewMac* tab_view_mac =
       static_cast<RenderWidgetHostViewMac*>(tab_view);
   tab_view_mac->LookUpDictionaryOverlayFromRange(range);
-}
-
-size_t GetOpenNSWindowsCount() {
-  return [[NSApp windows] count];
 }
 
 }  // namespace content

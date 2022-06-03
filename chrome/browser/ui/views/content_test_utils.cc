@@ -32,7 +32,11 @@ void TestTextInputViaKeyEvent(content::WebContents* contents) {
   // Replace the dialog content with a single text input element and focus it.
   ASSERT_TRUE(content::WaitForLoadStop(contents));
   ASSERT_TRUE(content::ExecuteScript(contents, R"(
-    document.body.innerHTML = '<input type="text" id="text-id">';
+    document.body.innerHTML = trustedTypes.emptyHTML;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'text-id';
+    document.body.appendChild(input);
     document.getElementById('text-id').focus();
   )"));
 
@@ -47,7 +51,7 @@ void TestTextInputViaKeyEvent(content::WebContents* contents) {
   // Verify text input is updated.
   std::string result;
   while (result != "a") {
-    GiveItSomeTime(base::TimeDelta::FromMilliseconds(100));
+    GiveItSomeTime(base::Milliseconds(100));
 
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, R"(
       window.domAutomationController.send(

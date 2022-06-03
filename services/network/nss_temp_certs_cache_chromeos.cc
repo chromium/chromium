@@ -4,6 +4,7 @@
 
 #include "services/network/nss_temp_certs_cache_chromeos.h"
 
+#include "base/logging.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace network {

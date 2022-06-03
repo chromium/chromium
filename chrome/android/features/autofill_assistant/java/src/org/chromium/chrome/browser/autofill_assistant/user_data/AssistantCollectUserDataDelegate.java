@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
+import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 
 /**
  * Common interface for autofill assistant payment request delegates.
@@ -18,30 +16,41 @@ import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
  */
 public interface AssistantCollectUserDataDelegate {
     /** The currently selected contact has changed. */
-    void onContactInfoChanged(@Nullable AutofillContact contact);
+    void onContactInfoChanged(@Nullable AssistantCollectUserDataModel.ContactModel contactModel);
 
     /** The currently selected shipping address has changed. */
-    void onShippingAddressChanged(@Nullable AutofillAddress address);
+    void onShippingAddressChanged(
+            @Nullable AssistantCollectUserDataModel.AddressModel addressModel);
 
     /** The currently selected payment method has changed. */
-    void onPaymentMethodChanged(@Nullable AutofillPaymentInstrument paymentInstrument);
+    void onPaymentMethodChanged(
+            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel);
 
     /** The currently selected terms & conditions state has changed. */
     void onTermsAndConditionsChanged(@AssistantTermsAndConditionsState int state);
 
-    /** Called when a link on the terms and conditions message is clicked. */
-    void onTermsAndConditionsLinkClicked(int link);
+    /** Called when a text link of the form <link0>text</link0>in a message is clicked. */
+    void onTextLinkClicked(int link);
 
     /** The currently selected login choice has changed. */
-    void onLoginChoiceChanged(@Nullable AssistantLoginChoice loginChoice);
+    void onLoginChoiceChanged(
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel);
 
-    /** The start of the date/time range has changed. */
-    void onDateTimeRangeStartChanged(
-            int year, int month, int day, int hour, int minute, int second);
+    /** The start date of the date/time range has changed. */
+    void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date);
 
-    /** The end of the date/time range has changed. */
-    void onDateTimeRangeEndChanged(int year, int month, int day, int hour, int minute, int second);
+    /** The start time of the date/time range has changed. */
+    void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index);
+
+    /** The start date of the date/time range has changed. */
+    void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date);
+
+    /** The end time of the date/time range has changed. */
+    void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index);
 
     /** The value of a key/value pair has changed. */
-    void onKeyValueChanged(String key, String value);
+    void onKeyValueChanged(String key, AssistantValue value);
+
+    /** The focus on an input text field has changed */
+    void onInputTextFocusChanged(boolean isFocused);
 }

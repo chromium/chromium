@@ -5,7 +5,6 @@
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
@@ -36,6 +35,10 @@ class TabLoaderDelegateImpl
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   explicit TabLoaderDelegateImpl(TabLoaderCallback* callback);
+
+  TabLoaderDelegateImpl(const TabLoaderDelegateImpl&) = delete;
+  TabLoaderDelegateImpl& operator=(const TabLoaderDelegateImpl&) = delete;
+
   ~TabLoaderDelegateImpl() override;
 
   // TabLoaderDelegate:
@@ -100,8 +103,6 @@ class TabLoaderDelegateImpl
   base::TimeDelta timeout_;
 
   base::WeakPtrFactory<TabLoaderDelegateImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderDelegateImpl);
 };
 
 TabLoaderDelegateImpl::TabLoaderDelegateImpl(TabLoaderCallback* callback)
@@ -119,8 +120,8 @@ TabLoaderDelegateImpl::TabLoaderDelegateImpl(TabLoaderCallback* callback)
     callback->SetTabLoadingEnabled(false);
   }
 
-  first_timeout_ = base::TimeDelta::FromMilliseconds(kFirstTabLoadTimeoutMS);
-  timeout_ = base::TimeDelta::FromMilliseconds(kInitialDelayTimerMS);
+  first_timeout_ = base::Milliseconds(kFirstTabLoadTimeoutMS);
+  timeout_ = base::Milliseconds(kInitialDelayTimerMS);
 
   // Override |policy_| if a testing policy has been set.
   if (g_testing_policy) {

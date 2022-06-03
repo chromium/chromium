@@ -31,7 +31,7 @@ const CSSValue* DeclaredStylePropertyMap::GetProperty(
 }
 
 const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   if (!GetStyleRule())
     return nullptr;
   return GetStyleRule()->Properties().GetPropertyCSSValue(property_name);
@@ -39,6 +39,7 @@ const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
 
 void DeclaredStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                            const CSSValue& value) {
+  DCHECK_NE(property_id, CSSPropertyID::kVariable);
   if (!GetStyleRule())
     return;
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
@@ -66,9 +67,8 @@ void DeclaredStylePropertyMap::SetCustomProperty(
   auto* variable_data =
       To<CSSVariableReferenceValue>(value).VariableDataValue();
   GetStyleRule()->MutableProperties().SetProperty(
-      CSSPropertyID::kVariable,
-      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
-                                                          variable_data));
+      CSSPropertyName(property_name),
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_data));
 }
 
 void DeclaredStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {

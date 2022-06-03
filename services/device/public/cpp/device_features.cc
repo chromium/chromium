@@ -10,13 +10,13 @@ namespace features {
 // which expose previously unexposed platform features, e.g. ALS or Magnetometer
 const base::Feature kGenericSensorExtraClasses{
     "GenericSensorExtraClasses", base::FEATURE_DISABLED_BY_DEFAULT};
-// Enables usage of the Windows.Devices.Sensors WinRT API for the sensor
-// backend instead of the ISensor API on Windows.
-const base::Feature kWinrtSensorsImplementation{
-    "WinrtSensorsImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables usage of the Windows.Devices.Geolocation WinRT API for the
 // LocationProvider instead of the NetworkLocationProvider on Windows.
 const base::Feature kWinrtGeolocationImplementation{
     "WinrtGeolocationImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables usage of the CoreLocation API for LocationProvider instead of
+// NetworkLocationProvider for macOS.
+const base::Feature kMacCoreLocationBackend{"MacCoreLocationBackend",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

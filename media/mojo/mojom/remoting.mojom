@@ -4,7 +4,9 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/remoting_common.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 interface RemoterFactory {
   // Create a new Remoter associated with the given RemotingSource and bind it
@@ -94,4 +96,60 @@ interface RemotingSource {
   // response to a Remoter.Stop() call, as other events (possibly external) may
   // have caused remoting to end.
   OnStopped(RemotingStopReason reason);
+};
+
+// Interface that is implemented by the host of RemotingSink and
+// RemotingDataStreamReceiver. Remotee implementation would be implemented in
+// the browser process in order to receive serialized RPC messages and frame
+// data from the sender.
+interface Remotee {
+  // Used by RemotingSink to notify Remotee that it is ready for remoting.
+  OnRemotingSinkReady(pending_remote<RemotingSink> sink);
+
+  // Used by the RemotingSink to send a serialized RPC message to sender side.
+  // |message| is a serialized protobuf from src/media/remoting/proto.
+  SendMessageToSource(array<uint8> message);
+
+  // Initialize the data pipe for RemotingDataStreamReceiver to allow Remotee to
+  // send frame data to it.
+  // Remoting media could be audio-only media, video-only media, or media has
+  // both audio and video. So, at least one of audio stream or video stream
+  // should be passed.
+  StartDataStreams(
+      pending_remote<RemotingDataStreamReceiver>? audio_stream,
+      pending_remote<RemotingDataStreamReceiver>? video_stream);
+
+  // Used by RemotingSink to notify Remotee that FlushUntil is happening in
+  // order to not send NACK for the frames that are ignored. The implementation
+  // should also forward the |{audio/video}_frame_count| to FlushUntil() of
+  // {audio|video} streams which are RemotingDataStreamReceiver implementations.
+  OnFlushUntil(uint32 audio_frame_count, uint32 video_frame_count);
+
+  // Used by RemotingSink to notify Remotee that VideoNaturalSizeChange is
+  // happening.
+  OnVideoNaturalSizeChange(gfx.mojom.Size size);
+};
+
+// Interface that is used to receive messages from the sender.
+interface RemotingSink {
+  // Used by the Remotee to send a serialized RPC message to the sink.
+  // |message| is a serialized protobuf from src/media/remoting/proto.
+  OnMessageFromSource(array<uint8> message);
+};
+
+// Interface that is implemented by either an audio or a video demuxer stream at
+// the receiver side to receive frame data. Passed to a Remotee which will send
+// it frame data.
+interface RemotingDataStreamReceiver {
+  // Used by the Remotee implementation to bind a data pipe to
+  // RemotingDataStreamReceiver.
+  InitializeDataPipe(handle<data_pipe_consumer> data_pipe);
+
+  // Used by the Remotee implementation to send frame data to
+  // RemotingDataStreamReceiver.
+  ReceiveFrame(uint32 frame_count, DecoderBuffer buffer);
+
+  // Used by the Remotee implementation to flush frames until the given frame
+  // count.
+  FlushUntil(uint32 frame_count);
 };

@@ -33,18 +33,21 @@ class ATL_NO_VTABLE TSFEventRouter::Delegate
   END_COM_MAP()
 
   Delegate();
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   ~Delegate();
 
   // ITfTextEditSink:
-  STDMETHOD(OnEndEdit)
-  (ITfContext* context,
-   TfEditCookie read_only_cookie,
-   ITfEditRecord* edit_record) override;
+  IFACEMETHODIMP OnEndEdit(ITfContext* context,
+                           TfEditCookie read_only_cookie,
+                           ITfEditRecord* edit_record) override;
 
   // ITfUiElementSink:
-  STDMETHOD(BeginUIElement)(DWORD element_id, BOOL* is_show) override;
-  STDMETHOD(UpdateUIElement)(DWORD element_id) override;
-  STDMETHOD(EndUIElement)(DWORD element_id) override;
+  IFACEMETHODIMP BeginUIElement(DWORD element_id, BOOL* is_show) override;
+  IFACEMETHODIMP UpdateUIElement(DWORD element_id) override;
+  IFACEMETHODIMP EndUIElement(DWORD element_id) override;
 
   // Sets |thread_manager| to be monitored. |thread_manager| can be nullptr.
   void SetManager(ITfThreadMgr* thread_manager);
@@ -86,8 +89,6 @@ class ATL_NO_VTABLE TSFEventRouter::Delegate
 
   TSFEventRouter* router_ = nullptr;
   gfx::Range previous_composition_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 TSFEventRouter::Delegate::Delegate()
@@ -99,9 +100,9 @@ void TSFEventRouter::Delegate::SetRouter(TSFEventRouter* router) {
   router_ = router;
 }
 
-STDMETHODIMP TSFEventRouter::Delegate::OnEndEdit(ITfContext* context,
-                                                 TfEditCookie read_only_cookie,
-                                                 ITfEditRecord* edit_record) {
+HRESULT TSFEventRouter::Delegate::OnEndEdit(ITfContext* context,
+                                            TfEditCookie read_only_cookie,
+                                            ITfEditRecord* edit_record) {
   if (!edit_record || !context)
     return E_INVALIDARG;
   if (!router_)
@@ -113,12 +114,12 @@ STDMETHODIMP TSFEventRouter::Delegate::OnEndEdit(ITfContext* context,
   // updated text.
   Microsoft::WRL::ComPtr<IEnumTfRanges> ranges;
   if (FAILED(edit_record->GetTextAndPropertyUpdates(TF_GTP_INCL_TEXT, nullptr,
-                                                    0, ranges.GetAddressOf())))
+                                                    0, &ranges)))
     return S_OK;  // Don't care about failures.
 
   ULONG fetched_count = 0;
   Microsoft::WRL::ComPtr<ITfRange> range;
-  if (FAILED(ranges->Next(1, range.GetAddressOf(), &fetched_count)))
+  if (FAILED(ranges->Next(1, &range, &fetched_count)))
     return S_OK;  // Don't care about failures.
 
   const gfx::Range composition_range = GetCompositionRange(context);
@@ -138,8 +139,8 @@ STDMETHODIMP TSFEventRouter::Delegate::OnEndEdit(ITfContext* context,
   return S_OK;
 }
 
-STDMETHODIMP TSFEventRouter::Delegate::BeginUIElement(DWORD element_id,
-                                                      BOOL* is_show) {
+HRESULT TSFEventRouter::Delegate::BeginUIElement(DWORD element_id,
+                                                 BOOL* is_show) {
   if (is_show)
     *is_show = TRUE;  // Without this the UI element will not be shown.
 
@@ -155,11 +156,11 @@ STDMETHODIMP TSFEventRouter::Delegate::BeginUIElement(DWORD element_id,
   return S_OK;
 }
 
-STDMETHODIMP TSFEventRouter::Delegate::UpdateUIElement(DWORD element_id) {
+HRESULT TSFEventRouter::Delegate::UpdateUIElement(DWORD element_id) {
   return S_OK;
 }
 
-STDMETHODIMP TSFEventRouter::Delegate::EndUIElement(DWORD element_id) {
+HRESULT TSFEventRouter::Delegate::EndUIElement(DWORD element_id) {
   if ((open_candidate_window_ids_.erase(element_id) != 0) && router_)
     router_->OnCandidateWindowCountChanged(open_candidate_window_ids_.size());
   return S_OK;
@@ -185,10 +186,9 @@ void TSFEventRouter::Delegate::SetManager(ITfThreadMgr* thread_manager) {
     return;
 
   Microsoft::WRL::ComPtr<ITfDocumentMgr> document_manager;
-  if (FAILED(thread_manager->GetFocus(document_manager.GetAddressOf())) ||
-      !document_manager.Get() ||
-      FAILED(document_manager->GetBase(context_.GetAddressOf())) ||
-      FAILED(context_.CopyTo(context_source_.GetAddressOf())))
+  if (FAILED(thread_manager->GetFocus(&document_manager)) ||
+      !document_manager.Get() || FAILED(document_manager->GetBase(&context_)) ||
+      FAILED(context_.As(&context_source_)))
     return;
   context_source_->AdviseSink(IID_ITfTextEditSink,
                               static_cast<ITfTextEditSink*>(this),
@@ -196,7 +196,7 @@ void TSFEventRouter::Delegate::SetManager(ITfThreadMgr* thread_manager) {
 
   if (FAILED(
           thread_manager->QueryInterface(IID_PPV_ARGS(&ui_element_manager_))) ||
-      FAILED(ui_element_manager_.CopyTo(ui_source_.GetAddressOf())))
+      FAILED(ui_element_manager_.As(&ui_source_)))
     return;
   ui_source_->AdviseSink(IID_ITfUIElementSink,
                          static_cast<ITfUIElementSink*>(this),
@@ -214,20 +214,18 @@ gfx::Range TSFEventRouter::Delegate::GetCompositionRange(ITfContext* context) {
   if (FAILED(context->QueryInterface(IID_PPV_ARGS(&context_composition))))
     return gfx::Range::InvalidRange();
   Microsoft::WRL::ComPtr<IEnumITfCompositionView> enum_composition_view;
-  if (FAILED(context_composition->EnumCompositions(
-          enum_composition_view.GetAddressOf())))
+  if (FAILED(context_composition->EnumCompositions(&enum_composition_view)))
     return gfx::Range::InvalidRange();
   Microsoft::WRL::ComPtr<ITfCompositionView> composition_view;
-  if (enum_composition_view->Next(1, composition_view.GetAddressOf(),
-                                  nullptr) != S_OK)
+  if (enum_composition_view->Next(1, &composition_view, nullptr) != S_OK)
     return gfx::Range::InvalidRange();
 
   Microsoft::WRL::ComPtr<ITfRange> range;
-  if (FAILED(composition_view->GetRange(range.GetAddressOf())))
+  if (FAILED(composition_view->GetRange(&range)))
     return gfx::Range::InvalidRange();
 
   Microsoft::WRL::ComPtr<ITfRangeACP> range_acp;
-  if (FAILED(range.CopyTo(range_acp.GetAddressOf())))
+  if (FAILED(range.As(&range_acp)))
     return gfx::Range::InvalidRange();
 
   LONG start = 0;
@@ -241,11 +239,10 @@ gfx::Range TSFEventRouter::Delegate::GetCompositionRange(ITfContext* context) {
 bool TSFEventRouter::Delegate::IsCandidateWindowInternal(DWORD element_id) {
   DCHECK(ui_element_manager_.Get());
   Microsoft::WRL::ComPtr<ITfUIElement> ui_element;
-  if (FAILED(ui_element_manager_->GetUIElement(element_id,
-                                               ui_element.GetAddressOf())))
+  if (FAILED(ui_element_manager_->GetUIElement(element_id, &ui_element)))
     return false;
   Microsoft::WRL::ComPtr<ITfCandidateListUIElement> candidate_list_ui_element;
-  return SUCCEEDED(ui_element.CopyTo(candidate_list_ui_element.GetAddressOf()));
+  return SUCCEEDED(ui_element.As(&candidate_list_ui_element));
 }
 
 // TSFEventRouter  ------------------------------------------------------------

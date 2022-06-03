@@ -2,23 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/web-nfc/#idl-def-ndefrecorddatasource
-
-// The bindings generator does not support "typedef in union".
-// Must be (DOMString or BufferSource or NDEFMessageInit).
-// TODO(http://crbug.com/1019126): Support nested typedef in Web IDLs.
-typedef (DOMString or ArrayBuffer or ArrayBufferView or NDEFMessageInit)
-  NDEFRecordDataSource;
-
 // https://w3c.github.io/web-nfc/#dom-ndefrecordinit
-
 dictionary NDEFRecordInit {
-    USVString recordType;
+    required USVString recordType;
     USVString mediaType;
     USVString id;
 
     USVString encoding;
     USVString lang;
 
-    NDEFRecordDataSource data;
+    any data;  // DOMString or BufferSource or NDEFMessageInit
 };

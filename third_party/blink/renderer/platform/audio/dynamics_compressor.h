@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor_kernel.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -70,6 +69,8 @@ class PLATFORM_EXPORT DynamicsCompressor {
   };
 
   DynamicsCompressor(float sample_rate, unsigned number_of_channels);
+  DynamicsCompressor(const DynamicsCompressor&) = delete;
+  DynamicsCompressor& operator=(const DynamicsCompressor&) = delete;
 
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
@@ -111,9 +112,6 @@ class PLATFORM_EXPORT DynamicsCompressor {
 
   // The core compressor.
   DynamicsCompressorKernel compressor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DynamicsCompressor);
 };
 
 }  // namespace blink

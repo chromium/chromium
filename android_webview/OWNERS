@@ -1,17 +1,12 @@
+set noparent
 boliu@chromium.org
-changwan@chromium.org
 michaelbai@chromium.org
-tobiasjs@chromium.org
+ntfschr@chromium.org
 torne@chromium.org
+nator@chromium.org
 
 # Documentation changes:
-per-file *.md=ntfschr@chromium.org
-
-# Build file refactoring:
-per-file *.gn=ntfschr@chromium.org
+per-file *.md=file://android_webview/docs/OWNERS
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# TEAM: android-webview-dev@chromium.org
-# COMPONENT: Mobile>WebView
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

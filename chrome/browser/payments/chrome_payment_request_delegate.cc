@@ -6,22 +6,23 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
-#include "chrome/browser/payments/ssl_validity_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -30,13 +31,22 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
+#include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/webauthn/content/browser/internal_authenticator_impl.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace payments {
 
@@ -57,14 +67,30 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 }  // namespace
 
 ChromePaymentRequestDelegate::ChromePaymentRequestDelegate(
-    content::WebContents* web_contents)
-    : shown_dialog_(nullptr), web_contents_(web_contents) {}
+    content::RenderFrameHost* render_frame_host)
+    : shown_dialog_(nullptr),
+      frame_routing_id_(content::GlobalRenderFrameHostId(
+          render_frame_host->GetProcess()->GetID(),
+          render_frame_host->GetRoutingID())) {}
 
-ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() {}
+ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() = default;
 
-void ChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
-  DCHECK_EQ(nullptr, shown_dialog_);
-  shown_dialog_ = new payments::PaymentRequestDialogView(request, nullptr);
+void ChromePaymentRequestDelegate::ShowDialog(
+    base::WeakPtr<PaymentRequest> request) {
+  DCHECK_EQ(nullptr, shown_dialog_.get());
+  DCHECK_EQ(nullptr, spc_dialog_.get());
+
+  switch (dialog_type_) {
+    case DialogType::PAYMENT_REQUEST:
+      shown_dialog_ = PaymentRequestDialogView::Create(request, nullptr);
+      break;
+    case DialogType::SECURE_PAYMENT_CONFIRMATION:
+      spc_dialog_ =
+          std::make_unique<SecurePaymentConfirmationController>(request);
+      shown_dialog_ = spc_dialog_->GetWeakPtr();
+      break;
+  }
+
   shown_dialog_->ShowDialog();
 }
 
@@ -77,6 +103,18 @@ void ChromePaymentRequestDelegate::CloseDialog() {
   if (shown_dialog_) {
     shown_dialog_->CloseDialog();
     shown_dialog_ = nullptr;
+  }
+
+  // The shown_dialog_ may have been an SPC dialog, in which case we own the
+  // object directly and need to clean it up here.
+  spc_dialog_.reset();
+
+  // The 'no-credentials' dialog for SPC is currently handled separately from
+  // spc_dialog_ (and shown_dialog_), and so needs to separately be closed and
+  // cleaned up.
+  if (spc_no_creds_dialog_) {
+    spc_no_creds_dialog_->CloseDialog();
+    spc_no_creds_dialog_.reset();
   }
 }
 
@@ -95,7 +133,7 @@ ChromePaymentRequestDelegate::GetPersonalDataManager() {
   // Autofill uses the original profile's PersonalDataManager to make data
   // available in incognito, so PaymentRequest should do the same.
   return autofill::PersonalDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+      Profile::FromBrowserContext(GetBrowserContextOrNull())
           ->GetOriginalProfile());
 }
 
@@ -103,23 +141,34 @@ const std::string& ChromePaymentRequestDelegate::GetApplicationLocale() const {
   return g_browser_process->GetApplicationLocale();
 }
 
-bool ChromePaymentRequestDelegate::IsIncognito() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return profile && profile->IsIncognitoProfile();
+bool ChromePaymentRequestDelegate::IsOffTheRecord() const {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh)
+    return false;
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  return profile && profile->IsOffTheRecord();
 }
 
 const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
-  return web_contents_->GetLastCommittedURL();
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
+                                      ->GetLastCommittedURL()
+                                : GURL::EmptyGURL();
 }
 
 void ChromePaymentRequestDelegate::DoFullCardRequest(
     const autofill::CreditCard& credit_card,
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate) {
-  if (shown_dialog_)
-    shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate,
-                                       web_contents_);
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsActive() || !shown_dialog_)
+    return;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate,
+                                     web_contents);
 }
 
 autofill::RegionDataLoader*
@@ -139,40 +188,78 @@ ukm::UkmRecorder* ChromePaymentRequestDelegate::GetUkmRecorder() {
 }
 
 std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh)
+    return std::string();
+
   // Check if the profile is authenticated.  Guest profiles or incognito
   // windows may not have a sign in manager, and are considered not
   // authenticated.
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager && identity_manager->HasPrimaryAccount())
-    return identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .email;
+  }
 
   return std::string();
 }
 
 PrefService* ChromePaymentRequestDelegate::GetPrefService() {
-  return Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-      ->GetPrefs();
+  return Profile::FromBrowserContext(GetBrowserContextOrNull())->GetPrefs();
 }
 
 bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsActive())
+    return false;
+
+  Browser* browser = chrome::FindBrowserWithWebContents(
+      content::WebContents::FromRenderFrameHost(rfh));
   return browser && browser->window() && browser->window()->IsActive();
+}
+
+void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
+    const std::u16string& merchant_name,
+    base::OnceClosure response_callback) {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsActive())
+    return;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
+  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name,
+                                   std::move(response_callback));
+}
+
+std::unique_ptr<webauthn::InternalAuthenticator>
+ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
+  // This authenticator can be used in a cross-origin iframe only if the
+  // top-level frame allowed it with Permissions Policy, e.g., with
+  // allow="payment" iframe attribute. The secure payment confirmation dialog
+  // displays the top-level origin in its UI before the user can click on the
+  // [Verify] button to invoke this authenticator.
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  return rfh && rfh->IsActive()
+             ? std::make_unique<content::InternalAuthenticatorImpl>(rfh)
+             : nullptr;
 }
 
 scoped_refptr<PaymentManifestWebDataService>
 ChromePaymentRequestDelegate::GetPaymentManifestWebDataService() const {
-  return WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      ServiceAccessType::EXPLICIT_ACCESS);
+  return webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetBrowserContextOrNull(), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
 PaymentRequestDisplayManager*
 ChromePaymentRequestDelegate::GetDisplayManager() {
   return PaymentRequestDisplayManagerFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
+      GetBrowserContextOrNull());
 }
 
 void ChromePaymentRequestDelegate::EmbedPaymentHandlerWindow(
@@ -193,12 +280,64 @@ bool ChromePaymentRequestDelegate::IsInteractive() const {
 
 std::string
 ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
-  return SslValidityChecker::GetInvalidSslCertificateErrorMessage(
-      web_contents_);
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  return rfh && rfh->IsActive()
+             ? SslValidityChecker::GetInvalidSslCertificateErrorMessage(
+                   content::WebContents::FromRenderFrameHost(rfh))
+             : "";
 }
 
 bool ChromePaymentRequestDelegate::SkipUiForBasicCard() const {
   return false;  // Only tests do this.
+}
+
+std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsActive())
+    return "";
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return "";
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!web_app::AppBrowserController::IsWebApp(browser))
+    return "";
+
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(
+      Profile::FromBrowserContext(rfh->GetBrowserContext()));
+  if (!apk_web_app_service)
+    return "";
+
+  absl::optional<std::string> twa_package_name =
+      apk_web_app_service->GetPackageNameForWebApp(
+          web_contents->GetLastCommittedURL());
+
+  return twa_package_name.has_value() ? twa_package_name.value() : "";
+#else
+  return "";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
+  return shown_dialog_.get();
+}
+
+SecurePaymentConfirmationNoCreds*
+ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
+  return spc_no_creds_dialog_.get();
+}
+
+content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
+    const {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  return rfh ? rfh->GetBrowserContext() : nullptr;
+}
+
+const base::WeakPtr<PaymentUIObserver>
+ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
+  return nullptr;
 }
 
 }  // namespace payments

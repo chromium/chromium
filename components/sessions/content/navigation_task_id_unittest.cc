@@ -13,6 +13,10 @@ namespace sessions {
 class NavigationTaskIDTest : public testing::Test {
  public:
   NavigationTaskIDTest() {}
+
+  NavigationTaskIDTest(const NavigationTaskIDTest&) = delete;
+  NavigationTaskIDTest& operator=(const NavigationTaskIDTest&) = delete;
+
   ~NavigationTaskIDTest() override {}
 
   void SetUp() override {
@@ -21,9 +25,6 @@ class NavigationTaskIDTest : public testing::Test {
 
  protected:
   std::unique_ptr<content::NavigationEntry> navigation_entry_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationTaskIDTest);
 };
 
 TEST_F(NavigationTaskIDTest, TaskIDTest) {
@@ -32,7 +33,6 @@ TEST_F(NavigationTaskIDTest, TaskIDTest) {
   navigation_task_id->set_id(test_data::kTaskId);
   navigation_task_id->set_parent_id(test_data::kParentTaskId);
   navigation_task_id->set_root_id(test_data::kRootTaskId);
-  navigation_task_id->set_children_ids(test_data::kChildrenTaskIds);
 
   EXPECT_EQ(test_data::kTaskId,
             NavigationTaskId::Get(navigation_entry_.get())->id());
@@ -40,16 +40,12 @@ TEST_F(NavigationTaskIDTest, TaskIDTest) {
             NavigationTaskId::Get(navigation_entry_.get())->parent_id());
   EXPECT_EQ(test_data::kRootTaskId,
             NavigationTaskId::Get(navigation_entry_.get())->root_id());
-  EXPECT_EQ(test_data::kChildrenTaskIds,
-            NavigationTaskId::Get(navigation_entry_.get())->children_ids());
 
   NavigationTaskId cloned_navigation_task_id(*navigation_task_id);
 
   EXPECT_EQ(test_data::kTaskId, cloned_navigation_task_id.id());
   EXPECT_EQ(test_data::kParentTaskId, cloned_navigation_task_id.parent_id());
   EXPECT_EQ(test_data::kRootTaskId, cloned_navigation_task_id.root_id());
-  EXPECT_EQ(test_data::kChildrenTaskIds,
-            cloned_navigation_task_id.children_ids());
 }
 
 }  // namespace sessions

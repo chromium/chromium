@@ -8,8 +8,7 @@
     },
     {
       "name": "LayoutNGBlockFlow HTML",
-      "position": [8, 8],
-      "bounds": [758, 39],
+      "bounds": [800, 5016],
       "transform": 1
     }
   ],

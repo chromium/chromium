@@ -1,0 +1,32 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../os_settings_routes.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
+
+<dom-module id="settings-multidevice-tether-item">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-multidevice-feature-item page-content-data="[[pageContentData]]"
+        feature="[[MultiDeviceFeature.INSTANT_TETHERING]]"
+        subpage-route="[[routes.INTERNET_NETWORKS]]"
+        subpage-route-url-search-params=
+            "[[getTetherNetworkUrlSearchParams_()]]">
+      <network-icon slot="icon"
+          aria-hidden="true"
+          show-technology-badge="[[showTechnologyBadge_]]"
+          network-state="[[activeNetworkState_]]"
+          device-state="[[deviceState_]]">
+      </network-icon>
+    </settings-multidevice-feature-item>
+  </template>
+  <script src="multidevice_tether_item.js"></script>
+</dom-module>

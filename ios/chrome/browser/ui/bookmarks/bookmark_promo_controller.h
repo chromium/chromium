@@ -7,13 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+class ChromeBrowserState;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
-
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
 
 @protocol BookmarkPromoControllerDelegate
 
@@ -40,10 +37,13 @@ class ChromeBrowserState;
 
 @property(nonatomic, readonly) SigninPromoViewMediator* signinPromoViewMediator;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                             delegate:
                                 (id<BookmarkPromoControllerDelegate>)delegate
                            presenter:(id<SigninPresenter>)presenter;
+
+// Called before the instance is deallocated.
+- (void)shutdown;
 
 // Hides the promo cell. It won't be presented again on this profile.
 - (void)hidePromoCell;

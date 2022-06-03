@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {

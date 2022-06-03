@@ -10,7 +10,7 @@ android_library("java") {
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
   ]
-  java_files = [ "java/src/org/chromium/chrome/features/dev_ui/DevUi.java" ]
+  sources = [ "java/src/org/chromium/chrome/features/dev_ui/DevUi.java" ]
 
   # Need this to generate DevUiModule.java.
   annotation_processor_deps =

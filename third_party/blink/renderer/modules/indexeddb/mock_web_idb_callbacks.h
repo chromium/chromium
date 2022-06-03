@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -24,36 +25,38 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MockWebIDBCallbacks();
   ~MockWebIDBCallbacks() override;
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t);
+  // Disallow copy and assign.
+  MockWebIDBCallbacks(const MockWebIDBCallbacks&) = delete;
+  MockWebIDBCallbacks& operator=(const MockWebIDBCallbacks&) = delete;
+
+  void SetState(base::WeakPtr<WebIDBCursor>, int64_t) override;
 
   MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
 
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primaryKey,
-      base::Optional<std::unique_ptr<IDBValue>>) override;
+      absl::optional<std::unique_ptr<IDBValue>>) override;
   MOCK_METHOD3(DoSuccessCursorContinue,
                void(const std::unique_ptr<IDBKey>& key,
                     const std::unique_ptr<IDBKey>& primaryKey,
-                    const base::Optional<std::unique_ptr<IDBValue>>& value));
+                    const absl::optional<std::unique_ptr<IDBValue>>& value));
 
   MOCK_METHOD1(SuccessNamesAndVersionsList,
                void(Vector<mojom::blink::IDBNameAndVersionPtr>));
-
-  MOCK_METHOD1(SuccessStringList, void(const Vector<String>&));
 
   void SuccessCursor(
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
   MOCK_METHOD4(
       DoSuccessCursor,
       void(const mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>&
                cursor_info,
            const std::unique_ptr<IDBKey>& key,
            const std::unique_ptr<IDBKey>& primary_key,
-           const base::Optional<std::unique_ptr<IDBValue>>& optional_value));
+           const absl::optional<std::unique_ptr<IDBValue>>& optional_value));
 
   MOCK_METHOD3(SuccessCursorPrefetch,
                void(Vector<std::unique_ptr<IDBKey>> keys,
@@ -78,6 +81,11 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
 
   MOCK_METHOD0(Success, void());
 
+  MOCK_METHOD2(
+      ReceiveGetAllResults,
+      void(bool,
+           mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>));
+
   MOCK_METHOD1(Blocked, void(int64_t oldVersion));
 
   MOCK_METHOD5(UpgradeNeeded,
@@ -88,9 +96,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
                     const IDBDatabaseMetadata&));
 
   MOCK_METHOD0(DetachRequestFromCallback, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebIDBCallbacks);
 };
 
 }  // namespace blink

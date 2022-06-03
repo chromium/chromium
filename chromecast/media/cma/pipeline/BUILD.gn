@@ -40,6 +40,7 @@ cast_source_set("pipeline") {
   ]
 
   public_deps = [
+    "//chromecast/media/api",
     "//chromecast/public",
     "//chromecast/public/media",
   ]

@@ -14,9 +14,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
@@ -70,6 +69,9 @@ class ActivityLogPolicy {
   // cleaner to pass thread_id as a param of ReadData directly.
   explicit ActivityLogPolicy(Profile* profile);
 
+  ActivityLogPolicy(const ActivityLogPolicy&) = delete;
+  ActivityLogPolicy& operator=(const ActivityLogPolicy&) = delete;
+
   // Instead of a public destructor, ActivityLogPolicy objects have a Close()
   // method which will cause the object to be deleted (but may do so on another
   // thread or in a deferred fashion).
@@ -89,7 +91,11 @@ class ActivityLogPolicy {
   // these methods more convenient from within a policy, but they are public.
   class Util {
    public:
-    // A collection of API calls, used to specify whitelists for argument
+    Util() = delete;
+    Util(const Util&) = delete;
+    Util& operator=(const Util&) = delete;
+
+    // A collection of API calls, used to specify allowlists for argument
     // filtering.
     typedef std::set<std::pair<Action::ActionType, std::string> > ApiSet;
 
@@ -104,9 +110,9 @@ class ActivityLogPolicy {
     // call ->Clone() first.
     static void StripPrivacySensitiveFields(scoped_refptr<Action> action);
 
-    // Strip arguments from most API actions, preserving actions only for a
-    // whitelisted set.  Modifies the Action object in-place.
-    static void StripArguments(const ApiSet& api_whitelist,
+    // Strip arguments from most API actions, preserving actions only for an
+    // allowlisted set.  Modifies the Action object in-place.
+    static void StripArguments(const ApiSet& api_allowlist,
                                scoped_refptr<Action> action);
 
     // Given a base day (timestamp at local midnight), computes the timestamp
@@ -120,9 +126,6 @@ class ActivityLogPolicy {
                                           int days_ago,
                                           int64_t* early_bound,
                                           int64_t* late_bound);
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Util);
   };
 
  protected:
@@ -140,8 +143,6 @@ class ActivityLogPolicy {
   // to determine the date for "today" when when interpreting date ranges to
   // fetch.  This has no effect on batching of writes to the database.
   base::Clock* testing_clock_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityLogPolicy);
 };
 
 // A subclass of ActivityLogPolicy which is designed for policies that use

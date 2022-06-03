@@ -35,7 +35,7 @@ class SplitTextNodeContainingElementCommand final
  public:
   SplitTextNodeContainingElementCommand(Text*, int offset);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

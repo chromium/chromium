@@ -15,8 +15,8 @@ source_set("lib") {
     "audio_focus_request.h",
     "media_controller.cc",
     "media_controller.h",
-    "media_session_service.cc",
-    "media_session_service.h",
+    "media_session_service_impl.cc",
+    "media_session_service_impl.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -28,9 +28,7 @@ source_set("lib") {
     "//skia",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("tests") {
@@ -38,13 +36,14 @@ source_set("tests") {
   sources = [
     "audio_focus_manager_unittest.cc",
     "media_controller_unittest.cc",
-    "media_session_service_unittest.cc",
+    "media_session_service_impl_unittest.cc",
   ]
 
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//services/media_session/public/cpp",
     "//services/media_session/public/cpp/test:test_support",
     "//services/media_session/public/mojom",

@@ -8,11 +8,13 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
@@ -27,39 +29,37 @@
 namespace extensions {
 
 ExtensionCacheImpl::ExtensionCacheImpl(
-    std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate,
-    base::TaskPriority task_priority)
+    std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate)
     : cache_(new LocalExtensionCache(
           delegate->GetCacheDir(),
           delegate->GetMaximumCacheSize(),
           delegate->GetMaximumCacheAge(),
-          base::CreateSequencedTaskRunner(
-              {base::ThreadPool(), base::MayBlock(), task_priority,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}))) {
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
       content::NotificationService::AllBrowserContextsAndSources());
-  cache_->Init(true, base::Bind(&ExtensionCacheImpl::OnCacheInitialized,
-                                weak_ptr_factory_.GetWeakPtr()));
+  cache_->Init(true, base::BindOnce(&ExtensionCacheImpl::OnCacheInitialized,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
-ExtensionCacheImpl::~ExtensionCacheImpl() {
-}
+ExtensionCacheImpl::~ExtensionCacheImpl() = default;
 
-void ExtensionCacheImpl::Start(const base::Closure& callback) {
+void ExtensionCacheImpl::Start(base::OnceClosure callback) {
   if (!cache_ || cache_->is_ready()) {
     DCHECK(init_callbacks_.empty());
-    callback.Run();
+    std::move(callback).Run();
   } else {
-    init_callbacks_.push_back(callback);
+    init_callbacks_.push_back(std::move(callback));
   }
 }
 
-void ExtensionCacheImpl::Shutdown(const base::Closure& callback) {
+void ExtensionCacheImpl::Shutdown(base::OnceClosure callback) {
   if (cache_)
-    cache_->Shutdown(callback);
+    cache_->Shutdown(std::move(callback));
   else
-    callback.Run();
+    std::move(callback).Run();
 }
 
 void ExtensionCacheImpl::AllowCaching(const std::string& id) {
@@ -80,11 +80,13 @@ void ExtensionCacheImpl::PutExtension(const std::string& id,
                                       const std::string& expected_hash,
                                       const base::FilePath& file_path,
                                       const std::string& version,
-                                      const PutExtensionCallback& callback) {
-  if (cache_ && CachingAllowed(id))
-    cache_->PutExtension(id, expected_hash, file_path, version, callback);
-  else
-    callback.Run(file_path, true);
+                                      PutExtensionCallback callback) {
+  if (cache_ && CachingAllowed(id)) {
+    cache_->PutExtension(id, expected_hash, file_path, version,
+                         std::move(callback));
+  } else {
+    std::move(callback).Run(file_path, true);
+  }
 }
 
 bool ExtensionCacheImpl::CachingAllowed(const std::string& id) {
@@ -92,10 +94,8 @@ bool ExtensionCacheImpl::CachingAllowed(const std::string& id) {
 }
 
 void ExtensionCacheImpl::OnCacheInitialized() {
-  for (std::vector<base::Closure>::iterator it = init_callbacks_.begin();
-       it != init_callbacks_.end(); ++it) {
-    it->Run();
-  }
+  for (auto& callback : init_callbacks_)
+    std::move(callback).Run();
   init_callbacks_.clear();
 
   uint64_t cache_size = 0;
@@ -128,18 +128,14 @@ void ExtensionCacheImpl::Observe(int type,
     DVLOG(2) << "Extension install was declined, file kept";
     return;
   }
-
-  if (error_type ==
-          extensions::CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE &&
-      error->sandbox_failure_detail() ==
-          extensions::SandboxedUnpackerFailureReason::
-              CRX_HASH_VERIFICATION_FAILED) {
+  // Remove and retry download if the crx present in the cache is corrupted or
+  // not according to the expectations,
+  if (error->IsCrxVerificationFailedError() ||
+      error->IsCrxExpectationsFailedError()) {
     if (cache_->ShouldRetryDownload(id, hash)) {
       cache_->RemoveExtension(id, hash);
-      installer->set_hash_check_failed(true);
+      installer->set_verification_check_failed(true);
     }
-    // We deliberately keep the file with incorrect hash sum, so that it
-    // will not be re-downloaded each time.
     return;
   }
 

@@ -18,9 +18,7 @@ action("credits") {
     "credits_entry.tmpl",
   ]
 
-  outputs = [
-    about_credits_file,
-  ]
+  outputs = [ about_credits_file ]
 
   args = [
     "credits",

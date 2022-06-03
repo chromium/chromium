@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -111,6 +111,12 @@ enum PageTransition {
   // Any of the core values above can be augmented by one or more qualifiers.
   // These qualifiers further define the transition.
 
+  // The values 0x00200000 (PAGE_TRANSITION_FROM_API_3) and 0x00400000
+  // (PAGE_TRANSITION_FROM_API_2) were used for experiments and were removed
+  // around 6/2021. The experiments ended well before 6/2021, but it's possible
+  // some databases still have the values. See https://crbug.com/1141501 for
+  // more.
+
   // A managed user attempted to visit a URL but was blocked.
   PAGE_TRANSITION_BLOCKED = 0x00800000,
 
@@ -150,43 +156,47 @@ enum PageTransition {
 
 // Compares two PageTransition types ignoring qualifiers. |rhs| is taken to
 // be a compile time constant, and hence must not contain any qualifiers.
-UI_BASE_EXPORT bool PageTransitionCoreTypeIs(PageTransition lhs,
-                                             PageTransition rhs);
+COMPONENT_EXPORT(UI_BASE)
+bool PageTransitionCoreTypeIs(PageTransition lhs, PageTransition rhs);
 
 // Compares two PageTransition types including qualifiers. Rarely useful,
 // PageTransitionCoreTypeIs() is more likely what you need.
-UI_BASE_EXPORT bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
-                                                            PageTransition rhs);
+COMPONENT_EXPORT(UI_BASE)
+bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
+                                             PageTransition rhs);
 
 // Simplifies the provided transition by removing any qualifier
-UI_BASE_EXPORT PageTransition PageTransitionStripQualifier(
-    PageTransition type);
+COMPONENT_EXPORT(UI_BASE)
+PageTransition PageTransitionStripQualifier(PageTransition type);
 
-UI_BASE_EXPORT bool PageTransitionIsValidType(int32_t type);
+COMPONENT_EXPORT(UI_BASE) bool PageTransitionIsValidType(int32_t type);
 
-UI_BASE_EXPORT PageTransition PageTransitionFromInt(int32_t type);
+COMPONENT_EXPORT(UI_BASE) PageTransition PageTransitionFromInt(int32_t type);
 
 // Returns true if the given transition is a top-level frame transition, or
 // false if the transition was for a subframe.
-UI_BASE_EXPORT bool PageTransitionIsMainFrame(PageTransition type);
+COMPONENT_EXPORT(UI_BASE) bool PageTransitionIsMainFrame(PageTransition type);
 
 // Returns whether a transition involves a redirection
-UI_BASE_EXPORT bool PageTransitionIsRedirect(PageTransition type);
+COMPONENT_EXPORT(UI_BASE) bool PageTransitionIsRedirect(PageTransition type);
 
 // Returns whether a transition is a new navigation (rather than a return
 // to a previously committed navigation).
-UI_BASE_EXPORT bool PageTransitionIsNewNavigation(PageTransition type);
+COMPONENT_EXPORT(UI_BASE)
+bool PageTransitionIsNewNavigation(PageTransition type);
 
 // Return the qualifier
-UI_BASE_EXPORT int32_t PageTransitionGetQualifier(PageTransition type);
+COMPONENT_EXPORT(UI_BASE)
+int32_t PageTransitionGetQualifier(PageTransition type);
 
 // Returns true if the transition can be triggered by the web instead of
 // through UI or similar.
-UI_BASE_EXPORT bool PageTransitionIsWebTriggerable(PageTransition type);
+COMPONENT_EXPORT(UI_BASE)
+bool PageTransitionIsWebTriggerable(PageTransition type);
 
 // Return a string version of the core type values.
-UI_BASE_EXPORT const char* PageTransitionGetCoreTransitionString(
-    PageTransition type);
+COMPONENT_EXPORT(UI_BASE)
+const char* PageTransitionGetCoreTransitionString(PageTransition type);
 
 // Declare a dummy class that is intentionally never defined.
 class DontUseOperatorEquals;

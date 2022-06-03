@@ -1,0 +1,233 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+component_js_files = [
+  "emoji_button.js",
+  "emoji_group_button.js",
+  "emoji_group.js",
+  "emoji_picker.js",
+  "emoji_search.js",
+  "emoji_variants.js",
+  "icons.js",
+]
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+preprocessed_grdp_file = "$target_gen_dir/preprocessed.grdp"
+fuse_grdp_file = "$target_gen_dir/fuse.grdp"
+
+generate_grd("build_grd") {
+  deps = [
+    ":build_fuse_grdp",
+    ":build_mojo_grdp",
+    ":build_preprocessed_grdp",
+    ":emoji_data",
+  ]
+  grd_prefix = "emoji_picker"
+  out_grd = resources_grd_file
+  input_files = [
+    "constants.js",
+    "events.js",
+    "index.html",
+    "store.js",
+    "types.js",
+    "emoji_picker_api_proxy.js",
+    "no_results.svg",
+    "no_results_dark.svg",
+  ]
+  grdp_files = [
+    preprocessed_grdp_file,
+    fuse_grdp_file,
+    "$target_gen_dir/mojo_resources.grdp",
+    "emoji_ordering.grdp",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "emoji_picker"
+  out_grd = "$target_gen_dir/mojo_resources.grdp"
+  deps = [ "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js" ]
+  input_files = [ "emoji_picker.mojom-webui.js" ]
+  input_files_base_dir =
+      rebase_path(
+          "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+          "$root_build_dir")
+  resource_path_rewrites = [ "emoji-picker.mojom-webui.js|chrome/browser/ui/webui/chromeos/emoji/emoji-picker.mojom-webui.js" ]
+}
+
+generate_grd("build_preprocessed_grdp") {
+  deps = [ ":web_components" ]
+  grd_prefix = "emoji_picker"
+  out_grd = preprocessed_grdp_file
+  input_files = component_js_files
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+}
+
+generate_grd("build_fuse_grdp") {
+  grd_prefix = "emoji_picker"
+  out_grd = fuse_grdp_file
+  input_files = [ "fuse.basic.esm.min.js" ]
+  input_files_base_dir = rebase_path("//third_party/fusejs/dist", "//")
+  resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/emoji_picker_resources.h",
+    "grit/emoji_picker_resources_map.cc",
+    "grit/emoji_picker_resources_map.h",
+    "emoji_picker_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+action_foreach("emoji_data") {
+  script = "tools/emoji_data.py"
+
+  metadata_json = [
+    "//third_party/emoji-metadata/src/emoji_14_0_ordering.json",
+    "./emoji_test_ordering.json",
+  ]
+  keyword_xmls = [
+    # later keywords will override earlier keywords for a particular emoji.
+    "//third_party/cldr/src/common/annotations/en.xml",
+    "//third_party/cldr/src/common/annotations/en_001.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
+  ]
+  merged_json = "$target_gen_dir/{{source_name_part}}.json"
+
+  sources = metadata_json
+  inputs = keyword_xmls
+  outputs = [ merged_json ]
+  args = [
+           "--metadata",
+           "{{source}}",
+           "--output",
+           rebase_path(merged_json, root_build_dir),
+           "--keywords",
+         ] + rebase_path(keyword_xmls, root_build_dir)
+}
+
+js_library("emoji_picker") {
+  deps = [
+    ":constants",
+    ":emoji_group",
+    ":emoji_group_button",
+    ":emoji_picker_api_proxy",
+    ":emoji_search",
+    ":events",
+    ":store",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("emoji_picker_api_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("emoji_group_button") {
+  deps = [
+    ":events",
+    ":icons",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+  ]
+}
+
+js_library("emoji_group") {
+  deps = [
+    ":emoji_button",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("emoji_button") {
+  deps = [
+    ":emoji_variants",
+    ":events",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("emoji_variants") {
+  # technically depends on :emoji_button, but that causes circular dependency.
+  deps = [
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("emoji_search") {
+  deps = [
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
+  ]
+}
+
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("types") {
+}
+
+js_library("constants") {
+}
+
+js_library("events") {
+}
+
+js_library("store") {
+  deps = [ ":types" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+                            root_build_dir),
+                  ]
+  deps = [
+    ":constants",
+    ":emoji_button",
+    ":emoji_group",
+    ":emoji_group_button",
+    ":emoji_picker",
+    ":emoji_picker_api_proxy",
+    ":emoji_search",
+    ":emoji_variants",
+    ":events",
+    ":icons",
+    ":store",
+    ":types",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = component_js_files
+}

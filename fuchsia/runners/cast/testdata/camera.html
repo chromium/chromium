@@ -1,0 +1,7 @@
+<script>
+function connectCamera() {
+    return navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+        .then((stream) => { return 'getUserMediaSucceeded'; })
+        .catch((error) => { return 'getUserMediaFailed'; });
+}
+</script>

@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+default_locale_lint_test_nocompile_sources =
+    [ "../../java/test/DefaultLocaleLintTest.java" ]
+
+new_api_lint_test_nocompile_sources = [ "../../java/test/NewApiLintTest.java" ]
+
+import_child_missing_symbol_test_nocompile_sources =
+    [ "../../java/test/missing_symbol/ImportsSubB.java" ]
+
+import_turbine_missing_symbol_test_nocompile_sources =
+    [ "../../java/test/missing_symbol/sub/BInMethodSignature.java" ]

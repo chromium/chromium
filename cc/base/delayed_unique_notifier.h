@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "cc/base/base_export.h"
 
 namespace base {
@@ -48,8 +49,6 @@ class CC_BASE_EXPORT DelayedUniqueNotifier {
   // Returns true if a notification is currently scheduled to run.
   bool HasPendingNotification() const;
 
-  base::TimeDelta delay() const { return delay_; }
-
  protected:
   // Virtual for testing.
   virtual base::TimeTicks Now() const;
@@ -57,13 +56,12 @@ class CC_BASE_EXPORT DelayedUniqueNotifier {
  private:
   void NotifyIfTime();
 
+  THREAD_CHECKER(thread_checker_);
+
   base::SequencedTaskRunner* const task_runner_;
   const base::RepeatingClosure closure_;
   const base::TimeDelta delay_;
 
-  // Lock should be held before modifying |next_notification_time_| or
-  // |notification_pending_|.
-  mutable base::Lock lock_;
   base::TimeTicks next_notification_time_;
   bool notification_pending_;
 

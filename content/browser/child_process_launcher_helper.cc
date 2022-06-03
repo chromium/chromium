@@ -6,11 +6,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -127,6 +128,8 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, &options)) {
+    base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
+        command_line(), &options);
     process =
         LaunchProcessOnLauncherThread(options, std::move(files_to_register),
 #if defined(OS_ANDROID)
@@ -231,10 +234,9 @@ base::SingleThreadTaskRunner* GetProcessLauncherTaskRunner() {
 #else   // defined(OS_ANDROID)
   // TODO(http://crbug.com/820200): Investigate whether we could use
   // SequencedTaskRunner on platforms other than Windows.
-  static base::LazySingleThreadTaskRunner launcher_task_runner =
-      LAZY_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-          base::TaskTraits(base::ThreadPool(), base::MayBlock(),
-                           base::TaskPriority::USER_BLOCKING,
+  static base::LazyThreadPoolSingleThreadTaskRunner launcher_task_runner =
+      LAZY_THREAD_POOL_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
+          base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN),
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   return launcher_task_runner.Get().get();

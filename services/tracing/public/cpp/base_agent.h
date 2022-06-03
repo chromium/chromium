@@ -17,14 +17,16 @@ namespace tracing {
 // categories via Perfetto.
 class COMPONENT_EXPORT(TRACING_CPP) BaseAgent {
  public:
+  BaseAgent(const BaseAgent&) = delete;
+  BaseAgent& operator=(const BaseAgent&) = delete;
+
   virtual ~BaseAgent();
 
+  // May be called on any thread.
   virtual void GetCategories(std::set<std::string>* category_set);
 
  protected:
   BaseAgent();
-
-  DISALLOW_COPY_AND_ASSIGN(BaseAgent);
 };
 
 }  // namespace tracing

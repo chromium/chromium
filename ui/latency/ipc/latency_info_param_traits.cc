@@ -32,7 +32,6 @@ namespace IPC {
 namespace IPC {
 
 void ParamTraits<ui::LatencyInfo>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.trace_name_);
   WriteParam(m, p.latency_components_);
   WriteParam(m, p.trace_id_);
   WriteParam(m, p.ukm_source_id_);
@@ -47,8 +46,6 @@ void ParamTraits<ui::LatencyInfo>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<ui::LatencyInfo>::Read(const base::Pickle* m,
                                         base::PickleIterator* iter,
                                         param_type* p) {
-  if (!ReadParam(m, iter, &p->trace_name_))
-    return false;
   if (!ReadParam(m, iter, &p->latency_components_))
     return false;
 
@@ -73,8 +70,6 @@ bool ParamTraits<ui::LatencyInfo>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<ui::LatencyInfo>::Log(const param_type& p, std::string* l) {
-  LogParam(p.trace_name_, l);
-  l->append(" ");
   LogParam(p.latency_components_, l);
   l->append(" ");
   LogParam(p.trace_id_, l);

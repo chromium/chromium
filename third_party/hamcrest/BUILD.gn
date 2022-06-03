@@ -19,12 +19,24 @@ java_prebuilt("hamcrest_core_java") {
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
 }
 
+java_prebuilt("hamcrest_integration_java") {
+  # Need this to avoid error because jar_excluded_patterns do not exist.
+  enable_bytecode_checks = false
+  supports_android = true
+  testonly = true
+  jar_path = "lib/hamcrest-integration.jar"
+  proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
+  deps = [ ":hamcrest_library_java" ]
+  jar_excluded_patterns = [
+    "org/hamcrest/integration/JMock1Adapter*",
+    "org/hamcrest/integration/EasyMock2Adapter*",
+  ]
+}
+
 java_prebuilt("hamcrest_library_java") {
   supports_android = true
   testonly = true
   jar_path = "lib/hamcrest-library.jar"
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
-  deps = [
-    ":hamcrest_core_java",
-  ]
+  deps = [ ":hamcrest_core_java" ]
 }

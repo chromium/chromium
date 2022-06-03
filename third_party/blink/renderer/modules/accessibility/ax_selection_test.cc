@@ -7,6 +7,7 @@
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -62,7 +63,7 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelection) {
   UpdateAllLifecyclePhasesForTest();
 
   const AXObject* ax_static_text_1 =
-      GetAXObjectByElementId("paragraph1")->FirstChild();
+      GetAXObjectByElementId("paragraph1")->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text_1);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text_1->RoleValue());
   const AXObject* ax_paragraph_2 = GetAXObjectByElementId("paragraph2");
@@ -82,10 +83,11 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelection) {
 
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hel^lo.>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: How are you?>\n|",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hel^lo.>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: How are you?>\n|",
       GetSelectionText(ax_selection));
 }
 
@@ -104,20 +106,24 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionSelectAll) {
   ASSERT_TRUE(ax_selection.IsValid());
 
   ASSERT_FALSE(ax_selection.Base().IsTextPosition());
-  EXPECT_EQ(GetAXRootObject(), ax_selection.Base().ContainerObject());
+
+  AXObject* html_object = GetAXRootObject()->ChildAtIncludingIgnored(0);
+  ASSERT_NE(nullptr, html_object);
+  EXPECT_EQ(html_object, ax_selection.Base().ContainerObject());
   EXPECT_EQ(0, ax_selection.Base().ChildIndex());
 
   ASSERT_FALSE(ax_selection.Extent().IsTextPosition());
-  EXPECT_EQ(GetAXRootObject(), ax_selection.Extent().ContainerObject());
-  EXPECT_EQ(GetAXRootObject()->ChildCount(),
+  EXPECT_EQ(html_object, ax_selection.Extent().ContainerObject());
+  EXPECT_EQ(html_object->ChildCountIncludingIgnored(),
             ax_selection.Extent().ChildIndex());
 
   EXPECT_EQ(
-      "^++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hello.>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: How are you?>\n|",
+      "++<GenericContainer>\n"
+      "^++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hello.>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: How are you?>\n|",
       GetSelectionText(ax_selection));
 }
 
@@ -175,7 +181,7 @@ TEST_F(AccessibilitySelectionTest, CancelSelect) {
   UpdateAllLifecyclePhasesForTest();
 
   const AXObject* ax_static_text_1 =
-      GetAXObjectByElementId("paragraph1")->FirstChild();
+      GetAXObjectByElementId("paragraph1")->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text_1);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text_1->RoleValue());
   const AXObject* ax_paragraph_2 = GetAXObjectByElementId("paragraph2");
@@ -199,10 +205,11 @@ TEST_F(AccessibilitySelectionTest, CancelSelect) {
   EXPECT_FALSE(Selection().GetSelectionInDOMTree().IsNone());
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hel^lo.>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: How are you?>\n|",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hel^lo.>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: How are you?>\n|",
       GetSelectionText(AXSelection::FromCurrentSelection(GetDocument())));
 }
 
@@ -213,7 +220,7 @@ TEST_F(AccessibilitySelectionTest, DocumentRangeMatchesSelection) {
       )HTML");
 
   const AXObject* ax_static_text_1 =
-      GetAXObjectByElementId("paragraph1")->FirstChild();
+      GetAXObjectByElementId("paragraph1")->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text_1);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text_1->RoleValue());
   const AXObject* ax_paragraph_2 = GetAXObjectByElementId("paragraph2");
@@ -241,7 +248,7 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInText) {
   ASSERT_TRUE(text->IsTextNode());
 
   const AXObject* ax_static_text =
-      GetAXObjectByElementId("paragraph")->FirstChild();
+      GetAXObjectByElementId("paragraph")->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
@@ -259,8 +266,9 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInText) {
   EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hel^lo|>\n",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hel^lo|>\n",
       GetSelectionText(ax_selection));
 }
 
@@ -272,7 +280,7 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInTextWithWhiteSpace) {
   ASSERT_TRUE(text->IsTextNode());
 
   const AXObject* ax_static_text =
-      GetAXObjectByElementId("paragraph")->FirstChild();
+      GetAXObjectByElementId("paragraph")->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
@@ -290,8 +298,9 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInTextWithWhiteSpace) {
   EXPECT_EQ(10, dom_selection.Extent().OffsetInContainerNode());
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hel^lo|>\n",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hel^lo|>\n",
       GetSelectionText(ax_selection));
 }
 
@@ -313,7 +322,8 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreak) {
   const AXObject* ax_br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, ax_br);
   ASSERT_EQ(ax::mojom::Role::kLineBreak, ax_br->RoleValue());
-  const AXObject* ax_line2 = GetAXObjectByElementId("paragraph")->LastChild();
+  const AXObject* ax_line2 =
+      GetAXObjectByElementId("paragraph")->LastChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_line2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_line2->RoleValue());
 
@@ -333,10 +343,11 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreak) {
   // selection focus marker '|' should be after it.
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hello>\n"
-      "^++++++<LineBreak: \n>\n"
-      "|++++++<StaticText: |How are you.>\n",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hello>\n"
+      "^++++++++<LineBreak: \n>\n"
+      "|++++++++<StaticText: |How are you.>\n",
       GetSelectionText(ax_selection));
 }
 
@@ -358,7 +369,8 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreakInEditableText) {
   const AXObject* ax_br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, ax_br);
   ASSERT_EQ(ax::mojom::Role::kLineBreak, ax_br->RoleValue());
-  const AXObject* ax_line2 = GetAXObjectByElementId("paragraph")->LastChild();
+  const AXObject* ax_line2 =
+      GetAXObjectByElementId("paragraph")->LastChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_line2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_line2->RoleValue());
 
@@ -380,10 +392,11 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreakInEditableText) {
   // selection focus marker '|' should be after it.
   EXPECT_EQ(
       "++<GenericContainer>\n"
-      "++++<Paragraph>\n"
-      "++++++<StaticText: Hello>\n"
-      "^++++++<LineBreak: \n>\n"
-      "|++++++<StaticText: |How are you.>\n",
+      "++++<GenericContainer>\n"
+      "++++++<Paragraph>\n"
+      "++++++++<StaticText: Hello>\n"
+      "^++++++++<LineBreak: \n>\n"
+      "|++++++++<StaticText: |How are you.>\n",
       GetSelectionText(ax_selection));
 }
 
@@ -440,9 +453,9 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
                              .Build();
 
   const auto ax_selection_shrink = AXSelection::FromSelection(
-      selection, AXSelectionBehavior::kShrinkToValidDOMRange);
+      selection, AXSelectionBehavior::kShrinkToValidRange);
   const auto ax_selection_extend = AXSelection::FromSelection(
-      selection, AXSelectionBehavior::kExtendToValidDOMRange);
+      selection, AXSelectionBehavior::kExtendToValidRange);
 
   // The "display: none" content is included in the AXTree as an ignored node,
   // so shrunk selection should include those AXObjects. Note that the browser
@@ -473,15 +486,16 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
   // to DOM selections.
   const std::string selection_text(
       "++<GenericContainer>\n"
-      "++++<Main>\n"
-      "++++++<Paragraph>\n"
-      "++++++++<StaticText: Before display:none.>\n"
-      "++++++<Paragraph: Display:none 1.>\n"
-      "^++++++<Paragraph>\n"
-      "++++++++<StaticText: In between two display:none elements.>\n"
-      "++++++<Paragraph: Display:none 2.>\n"
-      "|++++++<Paragraph>\n"
-      "++++++++<StaticText: After display:none.>\n");
+      "++++<GenericContainer>\n"
+      "++++++<Main>\n"
+      "++++++++<Paragraph>\n"
+      "++++++++++<StaticText: Before display:none.>\n"
+      "++++++++<Paragraph>\n"
+      "^++++++++<Paragraph>\n"
+      "++++++++++<StaticText: In between two display:none elements.>\n"
+      "++++++++<Paragraph>\n"
+      "|++++++++<Paragraph>\n"
+      "++++++++++<StaticText: After display:none.>\n");
   EXPECT_EQ(selection_text, GetSelectionText(ax_selection_shrink));
   EXPECT_EQ(selection_text, GetSelectionText(ax_selection_extend));
 }
@@ -519,13 +533,13 @@ TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
   const AXObject* ax_item_1 = GetAXObjectByElementId("item1");
   ASSERT_NE(nullptr, ax_item_1);
   ASSERT_EQ(ax::mojom::Role::kListItem, ax_item_1->RoleValue());
-  const AXObject* ax_bullet_1 = ax_item_1->FirstChild();
+  const AXObject* ax_bullet_1 = ax_item_1->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_bullet_1);
   ASSERT_EQ(ax::mojom::Role::kListMarker, ax_bullet_1->RoleValue());
   const AXObject* ax_item_2 = GetAXObjectByElementId("item2");
   ASSERT_NE(nullptr, ax_item_2);
   ASSERT_EQ(ax::mojom::Role::kListItem, ax_item_2->RoleValue());
-  const AXObject* ax_text_2 = ax_item_2->LastChild();
+  const AXObject* ax_text_2 = ax_item_2->LastChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_text_2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text_2->RoleValue());
 
@@ -540,7 +554,7 @@ TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
   // child of the first <li>, i.e. the text node containing the text "Item 1.".
   // This should be further optimized to a text position at the start of the
   // text object inside the first <li>.
-  ax_selection.Select(AXSelectionBehavior::kShrinkToValidDOMRange);
+  ax_selection.Select(AXSelectionBehavior::kShrinkToValidRange);
   const SelectionInDOMTree shrunk_selection =
       Selection().GetSelectionInDOMTree();
 
@@ -553,7 +567,7 @@ TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
 
   // The list bullet is not included in the DOM tree. Extending the
   // |AXSelection| should move the anchor to before the first <li>.
-  ax_selection.Select(AXSelectionBehavior::kExtendToValidDOMRange);
+  ax_selection.Select(AXSelectionBehavior::kExtendToValidRange);
   const SelectionInDOMTree extended_selection =
       Selection().GetSelectionInDOMTree();
 
@@ -569,27 +583,29 @@ TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
   if (LayoutNGEnabled()) {
     expectations =
         "++<GenericContainer>\n"
-        "++++<Main>\n"
-        "++++++<List>\n"
-        "++++++++<ListItem>\n"
-        "++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "^++++++++++++<StaticText: ^\xE2\x80\xA2 >\n"
-        "++++++++++<StaticText: Item 1.>\n"
-        "++++++++<ListItem>\n"
-        "++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "++++++++++++<StaticText: \xE2\x80\xA2 >\n"
-        "++++++++++<StaticText: Item 2.|>\n";
+        "++++<GenericContainer>\n"
+        "++++++<Main>\n"
+        "++++++++<List>\n"
+        "++++++++++<ListItem>\n"
+        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+        "^++++++++++++++<StaticText: ^\xE2\x80\xA2 >\n"
+        "++++++++++++<StaticText: Item 1.>\n"
+        "++++++++++<ListItem>\n"
+        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+        "++++++++++++++<StaticText: \xE2\x80\xA2 >\n"
+        "++++++++++++<StaticText: Item 2.|>\n";
   } else {
     expectations =
         "++<GenericContainer>\n"
-        "++++<Main>\n"
-        "++++++<List>\n"
-        "++++++++<ListItem>\n"
-        "++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "^++++++++++<StaticText: Item 1.>\n"
-        "++++++++<ListItem>\n"
-        "++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "++++++++++<StaticText: Item 2.|>\n";
+        "++++<GenericContainer>\n"
+        "++++++<Main>\n"
+        "++++++++<List>\n"
+        "++++++++++<ListItem>\n"
+        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+        "^++++++++++++<StaticText: Item 1.>\n"
+        "++++++++++<ListItem>\n"
+        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+        "++++++++++++<StaticText: Item 2.|>\n";
   }
 
   // The |AXSelection| should remain unaffected by any shrinking and should
@@ -828,7 +844,8 @@ TEST_F(AccessibilitySelectionTest,
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_contenteditable->RoleValue());
-  const AXObject* ax_static_text = ax_contenteditable->FirstChild();
+  const AXObject* ax_static_text =
+      ax_contenteditable->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   // Guard against the structure of the accessibility tree unexpectedly
   // changing, causing a hard to debug test failure.
@@ -848,7 +865,7 @@ TEST_F(AccessibilitySelectionTest,
   ASSERT_TRUE(ax_selection.Extent().IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_selection.Extent().ContainerObject());
   EXPECT_EQ(ax_static_text->ComputedName().length(),
-            unsigned{ax_selection.Extent().TextOffset()});
+            static_cast<unsigned>(ax_selection.Extent().TextOffset()));
 }
 
 TEST_F(AccessibilitySelectionTest,
@@ -887,7 +904,8 @@ TEST_F(AccessibilitySelectionTest,
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_contenteditable->RoleValue());
-  const AXObject* ax_static_text = ax_contenteditable->FirstChild();
+  const AXObject* ax_static_text =
+      ax_contenteditable->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   // Guard against the structure of the accessibility tree unexpectedly
   // changing, causing a hard to debug test failure.
@@ -942,10 +960,10 @@ TEST_F(AccessibilitySelectionTest,
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_contenteditable->RoleValue());
-  ASSERT_EQ(3, ax_contenteditable->ChildCount())
+  ASSERT_EQ(3, ax_contenteditable->UnignoredChildCount())
       << "The content editable should have two lines with a line break between "
          "them.";
-  const AXObject* ax_static_text_2 = ax_contenteditable->Children()[2];
+  const AXObject* ax_static_text_2 = ax_contenteditable->UnignoredChildAt(2);
   ASSERT_NE(nullptr, ax_static_text_2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text_2->RoleValue());
 
@@ -1055,6 +1073,12 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextField) {
   EXPECT_EQ(0u, ToTextControl(*input).selectionStart());
   EXPECT_EQ(18u, ToTextControl(*input).selectionEnd());
   EXPECT_EQ("forward", ToTextControl(*input).selectionDirection());
+
+  // Ensure that the selection that was just set could be successfully
+  // retrieved.
+  const auto ax_current_selection =
+      AXSelection::FromCurrentSelection(ToTextControl(*input));
+  EXPECT_EQ(ax_selection, ax_current_selection);
 }
 
 TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextField) {
@@ -1084,6 +1108,12 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextField) {
   EXPECT_EQ(3u, ToTextControl(*input).selectionStart());
   EXPECT_EQ(10u, ToTextControl(*input).selectionEnd());
   EXPECT_EQ("backward", ToTextControl(*input).selectionDirection());
+
+  // Ensure that the selection that was just set could be successfully
+  // retrieved.
+  const auto ax_current_selection =
+      AXSelection::FromCurrentSelection(ToTextControl(*input));
+  EXPECT_EQ(ax_selection, ax_current_selection);
 }
 
 TEST_F(AccessibilitySelectionTest, SelectingTheWholeOfTheTextField) {
@@ -1157,8 +1187,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1176,8 +1206,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1233,8 +1263,8 @@ TEST_F(AccessibilitySelectionTest,
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1252,8 +1282,8 @@ TEST_F(AccessibilitySelectionTest,
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1354,6 +1384,12 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextarea) {
   EXPECT_EQ(0u, ToTextControl(*textarea).selectionStart());
   EXPECT_EQ(53u, ToTextControl(*textarea).selectionEnd());
   EXPECT_EQ("forward", ToTextControl(*textarea).selectionDirection());
+
+  // Ensure that the selection that was just set could be successfully
+  // retrieved.
+  const auto ax_current_selection =
+      AXSelection::FromCurrentSelection(ToTextControl(*textarea));
+  EXPECT_EQ(ax_selection, ax_current_selection);
 }
 
 TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
@@ -1387,6 +1423,12 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
   EXPECT_EQ(3u, ToTextControl(*textarea).selectionStart());
   EXPECT_EQ(10u, ToTextControl(*textarea).selectionEnd());
   EXPECT_EQ("backward", ToTextControl(*textarea).selectionDirection());
+
+  // Ensure that the selection that was just set could be successfully
+  // retrieved.
+  const auto ax_current_selection =
+      AXSelection::FromCurrentSelection(ToTextControl(*textarea));
+  EXPECT_EQ(ax_selection, ax_current_selection);
 }
 
 TEST_F(AccessibilitySelectionTest, SelectTheWholeOfTheTextarea) {
@@ -1468,8 +1510,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.value()[i]} << " at position " << i
-            << " in textarea.";
+            << static_cast<char>(text_control.value()[i]) << " at position "
+            << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1488,8 +1530,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.value()[i]} << " at position " << i
-            << " in textarea.";
+            << static_cast<char>(text_control.value()[i]) << " at position "
+            << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1599,7 +1641,7 @@ TEST_F(AccessibilitySelectionTest,
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_contenteditable->RoleValue());
-  const AXObject* ax_text = ax_contenteditable->FirstChild();
+  const AXObject* ax_text = ax_contenteditable->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
 
@@ -1609,13 +1651,13 @@ TEST_F(AccessibilitySelectionTest,
   EXPECT_TRUE(ax_selection.Base().IsTextPosition());
   EXPECT_EQ(ax_text, ax_selection.Base().ContainerObject());
   EXPECT_LE(15, ax_selection.Base().TextOffset());
-  EXPECT_GT(int{ax_text->ComputedName().length()},
+  EXPECT_GT(static_cast<int>(ax_text->ComputedName().length()),
             ax_selection.Base().TextOffset());
   EXPECT_EQ(TextAffinity::kUpstream, ax_selection.Base().Affinity());
   EXPECT_TRUE(ax_selection.Extent().IsTextPosition());
   EXPECT_EQ(ax_text, ax_selection.Extent().ContainerObject());
   EXPECT_LE(15, ax_selection.Extent().TextOffset());
-  EXPECT_GT(int{ax_text->ComputedName().length()},
+  EXPECT_GT(static_cast<int>(ax_text->ComputedName().length()),
             ax_selection.Extent().TextOffset());
   EXPECT_EQ(TextAffinity::kUpstream, ax_selection.Extent().Affinity());
 }
@@ -1640,8 +1682,9 @@ TEST_F(AccessibilitySelectionTest,
   const AXObject* ax_contenteditable =
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
-  ASSERT_EQ(1, ax_contenteditable->ChildCount());
-  const AXObject* ax_static_text = ax_contenteditable->FirstChild();
+  ASSERT_EQ(1, ax_contenteditable->ChildCountIncludingIgnored());
+  const AXObject* ax_static_text =
+      ax_contenteditable->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
   String computed_name = ax_static_text->ComputedName();
@@ -1669,8 +1712,10 @@ TEST_F(AccessibilitySelectionTest,
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
-    EXPECT_EQ(int{i + 9}, dom_selection.Base().OffsetInContainerNode());
-    EXPECT_EQ(int{i + 10}, dom_selection.Extent().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 9),
+              dom_selection.Base().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 10),
+              dom_selection.Extent().OffsetInContainerNode());
   }
 
   for (unsigned int i = computed_name.length(); i > 0; --i) {
@@ -1695,8 +1740,10 @@ TEST_F(AccessibilitySelectionTest,
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
-    EXPECT_EQ(int{i + 9}, dom_selection.Base().OffsetInContainerNode());
-    EXPECT_EQ(int{i + 8}, dom_selection.Extent().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 9),
+              dom_selection.Base().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 8),
+              dom_selection.Extent().OffsetInContainerNode());
   }
 }
 
@@ -1704,7 +1751,8 @@ TEST_F(AccessibilitySelectionTest, SelectionWithEqualBaseAndExtent) {
   SetBodyInnerHTML(R"HTML(
       <select id="sel"><option>1</option></select>
       )HTML");
-  AXObject* ax_sel = GetAXObjectByElementId("sel")->FirstChild();
+  AXObject* ax_sel =
+      GetAXObjectByElementId("sel")->FirstChildIncludingIgnored();
   AXPosition ax_position = AXPosition::CreatePositionBeforeObject(*ax_sel);
   AXSelection::Builder builder;
   AXSelection ax_selection =
@@ -1748,6 +1796,17 @@ TEST_F(AccessibilitySelectionTest, ARIAHidden) {
 
 TEST_P(ParameterizedAccessibilitySelectionTest, List) {
   ParameterizedAccessibilitySelectionTest::RunSelectionTest("list");
+}
+
+TEST_F(AccessibilitySelectionTest, ParagraphPresentational) {
+  // The focus of the selection is an "after children" position on a paragraph
+  // with role="presentation" and in which the last child is an empty div. In
+  // other words, both the paragraph and its last child are ignored in the
+  // accessibility tree. In order to become valid, the focus should move to
+  // before the next unignored child of the presentational paragraph's unignored
+  // parent, which in this case is another paragraph that comes after the
+  // presentational one.
+  RunSelectionTest("paragraph-presentational");
 }
 
 TEST_F(AccessibilitySelectionTest, SVG) {

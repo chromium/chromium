@@ -7,8 +7,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "net/third_party/quiche/src/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_clock.h"
 
 namespace epoll_server {
 
@@ -23,6 +23,10 @@ namespace quic {
 class QuicEpollClock : public QuicClock {
  public:
   explicit QuicEpollClock(epoll_server::SimpleEpollServer* epoll_server);
+
+  QuicEpollClock(const QuicEpollClock&) = delete;
+  QuicEpollClock& operator=(const QuicEpollClock&) = delete;
+
   ~QuicEpollClock() override;
 
   // Returns the approximate current time as a QuicTime object.
@@ -45,9 +49,6 @@ class QuicEpollClock : public QuicClock {
   epoll_server::SimpleEpollServer* epoll_server_;
   // Largest time returned from Now() so far.
   mutable QuicTime largest_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicEpollClock);
 };
 
 }  // namespace quic

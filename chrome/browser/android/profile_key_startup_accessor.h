@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
 #define CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
 
-#include "base/macros.h"
-
 class ProfileKey;
 
 // The ProfileKeyStartupAccessor is a singleton class that exposes the

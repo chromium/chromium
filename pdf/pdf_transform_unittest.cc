@@ -195,13 +195,13 @@ TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
   PdfRectangle clip_box;
   gfx::PointF offset;
 
-  // |rect| and |clip_box| are the same size.
+  // `rect` and `clip_box` are the same size.
   InitializeBoxToDefaultPortraitValues(&clip_box);
   offset = CalculateScaledClipBoxOffset(rect, clip_box);
   EXPECT_FLOAT_EQ(0, offset.x());
   EXPECT_FLOAT_EQ(0, offset.y());
 
-  // |rect| is larger than |clip_box|.
+  // `rect` is larger than `clip_box`.
   clip_box.top /= 2;
   clip_box.right /= 4;
   offset = CalculateScaledClipBoxOffset(rect, clip_box);
@@ -215,7 +215,7 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   PdfRectangle clip_box;
   gfx::PointF offset;
 
-  // |rect|, page size and |clip_box| are the same.
+  // `rect`, page size and `clip_box` are the same.
   InitializeBoxToDefaultPortraitValues(&clip_box);
   offset =
       CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box);
@@ -234,7 +234,7 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   EXPECT_FLOAT_EQ(180, offset.x());
   EXPECT_FLOAT_EQ(-180, offset.y());
 
-  // Smaller |clip_box|.
+  // Smaller `clip_box`.
   clip_box.top /= 4;
   clip_box.right /= 2;
   offset =

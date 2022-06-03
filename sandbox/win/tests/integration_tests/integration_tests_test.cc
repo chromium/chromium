@@ -8,13 +8,18 @@
 
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
+#include "sandbox/win/tests/integration_tests/integration_tests_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -41,11 +46,12 @@ struct PolicyDiagnosticsWaiter {
   }
 };
 
-class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
+class TestDiagnosticsReceiver final : public PolicyDiagnosticsReceiver {
  public:
   TestDiagnosticsReceiver() {}
-  ~TestDiagnosticsReceiver() final {}
-  TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter) { waiter_ = waiter; }
+  ~TestDiagnosticsReceiver() override {}
+  explicit TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter)
+      : waiter_(waiter) {}
   PolicyDiagnosticsWaiter* waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);
@@ -176,7 +182,7 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_job(int argc, wchar_t **argv) {
     job_level = JOB_NONE;
 
   TestRunner runner(job_level, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
 
   if (1 != runner.RunTest(L"IntegrationTestsTest_args 1"))
     return 4;
@@ -189,35 +195,35 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_job(int argc, wchar_t **argv) {
 
 TEST(IntegrationTestsTest, CallsBeforeInit) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_INIT);
   ASSERT_EQ(BEFORE_INIT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsBeforeRevert) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_REVERT);
   ASSERT_EQ(BEFORE_REVERT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsAfterRevert) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(AFTER_REVERT);
   ASSERT_EQ(AFTER_REVERT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsEveryState) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(EVERY_STATE);
   ASSERT_EQ(AFTER_REVERT, runner.RunTest(L"IntegrationTestsTest_state2"));
 }
 
 TEST(IntegrationTestsTest, ForwardsArguments) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_INIT);
   ASSERT_EQ(1, runner.RunTest(L"IntegrationTestsTest_args first"));
   ASSERT_EQ(4, runner.RunTest(L"IntegrationTestsTest_args first second third "
@@ -226,7 +232,7 @@ TEST(IntegrationTestsTest, ForwardsArguments) {
 
 TEST(IntegrationTestsTest, WaitForStuckChild) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -236,7 +242,7 @@ TEST(IntegrationTestsTest, WaitForStuckChild) {
 
 TEST(IntegrationTestsTest, NoWaitForStuckChildNoJob) {
   TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -253,11 +259,11 @@ TEST(IntegrationTestsTest, NoWaitForStuckChildNoJob) {
 
 TEST(IntegrationTestsTest, TwoStuckChildrenSecondOneHasNoJob) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
+  runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -279,11 +285,11 @@ TEST(IntegrationTestsTest, TwoStuckChildrenSecondOneHasNoJob) {
 
 TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
+  runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -305,11 +311,11 @@ TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
 
 TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
+  runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
 
@@ -340,7 +346,7 @@ TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
 TEST(IntegrationTestsTest, RunChildFromInsideJob) {
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job with_job escape_flag"));
 }
@@ -351,26 +357,23 @@ TEST(IntegrationTestsTest, RunChildFromInsideJobNoEscape) {
   int expect_result = 4;  // Means the runner has failed to execute the child.
   // Check if we are on Win8 or newer and expect a success as newer windows
   // versions support nested jobs.
-  OSVERSIONINFOEX version_info = { sizeof version_info };
-  ::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info));
-  if (version_info.dwMajorVersion > 6 ||
-      (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion >= 2)) {
+  if (IsWindows8OrGreater()) {
     expect_result = SBOX_TEST_SUCCEEDED;
   }
 
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(expect_result,
             runner.RunTest(L"IntegrationTestsTest_job with_job"));
 }
 
 // Running without a job object should be ok regardless of the fact that we are
-// running inside an outter job.
+// running inside an outer job.
 TEST(IntegrationTestsTest, RunJoblessChildFromInsideJob) {
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job none"));
 }
@@ -382,7 +385,6 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   auto name_a = NonCollidingName();
   auto name_done = NonCollidingName();
 
-  runner.SetTimeout(2000);
   runner.SetAsynchronous(true);
   runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
                  name_a.c_str());
@@ -413,7 +415,9 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   cmd_line += name_done;
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
-  ASSERT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(handle_started.Get(), 1000));
+  ASSERT_EQ(WAIT_OBJECT_0,
+            ::WaitForSingleObject(handle_started.Get(),
+                                  sandbox::SboxTestEventTimeout()));
 
   {
     // After starting a process, there should be one policy.
@@ -431,7 +435,7 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   // in a job exits but before the final job notification is received
   // by the tracking thread. We have to give that notification a chance
   // before we test to see if the job itself is removed.
-  SleepEx(100, true);
+  SleepEx(TestTimeouts::tiny_timeout().InMilliseconds(), true);
   {
     // Finally there should be no processes and no policies.
     auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());

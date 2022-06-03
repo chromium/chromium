@@ -8,8 +8,10 @@
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_handle.h"
@@ -19,14 +21,14 @@
 #include <lib/zx/process.h>
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/feature_list.h"
 #include "base/process/port_provider_mac.h"
 #endif
 
 namespace base {
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 extern const Feature kMacAllowBackgroundingProcesses;
 #endif
 
@@ -51,6 +53,9 @@ class BASE_EXPORT Process {
 
   Process(Process&& other);
 
+  Process(const Process&) = delete;
+  Process& operator=(const Process&) = delete;
+
   // The destructor does not terminate the process.
   ~Process();
 
@@ -73,12 +78,6 @@ class BASE_EXPORT Process {
   static Process OpenWithAccess(ProcessId pid, DWORD desired_access);
 #endif
 
-  // Creates an object from a |handle| owned by someone else.
-  // Don't use this for new code. It is only intended to ease the migration to
-  // a strict ownership model.
-  // TODO(rvargas) crbug.com/417532: Remove this code.
-  static Process DeprecatedGetProcessFromHandle(ProcessHandle handle);
-
   // Returns true if processes can be backgrounded.
   static bool CanBackgroundProcesses();
 
@@ -95,18 +94,22 @@ class BASE_EXPORT Process {
   // Returns a second object that represents this process.
   Process Duplicate() const;
 
+  // Relinquishes ownership of the handle and sets this to kNullProcessHandle.
+  // The result may be a pseudo-handle, depending on the OS and value stored in
+  // this.
+  ProcessHandle Release() WARN_UNUSED_RESULT;
+
   // Get the PID for this process.
   ProcessId Pid() const;
 
-#if !defined(OS_ANDROID)
   // Get the creation time for this process. Since the Pid can be reused after a
   // process dies, it is useful to use both the Pid and the creation time to
   // uniquely identify a process.
   //
-  // Not available on Android because /proc/stat/ cannot be accessed on O+.
-  // https://issuetracker.google.com/issues/37140047
+  // On Android, works only if |this| is the current process, as security
+  // features prevent an application from getting data about other processes,
+  // even if they belong to us. Otherwise, returns Time().
   Time CreationTime() const;
-#endif  // !defined(OS_ANDROID)
 
   // Returns true if this process is the current process.
   bool is_current() const;
@@ -128,8 +131,23 @@ class BASE_EXPORT Process {
   // be the exit code of the process. If |wait| is true, this method will wait
   // for up to one minute for the process to actually terminate.
   // Returns true if the process terminates within the allowed time.
-  // NOTE: On POSIX |exit_code| is ignored.
+  // NOTE: |exit_code| is only used on OS_WIN.
   bool Terminate(int exit_code, bool wait) const;
+
+#if defined(OS_WIN)
+  enum class WaitExitStatus {
+    PROCESS_EXITED,
+    STOP_EVENT_SIGNALED,
+    FAILED,
+  };
+
+  // Waits for the process to exit, or the specified |stop_event_handle| to be
+  // set. Returns value indicating which event was set. The given |exit_code|
+  // will be the exit code of the process.
+  WaitExitStatus WaitForExitOrEvent(
+      const base::win::ScopedHandle& stop_event_handle,
+      int* exit_code) const;
+#endif  // OS_WIN
 
   // Waits for the process to exit. Returns true on success.
   // On POSIX, if the process has been signaled then |exit_code| is set to -1.
@@ -151,7 +169,7 @@ class BASE_EXPORT Process {
   // process though that should be avoided.
   void Exited(int exit_code) const;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // The Mac needs a Mach port in order to manipulate a process's priority,
   // and there's no good way to get that from base given the pid. These Mac
   // variants of the IsProcessBackgrounded and SetProcessBackgrounded API take
@@ -182,12 +200,12 @@ class BASE_EXPORT Process {
   // will be made "normal" - equivalent to default process priority.
   // Returns true if the priority was changed, false otherwise.
   bool SetProcessBackgrounded(bool value);
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
   // Returns an integer representing the priority of a process. The meaning
   // of this value is OS dependent.
   int GetPriority() const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get the PID in its PID namespace.
   // If the process is not in a PID namespace or /proc/<pid>/status does not
   // report NSpid, kNullProcessId is returned.
@@ -206,17 +224,15 @@ class BASE_EXPORT Process {
 #if defined(OS_WIN) || defined(OS_FUCHSIA)
   bool is_current_process_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Process);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Exposed for testing.
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
 BASE_EXPORT bool IsProcessBackgroundedCGroup(
     const StringPiece& cgroup_contents);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace base
 

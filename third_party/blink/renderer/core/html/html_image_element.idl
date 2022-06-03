@@ -21,11 +21,11 @@
 // https://html.spec.whatwg.org/C/#the-img-element
 
 [
-    Exposed=Window,
     ActiveScriptWrappable,
-    ConstructorCallWith=Document,
+    Exposed=Window,
     HTMLConstructor,
-    NamedConstructor=Image(optional unsigned long width, optional unsigned long height)
+    NamedConstructor=Image(optional unsigned long width, optional unsigned long height),
+    NamedConstructor_CallWith=Document
 ] interface HTMLImageElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, Reflect, URL] attribute USVString src;

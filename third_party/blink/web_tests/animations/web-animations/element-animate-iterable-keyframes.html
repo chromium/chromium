@@ -121,7 +121,7 @@ test(() => {
 }, 'Custom iterator with offset specified.');
 
 test(() => {
-  assert_throws({name: 'TypeError'}, () => {
+  assert_throws_js(TypeError, () => {
     assertAnimationEffect({
       keyframes: createIterable([
         {done: false, value: {left: '100px'}},
@@ -135,7 +135,7 @@ test(() => {
 }, 'Custom iterator with non object keyframe should throw.');
 
 test(() => {
-  assert_throws({name: 'TypeError'}, () => {
+  assert_throws_js(TypeError, () => {
     assertAnimationEffect({
       keyframes: {
         left: createIterable([

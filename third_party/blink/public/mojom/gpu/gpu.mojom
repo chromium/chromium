@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// An interface used by frames to query the browser about tracked GPU state.
+interface GpuDataManager {
+  // Asks whether or not `url` is allowed to use 3D APIs.
+  //
+  // Note that the renderer can ignore the result of this check, so this is
+  // currently not considered security-sensitive. As a temporary exception, pass
+  // the URL rather than routing this method via the frame.
+  [Sync]
+  Are3DAPIsBlockedForUrl(url.mojom.Url url) => (bool blocked);
+};

@@ -64,7 +64,7 @@
     Applications that can cause this error include antivirus, firewall, and web-filtering or proxy software.
   </message>
 
-  <!-- Lookalike URL warning -->
+  <!-- Lookalike URL warning with a suggested hostname -->
   <message name="IDS_LOOKALIKE_URL_TITLE" desc="Tab title. Context: the requested URL might be trying to trick the user since it looks like a more popular URL. This interstitial points the user to the safe site instead.">
     Safety warning
   </message>
@@ -77,8 +77,23 @@
   <message name="IDS_LOOKALIKE_URL_CONTINUE" desc="Button text. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL. This button dismisses the interstitial and navigates to the suggested (safe) URL.">
     Go to <ph name="DOMAIN">$1<ex>example.com</ex></ph>
   </message>
+
   <message name="IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL.">
     The site you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.
+  </message>
+
+  <!-- Lookalike URL without a suggested hostname -->
+  <message name="IDS_LOOKALIKE_URL_HEADING_NO_SUGGESTED_URL" desc="Large heading. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks fake. This interstitial warns the user to not visit the site but doesn't suggest a safe site.">
+    Fake site ahead
+  </message>
+  <message name="IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH_NO_SUGGESTED_URL" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks fake. This interstitial warns the user to not visit the site but doesn't suggest a safe site.">
+    Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.
+  </message>
+  <message name="IDS_LOOKALIKE_URL_BACK_TO_SAFETY" desc="The text for the button that takes the user back to the new tab page.">
+    Back to safety
+  </message>
+  <message name="IDS_LOOKALIKE_URL_CLOSE_PAGE" desc="The text for the button that closes the tab.">
+    Close page
   </message>
 
   <!-- Clock errors -->
@@ -113,7 +128,7 @@
   </if>
   <if expr="_google_chrome">
     <message name="IDS_CLOCK_ERROR_EXPLANATION" desc="Body text under an 'Advanced' button. Context: error shown when the browser can't load a page because the device's clock is wrong. This paragraph explains why a correct clock is necessary.">
-      To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Google Chrome cannot verify these certificates.
+      To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chrome cannot verify these certificates.
     </message>
   </if>
   <if expr="not _google_chrome">
@@ -140,6 +155,9 @@
   <message name="IDS_SSL_OVERRIDABLE_SAFETY_BUTTON" desc="The text for the button that takes the user back to the previous page.">
     Back to safety
   </message>
+  <message name="IDS_SSL_OVERRIDABLE_CLOSE_PAGE_BUTTON" desc="The text for the button that closes the page.">
+    Close page
+  </message>
   <message name="IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH" desc="The text for the paragraph at the bottom with the proceed link.">
     <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Proceed to <ph name="SITE">$1<ex>example.com</ex></ph> (unsafe)<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
@@ -159,10 +177,10 @@
   </message>
   <if expr="_google_chrome">
     <message name="IDS_SSL_NONOVERRIDABLE_MORE" desc="Body text for the explanation shown if user clicks on the Details button.">
-      <ph name="SITE">$1<ex>google.com</ex></ph> normally uses encryption to protect your information. When Google Chrome tried to connect to <ph name="SITE">$1<ex>google.com</ex></ph> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE">$1<ex>google.com</ex></ph>, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Google Chrome stopped the connection before any data was exchanged.
+      <ph name="SITE">$1<ex>google.com</ex></ph> normally uses encryption to protect your information. When Chrome tried to connect to <ph name="SITE">$1<ex>google.com</ex></ph> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE">$1<ex>google.com</ex></ph>, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chrome stopped the connection before any data was exchanged.
     </message>
     <message name="IDS_SSL_NONOVERRIDABLE_INVALID" desc="A sentence to explain why the user can't proceed.">
-      You cannot visit <ph name="SITE">$1<ex>google.com</ex></ph> right now because the website sent scrambled credentials that Google Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.
+      You cannot visit <ph name="SITE">$1<ex>google.com</ex></ph> right now because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.
     </message>
   </if>
   <if expr="not _google_chrome">
@@ -224,11 +242,11 @@
   <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     If you understand the risks to your security, you may <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> before the dangerous programs have been removed.
   </message>
-  <message name="IDS_SAFE_BROWSING_PRIVACY_POLICY_PAGE" desc="Label for the link to SafeBrowsing Privacy policy page">
-    Privacy policy
-  </message>
   <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE" desc="SafeBrowsing Scout label next to checkbox">
-    Help improve Chrome security by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="PRIVACY_PAGE_LINK">$1</ph>
+    Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK">&lt;a id="privacy-link" href="#"&gt;</ph>Privacy policy<ph name="END_PRIVACY_PAGE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE" desc="SafeBrowsing enhanced protection promo message">
+    To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- Harmful download interstitial -->
@@ -413,37 +431,29 @@
   <message name="IDS_ORIGIN_POLICY_INFO"
     desc="The primary explanatory paragraph for the Origin Policy Error interstitial.">
     The site <ph name="ORIGIN">$2</ph> has requested that an origin policy
-    will apply to all its request, but this policy cannot presently be applied.
+    apply to all requests to it, but this policy cannot presently be applied.
   </message>
-  <message name="IDS_ORIGIN_POLICY_INFO2" desc="The second paragrpah of the text of the Origin Policy Error Interstitial. (Presently intentionally left blank.)" />
+  <message name="IDS_ORIGIN_POLICY_INFO2" desc="The second paragraph of the text of the Origin Policy Error Interstitial. (Presently intentionally left blank.)" />
   <message name="IDS_ORIGIN_POLICY_BUTTON"
     desc="The text for the Origin Policy Error Interstitial button that takes the user back to the previous page">
-    Back to safety.
+    Back to safety
   </message>
   <message name="IDS_ORIGIN_POLICY_DETAILS"
     desc="The text for the Origin Policy Error Interstitial button that contains additional information.">
     Advanced
   </message>
-  <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_LOAD" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy could not be loaded.">
+  <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_LOAD" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy was requested but could not be loaded.">
     The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    an origin policy will be applied to all requests to it. But it has now
-    failed to deliver a policy, which prevents the browser from fulfilling
+    an origin policy be applied to all requests to it. But it has now failed to
+    deliver a policy, which prevents the browser from fulfilling your request
+    for <ph name="SITE">$1</ph>. Origin policies can be used by site operators
+    to configure security and other properties for a site.
+  </message>
+  <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_PARSE_HEADER" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy header could not be parsed.">
+    The server you are going to, <ph name="ORIGIN">$2</ph>, has set a header
+    requiring that an origin policy be applied to all requests to it. But
+    the header is malformed, which prevents the browser from fulfilling
     your request for <ph name="SITE">$1</ph>. Origin policies can be used by
-    site operators to configure security and other properties for a site.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_EXPLANATION_SHOULD_NOT_REDIRECT" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy request was met with a 'redirect' response.">
-    The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    an origin policy will be applied to all requests to it. But instead of
-    delivering a policy it has redirected the browser elsewhere, which prevents
-    the browser from fulfilling your request for <ph name="SITE">$1</ph>. Origin
-    policies can be used by site operators to configure security and other
-    properties for a site.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_EXPLANATION_OTHER" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for cases other than redirect or load error.">
-    The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    an origin policy will be applied to all requests to it. But it has now
-    delivered an invalid policy, which means the browser cannot fullfil your
-    request for <ph name="SITE">$1</ph>. Origin policies can be used by
     site operators to configure security and other properties for a site.
   </message>
   <message name="IDS_ORIGIN_POLICY_FINAL_PARAGRAPH"
@@ -452,17 +462,6 @@
   </message>
   <message name="IDS_ORIGIN_POLICY_CLOSE" desc="The text of the Origin Policy Error Interstitial that will hide the 'advanced' section again.">
     Hide advanced
-  </message>
-
-  <!-- Safety Tip summary strings for Android (Desktop is in page_info_strings.grdp) -->
-  <message name="IDS_SAFETY_TIP_ANDROID_LEAVE_BUTTON" desc="Text of button to ignore the warning on a suspicious page. Shown on the safety tip infobar.">
-    Leave site
-  </message>
-  <message name="IDS_SAFETY_TIP_ANDROID_LOOKALIKE_TITLE" desc="Title of Safety Tip infobar on a domain that looks like another domain.">
-    Is this the right site?
-  </message>
-  <message name="IDS_SAFETY_TIP_ANDROID_LOOKALIKE_DESCRIPTION" desc="Body of an infobar warning when the user visits a page that triggered a Safety Tip because the domain looked like another domain.">
-    <ph name='LOOKALIKE_DOMAIN'>$1<ex>fake-google.com</ex></ph> looks similar to <ph name='SUGGESTED_DOMAIN'>$2<ex>google.com</ex></ph>. Attackers sometimes mimic sites by using similar URLs.
   </message>
 
   <if expr="not is_ios">
@@ -505,4 +504,50 @@
       OK
     </message>
   </if>
+
+  <!-- Legacy TLS interstitial -->
+  <message name="IDS_LEGACY_TLS_HEADING" desc="Large heading of the legacy TLS interstitial.">
+    Your connection is not fully secure
+  </message>
+  <message name="IDS_LEGACY_TLS_PRIMARY_PARAGRAPH" desc="Main paragraph of the legacy TLS interstitial. A user visits a website that uses an obsolete version of TLS and they are shown this error. Page title and additional description of the error are shown above.">
+    This site uses an outdated security configuration, which may expose your information (for example, passwords, messages, or credit cards) when it is sent to this site.
+  </message>
+  <message name="IDS_LEGACY_TLS_EXPLANATION" desc="Part of an extended description hidden behind an 'Advanced' button on an error page. A user visits a website that uses an obsolete version of TLS and they are shown this error. Page title and additional description of the error are shown above.">
+    The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.
+  </message>
+
+  <!-- Insecure form submission interstitial-->
+  <message name="IDS_INSECURE_FORM_TITLE" desc="Tab Title for insecure form submission warning">
+    Form is not secure
+  </message>
+  <message name="IDS_INSECURE_FORM_HEADING" desc="Large heading of the warning shown when submitting an insecure form">
+    The information you’re about to submit is not secure
+  </message>
+  <message name="IDS_INSECURE_FORM_PRIMARY_PARAGRAPH" desc="Main paragraph of the insecure form submission warning. This warning is shown when a form shown on a secure website is submitted over an insecure connection.">
+    Because this form is being submitted using a connection that’s not secure, your information will be visible to others.
+  </message>
+  <message name="IDS_INSECURE_FORM_BACK_BUTTON" desc="Text for the button in the insecure form warning that takes the user back to the previous page">
+    Go back
+  </message>
+  <message name="IDS_INSECURE_FORM_SUBMIT_BUTTON" desc="Text for the button in the insecure form warning that bypasses the warning and submits the form">
+    Send anyway
+  </message>
+
+  <!-- HTTPS-Only Mode interstitial-->
+  <message name="IDS_HTTPS_ONLY_MODE_TITLE" desc="Tab title for HTTPS-only mode warning">
+    Site is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only mode active">
+    The connection to <ph name="SITE">$1<ex>example.com</ex></ph> is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_BACK_BUTTON" desc="Text for the button in the HTTPS-only mode warning that takes the user back to the previous page">
+    Go back
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_SUBMIT_BUTTON" desc="Text for the button in the HTTPS-only mode warning that bypasses the warning and loads the page">
+    Continue to site
+  </message>
+
 </grit-part>

@@ -9,10 +9,12 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.WrappedClassLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
@@ -31,15 +33,20 @@ public class ClassLoaderContextWrapperFactory {
     private static final WeakHashMap<Context, WeakReference<ClassLoaderContextWrapper>>
             sCtxToWrapper = new WeakHashMap<>();
     private static final Object sLock = new Object();
+
     @SuppressWarnings("StaticFieldLeak")
-    private static Context sResourceOverrideContext;
+    private static Context sLightModeResourceOverrideContext;
+    @SuppressWarnings("StaticFieldLeak")
+    private static Context sDarkModeResourceOverrideContext;
 
     /**
-     * Sets a context that will override the return values from getAssets(), getResources(), and
-     * getSystemService() when asking for layout inflater.
+     * Sets light and dark mode contexts that will override the return values from getAssets(),
+     * getResources(), and getSystemService() when asking for layout inflater.
      */
-    public static void setResourceOverrideContext(Context context) {
-        sResourceOverrideContext = context;
+    public static void setLightDarkResourceOverrideContext(
+            Context lightModeContext, Context darkModeContext) {
+        sLightModeResourceOverrideContext = lightModeContext;
+        sDarkModeResourceOverrideContext = darkModeContext;
     }
 
     public static Context get(Context ctx) {
@@ -70,26 +77,16 @@ public class ClassLoaderContextWrapperFactory {
         public ClassLoader getClassLoader() {
             final ClassLoader appCl = getBaseContext().getClassLoader();
             final ClassLoader chromiumCl = ClassLoaderContextWrapper.class.getClassLoader();
-            return new ClassLoader() {
-                @Override
-                protected Class<?> findClass(String name) throws ClassNotFoundException {
-                    // First look in the Chromium class loader.
-                    try {
-                        return chromiumCl.loadClass(name);
-                    } catch (ClassNotFoundException e) {
-                        // Look in the app class loader; allowing it to throw
-                        // ClassNotFoundException.
-                        return appCl.loadClass(name);
-                    }
-                }
-            };
+
+            return new WrappedClassLoader(chromiumCl, appCl);
         }
 
         @Override
         public Object getSystemService(String name) {
             if (Context.LAYOUT_INFLATER_SERVICE.equals(name)) {
-                if (sResourceOverrideContext != null) {
-                    return LayoutInflater.from(sResourceOverrideContext);
+                Context context = getResourceOverrideContext();
+                if (context != null) {
+                    return LayoutInflater.from(context);
                 }
                 LayoutInflater i = (LayoutInflater) getBaseContext().getSystemService(name);
                 return i.cloneInContext(this);
@@ -138,18 +135,30 @@ public class ClassLoaderContextWrapperFactory {
 
         @Override
         public AssetManager getAssets() {
-            if (sResourceOverrideContext != null) {
-                return sResourceOverrideContext.getAssets();
-            }
-            return getBaseContext().getAssets();
+            return getResourceContext().getAssets();
         }
 
         @Override
         public Resources getResources() {
-            if (sResourceOverrideContext != null) {
-                return sResourceOverrideContext.getResources();
-            }
-            return getBaseContext().getResources();
+            return getResourceContext().getResources();
+        }
+
+        @Override
+        public Resources.Theme getTheme() {
+            return getResourceContext().getTheme();
+        }
+
+        private Context getResourceOverrideContext() {
+            int uiMode = getBaseContext().getResources().getConfiguration().uiMode;
+            boolean darkModeEnabled =
+                    (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+            return darkModeEnabled ? sDarkModeResourceOverrideContext
+                                   : sLightModeResourceOverrideContext;
+        }
+
+        private Context getResourceContext() {
+            Context resourceOverrideContext = getResourceOverrideContext();
+            return (resourceOverrideContext != null) ? resourceOverrideContext : getBaseContext();
         }
     }
 }

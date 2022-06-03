@@ -3,6 +3,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
 var doctype = document.doctype;
 assert_equals(document.childNodes.length, 2);
 doctype.remove();

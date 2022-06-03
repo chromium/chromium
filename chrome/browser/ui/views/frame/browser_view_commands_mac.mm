@@ -6,7 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/app/chrome_command_ids.h"
 
 void ForwardCutCopyPasteToNSApp(int command_id) {

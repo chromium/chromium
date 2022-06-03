@@ -12,8 +12,6 @@ source_set("platform_apps") {
     "app_load_service.h",
     "app_load_service_factory.cc",
     "app_load_service_factory.h",
-    "app_shim_registry_mac.cc",
-    "app_shim_registry_mac.h",
     "app_termination_observer.cc",
     "app_termination_observer.h",
     "app_window_registry_util.cc",
@@ -36,6 +34,13 @@ source_set("platform_apps") {
     "shortcut_manager_factory.h",
   ]
 
+  if (is_mac) {
+    sources += [
+      "extension_app_shim_manager_delegate_mac.cc",
+      "extension_app_shim_manager_delegate_mac.h",
+    ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
@@ -45,14 +50,20 @@ source_set("platform_apps") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sharing/proto:proto",
+    "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/navigation_interception",
+    "//components/no_state_prefetch/browser",
     "//components/pref_registry",
     "//content/public/browser",
     "//content/public/common",
@@ -63,6 +74,10 @@ source_set("platform_apps") {
     "//services/preferences/public/cpp:cpp",
     "//ui/gfx",
   ]
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/apps/app_shim" ]
+  }
 
   allow_circular_includes_from = [ "//chrome/browser/extensions" ]
 }

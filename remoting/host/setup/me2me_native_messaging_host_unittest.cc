@@ -13,11 +13,11 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -170,6 +170,11 @@ namespace remoting {
 class MockDaemonControllerDelegate : public DaemonController::Delegate {
  public:
   MockDaemonControllerDelegate();
+
+  MockDaemonControllerDelegate(const MockDaemonControllerDelegate&) = delete;
+  MockDaemonControllerDelegate& operator=(const MockDaemonControllerDelegate&) =
+      delete;
+
   ~MockDaemonControllerDelegate() override;
 
   // DaemonController::Delegate interface.
@@ -177,17 +182,13 @@ class MockDaemonControllerDelegate : public DaemonController::Delegate {
   std::unique_ptr<base::DictionaryValue> GetConfig() override;
   void CheckPermission(bool it2me,
                        DaemonController::BoolCallback callback) override;
-  void SetConfigAndStart(
-      std::unique_ptr<base::DictionaryValue> config,
-      bool consent,
-      const DaemonController::CompletionCallback& done) override;
+  void SetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+                         bool consent,
+                         DaemonController::CompletionCallback done) override;
   void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
-                    const DaemonController::CompletionCallback& done) override;
-  void Stop(const DaemonController::CompletionCallback& done) override;
+                    DaemonController::CompletionCallback done) override;
+  void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonControllerDelegate);
 };
 
 MockDaemonControllerDelegate::MockDaemonControllerDelegate() = default;
@@ -212,28 +213,28 @@ void MockDaemonControllerDelegate::CheckPermission(
 void MockDaemonControllerDelegate::SetConfigAndStart(
     std::unique_ptr<base::DictionaryValue> config,
     bool consent,
-    const DaemonController::CompletionCallback& done) {
+    DaemonController::CompletionCallback done) {
   // Verify parameters passed in.
   if (consent && config && config->HasKey("start")) {
-    done.Run(DaemonController::RESULT_OK);
+    std::move(done).Run(DaemonController::RESULT_OK);
   } else {
-    done.Run(DaemonController::RESULT_FAILED);
+    std::move(done).Run(DaemonController::RESULT_FAILED);
   }
 }
 
 void MockDaemonControllerDelegate::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
-    const DaemonController::CompletionCallback& done) {
+    DaemonController::CompletionCallback done) {
   if (config && config->HasKey("update")) {
-    done.Run(DaemonController::RESULT_OK);
+    std::move(done).Run(DaemonController::RESULT_OK);
   } else {
-    done.Run(DaemonController::RESULT_FAILED);
+    std::move(done).Run(DaemonController::RESULT_FAILED);
   }
 }
 
 void MockDaemonControllerDelegate::Stop(
-    const DaemonController::CompletionCallback& done) {
-  done.Run(DaemonController::RESULT_OK);
+    DaemonController::CompletionCallback done) {
+  std::move(done).Run(DaemonController::RESULT_OK);
 }
 
 DaemonController::UsageStatsConsent
@@ -248,6 +249,11 @@ MockDaemonControllerDelegate::GetUsageStatsConsent() {
 class Me2MeNativeMessagingHostTest : public testing::Test {
  public:
   Me2MeNativeMessagingHostTest();
+
+  Me2MeNativeMessagingHostTest(const Me2MeNativeMessagingHostTest&) = delete;
+  Me2MeNativeMessagingHostTest& operator=(const Me2MeNativeMessagingHostTest&) =
+      delete;
+
   ~Me2MeNativeMessagingHostTest() override;
 
   void SetUp() override;
@@ -291,8 +297,6 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;
   std::unique_ptr<NativeMessagingPipe> native_messaging_pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(Me2MeNativeMessagingHostTest);
 };
 
 Me2MeNativeMessagingHostTest::Me2MeNativeMessagingHostTest() = default;
@@ -308,17 +312,17 @@ void Me2MeNativeMessagingHostTest::SetUp() {
 
   task_environment_ =
       std::make_unique<base::test::SingleThreadTaskEnvironment>();
-  test_run_loop_.reset(new base::RunLoop());
+  test_run_loop_ = std::make_unique<base::RunLoop>();
 
   // Run the host on a dedicated thread.
-  host_thread_.reset(new base::Thread("host_thread"));
+  host_thread_ = std::make_unique<base::Thread>("host_thread");
   host_thread_->Start();
 
   // Arrange to run |task_environment_| until no components depend on it.
   host_task_runner_ = new AutoThreadTaskRunner(
       host_thread_->task_runner(),
-      base::Bind(&Me2MeNativeMessagingHostTest::ExitTest,
-                 base::Unretained(this)));
+      base::BindOnce(&Me2MeNativeMessagingHostTest::ExitTest,
+                     base::Unretained(this)));
 
   host_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Me2MeNativeMessagingHostTest::StartHost,
@@ -345,7 +349,7 @@ void Me2MeNativeMessagingHostTest::StartHost() {
       new SynchronousPairingRegistry(
           base::WrapUnique(new MockPairingRegistryDelegate()));
 
-  native_messaging_pipe_.reset(new NativeMessagingPipe());
+  native_messaging_pipe_ = std::make_unique<NativeMessagingPipe>();
 
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(input_read_file),
@@ -356,8 +360,9 @@ void Me2MeNativeMessagingHostTest::StartHost() {
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
-          host_task_runner_, base::Bind(&Me2MeNativeMessagingHostTest::StopHost,
-                                        base::Unretained(this))));
+          host_task_runner_,
+          base::BindOnce(&Me2MeNativeMessagingHostTest::StopHost,
+                         base::Unretained(this))));
 
   std::unique_ptr<remoting::Me2MeNativeMessagingHost> host(
       new Me2MeNativeMessagingHost(false, 0, std::move(context),
@@ -400,7 +405,7 @@ void Me2MeNativeMessagingHostTest::TearDown() {
   input_write_file_.Close();
 
   // Start a new RunLoop and Wait until the host finishes shutting down.
-  test_run_loop_.reset(new base::RunLoop());
+  test_run_loop_ = std::make_unique<base::RunLoop>();
   test_run_loop_->Run();
 
   // Verify there are no more message in the output pipe.

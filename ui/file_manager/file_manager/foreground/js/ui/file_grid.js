@@ -2,13 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {isRTL} from 'chrome://resources/js/util.m.js';
+
+import {AsyncUtil} from '../../../common/js/async_util.js';
+import {FileType} from '../../../common/js/file_type.js';
+import {importer} from '../../../common/js/importer_common.js';
+import {str, util} from '../../../common/js/util.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {DragSelector} from './drag_selector.js';
+import {filelist} from './file_table_list.js';
+import {FileTapHandler} from './file_tap_handler.js';
+
 /**
  * FileGrid constructor.
  *
  * Represents grid for the Grid View in the File Manager.
  */
 
-class FileGrid extends cr.ui.Grid {
+export class FileGrid extends Grid {
   constructor() {
     super();
 
@@ -25,13 +48,13 @@ class FileGrid extends cr.ui.Grid {
     this.endIndex_ = 0;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.beforeFiller_ = null;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.afterFiller_ = null;
@@ -58,7 +81,7 @@ class FileGrid extends cr.ui.Grid {
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
 
-    /** @private {?importer.HistoryLoader} */
+    /** @private {?importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = null;
 
     /** @private {?AsyncUtil.RateLimiter} */
@@ -78,10 +101,10 @@ class FileGrid extends cr.ui.Grid {
 
   get dataModel() {
     if (!this.dataModelDescriptor_) {
-      // We get the property descriptor for dataModel from cr.ui.List, because
-      // cr.ui.Grid doesn't have its own descriptor.
+      // We get the property descriptor for dataModel from List, because
+      // Grid doesn't have its own descriptor.
       this.dataModelDescriptor_ =
-          Object.getOwnPropertyDescriptor(cr.ui.List.prototype, 'dataModel');
+          Object.getOwnPropertyDescriptor(List.prototype, 'dataModel');
     }
     return this.dataModelDescriptor_.get.call(this);
   }
@@ -104,11 +127,13 @@ class FileGrid extends cr.ui.Grid {
    * @param {!Element} element The grid to decorate.
    * @param {!MetadataModel} metadataModel File system metadata.
    * @param {!VolumeManager} volumeManager Volume manager instance.
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!A11yAnnounce} a11y
    */
   static decorate(element, metadataModel, volumeManager, historyLoader, a11y) {
-    cr.ui.Grid.decorate(element);
+    if (Grid.decorate) {
+      Grid.decorate(element);
+    }
     const self = /** @type {!FileGrid} */ (element);
     self.__proto__ = FileGrid.prototype;
     self.setAttribute('aria-multiselectable', true);
@@ -119,7 +144,7 @@ class FileGrid extends cr.ui.Grid {
     self.a11y = a11y;
 
     // Force the list's ending spacer to be tall enough to allow overscroll.
-    let endSpacer = self.querySelector('.spacer:last-child');
+    const endSpacer = self.querySelector('.spacer:last-child');
     if (endSpacer) {
       endSpacer.classList.add('signals-overscroll');
     }
@@ -134,7 +159,7 @@ class FileGrid extends cr.ui.Grid {
       let item = self.ownerDocument.createElement('li');
       item.__proto__ = FileGrid.Item.prototype;
       item = /** @type {!FileGrid.Item} */ (item);
-      self.decorateThumbnail_(item, entry);
+      self.decorateThumbnail_(item, /** @type {!Entry} */ (entry));
       return item;
     };
 
@@ -222,13 +247,13 @@ class FileGrid extends cr.ui.Grid {
                 .contentMimeType;
         if (!event.dataUrl) {
           FileGrid.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
-          FileGrid.setGenericThumbnail_(
-              assertInstanceof(box, HTMLDivElement), entry);
+          this.setGenericThumbnail_(
+              assertInstanceof(box, HTMLDivElement), entry, mimeType);
         } else {
           FileGrid.setThumbnailImage_(
               assertInstanceof(box, HTMLDivElement), entry,
               assert(event.dataUrl), assert(event.width), assert(event.height),
-              /* should animate */ true, mimeType);
+              mimeType);
         }
       }
       listItem.classList.toggle('thumbnail-loaded', !!event.dataUrl);
@@ -239,10 +264,11 @@ class FileGrid extends cr.ui.Grid {
    * @override
    */
   mergeItems(beginIndex, endIndex) {
-    cr.ui.List.prototype.mergeItems.call(this, beginIndex, endIndex);
+    List.prototype.mergeItems.call(this, beginIndex, endIndex);
 
     const afterFiller = this.afterFiller_;
     const columns = this.columns;
+    let previousTitle = '';
 
     for (let item = this.beforeFiller_.nextSibling; item !== afterFiller;) {
       const next = item.nextSibling;
@@ -254,6 +280,25 @@ class FileGrid extends cr.ui.Grid {
       }
       const index = item.listIndex;
       const nextIndex = index + 1;
+
+      const entry = this.dataModel.item(index);
+      if (entry) {
+        if (entry.isDirectory && previousTitle !== 'dir') {
+          // For first Directory we add a title div before the element.
+          const title = document.createElement('div');
+          title.innerText = str('GRID_VIEW_FOLDERS_TITLE');
+          title.classList.add('grid-title', 'folders');
+          this.insertBefore(title, item);
+          previousTitle = 'dir';
+        } else if (!entry.isDirectory && previousTitle !== 'file') {
+          // For first File we add a title div before the element.
+          const title = document.createElement('div');
+          title.innerText = str('GRID_VIEW_FILES_TITLE');
+          title.classList.add('grid-title', 'files');
+          this.insertBefore(title, item);
+          previousTitle = 'file';
+        }
+      }
 
       // Invisible pinned item could be outside of the
       // [beginIndex, endIndex). Ignore it.
@@ -592,12 +637,12 @@ class FileGrid extends cr.ui.Grid {
     this.columns = 0;
     this.redraw();
     this.endBatchUpdates();
-    cr.dispatchSimpleEvent(this, 'relayout');
+    dispatchSimpleEvent(this, 'relayout');
   }
 
   /**
    * Decorates thumbnail.
-   * @param {cr.ui.ListItem} li List item.
+   * @param {ListItem} li List item.
    * @param {!Entry} entry Entry to render a thumbnail for.
    * @private
    */
@@ -612,24 +657,10 @@ class FileGrid extends cr.ui.Grid {
     li.appendChild(frame);
 
     const box = li.ownerDocument.createElement('div');
-    box.className = 'img-container';
+    box.classList.add('img-container', 'no-thumbnail');
     frame.appendChild(box);
     if (entry) {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
-    }
-
-    const shield = li.ownerDocument.createElement('div');
-    shield.className = 'shield';
-    frame.appendChild(shield);
-
-    const isDirectory = entry && entry.isDirectory;
-    if (!isDirectory) {
-      const activeCheckmark = li.ownerDocument.createElement('div');
-      activeCheckmark.className = 'checkmark active';
-      frame.appendChild(activeCheckmark);
-      const inactiveCheckmark = li.ownerDocument.createElement('div');
-      inactiveCheckmark.className = 'checkmark inactive';
-      frame.appendChild(inactiveCheckmark);
     }
 
     const badge = li.ownerDocument.createElement('div');
@@ -644,11 +675,11 @@ class FileGrid extends cr.ui.Grid {
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
         li.ownerDocument, entry, locationInfo, mimeType);
-    if (isDirectory) {
-      const checkmark = li.ownerDocument.createElement('div');
-      checkmark.className = 'detail-checkmark';
-      detailIcon.appendChild(checkmark);
-    }
+
+    // For FilesNg we add the checkmark in the same location.
+    const checkmark = li.ownerDocument.createElement('div');
+    checkmark.className = 'detail-checkmark';
+    detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
     bottom.appendChild(
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
@@ -676,7 +707,7 @@ class FileGrid extends cr.ui.Grid {
     }
 
     if (entry.isDirectory) {
-      FileGrid.setGenericThumbnail_(box, entry);
+      this.setGenericThumbnail_(box, entry);
       return;
     }
 
@@ -685,25 +716,18 @@ class FileGrid extends cr.ui.Grid {
     const thumbnailData = this.listThumbnailLoader_ ?
         this.listThumbnailLoader_.getThumbnailFromCache(entry) :
         null;
-    if (thumbnailData && thumbnailData.dataUrl) {
-      const mimeType =
-          this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-              .contentMimeType;
-      FileGrid.setThumbnailImage_(
-          box, entry, thumbnailData.dataUrl, (thumbnailData.width || 0),
-          (thumbnailData.height || 0),
-          /* should not animate */ false, mimeType);
-      li.classList.toggle('thumbnail-loaded', true);
-    } else {
-      FileGrid.setGenericThumbnail_(box, entry);
-      li.classList.toggle('thumbnail-loaded', false);
-    }
     const mimeType =
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
-    li.classList.toggle(
-        'can-hide-filename',
-        FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType));
+    if (thumbnailData && thumbnailData.dataUrl) {
+      FileGrid.setThumbnailImage_(
+          box, entry, thumbnailData.dataUrl, (thumbnailData.width || 0),
+          (thumbnailData.height || 0), mimeType);
+      li.classList.toggle('thumbnail-loaded', true);
+    } else {
+      this.setGenericThumbnail_(box, entry, mimeType);
+      li.classList.toggle('thumbnail-loaded', false);
+    }
   }
 
   /**
@@ -761,17 +785,13 @@ class FileGrid extends cr.ui.Grid {
    * @param {string} dataUrl Data url of thumbnail.
    * @param {number} width Width of thumbnail.
    * @param {number} height Height of thumbnail.
-   * @param {boolean} shouldAnimate Whether the thumbnail is shown with
-   *     animation or not.
    * @param {string=} opt_mimeType Optional mime type for the image.
    * @private
    */
-  static setThumbnailImage_(
-      box, entry, dataUrl, width, height, shouldAnimate, opt_mimeType) {
-    const oldThumbnails = box.querySelectorAll('.thumbnail');
-
+  static setThumbnailImage_(box, entry, dataUrl, width, height, opt_mimeType) {
     const thumbnail = box.ownerDocument.createElement('div');
     thumbnail.classList.add('thumbnail');
+    box.classList.toggle('no-thumbnail', false);
 
     // If the image is JPEG or the thumbnail is larger than the grid size,
     // resize it to cover the thumbnail box.
@@ -782,20 +802,12 @@ class FileGrid extends cr.ui.Grid {
     }
 
     thumbnail.style.backgroundImage = 'url(' + dataUrl + ')';
-    thumbnail.addEventListener('animationend', () => {
-      // Remove animation css once animation is completed in order not to
-      // animate again when an item is attached to the dom again.
-      thumbnail.classList.remove('animate');
 
-      for (let i = 0; i < oldThumbnails.length; i++) {
-        if (box.contains(oldThumbnails[i])) {
-          box.removeChild(oldThumbnails[i]);
-        }
-      }
-    });
-    if (shouldAnimate) {
-      thumbnail.classList.add('animate');
+    const oldThumbnails = box.querySelectorAll('.thumbnail');
+    for (let i = 0; i < oldThumbnails.length; i++) {
+      box.removeChild(oldThumbnails[i]);
     }
+
     box.appendChild(thumbnail);
   }
 
@@ -810,6 +822,7 @@ class FileGrid extends cr.ui.Grid {
     for (let i = 0; i < oldThumbnails.length; i++) {
       box.removeChild(oldThumbnails[i]);
     }
+    box.classList.toggle('no-thumbnail', true);
     return;
   }
 
@@ -817,14 +830,17 @@ class FileGrid extends cr.ui.Grid {
    * Sets a generic thumbnail on the box.
    * @param {!HTMLDivElement} box A div element to hold thumbnails.
    * @param {!Entry} entry An entry of the thumbnail.
+   * @param {string=} opt_mimeType Optional mime type for the file.
    * @private
    */
-  static setGenericThumbnail_(box, entry) {
+  setGenericThumbnail_(box, entry, opt_mimeType) {
     if (entry.isDirectory) {
       box.setAttribute('generic-thumbnail', 'folder');
     } else {
-      const mediaType = FileType.getMediaType(entry);
-      box.setAttribute('generic-thumbnail', mediaType);
+      box.classList.toggle('no-thumbnail', true);
+      const locationInfo = this.volumeManager_.getLocationInfo(entry);
+      const icon = FileType.getIcon(entry, opt_mimeType, locationInfo.rootType);
+      box.setAttribute('generic-thumbnail', icon);
     }
   }
 
@@ -833,7 +849,7 @@ class FileGrid extends cr.ui.Grid {
    *
    * @param {!FileEntry} entry
    * @param {Element} box Box to decorate.
-   * @param {!importer.ImportHistory} history
+   * @param {!importerHistoryInterfaces.ImportHistory} history
    *
    * @private
    */
@@ -978,7 +994,7 @@ class FileGrid extends cr.ui.Grid {
  */
 FileGrid.GridSize = 180;  // px
 
-FileGrid.Item = class extends cr.ui.ListItem {
+FileGrid.Item = class extends ListItem {
   constructor() {
     super();
     throw new Error('Use FileGrid.Item.decorate');
@@ -989,6 +1005,10 @@ FileGrid.Item = class extends cr.ui.ListItem {
    */
   get label() {
     return this.querySelector('filename-label').textContent;
+  }
+
+  set label(newLabel) {
+    // no-op setter. List calls this setter but Files app doesn't need it.
   }
 
   /**
@@ -1010,11 +1030,11 @@ FileGrid.Item = class extends cr.ui.ListItem {
 /**
  * Selection controller for the file grid.
  */
-class FileGridSelectionController extends cr.ui.GridSelectionController {
+export class FileGridSelectionController extends GridSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
-   * @param {!cr.ui.Grid} grid The grid to interact with.
+   * @param {!Grid} grid The grid to interact with.
    */
   constructor(selectionModel, grid) {
     super(selectionModel, grid);
@@ -1034,7 +1054,7 @@ class FileGridSelectionController extends cr.ui.GridSelectionController {
   /** @override */
   handleTouchEvents(e, index) {
     if (this.tapHandler_.handleTouchEvents(
-            e, index, filelist.handleTap.bind(this))) {
+            assert(e), index, filelist.handleTap.bind(this))) {
       filelist.focusParentList(e);
     }
   }

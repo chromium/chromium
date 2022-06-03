@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 

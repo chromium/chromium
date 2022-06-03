@@ -11,8 +11,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
 class TabAndroid;
@@ -29,9 +28,13 @@ class TabModelJniBridge : public TabModel {
  public:
   TabModelJniBridge(JNIEnv* env,
                     jobject obj,
-                    bool is_incognito,
-                    bool is_tabbed_activity);
+                    Profile* profile,
+                    chrome::android::ActivityType activity_type);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+
+  TabModelJniBridge(const TabModelJniBridge&) = delete;
+  TabModelJniBridge& operator=(const TabModelJniBridge&) = delete;
+
   ~TabModelJniBridge() override;
 
   // Called by JNI
@@ -47,6 +50,7 @@ class TabModelJniBridge : public TabModel {
   int GetActiveIndex() const override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
 
   void SetActiveIndex(int index) override;
   void CloseTabAt(int index) override;
@@ -63,7 +67,10 @@ class TabModelJniBridge : public TabModel {
 
   // Return true if this class is the currently selected in the correspond
   // tab model selector.
-  bool IsCurrentModel() const override;
+  bool IsActiveModel() const override;
+
+  // Return whether |tab| is grouped together with other Tab objects.
+  static bool HasOtherRelatedTabs(TabAndroid* tab);
 
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;
@@ -74,6 +81,9 @@ class TabModelJniBridge : public TabModel {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  // Returns a corresponding Java Class object.
+  static jclass GetClazz(JNIEnv* env);
+
  protected:
   JavaObjectWeakGlobalRef java_object_;
 
@@ -81,9 +91,6 @@ class TabModelJniBridge : public TabModel {
   // It corresponds to a Java observer that is registered with the corresponding
   // Java TabModelJniBridge.
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModelJniBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_

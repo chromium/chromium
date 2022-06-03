@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<head>
+  <title id="title">App Migration Tester</title>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+</head>
+
+<h1>
+  App Migration Tester
+</h1>
+<p>
+  This website can be used to test the web app mover code.
+</p>
+
+<div>
+  To use this test site, launch Chromium with the following command line
+  arguments:
+  <pre>--enable-features=MoveWebApp:uninstallStartUrlPrefix/<span id="prefixUrl"></span>/installStartUrl/<span id="installUrl"></span></pre>
+
+  (or customize the URL prefix and install URL here)
+  <div>
+    <label for="urlPrefixInput">URL Prefix</label>
+    <input type="text" id="urlPrefixInput" name="urlPrefixInput" size="100" />
+    <label for="installUrlInput">Install URL</label>
+    <input type="text" id="installUrlInput" name="installUrlInput" size="100" />
+  </div>
+</div>
+
+<p>
+  This is just the root page, not a web app.
+</p>
+
+<div style="border: solid 1px grey; margin: 5px; padding: 5px;">
+  Directory:
+  <ul>
+    <li><a href="migrate_from/a/index.html">migrate_from/a/index.html</a></li>
+    <li><a href="migrate_from/b/index.html">migrate_from/b/index.html</a></li>
+    <li><a href="migrate_from/c/index.html">migrate_from/c/index.html</a></li>
+    <li><a href="migrate_to/index.html">migrate_to/index.html</a></li>
+    <li><a href="index.html">index.html (here)</a></li>
+  </ul>
+</div>
+
+<script>
+  function createFeatureParam(str) {
+    return str.replace(/[.%\/,:]/g, function(c) {
+      return "%" + c.charCodeAt(0).toString(16);
+    });
+  }
+  function updateCommandLine(prefix, installUrl) {
+    document.getElementById("prefixUrl").innerHTML = createFeatureParam(prefix);
+    document.getElementById("installUrl").innerHTML = createFeatureParam(
+      installUrl
+    );
+  }
+  function updateCommandLineFromForm() {
+    updateCommandLine(urlPrefixInput.value, installUrlInput.value);
+  }
+  var urlPrefixInput = document.getElementById("urlPrefixInput");
+  var installUrlInput = document.getElementById("installUrlInput");
+
+  urlPrefixInput.addEventListener("change", updateCommandLineFromForm);
+  installUrlInput.addEventListener("change", updateCommandLineFromForm);
+
+  var href_without_file = window.location.href;
+  href_without_file =
+    href_without_file.substring(0, href_without_file.lastIndexOf("/")) + "/";
+  var prefixUrl = href_without_file + "migrate_from/";
+  var installUrl = href_without_file + "migrate_to/index.html";
+
+  urlPrefixInput.value = prefixUrl;
+  installUrlInput.value = installUrl;
+
+  updateCommandLineFromForm();
+</script>

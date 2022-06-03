@@ -22,11 +22,11 @@ source_set("qr_scanner") {
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
-  libs = [
+  frameworks = [
     "AVFoundation.framework",
     "UIKit.framework",
   ]
@@ -41,49 +41,22 @@ source_set("coordinator") {
   deps = [
     ":qr_scanner",
     "//base",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/toolbar/public",
   ]
 }
 
-source_set("eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  defines = [ "CHROME_EARL_GREY_1" ]
-  testonly = true
-  sources = [
-    "qr_scanner_view_controller_egtest.mm",
-  ]
-  deps = [
-    ":test_support",
-    "//base",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/scanner:camera_state",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web/public/test/http_server",
-    "//net",
-    "//third_party/ocmock",
-    "//ui/base",
-  ]
-  libs = [
-    "AVFoundation.framework",
-    "UIKit.framework",
-  ]
-}
-
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "qr_scanner_view_controller_egtest.mm",
-  ]
+  sources = [ "qr_scanner_view_controller_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
@@ -92,47 +65,18 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
-    "//ios/web/public/test/http_server",
     "//net",
+    "//net:test_support",
     "//third_party/ocmock",
     "//ui/base",
   ]
-  libs = [
+  frameworks = [
     "AVFoundation.framework",
     "UIKit.framework",
   ]
 }
 
-source_set("test_support") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "qr_scanner_app_interface.h",
-    "qr_scanner_app_interface.mm",
-  ]
-  deps = [
-    ":qr_scanner",
-    "//base",
-    "//components/version_info",
-    "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/ui/icons",
-    "//ios/chrome/browser/ui/location_bar",
-    "//ios/chrome/browser/ui/scanner",
-    "//ios/chrome/browser/ui/scanner:camera_state",
-    "//ios/chrome/browser/url_loading",
-    "//ios/chrome/test/app:test_support",
-    "//ios/testing:nserror_support",
-    "//net",
-    "//third_party/ocmock",
-    "//ui/base",
-  ]
-}
-
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -145,10 +89,12 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":qr_scanner",
     "//base",
+    "//components/search_engines",
     "//components/version_info",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/scanner",
@@ -163,7 +109,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -172,8 +117,10 @@ source_set("eg_test_support+eg2") {
 
   sources = [
     "qr_scanner_app_interface.h",
+    "qr_scanner_app_interface_stub.mm",
   ]
   deps = [
     "//ios/chrome/browser/ui/scanner:camera_state",
+    "//ios/third_party/earl_grey2:test_lib",
   ]
 }

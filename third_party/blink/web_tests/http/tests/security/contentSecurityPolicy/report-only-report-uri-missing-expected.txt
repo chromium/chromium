@@ -1,2 +1,0 @@
-CONSOLE ERROR: The Content Security Policy 'script-src 'unsafe-inline';' was delivered in report-only mode, but does not specify a 'report-uri'; the policy will have no effect. Please either add a 'report-uri' directive, or deliver the policy via the 'Content-Security-Policy' header.
-This test passes if a console message is present, warning about the missing 'report-uri' directive.

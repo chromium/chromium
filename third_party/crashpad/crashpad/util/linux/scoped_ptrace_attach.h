@@ -17,9 +17,26 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
+
+//! \brief Attaches to the process with process ID \a pid and blocks until the
+//!     target process has stopped by calling `waitpid()`.
+//!
+//! \param pid The process ID of the process to attach to.
+//! \param can_log Whether this function may log messages on failure.
+//! \return `true` on success. `false` on failure with a message logged if \a
+//!     can_log is `true`.
+bool PtraceAttach(pid_t pid, bool can_log = true);
+
+//! \brief Detaches the process  with process ID \a pid. The process must
+//!     already be ptrace attached.
+//!
+//! \param pid The process ID of the process to detach.
+//! \param can_log Whether this function may log messages on failure.
+//! \return `true` on success. `false` on failure with a message logged if \a
+//!     ca_log is `true `true`
+bool PtraceDetach(pid_t pid, bool can_log = true);
 
 //! \brief Maintains a `ptrace()` attachment to a process.
 //!
@@ -27,6 +44,10 @@ namespace crashpad {
 class ScopedPtraceAttach {
  public:
   ScopedPtraceAttach();
+
+  ScopedPtraceAttach(const ScopedPtraceAttach&) = delete;
+  ScopedPtraceAttach& operator=(const ScopedPtraceAttach&) = delete;
+
   ~ScopedPtraceAttach();
 
   //! \brief Detaches from the process by calling `ptrace()`.
@@ -43,8 +64,6 @@ class ScopedPtraceAttach {
 
  private:
   pid_t pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPtraceAttach);
 };
 
 }  // namespace crashpad

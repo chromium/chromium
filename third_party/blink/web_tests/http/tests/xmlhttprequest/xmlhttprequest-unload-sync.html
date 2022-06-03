@@ -1,36 +1,17 @@
 <html>
 <body>
 <p>Test behavior of sync XHR during unload</p>
-<script>
-var consoleMessages = document.createElement("ul");
-document.body.appendChild(consoleMessages);
-
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsText();
-}
-
-function subframeLoaded()
-{
-    document.getElementById('ifr').contentWindow.location.assign("data:text/html,DONE");
-}
-
-function completed(msg)
-{
-    log(msg);
-    if (window.testRunner)
-        testRunner.notifyDone();
-}
-
-function log(message)
-{
-    var item = document.createElement("li");
-    item.appendChild(document.createTextNode(message));
-    consoleMessages.appendChild(item);
-}
-</script>
-<div id="framediv">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <iframe id="ifr" name="ifr" src="resources/xmlhttprequest-in-unload-sync.html"></iframe>
-</div>
+<script>
+var t = async_test();
+
+t.step_timeout(() => {
+  var iframe = document.getElementById("ifr");
+  iframe.src = "about:blank";
+}, 1000);
+
+</script>
 </body>
 </html>

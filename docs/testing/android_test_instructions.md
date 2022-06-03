@@ -130,6 +130,12 @@ resize2fs android_emulator_sdk/sdk/system-images/android-25/x86/userdata.img 1G
 tune2fs -e continue android_emulator_sdk/sdk/system-images/android-25/x86/userdata.img
 ```
 
+### AdbCommandFailedError: failed to stat remote object
+
+There's a known issue (https://crbug.com/1094062) where the unit test binaries can fail on
+Android R and later: if you see this error, try rerunning on an Android version
+with API level <= 29 (Android <= Q).
+
 ## Symbolizing Crashes
 
 Crash stacks are logged and can be viewed using `adb logcat`. To symbolize the
@@ -172,10 +178,10 @@ For example, adding a test to `chrome_junit_tests` requires to update
 ninja -C out/Default chrome_junit_tests
 
 # Run the test suite.
-out/Default/run_chrome_junit_tests
+out/Default/bin/run_chrome_junit_tests
 
 # Run a subset of tests. You might need to pass the package name for some tests.
-out/Default/run_chrome_junit_tests -f "org.chromium.chrome.browser.media.*"
+out/Default/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.media.*"
 ```
 
 ### Debugging
@@ -265,7 +271,7 @@ out/Debug/bin/run_content_shell_test_apk --wait-for-java-debugger
 If running with `is_debug=false`, Java stacks from logcat need to be fixed up:
 
 ```shell
-out/Release/bin/java_deobfuscate out/Release/apks/ChromePublicTest.apk.mapping < stacktrace.txt
+build/android/stacktrace/java_deobfuscate.py out/Release/apks/ChromePublicTest.apk.mapping < stacktrace.txt
 ```
 
 Any stacks produced by test runner output will already be deobfuscated.

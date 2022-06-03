@@ -1,17 +1,26 @@
-<div>FAIL</div>
+<!doctype html>
 <script>
+'use strict';
+function log(text)
+{
+    document.body.appendChild(document.createElement('div').appendChild(
+      document.createTextNode(text)));
+    document.body.appendChild(document.createElement('br'));
+}
 function doTest() {
-    testRunner.dumpAsText();
-
-    eventSender.beginDragWithFiles(["resources/file-for-drag-to-navigate.html"]);
+    log('Begin drag');
+    eventSender.beginDragWithFiles(
+      ["resources/file-for-drag-to-navigate.html"]);
     eventSender.mouseMoveTo(10, 10);
     eventSender.mouseUp();
+    log('PASS: Drag complete');
 }
-
 if (window.eventSender) {
+    testRunner.dumpAsText();
+    // notifyDone will be called by the new tab opened to the URL that is
+    // dropped above.
     testRunner.waitUntilDone();
-    // The load seems to fail if we try to kick of a
-    // new load before this one is finished.  So we wait.
-    window.onload = doTest();
+    window.onload = doTest;
 }
 </script>
+

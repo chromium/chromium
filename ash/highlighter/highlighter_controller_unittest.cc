@@ -6,13 +6,14 @@
 
 #include <memory>
 
-#include "ash/components/fast_ink/fast_ink_points.h"
+#include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/fast_ink/fast_ink_points.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
+#include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/system/palette/mock_palette_tool_delegate.h"
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/palette/tools/metalayer_mode.h"
-#include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -24,6 +25,10 @@ namespace {
 class TestHighlighterObserver : public HighlighterController::Observer {
  public:
   TestHighlighterObserver() = default;
+
+  TestHighlighterObserver(const TestHighlighterObserver&) = delete;
+  TestHighlighterObserver& operator=(const TestHighlighterObserver&) = delete;
+
   ~TestHighlighterObserver() override = default;
 
   // HighlighterController::Observer:
@@ -53,18 +58,20 @@ class TestHighlighterObserver : public HighlighterController::Observer {
   int disabled_by_session_abort_ = 0;
   int disabled_by_session_complete_ = 0;
   gfx::Rect last_recognized_rect_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestHighlighterObserver);
 };
 
-class HighlighterControllerTest : public AshTestBase {
+class HighlighterControllerTest : public AssistantAshTestBase {
  public:
   HighlighterControllerTest() = default;
+
+  HighlighterControllerTest(const HighlighterControllerTest&) = delete;
+  HighlighterControllerTest& operator=(const HighlighterControllerTest&) =
+      delete;
+
   ~HighlighterControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    AssistantAshTestBase::SetUp();
     controller_ = Shell::Get()->highlighter_controller();
     controller_test_api_ =
         std::make_unique<HighlighterControllerTestApi>(controller_);
@@ -78,7 +85,7 @@ class HighlighterControllerTest : public AshTestBase {
     // This needs to be called first to reset the controller state before the
     // shell instance gets torn down.
     controller_test_api_.reset();
-    AshTestBase::TearDown();
+    AssistantAshTestBase::TearDown();
   }
 
   void UpdateDisplayAndWaitForCompositingEnded(
@@ -110,9 +117,6 @@ class HighlighterControllerTest : public AshTestBase {
   std::unique_ptr<PaletteTool> tool_;
 
   HighlighterController* controller_ = nullptr;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlighterControllerTest);
 };
 
 }  // namespace
@@ -120,6 +124,8 @@ class HighlighterControllerTest : public AshTestBase {
 // Test to ensure the class responsible for drawing the highlighter pointer
 // receives points from stylus movements as expected.
 TEST_F(HighlighterControllerTest, HighlighterRenderer) {
+  ash::stylus_utils::SetHasStylusInputForTesting();
+
   // The highlighter pointer mode only works with stylus.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
@@ -428,11 +434,11 @@ TEST_F(HighlighterControllerTest, SelectionInsideScreen) {
   for (size_t i = 0; i < sizeof(display_scales) / sizeof(float); ++i) {
     // 2nd display is for offscreen test.
     std::string display_spec = base::StringPrintf(
-        "1000x1000*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
+        "1000x999*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
     SCOPED_TRACE(display_spec);
     UpdateDisplayAndWaitForCompositingEnded(display_spec);
 
-    const gfx::Rect screen(0, 0, 1000, 1000);
+    const gfx::Rect screen(0, 0, 1000, 999);
 
     // Rectangle completely offscreen.
     controller_test_api_->ResetSelection();

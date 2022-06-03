@@ -1,31 +1,9 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../global_scroll_target_behavior.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="cookie_info.html">
-<link rel="import" href="local_data_browser_proxy.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_data_entry.html">
-
-<dom-module id="site-data">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared">
       paper-spinner-lite {
-        @apply --cr-icon-height-width;
+        height: var(--cr-icon-size);
         opacity: 0;
         transition-delay: 1s;
+        width: var(--cr-icon-size);
       }
 
       paper-spinner-lite[active] {
@@ -36,13 +14,14 @@
         margin-inline-start: auto;
       }
     </style>
-    <div class="settings-box continuation">
+    <div class="cr-row continuation">
       <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
       <cr-button disabled$="[[isLoading_]]" id="removeShowingSites"
           on-click="onRemoveShowingSitesTap_" hidden$="[[!sites.length]]">
         [[computeRemoveLabel_(filter)]]
       </cr-button>
       <cr-button disabled$="[[isLoading_]]" id="removeThirdPartyCookies"
+          class="cr-button-gap"
           on-click="onRemoveThirdPartyCookiesTap_"
           hidden$="[[!showRemoveThirdPartyCookies_(sites.length, filter)]]">
           $i18n{siteSettingsCookieRemoveAllThirdParty}
@@ -96,6 +75,3 @@
       </div>
     </cr-dialog>
 
-  </template>
-  <script src="site_data.js"></script>
-</dom-module>

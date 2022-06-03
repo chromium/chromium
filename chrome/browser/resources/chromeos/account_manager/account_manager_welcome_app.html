@@ -1,0 +1,26 @@
+<style include="shared-css">
+  .welcome-image {
+    width: 338px;
+  }
+</style>
+<div class="content">
+  <div class="main-container">
+    <if expr="_google_chrome">
+      <img class="google-logo" src="../googleg.svg" alt="">
+    </if>
+    <h1>$i18n{welcomeTitle}</h1>
+    <p>$i18nRaw{welcomeMessage}</p>
+    <div class="image-container">
+      <if expr="_google_chrome">
+        <img class="welcome-image" alt=""
+            srcset="account_manager_welcome_1x.png 1x,
+                    account_manager_welcome_2x.png 2x">
+      </if>
+    </div>
+  </div>
+  <div class="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      $i18n{okButton}
+    </cr-button>
+  </div>
+</div>

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "media/base/video_util.h"
 

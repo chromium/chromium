@@ -27,6 +27,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/random/internal/chi_square.h"
+#include "absl/random/internal/pcg_engine.h"
 #include "absl/random/internal/sequence_urbg.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
@@ -213,7 +214,10 @@ class ZipfTest : public testing::TestWithParam<zipf_u64::param_type>,
  public:
   ZipfTest() : ZipfModel(GetParam().k(), GetParam().q(), GetParam().v()) {}
 
-  absl::InsecureBitGen rng_;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng_{0x2B7E151628AED2A6};
 };
 
 TEST_P(ZipfTest, ChiSquaredTest) {

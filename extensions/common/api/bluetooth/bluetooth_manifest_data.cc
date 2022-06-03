@@ -4,6 +4,7 @@
 
 #include "extensions/common/api/bluetooth/bluetooth_manifest_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "extensions/common/api/bluetooth/bluetooth_manifest_permission.h"
@@ -58,14 +59,13 @@ bool BluetoothManifestData::CheckPeripheralPermitted(
 // static
 std::unique_ptr<BluetoothManifestData> BluetoothManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<BluetoothManifestPermission> permission =
       BluetoothManifestPermission::FromValue(value, error);
   if (!permission)
-    return std::unique_ptr<BluetoothManifestData>();
+    return nullptr;
 
-  return std::unique_ptr<BluetoothManifestData>(
-      new BluetoothManifestData(std::move(permission)));
+  return std::make_unique<BluetoothManifestData>(std::move(permission));
 }
 
 BluetoothPermissionRequest::BluetoothPermissionRequest(

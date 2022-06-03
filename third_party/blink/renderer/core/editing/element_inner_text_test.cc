@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -15,7 +16,9 @@ class ElementInnerTest : public testing::WithParamInterface<bool>,
  protected:
   ElementInnerTest() : ScopedLayoutNGForTest(GetParam()) {}
 
-  bool LayoutNGEnabled() const { return GetParam(); }
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ElementInnerTest, testing::Bool());
@@ -55,6 +58,14 @@ TEST_P(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
   SetBodyContent("<div id=target>foo</div>");
   Element& target = *GetDocument().getElementById("target");
   EXPECT_EQ("foo", target.innerText());
+}
+
+// https://crbug.com/1164747
+TEST_P(ElementInnerTest, GetInnerTextWithoutUpdate) {
+  SetBodyContent("<div id=target>ab<span>c</span></div>");
+  Element& target = *GetDocument().getElementById("target");
+  EXPECT_EQ("abc", target.innerText());
+  EXPECT_EQ("abc", target.GetInnerTextWithoutUpdate());
 }
 
 }  // namespace blink

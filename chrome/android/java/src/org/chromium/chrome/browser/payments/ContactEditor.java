@@ -16,10 +16,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
-import org.chromium.chrome.browser.widget.prefeditor.EditorBase;
-import org.chromium.chrome.browser.widget.prefeditor.EditorFieldModel;
-import org.chromium.chrome.browser.widget.prefeditor.EditorFieldModel.EditorFieldValidator;
-import org.chromium.chrome.browser.widget.prefeditor.EditorModel;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.payments.mojom.PayerErrors;
 
 import java.util.HashSet;
@@ -183,33 +183,33 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         final EditorFieldModel nameField = mRequestPayerName
                 ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
-                          mContext.getString(R.string.payments_name_field_in_contact_details),
-                          mPayerNames, null /* suggestions */, null /* formatter */,
-                          null /* validator */,
-                          mContext.getString(
-                                  R.string.pref_edit_dialog_field_required_validation_message),
-                          null, contact.getPayerName())
+                        mContext.getString(R.string.payments_name_field_in_contact_details),
+                        mPayerNames, null /* suggestions */, null /* formatter */,
+                        null /* validator */,
+                        mContext.getString(
+                                R.string.pref_edit_dialog_field_required_validation_message),
+                        null, EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerName())
                 : null;
 
         final EditorFieldModel phoneField = mRequestPayerPhone
                 ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
-                          mContext.getString(R.string.autofill_profile_editor_phone_number),
-                          mPhoneNumbers, new PhoneNumberUtil.CountryAwareFormatTextWatcher(),
-                          getPhoneValidator(), null,
-                          mContext.getString(
-                                  R.string.pref_edit_dialog_field_required_validation_message),
-                          mContext.getString(R.string.payments_phone_invalid_validation_message),
-                          contact.getPayerPhone())
+                        mContext.getString(R.string.autofill_profile_editor_phone_number),
+                        mPhoneNumbers, new PhoneNumberUtil.CountryAwareFormatTextWatcher(),
+                        getPhoneValidator(), null,
+                        mContext.getString(
+                                R.string.pref_edit_dialog_field_required_validation_message),
+                        mContext.getString(R.string.payments_phone_invalid_validation_message),
+                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerPhone())
                 : null;
 
         final EditorFieldModel emailField = mRequestPayerEmail
                 ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
-                          mContext.getString(R.string.autofill_profile_editor_email_address),
-                          mEmailAddresses, null, getEmailValidator(), null,
-                          mContext.getString(
-                                  R.string.pref_edit_dialog_field_required_validation_message),
-                          mContext.getString(R.string.payments_email_invalid_validation_message),
-                          contact.getPayerEmail())
+                        mContext.getString(R.string.autofill_profile_editor_email_address),
+                        mEmailAddresses, null, getEmailValidator(), null,
+                        mContext.getString(
+                                R.string.pref_edit_dialog_field_required_validation_message),
+                        mContext.getString(R.string.payments_email_invalid_validation_message),
+                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerEmail())
                 : null;
 
         EditorModel editor = new EditorModel(toEdit == null
@@ -231,7 +231,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         // If the user clicks [Cancel], send |toEdit| contact back to the caller, which was the
         // original state (could be null, a complete contact, a partial contact).
-        editor.setCancelCallback(() -> cancelCallback.onResult(toEdit));
+        editor.setCancelCallback(cancelCallback.bind(toEdit));
 
         editor.setDoneCallback(() -> {
             String name = null;

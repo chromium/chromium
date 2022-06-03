@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/seat.h"
 
 #if defined(USE_OZONE)
@@ -29,7 +29,7 @@ namespace exo {
 class ClientControlledShellSurface;
 class DataDevice;
 class DataDeviceDelegate;
-class FileHelper;
+class DataExchangeDelegate;
 class InputMethodSurfaceManager;
 class NotificationSurface;
 class NotificationSurfaceManager;
@@ -37,9 +37,11 @@ class SharedMemory;
 class SubSurface;
 class Surface;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class InputMethodSurface;
 class ShellSurface;
+class ToastSurface;
+class ToastSurfaceManager;
 class XdgShellSurface;
 #endif
 
@@ -54,13 +56,20 @@ class Display {
  public:
   Display();
 
-#if defined(OS_CHROMEOS)
-  Display(NotificationSurfaceManager* notification_surface_manager,
-          InputMethodSurfaceManager* input_method_surface_manager,
-          std::unique_ptr<FileHelper> file_helper);
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Display(
+      std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
+      std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
+      std::unique_ptr<ToastSurfaceManager> toast_surface_manager,
+      std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
 
   ~Display();
+
+  void Shutdown();
 
   // Creates a new surface.
   std::unique_ptr<Surface> CreateSurface();
@@ -79,19 +88,21 @@ class Display {
       bool y_invert);
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates a shell surface for an existing surface.
   std::unique_ptr<ShellSurface> CreateShellSurface(Surface* surface);
 
   // Creates a xdg shell surface for an existing surface.
   std::unique_ptr<XdgShellSurface> CreateXdgShellSurface(Surface* surface);
 
-  // Creates a remote shell surface for an existing surface using |container|.
-  // The surface is scaled by 1 / |default_device_scale_factor|.
+  // Returns a remote shell surface for an existing surface using |container|.
+  // If the existing surface has window session id associated, the remote shell
+  // will be get from PropertyResolver. Or it will create a new remote shell.
   std::unique_ptr<ClientControlledShellSurface>
-  CreateClientControlledShellSurface(Surface* surface,
-                                     int container,
-                                     double default_device_scale_factor);
+  CreateOrGetClientControlledShellSurface(Surface* surface,
+                                          int container,
+                                          double default_device_scale_factor,
+                                          bool default_scale_cancellation);
 
   // Creates a notification surface for a surface and notification id.
   std::unique_ptr<NotificationSurface> CreateNotificationSurface(
@@ -101,8 +112,15 @@ class Display {
   // Creates a input method surface for a surface.
   std::unique_ptr<InputMethodSurface> CreateInputMethodSurface(
       Surface* surface,
-      double default_device_scale_factor);
-#endif  // defined(OS_CHROMEOS)
+      double default_device_scale_factor,
+      bool default_scale_cancellation);
+
+  // Creates a toast surface for a surface.
+  std::unique_ptr<ToastSurface> CreateToastSurface(
+      Surface* surface,
+      double default_device_scale_factor,
+      bool default_scale_cancellation);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Creates a sub-surface for an existing surface. The sub-surface will be
   // a child of |parent|.
@@ -115,20 +133,26 @@ class Display {
   // Obtains seat instance.
   Seat* seat() { return &seat_; }
 
- private:
-#if defined(OS_CHROMEOS)
-  NotificationSurfaceManager* notification_surface_manager_ = nullptr;
-  InputMethodSurfaceManager* input_method_surface_manager_ = nullptr;
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  InputMethodSurfaceManager* input_method_surface_manager() {
+    return input_method_surface_manager_.get();
+  }
+#endif
 
-  std::unique_ptr<FileHelper> file_helper_;
+ private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<NotificationSurfaceManager> notification_surface_manager_;
+  std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager_;
+  std::unique_ptr<ToastSurfaceManager> toast_surface_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   Seat seat_;
+
+  bool shutdown_ = false;
 
 #if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif  // defined(USE_OZONE)
-
-  DISALLOW_COPY_AND_ASSIGN(Display);
 };
 
 }  // namespace exo

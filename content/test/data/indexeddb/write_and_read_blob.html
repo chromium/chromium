@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<!--
+  Copyright 2020 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<head>
+<!-- Create a database. Write & read a blob. -->
+<title>IDB test for blob key corruption</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+function upgradeCallback(db) {
+  deleteAllObjectStores(db);
+  db.createObjectStore('storeName', { autoIncrement : true });
+}
+let db;
+
+async function test() {
+  db = await promiseOpenDb('blob_corrupt_db', upgradeCallback);
+
+  const transaction = db.transaction('storeName', 'readwrite');
+  transaction.onabort = unexpectedAbortCallback;
+  transaction.onerror = unexpectedErrorCallback;
+  transaction.oncomplete = getBlob;
+  const objectStore = transaction.objectStore('storeName');
+  const request = objectStore.put({blob: new Blob(['abc'])}, 'key-0');
+  request.onerror = unexpectedErrorCallback;
+}
+
+function getBlob() {
+  const transaction = db.transaction('storeName', 'readwrite');
+  transaction.onabort = unexpectedAbortCallback;
+  transaction.onerror = unexpectedErrorCallback;
+  const objectStore = transaction.objectStore('storeName');
+  const request = objectStore.get('key-0');
+  request.onerror = unexpectedErrorCallback;
+  request.onsuccess = () => {
+    const reader = new FileReader();
+    reader.addEventListener("loadend", () => {
+      if (reader.result !== "abc") {
+        fail(`expected blob to contain 'abc', got '${reader.result}'`);
+        return;
+      }
+      done();
+    });
+    reader.readAsText(request.result.blob);
+  }
+}
+
+test();
+
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

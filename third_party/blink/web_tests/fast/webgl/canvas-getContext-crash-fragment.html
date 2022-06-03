@@ -1,0 +1,25 @@
+<html>
+<head>
+
+<script src="../../resources/js-test.js"></script>
+<script>
+description('Tests that canvas can create a webgl context in a template');
+
+function start()
+{
+  const t0 = document.createElement('template')
+  t0.innerHTML=`<canvas></canvas>`
+  context = t0.content.firstElementChild.getContext('webgl')
+  if(context != null)
+    testPassed("Canvas succesfully created a webgl context in a template.");
+  else
+    testFailed("Canvas failed in creating a webgl context in a template.")
+}
+
+</script>
+</head>
+
+<body onload="start()">
+<canvas id="example"></canvas>
+</body>
+</html>

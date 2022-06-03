@@ -61,6 +61,6 @@ promise_test(t => {
   video.src = '../content/test.ogv';
 
   document.querySelector('div').appendChild(video);
-  return promise_rejects(t, "NotAllowedError", video.play());
+  return promise_rejects_dom(t, "NotAllowedError", video.play());
 }, "'autoplay muted'.play() doesn't work with video auto-fullscreen");
 </script>

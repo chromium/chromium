@@ -4,7 +4,7 @@
 
 #include "net/base/request_priority.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace net {
 

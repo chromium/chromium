@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -77,26 +78,26 @@ IconCacherImpl::~IconCacherImpl() = default;
 
 void IconCacherImpl::StartFetchPopularSites(
     PopularSites::Site site,
-    const base::Closure& icon_available,
-    const base::Closure& preliminary_icon_available) {
+    base::OnceClosure icon_available,
+    base::OnceClosure preliminary_icon_available) {
   // Copy values from |site| before it is moved.
   GURL site_url = site.url;
-  if (!StartRequest(site_url, icon_available)) {
+  if (!StartRequest(site_url, std::move(icon_available))) {
     return;
   }
 
   favicon_base::IconType icon_type = IconType(site);
   favicon::GetFaviconImageForPageURL(
       favicon_service_, site_url, icon_type,
-      base::Bind(&IconCacherImpl::OnGetFaviconImageForPageURLFinished,
-                 base::Unretained(this), std::move(site),
-                 preliminary_icon_available),
+      base::BindOnce(&IconCacherImpl::OnGetFaviconImageForPageURLFinished,
+                     base::Unretained(this), std::move(site),
+                     std::move(preliminary_icon_available)),
       &tracker_);
 }
 
 void IconCacherImpl::OnGetFaviconImageForPageURLFinished(
     PopularSites::Site site,
-    const base::Closure& preliminary_icon_available,
+    base::OnceClosure preliminary_icon_available,
     const favicon_base::FaviconImageResult& result) {
   if (!result.image.IsEmpty()) {
     FinishRequestAndNotifyIconAvailable(site.url, /*newly_available=*/false);
@@ -104,7 +105,7 @@ void IconCacherImpl::OnGetFaviconImageForPageURLFinished(
   }
 
   std::unique_ptr<CancelableImageCallback> preliminary_callback =
-      MaybeProvideDefaultIcon(site, preliminary_icon_available);
+      MaybeProvideDefaultIcon(site, std::move(preliminary_icon_available));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("icon_cacher", R"(
@@ -157,11 +158,11 @@ void IconCacherImpl::OnPopularSitesFaviconDownloaded(
 
 void IconCacherImpl::SaveAndNotifyDefaultIconForSite(
     const PopularSites::Site& site,
-    const base::Closure& preliminary_icon_available,
+    base::OnceClosure preliminary_icon_available,
     const gfx::Image& image) {
   SaveIconForSite(site, image);
   if (preliminary_icon_available) {
-    preliminary_icon_available.Run();
+    std::move(preliminary_icon_available).Run();
   }
 }
 
@@ -179,26 +180,26 @@ void IconCacherImpl::SaveIconForSite(const PopularSites::Site& site,
 std::unique_ptr<IconCacherImpl::CancelableImageCallback>
 IconCacherImpl::MaybeProvideDefaultIcon(
     const PopularSites::Site& site,
-    const base::Closure& preliminary_icon_available) {
+    base::OnceClosure preliminary_icon_available) {
   if (site.default_icon_resource < 0) {
-    return std::unique_ptr<CancelableImageCallback>();
+    return nullptr;
   }
   std::unique_ptr<CancelableImageCallback> preliminary_callback(
-      new CancelableImageCallback(base::Bind(
-          &IconCacherImpl::SaveAndNotifyDefaultIconForSite,
-          weak_ptr_factory_.GetWeakPtr(), site, preliminary_icon_available)));
+      new CancelableImageCallback(
+          base::BindOnce(&IconCacherImpl::SaveAndNotifyDefaultIconForSite,
+                         weak_ptr_factory_.GetWeakPtr(), site,
+                         std::move(preliminary_icon_available))));
   image_fetcher_->GetImageDecoder()->DecodeImage(
-      ui::ResourceBundle::GetSharedInstance()
-          .GetRawDataResource(site.default_icon_resource)
-          .as_string(),
+      std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          site.default_icon_resource)),
       gfx::Size(kDesiredFrameSize, kDesiredFrameSize),
       preliminary_callback->callback());
   return preliminary_callback;
 }
 
 void IconCacherImpl::StartFetchMostLikely(const GURL& page_url,
-                                          const base::Closure& icon_available) {
-  if (!StartRequest(page_url, icon_available)) {
+                                          base::OnceClosure icon_available) {
+  if (!StartRequest(page_url, std::move(icon_available))) {
     return;
   }
 
@@ -207,8 +208,8 @@ void IconCacherImpl::StartFetchMostLikely(const GURL& page_url,
   large_icon_service_->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       page_url, GetMinimumFetchingSizeForChromeSuggestionsFaviconsFromServer(),
       /*desired_size_in_pixel=*/0,
-      base::Bind(&IconCacherImpl::OnGetLargeIconOrFallbackStyleFinished,
-                 weak_ptr_factory_.GetWeakPtr(), page_url),
+      base::BindOnce(&IconCacherImpl::OnGetLargeIconOrFallbackStyleFinished,
+                     weak_ptr_factory_.GetWeakPtr(), page_url),
       &tracker_);
 }
 
@@ -256,8 +257,8 @@ void IconCacherImpl::OnGetLargeIconOrFallbackStyleFinished(
           page_url,
           /*may_page_url_be_private=*/true, /*should_trim_page_url_path=*/false,
           traffic_annotation,
-          base::Bind(&IconCacherImpl::OnMostLikelyFaviconDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(), page_url));
+          base::BindOnce(&IconCacherImpl::OnMostLikelyFaviconDownloaded,
+                         weak_ptr_factory_.GetWeakPtr(), page_url));
 }
 
 void IconCacherImpl::OnMostLikelyFaviconDownloaded(
@@ -269,24 +270,24 @@ void IconCacherImpl::OnMostLikelyFaviconDownloaded(
 }
 
 bool IconCacherImpl::StartRequest(const GURL& request_url,
-                                  const base::Closure& icon_available) {
+                                  base::OnceClosure icon_available) {
   bool in_flight = in_flight_requests_.count(request_url) > 0;
-  in_flight_requests_[request_url].push_back(icon_available);
+  in_flight_requests_[request_url].push_back(std::move(icon_available));
   return !in_flight;
 }
 
 void IconCacherImpl::FinishRequestAndNotifyIconAvailable(
     const GURL& request_url,
     bool newly_available) {
-  std::vector<base::Closure> callbacks =
+  std::vector<base::OnceClosure> callbacks =
       std::move(in_flight_requests_[request_url]);
   in_flight_requests_.erase(request_url);
   if (!newly_available) {
     return;
   }
-  for (const base::Closure& callback : callbacks) {
+  for (base::OnceClosure& callback : callbacks) {
     if (callback) {
-      callback.Run();
+      std::move(callback).Run();
     }
   }
 }

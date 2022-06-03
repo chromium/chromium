@@ -43,15 +43,15 @@ undefined
 n
 4
 `status: ${(await Promise.resolve({status:200})).status}`
-"status: 200"
+'status: 200'
 for (let i = 0; i < 2; ++i) await i
-undefined
+1
 for (let i = 0; i < 2; ++i) { await i }
-undefined
+1
 await 0
 0
 await 0;function foo(){}
-undefined
+0
 foo
 ƒ foo(){}
 class Foo{}; await 1;
@@ -59,13 +59,9 @@ class Foo{}; await 1;
 Foo
 class Foo{}
 await 0;function* gen(){}
-undefined
-for (var i = 0; i < 10; ++i) { await i; }
-undefined
-i
-10
+0
 for (let j = 0; j < 5; ++j) { await j; }
-undefined
+4
 j
 VM:1 Uncaught ReferenceError: j is not defined
     at <anonymous>:1:1
@@ -73,7 +69,7 @@ VM:1 Uncaught ReferenceError: j is not defined
 gen
 ƒ* gen(){}
 await 5; return 42;
-VM:1 Uncaught SyntaxError: await is only valid in async function
+VM:1 Uncaught SyntaxError: Illegal return statement
 let o = await 1, p
 undefined
 p

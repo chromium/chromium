@@ -1,0 +1,10 @@
+# This file exercises "continuation classes", whereby an affix can declare that
+# it may be followed by another affix. This file declares two affixes:
+#   "s", which may be applied to any ADJECTIVE (i.e. "wearable" -> "wearables")
+#   "able", which may be applied to any VERB (i.e. "wear" -> "wearable")
+
+SFX ADJECTIVE Y 1
+SFX ADJECTIVE 0 s .
+
+SFX VERB Y 1
+SFX VERB 0 able/ADJECTIVE .

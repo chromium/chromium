@@ -1,0 +1,9 @@
+include_rules = [
+  "+chromeos/services/nearby",
+  "+device/bluetooth/public/mojom",
+  "+jingle/glue",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/webrtc",
+  "+third_party/webrtc_overrides",
+]

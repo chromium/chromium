@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: Drag and drop</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#treelike">
+<link rel="help" href="https://drafts.csswg.org/css-ui/#user-interaction">
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<meta name="assert" content="This test checks that text dropped into a ::before or ::marker pseudo-element is inserted after the pseudo-element." />
+<style>
+.test {
+  font: 10px/1 Ahem;
+  margin-left: 200px;
+}
+#before::before {
+  content: "::before";
+  display: inline-block;
+  margin-left: -80px;
+}
+#marker {
+  display: list-item;
+  list-style-type: "::marker";
+}
+#before-marker::before {
+  content: "";
+  display: list-item;
+  list-style-type: "::marker";
+  height: 0;
+}
+#fake {
+  position: absolute;
+  z-index: -1;
+  width: 80px;
+  height: 10px;
+}
+</style>
+<div class="test" id="before" contenteditable>hello<span>world</span></div>
+<div class="test" id="marker" contenteditable>hello<span>world</span></div>
+<div class="test" id="before-marker" contenteditable>hello<span>world</span></div>
+<div id="fake"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../dom/resources/event-sender-util.js"></script>
+<script>
+(async function() {
+  setup({ explicit_done: true });
+  const fake = document.getElementById("fake");
+  for (let target of document.querySelectorAll(".test")) {
+    // Make the span draggable
+    const span = target.querySelector("span");
+    span.contentEditable = false;
+    span.draggable = true;
+    span.addEventListener("dragstart", (event) => {
+      event.dataTransfer.setData('text/html', span.innerHTML);
+    }, {once: true});
+
+    const promise = new Promise((resolve) => {
+      async_test(function(t) {
+        t.add_cleanup(resolve);
+        t.set_timeout(3e3);
+        target.addEventListener("drop", t.step_func((event) => {
+          assert_equals(event.target, target, "event.target");
+          span.addEventListener("dragend", t.step_func_done((e) => {
+            span.remove();
+            assert_equals(target.innerHTML, "worldhello", "target.textContent");
+          }), {once: true});
+        }), {once: true});
+      }, "Drag text into ::" + target.id);
+    });
+
+    // Drag the span into the pseudo-element.
+    // Note drag-and-drop doesn't work well with pointerActionSequence, but the presubmit
+    // complains if I use eventSender. As a workaround, I use dragFromTo. Since I can't
+    // pass the pseudo-element as the "to" parameter, I pass a fake element with the same
+    // position as the pseudo-element, but painted under it.
+    fake.style.left = target.offsetLeft - 80 + "px";
+    fake.style.top = target.offsetTop + "px";
+    dragFromTo(span, fake);
+
+    await promise;
+  }
+  done();
+})();
+</script>

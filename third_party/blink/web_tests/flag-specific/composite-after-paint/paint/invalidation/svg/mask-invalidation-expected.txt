@@ -5,47 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [50, 50, 453, 299],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [50, 50, 453, 299],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [200, 100, 403, 249],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [200, 100, 403, 249],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [200, 100, 403, 249],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [200, 100, 403, 249],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [100, 100, 403, 249],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [100, 100, 403, 249],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

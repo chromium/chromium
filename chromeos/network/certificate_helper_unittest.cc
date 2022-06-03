@@ -8,11 +8,16 @@
 #include "net/cert/nss_cert_database.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
-TEST(CertificateHelperTest, GetCertNameOrNickname) {
+// Required to register an observer from the constructor of
+// net::NSSCertDatabase.
+using CertificateHelperTest = net::TestWithTaskEnvironment;
+
+TEST_F(CertificateHelperTest, GetCertNameOrNickname) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(cert.get());
@@ -33,7 +38,7 @@ TEST(CertificateHelperTest, GetCertNameOrNickname) {
   EXPECT_EQ("", certificate::GetCertNameOrNickname(no_cn_cert.get()));
 }
 
-TEST(CertificateHelperTest, GetTypeCA) {
+TEST_F(CertificateHelperTest, GetTypeCA) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(cert.get());
@@ -54,7 +59,7 @@ TEST(CertificateHelperTest, GetTypeCA) {
   EXPECT_EQ(net::CA_CERT, certificate::GetCertType(cert.get()));
 }
 
-TEST(CertificateHelperTest, GetTypeServer) {
+TEST_F(CertificateHelperTest, GetTypeServer) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "google.single.der"));
   ASSERT_TRUE(cert.get());

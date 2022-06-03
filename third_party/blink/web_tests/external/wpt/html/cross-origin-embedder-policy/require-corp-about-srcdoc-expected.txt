@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Wait for the DOM to be built.
-PASS about:srcdoc can always be embedded by a 'require-corp' document
-FAIL A(B(C)) A=require-corp, B=about:srcdoc, C=no-require-corp => C can't load assert_equals: expected null but got Document node with 1 child
-Harness: the test ran to completion.
-

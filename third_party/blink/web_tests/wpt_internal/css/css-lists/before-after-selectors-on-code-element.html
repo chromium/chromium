@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Before/after selectors with counters on code element</title>
+<link rel="help" href="http://bugs.webkit.org/show_bug.cgi?id=11197">
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#counter-functions">
+<link rel="help" href="https://drafts.csswg.org/selectors-3/#gen-content">
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#simple-symbolic">
+<link rel="match" href="before-after-selectors-on-code-element-ref.html">
+<meta name="assert" content="The word 'PASSED' should be shown below with a circle before and a square after. This is a test for WebKit bug 11197.">
+<style>
+    code:before {
+      content: counter(dummy,circle);
+    }
+    code:after {
+      content: counter(dummy,square);
+    }
+</style>
+</head>
+<body>
+<code>PASSED</code>
+</body>
+</html>

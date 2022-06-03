@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -19,6 +18,12 @@
 namespace {
 
 class EnumerateInputMethodEditorsTest : public testing::Test {
+ public:
+  EnumerateInputMethodEditorsTest(const EnumerateInputMethodEditorsTest&) =
+      delete;
+  EnumerateInputMethodEditorsTest& operator=(
+      const EnumerateInputMethodEditorsTest&) = delete;
+
  protected:
   EnumerateInputMethodEditorsTest() = default;
   ~EnumerateInputMethodEditorsTest() override = default;
@@ -39,8 +44,6 @@ class EnumerateInputMethodEditorsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnumerateInputMethodEditorsTest);
 };
 
 // Adds a fake IME entry to the registry that should be found by the

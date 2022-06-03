@@ -20,6 +20,7 @@ source_set("quirks") {
     "//components/prefs",
     "//components/version_info",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }

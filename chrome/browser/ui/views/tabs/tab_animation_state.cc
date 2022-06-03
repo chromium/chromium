@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_animation_state.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "ui/gfx/animation/tween.h"

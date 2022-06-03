@@ -11,13 +11,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_types.h"
@@ -40,20 +40,13 @@ PolicyLoadStatus JsonErrorToPolicyLoadStatus(int status) {
       return POLICY_LOAD_STATUS_READ_ERROR;
     case JSONFileValueDeserializer::JSON_NO_SUCH_FILE:
       return POLICY_LOAD_STATUS_MISSING;
-    case base::JSONReader::JSON_INVALID_ESCAPE:
-    case base::JSONReader::JSON_SYNTAX_ERROR:
-    case base::JSONReader::JSON_UNEXPECTED_TOKEN:
-    case base::JSONReader::JSON_TRAILING_COMMA:
-    case base::JSONReader::JSON_TOO_MUCH_NESTING:
-    case base::JSONReader::JSON_UNEXPECTED_DATA_AFTER_ROOT:
-    case base::JSONReader::JSON_UNSUPPORTED_ENCODING:
-    case base::JSONReader::JSON_UNQUOTED_DICTIONARY_KEY:
-      return POLICY_LOAD_STATUS_PARSE_ERROR;
-    case base::JSONReader::JSON_NO_ERROR:
+    case base::ValueDeserializer::kErrorCodeNoError:
       NOTREACHED();
       return POLICY_LOAD_STATUS_STARTED;
   }
-  NOTREACHED() << "Invalid status " << status;
+  if (!base::ValueDeserializer::ErrorCodeIsDataError(status)) {
+    NOTREACHED() << "Invalid status " << status;
+  }
   return POLICY_LOAD_STATUS_PARSE_ERROR;
 }
 
@@ -63,7 +56,7 @@ ConfigDirPolicyLoader::ConfigDirPolicyLoader(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& config_dir,
     PolicyScope scope)
-    : AsyncPolicyLoader(task_runner),
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
       task_runner_(task_runner),
       config_dir_(config_dir),
       scope_(scope) {}
@@ -72,11 +65,13 @@ ConfigDirPolicyLoader::~ConfigDirPolicyLoader() {}
 
 void ConfigDirPolicyLoader::InitOnBackgroundThread() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  base::FilePathWatcher::Callback callback =
-      base::Bind(&ConfigDirPolicyLoader::OnFileUpdated, base::Unretained(this));
-  mandatory_watcher_.Watch(config_dir_.Append(kMandatoryConfigDir), false,
+  base::FilePathWatcher::Callback callback = base::BindRepeating(
+      &ConfigDirPolicyLoader::OnFileUpdated, base::Unretained(this));
+  mandatory_watcher_.Watch(config_dir_.Append(kMandatoryConfigDir),
+                           base::FilePathWatcher::Type::kNonRecursive,
                            callback);
-  recommended_watcher_.Watch(config_dir_.Append(kRecommendedConfigDir), false,
+  recommended_watcher_.Watch(config_dir_.Append(kRecommendedConfigDir),
+                             base::FilePathWatcher::Type::kNonRecursive,
                              callback);
 }
 
@@ -164,11 +159,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
     }
 
     // Detach the "3rdparty" node.
-    std::unique_ptr<base::Value> third_party;
-    if (dictionary_value->Remove("3rdparty", &third_party)) {
-      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+    absl::optional<base::Value> third_party =
+        dictionary_value->ExtractKey("3rdparty");
+    if (third_party.has_value()) {
+      Merge3rdPartyPolicy(&*third_party, level, bundle,
                           /*signin_profile=*/true);
-      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+      Merge3rdPartyPolicy(&*third_party, level, bundle,
                           /*signin_profile=*/false);
     }
 

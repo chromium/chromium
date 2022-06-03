@@ -1,0 +1,23 @@
+Name: The Incremental Distributed Point Functions library
+Short Name: distributed_point_functions
+URL: https://github.com/google/distributed_point_functions
+Version: 0
+Revision: ea175a91e6eda5b22392fdae82080eb9709cd0eb
+Date: 2021-04-21
+License: Apache 2.0
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: unknown
+
+Description:
+This library contains an implementation of incremental distributed point
+functions, based on the paper by Boneh et al.
+
+Local Modifications:
+The directory src/ is an unchanged copy, and parts of
+src/dpf/distributed_point_function_test.cc are adapted for fuzzing in
+fuzz/dpf_fuzzer.cc.
+
+The source code pulled in depends on "glog/logging.h" which is not accessible
+from chromium. As a workaround, we create a simple glog/logging.h that defines
+the macros needed.

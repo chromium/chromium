@@ -19,6 +19,10 @@ namespace device {
 class FakeSensor : public mojom::Sensor {
  public:
   FakeSensor(mojom::SensorType sensor_type, SensorReadingSharedBuffer* buffer);
+
+  FakeSensor(const FakeSensor&) = delete;
+  FakeSensor& operator=(const FakeSensor&) = delete;
+
   ~FakeSensor() override;
 
   // mojom::Sensor:
@@ -49,19 +53,22 @@ class FakeSensor : public mojom::Sensor {
   bool reading_notification_enabled_ = true;
   mojo::Remote<mojom::SensorClient> client_;
   SensorReading reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensor);
 };
 
 class FakeSensorProvider : public mojom::SensorProvider {
  public:
   FakeSensorProvider();
+
+  FakeSensorProvider(const FakeSensorProvider&) = delete;
+  FakeSensorProvider& operator=(const FakeSensorProvider&) = delete;
+
   ~FakeSensorProvider() override;
 
   // mojom::sensorProvider:
   void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
+  bool is_bound() const;
 
   void set_ambient_light_sensor_is_available(
       bool ambient_light_sensor_is_available) {
@@ -74,6 +81,9 @@ class FakeSensorProvider : public mojom::SensorProvider {
       bool linear_acceleration_sensor_is_available) {
     linear_acceleration_sensor_is_available_ =
         linear_acceleration_sensor_is_available;
+  }
+  void set_gravity_sensor_is_available(bool gravity_sensor_is_available) {
+    gravity_sensor_is_available_ = gravity_sensor_is_available;
   }
   void set_gyroscope_is_available(bool gyroscope_is_available) {
     gyroscope_is_available_ = gyroscope_is_available;
@@ -92,6 +102,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void SetAmbientLightSensorData(double value);
   void SetAccelerometerData(double x, double y, double z);
   void SetLinearAccelerationSensorData(double x, double y, double z);
+  void SetGravitySensorData(double x, double y, double z);
   void SetGyroscopeData(double x, double y, double z);
   void SetRelativeOrientationSensorData(double alpha,
                                         double beta,
@@ -107,6 +118,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void UpdateAmbientLightSensorData(double value);
   void UpdateAccelerometerData(double x, double y, double z);
   void UpdateLinearAccelerationSensorData(double x, double y, double z);
+  void UpdateGravitySensorData(double x, double y, double z);
   void UpdateGyroscopeData(double x, double y, double z);
   void UpdateRelativeOrientationSensorData(double alpha,
                                            double beta,
@@ -125,6 +137,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   FakeSensor* ambient_light_sensor_ = nullptr;
   FakeSensor* accelerometer_ = nullptr;
   FakeSensor* linear_acceleration_sensor_ = nullptr;
+  FakeSensor* gravity_sensor_ = nullptr;
   FakeSensor* gyroscope_ = nullptr;
   FakeSensor* relative_orientation_sensor_ = nullptr;
   FakeSensor* absolute_orientation_sensor_ = nullptr;
@@ -132,20 +145,20 @@ class FakeSensorProvider : public mojom::SensorProvider {
   SensorReading ambient_light_sensor_reading_;
   SensorReading accelerometer_reading_;
   SensorReading linear_acceleration_sensor_reading_;
+  SensorReading gravity_sensor_reading_;
   SensorReading gyroscope_reading_;
   SensorReading relative_orientation_sensor_reading_;
   SensorReading absolute_orientation_sensor_reading_;
   bool ambient_light_sensor_is_available_ = true;
   bool accelerometer_is_available_ = true;
   bool linear_acceleration_sensor_is_available_ = true;
+  bool gravity_sensor_is_available_ = true;
   bool gyroscope_is_available_ = true;
   bool relative_orientation_sensor_is_available_ = true;
   bool absolute_orientation_sensor_is_available_ = true;
   mojo::ReceiverSet<mojom::SensorProvider> receivers_{};
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensorProvider);
 };
 
 }  // namespace device

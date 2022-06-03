@@ -41,6 +41,11 @@ class BluetoothRemoteGattServiceBlueZ
       public BluetoothGattCharacteristicClient::Observer,
       public device::BluetoothRemoteGattService {
  public:
+  BluetoothRemoteGattServiceBlueZ(const BluetoothRemoteGattServiceBlueZ&) =
+      delete;
+  BluetoothRemoteGattServiceBlueZ& operator=(
+      const BluetoothRemoteGattServiceBlueZ&) = delete;
+
   ~BluetoothRemoteGattServiceBlueZ() override;
 
   // device::BluetoothRemoteGattService overrides.
@@ -99,8 +104,6 @@ class BluetoothRemoteGattServiceBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothRemoteGattServiceBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceBlueZ);
 };
 
 }  // namespace bluez

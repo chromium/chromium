@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>AmbientLightSensor Test</title>
+<meta name="timeout" content="long">
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://www.w3.org/TR/ambient-light/">
 <script src="/resources/testharness.js"></script>
@@ -34,5 +35,51 @@ runGenericSensorTests(
     kReadings,
     verifyAlsSensorReading,
     ['ambient-light-sensor']);
+
+// Regression test for https://crbug.com/1078172.
+// If we create 2 sensors, S1 and S2, by the time we dispatch a "reading" event
+// for S1 the shared memory buffer used by both S1 and S2 will have data, but
+// S2's AmbientLightSensor::OnSensorReadingChanged() has not been called yet.
+// This test checks the code does not crash if we reach
+// AmbientLightSensor::illuminance() during this window, and that other values
+// are still null or false.
+// TODO: This could be generalized and added to runGenericSensorTests().
+sensor_test(async (t, sensorProvider) => {
+  const sensor1 = new AmbientLightSensor();
+  const sensor2 = new AmbientLightSensor();
+
+  return new Promise((resolve, reject) => {
+    sensor1.addEventListener('reading', () => {
+      sensor2.addEventListener('activate', () => {
+        try {
+          assert_true(sensor1.activated);
+          assert_true(sensor1.hasReading);
+          assert_not_equals(sensor1.illuminance, null);
+          assert_not_equals(sensor1.timestamp, null);
+
+          assert_true(sensor2.activated);
+          assert_false(sensor2.hasReading);
+          assert_equals(sensor2.illuminance, null);
+          assert_equals(sensor2.timestamp, null);
+        } catch (e) {
+          reject(e);
+        }
+      }, { once: true });
+      sensor2.addEventListener('reading', () => {
+        try {
+          assert_true(sensor2.activated);
+          assert_true(sensor2.hasReading);
+          assert_equals(sensor1.illuminance, sensor2.illuminance);
+          assert_equals(sensor1.timestamp, sensor2.timestamp);
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, { once: true });
+      sensor2.start();
+    }, { once: true });
+    sensor1.start();
+  });
+}, "Accessing illuminance when a sensor is still activating does not crash.");
 
 </script>

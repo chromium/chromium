@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/media_stream_buffer.h"
 

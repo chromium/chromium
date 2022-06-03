@@ -7,13 +7,17 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content_settings {
 
@@ -63,6 +67,10 @@ namespace content_settings {
 class CookieSettingsBase {
  public:
   CookieSettingsBase() = default;
+
+  CookieSettingsBase(const CookieSettingsBase&) = delete;
+  CookieSettingsBase& operator=(const CookieSettingsBase&) = delete;
+
   virtual ~CookieSettingsBase() = default;
 
   // Returns true if the cookie associated with |domain| should be deleted
@@ -84,33 +92,33 @@ class CookieSettingsBase {
   // is used to determine third-party-ness of |url|.
   //
   // This may be called on any thread.
-  // DEPRECATED: Replace with IsCookieAccessAllowed(GURL, GURL, Origin).
-  bool IsCookieAccessAllowed(const GURL& url,
-                             const GURL& first_party_url) const;
+  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, GURL, Origin).
+  bool IsFullCookieAccessAllowed(const GURL& url,
+                                 const GURL& first_party_url) const;
 
-  // Similar to IsCookieAccessAllowed(GURL, GURL) but provides a mechanism
-  // to specify a separate |site_for_cookies|, which is used to determine
-  // whether a request is in a third_party context and |top_frame_origin|, which
+  // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
+  // to specify a separate `site_for_cookies`, which is used to determine
+  // whether a request is in a third_party context and `top_frame_origin`, which
   // is used to check if there are any content_settings exceptions.
-  // |top_frame_origin| should at least be specified when |site_for_cookies| is
+  // `top_frame_origin` should at least be specified when `site_for_cookies` is
   // non-empty.
-  bool IsCookieAccessAllowed(
+  bool IsFullCookieAccessAllowed(
       const GURL& url,
-      const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) const;
+      const net::SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
-  // session only. Querying this only makes sense if |IsCookieAccessAllowed|
+  // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|
   // has returned true.
   //
   // This may be called on any thread.
   bool IsCookieSessionOnly(const GURL& url) const;
 
   // A helper for applying third party cookie blocking rules.
-  void GetCookieSetting(const GURL& url,
-                        const GURL& first_party_url,
-                        content_settings::SettingSource* source,
-                        ContentSetting* cookie_setting) const;
+  ContentSetting GetCookieSetting(
+      const GURL& url,
+      const GURL& first_party_url,
+      content_settings::SettingSource* source) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -141,8 +149,8 @@ class CookieSettingsBase {
 
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
-  // This currently returns true if the |site_for_cookies| is a Chrome UI scheme
-  // URL and the |url| is secure.
+  // This currently returns true if the `site_for_cookies` is a Chrome UI scheme
+  // URL and the `url` is secure.
   //
   // This bypass refers to all SameSite cookies (unspecified-defaulted-into-Lax,
   // as well as explicitly specified Lax or Strict). This addresses cases where
@@ -159,7 +167,7 @@ class CookieSettingsBase {
   // embedding context.
   virtual bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const GURL& site_for_cookies) const = 0;
+      const net::SiteForCookies& site_for_cookies) const = 0;
 
   // Determines whether |setting| is a valid content setting for cookies.
   static bool IsValidSetting(ContentSetting setting);
@@ -170,15 +178,23 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
+ protected:
+  // Returns true iff the request is considered third-party.
+  static bool IsThirdPartyRequest(const GURL& url,
+                                  const net::SiteForCookies& site_for_cookies);
+
+  // Returns the URL to be considered "first-party" for the given request. If
+  // the `top_frame_origin` is non-empty, it is chosen; otherwise, the
+  // `site_for_cookies` is used.
+  static GURL GetFirstPartyURL(const net::SiteForCookies& site_for_cookies,
+                               const url::Origin* top_frame_origin);
+
  private:
-  virtual void GetCookieSettingInternal(
+  virtual ContentSetting GetCookieSettingInternal(
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
-      content_settings::SettingSource* source,
-      ContentSetting* cookie_setting) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsBase);
+      content_settings::SettingSource* source) const = 0;
 };
 
 }  // namespace content_settings

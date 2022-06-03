@@ -17,18 +17,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// http://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#XPathEvaluator
-
-// Note: The spec says "the XPathEvaluator interface will be implemented on the
-// same object which implements the Document interface" and does not define a
-// constructor or other means to create an XPathEvaluator object. Nonetheless,
-// Blink, Gecko, Presto, WebKit and all have these APIs on both Document and the
-// constructable XPathEvaluator interface.
+// https://dom.spec.whatwg.org/#interface-xpathevaluator
 
 [
-    Measure
+    Exposed=Window
 ] interface XPathEvaluator {
-    constructor();
+    [Measure] constructor();
+
+    // https://dom.spec.whatwg.org/#mixin-xpathevaluatorbase
     [Measure, RaisesException] XPathExpression createExpression(DOMString expression, optional XPathNSResolver? resolver = null);
 
     [Measure] XPathNSResolver createNSResolver(Node nodeResolver);

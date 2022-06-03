@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file aggregates resource GRDPs for developer-facing chrome:// pages
+(DevUI pages) under /components. This is needed by the Developer WebUI Dynamic
+Feature Module (DevUI DFM) for Android Chrome. More info:
+* User-facing resources should be aggregated in components_resources.grd.
+* DevUI page resources that are *not* for Android Chrome can be aggregated in
+  components_resources.grd (or browser_resources.grd if applicable).
+-->
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/dev_ui_components_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="dev_ui_components_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <part file="autofill_and_password_manager_internals_resources.grdp" />
+      <part file="crash_resources.grdp" />
+      <part file="gcm_driver_resources.grdp" />
+      <part file="net_log_resources.grdp" />
+      <part file="ntp_tiles_dev_ui_resources.grdp" />
+      <part file="policy_resources.grdp" />
+      <part file="security_interstitials_dev_ui_resources.grdp" />
+      <part file="signin_resources.grdp" />
+      <part file="user_actions_ui_resources.grdp" />
+    </includes>
+  </release>
+</grit>

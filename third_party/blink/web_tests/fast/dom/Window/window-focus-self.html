@@ -7,7 +7,7 @@ function runTest() {
     window.onblur = windowBlurred;
 
     if (window.testRunner) {
-        testRunner.setWindowIsKey(false);
+        testRunner.setWindowFocus(false);
         window.open('javascript:window.focus()', '_self', '');
         setTimeout(function() { testRunner.notifyDone(); }, 0);
     }

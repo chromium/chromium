@@ -12,7 +12,6 @@
         --cr-input-color: var(--cr-primary-text-color);
         --cr-input-error-color: var(--google-red-600);
         --cr-input-focus-color: var(--google-blue-600);
-        --cr-input-placeholder-color: var(--cr-secondary-text-color);
         display: block;
         /* Avoid showing outline when focus() programmatically called multiple
            times in a row. */
@@ -55,6 +54,7 @@
         color: var(--cr-input-color);
         font-family: inherit;
         font-size: inherit;
+        font-weight: inherit;
         line-height: inherit;
         min-height: var(--cr-input-min-height, auto);
         outline: none;
@@ -75,18 +75,16 @@
         text-align: inherit;
         text-overflow: ellipsis;
         width: 100%;
-
-        /* Avoid using the mixin. Use ::part(input) instead.
-         * Necessary for backward compatibility with Polymer1/SDv0 (only used by
-         * OOBE). TODO(crbug.com/955194): Remove this once fixed.*/
-         @apply --cr-input-input;
       }
 
       /* Underline styling below. */
       #underline {
         border-bottom: 2px solid var(--cr-input-focus-color);
+        border-radius: var(--cr-input-underline-border-radius, 0);
         bottom: 0;
         box-sizing: border-box;
+        display: var(--cr-input-underline-display);
+        height: var(--cr-input-underline-height, 0);
         left: 0;
         margin: auto;
         opacity: 0;
@@ -98,9 +96,9 @@
 
       :host([invalid]) #underline,
       :host([force-underline]) #underline,
-      :host([focused_]:not([readonly])) #underline {
+      :host([focused_]) #underline {
         opacity: 1;
-        transition: width 180ms ease-out, opacity 120ms ease-in;
+        transition: opacity 120ms ease-in, width 180ms ease-out;
         width: 100%;
       }
     </style>

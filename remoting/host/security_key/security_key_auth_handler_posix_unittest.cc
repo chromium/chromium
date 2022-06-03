@@ -77,9 +77,9 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
     EXPECT_TRUE(file_thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0)));
 
-    send_message_callback_ =
-        base::Bind(&SecurityKeyAuthHandlerPosixTest::SendMessageToClient,
-                   base::Unretained(this));
+    send_message_callback_ = base::BindRepeating(
+        &SecurityKeyAuthHandlerPosixTest::SendMessageToClient,
+        base::Unretained(this));
 
     auth_handler_ = remoting::SecurityKeyAuthHandler::Create(
         /*client_session_details=*/nullptr, send_message_callback_,
@@ -87,14 +87,19 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
     EXPECT_NE(auth_handler_.get(), nullptr);
   }
 
+  SecurityKeyAuthHandlerPosixTest(const SecurityKeyAuthHandlerPosixTest&) =
+      delete;
+  SecurityKeyAuthHandlerPosixTest& operator=(
+      const SecurityKeyAuthHandlerPosixTest&) = delete;
+
   void CreateSocketAndWait() {
     ASSERT_EQ(0u, auth_handler_->GetActiveConnectionCountForTest());
     auth_handler_->CreateSecurityKeyConnection();
 
     ASSERT_TRUE(file_thread_.task_runner()->PostTaskAndReply(
-        FROM_HERE, base::Bind(&RunUntilIdle), run_loop_->QuitClosure()));
+        FROM_HERE, base::BindOnce(&RunUntilIdle), run_loop_->QuitClosure()));
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
 
     ASSERT_EQ(0u, auth_handler_->GetActiveConnectionCountForTest());
   }
@@ -107,7 +112,7 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
   void WaitForSendMessageToClient() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   void CheckHostDataMessage(int id) {
@@ -188,10 +193,6 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath socket_path_;
-  base::Closure accept_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerPosixTest);
 };
 
 TEST_F(SecurityKeyAuthHandlerPosixTest, HandleSingleRequest) {

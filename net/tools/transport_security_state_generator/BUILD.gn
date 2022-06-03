@@ -46,9 +46,7 @@ source_set("transport_security_state_generator_test_sources") {
 }
 
 executable("transport_security_state_generator") {
-  sources = [
-    "transport_security_state_generator.cc",
-  ]
+  sources = [ "transport_security_state_generator.cc" ]
   deps = [
     ":transport_security_state_generator_sources",
     "//base",

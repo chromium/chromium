@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Reference:
+# https://github.com/google/closure-compiler/wiki/JS-Conformance-Framework
+
+# These attributes are labeled with @implicitCast for Trusted Types.
+# Change back to accept string only since we are not using Trusted Types.
+# See go/tt-closure for more details.
+requirement: {
+  type: RESTRICTED_PROPERTY_WRITE
+  error_message: "Property accepts only string."
+  value: "Element.prototype.outerHTML:string"
+  value: "HTMLAnchorElement.prototype.href:string"
+  value: "HTMLAreaElement.prototype.href:string"
+  value: "HTMLBaseElement.prototype.href:string"
+  value: "HTMLButtonElement.prototype.formAction:string"
+  value: "HTMLEmbedElement.prototype.src:string"
+  value: "HTMLFormElement.prototype.action:string"
+  value: "HTMLFrameElement.prototype.src:string"
+  value: "HTMLIFrameElement.prototype.src:string"
+  value: "HTMLIFrameElement.prototype.srcdoc:string"
+  value: "HTMLInputElement.prototype.formAction:string"
+  value: "HTMLInputElement.prototype.src:string"
+  value: "HTMLLinkElement.prototype.href:string"
+  value: "HTMLMediaElement.prototype.src:string"
+  value: "HTMLObjectElement.prototype.codeBase:string"
+  value: "HTMLObjectElement.prototype.data:string"
+  value: "HTMLScriptElement.prototype.src:string"
+  value: "HTMLScriptElement.prototype.text:string"
+  value: "HTMLSourceElement.prototype.src:string"
+  value: "HTMLTrackElement.prototype.src:string"
+  value: "Location.prototype.href:string"
+  value: "ShadowRoot.prototype.innerHTML:string"
+}

@@ -111,7 +111,7 @@ def GenerateFieldContent(element_name, field_info, content, lines, indent,
   if content is None:
     content = field_info.get('default', None)
   type = field_info['type']
-  if type == 'int' or type == 'enum':
+  if type in ('int', 'enum', 'class'):
     lines.append('%s%s,' % (indent, content))
   elif type == 'string':
     _GenerateString(content, lines, indent)

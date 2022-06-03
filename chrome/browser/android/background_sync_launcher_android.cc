@@ -14,7 +14,7 @@
 #include "chrome/android/chrome_jni_headers/BackgroundSyncBackgroundTask_jni.h"
 #include "chrome/android/chrome_jni_headers/GooglePlayServicesChecker_jni.h"
 #include "chrome/android/chrome_jni_headers/PeriodicBackgroundSyncChromeWakeUpTask_jni.h"
-#include "chrome/browser/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/background_sync_context.h"
 #include "content/public/browser/background_sync_parameters.h"

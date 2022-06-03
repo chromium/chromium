@@ -6,12 +6,14 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/v8_foreground_task_runner.h"
 #include "gin/v8_foreground_task_runner_with_locker.h"
+#include "v8/include/v8-isolate.h"
 
 using v8::ArrayBuffer;
 using v8::Eternal;

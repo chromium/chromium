@@ -11,6 +11,6 @@ UnhandledTapWebContentsObserver::UnhandledTapWebContentsObserver(
 
 UnhandledTapWebContentsObserver::~UnhandledTapWebContentsObserver() {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(UnhandledTapWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(UnhandledTapWebContentsObserver);
 
 }  // namespace contextual_search

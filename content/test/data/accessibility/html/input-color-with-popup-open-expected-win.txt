@@ -1,0 +1,21 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
+++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++IA2_ROLE_COLOR_CHOOSER name='color picker' value='100% red 60% green 0% blue' FOCUSABLE ia2_hypertext='<obj0>'
+++++++ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
+++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1><obj2><obj3><obj4><obj5><obj6>'
+++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++++++++++ROLE_SYSTEM_SLIDER name='Color well' value='X: 227, Y: 0' FOCUSABLE IA2_STATE_HORIZONTAL localized_extended_role='Color well with two-dimensional slider for selecting saturation and lightness'
+++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1>'
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Eyedropper' FOCUSABLE
+++++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++++++++++++ROLE_SYSTEM_SLIDER name='Hue slider' value='116' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++++++ROLE_SYSTEM_TEXT name='Red channel' value='255' FOCUSABLE ia2_hypertext='255'
+++++++++++ROLE_SYSTEM_TEXT name='Green channel' value='153' FOCUSABLE ia2_hypertext='153'
+++++++++++ROLE_SYSTEM_TEXT name='Blue channel' value='0' FOCUSABLE ia2_hypertext='0'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Format toggler' value='1' FOCUSABLE ia2_hypertext='RGB<obj3>'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='R' ia2_hypertext='R'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='G' ia2_hypertext='G'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='B' ia2_hypertext='B'
+++++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++++++++++++ROLE_SYSTEM_GRAPHIC
+++++++++++IA2_ROLE_SECTION

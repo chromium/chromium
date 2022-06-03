@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -38,6 +37,10 @@ namespace internal {
 class ExceptionSnapshotMac final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotMac();
+
+  ExceptionSnapshotMac(const ExceptionSnapshotMac&) = delete;
+  ExceptionSnapshotMac& operator=(const ExceptionSnapshotMac&) = delete;
+
   ~ExceptionSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -79,12 +82,16 @@ class ExceptionSnapshotMac final : public ExceptionSnapshot {
   virtual std::vector<const MemorySnapshot*> ExtraMemory() const override;
 
  private:
-#if defined(ARCH_CPU_X86_FAMILY)
   union {
+#if defined(ARCH_CPU_X86_FAMILY)
     CPUContextX86 x86;
     CPUContextX86_64 x86_64;
-  } context_union_;
+#elif defined(ARCH_CPU_ARM64)
+    CPUContextARM64 arm64;
+#else
+#error Port to your CPU architecture
 #endif
+  } context_union_;
   CPUContext context_;
   std::vector<uint64_t> codes_;
   uint64_t thread_id_;
@@ -92,8 +99,6 @@ class ExceptionSnapshotMac final : public ExceptionSnapshot {
   exception_type_t exception_;
   uint32_t exception_code_0_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotMac);
 };
 
 }  // namespace internal

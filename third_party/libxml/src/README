@@ -8,6 +8,7 @@ This code is released under the MIT Licence see the Copyright file.
 
 To build on an Unixised setup:
    ./configure ; make ; make install
+   if the ./configure file does not exist, run ./autogen.sh instead.
 To build on Windows:
    see instructions on win32/Readme.txt
 
@@ -18,7 +19,7 @@ To assert build quality:
        There is 3 standalone tools runtest.c runsuite.c testapi.c, which
        should compile as part of the build or as any application would.
        Launch them from this directory to get results, runtest checks 
-       the proper functionning of libxml2 main APIs while testapi does
+       the proper functioning of libxml2 main APIs while testapi does
        a full coverage check. Report failures to the list.
 
 To report bugs, follow the instructions at: 

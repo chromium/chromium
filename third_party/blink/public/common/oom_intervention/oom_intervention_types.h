@@ -16,17 +16,17 @@ namespace blink {
 // the arm64 and renderer in the arm32.
 
 struct OomInterventionMetrics {
-  uint64_t current_private_footprint_kb;
-  uint64_t current_swap_kb;
-  uint64_t current_vm_size_kb;
+  uint64_t current_private_footprint_kb = 0;
+  uint64_t current_swap_kb = 0;
+  uint64_t current_vm_size_kb = 0;
 
   // Stores the total of V8, BlinkGC and PartitionAlloc memory usage.
-  uint64_t current_blink_usage_kb;
+  uint64_t current_blink_usage_kb = 0;
 
   // Indicates whether the crash was because of virtual address space OOM.
   // This holds only 0 or 1 as a value but because of the reason stated above,
   // uses uint64_t instead of boolean.
-  uint64_t allocation_failed;
+  uint64_t allocation_failed = 0;
 };
 
 }  // namespace blink

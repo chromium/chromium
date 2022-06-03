@@ -26,6 +26,10 @@ class Canvas;
 class GlDesktop : public Drawable {
  public:
   GlDesktop();
+
+  GlDesktop(const GlDesktop&) = delete;
+  GlDesktop& operator=(const GlDesktop&) = delete;
+
   ~GlDesktop() override;
 
   // |frame| can be either a full frame or updated regions only frame.
@@ -49,8 +53,6 @@ class GlDesktop : public Drawable {
   base::WeakPtr<Canvas> canvas_ = nullptr;
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<Drawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlDesktop);
 };
 
 }  // namespace remoting

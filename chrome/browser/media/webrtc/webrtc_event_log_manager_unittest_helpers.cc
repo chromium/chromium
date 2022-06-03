@@ -4,8 +4,9 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 
+#include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webrtc_event_logging {
@@ -62,7 +63,7 @@ PerfectGzipEstimator::PerfectGzipEstimator() {
   // will never be suppressed.
   GzipLogCompressorFactory factory(std::make_unique<NullEstimator::Factory>());
 
-  compressor_ = factory.Create(base::Optional<size_t>());
+  compressor_ = factory.Create(absl::optional<size_t>());
   DCHECK(compressor_);
 
   std::string ignored;

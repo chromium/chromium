@@ -8,7 +8,7 @@ Can only run within DRT.
 <script>
 if (window.internals) {
     var host1 = document.querySelector('#host1');
-    var shadowRoot = host1.createShadowRoot();
+    var shadowRoot = host1.attachShadow({mode: 'open'});
     shadowRoot.appendChild(document.createTextNode('Shadow should be rendered.'));
 }
 </script>

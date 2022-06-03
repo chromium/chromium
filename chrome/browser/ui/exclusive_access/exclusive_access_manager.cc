@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -37,7 +36,7 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
   // In kiosk and exclusive app mode we always want to be fullscreen and do not
   // want to show exit instructions for browser mode fullscreen.
   bool app_mode = false;
-#if !defined(OS_MACOSX)  // App mode (kiosk) is not available on Mac yet.
+#if !defined(OS_MAC)  // App mode (kiosk) is not available on Mac yet.
   app_mode = chrome::IsRunningInAppMode();
 #endif
 
@@ -45,8 +44,7 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
     if (!fullscreen_controller_.IsTabFullscreen())
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
 
-    if (mouse_lock_controller_.IsMouseLockedSilently() ||
-        fullscreen_controller_.IsPrivilegedFullscreenForTab()) {
+    if (mouse_lock_controller_.IsMouseLockedSilently()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
     }
 
@@ -79,7 +77,6 @@ void ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent(
     bool force_update) {
   GURL url = GetExclusiveAccessBubbleURL();
   ExclusiveAccessBubbleType bubble_type = GetExclusiveAccessExitBubbleType();
-
   exclusive_access_context_->UpdateExclusiveAccessExitBubbleContent(
       url, bubble_type, std::move(bubble_first_hide_callback), force_update);
 }

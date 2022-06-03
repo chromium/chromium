@@ -31,6 +31,10 @@ class SANDBOX_EXPORT BaselinePolicy : public bpf_dsl::Policy {
   // |fs_denied_errno| is the errno returned when a filesystem access system
   // call is denied.
   explicit BaselinePolicy(int fs_denied_errno);
+
+  BaselinePolicy(const BaselinePolicy&) = delete;
+  BaselinePolicy& operator=(const BaselinePolicy&) = delete;
+
   ~BaselinePolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
@@ -42,8 +46,6 @@ class SANDBOX_EXPORT BaselinePolicy : public bpf_dsl::Policy {
 
   // The PID that the policy applies to (should be equal to the current pid).
   pid_t policy_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaselinePolicy);
 };
 
 }  // namespace sandbox.

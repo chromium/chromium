@@ -8,7 +8,6 @@ from blinkpy.common.html_diff import HtmlDiffGenerator, html_diff
 
 
 class TestHtmlDiff(unittest.TestCase):
-
     def test_html_diff(self):
         self.assertEqual(
             html_diff('one\ntoo\nthree\n', 'one\ntwo\nthree\n'),
@@ -41,22 +40,21 @@ class TestHtmlDiff(unittest.TestCase):
         self.assertEqual(
             HtmlDiffGenerator().generate_tbody(['one line\n'], []),
             '<tr><th>1<th><td class="del">one line\n</tr>')
-        self.assertEqual(
-            HtmlDiffGenerator().generate_tbody(['</pre>\n'], []),
-            '<tr><th>1<th><td class="del">&lt;/pre&gt;\n</tr>')
+        self.assertEqual(HtmlDiffGenerator().generate_tbody(['</pre>\n'], []),
+                         '<tr><th>1<th><td class="del">&lt;/pre&gt;\n</tr>')
 
     def test_html_diff_insert(self):
         self.assertEqual(
             HtmlDiffGenerator().generate_tbody([], ['one line\n']),
             '<tr><th><th>1<td class="add">one line\n</tr>')
-        self.assertEqual(
-            HtmlDiffGenerator().generate_tbody([], ['<!--\n']),
-            '<tr><th><th>1<td class="add">&lt;!--\n</tr>')
+        self.assertEqual(HtmlDiffGenerator().generate_tbody([], ['<!--\n']),
+                         '<tr><th><th>1<td class="add">&lt;!--\n</tr>')
 
     def test_html_diff_ending_newline(self):
         self.assertEqual(
             HtmlDiffGenerator().generate_tbody(['one line'], ['one line\n']),
-            '<tr><th>1<th><td class="del">one line</tr><tr><th><th>1<td class="add">one line\n</tr>')
+            '<tr><th>1<th><td class="del">one line</tr><tr><th><th>1<td class="add">one line\n</tr>'
+        )
 
     def test_html_diff_replace_multiple_lines(self):
         a_lines = [
@@ -71,14 +69,16 @@ class TestHtmlDiff(unittest.TestCase):
             '4. Complicated is better than complex.\n',
             '5. Flat is better than nested.\n',
         ]
-        self.assertEqual(HtmlDiffGenerator().generate_tbody(a_lines, b_lines), (
-            '<tr><th>1<th>1<td>1. Beautiful is better than ugly.\n</tr>'
+        self.assertEqual(HtmlDiffGenerator().generate_tbody(
+            a_lines, b_lines
+        ), ('<tr><th>1<th>1<td>1. Beautiful is better than ugly.\n</tr>'
             '<tr><th>2<th><td class="del">2. Explicit is better than implicit.\n</tr>'
             '<tr><th>3<th><td class="del">3. Simple is better than complex.\n</tr>'
             '<tr><th>4<th><td class="del">4. Complex is better than complicated.\n</tr>'
             '<tr><th><th>2<td class="add">3.   Simple is better than complex.\n</tr>'
             '<tr><th><th>3<td class="add">4. Complicated is better than complex.\n</tr>'
-            '<tr><th><th>4<td class="add">5. Flat is better than nested.\n</tr>'))
+            '<tr><th><th>4<td class="add">5. Flat is better than nested.\n</tr>'
+            ))
 
     def test_html_diff_context(self):
         a_lines = [
@@ -131,24 +131,24 @@ class TestHtmlDiff(unittest.TestCase):
             'line22\n',
             'line23\n',
         ]
-        self.assertEqual(HtmlDiffGenerator().generate_tbody(a_lines, b_lines), (
-            '<tr><td colspan=3>\n\n</tr>'
-            '<tr><th>6<th>6<td>line6\n</tr>'
-            '<tr><th>7<th>7<td>line7\n</tr>'
-            '<tr><th>8<th>8<td>line8\n</tr>'
-            '<tr><th>9<th><td class="del">line9a\n</tr>'
-            '<tr><th><th>9<td class="add">line9b\n</tr>'
-            '<tr><th>10<th>10<td>line10\n</tr>'
-            '<tr><th>11<th>11<td>line11\n</tr>'
-            '<tr><th>12<th>12<td>line12\n</tr>'
-            '<tr><th>13<th>13<td>line13\n</tr>'
-            '<tr><th>14<th>14<td>line14\n</tr>'
-            '<tr><th>15<th><td class="del">line15a\n</tr>'
-            '<tr><th><th>15<td class="add">line15b\n</tr>'
-            '<tr><th>16<th>16<td>line16\n</tr>'
-            '<tr><th>17<th>17<td>line17\n</tr>'
-            '<tr><th>18<th>18<td>line18\n</tr>'
-            '<tr><td colspan=3>\n\n</tr>'))
+        self.assertEqual(HtmlDiffGenerator().generate_tbody(a_lines, b_lines),
+                         ('<tr><td colspan=3>\n\n</tr>'
+                          '<tr><th>6<th>6<td>line6\n</tr>'
+                          '<tr><th>7<th>7<td>line7\n</tr>'
+                          '<tr><th>8<th>8<td>line8\n</tr>'
+                          '<tr><th>9<th><td class="del">line9a\n</tr>'
+                          '<tr><th><th>9<td class="add">line9b\n</tr>'
+                          '<tr><th>10<th>10<td>line10\n</tr>'
+                          '<tr><th>11<th>11<td>line11\n</tr>'
+                          '<tr><th>12<th>12<td>line12\n</tr>'
+                          '<tr><th>13<th>13<td>line13\n</tr>'
+                          '<tr><th>14<th>14<td>line14\n</tr>'
+                          '<tr><th>15<th><td class="del">line15a\n</tr>'
+                          '<tr><th><th>15<td class="add">line15b\n</tr>'
+                          '<tr><th>16<th>16<td>line16\n</tr>'
+                          '<tr><th>17<th>17<td>line17\n</tr>'
+                          '<tr><th>18<th>18<td>line18\n</tr>'
+                          '<tr><td colspan=3>\n\n</tr>'))
 
     def test_html_diff_context_at_edge(self):
         a_lines = [
@@ -173,13 +173,13 @@ class TestHtmlDiff(unittest.TestCase):
             'line8\n',
             'line9\n',
         ]
-        self.assertEqual(HtmlDiffGenerator().generate_tbody(a_lines, b_lines), (
-            '<tr><th><th>1<td class="add">line0\n</tr>'
-            '<tr><th>1<th>2<td>line1\n</tr>'
-            '<tr><th>2<th>3<td>line2\n</tr>'
-            '<tr><th>3<th>4<td>line3\n</tr>'
-            '<tr><td colspan=3>\n\n</tr>'
-            '<tr><th>6<th>7<td>line6\n</tr>'
-            '<tr><th>7<th>8<td>line7\n</tr>'
-            '<tr><th>8<th>9<td>line8\n</tr>'
-            '<tr><th><th>10<td class="add">line9\n</tr>'))
+        self.assertEqual(HtmlDiffGenerator().generate_tbody(a_lines, b_lines),
+                         ('<tr><th><th>1<td class="add">line0\n</tr>'
+                          '<tr><th>1<th>2<td>line1\n</tr>'
+                          '<tr><th>2<th>3<td>line2\n</tr>'
+                          '<tr><th>3<th>4<td>line3\n</tr>'
+                          '<tr><td colspan=3>\n\n</tr>'
+                          '<tr><th>6<th>7<td>line6\n</tr>'
+                          '<tr><th>7<th>8<td>line7\n</tr>'
+                          '<tr><th>8<th>9<td>line8\n</tr>'
+                          '<tr><th><th>10<td class="add">line9\n</tr>'))

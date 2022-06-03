@@ -7,10 +7,11 @@ import("//ios/build/config.gni")
 source_set("common") {
   sources = [
     "crw_content_view.h",
+    "crw_input_view_provider.h",
+    "crw_viewport_adjustment.h",
+    "crw_viewport_adjustment_container.h",
     "crw_web_view_content_view.h",
     "crw_web_view_content_view.mm",
-    "origin_util.h",
-    "origin_util.mm",
     "referrer_util.cc",
     "referrer_util.h",
     "url_scheme_util.h",
@@ -21,28 +22,35 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//ios/third_party/webkit",
     "//ios/web/public/navigation",
     "//net",
+    "//services/network/public/cpp",
     "//url",
   ]
 
-  public_deps = [
-    ":features",
-  ]
+  public_deps = [ ":features" ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("features") {
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   sources = [
     "features.h",
     "features.mm",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("uikit") {
+  sources = [
+    "uikit_ui_util.h",
+    "uikit_ui_util.mm",
+  ]
+
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -59,7 +67,7 @@ source_set("web_view_creation_util") {
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -96,7 +104,6 @@ source_set("unittests") {
   ]
 
   sources = [
-    "origin_util_unittest.mm",
     "referrer_util_unittest.cc",
     "url_scheme_util_unittest.mm",
     "url_util_unittest.cc",

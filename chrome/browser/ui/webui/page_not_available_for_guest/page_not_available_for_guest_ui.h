@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PAGE_NOT_AVAILABLE_FOR_GUEST_PAGE_NOT_AVAILABLE_FOR_GUEST_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PAGE_NOT_AVAILABLE_FOR_GUEST_PAGE_NOT_AVAILABLE_FOR_GUEST_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class PageNotAvailableForGuestUI : public content::WebUIController {
@@ -13,8 +12,9 @@ class PageNotAvailableForGuestUI : public content::WebUIController {
   explicit PageNotAvailableForGuestUI(content::WebUI* web_ui,
                                       const std::string& host_name);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageNotAvailableForGuestUI);
+  PageNotAvailableForGuestUI(const PageNotAvailableForGuestUI&) = delete;
+  PageNotAvailableForGuestUI& operator=(const PageNotAvailableForGuestUI&) =
+      delete;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PAGE_NOT_AVAILABLE_FOR_GUEST_PAGE_NOT_AVAILABLE_FOR_GUEST_UI_H_

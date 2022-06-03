@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 declare_args() {
   # You can set the variable 'use_official_google_api_keys' to true
@@ -64,7 +66,10 @@ if (use_official_google_api_keys == "") {
 
 config("key_defines") {
   defines = []
-  if (use_official_google_api_keys) {
+
+  # TODO(crbug.com/1171510): Refactor so use_official_google_api_keys can be
+  # used for Fuchsia.
+  if (!is_fuchsia && (is_chrome_branded || use_official_google_api_keys)) {
     defines += [ "USE_OFFICIAL_GOOGLE_API_KEYS=1" ]
   }
   if (google_api_key != "") {
@@ -86,12 +91,16 @@ template("google_apis_tmpl") {
     sources = [
       "gaia/core_account_id.cc",
       "gaia/core_account_id.h",
+      "gaia/gaia_access_token_fetcher.cc",
+      "gaia/gaia_access_token_fetcher.h",
       "gaia/gaia_auth_consumer.cc",
       "gaia/gaia_auth_consumer.h",
       "gaia/gaia_auth_fetcher.cc",
       "gaia/gaia_auth_fetcher.h",
       "gaia/gaia_auth_util.cc",
       "gaia/gaia_auth_util.h",
+      "gaia/gaia_config.cc",
+      "gaia/gaia_config.h",
       "gaia/gaia_constants.cc",
       "gaia/gaia_constants.h",
       "gaia/gaia_oauth_client.cc",
@@ -128,19 +137,20 @@ template("google_apis_tmpl") {
 
     configs += [
       ":key_defines",
-      "//build/config/compiler:no_size_t_to_int_warning",
     ]
 
     deps = [
+      ":oauth2_mint_token_consent_result_proto",
       "//base",
       "//base/third_party/dynamic_annotations",
       "//build:branding_buildflags",
+      "//build:chromeos_buildflags",
       "//crypto",
       "//mojo/public/cpp/bindings:struct_traits",
       "//services/network/public/cpp",
     ]
 
-    if (use_official_google_api_keys) {
+    if (is_chrome_branded || use_official_google_api_keys) {
       deps += [ "internal:generate_metrics_key_header" ]
     }
 
@@ -148,15 +158,13 @@ template("google_apis_tmpl") {
       deps += invoker.deps
     }
 
-    if (is_mac || is_ios) {
-      set_sources_assignment_filter([])
+    if (is_apple) {
       sources += [
         "google_api_keys_mac.h",
         "google_api_keys_mac.mm",
       ]
-      set_sources_assignment_filter(sources_assignment_filter)
 
-      libs = [ "Foundation.framework" ]
+      frameworks = [ "Foundation.framework" ]
     }
   }
 }
@@ -165,7 +173,12 @@ google_apis_tmpl("google_apis") {
   deps = [
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
+}
+
+proto_library("oauth2_mint_token_consent_result_proto") {
+  sources = [ "gaia/oauth2_mint_token_consent_result.proto" ]
 }
 
 static_library("test_support") {
@@ -193,9 +206,7 @@ static_library("test_support") {
 
 source_set("run_all_unittests") {
   testonly = true
-  sources = [
-    "run_all_unittests.cc",
-  ]
+  sources = [ "run_all_unittests.cc" ]
 
   deps = [
     "//base/test:test_support",
@@ -207,7 +218,9 @@ test("google_apis_unittests") {
   sources = [
     "gaia/gaia_auth_fetcher_unittest.cc",
     "gaia/gaia_auth_util_unittest.cc",
+    "gaia/gaia_config_unittest.cc",
     "gaia/gaia_oauth_client_unittest.cc",
+    "gaia/gaia_urls_unittest.cc",
     "gaia/google_service_auth_error_unittest.cc",
     "gaia/oauth2_access_token_fetcher_impl_unittest.cc",
     "gaia/oauth2_access_token_manager_unittest.cc",
@@ -220,32 +233,64 @@ test("google_apis_unittests") {
     "google_api_keys_unittest.h",
   ]
 
-  data = [
-    "test/",
-  ]
-
   configs += [ ":key_defines" ]
 
   deps = [
     ":google_apis",
+    ":oauth2_mint_token_consent_result_proto",
     ":run_all_unittests",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//google_apis/calendar:calendar_unittests",
+    "//google_apis/common:common_unittests",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_ios) {
+    deps += [ ":google_apis_unittest_bundle_data" ]
+  } else {
+    data = [ "test/" ]
+  }
+
+  if (is_android) {
+    deps += [ "//net/android:net_java" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+  }
 
   if (enable_extensions) {
     deps += [ "//google_apis/drive:drive_unittests" ]
   }
 
-  if (is_mac || is_ios) {
-    set_sources_assignment_filter([])
+  if (is_apple) {
     sources += [ "google_api_keys_mac_unittest.mm" ]
-    set_sources_assignment_filter(sources_assignment_filter)
 
     deps += [ "//third_party/ocmock" ]
   }
+}
+
+bundle_data("google_apis_unittest_bundle_data") {
+  testonly = true
+  sources = [
+    "test/data/calendar/events.json",
+    "test/data/calendar/invalid_events.json",
+    "test/data/gaia/all_base_urls.json",
+    "test/data/gaia/all_urls.json",
+    "test/data/gaia/api_keys.json",
+    "test/data/gaia/bad_url.json",
+    "test/data/gaia/bad_url_key.json",
+    "test/data/gaia/bad_urls_key.json",
+    "test/data/gaia/not_a_json.txt",
+    "test/data/gaia/one_base_url.json",
+    "test/data/gaia/one_url.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

@@ -5,9 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 #define CHROMEOS_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/components/tether/active_host.h"
 
@@ -25,6 +22,11 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
  public:
   explicit HotspotUsageDurationTracker(ActiveHost* active_host,
                                        base::Clock* clock);
+
+  HotspotUsageDurationTracker(const HotspotUsageDurationTracker&) = delete;
+  HotspotUsageDurationTracker& operator=(const HotspotUsageDurationTracker&) =
+      delete;
+
   virtual ~HotspotUsageDurationTracker();
 
  protected:
@@ -40,8 +42,6 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
   base::Clock* clock_;
 
   base::Time last_connection_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(HotspotUsageDurationTracker);
 };
 
 }  // namespace tether

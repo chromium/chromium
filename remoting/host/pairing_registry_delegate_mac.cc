@@ -4,7 +4,7 @@
 
 #include "remoting/host/pairing_registry_delegate.h"
 
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 
 namespace remoting {
 

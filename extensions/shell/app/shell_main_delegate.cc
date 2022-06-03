@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
@@ -19,40 +20,47 @@
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/common/shell_content_client.h"
 #include "extensions/shell/renderer/shell_content_renderer_client.h"
-#include "services/service_manager/embedder/switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_paths.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_paths.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_switches.h"  // nogncheck
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "components/nacl/common/nacl_paths.h"  // nogncheck
-#endif  // OS_LINUX
-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
-#endif  // OS_POSIX && !OS_MACOSX && !OS_ANDROID
+#endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/nix/xdg_util.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include "base/base_paths_mac.h"
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#include "components/crash/content/app/breakpad_linux.h"         // nogncheck
-#include "components/crash/content/app/crash_reporter_client.h"  // nogncheck
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/crash/core/app/breakpad_linux.h"         // nogncheck
+#include "components/crash/core/app/crash_reporter_client.h"  // nogncheck
 #include "extensions/shell/app/shell_crash_reporter_client.h"
 #endif
 
 namespace {
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extensions::ShellCrashReporterClient* GetCrashReporterClient() {
   static base::NoDestructor<extensions::ShellCrashReporterClient> instance;
   return instance.get();
@@ -70,13 +78,13 @@ base::FilePath GetDataPath() {
     return cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
 
   base::FilePath data_dir;
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   data_dir = base::nix::GetXDGDirectory(
       env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
 #elif defined(OS_WIN)
   CHECK(base::PathService::Get(base::DIR_LOCAL_APP_DATA, &data_dir));
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
 #else
   NOTIMPLEMENTED();
@@ -135,10 +143,13 @@ ShellMainDelegate::~ShellMainDelegate() {
 bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   InitLogging();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
 #endif
-#if BUILDFLAG(ENABLE_NACL) && defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::dbus_paths::RegisterPathProvider();
+#endif
+#if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
   nacl::RegisterPathProvider();
 #endif
   extensions::RegisterPathProvider();
@@ -149,10 +160,12 @@ void ShellMainDelegate::PreSandboxStartup() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   crash_reporter::SetCrashReporterClient(GetCrashReporterClient());
   // Reporting for sub-processes will be initialized in ZygoteForked.
-  if (process_type != service_manager::switches::kZygoteProcess)
+  if (process_type != switches::kZygoteProcess)
     breakpad::InitCrashReporter(process_type);
 #endif
 
@@ -182,17 +195,18 @@ void ShellMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
 void ShellMainDelegate::ZygoteStarting(
-    std::vector<std::unique_ptr<service_manager::ZygoteForkDelegate>>*
-        delegates) {
+    std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
 #if BUILDFLAG(ENABLE_NACL)
   nacl::AddNaClZygoteForkDelegates(delegates);
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
-#endif  // OS_POSIX && !OS_MACOSX && !OS_ANDROID
+#endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShellMainDelegate::ZygoteForked() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -201,18 +215,21 @@ void ShellMainDelegate::ZygoteForked() {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {}
+#endif
+
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
     const std::string& process_type) {
   // The browser process has no process type flag, but needs resources.
   // On Linux the zygote process opens the resources for the renderers.
-  return process_type.empty() ||
-         process_type == service_manager::switches::kZygoteProcess ||
+  return process_type.empty() || process_type == switches::kZygoteProcess ||
          process_type == switches::kRendererProcess ||
 #if BUILDFLAG(ENABLE_NACL)
          process_type == switches::kNaClLoaderProcess ||
 #endif
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
          process_type == switches::kGpuProcess ||
 #endif
          process_type == switches::kUtilityProcess;

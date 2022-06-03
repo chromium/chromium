@@ -11,10 +11,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/common/importer/importer_data_types.h"
 
 // ImporterList detects installed browsers and profiles via
@@ -22,6 +20,10 @@
 class ImporterList {
  public:
   ImporterList();
+
+  ImporterList(const ImporterList&) = delete;
+  ImporterList& operator=(const ImporterList&) = delete;
+
   ~ImporterList();
 
   // Detects the installed browsers and their associated profiles, then stores
@@ -35,7 +37,7 @@ class ImporterList {
   // alive, run the callback when the source profile detection finishes.
   void DetectSourceProfiles(const std::string& locale,
                             bool include_interactive_profiles,
-                            const base::Closure& profiles_loaded_callback);
+                            base::OnceClosure profiles_loaded_callback);
 
   // Returns the number of different source profiles you can import from.
   size_t count() const { return source_profiles_.size(); }
@@ -49,7 +51,7 @@ class ImporterList {
   // Called when the source profiles are loaded. Copies the loaded profiles
   // in |profiles| and calls |profiles_loaded_callback|.
   void SourceProfilesLoaded(
-      const base::Closure& profiles_loaded_callback,
+      base::OnceClosure profiles_loaded_callback,
       const std::vector<importer::SourceProfile>& profiles);
 
   // The list of profiles with the default one first.
@@ -58,8 +60,6 @@ class ImporterList {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ImporterList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImporterList);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_IMPORTER_LIST_H_

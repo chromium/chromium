@@ -8,21 +8,27 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>UploadChromeDesktopReport</code> when the upload is
   // finished.
   // Also Invoked by <code>setDeviceData</code> when data is stored.
+  [platforms = ("win", "mac", "linux")]
   callback DoneCallback = void();
 
   // Invoked by <code>getDeviceId</code> to return the ID.
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceIdCallback = void(DOMString id);
 
   // Invoked by <code>getPersistentSecret</code> to return the secret.
+  [platforms = ("win", "mac")]
   callback GetPersistentSecretCallback = void(ArrayBuffer secret);
 
   // Invoked by <code>getDeviceDataCallback</code> to return the device data.
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceDataCallback = void(ArrayBuffer data);
 
   // Possible states a particular device setting can be in.
+  [platforms = ("win", "mac", "linux")]
   enum SettingValue { UNKNOWN, DISABLED, ENABLED };
 
   // Device info fields returned by the getDeviceInfo API.
+  [platforms = ("win", "mac", "linux")]
   dictionary DeviceInfo {
     DOMString osName;
     DOMString osVersion;
@@ -31,38 +37,112 @@ namespace enterprise.reportingPrivate {
     DOMString serialNumber;
     SettingValue screenLockSecured;
     SettingValue diskEncrypted;
+    DOMString[] macAddresses;
+    DOMString? windowsMachineDomain;
+    DOMString? windowsUserDomain;
+    DOMString securityPatchLevel;
   };
 
   // Invoked by <code>getDeviceInfo</code> to return device information.
+  [platforms = ("win", "mac", "linux")]
   callback GetDeviceInfoCallback = void(DeviceInfo deviceInfo);
 
+  // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
+  enum RealtimeUrlCheckMode { DISABLED, ENABLED_MAIN_FRAME };
+
+  // Possible states for the SafeBrowsingProtectionLevel policy.
+  enum SafeBrowsingLevel { DISABLED, STANDARD, ENHANCED };
+
+  // Possible states for the PasswordProtectionWarningTrigger policy
+  enum PasswordProtectionTrigger {
+    PASSWORD_PROTECTION_OFF,
+    PASSWORD_REUSE,
+    PHISHING_REUSE,
+    POLICY_UNSET
+  };
+
+  // Context info fields returned by the getContextInfo API.
+  dictionary ContextInfo {
+    DOMString[] browserAffiliationIds;
+    DOMString[] profileAffiliationIds;
+    DOMString[] onFileAttachedProviders;
+    DOMString[] onFileDownloadedProviders;
+    DOMString[] onBulkDataEntryProviders;
+    RealtimeUrlCheckMode realtimeUrlCheckMode;
+    DOMString[] onSecurityEventProviders;
+    DOMString browserVersion;
+    SafeBrowsingLevel safeBrowsingProtectionLevel;
+    boolean siteIsolationEnabled;
+    boolean builtInDnsClientEnabled;
+    PasswordProtectionTrigger passwordProtectionWarningTrigger;
+    boolean? chromeCleanupEnabled;
+    boolean chromeRemoteDesktopAppBlocked;
+    boolean? thirdPartyBlockingEnabled;
+    SettingValue osFirewall;
+    DOMString[] systemDnsServers;
+  };
+
+  // Invoked by <code>getContextInfo</code> to return context information.
+  callback GetContextInfoCallback = void(ContextInfo contextInfo);
+
+  // The status passed to the callback of <code>getCertificate</code> to
+  // indicate if the required policy is set.
+  enum CertificateStatus { OK, POLICY_UNSET };
+
+  // The certificate, if one meets the requirements, returned by the
+  // $(ref:getCertificate) API. <code>encodedCertificate</code> will be
+  // the DER encoding (binary encoding following X.690 Distinguished Encoding
+  // Rules) of the X.509 certificate.
+  dictionary Certificate {
+    CertificateStatus status;
+    ArrayBuffer? encodedCertificate;
+  };
+
+  // Invoked by <code>getCertificate</code> to return the selected certificate.
+  callback CertificateCallback = void(Certificate certificate);
+
   interface Functions {
-
-    // Uploads the status of Chrome browser to the admin console by sending
-    // request to the DMServer. Sets runtime.lastError on failure.
-    static void uploadChromeDesktopReport(
-        object report,
-        optional DoneCallback callback);
-
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
+    [platforms = ("win", "mac", "linux"), supportsPromises]
     static void getDeviceId(optional GetDeviceIdCallback callback);
 
     // Gets a randomly generated persistent secret (symmetric key) that
-    // can be used to encrypt the data stored with |setDeviceData|.
-    static void getPersistentSecret(GetPersistentSecretCallback callback);
+    // can be used to encrypt the data stored with |setDeviceData|. If the
+    // optional parameter |forceCreation| is set to true the secret is recreated
+    // in case of any failure to retrieve the currently stored one. Sets
+    // $(ref:runtime.lastError) on failure.
+    [platforms = ("win", "mac"), supportsPromises]
+    static void getPersistentSecret(
+        optional boolean resetSecret,
+        GetPersistentSecretCallback callback);
 
-    // Gets the device data for |id|. Sets runtime.lastError on failure.
+    // Gets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
+    [platforms = ("win", "mac", "linux"), supportsPromises]
     static void getDeviceData(DOMString id, GetDeviceDataCallback callback);
 
-    // Sets the device data for |id|. Sets runtime.lastError on failure.
+    // Sets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
+    // If the |data| parameter is undefined and there is already data
+    // associated with |id| it will be cleared.
+    [platforms = ("win", "mac", "linux"), supportsPromises]
     static void setDeviceData(DOMString id,
-             ArrayBuffer data,
-             optional DoneCallback callback);
+                              optional ArrayBuffer data,
+                              optional DoneCallback callback);
 
     // Gets the device information (including disk encryption status,
     // screen lock status, serial number, model).
-    static void getDeviceInfo(optional GetDeviceInfoCallback callback);
+    [platforms = ("win", "mac", "linux"), supportsPromises]
+    static void getDeviceInfo(GetDeviceInfoCallback callback);
+
+    // Gets the context information (including management status of the browser,
+    // state of key security policies, browser version).
+    [supportsPromises] static void getContextInfo(
+        GetContextInfoCallback callback);
+
+    // Returns the certificate that would be selected by the filters in the
+    // AutoSelectCertificateForUrls policy for <code>url</code>.
+    [supportsPromises] static void getCertificate(DOMString url,
+                                                  CertificateCallback callback);
   };
 
 };

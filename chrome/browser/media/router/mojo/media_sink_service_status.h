@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/common/media_router/discovery/media_sink_internal.h"
-#include "chrome/common/media_router/media_route_provider_helper.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/media_route_provider_helper.h"
 
 namespace media_router {
 
@@ -21,6 +22,10 @@ namespace media_router {
 class MediaSinkServiceStatus {
  public:
   MediaSinkServiceStatus();
+
+  MediaSinkServiceStatus(const MediaSinkServiceStatus&) = delete;
+  MediaSinkServiceStatus& operator=(const MediaSinkServiceStatus&) = delete;
+
   ~MediaSinkServiceStatus();
 
   // Called when a media sink service reports discovered sinks to MR.
@@ -30,7 +35,7 @@ class MediaSinkServiceStatus {
 
   // Called when a media sink service reports available sinks for an app to MR.
   void UpdateAvailableSinks(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       const std::string& media_source,
       const std::vector<MediaSinkInternal>& available_sinks);
 
@@ -40,13 +45,17 @@ class MediaSinkServiceStatus {
   // Returns current status as a JSON string.
   std::string GetStatusAsJSONString() const;
 
- private:
-  // Map of sinks sent to extension, keyed by provider name;
-  base::flat_map<std::string, std::vector<MediaSinkInternal>> discovered_sinks_;
-  // Map of available sinks, keyed by media source
-  base::MRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
+  base::WeakPtr<MediaSinkServiceStatus> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkServiceStatus);
+ private:
+  // Map of discovered sinks, keyed by provider name.
+  base::flat_map<std::string, std::vector<MediaSinkInternal>> discovered_sinks_;
+  // Map of available sinks, keyed by media source.
+  base::LRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
+
+  base::WeakPtrFactory<MediaSinkServiceStatus> weak_ptr_factory_{this};
 };
 
 }  // namespace media_router

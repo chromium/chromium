@@ -1,22 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../controls/settings_checkbox.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="import_data_browser_proxy.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../settings_vars_css.html">
-
-<dom-module id="settings-import-data-dialog">
-  <template>
     <style include="settings-shared md-select">
       .description {
         align-items: center;
@@ -51,7 +32,7 @@
           </iron-icon>
           <div hidden$="[[!prefs.import_dialog_bookmarks.value]]">
             <div class="description">$i18n{importSuccess}</div>
-            <settings-toggle-button class="first"
+            <settings-toggle-button
                 label="$i18n{showBookmarksBar}"
                 pref="{{prefs.bookmark_bar.show_on_all_tabs}}">
             </settings-toggle-button>
@@ -64,34 +45,36 @@
               aria-label="$i18n{importFromLabel}"
               on-change="onBrowserProfileSelectionChange_">
             <template is="dom-repeat" items="[[browserProfiles_]]">
-              <option value="[[item.index]]">[[item.name]]</option>
+              <option value="[[item.index]]">
+                [[getProfileDisplayName_(item.name, item.profileName)]]
+              </option>
             </template>
           </select>
           <div class="description">$i18n{importDescription}</div>
-          <settings-checkbox
+          <settings-checkbox id="importDialogHistory"
               hidden="[[!selected_.history]]"
               pref="{{prefs.import_dialog_history}}"
-              label="$i18n{importHistory}">
+              label="$i18n{importHistory}" no-set-pref>
           </settings-checkbox>
-          <settings-checkbox
+          <settings-checkbox id="importDialogBookmarks"
               hidden="[[!selected_.favorites]]"
               pref="{{prefs.import_dialog_bookmarks}}"
-              label="$i18n{importFavorites}">
+              label="$i18n{importFavorites}" no-set-pref>
           </settings-checkbox>
-          <settings-checkbox
+          <settings-checkbox id="importDialogSavedPasswords"
               hidden="[[!selected_.passwords]]"
               pref="{{prefs.import_dialog_saved_passwords}}"
-              label="$i18n{importPasswords}">
+              label="$i18n{importPasswords}" no-set-pref>
           </settings-checkbox>
-          <settings-checkbox
+          <settings-checkbox id="importDialogSearchEngine"
               hidden="[[!selected_.search]]"
               pref="{{prefs.import_dialog_search_engine}}"
-              label="$i18n{importSearch}">
+              label="$i18n{importSearch}" no-set-pref>
           </settings-checkbox>
-          <settings-checkbox
+          <settings-checkbox id="importDialogAutofillFormData"
               hidden="[[!selected_.autofillFormData]]"
               pref="{{prefs.import_dialog_autofill_form_data}}"
-              label="$i18n{importAutofillFormData}">
+              label="$i18n{importAutofillFormData}" no-set-pref>
           </settings-checkbox>
         </div>
       </div>
@@ -125,6 +108,3 @@
             on-click="closeDialog_">$i18n{done}</cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="import_data_dialog.js"></script>
-:</dom-module>

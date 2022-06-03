@@ -35,6 +35,12 @@ std::vector<ColorPlaneLayout> CreatePlanes(const std::vector<int32_t>& strides,
   return planes;
 }
 
+static std::string ModifierToHexString(uint64_t modifier) {
+  std::stringstream stream;
+  stream << "0x" << std::hex << modifier;
+  return stream.str();
+}
+
 }  // namespace
 
 TEST(VideoFrameLayout, CreateI420) {
@@ -208,7 +214,7 @@ TEST(VideoFrameLayout, ToStringWithPlanes) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifier =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_I420, coded_size: 320x180, "
             "planes (stride, offset, size): [(384, 0, 0), (192, 0, 0), "
@@ -229,7 +235,7 @@ TEST(VideoFrameLayout, ToStringMultiPlanar) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifier =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
             "planes (stride, offset, size): [(384, 0, 100), (192, 100, 100)], "
@@ -246,7 +252,7 @@ TEST(VideoFrameLayout, ToString) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifier =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
             "planes (stride, offset, size): [(0, 0, 0), (0, 0, 0)], "

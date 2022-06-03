@@ -1,0 +1,7 @@
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x300
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x300
+    LayoutNGBlockFlow {BODY} at (0,0) size 1200x300
+layer at (12,11) size 15x15
+  LayoutIFrame (positioned) {IFRAME} at (12,10.50) size 15x15 (display-locked)

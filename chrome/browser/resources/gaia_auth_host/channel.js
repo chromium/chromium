@@ -4,8 +4,9 @@
 
 /**
  * Channel to the background script.
+ * @constructor
  */
-function Channel() {
+/* #export */ function Channel() {
   this.messageCallbacks_ = {};
   this.internalRequestCallbacks_ = {};
 }
@@ -32,7 +33,7 @@ Channel.prototype = {
   /**
    * Initialize the channel with given port for the background script.
    */
-  init: function(port) {
+  init(port) {
     this.port_ = port;
     this.port_.onMessage.addListener(this.onMessage_.bind(this));
   },
@@ -40,7 +41,7 @@ Channel.prototype = {
   /**
    * Connects to the background script with the given name.
    */
-  connect: function(name) {
+  connect(name) {
     this.port_ = chrome.runtime.connect({name: name});
     this.port_.onMessage.addListener(this.onMessage_.bind(this));
   },
@@ -50,14 +51,14 @@ Channel.prototype = {
    * is received, the callback will be invoked with the message as its arg.
    * Note only the last registered callback will be invoked.
    */
-  registerMessage: function(name, callback) {
+  registerMessage(name, callback) {
     this.messageCallbacks_[name] = callback;
   },
 
   /**
    * Sends a message to the other side of the channel.
    */
-  send: function(msg) {
+  send(msg) {
     this.port_.postMessage(msg);
   },
 
@@ -65,7 +66,7 @@ Channel.prototype = {
    * Sends a message to the other side and invokes the callback with
    * the replied object. Useful for message that expects a returned result.
    */
-  sendWithCallback: function(msg, callback) {
+  sendWithCallback(msg, callback) {
     const requestId = this.nextInternalRequestId_++;
     this.internalRequestCallbacks_[requestId] = callback;
     this.send({
@@ -79,7 +80,7 @@ Channel.prototype = {
    * Invokes message callback using given message.
    * @return {*} The return value of the message callback or null.
    */
-  invokeMessageCallbacks_: function(msg) {
+  invokeMessageCallbacks_(msg) {
     const name = msg.name;
     if (this.messageCallbacks_[name]) {
       return this.messageCallbacks_[name](msg);
@@ -92,7 +93,7 @@ Channel.prototype = {
   /**
    * Invoked when a message is received.
    */
-  onMessage_: function(msg) {
+  onMessage_(msg) {
     const name = msg.name;
     if (name == Channel.INTERNAL_REQUEST_MESSAGE) {
       const payload = msg.payload;

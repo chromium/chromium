@@ -12,43 +12,13 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 
-/** Java API for recording UMA histograms. */
+/**
+ * Java API for recording UMA histograms. Note that when updating this file, please also update
+ * {@link ShadowRecordHistogram} so that it correctly shadows all the methods.
+ * */
 @JNINamespace("base::android")
 @MainDex
 public class RecordHistogram {
-    /** Underlying {@link UmaRecorder} used by methods in this class. */
-    private static UmaRecorder sRecorder = new NativeUmaRecorder();
-
-    /**
-     * Null, unless recording of histograms is currently disabled for testing. Exposed for use in
-     * peer classes {e.g. AnimationFrameTimeHistogram}.
-     * <p>
-     * Use {@link #setDisabledForTests(boolean)} to set this value.
-     */
-    @VisibleForTesting
-    public static Throwable sDisabledBy;
-
-    /**
-     * Tests may not have native initialized, so they may need to disable metrics. The value should
-     * be reset after the test done, to avoid carrying over state to unrelated tests.
-     * <p>
-     * In JUnit tests this can be done automatically using
-     * {@link org.chromium.chrome.browser.DisableHistogramsRule}.
-     */
-    @VisibleForTesting
-    public static void setDisabledForTests(boolean disabled) {
-        if (disabled) {
-            if (sDisabledBy != null) {
-                throw new IllegalStateException("Histograms are already disabled.", sDisabledBy);
-            }
-            sDisabledBy = new Throwable();
-            sRecorder = new NoopUmaRecorder();
-        } else {
-            sDisabledBy = null;
-            sRecorder = new NativeUmaRecorder();
-        }
-    }
-
     /**
      * Records a sample in a boolean UMA histogram of the given name. Boolean histogram has two
      * buckets, corresponding to success (true) and failure (false). This is the Java equivalent of
@@ -58,7 +28,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, either true or false
      */
     public static void recordBooleanHistogram(String name, boolean sample) {
-        sRecorder.recordBooleanHistogram(name, sample);
+        UmaRecorderHolder.get().recordBooleanHistogram(name, sample);
     }
 
     /**
@@ -83,7 +53,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, at least 1 and at most 999999
      */
     public static void recordCountHistogram(String name, int sample) {
-        sRecorder.recordExponentialHistogram(name, sample, 1, 1_000_000, 50);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sample, 1, 1_000_000, 50);
     }
 
     /**
@@ -94,7 +64,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, at least 1 and at most 99
      */
     public static void recordCount100Histogram(String name, int sample) {
-        sRecorder.recordExponentialHistogram(name, sample, 1, 100, 50);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sample, 1, 100, 50);
     }
 
     /**
@@ -105,7 +75,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, at least 1 and at most 999
      */
     public static void recordCount1000Histogram(String name, int sample) {
-        sRecorder.recordExponentialHistogram(name, sample, 1, 1_000, 50);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sample, 1, 1_000, 50);
     }
 
     /**
@@ -116,7 +86,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, at least 1 and at most 99999
      */
     public static void recordCount100000Histogram(String name, int sample) {
-        sRecorder.recordExponentialHistogram(name, sample, 1, 100_000, 50);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sample, 1, 100_000, 50);
     }
 
     /**
@@ -132,7 +102,7 @@ public class RecordHistogram {
      */
     public static void recordCustomCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
-        sRecorder.recordExponentialHistogram(name, sample, min, max, numBuckets);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sample, min, max, numBuckets);
     }
 
     /**
@@ -148,7 +118,7 @@ public class RecordHistogram {
      */
     public static void recordLinearCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
-        sRecorder.recordLinearHistogram(name, sample, min, max, numBuckets);
+        UmaRecorderHolder.get().recordLinearHistogram(name, sample, min, max, numBuckets);
     }
 
     /**
@@ -171,7 +141,7 @@ public class RecordHistogram {
      *               {@code <= 100} ideally, definitely {@code <= 1000}.
      */
     public static void recordSparseHistogram(String name, int sample) {
-        sRecorder.recordSparseHistogram(name, sample);
+        UmaRecorderHolder.get().recordSparseHistogram(name, sample);
     }
 
     /**
@@ -257,7 +227,7 @@ public class RecordHistogram {
      * @param sizeInkB Sample to record in KB
      */
     public static void recordMemoryKBHistogram(String name, int sizeInKB) {
-        sRecorder.recordExponentialHistogram(name, sizeInKB, 1000, 500000, 50);
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sizeInKB, 1000, 500000, 50);
     }
 
     /**
@@ -268,12 +238,12 @@ public class RecordHistogram {
      * @param sample sample to be recorded, expected to fall in range {@code [0, max)}
      * @param max the smallest value counted in the overflow bucket, shouldn't be larger than 100
      */
-    private static void recordExactLinearHistogram(String name, int sample, int max) {
+    public static void recordExactLinearHistogram(String name, int sample, int max) {
         // Range [0, 1) is counted in the underflow bucket. The first "real" bucket starts at 1.
         final int min = 1;
         // One extra is added for the overflow bucket.
         final int numBuckets = max + 1;
-        sRecorder.recordLinearHistogram(name, sample, min, max, numBuckets);
+        UmaRecorderHolder.get().recordLinearHistogram(name, sample, min, max, numBuckets);
     }
 
     private static int clampToInt(long value) {
@@ -286,7 +256,7 @@ public class RecordHistogram {
 
     private static void recordCustomTimesHistogramMilliseconds(
             String name, long duration, long min, long max, int numBuckets) {
-        sRecorder.recordExponentialHistogram(
+        UmaRecorderHolder.get().recordExponentialHistogram(
                 name, clampToInt(duration), clampToInt(min), clampToInt(max), numBuckets);
     }
 
@@ -312,11 +282,22 @@ public class RecordHistogram {
     }
 
     /**
+     * Forgets the given histogram, for testing purposes only.
+     *
+     * @param name name of the histogram to forget
+     */
+    @VisibleForTesting
+    public static void forgetHistogramForTesting(String name) {
+        RecordHistogramJni.get().forgetHistogramForTesting(name);
+    }
+
+    /**
      * Natives API to read metrics reported when testing.
      */
     @NativeMethods
     public interface Natives {
         int getHistogramValueCountForTesting(String name, int sample);
         int getHistogramTotalCountForTesting(String name);
+        void forgetHistogramForTesting(String name);
     }
 }

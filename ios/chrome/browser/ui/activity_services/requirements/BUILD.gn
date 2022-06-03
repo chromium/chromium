@@ -4,7 +4,6 @@
 
 source_set("requirements") {
   sources = [
-    "activity_service_password.h",
     "activity_service_positioner.h",
     "activity_service_presentation.h",
   ]

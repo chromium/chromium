@@ -1,0 +1,3 @@
+BasedOnStyle: Chromium
+Standard: Cpp11
+JavaScriptWrapImports: true

@@ -1,0 +1,15 @@
+<html>
+<head>
+ <script>
+   function onLoad() {
+    var iframeDocument = document.getElementById("childframe").contentDocument;
+     iframeDocument.body.innerHTML = "<div><a id='anchorTag' href='http://www.example.com' style='position: absolute; left: 20px; top: 20px; height: 20px;'>Link to example.com</a></div>";
+    var anchor = iframeDocument.getElementById("anchorTag");
+    anchor.addEventListener("contextmenu", function(event) { document.title = "anchor contextmenu"; });
+  }
+</script>
+</head>
+<body onload="onLoad()">
+  <iframe id="childframe" style="width: 100px; height: 100px;"></iframe>
+</body>
+<html>

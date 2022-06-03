@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_PRIORITY_QUEUE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -30,6 +29,8 @@ class PriorityQueue {
   using const_iterator = typename StorageType::const_iterator;
 
   PriorityQueue() = default;
+  PriorityQueue(const PriorityQueue&) = delete;
+  PriorityQueue& operator=(const PriorityQueue&) = delete;
 
   bool Contains(ElementType* element) const {
     return element->PriorityQueueHandle() != kNotFound;
@@ -55,7 +56,7 @@ class PriorityQueue {
 
   const EntryType& operator[](wtf_size_t index) const { return heap_[index]; }
 
-  void Trace(Visitor* visitor) { visitor->Trace(heap_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(heap_); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PriorityQueueTest, Updates);
@@ -79,8 +80,6 @@ class PriorityQueue {
   }
 
   StorageType heap_;
-
-  DISALLOW_COPY_AND_ASSIGN(PriorityQueue);
 };
 
 template <typename PriorityType, typename ElementType>
@@ -142,6 +141,8 @@ inline void PriorityQueue<PriorityType, ElementType>::Remove(
   Swap(heap_[index], heap_.back());
   heap_.pop_back();
   element->PriorityQueueHandle() = kNotFound;
+  if (index == heap_.size() || PercolateUp(index) != index)
+    return;
   PercolateDown(index);
 }
 

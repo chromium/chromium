@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -11,6 +12,7 @@ mojom("mojom") {
     "battery_monitor.mojom",
     "battery_status.mojom",
     "bluetooth_system.mojom",
+    "device_posture_provider.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
     "geolocation_config.mojom",
@@ -36,16 +38,32 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:mutable_network_traffic_annotation_interface",
+    "//services/network/public/mojom:mojom_proxy_config",
+    "//services/network/public/mojom:url_loader_base",
+    "//url/mojom:url_mojom_gurl",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "mtp_file_entry.mojom",
       "mtp_manager.mojom",
       "mtp_storage_info.mojom",
     ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "device.mojom.BluetoothAddress"
+          cpp = "::std::array<::uint8_t, 6>"
+        },
+      ]
+      traits_headers = [ "//services/device/public/cpp/bluetooth/bluetooth_system_mojom_traits.h" ]
+      traits_sources = [ "//services/device/public/cpp/bluetooth/bluetooth_system_mojom_traits.cc" ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
 
   # The blink variant of the Device Service mojom are depended on by the
   # blink platform target. All blink variant mojoms use WTF types, which are
@@ -56,16 +74,13 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   visibility_blink = [
-    "//third_party/blink/renderer/bindings/modules/v8:generate_mojo_bindings",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
     "//third_party/blink/public/mojom:mojom_platform_blink",
   ]
 }
 
 mojom("device_service") {
-  sources = [
-    "device_service.mojom",
-  ]
+  sources = [ "device_service.mojom" ]
 
   # We can't depend on the Blink variant of ":generic_sensors", but we need the
   # non-Blink variant as a dependency. Blink can never use the DeviceService
@@ -73,12 +88,19 @@ mojom("device_service") {
   disable_variants = true
 
   enabled_features = []
-  if (is_linux && use_udev) {
+  if ((is_linux || is_chromeos) && use_udev) {
     enabled_features += [ "enable_input_device_manager" ]
   }
 
   if (!is_android) {
     enabled_features += [ "enable_hid" ]
+  }
+
+  # While the device posture API applies to all platforms, only Android and
+  # Windows can fetch posture information so we only build mojo bindings on
+  # these platforms
+  if (is_android || is_win) {
+    enabled_features += [ "enable_device_posture" ]
   }
 
   public_deps = [
@@ -109,6 +131,25 @@ mojom("generic_sensor") {
   # use prepackaged redistributable JS bindings. It is therefore not desirable
   # to scramble these messages.
   scramble_message_ids = false
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "device.mojom.SensorConfiguration"
+          cpp = "::device::PlatformSensorConfiguration"
+        },
+      ]
+      traits_headers = [
+        "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.cc",
+      ]
+      traits_public_deps =
+          [ "//services/device/public/cpp/generic_sensor:sensor_configuration" ]
+    },
+  ]
 }
 
 mojom("usb") {
@@ -145,15 +186,13 @@ mojom("usb") {
     "//third_party/blink/renderer/modules/webusb",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_blink",
   ]
+
+  webui_module_path = "/"
 }
 
 mojom("usb_test") {
   generate_java = true
-  sources = [
-    "usb_manager_test.mojom",
-  ]
-
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
+  sources = [ "usb_manager_test.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/"
 }

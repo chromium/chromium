@@ -1,0 +1,22 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-constexpr-actual.cc:::1094:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::1202:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::1320:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::2030:::16:::raw_ptr<const char16_t>
+r:::gen-constexpr-actual.cc:::2439:::16:::raw_ptr<const char16_t>
+r:::gen-constexpr-actual.cc:::2862:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2893:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2922:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2944:::12:::raw_ptr<const char>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+constexpr_variable_designated_initializers::foo()::(anonymous struct)::str2  # const-char, constexpr-var-initializer
+constexpr_variable_designated_initializers::foo()::(anonymous struct)::str3  # const-char, constexpr-var-initializer
+constexpr_variable_designated_initializers::foo()::(anonymous struct)::str_nullptr  # const-char
+constexpr_variable_designated_initializers::foo()::(anonymous struct)::str_uncovered  # const-char
+constexpr_variable_initializer::foo()::(anonymous struct)::str  # const-char, constexpr-var-initializer
+constexpr_variable_uninitialized_field::foo()::(anonymous struct)::str  # const-char
+field_initializer_in_constexpr_ctor::Foo::ptr2_  # constexpr-ctor-field-initializer
+field_initializer_in_constexpr_ctor::Foo::ptr_  # constexpr-ctor-field-initializer
+==== END FIELD FILTERS ====

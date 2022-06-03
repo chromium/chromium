@@ -1,0 +1,19 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("goods") {
+  sources = [
+    "digital_goods_service.cc",
+    "digital_goods_service.h",
+    "digital_goods_type_converters.cc",
+    "digital_goods_type_converters.h",
+    "dom_window_digital_goods.cc",
+    "dom_window_digital_goods.h",
+    "util.cc",
+    "util.h",
+  ]
+  deps = [ "//third_party/blink/renderer/modules/payments" ]
+}

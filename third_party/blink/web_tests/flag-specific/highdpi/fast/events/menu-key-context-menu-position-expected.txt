@@ -1,0 +1,11 @@
+Verifies that when element is focused in frames then selection by menu key, context menu should come on focused element. Succeeds if context menu is coming on the focused element and event co-ordinates are at center of the elements bounding box.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS event.target is inputNode
+FAIL event.clientX should be 33.33333396911621. Was 33.
+FAIL event.clientY should be 18.666666984558105. Was 18.

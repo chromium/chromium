@@ -8,9 +8,7 @@ var testTabId;
 chrome.test.getConfig(function(config) {
 
   function rewriteURL(url) {
-    var isFtp = /^ftp:/i.test(url);
-    var port = isFtp ? config.ftpServer.port : config.testServer.port;
-    return url.replace(/PORT/, port);
+    return url.replace(/PORT/, config.testServer.port);
   }
 
   function doReq(domain, expectSuccess) {
@@ -45,21 +43,6 @@ chrome.test.getConfig(function(config) {
     chrome.test.assertEq('injected', message);
 
     chrome.test.runTests([
-      function allowedOrigin() {
-        doReq('http://a.com', true);
-      },
-      function diallowedOrigin() {
-        doReq('http://c.com', false);
-      },
-      function allowedSubdomain() {
-        doReq('http://foo.b.com', true);
-      },
-      function noSubdomain() {
-        doReq('http://b.com', true);
-      },
-      function disallowedSubdomain() {
-        doReq('http://foob.com', false);
-      },
       // TODO(asargent): Explicitly create SSL test server and enable the test.
       // function disallowedSSL() {
       //   doReq('https://a.com', false);
@@ -69,15 +52,6 @@ chrome.test.getConfig(function(config) {
         // can still make requests to it since it's the page that the content
         // script is injected into.
         doReq('http://localhost', true);
-      },
-      function allowedFtpHostDisllowed() {
-        doReq('ftp://127.0.0.1', false);
-      },
-      function disallowedFtpHostDisallowed() {
-        // The host is the same as the current page, but the scheme differs.
-        // The origin is not whitelisted, so the same origin policy must kick in
-        // and block the request.
-        doReq('ftp://localhost', false);
       }
     ]);
   });

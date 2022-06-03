@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
@@ -37,6 +36,7 @@ TEST(PushSubscriptionTest, SerializesToBase64URLWithoutPadding) {
   PushSubscription subscription(
       KURL() /* endpoint */, true /* user_visible_only */,
       Vector<uint8_t>() /* application_server_key */, kP256DH, kAuthSecret,
+      absl::nullopt /* expiration_time */,
       nullptr /* service_worker_registration */);
 
   ScriptValue json_object =

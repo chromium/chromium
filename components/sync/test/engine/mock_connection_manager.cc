@@ -7,14 +7,19 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/guid.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "components/sync/engine_impl/syncer_proto_util.h"
+#include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/syncable/directory.h"
-#include "components/sync/syncable/syncable_write_transaction.h"
-#include "components/sync/test/engine/test_id_factory.h"
+#include "components/sync/protocol/client_commands.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using std::find;
@@ -31,7 +36,7 @@ namespace syncer {
 static char kValidAccessToken[] = "AccessToken";
 static char kCacheGuid[] = "kqyg7097kro6GSUod+GSg==";
 
-MockConnectionManager::MockConnectionManager(syncable::Directory* directory)
+MockConnectionManager::MockConnectionManager()
     : server_reachable_(true),
       conflict_all_commits_(false),
       conflict_n_commits_(0),
@@ -40,7 +45,6 @@ MockConnectionManager::MockConnectionManager(syncable::Directory* directory)
       store_birthday_sent_(false),
       client_stuck_(false),
       countdown_to_postbuffer_fail_(0),
-      directory_(directory),
       mid_commit_observer_(nullptr),
       throttling_(false),
       partial_failure_(false),
@@ -55,13 +59,8 @@ MockConnectionManager::~MockConnectionManager() {
   EXPECT_TRUE(update_queue_.empty()) << "Unfetched updates.";
 }
 
-void MockConnectionManager::SetCommitTimeRename(const string& prepend) {
-  commit_time_rename_prepended_string_ = prepend;
-}
-
-void MockConnectionManager::SetMidCommitCallback(
-    const base::Closure& callback) {
-  mid_commit_callback_ = callback;
+void MockConnectionManager::SetMidCommitCallback(base::OnceClosure callback) {
+  mid_commit_callback_ = std::move(callback);
 }
 
 void MockConnectionManager::SetMidCommitObserver(
@@ -69,109 +68,94 @@ void MockConnectionManager::SetMidCommitObserver(
   mid_commit_observer_ = observer;
 }
 
-bool MockConnectionManager::PostBufferToPath(PostBufferParams* params,
-                                             const string& path,
-                                             const string& access_token) {
+HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
+                                               const std::string& access_token,
+                                               std::string* buffer_out) {
   ClientToServerMessage post;
-  if (!post.ParseFromString(params->buffer_in)) {
+  if (!post.ParseFromString(buffer_in)) {
     ADD_FAILURE();
-    return false;
+    // Note: Here and below, ForIoError() is chosen somewhat arbitrarily, since
+    // HttpResponse doesn't have any better-fitting type of error.
+    return HttpResponse::ForIoError();
   }
   if (!post.has_protocol_version()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
   if (!post.has_api_key()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
   if (!post.has_bag_of_chips()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
 
   requests_.push_back(post);
   client_stuck_ = post.sync_problem_detected();
-  sync_pb::ClientToServerResponse response;
-  response.Clear();
-
-  if (directory_) {
-    // If the Directory's locked when we do this, it's a problem as in normal
-    // use this function could take a while to return because it accesses the
-    // network. As we can't test this we do the next best thing and hang here
-    // when there's an issue.
-    if (!directory_->good()) {
-      ADD_FAILURE();
-      return false;
-    }
-    syncable::WriteTransaction wt(FROM_HERE, syncable::UNITTEST, directory_);
-  }
+  sync_pb::ClientToServerResponse client_to_server_response;
+  client_to_server_response.Clear();
 
   if (access_token.empty()) {
-    params->response.server_status = HttpResponse::SYNC_AUTH_ERROR;
-    return false;
+    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
   if (access_token != kValidAccessToken) {
     // Simulate server-side auth failure.
-    params->response.server_status = HttpResponse::SYNC_AUTH_ERROR;
     ClearAccessToken();
+    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
   if (--countdown_to_postbuffer_fail_ == 0) {
     // Fail as countdown hits zero.
-    params->response.server_status = HttpResponse::SYNC_SERVER_ERROR;
-    return false;
+    return HttpResponse::ForHttpStatusCode(net::HTTP_BAD_REQUEST);
   }
 
   if (!server_reachable_) {
-    params->response.server_status = HttpResponse::CONNECTION_UNAVAILABLE;
-    return false;
+    return HttpResponse::ForNetError(net::ERR_FAILED);
   }
 
   // Default to an ok connection.
-  params->response.server_status = HttpResponse::SERVER_CONNECTION_OK;
-  response.set_error_code(SyncEnums::SUCCESS);
+  client_to_server_response.set_error_code(SyncEnums::SUCCESS);
   const string current_store_birthday = store_birthday();
-  response.set_store_birthday(current_store_birthday);
+  client_to_server_response.set_store_birthday(current_store_birthday);
   if (post.has_store_birthday() &&
       post.store_birthday() != current_store_birthday) {
-    response.set_error_code(SyncEnums::NOT_MY_BIRTHDAY);
-    response.set_error_message("Merry Unbirthday!");
-    response.SerializeToString(&params->buffer_out);
+    client_to_server_response.set_error_code(SyncEnums::NOT_MY_BIRTHDAY);
+    client_to_server_response.set_error_message("Merry Unbirthday!");
+    client_to_server_response.SerializeToString(buffer_out);
     store_birthday_sent_ = true;
-    return true;
+    return HttpResponse::ForSuccess();
   }
-  bool result = true;
   EXPECT_TRUE(!store_birthday_sent_ || post.has_store_birthday() ||
               post.message_contents() ==
                   ClientToServerMessage::CLEAR_SERVER_DATA);
   store_birthday_sent_ = true;
 
   if (post.message_contents() == ClientToServerMessage::COMMIT) {
-    if (!ProcessCommit(&post, &response)) {
-      return false;
+    if (!ProcessCommit(&post, &client_to_server_response)) {
+      return HttpResponse::ForIoError();
     }
 
   } else if (post.message_contents() == ClientToServerMessage::GET_UPDATES) {
-    if (!ProcessGetUpdates(&post, &response)) {
-      return false;
+    if (!ProcessGetUpdates(&post, &client_to_server_response)) {
+      return HttpResponse::ForIoError();
     }
   } else if (post.message_contents() ==
              ClientToServerMessage::CLEAR_SERVER_DATA) {
-    if (!ProcessClearServerData(&post, &response)) {
-      return false;
+    if (!ProcessClearServerData(&post, &client_to_server_response)) {
+      return HttpResponse::ForIoError();
     }
   } else {
     EXPECT_TRUE(false) << "Unknown/unsupported ClientToServerMessage";
-    return false;
+    return HttpResponse::ForIoError();
   }
 
   {
     base::AutoLock lock(response_code_override_lock_);
     if (throttling_) {
       sync_pb::ClientToServerResponse_Error* response_error =
-          response.mutable_error();
+          client_to_server_response.mutable_error();
       response_error->set_error_type(SyncEnums::THROTTLED);
       for (ModelType type : partial_failure_type_) {
         response_error->add_error_data_type_ids(
@@ -182,7 +166,7 @@ bool MockConnectionManager::PostBufferToPath(PostBufferParams* params,
 
     if (partial_failure_) {
       sync_pb::ClientToServerResponse_Error* response_error =
-          response.mutable_error();
+          client_to_server_response.mutable_error();
       response_error->set_error_type(SyncEnums::PARTIAL_FAILURE);
       for (ModelType type : partial_failure_type_) {
         response_error->add_error_data_type_ids(
@@ -192,17 +176,16 @@ bool MockConnectionManager::PostBufferToPath(PostBufferParams* params,
     }
   }
 
-  response.SerializeToString(&params->buffer_out);
+  client_to_server_response.SerializeToString(buffer_out);
   if (post.message_contents() == ClientToServerMessage::COMMIT &&
       !mid_commit_callback_.is_null()) {
-    mid_commit_callback_.Run();
-    mid_commit_callback_.Reset();
+    std::move(mid_commit_callback_).Run();
   }
   if (mid_commit_observer_) {
     mid_commit_observer_->Observe();
   }
 
-  return result;
+  return HttpResponse::ForSuccess();
 }
 
 sync_pb::GetUpdatesResponse* MockConnectionManager::GetUpdateResponse() {
@@ -222,19 +205,6 @@ void MockConnectionManager::AddDefaultBookmarkData(sync_pb::SyncEntity* entity,
   }
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateDirectory(
-    int id,
-    int parent_id,
-    const string& name,
-    int64_t version,
-    int64_t sync_ts,
-    const std::string& originator_cache_guid,
-    const std::string& originator_client_item_id) {
-  return AddUpdateDirectory(
-      TestIdFactory::FromNumber(id), TestIdFactory::FromNumber(parent_id), name,
-      version, sync_ts, originator_cache_guid, originator_client_item_id);
-}
-
 void MockConnectionManager::SetGUClientCommand(
     std::unique_ptr<sync_pb::ClientCommand> command) {
   gu_client_command_ = std::move(command);
@@ -245,26 +215,13 @@ void MockConnectionManager::SetCommitClientCommand(
   commit_client_command_ = std::move(command);
 }
 
-void MockConnectionManager::SetTransientErrorId(syncable::Id id) {
+void MockConnectionManager::SetTransientErrorId(const std::string& id) {
   transient_error_ids_.push_back(id);
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateBookmark(
-    int id,
-    int parent_id,
-    const string& name,
-    int64_t version,
-    int64_t sync_ts,
-    const string& originator_client_item_id,
-    const string& originator_cache_guid) {
-  return AddUpdateBookmark(
-      TestIdFactory::FromNumber(id), TestIdFactory::FromNumber(parent_id), name,
-      version, sync_ts, originator_client_item_id, originator_cache_guid);
-}
-
 sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
-    int id,
-    int parent_id,
+    const std::string& id,
+    const std::string& parent_id,
     const string& name,
     int64_t version,
     int64_t sync_ts,
@@ -272,9 +229,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
     int64_t position,
     const sync_pb::EntitySpecifics& specifics) {
   sync_pb::SyncEntity* ent =
-      AddUpdateMeta(TestIdFactory::FromNumber(id).GetServerId(),
-                    TestIdFactory::FromNumber(parent_id).GetServerId(), name,
-                    version, sync_ts);
+      AddUpdateMeta(id, parent_id, name, version, sync_ts);
   ent->set_position_in_parent(position);
   ent->mutable_specifics()->CopyFrom(specifics);
   ent->set_folder(is_dir);
@@ -282,8 +237,8 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
 }
 
 sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
-    int id,
-    int parent_id,
+    const std::string& id,
+    const std::string& parent_id,
     const string& name,
     int64_t version,
     int64_t sync_ts,
@@ -300,13 +255,13 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
 }
 
 sync_pb::SyncEntity* MockConnectionManager::SetNigori(
-    int id,
+    const std::string& id,
     int64_t version,
     int64_t sync_ts,
     const sync_pb::EntitySpecifics& specifics) {
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
-  ent->set_id_string(TestIdFactory::FromNumber(id).GetServerId());
-  ent->set_parent_id_string(TestIdFactory::FromNumber(0).GetServerId());
+  ent->set_id_string(id);
+  ent->set_parent_id_string("0");
   ent->set_server_defined_unique_tag(ModelTypeToRootTag(NIGORI));
   ent->set_name("Nigori");
   ent->set_non_unique_name("Nigori");
@@ -418,15 +373,13 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
             last_commit_response().entryresponse(0).response_type());
 
   if (last_sent_commit().entries(0).deleted()) {
-    ModelType type = GetModelType(last_sent_commit().entries(0));
-    AddUpdateTombstone(syncable::Id::CreateFromServerId(
-                           last_sent_commit().entries(0).id_string()),
-                       type);
+    ModelType type =
+        GetModelTypeFromSpecifics(last_sent_commit().entries(0).specifics());
+    AddUpdateTombstone(last_sent_commit().entries(0).id_string(), type);
   } else {
     sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
     ent->CopyFrom(last_sent_commit().entries(0));
     ent->clear_insert_after_item_id();
-    ent->clear_old_parent_id();
     ent->set_version(last_commit_response().entryresponse(0).version());
     ent->set_id_string(last_commit_response().entryresponse(0).id_string());
 
@@ -447,11 +400,11 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
   return GetMutableLastUpdate();
 }
 
-void MockConnectionManager::AddUpdateTombstone(const syncable::Id& id,
+void MockConnectionManager::AddUpdateTombstone(const std::string& id,
                                                ModelType type) {
   // Tombstones have only the ID set and dummy values for the required fields.
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
-  ent->set_id_string(id.GetServerId());
+  ent->set_id_string(id);
   ent->set_version(0);
   ent->set_name("");
   ent->set_deleted(true);
@@ -463,9 +416,10 @@ void MockConnectionManager::AddUpdateTombstone(const syncable::Id& id,
 void MockConnectionManager::SetLastUpdateDeleted() {
   // Tombstones have only the ID set.  Wipe anything else.
   string id_string = GetMutableLastUpdate()->id_string();
-  ModelType type = GetModelType(*GetMutableLastUpdate());
+  ModelType type =
+      GetModelTypeFromSpecifics(GetMutableLastUpdate()->specifics());
   GetUpdateResponse()->mutable_entries()->RemoveLast();
-  AddUpdateTombstone(syncable::Id::CreateFromServerId(id_string), type);
+  AddUpdateTombstone(id_string, type);
 }
 
 void MockConnectionManager::SetLastUpdateOriginatorFields(
@@ -534,7 +488,8 @@ bool MockConnectionManager::ProcessGetUpdates(
   sync_pb::GetUpdatesResponse* updates = &update_queue_.front();
   for (int i = 0; i < updates->entries_size(); ++i) {
     if (!updates->entries(i).deleted()) {
-      ModelType entry_type = GetModelType(updates->entries(i));
+      ModelType entry_type =
+          GetModelTypeFromSpecifics(updates->entries(i).specifics());
       EXPECT_TRUE(
           IsModelTypePresentInSpecifics(gu.from_progress_marker(), entry_type))
           << "Syncer did not request updates being provided by the test.";
@@ -586,7 +541,7 @@ bool MockConnectionManager::ShouldConflictThisCommit() {
   return conflict;
 }
 
-bool MockConnectionManager::ShouldTransientErrorThisId(syncable::Id id) {
+bool MockConnectionManager::ShouldTransientErrorThisId(const std::string& id) {
   return base::Contains(transient_error_ids_, id);
 }
 
@@ -601,7 +556,6 @@ bool MockConnectionManager::ProcessCommit(
     ADD_FAILURE() << "Wrong contents, found " << csm->message_contents();
     return false;
   }
-  map<string, string> changed_ids;
   const CommitMessage& commit_message = csm->commit();
   CommitResponse* commit_response = response_buffer->mutable_commit();
   commit_messages_.push_back(std::make_unique<CommitMessage>());
@@ -609,26 +563,28 @@ bool MockConnectionManager::ProcessCommit(
   map<string, sync_pb::CommitResponse_EntryResponse*> response_map;
   for (int i = 0; i < commit_message.entries_size(); i++) {
     const sync_pb::SyncEntity& entry = commit_message.entries(i);
-    if (!entry.has_id_string()) {
-      ADD_FAILURE();
-      return false;
-    }
     string id_string = entry.id_string();
+    if (!entry.has_id_string()) {
+      const ModelType model_type = GetModelTypeFromSpecifics(entry.specifics());
+      // For commit-only types, fake having received a random ID, simply to
+      // reuse the validation logic later below.
+      if (CommitOnlyTypes().Has(model_type)) {
+        id_string = base::GenerateGUID();
+      } else {
+        ADD_FAILURE() << " for specifics type "
+                      << ModelTypeToString(model_type);
+        return false;
+      }
+    }
+
     if (entry.name().length() >= 256ul) {
       ADD_FAILURE() << "Name probably too long. True server name dchecking not "
                        "implemented. Found length "
                     << entry.name().length();
       return false;
     }
-    syncable::Id id;
-    if (entry.version() == 0) {
-      // Relies on our new item string id format. (string representation of a
-      // negative number).
-      id = syncable::Id::CreateFromClientString(id_string);
-    } else {
-      id = syncable::Id::CreateFromServerId(id_string);
-    }
-    committed_ids_.push_back(id);
+
+    committed_ids_.push_back(id_string);
 
     if (response_map.end() == response_map.find(id_string))
       response_map[id_string] = commit_response->add_entryresponse();
@@ -637,27 +593,16 @@ bool MockConnectionManager::ProcessCommit(
       er->set_response_type(CommitResponse::CONFLICT);
       continue;
     }
-    if (ShouldTransientErrorThisId(id)) {
+    if (ShouldTransientErrorThisId(id_string)) {
       er->set_response_type(CommitResponse::TRANSIENT_ERROR);
       continue;
     }
     er->set_response_type(CommitResponse::SUCCESS);
     er->set_version(entry.version() + 1);
-    if (!commit_time_rename_prepended_string_.empty()) {
-      // Commit time rename sent down from the server.
-      er->set_name(commit_time_rename_prepended_string_ + entry.name());
-    }
-    string parent_id_string = entry.parent_id_string();
-    // Remap id's we've already assigned.
-    if (changed_ids.end() != changed_ids.find(parent_id_string)) {
-      parent_id_string = changed_ids[parent_id_string];
-      er->set_parent_id_string(parent_id_string);
-    }
     if (entry.has_version() && 0 != entry.version()) {
       er->set_id_string(id_string);  // Allows verification.
     } else {
       string new_id = base::StringPrintf("mock_server:%d", next_new_id_++);
-      changed_ids[id_string] = new_id;
       er->set_id_string(new_id);
     }
   }
@@ -684,32 +629,6 @@ bool MockConnectionManager::ProcessClearServerData(
   }
   response->mutable_clear_server_data();
   return true;
-}
-
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateDirectory(
-    syncable::Id id,
-    syncable::Id parent_id,
-    const string& name,
-    int64_t version,
-    int64_t sync_ts,
-    const string& originator_cache_guid,
-    const string& originator_client_item_id) {
-  return AddUpdateDirectory(id.GetServerId(), parent_id.GetServerId(), name,
-                            version, sync_ts, originator_cache_guid,
-                            originator_client_item_id);
-}
-
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateBookmark(
-    syncable::Id id,
-    syncable::Id parent_id,
-    const string& name,
-    int64_t version,
-    int64_t sync_ts,
-    const string& originator_cache_guid,
-    const string& originator_client_item_id) {
-  return AddUpdateBookmark(id.GetServerId(), parent_id.GetServerId(), name,
-                           version, sync_ts, originator_cache_guid,
-                           originator_client_item_id);
 }
 
 sync_pb::SyncEntity* MockConnectionManager::GetMutableLastUpdate() {

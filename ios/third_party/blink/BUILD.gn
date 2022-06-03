@@ -3,9 +3,7 @@
 # found in the LICENSE file.
 
 source_set("html_tokenizer") {
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   sources = [
     "src/html_character_provider.h",

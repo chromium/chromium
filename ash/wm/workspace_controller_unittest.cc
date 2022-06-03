@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -27,6 +26,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
@@ -78,10 +78,14 @@ std::string GetLayerNames(const aura::Window* window) {
 class WorkspaceControllerTest : public AshTestBase {
  public:
   WorkspaceControllerTest() = default;
+
+  WorkspaceControllerTest(const WorkspaceControllerTest&) = delete;
+  WorkspaceControllerTest& operator=(const WorkspaceControllerTest&) = delete;
+
   ~WorkspaceControllerTest() override = default;
 
   aura::Window* CreateTestWindowUnparented() {
-    aura::Window* window = window_factory::NewWindow().release();
+    aura::Window* window = new aura::Window(nullptr);
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
@@ -89,7 +93,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   aura::Window* CreateTestWindow() {
-    aura::Window* window = window_factory::NewWindow().release();
+    aura::Window* window = new aura::Window(nullptr);
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
@@ -128,9 +132,6 @@ class WorkspaceControllerTest : public AshTestBase {
   ShelfLayoutManager* shelf_layout_manager() {
     return GetPrimaryShelf()->shelf_layout_manager();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceControllerTest);
 };
 
 // Assertions around adding a normal window.
@@ -348,7 +349,7 @@ TEST_F(WorkspaceControllerTest, ShelfStateUpdated) {
   std::unique_ptr<Window> w1(CreateTestWindow());
   const gfx::Rect w1_bounds(0, 1, 101, 102);
   Shelf* shelf = GetPrimaryShelf();
-  shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   const gfx::Rect touches_shelf_bounds(
       0, shelf_layout_manager()->GetIdealBounds().y() - 10, 101, 102);
   // Move |w1| to overlap the shelf.
@@ -444,7 +445,7 @@ TEST_F(WorkspaceControllerTest, MinimizeResetsVisibility) {
   // AshTestHelper.
   SessionInfo info;
   info.state = session_manager::SessionState::ACTIVE;
-  ash::Shell::Get()->session_controller()->SetSessionInfo(info);
+  Shell::Get()->session_controller()->SetSessionInfo(info);
 
   std::unique_ptr<Window> w1(CreateTestWindow());
   w1->Show();
@@ -585,6 +586,11 @@ class DontCrashOnChangeAndActivateDelegate
  public:
   DontCrashOnChangeAndActivateDelegate() : window_(NULL) {}
 
+  DontCrashOnChangeAndActivateDelegate(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+  DontCrashOnChangeAndActivateDelegate& operator=(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+
   void set_window(aura::Window* window) { window_ = window; }
 
   // WindowDelegate overrides:
@@ -598,8 +604,6 @@ class DontCrashOnChangeAndActivateDelegate
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontCrashOnChangeAndActivateDelegate);
 };
 
 }  // namespace
@@ -1005,10 +1009,10 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
 
   // A user moved the window.
   std::unique_ptr<WindowResizer> resizer(
-      CreateWindowResizer(window1.get(), gfx::Point(), HTCAPTION,
+      CreateWindowResizer(window1.get(), gfx::PointF(), HTCAPTION,
                           ::wm::WINDOW_MOVE_SOURCE_MOUSE)
           .release());
-  gfx::Point location = resizer->GetInitialLocation();
+  gfx::PointF location = resizer->GetInitialLocation();
   location.Offset(-50, 0);
   resizer->Drag(location, 0);
   resizer->CompleteDrag();
@@ -1271,7 +1275,7 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
 
   // Left snap |window|.
   EXPECT_FALSE(window_state->bounds_changed_by_user());
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
       display::Screen::GetScreen()
@@ -1380,9 +1384,9 @@ TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
       ui::EventTarget* target = targeter->FindTargetForEvent(root, &mouse);
       EXPECT_EQ(expected_target, target);
 
-      ui::TouchEvent touch(
-          ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
-          ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::TouchEvent touch(ui::ET_TOUCH_PRESSED, location,
+                           ui::EventTimeForNow(),
+                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
       target = targeter->FindTargetForEvent(root, &touch);
       EXPECT_EQ(expected_target, target);
     }

@@ -23,19 +23,21 @@ component("menu") {
     "//ui/base",
     "//ui/gfx",
   ]
-  if (use_x11) {
-    configs += [ "//build/config/linux:x11" ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "menu_property_list_unittest.cc",
-  ]
+  sources = [ "menu_property_list_unittest.cc" ]
   deps = [
     ":menu",
     "//base",
+    "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -48,14 +46,11 @@ class CC_EXPORT UIResourceBitmap {
   UIResourceBitmap(const UIResourceBitmap& other);
   ~UIResourceBitmap();
 
-  // Returns the memory usage of the bitmap.
-  size_t EstimateMemoryUsage() const {
-    return pixel_ref_ ? pixel_ref_->rowBytes() * info_.height() : 0;
-  }
-
   const uint8_t* GetPixels() const {
     return static_cast<const uint8_t*>(pixel_ref_->pixels());
   }
+  size_t SizeInBytes() const;
+  size_t row_bytes() const { return pixel_ref_ ? pixel_ref_->rowBytes() : 0; }
 
  private:
   friend class AutoLockUIResourceBitmap;

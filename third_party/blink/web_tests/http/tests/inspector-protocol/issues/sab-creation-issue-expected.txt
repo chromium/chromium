@@ -1,0 +1,20 @@
+Verifies that creating a SAB in a non-COI context causes an issue.
+
+Inspector issue: {
+    issue : {
+        code : SharedArrayBufferIssue
+        details : {
+            sharedArrayBufferIssueDetails : {
+                isWarning : true
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : CreationIssue
+            }
+        }
+    }
+}
+

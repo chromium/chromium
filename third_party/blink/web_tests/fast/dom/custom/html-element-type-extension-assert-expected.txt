@@ -1,9 +1,0 @@
-Tests that type extension of a element whose DOM interface is HTMLElement does not assert
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS did not crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

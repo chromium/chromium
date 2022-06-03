@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/EXT_texture_compression_rgtc/
+
+[
+    LegacyNoInterfaceObject,
+    DoNotCheckConstants
+] interface EXTTextureCompressionRGTC {
+    const unsigned long COMPRESSED_RED_RGTC1_EXT = 0x8DBB;
+    const unsigned long COMPRESSED_SIGNED_RED_RGTC1_EXT = 0x8DBC;
+    const unsigned long COMPRESSED_RED_GREEN_RGTC2_EXT = 0x8DBD;
+    const unsigned long COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT = 0x8DBE;
+};

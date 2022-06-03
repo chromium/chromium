@@ -42,12 +42,6 @@ public class WebappCustomTabTimeSpentLogger {
         String umaSuffix;
         // TODO(peconn): Combine this with TrustedWebActivityOpenTimeRecorder.
         switch (mActivityType) {
-            case LaunchSourceType.WEBAPP:
-                umaSuffix = ".Webapp";
-                break;
-            case LaunchSourceType.WEBAPK:
-                umaSuffix = ".WebApk";
-                break;
             case LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY:
                 umaSuffix = ".MediaLauncherActivity";
                 break;

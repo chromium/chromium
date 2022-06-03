@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test for crbug/666610: Crash in blink::getTypeExtension document.registerElement is not a function
-Harness: the test ran to completion.
-

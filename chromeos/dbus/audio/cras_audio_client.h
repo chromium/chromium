@@ -7,16 +7,17 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
+#include "base/containers/flat_map.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/volume_state.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace dbus {
 class Bus;
@@ -58,6 +59,15 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when the number of active output streams has changed.
     virtual void NumberOfActiveStreamsChanged();
 
+    // Called when the battery level for a Bluetooth headset changed.
+    virtual void BluetoothBatteryChanged(const std::string& address,
+                                         uint32_t level);
+
+    // Called when the number of input streams with permission per client type
+    // changed.
+    virtual void NumberOfInputStreamsWithPermissionChanged(
+        const base::flat_map<std::string, uint32_t>& num_input_streams);
+
    protected:
     virtual ~Observer();
   };
@@ -73,6 +83,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Returns the global instance if initialized. May return null.
   static CrasAudioClient* Get();
+
+  CrasAudioClient(const CrasAudioClient&) = delete;
+  CrasAudioClient& operator=(const CrasAudioClient&) = delete;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
@@ -92,12 +105,27 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets any available group ID for the system AEC
   virtual void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) = 0;
 
+  // Gets if system NS is supported.
+  virtual void GetSystemNsSupported(DBusMethodCallback<bool> callback) = 0;
+
+  // Gets if system AGC is supported.
+  virtual void GetSystemAgcSupported(DBusMethodCallback<bool> callback) = 0;
+
   // Gets an array of audio input and output nodes.
   virtual void GetNodes(DBusMethodCallback<AudioNodeList> callback) = 0;
 
   // Gets the number of active output streams.
   virtual void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) = 0;
+
+  // Gets the number of input streams with permission per client type.
+  virtual void GetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>>) = 0;
+
+  // Gets the DeprioritzeBtWbsMic flag. On a few platforms CRAS may
+  // report to deprioritize Bluetooth WBS mic's node priority because
+  // WBS feature is still working to be stabilized.
+  virtual void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) = 0;
 
   // Sets output volume of the given |node_id| to |volume|, in the rage of
   // [0, 100].
@@ -113,6 +141,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets input mute state to |mute_on| value.
   virtual void SetInputMute(bool mute_on) = 0;
 
+  // Sets input noise cancellation state to |noise_cancellation_on| value.
+  virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
+
+  // Gets if Noise Cancellation is supported.
+  virtual void GetNoiseCancellationSupported(
+      DBusMethodCallback<bool> callback) = 0;
+
   // Sets the active output node to |node_id|.
   virtual void SetActiveOutputNode(uint64_t node_id) = 0;
 
@@ -127,6 +162,12 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void SetHotwordModel(uint64_t node_id,
                                const std::string& hotword_model,
                                VoidDBusMethodCallback callback) = 0;
+
+  // Enables or disables the usage of fixed A2DP packet size in CRAS.
+  virtual void SetFixA2dpPacketSize(bool enabled) = 0;
+
+  // Enables or disables CRAS to use Floss as the Bluetooth stack.
+  virtual void SetFlossEnabled(bool enabled) = 0;
 
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.
@@ -155,9 +196,37 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // |node_id|.
   virtual void SwapLeftRight(uint64_t node_id, bool swap) = 0;
 
+  // Sets the display |rotation| attribute of the primary active output device.
+  // The dbus message will be dropped if this feature is not supported on the
+  // |node_id|.
+  virtual void SetDisplayRotation(uint64_t node_id,
+                                  cras::DisplayRotation rotation) = 0;
+
   virtual void SetGlobalOutputChannelRemix(
       int32_t channels,
       const std::vector<double>& mixer) = 0;
+
+  // Sets the player playback status. Possible status are "Playing", "Paused" or
+  // "Stopped".
+  virtual void SetPlayerPlaybackStatus(const std::string& playback_status) = 0;
+
+  // Sets the player identity. Identity is a human readable title for the source
+  // of the media player. This could be the name of the app or the name of the
+  // site playing media.
+  virtual void SetPlayerIdentity(const std::string& playback_identity) = 0;
+
+  // Sets the current track position for the player in microseconds
+  virtual void SetPlayerPosition(const int64_t& position) = 0;
+
+  // Sets the current track duration for the player in microseconds
+  virtual void SetPlayerDuration(const int64_t& duration) = 0;
+
+  // Sets the current media metadata including Title, Album, and Artist.
+  virtual void SetPlayerMetadata(
+      const std::map<std::string, std::string>& metadata) = 0;
+
+  // Asks Cras to resend battery level for Bluetooth device if exists .
+  virtual void ResendBluetoothBattery() = 0;
 
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
@@ -168,11 +237,14 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   CrasAudioClient();
   virtual ~CrasAudioClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::CrasAudioClient;
+}
 
 #endif  // CHROMEOS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_

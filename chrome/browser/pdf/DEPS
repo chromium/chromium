@@ -1,4 +1,8 @@
-include_rules = [
-  # The next line is needed for chrome/browser/pdf/pdf_extension_test.cc.
-  "+chrome/browser/ui/views/location_bar/zoom_bubble_view.h",
-]
+specific_include_rules = {
+  "pdf_extension_test\.cc": [
+    "+chrome/browser/ui/views/location_bar/zoom_bubble_view.h",
+  ],
+  "pdf_find_request_manager_browsertest\.cc": [
+    "+pdf/document_loader_impl.h",
+  ],
+}

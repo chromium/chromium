@@ -4,7 +4,7 @@
 
 #include "chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace mojo {
 

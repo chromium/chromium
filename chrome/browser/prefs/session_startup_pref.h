@@ -52,8 +52,8 @@ struct SessionStartupPref {
   static void SetStartupPref(Profile* profile, const SessionStartupPref& pref);
   static void SetStartupPref(PrefService* prefs,
                              const SessionStartupPref& pref);
-  static SessionStartupPref GetStartupPref(Profile* profile);
-  static SessionStartupPref GetStartupPref(PrefService* prefs);
+  static SessionStartupPref GetStartupPref(const Profile* profile);
+  static SessionStartupPref GetStartupPref(const PrefService* prefs);
 
   // Whether the startup type and URLs are managed via mandatory policy.
   static bool TypeIsManaged(PrefService* prefs);
@@ -64,7 +64,7 @@ struct SessionStartupPref {
   static bool TypeHasRecommendedValue(PrefService* prefs);
 
   // Whether the startup type has not been overridden from its default.
-  static bool TypeIsDefault(PrefService* prefs);
+  static bool TypeIsDefault(const PrefService* prefs);
 
   // Converts an integer pref value to a SessionStartupPref::Type.
   static SessionStartupPref::Type PrefValueToType(int pref_value);

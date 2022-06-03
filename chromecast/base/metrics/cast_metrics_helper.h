@@ -31,7 +31,8 @@ namespace metrics {
 // Currently, browser startup code should instantiate this once; it can be
 // accessed thereafter through GetInstance. It's not deleted since it may be
 // called during teardown of other global objects.
-// TODO(halliwell): convert to mojo service, eliminate singleton pattern.
+// TODO(halliwell,guohuideng): convert to mojo service, eliminate singleton
+// pattern.
 class CastMetricsHelper {
  public:
   enum BufferingType {
@@ -69,6 +70,9 @@ class CastMetricsHelper {
 
   static CastMetricsHelper* GetInstance();
 
+  CastMetricsHelper(const CastMetricsHelper&) = delete;
+  CastMetricsHelper& operator=(const CastMetricsHelper&) = delete;
+
   // This records the startup time of an app load (note: another app
   // may be running and still collecting metrics).
   virtual void DidStartLoad(const std::string& app_id);
@@ -97,6 +101,11 @@ class CastMetricsHelper {
                                       const std::string& sdk_version,
                                       const std::string& event);
   virtual void RecordApplicationEventWithValue(const std::string& event,
+                                               int value);
+  virtual void RecordApplicationEventWithValue(const std::string& app_id,
+                                               const std::string& session_id,
+                                               const std::string& sdk_version,
+                                               const std::string& event,
                                                int value);
 
   // Logs UMA record of the time the app made its first paint.
@@ -180,8 +189,6 @@ class CastMetricsHelper {
 
   // Default RecordAction callback when metrics_sink_ is not set.
   RecordActionCallback record_action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMetricsHelper);
 };
 
 }  // namespace metrics

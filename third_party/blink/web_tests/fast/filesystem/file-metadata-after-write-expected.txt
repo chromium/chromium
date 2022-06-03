@@ -12,4 +12,5 @@ Writing abcdefghijklmnopqrstuvwxyz to the file...
 Created a writer.
 Write succeeded.
 
+PASS testFile.size is testText1.length
 PASS testFile.size is testText2.length

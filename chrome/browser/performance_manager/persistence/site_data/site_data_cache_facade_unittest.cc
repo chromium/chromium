@@ -4,18 +4,28 @@
 
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
-#include "chrome/browser/performance_manager/persistence/site_data/leveldb_site_data_store.h"
-#include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_factory.h"
-#include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_impl.h"
+#include "base/test/bind.h"
+#include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/unittest_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
+#include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
+#include "components/performance_manager/persistence/site_data/site_data_cache_impl.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -23,17 +33,19 @@ namespace performance_manager {
 
 namespace {
 
-const url::Origin kTestOrigin = url::Origin::Create(GURL("http://www.a.com"));
-const url::Origin kTestOrigin2 = url::Origin::Create(GURL("http://www.b.com"));
-
 // Mock version of a SiteDataCacheImpl. In practice instances of this object
 // live on the Performance Manager sequence and all the mocked methods will be
 // called from there.
-class LenienMockSiteDataCacheImpl : public SiteDataCacheImpl {
+class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
  public:
-  explicit LenienMockSiteDataCacheImpl(const std::string& browser_context_id)
+  explicit LenientMockSiteDataCacheImpl(const std::string& browser_context_id)
       : SiteDataCacheImpl(browser_context_id) {}
-  ~LenienMockSiteDataCacheImpl() override = default;
+
+  LenientMockSiteDataCacheImpl(const LenientMockSiteDataCacheImpl&) = delete;
+  LenientMockSiteDataCacheImpl& operator=(const LenientMockSiteDataCacheImpl&) =
+      delete;
+
+  ~LenientMockSiteDataCacheImpl() override = default;
 
   // The 2 following functions allow setting the expectations for the mocked
   // functions. Any call to one of these functions should be followed by the
@@ -75,10 +87,10 @@ class LenienMockSiteDataCacheImpl : public SiteDataCacheImpl {
   MOCK_METHOD0(ClearAllSiteData, void());
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(LenienMockSiteDataCacheImpl);
 };
-using MockSiteDataCache = ::testing::StrictMock<LenienMockSiteDataCacheImpl>;
+using MockSiteDataCache = ::testing::StrictMock<LenientMockSiteDataCacheImpl>;
+
+}  // namespace
 
 class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
  public:
@@ -87,17 +99,9 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
 
   void SetUp() override {
     testing::TestWithPerformanceManager::SetUp();
-    PerformanceManagerImpl::GetInstance()->CallOnGraphImpl(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::unique_ptr<SiteDataCacheFactory> site_data_cache_factory,
-               performance_manager::GraphImpl* graph) {
-              graph->PassToGraph(std::move(site_data_cache_factory));
-            },
-            std::make_unique<SiteDataCacheFactory>()));
+    profile_ = std::make_unique<TestingProfile>();
     use_in_memory_db_for_testing_ =
         LevelDBSiteDataStore::UseInMemoryDBForTesting();
-    profile_ = std::make_unique<TestingProfile>();
   }
 
   void TearDown() override {
@@ -114,15 +118,16 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
     base::RunLoop run_loop;
     auto quit_closure = run_loop.QuitClosure();
     auto browser_context_id = profile()->UniqueId();
-    PerformanceManagerImpl::GetInstance()->CallOnGraphImpl(
-        FROM_HERE,
-        base::BindLambdaForTesting([&](performance_manager::GraphImpl* graph) {
+    PerformanceManagerImpl::CallOnGraphImpl(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
           auto mock_cache =
               std::make_unique<MockSiteDataCache>(browser_context_id);
           mock_cache_raw = mock_cache.get();
 
-          SiteDataCacheFactory::GetInstance()->ReplaceCacheForTesting(
+          SiteDataCacheFactory::GetInstance()->SetCacheForTesting(
               browser_context_id, std::move(mock_cache));
+          SiteDataCacheFactory::GetInstance()->SetCacheInspectorForTesting(
+              browser_context_id, mock_cache_raw);
           std::move(quit_closure).Run();
         }));
     run_loop.Run();
@@ -133,8 +138,6 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<base::AutoReset<bool>> use_in_memory_db_for_testing_;
 };
-
-}  // namespace
 
 TEST_F(SiteDataCacheFacadeTest, IsDataCacheRecordingForTesting) {
   bool cache_is_recording = false;
@@ -154,7 +157,7 @@ TEST_F(SiteDataCacheFacadeTest, IsDataCacheRecordingForTesting) {
   EXPECT_TRUE(cache_is_recording);
 
   SiteDataCacheFacade off_record_data_cache_facade(
-      profile()->GetOffTheRecordProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   {
     base::RunLoop run_loop;
     auto quit_closure = run_loop.QuitClosure();
@@ -173,21 +176,22 @@ TEST_F(SiteDataCacheFacadeTest, IsDataCacheRecordingForTesting) {
 // when there are no more references to it in the history, after the history is
 // partially cleared.
 TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Partial_OriginNotReferenced) {
-  history::URLRows urls_to_delete = {history::URLRow(kTestOrigin.GetURL()),
-                                     history::URLRow(kTestOrigin2.GetURL())};
+  const auto kOrigin1 = url::Origin::Create(GURL("http://www.a.com"));
+  const auto kOrigin2 = url::Origin::Create(GURL("http://www.b.com"));
+  history::URLRows urls_to_delete = {history::URLRow(kOrigin1.GetURL()),
+                                     history::URLRow(kOrigin2.GetURL())};
   history::DeletionInfo deletion_info =
       history::DeletionInfo::ForUrls(urls_to_delete, std::set<GURL>());
   deletion_info.set_deleted_urls_origin_map({
-      {kTestOrigin.GetURL(), {0, base::Time::Now()}},
-      {kTestOrigin2.GetURL(), {0, base::Time::Now()}},
+      {kOrigin1.GetURL(), {0, base::Time::Now()}},
+      {kOrigin2.GetURL(), {0, base::Time::Now()}},
   });
 
   SiteDataCacheFacade data_cache_facade(profile());
   data_cache_facade.WaitUntilCacheInitializedForTesting();
 
   auto* mock_cache_raw = SetUpMockCache();
-  mock_cache_raw->SetClearSiteDataForOriginsExpectations(
-      {kTestOrigin, kTestOrigin2});
+  mock_cache_raw->SetClearSiteDataForOriginsExpectations({kOrigin1, kOrigin2});
   data_cache_facade.OnURLsDeleted(nullptr, deletion_info);
   mock_cache_raw->WaitForExpectations();
 }
@@ -196,22 +200,24 @@ TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Partial_OriginNotReferenced) {
 // disk) when there remain references to it in the history, after the history is
 // partially cleared.
 TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Partial_OriginStillReferenced) {
-  history::URLRows urls_to_delete = {history::URLRow(kTestOrigin.GetURL()),
-                                     history::URLRow(kTestOrigin2.GetURL())};
+  const auto kOrigin1 = url::Origin::Create(GURL("http://www.a.com"));
+  const auto kOrigin2 = url::Origin::Create(GURL("http://www.b.com"));
+  history::URLRows urls_to_delete = {history::URLRow(kOrigin1.GetURL()),
+                                     history::URLRow(kOrigin2.GetURL())};
   history::DeletionInfo deletion_info =
       history::DeletionInfo::ForUrls(urls_to_delete, std::set<GURL>());
   deletion_info.set_deleted_urls_origin_map({
-      {kTestOrigin.GetURL(), {0, base::Time::Now()}},
-      {kTestOrigin2.GetURL(), {3, base::Time::Now()}},
+      {kOrigin1.GetURL(), {0, base::Time::Now()}},
+      {kOrigin2.GetURL(), {3, base::Time::Now()}},
   });
 
   SiteDataCacheFacade data_cache_facade(profile());
   data_cache_facade.WaitUntilCacheInitializedForTesting();
 
   auto* mock_cache_raw = SetUpMockCache();
-  // |kTestOrigin2| shouldn't be removed as there's still some references to it
+  // |kOrigin2| shouldn't be removed as there's still some references to it
   // in the history.
-  mock_cache_raw->SetClearSiteDataForOriginsExpectations({kTestOrigin});
+  mock_cache_raw->SetClearSiteDataForOriginsExpectations({kOrigin1});
   data_cache_facade.OnURLsDeleted(nullptr, deletion_info);
   mock_cache_raw->WaitForExpectations();
 }

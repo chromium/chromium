@@ -5,6 +5,7 @@
 #include "chrome/browser/android/ntp/most_visited_sites_bridge.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
@@ -29,6 +29,7 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -54,6 +55,9 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
                      const JavaParamRef<jobject>& obj,
                      Profile* profile);
 
+  JavaHomepageClient(const JavaHomepageClient&) = delete;
+  JavaHomepageClient& operator=(const JavaHomepageClient&) = delete;
+
   bool IsHomepageTileEnabled() const override;
   GURL GetHomepageUrl() const override;
   void QueryHomepageTitle(TitleCallback title_callback) override;
@@ -67,8 +71,6 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
 
   // Used in loading titles.
   base::CancelableTaskTracker task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaHomepageClient);
 };
 
 JavaHomepageClient::JavaHomepageClient(JNIEnv* env,
@@ -82,14 +84,14 @@ void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
   DCHECK(!title_callback.is_null());
   GURL url = GetHomepageUrl();
   if (url.is_empty()) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfileIfExists(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (!history_service) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   // If the client is destroyed, the tracker will cancel this task automatically
@@ -105,7 +107,7 @@ void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
 void JavaHomepageClient::OnTitleEntryFound(TitleCallback title_callback,
                                            history::QueryURLResult result) {
   if (!result.success) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   std::move(title_callback).Run(result.row.title());
@@ -131,6 +133,9 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
  public:
   JavaObserver(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
+  JavaObserver(const JavaObserver&) = delete;
+  JavaObserver& operator=(const JavaObserver&) = delete;
+
   void OnURLsAvailable(
       const std::map<SectionType, NTPTilesVector>& sections) override;
 
@@ -138,8 +143,6 @@ class MostVisitedSitesBridge::JavaObserver : public MostVisitedSites::Observer {
 
  private:
   ScopedJavaGlobalRef<jobject> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaObserver);
 };
 
 MostVisitedSitesBridge::JavaObserver::JavaObserver(
@@ -150,40 +153,34 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<base::string16> titles;
-  std::vector<std::string> urls;
-  std::vector<std::string> whitelist_icons;
+  std::vector<std::u16string> titles;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
   std::vector<int> title_sources;
   std::vector<int> sources;
   std::vector<int> section_types;
-  std::vector<int64_t> data_generation_times;
   for (const auto& section : sections) {
     const NTPTilesVector& tiles = section.second;
     section_types.resize(section_types.size() + tiles.size(),
                          static_cast<int>(section.first));
     for (const auto& tile : tiles) {
       titles.emplace_back(tile.title);
-      urls.emplace_back(tile.url.spec());
-      whitelist_icons.emplace_back(tile.whitelist_icon_path.value());
+      urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
       title_sources.emplace_back(static_cast<int>(tile.title_source));
       sources.emplace_back(static_cast<int>(tile.source));
-      data_generation_times.emplace_back(
-          tile.data_generation_time.ToJavaTime());
     }
   }
   Java_MostVisitedSitesBridge_onURLsAvailable(
       env, observer_, ToJavaArrayOfStrings(env, titles),
-      ToJavaArrayOfStrings(env, urls), ToJavaIntArray(env, section_types),
-      ToJavaArrayOfStrings(env, whitelist_icons),
-      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources),
-      ToJavaLongArray(env, data_generation_times));
+      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
+      ToJavaIntArray(env, section_types),
+      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources));
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
     const GURL& site_url) {
   JNIEnv* env = AttachCurrentThread();
   Java_MostVisitedSitesBridge_onIconMadeAvailable(
-      env, observer_, ConvertUTF8ToJavaString(env, site_url.spec()));
+      env, observer_, url::GURLAndroid::FromNativeGURL(env, site_url));
 }
 
 MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)
@@ -218,17 +215,17 @@ void MostVisitedSitesBridge::SetObserver(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_observer,
     jint num_sites) {
-  java_observer_.reset(new JavaObserver(env, j_observer));
-  most_visited_->SetMostVisitedURLsObserver(java_observer_.get(), num_sites);
+  java_observer_ = std::make_unique<JavaObserver>(env, j_observer);
+  most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
 
-void MostVisitedSitesBridge::AddOrRemoveBlacklistedUrl(
+void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& j_url,
+    const JavaParamRef<jobject>& j_url,
     jboolean add_url) {
-  GURL url(ConvertJavaStringToUTF8(env, j_url));
-  most_visited_->AddOrRemoveBlacklistedUrl(url, add_url);
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  most_visited_->AddOrRemoveBlockedUrl(*url, add_url);
 }
 
 void MostVisitedSitesBridge::RecordPageImpression(
@@ -246,9 +243,8 @@ void MostVisitedSitesBridge::RecordTileImpression(
     jint jicon_type,
     jint jtitle_source,
     jint jsource,
-    jlong jdata_generation_time_ms,
-    const JavaParamRef<jstring>& jurl) {
-  GURL url(ConvertJavaStringToUTF8(env, jurl));
+    const JavaParamRef<jobject>& jurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
   TileSource source = static_cast<TileSource>(jsource);
   TileVisualType visual_type = static_cast<TileVisualType>(jvisual_type);
@@ -256,8 +252,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
       static_cast<favicon_base::IconType>(jicon_type);
 
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
-      jindex, source, title_source, visual_type, icon_type,
-      base::Time::FromJavaTime(jdata_generation_time_ms), url));
+      jindex, source, title_source, visual_type, icon_type, *url));
 }
 
 void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
@@ -266,13 +261,11 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
     jint index,
     jint tile_type,
     jint title_source,
-    jint source,
-    jlong jdata_generation_time_ms) {
+    jint source) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, static_cast<TileSource>(source),
       static_cast<TileTitleSource>(title_source),
       static_cast<TileVisualType>(tile_type), favicon_base::IconType::kInvalid,
-      base::Time::FromJavaTime(jdata_generation_time_ms),
       /*url_for_rappor=*/GURL()));
 }
 

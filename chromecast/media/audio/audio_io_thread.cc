@@ -4,7 +4,7 @@
 
 #include "chromecast/media/audio/audio_io_thread.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 
@@ -20,7 +20,7 @@ AudioIoThread::AudioIoThread() : thread_("AudioIO") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.priority = base::ThreadPriority::REALTIME_AUDIO;
-  CHECK(thread_.StartWithOptions(options));
+  CHECK(thread_.StartWithOptions(std::move(options)));
 }
 
 AudioIoThread::~AudioIoThread() = default;

@@ -4,6 +4,9 @@
 
 #include "ash/shelf/shelf_tooltip_manager.h"
 
+#include <string>
+
+#include "ash/constants/ash_switches.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
@@ -11,13 +14,11 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -95,7 +96,7 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
 
 void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
   if (ShouldShowTooltipForView(view)) {
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(timer_delay_),
+    timer_.Start(FROM_HERE, base::Milliseconds(timer_delay_),
                  base::BindOnce(&ShelfTooltipManager::ShowTooltip,
                                 weak_factory_.GetWeakPtr(), view));
   }

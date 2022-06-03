@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/pipeline/stream_decryptor.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 
@@ -24,6 +24,10 @@ class BackendDecryptor : public StreamDecryptor,
                          MediaPipelineBackend::AudioDecryptor::Delegate {
  public:
   explicit BackendDecryptor(EncryptionScheme scheme);
+
+  BackendDecryptor(const BackendDecryptor&) = delete;
+  BackendDecryptor& operator=(const BackendDecryptor&) = delete;
+
   ~BackendDecryptor() override;
 
   // StreamDecryptor implementation:
@@ -49,8 +53,6 @@ class BackendDecryptor : public StreamDecryptor,
   std::unique_ptr<MediaPipelineBackend::AudioDecryptor> decryptor_;
 
   DecryptCB decrypt_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackendDecryptor);
 };
 
 }  // namespace media

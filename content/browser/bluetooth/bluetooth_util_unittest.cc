@@ -4,8 +4,11 @@
 
 #include "content/browser/bluetooth/bluetooth_util.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using WebBluetoothManufacturerDataMap =
+    base::flat_map<blink::mojom::WebBluetoothCompanyPtr,
+                   std::vector<blink::mojom::WebBluetoothDataFilterPtr>>;
 
 namespace content {
 
@@ -14,145 +17,324 @@ namespace {
 const char kBatteryServiceUUIDString[] = "0000180f-0000-1000-8000-00805f9b34fb";
 const char kCyclingPowerUUIDString[] = "00001818-0000-1000-8000-00805f9b34fb";
 
+std::vector<blink::mojom::WebBluetoothDataFilterPtr> CreateDataFilters(
+    std::vector<uint8_t> filter_data,
+    std::vector<uint8_t> filter_mask) {
+  EXPECT_EQ(filter_data.size(), filter_mask.size());
+  std::vector<blink::mojom::WebBluetoothDataFilterPtr> data_filters;
+  for (size_t i = 0; i < filter_data.size(); ++i) {
+    auto data_filter = blink::mojom::WebBluetoothDataFilter::New();
+    data_filter->data = filter_data[i];
+    data_filter->mask = filter_mask[i];
+    data_filters.push_back(std::move(data_filter));
+  }
+  return data_filters;
+}
+
 }  // namespace
 
 class BluetoothUtilTest : public testing::Test {
  public:
   BluetoothUtilTest() = default;
-  ~BluetoothUtilTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothUtilTest);
+  BluetoothUtilTest(const BluetoothUtilTest&) = delete;
+  BluetoothUtilTest& operator=(const BluetoothUtilTest&) = delete;
+
+  ~BluetoothUtilTest() override = default;
 };
 
 TEST_F(BluetoothUtilTest, SameFilters) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
+
+  std::vector<uint8_t> filter_data = {0x01, 0x02, 0x03, 0x04};
+  std::vector<uint8_t> filter_mask = {0xff, 0xff, 0xff, 0xff};
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data, filter_mask)});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data, filter_mask)});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
   EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, BothNoName) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, base::nullopt, "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, base::nullopt, "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, /*name=*/absl::nullopt, "a",
+      /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, /*name=*/absl::nullopt, "a",
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, OnlyOneHasName) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, base::nullopt, "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, /*name=*/absl::nullopt, "a",
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, DifferentName) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "cd", "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "cd", "a", /*manufacturer_data=*/absl::nullopt);
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, BothNoNamePrefix) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(services, "ab",
-                                                              base::nullopt);
-  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(services, "ab",
-                                                              base::nullopt);
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", /*name_prefix=*/absl::nullopt,
+      /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", /*name_prefix=*/absl::nullopt,
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, OnlyOneHasNamePrefix) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(services, "ab",
-                                                              base::nullopt);
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", /*name_prefix=*/absl::nullopt,
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, DifferentNamePrefix) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "ab");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "ab", /*manufacturer_data=*/absl::nullopt);
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, BothNoServicesUUID) {
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(base::nullopt, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(base::nullopt, "ab", "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      /*services=*/absl::nullopt, "ab", "a",
+      /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      /*services=*/absl::nullopt, "ab", "a",
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, OnlyOneHasServicesUUID) {
-  base::Optional<std::vector<device::BluetoothUUID>> services;
+  absl::optional<std::vector<device::BluetoothUUID>> services;
   services.emplace();
   services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services, "ab", "a");
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(base::nullopt, "ab", "ab");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      /*services=*/absl::nullopt, "ab", "ab",
+      /*manufacturer_data=*/absl::nullopt);
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, DifferentServicesUUID) {
-  base::Optional<std::vector<device::BluetoothUUID>> services_1;
+  absl::optional<std::vector<device::BluetoothUUID>> services_1;
   services_1.emplace();
   services_1->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services_1, "ab", "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services_1, "ab", "a", /*manufacturer_data=*/absl::nullopt);
 
-  base::Optional<std::vector<device::BluetoothUUID>> services_2;
+  absl::optional<std::vector<device::BluetoothUUID>> services_2;
   services_2.emplace();
   services_2->push_back(device::BluetoothUUID(kCyclingPowerUUIDString));
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services_2, "ab", "a");
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services_2, "ab", "a", /*manufacturer_data=*/absl::nullopt);
 
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 TEST_F(BluetoothUtilTest, SameServicesUUIDButDifferentOrder) {
-  base::Optional<std::vector<device::BluetoothUUID>> services_1;
+  absl::optional<std::vector<device::BluetoothUUID>> services_1;
   services_1.emplace();
   services_1->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
   services_1->push_back(device::BluetoothUUID(kCyclingPowerUUIDString));
-  auto filter_1 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services_1, "ab", "a");
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services_1, "ab", "a", /*manufacturer_data=*/absl::nullopt);
 
-  base::Optional<std::vector<device::BluetoothUUID>> services_2;
+  absl::optional<std::vector<device::BluetoothUUID>> services_2;
   services_2.emplace();
-  services_2->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
   services_2->push_back(device::BluetoothUUID(kCyclingPowerUUIDString));
-  auto filter_2 =
-      blink::mojom::WebBluetoothLeScanFilter::New(services_2, "ab", "a");
+  services_2->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services_2, "ab", "a", /*manufacturer_data=*/absl::nullopt);
 
   EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, BothNoManufacturerData) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_TRUE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, OnlyOneHasManufacturerData) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  WebBluetoothManufacturerDataMap manufacturer_data;
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", /*manufacturer_data=*/absl::nullopt);
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, DifferentManufacturerDataSize) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters({}, {})});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters({}, {})});
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0002),
+                              CreateDataFilters({}, {})});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, DifferentManufacturerDataCompanyIdentifier) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters({}, {})});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0002),
+                              CreateDataFilters({}, {})});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, DifferentManufacturerDataFilterSize) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  std::vector<uint8_t> filter_data_1 = {0x01};
+  std::vector<uint8_t> filter_mask_1 = {0xff};
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data_1, filter_mask_1)});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  std::vector<uint8_t> filter_data_2 = {0x01, 0x02};
+  std::vector<uint8_t> filter_mask_2 = {0xff, 0xff};
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data_2, filter_mask_2)});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, DifferentManufacturerData) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  std::vector<uint8_t> filter_mask = {0xff, 0xff, 0xff, 0xff};
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  std::vector<uint8_t> filter_data_1 = {0x01, 0x02, 0x03, 0x04};
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data_1, filter_mask)});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  std::vector<uint8_t> filter_data_2 = {0x05, 0x06, 0x07, 0x08};
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data_2, filter_mask)});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
+}
+
+TEST_F(BluetoothUtilTest, DifferentManufacturerDataMask) {
+  absl::optional<std::vector<device::BluetoothUUID>> services;
+  services.emplace();
+  services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
+
+  std::vector<uint8_t> filter_data = {0x01, 0x02, 0x03, 0x04};
+
+  WebBluetoothManufacturerDataMap manufacturer_data_1;
+  std::vector<uint8_t> filter_mask_1 = {0xff, 0xff, 0xff, 0xff};
+  manufacturer_data_1.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data, filter_mask_1)});
+
+  WebBluetoothManufacturerDataMap manufacturer_data_2;
+  std::vector<uint8_t> filter_mask_2 = {0xff, 0xff, 0xff, 0x00};
+  manufacturer_data_2.insert({blink::mojom::WebBluetoothCompany::New(0x0001),
+                              CreateDataFilters(filter_data, filter_mask_2)});
+
+  auto filter_1 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_1));
+  auto filter_2 = blink::mojom::WebBluetoothLeScanFilter::New(
+      services, "ab", "a", std::move(manufacturer_data_2));
+  EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
 }  // namespace content

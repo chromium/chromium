@@ -25,7 +25,8 @@ struct MachPortRendezvousFuzzer {
     server_send_right.reset(port);
   }
 
-  void ClearClientData() {
+  void ClearClientData() EXCLUSIVE_LOCKS_REQUIRED(
+      base::MachPortRendezvousServer::GetInstance()->GetLock()) {
     base::MachPortRendezvousServer::GetInstance()->client_data_.clear();
   }
 
@@ -38,10 +39,10 @@ DEFINE_BINARY_PROTO_FUZZER(const mach_fuzzer::MachMessage& message) {
   static base::MachPortRendezvousFuzzer environment;
 
   {
-    auto* server = base::MachPortRendezvousServer::GetInstance();
-    base::AutoLock lock(server->GetLock());
+    base::AutoLock lock(
+        base::MachPortRendezvousServer::GetInstance()->GetLock());
     environment.ClearClientData();
-    server->RegisterPortsForPid(
+    base::MachPortRendezvousServer::GetInstance()->RegisterPortsForPid(
         getpid(), {std::make_pair(0xbadbeef, base::MachRendezvousPort{
                                                  mach_task_self(),
                                                  MACH_MSG_TYPE_COPY_SEND})});

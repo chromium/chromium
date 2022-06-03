@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -32,6 +31,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
     : public FileSystemBackend {
  public:
   explicit SandboxFileSystemBackend(SandboxFileSystemBackendDelegate* delegate);
+
+  SandboxFileSystemBackend(const SandboxFileSystemBackend&) = delete;
+  SandboxFileSystemBackend& operator=(const SandboxFileSystemBackend&) = delete;
+
   ~SandboxFileSystemBackend() override;
 
   // FileSystemBackend overrides.
@@ -45,14 +48,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(
       FileSystemType type,
       base::File::Error* error_code) override;
-  FileSystemOperation* CreateFileSystemOperation(
+  std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const override;
   bool SupportsStreaming(const FileSystemURL& url) const override;
-  bool HasInplaceCopyImplementation(
-      storage::FileSystemType type) const override;
-  std::unique_ptr<storage::FileStreamReader> CreateFileStreamReader(
+  bool HasInplaceCopyImplementation(FileSystemType type) const override;
+  std::unique_ptr<FileStreamReader> CreateFileStreamReader(
       const FileSystemURL& url,
       int64_t offset,
       int64_t max_bytes_to_read,
@@ -70,14 +72,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   const AccessObserverList* GetAccessObservers(
       FileSystemType type) const override;
 
-  // Returns an origin enumerator of this backend.
+  // Returns a StorageKey enumerator of this backend.
   // This method can only be called on the file thread.
-  SandboxFileSystemBackendDelegate::OriginEnumerator* CreateOriginEnumerator();
+  SandboxFileSystemBackendDelegate::StorageKeyEnumerator*
+  CreateStorageKeyEnumerator();
 
  private:
   SandboxFileSystemBackendDelegate* delegate_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileSystemBackend);
 };
 
 }  // namespace storage

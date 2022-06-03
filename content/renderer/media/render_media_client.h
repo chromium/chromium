@@ -15,6 +15,9 @@ namespace content {
 // visible to the lower media layer.
 class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
  public:
+  RenderMediaClient(const RenderMediaClient&) = delete;
+  RenderMediaClient& operator=(const RenderMediaClient&) = delete;
+
   // Initialize RenderMediaClient and SetMediaClient(). Note that the instance
   // is not exposed because no content code needs to directly access it.
   static void Initialize();
@@ -27,15 +30,13 @@ class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
   bool IsSupportedAudioType(const media::AudioType& type) final;
   bool IsSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;
-  base::Optional<::media::AudioRendererAlgorithmParameters>
+  absl::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       media::AudioParameters audio_parameters) final;
 
  private:
   RenderMediaClient();
   ~RenderMediaClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderMediaClient);
 };
 
 }  // namespace content

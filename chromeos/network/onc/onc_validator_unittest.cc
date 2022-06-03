@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chromeos/network/onc/onc_signature.h"
@@ -28,7 +28,7 @@ class ONCValidatorTest : public ::testing::Test {
   // validation is stored, so that expectations can be checked afterwards using
   // one of the Expect* functions below.
   void Validate(bool strict,
-                std::unique_ptr<base::Value> onc_object,
+                base::Value onc_object,
                 const OncValueSignature* signature,
                 bool managed_onc,
                 ::onc::ONCSource onc_source) {
@@ -51,20 +51,17 @@ class ONCValidatorTest : public ::testing::Test {
                                       true);        // log_warnings
     }
     validator->SetOncSource(onc_source);
-    original_object_ = base::DictionaryValue::From(std::move(onc_object));
-    repaired_object_ = validator->ValidateAndRepairObject(signature,
-                                                          *original_object_,
-                                                          &validation_result_);
+    original_object_ = std::move(onc_object);
+    repaired_object_ = validator->ValidateAndRepairObject(
+        signature, original_object_, &validation_result_);
   }
 
   void ExpectValid() {
     EXPECT_EQ(Validator::VALID, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(original_object_.get(),
-                                   repaired_object_.get()));
+    EXPECT_TRUE(test_utils::Equals(&original_object_, repaired_object_.get()));
   }
 
-  void ExpectRepairWithWarnings(
-      const base::DictionaryValue& expected_repaired) {
+  void ExpectRepairWithWarnings(const base::Value& expected_repaired) {
     EXPECT_EQ(Validator::VALID_WITH_WARNINGS, validation_result_);
     EXPECT_TRUE(test_utils::Equals(&expected_repaired, repaired_object_.get()));
   }
@@ -76,7 +73,7 @@ class ONCValidatorTest : public ::testing::Test {
 
  private:
   Validator::Result validation_result_;
-  std::unique_ptr<const base::DictionaryValue> original_object_;
+  base::Value original_object_;
   std::unique_ptr<const base::DictionaryValue> repaired_object_;
 };
 
@@ -92,8 +89,7 @@ struct OncParams {
       : location(location_of_object),
         signature(onc_signature),
         is_managed(is_managed_onc),
-        onc_source(onc_source) {
-  }
+        onc_source(onc_source) {}
 
   std::string location;
   const OncValueSignature* signature;
@@ -125,15 +121,15 @@ class ONCValidatorValidTest : public ONCValidatorTest,
 
 TEST_P(ONCValidatorValidTest, StrictValidationValid) {
   OncParams onc = GetParam();
-  Validate(true, test_utils::ReadTestDictionary(onc.location), onc.signature,
-           onc.is_managed, onc.onc_source);
+  Validate(true, test_utils::ReadTestDictionaryValue(onc.location),
+           onc.signature, onc.is_managed, onc.onc_source);
   ExpectValid();
 }
 
 TEST_P(ONCValidatorValidTest, LiberalValidationValid) {
   OncParams onc = GetParam();
-  Validate(false, test_utils::ReadTestDictionary(onc.location), onc.signature,
-           onc.is_managed, onc.onc_source);
+  Validate(false, test_utils::ReadTestDictionaryValue(onc.location),
+           onc.signature, onc.is_managed, onc.onc_source);
   ExpectValid();
 }
 
@@ -170,9 +166,18 @@ INSTANTIATE_TEST_SUITE_P(
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // AllowOnlyPolicyCellularNetworks is only allowed for device policies.
+        OncParams("managed_toplevel_with_only_managed_cellular.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("managed_toplevel_l2tpipsec.onc",
                   &kToplevelConfigurationSignature,
                   true),
+        OncParams("managed_toplevel_l2tpipsec.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("managed_toplevel_with_server_and_ca_cert.onc",
                   &kToplevelConfigurationSignature,
                   true),
@@ -215,6 +220,10 @@ INSTANTIATE_TEST_SUITE_P(
         OncParams("ethernet_with_eap.onc",
                   &kNetworkConfigurationSignature,
                   true),
+        OncParams("cellular_with_smdp.onc",
+                  &kNetworkConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("translation_of_shill_ethernet_with_ipconfig.onc",
                   &kNetworkWithStateSignature,
                   true),
@@ -287,13 +296,12 @@ class ONCValidatorTestRepairable
  public:
   // Load the common test data and return the dictionary at the field with
   // name |name|.
-  std::unique_ptr<base::DictionaryValue> GetDictionaryFromTestFile(
-      const std::string& name) {
-    std::unique_ptr<const base::DictionaryValue> dict(
-        test_utils::ReadTestDictionary("invalid_settings_with_repairs.json"));
-    const base::DictionaryValue* onc_object = NULL;
-    CHECK(dict->GetDictionary(name, &onc_object));
-    return base::WrapUnique(onc_object->DeepCopy());
+  base::Value GetDictionaryFromTestFile(const std::string& name) {
+    base::Value dict = test_utils::ReadTestDictionaryValue(
+        "invalid_settings_with_repairs.json");
+    base::Value* result = dict.FindKey(name);
+    EXPECT_TRUE(result);
+    return result ? std::move(*result) : base::Value();
   }
 };
 
@@ -306,7 +314,7 @@ TEST_P(ONCValidatorTestRepairable, StrictValidation) {
   if (location_of_repaired.empty())
     ExpectInvalid();
   else
-    ExpectRepairWithWarnings(*GetDictionaryFromTestFile(location_of_repaired));
+    ExpectRepairWithWarnings(GetDictionaryFromTestFile(location_of_repaired));
 }
 
 TEST_P(ONCValidatorTestRepairable, LiberalValidation) {
@@ -321,8 +329,7 @@ TEST_P(ONCValidatorTestRepairable, LiberalValidation) {
     if (location_of_repaired.empty())
       ExpectInvalid();
     else
-      ExpectRepairWithWarnings(
-          *GetDictionaryFromTestFile(location_of_repaired));
+      ExpectRepairWithWarnings(GetDictionaryFromTestFile(location_of_repaired));
   }
 }
 
@@ -372,6 +379,14 @@ INSTANTIATE_TEST_SUITE_P(
                       &kNetworkConfigurationSignature,
                       false),
             ExpectBothNotValid("", "third-party-vpn-missing-extension-id")),
+        std::make_pair(OncParams("managed-network-invalid-vpn-type-third-party",
+                                 &kNetworkConfigurationSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("managed-network-invalid-vpn-type-arc",
+                                 &kNetworkConfigurationSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
         std::make_pair(OncParams("tether-missing-battery-percentage",
                                  &kNetworkWithStateSignature,
                                  true),
@@ -471,11 +486,6 @@ INSTANTIATE_TEST_SUITE_P(
                                  false),
                        ExpectBothNotValid("network-repaired",
                                           "network-repaired")),
-        std::make_pair(OncParams("toplevel-with-vpn",
-                                 &kToplevelConfigurationSignature,
-                                 false,
-                                 ::onc::ONC_SOURCE_DEVICE_POLICY),
-                       ExpectBothNotValid("toplevel-empty", "toplevel-empty")),
         std::make_pair(OncParams("wifi-ssid-and-hexssid-inconsistent",
                                  &kNetworkConfigurationSignature,
                                  false),

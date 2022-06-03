@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_UI_COCOA_TOUCHBAR_BROWSER_WINDOW_TOUCH_BAR_CONTROLLER_H_
 
 #import <Cocoa/Cocoa.h>
-
-#include "base/mac/availability.h"
-#import "ui/base/cocoa/touch_bar_forward_declarations.h"
+#include <os/availability.h>
 
 class Browser;
 @class BrowserWindowDefaultTouchBar;

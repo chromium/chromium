@@ -1,0 +1,2 @@
+# TODO(crbug.com/1111979) Enable all tests on lacros.
+-NetExportFileWriterTest*

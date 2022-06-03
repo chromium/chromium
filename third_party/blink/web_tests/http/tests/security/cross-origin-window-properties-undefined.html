@@ -16,7 +16,7 @@ onload = function() {
   test(function() {
     let iframe = document.getElementById('cross-origin-iframe');
     let w = iframe.contentWindow;  // cross origin window
-    assert_throws('SecurityError', function() { w.document; }, "The window 'w' must be cross origin.");
+    assert_throws_dom('SecurityError', function() { w.document; }, "The window 'w' must be cross origin.");
     assert_equals(w.then, undefined, "The value of 'then' must be undefined.");
     assert_equals(w.location.then, undefined, "The value of 'location.then' must be undefined.");
 
@@ -25,7 +25,7 @@ onload = function() {
   test(function() {
     let iframe = document.getElementById('cross-origin-iframe');
     let w = iframe.contentWindow;  // cross origin window
-    assert_throws('SecurityError', function() { w.document; }, "The window 'w' must be cross origin.");
+    assert_throws_dom('SecurityError', function() { w.document; }, "The window 'w' must be cross origin.");
 
     // Make a child browsing context named 'then', which shouldn't be shadowed.
     let child_then_frame = document.createElement('iframe');

@@ -1,0 +1,1 @@
+type summary add GURL --summary-string "${var.spec_}"

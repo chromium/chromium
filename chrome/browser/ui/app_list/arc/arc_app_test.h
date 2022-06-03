@@ -9,20 +9,21 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/app.mojom-forward.h"
 
 namespace arc {
 namespace mojom {
 class AppInfo;
 }
+class ArcIntentHelperBridge;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
 class FakeAppInstance;
-}
+class FakeIntentHelperInstance;
+}  // namespace arc
 
-namespace chromeos {
+namespace ash {
 class FakeChromeUserManager;
 }
 
@@ -38,6 +39,10 @@ class Profile;
 class ArcAppTest {
  public:
   ArcAppTest();
+
+  ArcAppTest(const ArcAppTest&) = delete;
+  ArcAppTest& operator=(const ArcAppTest&) = delete;
+
   virtual ~ArcAppTest();
 
   void SetUp(Profile* profile);
@@ -46,6 +51,8 @@ class ArcAppTest {
   // Public methods to modify AppInstance for unit_tests.
   void StopArcInstance();
   void RestartArcInstance();
+
+  void SetUpIntentHelper();
 
   static std::string GetAppId(const arc::mojom::AppInfo& app_info);
   static std::string GetAppId(const arc::mojom::ShortcutInfo& shortcut);
@@ -78,9 +85,13 @@ class ArcAppTest {
     return fake_shortcuts_;
   }
 
-  chromeos::FakeChromeUserManager* GetUserManager();
+  ash::FakeChromeUserManager* GetUserManager();
 
   arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
+
+  arc::FakeIntentHelperInstance* intent_helper_instance() {
+    return intent_helper_instance_.get();
+  }
 
   ArcAppListPrefs* arc_app_list_prefs() { return arc_app_list_pref_; }
 
@@ -99,6 +110,10 @@ class ArcAppTest {
     activate_arc_on_start_ = activate_arc_on_start;
   }
 
+  void set_persist_service_manager(bool persist_service_manager) {
+    persist_service_manager_ = persist_service_manager;
+  }
+
  private:
   const user_manager::User* CreateUserAndLogin();
   bool FindPackage(const std::string& package_name);
@@ -114,11 +129,17 @@ class ArcAppTest {
   // If set to true ARC would be automatically enabled on test start up.
   bool activate_arc_on_start_ = true;
 
+  // Whether arc service manager should be destroyed when this object gets torn
+  // down.
+  bool persist_service_manager_ = false;
+
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<arc::ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
+  std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
+  std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::vector<arc::mojom::AppInfo> fake_apps_;
@@ -127,8 +148,6 @@ class ArcAppTest {
   std::vector<arc::mojom::ShortcutInfo> fake_shortcuts_;
 
   bool dbus_thread_manager_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppTest);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_TEST_H_

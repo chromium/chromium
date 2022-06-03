@@ -10,7 +10,7 @@
 description('Check focused shadow node dispatchs blur event on removeChild of host.');
 var logs = [];
 var test = document.getElementById('test');
-var shadow = test.createShadowRoot();
+var shadow = test.attachShadow({mode: 'open'});
 var input = document.createElement("input");
 shadow.appendChild(input);
 input.addEventListener('blur', function () { logs.push('blur'); });

@@ -1,70 +1,70 @@
-document
-++group IsControlElement=false
-++++description Name='This'
-++++description Name=' '
-++++description Name='paragraph has '
-++++description Name='text'
-++++description Name=' '
-++++description Name='in'
-++++description Name=' '
-++++description Name='spans'
-++++description Name='.'
-++group IsControlElement=false
-++++description Name='E1. Eat'
-++++description Name=' '
-++++link Name='space'
-++++++description Name='space' IsControlElement=false
-++group IsControlElement=false
-++++description Name='E2. Eat'
-++++description Name=' '
-++++link Name='space'
-++++++description Name='space' IsControlElement=false
-++group IsControlElement=false
-++++description Name='E3. Eat'
-++++description Name=' '
-++++link Name='space'
-++++++description Name='space' IsControlElement=false
-++group IsControlElement=false
-++++link Name='E4. Eat'
-++++++description Name='E4. Eat' IsControlElement=false
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++link Name='E5. Eat'
-++++++description Name='E5. Eat' IsControlElement=false
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++link Name='E6. Eat'
-++++++description Name='E6. Eat' IsControlElement=false
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K1. Keep'
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K2. Keep'
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K3. Keep'
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K4. Keep '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K5. Keep'
-++++description Name=' '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K6. Keep '
-++++description Name='space'
-++group IsControlElement=false
-++++description Name='K7. Keep'
-++++description Name=' space'
-++group IsControlElement=false
-++++description Name='K8. Keep'
-++++description Name=' '
-++++description Name='space'
+Document
+++Group IsControlElement=false
+++++Text Name='This'
+++++Text Name=' '
+++++Text Name='paragraph has '
+++++Text Name='text'
+++++Text Name=' '
+++++Text Name='in'
+++++Text Name=' '
+++++Text Name='spans'
+++++Text Name='.'
+++Group IsControlElement=false
+++++Text Name='E1. Eat'
+++++Text Name=' '
+++++Hyperlink Name='space'
+++++++Text Name='space' IsControlElement=false
+++Group IsControlElement=false
+++++Text Name='E2. Eat'
+++++Text Name=' '
+++++Hyperlink Name='space'
+++++++Text Name='space' IsControlElement=false
+++Group IsControlElement=false
+++++Text Name='E3. Eat'
+++++Text Name=' '
+++++Hyperlink Name='space'
+++++++Text Name='space' IsControlElement=false
+++Group IsControlElement=false
+++++Hyperlink Name='E4. Eat'
+++++++Text Name='E4. Eat' IsControlElement=false
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Hyperlink Name='E5. Eat'
+++++++Text Name='E5. Eat' IsControlElement=false
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Hyperlink Name='E6. Eat'
+++++++Text Name='E6. Eat' IsControlElement=false
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K1. Keep'
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K2. Keep'
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K3. Keep'
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K4. Keep '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K5. Keep'
+++++Text Name=' '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K6. Keep '
+++++Text Name='space'
+++Group IsControlElement=false
+++++Text Name='K7. Keep'
+++++Text Name=' space'
+++Group IsControlElement=false
+++++Text Name='K8. Keep'
+++++Text Name=' '
+++++Text Name='space'

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <style>
 #composited-box {
-    backface-visibility: hidden;
+    will-change: transform;
     position: absolute;
     background-color: green;
     clip: rect(40px, 110px, 110px, 40px);
@@ -12,7 +12,7 @@
     background-color: green;
 }
 .composited {
-    backface-visibility: hidden;
+    will-change: transform;
 }
 </style>
 <script src="../resources/text-based-repaint.js"></script>

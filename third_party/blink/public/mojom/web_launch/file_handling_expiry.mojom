@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Interface for finding when the file handling origin trial for a WebApp will
+// expire. This information is needed because file handlers are registered
+// outside Chromium, in the underlying operating system, so we need to know
+// when the trial expires so that they can be cleaned up.
+//
+// This service is hosted in the renderer. The browser process is responsible
+// for acquiring this interface and calling it.
+interface FileHandlingExpiry {
+  // Gets the time that the FileHandlingAPI origin trial will expire. If there
+  // is a valid token, this will return the time the token expires. Otherwise
+  // it will return base::Time().
+  RequestOriginTrialExpiryTime() => (mojo_base.mojom.Time expiry_time);
+};

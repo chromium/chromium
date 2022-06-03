@@ -12,10 +12,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -53,15 +51,6 @@ class AccessorySheetViewBinder {
             }
         } else {
             assert false : "Every possible property update needs to be handled!";
-        }
-        // Layout requests happen automatically since Kitkat and redundant requests cause warnings.
-        if (view != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            view.post(() -> {
-                ViewParent parent = view.getParent();
-                if (parent != null) {
-                    parent.requestLayout();
-                }
-            });
         }
     }
 

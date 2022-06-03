@@ -4,7 +4,7 @@
 
 #include "content/browser/scheduler/responsiveness/message_loop_observer.h"
 
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 
 namespace content {
 namespace responsiveness {
@@ -14,13 +14,13 @@ MessageLoopObserver::MessageLoopObserver(
     DidProcessTaskCallback did_process_task_callback)
     : will_process_task_callback_(std::move(will_process_task_callback)),
       did_process_task_callback_(std::move(did_process_task_callback)) {
-  base::MessageLoopCurrent::Get()->SetAddQueueTimeToTasks(true);
-  base::MessageLoopCurrent::Get()->AddTaskObserver(this);
+  base::CurrentThread::Get()->SetAddQueueTimeToTasks(true);
+  base::CurrentThread::Get()->AddTaskObserver(this);
 }
 
 MessageLoopObserver::~MessageLoopObserver() {
-  base::MessageLoopCurrent::Get()->RemoveTaskObserver(this);
-  base::MessageLoopCurrent::Get()->SetAddQueueTimeToTasks(false);
+  base::CurrentThread::Get()->RemoveTaskObserver(this);
+  base::CurrentThread::Get()->SetAddQueueTimeToTasks(false);
 }
 
 void MessageLoopObserver::WillProcessTask(const base::PendingTask& pending_task,

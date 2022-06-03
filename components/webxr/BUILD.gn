@@ -1,0 +1,17 @@
+source_set("webxr") {
+  defines = []
+  sources = [
+    "mailbox_to_surface_bridge_impl.cc",
+    "mailbox_to_surface_bridge_impl.h",
+  ]
+
+  deps = [
+    "//components/viz/common:common",
+    "//content/public/browser:browser",
+    "//device/vr/android:vr_android",
+    "//gpu/command_buffer/common:common",
+    "//gpu/ipc/common:common",
+    "//services/viz/public/cpp/gpu:gpu",
+    "//ui/gl:gl",
+  ]
+}

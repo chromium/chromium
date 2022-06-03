@@ -9,16 +9,20 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test implementation of ash's SessionController interface.
 class TestSessionController : public ash::SessionController {
  public:
   TestSessionController();
+
+  TestSessionController(const TestSessionController&) = delete;
+  TestSessionController& operator=(const TestSessionController&) = delete;
+
   ~TestSessionController() override;
 
-  const base::Optional<ash::SessionInfo>& last_session_info() const {
+  const absl::optional<ash::SessionInfo>& last_session_info() const {
     return last_session_info_;
   }
 
@@ -26,11 +30,11 @@ class TestSessionController : public ash::SessionController {
     return last_session_length_limit_;
   }
 
-  base::TimeTicks last_session_start_time() const {
+  base::Time last_session_start_time() const {
     return last_session_start_time_;
   }
 
-  const base::Optional<ash::UserSession>& last_user_session() const {
+  const absl::optional<ash::UserSession>& last_user_session() const {
     return last_user_session_;
   }
 
@@ -39,6 +43,12 @@ class TestSessionController : public ash::SessionController {
   int lock_animation_complete_call_count() const {
     return lock_animation_complete_call_count_;
   }
+
+  int set_user_session_order_count() const {
+    return set_user_session_order_count_;
+  }
+
+  void SetScreenLocked(bool locked);
 
   // ash::SessionController:
   void SetClient(ash::SessionControllerClient* client) override;
@@ -52,7 +62,7 @@ class TestSessionController : public ash::SessionController {
   void RunUnlockAnimation(RunUnlockAnimationCallback callback) override;
   void NotifyChromeTerminating() override;
   void SetSessionLengthLimit(base::TimeDelta length_limit,
-                             base::TimeTicks start_time) override;
+                             base::Time start_time) override;
   void CanSwitchActiveUser(CanSwitchActiveUserCallback callback) override;
   void ShowMultiprofilesIntroDialog(
       ShowMultiprofilesIntroDialogCallback callback) override;
@@ -66,16 +76,20 @@ class TestSessionController : public ash::SessionController {
   void RemoveSessionActivationObserverForAccountId(
       const AccountId& account_id,
       ash::SessionActivationObserver* observer) override;
+  void AddObserver(ash::SessionObserver* observer) override;
+  void RemoveObserver(ash::SessionObserver* observer) override;
+  bool IsScreenLocked() const override;
 
  private:
-  base::Optional<ash::SessionInfo> last_session_info_;
-  base::Optional<ash::UserSession> last_user_session_;
+  absl::optional<ash::SessionInfo> last_session_info_;
+  absl::optional<ash::UserSession> last_user_session_;
   base::TimeDelta last_session_length_limit_;
-  base::TimeTicks last_session_start_time_;
+  base::Time last_session_start_time_;
   int update_user_session_count_ = 0;
   int lock_animation_complete_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionController);
+  int set_user_session_order_count_ = 0;
+  bool is_screen_locked_ = false;
+  base::ObserverList<ash::SessionObserver> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_

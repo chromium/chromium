@@ -16,7 +16,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/c/system/types.h"
@@ -41,6 +41,9 @@ class UserOptionsReader {
     //                 "Options::struct_size not a uint32_t");
     // (Or maybe assert that its type is uint32_t?)
   }
+
+  UserOptionsReader(const UserOptionsReader&) = delete;
+  UserOptionsReader& operator=(const UserOptionsReader&) = delete;
 
   bool is_valid() const { return !!options_; }
 
@@ -75,8 +78,6 @@ class UserOptionsReader {
   }
 
   const Options* options_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserOptionsReader);
 };
 
 // Macro to invoke |UserOptionsReader<Options>::HasMember()| parametrized by

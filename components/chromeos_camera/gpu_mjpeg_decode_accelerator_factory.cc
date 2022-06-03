@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/fake_mjpeg_decode_accelerator.h"
@@ -62,9 +62,9 @@ std::unique_ptr<MjpegDecodeAccelerator> CreateFakeMjpegDecodeAccelerator(
 // static
 bool GpuMjpegDecodeAcceleratorFactory::IsAcceleratedJpegDecodeSupported() {
   auto accelerator_factory_functions = GetAcceleratorFactories();
-  for (const auto& factory_function : accelerator_factory_functions) {
+  for (auto& factory_function : accelerator_factory_functions) {
     std::unique_ptr<MjpegDecodeAccelerator> accelerator =
-        factory_function.Run(base::ThreadTaskRunnerHandle::Get());
+        std::move(factory_function).Run(base::ThreadTaskRunnerHandle::Get());
     if (accelerator && accelerator->IsSupported())
       return true;
   }
@@ -76,16 +76,18 @@ std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
 GpuMjpegDecodeAcceleratorFactory::GetAcceleratorFactories() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeMjpegDecodeAccelerator)) {
-    return {base::Bind(&CreateFakeMjpegDecodeAccelerator)};
+    std::vector<CreateAcceleratorCB> result;
+    result.push_back(base::BindOnce(&CreateFakeMjpegDecodeAccelerator));
+    return result;
   }
 
   // This list is ordered by priority of use.
   std::vector<CreateAcceleratorCB> result;
 #if defined(USE_V4L2_MJPEG_DECODE_ACCELERATOR)
-  result.push_back(base::Bind(&CreateV4L2MjpegDecodeAccelerator));
+  result.push_back(base::BindOnce(&CreateV4L2MjpegDecodeAccelerator));
 #endif
 #if BUILDFLAG(USE_VAAPI)
-  result.push_back(base::Bind(&CreateVaapiMjpegDecodeAccelerator));
+  result.push_back(base::BindOnce(&CreateVaapiMjpegDecodeAccelerator));
 #endif
   return result;
 }

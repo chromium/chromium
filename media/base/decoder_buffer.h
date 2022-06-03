@@ -12,9 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/memory/aligned_memory.h"
+#include "base/check.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -27,10 +25,6 @@
 namespace media {
 
 // A specialized buffer for interfacing with audio / video decoders.
-//
-// Specifically ensures that data is aligned and padded as necessary by the
-// underlying decoding framework.  On desktop platforms this means memory is
-// allocated using FFmpeg with particular alignment and padding requirements.
 //
 // Also includes decoder specific functionality for decryption.
 //
@@ -47,24 +41,53 @@ class MEDIA_EXPORT DecoderBuffer
 #endif
   };
 
-  // Allocates buffer with |size| >= 0.  Buffer will be padded and aligned
-  // as necessary, and |is_key_frame_| will default to false.
+  using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
+
+  struct MEDIA_EXPORT TimeInfo {
+    TimeInfo();
+    ~TimeInfo();
+    TimeInfo(const TimeInfo&);
+    TimeInfo& operator=(const TimeInfo&);
+
+    // Presentation time of the frame.
+    base::TimeDelta timestamp;
+
+    // Presentation duration of the frame.
+    base::TimeDelta duration;
+
+    // Duration of (audio) samples from the beginning and end of this frame
+    // which should be discarded after decoding. A value of kInfiniteDuration
+    // for the first value indicates the entire frame should be discarded; the
+    // second value must be base::TimeDelta() in this case.
+    DiscardPadding discard_padding;
+  };
+
+  // Allocates buffer with |size| >= 0. |is_key_frame_| will default to false.
   explicit DecoderBuffer(size_t size);
 
-  // Create a DecoderBuffer whose |data_| is copied from |data|.  Buffer will be
-  // padded and aligned as necessary.  |data| must not be NULL and |size| >= 0.
-  // The buffer's |is_key_frame_| will default to false.
+  DecoderBuffer(const DecoderBuffer&) = delete;
+  DecoderBuffer& operator=(const DecoderBuffer&) = delete;
+
+  // Create a DecoderBuffer whose |data_| is copied from |data|. |data| must not
+  // be NULL and |size| >= 0. The buffer's |is_key_frame_| will default to
+  // false.
   static scoped_refptr<DecoderBuffer> CopyFrom(const uint8_t* data,
                                                size_t size);
 
   // Create a DecoderBuffer whose |data_| is copied from |data| and |side_data_|
-  // is copied from |side_data|. Buffers will be padded and aligned as necessary
-  // Data pointers must not be NULL and sizes must be >= 0. The buffer's
-  // |is_key_frame_| will default to false.
+  // is copied from |side_data|. Data pointers must not be NULL and sizes must
+  // be >= 0. The buffer's |is_key_frame_| will default to false.
   static scoped_refptr<DecoderBuffer> CopyFrom(const uint8_t* data,
                                                size_t size,
                                                const uint8_t* side_data,
                                                size_t side_data_size);
+
+  // Create a DecoderBuffer where data() of |size| bytes resides within the heap
+  // as byte array. The buffer's |is_key_frame_| will default to false.
+  //
+  // Ownership of |data| is transferred to the buffer.
+  static scoped_refptr<DecoderBuffer> FromArray(std::unique_ptr<uint8_t[]> data,
+                                                size_t size);
 
   // Create a DecoderBuffer where data() of |size| bytes resides within the
   // memory referred to by |region| at non-negative offset |offset|. The
@@ -94,9 +117,14 @@ class MEDIA_EXPORT DecoderBuffer
   // is disallowed.
   static scoped_refptr<DecoderBuffer> CreateEOSBuffer();
 
+  const TimeInfo& time_info() const {
+    DCHECK(!end_of_stream());
+    return time_info_;
+  }
+
   base::TimeDelta timestamp() const {
     DCHECK(!end_of_stream());
-    return timestamp_;
+    return time_info_.timestamp;
   }
 
   // TODO(dalecurtis): This should be renamed at some point, but to avoid a yak
@@ -105,7 +133,7 @@ class MEDIA_EXPORT DecoderBuffer
 
   base::TimeDelta duration() const {
     DCHECK(!end_of_stream());
-    return duration_;
+    return time_info_.duration;
   }
 
   void set_duration(base::TimeDelta duration) {
@@ -113,7 +141,7 @@ class MEDIA_EXPORT DecoderBuffer
     DCHECK(duration == kNoTimestamp ||
            (duration >= base::TimeDelta() && duration != kInfiniteDuration))
         << duration.InSecondsF();
-    duration_ = duration;
+    time_info_.duration = duration;
   }
 
   const uint8_t* data() const {
@@ -148,15 +176,14 @@ class MEDIA_EXPORT DecoderBuffer
     return side_data_size_;
   }
 
-  typedef std::pair<base::TimeDelta, base::TimeDelta> DiscardPadding;
   const DiscardPadding& discard_padding() const {
     DCHECK(!end_of_stream());
-    return discard_padding_;
+    return time_info_.discard_padding;
   }
 
   void set_discard_padding(const DiscardPadding& discard_padding) {
     DCHECK(!end_of_stream());
-    discard_padding_ = discard_padding;
+    time_info_.discard_padding = discard_padding;
   }
 
   // Returns DecryptConfig associated with |this|. Returns null iff |this| is
@@ -189,7 +216,7 @@ class MEDIA_EXPORT DecoderBuffer
   bool MatchesForTesting(const DecoderBuffer& buffer) const;
 
   // Returns a human-readable string describing |*this|.
-  std::string AsHumanReadableString() const;
+  std::string AsHumanReadableString(bool verbose = false) const;
 
   // Replaces any existing side data with data copied from |side_data|.
   void CopySideDataFrom(const uint8_t* side_data, size_t side_data_size);
@@ -197,35 +224,35 @@ class MEDIA_EXPORT DecoderBuffer
  protected:
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
 
-  // Allocates a buffer of size |size| >= 0 and copies |data| into it.  Buffer
-  // will be padded and aligned as necessary.  If |data| is NULL then |data_| is
-  // set to NULL and |buffer_size_| to 0.  |is_key_frame_| will default to
-  // false.
+  // Allocates a buffer of size |size| >= 0 and copies |data| into it. If |data|
+  // is NULL then |data_| is set to NULL and |buffer_size_| to 0.
+  // |is_key_frame_| will default to false.
   DecoderBuffer(const uint8_t* data,
                 size_t size,
                 const uint8_t* side_data,
                 size_t side_data_size);
 
+  DecoderBuffer(std::unique_ptr<uint8_t[]> data, size_t size);
+
   DecoderBuffer(std::unique_ptr<UnalignedSharedMemory> shm, size_t size);
 
   DecoderBuffer(std::unique_ptr<ReadOnlyUnalignedMapping> shared_mem_mapping,
                 size_t size);
+
   virtual ~DecoderBuffer();
 
+  // Encoded data, if it is stored on the heap.
+  std::unique_ptr<uint8_t[]> data_;
+
  private:
-  // Presentation time of the frame.
-  base::TimeDelta timestamp_;
-  // Presentation duration of the frame.
-  base::TimeDelta duration_;
+  TimeInfo time_info_;
 
   // Size of the encoded data.
   size_t size_;
-  // Encoded data, if it is stored on the heap.
-  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> data_;
 
   // Side data. Used for alpha channel in VPx, and for text cues.
   size_t side_data_size_;
-  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> side_data_;
+  std::unique_ptr<uint8_t[]> side_data_;
 
   // Encoded data, if it is stored in a shared memory mapping.
   std::unique_ptr<ReadOnlyUnalignedMapping> shared_mem_mapping_;
@@ -236,19 +263,11 @@ class MEDIA_EXPORT DecoderBuffer
   // Encryption parameters for the encoded data.
   std::unique_ptr<DecryptConfig> decrypt_config_;
 
-  // Duration of (audio) samples from the beginning and end of this frame which
-  // should be discarded after decoding. A value of kInfiniteDuration for the
-  // first value indicates the entire frame should be discarded; the second
-  // value must be base::TimeDelta() in this case.
-  DiscardPadding discard_padding_;
-
   // Whether the frame was marked as a keyframe in the container.
   bool is_key_frame_;
 
   // Constructor helper method for memory allocations.
   void Initialize();
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderBuffer);
 };
 
 }  // namespace media

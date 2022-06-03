@@ -15,8 +15,7 @@ namespace gpu {
 COMPONENT_EXPORT(VULKAN_INIT)
 std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
     bool use_swiftshader = false,
-    bool allow_protected_memory = false,
-    bool enforce_protected_memory = false);
+    bool allow_protected_memory = false);
 
 }  // namespace gpu
 

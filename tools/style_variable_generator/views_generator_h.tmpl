@@ -1,0 +1,85 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_"|format(
+        out_file_path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+// This file is generated from:
+{%- for path in in_files %}
+//   {{path}}
+{%-  endfor %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/strings/strcat.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace {{namespace_name}} {
+
+enum class ColorName {
+{%- for obj in colors %}
+  {{obj.name | to_const_name}},
+{%-  endfor %}
+};
+
+{%- if opacities %}
+
+enum class OpacityName {
+{%-   for name in opacities.keys() %}
+  {{name | to_const_name}},
+{%-   endfor %}
+};
+
+constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
+  switch (opacity_name) {
+{%-   for name, mode_values in opacities.items() %}
+    case OpacityName::{{name | to_const_name}}:
+{%-   if mode_values[Modes.DARK] %}
+      if (is_dark_mode) {
+        return {{mode_values[Modes.DARK] | cpp_opacity}};
+      } else {
+        return {{mode_values[Modes.LIGHT] | cpp_opacity}};
+      }
+{%-    else %}
+      return {{mode_values[Modes.LIGHT] | cpp_opacity}};
+{%-    endif %}
+{%-   endfor %}
+  }
+}
+{%- endif %}
+
+constexpr SkColor ResolveColor(ColorName color_name,
+                               bool is_dark_mode,
+                               bool use_debug_colors) {
+  switch (color_name) {
+{%- for obj in colors %}
+    case ColorName::{{obj.name | to_const_name}}:
+{%-   if obj.mode_values[Modes.DEBUG] %}
+      if (use_debug_colors)
+        return {{obj.mode_values[Modes.DEBUG] | cpp_color}};
+
+{%-    endif %}
+{%-   if obj.mode_values[Modes.DARK] %}
+      if (is_dark_mode)
+        return {{obj.mode_values[Modes.DARK] | cpp_color}};
+
+{%-    endif %}
+      return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
+{%-  endfor %}
+  }
+}
+
+constexpr char kDebugOverrideCssString[] = "html:not(body) {\n"
+{%- for obj in colors %}
+{%-   if obj.mode_values[Modes.DEBUG] %}
+    "  {{obj.name | to_css_var_name}}-rgb: {{obj.mode_values[Modes.DEBUG] | css_color_rgb}};\n"
+    "  {{obj.name | to_css_var_name}}: {{css_color_var(obj.name, obj.mode_values[Modes.DEBUG])}};\n"
+{%-    endif %}
+{%-  endfor %}
+    "}\n";
+
+}  // namespace {{namespace_name}}
+#endif  // {{header_guard}}

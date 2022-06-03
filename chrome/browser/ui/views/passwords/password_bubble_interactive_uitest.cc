@@ -9,27 +9,26 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
-#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
-#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "chrome/browser/ui/views/passwords/password_pending_view.h"
+#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -38,9 +37,9 @@
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using testing::_;
 using testing::Eq;
 using testing::Field;
-using testing::_;
 
 namespace {
 
@@ -53,6 +52,12 @@ bool IsBubbleShowing() {
              ->IsVisible();
 }
 
+views::View* GetUsernameTextfield(const PasswordBubbleViewBase* bubble) {
+  const PasswordSaveUpdateView* save_bubble =
+      static_cast<const PasswordSaveUpdateView*>(bubble);
+  return save_bubble->GetUsernameTextfieldForTest();
+}
+
 }  // namespace
 
 namespace metrics_util = password_manager::metrics_util;
@@ -60,6 +65,12 @@ namespace metrics_util = password_manager::metrics_util;
 class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
  public:
   PasswordBubbleInteractiveUiTest() {}
+
+  PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
+      delete;
+  PasswordBubbleInteractiveUiTest& operator=(
+      const PasswordBubbleInteractiveUiTest&) = delete;
+
   ~PasswordBubbleInteractiveUiTest() override {}
 
   MOCK_METHOD0(OnIconRequestDone, void());
@@ -72,9 +83,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
     }
     return std::move(response);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordBubbleInteractiveUiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
@@ -82,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
   EXPECT_FALSE(IsBubbleShowing());
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
-  const PasswordPendingView* bubble = static_cast<const PasswordPendingView*>(
-      PasswordBubbleViewBase::manage_password_bubble());
+  const PasswordBubbleViewBase* bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
   EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
@@ -97,11 +105,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
       browser()->tab_strip_model()->GetActiveWebContents())
       ->ShowManagePasswordsBubble(true /* user_action */);
   EXPECT_TRUE(IsBubbleShowing());
-  bubble = static_cast<const PasswordPendingView*>(
-      PasswordBubbleViewBase::manage_password_bubble());
+  bubble = PasswordBubbleViewBase::manage_password_bubble();
   // A pending password with empty username should initially focus on the
   // username field.
-  EXPECT_EQ(bubble->GetUsernameTextfieldForTest(),
+  EXPECT_EQ(GetUsernameTextfield(bubble),
             bubble->GetFocusManager()->GetFocusedView());
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
@@ -211,33 +218,32 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(1, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnClick) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   EXPECT_FALSE(PasswordBubbleViewBase::manage_password_bubble()
                    ->GetFocusManager()
                    ->GetFocusedView());
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
-  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
-                                   password_manager::features::kStickyBubble));
+  EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnEsc) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       DontCloseOnEscWithoutFocus) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
-  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
-                                   password_manager::features::kStickyBubble));
+  EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
-  content::WindowedNotificationObserver focus_observer(
-      content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-      content::NotificationService::AllSources());
-  ui_test_utils::NavigateToURL(
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::FocusChangedObserver focus_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html;charset=utf-8,<input type=\"text\" autofocus>"));
+      GURL("data:text/html;charset=utf-8,<input type=\"text\" autofocus>")));
   focus_observer.Wait();
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -245,13 +251,46 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
                    ->GetFocusManager()
                    ->GetFocusedView());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(web_contents->IsFocusedElementEditable());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
                                               false, false, false));
-  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
-                                   password_manager::features::kStickyBubble));
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,<body>Welcome!</body>")));
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
+// crbug.com/1194950.
+// Test that the automatic save bubble ignores the browser activation and
+// deactivation events.
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       DontCloseOnDeactivation) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  browser()->window()->Deactivate();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  browser()->window()->Activate();
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
+// crbug.com/1194950.
+// Test that the automatic save bubble ignores the focus lost event.
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  PasswordBubbleViewBase::manage_password_bubble()
+      ->GetOkButton()
+      ->RequestFocus();
+
+  browser()->window()->Deactivate();
+  EXPECT_TRUE(IsBubbleShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
@@ -299,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   // PasswordBubbleViewBase::PendingView:: ButtonPressed(), and
   // simulate the OS event queue by posting a task.
   auto press_button = [](PasswordBubbleViewBase* bubble, bool* ran) {
-    bubble->model()->OnNeverForThisSiteClicked();
+    bubble->Cancel();
     *ran = true;
   };
 
@@ -328,13 +367,14 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PasswordBubbleInteractiveUiTest::HandleRequest, base::Unretained(this)));
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-  test_form()->origin = GURL("https://example.com");
-  test_form()->display_name = base::ASCIIToUTF16("Peter");
-  test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
+  test_form()->url = GURL("https://example.com");
+  test_form()->display_name = u"Peter";
+  test_form()->username_value = u"pet12@gmail.com";
   test_form()->icon_url = embedded_test_server()->GetURL("/icon.png");
-  std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
   local_credentials.push_back(
-      std::make_unique<autofill::PasswordForm>(*test_form()));
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
 
   // Prepare to capture the network request.
   EXPECT_CALL(*this, OnIconRequestDone());
@@ -353,12 +393,13 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
-  test_form()->origin = GURL("https://example.com");
-  test_form()->display_name = base::ASCIIToUTF16("Peter");
-  test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
-  std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials;
+  test_form()->url = GURL("https://example.com");
+  test_form()->display_name = u"Peter";
+  test_form()->username_value = u"pet12@gmail.com";
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
   local_credentials.push_back(
-      std::make_unique<autofill::PasswordForm>(*test_form()));
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
 
   // Open another window with focus.
   Browser* focused_window = CreateBrowser(browser()->profile());

@@ -25,43 +25,24 @@ TEST_PAGES_LOCATION_BY_REPO = {
             'src/multiple-peerconnections',
             'src/pause-play',
         ],
-        'revision': '9f0ff9343a38dbf16199a964a18d7411d940c601',
+        'revision': '63a46f73c917ffcdf765bd11622b10bf473eb11c',
     },
     'samples': {
         'dirs': [
             'src/content/datachannel/datatransfer',
             'src/content/getusermedia/resolution',
-            'src/content/peerconnection/audio',
-        ],
-        'files': [
-            'src/js/common.js',
-        ],
-        'revision': '6f9a14c10ee9b990d56c309d86d4b9129a4aa626',
-    },
-    'adapter': {
-        'files': [
-            'release/adapter.js',
-        ],
-        'revision': '5b7ce4bdce79b9cb754fe27b097106e9491e0354',
+            'src/content/insertable-streams/audio-processing',
+            'src/content/insertable-streams/video-processing',
+            'src/content/peerconnection/negotiate-timing',
+            ],
+        'revision': '2c807a20a3d5fca2436ca6608ddd42c22f15be26',
     },
 }
 
 ADDED_SCRIPT_TAGS = (
     '<script src="%s.js"></script>\n'
-    '<script src="adapter.js"></script>\n'
-    '<script src="common.js"></script>\n'
     '</body></html>'
 )
-
-COPYRIGHT_NOTICE = [
-    'Copyright 2017 The Chromium Authors. All rights reserved.\n',
-    'Use of this source code is governed by a BSD-style license that can be\n',
-    'found in the LICENSE file.\n',
-]
-
-COPYRIGHT_NOTICE_LENGTH = 8
-JS_COPYRIGHT_NOTICE = ' * '.join(['/*\n'] + COPYRIGHT_NOTICE) + ' */\n'
-HTML_COPYRIGHT_NOTICE = ' * '.join(['<!--\n'] + COPYRIGHT_NOTICE) + '-->\n'
 
 STRIPPED_TAGS_RE = ('( *<meta.*?>\n?| *<link.*?>\n?|'
                     ' *<script.*>.*?</script>\n?| *</body>.*?</html>)')
@@ -80,17 +61,22 @@ class TemporaryDirectory(object):
       self._closed = True
 
 
-def CopyJSFile(origin, destination, has_copyright=True):
-  contents = []
-  with open(origin) as input_file:
-    contents = input_file.readlines()
+def ConcatJSDir(origin, destination):
+  contents = ''
+  for filename in sorted(os.listdir(origin)):
+    if filename.endswith('.js'):
+      with open(os.path.join(origin, filename)) as input_file:
+       if contents:
+         contents += '\n'
+       contents += input_file.read()
 
-  if has_copyright:
-    contents = contents[COPYRIGHT_NOTICE_LENGTH:]
-  contents = [JS_COPYRIGHT_NOTICE] + contents
+  # Replace references to chrome.webm with road_trip_640_480.mp4, which has
+  # already been uploaded to cloud storage.
+  contents = re.sub('(../)+video/chrome.webm', 'road_trip_640_480.mp4',
+                    contents, flags=re.MULTILINE)
 
   with open(destination, 'w') as output_file:
-    output_file.writelines(contents)
+    output_file.write(contents)
 
 
 def CopyHTMLFile(test_name, origin, destination):
@@ -102,12 +88,8 @@ def CopyHTMLFile(test_name, origin, destination):
                     flags=re.MULTILINE|re.DOTALL)
   contents += ADDED_SCRIPT_TAGS % test_name
 
-  contents = [line + '\n' for line in contents.split('\n')]
-  contents = (contents[:1] + [HTML_COPYRIGHT_NOTICE] +
-              contents[COPYRIGHT_NOTICE_LENGTH:])
-
   with open(destination, 'w') as output_file:
-    output_file.writelines(contents)
+    output_file.write(contents)
 
 
 def main():
@@ -118,13 +100,13 @@ def main():
           'This script downloads the test pages from the WebRTC GitHub '
           'repository and copies them to the DESTINATION directory after '
           'processing them as follows: \n'
-          '  * Adds a copyright notice on top of the HTML and JS files.\n'
           '  * Deletes the <meta> tags.\n'
           '  * Discards the CSS files and corresponding link tags.\n'
-          '  * Discards the JS files and corresponding script tags except for '
-          'main.js, adapter.js and common.js.\n'
-          '  * Renames the index.html and main.js files for each test to '
-          'testname.html and testname.js.'))
+          '  * Renames the index.html to testname.html.\n'
+          '  * Concatenates the js files to testname.js, removing relative '
+          'paths to video resources to allow WPR recording.\n'
+          '  * Removes all script tags and adds a single script tag for '
+          'testname.js.'))
 
   parser.add_argument('-d', '--destination', default=DEFAULT_DESTINATION_DIR,
                       type=str, help='Where to save the WebRTC test pages.')
@@ -149,15 +131,10 @@ def main():
         test_dir = os.path.join(repo_dir, test_dir)
         test_name = os.path.basename(test_dir)
 
-        CopyJSFile(os.path.join(test_dir, 'js', 'main.js'),
-                   os.path.join(args.destination, test_name + '.js'))
+        ConcatJSDir(os.path.join(test_dir, 'js'),
+                    os.path.join(args.destination, test_name + '.js'))
         CopyHTMLFile(test_name, os.path.join(test_dir, 'index.html'),
                      os.path.join(args.destination, test_name + '.html'))
-
-      for test_file in repo_info.get('files', []):
-        file_name = os.path.basename(test_file)
-        CopyJSFile(os.path.join(temp_dir, repo_name, test_file),
-                   os.path.join(args.destination, file_name), False)
 
 
 if __name__ == '__main__':

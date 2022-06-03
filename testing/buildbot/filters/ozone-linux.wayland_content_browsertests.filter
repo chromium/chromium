@@ -1,0 +1,5 @@
+# Fix these failures: https://crbug.com/1040382
+-All/AuraWindowVideoCaptureDeviceBrowserTestP.CapturesContentChanges/2
+-All/AuraWindowVideoCaptureDeviceBrowserTestP.CapturesContentChanges/3
+-EventLatencyBrowserTest.KeyPressOnButton
+-EventLatencyBrowserTest.KeyPressOnButtonWithAnimation

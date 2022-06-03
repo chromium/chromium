@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,28 +19,31 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import android.os.Bundle;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.MediumTest;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests the direct actions exposed by AA. */
@@ -47,13 +51,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class AutofillAssistantDirectActionHandlerTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private ChromeActivity mActivity;
     private BottomSheetController mBottomSheetController;
     private DirectActionHandler mHandler;
     private TestingAutofillAssistantModuleEntryProvider mModuleEntryProvider;
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            SharedPreferencesManager.getInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -61,19 +66,19 @@ public class AutofillAssistantDirectActionHandlerTest {
         mActivity = mActivityTestRule.getActivity();
 
         mBottomSheetController = TestThreadUtils.runOnUiThreadBlocking(
-                () -> AutofillAssistantUiTestUtil.createBottomSheetController(mActivity));
+                () -> AutofillAssistantUiTestUtil.getBottomSheetController(mActivity));
         mModuleEntryProvider = new TestingAutofillAssistantModuleEntryProvider();
         mModuleEntryProvider.setCannotInstall();
 
         mHandler = new AutofillAssistantDirectActionHandler(mActivity, mBottomSheetController,
-                mActivity.getScrim(), mActivity.getTabModelSelector()::getCurrentTab,
+                mActivity.getBrowserControlsManager(),
+                mActivity.getCompositorViewHolderForTesting(), mActivity.getActivityTabProvider(),
                 mModuleEntryProvider);
 
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .remove(AutofillAssistantPreferencesUtil.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED)
-                .remove(AutofillAssistantPreferencesUtil.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN)
-                .apply();
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED);
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN);
     }
 
     @Test
@@ -84,9 +89,11 @@ public class AutofillAssistantDirectActionHandlerTest {
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         reportAvailableDirectActions(mHandler, reporter);
 
-        assertEquals(1, reporter.mActions.size());
+        Assert.assertThat(reporter.getDirectActions(),
+                containsInAnyOrder("onboarding", "onboarding_and_start"));
 
-        FakeDirectActionReporter.FakeDefinition onboarding = reporter.mActions.get(0);
+        FakeDirectActionReporter.FakeDefinition onboarding =
+                reporter.mActions.get(reporter.getDirectActions().indexOf("onboarding"));
         assertEquals("onboarding", onboarding.mId);
         assertEquals(2, onboarding.mParameters.size());
         assertEquals("name", onboarding.mParameters.get(0).mName);
@@ -206,7 +213,7 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testOnboarding() throws Exception {
         mModuleEntryProvider.setInstalled();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         acceptOnboarding();
 
         assertTrue(AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted());
@@ -217,7 +224,7 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testModuleNotAvailable() throws Exception {
         mModuleEntryProvider.setCannotInstall();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         assertFalse(performAction("onboarding", Bundle.EMPTY));
     }
 
@@ -227,17 +234,8 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testInstallModuleOnDemand() throws Exception {
         mModuleEntryProvider.setNotInstalled();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         acceptOnboarding();
-    }
-
-    @Test
-    @MediumTest
-    public void testSwitchedOffInPreferences() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-
-        assertThat(isOnboardingReported(), is(false));
-        assertFalse(performAction("onboarding", Bundle.EMPTY));
     }
 
     private void acceptOnboarding() throws Exception {
@@ -251,12 +249,12 @@ public class AutofillAssistantDirectActionHandlerTest {
         assertEquals(Boolean.TRUE, onboardingCallback.waitForResult("accept onboarding"));
     }
 
-    private boolean isOnboardingReported() throws Exception {
+    private boolean isActionReported(String actionId) throws Exception {
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         reportAvailableDirectActions(mHandler, reporter);
 
         for (FakeDirectActionReporter.FakeDefinition definition : reporter.mActions) {
-            if (definition.mId.equals("onboarding")) {
+            if (definition.mId.equals(actionId)) {
                 return true;
             }
         }

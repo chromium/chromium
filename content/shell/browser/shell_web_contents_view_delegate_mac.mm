@@ -7,12 +7,12 @@
 #import  <Cocoa/Cocoa.h>
 
 #include "base/command_line.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/context_menu_params.h"
 #include "content/shell/browser/renderer_host/shell_render_widget_host_view_mac_delegate.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -22,6 +22,7 @@
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
 #include "content/shell/common/shell_switches.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using blink::ContextMenuDataEditFlags;
 
@@ -94,7 +95,7 @@ ShellWebContentsViewDelegate::~ShellWebContentsViewDelegate() {
 }
 
 void ShellWebContentsViewDelegate::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
   if (switches::IsRunWebTestsSwitchPresent())
     return;
@@ -109,7 +110,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
   [menu setDelegate:delegate];
   [menu setAutoenablesItems:NO];
 
-  if (params.media_type == blink::ContextMenuDataMediaType::kNone &&
+  if (params.media_type == blink::mojom::ContextMenuDataMediaType::kNone &&
       !has_link && !has_selection && !params_.is_editable) {
     BOOL back_menu_enabled =
         web_contents_->GetController().CanGoBack() ? YES : NO;
@@ -207,7 +208,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
   NSTimeInterval eventTime = [currentEvent timestamp];
   NSEvent* clickEvent = [NSEvent mouseEventWithType:NSRightMouseDown
                                            location:position
-                                      modifierFlags:NSRightMouseDownMask
+                                      modifierFlags:0
                                           timestamp:eventTime
                                        windowNumber:[window windowNumber]
                                             context:nil

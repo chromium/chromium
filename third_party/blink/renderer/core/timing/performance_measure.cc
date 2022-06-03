@@ -54,9 +54,9 @@ ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {
   TraceWrapperV8Reference<v8::Value>& relevant_data =
       result.stored_value->value;
   if (!result.is_new_entry)
-    return ScriptValue(isolate, relevant_data.NewLocal(isolate));
+    return ScriptValue(isolate, relevant_data.Get(isolate));
   v8::Local<v8::Value> value = serialized_detail_->Deserialize(isolate);
-  relevant_data.Set(isolate, value);
+  relevant_data.Reset(isolate, value);
   return ScriptValue(isolate, value);
 }
 
@@ -76,7 +76,7 @@ PerformanceMeasure::ToMojoPerformanceMarkOrMeasure() {
   return mojo_performance_mark_or_measure;
 }
 
-void PerformanceMeasure::Trace(blink::Visitor* visitor) {
+void PerformanceMeasure::Trace(Visitor* visitor) const {
   visitor->Trace(deserialized_detail_map_);
   PerformanceEntry::Trace(visitor);
 }

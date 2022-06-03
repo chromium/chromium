@@ -9,23 +9,23 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 struct SecondaryKioskAppInfo {
   SecondaryKioskAppInfo() = delete;
   SecondaryKioskAppInfo(const extensions::ExtensionId& id,
-                        const base::Optional<bool>& enabled_on_launch);
+                        const absl::optional<bool>& enabled_on_launch);
   SecondaryKioskAppInfo(const SecondaryKioskAppInfo& other);
   ~SecondaryKioskAppInfo();
 
   const extensions::ExtensionId id;
-  const base::Optional<bool> enabled_on_launch;
+  const absl::optional<bool> enabled_on_launch;
 };
 
 struct KioskModeInfo : public Extension::ManifestData {
@@ -72,14 +72,16 @@ struct KioskModeInfo : public Extension::ManifestData {
 class KioskModeHandler : public ManifestHandler {
  public:
   KioskModeHandler();
+
+  KioskModeHandler(const KioskModeHandler&) = delete;
+  KioskModeHandler& operator=(const KioskModeHandler&) = delete;
+
   ~KioskModeHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskModeHandler);
 };
 
 }  // namespace extensions

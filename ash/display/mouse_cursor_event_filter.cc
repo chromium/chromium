@@ -25,7 +25,7 @@ MouseCursorEventFilter::~MouseCursorEventFilter() {
 
 void MouseCursorEventFilter::ShowSharedEdgeIndicator(aura::Window* from) {
   mouse_warp_controller_ =
-      ash::CreateMouseWarpController(Shell::Get()->display_manager(), from);
+      CreateMouseWarpController(Shell::Get()->display_manager(), from);
 }
 
 void MouseCursorEventFilter::HideSharedEdgeIndicator() {
@@ -38,7 +38,7 @@ void MouseCursorEventFilter::OnDisplaysInitialized() {
 
 void MouseCursorEventFilter::OnDisplayConfigurationChanged() {
   mouse_warp_controller_ =
-      ash::CreateMouseWarpController(Shell::Get()->display_manager(), nullptr);
+      CreateMouseWarpController(Shell::Get()->display_manager(), nullptr);
 }
 
 void MouseCursorEventFilter::OnMouseEvent(ui::MouseEvent* event) {

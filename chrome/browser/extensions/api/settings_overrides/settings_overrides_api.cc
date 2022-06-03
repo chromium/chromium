@@ -46,13 +46,24 @@ std::string SubstituteInstallParam(std::string str,
 
 std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     PrefService* prefs,
-    const ChromeSettingsOverrides::Search_provider& search_provider,
+    const ChromeSettingsOverrides::SearchProvider& search_provider,
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
   if (search_provider.prepopulated_id) {
     data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
         prefs, *search_provider.prepopulated_id);
-    if (!data) {
+    if (data) {
+      // We need to override the prepopulate_id and Sync GUID of the generated
+      // engine; otherwise, we will collide the original and also clone the
+      // Sync GUID of the original. See https://crbug.com/1166372#c13
+      //
+      // Note that prepopulate_id must be set first, since GenerateSyncGUID()
+      // internally depends on it.
+      std::string old_sync_guid = data->sync_guid;
+      data->prepopulate_id = 0;
+      data->GenerateSyncGUID();
+      DCHECK_NE(data->sync_guid, old_sync_guid);
+    } else {
       VLOG(1) << "Settings Overrides API can't recognize prepopulated_id="
           << *search_provider.prepopulated_id;
     }
@@ -60,6 +71,10 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 
   if (!data)
     data = std::make_unique<TemplateURLData>();
+
+  // `prepopulate_id` must be 0 to avoid collisions with prepopulated
+  // engines.
+  DCHECK_EQ(0, data->prepopulate_id);
 
   if (search_provider.name)
     data->SetShortName(base::UTF8ToUTF16(*search_provider.name));
@@ -93,7 +108,6 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
   }
   data->date_created = base::Time();
   data->last_modified = base::Time();
-  data->prepopulate_id = 0;
   if (search_provider.alternate_urls) {
     data->alternate_urls.clear();
     for (size_t i = 0; i < search_provider.alternate_urls->size(); ++i) {
@@ -110,7 +124,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 SettingsOverridesAPI::~SettingsOverridesAPI() {
@@ -168,8 +182,8 @@ void SettingsOverridesAPI::OnExtensionLoaded(
                        manifest_keys::kSettingsOverride);
       }
       std::unique_ptr<base::ListValue> url_list(new base::ListValue);
-      url_list->AppendString(SubstituteInstallParam(
-          settings->startup_pages[0].spec(), install_parameter));
+      url_list->Append(SubstituteInstallParam(settings->startup_pages[0].spec(),
+                                              install_parameter));
       SetPref(extension->id(), prefs::kURLsToRestoreOnStartup,
               std::move(url_list));
     }

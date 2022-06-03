@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 

@@ -4,7 +4,7 @@
 <script src="../resources/js-test.js"></script>
 <script src="../resources/accessibility-helper.js"></script>
 </head>
-<body id="body">
+<body>
 
 <fieldset id="fieldset">
     <legend>Choose a shipping method:</legend>
@@ -26,7 +26,7 @@
 
         // Print out the tree of accessible objects, indicating the titleUIElement so
         // that each platform can verify their expected object has been found
-        buildAccessibilityTree(accessibilityController.rootElement, 0, 0, 0, titleUIElement, "<< fieldset's titleUIElement");
+        buildAccessibilityTree(fieldset, 0, 0, 0, titleUIElement, "<< fieldset's titleUIElement");
 
         // Verify that we have gotten the titleUIElement and it has the expected text,
         // which should be in the last descendant regardless of platform.

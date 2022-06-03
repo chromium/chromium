@@ -8,22 +8,19 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -43,19 +40,19 @@ class CONTENT_EXPORT IndexedDBCallbacks
     : public base::RefCounted<IndexedDBCallbacks> {
  public:
   IndexedDBCallbacks(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-                     const url::Origin& origin,
+                     const blink::StorageKey& storage_key,
                      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                          pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  IndexedDBCallbacks(const IndexedDBCallbacks&) = delete;
+  IndexedDBCallbacks& operator=(const IndexedDBCallbacks&) = delete;
 
   virtual void OnError(const IndexedDBDatabaseError& error);
 
   // IndexedDBFactory::databases
   virtual void OnSuccess(
       std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions);
-
-  // IndexedDBFactory::GetDatabaseNames
-  virtual void OnSuccess(const std::vector<base::string16>& string);
 
   // IndexedDBFactory::Open / DeleteDatabase
   virtual void OnBlocked(int64_t existing_version);
@@ -102,13 +99,11 @@ class CONTENT_EXPORT IndexedDBCallbacks
   bool sent_blocked_ = false;
 
   base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBCallbacks);
 };
 
 }  // namespace content

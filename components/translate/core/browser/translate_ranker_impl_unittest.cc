@@ -11,13 +11,13 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
 #include "components/assist_ranker/proto/translate_ranker_model.pb.h"
 #include "components/assist_ranker/ranker_model.h"
+#include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -26,14 +26,9 @@
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
 
-namespace {
+namespace translate {
 
-using translate::kTranslateRankerAutoBlacklistOverride;
-using translate::kTranslateRankerEnforcement;
-using translate::kTranslateRankerPreviousLanguageMatchesOverride;
-using translate::kTranslateRankerQuery;
-using translate::TranslateRankerFeatures;
-using translate::TranslateRankerImpl;
+namespace {
 
 constexpr uint32_t kModelVersion = 1234;
 ukm::SourceId kUkmSourceId0 = 123;
@@ -42,6 +37,9 @@ ukm::SourceId kUkmSourceId1 = 567;
 class TranslateRankerImplTest : public ::testing::Test {
  protected:
   TranslateRankerImplTest();
+
+  TranslateRankerImplTest(const TranslateRankerImplTest&) = delete;
+  TranslateRankerImplTest& operator=(const TranslateRankerImplTest&) = delete;
 
   // Initializes the explicitly |enabled| and |disabled| features for this test.
   void InitFeatures(const std::initializer_list<base::Feature>& enabled,
@@ -83,11 +81,9 @@ class TranslateRankerImplTest : public ::testing::Test {
 
   // Manages the enabling/disabling of features within the scope of a test.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerImplTest);
 };
 
-TranslateRankerImplTest::TranslateRankerImplTest() {}
+TranslateRankerImplTest::TranslateRankerImplTest() = default;
 
 void TranslateRankerImplTest::InitFeatures(
     const std::initializer_list<base::Feature>& enabled,
@@ -161,8 +157,6 @@ TranslateRankerImplTest::CreateDefaultTranslateEvent() {
                                                        0);
 }
 
-}  // namespace
-
 TEST_F(TranslateRankerImplTest, GetVersion) {
   InitFeatures({kTranslateRankerQuery}, {});
   auto ranker = GetRankerForTest(0.01f);
@@ -213,14 +207,26 @@ TEST_F(TranslateRankerImplTest, GetModelDecision) {
 
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_AllEnabled) {
   InitFeatures({kTranslateRankerQuery, kTranslateRankerEnforcement,
-                kTranslateRankerAutoBlacklistOverride,
                 kTranslateRankerPreviousLanguageMatchesOverride},
                {});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
 
+  // Set up expectations for the |mock_translate_metrics_logger| to the below
+  // calls to |ShouldOfferTranslation|.
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  ::testing::Sequence mock_translate_metrics_logger_sequence;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kDontShowUI, kModelVersion))
+      .Times(1)
+      .InSequence(mock_translate_metrics_logger_sequence);
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kShowUI, kModelVersion))
+      .Times(1)
+      .InSequence(mock_translate_metrics_logger_sequence);
+
   // With a threshold of 0.99, en->fr is not over the threshold.
-  EXPECT_FALSE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_FALSE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::DONT_SHOW,
@@ -228,19 +234,25 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_AllEnabled) {
 
   // With a threshold of 0.01, en-fr is over the threshold.
   translate_event.Clear();
-  EXPECT_TRUE(
-      GetRankerForTest(0.01f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_TRUE(GetRankerForTest(0.01f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_EQ(metrics::TranslateEventProto::SHOW,
             translate_event.ranker_response());
 }
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_AllDisabled) {
   InitFeatures({}, {kTranslateRankerQuery, kTranslateRankerEnforcement,
-                    kTranslateRankerAutoBlacklistOverride,
                     kTranslateRankerPreviousLanguageMatchesOverride});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kNotQueried, kModelVersion))
+      .Times(1);
+
   // If query and other flags are turned off, returns true and do not query the
   // ranker.
-  EXPECT_TRUE(GetRankerForTest(0.5f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_TRUE(GetRankerForTest(0.5f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -248,15 +260,20 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_AllDisabled) {
 }
 
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_QueryOnlyDontShow) {
-  InitFeatures(
-      {kTranslateRankerQuery},
-      {kTranslateRankerEnforcement, kTranslateRankerAutoBlacklistOverride,
-       kTranslateRankerPreviousLanguageMatchesOverride});
+  InitFeatures({kTranslateRankerQuery},
+               {kTranslateRankerEnforcement,
+                kTranslateRankerPreviousLanguageMatchesOverride});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kDontShowUI, kModelVersion))
+      .Times(1);
+
   // If enforcement is turned off, returns true even if the decision
   // is not to show.
-  EXPECT_TRUE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::DONT_SHOW,
@@ -264,13 +281,18 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_QueryOnlyDontShow) {
 }
 
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_QueryOnlyShow) {
-  InitFeatures(
-      {kTranslateRankerQuery},
-      {kTranslateRankerEnforcement, kTranslateRankerAutoBlacklistOverride,
-       kTranslateRankerPreviousLanguageMatchesOverride});
+  InitFeatures({kTranslateRankerQuery},
+               {kTranslateRankerEnforcement,
+                kTranslateRankerPreviousLanguageMatchesOverride});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
-  EXPECT_TRUE(
-      GetRankerForTest(0.01f)->ShouldOfferTranslation(&translate_event));
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kShowUI, kModelVersion))
+      .Times(1);
+
+  EXPECT_TRUE(GetRankerForTest(0.01f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::SHOW,
@@ -279,13 +301,19 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_QueryOnlyShow) {
 
 TEST_F(TranslateRankerImplTest,
        ShouldOfferTranslation_EnforcementOnlyDontShow) {
-  InitFeatures({kTranslateRankerEnforcement},
-               {kTranslateRankerQuery, kTranslateRankerAutoBlacklistOverride,
-                kTranslateRankerPreviousLanguageMatchesOverride});
+  InitFeatures(
+      {kTranslateRankerEnforcement},
+      {kTranslateRankerQuery, kTranslateRankerPreviousLanguageMatchesOverride});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kDontShowUI, kModelVersion))
+      .Times(1);
+
   // If enforcement is turned on, returns the ranker decision.
-  EXPECT_FALSE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_FALSE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::DONT_SHOW,
@@ -293,13 +321,19 @@ TEST_F(TranslateRankerImplTest,
 }
 
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_EnforcementOnlyShow) {
-  InitFeatures({kTranslateRankerEnforcement},
-               {kTranslateRankerQuery, kTranslateRankerAutoBlacklistOverride,
-                kTranslateRankerPreviousLanguageMatchesOverride});
+  InitFeatures(
+      {kTranslateRankerEnforcement},
+      {kTranslateRankerQuery, kTranslateRankerPreviousLanguageMatchesOverride});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kShowUI, kModelVersion))
+      .Times(1);
+
   // If enforcement is turned on, returns the ranker decision.
-  EXPECT_TRUE(
-      GetRankerForTest(0.01f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_TRUE(GetRankerForTest(0.01f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::SHOW,
@@ -307,14 +341,19 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_EnforcementOnlyShow) {
 }
 
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_OverrideAndEnforcement) {
-  InitFeatures(
-      {kTranslateRankerEnforcement, kTranslateRankerAutoBlacklistOverride,
-       kTranslateRankerPreviousLanguageMatchesOverride},
-      {kTranslateRankerQuery});
+  InitFeatures({kTranslateRankerEnforcement,
+                kTranslateRankerPreviousLanguageMatchesOverride},
+               {kTranslateRankerQuery});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kDontShowUI, kModelVersion))
+      .Times(1);
+
   // DecisionOverride will not interact with Query or Enforcement.
-  EXPECT_FALSE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
+  EXPECT_FALSE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(kModelVersion, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::DONT_SHOW,
@@ -324,13 +363,19 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_OverrideAndEnforcement) {
 TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_NoModel) {
   auto ranker =
       std::make_unique<TranslateRankerImpl>(base::FilePath(), GURL(), nullptr);
-  InitFeatures({kTranslateRankerAutoBlacklistOverride,
-                kTranslateRankerPreviousLanguageMatchesOverride,
+  InitFeatures({kTranslateRankerPreviousLanguageMatchesOverride,
                 kTranslateRankerQuery, kTranslateRankerEnforcement},
                {});
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kNotQueried, 0U))
+      .Times(1);
+
   // If we don't have a model, returns true.
-  EXPECT_TRUE(ranker->ShouldOfferTranslation(&translate_event));
+  EXPECT_TRUE(ranker->ShouldOfferTranslation(&translate_event,
+                                             &mock_translate_metrics_logger));
   EXPECT_NE(0U, translate_event.ranker_request_timestamp_sec());
   EXPECT_EQ(0U, translate_event.ranker_version());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -338,7 +383,7 @@ TEST_F(TranslateRankerImplTest, ShouldOfferTranslation_NoModel) {
 }
 
 TEST_F(TranslateRankerImplTest, RecordAndFlushEvents) {
-  std::unique_ptr<translate::TranslateRanker> ranker = GetRankerForTest(0.0f);
+  std::unique_ptr<TranslateRanker> ranker = GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
   std::vector<metrics::TranslateEventProto> flushed_events;
 
@@ -368,7 +413,7 @@ TEST_F(TranslateRankerImplTest, RecordAndFlushEvents) {
   EXPECT_EQ(0U, flushed_events.size());
 
   const auto& entries = GetTestUkmRecorder()->GetEntriesByName(
-      ukm::builders::Translate::kEntryName);
+      ::ukm::builders::Translate::kEntryName);
   EXPECT_EQ(2u, entries.size());
   bool has_kUkmSourceId0 = false;
   bool has_kUkmSourceId1 = false;
@@ -383,16 +428,20 @@ TEST_F(TranslateRankerImplTest, RecordAndFlushEvents) {
 }
 
 TEST_F(TranslateRankerImplTest, EnableLogging) {
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   std::vector<metrics::TranslateEventProto> flushed_events;
 
-  // Logging is disabled by default. No events will be cached.
+  // UMA logging is disabled by default. No events will be cached.
   ranker->RecordTranslateEvent(0, kUkmSourceId0, &translate_event1_);
   ranker->RecordTranslateEvent(1, kUkmSourceId0, &translate_event2_);
 
   ranker->FlushTranslateEvents(&flushed_events);
   EXPECT_EQ(0U, flushed_events.size());
+
+  // Make sure UKM logging still works.
+  auto entries = GetTestUkmRecorder()->GetEntriesByName(
+      ::ukm::builders::Translate::kEntryName);
+  EXPECT_EQ(2u, entries.size());
 
   // Once we enable logging, events will be cached.
   ranker->EnableLogging(true);
@@ -403,6 +452,10 @@ TEST_F(TranslateRankerImplTest, EnableLogging) {
   EXPECT_EQ(2U, flushed_events.size());
   flushed_events.clear();
 
+  entries = GetTestUkmRecorder()->GetEntriesByName(
+      ::ukm::builders::Translate::kEntryName);
+  EXPECT_EQ(4u, entries.size());
+
   // Turning logging back off, caching is disabled once again.
   ranker->EnableLogging(false);
   ranker->RecordTranslateEvent(0, kUkmSourceId0, &translate_event1_);
@@ -411,11 +464,14 @@ TEST_F(TranslateRankerImplTest, EnableLogging) {
   // Logging is disabled, so no events should be cached.
   ranker->FlushTranslateEvents(&flushed_events);
   EXPECT_EQ(0U, flushed_events.size());
+
+  entries = GetTestUkmRecorder()->GetEntriesByName(
+      ::ukm::builders::Translate::kEntryName);
+  EXPECT_EQ(6u, entries.size());
 }
 
 TEST_F(TranslateRankerImplTest, EnableLoggingClearsCache) {
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   std::vector<metrics::TranslateEventProto> flushed_events;
   // Logging is disabled by default. No events will be cached.
   ranker->RecordTranslateEvent(0, kUkmSourceId0, &translate_event1_);
@@ -456,55 +512,51 @@ TEST_F(TranslateRankerImplTest, EnableLoggingClearsCache) {
   EXPECT_EQ(0U, flushed_events.size());
 }
 
-TEST_F(TranslateRankerImplTest, ShouldOverrideDecision_OverrideDisabled) {
-  InitFeatures({}, {kTranslateRankerAutoBlacklistOverride,
-                    kTranslateRankerPreviousLanguageMatchesOverride});
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+TEST_F(TranslateRankerImplTest,
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideDisabled) {
+  InitFeatures({}, {kTranslateRankerPreviousLanguageMatchesOverride});
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
-  const int kEventType = 12;
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
 
-  EXPECT_FALSE(ranker->ShouldOverrideDecision(kEventType, kUkmSourceId0,
-                                              &translate_event));
+  EXPECT_FALSE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
+      kUkmSourceId0, &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
   EXPECT_EQ(1U, flushed_events.size());
   ASSERT_EQ(translate_event.source_language(),
             flushed_events[0].source_language());
-  ASSERT_EQ(kEventType, flushed_events[0].event_type());
+  ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
+            flushed_events[0].event_type());
 }
 
-TEST_F(TranslateRankerImplTest,
-       ShouldOverrideDecision_AutoBlacklistOverrideEnabled) {
-  InitFeatures({kTranslateRankerAutoBlacklistOverride},
-               {kTranslateRankerQuery, kTranslateRankerEnforcement,
-                kTranslateRankerPreviousLanguageMatchesOverride});
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+TEST_F(TranslateRankerImplTest, ShouldOverrideMatchesPreviousLanguageDecision) {
+  InitFeatures({}, {kTranslateRankerQuery, kTranslateRankerEnforcement,
+                    kTranslateRankerPreviousLanguageMatchesOverride});
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kNotQueried, kModelVersion))
+      .Times(1);
+
   // DecisionOverride is decoupled from querying and enforcement. Enabling
   // only override will not query the Ranker. Ranker returns its default
   // response.
-  EXPECT_TRUE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
+  EXPECT_FALSE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
-  EXPECT_FALSE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, kUkmSourceId0,
-      &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
-  // When an ShouldOverrideDecision returns false, the event is finalized and is
-  // expected to be in the next flush.
+  // When ShouldOverrideMatchesPreviousLanguageDecision returns false, the event
+  // is finalized and is expected to be in the next flush.
   EXPECT_EQ(1U, flushed_events.size());
-  ASSERT_EQ(1, translate_event.decision_overrides_size());
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-            translate_event.decision_overrides(0));
+  ASSERT_EQ(0, translate_event.decision_overrides_size());
   ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             translate_event.event_type());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -512,68 +564,32 @@ TEST_F(TranslateRankerImplTest,
 }
 
 TEST_F(TranslateRankerImplTest,
-       ShouldOverrideDecision_PreviousLanguageMatchesOverrideEnabled) {
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideEnabled) {
   InitFeatures({kTranslateRankerPreviousLanguageMatchesOverride},
-               {kTranslateRankerQuery, kTranslateRankerEnforcement,
-                kTranslateRankerAutoBlacklistOverride});
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+               {kTranslateRankerQuery, kTranslateRankerEnforcement});
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kNotQueried, kModelVersion))
+      .Times(1);
+
   // DecisionOverride is decoupled from querying and enforcement. Enabling
   // only override will not query the Ranker. Ranker returns its default
   // response.
-  EXPECT_TRUE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, kUkmSourceId0,
-      &translate_event));
-  EXPECT_FALSE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
+  EXPECT_TRUE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
-  EXPECT_EQ(1U, flushed_events.size());
+  EXPECT_EQ(0U, flushed_events.size());
   ASSERT_EQ(1, translate_event.decision_overrides_size());
   ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             translate_event.decision_overrides(0));
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-            translate_event.event_type());
-  EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
-            translate_event.ranker_response());
-}
-
-TEST_F(TranslateRankerImplTest, ShouldOverrideDecision_BothOverridesEnabled) {
-  InitFeatures({kTranslateRankerPreviousLanguageMatchesOverride,
-                kTranslateRankerAutoBlacklistOverride},
-               {kTranslateRankerQuery, kTranslateRankerEnforcement});
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
-  ranker->EnableLogging(true);
-  metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
-  // DecisionOverride is decoupled from querying and enforcement. Enabling
-  // only override will not query the Ranker. Ranker returns its default
-  // response.
-  EXPECT_TRUE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, kUkmSourceId0,
-      &translate_event));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-      kUkmSourceId0, &translate_event));
-
-  std::vector<metrics::TranslateEventProto> flushed_events;
-  ranker->FlushTranslateEvents(&flushed_events);
-  // TranslateEventProtos are not finalized when ShouldOverrideDecision returns
-  // true, so no events are expected in the flush.
-  EXPECT_EQ(0U, flushed_events.size());
-  ASSERT_EQ(2, translate_event.decision_overrides_size());
-  ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
-            translate_event.decision_overrides(0));
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-            translate_event.decision_overrides(1));
   ASSERT_EQ(metrics::TranslateEventProto::UNKNOWN,
             translate_event.event_type());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -581,24 +597,26 @@ TEST_F(TranslateRankerImplTest, ShouldOverrideDecision_BothOverridesEnabled) {
 }
 
 TEST_F(TranslateRankerImplTest,
-       ShouldOverrideDecision_OverrideAndQueryEnabled) {
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideAndQueryEnabled) {
   InitFeatures(
-      {kTranslateRankerAutoBlacklistOverride,
-       kTranslateRankerPreviousLanguageMatchesOverride, kTranslateRankerQuery},
+      {kTranslateRankerPreviousLanguageMatchesOverride, kTranslateRankerQuery},
       {kTranslateRankerEnforcement});
   // This test checks that translate events are properly logged when ranker is
   // queried and a decision is overridden.
-  std::unique_ptr<translate::TranslateRankerImpl> ranker =
-      GetRankerForTest(0.0f);
+  std::unique_ptr<TranslateRankerImpl> ranker = GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
+
+  testing::MockTranslateMetricsLogger mock_translate_metrics_logger;
+  EXPECT_CALL(mock_translate_metrics_logger,
+              LogRankerMetrics(RankerDecision::kDontShowUI, kModelVersion))
+      .Times(1);
+
   // Ranker's decision is DONT_SHOW, but we are in query mode only, so Ranker
   // does not suppress the UI.
-  EXPECT_TRUE(
-      GetRankerForTest(0.99f)->ShouldOfferTranslation(&translate_event));
-
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
+      &translate_event, &mock_translate_metrics_logger));
+  EXPECT_TRUE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
   ranker->RecordTranslateEvent(
       metrics::TranslateEventProto::USER_NEVER_TRANSLATE_LANGUAGE,
@@ -608,10 +626,13 @@ TEST_F(TranslateRankerImplTest,
 
   EXPECT_EQ(1U, flushed_events.size());
   ASSERT_EQ(1, flushed_events[0].decision_overrides_size());
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             flushed_events[0].decision_overrides(0));
   ASSERT_EQ(metrics::TranslateEventProto::USER_NEVER_TRANSLATE_LANGUAGE,
             flushed_events[0].event_type());
   EXPECT_EQ(metrics::TranslateEventProto::DONT_SHOW,
             flushed_events[0].ranker_response());
 }
+
+}  // namespace
+}  // namespace translate

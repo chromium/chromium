@@ -1,0 +1,36 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum RefreshPolicy { "none", "refresh" };
+enum OperationType { "token-request", "send-redemption-record", "token-redemption" };
+enum SignRequestData { "omit", "include", "headers-only" };
+
+// A TrustToken object represents a request to execute a Trust Tokens protocol
+// operation (https://github.com/wicg/trust-token-api).
+dictionary TrustToken {
+  // |type| is the only required parameter; all other parameters are necessary
+  // only for certain operations.
+  required OperationType type;
+
+  // --- Parameters only for token redemption
+  // The following parameters are ignored unless |type| is
+  // "token-redemption":
+  // 1. refreshPolicy
+  RefreshPolicy refreshPolicy = "none";
+
+  // --- Parameters only for request signing
+  // The following parameters are ignored unless |type| is "send-redemption-record":
+  // 1. |issuers|
+  // 2. |additionalSignedHeaders|
+  // 3. |includeTimestampHeader|
+  // 4. |signRequestData|
+  // 5. |additionalSigningData|
+  //
+  // Additionally, |issuers| must be nonempty when |type| is "send-redemption-record".
+  sequence<USVString> issuers;
+  sequence<USVString> additionalSignedHeaders;
+  boolean includeTimestampHeader = false;
+  SignRequestData signRequestData = "omit";
+  DOMString additionalSigningData;
+};

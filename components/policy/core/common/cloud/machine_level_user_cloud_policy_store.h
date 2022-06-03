@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 
@@ -24,17 +23,24 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   MachineLevelUserCloudPolicyStore(
       const DMToken& machine_dm_token,
       const std::string& machine_client_id,
+      const base::FilePath& external_policy_path,
+      const base::FilePath& external_policy_info_path,
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+  MachineLevelUserCloudPolicyStore(const MachineLevelUserCloudPolicyStore&) =
+      delete;
+  MachineLevelUserCloudPolicyStore& operator=(
+      const MachineLevelUserCloudPolicyStore&) = delete;
   ~MachineLevelUserCloudPolicyStore() override;
 
+  // Creates a MachineLevelUserCloudPolicyStore instance. |external_policy_path|
+  // must be a secure location because no signature validations are made on it.
   static std::unique_ptr<MachineLevelUserCloudPolicyStore> Create(
       const DMToken& machine_dm_token,
       const std::string& machine_client_id,
+      const base::FilePath& external_policy_dir,
       const base::FilePath& policy_dir,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   // override DesktopCloudPolicyStore
@@ -56,6 +62,17 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   void InitWithoutToken();
 
  private:
+  // Function used as a PolicyLoadFilter to use external policies if they are
+  // newer than the ones previously written by the browser.
+  static PolicyLoadResult MaybeUseExternalCachedPolicies(
+      const base::FilePath& policy_cache_path,
+      const base::FilePath& policy_info_path,
+      PolicyLoadResult default_cached_policy_load_result);
+
+  static PolicyLoadResult LoadExternalCachedPolicies(
+      const base::FilePath& policy_cache_path,
+      const base::FilePath& policy_info_path);
+
   // override DesktopCloudPolicyStore
   void Validate(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
@@ -65,8 +82,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
 
   DMToken machine_dm_token_;
   std::string machine_client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStore);
 };
 
 }  // namespace policy

@@ -8,11 +8,13 @@
 
 #include "base/bind.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/ble/fido_ble_connection.h"
-#include "device/fido/ble/fido_ble_frames.h"
+#include "device/fido/cable/fido_ble_frames.h"
+#include "device/fido/cable/fido_ble_uuids.h"
+#include "device/fido/cable/v2_handshake.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -25,12 +27,12 @@ namespace {
 // counter larger than |kMaxCounter| FidoCableDevice should error out.
 constexpr uint32_t kMaxCounter = (1 << 24) - 1;
 
-base::Optional<std::vector<uint8_t>> ConstructV1Nonce(
+absl::optional<std::vector<uint8_t>> ConstructV1Nonce(
     base::span<const uint8_t> nonce,
     bool is_sender_client,
     uint32_t counter) {
   if (counter > kMaxCounter)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto constructed_nonce = fido_parsing_utils::Materialize(nonce);
   constructed_nonce.push_back(is_sender_client ? 0x00 : 0x01);
@@ -40,45 +42,98 @@ base::Optional<std::vector<uint8_t>> ConstructV1Nonce(
   return constructed_nonce;
 }
 
-bool ConstructV2Nonce(base::span<uint8_t, 12> out_nonce, uint32_t counter) {
-  if (counter > kMaxCounter) {
-    return false;
-  }
-
-  // Nonce is just a little-endian counter.
-  std::array<uint8_t, sizeof(counter)> counter_bytes;
-  memcpy(counter_bytes.data(), &counter, sizeof(counter));
-  auto remaining =
-      std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
-  std::fill(remaining, out_nonce.end(), 0);
-  return true;
-}
-
 }  // namespace
 
 FidoCableDevice::EncryptionData::EncryptionData() = default;
+FidoCableDevice::EncryptionData::~EncryptionData() = default;
 
-FidoCableDevice::FidoCableDevice(BluetoothAdapter* adapter, std::string address)
-    : FidoBleDevice(adapter, std::move(address), FidoBleDevice::Type::kCaBLE) {}
+FidoCableDevice::FidoCableDevice(BluetoothAdapter* adapter,
+                                 std::string address) {
+  connection_ = std::make_unique<FidoBleConnection>(
+      adapter, std::move(address), BluetoothUUID(kGoogleCableUUID128),
+      base::BindRepeating(&FidoCableDevice::OnStatusMessage,
+                          weak_factory_.GetWeakPtr()));
+}
 
 FidoCableDevice::FidoCableDevice(std::unique_ptr<FidoBleConnection> connection)
-    : FidoBleDevice(std::move(connection)) {}
+    : connection_(std::move(connection)) {}
 
 FidoCableDevice::~FidoCableDevice() = default;
+
+// static
+std::string FidoCableDevice::GetIdForAddress(const std::string& address) {
+  return "ble-" + address;
+}
+
+std::string FidoCableDevice::GetAddress() {
+  return connection_->address();
+}
+
+void FidoCableDevice::Connect() {
+  if (state_ != State::kInit)
+    return;
+
+  StartTimeout();
+  state_ = State::kConnecting;
+  connection_->Connect(base::BindOnce(&FidoCableDevice::OnConnected,
+                                      weak_factory_.GetWeakPtr()));
+}
+
+void FidoCableDevice::SendPing(std::vector<uint8_t> data,
+                               DeviceCallback callback) {
+  AddToPendingFrames(FidoBleDeviceCommand::kPing, std::move(data),
+                     std::move(callback));
+}
+
+FidoBleConnection::ReadCallback FidoCableDevice::GetReadCallbackForTesting() {
+  return base::BindRepeating(&FidoCableDevice::OnStatusMessage,
+                             weak_factory_.GetWeakPtr());
+}
+
+void FidoCableDevice::set_observer(FidoCableDevice::Observer* observer) {
+  DCHECK(!observer_);
+  observer_ = observer;
+}
+
+void FidoCableDevice::Cancel(CancelToken token) {
+  if (current_token_ && *current_token_ == token) {
+    transaction_->Cancel();
+    return;
+  }
+
+  for (auto it = pending_frames_.begin(); it != pending_frames_.end(); it++) {
+    if (it->token != token) {
+      continue;
+    }
+
+    auto callback = std::move(it->callback);
+    pending_frames_.erase(it);
+    std::vector<uint8_t> cancel_reply = {
+        static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel)};
+    std::move(callback).Run(
+        FidoBleFrame(FidoBleDeviceCommand::kMsg, std::move(cancel_reply)));
+    break;
+  }
+}
+
+std::string FidoCableDevice::GetId() const {
+  return GetIdForAddress(connection_->address());
+}
+
+FidoTransportProtocol FidoCableDevice::DeviceTransport() const {
+  return FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+}
 
 FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
     std::vector<uint8_t> command,
     DeviceCallback callback) {
-  if (!encryption_data_ ||
-      !EncryptOutgoingMessage(*encryption_data_, &command)) {
+  if (!encryption_data_ || !EncryptOutgoingMessage(&command)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     state_ = State::kDeviceError;
     FIDO_LOG(ERROR) << "Failed to encrypt outgoing caBLE message.";
     return 0;
   }
-
-  ++encryption_data_->write_sequence_num;
 
   FIDO_LOG(DEBUG) << "Sending encrypted message to caBLE client";
   return AddToPendingFrames(FidoBleDeviceCommand::kMsg, std::move(command),
@@ -86,19 +141,16 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
 }
 
 void FidoCableDevice::OnResponseFrame(FrameCallback callback,
-                                      base::Optional<FidoBleFrame> frame) {
+                                      absl::optional<FidoBleFrame> frame) {
   // The request is done, time to reset |transaction_|.
   ResetTransaction();
   state_ = frame ? State::kReady : State::kDeviceError;
 
   if (frame && frame->command() != FidoBleDeviceCommand::kControl) {
-    if (!encryption_data_ ||
-        !DecryptIncomingMessage(*encryption_data_, &frame.value())) {
+    if (!encryption_data_ || !DecryptIncomingMessage(&frame.value())) {
       state_ = State::kDeviceError;
-      frame = base::nullopt;
+      frame = absl::nullopt;
     }
-
-    ++encryption_data_->read_sequence_num;
   }
 
   auto self = GetWeakPtr();
@@ -109,8 +161,54 @@ void FidoCableDevice::OnResponseFrame(FrameCallback callback,
     Transition();
 }
 
-base::WeakPtr<FidoDevice> FidoCableDevice::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
+void FidoCableDevice::ResetTransaction() {
+  transaction_.reset();
+  current_token_.reset();
+}
+
+void FidoCableDevice::Transition() {
+  switch (state_) {
+    case State::kInit:
+      Connect();
+      break;
+    case State::kReady:
+      if (!pending_frames_.empty()) {
+        PendingFrame pending(std::move(pending_frames_.front()));
+        pending_frames_.pop_front();
+        current_token_ = pending.token;
+        SendRequestFrame(std::move(pending.frame), std::move(pending.callback));
+      }
+      break;
+    case State::kConnecting:
+    case State::kBusy:
+      break;
+    case State::kMsgError:
+    case State::kDeviceError:
+      auto self = GetWeakPtr();
+      // Executing callbacks may free |this|. Check |self| first.
+      while (self && !pending_frames_.empty()) {
+        // Respond to any pending frames.
+        FrameCallback cb = std::move(pending_frames_.front().callback);
+        pending_frames_.pop_front();
+        std::move(cb).Run(absl::nullopt);
+      }
+      break;
+  }
+}
+
+FidoDevice::CancelToken FidoCableDevice::AddToPendingFrames(
+    FidoBleDeviceCommand cmd,
+    std::vector<uint8_t> request,
+    DeviceCallback callback) {
+  const auto token = next_cancel_token_++;
+  pending_frames_.emplace_back(
+      FidoBleFrame(cmd, std::move(request)),
+      base::BindOnce(&FidoCableDevice::OnBleResponseReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      token);
+
+  Transition();
+  return token;
 }
 
 void FidoCableDevice::SendHandshakeMessage(
@@ -131,57 +229,144 @@ void FidoCableDevice::SetV1EncryptionData(
   encryption_data_->nonce = fido_parsing_utils::Materialize(nonce);
 }
 
-void FidoCableDevice::SetV2EncryptionData(
-    base::span<const uint8_t, 32> read_key,
-    base::span<const uint8_t, 32> write_key) {
-  DCHECK(!encryption_data_);
-  encryption_data_.emplace();
-  encryption_data_->read_key = fido_parsing_utils::Materialize(read_key);
-  encryption_data_->write_key = fido_parsing_utils::Materialize(write_key);
-  memset(encryption_data_->nonce.data(), 0, encryption_data_->nonce.size());
-  encryption_data_->is_version_two = true;
-}
-
-FidoTransportProtocol FidoCableDevice::DeviceTransport() const {
-  return FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
-}
-
 void FidoCableDevice::SetSequenceNumbersForTesting(uint32_t read_seq,
                                                    uint32_t write_seq) {
   encryption_data_->write_sequence_num = write_seq;
   encryption_data_->read_sequence_num = read_seq;
 }
 
-// static
+base::WeakPtr<FidoDevice> FidoCableDevice::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+FidoCableDevice::PendingFrame::PendingFrame(FidoBleFrame in_frame,
+                                            FrameCallback in_callback,
+                                            CancelToken in_token)
+    : frame(std::move(in_frame)),
+      callback(std::move(in_callback)),
+      token(in_token) {}
+
+FidoCableDevice::PendingFrame::PendingFrame(PendingFrame&&) = default;
+
+FidoCableDevice::PendingFrame::~PendingFrame() = default;
+
+void FidoCableDevice::OnConnected(bool success) {
+  if (state_ != State::kConnecting) {
+    return;
+  }
+  StopTimeout();
+  if (observer_) {
+    observer_->FidoCableDeviceConnected(this, success);
+  }
+  if (!success) {
+    FIDO_LOG(ERROR) << "FidoCableDevice::Connect() failed";
+    state_ = State::kDeviceError;
+    Transition();
+    return;
+  }
+  FIDO_LOG(EVENT) << "FidoCableDevice connected";
+  DCHECK_EQ(State::kConnecting, state_);
+  StartTimeout();
+  connection_->ReadControlPointLength(base::BindOnce(
+      &FidoCableDevice::OnReadControlPointLength, weak_factory_.GetWeakPtr()));
+}
+
+void FidoCableDevice::OnStatusMessage(std::vector<uint8_t> data) {
+  if (transaction_)
+    transaction_->OnResponseFragment(std::move(data));
+}
+
+void FidoCableDevice::OnReadControlPointLength(
+    absl::optional<uint16_t> length) {
+  if (state_ == State::kDeviceError) {
+    return;
+  }
+
+  StopTimeout();
+  if (length) {
+    control_point_length_ = *length;
+    state_ = State::kReady;
+  } else {
+    state_ = State::kDeviceError;
+  }
+  Transition();
+}
+
+void FidoCableDevice::SendRequestFrame(FidoBleFrame frame,
+                                       FrameCallback callback) {
+  state_ = State::kBusy;
+  transaction_.emplace(connection_.get(), control_point_length_);
+  transaction_->WriteRequestFrame(
+      std::move(frame),
+      base::BindOnce(&FidoCableDevice::OnResponseFrame,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FidoCableDevice::StartTimeout() {
+  timer_.Start(FROM_HERE, kDeviceTimeout, this, &FidoCableDevice::OnTimeout);
+}
+
+void FidoCableDevice::StopTimeout() {
+  timer_.Stop();
+}
+
+void FidoCableDevice::OnTimeout() {
+  FIDO_LOG(ERROR) << "FIDO Cable device timeout for " << GetId();
+  state_ = State::kDeviceError;
+  if (observer_) {
+    observer_->FidoCableDeviceTimeout(this);
+  }
+  Transition();
+}
+
+void FidoCableDevice::OnBleResponseReceived(
+    DeviceCallback callback,
+    absl::optional<FidoBleFrame> frame) {
+  if (!frame || !frame->IsValid()) {
+    state_ = State::kDeviceError;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  if (frame->command() == FidoBleDeviceCommand::kError) {
+    ProcessBleDeviceError(frame->data());
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(frame->data());
+}
+
+void FidoCableDevice::ProcessBleDeviceError(base::span<const uint8_t> data) {
+  if (data.size() != 1) {
+    FIDO_LOG(ERROR) << "Unknown BLE error received: "
+                    << base::HexEncode(data.data(), data.size());
+    state_ = State::kDeviceError;
+    return;
+  }
+
+  switch (static_cast<FidoBleFrame::ErrorCode>(data[0])) {
+    case FidoBleFrame::ErrorCode::INVALID_CMD:
+    case FidoBleFrame::ErrorCode::INVALID_PAR:
+    case FidoBleFrame::ErrorCode::INVALID_LEN:
+      state_ = State::kMsgError;
+      break;
+    default:
+      FIDO_LOG(ERROR) << "BLE error received: " << static_cast<int>(data[0]);
+      state_ = State::kDeviceError;
+  }
+}
+
 bool FidoCableDevice::EncryptOutgoingMessage(
-    const EncryptionData& encryption_data,
-    std::vector<uint8_t>* message_to_encrypt) {
-  return encryption_data.is_version_two
-             ? EncryptV2OutgoingMessage(encryption_data, message_to_encrypt)
-             : EncryptV1OutgoingMessage(encryption_data, message_to_encrypt);
-}
-
-// static
-bool FidoCableDevice::DecryptIncomingMessage(
-    const EncryptionData& encryption_data,
-    FidoBleFrame* incoming_frame) {
-  return encryption_data.is_version_two
-             ? DecryptV2IncomingMessage(encryption_data, incoming_frame)
-             : DecryptV1IncomingMessage(encryption_data, incoming_frame);
-}
-
-// static
-bool FidoCableDevice::EncryptV1OutgoingMessage(
-    const EncryptionData& encryption_data,
     std::vector<uint8_t>* message_to_encrypt) {
   const auto nonce =
-      ConstructV1Nonce(encryption_data.nonce, /*is_sender_client=*/true,
-                       encryption_data.write_sequence_num);
+      ConstructV1Nonce(encryption_data_->nonce, /*is_sender_client=*/true,
+                       encryption_data_->write_sequence_num++);
   if (!nonce)
     return false;
 
   crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data.write_key);
+  aes_key.Init(encryption_data_->write_key);
   DCHECK_EQ(nonce->size(), aes_key.NonceLength());
 
   const uint8_t additional_data[1] = {
@@ -192,116 +377,27 @@ bool FidoCableDevice::EncryptV1OutgoingMessage(
   return true;
 }
 
-// static
-bool FidoCableDevice::DecryptV1IncomingMessage(
-    const EncryptionData& encryption_data,
-    FidoBleFrame* incoming_frame) {
+bool FidoCableDevice::DecryptIncomingMessage(FidoBleFrame* incoming_frame) {
   const auto nonce =
-      ConstructV1Nonce(encryption_data.nonce, /*is_sender_client=*/false,
-                       encryption_data.read_sequence_num);
+      ConstructV1Nonce(encryption_data_->nonce, /*is_sender_client=*/false,
+                       encryption_data_->read_sequence_num);
   if (!nonce)
     return false;
 
   crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data.read_key);
+  aes_key.Init(encryption_data_->read_key);
   DCHECK_EQ(nonce->size(), aes_key.NonceLength());
 
   const uint8_t additional_data[1] = {
       base::strict_cast<uint8_t>(incoming_frame->command())};
-  base::Optional<std::vector<uint8_t>> plaintext =
+  absl::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(incoming_frame->data(), *nonce, additional_data);
   if (!plaintext) {
     FIDO_LOG(ERROR) << "Failed to decrypt caBLE message.";
     return false;
   }
 
-  incoming_frame->data().swap(*plaintext);
-  return true;
-}
-
-// static
-bool FidoCableDevice::EncryptV2OutgoingMessage(
-    const EncryptionData& encryption_data,
-    std::vector<uint8_t>* message_to_encrypt) {
-  // Messages will be padded in order to round their length up to a multiple of
-  // kPaddingGranularity.
-  constexpr size_t kPaddingGranularity = 32;
-  static_assert(kPaddingGranularity > 0, "padding too small");
-  static_assert(kPaddingGranularity < 256, "padding too large");
-  static_assert((kPaddingGranularity & (kPaddingGranularity - 1)) == 0,
-                "padding must be a power of two");
-
-  // Padding consists of a some number of zero bytes appended to the message and
-  // the final byte in the message is the number of zeros.
-  base::CheckedNumeric<size_t> padded_size_checked = message_to_encrypt->size();
-  padded_size_checked += 1;  // padding-length byte.
-  padded_size_checked = (padded_size_checked + kPaddingGranularity - 1) &
-                        ~(kPaddingGranularity - 1);
-  if (!padded_size_checked.IsValid()) {
-    return false;
-  }
-
-  const size_t padded_size = padded_size_checked.ValueOrDie();
-  DCHECK_GT(padded_size, message_to_encrypt->size());
-  const size_t num_zeros = padded_size - message_to_encrypt->size() - 1;
-
-  std::vector<uint8_t> padded_message(padded_size, 0);
-  memcpy(padded_message.data(), message_to_encrypt->data(),
-         message_to_encrypt->size());
-  // The number of added zeros has to fit in a single byte so it has to be less
-  // than 256.
-  DCHECK_LT(num_zeros, 256u);
-  padded_message[padded_message.size() - 1] = static_cast<uint8_t>(num_zeros);
-
-  std::array<uint8_t, 12> nonce;
-  if (!ConstructV2Nonce(nonce, encryption_data.write_sequence_num)) {
-    return false;
-  }
-
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data.write_key);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
-
-  const uint8_t additional_data[2] = {
-      base::strict_cast<uint8_t>(FidoBleDeviceCommand::kMsg), /*version=*/2};
-  std::vector<uint8_t> ciphertext =
-      aes_key.Seal(padded_message, nonce, additional_data);
-  message_to_encrypt->swap(ciphertext);
-  return true;
-}
-
-// static
-bool FidoCableDevice::DecryptV2IncomingMessage(
-    const EncryptionData& encryption_data,
-    FidoBleFrame* incoming_frame) {
-  std::array<uint8_t, 12> nonce;
-  if (!ConstructV2Nonce(nonce, encryption_data.read_sequence_num)) {
-    return false;
-  }
-
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data.read_key);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
-
-  const uint8_t additional_data[2] = {
-      base::strict_cast<uint8_t>(incoming_frame->command()), /*version=*/2};
-  base::Optional<std::vector<uint8_t>> plaintext =
-      aes_key.Open(incoming_frame->data(), nonce, additional_data);
-  if (!plaintext) {
-    FIDO_LOG(ERROR) << "Failed to decrypt caBLE message.";
-    return false;
-  }
-
-  if (plaintext->empty()) {
-    return false;
-  }
-
-  const size_t padding_length = (*plaintext)[plaintext->size() - 1];
-  if (padding_length + 1 > plaintext->size()) {
-    return false;
-  }
-  plaintext->resize(plaintext->size() - padding_length - 1);
-
+  encryption_data_->read_sequence_num++;
   incoming_frame->data().swap(*plaintext);
   return true;
 }

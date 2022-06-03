@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/compiler_specific.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_piece.h"
 #import "ios/chrome/browser/ui/list_model/list_item.h"
@@ -78,6 +78,7 @@ TEST_F(ListModelTest, GenericModelBoxing) {
   // specificModel = generalModel would not compile.
   ListModel<ListItem*, ListItem*>* generalModel = specificModel;
   generalModel = nil;
+  ALLOW_UNUSED_LOCAL(generalModel);
 }
 
 TEST_F(ListModelTest, EmptyModel) {
@@ -319,7 +320,8 @@ TEST_F(ListModelTest, InvalidIndexPath) {
   ListModel* model = [[ListModel alloc] init];
   [model addSectionWithIdentifier:SectionIdentifierCheese];
 
-  logging::ScopedLogAssertHandler scoped_assert_handler(base::Bind(LogSink));
+  logging::ScopedLogAssertHandler scoped_assert_handler(
+      base::BindRepeating(LogSink));
   bool out_of_bounds_exception_thrown = false;
   @try {
     [model indexInItemTypeForIndexPath:[NSIndexPath indexPathForItem:0

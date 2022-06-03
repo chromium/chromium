@@ -1,0 +1,74 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    display: inline-flex;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 460px;
+  }
+
+  iron-icon {
+    /* TODO(joonbug): Update with chrome color */
+    color: blue;
+    height: 20px;
+    width: 20px;
+  }
+
+  .error {
+    /* TODO(joonbug): Update with chrome color */
+    color: red;
+    font-weight: 500;
+  }
+
+  #networkList {
+    --cros-icon-color-primary: grey;
+    flex: 1;
+  }
+
+  .dialog-footer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-bottom: 16px;
+    padding-inline-start: 16px;
+    padding-top: 24px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('connectNetworkTitleText')]]</h1>
+    <div>[[i18n('connectNetworkDescriptionText')]]</div>
+  </div>
+  <div slot="body" id="container">
+    <network-list id="networkList" show-technology-badge
+        networks="[[networks_]]" on-selected="onNetworkSelected_">
+    </network-list>
+  </div>
+</base-page>
+
+<cr-dialog id="dialog" close-text="close">
+  <div slot="title">
+    [[getDialogTitle_(networkName_, networkType_, networkShowConnect_)]]
+  </div>
+  <div slot="body">
+    <network-config id="networkConfig" enable-connect="{{enableConnect_}}"
+      error="{{error_}}" on-close="onConfigClose_" name="{{networkName_}}"
+      on-properties-set="onPropertiesSet_" type="{{networkType_}}"
+      connect-on-enter="[[networkShowConnect_]]" guid="[[guid_]]">
+    </network-config>
+    <div class="dialog-footer" slot="button-container">
+      <template is="dom-if" if="[[error_]]" restamp>
+        <div class="flex error">[[getError_(error_)]]</div>
+      </template>
+      <cr-button id="cancelButton" on-click="closeConfig_">
+          [[i18n('connectNetworkDialogCancelButtonText')]]
+      </cr-button>
+      <cr-button id="connectButton" on-click="connectNetwork_"
+        disabled="[[!enableConnect_]]">
+          [[i18n('connectNetworkDialogConnectButtonText')]]
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>

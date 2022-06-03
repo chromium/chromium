@@ -1,0 +1,5 @@
+include_rules = [
+  "+content/public/test",
+  "+mojo/public/cpp",
+  "+third_party/blink/public",
+]

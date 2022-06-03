@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 20: Uncaught TypeError: p.createShadowRoot is not a function
-This tests that the JavaScript wrapper objects of shadow DOM objects
-are not prematurely garbage collected.
-
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

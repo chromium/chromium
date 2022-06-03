@@ -31,8 +31,7 @@ class TestQuicServerStream
   std::string peer_host() const override { return "127.0.0.1"; }
 
   void OnResponseBackendComplete(
-      const quic::QuicBackendResponse* response,
-      std::list<quic::QuicBackendResponse::ServerPushInfo> resources) override {
+      const quic::QuicBackendResponse* response) override {
     EXPECT_FALSE(did_complete_);
     did_complete_ = true;
     task_runner_->PostTask(FROM_HERE, run_loop_.QuitClosure());
@@ -62,7 +61,7 @@ class QuicHttpProxyBackendTest : public QuicTest {
     quic_proxy_backend_url_ = "http://www.google.com:80";
     http_proxy_.InitializeBackend(quic_proxy_backend_url_);
 
-    spdy::SpdyHeaderBlock request_headers;
+    spdy::Http2HeaderBlock request_headers;
     request_headers[":authority"] = "www.example.org";
     request_headers[":method"] = "GET";
     std::string body = "Test Body";

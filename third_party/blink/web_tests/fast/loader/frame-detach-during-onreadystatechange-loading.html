@@ -1,0 +1,16 @@
+<body>
+PASS if no crash.
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var i = document.createElement("iframe");
+i.id = "i";
+i.srcdoc = "";
+document.body.appendChild(i);
+i.contentWindow.addEventListener('readystatechange', () => {
+  if (i.contentDocument.readyState == "loading")
+    i.remove();
+}, true);
+</script>
+</body>

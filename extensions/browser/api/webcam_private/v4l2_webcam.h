@@ -17,6 +17,10 @@ namespace extensions {
 class V4L2Webcam : public Webcam {
  public:
   V4L2Webcam(const std::string& device_id);
+
+  V4L2Webcam(const V4L2Webcam&) = delete;
+  V4L2Webcam& operator=(const V4L2Webcam&) = delete;
+
   bool Open();
 
  private:
@@ -52,15 +56,18 @@ class V4L2Webcam : public Webcam {
              bool tilt,
              bool zoom,
              const SetPTZCompleteCallback& callback) override;
+
   void SetHome(const SetPTZCompleteCallback& callback) override;
   void SetFocus(int value, const SetPTZCompleteCallback& callback) override;
   void SetAutofocusState(AutofocusState state,
                          const SetPTZCompleteCallback& callback) override;
+  void RestoreCameraPreset(int preset_number,
+                           const SetPTZCompleteCallback& callback) override;
+  void SetCameraPreset(int preset_number,
+                       const SetPTZCompleteCallback& callback) override;
 
   const std::string device_id_;
   base::ScopedFD fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2Webcam);
 };
 
 

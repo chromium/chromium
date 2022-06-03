@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 
+#include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -16,11 +17,11 @@
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
 #endif
 
@@ -37,7 +38,8 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
   if (!format_check.IsVariableFont() && !format_check.IsColorFont()) {
     typeface = DefaultFontManager()->makeFromStream(std::move(stream));
     if (typeface) {
-      ReportWebFontInstantiationResult(kSuccessConventionalWebFont);
+      ReportInstantiationResult(
+          InstantiationResult::kSuccessConventionalWebFont);
       return true;
     }
     // Not UMA reporting general decoding errors as these are already recorded
@@ -48,15 +50,29 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
   // We don't expect variable CBDT/CBLC or Sbix variable fonts for now.
   if (format_check.IsCbdtCblcColorFont()) {
     typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
-    if (typeface)
-      ReportWebFontInstantiationResult(kSuccessCbdtCblcColorFont);
+    if (typeface) {
+      ReportInstantiationResult(InstantiationResult::kSuccessCbdtCblcColorFont);
+    }
     return typeface.get();
+  }
+
+  if (format_check.IsColrCpalColorFontV1()) {
+    if (RuntimeEnabledFeatures::COLRV1FontsEnabled()) {
+      typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
+      if (typeface) {
+        ReportInstantiationResult(InstantiationResult::kSuccessColrV1Font);
+      }
+      return typeface.get();
+    } else {
+      // Always reject COLRv1 fonts when the feature is off.
+      return false;
+    }
   }
 
   if (format_check.IsSbixColorFont()) {
     typeface = FontManagerForSbix()->makeFromStream(std::move(stream));
     if (typeface) {
-      ReportWebFontInstantiationResult(kSuccessSbixFont);
+      ReportInstantiationResult(InstantiationResult::kSuccessSbixFont);
     }
     return typeface.get();
   }
@@ -66,7 +82,7 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
   if (format_check.IsCff2OutlineFont()) {
     typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
     if (typeface)
-      ReportWebFontInstantiationResult(kSuccessCff2Font);
+      ReportInstantiationResult(InstantiationResult::kSuccessCff2Font);
     return typeface.get();
   }
 
@@ -74,17 +90,20 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
   // FontManager, which is FreeType on Windows.
   if (format_check.IsVariableFont()) {
     typeface = FontManagerForVariations()->makeFromStream(std::move(stream));
-    if (typeface)
-      ReportWebFontInstantiationResult(kSuccessVariableWebFont);
-    else
-      ReportWebFontInstantiationResult(kErrorInstantiatingVariableFont);
+    if (typeface) {
+      ReportInstantiationResult(InstantiationResult::kSuccessVariableWebFont);
+    } else {
+      ReportInstantiationResult(
+          InstantiationResult::kErrorInstantiatingVariableFont);
+    }
     return typeface.get();
   }
 
-  if (format_check.IsColrCpalColorFont()) {
+  if (format_check.IsColrCpalColorFontV0()) {
     typeface = FontManagerForColrCpal()->makeFromStream(std::move(stream));
-    if (typeface)
-      ReportWebFontInstantiationResult(kSuccessColrCpalFont);
+    if (typeface) {
+      ReportInstantiationResult(InstantiationResult::kSuccessColrCpalFont);
+    }
     return typeface.get();
   }
 
@@ -97,7 +116,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
     return DefaultFontManager();
   return FreeTypeFontManager();
 #else
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (!CoreTextVersionSupportsVariations())
     return FreeTypeFontManager();
 #endif
@@ -106,10 +125,11 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   return DefaultFontManager();
-#endif
+#else
   return FreeTypeFontManager();
+#endif
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
@@ -121,7 +141,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   return sk_sp<SkFontMgr>(SkFontMgr_New_Custom_Empty());
 #else
   return DefaultFontManager();
@@ -133,21 +153,17 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
   if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
     return FreeTypeFontManager();
 #endif
-#if defined(OS_MACOSX)
-  if (!CoreTextVersionSupportsColrCpal())
-    return FreeTypeFontManager();
-#endif
-  // TODO(https://crbug.com/882844): Check Mac OS version and use the FreeType
-  // font manager accordingly.
+
+#if defined(OS_MAC)
+  return FreeTypeFontManager();
+#else
   return DefaultFontManager();
+#endif
 }
 
-void WebFontTypefaceFactory::ReportWebFontInstantiationResult(
-    WebFontInstantiationResult result) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, web_font_variable_fonts_ratio,
-      ("Blink.Fonts.VariableFontsRatio", kMaxWebFontInstantiationResult));
-  web_font_variable_fonts_ratio.Count(result);
+void WebFontTypefaceFactory::ReportInstantiationResult(
+    InstantiationResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.Fonts.VariableFontsRatio", result);
 }
 
 }  // namespace blink

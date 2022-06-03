@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <include name="IDR_NET_ERROR_HTML" file="../neterror/resources/neterror.html" flattenhtml="true" type="BINDATA" compress="gzip"/>
+  <include name="IDR_NET_ERROR_HTML" file="../neterror/resources/neterror.html" flattenhtml="true" type="BINDATA"/>
 </grit-part>

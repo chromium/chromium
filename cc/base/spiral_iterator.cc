@@ -4,6 +4,8 @@
 
 #include "cc/base/spiral_iterator.h"
 
+#include "base/check_op.h"
+
 #include <algorithm>
 
 namespace cc {

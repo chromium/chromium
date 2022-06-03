@@ -38,7 +38,6 @@ class SocketsUdpUnitTest : public ApiUnitTest {
 TEST_F(SocketsUdpUnitTest, Create) {
   // Create SocketCreateFunction and put it on BrowserThread
   SocketsUdpCreateFunction* function = new SocketsUdpCreateFunction();
-  function->set_work_task_runner(base::SequencedTaskRunnerHandle::Get());
 
   // Run tests
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(

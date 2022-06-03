@@ -4,7 +4,7 @@
 
 #include "net/der/tag.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace net {
 

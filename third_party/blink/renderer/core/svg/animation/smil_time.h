@@ -30,8 +30,8 @@
 #include <ostream>
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -61,20 +61,18 @@ class SMILTime {
 
   static constexpr SMILTime Unresolved() { return base::TimeDelta::Max(); }
   static constexpr SMILTime Indefinite() {
-    return base::TimeDelta::Max() - base::TimeDelta::FromMicroseconds(1);
+    return base::TimeDelta::Max() - base::Microseconds(1);
   }
   static constexpr SMILTime Latest() {
-    return base::TimeDelta::Max() - base::TimeDelta::FromMicroseconds(2);
+    return base::TimeDelta::Max() - base::Microseconds(2);
   }
   static constexpr SMILTime Earliest() { return base::TimeDelta::Min(); }
-  static constexpr SMILTime Epsilon() {
-    return base::TimeDelta::FromMicroseconds(1);
-  }
+  static constexpr SMILTime Epsilon() { return base::Microseconds(1); }
   static constexpr SMILTime FromSecondsD(double seconds) {
-    return std::min(SMILTime(base::TimeDelta::FromSecondsD(seconds)), Latest());
+    return std::min(SMILTime(base::Seconds(seconds)), Latest());
   }
   static constexpr SMILTime FromMicroseconds(int64_t us) {
-    return std::min(SMILTime(base::TimeDelta::FromMicroseconds(us)), Latest());
+    return std::min(SMILTime(base::Microseconds(us)), Latest());
   }
 
   // Used for computing progress. Don't use for anything else.
@@ -107,10 +105,15 @@ class SMILTime {
   SMILTime operator-() const { return -time_; }
   // Division and /modulo are used primarily for computing interval
   // progress/repeats.
-  int64_t operator/(SMILTime other) const {
+  double operator/(SMILTime other) const {
     DCHECK(IsFinite());
     DCHECK(other.IsFinite());
     return time_ / other.time_;
+  }
+  int64_t IntDiv(SMILTime other) const {
+    DCHECK(IsFinite());
+    DCHECK(other.IsFinite());
+    return time_.IntDiv(other.time_);
   }
   SMILTime operator%(SMILTime other) const {
     DCHECK(IsFinite());
@@ -118,17 +121,25 @@ class SMILTime {
     return SMILTime(time_ % other.time_);
   }
 
-  bool operator==(SMILTime other) const { return time_ == other.time_; }
+  constexpr bool operator==(SMILTime other) const {
+    return time_ == other.time_;
+  }
   explicit operator bool() const { return IsFinite() && !time_.is_zero(); }
-  bool operator!=(SMILTime other) const { return time_ != other.time_; }
+  constexpr bool operator!=(SMILTime other) const {
+    return time_ != other.time_;
+  }
 
   // Ordering of SMILTimes has to follow: finite < indefinite < unresolved. We
   // set this up by assigning consecutive sentinel values for the two latter
   // (see above).
-  bool operator>(SMILTime other) const { return time_ > other.time_; }
-  bool operator<(SMILTime other) const { return time_ < other.time_; }
-  bool operator>=(SMILTime other) const { return time_ >= other.time_; }
-  bool operator<=(SMILTime other) const { return time_ <= other.time_; }
+  constexpr bool operator>(SMILTime other) const { return time_ > other.time_; }
+  constexpr bool operator<(SMILTime other) const { return time_ < other.time_; }
+  constexpr bool operator>=(SMILTime other) const {
+    return time_ >= other.time_;
+  }
+  constexpr bool operator<=(SMILTime other) const {
+    return time_ <= other.time_;
+  }
 
  private:
   constexpr SMILTime(base::TimeDelta time) : time_(time) {}
@@ -136,7 +147,7 @@ class SMILTime {
   base::TimeDelta time_;
 };
 
-std::ostream& operator<<(std::ostream& os, SMILTime time);
+CORE_EXPORT std::ostream& operator<<(std::ostream& os, SMILTime time);
 
 // What generated a SMILTime.
 enum class SMILTimeOrigin {
@@ -207,5 +218,15 @@ inline bool operator!=(const SMILInterval& a, const SMILInterval& b) {
 }
 
 }  // namespace blink
+
+namespace WTF {
+template <>
+struct HashTraits<blink::SMILInterval>
+    : GenericHashTraits<blink::SMILInterval> {
+  static blink::SMILInterval EmptyValue() {
+    return blink::SMILInterval::Unresolved();
+  }
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_H_

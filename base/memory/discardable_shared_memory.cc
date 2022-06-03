@@ -8,17 +8,17 @@
 
 #include <algorithm>
 
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_internal.h"
+#include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/numerics/safe_math.h"
-#include "base/process/process_metrics.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/process_memory_dump.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) && !defined(OS_NACL)
@@ -41,6 +41,11 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/trace_event/memory_allocator_dump.h"  // no-presubmit-check
+#include "base/trace_event/process_memory_dump.h"    // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 namespace base {
 namespace {
 
@@ -62,7 +67,7 @@ int64_t TimeToWireFormat(Time time);
 // Note: 19 January 2038, this will cease to work.
 template <>
 Time ALLOW_UNUSED_TYPE TimeFromWireFormat<4>(int64_t value) {
-  return value ? Time::UnixEpoch() + TimeDelta::FromSeconds(value) : Time();
+  return value ? Time::UnixEpoch() + Seconds(value) : Time();
 }
 template <>
 int64_t ALLOW_UNUSED_TYPE TimeToWireFormat<4>(Time time) {
@@ -114,7 +119,7 @@ SharedState* SharedStateFromSharedMemory(
 
 // Round up |size| to a multiple of page size.
 size_t AlignToPageSize(size_t size) {
-  return bits::Align(size, base::GetPageSize());
+  return bits::AlignUp(size, base::GetPageSize());
 }
 
 #if defined(OS_ANDROID)
@@ -274,7 +279,7 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   // Ensure that the platform won't discard the required pages.
   return LockPages(shared_memory_region_,
                    AlignToPageSize(sizeof(SharedState)) + offset, length);
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   // On macOS, there is no mechanism to lock pages. However, we do need to call
   // madvise(MADV_FREE_REUSE) in order to correctly update accounting for memory
   // footprint via task_info().
@@ -396,9 +401,9 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 // Linux and Android provide MADV_REMOVE which is preferred as it has a
 // behavior that can be verified in tests. Other POSIX flavors (MacOSX, BSDs),
 // provide MADV_FREE which has the same result but memory is purged lazily.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #define MADV_PURGE_ARGUMENT MADV_REMOVE
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 // MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with the
 // reusable bit, which allows both Activity Monitor and memory-infra to
 // correctly track the pages.
@@ -456,6 +461,35 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
   return true;
 }
 
+void DiscardableSharedMemory::ReleaseMemoryIfPossible(size_t offset,
+                                                      size_t length) {
+#if defined(OS_POSIX) && !defined(OS_NACL)
+// Linux and Android provide MADV_REMOVE which is preferred as it has a
+// behavior that can be verified in tests. Other POSIX flavors (MacOSX, BSDs),
+// provide MADV_FREE which has the same result but memory is purged lazily.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define MADV_PURGE_ARGUMENT MADV_REMOVE
+#elif defined(OS_APPLE)
+// MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with the
+// reusable bit, which allows both Activity Monitor and memory-infra to
+// correctly track the pages.
+#define MADV_PURGE_ARGUMENT MADV_FREE_REUSABLE
+#else  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define MADV_PURGE_ARGUMENT MADV_FREE
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  // Advise the kernel to remove resources associated with purged pages.
+  // Subsequent accesses of memory pages will succeed, but might result in
+  // zero-fill-on-demand pages.
+  if (madvise(static_cast<char*>(shared_memory_mapping_.memory()) + offset,
+              length, MADV_PURGE_ARGUMENT)) {
+    DPLOG(ERROR) << "madvise() failed";
+  }
+#else   // defined(OS_POSIX) && !defined(OS_NACL)
+  DiscardSystemPages(
+      static_cast<char*>(shared_memory_mapping_.memory()) + offset, length);
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+}
+
 bool DiscardableSharedMemory::IsMemoryResident() const {
   DCHECK(shared_memory_mapping_.IsValid());
 
@@ -483,6 +517,8 @@ void DiscardableSharedMemory::CreateSharedMemoryOwnershipEdge(
     trace_event::MemoryAllocatorDump* local_segment_dump,
     trace_event::ProcessMemoryDump* pmd,
     bool is_owned) const {
+// Memory dumps are only supported when tracing support is enabled,.
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   auto* shared_memory_dump = SharedMemoryTracker::GetOrCreateSharedMemoryDump(
       shared_memory_mapping_, pmd);
   // TODO(ssid): Clean this by a new api to inherit size of parent dump once the
@@ -512,6 +548,7 @@ void DiscardableSharedMemory::CreateSharedMemoryOwnershipEdge(
     pmd->CreateSharedMemoryOwnershipEdge(local_segment_dump->guid(),
                                          shared_memory_guid, kImportance);
   }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 // static

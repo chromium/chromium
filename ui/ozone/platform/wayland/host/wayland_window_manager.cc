@@ -20,6 +20,30 @@ void WaylandWindowManager::RemoveObserver(WaylandWindowObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void WaylandWindowManager::NotifyWindowConfigured(WaylandWindow* window) {
+  for (WaylandWindowObserver& observer : observers_)
+    observer.OnWindowConfigured(window);
+}
+
+void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
+  DCHECK_NE(located_events_grabber_, window);
+
+  // Wayland doesn't allow to grab the mouse. However, we start forwarding all
+  // mouse events received by WaylandWindow to the aura::WindowEventDispatcher
+  // which has capture.
+  auto* old_grabber = located_events_grabber_;
+  located_events_grabber_ = window;
+  if (old_grabber)
+    old_grabber->OnWindowLostCapture();
+}
+
+void WaylandWindowManager::UngrabLocatedEvents(WaylandWindow* window) {
+  DCHECK_EQ(located_events_grabber_, window);
+  auto* old_grabber = located_events_grabber_;
+  located_events_grabber_ = nullptr;
+  old_grabber->OnWindowLostCapture();
+}
+
 WaylandWindow* WaylandWindowManager::GetWindow(
     gfx::AcceleratedWidget widget) const {
   auto it = window_map_.find(widget);
@@ -41,7 +65,18 @@ WaylandWindow* WaylandWindowManager::GetWindowWithLargestBounds() const {
 }
 
 WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
-  for (auto entry : window_map_) {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->has_pointer_focus() || window->has_touch_focus() ||
+        window->has_keyboard_focus())
+      return window;
+  }
+  return nullptr;
+}
+
+WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
+    const {
+  for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;
     if (window->has_pointer_focus() || window->has_touch_focus())
       return window;
@@ -49,8 +84,26 @@ WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
   return nullptr;
 }
 
+WaylandWindow* WaylandWindowManager::GetCurrentPointerFocusedWindow() const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->has_pointer_focus())
+      return window;
+  }
+  return nullptr;
+}
+
+WaylandWindow* WaylandWindowManager::GetCurrentTouchFocusedWindow() const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->has_touch_focus())
+      return window;
+  }
+  return nullptr;
+}
+
 WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
-  for (auto entry : window_map_) {
+  for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;
     if (window->has_keyboard_focus())
       return window;
@@ -58,11 +111,43 @@ WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
   return nullptr;
 }
 
+void WaylandWindowManager::SetPointerFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentPointerFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->SetPointerFocus(false);
+  if (window)
+    window->SetPointerFocus(true);
+}
+
+void WaylandWindowManager::SetTouchFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentTouchFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->set_touch_focus(false);
+  if (window)
+    window->set_touch_focus(true);
+}
+
+void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentKeyboardFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->set_keyboard_focus(false);
+  if (window)
+    window->set_keyboard_focus(true);
+  for (auto& observer : observers_)
+    observer.OnKeyboardFocusedWindowChanged();
+}
+
 std::vector<WaylandWindow*> WaylandWindowManager::GetWindowsOnOutput(
     uint32_t output_id) {
   std::vector<WaylandWindow*> result;
   for (auto entry : window_map_) {
-    if (entry.second->entered_outputs_ids().count(output_id) > 0)
+    if (entry.second->GetPreferredEnteredOutputId() == output_id)
       result.push_back(entry.second);
   }
   return result;
@@ -84,6 +169,33 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 
   for (WaylandWindowObserver& observer : observers_)
     observer.OnWindowRemoved(window);
+
+  if (window->has_keyboard_focus()) {
+    for (auto& observer : observers_)
+      observer.OnKeyboardFocusedWindowChanged();
+  }
+}
+
+void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
+                                         WaylandSubsurface* subsurface) {
+  auto* window = window_map_[widget];
+  DCHECK(window);
+
+  for (WaylandWindowObserver& observer : observers_)
+    observer.OnSubsurfaceAdded(window, subsurface);
+}
+
+void WaylandWindowManager::RemoveSubsurface(gfx::AcceleratedWidget widget,
+                                            WaylandSubsurface* subsurface) {
+  auto* window = window_map_[widget];
+  DCHECK(window);
+
+  for (WaylandWindowObserver& observer : observers_)
+    observer.OnSubsurfaceRemoved(window, subsurface);
+}
+
+gfx::AcceleratedWidget WaylandWindowManager::AllocateAcceleratedWidget() {
+  return ++last_accelerated_widget_;
 }
 
 std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {

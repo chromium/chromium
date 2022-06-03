@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
-<translation id="6106989379647458772">Gali būti, kad tinklalapis adresu <ph name="PAGE" /> laikinai neveikia arba yra visam laikui perkeltas nauju žiniatinklio adresu.</translation>
-<translation id="6312113039770857350">Tinklalapis nepasiekiamas</translation>
-<translation id="8681531050781943054">Tinklalapio adresu <ph name="PAGE" /> nepavyko įkelti, nes:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Pasiūlymai:<ph name="MARKUP_2" />įsitikinkite, kad veikia duomenų ryšys;<ph name="MARKUP_3" />vėliau iš naujo įkelkite šį tinklalapį;<ph name="MARKUP_4" />patikrinkite įvestą adresą<ph name="MARKUP_5" /></translation>
 </translationbundle>

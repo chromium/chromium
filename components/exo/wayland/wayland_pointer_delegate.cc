@@ -96,8 +96,17 @@ void WaylandPointerDelegate::OnPointerButton(base::TimeTicks time_stamp,
 void WaylandPointerDelegate::OnPointerScroll(base::TimeTicks time_stamp,
                                              const gfx::Vector2dF& offset,
                                              bool discrete) {
-  // Same as Weston, the reference compositor.
-  const double kAxisStepDistance = 10.0 / ui::MouseWheelEvent::kWheelDelta;
+  // The unit aura considers to be "one scroll tick".
+  const int kAuraScrollUnit = ui::MouseWheelEvent::kWheelDelta;
+
+  // Weston, the reference compositor, treats one scroll tick as 10 units, with
+  // no acceleration applied.
+  constexpr int kWaylandScrollUnit = 10;
+
+  // The ratio between the wayland and aura unit sizes. Multiplying by this
+  // converts from aura units to wayland units, dividing does the reverse.
+  const double kAxisStepDistance = static_cast<double>(kWaylandScrollUnit) /
+                                   static_cast<double>(kAuraScrollUnit);
 
   if (wl_resource_get_version(pointer_resource_) >=
       WL_POINTER_AXIS_SOURCE_SINCE_VERSION) {
@@ -106,17 +115,39 @@ void WaylandPointerDelegate::OnPointerScroll(base::TimeTicks time_stamp,
     wl_pointer_send_axis_source(pointer_resource_, axis_source);
   }
 
-  double x_value = offset.x() * kAxisStepDistance;
+  double x_value = -offset.x() * kAxisStepDistance;
+  double y_value = -offset.y() * kAxisStepDistance;
+
+  // ::axis_discrete events must be sent before their corresponding ::axis
+  // events, per the specification.
+  if (wl_resource_get_version(pointer_resource_) >=
+          WL_POINTER_AXIS_DISCRETE_SINCE_VERSION &&
+      discrete) {
+    // Ensure that we never round the discrete value down to 0.
+    int discrete_x = static_cast<int>(x_value / kWaylandScrollUnit);
+    if (discrete_x == 0 && x_value != 0) {
+      discrete_x = copysign(1, x_value);
+    }
+    int discrete_y = static_cast<int>(y_value / kWaylandScrollUnit);
+    if (discrete_y == 0 && y_value != 0) {
+      discrete_y = copysign(1, y_value);
+    }
+
+    wl_pointer_send_axis_discrete(
+        pointer_resource_, WL_POINTER_AXIS_HORIZONTAL_SCROLL, discrete_x);
+    wl_pointer_send_axis_discrete(pointer_resource_,
+                                  WL_POINTER_AXIS_VERTICAL_SCROLL, discrete_y);
+  }
+
   SendTimestamp(time_stamp);
   wl_pointer_send_axis(pointer_resource_, TimeTicksToMilliseconds(time_stamp),
                        WL_POINTER_AXIS_HORIZONTAL_SCROLL,
-                       wl_fixed_from_double(-x_value));
+                       wl_fixed_from_double(x_value));
 
-  double y_value = offset.y() * kAxisStepDistance;
   SendTimestamp(time_stamp);
   wl_pointer_send_axis(pointer_resource_, TimeTicksToMilliseconds(time_stamp),
                        WL_POINTER_AXIS_VERTICAL_SCROLL,
-                       wl_fixed_from_double(-y_value));
+                       wl_fixed_from_double(y_value));
 }
 
 void WaylandPointerDelegate::OnPointerScrollStop(base::TimeTicks time_stamp) {

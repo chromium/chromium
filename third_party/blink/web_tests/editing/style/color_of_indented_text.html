@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where the color of indented text couldn't be changed.
+const kIndentStyle = 'margin: 0 0 0 40px; border: none; padding: 0px;';
+selection_test(
+    [
+        '<div contenteditable>',
+            `<blockquote style="${kIndentStyle}">`,
+                '^<font color="#ff0000">This text should be blue.</font>|',
+            '</blockquote>',
+        '</div>',
+    ],
+    'ForeColor blue',
+    [
+        '<div contenteditable>',
+            `<blockquote style="${kIndentStyle}">`,
+                '<font color="#0000ff">^This text should be blue.|</font>',
+            '</blockquote>',
+        '</div>',
+    ]);
+</script>

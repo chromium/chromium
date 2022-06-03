@@ -6,17 +6,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_TESTING_FAKE_AREA_SOURCE_H_
 
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
 class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
                        public CachedStorageArea::Source {
-  USING_GARBAGE_COLLECTED_MIXIN(FakeAreaSource);
-
  public:
-  explicit FakeAreaSource(const KURL& page_url) : page_url_(page_url) {}
+  explicit FakeAreaSource(const KURL& page_url,
+                          const LocalDOMWindow* local_dom_window)
+      : page_url_(page_url), local_dom_window_(local_dom_window) {}
 
   KURL GetPageUrl() const override { return page_url_; }
   bool EnqueueStorageEvent(const String& key,
@@ -33,14 +35,22 @@ class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
     return blink::WebScopedVirtualTimePauser();
   }
 
+  const LocalDOMWindow* GetDOMWindow() override { return local_dom_window_; }
+
   struct Event {
     String key, old_value, new_value, url;
+
+    bool operator==(const Event& other) const {
+      return std::tie(key, old_value, new_value, url) ==
+             std::tie(other.key, other.old_value, other.new_value, other.url);
+    }
   };
 
   Vector<Event> events;
 
  private:
   KURL page_url_;
+  UntracedMember<const LocalDOMWindow> local_dom_window_;
 };
 
 }  // namespace blink

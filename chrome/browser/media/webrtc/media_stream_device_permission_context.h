@@ -5,27 +5,35 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
-#include "chrome/browser/permissions/permission_context_base.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_context_base.h"
 
 // Common class which handles the mic and camera permissions.
-class MediaStreamDevicePermissionContext : public PermissionContextBase {
+class MediaStreamDevicePermissionContext
+    : public permissions::PermissionContextBase {
  public:
-  MediaStreamDevicePermissionContext(Profile* profile,
+  MediaStreamDevicePermissionContext(content::BrowserContext* browser_context,
                                      ContentSettingsType content_settings_type);
+
+  MediaStreamDevicePermissionContext(
+      const MediaStreamDevicePermissionContext&) = delete;
+  MediaStreamDevicePermissionContext& operator=(
+      const MediaStreamDevicePermissionContext&) = delete;
+
   ~MediaStreamDevicePermissionContext() override;
 
   // PermissionContextBase:
-  void DecidePermission(content::WebContents* web_contents,
-                        const PermissionRequestID& id,
-                        const GURL& requesting_origin,
-                        const GURL& embedding_origin,
-                        bool user_gesture,
-                        BrowserPermissionCallback callback) override;
+  void DecidePermission(
+      content::WebContents* web_contents,
+      const permissions::PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      bool user_gesture,
+      permissions::BrowserPermissionCallback callback) override;
 
-  // TODO(xhwang): GURL.GetOrigin() shouldn't be used as the origin. Need to
-  // refactor to use url::Origin. crbug.com/527149 is filed for this.
+  // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the
+  // origin. Need to refactor to use url::Origin. crbug.com/527149 is filed for
+  // this.
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -39,8 +47,6 @@ class MediaStreamDevicePermissionContext : public PermissionContextBase {
   bool IsRestrictedToSecureOrigins() const override;
 
   ContentSettingsType content_settings_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDevicePermissionContext);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSION_CONTEXT_H_

@@ -11,12 +11,8 @@ static_library("tracked") {
     "tracked_preference_histogram_names.cc",
     "tracked_preference_histogram_names.h",
   ]
-  public_deps = [
-    "//services/preferences/public/mojom",
-  ]
-  deps = [
-    "//base",
-  ]
+  public_deps = [ "//services/preferences/public/mojom" ]
+  deps = [ "//base" ]
 }
 
 static_library("test_support") {

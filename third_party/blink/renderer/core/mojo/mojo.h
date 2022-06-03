@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MOJO_MOJO_H_
 
 #include "mojo/public/cpp/system/core.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -55,7 +56,7 @@ class Mojo final : public ScriptWrappable {
                             const String& interface_name,
                             MojoHandle*,
                             const String& scope,
-                            bool use_browser_interface_broker);
+                            ExceptionState& exception_state);
 };
 
 }  // namespace blink

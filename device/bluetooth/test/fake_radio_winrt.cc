@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/async_operation.h"
 
@@ -104,6 +104,10 @@ void FakeRadioWinrt::SimulateAdapterPoweredOff() {
   state_changed_handler_->Invoke(this, nullptr);
 }
 
+void FakeRadioWinrt::SimulateSpuriousStateChangedEvent() {
+  state_changed_handler_->Invoke(this, nullptr);
+}
+
 FakeRadioStaticsWinrt::FakeRadioStaticsWinrt() = default;
 
 FakeRadioStaticsWinrt::~FakeRadioStaticsWinrt() = default;
@@ -122,12 +126,16 @@ HRESULT FakeRadioStaticsWinrt::FromIdAsync(HSTRING device_id,
   return E_NOTIMPL;
 }
 
+void FakeRadioStaticsWinrt::SimulateRequestAccessAsyncError(
+    ABI::Windows::Devices::Radios::RadioAccessStatus status) {
+  access_status_ = status;
+}
+
 HRESULT FakeRadioStaticsWinrt::RequestAccessAsync(
     IAsyncOperation<RadioAccessStatus>** operation) {
   auto async_op = Make<base::win::AsyncOperation<RadioAccessStatus>>();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(async_op->callback(), RadioAccessStatus_Allowed));
+      FROM_HERE, base::BindOnce(async_op->callback(), access_status_));
   *operation = async_op.Detach();
   return S_OK;
 }

@@ -26,7 +26,7 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
  protected:
   // ui::SelectFileDialog
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,

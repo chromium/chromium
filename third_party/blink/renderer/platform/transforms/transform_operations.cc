@@ -24,7 +24,6 @@
 #include <algorithm>
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
-#include "third_party/blink/renderer/platform/transforms/identity_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
@@ -73,11 +72,6 @@ TransformOperations ApplyFunctionToMatchingPrefix(
 }
 }  // namespace
 
-TransformOperations::TransformOperations(bool make_identity) {
-  if (make_identity)
-    operations_.push_back(IdentityTransformOperation::Create());
-}
-
 bool TransformOperations::operator==(const TransformOperations& o) const {
   if (operations_.size() != o.operations_.size())
     return false;
@@ -99,15 +93,24 @@ void TransformOperations::ApplyRemaining(const FloatSize& border_box_size,
   }
 }
 
+TransformOperation::BoxSizeDependency TransformOperations::BoxSizeDependencies(
+    wtf_size_t start) const {
+  TransformOperation::BoxSizeDependency deps = TransformOperation::kDependsNone;
+  for (wtf_size_t i = start; i < operations_.size(); i++) {
+    deps = TransformOperation::CombineDependencies(
+        deps, operations_[i]->BoxSizeDependencies());
+  }
+  return deps;
+}
+
 wtf_size_t TransformOperations::MatchingPrefixLength(
     const TransformOperations& other) const {
   wtf_size_t num_operations =
       std::min(Operations().size(), other.Operations().size());
   for (wtf_size_t i = 0; i < num_operations; ++i) {
-    if (Operations()[i]->PrimitiveType() !=
-        other.Operations()[i]->PrimitiveType()) {
-      // Remaining operations in each operations list require matrix/matrix3d
-      // interpolation.
+    if (!Operations()[i]->CanBlendWith(*other.Operations()[i])) {
+      // Remaining operations in each operations list require merging for
+      // matrix/matrix3d interpolation.
       return i;
     }
   }
@@ -124,7 +127,8 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
     double progress) const {
   // Not safe to use a cached transform if any of the operations are size
   // dependent.
-  if (DependsOnBoxSize() || from.DependsOnBoxSize()) {
+  if (BoxSizeDependencies(matching_prefix_length) ||
+      from.BoxSizeDependencies(matching_prefix_length)) {
     return InterpolatedTransformOperation::Create(
         from, *this, matching_prefix_length, progress);
   }
@@ -286,7 +290,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
   FloatPoint3D from_point = from_matrix.MapPoint(point);
 
   if (box.IsEmpty())
-    box.SetOrigin(from_point);
+    box.set_origin(from_point);
   else
     box.ExpandTo(from_point);
 
@@ -294,15 +298,16 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
 
   switch (from_transform.GetType()) {
     case TransformOperation::kRotateX:
-      FindCandidatesInPlane(point.Y(), point.Z(), from_transform.X(),
+      FindCandidatesInPlane(point.y(), point.z(), from_transform.X(),
                             candidates, &num_candidates);
       break;
     case TransformOperation::kRotateY:
-      FindCandidatesInPlane(point.Z(), point.X(), from_transform.Y(),
+      FindCandidatesInPlane(point.z(), point.x(), from_transform.Y(),
                             candidates, &num_candidates);
       break;
     case TransformOperation::kRotateZ:
-      FindCandidatesInPlane(point.X(), point.Y(), from_transform.Z(),
+    case TransformOperation::kRotate:
+      FindCandidatesInPlane(point.x(), point.y(), from_transform.Z(),
                             candidates, &num_candidates);
       break;
     default: {
@@ -337,18 +342,18 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
       // tan(t) = v2.x/v1.x
       // t = atan2(v2.x, v1.x) + n*M_PI;
 
-      candidates[0] = atan2(v2.X(), v1.X());
+      candidates[0] = atan2(v2.x(), v1.x());
       candidates[1] = candidates[0] + M_PI;
-      candidates[2] = atan2(v2.Y(), v1.Y());
+      candidates[2] = atan2(v2.y(), v1.y());
       candidates[3] = candidates[2] + M_PI;
-      candidates[4] = atan2(v2.Z(), v1.Z());
+      candidates[4] = atan2(v2.z(), v1.z());
       candidates[5] = candidates[4] + M_PI;
       num_candidates = 6;
     } break;
   }
 
-  double min_radians = deg2rad(from_degrees);
-  double max_radians = deg2rad(to_degrees);
+  double min_radians = Deg2rad(from_degrees);
+  double max_radians = Deg2rad(to_degrees);
   // Once we have the candidates, we now filter them down to ones that
   // actually live on the arc, rather than the entire circle.
   for (int i = 0; i < num_candidates; ++i) {
@@ -362,7 +367,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
       continue;
 
     TransformationMatrix rotation;
-    rotation.Rotate3d(axis.X(), axis.Y(), axis.Z(), rad2deg(radians));
+    rotation.Rotate3d(axis.x(), axis.y(), axis.z(), Rad2deg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
 }
@@ -391,9 +396,6 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
       return false;
 
     switch (interpolation_type) {
-      case TransformOperation::kIdentity:
-        bounds->ExpandTo(box);
-        continue;
       case TransformOperation::kTranslate:
       case TransformOperation::kTranslateX:
       case TransformOperation::kTranslateY:
@@ -435,10 +437,11 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
         bounds->ExpandTo(to_box);
         continue;
       }
-      case TransformOperation::kRotate:  // This is also RotateZ
+      case TransformOperation::kRotate:
       case TransformOperation::kRotate3D:
       case TransformOperation::kRotateX:
-      case TransformOperation::kRotateY: {
+      case TransformOperation::kRotateY:
+      case TransformOperation::kRotateZ: {
         scoped_refptr<RotateTransformOperation> identity_rotation;
         const RotateTransformOperation* from_rotation = nullptr;
         const RotateTransformOperation* to_rotation = nullptr;
@@ -466,7 +469,7 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
 
         if (!from_rotation) {
           identity_rotation = RotateTransformOperation::Create(
-              axis.X(), axis.Y(), axis.Z(), 0,
+              axis.x(), axis.y(), axis.z(), 0,
               from_operation ? from_operation->GetType()
                              : to_operation->GetType());
           from_rotation = identity_rotation.get();
@@ -475,7 +478,7 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
         if (!to_rotation) {
           if (!identity_rotation)
             identity_rotation = RotateTransformOperation::Create(
-                axis.X(), axis.Y(), axis.Z(), 0,
+                axis.x(), axis.y(), axis.z(), 0,
                 from_operation ? from_operation->GetType()
                                : to_operation->GetType());
           to_rotation = identity_rotation.get();
@@ -487,10 +490,10 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
           for (size_t k = 0; k < 2; ++k) {
             for (size_t m = 0; m < 2; ++m) {
               FloatBox bounds_for_arc;
-              FloatPoint3D corner(from_box.X(), from_box.Y(), from_box.Z());
+              FloatPoint3D corner(from_box.x(), from_box.y(), from_box.z());
               corner +=
-                  FloatPoint3D(j * from_box.Width(), k * from_box.Height(),
-                               m * from_box.Depth());
+                  FloatPoint3D(j * from_box.width(), k * from_box.height(),
+                               m * from_box.depth());
               BoundingBoxForArc(corner, *from_rotation, *to_rotation,
                                 min_progress, max_progress, bounds_for_arc);
               if (first) {

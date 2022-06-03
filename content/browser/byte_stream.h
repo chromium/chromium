@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 
 namespace base {
@@ -68,7 +69,7 @@ namespace content {
 //      std::unique_ptr<ByteStreamWriter> writer;
 //      std::unique_ptr<ByteStreamReader> reader;
 //      CreateByteStream(
-//          base::CreateSingleThreadTaskRunner({BrowserThread::IO}),
+//          GetIOThreadTaskRunner({}),
 //          base::CreateSequencedTaskRunner({base::MayBlock, ...}),
 //          kStreamBufferSize /* e.g. 10240.  */,
 //          &writer,

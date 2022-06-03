@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -25,12 +27,18 @@ LocalSyncPolicyHandler::~LocalSyncPolicyHandler() {}
 void LocalSyncPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  base::FilePath::StringType string_value;
+  std::string string_value;
   if (value && value->GetAsString(&string_value)) {
     base::FilePath::StringType expanded_value =
+#if defined(OS_WIN)
+        policy::path_parser::ExpandPathVariables(
+            base::UTF8ToWide(string_value));
+#else
         policy::path_parser::ExpandPathVariables(string_value);
+#endif
+    base::FilePath expanded_path(expanded_value);
     prefs->SetValue(syncer::prefs::kLocalSyncBackendDir,
-                    base::Value(expanded_value));
+                    base::Value(expanded_path.AsUTF8Unsafe()));
   }
 }
 

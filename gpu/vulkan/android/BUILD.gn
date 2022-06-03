@@ -44,6 +44,7 @@ test("vk_tests") {
     "//base/test:test_support",
     "//components/viz/common:vulkan_context_provider",
     "//testing/gtest",
+    "//ui/gfx",
   ]
   sources = [
     "run_all_unittests.cc",

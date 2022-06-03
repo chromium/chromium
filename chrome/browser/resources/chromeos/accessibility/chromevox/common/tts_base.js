@@ -12,22 +12,19 @@ goog.provide('ChromeTtsBase');
 goog.require('AbstractTts');
 
 
-/**
- * @constructor
- * @extends {AbstractTts}
- */
-ChromeTtsBase = function() {
-  goog.base(this);
-  this.propertyDefault['pitch'] = 1;
-  this.propertyMin['pitch'] = 0.2;
-  this.propertyMax['pitch'] = 2.0;
+ChromeTtsBase = class extends AbstractTts {
+  constructor() {
+    super();
+    this.propertyDefault['pitch'] = 1;
+    this.propertyMin['pitch'] = 0.2;
+    this.propertyMax['pitch'] = 2.0;
 
-  this.propertyDefault['rate'] = 1;
-  this.propertyMin['rate'] = 0.2;
-  this.propertyMax['rate'] = 5.0;
+    this.propertyDefault['rate'] = 1;
+    this.propertyMin['rate'] = 0.2;
+    this.propertyMax['rate'] = 5.0;
 
-  this.propertyDefault['volume'] = 1;
-  this.propertyMin['volume'] = 0.2;
-  this.propertyMax['volume'] = 1.0;
+    this.propertyDefault['volume'] = 1;
+    this.propertyMin['volume'] = 0.2;
+    this.propertyMax['volume'] = 1.0;
+  }
 };
-goog.inherits(ChromeTtsBase, AbstractTts);

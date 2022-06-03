@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ଓହ୍! ଅନିୟମିତ RSA ବ୍ୟକ୍ତିଗତ କୀ ସୃଷ୍ଟି କରିହେଲା ନାହିଁ।</translation>
 <translation id="1445572445564823378">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌ଟି <ph name="PRODUCT_NAME" />କୁ ଧୀର କରିଦେଉଛି। <ph name="PRODUCT_NAME" />ର କାର୍ଯ୍ୟଦକ୍ଷତାକୁ ରିଷ୍ଟୋର୍ କରିବା ପାଇଁ ଆପଣ ଏହାକୁ ଅକ୍ଷମ କରିଦେବା ଉଚିତ୍।</translation>
 <translation id="1468038450257740950">WebGL ସମର୍ଥନ କରୁନାହିଁ।</translation>
-<translation id="149347756975725155">ଏକ୍ସଟେନ୍‌ସନ୍ ଆଇକନ୍ '<ph name="ICON" />' ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' ପୃଷ୍ଠପଟ ପୃଷ୍ଠା ଲୋଡ୍‌ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="2159915644201199628">ଛବି ଡିକୋଡ୍ କରିପାରିଲା ନାହିଁ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ସ୍ଥାନୀୟକରଣ ବ୍ୟବହାର କରାଯାଇଛି, କିନ୍ତୁ ମାନିଫେଷ୍ଟରେ default_locale ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇନାହିଁ।</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ବ୍ୟକ୍ତିଗତ କୀ'କୁ ପଢ଼ିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="6391538222494443604">ଇନ୍‌ପୁଟ୍ ଡିରେକ୍ଟୋରୀ ରହିବା ଆବଶ୍ୟକ।</translation>
 <translation id="641087317769093025">ଏକ୍ସଟେନ୍‍ସନ୍‌ ଜିପ୍‌ ଖୋଲିହେଲା ନାହିଁ</translation>
-<translation id="6413453408918378296">'<ph name="ICON" />' ଆଇକନ୍ ଯଥେଷ୍ଟ ଦୃଶ୍ୟମାନ ନୁହେଁ।</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ଆପଣଙ୍କର ଏକ ବା ଅଧିକ ଡିଭାଇସ୍‌ଗୁଡ଼ିକର ଆକ୍‌ସେସ୍ ଅନୁରୋଧ କରୁଛି:</translation>
 <translation id="657064425229075395">ପୃଷ୍ଠପଟ ସ୍କ୍ରିପ୍ଟ '<ph name="BACKGROUND_SCRIPT" />’କୁ ଲୋଡ୍ କରିହେଲା ନାହିଁ।</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />ରୁ<ph name="VENDOR_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>

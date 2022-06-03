@@ -12,11 +12,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
@@ -81,8 +81,7 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         mShadowLayerWidth =
                 context.getResources().getDimension(R.dimen.autofill_assistant_actions_shadow_width)
                 / SHADOW_LAYERS;
-        mGradientDrawable =
-                context.getResources().getDrawable(R.drawable.autofill_assistant_actions_gradient);
+        mGradientDrawable = context.getDrawable(R.drawable.autofill_assistant_actions_gradient);
 
         mShadowPaint.setAntiAlias(true);
         mShadowPaint.setDither(true);
@@ -101,11 +100,27 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         }
 
         View lastChild = parent.getChildAt(parent.getChildCount() - 1);
+        View beforeLastChild = parent.getChildAt(parent.getChildCount() - 2);
         mLastChildRect.left = lastChild.getLeft() + lastChild.getTranslationX();
         mLastChildRect.top = lastChild.getTop() + lastChild.getTranslationY() + mVerticalInset;
         mLastChildRect.right = lastChild.getRight() + lastChild.getTranslationX();
         mLastChildRect.bottom =
                 lastChild.getBottom() + lastChild.getTranslationY() - mVerticalInset;
+
+        // Early return to avoid drawing last button decoration if no chip overlaps with the cancel
+        // chip. Note that there are spurious updates where the last chip's position is
+        // intermittently in the wrong position. The workaround is to check if the combined width of
+        // all chips fits without scrolling or not.
+        // TODO(b/144075373): Fix this properly by avoiding the spurious updates.
+        OrientationHelper orientationHelper = mLayoutManager.mOrientationHelper;
+        int sumDecoratedWidth = 0;
+        for (int i = 0; i < parent.getChildCount(); ++i) {
+            sumDecoratedWidth += orientationHelper.getDecoratedEnd(parent.getChildAt(i))
+                    - orientationHelper.getDecoratedStart(parent.getChildAt(i));
+        }
+        if (sumDecoratedWidth < mLayoutManager.getWidth()) {
+            return;
+        }
 
         canvas.save();
 
@@ -116,7 +131,6 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         canvas.clipPath(mLastChildPath, Region.Op.DIFFERENCE);
 
         // Overlay children close to the last child with a semi-transparent paint.
-        OrientationHelper orientationHelper = mLayoutManager.mOrientationHelper;
         float lastChildRight = orientationHelper.getDecoratedEnd(lastChild);
         for (int i = parent.getChildCount() - 2; i >= 0; i--) {
             View child = parent.getChildAt(i);
@@ -135,8 +149,6 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
             mChildRect.bottom = child.getBottom() + child.getTranslationY();
             canvas.drawRect(mChildRect, mOverlayPaint);
         }
-
-        View beforeLastChild = parent.getChildAt(parent.getChildCount() - 2);
 
         // Draw a fixed size white-to-transparent linear gradient from left to right.
         mGradientDrawable.setBounds(

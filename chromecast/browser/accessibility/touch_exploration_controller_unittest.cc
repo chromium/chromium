@@ -40,6 +40,10 @@ namespace {
 class EventCapturer : public ui::EventHandler {
  public:
   EventCapturer() {}
+
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
+
   ~EventCapturer() override {}
 
   void Reset() { events_.clear(); }
@@ -63,8 +67,6 @@ class EventCapturer : public ui::EventHandler {
 
  private:
   EventList events_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCapturer);
 };
 
 int Factorial(int n) {
@@ -78,21 +80,28 @@ int Factorial(int n) {
 class MockTouchExplorationControllerDelegate
     : public TouchExplorationControllerDelegate {
  public:
-  void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override {
+  void HandleAccessibilityGesture(const ax::mojom::Gesture gesture,
+                                  const gfx::PointF& location) override {
     last_gesture_ = gesture;
+    if (gesture == ax::mojom::Gesture::kTouchExplore)
+      touch_explore_points_.push_back(gfx::Point(location.x(), location.y()));
   }
-  void HandleTap(const gfx::Point touch_location) override {
+  void HandleTap(const gfx::Point& touch_location) override {
     last_tap_ = touch_location;
   }
 
   const std::vector<float> VolumeChanges() const { return volume_changes_; }
   ax::mojom::Gesture GetLastGesture() const { return last_gesture_; }
   void ResetLastGesture() { last_gesture_ = ax::mojom::Gesture::kNone; }
+  std::vector<gfx::Point>& GetTouchExplorePoints() {
+    return touch_explore_points_;
+  }
 
  private:
   std::vector<float> volume_changes_;
   ax::mojom::Gesture last_gesture_ = ax::mojom::Gesture::kNone;
   gfx::Point last_tap_;
+  std::vector<gfx::Point> touch_explore_points_;
 };
 
 class MockAccessibilitySoundPlayer : public AccessibilitySoundPlayer {
@@ -134,6 +143,11 @@ class TouchExplorationControllerTestApi {
       TouchExplorationController* touch_exploration_controller) {
     touch_exploration_controller_.reset(touch_exploration_controller);
   }
+
+  TouchExplorationControllerTestApi(const TouchExplorationControllerTestApi&) =
+      delete;
+  TouchExplorationControllerTestApi& operator=(
+      const TouchExplorationControllerTestApi&) = delete;
 
   void CallTapTimerNowForTesting() {
     DCHECK(touch_exploration_controller_->tap_timer_.IsRunning());
@@ -193,6 +207,10 @@ class TouchExplorationControllerTestApi {
     touch_exploration_controller_->SetExcludeBounds(bounds);
   }
 
+  void SetLiftActivationBounds(const gfx::Rect& bounds) {
+    touch_exploration_controller_->SetLiftActivationBounds(bounds);
+  }
+
   void InstallRewriter(aura::Window* window) {
     if (touch_exploration_controller_ && window) {
       window->GetHost()->GetEventSource()->AddEventRewriter(
@@ -209,13 +227,15 @@ class TouchExplorationControllerTestApi {
 
  private:
   std::unique_ptr<TouchExplorationController> touch_exploration_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationControllerTestApi);
 };
 
 class TouchExplorationTest : public aura::test::AuraTestBase {
  public:
   TouchExplorationTest() {}
+
+  TouchExplorationTest(const TouchExplorationTest&) = delete;
+  TouchExplorationTest& operator=(const TouchExplorationTest&) = delete;
+
   ~TouchExplorationTest() override {}
 
   void SetUp() override {
@@ -227,7 +247,7 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     generator_.reset(new ui::test::EventGenerator(root_window()));
 
     // Tests fail if time is ever 0.
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    simulated_clock_.Advance(base::Milliseconds(10));
     // ui takes ownership of the tick clock.
     ui::SetEventTickClockForTesting(&simulated_clock_);
 
@@ -283,16 +303,23 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     return events;
   }
 
-  void ClearCapturedEvents() { event_capturer_.Reset(); }
+  std::vector<gfx::Point>& GetTouchExplorePoints() {
+    return delegate_.GetTouchExplorePoints();
+  }
+
+  void ClearCapturedEvents() {
+    event_capturer_.Reset();
+    GetTouchExplorePoints().clear();
+  }
 
   void AdvanceSimulatedTimePastTapDelay() {
     simulated_clock_.Advance(gesture_detector_config_.double_tap_timeout);
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    simulated_clock_.Advance(base::Milliseconds(1));
     touch_exploration_controller_->CallTapTimerNowForTesting();
   }
 
   void AdvanceSimulatedTimePastPotentialTapDelay() {
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(1000));
+    simulated_clock_.Advance(base::Milliseconds(1000));
     touch_exploration_controller_->CallTapTimerNowIfRunningForTesting();
   }
 
@@ -317,7 +344,7 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
   void EnterTouchExplorationModeAtLocation(gfx::Point tap_location) {
     ui::TouchEvent touch_press(
         ui::ET_TOUCH_PRESSED, tap_location, Now(),
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_->Dispatch(&touch_press);
     AdvanceSimulatedTimePastTapDelay();
     EXPECT_TRUE(IsInTouchToMouseMode());
@@ -369,6 +396,25 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     touch_exploration_controller_->SetExcludeBounds(bounds);
   }
 
+  void SetLiftActivationBounds(const gfx::Rect& bounds) {
+    touch_exploration_controller_->SetLiftActivationBounds(bounds);
+  }
+
+  void TapAndVerifyTouchExplore(gfx::Point tap_location,
+                                bool set_anchor_point = false) {
+    generator_->set_current_screen_location(tap_location);
+    generator_->PressTouchId(1);
+    generator_->ReleaseTouchId(1);
+    AdvanceSimulatedTimePastTapDelay();
+
+    if (set_anchor_point)
+      SetTouchAccessibilityAnchorPoint(tap_location);
+
+    ASSERT_EQ(1U, GetTouchExplorePoints().size());
+    EXPECT_EQ(tap_location, GetTouchExplorePoints()[0]);
+    ClearCapturedEvents();
+  }
+
   std::unique_ptr<ui::test::EventGenerator> generator_;
   ui::GestureDetector::Config gesture_detector_config_;
   base::SimpleTestTickClock simulated_clock_;
@@ -380,8 +426,6 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
   std::unique_ptr<TouchExplorationControllerTestApi>
       touch_exploration_controller_;
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationTest);
 };
 
 // Executes a number of assertions to confirm that |e1| and |e2| are touch
@@ -542,7 +586,7 @@ TEST_F(TouchExplorationTest, TurnOnMidTouch) {
   SwitchTouchExplorationMode(true);
   ui::TouchEvent touch_move(
       ui::ET_TOUCH_MOVED, gfx::Point(111, 112), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&touch_move);
   EXPECT_TRUE(cursor_client()->IsCursorVisible());
   EXPECT_FALSE(cursor_client()->IsMouseEventsEnabled());
@@ -569,7 +613,7 @@ TEST_F(TouchExplorationTest, TurnOnMidTouch) {
   // The release of the first finger shouldn't be affected.
   ui::TouchEvent touch_release(
       ui::ET_TOUCH_RELEASED, gfx::Point(111, 112), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&touch_release);
   captured_events = GetCapturedLocatedEvents();
   ASSERT_EQ(1u, captured_events.size());
@@ -599,7 +643,7 @@ TEST_F(TouchExplorationTest, TimerFiresLateDuringTouchExploration) {
 
   // Send a press, then add another finger after the double-tap timeout.
   generator_->PressTouchId(1);
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(1000));
+  simulated_clock_.Advance(base::Milliseconds(1000));
   generator_->PressTouchId(2);
   std::vector<ui::LocatedEvent*> events =
       GetCapturedLocatedEventsOfType(ui::ET_MOUSE_MOVED);
@@ -629,7 +673,7 @@ TEST_F(TouchExplorationTest, TimerFiresLateAfterTap) {
   // timer fires.
   gfx::Point location1(233, 234);
   generator_->set_current_screen_location(location1);
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(301));
+  simulated_clock_.Advance(base::Milliseconds(301));
   generator_->PressTouch();
   generator_->ReleaseTouch();
   AdvanceSimulatedTimePastTapDelay();
@@ -644,6 +688,13 @@ TEST_F(TouchExplorationTest, TimerFiresLateAfterTap) {
   EXPECT_TRUE(events[1]->flags() & ui::EF_IS_SYNTHESIZED);
   EXPECT_TRUE(events[1]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
   EXPECT_TRUE(IsInNoFingersDownState());
+}
+
+TEST_F(TouchExplorationTest, TapGenExplore) {
+  // Tap at one location, and verify we get touch explore event.
+  SwitchTouchExplorationMode(true);
+  gfx::Point tap_for_touch_explore(51, 52);
+  TapAndVerifyTouchExplore(tap_for_touch_explore);
 }
 
 // Double-tapping should send a touch press and release through to the location
@@ -678,14 +729,8 @@ TEST_F(TouchExplorationTest, DoubleTap) {
   generator_->ReleaseTouch();
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(2U, captured_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
-  EXPECT_EQ(tap_location, captured_events[0]->location());
-  EXPECT_TRUE(captured_events[0]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
-  EXPECT_EQ(tap_location, captured_events[1]->location());
-  EXPECT_TRUE(captured_events[1]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_TRUE(IsInNoFingersDownState());
+  ASSERT_EQ(0U, captured_events.size());
+  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
 }
 
 // The press of the second tap in a double-tap must come within the double-tap
@@ -716,9 +761,9 @@ TEST_F(TouchExplorationTest, DoubleTapTiming) {
   generator_->PressTouch();
   generator_->ReleaseTouch();
   simulated_clock_.Advance(gesture_detector_config_.double_tap_timeout -
-                           base::TimeDelta::FromMilliseconds(25));
+                           base::Milliseconds(25));
   generator_->PressTouch();
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(50));
+  simulated_clock_.Advance(base::Milliseconds(50));
   generator_->ReleaseTouch();
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
@@ -928,22 +973,17 @@ TEST_F(TouchExplorationTest, SingleTap) {
   // tapping again.
   gfx::Point final_location(133, 134);
   generator_->set_current_screen_location(final_location);
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(250));
+  simulated_clock_.Advance(base::Milliseconds(250));
   generator_->PressTouch();
   generator_->ReleaseTouch();
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(4U, captured_events.size());
+  ASSERT_EQ(2U, captured_events.size());
   EXPECT_EQ(ui::ET_MOUSE_MOVED, captured_events[0]->type());
   EXPECT_TRUE(captured_events[0]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
   EXPECT_EQ(ui::ET_MOUSE_MOVED, captured_events[1]->type());
   EXPECT_TRUE(captured_events[1]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[2]->type());
-  EXPECT_EQ(tap_location, captured_events[2]->location());
-  EXPECT_TRUE(captured_events[2]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[3]->type());
-  EXPECT_EQ(tap_location, captured_events[3]->location());
-  EXPECT_TRUE(captured_events[3]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
 }
 
 // Double-tapping without coming from touch exploration (no previous touch
@@ -998,7 +1038,7 @@ TEST_F(TouchExplorationTest, SplitTap) {
   // After the release, there is still a finger in touch explore mode.
   ui::TouchEvent split_tap_press(
       ui::ET_TOUCH_PRESSED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_press);
   // To simulate the behavior of the real device, we manually disable
   // mouse events. To not rely on manually setting the state, this is also
@@ -1009,7 +1049,7 @@ TEST_F(TouchExplorationTest, SplitTap) {
   EXPECT_FALSE(IsInGestureInProgressState());
   ui::TouchEvent split_tap_release(
       ui::ET_TOUCH_RELEASED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_release);
   // Releasing the second finger should re-enable mouse events putting us
   // back into the touch exploration mode.
@@ -1017,18 +1057,13 @@ TEST_F(TouchExplorationTest, SplitTap) {
   EXPECT_FALSE(IsInNoFingersDownState());
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(2U, captured_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
-  EXPECT_EQ(initial_touch_location, captured_events[0]->location());
-  EXPECT_TRUE(captured_events[0]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
-  EXPECT_EQ(initial_touch_location, captured_events[1]->location());
-  EXPECT_TRUE(captured_events[1]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+  ASSERT_EQ(0U, captured_events.size());
+  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
   ClearCapturedEvents();
 
   ui::TouchEvent touch_explore_release(
       ui::ET_TOUCH_RELEASED, initial_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&touch_explore_release);
   AdvanceSimulatedTimePastTapDelay();
   EXPECT_TRUE(IsInNoFingersDownState());
@@ -1059,26 +1094,21 @@ TEST_F(TouchExplorationTest, SplitTapRelease) {
   // not at the location of the second tap and release.
   ui::TouchEvent split_tap_press(
       ui::ET_TOUCH_PRESSED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_press);
   ui::TouchEvent touch_explore_release(
       ui::ET_TOUCH_RELEASED, initial_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&touch_explore_release);
   ui::TouchEvent split_tap_release(
       ui::ET_TOUCH_RELEASED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_release);
   EXPECT_TRUE(IsInNoFingersDownState());
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(2U, captured_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
-  EXPECT_EQ(initial_touch_location, captured_events[0]->location());
-  EXPECT_TRUE(captured_events[0]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
-  EXPECT_EQ(initial_touch_location, captured_events[1]->location());
-  EXPECT_TRUE(captured_events[1]->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+  ASSERT_EQ(0U, captured_events.size());
+  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
 }
 
 TEST_F(TouchExplorationTest, SplitTapMultiFinger) {
@@ -1102,7 +1132,7 @@ TEST_F(TouchExplorationTest, SplitTapMultiFinger) {
   // Now tap at a different location
   ui::TouchEvent split_tap_press(
       ui::ET_TOUCH_PRESSED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_press);
   simulated_clock_.Advance(gesture_detector_config_.longpress_timeout);
 
@@ -1110,22 +1140,22 @@ TEST_F(TouchExplorationTest, SplitTapMultiFinger) {
   // enter the wait state.
   ui::TouchEvent third_press(
       ui::ET_TOUCH_PRESSED, third_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
   generator_->Dispatch(&third_press);
 
   // When all three fingers are released, no events should be captured.
   // All fingers should then be up.
   ui::TouchEvent touch_explore_release(
       ui::ET_TOUCH_RELEASED, initial_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&touch_explore_release);
   ui::TouchEvent split_tap_release(
       ui::ET_TOUCH_RELEASED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_release);
   ui::TouchEvent third_tap_release(
       ui::ET_TOUCH_RELEASED, third_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
   generator_->Dispatch(&third_tap_release);
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
@@ -1151,22 +1181,22 @@ TEST_F(TouchExplorationTest, SplitTapLeaveSlop) {
   // Now tap at a different location for split tap.
   ui::TouchEvent split_tap_press(
       ui::ET_TOUCH_PRESSED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_press);
 
   // Move the first finger out of slop and release both fingers. The split
   // tap should have been cancelled.
   ui::TouchEvent first_touch_move(
       ui::ET_TOUCH_MOVED, first_move_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&first_touch_move);
   ui::TouchEvent first_touch_release(
       ui::ET_TOUCH_RELEASED, first_move_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&first_touch_release);
   ui::TouchEvent second_touch_release(
       ui::ET_TOUCH_RELEASED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&second_touch_release);
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
@@ -1178,22 +1208,22 @@ TEST_F(TouchExplorationTest, SplitTapLeaveSlop) {
   ClearCapturedEvents();
   ui::TouchEvent split_tap_press2(
       ui::ET_TOUCH_PRESSED, second_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&split_tap_press2);
 
   // Move the second finger out of slop and release both fingers. The split
   // tap should have been cancelled.
   ui::TouchEvent second_touch_move2(
       ui::ET_TOUCH_MOVED, second_move_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&second_touch_move2);
   ui::TouchEvent first_touch_release2(
       ui::ET_TOUCH_RELEASED, first_touch_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&first_touch_release2);
   ui::TouchEvent second_touch_release2(
       ui::ET_TOUCH_RELEASED, second_move_location, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&second_touch_release2);
 
   captured_events = GetCapturedLocatedEvents();
@@ -1213,19 +1243,19 @@ TEST_F(TouchExplorationTest, EnterGestureInProgressState) {
   float distance = gesture_detector_config_.touch_slop + 1;
   ui::TouchEvent first_press(
       ui::ET_TOUCH_PRESSED, gfx::Point(100, 101), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   gfx::Point second_location(100 + distance / 2, 101);
   gfx::Point third_location(100 + distance, 101);
   gfx::Point touch_exploration_location(120, 121);
 
   generator_->Dispatch(&first_press);
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+  simulated_clock_.Advance(base::Milliseconds(10));
   // Since we are not out of the touch slop yet, we should not be in gesture in
   // progress.
   generator_->MoveTouch(second_location);
   EXPECT_FALSE(IsInTouchToMouseMode());
   EXPECT_FALSE(IsInGestureInProgressState());
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+  simulated_clock_.Advance(base::Milliseconds(10));
 
   // Once we are out of slop, we should be in GestureInProgress.
   generator_->MoveTouch(third_location);
@@ -1390,18 +1420,15 @@ TEST_F(TouchExplorationTest, DISABLED_AllFingerPermutations) {
     int y = 10 * touch_id + 102;
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_PRESSED, gfx::Point(x++, y++), Now(),
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                           touch_id)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
     queued_events.push_back(all_events.back().get());
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_MOVED, gfx::Point(x++, y++), Now(),
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                           touch_id)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
     queued_events.push_back(all_events.back().get());
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_RELEASED, gfx::Point(x, y), Now(),
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                           touch_id)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
     queued_events.push_back(all_events.back().get());
   }
 
@@ -1506,9 +1533,9 @@ TEST_F(TouchExplorationTest, GestureAddedFinger) {
   float distance = gesture_detector_config_.touch_slop + 1;
   ui::TouchEvent first_press(
       ui::ET_TOUCH_PRESSED, gfx::Point(100, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&first_press);
-  simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+  simulated_clock_.Advance(base::Milliseconds(10));
   gfx::Point second_location(100 + distance, 200);
   generator_->MoveTouch(second_location);
   EXPECT_TRUE(IsInGestureInProgressState());
@@ -1520,7 +1547,7 @@ TEST_F(TouchExplorationTest, GestureAddedFinger) {
   // gestures are prevented from continuing to go through.
   ui::TouchEvent second_press(
       ui::ET_TOUCH_PRESSED, gfx::Point(220, 221), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator_->Dispatch(&second_press);
   AdvanceSimulatedTimePastTapDelay();
   EXPECT_FALSE(IsInGestureInProgressState());
@@ -1537,7 +1564,7 @@ TEST_F(TouchExplorationTest, InBoundariesTouchExploration) {
   gfx::Point initial_press(window.right() - (GetMaxDistanceFromEdge() + GetLeavingDistanceFromEdge()) / 2, GetLeavingDistanceFromEdge() + 1);
   ui::TouchEvent first_press(
       ui::ET_TOUCH_PRESSED, initial_press, Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   generator_->Dispatch(&first_press);
   EXPECT_FALSE(IsInGestureInProgressState());
   EXPECT_FALSE(IsInTouchToMouseMode());
@@ -1600,24 +1627,24 @@ TEST_F(TouchExplorationTest, TwoFingerTapAndMoveFirstFinger) {
   // tap.
   ui::TouchEvent first_press_id_1(
       ui::ET_TOUCH_PRESSED, gfx::Point(100, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::TouchEvent first_press_id_2(
       ui::ET_TOUCH_PRESSED, gfx::Point(110, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
 
   ui::TouchEvent slop_move_id_1(
       ui::ET_TOUCH_MOVED,
       gfx::Point(100 + gesture_detector_config_.touch_slop, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::TouchEvent slop_move_id_2(
       ui::ET_TOUCH_MOVED,
       gfx::Point(110 + gesture_detector_config_.touch_slop, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
 
   ui::TouchEvent out_slop_id_1(
       ui::ET_TOUCH_MOVED,
       gfx::Point(100 + gesture_detector_config_.touch_slop + 1, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
   // Dispatch the inital presses.
   generator_->Dispatch(&first_press_id_1);
@@ -1650,15 +1677,15 @@ TEST_F(TouchExplorationTest, TwoFingerTapAndMoveSecondFinger) {
   // tap.
   ui::TouchEvent first_press_id_1(
       ui::ET_TOUCH_PRESSED, gfx::Point(100, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::TouchEvent first_press_id_2(
       ui::ET_TOUCH_PRESSED, gfx::Point(110, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
 
   ui::TouchEvent out_slop_id_2(
       ui::ET_TOUCH_MOVED,
       gfx::Point(100 + gesture_detector_config_.touch_slop + 1, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
   generator_->Dispatch(&first_press_id_1);
   EXPECT_FALSE(IsInTwoFingerTapState());
@@ -1776,28 +1803,28 @@ TEST_F(TouchExplorationTest, ThreeOrFourFingerTap) {
 
   ui::TouchEvent press_id_1(
       ui::ET_TOUCH_PRESSED, gfx::Point(100, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::TouchEvent release_id_1(
       ui::ET_TOUCH_RELEASED, gfx::Point(100, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::TouchEvent press_id_2(
       ui::ET_TOUCH_PRESSED, gfx::Point(110, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
   ui::TouchEvent release_id_2(
       ui::ET_TOUCH_RELEASED, gfx::Point(110, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 2));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 2));
   ui::TouchEvent press_id_3(
       ui::ET_TOUCH_PRESSED, gfx::Point(120, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 3));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 3));
   ui::TouchEvent release_id_3(
       ui::ET_TOUCH_RELEASED, gfx::Point(120, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 3));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 3));
   ui::TouchEvent press_id_4(
       ui::ET_TOUCH_PRESSED, gfx::Point(130, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 4));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 4));
   ui::TouchEvent release_id_4(
       ui::ET_TOUCH_RELEASED, gfx::Point(120, 200), Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 4));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 4));
 
   // Three fingers down.
   generator_->Dispatch(&press_id_1);
@@ -1845,6 +1872,84 @@ TEST_F(TouchExplorationTest, ThreeOrFourFingerTap) {
   EXPECT_TRUE(IsInNoFingersDownState());
 
   ASSERT_EQ(ax::mojom::Gesture::kTap4, delegate_.GetLastGesture());
+}
+
+TEST_F(TouchExplorationTest, SingleTapInLiftActivationArea) {
+  SwitchTouchExplorationMode(true);
+
+  gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
+  lift_activation.Inset(0, 0, 0, 30);
+  SetLiftActivationBounds(lift_activation);
+
+  // Tap at one location, and get tap and mouse move events.
+  gfx::Point tap_location = lift_activation.CenterPoint();
+
+  // The user has to have previously selected something.
+  SetTouchAccessibilityAnchorPoint(tap_location);
+
+  generator_->set_current_screen_location(tap_location);
+  generator_->PressTouchId(1);
+  generator_->ReleaseTouchId(1);
+  const EventList& captured_events = GetCapturedEvents();
+  EXPECT_EQ(2U, captured_events.size());
+  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
+  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
+  ASSERT_EQ(1U, accessibility_sound_player_.NumTouchTypeSounds());
+  accessibility_sound_player_.ResetCountersToZero();
+  ClearCapturedEvents();
+
+  gfx::Point out_tap_location(tap_location.x(), lift_activation.bottom() + 20);
+  SetTouchAccessibilityAnchorPoint(out_tap_location);
+  generator_->set_current_screen_location(out_tap_location);
+  generator_->PressTouchId(1);
+  generator_->ReleaseTouchId(1);
+
+  const EventList& out_captured_events = GetCapturedEvents();
+  ASSERT_TRUE(out_captured_events.empty());
+  ASSERT_EQ(0U, accessibility_sound_player_.NumTouchTypeSounds());
+}
+
+TEST_F(TouchExplorationTest, TouchExploreLiftInLiftActivationArea) {
+  SwitchTouchExplorationMode(true);
+
+  gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
+  lift_activation.Inset(0, 0, 0, 30);
+  SetLiftActivationBounds(lift_activation);
+
+  // Explore at one location, and get tap and touch explore events.
+  gfx::Point tap_location = lift_activation.CenterPoint();
+  EnterTouchExplorationModeAtLocation(tap_location);
+  ClearCapturedEvents();
+  ASSERT_EQ(0U, accessibility_sound_player_.NumTouchTypeSounds());
+
+  // A touch release should trigger a tap.
+  ui::TouchEvent touch_explore_release(
+      ui::ET_TOUCH_RELEASED, tap_location, Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  generator_->Dispatch(&touch_explore_release);
+
+  const EventList& captured_events = GetCapturedEvents();
+  ASSERT_EQ(3U, captured_events.size());
+  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
+  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
+  EXPECT_EQ(ui::ET_MOUSE_MOVED, captured_events[2]->type());
+  ASSERT_EQ(1U, accessibility_sound_player_.NumTouchTypeSounds());
+  ClearCapturedEvents();
+  accessibility_sound_player_.ResetCountersToZero();
+
+  // Touch explore inside the activation bounds, but lift outside.
+  gfx::Point out_tap_location(tap_location.x(), lift_activation.bottom() + 20);
+  SetTouchAccessibilityAnchorPoint(out_tap_location);
+  EnterTouchExplorationModeAtLocation(tap_location);
+  ClearCapturedEvents();
+  ui::TouchEvent out_touch_explore_release(
+      ui::ET_TOUCH_RELEASED, out_tap_location, Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  generator_->Dispatch(&out_touch_explore_release);
+
+  const EventList& out_captured_events = GetCapturedEvents();
+  ASSERT_TRUE(out_captured_events.empty());
+  ASSERT_EQ(0U, accessibility_sound_player_.NumTouchTypeSounds());
 }
 
 }  // namespace shell

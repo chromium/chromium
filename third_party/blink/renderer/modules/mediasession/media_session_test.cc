@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/modules/mediasession/media_session.h"
 
 #include "base/macros.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/mediasession/media_position_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -34,6 +37,10 @@ class MockMediaSessionService : public mojom::blink::MediaSessionService {
   MOCK_METHOD1(SetPositionState,
                void(media_session::mojom::blink::MediaPositionPtr));
   void SetMetadata(mojom::blink::SpecMediaMetadataPtr metadata) override {}
+  void SetMicrophoneState(
+      media_session::mojom::MicrophoneState microphone_state) override {}
+  void SetCameraState(media_session::mojom::CameraState camera_state) override {
+  }
   void EnableAction(
       media_session::mojom::blink::MediaSessionAction action) override {}
   void DisableAction(
@@ -49,13 +56,18 @@ class MediaSessionTest : public PageTestBase {
  public:
   MediaSessionTest() = default;
 
+  MediaSessionTest(const MediaSessionTest&) = delete;
+  MediaSessionTest& operator=(const MediaSessionTest&) = delete;
+
   void SetUp() override {
     PageTestBase::SetUp();
 
     mock_service_ = std::make_unique<MockMediaSessionService>();
 
-    media_session_ = MakeGarbageCollected<MediaSession>(&GetDocument());
+    media_session_ =
+        MediaSession::mediaSession(*GetFrame().DomWindow()->navigator());
     media_session_->service_ = mock_service_->CreateRemoteAndBind();
+    media_session_->clock_ = &test_clock_;
   }
 
   void SetPositionState(double duration,
@@ -82,21 +94,24 @@ class MediaSessionTest : public PageTestBase {
 
   MockMediaSessionService& service() { return *mock_service_.get(); }
 
+  base::SimpleTestTickClock& clock() { return test_clock_; }
+
  private:
+  base::SimpleTestTickClock test_clock_;
+
   std::unique_ptr<MockMediaSessionService> mock_service_;
 
   Persistent<MediaSession> media_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionTest);
 };
 
 TEST_F(MediaSessionTest, PlaybackPositionState_None) {
   base::RunLoop loop;
   EXPECT_CALL(service(), SetPositionState(_))
       .WillOnce(testing::Invoke([&](auto position_state) {
-        EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-        EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+        EXPECT_EQ(base::Seconds(10), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
         EXPECT_EQ(1.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
         loop.Quit();
       }));
@@ -110,9 +125,10 @@ TEST_F(MediaSessionTest, PlaybackPositionState_Paused) {
   base::RunLoop loop;
   EXPECT_CALL(service(), SetPositionState(_))
       .WillOnce(testing::Invoke([&](auto position_state) {
-        EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-        EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+        EXPECT_EQ(base::Seconds(10), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
         EXPECT_EQ(0.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
         loop.Quit();
       }));
@@ -126,9 +142,10 @@ TEST_F(MediaSessionTest, PlaybackPositionState_Playing) {
   base::RunLoop loop;
   EXPECT_CALL(service(), SetPositionState(_))
       .WillOnce(testing::Invoke([&](auto position_state) {
-        EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-        EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+        EXPECT_EQ(base::Seconds(10), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
         EXPECT_EQ(1.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
         loop.Quit();
       }));
@@ -143,9 +160,10 @@ TEST_F(MediaSessionTest, PlaybackPositionState_Paused_Clear) {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Seconds(10), position_state->duration);
+          EXPECT_EQ(base::Seconds(5), position_state->position);
           EXPECT_EQ(0.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
@@ -172,9 +190,10 @@ TEST_F(MediaSessionTest, PositionPlaybackState_None) {
   base::RunLoop loop;
   EXPECT_CALL(service(), SetPositionState(_))
       .WillOnce(testing::Invoke([&](auto position_state) {
-        EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-        EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+        EXPECT_EQ(base::Seconds(10), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
         EXPECT_EQ(1.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
         loop.Quit();
       }));
@@ -189,24 +208,28 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Paused_None) {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(1), position_state->position);
           EXPECT_EQ(1.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
 
-    SetPositionState(10, 5, 1.0);
+    SetPositionState(600, 60, 1.0);
     loop.Run();
   }
+
+  clock().Advance(base::Minutes(1));
 
   {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(2), position_state->position);
           EXPECT_EQ(0.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
@@ -215,13 +238,16 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Paused_None) {
     loop.Run();
   }
 
+  clock().Advance(base::Minutes(1));
+
   {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(2), position_state->position);
           EXPECT_EQ(1.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
@@ -236,24 +262,28 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Paused_Playing) {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(1), position_state->position);
           EXPECT_EQ(1.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
 
-    SetPositionState(10, 5, 1.0);
+    SetPositionState(600, 60, 1.0);
     loop.Run();
   }
+
+  clock().Advance(base::Minutes(1));
 
   {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(2), position_state->position);
           EXPECT_EQ(0.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
@@ -262,13 +292,16 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Paused_Playing) {
     loop.Run();
   }
 
+  clock().Advance(base::Minutes(1));
+
   {
     base::RunLoop loop;
     EXPECT_CALL(service(), SetPositionState(_))
         .WillOnce(testing::Invoke([&](auto position_state) {
-          EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-          EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+          EXPECT_EQ(base::Minutes(10), position_state->duration);
+          EXPECT_EQ(base::Minutes(2), position_state->position);
           EXPECT_EQ(1.0, position_state->playback_rate);
+          EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
           loop.Quit();
         }));
@@ -282,9 +315,10 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Playing) {
   base::RunLoop loop;
   EXPECT_CALL(service(), SetPositionState(_))
       .WillOnce(testing::Invoke([&](auto position_state) {
-        EXPECT_EQ(base::TimeDelta::FromSeconds(10), position_state->duration);
-        EXPECT_EQ(base::TimeDelta::FromSeconds(5), position_state->position);
+        EXPECT_EQ(base::Seconds(10), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
         EXPECT_EQ(1.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
 
         loop.Quit();
       }));

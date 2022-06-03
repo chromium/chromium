@@ -11,6 +11,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -38,17 +40,16 @@ public class DownloadTaskScheduler {
         bundle.putBoolean(EXTRA_BATTERY_REQUIRES_CHARGING, requiresCharging);
 
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
-        TaskInfo taskInfo =
-                TaskInfo.createOneOffTask(getTaskId(taskType), DownloadBackgroundTask.class,
-                                DateUtils.SECOND_IN_MILLIS * windowStartTimeSeconds,
-                                DateUtils.SECOND_IN_MILLIS * windowEndTimeSeconds)
-                        .setRequiredNetworkType(
-                                getRequiredNetworkType(taskType, requiresUnmeteredNetwork))
-                        .setRequiresCharging(requiresCharging)
-                        .setUpdateCurrent(true)
-                        .setIsPersisted(true)
-                        .setExtras(bundle)
-                        .build();
+        TaskInfo taskInfo = TaskInfo.createOneOffTask(getTaskId(taskType),
+                                            DateUtils.SECOND_IN_MILLIS * windowStartTimeSeconds,
+                                            DateUtils.SECOND_IN_MILLIS * windowEndTimeSeconds)
+                                    .setRequiredNetworkType(getRequiredNetworkType(
+                                            taskType, requiresUnmeteredNetwork))
+                                    .setRequiresCharging(requiresCharging)
+                                    .setUpdateCurrent(true)
+                                    .setIsPersisted(true)
+                                    .setExtras(bundle)
+                                    .build();
         scheduler.schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
@@ -67,8 +68,10 @@ public class DownloadTaskScheduler {
                 TimeUtils.SECONDS_PER_MINUTE * 5, TimeUtils.SECONDS_PER_MINUTE * 10);
         scheduleTask(DownloadTaskType.CLEANUP_TASK, false, false, 0,
                 TimeUtils.SECONDS_PER_HOUR * 12, TimeUtils.SECONDS_PER_HOUR * 24);
-        scheduleTask(DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK, false, false, 0,
-                TimeUtils.SECONDS_PER_MINUTE * 5, TimeUtils.SECONDS_PER_DAY);
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
+            scheduleTask(DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK, false, false, 0,
+                    TimeUtils.SECONDS_PER_MINUTE * 5, TimeUtils.SECONDS_PER_DAY);
+        }
     }
 
     private static int getTaskId(@DownloadTaskType int taskType) {
@@ -79,10 +82,11 @@ public class DownloadTaskScheduler {
                 return TaskIds.DOWNLOAD_CLEANUP_JOB_ID;
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK:
                 return TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID;
-            default:
-                assert false;
-                return -1;
+            case DownloadTaskType.DOWNLOAD_LATER_TASK:
+                return TaskIds.DOWNLOAD_LATER_JOB_ID;
         }
+        assert false : "Unknown download task type.";
+        return -1;
     }
 
     private static int getRequiredNetworkType(
@@ -94,9 +98,10 @@ public class DownloadTaskScheduler {
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK:
                 return requiresUnmeteredNetwork ? TaskInfo.NetworkType.UNMETERED
                                                 : TaskInfo.NetworkType.ANY;
-            default:
-                assert false;
+            case DownloadTaskType.DOWNLOAD_LATER_TASK:
                 return TaskInfo.NetworkType.ANY;
         }
+        assert false : "Unknown download task type.";
+        return -1;
     }
 }

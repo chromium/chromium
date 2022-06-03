@@ -4,7 +4,11 @@
 
 #include "chrome/browser/chromeos/printing/history/print_job_info_proto_conversions.h"
 
-#include "base/optional.h"
+#include <string>
+
+#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "printing/mojom/print.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -12,20 +16,21 @@ namespace proto = printing::proto;
 
 namespace {
 
-proto::PrintSettings_ColorMode ColorModelToProto(::printing::ColorModel color) {
-  base::Optional<bool> is_color = ::printing::IsColorModelSelected(color);
+proto::PrintSettings_ColorMode ColorModelToProto(
+    ::printing::mojom::ColorModel color) {
+  absl::optional<bool> is_color = ::printing::IsColorModelSelected(color);
   return is_color.value() ? proto::PrintSettings_ColorMode_COLOR
                           : proto::PrintSettings_ColorMode_BLACK_AND_WHITE;
 }
 
 proto::PrintSettings_DuplexMode DuplexModeToProto(
-    ::printing::DuplexMode duplex) {
+    ::printing::mojom::DuplexMode duplex) {
   switch (duplex) {
-    case ::printing::DuplexMode::SIMPLEX:
+    case ::printing::mojom::DuplexMode::kSimplex:
       return proto::PrintSettings_DuplexMode_ONE_SIDED;
-    case ::printing::DuplexMode::LONG_EDGE:
+    case ::printing::mojom::DuplexMode::kLongEdge:
       return proto::PrintSettings_DuplexMode_TWO_SIDED_LONG_EDGE;
-    case ::printing::DuplexMode::SHORT_EDGE:
+    case ::printing::mojom::DuplexMode::kShortEdge:
       return proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE;
     default:
       NOTREACHED();
@@ -49,6 +54,10 @@ proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
       return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW;
     case ::printing::PrintJob::Source::ARC:
       return proto::PrintJobInfo_PrintJobSource_ARC;
+    case ::printing::PrintJob::Source::EXTENSION:
+      return proto::PrintJobInfo_PrintJobSource_EXTENSION;
+    case ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO:
+      return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO;
     default:
       NOTREACHED();
   }
@@ -85,6 +94,41 @@ proto::Printer_PrinterSource PrinterSourceToProto(
   return proto::Printer_PrinterSource_USER;
 }
 
+proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
+    PrinterErrorCode error_code) {
+  switch (error_code) {
+    case PrinterErrorCode::NO_ERROR:
+      return proto::PrintJobInfo_PrinterErrorCode_NO_ERROR;
+    case PrinterErrorCode::PAPER_JAM:
+      return proto::PrintJobInfo_PrinterErrorCode_PAPER_JAM;
+    case PrinterErrorCode::OUT_OF_PAPER:
+      return proto::PrintJobInfo_PrinterErrorCode_OUT_OF_PAPER;
+    case PrinterErrorCode::OUT_OF_INK:
+      return proto::PrintJobInfo_PrinterErrorCode_OUT_OF_INK;
+    case PrinterErrorCode::DOOR_OPEN:
+      return proto::PrintJobInfo_PrinterErrorCode_DOOR_OPEN;
+    case PrinterErrorCode::PRINTER_UNREACHABLE:
+      return proto::PrintJobInfo_PrinterErrorCode_PRINTER_UNREACHABLE;
+    case PrinterErrorCode::TRAY_MISSING:
+      return proto::PrintJobInfo_PrinterErrorCode_TRAY_MISSING;
+    case PrinterErrorCode::OUTPUT_FULL:
+      return proto::PrintJobInfo_PrinterErrorCode_OUTPUT_FULL;
+    case PrinterErrorCode::STOPPED:
+      return proto::PrintJobInfo_PrinterErrorCode_STOPPED;
+    case PrinterErrorCode::FILTER_FAILED:
+      return proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED;
+    case PrinterErrorCode::UNKNOWN_ERROR:
+      return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED:
+      return proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED;
+    default:
+      // Be sure to update the above case statements whenever a new printer
+      // error is introduced.
+      NOTREACHED();
+  }
+  return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
+}
+
 // Helper method to convert base::Time to the number of milliseconds past the
 // Unix epoch. Loses precision beyond milliseconds.
 int64_t TimeToMillisecondsPastUnixEpoch(const base::Time& time) {
@@ -93,8 +137,9 @@ int64_t TimeToMillisecondsPastUnixEpoch(const base::Time& time) {
 
 proto::Printer PrinterToProto(const chromeos::Printer& printer) {
   proto::Printer printer_proto;
+  printer_proto.set_id(printer.id());
   printer_proto.set_name(printer.display_name());
-  printer_proto.set_uri(printer.uri());
+  printer_proto.set_uri(printer.uri().GetNormalized());
   printer_proto.set_source(PrinterSourceToProto(printer.source()));
   return printer_proto;
 }
@@ -121,6 +166,8 @@ proto::PrintJobInfo CupsPrintJobToProto(const CupsPrintJob& print_job,
   print_job_info_proto.set_source(PrintJobSourceToProto(print_job.source()));
   print_job_info_proto.set_source_id(print_job.source_id());
   print_job_info_proto.set_status(PrintJobStateToProto(print_job.state()));
+  print_job_info_proto.set_printer_error_code(
+      PrinterErrorCodeToProto(print_job.error_code()));
   print_job_info_proto.set_creation_time(
       TimeToMillisecondsPastUnixEpoch(print_job.creation_time()));
   print_job_info_proto.set_completion_time(

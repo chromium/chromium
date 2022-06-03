@@ -43,6 +43,8 @@
 .header-deletable,
 .header-from-previous,
 .header-provider-done,
-.header-duplicates {
+.header-duplicates,
+.header-pedal-id {
+  font-size: .75rem;
   width: 18px;
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- This would ideally be colorSwitchThumbNormal at 38% alpha. However, making the thumb
+         translucent causes the track to be visible behind the thumb. This color is not compatible
+         with dynamic colors. -->
+    <item android:color="?attr/colorSwitchThumbDisabledNonDynamic" android:state_enabled="false"/>
+    <item android:color="?attr/colorPrimaryNonDynamic" android:state_checked="true"/>
+    <item android:color="?attr/colorSwitchThumbNormalNonDynamic"/>
+</selector>

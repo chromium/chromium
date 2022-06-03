@@ -12,7 +12,9 @@ var SubtleCrypto = require('enterprise.platformKeys.SubtleCrypto').SubtleCrypto;
  */
 function TokenImpl(id) {
   this.id = id;
-  this.subtleCrypto = new SubtleCrypto(id);
+  this.subtleCrypto = new SubtleCrypto(id, /*softwareBacked=*/ false);
+  this.softwareBackedSubtleCrypto =
+      new SubtleCrypto(id, /*softwareBacked=*/ true);
 }
 $Object.setPrototypeOf(TokenImpl.prototype, null);
 
@@ -23,6 +25,7 @@ utils.expose(Token, TokenImpl, {
   readonly: [
     'id',
     'subtleCrypto',
+    'softwareBackedSubtleCrypto',
   ],
 });
 

@@ -170,7 +170,7 @@ void InitializeCPUContextMIPS(
   memcpy(&context->fpregs, &float_context.fpregs, sizeof(context->fpregs));
   context->fpcsr = float_context.fpcsr;
   context->fir = float_context.fpu_id;
-};
+}
 
 #endif  // ARCH_CPU_MIPS_FAMILY || DOXYGEN
 

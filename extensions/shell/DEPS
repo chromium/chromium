@@ -1,6 +1,7 @@
 include_rules = [
   # Individual subdirectories should have their own DEPS that include
   # their allowed directories.
+  "+chromeos/lacros",
   "-extensions/shell",
   "+extensions/shell/common",
   "+extensions/shell/test",

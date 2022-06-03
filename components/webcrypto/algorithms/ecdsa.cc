@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/ec.h"
 #include "components/webcrypto/algorithms/util.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
@@ -23,24 +22,11 @@ class MediaEngagementScore final {
   // number of visits to an origin and kMediaPlaybacksKey will store the number
   // of media playbacks on an origin. kLastMediaPlaybackTimeKey will store the
   // timestamp of the last media playback on an origin. kHasHighScoreKey will
-  // store whether the score is considered high. kAudiblePlaybacksKey will
-  // store the number of audible playbacks on an origin.
-  // kSignificantPlaybacksKey will store the number of significant playbacks
-  // on an origin. kSignificantMediaPlaybacksKey will store significant
-  // playbacks that originated from media elements and
-  // kSignificantAudioContextPlaybacksKey will store significant playbacks
-  // originated from audio contexts. The sum of the two may be higher than
-  // kMediaPlaybacksKey as a visit may have both an audio context playback
-  // and a media element playback.
+  // store whether the score is considered high.
   static const char kVisitsKey[];
   static const char kMediaPlaybacksKey[];
   static const char kLastMediaPlaybackTimeKey[];
   static const char kHasHighScoreKey[];
-  static const char kAudiblePlaybacksKey[];
-  static const char kSignificantPlaybacksKey[];
-  static const char kHighScoreChanges[];
-  static const char kSignificantMediaPlaybacksKey[];
-  static const char kSignificantAudioContextPlaybacksKey[];
 
   // Origins with a number of visits less than this number will recieve
   // a score of zero.
@@ -54,6 +40,10 @@ class MediaEngagementScore final {
   MediaEngagementScore(base::Clock* clock,
                        const url::Origin& origin,
                        HostContentSettingsMap* settings);
+
+  MediaEngagementScore(const MediaEngagementScore&) = delete;
+  MediaEngagementScore& operator=(const MediaEngagementScore&) = delete;
+
   ~MediaEngagementScore();
 
   MediaEngagementScore(MediaEngagementScore&&);
@@ -64,9 +54,6 @@ class MediaEngagementScore final {
 
   // Returns whether the total score is considered high.
   bool high_score() const { return is_high_; }
-
-  // Returns the number of times the high engagement bit was changed.
-  int high_score_changes() const { return high_score_changes_; }
 
   // Returns the origin associated with this score.
   const url::Origin& origin() const { return origin_; }
@@ -92,32 +79,6 @@ class MediaEngagementScore final {
     last_media_playback_time_ = new_time;
   }
 
-  // Get/increment the number of audible media playbacks this origin had.
-  int audible_playbacks() const { return audible_playbacks_; }
-  void IncrementAudiblePlaybacks(int amount) {
-    set_audible_playbacks(audible_playbacks_ + amount);
-  }
-
-  // Get/increment the number of significant media playbacks this origin had.
-  int significant_playbacks() const { return significant_playbacks_; }
-  void IncrementSignificantPlaybacks(int amount) {
-    set_significant_playbacks(significant_playbacks_ + amount);
-  }
-
-  // Get/increment the number of significant playbacks from media elements this
-  // origin had.
-  int media_element_playbacks() const { return media_element_playbacks_; }
-  void IncrementMediaElementPlaybacks() {
-    set_media_element_playbacks(media_element_playbacks_ + 1);
-  }
-
-  // Get/increment the number of significant playbacks from audio contexts this
-  // origin had.
-  int audio_context_playbacks() const { return audio_context_playbacks_; }
-  void IncrementAudioContextPlaybacks() {
-    set_audio_context_playbacks(audio_context_playbacks_ + 1);
-  }
-
   // Get a breakdown of the score that can be serialized by Mojo.
   media::mojom::MediaEngagementScoreDetailsPtr GetScoreDetails() const;
 
@@ -139,17 +100,6 @@ class MediaEngagementScore final {
 
   void SetVisits(int visits);
   void SetMediaPlaybacks(int media_playbacks);
-
-  void set_audible_playbacks(int playbacks) { audible_playbacks_ = playbacks; }
-  void set_significant_playbacks(int playbacks) {
-    significant_playbacks_ = playbacks;
-  }
-  void set_media_element_playbacks(int playbacks) {
-    media_element_playbacks_ = playbacks;
-  }
-  void set_audio_context_playbacks(int playbacks) {
-    audio_context_playbacks_ = playbacks;
-  }
 
  private:
   friend class MediaEngagementServiceTest;
@@ -173,26 +123,11 @@ class MediaEngagementScore final {
   // If the current score is considered high.
   bool is_high_ = false;
 
-  // Number of times the high engagement bit was changed for this origin.
-  int high_score_changes_ = 0;
-
   // The current engagement score.
   double actual_score_ = 0.0;
 
-  // The number of audible media playbacks this origin had.
-  int audible_playbacks_ = 0;
-
-  // The number of significant media playbacks this origin had.
-  int significant_playbacks_ = 0;
-
   // The last time media was played back on this origin.
   base::Time last_media_playback_time_;
-
-  // The number of significant playbacks from a media element this origin had.
-  int media_element_playbacks_ = 0;
-
-  // The number of significant playbacks from an audio context this origin had.
-  int audio_context_playbacks_ = 0;
 
   // The origin this score represents.
   url::Origin origin_;
@@ -206,8 +141,6 @@ class MediaEngagementScore final {
   // The content settings map that will persist the score,
   // has a lifetime of the Profile like the service which owns |this|.
   HostContentSettingsMap* settings_map_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementScore);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SCORE_H_

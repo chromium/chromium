@@ -9,18 +9,23 @@
 #include <stdint.h>
 
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/android/android_image_reader_compat.h"
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/scoped_binders.h"
@@ -35,6 +40,7 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderSecureSurfaceControl:
       return true;
     case TextureOwner::Mode::kAImageReaderInsecure:
+    case TextureOwner::Mode::kAImageReaderInsecureMultithreaded:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
       NOTREACHED();
@@ -43,8 +49,47 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
   NOTREACHED();
   return false;
 }
+
+// This should be as small as possible to limit the memory usage.
+// ImageReader needs 1 image to mimic the behavior of SurfaceTexture but
+// 2 images are required to minimize negative impact on
+// smoothness. This is because in case an image is not acquired for some
+// reasons, last acquired image should be displayed which is only possible with
+// 2 images (1 previously acquired, 1 currently acquired/tried to acquire).
+// But some devices supports only 1 image to be acquired. (see
+// crbug.com/1051705). For SurfaceControl we need 3 images instead of 2 since 1
+// frame (and hence image associated with it) will be with system compositor and
+// 2 frames will be in flight. For multi-threaded compositor, when AImageReader
+// is supported, we need 3 images in order to skip texture copy. 1 frame with
+// display compositor, 1 frame in flight and 1 frame being prepared by the
+// renderer.
+uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
+  if (IsSurfaceControl(mode) ||
+      mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
+    DCHECK(!features::LimitAImageReaderMaxSizeToOne());
+    if (features::IncreaseBufferCountForHighFrameRate())
+      return 5;
+
+    // WebView overlays relies on WebView zero copy at the moment, which
+    // requires at least 3 buffers (one renderer prepares, one is locked by
+    // display compositor in latest compositor frame and one is pending
+    // deletion). These are additional to normal 3 that we need to surface
+    // control.
+    // TODO(vasilyt): This needs to be resolved before feature launch, but
+    // should work for dogfoog.
+    if (features::IncreaseBufferCountForWebViewOverlays())
+      return 6;
+
+    return 3;
+  }
+  return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
+}
+
 }  // namespace
 
+// This class is safe to be created/destroyed on different threads. This is made
+// sure by destruction happening on correct thread. This class is not thread
+// safe to be used concurrently on multiple thraeads.
 class ImageReaderGLOwner::ScopedHardwareBufferImpl
     : public base::android::ScopedHardwareBufferFenceSync {
  public:
@@ -53,12 +98,15 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
                            base::android::ScopedHardwareBufferHandle handle,
                            base::ScopedFD fence_fd)
       : base::android::ScopedHardwareBufferFenceSync(std::move(handle),
-                                                     std::move(fence_fd)),
+                                                     std::move(fence_fd),
+                                                     base::ScopedFD(),
+                                                     true /* is_video */),
         texture_owner_(std::move(texture_owner)),
         image_(image) {
     DCHECK(image_);
-    texture_owner_->RegisterRefOnImage(image_);
+    texture_owner_->RegisterRefOnImageLocked(image_);
   }
+
   ~ScopedHardwareBufferImpl() override {
     texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
   }
@@ -78,9 +126,11 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 
 ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<gles2::AbstractTexture> texture,
-    Mode mode)
+    Mode mode,
+    scoped_refptr<SharedContextState> context_state)
     : TextureOwner(false /* binds_texture_on_image_update */,
-                   std::move(texture)),
+                   std::move(texture),
+                   std::move(context_state)),
       loader_(base::android::AndroidImageReader::GetInstance()),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -91,15 +141,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   // are/maybe overriden by the producer sending buffers to this imageReader's
   // Surface.
   int32_t width = 1, height = 1;
-
-  // This should be as small as possible to limit the memory usage.
-  // ImageReader needs 2 images to mimic the behavior of SurfaceTexture. For
-  // SurfaceControl we need 3 images instead of 2 since 1 frame(and hence image
-  // associated with it) will be with system compositor and 2 frames will be in
-  // flight. Also note that we always acquire an image before deleting the
-  // previous acquired image. This causes 2 acquired images to be in flight at
-  // the image acquisition point until the previous image is deleted.
-  max_images_ = IsSurfaceControl(mode) ? 3 : 2;
+  max_images_ = NumRequiredMaxImages(mode);
   AIMAGE_FORMATS format = mode == Mode::kAImageReaderSecureSurfaceControl
                               ? AIMAGE_FORMAT_PRIVATE
                               : AIMAGE_FORMAT_YUV_420_888;
@@ -110,18 +152,23 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   uint64_t usage = mode == Mode::kAImageReaderSecureSurfaceControl
                        ? AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT
                        : AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
-  usage |= gl::SurfaceControl::RequiredUsage();
+  if (IsSurfaceControl(mode))
+    usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 
   // Create a new reader for images of the desired size and format.
   media_status_t return_code = loader_.AImageReader_newWithUsage(
       width, height, format, usage, max_images_, &reader);
   if (return_code != AMEDIA_OK) {
-    LOG(ERROR) << " Image reader creation failed.";
-    if (return_code == AMEDIA_ERROR_INVALID_PARAMETER)
+    LOG(ERROR) << " Image reader creation failed on device model : "
+               << base::android::BuildInfo::GetInstance()->model()
+               << ". maxImages used is : " << max_images_;
+    base::debug::DumpWithoutCrashing();
+    if (return_code == AMEDIA_ERROR_INVALID_PARAMETER) {
       LOG(ERROR) << "Either reader is null, or one or more of width, height, "
                     "format, maxImages arguments is not supported";
-    else
+    } else {
       LOG(ERROR) << "unknown error";
+    }
     return;
   }
   DCHECK(reader);
@@ -144,42 +191,37 @@ ImageReaderGLOwner::ImageReaderGLOwner(
 }
 
 ImageReaderGLOwner::~ImageReaderGLOwner() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
-  // Clear the texture before we return, so that it can OnTextureDestroyed() if
-  // it hasn't already.  This will do nothing if it has already been destroyed.
-  ClearAbstractTexture();
+  // Call ReleaseResources() if it hasn't already. This will do nothing if the
+  // texture and other resources has already been destroyed due to context loss.
+  ReleaseResources();
 
   DCHECK_EQ(image_refs_.size(), 0u);
 }
 
-void ImageReaderGLOwner::OnTextureDestroyed(gles2::AbstractTexture*) {
-  // The AbstractTexture is being destroyed.  This can happen if, for example,
-  // the video decoder's gl context is lost.  Remember that the platform texture
-  // might not be gone; it's possible for the gl decoder (and AbstractTexture)
-  // to be destroyed via, e.g., renderer crash, but the platform texture is
-  // still shared with some other gl context.
+void ImageReaderGLOwner::ReleaseResources() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  base::AutoLock auto_lock(lock_);
+  // Either TextureOwner is being destroyed or the TextureOwner's shared context
+  // is lost. Cleanup is it hasn't already.
+  if (image_reader_) {
+    // Now we can stop listening to new images.
+    loader_.AImageReader_setImageListener(image_reader_, nullptr);
 
-  // This should only be called once.  Note that even during construction,
-  // there's a check that |image_reader_| is constructed.  Otherwise, errors
-  // during init might cause us to get here without an image reader.
-  DCHECK(image_reader_);
+    // Delete all images before closing the associated image reader.
+    for (auto& image_ref : image_refs_)
+      loader_.AImage_delete(image_ref.first);
 
-  // Now we can stop listening to new images.
-  loader_.AImageReader_setImageListener(image_reader_, nullptr);
+    // Delete the image reader.
+    loader_.AImageReader_delete(image_reader_);
+    image_reader_ = nullptr;
 
-  // Delete all images before closing the associated image reader.
-  for (auto& image_ref : image_refs_)
-    loader_.AImage_delete(image_ref.first);
-
-  // Delete the image reader.
-  loader_.AImageReader_delete(image_reader_);
-  image_reader_ = nullptr;
-
-  // Clean up the ImageRefs which should now be a no-op since there is no valid
-  // |image_reader_|.
-  image_refs_.clear();
-  current_image_ref_.reset();
+    // Clean up the ImageRefs which should now be a no-op since there is no
+    // valid |image_reader_|.
+    image_refs_.clear();
+    current_image_ref_.reset();
+  }
 }
 
 void ImageReaderGLOwner::SetFrameAvailableCallback(
@@ -189,6 +231,8 @@ void ImageReaderGLOwner::SetFrameAvailableCallback(
 }
 
 gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
+  base::AutoLock auto_lock(lock_);
+
   // If we've already lost the texture, then do nothing.
   if (!image_reader_) {
     DLOG(ERROR) << "Already lost texture / image reader";
@@ -204,15 +248,16 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 
   // Get the java surface object from the Android native window.
   JNIEnv* env = base::android::AttachCurrentThread();
-  jobject j_surface = loader_.ANativeWindow_toSurface(env, window);
+  auto j_surface = base::android::ScopedJavaLocalRef<jobject>::Adopt(
+      env, loader_.ANativeWindow_toSurface(env, window));
   DCHECK(j_surface);
 
-  // Get the scoped java surface that is owned externally.
-  return gl::ScopedJavaSurface::AcquireExternalSurface(j_surface);
+  // Get the scoped java surface that will call release() on destruction.
+  return gl::ScopedJavaSurface(j_surface);
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
   if (!texture())
@@ -220,11 +265,16 @@ void ImageReaderGLOwner::UpdateTexImage() {
 
   DCHECK(image_reader_);
 
-  // Acquire the latest image asynchronously
+  // Acquire the latest image asynchronously. We must release the current image
+  // before acquiring a new one if the ImageReader was initialized with one
+  // outstanding image at max.
+  if (max_images_ == 1)
+    current_image_ref_.reset();
+
   AImage* image = nullptr;
   int acquire_fence_fd = -1;
   media_status_t return_code = AMEDIA_OK;
-  DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
+
   if (max_images_ - image_refs_.size() < 2) {
     // acquireNextImageAsync is required here since as per the spec calling
     // AImageReader_acquireLatestImage with less than two images of margin, that
@@ -237,6 +287,8 @@ void ImageReaderGLOwner::UpdateTexImage() {
     return_code = loader_.AImageReader_acquireLatestImageAsync(
         image_reader_, &image, &acquire_fence_fd);
   }
+  base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
+                           return_code);
 
   // TODO(http://crbug.com/846050).
   // Need to add some better error handling if below error occurs. Currently we
@@ -244,24 +296,16 @@ void ImageReaderGLOwner::UpdateTexImage() {
   switch (return_code) {
     case AMEDIA_ERROR_INVALID_PARAMETER:
       LOG(ERROR) << " Image is null";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED:
       LOG(ERROR)
           << "number of concurrently acquired images has reached the limit";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_IMGREADER_NO_BUFFER_AVAILABLE:
       LOG(ERROR) << "no buffers currently available in the reader queue";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_ERROR_UNKNOWN:
       LOG(ERROR) << "method fails for some other reasons";
-      base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
-                               return_code);
       return;
     case AMEDIA_OK:
       // Method call succeeded.
@@ -279,17 +323,22 @@ void ImageReaderGLOwner::UpdateTexImage() {
     return;
   }
 
+  UMA_HISTOGRAM_BOOLEAN("Media.AImageReaderGLOwner.HasFence",
+                        scoped_acquire_fence_fd.is_valid());
+
   // Make the newly acquired image as current image.
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
 }
 
-void ImageReaderGLOwner::EnsureTexImageBound() {
+void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
+  base::AutoLock auto_lock(lock_);
   if (current_image_ref_)
-    current_image_ref_->EnsureBound();
+    current_image_ref_->EnsureBound(service_id);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 ImageReaderGLOwner::GetAHardwareBuffer() {
+  base::AutoLock auto_lock(lock_);
   if (!current_image_ref_)
     return nullptr;
 
@@ -298,13 +347,20 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
   if (!buffer)
     return nullptr;
 
+  // TODO(1179206): We suspect that buffer is already freed here and it causes
+  // crash later. Trying to crash earlier.
+  base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
+  base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
+
   return std::make_unique<ScopedHardwareBufferImpl>(
       this, current_image_ref_->image(),
       base::android::ScopedHardwareBufferHandle::Create(buffer),
       current_image_ref_->GetReadyFence());
 }
 
-gfx::Rect ImageReaderGLOwner::GetCropRect() {
+gfx::Rect ImageReaderGLOwner::GetCropRectLocked() {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  lock_.AssertAcquired();
   if (!current_image_ref_)
     return gfx::Rect();
 
@@ -325,7 +381,8 @@ gfx::Rect ImageReaderGLOwner::GetCropRect() {
                    crop_rect.bottom - crop_rect.top);
 }
 
-void ImageReaderGLOwner::RegisterRefOnImage(AImage* image) {
+void ImageReaderGLOwner::RegisterRefOnImageLocked(AImage* image) {
+  lock_.AssertAcquired();
   DCHECK(image_reader_);
 
   // Add a ref that the caller will release.
@@ -334,6 +391,13 @@ void ImageReaderGLOwner::RegisterRefOnImage(AImage* image) {
 
 void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
                                            base::ScopedFD fence_fd) {
+  base::AutoLock auto_lock(lock_);
+  ReleaseRefOnImageLocked(image, std::move(fence_fd));
+}
+
+void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
+                                                 base::ScopedFD fence_fd) {
+  lock_.AssertAcquired();
   // During cleanup on losing the texture, all images are synchronously released
   // and the |image_reader_| is destroyed.
   if (!image_reader_)
@@ -359,110 +423,39 @@ void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
   }
 
   image_refs_.erase(it);
-}
+  DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
+  auto buffer_available_cb = std::move(buffer_available_cb_);
 
-void ImageReaderGLOwner::GetTransformMatrix(float mtx[]) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Assign a Y inverted Identity matrix. Both MCVD and AVDA path performs a Y
-  // inversion of this matrix later. Hence if we assign a Y inverted matrix
-  // here, it simply becomes an identity matrix later and will have no effect
-  // on the image data.
-  static constexpr float kYInvertedIdentity[16]{1, 0, 0, 0, 0, -1, 0, 0,
-                                                0, 0, 1, 0, 0, 1,  0, 1};
-  memcpy(mtx, kYInvertedIdentity, sizeof(kYInvertedIdentity));
-
-
-  // Get the crop rectangle associated with this image. The crop rectangle
-  // specifies the region of valid pixels in the image.
-  gfx::Rect crop_rect = GetCropRect();
-  if (crop_rect.IsEmpty())
-    return;
-
-  // Get the AHardwareBuffer to query its dimensions.
-  AHardwareBuffer* buffer = nullptr;
-  loader_.AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
-  if (!buffer) {
-    DLOG(ERROR) << "Unable to get an AHardwareBuffer from the image";
-    return;
+  {
+    // |buffer_available_cb| will try to acquire lock again via
+    // UpdatetexImage(), hence we need to unlock here. Note that when
+    // |max_images_| is 1, this callback will always be empty here since it will
+    // be run immediately in RunWhenBufferIsAvailable(). Hence resetting
+    // |current_image_ref_| in UpdateTexImage() can not trigger this callback.
+    // Otherwise triggering this callback from UpdateTexImage() on
+    // |current_image_ref_| reset would cause callback and hence FrameInfoHelper
+    // to run and eventually call UpdateTexImage() from there which could have
+    // been filmsy.
+    base::AutoUnlock auto_unlock(lock_);
+    if (buffer_available_cb) {
+      DCHECK_GT(max_images_, 1);
+      std::move(buffer_available_cb).Run();
+    }
   }
-
-  // Get the buffer descriptor. Note that for querying the buffer descriptor, we
-  // do not need to wait on the AHB to be ready.
-  AHardwareBuffer_Desc desc;
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
-
-  // Note: Below calculation of shrink_amount and the transform matrix params
-  // tx,ty,sx,sy is copied from the android
-  // SurfaceTexture::computeCurrentTransformMatrix() -
-  // https://android.googlesource.com/platform/frameworks/native/+/5c1139f/libs/gui/SurfaceTexture.cpp#516.
-  // We are assuming here that bilinear filtering is always enabled for
-  // sampling the texture.
-  float shrink_amount = 0.0f;
-  float tx = 0.0f, ty = 0.0f, sx = 1.0f, sy = 1.0f;
-
-  // In order to prevent bilinear sampling beyond the edge of the
-  // crop rectangle we may need to shrink it by 2 texels in each
-  // dimension.  Normally this would just need to take 1/2 a texel
-  // off each end, but because the chroma channels of YUV420 images
-  // are subsampled we may need to shrink the crop region by a whole
-  // texel on each side.
-  switch (desc.format) {
-    case AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM:
-    case AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM:
-    case AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM:
-    case AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM:
-      // We know there's no subsampling of any channels, so we
-      // only need to shrink by a half a pixel.
-      shrink_amount = 0.5;
-      break;
-    default:
-      // If we don't recognize the format, we must assume the
-      // worst case (that we care about), which is YUV420.
-      shrink_amount = 1.0;
-  }
-
-  int32_t crop_rect_width = crop_rect.width();
-  int32_t crop_rect_height = crop_rect.height();
-  int32_t crop_rect_left = crop_rect.x();
-  int32_t crop_rect_bottom = crop_rect.y() + crop_rect_height;
-  int32_t buffer_width = desc.width;
-  int32_t buffer_height = desc.height;
-  DCHECK_GT(buffer_width, 0);
-  DCHECK_GT(buffer_height, 0);
-
-  // Only shrink the dimensions that are not the size of the buffer.
-  if (crop_rect_width < buffer_width) {
-    tx = (float(crop_rect_left) + shrink_amount) / buffer_width;
-    sx = (float(crop_rect_width) - (2.0f * shrink_amount)) / buffer_width;
-  }
-
-  if (crop_rect_height < buffer_height) {
-    ty = (float(buffer_height - crop_rect_bottom) + shrink_amount) /
-         buffer_height;
-    sy = (float(crop_rect_height) - (2.0f * shrink_amount)) / buffer_height;
-  }
-
-  // Update the transform matrix with above parameters by also taking into
-  // account Y inversion/ vertical flip.
-  mtx[0] = sx;
-  mtx[5] = 0 - sy;
-  mtx[12] = tx;
-  mtx[13] = 1 - ty;
 }
 
 void ImageReaderGLOwner::ReleaseBackBuffers() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   // ReleaseBackBuffers() call is not required with image reader.
 }
 
 gl::GLContext* ImageReaderGLOwner::GetContext() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   return context_.get();
 }
 
 gl::GLSurface* ImageReaderGLOwner::GetSurface() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   return surface_.get();
 }
 
@@ -474,6 +467,71 @@ void ImageReaderGLOwner::OnFrameAvailable(void* context, AImageReader* reader) {
 
   // It is safe to run this callback on any thread.
   image_reader_ptr->frame_available_cb_.Run();
+}
+
+void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  int image_refs_size = 0;
+  {
+    base::AutoLock auto_lock(lock_);
+    // Note that we handle only one simultaneous request, this is not issue
+    // because FrameInfoHelper maintain request queue and has only single
+    // outstanding request on GPU thread.
+    DCHECK(!buffer_available_cb_);
+    image_refs_size = static_cast<int>(image_refs_.size());
+  }
+  // If `max_images` == 1 we will drop it before acquiring new buffer. Note
+  // that this must never happen with SurfaceControl and the
+  // ImageReaderGLOwner is the sole owner of the images.
+  if (max_images_ == 1 || image_refs_size < max_images_) {
+    // This callback is run from here as well as from ReleaseRefOnImage() where
+    // we remove one image from image reader queue before callback is run.
+    // Once the |lock_| is dropped in this method here, another thread can
+    // UpdateTexImage() before callback is run and hence cause the image reader
+    // queue to become full. In that case callback will not be able to render
+    // and acquire updated image and hence will use FrameInfo of the previous
+    // image which will result in wrong coded size for all future frames. To
+    // avoid, this no other threads should try to UpdateTexImage() when this
+    // callback is run. lock held by the caller (GetFrameInfo()) of this
+    // method ensures that this never happens.
+    std::move(callback).Run();
+  } else {
+    base::AutoLock auto_lock(lock_);
+    buffer_available_cb_ = base::BindPostTask(
+        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+  }
+}
+
+bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
+    gfx::Size rotated_visible_size,
+    gfx::Size* coded_size,
+    gfx::Rect* visible_rect) {
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  base::AutoLock auto_lock(lock_);
+  DCHECK(visible_rect);
+  DCHECK(coded_size);
+
+  AHardwareBuffer* buffer = nullptr;
+  if (current_image_ref_) {
+    loader_.AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
+    if (!buffer) {
+      DLOG(ERROR) << "Unable to get an AHardwareBuffer from the image";
+    }
+  }
+  if (!buffer) {
+    *coded_size = gfx::Size();
+    *visible_rect = gfx::Rect();
+    return false;
+  }
+  // Get the buffer descriptor. Note that for querying the buffer descriptor, we
+  // do not need to wait on the AHB to be ready.
+  AHardwareBuffer_Desc desc;
+  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
+
+  *visible_rect = GetCropRectLocked();
+  *coded_size = gfx::Size(desc.width, desc.height);
+
+  return true;
 }
 
 ImageReaderGLOwner::ImageRef::ImageRef() = default;
@@ -489,11 +547,14 @@ ImageReaderGLOwner::ScopedCurrentImageRef::ScopedCurrentImageRef(
     : texture_owner_(texture_owner),
       image_(image),
       ready_fence_(std::move(ready_fence)) {
+  DCHECK(texture_owner_);
+  texture_owner_->lock_.AssertAcquired();
   DCHECK(image_);
-  texture_owner_->RegisterRefOnImage(image_);
+  texture_owner_->RegisterRefOnImageLocked(image_);
 }
 
 ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
+  texture_owner_->lock_.AssertAcquired();
   base::ScopedFD release_fence;
   // If there is no |image_reader_|, we are in tear down so no fence is
   // required.
@@ -501,7 +562,7 @@ ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
     release_fence = CreateEglFenceAndExportFd();
   else
     release_fence = std::move(ready_fence_);
-  texture_owner_->ReleaseRefOnImage(image_, std::move(release_fence));
+  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(release_fence));
 }
 
 base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
@@ -509,17 +570,24 @@ base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
   return base::ScopedFD(HANDLE_EINTR(dup(ready_fence_.get())));
 }
 
-void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound() {
-  if (image_bound_)
-    return;
-
-  // Insert an EGL fence and make server wait for image to be available.
+void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
+  // Same |image_| can be bound multiple times to different |service_id|. So
+  // even if |image_bound_| is true, it might not be for current |service_id|.
+  // Hence we still need to create and bind egl image to the |service_id|.
+  // Also continue to wait on the fence even if it was waited upon during
+  // previous EnsureBound() calls on same image since this call could be on a
+  // different context. Insert an EGL fence and make server wait for image to be
+  // available.
   if (!InsertEglFenceAndWait(GetReadyFence()))
     return;
 
+  // CreateAndBindEglImage will bind texture with service_id to current unit. We
+  // never should alter gl binding without updating state tracking, which we
+  // can't do here, so restore previous after we done.
+  ScopedRestoreTextureBinding scoped_restore_texture;
+
   // Create EGL image from the AImage and bind it to the texture.
-  if (!CreateAndBindEglImage(image_, texture_owner_->GetTextureId(),
-                             &texture_owner_->loader_))
+  if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))
     return;
 
   image_bound_ = true;

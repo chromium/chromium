@@ -14,10 +14,10 @@ namespace test {
 
 struct IpAndPort {
   struct Ip {
-    int a;
-    int b;
-    int c;
-    int d;
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+    uint8_t d;
   };
   Ip ip;
   int port;

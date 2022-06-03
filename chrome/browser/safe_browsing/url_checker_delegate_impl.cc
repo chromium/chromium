@@ -6,74 +6,76 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
+#include "build/build_config.h"
+#include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prerender/prerender_contents.h"
-#include "chrome/browser/prerender/prerender_final_status.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/db/database_manager.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/features.h"
-#include "components/safe_browsing/triggers/suspicious_site_trigger.h"
+#include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/features.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
+
 namespace safe_browsing {
 namespace {
 
-// Destroys the prerender contents associated with the web_contents, if any.
-void DestroyPrerenderContents(
+// Destroys the NoStatePrefetch contents associated with the web_contents, if
+// any.
+void DestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   content::WebContents* web_contents = std::move(web_contents_getter).Run();
   if (web_contents) {
-    prerender::PrerenderContents* prerender_contents =
-        prerender::PrerenderContents::FromWebContents(web_contents);
-    if (prerender_contents)
-      prerender_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
+    prerender::NoStatePrefetchContents* no_state_prefetch_contents =
+        prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+            web_contents);
+    if (no_state_prefetch_contents) {
+      no_state_prefetch_contents->Destroy(
+          prerender::FINAL_STATUS_SAFE_BROWSING);
+    }
   }
 }
 
-void StartDisplayingBlockingPage(
-    scoped_refptr<SafeBrowsingUIManager> ui_manager,
-    const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
-  if (web_contents) {
-    prerender::PrerenderContents* prerender_contents =
-        prerender::PrerenderContents::FromWebContents(web_contents);
-    if (prerender_contents) {
-      prerender_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
-    } else {
-      // With committed interstitials, if this is a main frame load, we need to
-      // get the navigation URL and referrer URL from the navigation entry now,
-      // since they are required for threat reporting, and the entry will be
-      // destroyed once the request is failed.
-      if (base::FeatureList::IsEnabled(kCommittedSBInterstitials) &&
-          resource.IsMainPageLoadBlocked()) {
-        content::NavigationEntry* entry =
-            web_contents->GetController().GetPendingEntry();
-        if (entry) {
-          security_interstitials::UnsafeResource resource_copy(resource);
-          resource_copy.navigation_url = entry->GetURL();
-          resource_copy.referrer_url = entry->GetReferrer().url;
-          ui_manager->DisplayBlockingPage(resource_copy);
-          return;
-        }
-      }
-      ui_manager->DisplayBlockingPage(resource);
-      return;
-    }
+void CreateSafeBrowsingUserInteractionObserver(
+    const security_interstitials::UnsafeResource& resource,
+    bool is_main_frame,
+    scoped_refptr<SafeBrowsingUIManager> ui_manager) {
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  // Don't delay the interstitial for prerender pages and portals.
+  if (!web_contents ||
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents) ||
+      web_contents->IsPortal()) {
+    ui_manager->StartDisplayingBlockingPage(resource);
+    return;
   }
-
-  // Tab is gone or it's being prerendered.
-  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                 base::BindOnce(resource.callback, false));
+#if defined(OS_ANDROID)
+  // Don't delay the interstitial for Chrome Custom Tabs.
+  auto* tab_android = TabAndroid::FromWebContents(web_contents);
+  if (tab_android && tab_android->IsCustomTab()) {
+    ui_manager->StartDisplayingBlockingPage(resource);
+    return;
+  }
+#endif
+  SafeBrowsingUserInteractionObserver::CreateForWebContents(
+      web_contents, resource, is_main_frame, ui_manager);
 }
 
 }  // namespace
@@ -97,11 +99,11 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
-void UrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
-  // Destroy the prefetch with FINAL_STATUS_SAFEBROSWING.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&DestroyPrerenderContents,
+  // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DestroyNoStatePrefetchContents,
                                 std::move(web_contents_getter)));
 }
 
@@ -111,30 +113,50 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const net::HttpRequestHeaders& headers,
     bool is_main_frame,
     bool has_user_gesture) {
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&StartDisplayingBlockingPage, ui_manager_, resource));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SafeBrowsingUIManager::StartDisplayingBlockingPage,
+                     ui_manager_, resource));
 }
 
-bool UrlCheckerDelegateImpl::IsUrlWhitelisted(const GURL& url) {
+// Starts displaying the SafeBrowsing interstitial page.
+void UrlCheckerDelegateImpl::
+    StartObservingInteractionsForDelayedBlockingPageHelper(
+        const security_interstitials::UnsafeResource& resource,
+        bool is_main_frame) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CreateSafeBrowsingUserInteractionObserver,
+                                resource, is_main_frame, ui_manager_));
+}
+
+bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 
+void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  allowlist_domains_ = allowlist_domains;
+}
+
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
-    content::ResourceContext* resource_context,
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  return false;
+  // Check for whether the URL matches the Safe Browsing allowlist domains
+  // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
+  return std::find_if(allowlist_domains_.begin(), allowlist_domains_.end(),
+                      [&original_url](const std::string& domain) {
+                        return original_url.DomainIs(domain);
+                      }) != allowlist_domains_.end();
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&NotifySuspiciousSiteTriggerDetected,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifySuspiciousSiteTriggerDetected,
                                 web_contents_getter));
 }
 

@@ -1,24 +1,52 @@
-<!DOCTYPE html>
-<html>
-<body>
-<p>
-This tests that clicking in a contenteditable div will set the caret in the right position for LTR text in a RTL block.
-To test manually, click the right of the text. The caret should be on the right edge.
-</p>
-<div style="direction: rtl; font-size: 20px; width: 20ex; border: solid thin black; padding: 10px;" contenteditable>WebKit2</div>
-<script src="resources/caret-edge-shared.js"></script>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
+const bidiCaretAffinityEnabled =
+    window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
-var clickOn = 'right';
-var expectedOffset = 0;
-if (window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled) {
-  // When bidi caret affinity is enabled, carets are shown at different visual
-  // locations. Use the changed test expectations in this case.
-  expectedOffset = 7;
-}
+selection_test(
+    [
+        '<div contenteditable id="target" style="direction: rtl">',
+            'abc',
+        '</div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+          throw 'This test requires eventSender.';
+        const target = selection.document.getElementById('target');
+        eventSender.mouseMoveTo(
+            selection.computeLeft(target) + 3,
+            selection.computeLeft(target) + 3);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+    },
+    [
+        '<div contenteditable id="target" style="direction: rtl">',
+            bidiCaretAffinityEnabled ? '|abc' : 'abc|',
+        '</div>',
+    ], 'Click left');
 
-runTest();
-
+selection_test(
+    [
+        '<div contenteditable id="target" style="direction: rtl">',
+            'abc',
+        '</div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+          throw 'This test requires eventSender.';
+        const target = selection.document.getElementById('target');
+        eventSender.mouseMoveTo(
+            selection.computeLeft(target) + target.offsetWidth - 3,
+            selection.computeLeft(target) + 3);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+    },
+    [
+        '<div contenteditable id="target" style="direction: rtl">',
+            bidiCaretAffinityEnabled ? 'abc|' : '|abc',
+        '</div>',
+    ], 'Click right');
 </script>
-</body>
-</html>

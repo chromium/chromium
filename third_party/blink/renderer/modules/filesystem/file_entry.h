@@ -52,10 +52,8 @@ class MODULES_EXPORT FileEntry final : public Entry {
 
   bool isFile() const override { return true; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
-
-DEFINE_TYPE_CASTS(FileEntry, Entry, entry, entry->isFile(), entry.isFile());
 
 }  // namespace blink
 

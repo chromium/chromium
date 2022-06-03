@@ -4,25 +4,34 @@
 
 #include "chrome/updater/win/user_info.h"
 
-#include "base/logging.h"
-#include "chrome/updater/win/util.h"
+#include <string>
+
+#include "base/check.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 
-HRESULT GetProcessUser(base::string16* name,
-                       base::string16* domain,
-                       base::string16* sid) {
+namespace {
+
+// Sid of NT AUTHORITY\SYSTEM user.
+constexpr wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
+
+}  // namespace
+
+HRESULT GetProcessUser(std::wstring* name,
+                       std::wstring* domain,
+                       std::wstring* sid) {
   CSid current_sid;
 
   HRESULT hr = GetProcessUserSid(&current_sid);
   if (FAILED(hr))
     return hr;
 
-  if (sid != nullptr)
+  if (sid)
     *sid = current_sid.Sid();
-  if (name != nullptr)
+  if (name)
     *name = current_sid.AccountName();
-  if (domain != nullptr)
+  if (domain)
     *domain = current_sid.Domain();
 
   return S_OK;
@@ -34,7 +43,7 @@ HRESULT GetProcessUserSid(CSid* sid) {
   CAccessToken token;
   if (!token.GetProcessToken(TOKEN_QUERY) || !token.GetUser(sid)) {
     HRESULT hr = HRESULTFromLastError();
-    base::string16 thread_sid;
+    std::wstring thread_sid;
     DCHECK(FAILED(GetThreadUserSid(&thread_sid)));
     return hr;
   }
@@ -42,7 +51,13 @@ HRESULT GetProcessUserSid(CSid* sid) {
   return S_OK;
 }
 
-HRESULT GetThreadUserSid(base::string16* sid) {
+bool IsLocalSystemUser() {
+  std::wstring user_sid;
+  HRESULT hr = GetProcessUser(nullptr, nullptr, &user_sid);
+  return SUCCEEDED(hr) && user_sid.compare(kSystemPrincipalSid) == 0;
+}
+
+HRESULT GetThreadUserSid(std::wstring* sid) {
   DCHECK(sid);
   CAccessToken access_token;
   CSid user_sid;

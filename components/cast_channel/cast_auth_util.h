@@ -77,6 +77,8 @@ class AuthContext {
   // The same context must be used in the challenge and reply.
   static AuthContext Create();
 
+  static AuthContext CreateForTest(const std::string& nonce);
+
   // Verifies the nonce received in the response is equivalent to the one sent.
   // Returns success if |nonce_response| matches nonce_
   AuthResult VerifySenderNonce(const std::string& nonce_response) const;

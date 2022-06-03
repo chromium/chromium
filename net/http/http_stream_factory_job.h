@@ -17,6 +17,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_controller.h"
@@ -33,6 +34,7 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config_service.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -147,13 +149,6 @@ class HttpStreamFactory::Job
   // Note that this can be overwritten by specifying a QUIC proxy in
   // |proxy_info|, or by setting
   // HttpNetworkSession::Params::origins_to_force_quic_on.
-  //
-  // If |alternative_proxy_server| is a valid proxy server, then the Job will
-  // use that instead of using ProxyResolutionService for proxy resolution.
-  // Further, if |alternative_proxy_server| is a valid but bad proxy, then
-  // fallback proxies are not used. It is illegal to call this constructor with
-  // a valid |alternative_proxy_server| and an |alternate_protocol| different
-  // from kProtoUnknown.
   Job(Delegate* delegate,
       JobType job_type,
       HttpNetworkSession* session,
@@ -162,14 +157,17 @@ class HttpStreamFactory::Job
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
       const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
+      url::SchemeHostPort destination,
       GURL origin_url,
       NextProto alternative_protocol,
       quic::ParsedQuicVersion quic_version,
-      const ProxyServer& alternative_proxy_server,
       bool is_websocket,
       bool enable_ip_based_pooling,
       NetLog* net_log);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() override;
 
   // Start initiates the process of creating a new HttpStream.
@@ -193,6 +191,7 @@ class HttpStreamFactory::Job
 
   void SetPriority(RequestPriority priority);
 
+  const GURL& origin_url() const { return origin_url_; }
   RequestPriority priority() const { return priority_; }
   bool was_alpn_negotiated() const;
   NextProto negotiated_protocol() const;
@@ -206,9 +205,6 @@ class HttpStreamFactory::Job
     return std::move(bidirectional_stream_impl_);
   }
 
-  // Returns the estimated memory usage in bytes.
-  size_t EstimateMemoryUsage() const;
-
   bool is_waiting() const { return next_state_ == STATE_WAIT_COMPLETE; }
   const SSLConfig& server_ssl_config() const;
   const SSLConfig& proxy_ssl_config() const;
@@ -216,10 +212,6 @@ class HttpStreamFactory::Job
   ResolveErrorInfo resolve_error_info() const;
 
   JobType job_type() const { return job_type_; }
-
-  const ProxyServer alternative_proxy_server() const {
-    return alternative_proxy_server_;
-  }
 
   bool using_existing_quic_session() const {
     return using_existing_quic_session_;
@@ -324,8 +316,7 @@ class HttpStreamFactory::Job
 
   // Called in Job constructor: should Job be forced to use QUIC.
   static bool ShouldForceQuic(HttpNetworkSession* session,
-                              const HostPortPair& destination,
-                              const GURL& origin_url,
+                              const url::SchemeHostPort& destination,
                               const ProxyInfo& proxy_info,
                               bool using_ssl);
 
@@ -337,7 +328,7 @@ class HttpStreamFactory::Job
       PrivacyMode privacy_mode,
       const SocketTag& socket_tag,
       const NetworkIsolationKey& network_isolation_key,
-      bool disable_secure_dns);
+      SecureDnsPolicy secure_dns_policy);
 
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;
@@ -349,8 +340,6 @@ class HttpStreamFactory::Job
   // available synchronously or asynchronously.  Otherwise, the given error
   // code is simply returned.
   int ReconsiderProxyAfterError(int error);
-
-  ClientSocketPoolManager::SocketGroupType GetSocketGroup() const;
 
   void MaybeCopyConnectionAttemptsFromSocketOrHandle();
 
@@ -373,15 +362,11 @@ class HttpStreamFactory::Job
 
   // The server we are trying to reach, could be that of the origin or of the
   // alternative service (after applying host mapping rules).
-  const HostPortPair destination_;
+  const url::SchemeHostPort destination_;
 
   // The origin url we're trying to reach. This url may be different from the
   // original request when host mapping rules are set-up.
   const GURL origin_url_;
-
-  // Alternative proxy server that should be used by |this| to fetch the
-  // request.
-  const ProxyServer alternative_proxy_server_;
 
   // True if request is for Websocket.
   const bool is_websocket_;
@@ -477,8 +462,6 @@ class HttpStreamFactory::Job
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request_;
 
   base::WeakPtrFactory<Job> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 // Factory for creating Jobs.
@@ -497,7 +480,7 @@ class HttpStreamFactory::JobFactory {
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
       const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
+      url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,
       bool enable_ip_based_pooling,
@@ -512,26 +495,10 @@ class HttpStreamFactory::JobFactory {
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
       const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
+      url::SchemeHostPort destination,
       GURL origin_url,
       NextProto alternative_protocol,
       quic::ParsedQuicVersion quic_version,
-      bool is_websocket,
-      bool enable_ip_based_pooling,
-      NetLog* net_log);
-
-  virtual std::unique_ptr<HttpStreamFactory::Job> CreateAltProxyJob(
-      HttpStreamFactory::Job::Delegate* delegate,
-      HttpStreamFactory::JobType job_type,
-      HttpNetworkSession* session,
-      const HttpRequestInfo& request_info,
-      RequestPriority priority,
-      const ProxyInfo& proxy_info,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
-      GURL origin_url,
-      const ProxyServer& alternative_proxy_server,
       bool is_websocket,
       bool enable_ip_based_pooling,
       NetLog* net_log);

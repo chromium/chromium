@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Mobile>CompositedUI"
+}
+team_email: "chrome-android-app@chromium.org"

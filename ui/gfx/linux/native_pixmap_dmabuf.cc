@@ -70,12 +70,9 @@ uint32_t NativePixmapDmaBuf::GetUniqueId() const {
 
 bool NativePixmapDmaBuf::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    const gfx::OverlayPlaneData& overlay_plane_data,
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences) {
   return false;
 }
 

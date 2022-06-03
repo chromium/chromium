@@ -10,22 +10,12 @@ class HttpRequestHeaders;
 }  // namespace net
 
 namespace blink {
-namespace mojom {
-class RendererPreferences;
-}  // namespace mojom
+struct RendererPreferences;
 }  // namespace blink
 
 namespace content {
 
 class BrowserContext;
-
-// Returns true if either of FetchMetadata or experimental-web-platform-features
-// is enabled.
-bool IsFetchMetadataEnabled();
-
-// Returns true if either of FetchMetadataDestination or
-// experimental-web-platform-features is enabled.
-bool IsFetchMetadataDestinationEnabled();
 
 // Sets request headers appropriate for browser-initiated resource requests,
 // i.e., requests for navigations and dedicated/shared/service worker
@@ -37,7 +27,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     net::HttpRequestHeaders* headers,
     BrowserContext* browser_context,
     bool should_update_existing_headers,
-    const blink::mojom::RendererPreferences& renderer_preferences);
+    const blink::RendererPreferences& renderer_preferences);
 
 }  // namespace content
 

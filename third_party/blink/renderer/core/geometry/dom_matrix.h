@@ -5,14 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/string_or_unrestricted_double_sequence.h"
-#include "third_party/blink/renderer/core/geometry/dom_matrix_2d_init.h"
-#include "third_party/blink/renderer/core/geometry/dom_matrix_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+class DOMMatrixInit;
+class ExecutionContext;
+class V8UnionStringOrUnrestrictedDoubleSequence;
 
 class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
   DEFINE_WRAPPERTYPEINFO();
@@ -20,13 +21,14 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
  public:
   static DOMMatrix* Create();
   static DOMMatrix* Create(ExecutionContext*, ExceptionState&);
-  static DOMMatrix* Create(ExecutionContext*,
-                           StringOrUnrestrictedDoubleSequence&,
-                           ExceptionState&);
+  static DOMMatrix* Create(
+      ExecutionContext* execution_context,
+      const V8UnionStringOrUnrestrictedDoubleSequence* init,
+      ExceptionState& exception_state);
   // TODO(fserb): double check those two bellow are needed:
   static DOMMatrix* Create(DOMMatrixReadOnly*,
                            ExceptionState& = ASSERT_NO_EXCEPTION);
-  static DOMMatrix* Create(const SkMatrix44&, ExceptionState&);
+  static DOMMatrix* Create(const skia::Matrix44&, ExceptionState&);
   static DOMMatrix* fromFloat32Array(NotShared<DOMFloat32Array>,
                                      ExceptionState&);
   static DOMMatrix* fromFloat64Array(NotShared<DOMFloat64Array>,
@@ -131,4 +133,4 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_H_

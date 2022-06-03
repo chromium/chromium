@@ -30,20 +30,20 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/image_animation_policy.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
+
+class UseCounter;
 
 class PLATFORM_EXPORT BitmapImage final : public Image {
   friend class BitmapImageTest;
@@ -64,9 +64,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
-  IntSize Size() const override;
-  IntSize SizeRespectingOrientation() const;
-  bool GetHotSpot(IntPoint&) const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
+  bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
 
   SizeAvailability SetData(scoped_refptr<SharedBuffer> data,
@@ -79,8 +78,10 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void ResetAnimation() override;
   bool MaybeAnimated() override;
 
-  void SetAnimationPolicy(ImageAnimationPolicy) override;
-  ImageAnimationPolicy AnimationPolicy() override { return animation_policy_; }
+  void SetAnimationPolicy(mojom::blink::ImageAnimationPolicy) override;
+  mojom::blink::ImageAnimationPolicy AnimationPolicy() override {
+    return animation_policy_;
+  }
 
   scoped_refptr<Image> ImageForDefaultFrame() override;
 
@@ -91,7 +92,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool CurrentFrameIsLazyDecoded() override;
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
-  ImageOrientation CurrentFrameOrientation() const;
+  ImageOrientation CurrentFrameOrientation() const override;
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {
@@ -101,9 +102,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
     decoder_ = std::move(decoder);
   }
 
-  DarkModeClassification CheckTypeSpecificConditionsForDarkMode(
-      const FloatRect& dest_rect,
-      DarkModeImageClassifier* classifier) override;
+  // Records the decoded image type in a UseCounter. |use_counter| may be a null
+  // pointer.
+  void RecordDecodedImageType(UseCounter* use_counter);
 
  protected:
   bool IsSizeAvailable() override;
@@ -129,9 +130,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions&) override;
 
   PaintImage CreatePaintImage();
   void UpdateSize() const;
@@ -142,6 +141,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void DestroyDecodedData() override;
 
   scoped_refptr<SharedBuffer> Data() override;
+  bool HasData() const override;
+  size_t DataSize() const override;
 
   // Notifies observers that the memory footprint has changed.
   void NotifyMemoryChanged();
@@ -155,19 +156,22 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   std::unique_ptr<DeferredImageDecoder> decoder_;
   mutable IntSize size_;  // The size to use for the overall image (will just
                           // be the size of the first image).
-  mutable IntSize size_respecting_orientation_;
+  mutable IntSize density_corrected_size_;
 
   // This caches the PaintImage created with the last updated encoded data to
   // ensure re-use of generated decodes. This is cleared each time the encoded
   // data is updated in DataChanged.
   PaintImage cached_frame_;
 
-  ImageAnimationPolicy
-      animation_policy_;  // Whether or not we can play animation.
+  // Whether or not we can play animation.
+  mojom::blink::ImageAnimationPolicy animation_policy_ =
+      blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
 
   bool all_data_received_ : 1;  // Whether we've received all our data.
   mutable bool have_size_ : 1;  // Whether our |m_size| member variable has the
                                 // final overall image size yet.
+  mutable bool preferred_size_is_transposed_ : 1;  // Whether the preferred size
+                                                   // uses width as height.
   bool size_available_ : 1;     // Whether we can obtain the size of the first
                                 // image frame from ImageIO yet.
   bool have_frame_count_ : 1;
@@ -184,8 +188,11 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   PaintImage::AnimationSequenceId reset_animation_sequence_id_ = 0;
 };
 
-DEFINE_IMAGE_TYPE_CASTS(BitmapImage);
+template <>
+struct DowncastTraits<BitmapImage> {
+  static bool AllowFrom(const Image& image) { return image.IsBitmapImage(); }
+};
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_BITMAP_IMAGE_H_

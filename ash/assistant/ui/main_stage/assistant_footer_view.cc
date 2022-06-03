@@ -12,9 +12,11 @@
 #include "ash/assistant/ui/main_stage/assistant_opt_in_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_container_view.h"
 #include "ash/assistant/util/animation_util.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/layout/fill_layout.h"
@@ -23,16 +25,16 @@ namespace ash {
 
 namespace {
 
-// Appearance.
-constexpr int kPreferredHeightDip = 48;
-
 // Animation.
-constexpr base::TimeDelta kAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(167);
-constexpr base::TimeDelta kAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(167);
-constexpr base::TimeDelta kAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationFadeInDelay = base::Milliseconds(167);
+constexpr base::TimeDelta kAnimationFadeInDuration = base::Milliseconds(167);
+constexpr base::TimeDelta kAnimationFadeOutDuration = base::Milliseconds(167);
+
+// Returns the preferred height in DIPs. Not named GetPreferredHeight() so it
+// looks less like a views::View method.
+int GetPreferredHeightDip() {
+  return features::IsProductivityLauncherEnabled() ? 64 : 48;
+}
 
 }  // namespace
 
@@ -63,7 +65,7 @@ gfx::Size AssistantFooterView::CalculatePreferredSize() const {
 }
 
 int AssistantFooterView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return GetPreferredHeightDip();
 }
 
 void AssistantFooterView::InitLayout() {
@@ -76,8 +78,9 @@ void AssistantFooterView::InitLayout() {
       chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // Suggestion container.
-  suggestion_container_ = new SuggestionContainerView(delegate_);
-  suggestion_container_->set_can_process_events_within_subtree(consent_given);
+  suggestion_container_ =
+      AddChildView(std::make_unique<SuggestionContainerView>(delegate_));
+  suggestion_container_->SetCanProcessEventsWithinSubtree(consent_given);
 
   // Suggestion container will be animated on its own layer.
   suggestion_container_->SetPaintToLayer();
@@ -85,19 +88,16 @@ void AssistantFooterView::InitLayout() {
   suggestion_container_->layer()->SetOpacity(consent_given ? 1.f : 0.f);
   suggestion_container_->SetVisible(consent_given);
 
-  AddChildView(suggestion_container_);
 
   // Opt in view.
-  opt_in_view_ = new AssistantOptInView(delegate_);
-  opt_in_view_->set_can_process_events_within_subtree(!consent_given);
+  opt_in_view_ = AddChildView(std::make_unique<AssistantOptInView>(delegate_));
+  opt_in_view_->SetCanProcessEventsWithinSubtree(!consent_given);
 
   // Opt in view will be animated on its own layer.
   opt_in_view_->SetPaintToLayer();
   opt_in_view_->layer()->SetFillsBoundsOpaquely(false);
   opt_in_view_->layer()->SetOpacity(consent_given ? 0.f : 1.f);
   opt_in_view_->SetVisible(!consent_given);
-
-  AddChildView(opt_in_view_);
 }
 
 void AssistantFooterView::OnAssistantConsentStatusChanged(int consent_status) {
@@ -148,8 +148,8 @@ void AssistantFooterView::OnAssistantConsentStatusChanged(int consent_status) {
 void AssistantFooterView::OnAnimationStarted(
     const ui::CallbackLayerAnimationObserver& observer) {
   // Our views should not process events while animating.
-  suggestion_container_->set_can_process_events_within_subtree(false);
-  opt_in_view_->set_can_process_events_within_subtree(false);
+  suggestion_container_->SetCanProcessEventsWithinSubtree(false);
+  opt_in_view_->SetCanProcessEventsWithinSubtree(false);
 }
 
 bool AssistantFooterView::OnAnimationEnded(
@@ -160,9 +160,9 @@ bool AssistantFooterView::OnAnimationEnded(
       chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // Only the view relevant to our consent state should process events.
-  suggestion_container_->set_can_process_events_within_subtree(consent_given);
+  suggestion_container_->SetCanProcessEventsWithinSubtree(consent_given);
   suggestion_container_->SetVisible(consent_given);
-  opt_in_view_->set_can_process_events_within_subtree(!consent_given);
+  opt_in_view_->SetCanProcessEventsWithinSubtree(!consent_given);
   opt_in_view_->SetVisible(!consent_given);
 
   // Return false to prevent the observer from destroying itself.

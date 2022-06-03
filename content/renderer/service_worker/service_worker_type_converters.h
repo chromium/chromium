@@ -5,11 +5,9 @@
 #ifndef CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_TYPE_CONVERTERS_H_
 #define CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_TYPE_CONVERTERS_H_
 
-#include <memory>
-
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_object_info.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_object_info.h"
@@ -21,14 +19,14 @@ template <>
 struct TypeConverter<blink::WebServiceWorkerObjectInfo,
                      blink::mojom::ServiceWorkerObjectInfoPtr> {
   static blink::WebServiceWorkerObjectInfo Convert(
-      const blink::mojom::ServiceWorkerObjectInfoPtr& input);
+      blink::mojom::ServiceWorkerObjectInfoPtr input);
 };
 
 template <>
 struct TypeConverter<blink::WebServiceWorkerRegistrationObjectInfo,
                      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr> {
   static blink::WebServiceWorkerRegistrationObjectInfo Convert(
-      const blink::mojom::ServiceWorkerRegistrationObjectInfoPtr& input);
+      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr input);
 };
 
 }  // namespace

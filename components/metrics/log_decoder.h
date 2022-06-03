@@ -7,6 +7,14 @@
 
 #include <string>
 
+namespace google {
+namespace protobuf {
+
+class MessageLite;
+
+}  // namespace protobuf
+}  // namespace google
+
 namespace metrics {
 
 // Other modules can call this function instead of directly calling gzip. This
@@ -15,6 +23,11 @@ namespace metrics {
 // Returns true on success, false on failure.
 bool DecodeLogData(const std::string& compressed_log_data,
                    std::string* log_data);
+
+// Decodes |compressed_log_data| and populates |proto| with the decompressed log
+// data. Returns true on success and false on failure.
+bool DecodeLogDataToProto(const std::string& compressed_log_data,
+                          google::protobuf::MessageLite* proto);
 
 }  // namespace metrics
 

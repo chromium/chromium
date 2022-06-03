@@ -29,75 +29,67 @@ namespace extensions {
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
   using NetworkMap =
-      std::map<base::string16, std::unique_ptr<base::DictionaryValue>>;
+      std::map<std::u16string, std::unique_ptr<base::DictionaryValue>>;
 
   typedef std::vector<std::string> GuidList;
 
   NetworkingPrivateLinux();
 
+  NetworkingPrivateLinux(const NetworkingPrivateLinux&) = delete;
+  NetworkingPrivateLinux& operator=(const NetworkingPrivateLinux&) = delete;
+
   // NetworkingPrivateDelegate
   void GetProperties(const std::string& guid,
-                     const DictionaryCallback& success_callback,
-                     const FailureCallback& failure_callback) override;
+                     PropertiesCallback callback) override;
   void GetManagedProperties(const std::string& guid,
-                            const DictionaryCallback& success_callback,
-                            const FailureCallback& failure_callback) override;
+                            PropertiesCallback callback) override;
   void GetState(const std::string& guid,
-                const DictionaryCallback& success_callback,
-                const FailureCallback& failure_callback) override;
+                DictionaryCallback success_callback,
+                FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
                      std::unique_ptr<base::DictionaryValue> properties,
                      bool allow_set_shared_config,
-                     const VoidCallback& success_callback,
-                     const FailureCallback& failure_callback) override;
+                     VoidCallback success_callback,
+                     FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
                      std::unique_ptr<base::DictionaryValue> properties,
-                     const StringCallback& success_callback,
-                     const FailureCallback& failure_callback) override;
+                     StringCallback success_callback,
+                     FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
                      bool allow_forget_shared_config,
-                     const VoidCallback& success_callback,
-                     const FailureCallback& failure_callback) override;
+                     VoidCallback success_callback,
+                     FailureCallback failure_callback) override;
   void GetNetworks(const std::string& network_type,
                    bool configured_only,
                    bool visible_only,
                    int limit,
-                   const NetworkListCallback& success_callback,
-                   const FailureCallback& failure_callback) override;
+                   NetworkListCallback success_callback,
+                   FailureCallback failure_callback) override;
   void StartConnect(const std::string& guid,
-                    const VoidCallback& success_callback,
-                    const FailureCallback& failure_callback) override;
+                    VoidCallback success_callback,
+                    FailureCallback failure_callback) override;
   void StartDisconnect(const std::string& guid,
-                       const VoidCallback& success_callback,
-                       const FailureCallback& failure_callback) override;
-  void SetWifiTDLSEnabledState(
-      const std::string& ip_or_mac_address,
-      bool enabled,
-      const StringCallback& success_callback,
-      const FailureCallback& failure_callback) override;
-  void GetWifiTDLSStatus(const std::string& ip_or_mac_address,
-                         const StringCallback& success_callback,
-                         const FailureCallback& failure_callback) override;
+                       VoidCallback success_callback,
+                       FailureCallback failure_callback) override;
   void GetCaptivePortalStatus(const std::string& guid,
-                              const StringCallback& success_callback,
-                              const FailureCallback& failure_callback) override;
+                              StringCallback success_callback,
+                              FailureCallback failure_callback) override;
   void UnlockCellularSim(const std::string& guid,
                          const std::string& pin,
                          const std::string& puk,
-                         const VoidCallback& success_callback,
-                         const FailureCallback& failure_callback) override;
+                         VoidCallback success_callback,
+                         FailureCallback failure_callback) override;
   void SetCellularSimState(const std::string& guid,
                            bool require_pin,
                            const std::string& current_pin,
                            const std::string& new_pin,
-                           const VoidCallback& success_callback,
-                           const FailureCallback& failure_callback) override;
-  void SelectCellularMobileNetwork(
-      const std::string& guid,
-      const std::string& network_id,
-      const VoidCallback& success_callback,
-      const FailureCallback& failure_callback) override;
-  std::unique_ptr<base::ListValue> GetEnabledNetworkTypes() override;
+                           VoidCallback success_callback,
+                           FailureCallback failure_callback) override;
+  void SelectCellularMobileNetwork(const std::string& guid,
+                                   const std::string& network_id,
+                                   VoidCallback success_callback,
+                                   FailureCallback failure_callback) override;
+  base::Value GetEnabledNetworkTypes() override;
   std::unique_ptr<DeviceStateList> GetDeviceStateList() override;
   std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() override;
   std::unique_ptr<base::DictionaryValue> GetCertificateLists() override;
@@ -164,7 +156,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Verifies that NetworkManager interfaces are initialized.
   // Returns true if NetworkManager is initialized, otherwise returns false
   // and the API call will fail with |kErrorNotSupported|.
-  bool CheckNetworkManagerSupported(const FailureCallback& failure_callback);
+  bool CheckNetworkManagerSupported();
 
   // Gets all network devices on the system.
   // Returns false if there is an error getting the device paths.
@@ -184,8 +176,8 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Reply callback accepts the map of networks and fires the
   // OnNetworkListChanged event and user callbacks.
   void OnAccessPointsFound(std::unique_ptr<NetworkMap> network_map,
-                           const NetworkListCallback& success_callback,
-                           const FailureCallback& failure_callback);
+                           NetworkListCallback success_callback,
+                           FailureCallback failure_callback);
 
   // Reply callback accepts the map of networks and fires the
   // OnNetworkListChanged event.
@@ -275,8 +267,6 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Observers to Network Events.
   base::ObserverList<NetworkingPrivateDelegateObserver>::Unchecked
       network_events_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateLinux);
 };
 
 }  // namespace extensions

@@ -190,7 +190,7 @@ interface NativeWidgetNSWindowHost {
   // Synchronously query if the NSWindow should always render as if it is
   // the key window (is active, in views terminology).
   [Sync]
-  GetCanWindowClose() => (bool can_window_close);
+  OnWindowCloseRequested() => (bool can_window_close);
 
   // Synchronously query if the NSWindow's theme frame overrides the titlebar
   // height, and, if so, what the overridden height is.

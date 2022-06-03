@@ -6,20 +6,20 @@
 #define UI_GFX_MOJOM_TRANSFORM_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/array_traits.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/transform.mojom-shared.h"
-#include "ui/gfx/transform.h"
 
 namespace mojo {
 
 template <>
-struct ArrayTraits<SkMatrix44> {
+struct ArrayTraits<skia::Matrix44> {
   using Element = float;
 
-  static bool IsNull(const SkMatrix44& input) { return input.isIdentity(); }
+  static bool IsNull(const skia::Matrix44& input) { return input.isIdentity(); }
 
-  static size_t GetSize(const SkMatrix44& input) { return 16; }
+  static size_t GetSize(const skia::Matrix44& input) { return 16; }
 
-  static float GetAt(const SkMatrix44& input, size_t index) {
+  static float GetAt(const skia::Matrix44& input, size_t index) {
     return input.getFloat(static_cast<int>(index % 4),
                           static_cast<int>(index / 4));
   }
@@ -27,7 +27,7 @@ struct ArrayTraits<SkMatrix44> {
 
 template <>
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static const SkMatrix44& matrix(const gfx::Transform& transform) {
+  static const skia::Matrix44& matrix(const gfx::Transform& transform) {
     return transform.matrix();
   }
 

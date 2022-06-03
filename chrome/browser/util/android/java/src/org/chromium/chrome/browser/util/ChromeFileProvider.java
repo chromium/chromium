@@ -9,9 +9,11 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
+
+import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;

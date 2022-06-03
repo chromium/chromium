@@ -8,7 +8,6 @@
 #include <istream>
 #include <memory>
 #include <ostream>
-#include <string>
 
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_format.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

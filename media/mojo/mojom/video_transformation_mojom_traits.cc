@@ -4,6 +4,8 @@
 
 #include "media/mojo/mojom/video_transformation_mojom_traits.h"
 
+#include "media/mojo/mojom/media_types.mojom.h"
+
 namespace mojo {
 
 // static

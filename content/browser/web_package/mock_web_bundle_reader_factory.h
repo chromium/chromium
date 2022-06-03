@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 
-#include "base/macros.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/browser/web_package/web_bundle_reader.h"
-#include "services/data_decoder/public/mojom/web_bundle_parser.mojom.h"
 
 namespace content {
 
@@ -20,6 +19,11 @@ class MockWebBundleReaderFactory {
   static std::unique_ptr<MockWebBundleReaderFactory> Create();
 
   MockWebBundleReaderFactory() = default;
+
+  MockWebBundleReaderFactory(const MockWebBundleReaderFactory&) = delete;
+  MockWebBundleReaderFactory& operator=(const MockWebBundleReaderFactory&) =
+      delete;
+
   virtual ~MockWebBundleReaderFactory() = default;
 
   // Creates WebBundleReader instance. A temporary file is created and
@@ -32,7 +36,7 @@ class MockWebBundleReaderFactory {
   // |metadata| is read.
   virtual void ReadAndFullfillMetadata(
       WebBundleReader* reader,
-      data_decoder::mojom::BundleMetadataPtr metadata,
+      web_package::mojom::BundleMetadataPtr metadata,
       WebBundleReader::MetadataCallback callback) = 0;
 
   // Calls ReadResponse on |reader| with |callback|, verifies that |reader|
@@ -41,18 +45,15 @@ class MockWebBundleReaderFactory {
   virtual void ReadAndFullfillResponse(
       WebBundleReader* reader,
       const network::ResourceRequest& resource_request,
-      data_decoder::mojom::BundleResponseLocationPtr expected_parse_args,
-      data_decoder::mojom::BundleResponsePtr response,
+      web_package::mojom::BundleResponseLocationPtr expected_parse_args,
+      web_package::mojom::BundleResponsePtr response,
       WebBundleReader::ResponseCallback callback) = 0;
 
   // Sets up the mocked factory so that the created WebBundleReader instance
   // can read |response| when WebBundleReader::ReadResponse is called.
   virtual void FullfillResponse(
-      data_decoder::mojom::BundleResponseLocationPtr expected_parse_args,
-      data_decoder::mojom::BundleResponsePtr response) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebBundleReaderFactory);
+      web_package::mojom::BundleResponseLocationPtr expected_parse_args,
+      web_package::mojom::BundleResponsePtr response) = 0;
 };
 
 }  // namespace content

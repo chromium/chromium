@@ -5,6 +5,8 @@
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -15,7 +17,7 @@
 namespace password_manager {
 
 HttpCredentialCleaner::HttpCredentialCleaner(
-    scoped_refptr<PasswordStore> store,
+    scoped_refptr<PasswordStoreInterface> store,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter,
     PrefService* prefs)
@@ -39,7 +41,7 @@ void HttpCredentialCleaner::StartCleaning(Observer* observer) {
 }
 
 void HttpCredentialCleaner::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   // Non HTTP or HTTPS credentials are ignored, in particular Android or
   // federated credentials.
   for (auto& form : RemoveNonHTTPOrHTTPSForms(std::move(results))) {
@@ -47,12 +49,13 @@ void HttpCredentialCleaner::OnGetPasswordStoreResults(
         {std::string(
              password_manager_util::GetSignonRealmWithProtocolExcluded(*form)),
          form->scheme, form->username_value});
-    if (form->origin.SchemeIs(url::kHttpScheme)) {
-      const GURL origin = form->origin;
+    if (form->url.SchemeIs(url::kHttpScheme)) {
+      auto origin = url::Origin::Create(form->url);
       PostHSTSQueryForHostAndNetworkContext(
           origin, network_context_getter_.Run(),
-          base::Bind(&HttpCredentialCleaner::OnHSTSQueryResult,
-                     base::Unretained(this), base::Passed(&form), form_key));
+          base::BindOnce(&HttpCredentialCleaner::OnHSTSQueryResult,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(form),
+                         form_key));
       ++total_http_credentials_;
     } else {  // HTTPS
       https_credentials_map_[form_key].insert(form->password_value);
@@ -64,7 +67,7 @@ void HttpCredentialCleaner::OnGetPasswordStoreResults(
 }
 
 void HttpCredentialCleaner::OnHSTSQueryResult(
-    std::unique_ptr<autofill::PasswordForm> form,
+    std::unique_ptr<PasswordForm> form,
     FormKey key,
     HSTSResult hsts_result) {
   ++processed_results_;

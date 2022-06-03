@@ -4,7 +4,7 @@
 
 #include "ui/base/pointer/pointer_device.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/win/win_util.h"
 #include "ui/base/win/hidden_window.h"
 

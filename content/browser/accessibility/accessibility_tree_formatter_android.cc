@@ -2,44 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_browser.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_android.h"
 
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
+#include "content/public/browser/ax_inspect_factory.h"
 
 using base::StringPrintf;
 
 namespace content {
 
 namespace {
-
+// clang-format off
 const char* const BOOL_ATTRIBUTES[] = {
-    "checkable",       "checked",
-    "clickable",       "collection",
-    "collection_item", "content_invalid",
-    "disabled",        "dismissable",
-    "editable_text",   "focusable",
-    "focused",         "has_character_locations",
-    "has_image",       "has_non_empty_value",
-    "heading",         "hierarchical",
-    "invisible",       "link",
-    "multiline",       "password",
-    "range",           "scrollable",
-    "selected",        "interesting"};
+    "checkable",
+    "checked",
+    "clickable",
+    "collapsed",
+    "collection",
+    "collection_item",
+    "content_invalid",
+    "disabled",
+    "dismissable",
+    "editable_text",
+    "expanded",
+    "focusable",
+    "focused",
+    "has_character_locations",
+    "has_image",
+    "has_non_empty_value",
+    "heading",
+    "hierarchical",
+    "invisible",
+    "link",
+    "multiline",
+    "multiselectable",
+    "password",
+    "range",
+    "scrollable",
+    "selected",
+    "interesting"
+};
 
 const char* const STRING_ATTRIBUTES[] = {
     "name",
     "hint",
+    "state_description",
 };
 
 const char* const INT_ATTRIBUTES[] = {
@@ -60,61 +79,84 @@ const char* const INT_ATTRIBUTES[] = {
     "text_change_removed_count",
 };
 
-}  // namespace
-
-class AccessibilityTreeFormatterAndroid
-    : public AccessibilityTreeFormatterBrowser {
- public:
-  AccessibilityTreeFormatterAndroid();
-  ~AccessibilityTreeFormatterAndroid() override;
-
-  void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
-
- private:
-  base::FilePath::StringType GetExpectedFileSuffix() override;
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  void AddProperties(const BrowserAccessibility& node,
-                     base::DictionaryValue* dict) override;
-  base::string16 ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) override;
+const char* const ACTION_ATTRIBUTES[] = {
+    "action_scroll_forward",
+    "action_scroll_backward",
+    "action_scroll_up",
+    "action_scroll_down",
+    "action_scroll_left",
+    "action_scroll_right",
+    "action_expand",
+    "action_collapse",
 };
-
-// static
-std::unique_ptr<AccessibilityTreeFormatter>
-AccessibilityTreeFormatter::Create() {
-  return std::make_unique<AccessibilityTreeFormatterAndroid>();
-}
-
-// static
-std::vector<AccessibilityTreeFormatter::TestPass>
-AccessibilityTreeFormatter::GetTestPasses() {
-  // Note: Android doesn't do a "blink" pass; the blink tree is different on
-  // Android because we exclude inline text boxes, for performance.
-  return {
-      {"android", &AccessibilityTreeFormatter::Create},
-  };
-}
+// clang-format on
+}  // namespace
 
 AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}
 
 AccessibilityTreeFormatterAndroid::~AccessibilityTreeFormatterAndroid() {}
 
-void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
-  AddPropertyFilter(property_filters, "hint=*");
-  AddPropertyFilter(property_filters, "interesting", PropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "has_character_locations",
-                    PropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "has_image", PropertyFilter::DENY);
+base::Value AccessibilityTreeFormatterAndroid::BuildTree(
+    ui::AXPlatformNodeDelegate* root) const {
+  CHECK(root);
+
+  BrowserAccessibility* root_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
+
+  // XXX: Android formatter should walk native Android tree (not internal one).
+  base::DictionaryValue dict;
+  RecursiveBuildTree(*root_internal, &dict);
+  return std::move(dict);
 }
+
+base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
+  NOTREACHED();
+  return base::Value(base::Value::Type::DICTIONARY);
+}
+
+base::Value AccessibilityTreeFormatterAndroid::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  CHECK(node);
+  base::DictionaryValue dict;
+  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  return std::move(dict);
+}
+
+void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
+    std::vector<AXPropertyFilter>* property_filters) {
+  AddPropertyFilter(property_filters, "hint=*");
+  AddPropertyFilter(property_filters, "interesting", AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "has_character_locations",
+                    AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "has_image", AXPropertyFilter::DENY);
+}
+
+void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
+    const BrowserAccessibility& node,
+    base::DictionaryValue* dict) const {
+  if (!ShouldDumpNode(node))
+    return;
+
+  AddProperties(node, dict);
+  if (!ShouldDumpChildren(node))
+    return;
+
+  base::ListValue children;
+
+  for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
+    BrowserAccessibility* child_node = node.PlatformGetChild(i);
+    std::unique_ptr<base::DictionaryValue> child_dict(
+        new base::DictionaryValue);
+    RecursiveBuildTree(*child_node, child_dict.get());
+    children.Append(std::move(child_dict));
+  }
+  dict->SetKey(kChildrenDictAttr, std::move(children));
+}
+
 void AccessibilityTreeFormatterAndroid::AddProperties(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   dict->SetInteger("id", node.GetId());
 
   const BrowserAccessibilityAndroid* android_node =
@@ -127,11 +169,14 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("checkable", android_node->IsCheckable());
   dict->SetBoolean("checked", android_node->IsChecked());
   dict->SetBoolean("clickable", android_node->IsClickable());
+  dict->SetBoolean("collapsed", android_node->IsCollapsed());
   dict->SetBoolean("collection", android_node->IsCollection());
   dict->SetBoolean("collection_item", android_node->IsCollectionItem());
+  dict->SetBoolean("content_invalid", android_node->IsContentInvalid());
   dict->SetBoolean("disabled", !android_node->IsEnabled());
   dict->SetBoolean("dismissable", android_node->IsDismissable());
-  dict->SetBoolean("editable_text", android_node->IsEditableText());
+  dict->SetBoolean("editable_text", android_node->IsTextField());
+  dict->SetBoolean("expanded", android_node->IsExpanded());
   dict->SetBoolean("focusable", android_node->IsFocusable());
   dict->SetBoolean("focused", android_node->IsFocused());
   dict->SetBoolean("has_character_locations",
@@ -143,8 +188,9 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("invisible", !android_node->IsVisibleToUser());
   dict->SetBoolean("link", android_node->IsLink());
   dict->SetBoolean("multiline", android_node->IsMultiLine());
-  dict->SetBoolean("range", android_node->IsRangeType());
-  dict->SetBoolean("password", android_node->IsPassword());
+  dict->SetBoolean("multiselectable", android_node->IsMultiselectable());
+  dict->SetBoolean("range", android_node->GetData().IsRangeValueSupported());
+  dict->SetBoolean("password", android_node->IsPasswordField());
   dict->SetBoolean("scrollable", android_node->IsScrollable());
   dict->SetBoolean("selected", android_node->IsSelected());
   dict->SetBoolean("interesting", android_node->IsInterestingOnAndroid());
@@ -153,6 +199,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetString("name", android_node->GetInnerText());
   dict->SetString("hint", android_node->GetHint());
   dict->SetString("role_description", android_node->GetRoleDescription());
+  dict->SetString("state_description", android_node->GetStateDescription());
 
   // Int attributes.
   dict->SetInteger("item_index", android_node->GetItemIndex());
@@ -181,23 +228,23 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("action_scroll_down", android_node->CanScrollDown());
   dict->SetBoolean("action_scroll_left", android_node->CanScrollLeft());
   dict->SetBoolean("action_scroll_right", android_node->CanScrollRight());
+  dict->SetBoolean("action_expand", android_node->IsCollapsed());
+  dict->SetBoolean("action_collapse", android_node->IsExpanded());
 }
 
-base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
-    const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) {
-  base::string16 error_value;
+std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
+    const base::DictionaryValue& dict) const {
+  std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;
 
-  base::string16 line;
+  std::string line;
   if (show_ids()) {
-    int id_value;
-    dict.GetInteger("id", &id_value);
-    WriteAttribute(true, base::NumberToString16(id_value), &line);
+    int id_value = dict.FindIntKey("id").value_or(0);
+    WriteAttribute(true, base::NumberToString(id_value), &line);
   }
 
-  base::string16 class_value;
+  std::string class_value;
   dict.GetString("class", &class_value);
   WriteAttribute(true, class_value, &line);
 
@@ -211,8 +258,8 @@ base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
 
   for (unsigned i = 0; i < base::size(BOOL_ATTRIBUTES); i++) {
     const char* attribute_name = BOOL_ATTRIBUTES[i];
-    bool value;
-    if (dict.GetBoolean(attribute_name, &value) && value)
+    absl::optional<bool> value = dict.FindBoolPath(attribute_name);
+    if (value && *value)
       WriteAttribute(true, attribute_name, &line);
   }
 
@@ -227,34 +274,22 @@ base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
 
   for (unsigned i = 0; i < base::size(INT_ATTRIBUTES); i++) {
     const char* attribute_name = INT_ATTRIBUTES[i];
-    int value;
-    if (!dict.GetInteger(attribute_name, &value) || value == 0)
+    int value = dict.FindIntKey(attribute_name).value_or(0);
+    if (value == 0)
       continue;
     WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value), &line);
   }
 
+  for (unsigned i = 0; i < base::size(ACTION_ATTRIBUTES); i++) {
+    const char* attribute_name = ACTION_ATTRIBUTES[i];
+    absl::optional<bool> value = dict.FindBoolPath(attribute_name);
+    if (value && *value) {
+      WriteAttribute(false /* Exclude actions by default */, attribute_name,
+                     &line);
+    }
+  }
+
   return line;
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterAndroid::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-android.txt");
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetAllowEmptyString() {
-  return "@ANDROID-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetAllowString() {
-  return "@ANDROID-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetDenyString() {
-  return "@ANDROID-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetDenyNodeString() {
-  return "@ANDROID-DENY-NODE:";
 }
 
 }  // namespace content

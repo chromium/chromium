@@ -6,13 +6,14 @@
 #define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_export.h"
@@ -35,9 +36,56 @@ class RemoteCommandsFactory;
 class POLICY_EXPORT RemoteCommandsService
     : public RemoteCommandsQueue::Observer {
  public:
+  // Represents received remote command status to be recorded.
+  // This enum is used to define the buckets for an enumerated UMA histogram.
+  // Hence,
+  //   (a) existing enumerated constants should never be deleted or reordered
+  //   (b) new constants should only be appended at the end of the enumeration
+  //       (update RemoteCommandReceivedStatus in
+  //       tools/metrics/histograms/enums.xml as well).
+  enum class MetricReceivedRemoteCommand {
+    // Invalid remote commands.
+    kInvalidSignature = 0,
+    kInvalid = 1,
+    kUnknownType = 2,
+    kDuplicated = 3,
+    kInvalidScope = 4,
+    // Remote commands type.
+    kCommandEchoTest = 5,
+    kDeviceReboot = 6,
+    kDeviceScreenshot = 7,
+    kDeviceSetVolume = 8,
+    kDeviceFetchStatus = 9,
+    kUserArcCommand = 10,
+    kDeviceWipeUsers = 11,
+    kDeviceStartCrdSession = 12,
+    kDeviceRemotePowerwash = 13,
+    kDeviceRefreshEnterpriseMachineCertificate = 14,
+    kDeviceGetAvailableDiagnosticRoutines = 15,
+    kDeviceRunDiagnosticRoutine = 16,
+    kDeviceGetDiagnosticRoutineUpdate = 17,
+    kBrowserClearBrowsingData = 18,
+    kDeviceResetEuicc = 19,
+    // Used by UMA histograms. Shall refer to the last enumeration.
+    kMaxValue = kDeviceResetEuicc
+  };
+
+  // Returns the metric name to report received commands.
+  static const char* GetMetricNameReceivedRemoteCommand(
+      PolicyInvalidationScope scope,
+      bool is_command_signed);
+  // Returns the metric name to report status of executed commands.
+  static std::string GetMetricNameExecutedRemoteCommand(
+      PolicyInvalidationScope scope,
+      enterprise_management::RemoteCommand_Type command_type,
+      bool is_command_signed);
+
   RemoteCommandsService(std::unique_ptr<RemoteCommandsFactory> factory,
                         CloudPolicyClient* client,
-                        CloudPolicyStore* store);
+                        CloudPolicyStore* store,
+                        PolicyInvalidationScope scope);
+  RemoteCommandsService(const RemoteCommandsService&) = delete;
+  RemoteCommandsService& operator=(const RemoteCommandsService&) = delete;
   ~RemoteCommandsService() override;
 
   // Attempts to fetch remote commands, mainly supposed to be called by
@@ -83,6 +131,12 @@ class POLICY_EXPORT RemoteCommandsService
       const std::vector<enterprise_management::RemoteCommand>& commands,
       const std::vector<enterprise_management::SignedData>& signed_commands);
 
+  // Records UMA metric of received remote command.
+  void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric,
+                                   bool is_command_signed) const;
+  // Records UMA metric of executed remote command.
+  void RecordExecutedRemoteCommand(const RemoteCommandJob& command) const;
+
   // Whether there is a command fetch on going or not.
   bool command_fetch_in_progress_ = false;
 
@@ -118,9 +172,10 @@ class POLICY_EXPORT RemoteCommandsService
   // as executed.
   base::OnceClosure on_command_acked_callback_;
 
-  base::WeakPtrFactory<RemoteCommandsService> weak_factory_{this};
+  // Represents remote commands scope covered by service.
+  const PolicyInvalidationScope scope_;
 
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsService);
+  base::WeakPtrFactory<RemoteCommandsService> weak_factory_{this};
 };
 
 }  // namespace policy

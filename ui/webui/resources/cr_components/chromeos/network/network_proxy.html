@@ -1,17 +1,18 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="cr_policy_network_behavior_mojo.html">
 <link rel="import" href="network_proxy_exclusions.html">
 <link rel="import" href="network_proxy_input.html">
 <link rel="import" href="network_shared_css.html">
+<link rel="import" href="onc_mojo.html">
 
 <dom-module id="network-proxy">
   <template>
@@ -87,6 +88,7 @@
         hidden$="[[!matches_(proxy_.type.activeValue, 'Manual')]]">
       <div hidden$="[[!useSameProxy_]]" class="layout vertical">
         <network-proxy-input
+            id="sameProxyInput"
             on-proxy-input-change="onProxyInputChange_"
             editable="[[isEditable_('manual.httpProxy.host', managedProperties,
                 editable, useSharedProxies)]]"
@@ -96,6 +98,7 @@
       </div>
       <div hidden$="[[useSameProxy_]]" class="layout vertical">
         <network-proxy-input
+          id="httpProxyInput"
             on-proxy-input-change="onProxyInputChange_"
             editable="[[isEditable_('manual.httpProxy.host', managedProperties,
                 editable, useSharedProxies)]]"
@@ -103,6 +106,7 @@
             label="[[i18n('networkProxyHttp')]]">
         </network-proxy-input>
         <network-proxy-input
+            id="secureHttpProxyInput"
             on-proxy-input-change="onProxyInputChange_"
             editable="[[isEditable_('manual.secureHttpProxy.host',
                 managedProperties, editable, useSharedProxies)]]"
@@ -110,13 +114,7 @@
             label="[[i18n('networkProxyShttp')]]">
         </network-proxy-input>
         <network-proxy-input
-            on-proxy-input-change="onProxyInputChange_"
-            editable="[[isEditable_('manual.ftpProxy.host', managedProperties,
-                editable, useSharedProxies)]]"
-            value="{{proxy_.manual.ftpProxy}}"
-            label="[[i18n('networkProxyFtp')]]">
-        </network-proxy-input>
-        <network-proxy-input
+            id="socksProxyInput"
             on-proxy-input-change="onProxyInputChange_"
             editable="[[isEditable_('manual.socks.host', managedProperties,
                 editable, useSharedProxies)]]"
@@ -136,9 +134,14 @@
         </network-proxy-exclusions>
         <div id="addException" class="layout horizontal center">
           <cr-input id="proxyExclusion" class="flex"
+              value="{{proxyExclusionInputValue_}}"
               aria-label="[[i18n('networkProxyExceptionInputA11yLabel')]]"
               on-keypress="onAddProxyExclusionKeypress_">
-            <cr-button on-click="onAddProxyExclusionTap_" slot="suffix">
+            <cr-button id="proxyExclusionButton"
+                on-click="onAddProxyExclusionTap_"
+                slot="suffix"
+                disabled="[[shouldProxyExclusionButtonBeDisabled_(
+                    proxyExclusionInputValue_)]]">
               [[i18n('networkProxyAddException')]]
             </cr-button>
           </cr-input>

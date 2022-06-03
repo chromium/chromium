@@ -1,7 +1,10 @@
 dtrainor@chromium.org
 fgorski@chromium.org
+hanxi@chromium.org
+mheikal@chromium.org
 nyquist@chromium.org
 peter@chromium.org
+shaktisahu@chromium.org
 
-# COMPONENT: Internals>BackgroundTaskScheduler
-
+# Everyone can add new TaskIds. For structural changes, ask component OWNERS.
+per-file task_ids.h=*

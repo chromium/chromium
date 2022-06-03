@@ -1,0 +1,37 @@
+Name: Androidx Repository
+Short Name: androidx
+Version: 1
+License: Refer to additional_readme_paths.json
+License Android Compatible: yes
+License File: NOT_SHIPPED
+Security Critical: yes
+
+Description:
+A gradle-specified repository for Androidx dependencies.
+
+Where the snapshots come from:
+* Snapshots originate from https://androidx.dev
+* They are made into CIPD packages by this bot: https://ci.chromium.org/p/chromium/builders/ci/android-androidx-packager
+* They are then rolled in by this autoroller: https://autoroll.skia.org/r/androidx-chromium
+* Googlers can trigger manual runs: https://luci-scheduler.appspot.com/jobs/chromium/android-androidx-packager
+
+Mapping snapshot version to git revision:
+* The current version of the snapshot is written to VERSION.txt (sibling of this
+  README, but does not appear in codesearch).
+* Open the "BUILD_INFO" JSON file from https://androidx.dev/snapshots/builds for
+  the given version, and search for the "platform/frameworks/support" entry.
+  * That entry will have a "revision" field, which is the git revision the
+    snapshot was created from.
+
+Viewing Source Code:
+Git viewer: https://android.googlesource.com/platform/frameworks/support/
+Code Search: https://cs.android.com/androidx/platform/frameworks/support
+
+How to add a new androidx library:
+* Add the gradle entry for the desired target to build.gradle.template
+* Do a trial run (downloads files locally):
+    mv libs libs.bak && ./fetch_all_androidx.py
+* Upload & submit your change to build.gradle.template
+* Wait for android-androidx-packager to upload a new CIPD instance (linked above)
+* Wait for androidx-chromium to roll the new package (linked above)
+

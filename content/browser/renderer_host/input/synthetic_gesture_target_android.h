@@ -24,6 +24,11 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
  public:
   SyntheticGestureTargetAndroid(RenderWidgetHostImpl* host,
                                 ui::ViewAndroid* view);
+
+  SyntheticGestureTargetAndroid(const SyntheticGestureTargetAndroid&) = delete;
+  SyntheticGestureTargetAndroid& operator=(
+      const SyntheticGestureTargetAndroid&) = delete;
+
   ~SyntheticGestureTargetAndroid() override;
 
   // SyntheticGestureTargetBase:
@@ -41,14 +46,14 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
       const ui::LatencyInfo& latency_info) override;
 
   // SyntheticGestureTarget:
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override;
   float GetTouchSlopInDips() const override;
   float GetMinScalingSpanInDips() const override;
 
  private:
-  void TouchSetPointer(int index, int x, int y, int id);
-  void TouchSetScrollDeltas(int x, int y, int dx, int dy);
+  void TouchSetPointer(int index, float x, float y, int id);
+  void TouchSetScrollDeltas(float x, float y, float dx, float dy);
   void TouchInject(MotionEventAction action,
                    int pointer_count,
                    base::TimeTicks time);
@@ -57,8 +62,6 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
 
   ui::ViewAndroid* const view_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetAndroid);
 };
 
 }  // namespace content

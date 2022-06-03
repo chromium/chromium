@@ -160,6 +160,11 @@ function clickElement(element) {
     eventSender.mouseUp();
 }
 
+function pressElement(element) {
+    hoverOverElement(element);
+    eventSender.mouseDown();
+}
+
 function traverseNextNode(node, stayWithin) {
     var nextNode = node.firstChild;
     if (nextNode)

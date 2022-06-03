@@ -23,10 +23,6 @@ const y = 100;
 var blue = document.getElementById('blue');
 
 window.onload = async () => {
-  if (window.internals) {
-    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-  }
-
   promise_test(async () => {
     // Move the blue element away when it is hovered, so the blue element will oscillates
     // between 75px and 500px at each animation frame.

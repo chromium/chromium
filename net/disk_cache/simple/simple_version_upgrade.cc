@@ -107,9 +107,7 @@ FakeIndexData::FakeIndexData() {
 bool UpgradeIndexV5V6(const base::FilePath& cache_directory) {
   const base::FilePath old_index_file =
       cache_directory.AppendASCII(kIndexFileName);
-  if (!base::DeleteFile(old_index_file, /* recursive = */ false))
-    return false;
-  return true;
+  return base::DeleteFile(old_index_file);
 }
 
 // Some points about the Upgrade process are still not clear:
@@ -145,7 +143,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   if (!fake_index_file.IsValid()) {
     if (fake_index_file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
       if (!WriteFakeIndexFile(fake_index)) {
-        base::DeleteFile(fake_index, /* recursive = */ false);
+        base::DeleteFile(fake_index);
         LOG(ERROR) << "Failed to write a new fake index.";
         return SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed;
       }
@@ -223,7 +221,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
 
   const base::FilePath temp_fake_index = path.AppendASCII("upgrade-index");
   if (!WriteFakeIndexFile(temp_fake_index)) {
-    base::DeleteFile(temp_fake_index, /* recursive = */ false);
+    base::DeleteFile(temp_fake_index);
     LOG(ERROR) << "Failed to write a new fake index.";
     LogMessageFailedUpgradeFromVersion(file_header.version);
     return SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed;
@@ -250,11 +248,9 @@ bool DeleteIndexFilesIfCacheIsEmpty(const base::FilePath& path) {
       continue;
     return false;
   }
-  bool deleted_fake_index =
-      base::DeleteFile(fake_index, /* recursive = */ false);
-  bool deleted_index_dir = base::DeleteFileRecursively(index_dir);
-  bool deleted_legacy_index_file =
-      base::DeleteFile(legacy_index_file, /* recursive = */ false);
+  bool deleted_fake_index = base::DeleteFile(fake_index);
+  bool deleted_index_dir = base::DeletePathRecursively(index_dir);
+  bool deleted_legacy_index_file = base::DeleteFile(legacy_index_file);
   return deleted_fake_index || deleted_index_dir || deleted_legacy_index_file;
 }
 

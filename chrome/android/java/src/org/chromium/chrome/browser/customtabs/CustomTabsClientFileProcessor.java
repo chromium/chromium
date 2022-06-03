@@ -17,7 +17,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.browserservices.trustedwebactivityui.splashscreen.SplashImageHolder;
+import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.SplashImageHolder;
 
 import javax.inject.Inject;
 import javax.inject.Named;

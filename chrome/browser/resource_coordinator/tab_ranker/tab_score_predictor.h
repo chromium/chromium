@@ -9,8 +9,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assist_ranker {
 class ExamplePreprocessorConfig;
@@ -51,6 +50,10 @@ class TabScorePredictor {
     kMaxValue = kFrecencyScorer
   };
   TabScorePredictor();
+
+  TabScorePredictor(const TabScorePredictor&) = delete;
+  TabScorePredictor& operator=(const TabScorePredictor&) = delete;
+
   ~TabScorePredictor();
 
   // Scores the tab using the tab reactivation model. A higher score indicates
@@ -66,7 +69,7 @@ class TabScorePredictor {
   // If the scoring fails at any step, it will set
   // std::numeric_limits<float>::max() as the reactivation score for that tab.
   std::map<int32_t, float> ScoreTabs(
-      const std::map<int32_t, base::Optional<TabFeatures>>& tabs);
+      const std::map<int32_t, absl::optional<TabFeatures>>& tabs);
 
  private:
   friend class ScoreTabsWithPairwiseScorerTest;
@@ -89,7 +92,7 @@ class TabScorePredictor {
                                  const TabFeatures& tab2,
                                  float* score);
   std::map<int32_t, float> ScoreTabsWithPairwiseScorer(
-      const std::map<int32_t, base::Optional<TabFeatures>>& tabs);
+      const std::map<int32_t, absl::optional<TabFeatures>>& tabs);
   TabRankerResult ScoreTabWithFrecencyScorer(const TabFeatures& tab,
                                              float* score);
 
@@ -104,8 +107,6 @@ class TabScorePredictor {
   const float discard_count_penalty_ = 0.0f;
   const float mru_scorer_penalty_ = 1.0f;
   const ScorerType type_ = kMLScorer;
-
-  DISALLOW_COPY_AND_ASSIGN(TabScorePredictor);
 };
 
 }  // namespace tab_ranker

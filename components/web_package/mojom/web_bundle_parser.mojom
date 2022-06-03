@@ -1,0 +1,133 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module web_package.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "url/mojom/url.mojom";
+
+// Factory interface to create WebBundleParser for the passed |file|
+// or |data_source| that provides application/webbundle data.
+interface WebBundleParserFactory {
+  // Constructs a parser for the passed |file|.
+  GetParserForFile(pending_receiver<WebBundleParser> receiver,
+                   mojo_base.mojom.ReadOnlyFile file);
+
+  // Constructs a parser for the passed |data_source|.
+  GetParserForDataSource(pending_receiver<WebBundleParser> receiver,
+                         pending_remote<BundleDataSource> data_source);
+};
+
+// Parser interface to obtain metadata and multiple responses from the bound
+// application/webbundle data provided on the construction at the factory above.
+interface WebBundleParser {
+  // Parses bundle's metadata.
+  ParseMetadata() => (BundleMetadata? Result, BundleMetadataParseError? error);
+
+  // Parses a response from the range
+  // |[response_offset, response_offset + response_length)|.
+  ParseResponse(uint64 response_offset,
+                uint64 response_length)
+      => (BundleResponse? Result, BundleResponseParseError? error);
+};
+
+// Data source that provides application/webbundle data to the parser.
+interface BundleDataSource {
+  // Reads up to |length| bytes starting with |offset|. Returns a non-null
+  // buffer shorter than |length| iff the end of the stream is reached.
+  Read(uint64 offset, uint64 length) => (array<uint8>? buffer);
+};
+
+enum BundleParseErrorType {
+  kParserInternalError,
+  kFormatError,
+  kVersionError,
+};
+
+struct BundleMetadataParseError {
+  BundleParseErrorType type;
+  url.mojom.Url fallback_url;
+  string message;
+};
+
+struct BundleResponseParseError {
+  BundleParseErrorType type;
+  string message;
+};
+
+// Corresponds to "bundle's metadata".
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#semantics-load-metadata
+struct BundleMetadata {
+  url.mojom.Url primary_url;
+  map<url.mojom.Url, BundleIndexValue> requests;
+  url.mojom.Url manifest_url;
+  array<AugmentedCertificate> authorities;
+  array<VouchedSubset> vouched_subsets;
+};
+
+// Corresponds to the value type of "index" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#index-section
+struct BundleIndexValue {
+  string variants_value;
+  array<BundleResponseLocation> response_locations;
+};
+
+// Offset (within the webbundle file) and length of a response.
+struct BundleResponseLocation {
+  uint64 offset;
+  uint64 length;
+};
+
+// Corresponds to "augmented-certificate" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cert-chain-format
+struct AugmentedCertificate {
+  array<uint8> cert;
+  array<uint8>? ocsp;
+  array<uint8>? sct;
+};
+
+// Corresponds to the item type of "vouched-subsets" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+struct VouchedSubset {
+  uint64 authority;  // An index in BundleMetadata::authorities.
+  array<uint8> sig;
+  array<uint8> raw_signed;
+
+  SignedSubset parsed_signed; // Clients must verify |sig| before using this.
+};
+
+// Corresponds to "signed-subset" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+struct SignedSubset {
+  url.mojom.Url validity_url;
+  array<uint8> auth_sha256;
+  uint64 date;
+  uint64 expires;
+  map<url.mojom.Url, SubsetHashesValue> subset_hashes;
+};
+
+// Corresponds to the value type of "subset-hashes" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+struct SubsetHashesValue {
+  string variants_value;
+  array<ResourceIntegrity> resource_integrities;
+};
+
+// Corresponds to "resource-integrity" in the spec CDDL.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+struct ResourceIntegrity {
+  array<uint8> header_sha256;
+  string payload_integrity_header;
+};
+
+// Contains response headers and payload location.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-response
+struct BundleResponse {
+  int32 response_code;
+  map<string, string> response_headers;
+
+  // Payload offset and length within the webbundle file.
+  uint64 payload_offset;
+  uint64 payload_length;
+};

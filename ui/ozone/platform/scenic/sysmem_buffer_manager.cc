@@ -12,13 +12,44 @@
 
 namespace ui {
 
+namespace {
+
+std::string GetProcessName() {
+  char name[ZX_MAX_NAME_LEN] = {};
+  zx_status_t status =
+      zx::process::self()->get_property(ZX_PROP_NAME, name, sizeof(name));
+  return (status == ZX_OK) ? std::string(name) : "";
+}
+
+}  // namespace
+
 SysmemBufferManager::SysmemBufferManager(
-    fuchsia::sysmem::AllocatorSyncPtr allocator)
-    : allocator_(std::move(allocator)) {}
+    ScenicSurfaceFactory* scenic_surface_factory)
+    : scenic_surface_factory_(scenic_surface_factory) {}
 
 SysmemBufferManager::~SysmemBufferManager() {
+  Shutdown();
+}
+
+void SysmemBufferManager::Initialize(
+    fuchsia::sysmem::AllocatorHandle allocator) {
   base::AutoLock auto_lock(collections_lock_);
   DCHECK(collections_.empty());
+  DCHECK(!allocator_);
+  allocator_.Bind(std::move(allocator));
+  allocator_->SetDebugClientInfo(GetProcessName() + "-SysmemBufferManager",
+                                 base::GetCurrentProcId());
+}
+
+void SysmemBufferManager::Shutdown() {
+  base::AutoLock auto_lock(collections_lock_);
+  DCHECK(collections_.empty());
+  allocator_ = nullptr;
+}
+
+fuchsia::sysmem::Allocator_Sync* SysmemBufferManager::GetAllocator() {
+  DCHECK(allocator_);
+  return allocator_.get();
 }
 
 scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
@@ -26,10 +57,12 @@ scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    size_t num_buffers) {
+    size_t min_buffer_count) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>();
-  if (!result->Initialize(allocator_.get(), size, format, usage, vk_device,
-                          num_buffers)) {
+  if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
+                          /*token_channel=*/zx::channel(), size, format, usage,
+                          vk_device, min_buffer_count,
+                          /*register_with_image_pipe=*/false)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -40,9 +73,16 @@ scoped_refptr<SysmemBufferCollection>
 SysmemBufferManager::ImportSysmemBufferCollection(
     VkDevice vk_device,
     gfx::SysmemBufferCollectionId id,
-    zx::channel token) {
+    zx::channel token,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    size_t min_buffer_count,
+    bool register_with_image_pipe) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>(id);
-  if (!result->Initialize(allocator_.get(), vk_device, std::move(token))) {
+  if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
+                          std::move(token), size, format, usage, vk_device,
+                          min_buffer_count, register_with_image_pipe)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -56,7 +96,7 @@ void SysmemBufferManager::RegisterCollection(
     collections_[collection->id()] = collection;
   }
 
-  collection->SetOnDeletedCallback(
+  collection->AddOnDeletedCallback(
       base::BindOnce(&SysmemBufferManager::OnCollectionDestroyed,
                      base::Unretained(this), collection->id()));
 }

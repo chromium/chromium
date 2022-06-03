@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script>
+onload = function() {
+  window.scrollTo(0, 400);
+};
+</script>
+Tests paint invalidation of fixed element under a composited absolute element on resize after scrolled.
+Passes if there is a 100x200 green rectangle and no red.
+<div style="position: absolute; top: 2000px; width: 1px; height: 1px"></div>
+<div style="position: absolute; top: 400px; left: 0; width: 100px; height: 200px; background: green"></div>

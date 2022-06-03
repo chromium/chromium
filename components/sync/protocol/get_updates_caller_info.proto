@@ -60,4 +60,4 @@ message GetUpdatesCallerInfo {
   // TODO(crbug.com/510165): Move this bool out of GetUpdatesCallerInfo so that
   // GetUpdatesCallerInfo can eventually be removed.
   optional bool notifications_enabled = 2;
-};
+}

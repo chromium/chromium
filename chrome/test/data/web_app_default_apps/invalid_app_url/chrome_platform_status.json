@@ -1,5 +1,6 @@
 {
   "app_url": "www.chromestatus.com/features",
   "create_shortcuts": true,
-  "launch_container": "tab"
+  "launch_container": "tab",
+  "user_type": ["unmanaged"]
 }

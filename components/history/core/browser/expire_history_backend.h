@@ -12,16 +12,19 @@
 
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
-class TestingProfile;
 
 namespace base {
 class SequencedTaskRunner;
+}
+
+namespace favicon {
+class FaviconDatabase;
 }
 
 namespace history {
@@ -29,13 +32,12 @@ namespace history {
 class HistoryBackendClient;
 class HistoryBackendNotifier;
 class HistoryDatabase;
-class ThumbnailDatabase;
 
 // Encapsulates visit expiration criteria and type of visits to expire.
 class ExpiringVisitsReader {
  public:
   virtual ~ExpiringVisitsReader() {}
-  // Populates |visits| from |db|, using provided |end_time| and |max_visits|
+  // Populates `visits` from `db`, using provided `end_time` and `max_visits`
   // cap.
   virtual bool Read(base::Time end_time, HistoryDatabase* db,
                     VisitVector* visits, int max_visits) const = 0;
@@ -62,20 +64,24 @@ class ExpireHistoryBackend {
   ExpireHistoryBackend(HistoryBackendNotifier* notifier,
                        HistoryBackendClient* backend_client,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  ExpireHistoryBackend(const ExpireHistoryBackend&) = delete;
+  ExpireHistoryBackend& operator=(const ExpireHistoryBackend&) = delete;
+
   ~ExpireHistoryBackend();
 
   // Completes initialization by setting the databases that this class will use.
   void SetDatabases(HistoryDatabase* main_db,
-                    ThumbnailDatabase* thumb_db);
+                    favicon::FaviconDatabase* favicon_db);
 
   // Begins periodic expiration of history older than the given threshold. This
   // will continue until the object is deleted.
   void StartExpiringOldStuff(base::TimeDelta expiration_threshold);
 
-  // Deletes everything associated with a URL until |end_time|.
+  // Deletes everything associated with a URL until `end_time`.
   void DeleteURL(const GURL& url, base::Time end_time);
 
-  // Deletes everything associated with each URL in the list until |end_time|.
+  // Deletes everything associated with each URL in the list until `end_time`.
   void DeleteURLs(const std::vector<GURL>& url, base::Time end_time);
 
   // Removes all visits to restrict_urls (or all URLs if empty) in the given
@@ -86,7 +92,7 @@ class ExpireHistoryBackend {
                             bool user_initiated);
 
   // Removes all visits to all URLs with the given times, updating the
-  // URLs accordingly.  |times| must be in reverse chronological order
+  // URLs accordingly.  `times` must be in reverse chronological order
   // and not contain any duplicates.
   void ExpireHistoryForTimes(const std::vector<base::Time>& times);
 
@@ -98,9 +104,8 @@ class ExpireHistoryBackend {
   // accordingly.
   void ExpireHistoryBeforeForTesting(base::Time end_time);
 
-  // Clears all old on-demand favicons from thumbnail database. Fails silently
-  // (we don't care about favicons so much, so don't want to stop everything if
-  // it fails).
+  // Clears all old on-demand favicons. Fails silently (we don't care about
+  // favicons so much, so don't want to stop everything if it fails).
   void ClearOldOnDemandFaviconsIfPossible(base::Time expiration_threshold);
 
   // Returns the current cut-off time before which we will start expiring stuff.
@@ -125,8 +130,6 @@ class ExpireHistoryBackend {
       ExpireHistoryTest,
       ClearOldOnDemandFaviconsDoesNotDeleteAfterShortDelay);
 
-  friend class ::TestingProfile;
-
   struct DeleteEffects {
     DeleteEffects();
     ~DeleteEffects();
@@ -149,11 +152,11 @@ class ExpireHistoryBackend {
     // will need to check when the delete operations are complete.
     std::set<favicon_base::FaviconID> affected_favicons;
 
-    // All favicon urls that were actually deleted from the thumbnail db.
+    // All favicon urls that were deleted from the favicon db.
     std::set<GURL> deleted_favicons;
   };
 
-  // Returns a vector with all visits that eventually redirect to |visits|.
+  // Returns a vector with all visits that eventually redirect to `visits`.
   VisitVector GetVisitsAndRedirectParents(const VisitVector& visits);
 
   // Deletes the visit-related stuff for all the visits in the given list, and
@@ -163,7 +166,7 @@ class ExpireHistoryBackend {
                               DeleteEffects* effects);
 
   // Finds or deletes dependency information for the given URL. Information that
-  // is specific to this URL (URL row, thumbnails, etc.) is deleted.
+  // is specific to this URL (URL row, favicons, etc.) is deleted.
   //
   // This does not affect the visits! This is used for expiration as well as
   // deleting from the UI, and they handle visits differently.
@@ -176,12 +179,12 @@ class ExpireHistoryBackend {
   //
   // Assumes the main_db_ is non-NULL.
   //
-  // NOTE: If the url is pinned, we keep the favicons and thumbnails.
+  // NOTE: If the url is pinned, we keep the favicons.
   void DeleteOneURL(const URLRow& url_row,
                     bool is_pinned,
                     DeleteEffects* effects);
 
-  // Deletes all favicons associated with |gurl|.
+  // Deletes all favicons associated with `gurl`.
   void DeleteIcons(const GURL& gurl, DeleteEffects* effects);
 
   // Deletes all the URLs in the given vector and handles their dependencies.
@@ -198,7 +201,7 @@ class ExpireHistoryBackend {
   //
   // The visits in the given vector should have already been deleted from the
   // database, and the list of affected URLs already be filled into
-  // |depenencies->affected_urls|.
+  // `depenencies->affected_urls`.
   //
   // Starred URLs will not be deleted. The information in the dependencies that
   // DeleteOneURL fills in will be updated, and this function will also delete
@@ -219,9 +222,9 @@ class ExpireHistoryBackend {
                             const std::set<GURL>& restrict_urls,
                             DeletionType type);
 
-  // Deletes the favicons listed in |effects->affected_favicons| if they are
+  // Deletes the favicons listed in `effects->affected_favicons` if they are
   // unused. Fails silently (we don't care about favicons so much, so don't want
-  // to stop everything if it fails). Fills |expired_favicons| with the set of
+  // to stop everything if it fails). Fills `expired_favicons` with the set of
   // favicon urls that no longer have associated visits and were therefore
   // expired.
   void DeleteFaviconsIfPossible(DeleteEffects* effects);
@@ -230,7 +233,7 @@ class ExpireHistoryBackend {
   void BroadcastNotifications(DeleteEffects* effects,
                               DeletionType type,
                               const DeletionTimeRange& time_range,
-                              base::Optional<std::set<GURL>> restrict_urls);
+                              absl::optional<std::set<GURL>> restrict_urls);
 
   // Schedules a call to DoExpireIteration.
   void ScheduleExpire();
@@ -240,8 +243,8 @@ class ExpireHistoryBackend {
   // future.
   void DoExpireIteration();
 
-  // Tries to expire the oldest |max_visits| visits from history that are older
-  // than |time_threshold|. The return value indicates if we think there might
+  // Tries to expire the oldest `max_visits` visits from history that are older
+  // than `time_threshold`. The return value indicates if we think there might
   // be more history to expire with the current time threshold (it does not
   // indicate success or failure).
   bool ExpireSomeOldHistory(base::Time end_time,
@@ -269,7 +272,7 @@ class ExpireHistoryBackend {
 
   // Non-owning pointers to the databases we deal with (MAY BE NULL).
   HistoryDatabase* main_db_;       // Main history database.
-  ThumbnailDatabase* thumb_db_;    // Thumbnails and favicons.
+  favicon::FaviconDatabase* favicon_db_;
 
   // The threshold for "old" history where we will automatically delete it.
   base::TimeDelta expiration_threshold_;
@@ -303,8 +306,6 @@ class ExpireHistoryBackend {
   // Used to generate runnable methods to do timers on this class. They will be
   // automatically canceled when this class is deleted.
   base::WeakPtrFactory<ExpireHistoryBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExpireHistoryBackend);
 };
 
 }  // namespace history

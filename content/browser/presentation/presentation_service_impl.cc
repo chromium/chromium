@@ -6,13 +6,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/presentation_request.h"
@@ -21,7 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/frame_navigate_params.h"
 
 using blink::mojom::PresentationConnectionState;
 using blink::mojom::PresentationError;
@@ -117,8 +118,8 @@ std::unique_ptr<PresentationServiceImpl> PresentationServiceImpl::Create(
 
 void PresentationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::PresentationService> receiver) {
-  presentation_service_receiver_.Bind(std::move(receiver));
-  presentation_service_receiver_.set_disconnect_handler(base::BindOnce(
+  presentation_service_receivers_.Add(this, std::move(receiver));
+  presentation_service_receivers_.set_disconnect_handler(base::BindRepeating(
       &PresentationServiceImpl::OnConnectionError, base::Unretained(this)));
 }
 
@@ -126,7 +127,7 @@ void PresentationServiceImpl::SetController(
     mojo::PendingRemote<blink::mojom::PresentationController>
         presentation_controller_remote) {
   if (presentation_controller_remote_) {
-    mojo::ReportBadMessage(
+    presentation_service_receivers_.ReportBadMessage(
         "There can only be one PresentationController at any given time.");
     return;
   }
@@ -150,14 +151,15 @@ void PresentationServiceImpl::SetReceiver(
   }
 
   if (!receiver_delegate_ || !is_main_frame_) {
-    mojo::ReportBadMessage(
+    presentation_service_receivers_.ReportBadMessage(
         "SetReceiver can only be called from a "
         "presentation receiver main frame.");
     return;
   }
 
   if (presentation_receiver_remote_) {
-    mojo::ReportBadMessage("SetReceiver can only be called once.");
+    presentation_service_receivers_.ReportBadMessage(
+        "SetReceiver can only be called once.");
     return;
   }
 
@@ -229,8 +231,8 @@ void PresentationServiceImpl::StartPresentation(
   }
 
   start_presentation_request_id_ = GetNextRequestId();
-  pending_start_presentation_cb_.reset(
-      new NewPresentationCallbackWrapper(std::move(callback)));
+  pending_start_presentation_cb_ =
+      std::make_unique<NewPresentationCallbackWrapper>(std::move(callback));
   PresentationRequest request({render_process_id_, render_frame_id_},
                               presentation_urls,
                               render_frame_host_->GetLastCommittedOrigin());
@@ -459,12 +461,13 @@ void PresentationServiceImpl::DidFinishNavigation(
   // RenderFrameHost, we should reset the connections when a navigation
   // finished but we're still using the same RenderFrameHost.
   // We don't need to do anything when the navigation didn't actually commit,
-  // won't use the same RenderFrameHost, or is restoring a RenderFrameHost from
-  // the back-forward cache.
+  // won't use the same RenderFrameHost, is restoring a RenderFrameHost from
+  // the back-forward cache, or is activating a prerendered page.
   DVLOG(2) << "PresentationServiceImpl::DidNavigateAnyFrame";
   if (!navigation_handle->HasCommitted() ||
       !FrameMatches(navigation_handle->GetRenderFrameHost()) ||
-      navigation_handle->IsServedFromBackForwardCache()) {
+      navigation_handle->IsServedFromBackForwardCache() ||
+      navigation_handle->IsPrerenderedPageActivation()) {
     return;
   }
 
@@ -496,7 +499,7 @@ void PresentationServiceImpl::Reset() {
 
   pending_reconnect_presentation_cbs_.clear();
 
-  presentation_service_receiver_.reset();
+  presentation_service_receivers_.Clear();
   presentation_controller_remote_.reset();
   presentation_receiver_remote_.reset();
 }

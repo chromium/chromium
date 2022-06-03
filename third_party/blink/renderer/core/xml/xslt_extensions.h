@@ -33,4 +33,4 @@ namespace blink {
 void RegisterXSLTExtensions(xsltTransformContextPtr ctxt);
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_EXTENSIONS_H_

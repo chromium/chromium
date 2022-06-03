@@ -4,13 +4,14 @@
 
 module mojo_base.mojom;
 
+[Stable]
 struct FilePath {
   [EnableIf=file_path_is_string]
   string path;
 
   // This duplicates the contents of mojo_base.mojom.String16. String16 isn't
   // used here due to typemapping dependency problems. base::FilePath is
-  // used for the typemap for both variants, but base::string16 and WTF::String
+  // used for the typemap for both variants, but std::u16string and WTF::String
   // are used for mojo_base.mojom.String16 typemapping. This mismatch causes
   // problems with dependencies.
   [EnableIf=file_path_is_string16]

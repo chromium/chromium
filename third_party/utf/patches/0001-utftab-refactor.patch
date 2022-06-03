@@ -1,0 +1,50 @@
+From 791f91a0169528abfe02ab9893fd4dab72b362c1 Mon Sep 17 00:00:00 2001
+From: Sophie Chang <sophiechang@chromium.org>
+Date: Wed, 3 Feb 2021 04:42:04 +0000
+Subject: [PATCH] utftab refactor
+
+---
+ third_party/utf/src/utf/chartorune.c |  8 --------
+ third_party/utf/src/utf/utftab.c     | 11 +++++++++++
+ 2 files changed, 11 insertions(+), 8 deletions(-)
+ create mode 100644 third_party/utf/src/utf/utftab.c
+
+diff --git a/third_party/utf/src/utf/chartorune.c b/third_party/utf/src/utf/chartorune.c
+index f5ed9a8c077c..3073d23de245 100644
+--- a/third_party/utf/src/utf/chartorune.c
++++ b/third_party/utf/src/utf/chartorune.c
+@@ -1,14 +1,6 @@
+ /* See LICENSE file for copyright and license details. */
+ #include "utf.h"
+ 
+-/* lookup table for the number of bytes expected in a sequence */
+-const unsigned char utftab[64] = {
+-	0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, /* 1100xxxx */
+-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, /* 1101xxxx */
+-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, /* 1110xxxx */
+-	4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0, /* 1111xxxx */
+-};
+-
+ int
+ charntorune(Rune *p, const char *s, size_t len)
+ {
+diff --git a/third_party/utf/src/utf/utftab.c b/third_party/utf/src/utf/utftab.c
+new file mode 100644
+index 000000000000..141580c16d9a
+--- /dev/null
++++ b/third_party/utf/src/utf/utftab.c
+@@ -0,0 +1,11 @@
++/* See LICENSE file for copyright and license details. */
++#include "utf.h"
++
++/* lookup table for the number of bytes expected in a sequence */
++const unsigned char utftab[64] = {
++        0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, /* 1100xxxx */
++        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, /* 1101xxxx */
++        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, /* 1110xxxx */
++        4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0, /* 1111xxxx */
++};
++
+-- 
+2.30.0.365.g02bc693789-goog
+

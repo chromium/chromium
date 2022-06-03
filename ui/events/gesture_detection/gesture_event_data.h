@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include "base/time/time.h"
-#include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/gesture_event_details.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 
@@ -32,6 +32,7 @@ struct GESTURE_DETECTION_EXPORT GestureEventData {
                    uint32_t unique_touch_event_id);
   GestureEventData(EventType type, const GestureEventData&);
   GestureEventData(const GestureEventData& other);
+  GestureEventData& operator=(const GestureEventData& other);
 
   EventType type() const { return details.type(); }
 

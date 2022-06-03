@@ -3,6 +3,8 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script type="text/javascript">
+        setup({single_test: true});
+
         var xmlpi = '<?xml version="1.0" encoding="UTF-8"?>';
         var markup = xmlpi + '<root><test/></root>';
         var xmldoc = new DOMParser().parseFromString(markup, "text/xml");

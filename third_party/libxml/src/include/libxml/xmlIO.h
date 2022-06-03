@@ -27,7 +27,7 @@ extern "C" {
  * @filename: the filename or URI
  *
  * Callback used in the I/O Input API to detect if the current handler
- * can provide input fonctionnalities for this resource.
+ * can provide input functionality for this resource.
  *
  * Returns 1 if yes and 0 if another Input module should be used
  */
@@ -73,7 +73,7 @@ typedef int (XMLCALL *xmlInputCloseCallback) (void * context);
  * @filename: the filename or URI
  *
  * Callback used in the I/O Output API to detect if the current handler
- * can provide output fonctionnalities for this resource.
+ * can provide output functionality for this resource.
  *
  * Returns 1 if yes and 0 if another Output module should be used
  */
@@ -217,6 +217,8 @@ xmlParserInputBufferPtr
  */
 XMLPUBFUN void XMLCALL
 	xmlCleanupOutputCallbacks		(void);
+XMLPUBFUN int XMLCALL
+	xmlPopOutputCallbacks			(void);
 XMLPUBFUN void XMLCALL
 	xmlRegisterDefaultOutputCallbacks(void);
 XMLPUBFUN xmlOutputBufferPtr XMLCALL

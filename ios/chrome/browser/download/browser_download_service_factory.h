@@ -23,6 +23,10 @@ class BrowserDownloadServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* browser_state);
   static BrowserDownloadServiceFactory* GetInstance();
 
+  BrowserDownloadServiceFactory(const BrowserDownloadServiceFactory&) = delete;
+  BrowserDownloadServiceFactory& operator=(
+      const BrowserDownloadServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<BrowserDownloadServiceFactory>;
 
@@ -34,8 +38,6 @@ class BrowserDownloadServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
   web::BrowserState* GetBrowserStateToUse(web::BrowserState*) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDownloadServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_

@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -97,10 +96,6 @@ class CORE_EXPORT NinePieceImage {
   }
   bool operator!=(const NinePieceImage& other) const {
     return data_ != other.data_;
-  }
-
-  bool DataEquals(const NinePieceImage& other) const {
-    return DataEquivalent(data_.Get(), other.data_.Get());
   }
 
   bool HasImage() const { return data_->image; }

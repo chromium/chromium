@@ -1,11 +1,11 @@
-document
-++group IsControlElement=false
-++++link Name='unread '
-++++++description Name='unread ' IsControlElement=false
-++++link Name='read '
-++++++description Name='read ' IsControlElement=false
-++++link Name='read '
-++++++description Name='read ' IsControlElement=false
-++++link Name='read'
-++++++img
-++++++description Name='read' IsControlElement=false
+Document
+++Group IsControlElement=false
+++++Hyperlink Name='unread '
+++++++Text Name='unread ' IsControlElement=false
+++++Hyperlink Name='read '
+++++++Text Name='read ' IsControlElement=false
+++++Hyperlink Name='read '
+++++++Text Name='read ' IsControlElement=false
+++++Hyperlink Name='read'
+++++++Image Name='To get missing image descriptions, open the context menu.'
+++++++Text Name='read' IsControlElement=false

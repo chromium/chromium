@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#7EFFC9'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), openPickerSuccessfulCallback);
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const formatToggler = popupDocument.querySelector('format-toggler');
+  const formatTogglerRect = formatToggler.getBoundingClientRect();
+  // // first tap changes format to HSL
+  eventSender.gestureTap(formatTogglerRect.left + formatTogglerRect.width / 3, formatTogglerRect.top + formatTogglerRect.height / 3);
+  // second tap changes format to Hex
+  eventSender.gestureTap(formatTogglerRect.left + formatTogglerRect.width / 2, formatTogglerRect.top + formatTogglerRect.height / 2);
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

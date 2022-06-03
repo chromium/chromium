@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_STRING_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_STRING_MAP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -47,15 +46,18 @@ class DOMStringMap : public ScriptWrappable {
                        const String& value,
                        ExceptionState&) = 0;
   virtual bool DeleteItem(const String& name) = 0;
-  bool AnonymousNamedSetter(const String& name,
-                            const String& value,
-                            ExceptionState& exception_state) {
+  NamedPropertySetterResult AnonymousNamedSetter(
+      const String& name,
+      const String& value,
+      ExceptionState& exception_state) {
     SetItem(name, value, exception_state);
-    return true;
+    return NamedPropertySetterResult::kIntercepted;
   }
-  DeleteResult AnonymousNamedDeleter(const AtomicString& name) {
-    bool known_property = DeleteItem(name);
-    return known_property ? kDeleteSuccess : kDeleteUnknownProperty;
+  DOMStringMap(const DOMStringMap&) = delete;
+  DOMStringMap& operator=(const DOMStringMap&) = delete;
+  NamedPropertyDeleterResult AnonymousNamedDeleter(const AtomicString& name) {
+    return DeleteItem(name) ? NamedPropertyDeleterResult::kDeleted
+                            : NamedPropertyDeleterResult::kDidNotIntercept;
   }
   void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&) {
     GetNames(names);
@@ -64,7 +66,6 @@ class DOMStringMap : public ScriptWrappable {
 
  protected:
   DOMStringMap() = default;
-  DISALLOW_COPY_AND_ASSIGN(DOMStringMap);
 };
 
 }  // namespace blink

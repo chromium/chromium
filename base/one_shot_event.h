@@ -8,10 +8,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace base {
 
@@ -46,8 +47,10 @@ class BASE_EXPORT OneShotEvent {
     return signaled_;
   }
 
-  // Causes is_signaled() to return true and all queued tasks to be
-  // run in an arbitrary order.  This method must only be called once.
+  // Causes is_signaled() to return true and all tasks to be posted to their
+  // corresponding task runners in the FIFO order. Note that tasks posted to
+  // different SingleThreadTaskRunners may still execute in arbitrary order.
+  // This method must only be called once.
   void Signal();
 
   // Scheduled |task| to be called on |runner| after is_signaled()
@@ -60,21 +63,16 @@ class BASE_EXPORT OneShotEvent {
   // If |*this| is destroyed before being released, none of these
   // tasks will be executed.
   //
-  // Omitting the |runner| argument indicates that |task| should run
-  // on current thread's TaskRunner.
-  //
-  // Tasks may be run in an arbitrary order, not just FIFO.  Tasks
-  // will never be called on the current thread before this function
-  // returns.  Beware that there's no simple way to wait for all tasks
-  // on a OneShotEvent to complete, so it's almost never safe to use
-  // base::Unretained() when creating one.
-  //
-  // Const because Post() doesn't modify the logical state of this
-  // object (which is just the is_signaled() bit).
-  void Post(const Location& from_here, OnceClosure task) const;
+  // Tasks are posted in FIFO order, however, tasks posted to different
+  // SingleThreadTaskRunners may still execute in an arbitrary order. Tasks will
+  // never be called on the current thread before this function returns.  Beware
+  // that there's no simple way to wait for all tasks on a OneShotEvent to
+  // complete, so it's almost never safe to use base::Unretained() when creating
+  // one.
   void Post(const Location& from_here,
             OnceClosure task,
-            const scoped_refptr<SingleThreadTaskRunner>& runner) const;
+            scoped_refptr<SingleThreadTaskRunner> runner =
+                ThreadTaskRunnerHandle::Get()) const;
   void PostDelayed(const Location& from_here,
                    OnceClosure task,
                    const TimeDelta& delay) const;
@@ -84,7 +82,7 @@ class BASE_EXPORT OneShotEvent {
 
   void PostImpl(const Location& from_here,
                 OnceClosure task,
-                const scoped_refptr<SingleThreadTaskRunner>& runner,
+                scoped_refptr<SingleThreadTaskRunner> runner,
                 const TimeDelta& delay) const;
 
   ThreadChecker thread_checker_;

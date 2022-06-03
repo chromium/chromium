@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_MODEL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_MODEL_H_
 
+#include <stddef.h>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "components/download/internal/background_service/entry.h"
-#include "components/download/internal/background_service/memory_tracker.h"
 #include "components/download/public/background_service/clients.h"
 
 namespace download {
@@ -19,7 +19,7 @@ class Store;
 
 // The model that contains a runtime representation of Entry entries. Any
 // updates to the model will be persisted to a backing |Store| as necessary.
-class Model : public MemoryTracker {
+class Model {
  public:
   // The Client which is responsible for handling all relevant messages from the
   // model.
@@ -59,7 +59,7 @@ class Model : public MemoryTracker {
 
   using EntryList = std::vector<Entry*>;
 
-  ~Model() override = default;
+  virtual ~Model() = default;
 
   // Initializes the Model.  Client::OnInitialized() will be called in response.
   // The Model can be used after that call.
@@ -93,6 +93,9 @@ class Model : public MemoryTracker {
   // immediately and NOT stored.  The underlying data may get updated or removed
   // by any other modifications to this model.
   virtual EntryList PeekEntries() = 0;
+
+  // Returns the estimate of dynamically allocated memory in bytes.
+  virtual size_t EstimateMemoryUsage() const = 0;
 };
 
 }  // namespace download

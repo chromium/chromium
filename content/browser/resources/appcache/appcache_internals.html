@@ -67,6 +67,12 @@
                     <span> Last Update Time: </span>
                     <span jscontent="new Date(lastUpdateTime)"></span>
                   </li>
+                  <li>
+                    <span> Token Expires: </span>
+                    <span jscontent=
+                      "tokenExpires ? new Date(tokenExpires) : '(unset)'">
+                    </span>
+                  </li>
                 </ul>
               </div>
               <div class="appcache-manifest-commands"
@@ -91,7 +97,7 @@
       </div>
 
       <table id="appcache-info-template">
-        <thead>
+        <thead class="appcache-details-header">
           <tr>
             <th>File URL</th>
             <th>Total Size</th>
@@ -120,9 +126,7 @@
     <div class="content">
       <div id="appcache-list">
       </div>
-      <script src="chrome://resources/js/util.js"></script>
-      <script src="chrome://resources/js/cr.js"></script>
-      <script src="appcache_internals.js"></script>
-      <script src="chrome://resources/js/jstemplate_compiled.js"></script>
+    </div>
+    <script type="module" src="appcache_internals.js"></script>
   </body>
 </html>

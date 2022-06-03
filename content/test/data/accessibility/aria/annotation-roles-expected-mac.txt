@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='comment' AXDescription='comment'
-++AXGroup AXRoleDescription='suggestion' AXDescription='suggestion'
+++AXGroup AXDescription='comment' AXRoleDescription='comment'
+++AXGroup AXDescription='suggestion' AXRoleDescription='suggestion'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='This is '
 ++++AXGroup AXRoleDescription='highlight'

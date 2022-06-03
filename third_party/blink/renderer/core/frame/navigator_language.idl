@@ -4,9 +4,7 @@
 
 // https://html.spec.whatwg.org/C/#language-preferences
 
-[
-    Exposed=(Window, Worker)
-] interface mixin NavigatorLanguage {
-    [HighEntropy, MeasureAs=NavigatorLanguage] readonly attribute DOMString language;
-    [CachedAttribute=IsLanguagesDirty, HighEntropy, MeasureAs=NavigatorLanguages] readonly attribute FrozenArray<DOMString> languages;
+interface mixin NavigatorLanguage {
+    [HighEntropy=Direct, MeasureAs=NavigatorLanguage] readonly attribute DOMString language;
+    [CachedAttribute=IsLanguagesDirty, HighEntropy=Direct, MeasureAs=NavigatorLanguages] readonly attribute FrozenArray<DOMString> languages;
 };

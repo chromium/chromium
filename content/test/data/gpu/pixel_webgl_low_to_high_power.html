@@ -12,14 +12,28 @@
 <script src="pixel_webgl_fullscreen_quad.js"></script>
 
 <script>
-function main() {
+function ready() {
+  sendResult("READY", "Ready for initialize() to be called");
+}
+
+function initialize(runningOnDualGPUMacBookPro) {
+  if (runningOnDualGPUMacBookPro)
+    setRunningOnDualGpuSystem();
   if (setup())
     drawSomeFrames(allocateHighPowerContext);
 }
 
 function allocateHighPowerContext() {
+  assertRunningOnLowPowerGpu();
   c2.getContext("webgl", { powerPreference: "high-performance" });
-  setTimeout(() => { drawSomeFrames(waitForFinish) }, 1000);
+  // On macOS there is an approximately two second delay between activating the
+  // discrete GPU and applications receiving a notification of its activation.
+  // Avoid a race condition, and test flakiness, by waiting for twice as long as
+  // this delay.
+  setTimeout(() => {
+    assertRunningOnHighPerformanceGpu();
+    drawSomeFrames(waitForFinish);
+  }, 4000);
 }
 
 function waitForFinish()
@@ -38,9 +52,8 @@ function waitForFinish()
 }
 </script>
 </head>
-<body onload="main()">
+<body onload="ready()">
 <canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
 <canvas id="c2" width="1" height="1" class="nomargin"></canvas>
-</div>
 </body>
 </html>

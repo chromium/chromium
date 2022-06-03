@@ -1,0 +1,7 @@
+#include "build/branding_buildflags.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+1 ICON "..\\..\\..\\app\\theme\\google_chrome\\win\\chrome_pwa_launcher.ico"
+#else
+1 ICON "chrome_pwa_launcher.ico"
+#endif

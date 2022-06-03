@@ -46,7 +46,7 @@ class ValueData final : public GarbageCollected<ValueData> {
   explicit ValueData(const String& string)
       : string_(string), node_set_(NodeSet::Create()) {}
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   NodeSet& GetNodeSet() { return *node_set_; }
 
   String string_;
@@ -89,7 +89,7 @@ class CORE_EXPORT Value {
         data_(MakeGarbageCollected<ValueData>()) {
     data_->GetNodeSet().Append(value);
   }
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   // This is needed to safely implement constructing from bool - with normal
   // function overloading, any pointer type would match.

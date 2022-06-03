@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that CSSParser correctly parses declarations with unterminated comments.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="color: red /* foo: bar;"></div>
@@ -13,13 +13,13 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected1', dumpStylesFirst);
 
-  function dumpStylesFirst() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function dumpStylesFirst() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected2', dumpStylesSecond);
   }
 
-  function dumpStylesSecond() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function dumpStylesSecond() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

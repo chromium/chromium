@@ -35,7 +35,9 @@ namespace blink {
 
 class PLATFORM_EXPORT HRTFPanner final : public Panner {
  public:
-  HRTFPanner(float sample_rate, HRTFDatabaseLoader*);
+  HRTFPanner(float sample_rate,
+             unsigned render_quantum_frames,
+             HRTFDatabaseLoader*);
   ~HRTFPanner() override;
 
   // Panner
@@ -54,14 +56,16 @@ class PLATFORM_EXPORT HRTFPanner final : public Panner {
 
   void Reset() override;
 
-  size_t FftSize() const { return FftSizeForSampleRate(sample_rate_); }
-  static size_t FftSizeForSampleRate(float sample_rate);
+  unsigned FftSize() const { return FftSizeForSampleRate(sample_rate_); }
+  static unsigned FftSizeForSampleRate(float sample_rate);
 
   float SampleRate() const { return sample_rate_; }
 
   double TailTime() const override;
   double LatencyTime() const override;
   bool RequiresTailProcessing() const override;
+
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
   // Given an azimuth angle in the range -180 -> +180, returns the corresponding
@@ -117,6 +121,7 @@ class PLATFORM_EXPORT HRTFPanner final : public Panner {
   AudioFloatArray temp_r1_;
   AudioFloatArray temp_l2_;
   AudioFloatArray temp_r2_;
+  unsigned render_quantum_frames_;
 };
 
 }  // namespace blink

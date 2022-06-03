@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -24,6 +23,9 @@ class MEDIA_EXPORT FakeAudioOutputStream : public MuteableAudioOutputStream {
  public:
   static AudioOutputStream* MakeFakeStream(AudioManagerBase* manager,
                                            const AudioParameters& params);
+
+  FakeAudioOutputStream(const FakeAudioOutputStream&) = delete;
+  FakeAudioOutputStream& operator=(const FakeAudioOutputStream&) = delete;
 
   // AudioOutputStream implementation.
   bool Open() override;
@@ -48,8 +50,6 @@ class MEDIA_EXPORT FakeAudioOutputStream : public MuteableAudioOutputStream {
   AudioSourceCallback* callback_;
   FakeAudioWorker fake_worker_;
   const std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputStream);
 };
 
 }  // namespace media

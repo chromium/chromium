@@ -25,6 +25,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortMac {
 
   explicit MachPortMac(mach_port_t mach_port) : mach_port_(mach_port) {}
 
+  MachPortMac(const MachPortMac&) = delete;
+  MachPortMac& operator=(const MachPortMac&) = delete;
+
   mach_port_t get_mach_port() const { return mach_port_; }
 
   // This method should only be used by ipc/ translation code.
@@ -66,7 +69,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortMac {
   // ownership of the Mach port, and assumes that the client code which receives
   // the callback will take ownership of the Mach port.
   mach_port_t mach_port_;
-  DISALLOW_COPY_AND_ASSIGN(MachPortMac);
 };
 
 template <>

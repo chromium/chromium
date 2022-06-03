@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.homepage;
 
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+import androidx.annotation.Nullable;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,13 +19,14 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepagePolicyStateListener;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -33,7 +34,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
 public class HomepagePolicyManagerTest {
     public static final String TEST_URL = "http://127.0.0.1:8000/foo.html";
     public static final String CHROME_NTP = "chrome-native://newtab/";
@@ -44,18 +44,30 @@ public class HomepagePolicyManagerTest {
     private HomepagePolicyManager mHomepagePolicyManager;
 
     @Mock
-    private PrefServiceBridge mMockServiceBridge;
-
+    private PrefService mMockPrefService;
     @Mock
     private PrefChangeRegistrar mMockRegistrar;
+    @Mock
+    private ChromeBrowserInitializer mChromeBrowserInitializer;
+
+    @Mock
+    private HomepagePolicyStateListener mListener;
+
+    private SharedPreferencesManager mSharedPreferenceManager;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
+        // Reset shared preference
+        mSharedPreferenceManager = SharedPreferencesManager.getInstance();
+        setHomepageInSharedPreference("");
+
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
+
         // Disable the policy during setup
-        PrefServiceBridge.setInstanceForTesting(mMockServiceBridge);
-        setupNewHomepagePolicyManagerForTests(false, "");
+        HomepagePolicyManager.setPrefServiceForTesting(mMockPrefService);
+        setupNewHomepagePolicyManagerForTests(false, "", null);
 
         // Verify setup
         Assert.assertFalse("#isHomepageManagedByPolicy == true without homepage pref setup",
@@ -63,53 +75,106 @@ public class HomepagePolicyManagerTest {
     }
 
     /**
-     * Set up the homepage location for Mock PrefServiceBridge, and create HomepagePolicyManager
+     * Set up the homepage location for Mock PrefService, and create HomepagePolicyManager
      * instance.
      * @param homepageLocation homepage preference that will be returned by mock pref service
      */
-    private void setupNewHomepagePolicyManagerForTests(
-            boolean isPolicyEnabled, String homepageLocation) {
-        Mockito.when(mMockServiceBridge.isManagedPreference(Pref.HOME_PAGE))
+    private void setupNewHomepagePolicyManagerForTests(boolean isPolicyEnabled,
+            String homepageLocation, @Nullable HomepagePolicyStateListener listener) {
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE))
                 .thenReturn(isPolicyEnabled);
-        Mockito.when(mMockServiceBridge.getString(Pref.HOME_PAGE)).thenReturn(homepageLocation);
+        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(homepageLocation);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar);
+            mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, listener);
             HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
         });
+    }
+
+    private void setHomepageInSharedPreference(String homepageLocation) {
+        mSharedPreferenceManager.writeString(
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, homepageLocation);
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyInstance_GetFromSharedPreference() {
+        // Create a new empty instance
+        HomepagePolicyManager manager = new HomepagePolicyManager();
+
+        // Test if policy reflects the setting of shared preference
+        Assert.assertFalse(
+                "HomepagePolicyManager should be not initialized yet", manager.isInitialized());
+        Assert.assertFalse("#isHomepageManagedByPolicy not consistent with test setting",
+                manager.isHomepageLocationPolicyEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyInstance_EnabledFromSharedPreference() {
+        setHomepageInSharedPreference(CHROME_NTP);
+
+        // Create a new empty instance
+        HomepagePolicyManager manager = new HomepagePolicyManager();
+
+        Assert.assertFalse(
+                "HomepagePolicyManager should be not initialized yet", manager.isInitialized());
+        Assert.assertTrue("#isHomepageManagedByPolicy not consistent with test setting",
+                manager.isHomepageLocationPolicyEnabled());
+        Assert.assertEquals("#getHomepageUrl not consistent with test setting", CHROME_NTP,
+                manager.getHomepagePreference());
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyInstance_InitializeAfterwards() {
+        // Create a new empty instance
+        HomepagePolicyManager manager = new HomepagePolicyManager();
+
+        manager.initializeWithNative(mMockRegistrar);
+        Assert.assertTrue("HomepagePolicyManager should be initialized", manager.isInitialized());
+        Mockito.verify(mMockRegistrar, Mockito.times(1)).addObserver(Pref.HOME_PAGE, manager);
     }
 
     @Test
     @SmallTest
     public void testInitialization() {
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL);
+        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("#isHomepageManagedByPolicy not consistent with test setting",
-                    HomepagePolicyManager.isHomepageManagedByPolicy());
-            Assert.assertEquals("#getHomepageUrl not consistent with test setting", TEST_URL,
-                    HomepagePolicyManager.getHomepageUrl());
-        });
+        Assert.assertTrue("#isHomepageManagedByPolicy not consistent with test setting",
+                HomepagePolicyManager.isHomepageManagedByPolicy());
+        Assert.assertEquals("#getHomepageUrl not consistent with test setting", TEST_URL,
+                HomepagePolicyManager.getHomepageUrl());
+
+        Assert.assertEquals("Updated HomepageLocation should be stored in shared preference",
+                TEST_URL,
+                mSharedPreferenceManager.readString(
+                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, ""));
     }
 
     @Test
     @SmallTest
     public void testInitialization_NTP() {
-        setupNewHomepagePolicyManagerForTests(true, CHROME_NTP);
+        setupNewHomepagePolicyManagerForTests(true, CHROME_NTP, null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("#isHomepageManagedByPolicy not consistent with test setting",
-                    HomepagePolicyManager.isHomepageManagedByPolicy());
-            Assert.assertEquals("#getHomepageUrl not consistent with test setting", CHROME_NTP,
-                    HomepagePolicyManager.getHomepageUrl());
-        });
+        Assert.assertTrue("#isHomepageManagedByPolicy not consistent with test setting",
+                HomepagePolicyManager.isHomepageManagedByPolicy());
+        Assert.assertEquals("#getHomepageUrl not consistent with test setting", CHROME_NTP,
+                HomepagePolicyManager.getHomepageUrl());
+
+        Assert.assertEquals("Updated HomepageLocation should be stored in shared preference",
+                CHROME_NTP,
+                mSharedPreferenceManager.readString(
+                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, ""));
     }
 
     @Test
     @SmallTest
     public void testDestroy() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> HomepagePolicyManager.destroy());
+        HomepagePolicyManager.destroy();
         Mockito.verify(mMockRegistrar).destroy();
+        Assert.assertTrue("Listeners are not remove completely",
+                mHomepagePolicyManager.getListenersForTesting().isEmpty());
     }
 
     @Test
@@ -118,81 +183,77 @@ public class HomepagePolicyManagerTest {
         Assert.assertFalse("Policy should be disabled after set up",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
 
+        // Add listener
+        mHomepagePolicyManager.addListener(mListener);
+
         // A new policy URL is set, which triggers the refresh of native manager.
         final String newUrl = "https://www.anothertesturl.com";
-        Mockito.when(mMockServiceBridge.isManagedPreference(Pref.HOME_PAGE)).thenReturn(true);
-        Mockito.when(mMockServiceBridge.getString(Pref.HOME_PAGE)).thenReturn(newUrl);
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE)).thenReturn(true);
+        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(newUrl);
 
         // Update the preference, so that the policy will be enabled.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHomepagePolicyManager.onPreferenceChange(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> mHomepagePolicyManager.onPreferenceChange());
 
         // The homepage retrieved from homepage manager should be in sync with pref setting
         Assert.assertTrue("Policy should be enabled after refresh",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
         Assert.assertEquals("#getHomepageUrl not consistent with test setting", newUrl,
                 mHomepagePolicyManager.getHomepagePreference());
+        Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
     }
 
     @Test
     @SmallTest
     public void testPrefRefreshToDisablePolicy() {
-        // Set a new HomepagePolicyManager with policy enabled
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL);
+        // Set a new HomepagePolicyManager with policy enabled.
+        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
+        mHomepagePolicyManager.addListener(mListener);
 
         // The verify policyEnabled
         Assert.assertTrue("Policy should be enabled after set up",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
 
         // Update the preference, so that the policy will be disabled.
-        Mockito.when(mMockServiceBridge.isManagedPreference(Pref.HOME_PAGE)).thenReturn(false);
-        Mockito.when(mMockServiceBridge.getString(Pref.HOME_PAGE)).thenReturn("");
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE)).thenReturn(false);
+        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn("");
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHomepagePolicyManager.onPreferenceChange(); });
 
-        // The homepage retrieved from homepage manager should be in sync with pref setting
+        // The homepage retrieved from homepage manager should be in sync with pref setting.
         Assert.assertFalse("Policy should be disabled after refresh",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
+        Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
     }
 
     @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
-    public void testFeatureFlagDisabled() {
-        // Disable the feature flag, the instance should not monitor the Pref changes
-        // mTestFeatureMap.put(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY, false);
+    @SmallTest
+    public void testPrefRefreshWithoutChanges() {
+        // Set a new HomepagePolicyManager with policy enabled.
+        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Mockito.reset(mMockRegistrar);
-            Mockito.reset(mMockServiceBridge);
+        // The verify policyEnabled
+        Assert.assertTrue("Policy should be enabled after set up",
+                mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
 
-            // 1. Test initialization early finishing
-            HomepagePolicyManager manager = new HomepagePolicyManager(mMockRegistrar);
-            Mockito.verify(mMockRegistrar, Mockito.never())
-                    .addObserver(Mockito.anyInt(), Mockito.any());
+        // Perform an debounce - creating a new homepage manager with same setting, and add the
+        // listener.
+        setupNewHomepagePolicyManagerForTests(true, TEST_URL, mListener);
 
-            // 2. Test getters
-            Assert.assertFalse("Policy should be disabled when feature flag disabled",
-                    mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
+        // Verify listeners should not receive updates.
+        Assert.assertTrue("Policy should be enabled after refresh",
+                mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
+        Assert.assertEquals("#getHomepageUrl not consistent with test setting", TEST_URL,
+                mHomepagePolicyManager.getHomepagePreference());
 
-            // 3. Test destroy. Registrar should not be destroyed
-            manager.destroyInternal();
-            Mockito.verify(mMockRegistrar, Mockito.never()).destroy();
-        });
+        // However, because the native setting is consistent with cached value in SharedPreference,
+        // listeners will not receive update.
+        Mockito.verify(mListener, Mockito.never()).onHomepagePolicyUpdate();
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testIllegal_GetHomepageUrl() {
-        setupNewHomepagePolicyManagerForTests(false, "");
+        setupNewHomepagePolicyManagerForTests(false, "", null);
         TestThreadUtils.runOnUiThreadBlocking(() -> { HomepagePolicyManager.getHomepageUrl(); });
-    }
-
-    @Test(expected = AssertionError.class)
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
-    public void testIllegal_Refresh() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHomepagePolicyManager.onPreferenceChange(); });
     }
 }

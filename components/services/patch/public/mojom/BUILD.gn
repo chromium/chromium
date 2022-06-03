@@ -5,11 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "file_patcher.mojom",
-  ]
+  sources = [ "file_patcher.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
   ]
 }

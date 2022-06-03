@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="resources/canvas_runner.js"></script>
+<script>
+var canvas_idle = null;
+
+function createCanvas4kBy4k(canvas_id) {
+    var myCanvas = document.createElement("canvas");
+    myCanvas.id = canvas_id;
+    myCanvas.width = 4000;
+    myCanvas.height = 4000;
+    myCanvas.getContext("2d").fillStyle = 'green';
+    myCanvas.getContext("2d").fillRect(0, 0, myCanvas.width, myCanvas.height);
+    return myCanvas;
+}
+
+function invokeToBlobPng(myCanvas) {
+    myCanvas.toBlob(function(blob){
+      CanvasRunner.gc();
+      runTest(myCanvas);
+    });
+}
+
+function draw() {
+    requestAnimationFrame(draw);
+}
+
+function runTest(myCanvas) {
+    draw(); //repeatedly draw the frame to keep main thread busy
+    requestAnimationFrame(invokeToBlobPng(myCanvas));
+}
+
+window.onload = function () {
+    canvas_idle = createCanvas4kBy4k("canvas_idle");
+    document.body.appendChild(canvas_idle);
+    runTest(canvas_idle);
+};
+</script>
+</body>
+</html>
+

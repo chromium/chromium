@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 #include "media/cdm/library_cdm/cdm_host_proxy_impl.h"

@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "permissions": ["management"],
   "background": {
-    "page": "background.html"
+    "scripts": ["test.js"],
+    "persistent": true
   }
 }
-

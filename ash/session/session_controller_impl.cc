@@ -12,21 +12,21 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller_client.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/session/fullscreen_controller.h"
 #include "ash/session/multiprofiles_intro_dialog.h"
 #include "ash/session/session_aborted_dialog.h"
-#include "ash/session/session_observer.h"
 #include "ash/session/teleport_warning_dialog.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer.h"
 #include "ash/system/screen_security/screen_switch_check_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_event.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "components/account_id/account_id.h"
@@ -39,7 +39,8 @@ using session_manager::SessionState;
 
 namespace ash {
 
-SessionControllerImpl::SessionControllerImpl() = default;
+SessionControllerImpl::SessionControllerImpl()
+    : fullscreen_controller_(std::make_unique<FullscreenController>(this)) {}
 
 SessionControllerImpl::~SessionControllerImpl() {
   // Abort pending start lock request.
@@ -66,10 +67,6 @@ bool SessionControllerImpl::IsActiveUserSessionStarted() const {
 
 bool SessionControllerImpl::CanLockScreen() const {
   return IsActiveUserSessionStarted() && can_lock_;
-}
-
-bool SessionControllerImpl::IsScreenLocked() const {
-  return state_ == SessionState::LOCKED;
 }
 
 bool SessionControllerImpl::ShouldLockScreenAutomatically() const {
@@ -109,20 +106,16 @@ SessionState SessionControllerImpl::GetSessionState() const {
 }
 
 bool SessionControllerImpl::ShouldEnableSettings() const {
-  // Settings opens a web UI window, so it is not available at the lock screen.
-  if (!IsActiveUserSessionStarted() || IsScreenLocked() ||
-      IsInSecondaryLoginScreen()) {
-    return false;
-  }
-
-  return user_sessions_[0]->should_enable_settings;
+  // Settings opens a web UI window, so it is only available at active session
+  // at the moment.
+  return !IsUserSessionBlocked();
 }
 
 bool SessionControllerImpl::ShouldShowNotificationTray() const {
   if (!IsActiveUserSessionStarted() || IsInSecondaryLoginScreen())
     return false;
 
-  return user_sessions_[0]->should_show_notification_tray;
+  return true;
 }
 
 const SessionControllerImpl::UserSessions&
@@ -138,6 +131,19 @@ const UserSession* SessionControllerImpl::GetUserSession(
   return user_sessions_[index].get();
 }
 
+const UserSession* SessionControllerImpl::GetUserSessionByAccountId(
+    const AccountId& account_id) const {
+  auto it =
+      std::find_if(user_sessions_.begin(), user_sessions_.end(),
+                   [&account_id](const std::unique_ptr<UserSession>& session) {
+                     return session->user_info.account_id == account_id;
+                   });
+  if (it == user_sessions_.end())
+    return nullptr;
+
+  return (*it).get();
+}
+
 const UserSession* SessionControllerImpl::GetPrimaryUserSession() const {
   auto it = std::find_if(user_sessions_.begin(), user_sessions_.end(),
                          [this](const std::unique_ptr<UserSession>& session) {
@@ -147,23 +153,6 @@ const UserSession* SessionControllerImpl::GetPrimaryUserSession() const {
     return nullptr;
 
   return (*it).get();
-}
-
-bool SessionControllerImpl::IsUserSupervised() const {
-  if (!IsActiveUserSessionStarted())
-    return false;
-
-  user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_SUPERVISED ||
-         active_user_type == user_manager::USER_TYPE_CHILD;
-}
-
-bool SessionControllerImpl::IsUserLegacySupervised() const {
-  if (!IsActiveUserSessionStarted())
-    return false;
-
-  user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_SUPERVISED;
 }
 
 bool SessionControllerImpl::IsUserChild() const {
@@ -182,12 +171,12 @@ bool SessionControllerImpl::IsUserPublicAccount() const {
   return active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
 }
 
-base::Optional<user_manager::UserType> SessionControllerImpl::GetUserType()
+absl::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
     const {
   if (!IsActiveUserSessionStarted())
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional(GetUserSession(0)->user_info.type);
+  return absl::make_optional(GetUserSession(0)->user_info.type);
 }
 
 bool SessionControllerImpl::IsUserPrimary() const {
@@ -219,6 +208,11 @@ void SessionControllerImpl::LockScreen() {
 void SessionControllerImpl::RequestSignOut() {
   if (client_)
     client_->RequestSignOut();
+}
+
+void SessionControllerImpl::AttemptRestartChrome() {
+  if (client_)
+    client_->AttemptRestartChrome();
 }
 
 void SessionControllerImpl::SwitchActiveUser(const AccountId& account_id) {
@@ -274,6 +268,10 @@ void SessionControllerImpl::AddObserver(SessionObserver* observer) {
 
 void SessionControllerImpl::RemoveObserver(SessionObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+bool SessionControllerImpl::IsScreenLocked() const {
+  return state_ == SessionState::LOCKED;
 }
 
 void SessionControllerImpl::SetClient(SessionControllerClient* client) {
@@ -367,17 +365,7 @@ void SessionControllerImpl::SetUserSessionOrder(
 }
 
 void SessionControllerImpl::PrepareForLock(PrepareForLockCallback callback) {
-  // If the active window is fullscreen, exit fullscreen to avoid the web page
-  // or app mimicking the lock screen. Do not exit fullscreen if the shelf is
-  // visible while in fullscreen because the shelf makes it harder for a web
-  // page or app to mimick the lock screen.
-  WindowState* active_window_state = WindowState::ForActiveWindow();
-  if (active_window_state && active_window_state->IsFullscreen() &&
-      active_window_state->GetHideShelfWhenFullscreen()) {
-    const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
-    active_window_state->OnWMEvent(&event);
-  }
-
+  FullscreenController::MaybeExitFullscreen();
   std::move(callback).Run();
 }
 
@@ -413,7 +401,7 @@ void SessionControllerImpl::NotifyChromeTerminating() {
 }
 
 void SessionControllerImpl::SetSessionLengthLimit(base::TimeDelta length_limit,
-                                                  base::TimeTicks start_time) {
+                                                  base::Time start_time) {
   session_length_limit_ = length_limit;
   session_start_time_ = start_time;
   for (auto& observer : observers_)
@@ -422,9 +410,8 @@ void SessionControllerImpl::SetSessionLengthLimit(base::TimeDelta length_limit,
 
 void SessionControllerImpl::CanSwitchActiveUser(
     CanSwitchActiveUserCallback callback) {
-  ash::Shell::Get()
-      ->screen_switch_check_controller()
-      ->CanSwitchAwayFromActiveUser(std::move(callback));
+  Shell::Get()->screen_switch_check_controller()->CanSwitchAwayFromActiveUser(
+      std::move(callback));
 }
 
 void SessionControllerImpl::ShowMultiprofilesIntroDialog(
@@ -479,6 +466,8 @@ void SessionControllerImpl::SetIsDemoSession() {
 void SessionControllerImpl::SetSessionState(SessionState state) {
   if (state_ == state)
     return;
+
+  base::AutoReset<bool> in_progress(&session_state_change_in_progress_, true);
 
   const bool was_user_session_blocked = IsUserSessionBlocked();
   const bool was_locked = state_ == SessionState::LOCKED;
@@ -539,7 +528,7 @@ LoginStatus SessionControllerImpl::CalculateLoginStatus() const {
       return LoginStatus::LOCKED;
 
     case SessionState::LOGIN_SECONDARY:
-      // TODO: There is no LoginStatus for this.
+      // TODO(jamescook): There is no LoginStatus for this.
       return LoginStatus::USER;
   }
   NOTREACHED();
@@ -560,16 +549,14 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
       return LoginStatus::GUEST;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return LoginStatus::PUBLIC;
-    case user_manager::USER_TYPE_SUPERVISED:
-      return LoginStatus::SUPERVISED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return LoginStatus::KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:
-      return LoginStatus::SUPERVISED;
+      return LoginStatus::CHILD;
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       return LoginStatus::KIOSK_APP;
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      // TODO: There is no LoginStatus for this.
+      // TODO(jamescook): There is no LoginStatus for this.
       return LoginStatus::USER;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return LoginStatus::KIOSK_APP;

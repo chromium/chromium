@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/script_context.h"
+#include "gin/data_object_builder.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -43,53 +43,89 @@ bool StringToWebCryptoOperation(const std::string& str,
   return false;
 }
 
-std::unique_ptr<base::DictionaryValue> WebCryptoAlgorithmToBaseValue(
-    const blink::WebCryptoAlgorithm& algorithm) {
+v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
+    const blink::WebCryptoAlgorithm& algorithm,
+    v8::Local<v8::Context> context) {
   DCHECK(!algorithm.IsNull());
+  v8::Context::Scope scope(context);
+  v8::Isolate* isolate = context->GetIsolate();
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
   const blink::WebCryptoAlgorithmInfo* info =
       blink::WebCryptoAlgorithm::LookupAlgorithmInfo(algorithm.Id());
-  dict->SetKey("name", base::Value(info->name));
+  gin::DataObjectBuilder builder(isolate);
+  builder.Set("name", base::StringPiece(info->name));
 
   const blink::WebCryptoAlgorithm* hash = nullptr;
 
-  const blink::WebCryptoRsaHashedKeyGenParams* rsaHashedKeyGen =
-      algorithm.RsaHashedKeyGenParams();
-  if (rsaHashedKeyGen) {
-    dict->SetKey(
-        "modulusLength",
-        base::Value(static_cast<int>(rsaHashedKeyGen->ModulusLengthBits())));
-    const blink::WebVector<unsigned char>& public_exponent =
-        rsaHashedKeyGen->PublicExponent();
-    dict->SetWithoutPathExpansion(
-        "publicExponent",
-        base::Value::CreateWithCopiedBuffer(
-            reinterpret_cast<const char*>(public_exponent.Data()),
-            public_exponent.size()));
+  switch (algorithm.Id()) {
+    case blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5: {
+      const blink::WebCryptoRsaHashedKeyGenParams* rsa_hashed_key_gen =
+          algorithm.RsaHashedKeyGenParams();
+      if (rsa_hashed_key_gen) {
+        builder.Set("modulusLength", rsa_hashed_key_gen->ModulusLengthBits());
 
-    hash = &rsaHashedKeyGen->GetHash();
-    DCHECK(!hash->IsNull());
-  }
+        const blink::WebVector<unsigned char>& public_exponent =
+            rsa_hashed_key_gen->PublicExponent();
+        v8::Local<v8::ArrayBuffer> buffer =
+            v8::ArrayBuffer::New(isolate, public_exponent.size());
+        memcpy(buffer->GetBackingStore()->Data(), public_exponent.Data(),
+               public_exponent.size());
+        builder.Set("publicExponent", buffer);
 
-  const blink::WebCryptoRsaHashedImportParams* rsaHashedImport =
-      algorithm.RsaHashedImportParams();
-  if (rsaHashedImport) {
-    hash = &rsaHashedImport->GetHash();
-    DCHECK(!hash->IsNull());
+        hash = &rsa_hashed_key_gen->GetHash();
+        DCHECK(!hash->IsNull());
+      }
+      const blink::WebCryptoRsaHashedImportParams* rsa_hashed_import =
+          algorithm.RsaHashedImportParams();
+      if (rsa_hashed_import) {
+        hash = &rsa_hashed_import->GetHash();
+        DCHECK(!hash->IsNull());
+      }
+      break;
+    }
+    case blink::kWebCryptoAlgorithmIdEcdsa: {
+      const blink::WebCryptoEcKeyGenParams* ec_key_gen =
+          algorithm.EcKeyGenParams();
+      if (ec_key_gen) {
+        base::StringPiece named_curve;
+        switch (ec_key_gen->NamedCurve()) {
+          case blink::kWebCryptoNamedCurveP256:
+            named_curve = "P-256";
+            break;
+          case blink::kWebCryptoNamedCurveP384:
+            named_curve = "P-384";
+            break;
+          case blink::kWebCryptoNamedCurveP521:
+            named_curve = "P-521";
+            break;
+        }
+        DCHECK(!named_curve.empty());
+        builder.Set("namedCurve", named_curve);
+      }
+
+      const blink::WebCryptoEcdsaParams* ecdsa = algorithm.EcdsaParams();
+      if (ecdsa) {
+        hash = &ecdsa->GetHash();
+        DCHECK(!hash->IsNull());
+      }
+      break;
+    }
+    default: {
+      break;
+    }
   }
 
   if (hash) {
     const blink::WebCryptoAlgorithmInfo* hash_info =
         blink::WebCryptoAlgorithm::LookupAlgorithmInfo(hash->Id());
 
-    std::unique_ptr<base::DictionaryValue> hash_dict(new base::DictionaryValue);
-    hash_dict->SetKey("name", base::Value(hash_info->name));
-    dict->SetWithoutPathExpansion("hash", std::move(hash_dict));
+    builder.Set("hash", gin::DataObjectBuilder(isolate)
+                            .Set("name", base::StringPiece(hash_info->name))
+                            .Build());
   }
   // Otherwise, |algorithm| is missing support here or no parameters were
   // required.
-  return dict;
+  return builder.Build();
 }
 
 }  // namespace
@@ -124,15 +160,11 @@ void PlatformKeysNatives::NormalizeAlgorithm(
       v8::Local<v8::Object>::Cast(call_info[0]), operation, &exception_code,
       &error_details, call_info.GetIsolate());
 
-  std::unique_ptr<base::DictionaryValue> algorithm_dict;
-  if (!algorithm.IsNull())
-    algorithm_dict = WebCryptoAlgorithmToBaseValue(algorithm);
-
-  if (!algorithm_dict)
+  if (algorithm.IsNull())
     return;
 
-  call_info.GetReturnValue().Set(content::V8ValueConverter::Create()->ToV8Value(
-      algorithm_dict.get(), context()->v8_context()));
+  call_info.GetReturnValue().Set(
+      WebCryptoAlgorithmToV8Value(algorithm, context()->v8_context()));
 }
 
 }  // namespace extensions

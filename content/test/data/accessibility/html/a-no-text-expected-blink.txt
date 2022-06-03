@@ -1,24 +1,25 @@
 rootWebArea
-++genericContainer
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++link
-++++++image
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++link
-++++++image
+++genericContainer ignored
+++++genericContainer
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++link
+++++++++image
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++link
+++++++++image

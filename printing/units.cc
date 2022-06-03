@@ -4,7 +4,7 @@
 
 #include "printing/units.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "printing/print_job_constants.h"
 
 namespace printing {

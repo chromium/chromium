@@ -11,6 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,14 +25,21 @@ static NativeLibraryObjCStatus GetObjCStatusForImage(
   if (!dladdr(function_pointer, &info))
     return OBJC_UNKNOWN;
 
-  // See if the the image contains an "ObjC image info" segment. This method
+  // See if the image contains an "ObjC image info" segment. This method
   // of testing is used in _CFBundleGrokObjcImageInfoFromFile in
   // CF-744/CFBundle.c, around lines 2447-2474.
   //
   // In 64-bit images, ObjC can be recognized in __DATA,__objc_imageinfo.
   const section_64* section = getsectbynamefromheader_64(
+      reinterpret_cast<const struct mach_header_64*>(info.dli_fbase), SEG_DATA,
+      "__objc_imageinfo");
+  if (section)
+    return OBJC_PRESENT;
+  // ....except when "SharedRegionEncodingV2" is on, it's in
+  // __DATA_CONST,__objc_image_info (see https://crbug.com/1220459#c16)
+  section = getsectbynamefromheader_64(
       reinterpret_cast<const struct mach_header_64*>(info.dli_fbase),
-      SEG_DATA, "__objc_imageinfo");
+      "__DATA_CONST", "__objc_imageinfo");
   return section ? OBJC_PRESENT : OBJC_NOT_PRESENT;
 }
 
@@ -117,12 +126,12 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 std::string GetNativeLibraryName(StringPiece name) {
   DCHECK(IsStringASCII(name));
-  return "lib" + name.as_string() + ".dylib";
+  return StrCat({"lib", name, ".dylib"});
 }
 
 std::string GetLoadableModuleName(StringPiece name) {
   DCHECK(IsStringASCII(name));
-  return name.as_string() + ".so";
+  return StrCat({name, ".so"});
 }
 
 }  // namespace base

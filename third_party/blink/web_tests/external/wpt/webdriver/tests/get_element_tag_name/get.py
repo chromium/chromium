@@ -1,5 +1,4 @@
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
 
 
 def get_element_tag_name(session, element_id):
@@ -9,7 +8,19 @@ def get_element_tag_name(session, element_id):
             element_id=element_id))
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
+    original_handle, element = closed_window
+    response = get_element_tag_name(session, element.id)
+    assert_error(response, "no such window")
+    response = get_element_tag_name(session, "foo")
+    assert_error(response, "no such window")
+
+    session.window_handle = original_handle
+    response = get_element_tag_name(session, element.id)
+    assert_error(response, "no such element")
+
+
+def test_no_browsing_context(session, closed_frame):
     response = get_element_tag_name(session, "foo")
     assert_error(response, "no such window")
 
@@ -19,7 +30,7 @@ def test_element_not_found(session):
     assert_error(result, "no such element")
 
 
-def test_element_stale(session):
+def test_element_stale(session, inline):
     session.url = inline("<input id=foo>")
     element = session.find.css("input", all=False)
     session.refresh()
@@ -28,7 +39,7 @@ def test_element_stale(session):
     assert_error(result, "stale element reference")
 
 
-def test_get_element_tag_name(session):
+def test_get_element_tag_name(session, inline):
     session.url = inline("<input id=foo>")
     element = session.find.css("input", all=False)
 

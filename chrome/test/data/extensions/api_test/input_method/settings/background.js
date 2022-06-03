@@ -3,107 +3,68 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-  // Test getting the value for a key that is not set.
+  // Test getting the settings for an engine with no settings.
   function getUnsetKey() {
-    chrome.inputMethodPrivate.getSetting('test', 'key', (val) => {
+    chrome.inputMethodPrivate.getSettings('test', (val) => {
       chrome.test.assertEq(null, val);
       chrome.test.succeed();
     });
   },
-  // Test setting and getting a string value.
-  function getSetString() {
-    chrome.inputMethodPrivate.setSetting('test', 'key-string', 'value1', () => {
-      chrome.inputMethodPrivate.getSetting('test', 'key-string', (val) => {
-        chrome.test.assertEq("value1", val);
+  // Test setting and getting the settings.
+  function getSetSettings() {
+    const settings = {
+      'koreanKeyboardLayout': 'set 2',
+      'zhuyinPageSize': 7,
+      'enableDoubleSpacePeriod': true
+    }
+    chrome.inputMethodPrivate.setSettings('test', settings, () => {
+      chrome.inputMethodPrivate.getSettings('test', (val) => {
+        chrome.test.assertEq(settings, val);
         chrome.test.succeed();
       });
     });
   },
-  // Test setting and getting an int value.
-  function getSetInt() {
-    chrome.inputMethodPrivate.setSetting('test', 'key-int', 42, () => {
-      chrome.inputMethodPrivate.getSetting('test', 'key-int', (val) => {
-        chrome.test.assertEq(42, val);
-        chrome.test.succeed();
-      });
-    });
-  },
-  // Test setting and getting a bool value.
-  function getSetBool() {
-    chrome.inputMethodPrivate.setSetting('test', 'key-bool', true, () => {
-      chrome.inputMethodPrivate.getSetting('test', 'key-bool', (val) => {
-        chrome.test.assertEq(true, val);
-        chrome.test.succeed();
-      });
-    });
-  },
-  // Test updating a key with a new value.
+  // Test updating settings.
   function updateKey() {
-    chrome.inputMethodPrivate.setSetting('test', 'key-update', 42, () => {
-      chrome.inputMethodPrivate.setSetting('test', 'key-update', 'new', () => {
-        chrome.inputMethodPrivate.getSetting('test', 'key-update', (val) => {
-          chrome.test.assertEq('new', val);
+    const settingsBefore = { 'zhuyinPageSize': 7 };
+    const settingsAfter = { 'zhuyinPageSize': 9 };
+    chrome.inputMethodPrivate.setSettings('test', settingsBefore, () => {
+      chrome.inputMethodPrivate.setSettings('test', settingsAfter, () => {
+        chrome.inputMethodPrivate.getSettings('test', (val) => {
+          chrome.test.assertEq(settingsAfter, val);
           chrome.test.succeed();
         });
       });
     });
   },
-  // Test setting and getting a multiple keys.
-  function getSetMultiple() {
-    chrome.inputMethodPrivate.setSetting('test', 'key1', 'value1', () => {
-      chrome.inputMethodPrivate.setSetting('test', 'key2', 'value2', () => {
-        chrome.inputMethodPrivate.getSetting('test', 'key1', (val) => {
-          chrome.test.assertEq("value1", val);
-          chrome.inputMethodPrivate.getSetting('test', 'key2', (val) => {
-            chrome.test.assertEq("value2", val);
-            chrome.test.succeed();
-          });
-        });
-      });
-    });
-  },
-  // Test setting and getting the same key from different IMEs.
+  // Test setting and getting for different IMEs.
   function getSetSameKeyDifferentIMEs() {
-    chrome.inputMethodPrivate.setSetting('ime1', 'key', 'value1', () => {
-      chrome.inputMethodPrivate.setSetting('ime2', 'key', 'value2', () => {
-        chrome.inputMethodPrivate.getSetting('ime1', 'key', (val) => {
-          chrome.test.assertEq("value1", val);
-          chrome.inputMethodPrivate.getSetting('ime2', 'key', (val) => {
-            chrome.test.assertEq("value2", val);
+    const settings1 = { 'enableDoubleSpacePeriod': true };
+    const settings2 = { 'enableDoubleSpacePeriod': false };
+    chrome.inputMethodPrivate.setSettings('ime1', settings1, () => {
+      chrome.inputMethodPrivate.setSettings('ime2', settings2, () => {
+        chrome.inputMethodPrivate.getSettings('ime1', (val) => {
+          chrome.test.assertEq(settings1, val);
+          chrome.inputMethodPrivate.getSettings('ime2', (val) => {
+            chrome.test.assertEq(settings2, val);
             chrome.test.succeed();
           });
         });
       });
     });
   },
-  // Test OnSettingsChanged event gets raised when a new key is added.
+  // Test OnSettingsChanged event gets raised when settings are updated.
   function eventRaisedWhenSettingToInitialValue() {
-    const listener = (ime, key, value) => {
+    const settings = { 'enableDoubleSpacePeriod': true };
+    const listener = (ime) => {
       chrome.test.assertEq('ime', ime);
-      chrome.test.assertEq('key', key);
-      chrome.test.assertEq('value', value);
       chrome.test.succeed();
 
-      chrome.inputMethodPrivate.onSettingsChanged.removeListener(listener);
+      chrome.inputMethodPrivate.onInputMethodOptionsChanged
+          .removeListener(listener);
     };
 
-    chrome.inputMethodPrivate.onSettingsChanged.addListener(listener);
-    chrome.inputMethodPrivate.setSetting('ime', 'key', 'value');
-  },
-  // Test OnSettingsChanged event gets raised when a key is changed.
-  function eventRaisedWhenSettingChanged() {
-    const listener = (ime, key, value) => {
-      chrome.test.assertEq('ime', ime);
-      chrome.test.assertEq('key', key);
-      chrome.test.assertEq('value2', value);
-      chrome.test.succeed();
-
-      chrome.inputMethodPrivate.onSettingsChanged.removeListener(listener);
-    };
-
-    chrome.inputMethodPrivate.setSetting('ime', 'key', 'value1', () => {
-      chrome.inputMethodPrivate.onSettingsChanged.addListener(listener);
-      chrome.inputMethodPrivate.setSetting('ime', 'key', 'value2');
-    });
+    chrome.inputMethodPrivate.onInputMethodOptionsChanged.addListener(listener);
+    chrome.inputMethodPrivate.setSettings('ime', settings);
   }
 ]);

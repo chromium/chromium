@@ -4,8 +4,10 @@
 
 #include "components/omnibox/browser/omnibox_log.h"
 
+#include "components/omnibox/browser/autocomplete_result.h"
+
 OmniboxLog::OmniboxLog(
-    const base::string16& text,
+    const std::u16string& text,
     bool just_deleted_text,
     metrics::OmniboxInputType input_type,
     bool in_keyword_mode,
@@ -36,6 +38,10 @@ OmniboxLog::OmniboxLog(
       completed_length(completed_length),
       elapsed_time_since_last_change_to_default_match(
           elapsed_time_since_last_change_to_default_match),
-      result(result) {}
+      result(result) {
+  DCHECK(selected_index < result.size())
+      << "The selected index should always be valid. See comments on "
+         "OmniboxLog::selected_index.";
+}
 
 OmniboxLog::~OmniboxLog() {}

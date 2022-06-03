@@ -19,34 +19,38 @@
 
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
 
 SVGViewSpec::SVGViewSpec() : zoom_and_pan_(kSVGZoomAndPanUnknown) {}
 
-void SVGViewSpec::Trace(Visitor* visitor) {
+void SVGViewSpec::Trace(Visitor* visitor) const {
   visitor->Trace(view_box_);
   visitor->Trace(preserve_aspect_ratio_);
   visitor->Trace(transform_);
 }
 
-SVGViewSpec* SVGViewSpec::CreateFromFragment(const String& fragment) {
+const SVGViewSpec* SVGViewSpec::CreateFromFragment(const String& fragment) {
   SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
   if (!view_spec->ParseViewSpec(fragment))
     return nullptr;
   return view_spec;
 }
 
-SVGViewSpec* SVGViewSpec::CreateForViewElement(const SVGViewElement& view) {
+const SVGViewSpec* SVGViewSpec::CreateForViewElement(
+    const SVGViewElement& view) {
   SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
-  if (view.HasValidViewBox())
+  if (view.viewBox()->CurrentValue()->IsValid())
     view_spec->view_box_ = view.viewBox()->CurrentValue()->Clone();
   if (view.preserveAspectRatio()->IsSpecified()) {
     view_spec->preserve_aspect_ratio_ =
@@ -60,14 +64,9 @@ SVGViewSpec* SVGViewSpec::CreateForViewElement(const SVGViewElement& view) {
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
   if (spec.IsEmpty())
     return false;
-  if (spec.Is8Bit()) {
-    const LChar* ptr = spec.Characters8();
-    const LChar* end = ptr + spec.length();
-    return ParseViewSpecInternal(ptr, end);
-  }
-  const UChar* ptr = spec.Characters16();
-  const UChar* end = ptr + spec.length();
-  return ParseViewSpecInternal(ptr, end);
+  return WTF::VisitCharacters(spec, [&](const auto* chars, unsigned length) {
+    return ParseViewSpecInternal(chars, chars + length);
+  });
 }
 
 namespace {
@@ -137,8 +136,7 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
               ParseNumber(ptr, end, width) &&
               ParseNumber(ptr, end, height, kDisallowWhitespace)))
           return false;
-        view_box_ =
-            MakeGarbageCollected<SVGRect>(FloatRect(x, y, width, height));
+        view_box_ = MakeGarbageCollected<SVGRect>(x, y, width, height);
         break;
       }
       case kViewTarget: {

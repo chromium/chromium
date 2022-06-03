@@ -10,7 +10,7 @@ Chrome. It is developed behind the `EnableQRCodeReader` experimental flag.
 1.  Create a delegate implementing the `QRScannerViewControllerDelegate`
     protocol.
 2.  Initialize `QRScannerViewController` with this delegate.
-3.  Present the view controller returned by `getViewControllerToPresent`.
+3.  Present the view controller returned by `viewControllerToPresent`.
 
 ## Behavior
 
@@ -85,11 +85,11 @@ queue, as recommended by the [documentation][avcapturesession] for
 `QRScannerViewController` owns an instance of `CameraController` and
 `QRScannerView` and is their delegate.
 
-1.  The `getViewControllerToPresent` method checks if camera permission is
+1.  The `viewControllerToPresent` method checks if camera permission is
     granted by calling `checkPermissionsAndLoadCamera` of the
     `CameraController`.
 2.  If the camera permission is denied, an error dialog will be returned from
-    `getViewControllerToPresent`. If the user has not previously granted camera
+    `viewControllerToPresent`. If the user has not previously granted camera
     permission to the application, the `QRScannerViewController` instance will
     be returned, and an error will be displayed by the QR scanner if the user
     denies the permission in the system dialog. The error dialog prompts the

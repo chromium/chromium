@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that media query stack is computed correctly when several stylesheets share the same URL.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -27,9 +27,9 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('main', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('Main style:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

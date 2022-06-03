@@ -6,17 +6,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,6 +35,9 @@ namespace {
 const char kWiFi1ServicePath[] = "/service/wifi1";
 const char kWiFi1Guid[] = "wifi1_guid";
 
+const char kWiFiUnconfiguredServicePath[] = "/service/wifi_unconfigured";
+const char kWiFiUnconfiguredGuid[] = "wifi_unconfigured_guid";
+
 const char kCellular1DevicePath[] = "/device/stub_cellular_device1";
 const char kCellular1ServicePath[] = "/service/cellular1";
 const char kCellular1Guid[] = "cellular1_guid";
@@ -51,6 +53,7 @@ class MockDelegate : public NetworkConnect::Delegate {
   MOCK_METHOD1(ShowNetworkSettings, void(const std::string& network_id));
   MOCK_METHOD1(ShowEnrollNetwork, bool(const std::string& network_id));
   MOCK_METHOD1(ShowMobileSetupDialog, void(const std::string& network_id));
+  MOCK_METHOD1(ShowCarrierAccountDetail, void(const std::string& network_id));
   MOCK_METHOD2(ShowNetworkConnectError,
                void(const std::string& error_name,
                     const std::string& network_id));
@@ -67,17 +70,15 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
   }
 
   // NetworkConnectionHandler::TetherDelegate:
-  void ConnectToNetwork(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback) override {
+  void ConnectToNetwork(const std::string& tether_network_guid,
+                        base::OnceClosure success_callback,
+                        StringErrorCallback error_callback) override {
     last_connected_tether_network_guid_ = tether_network_guid;
-    success_callback.Run();
+    std::move(success_callback).Run();
   }
-  void DisconnectFromNetwork(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback) override {}
+  void DisconnectFromNetwork(const std::string& tether_network_guid,
+                             base::OnceClosure success_callback,
+                             StringErrorCallback error_callback) override {}
 
  private:
   std::string last_connected_tether_network_guid_;
@@ -88,20 +89,22 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
 class NetworkConnectTest : public testing::Test {
  public:
   NetworkConnectTest() = default;
+
+  NetworkConnectTest(const NetworkConnectTest&) = delete;
+  NetworkConnectTest& operator=(const NetworkConnectTest&) = delete;
+
   ~NetworkConnectTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
-    shill_clients::InitializeFakes();
     LoginState::Initialize();
     SetupDefaultShillState();
-    NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
 
-    mock_delegate_.reset(new MockDelegate());
+    mock_delegate_ = std::make_unique<MockDelegate>();
     ON_CALL(*mock_delegate_, ShowEnrollNetwork(_)).WillByDefault(Return(true));
 
-    fake_tether_delegate_.reset(new FakeTetherDelegate());
+    fake_tether_delegate_ = std::make_unique<FakeTetherDelegate>();
     NetworkHandler::Get()->network_connection_handler()->SetTetherDelegate(
         fake_tether_delegate_.get());
 
@@ -112,8 +115,6 @@ class NetworkConnectTest : public testing::Test {
     NetworkConnect::Shutdown();
     mock_delegate_.reset();
     LoginState::Shutdown();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -146,6 +147,21 @@ class NetworkConnectTest : public testing::Test {
     service_test_->SetServiceProperty(
         kWiFi1ServicePath, shill::kPassphraseProperty, base::Value("password"));
 
+    // Create an unconfigured wifi network.
+    service_test_->AddService(kWiFiUnconfiguredServicePath,
+                              kWiFiUnconfiguredGuid, "wifi_unconfigured",
+                              shill::kTypeWifi, shill::kStateIdle,
+                              add_to_visible);
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kSecurityClassProperty,
+                                      base::Value(shill::kSecurityWep));
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kConnectableProperty,
+                                      base::Value(false));
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kErrorProperty,
+                                      base::Value("bad-password"));
+
     // Create a cellular network.
     service_test_->AddService(kCellular1ServicePath, kCellular1Guid,
                               "cellular1", shill::kTypeCellular,
@@ -176,11 +192,9 @@ class NetworkConnectTest : public testing::Test {
   std::unique_ptr<MockDelegate> mock_delegate_;
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectTest);
 };
 
 TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {
@@ -188,6 +202,14 @@ TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {
   EXPECT_CALL(*mock_delegate_, ShowNetworkConnectError(_, _)).Times(0);
 
   NetworkConnect::Get()->ConnectToNetworkId("bad guid");
+}
+
+TEST_F(NetworkConnectTest, ConnectToNetworkId_Unconfigured) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConfigure(_)).Times(1);
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConnectError(_, _)).Times(0);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kWiFiUnconfiguredGuid);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(NetworkConnectTest, ConfigureAndConnectToNetwork_NoConfiguration) {
@@ -269,6 +291,31 @@ TEST_F(NetworkConnectTest, ActivateCellular_Error) {
   base::RunLoop().RunUntilIdle();
 
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+}
+
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_OutOfCredits) {
+  EXPECT_CALL(*mock_delegate_, ShowCarrierAccountDetail(kCellular1Guid));
+
+  service_test_->SetServiceProperty(
+      kCellular1ServicePath, shill::kConnectableProperty, base::Value(false));
+  service_test_->SetServiceProperty(
+      kCellular1ServicePath, shill::kOutOfCreditsProperty, base::Value(true));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimLocked) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkSettings(kCellular1Guid)).Times(0);
+
+  service_test_->SetServiceProperty(kCellular1ServicePath,
+                                    shill::kErrorProperty,
+                                    base::Value(shill::kErrorSimLocked));
+  service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace chromeos

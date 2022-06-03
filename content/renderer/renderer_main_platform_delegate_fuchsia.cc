@@ -11,9 +11,11 @@ RendererMainPlatformDelegate::RendererMainPlatformDelegate(
 
 RendererMainPlatformDelegate::~RendererMainPlatformDelegate() {}
 
-void RendererMainPlatformDelegate::PlatformInitialize() {}
+void RendererMainPlatformDelegate::PlatformInitialize() {
+}
 
-void RendererMainPlatformDelegate::PlatformUninitialize() {}
+void RendererMainPlatformDelegate::PlatformUninitialize() {
+}
 
 bool RendererMainPlatformDelegate::EnableSandbox() {
   return true;

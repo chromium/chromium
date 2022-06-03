@@ -20,15 +20,18 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/tagging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/gtest_xml_util.h"
@@ -37,25 +40,27 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/process/port_provider_mac.h"
+#endif  // OS_APPLE
+
 #if defined(OS_IOS)
 #include "base/test/test_listener_ios.h"
-#endif  // OS_IOS
-#endif  // OS_MACOSX
-
-#include "base/i18n/rtl.h"
-#if !defined(OS_IOS)
+#include "base/test/test_support_ios.h"
+#else
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #endif
@@ -64,21 +69,16 @@
 #include "base/test/test_support_android.h"
 #endif
 
-#if defined(OS_IOS)
-#include "base/test/test_support_ios.h"
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
 
-#if defined(OS_LINUX)
-#include "base/test/fontconfig_util_linux.h"
-#endif
-
-#if defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
-#endif
-
-#if defined(OS_WIN) && defined(_DEBUG)
+#if defined(OS_WIN)
+#if defined(_DEBUG)
 #include <crtdbg.h>
-#endif
+#endif  // _DEBUG
+#include <windows.h>
+#endif  // OS_WIN
 
 namespace base {
 
@@ -105,6 +105,10 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
  public:
   ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {}
 
+  ResetCommandLineBetweenTests(const ResetCommandLineBetweenTests&) = delete;
+  ResetCommandLineBetweenTests& operator=(const ResetCommandLineBetweenTests&) =
+      delete;
+
   void OnTestStart(const testing::TestInfo& test_info) override {
     old_command_line_ = *CommandLine::ForCurrentProcess();
   }
@@ -115,8 +119,6 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
 
  private:
   CommandLine old_command_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetCommandLineBetweenTests);
 };
 
 // Initializes a base::test::ScopedFeatureList for each individual test, which
@@ -180,6 +182,9 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
  public:
   CheckForLeakedGlobals() = default;
 
+  CheckForLeakedGlobals(const CheckForLeakedGlobals&) = delete;
+  CheckForLeakedGlobals& operator=(const CheckForLeakedGlobals&) = delete;
+
   // Check for leaks in individual tests.
   void OnTestStart(const testing::TestInfo& test) override {
     feature_list_set_before_test_ = FeatureList::GetInstance();
@@ -209,8 +214,6 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   FeatureList* feature_list_set_before_case_ = nullptr;
   ThreadPoolInstance* thread_pool_set_before_test_ = nullptr;
   ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckForLeakedGlobals);
 };
 
 // base::Process is not available on iOS
@@ -219,18 +222,21 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
  public:
   CheckProcessPriority() { CHECK(!IsProcessBackgrounded()); }
 
+  CheckProcessPriority(const CheckProcessPriority&) = delete;
+  CheckProcessPriority& operator=(const CheckProcessPriority&) = delete;
+
   void OnTestStart(const testing::TestInfo& test) override {
     EXPECT_FALSE(IsProcessBackgrounded());
   }
   void OnTestEnd(const testing::TestInfo& test) override {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     // Flakes are found on Mac OS 10.11. See https://crbug.com/931721#c7.
     EXPECT_FALSE(IsProcessBackgrounded());
 #endif
   }
 
  private:
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Returns the calling process's task port, ignoring its argument.
   class CurrentProcessPortProvider : public PortProvider {
     mach_port_t TaskForPid(ProcessHandle process) const override {
@@ -242,42 +248,15 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 #endif
 
   bool IsProcessBackgrounded() const {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     CurrentProcessPortProvider port_provider;
     return Process::Current().IsProcessBackgrounded(&port_provider);
 #else
     return Process::Current().IsProcessBackgrounded();
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CheckProcessPriority);
 };
 #endif  // !defined(OS_IOS)
-
-class CheckThreadPriority : public testing::EmptyTestEventListener {
- public:
-  CheckThreadPriority(bool check_thread_priority_at_test_end)
-      : check_thread_priority_at_test_end_(check_thread_priority_at_test_end) {
-    CHECK_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-             base::ThreadPriority::NORMAL);
-  }
-
-  void OnTestStart(const testing::TestInfo& test) override {
-    EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-              base::ThreadPriority::NORMAL);
-  }
-  void OnTestEnd(const testing::TestInfo& test) override {
-    if (check_thread_priority_at_test_end_) {
-      EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriority(),
-                base::ThreadPriority::NORMAL);
-    }
-  }
-
- private:
-  const bool check_thread_priority_at_test_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckThreadPriority);
-};
 
 const std::string& GetProfileName() {
   static const NoDestructor<std::string> profile_name([]() {
@@ -291,33 +270,21 @@ const std::string& GetProfileName() {
 }
 
 void InitializeLogging() {
-#if defined(OS_ANDROID)
-  InitAndroidTestLogging();
+#if BUILDFLAG(IS_FUCHSIA)
+  constexpr auto kLoggingDest = logging::LOG_TO_STDERR;
 #else
+  constexpr auto kLoggingDest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+#endif
+  CHECK(logging::InitLogging({.logging_dest = kLoggingDest}));
 
-  FilePath log_filename;
-  FilePath exe;
-  PathService::Get(FILE_EXE, &exe);
-
-#if defined(OS_FUCHSIA)
-  // Write logfiles to /data, because the default log location alongside the
-  // executable (/pkg) is read-only.
-  FilePath data_dir;
-  PathService::Get(DIR_APP_DATA, &data_dir);
-  log_filename = data_dir.Append(exe.BaseName())
-                     .ReplaceExtension(FILE_PATH_LITERAL("log"));
-#else
-  log_filename = exe.ReplaceExtension(FILE_PATH_LITERAL("log"));
-#endif  // defined(OS_FUCHSIA)
-
-  logging::LoggingSettings settings;
-  settings.log_file_path = log_filename.value().c_str();
-  settings.logging_dest = logging::LOG_TO_ALL;
-  settings.delete_old = logging::DELETE_OLD_LOG_FILE;
-  logging::InitLogging(settings);
   // We want process and thread IDs because we may have multiple processes.
-  // Note: temporarily enabled timestamps in an effort to catch bug 6361.
-  logging::SetLogItems(true, true, true, true);
+#if defined(OS_ANDROID)
+  // To view log output with IDs and timestamps use "adb logcat -v threadtime".
+  logging::SetLogItems(false, false, false, false);
+#else
+  // We want process and thread IDs because we may have multiple processes.
+  logging::SetLogItems(true, true, false, false);
 #endif  // !defined(OS_ANDROID)
 }
 
@@ -374,23 +341,38 @@ void TestSuite::InitializeFromCommandLine(int argc, wchar_t** argv) {
 void TestSuite::PreInitialize() {
   DCHECK(!is_initialized_);
 
+  // The default death_test_style of "fast" is a frequent source of subtle test
+  // flakiness. And on some platforms like macOS, use of system libraries after
+  // fork() but before exec() is unsafe. Using the threadsafe style by default
+  // alleviates these concerns.
+  //
+  // However, the threasafe style does not work reliably on Android, so that
+  // will keep the default of "fast". See https://crbug.com/815537,
+  // https://github.com/google/googletest/issues/1496, and
+  // https://github.com/google/googletest/issues/2093.
+  // TODO(danakj): Determine if all death tests should be skipped on Android
+  // (many already are, such as for DCHECK-death tests).
+#if !defined(OS_ANDROID)
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+#endif
+
 #if defined(OS_WIN)
   testing::GTEST_FLAG(catch_exceptions) = false;
 #endif
   EnableTerminationOnHeapCorruption();
-#if defined(OS_LINUX) && defined(USE_AURA)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)
   // When calling native char conversion functions (e.g wrctomb) we need to
   // have the locale set. In the absence of such a call the "C" locale is the
   // default. In the gtk code (below) gtk_init() implicitly sets a locale.
   setlocale(LC_ALL, "");
   // We still need number to string conversions to be locale insensitive.
   setlocale(LC_NUMERIC, "C");
-#endif  // defined(OS_LINUX) && defined(USE_AURA)
+#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)
 
   // On Android, AtExitManager is created in
   // testing/android/native_test_wrapper.cc before main() is called.
 #if !defined(OS_ANDROID)
-  at_exit_manager_.reset(new AtExitManager);
+  at_exit_manager_ = std::make_unique<AtExitManager>();
 #endif
 
   // Don't add additional code to this function.  Instead add it to
@@ -432,11 +414,12 @@ int TestSuite::Run() {
   RunTestsFromIOSApp();
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   mac::ScopedNSAutoreleasePool scoped_pool;
 #endif
 
   Initialize();
+
   std::string client_func =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kTestChildProcess);
@@ -448,9 +431,22 @@ int TestSuite::Run() {
   test_listener_ios::RegisterTestEndListener();
 #endif
 
+#if defined(OS_LINUX)
+  // There's no standard way to opt processes into MTE on Linux just yet,
+  // so this call explicitly opts this test into synchronous MTE mode, where
+  // pointer mismatches are detected immediately.
+  base::memory::ChangeMemoryTaggingModeForCurrentThread(
+      base::memory::TagViolationReportingMode::kSynchronous);
+#elif defined(OS_ANDROID)
+    // On Android, the tests are opted into synchronous MTE mode by the
+    // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
+    // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
+    // is not needed.
+#endif
+
   int result = RUN_ALL_TESTS();
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // This MUST happen before Shutdown() since Shutdown() tears down
   // objects (such as NotificationService::current()) that Cocoa
   // objects use to remove themselves as observers.
@@ -470,11 +466,6 @@ void TestSuite::DisableCheckForLeakedGlobals() {
 void TestSuite::DisableCheckForThreadAndProcessPriority() {
   DCHECK(!is_initialized_);
   check_for_thread_and_process_priority_ = false;
-}
-
-void TestSuite::DisableCheckForThreadPriorityAtTestEnd() {
-  DCHECK(!is_initialized_);
-  check_for_thread_priority_at_test_end_ = false;
 }
 
 void TestSuite::UnitTestAssertHandler(const char* file,
@@ -500,8 +491,8 @@ void TestSuite::UnitTestAssertHandler(const char* file,
   // logged text, concatenated with stack trace of assert.
   // Concatenate summary and stack_trace here, to pass it as a message.
   if (printer_) {
-    const std::string summary_str = summary.as_string();
-    const std::string stack_trace_str = summary_str + stack_trace.as_string();
+    const std::string summary_str(summary);
+    const std::string stack_trace_str = summary_str + std::string(stack_trace);
     printer_->OnAssert(file, line, summary_str, stack_trace_str);
   }
 
@@ -574,11 +565,23 @@ void TestSuite::SuppressErrorDialogs() {
 void TestSuite::Initialize() {
   DCHECK(!is_initialized_);
 
+  test::ScopedRunLoopTimeout::SetAddGTestFailureOnTimeout();
+
   const CommandLine* command_line = CommandLine::ForCurrentProcess();
 #if !defined(OS_IOS)
   if (command_line->HasSwitch(switches::kWaitForDebugger)) {
     debug::WaitForDebugger(60, true);
   }
+#endif
+
+#if defined(DCHECK_IS_CONFIGURABLE)
+  // Default the configurable DCHECK level to FATAL when running death tests'
+  // child process, so that they behave as expected.
+  // TODO(crbug.com/1057995): Remove this in favor of the codepath in
+  // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
+  // are fixed to be invoked in the child process as expected.
+  if (command_line->HasSwitch("gtest_internal_run_death_test"))
+    logging::LOGGING_DCHECK = logging::LOG_FATAL;
 #endif
 
 #if defined(OS_IOS)
@@ -614,8 +617,8 @@ void TestSuite::Initialize() {
   // TODO(jshin): Should we set the locale via an OS X locale API here?
   i18n::SetICUDefaultLocale("en_US");
 
-#if defined(OS_LINUX)
-  SetUpFontconfig();
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  test_fonts::SetUpFontconfig();
 #endif
 
   // Add TestEventListeners to enforce certain properties across tests.
@@ -627,11 +630,6 @@ void TestSuite::Initialize() {
   if (check_for_leaked_globals_)
     listeners.Append(new CheckForLeakedGlobals);
   if (check_for_thread_and_process_priority_) {
-#if !defined(OS_ANDROID)
-    // TODO(https://crbug.com/931706): Check thread priority on Android.
-    listeners.Append(
-        new CheckThreadPriority(check_for_thread_priority_at_test_end_));
-#endif
 #if !defined(OS_IOS)
     listeners.Append(new CheckProcessPriority);
 #endif
@@ -641,7 +639,9 @@ void TestSuite::Initialize() {
 
   TestTimeouts::Initialize();
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   trace_to_file_.BeginTracingFromCommandLineOptions();
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   debug::StartProfiling(GetProfileName());
 

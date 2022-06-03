@@ -29,9 +29,9 @@ static const int kDefaultDeviceCount = 1;
 static const char* kDefaultDeviceIdMask = "/dev/video%d";
 static const media::FakeVideoCaptureDevice::DeliveryMode kDefaultDeliveryMode =
     media::FakeVideoCaptureDevice::DeliveryMode::USE_DEVICE_INTERNAL_BUFFERS;
-static constexpr std::array<gfx::Size, 5> kDefaultResolutions{
+static constexpr std::array<gfx::Size, 6> kDefaultResolutions{
     {gfx::Size(96, 96), gfx::Size(320, 240), gfx::Size(640, 480),
-     gfx::Size(1280, 720), gfx::Size(1920, 1080)}};
+     gfx::Size(1280, 720), gfx::Size(1920, 1080), gfx::Size(3840, 2160)}};
 static constexpr std::array<float, 1> kDefaultFrameRates{{20.0f}};
 
 static const double kInitialPan = 100.0;
@@ -199,49 +199,56 @@ std::unique_ptr<VideoCaptureDevice> FakeVideoCaptureDeviceFactory::CreateDevice(
   return nullptr;
 }
 
-void FakeVideoCaptureDeviceFactory::GetDeviceDescriptors(
-    VideoCaptureDeviceDescriptors* device_descriptors) {
+void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
+    GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(device_descriptors->empty());
+
+  std::vector<VideoCaptureDeviceInfo> devices_info;
 
   int entry_index = 0;
   for (const auto& entry : devices_config_) {
-    device_descriptors->emplace_back(
-        base::StringPrintf("fake_device_%d", entry_index), entry.device_id,
-#if defined(OS_LINUX)
-        VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE
-#elif defined(OS_MACOSX)
-        VideoCaptureApi::MACOSX_AVFOUNDATION
+    VideoCaptureApi api =
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+        VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
+#elif defined(OS_MAC)
+        VideoCaptureApi::MACOSX_AVFOUNDATION;
 #elif defined(OS_WIN)
-        VideoCaptureApi::WIN_DIRECT_SHOW
+        VideoCaptureApi::WIN_DIRECT_SHOW;
 #elif defined(OS_ANDROID)
-        VideoCaptureApi::ANDROID_API2_LEGACY
+        VideoCaptureApi::ANDROID_API2_LEGACY;
 #elif defined(OS_FUCHSIA)
-        VideoCaptureApi::UNKNOWN
+        VideoCaptureApi::FUCHSIA_CAMERA3;
+#else
+#error Unsupported platform
 #endif
-        );
+
+    devices_info.emplace_back(VideoCaptureDeviceDescriptor(
+        base::StringPrintf("fake_device_%d", entry_index), entry.device_id, api,
+        entry.photo_device_config.control_support,
+        VideoCaptureTransportType::OTHER_TRANSPORT));
+
+    devices_info.back().supported_formats =
+        GetSupportedFormats(entry.device_id);
     entry_index++;
   }
+
+  std::move(callback).Run(std::move(devices_info));
 }
 
-void FakeVideoCaptureDeviceFactory::GetSupportedFormats(
-    const VideoCaptureDeviceDescriptor& device_descriptor,
-    VideoCaptureFormats* supported_formats) {
+VideoCaptureFormats FakeVideoCaptureDeviceFactory::GetSupportedFormats(
+    const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  VideoCaptureFormats supported_formats;
   for (const auto& entry : devices_config_) {
-    if (device_descriptor.device_id != entry.device_id)
+    if (device_id != entry.device_id)
       continue;
-    supported_formats->insert(supported_formats->end(),
-                              entry.supported_formats.begin(),
-                              entry.supported_formats.end());
+    supported_formats.insert(supported_formats.end(),
+                             entry.supported_formats.begin(),
+                             entry.supported_formats.end());
   }
-}
 
-void FakeVideoCaptureDeviceFactory::GetCameraLocationsAsync(
-    std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
-    DeviceDescriptorsCallback result_callback) {
-  std::move(result_callback).Run(std::move(device_descriptors));
+  return supported_formats;
 }
 
 // static
@@ -255,13 +262,14 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
   std::vector<gfx::Size> resolutions = ArrayToVector(kDefaultResolutions);
   std::vector<float> frame_rates = ArrayToVector(kDefaultFrameRates);
   int device_count = kDefaultDeviceCount;
+  FakePhotoDeviceConfig photo_device_config;
   FakeVideoCaptureDevice::DisplayMediaType display_media_type =
       FakeVideoCaptureDevice::DisplayMediaType::ANY;
 
   while (option_tokenizer.GetNext()) {
-    std::vector<std::string> param =
-        base::SplitString(option_tokenizer.token(), "=", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> param = base::SplitStringPiece(
+        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
 
     if (param.size() != 2u) {
       LOG(WARNING) << "Forget a value '" << options_string
@@ -331,6 +339,23 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
       } else if (base::EqualsCaseInsensitiveASCII(param.back(), "browser")) {
         display_media_type = FakeVideoCaptureDevice::DisplayMediaType::BROWSER;
       }
+    } else if (base::EqualsCaseInsensitiveASCII(param.front(),
+                                                "hardware-support")) {
+      photo_device_config.control_support = VideoCaptureControlSupport();
+      if (!base::EqualsCaseInsensitiveASCII(param.back(), "none")) {
+        for (const std::string& support :
+             base::SplitString(param.back(), "-", base::KEEP_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY)) {
+          if (base::EqualsCaseInsensitiveASCII(support, "pan"))
+            photo_device_config.control_support.pan = true;
+          else if (base::EqualsCaseInsensitiveASCII(support, "tilt"))
+            photo_device_config.control_support.tilt = true;
+          else if (base::EqualsCaseInsensitiveASCII(support, "zoom"))
+            photo_device_config.control_support.zoom = true;
+          else
+            LOG(WARNING) << "Unsupported hardware support " << support;
+        }
+      }
     }
   }
 
@@ -342,6 +367,7 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
     settings.device_id = base::StringPrintf(kDefaultDeviceIdMask, device_index);
     AppendAllCombinationsToFormatsContainer(
         pixel_formats, resolutions, frame_rates, &settings.supported_formats);
+    settings.photo_device_config = photo_device_config;
     settings.display_media_type = display_media_type;
     config->push_back(settings);
   }

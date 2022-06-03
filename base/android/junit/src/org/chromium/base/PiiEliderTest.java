@@ -89,6 +89,13 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testElideNonHttpUrl() {
+        String original = "test some-other-scheme://address/01010?param=33&other_param=AAA !!!";
+        String expected = "test HTTP://WEBADDRESS.ELIDED !!!";
+        assertEquals(expected, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testDontElideFileSuffixes() {
         String original = "chromium_android_linker.so";
         assertEquals(original, PiiElider.elideUrl(original));
@@ -132,5 +139,13 @@ public class PiiEliderTest {
                 + "Caused by: java.lang.NullPointerException: Inner Exception "
                 + "HTTP://WEBADDRESS.ELIDED";
         assertEquals(expected, PiiElider.sanitizeStacktrace(original));
+    }
+
+    @Test
+    public void testDoesNotElideMethodNameInStacktrace() {
+        String original = "java.lang.NullPointerException: Attempt to invoke virtual method 'int "
+                + "androidx.fragment.app.FragmentManager.getBackStackEntryCount()' on a null "
+                + "object reference";
+        assertEquals(original, PiiElider.sanitizeStacktrace(original));
     }
 }

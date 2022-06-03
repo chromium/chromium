@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -11,16 +12,16 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -47,17 +48,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+using extensions::ExternalInstallInfoFile;
+using extensions::ExternalInstallInfoUpdateUrl;
+using extensions::mojom::ManifestLocation;
+using ::testing::_;
 using ::testing::Field;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::StrEq;
-using ::testing::_;
-using extensions::ExternalInstallInfoFile;
-using extensions::ExternalInstallInfoUpdateUrl;
 
 namespace chromeos {
 
@@ -73,6 +75,12 @@ class MockExternalPolicyProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
   MockExternalPolicyProviderVisitor();
+
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
+
   virtual ~MockExternalPolicyProviderVisitor();
 
   MOCK_METHOD1(OnExternalExtensionFileFound,
@@ -86,9 +94,6 @@ class MockExternalPolicyProviderVisitor
                     const std::vector<ExternalInstallInfoUpdateUrl>&,
                     const std::vector<ExternalInstallInfoFile>&,
                     const std::set<std::string>& removed_extensions));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 MockExternalPolicyProviderVisitor::MockExternalPolicyProviderVisitor() {
@@ -183,9 +188,9 @@ class DeviceLocalAccountExternalPolicyLoaderTest : public testing::Test {
 
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
-#if defined(OS_CHROMEOS)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-#endif // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 DeviceLocalAccountExternalPolicyLoaderTest::
@@ -209,10 +214,10 @@ void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_));
 
   loader_ = new DeviceLocalAccountExternalPolicyLoader(&store_, cache_dir_);
-  provider_.reset(new extensions::ExternalProviderImpl(
-      &visitor_, loader_, profile_.get(), extensions::Manifest::EXTERNAL_POLICY,
-      extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD,
-      extensions::Extension::NO_FLAGS));
+  provider_ = std::make_unique<extensions::ExternalProviderImpl>(
+      &visitor_, loader_, profile_.get(), ManifestLocation::kExternalPolicy,
+      ManifestLocation::kExternalPolicyDownload,
+      extensions::Extension::NO_FLAGS);
 
   VerifyAndResetVisitorCallExpectations();
 }
@@ -232,11 +237,10 @@ void DeviceLocalAccountExternalPolicyLoaderTest::
 }
 
 void DeviceLocalAccountExternalPolicyLoaderTest::SetForceInstallListPolicy() {
-  std::unique_ptr<base::ListValue> forcelist(new base::ListValue);
-  forcelist->AppendString("invalid");
-  forcelist->AppendString(base::StringPrintf(
-      "%s;%s",
-      kExtensionId,
+  base::Value forcelist(base::Value::Type::LIST);
+  forcelist.Append("invalid");
+  forcelist.Append(base::StringPrintf(
+      "%s;%s", kExtensionId,
       extension_urls::GetWebstoreUpdateUrl().spec().c_str()));
   store_.policy_map_.Set(policy::key::kExtensionInstallForcelist,
                          policy::POLICY_LEVEL_MANDATORY,
@@ -280,7 +284,7 @@ TEST_F(DeviceLocalAccountExternalPolicyLoaderTest, ForceInstallListEmpty) {
   // Spin the loop until the cache shutdown callback is invoked. Verify that at
   // that point, no further file I/O tasks are pending.
   run_loop.Run();
-  EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
 }
 
 // Verifies that when a force-install list policy referencing an extension is
@@ -340,7 +344,7 @@ TEST_F(DeviceLocalAccountExternalPolicyLoaderTest, ForceInstallListSet) {
                 StrEq(kExtensionId)),
           Field(&extensions::ExternalInstallInfoFile::path, cached_crx_path),
           Field(&extensions::ExternalInstallInfoFile::crx_location,
-                extensions::Manifest::EXTERNAL_POLICY))));
+                ManifestLocation::kExternalPolicy))));
   EXPECT_CALL(visitor_, OnExternalProviderReady(provider_.get()))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(&cache_run_loop, &base::RunLoop::Quit));

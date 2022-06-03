@@ -1,0 +1,34 @@
+request_version: FEED_QUERY
+feed_request {
+  client_info {
+    platform_type: ANDROID_ID
+    platform_version {
+      major: 10
+      architecture: ARM64
+      build_type: DEV
+      api_version: 29
+    }
+    app_type: CHROME_ANDROID
+    app_version {
+      major: 79
+      minor: 0
+      build: 3945
+      revision: 93
+      architecture: ARM64
+      build_type: RELEASE
+    }
+    locale: "en-US"
+    display_info {
+      screen_density: 2.625
+      screen_width_in_pixels: 1080
+      screen_height_in_pixels: 1794
+    }
+  }
+  feed_query {
+    reason: SCHEDULED_REFRESH
+  }
+  client_capability: BASE_UI
+  client_capability: REQUEST_SCHEDULE
+  consistency_token {
+  }
+}

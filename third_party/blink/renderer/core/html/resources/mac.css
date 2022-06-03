@@ -3,6 +3,12 @@
  * found in the LICENSE file.
  */
 
+/* This sheet is appended to html.css before parsing which means the selectors
+   below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
 select, input[type="color" i][list] {
     /* TODO(tkent): Use ButtonFace and border same as buttons. */
     background-color: #f8f8f8;
@@ -36,6 +42,6 @@ button {
     box-shadow: none !important
 }
 
-:focus {
+:focus-visible {
     outline: auto 5px -webkit-focus-ring-color
 }

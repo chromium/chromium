@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<script src = "/resources/testharness.js"></script>
+<script src = "/resources/testharnessreport.js"></script>
+<script>
+// This is a regression test for https://crbug.com/1146824.
+async_test((t) => {
+  const worker = new Worker('\n/path<', {type: 'module'});
+
+  worker.onerror = () => t.done();
+}, 'Creating a worker should not crash.');
+</script>
+</html>

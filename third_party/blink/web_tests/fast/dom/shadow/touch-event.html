@@ -12,11 +12,11 @@
 <pre id="console"></pre>
 
 <script>
-var shadowRoot1 = host1.createShadowRoot();
+var shadowRoot1 = host1.attachShadow({mode: 'open'});
 shadowRoot1.innerHTML = 'foo <span id="host2">bar</span> baz';
 
 var host2 = shadowRoot1.getElementById('host2');
-var shadowRoot2 = host2.createShadowRoot();
+var shadowRoot2 = host2.attachShadow({mode: 'open'});
 shadowRoot2.innerHTML = '(foo <span id="target">bar</span> baz)';
 
 var target = shadowRoot2.getElementById('target');

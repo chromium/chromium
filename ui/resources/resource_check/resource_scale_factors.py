@@ -6,7 +6,7 @@
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools, and see
-https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 for the rules we're checking against here.
 """
 
@@ -48,7 +48,7 @@ class ResourceScaleFactors(object):
     def ImageSize(filename):
       with open(filename, 'rb', buffering=0) as f:
         data = f.read(24)
-      if data[:8] != '\x89PNG\r\n\x1A\n' or data[12:16] != 'IHDR':
+      if data[:8] != b'\x89PNG\r\n\x1A\n' or data[12:16] != b'IHDR':
         raise InvalidPNGException
       return struct.unpack('>ii', data[16:24])
 

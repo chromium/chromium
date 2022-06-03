@@ -5,7 +5,7 @@
 #include "base/task/sequence_manager/work_deduplicator.h"
 
 #include <utility>
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 namespace sequence_manager {
@@ -59,36 +59,17 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::DidCheckForMoreWork(
     NextTask next_task) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
-  last_work_check_result_ = ShouldScheduleWork::kScheduleImmediate;
   if (next_task == NextTask::kIsImmediate) {
     state_.store(State::kDoWorkPending);
-  } else {
-    // Another thread may have set kPendingDoWorkFlag between
-    // WillCheckForMoreWork() and here, if so we should return
-    // ShouldScheduleWork::kScheduleImmediate. Otherwise we don't need to
-    // schedule an immediate continuation.
-    if (!(state_.fetch_and(~kInDoWorkFlag) & kPendingDoWorkFlag))
-      last_work_check_result_ = ShouldScheduleWork::kNotNeeded;
+    return ShouldScheduleWork::kScheduleImmediate;
   }
-  return last_work_check_result_;
-}
-
-void WorkDeduplicator::OnDelayedWorkStarted() {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  OnWorkStarted();
-}
-
-WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::OnDelayedWorkEnded(
-    NextTask next_task) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  ShouldScheduleWork prev_last_work_check_result = last_work_check_result_;
-  WorkDeduplicator::ShouldScheduleWork should_schedule_work =
-      DidCheckForMoreWork(next_task);
-  if (prev_last_work_check_result == ShouldScheduleWork::kScheduleImmediate) {
-    prev_last_work_check_result = ShouldScheduleWork::kNotNeeded;
-    should_schedule_work = ShouldScheduleWork::kNotNeeded;
-  }
-  return should_schedule_work;
+  // If |next_task| is not immediate, there's still a possibility that
+  // OnWorkRequested() was invoked racily from another thread just after this
+  // thread determined that the next task wasn't immediate. In that case, that
+  // other thread relies on us to return kScheduleImmediate.
+  return (state_.fetch_and(~kInDoWorkFlag) & kPendingDoWorkFlag)
+             ? ShouldScheduleWork::kScheduleImmediate
+             : ShouldScheduleWork::kNotNeeded;
 }
 
 }  // namespace internal

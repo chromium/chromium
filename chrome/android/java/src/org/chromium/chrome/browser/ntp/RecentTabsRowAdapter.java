@@ -27,18 +27,20 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.favicon.FaviconHelper.DefaultFaviconHelper;
-import org.chromium.chrome.browser.favicon.FaviconHelper.FaviconImageCallback;
-import org.chromium.chrome.browser.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.SyncPromoView;
-import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,18 +56,19 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private static final int MAX_NUM_FAVICONS_TO_CACHE = 128;
 
     @IntDef({ChildType.NONE, ChildType.DEFAULT_CONTENT, ChildType.PERSONALIZED_SIGNIN_PROMO,
-            ChildType.SYNC_PROMO})
+            ChildType.PERSONALIZED_SYNC_PROMO, ChildType.SYNC_PROMO})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ChildType {
         // Values should be enumerated from 0 and can't have gaps.
         int NONE = 0;
         int DEFAULT_CONTENT = 1;
         int PERSONALIZED_SIGNIN_PROMO = 2;
-        int SYNC_PROMO = 3;
+        int PERSONALIZED_SYNC_PROMO = 3;
+        int SYNC_PROMO = 4;
         /**
          * Number of entries.
          */
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     @IntDef({GroupType.CONTENT, GroupType.VISIBLE_SEPARATOR, GroupType.INVISIBLE_SEPARATOR})
@@ -299,9 +302,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         @Override
         public void configureChildView(int childPosition, ViewHolder viewHolder) {
             ForeignSessionTab sessionTab = getChild(childPosition);
-            String text = TextUtils.isEmpty(sessionTab.title) ? sessionTab.url : sessionTab.title;
+            String url = sessionTab.url.getSpec();
+            String text = TextUtils.isEmpty(sessionTab.title) ? url : sessionTab.title;
             viewHolder.textView.setText(text);
-            String domain = UrlUtilities.getDomainAndRegistry(sessionTab.url, false);
+            String domain = UrlUtilities.getDomainAndRegistry(url, false);
             if (!TextUtils.isEmpty(domain)) {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -424,14 +428,22 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    /**
-     * A group containing the personalized signin promo.
-     */
-    class PersonalizedSigninPromoGroup extends PromoGroup {
+    /** A group containing the personalized sync promo. */
+    class PersonalizedSyncPromoGroup extends PromoGroup {
+        private final @ChildType int mChildType;
+
+        PersonalizedSyncPromoGroup(@ChildType int childType) {
+            assert childType == ChildType.PERSONALIZED_SIGNIN_PROMO
+                    || childType
+                            == ChildType.PERSONALIZED_SYNC_PROMO : "Unsupported child type:"
+                                    + childType;
+            mChildType = childType;
+        }
+
         @Override
         @ChildType
         int getChildType() {
-            return ChildType.PERSONALIZED_SIGNIN_PROMO;
+            return mChildType;
         }
 
         @Override
@@ -442,7 +454,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 convertView = layoutInflater.inflate(
                         R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
             }
-            mRecentTabsManager.setupPersonalizedSigninPromo(
+            mRecentTabsManager.setUpSyncPromoView(
                     convertView.findViewById(R.id.signin_promo_view_container));
             return convertView;
         }
@@ -537,7 +549,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             String title = TitleUtil.getTitleForDisplay(tab.title, tab.url);
             viewHolder.textView.setText(title);
 
-            String domain = UrlUtilities.getDomainAndRegistry(tab.url, false);
+            String domain = UrlUtilities.getDomainAndRegistry(tab.url.getSpec(), false);
             if (!TextUtils.isEmpty(domain)) {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -652,17 +664,17 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     private static class FaviconCache {
-        private final LruCache<String, Drawable> mMemoryCache;
+        private final LruCache<GURL, Drawable> mMemoryCache;
 
         public FaviconCache(int size) {
             mMemoryCache = new LruCache<>(size);
         }
 
-        Drawable getFaviconImage(String url) {
+        Drawable getFaviconImage(GURL url) {
             return mMemoryCache.get(url);
         }
 
-        public void putFaviconImage(String url, Drawable image) {
+        public void putFaviconImage(GURL url, Drawable image) {
             mMemoryCache.put(url, image);
         }
     }
@@ -705,7 +717,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     private void loadFavicon(
-            final ViewHolder viewHolder, final String url, @FaviconLocality int locality) {
+            final ViewHolder viewHolder, final GURL url, @FaviconLocality int locality) {
         Drawable image;
         if (url == null) {
             // URL is null for print jobs, for example.
@@ -716,7 +728,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             if (image == null) {
                 FaviconImageCallback imageCallback = new FaviconImageCallback() {
                     @Override
-                    public void onFaviconAvailable(Bitmap bitmap, String iconUrl) {
+                    public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
                         if (this != viewHolder.imageCallback) return;
                         Drawable faviconDrawable = FaviconUtils.getIconDrawableWithFilter(bitmap,
                                 url, mIconGenerator, mDefaultFaviconHelper,
@@ -834,13 +846,16 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             addGroup(new ForeignSessionGroup(session));
         }
 
-        switch (mRecentTabsManager.getPromoType()) {
-            case RecentTabsManager.PromoState.PROMO_NONE:
+        switch (mRecentTabsManager.getPromoState()) {
+            case SyncPromoState.NO_PROMO:
                 break;
-            case RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED:
-                addGroup(new PersonalizedSigninPromoGroup());
+            case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
                 break;
-            case RecentTabsManager.PromoState.PROMO_SYNC:
+            case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
+                break;
+            case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
                 addGroup(new SyncPromoGroup());
                 break;
             default:

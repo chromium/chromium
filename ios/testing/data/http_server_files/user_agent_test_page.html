@@ -10,11 +10,17 @@ found in the LICENSE file. -->
 <title>Test Request Desktop/Mobile Script</title>
 </head>
 <body>
+<p id="userAgentResult"/>
+<p id="platformResult"/>
 <script type="text/javascript">
+var userAgent = "";
 if (navigator.appVersion.toLowerCase().indexOf("mobile") > -1)
-  document.write('Mobile');
+  userAgent = 'Mobile';
 else
-  document.write('Desktop');
+  userAgent = 'Desktop';
+document.getElementById("userAgentResult").innerHTML = userAgent;
+
+document.getElementById("platformResult").innerHTML = navigator.platform;
 </script>
 </body>
 </html>

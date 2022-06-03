@@ -19,7 +19,7 @@
 
 // static
 GoogleLogoService* GoogleLogoServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<GoogleLogoService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -42,8 +42,8 @@ GoogleLogoServiceFactory::~GoogleLogoServiceFactory() {}
 
 std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<GoogleLogoService>(
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
       IdentityManagerFactory::GetForBrowserState(browser_state),

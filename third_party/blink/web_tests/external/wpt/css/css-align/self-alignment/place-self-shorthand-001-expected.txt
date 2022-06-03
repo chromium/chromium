@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Checking place-self: auto
+PASS Checking place-self: normal
+PASS Checking place-self: stretch
+PASS Checking place-self: start
+PASS Checking place-self: end
+PASS Checking place-self: self-start
+PASS Checking place-self: self-end
+PASS Checking place-self: center
+PASS Checking place-self: flex-start
+PASS Checking place-self: flex-end
+PASS Checking place-self: baseline
+PASS Checking place-self: first baseline
+FAIL Checking place-self: last baseline assert_equals: align-self expanded value expected "last baseline" but got ""
+PASS Checking place-self: safe flex-end
+PASS Checking place-self: unsafe end
+PASS Checking place-self: safe end
+PASS Checking place-self: unsafe flex-start
+PASS Checking place-self: safe center
+Harness: the test ran to completion.
+

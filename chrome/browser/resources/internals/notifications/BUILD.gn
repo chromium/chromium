@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_android)
+
+generate_grd("build_grdp") {
+  grd_prefix = "notifications_internals"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [
+    "notifications_internals_browser_proxy.js",
+    "notifications_internals.html",
+    "notifications_internals.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+js_type_check("closure_compile") {
+  deps = [
+    ":notifications_internals",
+    ":notifications_internals_browser_proxy",
+  ]
+}
+
+js_library("notifications_internals") {
+  deps = [
+    ":notifications_internals_browser_proxy",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("notifications_internals_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}

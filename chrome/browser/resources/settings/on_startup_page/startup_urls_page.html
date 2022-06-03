@@ -1,32 +1,9 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
-<link rel="import" href="../controls/extension_controlled_indicator.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="startup_url_dialog.html">
-<link rel="import" href="startup_url_entry.html">
-<link rel="import" href="startup_urls_page_browser_proxy.html">
-
-<dom-module id="settings-startup-urls-page">
-  <template>
     <style include="settings-shared action-link iron-flex">
-      .list-frame {
-        @apply --settings-list-frame-padding;
-      }
-
-      .list-frame > div {
+      #editOptions > div {
         border-top: var(--cr-separator-line);
       }
 
       #outer {
-        @apply --settings-list-frame-padding;
         max-height: 355px;  /** Enough height to show six entries. */
       }
 
@@ -34,7 +11,7 @@
         cursor: default;
       }
     </style>
-    <div id="outer" class="layout vertical flex">
+    <div id="outer" class="layout vertical flex list-frame">
       <div id="container" class="scroll-container" scrollable>
         <iron-list items="[[startupPages_]]" scroll-target="container"
             preserve-focus risk-selection class="cr-separators">
@@ -49,7 +26,7 @@
         </iron-list>
       </div>
     </div>
-    <div class="list-frame">
+    <div id="editOptions" class="list-frame">
       <template is="dom-if" if="[[shouldAllowUrlsEdit_(
           prefs.session.startup_urls.enforcement)]]" restamp>
         <div class="list-item" id="addPage">
@@ -79,6 +56,3 @@
           on-close="destroyUrlDialog_">
       </settings-startup-url-dialog>
     </template>
-  </template>
-  <script src="startup_urls_page.js"></script>
-</dom-module>

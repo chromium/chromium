@@ -19,10 +19,9 @@
       const numberOfChannels = 1;
       const renderLength = 1;
 
-      // Create 1000 contexts in total. 58.0.3029 on OSX crashes around 2030,
-      // but creating ~2000 threads makes some try bots time-out.
-      // (crbug.com/741699)
-      const maxNumberOfContexts = 1000;
+      // 1000 concurrent contexts caused this test to time out on Mac OS and
+      // Linux. (See: crbug.com/1092145, crbug.com/741699)
+      const maxNumberOfContexts = 500;
 
       let contexts = [];
 

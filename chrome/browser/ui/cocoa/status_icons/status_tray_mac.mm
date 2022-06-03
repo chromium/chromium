@@ -19,7 +19,7 @@ StatusTrayMac::StatusTrayMac() {
 std::unique_ptr<StatusIcon> StatusTrayMac::CreatePlatformStatusIcon(
     StatusIconType type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
   auto icon = std::make_unique<StatusIconMac>();
   icon->SetImage(image);
   icon->SetToolTip(tool_tip);

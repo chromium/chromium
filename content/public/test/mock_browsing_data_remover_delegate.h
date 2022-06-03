@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_
-#define CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_
+#ifndef CONTENT_PUBLIC_TEST_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_
+#define CONTENT_PUBLIC_TEST_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_
 
 #include <list>
 #include <memory>
@@ -24,25 +24,27 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
   BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher GetOriginTypeMatcher()
       override;
   bool MayRemoveDownloadHistory() override;
+  std::vector<std::string> GetDomainsForDeferredCookieDeletion(
+      uint64_t remove_mask) override;
   void RemoveEmbedderData(const base::Time& delete_begin,
                           const base::Time& delete_end,
-                          int remove_mask,
+                          uint64_t remove_mask,
                           BrowsingDataFilterBuilder* filter_builder,
-                          int origin_type_mask,
-                          base::OnceClosure callback) override;
+                          uint64_t origin_type_mask,
+                          base::OnceCallback<void(uint64_t)> callback) override;
 
   // Add an expected call for testing.
   void ExpectCall(const base::Time& delete_begin,
                   const base::Time& delete_end,
-                  int remove_mask,
-                  int origin_type_mask,
+                  uint64_t remove_mask,
+                  uint64_t origin_type_mask,
                   BrowsingDataFilterBuilder* filter_builder);
 
   // Add an expected call that doesn't have to match the filter_builder.
   void ExpectCallDontCareAboutFilterBuilder(const base::Time& delete_begin,
                                             const base::Time& delete_end,
-                                            int remove_mask,
-                                            int origin_type_mask);
+                                            uint64_t remove_mask,
+                                            uint64_t origin_type_mask);
 
   // Verify that expected and actual calls match.
   void VerifyAndClearExpectations();
@@ -52,8 +54,8 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
    public:
     CallParameters(const base::Time& delete_begin,
                    const base::Time& delete_end,
-                   int remove_mask,
-                   int origin_type_mask,
+                   uint64_t remove_mask,
+                   uint64_t origin_type_mask,
                    std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
                    bool should_compare_filter);
     ~CallParameters();
@@ -66,8 +68,8 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
 
     base::Time delete_begin_;
     base::Time delete_end_;
-    int remove_mask_;
-    int origin_type_mask_;
+    uint64_t remove_mask_;
+    uint64_t origin_type_mask_;
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_;
     bool should_compare_filter_;
   };
@@ -84,4 +86,4 @@ std::ostream& operator<<(
 
 }  // content
 
-#endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_
+#endif  // CONTENT_PUBLIC_TEST_MOCK_BROWSING_DATA_REMOVER_DELEGATE_H_

@@ -16,7 +16,9 @@
 // - Or a |Sample| object created by some previous test.
 //
 // |tester| is either name with parameter of execCommand or function taking
-// one parameter |Document|.
+// up to two parameters: |document|, and |testRunner|. The |testRunner| is for
+// the frame in which the test is run, and allows the |tester| to inject test
+// behaviour into the frame, such as execCommand().
 //
 // |expectedText| is an HTML fragment indicating the expected result, where text
 // with spelling marker is surrounded by '#', and text with grammar marker is
@@ -318,8 +320,14 @@ function invokeSpellcheckTest(testObject, input, tester, expectedText) {
     const sample = typeof(input) === 'string' ? new Sample(input) : input;
     testObject.sample = sample;
 
+    sample.setMockSpellCheckerEnabled(true);
+    sample.setSpellCheckResolvedCallback(() => {
+      if (verificationForCurrentTest)
+         verificationForCurrentTest();
+    });
+
     if (typeof(tester) === 'function') {
-      tester.call(window, sample.document);
+      tester.call(window, sample.document, sample.window.testRunner);
     } else if (typeof(tester) === 'string') {
       const strings = tester.split(/ (.+)/);
       sample.document.execCommand(strings[0], false, strings[1]);
@@ -352,7 +360,6 @@ function invokeSpellcheckTest(testObject, input, tester, expectedText) {
         testObject.done();
       });
     };
-
     if (internals.idleTimeSpellCheckerState(sample.document) === 'HotModeRequested')
       internals.runIdleTimeSpellChecker(sample.document);
     if (testObject.properties[kNeedsFullCheck]) {
@@ -441,14 +448,6 @@ function spellcheckTest(input, tester, expectedText, opt_args) {
   }
 
   invokeSpellcheckTest(testObject, input, tester, expectedText);
-}
-
-if (window.testRunner) {
-  testRunner.setMockSpellCheckerEnabled(true);
-  testRunner.setSpellCheckResolvedCallback(() => {
-    if (verificationForCurrentTest)
-      verificationForCurrentTest();
-  });
 }
 
 // Export symbols

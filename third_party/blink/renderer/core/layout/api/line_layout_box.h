@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_BOX_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box_model.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -78,7 +79,7 @@ class LineLayoutBox : public LineLayoutBoxModel {
 
   void SetSize(const LayoutSize& size) { return ToBox()->SetSize(size); }
 
-  LayoutSize ScrolledContentOffset() const {
+  PhysicalOffset ScrolledContentOffset() const {
     return ToBox()->ScrolledContentOffset();
   }
 
@@ -101,9 +102,9 @@ class LineLayoutBox : public LineLayoutBoxModel {
 #endif
 
  private:
-  LayoutBox* ToBox() { return ToLayoutBox(GetLayoutObject()); }
+  LayoutBox* ToBox() { return To<LayoutBox>(GetLayoutObject()); }
 
-  const LayoutBox* ToBox() const { return ToLayoutBox(GetLayoutObject()); }
+  const LayoutBox* ToBox() const { return To<LayoutBox>(GetLayoutObject()); }
 };
 
 inline LineLayoutBox LineLayoutItem::ContainingBlock() const {

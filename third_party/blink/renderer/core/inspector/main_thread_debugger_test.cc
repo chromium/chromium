@@ -6,6 +6,8 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -23,9 +25,8 @@ TEST_F(MainThreadDebuggerTest, HitBreakPointDuringLifecycle) {
   // The following steps would cause either style update or layout, it should
   // never crash.
   document.View()->ViewportSizeChanged(true, true);
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
-  document.UpdateStyleAndLayout();
+  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   document.UpdateStyleAndLayoutTree();
 
   postponed_transition_scope.reset();

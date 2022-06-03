@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from core import perf_benchmark
-
+from core import platforms
 
 import page_sets
 
@@ -12,7 +12,7 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 
-@benchmark.Info(emails=['mythria@chromium.org','ulan@chromium.org'],
+@benchmark.Info(emails=['cbruni@chromium.org', 'leszeks@chromium.org'],
                 component='Blink>JavaScript')
 class V8Top25RuntimeStats(perf_benchmark.PerfBenchmark):
   """Runtime Stats benchmark for a 25 top V8 web pages.
@@ -20,8 +20,11 @@ class V8Top25RuntimeStats(perf_benchmark.PerfBenchmark):
   Designed to represent a mix between top websites and a set of pages that
   have unique V8 characteristics.
   """
-
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
   @classmethod
   def Name(cls):

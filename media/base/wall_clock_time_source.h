@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 #define MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -18,6 +17,10 @@ namespace media {
 class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
  public:
   WallClockTimeSource();
+
+  WallClockTimeSource(const WallClockTimeSource&) = delete;
+  WallClockTimeSource& operator=(const WallClockTimeSource&) = delete;
+
   ~WallClockTimeSource() override;
 
   // TimeSource implementation.
@@ -50,8 +53,6 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
   // TODO(scherkus): Remove internal locking from this class after access to
   // Renderer::CurrentMediaTime() is single threaded http://crbug.com/370634
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallClockTimeSource);
 };
 
 }  // namespace media

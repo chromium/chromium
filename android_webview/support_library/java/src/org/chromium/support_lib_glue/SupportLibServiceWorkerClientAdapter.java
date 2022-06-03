@@ -11,7 +11,7 @@ import com.android.webview.chromium.WebResourceRequestAdapter;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
-import org.chromium.android_webview.AwWebResourceResponse;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.ServiceWorkerClientBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
@@ -27,7 +27,7 @@ class SupportLibServiceWorkerClientAdapter extends AwServiceWorkerClient {
     }
 
     @Override
-    public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(mImpl.getSupportedFeatures(),
                     Features.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST)) {
             // If the shouldInterceptRequest callback isn't supported, return null;

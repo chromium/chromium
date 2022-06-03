@@ -42,6 +42,17 @@ class CSSShadowListInterpolationType : public CSSInterpolationType {
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
       InterpolationValue&& end) const final;
+  InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const final;
+  InterpolationValue PerformAdditiveComposition(
+      std::unique_ptr<InterpolableList> interpolable_list,
+      const InterpolationValue& underlying) const;
+  InterpolationValue PerformAccumulativeComposition(
+      std::unique_ptr<InterpolableList> interpolable_list,
+      const InterpolationValue& underlying) const;
 };
 
 }  // namespace blink

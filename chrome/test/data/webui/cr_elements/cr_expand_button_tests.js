@@ -3,46 +3,70 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-expand-button', function() {
+  /** @type {!CrExpandButtonElement} */
   let button;
 
+  /** @type {!CrIconButtonElement} */
+  let icon;
+
   setup(() => {
-    PolymerTest.clearBody();
-    document.body.innerHTML = '<cr-expand-button></cr-expand-button>';
-    button = document.body.querySelector('cr-expand-button');
+    document.body.innerHTML = '';
+    button = /** @type {!CrExpandButtonElement} */ (
+        document.createElement('cr-expand-button'));
+    document.body.appendChild(button);
+    icon = /** @type {!CrIconButtonElement} */ (button.$$('#icon'));
   });
 
-  test('setting |alt| label', () => {
-    const iconButton = button.$.icon;
-    assertFalse(!!button.alt);
-    assertEquals('label', iconButton.getAttribute('aria-labelledby'));
-    assertEquals(null, iconButton.getAttribute('aria-label'));
-    const altLabel = 'alt label';
-    button.alt = altLabel;
-    assertEquals(null, iconButton.getAttribute('aria-labelledby'));
-    assertEquals('alt label', iconButton.getAttribute('aria-label'));
+  test('setting |aria-label| label', () => {
+    assertFalse(!!button.ariaLabel);
+    assertEquals('label', icon.getAttribute('aria-labelledby'));
+    assertEquals(null, icon.getAttribute('aria-label'));
+    const ariaLabel = 'aria-label label';
+    button.ariaLabel = ariaLabel;
+    assertEquals(null, icon.getAttribute('aria-labelledby'));
+    assertEquals(ariaLabel, icon.getAttribute('aria-label'));
   });
 
   test('changing |expanded|', () => {
-    const iconButton = button.$.icon;
     assertFalse(button.expanded);
-    assertEquals('false', iconButton.getAttribute('aria-expanded'));
-    assertEquals('cr:expand-more', iconButton.ironIcon);
+    assertEquals('false', icon.getAttribute('aria-expanded'));
+    assertEquals('cr:expand-more', icon.ironIcon);
     button.expanded = true;
-    assertEquals('true', iconButton.getAttribute('aria-expanded'));
-    assertEquals('cr:expand-less', iconButton.ironIcon);
+    assertEquals('true', icon.getAttribute('aria-expanded'));
+    assertEquals('cr:expand-less', icon.ironIcon);
   });
 
   test('changing |disabled|', () => {
-    const iconButton = button.$.icon;
     assertFalse(button.disabled);
-    assertEquals('false', iconButton.getAttribute('aria-expanded'));
-    assertFalse(iconButton.disabled);
+    assertEquals('false', icon.getAttribute('aria-expanded'));
+    assertFalse(icon.disabled);
     button.disabled = true;
-    assertFalse(iconButton.hasAttribute('aria-expanded'));
-    assertTrue(iconButton.disabled);
+    assertFalse(icon.hasAttribute('aria-expanded'));
+    assertTrue(icon.disabled);
+  });
+
+  // Ensure that the label is marked with aria-hidden="true", so that screen
+  // reader focus goes straight to the cr-icon-button.
+  test('label aria-hidden', () => {
+    const labelId = 'label';
+    assertEquals('true', button.$$(`#${labelId}`).getAttribute('aria-hidden'));
+    assertEquals(labelId, icon.getAttribute('aria-labelledby'));
+  });
+
+  test('setting |expand-icon| and |collapse-icon|', () => {
+    const expandIconName = 'cr:arrow-drop-down';
+    button.setAttribute('expand-icon', expandIconName);
+    const collapseIconName = 'cr:arrow-drop-up';
+    button.setAttribute('collapse-icon', collapseIconName);
+
+    assertFalse(button.expanded);
+    assertEquals(expandIconName, icon.ironIcon);
+    button.expanded = true;
+    assertEquals(collapseIconName, icon.ironIcon);
   });
 });

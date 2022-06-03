@@ -4,6 +4,7 @@
 
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"

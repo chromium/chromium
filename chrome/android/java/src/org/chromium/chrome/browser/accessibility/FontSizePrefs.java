@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.accessibility;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +14,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Singleton class for accessing these font size-related preferences:
@@ -35,10 +37,13 @@ public class FontSizePrefs {
      */
     public static final float FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER = 1.3f;
 
-    private static final float EPSILON = 0.001f;
+    @VisibleForTesting
+    public static final String FONT_SIZE_CHANGE_HISTOGRAM =
+            "Accessibility.Android.UserFontSizePref.Change";
+    private static final String FONT_SIZE_STARTUP_HISTOGRAM =
+            "Accessibility.Android.UserFontSizePref.OnStartup";
 
-    static final String PREF_USER_SET_FORCE_ENABLE_ZOOM = "user_set_force_enable_zoom";
-    static final String PREF_USER_FONT_SCALE_FACTOR = "user_font_scale_factor";
+    private static final float EPSILON = 0.001f;
 
     @SuppressLint("StaticFieldLeak")
     private static FontSizePrefs sFontSizePrefs;
@@ -103,10 +108,8 @@ public class FontSizePrefs {
      * Sets the userFontScaleFactor. This should be a value between .5 and 2.
      */
     public void setUserFontScaleFactor(float userFontScaleFactor) {
-        SharedPreferences.Editor sharedPreferencesEditor =
-                ContextUtils.getAppSharedPreferences().edit();
-        sharedPreferencesEditor.putFloat(PREF_USER_FONT_SCALE_FACTOR, userFontScaleFactor);
-        sharedPreferencesEditor.apply();
+        SharedPreferencesManager.getInstance().writeFloat(
+                ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor);
         setFontScaleFactor(userFontScaleFactor * getSystemFontScale());
     }
 
@@ -114,8 +117,9 @@ public class FontSizePrefs {
      * Returns the userFontScaleFactor. This is the value that should be displayed to the user.
      */
     public float getUserFontScaleFactor() {
-        SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
-        float userFontScaleFactor = sharedPreferences.getFloat(PREF_USER_FONT_SCALE_FACTOR, 0f);
+        SharedPreferencesManager sharedPreferences = SharedPreferencesManager.getInstance();
+        float userFontScaleFactor =
+                sharedPreferences.readFloat(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR, 0f);
         if (userFontScaleFactor == 0f) {
             float fontScaleFactor = getFontScaleFactor();
 
@@ -129,9 +133,8 @@ public class FontSizePrefs {
                 userFontScaleFactor =
                         MathUtils.clamp(fontScaleFactor / getSystemFontScale(), 0.5f, 2f);
             }
-            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            sharedPreferencesEditor.putFloat(PREF_USER_FONT_SCALE_FACTOR, userFontScaleFactor);
-            sharedPreferencesEditor.apply();
+            sharedPreferences.writeFloat(
+                    ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor);
         }
         return userFontScaleFactor;
     }
@@ -162,6 +165,28 @@ public class FontSizePrefs {
     }
 
     /**
+     * Record the user font setting. Intended to be logged on activity startup.
+     */
+    public void recordUserFontPrefOnStartup() {
+        recordUserFontPrefHistogram(FONT_SIZE_STARTUP_HISTOGRAM);
+    }
+
+    /**
+     * Record the user font setting when the setting is changed by the user.
+     */
+    public void recordUserFontPrefChange() {
+        recordUserFontPrefHistogram(FONT_SIZE_CHANGE_HISTOGRAM);
+    }
+
+    private void recordUserFontPrefHistogram(String histogramName) {
+        // User font size prefs range from 0.5 to 2.0 (50% to 200%) and can be updated in increments
+        // of 5% (see org.chromium.chrome.browser.accessibility.settings.TextScalePreference).
+        int sample = (int) (FontSizePrefs.getInstance().getUserFontScaleFactor() * 100);
+        assert sample >= 50 && sample <= 200 : "Unexpected font size pref";
+        RecordHistogram.recordSparseHistogram(histogramName, sample);
+    }
+
+    /**
      * Sets a mock value for the system-wide font scale. Use only in tests.
      */
     @VisibleForTesting
@@ -175,17 +200,15 @@ public class FontSizePrefs {
     }
 
     private void setForceEnableZoom(boolean enabled, boolean fromUser) {
-        SharedPreferences.Editor sharedPreferencesEditor =
-                ContextUtils.getAppSharedPreferences().edit();
-        sharedPreferencesEditor.putBoolean(PREF_USER_SET_FORCE_ENABLE_ZOOM, fromUser);
-        sharedPreferencesEditor.apply();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM, fromUser);
         FontSizePrefsJni.get().setForceEnableZoom(
                 mFontSizePrefsAndroidPtr, FontSizePrefs.this, enabled);
     }
 
     private boolean getUserSetForceEnableZoom() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(
-                PREF_USER_SET_FORCE_ENABLE_ZOOM, false);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM, false);
     }
 
     private void setFontScaleFactor(float fontScaleFactor) {

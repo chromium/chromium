@@ -26,8 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENT_H_
 
-#include "base/macros.h"
-#include "third_party/blink/public/platform/web_focus_type.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 
@@ -55,22 +54,27 @@ class DateTimeFieldElement : public HTMLSpanElement {
     kDispatchNoEvent,
     kDispatchEvent,
   };
+  enum FieldRolloverType { kPastMin, kPastMax, kToPm };
 
   // FieldOwner implementer must call removeEventHandler when
   // it doesn't handle event, e.g. at destruction.
   class FieldOwner : public GarbageCollectedMixin {
    public:
     virtual ~FieldOwner();
-    virtual void DidBlurFromField(WebFocusType) = 0;
-    virtual void DidFocusOnField(WebFocusType) = 0;
+    virtual void DidBlurFromField(mojom::blink::FocusType) = 0;
+    virtual void DidFocusOnField(mojom::blink::FocusType) = 0;
     virtual void FieldValueChanged() = 0;
     virtual bool FocusOnNextField(const DateTimeFieldElement&) = 0;
     virtual bool FocusOnPreviousField(const DateTimeFieldElement&) = 0;
+    virtual void HandleAmPmRollover(FieldRolloverType) {}
     virtual bool IsFieldOwnerDisabled() const = 0;
     virtual bool IsFieldOwnerReadOnly() const = 0;
     virtual AtomicString LocaleIdentifier() const = 0;
     virtual void FieldDidChangeValueByKeyboard() = 0;
   };
+
+  DateTimeFieldElement(const DateTimeFieldElement&) = delete;
+  DateTimeFieldElement& operator=(const DateTimeFieldElement&) = delete;
 
   void DefaultEventHandler(Event&) override;
   virtual bool HasValue() const = 0;
@@ -88,7 +92,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
   virtual void StepUp() = 0;
   virtual String Value() const = 0;
   virtual String VisibleValue() const = 0;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
   DateTimeField Type() const;
 
   static float ComputeTextWidth(const ComputedStyle&, const String&);
@@ -96,6 +100,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
  protected:
   DateTimeFieldElement(Document&, FieldOwner&, DateTimeField);
   void FocusOnNextField();
+  void HandleAmPmRollover(FieldRolloverType);
   virtual void HandleKeyboardEvent(KeyboardEvent&) = 0;
   void Initialize(const AtomicString& pseudo,
                   const String& ax_help_text,
@@ -108,7 +113,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
   virtual int ValueForARIAValueNow() const;
 
   // Node functions.
-  void SetFocused(bool, WebFocusType) override;
+  void SetFocused(bool, mojom::blink::FocusType) override;
 
  private:
   void DefaultKeyboardEventHandler(KeyboardEvent&);
@@ -119,10 +124,8 @@ class DateTimeFieldElement : public HTMLSpanElement {
 
   Member<FieldOwner> field_owner_;
   DateTimeField type_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeFieldElement);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENT_H_

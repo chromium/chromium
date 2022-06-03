@@ -12,11 +12,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 
 namespace offline_items_collection {
 
@@ -32,6 +31,9 @@ class FileExistenceChecker {
   // be missing) is passed back.
   template <typename T>
   using ResultCallback = base::OnceCallback<void(FileWithIdCollection<T>)>;
+
+  FileExistenceChecker(const FileExistenceChecker&) = delete;
+  FileExistenceChecker& operator=(const FileExistenceChecker&) = delete;
 
   // Checks which of the provided |items_to_check| don't point to existing
   // files.
@@ -58,8 +60,6 @@ class FileExistenceChecker {
     }
     return missing_items;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FileExistenceChecker);
 };
 
 }  // namespace offline_items_collection

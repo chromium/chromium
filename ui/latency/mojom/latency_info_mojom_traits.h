@@ -5,6 +5,7 @@
 #ifndef UI_LATENCY_MOJOM_LATENCY_INFO_MOJOM_TRAITS_H_
 #define UI_LATENCY_MOJOM_LATENCY_INFO_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "ui/latency/latency_info.h"
 #include "ui/latency/mojom/latency_info.mojom-shared.h"
 
@@ -19,7 +20,8 @@ static_assert(static_cast<int>(ui::mojom::SourceEventType::kMaxValue) ==
               "Enum size mismatch");
 
 template <>
-struct ArrayTraits<ui::LatencyInfo::LatencyMap> {
+struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
+    ArrayTraits<ui::LatencyInfo::LatencyMap> {
   using Element = ui::LatencyInfo::LatencyMap::value_type;
   using Iterator = ui::LatencyInfo::LatencyMap::iterator;
   using ConstIterator = ui::LatencyInfo::LatencyMap::const_iterator;
@@ -43,8 +45,8 @@ struct ArrayTraits<ui::LatencyInfo::LatencyMap> {
 };
 
 template <>
-struct StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo> {
-  static const std::string& trace_name(const ui::LatencyInfo& info);
+struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
+    StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo> {
   static const ui::LatencyInfo::LatencyMap& latency_components(
       const ui::LatencyInfo& info);
   static int64_t trace_id(const ui::LatencyInfo& info);
@@ -56,11 +58,14 @@ struct StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo> {
       const ui::LatencyInfo& info);
   static float scroll_update_delta(const ui::LatencyInfo& info);
   static float predicted_scroll_update_delta(const ui::LatencyInfo& info);
+  static int64_t gesture_scroll_id(const ui::LatencyInfo& info);
+  static int64_t touch_trace_id(const ui::LatencyInfo& info);
   static bool Read(ui::mojom::LatencyInfoDataView data, ui::LatencyInfo* out);
 };
 
 template <>
-struct EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType> {
+struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
+    EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType> {
   static ui::mojom::LatencyComponentType ToMojom(ui::LatencyComponentType type);
   static bool FromMojom(ui::mojom::LatencyComponentType input,
                         ui::LatencyComponentType* output);

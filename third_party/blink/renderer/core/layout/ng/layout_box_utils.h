@@ -38,6 +38,11 @@ class LayoutBoxUtils {
 
   static bool SkipContainingBlockForPercentHeightCalculation(
       const LayoutBlock* cb);
+
+  static LayoutUnit InlineSize(const LayoutBox& box);
+
+  // The total block size of all fragments.
+  static LayoutUnit TotalBlockSize(const LayoutBox& box);
 };
 
 }  // namespace blink

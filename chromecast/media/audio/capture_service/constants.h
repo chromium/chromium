@@ -5,6 +5,9 @@
 #ifndef CHROMECAST_MEDIA_AUDIO_CAPTURE_SERVICE_CONSTANTS_H_
 #define CHROMECAST_MEDIA_AUDIO_CAPTURE_SERVICE_CONSTANTS_H_
 
+#include <cstdint>
+#include <ostream>
+
 namespace chromecast {
 namespace media {
 namespace capture_service {
@@ -12,7 +15,7 @@ namespace capture_service {
 constexpr char kDefaultUnixDomainSocketPath[] = "/tmp/capture-service";
 constexpr int kDefaultTcpPort = 12855;
 
-enum class SampleFormat {
+enum class SampleFormat : uint8_t {
   INTERLEAVED_INT16 = 0,
   INTERLEAVED_INT32 = 1,
   INTERLEAVED_FLOAT = 2,
@@ -22,7 +25,25 @@ enum class SampleFormat {
   LAST_FORMAT = PLANAR_FLOAT,
 };
 
-enum class StreamType {
+inline std::ostream& operator<<(std::ostream& os, SampleFormat sample_format) {
+  switch (sample_format) {
+    case SampleFormat::INTERLEAVED_INT16:
+      return os << "INTERLEAVED_INT16";
+    case SampleFormat::INTERLEAVED_INT32:
+      return os << "INTERLEAVED_INT32";
+    case SampleFormat::INTERLEAVED_FLOAT:
+      return os << "INTERLEAVED_FLOAT";
+    case SampleFormat::PLANAR_INT16:
+      return os << "PLANAR_INT16";
+    case SampleFormat::PLANAR_INT32:
+      return os << "PLANAR_INT32";
+    case SampleFormat::PLANAR_FLOAT:
+      return os << "PLANAR_FLOAT";
+    // Don't use default, so compiler can capture missed enums.
+  }
+}
+
+enum class StreamType : uint8_t {
   // Raw microphone capture from ALSA or other platform interface.
   kMicRaw = 0,
   // Echo cancelled capture using software AEC.
@@ -32,27 +53,54 @@ enum class StreamType {
   kSoftwareEchoCancelledLinear,
   // Hardware echo cancelled capture, e.g., from DSP.
   kHardwareEchoCancelled,
+  // Software echo rescaled capture that balances the volume of both far-end and
+  // near-end captures. The far-end sound is the echo voice that travels out
+  // from the loudspeaker and then is picked up by the system microphone,
+  // whereas the near-end sound is the remaining capture sound without the echo
+  // voice.
+  kSoftwareEchoRescaled,
+  // Hardware echo rescaled capture, e.g., from DSP.
+  kHardwareEchoRescaled,
+  // TDM loopback, e.g., from DSP output processing output.
+  kTdmLoopback,
   // Mark the last type.
-  kLastType = kHardwareEchoCancelled,
+  kLastType = kTdmLoopback,
+};
+
+enum class AudioCodec : uint8_t {
+  kPcm = 0,
+  kOpus,
+  // Mark the last codec.
+  kLastCodec = kOpus,
+};
+
+enum class MessageType : uint8_t {
+  // Handshake message that has stream header but empty body. It is used by
+  // receiver notifying the stream it is observing, and sender can confirm the
+  // types/codec are supported and send back more detailed parameters.
+  kHandshake = 0,
+  // PCM audio message that has stream header and audio data in the message
+  // body. The audio data will match the parameters in the header.
+  kPcmAudio,
+  // Opus encoded audio message that doesn't have stream header but a serialized
+  // proto data besides the type bits.
+  kOpusAudio,
+  // Metadata message that doesn't have stream header but a serialized proto
+  // data besides the type bits.
+  kMetadata,
 };
 
 struct StreamInfo {
-  StreamType stream_type;
+  StreamType stream_type = StreamType::kMicRaw;
+  AudioCodec audio_codec = AudioCodec::kPcm;
   int num_channels = 0;
-  SampleFormat sample_format;
+  SampleFormat sample_format = SampleFormat::INTERLEAVED_INT16;
   int sample_rate = 0;
   int frames_per_buffer = 0;
 };
 
-// Info describes the message packet. |timestamp_us| is about when the buffer is
-// captured. If the audio source is from ALSA, i.e., stream type is raw mic,
-// it's the ALSA capture timestamp; otherwise, it may be shifted based on the
-// samples and sample rate upon raw mic input.
-struct PacketInfo {
-  bool has_audio;
-  StreamInfo stream_info;
-  int64_t timestamp_us = 0;
-};
+// Size of a PCM audio message header.
+constexpr size_t kPcmAudioHeaderBytes = 10;
 
 }  // namespace capture_service
 }  // namespace media

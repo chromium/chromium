@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/resolve_host_client_base.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "net/base/host_port_pair.h"
 
 namespace network {

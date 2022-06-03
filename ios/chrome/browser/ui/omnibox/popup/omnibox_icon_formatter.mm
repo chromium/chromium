@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 
+#include "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -17,7 +18,7 @@ namespace {
 
 OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     AutocompleteMatchType::Type type,
-    base::Optional<int> answerType) {
+    absl::optional<int> answerType) {
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
   if (answerType) {
@@ -56,7 +57,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-    case AutocompleteMatchType::PEDAL:
+    case AutocompleteMatchType::PEDAL_DEPRECATED:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_TITLE:
@@ -67,7 +68,6 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::SEARCH_SUGGEST:
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
-    case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
     case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
@@ -76,10 +76,13 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
       return SEARCH;
     case AutocompleteMatchType::SEARCH_HISTORY:
+    case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
       return SEARCH_HISTORY;
     case AutocompleteMatchType::CALCULATOR:
       return CALCULATOR;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
+    case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
       return DEFAULT_FAVICON;
@@ -97,7 +100,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
   if (isAnswer && match.answer->second_line().image_url().is_valid()) {
     iconType = OmniboxIconTypeImage;
     imageURL = match.answer->second_line().image_url();
-  } else if (!match.image_url.empty()) {
+  } else if (!match.image_url.is_empty()) {
     iconType = OmniboxIconTypeImage;
     imageURL = GURL(match.image_url);
   } else if (!AutocompleteMatch::IsSearchType(match.type) &&
@@ -110,7 +113,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
   }
 
   auto answerType =
-      isAnswer ? base::make_optional<int>(match.answer->type()) : base::nullopt;
+      isAnswer ? absl::make_optional<int>(match.answer->type()) : absl::nullopt;
   OmniboxSuggestionIconType suggestionIconType =
       IconTypeFromMatchAndAnswerType(match.type, answerType);
   return [self initWithIconType:iconType

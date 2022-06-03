@@ -5,13 +5,12 @@
 #ifndef NET_COOKIES_COOKIE_STORE_TEST_CALLBACKS_H_
 #define NET_COOKIES_COOKIE_STORE_TEST_CALLBACKS_H_
 
-#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_store.h"
@@ -109,26 +108,27 @@ class GetCookieListCallback : public CookieCallback {
 
   ~GetCookieListCallback();
 
-  void Run(const CookieStatusList& cookies,
-           const CookieStatusList& excluded_cookies);
+  void Run(const CookieAccessResultList& cookies,
+           const CookieAccessResultList& excluded_cookies);
 
   // Makes a callback that will invoke Run. Assumes that |this| will be kept
   // alive till the time the callback is used.
-  base::OnceCallback<void(const CookieStatusList&, const CookieStatusList&)>
+  base::OnceCallback<void(const CookieAccessResultList&,
+                          const CookieAccessResultList&)>
   MakeCallback() {
     return base::BindOnce(&GetCookieListCallback::Run, base::Unretained(this));
   }
 
   const CookieList& cookies() { return cookies_; }
-  const CookieStatusList& cookies_with_statuses() {
-    return cookies_with_statuses_;
+  const CookieAccessResultList& cookies_with_access_results() {
+    return cookies_with_access_results_;
   }
-  const CookieStatusList& excluded_cookies() { return excluded_cookies_; }
+  const CookieAccessResultList& excluded_cookies() { return excluded_cookies_; }
 
  private:
   CookieList cookies_;
-  CookieStatusList cookies_with_statuses_;
-  CookieStatusList excluded_cookies_;
+  CookieAccessResultList cookies_with_access_results_;
+  CookieAccessResultList excluded_cookies_;
 };
 
 class GetAllCookiesCallback : public CookieCallback {

@@ -5,7 +5,6 @@
 #include "extensions/shell/browser/shell_speech_recognition_manager_delegate.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -13,6 +12,7 @@
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using content::BrowserThread;
 using content::SpeechRecognitionManager;
@@ -76,8 +76,8 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
   // |render_process_id| field, which is needed later to retrieve the profile.
   DCHECK_NE(context.render_process_id, 0);
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&CheckRenderFrameType, std::move(callback),
                      context.render_process_id, context.render_frame_id));
 }
@@ -108,10 +108,11 @@ void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   if (render_frame_host) {
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(render_frame_host);
-    extensions::ViewType view_type = extensions::GetViewType(web_contents);
+    extensions::mojom::ViewType view_type =
+        extensions::GetViewType(web_contents);
 
-    if (view_type == extensions::VIEW_TYPE_APP_WINDOW ||
-        view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+    if (view_type == extensions::mojom::ViewType::kAppWindow ||
+        view_type == extensions::mojom::ViewType::kExtensionBackgroundPage) {
       allowed = true;
       check_permission = true;
     } else {
@@ -119,8 +120,8 @@ void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     }
   }
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(std::move(callback), check_permission, allowed));
 }
 

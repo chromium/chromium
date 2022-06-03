@@ -10,8 +10,8 @@
 
 namespace net {
 
-// Default values are taken from glibc resolv.h except timeout which is set to
-// |kDnsDefaultTimeoutMs|.
+// Default values are taken from glibc resolv.h except |fallback_period| which
+// is set to |kDnsDefaultFallbackPeriod|.
 DnsConfig::DnsConfig() : DnsConfig(std::vector<IPEndPoint>()) {}
 
 DnsConfig::DnsConfig(const DnsConfig& other) = default;
@@ -24,13 +24,13 @@ DnsConfig::DnsConfig(std::vector<IPEndPoint> nameservers)
       dns_over_tls_hostname(std::string()),
       unhandled_options(false),
       append_to_multi_label_name(true),
-      randomize_ports(false),
       ndots(1),
-      timeout(kDnsDefaultTimeout),
+      fallback_period(kDnsDefaultFallbackPeriod),
       attempts(2),
+      doh_attempts(1),
       rotate(false),
       use_local_ipv6(false),
-      secure_dns_mode(SecureDnsMode::OFF),
+      secure_dns_mode(SecureDnsMode::kOff),
       allow_dns_over_https_upgrade(false) {}
 
 DnsConfig::~DnsConfig() = default;
@@ -57,9 +57,9 @@ bool DnsConfig::EqualsIgnoreHosts(const DnsConfig& d) const {
          (dns_over_tls_hostname == d.dns_over_tls_hostname) &&
          (search == d.search) && (unhandled_options == d.unhandled_options) &&
          (append_to_multi_label_name == d.append_to_multi_label_name) &&
-         (ndots == d.ndots) && (timeout == d.timeout) &&
-         (attempts == d.attempts) && (rotate == d.rotate) &&
-         (use_local_ipv6 == d.use_local_ipv6) &&
+         (ndots == d.ndots) && (fallback_period == d.fallback_period) &&
+         (attempts == d.attempts) && (doh_attempts == d.doh_attempts) &&
+         (rotate == d.rotate) && (use_local_ipv6 == d.use_local_ipv6) &&
          (dns_over_https_servers == d.dns_over_https_servers) &&
          (secure_dns_mode == d.secure_dns_mode) &&
          (allow_dns_over_https_upgrade == d.allow_dns_over_https_upgrade) &&
@@ -74,8 +74,9 @@ void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
   unhandled_options = d.unhandled_options;
   append_to_multi_label_name = d.append_to_multi_label_name;
   ndots = d.ndots;
-  timeout = d.timeout;
+  fallback_period = d.fallback_period;
   attempts = d.attempts;
+  doh_attempts = d.doh_attempts;
   rotate = d.rotate;
   use_local_ipv6 = d.use_local_ipv6;
   dns_over_https_servers = d.dns_over_https_servers;
@@ -84,60 +85,47 @@ void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
   disabled_upgrade_providers = d.disabled_upgrade_providers;
 }
 
-std::unique_ptr<base::Value> DnsConfig::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
+base::Value DnsConfig::ToValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
 
-  auto list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < nameservers.size(); ++i)
-    list->AppendString(nameservers[i].ToString());
-  dict->Set("nameservers", std::move(list));
+  base::Value list(base::Value::Type::LIST);
+  for (const auto& nameserver : nameservers)
+    list.Append(nameserver.ToString());
+  dict.SetKey("nameservers", std::move(list));
 
-  dict->SetBoolean("dns_over_tls_active", dns_over_tls_active);
-  dict->SetString("dns_over_tls_hostname", dns_over_tls_hostname);
+  dict.SetBoolKey("dns_over_tls_active", dns_over_tls_active);
+  dict.SetStringKey("dns_over_tls_hostname", dns_over_tls_hostname);
 
-  list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < search.size(); ++i)
-    list->AppendString(search[i]);
-  dict->Set("search", std::move(list));
-
-  dict->SetBoolean("unhandled_options", unhandled_options);
-  dict->SetBoolean("append_to_multi_label_name", append_to_multi_label_name);
-  dict->SetInteger("ndots", ndots);
-  dict->SetDouble("timeout", timeout.InSecondsF());
-  dict->SetInteger("attempts", attempts);
-  dict->SetBoolean("rotate", rotate);
-  dict->SetBoolean("use_local_ipv6", use_local_ipv6);
-  dict->SetInteger("num_hosts", hosts.size());
-  list = std::make_unique<base::ListValue>();
+  list = base::Value(base::Value::Type::LIST);
+  for (const auto& suffix : search)
+    list.Append(suffix);
+  dict.SetKey("search", std::move(list));
+  dict.SetBoolKey("unhandled_options", unhandled_options);
+  dict.SetBoolKey("append_to_multi_label_name", append_to_multi_label_name);
+  dict.SetIntKey("ndots", ndots);
+  dict.SetDoubleKey("timeout", fallback_period.InSecondsF());
+  dict.SetIntKey("attempts", attempts);
+  dict.SetIntKey("doh_attempts", doh_attempts);
+  dict.SetBoolKey("rotate", rotate);
+  dict.SetBoolKey("use_local_ipv6", use_local_ipv6);
+  dict.SetIntKey("num_hosts", hosts.size());
+  list = base::Value(base::Value::Type::LIST);
   for (auto& server : dns_over_https_servers) {
     base::Value val(base::Value::Type::DICTIONARY);
-    base::DictionaryValue* dict;
-    val.GetAsDictionary(&dict);
-    dict->SetString("server_template", server.server_template);
-    dict->SetBoolean("use_post", server.use_post);
-    list->Append(std::move(val));
+    val.SetStringKey("server_template", server.server_template);
+    val.SetBoolKey("use_post", server.use_post);
+    list.Append(std::move(val));
   }
-  dict->Set("doh_servers", std::move(list));
-  dict->SetInteger("secure_dns_mode", static_cast<int>(secure_dns_mode));
-  dict->SetBoolean("allow_dns_over_https_upgrade",
-                   allow_dns_over_https_upgrade);
+  dict.SetKey("doh_servers", std::move(list));
+  dict.SetIntKey("secure_dns_mode", static_cast<int>(secure_dns_mode));
+  dict.SetBoolKey("allow_dns_over_https_upgrade", allow_dns_over_https_upgrade);
 
-  list = std::make_unique<base::ListValue>();
+  list = base::Value(base::Value::Type::LIST);
   for (const auto& provider : disabled_upgrade_providers)
-    list->AppendString(provider);
-  dict->Set("disabled_upgrade_providers", std::move(list));
+    list.Append(provider);
+  dict.SetKey("disabled_upgrade_providers", std::move(list));
 
-  return std::move(dict);
-}
-
-DnsConfig::DnsOverHttpsServerConfig::DnsOverHttpsServerConfig(
-    const std::string& server_template,
-    bool use_post)
-    : server_template(server_template), use_post(use_post) {}
-
-bool DnsConfig::DnsOverHttpsServerConfig::operator==(
-    const DnsOverHttpsServerConfig& other) const {
-  return server_template == other.server_template && use_post == other.use_post;
+  return dict;
 }
 
 }  // namespace net

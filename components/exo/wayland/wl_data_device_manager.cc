@@ -20,6 +20,7 @@
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
 namespace exo {
 namespace wayland {
@@ -84,13 +85,17 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
       : client_(client),
         data_source_resource_(source) {}
 
+  WaylandDataSourceDelegate(const WaylandDataSourceDelegate&) = delete;
+  WaylandDataSourceDelegate& operator=(const WaylandDataSourceDelegate&) =
+      delete;
+
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override { delete this; }
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return surface &&
            wl_resource_get_client(GetSurfaceResource(surface)) == client_;
   }
-  void OnTarget(const base::Optional<std::string>& mime_type) override {
+  void OnTarget(const absl::optional<std::string>& mime_type) override {
     wl_data_source_send_target(data_source_resource_,
                                mime_type ? mime_type->c_str() : nullptr);
     wl_client_flush(wl_resource_get_client(data_source_resource_));
@@ -130,8 +135,6 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
  private:
   wl_client* const client_;
   wl_resource* const data_source_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataSourceDelegate);
 };
 
 void data_source_offer(wl_client* client,
@@ -162,6 +165,9 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
   explicit WaylandDataOfferDelegate(wl_resource* offer)
       : data_offer_resource_(offer) {}
 
+  WaylandDataOfferDelegate(const WaylandDataOfferDelegate&) = delete;
+  WaylandDataOfferDelegate& operator=(const WaylandDataOfferDelegate&) = delete;
+
   // Overridden from DataOfferDelegate:
   void OnDataOfferDestroying(DataOffer* device) override { delete this; }
   void OnOffer(const std::string& mime_type) override {
@@ -189,8 +195,6 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
 
  private:
   wl_resource* const data_offer_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOfferDelegate);
 };
 
 void data_offer_accept(wl_client* client,
@@ -245,18 +249,22 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
         data_device_resource_(device_resource),
         serial_tracker_(serial_tracker) {}
 
+  WaylandDataDeviceDelegate(const WaylandDataDeviceDelegate&) = delete;
+  WaylandDataDeviceDelegate& operator=(const WaylandDataDeviceDelegate&) =
+      delete;
+
   // Overridden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* device) override { delete this; }
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return surface &&
+    return surface && GetSurfaceResource(surface) &&
            wl_resource_get_client(GetSurfaceResource(surface)) == client_;
   }
-  DataOffer* OnDataOffer(DataOffer::Purpose purpose) override {
+  DataOffer* OnDataOffer() override {
     wl_resource* data_offer_resource =
         wl_resource_create(client_, &wl_data_offer_interface,
                            wl_resource_get_version(data_device_resource_), 0);
     std::unique_ptr<DataOffer> data_offer = std::make_unique<DataOffer>(
-        new WaylandDataOfferDelegate(data_offer_resource), purpose);
+        new WaylandDataOfferDelegate(data_offer_resource));
     SetDataOfferResource(data_offer.get(), data_offer_resource);
     SetImplementation(data_offer_resource, &data_offer_implementation,
                       std::move(data_offer));
@@ -301,21 +309,39 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                  Surface* origin,
                  Surface* icon,
                  uint32_t serial) {
-    base::Optional<wayland::SerialTracker::EventType> event_type =
+    absl::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
+    if (event_type == absl::nullopt) {
+      LOG(ERROR) << "The serial passed to StartDrag does not exist.";
+      return;
+    }
     if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN &&
         serial_tracker_->GetPointerDownSerial() == serial) {
-      data_device->StartDrag(
-          source, origin, icon,
-          ui::DragDropTypes::DragEventSource::DRAG_EVENT_SOURCE_MOUSE);
+      DCHECK(data_device);
+      data_device->StartDrag(source, origin, icon,
+                             ui::mojom::DragEventSource::kMouse);
     } else if (event_type == wayland::SerialTracker::EventType::TOUCH_DOWN &&
                serial_tracker_->GetTouchDownSerial() == serial) {
-      data_device->StartDrag(
-          source, origin, icon,
-          ui::DragDropTypes::DragEventSource::DRAG_EVENT_SOURCE_TOUCH);
+      DCHECK(data_device);
+      data_device->StartDrag(source, origin, icon,
+                             ui::mojom::DragEventSource::kTouch);
     } else {
-      source->Cancelled();
+      LOG(ERROR) << "The serial passed to StartDrag does not match its "
+                    "expected types.";
     }
+  }
+
+  void SetSelection(DataDevice* data_device,
+                    DataSource* source,
+                    uint32_t serial) {
+    absl::optional<wayland::SerialTracker::EventType> event_type =
+        serial_tracker_->GetEventType(serial);
+    if (event_type == absl::nullopt) {
+      LOG(ERROR) << "The serial passed to SetSelection does not exist.";
+      return;
+    }
+    DCHECK(data_device);
+    data_device->SetSelection(source);
   }
 
  private:
@@ -324,8 +350,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceDelegate);
 };
 
 void data_device_start_drag(wl_client* client,
@@ -347,10 +371,15 @@ void data_device_start_drag(wl_client* client,
 
 void data_device_set_selection(wl_client* client,
                                wl_resource* resource,
-                               wl_resource* data_source,
+                               wl_resource* source_resource,
                                uint32_t serial) {
-  GetUserDataAs<DataDevice>(resource)->SetSelection(
-      data_source ? GetUserDataAs<DataSource>(data_source) : nullptr, serial);
+  DataDevice* data_device = GetUserDataAs<DataDevice>(resource);
+  static_cast<WaylandDataDeviceDelegate*>(data_device->get_delegate())
+      ->SetSelection(data_device,
+                     source_resource
+                         ? GetUserDataAs<DataSource>(source_resource)
+                         : nullptr,
+                     serial);
 }
 
 void data_device_release(wl_client* client, wl_resource* resource) {

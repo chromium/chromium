@@ -5,35 +5,16 @@
 #include "cc/test/fake_scrollbar.h"
 
 #include "cc/paint/paint_flags.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
-FakeScrollbar::FakeScrollbar()
-    : FakeScrollbar(false, false, HORIZONTAL, false, false) {}
-
-FakeScrollbar::FakeScrollbar(bool paint, bool has_thumb, bool is_overlay)
-    : FakeScrollbar(paint, has_thumb, HORIZONTAL, false, is_overlay) {}
-
-FakeScrollbar::FakeScrollbar(bool paint,
-                             bool has_thumb,
-                             ScrollbarOrientation orientation,
-                             bool is_left_side_vertical_scrollbar,
-                             bool is_overlay)
-    : paint_(paint),
-      has_thumb_(has_thumb),
-      orientation_(orientation),
-      is_left_side_vertical_scrollbar_(is_left_side_vertical_scrollbar),
-      is_overlay_(is_overlay),
-      thumb_size_(5, 10),
-      thumb_opacity_(1),
-      needs_repaint_thumb_(true),
-      needs_repaint_track_(true),
-      has_tickmarks_(false),
-      track_rect_(0, 0, 100, 10),
-      fill_color_(SK_ColorGREEN) {}
-
+FakeScrollbar::FakeScrollbar() = default;
 FakeScrollbar::~FakeScrollbar() = default;
+
+bool FakeScrollbar::IsSame(const Scrollbar& other) const {
+  return this == &other;
+}
 
 ScrollbarOrientation FakeScrollbar::Orientation() const {
   return orientation_;
@@ -44,7 +25,7 @@ bool FakeScrollbar::IsLeftSideVerticalScrollbar() const {
 }
 
 bool FakeScrollbar::IsSolidColor() const {
-  return false;
+  return is_solid_color_;
 }
 
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
@@ -64,6 +45,10 @@ gfx::Rect FakeScrollbar::ForwardButtonRect() const {
   return forward_button_rect_;
 }
 
+bool FakeScrollbar::JumpOnTrackClick() const {
+  return false;
+}
+
 bool FakeScrollbar::SupportsDragSnapBack() const {
   return false;
 }
@@ -72,12 +57,12 @@ gfx::Rect FakeScrollbar::TrackRect() const {
   return track_rect_;
 }
 
-float FakeScrollbar::ThumbOpacity() const {
+float FakeScrollbar::Opacity() const {
   return thumb_opacity_;
 }
 
 bool FakeScrollbar::NeedsRepaintPart(ScrollbarPart part) const {
-  if (part == THUMB)
+  if (part == ScrollbarPart::THUMB)
     return needs_repaint_thumb_;
   return needs_repaint_track_;
 }
@@ -89,7 +74,7 @@ bool FakeScrollbar::HasTickmarks() const {
 void FakeScrollbar::PaintPart(PaintCanvas* canvas,
                               ScrollbarPart part,
                               const gfx::Rect& rect) {
-  if (!paint_)
+  if (!should_paint_)
     return;
 
   // Fill the scrollbar with a different color each time.
@@ -102,15 +87,15 @@ void FakeScrollbar::PaintPart(PaintCanvas* canvas,
 }
 
 bool FakeScrollbar::UsesNinePatchThumbResource() const {
-  return false;
+  return uses_nine_patch_thumb_resource_;
 }
 
 gfx::Size FakeScrollbar::NinePatchThumbCanvasSize() const {
-  return gfx::Size();
+  return uses_nine_patch_thumb_resource_ ? gfx::Size(5, 5) : gfx::Size();
 }
 
 gfx::Rect FakeScrollbar::NinePatchThumbAperture() const {
-  return gfx::Rect();
+  return uses_nine_patch_thumb_resource_ ? gfx::Rect(0, 0, 5, 5) : gfx::Rect();
 }
 
 }  // namespace cc

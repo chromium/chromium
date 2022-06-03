@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/webvtt_util.h"
@@ -37,10 +37,6 @@ void FakeTextTrackStream::Read(ReadCB read_cb) {
   }
 }
 
-bool FakeTextTrackStream::IsReadPending() const {
-  return !read_cb_.is_null();
-}
-
 DemuxerStream::Type FakeTextTrackStream::type() const {
   return DemuxerStream::TEXT;
 }
@@ -67,8 +63,8 @@ void FakeTextTrackStream::SatisfyPendingRead(
   const uint8_t* const sd_buf = &side_data[0];
   const int sd_len = static_cast<int>(side_data.size());
 
-  scoped_refptr<DecoderBuffer> buffer;
-  buffer = DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
 
   buffer->set_timestamp(start);
   buffer->set_duration(duration);

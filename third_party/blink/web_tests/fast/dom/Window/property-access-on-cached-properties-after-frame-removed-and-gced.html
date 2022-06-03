@@ -13,7 +13,10 @@ function insertExpectedResult(path, expected)
 {
     if (path.length < 2)
         return;
-    var propertyDir = path.slice(0, -1).join('.');
+    // It's expected that performance.eventCounts.size is non-zero.
+    if (getPropertyPath(path, path.length) == "performance.eventCounts.size")
+        return;
+    var propertyDir = getPropertyPath(path, path.length - 1);
     var cachedPropertyDir = "cached_" + propertyDir.replace('.', '_');
     window[cachedPropertyDir] = eval("childWindow." + propertyDir);
     propertiesToVerify.push({

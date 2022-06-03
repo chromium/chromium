@@ -9,12 +9,18 @@
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+namespace content {
+class BrowserContext;
+}
 class Profile;
 class SupervisedUserService;
 
 class SupervisedUserServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static SupervisedUserService* GetForProfile(Profile* profile);
+
+  static SupervisedUserService* GetForBrowserContext(
+      content::BrowserContext* context);
 
   static SupervisedUserService* GetForProfileIfExists(Profile* profile);
 

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The fallback base URL of a srcdoc document should be the document base URL of the document's browsing context's browsing context container's document even after the srcdoc document lost its browsing context. assert_not_equals: after detaching got disallowed value "about:srcdoc"
-Harness: the test ran to completion.
-

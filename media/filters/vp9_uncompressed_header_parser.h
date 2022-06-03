@@ -8,17 +8,27 @@
 #include "media/filters/vp9_parser.h"
 #include "media/filters/vp9_raw_bits_reader.h"
 
+#include "media/base/media_export.h"
+
 namespace media {
 
-class Vp9UncompressedHeaderParser {
+class MEDIA_EXPORT Vp9UncompressedHeaderParser {
  public:
   Vp9UncompressedHeaderParser(Vp9Parser::Context* context);
+
+  Vp9UncompressedHeaderParser(const Vp9UncompressedHeaderParser&) = delete;
+  Vp9UncompressedHeaderParser& operator=(const Vp9UncompressedHeaderParser&) =
+      delete;
 
   // Parses VP9 uncompressed header in |stream| with |frame_size| into |fhdr|.
   // Returns true if no error.
   bool Parse(const uint8_t* stream, off_t frame_size, Vp9FrameHeader* fhdr);
 
+  const Vp9FrameContext& GetVp9DefaultFrameContextForTesting() const;
+
  private:
+  friend class Vp9UncompressedHeaderParserTest;
+
   uint8_t ReadProfile();
   bool VerifySyncCode();
   bool ReadColorConfig(Vp9FrameHeader* fhdr);
@@ -39,8 +49,6 @@ class Vp9UncompressedHeaderParser {
   Vp9RawBitsReader reader_;
 
   Vp9Parser::Context* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9UncompressedHeaderParser);
 };
 
 }  // namespace media

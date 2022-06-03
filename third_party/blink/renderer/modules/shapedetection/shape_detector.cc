@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/numerics/checked_math.h"
+#include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -24,31 +26,46 @@
 
 namespace blink {
 
-ScriptPromise ShapeDetector::detect(
-    ScriptState* script_state,
-    const ImageBitmapSourceUnion& image_source) {
+ScriptPromise ShapeDetector::detect(ScriptState* script_state,
+                                    const V8ImageBitmapSource* image_source) {
+  DCHECK(image_source);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // ImageDatas cannot be tainted by definition.
-  if (image_source.IsImageData())
-    return DetectShapesOnImageData(resolver, image_source.GetAsImageData());
+  CanvasImageSource* canvas_image_source = nullptr;
+  switch (image_source->GetContentType()) {
+    case V8ImageBitmapSource::ContentType::kHTMLCanvasElement:
+      canvas_image_source = image_source->GetAsHTMLCanvasElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kHTMLImageElement:
+      canvas_image_source = image_source->GetAsHTMLImageElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kHTMLVideoElement:
+      canvas_image_source = image_source->GetAsHTMLVideoElement();
+      break;
+    case V8ImageBitmapSource::ContentType::kImageBitmap:
+      canvas_image_source = image_source->GetAsImageBitmap();
+      break;
+    case V8ImageBitmapSource::ContentType::kImageData:
+      // ImageData cannot be tainted by definition.
+      return DetectShapesOnImageData(resolver, image_source->GetAsImageData());
+    case V8ImageBitmapSource::ContentType::kOffscreenCanvas:
+      canvas_image_source = image_source->GetAsOffscreenCanvas();
+      break;
+    case V8ImageBitmapSource::ContentType::kBlob:
+    case V8ImageBitmapSource::ContentType::kSVGImageElement:
+    case V8ImageBitmapSource::ContentType::kVideoFrame:
+      NOTREACHED() << "Unsupported CanvasImageSource";
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "Unsupported source."));
+      return promise;
+  }
+  DCHECK(canvas_image_source);
 
-  CanvasImageSource* canvas_image_source;
-  if (image_source.IsHTMLImageElement()) {
-    canvas_image_source = image_source.GetAsHTMLImageElement();
-  } else if (image_source.IsImageBitmap()) {
-    canvas_image_source = image_source.GetAsImageBitmap();
-  } else if (image_source.IsHTMLVideoElement()) {
-    canvas_image_source = image_source.GetAsHTMLVideoElement();
-  } else if (image_source.IsHTMLCanvasElement()) {
-    canvas_image_source = image_source.GetAsHTMLCanvasElement();
-  } else if (image_source.IsOffscreenCanvas()) {
-    canvas_image_source = image_source.GetAsOffscreenCanvas();
-  } else {
-    NOTREACHED() << "Unsupported CanvasImageSource";
+  if (canvas_image_source->IsNeutered()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, "Unsupported source."));
+        DOMExceptionCode::kInvalidStateError, "The image source is detached."));
     return promise;
   }
 
@@ -58,9 +75,9 @@ ScriptPromise ShapeDetector::detect(
     return promise;
   }
 
-  if (image_source.IsHTMLImageElement()) {
+  if (image_source->IsHTMLImageElement()) {
     return DetectShapesOnImageElement(resolver,
-                                      image_source.GetAsHTMLImageElement());
+                                      image_source->GetAsHTMLImageElement());
   }
 
   // TODO(mcasas): Check if |video| is actually playing a MediaStream by using
@@ -68,11 +85,12 @@ ScriptPromise ShapeDetector::detect(
   // there is a local WebCam associated, there might be sophisticated ways to
   // detect faces on it. Until then, treat as a normal <video> element.
 
-  const FloatSize size(canvas_image_source->ElementSize(FloatSize()));
+  const FloatSize size(
+      canvas_image_source->ElementSize(FloatSize(), kRespectImageOrientation));
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
-      &source_image_status, kPreferNoAcceleration, size);
+  scoped_refptr<Image> image =
+      canvas_image_source->GetSourceImageForCanvas(&source_image_status, size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Invalid element or state."));
@@ -83,14 +101,15 @@ ScriptPromise ShapeDetector::detect(
     return promise;
   }
 
-  // makeNonTextureImage() will make a raster copy of
-  // PaintImageForCurrentFrame() if needed, otherwise returning the original
-  // SkImage.
+  // GetSwSkImage() will make a raster copy of PaintImageForCurrentFrame()
+  // if needed, otherwise returning the original SkImage.
   const sk_sp<SkImage> sk_image =
-      image->PaintImageForCurrentFrame().GetSkImage()->makeNonTextureImage();
+      image->PaintImageForCurrentFrame().GetSwSkImage();
 
   SkBitmap sk_bitmap;
-  if (!sk_image->asLegacyBitmap(&sk_bitmap)) {
+  SkBitmap n32_bitmap;
+  if (!sk_image->asLegacyBitmap(&sk_bitmap) ||
+      !skia::SkBitmapToN32OpaqueOrPremul(sk_bitmap, &n32_bitmap)) {
     // TODO(mcasas): retrieve the pixels from elsewhere.
     NOTREACHED();
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -99,7 +118,7 @@ ScriptPromise ShapeDetector::detect(
     return promise;
   }
 
-  return DoDetect(resolver, std::move(sk_bitmap));
+  return DoDetect(resolver, std::move(n32_bitmap));
 }
 
 ScriptPromise ShapeDetector::DetectShapesOnImageData(
@@ -112,29 +131,29 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
     return promise;
   }
 
-  if (image_data->BufferBase()->IsDetached()) {
+  if (image_data->IsBufferBaseDetached()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The image data has been detached."));
     return promise;
   }
 
+  SkPixmap image_data_pixmap = image_data->GetSkPixmap();
   SkBitmap sk_bitmap;
   if (!sk_bitmap.tryAllocPixels(
-          SkImageInfo::Make(image_data->width(), image_data->height(),
-                            kN32_SkColorType, kOpaque_SkAlphaType),
-          image_data->width() * 4 /* bytes per pixel */)) {
+          image_data_pixmap.info().makeColorType(kN32_SkColorType),
+          image_data_pixmap.rowBytes())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to allocate pixels for current frame."));
     return promise;
   }
-
-  base::CheckedNumeric<int> allocation_size = image_data->Size().Area() * 4;
-  CHECK_EQ(allocation_size.ValueOrDefault(0), sk_bitmap.computeByteSize());
-
-  memcpy(sk_bitmap.getPixels(), image_data->data()->Data(),
-         sk_bitmap.computeByteSize());
+  if (!sk_bitmap.writePixels(image_data_pixmap, 0, 0)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to copy pixels for current frame."));
+    return promise;
+  }
 
   return DoDetect(resolver, std::move(sk_bitmap));
 }
@@ -144,34 +163,36 @@ ScriptPromise ShapeDetector::DetectShapesOnImageElement(
     const HTMLImageElement* img) {
   ScriptPromise promise = resolver->Promise();
 
-  if (img->BitmapSourceSize().IsZero()) {
-    resolver->Resolve(HeapVector<Member<DOMRect>>());
-    return promise;
-  }
-
-  ImageResourceContent* const image_resource = img->CachedImage();
-  if (!image_resource || image_resource->ErrorOccurred()) {
+  ImageResourceContent* const image_content = img->CachedImage();
+  if (!image_content || !image_content->IsLoaded() ||
+      image_content->ErrorOccurred()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to load or decode HTMLImageElement."));
     return promise;
   }
 
-  Image* const blink_image = image_resource->GetImage();
-  if (!blink_image) {
+  if (!image_content->HasImage()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to get image from resource."));
     return promise;
   }
 
+  Image* const blink_image = image_content->GetImage();
+  if (blink_image->Size().IsZero()) {
+    resolver->Resolve(HeapVector<Member<DOMRect>>());
+    return promise;
+  }
+
+  // The call to asLegacyBitmap() below forces a readback so getting SwSkImage
+  // here doesn't readback unnecessarily
   const sk_sp<SkImage> sk_image =
-      blink_image->PaintImageForCurrentFrame().GetSkImage();
+      blink_image->PaintImageForCurrentFrame().GetSwSkImage();
   DCHECK_EQ(img->naturalWidth(), static_cast<unsigned>(sk_image->width()));
   DCHECK_EQ(img->naturalHeight(), static_cast<unsigned>(sk_image->height()));
 
   SkBitmap sk_bitmap;
-
   if (!sk_image || !sk_image->asLegacyBitmap(&sk_bitmap)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,

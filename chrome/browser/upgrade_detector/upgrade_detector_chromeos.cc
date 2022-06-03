@@ -7,27 +7,24 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <utility>
 
-#include "base/bind.h"
+#include "ash/components/settings/timezone_settings.h"
+#include "ash/constants/ash_features.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/rand_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/settings/timezone_settings.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 using chromeos::DBusThreadManager;
@@ -37,80 +34,22 @@ namespace {
 
 // How long to wait (each cycle) before checking which severity level we should
 // be at. Once we reach the highest severity, the timer will stop.
-constexpr base::TimeDelta kNotifyCycleDelta = base::TimeDelta::FromMinutes(20);
+constexpr base::TimeDelta kNotifyCycleDelta = base::Minutes(20);
 
 // The default amount of time it takes for the detector's annoyance level
 // (upgrade_notification_stage()) to reach UPGRADE_ANNOYANCE_HIGH once an
 // upgrade is detected.
-constexpr base::TimeDelta kDefaultHighThreshold = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kDefaultHighThreshold = base::Days(7);
+
+// The default amount of time it takes for the detector's annoyance level
+// (upgrade_notification_stage()) to reach UPGRADE_ANNOYANCE_ELEVATED once an
+// upgrade is detected.
+constexpr base::TimeDelta kDefaultElevatedThreshold = base::Days(4);
 
 // The default amount of time between the detector's annoyance level change
-// from UPGRADE_ANNOYANCE_ELEVATED to UPGRADE_ANNOYANCE_HIGH in ms.
+// from UPGRADE_ANNOYANCE_ELEVATED to UPGRADE_ANNOYANCE_HIGH.
 constexpr base::TimeDelta kDefaultHeadsUpPeriod =
-    base::TimeDelta::FromDays(3);  // 3 days.
-
-// The reason of the rollback used in the UpgradeDetector.RollbackReason
-// histogram.
-enum class RollbackReason {
-  kToMoreStableChannel = 0,
-  kEnterpriseRollback = 1,
-  kMaxValue = kEnterpriseRollback,
-};
-
-class ChannelsRequester {
- public:
-  typedef base::OnceCallback<void(std::string, std::string)>
-      OnChannelsReceivedCallback;
-
-  static void Begin(OnChannelsReceivedCallback callback) {
-    ChannelsRequester* instance = new ChannelsRequester(std::move(callback));
-    UpdateEngineClient* client =
-        DBusThreadManager::Get()->GetUpdateEngineClient();
-    // base::Unretained is safe because this instance keeps itself alive until
-    // both callbacks have run.
-    // TODO: use BindOnce here; see https://crbug.com/825993.
-    client->GetChannel(true /* get_current_channel */,
-                       base::Bind(&ChannelsRequester::SetCurrentChannel,
-                                  base::Unretained(instance)));
-    client->GetChannel(false /* get_current_channel */,
-                       base::Bind(&ChannelsRequester::SetTargetChannel,
-                                  base::Unretained(instance)));
-  }
-
- private:
-  explicit ChannelsRequester(OnChannelsReceivedCallback callback)
-      : callback_(std::move(callback)) {}
-
-  ~ChannelsRequester() = default;
-
-  void SetCurrentChannel(const std::string& current_channel) {
-    DCHECK(!current_channel.empty());
-    current_channel_ = current_channel;
-    TriggerCallbackAndDieIfReady();
-  }
-
-  void SetTargetChannel(const std::string& target_channel) {
-    DCHECK(!target_channel.empty());
-    target_channel_ = target_channel;
-    TriggerCallbackAndDieIfReady();
-  }
-
-  void TriggerCallbackAndDieIfReady() {
-    if (current_channel_.empty() || target_channel_.empty())
-      return;
-    if (!callback_.is_null()) {
-      std::move(callback_).Run(std::move(current_channel_),
-                               std::move(target_channel_));
-    }
-    delete this;
-  }
-
-  OnChannelsReceivedCallback callback_;
-  std::string current_channel_;
-  std::string target_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelsRequester);
-};
+    kDefaultHighThreshold - kDefaultElevatedThreshold;
 
 }  // namespace
 
@@ -119,22 +58,9 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
     const base::TickClock* tick_clock)
     : UpgradeDetector(clock, tick_clock),
       upgrade_notification_timer_(tick_clock),
-      initialized_(false) {
-  // Not all tests provide a PrefService for local_state().
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
-    pref_change_registrar_.Init(local_state);
-    // base::Unretained is safe here because |this| outlives the registrar.
-    pref_change_registrar_.Add(
-        prefs::kRelaunchHeadsUpPeriod,
-        base::BindRepeating(&UpgradeDetectorChromeos::OnRelaunchPrefChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kRelaunchNotification,
-        base::BindRepeating(&UpgradeDetectorChromeos::OnRelaunchPrefChanged,
-                            base::Unretained(this)));
-  }
-}
+      initialized_(false),
+      toggled_update_flag_(false),
+      update_in_progress_(false) {}
 
 UpgradeDetectorChromeos::~UpgradeDetectorChromeos() {}
 
@@ -145,7 +71,13 @@ void UpgradeDetectorChromeos::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void UpgradeDetectorChromeos::Init() {
+  UpgradeDetector::Init();
+  MonitorPrefChanges(prefs::kRelaunchHeadsUpPeriod);
+  MonitorPrefChanges(prefs::kRelaunchNotification);
   DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  auto* const build_state = g_browser_process->GetBuildState();
+  build_state->AddObserver(this);
+  installed_version_updater_.emplace(build_state);
   initialized_ = true;
 }
 
@@ -153,19 +85,76 @@ void UpgradeDetectorChromeos::Shutdown() {
   // Init() may not be called from tests.
   if (!initialized_)
     return;
+  installed_version_updater_.reset();
+  g_browser_process->GetBuildState()->RemoveObserver(this);
   DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
-  // Discard an outstanding request to a ChannelsRequester.
-  weak_factory_.InvalidateWeakPtrs();
   upgrade_notification_timer_.Stop();
+  UpgradeDetector::Shutdown();
   initialized_ = false;
 }
 
-base::TimeDelta UpgradeDetectorChromeos::GetHighAnnoyanceLevelDelta() {
-  return high_deadline_ - elevated_deadline_;
+base::Time UpgradeDetectorChromeos::GetAnnoyanceLevelDeadline(
+    UpgradeNotificationAnnoyanceLevel level) {
+  const base::Time detected_time = upgrade_detected_time();
+  if (detected_time.is_null())
+    return detected_time;
+  switch (level) {
+    case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
+      return detected_time;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+      return elevated_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
+      return grace_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
+      return high_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
+      return upgrade_notification_stage() == UPGRADE_ANNOYANCE_CRITICAL
+                 ? detected_time
+                 : base::Time();
+  }
 }
 
-base::Time UpgradeDetectorChromeos::GetHighAnnoyanceDeadline() {
-  return high_deadline_;
+void UpgradeDetectorChromeos::OverrideHighAnnoyanceDeadline(
+    base::Time deadline) {
+  DCHECK(!upgrade_detected_time().is_null());
+  if (deadline > upgrade_detected_time()) {
+    high_deadline_override_ = deadline;
+    CalculateDeadlines();
+    NotifyOnUpgrade();
+  }
+}
+
+void UpgradeDetectorChromeos::ResetOverriddenDeadline() {
+  if (high_deadline_override_.is_null())
+    return;
+
+  DCHECK(!upgrade_detected_time().is_null());
+  high_deadline_override_ = base::Time();
+  CalculateDeadlines();
+  NotifyOnUpgrade();
+}
+
+void UpgradeDetectorChromeos::OnUpdate(const BuildState* build_state) {
+  if (build_state->update_type() == BuildState::UpdateType::kNone) {
+    // If the update state changed to `kNone`, reset the state as there is no
+    // longer a valid update.
+    upgrade_notification_timer_.Stop();
+    set_upgrade_available(UPGRADE_AVAILABLE_NONE);
+    set_upgrade_detected_time(base::Time());
+  } else if (upgrade_detected_time().is_null()) {
+    // Only start the timer if the build state is valid.
+    set_upgrade_detected_time(clock()->Now());
+    CalculateDeadlines();
+  }
+
+  update_in_progress_ = false;
+  set_is_rollback(build_state->update_type() ==
+                  BuildState::UpdateType::kEnterpriseRollback);
+  set_is_factory_reset_required(build_state->update_type() ==
+                                BuildState::UpdateType::kChannelSwitchRollback);
+  NotifyOnUpgrade();
 }
 
 // static
@@ -178,111 +167,63 @@ base::TimeDelta UpgradeDetectorChromeos::GetRelaunchHeadsUpPeriod() {
       local_state->FindPreference(prefs::kRelaunchHeadsUpPeriod);
   const int value = preference->GetValue()->GetInt();
   // Enforce the preference's documented minimum value.
-  static constexpr base::TimeDelta kMinValue = base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kMinValue = base::Hours(1);
   if (preference->IsDefaultValue() || value < kMinValue.InMilliseconds())
     return base::TimeDelta();
-  return base::TimeDelta::FromMilliseconds(value);
-}
-
-// static
-base::TimeDelta UpgradeDetectorChromeos::GenRandomTimeDelta(
-    base::TimeDelta max) {
-  return max * base::RandDouble();
-}
-
-// static
-base::Time UpgradeDetectorChromeos::AdjustDeadline(base::Time deadline) {
-  // Compute the offset applied to GMT to get local time at |deadline|.
-  const icu::TimeZone& time_zone =
-      chromeos::system::TimezoneSettings::GetInstance()->GetTimezone();
-  UErrorCode status = U_ZERO_ERROR;
-  int32_t raw_offset, dst_offset;
-  time_zone.getOffset(deadline.ToDoubleT() * base::Time::kMillisecondsPerSecond,
-                      true /* local */, raw_offset, dst_offset, status);
-  base::TimeDelta time_zone_offset;
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Failed to get time zone offset, error code: " << status;
-    // The fallback case is to get the raw timezone offset ignoring the daylight
-    // saving time.
-    time_zone_offset =
-        base::TimeDelta::FromMilliseconds(time_zone.getRawOffset());
-  } else {
-    time_zone_offset =
-        base::TimeDelta::FromMilliseconds(raw_offset + dst_offset);
-  }
-
-  // To get local midnight add timezone offset to deadline and treat this time
-  // as UTC based to use UTCMidnight(), then subtract timezone offset.
-  auto midnight =
-      (deadline + time_zone_offset).UTCMidnight() - time_zone_offset;
-  const auto day_time = deadline - midnight;
-  // Return the exact deadline if it naturally falls between 2am and 4am.
-  if (day_time >= base::TimeDelta::FromHours(2) &&
-      day_time <= base::TimeDelta::FromHours(4)) {
-    return deadline;
-  }
-  // Advance to the next day if the deadline falls after 4am.
-  if (day_time > base::TimeDelta::FromHours(4))
-    midnight += base::TimeDelta::FromDays(1);
-
-  return midnight + base::TimeDelta::FromHours(2) +
-         GenRandomTimeDelta(base::TimeDelta::FromHours(2));
+  return base::Milliseconds(value);
 }
 
 void UpgradeDetectorChromeos::CalculateDeadlines() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   if (notification_period.is_zero())
     notification_period = kDefaultHighThreshold;
-  high_deadline_ =
-      AdjustDeadline(upgrade_detected_time() + notification_period);
+
+  const RelaunchWindow relaunch_window =
+      GetRelaunchWindowPolicyValue().value_or(GetDefaultRelaunchWindow());
+  high_deadline_ = AdjustDeadline(upgrade_detected_time() + notification_period,
+                                  relaunch_window);
 
   base::TimeDelta heads_up_period = GetRelaunchHeadsUpPeriod();
   if (heads_up_period.is_zero())
     heads_up_period = kDefaultHeadsUpPeriod;
   elevated_deadline_ =
       std::max(high_deadline_ - heads_up_period, upgrade_detected_time());
-}
 
-void UpgradeDetectorChromeos::OnRelaunchNotificationPeriodPrefChanged() {
-  OnRelaunchPrefChanged();
-}
+  base::TimeDelta grace_period =
+      GetGracePeriod(high_deadline_ - elevated_deadline_);
+  grace_deadline_ = high_deadline_ - grace_period;
 
-void UpgradeDetectorChromeos::OnRelaunchPrefChanged() {
-  // Run OnThresholdPrefChanged using SequencedTaskRunner to avoid double
-  // NotifyUpgrade calls in case multiple policies are changed at one moment.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpgradeDetectorChromeos::OnThresholdPrefChanged,
-                     weak_factory_.GetWeakPtr()));
+  if (!high_deadline_override_.is_null() &&
+      high_deadline_ > high_deadline_override_) {
+    elevated_deadline_ = upgrade_detected_time();
+    high_deadline_ = std::max(elevated_deadline_, high_deadline_override_);
+    grace_period = GetGracePeriod(high_deadline_ - elevated_deadline_);
+    grace_deadline_ = high_deadline_ - grace_period;
+  }
+  DCHECK(grace_deadline_ >= elevated_deadline_);
 }
 
 void UpgradeDetectorChromeos::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
   if (status.current_operation() ==
-      update_engine::Operation::UPDATED_NEED_REBOOT) {
-    if (upgrade_detected_time().is_null()) {
-      set_upgrade_detected_time(clock()->Now());
-      CalculateDeadlines();
-    }
-
-    if (status.is_enterprise_rollback()) {
-      // Powerwash will be required, determine what kind of notification to show
-      // based on the channel.
-      ChannelsRequester::Begin(
-          base::BindOnce(&UpgradeDetectorChromeos::OnChannelsReceived,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      // Not going to an earlier version, no powerwash or rollback message is
-      // required.
-      set_is_rollback(false);
-      set_is_factory_reset_required(false);
-      NotifyOnUpgrade();
-    }
-  } else if (status.current_operation() ==
-             update_engine::Operation::NEED_PERMISSION_TO_UPDATE) {
+      update_engine::Operation::NEED_PERMISSION_TO_UPDATE) {
     // Update engine broadcasts this state only when update is available but
     // downloading over cellular connection requires user's agreement.
     NotifyUpdateOverCellularAvailable();
+  } else if (!update_in_progress_ &&
+             status.current_operation() ==
+                 update_engine::Operation::DOWNLOADING) {
+    update_in_progress_ = true;
+    if (!upgrade_detected_time().is_null())
+      NotifyOnUpgrade();
+  }
+  if (!toggled_update_flag_) {
+    // Only send feature flag status one time.
+    toggled_update_flag_ = true;
+    DBusThreadManager::Get()->GetUpdateEngineClient()->ToggleFeature(
+        update_engine::kFeatureRepeatedUpdates,
+        base::FeatureList::IsEnabled(
+            chromeos::features::kAllowRepeatedUpdates));
   }
 }
 
@@ -290,7 +231,7 @@ void UpgradeDetectorChromeos::OnUpdateOverCellularOneTimePermissionGranted() {
   NotifyUpdateOverCellularOneTimePermissionGranted();
 }
 
-void UpgradeDetectorChromeos::OnThresholdPrefChanged() {
+void UpgradeDetectorChromeos::OnMonitoredPrefsChanged() {
   // Check the current stage and potentially notify observers now if a change to
   // the observed policies results in changes to the thresholds.
   if (upgrade_detected_time().is_null())
@@ -312,11 +253,20 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
 
   const auto last_stage = upgrade_notification_stage();
   // These if statements must be sorted (highest interval first).
-  if (current_time >= high_deadline_) {
+  if (update_in_progress_) {
+    // Cancel any notification of a previous update (if there was one) while a
+    // new update is being downloaded.
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
+  } else if (upgrade_detected_time().is_null()) {
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
+  } else if (current_time >= high_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_HIGH);
+  } else if (current_time >= grace_deadline_) {
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_GRACE);
+    next_delay = high_deadline_ - current_time;
   } else if (current_time >= elevated_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_ELEVATED);
-    next_delay = high_deadline_ - current_time;
+    next_delay = grace_deadline_ - current_time;
   } else {
     // If the relaunch notification policy is enabled, the user will be notified
     // at a later time, so set the level to UPGRADE_ANNOYANCE_NONE. Otherwise,
@@ -350,33 +300,6 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
   }
 }
 
-void UpgradeDetectorChromeos::OnChannelsReceived(std::string current_channel,
-                                                 std::string target_channel) {
-  bool to_more_stable_channel = UpdateEngineClient::IsTargetChannelMoreStable(
-      current_channel, target_channel);
-  // As current update engine status is UPDATE_STATUS_UPDATED_NEED_REBOOT,
-  // if target channel is more stable than current channel, powerwash
-  // will be performed after reboot.
-  set_is_factory_reset_required(to_more_stable_channel);
-  // If we are doing a channel switch, we're currently showing the channel
-  // switch message instead of the rollback message (even if the channel switch
-  // was initiated by the admin).
-  // TODO(crbug.com/864672): Fix this by getting is_rollback from update engine.
-  set_is_rollback(!to_more_stable_channel);
-
-  UMA_HISTOGRAM_ENUMERATION("UpgradeDetector.RollbackReason",
-                            to_more_stable_channel
-                                ? RollbackReason::kToMoreStableChannel
-                                : RollbackReason::kEnterpriseRollback);
-  LOG(WARNING) << "Device is rolling back, will require powerwash. Reason: "
-               << to_more_stable_channel
-               << ", current_channel: " << current_channel
-               << ", target_channel: " << target_channel;
-
-  // ChromeOS shows upgrade arrow once the upgrade becomes available.
-  NotifyOnUpgrade();
-}
-
 // static
 UpgradeDetectorChromeos* UpgradeDetectorChromeos::GetInstance() {
   static base::NoDestructor<UpgradeDetectorChromeos> instance(
@@ -392,4 +315,15 @@ UpgradeDetector* UpgradeDetector::GetInstance() {
 // static
 base::TimeDelta UpgradeDetector::GetDefaultHighAnnoyanceThreshold() {
   return kDefaultHighThreshold;
+}
+
+// static
+base::TimeDelta UpgradeDetector::GetDefaultElevatedAnnoyanceThreshold() {
+  return kDefaultElevatedThreshold;
+}
+
+// static
+UpgradeDetector::RelaunchWindow UpgradeDetector::GetDefaultRelaunchWindow() {
+  // Two hours starting at 2am.
+  return RelaunchWindow(/*start_hour=*/2, /*start_minute=*/0, base::Hours(2));
 }

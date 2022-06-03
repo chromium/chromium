@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 
 namespace ukm {
@@ -20,8 +20,10 @@ namespace performance_manager {
 
 class GraphObserver;
 class GraphOwned;
+class GraphRegistered;
 class FrameNode;
 class FrameNodeObserver;
+class NodeDataDescriberRegistry;
 class PageNode;
 class PageNodeObserver;
 class ProcessNode;
@@ -31,6 +33,9 @@ class SystemNodeObserver;
 class WorkerNode;
 class WorkerNodeObserver;
 
+template <typename DerivedType>
+class GraphRegisteredImpl;
+
 // Represents a graph of the nodes representing a single browser. Maintains a
 // set of nodes that can be retrieved in different ways, some indexed. Keeps
 // a list of observers that are notified of node addition and removal.
@@ -39,6 +44,10 @@ class Graph {
   using Observer = GraphObserver;
 
   Graph();
+
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
+
   virtual ~Graph();
 
   // Adds an |observer| on the graph. It is safe for observers to stay
@@ -61,9 +70,18 @@ class Graph {
   // For convenience, allows you to pass ownership of an object to the graph.
   // Useful for attaching observers that will live with the graph until it dies.
   // If you can name the object you can also take it back via "TakeFromGraph".
-  virtual void PassToGraph(std::unique_ptr<GraphOwned> graph_owned) = 0;
+  virtual void PassToGraphImpl(std::unique_ptr<GraphOwned> graph_owned) = 0;
   virtual std::unique_ptr<GraphOwned> TakeFromGraph(
       GraphOwned* graph_owned) = 0;
+
+  // Templated PassToGraph helper that also returns a pointer to the object,
+  // which makes it easy to use PassToGraph in constructors.
+  template <typename DerivedType>
+  DerivedType* PassToGraph(std::unique_ptr<DerivedType> graph_owned) {
+    DerivedType* object = graph_owned.get();
+    PassToGraphImpl(std::move(graph_owned));
+    return object;
+  }
 
   // A TakeFromGraph helper for taking back the ownership of a GraphOwned
   // subclass.
@@ -73,18 +91,42 @@ class Graph {
         static_cast<DerivedType*>(TakeFromGraph(graph_owned).release()));
   }
 
+  // Registers an object with this graph. It is expected that no more than one
+  // object of a given type is registered at a given moment, and that all
+  // registered objects are unregistered before graph tear-down.
+  virtual void RegisterObject(GraphRegistered* object) = 0;
+
+  // Unregisters the provided |object|, which must previously have been
+  // registered with "RegisterObject". It is expected that all registered
+  // objects are unregistered before graph tear-down.
+  virtual void UnregisterObject(GraphRegistered* object) = 0;
+
+  // Returns the registered object of the given type, nullptr if none has been
+  // registered.
+  template <typename DerivedType>
+  DerivedType* GetRegisteredObjectAs() {
+    // Be sure to access the TypeId provided by GraphRegisteredImpl, in case
+    // this class has other TypeId implementations.
+    GraphRegistered* object =
+        GetRegisteredObject(GraphRegisteredImpl<DerivedType>::TypeId());
+    return static_cast<DerivedType*>(object);
+  }
+
   // Returns a collection of all known nodes of the given type.
-  virtual const SystemNode* FindOrCreateSystemNode() = 0;
+  virtual const SystemNode* GetSystemNode() const = 0;
   virtual std::vector<const ProcessNode*> GetAllProcessNodes() const = 0;
   virtual std::vector<const FrameNode*> GetAllFrameNodes() const = 0;
   virtual std::vector<const PageNode*> GetAllPageNodes() const = 0;
   virtual std::vector<const WorkerNode*> GetAllWorkerNodes() const = 0;
 
-  // Returns true if the graph is currently empty.
-  virtual bool IsEmpty() const = 0;
+  // Returns true if the graph only contains the default nodes.
+  virtual bool HasOnlySystemNode() const = 0;
 
   // Returns the associated UKM recorder if it is defined.
   virtual ukm::UkmRecorder* GetUkmRecorder() const = 0;
+
+  // Returns the data describer registry.
+  virtual NodeDataDescriberRegistry* GetNodeDataDescriberRegistry() const = 0;
 
   // The following functions are implementation detail and should not need to be
   // used by external clients. They provide the ability to safely downcast to
@@ -92,14 +134,34 @@ class Graph {
   virtual uintptr_t GetImplType() const = 0;
   virtual const void* GetImpl() const = 0;
 
+  // Allows code that is not explicitly aware of the Graph sequence to determine
+  // if they are in fact on the right sequence. Prefer to use the
+  // DCHECK_ON_GRAPH_SEQUENCE macro.
+#if DCHECK_IS_ON()
+  virtual bool IsOnGraphSequence() const = 0;
+#endif
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(Graph);
+  // Retrieves the object with the given |type_id|, returning nullptr if none
+  // exists. Clients must use the GetRegisteredObjectAs wrapper instead.
+  virtual GraphRegistered* GetRegisteredObject(uintptr_t type_id) = 0;
 };
+
+#if DCHECK_IS_ON()
+#define DCHECK_ON_GRAPH_SEQUENCE(graph) DCHECK(graph->IsOnGraphSequence())
+#else
+// Compiles to a nop, and will eat ostream input.
+#define DCHECK_ON_GRAPH_SEQUENCE(graph) DCHECK(true)
+#endif
 
 // Observer interface for the graph.
 class GraphObserver {
  public:
   GraphObserver();
+
+  GraphObserver(const GraphObserver&) = delete;
+  GraphObserver& operator=(const GraphObserver&) = delete;
+
   virtual ~GraphObserver();
 
   // Called before the |graph| associated with this observer disappears. This
@@ -109,15 +171,16 @@ class GraphObserver {
   // TODO(chrisha): Make this run before the destructor!
   // crbug.com/966840
   virtual void OnBeforeGraphDestroyed(Graph* graph) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphObserver);
 };
 
 // Helper class for passing ownership of objects to a graph.
 class GraphOwned {
  public:
   GraphOwned();
+
+  GraphOwned(const GraphOwned&) = delete;
+  GraphOwned& operator=(const GraphOwned&) = delete;
+
   virtual ~GraphOwned();
 
   // Called when the object is passed into the graph.
@@ -126,23 +189,21 @@ class GraphOwned {
   // Called when the object is removed from the graph, either via an explicit
   // call to Graph::TakeFromGraph, or prior to the Graph being destroyed.
   virtual void OnTakenFromGraph(Graph* graph) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphOwned);
 };
 
 // A default implementation of GraphOwned.
 class GraphOwnedDefaultImpl : public GraphOwned {
  public:
   GraphOwnedDefaultImpl();
+
+  GraphOwnedDefaultImpl(const GraphOwnedDefaultImpl&) = delete;
+  GraphOwnedDefaultImpl& operator=(const GraphOwnedDefaultImpl&) = delete;
+
   ~GraphOwnedDefaultImpl() override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override {}
   void OnTakenFromGraph(Graph* graph) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphOwnedDefaultImpl);
 };
 
 }  // namespace performance_manager

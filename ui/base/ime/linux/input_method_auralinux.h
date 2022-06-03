@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
       public LinuxInputMethodContextDelegate {
  public:
   explicit InputMethodAuraLinux(internal::InputMethodDelegate* delegate);
+  InputMethodAuraLinux(const InputMethodAuraLinux&) = delete;
+  InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;
 
   LinuxInputMethodContext* GetContextForTesting(bool is_simple);
@@ -35,11 +37,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   bool IsCandidatePopupOpen() const override;
 
   // Overriden from ui::LinuxInputMethodContextDelegate
-  void OnCommit(const base::string16& text) override;
-  void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
+  void OnCommit(const std::u16string& text) override;
+  void OnDeleteSurroundingText(size_t before, size_t after) override;
   void OnPreeditChanged(const CompositionText& composition_text) override;
   void OnPreeditEnd() override;
   void OnPreeditStart() override {}
+  void OnSetPreeditRegion(const gfx::Range& range,
+                          const std::vector<ImeTextSpan>& spans) override;
 
  protected:
   // Overridden from InputMethodBase.
@@ -47,40 +51,43 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                                  TextInputClient* focused) override;
   void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                 TextInputClient* focused) override;
-  void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
 
  private:
+  // Continues to dispatch the ET_KEY_PRESSED event to the client.
+  // This needs to be called "before" committing the result string or
+  // the composition string.
+  ui::EventDispatchDetails DispatchImeFilteredKeyPressEvent(
+      ui::KeyEvent* event);
+  enum class CommitResult {
+    kSuccess,          // Successfully committed at least one character.
+    kNoCommitString,   // No available string to commit.
+    kTargetDestroyed,  // Target was destroyed during the commit.
+  };
+  CommitResult MaybeCommitResult(bool filtered, const KeyEvent& event);
+  bool MaybeUpdateComposition(bool text_committed);
+
+  // Shared implementation of OnPreeditChanged and OnPreeditEnd.
+  // |force_update_client| is designed to dispatch key event/update
+  // the client's composition string, specifically for async-mode case.
+  void OnPreeditUpdate(const ui::CompositionText& composition_text,
+                       bool force_update_client);
+  void ConfirmCompositionText();
   bool HasInputMethodResult();
-  bool NeedInsertChar() const;
+  bool NeedInsertChar(const std::u16string& result_text) const;
   ui::EventDispatchDetails SendFakeProcessKeyEvent(ui::KeyEvent* event) const
       WARN_UNUSED_RESULT;
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;
 
-  // Processes the key event after the event is processed by the system IME or
-  // the extension.
-  ui::EventDispatchDetails ProcessKeyEventDone(ui::KeyEvent* event,
-                                               bool filtered,
-                                               bool is_handled)
-      WARN_UNUSED_RESULT;
-
-  // Callback function for IMEEngineHandlerInterface::ProcessKeyEvent().
-  // It recovers the context when the event is being passed to the extension and
-  // call ProcessKeyEventDone() for the following processing. This is necessary
-  // as this method is async. The environment may be changed by other generated
-  // key events by the time the callback is run.
-  void ProcessKeyEventByEngineDone(ui::KeyEvent* event,
-                                   bool filtered,
-                                   bool composition_changed,
-                                   ui::CompositionText* composition,
-                                   base::string16* result_text,
-                                   bool is_handled);
-
   std::unique_ptr<LinuxInputMethodContext> context_;
   std::unique_ptr<LinuxInputMethodContext> context_simple_;
 
-  base::string16 result_text_;
+  // The last key event that IME is probably in process in
+  // async-mode.
+  absl::optional<ui::KeyEvent> ime_filtered_key_event_;
+
+  std::u16string result_text_;
 
   ui::CompositionText composition_;
 
@@ -101,8 +108,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodAuraLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAuraLinux);
 };
 
 }  // namespace ui

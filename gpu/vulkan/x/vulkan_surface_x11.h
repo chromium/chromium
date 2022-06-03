@@ -9,34 +9,41 @@
 
 #include "base/macros.h"
 #include "gpu/vulkan/vulkan_surface.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
+
+namespace x11 {
+class XScopedEventSelector;
+}
 
 namespace gpu {
 
-class VulkanSurfaceX11 : public VulkanSurface {
+class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
  public:
   static std::unique_ptr<VulkanSurfaceX11> Create(VkInstance vk_instance,
-                                                  Window parent_window);
+                                                  x11::Window parent_window);
   VulkanSurfaceX11(VkInstance vk_instance,
                    VkSurfaceKHR vk_surface,
-                   Window parent_window,
-                   Window window);
+                   x11::Window parent_window,
+                   x11::Window window);
+
+  VulkanSurfaceX11(const VulkanSurfaceX11&) = delete;
+  VulkanSurfaceX11& operator=(const VulkanSurfaceX11&) = delete;
+
   ~VulkanSurfaceX11() override;
 
   // VulkanSurface:
+  void Destroy() override;
   bool Reshape(const gfx::Size& size,
                gfx::OverlayTransform pre_transform) override;
 
  private:
-  class ExposeEventForwarder;
-  bool CanDispatchXEvent(const XEvent* event);
-  void ForwardXExposeEvent(const XEvent* event);
+  // x11::EventObserver:
+  void OnEvent(const x11::Event& xevent) override;
 
-  const Window parent_window_;
-  const Window window_;
-  std::unique_ptr<ExposeEventForwarder> expose_event_forwarder_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanSurfaceX11);
+  const x11::Window parent_window_;
+  x11::Window window_;
+  std::unique_ptr<x11::XScopedEventSelector> event_selector_;
 };
 
 }  // namespace gpu

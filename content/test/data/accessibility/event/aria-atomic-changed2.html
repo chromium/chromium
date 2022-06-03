@@ -1,0 +1,26 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="d1" tabindex='0' aria-label="Item1" aria-live="polite">Item1</div>
+  <div id="d2">Item2</div>
+  <script>
+    var go_passes = [
+      // Set aria-atomic from default false->false; should not fire an event.
+      () => document.getElementById('d1').setAttribute('aria-atomic', false),
+
+      // Set aria-atomic from false->true on a non-live region;
+      // should not fire an event.
+      () => document.getElementById('d2').setAttribute('aria-atomic', true),
+    ];
+    let current_pass = 0;
+    function go() {
+      go_passes[current_pass++].call();
+      return current_pass < go_passes.length;
+    }
+  </script>
+</body>
+</html>

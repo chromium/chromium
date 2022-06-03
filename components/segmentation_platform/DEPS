@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/leveldb_proto",
+  "+components/optimization_guide",
+  "-components/optimization_guide/content",
+  "+components/prefs",
+  "+third_party/perfetto",
+  "+third_party/tflite",
+  "+third_party/tflite_support",
+]

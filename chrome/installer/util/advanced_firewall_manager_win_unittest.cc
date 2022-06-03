@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/process_info.h"
 #include "base/win/scoped_bstr.h"
@@ -17,6 +17,10 @@ namespace installer {
 class AdvancedFirewallManagerTest : public ::testing::Test {
  public:
   AdvancedFirewallManagerTest() : skip_test_(true) {}
+
+  AdvancedFirewallManagerTest(const AdvancedFirewallManagerTest&) = delete;
+  AdvancedFirewallManagerTest& operator=(const AdvancedFirewallManagerTest&) =
+      delete;
 
  protected:
   // Sets up the test fixture.
@@ -40,28 +44,25 @@ class AdvancedFirewallManagerTest : public ::testing::Test {
 
   // Forwards calls to |manager_| to avoid making each test a friend of
   // |AdvancedFirewallManager|.
-  void GetAllRules(std::vector<base::string16>* rule_names) {
+  void GetAllRules(std::vector<std::wstring>* rule_names) {
     std::vector<Microsoft::WRL::ComPtr<INetFwRule>> rules;
     manager_.GetAllRules(&rules);
     for (size_t i = 0; i < rules.size(); ++i) {
       base::win::ScopedBstr name;
       EXPECT_TRUE(SUCCEEDED(rules[i]->get_Name(name.Receive())));
-      EXPECT_TRUE(name);
-      rule_names->push_back(base::string16(name));
+      EXPECT_TRUE(name.Get());
+      rule_names->push_back(std::wstring(name.Get()));
     }
   }
 
   bool skip_test_;
   AdvancedFirewallManager manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdvancedFirewallManagerTest);
 };
 
 TEST_F(AdvancedFirewallManagerTest, NoRule) {
   if (skip_test_)
     return;
-  std::vector<base::string16> rule_names;
+  std::vector<std::wstring> rule_names;
   GetAllRules(&rule_names);
   EXPECT_TRUE(rule_names.empty());
 }
@@ -72,7 +73,7 @@ TEST_F(AdvancedFirewallManagerTest, AddRule) {
   const wchar_t kRuleName[] = L"Port56789";
   EXPECT_TRUE(manager_.AddUDPRule(kRuleName, L"Test Description", 56789));
 
-  std::vector<base::string16> rule_names;
+  std::vector<std::wstring> rule_names;
   GetAllRules(&rule_names);
   ASSERT_EQ(1u, rule_names.size());
   EXPECT_EQ(rule_names[0], kRuleName);

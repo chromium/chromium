@@ -3,7 +3,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  assert_throws({name: 'TypeError'}, () => {
+  assert_throws_js(TypeError, () => {
     document.body.animate({left: [{toString:null}]});
   });
 }, 'Do not crash when passing an unstringable value in a property indexed keyframe');

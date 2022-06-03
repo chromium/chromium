@@ -1,5 +1,5 @@
 # Remove icons from the system icons
-XDG_ICON_RESOURCE="`which xdg-icon-resource 2> /dev/null || true`"
+XDG_ICON_RESOURCE="`command -v xdg-icon-resource 2> /dev/null || true`"
 if [ ! -x "$XDG_ICON_RESOURCE" ]; then
   echo "Error: Could not find xdg-icon-resource" >&2
   exit 1
@@ -9,7 +9,7 @@ for icon in @@LOGO_RESOURCES_PNG@@; do
   "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE@@"
 done
 
-UPDATE_MENUS="`which update-menus 2> /dev/null || true`"
+UPDATE_MENUS="`command -v update-menus 2> /dev/null || true`"
 if [ -x "$UPDATE_MENUS" ]; then
   update-menus
 fi

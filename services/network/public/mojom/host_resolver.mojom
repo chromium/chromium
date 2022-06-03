@@ -6,17 +6,10 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
-import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/url_loader.mojom";
-
-// A single entry from a HOSTS file.
-struct DnsHost {
-  string hostname;
-  IPAddress address;
-};
+import "services/network/public/mojom/request_priority.mojom";
 
 // An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
 // spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
@@ -31,9 +24,8 @@ struct DnsOverHttpsServer {
 
 // The secure DNS mode specifies what types of lookups (secure/insecure) should
 // be performed and in what order when resolving a specific query. This is
-// an expanded version of DnsConfig::SecureDnsMode that includes representation
-// of an optional SecureDnsMode. Needed because Mojo does not support optional
-// enums.
+// an expanded version of net::SecureDnsMode that includes representation of an
+// optional SecureDnsMode. Needed because Mojo does not support optional enums.
 enum OptionalSecureDnsMode {
   NO_OVERRIDE,
   OFF,
@@ -41,11 +33,17 @@ enum OptionalSecureDnsMode {
   SECURE,
 };
 
-// This enum corresponds to DnsConfig::SecureDnsMode.
+// This enum corresponds to net::SecureDnsMode.
 enum SecureDnsMode {
   OFF,
   AUTOMATIC,
   SECURE,
+};
+
+// This enum corresponds to net::SecureDnsPolicy
+enum SecureDnsPolicy {
+  ALLOW,
+  DISABLE,
 };
 
 // Overridable DNS configuration values for host resolution. All fields default
@@ -67,23 +65,14 @@ struct DnsConfigOverrides {
   // is less than |ndots|.
   array<string>? search;
 
-  // Entries from a HOSTS file. This array is intended for serialization to/from
-  // a lookup map, so unlike the source data from actual HOSTS files, each entry
-  // should represent a unique host query key (|hostname| and AddressFamily).
-  array<DnsHost>? hosts;
-
   // Whether suffix search should be performed for multi-label names.
   Tristate append_to_multi_label_name = Tristate.NO_OVERRIDE;
-
-  // Whether source port randomization is required. This uses additional
-  // resources on some platforms.
-  Tristate randomize_ports = Tristate.NO_OVERRIDE;
 
   // Minimum number of dots before global resolution precedes |search|.
   int8 ndots = -1;  // -1 for no override.
 
   // Time between retransmissions, see res_state.retrans.
-  mojo_base.mojom.TimeDelta? timeout;
+  mojo_base.mojom.TimeDelta? fallback_period;
 
   // Maximum number of attempts, see res_state.retry.
   int32 attempts = -1;  // -1 for no override.
@@ -100,8 +89,9 @@ struct DnsConfigOverrides {
   // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
   array<DnsOverHttpsServer>? dns_over_https_servers;
 
-  // The default SecureDnsMode to use when resolving queries. It can be
-  // for individual requests such as requests to resolve a DoH server hostname.
+  // The SecureDnsMode to use when resolving queries. If set, it overrides
+  // the resolver's current configured mode, and can in turn be overridden by
+  // ResolveHostParameters.secure_dns_policy.
   OptionalSecureDnsMode secure_dns_mode = OptionalSecureDnsMode.NO_OVERRIDE;
 
   // Whether automatic upgrade to DNS over HTTPS servers is permitted.
@@ -110,13 +100,9 @@ struct DnsConfigOverrides {
   // List of providers to exclude from upgrade mapping. See the
   // mapping in net/dns/dns_util.cc for provider ids.
   array<string>? disabled_upgrade_providers;
-};
 
-// Host resolution error info.
-struct ResolveErrorInfo {
-  // Underlying network error code. See net/base/net_error_list.h for error
-  // descriptions.
-  int32 error;
+  // Whether to clear data read from the system HOSTS file.
+  bool clear_hosts = false;
 };
 
 // Control handle used to control outstanding NetworkContext::ResolveHost
@@ -172,6 +158,7 @@ enum DnsQueryType {
   TXT,
   PTR,
   SRV,
+  HTTPS,
 };
 
 // Parameter-grouping struct for additional optional parameters for
@@ -214,8 +201,23 @@ struct ResolveHostParameters {
   // literals, etc.
   Source source = Source.ANY;
 
-  // If |false|, results will not come from the host cache.
-  bool allow_cached_response = true;
+  // Cache usage mode for ResolveHostRequest. Values corresponding to
+  // HostResolver::ResolveHostParameters::CacheUsage
+  enum CacheUsage {
+    // Results may come from the host cache if non-stale.
+    ALLOWED,
+
+    // Results may come from the host cache even if stale (by expiration or
+    // network changes).
+    STALE_ALLOWED,
+
+    // Results will not come from the host cache.
+    DISALLOWED,
+  };
+
+  // Indicates what DNS cache entries, if any, can be used to provide a
+  // response.
+  CacheUsage cache_usage = CacheUsage.ALLOWED;
 
   // If set, the outstanding request can be controlled, eg cancelled, via the
   // handle.
@@ -237,9 +239,21 @@ struct ResolveHostParameters {
   // ResolveHostClient::OnComplete will not receive any addresses.
   bool is_speculative = false;
 
-  // Set to override the resolver's default secure dns mode for this request.
-  OptionalSecureDnsMode secure_dns_mode_override =
-      OptionalSecureDnsMode.NO_OVERRIDE;
+  // Controls the resolver's Secure DNS behavior for this request.
+  SecureDnsPolicy secure_dns_policy = SecureDnsPolicy.ALLOW;
+
+  // Enumeration for specifying the purpose of a host resolve request.
+  // These values are used for UMA. Entries should not be reordered. Keep this
+  // in sync with tools/metrics/histograms/enums.xml.
+  // TODO(crbug.com/1232623): Consider adding more values if kPreconnect isn't
+  // a majority of the purpose of host resolve requests.
+  enum Purpose {
+    kUnspecified,
+    kPreconnect,
+  };
+
+  // Specifies the purpose of the request.
+  Purpose purpose = Purpose.kUnspecified;
 };
 
 // Response interface used to receive notifications from

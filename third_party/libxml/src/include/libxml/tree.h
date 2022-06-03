@@ -443,7 +443,7 @@ struct _xmlAttr {
     struct _xmlDoc  *doc;	/* the containing document */
     xmlNs           *ns;        /* pointer to the associated namespace */
     xmlAttributeType atype;     /* the attribute type if validating */
-    void            *psvi;	/* for type/PSVI informations */
+    void            *psvi;	/* for type/PSVI information */
 };
 
 /**
@@ -502,7 +502,7 @@ struct _xmlNode {
     xmlChar         *content;   /* the content */
     struct _xmlAttr *properties;/* properties list */
     xmlNs           *nsDef;     /* namespace definitions on this node */
-    void            *psvi;	/* for type/PSVI informations */
+    void            *psvi;	/* for type/PSVI information */
     unsigned short   line;	/* line number */
     unsigned short   extra;	/* extra data for XPath/XSLT */
 };
@@ -527,7 +527,7 @@ struct _xmlNode {
  * xmlDocProperty
  *
  * Set of properties of the document as found by the parser
- * Some of them are linked to similary named xmlParserOption
+ * Some of them are linked to similarly named xmlParserOption
  */
 typedef enum {
     XML_DOC_WELLFORMED		= 1<<0, /* document is XML well formed */
@@ -578,7 +578,7 @@ struct _xmlDoc {
     int             charset;    /* Internal flag for charset handling,
 				   actually an xmlCharEncoding */
     struct _xmlDict *dict;      /* dict used to allocate names or NULL */
-    void           *psvi;	/* for type/PSVI informations */
+    void           *psvi;	/* for type/PSVI information */
     int             parseFlags;	/* set of xmlParserOption used to parse the
 				   document */
     int             properties;	/* set of xmlDocProperties for this document

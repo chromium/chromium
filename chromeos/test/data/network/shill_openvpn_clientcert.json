@@ -6,8 +6,6 @@
       "123.com"
    ],
    "OpenVPN.Password": "some password",
-   "OpenVPN.Pkcs11.ID": "",
-   "OpenVPN.Pkcs11.PIN": "",
    "OpenVPN.Port": "1234",
    "OpenVPN.Proto": "udp",
    "OpenVPN.TLSVersionMin": "1.2",

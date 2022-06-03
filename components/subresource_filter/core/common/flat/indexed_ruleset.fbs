@@ -8,13 +8,13 @@ namespace subresource_filter.flat;
 
 // The top-level data structure used to store URL rules.
 table IndexedRuleset {
-  // The index of all blacklist URL rules.
-  blacklist_index : url_pattern_index.flat.UrlPatternIndex;
+  // The index of all blocklist URL rules.
+  blocklist_index : url_pattern_index.flat.UrlPatternIndex;
 
-  // The index of all whitelist URL rules, except pure deactivation rules.
-  whitelist_index : url_pattern_index.flat.UrlPatternIndex;
+  // The index of all allowlist URL rules, except pure deactivation rules.
+  allowlist_index : url_pattern_index.flat.UrlPatternIndex;
 
-  // The index of all whitelist URL rules with activation options.
+  // The index of all allowlist URL rules with activation options.
   deactivation_index : url_pattern_index.flat.UrlPatternIndex;
 }
 

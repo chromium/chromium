@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_DISCARDABLE_IMAGE_MAP_H_
 #define CC_PAINT_DISCARDABLE_IMAGE_MAP_H_
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "cc/paint/paint_worklet_input.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -59,7 +61,10 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   void GetDiscardableImagesInRect(const gfx::Rect& rect,
                                   std::vector<const DrawImage*>* images) const;
   const Rects& GetRectsForImage(PaintImage::Id image_id) const;
-  bool contains_non_srgb_images() const { return contains_non_srgb_images_; }
+  gfx::ContentColorUsage content_color_usage() const {
+    return content_color_usage_;
+  }
+  bool contains_hbd_images() const { return contains_hbd_images_; }
   const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
     return animated_images_metadata_;
   }
@@ -91,7 +96,8 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   base::flat_map<PaintImage::Id, Rects> image_id_to_rects_;
   std::vector<AnimatedImageMetadata> animated_images_metadata_;
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
-  bool contains_non_srgb_images_ = false;
+  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
+  bool contains_hbd_images_ = false;
 
   RTree<DrawImage> images_rtree_;
 

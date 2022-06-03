@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
 #include <memory>
+
+#include "base/logging.h"
 #include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -120,20 +122,20 @@ struct PublicFrameInfo {
 // This is the frame data for the following PNG image:
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 static PublicFrameInfo g_png_animated_frame_info[] = {
-    {base::TimeDelta::FromMilliseconds(500),
-     {IntPoint(0, 0), IntSize(5, 5)},
+    {base::Milliseconds(500),
+     {gfx::Point(0, 0), IntSize(5, 5)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
-    {base::TimeDelta::FromMilliseconds(900),
-     {IntPoint(1, 1), IntSize(3, 1)},
+    {base::Milliseconds(900),
+     {gfx::Point(1, 1), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeOverwriteBgcolor},
-    {base::TimeDelta::FromMilliseconds(2000),
-     {IntPoint(1, 2), IntSize(3, 2)},
+    {base::Milliseconds(2000),
+     {gfx::Point(1, 2), IntSize(3, 2)},
      ImageFrame::kBlendAtopPreviousFrame,
      ImageFrame::kDisposeKeep},
-    {base::TimeDelta::FromMilliseconds(1500),
-     {IntPoint(1, 2), IntSize(3, 1)},
+    {base::Milliseconds(1500),
+     {gfx::Point(1, 2), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
 };
@@ -1364,7 +1366,7 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
        4u, 160u},
 
       {"/images/resources/png-simple.png", 1u, 700u},
-      {"/images/resources/lenna.png", 1u, 40000u},
+      {"/images/resources/gracehopper.png", 1u, 40000u},
   };
   for (const auto& rec : g_recs) {
     scoped_refptr<SharedBuffer> full_data = ReadFile(rec.name);
@@ -1432,8 +1434,8 @@ TEST(PNGTests, truncated) {
   // should be transparent.
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   auto size = decoder->Size();
-  for (int i = 0; i < size.Width(); ++i) {
-    for (int j = 0; j < size.Height(); ++j) {
+  for (int i = 0; i < size.width(); ++i) {
+    for (int j = 0; j < size.height(); ++j) {
       ASSERT_NE(SK_ColorTRANSPARENT, *frame->GetAddr(i, j));
     }
   }

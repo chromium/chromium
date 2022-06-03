@@ -2,17 +2,15 @@ bashi@chromium.org
 haraken@chromium.org
 japhet@chromium.org
 jbroman@chromium.org
-jl@opera.com
 jochen@chromium.org
 kouhei@chromium.org
-marja@chromium.org
 mkwst@chromium.org
 mlippautz@chromium.org
-peria@chromium.org
-pfeldman@chromium.org
 vivekg@chromium.org
 yhirano@chromium.org
 yukishiino@chromium.org
 
-# TEAM: blink-reviews-bindings@chromium.org
-# COMPONENT: Blink>Bindings
+per-file generated_in_core.gni=*
+per-file generated_in_modules.gni=*
+per-file idl_in_core.gni=*
+per-file idl_in_modules.gni=*

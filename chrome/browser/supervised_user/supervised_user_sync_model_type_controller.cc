@@ -6,26 +6,26 @@
 
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
 
 SupervisedUserSyncModelTypeController::SupervisedUserSyncModelTypeController(
     syncer::ModelType type,
     const Profile* profile,
     const base::RepeatingClosure& dump_stack,
-    browser_sync::BrowserSyncClient* sync_client)
+    syncer::OnceModelTypeStoreFactory store_factory,
+    base::WeakPtr<syncer::SyncableService> syncable_service)
     : SyncableServiceBasedModelTypeController(
           type,
-          sync_client->GetModelTypeStoreService()->GetStoreFactory(),
-          sync_client->GetSyncableServiceForType(type),
-          dump_stack),
+          std::move(store_factory),
+          syncable_service,
+          dump_stack,
+          DelegateMode::kTransportModeWithSingleModel),
       profile_(profile) {
-  DCHECK(type == syncer::SUPERVISED_USER_SETTINGS ||
-         type == syncer::SUPERVISED_USER_WHITELISTS);
+  DCHECK(type == syncer::SUPERVISED_USER_SETTINGS);
 }
 
 SupervisedUserSyncModelTypeController::
-    ~SupervisedUserSyncModelTypeController() {}
+    ~SupervisedUserSyncModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 SupervisedUserSyncModelTypeController::GetPreconditionState() const {

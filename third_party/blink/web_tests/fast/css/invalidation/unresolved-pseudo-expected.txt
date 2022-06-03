@@ -1,18 +1,14 @@
-CONSOLE WARNING: :unresolved pseudo selector is deprecated and will be removed in M80, around February 2020. Please use :not(:defined) instead. See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-CONSOLE WARNING: line 41: document.registerElement is deprecated and will be removed in M80, around February 2020. Please use window.customElements.define instead. See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
+CONSOLE WARNING: line 10: The Custom Elements v0 API (:unresolved pseudo selector) has been removed. See https://www.chromestatus.com/feature/4642138092470272 for more details.
 Use invalidation sets for :unresolved pseudo class.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS getComputedStyle(child).backgroundColor is red
 PASS getComputedStyle(sibling).backgroundColor is red
-PASS getComputedStyle(child3).backgroundColor is red
 PASS internals.updateStyleAndReturnAffectedElementCount() is 1
 PASS getComputedStyle(child).backgroundColor is green
 PASS internals.updateStyleAndReturnAffectedElementCount() is 1
 PASS getComputedStyle(sibling).backgroundColor is green
-PASS internals.updateStyleAndReturnAffectedElementCount() is 1
-PASS getComputedStyle(child3).backgroundColor is green
 PASS successfullyParsed is true
 
 TEST COMPLETE

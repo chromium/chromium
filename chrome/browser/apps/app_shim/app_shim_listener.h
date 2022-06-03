@@ -7,15 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/apps/app_shim/mach_bootstrap_acceptor.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-
-namespace apps {
-class ExtensionAppShimHandler;
-}
 
 namespace base {
 class FilePath;
@@ -34,15 +29,13 @@ class AppShimListener : public apps::MachBootstrapAcceptor::Delegate,
                             content::BrowserThread::DeleteOnUIThread> {
  public:
   AppShimListener();
+  AppShimListener(const AppShimListener&) = delete;
+  AppShimListener& operator=(const AppShimListener&) = delete;
 
   // Init passes this AppShimListener to PostTask which requires it to have
   // a non-zero refcount. Therefore, Init cannot be called in the constructor
   // since the refcount is zero at that point.
   void Init();
-
-  apps::ExtensionAppShimHandler* extension_app_shim_handler() {
-    return extension_app_shim_handler_.get();
-  }
 
  private:
   friend class base::RefCountedThreadSafe<AppShimListener>;
@@ -51,6 +44,8 @@ class AppShimListener : public apps::MachBootstrapAcceptor::Delegate,
   friend class base::DeleteHelper<AppShimListener>;
   friend class test::AppShimListenerTestApi;
   virtual ~AppShimListener();
+
+  bool has_initialized_ = false;
 
   // MachBootstrapAcceptor::Delegate:
   void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
@@ -63,10 +58,6 @@ class AppShimListener : public apps::MachBootstrapAcceptor::Delegate,
   base::FilePath directory_in_tmp_;
 
   std::unique_ptr<apps::MachBootstrapAcceptor> mach_acceptor_;
-
-  std::unique_ptr<apps::ExtensionAppShimHandler> extension_app_shim_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimListener);
 };
 
 #endif  // CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_LISTENER_H_

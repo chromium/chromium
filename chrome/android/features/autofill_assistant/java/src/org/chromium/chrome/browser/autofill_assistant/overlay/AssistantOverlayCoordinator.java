@@ -4,18 +4,17 @@
 
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.graphics.RectF;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
 
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
-import org.chromium.chrome.browser.util.AccessibilityUtil;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.browser.widget.ScrimView.ScrimParams;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -24,50 +23,47 @@ import java.util.List;
  * displayed.
  */
 public class AssistantOverlayCoordinator {
-    private final ChromeActivity mActivity;
     private final AssistantOverlayModel mModel;
     private final AssistantOverlayEventFilter mEventFilter;
     private final AssistantOverlayDrawable mDrawable;
-    private final ScrimView mScrim;
-    private final ImageFetcher mImageFetcher;
+    private final CompositorViewHolder mCompositorViewHolder;
+    private final ScrimCoordinator mScrim;
     private boolean mScrimEnabled;
+    private boolean mScrimSuppressed;
 
-    public AssistantOverlayCoordinator(ChromeActivity activity, AssistantOverlayModel model) {
-        this(activity, model,
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY));
-    }
-
-    public AssistantOverlayCoordinator(
-            ChromeActivity activity, AssistantOverlayModel model, ImageFetcher imageFetcher) {
-        mActivity = activity;
+    public AssistantOverlayCoordinator(Context context,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            ScrimCoordinator scrim, AssistantOverlayModel model) {
         mModel = model;
-        mImageFetcher = imageFetcher;
-        mScrim = mActivity.getScrim();
-        mEventFilter = new AssistantOverlayEventFilter(
-                mActivity, mActivity.getFullscreenManager(), mActivity.getCompositorViewHolder());
-        mDrawable = new AssistantOverlayDrawable(mActivity, mActivity.getFullscreenManager());
+        mCompositorViewHolder = compositorViewHolder;
+        mScrim = scrim;
+        mEventFilter =
+                new AssistantOverlayEventFilter(context, browserControls, compositorViewHolder);
+        mDrawable = new AssistantOverlayDrawable(context, browserControls);
 
         // Listen for changes in the state.
         // TODO(crbug.com/806868): Bind model to view through a ViewBinder instead.
         model.addObserver((source, propertyKey) -> {
             if (AssistantOverlayModel.STATE == propertyKey) {
                 setState(model.get(AssistantOverlayModel.STATE));
+            } else if (AssistantOverlayModel.WEB_CONTENTS == propertyKey) {
+                WebContents webContents = model.get(AssistantOverlayModel.WEB_CONTENTS);
+                mEventFilter.setWebContents(webContents);
+                mDrawable.setWebContents(webContents);
             } else if (AssistantOverlayModel.VISUAL_VIEWPORT == propertyKey) {
                 RectF rect = model.get(AssistantOverlayModel.VISUAL_VIEWPORT);
                 mEventFilter.setVisualViewport(rect);
                 mDrawable.setVisualViewport(rect);
             } else if (AssistantOverlayModel.TOUCHABLE_AREA == propertyKey) {
-                List<RectF> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
+                List<AssistantOverlayRect> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
                 mEventFilter.setTouchableArea(area);
                 mDrawable.setTransparentArea(area);
             } else if (AssistantOverlayModel.RESTRICTED_AREA == propertyKey) {
-                List<RectF> area = model.get(AssistantOverlayModel.RESTRICTED_AREA);
+                List<AssistantOverlayRect> area = model.get(AssistantOverlayModel.RESTRICTED_AREA);
                 mEventFilter.setRestrictedArea(area);
                 mDrawable.setRestrictedArea(area);
             } else if (AssistantOverlayModel.DELEGATE == propertyKey) {
-                AssistantOverlayDelegate delegate = model.get(AssistantOverlayModel.DELEGATE);
-                mEventFilter.setDelegate(delegate);
-                mDrawable.setDelegate(delegate);
+                mEventFilter.setDelegate(model.get(AssistantOverlayModel.DELEGATE));
             } else if (AssistantOverlayModel.BACKGROUND_COLOR == propertyKey) {
                 mDrawable.setBackgroundColor(model.get(AssistantOverlayModel.BACKGROUND_COLOR));
             } else if (AssistantOverlayModel.HIGHLIGHT_BORDER_COLOR == propertyKey) {
@@ -80,19 +76,7 @@ public class AssistantOverlayCoordinator {
                 mEventFilter.setTapTrackingDurationMs(
                         model.get(AssistantOverlayModel.TAP_TRACKING_DURATION_MS));
             } else if (AssistantOverlayModel.OVERLAY_IMAGE == propertyKey) {
-                AssistantOverlayImage image = model.get(AssistantOverlayModel.OVERLAY_IMAGE);
-                if (image != null && !TextUtils.isEmpty(image.mImageUrl)) {
-                    DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
-                    // TODO(b/143517837) Merge autofill assistant image fetcher UMA names.
-                    mImageFetcher.fetchImage(image.mImageUrl,
-                            ImageFetcher.ASSISTANT_DETAILS_UMA_CLIENT_NAME, result -> {
-                                image.mImageBitmap = Bitmap.createScaledBitmap(result,
-                                        image.mImageSizeInPixels, image.mImageSizeInPixels, true);
-                                mDrawable.setFullOverlayImage(image);
-                            });
-                } else {
-                    mDrawable.setFullOverlayImage(image);
-                }
+                mDrawable.setFullOverlayImage(model.get(AssistantOverlayModel.OVERLAY_IMAGE));
             }
         });
     }
@@ -112,10 +96,31 @@ public class AssistantOverlayCoordinator {
     }
 
     /**
+     * Suppress the Scrim.
+     */
+    public void suppress() {
+        mScrimSuppressed = true;
+        setScrimEnabled(false);
+    }
+
+    /**
+     * Restore the Scrim to the current state.
+     */
+    public void restore() {
+        mScrimSuppressed = false;
+        setState(mModel.get(AssistantOverlayModel.STATE));
+    }
+
+    /**
      * Set the overlay state.
      */
     private void setState(@AssistantOverlayState int state) {
-        if (state == AssistantOverlayState.PARTIAL && AccessibilityUtil.isAccessibilityEnabled()) {
+        if (mScrimSuppressed) {
+            return;
+        }
+
+        if (state == AssistantOverlayState.PARTIAL
+                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
             // Touch exploration is fully disabled if there's an overlay in front. In this case, the
             // overlay must be fully gone and filtering elements for touch exploration must happen
             // at another level.
@@ -139,13 +144,16 @@ public class AssistantOverlayCoordinator {
         if (enabled == mScrimEnabled) return;
 
         if (enabled) {
-            ScrimParams params = new ScrimParams(mActivity.getCompositorViewHolder(),
-                    /* showInFrontOfAnchorView= */ true,
-                    /* affectsStatusBar = */ false,
-                    /* topMargin= */ 0,
-                    /* observer= */ null);
-            params.backgroundDrawable = mDrawable;
-            params.eventFilter = mEventFilter;
+            PropertyModel params = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                                           .with(ScrimProperties.TOP_MARGIN, 0)
+                                           .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                                           .with(ScrimProperties.ANCHOR_VIEW, mCompositorViewHolder)
+                                           .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
+                                           .with(ScrimProperties.VISIBILITY_CALLBACK, null)
+                                           .with(ScrimProperties.CLICK_DELEGATE, null)
+                                           .with(ScrimProperties.BACKGROUND_DRAWABLE, mDrawable)
+                                           .with(ScrimProperties.GESTURE_DETECTOR, mEventFilter)
+                                           .build();
             mScrim.showScrim(params);
         } else {
             mScrim.hideScrim(/* fadeOut= */ true);

@@ -44,7 +44,7 @@ TEST(SpdyHttpUtilsTest, CreateSpdyHeadersFromHttpRequestHTTP2) {
   request.method = "GET";
   request.url = url;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request, request.extra_headers, &headers);
   EXPECT_EQ("GET", headers[":method"]);
   EXPECT_EQ("https", headers[":scheme"]);
@@ -60,7 +60,7 @@ TEST(SpdyHttpUtilsTest, CreateSpdyHeadersFromHttpRequestConnectHTTP2) {
   request.method = "CONNECT";
   request.url = url;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request, request.extra_headers, &headers);
   EXPECT_EQ("CONNECT", headers[":method"]);
   EXPECT_TRUE(headers.end() == headers.find(":scheme"));

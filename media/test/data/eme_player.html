@@ -129,6 +129,16 @@
       Utils.timeLog('Event: ' + e.type + ', hidden: ' + document.hidden);
     }
 
+    function onEnded(e) {
+      Utils.timeLog('Event: ' + e.type);
+      PlayerUtils.removeSession(player).then(function() {
+        Utils.setResultInTitle('ENDED');
+      }).catch(function(error) {
+        Utils.timeLog(error);
+        Utils.failTest('Failed PlayerUtils.removeSession');
+      });
+    }
+
     function play(video, playTwice) {
       Utils.timeLog('Starting play, hidden: ' + document.hidden);
       video.addEventListener('canplay', onLogEvent);

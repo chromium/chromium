@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_UI_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_UI_H_
 
-
 namespace password_manager {
 
 namespace ui {
@@ -37,8 +36,19 @@ enum State {
   // Chrome needs to ask the user to confirm password updating.
   PENDING_PASSWORD_UPDATE_STATE,
 
-  // The user was prompted to sign in to Chrome after saving a password.
-  CHROME_SIGN_IN_PROMO_STATE,
+  // A user opted in to account storage is about to lose some unsynced
+  // passwords.
+  WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE,
+
+  // The user used a profile credential to log in successfully and should see a
+  // prompt that allows them to move the credential to their account store.
+  CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE,
+
+  // Last compromised password was updated and the user is safe.
+  PASSWORD_UPDATED_SAFE_STATE,
+
+  // A compromised password was updated and the user has more to fix.
+  PASSWORD_UPDATED_MORE_TO_FIX,
 };
 
 }  // namespace ui

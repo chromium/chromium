@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Flex assert_equals: height expected "18px" but got "162px"
-FAIL Inline flex assert_equals: height expected "18px" but got "162px"
-Harness: the test ran to completion.
-

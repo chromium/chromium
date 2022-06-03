@@ -5,8 +5,6 @@
 #ifndef PPAPI_PROXY_HOST_VAR_SERIALIZATION_RULES_H_
 #define PPAPI_PROXY_HOST_VAR_SERIALIZATION_RULES_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "ppapi/c/ppb_var.h"
 #include "ppapi/proxy/var_serialization_rules.h"
@@ -18,6 +16,11 @@ namespace proxy {
 class HostVarSerializationRules : public VarSerializationRules {
  public:
   HostVarSerializationRules();
+
+  HostVarSerializationRules(const HostVarSerializationRules&) = delete;
+  HostVarSerializationRules& operator=(const HostVarSerializationRules&) =
+      delete;
+
   ~HostVarSerializationRules();
 
   // VarSerialization implementation.
@@ -28,9 +31,6 @@ class HostVarSerializationRules : public VarSerializationRules {
   virtual PP_Var BeginSendPassRef(const PP_Var& var);
   virtual void EndSendPassRef(const PP_Var& var);
   virtual void ReleaseObjectRef(const PP_Var& var);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostVarSerializationRules);
 };
 
 }  // namespace proxy

@@ -17,12 +17,17 @@
 #include "base/timer/timer.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "net/base/backoff_entry.h"
 
 namespace base {
 class Location;
 class TimeDelta;
 } // namespace base
+
+namespace mojo {
+class ScopedInterfaceEndpointHandle;
+}
 
 namespace IPC {
 class Message;
@@ -49,9 +54,16 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
     // Sends an IPC message to the worker process. The message will be silently
     // dropped if the channel is closed.
+    // TODO(joedow): Remove this method after completing the migration to Mojo.
     virtual void Send(IPC::Message* message) = 0;
 
+    // Provides a way to request an associated interface from the worker process
+    // IPC channel.
+    virtual void GetRemoteAssociatedInterface(
+        mojo::GenericPendingAssociatedReceiver receiver) = 0;
+
     // Closes the IPC channel.
+    // TODO(joedow): Remove this method after completing the migration to Mojo.
     virtual void CloseChannel() = 0;
 
     // Terminates the worker process and closes the IPC channel.
@@ -63,6 +75,10 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   // |ipc_handler| must outlive this object.
   WorkerProcessLauncher(std::unique_ptr<Delegate> launcher_delegate,
                         WorkerProcessIpcDelegate* ipc_handler);
+
+  WorkerProcessLauncher(const WorkerProcessLauncher&) = delete;
+  WorkerProcessLauncher& operator=(const WorkerProcessLauncher&) = delete;
+
   ~WorkerProcessLauncher() override;
 
   // Asks the worker process to crash and generate a dump, and closes the IPC
@@ -72,9 +88,14 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   void Crash(const base::Location& location);
 
   // Sends an IPC message to the worker process. The message will be silently
-  // dropped if Send() is called before Start() or after stutdown has been
+  // dropped if Send() is called before Start() or after shutdown has been
   // initiated.
   void Send(IPC::Message* message);
+
+  // Provides a way to request an associated interface from the worker process
+  // IPC channel.
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver);
 
   // Notification methods invoked by |Delegate|.
 
@@ -93,6 +114,8 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   bool OnMessageReceived(const IPC::Message& message);
   void OnChannelConnected(int32_t peer_pid);
   void OnChannelError();
+  void OnAssociatedInterfaceRequest(const std::string& interface_name,
+                                    mojo::ScopedInterfaceEndpointHandle handle);
 
  private:
   friend class WorkerProcessLauncherTest;
@@ -131,7 +154,9 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   // code is used to determine whether the process has to be restarted.
   DWORD exit_code_;
 
-  // True if IPC messages should be passed to |ipc_handler_|.
+  // Indicates whether the worker process has been launched, after which IPC
+  // messages and events should be passed to the |ipc_handler_| delegate.
+  // TODO(joedow): Remove this member after completing the migration to Mojo.
   bool ipc_enabled_;
 
   // The timer used to delay termination of the worker process when an IPC error
@@ -159,8 +184,6 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   base::win::ScopedHandle worker_process_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerProcessLauncher);
 };
 
 }  // namespace remoting

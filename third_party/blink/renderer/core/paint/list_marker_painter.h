@@ -11,9 +11,9 @@ namespace blink {
 
 struct PaintInfo;
 class ComputedStyle;
-class IntRect;
 class LayoutListMarker;
 class LayoutObject;
+class LayoutRect;
 
 class ListMarkerPainter {
   STACK_ALLOCATED();
@@ -27,7 +27,7 @@ class ListMarkerPainter {
   static void PaintSymbol(const PaintInfo&,
                           const LayoutObject*,
                           const ComputedStyle&,
-                          const IntRect&);
+                          const LayoutRect&);
 
  private:
   const LayoutListMarker& layout_list_marker_;

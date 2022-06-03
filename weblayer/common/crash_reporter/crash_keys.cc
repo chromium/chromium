@@ -16,6 +16,34 @@ const char kAppPackageVersionCode[] = "app-package-version-code";
 
 const char kAndroidSdkInt[] = "android-sdk-int";
 
+const char kWeblayerWebViewCompatMode[] = "WEBLAYER_WEB_VIEW_COMPAT_MODE";
+
+// clang-format off
+const char* const kWebLayerCrashKeyAllowList[] = {
+    kAppPackageName, kAppPackageVersionCode, kAndroidSdkInt,
+    kWeblayerWebViewCompatMode,
+
+    // process type
+    "ptype",
+
+    // Java exception stack traces
+    "exception_info",
+
+    // gpu
+    "gpu-driver", "gpu-psver", "gpu-vsver", "gpu-gl-vendor", "gpu-gl-renderer",
+    "oop_read_failure",
+
+    // content/:
+    "bad_message_reason", "discardable-memory-allocated",
+    "discardable-memory-free", "mojo-message-error",
+    "total-discardable-memory-allocated",
+
+    // crash keys needed for recording finch trials
+    "variations", "num-experiments",
+
+    nullptr};
+// clang-format on
+
 }  // namespace crash_keys
 
 void SetWebLayerCrashKeys() {

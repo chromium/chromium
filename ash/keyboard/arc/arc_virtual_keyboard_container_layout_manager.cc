@@ -5,7 +5,7 @@
 #include "ash/keyboard/arc/arc_virtual_keyboard_container_layout_manager.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 
@@ -13,7 +13,7 @@ ArcVirtualKeyboardContainerLayoutManager::
     ArcVirtualKeyboardContainerLayoutManager(aura::Window* parent)
     : arc_ime_window_parent_container_(parent) {
   DCHECK(arc_ime_window_parent_container_);
-  DCHECK_EQ(arc_ime_window_parent_container_->id(),
+  DCHECK_EQ(arc_ime_window_parent_container_->GetId(),
             kShellWindowId_ArcImeWindowParentContainer);
 }
 
@@ -26,7 +26,7 @@ void ArcVirtualKeyboardContainerLayoutManager::OnWindowResized() {
 
 void ArcVirtualKeyboardContainerLayoutManager::OnWindowAddedToLayout(
     aura::Window* child) {
-  if (child->id() == kShellWindowId_ArcVirtualKeyboardContainer)
+  if (child->GetId() == kShellWindowId_ArcVirtualKeyboardContainer)
     SetChildBounds(child, arc_ime_window_parent_container_->bounds());
 }
 

@@ -120,7 +120,7 @@ skipped_functions = [
 "xmlRegisterInputCallbacks", "xmlReaderForIO",
 "xmlOutputBufferCreateIO", "xmlRegisterOutputCallbacks",
 "xmlSaveToIO", "xmlIOHTTPOpenW",
-# library state cleanup, generate false leak informations and other
+# library state cleanup, generate false leak information and other
 # troubles, heavillyb tested otherwise.
 "xmlCleanupParser", "xmlRelaxNGCleanupTypes", "xmlSetListDoc",
 "xmlSetTreeDoc", "xmlUnlinkNode",
@@ -676,7 +676,7 @@ def generate_test(module, node):
 
     #
     # check we know how to handle the args and return values
-    # and store the informations for the generation
+    # and store the information for the generation
     #
     try:
 	args = node.xpathEval("arg")

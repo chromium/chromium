@@ -26,7 +26,7 @@ namespace {
 
 class ScopedTerminateProcess {
  public:
-  ScopedTerminateProcess(HANDLE process) : process_(process) {}
+  explicit ScopedTerminateProcess(HANDLE process) : process_(process) {}
 
   ~ScopedTerminateProcess() { ::TerminateProcess(process_, 0); }
 
@@ -250,9 +250,7 @@ TEST(WinUtils, ConvertToLongPath) {
   // Expected result: "\Device\HarddiskVolumeX\Program Files\test_calc.exe"
 
   // clean up
-  EXPECT_TRUE(base::DeleteFileW(temp_path, false));
-
-  return;
+  EXPECT_TRUE(base::DeleteFile(temp_path));
 }
 
 }  // namespace sandbox

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 
 declare_args() {
@@ -13,15 +15,20 @@ declare_args() {
   enable_widevine = is_chrome_branded || is_android || is_fuchsia
 }
 
+# Disable Widevine when running linux-chromeos.
+if (is_chromeos && !is_chromeos_device) {
+  enable_widevine = false
+}
+
 # Widevine CDM is available as a library CDM on the following platforms and
 # architectures. Notably on Android library CDM is not used and Widevine is
 # supported via Android MediaDrm API.
-# TODO(hmchen): Provide support on "arm64".
 library_widevine_cdm_available =
-    (is_chromeos && (target_cpu == "x64" || target_cpu == "arm")) ||
-    (is_desktop_linux && (target_cpu == "x86" || target_cpu == "x64")) ||
-    (is_mac && target_cpu == "x64") ||
-    (is_win && (target_cpu == "x86" || target_cpu == "x64"))
+    (is_chromeos_ash && (target_cpu == "x64" || target_cpu == "arm")) ||
+    ((target_os == "linux" || is_chromeos_lacros) &&
+     (target_cpu == "x86" || target_cpu == "x64")) ||
+    (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
+    (target_os == "win" && (target_cpu == "x86" || target_cpu == "x64"))
 
 # Widevine CDM is available as a library CDM and it's supported by Chromium.
 # This does not define how the CDM will be deployed. It can be bundled or
@@ -32,14 +39,42 @@ enable_library_widevine_cdm =
 # Widevine CDM can be deployed as a component. Currently only supported on
 # Mac, Windows, and desktop Linux. The CDM can be bundled regardless whether
 # it's a component. See below.
+# Note: Not enabled on ChromeOS. See https://crbug.com/971433
 enable_widevine_cdm_component =
-    enable_library_widevine_cdm && (is_win || is_mac || is_desktop_linux)
+    enable_library_widevine_cdm &&
+    (is_win || is_mac || is_linux || is_chromeos_lacros)
 
-# Widevine CDM is bundled as part of Google Chrome builds.
-bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded
+# Enable (Windows) Media Foundation Widevine CDM component.
+declare_args() {
+  enable_media_foundation_widevine_cdm =
+      is_win && enable_widevine && is_chrome_branded
+}
+assert(!enable_media_foundation_widevine_cdm || is_win)
+assert(!enable_media_foundation_widevine_cdm || enable_widevine)
 
+declare_args() {
+  # Widevine CDM is bundled as part of Google Chrome builds.
+  bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded
+
+  # Relative root directory to //third_party/widevine/cdm for CDM files.
+  # Can be overridden if the CDM files are located in other places.
+  widevine_root = "."
+}
+
+# Enable Widevine CDM host verification, which will sign additional binaries
+# with Widevine certs and copy signature files as needed.
 enable_widevine_cdm_host_verification =
     enable_library_widevine_cdm && enable_cdm_host_verification
+
+declare_args() {
+  # If set, and Widevine CDM host verification signing failed due to no signing
+  # cert, the failure will be ignored. Otherwise the build process will fail.
+  # Set to false by default for official build to catch missing cert error.
+  # For developers building with "is_official_build" locally without Widevine
+  # signing certs, please manually set `ignore_missing_widevine_signing_cert`
+  # to true to suppress the error.
+  ignore_missing_widevine_signing_cert = !is_official_build
+}
 
 template("widevine_sign_file") {
   # For official builds, generate a signature file for |file| which will
@@ -62,12 +97,8 @@ template("widevine_sign_file") {
     }
 
     script = "//third_party/widevine/scripts/signature_generator.py"
-    sources = [
-      "$file",
-    ]
-    outputs = [
-      "$signature_file",
-    ]
+    sources = [ "$file" ]
+    outputs = [ "$signature_file" ]
     args = [
       "--input_file",
       rebase_path("$file", root_build_dir),
@@ -76,5 +107,9 @@ template("widevine_sign_file") {
       "--flags",
       "$flags",
     ]
+
+    if (ignore_missing_widevine_signing_cert) {
+      args += [ "--ignore_missing_cert" ]
+    }
   }
 }

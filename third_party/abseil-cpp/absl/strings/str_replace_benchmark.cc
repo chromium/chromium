@@ -62,7 +62,7 @@ void SetUpStrings() {
       }
     }
     // big_string->resize(50);
-    // OK, we've set up the std::string, now let's set up expectations - first by
+    // OK, we've set up the string, now let's set up expectations - first by
     // just replacing "the" with "box"
     after_replacing_the = new std::string(*big_string);
     for (size_t pos = 0;

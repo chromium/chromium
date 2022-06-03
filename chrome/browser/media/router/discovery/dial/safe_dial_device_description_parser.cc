@@ -42,9 +42,7 @@ SafeDialDeviceDescriptionParser::~SafeDialDeviceDescriptionParser() = default;
 void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
                                             const GURL& app_url,
                                             ParseCallback callback) {
-  DVLOG(2) << "Parsing device description...";
   DCHECK(callback);
-
   GetDataDecoder().ParseXml(
       xml_text,
       base::BindOnce(&SafeDialDeviceDescriptionParser::OnXmlParsingDone,
@@ -97,8 +95,8 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     if (value) {
       DCHECK_EQ(1, data_decoder::GetXmlElementChildrenCount(*device_element,
                                                             kNodeNames[i]));
-      bool result = data_decoder::GetXmlElementText(*value, kFields[i]);
-      if (!result) {
+      bool parsed = data_decoder::GetXmlElementText(*value, kFields[i]);
+      if (!parsed) {
         NotifyParsingError(std::move(callback), kParsingErrors[i]);
         return;
       }

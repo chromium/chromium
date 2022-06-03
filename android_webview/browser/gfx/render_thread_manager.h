@@ -11,16 +11,17 @@
 #include "android_webview/browser/gfx/hardware_renderer.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace android_webview {
 
+class AwVulkanContextProvider;
 class ChildFrame;
 class CompositorFrameProducer;
 
@@ -29,6 +30,10 @@ class RenderThreadManager : public CompositorFrameConsumer {
  public:
   explicit RenderThreadManager(
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_loop);
+
+  RenderThreadManager(const RenderThreadManager&) = delete;
+  RenderThreadManager& operator=(const RenderThreadManager&) = delete;
+
   ~RenderThreadManager() override;
 
   // CompositorFrameConsumer methods.
@@ -54,15 +59,18 @@ class RenderThreadManager : public CompositorFrameConsumer {
       const viz::FrameSinkId& frame_sink_id,
       viz::FrameTimingDetailsMap timing_details,
       uint32_t frame_token);
-  void InsertReturnedResourcesOnRT(
-      const std::vector<viz::ReturnedResource>& resources,
-      const viz::FrameSinkId& frame_sink_id,
-      uint32_t layer_tree_frame_sink_id);
+  void InsertReturnedResourcesOnRT(std::vector<viz::ReturnedResource> resources,
+                                   const viz::FrameSinkId& frame_sink_id,
+                                   uint32_t layer_tree_frame_sink_id);
 
   void CommitFrameOnRT();
+  void SetVulkanContextProviderOnRT(AwVulkanContextProvider* context_provider);
   void UpdateViewTreeForceDarkStateOnRT(bool view_tree_force_dark_state);
-  void DrawOnRT(bool save_restore, HardwareRendererDrawParams* params);
-  void DestroyHardwareRendererOnRT(bool save_restore);
+  void DrawOnRT(bool save_restore,
+                const HardwareRendererDrawParams& params,
+                const OverlaysParams& overlays_params);
+  void DestroyHardwareRendererOnRT(bool save_restore, bool abandon_context);
+  void RemoveOverlaysOnRT(OverlaysParams::MergeTransactionFn merge_transaction);
 
   // May be created on either thread.
   class InsideHardwareReleaseReset {
@@ -108,6 +116,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   // Accessed by RT thread.
   std::unique_ptr<HardwareRenderer> hardware_renderer_;
   bool view_tree_force_dark_state_ = false;
+  AwVulkanContextProvider* vulkan_context_provider_ = nullptr;
 
   // Accessed by both UI and RT thread.
   mutable base::Lock lock_;
@@ -121,8 +130,6 @@ class RenderThreadManager : public CompositorFrameConsumer {
   uint32_t presented_frame_token_ = 0u;
 
   base::WeakPtrFactory<RenderThreadManager> weak_factory_on_ui_thread_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadManager);
 };
 
 }  // namespace android_webview

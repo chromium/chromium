@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_OVERLAY_JS_RENDER_FRAME_OBSERVER_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_OVERLAY_JS_RENDER_FRAME_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -25,6 +24,11 @@ class OverlayJsRenderFrameObserver : public content::RenderFrameObserver {
  public:
   OverlayJsRenderFrameObserver(content::RenderFrame* render_frame,
                                service_manager::BinderRegistry* registry);
+
+  OverlayJsRenderFrameObserver(const OverlayJsRenderFrameObserver&) = delete;
+  OverlayJsRenderFrameObserver& operator=(const OverlayJsRenderFrameObserver&) =
+      delete;
+
   ~OverlayJsRenderFrameObserver() override;
 
   // RenderFrameObserver implementation.
@@ -52,8 +56,6 @@ class OverlayJsRenderFrameObserver : public content::RenderFrameObserver {
   bool did_start_enabling_js_api_ = false;
 
   base::WeakPtrFactory<OverlayJsRenderFrameObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayJsRenderFrameObserver);
 };
 
 }  // namespace contextual_search

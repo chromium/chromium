@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chromecast/browser/application_media_info_manager.h"
+
+#include <utility>
+
+#include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_renderer_block_data.h"
 #include "content/public/browser/web_contents.h"
-
-#include <utility>
 
 namespace chromecast {
 namespace media {
@@ -19,7 +21,8 @@ void CreateApplicationMediaInfoManager(
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver) {
   // The created ApplicationMediaInfoManager will be deleted on connection
-  // error, or when the frame navigates away. See FrameServiceBase for details.
+  // error, or when the frame navigates away. See DocumentService for
+  // details.
   new ApplicationMediaInfoManager(render_frame_host, std::move(receiver),
                                   std::move(application_session_id),
                                   mixer_audio_enabled);
@@ -31,7 +34,7 @@ ApplicationMediaInfoManager::ApplicationMediaInfoManager(
         receiver,
     std::string application_session_id,
     bool mixer_audio_enabled)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       application_session_id_(std::move(application_session_id)),
       mixer_audio_enabled_(mixer_audio_enabled),
       renderer_blocked_(false) {

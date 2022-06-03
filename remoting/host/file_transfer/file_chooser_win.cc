@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -99,6 +100,9 @@ class FileChooserWindows : public FileChooser,
   FileChooserWindows(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
                      ResultCallback callback);
 
+  FileChooserWindows(const FileChooserWindows&) = delete;
+  FileChooserWindows& operator=(const FileChooserWindows&) = delete;
+
   ~FileChooserWindows() override;
 
   // FileChooser implementation.
@@ -114,8 +118,6 @@ class FileChooserWindows : public FileChooser,
   base::Process process_;
   base::win::ObjectWatcher object_watcher_;
   ScopedHandle pipe_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserWindows);
 };
 
 FileChooserWindows::FileChooserWindows(

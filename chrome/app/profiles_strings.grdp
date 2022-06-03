@@ -2,53 +2,50 @@
 <!-- Profiles specific strings (included from generated_resources.grd). -->
 <grit-part>
   <!-- Supervised User (Legacy and Accounts for Kids) Avatar Menu -->
-  <message name="IDS_LEGACY_SUPERVISED_USER_INFO" desc="Text which explains that a supervised user is managed by a custodian.">
-    Usage and history can be reviewed by the manager (<ph name="CUSTODIAN_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>) on chrome.com.
-  </message>
   <message name="IDS_CHILD_INFO_ONE_CUSTODIAN" desc="Text which explains that a child user is managed by a single parent.">
     This is an account for kids managed by <ph name="CUSTODIAN_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>.
   </message>
   <message name="IDS_CHILD_INFO_TWO_CUSTODIANS" desc="Text which explains that a child user is managed by two parents.">
     This is an account for kids managed by <ph name="CUSTODIAN_EMAIL">$1<ex>John.Doe@gmail.com</ex></ph> and <ph name="SECOND_CUSTODIAN_EMAIL">$2<ex>Jane.Doe@gmail.com</ex></ph>.
   </message>
-  <message name="IDS_LEGACY_SUPERVISED_USER_AVATAR_LABEL" desc="A label for the supervised user which is used in the avatar menu and as a label in the titlebar.">
-    Supervised user
+  <message name="IDS_AVATAR_BUTTON_GUEST" desc="Short label for the avatar button when the user is in guest mode and the number of open guest windows if there are more than one guest window open. [ICU Syntax]" meaning="This window is browsing in guest mode and there are more than one guest windows open. The counter is not shown when there is only one guest window open.">
+    {0, plural,
+      =1 {Guest}
+      other {Guest (#)}
+    }
   </message>
-  <message name="IDS_GENERIC_USER_AVATAR_LABEL" desc="Label shown for the user that is currently active, when there are multiple user accounts.">
-    Current user
+  <message name="IDS_AVATAR_BUTTON_GUEST_TOOLTIP" desc="Tooltip for the avatar button when the user is in Guest mode.">
+    To clear Guest mode history, close all Guest windows.
   </message>
-  <message name="IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in incognito mode. The message also shows the number of open incognito windows if they are more than one. [ICU Syntax]">
+  <message name="IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in guest mode. The message also shows the number of open guest windows if they are more than one. [ICU Syntax]">
       {0, plural,
-        =1 {Incognito}
-        other {# open incognito windows}
+        =1 {Guest}
+        other {# open guest windows}
       }
   </message>
-  <message name="IDS_AVATAR_BUTTON_INCOGNITO" desc="Short label for the avatar button when the user is in incognito mode and the number of open incognito windows if there are more than one incognito window open. [ICU Syntax]" meaning="This window is browsing in incognito mode and there are more than one incognito windows open. The counter is not shown when there is only one incognito window open.">
+  <message name="IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in Incognito mode. The message also shows the number of open Incognito windows if they are more than one. [ICU Syntax]">
+      {0, plural,
+        =1 {Incognito}
+        other {# open Incognito windows}
+      }
+  </message>
+  <message name="IDS_AVATAR_BUTTON_INCOGNITO" desc="Short label for the avatar button when the user is in Incognito mode and the number of open Incognito windows if there are more than one Incognito window open. [ICU Syntax]" meaning="This window is browsing in Incognito mode and there are more than one Incognito windows open. The counter is not shown when there is only one Incognito window open.">
     {0, plural,
       =1 {Incognito}
       other {Incognito (#)}
     }
   </message>
-  <message name="IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP" desc="Tooltip for the inactive avatar button when the user is in incognito mode.">
-    You're incognito
+  <message name="IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP" desc="Tooltip for the avatar button when the user is in Incognito mode.">
+    You're Incognito
   </message>
   <message name="IDS_AVATAR_BUTTON_SYNC_ERROR" desc="Short label for the avatar button when there are sync errors for the current profile." meaning="An error has occurred during sync">
     Error
   </message>
   <message name="IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP" desc="Tooltip for the avatar button when there are sync errors for the current profile.">
-    <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: Sync isn't working
-  </message>
-  <message name="IDS_AVATAR_BUTTON_SYNC_ERROR_PASSWORDS_TOOLTIP" desc="Tooltip for the avatar button when there are sync errors for the current profile affecting passwords sync specifically.">
-    <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: Password sync isn't working
+    <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: <ph name="ERROR_DESCRIPTION">$2<ex>Sync isn't working</ex></ph>
   </message>
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED" desc="Short label for the avatar button when sync is paused for the current profile." meaning="Sync is paused">
     Paused
-  </message>
-  <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED_TOOLTIP" desc="Tooltip for the avatar button when sync is paused for the current profile.">
-    <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: Sync paused
-  </message>
-  <message name="IDS_LEGACY_SUPERVISED_USER_NEW_AVATAR_LABEL" desc="Label shown in the new avatar menu for a supervised user.">
-    <ph name="PROFILE_DISPLAY_NAME">$1<ex>Markus</ex></ph> (Supervised)
   </message>
   <message name="IDS_CHILD_AVATAR_LABEL" desc="Label shown in the new avatar menu for a child user.">
     <ph name="PROFILE_DISPLAY_NAME">$1<ex>Markus</ex></ph> (Account for kids)
@@ -61,19 +58,24 @@
   </message>
 
   <!-- Multi-profile -->
-  <message name="IDS_PROFILES_OPTIONS_GROUP_NAME" desc="The name of the sync group in the options dialog when using the new Profiles UI.">
-    People
+  <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
+    Profiles
   </message>
   <if expr="is_macosx">
     <message name="IDS_PROFILES_CREATE_NEW_PROFILE_OPTION" desc="In Title Case. Create new profile menu item and button title.">
       Add Person...
     </message>
+    <message name="IDS_PROFILES_ADD_PROFILE_LABEL" desc="In Title Case. Menu item for adding a new profile.">
+      Add Profile...
+    </message>
+  </if>
+  <if expr="is_linux">
+    <message name="IDS_PROFILES_ADD_PROFILE_LABEL" desc="Menu item for adding a new profile.">
+      Add profile...
+    </message>
   </if>
   <message name="IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu bubble.">
     Accounts and sync
-  </message>
-  <message name="IDS_PROFILES_PROFILE_SIGNOUT_BUTTON" desc="Button in the avatar menu bubble view to sign-out the current profile.">
-    Exit and childlock
   </message>
   <message name="IDS_PROFILES_EXIT_PROFILE_BUTTON" desc="Button in the avatar menu bubble view to close all windows of the current profile when there is more than one profile.">
     Exit <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
@@ -108,9 +110,6 @@
    <message name="IDS_PROFILES_DICE_SYNC_PAUSED_TITLE" desc="Title of the profile user menu when sync is paused.">
     Sync is paused
   </message>
-  <message name="IDS_PROFILES_EXIT_GUEST" desc="Button in the avatar menu bubble view for exiting the active guest session.">
-    Exit Guest
-  </message>
   <message name="IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
     {0, plural,
     =1 {Close # window}
@@ -130,8 +129,8 @@
     Addresses and more
   </message>
   <if expr="not use_titlecase">
-    <message name="IDS_PROFILES_OTHER_PROFILES_TITLE" desc="Title in the profile menu of the 'other profiles' section.">
-      Other people
+    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
+      Other profiles
     </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
@@ -139,19 +138,10 @@
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide accounts
     </message>
-    <message name="IDS_PROFILES_MANAGE_USERS_BUTTON" desc="Button in the avatar menu bubble view for launching the user manager.">
-      Manage people
-    </message>
-    <message name="IDS_PROFILES_OPEN_GUEST_PROFILE_BUTTON" desc="Button in the avatar menu bubble view to open a guest window.">
-      Open Guest window
-    </message>
-    <message name="IDS_PROFILES_CLOSE_ALL_WINDOWS_BUTTON" desc="Button in the avatar menu bubble view to close all windows of the current profile.">
-      Close all your windows
-    </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_PROFILES_OTHER_PROFILES_TITLE" desc="Title in the profile menu of the 'other profiles' section.">
-      Other People
+    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
+      Other Profiles
     </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your Accounts
@@ -159,21 +149,12 @@
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide Accounts
     </message>
-    <message name="IDS_PROFILES_MANAGE_USERS_BUTTON" desc="Button in the avatar menu bubble view for launching the user manager.">
-      Manage People
-    </message>
-    <message name="IDS_PROFILES_OPEN_GUEST_PROFILE_BUTTON" desc="Button in the avatar menu bubble view to open a guest window.">
-      Open Guest Window
-    </message>
-    <message name="IDS_PROFILES_CLOSE_ALL_WINDOWS_BUTTON" desc="Button in the avatar menu bubble view to close all windows of the current profile.">
-      Close All Your Windows
-    </message>
   </if>
-  <message name="IDS_PROFILES_EDIT_PROFILE_ACCESSIBLE_NAME" desc="Description of the Edit Profile button. This is used for accessibility.">
-    Edit person, <ph name="PROFILE_NAME">$1<ex>Jane Doe</ex></ph>
+  <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
+    Manage profiles
   </message>
-  <message name="IDS_PROFILES_EDIT_SIGNED_IN_PROFILE_ACCESSIBLE_NAME" desc="Description of the Edit Profile button for a signed-in profile. This is used for accessibility.">
-    Edit person, <ph name="PROFILE_NAME">$1<ex>Jane Doe</ex></ph>, <ph name="USERNAME">$2<ex>jane.doe@gmail.com</ex></ph>
+  <message name="IDS_PROFILES_CUSTOMIZE_PROFILE_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for editing the current profile.">
+    Customize profile
   </message>
   <message name="IDS_PROFILES_GUEST_PROFILE_NAME" desc="Name of the guest profile.">
     Guest
@@ -334,6 +315,9 @@
   <message name="IDS_DEFAULT_AVATAR_LABEL_25" desc="The label for the sun and cloud avatar.">
     Sun and clouds
   </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_26" desc="The label for the default avatar.">
+    Default avatar
+  </message>
   <message name="IDS_DEFAULT_AVATAR_LABEL_27" desc="The label for the cat avatar.">
     Cat
   </message>
@@ -471,58 +455,11 @@
 
   <!-- Android does not support multiple profiles and supervised users -->
   <if expr="not is_android">
-    <!-- Create Profile Dialog -->
-    <message name="IDS_PROFILES_CREATE_TITLE" desc="Title of the create profile dialog">
-      Add person
-    </message>
-    <message name="IDS_PROFILES_CREATE_NAME_PLACEHOLDER" desc="Name placeholder in the input field of the create profile dialog.">
-      Name
-    </message>
-    <message name="IDS_PROFILES_CREATE_LOCAL_ERROR" desc="Message shown when a local error (for example, a disk error) occurs during profile creation.">
-      The new user couldn't be created. Please check your hard drive space and permissions and try again.
-    </message>
-    <message name="IDS_PROFILES_CREATE_DESKTOP_SHORTCUT_LABEL" desc="Label for the checkbox that controls whether a desktop shortcut should be created for the new profile.">
-      Create a desktop shortcut for this user
-    </message>
-    <message name="IDS_PROFILES_CREATE_SUPERVISED_JUST_SIGNED_IN" desc="Warning message shown in the create-profile dialog when the custodian signed in recently, sync has not yet finished initializing, and so the creation process is likely to take extra time.">
-      Creating your supervised user. This may take a few moments.
-    </message>
-
-    <!-- Import existing supervised user dialog -->
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_TITLE" desc="Title for the dialog used to import existing supervised users. The dialog appears when the custodian clicks on 'Import existing supervised user' during the user creation flow. The dialog displays a list of existing supervised users for the custodian to choose from">
-      Import an existing supervised user
-    </message>
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_TEXT" desc="Text that instructs the user to choose one of the displayed supervised users to import to this device.">
-      Choose a supervised user to add to this device.
-    </message>
-    <message name="IDS_CREATE_NEW_LEGACY_SUPERVISED_USER_LINK" desc="The text for the link button that takes the user back from the dialog for importing an existing supervised user to the user creation dialog.">
-      Create a new supervised user
-    </message>
-    <message name="IDS_IMPORT_EXISTING_LEGACY_SUPERVISED_USER_OK" desc="Text on the button to confirm importing an existing supervised user.">
-      Import supervised user
-    </message>
-  </if>
-
-  <if expr="not is_android">
     <!-- User manager web UI -->
     <if expr="use_titlecase">
-      <message name="IDS_ADD_USER_BUTTON" desc="Text shown on an add user button on login/locker screen">
-        Add Person
-      </message>
-      <if expr="not chromeos">
-        <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
-          Remove This Person
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add Supervised Person
-        </message>
-      </if>
       <if expr="chromeos">
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove This User
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add Supervised User
         </message>
       </if>
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
@@ -530,23 +467,9 @@
       </message>
     </if>
     <if expr="not use_titlecase">
-      <message name="IDS_ADD_USER_BUTTON" desc="Text shown on an add user button on login/locker screen">
-        Add person
-      </message>
-      <if expr="not chromeos">
-        <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
-          Remove this person
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add supervised person
-        </message>
-      </if>
       <if expr="chromeos">
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON" desc="Text shown on a button that confirms removal of a user.">
           Remove this user
-        </message>
-        <message name="IDS_CREATE_LEGACY_SUPERVISED_USER_MENU_LABEL" desc="Text shown on a menu option that creates a legacy supervised user.">
-          Add supervised user
         </message>
       </if>
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
@@ -554,20 +477,12 @@
       </message>
     </if>
     <if expr="chromeos">
+      <message name="IDS_SCREEN_LOCK_ACTIVE_USER">
+        Currently signed in
+      </message>
       <message name="IDS_LAUNCH_APP_BUTTON" desc="Text shown on the button that launches kiosk app from Chrome OS login UI">
         Launch app
       </message>
-    </if>
-    <message name="IDS_BROWSE_AS_GUEST_BUTTON" desc="Text shown on Chrome OS sign-in screen button that launches guest session. Should be short.">
-      Browse as Guest
-    </message>
-    <message name="IDS_MORE_OPTIONS_BUTTON" desc="Text read but not shown on the [...] button on login screen">
-      More Options
-    </message>
-    <message name="IDS_SCREEN_LOCK_ACTIVE_USER">
-      Currently signed in
-    </message>
-    <if expr="chromeos">
       <message name="IDS_PIN_KEYBOARD_HINT_TEXT_PIN" desc="Text to display in the pin field for user pod when no pin has been entered.">
         PIN
       </message>
@@ -592,88 +507,213 @@
       <message name="IDS_LOGIN_ERROR_FINGERPRINT_MAX_ATTEMPT" desc="Couldn't sign in because fingerprint unlock has reached maximum attempt">
         Sorry, your fingerprint is still not recognized. Please enter your password.
       </message>
+      <message name="IDS_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because password is invalid">
+        Sorry, your password could not be verified. Please try again.
+      </message>
+      <message name="IDS_LOGIN_POD_EMPTY_PASSWORD_TEXT" desc="Text to display in the password field for user pod when no password has been entered.">
+        Password
+      </message>
+      <message name="IDS_LOGIN_POD_SIGNING_IN" desc="Text to display at the bottom of a user pod during signing in the user. The translation should be as short as possible because of limited UI space.">
+        Signing in
+      </message>
+      <message name="IDS_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the password field of a user pod on the sign-in screen.">
+        Password for <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>
+      </message>
+      <message name="IDS_LOGIN_POD_SUBMIT_BUTTON_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the submit button of a user pod on the sign-in screen.">
+        Submit
+      </message>
+      <message name="IDS_LOGIN_POD_MENU_BUTTON_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the menu button of the user pod on the login screen.">
+        Options menu for <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>
+      </message>
+      <message name="IDS_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME" desc="Text to be spoken when 'Remove user' item is selected on the pod menu.">
+        Remove this user
+      </message>
+      <message name="IDS_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING" desc="Text shown as a warning when attempting to remove non-owner user.">
+        All files and local data associated with this user will be permanently deleted once this user is removed. <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> can still sign in later.
+      </message>
     </if>
-    <message name="IDS_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because password is invalid">
-      Sorry, your password could not be verified. Please try again.
+  </if>
+
+  <if expr="not chromeos and not is_android">
+    <!-- Profile customization bubble -->
+    <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
+      Done
     </message>
-    <message name="IDS_LOGIN_ERROR_AUTHENTICATING_OFFLINE" desc="Couldn't unlock because the password can't be validated locally and the user is offline">
-      Sorry, your password could not be verified because you are offline.
+    <message name="IDS_PROFILE_CUSTOMIZATION_WELCOME" desc="Title of the profile customization bubble">
+      Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
     </message>
-    <message name="IDS_LOGIN_POD_EMPTY_PASSWORD_TEXT" desc="Text to display in the password field for user pod when no password has been entered.">
-      Password
+    <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
+      Rename your profile
     </message>
-    <message name="IDS_LOGIN_POD_SIGNING_IN" desc="Text to display at the bottom of a user pod during signing in the user. The translation should be as short as possible because of limited UI space.">
-      Signing in
+
+    <!-- Enterprise profile welcome screen -->
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_TITLE" desc="Title of the enteprise profile welcome screen. It is part of the profile creation flow, shown after sign-in to enterprise users.">
+      Welcome to your new profile
     </message>
-    <message name="IDS_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the password field of a user pod on the sign-in screen.">
-      Password for <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the account is managed by an administrator.">
+      This account is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_LOGIN_POD_SUBMIT_BUTTON_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the submit button of a user pod on the sign-in screen.">
-      Submit
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen for a signin interception, informing that the account is managed by an administrator.">
+      This account (<ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>) is managed by <ph name="PROFILE_NAME">$2<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_LOGIN_POD_MENU_BUTTON_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the menu button of the user pod on the login screen.">
-      Options menu for <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed by an administrator.">
+      Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME" desc="Text to be spoken when 'Remove user' item is selected on the pod menu.">
-      Remove this user
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed.">
+      Your device is managed by your organization
     </message>
-    <message name="IDS_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING" desc="Text shown as a warning when attempting to remove legacy supervised user.">
-      All files and local data associated with the supervised user will be permanently deleted once this supervised user is removed. Visited websites and settings for this supervised user may still be visible by the manager at <ph name="MANAGEMENT_URL">$1<ex>www.example.com</ex></ph>.
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is enabled by the administrator).">
+      You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data. Bookmarks, history, passwords, and other settings can be synced to your account and managed by your administrator.
     </message>
-    <message name="IDS_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING" desc="Text shown as a warning when attempting to remove non-owner user.">
-      All files and local data associated with this user will be permanently deleted once this user is removed. <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> can still sign in later.
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is disabled by the administrator).">
+      You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data.
     </message>
-    <if expr="not chromeos">
-      <message name="IDS_USER_MANAGER_GO_GUEST_PROFILES_LOCKED_ERROR" desc="Error message displayed when trying to browser as guest while all profiles are locked.">
-        Please unlock your profile before browsing as a guest.
-      </message>
-      <message name="IDS_USER_MANAGER_REMOVE_PROFILE_PROFILES_LOCKED_ERROR" desc="Error message displayed when trying to remove a profile while all profiles are locked.">
-        Please unlock your profile before removing a person.
-      </message>
-      <message name="IDS_USER_MANAGER_ADD_PROFILE_PROFILES_LOCKED_ERROR" desc="Error message displayed when trying to add a profile while all profiles are locked.">
-        Please unlock your profile before adding a person.
-      </message>
-      <message name="IDS_USER_MANAGER_PROMPT_MESSAGE" desc="Prompt message displayed on UserManager when force-sign-in policy is enabled.">
-        To use Chrome, please sign in
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_NONSYNC" desc="Main text shown as a warning when attempting to remove an user.">
-        This will permanently delete your browsing data from this device.
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
-        Browsing history
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_PASSWORDS" desc="The title of a statistic (passwords) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
-        Passwords
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_BOOKMARKS" desc="The title of a statistic (bookmarks) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
-        Bookmarks
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_AUTOFILL" desc="The title of a statistic (autofill) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
-        Autofill form data
-      </message>
-      <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_CALCULATING" desc="This is used in '...' of the warning message 'This will permanently delete ... items from the device.', which is shown when attempting to remove an user. Also shown next to the loading statistics below this warning. All occurrences of '...' will be eventually replaced by numbers when the statistics are loaded.">
-        ...
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enteprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
+      Your organization requires a profile
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON" desc="Label of the proceed button on the enterprise profile welcome screen when a user signed in an enterprise account outside of the profile creation flow. The label informs the user that a profile will be created.">
+      Create
+    </message>
+
+    <!-- Profile Picker -->
+    <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">
+      Add
+    </message>
+    <message name="IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON" desc="Text for the profile picker main view button that launches guest session.">
+      Guest mode
+    </message>
+    <message name="IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL" desc="Label for a button that navigates user to the previous page from a profile picker subpage">
+      Back from <ph name="PAGE_TITLE">$1<ex>Set up your new Chrome profile</ex></ph> page
+    </message>
+    <message name="IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL" desc="Label for a button that navigates user to the previous page from the 'Sign in' page">
+      Back from sign in
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
+      Sign in
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL" desc="Label for a profile card button that opens a new profile">
+      Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
+      Rename your profile
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT" desc="Text of the remove button in profile card menu.">
+      Delete
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_CONFIRM" desc="Text of the remove button in the remove warning.">
+      Delete
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT" desc="Text of the customize button in profile card menu">
+      Edit
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_INCOGNITO_TEXT" desc="Text of the Incognito button in profile card menu">
+      Incognito
+    </message>
+    <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
+      Show on startup
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
+      Delete this profile?
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
+      This will permanently delete your browsing data from this device. To recover the data, turn on sync as
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
+      Delete this profile and its data?
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
+      This will permanently delete your browsing data from this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
+      Browsing history
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS" desc="The title of a statistic (passwords) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
+      Passwords
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS" desc="The title of a statistic (bookmarks) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
+      Bookmarks
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL" desc="The title of a statistic (autofill) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
+      Autofill data
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING" desc="This is shown next to the loading statistics in the remove action menu. All occurrences of '...' will be eventually replaced by numbers when the statistics are loaded.">
+      ...
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
+      Continue without an account
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
+      Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed.">
+      Your device is managed by your organization. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL" desc="Accessibility label for edit avatar button when the pencil icon is focused that is not rendered.">
+      Customize avatar
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_THEME_TEXT" desc="Text of a section to pick a color for the profile.">
+      Pick a theme color
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT" desc="Text of a section to pick an avatar for the profile.">
+      Pick an avatar
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_DONE" desc="Label of a button to finish the profile creation.">
+      Done
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_DONE" desc="Label of a button to close avatar selection.">
+      Done
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME" desc="Name of the input to configure the profile name in the profile customization window.">
+      Add a name or a label like Work, Personal, or Kids
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT" desc="Text of a box creating a desktop shortcut for the profile.">
+      Create a desktop shortcut
+    </message>
+    <message name="IDS_PROFILE_PICKER_TAKE_A_TOUR_BUTTON_LABEL" desc="Label of a button that starts a tour for the picker using IPH bubbles.">
+      Take a tour
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL" desc="Label of the next button showing on the IPH.">
+      Next
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_DONE_BUTTON_LABEL" desc="Label of the done button showing on the last IPH to close the tour.">
+      Done
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_FOR_PROFILES_TITLE" desc="Title of the IPH bubble for introducing profiles.">
+      Your profiles
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_FOR_ADD_PROFILE_TITLE" desc="Title of the IPH bubble for adding new profiles.">
+      Add family and friends
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_FOR_CUSTOMIZE_PROFILE_TITLE" desc="Title of the IPH bubble for customizing profiles.">
+      Customize your profile
+    </message>
+    <message name="IDS_PROFILE_PICKER_IPH_FOR_CUSTOMIZE_PROFILE_TEXT" desc="Text of the IPH bubble for customizing profiles.">
+      Choose a name and color theme to differentiate between profiles
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
+      Switch
+    </message>
+
+    <if expr="not lacros">
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL" desc="Label for a button that prompts user to sign in">
+        Sign in
       </message>
     </if>
 
-    <!-- User manager tutorial -->
-    <message name="IDS_USER_MANAGER_TUTORIAL_NEXT" desc="Text of the button that advances the tutorial to the next slide">
-      Next
-    </message>
-    <message name="IDS_USER_MANAGER_TUTORIAL_DONE" desc="The text of the OK button on the last tutorial slide">
-      OK, got it
-    </message>
-    <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_GUEST_TITLE" desc="Title of the guest user slide">
-      Share with guests
-    </message>
-    <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_FRIENDS_TITLE" desc="Title of the friends and family slide">
-      Add family and friends
-    </message>
-    <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_OUTRO_TITLE" desc="Title of the tutorial completion slide">
-      You're almost done!
-    </message>
-    <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_OUTRO_USER_NOT_FOUND" desc="Text of the label asking the user if they see their name">
-      Don't see your name?
-    </message>
+    <if expr="lacros">
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS" desc="Label for a button that prompts user to sign in">
+        Next
+      </message>
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE" desc="Profile picker, account selection screen title">
+        Choose an account
+      </message>
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL" desc="Label for a button to use another account for the new profile">
+        Use another account
+      </message>
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS" desc="Profile picker main view title">
+        Choose a profile
+      </message>
+    </if>
+
   </if>
 </grit-part>

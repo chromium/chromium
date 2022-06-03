@@ -5,11 +5,17 @@
 #include "chromecast/media/audio/capture_service/message_parsing_utils.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstring>
 #include <limits>
 
 #include "base/big_endian.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
-#include "base/numerics/checked_math.h"
+#include "base/notreached.h"
+#include "chromecast/media/audio/capture_service/constants.h"
+#include "chromecast/media/audio/capture_service/packet_header.h"
 #include "media/base/limits.h"
 
 namespace chromecast {
@@ -17,9 +23,23 @@ namespace media {
 namespace capture_service {
 namespace {
 
-// Size in bytes of the total/message header.
-constexpr size_t kMessageHeaderBytes = 14;
-constexpr size_t kTotalHeaderBytes = kMessageHeaderBytes + sizeof(uint16_t);
+// Size in bytes of the header part of a handshake message.
+constexpr size_t kHandshakeHeaderBytes =
+    sizeof(HandshakePacket) - sizeof(uint16_t);
+
+static_assert(sizeof(PcmPacketHeader) % 4 == 0,
+              "Size of PCM audio packet header must be a multiple of 4 bytes.");
+static_assert(sizeof(HandshakePacket) % 4 == 0,
+              "Size of handshake packet must be a multiple of 4 bytes.");
+static_assert(kPcmAudioHeaderBytes ==
+                  sizeof(PcmPacketHeader) - sizeof(uint16_t),
+              "Invalid message header size.");
+static_assert(offsetof(struct PcmPacketHeader, message_type) ==
+                  sizeof(uint16_t),
+              "Invalid message header offset.");
+static_assert(offsetof(struct HandshakePacket, message_type) ==
+                  sizeof(uint16_t),
+              "Invalid message header offset.");
 
 // Check if audio data is properly aligned and has valid frame size. Return the
 // number of frames if they are all good, otherwise return 0 to indicate
@@ -135,87 +155,118 @@ bool ConvertData(int channels,
 
 }  // namespace
 
-char* PopulateHeader(char* data, size_t size, const PacketInfo& packet_info) {
-  // Currently doesn't support negative timestamps.
-  DCHECK_GE(packet_info.timestamp_us, 0);
-  base::BigEndianWriter data_writer(data, size);
-  const StreamInfo& stream_info = packet_info.stream_info;
-  // In audio message, the header contains a timestamp field, while in request
-  // message, it instead contains a frames field.
-  if (!data_writer.WriteU16(  // Deduct the size of |size| itself.
-          static_cast<uint16_t>(size - sizeof(uint16_t))) ||
-      !data_writer.WriteU8(static_cast<uint8_t>(packet_info.has_audio)) ||
-      !data_writer.WriteU8(static_cast<uint8_t>(stream_info.stream_type)) ||
-      !data_writer.WriteU8(static_cast<uint8_t>(stream_info.num_channels)) ||
-      !data_writer.WriteU8(static_cast<uint8_t>(stream_info.sample_format)) ||
-      !data_writer.WriteU16(static_cast<uint16_t>(stream_info.sample_rate)) ||
-      !data_writer.WriteU64(static_cast<uint64_t>(
-          packet_info.has_audio ? packet_info.timestamp_us
-                                : stream_info.frames_per_buffer))) {
-    LOG(ERROR) << "Fail to write message header.";
-    return nullptr;
-  }
-  DCHECK_EQ(size, data_writer.remaining() + kTotalHeaderBytes);
-  return data_writer.ptr();
+void FillBuffer(char* buf,
+                size_t buf_size,
+                const void* data,
+                size_t data_size) {
+  DCHECK_LE(data_size, buf_size - sizeof(uint16_t));
+  base::WriteBigEndian(  // Deduct the size of |size| itself.
+      buf, static_cast<uint16_t>(buf_size - sizeof(uint16_t)));
+  memcpy(buf + sizeof(uint16_t), data, data_size);
 }
 
-bool ReadHeader(const char* data, size_t size, PacketInfo* packet_info) {
-  DCHECK(packet_info);
-  uint8_t has_audio, type, channels, format;
-  uint16_t sample_rate;
-  uint64_t timestamp_or_frames;
-  base::BigEndianReader data_reader(data, size);
-  if (!data_reader.ReadU8(&has_audio) || !data_reader.ReadU8(&type) ||
-      type > static_cast<int>(StreamType::kLastType) ||
-      !data_reader.ReadU8(&channels) || !data_reader.ReadU8(&format) ||
-      format > static_cast<int>(SampleFormat::LAST_FORMAT) ||
-      !data_reader.ReadU16(&sample_rate) ||
-      !data_reader.ReadU64(&timestamp_or_frames)) {
-    LOG(ERROR) << "Invalid message header.";
+char* PopulatePcmAudioHeader(char* data,
+                             size_t size,
+                             StreamType stream_type,
+                             int64_t timestamp_us) {
+  PcmPacketHeader header;
+  header.message_type = static_cast<uint8_t>(MessageType::kPcmAudio);
+  header.stream_type = static_cast<uint8_t>(stream_type);
+  header.timestamp_us = timestamp_us;
+  FillBuffer(data, size, &header.message_type,
+             sizeof(header) - sizeof(uint16_t));
+  return data + sizeof(header);
+}
+
+void PopulateHandshakeMessage(char* data,
+                              size_t size,
+                              const StreamInfo& stream_info) {
+  HandshakePacket packet;
+  packet.message_type = static_cast<uint8_t>(MessageType::kHandshake);
+  packet.stream_type = static_cast<uint8_t>(stream_info.stream_type);
+  packet.audio_codec = static_cast<uint8_t>(stream_info.audio_codec);
+  packet.sample_format = static_cast<uint8_t>(stream_info.sample_format);
+  packet.num_channels = stream_info.num_channels;
+  packet.num_frames = stream_info.frames_per_buffer;
+  packet.sample_rate = stream_info.sample_rate;
+  FillBuffer(data, size, &packet.message_type,
+             sizeof(packet) - sizeof(uint16_t));
+}
+
+bool ReadPcmAudioHeader(const char* data,
+                        size_t size,
+                        const StreamInfo& stream_info,
+                        int64_t* timestamp_us) {
+  DCHECK(timestamp_us);
+  if (size < kPcmAudioHeaderBytes) {
+    LOG(ERROR) << "Message doesn't have a complete header: " << size << " v.s. "
+               << kPcmAudioHeaderBytes << ".";
     return false;
   }
-  DCHECK_EQ(size, data_reader.remaining() + kMessageHeaderBytes);
-  if (channels > ::media::limits::kMaxChannels) {
-    LOG(ERROR) << "Invalid number of channels: " << channels;
+  PcmPacketHeader header;
+  memcpy(&header.message_type, data, kPcmAudioHeaderBytes);
+  if (static_cast<MessageType>(header.message_type) != MessageType::kPcmAudio) {
+    LOG(ERROR) << "Message type mismatch.";
     return false;
   }
-  if (has_audio &&
-      !base::CheckedNumeric<uint64_t>(timestamp_or_frames).IsValid<int64_t>()) {
-    LOG(ERROR) << "Invalid timestamp: " << timestamp_or_frames;
+  if (static_cast<StreamType>(header.stream_type) != stream_info.stream_type) {
+    LOG(ERROR) << "Stream type mistach.";
     return false;
   }
-  if (!has_audio &&
-      !base::CheckedNumeric<uint64_t>(timestamp_or_frames).IsValid<int>()) {
-    LOG(ERROR) << "Invalid number of frames: " << timestamp_or_frames;
-    return false;
-  }
-  packet_info->has_audio = has_audio;
-  packet_info->stream_info.stream_type = static_cast<StreamType>(type);
-  packet_info->stream_info.num_channels = channels;
-  packet_info->stream_info.sample_format = static_cast<SampleFormat>(format);
-  packet_info->stream_info.sample_rate = sample_rate;
-  if (has_audio) {
-    packet_info->timestamp_us = timestamp_or_frames;
-  } else {
-    packet_info->stream_info.frames_per_buffer = timestamp_or_frames;
-  }
+  *timestamp_us = header.timestamp_us;
   return true;
 }
 
-scoped_refptr<net::IOBufferWithSize> MakeMessage(const PacketInfo& packet_info,
-                                                 const char* data,
-                                                 size_t data_size) {
-  const size_t total_size = kTotalHeaderBytes + data_size;
+scoped_refptr<net::IOBufferWithSize> MakePcmAudioMessage(StreamType stream_type,
+                                                         int64_t timestamp_us,
+                                                         const char* data,
+                                                         size_t data_size) {
+  const size_t total_size = sizeof(PcmPacketHeader) + data_size;
   DCHECK_LE(total_size, std::numeric_limits<uint16_t>::max());
   auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(total_size);
-  char* ptr = PopulateHeader(io_buffer->data(), io_buffer->size(), packet_info);
+  char* ptr = PopulatePcmAudioHeader(io_buffer->data(), io_buffer->size(),
+                                     stream_type, timestamp_us);
   if (!ptr) {
     return nullptr;
   }
-  if (packet_info.has_audio && data_size > 0) {
+  if (data_size > 0) {
     DCHECK(data);
     std::copy(data, data + data_size, ptr);
   }
+  return io_buffer;
+}
+
+scoped_refptr<net::IOBufferWithSize> MakeHandshakeMessage(
+    const StreamInfo& stream_info) {
+  auto io_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(sizeof(HandshakePacket));
+  PopulateHandshakeMessage(io_buffer->data(), io_buffer->size(), stream_info);
+  return io_buffer;
+}
+
+scoped_refptr<net::IOBufferWithSize> MakeSerializedMessage(
+    MessageType message_type,
+    const char* data,
+    size_t data_size) {
+  if (data == nullptr || data_size == 0) {
+    LOG(ERROR) << "Invalid data pointer or size: " << data << ", " << data_size
+               << ".";
+    return nullptr;
+  }
+
+  const uint8_t message_type_uint8 = static_cast<uint8_t>(message_type);
+  const uint16_t message_size = sizeof(message_type_uint8) + data_size;
+  DCHECK_LE(message_size, std::numeric_limits<uint16_t>::max());
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
+      sizeof(message_size) + message_size);
+
+  char* ptr = io_buffer->data();
+  base::WriteBigEndian(ptr, message_size);
+  ptr += sizeof(message_size);
+  memcpy(ptr, &message_type_uint8, sizeof(message_type_uint8));
+  ptr += sizeof(message_type_uint8);
+
+  std::copy(data, data + data_size, ptr);
   return io_buffer;
 }
 
@@ -226,8 +277,68 @@ bool ReadDataToAudioBus(const StreamInfo& stream_info,
   DCHECK(audio_bus);
   DCHECK_EQ(stream_info.num_channels, audio_bus->channels());
   return ConvertData(stream_info.num_channels, stream_info.sample_format,
-                     data + kMessageHeaderBytes, size - kMessageHeaderBytes,
+                     data + kPcmAudioHeaderBytes, size - kPcmAudioHeaderBytes,
                      audio_bus);
+}
+
+bool ReadPcmAudioMessage(const char* data,
+                         size_t size,
+                         const StreamInfo& stream_info,
+                         int64_t* timestamp_us,
+                         ::media::AudioBus* audio_bus) {
+  if (!ReadPcmAudioHeader(data, size, stream_info, timestamp_us)) {
+    return false;
+  }
+  return ReadDataToAudioBus(stream_info, data, size, audio_bus);
+}
+
+bool ReadHandshakeMessage(const char* data,
+                          size_t size,
+                          StreamInfo* stream_info) {
+  DCHECK(stream_info);
+  if (size != kHandshakeHeaderBytes) {
+    LOG(ERROR) << "Message doesn't have a complete handshake packet: " << size
+               << " v.s. " << kHandshakeHeaderBytes << ".";
+    return false;
+  }
+  HandshakePacket packet;
+  memcpy(&packet.message_type, data, kHandshakeHeaderBytes);
+  MessageType message_type = static_cast<MessageType>(packet.message_type);
+  if (message_type != MessageType::kHandshake ||
+      packet.stream_type > static_cast<uint8_t>(StreamType::kLastType) ||
+      packet.audio_codec > static_cast<uint8_t>(AudioCodec::kLastCodec) ||
+      packet.sample_format > static_cast<uint8_t>(SampleFormat::LAST_FORMAT)) {
+    LOG(ERROR) << "Invalid message header.";
+    return false;
+  }
+  if (packet.num_channels > ::media::limits::kMaxChannels) {
+    LOG(ERROR) << "Invalid number of channels: " << packet.num_channels;
+    return false;
+  }
+  stream_info->stream_type = static_cast<StreamType>(packet.stream_type);
+  stream_info->audio_codec = static_cast<AudioCodec>(packet.audio_codec);
+  stream_info->sample_format = static_cast<SampleFormat>(packet.sample_format);
+  stream_info->num_channels = packet.num_channels;
+  stream_info->frames_per_buffer = packet.num_frames;
+  stream_info->sample_rate = packet.sample_rate;
+  return true;
+}
+
+size_t DataSizeInBytes(const StreamInfo& stream_info) {
+  switch (stream_info.sample_format) {
+    case SampleFormat::INTERLEAVED_INT16:
+    case SampleFormat::PLANAR_INT16:
+      return sizeof(int16_t) * stream_info.num_channels *
+             stream_info.frames_per_buffer;
+    case SampleFormat::INTERLEAVED_INT32:
+    case SampleFormat::PLANAR_INT32:
+      return sizeof(int32_t) * stream_info.num_channels *
+             stream_info.frames_per_buffer;
+    case SampleFormat::INTERLEAVED_FLOAT:
+    case SampleFormat::PLANAR_FLOAT:
+      return sizeof(float) * stream_info.num_channels *
+             stream_info.frames_per_buffer;
+  }
 }
 
 }  // namespace capture_service

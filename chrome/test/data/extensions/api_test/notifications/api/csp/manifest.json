@@ -3,10 +3,9 @@
   "manifest_version": 2,
   "version": "0.1",
   "description": "chrome.notifications API CSP",
-  "app": {
-    "background": {
-      "scripts": ["background.js"]
-    }
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "permissions": [
     "notifications"

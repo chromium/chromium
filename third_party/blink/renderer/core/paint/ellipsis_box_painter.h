@@ -12,9 +12,9 @@ namespace blink {
 struct PaintInfo;
 
 class EllipsisBox;
-class LayoutPoint;
 class LayoutUnit;
 class ComputedStyle;
+struct PhysicalOffset;
 
 class EllipsisBoxPainter {
   STACK_ALLOCATED();
@@ -24,13 +24,13 @@ class EllipsisBoxPainter {
       : ellipsis_box_(ellipsis_box) {}
 
   void Paint(const PaintInfo&,
-             const LayoutPoint&,
+             const PhysicalOffset&,
              LayoutUnit line_top,
              LayoutUnit line_bottom);
 
  private:
   void PaintEllipsis(const PaintInfo&,
-                     const LayoutPoint& paint_offset,
+                     const PhysicalOffset& paint_offset,
                      LayoutUnit line_top,
                      LayoutUnit line_bottom,
                      const ComputedStyle&);

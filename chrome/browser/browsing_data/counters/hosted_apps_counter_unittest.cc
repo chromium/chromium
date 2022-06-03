@@ -31,7 +31,7 @@ using extensions::ListBuilder;
 class HostedAppsCounterTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     extension_registry_ = extensions::ExtensionRegistry::Get(profile_.get());
 
     SetHostedAppsDeletionPref(true);
@@ -152,9 +152,10 @@ class HostedAppsCounterTest : public testing::Test {
 TEST_F(HostedAppsCounterTest, Count) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&HostedAppsCounterTest::Callback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&HostedAppsCounterTest::Callback,
+                                   base::Unretained(this)));
   counter.Restart();
   EXPECT_EQ(0u, GetNumHostedApps());
 
@@ -179,9 +180,10 @@ TEST_F(HostedAppsCounterTest, Count) {
 TEST_F(HostedAppsCounterTest, OnlyHostedApps) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&HostedAppsCounterTest::Callback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&HostedAppsCounterTest::Callback,
+                                   base::Unretained(this)));
 
   AddHostedApp();  // 1
   AddExtension();
@@ -217,9 +219,10 @@ TEST_F(HostedAppsCounterTest, OnlyHostedApps) {
 TEST_F(HostedAppsCounterTest, Examples) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&HostedAppsCounterTest::Callback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&HostedAppsCounterTest::Callback,
+                                   base::Unretained(this)));
   counter.Restart();
   EXPECT_EQ(0u, GetExamples().size());
 

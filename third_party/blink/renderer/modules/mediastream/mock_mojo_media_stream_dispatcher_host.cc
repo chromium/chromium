@@ -60,7 +60,8 @@ void MockMojoMediaStreamDispatcherHost::GenerateStream(
   } else {
     std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
                             String("dummy") + String::Number(request_id_),
-                            audio_devices_, video_devices_);
+                            audio_devices_, video_devices_,
+                            /*pan_tilt_zoom_allowed=*/false);
   }
 }
 
@@ -70,7 +71,7 @@ void MockMojoMediaStreamDispatcherHost::CancelRequest(int32_t request_id) {
 
 void MockMojoMediaStreamDispatcherHost::StopStreamDevice(
     const String& device_id,
-    const base::Optional<base::UnguessableToken>& session_id) {
+    const absl::optional<base::UnguessableToken>& session_id) {
   for (const MediaStreamDevice& device : audio_devices_) {
     if (device.id == device_id.Utf8() && device.session_id() == session_id) {
       ++stop_audio_device_counter_;

@@ -3,14 +3,27 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ShowFeedbackPageTest = BrowserWithTestWindowTest;
 
-TEST_F(ShowFeedbackPageTest, UserFeedbackDisallowed) {
+// TODO(crbug.com/1128855): Fix the test for Lacros build.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UserFeedbackDisallowed DISABLED_UserFeedbackDisallowed
+#else
+#define MAYBE_UserFeedbackDisallowed UserFeedbackDisallowed
+#endif
+TEST_F(ShowFeedbackPageTest, MAYBE_UserFeedbackDisallowed) {
+  // TODO(crbug.com/1167223): Fix the test for WebUIFeedback
+  if (base::FeatureList::IsEnabled(features::kWebUIFeedback))
+    GTEST_SKIP() << "Skipped due to crash with webui feedback.";
+
   base::HistogramTester histogram_tester;
   std::string unused;
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,

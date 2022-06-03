@@ -10,15 +10,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace {
@@ -44,6 +44,12 @@ class ServiceProcessLauncherDelegateImpl
     : public ServiceProcessLauncherDelegate {
  public:
   ServiceProcessLauncherDelegateImpl() {}
+
+  ServiceProcessLauncherDelegateImpl(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+  ServiceProcessLauncherDelegateImpl& operator=(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+
   ~ServiceProcessLauncherDelegateImpl() override {}
 
   size_t get_and_clear_adjust_count() {
@@ -61,8 +67,6 @@ class ServiceProcessLauncherDelegateImpl
   }
 
   size_t adjust_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessLauncherDelegateImpl);
 };
 
 #if defined(OS_ANDROID)
@@ -74,22 +78,18 @@ class ServiceProcessLauncherDelegateImpl
 TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
   base::test::TaskEnvironment task_environment;
 
+  // The test executable is a data_deps and thus generated test data.
   base::FilePath test_service_path;
-#if defined(OS_FUCHSIA)
-  // Service binaries are treated as "assets".
-  base::PathService::Get(base::DIR_ASSETS, &test_service_path);
-#else
-  base::PathService::Get(base::DIR_EXE, &test_service_path);
-#endif
+  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &test_service_path);
   test_service_path = test_service_path.AppendASCII(kTestServiceName)
                           .AddExtension(kServiceExtension);
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  base::Optional<ServiceProcessLauncher> launcher(
-      base::in_place, &service_process_launcher_delegate, test_service_path);
+  absl::optional<ServiceProcessLauncher> launcher(
+      absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
-      Identity(), SandboxType::kNoSandbox,
+      Identity(), sandbox::mojom::Sandbox::kNoSandbox,
       base::BindOnce(&ProcessReadyCallbackAdapter,
                      true /*expect_process_id_valid*/, run_loop.QuitClosure()));
   run_loop.Run();
@@ -100,7 +100,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
   EXPECT_EQ(1u, service_process_launcher_delegate.get_and_clear_adjust_count());
 }
 
-#if !defined(OS_POSIX) || defined(OS_MACOSX)
+#if !defined(OS_POSIX) || defined(OS_MAC)
 // Verify that if ServiceProcessLauncher cannot launch a process running the
 // service from the specified path, then we are able to clean up without e.g.
 // double-freeing the platform-channel handle reserved for the peer.
@@ -114,10 +114,10 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   base::FilePath test_service_path(FILE_PATH_LITERAL("rockot@_rules.service"));
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  base::Optional<ServiceProcessLauncher> launcher(
-      base::in_place, &service_process_launcher_delegate, test_service_path);
+  absl::optional<ServiceProcessLauncher> launcher(
+      absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
-  launcher->Start(Identity(), SandboxType::kNoSandbox,
+  launcher->Start(Identity(), sandbox::mojom::Sandbox::kNoSandbox,
                   base::BindOnce(&ProcessReadyCallbackAdapter,
                                  false /*expect_process_id_valid*/,
                                  run_loop.QuitClosure()));
@@ -126,7 +126,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   launcher.reset();
   task_environment.RunUntilIdle();
 }
-#endif  //  !defined(OS_POSIX) || defined(OS_MACOSX)
+#endif  //  !defined(OS_POSIX) || defined(OS_MAC)
 
 }  // namespace
 }  // namespace service_manager

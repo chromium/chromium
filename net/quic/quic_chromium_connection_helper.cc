@@ -3,8 +3,16 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_chromium_connection_helper.h"
+#include "base/no_destructor.h"
 
 namespace net {
+
+namespace {
+quic::QuicBufferAllocator* GetBufferAllocator() {
+  static base::NoDestructor<quic::SimpleBufferAllocator> allocator;
+  return &*allocator;
+}
+}  // namespace
 
 QuicChromiumConnectionHelper::QuicChromiumConnectionHelper(
     const quic::QuicClock* clock,
@@ -23,7 +31,7 @@ quic::QuicRandom* QuicChromiumConnectionHelper::GetRandomGenerator() {
 
 quic::QuicBufferAllocator*
 QuicChromiumConnectionHelper::GetStreamSendBufferAllocator() {
-  return &buffer_allocator_;
+  return GetBufferAllocator();
 }
 
 }  // namespace net

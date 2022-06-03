@@ -81,7 +81,7 @@ class CORE_EXPORT ListInterpolationFunctions {
                                             const NonInterpolableValue* b);
 };
 
-class CORE_EXPORT NonInterpolableList : public NonInterpolableValue {
+class CORE_EXPORT NonInterpolableList final : public NonInterpolableValue {
  public:
   ~NonInterpolableList() final = default;
 
@@ -128,7 +128,15 @@ class CORE_EXPORT NonInterpolableList : public NonInterpolableValue {
   Vector<scoped_refptr<const NonInterpolableValue>> list_;
 };
 
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(NonInterpolableList);
+template <>
+struct DowncastTraits<NonInterpolableList> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() == NonInterpolableList::static_type_;
+  }
+};
 
 template <typename CreateItemCallback>
 InterpolationValue ListInterpolationFunctions::CreateList(

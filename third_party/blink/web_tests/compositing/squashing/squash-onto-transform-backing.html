@@ -31,8 +31,8 @@
 .top {
   position: absolute;
   z-index: 1;
-  top: 180px;
-  left: 180px;
+  top: 50px;
+  left: 50px;
   background-color: cyan;
 }
 
@@ -52,7 +52,7 @@ div:hover {
             return;
         }
 
-        document.body.textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.body.textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         document.body.style.whiteSpace = 'pre';
     }
 </script>

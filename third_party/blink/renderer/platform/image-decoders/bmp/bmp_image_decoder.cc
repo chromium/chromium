@@ -38,11 +38,11 @@ namespace blink {
 // Number of bits in .BMP used to store the file header (doesn't match
 // "sizeof(BMPImageDecoder::BitmapFileHeader)" since we omit some fields and
 // don't pack).
-static const size_t kSizeOfFileHeader = 14;
+static const wtf_size_t kSizeOfFileHeader = 14;
 
 BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
                                  const ColorBehavior& color_behavior,
-                                 size_t max_decoded_bytes)
+                                 wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
@@ -78,7 +78,7 @@ void BMPImageDecoder::Decode(bool only_size) {
 }
 
 bool BMPImageDecoder::DecodeHelper(bool only_size) {
-  size_t img_data_offset = 0;
+  wtf_size_t img_data_offset = 0;
   if ((decoded_offset_ < kSizeOfFileHeader) &&
       !ProcessFileHeader(img_data_offset))
     return false;
@@ -95,7 +95,7 @@ bool BMPImageDecoder::DecodeHelper(bool only_size) {
   return reader_->DecodeBMP(only_size);
 }
 
-bool BMPImageDecoder::ProcessFileHeader(size_t& img_data_offset) {
+bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
   // Read file header.
   DCHECK(!decoded_offset_);
   FastSharedBufferReader fast_reader(data_);
@@ -141,7 +141,8 @@ bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
     return false;
   file_header = fast_reader.GetConsecutiveData(decoded_offset_,
                                                kSizeOfFileHeader, buffer);
-  file_type = (file_header[0] << 8) | static_cast<uint8_t>(file_header[1]);
+  file_type = (static_cast<uint16_t>(file_header[0]) << 8) |
+              static_cast<uint8_t>(file_header[1]);
   return true;
 }
 

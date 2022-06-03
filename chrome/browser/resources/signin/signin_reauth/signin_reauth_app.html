@@ -1,0 +1,95 @@
+<style include="signin-dialog-shared cr-hidden-style">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  #illustrationContainer {
+    height: 170px;
+    position: relative;
+    width: 100%;
+  }
+
+  #illustration {
+    background-image: url(./images/signin_reauth_illustration.svg);
+    background-size: 100% 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #illustration {
+      background-image: url(./images/signin_reauth_illustration_dark.svg);
+    }
+  }
+
+  #illustrationContainer > img {
+    border-radius: 50%;
+    height: 58px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 92px;
+    width: 58px;
+  }
+
+  #contentContainer {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  h1 {
+    font-weight: normal;
+    margin-bottom: 8px;
+    padding: 0 40px;
+  }
+
+  .message-container {
+    color: var(--cr-secondary-text-color);
+    line-height: 20px;
+    margin-bottom: 16px;
+    padding: 0 40px;
+  }
+
+  cr-button {
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+</style>
+
+<!--
+  Use the 'consent-description' attribute to annotate all the UI elements
+  that are part of the text the user reads before consenting to use passwords
+  from their account. Similarly, use 'consent-confirmation' on the UI element on
+  which user clicks to indicate consent.
+-->
+
+<div id="illustrationContainer">
+  <div id="illustration"></div>
+  <img src="[[accountImageSrc_]]">
+</div>
+<div id="contentContainer">
+  <h1 id="signinReauthTitle" consent-description>
+    $i18n{signinReauthTitle}
+  </h1>
+  <div class="message-container">
+    <div consent-description>$i18n{signinReauthDesc}</div>
+  </div>
+</div>
+<div class="action-container">
+  <paper-spinner-lite active hidden$="[[!confirmButtonHidden_]]">
+  </paper-spinner-lite>
+  <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
+      hidden="[[confirmButtonHidden_]]" consent-confirmation>
+    $i18n{signinReauthConfirmLabel}
+  </cr-button>
+  <cr-button id="cancelButton" on-click="onCancel_"
+      hidden="[[cancelButtonHidden_]]">
+    $i18n{signinReauthCloseLabel}
+  </cr-button>
+</div>

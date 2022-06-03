@@ -59,6 +59,8 @@ class MediaControlOverlayPlayButtonElement;
 class MediaControlPanelElement;
 class MediaControlPanelEnclosureElement;
 class MediaControlPictureInPictureButtonElement;
+class MediaControlPlaybackSpeedButtonElement;
+class MediaControlPlaybackSpeedListElement;
 class MediaControlPlayButtonElement;
 class MediaControlRemainingTimeDisplayElement;
 class MediaControlScrubbingMessageElement;
@@ -75,12 +77,14 @@ class TextTrack;
 // HTMLMediaElement.
 class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
                                                public MediaControls {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaControlsImpl);
-
  public:
   static MediaControlsImpl* Create(HTMLMediaElement&, ShadowRoot&);
 
   explicit MediaControlsImpl(HTMLMediaElement&);
+
+  MediaControlsImpl(const MediaControlsImpl&) = delete;
+  MediaControlsImpl& operator=(const MediaControlsImpl&) = delete;
+
   ~MediaControlsImpl() override = default;
 
   // Returns whether the event is considered a touch event.
@@ -130,6 +134,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   bool TextTrackListIsWanted();
   MediaControlsTextTrackManager& GetTextTrackManager();
 
+  // Methods related to the playback speed menu.
+  void TogglePlaybackSpeedList();
+  bool PlaybackSpeedListIsWanted();
+
   // Methods related to the overflow menu.
   void OpenOverflowMenu();
   void CloseOverflowMenu();
@@ -158,7 +166,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   const MediaControlRemainingTimeDisplayElement& RemainingTimeDisplay() const;
   MediaControlToggleClosedCaptionsButtonElement& ToggleClosedCaptions();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Track the state of the controls.
   enum ControlsState {
@@ -280,7 +288,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void ElementSizeChangedTimerFired(TimerBase*);
 
   // Update any visible indicators of the current time.
-  void UpdateTimeIndicators();
+  void UpdateTimeIndicators(bool suppress_aria = false);
 
   // Hide elements that don't fit, and show those things that we want which
   // do fit.  This requires that m_effectiveWidth and m_effectiveHeight are
@@ -311,7 +319,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
 
   // Node
   bool IsMediaControls() const override { return true; }
-  bool WillRespondToMouseMoveEvents() override { return true; }
+  bool WillRespondToMouseMoveEvents() const override { return true; }
   void DefaultEventHandler(Event&) override;
   bool ContainsRelatedTarget(Event*);
 
@@ -369,6 +377,8 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlToggleClosedCaptionsButtonElement>
       toggle_closed_captions_button_;
   Member<MediaControlTextTrackListElement> text_track_list_;
+  Member<MediaControlPlaybackSpeedButtonElement> playback_speed_button_;
+  Member<MediaControlPlaybackSpeedListElement> playback_speed_list_;
   Member<MediaControlOverflowMenuButtonElement> overflow_menu_;
   Member<MediaControlOverflowMenuListElement> overflow_list_;
   Member<MediaControlButtonPanelElement> media_button_panel_;
@@ -389,11 +399,17 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
       rotate_to_fullscreen_delegate_;
   Member<MediaControlsDisplayCutoutDelegate> display_cutout_delegate_;
 
-  TaskRunnerTimer<MediaControlsImpl> hide_media_controls_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> hide_media_controls_timer_;
   unsigned hide_timer_behavior_flags_;
   bool is_mouse_over_controls_ : 1;
   bool is_paused_for_scrubbing_ : 1;
   bool is_scrubbing_ = false;
+
+  // When controls are hidden, we defer CSS updates on them in order to avoid
+  // unnecessary style calculation. When controls transition from shown to
+  // hidden, we set this flag to true to ensure that one final style update
+  // takes place in order to eliminate states such as scrubbing.
+  bool is_hiding_controls_ = false;
 
   // Watches the video element for resize and updates media controls as
   // necessary.
@@ -403,7 +419,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   // as necessary.
   Member<MediaElementMutationCallback> element_mutation_callback_;
 
-  TaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
   IntSize size_;
 
   bool keep_showing_until_timer_fires_ : 1;
@@ -417,19 +433,17 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   bool is_touch_interaction_ = false;
 
   // Timer for distinguishing double-taps.
-  TaskRunnerTimer<MediaControlsImpl> tap_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> tap_timer_;
   bool is_paused_for_double_tap_ = false;
 
   // Timer to delay showing the volume slider to avoid accidental triggering
   // of the slider
-  TaskRunnerTimer<MediaControlsImpl> volume_slider_wanted_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> volume_slider_wanted_timer_;
 
   Member<MediaControlsTextTrackManager> text_track_manager_;
 
   bool is_test_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsImpl);
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_

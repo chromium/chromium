@@ -1,0 +1,30 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/android_nocompile.gni")
+import("nocompile_gn/nocompile_sources.gni")
+
+android_nocompile_test_suite("errorprone_plugin_tests") {
+  # Depend on errorprone_plugin so that the action is re-run whenever any custom
+  # errorprone check is modified.
+  deps = [ "//tools/android/errorprone_plugin" ]
+  tests = [
+    {
+      target = "nocompile_gn:no_redundant_field_init_check_int_test_java"
+      nocompile_sources =
+          rebase_path(no_redundant_field_init_check_int_test_nocompile_sources,
+                      "",
+                      "nocompile_gn")
+      expected_compile_output_regex = "warning: .NoRedundantFieldInit"
+    },
+    {
+      target = "nocompile_gn:test_class_name_check_test_java"
+      nocompile_sources =
+          rebase_path(test_class_name_check_test_nocompile_sources,
+                      "",
+                      "nocompile_gn")
+      expected_compile_output_regex = "warning: .TestClassNameCheck"
+    },
+  ]
+}

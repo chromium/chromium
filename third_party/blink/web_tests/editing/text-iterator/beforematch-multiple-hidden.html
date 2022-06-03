@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+.hidden-matchable {
+  content-visibility: hidden-matchable;
+}
+</style>
+
+<div class=hidden-matchable id=matchOne>match one</div>
+<div class=spacer id=spacerOne>spacer one</div>
+<div class=hidden-matchable id=matchTwo>match two</div>
+<div class=spacer id=spacerTwo>spacer two</div>
+<div class=hidden-matchable id=matchThree>match three</div>
+
+<script>
+function selectElement(element) {
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function addListeners(matches) {
+  matchOne.addEventListener('beforematch', () => {
+    matches.push('matchOne');
+  });
+  matchTwo.addEventListener('beforematch', () => {
+    matches.push('matchTwo');
+  });
+  matchThree.addEventListener('beforematch', () => {
+    matches.push('matchThree');
+  });
+}
+
+test(() => {
+  const matches = [];
+  addListeners(matches);
+
+  window.getSelection().removeAllRanges();
+  testRunner.findString('match', ['WrapAround']);
+
+  assert_array_equals(
+    matches,
+    ['matchOne',
+     'matchTwo',
+     'matchThree']);
+}, 'beforematch should fire on each match in order when they are all hidden. This case is searching forward from the beginning of the page.');
+
+test(() => {
+  const matches = [];
+  addListeners(matches);
+
+  selectElement(spacerOne);
+  testRunner.findString('match', ['WrapAround']);
+
+  assert_array_equals(
+    matches,
+    ['matchTwo',
+     'matchThree',
+     'matchOne']);
+}, 'beforematch should fire on each match in order when they are all hidden. This case is searching forward from the middle of the page.');
+
+test(() => {
+  const matches = [];
+  addListeners(matches);
+
+  window.getSelection().removeAllRanges();
+  testRunner.findString('match', ['WrapAround', 'Backwards']);
+
+  assert_array_equals(
+    matches,
+    ['matchThree',
+     'matchTwo',
+     'matchOne']);
+}, 'beforematch should fire on each match in order when they are all hidden. This case is searching backward from the beginning of the page.');
+
+test(() => {
+  const matches = [];
+  addListeners(matches);
+
+  selectElement(spacerOne);
+  testRunner.findString('match', ['WrapAround', 'Backwards']);
+
+  assert_array_equals(
+    matches,
+    ['matchOne',
+     'matchThree',
+     'matchTwo']);
+}, 'beforematch should fire on each match in order when they are all hidden. This case is searching backward from the middle of the page.');
+</script>

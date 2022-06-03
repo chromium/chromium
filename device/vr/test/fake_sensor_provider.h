@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_TEST_FAKE_SENSOR_PROVIDER_H_
 #define DEVICE_VR_TEST_FAKE_SENSOR_PROVIDER_H_
 
+#include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/sensor.mojom.h"
@@ -12,12 +13,12 @@
 
 namespace device {
 
-class FakeSensorProvider : public mojom::SensorProvider {
+class DEVICE_VR_EXPORT FakeXRSensorProvider : public mojom::SensorProvider {
  public:
-  FakeSensorProvider();
-  explicit FakeSensorProvider(
+  FakeXRSensorProvider();
+  explicit FakeXRSensorProvider(
       mojo::PendingReceiver<mojom::SensorProvider> receiver);
-  ~FakeSensorProvider() override;
+  ~FakeXRSensorProvider() override;
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
   void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;

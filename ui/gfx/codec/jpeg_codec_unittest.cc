@@ -6,7 +6,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/barrier_closure.h"
+#include "base/cxx17_backports.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -176,6 +181,34 @@ TEST(JPEGCodec, InvalidRead) {
   JPEGCodec::Decode(kTopSitesMigrationTestImage,
                     base::size(kTopSitesMigrationTestImage),
                     JPEGCodec::FORMAT_RGBA, &output, &outw, &outh);
+}
+
+// Coverage for data races in JPEG encoding when run with TSan.
+// Regression test for crbug.com/1056011.
+TEST(JPEGCodec, ParallelEncoding) {
+  constexpr int kImageSize = 32;
+  std::vector<unsigned char> image_data;
+  MakeRGBAImage(kImageSize, kImageSize, &image_data);
+  SkImageInfo info = SkImageInfo::Make(
+      kImageSize, kImageSize, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
+  SkPixmap src(info, &image_data[0], kImageSize * 4);
+
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop encode_loop;
+
+  constexpr int kNumCopies = 100;
+  base::RepeatingClosure encode_completion_closure =
+      base::BarrierClosure(kNumCopies, encode_loop.QuitClosure());
+  for (int i = 0; i < kNumCopies; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          std::vector<unsigned char> output;
+          EXPECT_TRUE(JPEGCodec::Encode(src, jpeg_quality, &output));
+          encode_completion_closure.Run();
+        }));
+  }
+
+  encode_loop.Run();
 }
 
 }  // namespace gfx

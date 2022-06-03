@@ -29,7 +29,7 @@ class TraceWrapperV8ReferenceHolder final
   TraceWrapperV8ReferenceHolder(const TraceWrapperV8ReferenceHolder& other)
       : value_(other.value_) {}
 
-  virtual void Trace(Visitor* visitor) { visitor->Trace(value_); }
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
   TraceWrapperV8Reference<v8::Value>* ref() { return &value_; }
 
@@ -68,7 +68,7 @@ TEST_F(TraceWrapperV8ReferenceTest, CtorWithValue) {
   RunV8FullGC();
   CHECK(!holder1->ref()->IsEmpty());
   CHECK(!observer.IsEmpty());
-  holder1->ref()->Clear();
+  holder1->ref()->Reset();
   RunV8FullGC();
   CHECK(holder1->ref()->IsEmpty());
   CHECK(observer.IsEmpty());

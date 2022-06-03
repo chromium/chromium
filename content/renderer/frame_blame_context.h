@@ -15,9 +15,11 @@ class RenderFrameImpl;
 class FrameBlameContext : public base::trace_event::BlameContext {
  public:
   FrameBlameContext(RenderFrameImpl* frame, RenderFrameImpl* parent_frame);
-  ~FrameBlameContext() override;
 
-  DISALLOW_COPY_AND_ASSIGN(FrameBlameContext);
+  FrameBlameContext(const FrameBlameContext&) = delete;
+  FrameBlameContext& operator=(const FrameBlameContext&) = delete;
+
+  ~FrameBlameContext() override;
 };
 
 }  // namespace content

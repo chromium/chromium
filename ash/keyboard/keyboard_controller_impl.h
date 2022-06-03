@@ -14,9 +14,11 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "ash/session/session_observer.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "ash/public/cpp/session/session_observer.h"
+
+class PrefChangeRegistrar;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace gfx {
 class Rect;
@@ -31,6 +33,7 @@ namespace ash {
 
 class SessionControllerImpl;
 class VirtualKeyboardController;
+struct KeyRepeatSettings;
 
 // Contains and observes a keyboard::KeyboardUIController instance. Ash specific
 // behavior, including implementing the public interface, is implemented in this
@@ -43,7 +46,13 @@ class ASH_EXPORT KeyboardControllerImpl
  public:
   // |session_controller| is expected to outlive KeyboardControllerImpl.
   explicit KeyboardControllerImpl(SessionControllerImpl* session_controller);
+
+  KeyboardControllerImpl(const KeyboardControllerImpl&) = delete;
+  KeyboardControllerImpl& operator=(const KeyboardControllerImpl&) = delete;
+
   ~KeyboardControllerImpl() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Create or destroy the virtual keyboard. Called from Shell. TODO(stevenjb):
   // Fix dependencies so that the virtual keyboard can be created with the
@@ -70,23 +79,29 @@ class ASH_EXPORT KeyboardControllerImpl
   void ShowKeyboard() override;
   void HideKeyboard(HideReason reason) override;
   void SetContainerType(keyboard::ContainerType container_type,
-                        const base::Optional<gfx::Rect>& target_bounds,
+                        const gfx::Rect& target_bounds,
                         SetContainerTypeCallback callback) override;
   void SetKeyboardLocked(bool locked) override;
   void SetOccludedBounds(const std::vector<gfx::Rect>& bounds) override;
   void SetHitTestBounds(const std::vector<gfx::Rect>& bounds) override;
   bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override;
   void SetDraggableArea(const gfx::Rect& bounds) override;
+  bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) override;
+  void SetKeyboardConfigFromPref(bool enabled) override;
+  bool ShouldOverscroll() override;
   void AddObserver(KeyboardControllerObserver* observer) override;
   void RemoveObserver(KeyboardControllerObserver* observer) override;
+  KeyRepeatSettings GetKeyRepeatSettings() override;
 
   // keyboard::KeyboardLayoutDelegate:
   aura::Window* GetContainerForDefaultDisplay() override;
   aura::Window* GetContainerForDisplay(
       const display::Display& display) override;
-
+  void TransferGestureEventToShelf(const ui::GestureEvent& e) override;
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
+  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   keyboard::KeyboardUIController* keyboard_ui_controller() {
     return keyboard_ui_controller_.get();
@@ -104,6 +119,7 @@ class ASH_EXPORT KeyboardControllerImpl
  private:
   // KeyboardControllerObserver:
   void OnKeyboardConfigChanged(const keyboard::KeyboardConfig& config) override;
+  void OnKeyRepeatSettingsChanged(const KeyRepeatSettings& settings) override;
   void OnKeyboardVisibilityChanged(bool is_visible) override;
   void OnKeyboardVisibleBoundsChanged(const gfx::Rect& screen_bounds) override;
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
@@ -111,12 +127,22 @@ class ASH_EXPORT KeyboardControllerImpl
       const std::set<keyboard::KeyboardEnableFlag>& flags) override;
   void OnKeyboardEnabledChanged(bool is_enabled) override;
 
+  void ObservePrefs(PrefService* prefs);
+  void SendKeyRepeatUpdate();
+  void SendKeyboardConfigUpdate();
+
+  void SetEnableFlagFromCommandLine();
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   SessionControllerImpl* session_controller_;  // unowned
   std::unique_ptr<keyboard::KeyboardUIController> keyboard_ui_controller_;
   std::unique_ptr<VirtualKeyboardController> virtual_keyboard_controller_;
   base::ObserverList<KeyboardControllerObserver>::Unchecked observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerImpl);
+  // This flag controls if the keyboard config is set from the policy settings.
+  // Note: the flag value cannot be changed from 'true' to 'false' because
+  // original config is not stored.
+  bool keyboard_config_from_pref_enabled_ = false;
 };
 
 }  // namespace ash

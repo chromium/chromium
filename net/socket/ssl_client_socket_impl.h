@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -22,7 +22,6 @@
 #include "net/base/io_buffer.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_bio_adapter.h"
@@ -33,6 +32,7 @@
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -59,6 +59,10 @@ class SSLClientSocketImpl : public SSLClientSocket,
                       std::unique_ptr<StreamSocket> stream_socket,
                       const HostPortPair& host_and_port,
                       const SSLConfig& ssl_config);
+
+  SSLClientSocketImpl(const SSLClientSocketImpl&) = delete;
+  SSLClientSocketImpl& operator=(const SSLClientSocketImpl&) = delete;
+
   ~SSLClientSocketImpl() override;
 
   const HostPortPair& host_and_port() const { return host_and_port_; }
@@ -66,6 +70,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Log SSL key material to |logger|. Must be called before any
   // SSLClientSockets are created.
   static void SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger);
+
+  // SSLClientSocket implementation.
+  std::vector<uint8_t> GetECHRetryConfigs() override;
 
   // SSLSocket implementation.
   int ExportKeyingMaterial(const base::StringPiece& label,
@@ -86,12 +93,12 @@ class SSLClientSocketImpl : public SSLClientSocket,
   bool WasEverUsed() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
+  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
   void ClearConnectionAttempts() override {}
   void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
-  void DumpMemoryStats(SocketMemoryStats* stats) const override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
 
@@ -149,7 +156,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   static ssl_verify_result_t VerifyCertCallback(SSL* ssl, uint8_t* out_alert);
   ssl_verify_result_t VerifyCert();
   ssl_verify_result_t HandleVerifyResult();
-  int VerifyCT();
+  int CheckCTCompliance();
 
   // Callback from the SSL layer that indicates the remote server is requesting
   // a certificate for this client.
@@ -158,17 +165,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Called from the SSL layer whenever a new session is established.
   int NewSessionCallback(SSL_SESSION* session);
 
-  // Adds the Certificate Transparency info from ct_verify_result_ to
-  // |ssl_info|.
-  // SCTs are held in three separate vectors in ct_verify_result, each
-  // vetor representing a particular verification state, this method associates
-  // each of the SCTs with the corresponding SCTVerifyStatus as it adds it to
-  // the |ssl_info|.signed_certificate_timestamps list.
-  void AddCTInfoToSSLInfo(SSLInfo* ssl_info) const;
-
   // Returns a session cache key for this socket.
   SSLClientSessionCache::Key GetSessionCacheKey(
-      base::Optional<IPAddress> dest_ip_addr) const;
+      absl::optional<IPAddress> dest_ip_addr) const;
 
   // Returns true if renegotiations are allowed.
   bool IsRenegotiationAllowed() const;
@@ -207,6 +206,15 @@ class SSLClientSocketImpl : public SSLClientSocket,
                           const crypto::OpenSSLErrStackTracer& tracer,
                           OpenSSLErrorInfo* info);
 
+  // Wraps SSL_get0_ech_name_override. See documentation for that function.
+  base::StringPiece GetECHNameOverride() const;
+
+  // Returns true if |cert| is one of the certs in |allowed_bad_certs|.
+  // The expected cert status is written to |cert_status|. |*cert_status| can
+  // be nullptr if user doesn't care about the cert status. This method checks
+  // handshake state, so it may only be called during certificate verification.
+  bool IsAllowedBadCert(X509Certificate* cert, CertStatus* cert_status) const;
+
   CompletionOnceCallback user_connect_callback_;
   CompletionOnceCallback user_read_callback_;
   CompletionOnceCallback user_write_callback_;
@@ -220,9 +228,8 @@ class SSLClientSocketImpl : public SSLClientSocket,
   int user_write_buf_len_;
   bool first_post_handshake_write_ = true;
 
-  // True if we've already recorded the result of our attempt to
-  // use early data.
-  bool recorded_early_data_result_ = false;
+  // True if we've already handled the result of our attempt to use early data.
+  bool handled_early_data_result_ = false;
 
   // Used by DoPayloadRead() when attempting to fill the caller's buffer with
   // as much data as possible without blocking.
@@ -256,9 +263,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Result from Cert Verifier.
   int cert_verification_result_;
 
-  // Certificate Transparency: Verifier and result holder.
-  ct::CTVerifyResult ct_verify_result_;
-
   // OpenSSL stuff
   bssl::UniquePtr<SSL> ssl_;
 
@@ -282,6 +286,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // True if the socket has been disconnected.
   bool disconnected_;
+
+  // True if certificate verification used an ECH name override.
+  bool used_ech_name_override_ = false;
 
   NextProto negotiated_protocol_;
 
@@ -313,8 +320,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   NetLogWithSource net_log_;
   base::WeakPtrFactory<SSLClientSocketImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientSocketImpl);
 };
 
 }  // namespace net

@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -115,21 +115,26 @@ IDBKeyPath::IDBKeyPath(const Vector<class String>& array)
 #endif
 }
 
-IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
-  if (key_path.IsNull()) {
+IDBKeyPath::IDBKeyPath(const V8UnionStringOrStringSequence* key_path) {
+  if (!key_path) {
     type_ = mojom::IDBKeyPathType::Null;
-  } else if (key_path.IsString()) {
-    type_ = mojom::IDBKeyPathType::String;
-    string_ = key_path.GetAsString();
-    DCHECK(!string_.IsNull());
-  } else {
-    DCHECK(key_path.IsStringSequence());
-    type_ = mojom::IDBKeyPathType::Array;
-    array_ = key_path.GetAsStringSequence();
+    return;
+  }
+
+  switch (key_path->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString:
+      type_ = mojom::IDBKeyPathType::String;
+      string_ = key_path->GetAsString();
+      DCHECK(!string_.IsNull());
+      break;
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+      type_ = mojom::IDBKeyPathType::Array;
+      array_ = key_path->GetAsStringSequence();
 #if DCHECK_IS_ON()
-    for (const auto& element : array_)
-      DCHECK(!element.IsNull());
+      for (const auto& element : array_)
+        DCHECK(!element.IsNull());
 #endif
+      break;
   }
 }
 

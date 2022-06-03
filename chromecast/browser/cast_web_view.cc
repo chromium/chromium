@@ -6,38 +6,11 @@
 
 namespace chromecast {
 
-std::unique_ptr<content::BluetoothChooser>
-CastWebView::Delegate::RunBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  return nullptr;
+void CastWebView::BindReceivers(
+    mojo::PendingReceiver<mojom::CastWebContents> web_contents_receiver,
+    mojo::PendingReceiver<mojom::CastContentWindow> window_receiver) {
+  cast_web_contents()->BindReceiver(std::move(web_contents_receiver));
+  window()->BindReceiver(std::move(window_receiver));
 }
-
-CastWebView::CastWebView(const CreateParams& create_params)
-    : delegate_(create_params.delegate),
-      shutdown_delay_(create_params.shutdown_delay) {}
-
-CastWebView::~CastWebView() {
-  for (Observer& observer : observer_list_) {
-    observer.OnPageDestroyed(this);
-  }
-}
-
-void CastWebView::ForceClose() {
-  shutdown_delay_ = base::TimeDelta();
-  ClosePage();
-}
-
-void CastWebView::AddObserver(CastWebView::Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void CastWebView::RemoveObserver(CastWebView::Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-CastWebView::CreateParams::CreateParams() = default;
-CastWebView::CreateParams::CreateParams(const CreateParams& other) = default;
-CastWebView::CreateParams::~CreateParams() = default;
 
 }  // namespace chromecast

@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 #include "content/browser/renderer_host/pepper/pepper_security_helper.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_file_io.h"
 #include "ppapi/host/dispatch_host_message.h"
@@ -102,6 +104,25 @@ void DidOpenFile(base::WeakPtr<PepperFileIOHost> file_host,
   }
 }
 
+void OpenFileCallbackWrapperIO(
+    storage::FileSystemOperationRunner::OpenFileCallback callback,
+    base::File file,
+    base::OnceClosure on_close_callback) {
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(file),
+                                std::move(on_close_callback)));
+}
+
+void CallOpenFile(
+    PepperFileSystemBrowserHost::GetOperationRunnerCallback get_runner,
+    const storage::FileSystemURL& url,
+    int file_flags,
+    storage::FileSystemOperationRunner::OpenFileCallback callback) {
+  get_runner.Run()->OpenFile(
+      url, file_flags,
+      base::BindOnce(&OpenFileCallbackWrapperIO, std::move(callback)));
+}
+
 }  // namespace
 
 PepperFileIOHost::PepperFileIOHost(BrowserPpapiHostImpl* host,
@@ -109,9 +130,8 @@ PepperFileIOHost::PepperFileIOHost(BrowserPpapiHostImpl* host,
                                    PP_Resource resource)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       browser_ppapi_host_(host),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       file_(task_runner_.get()),
       open_flags_(0),
@@ -195,7 +215,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     // Whitelist the supported ones.
     if (file_system_url_.mount_type() == storage::kFileSystemTypeExternal) {
       switch (file_system_url_.type()) {
-        case storage::kFileSystemTypeNativeMedia:
+        case storage::kFileSystemTypeLocalMedia:
         case storage::kFileSystemTypeDeviceMedia:
           break;
         default:
@@ -205,20 +225,16 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     if (!CanOpenFileSystemURLWithPepperFlags(
             open_flags, render_process_id_, file_system_url_))
       return PP_ERROR_NOACCESS;
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&GetUIThreadStuffForInternalFileSystems,
-                       render_process_id_),
-        base::BindOnce(
-            &PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
-            AsWeakPtr(), context->MakeReplyMessageContext(),
-            platform_file_flags));
+
+    GotUIThreadStuffForInternalFileSystems(
+        context->MakeReplyMessageContext(), platform_file_flags,
+        GetUIThreadStuffForInternalFileSystems(render_process_id_));
   } else {
     base::FilePath path = file_ref_host->GetExternalFilePath();
     if (!CanOpenWithPepperFlags(open_flags, render_process_id_, path))
       return PP_ERROR_NOACCESS;
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&GetResolvedRenderProcessId, render_process_id_),
         base::BindOnce(&PepperFileIOHost::GotResolvedRenderProcessId,
                        AsWeakPtr(), context->MakeReplyMessageContext(), path,
@@ -232,30 +248,37 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     ppapi::host::ReplyMessageContext reply_context,
     int platform_file_flags,
     UIThreadStuff ui_thread_stuff) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  file_system_context_ = ui_thread_stuff.file_system_context;
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = ui_thread_stuff.resolved_render_process_id;
   if (resolved_render_process_id_ == base::kNullProcessId ||
-      !file_system_context_.get()) {
+      !ui_thread_stuff.file_system_context.get()) {
     reply_context.params.set_result(PP_ERROR_FAILED);
     SendOpenErrorReply(reply_context);
     return;
   }
 
-  if (!file_system_context_->GetFileSystemBackend(file_system_url_.type())) {
+  if (!ui_thread_stuff.file_system_context->GetFileSystemBackend(
+          file_system_url_.type())) {
     reply_context.params.set_result(PP_ERROR_FAILED);
     SendOpenErrorReply(reply_context);
     return;
   }
 
-  DCHECK(file_system_host_.get());
-  DCHECK(file_system_host_->GetFileSystemOperationRunner());
+  if (!file_system_host_.get()) {
+    reply_context.params.set_result(PP_ERROR_FAILED);
+    SendOpenErrorReply(reply_context);
+    return;
+  }
 
-  file_system_host_->GetFileSystemOperationRunner()->OpenFile(
-      file_system_url_, platform_file_flags,
+  auto open_callback =
       base::BindOnce(&DidOpenFile, AsWeakPtr(), task_runner_,
                      base::BindOnce(&PepperFileIOHost::DidOpenInternalFile,
-                                    AsWeakPtr(), reply_context)));
+                                    AsWeakPtr(), reply_context));
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallOpenFile, file_system_host_->GetFileSystemOperationRunner(),
+          file_system_url_, platform_file_flags, std::move(open_callback)));
 }
 
 void PepperFileIOHost::DidOpenInternalFile(
@@ -270,7 +293,7 @@ void PepperFileIOHost::DidOpenInternalFile(
       file_system_host_->OpenQuotaFile(
           this, file_system_url_,
           base::BindOnce(&PepperFileIOHost::DidOpenQuotaFile, AsWeakPtr(),
-                         reply_context, base::Passed(&file)));
+                         reply_context, std::move(file)));
       return;
     }
   }
@@ -287,7 +310,7 @@ void PepperFileIOHost::GotResolvedRenderProcessId(
     base::FilePath path,
     int file_flags,
     base::ProcessId resolved_render_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = resolved_render_process_id;
   file_.CreateOrOpen(path, file_flags,
                      base::BindOnce(&PepperFileIOHost::OnLocalFileOpened,
@@ -395,8 +418,8 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 
   GURL document_url =
       browser_ppapi_host_->GetDocumentURLForInstance(pp_instance());
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetPluginAllowedToCallRequestOSFileHandle,
                      render_process_id_, document_url),
       base::BindOnce(
@@ -408,7 +431,7 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 void PepperFileIOHost::GotPluginAllowedToCallRequestOSFileHandle(
     ppapi::host::ReplyMessageContext reply_context,
     bool plugin_allowed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!browser_ppapi_host_->external_plugin() ||
       host()->permissions().HasPermission(ppapi::PERMISSION_PRIVATE) ||
       plugin_allowed) {
@@ -433,7 +456,7 @@ void PepperFileIOHost::OnLocalFileOpened(
     ppapi::host::ReplyMessageContext reply_context,
     const base::FilePath& path,
     base::File::Error error_code) {
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Quarantining a file before its contents are available is only supported on
   // Windows and Linux.
   if (!FileOpenForWrite(open_flags_) || error_code != base::File::FILE_OK) {
@@ -441,26 +464,40 @@ void PepperFileIOHost::OnLocalFileOpened(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &download::QuarantineFile, path,
-          browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()), GURL(),
-          std::string()),
-      base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined, AsWeakPtr(),
-                     reply_context, path));
+  mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote;
+  download::QuarantineConnectionCallback quarantine_connection_callback =
+      GetContentClient()->browser()->GetQuarantineConnectionCallback();
+  if (quarantine_connection_callback) {
+    quarantine_connection_callback.Run(
+        quarantine_remote.BindNewPipeAndPassReceiver());
+  }
+
+  if (quarantine_remote) {
+    quarantine::mojom::Quarantine* raw_quarantine = quarantine_remote.get();
+    raw_quarantine->QuarantineFile(
+        path, browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()),
+        GURL(), std::string(),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined,
+                           AsWeakPtr(), reply_context, path,
+                           std::move(quarantine_remote)),
+            quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED));
+  } else {
+    SendFileOpenReply(reply_context, error_code);
+  }
 #else
   SendFileOpenReply(reply_context, error_code);
 #endif
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 void PepperFileIOHost::OnLocalFileQuarantined(
     ppapi::host::ReplyMessageContext reply_context,
     const base::FilePath& path,
-    download::QuarantineFileResult quarantine_result) {
+    mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
+    quarantine::mojom::QuarantineFileResult quarantine_result) {
   base::File::Error file_error =
-      (quarantine_result == download::QuarantineFileResult::OK
+      (quarantine_result == quarantine::mojom::QuarantineFileResult::OK
            ? base::File::FILE_OK
            : base::File::FILE_ERROR_SECURITY);
   if (file_error != base::File::FILE_OK && file_.IsValid())

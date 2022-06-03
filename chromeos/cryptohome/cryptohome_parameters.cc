@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include <memory>
+
+#include "base/notreached.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -107,63 +109,6 @@ AccountId GetAccountIdFromAccountIdentifier(
   return LookupUserByCryptohomeId(account_identifier.account_id());
 }
 
-KeyDefinition::AuthorizationData::Secret::Secret() : encrypt(false),
-                                                     sign(false),
-                                                     wrapped(false) {
-}
-
-KeyDefinition::AuthorizationData::Secret::Secret(
-    bool encrypt,
-    bool sign,
-    const std::string& symmetric_key,
-    const std::string& public_key,
-    bool wrapped)
-    : encrypt(encrypt),
-      sign(sign),
-      symmetric_key(symmetric_key),
-      public_key(public_key),
-      wrapped(wrapped) {
-}
-
-bool KeyDefinition::AuthorizationData::Secret::operator==(
-    const Secret& other) const {
-  return encrypt == other.encrypt &&
-         sign == other.sign &&
-         symmetric_key == other.symmetric_key &&
-         public_key == other.public_key &&
-         wrapped == other.wrapped;
-}
-
-KeyDefinition::AuthorizationData::AuthorizationData() : type(TYPE_HMACSHA256) {
-}
-
-KeyDefinition::AuthorizationData::AuthorizationData(
-    bool encrypt,
-    bool sign,
-    const std::string& symmetric_key) : type(TYPE_HMACSHA256) {
-    secrets.push_back(Secret(encrypt,
-                             sign,
-                             symmetric_key,
-                             std::string() /* public_key */,
-                             false /* wrapped */));
-}
-
-KeyDefinition::AuthorizationData::AuthorizationData(
-    const AuthorizationData& other) = default;
-
-KeyDefinition::AuthorizationData::~AuthorizationData() = default;
-
-bool KeyDefinition::AuthorizationData::operator==(
-    const AuthorizationData& other) const {
-  if (type != other.type || secrets.size() != other.secrets.size())
-    return false;
-  for (size_t i = 0; i < secrets.size(); ++i) {
-    if (!(secrets[i] == other.secrets[i]))
-      return false;
-  }
-  return true;
-}
-
 KeyDefinition::ProviderData::ProviderData() = default;
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name)
@@ -173,9 +118,9 @@ KeyDefinition::ProviderData::ProviderData(const std::string& name)
 KeyDefinition::ProviderData::ProviderData(const ProviderData& other)
     : name(other.name) {
   if (other.number)
-    number.reset(new int64_t(*other.number));
+    number = std::make_unique<int64_t>(*other.number);
   if (other.bytes)
-    bytes.reset(new std::string(*other.bytes));
+    bytes = std::make_unique<std::string>(*other.bytes);
 }
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name,
@@ -252,15 +197,10 @@ bool KeyDefinition::operator==(const KeyDefinition& other) const {
       privileges != other.privileges || policy != other.policy ||
       revision != other.revision ||
       challenge_response_keys != other.challenge_response_keys ||
-      authorization_data.size() != other.authorization_data.size() ||
       provider_data.size() != other.provider_data.size()) {
     return false;
   }
 
-  for (size_t i = 0; i < authorization_data.size(); ++i) {
-    if (!(authorization_data[i] == other.authorization_data[i]))
-      return false;
-  }
   for (size_t i = 0; i < provider_data.size(); ++i) {
     if (!(provider_data[i] == other.provider_data[i]))
       return false;

@@ -9,12 +9,17 @@
 #include <algorithm>
 #include <map>
 #include <random>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/environment.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -23,14 +28,14 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -39,18 +44,21 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_util.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher_tracer.h"
 #include "base/test/launcher/test_results_tracker.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_POSIX)
@@ -59,24 +67,28 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
 #if defined(OS_WIN)
 #include "base/strings/string_util_win.h"
 #include "base/win/windows_version.h"
+
+#include <windows.h>
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef GetCommandLine
 #endif
 
 #if defined(OS_FUCHSIA)
 #include <lib/fdio/namespace.h>
 #include <lib/zx/job.h>
+#include <lib/zx/time.h>
 #include "base/atomic_sequence_num.h"
-#include "base/base_paths_fuchsia.h"
 #include "base/fuchsia/default_job.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/path_service.h"
 #endif
 
 namespace base {
@@ -108,7 +120,7 @@ const char kUnreliableResultsTag[] = "UNRELIABLE_RESULTS";
 // the test launcher to people looking at the output (no output for a long
 // time is mysterious and gives no info about what is happening) 3) help
 // debugging in case the process hangs anyway.
-constexpr TimeDelta kOutputTimeout = TimeDelta::FromSeconds(15);
+constexpr TimeDelta kOutputTimeout = Seconds(15);
 
 // Limit of output snippet lines when printing to stdout.
 // Avoids flooding the logs with amount of output that gums up
@@ -141,6 +153,22 @@ TestLauncherTracer* GetTestLauncherTracer() {
   return tracer;
 }
 
+#if defined(OS_FUCHSIA)
+zx_status_t WaitForJobExit(const zx::job& job) {
+  zx::time deadline =
+      zx::deadline_after(zx::duration(kOutputTimeout.ToZxDuration()));
+  zx_signals_t to_wait_for = ZX_JOB_NO_JOBS | ZX_JOB_NO_PROCESSES;
+  while (to_wait_for) {
+    zx_signals_t observed = 0;
+    zx_status_t status = job.wait_one(to_wait_for, deadline, &observed);
+    if (status != ZX_OK)
+      return status;
+    to_wait_for &= ~observed;
+  }
+  return ZX_OK;
+}
+#endif  // defined(OS_FUCHSIA)
+
 #if defined(OS_POSIX)
 // Self-pipe that makes it possible to do complex shutdown handling
 // outside of the signal handler.
@@ -168,7 +196,7 @@ void KillSpawnedTestProcesses() {
           "done.\nGiving processes a chance to terminate cleanly... ");
   fflush(stdout);
 
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(500));
+  PlatformThread::Sleep(Milliseconds(500));
 
   fprintf(stdout, "done.\n");
   fflush(stdout);
@@ -232,7 +260,8 @@ bool BotModeEnabled(const CommandLine* command_line) {
 // Returns command line command line after gtest-specific processing
 // and applying |wrapper|.
 CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
-                                       const std::string& wrapper) {
+                                       const std::string& wrapper,
+                                       const size_t retries_left) {
   CommandLine new_command_line(command_line.GetProgram());
   CommandLine::SwitchMap switches = command_line.GetSwitches();
 
@@ -242,6 +271,16 @@ CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
 
   // Don't try to write the final XML report in child processes.
   switches.erase(kGTestOutputFlag);
+
+  if (switches.find(switches::kTestLauncherRetriesLeft) == switches.end()) {
+    switches[switches::kTestLauncherRetriesLeft] =
+#if defined(OS_WIN)
+        base::NumberToWString(
+#else
+        base::NumberToString(
+#endif
+            retries_left);
+  }
 
   for (CommandLine::SwitchMap::const_iterator iter = switches.begin();
        iter != switches.end(); ++iter) {
@@ -313,16 +352,17 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   // that we can install a different /data.
   new_options.spawn_flags = FDIO_SPAWN_CLONE_STDIO | FDIO_SPAWN_CLONE_JOB;
 
-  const base::FilePath kDataPath(base::fuchsia::kPersistedDataDirectoryPath);
+  const base::FilePath kDataPath(base::kPersistedDataDirectoryPath);
+  const base::FilePath kCachePath(base::kPersistedCacheDirectoryPath);
 
-  // Clone all namespace entries from the current process, except /data, which
-  // is overridden below.
+  // Clone all namespace entries from the current process, except /data and
+  // /cache, which are overridden below.
   fdio_flat_namespace_t* flat_namespace = nullptr;
   zx_status_t result = fdio_ns_export_root(&flat_namespace);
   ZX_CHECK(ZX_OK == result, result) << "fdio_ns_export_root";
   for (size_t i = 0; i < flat_namespace->count; ++i) {
     base::FilePath path(flat_namespace->path[i]);
-    if (path == kDataPath) {
+    if (path == kDataPath || path == kCachePath) {
       result = zx_handle_close(flat_namespace->handle[i]);
       ZX_CHECK(ZX_OK == result, result) << "zx_handle_close";
     } else {
@@ -338,28 +378,39 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   new_options.job_handle = job_handle.get();
 
   // Give this test its own isolated /data directory by creating a new temporary
-  // subdirectory under data (/data/test-$PID) and binding that to /data on the
-  // child process.
+  // subdirectory under data (/data/test-$PID) and binding paths under that to
+  // /data and /cache in the child process.
+  // Persistent data storage is mapped to /cache rather than system-provided
+  // cache storage, to avoid unexpected purges (see crbug.com/1242170).
   CHECK(base::PathExists(kDataPath));
 
   // Create the test subdirectory with a name that is unique to the child test
   // process (qualified by parent PID and an autoincrementing test process
   // index).
   static base::AtomicSequenceNumber child_launch_index;
-  base::FilePath nested_data_path = kDataPath.AppendASCII(
+  const base::FilePath child_data_path = kDataPath.AppendASCII(
       base::StringPrintf("test-%zu-%d", base::Process::Current().Pid(),
                          child_launch_index.GetNext()));
-  CHECK(!base::DirectoryExists(nested_data_path));
-  CHECK(base::CreateDirectory(nested_data_path));
-  DCHECK(base::DirectoryExists(nested_data_path));
+  CHECK(!base::DirectoryExists(child_data_path));
+  CHECK(base::CreateDirectory(child_data_path));
+  DCHECK(base::DirectoryExists(child_data_path));
 
-  // Bind the new test subdirectory to /data in the child process' namespace.
+  const base::FilePath test_data_dir(child_data_path.AppendASCII("data"));
+  CHECK(base::CreateDirectory(test_data_dir));
+  const base::FilePath test_cache_dir(child_data_path.AppendASCII("cache"));
+  CHECK(base::CreateDirectory(test_cache_dir));
+
+  // Transfer handles to the new directories as /data and /cache in the child
+  // process' namespace.
   new_options.paths_to_transfer.push_back(
       {kDataPath,
-       base::fuchsia::OpenDirectory(nested_data_path).TakeChannel().release()});
+       base::OpenDirectoryHandle(test_data_dir).TakeChannel().release()});
+  new_options.paths_to_transfer.push_back(
+      {kCachePath,
+       base::OpenDirectoryHandle(test_cache_dir).TakeChannel().release()});
 #endif  // defined(OS_FUCHSIA)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // To prevent accidental privilege sharing to an untrusted child, processes
   // are started with PR_SET_NO_NEW_PRIVS. Do not set that here, since this
   // new child will be privileged and trusted.
@@ -423,6 +474,14 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     }
   }
 
+#if defined(OS_FUCHSIA)
+  zx_status_t wait_status = WaitForJobExit(job_handle);
+  if (wait_status != ZX_OK) {
+    LOG(ERROR) << "Batch leaked jobs or processes.";
+    exit_code = -1;
+  }
+#endif  // defined(OS_FUCHSIA)
+
   {
     // Note how we grab the log before issuing a possibly broad process kill.
     // Other code parts that grab the log kill processes, so avoid trying
@@ -434,16 +493,19 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     ZX_CHECK(status == ZX_OK, status);
 
     // Cleanup the data directory.
-    CHECK(DeleteFileRecursively(nested_data_path));
+    CHECK(DeletePathRecursively(child_data_path));
 #elif defined(OS_POSIX)
-    if (exit_code != 0) {
-      // On POSIX, in case the test does not exit cleanly, either due to a crash
-      // or due to it timing out, we need to clean up any child processes that
-      // it might have created. On Windows, child processes are automatically
-      // cleaned up using JobObjects.
-      KillProcessGroup(process.Handle());
-    }
-#endif
+    // It is not possible to waitpid() on any leaked sub-processes of the test
+    // batch process, since those are not direct children of this process.
+    // kill()ing the process-group will return a result indicating whether the
+    // group was found (i.e. processes were still running in it) or not (i.e.
+    // sub-processes had exited already). Unfortunately many tests (e.g. browser
+    // tests) have processes exit asynchronously, so checking the kill() result
+    // will report false failures.
+    // Unconditionally kill the process group, regardless of the batch exit-code
+    // until a better solution is available.
+    kill(-1 * process.Handle(), SIGKILL);
+#endif  // defined(OS_POSIX)
 
     GetLiveProcesses()->erase(process.Handle());
   }
@@ -465,10 +527,36 @@ struct ChildProcessResults {
   int exit_code;
 };
 
+// Returns the path to a temporary directory within |task_temp_dir| for the
+// child process of index |child_index|, or an empty FilePath if per-child temp
+// dirs are not supported.
+FilePath CreateChildTempDirIfSupported(const FilePath& task_temp_dir,
+                                       int child_index) {
+  if (!TestLauncher::SupportsPerChildTempDirs())
+    return FilePath();
+  FilePath child_temp = task_temp_dir.AppendASCII(NumberToString(child_index));
+  CHECK(CreateDirectoryAndGetError(child_temp, nullptr));
+  return child_temp;
+}
+
+// Adds the platform-specific variable setting |temp_dir| as a process's
+// temporary directory to |environment|.
+void SetTemporaryDirectory(const FilePath& temp_dir,
+                           EnvironmentMap* environment) {
+#if defined(OS_WIN)
+  environment->emplace(L"TMP", temp_dir.value());
+#elif defined(OS_APPLE)
+  environment->emplace("MAC_CHROMIUM_TMPDIR", temp_dir.value());
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+  environment->emplace("TMPDIR", temp_dir.value());
+#endif
+}
+
 // This launches the child test process, waits for it to complete,
 // and returns child process results.
 ChildProcessResults DoLaunchChildTestProcess(
     const CommandLine& command_line,
+    const FilePath& process_temp_dir,
     TimeDelta timeout,
     const TestLauncher::LaunchOptions& test_launch_options,
     bool redirect_stdio,
@@ -480,12 +568,22 @@ ChildProcessResults DoLaunchChildTestProcess(
   ScopedFILE output_file;
   FilePath output_filename;
   if (redirect_stdio) {
-    FILE* raw_output_file = CreateAndOpenTemporaryFile(&output_filename);
-    output_file.reset(raw_output_file);
+    output_file = CreateAndOpenTemporaryStream(&output_filename);
     CHECK(output_file);
+#if defined(OS_WIN)
+    // Paint the file so that it will be deleted when all handles are closed.
+    if (!FILEToFile(output_file.get()).DeleteOnClose(true)) {
+      PLOG(WARNING) << "Failed to mark " << output_filename.AsUTF8Unsafe()
+                    << " for deletion on close";
+    }
+#endif
   }
 
   LaunchOptions options;
+
+  // Tell the child process to use its designated temporary directory.
+  if (!process_temp_dir.empty())
+    SetTemporaryDirectory(process_temp_dir, &options.environment);
 #if defined(OS_WIN)
 
   options.inherit_mode = test_launch_options.inherit_mode;
@@ -520,7 +618,7 @@ ChildProcessResults DoLaunchChildTestProcess(
 #if !defined(OS_FUCHSIA)
   options.new_process_group = true;
 #endif
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   options.kill_on_parent_death = true;
 #endif
 
@@ -532,17 +630,21 @@ ChildProcessResults DoLaunchChildTestProcess(
 
   if (redirect_stdio) {
     fflush(output_file.get());
-    output_file.reset();
+
     // Reading the file can sometimes fail when the process was killed midflight
     // (e.g. on test suite timeout): https://crbug.com/826408. Attempt to read
     // the output file anyways, but do not crash on failure in this case.
-    CHECK(ReadFileToString(output_filename, &result.output_file_contents) ||
+    CHECK(ReadStreamToString(output_file.get(), &result.output_file_contents) ||
           result.exit_code != 0);
 
-    if (!DeleteFile(output_filename, false)) {
-      // This needs to be non-fatal at least for Windows.
+    output_file.reset();
+#if !defined(OS_WIN)
+    // On Windows, the reset() above is enough to delete the file since it was
+    // painted for such after being opened. Lesser platforms require an explicit
+    // delete now.
+    if (!DeleteFile(output_filename))
       LOG(WARNING) << "Failed to delete " << output_filename.AsUTF8Unsafe();
-    }
+#endif
   }
   result.elapsed_time = TimeTicks::Now() - start_time;
   return result;
@@ -581,25 +683,26 @@ class TestRunner {
  private:
   // Called to check if the next batch has to run on the same
   // sequence task runner and using the same temporary directory.
-  bool ShouldReuseStateFromLastBatch(
+  static bool ShouldReuseStateFromLastBatch(
       const std::vector<std::string>& test_names) {
     return test_names.size() == 1u &&
            test_names.front().find(kPreTestPrefix) != std::string::npos;
   }
 
-  // Launch next child process on |task_runner|,
-  // and clear |temp_dir| from previous process.
-  void LaunchNextTask(scoped_refptr<TaskRunner> task_runner, FilePath temp_dir);
+  // Launches the next child process on |task_runner| and clears
+  // |last_task_temp_dir| from the previous task.
+  void LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
+                      const FilePath& last_task_temp_dir);
 
-  // Forward |temp_dir| and Launch next task on main thread.
+  // Forwards |last_task_temp_dir| and launches the next task on main thread.
   // The method is called on |task_runner|.
   void ClearAndLaunchNext(scoped_refptr<TaskRunner> main_thread_runner,
                           scoped_refptr<TaskRunner> task_runner,
-                          const FilePath& temp_dir) {
+                          const FilePath& last_task_temp_dir) {
     main_thread_runner->PostTask(
         FROM_HERE,
         BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
-                 task_runner, temp_dir));
+                 task_runner, last_task_temp_dir));
   }
 
   ThreadChecker thread_checker_;
@@ -624,12 +727,12 @@ void TestRunner::Run(const std::vector<std::string>& test_names) {
   CHECK_GT(runner_count_, 0u);
   tests_to_run_ = test_names;
   // Reverse test order to avoid coping the whole vector when removing tests.
-  std::reverse(tests_to_run_.begin(), tests_to_run_.end());
+  ranges::reverse(tests_to_run_);
   runners_done_ = 0;
   task_runners_.clear();
   for (size_t i = 0; i < runner_count_; i++) {
-    task_runners_.push_back(CreateSequencedTaskRunner(
-        {ThreadPool(), MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+    task_runners_.push_back(ThreadPool::CreateSequencedTaskRunner(
+        {MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN}));
     ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
@@ -639,12 +742,13 @@ void TestRunner::Run(const std::vector<std::string>& test_names) {
 }
 
 void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
-                                FilePath temp_dir) {
+                                const FilePath& last_task_temp_dir) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // delete previous temporary directory
-  if (!temp_dir.empty() && !DeleteFileRecursively(temp_dir)) {
+  if (!last_task_temp_dir.empty() &&
+      !DeletePathRecursively(last_task_temp_dir)) {
     // This needs to be non-fatal at least for Windows.
-    LOG(WARNING) << "Failed to delete " << temp_dir.AsUTF8Unsafe();
+    LOG(WARNING) << "Failed to delete " << last_task_temp_dir.AsUTF8Unsafe();
   }
 
   // No more tests to run, finish sequence.
@@ -656,10 +760,17 @@ void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
     return;
   }
 
-  CreateNewTempDirectory(FilePath::StringType(), &temp_dir);
+  // Create a temporary directory for this task. This directory will hold the
+  // flags and results files for the child processes as well as their User Data
+  // dir, where appropriate. For platforms that support per-child temp dirs,
+  // this directory will also contain one subdirectory per child for that
+  // child's process-wide temp dir.
+  base::FilePath task_temp_dir;
+  CHECK(CreateNewTempDirectory(FilePath::StringType(), &task_temp_dir));
   bool post_to_current_runner = true;
   size_t batch_size = (batch_size_ == 0) ? tests_to_run_.size() : batch_size_;
 
+  int child_index = 0;
   while (post_to_current_runner && !tests_to_run_.empty()) {
     batch_size = std::min(batch_size, tests_to_run_.size());
     std::vector<std::string> batch(tests_to_run_.rbegin(),
@@ -668,13 +779,49 @@ void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
     task_runner->PostTask(
         FROM_HERE,
         BindOnce(&TestLauncher::LaunchChildGTestProcess, Unretained(launcher_),
-                 ThreadTaskRunnerHandle::Get(), batch, temp_dir));
+                 ThreadTaskRunnerHandle::Get(), batch, task_temp_dir,
+                 CreateChildTempDirIfSupported(task_temp_dir, child_index++)));
     post_to_current_runner = ShouldReuseStateFromLastBatch(batch);
   }
   task_runner->PostTask(
       FROM_HERE,
       BindOnce(&TestRunner::ClearAndLaunchNext, Unretained(this),
-               ThreadTaskRunnerHandle::Get(), task_runner, temp_dir));
+               ThreadTaskRunnerHandle::Get(), task_runner, task_temp_dir));
+}
+
+// Returns the number of files and directories in |dir|, or 0 if |dir| is empty.
+int CountItemsInDirectory(const FilePath& dir) {
+  if (dir.empty())
+    return 0;
+  int items = 0;
+  FileEnumerator file_enumerator(
+      dir, /*recursive=*/false,
+      FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+  for (FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    ++items;
+  }
+  return items;
+}
+
+// Truncates a snippet in the middle to the given byte limit. byte_limit should
+// be at least 30.
+std::string TruncateSnippet(const base::StringPiece snippet,
+                            size_t byte_limit) {
+  if (snippet.length() <= byte_limit) {
+    return std::string(snippet);
+  }
+  std::string truncation_message =
+      StringPrintf("\n<truncated (%zu bytes)>\n", snippet.length());
+  if (truncation_message.length() > byte_limit) {
+    // Fail gracefully.
+    return truncation_message;
+  }
+  size_t remaining_limit = byte_limit - truncation_message.length();
+  size_t first_half = remaining_limit / 2;
+  return base::StrCat(
+      {snippet.substr(0, first_half), truncation_message,
+       snippet.substr(snippet.length() - (remaining_limit - first_half))});
 }
 
 }  // namespace
@@ -789,7 +936,9 @@ TestLauncher::TestLauncher(TestLauncherDelegate* launcher_delegate,
       test_finished_count_(0),
       test_success_count_(0),
       test_broken_count_(0),
+      retries_left_(0),
       retry_limit_(retry_limit),
+      output_bytes_limit_(kOutputSnippetBytesLimit),
       force_run_broken_tests_(false),
       watchdog_timer_(FROM_HERE,
                       kOutputTimeout,
@@ -833,11 +982,18 @@ bool TestLauncher::Run(CommandLine* command_line) {
 
   // Indicate a test did not succeed.
   bool test_failed = false;
-  int cycles = cycles_;
+  int iterations = cycles_;
+  if (cycles_ > 1 && !stop_on_failure_) {
+    // If we don't stop on failure, execute all the repeats in all iteration,
+    // which allows us to parallelize the execution.
+    iterations = 1;
+    repeats_per_iteration_ = cycles_;
+  }
   // Set to false if any iteration fails.
   bool run_result = true;
 
-  while ((cycles > 0 || cycles == -1) && !(stop_on_failure_ && test_failed)) {
+  while ((iterations > 0 || iterations == -1) &&
+         !(stop_on_failure_ && test_failed)) {
     OnTestIterationStart();
 
     RunTests();
@@ -854,7 +1010,7 @@ bool TestLauncher::Run(CommandLine* command_line) {
     test_failed = test_success_count_ != test_finished_count_;
     OnTestIterationFinished();
     // Special value "-1" means "repeat indefinitely".
-    cycles = (cycles == -1) ? cycles : cycles - 1;
+    iterations = (iterations == -1) ? iterations : iterations - 1;
   }
 
   if (cycles_ != 1)
@@ -868,20 +1024,22 @@ bool TestLauncher::Run(CommandLine* command_line) {
 void TestLauncher::LaunchChildGTestProcess(
     scoped_refptr<TaskRunner> task_runner,
     const std::vector<std::string>& test_names,
-    const FilePath& temp_dir) {
+    const FilePath& task_temp_dir,
+    const FilePath& child_temp_dir) {
   FilePath result_file;
-  CommandLine cmd_line =
-      launcher_delegate_->GetCommandLine(test_names, temp_dir, &result_file);
+  CommandLine cmd_line = launcher_delegate_->GetCommandLine(
+      test_names, task_temp_dir, &result_file);
 
   // Record the exact command line used to launch the child.
-  CommandLine new_command_line(
-      PrepareCommandLineForGTest(cmd_line, launcher_delegate_->GetWrapper()));
+  CommandLine new_command_line(PrepareCommandLineForGTest(
+      cmd_line, launcher_delegate_->GetWrapper(), retries_left_));
   LaunchOptions options;
   options.flags = launcher_delegate_->GetLaunchOptions();
 
   ChildProcessResults process_results = DoLaunchChildTestProcess(
-      new_command_line, launcher_delegate_->GetTimeout() * test_names.size(),
-      options, redirect_stdio_, launcher_delegate_);
+      new_command_line, child_temp_dir,
+      launcher_delegate_->GetTimeout() * test_names.size(), options,
+      redirect_stdio_, launcher_delegate_);
 
   // Invoke ProcessTestResults on the original thread, not
   // on a worker pool thread.
@@ -890,7 +1048,8 @@ void TestLauncher::LaunchChildGTestProcess(
       BindOnce(&TestLauncher::ProcessTestResults, Unretained(this), test_names,
                result_file, process_results.output_file_contents,
                process_results.elapsed_time, process_results.exit_code,
-               process_results.was_timeout));
+               process_results.was_timeout,
+               CountItemsInDirectory(child_temp_dir)));
 }
 
 // Determines which result status will be assigned for missing test results.
@@ -920,7 +1079,8 @@ void TestLauncher::ProcessTestResults(
     const std::string& output,
     TimeDelta elapsed_time,
     int exit_code,
-    bool was_timeout) {
+    bool was_timeout,
+    int leaked_items) {
   std::vector<TestResult> test_results;
   bool crashed = false;
   bool have_test_results =
@@ -1000,6 +1160,9 @@ void TestLauncher::ProcessTestResults(
     i.output_snippet = GetTestOutputSnippet(i, output);
   }
 
+  if (leaked_items)
+    results_tracker_.AddLeakedItems(leaked_items, test_names);
+
   launcher_delegate_->ProcessTestResults(final_results, elapsed_time);
 
   for (const auto& result : final_results)
@@ -1011,18 +1174,12 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
 
   TestResult result(original_result);
 
-  if (result.output_snippet.length() > kOutputSnippetBytesLimit) {
+  if (result.output_snippet.length() > output_bytes_limit_) {
     if (result.status == TestResult::TEST_SUCCESS)
       result.status = TestResult::TEST_EXCESSIVE_OUTPUT;
 
-    // Keep the top and bottom of the log and truncate the middle part.
     result.output_snippet =
-        result.output_snippet.substr(0, kOutputSnippetBytesLimit / 2) + "\n" +
-        StringPrintf("<truncated (%zu bytes)>\n",
-                     result.output_snippet.length()) +
-        result.output_snippet.substr(result.output_snippet.length() -
-                                     kOutputSnippetBytesLimit / 2) +
-        "\n";
+        TruncateSnippetFocused(result.output_snippet, output_bytes_limit_);
   }
 
   bool print_snippet = false;
@@ -1086,6 +1243,12 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   fprintf(stdout, "%s\n", status_line.c_str());
   fflush(stdout);
 
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherPrintTimestamps)) {
+    ::logging::ScopedLoggingSettings scoped_logging_setting;
+    ::logging::SetLogItems(true, true, true, true);
+    LOG(INFO) << "Test_finished_timestamp";
+  }
   // We just printed a status line, reset the watchdog timer.
   watchdog_timer_.Reset();
 
@@ -1137,9 +1300,8 @@ bool LoadFilterFile(const FilePath& file_path,
     }
 
     // Strip comments and whitespace from each line.
-    std::string trimmed_line =
-        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL)
-            .as_string();
+    std::string trimmed_line(
+        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL));
 
     if (trimmed_line.substr(0, 2) == "//") {
       LOG(ERROR) << "Line " << line_num << " in " << file_path
@@ -1245,6 +1407,11 @@ bool TestLauncher::Init(CommandLine* command_line) {
     }
 
     retry_limit_ = retry_limit;
+  } else if (command_line->HasSwitch(kGTestRepeatFlag) ||
+             command_line->HasSwitch(kGTestBreakOnFailure)) {
+    // If we are repeating tests or waiting for the first test to fail, disable
+    // retries.
+    retry_limit_ = 0U;
   } else if (!BotModeEnabled(command_line) &&
              (command_line->HasSwitch(kGTestFilterFlag) ||
               command_line->HasSwitch(kIsolatedScriptTestFilterFlag))) {
@@ -1253,8 +1420,23 @@ bool TestLauncher::Init(CommandLine* command_line) {
     retry_limit_ = 0U;
   }
 
+  retries_left_ = retry_limit_;
   force_run_broken_tests_ =
       command_line->HasSwitch(switches::kTestLauncherForceRunBrokenTests);
+
+  if (command_line->HasSwitch(switches::kTestLauncherOutputBytesLimit)) {
+    int output_bytes_limit = -1;
+    if (!StringToInt(command_line->GetSwitchValueASCII(
+                         switches::kTestLauncherOutputBytesLimit),
+                     &output_bytes_limit) ||
+        output_bytes_limit < 0) {
+      LOG(ERROR) << "Invalid value for "
+                 << switches::kTestLauncherOutputBytesLimit;
+      return false;
+    }
+
+    output_bytes_limit_ = output_bytes_limit;
+  }
 
   fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
@@ -1300,7 +1482,7 @@ bool TestLauncher::Init(CommandLine* command_line) {
     }
   }
 
-  skip_diabled_tests_ =
+  skip_disabled_tests_ =
       !command_line->HasSwitch(kGTestRunDisabledTestsFlag) &&
       !command_line->HasSwitch(kIsolatedScriptRunDisabledTestsFlag);
 
@@ -1367,6 +1549,10 @@ bool TestLauncher::Init(CommandLine* command_line) {
   results_tracker_.AddGlobalTag("OS_ANDROID");
 #endif
 
+#if defined(OS_APPLE)
+  results_tracker_.AddGlobalTag("OS_APPLE");
+#endif
+
 #if defined(OS_BSD)
   results_tracker_.AddGlobalTag("OS_BSD");
 #endif
@@ -1383,12 +1569,16 @@ bool TestLauncher::Init(CommandLine* command_line) {
   results_tracker_.AddGlobalTag("OS_IOS");
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   results_tracker_.AddGlobalTag("OS_LINUX");
 #endif
 
-#if defined(OS_MACOSX)
-  results_tracker_.AddGlobalTag("OS_MACOSX");
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  results_tracker_.AddGlobalTag("OS_CHROMEOS");
+#endif
+
+#if defined(OS_MAC)
+  results_tracker_.AddGlobalTag("OS_MAC");
 #endif
 
 #if defined(OS_NACL)
@@ -1429,12 +1619,30 @@ bool TestLauncher::InitTests() {
     LOG(ERROR) << "Failed to get list of tests.";
     return false;
   }
+  std::vector<std::string> uninstantiated_tests;
   for (const TestIdentifier& test_id : tests) {
     TestInfo test_info(test_id);
+    if (test_id.test_case_name == "GoogleTestVerification") {
+      // GoogleTestVerification is used by googletest to detect tests that are
+      // parameterized but not instantiated.
+      uninstantiated_tests.push_back(test_id.test_name);
+      continue;
+    }
     // TODO(isamsonov): crbug.com/1004417 remove when windows builders
     // stop flaking on MANAUAL_ tests.
     if (launcher_delegate_->ShouldRunTest(test_id))
       tests_.push_back(test_info);
+  }
+  if (!uninstantiated_tests.empty()) {
+    LOG(ERROR) << "Found uninstantiated parameterized tests. These test suites "
+                  "will not run:";
+    for (const std::string& name : uninstantiated_tests)
+      LOG(ERROR) << "  " << name;
+    LOG(ERROR) << "Please use INSTANTIATE_TEST_SUITE_P to instantiate the "
+                  "tests, or GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST if "
+                  "the parameter list can be intentionally empty. See "
+                  "//third_party/googletest/src/docs/advanced.md";
+    return false;
   }
   return true;
 }
@@ -1464,7 +1672,7 @@ bool TestLauncher::ShuffleTests(CommandLine* command_line) {
 
     std::mt19937 randomizer;
     randomizer.seed(shuffle_seed);
-    std::shuffle(tests_.begin(), tests_.end(), randomizer);
+    ranges::shuffle(tests_, randomizer);
 
     fprintf(stdout, "Randomizing with seed %u\n", shuffle_seed);
     fflush(stdout);
@@ -1513,7 +1721,7 @@ bool TestLauncher::ProcessAndValidateTests() {
       pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
     }
     // Skip disabled tests unless explicitly requested.
-    if (!test_info.disabled() || !skip_diabled_tests_)
+    if (!test_info.disabled() || !skip_disabled_tests_)
       tests_to_run.insert(tests_to_run.end(), test_sequence.rbegin(),
                           test_sequence.rend());
   }
@@ -1563,48 +1771,78 @@ void TestLauncher::CombinePositiveTestFilters(
   }
 }
 
-void TestLauncher::RunTests() {
+std::vector<std::string> TestLauncher::CollectTests() {
   std::vector<std::string> test_names;
-  size_t test_found_count = 0;
+  // To support RTS(regression test selection), which may have 100,000 or
+  // more exact gtest filter, we first split filter into exact filter
+  // and wildcards filter, then exact filter can match faster.
+  std::vector<StringPiece> positive_wildcards_filter;
+  std::unordered_set<StringPiece, StringPieceHash> positive_exact_filter;
+  positive_exact_filter.reserve(positive_test_filter_.size());
+  for (const std::string& filter : positive_test_filter_) {
+    if (filter.find('*') != std::string::npos) {
+      positive_wildcards_filter.push_back(filter);
+    } else {
+      positive_exact_filter.insert(filter);
+    }
+  }
+
+  std::vector<StringPiece> negative_wildcards_filter;
+  std::unordered_set<StringPiece, StringPieceHash> negative_exact_filter;
+  negative_exact_filter.reserve(negative_test_filter_.size());
+  for (const std::string& filter : negative_test_filter_) {
+    if (filter.find('*') != std::string::npos) {
+      negative_wildcards_filter.push_back(filter);
+    } else {
+      negative_exact_filter.insert(filter);
+    }
+  }
+
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
-
-    // Count tests in the binary, before we apply filter and sharding.
-    test_found_count++;
 
     std::string prefix_stripped_name = test_info.GetPrefixStrippedName();
 
     // Skip the test that doesn't match the filter (if given).
     if (has_at_least_one_positive_filter_) {
-      bool found = false;
-      for (auto filter : positive_test_filter_) {
-        if (MatchPattern(test_name, filter) ||
-            MatchPattern(prefix_stripped_name, filter)) {
-          found = true;
-          break;
+      bool found = positive_exact_filter.find(test_name) !=
+                       positive_exact_filter.end() ||
+                   positive_exact_filter.find(prefix_stripped_name) !=
+                       positive_exact_filter.end();
+      if (!found) {
+        for (const StringPiece& filter : positive_wildcards_filter) {
+          if (MatchPattern(test_name, filter) ||
+              MatchPattern(prefix_stripped_name, filter)) {
+            found = true;
+            break;
+          }
         }
       }
 
       if (!found)
         continue;
     }
-    if (!negative_test_filter_.empty()) {
-      bool excluded = false;
-      for (auto filter : negative_test_filter_) {
-        if (MatchPattern(test_name, filter) ||
-            MatchPattern(prefix_stripped_name, filter)) {
-          excluded = true;
-          break;
-        }
-      }
 
-      if (excluded)
-        continue;
+    if (negative_exact_filter.find(test_name) != negative_exact_filter.end() ||
+        negative_exact_filter.find(prefix_stripped_name) !=
+            negative_exact_filter.end()) {
+      continue;
     }
+
+    bool excluded = false;
+    for (const StringPiece& filter : negative_wildcards_filter) {
+      if (MatchPattern(test_name, filter) ||
+          MatchPattern(prefix_stripped_name, filter)) {
+        excluded = true;
+        break;
+      }
+    }
+    if (excluded)
+      continue;
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    if (Hash(prefix_stripped_name) % total_shards_ !=
+    if (PersistentHash(prefix_stripped_name) % total_shards_ !=
         static_cast<uint32_t>(shard_index_)) {
       continue;
     }
@@ -1613,32 +1851,82 @@ void TestLauncher::RunTests() {
     // locations only for those tests that were run as part of this shard.
     results_tracker_.AddTestLocation(test_name, test_info.file(),
                                      test_info.line());
+
     if (!test_info.pre_test()) {
       // Only a subset of tests that are run require placeholders -- namely,
-      // those that will output results.
+      // those that will output results. Note that the results for PRE_XYZ will
+      // be merged into XYZ's results if the former fails, so we don't need a
+      // placeholder for it.
       results_tracker_.AddTestPlaceholder(test_name);
     }
 
     test_names.push_back(test_name);
   }
 
+  return test_names;
+}
+
+void TestLauncher::RunTests() {
+  std::vector<std::string> original_test_names = CollectTests();
+
+  std::vector<std::string> test_names;
+  for (int i = 0; i < repeats_per_iteration_; ++i) {
+    test_names.insert(test_names.end(), original_test_names.begin(),
+                      original_test_names.end());
+  }
+
+  broken_threshold_ = std::max(static_cast<size_t>(20), tests_.size() / 10);
+
+  test_started_count_ = test_names.size();
+
+  // If there are no matching tests, warn and notify of any matches against
+  // *<filter>*.
+  if (test_started_count_ == 0) {
+    PrintFuzzyMatchingTestNames();
+    fprintf(stdout, "WARNING: No matching tests to run.\n");
+    fflush(stdout);
+  }
+
   // Save an early test summary in case the launcher crashes or gets killed.
   results_tracker_.GeneratePlaceholderIteration();
   MaybeSaveSummaryAsJSON({"EARLY_SUMMARY"});
 
-  broken_threshold_ = std::max(static_cast<size_t>(20), test_found_count / 10);
+  // If we are repeating the test, set batch size to 1 to ensure that batch size
+  // does not interfere with repeats (unittests are using filter for batches and
+  // can't run the same test twice in the same batch).
+  size_t batch_size =
+      repeats_per_iteration_ > 1 ? 1U : launcher_delegate_->GetBatchSize();
 
-  test_started_count_ = test_names.size();
-
-  TestRunner test_runner(this, parallel_jobs_,
-                         launcher_delegate_->GetBatchSize());
+  TestRunner test_runner(this, parallel_jobs_, batch_size);
   test_runner.Run(test_names);
 }
 
+void TestLauncher::PrintFuzzyMatchingTestNames() {
+  for (auto filter : positive_test_filter_) {
+    if (filter.empty())
+      continue;
+    std::string almost_filter;
+    if (filter.front() != '*')
+      almost_filter += '*';
+    almost_filter += filter;
+    if (filter.back() != '*')
+      almost_filter += '*';
+
+    for (const TestInfo& test_info : tests_) {
+      std::string test_name = test_info.GetFullName();
+      std::string prefix_stripped_name = test_info.GetPrefixStrippedName();
+      if (MatchPattern(test_name, almost_filter) ||
+          MatchPattern(prefix_stripped_name, almost_filter)) {
+        fprintf(stdout, "Filter \"%s\" would have matched: %s\n",
+                almost_filter.c_str(), test_name.c_str());
+        fflush(stdout);
+      }
+    }
+  }
+}
+
 bool TestLauncher::RunRetryTests() {
-  // Number of retries in this iteration.
-  size_t retry_count = 0;
-  while (!tests_to_retry_.empty() && retry_count < retry_limit_) {
+  while (!tests_to_retry_.empty() && retries_left_ > 0) {
     // Retry all tests that depend on a failing test.
     std::vector<std::string> test_names;
     for (const TestInfo& test_info : tests_) {
@@ -1655,12 +1943,12 @@ bool TestLauncher::RunRetryTests() {
       return false;
 
     fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
-            retry_started_count > 1 ? "s" : "", retry_count);
+            retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
     fflush(stdout);
 
+    --retries_left_;
     TestRunner test_runner(this);
     test_runner.Run(test_names);
-    retry_count++;
   }
   return tests_to_retry_.empty();
 }
@@ -1730,11 +2018,17 @@ void TestLauncher::OnOutputTimeout() {
 
   fflush(stdout);
 
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherPrintTimestamps)) {
+    ::logging::ScopedLoggingSettings scoped_logging_setting;
+    ::logging::SetLogItems(true, true, true, true);
+    LOG(INFO) << "Waiting_timestamp";
+  }
   // Arm the timer again - otherwise it would fire only once.
   watchdog_timer_.Reset();
 }
 
-size_t NumParallelJobs() {
+size_t NumParallelJobs(unsigned int cores_per_job) {
   const CommandLine* command_line = CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kTestLauncherJobs)) {
     // If the number of test launcher jobs was specified, return that number.
@@ -1757,15 +2051,15 @@ size_t NumParallelJobs() {
     return 1U;
   }
 
-  // Default to the number of processor cores.
 #if defined(OS_WIN)
   // Use processors in all groups (Windows splits more than 64 logical
   // processors into groups).
-  return base::checked_cast<size_t>(
+  size_t cores = base::checked_cast<size_t>(
       ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
 #else
-  return base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
+  size_t cores = base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
 #endif
+  return std::max(size_t(1), cores / cores_per_job);
 }
 
 std::string GetTestOutputSnippet(const TestResult& result,
@@ -1779,12 +2073,25 @@ std::string GetTestOutputSnippet(const TestResult& result,
                                     result.full_name,
                                     run_pos);
   // Only clip the snippet to the "OK" message if the test really
-  // succeeded. It still might have e.g. crashed after printing it.
-  if (end_pos == std::string::npos &&
-      result.status == TestResult::TEST_SUCCESS) {
-    end_pos = full_output.find(std::string("[       OK ] ") +
-                               result.full_name,
-                               run_pos);
+  // succeeded or was skipped. It still might have e.g. crashed
+  // after printing it.
+  if (end_pos == std::string::npos) {
+    if (result.status == TestResult::TEST_SUCCESS) {
+      end_pos = full_output.find(std::string("[       OK ] ") +
+                                result.full_name,
+                                run_pos);
+
+      // Also handle SKIPPED next to SUCCESS because the GTest XML output
+      // doesn't make a difference between SKIPPED and SUCCESS
+      if (end_pos == std::string::npos)
+        end_pos = full_output.find(
+            std::string("[  SKIPPED ] ") + result.full_name, run_pos);
+    } else {
+      // If test is not successful, include all output until subsequent test.
+      end_pos = full_output.find(std::string("[ RUN      ]"), run_pos + 1);
+      if (end_pos != std::string::npos)
+        end_pos--;
+    }
   }
   if (end_pos != std::string::npos) {
     size_t newline_pos = full_output.find("\n", end_pos);
@@ -1797,6 +2104,65 @@ std::string GetTestOutputSnippet(const TestResult& result,
     snippet = full_output.substr(run_pos, end_pos - run_pos);
 
   return snippet;
+}
+
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit) {
+  // Find the start of anything that looks like a fatal log message.
+  // We want to preferentially preserve these from truncation as we
+  // run extraction of fatal test errors from snippets in result_adapter
+  // to populate failure reasons in ResultDB. It is also convenient for
+  // the user to see them.
+  // Refer to LogMessage::Init in base/logging[_platform].cc for patterns.
+  size_t fatal_message_pos =
+      std::min(snippet.find("FATAL:"), snippet.find("FATAL "));
+
+  size_t fatal_message_start = 0;
+  size_t fatal_message_end = 0;
+  if (fatal_message_pos != std::string::npos) {
+    // Find the line-endings before and after the fatal message.
+    size_t start_pos = snippet.rfind("\n", fatal_message_pos);
+    if (start_pos != std::string::npos) {
+      fatal_message_start = start_pos;
+    }
+    size_t end_pos = snippet.find("\n", fatal_message_pos);
+    if (end_pos != std::string::npos) {
+      // Include the new-line character.
+      fatal_message_end = end_pos + 1;
+    } else {
+      fatal_message_end = snippet.length();
+    }
+  }
+  // Limit fatal message length to half the snippet byte quota. This ensures
+  // we have space for some context at the beginning and end of the snippet.
+  fatal_message_end =
+      std::min(fatal_message_end, fatal_message_start + (byte_limit / 2));
+
+  // Distribute remaining bytes between start and end of snippet.
+  // The split is either even, or if one is small enough to be displayed
+  // without truncation, it gets displayed in full and the other split gets
+  // the remaining bytes.
+  size_t remaining_bytes =
+      byte_limit - (fatal_message_end - fatal_message_start);
+  size_t start_split_bytes;
+  size_t end_split_bytes;
+  if (fatal_message_start < remaining_bytes / 2) {
+    start_split_bytes = fatal_message_start;
+    end_split_bytes = remaining_bytes - fatal_message_start;
+  } else if ((snippet.length() - fatal_message_end) < remaining_bytes / 2) {
+    start_split_bytes =
+        remaining_bytes - (snippet.length() - fatal_message_end);
+    end_split_bytes = (snippet.length() - fatal_message_end);
+  } else {
+    start_split_bytes = remaining_bytes / 2;
+    end_split_bytes = remaining_bytes - start_split_bytes;
+  }
+  return base::StrCat(
+      {TruncateSnippet(snippet.substr(0, fatal_message_start),
+                       start_split_bytes),
+       snippet.substr(fatal_message_start,
+                      fatal_message_end - fatal_message_start),
+       TruncateSnippet(snippet.substr(fatal_message_end), end_split_bytes)});
 }
 
 }  // namespace base

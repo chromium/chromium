@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 
@@ -25,7 +25,6 @@ struct GpuFeatureInfo;
 struct SharedMemoryLimits;
 
 namespace webgpu {
-class WebGPUInterface;
 class WebGPUImplementation;
 }  // namespace webgpu
 
@@ -34,6 +33,10 @@ class WebGPUImplementation;
 class WebGPUInProcessContext {
  public:
   WebGPUInProcessContext();
+
+  WebGPUInProcessContext(const WebGPUInProcessContext&) = delete;
+  WebGPUInProcessContext& operator=(const WebGPUInProcessContext&) = delete;
+
   ~WebGPUInProcessContext();
 
   // |attrib_list| must be null or a NONE-terminated list of attribute/value
@@ -52,7 +55,7 @@ class WebGPUInProcessContext {
 
   // Allows direct access to the WebGPUImplementation so a
   // WebGPUInProcessContext can be used without making it current.
-  gpu::webgpu::WebGPUInterface* GetImplementation();
+  gpu::webgpu::WebGPUImplementation* GetImplementation();
   base::TestSimpleTaskRunner* GetTaskRunner();
 
   // Test only functions.
@@ -65,8 +68,6 @@ class WebGPUInProcessContext {
   std::unique_ptr<webgpu::WebGPUImplementation> webgpu_implementation_;
   std::unique_ptr<InProcessCommandBuffer> command_buffer_;
   scoped_refptr<base::TestSimpleTaskRunner> client_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGPUInProcessContext);
 };
 
 }  // namespace gpu

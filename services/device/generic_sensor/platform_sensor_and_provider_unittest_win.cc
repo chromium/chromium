@@ -7,11 +7,8 @@
 #include <wrl/implements.h>
 
 #include "base/bind.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/win/propvarutil.h"
 #include "base/win/scoped_com_initializer.h"
@@ -19,6 +16,7 @@
 #include "services/device/generic_sensor/fake_platform_sensor_and_provider.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/platform_sensor_provider_win.h"
+#include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -388,6 +386,14 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+double RoundAccelerometerValue(double value) {
+  return RoundToMultiple(value, kAccelerometerRoundingMultiple);
+}
+
+double RoundGyroscopeValue(double value) {
+  return RoundToMultiple(value, kGyroscopeRoundingMultiple);
+}
+
 // Tests that PlatformSensorManager returns null sensor when sensor
 // is not implemented.
 TEST_F(PlatformSensorAndProviderTestWin, SensorIsNotImplemented) {
@@ -563,9 +569,12 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckAccelerometerReadingConversion) {
   base::RunLoop().RunUntilIdle();
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-  EXPECT_THAT(buffer->reading.accel.x, -x_accel * base::kMeanGravityDouble);
-  EXPECT_THAT(buffer->reading.accel.y, -y_accel * base::kMeanGravityDouble);
-  EXPECT_THAT(buffer->reading.accel.z, -z_accel * base::kMeanGravityDouble);
+  EXPECT_THAT(buffer->reading.accel.x,
+              RoundAccelerometerValue(-x_accel * base::kMeanGravityDouble));
+  EXPECT_THAT(buffer->reading.accel.y,
+              RoundAccelerometerValue(-y_accel * base::kMeanGravityDouble));
+  EXPECT_THAT(buffer->reading.accel.z,
+              RoundAccelerometerValue(-z_accel * base::kMeanGravityDouble));
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }
 
@@ -602,9 +611,12 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
   base::RunLoop().RunUntilIdle();
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-  EXPECT_THAT(buffer->reading.gyro.x, gfx::DegToRad(x_ang_accel));
-  EXPECT_THAT(buffer->reading.gyro.y, gfx::DegToRad(y_ang_accel));
-  EXPECT_THAT(buffer->reading.gyro.z, gfx::DegToRad(z_ang_accel));
+  EXPECT_THAT(buffer->reading.gyro.x,
+              RoundGyroscopeValue(gfx::DegToRad(x_ang_accel)));
+  EXPECT_THAT(buffer->reading.gyro.y,
+              RoundGyroscopeValue(gfx::DegToRad(y_ang_accel)));
+  EXPECT_THAT(buffer->reading.gyro.z,
+              RoundGyroscopeValue(gfx::DegToRad(z_ang_accel)));
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }
 
@@ -708,11 +720,17 @@ TEST_F(PlatformSensorAndProviderTestWin,
   EXPECT_TRUE(StartListening(sensor, client.get(), configuration));
   EXPECT_CALL(*client, OnSensorReadingChanged(sensor->GetType())).Times(1);
 
-  double x = -0.5;
-  double y = -0.5;
-  double z = 0.5;
-  double w = 0.5;
-  float quat_elements[4] = {x, y, z, w};
+  // The axis (unit vector) around which to rotate.
+  const double axis[3] = {1.0 / std::sqrt(3), 1.0 / std::sqrt(3),
+                          -1.0 / std::sqrt(3)};
+
+  // Create the unit quaternion manually.
+  const double theta = 2.0943951023931953;  // 120 degrees in radians.
+  const float quat_elements[4] = {
+      static_cast<float>(axis[0] * std::sin(theta / 2.0)),
+      static_cast<float>(axis[1] * std::sin(theta / 2.0)),
+      static_cast<float>(axis[2] * std::sin(theta / 2.0)),
+      static_cast<float>(std::cos(theta / 2.0))};
 
   base::win::ScopedPropVariant pvQuat;
 
@@ -730,10 +748,11 @@ TEST_F(PlatformSensorAndProviderTestWin,
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
 
-  EXPECT_THAT(buffer->reading.orientation_quat.x, x);
-  EXPECT_THAT(buffer->reading.orientation_quat.y, y);
-  EXPECT_THAT(buffer->reading.orientation_quat.z, z);
-  EXPECT_THAT(buffer->reading.orientation_quat.w, w);
+  const float epsilon = 1.0e-3;
+  EXPECT_NEAR(buffer->reading.orientation_quat.x, quat_elements[0], epsilon);
+  EXPECT_NEAR(buffer->reading.orientation_quat.y, quat_elements[1], epsilon);
+  EXPECT_NEAR(buffer->reading.orientation_quat.z, quat_elements[2], epsilon);
+  EXPECT_FLOAT_EQ(buffer->reading.orientation_quat.w, quat_elements[3]);
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }
 
@@ -762,107 +781,6 @@ TEST_F(PlatformSensorAndProviderTestWin,
   auto quaternion_sensor =
       CreateSensor(SensorType::ABSOLUTE_ORIENTATION_QUATERNION);
   EXPECT_FALSE(quaternion_sensor);
-}
-
-// Tests the sensor activation histogram tracks sensor activation return
-// codes correctly.
-TEST_F(PlatformSensorAndProviderTestWin, CheckSensorActivationHistogram) {
-  base::HistogramTester histogram_tester;
-
-  // Trigger ERROR_NOT_FOUND
-  SetUnsupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
-  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
-  EXPECT_FALSE(sensor);
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Activation.Result",
-                HRESULT_FROM_WIN32(ERROR_NOT_FOUND)),
-            1);
-
-  // Trigger S_OK
-  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
-  sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
-  EXPECT_TRUE(sensor);
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Activation.Result", S_OK),
-            1);
-
-  histogram_tester.ExpectTotalCount("Sensors.Windows.ISensor.Activation.Result",
-                                    2);
-}
-
-// Tests the sensor start histogram tracks sensor start return codes
-// correctly.
-TEST_F(PlatformSensorAndProviderTestWin, CheckSensorStartHistogram) {
-  base::HistogramTester histogram_tester;
-
-  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
-  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
-  EXPECT_TRUE(sensor);
-  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
-  PlatformSensorConfiguration configuration(10);
-
-  // Trigger S_OK
-  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
-  EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
-  base::Optional<base::RunLoop> run_loop;
-  run_loop.emplace();
-  provider_->GetComStaTaskRunnerForTesting()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(), run_loop->QuitClosure());
-  run_loop->Run();
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Start.Result", S_OK),
-            1);
-
-  // Trigger E_OUTOFMEMORY
-  ON_CALL(*(sensor_.Get()), SetEventSink(NotNull()))
-      .WillByDefault(Invoke([](ISensorEvents*) { return E_OUTOFMEMORY; }));
-
-  // StartListening() swallows SetEventSink() errors so this will return
-  // true even if the sensor failed to start.
-  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
-  EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
-  run_loop.emplace();
-  provider_->GetComStaTaskRunnerForTesting()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(), run_loop->QuitClosure());
-  run_loop->Run();
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Start.Result", E_OUTOFMEMORY),
-            1);
-
-  histogram_tester.ExpectTotalCount("Sensors.Windows.ISensor.Start.Result", 2);
-}
-
-// Tests the sensor stop histogram tracks sensor stop return codes
-// correctly.
-TEST_F(PlatformSensorAndProviderTestWin, CheckSensorStopHistogram) {
-  base::HistogramTester histogram_tester;
-
-  SetSupportedSensor(SENSOR_TYPE_AMBIENT_LIGHT);
-  auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
-  EXPECT_TRUE(sensor);
-  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>(sensor);
-  PlatformSensorConfiguration configuration(10);
-
-  // Trigger S_OK
-  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
-  EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Stop.Result", S_OK),
-            1);
-
-  // Trigger E_POINTER
-  ON_CALL(*(sensor_.Get()), SetEventSink(IsNull()))
-      .WillByDefault(Invoke([&](ISensorEvents*) { return E_POINTER; }));
-
-  // StopListening() swallows SetEventSink() errors so this will return
-  // true even if the sensor failed to start.
-  EXPECT_TRUE(sensor->StartListening(client.get(), configuration));
-  EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Sensors.Windows.ISensor.Stop.Result", E_POINTER),
-            1);
-
-  histogram_tester.ExpectTotalCount("Sensors.Windows.ISensor.Stop.Result", 2);
 }
 
 }  // namespace device

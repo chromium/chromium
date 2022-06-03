@@ -8,29 +8,33 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/arc/optin/arc_optin_preference_handler_observer.h"
+#include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/settings/timezone_settings.h"
 
 namespace arc {
 class ArcOptInPreferenceHandler;
 }
 
+namespace ash {
+class ArcTermsOfServiceScreen;
+}
+
 namespace chromeos {
 
-class ArcTermsOfServiceScreen;
 class ArcTermsOfServiceScreenView;
 
 class ArcTermsOfServiceScreenViewObserver {
  public:
-  virtual ~ArcTermsOfServiceScreenViewObserver() = default;
+  ArcTermsOfServiceScreenViewObserver(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
+  ArcTermsOfServiceScreenViewObserver& operator=(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
 
-  // Called when the user skips the PlayStore Terms of Service.
-  virtual void OnSkip() = 0;
+  virtual ~ArcTermsOfServiceScreenViewObserver() = default;
 
   // Called when the user accepts the PlayStore Terms of Service.
   virtual void OnAccept(bool review_arc_settings) = 0;
@@ -40,14 +44,15 @@ class ArcTermsOfServiceScreenViewObserver {
 
  protected:
   ArcTermsOfServiceScreenViewObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenViewObserver);
 };
 
 class ArcTermsOfServiceScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"arc-tos"};
+
+  ArcTermsOfServiceScreenView(const ArcTermsOfServiceScreenView&) = delete;
+  ArcTermsOfServiceScreenView& operator=(const ArcTermsOfServiceScreenView&) =
+      delete;
 
   virtual ~ArcTermsOfServiceScreenView() = default;
 
@@ -63,13 +68,10 @@ class ArcTermsOfServiceScreenView {
   virtual void Hide() = 0;
 
   // Sets view and screen.
-  virtual void Bind(ArcTermsOfServiceScreen* screen) = 0;
+  virtual void Bind(ash::ArcTermsOfServiceScreen* screen) = 0;
 
  protected:
   ArcTermsOfServiceScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenView);
 };
 
 // The sole implementation of the ArcTermsOfServiceScreenView, using WebUI.
@@ -84,6 +86,12 @@ class ArcTermsOfServiceScreenHandler
   using TView = ArcTermsOfServiceScreenView;
 
   explicit ArcTermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+
+  ArcTermsOfServiceScreenHandler(const ArcTermsOfServiceScreenHandler&) =
+      delete;
+  ArcTermsOfServiceScreenHandler& operator=(
+      const ArcTermsOfServiceScreenHandler&) = delete;
+
   ~ArcTermsOfServiceScreenHandler() override;
 
   // content::WebUIMessageHandler:
@@ -98,7 +106,7 @@ class ArcTermsOfServiceScreenHandler
   void RemoveObserver(ArcTermsOfServiceScreenViewObserver* observer) override;
   void Show() override;
   void Hide() override;
-  void Bind(ArcTermsOfServiceScreen* screen) override;
+  void Bind(ash::ArcTermsOfServiceScreen* screen) override;
 
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,
@@ -123,13 +131,12 @@ class ArcTermsOfServiceScreenHandler
   // configured for Public Session.
   void DoShowForDemoModeSetup();
 
-  void HandleSkip(const std::string& tos_content);
   void HandleAccept(bool enable_backup_restore,
                     bool enable_location_services,
                     bool review_arc_settings,
                     const std::string& tos_content);
   // Loads Play Store ToS content in case default network exists. If
-  // |ignore_network_state| is set then network state is not checked.
+  // `ignore_network_state` is set then network state is not checked.
   void MaybeLoadPlayStoreToS(bool ignore_network_state);
 
   void StartNetworkAndTimeZoneObserving();
@@ -174,10 +181,16 @@ class ArcTermsOfServiceScreenHandler
   bool is_child_account_;
 
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ArcTermsOfServiceScreenHandler;
+using ::chromeos::ArcTermsOfServiceScreenView;
+using ::chromeos::ArcTermsOfServiceScreenViewObserver;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ARC_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

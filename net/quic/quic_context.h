@@ -7,40 +7,50 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 
 namespace net {
 
-// Default QUIC version used in absence of any external configuration.
-constexpr quic::ParsedQuicVersion kDefaultSupportedQuicVersion{
-    quic::PROTOCOL_QUIC_CRYPTO, quic::QUIC_VERSION_46};
-
-// Returns a list containing only the current default version.
+// Default QUIC supported versions used in absence of any external
+// configuration.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector
 DefaultSupportedQuicVersions() {
-  return quic::ParsedQuicVersionVector{kDefaultSupportedQuicVersion};
+  // The ordering of this list does not matter for Chrome because it respects
+  // the ordering received from the server via Alt-Svc. However, cronet offers
+  // an addQuicHint() API which uses the first version from this list until
+  // it receives Alt-Svc from the server.
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::RFCv1(),
+                                       quic::ParsedQuicVersion::Draft29(),
+                                       quic::ParsedQuicVersion::Q050()};
+}
+
+// Obsolete QUIC supported versions are versions that are supported by the
+// QUIC shared code but that Chrome refuses to use because modern clients
+// should only use versions at least as recent as the oldest default version.
+inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q043(),
+                                       quic::ParsedQuicVersion::Q046()};
 }
 
 // When a connection is idle for 30 seconds it will be closed.
-constexpr base::TimeDelta kIdleConnectionTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 // The default maximum time allowed to have no retransmittable packets on the
 // wire (after sending the first retransmittable packet) if
 // |migrate_session_early_v2_| is true. PING frames will be sent as needed to
 // enforce this.
 constexpr base::TimeDelta kDefaultRetransmittableOnWireTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 // The default maximum time QUIC session could be on non-default network before
 // migrate back to default network.
-constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork =
-    base::TimeDelta::FromSeconds(128);
+constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork = base::Seconds(128);
 
 // The default maximum number of migrations to non default network on write
 // error per network.
@@ -83,8 +93,6 @@ struct NET_EXPORT QuicParams {
   quic::QuicTagVector client_connection_options;
   // Enables experimental optimization for receiving data in UDPSocket.
   bool enable_socket_recv_optimization = false;
-  // Initial value of QuicSpdyClientSessionBase::max_allowed_push_id_.
-  quic::QuicStreamId max_allowed_push_id = 0;
 
   // Active QUIC experiments
 
@@ -100,8 +108,7 @@ struct NET_EXPORT QuicParams {
   base::TimeDelta idle_connection_timeout = kIdleConnectionTimeout;
   // Specifies the reduced ping timeout subsequent connections should use when
   // a connection was timed out with open streams.
-  base::TimeDelta reduced_ping_timeout =
-      base::TimeDelta::FromSeconds(quic::kPingTimeoutSecs);
+  base::TimeDelta reduced_ping_timeout = base::Seconds(quic::kPingTimeoutSecs);
   // Maximum time that a session can have no retransmittable packets on the
   // wire. Set to zero if not specified and no retransmittable PING will be
   // sent to peer when the wire has no retransmittable packets.
@@ -109,10 +116,10 @@ struct NET_EXPORT QuicParams {
   // Maximum time the session can be alive before crypto handshake is
   // finished.
   base::TimeDelta max_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(quic::kMaxTimeForCryptoHandshakeSecs);
+      base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs);
   // Maximum idle time before the crypto handshake has completed.
   base::TimeDelta max_idle_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(quic::kInitialIdleTimeoutSecs);
+      base::Seconds(quic::kInitialIdleTimeoutSecs);
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
@@ -157,8 +164,6 @@ struct NET_EXPORT QuicParams {
   bool go_away_on_path_degrading = false;
   // If true, bidirectional streams over QUIC will be disabled.
   bool disable_bidirectional_streams = false;
-  // If true, race cert verification with host resolution.
-  bool race_cert_verification = false;
   // If true, estimate the initial RTT for QUIC connections based on network.
   bool estimate_initial_rtt = false;
   // If true, client headers will include HTTP/2 stream dependency info
@@ -167,6 +172,13 @@ struct NET_EXPORT QuicParams {
   // The initial rtt that will be used in crypto handshake if no cached
   // smoothed rtt is present.
   base::TimeDelta initial_rtt_for_handshake;
+  // If true, QUIC with TLS will not try 0-RTT connection.
+  bool disable_tls_zero_rtt = false;
+  // If true, gQUIC requests will always require confirmation.
+  bool disable_gquic_zero_rtt = false;
+  // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE
+  // (best effort).
+  int ios_network_service_type = 0;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the
@@ -187,6 +199,11 @@ class NET_EXPORT_PRIVATE QuicContext {
   }
   const quic::ParsedQuicVersionVector& supported_versions() {
     return params_.supported_versions;
+  }
+
+  void SetHelperForTesting(
+      std::unique_ptr<quic::QuicConnectionHelperInterface> helper) {
+    helper_ = std::move(helper);
   }
 
  private:

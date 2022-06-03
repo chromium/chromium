@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -32,10 +31,10 @@ enum NodeListInvalidationType : int;
 class CORE_EXPORT LiveNodeListRegistry {
   DISALLOW_NEW();
 
-  using Entry = std::pair<UntracedMember<const LiveNodeListBase>, unsigned>;
-
  public:
   LiveNodeListRegistry() = default;
+  LiveNodeListRegistry(const LiveNodeListRegistry&) = delete;
+  LiveNodeListRegistry& operator=(const LiveNodeListRegistry&) = delete;
   void Add(const LiveNodeListBase*, NodeListInvalidationType);
   void Remove(const LiveNodeListBase*, NodeListInvalidationType);
 
@@ -45,7 +44,7 @@ class CORE_EXPORT LiveNodeListRegistry {
     return mask_ & MaskForInvalidationType(type);
   }
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   static inline unsigned MaskForInvalidationType(
@@ -57,11 +56,14 @@ class CORE_EXPORT LiveNodeListRegistry {
 
   // Removes any entries corresponding to node lists which have been collected
   // by the GC, and updates the mask accordingly.
-  void ProcessCustomWeakness(const WeakCallbackInfo&);
+  void ProcessCustomWeakness(const LivenessBroker&);
 
+  // We use UntracedMember<> here to recalculate the mask in
+  // |ProcessCustomWeakness()|.
+  using Entry = std::pair<UntracedMember<const LiveNodeListBase>, unsigned>;
   Vector<Entry> data_;
+
   unsigned mask_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(LiveNodeListRegistry);
 };
 
 }  // namespace blink

@@ -74,7 +74,7 @@ class MutationalFuzzer:
 
   def main(self):
     self.set_corpus()
-    for _ in xrange(self.args.no_of_files):
+    for _ in range(self.args.no_of_files):
       self.create_mutated_ipcdump_testcase()
 
     return 0

@@ -23,6 +23,9 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
  public:
   StructTraitsTest() = default;
 
+  StructTraitsTest(const StructTraitsTest&) = delete;
+  StructTraitsTest& operator=(const StructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::TraitsTestService> remote;
@@ -85,8 +88,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructTraitsTest);
 };
 
 }  // namespace
@@ -178,10 +179,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>
       video_encode_accelerator_supported_profiles;
   const bool jpeg_decode_accelerator_supported = true;
-#if defined(USE_X11)
-  const VisualID system_visual = 0x1234;
-  const VisualID rgba_visual = 0x5678;
-#endif
 
   gpu::GPUInfo input;
   input.initialization_time = initialization_time;
@@ -210,10 +207,10 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.in_process_gpu = in_process_gpu;
   input.passthrough_cmd_decoder = passthrough_cmd_decoder;
 #if defined(OS_WIN)
-  input.direct_composition = direct_composition;
-  input.supports_overlays = supports_overlays;
-  input.yuy2_overlay_support = yuy2_overlay_support;
-  input.nv12_overlay_support = nv12_overlay_support;
+  input.overlay_info.direct_composition = direct_composition;
+  input.overlay_info.supports_overlays = supports_overlays;
+  input.overlay_info.yuy2_overlay_support = yuy2_overlay_support;
+  input.overlay_info.nv12_overlay_support = nv12_overlay_support;
   input.dx_diagnostics = dx_diagnostics;
 #endif
   input.video_decode_accelerator_capabilities =
@@ -221,10 +218,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.video_encode_accelerator_supported_profiles =
       video_encode_accelerator_supported_profiles;
   input.jpeg_decode_accelerator_supported = jpeg_decode_accelerator_supported;
-#if defined(USE_X11)
-  input.system_visual = system_visual;
-  input.rgba_visual = rgba_visual;
-#endif
 
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   gpu::GPUInfo output;
@@ -277,10 +270,10 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(in_process_gpu, output.in_process_gpu);
   EXPECT_EQ(passthrough_cmd_decoder, output.passthrough_cmd_decoder);
 #if defined(OS_WIN)
-  EXPECT_EQ(direct_composition, output.direct_composition);
-  EXPECT_EQ(supports_overlays, output.supports_overlays);
-  EXPECT_EQ(yuy2_overlay_support, output.yuy2_overlay_support);
-  EXPECT_EQ(nv12_overlay_support, output.nv12_overlay_support);
+  EXPECT_EQ(direct_composition, output.overlay_info.direct_composition);
+  EXPECT_EQ(supports_overlays, output.overlay_info.supports_overlays);
+  EXPECT_EQ(yuy2_overlay_support, output.overlay_info.yuy2_overlay_support);
+  EXPECT_EQ(nv12_overlay_support, output.overlay_info.nv12_overlay_support);
   EXPECT_EQ(dx_diagnostics.values, output.dx_diagnostics.values);
 #endif
   EXPECT_EQ(output.video_decode_accelerator_capabilities.flags,
@@ -302,10 +295,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
       video_decode_accelerator_capabilities.supported_profiles.size());
   EXPECT_EQ(output.video_encode_accelerator_supported_profiles.size(),
             video_encode_accelerator_supported_profiles.size());
-#if defined(USE_X11)
-  EXPECT_EQ(system_visual, output.system_visual);
-  EXPECT_EQ(rgba_visual, output.rgba_visual);
-#endif
 }
 
 TEST_F(StructTraitsTest, EmptyGpuInfo) {
@@ -455,8 +444,8 @@ TEST_F(StructTraitsTest, GpuPreferences) {
 
 TEST_F(StructTraitsTest, GpuFeatureInfo) {
   GpuFeatureInfo input;
-  input.status_values[GPU_FEATURE_TYPE_FLASH3D] =
-      gpu::kGpuFeatureStatusBlacklisted;
+  input.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
+      gpu::kGpuFeatureStatusBlocklisted;
   input.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       gpu::kGpuFeatureStatusUndefined;
   input.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =

@@ -35,7 +35,8 @@ public final class TabSuggestion {
 
     public TabSuggestion(List<TabContext.TabInfo> tabsInfo, @TabSuggestionAction int action,
             String providerName, Integer tabGroupId) {
-        mTabsInfo = Collections.unmodifiableList(tabsInfo);
+        mTabsInfo =
+                tabsInfo == null ? Collections.emptyList() : Collections.unmodifiableList(tabsInfo);
         mAction = action;
         mProviderName = providerName;
         mTabGroupId = tabGroupId;

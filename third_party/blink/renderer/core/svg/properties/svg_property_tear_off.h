@@ -61,9 +61,10 @@ class SVGPropertyTearOffBase : public ScriptWrappable {
 
   void Bind(SVGAnimatedPropertyBase* binding);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   static void ThrowReadOnly(ExceptionState&);
+  static void ThrowIndexSize(ExceptionState&, uint32_t, uint32_t);
 
  protected:
   SVGPropertyTearOffBase(SVGAnimatedPropertyBase* binding,
@@ -90,7 +91,7 @@ class SVGPropertyTearOff : public SVGPropertyTearOffBase {
 
   void SetTarget(Property* target) { target_ = target; }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(target_);
     SVGPropertyTearOffBase::Trace(visitor);
   }

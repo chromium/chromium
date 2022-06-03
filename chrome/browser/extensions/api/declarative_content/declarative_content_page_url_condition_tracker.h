@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -27,6 +26,11 @@ class Extension;
 // URLMatcherConditionSet.
 class DeclarativeContentPageUrlPredicate : public ContentPredicate {
  public:
+  DeclarativeContentPageUrlPredicate(
+      const DeclarativeContentPageUrlPredicate&) = delete;
+  DeclarativeContentPageUrlPredicate& operator=(
+      const DeclarativeContentPageUrlPredicate&) = delete;
+
   ~DeclarativeContentPageUrlPredicate() override;
 
   url_matcher::URLMatcherConditionSet* url_matcher_condition_set() const {
@@ -52,8 +56,6 @@ class DeclarativeContentPageUrlPredicate : public ContentPredicate {
   ContentPredicateEvaluator* const evaluator_;
 
   scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_condition_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentPageUrlPredicate);
 };
 
 // Supports tracking of URL matches across tab contents in a browser context,
@@ -62,6 +64,12 @@ class DeclarativeContentPageUrlConditionTracker
     : public ContentPredicateEvaluator {
  public:
   explicit DeclarativeContentPageUrlConditionTracker(Delegate* delegate);
+
+  DeclarativeContentPageUrlConditionTracker(
+      const DeclarativeContentPageUrlConditionTracker&) = delete;
+  DeclarativeContentPageUrlConditionTracker& operator=(
+      const DeclarativeContentPageUrlConditionTracker&) = delete;
+
   ~DeclarativeContentPageUrlConditionTracker() override;
 
   // ContentPredicateEvaluator:
@@ -79,6 +87,9 @@ class DeclarativeContentPageUrlConditionTracker
   void OnWebContentsNavigation(
       content::WebContents* contents,
       content::NavigationHandle* navigation_handle) override;
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override;
   bool EvaluatePredicate(const ContentPredicate* predicate,
                          content::WebContents* tab) const override;
 
@@ -89,15 +100,18 @@ class DeclarativeContentPageUrlConditionTracker
   class PerWebContentsTracker : public content::WebContentsObserver {
    public:
     using RequestEvaluationCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::RepeatingCallback<void(content::WebContents*)>;
     using WebContentsDestroyedCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::OnceCallback<void(content::WebContents*)>;
 
-    PerWebContentsTracker(
-        content::WebContents* contents,
-        url_matcher::URLMatcher* url_matcher,
-        const RequestEvaluationCallback& request_evaluation,
-        const WebContentsDestroyedCallback& web_contents_destroyed);
+    PerWebContentsTracker(content::WebContents* contents,
+                          url_matcher::URLMatcher* url_matcher,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed);
+
+    PerWebContentsTracker(const PerWebContentsTracker&) = delete;
+    PerWebContentsTracker& operator=(const PerWebContentsTracker&) = delete;
+
     ~PerWebContentsTracker() override;
 
     void UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged);
@@ -112,11 +126,9 @@ class DeclarativeContentPageUrlConditionTracker
 
     url_matcher::URLMatcher* url_matcher_;
     const RequestEvaluationCallback request_evaluation_;
-    const WebContentsDestroyedCallback web_contents_destroyed_;
+    WebContentsDestroyedCallback web_contents_destroyed_;
 
     std::set<url_matcher::URLMatcherConditionSet::ID> matches_;
-
-    DISALLOW_COPY_AND_ASSIGN(PerWebContentsTracker);
   };
 
   // Called by PerWebContentsTracker on web contents destruction.
@@ -137,8 +149,6 @@ class DeclarativeContentPageUrlConditionTracker
   // Maps WebContents to the tracker for that WebContents state.
   std::map<content::WebContents*, std::unique_ptr<PerWebContentsTracker>>
       per_web_contents_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentPageUrlConditionTracker);
 };
 
 }  // namespace extensions

@@ -4,7 +4,7 @@
 
 #include "ash/wm/window_preview_view.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_preview_view_test_api.h"
 #include "ui/aura/client/aura_constants.h"
@@ -48,6 +48,19 @@ TEST_F(WindowPreviewViewTest, Basic) {
   EXPECT_EQ(2u, test_api.GetMirrorViews().size());
   EXPECT_TRUE(test_api.GetMirrorViews().contains(widget1->GetNativeWindow()));
   EXPECT_TRUE(test_api.GetMirrorViews().contains(widget2->GetNativeWindow()));
+}
+
+// Tests that the preview view preferred size is the same aspect ratio as the
+// window's non client view.
+TEST_F(WindowPreviewViewTest, AspectRatio) {
+  // Default frame header is 32dp, so we expect a window of size 300, 300 to
+  // have a preview of 1:1 ratio.
+  auto window = CreateAppWindow(gfx::Rect(300, 332));
+  auto preview_view = std::make_unique<WindowPreviewView>(
+      window.get(), /*trilinear_filtering_on_init=*/false);
+
+  const gfx::SizeF preferred_size(preview_view->GetPreferredSize());
+  EXPECT_EQ(1.f, preferred_size.width() / preferred_size.height());
 }
 
 // Tests that WindowPreviewView behaves as expected when we add or remove
@@ -135,20 +148,21 @@ TEST_F(WindowPreviewViewTest,
   preview_view.reset();
 }
 
-// Test that WindowPreviewView layouts the transient tree correctly when each
-// transient child is within the bounds of its transient parent.
 TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
 
   // Create two widgets linked transiently. The child window is within the
   // bounds of the parent window.
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
-  widget1->GetNativeWindow()->SetBounds(gfx::Rect(100, 100));
-  widget2->GetNativeWindow()->SetBounds(gfx::Rect(25, 25, 50, 50));
+  widget1->GetNativeWindow()->SetBounds(gfx::Rect(0, -20, 100, 120));
+  widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
+  widget2->GetNativeWindow()->SetBounds(gfx::Rect(20, 20, 50, 50));
+  widget2->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 10);
   ::wm::AddTransientChild(widget1->GetNativeWindow(),
                           widget2->GetNativeWindow());
 
+  // The top inset is excluded from GetUnionRect() calculations.
   auto preview_view = std::make_unique<WindowPreviewView>(
       widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
   WindowPreviewViewTestApi test_api(preview_view.get());
@@ -158,35 +172,44 @@ TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
   preview_view->SetBoundsRect(gfx::Rect(500, 500));
   EXPECT_EQ(gfx::Rect(500, 500),
             test_api.GetMirrorViewForWidget(widget1.get())->bounds());
-  EXPECT_EQ(gfx::Rect(125, 125, 250, 250),
+  // The original rect (20, 20, 50, 50) should now be (100, 100, 250, 250).
+  // However, the top inset of 10 is now 50, and is excluded from calculations.
+  EXPECT_EQ(gfx::Rect(100, 150, 250, 200),
             test_api.GetMirrorViewForWidget(widget2.get())->bounds());
 }
 
 // Test that WindowPreviewView layouts the transient tree correctly when each
 // transient child is outside the bounds of its transient parent.
 TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
 
   // Create two widgets linked transiently. The child window is outside of the
   // bounds of the parent window.
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
-  widget1->GetNativeWindow()->SetBounds(gfx::Rect(200, 200));
+  widget1->GetNativeWindow()->SetBounds(gfx::Rect(0, -20, 200, 220));
+  widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
   widget2->GetNativeWindow()->SetBounds(gfx::Rect(300, 300, 100, 100));
+  widget2->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
   ::wm::AddTransientChild(widget1->GetNativeWindow(),
                           widget2->GetNativeWindow());
 
+  // Get the union rect of the two windows. The top inset is excluded from
+  // calculations.
   auto preview_view = std::make_unique<WindowPreviewView>(
       widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
   WindowPreviewViewTestApi test_api(preview_view.get());
   EXPECT_EQ(gfx::RectF(400.f, 400.f), test_api.GetUnionRect());
 
   // Test that the ratio between the two windows, relative to the smallest
-  // rectangle which encompasses them both (0,0, 400, 400)  is maintained.
+  // rectangle which encompasses them both (0, 0, 400, 400) is maintained. The
+  // first window is positioned at the origin, the second window is positioned
+  // such that it is 25% larger and the bottom right corner is aligned with
+  // |preview_view|'s bottom right corner.
   preview_view->SetBoundsRect(gfx::Rect(500, 500));
   EXPECT_EQ(gfx::Rect(250, 250),
             test_api.GetMirrorViewForWidget(widget1.get())->bounds());
-  EXPECT_EQ(gfx::Rect(375, 375, 125, 125),
+  EXPECT_EQ(gfx::Rect(375, 400, 125, 100),
             test_api.GetMirrorViewForWidget(widget2.get())->bounds());
 }
 

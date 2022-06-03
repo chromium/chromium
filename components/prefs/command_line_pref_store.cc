@@ -8,7 +8,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/values.h"
 
 CommandLinePrefStore::CommandLinePrefStore(
     const base::CommandLine* command_line)
@@ -37,7 +40,7 @@ void CommandLinePrefStore::ApplyPathSwitches(
       SetValue(path_switch[i].preference_path,
                std::make_unique<base::Value>(
                    command_line_->GetSwitchValuePath(path_switch[i].switch_name)
-                       .value()),
+                       .AsUTF8Unsafe()),
                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }

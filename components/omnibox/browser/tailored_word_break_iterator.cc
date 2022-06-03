@@ -5,7 +5,7 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 
 namespace {
-constexpr base::char16 kUnderscore = '_';
+constexpr char16_t kUnderscore = '_';
 }  // namespace
 
 using base::i18n::BreakIterator;
@@ -28,7 +28,7 @@ bool TailoredWordBreakIterator::Advance() {
     return false;
   prev_ = 0;
   pos_ = 0;
-  underscore_word_.clear();
+  underscore_word_ = base::StringPiece16();
   if (!IsWord())
     return true;
   base::StringPiece16 word = BreakIterator::GetStringPiece();
@@ -54,8 +54,8 @@ base::StringPiece16 TailoredWordBreakIterator::GetStringPiece() const {
   return BreakIterator::GetStringPiece();
 }
 
-base::string16 TailoredWordBreakIterator::GetString() const {
-  return GetStringPiece().as_string();
+std::u16string TailoredWordBreakIterator::GetString() const {
+  return std::u16string(GetStringPiece());
 }
 
 size_t TailoredWordBreakIterator::prev() const {

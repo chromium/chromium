@@ -96,6 +96,7 @@
 #define glGetAttachedShaders GLES2_GET_FUN(GetAttachedShaders)
 #define glGetAttribLocation GLES2_GET_FUN(GetAttribLocation)
 #define glGetBooleanv GLES2_GET_FUN(GetBooleanv)
+#define glGetBooleani_v GLES2_GET_FUN(GetBooleani_v)
 #define glGetBufferParameteri64v GLES2_GET_FUN(GetBufferParameteri64v)
 #define glGetBufferParameteriv GLES2_GET_FUN(GetBufferParameteriv)
 #define glGetError GLES2_GET_FUN(GetError)
@@ -166,7 +167,6 @@
 #define glShaderBinary GLES2_GET_FUN(ShaderBinary)
 #define glShaderSource GLES2_GET_FUN(ShaderSource)
 #define glShallowFinishCHROMIUM GLES2_GET_FUN(ShallowFinishCHROMIUM)
-#define glShallowFlushCHROMIUM GLES2_GET_FUN(ShallowFlushCHROMIUM)
 #define glOrderingBarrierCHROMIUM GLES2_GET_FUN(OrderingBarrierCHROMIUM)
 #define glMultiDrawArraysWEBGL GLES2_GET_FUN(MultiDrawArraysWEBGL)
 #define glMultiDrawArraysInstancedWEBGL \
@@ -357,39 +357,6 @@
 #define glGetLastFlushIdCHROMIUM GLES2_GET_FUN(GetLastFlushIdCHROMIUM)
 #define glScheduleDCLayerCHROMIUM GLES2_GET_FUN(ScheduleDCLayerCHROMIUM)
 #define glSetActiveURLCHROMIUM GLES2_GET_FUN(SetActiveURLCHROMIUM)
-#define glMatrixLoadfCHROMIUM GLES2_GET_FUN(MatrixLoadfCHROMIUM)
-#define glMatrixLoadIdentityCHROMIUM GLES2_GET_FUN(MatrixLoadIdentityCHROMIUM)
-#define glGenPathsCHROMIUM GLES2_GET_FUN(GenPathsCHROMIUM)
-#define glDeletePathsCHROMIUM GLES2_GET_FUN(DeletePathsCHROMIUM)
-#define glIsPathCHROMIUM GLES2_GET_FUN(IsPathCHROMIUM)
-#define glPathCommandsCHROMIUM GLES2_GET_FUN(PathCommandsCHROMIUM)
-#define glPathParameterfCHROMIUM GLES2_GET_FUN(PathParameterfCHROMIUM)
-#define glPathParameteriCHROMIUM GLES2_GET_FUN(PathParameteriCHROMIUM)
-#define glPathStencilFuncCHROMIUM GLES2_GET_FUN(PathStencilFuncCHROMIUM)
-#define glStencilFillPathCHROMIUM GLES2_GET_FUN(StencilFillPathCHROMIUM)
-#define glStencilStrokePathCHROMIUM GLES2_GET_FUN(StencilStrokePathCHROMIUM)
-#define glCoverFillPathCHROMIUM GLES2_GET_FUN(CoverFillPathCHROMIUM)
-#define glCoverStrokePathCHROMIUM GLES2_GET_FUN(CoverStrokePathCHROMIUM)
-#define glStencilThenCoverFillPathCHROMIUM \
-  GLES2_GET_FUN(StencilThenCoverFillPathCHROMIUM)
-#define glStencilThenCoverStrokePathCHROMIUM \
-  GLES2_GET_FUN(StencilThenCoverStrokePathCHROMIUM)
-#define glStencilFillPathInstancedCHROMIUM \
-  GLES2_GET_FUN(StencilFillPathInstancedCHROMIUM)
-#define glStencilStrokePathInstancedCHROMIUM \
-  GLES2_GET_FUN(StencilStrokePathInstancedCHROMIUM)
-#define glCoverFillPathInstancedCHROMIUM \
-  GLES2_GET_FUN(CoverFillPathInstancedCHROMIUM)
-#define glCoverStrokePathInstancedCHROMIUM \
-  GLES2_GET_FUN(CoverStrokePathInstancedCHROMIUM)
-#define glStencilThenCoverFillPathInstancedCHROMIUM \
-  GLES2_GET_FUN(StencilThenCoverFillPathInstancedCHROMIUM)
-#define glStencilThenCoverStrokePathInstancedCHROMIUM \
-  GLES2_GET_FUN(StencilThenCoverStrokePathInstancedCHROMIUM)
-#define glBindFragmentInputLocationCHROMIUM \
-  GLES2_GET_FUN(BindFragmentInputLocationCHROMIUM)
-#define glProgramPathFragmentInputGenCHROMIUM \
-  GLES2_GET_FUN(ProgramPathFragmentInputGenCHROMIUM)
 #define glContextVisibilityHintCHROMIUM \
   GLES2_GET_FUN(ContextVisibilityHintCHROMIUM)
 #define glCoverageModulationCHROMIUM GLES2_GET_FUN(CoverageModulationCHROMIUM)
@@ -399,10 +366,6 @@
   GLES2_GET_FUN(BindFragDataLocationIndexedEXT)
 #define glBindFragDataLocationEXT GLES2_GET_FUN(BindFragDataLocationEXT)
 #define glGetFragDataIndexEXT GLES2_GET_FUN(GetFragDataIndexEXT)
-#define glUniformMatrix4fvStreamTextureMatrixCHROMIUM \
-  GLES2_GET_FUN(UniformMatrix4fvStreamTextureMatrixCHROMIUM)
-#define glOverlayPromotionHintCHROMIUM \
-  GLES2_GET_FUN(OverlayPromotionHintCHROMIUM)
 #define glSwapBuffersWithBoundsCHROMIUM \
   GLES2_GET_FUN(SwapBuffersWithBoundsCHROMIUM)
 #define glSetDrawRectangleCHROMIUM GLES2_GET_FUN(SetDrawRectangleCHROMIUM)
@@ -435,5 +398,17 @@
   GLES2_GET_FUN(BeginSharedImageAccessDirectCHROMIUM)
 #define glEndSharedImageAccessDirectCHROMIUM \
   GLES2_GET_FUN(EndSharedImageAccessDirectCHROMIUM)
+#define glBeginBatchReadAccessSharedImageCHROMIUM \
+  GLES2_GET_FUN(BeginBatchReadAccessSharedImageCHROMIUM)
+#define glEndBatchReadAccessSharedImageCHROMIUM \
+  GLES2_GET_FUN(EndBatchReadAccessSharedImageCHROMIUM)
+#define glEnableiOES GLES2_GET_FUN(EnableiOES)
+#define glDisableiOES GLES2_GET_FUN(DisableiOES)
+#define glBlendEquationiOES GLES2_GET_FUN(BlendEquationiOES)
+#define glBlendEquationSeparateiOES GLES2_GET_FUN(BlendEquationSeparateiOES)
+#define glBlendFunciOES GLES2_GET_FUN(BlendFunciOES)
+#define glBlendFuncSeparateiOES GLES2_GET_FUN(BlendFuncSeparateiOES)
+#define glColorMaskiOES GLES2_GET_FUN(ColorMaskiOES)
+#define glIsEnablediOES GLES2_GET_FUN(IsEnablediOES)
 
 #endif  // GPU_GLES2_GL2CHROMIUM_AUTOGEN_H_

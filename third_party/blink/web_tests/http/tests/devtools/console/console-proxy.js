@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proxy properly.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     window.accessedGet = false;
@@ -31,12 +31,12 @@
   ConsoleTestRunner.waitUntilNthMessageReceived(2, dumpMessages);
   TestRunner.evaluateInPage('testFunction()');
 
-  function dumpMessages() {
+  async function dumpMessages() {
     var consoleView = Console.ConsoleView.instance();
-    consoleView._viewport.invalidate();
-    var element = consoleView._visibleViewMessages[0].contentElement();
+    consoleView.viewport.invalidate();
+    var element = consoleView.visibleViewMessages[0].contentElement();
 
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.evaluateInPage('window.accessedGet', dumpAccessedGetAndExpand);
   }
 
@@ -45,11 +45,11 @@
     ConsoleTestRunner.expandConsoleMessages(dumpExpandedConsoleMessages);
   }
 
-  function dumpExpandedConsoleMessages() {
-    var element = Console.ConsoleView.instance()._visibleViewMessages[0].contentElement();
+  async function dumpExpandedConsoleMessages() {
+    var element = Console.ConsoleView.instance().visibleViewMessages[0].contentElement();
     dumpNoteVisible(element, 'info-note');
 
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.evaluateInPage('window.accessedGet', dumpAccessedGetAndCompleteTest);
   }
 

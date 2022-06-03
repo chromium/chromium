@@ -1,0 +1,40 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Metrics about mobile friendliness for UpdateTiming call. The various values
+// are calculated at different times by different signals, so the values may be
+// invalid (e.g. unknown or -1) if they have not yet been determined.
+struct MobileFriendliness {
+  // Whether <meta name="viewport" content="width=device-width"> is specified or
+  // not.
+  // Default value is false.
+  bool viewport_device_width;
+
+  // The value specified in viewport initial-scale in meta tag multiplied by 10.
+  // Default value is -1 as an invalid data.
+  int32 viewport_initial_scale_x10;
+
+  // The value specified in viewport width in meta tag.
+  // Default value is -1 as an invalid data.
+  int32 viewport_hardcoded_width;
+
+  // Whether the page allows user to zoom in/out.
+  // Default value is true.
+  bool allow_user_zoom;
+
+  // Percentage of small font text area in total text area.
+  // Default value is -1 as an invalid data.
+  int32 small_text_ratio;
+
+  // Percentage of pixels of text and images horizontally outside the viewport,
+  // relative to the frame width.
+  int32 text_content_outside_viewport_percentage = 0;
+
+  // Percentage of bad tap targets of all tap targets.
+  // Default value is -1 as an invalid data.
+  // If evaluation time budget exceeded, this will be -2.
+  int32 bad_tap_targets_ratio;
+};

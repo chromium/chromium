@@ -15,8 +15,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/numerics/ranges.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "chromecast/graphics/accessibility/accessibility_cursor_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_highlight_layer.h"
@@ -67,13 +67,13 @@ AccessibilityFocusRingController::AccessibilityFocusRingController(
     : root_window_(root_window) {
   DCHECK(root_window);
   focus_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kFocusFadeInTimeMilliseconds);
+      base::Milliseconds(kFocusFadeInTimeMilliseconds);
   focus_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kFocusFadeOutTimeMilliseconds);
+      base::Milliseconds(kFocusFadeOutTimeMilliseconds);
   caret_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeInTimeMilliseconds);
+      base::Milliseconds(kCaretFadeInTimeMilliseconds);
   caret_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeOutTimeMilliseconds);
+      base::Milliseconds(kCaretFadeOutTimeMilliseconds);
 }
 
 AccessibilityFocusRingController::~AccessibilityFocusRingController() = default;
@@ -195,9 +195,9 @@ void AccessibilityFocusRingController::HideCaretRing() {
 
 void AccessibilityFocusRingController::SetNoFadeForTesting() {
   focus_animation_info_.fade_in_time = base::TimeDelta();
-  focus_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  focus_animation_info_.fade_out_time = base::Hours(1);
   caret_animation_info_.fade_in_time = base::TimeDelta();
-  caret_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  caret_animation_info_.fade_out_time = base::Hours(1);
 }
 
 void AccessibilityFocusRingController::RectsToRings(
@@ -429,16 +429,14 @@ void AccessibilityFocusRingController::AnimateFocusRings(
   if (focus_ring_behavior_ == FocusRingBehavior::PERSIST_FOCUS_RING) {
     base::TimeDelta delta = timestamp - focus_animation_info_.change_time;
     base::TimeDelta transition_time =
-        base::TimeDelta::FromMilliseconds(kTransitionTimeMilliseconds);
+        base::Milliseconds(kTransitionTimeMilliseconds);
     if (delta >= transition_time) {
       focus_layers_[0]->Set(focus_rings_[0]);
       return;
     }
 
-    double fraction = delta.InSecondsF() / transition_time.InSecondsF();
-
     // Ease-in effect.
-    fraction = pow(fraction, 0.3);
+    const double fraction = pow(delta / transition_time, 0.3);
 
     // Handle corner case where we're animating but we don't have previous
     // rings.
@@ -474,17 +472,13 @@ void AccessibilityFocusRingController::ComputeOpacity(
   }
 
   float opacity;
-  if (start_delta < fade_in_time) {
-    opacity = start_delta.InSecondsF() / fade_in_time.InSecondsF();
-  } else {
-    opacity = 1.0 - (change_delta.InSecondsF() /
-                     (fade_in_time + fade_out_time).InSecondsF());
-  }
+  if (start_delta < fade_in_time)
+    opacity = start_delta / fade_in_time;
+  else
+    opacity = 1.0 - (change_delta / (fade_in_time + fade_out_time));
 
   // Layer::SetOpacity will throw an error if we're not within 0...1.
-  opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
-
-  animation_info->opacity = opacity;
+  animation_info->opacity = base::clamp(opacity, 0.0f, 1.0f);
 }
 
 void AccessibilityFocusRingController::AnimateCaretRing(

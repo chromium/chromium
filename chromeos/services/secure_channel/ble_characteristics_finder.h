@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -37,14 +37,10 @@ class BluetoothLowEnergyCharacteristicsFinder
   // |to_peripheral_char_| and |from_peripheral_char_|. Note that, since this is
   // called after the characteristics were discovered, their id field (e.g.
   // to_peripheral_char_.id) will be non-blank.
-  typedef base::Callback<void(const RemoteAttribute&,
-                              const RemoteAttribute&,
-                              const RemoteAttribute&)>
+  typedef base::OnceCallback<void(const RemoteAttribute&,
+                                  const RemoteAttribute&,
+                                  const RemoteAttribute&)>
       SuccessCallback;
-
-  // Error callback indicating that no valid GATT service with all required
-  // characteristic was found on the |device_|.
-  typedef base::Callback<void()> ErrorCallback;
 
   // Constructs the object and registers itself as an observer for |adapter|,
   // waiting for |to_peripheral_char| and |from_peripheral_char| to be found.
@@ -52,16 +48,25 @@ class BluetoothLowEnergyCharacteristicsFinder
   // all characteristics of |service| were discovered, if |from_periphral_char|
   // or |to_peripheral| was not found, it calls |error_callback|. The object
   // will perform at most one call of the callbacks.
+  //
+  // Starts this operation by posting a task to |task_runner|.
   BluetoothLowEnergyCharacteristicsFinder(
       scoped_refptr<device::BluetoothAdapter> adapter,
       device::BluetoothDevice* device,
       const RemoteAttribute& remote_service,
       const RemoteAttribute& to_peripheral_char,
       const RemoteAttribute& from_peripheral_char,
-      const SuccessCallback& success_callback,
-      const ErrorCallback& error_callback,
+      SuccessCallback success_callback,
+      base::OnceClosure error_callback,
       const multidevice::RemoteDeviceRef& remote_device,
-      std::unique_ptr<BackgroundEidGenerator> background_eid_generator);
+      std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
+      scoped_refptr<base::TaskRunner> task_runner =
+          base::ThreadTaskRunnerHandle::Get());
+
+  BluetoothLowEnergyCharacteristicsFinder(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
+  BluetoothLowEnergyCharacteristicsFinder& operator=(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
 
   ~BluetoothLowEnergyCharacteristicsFinder() override;
 
@@ -76,6 +81,9 @@ class BluetoothLowEnergyCharacteristicsFinder
 
  private:
   friend class SecureChannelBluetoothLowEnergyCharacteristicFinderTest;
+
+  // Starts the process of finding GATT characteristics.
+  void Start();
 
   // Scans the remote chracteristics of the service with |remote_service_.uuid|
   // in |device| and triggers the success or error callback.
@@ -92,11 +100,10 @@ class BluetoothLowEnergyCharacteristicsFinder
   void NotifyFailureIfNoPendingEidCharReads();
 
   void TryToVerifyEid(device::BluetoothRemoteGattCharacteristic* eid_char);
-  void OnRemoteCharacteristicRead(const std::string& service_id,
-                                  const std::vector<uint8_t>& value);
-  void OnReadRemoteCharacteristicError(
+  void OnRemoteCharacteristicRead(
       const std::string& service_id,
-      device::BluetoothRemoteGattService::GattErrorCode error);
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
   bool DoesEidMatchExpectedDevice(const std::vector<uint8_t>& eid_value_read);
 
   // The Bluetooth adapter where the connection was established.
@@ -126,7 +133,7 @@ class BluetoothLowEnergyCharacteristicsFinder
   bool have_services_been_parsed_ = false;
 
   // Called when there is an error.
-  ErrorCallback error_callback_;
+  base::OnceClosure error_callback_;
 
   const multidevice::RemoteDeviceRef remote_device_;
 
@@ -137,12 +144,10 @@ class BluetoothLowEnergyCharacteristicsFinder
 
   base::WeakPtrFactory<BluetoothLowEnergyCharacteristicsFinder>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyCharacteristicsFinder);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_BLUETOOTH_CHARACTERISTICS_FINDER_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_

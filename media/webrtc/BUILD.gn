@@ -3,14 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
-import("//media/webrtc/audio_processing.gni")
 import("//third_party/webrtc/webrtc.gni")
-
-config("audio_processing_build_flag") {
-  if (audio_processing_in_audio_service_supported) {
-    defines = [ "AUDIO_PROCESSING_IN_AUDIO_SERVICE" ]
-  }
-}
 
 component("webrtc") {
   output_name = "media_webrtc"
@@ -20,46 +13,32 @@ component("webrtc") {
     "audio_delay_stats_reporter.h",
     "helpers.cc",
     "helpers.h",
-    "webrtc_switches.cc",
-    "webrtc_switches.h",
+    "webrtc_features.cc",
+    "webrtc_features.h",
   ]
 
   defines = [ "IS_MEDIA_WEBRTC_IMPL" ]
 
   deps = [
     "//base",
+    "//build:chromecast_buildflags",
+    "//media",
     "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
-
-  if (audio_processing_in_audio_service_supported) {
-    # Only build this on platforms where it's supported and used.
-    sources += [
-      "audio_processor.cc",
-      "audio_processor.h",
-      "audio_processor_controls.h",
-    ]
-
-    deps += [ "//media" ]
-
-    public_configs = [ ":audio_processing_build_flag" ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  if (audio_processing_in_audio_service_supported) {
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//media:test_support",
-      "//media/webrtc",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/webrtc_overrides:webrtc_component",
-    ]
-    sources = [
-      "audio_processor_unittest.cc",
-    ]
-  }
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//build:chromecast_buildflags",
+    "//media:test_support",
+    "//media/webrtc",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+  sources = [ "helpers_unittests.cc" ]
 }

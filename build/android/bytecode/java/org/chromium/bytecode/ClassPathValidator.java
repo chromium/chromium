@@ -6,12 +6,14 @@ package org.chromium.bytecode;
 
 import org.objectweb.asm.ClassReader;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 /**
  * Checks classpaths (given as ClassLoaders) by reading the constant pool of the class file and
@@ -20,9 +22,18 @@ import java.util.TreeSet;
  * can't find the class with any given classpath.
  */
 public class ClassPathValidator {
+    // Number of warnings to print.
+    private static final int MAX_MISSING_CLASS_WARNINGS = 10;
+    // Number of missing classes to show per missing jar.
+    private static final int MAX_ERRORS_PER_JAR = 2;
     // Map of missing .jar -> Missing class -> Classes that failed.
     // TreeMap so that error messages have sorted list of jars.
-    private final Map<String, Map<String, Set<String>>> mErrors = new TreeMap<>();
+    private final Map<String, Map<String, Set<String>>> mDirectErrors =
+            Collections.synchronizedMap(new TreeMap<>());
+    // Missing classes we only track the first one for each jar.
+    // Map of missingClass -> srcClass.
+    private final Map<String, String> mMissingClasses =
+            Collections.synchronizedMap(new TreeMap<>());
 
     static class ClassNotLoadedException extends ClassNotFoundException {
         private final String mClassName;
@@ -35,17 +46,6 @@ public class ClassPathValidator {
         public String getClassName() {
             return mClassName;
         }
-    }
-
-    private static void printAndQuit(ClassNotLoadedException e, ClassReader classReader,
-            boolean verbose) throws ClassNotLoadedException {
-        System.err.println("Class \"" + e.getClassName()
-                + "\" not found on any classpath. Used by class \"" + classReader.getClassName()
-                + "\"");
-        if (verbose) {
-            throw e;
-        }
-        System.exit(1);
     }
 
     private static void validateClass(ClassLoader classLoader, String className)
@@ -87,10 +87,10 @@ public class ClassPathValidator {
      *
      * @param classReader .class file interface for reading the constant pool.
      * @param classLoader classpath you wish to validate.
-     * @throws ClassNotLoadedException thrown if it can't load a certain class.
+     * @param errorConsumer Called for each missing class.
      */
-    private static void validateClassPath(ClassReader classReader, ClassLoader classLoader)
-            throws ClassNotLoadedException {
+    private static void validateClassPath(ClassReader classReader, ClassLoader classLoader,
+            Consumer<ClassNotLoadedException> errorConsumer) {
         char[] charBuffer = new char[classReader.getMaxStringLength()];
         // According to the Java spec, the constant pool is indexed from 1 to constant_pool_count -
         // 1. See https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4
@@ -99,69 +99,135 @@ public class ClassPathValidator {
             // Class entries correspond to 7 in the constant pool
             // https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4
             if (offset > 0 && classReader.readByte(offset - 1) == 7) {
-                validateClass(classLoader, classReader.readUTF8(offset, charBuffer));
-            }
-        }
-    }
-
-    public void validateClassPathsAndOutput(ClassReader classReader,
-            ClassLoader directClassPathClassLoader, ClassLoader fullClassPathClassLoader,
-            Collection<String> jarsOnlyInFullClassPath, boolean isPrebuilt, boolean verbose)
-            throws ClassNotLoadedException {
-        if (isPrebuilt) {
-            // Prebuilts only need transitive dependencies checked, not direct dependencies.
-            try {
-                validateClassPath(classReader, fullClassPathClassLoader);
-            } catch (ClassNotLoadedException e) {
-                printAndQuit(e, classReader, verbose);
-            }
-        } else {
-            try {
-                validateClassPath(classReader, directClassPathClassLoader);
-            } catch (ClassNotLoadedException e) {
                 try {
-                    validateClass(fullClassPathClassLoader, e.getClassName());
-                } catch (ClassNotLoadedException d) {
-                    printAndQuit(d, classReader, verbose);
-                }
-                if (verbose) {
-                    System.err.println("Class \"" + e.getClassName()
-                            + "\" not found in direct dependencies,"
-                            + " but found in indirect dependiences.");
-                }
-                // Iterating through all jars that are in the full classpath but not the direct
-                // classpath to find which one provides the class we are looking for.
-                for (String jarPath : jarsOnlyInFullClassPath) {
-                    try {
-                        ClassLoader smallLoader =
-                                ByteCodeProcessor.loadJars(Collections.singletonList(jarPath));
-                        validateClass(smallLoader, e.getClassName());
-                        Map<String, Set<String>> failedClassesByMissingClass = mErrors.get(jarPath);
-                        if (failedClassesByMissingClass == null) {
-                            // TreeMap so that error messages have sorted list of classes.
-                            failedClassesByMissingClass = new TreeMap<>();
-                            mErrors.put(jarPath, failedClassesByMissingClass);
-                        }
-                        Set<String> failedClasses =
-                                failedClassesByMissingClass.get(e.getClassName());
-                        if (failedClasses == null) {
-                            failedClasses = new TreeSet<>();
-                            failedClassesByMissingClass.put(e.getClassName(), failedClasses);
-                        }
-                        failedClasses.add(classReader.getClassName());
-                        break;
-                    } catch (ClassNotLoadedException f) {
-                    }
+                    validateClass(classLoader, classReader.readUTF8(offset, charBuffer));
+                } catch (ClassNotLoadedException e) {
+                    errorConsumer.accept(e);
                 }
             }
         }
     }
 
-    public Map<String, Map<String, Set<String>>> getErrors() {
-        return mErrors;
+    public void validateFullClassPath(ClassReader classReader, ClassLoader fullClassLoader,
+            Set<String> missingClassAllowlist) {
+        // Prebuilts only need transitive dependencies checked, not direct dependencies.
+        validateClassPath(classReader, fullClassLoader, (e) -> {
+            if (!missingClassAllowlist.contains(e.getClassName())) {
+                addMissingError(classReader.getClassName(), e.getClassName());
+            }
+        });
+    }
+
+    public void validateDirectClassPath(ClassReader classReader, ClassLoader directClassLoader,
+            ClassLoader fullClassLoader, Collection<String> jarsOnlyInFullClassPath,
+            Set<String> missingClassAllowlist, boolean verbose) {
+        validateClassPath(classReader, directClassLoader, (e) -> {
+            try {
+                validateClass(fullClassLoader, e.getClassName());
+            } catch (ClassNotLoadedException d) {
+                if (!missingClassAllowlist.contains(e.getClassName())) {
+                    addMissingError(classReader.getClassName(), e.getClassName());
+                }
+                return;
+            }
+            if (verbose) {
+                System.err.println("Class \"" + e.getClassName()
+                        + "\" not found in direct dependencies,"
+                        + " but found in indirect dependiences.");
+            }
+            // Iterating through all jars that are in the full classpath but not the direct
+            // classpath to find which one provides the class we are looking for.
+            for (String jarPath : jarsOnlyInFullClassPath) {
+                try {
+                    ClassLoader smallLoader =
+                            ByteCodeProcessor.loadJars(Collections.singletonList(jarPath));
+                    validateClass(smallLoader, e.getClassName());
+                    addDirectError(jarPath, classReader.getClassName(), e.getClassName());
+                    break;
+                } catch (ClassNotLoadedException f) {
+                }
+            }
+        });
+    }
+
+    private void addMissingError(String srcClass, String missingClass) {
+        mMissingClasses.put(missingClass, srcClass);
+    }
+
+    private void addDirectError(String jarPath, String srcClass, String missingClass) {
+        synchronized (mDirectErrors) {
+            Map<String, Set<String>> failedClassesByMissingClass = mDirectErrors.get(jarPath);
+            if (failedClassesByMissingClass == null) {
+                // TreeMap so that error messages have sorted list of classes.
+                failedClassesByMissingClass = new TreeMap<>();
+                mDirectErrors.put(jarPath, failedClassesByMissingClass);
+            }
+            Set<String> failedClasses = failedClassesByMissingClass.get(missingClass);
+            if (failedClasses == null) {
+                failedClasses = new TreeSet<>();
+                failedClassesByMissingClass.put(missingClass, failedClasses);
+            }
+            failedClasses.add(srcClass);
+        }
     }
 
     public boolean hasErrors() {
-        return !mErrors.isEmpty();
+        return !mDirectErrors.isEmpty() || !mMissingClasses.isEmpty();
+    }
+
+    private static void printValidationError(
+            PrintStream out, String gnTarget, Map<String, Set<String>> missingClasses) {
+        out.print(" * ");
+        out.println(gnTarget);
+        int i = 0;
+        // The list of missing classes is non-exhaustive because each class that fails to validate
+        // reports only the first missing class.
+        for (Map.Entry<String, Set<String>> entry : missingClasses.entrySet()) {
+            String missingClass = entry.getKey();
+            Set<String> filesThatNeededIt = entry.getValue();
+            out.print("     * ");
+            if (i == MAX_ERRORS_PER_JAR) {
+                out.print(String.format(
+                        "And %d more...", missingClasses.size() - MAX_ERRORS_PER_JAR));
+                break;
+            }
+            out.print(missingClass.replace('/', '.'));
+            out.print(" (needed by ");
+            out.print(filesThatNeededIt.iterator().next().replace('/', '.'));
+            if (filesThatNeededIt.size() > 1) {
+                out.print(String.format(" and %d more", filesThatNeededIt.size() - 1));
+            }
+            out.println(")");
+            i++;
+        }
+    }
+
+    public void printAll(String gnTarget, Map<String, String> jarToGnTarget) {
+        String streamer = "=============================";
+        System.err.println();
+        System.err.println(streamer + " Dependency Checks Failed " + streamer);
+        System.err.println("Target: " + gnTarget);
+        if (!mMissingClasses.isEmpty()) {
+            int i = 0;
+            for (Map.Entry<String, String> entry : mMissingClasses.entrySet()) {
+                if (++i > MAX_MISSING_CLASS_WARNINGS) {
+                    System.err.println(String.format("... and %d more.",
+                            mMissingClasses.size() - MAX_MISSING_CLASS_WARNINGS));
+                    break;
+                }
+                System.err.println(String.format(
+                        "Class \"%s\" not found on any classpath. Used by class \"%s\"",
+                        entry.getKey(), entry.getValue()));
+            }
+            System.err.println();
+        }
+        if (!mDirectErrors.isEmpty()) {
+            System.err.println("Direct classpath is incomplete. To fix, add deps on:");
+            for (Map.Entry<String, Map<String, Set<String>>> entry : mDirectErrors.entrySet()) {
+                printValidationError(
+                        System.err, jarToGnTarget.get(entry.getKey()), entry.getValue());
+            }
+            System.err.println();
+        }
     }
 }

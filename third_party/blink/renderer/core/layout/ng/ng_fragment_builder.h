@@ -9,10 +9,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -37,50 +37,63 @@ class CORE_EXPORT NGFragmentBuilder {
     style_variant_ = style_variant;
   }
 
-  WritingMode GetWritingMode() const { return writing_mode_; }
-  TextDirection Direction() const { return direction_; }
+  WritingDirectionMode GetWritingDirection() const {
+    return writing_direction_;
+  }
+  WritingMode GetWritingMode() const {
+    return writing_direction_.GetWritingMode();
+  }
+  TextDirection Direction() const { return writing_direction_.Direction(); }
 
   LayoutUnit InlineSize() const { return size_.inline_size; }
-  LayoutUnit BlockSize() const { return size_.block_size; }
-  const LogicalSize& Size() const { return size_; }
+  LayoutUnit BlockSize() const {
+    DCHECK(size_.block_size != kIndefiniteSize);
+    return size_.block_size;
+  }
+  const LogicalSize& Size() const {
+    DCHECK(size_.block_size != kIndefiniteSize);
+    return size_;
+  }
   void SetBlockSize(LayoutUnit block_size) { size_.block_size = block_size; }
 
+  bool HasBlockSize() const { return size_.block_size != kIndefiniteSize; }
+
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
+  void SetIsOpaque() { is_opaque_ = true; }
+
+  void SetHasCollapsedBorders(bool value) { has_collapsed_borders_ = value; }
 
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  protected:
   NGFragmentBuilder(scoped_refptr<const ComputedStyle> style,
-                    WritingMode writing_mode,
-                    TextDirection direction)
+                    WritingDirectionMode writing_direction)
       : style_(std::move(style)),
-        writing_mode_(writing_mode),
-        direction_(direction),
+        writing_direction_(writing_direction),
         style_variant_(NGStyleVariant::kStandard) {
     DCHECK(style_);
   }
-  NGFragmentBuilder(WritingMode writing_mode, TextDirection direction)
-      : writing_mode_(writing_mode), direction_(direction) {}
+  explicit NGFragmentBuilder(WritingDirectionMode writing_direction)
+      : writing_direction_(writing_direction) {}
 
   NGFragmentBuilder(const NGPhysicalFragment& fragment)
       : style_(&fragment.Style()),
-        writing_mode_(style_->GetWritingMode()),
-        direction_(style_->Direction()),
+        writing_direction_(style_->GetWritingDirection()),
         style_variant_(fragment.StyleVariant()),
-        size_(fragment.Size().ConvertToLogical(writing_mode_)),
+        size_(fragment.Size().ConvertToLogical(GetWritingMode())),
         layout_object_(fragment.GetMutableLayoutObject()),
         is_hidden_for_paint_(fragment.IsHiddenForPaint()) {}
 
  protected:
   scoped_refptr<const ComputedStyle> style_;
-  WritingMode writing_mode_;
-  TextDirection direction_;
+  WritingDirectionMode writing_direction_;
   NGStyleVariant style_variant_;
   LogicalSize size_;
   LayoutObject* layout_object_ = nullptr;
-  scoped_refptr<NGBreakToken> break_token_;
+  const NGBreakToken* break_token_ = nullptr;
   bool is_hidden_for_paint_ = false;
-
+  bool is_opaque_ = false;
+  bool has_collapsed_borders_ = false;
   friend class NGPhysicalFragment;
 };
 

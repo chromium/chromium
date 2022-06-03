@@ -24,7 +24,7 @@ class StyleRuleNamespace final : public StyleRuleBase {
   AtomicString Prefix() const { return prefix_; }
   AtomicString Uri() const { return uri_; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     StyleRuleBase::TraceAfterDispatch(visitor);
   }
 

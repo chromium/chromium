@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -19,6 +20,7 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +41,9 @@ class TestUDPClientSocket : public DatagramClientSocket {
  public:
   explicit TestUDPClientSocket(const AddressMapping* mapping)
       : mapping_(mapping), connected_(false)  {}
+
+  TestUDPClientSocket(const TestUDPClientSocket&) = delete;
+  TestUDPClientSocket& operator=(const TestUDPClientSocket&) = delete;
 
   ~TestUDPClientSocket() override = default;
 
@@ -133,14 +138,16 @@ class TestUDPClientSocket : public DatagramClientSocket {
   const AddressMapping* mapping_;
   bool connected_;
   IPEndPoint local_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUDPClientSocket);
 };
 
 // Creates TestUDPClientSockets and maintains an AddressMapping.
 class TestSocketFactory : public ClientSocketFactory {
  public:
   TestSocketFactory() = default;
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -153,6 +160,7 @@ class TestSocketFactory : public ClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList&,
       std::unique_ptr<SocketPerformanceWatcher>,
+      net::NetworkQualityEstimator*,
       NetLog*,
       const NetLogSource&) override {
     NOTIMPLEMENTED();
@@ -186,8 +194,6 @@ class TestSocketFactory : public ClientSocketFactory {
 
  private:
   AddressMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 void OnSortComplete(AddressList* result_buf,
@@ -202,7 +208,9 @@ void OnSortComplete(AddressList* result_buf,
 
 }  // namespace
 
-class AddressSorterPosixTest : public testing::Test {
+// TaskEnvironment is required to register an IPAddressObserver from the
+// constructor of AddressSorterPosix.
+class AddressSorterPosixTest : public TestWithTaskEnvironment {
  protected:
   AddressSorterPosixTest() : sorter_(&socket_factory_) {}
 

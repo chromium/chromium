@@ -7,48 +7,40 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/logging.h"
 #include "build/build_config.h"
-#include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
-#include "ui/display/types/display_snapshot.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gl/buffer_format_utils.h"
-#include "ui/gl/gl_image.h"
 
 namespace viz {
 
-BufferQueue::BufferQueue(gpu::gles2::GLES2Interface* gl,
-                         gfx::BufferFormat format,
-                         gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                         gpu::SurfaceHandle surface_handle,
-                         const gpu::Capabilities& capabilities)
-    : gl_(gl),
+BufferQueue::BufferQueue(gpu::SharedImageInterface* sii,
+                         gpu::SurfaceHandle surface_handle)
+    : sii_(sii),
       allocated_count_(0),
-      texture_target_(gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT,
-                                                  format,
-                                                  capabilities)),
-      internal_format_(base::strict_cast<uint32_t>(
-          gl::BufferFormatToGLInternalFormat(format))),
-      format_(format),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       surface_handle_(surface_handle) {}
 
 BufferQueue::~BufferQueue() {
   FreeAllSurfaces();
 }
 
-unsigned BufferQueue::GetCurrentBuffer(unsigned* stencil) {
-  DCHECK(stencil);
+void BufferQueue::SetSyncTokenProvider(SyncTokenProvider* sync_token_provider) {
+  DCHECK(!sync_token_provider_);
+  sync_token_provider_ = sync_token_provider;
+}
+
+gpu::Mailbox BufferQueue::GetCurrentBuffer(gpu::SyncToken* creation_sync_token,
+                                           gfx::GpuFenceHandle* release_fence) {
+  DCHECK(creation_sync_token);
   if (!current_surface_)
-    current_surface_ = GetNextSurface();
-  if (current_surface_) {
-    *stencil = current_surface_->stencil;
-    return current_surface_->texture;
-  }
-  *stencil = 0u;
-  return 0u;
+    current_surface_ = GetNextSurface(creation_sync_token);
+  if (release_fence)
+    *release_fence = current_surface_->release_fence.Clone();
+  return current_surface_ ? current_surface_->mailbox : gpu::Mailbox();
 }
 
 void BufferQueue::UpdateBufferDamage(const gfx::Rect& damage) {
@@ -63,8 +55,18 @@ void BufferQueue::UpdateBufferDamage(const gfx::Rect& damage) {
 }
 
 gfx::Rect BufferQueue::CurrentBufferDamage() const {
-  DCHECK(current_surface_);
-  return current_surface_->damage;
+  if (current_surface_)
+    return current_surface_->damage;
+
+  // In case there is no current_surface_, we get the damage from the surface
+  // that will be set as current_surface_ by the next call to GetNextSurface.
+  if (!available_surfaces_.empty()) {
+    return available_surfaces_.back()->damage;
+  }
+
+  // If we can't determine which surface will be the next current_surface_, we
+  // conservatively invalidate the whole buffer.
+  return gfx::Rect(size_);
 }
 
 void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
@@ -75,14 +77,12 @@ void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
 }
 
 bool BufferQueue::Reshape(const gfx::Size& size,
-                          float scale_factor,
                           const gfx::ColorSpace& color_space,
-                          bool use_stencil) {
-  if (size == size_ && color_space == color_space_ &&
-      use_stencil == use_stencil_) {
+                          gfx::BufferFormat format) {
+  if (size == size_ && color_space == color_space_ && format == format_)
     return false;
-  }
-#if !defined(OS_MACOSX)
+
+#if !defined(OS_APPLE)
   // TODO(ccameron): This assert is being hit on Mac try jobs. Determine if that
   // is cause for concern or if it is benign.
   // http://crbug.com/524624
@@ -90,17 +90,23 @@ bool BufferQueue::Reshape(const gfx::Size& size,
 #endif
   size_ = size;
   color_space_ = color_space;
-  use_stencil_ = use_stencil;
+  format_ = format;
 
   FreeAllSurfaces();
   return true;
 }
 
-void BufferQueue::PageFlipComplete() {
+void BufferQueue::SetMaxBuffers(size_t max) {
+  max_buffers_ = max;
+}
+
+void BufferQueue::PageFlipComplete(gfx::GpuFenceHandle release_fence) {
   DCHECK(!in_flight_surfaces_.empty());
   if (in_flight_surfaces_.front()) {
-    if (displayed_surface_)
+    if (displayed_surface_) {
+      displayed_surface_->release_fence = std::move(release_fence);
       available_surfaces_.push_back(std::move(displayed_surface_));
+    }
     displayed_surface_ = std::move(in_flight_surfaces_.front());
   }
 
@@ -108,30 +114,36 @@ void BufferQueue::PageFlipComplete() {
 }
 
 void BufferQueue::FreeAllSurfaces() {
-  displayed_surface_.reset();
-  current_surface_.reset();
+  DCHECK(sync_token_provider_);
+  const gpu::SyncToken destruction_sync_token =
+      sync_token_provider_->GenSyncToken();
+  FreeSurface(std::move(displayed_surface_), destruction_sync_token);
+  FreeSurface(std::move(current_surface_), destruction_sync_token);
+
   // This is intentionally not emptied since the swap buffers acks are still
   // expected to arrive.
-  for (auto& surface : in_flight_surfaces_)
-    surface = nullptr;
+  for (auto& surface : in_flight_surfaces_) {
+    FreeSurface(std::move(surface), destruction_sync_token);
+  }
+
+  for (auto& surface : available_surfaces_) {
+    FreeSurface(std::move(surface), destruction_sync_token);
+  }
   available_surfaces_.clear();
 }
 
-void BufferQueue::FreeSurfaceResources(AllocatedSurface* surface) {
-  if (!surface->texture)
+void BufferQueue::FreeSurface(std::unique_ptr<AllocatedSurface> surface,
+                              const gpu::SyncToken& sync_token) {
+  if (!surface)
     return;
-
-  gl_->BindTexture(texture_target_, surface->texture);
-  gl_->ReleaseTexImage2DCHROMIUM(texture_target_, surface->image);
-  gl_->DeleteTextures(1, &surface->texture);
-  gl_->DestroyImageCHROMIUM(surface->image);
-  if (surface->stencil)
-    gl_->DeleteRenderbuffers(1, &surface->stencil);
-  surface->buffer.reset();
+  DCHECK(!surface->mailbox.IsZero());
+  sii_->DestroySharedImage(sync_token, surface->mailbox);
   allocated_count_--;
 }
 
-std::unique_ptr<BufferQueue::AllocatedSurface> BufferQueue::GetNextSurface() {
+std::unique_ptr<BufferQueue::AllocatedSurface> BufferQueue::GetNextSurface(
+    gpu::SyncToken* creation_sync_token) {
+  DCHECK(creation_sync_token);
   if (!available_surfaces_.empty()) {
     std::unique_ptr<AllocatedSurface> surface =
         std::move(available_surfaces_.back());
@@ -139,67 +151,32 @@ std::unique_ptr<BufferQueue::AllocatedSurface> BufferQueue::GetNextSurface() {
     return surface;
   }
 
-  unsigned texture;
-  gl_->GenTextures(1, &texture);
-
-  unsigned stencil = 0;
-  if (use_stencil_) {
-    gl_->GenRenderbuffers(1, &stencil);
-    gl_->BindRenderbuffer(GL_RENDERBUFFER, stencil);
-    gl_->RenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, size_.width(),
-                             size_.height());
-    gl_->BindRenderbuffer(GL_RENDERBUFFER, 0);
-  }
-
   // We don't want to allow anything more than triple buffering.
-  DCHECK_LT(allocated_count_, 3U);
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer(
-      gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          size_, format_, gfx::BufferUsage::SCANOUT, surface_handle_));
-  if (!buffer) {
-    gl_->DeleteTextures(1, &texture);
-    DLOG(ERROR) << "Failed to allocate GPU memory buffer";
-    return nullptr;
-  }
-  buffer->SetColorSpace(color_space_);
+  DCHECK_LT(allocated_count_, max_buffers_);
 
-  unsigned id =
-      gl_->CreateImageCHROMIUM(buffer->AsClientBuffer(), size_.width(),
-                               size_.height(), internal_format_);
-  if (!id) {
-    LOG(ERROR) << "Failed to allocate backing image surface";
-    gl_->DeleteTextures(1, &texture);
+  DCHECK(format_);
+  const ResourceFormat format = GetResourceFormat(format_.value());
+  const gpu::Mailbox mailbox = sii_->CreateSharedImage(
+      format, size_, color_space_, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_SCANOUT |
+          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+      surface_handle_);
+
+  if (mailbox.IsZero()) {
+    LOG(ERROR) << "Failed to create SharedImage";
     return nullptr;
   }
 
   allocated_count_++;
-  gl_->BindTexture(texture_target_, texture);
-  gl_->BindTexImage2DCHROMIUM(texture_target_, id);
-
-  // The texture must be bound to the image before setting the color space.
-  gl_->SetColorSpaceMetadataCHROMIUM(
-      texture, reinterpret_cast<GLColorSpace>(&color_space_));
-
-  return std::make_unique<AllocatedSurface>(this, std::move(buffer), texture,
-                                            id, stencil, gfx::Rect(size_));
+  *creation_sync_token = sii_->GenUnverifiedSyncToken();
+  return std::make_unique<AllocatedSurface>(mailbox, gfx::Rect(size_));
 }
 
-BufferQueue::AllocatedSurface::AllocatedSurface(
-    BufferQueue* buffer_queue,
-    std::unique_ptr<gfx::GpuMemoryBuffer> buffer,
-    unsigned texture,
-    unsigned image,
-    unsigned stencil,
-    const gfx::Rect& rect)
-    : buffer_queue(buffer_queue),
-      buffer(buffer.release()),
-      texture(texture),
-      image(image),
-      stencil(stencil),
-      damage(rect) {}
+BufferQueue::AllocatedSurface::AllocatedSurface(const gpu::Mailbox& mailbox,
+                                                const gfx::Rect& rect)
+    : mailbox(mailbox), damage(rect) {}
 
-BufferQueue::AllocatedSurface::~AllocatedSurface() {
-  buffer_queue->FreeSurfaceResources(this);
-}
+BufferQueue::AllocatedSurface::~AllocatedSurface() = default;
 
 }  // namespace viz

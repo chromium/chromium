@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_PREFS_H_
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_PREFS_H_
 
+#include <set>
 #include <string>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -29,34 +32,52 @@ class LanguagePrefs {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  LanguagePrefs(PrefService* user_prefs);
+  explicit LanguagePrefs(PrefService* user_prefs);
 
-  // Return true iff the user is fluent in the given |language|.
-  bool IsFluent(const std::string& language) const;
-  // Mark that the user is fluent in the given |language|.
-  void SetFluent(const std::string& language);
-  // Remove the given |language| from the user's fluent languages.
-  void ClearFluent(const std::string& language);
-  // Reset the fluent languages to their defaults.
-  void ResetFluentLanguagesToDefaults();
-  // Get the default fluent languages for the user.
-  static base::Value GetDefaultFluentLanguages();
-  // If the list of fluent languages is empty, reset it to defaults.
-  void ResetEmptyFluentLanguagesToDefault();
+  LanguagePrefs(const LanguagePrefs&) = delete;
+  LanguagePrefs& operator=(const LanguagePrefs&) = delete;
+
+  ~LanguagePrefs();
+
+  // Gets the language settings list containing combination of policy-forced and
+  // user-selected languages. Language settings list follows the Chrome internal
+  // format.
+  void GetAcceptLanguagesList(std::vector<std::string>* languages) const;
+  // Gets the user-selected language settings list. Languages are expected to be
+  // in the Chrome internal format.
+  void GetUserSelectedLanguagesList(std::vector<std::string>* languages) const;
+  // Updates the user-selected language settings list. Languages are expected to
+  // be in the Chrome internal format.
+  void SetUserSelectedLanguagesList(const std::vector<std::string>& languages);
+  // Returns true if the target language is forced through policy.
+  bool IsForcedLanguage(const std::string& language);
 
  private:
-  base::Value* GetFluentLanguages();
+  // Updates the language list containing combination of policy-forced and
+  // user-selected languages.
+  void GetDeduplicatedUserLanguages(std::string* deduplicated_languages_string);
+  // Updates the pref corresponding to the language list containing combination
+  // of policy-forced and user-selected languages.
+  // Since languages may be removed from the policy while the browser is off,
+  // having an additional policy solely for user-selected languages allows
+  // Chrome to clear any removed policy languages from the accept languages pref
+  // while retaining all user-selected languages.
+  void UpdateAcceptLanguagesPref();
+  // Initializes the user selected language pref to ensure backwards
+  // compatibility.
+  void InitializeSelectedLanguagesPref();
 
-  const base::Value* GetFluentLanguages() const;
-
-  size_t NumFluentLanguages() const;
+  // Used for deduplication and reordering of languages.
+  std::set<std::string> forced_languages_set_;
 
   PrefService* prefs_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(LanguagePrefs);
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 void ResetLanguagePrefs(PrefService* prefs);
+
+// Given a comma separated list of locales, return the first.
+std::string GetFirstLanguage(base::StringPiece language_list);
 
 }  // namespace language
 

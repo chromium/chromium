@@ -125,12 +125,10 @@
       const stream = await startRequestAndTakeStream(100);
       if (!stream)
         return;
-      let result = (await dp.IO.read({handle: stream, size: 0})).result;
+      const {error} = (await dp.IO.read({handle: stream, size: 0}));
+      testRunner.log(`reading 0: ${error.message}`);
+      const result = (await dp.IO.read({handle: stream, size: 100})).result;
       testRunner.log(`data: ${result.data} (${result.data.length}) eof: ${result.eof}`);
-      result = (await dp.IO.read({handle: stream, size: 100})).result;
-      testRunner.log(`data: ${result.data} (${result.data.length}) eof: ${result.eof}`);
-      result = (await dp.IO.read({handle: stream, size: 0})).result;
-      testRunner.log(`eof: ${result.eof}`);
     },
 
     async function testTakeTwice() {

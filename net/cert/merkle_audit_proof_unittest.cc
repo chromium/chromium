@@ -4,7 +4,7 @@
 
 #include "net/cert/merkle_audit_proof.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

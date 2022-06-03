@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "media/base/data_source.h"
@@ -25,6 +24,10 @@ class IPCDataSource : public media::DataSource {
   // May only be called on the utility thread.
   explicit IPCDataSource(
       mojo::PendingRemote<mojom::AssistantMediaDataSource> media_data_source);
+
+  IPCDataSource(const IPCDataSource&) = delete;
+  IPCDataSource& operator=(const IPCDataSource&) = delete;
+
   ~IPCDataSource() override;
 
   // media::DataSource implementation. The methods may be called on any single
@@ -34,16 +37,16 @@ class IPCDataSource : public media::DataSource {
   void Read(int64_t position,
             int size,
             uint8_t* destination,
-            const ReadCB& callback) override;
+            ReadCB callback) override;
   bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
 
  private:
   // Media data read helpers: must be run on the utility thread.
-  void ReadMediaData(uint8_t* destination, const ReadCB& callback, int size);
+  void ReadMediaData(uint8_t* destination, ReadCB callback, int size);
   void ReadDone(uint8_t* destination,
-                const ReadCB& callback,
+                ReadCB callback,
                 uint32_t requested_size,
                 const std::vector<uint8_t>& data);
 
@@ -55,8 +58,6 @@ class IPCDataSource : public media::DataSource {
 
   // Enforces that the DataSource methods are called on one other thread only.
   THREAD_CHECKER(data_source_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IPCDataSource);
 };
 
 }  // namespace assistant

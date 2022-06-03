@@ -33,6 +33,9 @@ class RulesFunction : public ExtensionFunction {
  public:
   RulesFunction();
 
+  RulesFunction(const RulesFunction&) = delete;
+  RulesFunction& operator=(const RulesFunction&) = delete;
+
  protected:
   ~RulesFunction() override;
 
@@ -55,8 +58,6 @@ class RulesFunction : public ExtensionFunction {
 
  private:
   void SendResponse(ResponseValue response);
-
-  DISALLOW_COPY_AND_ASSIGN(RulesFunction);
 };
 
 class EventsEventAddRulesFunction : public RulesFunction {

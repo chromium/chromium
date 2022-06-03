@@ -1,0 +1,30 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {DIV} at (0,0) size 1176x84 [border: (3px solid #FF0000)]
+        LayoutText {#text} at (21,22) size 22x40
+          text run at (21,22) width 22: "\x{2022} "
+        LayoutInline {B} at (43,22) size 360x40
+          LayoutText {#text} at (43,22) size 360x40
+            text run at (43,22) width 360: "This is some linked text"
+        LayoutText {#text} at (0,0) size 0x0
+caret: position 1 of child 0 {#text} of child 1 {DIV} of body

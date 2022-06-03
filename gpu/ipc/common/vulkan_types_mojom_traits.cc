@@ -69,7 +69,7 @@ bool StructTraits<gpu::mojom::VkPhysicalDevicePropertiesDataView,
   deviceName.copy(out->deviceName, sizeof(out->deviceName));
 
   base::span<uint8_t> pipelineCacheUUID(out->pipelineCacheUUID);
-  if (!data.ReadPipelineCacheUUID(&pipelineCacheUUID))
+  if (!data.ReadPipelineCacheUuid(&pipelineCacheUUID))
     return false;
 
   if (!data.ReadLimits(&out->limits))

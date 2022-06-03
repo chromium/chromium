@@ -9,19 +9,22 @@
 #include <vector>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "services/network/public/mojom/address_list.mojom.h"
+#include "net/base/address_list.h"
+#include "services/network/public/mojom/address_list.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<network::mojom::AddressListDataView, net::AddressList> {
+struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
+    StructTraits<network::mojom::AddressListDataView, net::AddressList> {
   static const std::vector<net::IPEndPoint>& addresses(
       const net::AddressList& obj) {
     return obj.endpoints();
   }
 
-  static const std::string& canonical_name(const net::AddressList& obj) {
-    return obj.canonical_name();
+  static const std::vector<std::string>& dns_aliases(
+      const net::AddressList& obj) {
+    return obj.dns_aliases();
   }
 
   static bool Read(network::mojom::AddressListDataView data,

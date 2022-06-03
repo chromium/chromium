@@ -1,21 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Details'",
-          "rect": [24, 8, 47, 18],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutDetailsMarker DIV id='details-marker'",
-          "rect": [8, 11, 11, 11],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [24, 8, 47, 18],
+        [8, 8, 11, 18]
       ]
     }
   ]

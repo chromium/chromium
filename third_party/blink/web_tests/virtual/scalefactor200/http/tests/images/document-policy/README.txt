@@ -1,0 +1,1 @@
+# This suite runs tests in http/tests/images/document-policy with --force-device-scale-factor=2

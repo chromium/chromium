@@ -36,12 +36,14 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {
   ClientCertConfig(const ClientCertConfig& other);
   ~ClientCertConfig();
 
-  // Independent of whether the client cert (pattern or reference) is
-  // configured, the location determines whether this network configuration
-  // supports client certs and what kind of configuration it requires.
+  // Independent of whether the client cert (pattern, reference, or provisioning
+  // profile id) is configured, the location determines whether this network
+  // configuration supports client certs and what kind of configuration it
+  // requires.
   ConfigType location;
 
-  // One of the ClientCertTypes defined in ONC: |kNone|, |kRef|, or |kPattern|.
+  // One of the ClientCertTypes defined in ONC: |kNone|, |kRef|,
+  // |kProvisioningProfileId|, or |kPattern|.
   std::string client_cert_type;
 
   // If |client_cert_type| equals |kPattern|, this contains the pattern.
@@ -50,6 +52,10 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {
   // If |client_cert_type| equals |kRef|, this contains the GUID of the
   // referenced certificate.
   std::string guid;
+
+  // If |client_cert_type| equals |kProvisioningProfileId|, this contains the id
+  // of the referenced certificate.
+  std::string provisioning_profile_id;
 
   // The value of |kIdentity|, to enable substitutions.
   std::string policy_identity;

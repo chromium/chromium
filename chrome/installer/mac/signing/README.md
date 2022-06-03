@@ -7,12 +7,20 @@ files.
 
 ## Invoking
 
+Signing requires a statically linked build (i.e. `is_component_build = false`),
+which you can set up in a new GN out directory with the following args:
+
+    is_debug = false
+    is_component_build = false
+
 The scripts are invoked using the driver located at
 `//chrome/installer/mac/sign_chrome.py`. In order to sign a binary, a signing
 identity is required. Googlers can use the [internal development
-identity](https://goto.google.com/macoscerts); otherwise you can create a
+identity](https://goto.google.com/ioscerts); otherwise you must supply your
+own. Note that a
 [self-signed](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html)
-identity.
+identity is incompatible with the _library validation_ signing option that
+Chrome uses.
 
 A sample invocation to use during development would be:
 
@@ -24,29 +32,75 @@ speeds up the signing process when one is only interested in a signed .app
 bundle. The `--development` flag skips over code signing requirements and checks
 that do not work without the official Google signing identity.
 
+## The Installer Identity
+
+The above section speaks of the `--identity` parameter to `sign_chrome.py`, and
+how the normal development identity will do, and how a self-signed identity will
+not work. However, the identity used for Installer (.pkg) files is different.
+
+Installer files require a special Installer Package Signing Certificate, which
+is different than a normal certificate in that it has a special Extended Key
+Usage extension.
+
+For the normal identity, Apple provides both a development and a deployment
+certificate, and while the deployment certificate can be (and should be)
+carefully guarded, the development certificate can be more widely used by the
+development team. However, Apple provides _only_ a deployment installer
+certificate. For development purposes, you must self-sign your own.
+
+Directions on how to create a self-signed certificate with the special Extended
+Key Usage extension for installer use can be found on
+[security.stackexchange](https://security.stackexchange.com/a/47908).
+
+You will need to explicitly mark the certificate in Keychain Access as trusted.
+Be sure that `security -v find-identity` lists this new certificate as a valid
+identity.
+
 ## Chromium
 
-The signing scripts do not work out-of-the-box with a Chromium build. Until
-https://crbug.com/1021255 is fixed, in order to have a working (i.e.
-launch-able), signed Chromium:
+There are slight differences between the official Google Chrome signed build and
+a development-signed Chromium build. Specifically, the entitlements will vary
+because the default
+[chrome/app/app-entitlements.plist](../../../app/app-entitlements.plist) omits
+[specific entitlements](../../../app/app-entitlements-chrome.plist) that are
+tied to the official Google signing identity.
 
-1. Edit chrome/app/app-entitlements.plist and remove the following key/value
-   pairs:
-   - `com.apple.application-identifier`
-   - `keychain-access-groups`
-   - `com.apple.developer.associated-domains.applinks.read-write`
-2. `touch out/<outdir>/Chromium\ Packaging/keystone_install.sh`
-3. Run `sign_chrome.py` as documented above.
-
-Note that the Chromium [code sign
+In addition, the Chromium [code sign
 config](https://cs.chromium.org/chromium/src/chrome/installer/mac/signing/chromium_config.py)
 only produces one Distribution to sign just the .app. An
-`is_chrome_build=true` build produces several Distributions for the official
+`is_chrome_branded=true` build produces several Distributions for the official
 release system.
+
+## Google Chrome
+
+If you attempt to sign an `is_chrome_branded=true` build locally, the app will
+fail to launch because certain entitlements are tied to the official Google code
+signing identity/certificate. To test an `is_chrome_branded=true` build locally,
+replace the contents of
+[`app-entitlements-chrome.plist`](../../../app/app-entitlements-chrome.plist) with
+an empty plist.
+
+### System Detached Signatures
+
+MacOS may itself sign Chromium build binaries when it needs to record a
+signature for certain OS operations. The signature is not attached to the
+application bundle, as the signing scripts do, but it is instead recorded in a
+_detached signature database_. This happens, e.g. when a network request
+is filtered by the Application Firewall.
+
+If you get errors saying the build is already signed, before signing the build
+yourself, this is likely the issue. To fix it:
+
+1. Disable the Application Firewall in **System Preferences > Security &
+    Privacy > Firewall > Turn Off Firewall**.
+2. `sudo rm /var/db/DetachedSignatures`
+3. Reboot
 
 ## Running Tests
 
-Simply run the wrapper script at
+The `signing` module is thoroughly unit-tested. When making changes to the
+signing scripts, please be sure to add new tests too. To run the tests, simply
+run the wrapper script at
 `//chrome/installer/mac/signing/run_mac_signing_tests.py`.
 
 You can pass `--coverage` or `-c` to show coverage information. To generate a

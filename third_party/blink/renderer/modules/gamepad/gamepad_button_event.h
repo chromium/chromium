@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_button_event_init.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_button.h"
-#include "third_party/blink/renderer/modules/gamepad/gamepad_button_event_init.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_event.h"
 
 namespace blink {

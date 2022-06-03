@@ -76,37 +76,50 @@ class TreeWorker {
    * Loads the tree data given on a worker thread and replaces the tree view in
    * the UI once complete. Uses query string as state for the options.
    * Use `onProgress` before calling `loadTree`.
-   * @param {string} input
+   * @param {?string=} input
+   * @param {?string=} accessToken
    * @returns {Promise<TreeProgress>}
    */
-  loadTree(input = null) {
+  loadTree(input = null, accessToken = null) {
     return this._waitForResponse('load', {
       input,
+      accessToken,
       options: location.search.slice(1),
     });
   }
 }
 
-let _innerWorker = null;
-let worker = null;
+window.supersize = {
+  worker: null,
+  treeReady: null,
+};
 
 // .size files and .ndjson files require different web workers.
 // Switch between the two dynamically.
 function startWorkerForFileName(fileName) {
+  let innerWorker = null;
   if (fileName &&
       (fileName.endsWith('.size') || fileName.endsWith('.sizediff'))) {
     console.log('Using WebAssembly web worker');
-    _innerWorker = new Worker('tree-worker-wasm.js');
+    innerWorker = new Worker('tree-worker-wasm.js');
   } else {
     console.log('Using JavaScript web worker');
-    _innerWorker = new Worker('tree-worker.js');
+    innerWorker = new Worker('tree-worker.js');
   }
-  worker = new TreeWorker(_innerWorker);
+  window.supersize.worker = new TreeWorker(innerWorker);
 }
 
-const urlParams = new URLSearchParams(window.location.search);
-startWorkerForFileName(urlParams.get('load_url'));
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const url = urlParams.get('load_url');
+  startWorkerForFileName(url);
 
-// Kick off the worker ASAP so it can start parsing data faster.
-// Subsequent calls will just use a worker locally.
-const treeReady = worker.loadTree('from-url://');
+  if (requiresAuthentication()) {
+    window.supersize.treeReady = window.googleAuthPromise.then((authResponse) =>
+        window.supersize.worker.loadTree('from-url://',
+          authResponse.access_token));
+  } else {
+    window.supersize.treeReady = window.supersize.worker.loadTree('from-url://');
+  }
+
+})()

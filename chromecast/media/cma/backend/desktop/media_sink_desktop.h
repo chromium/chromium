@@ -18,6 +18,10 @@ class MediaSinkDesktop {
  public:
   MediaSinkDesktop(MediaPipelineBackend::Decoder::Delegate* delegate,
                    base::TimeDelta start_pts);
+
+  MediaSinkDesktop(const MediaSinkDesktop&) = delete;
+  MediaSinkDesktop& operator=(const MediaSinkDesktop&) = delete;
+
   ~MediaSinkDesktop();
 
   void SetPlaybackRate(float rate);
@@ -33,9 +37,7 @@ class MediaSinkDesktop {
   float playback_rate_;
   base::TimeDelta last_frame_pts_;
   bool received_eos_;
-  base::CancelableClosure eos_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkDesktop);
+  base::CancelableOnceClosure eos_task_;
 };
 
 }  // namespace media

@@ -21,101 +21,10 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
  */
 
-/**
- * FilesAppEntry represents a single Entry (file, folder or root) in the Files
- * app. Previously, we used the Entry type directly, but this limits the code to
- * only work with native Entry type which can't be instantiated in JS.
- * For now, Entry and FilesAppEntry should be used interchangeably.
- * See also FilesAppDirEntry for a folder-like interface.
- *
- * TODO(lucmult): Replace uses of Entry with FilesAppEntry implementations.
- *
- * @interface
- */
-class FilesAppEntry {
-  constructor() {
-    /**
-     * @public {boolean} true if this entry represents a Directory-like entry,
-     * as in have sub-entries and implements {createReader} method.
-     * This attribute is defined on Entry.
-     */
-    this.isDirectory = false;
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
-    /**
-     * @public {boolean} true if this entry represents a File-like entry.
-     * Implementations of FilesAppEntry are expected to have this as |true|.
-     * Whereas implementations of FilesAppDirEntry are expected to have this as
-     * |false|.
-     * This attribute is defined on Entry.
-     */
-    this.isFile = true;
-
-    /**
-     * @public {string} absolute path from the file system's root to the entry.
-     * It can also be thought of as a path which is relative to the root
-     * directory, prepended with a "/" character.
-     * This attribute is defined on Entry.
-     */
-    this.fullPath = '';
-
-    /**
-     * @public {string} the name of the entry (the final part of the path,
-     * after the last.
-     * This attribute is defined on Entry.
-     */
-    this.name = '';
-
-    /**
-     * @public {string} the class name for this class. It's workaround for the
-     * fact that an instance created on foreground page and sent to background
-     * page can't be checked with "instanceof".
-     */
-    this.type_name = 'FilesAppEntry';
-
-    /** @public {VolumeManagerCommon.RootType|null} */
-    this.rootType = null;
-  }
-
-  /**
-   * @param {function(Entry)|function(FilesAppEntry)} success callback.
-   * @param {function(Entry)|function(FilesAppEntry)} error callback.
-   * This method is defined on Entry.
-   */
-  getParent(success, error) {}
-
-  /**
-   * @return {string} used to compare entries. It should return an unique
-   * identifier for such entry, usually prefixed with it's root type like:
-   * "fake-entry://unique/path/to/entry".
-   * This method is defined on Entry.
-   */
-  toURL() {}
-
-  /**
-   * Return metadata via |success| callback. Relevant metadata are
-   * "modificationTime" and "contentMimeType".
-   * @param {function(Object)} success callback to be called with the result
-   * metadata.
-   * @param {function(Object)} error callback to be called in case of error or
-   * ignored if no error happened.
-   */
-  getMetadata(success, error) {}
-
-  /**
-   * Returns true if this entry object has a native representation such as Entry
-   * or DirectoryEntry, this means it can interact with VolumeManager.
-   * @return {boolean}
-   */
-  get isNativeType() {}
-
-  /**
-   * Returns a FileSystemEntry if this instance has one, returns null if it
-   * doesn't have or the entry hasn't been resolved yet. It's used to unwrap a
-   * FilesAppEntry to be able to send to FileSystem API or fileManagerPrivate.
-   * @return {Entry}
-   */
-  getNativeEntry() {}
-}
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * A reader compatible with DirectoryEntry.createReader (from Web Standards)
@@ -125,7 +34,7 @@ class FilesAppEntry {
  * entries.
  * @extends {DirectoryReader}
  */
-class StaticReader {
+export class StaticReader {
   /**
    * @param {!Array<!Entry|!FilesAppEntry>} entries: Array of Entry-like
    * instances that will be returned/read by this reader.
@@ -160,7 +69,7 @@ class StaticReader {
  * entries from all readers.
  * @extends {DirectoryReader}
  */
-class CombinedReaders {
+export class CombinedReaders {
   /**
    * @param {!Array<!DirectoryReader>} readers Array of all readers that will
    * have their entries combined.
@@ -210,40 +119,6 @@ class CombinedReaders {
   }
 }
 
-/**
- * Interface with minimal API shared among different types of FilesAppDirEntry
- * and native DirectoryEntry. UI components should be able to display any
- * implementation of FilesAppEntry.
- *
- * FilesAppDirEntry represents a DirectoryEntry-like (folder or root) in the
- * Files app. It's a specialization of FilesAppEntry extending the behavior for
- * folder, which is basically the method createReader.
- * As in FilesAppEntry, FilesAppDirEntry should be interchangeable with Entry
- * and DirectoryEntry.
- *
- * @interface
- */
-class FilesAppDirEntry extends FilesAppEntry {
-  constructor() {
-    super();
-    /**
-     * @public {boolean} true if this entry represents a Directory-like entry,
-     * as in have sub-entries and implements {createReader} method.
-     * Implementations of FilesAppEntry are expected to have this as |true|.
-     * This attribute is defined on Entry.
-     */
-    this.isDirectory = true;
-    this.type_name = 'FilesAppDirEntry';
-  }
-
-  /**
-   * @return {!DirectoryReader} Returns a reader compatible with
-   * DirectoryEntry.createReader (from Web Standards) that reads the children of
-   * this instance.
-   * This method is defined on DirectoryEntry.
-   */
-  createReader() {}
-}
 
 /**
  * EntryList, a DirectoryEntry-like object that contains entries. Initially used
@@ -252,7 +127,7 @@ class FilesAppDirEntry extends FilesAppEntry {
  *
  * @implements FilesAppDirEntry
  */
-class EntryList {
+export class EntryList {
   /**
    * @param {string} label: Label to be used when displaying to user, it should
    *    already translated.
@@ -449,7 +324,7 @@ class EntryList {
  *
  * @implements FilesAppDirEntry
  */
-class VolumeEntry {
+export class VolumeEntry {
   /**
    * @param {!VolumeInfo} volumeInfo: VolumeInfo for this entry.
    */
@@ -524,7 +399,7 @@ class VolumeEntry {
   }
 
   /**
-   * @see https://github.com/google/closure-compiler/blob/master/externs/browser/fileapi.js
+   * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path Entry fullPath.
    * @param {!FileSystemFlags=} options
    * @param {function(!DirectoryEntry)=} success
@@ -539,7 +414,7 @@ class VolumeEntry {
   }
 
   /**
-   * @see https://github.com/google/closure-compiler/blob/master/externs/browser/fileapi.js
+   * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path
    * @param {!FileSystemFlags=} options
    * @param {function(!FileEntry)=} success
@@ -575,7 +450,7 @@ class VolumeEntry {
    * @return {string}
    */
   get iconName() {
-    return this.volumeInfo_.volumeType;
+    return /** @type {string} */ (this.volumeInfo_.volumeType);
   }
 
   /**
@@ -715,16 +590,18 @@ class VolumeEntry {
  * FakeEntry is used for entries that used only for UI, that weren't generated
  * by FileSystem API, like Drive, Downloads or Provided.
  *
- * @implements FilesAppDirEntry
+ * @implements FakeEntry
  */
-class FakeEntry {
+export class FakeEntryImpl {
   /**
    * @param {string} label Translated text to be displayed to user.
    * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    *    used on Recents to filter the source of recent files/directories.
+   * @param {chrome.fileManagerPrivate.RecentFileType=} opt_recentFileType
+   *    used on Recents to filter recent files by their file types.
    */
-  constructor(label, rootType, opt_sourceRestriction) {
+  constructor(label, rootType, opt_sourceRestriction, opt_recentFileType) {
     /**
      * @public {string} label: Label to be used when displaying to user, it
      *      should be already translated.
@@ -751,6 +628,13 @@ class FakeEntry {
     this.sourceRestriction = opt_sourceRestriction;
 
     /**
+     * @public {chrome.fileManagerPrivate.RecentFileType|undefined} It's used to
+     * communicate file-type filter to chrome.fileManagerPrivate.getRecentFiles
+     * API.
+     */
+    this.recentFileType = opt_recentFileType;
+
+    /**
      * @public {string} the class name for this class. It's workaround for the
      * fact that an instance created on foreground page and sent to background
      * page can't be checked with "instanceof".
@@ -772,7 +656,20 @@ class FakeEntry {
 
   /** @override */
   toURL() {
-    return 'fake-entry://' + this.rootType;
+    let url = 'fake-entry://' + this.rootType;
+    if (this.recentFileType) {
+      url += '/' + this.recentFileType;
+    }
+    return url;
+  }
+
+  /**
+   * @return {!Array<!Entry|!FilesAppEntry>} List of entries that are shown as
+   *     children of this Volume in the UI, but are not actually entries of the
+   *     Volume.  E.g. 'Play files' is shown as a child of 'My files'.
+   */
+  getUIChildren() {
+    return [];
   }
 
   /**

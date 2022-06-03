@@ -13,10 +13,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
@@ -74,7 +75,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
  protected:
   PlatformSensorReaderWinrtBase();
-  virtual ~PlatformSensorReaderWinrtBase();
+  virtual ~PlatformSensorReaderWinrtBase() { StopSensor(); }
 
   // Derived classes should implement this function to handle sensor specific
   // parsing of the sensor reading.
@@ -95,7 +96,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // threads by PlatformSensorWin.
   base::Lock lock_;
   // Null if there is no client to notify, non-null otherwise.
-  Client* client_;
+  Client* client_ GUARDED_BY(lock_);
 
   // Always report the first sample received after starting the sensor.
   bool has_received_first_sample_ = false;
@@ -105,8 +106,8 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
   GetSensorFactoryFunctor get_sensor_factory_callback_;
 
-  // base::nullopt if the sensor has not been started, non-empty otherwise.
-  base::Optional<EventRegistrationToken> reading_callback_token_;
+  // absl::nullopt if the sensor has not been started, non-empty otherwise.
+  absl::optional<EventRegistrationToken> reading_callback_token_;
 
   base::TimeDelta minimum_report_interval_;
   Microsoft::WRL::ComPtr<ISensorWinrtClass> sensor_;
@@ -203,7 +204,7 @@ class PlatformSensorReaderWinrtGyrometer final
               Microsoft::WRL::FtmBase>,
           ABI::Windows::Devices::Sensors::IGyrometerReadingChangedEventArgs> {
  public:
-  static constexpr double kDegreeThreshold = 5.0;
+  static constexpr double kDegreeThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -242,7 +243,7 @@ class PlatformSensorReaderWinrtMagnetometer final
           ABI::Windows::Devices::Sensors::
               IMagnetometerReadingChangedEventArgs> {
  public:
-  static constexpr double kMicroteslaThreshold = 5.0f;
+  static constexpr double kMicroteslaThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -281,7 +282,7 @@ class PlatformSensorReaderWinrtAbsOrientationEulerAngles final
           ABI::Windows::Devices::Sensors::
               IInclinometerReadingChangedEventArgs> {
  public:
-  static constexpr double kDegreeThreshold = 5.0f;
+  static constexpr double kDegreeThreshold = 0.1;
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -320,7 +321,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
           ABI::Windows::Devices::Sensors::
               IOrientationSensorReadingChangedEventArgs> {
  public:
-  static constexpr double kRadianThreshold = gfx::DegToRad(5.0);
+  static constexpr double kRadianThreshold = gfx::DegToRad(0.1);
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 

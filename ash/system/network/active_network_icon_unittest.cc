@@ -31,12 +31,17 @@ namespace {
 const char kShillManagerClientStubCellularDevice[] =
     "/device/stub_cellular_device";
 const char kCellularNetworkGuid[] = "cellular_guid";
+const char16_t kCellularNetworkGuid16[] = u"cellular_guid";
 
 }  // namespace
 
 class ActiveNetworkIconTest : public AshTestBase {
  public:
   ActiveNetworkIconTest() = default;
+
+  ActiveNetworkIconTest(const ActiveNetworkIconTest&) = delete;
+  ActiveNetworkIconTest& operator=(const ActiveNetworkIconTest&) = delete;
+
   ~ActiveNetworkIconTest() override = default;
 
   void SetUp() override {
@@ -121,7 +126,7 @@ class ActiveNetworkIconTest : public AshTestBase {
     std::string id = base::StringPrintf("reference_%d", reference_count_++);
     chromeos::network_config::mojom::NetworkStatePropertiesPtr
         reference_properties =
-            network_state_helper().CreateStandaloneNetworkProperties(
+            network_config_helper_.CreateStandaloneNetworkProperties(
                 id, type, connection_state, signal_strength);
     return network_icon::GetImageForNonVirtualNetwork(
         reference_properties.get(), icon_type_, false /* show_vpn_badge */);
@@ -151,6 +156,9 @@ class ActiveNetworkIconTest : public AshTestBase {
   ActiveNetworkIcon* active_network_icon() {
     return active_network_icon_.get();
   }
+  TrayNetworkStateModel* network_state_model() {
+    return network_state_model_.get();
+  }
 
   const std::string& eth_path() const { return eth_path_; }
   const std::string& wifi_path() const { return wifi_path_; }
@@ -170,24 +178,21 @@ class ActiveNetworkIconTest : public AshTestBase {
   network_icon::IconType icon_type_ = network_icon::ICON_TYPE_TRAY_REGULAR;
   // Counter to provide unique ids for reference networks.
   int reference_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveNetworkIconTest);
 };
 
 TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
   // TODO(902409): Test multi icon and improve coverage.
   SetupCellular(shill::kStateOnline);
-  base::string16 name, desc, tooltip;
+  std::u16string name, desc, tooltip;
   active_network_icon()->GetConnectionStatusStrings(
       ActiveNetworkIcon::Type::kSingle, &name, &desc, &tooltip);
   // Note: The guid is used for the name in ConfigureService.
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
-                                       base::UTF8ToUTF16(kCellularNetworkGuid)),
+                                       kCellularNetworkGuid16),
             name);
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP,
-          base::UTF8ToUTF16(kCellularNetworkGuid),
+          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP, kCellularNetworkGuid16,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_STRONG)),
       tooltip);
 }
@@ -268,6 +273,37 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
       AreImagesEqual(image, ImageForNetwork(NetworkType::kCellular,
                                             ConnectionStateType::kConnecting)));
   EXPECT_TRUE(animating);
+}
+
+TEST_F(ActiveNetworkIconTest, CellularDisable) {
+  SetupCellular(shill::kStateOnline);
+  bool animating;
+  gfx::ImageSkia image = active_network_icon()->GetImage(
+      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+  EXPECT_TRUE(AreImagesEqual(
+      image,
+      ImageForNetwork(NetworkType::kCellular, ConnectionStateType::kOnline)));
+  EXPECT_FALSE(animating);
+
+  // The cellular device's scanning property may be true while it's being
+  // disabled, mock this.
+  network_state_helper().device_test()->SetDeviceProperty(
+      kShillManagerClientStubCellularDevice, shill::kScanningProperty,
+      base::Value(true), true /* notify_changed */);
+
+  // Disable the device.
+  network_state_model()->SetNetworkTypeEnabledState(NetworkType::kCellular,
+                                                    false);
+  // Disabling the device doesn't actually remove the services in the fakes,
+  // remove them explicitly.
+  network_state_helper().ClearServices();
+  base::RunLoop().RunUntilIdle();
+
+  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+                                          icon_type(), &animating);
+  EXPECT_TRUE(AreImagesEqual(
+      image, network_icon::GetImageForWiFiNoConnections(icon_type())));
+  EXPECT_FALSE(animating);
 }
 
 // TODO(stevenjb): Test GetDualImagePrimary, GetDualImageCellular.

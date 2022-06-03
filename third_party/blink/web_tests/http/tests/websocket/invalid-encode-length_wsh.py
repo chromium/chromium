@@ -1,6 +1,8 @@
 import re
 import struct
 from mod_pywebsocket import common
+from mod_pywebsocket import msgutil
+from mod_pywebsocket import util
 
 
 def web_socket_do_extra_handshake(request):
@@ -20,9 +22,9 @@ def web_socket_transfer_data(request):
 
     # pywebsocket refuses to create a frame with error encode length.
     # Thus, we need to build a frame manually.
-    header = chr(0x80 | common.OPCODE_TEXT)  # 0x80 is for "fin" bit.
+    header = util.pack_byte(0x80 | common.OPCODE_TEXT)  # 0x80 is for "fin" bit.
     # No Mask and two bytes extended payload length.
-    header += chr(payload_length)
+    header += util.pack_byte(payload_length)
     if payload_length == 126:
         header += struct.pack('!H', extended_length)
     elif payload_length == 127:
@@ -32,4 +34,4 @@ def web_socket_transfer_data(request):
                              'FAIL: Query value is incorrect or missing')
         return
     request.connection.write(header)
-    request.connection.write('X' * extended_length)
+    request.connection.write(b'X' * extended_length)

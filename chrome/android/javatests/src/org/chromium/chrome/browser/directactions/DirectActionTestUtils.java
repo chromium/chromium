@@ -13,7 +13,7 @@ import android.os.CancellationSignal;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -71,7 +71,7 @@ class DirectActionTestUtils {
     static void allowGoForward(ChromeActivityTestRule<?> rule) throws Exception {
         ChromeActivity activity = rule.getActivity();
         String initialUrl = TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.getCurrentWebContents().getLastCommittedUrl());
+                () -> activity.getCurrentWebContents().getLastCommittedUrl().getSpec());
 
         // Any built-in page that is not about:blank and is reasonably cheap to render will do,
         // here.

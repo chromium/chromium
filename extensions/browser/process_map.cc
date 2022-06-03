@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/common/extension.h"
@@ -16,12 +17,15 @@ namespace extensions {
 
 // Item
 struct ProcessMap::Item {
-  Item(const std::string& extension_id, int process_id,
-       int site_instance_id)
+  Item(const std::string& extension_id,
+       int process_id,
+       content::SiteInstanceId site_instance_id)
       : extension_id(extension_id),
         process_id(process_id),
-        site_instance_id(site_instance_id) {
-  }
+        site_instance_id(site_instance_id) {}
+
+  Item(const Item&) = delete;
+  Item& operator=(const Item&) = delete;
 
   ~Item() {
   }
@@ -37,10 +41,7 @@ struct ProcessMap::Item {
 
   std::string extension_id;
   int process_id = 0;
-  int site_instance_id = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Item);
+  content::SiteInstanceId site_instance_id;
 };
 
 
@@ -56,13 +57,15 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
   return ProcessMapFactory::GetForBrowserContext(browser_context);
 }
 
-bool ProcessMap::Insert(const std::string& extension_id, int process_id,
-                        int site_instance_id) {
+bool ProcessMap::Insert(const std::string& extension_id,
+                        int process_id,
+                        content::SiteInstanceId site_instance_id) {
   return items_.insert(Item(extension_id, process_id, site_instance_id)).second;
 }
 
-bool ProcessMap::Remove(const std::string& extension_id, int process_id,
-                        int site_instance_id) {
+bool ProcessMap::Remove(const std::string& extension_id,
+                        int process_id,
+                        content::SiteInstanceId site_instance_id) {
   return items_.erase(Item(extension_id, process_id, site_instance_id)) > 0;
 }
 
@@ -107,16 +110,27 @@ std::set<std::string> ProcessMap::GetExtensionsInProcess(int process_id) const {
 
 Feature::Context ProcessMap::GetMostLikelyContextType(
     const Extension* extension,
-    int process_id) const {
+    int process_id,
+    const GURL* url) const {
   // WARNING: This logic must match ScriptContextSet::ClassifyJavaScriptContext,
   // as much as possible.
 
+  // TODO(crbug.com/1055168): Move this into the !extension if statement below
+  // or document why we want to return WEBUI_CONTEXT for content scripts in
+  // WebUIs.
+  // TODO(crbug.com/1055656): HasWebUIBindings does not always return true for
+  // WebUIs. This should be changed to use something else.
   if (content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
           process_id)) {
     return Feature::WEBUI_CONTEXT;
   }
 
   if (!extension) {
+    // Note that blob/filesystem schemes associated with an inner URL of
+    // chrome-untrusted will be considered regular pages.
+    if (url && url->SchemeIs(content::kChromeUIUntrustedScheme))
+      return Feature::WEBUI_UNTRUSTED_CONTEXT;
+
     return Feature::WEB_PAGE_CONTEXT;
   }
 
@@ -128,7 +142,7 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   }
 
   if (extension->is_hosted_app() &&
-      extension->location() != Manifest::COMPONENT) {
+      extension->location() != mojom::ManifestLocation::kComponent) {
     return Feature::BLESSED_WEB_PAGE_CONTEXT;
   }
 

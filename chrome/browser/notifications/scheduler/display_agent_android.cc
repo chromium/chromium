@@ -8,13 +8,14 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/android/chrome_jni_headers/DisplayAgent_jni.h"
+#include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/user_action_handler.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 using base::android::ConvertUTF16ToJavaString;
@@ -24,11 +25,11 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-notifications::UserActionHandler* GetUserActionHandler(
-    const base::android::JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  auto* service =
-      NotificationScheduleServiceFactory::GetForBrowserContext(profile);
+notifications::UserActionHandler* GetUserActionHandler() {
+  ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
+  DCHECK(profile_key);
+  auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
+  DCHECK(service);
   return service->GetUserActionHandler();
 }
 
@@ -36,7 +37,6 @@ notifications::UserActionHandler* GetUserActionHandler(
 
 // static
 void JNI_DisplayAgent_OnUserAction(JNIEnv* env,
-                                   const JavaParamRef<jobject>& j_profile,
                                    jint j_client_type,
                                    jint j_action_type,
                                    const JavaParamRef<jstring>& j_guid,
@@ -55,10 +55,10 @@ void JNI_DisplayAgent_OnUserAction(JNIEnv* env,
     button_click_info.type =
         static_cast<notifications::ActionButtonType>(j_button_type);
     action_data.button_click_info =
-        base::make_optional(std::move(button_click_info));
+        absl::make_optional(std::move(button_click_info));
   }
 
-  GetUserActionHandler(j_profile)->OnUserAction(action_data);
+  GetUserActionHandler()->OnUserAction(action_data);
 }
 
 DisplayAgentAndroid::DisplayAgentAndroid() = default;
@@ -83,7 +83,7 @@ void DisplayAgentAndroid::ShowNotification(
   for (const auto& icon : notification_data->icons) {
     Java_DisplayAgent_addIcon(env, java_notification_data,
                               static_cast<int>(icon.first /*IconType*/),
-                              gfx::ConvertToJavaBitmap(&icon.second.bitmap),
+                              gfx::ConvertToJavaBitmap(icon.second.bitmap),
                               static_cast<jint>(icon.second.resource_id));
   }
 

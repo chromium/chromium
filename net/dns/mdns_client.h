@@ -70,8 +70,8 @@ class NET_EXPORT MDnsTransaction {
     FLAG_MASK = (1 << 3) - 1,
   };
 
-  typedef base::Callback<void(Result, const RecordParsed*)>
-  ResultCallback;
+  typedef base::RepeatingCallback<void(Result, const RecordParsed*)>
+      ResultCallback;
 
   // Destroying the transaction cancels it.
   virtual ~MDnsTransaction() {}

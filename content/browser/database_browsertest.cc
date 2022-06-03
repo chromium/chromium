@@ -9,6 +9,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -25,9 +26,8 @@ class DatabaseTest : public ContentBrowserTest {
   void RunScriptAndCheckResult(Shell* shell,
                                const std::string& script,
                                const std::string& result) {
-    std::string data;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(shell, script, &data));
-    ASSERT_EQ(data, result);
+    ASSERT_EQ(result, EvalJs(shell->web_contents(), script,
+                             EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
   void Navigate(Shell* shell) {
@@ -59,8 +59,9 @@ class DatabaseTest : public ContentBrowserTest {
   }
 
   bool HasTable(Shell* shell) {
-    std::string data;
-    CHECK(ExecuteScriptAndExtractString(shell, "getRecords()", &data));
+    std::string data =
+        EvalJs(shell, "getRecords()", EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString();
     return data != "getRecords error: [object SQLError]";
   }
 };

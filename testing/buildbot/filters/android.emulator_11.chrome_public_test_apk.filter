@@ -1,0 +1,91 @@
+# vr tests do not apply to emulator
+-org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
+
+# crbug.com/1193745
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
+
+# crbug.com/1193814
+-org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveImage
+-org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveVideo
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1036552
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
+
+# crbug.com/1036459
+-org.chromium.chrome.browser.ntp.NewTabPageTest.testFocusFakebox
+
+# crbug.com/1040088
+-org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
+
+# crbug.com/1059046
+-org.chromium.chrome.browser.customtabs.CustomTabFromChromeExternalNavigationTest.testIntentWithRedirectToApp
+
+# crbug.com/1060724
+-org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorWhenTemporarilyPaused
+
+# crbug.com/1061178
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
+
+# crbug.com/1061198
+-org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
+
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
+
+# crbug.com/1195097
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
+
+# crbug.com/1195129
+-org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabInSearchActivity
+-org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestionWhenIncognitoTabOnTop
+-org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestion
+
+# crbug.com/1225709
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
+-org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
+
+# crbug.com/1225746
+-org.chromium.chrome.browser.incognito.IncognitoDownloadLeakageTest.*
+
+# crbug.com/1225754
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1231219
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testMoveDownMenuItem
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testReadingListDeletion
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testSearchReadingList_Deletion
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testShowInFolder_*
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.*
+
+# crbug.com/1231259
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
+
+# crbug.com/1231646
+-org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMediatorTest.testShowAreaSelectionDone
+
+# crbug.com/1231652
+-org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
+
+# crbug.com/1231656
+-org.chromium.chrome.browser.language.settings.LanguageSettingsTest.testToggleOfferToTranslate

@@ -11,7 +11,8 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "content/public/common/content_switches.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
@@ -132,15 +133,6 @@ PP_Module HostGlobals::GetModuleForInstance(PP_Instance instance) {
   return inst->module()->pp_module();
 }
 
-std::string HostGlobals::GetCmdLine() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPpapiFlashArgs);
-}
-
-void HostGlobals::PreCacheFontForFlash(const void* logfontw) {
-  // Not implemented in-process.
-}
-
 void HostGlobals::LogWithSource(PP_Instance instance,
                                 PP_LogLevel level,
                                 const std::string& source,
@@ -189,8 +181,7 @@ void HostGlobals::BroadcastLogWithSource(PP_Module pp_module,
 
 base::TaskRunner* HostGlobals::GetFileTaskRunner() {
   if (!file_task_runner_)
-    file_task_runner_ =
-        base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()});
+    file_task_runner_ = base::ThreadPool::CreateTaskRunner({base::MayBlock()});
   return file_task_runner_.get();
 }
 

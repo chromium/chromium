@@ -3,15 +3,12 @@
 # found in the LICENSE file.
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "pdf_egtest.mm",
-  ]
+  sources = [ "pdf_egtest.mm" ]
   deps = [
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -19,7 +16,7 @@ source_set("eg2_tests") {
     "//net:test_support",
     "//ui/base",
   ]
-  libs = [
+  frameworks = [
     "UIKit.framework",
     "XCTest.framework",
   ]

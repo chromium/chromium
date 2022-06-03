@@ -4,10 +4,10 @@
 
 #include "extensions/shell/app/shell_crash_reporter_client.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -15,7 +15,6 @@
 #include "components/version_info/version_info_values.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/shell/common/switches.h"
-#include "services/service_manager/embedder/switches.h"
 
 namespace extensions {
 
@@ -79,7 +78,7 @@ bool ShellCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == ::switches::kRendererProcess ||
          process_type == ::switches::kPpapiPluginProcess ||
-         process_type == service_manager::switches::kZygoteProcess ||
+         process_type == ::switches::kZygoteProcess ||
          process_type == ::switches::kGpuProcess ||
          process_type == ::switches::kUtilityProcess;
 }

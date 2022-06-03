@@ -16,11 +16,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -37,6 +38,7 @@
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/util.h"
+#include "net/dns/resolve_context.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
@@ -127,14 +129,13 @@ DnsConfig GetFuzzedDnsConfig(FuzzedDataProvider* data_provider) {
 
   config.unhandled_options = data_provider->ConsumeBool();
   config.append_to_multi_label_name = data_provider->ConsumeBool();
-  config.randomize_ports = data_provider->ConsumeBool();
   config.ndots = data_provider->ConsumeIntegralInRange(0, 3);
   config.attempts = data_provider->ConsumeIntegralInRange(1, 3);
 
-  // Timeouts don't really work for fuzzing. Even a timeout of 0 milliseconds
-  // will be increased after the first timeout, resulting in inconsistent
-  // behavior.
-  config.timeout = base::TimeDelta::FromDays(10);
+  // Fallback periods don't really work for fuzzing. Even a period of 0
+  // milliseconds will be increased after the first expiration, resulting in
+  // inconsistent behavior.
+  config.fallback_period = base::Days(10);
 
   config.rotate = data_provider->ConsumeBool();
 
@@ -155,6 +156,9 @@ class FuzzedHostResolverProc : public HostResolverProc {
       : HostResolverProc(nullptr),
         data_provider_(data_provider),
         network_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+  FuzzedHostResolverProc(const FuzzedHostResolverProc&) = delete;
+  FuzzedHostResolverProc& operator=(const FuzzedHostResolverProc&) = delete;
 
   int Resolve(const std::string& host,
               AddressFamily address_family,
@@ -199,7 +203,8 @@ class FuzzedHostResolverProc : public HostResolverProc {
 
     if (host_resolver_flags & HOST_RESOLVER_CANONNAME) {
       // Don't bother to fuzz this - almost nothing cares.
-      result.set_canonical_name("foo.com");
+      std::vector<std::string> aliases({"foo.com"});
+      result.SetDnsAliases(std::move(aliases));
     }
 
     *addrlist = result;
@@ -213,8 +218,6 @@ class FuzzedHostResolverProc : public HostResolverProc {
 
   // Just used for thread-safety checks.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverProc);
 };
 
 const Error kMdnsErrors[] = {ERR_FAILED,
@@ -384,11 +387,16 @@ class FuzzedHostResolverManager : public HostResolverManager {
         std::make_unique<FuzzedMdnsSocketFactory>(data_provider_));
     std::unique_ptr<DnsClient> dns_client = DnsClient::CreateClientForTesting(
         net_log_, &socket_factory_,
-        base::Bind(&FuzzedDataProvider::ConsumeIntegralInRange<int32_t>,
-                   base::Unretained(data_provider_)));
+        base::BindRepeating(
+            &FuzzedDataProvider::ConsumeIntegralInRange<int32_t>,
+            base::Unretained(data_provider_)));
     dns_client->SetSystemConfig(GetFuzzedDnsConfig(data_provider_));
     HostResolverManager::SetDnsClientForTesting(std::move(dns_client));
   }
+
+  FuzzedHostResolverManager(const FuzzedHostResolverManager&) = delete;
+  FuzzedHostResolverManager& operator=(const FuzzedHostResolverManager&) =
+      delete;
 
   ~FuzzedHostResolverManager() override = default;
 
@@ -421,8 +429,6 @@ class FuzzedHostResolverManager : public HostResolverManager {
   NetLog* const net_log_;
 
   base::WeakPtrFactory<FuzzedDataProvider> data_provider_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverManager);
 };
 
 }  // namespace
@@ -434,9 +440,10 @@ std::unique_ptr<ContextHostResolver> CreateFuzzedContextHostResolver(
     bool enable_caching) {
   auto manager = std::make_unique<FuzzedHostResolverManager>(options, net_log,
                                                              data_provider);
-  return std::make_unique<ContextHostResolver>(
-      std::move(manager),
-      enable_caching ? HostCache::CreateDefaultCache() : nullptr);
+  auto resolve_context = std::make_unique<ResolveContext>(
+      nullptr /* url_request_context */, enable_caching);
+  return std::make_unique<ContextHostResolver>(std::move(manager),
+                                               std::move(resolve_context));
 }
 
 }  // namespace net

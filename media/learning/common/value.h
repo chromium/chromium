@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(LEARNING_COMMON) Value {
   bool operator!=(const Value& rhs) const;
   bool operator<(const Value& rhs) const;
   bool operator>(const Value& rhs) const;
+  bool operator>=(const Value& rhs) const;
 
   double value() const { return value_; }
 

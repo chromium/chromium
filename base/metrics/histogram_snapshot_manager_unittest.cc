@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sample_vector.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -20,6 +20,11 @@ namespace base {
 class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
  public:
   HistogramFlattenerDeltaRecorder() = default;
+
+  HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
+      delete;
+  HistogramFlattenerDeltaRecorder& operator=(
+      const HistogramFlattenerDeltaRecorder&) = delete;
 
   void RecordDelta(const HistogramBase& histogram,
                    const HistogramSamples& snapshot) override {
@@ -48,8 +53,6 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
  private:
   std::vector<std::string> recorded_delta_histogram_names_;
   std::map<std::string, int64_t> recorded_delta_histogram_sum_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramFlattenerDeltaRecorder);
 };
 
 class HistogramSnapshotManagerTest : public testing::Test {

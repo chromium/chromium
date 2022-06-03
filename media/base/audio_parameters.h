@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -20,6 +19,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/media_shmem_export.h"
 #include "media/base/sample_format.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -254,7 +254,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   }
   int frames_per_buffer() const { return frames_per_buffer_; }
 
-  base::Optional<HardwareCapabilities> hardware_capabilities() const {
+  absl::optional<HardwareCapabilities> hardware_capabilities() const {
     return hardware_capabilities_;
   }
 
@@ -305,7 +305,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Audio hardware specific parameters, these are treated as read-only and
   // changing them has no effect.
-  base::Optional<HardwareCapabilities> hardware_capabilities_;
+  absl::optional<HardwareCapabilities> hardware_capabilities_;
 };
 
 // Comparison is useful when AudioParameters is used with std structures.

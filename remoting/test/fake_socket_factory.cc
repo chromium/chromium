@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -14,7 +15,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/numerics/math_constants.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -47,6 +48,10 @@ class FakeUdpSocket : public rtc::AsyncPacketSocket {
   FakeUdpSocket(FakePacketSocketFactory* factory,
                 scoped_refptr<FakeNetworkDispatcher> dispatcher,
                 const rtc::SocketAddress& local_address);
+
+  FakeUdpSocket(const FakeUdpSocket&) = delete;
+  FakeUdpSocket& operator=(const FakeUdpSocket&) = delete;
+
   ~FakeUdpSocket() override;
 
   void ReceivePacket(const rtc::SocketAddress& from,
@@ -76,8 +81,6 @@ class FakeUdpSocket : public rtc::AsyncPacketSocket {
   scoped_refptr<FakeNetworkDispatcher> dispatcher_;
   rtc::SocketAddress local_address_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUdpSocket);
 };
 
 FakeUdpSocket::FakeUdpSocket(FakePacketSocketFactory* factory,
@@ -201,7 +204,7 @@ void FakePacketSocketFactory::SetBandwidth(int bandwidth, int max_buffer) {
   if (bandwidth <= 0) {
     leaky_bucket_.reset();
   } else {
-    leaky_bucket_.reset(new LeakyBucket(max_buffer, bandwidth));
+    leaky_bucket_ = std::make_unique<LeakyBucket>(max_buffer, bandwidth);
   }
 }
 
@@ -242,13 +245,13 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateUdpSocket(
       new FakeUdpSocket(this, dispatcher_,
                         rtc::SocketAddress(local_address.ipaddr(), port));
 
-  udp_sockets_[port] =
-      base::Bind(&FakeUdpSocket::ReceivePacket, base::Unretained(result));
+  udp_sockets_[port] = base::BindRepeating(&FakeUdpSocket::ReceivePacket,
+                                           base::Unretained(result));
 
   return result;
 }
 
-rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* FakePacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -304,12 +307,11 @@ void FakePacketSocketFactory::ReceivePacket(
     max_buffer_delay_ = delay;
   ++total_packets_received_;
 
-  if (latency_average_ > base::TimeDelta()) {
-    delay += base::TimeDelta::FromMillisecondsD(
-        GetNormalRandom(latency_average_.InMillisecondsF(),
-                        latency_stddev_.InMillisecondsF()));
+  if (latency_average_.is_positive()) {
+    delay += base::Milliseconds(GetNormalRandom(
+        latency_average_.InMillisecondsF(), latency_stddev_.InMillisecondsF()));
   }
-  if (delay < base::TimeDelta())
+  if (delay.is_negative())
     delay = base::TimeDelta();
 
   // Put the packet to the |pending_packets_| and post a task for

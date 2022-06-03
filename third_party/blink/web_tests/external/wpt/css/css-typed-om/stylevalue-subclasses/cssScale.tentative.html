@@ -11,15 +11,16 @@
 const gInvalidCoordTestCases = [
   { coord: CSS.deg(1), desc: 'an angle CSSUnitValue'},
   { coord: new CSSMathSum(CSS.px(1)), desc: 'a CSSMathValue that doesn\'t match <number>'},
+  { coord: new CSSMathProduct(CSS.px(1), new CSSMathInvert(CSS.px(1))), desc: 'an invalid division by px/px'},
 ];
 
 for (const {coord, desc} of gInvalidCoordTestCases) {
   test(() => {
-    assert_throws(new TypeError(), () => new CSSScale(coord, 0));
-    assert_throws(new TypeError(), () => new CSSScale(0, coord));
-    assert_throws(new TypeError(), () => new CSSScale(coord, 0, 0));
-    assert_throws(new TypeError(), () => new CSSScale(0, coord, 0));
-    assert_throws(new TypeError(), () => new CSSScale(0, 0, coord));
+    assert_throws_js(TypeError, () => new CSSScale(coord, 0));
+    assert_throws_js(TypeError, () => new CSSScale(0, coord));
+    assert_throws_js(TypeError, () => new CSSScale(coord, 0, 0));
+    assert_throws_js(TypeError, () => new CSSScale(0, coord, 0));
+    assert_throws_js(TypeError, () => new CSSScale(0, 0, coord));
   }, 'Constructing a CSSScale with ' + desc + ' for the coordinates throws a TypeError');
 }
 
@@ -27,7 +28,7 @@ for (const attr of ['x', 'y', 'z']) {
   for (const {value, desc} of gInvalidCoordTestCases) {
     test(() => {
       let result = new CSSScale(0, 0, 0);
-      assert_throws(new TypeError(), () => result[attr] = value);
+      assert_throws_js(TypeError, () => result[attr] = value);
       assert_style_value_equals(result[attr], CSS.number(0));
     }, 'Updating CSSScale.' + attr + ' to ' + desc + ' throws a TypeError');
   }

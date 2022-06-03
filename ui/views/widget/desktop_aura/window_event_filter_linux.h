@@ -6,11 +6,11 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
+class LocatedEvent;
 class MouseEvent;
 class WmMoveResizeHandler;
 }  // namespace ui
@@ -25,11 +25,17 @@ class VIEWS_EXPORT WindowEventFilterLinux {
  public:
   WindowEventFilterLinux(DesktopWindowTreeHostLinux* desktop_window_tree_host,
                          ui::WmMoveResizeHandler* handler);
+
+  WindowEventFilterLinux(const WindowEventFilterLinux&) = delete;
+  WindowEventFilterLinux& operator=(const WindowEventFilterLinux&) = delete;
+
   ~WindowEventFilterLinux();
 
-  void HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+  void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
 
  private:
+  bool HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 
@@ -41,7 +47,8 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // Dispatches a message to the window manager to tell it to act as if a border
   // or titlebar drag occurred with left mouse click. In case of X11, a
   // _NET_WM_MOVERESIZE message is sent.
-  void MaybeDispatchHostWindowDragMovement(int hittest, ui::MouseEvent* event);
+  void MaybeDispatchHostWindowDragMovement(int hittest,
+                                           ui::LocatedEvent* event);
 
   // A signal to lower an attached to this filter window to the bottom of the
   // stack.
@@ -60,8 +67,6 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // initial click. Acting on a double click should only occur for matching
   // components.
   int click_component_ = HTNOWHERE;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventFilterLinux);
 };
 
 }  // namespace views

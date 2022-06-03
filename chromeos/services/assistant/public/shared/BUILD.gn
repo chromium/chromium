@@ -1,0 +1,29 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/assistant/assistant.gni")
+
+# C++ headers and sources that can be shared by assistant internal and
+# external directories.
+component("shared") {
+  output_name = "assistant_service_shared"
+
+  defines = [ "IS_ASSISTANT_SERVICE_SHARED_IMPL" ]
+
+  sources = [
+    "constants.h",
+    "utils.h",
+  ]
+
+  if (enable_cros_libassistant) {
+    sources += [ "//chromeos/assistant/internal/constants.cc" ]
+  } else {
+    sources += [ "constants.cc" ]
+  }
+
+  deps = [
+    "//base:base",
+    "//chromeos/services/libassistant/public/cpp:structs",
+  ]
+}

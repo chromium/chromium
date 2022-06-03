@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,6 +22,9 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
   MockAudioRendererSink(const std::string& device_id,
                         OutputDeviceStatus device_status,
                         const AudioParameters& device_output_params);
+
+  MockAudioRendererSink(const MockAudioRendererSink&) = delete;
+  MockAudioRendererSink& operator=(const MockAudioRendererSink&) = delete;
 
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(Stop, void());
@@ -49,8 +51,6 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
  private:
   RenderCallback* callback_;
   OutputDeviceInfo output_device_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioRendererSink);
 };
 
 }  // namespace media

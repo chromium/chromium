@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 6: Uncaught TypeError: document.registerElement is not a function

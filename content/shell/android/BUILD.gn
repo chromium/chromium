@@ -25,6 +25,7 @@ shared_library("libcontent_shell_content_view") {
   deps = [
     ":content_shell_jni_headers",
     "//components/crash/content/browser",
+    "//content/shell:content_shell_app",
     "//content/shell:content_shell_lib",
     "//content/shell:pak",
     "//media",
@@ -39,9 +40,7 @@ shared_library("libcontent_shell_content_view") {
       "//media/midi",
     ]
   }
-  sources = [
-    "shell_library_loader.cc",
-  ]
+  sources = [ "shell_library_loader.cc" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
 }
@@ -52,29 +51,37 @@ shared_library("libcontent_native_test") {
     "//base",
     "//base:base_javatests_lib",
     "//content/public/test/android:content_native_test_support",
+    "//content/shell:content_shell_app",
     "//content/shell:content_shell_lib",
   ]
 
-  sources = [
-    "shell_test_library_loader.cc",
-  ]
+  sources = [ "shell_test_library_loader.cc" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
 }
 
 android_resources("content_shell_java_resources") {
   testonly = true
-  resource_dirs = [ "java/res" ]
-  custom_package = "org.chromium.content_shell"
+  sources = [
+    "java/res/drawable/ic_refresh.png",
+    "java/res/drawable/progress.xml",
+    "java/res/layout/shell_view.xml",
+    "java/res/mipmap-hdpi/app_icon.png",
+    "java/res/mipmap-mdpi/app_icon.png",
+    "java/res/mipmap-xhdpi/app_icon.png",
+    "java/res/mipmap-xxhdpi/app_icon.png",
+    "java/res/mipmap-xxxhdpi/app_icon.png",
+    "java/res/values/strings.xml",
+  ]
 }
 
 android_library("content_shell_java") {
   testonly = true
+  resources_package = "org.chromium.content_shell"
   deps = [
     ":content_shell_java_resources",
     ":content_shell_manifest",
     "//base:base_java",
-    "//base:jni_java",
     "//components/download/internal/common:internal_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:view_java",
@@ -85,14 +92,15 @@ android_library("content_shell_java") {
     "//mojo/public/java:system_java",
     "//net/android:net_java",
     "//ui/android:ui_java",
+    "//ui/base/cursor/mojom:cursor_type_java",
+    "//url:gurl_java",
   ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/content_shell/Shell.java",
     "java/src/org/chromium/content_shell/ShellManager.java",
     "java/src/org/chromium/content_shell/ShellViewAndroidDelegate.java",
   ]
 
-  android_manifest_for_lint = content_shell_manifest
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -113,11 +121,11 @@ jinja_template("content_shell_test_manifest") {
 
 android_resources("content_shell_apk_resources") {
   testonly = true
-  resource_dirs = [ "shell_apk/res" ]
-  deps = [
-    ":content_shell_java_resources",
+  sources = [
+    "shell_apk/res/layout/content_shell_activity.xml",
+    "shell_apk/res/values/strings.xml",
   ]
-  custom_package = "org.chromium.content_shell_apk"
+  deps = [ ":content_shell_java_resources" ]
 }
 
 android_library("content_shell_apk_java") {
@@ -125,6 +133,7 @@ android_library("content_shell_apk_java") {
 
   srcjar_deps = [ ":content_javatests_aidl" ]
 
+  resources_package = "org.chromium.content_shell_apk"
   deps = [
     ":content_shell_apk_resources",
     ":content_shell_java",
@@ -134,11 +143,12 @@ android_library("content_shell_apk_java") {
     "//content/public/android:content_java",
     "//media/capture/video/android:capture_java",
     "//net/android:net_java",
-    "//third_party/jsr-305:jsr_305_javalib",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
-  java_files = [
+  sources = [
     "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestHelperService.java",
     "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestUtils.java",
     "shell_apk/src/org/chromium/content_shell_apk/ContentShellActivity.java",
@@ -151,16 +161,13 @@ android_library("content_shell_apk_java") {
 
 android_aidl("content_javatests_aidl") {
   import_include = [ "shell_apk/src" ]
-  sources = [
-    "shell_apk/src/org/chromium/content_shell_apk/IChildProcessTest.aidl",
-  ]
+  sources =
+      [ "shell_apk/src/org/chromium/content_shell_apk/IChildProcessTest.aidl" ]
 }
 
 android_assets("content_shell_assets") {
   testonly = true
-  sources = [
-    "$root_out_dir/content_shell.pak",
-  ]
+  sources = [ "$root_out_dir/content_shell.pak" ]
   disable_compression = true
   deps = [
     "//content/shell:pak",
@@ -168,7 +175,8 @@ android_assets("content_shell_assets") {
   ]
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
+  }
+  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }
@@ -188,7 +196,7 @@ template("content_shell_apk_tmpl") {
       "//base:base_java",
       "//base:base_java_test_support",
       "//components/crash/android:java",
-      "//components/crash/content/app:chrome_crashpad_handler_named_as_so",
+      "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//content/public/android:content_java",
       "//content/public/test/android:android_test_message_pump_support_java",
       "//media/capture/video/android:capture_java",
@@ -223,12 +231,13 @@ content_shell_apk_tmpl("content_shell_test_apk") {
     "//net/android:net_javatests",
     "//third_party/android_support_test_runner:runner_java",
   ]
-  data_deps = [
-    "//testing/buildbot/filters:content_shell_test_apk_filters",
-  ]
+  data_deps = [ "//testing/buildbot/filters:content_shell_test_apk_filters" ]
   if (enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:content_shell_test_apk_filters" ]
   }
+
+  # TODO(crbug.com/1099536): Fix tests that break when this is increased.
+  target_sdk_version = 24
 }
 
 android_library("content_shell_test_java") {
@@ -244,117 +253,18 @@ android_library("content_shell_test_java") {
     "//mojo/public/java/system:test_support_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
-  java_files = [
+  sources = [
+    "javatests/src/org/chromium/content_shell_apk/ContentShellActivityTestRule.java",
     "javatests/src/org/chromium/content_shell_apk/ContentShellPreconditionsTest.java",
     "javatests/src/org/chromium/content_shell_apk/ContentShellShellManagementTest.java",
-    "javatests/src/org/chromium/content_shell_apk/ContentShellActivityTestRule.java",
     "javatests/src/org/chromium/content_shell_apk/ContentShellUrlTest.java",
   ]
-}
-
-if (current_cpu != "x64") {
-  chromium_linker_test_manifest =
-      "$target_gen_dir/linker_test_apk/AndroidManifest.xml"
-
-  jinja_template("chromium_linker_test_manifest") {
-    testonly = true
-    input = "linker_test_apk/AndroidManifest.xml.jinja2"
-    output = chromium_linker_test_manifest
-  }
-
-  android_resources("linker_resources") {
-    testonly = true
-    resource_dirs = [ "linker_test_apk/res" ]
-    android_manifest = chromium_linker_test_manifest
-    android_manifest_dep = ":chromium_linker_test_manifest"
-  }
-
-  _linker_test_apk_target_name = "chromium_linker_test_apk__apk"
-  _linker_test_apk_test_runner_target_name =
-      "chromium_linker_test_apk__test_runner_script"
-  _linker_test_jni_registration_header =
-      "$target_gen_dir/linker_test_apk/linker_test_jni_registration.h"
-
-  android_apk(_linker_test_apk_target_name) {
-    testonly = true
-    deps = [
-      ":content_shell_assets",
-      ":content_shell_java",
-      ":linker_resources",
-      "//base:base_java",
-      "//base:jni_java",
-      "//content/public/android:content_java",
-      "//ui/android:ui_java",
-    ]
-    android_manifest = chromium_linker_test_manifest
-    android_manifest_dep = ":chromium_linker_test_manifest"
-    apk_name = "ChromiumLinkerTest"
-    shared_libraries = [ ":linker_test" ]
-    use_chromium_linker = true
-    enable_chromium_linker_tests = true
-    jni_registration_header = _linker_test_jni_registration_header
-    java_files = [
-      "linker_test_apk/src/org/chromium/chromium_linker_test_apk/ChromiumLinkerTestActivity.java",
-      "linker_test_apk/src/org/chromium/chromium_linker_test_apk/ChromiumLinkerTestApplication.java",
-      "linker_test_apk/src/org/chromium/chromium_linker_test_apk/LinkerTests.java",
-    ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-    processor_args_javac = [ skip_gen_jni_arg ]
-  }
-
-  test_runner_script(_linker_test_apk_test_runner_target_name) {
-    test_name = "chromium_linker_test_apk"
-    test_type = "linker"
-    apk_target = ":$_linker_test_apk_target_name"
-    ignore_all_data_deps = true
-  }
-
-  group("chromium_linker_test_apk") {
-    testonly = true
-    deps = [
-      ":$_linker_test_apk_target_name",
-      ":$_linker_test_apk_test_runner_target_name",
-    ]
-  }
-
-  shared_library("linker_test") {
-    testonly = true
-    sources = [
-      "linker_test_apk/chromium_linker_test_android.cc",
-      "linker_test_apk/chromium_linker_test_linker_tests.cc",
-      _linker_test_jni_registration_header,
-    ]
-
-    deps = [
-      ":${_linker_test_apk_target_name}__final_jni",
-      ":linker_test_jni_headers",
-      "//content/shell:content_shell_lib",
-
-      # Required to include "content/public/browser/android/compositor.h"
-      # in chromium_linker_test_android.cc :-(
-      "//skia",
-      "//third_party/re2",
-    ]
-
-    # Explicit dependency required for JNI registration to be able to
-    # find the native side functions.
-    if (is_component_build) {
-      deps += [
-        "//device/gamepad",
-        "//media/midi",
-      ]
-    }
-  }
-
-  generate_jni("linker_test_jni_headers") {
-    testonly = true
-    sources = [
-      "linker_test_apk/src/org/chromium/chromium_linker_test_apk/LinkerTests.java",
-    ]
-  }
 }
 
 android_library("content_shell_browsertests_java") {
@@ -364,8 +274,8 @@ android_library("content_shell_browsertests_java") {
     "//base:base_java",
     "//content/public/android:content_java",
     "//testing/android/native_test:native_test_java",
-    "//third_party/android_deps:com_android_support_support_compat_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
-  java_files = [ "browsertests/src/org/chromium/content_shell/browsertests/ContentShellBrowserTestActivity.java" ]
+  sources = [ "browsertests/src/org/chromium/content_shell/browsertests/ContentShellBrowserTestActivity.java" ]
 }

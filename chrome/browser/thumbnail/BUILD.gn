@@ -1,0 +1,48 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/protobuf/proto_library.gni")
+}
+
+group("thumbnail") {
+  public_deps = [ "//chrome/browser/thumbnail/generator" ]
+
+  if (is_android) {
+    public_deps += [ "//chrome/browser/thumbnail/cc" ]
+  }
+}
+
+if (is_android) {
+  java_group("java") {
+    deps = [ "//chrome/browser/thumbnail/generator:java" ]
+  }
+
+  group("unit_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/thumbnail/cc:unit_tests" ]
+  }
+
+  java_group("javatests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/thumbnail/generator:javatests" ]
+  }
+
+  java_group("thumbnail_java_test_support") {
+    testonly = true
+
+    deps =
+        [ "//chrome/browser/thumbnail/generator:generator_java_test_support" ]
+  }
+
+  group("test_support") {
+    testonly = true
+
+    public_deps = [ "//chrome/browser/thumbnail/generator:test_support" ]
+  }
+}

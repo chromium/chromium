@@ -5,10 +5,9 @@
 #ifndef UI_BASE_VIEW_PROP_H_
 #define UI_BASE_VIEW_PROP_H_
 
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if !defined(OS_WIN) && !defined(USE_AURA)
@@ -21,7 +20,7 @@ namespace ui {
 // designed as a replacement for the Win32's SetProp, but does not make use of
 // window manager memory. ViewProp shares similar semantics as SetProp, the
 // value for a particular view/key pair comes from the last ViewProp created.
-class UI_BASE_EXPORT ViewProp {
+class COMPONENT_EXPORT(UI_BASE) ViewProp {
  public:
   // Associates data with a view/key pair. If a ViewProp has already been
   // created for the specified pair |data| replaces the current value.
@@ -29,6 +28,10 @@ class UI_BASE_EXPORT ViewProp {
   // ViewProp does *not* make a copy of the char*, the pointer is used for
   // sorting.
   ViewProp(gfx::AcceleratedWidget view, const char* key, void* data);
+
+  ViewProp(const ViewProp&) = delete;
+  ViewProp& operator=(const ViewProp&) = delete;
+
   ~ViewProp();
 
   // Returns the value associated with the view/key pair, or NULL if there is
@@ -43,8 +46,6 @@ class UI_BASE_EXPORT ViewProp {
 
   // Stores the actual data.
   scoped_refptr<Data> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewProp);
 };
 
 }  // namespace ui

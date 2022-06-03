@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
@@ -138,8 +137,7 @@ void TCPSocketEventDispatcher::ReadCallback(
     sockets_tcp::ReceiveInfo receive_info;
     receive_info.socket_id = params.socket_id;
     receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp::OnReceive::Create(receive_info);
+    auto args = sockets_tcp::OnReceive::Create(receive_info);
     std::unique_ptr<Event> event(new Event(events::SOCKETS_TCP_ON_RECEIVE,
                                            sockets_tcp::OnReceive::kEventName,
                                            std::move(args)));
@@ -147,9 +145,10 @@ void TCPSocketEventDispatcher::ReadCallback(
 
     // Post a task to delay the read until the socket is available, as
     // calling StartReceive at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
-        base::BindOnce(&TCPSocketEventDispatcher::StartRead, params));
+    content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TCPSocketEventDispatcher::StartRead, params));
   } else if (bytes_read == net::ERR_IO_PENDING) {
     // This happens when resuming a socket which already had an
     // active "read" callback.
@@ -159,8 +158,7 @@ void TCPSocketEventDispatcher::ReadCallback(
     sockets_tcp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp::OnReceiveError::Create(receive_error_info);
+    auto args = sockets_tcp::OnReceiveError::Create(receive_error_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_TCP_ON_RECEIVE_ERROR,
                   sockets_tcp::OnReceiveError::kEventName, std::move(args)));
@@ -183,8 +181,8 @@ void TCPSocketEventDispatcher::PostEvent(const ReadParams& params,
                                          std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DispatchEvent, params.browser_context_id,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
                                 params.extension_id, std::move(event)));
 }
 

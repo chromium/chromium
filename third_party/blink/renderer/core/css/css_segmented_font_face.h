@@ -26,12 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 
+#include "base/callback.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -41,6 +42,47 @@ class FontData;
 class FontDescription;
 class FontFace;
 class SegmentedFontData;
+
+// CSSSegmentedFontFace stores two FontFace list-sets, CSS-connected and
+// non-CSS-connected. This class combines the two such that they can be
+// conveniently operated as one.
+// Note however, |Insert| has to be instructed which sub-list to insert it to.
+// Iterating over the combined set, behaves as if all non-CSS-connected
+// FontFaces were stored after the CSS-connected ones.
+class FontFaceList : public GarbageCollected<FontFaceList> {
+  using FontFaceListPart = HeapLinkedHashSet<Member<FontFace>>;
+
+ public:
+  bool IsEmpty() const;
+  void Insert(FontFace* font_face, bool css_connected);
+  bool Erase(FontFace* font_face);
+
+  // Iterate over CSS-connected FontFaces first, and then non-CSS-connected
+  // ones.
+  // Modifying the collection is not allowed during iteration.
+  bool ForEachUntilTrue(
+      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
+  bool ForEachUntilFalse(
+      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
+  void ForEach(
+      const base::RepeatingCallback<void(Member<FontFace>)>& callback) const;
+
+  // Iterate (in reverse order) over non-CSS-connected FontFaces first, and
+  // then CSS-connected ones.
+  // Modifying the collection is not allowed during iteration.
+  bool ForEachReverseUntilTrue(
+      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
+  bool ForEachReverseUntilFalse(
+      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
+  void ForEachReverse(
+      const base::RepeatingCallback<void(Member<FontFace>)>& callback) const;
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  FontFaceListPart css_connected_face_;
+  FontFaceListPart non_css_connected_face_;
+};
 
 class CSSSegmentedFontFace final
     : public GarbageCollected<CSSSegmentedFontFace> {
@@ -58,35 +100,31 @@ class CSSSegmentedFontFace final
 
   void AddFontFace(FontFace*, bool css_connected);
   void RemoveFontFace(FontFace*);
-  bool IsEmpty() const { return font_faces_.IsEmpty(); }
+  bool IsEmpty() const { return font_faces_->IsEmpty(); }
 
   scoped_refptr<FontData> GetFontData(const FontDescription&);
 
   bool CheckFont(const String&) const;
-  void Match(const String&, HeapVector<Member<FontFace>>&) const;
+  void Match(const String&, HeapVector<Member<FontFace>>*) const;
   void WillUseFontData(const FontDescription&, const String& text);
   void WillUseRange(const FontDescription&, const blink::FontDataForRangeSet&);
   size_t ApproximateCharacterCount() const {
     return approximate_character_count_;
   }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   void PruneTable();
   bool IsValid() const;
 
-  using FontFaceList = HeapListHashSet<Member<FontFace>>;
-
   FontSelectionCapabilities font_selection_capabilities_;
-  HashMap<FontCacheKey,
-          scoped_refptr<SegmentedFontData>,
-          FontCacheKeyHash,
-          FontCacheKeyTraits>
+
+  WTF::LruCache<FontCacheKey, scoped_refptr<SegmentedFontData>>
       font_data_table_;
+
   // All non-CSS-connected FontFaces are stored after the CSS-connected ones.
-  FontFaceList font_faces_;
-  FontFaceList::iterator first_non_css_connected_face_;
+  Member<FontFaceList> font_faces_;
 
   // Approximate number of characters styled with this CSSSegmentedFontFace.
   // LayoutText::StyleDidChange() increments this on the first

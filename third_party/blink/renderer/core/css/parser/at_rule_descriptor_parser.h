@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -14,13 +15,15 @@ namespace blink {
 class CSSParserContext;
 class CSSParserTokenRange;
 class CSSValue;
+struct CSSTokenizedValue;
 
 class AtRuleDescriptorParser {
   STATIC_ONLY(AtRuleDescriptorParser);
 
  public:
-  static bool ParseAtRule(AtRuleDescriptorID,
-                          CSSParserTokenRange&,
+  static bool ParseAtRule(StyleRule::RuleType,
+                          AtRuleDescriptorID,
+                          const CSSTokenizedValue&,
                           const CSSParserContext&,
                           HeapVector<CSSPropertyValue, 256>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
@@ -32,8 +35,14 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseFontFaceDeclaration(CSSParserTokenRange&,
                                             const CSSParserContext&);
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
-                                             CSSParserTokenRange&,
+                                             const CSSTokenizedValue&,
                                              const CSSParserContext&);
+  static CSSValue* ParseAtCounterStyleDescriptor(AtRuleDescriptorID,
+                                                 CSSParserTokenRange&,
+                                                 const CSSParserContext&);
+  static CSSValue* ParseAtScrollTimelineDescriptor(AtRuleDescriptorID,
+                                                   CSSParserTokenRange&,
+                                                   const CSSParserContext&);
 };
 
 }  // namespace blink

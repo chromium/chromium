@@ -7,15 +7,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/network.h"
 
 namespace updater {
 
+class PolicyService;
+
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  NetworkFetcherFactory();
+  explicit NetworkFetcherFactory(scoped_refptr<PolicyService> policy_service);
+  NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
+  NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 
   std::unique_ptr<update_client::NetworkFetcher> Create() const override;
 
@@ -24,8 +28,6 @@ class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
 
  private:
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherFactory);
 };
 
 }  // namespace updater

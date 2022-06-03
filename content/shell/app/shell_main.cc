@@ -23,14 +23,14 @@ int main() {
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   content::ShellMainDelegate delegate;
 
   content::ContentMainParams params(&delegate);
   params.instance = instance;
   params.sandbox_info = &sandbox_info;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 #else
@@ -40,7 +40,7 @@ int main(int argc, const char** argv) {
   content::ContentMainParams params(&delegate);
   params.argc = argc;
   params.argv = argv;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 #endif  // OS_POSIX

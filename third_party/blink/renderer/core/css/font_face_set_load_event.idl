@@ -34,6 +34,6 @@
   // TODO(loonybear): Exposed=(Window,Worker)
   Exposed=Window
 ] interface FontFaceSetLoadEvent : Event {
-    constructor(DOMString type, optional FontFaceSetLoadEventInit eventInitDict);
+    constructor(DOMString type, optional FontFaceSetLoadEventInit eventInitDict = {});
     [SameObject] readonly attribute FrozenArray<FontFace> fontfaces;
 };

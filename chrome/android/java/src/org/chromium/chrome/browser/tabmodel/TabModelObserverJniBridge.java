@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
@@ -66,7 +67,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void didAddTab(Tab tab, @TabLaunchType int type) {
+    public final void didAddTab(
+            Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().didAddTab(
                 mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab, type);

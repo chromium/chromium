@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -30,15 +30,14 @@ namespace blink {
 CanvasFontCache::CanvasFontCache(Document& document)
     : document_(&document), pruning_scheduled_(false) {
   FontFamily font_family;
-  font_family.SetFamily(defaultFontFamily);
+  font_family.SetFamily(defaultFontFamily,
+                        FontFamily::InferredTypeFor(defaultFontFamily));
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(defaultFontSize);
   default_font_description.SetComputedSize(defaultFontSize);
-  default_font_style_ = ComputedStyle::Create();
+  default_font_style_ = document.GetStyleResolver().CreateComputedStyle();
   default_font_style_->SetFontDescription(default_font_description);
-  default_font_style_->GetFont().Update(
-      default_font_style_->GetFont().GetFontSelector());
 }
 
 CanvasFontCache::~CanvasFontCache() {
@@ -76,8 +75,8 @@ bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,
 
   scoped_refptr<ComputedStyle> font_style =
       ComputedStyle::Clone(*default_font_style_.get());
-  document_->EnsureStyleResolver().ComputeFont(element, font_style.get(),
-                                               *parsed_style);
+  document_->GetStyleEngine().ComputeFont(element, font_style.get(),
+                                          *parsed_style);
   fonts_resolved_using_default_style_.insert(font_string,
                                              font_style->GetFont());
   resolved_font = fonts_resolved_using_default_style_.find(font_string)->value;
@@ -94,17 +93,8 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
     parsed_style = i->value;
   } else {
     parsed_style =
-        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-    CSSParser::ParseValue(parsed_style, CSSPropertyID::kFont, font_string, true,
-                          document_->GetSecureContextMode());
-    if (parsed_style->IsEmpty())
-      return nullptr;
-    // According to
-    // http://lists.w3.org/Archives/Public/public-html/2009Jul/0947.html,
-    // the "inherit", "initial" and "unset" values must be ignored.
-    const CSSValue* font_value =
-        parsed_style->GetPropertyCSSValue(CSSPropertyID::kFontSize);
-    if (font_value && font_value->IsCSSWideKeyword())
+        CSSParser::ParseFont(font_string, document_->GetExecutionContext());
+    if (!parsed_style)
       return nullptr;
     fetched_fonts_.insert(font_string, parsed_style);
     font_lru_list_.PrependOrMoveToFirst(font_string);
@@ -155,7 +145,7 @@ void CanvasFontCache::PruneAll() {
   fonts_resolved_using_default_style_.clear();
 }
 
-void CanvasFontCache::Trace(Visitor* visitor) {
+void CanvasFontCache::Trace(Visitor* visitor) const {
   visitor->Trace(fetched_fonts_);
   visitor->Trace(document_);
 }

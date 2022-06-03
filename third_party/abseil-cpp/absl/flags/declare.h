@@ -25,9 +25,10 @@
 #ifndef ABSL_FLAGS_DECLARE_H_
 #define ABSL_FLAGS_DECLARE_H_
 
-#include "absl/strings/string_view.h"
+#include "absl/base/config.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 
 // absl::Flag<T> represents a flag of type 'T' created by ABSL_FLAG.
@@ -39,9 +40,15 @@ class Flag;
 // Flag
 //
 // Forward declaration of the `absl::Flag` type for use in defining the macro.
+#if defined(_MSC_VER) && !defined(__clang__)
+template <typename T>
+class Flag;
+#else
 template <typename T>
 using Flag = flags_internal::Flag<T>;
+#endif
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 // ABSL_DECLARE_FLAG()

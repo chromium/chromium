@@ -10,9 +10,9 @@ dictionary GPUDepthStencilStateDescriptor {
     boolean depthWriteEnabled = false;
     GPUCompareFunction depthCompare = "always";
 
-    GPUStencilStateFaceDescriptor stencilFront = {};
-    GPUStencilStateFaceDescriptor stencilBack = {};
+    GPUStencilFaceState stencilFront = {};
+    GPUStencilFaceState stencilBack = {};
 
-    unsigned long stencilReadMask = 0xFFFFFFFF;
-    unsigned long stencilWriteMask = 0xFFFFFFFF;
+    GPUStencilValue stencilReadMask = 0xFFFFFFFF;
+    GPUStencilValue stencilWriteMask = 0xFFFFFFFF;
 };

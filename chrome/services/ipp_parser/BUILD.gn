@@ -2,29 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
-enable_service = use_cups && is_chromeos
+enable_service = use_cups && is_chromeos_ash
 
 source_set("ipp_parser") {
-  sources = [
-    "ipp_parser.h",
-    "ipp_parser_service.cc",
-    "ipp_parser_service.h",
-  ]
+  sources = [ "ipp_parser.h" ]
 
   deps = [
     "//base",
-    "//chrome:strings",
-    "//mojo/public/cpp/bindings",
     "//net",
   ]
 
   public_deps = [
     "//chrome/services/ipp_parser/public/mojom",
     "//mojo/public/mojom/base",
-    "//printing",
   ]
 
   # We stub the implementation if libCUPS is not present.

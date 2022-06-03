@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "build/build_config.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -56,12 +56,13 @@ class MEDIA_EXPORT AAC {
   // unchanged.
   bool ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const;
 
-#if defined(OS_ANDROID)
+  // If known, returns the AudioCodecProfile.
+  AudioCodecProfile GetProfile() const;
+
   // Returns the codec specific data needed by android MediaCodec.
   std::vector<uint8_t> codec_specific_data() const {
     return codec_specific_data_;
   }
-#endif
 
  private:
   bool SkipDecoderGASpecificConfig(BitReader* bit_reader) const;
@@ -74,10 +75,8 @@ class MEDIA_EXPORT AAC {
   uint8_t frequency_index_;
   uint8_t channel_config_;
 
-#if defined(OS_ANDROID)
   // The codec specific data needed by the android MediaCodec.
   std::vector<uint8_t> codec_specific_data_;
-#endif
 
   // The following variables store audio configuration information that
   // can be used by Chromium. They are based on the AAC specific

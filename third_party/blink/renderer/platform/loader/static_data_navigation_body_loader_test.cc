@@ -38,7 +38,7 @@ class StaticDataNavigationBodyLoaderTest
       int64_t total_encoded_body_length,
       int64_t total_decoded_body_length,
       bool should_report_corb_blocking,
-      const base::Optional<blink::WebURLError>& error) override {
+      const absl::optional<blink::WebURLError>& error) override {
     ASSERT_TRUE(expecting_finished_);
     expecting_finished_ = false;
     ASSERT_TRUE(!did_finish_);
@@ -47,9 +47,9 @@ class StaticDataNavigationBodyLoaderTest
   }
 
   void TakeActions() {
-    if (set_defers_loading_) {
-      set_defers_loading_ = false;
-      loader_->SetDefersLoading(true);
+    if (freeze_mode_ != LoaderFreezeMode::kNone) {
+      freeze_mode_ = LoaderFreezeMode::kNone;
+      loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
     }
     if (!buffer_to_write_.IsEmpty()) {
       String buffer = buffer_to_write_;
@@ -74,20 +74,20 @@ class StaticDataNavigationBodyLoaderTest
   bool expecting_finished_ = false;
   bool did_finish_ = false;
   String buffer_to_write_;
-  bool set_defers_loading_ = false;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   bool destroy_loader_ = false;
   String data_received_;
 };
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, WriteFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   buffer_to_write_ = "world";
   Write("hello");
@@ -96,18 +96,30 @@ TEST_F(StaticDataNavigationBodyLoaderTest, WriteFromDataReceived) {
 
 TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingAndWriteFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
-  set_defers_loading_ = true;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   buffer_to_write_ = "world";
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
-  loader_->SetDefersLoading(false);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
+  EXPECT_EQ("world", TakeDataReceived());
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheAndWriteFromDataReceived) {
+  loader_->StartLoadingBody(this, nullptr);
+  expecting_data_received_ = true;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
+  buffer_to_write_ = "world";
+  Write("hello");
+  EXPECT_EQ("hello", TakeDataReceived());
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("world", TakeDataReceived());
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   destroy_loader_ = false;
   Write("hello");
@@ -115,9 +127,20 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
-  set_defers_loading_ = true;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
+  Write("hello");
+  EXPECT_EQ("hello", TakeDataReceived());
+  Write("world");
+  EXPECT_EQ("", TakeDataReceived());
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromDataReceived) {
+  loader_->StartLoadingBody(this, nullptr);
+  expecting_data_received_ = true;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
   Write("world");
@@ -127,7 +150,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
 TEST_F(StaticDataNavigationBodyLoaderTest, WriteThenStart) {
   Write("hello");
   expecting_data_received_ = true;
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
   loader_->Finish();
@@ -140,26 +163,49 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   Write("hello");
   loader_->Finish();
   expecting_data_received_ = true;
-  set_defers_loading_ = true;
-  loader_->StartLoadingBody(this, false);
+  freeze_mode_ = LoaderFreezeMode::kStrict;
+  loader_->StartLoadingBody(this, nullptr);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
-  loader_->SetDefersLoading(false);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
+  EXPECT_EQ("", TakeDataReceived());
+  EXPECT_TRUE(did_finish_);
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromFinishedDataReceived) {
+  Write("hello");
+  loader_->Finish();
+  expecting_data_received_ = true;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
+  loader_->StartLoadingBody(this, nullptr);
+  EXPECT_EQ("hello", TakeDataReceived());
+  expecting_finished_ = true;
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("", TakeDataReceived());
   EXPECT_TRUE(did_finish_);
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferred) {
-  loader_->SetDefersLoading(true);
-  loader_->StartLoadingBody(this, false);
+  loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
+  loader_->StartLoadingBody(this, nullptr);
   Write("hello");
   expecting_data_received_ = true;
-  loader_->SetDefersLoading(false);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
+  EXPECT_EQ("hello", TakeDataReceived());
+}
+
+TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
+  loader_->SetDefersLoading(LoaderFreezeMode::kBufferIncoming);
+  loader_->StartLoadingBody(this, nullptr);
+  Write("hello");
+  expecting_data_received_ = true;
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromFinished) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_finished_ = true;
   destroy_loader_ = true;
   loader_->Finish();
@@ -167,11 +213,19 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromFinished) {
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromFinished) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_finished_ = true;
-  set_defers_loading_ = true;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   loader_->Finish();
   EXPECT_TRUE(did_finish_);
 }
 
+TEST_F(StaticDataNavigationBodyLoaderTest,
+       SetDefersLoadingWithBfcacheFromFinished) {
+  loader_->StartLoadingBody(this, nullptr);
+  expecting_finished_ = true;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
+  loader_->Finish();
+  EXPECT_TRUE(did_finish_);
+}
 }  // namespace blink

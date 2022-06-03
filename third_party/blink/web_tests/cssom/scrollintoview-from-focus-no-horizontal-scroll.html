@@ -1,0 +1,46 @@
+<!doctype html>
+<title>CSSOM View - scrollIntoView from focus call shouldn't horizontally scroll a partially visible element</title>
+<meta charset="utf-8">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-focus">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1036817">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1050868">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+  #scroller {
+    width: 200px;
+    height: 200px;
+    padding-top: 200px;
+    padding-left: 200px;
+    background: purple;
+    overflow: hidden;
+  }
+  #child {
+    width: 400px;
+    height: 400px;
+    background: green;
+  }
+</style>
+<div id="scroller">
+  <div id="child" tabindex="0"></div>
+</div>
+<script>
+  test(function() {
+    let scroller = document.getElementById("scroller");
+    let child = document.getElementById("child");
+
+    scroller.scrollTop = 0;
+    scroller.scrollLeft = 0;
+
+    assert_equals(scroller.scrollTop, 0, "Precondition");
+    assert_equals(scroller.scrollLeft, 0, "Precondition");
+    assert_not_equals(scroller.scrollTopMax, 0, "Precondition")
+    assert_not_equals(scroller.scrollLeftMax, 0, "Precondition")
+
+    child.focus();
+
+    assert_equals(scroller.scrollTop, 200, "Should have scrolled in the vertical direction");
+    assert_equals(scroller.scrollLeft, 0, "Should not have scrolled in the horizontal direction");
+  }, "focus scrolls partially-visible child only in vertical axis");
+</script>
+

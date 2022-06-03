@@ -4,6 +4,9 @@
 
 #include "ui/views/animation/animation_delegate_views.h"
 
+#include <memory>
+#include <utility>
+
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/widget/widget.h"
@@ -12,7 +15,7 @@ namespace views {
 
 AnimationDelegateViews::AnimationDelegateViews(View* view) : view_(view) {
   if (view)
-    scoped_observer_.Add(view);
+    scoped_observation_.Observe(view);
 }
 
 AnimationDelegateViews::~AnimationDelegateViews() {
@@ -32,44 +35,57 @@ void AnimationDelegateViews::AnimationContainerWasSet(
 
   container_ = container;
   container_->set_observer(this);
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewAddedToWidget(View* observed_view) {
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
-  UpdateAnimationRunner();
+  ClearAnimationRunner();
 }
 
 void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
-  scoped_observer_.Remove(view_);
+  DCHECK(scoped_observation_.IsObservingSource(view_));
+  scoped_observation_.Reset();
   view_ = nullptr;
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::AnimationContainerShuttingDown(
     gfx::AnimationContainer* container) {
   container_ = nullptr;
+  ClearAnimationRunner();
 }
 
-void AnimationDelegateViews::UpdateAnimationRunner() {
-  if (!container_)
-    return;
+base::TimeDelta AnimationDelegateViews::GetAnimationDurationForReporting()
+    const {
+  return base::TimeDelta();
+}
 
+void AnimationDelegateViews::UpdateAnimationRunner(
+    const base::Location& location) {
   if (!view_ || !view_->GetWidget() || !view_->GetWidget()->GetCompositor()) {
-    // TODO(https://crbug.com/960621): make sure the container has a correct
-    // compositor-assisted runner.
-    container_->SetAnimationRunner(nullptr);
+    ClearAnimationRunner();
     return;
   }
 
-  if (container_->has_custom_animation_runner())
+  if (!container_ || container_->has_custom_animation_runner())
     return;
 
-  container_->SetAnimationRunner(
-      std::make_unique<CompositorAnimationRunner>(view_->GetWidget()));
+  auto compositor_animation_runner =
+      std::make_unique<CompositorAnimationRunner>(view_->GetWidget(), location);
+  compositor_animation_runner_ = compositor_animation_runner.get();
+  container_->SetAnimationRunner(std::move(compositor_animation_runner));
+}
+
+void AnimationDelegateViews::ClearAnimationRunner() {
+  // TODO(https://crbug.com/960621): make sure the container has a correct
+  // compositor-assisted runner.
+  if (container_)
+    container_->SetAnimationRunner(nullptr);
+  compositor_animation_runner_ = nullptr;
 }
 
 }  // namespace views

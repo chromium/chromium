@@ -15,14 +15,6 @@ PluginTest.*
 CrossPlatformAccessibilityBrowserTest.SelectedEditableTextAccessibility
 
 # http://crbug.com/297230
-*/DumpAccessibilityTreeTest.AccessibilityAriaLevel/*
-*/DumpAccessibilityTreeTest.AccessibilityAriaProgressbar/*
-*/DumpAccessibilityTreeTest.AccessibilityListMarkers/*
-*/DumpAccessibilityTreeTest.AccessibilityUl/*
-*/DumpAccessibilityTreeTest.AccessibilityCanvas/*
-*/DumpAccessibilityTreeTest.AccessibilityDialog/*
-*/DumpAccessibilityTreeTest.AccessibilityModalDialogClosed/*
-*/DumpAccessibilityTreeTest.AccessibilityModalDialogInIframeOpened/*
 RenderAccessibilityImplTest.DetachAccessibilityObject
 
 # http://crbug.com/187500
@@ -48,3 +40,6 @@ GinBrowserTest.GinAndGarbageCollection
 
 # http://crbug.com/343604
 MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo/0
+
+# http://crbug.com/1039450
+ProprietaryCodec/WebRtcMediaRecorderTest.*

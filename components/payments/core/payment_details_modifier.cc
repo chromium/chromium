@@ -54,15 +54,13 @@ bool PaymentDetailsModifier::operator!=(
   return !(*this == other);
 }
 
-std::unique_ptr<base::DictionaryValue>
-PaymentDetailsModifier::ToDictionaryValue() const {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kPaymentDetailsModifierSupportedMethods,
-                    method_data.supported_method);
-  result->SetString(kPaymentDetailsModifierData, method_data.data);
+base::Value PaymentDetailsModifier::ToValue() const {
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kPaymentDetailsModifierSupportedMethods,
+                      method_data.supported_method);
+  result.SetStringKey(kPaymentDetailsModifierData, method_data.data);
   if (total) {
-    result->SetDictionary(kPaymentDetailsModifierTotal,
-                          total->ToDictionaryValue());
+    result.SetKey(kPaymentDetailsModifierTotal, total->ToValue());
   }
 
   return result;

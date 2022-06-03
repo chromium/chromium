@@ -8,36 +8,23 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class Document;
 class ExceptionState;
+class LocalDOMWindow;
 class Navigator;
 class ScriptState;
 class ServiceWorkerContainer;
 
-class MODULES_EXPORT NavigatorServiceWorker final
-    : public GarbageCollected<NavigatorServiceWorker>,
-      public Supplement<Navigator> {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorServiceWorker);
+class MODULES_EXPORT NavigatorServiceWorker {
+  STATIC_ONLY(NavigatorServiceWorker);
 
  public:
-  static const char kSupplementName[];
-
-  static NavigatorServiceWorker* From(Document&);
-  static NavigatorServiceWorker& From(Navigator&);
-  static NavigatorServiceWorker* ToNavigatorServiceWorker(Navigator&);
+  static ServiceWorkerContainer* From(LocalDOMWindow&);
   static ServiceWorkerContainer* serviceWorker(ScriptState*,
                                                Navigator&,
                                                ExceptionState&);
-
-  explicit NavigatorServiceWorker(Navigator&);
-  void Trace(blink::Visitor*) override;
-
- private:
-  ServiceWorkerContainer* GetOrCreateContainer(LocalFrame*, ExceptionState&);
 };
 
 }  // namespace blink

@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/webui_features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 
-if (closure_compile) {
+if (enable_js_type_check) {
   group("closure_compile") {
     deps = [
+      "attribution_reporting:closure_compile",
       "histograms:closure_compile",
       "process:closure_compile",
     ]

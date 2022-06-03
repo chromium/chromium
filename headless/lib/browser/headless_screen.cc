@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/input_method.h"
@@ -33,6 +32,12 @@ bool HeadlessScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
 
 gfx::NativeWindow HeadlessScreen::GetWindowAtScreenPoint(
     const gfx::Point& point) {
+  return nullptr;
+}
+
+gfx::NativeWindow HeadlessScreen::GetLocalProcessWindowAtPoint(
+    const gfx::Point& point,
+    const std::set<gfx::NativeWindow>& ignore) {
   return nullptr;
 }
 

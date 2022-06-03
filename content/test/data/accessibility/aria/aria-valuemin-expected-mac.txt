@@ -1,6 +1,5 @@
 AXWebArea
-++AXProgressIndicator AXMinValue='1'
-++AXScrollBar AXMinValue='2'
-++AXSlider AXMinValue='3'
-++AXIncrementor AXMinValue='4'
-++++AXStaticText
+++AXProgressIndicator AXMinValue=1
+++AXScrollBar AXMinValue=2
+++AXSlider AXMinValue=3
+++AXIncrementor AXMinValue=4

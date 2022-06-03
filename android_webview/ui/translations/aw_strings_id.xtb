@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
-<translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
-<translation id="6312113039770857350">Halaman web tidak tersedia</translation>
-<translation id="8681531050781943054">Halaman web di <ph name="PAGE" /> tidak dapat dimuat karena:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Saran:<ph name="MARKUP_2" />Pastikan Anda memiliki sambungan data<ph name="MARKUP_3" />Coba muat ulang halaman web ini nanti<ph name="MARKUP_4" />Periksa alamat yang Anda masukkan<ph name="MARKUP_5" /></translation>
 </translationbundle>

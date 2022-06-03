@@ -31,11 +31,17 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   PostProcessingPipelineImpl(const std::string& name,
                              const base::Value* filter_description_list,
                              int channels);
+
+  PostProcessingPipelineImpl(const PostProcessingPipelineImpl&) = delete;
+  PostProcessingPipelineImpl& operator=(const PostProcessingPipelineImpl&) =
+      delete;
+
   ~PostProcessingPipelineImpl() override;
 
   double ProcessFrames(float* data,
                        int num_frames,
                        float current_volume,
+                       float target_volume,
                        bool is_silence) override;
 
   float* GetOutputBuffer() override;
@@ -61,7 +67,7 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   } PostProcessorInfo;
 
   int GetRingingTimeInFrames();
-  void UpdateCastVolume(float multiplier);
+  void UpdateCastVolume(float multiplier, float target);
 
   std::string name_;
   int input_sample_rate_ = 0;
@@ -72,6 +78,8 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   float current_multiplier_ = 0.0;
   float cast_volume_ = 0.0;
   float current_dbfs_ = 0.0;
+  float target_multiplier_ = 0.0;
+  float target_dbfs_ = 0.0;
   int num_output_channels_ = 0;
   float* output_buffer_ = nullptr;
   AlignedBuffer<float> silence_buffer_;
@@ -80,8 +88,6 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   PostProcessorFactory factory_;
 
   std::vector<PostProcessorInfo> processors_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostProcessingPipelineImpl);
 };
 
 class PostProcessingPipelineFactoryImpl : public PostProcessingPipelineFactory {

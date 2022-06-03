@@ -46,7 +46,7 @@ void RTCStatsResponse::AddStats(const RTCLegacyStats& stats) {
   }
 }
 
-void RTCStatsResponse::Trace(blink::Visitor* visitor) {
+void RTCStatsResponse::Trace(Visitor* visitor) const {
   visitor->Trace(result_);
   RTCStatsResponseBase::Trace(visitor);
 }

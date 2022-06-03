@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that inspect element action works for deep shadow elements.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>
@@ -16,7 +16,7 @@
       </div>
     `);
   await TestRunner.evaluateInPagePromise(`
-          document.querySelector('#host').createShadowRoot().innerHTML = "<div><div><span id='shadow'>Shadow</span></div></div>";
+          document.querySelector('#host').attachShadow({mode: 'open'}).innerHTML = "<div><div><span id='shadow'>Shadow</span></div></div>";
           document.querySelector('#hostOpen').attachShadow({ mode: "open" }).innerHTML = "<div><div><span id='shadow-open'>Shadow</span></div></div>";
     `);
 

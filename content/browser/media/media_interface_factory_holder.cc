@@ -8,9 +8,9 @@ namespace content {
 
 MediaInterfaceFactoryHolder::MediaInterfaceFactoryHolder(
     MediaServiceGetter media_service_getter,
-    CreateInterfaceProviderCB create_interface_provider_cb)
+    FrameServicesGetter frame_services_getter)
     : media_service_getter_(std::move(media_service_getter)),
-      create_interface_provider_cb_(std::move(create_interface_provider_cb)) {}
+      frame_services_getter_(std::move(frame_services_getter)) {}
 
 MediaInterfaceFactoryHolder::~MediaInterfaceFactoryHolder() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -28,17 +28,12 @@ media::mojom::InterfaceFactory* MediaInterfaceFactoryHolder::Get() {
 void MediaInterfaceFactoryHolder::ConnectToMediaService() {
   media_service_getter_.Run().CreateInterfaceFactory(
       interface_factory_remote_.BindNewPipeAndPassReceiver(),
-      create_interface_provider_cb_.Run());
-  interface_factory_remote_.set_disconnect_handler(base::BindOnce(
-      &MediaInterfaceFactoryHolder::OnMediaServiceConnectionError,
-      base::Unretained(this)));
+      frame_services_getter_.Run());
+  // Handle unexpected mojo pipe disconnection such as media service process
+  // crashed or killed in the browser task manager.
+  interface_factory_remote_.reset_on_disconnect();
 }
 
-void MediaInterfaceFactoryHolder::OnMediaServiceConnectionError() {
-  DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  interface_factory_remote_.reset();
-}
 
 }  // namespace content

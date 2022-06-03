@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 
-#import <UIKit/UIKit.h>
-
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -24,19 +23,27 @@
   // A map associating webStates with their OpenInControllers.
   std::map<web::WebState*, OpenInController*> _openInControllersForWebStates;
 }
+
+// The Browser that accesses the WebStateList.
+@property(nonatomic, assign) Browser* browser;
+
 // The WebStateList that this mediator listens for newly added Webstates.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// The base view controller from which to present UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 @end
 
 @implementation OpenInMediator
 
-@synthesize webStateList = _webStateList;
-
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser {
   self = [super init];
   if (self) {
-    _webStateList = webStateList;
+    _baseViewController = baseViewController;
+    _browser = browser;
+    _webStateList = browser->GetWebStateList();
     // Set the delegates for all existing webstates in the |_webStateList|.
     for (int i = 0; i < _webStateList->count(); i++) {
       web::WebState* webState = _webStateList->GetWebStateAt(i);
@@ -54,7 +61,7 @@
 
 - (void)disableAll {
   for (const auto& element : _openInControllersForWebStates)
-    [element.second disable];
+    [element.second detachFromWebState];
   _openInControllersForWebStates.clear();
 }
 
@@ -85,10 +92,13 @@
                 withDocumentURL:(const GURL&)documentURL
               suggestedFileName:(NSString*)suggestedFileName {
   if (!_openInControllersForWebStates[webState]) {
-    _openInControllersForWebStates[webState] = [[OpenInController alloc]
-        initWithURLLoaderFactory:webState->GetBrowserState()
-                                     ->GetSharedURLLoaderFactory()
-                        webState:webState];
+    OpenInController* openInController = [[OpenInController alloc]
+        initWithBaseViewController:_baseViewController
+                  URLLoaderFactory:webState->GetBrowserState()
+                                       ->GetSharedURLLoaderFactory()
+                          webState:webState
+                           browser:_browser];
+    _openInControllersForWebStates[webState] = openInController;
   }
   OpenInController* controller = _openInControllersForWebStates[webState];
   controller.baseView = webState->GetView();

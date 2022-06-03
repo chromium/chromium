@@ -5,12 +5,8 @@
 #ifndef MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 #define MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 
-#include <map>
-#include <string>
-
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
@@ -28,14 +24,15 @@ class COMPONENT_EXPORT(LEARNING_IMPL) FeatureProvider {
   using FeatureVectorCB = base::OnceCallback<void(FeatureVector)>;
 
   FeatureProvider();
+
+  FeatureProvider(const FeatureProvider&) = delete;
+  FeatureProvider& operator=(const FeatureProvider&) = delete;
+
   virtual ~FeatureProvider();
 
   // Update |features| to include whatever features are specified by |task_|,
   // and call |cb| once they're filled in.
   virtual void AddFeatures(FeatureVector features, FeatureVectorCB cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FeatureProvider);
 };
 
 // Since FeatureProviders are often going to thread-hop, provide this typedef.

@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,10 +26,8 @@
 
 @implementation AutofillEditTableViewController
 
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle {
-  self = [super initWithTableViewStyle:style appBarStyle:appBarStyle];
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  self = [super initWithStyle:style];
   if (!self) {
     return nil;
   }
@@ -85,6 +84,7 @@
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
+  self.formInputAccessoryView.hidden = NO;
   [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
@@ -93,6 +93,7 @@
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   DCHECK(_currentEditingCell == cell);
   [textField setInputAccessoryView:nil];
+  self.formInputAccessoryView.hidden = YES;
   _currentEditingCell = nil;
 }
 
@@ -116,6 +117,11 @@
 - (void)formInputAccessoryViewDidTapCloseButton:
     (FormInputAccessoryView*)sender {
   [[_currentEditingCell textField] resignFirstResponder];
+}
+
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
 }
 
 #pragma mark - Helper methods
@@ -142,17 +148,19 @@
   if (!cellPath || !offset)
     return nil;
 
-  NSInteger cellSection = [cellPath section];
-  NSInteger nextCellRow = [cellPath row] + offset;
-
-  if (nextCellRow >= 0 && nextCellRow < [self.tableView
-                                            numberOfRowsInSection:cellSection])
+  const NSInteger cellSection = [cellPath section];
+  const NSInteger nextCellRow = [cellPath row] + offset;
+  if ((0 <= nextCellRow) &&
+      (nextCellRow < [self.tableView numberOfRowsInSection:cellSection])) {
     return [NSIndexPath indexPathForRow:nextCellRow inSection:cellSection];
+  }
 
-  NSInteger nextCellSection = cellSection + offset;
-  if (nextCellSection >= 0 &&
-      nextCellSection < [self.tableView numberOfSections])
+  const NSInteger nextCellSection = cellSection + offset;
+  if ((0 <= nextCellSection) &&
+      (nextCellSection < [self.tableView numberOfSections]) &&
+      ([self.tableView numberOfRowsInSection:nextCellSection] > 0)) {
     return [NSIndexPath indexPathForRow:0 inSection:nextCellSection];
+  }
 
   return nil;
 }
@@ -162,13 +170,17 @@
   return [self.tableView indexPathForCell:_currentEditingCell];
 }
 
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  return YES;
+}
+
 - (void)moveToAnotherCellWithOffset:(NSInteger)offset {
   NSIndexPath* cellPath = [self indexPathForCurrentTextField];
   DCHECK(cellPath);
   NSIndexPath* nextCellPath = [self indexForCellPathWithOffset:offset
                                                       fromPath:cellPath];
 
-  if (!nextCellPath) {
+  if (!nextCellPath || ![self isItemAtIndexPathTextEditCell:nextCellPath]) {
     [[_currentEditingCell textField] resignFirstResponder];
   } else {
     TableViewTextEditCell* nextCell =

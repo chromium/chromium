@@ -7,23 +7,26 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
+#include "google_apis/gcm/base/gcm_constants.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -63,6 +66,9 @@ enum LoadStatus {
 
 // Limit to the number of outstanding messages per app.
 const int kMessagesPerAppLimit = 20;
+
+// Separator used to split persistent ID and expiration time.
+constexpr char kIncomingMsgSeparator[] = "|";
 
 // ---- LevelDB keys. ----
 // Key for this device's android id.
@@ -132,6 +138,14 @@ std::string MakeIncomingKey(const std::string& persistent_id) {
   return kIncomingMsgKeyStart + persistent_id;
 }
 
+std::string MakeIncomingData(const std::string& persistent_id) {
+  return base::StrCat(
+      {persistent_id, kIncomingMsgSeparator,
+       base::NumberToString(
+           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds() +
+           kIncomingMessageTTL.InMicroseconds())});
+}
+
 std::string MakeOutgoingKey(const std::string& persistent_id) {
   return kOutgoingMsgKeyStart + persistent_id;
 }
@@ -191,59 +205,55 @@ class GCMStoreImpl::Backend
           std::unique_ptr<Encryptor> encryptor);
 
   // Blocking implementations of GCMStoreImpl methods.
-  void Load(StoreOpenMode open_mode, const LoadCallback& callback);
+  void Load(StoreOpenMode open_mode, LoadCallback callback);
   void Close();
-  void Destroy(const UpdateCallback& callback);
+  void Destroy(UpdateCallback callback);
   void SetDeviceCredentials(uint64_t device_android_id,
                             uint64_t device_security_token,
-                            const UpdateCallback& callback);
+                            UpdateCallback callback);
   void AddRegistration(const std::string& serialized_key,
                        const std::string& serialized_value,
-                       const UpdateCallback& callback);
+                       UpdateCallback callback);
   void RemoveRegistration(const std::string& serialized_key,
-                          const UpdateCallback& callback);
+                          UpdateCallback callback);
   void AddIncomingMessage(const std::string& persistent_id,
-                          const UpdateCallback& callback);
+                          UpdateCallback callback);
   void RemoveIncomingMessages(const PersistentIdList& persistent_ids,
-                              const UpdateCallback& callback);
+                              UpdateCallback callback);
   void AddOutgoingMessage(const std::string& persistent_id,
                           const MCSMessage& message,
-                          const UpdateCallback& callback);
+                          UpdateCallback callback);
   void RemoveOutgoingMessages(
       const PersistentIdList& persistent_ids,
-      const base::Callback<void(bool, const AppIdToMessageCountMap&)>
-          callback);
+      base::OnceCallback<void(bool, const AppIdToMessageCountMap&)> callback);
   void AddUserSerialNumber(const std::string& username,
                            int64_t serial_number,
-                           const UpdateCallback& callback);
+                           UpdateCallback callback);
   void RemoveUserSerialNumber(const std::string& username,
-                              const UpdateCallback& callback);
+                              UpdateCallback callback);
   void SetLastCheckinInfo(const base::Time& time,
                           const std::set<std::string>& accounts,
-                          const UpdateCallback& callback);
-  void SetGServicesSettings(
-      const std::map<std::string, std::string>& settings,
-      const std::string& digest,
-      const UpdateCallback& callback);
+                          UpdateCallback callback);
+  void SetGServicesSettings(const std::map<std::string, std::string>& settings,
+                            const std::string& digest,
+                            UpdateCallback callback);
   void AddAccountMapping(const AccountMapping& account_mapping,
-                         const UpdateCallback& callback);
+                         UpdateCallback callback);
   void RemoveAccountMapping(const CoreAccountId& account_id,
-                            const UpdateCallback& callback);
-  void SetLastTokenFetchTime(const base::Time& time,
-                             const UpdateCallback& callback);
+                            UpdateCallback callback);
+  void SetLastTokenFetchTime(const base::Time& time, UpdateCallback callback);
   void AddHeartbeatInterval(const std::string& scope,
                             int interval_ms,
-                            const UpdateCallback& callback);
+                            UpdateCallback callback);
   void RemoveHeartbeatInterval(const std::string& scope,
-                               const UpdateCallback& callback);
+                               UpdateCallback callback);
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id_data,
-                         const UpdateCallback& callback);
-  void RemoveInstanceIDData(const std::string& app_id,
-                            const UpdateCallback& callback);
+                         UpdateCallback callback);
+  void RemoveInstanceIDData(const std::string& app_id, UpdateCallback callback);
   void SetValue(const std::string& key,
                 const std::string& value,
-                const UpdateCallback& callback);
+                UpdateCallback callback);
 
  private:
   friend class base::RefCountedThreadSafe<Backend>;
@@ -345,7 +355,7 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
 }
 
 void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
-                                 const LoadCallback& callback) {
+                                 LoadCallback callback) {
   std::unique_ptr<LoadResult> result(new LoadResult());
   LoadStatus load_status = OpenStoreAndLoadData(open_mode, result.get());
   UMA_HISTOGRAM_ENUMERATION("GCM.LoadStatus", load_status, LOAD_STATUS_COUNT);
@@ -353,7 +363,7 @@ void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
     result->Reset();
     result->store_does_not_exist = (load_status == STORE_DOES_NOT_EXIST);
     foreground_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(callback, std::move(result)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
 
@@ -400,7 +410,7 @@ void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
            << instance_id_token_count << " InstanceID tokens.";
   result->success = true;
   foreground_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(callback, std::move(result)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   return;
 }
 
@@ -409,29 +419,29 @@ void GCMStoreImpl::Backend::Close() {
   db_.reset();
 }
 
-void GCMStoreImpl::Backend::Destroy(const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::Destroy(UpdateCallback callback) {
   DVLOG(1) << "Destroying GCM store.";
   db_.reset();
   const leveldb::Status s =
       leveldb::DestroyDB(path_.AsUTF8Unsafe(), leveldb_env::Options());
   if (s.ok()) {
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, true));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   LOG(ERROR) << "Destroy failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, false));
+  foreground_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(std::move(callback), false));
 }
 
-void GCMStoreImpl::Backend::SetDeviceCredentials(
-    uint64_t device_android_id,
-    uint64_t device_security_token,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::SetDeviceCredentials(uint64_t device_android_id,
+                                                 uint64_t device_security_token,
+                                                 UpdateCallback callback) {
   DVLOG(1) << "Saving device credentials with AID " << device_android_id;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -451,23 +461,23 @@ void GCMStoreImpl::Backend::SetDeviceCredentials(
         write_options, MakeSlice(kDeviceTokenKey), MakeSlice(encrypted_token));
   }
   if (s.ok()) {
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, true));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   LOG(ERROR) << "LevelDB put failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, false));
+  foreground_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(std::move(callback), false));
 }
 
-void GCMStoreImpl::Backend::AddRegistration(
-    const std::string& serialized_key,
-    const std::string& serialized_value,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::AddRegistration(const std::string& serialized_key,
+                                            const std::string& serialized_value,
+                                            UpdateCallback callback) {
   DVLOG(1) << "Saving registration info for app: " << serialized_key;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   leveldb::WriteOptions write_options;
@@ -479,17 +489,17 @@ void GCMStoreImpl::Backend::AddRegistration(
       MakeSlice(serialized_value));
   if (!status.ok())
     LOG(ERROR) << "LevelDB put failed: " << status.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, status.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status.ok()));
 }
 
 void GCMStoreImpl::Backend::RemoveRegistration(
     const std::string& serialized_key,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   leveldb::WriteOptions write_options;
@@ -499,17 +509,17 @@ void GCMStoreImpl::Backend::RemoveRegistration(
       write_options, MakeSlice(MakeRegistrationKey(serialized_key)));
   if (!status.ok())
     LOG(ERROR) << "LevelDB remove failed: " << status.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, status.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status.ok()));
 }
 
 void GCMStoreImpl::Backend::AddIncomingMessage(const std::string& persistent_id,
-                                               const UpdateCallback& callback) {
+                                               UpdateCallback callback) {
   DVLOG(1) << "Saving incoming message with id " << persistent_id;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -517,25 +527,26 @@ void GCMStoreImpl::Backend::AddIncomingMessage(const std::string& persistent_id,
   write_options.sync = true;
 
   std::string key = MakeIncomingKey(persistent_id);
-  const leveldb::Status s = db_->Put(write_options,
-                                     MakeSlice(key),
-                                     MakeSlice(persistent_id));
+  std::string data = MakeIncomingData(persistent_id);
+  const leveldb::Status s =
+      db_->Put(write_options, MakeSlice(key), MakeSlice(data));
   if (s.ok()) {
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, true));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   LOG(ERROR) << "LevelDB put failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, false));
+  foreground_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(std::move(callback), false));
 }
 
 void GCMStoreImpl::Backend::RemoveIncomingMessages(
     const PersistentIdList& persistent_ids,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   leveldb::WriteOptions write_options;
@@ -552,22 +563,23 @@ void GCMStoreImpl::Backend::RemoveIncomingMessages(
       break;
   }
   if (s.ok()) {
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, true));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   LOG(ERROR) << "LevelDB remove failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, false));
+  foreground_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(std::move(callback), false));
 }
 
 void GCMStoreImpl::Backend::AddOutgoingMessage(const std::string& persistent_id,
                                                const MCSMessage& message,
-                                               const UpdateCallback& callback) {
+                                               UpdateCallback callback) {
   DVLOG(1) << "Saving outgoing message with id " << persistent_id;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   leveldb::WriteOptions write_options;
@@ -580,22 +592,23 @@ void GCMStoreImpl::Backend::AddOutgoingMessage(const std::string& persistent_id,
                                      MakeSlice(key),
                                      MakeSlice(data));
   if (s.ok()) {
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, true));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   LOG(ERROR) << "LevelDB put failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE, base::BindOnce(callback, false));
+  foreground_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(std::move(callback), false));
 }
 
 void GCMStoreImpl::Backend::RemoveOutgoingMessages(
     const PersistentIdList& persistent_ids,
-    const base::Callback<void(bool, const AppIdToMessageCountMap&)>
-        callback) {
+    base::OnceCallback<void(bool, const AppIdToMessageCountMap&)> callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
     foreground_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(callback, false, AppIdToMessageCountMap()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false, AppIdToMessageCountMap()));
     return;
   }
   leveldb::ReadOptions read_options;
@@ -632,18 +645,20 @@ void GCMStoreImpl::Backend::RemoveOutgoingMessages(
   }
   if (s.ok()) {
     foreground_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(callback, true, removed_message_counts));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), true, removed_message_counts));
     return;
   }
   LOG(ERROR) << "LevelDB remove failed: " << s.ToString();
   foreground_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(callback, false, AppIdToMessageCountMap()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), false, AppIdToMessageCountMap()));
 }
 
 void GCMStoreImpl::Backend::SetLastCheckinInfo(
     const base::Time& time,
     const std::set<std::string>& accounts,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   leveldb::WriteBatch write_batch;
 
   int64_t last_checkin_time_internal = time.ToInternalValue();
@@ -669,47 +684,48 @@ void GCMStoreImpl::Backend::SetLastCheckinInfo(
 
   if (!s.ok())
     LOG(ERROR) << "LevelDB set last checkin info failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
 void GCMStoreImpl::AddInstanceIDData(const std::string& app_id,
                                      const std::string& instance_id_data,
-                                     const UpdateCallback& callback) {
+                                     UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddInstanceIDData,
-                                backend_, app_id, instance_id_data, callback));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::AddInstanceIDData, backend_,
+                     app_id, instance_id_data, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveInstanceIDData(const std::string& app_id,
-                                        const UpdateCallback& callback) {
+                                        UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveInstanceIDData,
-                                backend_, app_id, callback));
+                                backend_, app_id, std::move(callback)));
 }
 
 void GCMStoreImpl::Backend::SetGServicesSettings(
     const std::map<std::string, std::string>& settings,
     const std::string& settings_digest,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   leveldb::WriteBatch write_batch;
 
   // Remove all existing settings.
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
-  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
-  for (iter->Seek(MakeSlice(kGServiceSettingKeyStart));
-       iter->Valid() && iter->key().ToString() < kGServiceSettingKeyEnd;
-       iter->Next()) {
-    write_batch.Delete(iter->key());
+  std::unique_ptr<leveldb::Iterator> db_it(db_->NewIterator(read_options));
+  for (db_it->Seek(MakeSlice(kGServiceSettingKeyStart));
+       db_it->Valid() && db_it->key().ToString() < kGServiceSettingKeyEnd;
+       db_it->Next()) {
+    write_batch.Delete(db_it->key());
   }
 
   // Add the new settings.
-  for (std::map<std::string, std::string>::const_iterator iter =
+  for (std::map<std::string, std::string>::const_iterator map_it =
            settings.begin();
-       iter != settings.end(); ++iter) {
-    write_batch.Put(MakeSlice(MakeGServiceSettingKey(iter->first)),
-                    MakeSlice(iter->second));
+       map_it != settings.end(); ++map_it) {
+    write_batch.Put(MakeSlice(MakeGServiceSettingKey(map_it->first)),
+                    MakeSlice(map_it->second));
   }
 
   // Update the settings digest.
@@ -723,19 +739,19 @@ void GCMStoreImpl::Backend::SetGServicesSettings(
   leveldb::Status s = db_->Write(write_options, &write_batch);
   if (!s.ok())
     LOG(ERROR) << "LevelDB GService Settings update failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
 void GCMStoreImpl::Backend::AddAccountMapping(
     const AccountMapping& account_mapping,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   DVLOG(1) << "Saving account info for account with email: "
            << account_mapping.email;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -748,17 +764,17 @@ void GCMStoreImpl::Backend::AddAccountMapping(
       db_->Put(write_options, MakeSlice(key), MakeSlice(data));
   if (!s.ok())
     LOG(ERROR) << "LevelDB adding account mapping failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
 void GCMStoreImpl::Backend::RemoveAccountMapping(
     const CoreAccountId& account_id,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -770,18 +786,17 @@ void GCMStoreImpl::Backend::RemoveAccountMapping(
 
   if (!s.ok())
     LOG(ERROR) << "LevelDB removal of account mapping failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
-void GCMStoreImpl::Backend::SetLastTokenFetchTime(
-    const base::Time& time,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::SetLastTokenFetchTime(const base::Time& time,
+                                                  UpdateCallback callback) {
   DVLOG(1) << "Setting last token fetching time.";
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -794,20 +809,19 @@ void GCMStoreImpl::Backend::SetLastTokenFetchTime(
 
   if (!s.ok())
     LOG(ERROR) << "LevelDB setting last token fetching time: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
-void GCMStoreImpl::Backend::AddHeartbeatInterval(
-    const std::string& scope,
-    int interval_ms,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::AddHeartbeatInterval(const std::string& scope,
+                                                 int interval_ms,
+                                                 UpdateCallback callback) {
   DVLOG(1) << "Saving a heartbeat interval: scope: " << scope
            << " interval: " << interval_ms << "ms.";
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -820,17 +834,16 @@ void GCMStoreImpl::Backend::AddHeartbeatInterval(
       db_->Put(write_options, MakeSlice(key), MakeSlice(data));
   if (!s.ok())
     LOG(ERROR) << "LevelDB adding heartbeat interval failed: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
-void GCMStoreImpl::Backend::RemoveHeartbeatInterval(
-    const std::string& scope,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::RemoveHeartbeatInterval(const std::string& scope,
+                                                    UpdateCallback callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -844,19 +857,19 @@ void GCMStoreImpl::Backend::RemoveHeartbeatInterval(
     LOG(ERROR) << "LevelDB removal of heartbeat interval failed: "
                << s.ToString();
   }
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
 void GCMStoreImpl::Backend::AddInstanceIDData(
     const std::string& app_id,
     const std::string& instance_id_data,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   DVLOG(1) << "Adding Instance ID data.";
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -869,17 +882,16 @@ void GCMStoreImpl::Backend::AddInstanceIDData(
                                           MakeSlice(instance_id_data));
   if (!status.ok())
     LOG(ERROR) << "LevelDB put failed: " << status.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, status.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status.ok()));
 }
 
-void GCMStoreImpl::Backend::RemoveInstanceIDData(
-    const std::string& app_id,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::Backend::RemoveInstanceIDData(const std::string& app_id,
+                                                 UpdateCallback callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   leveldb::WriteOptions write_options;
@@ -889,19 +901,19 @@ void GCMStoreImpl::Backend::RemoveInstanceIDData(
       db_->Delete(write_options, MakeSlice(MakeInstanceIDKey(app_id)));
   if (!status.ok())
     LOG(ERROR) << "LevelDB remove failed: " << status.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, status.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status.ok()));
 }
 
 void GCMStoreImpl::Backend::SetValue(const std::string& key,
                                      const std::string& value,
-                                     const UpdateCallback& callback) {
+                                     UpdateCallback callback) {
   DVLOG(1) << "Injecting a value to GCM Store for testing. Key: "
            << key << ", Value: " << value;
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(FROM_HERE,
-                                      base::BindOnce(callback, false));
+    foreground_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -913,8 +925,8 @@ void GCMStoreImpl::Backend::SetValue(const std::string& key,
 
   if (!s.ok())
     LOG(ERROR) << "LevelDB had problems injecting a value: " << s.ToString();
-  foreground_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(callback, s.ok()));
+  foreground_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
 bool GCMStoreImpl::Backend::LoadDeviceCredentials(uint64_t* android_id,
@@ -983,6 +995,7 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
   read_options.verify_checksums = true;
 
   std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
+  std::vector<std::string> expired_incoming_messages;
   for (iter->Seek(MakeSlice(kIncomingMsgKeyStart));
        iter->Valid() && iter->key().ToString() < kIncomingMsgKeyEnd;
        iter->Next()) {
@@ -993,9 +1006,43 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
       return false;
     }
     DVLOG(1) << "Found incoming message with id " << s.ToString();
-    incoming_messages->push_back(s.ToString());
+    std::string data = s.ToString();
+    size_t found = data.find(kIncomingMsgSeparator);
+    if (found != std::string::npos) {
+      std::string persistent_id = data.substr(0, found);
+      int64_t expiration_time = 0LL;
+      if (!base::StringToInt64(
+              data.substr(found + base::size(kIncomingMsgSeparator) - 1),
+              &expiration_time)) {
+        LOG(ERROR)
+            << "Failed to parse expiration time from the incoming message "
+            << data;
+        expiration_time = 0LL;
+      }
+      if (base::Time::Now() < base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(expiration_time))) {
+        incoming_messages->push_back(std::move(persistent_id));
+      } else {
+        expired_incoming_messages.push_back(std::move(persistent_id));
+      }
+    } else {
+      if (base::FeatureList::IsEnabled(
+              features::kGCMDeleteIncomingMessagesWithoutTTL)) {
+        // No expiration time can be found from |data|. The messeage should be
+        // added with the legacy non-TTL path. Treat it as expired.
+        expired_incoming_messages.push_back(std::move(data));
+      } else {
+        incoming_messages->push_back(std::move(data));
+      }
+    }
   }
-
+  if (!expired_incoming_messages.empty()) {
+    DVLOG(1) << "Removing " << expired_incoming_messages.size()
+             << " expired incoming messages.";
+    UMA_HISTOGRAM_COUNTS_1M("GCM.ExpiredIncomingMessages",
+                            expired_incoming_messages.size());
+    RemoveIncomingMessages(expired_incoming_messages, base::DoNothing());
+  }
   return true;
 }
 
@@ -1117,8 +1164,7 @@ bool GCMStoreImpl::Backend::LoadAccountMappingInfo(
                   account_mapping.account_id.IsEmail();
     base::UmaHistogramBoolean("GCM.RemoveAccountMappingWhenLoading", remove);
     if (remove) {
-      RemoveAccountMapping(account_mapping.account_id,
-                           base::DoNothing::Repeatedly<bool>());
+      RemoveAccountMapping(account_mapping.account_id, base::DoNothing());
     } else {
       account_mappings->push_back(account_mapping);
     }
@@ -1205,14 +1251,19 @@ GCMStoreImpl::GCMStoreImpl(
                            std::move(encryptor))),
       blocking_task_runner_(blocking_task_runner) {}
 
-GCMStoreImpl::~GCMStoreImpl() {}
+GCMStoreImpl::~GCMStoreImpl() {
+  // |backend_| owns an sql::Database object, which may perform IO when
+  // |destroyed.
+  blocking_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
+}
 
-void GCMStoreImpl::Load(StoreOpenMode open_mode, const LoadCallback& callback) {
+void GCMStoreImpl::Load(StoreOpenMode open_mode, LoadCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&GCMStoreImpl::Backend::Load, backend_, open_mode,
-                     base::Bind(&GCMStoreImpl::LoadContinuation,
-                                weak_ptr_factory_.GetWeakPtr(), callback)));
+      base::BindOnce(
+          &GCMStoreImpl::Backend::Load, backend_, open_mode,
+          base::BindOnce(&GCMStoreImpl::LoadContinuation,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void GCMStoreImpl::Close() {
@@ -1222,64 +1273,63 @@ void GCMStoreImpl::Close() {
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::Close, backend_));
 }
 
-void GCMStoreImpl::Destroy(const UpdateCallback& callback) {
+void GCMStoreImpl::Destroy(UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMStoreImpl::Backend::Destroy, backend_, callback));
+      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::Destroy, backend_,
+                                std::move(callback)));
 }
 
 void GCMStoreImpl::SetDeviceCredentials(uint64_t device_android_id,
                                         uint64_t device_security_token,
-                                        const UpdateCallback& callback) {
+                                        UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMStoreImpl::Backend::SetDeviceCredentials, backend_,
-                     device_android_id, device_security_token, callback));
+      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetDeviceCredentials,
+                                backend_, device_android_id,
+                                device_security_token, std::move(callback)));
 }
 
-void GCMStoreImpl::AddRegistration(
-    const std::string& serialized_key,
-    const std::string& serialized_value,
-    const UpdateCallback& callback) {
+void GCMStoreImpl::AddRegistration(const std::string& serialized_key,
+                                   const std::string& serialized_value,
+                                   UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GCMStoreImpl::Backend::AddRegistration, backend_,
-                     serialized_key, serialized_value, callback));
+                     serialized_key, serialized_value, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveRegistration(const std::string& app_id,
-                                          const UpdateCallback& callback) {
+                                      UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveRegistration,
-                                backend_, app_id, callback));
+                                backend_, app_id, std::move(callback)));
 }
 
 void GCMStoreImpl::AddIncomingMessage(const std::string& persistent_id,
-                                      const UpdateCallback& callback) {
+                                      UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddIncomingMessage,
-                                backend_, persistent_id, callback));
+                                backend_, persistent_id, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveIncomingMessage(const std::string& persistent_id,
-                                         const UpdateCallback& callback) {
+                                         UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GCMStoreImpl::Backend::RemoveIncomingMessages, backend_,
-                     PersistentIdList(1, persistent_id), callback));
+                     PersistentIdList(1, persistent_id), std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveIncomingMessages(
     const PersistentIdList& persistent_ids,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveIncomingMessages,
-                                backend_, persistent_ids, callback));
+                                backend_, persistent_ids, std::move(callback)));
 }
 
 bool GCMStoreImpl::AddOutgoingMessage(const std::string& persistent_id,
                                       const MCSMessage& message,
-                                      const UpdateCallback& callback) {
+                                      UpdateCallback callback) {
   DCHECK_EQ(message.tag(), kDataMessageStanzaTag);
   std::string app_id = reinterpret_cast<const mcs_proto::DataMessageStanza*>(
                            &message.GetProtobuf())->category();
@@ -1294,8 +1344,9 @@ bool GCMStoreImpl::AddOutgoingMessage(const std::string& persistent_id,
         base::BindOnce(
             &GCMStoreImpl::Backend::AddOutgoingMessage, backend_, persistent_id,
             message,
-            base::Bind(&GCMStoreImpl::AddOutgoingMessageContinuation,
-                       weak_ptr_factory_.GetWeakPtr(), callback, app_id)));
+            base::BindOnce(&GCMStoreImpl::AddOutgoingMessageContinuation,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           app_id)));
     return true;
   }
   return false;
@@ -1303,7 +1354,7 @@ bool GCMStoreImpl::AddOutgoingMessage(const std::string& persistent_id,
 
 void GCMStoreImpl::OverwriteOutgoingMessage(const std::string& persistent_id,
                                             const MCSMessage& message,
-                                            const UpdateCallback& callback) {
+                                            UpdateCallback callback) {
   DCHECK_EQ(message.tag(), kDataMessageStanzaTag);
   std::string app_id = reinterpret_cast<const mcs_proto::DataMessageStanza*>(
                            &message.GetProtobuf())->category();
@@ -1312,98 +1363,102 @@ void GCMStoreImpl::OverwriteOutgoingMessage(const std::string& persistent_id,
   DCHECK(app_message_counts_.count(app_id));
   // TODO(zea): consider verifying the specific message already exists.
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddOutgoingMessage,
-                                backend_, persistent_id, message, callback));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::AddOutgoingMessage, backend_,
+                     persistent_id, message, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveOutgoingMessage(const std::string& persistent_id,
-                                         const UpdateCallback& callback) {
+                                         UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &GCMStoreImpl::Backend::RemoveOutgoingMessages, backend_,
           PersistentIdList(1, persistent_id),
-          base::Bind(&GCMStoreImpl::RemoveOutgoingMessagesContinuation,
-                     weak_ptr_factory_.GetWeakPtr(), callback)));
+          base::BindOnce(&GCMStoreImpl::RemoveOutgoingMessagesContinuation,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void GCMStoreImpl::RemoveOutgoingMessages(
     const PersistentIdList& persistent_ids,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &GCMStoreImpl::Backend::RemoveOutgoingMessages, backend_,
           persistent_ids,
-          base::Bind(&GCMStoreImpl::RemoveOutgoingMessagesContinuation,
-                     weak_ptr_factory_.GetWeakPtr(), callback)));
+          base::BindOnce(&GCMStoreImpl::RemoveOutgoingMessagesContinuation,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void GCMStoreImpl::SetLastCheckinInfo(const base::Time& time,
                                       const std::set<std::string>& accounts,
-                                      const UpdateCallback& callback) {
+                                      UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetLastCheckinInfo,
-                                backend_, time, accounts, callback));
+                                backend_, time, accounts, std::move(callback)));
 }
 
 void GCMStoreImpl::SetGServicesSettings(
     const std::map<std::string, std::string>& settings,
     const std::string& digest,
-    const UpdateCallback& callback) {
+    UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetGServicesSettings,
-                                backend_, settings, digest, callback));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::SetGServicesSettings, backend_,
+                     settings, digest, std::move(callback)));
 }
 
 void GCMStoreImpl::AddAccountMapping(const AccountMapping& account_mapping,
-                                     const UpdateCallback& callback) {
+                                     UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddAccountMapping,
-                                backend_, account_mapping, callback));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::AddAccountMapping, backend_,
+                     account_mapping, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveAccountMapping(const CoreAccountId& account_id,
-                                        const UpdateCallback& callback) {
+                                        UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveAccountMapping,
-                                backend_, account_id, callback));
+                                backend_, account_id, std::move(callback)));
 }
 
 void GCMStoreImpl::SetLastTokenFetchTime(const base::Time& time,
-                                         const UpdateCallback& callback) {
+                                         UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetLastTokenFetchTime,
-                                backend_, time, callback));
+                                backend_, time, std::move(callback)));
 }
 
 void GCMStoreImpl::AddHeartbeatInterval(const std::string& scope,
                                         int interval_ms,
-                                        const UpdateCallback& callback) {
+                                        UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::AddHeartbeatInterval,
-                                backend_, scope, interval_ms, callback));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::AddHeartbeatInterval, backend_,
+                     scope, interval_ms, std::move(callback)));
 }
 
 void GCMStoreImpl::RemoveHeartbeatInterval(const std::string& scope,
-                                           const UpdateCallback& callback) {
+                                           UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveHeartbeatInterval,
-                                backend_, scope, callback));
+                                backend_, scope, std::move(callback)));
 }
 
 void GCMStoreImpl::SetValueForTesting(const std::string& key,
                                       const std::string& value,
-                                      const UpdateCallback& callback) {
+                                      UpdateCallback callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetValue, backend_, key,
-                                value, callback));
+                                value, std::move(callback)));
 }
 
-void GCMStoreImpl::LoadContinuation(const LoadCallback& callback,
+void GCMStoreImpl::LoadContinuation(LoadCallback callback,
                                     std::unique_ptr<LoadResult> result) {
   if (!result->success) {
-    callback.Run(std::move(result));
+    std::move(callback).Run(std::move(result));
     return;
   }
   int num_throttled_apps = 0;
@@ -1421,26 +1476,25 @@ void GCMStoreImpl::LoadContinuation(const LoadCallback& callback,
       num_throttled_apps++;
   }
   UMA_HISTOGRAM_COUNTS_1M("GCM.NumThrottledApps", num_throttled_apps);
-  callback.Run(std::move(result));
+  std::move(callback).Run(std::move(result));
 }
 
-void GCMStoreImpl::AddOutgoingMessageContinuation(
-    const UpdateCallback& callback,
-    const std::string& app_id,
-    bool success) {
+void GCMStoreImpl::AddOutgoingMessageContinuation(UpdateCallback callback,
+                                                  const std::string& app_id,
+                                                  bool success) {
   if (!success) {
     DCHECK(app_message_counts_[app_id] > 0);
     app_message_counts_[app_id]--;
   }
-  callback.Run(success);
+  std::move(callback).Run(success);
 }
 
 void GCMStoreImpl::RemoveOutgoingMessagesContinuation(
-    const UpdateCallback& callback,
+    UpdateCallback callback,
     bool success,
     const AppIdToMessageCountMap& removed_message_counts) {
   if (!success) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
   for (AppIdToMessageCountMap::const_iterator iter =
@@ -1450,7 +1504,7 @@ void GCMStoreImpl::RemoveOutgoingMessagesContinuation(
     app_message_counts_[iter->first] -= iter->second;
     DCHECK_GE(app_message_counts_[iter->first], 0);
   }
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 }  // namespace gcm

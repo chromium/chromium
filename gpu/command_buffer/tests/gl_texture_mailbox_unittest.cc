@@ -21,6 +21,11 @@
 namespace gpu {
 
 namespace {
+GLcolorSpace GetGLColorSpace() {
+  static gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  return color_space.AsGLColorSpace();
+}
+
 uint32_t ReadTexel(GLuint id, GLint x, GLint y) {
   GLint old_fbo = 0;
   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &old_fbo);
@@ -72,7 +77,7 @@ class GLTextureMailboxTest : public testing::Test {
   // The second GL context takes and consumes a mailbox from the first GL
   // context. Assumes that |gl1_| is current.
   Mailbox TakeAndConsumeMailbox() {
-    glResizeCHROMIUM(10, 10, 1, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+    glResizeCHROMIUM(10, 10, 1, GetGLColorSpace(), true);
     glClearColor(0, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     ::gles2::GetGLContext()->SwapBuffers(1);
@@ -359,7 +364,7 @@ TEST_F(GLTextureMailboxTest, TakeFrontBuffer) {
   SetUpContexts();
 
   gl2_.MakeCurrent();
-  glResizeCHROMIUM(10, 10, 1, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+  glResizeCHROMIUM(10, 10, 1, GetGLColorSpace(), true);
   glClearColor(0, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   ::gles2::GetGLContext()->SwapBuffers(1);
@@ -467,7 +472,7 @@ TEST_F(GLTextureMailboxTest, FrontBufferChangeSize) {
   mailboxes.clear();
   EXPECT_EQ(5u, gl1_.decoder()->GetSavedBackTextureCountForTest());
 
-  glResizeCHROMIUM(21, 31, 1, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+  glResizeCHROMIUM(21, 31, 1, GetGLColorSpace(), true);
   ::gles2::GetGLContext()->SwapBuffers(1);
   EXPECT_EQ(0u, gl1_.decoder()->GetSavedBackTextureCountForTest());
 }
@@ -526,7 +531,7 @@ TEST_F(GLTextureMailboxTest, FrontBufferSamplerParameters) {
   SetUpContexts();
 
   gl2_.MakeCurrent();
-  glResizeCHROMIUM(10, 10, 1, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+  glResizeCHROMIUM(10, 10, 1, GetGLColorSpace(), true);
   glClearColor(0, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   ::gles2::GetGLContext()->SwapBuffers(1);
@@ -564,7 +569,7 @@ TEST_F(GLTextureMailboxTest, TakeFrontBufferMultipleContexts) {
   for (size_t i = 0; i < 2; ++i) {
     other_gl[i].Initialize(options);
     other_gl[i].MakeCurrent();
-    glResizeCHROMIUM(10, 10, 1, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+    glResizeCHROMIUM(10, 10, 1, GetGLColorSpace(), true);
     glClearColor(1 - i % 2, i % 2, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     ::gles2::GetGLContext()->SwapBuffers(0, 1);

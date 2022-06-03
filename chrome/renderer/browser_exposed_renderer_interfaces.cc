@@ -9,30 +9,29 @@
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/renderer/safe_browsing/phishing_classifier_delegate.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/renderer/spellcheck.h"
 #endif
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
+#if defined(ARCH_CPU_X86_64)
+#include "chrome/renderer/performance_manager/mechanisms/userspace_swap_impl_chromeos.h"
+#endif  // defined(ARCH_CPU_X86_64)
 #if BUILDFLAG(USE_TCMALLOC)
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "chrome/renderer/performance_manager/mechanisms/tcmalloc_tunables_impl.h"
 #endif  // BUILDFLAG(USE_TCMALLOC)
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -67,20 +66,24 @@ void ExposeChromeRendererInterfacesToBrowser(
   binders->Add(base::BindRepeating(&BindWebRTCLoggingAgent, client),
                base::SequencedTaskRunnerHandle::Get());
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  binders->Add(
-      base::BindRepeating(&safe_browsing::PhishingClassifierFilter::Create),
-      base::SequencedTaskRunnerHandle::Get());
-#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
+  if (performance_manager::mechanism::UserspaceSwapImpl::
+          PlatformSupportsUserspaceSwap()) {
+    binders->Add(
+        base::BindRepeating(
+            &performance_manager::mechanism::UserspaceSwapImpl::Create),
+        base::SequencedTaskRunnerHandle::Get());
+  }
+#endif  // defined(ARCH_CPU_X86_64)
 
-#if defined(OS_LINUX)
 #if BUILDFLAG(USE_TCMALLOC)
   binders->Add(
       base::BindRepeating(
           &performance_manager::mechanism::TcmallocTunablesImpl::Create),
       base::SequencedTaskRunnerHandle::Get());
 #endif  // BUILDFLAG(USE_TCMALLOC)
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   binders->Add(base::BindRepeating(&BindSpellChecker, client),

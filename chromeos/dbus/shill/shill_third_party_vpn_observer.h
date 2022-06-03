@@ -14,14 +14,14 @@ namespace chromeos {
 // ThirdPartyVpnAdaptor in Shill.
 class ShillThirdPartyVpnObserver {
  public:
+  ShillThirdPartyVpnObserver& operator=(const ShillThirdPartyVpnObserver&) =
+      delete;
+
   virtual void OnPacketReceived(const std::vector<char>& data) = 0;
   virtual void OnPlatformMessage(uint32_t message) = 0;
 
  protected:
   virtual ~ShillThirdPartyVpnObserver() {}
-
- private:
-  DISALLOW_ASSIGN(ShillThirdPartyVpnObserver);
 };
 
 }  // namespace chromeos

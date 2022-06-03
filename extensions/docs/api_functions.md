@@ -97,14 +97,14 @@ GizmoFrobulateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("gizmo.frobulate", GIZMO_FROBULATE)
 
   GizmoFrobulateFunction();
+  GizmoFrobulateFunction(const GizmoFrobulateFunction&) = delete;
+  GizmoFrobulateFunction& operator=(const GizmoFrobulateFunction&) = delete;
 
  private:
   ~GizmoFrobulateFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(GizmoFrobulateFunction);
 };
 ```
 
@@ -118,7 +118,7 @@ GizmoFrobulateFunction::~ GizmoFrobulateFunction() = default;
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   // We can create a typed struct of the arguments from the generated code.
   std::unique_ptr<api::gizmo::Frobulate::Params> params(
-      api::gizmo::Frobulate::Params::Create(*args_));
+      api::gizmo::Frobulate::Params::Create(args()));
 
   // EXTENSION_FUNCTION_VALIDATE() is used to assert things that should only
   // ever be true, and should have already been enforced. This equates to a
@@ -146,8 +146,7 @@ ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   // even though the function finished synchronously in C++, the extension still
   // sees this as an asynchronous function, because the IPC between the
   // renderer and the browser is asynchronous.
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(std::move(frobulate_result))));
+  return RespondNow(OneArgument(base::Value(std::move(frobulate_result))));
 }
 ```
 
@@ -158,7 +157,7 @@ implement.
 ```
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   std::unique_ptr<api::gizmo::Frobulate::Params> params(
-      api::gizmo::Frobulate::Params::Create(*args_));
+      api::gizmo::Frobulate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int max_cycles = GetMaxCyclesFromPrefs();
@@ -172,7 +171,7 @@ ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
       params->cycles,
       // Note that |this| is refcounted, so binding automatically adds a
       // reference.
-      base::Bind(&GizmoFrobulateFunction::OnFrobulated, this));
+      base::BindOnce(&GizmoFrobulateFunction::OnFrobulated, this));
 
   // Note: Since we are returning RespondLater() here, it is required that
   // Frobulate() did not call the callback synchronously (in which case,
@@ -181,7 +180,7 @@ ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
 }
 
 void GizmoFrobulateFunction::OnFrobulated(const std::string& frobulate_result) {
-  Respond(OneArgument(std::make_unique<base::Value>(frobulate_result)));
+  Respond(OneArgument(base::Value(frobulate_result)));
 }
 ```
 

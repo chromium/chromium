@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests node xPath construction\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   await TestRunner.loadHTML(`
@@ -38,7 +38,7 @@
   async function processElement(element) {
     if (element instanceof Elements.ElementsTreeElement && !element.isClosingTag() && element.node().nodeNameInCorrectCase() !== 'base') {
       TestRunner.addResult('\n' + element.listItemElement.textContent);
-      await element._copyStyles();
+      await element.copyStyles();
     }
     for (const child of element.children()) {
       await processElement(child);

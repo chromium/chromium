@@ -1,9 +1,6 @@
 # Speech recognition
-tommi@chromium.org
+evliu@google.com
 
 # Text-to-speech
-per-file *tts_*=dmazzoni@chromium.org
 per-file *tts_*=dtseng@chromium.org
 per-file *tts_*=katie@chromium.org
-
-# COMPONENT: Blink>Speech

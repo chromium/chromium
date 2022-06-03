@@ -14,8 +14,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
@@ -157,8 +157,9 @@ std::unique_ptr<KeyedService> GetTestingRequestCoordinator(
           std::move(policy), std::move(offliner), std::move(queue),
           std::move(scheduler), network_quality_tracker);
   request_coordinator->SetInternalStartProcessingCallbackForTest(
-      base::Bind(&android::EvaluationTestScheduler::ImmediateScheduleCallback,
-                 base::Unretained(scheduler.get())));
+      base::BindRepeating(
+          &android::EvaluationTestScheduler::ImmediateScheduleCallback,
+          base::Unretained(scheduler.get())));
 
   return std::move(request_coordinator);
 }
@@ -311,7 +312,7 @@ void OfflinePageEvaluationBridge::GetAllPages(
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
   offline_page_model_->GetAllPages(
-      base::Bind(&GetAllPagesCallback, j_result_ref, j_callback_ref));
+      base::BindOnce(&GetAllPagesCallback, j_result_ref, j_callback_ref));
 }
 
 bool OfflinePageEvaluationBridge::PushRequestProcessing(
@@ -350,7 +351,7 @@ void OfflinePageEvaluationBridge::GetRequestsInQueue(
     const JavaParamRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
   request_coordinator_->GetAllRequests(
-      base::Bind(&OnGetAllRequestsDone, j_callback_ref));
+      base::BindOnce(&OnGetAllRequestsDone, j_callback_ref));
 }
 
 void OfflinePageEvaluationBridge::RemoveRequestsFromQueue(
@@ -362,7 +363,7 @@ void OfflinePageEvaluationBridge::RemoveRequestsFromQueue(
   base::android::JavaLongArrayToInt64Vector(env, j_request_ids, &request_ids);
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
   request_coordinator_->RemoveRequests(
-      request_ids, base::Bind(&OnRemoveRequestsDone, j_callback_ref));
+      request_ids, base::BindOnce(&OnRemoveRequestsDone, j_callback_ref));
 }
 
 void OfflinePageEvaluationBridge::NotifyIfDoneLoading() const {

@@ -1,2 +1,0 @@
-android_sdk_root=../../../mock_sdk
-android_tool_prefix=../../../mock_toolchain/

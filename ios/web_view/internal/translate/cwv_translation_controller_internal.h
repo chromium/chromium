@@ -7,6 +7,7 @@
 
 #import "ios/web_view/public/cwv_translation_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "components/translate/core/browser/translate_step.h"
@@ -14,21 +15,26 @@
 
 namespace ios_web_view {
 class WebViewTranslateClient;
-}  // namespace ios_web_view
+}  // namespace is_web_view
+
+namespace web {
+class WebState;
+}  // namespace web
 
 NS_ASSUME_NONNULL_BEGIN
 
 // Some internal methods needed to hide any C++ details.
 @interface CWVTranslationController ()
 
-- (instancetype)initWithTranslateClient:
-    (ios_web_view::WebViewTranslateClient*)translateClient
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWebState:(web::WebState*)webState
+                 translateClient:
+                     (std::unique_ptr<ios_web_view::WebViewTranslateClient>)
+                         translateClient NS_DESIGNATED_INITIALIZER;
 
 // Called to keep this class informed of the current translate progress.
 // |step| the state of current translation.
 // |sourceLanguage| the source language associated with the current |step|.
-// |targetLanguage| the target langauge associated with the current |step|.
+// |targetLanguage| the target language associated with the current |step|.
 // |errorType| the error, if any for the current |step|.
 // |triggeredFromMenu| should be true if this was a result from user action.
 - (void)updateTranslateStep:(translate::TranslateStep)step

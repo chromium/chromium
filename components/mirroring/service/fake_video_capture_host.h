@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,21 +18,31 @@
 
 namespace mirroring {
 
-class FakeVideoCaptureHost final : public media::mojom::VideoCaptureHost {
+class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
  public:
   explicit FakeVideoCaptureHost(
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
+
+  FakeVideoCaptureHost(const FakeVideoCaptureHost&) = delete;
+  FakeVideoCaptureHost& operator=(const FakeVideoCaptureHost&) = delete;
+
   ~FakeVideoCaptureHost() override;
 
   // mojom::VideoCaptureHost implementations
   MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
   MOCK_METHOD3(ReleaseBuffer,
-               void(const base::UnguessableToken&, int32_t, double));
+               void(const base::UnguessableToken&,
+                    int32_t,
+                    const media::VideoCaptureFeedback&));
   MOCK_METHOD1(Pause, void(const base::UnguessableToken&));
   MOCK_METHOD3(Resume,
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     const media::VideoCaptureParams&));
+  MOCK_METHOD3(Crop,
+               void(const base::UnguessableToken&,
+                    const base::Token&,
+                    CropCallback));
   MOCK_METHOD0(OnStopped, void());
   MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const std::string&));
   MOCK_METHOD2(OnFrameDropped,
@@ -58,8 +70,6 @@ class FakeVideoCaptureHost final : public media::mojom::VideoCaptureHost {
  private:
   mojo::Receiver<media::mojom::VideoCaptureHost> receiver_;
   mojo::Remote<media::mojom::VideoCaptureObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoCaptureHost);
 };
 
 }  // namespace mirroring

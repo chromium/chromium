@@ -6,10 +6,11 @@
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools, and see
-https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 for the rules we're checking against here.
 """
 
+USE_PYTHON3 = True
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)

@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 
 namespace chrome_browser_net {

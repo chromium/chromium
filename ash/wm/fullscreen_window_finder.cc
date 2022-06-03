@@ -41,7 +41,10 @@ aura::Window* GetTopMostWindowInContainer(aura::Window* container) {
   DCHECK(IsSwitchableContainer(container));
 
   for (auto* child : base::Reversed(container->children())) {
-    if (WindowState::Get(child)->IsUserPositionable() &&
+    // `child` may be type `aura::client::WINDOW_TYPE_CONTROL` which has no
+    // WindowState.
+    if (WindowState::Get(child) &&
+        WindowState::Get(child)->IsUserPositionable() &&
         child->layer()->GetTargetVisibility()) {
       return child;
     }

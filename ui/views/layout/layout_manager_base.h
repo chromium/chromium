@@ -11,7 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/dcheck_is_on.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,6 +30,9 @@ class View;
 // CalculateProposedLayout(). Used in interpolating and animating layouts.
 class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
  public:
+  LayoutManagerBase(const LayoutManagerBase&) = delete;
+  LayoutManagerBase& operator=(const LayoutManagerBase&) = delete;
+
   ~LayoutManagerBase() override;
 
   View* host_view() { return host_view_; }
@@ -61,32 +65,32 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
 
   // Direct cache control for subclasses that want to override default caching
   // behavior. Use at your own risk.
-  base::Optional<gfx::Size> cached_minimum_size() const {
+  absl::optional<gfx::Size> cached_minimum_size() const {
     return cached_minimum_size_;
   }
   void set_cached_minimum_size(
-      const base::Optional<gfx::Size>& minimum_size) const {
+      const absl::optional<gfx::Size>& minimum_size) const {
     cached_minimum_size_ = minimum_size;
   }
-  const base::Optional<gfx::Size>& cached_preferred_size() const {
+  const absl::optional<gfx::Size>& cached_preferred_size() const {
     return cached_preferred_size_;
   }
   void set_cached_preferred_size(
-      const base::Optional<gfx::Size>& preferred_size) const {
+      const absl::optional<gfx::Size>& preferred_size) const {
     cached_preferred_size_ = preferred_size;
   }
-  const base::Optional<gfx::Size>& cached_height_for_width() const {
+  const absl::optional<gfx::Size>& cached_height_for_width() const {
     return cached_height_for_width_;
   }
   void set_cached_height_for_width(
-      const base::Optional<gfx::Size>& height_for_width) const {
+      const absl::optional<gfx::Size>& height_for_width) const {
     cached_height_for_width_ = height_for_width;
   }
-  const base::Optional<gfx::Size>& cached_layout_size() const {
+  const absl::optional<gfx::Size>& cached_layout_size() const {
     return cached_layout_size_;
   }
   void set_cached_layout_size(
-      const base::Optional<gfx::Size>& layout_size) const {
+      const absl::optional<gfx::Size>& layout_size) const {
     cached_layout_size_ = layout_size;
   }
   const ProposedLayout& cached_layout() const { return cached_layout_; }
@@ -94,11 +98,20 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
     cached_layout_ = layout;
   }
 
+  // Returns the size available to the host view from its parent.
+  SizeBounds GetAvailableHostSize() const;
+
   // Returns true if the specified view is a child of the host view and is not
   // ignored. Views hidden by external code are only included if
   // |include_hidden| is set.
   bool IsChildIncludedInLayout(const View* child,
                                bool include_hidden = false) const;
+
+  // Returns whether the specified child view can be visible. To be able to be
+  // visible, |child| must be a child of the host view, and must have been
+  // visible when it was added or most recently had SetVisible(true) called on
+  // it by non-layout code.
+  bool CanBeVisible(const View* child) const;
 
   // Creates a proposed layout for the host view, including bounds and
   // visibility for all children currently included in the layout.
@@ -201,15 +214,23 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   // or while invalidating the host view without invalidating the layout.
   bool suppress_invalidate_ = false;
 
+  // Used during layout to determine if available size has changed for children;
+  // when it changes, children are always laid out regardless of visibility or
+  // whether their bounds have changed.
+  SizeBounds cached_available_size_;
+
+#if (DCHECK_IS_ON())
+  // Used to prevent GetProposedLayout() from being re-entrant.
+  mutable bool calculating_layout_ = false;
+#endif
+
   // Do some really simple caching because layout generation can cost as much
   // as 1ms or more for complex views.
-  mutable base::Optional<gfx::Size> cached_minimum_size_;
-  mutable base::Optional<gfx::Size> cached_preferred_size_;
-  mutable base::Optional<gfx::Size> cached_height_for_width_;
-  mutable base::Optional<gfx::Size> cached_layout_size_;
+  mutable absl::optional<gfx::Size> cached_minimum_size_;
+  mutable absl::optional<gfx::Size> cached_preferred_size_;
+  mutable absl::optional<gfx::Size> cached_height_for_width_;
+  mutable absl::optional<gfx::Size> cached_layout_size_;
   mutable ProposedLayout cached_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutManagerBase);
 };
 
 }  // namespace views

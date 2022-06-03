@@ -5,6 +5,7 @@
 #include "net/cert/pem.h"
 
 #include "base/base64.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -44,7 +45,7 @@ bool PEMTokenizer::GetNext() {
     std::vector<PEMType>::const_iterator it;
     // Check to see if it is of an acceptable block type.
     for (it = block_types_.begin(); it != block_types_.end(); ++it) {
-      if (!str_.substr(pos_).starts_with(it->header))
+      if (!base::StartsWith(str_.substr(pos_), it->header))
         continue;
 
       // Look for a footer matching the header. If none is found, then all
@@ -61,9 +62,8 @@ bool PEMTokenizer::GetNext() {
       block_type_ = it->type;
 
       StringPiece encoded = str_.substr(data_begin, footer_pos - data_begin);
-      if (!base::Base64Decode(
-              base::CollapseWhitespaceASCII(encoded.as_string(), true),
-              &data_)) {
+      if (!base::Base64Decode(base::CollapseWhitespaceASCII(encoded, true),
+                              &data_)) {
         // The most likely cause for a decode failure is a datatype that
         // includes PEM headers, which are not supported.
         break;

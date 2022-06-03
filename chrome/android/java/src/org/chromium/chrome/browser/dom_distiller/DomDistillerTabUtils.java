@@ -4,21 +4,29 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * A helper class for using the DOM Distiller.
  */
 @JNINamespace("android")
 public class DomDistillerTabUtils {
-    // Triggering heuristics encoded in native enum DistillerHeuristicsType.
+    /** Triggering heuristics encoded in native enum DistillerHeuristicsType. */
     private static Integer sHeuristics;
+
+    /** Used to specify whether mobile friendly is enabled for testing purposes. */
+    private static Boolean sExcludeMobileFriendlyForTesting;
 
     private DomDistillerTabUtils() {
     }
@@ -63,7 +71,7 @@ public class DomDistillerTabUtils {
      * @param url The original URL.
      * @return the formatted URL of the original page.
      */
-    public static String getFormattedUrlFromOriginalDistillerUrl(String url) {
+    public static String getFormattedUrlFromOriginalDistillerUrl(GURL url) {
         return DomDistillerTabUtilsJni.get().getFormattedUrlFromOriginalDistillerUrl(url);
     }
 
@@ -92,9 +100,18 @@ public class DomDistillerTabUtils {
      * @return True if heuristic is ADABOOST_MODEL, and "Simplified view for accessibility"
      * is disabled.
      */
-    public static boolean shouldExcludeMobileFriendly() {
-        return !PrefServiceBridge.getInstance().getBoolean(Pref.READER_FOR_ACCESSIBILITY_ENABLED)
+    public static boolean shouldExcludeMobileFriendly(Tab tab) {
+        if (sExcludeMobileFriendlyForTesting != null) return sExcludeMobileFriendlyForTesting;
+        WebContents webContents = tab.getWebContents();
+        assert webContents != null;
+        return !UserPrefs.get(Profile.fromWebContents(webContents))
+                        .getBoolean(Pref.READER_FOR_ACCESSIBILITY)
                 && getDistillerHeuristics() == DistillerHeuristicsType.ADABOOST_MODEL;
+    }
+
+    @VisibleForTesting
+    public static void setExcludeMobileFriendlyForTesting(boolean excludeForTesting) {
+        sExcludeMobileFriendlyForTesting = excludeForTesting;
     }
 
     /**
@@ -118,6 +135,14 @@ public class DomDistillerTabUtils {
     }
 
     /**
+     * Returns true if reader mode prompt should be displayed as a message. Otherwise it will be
+     * displayed as an infobar.
+     */
+    public static boolean useMessagesForReaderModePrompt() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE);
+    }
+
+    /**
      * Set an InterceptNavigationDelegate on a WebContents.
      * @param delegate The navigation delegate.
      * @param webContents The WebContents to bind the delegate to.
@@ -132,7 +157,7 @@ public class DomDistillerTabUtils {
         void distillCurrentPageAndView(WebContents webContents);
         void distillCurrentPage(WebContents webContents);
         void distillAndView(WebContents sourceWebContents, WebContents destinationWebContents);
-        String getFormattedUrlFromOriginalDistillerUrl(String url);
+        String getFormattedUrlFromOriginalDistillerUrl(GURL url);
         int getDistillerHeuristics();
         void setInterceptNavigationDelegate(
                 InterceptNavigationDelegate delegate, WebContents webContents);

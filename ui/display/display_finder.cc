@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"

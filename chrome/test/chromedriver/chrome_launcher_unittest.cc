@@ -27,7 +27,7 @@ TEST(ProcessExtensions, NoExtension) {
   base::FilePath extension_dir;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(extensions, extension_dir,
-                                              false, &switches, &bg_pages);
+                                              &switches, &bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_FALSE(switches.HasSwitch("load-extension"));
   ASSERT_EQ(0u, bg_pages.size());
@@ -62,7 +62,7 @@ TEST(ProcessExtensions, GenerateIds) {
   ASSERT_TRUE(extension_dir.CreateUniqueTempDir());
 
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), &switches, &bg_pages);
 
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(3u, bg_pages.size());
@@ -85,7 +85,7 @@ TEST(ProcessExtensions, GenerateIdCrx3) {
   ASSERT_TRUE(extension_dir.CreateUniqueTempDir());
 
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), &switches, &bg_pages);
 
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(1u, bg_pages.size());
@@ -105,7 +105,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   Switches switches;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), &switches, &bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_TRUE(switches.HasSwitch("load-extension"));
   base::FilePath temp_ext_path(switches.GetSwitchValueNative("load-extension"));
@@ -151,7 +151,7 @@ TEST(ProcessExtensions, MultipleExtensionsNoBgPages) {
   Switches switches;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), &switches, &bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_TRUE(switches.HasSwitch("load-extension"));
   base::CommandLine::StringType ext_paths =
@@ -175,7 +175,7 @@ TEST(ProcessExtensions, CommandLineExtensions) {
   switches.SetSwitch("load-extension", "/a");
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), &switches, &bg_pages);
   ASSERT_EQ(kOk, status.code());
   base::FilePath::StringType load = switches.GetSwitchValueNative(
       "load-extension");

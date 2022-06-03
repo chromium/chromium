@@ -4,13 +4,5 @@
 
 #include "chrome/browser/ui/hid/hid_chooser.h"
 
-#include <utility>
-
-#include "components/bubble/bubble_controller.h"
-
-HidChooser::HidChooser(BubbleReference bubble) : bubble_(std::move(bubble)) {}
-
-HidChooser::~HidChooser() {
-  if (bubble_)
-    bubble_->CloseBubble(BUBBLE_CLOSE_FORCED);
-}
+HidChooser::HidChooser(base::OnceClosure close_closure)
+    : closure_runner_(std::move(close_closure)) {}

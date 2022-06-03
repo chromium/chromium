@@ -58,7 +58,8 @@ FontFaceSet* FontFaceSet::addForBinding(ScriptState*,
   font_selector->GetFontFaceCache()->AddFontFace(font_face, false);
   if (font_face->LoadStatus() == FontFace::kLoading)
     AddToLoadingFonts(font_face);
-  font_selector->FontFaceInvalidated();
+  font_selector->FontFaceInvalidated(
+      FontInvalidationReason::kGeneralInvalidation);
   return this;
 }
 
@@ -73,7 +74,8 @@ void FontFaceSet::clearForBinding(ScriptState*, ExceptionState&) {
       RemoveFromLoadingFonts(font_face);
   }
   non_css_connected_faces_.clear();
-  font_selector->FontFaceInvalidated();
+  font_selector->FontFaceInvalidated(
+      FontInvalidationReason::kGeneralInvalidation);
 }
 
 bool FontFaceSet::deleteForBinding(ScriptState*,
@@ -90,7 +92,8 @@ bool FontFaceSet::deleteForBinding(ScriptState*,
     font_selector->GetFontFaceCache()->RemoveFontFace(font_face, false);
     if (font_face->LoadStatus() == FontFace::kLoading)
       RemoveFromLoadingFonts(font_face);
-    font_selector->FontFaceInvalidated();
+    font_selector->FontFaceInvalidated(
+        FontInvalidationReason::kFontFaceDeleted);
     return true;
   }
   return false;
@@ -106,13 +109,13 @@ bool FontFaceSet::hasForBinding(ScriptState*,
          IsCSSConnectedFontFace(font_face);
 }
 
-void FontFaceSet::Trace(blink::Visitor* visitor) {
+void FontFaceSet::Trace(Visitor* visitor) const {
   visitor->Trace(non_css_connected_faces_);
   visitor->Trace(loading_fonts_);
   visitor->Trace(loaded_fonts_);
   visitor->Trace(failed_fonts_);
   visitor->Trace(ready_);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   FontFace::LoadFontCallback::Trace(visitor);
 }
@@ -152,8 +155,10 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
     return;
   }
 
-  for (wtf_size_t i = 0; i < font_faces_.size(); i++)
+  for (wtf_size_t i = 0; i < font_faces_.size(); i++) {
     font_faces_[i]->LoadWithCallback(this);
+    font_faces_[i]->DidBeginImperativeLoad();
+  }
 }
 
 ScriptPromise FontFaceSet::load(ScriptState* script_state,
@@ -173,11 +178,13 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
-  FontFaceArray faces;
+  FontFaceArray* faces = MakeGarbageCollected<FontFaceArray>();
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
+    if (f->FamilyIsGeneric())
+      continue;
     CSSSegmentedFontFace* segmented_font_face =
-        font_face_cache->Get(font.GetFontDescription(), f->Family());
+        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (segmented_font_face)
       segmented_font_face->Match(text, faces);
   }
@@ -210,8 +217,10 @@ bool FontFaceSet::check(const String& font_string,
   bool has_loaded_faces = false;
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
+    if (f->FamilyIsGeneric())
+      continue;
     CSSSegmentedFontFace* face =
-        font_face_cache->Get(font.GetFontDescription(), f->Family());
+        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (face) {
       if (!face->CheckFont(text))
         return false;
@@ -223,7 +232,7 @@ bool FontFaceSet::check(const String& font_string,
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
     if (font_selector->IsPlatformFamilyMatchAvailable(font.GetFontDescription(),
-                                                      f->Family()))
+                                                      *f))
       return true;
   }
   return false;
@@ -273,7 +282,7 @@ void FontFaceSet::LoadFontPromiseResolver::NotifyError(FontFace* font_face) {
   }
 }
 
-void FontFaceSet::LoadFontPromiseResolver::Trace(blink::Visitor* visitor) {
+void FontFaceSet::LoadFontPromiseResolver::Trace(Visitor* visitor) const {
   visitor->Trace(font_faces_);
   visitor->Trace(resolver_);
   LoadFontCallback::Trace(visitor);

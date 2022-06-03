@@ -65,7 +65,7 @@ bool BrowserSwitcherCore::InvokeChrome(const std::wstring& url) const {
   HINSTANCE browser_instance =
       ::ShellExecute(NULL, NULL, chrome_path_.c_str(), command_line.c_str(),
                      NULL, SW_SHOWNORMAL);
-  if (reinterpret_cast<int>(browser_instance) <= 32) {
+  if (reinterpret_cast<uintptr_t>(browser_instance) <= 32) {
     LOG(ERR) << "Could not start Chrome! Handle: " << browser_instance << " "
              << ::GetLastError() << std::endl;
     return false;
@@ -499,7 +499,7 @@ std::wstring BrowserSwitcherCore::CompileCommandLine(
   // In almost every case should this be enough for the sanitization because
   // any ASCII char will expand to at most 3 chars - %[0-9A-F][0-9A-F].
   DWORD length = static_cast<DWORD>(url.length() * 3 + 1);
-  std::auto_ptr<wchar_t> buffer(new wchar_t[length]);
+  std::unique_ptr<wchar_t[]> buffer(new wchar_t[length]);
   if (!::InternetCanonicalizeUrl(url.c_str(), buffer.get(), &length, 0)) {
     DWORD error = ::GetLastError();
     if (error == ERROR_INSUFFICIENT_BUFFER) {
@@ -540,7 +540,7 @@ std::wstring BrowserSwitcherCore::SanitizeUrl(const std::wstring url) const {
   // any ASCII char will expand to at most 3 chars - %[0-9A-F][0-9A-F].
   std::wstring::const_iterator it = url.begin();
   std::wstring untranslated_chars(L".:/\\_-@~();");
-  std::auto_ptr<wchar_t> sanitized_url(new wchar_t[url.length() * 3 + 1]);
+  std::unique_ptr<wchar_t[]> sanitized_url(new wchar_t[url.length() * 3 + 1]);
   wchar_t* output = sanitized_url.get();
 
   while (it != url.end()) {
@@ -613,7 +613,7 @@ std::wstring BrowserSwitcherCore::ReadRegValue(HKEY key,
              << std::endl;
     return std::wstring();
   }
-  std::auto_ptr<wchar_t> browser_path(new wchar_t[length]);
+  std::unique_ptr<wchar_t[]> browser_path(new wchar_t[length]);
   if (ERROR_SUCCESS !=
       ::RegQueryValueEx(key, name, NULL, NULL,
                         reinterpret_cast<LPBYTE>(browser_path.get()),
@@ -632,7 +632,7 @@ std::wstring BrowserSwitcherCore::ExpandEnvironmentVariables(
   expanded_size = ::ExpandEnvironmentStrings(str.c_str(), NULL, expanded_size);
   if (expanded_size != 0) {
     // The expected buffer length as defined in MSDN is chars + null + 1.
-    std::auto_ptr<wchar_t> expanded_path(new wchar_t[expanded_size + 2]);
+    std::unique_ptr<wchar_t[]> expanded_path(new wchar_t[expanded_size + 2]);
     expanded_size = ::ExpandEnvironmentStrings(str.c_str(), expanded_path.get(),
                                                expanded_size);
     if (expanded_size != 0)

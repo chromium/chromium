@@ -90,13 +90,13 @@ bool CanonicalizeMailtoURL(const char* spec,
       URLComponentSource<char>(spec), parsed, output, new_parsed);
 }
 
-bool CanonicalizeMailtoURL(const base::char16* spec,
+bool CanonicalizeMailtoURL(const char16_t* spec,
                            int spec_len,
                            const Parsed& parsed,
                            CanonOutput* output,
                            Parsed* new_parsed) {
-  return DoCanonicalizeMailtoURL<base::char16, base::char16>(
-      URLComponentSource<base::char16>(spec), parsed, output, new_parsed);
+  return DoCanonicalizeMailtoURL<char16_t, char16_t>(
+      URLComponentSource<char16_t>(spec), parsed, output, new_parsed);
 }
 
 bool ReplaceMailtoURL(const char* base,
@@ -113,7 +113,7 @@ bool ReplaceMailtoURL(const char* base,
 
 bool ReplaceMailtoURL(const char* base,
                       const Parsed& base_parsed,
-                      const Replacements<base::char16>& replacements,
+                      const Replacements<char16_t>& replacements,
                       CanonOutput* output,
                       Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;

@@ -10,6 +10,8 @@
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-microtask-queue.h"
 
 gin::WrapperInfo NetErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
@@ -22,6 +24,8 @@ void NetErrorPageController::Install(content::RenderFrame* render_frame,
                                      base::WeakPtr<Delegate> delegate) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context =
       render_frame->GetWebFrame()->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -71,22 +75,6 @@ bool NetErrorPageController::ResetEasterEggHighScore() {
 
 bool NetErrorPageController::DiagnoseErrorsButtonClick() {
   return ButtonClick(NetErrorHelperCore::DIAGNOSE_ERROR);
-}
-
-bool NetErrorPageController::TrackCachedCopyButtonClick() {
-  return ButtonClick(NetErrorHelperCore::SHOW_CACHED_COPY_BUTTON);
-}
-
-bool NetErrorPageController::TrackClick(const gin::Arguments& args) {
-  if (args.PeekNext().IsEmpty() || !args.PeekNext()->IsInt32())
-    return false;
-
-  if (delegate_) {
-    delegate_->TrackClick(args.PeekNext()
-                              ->Int32Value(args.GetHolderCreationContext())
-                              .FromMaybe(0));
-  }
-  return true;
 }
 
 bool NetErrorPageController::ButtonClick(NetErrorHelperCore::Button button) {
@@ -143,14 +131,11 @@ gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
                  &NetErrorPageController::DetailsButtonClick)
       .SetMethod("diagnoseErrorsButtonClick",
                  &NetErrorPageController::DiagnoseErrorsButtonClick)
-      .SetMethod("trackClick", &NetErrorPageController::TrackClick)
       .SetMethod("trackEasterEgg", &NetErrorPageController::TrackEasterEgg)
       .SetMethod("updateEasterEggHighScore",
                  &NetErrorPageController::UpdateEasterEggHighScore)
       .SetMethod("resetEasterEggHighScore",
                  &NetErrorPageController::ResetEasterEggHighScore)
-      .SetMethod("trackCachedCopyButtonClick",
-                 &NetErrorPageController::TrackCachedCopyButtonClick)
       .SetMethod("launchOfflineItem",
                  &NetErrorPageController::LaunchOfflineItem)
       .SetMethod("launchDownloadsPage",

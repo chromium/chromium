@@ -1,5 +1,5 @@
 def main(request, response):
-    headers = [("Content-type", "text/html;charset=utf-8")]
-    content = chr(0xff)
+    headers = [(b"Content-type", b"text/html;charset=utf-8")]
+    content = b"\xff"
 
     return headers, content

@@ -18,7 +18,6 @@
 #ifndef MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 #define MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "media/audio/audio_io.h"
 
 namespace media {
@@ -29,6 +28,10 @@ class AudioOutputProxy;
 class MEDIA_EXPORT AudioOutputDispatcher {
  public:
   AudioOutputDispatcher(AudioManager* audio_manager);
+
+  AudioOutputDispatcher(const AudioOutputDispatcher&) = delete;
+  AudioOutputDispatcher& operator=(const AudioOutputDispatcher&) = delete;
+
   virtual ~AudioOutputDispatcher();
 
   // Creates an instance of AudioOutputProxy, which uses |this| as dispatcher.
@@ -69,8 +72,6 @@ class MEDIA_EXPORT AudioOutputDispatcher {
   // A no-reference-held pointer (we don't want circular references) back to the
   // AudioManager that owns this object.
   AudioManager* const audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputDispatcher);
 };
 
 }  // namespace media

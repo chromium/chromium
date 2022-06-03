@@ -15,6 +15,7 @@
       <structure type="chrome_scaled_image" name="IDR_EXTENSION_DEFAULT_ICON" file="extension_default_icon.png" />
       <structure type="chrome_scaled_image" name="IDR_EXTENSION_ACTION_PLAIN_BACKGROUND" file="extension_action_plain_background.png"/>
       <structure type="chrome_scaled_image" name="IDR_EXTENSION_ICON_PLAIN_BACKGROUND" file="extension_icon_plain_background.png"/>
+      <structure type="chrome_scaled_image" name="IDR_EXTENSIONS_FAVICON" file="favicon_extensions.png" />
     </structures>
   </release>
 </grit>

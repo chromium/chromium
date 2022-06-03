@@ -1,0 +1,65 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("breakout_box") {
+  sources = [
+    "frame_queue.h",
+    "frame_queue_transferring_optimizer.cc",
+    "frame_queue_transferring_optimizer.h",
+    "frame_queue_underlying_source.cc",
+    "frame_queue_underlying_source.h",
+    "media_stream_audio_track_underlying_sink.cc",
+    "media_stream_audio_track_underlying_sink.h",
+    "media_stream_audio_track_underlying_source.cc",
+    "media_stream_audio_track_underlying_source.h",
+    "media_stream_track_generator.cc",
+    "media_stream_track_generator.h",
+    "media_stream_track_processor.cc",
+    "media_stream_track_processor.h",
+    "media_stream_video_track_underlying_sink.cc",
+    "media_stream_video_track_underlying_sink.h",
+    "media_stream_video_track_underlying_source.cc",
+    "media_stream_video_track_underlying_source.h",
+    "metrics.cc",
+    "metrics.h",
+    "pushable_media_stream_audio_source.cc",
+    "pushable_media_stream_audio_source.h",
+    "pushable_media_stream_video_source.cc",
+    "pushable_media_stream_video_source.h",
+    "transferred_frame_queue_underlying_source.cc",
+    "transferred_frame_queue_underlying_source.h",
+  ]
+  deps = [
+    "//third_party/blink/renderer/modules/mediastream:mediastream",
+    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "frame_queue_test.cc",
+    "media_stream_audio_track_underlying_sink_test.cc",
+    "media_stream_audio_track_underlying_source_test.cc",
+    "media_stream_track_generator_test.cc",
+    "media_stream_track_processor_test.cc",
+    "media_stream_video_track_underlying_sink_test.cc",
+    "media_stream_video_track_underlying_source_test.cc",
+    "pushable_media_stream_audio_source_test.cc",
+    "pushable_media_stream_video_source_test.cc",
+    "stream_test_utils.cc",
+    "stream_test_utils.h",
+  ]
+
+  deps = [
+    "//testing/gmock:gmock",
+    "//testing/gtest:gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules/mediastream:test_support",
+  ]
+}

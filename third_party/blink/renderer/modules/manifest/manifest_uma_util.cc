@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace blink {
@@ -12,6 +13,7 @@ namespace {
 
 static const char kUMANameParseSuccess[] = "Manifest.ParseSuccess";
 static const char kUMANameFetchResult[] = "Manifest.FetchResult";
+static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
 
 // Enum for UMA purposes, make sure you update histograms.xml if you add new
 // result types. Never delete or reorder an entry; only add new entries
@@ -39,6 +41,8 @@ void ManifestUmaUtil::ParseSucceeded(
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.short_name",
                         !manifest->short_name.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.description",
+                        !manifest->description.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.start_url",
                         !manifest->start_url.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN(
@@ -46,17 +50,26 @@ void ManifestUmaUtil::ParseSucceeded(
       manifest->display != blink::mojom::DisplayMode::kUndefined);
   UMA_HISTOGRAM_BOOLEAN(
       "Manifest.HasProperty.orientation",
-      manifest->orientation != kWebScreenOrientationLockDefault);
+      manifest->orientation !=
+          device::mojom::blink::ScreenOrientationLockType::DEFAULT);
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons",
                         !manifest->icons.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.screenshots",
+                        !manifest->screenshots.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.share_target",
                         manifest->share_target.get());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
+                        !manifest->protocol_handlers.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
                         !manifest->gcm_sender_id.IsEmpty());
 }
 
 void ManifestUmaUtil::ParseFailed() {
   UMA_HISTOGRAM_BOOLEAN(kUMANameParseSuccess, false);
+}
+
+void ManifestUmaUtil::ParseIdResult(ParseIdResultType result) {
+  base::UmaHistogramEnumeration(kUMAIdParseResult, result);
 }
 
 void ManifestUmaUtil::FetchSucceeded() {

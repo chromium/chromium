@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+<style>
+text {
+  writing-mode: vertical-rl;
+  letter-spacing: 10px;
+}
+#t1, #g1 {
+  font-size: 40px;
+  text-decoration: underline;
+}
+#t2 {
+  font-size: 20px;
+  text-decoration: underline;
+}
+</style>
+<text id="t1" x="40" y="20">Not scaled</text>
+<text id="t2" x="80" y="10" transform="scale(2)">Scaled</text>
+<g id="g1"><text x="280" y="20">Wrapped with &lt;g></text></g>
+</svg>

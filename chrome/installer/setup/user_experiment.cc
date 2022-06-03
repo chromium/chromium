@@ -11,14 +11,15 @@
 #include <wtsapi32.h>
 
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -28,7 +29,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/install_static/install_modes.h"
+#include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/setup_constants.h"
@@ -47,17 +48,21 @@ namespace installer {
 
 namespace {
 
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 // The study currently being conducted.
 constexpr ExperimentStorage::Study kCurrentStudy = ExperimentStorage::kStudyOne;
+#endif
 
 // The primary group for study number two.
 constexpr int kStudyTwoGroup = 0;
 
 // Test switches.
-constexpr char kExperimentEnableForTesting[] = "experiment-enable-for-testing";
-constexpr char kExperimentEnterpriseBypass[] = "experiment-enterprise-bypass";
 constexpr char kExperimentParticipation[] = "experiment-participation";
 constexpr char kExperimentRetryDelay[] = "experiment-retry-delay";
+
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+constexpr char kExperimentEnableForTesting[] = "experiment-enable-for-testing";
+constexpr char kExperimentEnterpriseBypass[] = "experiment-enterprise-bypass";
 
 // Returns true if the experiment is enabled for testing.
 bool IsExperimentEnabledForTesting() {
@@ -75,17 +80,18 @@ bool IsEnterpriseInstall(const InstallerState& installer_state) {
   }
   return installer_state.is_msi() || IsDomainJoined();
 }
+#endif
 
 // Returns the delay to be used between presentation retries. The default (five
-// minutes) can be overidden via --experiment-retry-delay=SECONDS.
+// minutes) can be overridden via --experiment-retry-delay=SECONDS.
 base::TimeDelta GetRetryDelay() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::string16 value =
+  std::wstring value =
       command_line->GetSwitchValueNative(kExperimentRetryDelay);
   int seconds;
   if (!value.empty() && base::StringToInt(value, &seconds))
-    return base::TimeDelta::FromSeconds(seconds);
-  return base::TimeDelta::FromMinutes(5);
+    return base::Seconds(seconds);
+  return base::Minutes(5);
 }
 
 // Overrides the participation value for testing if a value is provided via
@@ -99,7 +105,7 @@ ExperimentStorage::Study HandleParticipationOverride(
   if (!command_line->HasSwitch(kExperimentParticipation))
     return current_participation;
 
-  base::string16 participation_override =
+  std::wstring participation_override =
       command_line->GetSwitchValueNative(kExperimentParticipation);
   ExperimentStorage::Study participation = ExperimentStorage::kNoStudySelected;
   if (participation_override == L"one")
@@ -161,8 +167,7 @@ bool MayShowNotifications() {
 }
 
 bool UserSessionIsNotYoung() {
-  static constexpr base::TimeDelta kMinSessionLength =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kMinSessionLength = base::Minutes(5);
   base::Time session_start_time = GetConsoleSessionStartTime();
   if (session_start_time.is_null())
     return true;
@@ -215,9 +220,9 @@ bool WaitForPresentation(
 // Execution may be in the context of the system or a user on it, and no
 // guarantee is made regarding the setup singleton.
 bool ShouldRunUserExperiment(const InstallerState& installer_state) {
-  if (!install_static::kUseGoogleUpdateIntegration)
-    return false;
-
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  return false;
+#else
   if (!install_static::SupportsRetentionExperiments())
     return false;
 
@@ -250,6 +255,7 @@ bool ShouldRunUserExperiment(const InstallerState& installer_state) {
     return false;
 
   return true;
+#endif
 }
 
 // Execution is from the context of the installer immediately following a
@@ -262,7 +268,7 @@ void BeginUserExperiment(const InstallerState& installer_state,
   // Prepare a command line to relaunch the installed setup.exe for the
   // experiment.
   base::CommandLine setup_command(setup_path);
-  InstallUtil::AppendModeSwitch(&setup_command);
+  InstallUtil::AppendModeAndChannelSwitches(&setup_command);
   if (installer_state.system_install())
     setup_command.AppendSwitch(switches::kSystemLevel);
   if (installer_state.verbose_logging())
@@ -327,14 +333,14 @@ void BeginUserExperiment(const InstallerState& installer_state,
 // setup.exe immediately after a successful update or following user logon as a
 // result of Active Setup.
 void RunUserExperiment(const base::CommandLine& command_line,
-                       const MasterPreferences& master_preferences,
+                       const InitialPreferences& initial_preferences,
                        InstallationState* original_state,
                        InstallerState* installer_state) {
   VLOG(1) << __func__;
 
   ExperimentStorage storage;
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      command_line, master_preferences, original_state, installer_state));
+      command_line, initial_preferences, original_state, installer_state));
   if (!setup_singleton) {
     VLOG(1) << "Timed out while waiting for setup singleton";
     WriteInitialState(&storage, ExperimentMetrics::kSingletonWaitTimeout);
@@ -489,7 +495,7 @@ int PickGroup(ExperimentStorage::Study participation) {
   DCHECK(participation == ExperimentStorage::kStudyOne ||
          participation == ExperimentStorage::kStudyTwo);
   if (participation == ExperimentStorage::kStudyOne) {
-    // Evenly distrubute clients among the groups.
+    // Evenly distribute clients among the groups.
     return base::RandInt(0, ExperimentMetrics::kNumGroups - 1);
   }
 
@@ -502,8 +508,7 @@ bool IsUpdateRenamePending() {
   // Consider an update to be pending if an "opv" value is present in the
   // registry or if Chrome's version as registered with Omaha doesn't match the
   // current version.
-  base::string16 clients_key_path =
-      install_static::GetClientsKeyPath(install_static::GetAppGuid());
+  std::wstring clients_key_path = install_static::GetClientsKeyPath();
   const HKEY root = install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
                                                       : HKEY_CURRENT_USER;
   base::win::RegKey clients_key;
@@ -516,7 +521,7 @@ bool IsUpdateRenamePending() {
   }
   if (clients_key.HasValue(google_update::kRegOldVersionField))
     return true;
-  base::string16 product_version;
+  std::wstring product_version;
   if (clients_key.ReadValue(google_update::kRegVersionField,
                             &product_version) != ERROR_SUCCESS) {
     return false;
@@ -531,12 +536,12 @@ void LaunchChrome(const InstallerState& installer_state,
   base::CommandLine command_line(chrome_exe);
 #if defined(OS_WIN)
   command_line.AppendSwitchNative(::switches::kTryChromeAgain,
-                                  base::NumberToString16(experiment.group()));
+                                  base::NumberToWString(experiment.group()));
 #endif  // defined(OS_WIN)
 
   STARTUPINFOW startup_info = {sizeof(startup_info)};
   PROCESS_INFORMATION temp_process_info = {};
-  base::string16 writable_command_line_string(
+  std::wstring writable_command_line_string(
       command_line.GetCommandLineString());
   if (!::CreateProcess(
           chrome_exe.value().c_str(), &writable_command_line_string[0],

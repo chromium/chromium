@@ -18,16 +18,13 @@ namespace blink {
 class CORE_EXPORT DocumentModuleScriptFetcher final
     : public GarbageCollected<DocumentModuleScriptFetcher>,
       public ModuleScriptFetcher {
-  USING_GARBAGE_COLLECTED_MIXIN(DocumentModuleScriptFetcher);
-
  public:
-  DocumentModuleScriptFetcher() = default;
-  ~DocumentModuleScriptFetcher() override = default;
+  explicit DocumentModuleScriptFetcher(base::PassKey<ModuleScriptLoader>);
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
+             ModuleType,
              ResourceFetcher*,
-             const Modulator* modulator_for_built_in_modules,
              ModuleGraphLevel,
              Client*) override;
 
@@ -35,13 +32,11 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
   void NotifyFinished(Resource*) override;
   String DebugName() const override { return "DocumentModuleScriptFetcher"; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  bool FetchIfLayeredAPI(const Modulator& modulator_for_built_in_modules,
-                         FetchParameters&);
-
   Member<Client> client_;
+  ModuleType expected_module_type_;
 };
 
 }  // namespace blink

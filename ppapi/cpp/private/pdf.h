@@ -77,6 +77,93 @@ class PDF {
     uint32_t text_run_index;
     uint32_t text_run_count;
     FloatRect bounds;
+    // Color of the highlight in ARGB. Alpha is stored in the first 8 MSBs. RGB
+    // follows after it with each using 8 bytes.
+    uint32_t color;
+  };
+
+  // C++ version of PP_PrivateAccessibilityTextFieldInfo.
+  // Needs to stay in sync with the C version.
+  struct PrivateAccessibilityTextFieldInfo {
+    std::string name;
+    std::string value;
+    bool is_read_only;
+    bool is_required;
+    bool is_password;
+    // Index of this text field in the collection of text fields in the page.
+    uint32_t index_in_page;
+    // We anchor the text field to a text run index, this denotes the text run
+    // before which the text field should be inserted in the accessibility tree.
+    uint32_t text_run_index;
+    FloatRect bounds;
+  };
+
+  // C++ version of PP_PrivateAccessibilityChoiceFieldOptionInfo.
+  // Needs to stay in sync with the C version.
+  struct PrivateAccessibilityChoiceFieldOptionInfo {
+    std::string name;
+    bool is_selected;
+    FloatRect bounds;
+  };
+
+  // C++ version of PP_PrivateAccessibilityChoiceFieldInfo.
+  // Needs to stay in sync with the C version.
+  struct PrivateAccessibilityChoiceFieldInfo {
+    std::string name;
+    std::vector<PrivateAccessibilityChoiceFieldOptionInfo> options;
+    PP_PrivateChoiceFieldType type;
+    // Represents if the choice field is non-editable.
+    bool is_read_only;
+    // Represents if the choice field is multi-selectable.
+    bool is_multi_select;
+    // Represents if the choice field includes an editable text box.
+    bool has_editable_text_box;
+    // Index of this choice field in the collection of choice fields in the
+    // page.
+    uint32_t index_in_page;
+    // We anchor the choice field to a text run index, this denotes the text run
+    // before which the choice field should be inserted in the accessibility
+    // tree.
+    uint32_t text_run_index;
+    FloatRect bounds;
+  };
+
+  // C++ version of PP_PrivateAccessibilityButtonInfo.
+  // Needs to stay in sync with the C version.
+  struct PrivateAccessibilityButtonInfo {
+    std::string name;
+    std::string value;
+    // Represents the button type.
+    PP_PrivateButtonType type;
+    // Represents if the button is non-editable.
+    bool is_read_only;
+    // Represents if the radio button or check box is checked or not.
+    bool is_checked;
+    // Represents count of controls in the control group. A group of interactive
+    // form annotations is collectively called a form control group. Here, an
+    // interactive form annotation, should be either a radio button or a
+    // checkbox. Value of |control_count| is >= 1.
+    uint32_t control_count;
+    // Represents index of the control in the control group. A group of
+    // interactive form annotations is collectively called a form control group.
+    // Here, an interactive form annotation, should be either a radio button or
+    // a checkbox. Value of |control_index| should always be less than
+    // |control_count|.
+    uint32_t control_index;
+    // Index of this button in the collection of buttons in the page.
+    uint32_t index_in_page;
+    // We anchor the button to a text run index, this denotes the text run
+    // before which the button should be inserted in the accessibility tree.
+    uint32_t text_run_index;
+    FloatRect bounds;
+  };
+
+  // C++ version of PP_PrivateAccessibilityFormFieldInfo.
+  // Needs to stay in sync with the C version.
+  struct PrivateAccessibilityFormFieldInfo {
+    std::vector<PrivateAccessibilityTextFieldInfo> text_fields;
+    std::vector<PrivateAccessibilityChoiceFieldInfo> choice_fields;
+    std::vector<PrivateAccessibilityButtonInfo> buttons;
   };
 
   // C++ version of PP_PrivateAccessibilityPageObjects.
@@ -85,6 +172,7 @@ class PDF {
     std::vector<PrivateAccessibilityLinkInfo> links;
     std::vector<PrivateAccessibilityImageInfo> images;
     std::vector<PrivateAccessibilityHighlightInfo> highlights;
+    PrivateAccessibilityFormFieldInfo form_fields;
   };
 
   // Returns true if the required interface is available.

@@ -1,0 +1,6 @@
+There must be a page break below between "FIRST" and "LAST"
+FIRST dummy dummy dummy dummy dummy dummy dummy dummy dummy FIRST
+
+
+PASS: page number of "test1" is 0
+FAIL: expected page number of "test2" is 1. Was 0

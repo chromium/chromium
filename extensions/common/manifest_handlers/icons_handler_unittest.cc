@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/values_test_util.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,56 +12,49 @@ namespace extensions {
 
 class ProductIconManifestTest : public ManifestTest {
  public:
-  ProductIconManifestTest() {}
+  ProductIconManifestTest() = default;
+
+  ProductIconManifestTest(const ProductIconManifestTest&) = delete;
+  ProductIconManifestTest& operator=(const ProductIconManifestTest&) = delete;
 
  protected:
-  std::unique_ptr<base::Value> CreateManifest(const std::string& extra_icons) {
-    std::unique_ptr<base::Value> manifest = base::test::ParseJsonDeprecated(
-        "{ \n"
-        "  \"name\": \"test\", \n"
-        "  \"version\": \"0.1\", \n"
-        "  \"manifest_version\": 2, \n"
-        "  \"icons\": { \n" +
-        extra_icons +
-        "    \"16\": \"icon1.png\", \n"
-        "    \"32\": \"icon2.png\" \n"
-        "  } \n"
-        "} \n");
-    EXPECT_TRUE(manifest);
+  base::Value CreateManifest(const std::string& extra_icons) {
+    constexpr const char kManifest[] = R"({
+      "name": "test",
+      "version": "0.1",
+      "manifest_version": 2,
+      "icons": {
+        %s
+        "16": "icon1.png",
+        "32": "icon2.png"
+      }
+    })";
+    base::Value manifest = base::test::ParseJson(
+        base::StringPrintf(kManifest, extra_icons.c_str()));
+    EXPECT_TRUE(manifest.is_dict());
     return manifest;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProductIconManifestTest);
 };
 
 TEST_F(ProductIconManifestTest, Sizes) {
   // Too big.
   {
-    std::unique_ptr<base::Value> ext_manifest =
-        CreateManifest("\"100000\": \"icon3.png\", \n");
-    ManifestData manifest(std::move(ext_manifest), "test");
+    ManifestData manifest(CreateManifest(R"("100000": "icon3.png",)"), "test");
     LoadAndExpectError(manifest, "Invalid key in icons: \"100000\".");
   }
   // Too small.
   {
-    std::unique_ptr<base::Value> ext_manifest =
-        CreateManifest("\"0\": \"icon3.png\", \n");
-    ManifestData manifest(std::move(ext_manifest), "test");
+    ManifestData manifest(CreateManifest(R"("0": "icon3.png",)"), "test");
     LoadAndExpectError(manifest, "Invalid key in icons: \"0\".");
   }
   // NaN.
   {
-    std::unique_ptr<base::Value> ext_manifest =
-        CreateManifest("\"sixteen\": \"icon3.png\", \n");
-    ManifestData manifest(std::move(ext_manifest), "test");
+    ManifestData manifest(CreateManifest(R"("sixteen": "icon3.png",)"), "test");
     LoadAndExpectError(manifest, "Invalid key in icons: \"sixteen\".");
   }
   // Just right.
   {
-    std::unique_ptr<base::Value> ext_manifest =
-        CreateManifest("\"512\": \"icon3.png\", \n");
-    ManifestData manifest(std::move(ext_manifest), "test");
+    ManifestData manifest(CreateManifest(R"("512": "icon3.png",)"), "test");
     scoped_refptr<extensions::Extension> extension =
         LoadAndExpectSuccess(manifest);
   }

@@ -16,10 +16,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -40,20 +45,26 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Reason used when resetting the URLLoader to follow a redirect.
   static const char kFollowRedirectReason[];
 
+  // |url_request| can be mutated by this function, and doesn't need to stay
+  // alive after calling this function.
+  //
   // |client| must stay alive during the lifetime of the returned object. Please
   // note that the request may not start immediately since it could be deferred
   // by throttles.
   static std::unique_ptr<ThrottlingURLLoader> CreateLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       network::ResourceRequest* url_request,
       network::mojom::URLLoaderClient* client,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      absl::optional<std::vector<std::string>> cors_exempt_header_list =
+          absl::nullopt);
 
+  ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
+  ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
   ~ThrottlingURLLoader() override;
 
   // Follows a redirect, calling CreateLoaderAndStart() on the factory. This
@@ -64,10 +75,19 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // implementing similar logic to FollowRedirectForcingRestart(). If this is
   // called, a future request for the redirect should be guaranteed to be sent
   // with the same request_id.
-  void ResetForFollowRedirect();
+  // `removed_headers`, `modified_headers` and `modified_cors_exempt_headers`
+  // will be merged to corresponding members in the ThrottlingURLLoader, and
+  // then apply updates against `resource_request`.
+  void ResetForFollowRedirect(
+      network::ResourceRequest& resource_request,
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers);
 
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers);
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
   void PauseReadingBodyFromNet();
   void ResumeReadingBodyFromNet();
@@ -106,11 +126,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
-             int32_t routing_id,
              int32_t request_id,
              uint32_t options,
              network::ResourceRequest* url_request,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             absl::optional<std::vector<std::string>> cors_exempt_header_list);
 
   void StartNow();
   void RestartWithFlagsNow();
@@ -133,7 +153,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Restart the request using |original_url_|.
   void RestartWithURLResetAndFlags(int additional_load_flags);
 
+  // Restart the request immediately if the response has not started yet.
+  void RestartWithURLResetAndFlagsNow(int additional_load_flags);
+
   // network::mojom::URLLoaderClient implementation:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -155,6 +179,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void UpdateDeferredRequestHeaders(
       const net::HttpRequestHeaders& modified_request_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_request_headers);
+  void UpdateRequestHeaders(network::ResourceRequest& resource_request);
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head);
   void PauseReadingBodyFromNet(URLLoaderThrottle* throttle);
@@ -178,26 +203,25 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     DEFERRED_RESPONSE,
     DEFERRED_COMPLETE
   };
+  const char* GetStageNameForHistogram(DeferredStage stage);
+
   DeferredStage deferred_stage_ = DEFERRED_NONE;
   bool loader_completed_ = false;
+  bool did_receive_response_ = false;
 
   struct ThrottleEntry {
     ThrottleEntry(ThrottlingURLLoader* loader,
                   std::unique_ptr<URLLoaderThrottle> the_throttle);
     ThrottleEntry(ThrottleEntry&& other);
-    ~ThrottleEntry();
-
     ThrottleEntry& operator=(ThrottleEntry&& other);
+    ~ThrottleEntry();
 
     std::unique_ptr<ForwardingThrottleDelegate> delegate;
     std::unique_ptr<URLLoaderThrottle> throttle;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ThrottleEntry);
   };
 
   std::vector<ThrottleEntry> throttles_;
-  std::set<URLLoaderThrottle*> deferring_throttles_;
+  std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
   // nullptr is used when this loader is directly requested to pause reading
   // body from net by calling PauseReadingBodyFromNet().
   std::set<URLLoaderThrottle*> pausing_reading_body_from_net_throttles_;
@@ -213,21 +237,21 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   struct StartInfo {
     StartInfo(
         scoped_refptr<network::SharedURLLoaderFactory> in_url_loader_factory,
-        int32_t in_routing_id,
         int32_t in_request_id,
         uint32_t in_options,
         network::ResourceRequest* in_url_request,
-        scoped_refptr<base::SingleThreadTaskRunner> in_task_runner);
+        scoped_refptr<base::SingleThreadTaskRunner> in_task_runner,
+        absl::optional<std::vector<std::string>> in_cors_exempt_header_list);
     ~StartInfo();
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    int32_t routing_id;
     int32_t request_id;
     uint32_t options;
 
     network::ResourceRequest url_request;
     // |task_runner| is used to set up |client_receiver_|.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+    absl::optional<std::vector<std::string>> cors_exempt_header_list;
   };
   // Holds any info needed to start or restart the request. Used when start is
   // deferred or when FollowRedirectForcingRestart() is called.
@@ -286,13 +310,12 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   std::vector<std::string> removed_headers_;
   net::HttpRequestHeaders modified_headers_;
+  net::HttpRequestHeaders modified_cors_exempt_headers_;
 
   int pending_restart_flags_ = 0;
   bool has_pending_restart_ = false;
 
   base::WeakPtrFactory<ThrottlingURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingURLLoader);
 };
 
 }  // namespace blink

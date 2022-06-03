@@ -7,13 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
-using Purpose = blink::Manifest::ImageResource::Purpose;
+using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
 const int kIdealIconSize = 144;
@@ -53,7 +52,7 @@ class ManifestIconSelectorTest : public testing::TestWithParam<bool> {
       const std::vector<blink::Manifest::ImageResource>& icons,
       int ideal_icon_size_in_px,
       int minimum_icon_size_in_px,
-      blink::Manifest::ImageResource::Purpose purpose) {
+      blink::mojom::ManifestImageResource_Purpose purpose) {
     if (selects_square_only_) {
       return ManifestIconSelector::FindBestMatchingSquareIcon(
           icons, ideal_icon_size_in_px, minimum_icon_size_in_px, purpose);
@@ -140,23 +139,24 @@ TEST_P(ManifestIconSelectorTest, PurposeFiltering) {
   sizes_144.push_back(gfx::Size(width_to_height_ratio() * 144, 144));
 
   std::vector<blink::Manifest::ImageResource> icons;
-  icons.push_back(
-      CreateIcon("http://foo.com/icon_48.png", "", sizes_48, Purpose::BADGE));
+  icons.push_back(CreateIcon("http://foo.com/icon_48.png", "", sizes_48,
+                             Purpose::MONOCHROME));
   icons.push_back(
       CreateIcon("http://foo.com/icon_96.png", "", sizes_96, Purpose::ANY));
   icons.push_back(
       CreateIcon("http://foo.com/icon_144.png", "", sizes_144, Purpose::ANY));
 
-  GURL url = FindBestMatchingIcon(icons, 48, kMinimumIconSize, Purpose::BADGE);
+  GURL url =
+      FindBestMatchingIcon(icons, 48, kMinimumIconSize, Purpose::MONOCHROME);
   EXPECT_EQ("http://foo.com/icon_48.png", url.spec());
 
   url = FindBestMatchingIcon(icons, 48, kMinimumIconSize, Purpose::ANY);
   EXPECT_EQ("http://foo.com/icon_96.png", url.spec());
 
-  url = FindBestMatchingIcon(icons, 96, kMinimumIconSize, Purpose::BADGE);
+  url = FindBestMatchingIcon(icons, 96, kMinimumIconSize, Purpose::MONOCHROME);
   EXPECT_EQ("http://foo.com/icon_48.png", url.spec());
 
-  url = FindBestMatchingIcon(icons, 96, 96, Purpose::BADGE);
+  url = FindBestMatchingIcon(icons, 96, 96, Purpose::MONOCHROME);
   EXPECT_TRUE(url.is_empty());
 
   url = FindBestMatchingIcon(icons, 144, kMinimumIconSize, Purpose::ANY);

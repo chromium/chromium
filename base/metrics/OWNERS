@@ -1,10 +1,15 @@
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chromium-metrics-reviews@google.com rather than to specific individuals. These
+# CLs will be automatically reassigned to a reviewer within about 5 minutes.
+# This approach helps our team to load-balance incoming reviews. Googlers can
+# read more about this at go/gwsq-gerrit.
+
 asvitkine@chromium.org
 bcwhite@chromium.org
+caitlinfischer@google.com
 holte@chromium.org
 isherman@chromium.org
 jwd@chromium.org
 mpearson@chromium.org
-nikunjb@chromium.org
 rkaplow@chromium.org
-
-# COMPONENT: Internals>Metrics
+sweilun@chromium.org

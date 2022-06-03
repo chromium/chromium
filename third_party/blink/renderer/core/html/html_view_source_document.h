@@ -36,11 +36,11 @@ class HTMLToken;
 
 class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
  public:
-  HTMLViewSourceDocument(const DocumentInit&, const String& mime_type);
+  HTMLViewSourceDocument(const DocumentInit&);
 
   void AddSource(const String&, HTMLToken&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   DocumentParser* CreateParser() override;

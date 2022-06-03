@@ -28,10 +28,11 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/events/custom_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 
 namespace blink {
+
+class CustomEventInit;
 
 class CORE_EXPORT CustomEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -62,7 +63,7 @@ class CORE_EXPORT CustomEvent final : public Event {
 
   ScriptValue detail(ScriptState*) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   WorldSafeV8Reference<v8::Value> detail_;

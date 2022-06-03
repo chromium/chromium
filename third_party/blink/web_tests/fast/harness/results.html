@@ -36,7 +36,7 @@ p, h2, h3, h4 {
   background-color: rgba(255, 0, 0, 0.1);
 }
 
-#help {
+.popup {
   font-family: sans-serif;
   box-sizing: border-box;
   position: fixed;
@@ -179,21 +179,61 @@ p, h2, h3, h4 {
   margin-left: 5px;
 }
 
-#flag-toolbar {
-  display: inline-block;
-}
 #flag-toolbar.hidden {
   display: none;
+}
+
+.actual-result {
+  font-weight: bold;
+}
+
+.unexpected-failure {
+  color: red;
+}
+
+.unexpected-pass {
+  color: green;
+}
+
+#timing-stats-table {
+  text-align: right;
+  white-space: nowrap;
+}
+
+#timing-stats-table th {
+  padding-left: 10px;
+}
+
+.stat-bar-count, .stat-bar-time {
+  width: 12px;
+  height: 8px;
+  margin-left: 4px;
+}
+
+.stat-bar-count {
+  background: blue;
+}
+
+.stat-bar-time {
+  background: cyan;
 }
 </style>
 <body>
 <h3>Test run summary <span id="builder_name"></span> <span class="flag_name"></span></h3>
 
 <div id="right-toolbar">
-  <a id="help_button" href="javascript:GUI.toggleVisibility('help')">help</a>
+  <a href="javascript:GUI.showTimingStats()">Timing stats</a>
+  &nbsp;
+  <a id="help_button" href="javascript:GUI.toggleVisibility('help')">Help</a>
 </div>
 
-<div id="help" class="hidden hide-on-esc">
+<div id="timing-stats" class="popup hidden hide-on-esc">
+  <button style="position:fixed;right:40px;" onclick="GUI.toggleVisibility('timing-stats')">Close</button>
+  <h3>Timing stats</h3>
+  <table id="timing-stats-table"></table>
+</div>
+
+<div id="help" class="popup hidden hide-on-esc">
   <button style="position:fixed;right:40px;" onclick="GUI.toggleVisibility('help')">Close</button>
   <h3>Keyboard navigation</h3>
 
@@ -215,8 +255,14 @@ p, h2, h3, h4 {
 
   <h3>Querying Results</h3>
 
-  <p>Select the results you are interested in using "Query" buttons.
-  Narrow down the results further with "Filter" checkboxes.</p>
+  <p>Select the results you are interested in using "Query" buttons.</p>
+  <p>Narrow down the results further with "Filter" search box and checkboxes.
+  The following types of search strings are supported:</p>
+  <ul>
+  <li>Test name: full or partial,</li>
+  <li>Bug number: full or partial,</li>
+  <li>Range of test time duration: 'time:min-' or 'time:min-max' or 'time:-max' in seconds.</li>
+  </ul>
 
 
   <h3>Displaying results.</h3>
@@ -230,19 +276,20 @@ p, h2, h3, h4 {
   <h4>2. TestExpectations</a></h4>
 <pre><a href="#">crbug.com/bug</a> layout/test/path/<a href="#">test.html</a> [ Status ]</pre>
   <p>TestExpectationsshow lines as they'd appear in <a
-    href="https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md">TestExpectations</a> file.</p>
+    href="https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md">TestExpectations</a> file.</p>
 
   <p>The interesting part here is [ Status ]. Inside TestExpectations file, [ Status ]
   can have multiple values, representing all expected results. For example:</p>
 
-<pre>[ Failure Slow Timeout Crash Pass ]</pre>
+<pre>[ Failure Timeout Crash Pass ]</pre>
 
   <p>Result lines include existing expected values, and make a guess about what the new
   test expectation line should look like by merging together expected and actual
-  results. The actual result will be shown in bold. For example:</p>
+  results. The actual result will be shown in bold, and unexpected actual result will be
+  shown in red (unexpected failure) or green (unexpected pass). For example:</p>
 
-  <pre>TestResult(PASS) + TestExpectation(Failure) => [ Pass ]
-TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
+  <pre>TestResult(PASS) + TestExpectation(Failure) => [ Failure <span class="actual-result unexpected-pass">Pass</span> ]
+TestResult(TIMEOUT CRASH) + TextExpectation(Timeout Failure) => [ Failure <span class="actual-result">Timeout</span> <span class="actual-result unexpected-failure">Crash</span> ]</pre>
 
   <p>If you are doing a lot of TestExpectation edits, the hope is that this will make
   your job as easy as copy and paste.</p>
@@ -319,19 +366,26 @@ TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
       Flagged
     </button>
     <div id="flag-toolbar" class="hidden">
+      <span class="fix-width"></span>
       <button onclick="javascript:Query.query('Flag failures', Filters.flagFailure, true)">
         <span class="flag_name"></span> failures
-        <span id="count_flagfailure"></span>
+        <span id="count_flag_failure"></span>
       </button>
-      <button onclick="javascript:Query.query('Flag failures', Filters.flagPass, true)">
+      <button onclick="javascript:Query.query('Flag passes', Filters.flagPass, true)">
         <span class="flag_name"></span> passes
-        <span id="count_flagpass"></span>
+        <span id="count_flag_pass"></span>
+      </button>
+      <button onclick="javascript:Query.query('Flag unexpected passes', Filters.flagUnexpectedPass, true)">
+        <span class="flag_name"></span> unexpected passes
+        <span id="count_flag_unexpected_pass"></span>
       </button>
     </div>
   </div>
   <div id="filters">
     <span class="fix-width">Filters</span>
-    <input id="text-filter" onchange="Query.filterChanged()" type="text" placeholder="test name/bug#, hit enter">
+    <input id="text-filter" onsearch="Query.filterChanged()" type="search"
+           placeholder="test name | bug | time &#9166;"
+           title="Format of time: 'time:min-' or 'time:min-max' or 'time:-max' in seconds">
     <label id="CRASH"><input type="checkbox">Crash <span></span></label>
     <label id="TIMEOUT"><input type="checkbox">Timeout <span></span></label>
     <label id="TEXT"><input type="checkbox">Text failure <span></span></label>
@@ -341,7 +395,6 @@ TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
     <label id="AUDIO"><input type="checkbox">Audio failure <span></span></label>
     <label id="SKIP"><input type="checkbox">Skipped <span></span></label>
     <label id="PASS"><input type="checkbox">Pass <span></span></label>
-    <label id="MISSING"><input type="checkbox">Missing <span></span></label>
     <label id="LEAK"><input type="checkbox">Leak <span></span></label>
   </div>
 </div>
@@ -360,8 +413,8 @@ TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
   <span style="margin-left: 20px">
     <button id="copy_report" title="Copy the shown/flagged tests to clipboard in the current format"
         onclick="GUI.copyResult(false)" disabled>Copy report</button>
-    <button id="copy_single_line" title="Copy the shown/flagged tests to clipboard in a single line for use in command lines."
-        onclick="GUI.copyResult(true)" disabled>Copy single line</button>
+    <button id="copy_test_names" title="Copy the names of the shown/flagged tests to clipboard in a single line for use in command lines."
+        onclick="GUI.copyResult(true)" disabled>Copy test names</button>
     <label id="flagged_only" class="hidden"><input id="flagged_only_checkbox" type="checkbox" checked>Flagged only</label>
     <span id="copied" class="hidden">Copied.</span>
   </span>
@@ -386,11 +439,9 @@ const TestResultInformation = {
   "AUDIO":      { index: 6, text: "Failure", isFailure: true, isSuccess: false },
   "TIMEOUT":    { index: 7, text: "Timeout", isFailure: true, isSuccess: false },
   "LEAK":       { index: 8, text: "LEAK", isFailure: true, isSuccess: false },
-  "SLOW":       { index: 9, text: "Slow", isFailure: false, isSuccess: true },
-  "SKIP":       { index: 10, text: "Skip", isFailure: false, isSuccess: false },
-  "MISSING":    { index: 11, text: "Missing", isFailure: false, isSuccess: false },
-  "PASS":       { index: 12, text: "Pass", isFailure: false, isSuccess: true },
-  "NOTRUN":     { index: 13, text: "NOTRUN", isFailure: false, isSuccess: true }
+  "SKIP":       { index: 9, text: "Skip", isFailure: false, isSuccess: false },
+  "PASS":       { index: 10, text: "Pass", isFailure: false, isSuccess: true },
+  "NOTRUN":     { index: 11, text: "NOTRUN", isFailure: false, isSuccess: true }
 };
 
 // Sorted from worst to best.
@@ -411,10 +462,12 @@ class Traversal {
     this.reset();
   }
 
-  traverse(filter, action) {
+  traverse(filter, action, endAction) {
     console.time("traverse");
     action = action || function() {};
     this._helper(this.root, "", filter, action);
+    if (endAction)
+      endAction(this);
     console.timeEnd("traverse");
   }
 
@@ -448,11 +501,20 @@ const PathParserGlobals = {
 class PathParser {
   constructor(path) {
     this.path = path;
-    let href;
-    [href, this.dir, this.file] = path.match("/(.*/)?(.*)");
-    this.dir = this.dir || "";
+    let pathWithoutQuery = path;
+    const questionMarkIndex = path.indexOf('?');
+    if (questionMarkIndex !== -1) {
+      pathWithoutQuery = path.substring(0, questionMarkIndex);
+      this.query = path.substring(questionMarkIndex);
+    } else {
+      this.query = "";
+    }
+    const lastDirSeparatorIndex = pathWithoutQuery.lastIndexOf('/');
+    console.assert(lastDirSeparatorIndex !== -1);  // first char should always be '/'
+    this.dir = pathWithoutQuery.substring(1, lastDirSeparatorIndex + 1);
+    this.file = pathWithoutQuery.substring(lastDirSeparatorIndex + 1);
+
     try {
-      [, this.file, this.query ] = this.file.match("([^\?]*)(.*)");
       [, this.basename, this.extension ] = this.file.match(/(.+)\.(.+)/);
       this.resultPrefix = (this.basename + this.query).replace(/[~#%&*{}\:<>?\/|"]/g, "_");
     } catch {
@@ -460,8 +522,7 @@ class PathParser {
       this.resultPrefix = "ERROR";
     }
 
-    href = href.replace(/^\/virtual\/[^\/]*/, "");  // virtual suites
-    href = href.replace(/\?.*$/, "");               // query strings (variants)
+    const href = pathWithoutQuery.replace(/^\/virtual\/[^\/]*/, "");  // virtual suites
     this.testHref = this.testBaseHref() + href;
   }
 
@@ -490,10 +551,10 @@ class PathParser {
       return "../../../third_party/blink/web_tests";
     } else if (PathParserGlobals.chromium_revision) {
       // Existing crrev list is incorrect:  https://crbug.com/750347
-      let correctedRevision = PathParserGlobals.chromium_revision.replace("refs/heads/master@{#", "").replace("}", "");
+      let correctedRevision = PathParserGlobals.chromium_revision.replace("refs/heads/main@{#", "").replace("}", "");
       return "https://crrev.com/" + correctedRevision + "/third_party/blink/web_tests";
     } else {
-      return "https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/web_tests";
+      return "https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests";
     }
   }
 } // class PathParser
@@ -512,7 +573,7 @@ const Report = {
       case "textmismatch":
         return {print: Report.printTextMismatch, render: Report.renderGroupTextMismatch};
       case "rebaseline":
-        return {print: Report.printRebaseline, render: Report.renderResultList};
+        return {print: Report.printRebaseline, endPrint: Report.endPrintRebaseline, render: Report.renderResultList};
       case "plain":
       default:
         return {print: Report.printPlainTest, render: Report.renderResultList};
@@ -535,7 +596,7 @@ const Report = {
 
   printExpectation: (test, path, traversal) => {
     // TestExpectations file format is documented at:
-    // https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+    // https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
     let pathParser = new PathParser(path);
     // Print directory header if this test's directory is different from the last.
@@ -548,29 +609,29 @@ const Report = {
     let statusMap = new Map(test.expectedMap);
     if (statusMap.has("PASS") && statusMap.size == 1)
        statusMap.delete("PASS");
-    for (let s of test.actualMap.keys()) {
-      let result = s;
-      if (result == "TEXT" || result == "IMAGE" || result == "IMAGE+TEXT")
-        result = "FAIL";
-      statusMap.set(result, "bold");
-    }
-    let status = "";
-    for (let key of statusMap.keys()) {
-      if (statusMap.get(key) == "bold")
-        status += ` <b>${TestResultInformation[key].text}</b>`;
-      else
-        status += ` ${TestResultInformation[key].text}`;
-    }
-    let bug = test.actualMap.has("PASS") ? "" : "<span class='warn'>NEEDBUG</span>";
+    test.actualMap.forEach((value, key) => {
+      if (key == "TEXT" || key == "IMAGE" || key == "IMAGE+TEXT" || key == "AUDIO")
+        key = "FAIL";
+      let statusClass = 'actual-result';
+      if (!test.expectedMap.has(key))
+        statusClass += key == "PASS" ? " unexpected-pass" : " unexpected-failure";
+      statusMap.set(key, statusClass);
+    });
+    let status = test.is_slow_test ? "Slow" : "";
+    statusMap.forEach((value, key) => {
+      status += ` <span class="${value}">${TestResultInformation[key].text}</span>`;
+    });
+    let bug = "";
     if (test.bugs && test.bugs.length > 0) {
-      bug = "";
       for (let b of test.bugs) {
         bug += `<a target='crbug' tabindex='-1' href='https://${b}'>${b}</a> `;
       }
     }
+    if (!bug && !Filters.isPass(test.actualMap))
+      bug = "<span class='warn'>NEEDBUG</span>";
     let html = `
       <div class='expect' tabindex='0' data-id='${test.expectId}'><div class='details'></div>${Report.printFlag(test)}${bug}
-        ${pathParser.dir}<a target='test' tabindex='-1' href='${pathParser.testHref}'>${pathParser.file}</a>
+        ${pathParser.dir}<a target='test' tabindex='-1' href='${pathParser.testHref}'>${pathParser.file}${pathParser.query}</a>
         [ ${status} ]
     </div>
     `;
@@ -584,7 +645,7 @@ const Report = {
       + `${Report.printFlag(test)}`
       + pathParser.dir
       + "<a target='test' tabindex='-1' href='" + pathParser.testHref + "'>"
-      + pathParser.file + "</a>";
+      + pathParser.file + pathParser.query + "</a>";
     html = "<div class='expect' tabindex='0' data-id='"+ test.expectId +"'><div class='details'></div>" + html + "</div>";
     traversal.html.push({key: key, html: html});
   },
@@ -620,13 +681,10 @@ const Report = {
     // Change directory if in wrong place
     let dir = parser.dir;
     if (dir != traversal.rebaselineDir) {
-      if (traversal.rebaselineDir) {
-        let depth = (traversal.rebaselineDir.match(/\//g) || []).length;
-        if (depth)
-          traversal.html.push(`<div>cd ${'..' + '/..'.repeat(depth - 1)};</div>`);
-      }
+      if (traversal.rebaselineDir)
+        traversal.html.push('<div>popd >/dev/null;</div>');
       traversal.html.push(`<div>mkdir -p ${dir};</div>`);
-      traversal.html.push(`<div>cd ${dir};</div>`);
+      traversal.html.push(`<div>pushd ${dir};</div>`);
       traversal.rebaselineDir = dir;
     }
     for (let i=0; i<actualNames.length; i++) {
@@ -638,6 +696,18 @@ const Report = {
         traversal.html.push(`<div>wget ${url.href};</div>`);
         traversal.html.push(`<div>mv ${parser.basename + actualNames[i]} ${parser.basename + expectedNames[i]};</div>`);
       }
+    }
+    traversal.rebaselinedTests = `${traversal.rebaselinedTests || ''} ${parser.dir}${parser.file}`;
+  },
+
+  endPrintRebaseline: (traversal) => {
+    if (traversal.rebaselineDir)
+      traversal.html.push('<div>popd >/dev/null;</div>');
+    if (traversal.rebaselinedTests) {
+      traversal.html.push(
+          `<div>if ! blink_tool.py optimize-baselines ${traversal.rebaselinedTests}; then</div>`,
+          '<div>echo The above command needs third_party/blink/tools in PATH</div>',
+          '<div>fi</div>');
     }
   },
 
@@ -730,11 +800,13 @@ const Report = {
   getResultToolbars: (test) => {
     let toolbars = [];
     let pathParser = new PathParser(test.expectPath);
-    toolbars.push(new PlainHtmlToolbar().createDom(test.actual));
+    let actual = test.actual;
+    if (test.time)
+      actual = actual.replace(/ |$/, `(${test.time}s)` + "$&");
+    toolbars.push(new PlainHtmlToolbar().createDom(actual));
     for (let result of test.actualMap.keys()) {
       switch(result) {
         case "PASS":
-        case "SLOW":
           if (Filters.unexpectedPass(test))
             toolbars.push(new PlainHtmlToolbar().createDom("Expected: " + test.expected));
           if (!test.has_stderr)
@@ -748,8 +820,7 @@ const Report = {
             pathParser.resultLink("-crash-log.txt"), "Crash log", "crash log"));
           break;
         case "TIMEOUT":
-          toolbars.push(new PlainHtmlToolbar().createDom("Test timed out. "
-            + ("time" in test ? `(${test.time}s)` : "")));
+          toolbars.push(new PlainHtmlToolbar().createDom("Test timed out. "));
           if (test.text_mismatch)
             toolbars.push(new TextResultsToolbar().createDom(test));
           break;
@@ -766,11 +837,6 @@ const Report = {
         case "AUDIO":
           toolbars.push(new AudioResultsToolbar().createDom(test));
           break;
-        case "MISSING":
-          toolbars.push(new PlainHtmlToolbar().createDom("Expectations are missing."));
-          toolbars.push(new TextResultsToolbar().createDom(test));
-          toolbars.push(new ImageResultsToolbar().createDom(test));
-          break;
         case "LEAK":
           toolbars.push(new SimpleLinkToolbar().createDom(
             pathParser.resultLink("-leak-log.txt"), "Leak log", "leak log"));
@@ -782,6 +848,10 @@ const Report = {
     if (test.has_stderr) {
       toolbars.push(new SimpleLinkToolbar().createDom(
             pathParser.resultLink("-stderr.txt"), "standard error", "stderr"));
+    }
+    if (test.command) {
+      toolbars.push(new SimpleLinkToolbar().createDom(
+            pathParser.resultLink("-command.txt"), "Command", "command"));
     }
     return toolbars;
   },
@@ -861,7 +931,14 @@ const Query = {
         if (el.querySelector('input').checked)
           filterMap.set(el.id.replace("_", "+"), true);
     }
-    let searchText = document.querySelector("#text-filter").value;
+    let searchText = document.querySelector("#text-filter").value.trim();
+    let timeRange = searchText.match(/^time:([ .0-9]*)-([ .0-9]*)$/);
+    let timeMin = 0, timeMax = Number.MAX_VALUE;
+    if (timeRange) {
+      timeMin = parseFloat(timeRange[1]);
+      if (timeRange[2] != "")
+        timeMax = parseFloat(timeRange[2]);
+    }
     let textFilter = (!searchText || searchText.length < 1)
       ? _ => true
       : test => {
@@ -873,20 +950,24 @@ const Query = {
                 return true;
             }
           }
+          if (timeRange) {
+            let time = test.time || 0;
+            if (time >= timeMin && time <= timeMax)
+              return true;
+          }
           return false;
         };
     return test => {
       if (!queryFilter(test) || !textFilter(test))
         return false;
-      let resultKey = test.is_testharness_test ? "HARNESS" : test.actualFinal;
       // Ignore all results except final one, or not?
+      let resultKey = test.actualFinal;
+      if (resultKey == "TEXT" && test.is_testharness_test)
+        resultKey = "HARNESS";
       if (!(resultKey in this.resultCounts))
         this.resultCounts[resultKey] = 0;
       this.resultCounts[resultKey]++;
-      if (test.actualFinal == "TEXT" && test.is_testharness_test) {
-        return filterMap.has("HARNESS");
-      }
-      return filterMap.has(test.actualFinal);
+      return filterMap.has(resultKey);
     };
   },
 
@@ -919,7 +1000,7 @@ const Query = {
     document.querySelector("#report_title").innerHTML = name;
     document.querySelector("#progress").style.width = "1%";
     document.querySelector("#copy_report").disabled = true;
-    document.querySelector("#copy_single_line").disabled = true;
+    document.querySelector("#copy_test_names").disabled = true;
         document.querySelector("#report_count").innerText = "";
     let traversal = new Traversal(globalResults.tests);
     let chunkSize = 1000;
@@ -939,7 +1020,7 @@ const Query = {
       }
     };
     window.setTimeout( _ => {
-      traversal.traverse(filter, report.print);
+      traversal.traverse(filter, report.print, report.endPrint);
       this.updateFilters();
       this.completeReportPromise(traversal);
       this.currentRAF = window.requestAnimationFrame(callback);
@@ -950,37 +1031,27 @@ const Query = {
 
 // Test filters for queries.
 const Filters = {
-  containsPass: function (map) {
-    return map.has("PASS") || map.has("SLOW");
-  },
-  containsNoPass: function(map) {
-    return map.has("FAIL")
-        || map.has("SKIP")
-        || map.has("CRASH");
-  },
+  containsPass: map => map.has("PASS"),
+  isPass: map => map.has("PASS") && map.size == 1,
   unexpectedPass: test => {
     return !Filters.containsPass(test.expectedMap) && Filters.containsPass(test.actualMap);
   },
   regressionFromExpectedMap: (finalResult, expectedMap) => {
-    if (expectedMap.has("NEEDSREBASELINE"))
-      return false;
     switch (finalResult) {
       case "SKIP":
         return false;
       case "CRASH":
       case "TIMEOUT":
       case "LEAK":
-        if (expectedMap.has(finalResult))
+        if (expectedMap && expectedMap.has(finalResult))
           return false;
         break;
       case "TEXT":
       case "IMAGE":
       case "IMAGE+TEXT":
       case "AUDIO":
-        if (expectedMap.has("FAIL"))
+        if (expectedMap && expectedMap.has("FAIL"))
           return false;
-        break;
-      case "MISSING":
         break;
       default:
         console.error("Unexpected test result", finalResult);
@@ -1000,40 +1071,28 @@ const Filters = {
   },
   all: _ => true,
   flaky: test => test.actualMap.size > 1,
-  unexpectedFlaky: test => test.actualMap.size > 1 && test.expectedMap.size <= 1,
+  unexpectedFlaky: test => {
+    if (!Filters.flaky(test))
+      return false;
+    let pass_is_expected = Filters.containsPass(test.expectedMap);
+    return Array.from(test.actualMap.keys()).some(k => {
+      return (k == "PASS" && !pass_is_expected) ||
+             Filters.regressionFromExpectedMap(k, test.expectedMap);
+    });
+  },
   flagged: test => test.flagged,
   flagFailure: test => { // Tests that are failing, but expected to pass in base.
     if (Filters.containsPass(test.actualMap))
       return false;
-    if (test.expectedMap.has("NEEDSREBASELINE"))
-      return false;
     let baseMap = test.flagMap ? test.baseMap : test.expectedMap;
-    switch (test.actualFinal) {
-      case "SKIP":
-        return false;
-      case "CRASH":
-      case "TIMEOUT":
-      case "LEAK":
-        if (baseMap && baseMap.has(test.actualFinal))
-          return false;
-        break;
-      case "TEXT":
-      case "IMAGE":
-      case "IMAGE+TEXT":
-      case "AUDIO":
-        if (baseMap && baseMap.has("FAIL"))
-          return false;
-        break;
-      case "MISSING":
-        break;
-      default:
-        console.error("Unexpected test result", test.actualFinal);
-      }
-    return true;
+    return Filters.regressionFromExpectedMap(test.actualFinal, baseMap);
   },
   flagPass: test => {
     return test.baseMap && (Filters.containsPass(test.actualMap) && !Filters.containsPass(test.baseMap));
-  }
+  },
+  flagUnexpectedPass: test => {
+    return test.flagMap && !Filters.containsPass(test.flagMap) && Filters.containsPass(test.actualMap);
+  },
 }; // Filters
 
 // Event handling, initialization.
@@ -1076,33 +1135,34 @@ const GUI = {
   },
 
   translateArtifactsIntoResult: function(artifacts, result, test){
-    let artifact_names = Object.keys(artifacts);
-    if(result == 'FAIL'){
-      if(artifact_names.some(name => name.startsWith('expected'))){
-        // The test is a mismatch between baseline output and actual
-        // output or a reftest failure.
-        if(artifacts.hasOwnProperty('expected_image') &&
-           artifacts.hasOwnProperty('expected_text')){
-          result = 'IMAGE+TEXT';
-        }else if(artifacts.hasOwnProperty('expected_image')){
-          result = 'IMAGE';
-        }else if(artifacts.hasOwnProperty('expected_text')){
-          result = 'TEXT';
-        }else{
-          result = 'AUDIO';
-        }
-      }else if(test.is_testharness_test){
-        result = 'TEXT';
-      }else if(artifact_names.includes('reference_file_match')){
-        result = 'IMAGE';
-      }else if(artifact_names.includes('leak_log')){
-        result = 'LEAK';
-      }else{
-        // if there are no baselines in the artifacts then by default,
-        // the result is missing
-        result = 'MISSING';
-      }
-    }
+    if (artifacts.hasOwnProperty('command'))
+      test.command = artifacts.command;
+
+    if (result != 'FAIL')
+      return result;
+    // Check detailed failure type based on artifacts.
+    let is_image = artifacts.hasOwnProperty('actual_image') ||
+                   artifacts.hasOwnProperty('expected_image');
+    let is_text = artifacts.hasOwnProperty('actual_text') ||
+                  artifacts.hasOwnProperty('expected_text');
+    let is_audio = artifacts.hasOwnProperty('actual_audio') ||
+                   artifacts.hasOwnProperty('expected_audio');
+    let is_leak = artifacts.hasOwnProperty('leak_log');
+
+    if (artifacts.hasOwnProperty('reference_file_mismatch'))
+      test.reference = artifacts.reference_file_mismatch;
+
+    if (is_image && is_text)
+      return 'IMAGE+TEXT';
+    if (is_image)
+      return 'IMAGE';
+    if (is_text)
+      return 'TEXT';
+    if (is_audio)
+      return 'AUDIO';
+    if (is_leak)
+      return 'LEAK';
+    console.error("Unknown failure type");
     return result;
   },
 
@@ -1111,6 +1171,7 @@ const GUI = {
     for(let [iteration, result] of test.actual.split(' ').entries()){
       if(test.artifacts != null){
         let perIterationArtifact = Object();
+        let lastArtifact = Object();
         for(let [name, paths] of Object.entries(test.artifacts)){
           for(let path of paths){
             const is_retry_artifact_path = (path.startsWith('layout-test-results/retry_') ||
@@ -1121,8 +1182,14 @@ const GUI = {
                 perIterationArtifact[name] = [];
               }
               perIterationArtifact[name].push(path);
+            } else {
+              lastArtifact[name] = path;
             }
           }
+        }
+        for (let [name, artifact] of Object.entries(lastArtifact)) {
+          if (!perIterationArtifact.hasOwnProperty(name))
+              perIterationArtifact[name] = [artifact];
         }
         actual_results.push(GUI.translateArtifactsIntoResult(
             perIterationArtifact, result, test));
@@ -1393,7 +1460,7 @@ const GUI = {
       } else {
         printer.print(test, path, traversal);
       }
-    });
+    }, printer.endPrint);
     let div = document.createElement("div");
     div.setAttribute("style", "overflow: hidden; color: white; height: 1px");
     if (asSingleLine)
@@ -1409,7 +1476,7 @@ const GUI = {
   updateCopyButtons: function() {
     let noResult = document.querySelector("#none");
     document.querySelector("#copy_report").disabled = noResult;
-    document.querySelector("#copy_single_line").disabled = noResult;
+    document.querySelector("#copy_test_names").disabled = noResult;
 
     let flagged_only = document.querySelector("#flagged_only");
     if (document.querySelector(".flagged"))
@@ -1440,8 +1507,9 @@ const GUI = {
       "count_flaky": 0,
       "count_unexpected_flaky": 0,
       "count_all": 0,
-      "count_flagfailure": 0,
-      "count_flagpass" : 0
+      "count_flag_failure": 0,
+      "count_flag_pass" : 0,
+      "count_flag_unexpected_pass" : 0,
     };
     var t = new Traversal(fullResults.tests);
     t.traverse( test => {
@@ -1457,9 +1525,11 @@ const GUI = {
       if (Filters.unexpectedFlaky(test))
         counts.count_unexpected_flaky++;
       if (Filters.flagFailure(test))
-        counts.count_flagfailure++;
+        counts.count_flag_failure++;
       if (Filters.flagPass(test))
-        counts.count_flagpass++;
+        counts.count_flag_pass++;
+      if (Filters.flagUnexpectedPass(test))
+        counts.count_flag_unexpected_pass++;
     });
     console.assert(
         counts.count_regressions == fullResults.num_regressions,
@@ -1616,7 +1686,84 @@ const GUI = {
       return;
     expectation.querySelector(".details").classList.remove("open");
     expectation.nextSibling.remove();
-  }
+  },
+
+  showTimingStats: function() {
+    let table = document.querySelector("#timing-stats-table");
+    if (!table.firstChild) {
+      let counts = [];
+      let times = [];
+      let timeout_counts = [];
+      let total_count = 0;
+      let total_count_timeouts = 0;
+      let max = 0;
+      let total_time_all = 0;
+      let total_time_timeouts = 0;
+      new Traversal(globalResults.tests).traverse(
+        test => test.actualFinal != "SKIP",
+        (test, path) => {
+          let time = test.time || 0;
+          let int_time = Math.floor(time);
+          counts[int_time] = (counts[int_time] || 0) + 1;
+          times[int_time] = (times[int_time] || 0) + time;
+          total_time_all += time;
+          // result.time is measured during the first run, so check the first
+          // TIMEOUT here.
+          if (test.actual.startsWith('TIMEOUT')) {
+            timeout_counts[int_time] = (timeout_counts[int_time] || 0) + 1;
+            total_time_timeouts += time;
+            total_count_timeouts++;
+          }
+          total_count++;
+          max = Math.max(max, int_time + 1);
+        }
+      );
+      let i = 0;
+      let html = `<tr>
+                    <th>Range</th>
+                    <th colspan="2">Count/Percent<img class="stat-bar-count"></th>
+                    <th>Timeouts</th>
+                    <th colspan="2">Time/Percent<img class="stat-bar-time"></th>
+                    <th style='width: 60%'></th>
+                  </tr>`;
+      for (let end of [1, 2, 3, 4, 6, 8, 10, 15, 20, 30, 45, 60, 90, 9999]) {
+        let begin = i;
+        end = Math.min(end, max);
+        let count = 0, timeout_count = 0, time = 0;
+        for (; i < end; i++) {
+          count += (counts[i] || 0);
+          timeout_count += (timeout_counts[i] || 0);
+          time += (times[i] || 0);
+        }
+        let count_percent = (count / total_count * 100).toFixed(2);
+        let time_percent = (time / total_time_all * 100).toFixed(2);
+        html += `<tr>
+                   <td>${begin}-${end}s</td>
+                   <td>${count}</td><td>${count_percent}%</td>
+                   <td>${timeout_count}</td>
+                   <td>${Math.round(time)}s</td><td>${time_percent}%</td>
+                   <td>
+                     <div class="stat-bar-count" style="width: ${count_percent}%"></div>
+                     <div class="stat-bar-time" style="width: ${time_percent}%"></div>
+                   </td>
+                 </tr>`;
+        if (end == max)
+          break;
+      }
+      html += `<tr>
+                 <th>Total</th>
+                 <th>${total_count}</th><th>100%</th>
+                 <th>${total_count_timeouts}</th>
+                 <th>${Math.round(total_time_all)}s</th><th>100%</th>
+               </tr>
+               <tr>
+                 <td colspan="4">Timeouts:</td>
+                 <td>${Math.round(total_time_timeouts)}s</td>
+               </tr>`;
+      table.innerHTML = html;
+    }
+    GUI.toggleVisibility('timing-stats');
+  },
 }; // GUI
 
 </script>
@@ -1643,8 +1790,8 @@ class TXToolbar {
       text-decoration-color: aquamarine;
     }
     .tx-toolbar a {
-      padding-left: 4px;
-      padding-right: 4px;
+      margin: 0 2px;
+      padding: 0 2px;
     }
     `;
     document.head.appendChild(style);
@@ -1696,26 +1843,28 @@ class ImageResultsToolbar extends TXToolbar {
     this.toolbar.showDefault = _ => this.viewOptionsChangeHandler({target: this.toolbar.querySelector(".view-options")});
     this.toolbar.classList.add("image-toolbar");
     this.toolbar.classList.add("tx-toolbar");
-    let missing = test.actual == "MISSING";
-    let html = `
-      image:
-      <a class="actual" href="${pathParser.resultLink("-actual.png")}" title="Actual result">actual</a>`;
-    if (!missing)
-      html += `
-      <a class="expected" href="${pathParser.resultLink("-expected.png")}" title="Expected result">expected</a>
-      <a class="diff" href="${pathParser.resultLink("-diff.png")}" title="Difference">diff</a>
-      `;
+
+    let html = "image: ";
+    html += `<a class="toggle" href="${pathParser.resultLink("-actual.png")}" title="Actual result">actual</a>`;
+    html += `<a class="toggle" href="${pathParser.resultLink("-expected.png")}" title="Expected result">expected</a>`;
+    if (test.reference) {
+      html += `<span style="margin-left: -2px; margin-right: 2px">(` +
+              `<a style="margin: 0; padding: 0" target="reference" href="../${test.reference}">ref</a>` +
+              `)</span>`;
+    }
+    html += `<a class="toggle" href="${pathParser.resultLink("-diff.png")}" title="Difference">diff</a>`;
 
     html += `
       <label><select class="view-options">
         <option value="single">Single view</option>
         <option value="animated">Animated view</option>
         <option value="multiple">Side by side view</option>
-      </label>
+      </select></label>
     `;
+
     this.toolbar.innerHTML = html;
     this.toolbar.addEventListener("click", ev => {
-      if (ev.target.tagName == "A") {
+      if (ev.target.tagName == "A" && ev.target.className == "toggle") {
         this.selectAnchor(ev.target);
         ev.preventDefault();
         if (this.animationIntervalId) {
@@ -1761,7 +1910,7 @@ class ImageResultsToolbar extends TXToolbar {
       break;
     case "multiple": {
       this.setAnimation(false);
-      for (let anchor of Array.from(this.toolbar.querySelectorAll("a")))
+      for (let anchor of Array.from(this.toolbar.querySelectorAll("a.toggle")))
         this.selectAnchor(anchor, true);
       }
       break;
@@ -1783,7 +1932,7 @@ class ImageResultsToolbar extends TXToolbar {
     }
     let viewer = this.getViewer();
     if (!viewer) {
-      let imgInfo = Array.from(this.toolbar.querySelectorAll("a")).map(
+      let imgInfo = Array.from(this.toolbar.querySelectorAll("a.toggle")).map(
         anchor => { return {src: anchor.href, title: anchor.title}; });
       viewer = (new ImageResultsViewer()).createDom(imgInfo, this);
       this.setAnimation(this.toolbar.querySelector(".view-options").value == "animated");
@@ -1805,7 +1954,7 @@ class ImageResultsToolbar extends TXToolbar {
           if (this.animationPaused)
             return;
           // Find next anchor.
-          let allAnchors = Array.from(this.toolbar.querySelectorAll("a"));
+          let allAnchors = Array.from(this.toolbar.querySelectorAll("a.toggle"));
           let nextAnchor = allAnchors[0];
           for (let i = 0; i < allAnchors.length; i++) {
             if (allAnchors[i].hasAttribute("data-selected")) {
@@ -2098,6 +2247,7 @@ class ImageViewerZoom {
       position: relative;
       flex-grow: 1;
       flex-shrink: 1;
+      flex-basis: 100px;
       margin: 16px 8px 16px 8px;
     }
     .image-viewer-zoom-tile > canvas {
@@ -2241,15 +2391,11 @@ class TextResultsToolbar extends TXToolbar {
     }).bind(this);
     this.toolbar.classList.add("text-results-toolbar");
     this.toolbar.classList.add("tx-toolbar");
-    let missing = test.actual == "MISSING";
     let html = "text:";
-    if (!test.is_testharness_test && !missing)
-      html += `<a class="pretty" href="${pathParser.resultLink("-pretty-diff.html")}" title="Pretty difference">pretty</a>`;
+    html += `<a class="pretty" href="${pathParser.resultLink("-pretty-diff.html")}" title="Pretty difference">pretty</a>`;
     html += `<a class="actual" href="${pathParser.resultLink("-actual.txt")}" title="Actual text">actual</a>`;
-    if (!test.is_testharness_test && !missing) {
-      html += `<a class="expected" href="${pathParser.resultLink("-expected.txt")}" title="Expected result">expected</a><a
-        class="diff" href="${pathParser.resultLink("-diff.txt")}" title="Difference">diff</a>`;
-    }
+    html += `<a class="expected" href="${pathParser.resultLink("-expected.txt")}" title="Expected result">expected</a>`;
+    html += `<a class="diff" href="${pathParser.resultLink("-diff.txt")}" title="Difference">diff</a>`;
     if (test.has_repaint_overlay)
       html += ` <a class="repaint" href="${pathParser.repaintOverlayLink()}" title="Repaint overlay">repaint</a>`;
     this.toolbar.innerHTML = html + "\n";
@@ -2440,6 +2586,16 @@ class AudioResultsViewer {
   }
 } // class AudioResultsViewer
 
+(function setTextFilterWidth() {
+  let textFilter = document.querySelector("#text-filter");
+  let div = document.createElement('div');
+  div.style.position = 'absolute';
+  div.style.top = '-200px';
+  div.style.fontSize = getComputedStyle(textFilter).fontSize;
+  div.textContent = textFilter.getAttribute('placeholder');
+  document.body.appendChild(div);
+  textFilter.style.width = div.offsetWidth + 30 + 'px';
+})();
 </script>
 <script>
 // jsonp callback

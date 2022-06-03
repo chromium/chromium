@@ -5,7 +5,10 @@
 #include "services/network/websocket_factory.h"
 
 #include "base/bind.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "net/base/isolation_info.h"
 #include "net/base/url_util.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -27,52 +30,55 @@ WebSocketFactory::~WebSocketFactory() {
 void WebSocketFactory::CreateWebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
-    const GURL& site_for_cookies,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::SiteForCookies& site_for_cookies,
+    const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     int32_t process_id,
-    int32_t render_frame_id,
     const url::Origin& origin,
     uint32_t options,
+    net::NetworkTrafficAnnotationTag traffic_annotation,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-    mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
-    mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) {
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
+    mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
+    mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
+  if (isolation_info.request_type() !=
+      net::IsolationInfo::RequestType::kOther) {
+    mojo::ReportBadMessage(
+        "WebSocket's IsolationInfo::RequestType must be kOther");
+    return;
+  }
+
+  // If |require_network_isolation_key| is set, |isolation_info| must not be
+  // empty.
+  if (context_->require_network_isolation_key())
+    DCHECK(!isolation_info.IsEmpty());
+
   if (throttler_.HasTooManyPendingConnections(process_id)) {
     // Too many websockets!
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
         std::move(handshake_client));
-    handshake_client_remote.ResetWithReason(
-        mojom::WebSocket::kInsufficientResources,
-        "Error in connection establishment: net::ERR_INSUFFICIENT_RESOURCES");
+    handshake_client_remote->OnFailure("Insufficient resources",
+                                       net::ERR_INSUFFICIENT_RESOURCES, -1);
+    handshake_client_remote.reset();
     return;
   }
   WebSocket::HasRawHeadersAccess has_raw_headers_access(
       context_->network_service()->HasRawHeadersAccess(
           process_id, net::ChangeWebSocketSchemeToHttpScheme(url)));
   connections_.insert(std::make_unique<WebSocket>(
-      this, url, requested_protocols, site_for_cookies, network_isolation_key,
-      std::move(additional_headers), process_id, render_frame_id, origin,
-      options, has_raw_headers_access, std::move(handshake_client),
-      std::move(auth_handler), std::move(header_client),
+      this, url, requested_protocols, site_for_cookies, isolation_info,
+      std::move(additional_headers), origin, options, traffic_annotation,
+      has_raw_headers_access, std::move(handshake_client),
+      std::move(url_loader_network_observer), std::move(auth_handler),
+      std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
-      throttler_.CalculateDelay(process_id)));
+      throttler_.CalculateDelay(process_id), throttling_profile_id));
 }
 
 net::URLRequestContext* WebSocketFactory::GetURLRequestContext() {
   return context_->url_request_context();
-}
-
-void WebSocketFactory::OnSSLCertificateError(
-    base::OnceCallback<void(int)> callback,
-    const GURL& url,
-    int process_id,
-    int render_frame_id,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    bool fatal) {
-  context_->client()->OnSSLCertificateError(process_id, render_frame_id, url,
-                                            net_error, ssl_info, fatal,
-                                            std::move(callback));
 }
 
 void WebSocketFactory::Remove(WebSocket* impl) {

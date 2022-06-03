@@ -1,0 +1,66 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PerformanceHintsMetadataProto";
+
+package optimization_guide.proto;
+
+// A classification of the historical performance of a URL or set of URLs.
+enum PerformanceClass {
+  PERFORMANCE_UNKNOWN = 0;
+  // Historic performance for the associated key is relatively slow.
+  PERFORMANCE_SLOW = 1;
+  // Historic performance for the associated key is relatively fast.
+  PERFORMANCE_FAST = 2;
+  // Historic performance for the associated key is neither slow nor fast.
+  PERFORMANCE_NORMAL = 3;
+}
+
+message PerformanceHint {
+  // URLs that match this key should utilize the associated information.
+  oneof key {
+    // Uses wildcard strings (e.g. "https://google.com/*/page.html") to match
+    // URLs. See the following code for more information:
+    // https://cs.chromium.org/chromium/src/components/optimization_guide/url_pattern_with_wildcards.h
+    string wildcard_pattern = 1;
+  }
+
+  // A classification of the historical performance of URLs matching the
+  // associated key.
+  optional PerformanceClass performance_class = 2;
+}
+
+// Optimization metadata associated with Performance Hints.
+//
+// This is only populated for the PERFORMANCE_HINTS optimization type.
+message PerformanceHintsMetadata {
+  // An ordered set of performance hints.
+  //
+  // Only the first matching hint should be applied to a given URL.
+  //
+  // These will be omitted if LINK_PERFORMANCE hints are requested. Instead,
+  // link hints will be included in LinkPerformanceMetadata, below.
+  repeated PerformanceHint performance_hints = 1;
+
+  // The PerformanceHint for the page pattern that matched the parent
+  // OptimizationGuide hint.
+  //
+  // This is (generally) the current page. The "key" field is not populated as
+  // the pattern matching is done by OptimizationGuide.
+  optional PerformanceHint page_hint = 2;
+}
+
+// Optimization metadata associated with Link Performance Hints.
+//
+// This is only populated for the LINK_PERFORMANCE optimization type.
+message LinkPerformanceMetadata {
+  // An ordered set of hints for the most popular links for this key.
+  //
+  // Only the first matching hint should be applied to a given link URL.
+  repeated PerformanceHint link_hints = 1;
+}

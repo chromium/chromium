@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -38,6 +39,7 @@ class StyleRuleImport : public StyleRuleBase {
 
  public:
   StyleRuleImport(const String& href,
+                  LayerName&& layer,
                   scoped_refptr<MediaQuerySet>,
                   OriginClean origin_clean);
   ~StyleRuleImport();
@@ -57,7 +59,11 @@ class StyleRuleImport : public StyleRuleBase {
 
   void RequestStyleSheet();
 
-  void TraceAfterDispatch(blink::Visitor*);
+  bool IsLayered() const { return layer_.size(); }
+  const LayerName& GetLayerName() const { return layer_; }
+  String GetLayerNameAsString() const;
+
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // FIXME: inherit from ResourceClient directly to eliminate back
@@ -67,8 +73,6 @@ class StyleRuleImport : public StyleRuleBase {
   class ImportedStyleSheetClient final
       : public GarbageCollected<ImportedStyleSheetClient>,
         public ResourceClient {
-    USING_GARBAGE_COLLECTED_MIXIN(ImportedStyleSheetClient);
-
    public:
     ImportedStyleSheetClient(StyleRuleImport* owner_rule)
         : owner_rule_(owner_rule) {}
@@ -80,7 +84,7 @@ class StyleRuleImport : public StyleRuleBase {
 
     String DebugName() const override { return "ImportedStyleSheetClient"; }
 
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(owner_rule_);
       ResourceClient::Trace(visitor);
     }
@@ -97,6 +101,7 @@ class StyleRuleImport : public StyleRuleBase {
 
   Member<ImportedStyleSheetClient> style_sheet_client_;
   String str_href_;
+  LayerName layer_;
   scoped_refptr<MediaQuerySet> media_queries_;
   Member<StyleSheetContents> style_sheet_;
   bool loading_;
@@ -114,4 +119,4 @@ struct DowncastTraits<StyleRuleImport> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_IMPORT_H_

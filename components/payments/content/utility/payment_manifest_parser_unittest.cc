@@ -19,38 +19,33 @@ namespace {
 void ExpectUnableToParsePaymentMethodManifest(const std::string& input) {
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
-  bool actual_all_origins_supported = false;
 
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      std::move(value), ErrorLogger(), &actual_web_app_urls,
-      &actual_supported_origins, &actual_all_origins_supported);
+      GURL("https://bobpay.com/pmm.json"), std::move(value), ErrorLogger(),
+      &actual_web_app_urls, &actual_supported_origins);
 
   EXPECT_TRUE(actual_web_app_urls.empty()) << actual_web_app_urls.front();
   EXPECT_TRUE(actual_supported_origins.empty())
       << actual_supported_origins.front();
-  EXPECT_FALSE(actual_all_origins_supported);
 }
 
 void ExpectParsedPaymentMethodManifest(
     const std::string& input,
     const std::vector<GURL>& expected_web_app_urls,
-    const std::vector<url::Origin>& expected_supported_origins,
-    bool expected_all_origins_supported) {
+    const std::vector<url::Origin>& expected_supported_origins) {
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
-  bool actual_all_origins_supported = false;
 
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      std::move(value), ErrorLogger(), &actual_web_app_urls,
-      &actual_supported_origins, &actual_all_origins_supported);
+      GURL("https://bobpay.com/pmm.json"), std::move(value), ErrorLogger(),
+      &actual_web_app_urls, &actual_supported_origins);
 
   EXPECT_EQ(expected_web_app_urls, actual_web_app_urls);
   EXPECT_EQ(expected_supported_origins, actual_supported_origins);
-  EXPECT_EQ(expected_all_origins_supported, actual_all_origins_supported);
 }
 
 TEST(PaymentManifestParserTest, NullPaymentMethodManifestIsMalformed) {
@@ -91,9 +86,10 @@ TEST(PaymentManifestParserTest, ListOfEmptyDefaultApplicationsIsMalformed) {
       "{\"default_applications\": [\"\"]}");
 }
 
-TEST(PaymentManifestParserTest, RelativeURLDefaultApplicationIsMalformed) {
-  ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"manifest.json\"]}");
+TEST(PaymentManifestParserTest, DefaultApplicationCanBeRelativeURL) {
+  ExpectParsedPaymentMethodManifest(
+      "{\"default_applications\": [\"manifest.json\"]}",
+      {GURL("https://bobpay.com/manifest.json")}, {});
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationsShouldNotHaveNulCharacters) {
@@ -111,11 +107,15 @@ TEST(PaymentManifestParserTest, DefaultApplicationKeyShouldBeLowercase) {
       "{\"Default_Applications\": [\"https://bobpay.com/app.json\"]}");
 }
 
-TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeAbsoluteUrls) {
-  ExpectUnableToParsePaymentMethodManifest(
+TEST(PaymentManifestParserTest,
+     DefaultApplicationsCanBeEitherAbsoluteOrRelative) {
+  ExpectParsedPaymentMethodManifest(
       "{\"default_applications\": ["
-      "\"https://bobpay.com/app.json\","
-      "\"app.json\"]}");
+      "\"https://bobpay.com/app1.json\","
+      "\"app2.json\"]}",
+      {GURL("https://bobpay.com/app1.json"),
+       GURL("https://bobpay.com/app2.json")},
+      {});
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeHttps) {
@@ -187,7 +187,7 @@ TEST(PaymentManifestParserTest, WellFormedPaymentMethodManifestWithApps) {
       "\"https://alicepay.com/app.json\"]}",
       {GURL("https://bobpay.com/app.json"),
        GURL("https://alicepay.com/app.json")},
-      std::vector<url::Origin>(), false);
+      std::vector<url::Origin>());
 }
 
 TEST(PaymentManifestParserTest,
@@ -198,30 +198,24 @@ TEST(PaymentManifestParserTest,
       "\"http://localhost:8081/app.json\"]}",
       {GURL("http://127.0.0.1:8080/app.json"),
        GURL("http://localhost:8081/app.json")},
-      std::vector<url::Origin>(), false);
+      std::vector<url::Origin>());
 }
 
 TEST(PaymentManifestParserTest,
-     WellFormedPaymentMethodManifestWithAppsAndAllSupportedOrigins) {
-  ExpectParsedPaymentMethodManifest(
+     InvalidPaymentMethodManifestWithAppsAndAllSupportedOrigins) {
+  ExpectUnableToParsePaymentMethodManifest(
       "{\"default_applications\": [\"https://bobpay.com/app.json\", "
-      "\"https://alicepay.com/app.json\"], \"supported_origins\": \"*\"}",
-      {GURL("https://bobpay.com/app.json"),
-       GURL("https://alicepay.com/app.json")},
-      std::vector<url::Origin>(), true);
+      "\"https://alicepay.com/app.json\"], \"supported_origins\": \"*\"}");
 }
 
-TEST(PaymentManifestParserTest, AllOriginsSupported) {
-  ExpectParsedPaymentMethodManifest("{\"supported_origins\": \"*\"}",
-                                    std::vector<GURL>(),
-                                    std::vector<url::Origin>(), true);
+TEST(PaymentManifestParserTest, OriginWildcardNotSupported) {
+  ExpectUnableToParsePaymentMethodManifest("{\"supported_origins\": \"*\"}");
 }
 
 TEST(PaymentManifestParserTest,
      InvalidDefaultAppsWillPreventParsingSupportedOrigins) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"http://bobpay.com/app.json\"], "
-      "\"supported_origins\": \"*\"}");
+      "{\"default_applications\": [\"http://bobpay.com/app.json\"]}");
 }
 
 TEST(PaymentManifestParserTest,
@@ -240,8 +234,7 @@ TEST(PaymentManifestParserTest,
       {GURL("https://bobpay.com/app.json"),
        GURL("https://alicepay.com/app.json")},
       {url::Origin::Create(GURL("https://charliepay.com")),
-       url::Origin::Create(GURL("https://evepay.com"))},
-      false);
+       url::Origin::Create(GURL("https://evepay.com"))});
 }
 
 TEST(PaymentManifestParserTest,
@@ -251,8 +244,7 @@ TEST(PaymentManifestParserTest,
       "\"http://127.0.0.1:8081\"]}",
       std::vector<GURL>(),
       {url::Origin::Create(GURL("http://localhost:8080")),
-       url::Origin::Create(GURL("http://127.0.0.1:8081"))},
-      false);
+       url::Origin::Create(GURL("http://127.0.0.1:8081"))});
 }
 
 TEST(PaymentManifestParserTest,
@@ -262,15 +254,14 @@ TEST(PaymentManifestParserTest,
       "\"https://evepay.com\"]}",
       std::vector<GURL>(),
       {url::Origin::Create(GURL("https://charliepay.com")),
-       url::Origin::Create(GURL("https://evepay.com"))},
-      false);
+       url::Origin::Create(GURL("https://evepay.com"))});
 }
 
 TEST(PaymentManifestParserTest,
      WellFormedPaymentMethodManifestWithAllSupportedOrigins) {
   ExpectParsedPaymentMethodManifest("{\"supported_origins\": \"*\"}",
                                     std::vector<GURL>(),
-                                    std::vector<url::Origin>(), true);
+                                    std::vector<url::Origin>());
 }
 
 // Web app manifest parsing:

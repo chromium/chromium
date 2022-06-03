@@ -14,11 +14,12 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/mojom/event.mojom.h"
 #include "ui/events/mojom/event_constants.mojom.h"
+#include "ui/events/pointer_details.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 class Event;
 class LatencyInfo;
-struct PointerDetails;
 }
 
 namespace mojo {
@@ -92,49 +93,6 @@ struct EnumTraits<ui::mojom::EventMomentumPhase, ui::EventMomentumPhase> {
         return true;
       case ui::mojom::EventMomentumPhase::BLOCKED:
         *out = ui::EventMomentumPhase::BLOCKED;
-        return true;
-    }
-    NOTREACHED();
-    return false;
-  }
-};
-
-template <>
-struct EnumTraits<ui::mojom::PointerKind, ui::EventPointerType> {
-  static ui::mojom::PointerKind ToMojom(ui::EventPointerType input) {
-    switch (input) {
-      case ui::EventPointerType::POINTER_TYPE_UNKNOWN:
-        return ui::mojom::PointerKind::UNKNOWN;
-      case ui::EventPointerType::POINTER_TYPE_MOUSE:
-        return ui::mojom::PointerKind::MOUSE;
-      case ui::EventPointerType::POINTER_TYPE_PEN:
-        return ui::mojom::PointerKind::PEN;
-      case ui::EventPointerType::POINTER_TYPE_TOUCH:
-        return ui::mojom::PointerKind::TOUCH;
-      case ui::EventPointerType::POINTER_TYPE_ERASER:
-        return ui::mojom::PointerKind::ERASER;
-    }
-    NOTREACHED();
-    return ui::mojom::PointerKind::UNKNOWN;
-  }
-
-  static bool FromMojom(ui::mojom::PointerKind input,
-                        ui::EventPointerType* out) {
-    switch (input) {
-      case ui::mojom::PointerKind::UNKNOWN:
-        *out = ui::EventPointerType::POINTER_TYPE_UNKNOWN;
-        return true;
-      case ui::mojom::PointerKind::MOUSE:
-        *out = ui::EventPointerType::POINTER_TYPE_MOUSE;
-        return true;
-      case ui::mojom::PointerKind::PEN:
-        *out = ui::EventPointerType::POINTER_TYPE_PEN;
-        return true;
-      case ui::mojom::PointerKind::TOUCH:
-        *out = ui::EventPointerType::POINTER_TYPE_TOUCH;
-        return true;
-      case ui::mojom::PointerKind::ERASER:
-        *out = ui::EventPointerType::POINTER_TYPE_ERASER;
         return true;
     }
     NOTREACHED();

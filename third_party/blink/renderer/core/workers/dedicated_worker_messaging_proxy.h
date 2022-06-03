@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_MESSAGING_PROXY_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -24,6 +25,7 @@ class DedicatedWorker;
 class DedicatedWorkerObjectProxy;
 class FetchClientSettingsObjectSnapshot;
 class WorkerOptions;
+struct WorkerMainScriptLoadParameters;
 
 // A proxy class to talk to the DedicatedWorkerGlobalScope on a worker thread
 // via the DedicatedWorkerMessagingProxy from the main thread. See class
@@ -32,16 +34,27 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
     : public ThreadedMessagingProxyBase {
  public:
   DedicatedWorkerMessagingProxy(ExecutionContext*, DedicatedWorker*);
+  DedicatedWorkerMessagingProxy(const DedicatedWorkerMessagingProxy&) = delete;
+  DedicatedWorkerMessagingProxy& operator=(
+      const DedicatedWorkerMessagingProxy&) = delete;
   ~DedicatedWorkerMessagingProxy() override;
 
   // These methods should only be used on the parent context thread.
   void StartWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams>,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       const WorkerOptions*,
       const KURL& script_url,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       const v8_inspector::V8StackTraceId&,
-      const String& source_code);
+      const String& source_code,
+      RejectCoepUnsafeNone reject_coep_unsafe_none,
+      const blink::DedicatedWorkerToken& token,
+      mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+          dedicated_worker_host,
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
   void PostMessageToWorkerGlobalScope(BlinkTransferableMessage);
 
   bool HasPendingActivity() const;
@@ -66,12 +79,12 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
     return *worker_object_proxy_.get();
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class DedicatedWorkerMessagingProxyForTest;
 
-  base::Optional<WorkerBackingThreadStartupData> CreateBackingThreadStartupData(
+  absl::optional<WorkerBackingThreadStartupData> CreateBackingThreadStartupData(
       v8::Isolate*);
 
   std::unique_ptr<WorkerThread> CreateWorkerThread() override;
@@ -93,7 +106,12 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
   // Tasks are queued here until worker scripts are evaluated on the worker
   // global scope.
   Vector<BlinkTransferableMessage> queued_early_tasks_;
-  DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerMessagingProxy);
+
+  // Passed to DedicatedWorkerThread on worker thread creation.
+  mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+      pending_dedicated_worker_host_;
+  mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+      pending_back_forward_cache_controller_host_;
 };
 
 }  // namespace blink

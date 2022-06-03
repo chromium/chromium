@@ -15,7 +15,7 @@
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 
@@ -46,6 +46,9 @@ class GIN_EXPORT ObjectTemplateBuilder {
  public:
   explicit ObjectTemplateBuilder(v8::Isolate* isolate);
   ObjectTemplateBuilder(v8::Isolate* isolate, const char* type_name);
+  ObjectTemplateBuilder(v8::Isolate* isolate,
+                        const char* type_name,
+                        v8::Local<v8::ObjectTemplate> tmpl);
   ObjectTemplateBuilder(const ObjectTemplateBuilder& other);
   ~ObjectTemplateBuilder();
 
@@ -58,15 +61,23 @@ class GIN_EXPORT ObjectTemplateBuilder {
   }
 
   // In the following methods, T and U can be function pointer, member function
-  // pointer, base::Callback, or v8::FunctionTemplate. Most clients will want to
-  // use one of the first two options. Also see gin::CreateFunctionTemplate()
-  // for creating raw function templates.
+  // pointer, base::RepeatingCallback, or v8::FunctionTemplate. Most clients
+  // will want to use one of the first two options. Also see
+  // gin::CreateFunctionTemplate() for creating raw function templates.
   template<typename T>
   ObjectTemplateBuilder& SetMethod(const base::StringPiece& name,
                                    const T& callback) {
     return SetImpl(
         name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
   }
+
+  template <typename T>
+  ObjectTemplateBuilder& SetMethod(v8::Local<v8::Name> name,
+                                   const T& callback) {
+    return SetImpl(
+        name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
+  }
+
   template<typename T>
   ObjectTemplateBuilder& SetProperty(const base::StringPiece& name,
                                      const T& getter) {
@@ -107,6 +118,8 @@ class GIN_EXPORT ObjectTemplateBuilder {
 
  private:
   ObjectTemplateBuilder& SetImpl(const base::StringPiece& name,
+                                 v8::Local<v8::Data> val);
+  ObjectTemplateBuilder& SetImpl(v8::Local<v8::Name> name,
                                  v8::Local<v8::Data> val);
   ObjectTemplateBuilder& SetPropertyImpl(
       const base::StringPiece& name, v8::Local<v8::FunctionTemplate> getter,

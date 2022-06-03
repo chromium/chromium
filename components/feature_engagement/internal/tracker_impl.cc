@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
@@ -155,8 +157,8 @@ TrackerImpl::TrackerImpl(
       event_model_initialization_finished_(false),
       availability_model_initialization_finished_(false) {
   event_model_->Initialize(
-      base::Bind(&TrackerImpl::OnEventModelInitializationFinished,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&TrackerImpl::OnEventModelInitializationFinished,
+                     weak_ptr_factory_.GetWeakPtr()),
       time_provider_->GetCurrentDay());
 
   availability_model_->Initialize(
@@ -174,10 +176,16 @@ void TrackerImpl::NotifyEvent(const std::string& event) {
 }
 
 bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
+  return ShouldTriggerHelpUIWithSnooze(feature).ShouldShowIph();
+}
+
+TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
+    const base::Feature& feature) {
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
-      *display_lock_controller_, time_provider_->GetCurrentDay());
+      *display_lock_controller_, configuration_.get(),
+      time_provider_->GetCurrentDay());
   if (result.NoErrors()) {
     condition_validator_->NotifyIsShowing(
         feature, feature_config, configuration_->GetRegisteredFeatures());
@@ -192,19 +200,51 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
            << result;
-  return result.NoErrors() && !feature_config.tracking_only;
+
+  bool should_show_iph = false;
+
+  if (feature_config.tracking_only) {
+    if (result.NoErrors()) {
+      // Because tracking only features always return false to the client,
+      // clients do not have the context to correctly dismiss. The dismiss is
+      // needed because our condition validator thinks the feature is currently
+      // showing. See https://crbug.com/1188679 for more details.
+      Dismissed(feature);
+    }
+    should_show_iph = false;
+  } else {
+    should_show_iph = result.NoErrors();
+  }
+
+  return TriggerDetails(should_show_iph, result.should_show_snooze);
 }
 
 bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
-      *display_lock_controller_, time_provider_->GetCurrentDay());
+      *display_lock_controller_, configuration_.get(),
+      time_provider_->GetCurrentDay());
   DVLOG(2) << "Would trigger result for " << feature.name
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
            << result;
   return result.NoErrors() && !feature_config.tracking_only;
+}
+
+bool TrackerImpl::HasEverTriggered(const base::Feature& feature,
+                                   bool from_window) const {
+  const FeatureConfig feature_config =
+      configuration_->GetFeatureConfig(feature);
+  const EventConfig trigger_config = feature_config.trigger;
+
+  uint32_t window_size =
+      from_window ? trigger_config.window : trigger_config.storage;
+
+  uint32_t event_count = event_model_->GetEventCount(
+      trigger_config.name, time_provider_->GetCurrentDay(), window_size);
+
+  return event_count > 0;
 }
 
 Tracker::TriggerState TrackerImpl::GetTriggerState(
@@ -217,7 +257,7 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
 
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, configuration_->GetFeatureConfig(feature), *event_model_,
-      *availability_model_, *display_lock_controller_,
+      *availability_model_, *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
 
   if (result.trigger_ok) {
@@ -235,6 +275,21 @@ void TrackerImpl::Dismissed(const base::Feature& feature) {
   DVLOG(2) << "Dismissing " << feature.name;
   condition_validator_->NotifyDismissed(feature);
   stats::RecordUserDismiss();
+}
+
+void TrackerImpl::DismissedWithSnooze(
+    const base::Feature& feature,
+    absl::optional<SnoozeAction> snooze_action) {
+  FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
+  if (snooze_action == SnoozeAction::SNOOZED) {
+    event_model_->IncrementSnooze(feature_config.trigger.name,
+                                  time_provider_->GetCurrentDay(),
+                                  time_provider_->Now());
+  } else if (snooze_action == SnoozeAction::DISMISSED) {
+    event_model_->DismissSnooze(feature_config.trigger.name);
+  }
+  if (snooze_action.has_value())
+    stats::RecordUserSnoozeAction(snooze_action.value());
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {

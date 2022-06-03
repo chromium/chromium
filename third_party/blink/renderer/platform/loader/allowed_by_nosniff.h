@@ -25,4 +25,4 @@ class PLATFORM_EXPORT AllowedByNosniff final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_ALLOWED_BY_NOSNIFF_H_

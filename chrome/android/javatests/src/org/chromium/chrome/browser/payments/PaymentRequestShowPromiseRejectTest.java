@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -13,7 +13,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -41,8 +43,7 @@ public class PaymentRequestShowPromiseRejectTest implements MainActivityStartCal
     @MediumTest
     @Feature({"Payments"})
     public void testReject() throws TimeoutException {
-        mRule.installPaymentApp("basic-card", PaymentRequestTestRule.HAVE_INSTRUMENTS,
-                PaymentRequestTestRule.IMMEDIATE_RESPONSE);
+        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.openPageAndClickNodeAndWait("buy", mRule.getRendererClosedMojoConnection());
         mRule.expectResultContains(new String[] {"AbortError"});
     }

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -15,7 +15,7 @@ generate_extension_admx.py --name <name> --id <id> --schema <schema_file>
 
 Example:
   Download the managed bookmarks extension from
-    http://developer.chrome.com/extensions/examples/extensions/managed_bookmarks.zip
+    https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/mv2-archive/extensions/managed_bookmarks
   to obtain the schema.json file.
 
   generate_extension_admx.py --name 'Managed Bookmarks'
@@ -29,9 +29,8 @@ Example:
 import re
 import sys
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from xml.dom import minidom
-
 
 class AdmxGenerator(object):
   '''Generates ADMX and ADML templates'''
@@ -233,7 +232,7 @@ class AdmxGenerator(object):
     elif ('$ref' in policy_schema):
       # Instantiate referenced schema.
       referenced_schema = self._schema_map[policy_schema['$ref']]
-      for key, value in referenced_schema.iteritems():
+      for key, value in referenced_schema.items():
         if not key in policy_schema:
           policy_schema[key] = value
 
@@ -371,34 +370,33 @@ def ConvertJsonToAdmx(extension_id, extension_name, schema_file, admx_file,
 
 def main():
   '''Main function, usage see top of file.'''
-  parser = OptionParser(usage=__doc__)
-  parser.add_option(
+  parser = ArgumentParser(usage=__doc__)
+  parser.add_argument(
       '--name',
       dest='extension_name',
       help='extension name (e.g. Managed Bookmarks)')
-  parser.add_option(
+  parser.add_argument(
       '--id',
       dest='extension_id',
       help='extension id (e.g. gihmafigllmhbppdfjnfecimiohcljba)')
-  parser.add_option(
+  parser.add_argument(
       '--schema',
       dest='schema_file',
       help='Input schema.json file for the extension',
       metavar='FILE')
-  parser.add_option(
+  parser.add_argument(
       '--admx', dest='admx_file', help='Output ADMX file', metavar='FILE')
-  parser.add_option(
+  parser.add_argument(
       '--adml', dest='adml_file', help='Output ADML file', metavar='FILE')
-  (options, args) = parser.parse_args()
+  args = parser.parse_args()
 
-  if (not options.extension_name or not options.extension_id or
-      not options.schema_file or not options.admx_file or
-      not options.adml_file):
+  if (not args.extension_name or not args.extension_id or
+      not args.schema_file or not args.admx_file or not args.adml_file):
     parser.print_help()
     return 1
 
-  ConvertJsonToAdmx(options.extension_name, options.extension_id,
-                    options.schema_file, options.admx_file, options.adml_file)
+  ConvertJsonToAdmx(args.extension_name, args.extension_id, args.schema_file,
+                    args.admx_file, args.adml_file)
   return 0
 
 

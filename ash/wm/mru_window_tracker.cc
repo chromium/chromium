@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -13,11 +14,16 @@
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -36,6 +42,11 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   explicit ScopedWindowClosingObserver(aura::Window* window) : window_(window) {
     window_->AddObserver(this);
   }
+
+  ScopedWindowClosingObserver(const ScopedWindowClosingObserver&) = delete;
+  ScopedWindowClosingObserver& operator=(const ScopedWindowClosingObserver&) =
+      delete;
+
   ~ScopedWindowClosingObserver() override {
     window_->RemoveObserver(this);
     window_ = nullptr;
@@ -46,12 +57,12 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowClosingObserver);
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
-  DCHECK(window);
+  if (window->GetProperty(ash::kExcludeInMruKey))
+    return false;
+
   ScopedWindowClosingObserver observer(window);
   AshFocusRules* focus_rules = Shell::Get()->focus_rules();
 
@@ -84,10 +95,15 @@ bool CanIncludeWindowInCycleList(aura::Window* window) {
 }
 
 // A predicate that determines whether |window| can be included in the list
-// built for alt-tab cycling, including Android PIP windows.
+// built for alt-tab cycling, including one of the windows for Android PIP apps.
+// For single-activity PIP, the PIP window is included in the list. (in the case
+// of single-activity PIP, the PIP window is the same as the original window.)
+// For multi-activity PIP, the non-PIP activity is included in the list.
+// See the comment for |kPipOriginalWindowKey| for more detail.
 bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
   return CanIncludeWindowInCycleList(window) ||
-         window_util::IsArcPipWindow(window);
+         (window_util::IsArcPipWindow(window) &&
+          window->GetProperty(ash::kPipOriginalWindowKey));
 }
 
 // Returns a list of windows ordered by their stacking order such that the most
@@ -121,7 +137,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
         if (active_desk_only) {
           // If only the active desk's MRU windows are requested, then exclude
           // children of the non-active desks' containers.
-          const int parent_id = window->parent()->id();
+          const int parent_id = window->parent()->GetId();
           if (desks_util::IsDeskContainerId(parent_id) &&
               parent_id != active_desk_id) {
             continue;
@@ -184,20 +200,39 @@ MruWindowTracker::WindowList BuildWindowListInternal(
 }  // namespace
 
 bool CanIncludeWindowInMruList(aura::Window* window) {
-  return wm::CanActivateWindow(window) && !WindowState::Get(window)->IsPip();
+  // If `window` was launched from Full Restore it won't be activatable
+  // temporarily, but it should still be included in the MRU list.
+  if (window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
+    return true;
+
+  return wm::CanActivateWindow(window) &&
+         !window->GetProperty(ash::kExcludeInMruKey);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // MruWindowTracker, public:
 
 MruWindowTracker::MruWindowTracker() {
+  if (full_restore::features::IsFullRestoreEnabled())
+    aura::Env::GetInstance()->AddObserver(this);
+
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
 MruWindowTracker::~MruWindowTracker() {
+  aura::Env::GetInstance()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   for (auto* window : mru_windows_)
     window->RemoveObserver(this);
+}
+
+MruWindowTracker::WindowList MruWindowTracker::BuildAppWindowList(
+    DesksMruType desks_mru_type) const {
+  return BuildWindowListInternal(
+      &mru_windows_, desks_mru_type, [](aura::Window* w) {
+        return w->GetProperty(aura::client::kAppType) !=
+               static_cast<int>(ash::AppType::NON_APP);
+      });
 }
 
 MruWindowTracker::WindowList MruWindowTracker::BuildMruWindowList(
@@ -233,12 +268,13 @@ void MruWindowTracker::SetIgnoreActivations(bool ignore) {
     SetActiveWindow(window_util::GetActiveWindow());
 }
 
-void MruWindowTracker::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
+void MruWindowTracker::OnWindowMovedOutFromRemovingDesk(aura::Window* window) {
+  DCHECK(window);
 
-void MruWindowTracker::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+  auto iter = std::find(mru_windows_.begin(), mru_windows_.end(), window);
+  DCHECK(iter != mru_windows_.end());
+  mru_windows_.erase(iter);
+  mru_windows_.insert(mru_windows_.begin(), window);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -261,8 +297,13 @@ void MruWindowTracker::SetActiveWindow(aura::Window* active_window) {
 void MruWindowTracker::OnWindowActivated(ActivationReason reason,
                                          aura::Window* gained_active,
                                          aura::Window* lost_active) {
-  if (!ignore_window_activations_)
-    SetActiveWindow(gained_active);
+  if (ignore_window_activations_)
+    return;
+
+  SetActiveWindow(gained_active);
+
+  if (gained_active && full_restore::features::IsFullRestoreEnabled())
+    WindowRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
 void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
@@ -271,9 +312,23 @@ void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
   // else we may end up with a deleted window in |mru_windows_|.
   base::Erase(mru_windows_, window);
   window->RemoveObserver(this);
+}
 
-  for (auto& observer : observers_)
-    observer.OnWindowUntracked(window);
+void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
+  DCHECK(full_restore::features::IsFullRestoreEnabled());
+
+  int32_t* activation_index =
+      window->GetProperty(app_restore::kActivationIndexKey);
+  if (!activation_index)
+    return;
+
+  // When windows are restored from Full Restore, they are restored inactive
+  // so we have to manually insert them into the window tracker and restore
+  // their MRU order.
+  window->AddObserver(this);
+  mru_windows_.insert(
+      WindowRestoreController::GetWindowToInsertBefore(window, mru_windows_),
+      window);
 }
 
 }  // namespace ash

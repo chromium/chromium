@@ -4,7 +4,6 @@
 
 #include "media/capture/video/win/sink_filter_win.h"
 
-#include "base/logging.h"
 #include "media/capture/video/win/sink_input_pin_win.h"
 
 namespace media {
@@ -30,7 +29,7 @@ IPin* SinkFilter::GetPin(int index) {
   return index == 0 ? input_pin_.get() : nullptr;
 }
 
-STDMETHODIMP SinkFilter::GetClassID(CLSID* clsid) {
+HRESULT SinkFilter::GetClassID(CLSID* clsid) {
   *clsid = __uuidof(SinkFilter);
   return S_OK;
 }

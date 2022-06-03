@@ -6,11 +6,8 @@
 #define CONTENT_BROWSER_MEDIA_AUDIO_LOOPBACK_STREAM_BROKER_H_
 
 #include <cstdint>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/browser/media/audio_muting_session.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
@@ -21,10 +18,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 namespace mojom {
-class StreamFactory;
+class AudioStreamFactory;
 }
 }  // namespace audio
 
@@ -45,13 +43,17 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
       uint32_t shared_memory_count,
       bool mute_source,
       AudioStreamBroker::DeleterCallback deleter,
-      mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+      mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client);
+
+  AudioLoopbackStreamBroker(const AudioLoopbackStreamBroker&) = delete;
+  AudioLoopbackStreamBroker& operator=(const AudioLoopbackStreamBroker&) =
+      delete;
 
   ~AudioLoopbackStreamBroker() final;
 
   // Creates the stream.
-  void CreateStream(audio::mojom::StreamFactory* factory) final;
+  void CreateStream(media::mojom::AudioStreamFactory* factory) final;
 
   // media::AudioInputStreamObserver implementation.
   void DidStartRecording() final;
@@ -74,16 +76,14 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
 
   // Constructed only if the loopback source playback should be muted while the
   // loopback stream is running.
-  base::Optional<AudioMutingSession> muter_;
+  absl::optional<AudioMutingSession> muter_;
 
-  mojo::Remote<mojom::RendererAudioInputStreamFactoryClient>
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactoryClient>
       renderer_factory_client_;
   mojo::Receiver<AudioInputStreamObserver> observer_receiver_{this};
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient> client_receiver_;
 
   base::WeakPtrFactory<AudioLoopbackStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLoopbackStreamBroker);
 };
 
 }  // namespace content

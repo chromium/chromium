@@ -11,51 +11,42 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
+namespace invalidation {
 
-namespace syncer {
-
-namespace test_util {
-class UnackedInvalidationSetEqMatcher;
-}  // test_util
-
-class SingleObjectInvalidationSet;
-class ObjectIdInvalidationMap;
+class SingleTopicInvalidationSet;
+class TopicInvalidationMap;
 class AckHandle;
 class UnackedInvalidationSet;
 
-using UnackedInvalidationsMap =
-    std::map<invalidation::ObjectId, UnackedInvalidationSet, ObjectIdLessThan>;
+using UnackedInvalidationsMap = std::map<Topic, UnackedInvalidationSet>;
 
 // Manages the set of invalidations that are awaiting local acknowledgement for
-// a particular ObjectId.  This set of invalidations will be persisted across
+// a particular Topic.  This set of invalidations will be persisted across
 // restarts, though this class is not directly responsible for that.
 class INVALIDATION_EXPORT UnackedInvalidationSet {
  public:
   static const size_t kMaxBufferedInvalidations;
 
-  explicit UnackedInvalidationSet(invalidation::ObjectId id);
+  explicit UnackedInvalidationSet(const Topic& topic);
   UnackedInvalidationSet(const UnackedInvalidationSet& other);
   ~UnackedInvalidationSet();
 
-  // Returns the ObjectID of the invalidations this class is tracking.
-  const invalidation::ObjectId& object_id() const;
+  // Returns the Topic of the invalidations this class is tracking.
+  const Topic& topic() const;
 
   // Adds a new invalidation to the set awaiting acknowledgement.
   void Add(const Invalidation& invalidation);
 
   // Adds many new invalidations to the set awaiting acknowledgement.
-  void AddSet(const SingleObjectInvalidationSet& invalidations);
+  void AddSet(const SingleTopicInvalidationSet& invalidations);
 
   // Exports the set of invalidations awaiting acknowledgement as an
-  // ObjectIdInvalidationMap.  Each of these invalidations will be associated
+  // TopicInvalidationMap. Each of these invalidations will be associated
   // with the given |ack_handler|.
   //
   // The contents of the UnackedInvalidationSet are not directly modified by
@@ -64,7 +55,7 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   void ExportInvalidations(
       base::WeakPtr<AckHandler> ack_handler,
       scoped_refptr<base::SingleThreadTaskRunner> ack_handler_task_runner,
-      ObjectIdInvalidationMap* out) const;
+      TopicInvalidationMap* out) const;
 
   // Removes all stored invalidations from this object.
   void Clear();
@@ -98,22 +89,9 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   // indicate that this invalidation has been lost without being acted on.
   void Drop(const AckHandle& handle);
 
-  // Deserializes the given |dict| as an UnackedInvalidationSet and inserts the
-  // pair into |map| using the ObjectId as the key. Returns false if the
-  // deserialization fails.
-  static bool DeserializeSetIntoMap(const base::DictionaryValue& dict,
-                                    syncer::UnackedInvalidationsMap* map);
-
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
-  bool ResetFromValue(const base::DictionaryValue& value);
-
  private:
-  // Allow this test helper to have access to our internals.
-  friend class test_util::UnackedInvalidationSetEqMatcher;
 
   typedef std::set<Invalidation, InvalidationVersionLessThan> InvalidationsSet;
-
-  bool ResetListFromValue(const base::ListValue& value);
 
   // Limits the list size to the given maximum.  This function will correctly
   // update this class' internal data to indicate if invalidations have been
@@ -121,10 +99,10 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   void Truncate(size_t max_size);
 
   bool registered_;
-  invalidation::ObjectId object_id_;
+  const Topic topic_;
   InvalidationsSet invalidations_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_UNACKED_INVALIDATION_SET_H_

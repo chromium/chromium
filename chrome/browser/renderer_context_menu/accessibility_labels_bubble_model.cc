@@ -8,6 +8,8 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -33,30 +35,30 @@ void RecordModalDialogAccepted(bool accepted) {
 
 AccessibilityLabelsBubbleModel::AccessibilityLabelsBubbleModel(
     Profile* profile,
-    WebContents* web_contents,
+    content::WebContents* web_contents,
     bool enable_always)
     : profile_(profile),
-      web_contents_(web_contents),
+      web_contents_(web_contents->GetWeakPtr()),
       enable_always_(enable_always) {}
 
-AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() {}
+AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() = default;
 
-base::string16 AccessibilityLabelsBubbleModel::GetTitle() const {
+std::u16string AccessibilityLabelsBubbleModel::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_DIALOG_TITLE);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetMessageText() const {
+std::u16string AccessibilityLabelsBubbleModel::GetMessageText() const {
   return l10n_util::GetStringUTF16(
       enable_always_
           ? IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_TEXT
           : IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_TEXT_ONCE);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetButtonLabel(
-    BubbleButton button) const {
+std::u16string AccessibilityLabelsBubbleModel::GetButtonLabel(
+    ui::DialogButton button) const {
   return l10n_util::GetStringUTF16(
-      button == BUTTON_OK
+      button == ui::DIALOG_BUTTON_OK
           ? IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_ENABLE
           : IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_DISABLE);
 }
@@ -82,7 +84,7 @@ void AccessibilityLabelsBubbleModel::Cancel() {
   RecordModalDialogAccepted(/* not accepted */ false);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetLinkText() const {
+std::u16string AccessibilityLabelsBubbleModel::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
@@ -91,12 +93,16 @@ GURL AccessibilityLabelsBubbleModel::GetHelpPageURL() const {
 }
 
 void AccessibilityLabelsBubbleModel::OpenHelpPage() {
-  // TODO(katie): Link to a specific accessibility labels help page when
-  // there is one; check with the privacy team.
   OpenURLParams params(GetHelpPageURL(), Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  if (web_contents_) {
+    web_contents_->OpenURL(params);
+    return;
+  }
+  // The web contents used to open this dialog have been destroyed.
+  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  browser->OpenURL(params);
 }
 
 void AccessibilityLabelsBubbleModel::SetPref(bool enabled) {

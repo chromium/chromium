@@ -10,10 +10,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
@@ -28,16 +29,18 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "url/origin.h"
 
 namespace net {
 
 namespace {
 
-bool ValidatePushedHeaders(const HttpRequestInfo& request_info,
-                           const spdy::SpdyHeaderBlock& pushed_request_headers,
-                           const spdy::SpdyHeaderBlock& pushed_response_headers,
-                           const HttpResponseInfo& pushed_response_info) {
-  spdy::SpdyHeaderBlock::const_iterator status_it =
+bool ValidatePushedHeaders(
+    const HttpRequestInfo& request_info,
+    const spdy::Http2HeaderBlock& pushed_request_headers,
+    const spdy::Http2HeaderBlock& pushed_response_headers,
+    const HttpResponseInfo& pushed_response_info) {
+  spdy::Http2HeaderBlock::const_iterator status_it =
       pushed_response_headers.find(spdy::kHttp2StatusHeader);
   DCHECK(status_it != pushed_response_headers.end());
   // 206 Partial Content and 416 Requested Range Not Satisfiable are range
@@ -51,7 +54,7 @@ bool ValidatePushedHeaders(const HttpRequestInfo& request_info,
           SpdyPushedStreamFate::kClientRequestNotRange);
       return false;
     }
-    spdy::SpdyHeaderBlock::const_iterator pushed_request_range_it =
+    spdy::Http2HeaderBlock::const_iterator pushed_request_range_it =
         pushed_request_headers.find("range");
     if (pushed_request_range_it == pushed_request_headers.end()) {
       // Pushed request is not a range request.
@@ -93,11 +96,14 @@ bool ValidatePushedHeaders(const HttpRequestInfo& request_info,
 
 }  // anonymous namespace
 
-const size_t SpdyHttpStream::kRequestBodyBufferSize = 1 << 14;  // 16KB
+// Align our request body with |kMaxSpdyFrameChunkSize| to prevent unexpected
+// buffer chunking. This is 16KB - frame header size.
+const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
-                               NetLogSource source_dependency)
+                               NetLogSource source_dependency,
+                               std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -116,9 +122,8 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       upload_stream_in_progress_(false),
       user_buffer_len_(0),
       request_body_buf_size_(0),
-      buffered_read_callback_pending_(false),
-      more_read_data_pending_(false),
-      was_alpn_negotiated_(false) {
+      was_alpn_negotiated_(false),
+      dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
 
@@ -344,16 +349,17 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
     return ERR_IO_PENDING;
   }
 
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(*request_info_, request_headers, &headers);
   stream_->net_log().AddEvent(
       NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
       [&](NetLogCaptureMode capture_mode) {
-        return SpdyHeaderBlockNetLogParams(&headers, capture_mode);
+        return Http2HeaderBlockNetLogParams(&headers, capture_mode);
       });
   DispatchRequestHeadersCallback(headers);
 
-  bool will_send_data = HasUploadData() | spdy_session_->GreasedFramesEnabled();
+  bool will_send_data =
+      HasUploadData() || spdy_session_->EndStreamWithDataFrame();
   result = stream_->SendRequestHeaders(
       std::move(headers),
       will_send_data ? MORE_DATA_TO_SEND : NO_MORE_DATA_TO_SEND);
@@ -377,16 +383,30 @@ void SpdyHttpStream::Cancel() {
 void SpdyHttpStream::OnHeadersSent() {
   if (HasUploadData()) {
     ReadAndSendRequestBodyData();
-  } else if (spdy_session_->GreasedFramesEnabled()) {
+  } else if (spdy_session_->EndStreamWithDataFrame()) {
     SendEmptyBody();
   } else {
     MaybePostRequestCallback(OK);
   }
 }
 
+void SpdyHttpStream::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  DCHECK(!response_headers_complete_);
+  DCHECK(response_info_);
+  DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
+
+  const bool headers_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  CHECK(headers_valid);
+
+  if (!response_callback_.is_null()) {
+    DoResponseCallback(OK);
+  }
+}
+
 void SpdyHttpStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {
   DCHECK(!response_headers_complete_);
   response_headers_complete_ = true;
 
@@ -442,26 +462,22 @@ void SpdyHttpStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   DCHECK(!stream_->IsClosed() || stream_->type() == SPDY_PUSH_STREAM);
   if (buffer) {
     response_body_queue_.Enqueue(std::move(buffer));
-
-    if (user_buffer_.get()) {
-      // Handing small chunks of data to the caller creates measurable overhead.
-      // We buffer data in short time-spans and send a single read notification.
-      ScheduleBufferedReadCallback();
-    }
+    MaybeScheduleBufferedReadCallback();
   }
 }
 
 void SpdyHttpStream::OnDataSent() {
-  if (HasUploadData()) {
+  if (request_info_ && HasUploadData()) {
     request_body_buf_size_ = 0;
     ReadAndSendRequestBodyData();
   } else {
-    CHECK(spdy_session_->GreasedFramesEnabled());
+    CHECK(spdy_session_->EndStreamWithDataFrame());
+    MaybePostRequestCallback(OK);
   }
 }
 
 // TODO(xunjieli): Maybe do something with the trailers. crbug.com/422958.
-void SpdyHttpStream::OnTrailers(const spdy::SpdyHeaderBlock& trailers) {}
+void SpdyHttpStream::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
 
 void SpdyHttpStream::OnClose(int status) {
   DCHECK(stream_);
@@ -553,7 +569,7 @@ void SpdyHttpStream::ReadAndSendRequestBodyData() {
 
 void SpdyHttpStream::SendEmptyBody() {
   CHECK(!HasUploadData());
-  CHECK(spdy_session_->GreasedFramesEnabled());
+  CHECK(spdy_session_->EndStreamWithDataFrame());
 
   auto buffer = base::MakeRefCounted<IOBuffer>(/* buffer_size = */ 0);
   stream_->SendData(buffer.get(), /* length = */ 0, NO_MORE_DATA_TO_SEND);
@@ -592,52 +608,42 @@ void SpdyHttpStream::OnRequestBodyReadCompleted(int status) {
                     eof ? NO_MORE_DATA_TO_SEND : MORE_DATA_TO_SEND);
 }
 
-void SpdyHttpStream::ScheduleBufferedReadCallback() {
-  // If there is already a scheduled DoBufferedReadCallback, don't issue
-  // another one.  Mark that we have received more data and return.
-  if (buffered_read_callback_pending_) {
-    more_read_data_pending_ = true;
+void SpdyHttpStream::MaybeScheduleBufferedReadCallback() {
+  DCHECK(!stream_closed_);
+
+  if (!user_buffer_.get())
+    return;
+
+  // If enough data was received to fill the user buffer, invoke
+  // DoBufferedReadCallback() with no delay.
+  //
+  // Note: DoBufferedReadCallback() is invoked asynchronously to preserve
+  // historical behavior. It would be interesting to evaluate whether it can be
+  // invoked synchronously to avoid the overhead of posting a task. A long time
+  // ago, the callback was invoked synchronously
+  // https://codereview.chromium.org/652209/diff/2018/net/spdy/spdy_stream.cc.
+  if (response_body_queue_.GetTotalSize() >=
+      static_cast<size_t>(user_buffer_len_)) {
+    buffered_read_timer_.Start(FROM_HERE, base::TimeDelta() /* no delay */,
+                               this, &SpdyHttpStream::DoBufferedReadCallback);
     return;
   }
 
-  more_read_data_pending_ = false;
-  buffered_read_callback_pending_ = true;
-  const base::TimeDelta kBufferTime = base::TimeDelta::FromMilliseconds(1);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SpdyHttpStream::DoBufferedReadCallback,
-                     weak_factory_.GetWeakPtr()),
-      kBufferTime);
-}
-
-// Checks to see if we should wait for more buffered data before notifying
-// the caller.  Returns true if we should wait, false otherwise.
-bool SpdyHttpStream::ShouldWaitForMoreBufferedData() const {
-  // If the response is complete, there is no point in waiting.
-  if (stream_closed_)
-    return false;
-
-  DCHECK_GT(user_buffer_len_, 0);
-  return response_body_queue_.GetTotalSize() <
-      static_cast<size_t>(user_buffer_len_);
+  // Handing small chunks of data to the caller creates measurable overhead.
+  // Wait 1ms to allow handing off multiple chunks of data received within a
+  // short time span at once.
+  buffered_read_timer_.Start(FROM_HERE, base::Milliseconds(1), this,
+                             &SpdyHttpStream::DoBufferedReadCallback);
 }
 
 void SpdyHttpStream::DoBufferedReadCallback() {
-  buffered_read_callback_pending_ = false;
+  buffered_read_timer_.Stop();
 
   // If the transaction is cancelled or errored out, we don't need to complete
   // the read.
   if (stream_closed_ && closed_stream_status_ != OK) {
     if (response_callback_)
       DoResponseCallback(closed_stream_status_);
-    return;
-  }
-
-  // When more_read_data_pending_ is true, it means that more data has
-  // arrived since we started waiting.  Wait a little longer and continue
-  // to buffer.
-  if (more_read_data_pending_ && ShouldWaitForMoreBufferedData()) {
-    ScheduleBufferedReadCallback();
     return;
   }
 
@@ -704,6 +710,19 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   if (stream_) {
     stream_->SetPriority(priority);
   }
+}
+
+const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
+  return dns_aliases_;
+}
+
+base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 }  // namespace net

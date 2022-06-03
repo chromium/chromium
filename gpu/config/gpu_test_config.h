@@ -39,10 +39,12 @@ class GPU_EXPORT GPUTestConfig {
     kOsMacHighSierra = 1 << 18,
     kOsMacMojave = 1 << 19,
     kOsMacCatalina = 1 << 20,
+    kOsMacBigSur = 1 << 21,
+    kOsMacMonterey = 1 << 22,
     kOsMac = kOsMacLeopard | kOsMacSnowLeopard | kOsMacLion |
              kOsMacMountainLion | kOsMacMavericks | kOsMacYosemite |
              kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave |
-             kOsMacCatalina,
+             kOsMacCatalina | kOsMacBigSur | kOsMacMonterey,
     // Jump over a few bits for future OSX versions.
     kOsLinux = 1 << 25,
     kOsChromeOS = 1 << 26,
@@ -66,6 +68,12 @@ class GPU_EXPORT GPUTestConfig {
     kAPIGLES = 1 << 3,
   };
 
+  enum CommandDecoder {
+    kCommandDecoderUnknown,
+    kCommandDecoderPassthrough = 1 << 0,
+    kCommandDecoderValidating = 1 << 1,
+  };
+
   GPUTestConfig();
   GPUTestConfig(const GPUTestConfig& other);
   virtual ~GPUTestConfig();
@@ -74,6 +82,7 @@ class GPU_EXPORT GPUTestConfig {
   void set_gpu_device_id(uint32_t id);
   void set_build_type(int32_t build_type);
   void set_api(int32_t api);
+  void set_command_decoder(int32_t command_decoder);
 
   virtual void AddGPUVendor(uint32_t gpu_vendor);
 
@@ -82,6 +91,7 @@ class GPU_EXPORT GPUTestConfig {
   uint32_t gpu_device_id() const { return gpu_device_id_; }
   int32_t build_type() const { return build_type_; }
   int32_t api() const { return api_; }
+  int32_t command_decoder() const { return command_decoder_; }
 
   // Check if the config is valid. For example, if gpu_device_id_ is set, but
   // gpu_vendor_ is unknown, then it's invalid.
@@ -109,6 +119,9 @@ class GPU_EXPORT GPUTestConfig {
 
   // Back-end rendering APIs.
   int32_t api_;
+
+  // GPU process command decoder type
+  int32_t command_decoder_;
 };
 
 class GPU_EXPORT GPUTestBotConfig : public GPUTestConfig {
@@ -140,8 +153,8 @@ class GPU_EXPORT GPUTestBotConfig : public GPUTestConfig {
   static bool CurrentConfigMatches(const std::string& config_data);
   static bool CurrentConfigMatches(const std::vector<std::string>& configs);
 
-  // Check if the bot has blacklisted all GPU features.
-  static bool GpuBlacklistedOnBot();
+  // Check if the bot has blocklisted all GPU features.
+  static bool GpuBlocklistedOnBot();
 };
 
 }  // namespace gpu

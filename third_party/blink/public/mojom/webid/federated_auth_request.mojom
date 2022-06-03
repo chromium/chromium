@@ -1,0 +1,69 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// Implementation of the proposed WebID API.
+//
+// Proposal: https://github.com/WICG/WebID
+
+enum RequestIdTokenStatus {
+  kSuccess,
+  kApprovalDeclined,
+  kErrorTooManyRequests,
+  kErrorWebIdNotSupportedByProvider,
+  kErrorFetchingWellKnown,
+  kErrorInvalidWellKnown,
+  kErrorFetchingSignin,
+  kErrorInvalidSigninResponse,
+  kErrorInvalidAccountsResponse,
+  kErrorInvalidTokenResponse,
+  kError,
+};
+
+enum LogoutStatus {
+  kSuccess,
+  kErrorTooManyRequests,
+  kError,
+};
+
+enum RequestMode {
+  kMediated,
+  kPermission,
+};
+
+// The details of a single logout request from an identity provider.
+struct LogoutRequest {
+  // Endpoint to which the request will be sent. The origin is validated to
+  // have an associated active session.
+  url.mojom.Url endpoint;
+
+  // Identifier for the account being logged out. This is used to verify that
+  // the logout request correlates to a previous sign-in event, and will
+  // result in the corresponding active session being terminated.
+  string account_id;
+};
+
+// Create a federated sign-in request using the specified provider.
+// This interface is called from a renderer process and implemented in the
+// browser process.
+interface FederatedAuthRequest {
+  // Requests an IdToken to be generated, given an IDP URL, some request
+  // parameters, and a mode that specifies the UI flow.
+  // |client_id| and |nonce| can be empty strings to omit the fields in the
+  // request sent to the provider.
+  // Returns the raw content of the IdToken.
+  RequestIdToken(url.mojom.Url provider,
+                 string client_id,
+                 string nonce,
+                 RequestMode mode,
+                 bool prefer_auto_sign_in) =>
+      (RequestIdTokenStatus status, string? id_token);
+
+  // Contact the list of Relying Party logout endpoints and account IDs to
+  // attempt to initiate user logout.
+  Logout(array<LogoutRequest> rp_logout_requests) => (LogoutStatus status);
+};

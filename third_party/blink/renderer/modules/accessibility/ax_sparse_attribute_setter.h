@@ -9,44 +9,33 @@
 #include "third_party/blink/renderer/core/aom/accessible_node_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/accessibility/ax_node_data.h"
 
 namespace blink {
 
-class AXSparseAttributeSetter {
-  USING_FAST_MALLOC(AXSparseAttributeSetter);
-
- public:
-  virtual void Run(const AXObject&,
-                   AXSparseAttributeClient&,
-                   const AtomicString& value) = 0;
-};
-
-using AXSparseAttributeSetterMap =
-    HashMap<QualifiedName, AXSparseAttributeSetter*>;
-
-// A map from attribute name to a AXSparseAttributeSetter that
-// calls AXSparseAttributeClient when that attribute's value
-// changes.
+// A map from attribute name to a callback that sets the |value| for that
+// attribute on an AXNodeData.
 //
 // That way we only need to iterate over the list of attributes once,
 // rather than calling getAttribute() once for each possible obscure
 // accessibility attribute.
-AXSparseAttributeSetterMap& GetSparseAttributeSetterMap();
 
-// An implementation of AOMPropertyClient that calls
-// AXSparseAttributeClient for an AOM property.
-class AXSparseAttributeAOMPropertyClient : public AOMPropertyClient {
+using AXSparseSetterFunc =
+    base::RepeatingCallback<void(AXObject* ax_object,
+                                 ui::AXNodeData* node_data,
+                                 const AtomicString& value)>;
+using AXSparseAttributeSetterMap = HashMap<QualifiedName, AXSparseSetterFunc>;
+
+AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap();
+
+class AXNodeDataAOMPropertyClient : public AOMPropertyClient {
  public:
-  AXSparseAttributeAOMPropertyClient(
-      AXObjectCacheImpl& ax_object_cache,
-      AXSparseAttributeClient& sparse_attribute_client)
-      : ax_object_cache_(ax_object_cache),
-        sparse_attribute_client_(sparse_attribute_client) {}
+  AXNodeDataAOMPropertyClient(AXObjectCacheImpl& ax_object_cache,
+                              ui::AXNodeData& node_data)
+      : ax_object_cache_(ax_object_cache), node_data_(node_data) {}
 
   void AddStringProperty(AOMStringProperty, const String& value) override;
   void AddBooleanProperty(AOMBooleanProperty, bool value) override;
-  void AddIntProperty(AOMIntProperty, int32_t value) override;
-  void AddUIntProperty(AOMUIntProperty, uint32_t value) override;
   void AddFloatProperty(AOMFloatProperty, float value) override;
   void AddRelationProperty(AOMRelationProperty,
                            const AccessibleNode& value) override;
@@ -55,7 +44,7 @@ class AXSparseAttributeAOMPropertyClient : public AOMPropertyClient {
 
  private:
   Persistent<AXObjectCacheImpl> ax_object_cache_;
-  AXSparseAttributeClient& sparse_attribute_client_;
+  ui::AXNodeData& node_data_;
 };
 
 }  // namespace blink

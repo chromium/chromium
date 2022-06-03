@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_PLATFORM_HELPER_H_
 
 #include <memory>
-
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
 
 class FindBarController;
 
@@ -18,19 +16,19 @@ class FindBarPlatformHelper {
   static std::unique_ptr<FindBarPlatformHelper> Create(
       FindBarController* find_bar_controller);
 
+  FindBarPlatformHelper(const FindBarPlatformHelper&) = delete;
+  FindBarPlatformHelper& operator=(const FindBarPlatformHelper&) = delete;
+
   virtual ~FindBarPlatformHelper();
 
   // Called when the user changes the find text to |text|.
-  virtual void OnUserChangedFindText(base::string16 text) = 0;
+  virtual void OnUserChangedFindText(std::u16string text) = 0;
 
  protected:
   explicit FindBarPlatformHelper(FindBarController* find_bar_controller);
 
   // Owns FindBarPlatformHelper.
   FindBarController* const find_bar_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_PLATFORM_HELPER_H_

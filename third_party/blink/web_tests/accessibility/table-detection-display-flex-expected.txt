@@ -1,0 +1,190 @@
+
+
+This should be a table because it has a thead.
+
+AXRole: AXTable
+
+
+asdf	asdf
+asdf	asdf
+
+
+This should be a table because cells have borders.
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should not be a table because its cells do not have borders.
+
+AXRole: AXLayoutTable
+
+
+asdf	asdf
+
+
+This should be a table because a cell has a special attribute
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should be a table because a cell has a special attribute.
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should be a table because a cell has a special attribute.
+
+AXRole: AXTable
+
+
+asdf	asdf
+asdf	asdf
+
+
+This should be a table because cells have different colors.
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should not be a table because cells have different but no spacing.
+
+AXRole: AXLayoutTable
+
+
+asdf	asdf
+
+
+This should not be a table because cells have the same colors even though there is spacing.
+
+AXRole: AXLayoutTable
+
+
+asdf	asdf
+
+
+This should be a table because it has the "rules" attr.
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should not be a table because it only has one valid cell (need more than one).
+
+AXRole: AXLayoutTable
+
+
+Contributions
+
+
+This should not be a table because it does not have enough cell borders or background colors
+
+AXRole: AXLayoutTable
+
+
+Politics
+Decision '08
+The debates
+The White House
+Capitol Hill
+National Journal
+New York Times
+
+
+This should be a table because it's editable.
+
+AXRole: AXTable
+
+
+asdf	asdf
+
+
+This should be a table because most cells have a top border.
+
+AXRole: AXTable
+
+
+asdf	asdf
+asdf	asdf
+
+
+This should not be a table because cells have different borders.
+
+AXRole: AXLayoutTable
+
+
+asdf	asdf
+asdf	asdf
+
+
+This should be a table because it sets empty-cells: hide on the table.
+
+AXRole: AXTable
+
+
+asdf	asdf
+	asdf
+asdf	asdf
+
+
+This should be a table because it sets empty-cells: hide on a cell.
+
+AXRole: AXTable
+
+
+asdf	asdf
+	asdf
+asdf	asdf
+
+
+This should be a table because it has a col.
+
+AXRole: AXTable
+
+
+asdf	asdf
+asdf	asdf
+
+
+This should be a table because it has at least 20 rows
+
+AXRole: AXTable
+
+
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf

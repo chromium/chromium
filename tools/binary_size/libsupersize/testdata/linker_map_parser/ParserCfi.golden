@@ -1,8 +1,8 @@
 ******** section_sizes ********
-.ARM.extab               24100
-.data.rel.ro             2430180
-.rodata                  6759914
-.text                    43636188
+.ARM.extab               @8b02ec   24100
+.data.rel.ro             @3255000  2430180
+.rodata                  @23dd00   6759914
+.text                    @8b6140   43636188
 
 ******** raw_symbols ********
 .rodata@23dd00(size_without_padding=4,padding=0,full_name=v8_Default_embedded_blob_size_,object_path=obj/v8/v8_external_snapshot/embedded.o,source_path=,flags={},num_aliases=1,component=)

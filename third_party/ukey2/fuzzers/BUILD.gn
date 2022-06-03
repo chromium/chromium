@@ -1,0 +1,59 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+# root BUILD depends on this target. Needed for package discovery
+group("fuzzers") {
+}
+
+fuzzer_test("d2d_connection_context_server_fuzzer") {
+  sources = [
+    "d2d_connection_context_factory.cc",
+    "d2d_connection_context_factory.h",
+    "d2d_connection_context_server_fuzzer.cc",
+  ]
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/ukey2",
+  ]
+}
+
+fuzzer_test("d2d_connection_context_client_fuzzer") {
+  sources = [
+    "d2d_connection_context_client_fuzzer.cc",
+    "d2d_connection_context_factory.cc",
+    "d2d_connection_context_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/ukey2",
+  ]
+}
+
+fuzzer_test("ukey2_handshake_client_init_fuzzer") {
+  sources = [ "ukey2_handshake_client_init_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/ukey2",
+  ]
+}
+
+fuzzer_test("ukey2_handshake_server_init_fuzzer") {
+  sources = [ "ukey2_handshake_server_init_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/ukey2",
+  ]
+}
+
+fuzzer_test("ukey2_handshake_client_finish_fuzzer") {
+  sources = [ "ukey2_handshake_client_finish_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/ukey2",
+  ]
+}

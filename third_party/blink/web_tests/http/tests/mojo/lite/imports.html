@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export1.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export2.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export3.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export4.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/other_dir/other_dir.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export_other1.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export_other2.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/export_other3.test-mojom-lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/import.test-mojom-lite.js"></script>
+<script>
+'use strict';
+test(() => {
+  assert_equals(mojo.tstest.imported.IMPORTED_ONE, 1);
+  assert_equals(mojo.tstest.imported.IMPORTED_TWO, 2);
+  assert_equals(mojo.tstest.imported.IMPORTED_THREE, 3);
+  assert_equals(mojo.tstest.imported.IMPORTED_OTHER_DIR, 1);
+  assert_equals(mojo.tstest.imported.IMPORTED_OTHER_ONE, 1);
+  assert_equals(mojo.tstest.imported.IMPORTED_OTHER_TWO, 2);
+}, 'Checks that values of imported constants is correct');
+</script>

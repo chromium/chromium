@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "base/test/bind.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/widget/widget.h"
@@ -18,33 +21,7 @@
 
 namespace ash {
 
-namespace {
-
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetDelegate(bool can_maximize,
-                     bool can_minimize,
-                     bool close_button_visible)
-      : can_maximize_(can_maximize),
-        can_minimize_(can_minimize),
-        close_button_visible_(close_button_visible) {}
-  ~TestWidgetDelegate() override = default;
-
-  bool CanMaximize() const override { return can_maximize_; }
-
-  bool CanMinimize() const override { return can_minimize_; }
-
-  bool ShouldShowCloseButton() const override { return close_button_visible_; }
-
- private:
-  bool can_maximize_;
-  bool can_minimize_;
-  bool close_button_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
-};
-
-}  // namespace
+using ::chromeos::FrameCaptionButtonContainerView;
 
 class FrameCaptionButtonContainerViewTest : public AshTestBase {
  public:
@@ -56,6 +33,11 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
 
   FrameCaptionButtonContainerViewTest() = default;
 
+  FrameCaptionButtonContainerViewTest(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+  FrameCaptionButtonContainerViewTest& operator=(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+
   ~FrameCaptionButtonContainerViewTest() override = default;
 
   // Creates a widget which allows maximizing based on |maximize_allowed|.
@@ -65,13 +47,16 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
                                   CloseButtonVisible close_button_visible)
       WARN_UNUSED_RESULT {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params;
-    params.delegate =
-        new TestWidgetDelegate(maximize_allowed == MAXIMIZE_ALLOWED,
-                               minimize_allowed == MINIMIZE_ALLOWED,
-                               close_button_visible == CLOSE_BUTTON_VISIBLE);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
+    delegate->SetCanMinimize(minimize_allowed == MINIMIZE_ALLOWED);
+    delegate->SetShowCloseButton(close_button_visible == CLOSE_BUTTON_VISIBLE);
+    params.delegate = delegate.release();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.context = CurrentContext();
+    params.bounds = gfx::Rect(10, 10, 100, 100);
+    params.context = GetContext();
     widget->Init(std::move(params));
     return widget;
   }
@@ -109,8 +94,13 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     return false;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameCaptionButtonContainerViewTest);
+  void ClickSizeButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(
+        testApi->size_button()->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 // Test how the allowed actions affect which caption buttons are visible.
@@ -225,7 +215,7 @@ TEST_F(FrameCaptionButtonContainerViewTest,
 }
 
 // Test that the close button is visible when
-// |WidgetDelegate::ShouldShowCloseButton()| returns true.
+// |ShouldShowCloseButton()| returns true.
 TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
   FrameCaptionButtonContainerView container(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_VISIBLE));
@@ -237,7 +227,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
 }
 
 // Test that the close button is not visible when
-// |WidgetDelegate::ShouldShowCloseButton()| returns false.
+// |ShouldShowCloseButton()| returns false.
 TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {
   FrameCaptionButtonContainerView container(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_NOT_VISIBLE));
@@ -246,6 +236,66 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   EXPECT_FALSE(testApi.close_button()->GetVisible());
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
+}
+
+// Test that overriding size button behavior works properly.
+TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  container.Layout();
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button works without override.
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button behavior is overridden when override callback
+  // returning true is set.
+  bool called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return true;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
+
+  // Test that the override callback is removable.
+  called = false;
+  container.ClearOnSizeButtonPressedCallback();
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_FALSE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(called);
+
+  // Test that the size button behavior fall back to the default one when
+  // override callback returns false.
+  called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return false;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_TRUE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
 }
 
 }  // namespace ash

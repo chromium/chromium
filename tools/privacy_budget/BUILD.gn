@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("privacy_budget_tools") {
+  testonly = true
+  deps = [
+    "blink_apis:blink_apis",
+    "clock_skew:clock_skew_tool",
+    "font_indexer:font_indexer",
+  ]
+}

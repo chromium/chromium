@@ -1,33 +1,42 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './toggle_row.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction, OptionalBool} from './constants.js';
+import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-pin-to-shelf-item',
 
   properties: {
     /**
      * @type {App}
-     * @private
      */
-    app_: Object,
+    app: Object,
 
     /**
      * @type {boolean}
-     * @private
      */
     hidden: {
       type: Boolean,
-      computed: 'isAvailable_(app_)',
+      computed: 'isAvailable_(app)',
       reflectToAttribute: true,
     },
 
     /**
      * @type {boolean}
-     * @private
      */
     disabled: {
       type: Boolean,
-      computed: 'isManaged_(app_)',
+      computed: 'isManaged_(app)',
       reflectToAttribute: true,
     },
   },
@@ -42,7 +51,7 @@ Polymer({
    * @returns {boolean} true if the app is pinned
    * @private
    */
-  getValue_: function(app) {
+  getValue_(app) {
     if (app === undefined) {
       return false;
     }
@@ -54,7 +63,7 @@ Polymer({
    * @param {App} app
    * @returns {boolean} true if pinning is available.
    */
-  isAvailable_: function(app) {
+  isAvailable_(app) {
     if (app === undefined) {
       return false;
     }
@@ -67,7 +76,7 @@ Polymer({
    * @returns {boolean} true if the pinning is managed by policy.
    * @private
    */
-  isManaged_: function(app) {
+  isManaged_(app) {
     if (app === undefined) {
       return false;
     }
@@ -75,27 +84,25 @@ Polymer({
     return app.isPolicyPinned === OptionalBool.kTrue;
   },
 
-  toggleSetting_: function() {
-    const newState =
-        assert(app_management.util.toggleOptionalBool(this.app_.isPinned));
-    const newStateBool =
-        app_management.util.convertOptionalBoolToBool(newState);
+  toggleSetting_() {
+    const newState = assert(toggleOptionalBool(this.app.isPinned));
+    const newStateBool = convertOptionalBoolToBool(newState);
     assert(newStateBool === this.$['toggle-row'].isChecked());
-    app_management.BrowserProxy.getInstance().handler.setPinned(
-        this.app_.id,
+    BrowserProxy.getInstance().handler.setPinned(
+        this.app.id,
         newState,
     );
+    recordSettingChange();
     const userAction = newStateBool ?
         AppManagementUserAction.PinToShelfTurnedOn :
         AppManagementUserAction.PinToShelfTurnedOff;
-    app_management.util.recordAppManagementUserAction(
-        this.app_.type, userAction);
+    recordAppManagementUserAction(this.app.type, userAction);
   },
 
   /**
    * @private
    */
-  onClick_: function() {
+  onClick_() {
     this.$['toggle-row'].click();
   },
 });

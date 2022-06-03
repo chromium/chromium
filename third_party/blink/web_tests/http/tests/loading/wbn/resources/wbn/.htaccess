@@ -1,0 +1,7 @@
+AddType application/webbundle .wbn
+AddType application/webbundle .wbn-without-nosniff
+<FilesMatch "\.wbn$">
+  Header set X-Content-Type-Options "nosniff"
+  # Allow bundles to be fetched via CORS.
+  Header set Access-Control-Allow-Origin "*"
+</FilesMatch>

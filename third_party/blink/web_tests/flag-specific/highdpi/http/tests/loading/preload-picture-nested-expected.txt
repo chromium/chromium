@@ -1,0 +1,45 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+PASS internals.isPreloaded('resources/preload-test.jpg?0'); is true
+PASS internals.isPreloaded('resources/image2.png'); is true
+PASS internals.isPreloaded('resources/preload-test.jpg?1'); is false
+PASS internals.isPreloaded('resources/base-image1.png?1'); is false
+FAIL internals.isPreloaded('resources/base-image2.png?1'); should be false. Was true.
+FAIL internals.isPreloaded('resources/base-image3.png?1'); should be true. Was false.
+PASS internals.isPreloaded('resources/preload-test.jpg?2'); is false
+PASS internals.isPreloaded('resources/base-image1.png?2'); is false
+FAIL internals.isPreloaded('resources/base-image2.png?2'); should be false. Was true.
+FAIL internals.isPreloaded('resources/base-image3.png?2'); should be true. Was false.
+PASS internals.isPreloaded('resources/preload-test.jpg?3'); is true
+PASS internals.isPreloaded('resources/base-image1.png?3'); is false
+PASS internals.isPreloaded('resources/base-image2.png?3'); is false
+PASS internals.isPreloaded('resources/base-image3.png?3'); is false
+PASS internals.isPreloaded('resources/preload-test.jpg?4'); is false
+PASS internals.isPreloaded('resources/base-image1.png?4'); is false
+FAIL internals.isPreloaded('resources/base-image2.png?4'); should be false. Was true.
+FAIL internals.isPreloaded('resources/base-image3.png?4'); should be true. Was false.
+PASS internals.isPreloaded('resources/preload-test.jpg?5'); is true
+PASS internals.isPreloaded('resources/base-image1.png?5'); is false
+PASS internals.isPreloaded('resources/base-image2.png?5'); is false
+PASS internals.isPreloaded('resources/base-image3.png?5'); is false
+PASS internals.isPreloaded('resources/preload-test.jpg?6'); is false
+PASS internals.isPreloaded('resources/base-image1.png?6'); is false
+FAIL internals.isPreloaded('resources/base-image2.png?6'); should be false. Was true.
+FAIL internals.isPreloaded('resources/base-image3.png?6'); should be true. Was false.
+PASS internals.isPreloaded('resources/preload-test.jpg?7'); is false
+PASS internals.isPreloaded('resources/base-image1.png?7'); is false
+FAIL internals.isPreloaded('resources/base-image2.png?7'); should be false. Was true.
+FAIL internals.isPreloaded('resources/base-image3.png?7'); should be true. Was false.
+PASS internals.isPreloaded('resources/preload-test.jpg?71'); is false
+PASS internals.isPreloaded('resources/preload-test.jpg?72'); is true
+PASS internals.isPreloaded('resources/preload-test.jpg?8'); is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+  
+    

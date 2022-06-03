@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_NTP_TILES_NTP_TILE_H_
 #define COMPONENTS_NTP_TILES_NTP_TILE_H_
 
+#include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
@@ -19,15 +17,10 @@ namespace ntp_tiles {
 
 // A suggested site shown on the New Tab Page.
 struct NTPTile {
-  base::string16 title;
+  std::u16string title;
   GURL url;
   TileTitleSource title_source;
   TileSource source;
-
-  // Empty unless whitelists are enabled and this site is in a whitelist.
-  // However, may be non-empty even if |source| is not |WHITELIST|, if this tile
-  // is also available from another, higher-priority source.
-  base::FilePath whitelist_icon_path;
 
   // This won't be empty, but might 404 etc.
   GURL favicon_url;

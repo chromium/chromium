@@ -1,7 +1,5 @@
 Tests that effectively inactive properties are displayed correctly in the sidebar.
 
-color: rgb(0, 0, 0);
-    -internal-root-color - html user agent stylesheet
 display: block;
     block - div user agent stylesheet
 text-align: right;
@@ -23,10 +21,5 @@ div[Attributes Style] { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

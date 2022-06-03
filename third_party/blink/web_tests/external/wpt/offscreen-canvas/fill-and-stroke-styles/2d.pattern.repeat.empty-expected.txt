@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL OffscreenCanvas test: 2d.pattern.repeat.empty Failed to execute 'createPattern' on 'OffscreenCanvasRenderingContext2D': The provided value is not of type '(CSSImageValue or HTMLImageElement or SVGImageElement or HTMLVideoElement or HTMLCanvasElement or ImageBitmap or OffscreenCanvas)'
-Harness: the test ran to completion.
-

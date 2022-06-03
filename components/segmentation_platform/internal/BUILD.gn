@@ -1,0 +1,193 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+import("//components/optimization_guide/features.gni")
+
+static_library("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+
+  sources = [
+    "constants.cc",
+    "constants.h",
+    "database/database_maintenance.h",
+    "database/database_maintenance_impl.cc",
+    "database/database_maintenance_impl.h",
+    "database/metadata_utils.cc",
+    "database/metadata_utils.h",
+    "database/segment_info_database.cc",
+    "database/segment_info_database.h",
+    "database/signal_database.h",
+    "database/signal_database_impl.cc",
+    "database/signal_database_impl.h",
+    "database/signal_key.cc",
+    "database/signal_key.h",
+    "database/signal_key_internal.cc",
+    "database/signal_key_internal.h",
+    "database/signal_storage_config.cc",
+    "database/signal_storage_config.h",
+    "dummy_segmentation_platform_service.cc",
+    "dummy_segmentation_platform_service.h",
+    "execution/dummy_model_execution_manager.cc",
+    "execution/dummy_model_execution_manager.h",
+    "execution/feature_aggregator.h",
+    "execution/feature_aggregator_impl.cc",
+    "execution/feature_aggregator_impl.h",
+    "execution/model_execution_manager.h",
+    "execution/model_execution_manager_factory.cc",
+    "execution/model_execution_manager_factory.h",
+    "execution/model_execution_status.h",
+    "platform_options.cc",
+    "platform_options.h",
+    "scheduler/model_execution_scheduler.h",
+    "scheduler/model_execution_scheduler_impl.cc",
+    "scheduler/model_execution_scheduler_impl.h",
+    "segmentation_platform_service_impl.cc",
+    "segmentation_platform_service_impl.h",
+    "selection/segment_score_provider.cc",
+    "selection/segment_score_provider.h",
+    "selection/segment_selector.h",
+    "selection/segment_selector_impl.cc",
+    "selection/segment_selector_impl.h",
+    "selection/segmentation_result_prefs.cc",
+    "selection/segmentation_result_prefs.h",
+    "signals/histogram_signal_handler.cc",
+    "signals/histogram_signal_handler.h",
+    "signals/signal_filter_processor.cc",
+    "signals/signal_filter_processor.h",
+    "signals/user_action_signal_handler.cc",
+    "signals/user_action_signal_handler.h",
+    "stats.cc",
+    "stats.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//components/prefs",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+  ]
+
+  public_deps = [
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "execution/model_execution_manager_impl.cc",
+      "execution/model_execution_manager_impl.h",
+      "execution/segmentation_model_executor.cc",
+      "execution/segmentation_model_executor.h",
+      "execution/segmentation_model_handler.cc",
+      "execution/segmentation_model_handler.h",
+    ]
+
+    deps += [
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/segmentation_platform_service_android.cc",
+      "android/segmentation_platform_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/segmentation_platform:unit_tests" ]
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = [
+    "database/database_maintenance_impl_unittest.cc",
+    "database/metadata_utils_unittest.cc",
+    "database/mock_signal_database.cc",
+    "database/mock_signal_database.h",
+    "database/mock_signal_storage_config.cc",
+    "database/mock_signal_storage_config.h",
+    "database/segment_info_database_unittest.cc",
+    "database/signal_database_impl_unittest.cc",
+    "database/signal_key_internal_unittest.cc",
+    "database/signal_key_unittest.cc",
+    "database/signal_storage_config_unittest.cc",
+    "database/test_segment_info_database.cc",
+    "database/test_segment_info_database.h",
+    "dummy_segmentation_platform_service_unittest.cc",
+    "execution/dummy_model_execution_manager_unittest.cc",
+    "execution/feature_aggregator_impl_unittest.cc",
+    "execution/model_execution_manager_factory_unittest.cc",
+    "scheduler/model_execution_scheduler_unittest.cc",
+    "segmentation_platform_service_impl_unittest.cc",
+    "selection/segment_score_provider_unittest.cc",
+    "selection/segment_selector_unittest.cc",
+    "selection/segmentation_result_prefs_unittest.cc",
+    "signals/histogram_signal_handler_unittest.cc",
+    "signals/signal_filter_processor_unittest.cc",
+    "signals/user_action_signal_handler_unittest.cc",
+    "stats_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (build_with_tflite_lib) {
+    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+    # tests in //components/segmentation_platform/components_unittests.filter
+    sources += [
+      "execution/model_execution_manager_impl_unittest.cc",
+      "execution/segmentation_model_executor_unittest.cc",
+    ]
+  }
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
+      "//components/segmentation_platform/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+  }
+}

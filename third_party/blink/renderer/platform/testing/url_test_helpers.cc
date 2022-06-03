@@ -33,10 +33,10 @@
 #include <string>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_load_timing.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -63,57 +63,59 @@ WebURL RegisterMockedURLLoadFromBase(const WebString& base_url,
 
 void RegisterMockedURLLoad(const WebURL& full_url,
                            const WebString& file_path,
-                           const WebString& mime_type) {
-  WebURLLoadTiming timing;
-  timing.Initialize();
+                           const WebString& mime_type,
+                           WebURLLoaderMockFactory* mock_factory,
+                           network::mojom::IPAddressSpace address_space) {
+  network::mojom::LoadTimingInfoPtr timing =
+      network::mojom::LoadTimingInfo::New();
 
   WebURLResponse response(full_url);
   response.SetMimeType(mime_type);
   response.SetHttpHeaderField(http_names::kContentType, mime_type);
   response.SetHttpStatusCode(200);
-  response.SetLoadTiming(timing);
+  response.SetLoadTiming(*timing);
+  response.SetAddressSpace(address_space);
 
-  RegisterMockedURLLoadWithCustomResponse(full_url, file_path, response);
+  mock_factory->RegisterURL(full_url, response, file_path);
 }
 
-void RegisterMockedErrorURLLoad(const WebURL& full_url) {
-  WebURLLoadTiming timing;
-  timing.Initialize();
+void RegisterMockedErrorURLLoad(const WebURL& full_url,
+                                WebURLLoaderMockFactory* mock_factory) {
+  network::mojom::LoadTimingInfoPtr timing =
+      network::mojom::LoadTimingInfo::New();
 
   WebURLResponse response;
   response.SetMimeType("image/png");
   response.SetHttpHeaderField(http_names::kContentType, "image/png");
   response.SetHttpStatusCode(404);
-  response.SetLoadTiming(timing);
+  response.SetLoadTiming(*timing);
 
   ResourceError error = ResourceError::Failure(full_url);
-  Platform::Current()->GetURLLoaderMockFactory()->RegisterErrorURL(
-      full_url, response, error);
+  mock_factory->RegisterErrorURL(full_url, response, WebURLError(error));
 }
 
 void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
                                              const WebString& file_path,
                                              WebURLResponse response) {
-  Platform::Current()->GetURLLoaderMockFactory()->RegisterURL(
+  WebURLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
       full_url, response, file_path);
 }
 
 void RegisterMockedURLUnregister(const WebURL& url) {
-  Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url);
+  WebURLLoaderMockFactory::GetSingletonInstance()->UnregisterURL(url);
 }
 
 void UnregisterAllURLsAndClearMemoryCache() {
-  Platform::Current()
-      ->GetURLLoaderMockFactory()
+  WebURLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
 }
 
 void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate) {
-  Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(delegate);
+  WebURLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(delegate);
 }
 
 void ServeAsynchronousRequests() {
-  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 }
 
 }  // namespace url_test_helpers

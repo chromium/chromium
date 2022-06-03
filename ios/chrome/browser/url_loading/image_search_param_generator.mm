@@ -69,7 +69,7 @@ ImageSearchParamGenerator::LoadParamsForResizedImageData(
   DCHECK(!default_url->image_url().empty());
   DCHECK(default_url->image_url_ref().IsValid(
       template_url_service->search_terms_data()));
-  TemplateURLRef::SearchTermsArgs search_args(base::ASCIIToUTF16(""));
+  TemplateURLRef::SearchTermsArgs search_args(u"");
   if (!url.is_empty()) {
     search_args.image_url = url;
   }

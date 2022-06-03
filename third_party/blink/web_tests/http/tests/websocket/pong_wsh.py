@@ -1,4 +1,4 @@
-import cgi
+from six.moves.urllib import parse
 from mod_pywebsocket import common
 from mod_pywebsocket import msgutil
 
@@ -11,7 +11,7 @@ def web_socket_transfer_data(request):
     send_payload = ''
     r = request.ws_resource.split('?', 1)
     if len(r) == 2:
-        params = cgi.parse_qs(r[1])
+        params = parse.parse_qs(r[1])
         if 'payload' in params:
             send_payload = params['payload'][0]
 
@@ -21,8 +21,8 @@ def web_socket_transfer_data(request):
     # client.
     opcode, recv_payload, final, reserved1, reserved2, reserved3 = \
         request.ws_stream._receive_frame()
-    if (opcode == common.OPCODE_PONG and recv_payload == send_payload and
-            final and not reserved1 and not reserved2 and not reserved3):
+    if (opcode == common.OPCODE_PONG and recv_payload.decode('UTF-8') == send_payload and final and not reserved1 and not reserved2
+            and not reserved3):
         msgutil.send_message(request, 'PASS')
     else:
         msgutil.send_message(

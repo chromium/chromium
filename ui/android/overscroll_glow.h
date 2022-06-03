@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "ui/android/edge_effect_base.h"
+#include "ui/android/edge_effect.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -27,7 +26,7 @@ class UI_ANDROID_EXPORT OverscrollGlowClient {
   virtual ~OverscrollGlowClient() {}
 
   // Called lazily, after the initial overscrolling event.
-  virtual std::unique_ptr<EdgeEffectBase> CreateEdgeEffect() = 0;
+  virtual std::unique_ptr<EdgeEffect> CreateEdgeEffect() = 0;
 };
 
 /* |OverscrollGlow| mirrors its Android counterpart, OverscrollGlow.java.
@@ -40,6 +39,10 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   // The effect is enabled by default, but will remain dormant until the first
   // overscroll event.
   explicit OverscrollGlow(OverscrollGlowClient* client);
+
+  OverscrollGlow(const OverscrollGlow&) = delete;
+  OverscrollGlow& operator=(const OverscrollGlow&) = delete;
+
   virtual ~OverscrollGlow();
 
   // Called when the root content layer overscrolls.
@@ -77,7 +80,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
 
  private:
   enum Axis { AXIS_X, AXIS_Y };
-  enum { EDGE_COUNT = EdgeEffectBase::EDGE_COUNT };
+  enum { EDGE_COUNT = EdgeEffect::EDGE_COUNT };
 
   // Returns whether the effect has been properly initialized.
   bool InitializeIfNecessary();
@@ -93,10 +96,10 @@ class UI_ANDROID_EXPORT OverscrollGlow {
               bool y_overscroll_started);
   void Release(base::TimeTicks current_time);
 
-  EdgeEffectBase* GetOppositeEdge(int edge_index);
+  EdgeEffect* GetOppositeEdge(int edge_index);
 
-  OverscrollGlowClient* const client_;
-  std::unique_ptr<EdgeEffectBase> edge_effects_[EDGE_COUNT];
+  OverscrollGlowClient* client_;
+  std::unique_ptr<EdgeEffect> edge_effects_[EDGE_COUNT];
 
   gfx::SizeF viewport_size_;
   float edge_offsets_[EDGE_COUNT];
@@ -105,8 +108,6 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   bool allow_vertical_overscroll_;
 
   scoped_refptr<cc::Layer> root_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollGlow);
 };
 
 }  // namespace ui

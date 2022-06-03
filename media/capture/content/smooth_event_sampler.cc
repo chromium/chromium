@@ -19,6 +19,8 @@ SmoothEventSampler::SmoothEventSampler(base::TimeDelta min_capture_period)
 
 void SmoothEventSampler::SetMinCapturePeriod(base::TimeDelta period) {
   DCHECK_GT(period, base::TimeDelta());
+  if (period == min_capture_period_)
+    return;
   min_capture_period_ = period;
   token_bucket_capacity_ = period + period / 2;
   token_bucket_ = std::min(token_bucket_capacity_, token_bucket_);
@@ -51,7 +53,7 @@ bool SmoothEventSampler::ShouldSample() const {
 
 void SmoothEventSampler::RecordSample() {
   token_bucket_ -= min_capture_period_;
-  if (token_bucket_ < base::TimeDelta())
+  if (token_bucket_.is_negative())
     token_bucket_ = base::TimeDelta();
   TRACE_COUNTER1("gpu.capture", "MirroringTokenBucketUsec",
                  std::max<int64_t>(0, token_bucket_.InMicroseconds()));

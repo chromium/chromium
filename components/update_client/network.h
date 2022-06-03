@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 class GURL;
@@ -31,6 +30,7 @@ class NetworkFetcher {
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               int net_error,
                               const std::string& header_etag,
+                              const std::string& header_x_cup_server_proof,
                               int64_t xheader_retry_after_sec)>;
   using DownloadToFileCompleteCallback =
       base::OnceCallback<void(int net_error, int64_t content_size)>;
@@ -38,9 +38,11 @@ class NetworkFetcher {
       base::OnceCallback<void(int response_code, int64_t content_length)>;
   using ProgressCallback = base::RepeatingCallback<void(int64_t current)>;
 
-  // The ETag header carries the ECSDA signature of the POST response, if
-  // signing has been used.
+  // The following two headers carry the ECSDA signature of the POST response,
+  // if signing has been used. Two headers are used for redundancy purposes.
+  // The value of the `X-Cup-Server-Proof` is preferred.
   static constexpr char kHeaderEtag[] = "ETag";
+  static constexpr char kHeaderXCupServerProof[] = "X-Cup-Server-Proof";
 
   // The server uses the optional X-Retry-After header to indicate that the
   // current request should not be attempted again.
@@ -50,11 +52,15 @@ class NetworkFetcher {
   // trusted.
   static constexpr char kHeaderXRetryAfter[] = "X-Retry-After";
 
+  NetworkFetcher(const NetworkFetcher&) = delete;
+  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
+
   virtual ~NetworkFetcher() = default;
 
   virtual void PostRequest(
       const GURL& url,
       const std::string& post_data,
+      const std::string& content_type,
       const base::flat_map<std::string, std::string>& post_additional_headers,
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
@@ -68,22 +74,20 @@ class NetworkFetcher {
 
  protected:
   NetworkFetcher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcher);
 };
 
-class NetworkFetcherFactory : public base::RefCounted<NetworkFetcherFactory> {
+class NetworkFetcherFactory
+    : public base::RefCountedThreadSafe<NetworkFetcherFactory> {
  public:
   virtual std::unique_ptr<NetworkFetcher> Create() const = 0;
 
+  NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
+  NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
+
  protected:
-  friend class base::RefCounted<NetworkFetcherFactory>;
+  friend class base::RefCountedThreadSafe<NetworkFetcherFactory>;
   NetworkFetcherFactory() = default;
   virtual ~NetworkFetcherFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherFactory);
 };
 
 }  // namespace update_client

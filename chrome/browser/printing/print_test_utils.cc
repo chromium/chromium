@@ -10,13 +10,14 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
 namespace printing {
 
 const char kDummyPrinterName[] = "DefaultPrinter";
 
-base::Value GetPrintTicket(PrinterType type) {
+base::Value GetPrintTicket(mojom::PrinterType type) {
   base::Value ticket(base::Value::Type::DICTIONARY);
 
   // Letter
@@ -31,14 +32,14 @@ base::Value GetPrintTicket(PrinterType type) {
   ticket.SetIntKey(kSettingColor, 2);  // color printing
   ticket.SetBoolKey(kSettingHeaderFooterEnabled, false);
   ticket.SetIntKey(kSettingMarginsType, 0);  // default margins
-  ticket.SetIntKey(kSettingDuplexMode, LONG_EDGE);
+  ticket.SetIntKey(kSettingDuplexMode,
+                   static_cast<int>(mojom::DuplexMode::kLongEdge));
   ticket.SetIntKey(kSettingCopies, 1);
   ticket.SetBoolKey(kSettingCollate, true);
   ticket.SetBoolKey(kSettingShouldPrintBackgrounds, false);
   ticket.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
   ticket.SetBoolKey(kSettingPreviewModifiable, true);
-  ticket.SetBoolKey(kSettingPreviewIsPdf, false);
-  ticket.SetIntKey(kSettingPrinterType, type);
+  ticket.SetIntKey(kSettingPrinterType, static_cast<int>(type));
   ticket.SetBoolKey(kSettingRasterizePdf, false);
   ticket.SetIntKey(kSettingScaleFactor, 100);
   ticket.SetIntKey(kSettingScalingType, FIT_TO_PAGE);
@@ -50,9 +51,10 @@ base::Value GetPrintTicket(PrinterType type) {
   ticket.SetIntKey(kSettingPageHeight, 279400);
   ticket.SetBoolKey(kSettingShowSystemDialog, false);
 
-  if (type == kCloudPrinter) {
+  if (type == mojom::PrinterType::kCloud) {
     ticket.SetStringKey(kSettingCloudPrintId, kDummyPrinterName);
-  } else if (type == kPrivetPrinter || type == kExtensionPrinter) {
+  } else if (type == mojom::PrinterType::kPrivet ||
+             type == mojom::PrinterType::kExtension) {
     base::Value capabilities(base::Value::Type::DICTIONARY);
     capabilities.SetBoolKey("duplex", true);  // non-empty
     std::string caps_string;

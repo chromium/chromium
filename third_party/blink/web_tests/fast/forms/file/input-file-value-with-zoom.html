@@ -10,13 +10,11 @@
 <script>
 description("This tests the value attribute in file input forms with page zoom in");
 
-if (window.eventSender) {
-    eventSender.zoomPageIn();
-    eventSender.zoomPageIn();
-    eventSender.zoomPageIn();
-}
-
 if (window.testRunner) {
+    testRunner.zoomPageIn();
+    testRunner.zoomPageIn();
+    testRunner.zoomPageIn();
+
     var file = document.getElementById("file");
     dragFilesOntoInput(file, ["foo.txt"]);
     

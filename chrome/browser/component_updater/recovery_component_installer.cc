@@ -15,23 +15,20 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
-#include "build/branding_buildflags.h"
-#include "content/public/browser/browser_task_traits.h"
-#if defined(OS_MACOSX)
-#include "base/mac/authorization_util.h"
-#include "base/mac/scoped_authorizationref.h"
-#endif
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
+#include "base/strings/string_util.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -43,15 +40,21 @@
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
+
+#if defined(OS_MAC)
+#include "base/mac/authorization_util.h"
+#include "base/mac/scoped_authorizationref.h"
+#endif
 
 using content::BrowserThread;
 
 namespace component_updater {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
 
 namespace {
 
@@ -67,7 +70,7 @@ static_assert(base::size(kRecoverySha2Hash) == crypto::kSHA256Length,
 const base::FilePath::CharType kRecoveryFileName[] =
 #if defined(OS_WIN)
     FILE_PATH_LITERAL("ChromeRecovery.exe");
-#else  // OS_LINUX, OS_MACOSX, etc.
+#else  // OS_LINUX, OS_MAC, etc.
     FILE_PATH_LITERAL("ChromeRecovery");
 #endif
 
@@ -155,7 +158,7 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
 
 void WaitForElevatedInstallToComplete(base::Process process) {
   int installer_exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
     if (installer_exit_code == EXIT_CODE_RECOVERY_SUCCEEDED) {
       RecordRecoveryComponentUMAEvent(RCE_ELEVATED_SUCCEEDED);
@@ -195,7 +198,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   base::LaunchOptions options;
   options.start_hidden = true;
   base::Process process = base::LaunchElevatedProcess(cmdline, options);
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   base::mac::ScopedAuthorizationRef authRef(
       base::mac::AuthorizationCreateToRunAsRoot(nullptr));
   if (!authRef.get()) {
@@ -233,18 +236,17 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   base::Process process = base::Process::Open(pid);
 #endif
   // This task joins a process, hence .WithBaseSyncPrimitives().
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::WithBaseSyncPrimitives(),
-                  base::TaskPriority::BEST_EFFORT,
-                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                 base::BindOnce(&WaitForElevatedInstallToComplete,
-                                base::Passed(&process)));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&WaitForElevatedInstallToComplete, std::move(process)));
 }
 
 void ElevatedInstallRecoveryComponent(const base::FilePath& installer_path) {
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&DoElevatedInstallRecoveryComponent, installer_path));
 }
@@ -269,6 +271,8 @@ class RecoveryComponentInstaller : public update_client::CrxInstaller {
 
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
+               std::unique_ptr<InstallParams> install_params,
+               ProgressCallback progress_callback,
                Callback callback) override;
 
   bool GetInstalledFile(const std::string& file,
@@ -277,7 +281,7 @@ class RecoveryComponentInstaller : public update_client::CrxInstaller {
   bool Uninstall() override;
 
  private:
-  ~RecoveryComponentInstaller() override {}
+  ~RecoveryComponentInstaller() override = default;
 
   bool DoInstall(const base::FilePath& unpack_path);
 
@@ -343,13 +347,13 @@ void WaitForInstallToComplete(base::Process process,
                               const base::FilePath& installer_folder,
                               PrefService* prefs) {
   int installer_exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
     if (installer_exit_code == EXIT_CODE_ELEVATION_NEEDED) {
       RecordRecoveryComponentUMAEvent(RCE_ELEVATION_NEEDED);
 
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     base::BindOnce(&SetPrefsForElevatedRecoveryInstall,
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&SetPrefsForElevatedRecoveryInstall,
                                     installer_folder, prefs));
     } else if (installer_exit_code == EXIT_CODE_RECOVERY_SUCCEEDED) {
       RecordRecoveryComponentUMAEvent(RCE_SUCCEEDED);
@@ -376,12 +380,11 @@ bool RecoveryComponentInstaller::RunInstallCommand(
 
   // Let worker pool thread wait for us so we don't block Chrome shutdown.
   // This task joins a process, hence .WithBaseSyncPrimitives().
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::ThreadPool(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::BEST_EFFORT,
+      {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&WaitForInstallToComplete, base::Passed(&process),
+      base::BindOnce(&WaitForInstallToComplete, std::move(process),
                      installer_folder, prefs_));
 
   // Returns true regardless of install result since from updater service
@@ -408,25 +411,28 @@ bool SetPosixExecutablePermission(const base::FilePath& path) {
 void RecoveryComponentInstaller::Install(
     const base::FilePath& unpack_path,
     const std::string& /*public_key*/,
+    std::unique_ptr<InstallParams> /*install_params*/,
+    ProgressCallback /*progress_callback*/,
     update_client::CrxInstaller::Callback callback) {
   auto result = update_client::InstallFunctionWrapper(
       base::BindOnce(&RecoveryComponentInstaller::DoInstall,
                      base::Unretained(this), std::cref(unpack_path)));
-  base::PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 bool RecoveryComponentInstaller::DoInstall(
     const base::FilePath& unpack_path) {
-  const auto manifest = update_client::ReadManifest(unpack_path);
-  if (!manifest)
+  const base::Value manifest = update_client::ReadManifest(unpack_path);
+  if (!manifest.is_dict())
     return false;
-  std::string name;
-  manifest->GetStringASCII("name", &name);
-  if (name != kRecoveryManifestName)
+  const std::string* name = manifest.FindStringKey("name");
+  if (!name || *name != kRecoveryManifestName)
     return false;
-  std::string proposed_version;
-  manifest->GetStringASCII("version", &proposed_version);
-  base::Version version(proposed_version);
+  const std::string* proposed_version = manifest.FindStringKey("version");
+  if (!proposed_version || !base::IsStringASCII(*proposed_version))
+    return false;
+  base::Version version(*proposed_version);
   if (!version.IsValid())
     return false;
   if (current_version_.CompareTo(version) >= 0)
@@ -439,7 +445,7 @@ bool RecoveryComponentInstaller::DoInstall(
   if (!base::PathExists(path) && !base::CreateDirectory(path))
     return false;
   path = path.AppendASCII(version.GetString());
-  if (base::PathExists(path) && !base::DeleteFileRecursively(path))
+  if (base::PathExists(path) && !base::DeletePathRecursively(path))
     return false;
   if (!base::Move(unpack_path, path)) {
     DVLOG(1) << "Recovery component move failed.";
@@ -464,7 +470,8 @@ bool RecoveryComponentInstaller::DoInstall(
   // Run the recovery component.
   const bool is_deferred_run = false;
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, *manifest, is_deferred_run, current_version_);
+      main_file, base::Value::AsDictionaryValue(manifest), is_deferred_run,
+      current_version_);
 
   if (!RunInstallCommand(cmdline, path)) {
     return false;
@@ -472,8 +479,8 @@ bool RecoveryComponentInstaller::DoInstall(
 
   current_version_ = version;
   if (prefs_) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&RecoveryUpdateVersionHelper, version, prefs_));
   }
   return true;
@@ -489,23 +496,23 @@ bool RecoveryComponentInstaller::Uninstall() {
   return false;
 }
 
-#endif  // defined(OS_WIN) || defined(OS_MACOSX)
+#endif  // defined(OS_WIN) || defined(OS_MAC)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void RegisterRecoveryComponent(ComponentUpdateService* cus,
                                PrefService* prefs) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   if (SimulatingElevatedRecovery()) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&SimulateElevatedRecoveryHelper, prefs));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SimulateElevatedRecoveryHelper, prefs));
   }
 
   // We delay execute the registration because we are not required in
   // the critical path during browser startup.
-  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                        base::BindOnce(&RecoveryRegisterHelper, cus, prefs),
-                        base::TimeDelta::FromSeconds(6));
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&RecoveryRegisterHelper, cus, prefs),
+      base::Seconds(6));
 #endif
 #endif
 }
@@ -521,7 +528,7 @@ void AcceptedElevatedRecoveryInstall(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   ElevatedInstallRecoveryComponent(
       prefs->GetFilePath(prefs::kRecoveryComponentUnpackPath));
 #endif

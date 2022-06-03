@@ -6,16 +6,20 @@ package org.chromium.content_public.browser;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.url.GURL;
+
 /**
  * Represents one entry in the navigation history of a page.
  */
 public class NavigationEntry {
 
     private final int mIndex;
-    private final String mUrl;
-    private final String mOriginalUrl;
-    private final String mVirtualUrl;
-    private final String mReferrerUrl;
+    private final GURL mUrl;
+    private final GURL mOriginalUrl;
+    private final GURL mVirtualUrl;
+    private final GURL mReferrerUrl;
     private final String mTitle;
     private Bitmap mFavicon;
     private int mTransition;
@@ -24,8 +28,9 @@ public class NavigationEntry {
     /**
      * Default constructor.
      */
-    public NavigationEntry(int index, String url, String virtualUrl, String originalUrl,
-            String referrerUrl, String title, Bitmap favicon, int transition, long timestamp) {
+    public NavigationEntry(int index, @NonNull GURL url, @NonNull GURL virtualUrl,
+            @NonNull GURL originalUrl, @NonNull GURL referrerUrl, String title, Bitmap favicon,
+            int transition, long timestamp) {
         mIndex = index;
         mUrl = url;
         mVirtualUrl = virtualUrl;
@@ -49,7 +54,7 @@ public class NavigationEntry {
      *         scary data: URL or something like that. Use GetVirtualURL() for
      *         showing to the user.
      */
-    public String getUrl() {
+    public @NonNull GURL getUrl() {
         return mUrl;
     }
 
@@ -64,21 +69,21 @@ public class NavigationEntry {
      *         cases, so if there is no overridden display URL, it will return
      *         the actual one.
      */
-    public String getVirtualUrl() {
+    public @NonNull GURL getVirtualUrl() {
         return mVirtualUrl;
     }
 
     /**
      * @return The URL that caused this NavigationEntry to be created.
      */
-    public String getOriginalUrl() {
+    public @NonNull GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
     /**
      * @return The referring URL, can be empty.
      */
-    public String getReferrerUrl() {
+    public @NonNull GURL getReferrerUrl() {
         return mReferrerUrl;
     }
 

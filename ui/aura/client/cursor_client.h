@@ -5,7 +5,7 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_H_
 
-#include "base/strings/string16.h"
+
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -16,6 +16,7 @@ class Display;
 
 namespace ui {
 class KeyEvent;
+enum class CursorSize;
 }
 
 namespace aura {
@@ -31,6 +32,11 @@ class AURA_EXPORT CursorClient {
 
   // Returns the current cursor.
   virtual gfx::NativeCursor GetCursor() const = 0;
+
+  // Forces the cursor to be updated. This is called when the system may have
+  // changed the cursor without the cursor client's knowledge, which breaks
+  // if the cursor client doesn't think the cursor has changed.
+  virtual void SetCursorForced(gfx::NativeCursor cursor) = 0;
 
   // Shows the cursor. This does not take effect When mouse events are disabled.
   virtual void ShowCursor() = 0;

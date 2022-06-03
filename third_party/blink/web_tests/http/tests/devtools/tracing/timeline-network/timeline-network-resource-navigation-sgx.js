@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests presence and order of tracing events for a browser navigation.\n`);
-  await TestRunner.loadModule(`performance_test_runner`);
+  await TestRunner.loadTestModule(`performance_test_runner`);
   await TestRunner.showPanel(`timeline`);
   await TestRunner.NetworkAgent.setCacheDisabled(true);
   await TestRunner.navigatePromise('/loading/sxg/resources/sxg-location.sxg');
@@ -13,8 +13,8 @@
 
   const panel = UI.panels.timeline;
   PerformanceTestRunner.runWhenTimelineIsReady(recordingStopped);
-  panel._millisecondsToRecordAfterLoadEvent = 1;
-  panel._recordReload();
+  panel.millisecondsToRecordAfterLoadEvent = 1;
+  panel.recordReload();
 
   async function recordingStopped() {
     TestRunner.addResult('Recording stopped');
@@ -28,7 +28,7 @@
         } else if (requestId !== event.args.data.requestId) {
           TestRunner.addResult(`Events did not have the same request id.`)
         }
-        TestRunner.addResult(`${event.name} from thread ${event.thread._name}`);
+        TestRunner.addResult(`${event.name} from thread ${event.thread.name()}`);
       }
     }
     TestRunner.completeTest();

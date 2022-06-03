@@ -202,7 +202,7 @@ Done:
   by the XML parser, UTF-8 should be checked when there is no "encoding"
   declared !
 - Support for UTF-8 and UTF-16 encoding
-  => added some convertion routines provided by Martin Durst
+  => added some conversion routines provided by Martin Durst
      patched them, got fixes from @@@
      I plan to keep everything internally as UTF-8 (or ISO-Latin-X)
      this is slightly more costly but more compact, and recent processors
@@ -212,7 +212,7 @@ Done:
      is enabled, tested the ISO->UTF-8 stuff
 - External entities loading: 
    - allow override by client code
-   - make sure it is alled for all external entities referenced
+   - make sure it is called for all external entities referenced
   Done, client code should use xmlSetExternalEntityLoader() to set
   the default loading routine. It will be called each time an external
   entity entity resolution is triggered.
@@ -245,8 +245,8 @@ Done:
   most cases !
 
 - progressive reading. The entity support is a first step toward
-  asbtraction of an input stream. A large part of the context is still
-  located on the stack, moving to a state machine and putting everyting
+  abstraction of an input stream. A large part of the context is still
+  located on the stack, moving to a state machine and putting everything
   in the parsing context should provide an adequate solution.
   => Rather than progressive parsing, give more power to the SAX-like
      interface. Currently the DOM-like representation is built but

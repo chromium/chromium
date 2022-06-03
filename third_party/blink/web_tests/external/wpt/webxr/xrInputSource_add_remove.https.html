@@ -3,7 +3,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
-<canvas id="webgl-canvas"></canvas>
 
 <script>
 
@@ -21,7 +20,7 @@ let testFunction = (session, fakeDeviceController, t) => new Promise((resolve) =
 
     let input_source_1 = fakeDeviceController.simulateInputSourceConnection(RIGHT_CONTROLLER);
 
-    session.requestAnimationFrame((time, xrFrame) => {
+    requestSkipAnimationFrame(session, (time, xrFrame) => {
       let input_sources = session.inputSources;
 
       t.step( () => {
@@ -46,7 +45,7 @@ let testFunction = (session, fakeDeviceController, t) => new Promise((resolve) =
           assert_equals(input_sources[1].handedness, "none");
         });
 
-        fakeDeviceController.removeInputSource(input_source_1);
+        input_source_1.disconnect();
 
         session.requestAnimationFrame((time, xrFrame) => {
           let input_sources = session.inputSources;

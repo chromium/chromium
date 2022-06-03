@@ -1,0 +1,15 @@
+Tests that console logging dumps properly styled messages, and that the whole message gets the same style, regardless of multiple %c settings.
+
+console-format-style-allowed.js:13 Colors are awesome.
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
+console-format-style-allowed.js:14 So are fonts!
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; font: 1em Helvetica;
+console-format-style-allowed.js:15 And borders and margins and paddings!
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; border: 1px solid red; margin: 20px; padding: 10px;
+console-format-style-allowed.js:16 text-* is fine by us!
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; text-decoration: none;
+console-format-style-allowed.js:18 Display, on the other hand, is bad news.
+Styled text #0: contain: paint; display: inline-block; max-width: 100%;
+console-format-style-allowed.js:19 And position too.
+Styled text #0: contain: paint; display: inline-block; max-width: 100%;
+

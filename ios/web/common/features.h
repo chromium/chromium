@@ -10,9 +10,6 @@
 namespace web {
 namespace features {
 
-// Used to always allow scaling of the web page, regardless of author intent.
-extern const base::Feature kIgnoresViewportScaleLimits;
-
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
 extern const base::Feature kCrashOnUnexpectedURLChange;
@@ -33,26 +30,80 @@ extern const base::Feature kKeepsRenderProcessAlive;
 // navigation finishes.
 extern const base::Feature kClearOldNavigationRecordsWorkaround;
 
-// Used to enable committed interstitials for SSL errors.
-extern const base::Feature kSSLCommittedInterstitials;
-
-// Used to enable using WKWebView.loading for WebState::IsLoading.
-extern const base::Feature kUseWKWebViewLoading;
-
 // Feature flag enabling persistent downloads.
 extern const base::Feature kEnablePersistentDownloads;
-
-// Feature flag for the new error page workflow, using JavaScript.
-extern const base::Feature kUseJSForErrorPage;
 
 // When enabled, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is disabled, the mobile version
 // is requested by default.
+// Use UseWebClientDefaultUserAgent() instead of checking this variable.
 extern const base::Feature kUseDefaultUserAgentInWebClient;
 
-// Use WKWebView.loading to update WebState::IsLoading.
-// TODO(crbug.com/1006012): Clean up this flag after experiment.
-bool UseWKWebViewLoading();
+// When enabled, preserves properties of the UIScrollView using CRWPropertyStore
+// when the scroll view is recreated. When disabled, only preserve a small set
+// of properties using hard coded logic.
+extern const base::Feature kPreserveScrollViewProperties;
+
+// When enabled, display an interstitial on legacy TLS connections.
+extern const base::Feature kIOSLegacyTLSInterstitial;
+
+// Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
+// (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
+// generate PDF when Page Snapshot is taken just to record PDF size.
+extern const base::Feature kRecordSnapshotSize;
+
+// When enabled, the |attribution| property of NSMutableURLRequests passed to
+// WKWebView is set as NSURLRequestAttributionUser on iOS 15.
+extern const base::Feature kSetRequestAttribution;
+
+// When enabled, use the native context menu in web content.
+extern const base::Feature kWebViewNativeContextMenu;
+
+// When enabled, display non-live preview for context menus in web content.
+extern const base::Feature kWebViewNativeContextMenuPhase2;
+
+// When enabled, the default context menu from WKWebView is used.
+extern const base::Feature kDefaultWebViewContextMenu;
+
+// Disables the screenshots of non-HTML pages on iOS15.
+extern const base::Feature kDisableNonHTMLScreenshotOnIOS15;
+
+// Feature flag that enable Shared Highlighting color change in iOS.
+extern const base::Feature kIOSSharedHighlightingColorChange;
+
+// Feature flag that enables creating pending item on POST form submission.
+// Also, for GET form submissions with same page navigation, retains the
+// transition type of new navigation item.
+extern const base::Feature kCreatePendingItemForPostFormSubmission;
+
+// Enable the new download API if available.
+extern const base::Feature kEnableNewDownloadAPI;
+
+// Feature flag that enables native session restoration with a synthesized
+// interaction state.
+extern const base::Feature kSynthesizedRestoreSession;
+
+// Enable support for unrealized WebState upon session restoration.
+// See //docs/ios/unrealized_web_state.md for more information.
+extern const base::Feature kEnableUnrealizedWebStates;
+
+// When true, for each navigation, the default user agent is chosen by the
+// WebClient GetDefaultUserAgent() method. If it is false, the mobile version
+// is requested by default.
+bool UseWebClientDefaultUserAgent();
+
+// When true, the native context menu for the web content are used.
+bool UseWebViewNativeContextMenuWeb();
+
+// When true, the custom implementation of context menu using native ContextMenu
+// for the web content is used.
+bool UseWebViewNativeContextMenuSystem();
+
+// When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
+bool ShouldTakeScreenshotOnNonHTMLContent();
+
+// When true, the new download API should be used.
+bool IsNewDownloadAPIEnabled();
 
 }  // namespace features
 }  // namespace web

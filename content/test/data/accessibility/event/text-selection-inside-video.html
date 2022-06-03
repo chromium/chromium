@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>1<video id="video">2</video><div id="div">3</div>
+<script>
+  function go() {
+    document.execCommand("selectAll", false);
+    document.getSelection().extend(document.getElementById("video"), 0);
+    document.getSelection().extend(document.getElementById("div"), 0);
+  }
+</script>
+</body>
+</html>

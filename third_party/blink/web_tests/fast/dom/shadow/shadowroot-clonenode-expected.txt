@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 11: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 Calling ShadowRoot.cloneNode() should throw a NotSupportedError exception.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

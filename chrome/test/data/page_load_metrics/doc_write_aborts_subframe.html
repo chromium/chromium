@@ -1,0 +1,13 @@
+<html>
+  <link rel="stylesheet" href="seamless-iframe.css">
+  <body>
+    <iframe src="/slow?100" id="frame" class="seamless"></iframe>
+    <script>
+      let frame = document.getElementById("frame");
+      let doc = frame.contentDocument;
+      doc.open();
+      doc.write("<html>Rewritten. <img src=pixel.png> </html>");
+      doc.close();
+    </script>
+  </body>
+</html>

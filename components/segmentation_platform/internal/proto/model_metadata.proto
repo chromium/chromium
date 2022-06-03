@@ -1,0 +1,101 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+import "components/segmentation_platform/internal/proto/aggregation.proto";
+import "components/segmentation_platform/internal/proto/types.proto";
+
+// Used as time unit for rest of this proto.
+enum TimeUnit {
+  UNKNOWN_TIME_UNIT = 0;
+  YEAR = 1;
+  MONTH = 2;
+  WEEK = 3;
+  DAY = 4;
+  HOUR = 5;
+  MINUTE = 6;
+  SECOND = 7;
+}
+
+message Feature {
+  // The type of signal this feature refers to.
+  optional SignalType type = 1;
+
+  // The human readable name of the histogram or user action.
+  optional string name = 2;
+
+  // The hash of the histogram name or user action. Must match the result of
+  // base::HashMetricName.
+  optional fixed64 name_hash = 3;
+
+  // Number of buckets to include in the result. If set to 0, no data will be
+  // collected. This can be used to start storing data before it should be used.
+  // See documentation for Aggregation for details.
+  optional uint64 bucket_count = 4;
+
+  // The required length of the calculated result. See documentation for
+  // Aggregation for details.
+  optional uint64 tensor_length = 5;
+
+  // The type of aggregation to use for this particular feature.
+  optional Aggregation aggregation = 6;
+
+  // Only set if type == HISTOGRAM_ENUM.
+  // Matches are only valid when the enum ID matches any of these.
+  // Works like an OR condition, e.g.: [url, search, …] or just [url].
+  repeated int32 enum_ids = 7;
+}
+
+// Metadata about a segmentation model for a given segment. Contains information
+// on how to use the model such as collecting signals, interpreting results etc.
+message SegmentationModelMetadata {
+  // An ordered list of required features.
+  repeated Feature features = 1;
+
+  // The time unit to be used for the rest of this proto.
+  optional TimeUnit time_unit = 2;
+
+  // The size of each interval the data should be aggregated over.
+  optional uint64 bucket_duration = 3;
+
+  // For how long should data be stored for this model.
+  optional int64 signal_storage_length = 4;
+
+  // For how long do we have to have captured data for this model. If the
+  // relevant signals have been captured for a shorter amount of time than this,
+  // this model can never be selected.
+  optional int64 min_signal_collection_length = 5;
+
+  // Describes how long after a valid result has been calculated for this model
+  // it is OK to cache the result without recalculating with updated data.
+  optional int64 result_time_to_live = 6;
+
+  message DiscreteMapping {
+    // A mapping result from the raw continuous result to a discrete and
+    // comparable value based on |rank|.
+    message Entry {
+      // The minimum result of the model to be allowed to choose this mapping.
+      optional float min_result = 1;
+
+      // A feature specific rank.
+      optional int64 rank = 2;
+    }
+
+    // An ordered (based on their |min_result|) list of discrete mappings.
+    // To map a model evaluation result to a DiscreteMapping, choose the highest
+    // |min_value| that the evaluation result is at or above.
+    // E.g. for these mappings: [(0.0, 0), (0.4, 1), (0.7, 2), (0.9, 3)], a
+    // result of 0.7 would yield (0.7, 2), and 0.69 would yield (0.4, 1).
+    repeated Entry entries = 1;
+  }
+  map<string, DiscreteMapping> discrete_mappings = 7;
+
+  // The default key to use during the mapping process if no key has been
+  // provided.
+  optional string default_discrete_mapping = 8;
+}

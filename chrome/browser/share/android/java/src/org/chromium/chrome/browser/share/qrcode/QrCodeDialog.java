@@ -4,16 +4,22 @@
 
 package org.chromium.chrome.browser.share.qrcode;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
+import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -22,28 +28,32 @@ import java.util.ArrayList;
  * QrCodeDialog is the main view for QR code sharing and scanning.
  */
 public class QrCodeDialog extends DialogFragment {
+    // Used to pass the URL in the bundle.
+    public static String URL_KEY = "url_key";
+
+    private AndroidPermissionDelegate mWindowAndroid;
     private ArrayList<QrCodeDialogTab> mTabs;
-
-    /** The QrCodeDialog constructor. */
-    public QrCodeDialog() {}
+    private TabLayoutPageListener mTabLayoutPageListener;
 
     /**
-     * The QrCodeDialog constructor.
-     * @param tabs The array of tabs for the tab layout.
+     * Create a new instance of {@link QrCodeDialog} and set the URL.
+     * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
      */
-    /**
-     * TODO(gayane): Resolve lint warning. Per warning, tabs should be passed through Bundle, but I
-     * don't want to make all the classes parcelable.
-     */
-    @SuppressLint("ValidFragment")
-    public QrCodeDialog(ArrayList<QrCodeDialogTab> tabs) {
-        mTabs = tabs;
+    static QrCodeDialog newInstance(String url, AndroidPermissionDelegate windowAndroid) {
+        assert windowAndroid != null;
+        QrCodeDialog qrCodeDialog = new QrCodeDialog();
+        Bundle args = new Bundle();
+        args.putString(URL_KEY, url);
+        qrCodeDialog.setArguments(args);
+        qrCodeDialog.setAndroidPermissionDelegate(windowAndroid);
+        return qrCodeDialog;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        initTabs();
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_Fullscreen);
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
         builder.setView(getDialogView());
         return builder.create();
     }
@@ -51,23 +61,49 @@ public class QrCodeDialog extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        for (QrCodeDialogTab tab : mTabs) {
-            tab.onResume();
-        }
+        mTabLayoutPageListener.resumeSelectedTab();
     }
+
     @Override
     public void onPause() {
         super.onPause();
+        mTabLayoutPageListener.pauseAllTabs();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         for (QrCodeDialogTab tab : mTabs) {
-            tab.onPause();
+            tab.onDestroy();
+        }
+        mTabs.clear();
+        mWindowAndroid = null;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // There is a corner case where this function can be triggered by toggling the battery saver
+        // state, resulting in all the variables being reset. The only way out is to destroy this
+        // dialog to bring the user back to the web page.
+        if (mWindowAndroid == null || mTabLayoutPageListener == null) {
+            onDestroyView();
+        }
+    }
+    /**
+     * Setter for the current WindowAndroid.
+     * @param windowAndroid The windowAndroid to set.
+     */
+    public void setAndroidPermissionDelegate(AndroidPermissionDelegate windowAndroid) {
+        mWindowAndroid = windowAndroid;
+        if (mTabLayoutPageListener != null) {
+            mTabLayoutPageListener.updatePermissions(mWindowAndroid);
         }
     }
 
     private View getDialogView() {
-        View dialogView = (View) getActivity().getLayoutInflater().inflate(
-                org.chromium.chrome.browser.share.qrcode.R.layout.qrcode_dialog, null);
-        ChromeImageButton closeButton =
-                (ChromeImageButton) dialogView.findViewById(R.id.close_button);
+        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.qrcode_dialog, null);
+        ChromeImageButton closeButton = dialogView.findViewById(R.id.close_button);
         closeButton.setOnClickListener(v -> dismiss());
 
         // Setup page adapter and tab layout.
@@ -77,13 +113,25 @@ public class QrCodeDialog extends DialogFragment {
         }
         QrCodePageAdapter pageAdapter = new QrCodePageAdapter(pages);
 
-        TabLayout tabLayout =
-                dialogView.findViewById(org.chromium.chrome.browser.share.qrcode.R.id.tab_layout);
-        ViewPager viewPager = dialogView.findViewById(
-                org.chromium.chrome.browser.share.qrcode.R.id.qrcode_view_pager);
+        TabLayout tabLayout = dialogView.findViewById(R.id.tab_layout);
+        ViewPager viewPager = dialogView.findViewById(R.id.qrcode_view_pager);
         viewPager.setAdapter(pageAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        mTabLayoutPageListener = new TabLayoutPageListener(tabLayout, mTabs);
+        viewPager.addOnPageChangeListener(mTabLayoutPageListener);
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
         return dialogView;
+    }
+
+    private void initTabs() {
+        Context context = getActivity();
+
+        QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(
+                context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
+        QrCodeScanCoordinator scanCoordinator = new QrCodeScanCoordinator(context, this::dismiss);
+
+        mTabs = new ArrayList<>();
+        mTabs.add(shareCoordinator);
+        mTabs.add(scanCoordinator);
     }
 }

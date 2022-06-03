@@ -23,9 +23,7 @@ static_library("pwg_encoder") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "pwg_encoder_unittest.cc",
-  ]
+  sources = [ "pwg_encoder_unittest.cc" ]
 
   deps = [
     ":pwg_encoder",

@@ -8,8 +8,6 @@ source_set("colors") {
     "MDCPalette+CrAdditions.h",
     "MDCPalette+CrAdditions.mm",
   ]
-  deps = [
-    "//ios/third_party/material_components_ios",
-    "//ios/web",
-  ]
+  deps = [ "//ios/web" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
 }

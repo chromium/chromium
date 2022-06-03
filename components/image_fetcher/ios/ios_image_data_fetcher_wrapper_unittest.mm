@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include "base/mac/scoped_block.h"
+#include "base/cxx17_backports.h"
+#import "base/ios/ios_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -105,13 +105,19 @@ NSData* DecodedWebpImage() {
 namespace image_fetcher {
 
 class IOSImageDataFetcherWrapperTest : public PlatformTest {
+ public:
+  IOSImageDataFetcherWrapperTest(const IOSImageDataFetcherWrapperTest&) =
+      delete;
+  IOSImageDataFetcherWrapperTest& operator=(
+      const IOSImageDataFetcherWrapperTest&) = delete;
+
  protected:
   IOSImageDataFetcherWrapperTest()
-      : callback_([^(NSData* data) {
+      : callback_(^(NSData* data, const RequestMetadata&) {
           result_data_ = data;
           result_ = [UIImage imageWithData:data];
           called_ = true;
-        } copy]) {
+        }) {
     shared_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &factory_);
@@ -128,16 +134,13 @@ class IOSImageDataFetcherWrapperTest : public PlatformTest {
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
 
-  base::mac::ScopedBlock<ImageDataFetcherBlock> callback_;
+  __strong ImageDataFetcherBlock callback_;
   network::TestURLLoaderFactory factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<IOSImageDataFetcherWrapper> image_fetcher_;
-  NSData* result_data_ = nil;
-  UIImage* result_ = nil;
+  __strong NSData* result_data_ = nil;
+  __strong UIImage* result_ = nil;
   bool called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSImageDataFetcherWrapperTest);
 };
 
 TEST_F(IOSImageDataFetcherWrapperTest, TestError) {
@@ -192,7 +195,16 @@ TEST_F(IOSImageDataFetcherWrapperTest, TestGoodWebPNoHeader) {
                        std::string(reinterpret_cast<const char*>(kWEBPImage),
                                    sizeof(kWEBPImage)));
   environment_.RunUntilIdle();
-  EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
+  // TODO(crbug.com/1129484): Remove once minimum supported version is at least
+  // 14 for all consumers of ios/web_view
+  if (base::ios::IsRunningOnIOS14OrLater()) {
+    NSData* webPImageConverted =
+        [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
+                       length:sizeof(kWEBPImage)];
+    EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
+  } else {
+    EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
+  }
   EXPECT_TRUE(called_);
 }
 
@@ -228,7 +240,16 @@ TEST_F(IOSImageDataFetcherWrapperTest, DeleteDuringWebPDecoding) {
   // Delete the image fetcher, and check that the callback is called.
   image_fetcher_.reset();
   environment_.RunUntilIdle();
-  EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
+  // TODO(crbug.com/1129484): Remove once minimum supported version is at least
+  // 14 for all consumers of components/image_fetcher/ios
+  if (base::ios::IsRunningOnIOS14OrLater()) {
+    NSData* webPImageConverted =
+        [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
+                       length:sizeof(kWEBPImage)];
+    EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
+  } else {
+    EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
+  }
   EXPECT_TRUE(called_);
 }
 

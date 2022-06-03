@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-class PrefService;
 
 namespace gcm {
 class GCMDriver;
@@ -23,10 +20,10 @@ class InstanceIDDriver;
 // Providing Instance ID support, via InstanceIDDriver, to a profile.
 class InstanceIDProfileService : public KeyedService {
  public:
-  // Returns whether InstanceID is enabled for |profile|.
-  static bool IsInstanceIDEnabled(PrefService* prefs);
-
   InstanceIDProfileService(gcm::GCMDriver* driver, bool is_off_the_record);
+
+  InstanceIDProfileService(const InstanceIDProfileService&) = delete;
+  InstanceIDProfileService& operator=(const InstanceIDProfileService&) = delete;
 
   ~InstanceIDProfileService() override;
 
@@ -34,8 +31,6 @@ class InstanceIDProfileService : public KeyedService {
 
  private:
   std::unique_ptr<InstanceIDDriver> driver_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDProfileService);
 };
 
 }  // namespace instance_id

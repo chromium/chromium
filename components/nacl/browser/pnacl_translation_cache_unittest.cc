@@ -4,6 +4,8 @@
 
 #include "components/nacl/browser/pnacl_translation_cache.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -28,7 +30,7 @@ class PnaclTranslationCacheTest : public testing::Test {
   PnaclTranslationCacheTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~PnaclTranslationCacheTest() override {}
-  void SetUp() override { cache_.reset(new PnaclTranslationCache()); }
+  void SetUp() override { cache_ = std::make_unique<PnaclTranslationCache>(); }
   void TearDown() override {
     // The destructor of PnaclTranslationCacheWriteEntry posts a task to the IO
     // thread to close the backend cache entry. We want to make sure the entries
@@ -86,8 +88,9 @@ class TestNexeCallback {
   TestNexeCallback()
       : have_result_(false),
         result_(-1),
-        cb_(base::Bind(&TestNexeCallback::SetResult, base::Unretained(this))) {}
-  GetNexeCallback callback() { return cb_; }
+        cb_(base::BindOnce(&TestNexeCallback::SetResult,
+                           base::Unretained(this))) {}
+  GetNexeCallback callback() { return std::move(cb_); }
   net::DrainableIOBuffer* GetResult(int* result) {
     while (!have_result_)
       base::RunLoop().RunUntilIdle();
@@ -105,7 +108,7 @@ class TestNexeCallback {
   bool have_result_;
   int result_;
   scoped_refptr<net::DrainableIOBuffer> buf_;
-  const GetNexeCallback cb_;
+  GetNexeCallback cb_;
 };
 
 std::string PnaclTranslationCacheTest::GetNexe(const std::string& key) {

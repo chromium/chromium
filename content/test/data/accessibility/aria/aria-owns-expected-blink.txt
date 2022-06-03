@@ -1,26 +1,30 @@
 rootWebArea
 ++genericContainer ignored
-++++list
-++++++listItem
-++++++++listMarker name='• '
-++++++++++staticText name='• '
-++++++++++++inlineTextBox name='• '
-++++++++genericContainer
-++++++++++staticText name='One'
-++++++++++++inlineTextBox name='One'
-++++++listItem
-++++++++listMarker name='• '
-++++++++++staticText name='• '
-++++++++++++inlineTextBox name='•'
-++++++++genericContainer
-++++++++++staticText name='Two'
-++++++++++++inlineTextBox name='Two'
 ++++genericContainer ignored
-++++genericContainer ignored
-++++++listItem
-++++++++listMarker name='• '
-++++++++++staticText name='• '
-++++++++++++inlineTextBox name='•'
-++++++++genericContainer
-++++++++++staticText name='Three'
-++++++++++++inlineTextBox name='Three'
+++++++list
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++genericContainer
+++++++++++++staticText name='One'
+++++++++++++++inlineTextBox name='One'
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2'
+++++++++++++staticText ignored name='%E2%80%A2'
+++++++++++genericContainer
+++++++++++++staticText name='Two'
+++++++++++++++inlineTextBox name='Two'
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++staticText name='Four'
+++++++++++++inlineTextBox name='Four'
+++++++genericContainer ignored
+++++++genericContainer ignored
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2'
+++++++++++++staticText ignored name='%E2%80%A2'
+++++++++++genericContainer
+++++++++++++staticText name='Three'
+++++++++++++++inlineTextBox name='Three'
+++++++genericContainer ignored

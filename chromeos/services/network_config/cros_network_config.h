@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_certificate_handler.h"
+#include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -17,10 +19,11 @@
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace chromeos {
 
+class CellularESimProfileHandler;
 class ManagedNetworkConfigurationHandler;
 class NetworkConnectionHandler;
 class NetworkDeviceHandler;
@@ -30,7 +33,8 @@ namespace network_config {
 
 class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                           public NetworkStateHandlerObserver,
-                          public NetworkCertificateHandler::Observer {
+                          public NetworkCertificateHandler::Observer,
+                          public CellularInhibitor::Observer {
  public:
   // Constructs an instance of CrosNetworkConfig with default network subsystem
   // dependencies appropriate for a production environment.
@@ -41,9 +45,16 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   CrosNetworkConfig(
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler,
+      CellularInhibitor* cellular_inhibitor,
+      CellularESimProfileHandler* cellular_esim_profile_handler,
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
-      NetworkCertificateHandler* network_certificate_handler);
+      NetworkCertificateHandler* network_certificate_handler,
+      NetworkProfileHandler* network_profile_handler);
+
+  CrosNetworkConfig(const CrosNetworkConfig&) = delete;
+  CrosNetworkConfig& operator=(const CrosNetworkConfig&) = delete;
+
   ~CrosNetworkConfig() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::CrosNetworkConfig> receiver);
@@ -85,24 +96,28 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void SetVpnProviders(std::vector<mojom::VpnProviderPtr> providers) override;
   void GetVpnProviders(GetVpnProvidersCallback callback) override;
   void GetNetworkCertificates(GetNetworkCertificatesCallback callback) override;
+  void GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) override;
+  void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) override;
+  void GetSupportedVpnTypes(GetSupportedVpnTypesCallback callback) override;
+  void RequestTrafficCounters(const std::string& guid,
+                              RequestTrafficCountersCallback callback) override;
+  void ResetTrafficCounters(const std::string& guid) override;
+
+  // static
+  static mojom::TrafficCounterSource GetTrafficCounterEnumForTesting(
+      const std::string& source);
 
  private:
-  void GetManagedPropertiesSuccess(int callback_id,
-                                   const std::string& service_path,
-                                   const base::DictionaryValue& properties);
-  void GetManagedPropertiesSuccessEap(
-      int callback_id,
-      const std::string& service_path,
-      const base::DictionaryValue& eap_properties);
-  void GetManagedPropertiesSuccessNoEap(
-      int callback_id,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
-  void GetManagedPropertiesFailure(
-      std::string guid,
-      int callback_id,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnGetManagedProperties(GetManagedPropertiesCallback callback,
+                              std::string guid,
+                              const std::string& service_path,
+                              absl::optional<base::Value> properties,
+                              absl::optional<std::string> error);
+  void OnGetManagedPropertiesEap(GetManagedPropertiesCallback callback,
+                                 mojom::ManagedPropertiesPtr managed_properties,
+                                 const std::string& service_path,
+                                 absl::optional<base::Value> properties,
+                                 absl::optional<std::string> error);
   void SetPropertiesSuccess(int callback_id);
   void SetPropertiesConfigureSuccess(int callback_id,
                                      const std::string& service_path,
@@ -133,6 +148,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       int callback_id,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void UpdateCustomAPNList(const NetworkState* network,
+                           const mojom::ConfigProperties* properties);
+  std::vector<mojom::ApnPropertiesPtr> GetCustomAPNList(
+      const std::string& guid);
 
   void StartConnectSuccess(int callback_id);
   void StartConnectFailure(int callback_id,
@@ -143,8 +162,15 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       int callback_id,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
+                        std::string mode,
+                        std::string service_path);
+  void OnGetSupportedVpnTypes(GetSupportedVpnTypesCallback callback,
+                              absl::optional<base::Value> manager_properties);
+  void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
+                               absl::optional<base::Value> traffic_counters);
 
-  // NetworkStateHandlerObserver
+  // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
   void DeviceListChanged() override;
   void ActiveNetworksChanged(
@@ -152,25 +178,32 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void NetworkPropertiesUpdated(const NetworkState* network) override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
   void OnShuttingDown() override;
+  void ScanStarted(const DeviceState* device) override;
+  void ScanCompleted(const DeviceState* device) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // NetworkCertificateHandler::Observer
   void OnCertificatesChanged() override;
+
+  // CellularInhibitor::Observer:
+  void OnInhibitStateChanged() override;
 
   const std::string& GetServicePathFromGuid(const std::string& guid);
 
   NetworkStateHandler* network_state_handler_;    // Unowned
   NetworkDeviceHandler* network_device_handler_;  // Unowned
+  CellularInhibitor* cellular_inhibitor_;         // Unowned
+  CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
   ManagedNetworkConfigurationHandler*
       network_configuration_handler_;                       // Unowned
   NetworkConnectionHandler* network_connection_handler_;    // Unowned
   NetworkCertificateHandler* network_certificate_handler_;  // Unowned
+  NetworkProfileHandler* network_profile_handler_;          // Unowned
 
   mojo::RemoteSet<mojom::CrosNetworkConfigObserver> observers_;
   mojo::ReceiverSet<mojom::CrosNetworkConfig> receivers_;
 
   int callback_id_ = 1;
-  base::flat_map<int, GetManagedPropertiesCallback>
-      get_managed_properties_callbacks_;
   base::flat_map<int, SetPropertiesCallback> set_properties_callbacks_;
   base::flat_map<int, ConfigureNetworkCallback> configure_network_callbacks_;
   base::flat_map<int, ForgetNetworkCallback> forget_network_callbacks_;
@@ -183,13 +216,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
 
   std::vector<mojom::VpnProviderPtr> vpn_providers_;
 
-  // GetManagedProperties may require multiple async calls so we need to store
-  // an owned copy of the mojo properties by callback id.
-  base::flat_map<int, mojom::ManagedPropertiesPtr> managed_properties_;
-
   base::WeakPtrFactory<CrosNetworkConfig> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfig);
 };
 
 }  // namespace network_config

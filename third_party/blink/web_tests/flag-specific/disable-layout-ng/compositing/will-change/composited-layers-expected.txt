@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -49,11 +49,25 @@
       "transform": 6
     },
     {
-      "name": "LayoutBlockFlow DIV id='willChangeCombinationThatComposites' class='shouldComposite'",
+      "name": "LayoutBlockFlow DIV id='willChangeFilter' class='shouldComposite'",
       "bounds": [30, 30],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 7
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='willChangeBackdropFilter' class='shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 8
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='willChangeCombinationThatComposites' class='shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 9
     }
   ],
   "transforms": [
@@ -117,7 +131,25 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [12, 382, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [12, 416, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 450, 0, 1]
       ]
     }
   ]

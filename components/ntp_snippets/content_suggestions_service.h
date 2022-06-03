@@ -13,8 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -28,6 +27,7 @@
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_snippets/user_classifier.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -107,6 +107,9 @@ class ContentSuggestionsService : public KeyedService,
       std::unique_ptr<UserClassifier> user_classifier,
       std::unique_ptr<RemoteSuggestionsScheduler>
           remote_suggestions_scheduler);  // Can be nullptr in unittests.
+  ContentSuggestionsService(const ContentSuggestionsService&) = delete;
+  ContentSuggestionsService& operator=(const ContentSuggestionsService&) =
+      delete;
   ~ContentSuggestionsService() override;
 
   // Inherited from KeyedService.
@@ -125,7 +128,7 @@ class ContentSuggestionsService : public KeyedService,
   CategoryStatus GetCategoryStatus(Category category) const;
 
   // Gets the meta information of a category.
-  base::Optional<CategoryInfo> GetCategoryInfo(Category category) const;
+  absl::optional<CategoryInfo> GetCategoryInfo(Category category) const;
 
   // Gets the available suggestions for a category. The result is empty if the
   // category is available and empty, but also if the category is unavailable
@@ -206,9 +209,10 @@ class ContentSuggestionsService : public KeyedService,
   // suggestions, which are based on history from that time range. Providers
   // should immediately clear any data related to history from the specified
   // time range where the URL matches the |filter|.
-  void ClearHistory(base::Time begin,
-                    base::Time end,
-                    const base::Callback<bool(const GURL& url)>& filter);
+  void ClearHistory(
+      base::Time begin,
+      base::Time end,
+      const base::RepeatingCallback<bool(const GURL& url)>& filter);
 
   // Removes all suggestions from all caches or internal stores in all
   // providers. It does, however, not remove any suggestions from the provider's
@@ -280,8 +284,8 @@ class ContentSuggestionsService : public KeyedService,
       const ContentSuggestion::ID& suggestion_id) override;
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // history::HistoryServiceObserver implementation.
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -377,13 +381,15 @@ class ContentSuggestionsService : public KeyedService,
 
   // Observer for the IdentityManager. All observers are notified when the
   // signin state changes so that they can refresh their list of suggestions.
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Observer for the HistoryService. All providers are notified when history is
   // deleted.
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -409,8 +415,6 @@ class ContentSuggestionsService : public KeyedService,
 
   // Provides order for categories.
   std::unique_ptr<CategoryRanker> category_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestionsService);
 };
 
 }  // namespace ntp_snippets

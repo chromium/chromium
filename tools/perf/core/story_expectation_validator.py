@@ -82,6 +82,14 @@ def validate_tag_declaration_lists(tag_sets):
         "please declare it the top of the file" % tag)
 
 
+def validate_supported_platform_lists(benchmarks):
+  for b in benchmarks:
+    assert all(tag.lower() in SYSTEM_CONDITION_TAGS
+               for tag in b.SUPPORTED_PLATFORM_TAGS), (
+        "%s's SUPPORTED_PLATFORM_TAGS contains a tag not"
+        " defined in expectations.config" % b.Name())
+
+
 def main():
   benchmarks = benchmark_finders.GetAllBenchmarks()
   with open(path_util.GetExpectationsPath()) as fp:
@@ -92,6 +100,7 @@ def main():
     logging.error(msg)
     return ret
   #validate_tag_declaration_lists(test_expectations.tag_sets)
+  validate_supported_platform_lists(benchmarks)
   validate_story_names(benchmarks, test_expectations)
   validate_expectations_component_tags(test_expectations)
   return 0

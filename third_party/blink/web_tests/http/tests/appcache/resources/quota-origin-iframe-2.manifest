@@ -1,8 +1,0 @@
-CACHE MANIFEST
-
-# iframe-2 should fail. The origin quota has been set to
-# 20kb, with ~13kb already cached. Caching abe.png and this
-# manifest (~13kb) should exceed the quota and fail.
-
-CACHE:
-abe.png

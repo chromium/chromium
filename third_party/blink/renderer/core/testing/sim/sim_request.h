@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -33,6 +34,12 @@ class SimRequestBase {
     // if |redirect_url| is non-empty.
     String redirect_url;
 
+    // Referrer URL that should be included in response.
+    String referrer;
+
+    // The origin of the request used to load the main resource.
+    WebSecurityOrigin requestor_origin;
+
     WTF::HashMap<String, String> response_http_headers;
 
     // The HTTP status code of the response. |response_http_status| is ignored
@@ -46,14 +53,17 @@ class SimRequestBase {
   void Write(const Vector<char>& data);
 
   // Finish the response, this is as if the server closed the connection.
-  void Finish();
+  // If |navigation_body_loader| already finished, skip calling Finish on it.
+  void Finish(bool body_loader_finished = false);
 
   // Shorthand to complete a request (start/write/finish) sequence in order.
   void Complete(const String& data = String());
   void Complete(const Vector<char>& data);
 
+  const KURL& GetURL() const { return url_; }
+
  protected:
-  SimRequestBase(String url,
+  SimRequestBase(KURL url,
                  String mime_type,
                  bool start_immediately,
                  Params params = Params());
@@ -75,13 +85,15 @@ class SimRequestBase {
   void DidFail(const WebURLError&);
   void UsedForNavigation(StaticDataNavigationBodyLoader*);
 
-  KURL url_;
+  const KURL url_;
   String redirect_url_;
   String mime_type_;
-  bool start_immediately_;
+  String referrer_;
+  WebSecurityOrigin requestor_origin_;
+  const bool start_immediately_;
   bool started_;
   WebURLResponse response_;
-  base::Optional<WebURLError> error_;
+  absl::optional<WebURLError> error_;
   WebURLLoaderClient* client_;
   unsigned total_encoded_data_length_;
   WTF::HashMap<String, String> response_http_headers_;
@@ -95,6 +107,7 @@ class SimRequestBase {
 // TODO(dgozman): rename this to SimNavigationRequest or something.
 class SimRequest final : public SimRequestBase {
  public:
+  SimRequest(KURL url, String mime_type, Params params = Params());
   SimRequest(String url, String mime_type, Params params = Params());
   ~SimRequest();
 };
@@ -103,6 +116,7 @@ class SimRequest final : public SimRequestBase {
 // delayed load of subresources.
 class SimSubresourceRequest final : public SimRequestBase {
  public:
+  SimSubresourceRequest(KURL url, String mime_type, Params params = Params());
   SimSubresourceRequest(String url, String mime_type, Params params = Params());
 
   ~SimSubresourceRequest();
@@ -114,4 +128,4 @@ class SimSubresourceRequest final : public SimRequestBase {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_

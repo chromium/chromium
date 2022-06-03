@@ -20,11 +20,14 @@ void MockClientSocketPoolManager::SetSocketPool(
   socket_pools_[proxy_server] = std::move(pool);
 }
 
-void MockClientSocketPoolManager::FlushSocketPoolsWithError(int error) {
+void MockClientSocketPoolManager::FlushSocketPoolsWithError(
+    int error,
+    const char* net_log_reason_utf8) {
   NOTIMPLEMENTED();
 }
 
-void MockClientSocketPoolManager::CloseIdleSockets() {
+void MockClientSocketPoolManager::CloseIdleSockets(
+    const char* net_log_reason_utf8) {
   NOTIMPLEMENTED();
 }
 
@@ -41,9 +44,5 @@ MockClientSocketPoolManager::SocketPoolInfoToValue() const {
   NOTIMPLEMENTED();
   return std::unique_ptr<base::Value>(nullptr);
 }
-
-void MockClientSocketPoolManager::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {}
 
 }  // namespace net

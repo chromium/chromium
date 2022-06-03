@@ -53,7 +53,7 @@ public interface AutofillAssistantActionHandler {
     List<AutofillAssistantDirectAction> getActions();
 
     /** Performs onboarding and returns the result to the callback. */
-    void performOnboarding(String experimentIds, Callback<Boolean> callback);
+    void performOnboarding(String experimentIds, Bundle arguments, Callback<Boolean> callback);
 
     /**
      * Performs an AA action.
@@ -68,4 +68,9 @@ public interface AutofillAssistantActionHandler {
      */
     void performAction(
             String name, String experimentIds, Bundle arguments, Callback<Boolean> callback);
+
+    /**
+     * Displays a generic error message to the user.
+     */
+    void showFatalError();
 }

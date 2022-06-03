@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_NET_COOKIES_WK_COOKIE_UTIL_H_
 #define IOS_WEB_NET_COOKIES_WK_COOKIE_UTIL_H_
 
-#include "base/mac/availability.h"
-
 @class WKHTTPCookieStore;
 
 namespace web {

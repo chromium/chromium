@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/grit/components_resources.h",
-  "+components/password_manager/core/browser/hash_password_manager.h",
-  "+components/user_prefs",
-  "+components/safe_browsing/proto/csd.pb.h",
-  "+components/strings/grit/components_strings.h",
-  "+components/grit/components_scaled_resources.h",
-  "+components/safe_browsing_db",
-]

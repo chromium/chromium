@@ -8,37 +8,10 @@ Tested locations: 1200,1500
       "bounds": [1600, 585],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [1300, 0, 300, 585],
-          "reason": "incremental"
-        },
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [1000, 0, 300, 585],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='box'",
-          "rect": [1500, 0, 100, 100],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='box'",
-          "rect": [1200, 0, 100, 100],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='box'",
-          "rect": [1200, 0, 100, 100],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='box'",
-          "rect": [900, 0, 100, 100],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [1300, 0, 300, 585],
+        [1000, 0, 300, 585],
+        [900, 0, 100, 100]
       ]
     },
     {

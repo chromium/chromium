@@ -33,6 +33,7 @@ import types
 from core.css import css_properties
 import json5_generator
 
+
 def calculate_apply_functions_to_declare(property_):
     property_['should_declare_functions'] = \
         not property_['longhands'] \
@@ -40,8 +41,8 @@ def calculate_apply_functions_to_declare(property_):
     property_['use_property_class_in_stylebuilder'] = \
         property_['should_declare_functions']
 
-class StyleBuilderWriter(json5_generator.Writer):
 
+class StyleBuilderWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
         super(StyleBuilderWriter, self).__init__([], output_dir)
 
@@ -55,6 +56,7 @@ class StyleBuilderWriter(json5_generator.Writer):
     @property
     def css_properties(self):
         return self._json5_properties
+
 
 if __name__ == '__main__':
     json5_generator.Maker(StyleBuilderWriter).main()

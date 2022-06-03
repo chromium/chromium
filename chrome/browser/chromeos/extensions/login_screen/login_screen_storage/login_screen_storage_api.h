@@ -13,26 +13,35 @@ namespace extensions {
 // Provides common callback functions to return results from
 // 'LoginScreenStorageStore' and 'LoginScreenStorageRetrieve' D-Bus methods.
 class LoginScreenStorageExtensionFunction : public ExtensionFunction {
+ public:
+  LoginScreenStorageExtensionFunction(
+      const LoginScreenStorageExtensionFunction&) = delete;
+  LoginScreenStorageExtensionFunction& operator=(
+      const LoginScreenStorageExtensionFunction&) = delete;
+
  protected:
   LoginScreenStorageExtensionFunction();
   ~LoginScreenStorageExtensionFunction() override;
 
   // When passed as a callback to the 'LoginScreenStorageStore' D-Bus method,
   // returns its result to the calling extension.
-  void OnDataStored(base::Optional<std::string> error);
+  void OnDataStored(absl::optional<std::string> error);
 
   // When passed as a callback to the 'LoginScreenStorageRetrieve' D-Bus method,
   // returns its result to the calling extension.
-  void OnDataRetrieved(base::Optional<std::string> data,
-                       base::Optional<std::string> error);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageExtensionFunction);
+  void OnDataRetrieved(absl::optional<std::string> data,
+                       absl::optional<std::string> error);
 };
 
 class LoginScreenStorageStorePersistentDataFunction : public ExtensionFunction {
  public:
   LoginScreenStorageStorePersistentDataFunction();
+
+  LoginScreenStorageStorePersistentDataFunction(
+      const LoginScreenStorageStorePersistentDataFunction&) = delete;
+  LoginScreenStorageStorePersistentDataFunction& operator=(
+      const LoginScreenStorageStorePersistentDataFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("loginScreenStorage.storePersistentData",
                              LOGINSCREENSTORAGE_STOREPERSISTENTDATA)
 
@@ -48,21 +57,25 @@ class LoginScreenStorageStorePersistentDataFunction : public ExtensionFunction {
   void OnDataStored(std::vector<std::string> extension_ids,
                     const login_manager::LoginScreenStorageMetadata& metadata,
                     const std::string& data,
-                    base::Optional<std::string> error);
+                    absl::optional<std::string> error);
 
   // Asynchronously stores data for every extension from |extension_ids|.
   void StoreDataForExtensions(
       std::vector<std::string> extension_ids,
       const login_manager::LoginScreenStorageMetadata& metadata,
       const std::string& data);
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageStorePersistentDataFunction);
 };
 
 class LoginScreenStorageRetrievePersistentDataFunction
     : public LoginScreenStorageExtensionFunction {
  public:
   LoginScreenStorageRetrievePersistentDataFunction();
+
+  LoginScreenStorageRetrievePersistentDataFunction(
+      const LoginScreenStorageRetrievePersistentDataFunction&) = delete;
+  LoginScreenStorageRetrievePersistentDataFunction& operator=(
+      const LoginScreenStorageRetrievePersistentDataFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("loginScreenStorage.retrievePersistentData",
                              LOGINSCREENSTORAGE_RETRIEVEPERSISTENTDATA)
 
@@ -71,15 +84,18 @@ class LoginScreenStorageRetrievePersistentDataFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageRetrievePersistentDataFunction);
 };
 
 class LoginScreenStorageStoreCredentialsFunction
     : public LoginScreenStorageExtensionFunction {
  public:
   LoginScreenStorageStoreCredentialsFunction();
+
+  LoginScreenStorageStoreCredentialsFunction(
+      const LoginScreenStorageStoreCredentialsFunction&) = delete;
+  LoginScreenStorageStoreCredentialsFunction& operator=(
+      const LoginScreenStorageStoreCredentialsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("loginScreenStorage.storeCredentials",
                              LOGINSCREENSTORAGE_STORECREDENTIALS)
 
@@ -88,15 +104,18 @@ class LoginScreenStorageStoreCredentialsFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageStoreCredentialsFunction);
 };
 
 class LoginScreenStorageRetrieveCredentialsFunction
     : public LoginScreenStorageExtensionFunction {
  public:
   LoginScreenStorageRetrieveCredentialsFunction();
+
+  LoginScreenStorageRetrieveCredentialsFunction(
+      const LoginScreenStorageRetrieveCredentialsFunction&) = delete;
+  LoginScreenStorageRetrieveCredentialsFunction& operator=(
+      const LoginScreenStorageRetrieveCredentialsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("loginScreenStorage.retrieveCredentials",
                              LOGINSCREENSTORAGE_RETRIEVECREDENTIALS)
 
@@ -105,9 +124,6 @@ class LoginScreenStorageRetrieveCredentialsFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageRetrieveCredentialsFunction);
 };
 
 }  // namespace extensions

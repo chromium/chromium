@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_ANIMATED_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_ANIMATED_PROPERTY_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
@@ -47,15 +46,16 @@ class SVGElement;
 
 class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
  public:
+  SVGAnimatedPropertyBase(const SVGAnimatedPropertyBase&) = delete;
+  SVGAnimatedPropertyBase& operator=(const SVGAnimatedPropertyBase&) = delete;
   virtual ~SVGAnimatedPropertyBase();
 
-  virtual SVGPropertyBase* CurrentValueBase() = 0;
   virtual const SVGPropertyBase& BaseValueBase() const = 0;
   virtual bool IsAnimating() const = 0;
 
   virtual SVGPropertyBase* CreateAnimatedValue() = 0;
   virtual void SetAnimatedValue(SVGPropertyBase*) = 0;
-  virtual void AnimationEnded();
+  virtual void AnimationEnded() = 0;
 
   virtual SVGParsingError AttributeChanged(const String&) = 0;
   virtual bool NeedsSynchronizeAttribute() const;
@@ -79,7 +79,7 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
 
   bool IsSpecified() const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void BaseValueChanged();
   void EnsureAnimValUpdated();
@@ -101,18 +101,14 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
  private:
   static_assert(kNumberOfAnimatedPropertyTypes <= (1u << 5),
                 "enough bits for AnimatedPropertyType (type_)");
-  static constexpr int kCssPropertyBits = 10;
-  static_assert((1u << kCssPropertyBits) - 1 >= kIntLastCSSProperty,
-                "enough bits for CSS property ids");
 
   const unsigned type_ : 5;
-  const unsigned css_property_id_ : kCssPropertyBits;
+  const unsigned css_property_id_ : kCSSPropertyIDBitLength;
   const unsigned initial_value_storage_ : kInitialValueStorageBits;
 
   unsigned base_value_needs_synchronization_ : 1;
   Member<SVGElement> context_element_;
   const QualifiedName& attribute_name_;
-  DISALLOW_COPY_AND_ASSIGN(SVGAnimatedPropertyBase);
 };
 
 template <typename Property>
@@ -124,8 +120,6 @@ class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
   const Property* CurrentValue() const {
     return const_cast<SVGAnimatedPropertyCommon*>(this)->CurrentValue();
   }
-
-  SVGPropertyBase* CurrentValueBase() override { return CurrentValue(); }
 
   const SVGPropertyBase& BaseValueBase() const override { return *base_value_; }
 
@@ -158,10 +152,9 @@ class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
 
   void AnimationEnded() override {
     current_value_ = base_value_;
-    SVGAnimatedPropertyBase::AnimationEnded();
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(base_value_);
     visitor->Trace(current_value_);
     SVGAnimatedPropertyBase::Trace(visitor);
@@ -273,7 +266,7 @@ class SVGAnimatedProperty<Property, TearOffType, void>
     return anim_val_tear_off_;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(base_val_tear_off_);
     visitor->Trace(anim_val_tear_off_);
     SVGAnimatedPropertyCommon<Property>::Trace(visitor);

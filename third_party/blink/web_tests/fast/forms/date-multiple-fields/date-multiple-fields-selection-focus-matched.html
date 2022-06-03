@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+
+<p><input type=text id=start></p>
+<div contenteditable=true><input type=date id=date></div>
+
+<script>
+function testSelectionOnDateFocus(focusFunction) {
+  const textField = document.querySelector('#start');
+  textField.focus();
+  const sel = getSelection();
+  // Physical text selection is in the text field shadow DOM.
+  // Web-exposed text slection points [p, 0].
+  assert_equals(sel.anchorNode, textField.parentNode, 'prereq: anchorNode');
+  assert_equals(sel.anchorOffset, 0, 'prereq: anchorOffset');
+  assert_equals(sel.focusNode, textField.parentNode, 'prereq: focusNode');
+  assert_equals(sel.focusOffset, 0, 'prereq: focusOffset');
+
+  const date = document.querySelector('#date');
+  focusFunction(date);
+  assert_equals(document.activeElement, date,
+      'The date field should get focused.');
+  // Physical text selection is in the date field shadow DOM.
+  // Web-exposed text slection points [div, 0].
+  assert_equals(sel.anchorNode, date.parentNode, 'anchorNode');
+  assert_equals(sel.anchorOffset, 0, 'anchorOffset');
+  assert_equals(sel.focusNode, date.parentNode, 'focusNode');
+  assert_equals(sel.focusOffset, 0, 'focusOffset');
+}
+
+test(() => {
+  testSelectionOnDateFocus(date => date.focus());
+}, 'crbug.com/1034854; We had a bug that text selection was not in a focused date input; programatic focus');
+
+test(() => {
+  // clickElement() is defined in common.js.
+  testSelectionOnDateFocus(clickElement);
+}, 'crbug.com/1034854; We had a bug that text selection was not in a focused date input; click focus');
+</script>
+</body>
+

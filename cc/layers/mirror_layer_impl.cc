@@ -4,10 +4,12 @@
 
 #include "cc/layers/mirror_layer_impl.h"
 
+#include <memory>
+
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 
 namespace cc {
 
@@ -21,7 +23,7 @@ std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
-void MirrorLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                   AppendQuadsData* append_quads_data) {
   // TODO(mohsen): Currently, effects on the mirrored layer (e.g mask and
   // opacity) are ignored. Consider applying them here.
@@ -40,24 +42,25 @@ void MirrorLayerImpl::AppendQuads(viz::RenderPass* render_pass,
   const bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
+  // TODO(crbug.com/1196414): Support 2D scales in mirror layers.
   PopulateScaledSharedQuadStateWithContentRects(
-      shared_quad_state, mirrored_layer->GetIdealContentsScale(), content_rect,
-      content_rect, contents_opaque);
+      shared_quad_state, mirrored_layer->GetIdealContentsScaleKey(),
+      content_rect, content_rect, contents_opaque);
 
   AppendDebugBorderQuad(render_pass, content_rect, shared_quad_state,
                         append_quads_data);
 
-  viz::ResourceId mask_resource_id = 0;
+  viz::ResourceId mask_resource_id = viz::kInvalidResourceId;
   gfx::RectF mask_uv_rect;
   gfx::Size mask_texture_size;
 
   auto* mirrored_effect_node = mirrored_render_surface->OwningEffectNode();
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+  auto* quad =
+      render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, content_rect, unoccluded_content_rect,
-               mirrored_layer_id_, mask_resource_id, mask_uv_rect,
+               mirrored_layer_render_pass_id(), mask_resource_id, mask_uv_rect,
                mask_texture_size, mirrored_effect_node->surface_contents_scale,
-               mirrored_effect_node->filters_origin,
-               gfx::RectF(gfx::Rect(content_rect.size())),
+               gfx::PointF(), gfx::RectF(gfx::Rect(content_rect.size())),
                !layer_tree_impl()->settings().enable_edge_anti_aliasing, 0.f);
 }
 
@@ -74,11 +77,11 @@ gfx::Rect MirrorLayerImpl::GetDamageRect() const {
   return gfx::Rect(bounds());
 }
 
-gfx::Rect MirrorLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect MirrorLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   const LayerImpl* mirrored_layer =
       layer_tree_impl()->LayerById(mirrored_layer_id_);
-  return GetScaledEnclosingRectInTargetSpace(
-      mirrored_layer->GetIdealContentsScale());
+  return GetScaledEnclosingVisibleRectInTargetSpace(
+      mirrored_layer->GetIdealContentsScaleKey());
 }
 
 const char* MirrorLayerImpl::LayerTypeAsString() const {

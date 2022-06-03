@@ -17,7 +17,7 @@ promise_test(async t => {
   const element2 = document.createElement('div');
   await test_driver.bless('request Picture-in-Picture');
   const promise = element1.requestPictureInPicture(options);
-  await promise_rejects(t, 'NotAllowedError', element2.requestPictureInPicture(options));
+  await promise_rejects_dom(t, 'NotAllowedError', element2.requestPictureInPicture(options));
   return promise;
 }, 'request Picture-in-Picture consumes user gesture');
 

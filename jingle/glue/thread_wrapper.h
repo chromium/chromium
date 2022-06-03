@@ -11,13 +11,16 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 
 namespace jingle_glue {
@@ -33,10 +36,14 @@ namespace jingle_glue {
 // - Using JingleThreadWrapper() constructor. In this case the creating code
 //   must pass a valid task runner for the current thread and also delete the
 //   wrapper later.
-class JingleThreadWrapper
-    : public base::MessageLoopCurrent::DestructionObserver,
-      public rtc::Thread {
+class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
+                            public rtc::Thread {
  public:
+  // A repeating callback whose TimeDelta argument indicates a duration sample.
+  // What the duration represents is contextual.
+  using SampledDurationCallback =
+      base::RepeatingCallback<void(base::TimeDelta)>;
+
   // Create JingleThreadWrapper for the current thread if it hasn't been created
   // yet. The thread wrapper is destroyed automatically when the current
   // MessageLoop is destroyed.
@@ -51,6 +58,24 @@ class JingleThreadWrapper
   // exist.
   static JingleThreadWrapper* current();
 
+  // Sets task latency & duration sample callbacks intended to gather UMA
+  // statistics. Samples are acquired periodically every several seconds by
+  // JingleThreadWrapper. In this context,
+  // * task latency is defined as the duration between the moment a task is
+  //   scheduled from JingleThreadWrapper's task runner, and the moment
+  //   it begins running.
+  // * task duration is defined as the duration between the moment the
+  //   JingleThreadWrapper begins running a task and the moment it ends
+  //   executing it. It only measures durations of tasks posted to rtc::Thread.
+  // The passed callbacks are called in the JingleThreadWrapper's task runner
+  // context.
+  void SetLatencyAndTaskDurationCallbacks(
+      SampledDurationCallback task_latency_callback,
+      SampledDurationCallback task_duration_callback);
+
+  JingleThreadWrapper(const JingleThreadWrapper&) = delete;
+  JingleThreadWrapper& operator=(const JingleThreadWrapper&) = delete;
+
   ~JingleThreadWrapper() override;
 
   // Sets whether the thread can be used to send messages
@@ -60,7 +85,7 @@ class JingleThreadWrapper
   // need to call Send() for other threads.
   void set_send_allowed(bool allowed) { send_allowed_ = allowed; }
 
-  // MessageLoopCurrent::DestructionObserver implementation.
+  // CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override;
 
   // rtc::MessageQueue overrides.
@@ -92,17 +117,11 @@ class JingleThreadWrapper
   // Following methods are not supported. They are overriden just to
   // ensure that they are not called (each of them contain NOTREACHED
   // in the body). Some of this methods can be implemented if it
-  // becomes neccessary to use libjingle code that calls them.
+  // becomes necessary to use libjingle code that calls them.
   void Quit() override;
   void Restart() override;
   bool Get(rtc::Message* message, int delay_ms, bool process_io) override;
   bool Peek(rtc::Message* message, int delay_ms) override;
-  void PostAt(const rtc::Location& posted_from,
-              uint32_t timestamp,
-              rtc::MessageHandler* handler,
-              uint32_t id,
-              rtc::MessageData* data) override;
-  void ReceiveSends() override;
   int GetDelay() override;
 
   // rtc::Thread overrides.
@@ -112,6 +131,7 @@ class JingleThreadWrapper
  private:
   typedef std::map<int, rtc::Message> MessagesQueue;
   struct PendingSend;
+  class PostTaskLatencySampler;
 
   explicit JingleThreadWrapper(
      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -122,7 +142,24 @@ class JingleThreadWrapper
                         uint32_t message_id,
                         rtc::MessageData* data);
   void RunTask(int task_id);
+  void RunTaskInternal(int task_id);
   void ProcessPendingSends();
+
+  // TaskQueueBase overrides.
+  void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override;
+  void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
+                       uint32_t milliseconds) override;
+
+  // Executes WebRTC queued tasks from TaskQueueBase overrides on
+  // |task_runner_|.
+  void RunTaskQueueTask(std::unique_ptr<webrtc::QueuedTask> task);
+
+  // Called before a task runs, returns an opaque optional timestamp which
+  // should be passed into FinalizeRunTask.
+  absl::optional<base::TimeTicks> PrepareRunTask();
+  // Called after a task has run. Move the return value of PrepareRunTask as
+  // |task_start_timestamp|.
+  void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
 
   // Task runner used to execute messages posted on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -135,11 +172,12 @@ class JingleThreadWrapper
   MessagesQueue messages_;
   std::list<PendingSend*> pending_send_messages_;
   base::WaitableEvent pending_send_event_;
+  std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
+  SampledDurationCallback task_latency_callback_;
+  SampledDurationCallback task_duration_callback_;
 
   base::WeakPtr<JingleThreadWrapper> weak_ptr_;
   base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JingleThreadWrapper);
 };
 
 }  // namespace jingle_glue

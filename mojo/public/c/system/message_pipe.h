@@ -99,6 +99,12 @@ typedef uint32_t MojoCreateMessageFlags;
 // No flags. Default behavior.
 #define MOJO_CREATE_MESSAGE_FLAG_NONE ((uint32_t)0)
 
+// Do not enforce size restrictions on this message, allowing its serialized
+// payload to grow arbitrarily large. If this flag is NOT specified, Mojo will
+// throw an assertion failure at serialization time when the message exceeds a
+// globally configured maximum size.
+#define MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE ((uint32_t)1)
+
 // Options passed to |MojoCreateMessage()|.
 struct MOJO_ALIGNAS(8) MojoCreateMessageOptions {
   // The size of this structure, used for versioning.

@@ -20,3 +20,5 @@ NSString* const kLanguageSettingsTableViewAccessibilityIdentifier =
     @"kLanguageSettingsTableViewAccessibilityIdentifier";
 NSString* const kTranslateSwitchAccessibilityIdentifier =
     @"kTranslateSwitchAccessibilityIdentifier";
+NSString* const kTranslateManagedAccessibilityIdentifier =
+    @"kTranslateManagedAccessibilityIdentifier";

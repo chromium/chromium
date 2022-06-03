@@ -28,7 +28,7 @@ TEST(WorkDeduplicatorTest, OnWorkRequestedUnBound) {
             work_deduplicator.BindToCurrentThread());
 }
 
-TEST(WorkDeduplicatorTest, OnWorkRequestedBeforeDoWork) {
+TEST(WorkDeduplicatorTest, OnWorkRequestedOnWorkStarted) {
   WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
   work_deduplicator.BindToCurrentThread();
 
@@ -178,7 +178,8 @@ TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedInDoWork) {
   work_deduplicator.DidCheckForMoreWork(NextTask::kIsImmediate);
 }
 
-TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedAfterDoWorkWithMoreWork) {
+TEST(WorkDeduplicatorTest,
+     OnDelayedWorkRequestedDidCheckForMoreWorkWithMoreWork) {
   WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
   work_deduplicator.BindToCurrentThread();
 
@@ -190,7 +191,8 @@ TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedAfterDoWorkWithMoreWork) {
             work_deduplicator.OnDelayedWorkRequested());
 }
 
-TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedAfterDoWorkWithNoMoreWork) {
+TEST(WorkDeduplicatorTest,
+     OnDelayedWorkRequestedDidCheckForMoreWorkWithNoMoreWork) {
   WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
   work_deduplicator.BindToCurrentThread();
 
@@ -210,63 +212,6 @@ TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedWithDoWorkPending) {
             work_deduplicator.OnWorkRequested());
   EXPECT_EQ(ShouldScheduleWork::kNotNeeded,
             work_deduplicator.OnDelayedWorkRequested());
-}
-
-TEST(WorkDeduplicatorTest, DoDelayedWorkWithNoMoreWorkAfterDoWorkWithMoreWork) {
-  WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
-  work_deduplicator.BindToCurrentThread();
-
-  work_deduplicator.OnWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  work_deduplicator.DidCheckForMoreWork(NextTask::kIsImmediate);
-
-  work_deduplicator.OnDelayedWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  EXPECT_EQ(ShouldScheduleWork::kNotNeeded,
-            work_deduplicator.OnDelayedWorkEnded(NextTask::kIsDelayed));
-}
-
-TEST(WorkDeduplicatorTest, DoDelayedWorkWithMoreWorkAfterDoWorkWithMoreWork) {
-  WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
-  work_deduplicator.BindToCurrentThread();
-
-  work_deduplicator.OnWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  work_deduplicator.DidCheckForMoreWork(NextTask::kIsImmediate);
-
-  work_deduplicator.OnDelayedWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  EXPECT_EQ(ShouldScheduleWork::kNotNeeded,
-            work_deduplicator.OnDelayedWorkEnded(NextTask::kIsImmediate));
-}
-
-TEST(WorkDeduplicatorTest, DoDelayedWorkWithMoreWorkAfterDoWorkWithNoMoreWork) {
-  WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
-  work_deduplicator.BindToCurrentThread();
-
-  work_deduplicator.OnWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  work_deduplicator.DidCheckForMoreWork(NextTask::kIsDelayed);
-
-  work_deduplicator.OnDelayedWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  EXPECT_EQ(ShouldScheduleWork::kScheduleImmediate,
-            work_deduplicator.OnDelayedWorkEnded(NextTask::kIsImmediate));
-}
-
-TEST(WorkDeduplicatorTest,
-     DoDelayedWorkWithNoMoreWorkAfterDoWorkWithNoMoreWork) {
-  WorkDeduplicator work_deduplicator(AssociatedThreadId::CreateBound());
-  work_deduplicator.BindToCurrentThread();
-
-  work_deduplicator.OnWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  work_deduplicator.DidCheckForMoreWork(NextTask::kIsDelayed);
-
-  work_deduplicator.OnDelayedWorkStarted();
-  work_deduplicator.WillCheckForMoreWork();
-  EXPECT_EQ(ShouldScheduleWork::kNotNeeded,
-            work_deduplicator.OnDelayedWorkEnded(NextTask::kIsDelayed));
 }
 
 }  // namespace internal

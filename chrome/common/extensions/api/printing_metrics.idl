@@ -13,7 +13,10 @@ namespace printingMetrics {
     PRINT_PREVIEW,
 
     // The job was created from an Android App.
-    ANDROID_APP
+    ANDROID_APP,
+
+    // The job was created by extension via Chrome API.
+    EXTENSION
   };
 
   // The final status of the print job.
@@ -130,13 +133,16 @@ namespace printingMetrics {
 
     // The number of pages in the document.
     long numberOfPages;
+
+    // The status of the printer.
+    printing.PrinterStatus printer_status;
   };
 
   callback GetPrintJobsCallback = void(PrintJobInfo[] jobs);
 
   interface Functions {
     // Returns the list of the finished print jobs.
-    static void getPrintJobs(GetPrintJobsCallback callback);
+    [supportsPromises] static void getPrintJobs(GetPrintJobsCallback callback);
   };
 
   interface Events {

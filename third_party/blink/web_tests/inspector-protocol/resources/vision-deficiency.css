@@ -1,0 +1,12 @@
+html {
+  background: blue;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+}
+div {
+  width: 20px;
+  height: 20px;
+  background: green;
+}

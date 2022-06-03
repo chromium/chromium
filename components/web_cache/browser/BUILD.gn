@@ -8,11 +8,10 @@ static_library("browser") {
     "web_cache_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//components/prefs",
+    "//components/web_cache/public:features",
     "//components/web_cache/public/mojom",
     "//content/public/browser",
     "//content/public/common",
@@ -23,9 +22,7 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "web_cache_manager_unittest.cc",
-  ]
+  sources = [ "web_cache_manager_unittest.cc" ]
   deps = [
     ":browser",
     "//base",

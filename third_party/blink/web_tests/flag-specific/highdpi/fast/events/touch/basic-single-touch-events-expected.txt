@@ -1,0 +1,72 @@
+This tests basic single touch event support.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS lastEvent.type is "touchstart"
+PASS lastEvent.touches.length is 1
+PASS lastEvent.changedTouches.length is 1
+PASS lastEvent.targetTouches.length is 1
+PASS lastEvent.composed is true
+PASS lastEvent.shiftKey is false
+PASS lastEvent.touches[0].target.id is "touchtarget"
+PASS lastEvent.touches[0].pageX is 10
+PASS lastEvent.touches[0].pageY is 10
+PASS lastEvent.touches[0].clientX is 10
+PASS lastEvent.touches[0].clientY is 10
+PASS lastEvent.touches[0].identifier is 0
+PASS lastEvent.changedTouches[0].pageX is 10
+PASS lastEvent.changedTouches[0].pageY is 10
+PASS lastEvent.changedTouches[0].clientX is 10
+PASS lastEvent.changedTouches[0].clientY is 10
+PASS lastEvent.changedTouches[0].identifier is 0
+PASS lastEvent.targetTouches[0].pageX is 10
+PASS lastEvent.targetTouches[0].pageY is 10
+PASS lastEvent.targetTouches[0].clientX is 10
+PASS lastEvent.targetTouches[0].clientY is 10
+PASS lastEvent.targetTouches[0].identifier is 0
+PASS lastEvent.type is "touchmove"
+PASS lastEvent.touches.length is 1
+PASS lastEvent.changedTouches.length is 1
+PASS lastEvent.targetTouches.length is 1
+PASS lastEvent.composed is true
+FAIL lastEvent.touches[0].pageX should be 50. Was 33.333335876464844.
+FAIL lastEvent.touches[0].pageY should be 50. Was 33.333335876464844.
+FAIL lastEvent.touches[0].clientX should be 50. Was 33.333335876464844.
+FAIL lastEvent.touches[0].clientY should be 50. Was 33.333335876464844.
+PASS lastEvent.touches[0].identifier is 0
+PASS lastEvent.shiftKey is true
+PASS lastEvent.altKey is true
+PASS lastEvent.ctrlKey is false
+PASS lastEvent.metaKey is false
+PASS lastEvent.type is "touchend"
+PASS lastEvent.touches.length is 0
+PASS lastEvent.changedTouches.length is 1
+PASS lastEvent.targetTouches.length is 0
+PASS lastEvent.composed is true
+FAIL lastEvent.changedTouches[0].pageX should be 50. Was 33.333335876464844.
+FAIL lastEvent.changedTouches[0].pageY should be 50. Was 33.333335876464844.
+FAIL lastEvent.changedTouches[0].clientX should be 50. Was 33.333335876464844.
+FAIL lastEvent.changedTouches[0].clientY should be 50. Was 33.333335876464844.
+PASS lastEvent.changedTouches[0].identifier is 0
+PASS lastEvent.shiftKey is false
+PASS lastEvent.altKey is false
+PASS lastEvent.type is "touchstart"
+PASS lastEvent.touches.length is 1
+PASS lastEvent.changedTouches.length is 1
+PASS lastEvent.targetTouches.length is 1
+PASS lastEvent.composed is true
+PASS lastEvent.targetTouches[0].target.tagName is "DIV"
+PASS lastEvent.type is "touchmove"
+PASS lastEvent.touches.length is 1
+PASS lastEvent.changedTouches.length is 1
+PASS lastEvent.targetTouches.length is 1
+PASS lastEvent.composed is true
+PASS lastEvent.touches[0].target.tagName is "DIV"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
 
@@ -24,6 +23,12 @@ namespace settings {
 class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
  public:
   IncompatibleApplicationsHandler();
+
+  IncompatibleApplicationsHandler(const IncompatibleApplicationsHandler&) =
+      delete;
+  IncompatibleApplicationsHandler& operator=(
+      const IncompatibleApplicationsHandler&) = delete;
+
   ~IncompatibleApplicationsHandler() override;
 
   // SettingsPageUIHandler:
@@ -51,8 +56,6 @@ class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
   std::map<InstalledApplications::ApplicationInfo,
            std::unique_ptr<RegistryKeyWatcher>>
       registry_key_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsHandler);
 };
 
 }  // namespace settings

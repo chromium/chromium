@@ -1,10 +1,12 @@
-
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/timer.h"
 
+#include <memory>
+
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,9 +37,9 @@ TEST_F(TimerPerfTest, PostAndRunTimers) {
   Vector<std::unique_ptr<TaskRunnerTimer<TimerPerfTest>>> timers(
       kNumIterations);
   for (int i = 0; i < kNumIterations; i++) {
-    timers[i].reset(new TaskRunnerTimer<TimerPerfTest>(
+    timers[i] = std::make_unique<TaskRunnerTimer<TimerPerfTest>>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), this,
-        &TimerPerfTest::NopTask));
+        &TimerPerfTest::NopTask);
   }
 
   TaskRunnerTimer<TimerPerfTest> measure_run_start(
@@ -57,7 +59,7 @@ TEST_F(TimerPerfTest, PostAndRunTimers) {
 
   test::EnterRunLoop();
 
-  double posting_time = (post_end - post_start).InMicroseconds();
+  double posting_time = (post_end - post_start).InMicrosecondsF();
   double posting_time_us_per_call =
       posting_time / static_cast<double>(kNumIterations);
   LOG(INFO) << "TimerBase::startOneShot cost (us/call) "
@@ -71,9 +73,9 @@ TEST_F(TimerPerfTest, PostThenCancelTenThousandTimers) {
   Vector<std::unique_ptr<TaskRunnerTimer<TimerPerfTest>>> timers(
       kNumIterations);
   for (int i = 0; i < kNumIterations; i++) {
-    timers[i].reset(new TaskRunnerTimer<TimerPerfTest>(
+    timers[i] = std::make_unique<TaskRunnerTimer<TimerPerfTest>>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), this,
-        &TimerPerfTest::NopTask));
+        &TimerPerfTest::NopTask);
   }
 
   TaskRunnerTimer<TimerPerfTest> measure_run_start(
@@ -99,13 +101,13 @@ TEST_F(TimerPerfTest, PostThenCancelTenThousandTimers) {
 
   test::EnterRunLoop();
 
-  double posting_time = (post_end - post_start).InMicroseconds();
+  double posting_time = (post_end - post_start).InMicrosecondsF();
   double posting_time_us_per_call =
       posting_time / static_cast<double>(kNumIterations);
   LOG(INFO) << "TimerBase::startOneShot cost (us/call) "
             << posting_time_us_per_call << " (total " << posting_time << " us)";
 
-  double cancel_time = (cancel_end - cancel_start).InMicroseconds();
+  double cancel_time = (cancel_end - cancel_start).InMicrosecondsF();
   double cancel_time_us_per_call =
       cancel_time / static_cast<double>(kNumIterations);
   LOG(INFO) << "TimerBase::stop cost (us/call) " << cancel_time_us_per_call

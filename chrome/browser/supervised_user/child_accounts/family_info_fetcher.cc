@@ -5,28 +5,31 @@
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 
 #include <stddef.h>
+#include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 const char kGetFamilyProfileApiPath[] = "families/mine?alt=json";
 const char kGetFamilyMembersApiPath[] = "families/mine/members?alt=json";
-const char kScope[] = "https://www.googleapis.com/auth/kid.family.readonly";
 const int kNumFamilyInfoFetcherRetries = 1;
 
 const char kIdFamily[] = "family";
@@ -86,7 +89,8 @@ FamilyInfoFetcher::FamilyInfoFetcher(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : consumer_(consumer),
-      primary_account_id_(identity_manager->GetPrimaryAccountId()),
+      primary_account_id_(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       access_token_expired_(false) {}
@@ -122,13 +126,15 @@ void FamilyInfoFetcher::StartGetFamilyMembers() {
 }
 
 void FamilyInfoFetcher::StartFetchingAccessToken() {
-  OAuth2AccessTokenManager::ScopeSet scopes{kScope};
+  OAuth2AccessTokenManager::ScopeSet scopes{
+      GaiaConstants::kKidFamilyReadonlyOAuth2Scope};
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "family_info_fetcher", identity_manager_, scopes,
           base::BindOnce(&FamilyInfoFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          signin::ConsentLevel::kSync);
 }
 
 void FamilyInfoFetcher::OnAccessTokenFetchComplete(
@@ -137,7 +143,7 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
   access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Failed to get an access token: " << error.ToString();
-    consumer_->OnFailure(TOKEN_ERROR);
+    consumer_->OnFailure(ErrorCode::kTokenError);
     return;
   }
   access_token_ = access_token_info.token;
@@ -215,7 +221,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
     DVLOG(1) << "Access token expired, retrying";
     access_token_expired_ = true;
     OAuth2AccessTokenManager::ScopeSet scopes;
-    scopes.insert(kScope);
+    scopes.insert(GaiaConstants::kKidFamilyReadonlyOAuth2Scope);
     identity_manager_->RemoveAccessTokenFromCache(primary_account_id_, scopes,
                                                   access_token_);
     StartFetchingAccessToken();
@@ -224,13 +230,13 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "HTTP error " << response_code;
-    consumer_->OnFailure(NETWORK_ERROR);
+    consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
 
   if (net_error != net::OK) {
     DLOG(WARNING) << "NetError " << net_error;
-    consumer_->OnFailure(NETWORK_ERROR);
+    consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
 
@@ -246,10 +252,10 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 // static
 bool FamilyInfoFetcher::ParseMembers(const base::ListValue* list,
                                      std::vector<FamilyMember>* members) {
-  for (auto it = list->begin(); it != list->end(); ++it) {
+  for (const auto& entry : list->GetList()) {
     FamilyMember member;
     const base::DictionaryValue* dict = NULL;
-    if (!it->GetAsDictionary(&dict) || !ParseMember(dict, &member)) {
+    if (!entry.GetAsDictionary(&dict) || !ParseMember(dict, &member)) {
       return false;
     }
     members->push_back(member);
@@ -289,29 +295,32 @@ void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
       base::JSONReader::ReadDeprecated(response);
   const base::DictionaryValue* dict = NULL;
   if (!value || !value->GetAsDictionary(&dict)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   const base::DictionaryValue* family_dict = NULL;
   if (!dict->GetDictionary(kIdFamily, &family_dict)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   FamilyProfile family;
-  if (!family_dict->GetStringWithoutPathExpansion(kIdFamilyId, &family.id)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+  const std::string* id = family_dict->FindStringKey(kIdFamilyId);
+  if (!id) {
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
+  family.id = *id;
   const base::DictionaryValue* profile_dict = NULL;
   if (!family_dict->GetDictionary(kIdProfile, &profile_dict)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  if (!profile_dict->GetStringWithoutPathExpansion(kIdFamilyName,
-                                                   &family.name)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+  const std::string* name = profile_dict->FindStringKey(kIdFamilyName);
+  if (!name) {
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
+  family.name = *name;
   consumer_->OnGetFamilyProfileSuccess(family);
 }
 
@@ -320,17 +329,17 @@ void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
       base::JSONReader::ReadDeprecated(response);
   const base::DictionaryValue* dict = NULL;
   if (!value || !value->GetAsDictionary(&dict)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   const base::ListValue* members_list = NULL;
   if (!dict->GetList(kIdMembers, &members_list)) {
-    consumer_->OnFailure(SERVICE_ERROR);
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   std::vector<FamilyMember> members;
-  if (!ParseMembers(members_list, &members)){
-    consumer_->OnFailure(SERVICE_ERROR);
+  if (!ParseMembers(members_list, &members)) {
+    consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   consumer_->OnGetFamilyMembersSuccess(members);

@@ -4,29 +4,24 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cicerone_client.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-const char kVmName[] = "vm_name";
-const char kContainerName[] = "container_name";
-
 chromeos::FakeCiceroneClient* GetFakeCiceroneClient() {
-  return static_cast<chromeos::FakeCiceroneClient*>(
-      chromeos::DBusThreadManager::Get()->GetCiceroneClient());
+  return chromeos::FakeCiceroneClient::Get();
 }
 
 class CrostiniUpdateFilesystemViewBrowserTest
@@ -34,6 +29,11 @@ class CrostiniUpdateFilesystemViewBrowserTest
  public:
   CrostiniUpdateFilesystemViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/) {}
+
+  CrostiniUpdateFilesystemViewBrowserTest(
+      const CrostiniUpdateFilesystemViewBrowserTest&) = delete;
+  CrostiniUpdateFilesystemViewBrowserTest& operator=(
+      const CrostiniUpdateFilesystemViewBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -66,8 +66,8 @@ class CrostiniUpdateFilesystemViewBrowserTest
     EXPECT_EQ(nullptr, ActiveView());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpdateFilesystemViewBrowserTest);
+  const crostini::ContainerId kContainerId =
+      crostini::ContainerId("vm_name", "container_name");
 };
 
 // Test the dialog is actually launched.
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kVmName, kContainerName, base::DoNothing());
+      ->StartLxdContainer(kContainerId, base::DoNothing());
   ExpectNoView();
 }
 
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kVmName, kContainerName, base::DoNothing());
+      ->StartLxdContainer(kContainerId, base::DoNothing());
   ExpectView();
 
   ActiveView()->AcceptDialog();

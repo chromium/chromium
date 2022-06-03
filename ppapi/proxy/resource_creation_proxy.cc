@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_size.h"
-#include "ppapi/proxy/audio_encoder_resource.h"
 #include "ppapi/proxy/audio_input_resource.h"
 #include "ppapi/proxy/audio_output_resource.h"
 #include "ppapi/proxy/camera_device_resource.h"
@@ -16,9 +15,7 @@
 #include "ppapi/proxy/file_io_resource.h"
 #include "ppapi/proxy/file_ref_resource.h"
 #include "ppapi/proxy/file_system_resource.h"
-#include "ppapi/proxy/flash_drm_resource.h"
 #include "ppapi/proxy/flash_font_file_resource.h"
-#include "ppapi/proxy/flash_menu_resource.h"
 #include "ppapi/proxy/graphics_2d_resource.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/host_resolver_resource.h"
@@ -30,9 +27,7 @@
 #include "ppapi/proxy/plugin_resource_tracker.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/ppb_audio_proxy.h"
-#include "ppapi/proxy/ppb_broker_proxy.h"
 #include "ppapi/proxy/ppb_buffer_proxy.h"
-#include "ppapi/proxy/ppb_flash_message_loop_proxy.h"
 #include "ppapi/proxy/ppb_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppb_image_data_proxy.h"
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
@@ -41,7 +36,6 @@
 #include "ppapi/proxy/tcp_server_socket_private_resource.h"
 #include "ppapi/proxy/tcp_socket_private_resource.h"
 #include "ppapi/proxy/tcp_socket_resource.h"
-#include "ppapi/proxy/truetype_font_resource.h"
 #include "ppapi/proxy/udp_socket_private_resource.h"
 #include "ppapi/proxy/udp_socket_resource.h"
 #include "ppapi/proxy/url_loader_resource.h"
@@ -159,14 +153,6 @@ PP_Resource ResourceCreationProxy::CreateTouchInputEvent(
       OBJECT_IS_PROXY, instance, type, time_stamp, modifiers);
 }
 
-PP_Resource ResourceCreationProxy::CreateTrueTypeFont(
-    PP_Instance instance,
-    const PP_TrueTypeFontDesc_Dev* desc) {
-  return (new TrueTypeFontResource(GetConnection(),
-                                   instance, *desc))->GetReference();
-
-}
-
 PP_Resource ResourceCreationProxy::CreateURLLoader(PP_Instance instance) {
     return (new URLLoaderResource(GetConnection(), instance))->GetReference();
 }
@@ -205,10 +191,6 @@ PP_Resource ResourceCreationProxy::CreateAudio(
     void* user_data) {
   return PPB_Audio_Proxy::CreateProxyResource(
       instance, config_id, AudioCallbackCombined(audio_callback), user_data);
-}
-
-PP_Resource ResourceCreationProxy::CreateAudioEncoder(PP_Instance instance) {
-  return (new AudioEncoderResource(GetConnection(), instance))->GetReference();
 }
 
 PP_Resource ResourceCreationProxy::CreateAudioTrusted(PP_Instance instance) {
@@ -393,12 +375,12 @@ PP_Resource ResourceCreationProxy::CreateWebSocket(PP_Instance instance) {
   return (new WebSocketResource(GetConnection(), instance))->GetReference();
 }
 
+#if !defined(OS_NACL)
 PP_Resource ResourceCreationProxy::CreateX509CertificatePrivate(
     PP_Instance instance) {
   return PPB_X509Certificate_Private_Proxy::CreateProxyResource(instance);
 }
 
-#if !defined(OS_NACL)
 PP_Resource ResourceCreationProxy::CreateAudioInput(
     PP_Instance instance) {
   return (new AudioInputResource(GetConnection(), instance))->GetReference();
@@ -406,10 +388,6 @@ PP_Resource ResourceCreationProxy::CreateAudioInput(
 
 PP_Resource ResourceCreationProxy::CreateAudioOutput(PP_Instance instance) {
   return (new AudioOutputResource(GetConnection(), instance))->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateBroker(PP_Instance instance) {
-  return PPB_Broker_Proxy::CreateProxyResource(instance);
 }
 
 PP_Resource ResourceCreationProxy::CreateBrowserFont(
@@ -427,31 +405,12 @@ PP_Resource ResourceCreationProxy::CreateBuffer(PP_Instance instance,
   return PPB_Buffer_Proxy::CreateProxyResource(instance, size);
 }
 
-PP_Resource ResourceCreationProxy::CreateFlashDRM(PP_Instance instance) {
-  return (new FlashDRMResource(GetConnection(), instance))->GetReference();
-}
-
 PP_Resource ResourceCreationProxy::CreateFlashFontFile(
     PP_Instance instance,
     const PP_BrowserFont_Trusted_Description* description,
     PP_PrivateFontCharset charset) {
   return (new FlashFontFileResource(
       GetConnection(), instance, description, charset))->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateFlashMenu(
-    PP_Instance instance,
-    const PP_Flash_Menu* menu_data) {
-  scoped_refptr<FlashMenuResource> flash_menu(
-      new FlashMenuResource(GetConnection(), instance));
-  if (!flash_menu->Initialize(menu_data))
-    return 0;
-  return flash_menu->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateFlashMessageLoop(
-    PP_Instance instance) {
-  return PPB_Flash_MessageLoop_Proxy::CreateProxyResource(instance);
 }
 
 PP_Resource ResourceCreationProxy::CreateVideoCapture(PP_Instance instance) {

@@ -181,7 +181,7 @@
             "parameters": [
               {
                 "name": "info",
-                "$ref": "contextMenusInternal.OnClickData",
+                "$ref": "contextMenus.OnClickData",
                 "description": "Information about the item clicked and the context where the click happened."
               }
             ]
@@ -249,7 +249,7 @@
             "parameters": [
               {
                 "name": "info",
-                "$ref": "contextMenusInternal.OnClickData",
+                "$ref": "contextMenus.OnClickData",
                 "description": "Information about the item clicked and the context where the click happened."
               }
             ]
@@ -288,7 +288,7 @@
           {
             "name": "create",
             "type": "function",
-            "description": "Creates a new context menu item. Note that if an error occurs during creation, you may not find out until the creation callback fires (the details will be in <code>chrome.runtime.lastError</code>).",
+            "description": "Creates a new context menu item. Note that if an error occurs during creation, you may not find out until the creation callback fires (the details will be in $(ref:runtime.lastError)).",
             "returns": {
               "choices": [
                 { "type": "integer" },
@@ -307,7 +307,7 @@
                 "type": "function",
                 "name": "callback",
                 "optional": true,
-                "description": "Called when the item has been created in the browser. If there were any problems creating the item, details will be available in <code>chrome.runtime.lastError</code>.",
+                "description": "Called when the item has been created in the browser. If there were any problems creating the item, details will be available in $(ref:runtime.lastError).",
                 "parameters": []
               }
             ]

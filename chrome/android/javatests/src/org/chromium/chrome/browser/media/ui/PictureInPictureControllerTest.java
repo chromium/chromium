@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.media.ui;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.UiThreadTestRule;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,17 +18,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,8 +49,6 @@ public class PictureInPictureControllerTest {
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";
     private static final String VIDEO_ID = "video";
 
-    @Rule
-    public UiThreadTestRule mUiThreadTestRule = new UiThreadTestRule();
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -85,28 +84,37 @@ public class PictureInPictureControllerTest {
         enterFullscreen();
 
         DOMUtils.pauseMedia(getWebContents(), VIDEO_ID);
-        CriteriaHelper.pollUiThread(
-                Criteria.equals(false, getWebContents()::hasActiveEffectivelyFullscreenVideo));
+        CriteriaHelper.pollUiThread(() -> !getWebContents().hasActiveEffectivelyFullscreenVideo());
     }
 
     /** Tests that we can enter PiP. */
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @FlakyTest(message = "https://crbug.com/1211930/#c10")
     public void testEnterPip() throws Throwable {
         enterFullscreen();
-        triggerAutoPiP();
-
-        CriteriaHelper.pollUiThread(Criteria.equals(true, mActivity::isInPictureInPictureMode));
+        triggerAutoPiPAndWait();
     }
 
     /** Tests that PiP is left when we navigate the main page. */
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @FlakyTest(message = "https://crbug.com/1211930/#c10")
     public void testExitPipOnNavigation() throws Throwable {
         testExitOn(() -> JavaScriptUtils.executeJavaScript(getWebContents(),
                 "window.location.href = 'https://www.example.com/';"));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"enable-features=Portals"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testExitPipOnPortalActivation() throws Throwable {
+        testExitOn(()
+                           -> JavaScriptUtils.executeJavaScript(getWebContents(),
+                                   "document.querySelector('portal').activate();"));
     }
 
     /** Tests that PiP is left when the video leaves fullscreen. */
@@ -140,6 +148,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1249669")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(new Runnable() {
             @Override
@@ -157,6 +166,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @FlakyTest(message = "https://crbug.com/1211930/#c10")
     public void testNoExitOnIframeNavigation() throws Throwable {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
         // we are still in PiP.
@@ -164,14 +174,16 @@ public class PictureInPictureControllerTest {
         mActivity.getActivityTab().addObserver(navigationObserver);
 
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(Criteria.equals(true, mActivity::isInPictureInPictureMode));
+        triggerAutoPiPAndWait();
 
         JavaScriptUtils.executeJavaScript(getWebContents(),
                 "document.getElementById('iframe').src = 'https://www.example.com/'");
 
-        CriteriaHelper.pollUiThread(Criteria.equals(true, navigationObserver::didNavigationOccur));
+        CriteriaHelper.pollUiThread(navigationObserver::didNavigationOccur);
 
+        // Wait for isInPictureInPictureMode rather than getLast...ForTesting, since the latter
+        // isn't synchronous with navigation occurring.  It has to wait for some back-and-forth with
+        // the framework.
         Assert.assertTrue(
                 TestThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
     }
@@ -180,27 +192,29 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1038151")
     public void testReenterPip() throws Throwable {
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(Criteria.equals(true, mActivity::isInPictureInPictureMode));
+        triggerAutoPiPAndWait();
 
+        // This waits for Stage.CREATED, but we never get one.  We go right to Stage.RESUMED .
         mActivityTestRule.startMainActivityFromLauncher();
-        CriteriaHelper.pollUiThread(Criteria.equals(false, mActivity::isInPictureInPictureMode));
+        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
 
         enterFullscreen(false);
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(Criteria.equals(true, mActivity::isInPictureInPictureMode));
+        triggerAutoPiPAndWait();
     }
 
     private WebContents getWebContents() {
         return mActivity.getCurrentWebContents();
     }
 
-    private void triggerAutoPiP() throws Throwable{
-        mUiThreadTestRule.runOnUiThread(
-                () -> InstrumentationRegistry.getInstrumentation().callActivityOnUserLeaving(
+    private void triggerAutoPiPAndWait() throws Throwable {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> InstrumentationRegistry.getInstrumentation().callActivityOnUserLeaving(
                                 mActivity));
+        CriteriaHelper.pollUiThread(mActivity::getLastPictureInPictureModeForTesting);
     }
 
     private void enterFullscreen() throws Throwable {
@@ -218,18 +232,16 @@ public class PictureInPictureControllerTest {
                 true /* goThroughRootAndroidView */, false /* shouldScrollIntoView */));
 
         // We use the web contents fullscreen heuristic.
-        CriteriaHelper.pollUiThread(
-                Criteria.equals(true, getWebContents()::hasActiveEffectivelyFullscreenVideo));
+        CriteriaHelper.pollUiThread(getWebContents()::hasActiveEffectivelyFullscreenVideo);
     }
 
     private void testExitOn(Runnable runnable) throws Throwable {
         enterFullscreen();
-        triggerAutoPiP();
-        CriteriaHelper.pollUiThread(Criteria.equals(true, mActivity::isInPictureInPictureMode));
+        triggerAutoPiPAndWait();
 
         runnable.run();
 
-        CriteriaHelper.pollUiThread(Criteria.equals(false, mActivity::isInPictureInPictureMode));
+        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
     }
 
     /** A TabObserver that tracks whether a navigation has occurred. */

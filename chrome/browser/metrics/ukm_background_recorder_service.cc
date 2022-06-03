@@ -46,7 +46,7 @@ void UkmBackgroundRecorderService::DidGetVisibleVisitCount(
     GetBackgroundSourceIdCallback callback,
     history::VisibleVisitCountToHostResult result) {
   if (!result.success || !result.count) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

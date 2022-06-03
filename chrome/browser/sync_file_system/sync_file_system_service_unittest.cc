@@ -5,15 +5,16 @@
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
@@ -37,7 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
-using content::BrowserThread;
+using ::testing::_;
 using storage::FileSystemURL;
 using storage::FileSystemURLSet;
 using ::testing::AnyNumber;
@@ -46,7 +47,7 @@ using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ::testing::_;
+using ::testing::WithArg;
 
 namespace sync_file_system {
 
@@ -76,10 +77,9 @@ void AssignValueAndQuit(base::RunLoop* run_loop,
 }
 
 // This is called on IO thread. Posts |callback| to be called on UI thread.
-void VerifyFileError(base::Closure callback,
-                     base::File::Error error) {
+void VerifyFileError(base::OnceClosure callback, base::File::Error error) {
   EXPECT_EQ(base::File::FILE_OK, error);
-  base::PostTask(FROM_HERE, {BrowserThread::UI}, callback);
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace
@@ -101,31 +101,30 @@ class MockSyncEventObserver : public SyncEventObserver {
                     SyncDirection direction));
 };
 
-ACTION_P3(NotifyStateAndCallback,
-          mock_remote_service, service_state, operation_status) {
-  mock_remote_service->NotifyRemoteServiceStateUpdated(
-      service_state, "Test event.");
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg1, operation_status));
-}
-
 ACTION_P(RecordState, states) {
   states->push_back(arg1);
 }
 
-ACTION_P(MockStatusCallback, status) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(arg4, status));
-}
+struct PostSyncFileCallback {
+  PostSyncFileCallback(SyncStatusCode status, const storage::FileSystemURL& url)
+      : status_(status), url_(url) {}
+  void operator()(SyncFileCallback callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status_, url_));
+  }
 
-ACTION_P2(MockSyncFileCallback, status, url) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg0, status, url));
-}
+ private:
+  SyncStatusCode status_;
+  storage::FileSystemURL url_;
+};
 
-ACTION(InvokeCompletionClosure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, arg0);
-}
+struct PostOnceClosureFunctor {
+  PostOnceClosureFunctor() = default;
+  void operator()(base::OnceClosure callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback));
+  }
+};
 
 class SyncFileSystemServiceTest : public testing::Test {
  protected:
@@ -134,11 +133,9 @@ class SyncFileSystemServiceTest : public testing::Test {
 
   void SetUp() override {
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncFileSystemServiceTest");
-    file_system_.reset(new CannedSyncableFileSystem(
-        GURL(kOrigin), in_memory_env_.get(),
-        base::CreateSingleThreadTaskRunner({BrowserThread::IO}),
-        base::CreateSingleThreadTaskRunner(
-            {base::ThreadPool(), base::MayBlock()})));
+    file_system_ = std::make_unique<CannedSyncableFileSystem>(
+        GURL(kOrigin), in_memory_env_.get(), content::GetIOThreadTaskRunner({}),
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}));
 
     std::unique_ptr<LocalFileSyncService> local_service =
         LocalFileSyncService::CreateForTesting(&profile_, in_memory_env_.get());
@@ -219,11 +216,13 @@ class SyncFileSystemServiceTest : public testing::Test {
         .Times(AnyNumber())
         .WillRepeatedly(Return(state_to_notify));
 
-    EXPECT_CALL(*mock_remote_service(),
-                RegisterOrigin(GURL(kOrigin), _))
-        .WillOnce(NotifyStateAndCallback(mock_remote_service(),
-                                         state_to_notify,
-                                         status_to_return));
+    EXPECT_CALL(*mock_remote_service(), RegisterOrigin(GURL(kOrigin), _))
+        .WillOnce(WithArg<1>([&](SyncStatusCallback callback) {
+          mock_remote_service()->NotifyRemoteServiceStateUpdated(
+              state_to_notify, "Test event.");
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), status_to_return));
+        }));
 
     std::vector<SyncServiceState> actual_states;
     EXPECT_CALL(event_observer, OnSyncStateUpdated(GURL(), _, _))
@@ -303,7 +302,8 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
       SYNC_STATUS_NETWORK_ERROR);
 }
 
-TEST_F(SyncFileSystemServiceTest, InitializeForAppWithError) {
+// Disabled due to flakiness: crbug.com/1222929
+TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
   std::vector<SyncServiceState> expected_states;
   expected_states.push_back(SYNC_SERVICE_DISABLED);
 
@@ -354,13 +354,16 @@ TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
                           SYNC_FILE_TYPE_FILE);
   EXPECT_CALL(*mock_local_change_processor(),
               ApplyLocalChange(change, _, _, kFile, _))
-      .WillOnce(MockStatusCallback(SYNC_STATUS_OK));
+      .WillOnce(WithArg<4>([](SyncStatusCallback callback) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
+      }));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-      .WillRepeatedly(MockSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC,
-                                           FileSystemURL()));
+      .WillRepeatedly(
+          PostSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   EXPECT_EQ(base::File::FILE_OK, file_system_->CreateFile(kFile));
 
@@ -402,8 +405,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
     // Return with SYNC_STATUS_FILE_BUSY once.
     EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-        .WillOnce(MockSyncFileCallback(SYNC_STATUS_FILE_BUSY,
-                                       kFile));
+        .WillOnce(PostSyncFileCallback(SYNC_STATUS_FILE_BUSY, kFile));
 
     // ProcessRemoteChange should be called again when the becomes
     // not busy.
@@ -412,7 +414,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
   }
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   // We might also see an activity for local sync as we're going to make
   // a local write operation on kFile.
@@ -425,12 +427,12 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
   // Start a local operation on the same file (to make it BUSY).
   base::RunLoop verify_file_error_run_loop;
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&CannedSyncableFileSystem::DoCreateFile,
                      base::Unretained(file_system_.get()), kFile,
-                     base::Bind(&VerifyFileError,
-                                verify_file_error_run_loop.QuitClosure())));
+                     base::BindOnce(&VerifyFileError,
+                                    verify_file_error_run_loop.QuitClosure())));
 
   run_loop.Run();
 
@@ -460,9 +462,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);
@@ -477,9 +478,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);

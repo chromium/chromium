@@ -118,7 +118,8 @@ void PpapiCommandBufferProxy::SetGetBuffer(int32_t transfer_buffer_id) {
 
 scoped_refptr<gpu::Buffer> PpapiCommandBufferProxy::CreateTransferBuffer(
     uint32_t size,
-    int32_t* id) {
+    int32_t* id,
+    gpu::TransferBufferAllocationOption option) {
   *id = -1;
 
   if (last_state_.error != gpu::error::kNoError)

@@ -6,27 +6,23 @@
 #define CHROME_BROWSER_UI_SEARCH_SEARCH_TAB_HELPER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/search/instant_service_observer.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
-#include "chrome/common/search.mojom.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
-#include "components/omnibox/browser/autocomplete_controller_delegate.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(OS_ANDROID)
 #error "Instant is only used on desktop";
@@ -37,13 +33,16 @@ class WebContents;
 struct LoadCommittedDetails;
 }
 
-class AutocompleteController;
+namespace gfx {
+class Image;
+}
+
 class GURL;
 class InstantService;
-class OmniboxView;
+class NTPUserDataLogger;
 class Profile;
 class SearchIPCRouterTest;
-class SearchSuggestService;
+class SkBitmap;
 
 // This is the browser-side, per-tab implementation of the embeddedSearch API
 // (see https://www.chromium.org/embeddedsearch).
@@ -51,19 +50,17 @@ class SearchTabHelper : public content::WebContentsObserver,
                         public content::WebContentsUserData<SearchTabHelper>,
                         public InstantServiceObserver,
                         public SearchIPCRouter::Delegate,
-                        public ui::SelectFileDialog::Listener,
-                        public AutocompleteControllerDelegate {
+                        public OmniboxTabHelper::Observer {
  public:
+  SearchTabHelper(const SearchTabHelper&) = delete;
+  SearchTabHelper& operator=(const SearchTabHelper&) = delete;
+
   ~SearchTabHelper() override;
 
-  // Invoked when the omnibox input state is changed in some way that might
-  // affect the search mode.
-  void OmniboxInputStateChanged();
-
-  // Called to indicate that the omnibox focus state changed with the given
-  // |reason|.
-  void OmniboxFocusChanged(OmniboxFocusState state,
-                           OmniboxFocusChangeReason reason);
+  static void BindEmbeddedSearchConnecter(
+      mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   // Called when the tab corresponding to |this| instance is activated.
   void OnTabActivated();
@@ -71,17 +68,11 @@ class SearchTabHelper : public content::WebContentsObserver,
   // Called when the tab corresponding to |this| instance is deactivated.
   void OnTabDeactivated();
 
-  // Called when the tab corresponding to |this| instance is closing.
-  void OnTabClosing();
-
   SearchIPCRouter& ipc_router_for_testing() { return ipc_router_; }
 
  private:
   friend class content::WebContentsUserData<SearchTabHelper>;
   friend class SearchIPCRouterTest;
-
-  FRIEND_TEST_ALL_PREFIXES(SearchTabHelperTest,
-                           FileSelectedUpdatesLastSelectedDirectory);
 
   explicit SearchTabHelper(content::WebContents* web_contents);
 
@@ -101,79 +92,24 @@ class SearchTabHelper : public content::WebContentsObserver,
   void OnDeleteMostVisitedItem(const GURL& url) override;
   void OnUndoMostVisitedDeletion(const GURL& url) override;
   void OnUndoAllMostVisitedDeletions() override;
-  bool OnAddCustomLink(const GURL& url, const std::string& title) override;
-  bool OnUpdateCustomLink(const GURL& url,
-                          const GURL& new_url,
-                          const std::string& new_title) override;
-  bool OnReorderCustomLink(const GURL& url, int new_pos) override;
-  bool OnDeleteCustomLink(const GURL& url) override;
-  void OnUndoCustomLinkAction() override;
-  void OnResetCustomLinks() override;
-  void OnToggleMostVisitedOrCustomLinks() override;
-  void OnToggleShortcutsVisibility(bool do_notify) override;
-  void OnLogEvent(NTPLoggingEventType event, base::TimeDelta time) override;
-  void OnLogSuggestionEventWithValue(NTPSuggestionsLoggingEventType event,
-                                     int data,
-                                     base::TimeDelta time) override;
-  void OnLogMostVisitedImpression(
-      const ntp_tiles::NTPTileImpression& impression) override;
-  void OnLogMostVisitedNavigation(
-      const ntp_tiles::NTPTileImpression& impression) override;
-  void PasteIntoOmnibox(const base::string16& text) override;
-  void OnSetCustomBackgroundInfo(const GURL& background_url,
-                                 const std::string& attribution_line_1,
-                                 const std::string& attribution_line_2,
-                                 const GURL& action_url,
-                                 const std::string& collection_id) override;
-  void OnSelectLocalBackgroundImage() override;
-  void OnBlocklistSearchSuggestion(int task_version, long task_id) override;
-  void OnBlocklistSearchSuggestionWithHash(int task_version,
-                                           long task_id,
-                                           const uint8_t hash[4]) override;
-  void OnSearchSuggestionSelected(int task_version,
-                                  long task_id,
-                                  const uint8_t hash[4]) override;
-  void OnOptOutOfSearchSuggestions() override;
-  void OnApplyDefaultTheme() override;
-  void OnApplyAutogeneratedTheme(SkColor color) override;
-  void OnRevertThemeChanges() override;
-  void OnConfirmThemeChanges() override;
-  void QueryAutocomplete(const base::string16& input,
-                         bool prevent_inline_autocomplete) override;
-  void DeleteAutocompleteMatch(uint8_t line) override;
-  void StopAutocomplete(bool clear_result) override;
-  void BlocklistPromo(const std::string& promo_id) override;
-  void OpenExtensionsPage(double button,
-                          bool alt_key,
-                          bool ctrl_key,
-                          bool meta_key,
-                          bool shift_key) override;
-  void OpenAutocompleteMatch(uint8_t line,
-                             const GURL& url,
-                             bool are_matches_showing,
-                             double time_elapsed_since_last_focus,
-                             double button,
-                             bool alt_key,
-                             bool ctrl_key,
-                             bool meta_key,
-                             bool shift_key) override;
 
   // Overridden from InstantServiceObserver:
   void NtpThemeChanged(const NtpTheme& theme) override;
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
 
-  // Overridden from SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  // Overridden from OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override;
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override;
 
-  // Overridden from AutocompleteControllerDelegate:
-  void OnResultChanged(bool default_match_changed) override;
+  void OnBitmapFetched(int match_index,
+                       const std::string& image_url,
+                       const SkBitmap& bitmap);
 
-  OmniboxView* GetOmniboxView();
-  const OmniboxView* GetOmniboxView() const;
+  void OnFaviconFetched(int match_index,
+                        const std::string& page_url,
+                        const gfx::Image& favicon);
 
   Profile* profile() const;
 
@@ -194,22 +130,13 @@ class SearchTabHelper : public content::WebContentsObserver,
 
   InstantService* instant_service_;
 
-  SearchSuggestService* search_suggest_service_;
-
   bool is_setting_title_ = false;
 
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  chrome_colors::ChromeColorsService* chrome_colors_service_;
-
-  std::unique_ptr<AutocompleteController> autocomplete_controller_;
-  base::TimeTicks time_of_first_autocomplete_query_;
+  std::unique_ptr<NTPUserDataLogger> logger_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<SearchTabHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_SEARCH_TAB_HELPER_H_

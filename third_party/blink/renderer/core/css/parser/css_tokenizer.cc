@@ -48,6 +48,11 @@ Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
   }
 }
 
+StringView CSSTokenizer::StringRangeAt(wtf_size_t start,
+                                       wtf_size_t length) const {
+  return input_.RangeAt(start, length);
+}
+
 CSSParserToken CSSTokenizer::TokenizeSingle() {
   while (true) {
     prev_offset_ = input_.Offset();
@@ -398,8 +403,10 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
   StringBuilder output;
   while (true) {
     UChar cc = Consume();
-    if (cc == ending_code_point || cc == kEndOfFileMarker)
-      return CSSParserToken(kStringToken, RegisterString(output.ToString()));
+    if (cc == ending_code_point || cc == kEndOfFileMarker) {
+      return CSSParserToken(kStringToken,
+                            RegisterString(output.ReleaseString()));
+    }
     if (IsCSSNewLine(cc)) {
       Reconsume(cc);
       return CSSParserToken(kBadStringToken);
@@ -478,12 +485,14 @@ CSSParserToken CSSTokenizer::ConsumeUrlToken() {
   while (true) {
     UChar cc = Consume();
     if (cc == ')' || cc == kEndOfFileMarker)
-      return CSSParserToken(kUrlToken, RegisterString(result.ToString()));
+      return CSSParserToken(kUrlToken, RegisterString(result.ReleaseString()));
 
     if (IsHTMLSpace(cc)) {
       input_.AdvanceUntilNonWhitespace();
-      if (ConsumeIfNext(')') || input_.NextInputChar() == kEndOfFileMarker)
-        return CSSParserToken(kUrlToken, RegisterString(result.ToString()));
+      if (ConsumeIfNext(')') || input_.NextInputChar() == kEndOfFileMarker) {
+        return CSSParserToken(kUrlToken,
+                              RegisterString(result.ReleaseString()));
+      }
       break;
     }
 

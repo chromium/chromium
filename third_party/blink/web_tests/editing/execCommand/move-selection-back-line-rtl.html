@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-</head>
-<body>
-<p>Move the caret upwards from [ ] on the second line. The caret should appear in the green box inside [ ] on the first line.</p>
-<div dir="rtl" contentEditable="true" style="font-family: monospace;">
-<p dir="rtl">קו <span id="target" style="background-color:green">[ ]</span> ראשון<br></p>
-<p dir="rtl">קו <span id="test">[ ]</span> שני<br></p>
-</div>
-<div id="results">FAILED</div>
-<script src="../editing.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-function editingTest()
-{
-    execMoveSelectionForwardByCharacterCommand();
-    execMoveSelectionBackwardByLineCommand();
-
-    // Verify that we ended up in "target".
-    if (window.getSelection().anchorNode.parentNode == document.getElementById("target"))
-        document.getElementById("results").innerText = "PASS";
-}
-runDumpAsTextEditingTest(false);
+// TODO(yosin): We should move this test file to "editing/selection/"
+selection_test(
+    [
+        '<div contenteditable dir="rtl" style="font-family: monospace;">',
+            '<p dir="rtl">\u05E7\u05D5 <span>[ ]</span> \u05E8\u05E8\u05E9\u05D5\u05DF</p>',
+            '<p dir="rtl">\u05E7\u05D5 <span>[| ]</span> \u05E9\u05E0\u05D9</p>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        '<div contenteditable dir="rtl" style="font-family: monospace;">',
+            '<p dir="rtl">\u05E7\u05D5 <span>[| ]</span> \u05E8\u05E8\u05E9\u05D5\u05DF</p>',
+            '<p dir="rtl">\u05E7\u05D5 <span>[ ]</span> \u05E9\u05E0\u05D9</p>',
+        '</div>',
+    ]);
 </script>

@@ -38,6 +38,10 @@ class LockScreenAppFocuser {
  public:
   explicit LockScreenAppFocuser(views::Widget* lock_screen_app_widget)
       : lock_screen_app_widget_(lock_screen_app_widget) {}
+
+  LockScreenAppFocuser(const LockScreenAppFocuser&) = delete;
+  LockScreenAppFocuser& operator=(const LockScreenAppFocuser&) = delete;
+
   ~LockScreenAppFocuser() = default;
 
   bool reversed_tab_order() const { return reversed_tab_order_; }
@@ -50,8 +54,6 @@ class LockScreenAppFocuser {
  private:
   bool reversed_tab_order_ = false;
   views::Widget* lock_screen_app_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppFocuser);
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {
@@ -381,22 +383,24 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
   // The secondary user is not removable (as configured above) so showing the
   // dropdown does not result in an interactive/focusable view.
   focus_and_submit(secondary().dropdown());
-  EXPECT_TRUE(secondary().menu());
-  EXPECT_FALSE(HasFocusInAnyChildView(secondary().menu()));
-  // TODO(jdufault): Run submit() and then EXPECT_FALSE(secondary().menu()); to
+  EXPECT_TRUE(secondary().remove_account_dialog());
+  EXPECT_FALSE(HasFocusInAnyChildView(secondary().remove_account_dialog()));
+  // TODO(jdufault): Run submit() and then
+  // EXPECT_FALSE(secondary().remove_account_dialog()); to
   // verify that double-enter closes the bubble.
 
-  // The primary user is removable, so the menu is interactive. Submitting the
-  // first time shows the remove user warning, submitting the second time
-  // actually removes the user. Removing the user triggers a mojo API call as
-  // well as removes the user from the UI.
+  // The primary user is removable, so the remove account dialog is interactive.
+  // Submitting the first time shows the remove user warning, submitting the
+  // second time actually removes the user. Removing the user triggers a mojo
+  // API call as well as removes the user from the UI.
   focus_and_submit(primary().dropdown());
-  EXPECT_TRUE(primary().menu());
-  EXPECT_TRUE(HasFocusInAnyChildView(primary().menu()));
+  EXPECT_TRUE(primary().remove_account_dialog());
+  EXPECT_TRUE(HasFocusInAnyChildView(primary().remove_account_dialog()));
   EXPECT_CALL(*client, OnRemoveUserWarningShown()).Times(1);
   submit();
   EXPECT_CALL(*client, RemoveUser(users()[0].basic_user_info.account_id))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Invoke(this, &LoginTestBase::RemoveUser));
   submit();
 
   // Secondary auth should be gone because it is now the primary auth.
@@ -405,13 +409,13 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
                   .primary_big_view()
                   ->GetCurrentUser()
                   .basic_user_info.account_id ==
-              users()[1].basic_user_info.account_id);
+              users()[0].basic_user_info.account_id);
 }
 
 TEST_F(LockScreenSanityTest, LockScreenKillsPreventsClipboardPaste) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("password"));
+    writer.WriteText(u"password");
   }
 
   ShowLockScreen();
@@ -429,7 +433,7 @@ TEST_F(LockScreenSanityTest, LockScreenKillsPreventsClipboardPaste) {
   text_input->RequestFocus();
   generator->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
 
-  EXPECT_EQ(base::UTF8ToUTF16("password"), text_input->GetText());
+  EXPECT_EQ(u"password", text_input->GetText());
 }
 
 }  // namespace ash

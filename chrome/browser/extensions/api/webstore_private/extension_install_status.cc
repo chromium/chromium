@@ -16,18 +16,90 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permission_set.h"
 
 namespace extensions {
+namespace {
+
+// A helper function to determine if an extension from web store with given
+// information should be blocked by enterprise policy. It checks extension's
+// installation mode, permission and manifest type.
+// Returns true if the extension |mode| is blocked, removed or allowed by
+// wildcard/update_url but blocked by |manifest type| or |required permissions|.
+bool IsExtensionInstallBlockedByPolicy(
+    ExtensionManagement* extension_management,
+    ExtensionManagement::InstallationMode mode,
+    const ExtensionId& extension_id,
+    const std::string& update_url,
+    Manifest::Type manifest_type,
+    const PermissionSet& required_permissions) {
+  switch (mode) {
+    case ExtensionManagement::INSTALLATION_BLOCKED:
+    case ExtensionManagement::INSTALLATION_REMOVED:
+      return true;
+    case ExtensionManagement::INSTALLATION_FORCED:
+    case ExtensionManagement::INSTALLATION_RECOMMENDED:
+      return false;
+    case ExtensionManagement::INSTALLATION_ALLOWED:
+      break;
+  }
+
+  if (extension_management->IsInstallationExplicitlyAllowed(extension_id))
+    return false;
+
+  // Extension is allowed by wildcard or update_url, checks required permissions
+  // and manifest type.
+  // TODO(crbug.com/1088021): Find out the right way to handle extension policy
+  // priority.
+  if (manifest_type != Manifest::Type::TYPE_UNKNOWN &&
+      !extension_management->IsAllowedManifestType(manifest_type,
+                                                   extension_id)) {
+    return true;
+  }
+
+  if (!extension_management->IsPermissionSetAllowed(extension_id, update_url,
+                                                    required_permissions)) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     const ExtensionId& extension_id,
     Profile* profile) {
+  return GetWebstoreExtensionInstallStatus(
+      extension_id, profile, Manifest::Type::TYPE_UNKNOWN, PermissionSet());
+}
+
+ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
+    const ExtensionId& extension_id,
+    Profile* profile,
+    const Manifest::Type manifest_type,
+    const PermissionSet& required_permission_set) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
 
   if (ExtensionPrefs::Get(profile)->HasDisableReason(
           extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED)) {
     return kCustodianApprovalRequired;
   }
+
+  const GURL update_url = extension_urls::GetWebstoreUpdateUrl();
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile);
+  // Always use webstore update url to check the installation mode because this
+  // function is used by webstore private API only and there may not be any
+  // |Extension| instance. Note that we don't handle the case where an offstore
+  // extension with an identical ID is installed.
+  ExtensionManagement::InstallationMode mode =
+      extension_management->GetInstallationMode(extension_id,
+                                                update_url.spec());
+
+  if (mode == ExtensionManagement::INSTALLATION_FORCED ||
+      mode == ExtensionManagement::INSTALLATION_RECOMMENDED)
+    return kForceInstalled;
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (registry->enabled_extensions().Contains(extension_id))
@@ -36,22 +108,16 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   if (registry->terminated_extensions().Contains(extension_id))
     return kTerminated;
 
-  if (registry->blacklisted_extensions().Contains(extension_id))
-    return kBlacklisted;
-
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile);
-  ExtensionManagement::InstallationMode mode =
-      extension_management->GetInstallationMode(
-          extension_id, extension_urls::GetDefaultWebstoreUpdateUrl().spec());
+  if (registry->blocklisted_extensions().Contains(extension_id))
+    return kBlocklisted;
 
   // If an installed extension is disabled due to policy, returns
   // kBlockedByPolicy, kCanRequest or kRequestPending instead of kDisabled.
   // By doing so, user can still request an installed and policy blocked
   // extension.
-  if (mode == ExtensionManagement::INSTALLATION_FORCED ||
-      mode == ExtensionManagement::INSTALLATION_RECOMMENDED ||
-      mode == ExtensionManagement::INSTALLATION_ALLOWED) {
+  if (!IsExtensionInstallBlockedByPolicy(
+          extension_management, mode, extension_id, update_url.spec(),
+          manifest_type, required_permission_set)) {
     if (registry->disabled_extensions().Contains(extension_id))
       return kDisabled;
     return kInstallable;
@@ -62,6 +128,8 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   if (!profile->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
     return kBlockedByPolicy;
 
+  // An extension which is explicitly blocked by enterprise policy can't be
+  // requested anymore.
   if (extension_management->IsInstallationExplicitlyBlocked(extension_id))
     return kBlockedByPolicy;
 

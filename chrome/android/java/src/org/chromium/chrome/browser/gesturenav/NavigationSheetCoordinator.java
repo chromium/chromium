@@ -6,24 +6,27 @@ package org.chromium.chrome.browser.gesturenav;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chromium.base.Supplier;
+import androidx.annotation.DimenRes;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetObserver;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -60,7 +63,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     private final View mToolbarView;
     private final LayoutInflater mLayoutInflater;
     private final Supplier<BottomSheetController> mBottomSheetController;
-    private final NavigationSheet.Delegate mDelegate;
     private final NavigationSheetMediator mMediator;
     private final BottomSheetObserver mSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -79,6 +81,8 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     private final int mItemHeight;
     private final int mContentPadding;
     private final View mParentView;
+
+    private NavigationSheet.Delegate mDelegate;
 
     private static class NavigationItemViewBinder {
         public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
@@ -110,17 +114,19 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     // no peek/half state.
     private boolean mFullyExpand;
 
+    private Profile mProfile;
+
     /**
      * Construct a new NavigationSheet.
      */
     NavigationSheetCoordinator(View parent, Context context,
-            Supplier<BottomSheetController> bottomSheetController, Delegate delegate) {
+            Supplier<BottomSheetController> bottomSheetController, Profile profile) {
         mParentView = parent;
         mBottomSheetController = bottomSheetController;
-        mDelegate = delegate;
         mLayoutInflater = LayoutInflater.from(context);
         mToolbarView = mLayoutInflater.inflate(R.layout.navigation_sheet_toolbar, null);
-        mMediator = new NavigationSheetMediator(context, mModelList, (position, index) -> {
+        mProfile = profile;
+        mMediator = new NavigationSheetMediator(context, mModelList, profile, (position, index) -> {
             mDelegate.navigateToIndex(index);
             close(false);
             if (mOpenedAsPopup) {
@@ -135,9 +141,9 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                         index == -1 ? 0 : (mForward ? position + 1 : -position - 1));
             }
         });
-        mModelAdapter.registerType(NAVIGATION_LIST_ITEM_TYPE_ID, () -> {
-            return mLayoutInflater.inflate(R.layout.navigation_popup_item, null);
-        }, NavigationItemViewBinder::bind);
+        mModelAdapter.registerType(NAVIGATION_LIST_ITEM_TYPE_ID,
+                new LayoutViewBuilder(R.layout.navigation_popup_item),
+                NavigationItemViewBinder::bind);
         mOpenSheetRunnable = () -> {
             if (isHidden()) openSheet(true, true);
         };
@@ -146,11 +152,10 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 parent.getWidth() / 2);
         mItemHeight = getSizePx(context, R.dimen.navigation_popup_item_height);
         mContentPadding = getSizePx(context, R.dimen.navigation_sheet_content_top_padding)
-                + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding)
-                + getSizePx(context, R.dimen.navigation_sheet_content_wrap_padding);
+                + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding);
     }
 
-    private static int getSizePx(Context context, @IdRes int id) {
+    private static int getSizePx(Context context, @DimenRes int id) {
         return context.getResources().getDimensionPixelSize(id);
     }
 
@@ -160,7 +165,10 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 (NavigationSheetView) mLayoutInflater.inflate(R.layout.navigation_sheet, null);
         ListView listview = (ListView) mContentView.findViewById(R.id.navigation_entries);
         listview.setAdapter(mModelAdapter);
-        NavigationHistory history = mDelegate.getHistory(mForward);
+        NavigationHistory history = mDelegate.getHistory(mForward, mProfile.isOffTheRecord());
+        // If there is no entry, the sheet should not be opened. This is the case when in a fresh
+        // Incognito NTP.
+        if (history.getEntryCount() == 0) return false;
         mMediator.populateEntries(history);
         if (!mBottomSheetController.get().requestShowContent(this, true)) {
             close(false);
@@ -182,6 +190,11 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     // NavigationSheet
+
+    @Override
+    public void setDelegate(NavigationSheet.Delegate delegate) {
+        mDelegate = delegate;
+    }
 
     @Override
     public void start(boolean forward, boolean showCloseIndicator) {

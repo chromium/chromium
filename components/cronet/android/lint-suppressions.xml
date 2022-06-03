@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<lint>
+  <!-- Ignore all lint errors in chrome code. -->
+  <issue id="all">
+    <ignore regexp="../../base/"/>
+    <ignore regexp="../../net/"/>
+    <ignore regexp="../../testing/"/>
+  </issue>
+</lint>

@@ -20,23 +20,41 @@ enum PaymentHandlerStatus {
   FETCH_PAYMENT_APP_INFO_FAILED,
 };
 
+enum CanMakePaymentEventResponseType {
+  // Reasons for not firing the "canmakepayment" event.
+  INCOGNITO,
+  NO_EXPLICITLY_VERIFIED_METHODS,
+  NOT_INSTALLED,
+  NO_URL_BASED_PAYMENT_METHODS,
+  BOOLEAN_CONVERSION_ERROR,
+  BROWSER_ERROR,
+  INTERNAL_ERROR,
+  NO_RESPONSE,
+  REJECT,
+  SUCCESS,
+  TIMEOUT,
+};
+
 enum PaymentEventResponseType {
-  PAYMENT_EVENT_SUCCESS,
-  PAYMENT_EVENT_REJECT,
-  PAYMENT_EVENT_SERVICE_WORKER_ERROR,
-  PAYMENT_HANDLER_WINDOW_CLOSING,
-  PAYMENT_EVENT_INTERNAL_ERROR,
-  PAYMENT_EVENT_NO_RESPONSE,
-  PAYMENT_DETAILS_STRINGIFY_ERROR,
-  PAYMENT_METHOD_NAME_EMPTY,
-  PAYMENT_DETAILS_ABSENT,
-  PAYMENT_DETAILS_NOT_OBJECT,
-  PAYMENT_EVENT_BROWSER_ERROR,
-  PAYMENT_EVENT_TIMEOUT,
-  PAYMENT_HANDLER_INSECURE_NAVIGATION,
   PAYER_NAME_EMPTY,
   PAYER_EMAIL_EMPTY,
   PAYER_PHONE_EMPTY,
+  PAYMENT_DETAILS_ABSENT,
+  PAYMENT_DETAILS_NOT_OBJECT,
+  PAYMENT_DETAILS_STRINGIFY_ERROR,
+  PAYMENT_EVENT_BROWSER_ERROR,
+  PAYMENT_EVENT_INTERNAL_ERROR,
+  PAYMENT_EVENT_NO_RESPONSE,
+  PAYMENT_EVENT_REJECT,
+  PAYMENT_EVENT_SERVICE_WORKER_ERROR,
+  PAYMENT_EVENT_SUCCESS,
+  PAYMENT_EVENT_TIMEOUT,
+  PAYMENT_HANDLER_ACTIVITY_DIED,
+  PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME,
+  PAYMENT_HANDLER_INSECURE_NAVIGATION,
+  PAYMENT_HANDLER_INSTALL_FAILED,
+  PAYMENT_HANDLER_WINDOW_CLOSING,
+  PAYMENT_METHOD_NAME_EMPTY,
   SHIPPING_ADDRESS_INVALID,
   SHIPPING_OPTION_EMPTY,
 };
@@ -50,9 +68,8 @@ struct PaymentInstrument {
   string stringified_capabilities;
 
   // Parsed basic-card specific capabilities.
-  // Below arrays are non-empty only if enabled_methods contains "basic-card".
+  // Non-empty only if |method| is "basic-card".
   array<BasicCardNetwork> supported_networks;
-  array<BasicCardType> supported_types;
 };
 
 enum PaymentDelegation {
@@ -118,6 +135,12 @@ struct PaymentRequestEventData {
   pending_remote<PaymentHandlerHost>? payment_handler_host;
 };
 
+// Response to "can make payment" query. Sent from the renderer to the browser.
+struct CanMakePaymentResponse {
+  CanMakePaymentEventResponseType response_type;
+  bool can_make_payment;
+};
+
 // This struct is provided to receive payment app response from render
 // side (PaymentHandlerResponse.idl).
 struct PaymentHandlerResponse {
@@ -134,7 +157,15 @@ struct PaymentHandlerResponse {
 // This interface is provided to pass a payment handler response from payment
 // request event in renderer side to browser side by calling respondWith().
 interface PaymentHandlerResponseCallback {
+  // Response from the renderer to the browser about the status of attempted
+  // abort of payment.
   OnResponseForAbortPayment(bool payment_aborted);
-  OnResponseForCanMakePayment(bool can_make_payment);
+
+  // Response from the renderer to the browser about the ability of the payment
+  // handler to make payments.
+  OnResponseForCanMakePayment(CanMakePaymentResponse response);
+
+  // Response from the renderer to the browser containing the payment details
+  // from the payment handler.
   OnResponseForPaymentRequest(PaymentHandlerResponse response);
 };

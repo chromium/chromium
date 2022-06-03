@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.1.0">
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="204"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="205"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="292"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="293"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="295"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../remoting/android/java/res/layout/host_online.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="SetJavaScriptEnabled"
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/help/HelpActivity.java"
+            line="91"/>
+    </issue>
+
+    <issue
+        id="SetJavaScriptEnabled"
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/WebViewActivity.java"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/accountswitcher/AccountManagerCompat.java"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="628"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="183"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="221"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="280"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="512"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="521"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
+            line="605"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `DesktopView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/DesktopView.java"
+            line="85"/>
+    </issue>
+
+    <issue
+        id="RtlEnabled"
+        message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
+        <location
+            file="gen/remoting/android/remoting_apk__lint/gen/remoting/android/AndroidManifest.xml"/>
+    </issue>
+
+</issues>

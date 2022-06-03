@@ -24,8 +24,6 @@ class Page;
 class MODULES_EXPORT AudioGraphTracer final
     : public GarbageCollected<AudioGraphTracer>,
       public Supplement<Page> {
-  USING_GARBAGE_COLLECTED_MIXIN(AudioGraphTracer);
-
  public:
   static const char kSupplementName[];
 
@@ -33,7 +31,7 @@ class MODULES_EXPORT AudioGraphTracer final
 
   AudioGraphTracer();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void SetInspectorAgent(InspectorWebAudioAgent*);
 

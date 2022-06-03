@@ -17,6 +17,7 @@ source_set("host") {
     "//gpu/config",
     "//gpu/ipc/common",
     "//net",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gl",
   ]

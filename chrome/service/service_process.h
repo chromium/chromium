@@ -6,11 +6,9 @@
 #define CHROME_SERVICE_SERVICE_PROCESS_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
 #include "chrome/service/net/in_process_network_connection_tracker.h"
@@ -49,6 +47,10 @@ class ServiceProcess : public ServiceIPCServer::Client,
                        public cloud_print::CloudPrintProxy::Provider {
  public:
   ServiceProcess();
+
+  ServiceProcess(const ServiceProcess&) = delete;
+  ServiceProcess& operator=(const ServiceProcess&) = delete;
+
   ~ServiceProcess() override;
 
   // Initialize the ServiceProcess. |quit_closure| will be run when the service
@@ -142,8 +144,6 @@ class ServiceProcess : public ServiceIPCServer::Client,
 #elif defined(OS_WIN)
   mojo::NamedPlatformChannel::ServerName server_name_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcess);
 };
 
 extern ServiceProcess* g_service_process;

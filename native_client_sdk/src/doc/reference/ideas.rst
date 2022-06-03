@@ -235,7 +235,7 @@ is of course benefiting from these improvements!). Some of these ideas would
 also apply to Subzero_, a small and fast translator from portable executable to
 machine-specific code.
 
-.. _Subzero: https://chromium.googlesource.com/native_client/pnacl-subzero/+/master/README.rst
+.. _Subzero: https://chromium.googlesource.com/native_client/pnacl-subzero/+/main/README.rst
 
 Sandboxing Optimizations
 ^^^^^^^^^^^^^^^^^^^^^^^^

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_BASE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -13,7 +12,6 @@
 namespace blink {
 
 class LayoutObject;
-class Node;
 class AXObject;
 
 // AXObjectCacheBase is a temporary class that sits between AXObjectCache and
@@ -24,14 +22,15 @@ class AXObject;
 // new public API methods or similar) and remove this class.
 class CORE_EXPORT AXObjectCacheBase : public AXObjectCache {
  public:
-  ~AXObjectCacheBase() override;
+  AXObjectCacheBase(const AXObjectCacheBase&) = delete;
+  AXObjectCacheBase& operator=(const AXObjectCacheBase&) = delete;
+  ~AXObjectCacheBase() override = default;
 
-  virtual AXObject* Get(const Node*) = 0;
-  virtual AXObject* GetOrCreate(LayoutObject*) = 0;
+  virtual AXObject* GetOrCreate(LayoutObject*,
+                                AXObject* parent_if_known = nullptr) = 0;
 
  protected:
-  AXObjectCacheBase(Document&);
-  DISALLOW_COPY_AND_ASSIGN(AXObjectCacheBase);
+  AXObjectCacheBase() = default;
 };
 
 template <>
@@ -43,4 +42,4 @@ struct DowncastTraits<AXObjectCacheBase> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_BASE_H_

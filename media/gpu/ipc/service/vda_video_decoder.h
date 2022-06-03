@@ -11,11 +11,10 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_log.h"
 #include "media/base/video_decoder.h"
@@ -64,14 +63,36 @@ class VdaVideoDecoder : public VideoDecoder,
   //     called on the GPU thread.
   //
   // See VdaVideoDecoder() for other arguments.
-  static std::unique_ptr<VdaVideoDecoder, std::default_delete<VideoDecoder>>
-  Create(scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
-         scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-         std::unique_ptr<MediaLog> media_log,
-         const gfx::ColorSpace& target_color_space,
-         const gpu::GpuPreferences& gpu_preferences,
-         const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-         GetStubCB get_stub_cb);
+  static std::unique_ptr<VideoDecoder> Create(
+      scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      std::unique_ptr<MediaLog> media_log,
+      const gfx::ColorSpace& target_color_space,
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      GetStubCB get_stub_cb);
+
+  VdaVideoDecoder(const VdaVideoDecoder&) = delete;
+  VdaVideoDecoder& operator=(const VdaVideoDecoder&) = delete;
+  ~VdaVideoDecoder() override;
+  static void DestroyAsync(std::unique_ptr<VdaVideoDecoder>);
+
+  // media::VideoDecoder implementation.
+  VideoDecoderType GetDecoderType() const override;
+  void Initialize(const VideoDecoderConfig& config,
+                  bool low_delay,
+                  CdmContext* cdm_context,
+                  InitCB init_cb,
+                  const OutputCB& output_cb,
+                  const WaitingCB& waiting_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure reset_cb) override;
+  bool NeedsBitstreamConversion() const override;
+  bool CanReadWithoutStalling() const override;
+  int GetMaxDecodeRequests() const override;
+
+ private:
+  friend class VdaVideoDecoderTest;
 
   // |parent_task_runner|: Task runner that |this| should operate on. All
   //     methods must be called on |parent_task_runner| (should be the Mojo
@@ -95,32 +116,8 @@ class VdaVideoDecoder : public VideoDecoder,
       CreateAndInitializeVdaCB create_and_initialize_vda_cb,
       const VideoDecodeAccelerator::Capabilities& vda_capabilities);
 
-  // media::VideoDecoder implementation.
-  std::string GetDisplayName() const override;
-  void Initialize(const VideoDecoderConfig& config,
-                  bool low_delay,
-                  CdmContext* cdm_context,
-                  InitCB init_cb,
-                  const OutputCB& output_cb,
-                  const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
-  void Reset(base::OnceClosure reset_cb) override;
-  bool NeedsBitstreamConversion() const override;
-  bool CanReadWithoutStalling() const override;
-  int GetMaxDecodeRequests() const override;
-
- private:
-  void Destroy() override;
-
- protected:
-  // Owners should call Destroy(). This is automatic via
-  // std::default_delete<media::VideoDecoder> when held by a
-  // std::unique_ptr<media::VideoDecoder>.
-  ~VdaVideoDecoder() override;
-
- private:
   // media::VideoDecodeAccelerator::Client implementation.
-  void NotifyInitializationComplete(bool success) override;
+  void NotifyInitializationComplete(Status status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -132,12 +129,14 @@ class VdaVideoDecoder : public VideoDecoder,
   void NotifyFlushDone() override;
   void NotifyResetDone() override;
   void NotifyError(VideoDecodeAccelerator::Error error) override;
+  gpu::SharedImageStub* GetSharedImageStub() const override;
+  CommandBufferHelper* GetCommandBufferHelper() const override;
 
   // Tasks and thread hopping.
-  void DestroyOnGpuThread();
+  static void CleanupOnGpuThread(std::unique_ptr<VdaVideoDecoder>);
   void InitializeOnGpuThread();
   void ReinitializeOnGpuThread();
-  void InitializeDone(bool status);
+  void InitializeDone(Status status);
   void DecodeOnGpuThread(scoped_refptr<DecoderBuffer> buffer,
                          int32_t bitstream_id);
   void DismissPictureBufferOnParentThread(int32_t picture_buffer_id);
@@ -183,7 +182,7 @@ class VdaVideoDecoder : public VideoDecoder,
   std::map<int32_t, DecodeCB> decode_cbs_;
   // Records timestamps so that they can be mapped to output pictures. Must be
   // large enough to account for any amount of frame reordering.
-  base::MRUCache<int32_t, base::TimeDelta> timestamps_;
+  base::LRUCache<int32_t, base::TimeDelta> timestamps_;
 
   //
   // Shared state.
@@ -217,8 +216,6 @@ class VdaVideoDecoder : public VideoDecoder,
   base::WeakPtr<VdaVideoDecoder> parent_weak_this_;
   base::WeakPtrFactory<VdaVideoDecoder> gpu_weak_this_factory_{this};
   base::WeakPtrFactory<VdaVideoDecoder> parent_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VdaVideoDecoder);
 };
 
 }  // namespace media

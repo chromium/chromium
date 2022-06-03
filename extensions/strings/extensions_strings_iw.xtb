@@ -3,11 +3,10 @@
 <translationbundle lang="iw">
 <translation id="1135328998467923690">החבילה לא חוקית: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">מצלמה אחורית</translation>
-<translation id="1196338895211115272">נכשל ייצוא מפתח פרטי.</translation>
+<translation id="1196338895211115272">ייצוא המפתח הפרטי נכשל.</translation>
 <translation id="1420684932347524586">‏אוי לא! אירע כשל ביצירת מפתח RSA פרטי אקראי.</translation>
 <translation id="1445572445564823378">תוסף זה מאט את <ph name="PRODUCT_NAME" />. עליך להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL אינו נתמך.</translation>
-<translation id="149347756975725155">לא היתה אפשרות לטעון את אייקון התוסף '<ph name="ICON" />'.</translation>
 <translation id="1803557475693955505">לא היתה אפשרות לטעון את דף הרקע '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">לא ניתן לפענח תמונה: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏נעשה שימוש בהתאמה למקום, אך default_locale לא צוין במניפסט.</translation>
@@ -16,7 +15,7 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") חסום על-ידי מנהל המערכת. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">לא ניתן להתקין את החבילה: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">‏הנסיון להחליף קובץ crx נכשל. בדוק אם הקובץ נמצא בשימוש.</translation>
+<translation id="3144135466825225871">‏הניסיון להחליף קובץ crx נכשל. יש לבדוק אם הקובץ נמצא בשימוש.</translation>
 <translation id="3163201441334626963">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3302709122321372472">‏לא היתה אפשרות לטעון את ה-css‏ ‏'<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן.</translation>
 <translation id="3369521687965833290">לא ניתן לפרוק את התוסף. כדי לפרוק תוספים בצורה בטוחה, יש צורך בנתיב לספריית הפרופילים שמתחיל באות כונן ולא מכיל צומת, נקודת טעינה או קישור סמלי. לא קיים נתיב שכזה לפרופיל שלך.</translation>
@@ -25,11 +24,11 @@
 <translation id="3561217442734750519">ערך קלט עבור מפתח פרטי חייב להיות נתיב חוקי.</translation>
 <translation id="388442998277590542">לא היתה אפשרות לטעון את דף האפשרויות '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">שגיאה בחתימה על התוסף.</translation>
-<translation id="39964277676607559">‏לא היתה אפשרות לטעון את ה-Javascript‏ ‏'<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן.</translation>
+<translation id="39964277676607559">‏לא היתה אפשרות לטעון את ה-JavaScript‏ ‏'<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן.</translation>
 <translation id="4115165561519362854">מנהל המערכת של מחשב זה דורש שהגרסה המינימלית של <ph name="EXTENSION_NAME" /> תהיה <ph name="EXTENSION_VERSION" />. ההפעלה אינה אפשרית עד לעדכון לגרסה זו (ואילך).</translation>
 <translation id="4233778200880751280">לא ניתן לטעון את דף המידע '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">נכשל בפלט מפתח פרטי.</translation>
-<translation id="4811956658694082538">‏לא ניתן היה להתקין את החבילה מפני שתהליך כלי השירות קרס. נסה לאתחל את Chrome ואז נסה שוב.</translation>
+<translation id="4811956658694082538">‏לא ניתן היה להתקין את החבילה מפני שתהליך כלי השירות קרס. יש לאתחל את Chrome ולנסות שוב.</translation>
 <translation id="4988792151665380515">נכשל ייצוא מפתח ציבורי.</translation>
 <translation id="5026754133087629784">צפיות באתר: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">לא ניתן למצוא את הנתיב המוחלט לספריה לאריזה.</translation>
@@ -41,10 +40,9 @@
 <translation id="6027032947578871493">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="6143635259298204954">לא ניתן לפרוק את התוסף. כדי לפרוק תוספים בצורה בטוחה, יש צורך בנתיב לספריית הפרופילים שלך שלא מכיל קישור סמלי. לא קיים נתיב שכזה לפרופיל שלך.</translation>
-<translation id="6322279351188361895">נכשל בקריאת מפתח פרטי.</translation>
+<translation id="6322279351188361895">לא ניתן היה לקרוא את המפתח הפרטי.</translation>
 <translation id="6391538222494443604">ספריית קלט חייבת להתקיים.</translation>
 <translation id="641087317769093025">לא ניתן לבטל את הדחיסה של התוסף</translation>
-<translation id="6413453408918378296">הסמל לא מספיק בולט לעין '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354">האפליקציה "<ph name="APP_NAME" />" מבקשת גישה לאחד או יותר מהמכשירים שלך:</translation>
 <translation id="657064425229075395">לא ניתן להעלות את סקריפט הרקע '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> מ-<ph name="VENDOR_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
@@ -62,7 +60,7 @@
 <translation id="8517576857589387417">אין קובץ מניפסט, או שהוא אינו קריא</translation>
 <translation id="8636666366616799973">החבילה לא חוקית. פרטים: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">האפליקציה "<ph name="APP_NAME" />" מבקשת גישה לאחד מהמכשירים שלך:</translation>
-<translation id="8885905466771744233">מפתח פרטי לתוסף שצוין כבר קיים. השתמש שוב במפתח זה או מחק אותו תחילה.</translation>
+<translation id="8885905466771744233">מפתח פרטי לתוסף שצוין כבר קיים. יש להשתמש שוב במפתח זה או למחוק אותו תחילה.</translation>
 <translation id="907841381057066561">‏נכשל ביצירת קובץ zip זמני במהלך האריזה.</translation>
 <translation id="941543339607623937">מפתח פרטי לא חוקי.</translation>
 </translationbundle>

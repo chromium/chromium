@@ -18,11 +18,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "net/base/address_tracker_linux.h"
 #include "net/base/escape.h"
 #include "net/base/ip_endpoint.h"
@@ -31,7 +31,9 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/build_info.h"
 #include "net/android/network_library.h"
+#include "net/base/network_interfaces_getifaddrs.h"
 #endif
 
 namespace net {
@@ -212,6 +214,20 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   if (networks == NULL)
     return false;
 
+#if defined(OS_ANDROID)
+  // On Android 11 RTM_GETLINK (used by AddressTrackerLinux) no longer works as
+  // per https://developer.android.com/preview/privacy/mac-address so instead
+  // use getifaddrs() which is supported since Android N.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_NOUGAT) {
+    bool ret = internal::GetNetworkListUsingGetifaddrs(networks, policy);
+    // Use GetInterfaceConnectionType() to sharpen up interface types.
+    for (NetworkInterface& network : *networks)
+      network.type = internal::GetInterfaceConnectionType(network.name);
+    return ret;
+  }
+#endif
+
   internal::AddressTrackerLinux tracker;
   tracker.Init();
 
@@ -224,13 +240,14 @@ std::string GetWifiSSID() {
 // On Android, obtain the SSID using the Android-specific APIs.
 #if defined(OS_ANDROID)
   return android::GetWifiSSID();
-#endif
+#else
   NetworkInterfaceList networks;
   if (GetNetworkList(&networks, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
     return internal::GetWifiSSIDFromInterfaceListInternal(
         networks, internal::GetInterfaceSSID);
   }
   return std::string();
+#endif
 }
 
 }  // namespace net

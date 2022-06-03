@@ -10,7 +10,7 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 
 namespace base {
 namespace subtle {
@@ -103,7 +103,7 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   if (mode_ != Mode::kReadOnly)
     options |= ZX_VM_PERM_WRITE;
   zx_status_t status = zx::vmar::root_self()->map(
-      /*vmar_offset=*/0, handle_, offset, size, options, &addr);
+      options, /*vmar_offset=*/0, handle_, offset, size, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
     return false;
@@ -121,7 +121,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
 
   // Aligning may overflow so check that the result doesn't decrease.
-  size_t rounded_size = bits::Align(size, GetPageSize());
+  size_t rounded_size = bits::AlignUp(size, GetPageSize());
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
@@ -162,13 +162,15 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   zx_info_handle_basic_t basic = {};
   zx_status_t status = handle->get_info(ZX_INFO_HANDLE_BASIC, &basic,
                                         sizeof(basic), nullptr, nullptr);
-  if (status != ZX_OK) {
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
+
+  if (basic.type != ZX_OBJ_TYPE_VMO) {
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
-    ZX_LOG(ERROR, status) << "zx_object_get_info";
+    LOG(ERROR) << "Received zircon handle is not a VMO";
     return false;
   }
 
-  bool is_read_only = (basic.rights & kNoWriteOrExec) == basic.rights;
+  bool is_read_only = (basic.rights & (ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE)) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {

@@ -20,15 +20,20 @@ class CONTENT_EXPORT RenderWidgetHostObserver : public base::CheckedObserver {
   virtual void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
                                                  bool became_visible) {}
 
+  // Invoked after the renderer has updated visual properties on the main thread
+  // and committed the change on the compositor thread.
+  virtual void RenderWidgetHostDidUpdateVisualProperties(
+      RenderWidgetHost* widget_host) {}
+
   // This method is invoked when the observed RenderWidgetHost is destroyed.
   // This is guaranteed to be the last call made to the observer, so if the
   // observer is tied to the observed RenderWidgetHost, it is safe to delete it.
   virtual void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {}
 
  protected:
-  ~RenderWidgetHostObserver() override = default;
+  ~RenderWidgetHostObserver() override;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_OBSERVER_H_

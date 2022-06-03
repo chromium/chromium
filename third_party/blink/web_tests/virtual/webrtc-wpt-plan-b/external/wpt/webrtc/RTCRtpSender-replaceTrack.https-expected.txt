@@ -8,5 +8,6 @@ FAIL Calling replaceTrack(null) on sender not set to session description should 
 FAIL Calling replaceTrack(null) on sender set to session description should resolve with sender.track set to null promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL Calling replaceTrack on sender with stopped track and and set to session description should resolve with sender.track set to given track promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL Calling replaceTrack on sender with similar track and and set to session description should resolve with sender.track set to new track promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+PASS ReplaceTrack transmits the new track not the old track
 Harness: the test ran to completion.
 

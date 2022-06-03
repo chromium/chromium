@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 /** Interface for factories of additional user form sections. */
 public interface AssistantAdditionalSectionFactory {

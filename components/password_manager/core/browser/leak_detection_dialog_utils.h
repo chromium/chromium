@@ -5,12 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 
+#include <string>
 #include <type_traits>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "base/util/type_safety/strong_alias.h"
-#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -25,19 +23,29 @@ enum CredentialLeakFlags {
   kPasswordUsedOnOtherSites = 1 << 1,
   // User is syncing passwords with normal encryption.
   kSyncingPasswordsNormally = 1 << 2,
+  // There is an automatic password change script available for this credential.
+  kAutomaticPasswordChangeScriptAvailable = 1 << 3,
+};
+
+enum class PasswordCheckupReferrer {
+  // Corresponds to the leak detection dialog shown on Desktop and Mobile.
+  kLeakDetectionDialog = 0,
+  // Corresponds to Chrome's password check page on Desktop.
+  kPasswordCheck = 1,
 };
 
 // Contains combination of CredentialLeakFlags values.
 using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 
-using IsSaved = util::StrongAlias<class IsSavedTag, bool>;
-using IsReused = util::StrongAlias<class IsReusedTag, bool>;
-using IsSyncing = util::StrongAlias<class IsSyncingTag, bool>;
-
+using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
+using IsReused = base::StrongAlias<class IsReusedTag, bool>;
+using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
+using HasChangeScript = base::StrongAlias<class HasChangeScriptTag, bool>;
 // Creates CredentialLeakType from strong booleans.
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing);
+                                  IsSyncing is_syncing,
+                                  HasChangeScript has_change_script);
 
 // Checks whether password is saved in chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
@@ -48,35 +56,40 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 // Checks whether user is syncing passwords with normal encryption.
 bool IsSyncingPasswordsNormally(CredentialLeakType leak_type);
 
+// Checks whether an automatic password change script is available for the
+// credential.
+bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type);
+
 // Returns the label for the leak dialog accept button.
-base::string16 GetAcceptButtonLabel(
-    password_manager::CredentialLeakType leak_type);
+std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog cancel button.
-base::string16 GetCancelButtonLabel();
+std::u16string GetCancelButtonLabel();
 
 // Returns the leak dialog message based on leak type.
-base::string16 GetDescription(password_manager::CredentialLeakType leak_type,
-                              const GURL& origin);
+std::u16string GetDescription(CredentialLeakType leak_type);
 
 // Returns the leak dialog title based on leak type.
-base::string16 GetTitle(password_manager::CredentialLeakType leak_type);
+std::u16string GetTitle(CredentialLeakType leak_type);
 
 // Returns the leak dialog tooltip shown on (?) click.
-base::string16 GetLeakDetectionTooltip();
+std::u16string GetLeakDetectionTooltip();
 
 // Checks whether the leak dialog should prompt user to password checkup.
-bool ShouldCheckPasswords(password_manager::CredentialLeakType leak_type);
+bool ShouldCheckPasswords(CredentialLeakType leak_type);
+
+// Checks whether the leak dialog should show change password button.
+bool ShouldShowChangePasswordButton(CredentialLeakType leak_type);
 
 // Checks whether the leak dialog should show cancel button.
-bool ShouldShowCancelButton(password_manager::CredentialLeakType leak_type);
+bool ShouldShowCancelButton(CredentialLeakType leak_type);
 
 // Returns the LeakDialogType corresponding to |leak_type|.
-password_manager::metrics_util::LeakDialogType GetLeakDialogType(
-    password_manager::CredentialLeakType leak_type);
+metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);
 
 // Returns the URL used to launch the password checkup.
-GURL GetPasswordCheckupURL();
+GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer =
+                               PasswordCheckupReferrer::kLeakDetectionDialog);
 
 }  // namespace password_manager
 

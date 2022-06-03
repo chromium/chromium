@@ -5,18 +5,16 @@
 #ifndef CHROME_BROWSER_NET_DNS_PROBE_SERVICE_H_
 #define CHROME_BROWSER_NET_DNS_PROBE_SERVICE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/callback.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "net/dns/public/dns_config_overrides.h"
 
 namespace chrome_browser_net {
 
-// Probes the system and public DNS servers to determine the (probable) cause
-// of a recent DNS-related page load error.  Coalesces multiple probe requests
-// (perhaps from multiple tabs) and caches the results.
+// Probes the current DNS config servers and Google DNS servers to determine
+// the (probable) cause of a recent DNS-related page load error.  Coalesces
+// multiple probe requests (perhaps from multiple tabs) and caches the results.
 //
 // Uses a single DNS attempt per config, and doesn't randomize source ports.
 //
@@ -30,6 +28,9 @@ class DnsProbeService : public KeyedService {
   // in progress or recently completed. |callback| will be called
   // asynchronously with the probe result.
   virtual void ProbeDns(ProbeCallback callback) = 0;
+
+  // Returns the DnsConfigOverrides being used to mimic the current DNS config.
+  virtual net::DnsConfigOverrides GetCurrentConfigOverridesForTesting() = 0;
 };
 
 }  // namespace chrome_browser_net

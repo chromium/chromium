@@ -8,7 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom-shared.h"
 
 namespace mojo {
 

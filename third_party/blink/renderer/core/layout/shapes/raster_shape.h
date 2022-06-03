@@ -31,11 +31,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_RASTER_SHAPE_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_interval.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -45,7 +43,7 @@ class RasterShapeIntervals {
 
  public:
   RasterShapeIntervals(unsigned size, int offset = 0) : offset_(offset) {
-    intervals_.resize(clampTo<int>(size));
+    intervals_.resize(ClampTo<int>(size));
   }
 
   void InitializeBounds();
@@ -87,6 +85,8 @@ class RasterShape final : public Shape {
       : intervals_(std::move(intervals)), margin_rect_size_(margin_rect_size) {
     intervals_->InitializeBounds();
   }
+  RasterShape(const RasterShape&) = delete;
+  RasterShape& operator=(const RasterShape&) = delete;
 
   LayoutRect ShapeMarginLogicalBoundingBox() const override {
     return static_cast<LayoutRect>(MarginIntervals().Bounds());
@@ -106,7 +106,6 @@ class RasterShape final : public Shape {
   std::unique_ptr<RasterShapeIntervals> intervals_;
   mutable std::unique_ptr<RasterShapeIntervals> margin_intervals_;
   IntSize margin_rect_size_;
-  DISALLOW_COPY_AND_ASSIGN(RasterShape);
 };
 
 }  // namespace blink

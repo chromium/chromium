@@ -1,0 +1,31 @@
+This test checks that style.borderSpacing returns the correct result for valid, negative, and missing border-spacing values.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Valid values:
+PASS document.getElementById("infer-vertical-border-spacing").style.borderSpacing is "4px"
+PASS document.getElementById("explicit-border-spacing").style.borderSpacing is "4px 5px"
+FAIL computedStyle(document.getElementById("computed-infer-vertical-border-spacing")).borderSpacing should be 11px 11px. Was 10.6667px 10.6667px.
+PASS cssRule("#computed-infer-vertical-border-spacing").style.borderSpacing is "11px"
+FAIL computedStyle(document.getElementById("computed-explicit-border-spacing")).borderSpacing should be 13px 23px. Was 12.6667px 22.6667px.
+PASS cssRule("#computed-explicit-border-spacing").style.borderSpacing is "13px 23px"
+
+Negative values:
+PASS document.getElementById("infer-vertical-border-spacing-from-negative-horizontal-spacing").style.borderSpacing is ""
+PASS document.getElementById("explicit-negative-border-spacing").style.borderSpacing is ""
+PASS document.getElementById("explicit-border-spacing-with-negative-horizontal").style.borderSpacing is ""
+PASS document.getElementById("explicit-border-spacing-with-negative-vertical").style.borderSpacing is ""
+PASS cssRule("#computed-infer-vertical-border-spacing-from-negative-horizontal-border-spacing").style.borderSpacing is ""
+PASS cssRule("#computed-explicit-negative-border-spacing").style.borderSpacing is ""
+PASS cssRule("#computed-explicit-border-spacing-with-negative-horizontal").style.borderSpacing is ""
+PASS cssRule("#computed-explicit-border-spacing-with-negative-vertical").style.borderSpacing is ""
+
+Missing values:
+PASS document.getElementById("missing-border-spacing").style.borderSpacing is ""
+PASS cssRule("#missing-stylesheet-border-spacing").style.borderSpacing is ""
+
+TEST COMPLETE

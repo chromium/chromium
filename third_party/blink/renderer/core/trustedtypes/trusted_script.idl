@@ -4,11 +4,13 @@
 
 // https://github.com/wicg/trusted-types
 
-typedef (DOMString or TrustedScript) ScriptString;
+typedef [StringContext=TrustedScript] DOMString ScriptString;
 
 [
-    Exposed=Window,
+    IsCodeLike,
+    Exposed=(Window, Worker),
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedScript {
     stringifier;
+    DOMString toJSON();
 };

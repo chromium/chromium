@@ -16,12 +16,12 @@ CryptAuthGCMManager::Observer::~Observer() {}
 void CryptAuthGCMManager::Observer::OnGCMRegistrationResult(bool success) {}
 
 void CryptAuthGCMManager::Observer::OnReenrollMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {}
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {}
 
 void CryptAuthGCMManager::Observer::OnResyncMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {}
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {}
 
 // static.
 void CryptAuthGCMManager::RegisterPrefs(PrefRegistrySimple* registry) {

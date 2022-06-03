@@ -6,7 +6,7 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -21,20 +21,13 @@ CASE 1, original layer tree:
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
       "position": [0, 100],
-      "bounds": [200, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan')",
-      "position": [0, 200],
-      "bounds": [200, 300]
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [785, 0],
-      "bounds": [15, 600],
+      "bounds": [200, 1300],
       "contentsOpaque": true
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -54,22 +47,10 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-f' class='overlapping lime'",
-          "rect": [0, 500, 200, 100],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
-          "rect": [0, 100, 200, 100],
-          "reason": "chunk appeared"
-        }
-      ],
       "transform": 1
     },
     {
@@ -80,38 +61,16 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-      "position": [0, 200],
-      "bounds": [200, 100],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
-      "backgroundColor": "#00FFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-          "rect": [0, 0, 200, 100],
-          "reason": "full layer"
-        }
-      ],
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime')",
-      "position": [0, 300],
-      "bounds": [200, 300],
-      "paintInvalidations": [
-        {
-          "object": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime')",
-          "rect": [0, 0, 200, 300],
-          "reason": "full layer"
-        }
-      ],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -140,7 +99,7 @@ CASE 3, scrolling y to 120, no repaints expected:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -154,24 +113,16 @@ CASE 3, scrolling y to 120, no repaints expected:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-      "position": [0, 200],
-      "bounds": [200, 100],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
-      "backgroundColor": "#00FFFF",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime')",
-      "position": [0, 300],
-      "bounds": [200, 300],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -200,22 +151,10 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-g' class='overlapping cyan'",
-          "rect": [0, 600, 200, 100],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-          "rect": [0, 200, 200, 100],
-          "reason": "chunk appeared"
-        }
-      ],
       "transform": 1
     },
     {
@@ -226,38 +165,16 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime'",
-      "position": [0, 300],
-      "bounds": [200, 100],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime'",
-          "rect": [0, 0, 200, 100],
-          "reason": "full layer"
-        }
-      ],
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-e' class='overlapping cyan')",
-      "position": [0, 400],
-      "bounds": [200, 300],
-      "paintInvalidations": [
-        {
-          "object": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='paragraph-e' class='overlapping cyan')",
-          "rect": [0, 0, 200, 300],
-          "reason": "full layer"
-        }
-      ],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

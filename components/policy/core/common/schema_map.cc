@@ -4,7 +4,8 @@
 
 #include "components/policy/core/common/schema_map.h"
 
-#include "base/logging.h"
+#include <utility>
+
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -13,9 +14,7 @@ namespace policy {
 
 SchemaMap::SchemaMap() {}
 
-SchemaMap::SchemaMap(DomainMap& map) {
-  map_.swap(map);
-}
+SchemaMap::SchemaMap(DomainMap map) : map_(std::move(map)) {}
 
 SchemaMap::~SchemaMap() {}
 
@@ -36,45 +35,59 @@ const Schema* SchemaMap::GetSchema(const PolicyNamespace& ns) const {
   return it == map->end() ? nullptr : &it->second;
 }
 
-void SchemaMap::FilterBundle(PolicyBundle* bundle) const {
-  for (const auto& bundle_item : *bundle) {
+void SchemaMap::FilterBundle(PolicyBundle* bundle,
+                             bool drop_invalid_component_policies) const {
+  for (auto& bundle_item : *bundle) {
     const PolicyNamespace& ns = bundle_item.first;
-    const std::unique_ptr<PolicyMap>& policy_map = bundle_item.second;
+    PolicyMap& policy_map = bundle_item.second;
 
     // Chrome policies are not filtered, so that typos appear in about:policy.
-    // Everything else gets filtered, so that components only see valid policy.
     if (ns.domain == POLICY_DOMAIN_CHROME)
       continue;
 
     const Schema* schema = GetSchema(ns);
 
     if (!schema) {
-      policy_map->Clear();
+      policy_map.Clear();
       continue;
     }
 
     if (!schema->valid()) {
       // Don't serve unknown policies.
-      policy_map->Clear();
+      if (drop_invalid_component_policies) {
+        policy_map.Clear();
+      } else {
+        policy_map.SetAllInvalid();
+      }
       continue;
     }
 
-    for (auto it_map = policy_map->begin(); it_map != policy_map->end();) {
+    for (auto it_map = policy_map.begin(); it_map != policy_map.end();) {
       const std::string& policy_name = it_map->first;
-      base::Value* policy_value = it_map->second.value.get();
-      Schema policy_schema = schema->GetProperty(policy_name);
-      ++it_map;
-      std::string error_path;
-      std::string error;
-      if (!policy_value ||
-          !policy_schema.Normalize(policy_value, SCHEMA_ALLOW_UNKNOWN,
-                                   &error_path, &error, nullptr)) {
-        LOG(ERROR) << "Dropping policy " << policy_name << " of component "
-                   << ns.component_id << " due to error at "
-                   << (error_path.empty() ? "root" : error_path) << ": "
-                   << error;
-        policy_map->Erase(policy_name);
+      PolicyMap::Entry& entry = it_map->second;
+      const Schema policy_schema = schema->GetProperty(policy_name);
+
+      const bool has_value = entry.value();
+      const bool is_valid =
+          has_value &&
+          policy_schema.Normalize(entry.value(), SCHEMA_ALLOW_UNKNOWN,
+                                  /* out_error_path=*/nullptr,
+                                  /* out_error=*/nullptr,
+                                  /* out_changed=*/nullptr);
+      if (drop_invalid_component_policies && (!has_value || !is_valid)) {
+        it_map = policy_map.EraseIt(it_map);
+        continue;
       }
+
+      ++it_map;
+
+      if (!has_value) {
+        entry.SetIgnored();
+        continue;
+      }
+
+      if (!is_valid)
+        entry.SetInvalid();
     }
   }
 }

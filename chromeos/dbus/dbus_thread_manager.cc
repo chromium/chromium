@@ -4,33 +4,30 @@
 
 #include "chromeos/dbus/dbus_thread_manager.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/command_line.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/system/sys_info.h"
-#include "base/threading/thread.h"
-#include "chromeos/dbus/anomaly_detector_client.h"
-#include "chromeos/dbus/arc_keymaster_client.h"
-#include "chromeos/dbus/arc_midis_client.h"
-#include "chromeos/dbus/arc_obb_mounter_client.h"
-#include "chromeos/dbus/arc_oemcrypto_client.h"
-#include "chromeos/dbus/cec_service_client.h"
-#include "chromeos/dbus/cicerone_client.h"
-#include "chromeos/dbus/concierge_client.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
+#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/dbus/arc/arc_keymaster_client.h"
+#include "chromeos/dbus/arc/arc_midis_client.h"
+#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/easy_unlock_client.h"
-#include "chromeos/dbus/gnubby_client.h"
-#include "chromeos/dbus/image_burner_client.h"
-#include "chromeos/dbus/image_loader_client.h"
-#include "chromeos/dbus/lorgnette_manager_client.h"
-#include "chromeos/dbus/runtime_probe_client.h"
-#include "chromeos/dbus/seneschal_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/dbus/gnubby/gnubby_client.h"
+#include "chromeos/dbus/image_burner/image_burner_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
+#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -40,73 +37,28 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/sms_client.h"
-#include "chromeos/dbus/smb_provider_client.h"
-#include "chromeos/dbus/update_engine_client.h"
-#include "dbus/bus.h"
-#include "dbus/dbus_statistics.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 namespace chromeos {
 
 static DBusThreadManager* g_dbus_thread_manager = nullptr;
-static bool g_using_dbus_thread_manager_for_testing = false;
+static DBusThreadManagerSetter* g_setter = nullptr;
 
-DBusThreadManager::DBusThreadManager(ClientSet client_set,
-                                     bool use_real_clients)
-    : use_real_clients_(use_real_clients) {
-  if (client_set == DBusThreadManager::kAll)
-    clients_browser_.reset(new DBusClientsBrowser(use_real_clients));
-  // NOTE: When there are clients only used by ash, create them here.
-
-  dbus::statistics::Initialize();
-
-  if (use_real_clients) {
-    // Create the D-Bus thread.
-    base::Thread::Options thread_options;
-    thread_options.message_pump_type = base::MessagePumpType::IO;
-    dbus_thread_.reset(new base::Thread("D-Bus thread"));
-    dbus_thread_->StartWithOptions(thread_options);
-
-    // Create the connection to the system bus.
-    dbus::Bus::Options system_bus_options;
-    system_bus_options.bus_type = dbus::Bus::SYSTEM;
-    system_bus_options.connection_type = dbus::Bus::PRIVATE;
-    system_bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    system_bus_ = new dbus::Bus(system_bus_options);
-  }
-}
+DBusThreadManager::DBusThreadManager()
+    : clients_browser_(
+          std::make_unique<DBusClientsBrowser>(use_real_clients_)) {}
 
 DBusThreadManager::~DBusThreadManager() {
   // Delete all D-Bus clients before shutting down the system bus.
   clients_browser_.reset();
-
-  // Shut down the bus. During the browser shutdown, it's ok to shut down
-  // the bus synchronously.
-  if (system_bus_.get())
-    system_bus_->ShutdownOnDBusThreadAndBlock();
-
-  // Stop the D-Bus thread.
-  if (dbus_thread_)
-    dbus_thread_->Stop();
-
-  dbus::statistics::Shutdown();
-
-  if (!g_dbus_thread_manager)
-    return;  // Called form Shutdown() or local test instance.
-
-  // There should never be both a global instance and a local instance.
-  CHECK_EQ(this, g_dbus_thread_manager);
-  if (g_using_dbus_thread_manager_for_testing) {
-    g_dbus_thread_manager = nullptr;
-    g_using_dbus_thread_manager_for_testing = false;
-    VLOG(1) << "DBusThreadManager destroyed";
-  } else {
-    LOG(FATAL) << "~DBusThreadManager() called outside of Shutdown()";
-  }
 }
 
-dbus::Bus* DBusThreadManager::GetSystemBus() {
-  return system_bus_.get();
-}
+// Returns a client that is set via DBusThreadManagerSetter when available.
+#define RETURN_DBUS_CLIENT(name)      \
+  return (g_setter && g_setter->name) \
+             ? g_setter->name.get()   \
+             : (clients_browser_ ? clients_browser_->name.get() : nullptr)
 
 AnomalyDetectorClient* DBusThreadManager::GetAnomalyDetectorClient() {
   return clients_browser_ ? clients_browser_->anomaly_detector_client_.get()
@@ -115,6 +67,11 @@ AnomalyDetectorClient* DBusThreadManager::GetAnomalyDetectorClient() {
 
 ArcAppfuseProviderClient* DBusThreadManager::GetArcAppfuseProviderClient() {
   return clients_browser_ ? clients_browser_->arc_appfuse_provider_client_.get()
+                          : nullptr;
+}
+
+ArcDataSnapshotdClient* DBusThreadManager::GetArcDataSnapshotdClient() {
+  return clients_browser_ ? clients_browser_->arc_data_snapshotd_client_.get()
                           : nullptr;
 }
 
@@ -132,32 +89,21 @@ ArcObbMounterClient* DBusThreadManager::GetArcObbMounterClient() {
                           : nullptr;
 }
 
-ArcOemCryptoClient* DBusThreadManager::GetArcOemCryptoClient() {
-  return clients_browser_ ? clients_browser_->arc_oemcrypto_client_.get()
-                          : nullptr;
-}
-
 CecServiceClient* DBusThreadManager::GetCecServiceClient() {
   return clients_browser_ ? clients_browser_->cec_service_client_.get()
                           : nullptr;
 }
 
-CiceroneClient* DBusThreadManager::GetCiceroneClient() {
-  return clients_browser_ ? clients_browser_->cicerone_client_.get() : nullptr;
-}
-
-ConciergeClient* DBusThreadManager::GetConciergeClient() {
-  return clients_browser_ ? clients_browser_->concierge_client_.get() : nullptr;
+ChunneldClient* DBusThreadManager::GetChunneldClient() {
+  return clients_browser_ ? clients_browser_->chunneld_client_.get() : nullptr;
 }
 
 CrosDisksClient* DBusThreadManager::GetCrosDisksClient() {
-  return clients_browser_ ? clients_browser_->cros_disks_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(cros_disks_client_);
 }
 
 DebugDaemonClient* DBusThreadManager::GetDebugDaemonClient() {
-  return clients_browser_ ? clients_browser_->debug_daemon_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(debug_daemon_client_);
 }
 
 EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {
@@ -166,7 +112,7 @@ EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {
 }
 
 GnubbyClient* DBusThreadManager::GetGnubbyClient() {
-  return clients_browser_ ? clients_browser_->gnubby_client_.get() : nullptr;
+  RETURN_DBUS_CLIENT(gnubby_client_);
 }
 
 ShillDeviceClient* DBusThreadManager::GetShillDeviceClient() {
@@ -195,13 +141,11 @@ DBusThreadManager::GetShillThirdPartyVpnDriverClient() {
 }
 
 ImageBurnerClient* DBusThreadManager::GetImageBurnerClient() {
-  return clients_browser_ ? clients_browser_->image_burner_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(image_burner_client_);
 }
 
 ImageLoaderClient* DBusThreadManager::GetImageLoaderClient() {
-  return clients_browser_ ? clients_browser_->image_loader_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(image_loader_client_);
 }
 
 LorgnetteManagerClient* DBusThreadManager::GetLorgnetteManagerClient() {
@@ -222,13 +166,8 @@ RuntimeProbeClient* DBusThreadManager::GetRuntimeProbeClient() {
                           : nullptr;
 }
 
-SeneschalClient* DBusThreadManager::GetSeneschalClient() {
-  return clients_browser_ ? clients_browser_->seneschal_client_.get() : nullptr;
-}
-
 SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
-  return clients_browser_ ? clients_browser_->smb_provider_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(smb_provider_client_);
 }
 
 SMSClient* DBusThreadManager::GetSMSClient() {
@@ -236,8 +175,7 @@ SMSClient* DBusThreadManager::GetSMSClient() {
 }
 
 UpdateEngineClient* DBusThreadManager::GetUpdateEngineClient() {
-  return clients_browser_ ? clients_browser_->update_engine_client_.get()
-                          : nullptr;
+  RETURN_DBUS_CLIENT(update_engine_client_);
 }
 
 VirtualFileProviderClient* DBusThreadManager::GetVirtualFileProviderClient() {
@@ -250,6 +188,8 @@ VmPluginDispatcherClient* DBusThreadManager::GetVmPluginDispatcherClient() {
   return clients_browser_ ? clients_browser_->vm_plugin_dispatcher_client_.get()
                           : nullptr;
 }
+
+#undef RETURN_DBUS_CLIENT
 
 void DBusThreadManager::InitializeClients() {
   // Some clients call DBusThreadManager::Get() during initialization.
@@ -268,50 +208,18 @@ void DBusThreadManager::InitializeClients() {
     VLOG(1) << "DBusThreadManager created for testing";
 }
 
-bool DBusThreadManager::IsUsingFakes() {
-  return !use_real_clients_;
-}
-
 // static
-void DBusThreadManager::Initialize(ClientSet client_set) {
-  // If we initialize DBusThreadManager twice we may also be shutting it down
-  // early; do not allow that.
-  if (g_using_dbus_thread_manager_for_testing)
-    return;
-
+void DBusThreadManager::Initialize() {
   CHECK(!g_dbus_thread_manager);
-#if defined(USE_REAL_DBUS_CLIENTS)
-  bool use_real_clients = true;
-#else
-  // TODO(hashimoto): Always use fakes after adding
-  // use_real_dbus_clients=true to where needed. crbug.com/952745
-  bool use_real_clients = base::SysInfo::IsRunningOnChromeOS() &&
-                          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              chromeos::switches::kDbusStub);
-#endif
-  g_dbus_thread_manager = new DBusThreadManager(client_set, use_real_clients);
+  g_dbus_thread_manager = new DBusThreadManager();
   g_dbus_thread_manager->InitializeClients();
 }
 
 // static
-void DBusThreadManager::Initialize() {
-  Initialize(kAll);
-}
-
-// static
-std::unique_ptr<DBusThreadManagerSetter>
-DBusThreadManager::GetSetterForTesting() {
-  if (!g_using_dbus_thread_manager_for_testing) {
-    g_using_dbus_thread_manager_for_testing = true;
-    CHECK(!g_dbus_thread_manager);
-    // TODO(jamescook): Don't initialize clients as a side-effect of using a
-    // test API. For now, assume the caller wants all clients.
-    g_dbus_thread_manager =
-        new DBusThreadManager(kAll, false /* use_real_clients */);
-    g_dbus_thread_manager->InitializeClients();
-  }
-
-  return base::WrapUnique(new DBusThreadManagerSetter());
+DBusThreadManagerSetter* DBusThreadManager::GetSetterForTesting() {
+  if (!g_setter)
+    g_setter = new DBusThreadManagerSetter();
+  return g_setter;
 }
 
 // static
@@ -329,8 +237,11 @@ void DBusThreadManager::Shutdown() {
 
   DBusThreadManager* dbus_thread_manager = g_dbus_thread_manager;
   g_dbus_thread_manager = nullptr;
-  g_using_dbus_thread_manager_for_testing = false;
   delete dbus_thread_manager;
+
+  delete g_setter;
+  g_setter = nullptr;
+
   VLOG(1) << "DBusThreadManager Shutdown completed";
 }
 
@@ -345,70 +256,39 @@ DBusThreadManagerSetter::DBusThreadManagerSetter() = default;
 
 DBusThreadManagerSetter::~DBusThreadManagerSetter() = default;
 
-void DBusThreadManagerSetter::SetCiceroneClient(
-    std::unique_ptr<CiceroneClient> client) {
-  DBusThreadManager::Get()->clients_browser_->cicerone_client_ =
-      std::move(client);
-}
-
-void DBusThreadManagerSetter::SetConciergeClient(
-    std::unique_ptr<ConciergeClient> client) {
-  DBusThreadManager::Get()->clients_browser_->concierge_client_ =
-      std::move(client);
-}
-
 void DBusThreadManagerSetter::SetCrosDisksClient(
     std::unique_ptr<CrosDisksClient> client) {
-  DBusThreadManager::Get()->clients_browser_->cros_disks_client_ =
-      std::move(client);
+  cros_disks_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetDebugDaemonClient(
     std::unique_ptr<DebugDaemonClient> client) {
-  DBusThreadManager::Get()->clients_browser_->debug_daemon_client_ =
-      std::move(client);
+  debug_daemon_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetGnubbyClient(
     std::unique_ptr<GnubbyClient> client) {
-  DBusThreadManager::Get()->clients_browser_->gnubby_client_ =
-      std::move(client);
-}
-
-void DBusThreadManagerSetter::SetRuntimeProbeClient(
-    std::unique_ptr<RuntimeProbeClient> client) {
-  DBusThreadManager::Get()->clients_browser_->runtime_probe_client_ =
-      std::move(client);
-}
-
-void DBusThreadManagerSetter::SetSeneschalClient(
-    std::unique_ptr<SeneschalClient> client) {
-  DBusThreadManager::Get()->clients_browser_->seneschal_client_ =
-      std::move(client);
+  gnubby_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetImageBurnerClient(
     std::unique_ptr<ImageBurnerClient> client) {
-  DBusThreadManager::Get()->clients_browser_->image_burner_client_ =
-      std::move(client);
+  image_burner_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetImageLoaderClient(
     std::unique_ptr<ImageLoaderClient> client) {
-  DBusThreadManager::Get()->clients_browser_->image_loader_client_ =
-      std::move(client);
+  image_loader_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetSmbProviderClient(
     std::unique_ptr<SmbProviderClient> client) {
-  DBusThreadManager::Get()->clients_browser_->smb_provider_client_ =
-      std::move(client);
+  smb_provider_client_ = std::move(client);
 }
 
 void DBusThreadManagerSetter::SetUpdateEngineClient(
     std::unique_ptr<UpdateEngineClient> client) {
-  DBusThreadManager::Get()->clients_browser_->update_engine_client_ =
-      std::move(client);
+  update_engine_client_ = std::move(client);
 }
 
 }  // namespace chromeos

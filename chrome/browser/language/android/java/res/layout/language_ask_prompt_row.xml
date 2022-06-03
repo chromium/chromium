@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/language_ask_row"
+    style="@style/ListItemContainer"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:baselineAligned="true">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/explicit_ask_checkbox_end_padding"
+        android:id="@+id/language_ask_checkbox"
+        android:layout_alignBaseline="@+id/ui_language_representation" />
+
+    <TextView
+            android:id="@+id/ui_language_representation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:layout_toEndOf="@+id/language_ask_checkbox" />
+
+    <TextView
+        android:id="@+id/native_language_representation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_alignStart="@+id/ui_language_representation"
+        android:layout_below="@+id/ui_language_representation" />
+
+    <ImageView
+        android:id="@+id/device_language_icon"
+        android:importantForAccessibility="no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_mobile_friendly_grey600_24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/list_item_default_margin"
+        android:visibility="invisible" />
+</RelativeLayout>

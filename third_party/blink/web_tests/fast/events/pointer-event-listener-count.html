@@ -1,0 +1,140 @@
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+
+<body>
+<script>
+
+var listener = function() { };
+
+(function() {
+    test(function() {
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+        window.addEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        window.addEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+        window.addEventListener('pointerenter', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 3);
+        window.addEventListener('pointerout', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 4);
+        window.removeEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 3);
+        window.removeEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+
+        // Try removing the capturing listener again.
+        window.removeEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+        window.removeEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+
+        window.removeEventListener('pointerenter', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        window.removeEventListener('pointerout', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+    }, "Test addEventListener/removeEventListener on the window");
+
+})();
+
+(function() {
+    test(function() {
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+        window.onpointerenter = function() { }
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        window.onpointerenter = function() { }
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        window.onpointerenter = null;
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+    }, "Setting onpointerenter on the window");
+
+})();
+
+(function() {
+    test(function() {
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+        document.onpointerenter = function() { }
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        document.onpointerenter = function() { }
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        document.onpointerenter = null;
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+    }, "Setting onpointerenter on the document");
+
+})();
+
+
+(function() {
+    test(function() {
+
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+        document.addEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        document.addEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+        document.addEventListener('pointerenter', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 3);
+        document.addEventListener('pointerout', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 4);
+        document.removeEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 3);
+        document.removeEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+
+        // Try removing the capturing listener again.
+        document.removeEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+        document.removeEventListener('pointerout', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+
+        document.removeEventListener('pointerenter', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        document.removeEventListener('pointerout', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+
+    }, "Test addEventListener/removeEventListener on the document");
+
+})();
+
+(function() {
+    test(function() {
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+        document.addEventListener('pointerenter', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 1);
+        document.addEventListener('pointerover', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 2);
+        document.addEventListener('pointerleave', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 3);
+        document.addEventListener('pointerout', listener, false);
+        assert_equals(internals.pointerEventHandlerCount(document), 4);
+        document.addEventListener('pointermove', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 5);
+        document.addEventListener('pointerrawupdate', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 6);
+        document.addEventListener('pointerup', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 7);
+        document.addEventListener('pointerdown', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 8);
+        document.addEventListener('pointercancel', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 9);
+        document.addEventListener('gotpointercapture', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 10);
+        document.addEventListener('lostpointercapture', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 11);
+        document.removeEventListener('pointerenter', listener, true);
+        document.removeEventListener('pointerover', listener, true);
+        document.removeEventListener('pointerleave', listener, false);
+        document.removeEventListener('pointerout', listener, false);
+        document.removeEventListener('pointermove', listener, true);
+        document.removeEventListener('pointerrawupdate', listener, true);
+        document.removeEventListener('pointerup', listener, true);
+        document.removeEventListener('pointerdown', listener, true);
+        document.removeEventListener('pointercancel', listener, true);
+        document.removeEventListener('gotpointercapture', listener, true);
+        document.removeEventListener('lostpointercapture', listener, true);
+        assert_equals(internals.pointerEventHandlerCount(document), 0);
+    }, "Test addEventListener for all possible pointer event");
+
+})();
+
+</script>
+</body>

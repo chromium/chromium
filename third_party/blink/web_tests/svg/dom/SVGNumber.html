@@ -31,11 +31,11 @@ test(function() {
   // Check assigning invalid number, number should be 0 afterwards.
   num.value = 0;
   assert_equals(num.value, 0);
-  assert_throws(new TypeError(), function() { num.value = num; });
-  assert_throws(new TypeError(), function() { num.value = 'aString'; });
-  assert_throws(new TypeError(), function() { num.value = svgElement; });
-  assert_throws(new TypeError(), function() { num.value = NaN; });
-  assert_throws(new TypeError(), function() { num.value = Infinity; });
+  assert_throws_js(TypeError, function() { num.value = num; });
+  assert_throws_js(TypeError, function() { num.value = 'aString'; });
+  assert_throws_js(TypeError, function() { num.value = svgElement; });
+  assert_throws_js(TypeError, function() { num.value = NaN; });
+  assert_throws_js(TypeError, function() { num.value = Infinity; });
   assert_equals(num.value, 0);
   num.value = null;
   // Check that the number is now null.

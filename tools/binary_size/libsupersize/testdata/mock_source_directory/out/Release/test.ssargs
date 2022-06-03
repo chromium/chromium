@@ -1,0 +1,3 @@
+Container1: -f test.apk --map-file ../../../test.map --aux-elf-file elf
+Container2: -f elf --map-file ../../../test.map
+

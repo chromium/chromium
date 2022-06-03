@@ -18,6 +18,8 @@
 
 // Whether a cancel button has been added.
 @property(nonatomic, readonly) BOOL cancelButtonAdded;
+// Title of the alert.
+@property(nonatomic, copy, readonly) NSString* title;
 // Message of the alert.
 @property(nonatomic, copy) NSString* message;
 // Whether the alert is visible. This will be true after |-start| is called
@@ -35,28 +37,23 @@
 
 // Init a coordinator for displaying a alert on this view controller.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                     title:(NSString*)title
-                                   message:(NSString*)message
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Adds an item at the end of the menu. It does nothing if |visible| is true or
 // if trying to add an item with a UIAlertActionStyleCancel while
-// |cancelButtonAdded| is true.
+// |cancelButtonAdded| is true. If |enabled| is NO, the action appears dimmed
+// and non-interactable.
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+                 enabled:(BOOL)enabled;
+// Shorthand for the above method, with |enabled| = YES.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style;

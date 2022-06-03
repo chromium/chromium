@@ -8,32 +8,50 @@ source_set("commands") {
   sources = [
     "activity_service_commands.h",
     "application_commands.h",
+    "bookmark_add_command.h",
+    "bookmark_add_command.mm",
+    "bookmarks_commands.h",
     "browser_commands.h",
     "browser_coordinator_commands.h",
     "browsing_data_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",
+    "find_in_page_commands.h",
+    "generate_qr_code_command.h",
+    "generate_qr_code_command.mm",
+    "help_commands.h",
     "infobar_commands.h",
     "load_query_commands.h",
+    "omnibox_commands.h",
     "omnibox_suggestion_commands.h",
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "page_info_commands.h",
     "password_breach_commands.h",
+    "password_protection_commands.h",
+    "policy_change_commands.h",
     "popup_menu_commands.h",
+    "qr_generation_commands.h",
     "qr_scanner_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
-    "send_tab_to_self_command.h",
-    "send_tab_to_self_command.mm",
-    "settings_main_page_commands.h",
+    "search_image_with_lens_command.h",
+    "search_image_with_lens_command.mm",
+    "security_alert_commands.h",
+    "share_highlight_command.h",
+    "share_highlight_command.mm",
     "show_signin_command.h",
     "show_signin_command.mm",
     "snackbar_commands.h",
+    "text_zoom_commands.h",
+    "thumb_strip_commands.h",
     "toolbar_commands.h",
+    "whats_new_commands.h",
   ]
 
   deps = [
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",
     "//net",
     "//url",
@@ -43,7 +61,6 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
-    "//components/signin/public/base",
     "//ios/chrome/browser/browsing_data:browsing_data_remove_mask",
   ]
 }
@@ -51,9 +68,7 @@ source_set("commands") {
 source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "command_dispatcher_unittest.mm",
-  ]
+  sources = [ "command_dispatcher_unittest.mm" ]
   deps = [
     ":commands",
     "//base",

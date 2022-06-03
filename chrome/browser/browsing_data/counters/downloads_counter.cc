@@ -20,8 +20,7 @@ const char* DownloadsCounter::GetPrefName() const {
 }
 
 void DownloadsCounter::Count() {
-  content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(profile_);
+  content::DownloadManager* download_manager = profile_->GetDownloadManager();
   std::vector<download::DownloadItem*> downloads;
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();

@@ -15,18 +15,17 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace url {
-class Origin;
+namespace blink {
+class StorageKey;
 }
 
 namespace leveldb {
@@ -43,18 +42,21 @@ class ProcessMemoryDump;
 
 namespace storage {
 
+using LegacyDomStorageValuesMap =
+    std::map<std::u16string, absl::optional<std::u16string>>;
+
 // A legacy implementation of Session Storage used only in tests to provide
 // coverage of session storage migration code.
 //
 // This class is not thread safe. Read-only methods (ReadAreaValues,
-// ReadNamespacesAndOrigins, and OnMemoryDump) may be called on any thread.
+// ReadNamespacesAndStorageKeys, and OnMemoryDump) may be called on any thread.
 // Methods that modify the database must be called on the same thread.
 class TestingLegacySessionStorageDatabase
     : public base::RefCountedDeleteOnSequence<
           TestingLegacySessionStorageDatabase> {
  public:
-  // |file_path| is the path to the directory where the database will be
-  // created. |commit_task_runner| is the runner on which methods which modify
+  // `file_path` is the path to the directory where the database will be
+  // created. `commit_task_runner` is the runner on which methods which modify
   // the database must be run and where this object will be deleted.
   TestingLegacySessionStorageDatabase(
       const base::FilePath& file_path,
@@ -64,43 +66,45 @@ class TestingLegacySessionStorageDatabase
   TestingLegacySessionStorageDatabase& operator=(
       const TestingLegacySessionStorageDatabase&) = delete;
 
-  // Reads the (key, value) pairs for |namespace_id| and |origin|. |result| is
-  // assumed to be empty and any duplicate keys will be overwritten. If the
+  // Reads the (key, value) pairs for `namespace_id` and `storage_key`. `result`
+  // is assumed to be empty and any duplicate keys will be overwritten. If the
   // database exists on disk then it will be opened. If it does not exist then
-  // it will not be created and |result| will be unmodified.
+  // it will not be created and `result` will be unmodified.
   void ReadAreaValues(
       const std::string& namespace_id,
       const std::vector<std::string>& original_permanent_namespace_ids,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       LegacyDomStorageValuesMap* result);
 
-  // Updates the data for |namespace_id| and |origin|. Will remove all keys
-  // before updating the database if |clear_all_first| is set. Then all entries
-  // in |changes| will be examined - keys mapped to a null NullableString16 will
-  // be removed and all others will be inserted/updated as appropriate. It is
+  // Updates the data for `namespace_id` and `storage_key`. Will remove all keys
+  // before updating the database if `clear_all_first` is set. Then all entries
+  // in `changes` will be examined - keys mapped to a nullopt value will be
+  // removed and all others will be inserted/updated as appropriate. It is
   // allowed to write data into a shallow copy created by CloneNamespace, and in
   // that case the copy will be made deep before writing the values.
   bool CommitAreaChanges(const std::string& namespace_id,
-                         const url::Origin& origin,
+                         const blink::StorageKey& storage_key,
                          bool clear_all_first,
                          const LegacyDomStorageValuesMap& changes);
 
-  // Creates shallow copies of the areas for |namespace_id| and associates them
-  // with |new_namespace_id|.
+  // Creates shallow copies of the areas for `namespace_id` and associates them
+  // with `new_namespace_id`.
   bool CloneNamespace(const std::string& namespace_id,
                       const std::string& new_namespace_id);
 
-  // Deletes the data for |namespace_id| and |origin|.
-  bool DeleteArea(const std::string& namespace_id, const url::Origin& origin);
+  // Deletes the data for `namespace_id` and `storage_key`.
+  bool DeleteArea(const std::string& namespace_id,
+                  const blink::StorageKey& storage_key);
 
-  // Deletes the data for |namespace_id|.
+  // Deletes the data for `namespace_id`.
   bool DeleteNamespace(const std::string& namespace_id);
 
-  // Reads the namespace IDs and origins present in the database.
-  bool ReadNamespacesAndOrigins(
-      std::map<std::string, std::vector<url::Origin>>* namespaces_and_origins);
+  // Reads the namespace IDs and storage_keys present in the database.
+  bool ReadNamespacesAndStorageKeys(
+      std::map<std::string, std::vector<blink::StorageKey>>*
+          namespaces_and_storage_keys);
 
-  // Adds memory statistics to |pmd| for chrome://tracing.
+  // Adds memory statistics to `pmd` for chrome://tracing.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
   // Used in testing to set an easier to handle in-memory database. Should
@@ -120,22 +124,22 @@ class TestingLegacySessionStorageDatabase
   ~TestingLegacySessionStorageDatabase();
 
   // Opens the database at file_path_ if it exists already and creates it if
-  // |create_if_needed| is true. Returns true if the database was opened, false
+  // `create_if_needed` is true. Returns true if the database was opened, false
   // if the opening failed or was not necessary (the database doesn't exist and
-  // |create_if_needed| is false). The possible failures are:
+  // `create_if_needed` is false). The possible failures are:
   // - leveldb cannot open the database.
   // - The database is in an inconsistent or errored state.
   bool LazyOpen(bool create_if_needed);
 
-  // Tries to open the database at file_path_, assigns |db| to point to the
+  // Tries to open the database at file_path_, assigns `db` to point to the
   // opened leveldb::DB instance.
   leveldb::Status TryToOpen(std::unique_ptr<leveldb::DB>* db);
 
   // Returns true if the database is already open, false otherwise.
   bool IsOpen() const;
 
-  // Helpers for checking caller erros, invariants and database errors. All
-  // these return |ok|, for chaining.
+  // Helpers for checking caller errors, invariants and database errors. All
+  // these return `ok`, for chaining.
   bool CallerErrorCheck(bool ok) const;
   bool ConsistencyCheck(bool ok);
   bool DatabaseErrorCheck(bool ok);
@@ -145,54 +149,54 @@ class TestingLegacySessionStorageDatabase
   // void, the operation cannot fail. If they return false, ConsistencyCheck or
   // DatabaseErrorCheck have already been called.
 
-  // Creates a namespace for |namespace_id| and updates the next namespace id if
-  // needed. If |ok_if_exists| is false, checks that the namespace didn't exist
+  // Creates a namespace for `namespace_id` and updates the next namespace id if
+  // needed. If `ok_if_exists` is false, checks that the namespace didn't exist
   // before.
   bool CreateNamespace(const std::string& namespace_id,
                        bool ok_if_exists,
                        leveldb::WriteBatch* batch);
 
-  // Reads the areas assoiated with |namespace_id| and puts the (origin, map_id)
-  // pairs into |areas|.
+  // Reads the areas associated with `namespace_id` and puts the
+  // (serialized_origin, map_id) pairs into `areas`.
   bool GetAreasInNamespace(const std::string& namespace_id,
                            std::map<std::string, std::string>* areas);
 
-  // Adds an association between |origin| and |map_id| into the namespace
-  // |namespace_id|.
+  // Adds an association between `serialized_origin` and `map_id` into the
+  // namespace `namespace_id`.
   void AddAreaToNamespace(const std::string& namespace_id,
-                          const std::string& origin,
+                          const std::string& serialized_origin,
                           const std::string& map_id,
                           leveldb::WriteBatch* batch);
 
-  // Helpers for deleting data for |namespace_id| and |origin|.
+  // Helpers for deleting data for `namespace_id` and `serialized_origin`.
   bool DeleteAreaHelper(const std::string& namespace_id,
-                        const std::string& origin,
+                        const std::string& serialized_origin,
                         leveldb::WriteBatch* batch);
 
-  // Retrieves the map id for |namespace_id| and |origin|. It's not an error if
-  // the map doesn't exist.
+  // Retrieves the map id for `namespace_id` and `serialized_origin`. It's not
+  // an error if the map doesn't exist.
   bool GetMapForArea(const std::string& namespace_id,
-                     const std::string& origin,
+                     const std::string& serialized_origin,
                      const leveldb::ReadOptions& options,
                      bool* exists,
                      std::string* map_id);
 
-  // Creates a new map for |namespace_id| and |origin|. |map_id| will hold the
-  // id of the created map. If there is a map for |namespace_id| and |origin|,
-  // this just overwrites the map id. The caller is responsible for decreasing
-  // the ref count.
+  // Creates a new map for `namespace_id` and `storage_key`. `map_id` will hold
+  // the id of the created map. If there is a map for `namespace_id` and
+  // `storage_key`, this just overwrites the map id. The caller is responsible
+  // for decreasing the ref count.
   bool CreateMapForArea(const std::string& namespace_id,
-                        const url::Origin& origin,
+                        const blink::StorageKey& storage_key,
                         std::string* map_id,
                         leveldb::WriteBatch* batch);
-  // Reads the contents of the map |map_id| into |result|. If |only_keys| is
-  // true, only keys are aread from the database and the values in |result| will
+  // Reads the contents of the map `map_id` into `result`. If `only_keys` is
+  // true, only keys are aread from the database and the values in `result` will
   // be empty.
   bool ReadMap(const std::string& map_id,
                const leveldb::ReadOptions& options,
                LegacyDomStorageValuesMap* result,
                bool only_keys);
-  // Writes |values| into the map |map_id|.
+  // Writes `values` into the map `map_id`.
   void WriteValuesToMap(const std::string& map_id,
                         const LegacyDomStorageValuesMap& values,
                         leveldb::WriteBatch* batch);
@@ -200,20 +204,20 @@ class TestingLegacySessionStorageDatabase
   bool GetMapRefCount(const std::string& map_id, int64_t* ref_count);
   bool IncreaseMapRefCount(const std::string& map_id,
                            leveldb::WriteBatch* batch);
-  // Decreases the ref count of a map by |decrease|. If the ref count goes to 0,
+  // Decreases the ref count of a map by `decrease`. If the ref count goes to 0,
   // deletes the map.
   bool DecreaseMapRefCount(const std::string& map_id,
                            int decrease,
                            leveldb::WriteBatch* batch);
 
-  // Deletes all values in |map_id|.
+  // Deletes all values in `map_id`.
   bool ClearMap(const std::string& map_id, leveldb::WriteBatch* batch);
 
-  // Breaks the association between (|namespace_id|, |origin|) and |map_id| and
-  // creates a new map for (|namespace_id|, |origin|). Copies the data from the
-  // old map if |copy_data| is true.
+  // Breaks the association between (`namespace_id`, `storage_key`) and `map_id`
+  // and creates a new map for (`namespace_id`, `storage_key`). Copies the data
+  // from the old map if `copy_data` is true.
   bool DeepCopyArea(const std::string& namespace_id,
-                    const url::Origin& origin,
+                    const blink::StorageKey& storage_key,
                     bool copy_data,
                     std::string* map_id,
                     leveldb::WriteBatch* batch);
@@ -221,7 +225,7 @@ class TestingLegacySessionStorageDatabase
   // Helper functions for creating the keys needed for the schema.
   static std::string NamespaceStartKey(const std::string& namespace_id);
   static std::string NamespaceKey(const std::string& namespace_id,
-                                  const std::string& origin);
+                                  const std::string& serialized_origin);
   static const char* NamespacePrefix();
   static std::string MapRefCountKey(const std::string& map_id);
   static std::string MapKey(const std::string& map_id, const std::string& key);

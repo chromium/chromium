@@ -7,8 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class AppState;
+
 // The main delegate of the application.
 @interface MainApplicationDelegate : NSObject<UIApplicationDelegate>
+
+// Handles the application stage changes.
+@property(nonatomic, strong) AppState* appState;
+
 @end
 
 #endif  // IOS_CHROME_APP_MAIN_APPLICATION_DELEGATE_H_

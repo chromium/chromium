@@ -22,6 +22,7 @@ source_set("chromeos") {
 
   public_deps = [
     "//ash",
+    "//build:chromeos_buildflags",
     "//cc",
     "//gpu/command_buffer/common",
     "//ppapi/host",
@@ -29,9 +30,49 @@ source_set("chromeos") {
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/aura",
+    "//ui/base/cursor:cursor_base",
     "//ui/compositor",
     "//ui/events",
     "//ui/views",
+  ]
+
+  deps = [
+    "//remoting/base:base",
+    "//remoting/host:clipboard",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type",
+  ]
+}
+
+# ChromeOS enterprise specific stuff that is also accessed from other areas
+# like //remoting/host/it2me.
+# Split out in its own target to prevent cyclic dependencies.
+source_set("enterprise_support") {
+  sources = [ "chromeos_enterprise_params.h" ]
+}
+
+source_set("remoting_service") {
+  sources = [
+    "remote_support_host_ash.cc",
+    "remote_support_host_ash.h",
+    "remoting_service.cc",
+    "remoting_service.h",
+  ]
+
+  public_deps = [
+    ":enterprise_support",
+    "//remoting/host/it2me:chrome_os_host",
+  ]
+
+  configs += [ "//remoting/build/config:version" ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//content/public/browser:browser",
+    "//mojo/public/cpp/bindings",
+    "//remoting/base:base",
+    "//remoting/host",
+    "//remoting/host/mojom:mojom",
   ]
 }
 
@@ -47,6 +88,8 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
+    ":chromeos",
+    "//base/test:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/proto",

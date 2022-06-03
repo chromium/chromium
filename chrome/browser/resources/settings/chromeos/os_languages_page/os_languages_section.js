@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The IME ID for the Accessibility Common extension used by Dictation.
+/** @type {string} */
+const ACCESSIBILITY_COMMON_IME_ID =
+    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+
 /**
  * @fileoverview
  * 'os-settings-languages-section' is the top-level settings section for
@@ -9,6 +14,10 @@
  */
 Polymer({
   is: 'os-settings-languages-section',
+
+  behaviors: [
+    I18nBehavior,
+  ],
 
   properties: {
     prefs: Object,
@@ -25,41 +34,91 @@ Polymer({
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
-      value: function() {
+      value() {
         const map = new Map();
-        if (settings.routes.LANGUAGES_DETAILS) {
+        if (settings.routes.OS_LANGUAGES_SMART_INPUTS) {
           map.set(
-              settings.routes.LANGUAGES_DETAILS.path,
-              '#languagesSubpageTrigger');
+              settings.routes.OS_LANGUAGES_SMART_INPUTS.path,
+              '#smartInputsSubpageTrigger');
         }
         return map;
+      },
+    },
+
+    /** @private */
+    inputPageTitle_: {
+      type: String,
+      value() {
+        const isUpdate2 =
+            loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+        return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
+      },
+    },
+
+    /**
+     * This is enabled when any of the smart inputs features is allowed.
+     * @private
+     * */
+    smartInputsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
+            loadTimeData.getBoolean('allowEmojiSuggestion') ||
+            loadTimeData.getBoolean('allowPredictiveWriting');
       },
     }
   },
 
   /** @private */
-  onLanguagesTap_: function() {
-    // TODO(crbug.com/950007): Add UMA metric for opening language details.
-    settings.navigateTo(settings.routes.LANGUAGES_DETAILS);
+  onLanguagesV2Click_() {
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_LANGUAGES_LANGUAGES);
+  },
+
+  /** @private */
+  onInputClick_() {
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_LANGUAGES_INPUT);
+  },
+
+  /** @private */
+  onSmartInputsClick_() {
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_LANGUAGES_SMART_INPUTS);
   },
 
   /**
-   * @param {string} uiLanguage Current UI language fully specified, e.g.
-   *     "English (United States)".
-   * @param {string} id The input method ID, e.g. "US Keyboard".
-   * @return {string} A sublabel for the 'Languages and input' row
+   * @param {string|undefined} code The language code of the language.
+   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
+   * @return {string} The display name of the language specified.
    * @private
    */
-  getSubLabel_: function(uiLanguage, id) {
-    const languageDisplayName =
-        this.languageHelper.getLanguage(uiLanguage).displayName;
-    const inputMethod =
-        this.languages.inputMethods.enabled.find(function(inputMethod) {
-          return inputMethod.id == id;
-        });
-    const inputMethodDisplayName = inputMethod ? inputMethod.displayName : '';
-    // It is OK to use string concatenation here because it is just joining a 2
-    // element list (i.e. it's a standard format).
-    return languageDisplayName + ', ' + inputMethodDisplayName;
+  getLanguageDisplayName_(code, languageHelper) {
+    if (!code) {
+      return '';
+    }
+    const language = languageHelper.getLanguage(code);
+    if (!language) {
+      return '';
+    }
+    return language.displayName;
+  },
+
+  /**
+   * @param {string|undefined} id The input method ID.
+   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
+   * @return {string} The display name of the input method.
+   * @private
+   */
+  getInputMethodDisplayName_(id, languageHelper) {
+    if (id === undefined) {
+      return '';
+    }
+
+    if (id === ACCESSIBILITY_COMMON_IME_ID) {
+      return '';
+    }
+
+    return languageHelper.getInputMethodDisplayName(id);
   },
 });

@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include "base/logging.h"
+
 namespace remoting {
 
 protocol::FileTransferResult<Monostate> EnsureUserContext() {

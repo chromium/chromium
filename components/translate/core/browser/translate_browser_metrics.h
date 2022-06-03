@@ -5,24 +5,13 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_BROWSER_METRICS_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_BROWSER_METRICS_H_
 
-#include <string>
+#include <stddef.h>
+
+#include "base/strings/string_piece.h"
 
 namespace translate {
 
 namespace TranslateBrowserMetrics {
-
-// An indexing type to query each UMA entry name via GetMetricsName() function.
-// Note: |kMetricsEntries| should be updated when a new entry is added here.
-enum MetricsNameIndex {
-  UMA_INITIATION_STATUS,
-  UMA_LANGUAGE_DETECTION_ERROR,
-  UMA_LOCALES_ON_DISABLED_BY_PREFS,
-  UMA_UNDISPLAYABLE_LANGUAGE,
-  UMA_UNSUPPORTED_LANGUAGE_AT_INITIATION,
-  UMA_TRANSLATE_SOURCE_LANGUAGE,
-  UMA_TRANSLATE_TARGET_LANGUAGE,
-  UMA_MAX,
-};
 
 // When Chrome Translate is ready to translate a page, one of following reasons
 // decides the next browser action.
@@ -45,7 +34,10 @@ enum InitiationStatusType {
   INITIATION_STATUS_DISABLED_BY_KEY,
   INITIATION_STATUS_LANGUAGE_IN_ULP,
   INITIATION_STATUS_ABORTED_BY_RANKER,
-  INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED,
+
+  // Deprecated, never used in practice
+  DEPRECATED_INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED,
+
   INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE,
   INITIATION_STATUS_CREATE_INFOBAR,
   INITIATION_STATUS_SHOW_ICON,
@@ -54,37 +46,101 @@ enum InitiationStatusType {
   INITIATION_STATUS_NO_NETWORK,
   INITIATION_STATUS_DOESNT_NEED_TRANSLATION,
   INITIATION_STATUS_IDENTICAL_LANGUAGE_USE_SOURCE_LANGUAGE_UNKNOWN,
+  INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT,
+  INITIATION_STATUS_AUTO_BY_PREDEFINED_TARGET_LANGUAGE,
   // Insert new items here.
   INITIATION_STATUS_MAX,
+};
+
+enum class HrefTranslateStatus {
+  kAutoTranslated,
+  kAutoTranslatedDifferentTargetLanguage,
+
+  // Deprecated, use the below values instead.
+  kDeprecatedNotAutoTranslated,
+
+  kUiShownNotAutoTranslated,
+  kNoUiShownNotAutoTranslated,
+
+  // Insert new items here. Keep in sync with HrefTranslateStatus in enums.xml
+  // when adding values.
+  kMaxValue = kNoUiShownNotAutoTranslated
+};
+
+enum class HrefTranslatePrefsFilterStatus {
+  kNotInBlocklists,
+  kLanguageInBlocklist,
+  kSiteInBlocklist,
+  kBothLanguageAndSiteInBlocklist,
+
+  // Insert new items here. Keep in sync with HrefTranslatePrefsFilterStatus in
+  // enums.xml when adding values.
+  kMaxValue = kBothLanguageAndSiteInBlocklist
+};
+
+enum class TargetLanguageOrigin {
+  kRecentTarget,
+  kLanguageModel,
+  kApplicationUI,
+  kAcceptLanguages,
+  kDefaultEnglish,
+  kChangedByUser,
+  kUninitialized,
+  // Insert new items here. Keep in sync with TranslateTargetLanguageOrigin in
+  // enums.xml when adding values.
+  kMaxValue = kUninitialized
+};
+
+enum class MenuTranslationUnavailableReason {
+  kTranslateDisabled,
+  kNetworkOffline,
+  kApiKeysMissing,
+  kMIMETypeUnsupported,
+  kURLNotTranslatable,
+  kTargetLangUnknown,
+  kNotAllowedByPolicy,
+  kSourceLangUnknown,
+  // Insert new items here. Keep in sync with MenuTranslationUnavailableReason
+  // in enums.xml when adding values.
+  kMaxValue = kSourceLangUnknown
 };
 
 // Called when Chrome Translate is initiated to report a reason of the next
 // browser action.
 void ReportInitiationStatus(InitiationStatusType type);
 
-// Called when Chrome opens the URL so that the user sends an error feedback.
-void ReportLanguageDetectionError();
+// Called when the context (Desktop) menu or app (Mobile) menu is shown and
+// manual translation is unavailable to report a reason it is unavailable.
+void ReportMenuTranslationUnavailableReason(
+    MenuTranslationUnavailableReason reason);
 
-void ReportLocalesOnDisabledByPrefs(const std::string& locale);
+// Called when language detection details are complete.
+void ReportLanguageDetectionContentLength(size_t length);
 
-// Called when Chrome Translate server sends the language list which includes
-// a undisplayable language in the user's locale.
-void ReportUndisplayableLanguage(const std::string& language);
-
-void ReportUnsupportedLanguageAtInitiation(const std::string& language);
+void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the source
-// language of the translated page. Buckets are labelled with CLD3LanguageCode
+// language of the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
-void ReportTranslateSourceLanguage(const std::string& language);
+void ReportTranslateSourceLanguage(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the target
-// language for the translated page. Buckets are labelled with CLD3LanguageCode
+// language for the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
-void ReportTranslateTargetLanguage(const std::string& language);
+void ReportTranslateTargetLanguage(base::StringPiece language);
 
-// Provides UMA entry names for unit tests.
-const char* GetMetricsName(MetricsNameIndex index);
+// Called when Chrome Translate is initiated, the navigation is from Google, and
+// a href translate target is present.
+void ReportTranslateHrefHintStatus(HrefTranslateStatus status);
+
+// Called when Chrome Translate is initiated, the navigation is from Google, and
+// a href translate target is present. Records the status of any user prefs
+// filtering.
+void ReportTranslateHrefHintPrefsFilterStatus(
+    HrefTranslatePrefsFilterStatus status);
+
+// Called when Chrome Translate target language is determined.
+void ReportTranslateTargetLanguageOrigin(TargetLanguageOrigin origin);
 
 }  // namespace TranslateBrowserMetrics
 

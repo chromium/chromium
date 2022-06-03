@@ -15,11 +15,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/win/scoped_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_low_energy_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -55,6 +55,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   struct DEVICE_BLUETOOTH_EXPORT ServiceRecordState {
     ServiceRecordState();
+
+    ServiceRecordState(const ServiceRecordState&) = delete;
+    ServiceRecordState& operator=(const ServiceRecordState&) = delete;
+
     ~ServiceRecordState();
     // Properties common to Bluetooth Classic and LE devices.
     std::string name;
@@ -68,20 +72,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     // service must use service device path instead of resident device device
     // path.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServiceRecordState);
   };
 
   struct DEVICE_BLUETOOTH_EXPORT DeviceState {
     DeviceState();
+
+    DeviceState(const DeviceState&) = delete;
+    DeviceState& operator=(const DeviceState&) = delete;
+
     ~DeviceState();
 
     bool is_bluetooth_classic() const { return path.empty(); }
 
     // Properties common to Bluetooth Classic and LE devices.
     std::string address;  // This uniquely identifies the device.
-    base::Optional<std::string> name;  // Friendly name
+    absl::optional<std::string> name;  // Friendly name
     bool visible;
     bool connected;
     bool authenticated;
@@ -90,9 +95,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     uint32_t bluetooth_class;
     // Properties specific to Bluetooth LE devices.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DeviceState);
   };
 
   class DEVICE_BLUETOOTH_EXPORT Observer {
@@ -116,6 +118,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   explicit BluetoothTaskManagerWin(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  BluetoothTaskManagerWin(const BluetoothTaskManagerWin&) = delete;
+  BluetoothTaskManagerWin& operator=(const BluetoothTaskManagerWin&) = delete;
+
   static scoped_refptr<BluetoothTaskManagerWin> CreateForTesting(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
       std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
@@ -133,24 +138,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   void PostSetPoweredBluetoothTask(
       bool powered,
-      const base::Closure& callback,
-      const BluetoothAdapter::ErrorCallback& error_callback);
+      base::OnceClosure callback,
+      BluetoothAdapter::ErrorCallback error_callback);
   void PostStartDiscoveryTask();
   void PostStopDiscoveryTask();
 
   // Callbacks of asynchronous operations of GATT service.
-  typedef base::Callback<void(HRESULT)> HResultCallback;
-  typedef base::Callback<
-      void(std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC>, uint16_t, HRESULT)>
-      GetGattIncludedCharacteristicsCallback;
-  typedef base::Callback<
-      void(std::unique_ptr<BTH_LE_GATT_DESCRIPTOR>, uint16_t, HRESULT)>
-      GetGattIncludedDescriptorsCallback;
-  typedef base::Callback<void(std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC_VALUE>,
-                              HRESULT)>
-      ReadGattCharacteristicValueCallback;
-  typedef base::Callback<void(std::unique_ptr<std::vector<uint8_t>>)>
-      GattCharacteristicValueChangedCallback;
+  using HResultCallback = base::OnceCallback<void(HRESULT)>;
+  using GetGattIncludedCharacteristicsCallback = base::OnceCallback<
+      void(std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC>, uint16_t, HRESULT)>;
+  using GetGattIncludedDescriptorsCallback = base::OnceCallback<
+      void(std::unique_ptr<BTH_LE_GATT_DESCRIPTOR>, uint16_t, HRESULT)>;
+  using ReadGattCharacteristicValueCallback =
+      base::OnceCallback<void(std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC_VALUE>,
+                              HRESULT)>;
+  using GattCharacteristicValueChangedCallback =
+      base::RepeatingCallback<void(std::unique_ptr<std::vector<uint8_t>>)>;
   using GattEventRegistrationCallback =
       base::OnceCallback<void(PVOID, HRESULT)>;
 
@@ -162,7 +165,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       const base::FilePath& service_path,
       const BluetoothUUID& uuid,
       uint16_t attribute_handle,
-      const GetGattIncludedCharacteristicsCallback& callback);
+      GetGattIncludedCharacteristicsCallback callback);
 
   // Get all included descriptors of a given |characterisitc| in service
   // with |service_path|. The result is returned asynchronously through
@@ -170,14 +173,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   void PostGetGattIncludedDescriptors(
       const base::FilePath& service_path,
       const PBTH_LE_GATT_CHARACTERISTIC characteristic,
-      const GetGattIncludedDescriptorsCallback& callback);
+      GetGattIncludedDescriptorsCallback callback);
 
   // Post read the value of a given |characteristic| in service with
   // |service_path|. The result is returned asynchronously through |callback|.
   void PostReadGattCharacteristicValue(
       const base::FilePath& device_path,
       const PBTH_LE_GATT_CHARACTERISTIC characteristic,
-      const ReadGattCharacteristicValueCallback& callback);
+      ReadGattCharacteristicValueCallback callback);
 
   // Post write the value of a given |characteristic| in service with
   // |service_path| to |new_value|. The operation result is returned
@@ -186,7 +189,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       const base::FilePath& service_path,
       const PBTH_LE_GATT_CHARACTERISTIC characteristic,
       const std::vector<uint8_t>& new_value,
-      const HResultCallback& callback);
+      ULONG flags,
+      HResultCallback callback);
 
   // Post a task to register to receive value changed notifications from
   // |characteristic| in service with |service_path|. |ccc_descriptor| is the
@@ -232,8 +236,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   void PollAdapter();
   void PostAdapterStateToUi();
   void SetPowered(bool powered,
-                  const base::Closure& callback,
-                  const BluetoothAdapter::ErrorCallback& error_callback);
+                  base::OnceClosure callback,
+                  BluetoothAdapter::ErrorCallback error_callback);
 
   // Starts discovery. Once the discovery starts, it issues a discovery inquiry
   // with a short timeout, then issues more inquiries with greater timeout
@@ -307,19 +311,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       base::FilePath device_path,
       BluetoothUUID uuid,
       uint16_t attribute_handle,
-      const GetGattIncludedCharacteristicsCallback& callback);
-  void GetGattIncludedDescriptors(
-      base::FilePath service_path,
-      BTH_LE_GATT_CHARACTERISTIC characteristic,
-      const GetGattIncludedDescriptorsCallback& callback);
+      GetGattIncludedCharacteristicsCallback callback);
+  void GetGattIncludedDescriptors(base::FilePath service_path,
+                                  BTH_LE_GATT_CHARACTERISTIC characteristic,
+                                  GetGattIncludedDescriptorsCallback callback);
   void ReadGattCharacteristicValue(
       base::FilePath device_path,
       BTH_LE_GATT_CHARACTERISTIC characteristic,
-      const ReadGattCharacteristicValueCallback& callback);
+      ReadGattCharacteristicValueCallback callback);
   void WriteGattCharacteristicValue(base::FilePath service_path,
                                     BTH_LE_GATT_CHARACTERISTIC characteristic,
                                     std::vector<uint8_t> new_value,
-                                    const HResultCallback& callback);
+                                    ULONG flags,
+                                    HResultCallback callback);
   void RegisterGattCharacteristicValueChangedEvent(
       base::FilePath service_path,
       BTH_LE_GATT_CHARACTERISTIC characteristic,
@@ -346,8 +350,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   // Wrapper around the Windows Bluetooth APIs. Owns the radio handle.
   std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper_;
   std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTaskManagerWin);
 };
 
 }  // namespace device

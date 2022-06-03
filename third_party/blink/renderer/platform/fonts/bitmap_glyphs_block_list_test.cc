@@ -13,18 +13,19 @@ namespace blink {
 #if defined(OS_WIN)
 
 static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
-                                        bool blacklisted_expected) {
+                                        bool block_listed_expected) {
   FontCache* font_cache = FontCache::GetFontCache();
   FontDescription font_description;
   FontFamily font_family;
-  font_family.SetFamily(windows_family_name);
+  font_family.SetFamily(windows_family_name,
+                        FontFamily::InferredTypeFor(windows_family_name));
   font_description.SetFamily(font_family);
   scoped_refptr<SimpleFontData> simple_font_data =
       font_cache->GetFontData(font_description, windows_family_name);
   ASSERT_TRUE(simple_font_data);
   const FontPlatformData& font_platform_data = simple_font_data->PlatformData();
   ASSERT_TRUE(font_platform_data.Typeface());
-  ASSERT_EQ(blacklisted_expected,
+  ASSERT_EQ(block_listed_expected,
             BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(
                 *font_platform_data.Typeface()));
 }

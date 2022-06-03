@@ -11,23 +11,23 @@
 namespace device {
 
 // static
-base::Optional<PublicKeyCredentialUserEntity>
+absl::optional<PublicKeyCredentialUserEntity>
 PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
   auto id_it = cbor_map.find(cbor::Value(kEntityIdMapKey));
   if (id_it == cbor_map.end() || !id_it->second.is_bytestring())
-    return base::nullopt;
+    return absl::nullopt;
 
   PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
   auto name_it = cbor_map.find(cbor::Value(kEntityNameMapKey));
   if (name_it != cbor_map.end()) {
     if (!name_it->second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     user.name = name_it->second.GetString();
   }
@@ -35,7 +35,7 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   auto display_name_it = cbor_map.find(cbor::Value(kDisplayNameMapKey));
   if (display_name_it != cbor_map.end()) {
     if (!display_name_it->second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     user.display_name = display_name_it->second.GetString();
   }
@@ -43,11 +43,11 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   auto icon_it = cbor_map.find(cbor::Value(kIconUrlMapKey));
   if (icon_it != cbor_map.end()) {
     if (!icon_it->second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     user.icon_url = GURL(icon_it->second.GetString());
     if (!user.icon_url->is_valid()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -62,9 +62,9 @@ PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
 
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
     std::vector<uint8_t> id_,
-    base::Optional<std::string> name_,
-    base::Optional<std::string> display_name_,
-    base::Optional<GURL> icon_url_)
+    absl::optional<std::string> name_,
+    absl::optional<std::string> display_name_,
+    absl::optional<GURL> icon_url_)
     : id(std::move(id_)),
       name(std::move(name_)),
       display_name(std::move(display_name_)),

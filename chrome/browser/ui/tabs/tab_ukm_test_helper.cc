@@ -18,7 +18,7 @@ namespace {
 void ExpectEntryMetrics(const ukm::mojom::UkmEntry& entry,
                         const UkmMetricMap& expected_metrics) {
   // Each expected metric should match a named value in the UKM entry.
-  for (const UkmMetricMap::value_type pair : expected_metrics) {
+  for (const UkmMetricMap::value_type& pair : expected_metrics) {
     if (pair.second.has_value()) {
       ukm::TestUkmRecorder::ExpectEntryMetric(&entry, pair.first,
                                               pair.second.value());

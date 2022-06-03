@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script>
+onload = () => {
+  if (window.testRunner && window.internals) {
+    testRunner.dumpAsText();
+    testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+  }
+}
+</script>
+<div id="green1" style="background: hotpink; padding: 10px; will-change: transform; position: absolute; top: 0; left: 0">
+  <div style="background: green; padding: 50px">
+    <div style="background: red; width: 50px; height: 50px"></div>
+  </div>
+</div>
+<div id="green2" style="background: hotpink; padding: 10px; will-change: transform; position: absolute; top: 0; left: 200px">
+  <div style="background: green; padding: 50px; transform: translateX(10px)">
+    <div style="background: red; width: 50px; height: 50px"></div>
+  </div>
+</div>
+<div id="green3" style="background: hotpink; padding: 10px; will-change: transform; position: absolute; top: 0; left: 400px">
+  <div style="background: red; width: 100px; height: 100px; position: absolute"></div>
+  <div style="background: green; width: 100px; height: 100px; position: absolute"></div>
+</div>
+<div id="brown1" style="will-change: transform; position: absolute; top: 200px; left: 0px">
+  <div style="background: green">
+    <div style="background: rgba(255, 0, 0, 0.4); width: 100px; height: 100px"></div>
+  </div>
+</div>
+<div id="brown2" style="will-change: transform; position: absolute; top: 200px; left: 200px">
+  <div style="background: green">
+    <div style="opacity: 0.4; background: red; width: 100px; height: 100px"></div>
+  </div>
+</div>
+<div id="brown3" style="will-change: transform; position: absolute; top: 200px; left: 400px;
+                        width: 100px; height: 100px; background: green; overflow: scroll">
+  <div style="background: rgba(255, 0, 0, 0.4); height: 10000px"></div>
+</div>
+<div id="brown4" style="will-change: transform; position: absolute; top: 200px; left: 600px;
+                        width: 100px; height: 100px; background: green; overflow: scroll">
+  <div style="opacity: 0.4; background: red; height: 10000px"></div>
+</div>

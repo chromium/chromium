@@ -5,7 +5,7 @@
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
@@ -25,6 +25,11 @@ class BluetoothAdvertisementManagerClientImpl
       public dbus::ObjectManager::Interface {
  public:
   BluetoothAdvertisementManagerClientImpl() : object_manager_(nullptr) {}
+
+  BluetoothAdvertisementManagerClientImpl(
+      const BluetoothAdvertisementManagerClientImpl&) = delete;
+  BluetoothAdvertisementManagerClientImpl& operator=(
+      const BluetoothAdvertisementManagerClientImpl&) = delete;
 
   ~BluetoothAdvertisementManagerClientImpl() override {
     if (object_manager_) {
@@ -211,8 +216,6 @@ class BluetoothAdvertisementManagerClientImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementManagerClientImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementManagerClientImpl);
 };
 
 BluetoothLEAdvertisingManagerClient::BluetoothLEAdvertisingManagerClient() =

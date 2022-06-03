@@ -11,9 +11,6 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using quic::ParsedQuicVersion;
-using quic::PROTOCOL_QUIC_CRYPTO;
-
 namespace net {
 namespace test {
 
@@ -45,20 +42,18 @@ TEST(QuicHttpUtilsTest, FilterSupportedAltSvcVersions) {
   // finds the intersection of the two sets ... version C.  Note that
   // as QUIC versions are defined/undefined, the exact version numbers
   // used may need to change.  The actual version numbers are not
-  // important.
+  // important. Note that FilterSupportedAltSvcVersions is only used
+  // for the old Google-specific Alt-Svc format which is now deprecated.
   quic::ParsedQuicVersionVector supported_versions = {
-      ParsedQuicVersion(PROTOCOL_QUIC_CRYPTO, quic::QUIC_VERSION_48),
-      ParsedQuicVersion(PROTOCOL_QUIC_CRYPTO, quic::QUIC_VERSION_43),
+      quic::ParsedQuicVersion::Q050(),
+      quic::ParsedQuicVersion::Q043(),
   };
 
-  std::vector<uint32_t> alt_svc_versions_google = {quic::QUIC_VERSION_48,
-                                                   quic::QUIC_VERSION_46};
-  std::vector<uint32_t> alt_svc_versions_ietf = {
-      QuicVersionToQuicVersionLabel(quic::QUIC_VERSION_48),
-      QuicVersionToQuicVersionLabel(quic::QUIC_VERSION_46)};
+  spdy::SpdyAltSvcWireFormat::VersionVector alt_svc_versions_google = {
+      33, quic::ParsedQuicVersion::Q043().transport_version};
 
   quic::ParsedQuicVersionVector supported_alt_svc_versions = {
-      ParsedQuicVersion(PROTOCOL_QUIC_CRYPTO, quic::QUIC_VERSION_48)};
+      quic::ParsedQuicVersion::Q043()};
   spdy::SpdyAltSvcWireFormat::AlternativeService altsvc;
 
   altsvc.protocol_id = "quic";

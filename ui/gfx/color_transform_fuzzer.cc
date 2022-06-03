@@ -7,6 +7,7 @@
 #include <random>
 
 #include "base/at_exit.h"
+#include "base/logging.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/icc_profile.h"
@@ -27,13 +28,13 @@ static gfx::ColorSpace test;
 static gfx::ColorSpace srgb;
 
 static void ColorTransform(size_t hash) {
-  const auto kIntent = static_cast<gfx::ColorTransform::Intent>(hash & 1);
+  const gfx::ColorTransform::Options options;
 
   std::unique_ptr<gfx::ColorTransform> transform;
   if (hash & 2) {
-    transform = gfx::ColorTransform::NewColorTransform(test, srgb, kIntent);
+    transform = gfx::ColorTransform::NewColorTransform(test, srgb, options);
   } else {
-    transform = gfx::ColorTransform::NewColorTransform(srgb, test, kIntent);
+    transform = gfx::ColorTransform::NewColorTransform(srgb, test, options);
   }
 
   transform->Transform(pixels, kPixels);
@@ -41,13 +42,13 @@ static void ColorTransform(size_t hash) {
 
 static gfx::ColorSpace CreateRGBColorSpace(size_t hash) {
   auto primaries = static_cast<gfx::ColorSpace::PrimaryID>(
-      1 + ((hash >> 0) % (size_t)gfx::ColorSpace::PrimaryID::LAST));
+      1 + ((hash >> 0) % (size_t)gfx::ColorSpace::PrimaryID::kMaxValue));
   auto transfer = static_cast<gfx::ColorSpace::TransferID>(
-      1 + ((hash >> 8) % (size_t)gfx::ColorSpace::TransferID::LAST));
+      1 + ((hash >> 8) % (size_t)gfx::ColorSpace::TransferID::kMaxValue));
   auto matrix = static_cast<gfx::ColorSpace::MatrixID>(
-      1 + ((hash >> 16) % (size_t)gfx::ColorSpace::MatrixID::LAST));
+      1 + ((hash >> 16) % (size_t)gfx::ColorSpace::MatrixID::kMaxValue));
   auto range = static_cast<gfx::ColorSpace::RangeID>(
-      1 + ((hash >> 24) % (size_t)gfx::ColorSpace::RangeID::LAST));
+      1 + ((hash >> 24) % (size_t)gfx::ColorSpace::RangeID::kMaxValue));
 
   return gfx::ColorSpace(primaries, transfer, matrix, range);
 }

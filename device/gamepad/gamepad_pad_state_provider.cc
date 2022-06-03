@@ -5,6 +5,7 @@
 #include "device/gamepad/gamepad_pad_state_provider.h"
 
 #include <cmath>
+#include <memory>
 
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_provider.h"
@@ -22,7 +23,7 @@ PadState::PadState() = default;
 PadState::~PadState() = default;
 
 GamepadPadStateProvider::GamepadPadStateProvider() {
-  pad_states_.reset(new PadState[Gamepads::kItemsLengthCap]);
+  pad_states_ = std::make_unique<PadState[]>(Gamepads::kItemsLengthCap);
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i)
     ClearPadState(pad_states_.get()[i]);

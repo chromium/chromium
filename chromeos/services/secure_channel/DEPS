@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/components/multidevice/logging/logging.h",
-  "+components/cryptauth",
   "+device/bluetooth",
   "+mojo/public",
+  "+third_party/securemessage",
+  "+third_party/ukey2",
 ]

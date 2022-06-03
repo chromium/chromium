@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PublicImageMetadataProto";
+
+package optimization_guide.proto;
+
+// Optimization metadata for compressing public images.
+//
+// This is populated for optimization type COMPRESS_PUBLIC_IMAGES.
+message PublicImageMetadata {
+  repeated string url = 1;
+}

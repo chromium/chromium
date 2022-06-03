@@ -146,13 +146,13 @@ cr.googleTranslate = (function() {
   function onTranslateProgress(progress, opt_finished, opt_error) {
     finished = opt_finished;
     // opt_error can be 'undefined'.
-    if (typeof opt_error == 'boolean' && opt_error) {
+    if (typeof opt_error === 'boolean' && opt_error) {
       // TODO(toyoshim): Remove boolean case once a server is updated.
       errorCode = ERROR['TRANSLATION_ERROR'];
       // We failed to translate, restore so the page is in a consistent state.
       lib.restore();
       invokeResultCallback();
-    } else if (typeof opt_error == 'number' && opt_error != 0) {
+    } else if (typeof opt_error === 'number' && opt_error !== 0) {
       errorCode = TRANSLATE_ERROR_TO_ERROR_CODE_MAP[opt_error];
       lib.restore();
       invokeResultCallback();
@@ -241,7 +241,7 @@ cr.googleTranslate = (function() {
      * @type {boolean}
      */
     get error() {
-      return errorCode != ERROR['NONE'];
+      return errorCode !== ERROR['NONE'];
     },
 
     /**
@@ -261,7 +261,7 @@ cr.googleTranslate = (function() {
      * @type {boolean}
      */
     get sourceLang() {
-      if (!libReady || !finished || errorCode != ERROR['NONE']) {
+      if (!libReady || !finished || errorCode !== ERROR['NONE']) {
         return '';
       }
       if (!lib.getDetectedLanguage) {
@@ -276,7 +276,7 @@ cr.googleTranslate = (function() {
      * @type {number}
      */
     get loadTime() {
-      if (loadedTime == 0) {
+      if (loadedTime === 0) {
         return 0;
       }
       return loadedTime - injectedTime;
@@ -309,12 +309,12 @@ cr.googleTranslate = (function() {
      * Translate the page contents.  Note that the translation is asynchronous.
      * You need to regularly check the state of |finished| and |errorCode| to
      * know if the translation finished or if there was an error.
-     * @param {string} originalLang The language the page is in.
+     * @param {string} sourceLang The language the page is in.
      * @param {string} targetLang The language the page should be translated to.
      * @return {boolean} False if the translate library was not ready, in which
      *                   case the translation is not started.  True otherwise.
      */
-    translate: function(originalLang, targetLang) {
+    translate(sourceLang, targetLang) {
       finished = false;
       errorCode = ERROR['NONE'];
       if (!libReady) {
@@ -322,7 +322,7 @@ cr.googleTranslate = (function() {
       }
       startTime = performance.now();
       try {
-        lib.translatePage(originalLang, targetLang, onTranslateProgress);
+        lib.translatePage(sourceLang, targetLang, onTranslateProgress);
       } catch (err) {
         console.error('Translate: ' + err);
         errorCode = ERROR['UNEXPECTED_SCRIPT_ERROR'];
@@ -336,7 +336,7 @@ cr.googleTranslate = (function() {
      * Reverts the page contents to its original value, effectively reverting
      * any performed translation.  Does nothing if the page was not translated.
      */
-    revert: function() {
+    revert() {
       lib.restore();
     },
 
@@ -344,7 +344,7 @@ cr.googleTranslate = (function() {
      * Called when an error is caught while executing script fetched in
      * translate_script.cc.
      */
-    onTranslateElementError: function(error) {
+    onTranslateElementError(error) {
       errorCode = ERROR['UNEXPECTED_SCRIPT_ERROR'];
       invokeReadyCallback();
     },
@@ -353,7 +353,7 @@ cr.googleTranslate = (function() {
      * Entry point called by the Translate Element once it has been injected in
      * the page.
      */
-    onTranslateElementLoad: function() {
+    onTranslateElementLoad() {
       loadedTime = performance.now();
       try {
         lib = google.translate.TranslateService({
@@ -384,7 +384,7 @@ cr.googleTranslate = (function() {
      * external CSS resource into the page.
      * @param {string} url URL of an external CSS resource to load.
      */
-    onLoadCSS: function(url) {
+    onLoadCSS(url) {
       const element = document.createElement('link');
       element.type = 'text/css';
       element.rel = 'stylesheet';
@@ -398,7 +398,7 @@ cr.googleTranslate = (function() {
      * an external JavaScript on the page.
      * @param {string} url URL of an external JavaScript to load.
      */
-    onLoadJavascript: function(url) {
+    onLoadJavascript(url) {
       // securityOrigin is predefined by translate_script.cc.
       if (!url.startsWith(securityOrigin)) {
         console.error('Translate: ' + url + ' is not allowed to load.');
@@ -414,14 +414,17 @@ cr.googleTranslate = (function() {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.onreadystatechange = function() {
-        if (this.readyState != this.DONE) {
+        if (this.readyState !== this.DONE) {
           return;
         }
-        if (this.status != 200) {
+        if (this.status !== 200) {
           errorCode = ERROR['SCRIPT_LOAD_ERROR'];
           return;
         }
-        eval(this.responseText);
+        // Execute translate script using an anonymous function on the window,
+        // this prevents issues with the code being inside of the scope of the
+        // XHR request.
+        new Function(this.responseText).call(window);
       };
       xhr.send();
     }

@@ -5,14 +5,13 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/proto/csd.pb.h"
-#include "components/safe_browsing/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/site_instance.h"
@@ -34,7 +33,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void DownloadAndWait(GURL url) {
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     content::DownloadTestObserverTerminal observer(
         download_manager, 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
@@ -43,7 +42,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
     // for the download to finish.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     observer.WaitForFinished();
   }
@@ -128,6 +127,25 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/rar/multipart.part0001.rar");
+  DownloadAndWait(url);
+
+  const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
+      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+
+  ASSERT_EQ(1u, requests.size());
+  ASSERT_EQ(1, requests[0]->archived_binary_size());
+  EXPECT_EQ("random.exe", requests[0]->archived_binary(0).file_basename());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
+                       MultipartRarInspectionSecondPart) {
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+
+  GURL url = embedded_test_server()->GetURL(
+      "/safe_browsing/rar/multipart.part0002.rar");
   DownloadAndWait(url);
 
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =

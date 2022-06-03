@@ -4,7 +4,7 @@
 
 #include "ui/aura/window_observer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace aura {
 

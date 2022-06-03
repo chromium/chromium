@@ -4,7 +4,16 @@
 
 #include "base/command_line.h"
 #include "base/process/launch.h"
+#include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -16,11 +25,14 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "net/base/filename_util.h"
 
-// These tests don't apply to the Mac version; see GetCommandLineForRelaunch
+// These tests don't apply to Mac or Lacros; see GetCommandLineForRelaunch
 // for details.
-#if !defined(OS_MACOSX)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#error Not supported on this platform.
+#endif
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
@@ -28,6 +40,34 @@ class ChromeMainTest : public InProcessBrowserTest {
 
   void Relaunch(const base::CommandLine& new_command_line) {
     base::LaunchProcess(new_command_line, base::LaunchOptionsForTest());
+  }
+
+  Profile* CreateProfile(const base::FilePath& basename) {
+    Profile* created_profile = nullptr;
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath profile_path =
+        profile_manager->user_data_dir().Append(basename);
+    base::RunLoop run_loop;
+    profile_manager->CreateProfileAsync(
+        profile_path, base::BindLambdaForTesting(
+                          [&run_loop, &created_profile](
+                              Profile* profile, Profile::CreateStatus status) {
+                            if (status != Profile::CREATE_STATUS_INITIALIZED)
+                              return;
+                            created_profile = profile;
+                            run_loop.Quit();
+                          }));
+    run_loop.Run();
+    return created_profile;
+  }
+
+  // Gets the relaunch command line with the kProfileEmail switch.
+  base::CommandLine GetCommandLineForRelaunchWithEmail(
+      const std::string& email) {
+    base::CommandLine command_line = GetCommandLineForRelaunch();
+    command_line.AppendArg(
+        base::StringPrintf("--profile-email=%s", email.c_str()));
+    return command_line;
   }
 };
 
@@ -54,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
 
 // ChromeMainTest.SecondLaunchWithIncognitoUrl is flaky on Win and Linux.
 // http://crbug.com/130395
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_SecondLaunchWithIncognitoUrl DISABLED_SecondLaunchWithIncognitoUrl
 #else
 #define MAYBE_SecondLaunchWithIncognitoUrl SecondLaunchWithIncognitoUrl
@@ -112,4 +152,60 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
 }
 
-#endif  // !OS_MACOSX
+// Multi-profile is not supported on Ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileDir) {
+  const base::FilePath kProfileDir(FILE_PATH_LITERAL("Other"));
+  Profile* other_profile = CreateProfile(kProfileDir);
+  ASSERT_TRUE(other_profile);
+
+  // Pass the other profile path on the command line.
+  base::CommandLine other_command_line = GetCommandLineForRelaunch();
+  other_command_line.AppendSwitchPath(switches::kProfileDirectory, kProfileDir);
+  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  Relaunch(other_command_line);
+  Browser* other_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(other_browser);
+  EXPECT_EQ(other_browser->profile(), other_profile);
+  EXPECT_EQ(original_browser_count + 1, chrome::GetTotalBrowserCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
+  const base::FilePath kProfileDir1(FILE_PATH_LITERAL("Profile1"));
+  const base::FilePath kProfileDir2(FILE_PATH_LITERAL("Profile2"));
+  const std::string kProfileEmail1 = "example@gmail.com";
+  // Unicode emails are supported.
+  const std::string kProfileEmail2 =
+      "\xe4\xbd\xa0\xe5\xa5\xbd\x40\x67\x6d\x61\x69\x6c\x2e\x63\x6f\x6d\x0a";
+  ProfileAttributesStorage* storage =
+      &g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  Profile* profile1 = CreateProfile(kProfileDir1);
+  ASSERT_TRUE(profile1);
+  storage->GetProfileAttributesWithPath(profile1->GetPath())
+      ->SetAuthInfo("gaia_id_1", base::UTF8ToUTF16(kProfileEmail1),
+                    /*is_consented_primary_account=*/false);
+  Profile* profile2 = CreateProfile(kProfileDir2);
+  ASSERT_TRUE(profile2);
+  storage->GetProfileAttributesWithPath(profile2->GetPath())
+      ->SetAuthInfo("gaia_id_2", base::UTF8ToUTF16(kProfileEmail2),
+                    /*is_consented_primary_account=*/false);
+  base::RunLoop run_loop;
+  g_browser_process->FlushLocalStateAndReply(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  // Normal email.
+  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail1));
+  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->profile(), profile1);
+  EXPECT_EQ(original_browser_count + 1, chrome::GetTotalBrowserCount());
+  // Non-ASCII email.
+  Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail2));
+  new_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->profile(), profile2);
+  EXPECT_EQ(original_browser_count + 2, chrome::GetTotalBrowserCount());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

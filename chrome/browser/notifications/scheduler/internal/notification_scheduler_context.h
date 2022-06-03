@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace notifications {
@@ -33,6 +32,9 @@ class NotificationSchedulerContext {
       std::unique_ptr<DisplayAgent> display_agent,
       std::unique_ptr<DisplayDecider> display_decider,
       std::unique_ptr<SchedulerConfig> config);
+  NotificationSchedulerContext(const NotificationSchedulerContext&) = delete;
+  NotificationSchedulerContext& operator=(const NotificationSchedulerContext&) =
+      delete;
   ~NotificationSchedulerContext();
 
   NotificationSchedulerClientRegistrar* client_registrar() {
@@ -78,8 +80,6 @@ class NotificationSchedulerContext {
 
   // Used to schedule background task in OS level.
   std::unique_ptr<BackgroundTaskCoordinator> background_task_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationSchedulerContext);
 };
 
 }  // namespace notifications

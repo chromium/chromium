@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+// Information about an origin and the intervention it supports.
+// Next Id: 4
+message OriginInterventions {
+  // The MD5 hash of the origin, the value used to generate this hash
+  // should be the ‘host’ part of the origin, e.g. in
+  // “http://example.com/foo” the host is “example.com”.
+  required string host_hash = 1;
+
+  // Policy associated with an intervention. A DEFAULT value indicates
+  // that the existing heuristics should be applied.
+  enum InterventionPolicy {
+    OPT_IN = 0;
+    OPT_OUT = 1;
+    DEFAULT = 2;
+  }
+  // The discarding policy.
+  required InterventionPolicy discarding_policy = 2;
+  // The freezing policy.
+  required InterventionPolicy freezing_policy = 3;
+}
+
+// The database that contains all the origins and the interventions they
+// support.
+// Next Id: 2
+message OriginInterventionsDatabase {
+  repeated OriginInterventions origin_interventions = 1;
+}

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_HOST_GPU_CLIENT_DELEGATE_H_
 #define COMPONENTS_VIZ_HOST_GPU_CLIENT_DELEGATE_H_
 
-#include "base/callback_forward.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace viz {

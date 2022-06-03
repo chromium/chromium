@@ -4,6 +4,8 @@
 
 #include "net/cert/internal/crl.h"
 
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/test_helpers.h"
@@ -14,10 +16,10 @@ namespace net {
 
 namespace {
 
-constexpr base::TimeDelta kAgeOneWeek = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kAgeOneWeek = base::Days(7);
 
 std::string GetFilePath(base::StringPiece file_name) {
-  return std::string("net/data/crl_unittest/") + file_name.as_string();
+  return std::string("net/data/crl_unittest/") + std::string(file_name);
 }
 
 scoped_refptr<ParsedCertificate> ParseCertificate(base::StringPiece data) {
@@ -111,7 +113,7 @@ struct PrintTestName {
     base::StringPiece name(info.param);
     // Strip ".pem" from the end as GTest names cannot contain period.
     name.remove_suffix(4);
-    return name.as_string();
+    return std::string(name);
   }
 };
 
@@ -170,13 +172,12 @@ TEST_P(CheckCRLTest, FromFile) {
   ASSERT_TRUE(cert_dp);
 
   // Mar 9 00:00:00 2017 GMT
-  base::Time kVerifyTime =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1489017600);
+  base::Time kVerifyTime = base::Time::UnixEpoch() + base::Seconds(1489017600);
 
   CRLRevocationStatus expected_revocation_status = CRLRevocationStatus::UNKNOWN;
-  if (file_name.starts_with("good"))
+  if (base::StartsWith(file_name, "good"))
     expected_revocation_status = CRLRevocationStatus::GOOD;
-  else if (file_name.starts_with("revoked"))
+  else if (base::StartsWith(file_name, "revoked"))
     expected_revocation_status = CRLRevocationStatus::REVOKED;
 
   CRLRevocationStatus revocation_status =

@@ -4,7 +4,6 @@
 
 #include "components/variations/variations_associated_data.h"
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,14 +37,15 @@ class VariationsAssociatedDataTest : public ::testing::Test {
  public:
   VariationsAssociatedDataTest() {}
 
+  VariationsAssociatedDataTest(const VariationsAssociatedDataTest&) = delete;
+  VariationsAssociatedDataTest& operator=(const VariationsAssociatedDataTest&) =
+      delete;
+
   ~VariationsAssociatedDataTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
     testing::ClearAllVariationIDs();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationsAssociatedDataTest);
 };
 
 // Test that if the trial is immediately disabled, GetGoogleVariationID just
@@ -56,7 +56,11 @@ TEST_F(VariationsAssociatedDataTest, DisableImmediately) {
       CreateFieldTrial("trial", 100, "default", &default_group_number));
 
   ASSERT_EQ(default_group_number, trial->group());
-  ASSERT_EQ(EMPTY_ID, GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial.get()));
+
+  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+    ASSERT_EQ(EMPTY_ID,
+              GetIDForTrial(static_cast<IDCollectionKey>(i), trial.get()));
+  }
 }
 
 // Test that successfully associating the FieldTrial with some ID, and then
@@ -70,13 +74,13 @@ TEST_F(VariationsAssociatedDataTest, DisableAfterInitialization) {
       CreateFieldTrial("trial", 100, default_name, nullptr));
 
   trial->AppendGroup(non_default_name, 100);
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial->trial_name(),
-      default_name, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial->trial_name(),
-      non_default_name, TEST_VALUE_B);
+  AssociateGoogleVariationID(GOOGLE_APP, trial->trial_name(), default_name,
+                             TEST_VALUE_A);
+  AssociateGoogleVariationID(GOOGLE_APP, trial->trial_name(), non_default_name,
+                             TEST_VALUE_B);
   trial->Disable();
   ASSERT_EQ(default_name, trial->group_name());
-  ASSERT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial.get()));
+  ASSERT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_APP, trial.get()));
 }
 
 // Test various successful association cases.
@@ -88,15 +92,14 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   int winner_group = trial_true->AppendGroup(winner, 10);
 
   // Set GoogleVariationIDs so we can verify that they were chosen correctly.
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial_true->trial_name(),
-      default_name1, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial_true->trial_name(),
-      winner, TEST_VALUE_B);
+  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(),
+                             default_name1, TEST_VALUE_A);
+  AssociateGoogleVariationID(GOOGLE_APP, trial_true->trial_name(), winner,
+                             TEST_VALUE_B);
 
   EXPECT_EQ(winner_group, trial_true->group());
   EXPECT_EQ(winner, trial_true->group_name());
-  EXPECT_EQ(TEST_VALUE_B,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial_true.get()));
+  EXPECT_EQ(TEST_VALUE_B, GetIDForTrial(GOOGLE_APP, trial_true.get()));
 
   const std::string default_name2 = "default2";
   scoped_refptr<base::FieldTrial> trial_false(
@@ -104,14 +107,13 @@ TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   const std::string loser = "ALoser";
   const int loser_group = trial_false->AppendGroup(loser, 0);
 
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial_false->trial_name(),
-      default_name2, TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial_false->trial_name(),
-      loser, TEST_VALUE_B);
+  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(),
+                             default_name2, TEST_VALUE_A);
+  AssociateGoogleVariationID(GOOGLE_APP, trial_false->trial_name(), loser,
+                             TEST_VALUE_B);
 
   EXPECT_NE(loser_group, trial_false->group());
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial_false.get()));
+  EXPECT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_APP, trial_false.get()));
 }
 
 // Test that not associating a FieldTrial with any IDs ensure that the empty ID
@@ -128,25 +130,23 @@ TEST_F(VariationsAssociatedDataTest, NoAssociation) {
   // have a valid VariationID associated with it.
   EXPECT_EQ(winner_group, no_id_trial->group());
   EXPECT_EQ(winner, no_id_trial->group_name());
-  EXPECT_EQ(EMPTY_ID, GetIDForTrial(GOOGLE_WEB_PROPERTIES, no_id_trial.get()));
+  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+    ASSERT_EQ(EMPTY_ID, GetIDForTrial(static_cast<IDCollectionKey>(i),
+                                      no_id_trial.get()));
+  }
 }
 
 // Ensure that the AssociateGoogleVariationIDForce works as expected.
 TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
-  EXPECT_EQ(EMPTY_ID,
-            GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group"));
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group",
-                             TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group"));
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group",
-                             TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group"));
-  AssociateGoogleVariationIDForce(GOOGLE_WEB_PROPERTIES, "trial", "group",
-                                  TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_B,
-            GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group"));
+  EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+
+  AssociateGoogleVariationID(GOOGLE_APP, "trial", "group", TEST_VALUE_A);
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+  AssociateGoogleVariationID(GOOGLE_APP, "trial", "group", TEST_VALUE_B);
+  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
+
+  AssociateGoogleVariationIDForce(GOOGLE_APP, "trial", "group", TEST_VALUE_B);
+  EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(GOOGLE_APP, "trial", "group"));
 }
 
 }  // namespace variations

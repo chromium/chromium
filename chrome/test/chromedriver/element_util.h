@@ -37,6 +37,14 @@ Status FindElement(int interval_ms,
                    const base::DictionaryValue& params,
                    std::unique_ptr<base::Value>* value);
 
+Status FindShadowElement(int interval_ms,
+                         bool only_one,
+                         const std::string* shadow_root_id,
+                         Session* session,
+                         WebView* web_view,
+                         const base::DictionaryValue& params,
+                         std::unique_ptr<base::Value>* value);
+
 Status GetActiveElement(Session* session,
                         WebView* web_view,
                         std::unique_ptr<base::Value>* value);
@@ -163,5 +171,10 @@ Status GetElementLocationInViewCenter(Session* session,
                                       WebView* web_view,
                                       const std::string& element_id,
                                       WebPoint* location);
+
+Status GetAXNodeByElementId(Session* session,
+                            WebView* web_view,
+                            const std::string& element_id,
+                            std::unique_ptr<base::Value>* axNode);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_ELEMENT_UTIL_H_

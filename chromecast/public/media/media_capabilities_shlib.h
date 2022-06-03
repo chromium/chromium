@@ -28,6 +28,15 @@ class CHROMECAST_EXPORT MediaCapabilitiesShlib {
 
   // Return true if the platform supports the given audio |config|.
   static bool IsSupportedAudioConfig(const AudioConfig& config);
+
+  // Return true if the platform is able to decode and display the video stream
+  // smoothly with requested codec, profile, visible size and framerate.
+  CHROMECAST_EXPORT static bool CanPlayVideoSmoothly(VideoCodec codec,
+                                                     VideoProfile profile,
+                                                     int width,
+                                                     int height,
+                                                     double framerate)
+      __attribute__((weak));
 };
 
 }  // namespace media

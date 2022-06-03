@@ -6,23 +6,27 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_MANIFEST_CHANGE_NOTIFIER_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 
 class MODULES_EXPORT ManifestChangeNotifier
     : public GarbageCollected<ManifestChangeNotifier> {
  public:
-  explicit ManifestChangeNotifier(LocalFrame& frame);
+  explicit ManifestChangeNotifier(LocalDOMWindow& window);
+
+  ManifestChangeNotifier(const ManifestChangeNotifier&) = delete;
+  ManifestChangeNotifier& operator=(const ManifestChangeNotifier&) = delete;
+
   virtual ~ManifestChangeNotifier();
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
   virtual void DidChangeManifest();
 
@@ -30,12 +34,10 @@ class MODULES_EXPORT ManifestChangeNotifier
   void ReportManifestChange();
   void EnsureManifestChangeObserver();
 
-  Member<LocalFrame> frame_;
-  mojo::AssociatedRemote<mojom::blink::ManifestUrlChangeObserver>
+  Member<LocalDOMWindow> window_;
+  HeapMojoAssociatedRemote<mojom::blink::ManifestUrlChangeObserver>
       manifest_change_observer_;
   bool report_task_scheduled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestChangeNotifier);
 };
 
 }  // namespace blink

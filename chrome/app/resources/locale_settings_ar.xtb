@@ -47,7 +47,6 @@
 <translation id="IDS_STATIC_ENCODING_LIST">windows-1256,ISO-8859-6</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_WIDTH_CHARS">150</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_HEIGHT_LINES">40</translation>
-<translation id="IDS_DOWNLOAD_BIG_PROGRESS_SIZE">52</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_WIDTH_CHARS">60</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_HEIGHT_LINES">5</translation>
 <translation id="IDS_NEW_PROFILE_DIALOG_WIDTH_CHARS">60</translation>

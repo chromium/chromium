@@ -4,7 +4,6 @@
 
 #include "ui/base/cocoa/cocoa_base_utils.h"
 
-#include "base/mac/sdk_forward_declarations.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 
 namespace ui {

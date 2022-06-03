@@ -1,0 +1,63 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+html_to_js("components") {
+  js_files = [ "app_service_internals.ts" ]
+}
+
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/app_service_internals:mojo_bindings_webui_js",
+  ]
+  mojom_folder =
+      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/app_service_internals/"
+  sources = [ "$mojom_folder/app_service_internals.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "app_service_internals.ts",
+    "app_service_internals.mojom-webui.js",
+  ]
+
+  deps = [ "//third_party/polymer/v3_0:library" ]
+  extra_deps = [
+    ":components",
+    ":copy_mojo",
+  ]
+}
+
+generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+
+  grd_prefix = "app_service_internals"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/app_service_internals_resources.h",
+    "grit/app_service_internals_resources_map.cc",
+    "grit/app_service_internals_resources_map.h",
+    "app_service_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

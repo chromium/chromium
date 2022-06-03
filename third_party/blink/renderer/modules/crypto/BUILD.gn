@@ -25,7 +25,5 @@ blink_modules_sources("crypto") {
     "worker_global_scope_crypto.h",
   ]
 
-  deps = [
-    "//crypto",
-  ]
+  deps = [ "//crypto" ]
 }

@@ -1,4 +1,0 @@
-PASS --- [Expected] Property: padding-left Target: box Elapsed Time: 1
-PASS --- [Expected] Property: padding-right Target: box Elapsed Time: 1
-PASS --- [Expected] Property: padding-top Target: box Elapsed Time: 1
-

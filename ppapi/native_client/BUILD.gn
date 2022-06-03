@@ -7,15 +7,12 @@ import("//build/config/nacl/config.gni")
 
 if (is_nacl) {
   group("ppapi_lib") {
-    deps = [
-      "//ppapi/native_client/src/untrusted/irt_stub:ppapi_stub_lib",
-    ]
+    deps = [ "//ppapi/native_client/src/untrusted/irt_stub:ppapi_stub_lib" ]
   }
 
   executable("nacl_irt") {
     deps = [
       "//base",
-      "//components/tracing",
       "//gpu/command_buffer/client",
       "//gpu/command_buffer/client:gles2_implementation",
       "//gpu/command_buffer/common",
@@ -55,15 +52,9 @@ if (is_nacl) {
   irt_name = "nacl_irt_" + irt_cpu + ".nexe"
 
   copy("nacl_irt_debug") {
-    sources = [
-      "${root_out_dir}/exe.unstripped/nacl_irt.nexe",
-    ]
-    outputs = [
-      "${root_build_dir}/${irt_name}.debug",
-    ]
-    deps = [
-      ":nacl_irt",
-    ]
+    sources = [ "${root_out_dir}/exe.unstripped/nacl_irt.nexe" ]
+    outputs = [ "${root_build_dir}/${irt_name}.debug" ]
+    deps = [ ":nacl_irt" ]
   }
 
   action("nacl_irt_debuglink") {
@@ -82,16 +73,12 @@ if (is_nacl) {
     irt_debug = irt_debug[0]
     irt_final = "${root_build_dir}/${irt_name}"
 
-    inputs = [
-      objcopy,
-    ]
+    inputs = [ objcopy ]
     sources = [
       irt_debug,
       irt_stripped,
     ]
-    outputs = [
-      irt_final,
-    ]
+    outputs = [ irt_final ]
 
     script = "irt_debuglink.py"
     args = [

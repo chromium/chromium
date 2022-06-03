@@ -66,8 +66,10 @@ ChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
-    if (identity_manager && identity_manager->HasPrimaryAccount())
+    if (identity_manager &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       accounts_status.num_signed_in_accounts++;
+    }
   }
 
   return accounts_status;
@@ -99,7 +101,8 @@ void ChromeSigninStatusMetricsProviderDelegate::OnBrowserAdded(
   if (!identity_manager)
     return;
 
-  const bool signed_in = identity_manager->HasPrimaryAccount();
+  const bool signed_in =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   UpdateStatusWhenBrowserAdded(signed_in);
 }
 #endif
@@ -107,11 +110,6 @@ void ChromeSigninStatusMetricsProviderDelegate::OnBrowserAdded(
 void ChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
     signin::IdentityManager* identity_manager) {
   owner()->OnIdentityManagerCreated(identity_manager);
-}
-
-void ChromeSigninStatusMetricsProviderDelegate::IdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  owner()->OnIdentityManagerShutdown(identity_manager);
 }
 
 void ChromeSigninStatusMetricsProviderDelegate::UpdateStatusWhenBrowserAdded(

@@ -7,6 +7,8 @@
 <button id="button">Tap Here</button>
 <div id="console"></div>
 <script>
+    setup({single_test: true});
+
     document.getElementById('button').addEventListener('pointerup', pointer_popup);
     function pointer_popup() {
         assert_not_equals(window.open("about:blank", "window1"), null, "Popup didn't open in pointerup handler.");
@@ -16,7 +18,6 @@
 
     if (window.testRunner) {
         testRunner.setPopupBlockingEnabled(true);
-        testRunner.setCloseRemainingWindowsWhenComplete(true);
 
         if (window.eventSender) {
             var button = document.getElementById("button");

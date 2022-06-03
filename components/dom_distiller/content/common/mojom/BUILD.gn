@@ -8,6 +8,6 @@ mojom("mojom") {
   sources = [
     "distillability_service.mojom",
     "distiller_javascript_service.mojom",
-    "distiller_page_notifier_service.mojom",
   ]
+  deps = [ "//components/dom_distiller/core/mojom" ]
 }

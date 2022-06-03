@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/version.h"
-#include "printing/printer_query_result_chromeos.h"
-#include "printing/printing_export.h"
+#include "printing/printer_query_result.h"
 
 // This file contains a collection of functions used to query IPP printers or
 // print servers and the related code to parse these responses.  All Get*
@@ -23,8 +23,10 @@
 
 namespace printing {
 
+struct PrinterStatus;
+
 // Represents a print job sent to the queue.
-struct PRINTING_EXPORT CupsJob {
+struct COMPONENT_EXPORT(PRINT_BACKEND) CupsJob {
   // Corresponds to job-state from RFC2911.
   enum JobState {
     UNKNOWN,
@@ -37,9 +39,20 @@ struct PRINTING_EXPORT CupsJob {
     ABORTED      // an error occurred causing the printer to give up
   };
 
+  // Possible reasons sent by CUPS in job-state-reason
+  // The strings are hardcoded in CUPS code and these strings the only once are
+  // currently needed.
+  enum class JobStateReason {
+    kJobCompletedWithErrors = 0,
+    kCupsHeldForAuthentication,
+  };
+
   CupsJob();
   CupsJob(const CupsJob& other);
   ~CupsJob();
+
+  // Returns true if `job`.state_reasons contains `reason`.
+  bool ContainsStateReason(JobStateReason reason) const;
 
   // job id
   int id = -1;
@@ -56,68 +69,7 @@ struct PRINTING_EXPORT CupsJob {
   int processing_started = 0;
 };
 
-// Represents the status of a printer containing the properties printer-state,
-// printer-state-reasons, and printer-state-message.
-struct PRINTING_EXPORT PrinterStatus {
-  struct PrinterReason {
-    // Standardized reasons from RFC2911.
-    enum Reason {
-      UNKNOWN_REASON,
-      NONE,
-      MEDIA_NEEDED,
-      MEDIA_JAM,
-      MOVING_TO_PAUSED,
-      PAUSED,
-      SHUTDOWN,
-      CONNECTING_TO_DEVICE,
-      TIMED_OUT,
-      STOPPING,
-      STOPPED_PARTLY,
-      TONER_LOW,
-      TONER_EMPTY,
-      SPOOL_AREA_FULL,
-      COVER_OPEN,
-      INTERLOCK_OPEN,
-      DOOR_OPEN,
-      INPUT_TRAY_MISSING,
-      MEDIA_LOW,
-      MEDIA_EMPTY,
-      OUTPUT_TRAY_MISSING,
-      OUTPUT_AREA_ALMOST_FULL,
-      OUTPUT_AREA_FULL,
-      MARKER_SUPPLY_LOW,
-      MARKER_SUPPLY_EMPTY,
-      MARKER_WASTE_ALMOST_FULL,
-      MARKER_WASTE_FULL,
-      FUSER_OVER_TEMP,
-      FUSER_UNDER_TEMP,
-      OPC_NEAR_EOL,
-      OPC_LIFE_OVER,
-      DEVELOPER_LOW,
-      DEVELOPER_EMPTY,
-      INTERPRETER_RESOURCE_UNAVAILABLE
-    };
-
-    // Severity of the state-reason.
-    enum Severity { UNKNOWN_SEVERITY, REPORT, WARNING, ERROR };
-
-    Reason reason;
-    Severity severity;
-  };
-
-  PrinterStatus();
-  PrinterStatus(const PrinterStatus& other);
-  ~PrinterStatus();
-
-  // printer-state
-  ipp_pstate_t state;
-  // printer-state-reasons
-  std::vector<PrinterReason> reasons;
-  // printer-state-message
-  std::string message;
-};
-
-struct PRINTING_EXPORT PrinterInfo {
+struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterInfo {
   PrinterInfo();
   PrinterInfo(const PrinterInfo& info);
 
@@ -136,10 +88,6 @@ struct PRINTING_EXPORT PrinterInfo {
 
   // Does ipp-features-supported contain 'ipp-everywhere'.
   bool ipp_everywhere = false;
-
-  // Does the printer have at least one resolution defined in the
-  // pwg-raster-document-resolution-supported IPP attribute.
-  bool supports_pwg_raster_resolution = false;
 };
 
 // Specifies classes of jobs.
@@ -148,39 +96,46 @@ enum JobCompletionState {
   PROCESSING  // only jobs that are being processed
 };
 
-// Returns the uri for printer with |id| as served by CUPS. Assumes that |id| is
-// a valid CUPS printer name and performs no error checking or escaping.
-std::string PRINTING_EXPORT PrinterUriFromName(const std::string& id);
+// Converts a JobStateReason to the exact string returned by CUPS.
+const base::StringPiece COMPONENT_EXPORT(PRINT_BACKEND)
+    ToJobStateReasonString(CupsJob::JobStateReason stateReason);
 
-// Extracts structured job information from the |response| for |printer_id|.
-// Extracted jobs are added to |jobs|.
+// Returns the uri for printer with `id` as served by CUPS. Assumes that `id` is
+// a valid CUPS printer name and performs no error checking or escaping.
+std::string COMPONENT_EXPORT(PRINT_BACKEND)
+    PrinterUriFromName(const std::string& id);
+
+// Extracts structured job information from the `response` for `printer_id`.
+// Extracted jobs are added to `jobs`.
 void ParseJobsResponse(ipp_t* response,
                        const std::string& printer_id,
                        std::vector<CupsJob>* jobs);
 
-// Attempts to extract a PrinterStatus object out of |response|.
+// Attempts to extract a PrinterStatus object out of `response`.
 void ParsePrinterStatus(ipp_t* response, PrinterStatus* printer_status);
 
-// Queries the printer at |address| on |port| with a Get-Printer-Attributes
-// request to populate |printer_info|. If |encrypted| is true, request is made
+// Queries the printer at `address` on `port` with a Get-Printer-Attributes
+// request to populate `printer_info`. If `encrypted` is true, request is made
 // using ipps, otherwise, ipp is used. Returns false if the request failed.
-PrinterQueryResult PRINTING_EXPORT GetPrinterInfo(const std::string& address,
-                                                  const int port,
-                                                  const std::string& resource,
-                                                  bool encrypted,
-                                                  PrinterInfo* printer_info);
+PrinterQueryResult COMPONENT_EXPORT(PRINT_BACKEND)
+    GetPrinterInfo(const std::string& address,
+                   int port,
+                   const std::string& resource,
+                   bool encrypted,
+                   PrinterInfo* printer_info,
+                   PrinterStatus* printer_status);
 
-// Attempts to retrieve printer status using connection |http| for |printer_id|.
-// Returns true if succcssful and updates the fields in |printer_status| as
+// Attempts to retrieve printer status using connection `http` for `printer_id`.
+// Returns true if succcssful and updates the fields in `printer_status` as
 // appropriate.  Returns false if the request failed.
 bool GetPrinterStatus(http_t* http,
                       const std::string& printer_id,
                       PrinterStatus* printer_status);
 
-// Attempts to retrieve job information using connection |http| for the printer
-// named |printer_id|.  Retrieves at most |limit| jobs.  If |completed| then
+// Attempts to retrieve job information using connection `http` for the printer
+// named `printer_id`.  Retrieves at most `limit` jobs.  If `completed` then
 // completed jobs are retrieved.  Otherwise, jobs that are currently in progress
-// are retrieved.  Results are added to |jobs| if the operation was successful.
+// are retrieved.  Results are added to `jobs` if the operation was successful.
 bool GetCupsJobs(http_t* http,
                  const std::string& printer_id,
                  int limit,

@@ -34,9 +34,9 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   DISALLOW_NEW();
 
  public:
-  MultiColumnFragmentainerGroup(const LayoutMultiColumnSet&);
+  explicit MultiColumnFragmentainerGroup(const LayoutMultiColumnSet&);
 
-  const LayoutMultiColumnSet& ColumnSet() const { return column_set_; }
+  const LayoutMultiColumnSet& ColumnSet() const { return *column_set_; }
 
   bool IsFirstGroup() const;
   bool IsLastGroup() const;
@@ -86,6 +86,9 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   }
   void SetLogicalBottomInFlowThread(LayoutUnit logical_bottom_in_flow_thread) {
     logical_bottom_in_flow_thread_ = logical_bottom_in_flow_thread;
+  }
+  void ExtendLogicalBottomInFlowThread(LayoutUnit block_size) {
+    logical_bottom_in_flow_thread_ += block_size;
   }
 
   // The height of the flow thread portion for the entire fragmentainer group.
@@ -159,7 +162,10 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // Returns 1 or greater, never 0.
   unsigned ActualColumnCount() const;
 
-  void UpdateFromNG(LayoutUnit logical_height);
+  void SetColumnBlockSizeFromNG(LayoutUnit);
+  void ExtendColumnBlockSizeFromNG(LayoutUnit);
+
+  void Trace(Visitor*) const;
 
  private:
   LayoutUnit HeightAdjustedForRowOffset(LayoutUnit height) const;
@@ -180,7 +186,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   unsigned UnclampedActualColumnCount() const;
 
-  const LayoutMultiColumnSet& column_set_;
+  const Member<const LayoutMultiColumnSet> column_set_;
 
   LayoutUnit logical_top_;
   LayoutUnit logical_top_in_flow_thread_;
@@ -205,7 +211,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroupList {
   DISALLOW_NEW();
 
  public:
-  MultiColumnFragmentainerGroupList(LayoutMultiColumnSet&);
+  explicit MultiColumnFragmentainerGroupList(LayoutMultiColumnSet&);
   ~MultiColumnFragmentainerGroupList();
 
   // Add an additional fragmentainer group to the end of the list, and return
@@ -220,8 +226,8 @@ class CORE_EXPORT MultiColumnFragmentainerGroupList {
   MultiColumnFragmentainerGroup& Last() { return groups_.back(); }
   const MultiColumnFragmentainerGroup& Last() const { return groups_.back(); }
 
-  typedef Vector<MultiColumnFragmentainerGroup, 1>::iterator iterator;
-  typedef Vector<MultiColumnFragmentainerGroup, 1>::const_iterator
+  typedef HeapVector<MultiColumnFragmentainerGroup, 1>::iterator iterator;
+  typedef HeapVector<MultiColumnFragmentainerGroup, 1>::const_iterator
       const_iterator;
 
   iterator begin() { return groups_.begin(); }
@@ -242,12 +248,17 @@ class CORE_EXPORT MultiColumnFragmentainerGroupList {
   }
   void Shrink(wtf_size_t size) { groups_.Shrink(size); }
 
- private:
-  LayoutMultiColumnSet& column_set_;
+  void Trace(Visitor*) const;
 
-  Vector<MultiColumnFragmentainerGroup, 1> groups_;
+ private:
+  Member<LayoutMultiColumnSet> column_set_;
+
+  HeapVector<MultiColumnFragmentainerGroup, 1> groups_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::MultiColumnFragmentainerGroup)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MULTI_COLUMN_FRAGMENTAINER_GROUP_H_

@@ -11,7 +11,7 @@
 #include <climits>
 
 #include "base/bits.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
@@ -48,9 +48,9 @@ bool TransferBuffer::Initialize(unsigned int default_buffer_size,
                                 unsigned int alignment) {
   result_size_ = result_size;
   alignment_ = alignment;
-  default_buffer_size_ = base::bits::Align(default_buffer_size, alignment);
-  min_buffer_size_ = base::bits::Align(min_buffer_size, alignment);
-  max_buffer_size_ = base::bits::Align(max_buffer_size, alignment);
+  default_buffer_size_ = base::bits::AlignUp(default_buffer_size, alignment);
+  min_buffer_size_ = base::bits::AlignUp(min_buffer_size, alignment);
+  max_buffer_size_ = base::bits::AlignUp(max_buffer_size, alignment);
   ReallocateRingBuffer(default_buffer_size_ - result_size);
   return HaveBuffer();
 }
@@ -61,6 +61,11 @@ void TransferBuffer::Free() {
     TRACE_EVENT0("gpu", "TransferBuffer::Free");
     helper_->OrderingBarrier();
     helper_->command_buffer()->DestroyTransferBuffer(buffer_id_);
+    if (!HaveBuffer()) {
+      // The above may call this function reentrantly. If the buffer was
+      // already freed, then our work is done.
+      return;
+    }
     buffer_id_ = -1;
     buffer_ = nullptr;
     result_buffer_ = nullptr;
@@ -129,7 +134,7 @@ void TransferBuffer::AllocateRingBuffer(unsigned int size) {
       return;
     }
     // we failed so don't try larger than this.
-    max_buffer_size_ = base::bits::Align(size / 2, alignment_);
+    max_buffer_size_ = base::bits::AlignUp(size / 2, alignment_);
   }
   usable_ = false;
 }

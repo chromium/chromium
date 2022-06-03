@@ -1,7 +1,14 @@
+include_rules = [
+  "+ash/components/account_manager",
+  "+components/live_caption:constants",
+  "+components/profile_metrics",
+]
+
 specific_include_rules = {
-  "profile_impl.cc": [
-    # Profile embeds the Identity Service, but the dependence
-    # should be used *only* for Identity Service creation.
-    "+services/identity/identity_service.h",
+  "chrome_browser_main_extra_parts_profiles.cc": [
+    # This is required to create the SiteDataCacheFacadeFactory when a profile
+    # is created. This file isn't part of the PerformanceManager public API and
+    # its include should be explicitly allowed.
+    "+chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
   ],
 }

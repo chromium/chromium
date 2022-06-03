@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 /**
  * Provider class for TabManagementModule.

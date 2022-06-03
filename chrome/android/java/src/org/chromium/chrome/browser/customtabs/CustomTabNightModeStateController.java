@@ -5,26 +5,25 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatDelegate;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
-import org.chromium.chrome.browser.util.IntentUtils;
 
 /**
  * Maintains and provides the night mode state for {@link CustomTabActivity}.
  */
-public class CustomTabNightModeStateController implements Destroyable, NightModeStateProvider {
+public class CustomTabNightModeStateController implements DestroyObserver, NightModeStateProvider {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final PowerSavingModeMonitor mPowerSavingModeMonitor;
     private final SystemNightModeMonitor mSystemNightModeMonitor;
@@ -57,8 +56,7 @@ public class CustomTabNightModeStateController implements Destroyable, NightMode
      * @param intent  The {@link Intent} to retrieve information about the initial state.
      */
     void initialize(AppCompatDelegate delegate, Intent intent) {
-        if (!NightModeUtils.isNightModeSupported()
-                || !FeatureUtilities.isNightModeForCustomTabsAvailable()) {
+        if (!NightModeUtils.isNightModeSupported()) {
             // Always stay in light mode if night mode is not available.
             mRequestedColorScheme = CustomTabsIntent.COLOR_SCHEME_LIGHT;
             return;
@@ -77,9 +75,9 @@ public class CustomTabNightModeStateController implements Destroyable, NightMode
         }
     }
 
-    // Destroyable implementation.
+    // DestroyObserver implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mSystemNightModeMonitor.removeObserver(mSystemNightModeObserver);
         mPowerSavingModeMonitor.removeObserver(mPowerSaveModeObserver);
     }

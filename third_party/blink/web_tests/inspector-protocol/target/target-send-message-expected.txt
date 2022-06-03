@@ -1,8 +1,8 @@
 Tests sendMessage with invalid message.
 JSON syntax error..
-{"error":{"code":-32700,"message":"Message must be a valid JSON"}}
+{"error":{"code":-32700,"message":"JSON: string literal expected at position 57"}}
 JSON with primitive value..
-{"error":{"code":-32700,"message":"Message must be a valid JSON"}}
+{"error":{"code":-32600,"message":"Message must be an object"}}
 JSON without method property..
 {"error":{"code":-32600,"message":"Message must have integer 'id' property"}}
 JSON without id property..

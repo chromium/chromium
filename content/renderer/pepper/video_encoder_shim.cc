@@ -6,15 +6,18 @@
 
 #include <inttypes.h>
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/pepper/pepper_video_encoder_host.h"
 #include "content/renderer/render_thread_impl.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 #include "ui/gfx/geometry/size.h"
@@ -100,7 +103,8 @@ class VideoEncoderShim::EncoderImpl {
   void Initialize(const media::VideoEncodeAccelerator::Config& config);
   void Encode(scoped_refptr<media::VideoFrame> frame, bool force_keyframe);
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem);
-  void RequestEncodingParametersChange(uint32_t bitrate, uint32_t framerate);
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
+                                       uint32_t framerate);
   void Stop();
 
  private:
@@ -182,7 +186,7 @@ void VideoEncoderShim::EncoderImpl::Initialize(const Config& config) {
   config_.g_lag_in_frames = 0;
   config_.g_timebase.num = 1;
   config_.g_timebase.den = base::Time::kMicrosecondsPerSecond;
-  config_.rc_target_bitrate = config.initial_bitrate / 1000;
+  config_.rc_target_bitrate = config.bitrate.target() / 1000;
   config_.rc_min_quantizer = min_quantizer;
   config_.rc_max_quantizer = max_quantizer;
   // Do not saturate CPU utilization just for encoding. On a lower-end system
@@ -193,7 +197,7 @@ void VideoEncoderShim::EncoderImpl::Initialize(const Config& config) {
 
   // Use Q/CQ mode if no target bitrate is given. Note that in the VP8/CQ case
   // the meaning of rc_target_bitrate changes to target maximum rate.
-  if (config.initial_bitrate == 0) {
+  if (config.bitrate.target() == 0) {
     if (config.output_profile == media::VP9PROFILE_PROFILE0) {
       config_.rc_end_usage = VPX_Q;
     } else if (config.output_profile == media::VP8PROFILE_ANY) {
@@ -250,11 +254,17 @@ void VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer(
 }
 
 void VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const media::Bitrate& bitrate,
     uint32_t framerate) {
+  // If this is changed to use variable bitrate encoding, change the mode check
+  // to check that the mode matches the current mode.
+  if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
+    NotifyError(media::VideoEncodeAccelerator::kInvalidArgumentError);
+    return;
+  }
   framerate_ = framerate;
 
-  uint32_t bitrate_kbit = bitrate / 1000;
+  uint32_t bitrate_kbit = bitrate.target() / 1000;
   if (config_.rc_target_bitrate == bitrate_kbit)
     return;
 
@@ -305,8 +315,7 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
     if (frame.force_keyframe)
       flags = VPX_EFLAG_FORCE_KF;
 
-    const base::TimeDelta frame_duration =
-        base::TimeDelta::FromSecondsD(1.0 / framerate_);
+    const base::TimeDelta frame_duration = base::Seconds(1.0 / framerate_);
     if (vpx_codec_encode(&encoder_, &vpx_image, 0,
                          frame_duration.InMicroseconds(), flags,
                          VPX_DL_REALTIME) != VPX_CODEC_OK) {
@@ -351,7 +360,7 @@ VideoEncoderShim::VideoEncoderShim(PepperVideoEncoderHost* host)
     : host_(host),
       media_task_runner_(
           RenderThreadImpl::current()->GetMediaThreadTaskRunner()) {
-  encoder_impl_.reset(new EncoderImpl(weak_ptr_factory_.GetWeakPtr()));
+  encoder_impl_ = std::make_unique<EncoderImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 
 VideoEncoderShim::~VideoEncoderShim() {
@@ -434,8 +443,9 @@ void VideoEncoderShim::UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) {
                      host_->ShmHandleToAddress(buffer.id())));
 }
 
-void VideoEncoderShim::RequestEncodingParametersChange(uint32_t bitrate,
-                                                       uint32_t framerate) {
+void VideoEncoderShim::RequestEncodingParametersChange(
+    const media::Bitrate& bitrate,
+    uint32_t framerate) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(

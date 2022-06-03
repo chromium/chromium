@@ -66,7 +66,7 @@ function buildPage() {
 var x = 10;
 var y = 72;
 function firstGestureScroll() {
-  eventSender.setPageZoomFactor(0.5);
+  testRunner.setPageZoomFactor(0.5);
   return smoothScroll(70, x, y, GestureSourceType.TOUCH_INPUT, "down",
       SPEED_INSTANT);
 }
@@ -77,7 +77,7 @@ function secondGestureScroll() {
 }
 
 function thirdGestureScroll() {
-  eventSender.setPageZoomFactor(2.0);
+  testRunner.setPageZoomFactor(2.0);
   x = 799;
   y = 40;
   return smoothScroll(80, x, y, GestureSourceType.TOUCH_INPUT, "down",

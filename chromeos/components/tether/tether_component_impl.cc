@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/active_host.h"
@@ -76,7 +76,7 @@ TetherComponentImpl::Factory* TetherComponentImpl::Factory::factory_instance_ =
     nullptr;
 
 // static
-std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::NewInstance(
+std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::Create(
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     TetherHostFetcher* tether_host_fetcher,
@@ -89,19 +89,25 @@ std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::NewInstance(
     NetworkConnectionHandler* network_connection_handler,
     scoped_refptr<device::BluetoothAdapter> adapter,
     session_manager::SessionManager* session_manager) {
-  if (!factory_instance_)
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        device_sync_client, secure_channel_client, tether_host_fetcher,
+        notification_presenter, gms_core_notifications_state_tracker,
+        pref_service, network_state_handler,
+        managed_network_configuration_handler, network_connect,
+        network_connection_handler, adapter, session_manager);
+  }
 
-  return factory_instance_->BuildInstance(
+  return base::WrapUnique(new TetherComponentImpl(
       device_sync_client, secure_channel_client, tether_host_fetcher,
       notification_presenter, gms_core_notifications_state_tracker,
       pref_service, network_state_handler,
       managed_network_configuration_handler, network_connect,
-      network_connection_handler, adapter, session_manager);
+      network_connection_handler, adapter, session_manager));
 }
 
 // static
-void TetherComponentImpl::Factory::SetInstanceForTesting(Factory* factory) {
+void TetherComponentImpl::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
 }
 
@@ -112,27 +118,6 @@ void TetherComponentImpl::RegisterProfilePrefs(
   PersistentHostScanCacheImpl::RegisterPrefs(registry);
   TetherHostResponseRecorder::RegisterPrefs(registry);
   WifiHotspotDisconnectorImpl::RegisterPrefs(registry);
-}
-
-std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::BuildInstance(
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
-    TetherHostFetcher* tether_host_fetcher,
-    NotificationPresenter* notification_presenter,
-    GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
-    PrefService* pref_service,
-    NetworkStateHandler* network_state_handler,
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-    NetworkConnect* network_connect,
-    NetworkConnectionHandler* network_connection_handler,
-    scoped_refptr<device::BluetoothAdapter> adapter,
-    session_manager::SessionManager* session_manager) {
-  return base::WrapUnique(new TetherComponentImpl(
-      device_sync_client, secure_channel_client, tether_host_fetcher,
-      notification_presenter, gms_core_notifications_state_tracker,
-      pref_service, network_state_handler,
-      managed_network_configuration_handler, network_connect,
-      network_connection_handler, adapter, session_manager));
 }
 
 TetherComponentImpl::TetherComponentImpl(
@@ -149,7 +134,7 @@ TetherComponentImpl::TetherComponentImpl(
     scoped_refptr<device::BluetoothAdapter> adapter,
     session_manager::SessionManager* session_manager)
     : asynchronous_shutdown_object_container_(
-          AsynchronousShutdownObjectContainerImpl::Factory::NewInstance(
+          AsynchronousShutdownObjectContainerImpl::Factory::Create(
               device_sync_client,
               secure_channel_client,
               tether_host_fetcher,
@@ -158,7 +143,7 @@ TetherComponentImpl::TetherComponentImpl(
               network_connection_handler,
               pref_service)),
       synchronous_shutdown_object_container_(
-          SynchronousShutdownObjectContainerImpl::Factory::NewInstance(
+          SynchronousShutdownObjectContainerImpl::Factory::Create(
               asynchronous_shutdown_object_container_.get(),
               notification_presenter,
               gms_core_notifications_state_tracker,
@@ -169,13 +154,13 @@ TetherComponentImpl::TetherComponentImpl(
               session_manager,
               device_sync_client,
               secure_channel_client)),
-      crash_recovery_manager_(CrashRecoveryManagerImpl::Factory::NewInstance(
+      crash_recovery_manager_(CrashRecoveryManagerImpl::Factory::Create(
           network_state_handler,
           synchronous_shutdown_object_container_->active_host(),
           synchronous_shutdown_object_container_->host_scan_cache())) {
   crash_recovery_manager_->RestorePreCrashStateIfNecessary(
-      base::Bind(&TetherComponentImpl::OnPreCrashStateRestored,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&TetherComponentImpl::OnPreCrashStateRestored,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 TetherComponentImpl::~TetherComponentImpl() = default;
@@ -233,7 +218,7 @@ void TetherComponentImpl::InitiateShutdown() {
                     << "\".";
     tether_disconnector->DisconnectFromNetwork(
         active_host->GetTetherNetworkGuid(), base::DoNothing(),
-        base::Bind(&OnDisconnectErrorDuringShutdown),
+        base::BindOnce(&OnDisconnectErrorDuringShutdown),
         GetSessionCompletionReasonFromShutdownReason(shutdown_reason_));
   }
 
@@ -244,8 +229,8 @@ void TetherComponentImpl::InitiateShutdown() {
 
   // Start the shutdown process for objects which shutdown asynchronously.
   asynchronous_shutdown_object_container_->Shutdown(
-      base::Bind(&TetherComponentImpl::OnShutdownComplete,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&TetherComponentImpl::OnShutdownComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TetherComponentImpl::OnShutdownComplete() {

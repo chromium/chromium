@@ -131,13 +131,13 @@ There are a number of heuristics to determine when and how to change rasterizati
 These aren’t perfect, but change them at your own peril.
 🐉🐉🐉
 
-### PictureImageLayer
+#### Directly composited images
 
-A subclass of PictureLayer.
-This is a special case for composited images in Blink.
-If an image gets a composited layer but has no borders or padding (i.e. the painted content is exactly equal to the image) then some work can be saved here.
-It "rasters" the image at fixed scales such that scaling this image is performant.
-This is really a savings for software raster and in a gpu raster world such layers should never be created.
+A specialized raster mode of PictureLayerImpl.
+If a PictureLayer's DisplayItemList consists of a single drawImageRect DrawOp, we use different logic to determine what the raster scale of the image should end up being.
+The layer is rastered at fixed scales such that scaling this image is performant.
+The default raster scale is chosen such that the image will raster at its intrinsic side, then that scale is adjusted, based on how close it is to the ideal scale.
+See PictureLayerImpl::ShouldAdjustRasterScale and RecalculateRasterScales for more details.
 
 ### TextureLayer
 
@@ -178,7 +178,7 @@ ChromeOS uses PaintedOverlayScrollbarLayer, which is a nine-patch bitmap version
 ### HeadsUpDisplayLayer
 
 This layer supports [devtools rendering settings](https://developer.chrome.com/devtools/docs/rendering-settings).
-It draws an FPS meter, as well as overlays for paint invalidation or damage.
+It draws an Frame Rendering Stats, as well as overlays for paint invalidation or damage.
 This layer is special because it must be updated last because its inputs depend on all of the other layers’ damage calculations.
 
 ### UIResourceLayer / NinePatchLayer
@@ -362,7 +362,7 @@ A BSP tree is used to sort and intersect these against each other in the same 3d
 
 ## Glossary
 
-See: [cc/README.md](https://chromium.googlesource.com/chromium/src/+/master/cc/README.md#glossaries)
+See: [cc/README.md](https://chromium.googlesource.com/chromium/src/+/main/cc/README.md#glossaries)
 
 ## Other Resources
 

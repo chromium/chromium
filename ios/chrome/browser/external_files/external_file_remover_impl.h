@@ -14,9 +14,8 @@
 #include "components/sessions/core/tab_restore_service_observer.h"
 #import "ios/chrome/browser/external_files/external_file_remover.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
+
 namespace sessions {
 class TabRestoreService;
 }
@@ -28,8 +27,12 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // Creates an ExternalFileRemoverImpl to remove external documents not
   // referenced by the specified BrowserViewController. Use Remove to initiate
   // the removal.
-  ExternalFileRemoverImpl(ios::ChromeBrowserState* browser_state,
+  ExternalFileRemoverImpl(ChromeBrowserState* browser_state,
                           sessions::TabRestoreService* tab_restore_service);
+
+  ExternalFileRemoverImpl(const ExternalFileRemoverImpl&) = delete;
+  ExternalFileRemoverImpl& operator=(const ExternalFileRemoverImpl&) = delete;
+
   ~ExternalFileRemoverImpl() override;
 
   // ExternalFileRemover methods.
@@ -67,13 +70,11 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   sessions::TabRestoreService* tab_restore_service_ = nullptr;
   // ChromeBrowserState used to get the referenced files. Must outlive this
   // object.
-  ios::ChromeBrowserState* browser_state_ = nullptr;
+  ChromeBrowserState* browser_state_ = nullptr;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure |Remove()| is not run when this object is destroyed.
   base::WeakPtrFactory<ExternalFileRemoverImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileRemoverImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_IMPL_H_

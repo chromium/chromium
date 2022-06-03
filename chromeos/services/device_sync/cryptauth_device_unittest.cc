@@ -6,13 +6,13 @@
 
 #include <map>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -45,7 +45,7 @@ TEST(DeviceSyncCryptAuthDevice, ToAndFromDictionary) {
       cryptauthv2::GetBetterTogetherDeviceMetadataForTest(),
       kFakeFeatureStates);
 
-  base::Optional<CryptAuthDevice> device =
+  absl::optional<CryptAuthDevice> device =
       CryptAuthDevice::FromDictionary(expected_device.AsDictionary());
 
   ASSERT_TRUE(device);

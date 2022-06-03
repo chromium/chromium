@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/web_thread_safe_data.h"
@@ -23,8 +25,9 @@ MHTMLHandleWriter::~MHTMLHandleWriter() {}
 
 void MHTMLHandleWriter::WriteContents(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  TRACE_EVENT_ASYNC_BEGIN0("page-serialization",
-                           "Writing MHTML contents to handle", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("page-serialization",
+                                    "Writing MHTML contents to handle",
+                                    TRACE_ID_LOCAL(this));
   DCHECK(mhtml_write_start_time_.is_null());
   mhtml_write_start_time_ = base::TimeTicks::Now();
 
@@ -37,8 +40,9 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
 
   // Only record UMA if WriteContents has been called.
   if (!mhtml_write_start_time_.is_null()) {
-    TRACE_EVENT_ASYNC_END0("page-serialization",
-                           "WriteContentsImpl (MHTMLHandleWriter)", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization",
+                                    "WriteContentsImpl (MHTMLHandleWriter)",
+                                    TRACE_ID_LOCAL(this));
     base::TimeDelta mhtml_write_time =
         base::TimeTicks::Now() - mhtml_write_start_time_;
     UMA_HISTOGRAM_TIMES(
@@ -96,9 +100,8 @@ void MHTMLProducerHandleWriter::WriteContentsImpl(
   mhtml_contents_ = std::move(mhtml_contents);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&MHTMLProducerHandleWriter::BeginWatchingHandle,

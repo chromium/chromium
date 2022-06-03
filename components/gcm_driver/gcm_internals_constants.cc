@@ -12,7 +12,7 @@ const char kGcmInternalsJS[] = "gcm_internals.js";
 
 // Message handlers.
 const char kGetGcmInternalsInfo[] = "getGcmInternalsInfo";
-const char kSetGcmInternalsInfo[] = "gcmInternals.setGcmInternalsInfo";
+const char kSetGcmInternalsInfo[] = "set-gcm-internals-info";
 const char kSetGcmInternalsRecording[] = "setGcmInternalsRecording";
 
 // GCM internal info.

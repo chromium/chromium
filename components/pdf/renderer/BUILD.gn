@@ -2,50 +2,83 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 
-jumbo_static_library("renderer") {
-  sources = [
-    "pdf_accessibility_tree.cc",
+assert(enable_pdf)
+
+static_library("renderer") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "internal_plugin_renderer_helpers.h",
     "pdf_accessibility_tree.h",
-    "pdf_ax_action_target.cc",
     "pdf_ax_action_target.h",
-    "pepper_pdf_host.cc",
+    "pdf_find_in_page.h",
+    "pdf_internal_plugin_delegate.h",
     "pepper_pdf_host.h",
+  ]
+
+  sources = [
+    "internal_plugin_renderer_helpers.cc",
+    "pdf_accessibility_tree.cc",
+    "pdf_ax_action_target.cc",
+    "pdf_find_in_page.cc",
+    "pdf_internal_plugin_delegate.cc",
+    "pdf_view_web_plugin_client.cc",
+    "pdf_view_web_plugin_client.h",
+    "pepper_pdf_host.cc",
   ]
 
   deps = [
     "//base",
-    "//components/pdf/common:interfaces",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
     "//components/strings",
     "//content/public/common",
-    "//content/public/renderer",
     "//gin",
     "//ipc",
+    "//pdf:accessibility",
+    "//pdf:buildflags",
     "//pdf:features",
+    "//pdf:pdf_view_web_plugin",
     "//ppapi/host",
     "//ppapi/proxy",
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
+    "//printing/buildflags",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/icu",
+    "//url",
     "//v8",
   ]
+
+  public_deps = [
+    "//content/public/renderer",
+    "//pdf/mojom",
+    "//ui/accessibility",
+    "//ui/gfx/geometry",
+  ]
+
+  if (enable_basic_printing) {
+    deps += [ "//components/printing/renderer" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "pdf_accessibility_tree_unittest.cc",
-  ]
+  sources = [ "pdf_accessibility_tree_unittest.cc" ]
 
   deps = [
     ":renderer",
-    "//components/pdf/common:interfaces",
+    "//pdf:accessibility",
+    "//pdf/mojom",
     "//testing/gtest",
+    "//ui/gfx/geometry",
+
+    # TODO(crbug.com/1233217): The V8 dependency should have been propagated
+    # from ":renderer".
+    "//v8",
   ]
 }

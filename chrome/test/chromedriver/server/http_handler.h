@@ -12,17 +12,19 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/commands.h"
+#include "chrome/test/chromedriver/connection_session_map.h"
 #include "chrome/test/chromedriver/element_commands.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/session_commands.h"
+#include "chrome/test/chromedriver/session_connection_map.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/window_commands.h"
+#include "net/http/http_status_code.h"
 
 namespace base {
 class DictionaryValue;
@@ -42,6 +44,8 @@ class Adb;
 class DeviceManager;
 class URLRequestContextGetter;
 class WrapperURLLoaderFactory;
+
+class HttpServer;
 
 enum HttpMethod {
   kGet,
@@ -64,20 +68,28 @@ struct CommandMapping {
 extern const char kCreateWebSocketPath[];
 extern const char kSendCommandFromWebSocket[];
 
-typedef base::Callback<void(std::unique_ptr<net::HttpServerResponseInfo>)>
+typedef base::RepeatingCallback<void(
+    std::unique_ptr<net::HttpServerResponseInfo>)>
     HttpResponseSenderFunc;
 
 class HttpHandler {
  public:
   explicit HttpHandler(const std::string& url_base);
-  HttpHandler(const base::Closure& quit_func,
+  HttpHandler(const base::RepeatingClosure& quit_func,
               const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+              const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
               const std::string& url_base,
               int adb_port);
+
+  HttpHandler(const HttpHandler&) = delete;
+  HttpHandler& operator=(const HttpHandler&) = delete;
+
   ~HttpHandler();
 
   void Handle(const net::HttpServerRequestInfo& request,
               const HttpResponseSenderFunc& send_response_func);
+
+  base::WeakPtr<HttpHandler> WeakPtr();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleUnknownCommand);
@@ -87,6 +99,8 @@ class HttpHandler {
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, StandardResponse_ErrorNoMessage);
   typedef std::vector<CommandMapping> CommandMap;
+
+  friend class HttpServer;
 
   Command WrapToCommand(const char* name,
                         const SessionCommand& session_command,
@@ -118,8 +132,20 @@ class HttpHandler {
       std::unique_ptr<base::Value> value,
       const std::string& session_id);
 
+  void OnWebSocketRequest(HttpServer* http_server,
+                          int connection_id,
+                          const net::HttpServerRequestInfo& info);
+
+  void OnClose(HttpServer* http_server, int connection_id);
+
+  void SendWebSocketRejectResponse(HttpServer* http_server,
+                                   int connection_id,
+                                   net::HttpStatusCode code,
+                                   const std::string& msg);
+
   base::ThreadChecker thread_checker_;
-  base::Closure quit_func_;
+  base::RepeatingClosure quit_func_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::string url_base_;
   bool received_shutdown_;
   scoped_refptr<URLRequestContextGetter> context_getter_;
@@ -128,13 +154,13 @@ class HttpHandler {
   std::unique_ptr<WrapperURLLoaderFactory> wrapper_url_loader_factory_;
   SyncWebSocketFactory socket_factory_;
   SessionThreadMap session_thread_map_;
+  SessionConnectionMap session_connection_map_;
+  ConnectionSessionMap connection_session_map_;
   std::unique_ptr<CommandMap> command_map_;
   std::unique_ptr<Adb> adb_;
   std::unique_ptr<DeviceManager> device_manager_;
 
   base::WeakPtrFactory<HttpHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpHandler);
 };
 
 namespace internal {
@@ -146,6 +172,8 @@ bool MatchesCommand(const std::string& method,
                     const CommandMapping& command,
                     std::string* session_id,
                     base::DictionaryValue* out_params);
+
+bool IsNewSession(const CommandMapping& command);
 
 }  // namespace internal
 

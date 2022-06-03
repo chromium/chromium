@@ -2,6 +2,7 @@
 <html>
 <title>Fetch in a document with &quot;referrer origin&quot; policy and controlled by a ServiceWorker</title>
 <body>
+<script src = "/resources/get-host-info.js?pipe=sub"></script>
 <script src = "/resources/testharness.js"></script>
 <script src = "/resources/testharnessreport.js"></script>
 <script src = "/serviceworker/resources/test-helpers.js"></script>
@@ -11,6 +12,7 @@
 const SCRIPT = '/fetch/referrer/resources/simple-onfetch.js';
 const SCOPE = '/fetch/referrer/resources/empty-referrer-origin.html';
 
+const {BASE_ORIGIN, OTHER_ORIGIN} = get_fetch_test_options();
 const BASE_URL = BASE_ORIGIN + '/fetch/resources/referrer.php';
 const OTHER_URL = OTHER_ORIGIN + '/fetch/resources/referrer.php';
 const REFERRER_SOURCE = BASE_ORIGIN + SCOPE;

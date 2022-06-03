@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_GCM_ENGINE_GSERVICSE_SWITCHES_H_
-#define GOOGLE_APIS_GCM_ENGINE_GSERVICSE_SWITCHES_H_
+#ifndef GOOGLE_APIS_GCM_ENGINE_GSERVICES_SWITCHES_H_
+#define GOOGLE_APIS_GCM_ENGINE_GSERVICES_SWITCHES_H_
 
 namespace switches {
 
@@ -13,4 +13,4 @@ extern const char kGCMRegistrationURL[];
 
 }  // namespace switches
 
-#endif  // GOOGLE_APIS_GCM_ENGINE_GSERVICSE_SWITCHES_H_
+#endif  // GOOGLE_APIS_GCM_ENGINE_GSERVICES_SWITCHES_H_

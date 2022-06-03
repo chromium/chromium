@@ -10,10 +10,15 @@
  * It is column model responsibility to resize other columns accordingly.
  */
 
+import {dispatchSimpleEvent, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
+
+import {Table} from './table.js';
+
 /**
  * Creates a new table splitter element.
  */
-class TableSplitter extends cr.ui.Splitter {
+export class TableSplitter extends Splitter {
   /**
    * @param {Object=} opt_propertyBag Optional properties.
    */
@@ -22,7 +27,7 @@ class TableSplitter extends cr.ui.Splitter {
     // cr.ui magic overwrites __proto__, so here we restore it back.
     this.__proto__ = TableSplitter.prototype;
 
-    /** @private {cr.ui.Table} */
+    /** @private {Table} */
     this.table_;
     this.table = (opt_propertyBag && opt_propertyBag.table) || null;
 
@@ -43,6 +48,13 @@ class TableSplitter extends cr.ui.Splitter {
    */
   decorate() {
     super.decorate();
+
+    const icon = document.createElement('cr-icon-button');
+    icon.setAttribute('iron-icon', 'files32:small-dragger');
+    icon.setAttribute('tabindex', '-1');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.classList.add('splitter-icon');
+    this.appendChild(icon);
 
     this.classList.add('table-header-splitter');
   }
@@ -67,8 +79,10 @@ class TableSplitter extends cr.ui.Splitter {
    * @override
    */
   handleSplitterDragMove(deltaX) {
-    this.table_.columnModel.setWidthAndKeepTotal(
-        this.columnIndex, this.columnWidth_ + deltaX, true);
+    if (this.table_.columnModel.setWidthAndKeepTotal) {
+      this.table_.columnModel.setWidthAndKeepTotal(
+          this.columnIndex, this.columnWidth_ + deltaX, true);
+    }
   }
 
   /**
@@ -77,7 +91,7 @@ class TableSplitter extends cr.ui.Splitter {
    */
   handleSplitterDragEnd() {
     this.ownerDocument.documentElement.classList.remove('col-resize');
-    cr.dispatchSimpleEvent(this, 'column-resize-end', true);
+    dispatchSimpleEvent(this, 'column-resize-end', true);
     this.table_.columnModel.handleSplitterDragEnd();
   }
 }
@@ -86,10 +100,15 @@ class TableSplitter extends cr.ui.Splitter {
  * The column index.
  * @type {number}
  */
-cr.defineProperty(TableSplitter, 'columnIndex');
+TableSplitter.prototype.columnIndex;
+Object.defineProperty(
+    TableSplitter.prototype, 'columnIndex',
+    getPropertyDescriptor('columnIndex'));
 
 /**
  * The table associated with the splitter.
  * @type {Element}
  */
-cr.defineProperty(TableSplitter, 'table');
+TableSplitter.prototype.table;
+Object.defineProperty(
+    TableSplitter.prototype, 'table', getPropertyDescriptor('table'));

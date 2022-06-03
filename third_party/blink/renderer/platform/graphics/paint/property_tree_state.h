@@ -5,73 +5,83 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PROPERTY_TREE_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PROPERTY_TREE_STATE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 namespace blink {
 
+class PropertyTreeState;
+
 // A complete set of paint properties including those that are inherited from
 // other objects.
-class PLATFORM_EXPORT PropertyTreeState {
-  USING_FAST_MALLOC(PropertyTreeState);
+class PLATFORM_EXPORT PropertyTreeStateOrAlias {
+  USING_FAST_MALLOC(PropertyTreeStateOrAlias);
 
  public:
-  PropertyTreeState(const TransformPaintPropertyNode& transform,
-                    const ClipPaintPropertyNode& clip,
-                    const EffectPaintPropertyNode& effect)
+  PropertyTreeStateOrAlias(const TransformPaintPropertyNodeOrAlias& transform,
+                           const ClipPaintPropertyNodeOrAlias& clip,
+                           const EffectPaintPropertyNodeOrAlias& effect)
       : transform_(&transform), clip_(&clip), effect_(&effect) {
     DCHECK(transform_);
     DCHECK(clip_);
     DCHECK(effect_);
   }
 
-  static const PropertyTreeState& Root();
-
   // This is used as the initial value of uninitialized PropertyTreeState.
   // Access to the nodes are not allowed.
-  static const PropertyTreeState& Uninitialized();
+  static PropertyTreeStateOrAlias Uninitialized() {
+    return PropertyTreeStateOrAlias();
+  }
+
+  static const PropertyTreeState& Root();
 
   // Returns true if all fields are initialized.
-  bool IsInitialized() const {
-    return transform_ != Uninitialized().transform_ &&
-           clip_ != Uninitialized().clip_ && effect_ != Uninitialized().effect_;
-  }
+  bool IsInitialized() const { return transform_ && clip_ && effect_; }
 
   // Returns an unaliased property tree state.
   PropertyTreeState Unalias() const;
 
-  const TransformPaintPropertyNode& Transform() const {
-    DCHECK_NE(transform_, Uninitialized().transform_);
+  const TransformPaintPropertyNodeOrAlias& Transform() const {
+    DCHECK(transform_);
     return *transform_;
   }
-  void SetTransform(const TransformPaintPropertyNode& node) {
+  void SetTransform(const TransformPaintPropertyNodeOrAlias& node) {
     transform_ = &node;
     DCHECK(transform_);
   }
 
-  const ClipPaintPropertyNode& Clip() const {
-    DCHECK_NE(clip_, Uninitialized().clip_);
+  const ClipPaintPropertyNodeOrAlias& Clip() const {
+    DCHECK(clip_);
     return *clip_;
   }
-  void SetClip(const ClipPaintPropertyNode& node) {
+  void SetClip(const ClipPaintPropertyNodeOrAlias& node) {
     clip_ = &node;
     DCHECK(clip_);
   }
 
-  const EffectPaintPropertyNode& Effect() const {
-    DCHECK_NE(effect_, Uninitialized().effect_);
+  const EffectPaintPropertyNodeOrAlias& Effect() const {
+    DCHECK(effect_);
     return *effect_;
   }
-  void SetEffect(const EffectPaintPropertyNode& node) {
+  void SetEffect(const EffectPaintPropertyNodeOrAlias& node) {
     effect_ = &node;
     DCHECK(effect_);
   }
 
-  void ClearChangedToRoot() const {
-    Transform().ClearChangedToRoot();
-    Clip().ClearChangedToRoot();
-    Effect().ClearChangedToRoot();
+  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
+    Transform().ClearChangedTo(&to.Transform());
+    Clip().ClearChangedTo(&to.Clip());
+    Effect().ClearChangedTo(&to.Effect());
+  }
+
+  // Returns true if any property tree state change is >= |change| relative to
+  // |relative_to|. Note that this is O(|nodes|).
+  bool Changed(PaintPropertyChangeType change,
+               const PropertyTreeState& relative_to) const;
+  bool ChangedToRoot(PaintPropertyChangeType change) const {
+    return Changed(change, Root());
   }
 
   String ToString() const;
@@ -79,30 +89,83 @@ class PLATFORM_EXPORT PropertyTreeState {
   // Dumps the tree from this state up to the root as a string.
   String ToTreeString() const;
 #endif
+  std::unique_ptr<JSONObject> ToJSON() const;
 
-  // Returns memory usage of the transform & clip caches of this state plus
-  // ancestors.
-  size_t CacheMemoryUsageInBytes() const;
-
-  bool operator==(const PropertyTreeState& other) const {
+  bool operator==(const PropertyTreeStateOrAlias& other) const {
     return transform_ == other.transform_ && clip_ == other.clip_ &&
            effect_ == other.effect_;
   }
-  bool operator!=(const PropertyTreeState& other) const {
+  bool operator!=(const PropertyTreeStateOrAlias& other) const {
     return !(*this == other);
   }
 
- private:
-  // For Uninitialized().
-  PropertyTreeState();
+ protected:
+  // For Uninitialized();
+  PropertyTreeStateOrAlias() = default;
 
-  const TransformPaintPropertyNode* transform_;
-  const ClipPaintPropertyNode* clip_;
-  const EffectPaintPropertyNode* effect_;
+ private:
+  const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
+  const ClipPaintPropertyNodeOrAlias* clip_ = nullptr;
+  const EffectPaintPropertyNodeOrAlias* effect_ = nullptr;
 };
 
+class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
+ public:
+  PropertyTreeState(const TransformPaintPropertyNode& transform,
+                    const ClipPaintPropertyNode& clip,
+                    const EffectPaintPropertyNode& effect)
+      : PropertyTreeStateOrAlias(transform, clip, effect) {}
+
+  PropertyTreeState Unalias() const = delete;
+
+  // This is used as the initial value of uninitialized PropertyTreeState.
+  // Access to the nodes are not allowed.
+  static PropertyTreeState Uninitialized() { return PropertyTreeState(); }
+
+  const TransformPaintPropertyNode& Transform() const {
+    const auto& node = PropertyTreeStateOrAlias::Transform();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const TransformPaintPropertyNode&>(node);
+  }
+  void SetTransform(const TransformPaintPropertyNode& node) {
+    PropertyTreeStateOrAlias::SetTransform(node);
+  }
+  const ClipPaintPropertyNode& Clip() const {
+    const auto& node = PropertyTreeStateOrAlias::Clip();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const ClipPaintPropertyNode&>(node);
+  }
+  void SetClip(const ClipPaintPropertyNode& node) {
+    PropertyTreeStateOrAlias::SetClip(node);
+  }
+  const EffectPaintPropertyNode& Effect() const {
+    const auto& node = PropertyTreeStateOrAlias::Effect();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const EffectPaintPropertyNode&>(node);
+  }
+  void SetEffect(const EffectPaintPropertyNode& node) {
+    PropertyTreeStateOrAlias::SetEffect(node);
+  }
+
+  // Determines whether drawings based on the 'guest' state can be painted into
+  // a layer with the 'home' state, and if yes, returns the common ancestor
+  // state to which both layer will be upcasted.
+  absl::optional<PropertyTreeState> CanUpcastWith(
+      const PropertyTreeState& guest) const;
+
+ private:
+  // For Uninitialized();
+  PropertyTreeState() = default;
+};
+
+PLATFORM_EXPORT inline PropertyTreeState PropertyTreeStateOrAlias::Unalias()
+    const {
+  return PropertyTreeState(Transform().Unalias(), Clip().Unalias(),
+                           Effect().Unalias());
+}
+
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
-                                         const PropertyTreeState&);
+                                         const PropertyTreeStateOrAlias&);
 
 }  // namespace blink
 

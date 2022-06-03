@@ -1,5 +1,5 @@
-document
-++description Name='Before'
-++group IsControlElement=false
-++++description Name='Paragraph'
-++description Name='After'
+Document
+++Text Name='Before'
+++Group IsControlElement=false
+++++Text Name='Paragraph'
+++Text Name='After'

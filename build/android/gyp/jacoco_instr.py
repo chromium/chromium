@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -199,8 +199,8 @@ def _RunInstrumentCommand(parser):
     source_files.extend(build_utils.ReadSourcesList(args.java_sources_file))
 
   with build_utils.TempDir() as temp_dir:
-    instrument_cmd = [
-        build_utils.JAVA_PATH, '-jar', args.jacococli_jar, 'instrument'
+    instrument_cmd = build_utils.JavaCmd() + [
+        '-jar', args.jacococli_jar, 'instrument'
     ]
 
     if not args.files_to_instrument:

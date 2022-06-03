@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:drawablePadding="3dp"
         android:text="@string/data_reduction_initial_title"
-        android:textAppearance="@style/TextAppearance.BlackDisabledText1" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
 
     <LinearLayout
         android:id="@+id/data_reduction_stats_container"
@@ -45,7 +45,7 @@
                 android:layout_marginTop="3dp"
                 android:paddingStart="3dp"
                 android:text="@string/data_reduction_savings_label"
-                android:textAppearance="@style/TextAppearance.BlueLink2" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
 
         </LinearLayout>
 
@@ -61,14 +61,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlackBody" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="3dp"
                 android:text="@string/data_reduction_usage_label"
-                android:textAppearance="@style/TextAppearance.BlackBody" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
 
         <include layout="@layout/data_usage_chart" />
@@ -82,13 +82,13 @@
                 android:id="@+id/data_reduction_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.BlackBody" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
             <TextView
                 android:id="@+id/data_reduction_end_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.BlackBody" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         </FrameLayout>
 

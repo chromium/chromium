@@ -1,0 +1,99 @@
+<style include="cr-shared-style shimless-rma-shared">
+  .input-row {
+    margin-bottom: 30px;
+  }
+
+  .input-holder {
+    align-items: center;
+    display: flex;
+  }
+
+  cr-button {
+    border-radius: 20px;
+  }
+
+  .sku-warning {
+    color: gray; /* TODO(joonbug): Update cros colors */
+    display: flex;
+    max-width: 400px;
+  }
+
+  iron-icon {
+    height: 10px;
+    width: 50px;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+    margin-inline-end: 20px;
+  }
+
+  select {
+    margin-inline-end: 20px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(gavindodd): Update text for i18n -->
+    <h1>Please confirm device information</h1>
+    <p>Change device information as needed.</p>
+  </div>
+  <div slot="body">
+    <div class="input-row">
+      <label id="serialNumberLabel" class="cr-form-field-label">
+        Serial number:
+      </label>
+      <div class="input-holder">
+        <cr-input id="serialNumber" placeholder="Enter Serial Number"
+            value="{{serialNumber_}}" aria-labelledby="serialNumberLabel">
+        </cr-input>
+        <cr-button id="resetSerialNumber"
+            on-click="onResetSerialNumberButtonClicked_"
+            disabled="[[disableResetSerialNumber_]]">
+          Reset
+        </cr-button>
+      </div>
+    </div>
+    <div class="input-row">
+      <label id="regionLabel" class="cr-form-field-label">Region:</label>
+      <div class="input-holder">
+        <select id="regionSelect" class="md-select"
+            on-change="onSelectedRegionChange_" aria-labelledby="regionLabel">
+          <template is="dom-repeat" items="[[regions_]]" as="region">
+            <option value="[[region]]">
+              [[region]]
+            </option>
+          </template>
+        </select>
+        <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
+            disabled="[[disableResetRegion_]]">
+          Reset
+        </cr-button>
+      </div>
+    </div>
+    <div>
+      <label id="skuLabel" class="cr-form-field-label">SKU:</label>
+      <div class="input-holder">
+        <select id="skuSelect" class="md-select"
+            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel">
+          <template is="dom-repeat" items="[[skus_]]" as="sku">
+            <option value="[[sku]]">
+              [[sku]]
+            </option>
+          </template>
+        </select>
+        <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
+            disabled="[[disableResetSku_]]">
+          Reset
+        </cr-button>
+      </div>
+    </div>
+    <div class="sku-warning">
+      <iron-icon icon="shimless-icon:warning"></iron-icon>
+      The SKU should only be changed if the new component(s) are different
+      from the ones they replaced. For example, a touchscreen replacing a
+      non-touchscreen, or memory being upgraded from 8GB to 16GB.
+    </p>
+  </div>
+</base-page>

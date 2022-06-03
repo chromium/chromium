@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -33,14 +32,17 @@ struct NativelyConnectableHosts : public Extension::ManifestData {
 class NativelyConnectableHandler : public ManifestHandler {
  public:
   NativelyConnectableHandler();
+
+  NativelyConnectableHandler(const NativelyConnectableHandler&) = delete;
+  NativelyConnectableHandler& operator=(const NativelyConnectableHandler&) =
+      delete;
+
   ~NativelyConnectableHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NativelyConnectableHandler);
 };
 
 }  // namespace extensions

@@ -19,8 +19,8 @@ def main(argv):
   version_url = "chrome://version"
 
   # Verify the user data dir is not existing before launch the Chrome
-  print "User data before running chrome is " + str(
-      os.path.isdir(FLAGS.user_data_dir))
+  print("User data before running chrome is " + str(
+      os.path.isdir(FLAGS.user_data_dir)))
 
   # Launch real Chrome
   os.system('start chrome --remote-debugging-port=9222')
@@ -34,16 +34,16 @@ def main(argv):
   try:
     # Verify User Data Dir in chrome://policy page
     driver.get(policy_url)
-    print driver.find_element_by_css_selector('html').text.encode('utf-8')
+    print(driver.find_element_by_css_selector('html').text.encode('utf-8'))
 
     # Verfiy User Data Dir used in chrome://version
     driver.get(version_url)
-    print "Profile path is " + driver.find_element_by_id("profile_path").text
+    print("Profile path is " + driver.find_element_by_id("profile_path").text)
 
     # Verify if UserDataDir folder is created
-    print "User data dir creation is " + str(os.path.isdir(FLAGS.user_data_dir))
+    print("User data dir creation is " + str(os.path.isdir(FLAGS.user_data_dir)))
   except Exception as error:
-    print error
+    print(error)
   finally:
     driver.quit()
     os.system('taskkill /f /im chrome.exe')

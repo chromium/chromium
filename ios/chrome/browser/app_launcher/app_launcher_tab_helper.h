@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_H_
 
 #include "base/macros.h"
+#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@protocol AppLauncherTabHelperDelegate;
+class AppLauncherTabHelperDelegate;
 @class AppLauncherAbuseDetector;
 class GURL;
 
@@ -18,19 +19,23 @@ class AppLauncherTabHelper
     : public web::WebStatePolicyDecider,
       public web::WebStateUserData<AppLauncherTabHelper> {
  public:
+  AppLauncherTabHelper(const AppLauncherTabHelper&) = delete;
+  AppLauncherTabHelper& operator=(const AppLauncherTabHelper&) = delete;
+
   ~AppLauncherTabHelper() override;
 
-  // Creates AppLauncherTabHelper and attaches to |web_state|. |web_state| must
-  // not be null. |policy_decider| provides policy for launching apps.
-  // |delegate| can launch applications and present UI and is not retained by
-  // TabHelper.
+  // Creates a tab helper for |web_state| that uses |abuse_detector| to make
+  // navigation policy decisions.
   static void CreateForWebState(web::WebState* web_state,
-                                AppLauncherAbuseDetector* abuse_detector,
-                                id<AppLauncherTabHelperDelegate> delegate);
+                                AppLauncherAbuseDetector* abuse_detector =
+                                    [[AppLauncherAbuseDetector alloc] init]);
 
   // Returns true, if the |url| has a scheme for an external application
   // (eg. twitter:// , calshow://).
   static bool IsAppUrl(const GURL& url);
+
+  // Sets the delegate.
+  void SetDelegate(AppLauncherTabHelperDelegate* delegate);
 
   // Requests to open the application with |url|.
   // The method checks if the application for |url| has been opened repeatedly
@@ -38,27 +43,27 @@ class AppLauncherTabHelper
   // will appear to the user with an option to block the application from
   // launching. Then the method also checks for user interaction and for schemes
   // that require special handling (eg. facetime, mailto) and may present the
-  // user with a confirmation dialog to open the application. If there is no
-  // such application available or it's not possible to open the application the
-  // method returns NO.
-  bool RequestToLaunchApp(const GURL& url,
+  // user with a confirmation dialog to open the application.
+  void RequestToLaunchApp(const GURL& url,
                           const GURL& source_page_url,
                           bool link_transition);
 
   // web::WebStatePolicyDecider implementation
-  bool ShouldAllowRequest(
+  void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
+      web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:
   friend class web::WebStateUserData<AppLauncherTabHelper>;
 
   // Constructor for AppLauncherTabHelper. |abuse_detector| provides policy for
-  // launching apps. |delegate| can launch applications and present UI and is
-  // not retained by TabHelper.
+  // launching apps.
   AppLauncherTabHelper(web::WebState* web_state,
-                       AppLauncherAbuseDetector* abuse_detector,
-                       id<AppLauncherTabHelperDelegate> delegate);
+                       AppLauncherAbuseDetector* abuse_detector);
+
+  // Getter for the delegate.
+  AppLauncherTabHelperDelegate* delegate() const { return delegate_; }
 
   // The WebState that this object is attached to.
   web::WebState* web_state_ = nullptr;
@@ -67,17 +72,15 @@ class AppLauncherTabHelper
   AppLauncherAbuseDetector* abuse_detector_ = nil;
 
   // Used to launch apps and present UI.
-  __weak id<AppLauncherTabHelperDelegate> delegate_ = nil;
+  AppLauncherTabHelperDelegate* delegate_ = nullptr;
 
   // Returns whether there is a prompt shown by |RequestToOpenUrl| or not.
   bool is_prompt_active_ = false;
 
   // Must be last member to ensure it is destroyed last.
-  base::WeakPtrFactory<AppLauncherTabHelper> weak_factory_;
+  base::WeakPtrFactory<AppLauncherTabHelper> weak_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AppLauncherTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_H_

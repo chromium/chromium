@@ -13,4 +13,9 @@ AssistantTextElement::AssistantTextElement(const std::string& text)
 
 AssistantTextElement::~AssistantTextElement() = default;
 
+bool AssistantTextElement::Compare(const AssistantUiElement& other) const {
+  return other.type() == AssistantUiElementType::kText &&
+         static_cast<const AssistantTextElement&>(other).text() == text_;
+}
+
 }  // namespace ash

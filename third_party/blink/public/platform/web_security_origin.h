@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SECURITY_ORIGIN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SECURITY_ORIGIN_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -59,7 +60,6 @@ class WebSecurityOrigin {
   BLINK_PLATFORM_EXPORT static WebSecurityOrigin CreateFromString(
       const WebString&);
   BLINK_PLATFORM_EXPORT static WebSecurityOrigin Create(const WebURL&);
-  BLINK_PLATFORM_EXPORT static WebSecurityOrigin CreateUniqueOpaque();
 
   BLINK_PLATFORM_EXPORT void Reset();
   BLINK_PLATFORM_EXPORT void Assign(const WebSecurityOrigin&);
@@ -68,12 +68,10 @@ class WebSecurityOrigin {
 
   BLINK_PLATFORM_EXPORT WebString Protocol() const;
   BLINK_PLATFORM_EXPORT WebString Host() const;
-  BLINK_PLATFORM_EXPORT uint16_t Port() const;
 
-  // |Port()| will return 0 if the port is the default for an origin. This
-  // method instead returns the effective port, even if it is the default port
-  // (e.g. "http" => 80).
-  BLINK_PLATFORM_EXPORT uint16_t EffectivePort() const;
+  // Like url::Origin::port, this returns the default port for standard URLs
+  // with no explicit port set.
+  BLINK_PLATFORM_EXPORT uint16_t Port() const;
 
   // A unique WebSecurityOrigin is the least privileged WebSecurityOrigin.
   BLINK_PLATFORM_EXPORT bool IsOpaque() const;
@@ -109,6 +107,18 @@ class WebSecurityOrigin {
   // passwords stored in password manager.
   BLINK_PLATFORM_EXPORT bool CanAccessPasswordManager() const;
 
+  // This method implements HTML's "same origin" check, which verifies equality
+  // of opaque origins, or exact (scheme,host,port) matches. Note that
+  // `document.domain` does not come into play for this comparison.
+  //
+  // This method does not take the "universal access" flag into account. It does
+  // take the "local access" flag into account, considering `file:` origins that
+  // set the flag to be same-origin with all other `file:` origins that set the
+  // flag.
+  //
+  // https://html.spec.whatwg.org/#same-origin
+  BLINK_PLATFORM_EXPORT bool IsSameOriginWith(const WebSecurityOrigin&) const;
+
 #if INSIDE_BLINK
   BLINK_PLATFORM_EXPORT WebSecurityOrigin(scoped_refptr<const SecurityOrigin>);
   BLINK_PLATFORM_EXPORT WebSecurityOrigin& operator=(
@@ -116,9 +126,6 @@ class WebSecurityOrigin {
   BLINK_PLATFORM_EXPORT operator scoped_refptr<const SecurityOrigin>() const;
   BLINK_PLATFORM_EXPORT const SecurityOrigin* Get() const;
 #endif
-  // TODO(mkwst): A number of properties don't survive a round-trip
-  // ('document.domain', for instance).  We'll need to fix that for OOPI-enabled
-  // embedders, https://crbug.com/490074.
   BLINK_PLATFORM_EXPORT WebSecurityOrigin(const url::Origin&);
   BLINK_PLATFORM_EXPORT operator url::Origin() const;
 
@@ -132,4 +139,4 @@ class WebSecurityOrigin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SECURITY_ORIGIN_H_

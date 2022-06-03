@@ -9,17 +9,18 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_config.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,9 @@ class SSLConfigServiceManagerPrefTest : public testing::Test,
     // steal the only two params that the |config_manager| populates.
     network::mojom::NetworkContextParamsPtr network_context_params =
         network::mojom::NetworkContextParams::New();
+    network_context_params->cert_verifier_params =
+        content::GetCertVerifierParams(
+            cert_verifier::mojom::CertVerifierCreationParams::New());
     config_manager->AddToNetworkContextParams(network_context_params.get());
     EXPECT_TRUE(network_context_params->initial_ssl_config);
     initial_config_ = std::move(network_context_params->initial_ssl_config);
@@ -88,7 +92,7 @@ class SSLConfigServiceManagerPrefTest : public testing::Test,
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   TestingPrefServiceSimple local_state_;
 
@@ -110,8 +114,8 @@ TEST_F(SSLConfigServiceManagerPrefTest, GoodDisabledCipherSuites) {
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
   auto list_value = std::make_unique<base::ListValue>();
-  list_value->AppendString("0x0004");
-  list_value->AppendString("0x0005");
+  list_value->Append("0x0004");
+  list_value->Append("0x0005");
   local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list_value));
 
   // Wait for the SSLConfigServiceManagerPref to be notified of the preferences
@@ -137,10 +141,10 @@ TEST_F(SSLConfigServiceManagerPrefTest, BadDisabledCipherSuites) {
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
   auto list_value = std::make_unique<base::ListValue>();
-  list_value->AppendString("0x0004");
-  list_value->AppendString("TLS_NOT_WITH_A_CIPHER_SUITE");
-  list_value->AppendString("0x0005");
-  list_value->AppendString("0xBEEFY");
+  list_value->Append("0x0004");
+  list_value->Append("TLS_NOT_WITH_A_CIPHER_SUITE");
+  list_value->Append("0x0005");
+  list_value->Append("0xBEEFY");
   local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list_value));
 
   // Wait for the SSLConfigServiceManagerPref to be notified of the preferences
@@ -155,7 +159,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, BadDisabledCipherSuites) {
 }
 
 // Test that without command-line settings for minimum and maximum SSL versions,
-// TLS versions from 1.0 up to 1.1 or 1.2 are enabled.
+// TLS versions from 1.2 are enabled.
 TEST_F(SSLConfigServiceManagerPrefTest, NoCommandLinePrefs) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
   TestingPrefServiceSimple local_state;
@@ -194,8 +198,26 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoSSL3) {
   EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
 }
 
-// Tests that SSLVersionMin correctly sets the minimum version.
-TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMin) {
+// Tests that "tls1" is not treated as a valid minimum version.
+TEST_F(SSLConfigServiceManagerPrefTest, NoTLS10) {
+  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
+
+  TestingPrefServiceSimple local_state;
+  local_state.SetUserPref(prefs::kSSLVersionMin,
+                          std::make_unique<base::Value>("tls1"));
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  // The command-line option must not have been honored.
+  EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
+  EXPECT_LE(network::mojom::SSLVersion::kTLS12,
+            initial_config_->version_min_warn);
+}
+
+// Tests that "tls1.1" is not treated as a valid minimum version.
+TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -206,7 +228,25 @@ TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMin) {
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
 
-  EXPECT_EQ(network::mojom::SSLVersion::kTLS11, initial_config_->version_min);
+  // The command-line option must not have been honored.
+  EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
+  EXPECT_LE(network::mojom::SSLVersion::kTLS12,
+            initial_config_->version_min_warn);
+}
+
+// Tests that SSLVersionMin correctly sets the minimum version.
+TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMin) {
+  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
+
+  TestingPrefServiceSimple local_state;
+  local_state.SetUserPref(prefs::kSSLVersionMin,
+                          std::make_unique<base::Value>("tls1.3"));
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  EXPECT_EQ(network::mojom::SSLVersion::kTLS13, initial_config_->version_min);
 }
 
 // Tests that SSL max version correctly sets the maximum version.
@@ -215,13 +255,13 @@ TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMax) {
 
   TestingPrefServiceSimple local_state;
   local_state.SetUserPref(prefs::kSSLVersionMax,
-                          std::make_unique<base::Value>("tls1.3"));
+                          std::make_unique<base::Value>("tls1.2"));
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
 
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
 
-  EXPECT_EQ(network::mojom::SSLVersion::kTLS13, initial_config_->version_max);
+  EXPECT_EQ(network::mojom::SSLVersion::kTLS12, initial_config_->version_max);
 }
 
 // Tests that SSL max version can not be set below TLS 1.2.
@@ -300,58 +340,4 @@ TEST_F(SSLConfigServiceManagerPrefTest,
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
 
   EXPECT_TRUE(observed_configs_[0]->rev_checking_required_local_anchors);
-}
-
-// Tests that the TLS 1.3 hardening pref correctly interacts with the feature
-// flag.
-TEST_F(SSLConfigServiceManagerPrefTest, TLS13HardeningForLocalAnchorsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kTLS13HardeningForLocalAnchors);
-
-  TestingPrefServiceSimple local_state;
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-
-  // With the feature disabled, the hardening is disabled by default.
-  EXPECT_FALSE(initial_config_->tls13_hardening_for_local_anchors_enabled);
-
-  // It can be enabled via preference.
-  local_state.SetUserPref(prefs::kTLS13HardeningForLocalAnchorsEnabled,
-                          std::make_unique<base::Value>(true));
-  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_TRUE(observed_configs_[0]->tls13_hardening_for_local_anchors_enabled);
-
-  // It can then be disabled again.
-  local_state.SetUserPref(prefs::kTLS13HardeningForLocalAnchorsEnabled,
-                          std::make_unique<base::Value>(false));
-  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_FALSE(observed_configs_[1]->tls13_hardening_for_local_anchors_enabled);
-}
-
-// Tests that the TLS 1.3 hardening pref correctly sets the corresponding value
-// in SSL configs.
-TEST_F(SSLConfigServiceManagerPrefTest,
-       TLS13HardeningForLocalAnchorsFeatureEnabled) {
-  TestingPrefServiceSimple local_state;
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-
-  // The hardening is enabled by default.
-  EXPECT_TRUE(initial_config_->tls13_hardening_for_local_anchors_enabled);
-
-  // It can be disabled via preferences.
-  local_state.SetUserPref(prefs::kTLS13HardeningForLocalAnchorsEnabled,
-                          std::make_unique<base::Value>(false));
-  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_FALSE(observed_configs_[0]->tls13_hardening_for_local_anchors_enabled);
-
-  // It can then be enabled again.
-  local_state.SetUserPref(prefs::kTLS13HardeningForLocalAnchorsEnabled,
-                          std::make_unique<base::Value>(true));
-  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_TRUE(observed_configs_[1]->tls13_hardening_for_local_anchors_enabled);
 }

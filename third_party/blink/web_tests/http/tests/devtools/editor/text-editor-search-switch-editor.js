@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that switching editor tabs after searching does not affect editor selection and viewport.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../sources/debugger/resources/edit-me.js');
   await TestRunner.addScriptTag('resources/search-me.js');
@@ -18,17 +18,19 @@
 
   function didShowScriptSource(shownSourceFrame) {
     sourceFrame = shownSourceFrame;
-    textEditor = sourceFrame._textEditor;
-    // We are probably still updating the editor in current callstack, so postponing the test execution.
-    setImmediate(textEditorUpdated);
+    textEditor = sourceFrame.textEditor;
+    // We are probably still updating the editor in current callstack, so postpone the test execution.
+    queueMicrotask(() => {
+      textEditorUpdated();
+    });
   }
 
   function textEditorUpdated(sourceFrame) {
     searchableView.showSearchField();
 
     TestRunner.addResult('Performing search...');
-    searchableView._searchInputElement.value = searchString;
-    searchableView._performSearch(true, true);
+    searchableView.searchInputElement.value = searchString;
+    searchableView.performSearch(true, true);
     TestRunner.addResult('Recording editor viewport after searching...');
 
     var originalViewport = {from: textEditor.firstVisibleLine(), to: textEditor.lastVisibleLine()};

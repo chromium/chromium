@@ -136,7 +136,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SetParameters) {
   dbus::MessageWriter writer(response.get());
   writer.AppendString(std::string("deadbeef"));
 
-  base::DictionaryValue parameters;
+  base::Value parameters(base::Value::Type::DICTIONARY);
   const std::string kAddress("1.1.1.1");
   parameters.SetKey(shill::kAddressParameterThirdPartyVpn,
                     base::Value(kAddress));
@@ -145,7 +145,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SetParameters) {
 
   PrepareForMethodCall(
       shill::kSetParametersFunction,
-      base::BindRepeating(&ExpectDictionaryValueArgument, &parameters, true),
+      base::BindRepeating(&ExpectValueDictionaryArgument, &parameters, true),
       response.get());
 
   client_->SetParameters(

@@ -8,7 +8,7 @@
 #define JINGLE_GLUE_NETWORK_SERVICE_CONFIG_TEST_UTIL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "jingle/glue/network_service_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

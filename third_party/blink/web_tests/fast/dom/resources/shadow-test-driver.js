@@ -89,7 +89,7 @@ function createContentWithText(fallbackText) {
 }
 
 function appendShadow(target, select) {
-    var root = target.createShadowRoot();
+    var root = target.attachShadow({mode: 'open'});
 
     var content = document.createElement('content');
     content.setAttribute('select', select);
@@ -101,7 +101,7 @@ function appendShadow(target, select) {
 }
 
 function appendShadowDeep(target, select) {
-    var root = target.createShadowRoot();
+    var root = target.attachShadow({mode: 'open'});
 
     var child = document.createElement("span");
     {

@@ -4,9 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests scroll rectangles support in in Layers3DViewxScroll rectangles\n`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
-      <div style="transform: translateZ(100px);" onmousewheel=""></div>
+      <div style="transform: translateZ(100px);height:20px;width:30px;" onmousewheel=""></div>
       <div id="touchable" style="transform:translateZ(100px);height:20px;width:20px;overflow:scroll;">
           <div style="height:40px;width:40px;"></div>
       </div>
@@ -23,8 +23,9 @@
 
   TestRunner.addResult('Scroll rectangles');
   LayersTestRunner.layerTreeModel().layerTree().forEachLayer(layer => {
-    if (layer._scrollRects.length > 0)
-      TestRunner.addObject(layer._scrollRects);
+    const scrollRects = layer.scrollRects();
+    if (scrollRects.length > 0)
+      TestRunner.addObject(scrollRects);
   });
   TestRunner.completeTest();
 

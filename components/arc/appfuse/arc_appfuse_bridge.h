@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "components/arc/mojom/appfuse.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -26,9 +25,15 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAppfuseBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcAppfuseBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcAppfuseBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);
+
+  ArcAppfuseBridge(const ArcAppfuseBridge&) = delete;
+  ArcAppfuseBridge& operator=(const ArcAppfuseBridge&) = delete;
+
   ~ArcAppfuseBridge() override;
 
   // mojom::AppfuseHost overrides:
@@ -44,8 +49,6 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
 
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppfuseBridge);
 };
 
 }  // namespace arc

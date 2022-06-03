@@ -16,78 +16,6 @@ MSVC_BIG_WARNING_FLAGS = [
     "/W3",
 ]
 
-LLVM_BIG_WARNING_FLAGS = [
-    "-Wall",
-    "-Wextra",
-    "-Weverything",
-]
-
-# Docs on single flags is preceded by a comment.
-# Docs on groups of flags is preceded by ###.
-LLVM_DISABLE_WARNINGS_FLAGS = [
-    # Abseil does not support C++98
-    "-Wno-c++98-compat-pedantic",
-    # Turns off all implicit conversion warnings. Most are re-enabled below.
-    "-Wno-conversion",
-    "-Wno-covered-switch-default",
-    "-Wno-deprecated",
-    "-Wno-disabled-macro-expansion",
-    "-Wno-double-promotion",
-    ###
-    # Turned off as they include valid C++ code.
-    "-Wno-comma",
-    "-Wno-extra-semi",
-    "-Wno-extra-semi-stmt",
-    "-Wno-packed",
-    "-Wno-padded",
-    ###
-    # Google style does not use unsigned integers, though STL containers
-    # have unsigned types.
-    "-Wno-sign-compare",
-    ###
-    "-Wno-float-conversion",
-    "-Wno-float-equal",
-    "-Wno-format-nonliteral",
-    # Too aggressive: warns on Clang extensions enclosed in Clang-only
-    # compilation paths.
-    "-Wno-gcc-compat",
-    ###
-    # Some internal globals are necessary. Don't do this at home.
-    "-Wno-global-constructors",
-    "-Wno-exit-time-destructors",
-    ###
-    "-Wno-nested-anon-types",
-    "-Wno-non-modular-include-in-module",
-    "-Wno-old-style-cast",
-    # Warns on preferred usage of non-POD types such as string_view
-    "-Wno-range-loop-analysis",
-    "-Wno-reserved-id-macro",
-    "-Wno-shorten-64-to-32",
-    "-Wno-switch-enum",
-    "-Wno-thread-safety-negative",
-    "-Wno-unknown-warning-option",
-    "-Wno-unreachable-code",
-    # Causes warnings on include guards
-    "-Wno-unused-macros",
-    "-Wno-weak-vtables",
-    # Causes warnings on usage of types/compare.h comparison operators.
-    "-Wno-zero-as-null-pointer-constant",
-    ###
-    # Implicit conversion warnings turned off by -Wno-conversion
-    # which are re-enabled below.
-    "-Wbitfield-enum-conversion",
-    "-Wbool-conversion",
-    "-Wconstant-conversion",
-    "-Wenum-conversion",
-    "-Wint-conversion",
-    "-Wliteral-conversion",
-    "-Wnon-literal-null-conversion",
-    "-Wnull-conversion",
-    "-Wobjc-literal-conversion",
-    "-Wno-sign-conversion",
-    "-Wstring-conversion",
-]
-
 LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
     "-Wno-c99-extensions",
     "-Wno-deprecated-declarations",
@@ -109,12 +37,6 @@ LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
     "-Wno-gnu-zero-variadic-macro-arguments",
 ]
 
-MSVC_STYLE_EXCEPTIONS_FLAGS = [
-    "/U_HAS_EXCEPTIONS",
-    "/D_HAS_EXCEPTIONS=1",
-    "/EHsc"
-]
-
 MSVC_DEFINES = [
     "/DNOMINMAX",  # Don't define min and max macros (windows.h)
     # Don't bloat namespace with incompatible winsock versions.
@@ -132,21 +54,18 @@ COPT_VARS = {
         "-Wextra",
         "-Wcast-qual",
         "-Wconversion-null",
+        "-Wformat-security",
         "-Wmissing-declarations",
         "-Woverlength-strings",
         "-Wpointer-arith",
+        "-Wundef",
         "-Wunused-local-typedefs",
         "-Wunused-result",
         "-Wvarargs",
         "-Wvla",  # variable-length array
         "-Wwrite-strings",
-        # gcc-4.x has spurious missing field initializer warnings.
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36750
-        # Remove when gcc-4.x is no longer supported.
-        "-Wno-missing-field-initializers",
-        # Google style does not use unsigned integers, though STL containers
-        # have unsigned types.
-        "-Wno-sign-compare",
+        # Don't define min and max macros (Build on Windows using gcc)
+        "-DNOMINMAX",
     ],
     "ABSL_GCC_TEST_FLAGS": [
         "-Wno-conversion-null",
@@ -157,20 +76,58 @@ COPT_VARS = {
         "-Wno-unused-parameter",
         "-Wno-unused-private-field",
     ],
-    "ABSL_GCC_EXCEPTIONS_FLAGS": ["-fexceptions"],
-    "ABSL_LLVM_FLAGS":
-        LLVM_BIG_WARNING_FLAGS + LLVM_DISABLE_WARNINGS_FLAGS,
+    "ABSL_LLVM_FLAGS": [
+        "-Wall",
+        "-Wextra",
+        "-Wcast-qual",
+        "-Wconversion",
+        "-Wfloat-overflow-conversion",
+        "-Wfloat-zero-conversion",
+        "-Wfor-loop-analysis",
+        "-Wformat-security",
+        "-Wgnu-redeclared-enum",
+        "-Winfinite-recursion",
+        "-Winvalid-constexpr",
+        "-Wliteral-conversion",
+        "-Wmissing-declarations",
+        "-Woverlength-strings",
+        "-Wpointer-arith",
+        "-Wself-assign",
+        "-Wshadow-all",
+        "-Wstring-conversion",
+        "-Wtautological-overlap-compare",
+        "-Wundef",
+        "-Wuninitialized",
+        "-Wunreachable-code",
+        "-Wunused-comparison",
+        "-Wunused-local-typedefs",
+        "-Wunused-result",
+        "-Wvla",
+        "-Wwrite-strings",
+        # Warnings that are enabled by group warning flags like -Wall that we
+        # explicitly disable.
+        "-Wno-float-conversion",
+        "-Wno-implicit-float-conversion",
+        "-Wno-implicit-int-float-conversion",
+        "-Wno-implicit-int-conversion",
+        "-Wno-shorten-64-to-32",
+        "-Wno-sign-conversion",
+        # Disable warnings on unknown warning flags (when warning flags are
+        # unknown on older compiler versions)
+        "-Wno-unknown-warning-option",
+        # Don't define min and max macros (Build on Windows using clang)
+        "-DNOMINMAX",
+    ],
     "ABSL_LLVM_TEST_FLAGS":
         LLVM_TEST_DISABLE_WARNINGS_FLAGS,
-    "ABSL_LLVM_EXCEPTIONS_FLAGS": ["-fexceptions"],
     "ABSL_CLANG_CL_FLAGS":
-        (MSVC_BIG_WARNING_FLAGS + LLVM_DISABLE_WARNINGS_FLAGS + MSVC_DEFINES),
+        (MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES),
     "ABSL_CLANG_CL_TEST_FLAGS":
         LLVM_TEST_DISABLE_WARNINGS_FLAGS,
-    "ABSL_CLANG_CL_EXCEPTIONS_FLAGS":
-        MSVC_STYLE_EXCEPTIONS_FLAGS,
     "ABSL_MSVC_FLAGS":
         MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES + [
+            # Increase the number of sections available in object files
+            "/bigobj",
             "/wd4005",  # macro-redefinition
             "/wd4068",  # unknown pragma
             # qualifier applied to function type has no meaning; ignored
@@ -191,8 +148,6 @@ COPT_VARS = {
         "/wd4996",  # use of deprecated symbol
         "/DNOMINMAX",  # disable the min() and max() macros from <windows.h>
     ],
-    "ABSL_MSVC_EXCEPTIONS_FLAGS":
-        MSVC_STYLE_EXCEPTIONS_FLAGS,
     "ABSL_MSVC_LINKOPTS": [
         # Object file doesn't export any previously undefined symbols
         "-ignore:4221",
@@ -207,8 +162,5 @@ COPT_VARS = {
         "-maes",
         "-msse4.1",
     ],
-    "ABSL_RANDOM_HWAES_MSVC_X64_FLAGS": [
-        "/O2",  # Maximize speed
-        "/Ob2",  # Aggressive inlining
-    ],
+    "ABSL_RANDOM_HWAES_MSVC_X64_FLAGS": [],
 }

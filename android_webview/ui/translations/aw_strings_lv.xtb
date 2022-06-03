@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
-<translation id="6106989379647458772">Tīmekļa lapa <ph name="PAGE" /> var būt īslaicīgi nepieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
-<translation id="6312113039770857350">Tīmekļa lapa nav pieejama</translation>
-<translation id="8681531050781943054">Tīmekļa lapu <ph name="PAGE" /> nevarēja ielādēt tālāk norādīto iemeslu dēļ.</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Ieteikumi.<ph name="MARKUP_2" />Pārbaudiet, vai ir pieejams datu savienojums.<ph name="MARKUP_3" />Ielādējiet šo tīmekļa lapu vēlāk.<ph name="MARKUP_4" />Pārbaudiet, vai ir ievadīta pareiza adrese.<ph name="MARKUP_5" /></translation>
 </translationbundle>

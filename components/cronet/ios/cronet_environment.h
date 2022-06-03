@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -29,6 +28,7 @@ class WaitableEvent;
 
 namespace net {
 class CookieStore;
+class HttpNetworkSession;
 class NetLog;
 class FileNetLogObserver;
 }  // namespace net
@@ -50,6 +50,10 @@ class CronetEnvironment {
   // |user_agent_partial| is true, or will be used as the complete user-agent
   // otherwise.
   CronetEnvironment(const std::string& user_agent, bool user_agent_partial);
+
+  CronetEnvironment(const CronetEnvironment&) = delete;
+  CronetEnvironment& operator=(const CronetEnvironment&) = delete;
+
   ~CronetEnvironment();
 
   // Starts this instance of Cronet environment.
@@ -132,14 +136,15 @@ class CronetEnvironment {
     CronetNetworkThread(const std::string& name,
                         cronet::CronetEnvironment* cronet_environment);
 
+    CronetNetworkThread(const CronetNetworkThread&) = delete;
+    CronetNetworkThread& operator=(const CronetNetworkThread&) = delete;
+
    protected:
     ~CronetNetworkThread() override;
     void CleanUp() override;
 
    private:
     cronet::CronetEnvironment* const cronet_environment_;
-
-    DISALLOW_COPY_AND_ASSIGN(CronetNetworkThread);
   };
 
   // Performs initialization tasks that must happen on the network thread.
@@ -150,13 +155,13 @@ class CronetEnvironment {
 
   // Runs a closure on the network thread.
   void PostToNetworkThread(const base::Location& from_here,
-                           const base::Closure& task);
+                           base::OnceClosure task);
 
   // Helper methods that start/stop net logging on the network thread.
   void StartNetLogOnNetworkThread(const base::FilePath&, bool log_bytes);
   void StopNetLogOnNetworkThread(base::WaitableEvent* log_stopped_event);
 
-  std::unique_ptr<base::DictionaryValue> GetNetLogInfo() const;
+  base::Value GetNetLogInfo() const;
 
   // Returns the HttpNetworkSession object from the passed in
   // URLRequestContext or NULL if none exists.
@@ -205,8 +210,6 @@ class CronetEnvironment {
   bool enable_pkp_bypass_for_local_trust_anchors_;
   double network_thread_priority_;
   std::unique_ptr<CronetPrefsManager> cronet_prefs_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetEnvironment);
 };
 
 }  // namespace cronet

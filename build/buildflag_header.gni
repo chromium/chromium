@@ -104,9 +104,7 @@ template("buildflag_header") {
       header_file = rebase_path(".", "//") + "/${invoker.header}"
     }
 
-    outputs = [
-      "$root_gen_dir/$header_file",
-    ]
+    outputs = [ "$root_gen_dir/$header_file" ]
 
     # Always write --flags to the file so it's not empty. Empty will confuse GN
     # into thinking the response file isn't used.
@@ -134,8 +132,6 @@ template("buildflag_header") {
                              "visibility",
                            ])
 
-    public_deps = [
-      "//build:buildflag_header_h",
-    ]
+    public_deps = [ "//build:buildflag_header_h" ]
   }
 }

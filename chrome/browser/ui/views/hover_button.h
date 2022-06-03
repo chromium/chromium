@@ -5,24 +5,25 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
-
-namespace gfx {
-enum ElideBehavior;
-class ImageSkia;
-}  // namespace gfx
+#include "ui/views/metadata/view_factory.h"
 
 namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
 
+namespace ui {
+class ImageModel;
+}
+
 namespace views {
-class ButtonListener;
 class Label;
 class StyledLabel;
 class View;
@@ -30,41 +31,21 @@ class View;
 
 class PageInfoBubbleViewBrowserTest;
 
-// A special class used for wrapping a single line styled label.
-// |views::StyledLabel|s are all multi-line. With a layout manager,
-// |StyledLabel| will try use the available space to size itself, and long
-// titles will wrap to the next line (for smaller |HoverButton|s, this will
-// also cover up |subtitle_|). Wrap it in a parent view with no layout manager
-// to ensure it keeps its original size set by SizeToFit(). Long titles
-// will then be truncated.
-class SingleLineStyledLabelWrapper : public views::View {
- public:
-  explicit SingleLineStyledLabelWrapper(const base::string16& title);
-  ~SingleLineStyledLabelWrapper() override = default;
-
-  // views::View
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
-  views::StyledLabel* label();
-
- private:
-  views::StyledLabel* label_;
-};
-
 // A button taking the full width of its parent that shows a background color
 // when hovered over.
 class HoverButton : public views::LabelButton {
  public:
+  METADATA_HEADER(HoverButton);
+
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.
-  HoverButton(views::ButtonListener* button_listener,
-              const base::string16& text);
+  HoverButton(PressedCallback callback, const std::u16string& text);
 
   // Creates a single line hover button with an icon.
-  HoverButton(views::ButtonListener* button_listener,
-              const gfx::ImageSkia& icon,
-              const base::string16& text);
+  HoverButton(PressedCallback callback,
+              const ui::ImageModel& icon,
+              const std::u16string& text);
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
@@ -73,14 +54,18 @@ class HoverButton : public views::LabelButton {
   // When |resize_row_for_secondary_icon| is false, the button tries to
   // accommodate the view's preferred size by reducing the top and bottom
   // insets appropriately up to a value of 0.
-  HoverButton(views::ButtonListener* button_listener,
+  // Warning: |icon_view| must have a fixed size and be correctly set during its
+  // constructor for the HoverButton to layout correctly.
+  HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
-              const base::string16& title,
-              const base::string16& subtitle,
+              const std::u16string& title,
+              const std::u16string& subtitle = std::u16string(),
               std::unique_ptr<views::View> secondary_view = nullptr,
               bool resize_row_for_secondary_view = true,
               bool secondary_view_can_process_events = false);
 
+  HoverButton(const HoverButton&) = delete;
+  HoverButton& operator=(const HoverButton&) = delete;
   ~HoverButton() override;
 
   static SkColor GetInkDropColor(const views::View* view);
@@ -88,21 +73,7 @@ class HoverButton : public views::LabelButton {
   // views::LabelButton:
   void SetBorder(std::unique_ptr<views::Border> b) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Insets GetInsets() const override;
-
-  // Updates the title text, and applies the secondary style to the text
-  // specified by |range|. If |range| is invalid, no style is applied. This
-  // method is only supported for |HoverButton|s created with a title and
-  // subtitle.
-  void SetTitleTextWithHintRange(const base::string16& title_text,
-                                 const gfx::Range& range);
-
-  // This method is only supported for |HoverButton|s created with a title and
-  // non-empty subtitle.
-  void SetSubtitleElideBehavior(gfx::ElideBehavior elide_behavior);
-
-  // Adjusts the background and the text color according to |style|.
-  void SetStyle(Style style);
+  void OnViewBoundsChanged(View* observed_view) override;
 
   // Sets the text style of the title considering the color of the background.
   // Passing |background_color| makes sure that the text color will not be
@@ -110,20 +81,15 @@ class HoverButton : public views::LabelButton {
   void SetTitleTextStyle(views::style::TextStyle text_style,
                          SkColor background_color);
 
-  void SetSubtitleColor(SkColor color);
-
-  void set_auto_compute_tooltip(bool auto_compute_tooltip) {
-    auto_compute_tooltip_ = auto_compute_tooltip;
-  }
+  // Updates the accessible name and tooltip of the button if necessary based on
+  // |title_| and |subtitle_| labels.
+  void SetTooltipAndAccessibleName();
 
  protected:
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
-  SkColor GetInkDropBaseColor() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   views::StyledLabel* title() const { return title_; }
   views::Label* subtitle() const { return subtitle_; }
@@ -142,25 +108,19 @@ class HoverButton : public views::LabelButton {
   friend class PageInfoBubbleViewBrowserTest;
 
   views::StyledLabel* title_ = nullptr;
+  views::View* label_wrapper_ = nullptr;
   views::Label* subtitle_ = nullptr;
   views::View* icon_view_ = nullptr;
   views::View* secondary_view_ = nullptr;
 
-  // The horizontal space the padding and icon take up. Used for calculating the
-  // available space for |title_|, if it exists.
-  int taken_width_ = 0;
-
-  // Custom insets, when secondary_view_ is larger than the rest of the row.
-  base::Optional<gfx::Insets> insets_;
-
-  // Whether this |HoverButton|'s accessible name and tooltip should be computed
-  // from the |title_| and |subtitle_| text.
-  bool auto_compute_tooltip_ = true;
-
-  // Listener to be called when button is clicked.
-  views::ButtonListener* listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(HoverButton);
+  base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
+      this};
 };
+
+BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
+VIEW_BUILDER_METHOD(SetTitleTextStyle, views::style::TextStyle, SkColor)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, HoverButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_

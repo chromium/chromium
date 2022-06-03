@@ -13,9 +13,8 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
 
@@ -24,9 +23,12 @@ class FilePath;
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace updater {
+namespace winhttp {
+class NetworkFetcher;
+class ProxyConfiguration;
+}  // namespace winhttp
 
-class NetworkFetcherWinHTTP;
+namespace updater {
 
 class NetworkFetcher : public update_client::NetworkFetcher {
  public:
@@ -38,13 +40,17 @@ class NetworkFetcher : public update_client::NetworkFetcher {
   using DownloadToFileCompleteCallback =
       update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-  explicit NetworkFetcher(const HINTERNET& session_handle_);
+  NetworkFetcher(const HINTERNET& session_handle,
+                 scoped_refptr<winhttp::ProxyConfiguration> proxy_config);
   ~NetworkFetcher() override;
+  NetworkFetcher(const NetworkFetcher&) = delete;
+  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
 
   // NetworkFetcher overrides.
   void PostRequest(
       const GURL& url,
       const std::string& post_data,
+      const std::string& content_type,
       const base::flat_map<std::string, std::string>& post_additional_headers,
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
@@ -57,18 +63,16 @@ class NetworkFetcher : public update_client::NetworkFetcher {
                           download_to_file_complete_callback) override;
 
  private:
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   void PostRequestComplete();
   void DownloadToFileComplete();
 
-  scoped_refptr<NetworkFetcherWinHTTP> network_fetcher_;
+  scoped_refptr<winhttp::NetworkFetcher> winhttp_network_fetcher_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   DownloadToFileCompleteCallback download_to_file_complete_callback_;
   PostRequestCompleteCallback post_request_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcher);
 };
 
 }  // namespace updater

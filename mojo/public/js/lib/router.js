@@ -165,10 +165,10 @@
       return new internal.InterfaceEndpointHandle();
     }
 
-    // Unless it is the master ID, |interfaceId| is from the remote side and
+    // Unless it is the primary ID, |interfaceId| is from the remote side and
     // therefore its namespace bit is supposed to be different than the value
     // that this router would use.
-    if (!internal.isMasterInterfaceId(interfaceId) &&
+    if (!internal.isPrimaryInterfaceId(interfaceId) &&
         this.setInterfaceIdNamespaceBit_ ===
             internal.hasInterfaceIdNamespaceBitSet(interfaceId)) {
       return new internal.InterfaceEndpointHandle();
@@ -290,7 +290,7 @@
     this.updateEndpointStateMayRemove(endpoint,
         EndpointStateUpdateType.ENDPOINT_CLOSED);
 
-    if (!internal.isMasterInterfaceId(interfaceId) || reason) {
+    if (!internal.isPrimaryInterfaceId(interfaceId) || reason) {
       this.controlMessageProxy_.notifyPeerEndpointClosed(interfaceId, reason);
     }
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/logging.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/codec/jpeg_codec.h"

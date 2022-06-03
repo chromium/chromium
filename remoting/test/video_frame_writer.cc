@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/gfx/codec/png_codec.h"

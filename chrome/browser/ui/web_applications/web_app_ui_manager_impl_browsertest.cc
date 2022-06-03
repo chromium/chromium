@@ -5,23 +5,29 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
 #include "base/barrier_closure.h"
-#include "base/test/bind_test_util.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
+#include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -31,56 +37,33 @@
 
 namespace web_app {
 
-namespace {
-
-// Waits for |browser| to be removed from BrowserList and then calls |callback|.
-class BrowserRemovedWaiter final : public BrowserListObserver {
- public:
-  explicit BrowserRemovedWaiter(Browser* browser) : browser_(browser) {}
-  ~BrowserRemovedWaiter() override = default;
-
-  void Wait() {
-    BrowserList::AddObserver(this);
-    run_loop_.Run();
-  }
-
-  // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_)
-      return;
-
-    BrowserList::RemoveObserver(this);
-    // Post a task to ensure the Remove event has been dispatched to all
-    // observers.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
-  }
-
- private:
-  Browser* browser_;
-  base::RunLoop run_loop_;
-};
-
-void CloseAndWait(Browser* browser) {
-  BrowserRemovedWaiter waiter(browser);
-  browser->window()->Close();
-  waiter.Wait();
-}
-
-}  // namespace
-
-const GURL kFooUrl = GURL("https://foo.example");
-const GURL kBarUrl = GURL("https://bar.example");
-
 class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
+ public:
+  WebAppUiManagerImplBrowserTest()
+      : fake_web_app_provider_creator_(base::BindRepeating(
+            &WebAppUiManagerImplBrowserTest::CreateFakeWebAppProvider,
+            base::Unretained(this))) {}
+
  protected:
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
+
   Profile* profile() { return browser()->profile(); }
 
-  const AppId InstallWebApp(const GURL& app_url) {
+  const AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->app_url = app_url;
-    web_app_info->open_as_window = true;
-    return web_app::InstallWebApp(profile(), std::move(web_app_info));
+    web_app_info->start_url = start_url;
+    web_app_info->user_display_mode = DisplayMode::kStandalone;
+    return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  }
+
+  void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback) {
+    return web_app::UninstallWebAppWithCallback(profile(), app_id,
+                                                std::move(callback));
   }
 
   Browser* LaunchWebApp(const AppId& app_id) {
@@ -88,8 +71,27 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppUiManager& ui_manager() {
-    return WebAppProviderBase::GetProviderBase(profile())->ui_manager();
+    return WebAppProvider::GetForTest(profile())->ui_manager();
   }
+
+  TestShortcutManager* shortcut_manager_;
+  FakeOsIntegrationManager* os_integration_manager_;
+
+ private:
+  std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
+    auto provider = std::make_unique<FakeWebAppProvider>(profile);
+    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile);
+    shortcut_manager_ = shortcut_manager.get();
+    auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
+        profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
+    os_integration_manager_ = os_integration_manager.get();
+    provider->SetOsIntegrationManager(std::move(os_integration_manager));
+    provider->Start();
+    DCHECK(provider);
+    return provider;
+  }
+
+  FakeWebAppProviderCreator fake_web_app_provider_creator_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
@@ -97,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   // Zero apps on start:
   EXPECT_EQ(0u, ui_manager().GetNumWindowsForApp(AppId()));
 
-  AppId foo_app_id = InstallWebApp(kFooUrl);
+  AppId foo_app_id = InstallWebApp(GURL("https://foo.example"));
   LaunchWebApp(foo_app_id);
   EXPECT_EQ(1u, ui_manager().GetNumWindowsForApp(foo_app_id));
 
@@ -106,12 +108,42 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
+                       UninstallDuringLastBrowserWindow) {
+  // Zero apps on start:
+  EXPECT_EQ(0u, ui_manager().GetNumWindowsForApp(AppId()));
+  AppId foo_app_id = InstallWebApp(GURL("https://foo.example"));
+  LaunchWebApp(foo_app_id);
+  EXPECT_EQ(1u, ui_manager().GetNumWindowsForApp(foo_app_id));
+  // It has 2 browser window object.
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  // Retrieve the provider before closing the browser, as this causes a crash.
+  WebAppProvider* provider = web_app::WebAppProvider::GetForTest(profile());
+  web_app::CloseAndWait(browser());
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  // Uninstalling should close the |app_browser|, but keep the browser
+  // object alive long enough to complete the uninstall.
+  base::RunLoop run_loop;
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(foo_app_id));
+  provider->install_finalizer().UninstallWebApp(
+      foo_app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  web_app::WaitForBrowserToBeClosed(app_browser);
+
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
                        GetNumWindowsForApp_AppWindowsRemoved) {
-  AppId foo_app_id = InstallWebApp(kFooUrl);
+  AppId foo_app_id = InstallWebApp(GURL("https://foo.example"));
   auto* foo_window1 = LaunchWebApp(foo_app_id);
   auto* foo_window2 = LaunchWebApp(foo_app_id);
 
-  AppId bar_app_id = InstallWebApp(kBarUrl);
+  AppId bar_app_id = InstallWebApp(GURL("https://bar.example"));
   LaunchWebApp(bar_app_id);
 
   EXPECT_EQ(2u, ui_manager().GetNumWindowsForApp(foo_app_id));
@@ -130,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
                        NotifyOnAllAppWindowsClosed_NoOpenedWindows) {
-  AppId foo_app_id = InstallWebApp(kFooUrl);
-  AppId bar_app_id = InstallWebApp(kBarUrl);
+  AppId foo_app_id = InstallWebApp(GURL("https://foo.example"));
+  AppId bar_app_id = InstallWebApp(GURL("https://bar.example"));
   LaunchWebApp(bar_app_id);
 
   base::RunLoop run_loop;
@@ -144,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 // app window.
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
                        NotifyOnAllAppWindowsClosed_MultipleOpenedWindows) {
-  AppId foo_app_id = InstallWebApp(kFooUrl);
-  AppId bar_app_id = InstallWebApp(kBarUrl);
+  AppId foo_app_id = InstallWebApp(GURL("https://foo.example"));
+  AppId bar_app_id = InstallWebApp(GURL("https://bar.example"));
 
   // Test that NotifyOnAllAppWindowsClosed can be called more than once for
   // the same app.
@@ -176,92 +208,78 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   }
 }
 
-#if defined(OS_CHROMEOS)
-class WebAppUiManagerMigrationBrowserTest
-    : public WebAppUiManagerImplBrowserTest {
- public:
-  void SetUp() override {
-    hide_settings_app_for_testing_ =
-        apps::BuiltInChromeOsApps::SetHideSettingsAppForTesting(true);
-    // Disable System Web Apps so that the Internal Apps are installed.
-    scoped_feature_list_.InitAndDisableFeature(features::kSystemWebApps);
-    WebAppUiManagerImplBrowserTest::SetUp();
-  }
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Regression test for crbug.com/1182030
+IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
+                       WebAppMigrationPreservesShortcutStates) {
+  const GURL kOldAppUrl("https://old.app.com");
+  // Install an old app to be replaced.
+  AppId old_app_id = InstallWebApp(kOldAppUrl);
 
-  void TearDown() override {
-    WebAppUiManagerImplBrowserTest::TearDown();
-    apps::BuiltInChromeOsApps::SetHideSettingsAppForTesting(
-        hide_settings_app_for_testing_);
-  }
+  // Set up the existing shortcuts.
+  auto shortcut_info = std::make_unique<ShortcutInfo>();
+  shortcut_info->url = kOldAppUrl;
+  shortcut_manager_->SetShortcutInfoForApp(old_app_id,
+                                           std::move(shortcut_info));
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.in_startup = true;
+  shortcut_manager_->SetAppExistingShortcuts(kOldAppUrl, locations);
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  bool hide_settings_app_for_testing_ = false;
-};
+  // Install a new app to migrate the old one to.
+  AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
+  ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->FlushMojoCallsForTesting();
 
-// Tests that the Settings app migrates the launcher and app list details from
-// the Settings internal app.
-//
-// TODO(https://crbug.com/1012967): Find a way to implement this that does not
-// depend on unsupported behavior of the FeatureList API.
-IN_PROC_BROWSER_TEST_F(WebAppUiManagerMigrationBrowserTest,
-                       DISABLED_SettingsSystemWebAppMigration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kSystemWebApps);
+  EXPECT_TRUE(os_integration_manager_->did_add_to_desktop());
+  auto options = os_integration_manager_->get_last_install_options();
+  EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
+  EXPECT_FALSE(options->add_to_quick_launch_bar);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  auto& system_web_app_manager =
-      WebAppProvider::Get(browser()->profile())->system_web_app_manager();
-
-  auto* app_list_service =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that app migrations use the UI preferences of the replaced app but only
+// if it's present.
+IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
+  app_list::AppListSyncableService* app_list_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(
           browser()->profile());
 
-  // Pin the Settings Internal App.
-  syncer::StringOrdinal pin_position =
-      syncer::StringOrdinal::CreateInitialOrdinal();
-  pin_position = pin_position.CreateAfter().CreateAfter();
-  app_list_service->SetPinPosition(ash::kInternalAppIdSettings, pin_position);
+  // Install an old app to be replaced.
+  AppId old_app_id = InstallWebApp(GURL("https://old.app.com"));
+  app_list_service->SetPinPosition(old_app_id,
+                                   syncer::StringOrdinal("positionold"));
 
-  // Add the Settings Internal App to a folder.
-  AppListModelUpdater* updater =
-      test::GetModelUpdater(test::GetAppListClient());
-  updater->MoveItemToFolder(ash::kInternalAppIdSettings, "asdf");
-
-  // Install the Settings System Web App, which should be immediately migrated
-  // to the Settings Internal App's details.
-  system_web_app_manager.InstallSystemAppsForTesting();
-  std::string settings_system_web_app_id =
-      *system_web_app_manager.GetAppIdForSystemApp(SystemAppType::SETTINGS);
+  // Install a new app to migrate the old one to.
+  AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
   {
-    const app_list::AppListSyncableService::SyncItem* web_app_item =
-        app_list_service->GetSyncItem(settings_system_web_app_id);
-    const app_list::AppListSyncableService::SyncItem* internal_app_item =
-        app_list_service->GetSyncItem(ash::kInternalAppIdSettings);
-
-    EXPECT_TRUE(internal_app_item->item_pin_ordinal.Equals(
-        web_app_item->item_pin_ordinal));
-    EXPECT_TRUE(
-        internal_app_item->item_ordinal.Equals(web_app_item->item_ordinal));
-    EXPECT_EQ(internal_app_item->parent_id, web_app_item->parent_id);
+    WebAppTestUninstallObserver waiter(browser()->profile());
+    waiter.BeginListening({old_app_id});
+    ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
+    waiter.Wait();
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->FlushMojoCallsForTesting();
   }
 
-  // Change Settings System Web App properties.
-  app_list_service->SetPinPosition(
-      settings_system_web_app_id,
-      syncer::StringOrdinal::CreateInitialOrdinal());
-  updater->MoveItemToFolder(settings_system_web_app_id, std::string());
+  // New app should acquire old app's pin position.
+  EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
+                ->item_pin_ordinal.ToDebugString(),
+            "positionold");
 
-  // Do migration again with the already-installed app. Should be a no-op.
-  system_web_app_manager.InstallSystemAppsForTesting();
-  {
-    const app_list::AppListSyncableService::SyncItem* web_app_item =
-        app_list_service->GetSyncItem(settings_system_web_app_id);
+  // Change the new app's pin position.
+  app_list_service->SetPinPosition(new_app_id,
+                                   syncer::StringOrdinal("positionnew"));
 
-    EXPECT_TRUE(syncer::StringOrdinal::CreateInitialOrdinal().Equals(
-        web_app_item->item_pin_ordinal));
-    EXPECT_EQ(std::string(), web_app_item->parent_id);
-  }
+  // Do migration again. New app should not move.
+  ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->FlushMojoCallsForTesting();
+  EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
+                ->item_pin_ordinal.ToDebugString(),
+            "positionnew");
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

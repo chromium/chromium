@@ -7,7 +7,8 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -25,10 +26,11 @@ class BinderMapTest : public testing::Test {
  public:
   BinderMapTest() = default;
 
+  BinderMapTest(const BinderMapTest&) = delete;
+  BinderMapTest& operator=(const BinderMapTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BinderMapTest);
 };
 
 class TestInterface1Impl : public mojom::TestInterface1 {
@@ -41,14 +43,6 @@ class TestInterface1Impl : public mojom::TestInterface1 {
     if (expected_task_runner)
       EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
     receiver_.Bind(std::move(receiver));
-  }
-
-  void BindFromRequest(
-      scoped_refptr<base::SequencedTaskRunner> expected_task_runner,
-      mojom::TestInterface1Request request) {
-    if (expected_task_runner)
-      EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
-    receiver_.Bind(std::move(request));
   }
 
  private:
@@ -75,8 +69,7 @@ TEST_F(BinderMapTest, NoMatch) {
   Remote<mojom::TestInterface1> remote;
   GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
   BinderMap empty_map;
-  EXPECT_FALSE(empty_map.CanBind(receiver));
-  EXPECT_FALSE(empty_map.Bind(&receiver));
+  EXPECT_FALSE(empty_map.TryBind(&receiver));
 }
 
 TEST_F(BinderMapTest, BasicMatch) {
@@ -88,23 +81,26 @@ TEST_F(BinderMapTest, BasicMatch) {
   map.Add(base::BindRepeating(&TestInterface1Impl::Bind,
                               base::Unretained(&impl), nullptr),
           base::SequencedTaskRunnerHandle::Get());
-  EXPECT_TRUE(map.CanBind(receiver));
-  EXPECT_TRUE(map.Bind(&receiver));
+  EXPECT_TRUE(map.TryBind(&receiver));
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
 }
 
-TEST_F(BinderMapTest, BasicMatchWithInterfaceRequestCallback) {
+TEST_F(BinderMapTest, WithContext) {
   Remote<mojom::TestInterface1> remote;
   GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
 
+  int context = 42;
   TestInterface1Impl impl;
-  BinderMap map;
-  map.Add(base::BindRepeating(&TestInterface1Impl::BindFromRequest,
-                              base::Unretained(&impl), nullptr),
-          base::SequencedTaskRunnerHandle::Get());
-  EXPECT_TRUE(map.CanBind(receiver));
-  EXPECT_TRUE(map.Bind(&receiver));
+  BinderMapWithContext<int*> map;
+  map.Add(base::BindRepeating(
+      [](TestInterface1Impl* impl, int* expected_context, int* context,
+         mojo::PendingReceiver<mojom::TestInterface1> receiver) {
+        EXPECT_EQ(context, expected_context);
+        impl->Bind(nullptr, std::move(receiver));
+      },
+      base::Unretained(&impl), base::Unretained(&context)));
+  EXPECT_TRUE(map.TryBind(&context, &receiver));
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
 }
@@ -116,8 +112,8 @@ TEST_F(BinderMapTest, CorrectSequence) {
   Remote<mojom::TestInterface2> remote2;
   GenericPendingReceiver receiver2(remote2.BindNewPipeAndPassReceiver());
 
-  auto task_runner1 = base::CreateSequencedTaskRunner({base::CurrentThread()});
-  auto task_runner2 = base::CreateSequencedTaskRunner({base::ThreadPool()});
+  auto task_runner1 = base::SequencedTaskRunnerHandle::Get();
+  auto task_runner2 = base::ThreadPool::CreateSequencedTaskRunner({});
 
   TestInterface1Impl impl1;
   std::unique_ptr<TestInterface2Impl> impl2;
@@ -137,8 +133,8 @@ TEST_F(BinderMapTest, CorrectSequence) {
   map.Add(base::BindRepeating(&TestInterface2Impl::Bind,
                               base::Unretained(impl2.get()), task_runner2),
           task_runner2);
-  EXPECT_TRUE(map.Bind(&receiver1));
-  EXPECT_TRUE(map.Bind(&receiver2));
+  EXPECT_TRUE(map.TryBind(&receiver1));
+  EXPECT_TRUE(map.TryBind(&receiver2));
   remote1.FlushForTesting();
   remote2.FlushForTesting();
   EXPECT_TRUE(remote1.is_connected());

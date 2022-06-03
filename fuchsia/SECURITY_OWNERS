@@ -1,0 +1,16 @@
+# Changes to integration with the Fuchsia platform, or peer components, require
+# security review to avoid introducing sandbox escapes. These include:
+# - Critical platform integrations (e.g. shared memory, process launching).
+# - Changes to Chromium-defined Fuchsia IPC (aka FIDL) protocols.
+# - Addition of new FIDL services to child process sandboxes.
+# - Addition of new FIDL clients and implementations.
+#
+# Security team: If you are uncomfortable reviewing a particular bit of code
+# yourself, don't hesitate to seek help from another security team member!
+# Nobody knows everything, and the only way to learn is from experience.
+
+# Please keep reviewers ordered alphabetically by LDAP.
+ajgo@chromium.org
+rsesek@chromium.org
+tsepez@chromium.org
+wez@chromium.org

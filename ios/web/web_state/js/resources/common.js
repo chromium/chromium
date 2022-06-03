@@ -6,7 +6,7 @@
 
 goog.provide('__crWeb.common');
 
-goog.require('__crWeb.base');
+// Requires __crWeb.base.
 
 /** @typedef {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} */
 var FormControlElement;
@@ -202,32 +202,6 @@ __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
   // URL.protocol is used instead.
   return (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
       parsed.pathname;
-};
-
-/**
- * Retrieves favicon information.
- *
- * @return {Object} Object containing favicon data.
- */
-__gCrWeb.common.getFavicons = function() {
-  var favicons = [];
-  delete favicons.toJSON;  // Never inherit Array.prototype.toJSON.
-  var links = document.getElementsByTagName('link');
-  var linkCount = links.length;
-  for (var i = 0; i < linkCount; ++i) {
-    if (links[i].rel) {
-      var rel = links[i].rel.toLowerCase();
-      if (rel == 'shortcut icon' || rel == 'icon' ||
-          rel == 'apple-touch-icon' || rel == 'apple-touch-icon-precomposed') {
-        var favicon = {rel: links[i].rel.toLowerCase(), href: links[i].href};
-        if (links[i].sizes && links[i].sizes.value) {
-          favicon.sizes = links[i].sizes.value;
-        }
-        favicons.push(favicon);
-      }
-    }
-  }
-  return favicons;
 };
 
 /**

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -17,20 +19,10 @@
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/nesting_level_incrementer.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
-
-namespace {
-bool ShouldAssignToCustomSlot(const Node& node) {
-  if (IsA<HTMLDetailsElement>(node.parentElement()))
-    return HTMLDetailsElement::IsFirstSummary(node);
-  if (IsA<HTMLSelectElement>(node.parentElement()))
-    return HTMLSelectElement::CanAssignToSelectSlot(node);
-  if (IsA<HTMLOptGroupElement>(node.parentElement()))
-    return HTMLOptGroupElement::CanAssignToOptGroupSlot(node);
-  return false;
-}
-}  // anonymous namespace
 
 void SlotAssignment::DidAddSlot(HTMLSlotElement& slot) {
   // Relevant DOM Standard:
@@ -43,7 +35,7 @@ void SlotAssignment::DidAddSlot(HTMLSlotElement& slot) {
   needs_collect_slots_ = true;
 
   if (owner_->IsManualSlotting()) {
-    SetNeedsAssignmentRecalc();
+    // Adding a new slot should not require assignment recalc.
     return;
   }
 
@@ -66,11 +58,14 @@ void SlotAssignment::DidRemoveSlot(HTMLSlotElement& slot) {
   needs_collect_slots_ = true;
 
   if (owner_->IsManualSlotting()) {
-    SetNeedsAssignmentRecalc();
+    auto& candidates = slot.ManuallyAssignedNodes();
+    if (candidates.size()) {
+      SetNeedsAssignmentRecalc();
+      slot.DidSlotChangeAfterRemovedFromShadowTree();
+    }
     return;
   }
 
-  DCHECK(GetCachedFirstSlotWithoutAccessingNodeTree(slot.GetName()));
   DidRemoveSlotInternal(slot, slot.GetName(), SlotMutationType::kRemoved);
   // Ensures that TreeOrderedMap has a cache if there is a slot for the name.
   DCHECK(!slot_map_->Contains(slot.GetName()) ||
@@ -90,7 +85,7 @@ void SlotAssignment::DidAddSlotInternal(HTMLSlotElement& slot) {
 
   // At this timing, we can't use FindSlotByName because what we are interested
   // in is the first slot *before* |slot| was inserted. Here, |slot| was already
-  // disconnected from the tree. Thus, we can't use on FindBySlotName because
+  // connected to the tree. Thus, we can't use on FindBySlotName because
   // it might scan the current tree and return a wrong result.
   HTMLSlotElement* old_active =
       GetCachedFirstSlotWithoutAccessingNodeTree(slot_name);
@@ -139,11 +134,18 @@ void SlotAssignment::DidRemoveSlotInternal(
 
   // At this timing, we can't use FindSlotByName because what we are interested
   // in is the first slot *before* |slot| was removed. Here, |slot| was already
-  // connected to the tree. Thus, we can't use FindBySlotName because
+  // disconnected from the tree. Thus, we can't use FindBySlotName because
   // it might scan the current tree and return a wrong result.
   HTMLSlotElement* old_active =
       GetCachedFirstSlotWithoutAccessingNodeTree(slot_name);
-  DCHECK(old_active);
+
+  // If we don't have a cached slot for this slot name, then we're
+  // likely removing a nested identically named slot, e.g.
+  // <slot id=removed><slot></slot</slot>, and this is the inner
+  // slot. It has already been removed from the map, so return.
+  if (!old_active)
+    return;
+
   slot_map_->Remove(slot_name, slot);
   // This also ensures that TreeOrderedMap has a cache for the first element.
   HTMLSlotElement* new_active = FindSlotByName(slot_name);
@@ -217,7 +219,6 @@ SlotAssignment::SlotAssignment(ShadowRoot& owner)
       owner_(&owner),
       needs_collect_slots_(false),
       slot_count_(0) {
-  DCHECK(owner.IsV1());
 }
 
 void SlotAssignment::SetNeedsAssignmentRecalc() {
@@ -225,80 +226,126 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
   if (owner_->isConnected()) {
     owner_->GetDocument().GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
         *owner_);
+    owner_->GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
   }
 }
 
 void SlotAssignment::RecalcAssignment() {
   if (!needs_assignment_recalc_)
     return;
-  NestingLevelIncrementer slot_assignment_recalc_depth(
-      owner_->GetDocument().SlotAssignmentRecalcDepth());
+  {
+    NestingLevelIncrementer slot_assignment_recalc_depth(
+        owner_->GetDocument().SlotAssignmentRecalcDepth());
 
-#if DCHECK_IS_ON()
-  DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
+// TODO(crbug.com/1176575): Revert https://crrev.com/c/2686770 to re-enable this
+// DCHECK on CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for
+// more details.
+#if DCHECK_IS_ON() && !defined(OS_CHROMEOS)
+    DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
 #endif
-  // To detect recursive RecalcAssignment, which shouldn't happen.
-  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(owner_->GetDocument());
+    // To detect recursive RecalcAssignment, which shouldn't happen.
+    SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
+        owner_->GetDocument());
 
-  FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
-      owner_->GetDocument());
+    // The accessibility cache must be invalidated before flat tree traversal
+    // is forbidden, because the process of invalidation accesses the old flat
+    // tree children in order to clean up soon to be stale relationships.
+    // Any <slot> within this shadow root may lose or gain flat tree children
+    // during slot reassignment, so call ChildrenChanged() on all of them.
+    if (AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache()) {
+      for (Member<HTMLSlotElement> slot : Slots())
+        cache->SlotAssignmentWillChange(slot);
+    }
 
-  needs_assignment_recalc_ = false;
+    FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
+        owner_->GetDocument());
 
-  for (Member<HTMLSlotElement> slot : Slots())
-    slot->WillRecalcAssignedNodes();
+    if (owner_->IsUserAgent() && owner_->IsManualSlotting()) {
+      owner_->host().ManuallyAssignSlots();
+    }
+    needs_assignment_recalc_ = false;
 
-  const bool is_user_agent = owner_->IsUserAgent();
+    for (Member<HTMLSlotElement> slot : Slots())
+      slot->WillRecalcAssignedNodes();
 
-  HTMLSlotElement* user_agent_default_slot = nullptr;
-  HTMLSlotElement* user_agent_custom_assign_slot = nullptr;
-  if (is_user_agent) {
-    user_agent_default_slot =
-        FindSlotByName(HTMLSlotElement::UserAgentDefaultSlotName());
-    user_agent_custom_assign_slot =
-        FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
-  }
+    if (owner_->IsManualSlotting()) {
+      // |children_to_clear| starts with the list of all light-dom children of
+      // the host that are *currently slotted*. Any of those that aren't slotted
+      // during this recalc will then have their flat tree data cleared.
+      HeapHashSet<Member<Node>> children_to_clear;
+      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+        if (!child.GetFlatTreeNodeData())
+          continue;
+        children_to_clear.insert(&child);
+      }
 
-  for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
-    if (!child.IsSlotable())
-      continue;
-
-    HTMLSlotElement* slot = nullptr;
-    if (!is_user_agent) {
-      if (owner_->IsManualSlotting()) {
-        for (auto candidate_slot : Slots()) {
-          if (candidate_slot->AssignedNodesCandidate().Contains(&child)) {
-            slot = candidate_slot;
-            break;
+      for (Member<HTMLSlotElement> slot : Slots()) {
+        for (Node* slottable : slot->ManuallyAssignedNodes()) {
+          // Some of the manually assigned nodes might have been moved
+          // to other trees or documents. In that case, don't assign them
+          // here, but also don't remove/invalidate them in the manually
+          // assigned nodes list, in case they come back later.
+          if (slottable && slottable->IsChildOfShadowHost() &&
+              slottable->parentElement() == owner_->host()) {
+            slot->AppendAssignedNode(*slottable);
+            children_to_clear.erase(slottable);
           }
         }
-      } else {
-        slot = FindSlotByName(child.SlotName());
+      }
+
+      for (auto child : children_to_clear) {
+        child->ClearFlatTreeNodeData();
+        child->RemovedFromFlatTree();
       }
     } else {
-      if (user_agent_custom_assign_slot && ShouldAssignToCustomSlot(child)) {
-        slot = user_agent_custom_assign_slot;
-      } else {
-        slot = user_agent_default_slot;
+      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+        if (!child.IsSlotable())
+          continue;
+
+        if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
+          slot->AppendAssignedNode(child);
+        } else {
+          child.ClearFlatTreeNodeData();
+          child.RemovedFromFlatTree();
+        }
       }
     }
 
-    if (slot) {
-      slot->AppendAssignedNode(child);
-    } else {
-      child.ClearFlatTreeNodeData();
-      child.RemovedFromFlatTree();
+    if (owner_->isConnected()) {
+      owner_->GetDocument()
+          .GetSlotAssignmentEngine()
+          .RemoveShadowRootNeedingRecalc(*owner_);
+    }
+
+    for (auto& slot : Slots()) {
+      // TODO(crbug.com/1208573): Consider if we really need to be using
+      // IsInLockedSubtreeCrossingFrames, or if
+      // LockedInclusiveAncestorPreventingStyleWithinTreeScope is good enough
+      // as-is.
+      //
+      // If we have an ancestor that blocks style recalc, we should let
+      // DidRecalcAssignNodes know this, since we may need to do work that
+      // would otherwise be done in layout tree building.
+      slot->DidRecalcAssignedNodes(
+          !!DisplayLockUtilities::
+               LockedInclusiveAncestorPreventingStyleWithinTreeScope(*slot));
     }
   }
 
-  if (owner_->isConnected()) {
-    owner_->GetDocument()
-        .GetSlotAssignmentEngine()
-        .RemoveShadowRootNeedingRecalc(*owner_);
+  // Update an dir=auto flag from a host of slots to its all descendants.
+  // We should call below functions outside FlatTreeTraversalForbiddenScope
+  // because we can go a tree walk to either their ancestors or descendants
+  // if needed.
+  if (owner_->NeedsDirAutoAttributeUpdate()) {
+    owner_->SetNeedsDirAutoAttributeUpdate(false);
+    if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
+      element->UpdateDescendantHasDirAutoAttribute(
+          element->SelfOrAncestorHasDirAutoAttribute());
+    }
   }
-
-  for (auto& slot : Slots())
-    slot->DidRecalcAssignedNodes();
+  // Resolve the directionality of elements deferred their adjustment.
+  HTMLElement::AdjustCandidateDirectionalityForSlot(
+      std::move(candidate_directionality_set_));
 }
 
 const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
@@ -310,8 +357,6 @@ const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
 HTMLSlotElement* SlotAssignment::FindSlot(const Node& node) {
   if (!node.IsSlotable())
     return nullptr;
-  if (owner_->IsUserAgent())
-    return FindSlotInUserAgentShadow(node);
   return owner_->IsManualSlotting()
              ? FindSlotInManualSlotting(const_cast<Node&>(node))
              : FindSlotByName(node.SlotName());
@@ -322,22 +367,12 @@ HTMLSlotElement* SlotAssignment::FindSlotByName(
   return slot_map_->GetSlotByName(slot_name, *owner_);
 }
 
-HTMLSlotElement* SlotAssignment::FindSlotInUserAgentShadow(
-    const Node& node) const {
-  HTMLSlotElement* user_agent_custom_assign_slot =
-      FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
-  if (user_agent_custom_assign_slot && ShouldAssignToCustomSlot(node))
-    return user_agent_custom_assign_slot;
-  HTMLSlotElement* user_agent_default_slot =
-      FindSlotByName(HTMLSlotElement::UserAgentDefaultSlotName());
-  return user_agent_default_slot;
-}
+HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(Node& node) {
+  auto* slot = node.ManuallyAssignedSlot();
+  if (slot && slot->ContainingShadowRoot() == owner_ &&
+      node.IsChildOfShadowHost() && node.parentElement() == owner_->host())
+    return slot;
 
-HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(const Node& node) {
-  for (auto& slot : Slots()) {
-    if (slot->AssignedNodesCandidate().Contains(const_cast<Node*>(&node)))
-      return slot;
-  }
   return nullptr;
 }
 
@@ -363,10 +398,11 @@ HTMLSlotElement* SlotAssignment::GetCachedFirstSlotWithoutAccessingNodeTree(
   return nullptr;
 }
 
-void SlotAssignment::Trace(Visitor* visitor) {
+void SlotAssignment::Trace(Visitor* visitor) const {
   visitor->Trace(slots_);
   visitor->Trace(slot_map_);
   visitor->Trace(owner_);
+  visitor->Trace(candidate_directionality_set_);
 }
 
 }  // namespace blink

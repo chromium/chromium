@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,12 +17,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/features.h"
-#include "components/safe_browsing/triggers/ad_redirect_trigger.h"
-#include "components/safe_browsing/triggers/mock_trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/ad_redirect_trigger.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -29,8 +32,9 @@
 
 namespace safe_browsing {
 
-class AdRedirectTriggerBrowserTest : public InProcessBrowserTest,
-                                     public UrlListManager::Observer {
+class AdRedirectTriggerBrowserTest
+    : public InProcessBrowserTest,
+      public blocked_content::UrlListManager::Observer {
  public:
   AdRedirectTriggerBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(kAdRedirectTriggerFeature);
@@ -109,8 +113,8 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
                        DISABLED_BlockRedirectNavigation_FromAd) {
   base::HistogramTester histogram_tester;
   CreateTrigger();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   // Sets the Iframe that will cause the blocked redirect to a google ad.
   GURL child_url =
@@ -130,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
                                             redirect_url.spec().c_str())),
       base::NullCallback());
   // Navigate away - this will trigger logging of the UMA.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   block_waiter.RunUntilIdle();
 
@@ -147,14 +151,14 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
                        BlockRedirectNavigation_NotFromAdFrameOnPageWithAd) {
   base::HistogramTester histogram_tester;
   CreateTrigger();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   // Create an ad subframe.
   GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("f = document.createElement('google_ads_iframe');"
-                         "f.srcdoc = '<script>var x = 1</script>';"
-                         "document.body.appendChild(f);"),
+      u"f = document.createElement('google_ads_iframe');"
+      u"f.srcdoc = '<script>var x = 1</script>';"
+      u"document.body.appendChild(f);",
       base::NullCallback());
 
   // Cause blocked redirect
@@ -179,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
       base::Contains(GetFramebustTabHelper()->blocked_urls(), redirect_url));
 
   // Navigate away - this will trigger logging of the UMA.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   histogram_tester.ExpectBucketCount(kAdRedirectTriggerActionMetricName,
                                      AdRedirectTriggerAction::REDIRECT_CHECK,
                                      1);
@@ -194,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
                        BlockRedirectNavigation_NoAdsOnPage) {
   base::HistogramTester histogram_tester;
   CreateTrigger();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   // Cause blocked redirect
   GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -219,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
       base::Contains(GetFramebustTabHelper()->blocked_urls(), redirect_url));
 
   // Navigate away - this will trigger logging of the UMA.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   histogram_tester.ExpectBucketCount(kAdRedirectTriggerActionMetricName,
                                      AdRedirectTriggerAction::REDIRECT_CHECK,
                                      1);

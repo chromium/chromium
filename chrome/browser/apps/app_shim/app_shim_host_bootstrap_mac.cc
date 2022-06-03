@@ -4,18 +4,39 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/strings/sys_string_conversions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
+// NSLog is in Foundation, which cannot be #included in this translation
+// unit without renaming it to .mm. Because the logging is temporary, just
+// forward-declare it.
+extern "C" {
+void NSLogv(CFStringRef, va_list);
+}  // extern C
+
 namespace {
 AppShimHostBootstrap::Client* g_client = nullptr;
+
+// TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
+// internal debugging URL.
+void LogToNSLog(std::string format, ...) {
+  base::ScopedCFTypeRef<CFStringRef> cf_format(
+      base::SysUTF8ToCFStringRef(format));
+
+  va_list arguments;
+  va_start(arguments, format);
+  NSLogv(cf_format.get(), arguments);
+  va_end(arguments);
+}
+
 }  // namespace
 
 // static
@@ -39,6 +60,7 @@ AppShimHostBootstrap::AppShimHostBootstrap(base::ProcessId peer_pid)
 
 AppShimHostBootstrap::~AppShimHostBootstrap() {
   DCHECK(!shim_connected_callback_);
+  LogToNSLog("AppShim: Closing pid %d", pid_);
 }
 
 void AppShimHostBootstrap::ServeChannel(
@@ -91,16 +113,25 @@ const std::vector<base::FilePath>& AppShimHostBootstrap::GetLaunchFiles()
   return app_shim_info_->files;
 }
 
+chrome::mojom::AppShimLoginItemRestoreState
+AppShimHostBootstrap::GetLoginItemRestoreState() const {
+  return app_shim_info_->login_item_restore_state;
+}
+
+const std::vector<GURL>& AppShimHostBootstrap::GetLaunchUrls() const {
+  return app_shim_info_->urls;
+}
+
 bool AppShimHostBootstrap::IsMultiProfile() const {
   // PWAs and bookmark apps are multi-profile capable.
-  return base::FeatureList::IsEnabled(features::kAppShimMultiProfile) &&
-         app_shim_info_->app_url.is_valid();
+  return app_shim_info_->app_url.is_valid();
 }
 
 void AppShimHostBootstrap::OnShimConnected(
     mojo::PendingReceiver<chrome::mojom::AppShimHost> app_shim_host_receiver,
     chrome::mojom::AppShimInfoPtr app_shim_info,
     OnShimConnectedCallback callback) {
+  LogToNSLog("AppShim: Received OnShimConnected from pid %d", pid_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!app_shim_info_);
   // Only one app launch message per channel.
@@ -126,6 +157,7 @@ void AppShimHostBootstrap::OnShimConnected(
 
 void AppShimHostBootstrap::OnConnectedToHost(
     mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
+  LogToNSLog("AppShim: Performing OnConnectedToHost for pid %d", pid_);
   std::move(shim_connected_callback_)
       .Run(chrome::mojom::AppShimLaunchResult::kSuccess,
            std::move(app_shim_receiver));
@@ -133,6 +165,9 @@ void AppShimHostBootstrap::OnConnectedToHost(
 
 void AppShimHostBootstrap::OnFailedToConnectToHost(
     chrome::mojom::AppShimLaunchResult result) {
+  LogToNSLog("AppShim: Performing OnFailedToConnectToHost result %d for pid %d",
+             result, pid_);
+
   // Because there will be users of the AppShim interface in failure, just
   // return a dummy receiver.
   mojo::Remote<chrome::mojom::AppShim> dummy_remote;

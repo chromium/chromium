@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 
 namespace chromeos {
@@ -31,6 +32,8 @@ Disk::Disk(const DiskInfo& disk_info,
       fs_uuid_(disk_info.uuid()),
       storage_device_path_(disk_info.storage_device_path()),
       device_type_(disk_info.device_type()),
+      bus_number_(disk_info.bus_number()),
+      device_number_(disk_info.device_number()),
       total_size_in_bytes_(disk_info.total_size_in_bytes()),
       is_parent_(disk_info.is_drive()),
       is_read_only_hardware_(disk_info.is_read_only()),
@@ -129,6 +132,16 @@ Disk::Builder& Disk::Builder::SetDeviceType(DeviceType device_type) {
   return *this;
 }
 
+Disk::Builder& Disk::Builder::SetBusNumber(int bus_number) {
+  disk_->bus_number_ = bus_number;
+  return *this;
+}
+
+Disk::Builder& Disk::Builder::SetDeviceNumber(int device_number) {
+  disk_->device_number_ = device_number;
+  return *this;
+}
+
 Disk::Builder& Disk::Builder::SetSizeInBytes(uint64_t total_size_in_bytes) {
   disk_->total_size_in_bytes_ = total_size_in_bytes;
   return *this;
@@ -184,6 +197,10 @@ std::unique_ptr<Disk> Disk::Builder::Build() {
 Disk::Builder& Disk::Builder::SetIsMounted(bool is_mounted) {
   disk_->is_mounted_ = is_mounted;
   return *this;
+}
+
+base::FilePath GetStatefulPartitionPath() {
+  return base::FilePath(kStatefulPartition);
 }
 
 }  // namespace disks

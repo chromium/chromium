@@ -17,13 +17,13 @@ class Value;
 
 class Status;
 
-typedef base::Callback<
+typedef base::RepeatingCallback<
     void(const Status&, std::unique_ptr<base::Value>, const std::string&, bool)>
     CommandCallback;
 
-typedef base::Callback<void(
-    const base::DictionaryValue&,
-    const std::string&,
-    const CommandCallback&)> Command;
+typedef base::RepeatingCallback<void(const base::DictionaryValue&,
+                                     const std::string&,
+                                     const CommandCallback&)>
+    Command;
 
 #endif  // CHROME_TEST_CHROMEDRIVER_COMMAND_H_

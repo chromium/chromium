@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -33,6 +32,10 @@ class NotificationDisplayServiceTester {
   //     It can be nullptr, in which case |display_service_| will be set up as a
   //     system notification display service.
   explicit NotificationDisplayServiceTester(Profile* profile);
+  NotificationDisplayServiceTester(const NotificationDisplayServiceTester&) =
+      delete;
+  NotificationDisplayServiceTester& operator=(
+      const NotificationDisplayServiceTester&) = delete;
   ~NotificationDisplayServiceTester();
 
   // Returns the currently active tester, if any.
@@ -51,15 +54,15 @@ class NotificationDisplayServiceTester {
   const NotificationCommon::Metadata* GetMetadataForNotification(
       const message_center::Notification& notification);
 
-  base::Optional<message_center::Notification> GetNotification(
+  absl::optional<message_center::Notification> GetNotification(
       const std::string& notification_id) const;
 
   // Simulates the notification identified by |notification_id| being clicked
   // on, optionally with the given |action_index| and |reply|.
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
-                     base::Optional<int> action_index,
-                     base::Optional<base::string16> reply);
+                     absl::optional<int> action_index,
+                     absl::optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.
@@ -89,10 +92,7 @@ class NotificationDisplayServiceTester {
 
   Profile* profile_;
   StubNotificationDisplayService* display_service_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      profile_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDisplayServiceTester);
+  base::CallbackListSubscription profile_shutdown_subscription_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_

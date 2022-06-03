@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/sender/software_video_encoder.h"
@@ -20,7 +19,7 @@ namespace cast {
 
 // This object is called external from the main cast thread and internally from
 // the video encoder thread.
-class VideoEncoderImpl : public VideoEncoder {
+class VideoEncoderImpl final : public VideoEncoder {
  public:
   struct CodecDynamicConfig {
     bool key_frame_requested;
@@ -32,15 +31,17 @@ class VideoEncoderImpl : public VideoEncoder {
 
   VideoEncoderImpl(scoped_refptr<CastEnvironment> cast_environment,
                    const FrameSenderConfig& video_config,
-                   const StatusChangeCallback& status_change_cb);
+                   StatusChangeCallback status_change_cb);
+
+  VideoEncoderImpl(const VideoEncoderImpl&) = delete;
+  VideoEncoderImpl& operator=(const VideoEncoderImpl&) = delete;
 
   ~VideoEncoderImpl() final;
 
   // VideoEncoder implementation.
-  bool EncodeVideoFrame(
-      scoped_refptr<media::VideoFrame> video_frame,
-      const base::TimeTicks& reference_time,
-      const FrameEncodedCallback& frame_encoded_callback) final;
+  bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                        base::TimeTicks reference_time,
+                        FrameEncodedCallback frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
@@ -53,8 +54,6 @@ class VideoEncoderImpl : public VideoEncoder {
   // manually because it needs to be initialize, used and destroyed on the
   // video encoder thread and video encoder thread can out-live the main thread.
   std::unique_ptr<SoftwareVideoEncoder> encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderImpl);
 };
 
 }  // namespace cast

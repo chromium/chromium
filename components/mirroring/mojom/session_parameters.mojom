@@ -5,18 +5,32 @@
 module mirroring.mojom;
 
 import "services/network/public/mojom/ip_address.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
-// The type of a mirroring session.
+// What kind of content the session is configured for. Used by the session
+// to determine what senders to initialize.
 enum SessionType {
   AUDIO_ONLY,
   VIDEO_ONLY,
   AUDIO_AND_VIDEO,
 };
 
-// The parameters of a mirroring session.
+// Represents all of the information necessary to instantiate a session.
+// Specific sender properties, such as codecs, are determined directly
+// by the senders as part of construction.
 struct SessionParameters {
   SessionType type;
   network.mojom.IPAddress receiver_address;
+
+  // Used to fix bugs in capability reporting for specific receiver models,
+  // e.g. Chromecast Ultra. Eventually, when no model-specific hacks are
+  // necessary we should remove this field as part of fixing capabilities.
+  // TODO(crbug.com/1015467): Receivers should report capabilities.
   string receiver_model_name;
+
+  // Used to set both the min and max playout delays for both the audio and
+  // video senders. Omission of this parameter instructs the session to use
+  // the default configured value.
+  mojo_base.mojom.TimeDelta? target_playout_delay;
 };
 

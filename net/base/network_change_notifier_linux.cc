@@ -4,13 +4,15 @@
 
 #include "net/base/network_change_notifier_linux.h"
 
+#include <string>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "net/base/address_tracker_linux.h"
 #include "net/dns/dns_config_service_posix.h"
@@ -22,6 +24,8 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
  public:
   explicit BlockingThreadObjects(
       const std::unordered_set<std::string>& ignored_interfaces);
+  BlockingThreadObjects(const BlockingThreadObjects&) = delete;
+  BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
   // Plumbing for NetworkChangeNotifier::GetCurrentConnectionType.
   // Safe to call from any thread.
@@ -42,8 +46,6 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
   // Used to detect online/offline state and IP address changes.
   internal::AddressTrackerLinux address_tracker_;
   NetworkChangeNotifier::ConnectionType last_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingThreadObjects);
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
@@ -86,8 +88,8 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged() {
 NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
     const std::unordered_set<std::string>& ignored_interfaces)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsLinux()),
-      blocking_thread_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})),
+      blocking_thread_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       blocking_thread_objects_(
           new BlockingThreadObjects(ignored_interfaces),
           // Ensure |blocking_thread_objects_| lives on
@@ -113,11 +115,10 @@ NetworkChangeNotifierLinux::NetworkChangeCalculatorParamsLinux() {
   NetworkChangeCalculatorParams params;
   // Delay values arrived at by simple experimentation and adjusted so as to
   // produce a single signal when switching between network connections.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromMilliseconds(2000);
-  params.ip_address_online_delay_ = base::TimeDelta::FromMilliseconds(2000);
-  params.connection_type_offline_delay_ =
-      base::TimeDelta::FromMilliseconds(1500);
-  params.connection_type_online_delay_ = base::TimeDelta::FromMilliseconds(500);
+  params.ip_address_offline_delay_ = base::Milliseconds(2000);
+  params.ip_address_online_delay_ = base::Milliseconds(2000);
+  params.connection_type_offline_delay_ = base::Milliseconds(1500);
+  params.connection_type_online_delay_ = base::Milliseconds(500);
   return params;
 }
 

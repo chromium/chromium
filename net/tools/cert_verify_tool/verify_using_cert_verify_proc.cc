@@ -6,9 +6,8 @@
 
 #include <iostream>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/sha2.h"
@@ -19,6 +18,7 @@
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/log/net_log_with_source.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
 
 namespace {
@@ -47,27 +47,6 @@ bool DumpX509CertificateChain(const base::FilePath& file_path,
   return WriteToFile(file_path, base::StrCat(pem_encoded));
 }
 
-// Returns a hex-encoded sha256 of the DER-encoding of |cert_handle|.
-std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
-  net::SHA256HashValue hash =
-      net::X509Certificate::CalculateFingerprint256(cert_handle);
-  return base::HexEncode(hash.data, base::size(hash.data));
-}
-
-// Returns a textual representation of the Subject of |cert|.
-std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {
-  return cert->subject().GetDisplayName();
-}
-
-// Returns a textual representation of the Subject of |cert_handle|.
-std::string SubjectFromCryptoBuffer(CRYPTO_BUFFER* cert_handle) {
-  scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBuffer(bssl::UpRef(cert_handle), {});
-  if (!cert)
-    return std::string();
-  return SubjectFromX509Certificate(cert.get());
-}
-
 void PrintCertStatus(int cert_status) {
   std::cout << base::StringPrintf("CertStatus: 0x%x\n", cert_status);
 
@@ -76,6 +55,8 @@ void PrintCertStatus(int cert_status) {
       std::cout << " " << flag.name << "\n";
   }
 }
+
+}  // namespace
 
 void PrintCertVerifyResult(const net::CertVerifyResult& result) {
   PrintDebugData(&result);
@@ -108,8 +89,6 @@ void PrintCertVerifyResult(const net::CertVerifyResult& result) {
   }
 }
 
-}  // namespace
-
 bool VerifyUsingCertVerifyProc(
     net::CertVerifyProc* cert_verify_proc,
     const CertInput& target_der_cert,
@@ -118,10 +97,6 @@ bool VerifyUsingCertVerifyProc(
     const std::vector<CertInput>& root_der_certs,
     net::CRLSet* crl_set,
     const base::FilePath& dump_path) {
-  std::cout
-      << "NOTE: CertVerifyProc always uses OS trust settings (--roots are in "
-         "addition).\n";
-
   std::vector<base::StringPiece> der_cert_chain;
   der_cert_chain.push_back(target_der_cert.der_cert);
   for (const auto& cert : intermediate_der_certs)
@@ -142,8 +117,8 @@ bool VerifyUsingCertVerifyProc(
   net::CertificateList x509_additional_trust_anchors;
   for (const auto& cert : root_der_certs) {
     scoped_refptr<net::X509Certificate> x509_root =
-        net::X509Certificate::CreateFromBytes(cert.der_cert.data(),
-                                              cert.der_cert.size());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(cert.der_cert)));
 
     if (!x509_root)
       PrintCertError("ERROR: X509Certificate::CreateFromBytes failed:", cert);
@@ -171,12 +146,12 @@ bool VerifyUsingCertVerifyProc(
     x509_additional_trust_anchors.clear();
   }
 
+  // TODO(crbug.com/634484): use a real netlog and print the results?
   net::CertVerifyResult result;
-  int rv =
-      cert_verify_proc->Verify(x509_target_and_intermediates.get(), hostname,
-                               /*ocsp_response=*/std::string(),
-                               /*sct_list=*/std::string(), flags, crl_set,
-                               x509_additional_trust_anchors, &result);
+  int rv = cert_verify_proc->Verify(
+      x509_target_and_intermediates.get(), hostname,
+      /*ocsp_response=*/std::string(), /*sct_list=*/std::string(), flags,
+      crl_set, x509_additional_trust_anchors, &result, net::NetLogWithSource());
 
   // Remove any temporary trust anchors.
   test_root_certs->Clear();

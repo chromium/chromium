@@ -5,37 +5,54 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_PAGE_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_PAGE_VIEW_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
-#include "base/macros.h"
+#include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
+namespace views {
+class DialogDelegateView;
+}
+
 namespace ash {
 
-class AppListViewDelegate;
+class AppListMainView;
+class ProductivityLauncherSearchView;
+class PrivacyContainerView;
+class SearchBoxView;
 class SearchResultBaseView;
+class SearchResultListView;
+class SearchResultTileItemListView;
+class SearchResultPageAnchoredDialog;
 class ViewShadow;
 
 // The search results page for the app list.
-class APP_LIST_EXPORT SearchResultPageView
+class ASH_EXPORT SearchResultPageView
     : public AppListPage,
+      public AppListModelProvider::Observer,
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {
  public:
-  SearchResultPageView(AppListViewDelegate* view_delegate,
-                       SearchModel* search_model);
+  SearchResultPageView();
+
+  SearchResultPageView(const SearchResultPageView&) = delete;
+  SearchResultPageView& operator=(const SearchResultPageView&) = delete;
+
   ~SearchResultPageView() override;
 
-  void AddSearchResultContainerView(
-      SearchResultContainerView* result_container);
+  void InitializeContainers(AppListViewDelegate* view_delegate,
+                            AppListMainView* app_list_main_view,
+                            SearchBoxView* search_box_view);
 
   const std::vector<SearchResultContainerView*>& result_container_views() {
     return result_container_views_;
@@ -45,44 +62,55 @@ class APP_LIST_EXPORT SearchResultPageView
   bool IsFirstResultHighlighted() const;
 
   // Overridden from views::View:
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // AppListPage overrides:
+  void OnWillBeHidden() override;
   void OnHidden() override;
   void OnShown() override;
-
-  void OnAnimationStarted(ash::AppListState from_state,
-                          ash::AppListState to_state) override;
-  void OnAnimationUpdated(double progress,
-                          ash::AppListState from_state,
-                          ash::AppListState to_state) override;
-  gfx::Size GetPreferredSearchBoxSize() const override;
-  base::Optional<int> GetSearchBoxTop(
-      ash::AppListViewState view_state) const override;
+  void AnimateYPosition(AppListViewState target_view_state,
+                        const TransformAnimator& animator,
+                        float default_offset) override;
+  void UpdatePageOpacityForState(AppListState state,
+                                 float search_box_opacity,
+                                 bool restore_opacity) override;
+  void UpdatePageBoundsForState(AppListState state,
+                                const gfx::Rect& contents_bounds,
+                                const gfx::Rect& search_box_bounds) override;
   gfx::Rect GetPageBoundsForState(
-      ash::AppListState state,
+      AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  views::View* GetFirstFocusableView() override;
-  views::View* GetLastFocusableView() override;
+  void OnAnimationStarted(AppListState from_state,
+                          AppListState to_state) override;
+  void OnAnimationUpdated(double progress,
+                          AppListState from_state,
+                          AppListState to_state) override;
+  gfx::Size GetPreferredSearchBoxSize() const override;
+
+  // Overridden from AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // Overridden from SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;
   void OnSearchResultContainerResultsChanged() override;
-  void OnSearchResultContainerResultFocused(
-      SearchResultBaseView* focused_result_view) override;
 
   // Overridden from SearchBoxModelObserver:
-  void HintTextChanged() override;
   void Update() override;
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
 
-  void OnAssistantPrivacyInfoViewCloseButtonPressed();
+  // Shows a dialog widget, and anchors it within the search results page. The
+  // dialog will be positioned relative to the search box bounds, and will be
+  // repositioned as the page layout changes. The dialog will be closed if the
+  // search results page gets hidden.
+  // |dialog| should not yet have a widget.
+  void ShowAnchoredDialog(std::unique_ptr<views::DialogDelegateView> dialog);
 
   views::View* contents_view() { return contents_view_; }
 
@@ -91,12 +119,27 @@ class APP_LIST_EXPORT SearchResultPageView
     return result_selection_controller_.get();
   }
 
+  SearchResultPageAnchoredDialog* anchored_dialog_for_test() {
+    return anchored_dialog_.get();
+  }
+
+  // Returns background color for the given state.
+  SkColor GetBackgroundColorForState(AppListState state) const;
+
+  // Hide zero state search result view when ProductivityLauncher is enabled.
+  bool ShouldShowSearchResultView() const;
+
+  // Sets visibility of result container and separator views so only containers
+  // that contain some results are shown.
+  void UpdateResultContainersVisibility();
+
+  PrivacyContainerView* GetPrivacyContainerViewForTest();
+  SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
+  SearchResultListView* GetSearchResultListViewForTest();
+
  private:
   // Separator between SearchResultContainerView.
   class HorizontalSeparator;
-
-  // Sort the result container views.
-  void ReorderSearchResultContainers();
 
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
@@ -130,10 +173,18 @@ class APP_LIST_EXPORT SearchResultPageView
   // selected search result view.
   void NotifySelectedResultChanged();
 
-  AppListViewDelegate* view_delegate_;
+  // Called when the widget anchored in the search results page gets closed.
+  void OnAnchoredDialogClosed();
 
-  // The search model for which the results are displayed.
-  SearchModel* const search_model_;
+  template <typename T>
+  T* AddSearchResultContainerView(std::unique_ptr<T> result_container) {
+    auto* result = result_container.get();
+    AddSearchResultContainerViewInternal(std::move(result_container));
+    return result;
+  }
+
+  void AddSearchResultContainerViewInternal(
+      std::unique_ptr<SearchResultContainerView> result_container);
 
   // The SearchResultContainerViews that compose the search page. All owned by
   // the views hierarchy.
@@ -143,7 +194,17 @@ class APP_LIST_EXPORT SearchResultPageView
   // |result_container_views_|
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
 
-  std::vector<HorizontalSeparator*> separators_;
+  // Search result containers shown within search results page (and added to
+  // `result_container_views_`).
+  PrivacyContainerView* privacy_container_view_ = nullptr;
+  SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
+  SearchResultListView* search_result_list_view_ = nullptr;
+  // Search result container used for productivity launcher.
+  ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
+
+  // Separator view shown between search result tile item list and search
+  // results list.
+  HorizontalSeparator* result_lists_separator_ = nullptr;
 
   // View containing SearchCardView instances. Owned by view hierarchy.
   views::View* const contents_view_;
@@ -162,14 +223,13 @@ class APP_LIST_EXPORT SearchResultPageView
   // containers.
   int last_search_result_count_ = 0;
 
-  views::View* assistant_privacy_info_view_ = nullptr;
+  std::unique_ptr<ViewShadow> view_shadow_;
 
-  std::unique_ptr<ash::ViewShadow> view_shadow_;
+  // The dialog anchored within the search results page.
+  std::unique_ptr<SearchResultPageAnchoredDialog> anchored_dialog_;
 
-  ScopedObserver<SearchBoxModel, SearchBoxModelObserver> search_box_observer_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageView);
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_observation_{this};
 };
 
 }  // namespace ash

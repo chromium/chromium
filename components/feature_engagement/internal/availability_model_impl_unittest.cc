@@ -6,14 +6,12 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -34,6 +32,10 @@ class AvailabilityModelImplTest : public testing::Test {
     initialized_callback_ = base::BindOnce(
         &AvailabilityModelImplTest::OnInitialized, base::Unretained(this));
   }
+
+  AvailabilityModelImplTest(const AvailabilityModelImplTest&) = delete;
+  AvailabilityModelImplTest& operator=(const AvailabilityModelImplTest&) =
+      delete;
 
   ~AvailabilityModelImplTest() override = default;
 
@@ -63,11 +65,8 @@ class AvailabilityModelImplTest : public testing::Test {
   std::unique_ptr<AvailabilityModelImpl> availability_model_;
 
   AvailabilityModel::OnInitializedCallback initialized_callback_;
-  base::Optional<bool> success_;
-  base::Optional<uint32_t> current_day_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImplTest);
+  absl::optional<bool> success_;
+  absl::optional<uint32_t> current_day_;
 };
 
 }  // namespace
@@ -105,7 +104,7 @@ TEST_F(AvailabilityModelImplTest, SuccessfullyLoadThreeFeatures) {
   EXPECT_EQ(100u, availability_model_->GetAvailability(kTestFeatureFoo));
   EXPECT_EQ(200u, availability_model_->GetAvailability(kTestFeatureBar));
   EXPECT_EQ(300u, availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 
@@ -120,13 +119,13 @@ TEST_F(AvailabilityModelImplTest, FailToLoadThreeFeatures) {
   EXPECT_FALSE(availability_model_->IsReady());
 
   // Load failed, so all results should be ignored.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureFoo));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureBar));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 

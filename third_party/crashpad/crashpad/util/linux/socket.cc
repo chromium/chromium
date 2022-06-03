@@ -16,11 +16,14 @@
 
 #include <unistd.h>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "third_party/lss/lss.h"
 
 namespace crashpad {
+
+constexpr size_t UnixCredentialSocket::kMaxSendRecvMsgFDs;
 
 // static
 bool UnixCredentialSocket::CreateCredentialSocketpair(ScopedFileHandle* sock1,
@@ -47,8 +50,6 @@ bool UnixCredentialSocket::CreateCredentialSocketpair(ScopedFileHandle* sock1,
   sock2->swap(local_sock2);
   return true;
 }
-
-constexpr size_t UnixCredentialSocket::kMaxSendRecvMsgFDs = 4;
 
 // static
 int UnixCredentialSocket::SendMsg(int fd,

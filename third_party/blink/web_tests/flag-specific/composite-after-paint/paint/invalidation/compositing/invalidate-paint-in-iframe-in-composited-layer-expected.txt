@@ -7,22 +7,18 @@
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "LayoutNGBlockFlow DIV",
+      "bounds": [304, 200],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [10, 10, 50, 50]
+      ],
+      "transform": 1
+    },
+    {
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV",
-      "bounds": [304, 154],
-      "backgroundColor": "#9A9A9A",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [10, 10, 50, 50],
-          "reason": "background"
-        }
-      ],
-      "transform": 1
     }
   ],
   "transforms": [

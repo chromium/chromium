@@ -1,6 +1,6 @@
 Tests that elements panel correctly displays DOM tree structure for bi-di pages.
 
-  <!doctype html>
+  <!DOCTYPE html>
 - <html>
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">

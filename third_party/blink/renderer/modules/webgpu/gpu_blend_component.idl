@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUBlendComponent {
+    GPUBlendFactor srcFactor = "one";
+    GPUBlendFactor dstFactor = "zero";
+    GPUBlendOperation operation = "add";
+};
+
+enum GPUBlendFactor {
+    "zero",
+    "one",
+    "src",
+    "one-minus-src",
+    "src-alpha",
+    "one-minus-src-alpha",
+    "dst",
+    "one-minus-dst",
+    "dst-alpha",
+    "one-minus-dst-alpha",
+    "src-alpha-saturated",
+    "constant",
+    "one-minus-constant",
+};
+
+enum GPUBlendOperation {
+    "add",
+    "subtract",
+    "reverse-subtract",
+    "min",
+    "max"
+};

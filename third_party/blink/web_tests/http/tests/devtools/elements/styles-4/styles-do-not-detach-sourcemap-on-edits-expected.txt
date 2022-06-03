@@ -15,11 +15,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 
 Running: editSelector
 [expanded] 
@@ -34,11 +29,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 
 Running: editMedia
@@ -55,11 +45,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 
 Running: addRule
 [expanded] 
@@ -74,11 +59,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 
 Running: finish
@@ -97,10 +77,5 @@ NEW-RULE { (styles-do-n…dits.scss:4 -> styles-do-not-detach-sourcemap-on-edits
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

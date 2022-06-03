@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_EXTENSION_POLICY_MIGRATOR_H_
 #define CHROME_BROWSER_POLICY_CHROME_EXTENSION_POLICY_MIGRATOR_H_
 
-#include "components/policy/core/common/extension_policy_migrator.h"
+#include "components/policy/core/common/policy_migrator.h"
 
 namespace policy {
 
-// ExtensionPolicyMigrator with chrome-specific helper functions.
-class ChromeExtensionPolicyMigrator : public ExtensionPolicyMigrator {
+// A helper class that migrates a deprecated policy to a new policy across
+// domain boundaries, by setting up the new policy based on the old one. It can
+// migrate a deprecated extension policy to a new Chrome policy.
+//
+// PolicyMigrator with chrome-specific helper functions.
+class ChromeExtensionPolicyMigrator : public PolicyMigrator {
  public:
   ~ChromeExtensionPolicyMigrator() override {}
 

@@ -8,21 +8,17 @@
 #include <utility>
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
-#include "third_party/blink/renderer/modules/nfc/ndef_push_options.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
-#include "third_party/blink/renderer/modules/nfc/ndef_scan_options.h"
-#include "third_party/blink/renderer/modules/nfc/nfc_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using device::mojom::blink::NDEFMessage;
 using device::mojom::blink::NDEFMessagePtr;
-using device::mojom::blink::NDEFPushOptions;
-using device::mojom::blink::NDEFPushOptionsPtr;
 using device::mojom::blink::NDEFRecord;
 using device::mojom::blink::NDEFRecordPtr;
-using device::mojom::blink::NDEFScanOptions;
-using device::mojom::blink::NDEFScanOptionsPtr;
+using device::mojom::blink::NDEFWriteOptions;
+using device::mojom::blink::NDEFWriteOptionsPtr;
 
 // Mojo type converters
 namespace mojo {
@@ -30,8 +26,8 @@ namespace mojo {
 NDEFRecordPtr TypeConverter<NDEFRecordPtr, blink::NDEFRecord*>::Convert(
     const blink::NDEFRecord* record) {
   return NDEFRecord::New(
-      record->recordType(), record->mediaType(), record->id(),
-      record->encoding(), record->lang(), record->payloadData(),
+      record->category(), record->recordType(), record->mediaType(),
+      record->id(), record->encoding(), record->lang(), record->payloadData(),
       TypeConverter<NDEFMessagePtr, blink::NDEFMessage*>::Convert(
           record->payload_message()));
 }
@@ -42,47 +38,26 @@ NDEFMessagePtr TypeConverter<NDEFMessagePtr, blink::NDEFMessage*>::Convert(
   // possible to be null for some "smart-poster" and external type records.
   if (!message)
     return nullptr;
-  NDEFMessagePtr messagePtr = NDEFMessage::New();
-  messagePtr->data.resize(message->records().size());
+  NDEFMessagePtr message_ptr = NDEFMessage::New();
+  message_ptr->data.resize(message->records().size());
   for (wtf_size_t i = 0; i < message->records().size(); ++i) {
     NDEFRecordPtr record = NDEFRecord::From(message->records()[i].Get());
     DCHECK(record);
-    messagePtr->data[i] = std::move(record);
+    message_ptr->data[i] = std::move(record);
   }
-  return messagePtr;
+  return message_ptr;
 }
 
-NDEFPushOptionsPtr
-TypeConverter<NDEFPushOptionsPtr, const blink::NDEFPushOptions*>::Convert(
-    const blink::NDEFPushOptions* pushOptions) {
-  // https://w3c.github.io/web-nfc/#the-ndefpushoptions-dictionary
-  // Default values for NDEFPushOptions dictionary are:
-  // target = 'any', ignoreRead = true
-  NDEFPushOptionsPtr pushOptionsPtr = NDEFPushOptions::New();
-  pushOptionsPtr->target = blink::StringToNDEFPushTarget(pushOptions->target());
-  pushOptionsPtr->ignore_read = pushOptions->ignoreRead();
+NDEFWriteOptionsPtr
+TypeConverter<NDEFWriteOptionsPtr, const blink::NDEFWriteOptions*>::Convert(
+    const blink::NDEFWriteOptions* write_options) {
+  // https://w3c.github.io/web-nfc/#the-ndefwriteoptions-dictionary
+  // Default values for NDEFWriteOptions dictionary are:
+  // overwrite = true
+  NDEFWriteOptionsPtr write_options_ptr = NDEFWriteOptions::New();
+  write_options_ptr->overwrite = write_options->overwrite();
 
-  return pushOptionsPtr;
-}
-
-NDEFScanOptionsPtr
-TypeConverter<NDEFScanOptionsPtr, const blink::NDEFScanOptions*>::Convert(
-    const blink::NDEFScanOptions* scanOptions) {
-  // https://w3c.github.io/web-nfc/#dom-ndefscanoptions
-  // Default values for NDEFScanOptions dictionary are:
-  // id = undefined, recordType = undefined, mediaType = ""
-  NDEFScanOptionsPtr scanOptionsPtr = NDEFScanOptions::New();
-  scanOptionsPtr->media_type = scanOptions->mediaType();
-
-  if (scanOptions->hasId()) {
-    scanOptionsPtr->id = scanOptions->id();
-  }
-
-  if (scanOptions->hasRecordType()) {
-    scanOptionsPtr->record_type = scanOptions->recordType();
-  }
-
-  return scanOptionsPtr;
+  return write_options_ptr;
 }
 
 }  // namespace mojo

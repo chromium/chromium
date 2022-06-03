@@ -9,7 +9,7 @@
 namespace blink {
 
 void WebMemoryPressureListener::OnMemoryPressure(
-    WebMemoryPressureLevel pressure_level) {
+    base::MemoryPressureListener::MemoryPressureLevel pressure_level) {
   MemoryPressureListenerRegistry::Instance().OnMemoryPressure(pressure_level);
 }
 

@@ -4,7 +4,6 @@
 
 #include "net/cert/internal/simple_path_builder_delegate.h"
 
-#include "base/logging.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/signature_algorithm.h"

@@ -7,10 +7,11 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_content_type.h"
@@ -34,7 +35,7 @@ class AudioFocusDelegateAndroidBrowserTest : public ContentBrowserTest {};
 IN_PROC_BROWSER_TEST_F(AudioFocusDelegateAndroidBrowserTest,
                        MAYBE_OnAudioFocusChangeAfterDtorCrash) {
   std::unique_ptr<MockMediaSessionPlayerObserver> player_observer(
-      new MockMediaSessionPlayerObserver);
+      new MockMediaSessionPlayerObserver(media::MediaContentType::Persistent));
 
   MediaSessionImpl* media_session =
       MediaSessionImpl::Get(shell()->web_contents());
@@ -46,25 +47,24 @@ IN_PROC_BROWSER_TEST_F(AudioFocusDelegateAndroidBrowserTest,
   ASSERT_TRUE(other_media_session);
 
   player_observer->StartNewPlayer();
-  media_session->AddPlayer(player_observer.get(), 0,
-                           media::MediaContentType::Persistent);
+  media_session->AddPlayer(player_observer.get(), 0);
   EXPECT_TRUE(media_session->IsActive());
   EXPECT_FALSE(other_media_session->IsActive());
 
   player_observer->StartNewPlayer();
-  other_media_session->AddPlayer(player_observer.get(), 1,
-                                 media::MediaContentType::Persistent);
+  other_media_session->AddPlayer(player_observer.get(), 1);
   EXPECT_TRUE(media_session->IsActive());
   EXPECT_TRUE(other_media_session->IsActive());
 
-  shell()->CloseAllWindows();
+  while (!Shell::windows().empty())
+    Shell::windows().back()->Close();
 
   // Give some time to the AudioFocusManager to send an audioFocusChange message
   // to the listeners. If the bug is still present, it will crash.
   {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
     run_loop.Run();
   }
 }

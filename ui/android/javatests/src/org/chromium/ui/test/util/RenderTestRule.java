@@ -5,54 +5,70 @@
 package org.chromium.ui.test.util;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 
+import androidx.annotation.StringDef;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.ui.UiUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * A TestRule for creating Render Tests. An exception will be thrown after the test method completes
- * if the test fails.
+ * A TestRule for creating Render Tests. The comparison is performed using the Skia Gold image
+ * diffing service on the host.
+ *
+ * General usage:
  *
  * <pre>
  * {@code
  *
  * @RunWith(BaseJUnit4ClassRunner.class)
  * public class MyTest extends DummyUiActivityTestCase {
- *     // Provide RenderTestRule with the path from src/ to the golden directory.
  *     @Rule
- *     public RenderTestRule mRenderTestRule =
- *             new RenderTestRule("components/myfeature/test/data/android/render_tests");
+ *     public RenderTestRule mRenderTestRule = new RenderTestRule.Builder()
+ *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with
+ *             // the shorthand RenderTestRule.Builder.withPublicCorpus().
+ *             .setCorpus(RenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+ *             // Optional, only necessary once a CL lands that should invalidate previous golden
+ *             // images, e.g. a UI rework.
+ *             .setRevision(2)
+ *             // Optional, only necessary if you want a message to be associated with these
+ *             // golden images and shown in the Gold web UI, e.g. the reason why the revision was
+ *             // incremented.
+ *             .setDescription("Material design rework")
+ *             .build();
  *
  *     @Test
- *     // The test must have the feature "RenderTest" for the bots to display renders.
+ *     // "RenderTest" feature required.
  *     @Feature({"RenderTest"})
  *     public void testViewAppearance() {
  *         // Setup the UI.
  *         ...
  *
- *         // Render UI Elements.
+ *         // Render the UI Elements.
  *         mRenderTestRule.render(bigWidgetView, "big_widget");
  *         mRenderTestRule.render(smallWidgetView, "small_widget");
  *     }
@@ -60,30 +76,19 @@ import java.util.concurrent.Callable;
  *
  * }
  * </pre>
+ *
  */
 public class RenderTestRule extends TestWatcher {
     private static final String TAG = "RenderTest";
 
-    private static final String DIFF_FOLDER_RELATIVE = "/diffs";
-    private static final String FAILURE_FOLDER_RELATIVE = "/failures";
-    private static final String GOLDEN_FOLDER_RELATIVE = "/goldens";
-
-    /**
-     * This is a list of model-SDK version identifiers for devices we maintain golden images for.
-     * If render tests are being run on a device of a model-sdk on this list, goldens should exist.
-     */
-    private static final String[] RENDER_TEST_MODEL_SDK_PAIRS = {"Nexus_5-19", "Nexus_5X-23"};
-
-    private enum ComparisonResult { MATCH, MISMATCH, GOLDEN_NOT_FOUND }
+    private static final String SKIA_GOLD_FOLDER_RELATIVE = "/skia_gold";
 
     // State for a test class.
     private final String mOutputFolder;
-    private final String mGoldenFolder;
 
     // State for a test method.
     private String mTestClassName;
-    private List<String> mMismatchIds = new LinkedList<>();
-    private List<String> mGoldenMissingIds = new LinkedList<>();
+    private String mFullTestName;
     private boolean mHasRenderTestFeature;
 
     /** Parameterized tests have a prefix inserted at the front of the test description. */
@@ -92,23 +97,39 @@ public class RenderTestRule extends TestWatcher {
     /** Prefix on the render test images that describes light/dark mode. */
     private String mNightModePrefix;
 
-    // How much a channel must differ when comparing pixels in order to be considered different.
-    private int mPixelDiffThreshold;
+    private String mSkiaGoldCorpus;
+    private int mSkiaGoldRevision;
+    private String mSkiaGoldRevisionDescription;
+    private boolean mFailOnUnsupportedConfigs;
 
-    /**
-     * An exception thrown after a Render Test if images do not match the goldens or goldens are
-     * missing on a render test device.
-     */
-    public static class RenderTestException extends RuntimeException {
-        public RenderTestException(String message) {
-            super(message);
-        }
+    @StringDef({Corpus.ANDROID_RENDER_TESTS_PUBLIC, Corpus.ANDROID_RENDER_TESTS_INTERNAL,
+            Corpus.ANDROID_VR_RENDER_TESTS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Corpus {
+        // Corpus for general use and public results.
+        String ANDROID_RENDER_TESTS_PUBLIC = "android-render-tests";
+        // Corpus for general use and internal results.
+        String ANDROID_RENDER_TESTS_INTERNAL = "android-render-tests-internal";
+        // Corpus for VR (virtual reality) features.
+        String ANDROID_VR_RENDER_TESTS = "android-vr-render-tests";
     }
 
-    public RenderTestRule(String goldenFolder) {
-        // |goldenFolder| is relative to the src directory in the repository. |mGoldenFolder| will
-        // be the folder on the test device.
-        mGoldenFolder = UrlUtils.getIsolatedTestFilePath(goldenFolder);
+    // Skia Gold-specific constructor used by the builder.
+    // Note that each corpus/description combination results in some additional initialization
+    // on the host (~250 ms), so consider whether adding unique descriptions is necessary before
+    // adding them to a bunch of test classes.
+    protected RenderTestRule(int revision, @Corpus String corpus, String description,
+            boolean failOnUnsupportedConfigs) {
+        assert revision >= 0;
+        // Don't have a default corpus so that users explicitly specify whether
+        // they want their test results to be public or not.
+        assert corpus != null;
+
+        mSkiaGoldCorpus = corpus;
+        mSkiaGoldRevisionDescription = description;
+        mSkiaGoldRevision = revision;
+        mFailOnUnsupportedConfigs = failOnUnsupportedConfigs;
+
         // The output folder can be overridden with the --render-test-output-dir command.
         mOutputFolder = CommandLine.getInstance().getSwitchValue("render-test-output-dir");
     }
@@ -117,9 +138,7 @@ public class RenderTestRule extends TestWatcher {
     protected void starting(Description desc) {
         // desc.getClassName() gets the fully qualified name.
         mTestClassName = desc.getTestClass().getSimpleName();
-
-        mMismatchIds.clear();
-        mGoldenMissingIds.clear();
+        mFullTestName = desc.getClassName() + "#" + desc.getMethodName();
 
         Feature feature = desc.getAnnotation(Feature.class);
         mHasRenderTestFeature =
@@ -127,10 +146,12 @@ public class RenderTestRule extends TestWatcher {
     }
 
     /**
-     * Renders the |view| and compares it to the golden view with the |id|. The RenderTestRule will
-     * throw an exception after the test method has completed if the view does not match the
-     * golden or if a golden is missing on a device it should be present (see
-     * {@link RenderTestRule#RENDER_TEST_MODEL_SDK_PAIRS}).
+     * Renders the |view| and compares it to the golden view with the |id|. Image comparison is
+     * performed on the host after the test has finished running. Comparison will fail if the given
+     * image does not exactly match one of the images in Gold and the image came from a device that
+     * should have baselines maintained (see the RENDER_TEST_MODEL_SDK_CONFIGS constant in the
+     * Python test runner code at
+     * //build/android/pylib/local/device/local_device_instrumentation_test_run.py).
      *
      * @throws IOException if the rendered image cannot be saved to the device.
      */
@@ -155,10 +176,11 @@ public class RenderTestRule extends TestWatcher {
     }
 
     /**
-     * Compares the given |testBitmap| to the golden with the |id|. The RenderTestRule will throw
-     * an exception after the test method has completed if the view does not match the golden or if
-     * a golden is missing on a device it should be present (see
-     * {@link RenderTestRule#RENDER_TEST_MODEL_SDK_PAIRS}).
+     * Compares the given |testBitmap| to the images in Gold for |id|. Image comparison is performed
+     * on the host after the test has finished running. Comparison will fail if the given image
+     * does not exactly match one of the images in Gold and the image came from a device that should
+     * have baselines maintained (see the RENDER_TEST_MODEL_SDK_CONFIGS constant in the Python test
+     * runner code at //build/android/pylib/local/device/local_device_instrumentation_test_run.py).
      *
      * Tests should prefer {@link RenderTestRule#render(View, String) render} to this if possible.
      *
@@ -167,74 +189,53 @@ public class RenderTestRule extends TestWatcher {
     public void compareForResult(Bitmap testBitmap, String id) throws IOException {
         Assert.assertTrue("Render Tests must have the RenderTest feature.", mHasRenderTestFeature);
 
-        String filename = imageName(mTestClassName, mVariantPrefix, id);
+        // Save the image and its metadata to a location where it can be pulled by the test runner
+        // for comparison after the test finishes.
+        String imageName = getImageName(mTestClassName, mVariantPrefix, id);
+        String jsonName = getJsonName(mTestClassName, mVariantPrefix, id);
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = testBitmap.getConfig();
-        File goldenFile = createGoldenPath(filename);
-        Bitmap goldenBitmap = BitmapFactory.decodeFile(goldenFile.getAbsolutePath(), options);
-
-        Pair<ComparisonResult, Bitmap> result = compareBitmapToGolden(testBitmap, goldenBitmap);
-        Log.i(TAG, "RenderTest %s %s", id, result.first.toString());
-
-        // Save the result and any interesting images.
-        switch (result.first) {
-            case MATCH:
-                // We don't do anything with the matches.
-                break;
-            case GOLDEN_NOT_FOUND:
-                mGoldenMissingIds.add(id);
-
-                saveBitmap(testBitmap, createOutputPath(FAILURE_FOLDER_RELATIVE, filename));
-                break;
-            case MISMATCH:
-                mMismatchIds.add(id);
-
-                saveBitmap(testBitmap, createOutputPath(FAILURE_FOLDER_RELATIVE, filename));
-                saveBitmap(goldenBitmap, createOutputPath(GOLDEN_FOLDER_RELATIVE, filename));
-                saveBitmap(result.second, createOutputPath(DIFF_FOLDER_RELATIVE, filename));
-                break;
+        saveBitmap(testBitmap, createOutputPath(SKIA_GOLD_FOLDER_RELATIVE, imageName));
+        JSONObject goldKeys = new JSONObject();
+        try {
+            goldKeys.put("source_type", mSkiaGoldCorpus);
+            goldKeys.put("model", Build.MODEL);
+            goldKeys.put("sdk_version", String.valueOf(Build.VERSION.SDK_INT));
+            if (!TextUtils.isEmpty(mSkiaGoldRevisionDescription)) {
+                goldKeys.put("revision_description", mSkiaGoldRevisionDescription);
+            }
+            goldKeys.put("fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            // This key will be deleted by the test runner before uploading to Gold. It is used to
+            // differentiate results from different tests if the test runner has batched multiple
+            // tests together in a single run.
+            goldKeys.put("full_test_name", mFullTestName);
+        } catch (JSONException e) {
+            Assert.fail("Failed to create Skia Gold JSON keys: " + e.toString());
         }
-    }
-
-    @Override
-    protected void finished(Description desc) {
-        if (!onRenderTestDevice() && !mGoldenMissingIds.isEmpty()) {
-            Log.d(TAG, "RenderTest missing goldens, but we are not on a render test device.");
-            mGoldenMissingIds.clear();
-        }
-
-        if (mGoldenMissingIds.isEmpty() && mMismatchIds.isEmpty()) {
-            // Everything passed!
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        if (!mGoldenMissingIds.isEmpty()) {
-            sb.append("RenderTest Goldens missing for: ");
-            sb.append(TextUtils.join(", ", mGoldenMissingIds));
-            sb.append(".");
-        }
-
-        if (!mMismatchIds.isEmpty()) {
-            if (sb.length() != 0) sb.append(" ");
-            sb.append("RenderTest Mismatches for: ");
-            sb.append(TextUtils.join(", ", mMismatchIds));
-            sb.append(".");
-        }
-
-        sb.append(" See RENDER_TESTS.md for how to fix this failure.");
-        throw new RenderTestException(sb.toString());
+        saveString(goldKeys.toString(), createOutputPath(SKIA_GOLD_FOLDER_RELATIVE, jsonName));
     }
 
     /**
-     * Returns whether goldens should exist for the current device.
+     * Searches the View hierarchy and modifies the Views to provide better stability in tests. For
+     * example it will disable the blinking cursor in EditTexts.
      */
-    private static boolean onRenderTestDevice() {
-        for (String model : RENDER_TEST_MODEL_SDK_PAIRS) {
-            if (model.equals(modelSdkIdentifier())) return true;
+    public static void sanitize(View view) {
+        // Add more sanitizations as we discover more flaky attributes.
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                sanitize(viewGroup.getChildAt(i));
+            }
+        } else if (view instanceof EditText) {
+            EditText editText = (EditText) view;
+            editText.setCursorVisible(false);
+        } else if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            if (drawable instanceof AnimatedVectorDrawableCompat) {
+                ((AnimatedVectorDrawableCompat) drawable).stop();
+            }
         }
-        return false;
+        // Scrollbars fade slowly, making tests flaky due to differences in rendered images.
+        view.setVerticalScrollBarEnabled(false);
     }
 
     /**
@@ -253,22 +254,26 @@ public class RenderTestRule extends TestWatcher {
     }
 
     /**
-     * Sets the threshold that a pixel must differ by when comparing channels in order to be
-     * considered different.
+     * Creates an image name combining the image description with details about the device
+     * (e.g. current orientation).
      */
-    public void setPixelDiffThreshold(int threshold) {
-        assert threshold >= 0;
-        mPixelDiffThreshold = threshold;
+    private String getImageName(String testClass, String variantPrefix, String desc) {
+        return String.format("%s.png", getFileName(testClass, variantPrefix, desc));
     }
 
     /**
-     * Creates an image name combining the image description with details about the device
-     * (eg model, current orientation).
-     *
-     * This function must be kept in sync with |RE_RENDER_IMAGE_NAME| from
-     * src/build/android/pylib/local/device/local_device_instrumentation_test_run.py.
+     * Creates a JSON name combining the description with details about the device (e.g. current
+     * orientation).
      */
-    private String imageName(String testClass, String variantPrefix, String desc) {
+    private String getJsonName(String testClass, String variantPrefix, String desc) {
+        return String.format("%s.json", getFileName(testClass, variantPrefix, desc));
+    }
+
+    /**
+     * Creates a generic filename (without a file extension) combining the description with details
+     * about the device (e.g. current orientation).
+     */
+    private String getFileName(String testClass, String variantPrefix, String desc) {
         if (!TextUtils.isEmpty(mNightModePrefix)) {
             desc = mNightModePrefix + "-" + desc;
         }
@@ -277,7 +282,7 @@ public class RenderTestRule extends TestWatcher {
             desc = variantPrefix + "-" + desc;
         }
 
-        return String.format("%s.%s.%s.png", testClass, desc, modelSdkIdentifier());
+        return String.format("%s.%s.rev_%s", testClass, desc, mSkiaGoldRevision);
     }
 
     /**
@@ -300,10 +305,12 @@ public class RenderTestRule extends TestWatcher {
     }
 
     /**
-     * Convenience method to create a File pointing to |filename| in |mGoldenFolder|.
+     * Saves the given |string| to the |file|.
      */
-    private File createGoldenPath(String filename) throws IOException {
-        return createPath(mGoldenFolder, filename);
+    private static void saveString(String string, File file) throws IOException {
+        try (PrintWriter out = new PrintWriter(file)) {
+            out.println(string);
+        }
     }
 
     /**
@@ -311,8 +318,7 @@ public class RenderTestRule extends TestWatcher {
      * |mOutputFolder|.
      */
     private File createOutputPath(String subfolder, String filename) throws IOException {
-        String folder = mOutputFolder != null ? mOutputFolder : mGoldenFolder;
-        return createPath(folder + subfolder, filename);
+        return createPath(mOutputFolder + subfolder, filename);
     }
 
     private static File createPath(String folder, String filename) throws IOException {
@@ -326,143 +332,72 @@ public class RenderTestRule extends TestWatcher {
     }
 
     /**
-     * Compares two Bitmaps.
-     * @return A pair of ComparisonResult and Bitmap. If the ComparisonResult is MISMATCH or MATCH,
-     *         the Bitmap will be a generated pixel-by-pixel difference.
+     * Base Builder class for creating RenderTestRules and its derivatives.
      */
-    private Pair<ComparisonResult, Bitmap> compareBitmapToGolden(Bitmap render, Bitmap golden) {
-        if (golden == null) return Pair.create(ComparisonResult.GOLDEN_NOT_FOUND, null);
-        // This comparison is much, much faster than doing a pixel-by-pixel comparison, so try this
-        // first and only fall back to the pixel comparison if it fails.
-        if (render.sameAs(golden)) return Pair.create(ComparisonResult.MATCH, null);
+    protected abstract static class BaseBuilder<B extends BaseBuilder<B>> {
+        protected int mRevision;
+        protected @Corpus String mCorpus;
+        protected String mDescription;
+        protected boolean mFailOnUnsupportedConfigs;
 
-        Bitmap diff = Bitmap.createBitmap(Math.max(render.getWidth(), golden.getWidth()),
-                Math.max(render.getHeight(), golden.getHeight()), render.getConfig());
-        // Assume that the majority of the pixels will be the same and set the diff image to
-        // transparent by default.
-        diff.eraseColor(Color.TRANSPARENT);
-
-        int maxWidth = Math.max(render.getWidth(), golden.getWidth());
-        int maxHeight = Math.max(render.getHeight(), golden.getHeight());
-        int minWidth = Math.min(render.getWidth(), golden.getWidth());
-        int minHeight = Math.min(render.getHeight(), golden.getHeight());
-
-        int diffPixelsCount =
-                comparePixels(render, golden, diff, mPixelDiffThreshold, 0, minWidth, 0, minHeight)
-                + compareSizes(diff, minWidth, maxWidth, minHeight, maxHeight);
-
-        if (diffPixelsCount > 0) {
-            return Pair.create(ComparisonResult.MISMATCH, diff);
+        /**
+         * Sets the revision that will be appended to the test name reported to Gold. This should
+         * be incremented anytime output changes significantly enough that previous baselines
+         * should be considered invalid.
+         */
+        public B setRevision(int revision) {
+            mRevision = revision;
+            return self();
         }
-        return Pair.create(ComparisonResult.MATCH, diff);
+
+        /**
+         * Sets the corpus in the Gold instance that images belong to.
+         */
+        public B setCorpus(@Corpus String corpus) {
+            mCorpus = corpus;
+            return self();
+        }
+
+        /**
+         * Sets the optional description that will be shown alongside the image in the Gold web UI.
+         */
+        public B setDescription(String description) {
+            mDescription = description;
+            return self();
+        }
+
+        /**
+         * Sets whether failures should still be reported on unsupported hardware/software configs.
+         * Supported configurations are listed in the Python test runner code in
+         * //build/android/pylib/local/device/local_device_instrumentation_test_run.py under the
+         * RENDER_TEST_MODEL_SDK_CONFIGS constant.
+         */
+        public B setFailOnUnsupportedConfigs(boolean fail) {
+            mFailOnUnsupportedConfigs = fail;
+            return self();
+        }
+
+        protected B self() {
+            return (B) this;
+        }
+
+        public abstract RenderTestRule build();
     }
 
     /**
-     * Compares two bitmaps pixel-wise.
-     *
-     * @param testImage Bitmap of test image.
-     *
-     * @param goldenImage Bitmap of golden image.
-     *
-     * @param diffImage This is an output argument. Function will set pixels in the |diffImage| to
-     * either transparent or red depending on whether that pixel differed in the golden and test
-     * bitmaps. diffImage should have its width and height be the max width and height of the
-     * golden and test bitmaps.
-     *
-     * @param diffThreshold Threshold for when to consider two color values as different. These
-     * values are 8 bit (256) so this threshold value should be in range 0-256.
-     *
-     * @param startWidth Start x-coord to start diffing the Bitmaps.
-     *
-     * @param endWidth End x-coord to start diffing the Bitmaps.
-     *
-     * @param startHeight Start y-coord to start diffing the Bitmaps.
-     *
-     * @param endHeight End x-coord to start diffing the Bitmaps.
-     *
-     * @return Returns number of pixels that differ between |goldenImage| and |testImage|
+     * Builder to create a RenderTestRule.
      */
-    private static int comparePixels(Bitmap testImage, Bitmap goldenImage, Bitmap diffImage,
-            int diffThreshold, int startWidth, int endWidth, int startHeight, int endHeight) {
-        int diffPixels = 0;
-
-        // Get copies of the pixels and compare using that instead of repeatedly calling getPixel,
-        // as that's significantly faster since we don't need to repeatedly hop through JNI.
-        int diffWidth = endWidth - startWidth;
-        int diffHeight = endHeight - startHeight;
-        int[] goldenPixels =
-                writeBitmapToArray(goldenImage, startWidth, startHeight, diffWidth, diffHeight);
-        int[] testPixels =
-                writeBitmapToArray(testImage, startWidth, startHeight, diffWidth, diffHeight);
-
-        int diffArea = diffHeight * diffWidth;
-        for (int i = 0; i < diffArea; ++i) {
-            if (goldenPixels[i] == testPixels[i]) continue;
-            int goldenColor = goldenPixels[i];
-            int testColor = testPixels[i];
-
-            int redDiff = Math.abs(Color.red(goldenColor) - Color.red(testColor));
-            int greenDiff = Math.abs(Color.green(goldenColor) - Color.green(testColor));
-            int blueDiff = Math.abs(Color.blue(goldenColor) - Color.blue(testColor));
-            int alphaDiff = Math.abs(Color.alpha(goldenColor) - Color.alpha(testColor));
-
-            if (redDiff > diffThreshold || blueDiff > diffThreshold || greenDiff > diffThreshold
-                    || alphaDiff > diffThreshold) {
-                diffPixels++;
-                diffImage.setPixel(i % diffWidth, i / diffWidth, Color.RED);
-            }
+    public static class Builder extends BaseBuilder<Builder> {
+        @Override
+        public RenderTestRule build() {
+            return new RenderTestRule(mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs);
         }
-        return diffPixels;
-    }
 
-    /**
-     * Compares two bitmaps size.
-     *
-     * @param diffImage This is an output argument. Function will set pixels in the |diffImage| to
-     * either transparent or red depending on whether that pixel coordinate occurs in the
-     * dimensions of the golden and not the test bitmap or vice-versa.
-     *
-     * @param minWidth Min width of golden and test bitmaps.
-     *
-     * @param maxWidth Max width of golden and test bitmaps.
-     *
-     * @param minHeight Min height of golden and test bitmaps.
-     *
-     * @param maxHeight Max height of golden and test bitmaps.
-     *
-     * @return Returns number of pixels that differ between |goldenImage| and |testImage| due to
-     * their size.
-     */
-    private static int compareSizes(
-            Bitmap diffImage, int minWidth, int maxWidth, int minHeight, int maxHeight) {
-        int diffPixels = 0;
-
-        if (maxWidth > minWidth) {
-            int diffWidth = maxWidth - minWidth;
-            int totalPixels = diffWidth * maxHeight;
-            // Filling an array of pixels then bulk-setting is faster than looping through each
-            // individual pixel and setting it.
-            int[] pixels = new int[totalPixels];
-            Arrays.fill(pixels, 0, totalPixels, Color.RED);
-            diffImage.setPixels(pixels, 0 /* offset */, diffWidth /* stride */, minWidth /* x */,
-                    0 /* y */, diffWidth /* width */, maxHeight /* height */);
-            diffPixels += totalPixels;
+        /**
+         * Creates a Builder with the default public corpus.
+         */
+        public static Builder withPublicCorpus() {
+            return new Builder().setCorpus(Corpus.ANDROID_RENDER_TESTS_PUBLIC);
         }
-        if (maxHeight > minHeight) {
-            int diffHeight = maxHeight - minHeight;
-            int totalPixels = diffHeight * minWidth;
-            int[] pixels = new int[totalPixels];
-            Arrays.fill(pixels, 0, totalPixels, Color.RED);
-            diffImage.setPixels(pixels, 0 /* offset */, minWidth /* stride */, 0 /* x */,
-                    minHeight /* y */, minWidth /* width */, diffHeight /* height */);
-            diffPixels += totalPixels;
-        }
-        return diffPixels;
-    }
-
-    private static int[] writeBitmapToArray(Bitmap bitmap, int x, int y, int width, int height) {
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0 /* offset */, width /* stride */, x, y, width, height);
-        return pixels;
     }
 }

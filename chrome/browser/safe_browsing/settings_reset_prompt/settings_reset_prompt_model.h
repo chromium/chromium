@@ -8,13 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
@@ -54,6 +51,10 @@ class SettingsResetPromptModel {
       Profile* profile,
       std::unique_ptr<SettingsResetPromptConfig> prompt_config,
       std::unique_ptr<ProfileResetter> profile_resetter);
+
+  SettingsResetPromptModel(const SettingsResetPromptModel&) = delete;
+  SettingsResetPromptModel& operator=(const SettingsResetPromptModel&) = delete;
+
   virtual ~SettingsResetPromptModel();
 
   Profile* profile() const;
@@ -69,7 +70,7 @@ class SettingsResetPromptModel {
   // NOTE: Can only be called once during the lifetime of this object.
   virtual void PerformReset(
       std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-      const base::Closure& done_callback);
+      base::OnceClosure done_callback);
   // To be called when the reset prompt dialog has been shown so that
   // preferences can be updated.
   virtual void DialogShown();
@@ -143,8 +144,6 @@ class SettingsResetPromptModel {
   std::unordered_set<int> domain_ids_for_startup_urls_to_reset_;
   ResetState startup_urls_reset_state_ =
       NO_RESET_REQUIRED_DUE_TO_DOMAIN_NOT_MATCHED;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptModel);
 };
 
 }  // namespace safe_browsing

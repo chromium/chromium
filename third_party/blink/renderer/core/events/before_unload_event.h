@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -59,13 +60,18 @@ class BeforeUnloadEvent final : public Event {
     return true;
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String return_value_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(BeforeUnloadEvent);
+template <>
+struct DowncastTraits<BeforeUnloadEvent> {
+  static bool AllowFrom(const Event& event) {
+    return event.IsBeforeUnloadEvent();
+  }
+};
 
 }  // namespace blink
 

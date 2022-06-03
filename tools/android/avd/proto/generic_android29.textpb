@@ -1,0 +1,25 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-29 AVD (userdebug build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "Dogc_gNCYNb3fIG-ovlMkV5EhjaYwdA_Jw9goUpl3A8C"  # 30.7.5
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-29/google_apis/x86"
+  version: "X4vLD4EI9TvhMK-A1x48Nb4KpIM5kO9fPqRso84-2YUC"  # 11
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-29;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-29/google_apis/x86"
+  version: "2Gxj7yjYANdMp9q9AhC3VItWEMIRZ4X3Cp6CthFremQC"  # created in bb_id 8839810454095989792
+  dest_path: ".android"
+}
+avd_name: "android_29_google_apis_x86"

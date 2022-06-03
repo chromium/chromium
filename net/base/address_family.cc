@@ -4,7 +4,7 @@
 
 #include "net/base/address_family.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "net/base/ip_address.h"
 #include "net/base/sys_addrinfo.h"
 

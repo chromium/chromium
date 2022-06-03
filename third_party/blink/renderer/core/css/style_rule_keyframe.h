@@ -30,7 +30,7 @@ class StyleRuleKeyframe final : public StyleRuleBase {
 
   String CssText() const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSPropertyValueSet> properties_;

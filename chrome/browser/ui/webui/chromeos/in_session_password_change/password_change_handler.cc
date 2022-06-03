@@ -7,13 +7,12 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/auth/chrome_cryptohome_authenticator.h"
-#include "chrome/browser/chromeos/login/saml/in_session_password_change_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/login/auth/saml_password_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -41,7 +40,7 @@ void PasswordChangeHandler::HandleInitialize(const base::ListValue* value) {
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
     params.SetKey("userName", base::Value(user->GetDisplayEmail()));
-  CallJavascriptFunction("insession.password.change.loadAuthExtension", params);
+  CallJavascriptFunction("$(\'main-element\').loadAuthExtension", params);
 }
 
 void PasswordChangeHandler::HandleChangePassword(
@@ -63,11 +62,11 @@ void PasswordChangeHandler::HandleChangePassword(
 }
 
 void PasswordChangeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize",
       base::BindRepeating(&PasswordChangeHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "changePassword",
       base::BindRepeating(&PasswordChangeHandler::HandleChangePassword,
                           weak_factory_.GetWeakPtr()));

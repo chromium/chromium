@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
 
@@ -55,14 +55,16 @@ class FontVariantLigaturesParser {
       default:
         return ParseResult::kUnknownValue;
     }
-    result_->Append(*css_property_parser_helpers::ConsumeIdent(range));
+    result_->Append(*css_parsing_utils::ConsumeIdent(range));
     return ParseResult::kConsumedValue;
   }
 
   CSSValue* FinalizeValue() {
     if (!result_->length())
       return CSSIdentifierValue::Create(CSSValueID::kNormal);
-    return result_.Release();
+    CSSValue* result = result_;
+    result_ = nullptr;
+    return result;
   }
 
  private:
@@ -70,7 +72,7 @@ class FontVariantLigaturesParser {
   bool saw_discretionary_ligatures_value_;
   bool saw_historical_ligatures_value_;
   bool saw_contextual_ligatures_value_;
-  Member<CSSValueList> result_;
+  CSSValueList* result_;
 };
 
 }  // namespace blink

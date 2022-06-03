@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
-<translation id="6106989379647458772">Веб-страницата на <ph name="PAGE" /> можеби привремено не работи или можеби трајно е преместена на нова веб-адреса.</translation>
-<translation id="6312113039770857350">Веб-страницата не е достапна</translation>
-<translation id="8681531050781943054">Веб-страницата на <ph name="PAGE" /> не може да се вчита бидејќи:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверете дали имате врска со интернет<ph name="MARKUP_3" />Подоцна вчитајте ја веб-страницата повторно<ph name="MARKUP_4" />Проверете ја адресата што ја внесовте<ph name="MARKUP_5" /></translation>
 </translationbundle>

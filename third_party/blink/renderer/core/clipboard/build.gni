@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_clipboard = [
+  "clipboard_mime_types.cc",
+  "clipboard_mime_types.h",
+  "clipboard_utilities.cc",
+  "clipboard_utilities.h",
+  "data_object.cc",
+  "data_object.h",
+  "data_object_item.cc",
+  "data_object_item.h",
+  "data_transfer.cc",
+  "data_transfer.h",
+  "data_transfer_access_policy.h",
+  "data_transfer_item.cc",
+  "data_transfer_item.h",
+  "data_transfer_item_list.cc",
+  "data_transfer_item_list.h",
+  "dragged_isolated_file_system.cc",
+  "dragged_isolated_file_system.h",
+  "paste_mode.h",
+  "system_clipboard.cc",
+  "system_clipboard.h",
+]
+
+if (is_win) {
+  blink_core_sources_clipboard += [ "clipboard_utilities_win.cc" ]
+}
+
+blink_core_tests_clipboard = [
+  "data_object_test.cc",
+  "data_transfer_test.cc",
+]

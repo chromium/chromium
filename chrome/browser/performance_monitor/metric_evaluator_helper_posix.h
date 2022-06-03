@@ -12,13 +12,15 @@ namespace performance_monitor {
 class MetricEvaluatorsHelperPosix : public MetricEvaluatorsHelper {
  public:
   MetricEvaluatorsHelperPosix();
+
+  MetricEvaluatorsHelperPosix(const MetricEvaluatorsHelperPosix&) = delete;
+  MetricEvaluatorsHelperPosix& operator=(const MetricEvaluatorsHelperPosix&) =
+      delete;
+
   ~MetricEvaluatorsHelperPosix() override;
 
   // MetricEvaluatorsHelper:
-  base::Optional<int> GetFreePhysicalMemoryMb() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelperPosix);
+  absl::optional<int> GetFreePhysicalMemoryMb() override;
 };
 
 }  // namespace performance_monitor

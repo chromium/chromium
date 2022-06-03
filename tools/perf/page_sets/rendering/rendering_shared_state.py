@@ -53,11 +53,21 @@ class RenderingSharedState(shared_page_state.SharedPageState):
 
   def WillRunStory(self, page):
     super(RenderingSharedState, self).WillRunStory(page)
-    self._EnsureNotSwiftShader()
+    if not self._finder_options.allow_software_compositing:
+      self._EnsureNotSwiftShader()
     if page.TAGS and story_tags.KEY_IDLE_POWER in page.TAGS:
       self._EnsureScreenOn()
 
   def DidRunStory(self, results):
+    if (self.current_page.TAGS
+        and story_tags.MOTIONMARK in self.current_page.TAGS):
+      unit = 'unitless_biggerIsBetter'
+      results.AddMeasurement('motionmark', unit, [self.current_page.score])
+      results.AddMeasurement('motionmarkLower', unit,
+                             [self.current_page.scoreLowerBound])
+      results.AddMeasurement('motionmarkUpper', unit,
+                             [self.current_page.scoreUpperBound])
+
     if (self.current_page.TAGS and
         story_tags.KEY_IDLE_POWER in self.current_page.TAGS):
       try:

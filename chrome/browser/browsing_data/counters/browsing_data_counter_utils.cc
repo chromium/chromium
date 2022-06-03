@@ -30,18 +30,20 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #endif
 
 namespace browsing_data_counter_utils {
 
+using BrowsingDataCounter = browsing_data::BrowsingDataCounter;
+using SigninDataCounter = browsing_data::SigninDataCounter;
+using ResultInt = browsing_data::BrowsingDataCounter::ResultInt;
+
 namespace {
 // A helper function to display the size of cache in units of MB or higher.
 // We need this, as 1 MB is the lowest nonzero cache size displayed by the
 // counter.
-base::string16 FormatBytesMBOrHigher(
-    browsing_data::BrowsingDataCounter::ResultInt bytes) {
+std::u16string FormatBytesMBOrHigher(ResultInt bytes) {
   if (ui::GetByteDisplayUnits(bytes) >= ui::DataUnits::DATA_UNITS_MEBIBYTE)
     return ui::FormatBytes(bytes);
 
@@ -53,18 +55,18 @@ base::string16 FormatBytesMBOrHigher(
 bool ShouldShowCookieException(Profile* profile) {
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    return identity_manager->HasPrimaryAccount();
+    return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return sync_ui_util::GetStatus(profile) == sync_ui_util::SYNCED;
+    return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
   }
 #endif
   return false;
 }
 
-base::string16 GetChromeCounterTextFromResult(
-    const browsing_data::BrowsingDataCounter::Result* result,
+std::u16string GetChromeCounterTextFromResult(
+    const BrowsingDataCounter::Result* result,
     Profile* profile) {
   std::string pref_name = result->source()->GetPrefName();
 
@@ -86,7 +88,7 @@ base::string16 GetChromeCounterTextFromResult(
     // a subset of cache (i.e. a finite time interval), and almost zero (< 1MB).
     static const int kBytesInAMegabyte = 1024 * 1024;
     if (cache_size_bytes >= kBytesInAMegabyte) {
-      base::string16 formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
+      std::u16string formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
       if (!is_upper_limit) {
         return is_basic_tab ? l10n_util::GetStringFUTF16(
                                   IDS_DEL_CACHE_COUNTER_BASIC, formatted_size)
@@ -107,9 +109,8 @@ base::string16 GetChromeCounterTextFromResult(
   }
   if (pref_name == browsing_data::prefs::kDeleteCookies) {
     // Site data counter.
-    browsing_data::BrowsingDataCounter::ResultInt origins =
-        static_cast<const browsing_data::BrowsingDataCounter::FinishedResult*>(
-            result)
+    ResultInt origins =
+        static_cast<const BrowsingDataCounter::FinishedResult*>(result)
             ->Value();
 
     // Determines whether or not to show the count with exception message.
@@ -128,11 +129,11 @@ base::string16 GetChromeCounterTextFromResult(
         static_cast<const HostedAppsCounter::HostedAppsResult*>(result);
     int hosted_apps_count = hosted_apps_result->Value();
 
-    DCHECK_GE(hosted_apps_result->Value(),
-              base::checked_cast<browsing_data::BrowsingDataCounter::ResultInt>(
-                  hosted_apps_result->examples().size()));
+    DCHECK_GE(
+        hosted_apps_result->Value(),
+        base::checked_cast<ResultInt>(hosted_apps_result->examples().size()));
 
-    std::vector<base::string16> replacements;
+    std::vector<std::u16string> replacements;
     if (hosted_apps_count > 0) {
       replacements.push_back(                                     // App1,
           base::UTF8ToUTF16(hosted_apps_result->examples()[0]));
@@ -159,17 +160,19 @@ base::string16 GetChromeCounterTextFromResult(
 #endif
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
-    const browsing_data::SigninDataCounter::SigninDataResult*
-        passwords_and_signin_data_result = static_cast<
-            const browsing_data::SigninDataCounter::SigninDataResult*>(result);
+    auto* signin_result =
+        static_cast<const SigninDataCounter::SigninDataResult*>(result);
 
-    browsing_data::BrowsingDataCounter::ResultInt password_count =
-        passwords_and_signin_data_result->Value();
-    browsing_data::BrowsingDataCounter::ResultInt signin_data_count =
-        passwords_and_signin_data_result->WebAuthnCredentialsValue();
+    ResultInt profile_passwords = signin_result->Value();
+    ResultInt account_passwords = signin_result->account_passwords();
+    ResultInt signin_data_count = signin_result->WebAuthnCredentialsValue();
 
-    std::vector<base::string16> counts;
-    if (password_count) {
+    std::vector<std::u16string> counts;
+    // TODO(crbug.com/1086433): If there are profile passwords, account
+    // passwords and other sign-in data, these are combined as
+    // "<1>; <2>; <3>" by recursively applying a "<1>; <2>" message.
+    // Maybe we should do something more pretty?
+    if (profile_passwords || account_passwords) {
       counts.emplace_back(browsing_data::GetCounterTextFromResult(result));
     }
     if (signin_data_count) {

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+function checkInputMap(inputs) {
+  let input;
+  for (const i of inputs.values()) {
+    input = i;
+    assert_equals(i.id, 'MockInputID-0');
+    assert_equals(i.manufacturer, 'MockInputManufacturer');
+    assert_equals(i.name, 'MockInputName');
+    assert_equals(i.version, 'MockInputVersion');
+    assert_equals(i.state, 'connected');
+    assert_equals(i.type, 'input');
+  }
+
+  let key;
+  for (const k of inputs.keys()) {
+    key = k;
+    assert_equals(k, 'MockInputID-0');
+  }
+
+  let entry;
+  for (const e of inputs.entries()) {
+    entry = e;
+    assert_equals(e[0], key);
+    assert_equals(e[1], input);
+  }
+
+  for (const e of inputs) {
+    assert_equals(e[0], key);
+    assert_equals(e[1], input);
+  }
+
+  assert_true(inputs.has('MockInputID-0'));
+  assert_false(inputs.has('MockOutputID-0'));
+  assert_equals(inputs.get('MockInputID-0'), input);
+  assert_equals(inputs.get('MockOutputID-0'), undefined);
+
+  inputs.forEach((i, k, m) => {
+    assert_equals(i, input);
+    assert_equals(k, key);
+    assert_equals(m, inputs);
+  });
+}
+
+function checkOutputMap(outputs) {
+  let output;
+  for (const o of outputs.values()) {
+    output = o;
+    assert_equals(o.id, 'MockOutputID-0');
+    assert_equals(o.manufacturer, 'MockOutputManufacturer');
+    assert_equals(o.name, 'MockOutputName');
+    assert_equals(o.version, 'MockOutputVersion');
+    assert_equals(o.state, 'connected');
+    assert_equals(o.type, 'output');
+  }
+
+  let key;
+  for (const k of outputs.keys()) {
+    key = k;
+    assert_equals(k, 'MockOutputID-0');
+  }
+
+  let entry;
+  for (const e of outputs.entries()) {
+    entry = e;
+    assert_equals(e[0], key);
+    assert_equals(e[1], output);
+  }
+
+  for (const e of outputs) {
+    assert_equals(e[0], key);
+    assert_equals(e[1], output);
+  }
+
+  assert_true(outputs.has('MockOutputID-0'));
+  assert_false(outputs.has('MockInputID-0'));
+  assert_equals(outputs.get('MockOutputID-0'), output);
+  assert_equals(outputs.get('MockInputID-0'), undefined);
+
+  outputs.forEach((o, k, m) => {
+    assert_equals(o, output);
+    assert_equals(k, key);
+    assert_equals(m, outputs);
+  });
+}
+
+promise_test(async t => {
+  await setMidiPermission({}, 'granted');
+  const access = await navigator.requestMIDIAccess();
+
+  // Validate the values of the attributes on the access.
+  assert_false(access.sysexEnabled);
+  assert_equals(access.inputs.size, 1);
+  assert_equals(access.outputs.size, 1);
+  checkInputMap(access.inputs);
+  checkOutputMap(access.outputs);
+
+  const output = access.outputs.values().next().value;
+
+  // Test sending of MIDI data with a Uint8Array.
+  const typedArrayData = new Uint8Array([0x90, 0x45, 0x7f]);
+  output.send(typedArrayData);
+
+  // Test sending of MIDI data with a regular Array.
+  output.send([0x90, 0x45, 0x7f]);
+
+  // Test sending of MIDI data with a regular Array giving an explicit timestamp.
+  output.send([0x90, 0x45, 0x7f], performance.now());
+
+  // Test sending of invalid MIDI data.
+  assert_throws_js(TypeError, () => output.send([0xfff, 0x45, 0x7f]));
+
+  // Test sending system exclusive messages. These should throw, since we don't have sysex access.
+  assert_throws_dom('InvalidAccessError', () => output.send([0xf0, 0x45, 0xf7]));
+
+  // Now test System Exclusive access - our test mock should not allow this type of access.
+  return promise_rejects_dom(t, 'SecurityError',
+      navigator.requestMIDIAccess({sysex: true}));
+}, 'basic MIDI access is functional');
+
+</script>
+</body>
+</html>

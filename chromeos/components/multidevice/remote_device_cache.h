@@ -6,12 +6,12 @@
 #define CHROMEOS_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_CACHE_H_
 
 #include <memory>
-#include <unordered_map>
+#include <string>
+#include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -21,18 +21,33 @@ namespace multidevice {
 // SetRemoteDevices() are provided different sets of devices, the set of devices
 // returned by GetRemoteDevices() is the union of those different sets (i.e.,
 // devices are not deleted from the cache).
+//
+// All devices in the cache will have a unique Instance ID, if one exists,
+// and/or a unique legacy device ID, RemoteDevice::GetDeviceId(), if one exists.
+// Every device is guaranteed to have at least one non-trivial ID. If a device
+// is added with either ID matching an existing device, the existing device is
+// overwritten.
+//
+// Note: Even though CryptAuth v2 DeviceSync guarantees that all devices have an
+// Instance ID, there may still be uses of RemoteDeviceCache in multi-device
+// application code that solely uses the legacy device ID.
 class RemoteDeviceCache {
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<RemoteDeviceCache> Create();
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<RemoteDeviceCache> BuildInstance();
+    virtual std::unique_ptr<RemoteDeviceCache> CreateInstance() = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  RemoteDeviceCache(const RemoteDeviceCache&) = delete;
+  RemoteDeviceCache& operator=(const RemoteDeviceCache&) = delete;
 
   virtual ~RemoteDeviceCache();
 
@@ -40,20 +55,36 @@ class RemoteDeviceCache {
 
   RemoteDeviceRefList GetRemoteDevices() const;
 
-  base::Optional<RemoteDeviceRef> GetRemoteDevice(
-      const std::string& device_id) const;
+  // Looks up device in cache by Instance ID, |instance_id|, and by the legacy
+  // device ID from RemoteDevice::GetDeviceId(), |legacy_device_id|. Returns the
+  // first device that matches either ID. Returns null if no such device exists.
+  //
+  // For best results, pass in both IDs when available since the device could
+  // have been written to the cache with one of the IDs missing.
+  absl::optional<RemoteDeviceRef> GetRemoteDevice(
+      const absl::optional<std::string>& instance_id,
+      const absl::optional<std::string>& legacy_device_id) const;
 
  private:
   RemoteDeviceCache();
 
-  std::unordered_map<std::string, std::shared_ptr<RemoteDevice>>
-      remote_device_map_;
+  std::shared_ptr<RemoteDevice> GetRemoteDeviceFromCache(
+      const absl::optional<std::string>& instance_id,
+      const absl::optional<std::string>& legacy_device_id) const;
 
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceCache);
+  std::vector<std::shared_ptr<RemoteDevice>> cached_remote_devices_;
 };
 
 }  // namespace multidevice
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::RemoteDeviceCache;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_CACHE_H_

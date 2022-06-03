@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #include "ios/chrome/browser/signin/constants.h"
 
 @class UIViewController;
@@ -38,8 +39,14 @@
 // Indicates that the user cancelled signing in to a managed account.
 - (void)didCancelManagedConfirmation;
 
-// The view controller that is showing the sign-in flow.
-@property(readonly) UIViewController* presentingViewController;
+// Dismisses the view controller that is showing the sign-in flow.
+- (void)dismissPresentingViewControllerAnimated:(BOOL)animated
+                                     completion:(ProceduralBlock)completion;
+
+// Presents a view controller on the sign-in flow.
+- (void)presentViewController:(UIViewController*)viewController
+                     animated:(BOOL)animated
+                   completion:(ProceduralBlock)completion;
 
 @end
 

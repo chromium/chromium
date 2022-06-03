@@ -15,26 +15,11 @@ import node_modules
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--filelist', required=True)
+  parser.add_argument('--tsconfig_path', required=True)
   args = parser.parse_args(argv)
 
-  files = []
-  with open(args.filelist) as filelist_file:
-    for line in filelist_file:
-      for f in line.split():
-        files.append(os.path.join(os.getcwd(), f))
-
-  file_paths = ' '.join(files)
-
-  result = node.RunNode(
-      [node_modules.PathToTypescript()] +
-      [
-          "--target 'es6'",
-          "--module 'es6'",
-          "--lib 'es6, esnext.bigint'",
-          "--strict",
-          file_paths
-      ])
+  result = node.RunNode([node_modules.PathToTypescript()] +
+                        ['--project', args.tsconfig_path])
   if len(result) != 0:
     raise RuntimeError('Failed to compile Typescript: \n%s' % result)
 

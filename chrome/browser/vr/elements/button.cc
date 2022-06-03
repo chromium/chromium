@@ -151,16 +151,16 @@ void Button::OnSetCornerRadii(const CornerRadii& radii) {
   hit_plane_->SetCornerRadii(radii);
 }
 
-void Button::NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                      int target_property_id,
-                                      cc::KeyframeModel* animation) {
+void Button::OnSizeAnimated(const gfx::SizeF& size,
+                            int target_property_id,
+                            gfx::KeyframeModel* animation) {
   // We could have OnSetSize called in UiElement's Notify handler instead, but
   // this may have expensive implications (such as regenerating textures on
   // every frame of an animation).  For now, keep this elements-specific.
   if (target_property_id == BOUNDS) {
     OnSetSize(size);
   }
-  UiElement::NotifyClientSizeAnimated(size, target_property_id, animation);
+  UiElement::OnSizeAnimated(size, target_property_id, animation);
 }
 
 const Sounds& Button::GetSounds() const {

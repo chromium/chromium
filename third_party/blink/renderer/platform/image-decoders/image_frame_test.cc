@@ -26,9 +26,11 @@ class ImageFrameTest : public testing::Test {
     src_8888 = SkPackARGB32(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
     dst_8888 = SkPackARGB32(0xA0, 0x60, 0x70, 0x80);
 
+#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
+    pixel_format_n32 = skcms_PixelFormat_BGRA_8888;
+#else
     pixel_format_n32 = skcms_PixelFormat_RGBA_8888;
-    if (kN32_SkColorType == kRGBA_8888_SkColorType)
-      pixel_format_n32 = skcms_PixelFormat_BGRA_8888;
+#endif
 
     skcms_Transform(&src_8888, pixel_format_n32, skcms_AlphaFormat_Unpremul,
                     nullptr, &src_f16, skcms_PixelFormat_RGBA_hhhh,

@@ -1,0 +1,6 @@
+FAIL document.querySelector('input').offsetHeight > 10 should be true. Was false.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Tests that a display:none upload button works. 

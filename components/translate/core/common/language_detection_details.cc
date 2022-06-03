@@ -6,13 +6,11 @@
 
 namespace translate {
 
-LanguageDetectionDetails::LanguageDetectionDetails()
-    : is_cld_reliable(false), has_notranslate(false) {
-}
+LanguageDetectionDetails::LanguageDetectionDetails() = default;
 
 LanguageDetectionDetails::LanguageDetectionDetails(
     const LanguageDetectionDetails& other) = default;
 
-LanguageDetectionDetails::~LanguageDetectionDetails() {}
+LanguageDetectionDetails::~LanguageDetectionDetails() = default;
 
 }  // namespace translate

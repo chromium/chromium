@@ -72,10 +72,6 @@ WebViewEvents.EVENTS = {
     fields: ['defaultPromptText', 'messageText', 'messageType', 'url'],
     handler: 'handleDialogEvent'
   },
-  'droplink': {
-    evt: CreateEvent('webViewInternal.onDropLink'),
-    fields: ['url']
-  },
   'exit': {
     evt: CreateEvent('webViewInternal.onExit'),
     fields: ['processId', 'reason']
@@ -279,8 +275,8 @@ WebViewEvents.prototype.handleLoadCommitEvent = function(event, eventName) {
                          event.currentEntryIndex,
                          event.entryCount,
                          event.processId,
-                         event.url,
-                         event.isTopLevel);
+                         event.visibleUrl);
+
   var webViewEvent = this.makeDomEvent(event, eventName);
   this.view.dispatchEvent(webViewEvent);
 };

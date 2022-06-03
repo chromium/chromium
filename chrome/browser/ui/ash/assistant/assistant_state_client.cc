@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/mojom/assistant_state_controller.mojom.h"
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/assistant/assistant_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/arc/arc_util.h"
@@ -29,7 +32,7 @@ AssistantStateClient::~AssistantStateClient() {
 
 void AssistantStateClient::NotifyFeatureAllowed() {
   DCHECK(profile_);
-  ash::mojom::AssistantAllowedState state =
+  chromeos::assistant::AssistantAllowedState state =
       assistant::IsAssistantAllowedForProfile(profile_);
   ash::AssistantState::Get()->NotifyFeatureAllowed(state);
 }

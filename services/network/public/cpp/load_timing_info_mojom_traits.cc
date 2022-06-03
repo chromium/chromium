@@ -34,10 +34,16 @@ bool StructTraits<network::mojom::LoadTimingInfoDataView, net::LoadTimingInfo>::
          data.ReadSendEnd(&out->send_end) &&
          data.ReadReceiveHeadersStart(&out->receive_headers_start) &&
          data.ReadReceiveHeadersEnd(&out->receive_headers_end) &&
+         data.ReadReceiveNonInformationalHeadersStart(
+             &out->receive_non_informational_headers_start) &&
+         data.ReadFirstEarlyHintsTime(&out->first_early_hints_time) &&
          data.ReadPushStart(&out->push_start) &&
          data.ReadPushEnd(&out->push_end) &&
          data.ReadServiceWorkerStartTime(&out->service_worker_start_time) &&
-         data.ReadServiceWorkerReadyTime(&out->service_worker_ready_time);
+         data.ReadServiceWorkerReadyTime(&out->service_worker_ready_time) &&
+         data.ReadServiceWorkerFetchStart(&out->service_worker_fetch_start) &&
+         data.ReadServiceWorkerRespondWithSettled(
+             &out->service_worker_respond_with_settled);
 }
 
 }  // namespace mojo

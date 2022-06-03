@@ -1,0 +1,107 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
+import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
+import "url/mojom/origin.mojom";
+
+// This structure holds information that needs to be replicated between a
+// RenderFrame and any of its associated RenderFrameProxies.
+struct FrameReplicationState {
+  // Current origin of the frame. This field is updated whenever a frame
+  // navigation commits.
+  //
+  // TODO(alexmos): For now, |origin| updates are immediately sent to all frame
+  // proxies when in --site-per-process mode. This isn't ideal, since Blink
+  // typically needs a proxy's origin only when performing security checks on
+  // the ancestors of a local frame.  So, as a future improvement, we could
+  // delay sending origin updates to proxies until they have a local descendant
+  // (if ever). This would reduce leaking a user's browsing history into a
+  // compromized renderer.
+  url.mojom.Origin origin;
+
+  // The assigned name of the frame (see WebFrame::assignedName()).
+  //
+  // |name| is set when a new child frame is created using the value of the
+  // <iframe> element's "name" attribute (see
+  // RenderFrameHostImpl::OnCreateChildFrame), and it is updated dynamically
+  // whenever a frame sets its window.name.
+  //
+  // |name| updates are immediately sent to all frame proxies (when in
+  // --site-per-process mode), so that other frames can look up or navigate a
+  // frame using its updated name (e.g., using window.open(url, frame_name)).
+  string name;
+
+  // Unique name of the frame (see WebFrame::uniqueName()).
+  //
+  // |unique_name| is used in heuristics that try to identify the same frame
+  // across different, unrelated navigations (i.e. to refer to the frame
+  // when going back/forward in session history OR when refering to the frame
+  // in web tests results).
+  //
+  // |unique_name| needs to be replicated to ensure that unique name for a given
+  // frame is the same across all renderers - without replication a renderer
+  // might arrive at a different value when recalculating the unique name from
+  // scratch.
+  string unique_name;
+
+  // Parsed permissions policy header. May be empty if no header was sent with
+  // the document.
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+    permissions_policy_header;
+
+  // Contains the currently active sandbox flags for this frame, including flags
+  // inherited from parent frames, the currently active flags from the <iframe>
+  // element hosting this frame, as well as any flags set from a
+  // Content-Security-Policy HTTP header.
+  network.mojom.WebSandboxFlags active_sandbox_flags =
+      network.mojom.WebSandboxFlags.kNone;
+
+  // Iframe sandbox flags and container policy currently in effect for the
+  // frame. Container policy may be empty if this is the top-level frame.
+  // |sandbox_flags| are initialized for new child frames using the value of the
+  // <iframe> element's "sandbox" attribute, combined with any sandbox flags in
+  // effect for the parent frame. This does *not* include any flags set by a
+  // Content-Security-Policy header delivered with the framed document.
+  //
+  // When a parent frame updates an <iframe>'s sandbox attribute via
+  // JavaScript, |sandbox_flags| are updated only after the child frame commits
+  // a navigation that makes the updated flags take effect.  This is also the
+  // point at which updates are sent to proxies (see
+  // CommitPendingFramePolicy()). The proxies need updated flags so that they
+  // can be inherited properly if a proxy ever becomes a parent of a local
+  // frame.
+  blink.mojom.FramePolicy frame_policy;
+
+  // The insecure request policy that a frame's current document is enforcing.
+  // Updates are immediately sent to all frame proxies when frames live in
+  // different processes.
+  blink.mojom.InsecureRequestPolicy insecure_request_policy =
+      blink.mojom.InsecureRequestPolicy.kLeaveInsecureRequestsAlone;
+
+  // The upgrade insecure navigations set that a frame's current document is
+  // enforcing. Updates are immediately sent to all frame proxies when frames
+  // live in different processes. Elements in the set are hashes of hosts to be
+  // upgraded.
+  array<uint32> insecure_navigations_set;
+
+  // True if a frame's origin is unique and should be considered potentially
+  // trustworthy.
+  bool has_potentially_trustworthy_unique_origin = false;
+
+  // Whether the frame has an active transient user gesture.
+  bool has_active_user_gesture = false;
+
+  // Whether the frame has received a user gesture in a previous navigation so
+  // long as a the frame has staying on the same eTLD+1.
+  bool has_received_user_gesture_before_nav = false;
+
+  // Whether this frame is an ad frame.
+  bool is_ad_subframe = false;
+};

@@ -9,22 +9,9 @@
     {
       "name": "LayoutNGBlockFlow DIV id='resizing'",
       "bounds": [402, 207],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='resizing'",
-          "rect": [0, 0, 402, 207],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [2, 155, 398, 50],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [2, 104, 398, 50],
-          "reason": "appeared"
-        }
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 402, 207]
       ],
       "transform": 1
     }

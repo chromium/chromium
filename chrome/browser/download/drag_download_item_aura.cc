@@ -13,23 +13,19 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/file_info.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/button_drag_utils.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "content/public/browser/download_item_utils.h"
-#endif
-
 void DragDownloadItem(const download::DownloadItem* download,
-                      gfx::Image* icon,
+                      const gfx::Image* icon,
                       gfx::NativeView view) {
   DCHECK(download);
   DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
@@ -43,8 +39,7 @@ void DragDownloadItem(const download::DownloadItem* download,
 
   button_drag_utils::SetDragImage(
       GURL(), download->GetFileNameToReportUser().BaseName().LossyDisplayName(),
-      icon ? icon->AsImageSkia() : gfx::ImageSkia(), nullptr,
-      *views::Widget::GetTopLevelWidgetForNativeView(view), data.get());
+      icon ? icon->AsImageSkia() : gfx::ImageSkia(), nullptr, data.get());
 
   base::FilePath full_path = download->GetTargetFilePath();
   std::vector<ui::FileInfo> file_infos;
@@ -53,10 +48,10 @@ void DragDownloadItem(const download::DownloadItem* download,
   data->SetFilenames(file_infos);
 
   gfx::Point location = display::Screen::GetScreen()->GetCursorScreenPoint();
-  // TODO(varunjain): Properly determine and send DRAG_EVENT_SOURCE below.
+  // TODO(varunjain): Properly determine and send DragEventSource below.
   aura::client::GetDragDropClient(root_window)
       ->StartDragAndDrop(
           std::move(data), root_window, view, location,
           ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK,
-          ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE);
+          ui::mojom::DragEventSource::kMouse);
 }

@@ -1,0 +1,39 @@
+Document IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
+++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Text Name='no overflow' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Text Name='clipped large lots of text more text' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++Edit ClassName='textarea scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true Value.Value='ab cd'
+++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++Text Name='tiny' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++Group ClassName='x-overflow-group' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group ClassName='x-hidden-small not-scrollable' IsControlElement=false IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='x=hidden' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='x=hidden' ClassName='x-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='x=hidden' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='x=auto' ClassName='x-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='x=auto' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='x=scroll' ClassName='x-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='x=scroll' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++Text Name='x=visible' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++Group ClassName='y-overflow-group' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group ClassName='y-hidden-small not-scrollable' IsControlElement=false IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='y=hidden' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='y=hidden' ClassName='y-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='y=hidden' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='y=auto' ClassName='y-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='y=auto' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group Name='y=scroll' ClassName='y-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
+++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++++Text Name='y=scroll' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++++Text Name='y=visible' IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true

@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context_base.h"
@@ -24,17 +25,19 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContextImageBitmap;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   ImageBitmapRenderingContext(CanvasRenderingContextHost*,
@@ -44,25 +47,14 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   void transferFromImageBitmap(ImageBitmap*, ExceptionState&);
 
   // CanvasRenderingContext implementation
-  ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContextImageBitmap;
-  }
   ImageBitmap* TransferToImageBitmap(ScriptState*) override;
 
-  void SetCanvasGetContextResult(RenderingContext&) final;
-  void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
+  V8RenderingContext* AsV8RenderingContext() final;
+  V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
 
   ~ImageBitmapRenderingContext() override;
 };
 
-DEFINE_TYPE_CASTS(ImageBitmapRenderingContext,
-                  CanvasRenderingContext,
-                  context,
-                  context->GetContextType() ==
-                      CanvasRenderingContext::kContextImageBitmap,
-                  context.GetContextType() ==
-                      CanvasRenderingContext::kContextImageBitmap);
-
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_RENDERING_CONTEXT_H_

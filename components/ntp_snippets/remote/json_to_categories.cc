@@ -4,9 +4,9 @@
 
 #include "components/ntp_snippets/remote/json_to_categories.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_snippets {
@@ -16,10 +16,12 @@ namespace {
 // Creates suggestions from dictionary values in |list| and adds them to
 // |suggestions|. Returns true on success, false if anything went wrong.
 bool AddSuggestionsFromListValue(int remote_category_id,
-                                 const base::ListValue& list,
+                                 const base::Value& list,
                                  RemoteSuggestion::PtrVector* suggestions,
                                  const base::Time& fetch_time) {
-  for (const auto& value : list) {
+  DCHECK(list.is_list());
+
+  for (const base::Value& value : list.GetList()) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict)) {
       return false;
@@ -51,7 +53,7 @@ FetchedCategory::~FetchedCategory() = default;
 FetchedCategory& FetchedCategory::operator=(FetchedCategory&&) = default;
 
 CategoryInfo BuildArticleCategoryInfo(
-    const base::Optional<base::string16>& title) {
+    const absl::optional<std::u16string>& title) {
   return CategoryInfo(
       title.has_value() ? title.value()
                         : l10n_util::GetStringUTF16(
@@ -62,7 +64,7 @@ CategoryInfo BuildArticleCategoryInfo(
       l10n_util::GetStringUTF16(IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY));
 }
 
-CategoryInfo BuildRemoteCategoryInfo(const base::string16& title,
+CategoryInfo BuildRemoteCategoryInfo(const std::u16string& title,
                                      bool allow_fetching_more_results) {
   ContentSuggestionsAdditionalAction action =
       ContentSuggestionsAdditionalAction::NONE;
@@ -91,39 +93,37 @@ bool JsonToCategories(const base::Value& parsed,
     return false;
   }
 
-  for (const auto& v : *categories_value) {
-    std::string utf8_title;
-    int remote_category_id = -1;
-    const base::DictionaryValue* category_value = nullptr;
-    if (!(v.GetAsDictionary(&category_value) &&
-          category_value->GetString("localizedTitle", &utf8_title) &&
-          category_value->GetInteger("id", &remote_category_id) &&
-          (remote_category_id > 0))) {
+  for (const base::Value& v : categories_value->GetList()) {
+    if (!v.is_dict())
+      return false;
+
+    const std::string* utf8_title = v.FindStringKey("localizedTitle");
+    int remote_category_id = v.FindIntKey("id").value_or(-1);
+
+    if (!utf8_title || remote_category_id <= 0) {
       return false;
     }
 
     RemoteSuggestion::PtrVector suggestions;
-    const base::ListValue* suggestions_list = nullptr;
+    const base::Value* suggestions_list = v.FindListKey("suggestions");
     // Absence of a list of suggestions is treated as an empty list, which
     // is permissible.
-    if (category_value->GetList("suggestions", &suggestions_list)) {
-      if (!AddSuggestionsFromListValue(remote_category_id, *suggestions_list,
-                                       &suggestions, fetch_time)) {
-        return false;
-      }
+    if (suggestions_list &&
+        !AddSuggestionsFromListValue(remote_category_id, *suggestions_list,
+                                     &suggestions, fetch_time)) {
+      return false;
     }
     Category category = Category::FromRemoteCategory(remote_category_id);
     if (category.IsKnownCategory(KnownCategories::ARTICLES)) {
       categories->push_back(FetchedCategory(
-          category, BuildArticleCategoryInfo(base::UTF8ToUTF16(utf8_title))));
+          category, BuildArticleCategoryInfo(base::UTF8ToUTF16(*utf8_title))));
     } else {
       // TODO(tschumann): Right now, the backend does not yet populate this
       // field. Make it mandatory once the backends provide it.
-      bool allow_fetching_more_results = false;
-      category_value->GetBoolean("allowFetchingMoreResults",
-                                 &allow_fetching_more_results);
+      bool allow_fetching_more_results =
+          v.FindBoolKey("allowFetchingMoreResults").value_or(false);
       categories->push_back(FetchedCategory(
-          category, BuildRemoteCategoryInfo(base::UTF8ToUTF16(utf8_title),
+          category, BuildRemoteCategoryInfo(base::UTF8ToUTF16(*utf8_title),
                                             allow_fetching_more_results)));
     }
     categories->back().suggestions = std::move(suggestions);

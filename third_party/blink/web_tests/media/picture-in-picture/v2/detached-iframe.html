@@ -18,8 +18,9 @@ promise_test(async t => {
   await frameLoadedPromise;
 
   const element = frame.contentDocument.createElement('div');
+  const frameDOMException = frame.contentWindow.DOMException;
   document.body.removeChild(frame);
-  return promise_rejects(t, 'InvalidStateError',
+  return promise_rejects_dom(t, 'InvalidStateError', frameDOMException,
     requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1 }));
 }, 'request Picture-in-Picture rejects when frame is detached');
 </script>

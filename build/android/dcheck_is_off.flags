@@ -10,8 +10,3 @@
 -checkdiscard class ** {
   @org.chromium.base.annotations.CheckDiscard *;
 }
-
-# Ensure @RemovableInRelease actually works.
--checkdiscard class ** {
-  @org.chromium.base.annotations.RemovableInRelease *;
-}

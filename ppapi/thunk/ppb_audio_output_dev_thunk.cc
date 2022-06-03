@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"

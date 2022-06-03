@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>INPUT TYPE=FILE WEBKITDIRECTORY and key events - Enter keypress prevented</title>
+<input type="file" webkitdirectory>
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  const input = document.querySelector('input');
+  input.onkeypress = e => e.preventDefault();
+  input.focus();
+  // Despite the name, 'keyDown' simulates a full down/press/up sequence.
+  eventSender.keyDown('Enter', []);
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kUploadFolder');
+}, 'pressing Enter with a webkitdirectory file input focused still launches a file chooser if preventDefault() is called on the keypress event');
+</script>
+

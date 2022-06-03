@@ -23,6 +23,9 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Requests signing out all users, ending the current session.
   virtual void RequestSignOut() = 0;
 
+  // Attempts to restart the chrome browser.
+  virtual void AttemptRestartChrome() = 0;
+
   // Switch to the active user with |account_id| (if the user has already signed
   // in).
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;

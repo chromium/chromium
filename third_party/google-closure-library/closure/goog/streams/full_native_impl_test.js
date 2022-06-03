@@ -1,0 +1,28 @@
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+goog.module('goog.streams.fullNativeImplTest');
+goog.setTestOnly();
+
+const testSuite = goog.require('goog.testing.testSuite');
+const {TestCases} = goog.require('goog.streams.fullTestCases');
+const {newReadableStream} = goog.require('goog.streams.fullNativeImpl');
+
+let nativeImplementation = false;
+
+try {
+  new ReadableStream();
+  nativeImplementation = true;
+} catch (e) {
+}
+
+if (nativeImplementation) {
+  testSuite(new TestCases(newReadableStream));
+} else {
+  testSuite({
+    testNotEnabledForNonNativeReadableStreamBrowsers() {},
+  });
+}

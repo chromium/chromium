@@ -34,8 +34,8 @@
 #include "base/location.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -48,9 +48,8 @@ class FileEntry;
 class MODULES_EXPORT DOMFileSystem final
     : public DOMFileSystemBase,
       public ActiveScriptWrappable<DOMFileSystem>,
-      public ContextClient {
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(DOMFileSystem);
 
  public:
   // Creates a new isolated file system for the given filesystemId.
@@ -88,7 +87,7 @@ class MODULES_EXPORT DOMFileSystem final
   static void ScheduleCallback(ExecutionContext* execution_context,
                                base::OnceClosure task);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   static String TaskNameForInstrumentation() { return "FileSystem"; }

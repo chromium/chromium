@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_HAPTIC_ACTUATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_HAPTIC_ACTUATOR_H_
 
+#include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -21,15 +22,11 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 
 class GamepadHapticActuator final : public ScriptWrappable,
-                                    public ContextClient {
+                                    public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(GamepadHapticActuator);
 
  public:
-  static GamepadHapticActuator* Create(ExecutionContext* context,
-                                       int pad_index);
-
-  GamepadHapticActuator(ExecutionContext* context,
+  GamepadHapticActuator(ExecutionContext& context,
                         int pad_index,
                         device::GamepadHapticActuatorType type);
   ~GamepadHapticActuator() override;
@@ -43,7 +40,7 @@ class GamepadHapticActuator final : public ScriptWrappable,
 
   ScriptPromise reset(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void OnPlayEffectCompleted(ScriptPromiseResolver*,

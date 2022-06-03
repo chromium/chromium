@@ -4,12 +4,38 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 proto_library("optimization_guide_proto") {
+  proto_in_dir = "//"
   sources = [
     "common_types.proto",
     "hint_cache.proto",
     "hints.proto",
+    "lite_video_metadata.proto",
+    "loading_predictor_metadata.proto",
     "models.proto",
-    "previews_metadata.proto",
+    "page_topics_model_metadata.proto",
+    "performance_hints_metadata.proto",
+    "public_image_metadata.proto",
+    "push_notification.proto",
   ]
+}
+
+if (is_android) {
+  proto_java_library("optimization_guide_proto_java") {
+    proto_path = "//"
+    sources = [
+      "common_types.proto",
+      "hints.proto",
+      "lite_video_metadata.proto",
+      "loading_predictor_metadata.proto",
+      "models.proto",
+      "performance_hints_metadata.proto",
+      "public_image_metadata.proto",
+      "push_notification.proto",
+    ]
+  }
 }

@@ -5,14 +5,15 @@
 #include "media/base/media_url_demuxer.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
 MediaUrlDemuxer::MediaUrlDemuxer(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     const GURL& media_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     bool allow_credentials,
     bool is_hls)
@@ -80,6 +81,11 @@ base::Time MediaUrlDemuxer::GetTimelineOffset() const {
 
 int64_t MediaUrlDemuxer::GetMemoryUsage() const {
   return 0;
+}
+
+absl::optional<container_names::MediaContainerName>
+MediaUrlDemuxer::GetContainerForMetrics() const {
+  return absl::nullopt;
 }
 
 void MediaUrlDemuxer::OnEnabledAudioTracksChanged(

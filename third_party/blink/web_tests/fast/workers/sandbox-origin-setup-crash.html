@@ -1,0 +1,18 @@
+<html>
+<head>
+<meta content="sandbox allow-scripts" http-equiv="Content-Security-Policy">
+</head>
+<body>
+PASS if no crash.
+<script>
+// See https://crbug.com/1068008
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+new Worker("resources/empty-worker.js").onmessage = () => {
+  if (window.testRunner)
+    testRunner.notifyDone();
+};
+</script>
+</body></html>

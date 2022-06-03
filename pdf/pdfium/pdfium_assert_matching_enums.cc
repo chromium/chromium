@@ -3,32 +3,47 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "pdf/pdf.h"
+#include "pdf/accessibility_structs.h"
+#include "pdf/content_restriction.h"
+#include "pdf/document_metadata.h"
 #include "ppapi/c/pp_input_event.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
+#include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_fwlevent.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if defined(OS_WIN)
+#include "pdf/pdf.h"
+#endif
+
+namespace chrome_pdf {
+
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
 
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_SHIFTKEY, FWL_EVENTFLAG_ShiftKey);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_CONTROLKEY, FWL_EVENTFLAG_ControlKey);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_ALTKEY, FWL_EVENTFLAG_AltKey);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_METAKEY, FWL_EVENTFLAG_MetaKey);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_ISKEYPAD, FWL_EVENTFLAG_KeyPad);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kShiftKey,
+                   FWL_EVENTFLAG_ShiftKey);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kControlKey,
+                   FWL_EVENTFLAG_ControlKey);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kAltKey,
+                   FWL_EVENTFLAG_AltKey);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kMetaKey,
+                   FWL_EVENTFLAG_MetaKey);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kIsKeyPad,
+                   FWL_EVENTFLAG_KeyPad);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kIsAutoRepeat,
                    FWL_EVENTFLAG_AutoRepeat);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kLeftButtonDown,
                    FWL_EVENTFLAG_LeftButtonDown);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kMiddleButtonDown,
                    FWL_EVENTFLAG_MiddleButtonDown);
-STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kRightButtonDown,
                    FWL_EVENTFLAG_RightButtonDown);
 
 STATIC_ASSERT_ENUM(ui::VKEY_BACK, FWL_VKEY_Back);
@@ -215,6 +230,8 @@ STATIC_ASSERT_ENUM(PP_PRIVATEDUPLEXMODE_SIMPLEX, Simplex);
 STATIC_ASSERT_ENUM(PP_PRIVATEDUPLEXMODE_SHORT_EDGE, DuplexFlipShortEdge);
 STATIC_ASSERT_ENUM(PP_PRIVATEDUPLEXMODE_LONG_EDGE, DuplexFlipLongEdge);
 
+STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_UNKNOWN, FPDF_TEXTRENDERMODE_UNKNOWN);
+STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_FIRST, FPDF_TEXTRENDERMODE_UNKNOWN);
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_FILL, FPDF_TEXTRENDERMODE_FILL);
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_STROKE, FPDF_TEXTRENDERMODE_STROKE);
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_FILLSTROKE,
@@ -228,10 +245,27 @@ STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_STROKECLIP,
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_FILLSTROKECLIP,
                    FPDF_TEXTRENDERMODE_FILL_STROKE_CLIP);
 STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_CLIP, FPDF_TEXTRENDERMODE_CLIP);
+STATIC_ASSERT_ENUM(PP_TEXTRENDERINGMODE_LAST, FPDF_TEXTRENDERMODE_LAST);
+
+STATIC_ASSERT_ENUM(FormType::kNone, FORMTYPE_NONE);
+STATIC_ASSERT_ENUM(FormType::kAcroForm, FORMTYPE_ACRO_FORM);
+STATIC_ASSERT_ENUM(FormType::kXFAFull, FORMTYPE_XFA_FULL);
+STATIC_ASSERT_ENUM(FormType::kXFAForeground, FORMTYPE_XFA_FOREGROUND);
+STATIC_ASSERT_ENUM(FormType::kMaxValue, FORMTYPE_COUNT - 1);
+
+STATIC_ASSERT_ENUM(PP_PRIVATEBUTTON_PUSHBUTTON, FPDF_FORMFIELD_PUSHBUTTON);
+STATIC_ASSERT_ENUM(PP_PRIVATEBUTTON_CHECKBOX, FPDF_FORMFIELD_CHECKBOX);
+STATIC_ASSERT_ENUM(PP_PRIVATEBUTTON_RADIOBUTTON, FPDF_FORMFIELD_RADIOBUTTON);
 
 #if defined(OS_WIN)
-STATIC_ASSERT_ENUM(chrome_pdf::kEmf, FPDF_PRINTMODE_EMF);
-STATIC_ASSERT_ENUM(chrome_pdf::kTextOnly, FPDF_PRINTMODE_TEXTONLY);
-STATIC_ASSERT_ENUM(chrome_pdf::kPostScript2, FPDF_PRINTMODE_POSTSCRIPT2);
-STATIC_ASSERT_ENUM(chrome_pdf::kPostScript3, FPDF_PRINTMODE_POSTSCRIPT3);
+STATIC_ASSERT_ENUM(kEmf, FPDF_PRINTMODE_EMF);
+STATIC_ASSERT_ENUM(kTextOnly, FPDF_PRINTMODE_TEXTONLY);
+STATIC_ASSERT_ENUM(kPostScript2, FPDF_PRINTMODE_POSTSCRIPT2);
+STATIC_ASSERT_ENUM(kPostScript3, FPDF_PRINTMODE_POSTSCRIPT3);
+STATIC_ASSERT_ENUM(kEmfWithReducedRasterization,
+                   FPDF_PRINTMODE_EMF_IMAGE_MASKS);
+STATIC_ASSERT_ENUM(kPostScript3WithType42Fonts,
+                   FPDF_PRINTMODE_POSTSCRIPT3_TYPE42);
 #endif
+
+}  // namespace chrome_pdf

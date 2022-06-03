@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 
 namespace blink {
 
@@ -17,9 +18,9 @@ namespace {
 inline bool FullyClipsContents(const Node* node) {
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || !layout_object->IsBox() ||
-      !layout_object->HasOverflowClip() || layout_object->IsLayoutView())
+      !layout_object->IsScrollContainer() || IsA<LayoutView>(layout_object))
     return false;
-  return ToLayoutBox(layout_object)->Size().IsEmpty();
+  return To<LayoutBox>(layout_object)->Size().IsEmpty();
 }
 
 inline bool IgnoresContainerClip(const Node* node) {

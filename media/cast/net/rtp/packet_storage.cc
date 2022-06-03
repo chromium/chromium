@@ -4,7 +4,8 @@
 
 #include "media/cast/net/rtp/packet_storage.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "media/cast/constants.h"
 
 namespace media {

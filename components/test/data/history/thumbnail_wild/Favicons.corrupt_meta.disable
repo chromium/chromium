@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.WildSchema
+-- unit_tests --gtest_filter=FaviconDatabaseTest.WildSchema
 --
 -- [meta] table has first column [oey] instead of [key] (single-bit
 -- error).  Database consistent with v6, but that may just mean that

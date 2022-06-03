@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/policy_export.h"
@@ -60,7 +59,8 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
   // bind base::Passed() scoped_ptrs to the callback in such cases as these
   // become invalid after a callback has been run once. base::Owned() can be
   // used in all cases.
-  typedef base::Callback<bool(const std::string&)> FetchSuccessCallback;
+  typedef base::RepeatingCallback<bool(const std::string&)>
+      FetchSuccessCallback;
 
   // This class runs on the background thread represented by |task_runner|,
   // which must support file I/O. All network I/O is forwarded to a different
@@ -69,6 +69,9 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher,
       size_t max_parallel_fetches);
+  ExternalPolicyDataUpdater(const ExternalPolicyDataUpdater&) = delete;
+  ExternalPolicyDataUpdater& operator=(const ExternalPolicyDataUpdater&) =
+      delete;
   ~ExternalPolicyDataUpdater();
 
   // Fetches the external data specified in the |request|. The |key| is an
@@ -122,8 +125,6 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
   // |true| once the destructor starts. Prevents jobs from being started during
   // shutdown.
   bool shutting_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataUpdater);
 };
 
 }  // namespace policy

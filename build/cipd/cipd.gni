@@ -1,0 +1,140 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Build targets for constructing CIPD packages.
+#
+# Prepares a CIPD archive and generates a manifest file.
+#
+# TODO(crbug.com/1042819): Add support for including directories.
+#
+# Parameters:
+#   package_definition_yaml: CIPD package definition filename. "cipd.yaml"
+#                            if unspecified.
+#   package: The path where the package will be located inside the CIPD
+#            repository.
+#   description: Sets the "description" field in CIPD package definition.
+#   install_mode: String, should be either "symlink" or "copy". Defaults to
+#                 "symlink".
+#   deps: A list of targets to build prior to copying files.
+#   sources: A list of files to copy into the staging root.
+#   source_directories: A list of directories to include in the package. Should
+#                       only be used when listing out all the files (in a given
+#                       directory) in |sources| is unfeasible.
+#
+# Example:
+#   cipd_package_definition("chromedriver") {
+#     package = "path/to/cipd/package"
+#     description = "Prebuilt test binary."
+#     install_mode = "copy"
+#     deps = [ "//path/to:test_binary_target" ]
+#     sources = [ "//path/to:test_binary_file" ]
+#   }
+#
+template("cipd_package_definition") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "data",
+                           "source_directories",
+                           "data_deps",
+                           "sources",
+                           "testonly",
+                         ])
+
+  assert(defined(sources) || defined(source_directories),
+         "At least one sources input must be specified.")
+
+  _install_mode = "symlink"
+  if (defined(invoker.install_mode)) {
+    _install_mode = invoker.install_mode
+  }
+  assert(_install_mode == "copy" || _install_mode == "symlink",
+         "\"install_mode\" arg should be either \"copy\" or \"symlink\".")
+
+  _cipd_definition_yaml = "cipd.yaml"
+  if (defined(invoker.package_definition_yaml)) {
+    _cipd_definition_yaml = invoker.package_definition_yaml
+  }
+
+  _package_staging_dir = "${target_gen_dir}/${target_name}"
+
+  _yaml_contents = [
+    "package: ${invoker.package}",
+    "description: ${invoker.description}",
+    "root: " + rebase_path(_package_staging_dir),
+    "install_mode: ${_install_mode}",
+    "data:",
+  ]
+
+  if (defined(sources)) {
+    foreach(source, sources) {
+      _yaml_contents += [ "  - file: " + get_path_info(source, "file") ]
+    }
+    copy(target_name) {
+      outputs = [ "${_package_staging_dir}/{{source_file_part}}" ]
+    }
+  }
+
+  if (defined(source_directories)) {
+    foreach(directory, source_directories) {
+      _yaml_contents += [ "  - dir: " + directory ]
+    }
+  }
+
+  write_file("${_package_staging_dir}/${_cipd_definition_yaml}", _yaml_contents)
+}
+
+# Create a cipd file based on inputs and FILES.cfg config. Most of the arguments
+# are similar with |cipd_package_definition| above.
+#
+# Additional parameters:
+#
+#   package_definition_yaml: The output yaml file. Default is
+#                            ${target_name}_cipd.yaml.
+#   files_file: The file defines what files and directories to include.
+#               Example: //tools/build/chromeos/FILES.cfg.
+#   buildtype: str, required. It can be "dev" or "official".
+#              Only when the file has the same buildtype, it will be included.
+#   arch: str, required. It can be "32bit", "64bit", "arm".
+#
+# Example:
+# cipd_package_definition_by_file("chrome_cipd") {
+#     package = "path/to/cipd/package"
+#     description = "Prebuilt test binary."
+#     install_mode = "copy"
+#     files_file = "//chrome/tools/build/chromeos/FILES.json"
+#     buildtype = "dev"
+#     arch = "64bit"
+#     deps = [ "//path/to:test_binary_target" ]
+#   }
+template("cipd_package_definition_by_file") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "data",
+                           "data_deps",
+                           "sources",
+                           "testonly",
+                         ])
+  _output_yaml_filename = "${target_name}_cipd.yaml"
+  if (defined(invoker.package_definition_yaml)) {
+    _output_yaml_filename = invoker.package_definition_yaml
+  }
+  action(target_name) {
+    script = "//build/cipd/cipd_from_file.py"
+    inputs = [ "//build/cipd/cipd_from_file.py" ]
+    args = [
+      "--description=" + invoker.description,
+      "--buildtype=" + invoker.buildtype,
+      "--arch=" + invoker.arch,
+      "--files_file=" + rebase_path(invoker.files_file, root_build_dir),
+      "--package=" + invoker.package,
+      "--install_mode=" + invoker.install_mode,
+      "--output_yaml_file=" +
+          rebase_path("${root_out_dir}/" + _output_yaml_filename,
+                      root_build_dir),
+    ]
+    outputs = [ "${root_out_dir}/" + _output_yaml_filename ]
+  }
+}

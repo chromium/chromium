@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +14,12 @@
 namespace device {
 
 class PowerMonitorBroadcastSourceTest : public testing::Test {
+ public:
+  PowerMonitorBroadcastSourceTest(const PowerMonitorBroadcastSourceTest&) =
+      delete;
+  PowerMonitorBroadcastSourceTest& operator=(
+      const PowerMonitorBroadcastSourceTest&) = delete;
+
  protected:
   PowerMonitorBroadcastSourceTest() {}
   ~PowerMonitorBroadcastSourceTest() override {}
@@ -39,13 +45,12 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
 
  private:
   PowerMonitorBroadcastSource* power_monitor_source_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSourceTest);
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
-  base::PowerMonitorTestObserver observer;
-  base::PowerMonitor::AddObserver(&observer);
+  base::test::PowerMonitorTestObserver observer;
+  base::PowerMonitor::AddPowerSuspendObserver(&observer);
+  base::PowerMonitor::AddPowerStateObserver(&observer);
 
   // Sending resume when not suspended should have no effect.
   client()->Resume();
@@ -93,7 +98,9 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   client()->PowerStateChange(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
-  base::PowerMonitor::RemoveObserver(&observer);
+
+  base::PowerMonitor::RemovePowerSuspendObserver(&observer);
+  base::PowerMonitor::RemovePowerStateObserver(&observer);
 }
 
 }  // namespace device

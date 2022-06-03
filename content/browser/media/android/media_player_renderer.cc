@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/browser/media/android/media_player_renderer_web_contents_observer.h"
 #include "content/browser/media/android/media_resource_getter_impl.h"
@@ -47,10 +45,8 @@ MediaPlayerRenderer::MediaPlayerRenderer(
       volume_(kDefaultVolume),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)) {
-  DCHECK_EQ(static_cast<RenderFrameHostImpl*>(
-                RenderFrameHost::FromID(process_id, routing_id))
-                ->delegate()
-                ->GetAsWebContents(),
+  DCHECK_EQ(WebContents::FromRenderFrameHost(
+                RenderFrameHost::FromID(process_id, routing_id)),
             web_contents);
 
   WebContentsImpl* web_contents_impl =
@@ -95,8 +91,8 @@ void MediaPlayerRenderer::Initialize(media::MediaResource* media_resource,
     return;
   }
 
-  base::PostDelayedTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&MediaPlayerRenderer::CreateMediaPlayer,
                      weak_factory_.GetWeakPtr(),
                      media_resource->GetMediaUrlParams(), std::move(init_cb)),
@@ -118,17 +114,12 @@ void MediaPlayerRenderer::CreateMediaPlayer(
 
   const std::string user_agent = GetContentClient()->browser()->GetUserAgent();
 
-  // Never allow credentials on KitKat. See https://crbug.com/936566.
-  bool allow_credentials = url_params.allow_credentials &&
-                           base::android::BuildInfo::GetInstance()->sdk_int() >
-                               base::android::SDK_VERSION_KITKAT;
-
-  media_player_.reset(new media::MediaPlayerBridge(
+  media_player_ = std::make_unique<media::MediaPlayerBridge>(
       url_params.media_url, url_params.site_for_cookies,
       url_params.top_frame_origin, user_agent,
       false,  // hide_url_log
       this,   // MediaPlayerBridge::Client
-      allow_credentials, url_params.is_hls));
+      url_params.allow_credentials, url_params.is_hls);
 
   media_player_->Initialize();
   UpdateVolume();
@@ -136,13 +127,8 @@ void MediaPlayerRenderer::CreateMediaPlayer(
   std::move(init_cb).Run(media::PIPELINE_OK);
 }
 
-void MediaPlayerRenderer::SetCdm(media::CdmContext* cdm_context,
-                                 media::CdmAttachedCB cdm_attached_cb) {
-  NOTREACHED();
-}
-
 void MediaPlayerRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {}
+    absl::optional<base::TimeDelta> latency_hint) {}
 
 void MediaPlayerRenderer::Flush(base::OnceClosure flush_cb) {
   DVLOG(3) << __func__;
@@ -179,12 +165,9 @@ void MediaPlayerRenderer::SetPlaybackRate(double playback_rate) {
   if (playback_rate == 0) {
     media_player_->Pause();
   } else {
+    media_player_->SetPlaybackRate(playback_rate);
     // MediaPlayerBridge's Start() is idempotent.
     media_player_->Start();
-
-    // TODO(tguilbert): MediaPlayer's interface allows variable playback rate,
-    // but is not currently exposed in the MediaPlayerBridge interface.
-    // Investigate wether or not we want to add variable playback speed.
   }
 }
 
@@ -239,8 +222,8 @@ media::MediaResourceGetter* MediaPlayerRenderer::GetMediaResourceGetter() {
     StoragePartition* partition = host->GetStoragePartition();
     storage::FileSystemContext* file_system_context =
         partition ? partition->GetFileSystemContext() : nullptr;
-    media_resource_getter_.reset(new MediaResourceGetterImpl(
-        context, file_system_context, render_process_id_, routing_id_));
+    media_resource_getter_ = std::make_unique<MediaResourceGetterImpl>(
+        context, file_system_context, render_process_id_, routing_id_);
   }
   return media_resource_getter_.get();
 }

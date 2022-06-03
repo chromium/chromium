@@ -7,7 +7,6 @@
 
 #include "components/viz/common/frame_timing_details.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-shared.h"
-
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
@@ -37,13 +36,7 @@ struct StructTraits<viz::mojom::FrameTimingDetailsDataView,
   }
 
   static bool Read(viz::mojom::FrameTimingDetailsDataView data,
-                   viz::FrameTimingDetails* out) {
-    return data.ReadReceivedCompositorFrameTimestamp(
-               &out->received_compositor_frame_timestamp) &&
-           data.ReadDrawStartTimestamp(&out->draw_start_timestamp) &&
-           data.ReadSwapTimings(&out->swap_timings) &&
-           data.ReadPresentationFeedback(&out->presentation_feedback);
-  }
+                   viz::FrameTimingDetails* out);
 };
 
 }  // namespace mojo

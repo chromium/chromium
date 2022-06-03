@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/engine/url_request_rewrite_type_converters.h"
@@ -11,13 +12,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace {
-
-using RoutingIdRewriterMap =
-    std::unordered_map<int, UrlRequestRewriteRulesManager*>;
-RoutingIdRewriterMap& GetRewriterMap() {
-  static base::NoDestructor<RoutingIdRewriterMap> rewriter_map;
-  return *rewriter_map;
-}
 
 bool IsValidUrlHost(base::StringPiece host) {
   return GURL(base::StrCat({url::kHttpScheme, "://", host})).is_valid();
@@ -67,6 +61,13 @@ bool ValidateReplaceUrl(
   return true;
 }
 
+bool ValidateAppendToQuery(
+    const fuchsia::web::UrlRequestRewriteAppendToQuery& append_to_query) {
+  if (!append_to_query.has_query())
+    return false;
+  return true;
+}
+
 bool ValidateRewrite(const fuchsia::web::UrlRequestRewrite& rewrite) {
   switch (rewrite.Which()) {
     case fuchsia::web::UrlRequestRewrite::Tag::kAddHeaders:
@@ -77,6 +78,8 @@ bool ValidateRewrite(const fuchsia::web::UrlRequestRewrite& rewrite) {
       return ValidateSubstituteQueryPattern(rewrite.substitute_query_pattern());
     case fuchsia::web::UrlRequestRewrite::Tag::kReplaceUrl:
       return ValidateReplaceUrl(rewrite.replace_url());
+    case fuchsia::web::UrlRequestRewrite::Tag::kAppendToQuery:
+      return ValidateAppendToQuery(rewrite.append_to_query());
     default:
       // This is to prevent build breakage when adding new rewrites to the FIDL
       // definition. This can also happen if the client sends an empty rewrite,
@@ -105,34 +108,24 @@ bool ValidateRules(
     }
     if (rule.has_schemes_filter() && rule.schemes_filter().empty())
       return false;
-    if (!rule.has_rewrites())
-      return false;
-    for (const auto& rewrite : rule.rewrites()) {
-      if (!ValidateRewrite(rewrite))
+
+    if (rule.has_rewrites()) {
+      if (rule.has_action())
         return false;
+
+      for (const auto& rewrite : rule.rewrites()) {
+        if (!ValidateRewrite(rewrite))
+          return false;
+      }
+    } else if (!rule.has_action()) {
+      // No rewrites, no action = no point!
+      return false;
     }
   }
   return true;
 }
 
 }  // namespace
-
-UrlRequestRewriteRulesManager::ActiveFrame::ActiveFrame(
-    content::RenderFrameHost* rfh,
-    mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> ar)
-    : render_frame_host(rfh), associated_remote(std::move(ar)) {}
-UrlRequestRewriteRulesManager::ActiveFrame::ActiveFrame(
-    UrlRequestRewriteRulesManager::ActiveFrame&&) = default;
-UrlRequestRewriteRulesManager::ActiveFrame::~ActiveFrame() = default;
-
-// static
-UrlRequestRewriteRulesManager*
-UrlRequestRewriteRulesManager::ForFrameTreeNodeId(int frame_tree_node_id) {
-  auto iter = GetRewriterMap().find(frame_tree_node_id);
-  if (iter == GetRewriterMap().end())
-    return nullptr;
-  return iter->second;
-}
 
 // static
 std::unique_ptr<UrlRequestRewriteRulesManager>
@@ -144,27 +137,26 @@ UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() = default;
+UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
     std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
     fuchsia::web::Frame::SetUrlRequestRewriteRulesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!ValidateRules(rules)) {
-    base::AutoLock auto_lock(lock_);
     cached_rules_ = nullptr;
     return ZX_ERR_INVALID_ARGS;
   }
 
-  base::AutoLock auto_lock(lock_);
-  cached_rules_ =
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
-          mojo::ConvertTo<std::vector<mojom::UrlRequestRewriteRulePtr>>(
-              std::move(rules)));
+  cached_rules_ = base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
+      mojo::ConvertTo<mojom::UrlRequestRewriteRulesPtr>(std::move(rules)));
 
   // Send the updated rules to the receivers.
-  for (const auto& receiver_pair : active_frames_) {
-    receiver_pair.second.associated_remote->OnRulesUpdated(
-        mojo::Clone(cached_rules_->data));
+  for (const auto& receiver_pair : active_remotes_) {
+    receiver_pair.second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
   }
 
   // TODO(crbug.com/976975): Only call the callback when there are pending
@@ -173,62 +165,36 @@ zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
   return ZX_OK;
 }
 
-scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
 UrlRequestRewriteRulesManager::GetCachedRules() {
-  base::AutoLock auto_lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;
 }
 
-UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() {}
+UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() = default;
 
 void UrlRequestRewriteRulesManager::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-
-  if (active_frames_.find(frame_tree_node_id) != active_frames_.end()) {
-    // This happens on cross-process navigations. It is not necessary to refresh
-    // the global map in this case as RenderFrameDeleted will not have been
-    // called for this RenderFrameHost.
-    size_t deleted = active_frames_.erase(frame_tree_node_id);
-    DCHECK(deleted == 1);
-  } else {
-    // Register this instance of UrlRequestRewriteRulesManager as the URL
-    // request rewriter handler for this RenderFrameHost ID.
-    auto iter =
-        GetRewriterMap().emplace(std::make_pair(frame_tree_node_id, this));
-    DCHECK(iter.second);
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Register the frame rules receiver.
   mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> rules_receiver;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &rules_receiver);
-  ActiveFrame active_frame(render_frame_host, std::move(rules_receiver));
-  auto iter =
-      active_frames_.emplace(frame_tree_node_id, std::move(active_frame));
+  auto iter = active_remotes_.emplace(render_frame_host->GetGlobalId(),
+                                      std::move(rules_receiver));
   DCHECK(iter.second);
 
-  base::AutoLock auto_lock(lock_);
   if (cached_rules_) {
     // Send an initial set of rules.
-    iter.first->second.associated_remote->OnRulesUpdated(
-        mojo::Clone(cached_rules_->data));
+    iter.first->second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
   }
 }
 
 void UrlRequestRewriteRulesManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  auto iter = active_frames_.find(frame_tree_node_id);
-  DCHECK(iter != active_frames_.end());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // On cross-process navigations, the new RenderFrameHost is created before
-  // the old one is deleted. When that happens, the map has already been
-  // updated, so it is safe to return here.
-  if (iter->second.render_frame_host != render_frame_host)
-    return;
-
-  active_frames_.erase(iter);
-  size_t deleted = GetRewriterMap().erase(frame_tree_node_id);
-  DCHECK(deleted == 1);
+  size_t removed = active_remotes_.erase(render_frame_host->GetGlobalId());
+  DCHECK_EQ(removed, 1u);
 }

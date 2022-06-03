@@ -24,9 +24,7 @@ static_library("webdata") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "token_service_table_unittest.cc",
-  ]
+  sources = [ "token_service_table_unittest.cc" ]
 
   deps = [
     ":webdata",

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The 2D context ignores extra getContext arguments Failed to execute 'getContext' on 'OffscreenCanvas': parameter 2 ('attributes') is not an object.
-Harness: the test ran to completion.
-

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">អីយ៉ាស! បានបរាជ័យក្នុងការបង្កើតសោឯកជនចៃដន្យ RSA។</translation>
 <translation id="1445572445564823378">កម្មវិធីបន្ថែមនេះកំពុងធ្វើឲ្យ <ph name="PRODUCT_NAME" /> យឺត។ អ្នកគួរតែបិទដំណើរការវាដើម្បីស្តារប្រតិបត្តិការ <ph name="PRODUCT_NAME" />។</translation>
 <translation id="1468038450257740950">WebGL មិនត្រូវបានគាំទ្រទេ។</translation>
-<translation id="149347756975725155">មិនអាចដំណើរការរូបតំណាងកម្មវិធីបន្ថែម '<ph name="ICON" />' ទេ។</translation>
 <translation id="1803557475693955505">មិនអាចដំណើរការទំព័រផ្ទៃខាងក្រោយ '<ph name="BACKGROUND_PAGE" />' ទេ។</translation>
 <translation id="2159915644201199628">មិនអាចបម្លែងរូបភាព '<ph name="IMAGE_NAME" />' ទេ</translation>
 <translation id="2350172092385603347">មូលដ្ឋានីយកម្មត្រូវបានប្រើប្រាស់ ប៉ុន្តែ មូលដ្ឋាន_លំនាំដើម មិនត្រូវបានបញ្ជាក់នៅក្នុងមេនីហ្វេសទេ។</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">បានបរាជ័យក្នុងការអានសោឯកជន។</translation>
 <translation id="6391538222494443604">ត្រូវមានថតឯកសារធាតុបញ្ចូល។</translation>
 <translation id="641087317769093025">មិនអាចពន្លាកម្មវិធីបន្ថែមទេ</translation>
-<translation id="6413453408918378296">មើល​រូបតំណា​ងមិនសូវឃើញ​ទេ '<ph name="ICON" />'។</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" កំពុង​ស្នើ​សុំ​ចូល​ប្រើ​ឧបករណ៍​មួយ​ ឬ​ច្រើន​របស់​អ្នក​៖</translation>
 <translation id="657064425229075395">មិនអាចដំណើរការស្គ្រីបផ្ទៃខាងក្រោយ '<ph name="BACKGROUND_SCRIPT" />' ទេ។</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> មកពី <ph name="VENDOR_NAME" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>

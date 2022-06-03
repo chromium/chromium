@@ -1,5 +1,4 @@
-# tags: [ Android Fuchsia IOS IOS12.2 IOS13.0 Linux Mac Mac10.10 Mac10.11 Mac10.12 Retina
-#         Mac10.13 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -24,13 +23,10 @@ crbug.com/145940 [ Linux ] plugins/iframe-shims.html [ Skip ]
 #    #0 0x7f48eb06f7c5 in DocumentOpenInDestroyStream::NPP_DestroyStream
 crbug.com/166932 [ Linux ] plugins/embed-attributes-setting.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-style.html [ Skip ]
-crbug.com/166932 [ Linux ] plugins/fullscreen-plugins-dont-reload.html [ Skip ]
 
 # These have been failing since at least chrome r203901, blink r151723 (no memory errors, just text failure):
 crbug.com/231357 [ Linux ] editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
 
-crbug.com/333791 [ Linux ] svg/animations/repeatn-event-1b.svg [ Pass Failure ]
-crbug.com/333791 [ Linux ] svg/animations/repeatn-event-1d.svg [ Pass Failure ]
 crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-absolute-overflow.html [ Failure Pass ]
 crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-fixed-overflow-scrolled.html [ Failure Pass ]
 crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-fixed-overflow.html [ Failure Pass ]
@@ -57,7 +53,7 @@ crbug.com/438499 [ Linux ] http/tests/devtools/profiler/heap-snapshot-containmen
 crbug.com/438499 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/unanimated-style.html [ Timeout ]
 
 # Flakily timeout on Linux ASAN bots.
-crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/ [ Skip ]
+crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/* [ Skip ]
 crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow.html [ Timeout ]
 crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow-2.html [ Timeout ]
 crbug.com/572723 [ Linux ] http/tests/devtools/sources/debugger/debugger-completions-on-call-frame.js [ Timeout Pass ]
@@ -77,3 +73,4 @@ crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]
 # Sheriff 2019-07-31
 crbug.com/989365 [ Linux ] external/wpt/cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html [ Pass Timeout ]
 
+crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]

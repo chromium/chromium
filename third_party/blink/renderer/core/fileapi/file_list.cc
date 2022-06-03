@@ -51,7 +51,7 @@ Vector<base::FilePath> FileList::PathsForUserVisibleFiles() const {
   return paths;
 }
 
-void FileList::Trace(blink::Visitor* visitor) {
+void FileList::Trace(Visitor* visitor) const {
   visitor->Trace(files_);
   ScriptWrappable::Trace(visitor);
 }

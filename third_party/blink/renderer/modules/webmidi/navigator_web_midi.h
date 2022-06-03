@@ -32,8 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_NAVIGATOR_WEB_MIDI_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/modules/webmidi/midi_options.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -44,8 +44,6 @@ class Navigator;
 
 class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
                                public Supplement<Navigator> {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorWebMIDI);
-
  public:
   static const char kSupplementName[];
 
@@ -60,7 +58,7 @@ class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
 
   explicit NavigatorWebMIDI(Navigator&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

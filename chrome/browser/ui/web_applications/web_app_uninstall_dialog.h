@@ -8,10 +8,14 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
+
+namespace webapps {
+enum class WebappUninstallSource;
+}
 
 namespace web_app {
 
@@ -37,6 +41,7 @@ class WebAppUninstallDialog {
   // Starts the process of showing a confirmation UI.
   virtual void ConfirmUninstall(
       const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
       OnWebAppUninstallDialogClosed closed_callback) = 0;
 
   virtual void SetDialogShownCallbackForTesting(base::OnceClosure callback) = 0;

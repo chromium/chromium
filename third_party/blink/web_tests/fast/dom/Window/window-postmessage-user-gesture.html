@@ -12,12 +12,6 @@
 <script>
 window.jsTestIsAsync = true;
 
-if (window.testRunner) {
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
-    testRunner.setCanOpenWindows();
-    testRunner.setPopupBlockingEnabled(true);
-}
-
 var testSelf = true;
 var consumeInFrame = false; // where to consume user gesture: self or frame
 var needClickDiv = false;

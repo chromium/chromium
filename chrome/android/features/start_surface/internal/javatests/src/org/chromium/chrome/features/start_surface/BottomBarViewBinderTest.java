@@ -14,16 +14,18 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_BOTTOM_BAR_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 
-import android.support.design.widget.TabLayout;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.test.filters.SmallTest;
+
+import com.google.android.material.tabs.TabLayout;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -33,8 +35,10 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link BottomBarViewBinder}. */
+@SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class BottomBarViewBinderTest extends DummyUiActivityTestCase {
+    @SuppressWarnings("unused")
     private BottomBarCoordinator mBottomBarCoordinator;
     private TabLayout mTabLayout;
     private ViewGroup mParentView;
@@ -53,8 +57,8 @@ public class BottomBarViewBinderTest extends DummyUiActivityTestCase {
                     new BottomBarCoordinator(getActivity(), mParentView, mPropertyModel);
         });
 
-        mBottomBarView = (BottomBarView) mParentView.findViewById(R.id.ss_bottom_bar);
-        mTabLayout = (TabLayout) mBottomBarView.findViewById(R.id.bottom_tab_layout);
+        mBottomBarView = mParentView.findViewById(R.id.ss_bottom_bar);
+        mTabLayout = mBottomBarView.findViewById(R.id.bottom_tab_layout);
     }
 
     @Test

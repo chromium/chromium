@@ -15,8 +15,6 @@ loadable_module("clear_key_cdm") {
     "cdm_file_adapter.h",
     "cdm_file_io_test.cc",
     "cdm_file_io_test.h",
-    "cdm_proxy_handler.cc",
-    "cdm_proxy_handler.h",
     "cdm_video_decoder.cc",
     "cdm_video_decoder.h",
     "clear_key_cdm.cc",
@@ -25,23 +23,23 @@ loadable_module("clear_key_cdm") {
     "clear_key_persistent_session_cdm.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "CDM_IMPLEMENTATION" ]
 
   deps = [
-    ":cdm_proxy_common",
     "//base",
     "//media",
     "//media:media_buildflags",
     "//media:shared_memory_support",  # For media::AudioBus.
     "//media/cdm:cdm_api",  # For content_decryption_module.h
     "//media/cdm/library_cdm:cdm_host_proxy",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/libyuv",
     "//url",
   ]
+
+  if (!enable_library_cdms) {
+    # cdm_type_conversion is not included via //media.
+    deps += [ "//media/cdm:cdm_type_conversion" ]
+  }
 
   # TODO(xhwang): Convert this to use media::FFmpegAudioDecoder.
   if (media_use_ffmpeg) {
@@ -52,23 +50,4 @@ loadable_module("clear_key_cdm") {
     defines += [ "CLEAR_KEY_CDM_USE_FFMPEG_DECODER" ]
     deps += [ "//third_party/ffmpeg" ]
   }
-}
-
-source_set("clear_key_cdm_proxy") {
-  sources = [
-    "clear_key_cdm_proxy.cc",
-    "clear_key_cdm_proxy.h",
-  ]
-
-  deps = [
-    ":cdm_proxy_common",
-    "//base",
-    "//media",
-  ]
-}
-
-source_set("cdm_proxy_common") {
-  sources = [
-    "cdm_proxy_common.h",
-  ]
 }

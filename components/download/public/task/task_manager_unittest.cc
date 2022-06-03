@@ -46,6 +46,9 @@ class TaskManagerImplTest : public testing::Test {
     task_manager_ = std::make_unique<TaskManagerImpl>(std::move(scheduler));
   }
 
+  TaskManagerImplTest(const TaskManagerImplTest&) = delete;
+  TaskManagerImplTest& operator=(const TaskManagerImplTest&) = delete;
+
   ~TaskManagerImplTest() override = default;
 
  protected:
@@ -76,9 +79,6 @@ class TaskManagerImplTest : public testing::Test {
 
   MockTaskScheduler* task_scheduler_;
   std::unique_ptr<TaskManagerImpl> task_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImplTest);
 };
 
 }  // namespace
@@ -220,6 +220,34 @@ TEST_F(TaskManagerImplTest, StopTaskWillClearTheCallback) {
   task_manager_->OnStopScheduledTask(DownloadTaskType::DOWNLOAD_TASK);
 
   task_manager_->NotifyTaskFinished(DownloadTaskType::DOWNLOAD_TASK, false);
+
+  task_runner_->RunUntilIdle();
+}
+
+// Verifies that OnStartScheduledTask() can be called without preceding
+// ScheduleTask() calls.
+TEST_F(TaskManagerImplTest, StartTaskWithoutPendingParams) {
+  MockTaskWaiter waiter;
+  auto callback =
+      base::BindOnce(&MockTaskWaiter::TaskFinished, base::Unretained(&waiter));
+  task_manager_->OnStartScheduledTask(DownloadTaskType::DOWNLOAD_TASK,
+                                      std::move(callback));
+  EXPECT_CALL(waiter, TaskFinished(false)).Times(1);
+  task_manager_->NotifyTaskFinished(DownloadTaskType::DOWNLOAD_TASK, false);
+  task_runner_->RunUntilIdle();
+}
+
+// Verifies that OnStopScheduledTask() can be called without preceding
+// ScheduleTask() calls.
+TEST_F(TaskManagerImplTest, StopTaskWithoutPendingParams) {
+  MockTaskWaiter waiter;
+  EXPECT_CALL(waiter, TaskFinished(false)).Times(0);
+
+  auto callback =
+      base::BindOnce(&MockTaskWaiter::TaskFinished, base::Unretained(&waiter));
+  task_manager_->OnStartScheduledTask(DownloadTaskType::DOWNLOAD_TASK,
+                                      std::move(callback));
+  task_manager_->OnStopScheduledTask(DownloadTaskType::DOWNLOAD_TASK);
 
   task_runner_->RunUntilIdle();
 }

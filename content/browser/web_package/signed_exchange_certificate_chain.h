@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
-#include "services/network/ignore_errors_cert_verifier.h"
+#include "services/network/public/cpp/spki_hash_set.h"
 
 namespace base {
 class CommandLine;
@@ -42,6 +42,10 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
         scoped_refptr<net::X509Certificate> certificate);
 
     explicit IgnoreErrorsSPKIList(const base::CommandLine& command_line);
+
+    IgnoreErrorsSPKIList(const IgnoreErrorsSPKIList&) = delete;
+    IgnoreErrorsSPKIList& operator=(const IgnoreErrorsSPKIList&) = delete;
+
     ~IgnoreErrorsSPKIList();
 
     // Used for tests to override the instance. Returns the old instance, which
@@ -60,8 +64,7 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
     bool ShouldIgnoreErrorsInternal(
         scoped_refptr<net::X509Certificate> certificate);
 
-    network::IgnoreErrorsCertVerifier::SPKIHashSet hash_set_;
-    DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsSPKIList);
+    network::SPKIHashSet hash_set_;
   };
 
   static std::unique_ptr<SignedExchangeCertificateChain> Parse(

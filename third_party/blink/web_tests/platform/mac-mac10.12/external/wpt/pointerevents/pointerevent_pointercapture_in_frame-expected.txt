@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Test mousepointer capture in same-origin frame: Pointer down at inner frame and set pointer capture. assert_array_equals: Received events: innerFrame received pointerdown,innerFrame received gotpointercapture,innerFrame received pointermove,innerFrame received pointerup,innerFrame received lostpointercapture lengths differ, expected array ["innerFrame received pointerdown", "innerFrame received gotpointercapture", "innerFrame received pointermove", "innerFrame received pointermove", "innerFrame received pointerup", "innerFrame received lostpointercapture"] length 6, got ["innerFrame received pointerdown", "innerFrame received gotpointercapture", "innerFrame received pointermove", "innerFrame received pointerup", "innerFrame received lostpointercapture"] length 5
+PASS Test mousepointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture.
+PASS Test mousepointer capture in same-origin frame: Pointerdown with set capture at inner frame, then release on next pointermove.
+PASS Test mousepointer capture in same-origin frame: Pointerdown with set capture at outer frame, then release on next pointermove.
+PASS Test touchpointer capture in same-origin frame: Pointer down at inner frame and set pointer capture.
+PASS Test touchpointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture.
+PASS Test touchpointer capture in same-origin frame: Pointerdown with set capture at inner frame, then release on next pointermove.
+PASS Test touchpointer capture in same-origin frame: Pointerdown with set capture at outer frame, then release on next pointermove.
+PASS Test penpointer capture in same-origin frame: Pointer down at inner frame and set pointer capture.
+FAIL Test penpointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture. assert_array_equals: Received events: outerFrame received pointerdown,outerFrame received gotpointercapture,outerFrame received pointermove,innerFrame received pointerup lengths differ, expected array ["outerFrame received pointerdown", "outerFrame received gotpointercapture", "outerFrame received pointermove", "outerFrame received pointerup", "outerFrame received lostpointercapture"] length 5, got ["outerFrame received pointerdown", "outerFrame received gotpointercapture", "outerFrame received pointermove", "innerFrame received pointerup"] length 4
+PASS Test penpointer capture in same-origin frame: Pointerdown with set capture at inner frame, then release on next pointermove.
+PASS Test penpointer capture in same-origin frame: Pointerdown with set capture at outer frame, then release on next pointermove.
+Harness: the test ran to completion.
+

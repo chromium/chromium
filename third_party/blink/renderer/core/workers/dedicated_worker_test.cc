@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/workers/dedicated_worker_test.h"
+
 #include <bitset>
 #include <memory>
-#include "base/single_thread_task_runner.h"
+
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -33,26 +39,36 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
  public:
   DedicatedWorkerThreadForTest(ExecutionContext* parent_execution_context,
                                DedicatedWorkerObjectProxy& worker_object_proxy)
-      : DedicatedWorkerThread(parent_execution_context, worker_object_proxy) {
+      : DedicatedWorkerThread(
+            parent_execution_context,
+            worker_object_proxy,
+            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+            mojo::PendingRemote<
+                mojom::blink::BackForwardCacheControllerHost>()) {
     worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
         ThreadCreationParams(ThreadType::kTestThread));
   }
 
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) override {
+    // Needed to avoid calling into an uninitialized broker.
+    if (!creation_params->browser_interface_broker) {
+      (void)creation_params->browser_interface_broker
+          .InitWithNewPipeAndPassReceiver();
+    }
     auto* global_scope = DedicatedWorkerGlobalScope::Create(
-        std::move(creation_params), this, time_origin_);
+        std::move(creation_params), this, time_origin_,
+        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+        mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>());
     // Initializing a global scope with a dummy creation params may emit warning
-    // messages (e.g., invalid CSP directives). Clear them here for tests that
-    // check console messages (i.e., UseCounter tests).
-    GetConsoleMessageStorage()->Clear();
+    // messages (e.g., invalid CSP directives).
     return global_scope;
   }
 
   // Emulates API use on DedicatedWorkerGlobalScope.
   void CountFeature(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
-    GlobalScope()->CountFeature(feature);
+    GlobalScope()->CountUse(feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -60,13 +76,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
   // Emulates deprecated API use on DedicatedWorkerGlobalScope.
   void CountDeprecation(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
-    GlobalScope()->CountDeprecation(feature);
-
-    // CountDeprecation() should add a warning message.
-    EXPECT_EQ(1u, GetConsoleMessageStorage()->size());
-    String console_message = GetConsoleMessageStorage()->at(0)->Message();
-    EXPECT_TRUE(console_message.Contains("deprecated"));
-
+    Deprecation::CountDeprecation(GlobalScope(), feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -79,6 +89,15 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
+
+  void InitializeGlobalScope(KURL script_url) {
+    EXPECT_TRUE(IsCurrentThread());
+    To<DedicatedWorkerGlobalScope>(GlobalScope())
+        ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
+                     network::mojom::IPAddressSpace::kLocal,
+                     Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                     nullptr /* response_origin_trial_tokens */);
+  }
 };
 
 class DedicatedWorkerObjectProxyForTest final
@@ -88,20 +107,14 @@ class DedicatedWorkerObjectProxyForTest final
       DedicatedWorkerMessagingProxy* messaging_proxy,
       ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
       : DedicatedWorkerObjectProxy(messaging_proxy,
-                                   parent_execution_context_task_runners) {}
+                                   parent_execution_context_task_runners,
+                                   DedicatedWorkerToken()) {}
 
   void CountFeature(WebFeature feature) override {
     // Any feature should be reported only one time.
     EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
     reported_features_.set(static_cast<size_t>(feature));
     DedicatedWorkerObjectProxy::CountFeature(feature);
-  }
-
-  void CountDeprecation(WebFeature feature) override {
-    // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
-    reported_features_.set(static_cast<size_t>(feature));
-    DedicatedWorkerObjectProxy::CountDeprecation(feature);
   }
 
  private:
@@ -115,37 +128,56 @@ class DedicatedWorkerMessagingProxyForTest
   DedicatedWorkerMessagingProxyForTest(ExecutionContext* execution_context)
       : DedicatedWorkerMessagingProxy(execution_context,
                                       nullptr /* worker_object */) {
+    // The |worker_object_proxy_| should not have been set in the
+    // DedicatedWorkerMessagingProxy constructor as |worker_object| is nullptr.
+    DCHECK(!worker_object_proxy_);
     worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxyForTest>(
         this, GetParentExecutionContextTaskRunners());
+    script_url_ = KURL("http://fake.url/");
   }
 
   ~DedicatedWorkerMessagingProxyForTest() override = default;
 
-  void StartWithSourceCode(const String& source) {
-    KURL script_url("http://fake.url/");
-    security_origin_ = SecurityOrigin::Create(script_url);
-    Vector<CSPHeaderAndType> headers{
-        {"contentSecurityPolicy", kContentSecurityPolicyHeaderTypeReport}};
+  void StartWorker() {
+    scoped_refptr<const SecurityOrigin> security_origin =
+        SecurityOrigin::Create(script_url_);
     auto worker_settings = std::make_unique<WorkerSettings>(
-        To<Document>(GetExecutionContext())->GetSettings());
+        To<LocalDOMWindow>(GetExecutionContext())->GetFrame()->GetSettings());
+    auto params = std::make_unique<GlobalScopeCreationParams>(
+        script_url_, mojom::blink::ScriptType::kClassic,
+        "fake global scope name", "fake user agent", UserAgentMetadata(),
+        nullptr /* web_worker_fetch_context */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        network::mojom::ReferrerPolicy::kDefault, security_origin.get(),
+        false /* starter_secure_context */,
+        CalculateHttpsState(security_origin.get()),
+        nullptr /* worker_clients */, nullptr /* content_settings_client */,
+        network::mojom::IPAddressSpace::kLocal,
+        nullptr /* origin_trial_tokens */, base::UnguessableToken::Create(),
+        std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
+        nullptr /* worklet_module_responses_map */);
+    params->parent_context_token =
+        GetExecutionContext()->GetExecutionContextToken();
     InitializeWorkerThread(
-        std::make_unique<GlobalScopeCreationParams>(
-            script_url, mojom::ScriptType::kClassic,
-            OffMainThreadWorkerScriptFetchOption::kDisabled,
-            "fake global scope name", "fake user agent",
-            nullptr /* web_worker_fetch_context */, headers,
-            network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
-            false /* starter_secure_context */,
-            CalculateHttpsState(security_origin_.get()),
-            nullptr /* worker_clients */, nullptr /* content_settings_client */,
-            network::mojom::IPAddressSpace::kLocal,
-            nullptr /* origin_trial_tokens */, base::UnguessableToken::Create(),
-            std::move(worker_settings), kV8CacheOptionsDefault,
-            nullptr /* worklet_module_responses_map */),
+        std::move(params),
         WorkerBackingThreadStartupData(
             WorkerBackingThreadStartupData::HeapLimitMode::kDefault,
-            WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow));
-    GetWorkerThread()->EvaluateClassicScript(script_url, source,
+            WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
+        worker_object_proxy_->token());
+
+    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
+      PostCrossThreadTask(
+          *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
+          FROM_HERE,
+          CrossThreadBindOnce(
+              &DedicatedWorkerThreadForTest::InitializeGlobalScope,
+              CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
+    }
+  }
+
+  void EvaluateClassicScript(const String& source) {
+    GetWorkerThread()->EvaluateClassicScript(script_url_, source,
                                              nullptr /* cached_meta_data */,
                                              v8_inspector::V8StackTraceId());
   }
@@ -154,7 +186,7 @@ class DedicatedWorkerMessagingProxyForTest
     return static_cast<DedicatedWorkerThreadForTest*>(GetWorkerThread());
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     DedicatedWorkerMessagingProxy::Trace(visitor);
   }
 
@@ -164,45 +196,63 @@ class DedicatedWorkerMessagingProxyForTest
                                                           WorkerObjectProxy());
   }
 
-  scoped_refptr<const SecurityOrigin> security_origin_;
+  KURL script_url_;
 };
 
-class DedicatedWorkerTest : public PageTestBase {
- public:
-  DedicatedWorkerTest() = default;
+void DedicatedWorkerTest::SetUp() {
+  PageTestBase::SetUp(IntSize());
+  worker_messaging_proxy_ =
+      MakeGarbageCollected<DedicatedWorkerMessagingProxyForTest>(
+          GetFrame().DomWindow());
+}
 
-  void SetUp() override {
-    PageTestBase::SetUp(IntSize());
-    worker_messaging_proxy_ =
-        MakeGarbageCollected<DedicatedWorkerMessagingProxyForTest>(
-            &GetDocument());
-  }
+void DedicatedWorkerTest::TearDown() {
+  GetWorkerThread()->TerminateForTesting();
+  GetWorkerThread()->WaitForShutdownForTesting();
+}
 
-  void TearDown() override {
-    GetWorkerThread()->Terminate();
-    GetWorkerThread()->WaitForShutdownForTesting();
-  }
+void DedicatedWorkerTest::DispatchMessageEvent() {
+  BlinkTransferableMessage message;
+  WorkerMessagingProxy()->PostMessageToWorkerGlobalScope(std::move(message));
+}
 
-  void DispatchMessageEvent() {
-    BlinkTransferableMessage message;
-    WorkerMessagingProxy()->PostMessageToWorkerGlobalScope(std::move(message));
-  }
+DedicatedWorkerMessagingProxyForTest*
+DedicatedWorkerTest::WorkerMessagingProxy() {
+  return worker_messaging_proxy_.Get();
+}
 
-  DedicatedWorkerMessagingProxyForTest* WorkerMessagingProxy() {
-    return worker_messaging_proxy_.Get();
-  }
+DedicatedWorkerThreadForTest* DedicatedWorkerTest::GetWorkerThread() {
+  return worker_messaging_proxy_->GetDedicatedWorkerThread();
+}
 
-  DedicatedWorkerThreadForTest* GetWorkerThread() {
-    return worker_messaging_proxy_->GetDedicatedWorkerThread();
-  }
+void DedicatedWorkerTest::StartWorker() {
+  WorkerMessagingProxy()->StartWorker();
+}
 
- private:
-  Persistent<DedicatedWorkerMessagingProxyForTest> worker_messaging_proxy_;
-};
+void DedicatedWorkerTest::EvaluateClassicScript(const String& source_code) {
+  WorkerMessagingProxy()->EvaluateClassicScript(source_code);
+}
+
+namespace {
+
+void PostExitRunLoopTaskOnParent(WorkerThread* worker_thread) {
+  PostCrossThreadTask(*worker_thread->GetParentTaskRunnerForTesting(),
+                      FROM_HERE, CrossThreadBindOnce(&test::ExitRunLoop));
+}
+
+}  // anonymous namespace
+
+void DedicatedWorkerTest::WaitUntilWorkerIsRunning() {
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&PostExitRunLoopTaskOnParent,
+                          CrossThreadUnretained(GetWorkerThread())));
+
+  test::EnterRunLoop();
+}
 
 TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
-  const String source_code = "// Do nothing";
-  WorkerMessagingProxy()->StartWithSourceCode(source_code);
+  StartWorker();
 
   EXPECT_TRUE(WorkerMessagingProxy()->HasPendingActivity());
 
@@ -214,7 +264,8 @@ TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
 TEST_F(DedicatedWorkerTest, UseCounter) {
   Page::InsertOrdinaryPageForTesting(&GetPage());
   const String source_code = "// Do nothing";
-  WorkerMessagingProxy()->StartWithSourceCode(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
 
   // This feature is randomly selected.
   const WebFeature kFeature1 = WebFeature::kRequestFileSystem;
@@ -260,8 +311,7 @@ TEST_F(DedicatedWorkerTest, UseCounter) {
 }
 
 TEST_F(DedicatedWorkerTest, TaskRunner) {
-  const String source_code = "// Do nothing";
-  WorkerMessagingProxy()->StartWithSourceCode(source_code);
+  StartWorker();
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,

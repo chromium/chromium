@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 FileHandling --expire-timestamp=2000000000
+-->
+
+<meta http-equiv="origin-trial" content="AqDpvBKO5vwN29hVkukC+m96UKTvQTvnSklUKpjRaPGD4ZeteHMomcXdfWTiLzP9BQyg7lCUDenkJX7gAOdMMwcAAABUeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRmlsZUhhbmRsaW5nIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>File Handling API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'LaunchQueue': ['setConsumer'],
+        'LaunchParams': ['files']
+      });
+
+  assert_equals(typeof window.launchQueue, 'object');
+  assert_equals(typeof window.launchQueue.setConsumer, 'function');
+}, 'File Handling API interfaces and properties in Origin-Trial enabled document.');
+</script>

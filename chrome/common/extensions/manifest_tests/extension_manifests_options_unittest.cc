@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
@@ -136,6 +136,17 @@ TEST_F(OptionsPageManifestTest, OptionsPageChromeStyleAndOpenInTab) {
         FeatureSwitch::embedded_extension_options(), true);
     EXPECT_TRUE(TestOptionsPageChromeStyleAndOpenInTab(false));
   }
+}
+
+// Tests that the chrome_style flag is not supported in manifest v3 and will
+// trigger an error when specified.
+TEST_F(OptionsPageManifestTest, OptionsPageChromeStyleManifestV3) {
+  LoadAndExpectError(
+      "options_ui_chrome_style_manifest_v3_false.json",
+      extensions::manifest_errors::kChromeStyleInvalidForManifestV3);
+  LoadAndExpectError(
+      "options_ui_chrome_style_manifest_v3_true.json",
+      extensions::manifest_errors::kChromeStyleInvalidForManifestV3);
 }
 
 }  // namespace

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -43,12 +43,17 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
  public:
   explicit WindowModalityController(ui::EventTarget* event_target,
                                     aura::Env* env = nullptr);
+
+  WindowModalityController(const WindowModalityController&) = delete;
+  WindowModalityController& operator=(const WindowModalityController&) = delete;
+
   ~WindowModalityController() override;
 
   // Overridden from ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Overridden from aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;
@@ -74,8 +79,6 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
   std::vector<aura::Window*> windows_;
 
   ui::EventTarget* event_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowModalityController);
 };
 
 }  // namespace wm

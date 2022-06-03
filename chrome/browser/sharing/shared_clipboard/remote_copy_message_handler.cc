@@ -6,53 +6,53 @@
 
 #include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/numerics/ranges.h"
-#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/proto/remote_copy_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "skia/ext/image_operations.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "url/origin.h"
 
 namespace {
+
+constexpr char kRemoteCopyAllowedOrigin[] = "https://googleusercontent.com";
+
 constexpr size_t kMaxImageDownloadSize = 5 * 1024 * 1024;
 
-// These values are the 2x of the preferred width and height defined in
-// message_center_constants.h, which are in dip.
-constexpr int kNotificationImageMaxWidthPx = 720;
-constexpr int kNotificationImageMaxHeightPx = 480;
-
-// This method should be called on a ThreadPool thread because it performs a
-// potentially slow operation.
-SkBitmap ResizeImage(const SkBitmap& image, int width, int height) {
-  return skia::ImageOperations::Resize(
-      image, skia::ImageOperations::RESIZE_BEST, width, height);
-}
+// The initial delay for the timer that detects clipboard writes. An exponential
+// backoff will double this value whenever the OneShotTimer reschedules.
+constexpr base::TimeDelta kInitialDetectionTimerDelay = base::Milliseconds(1);
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("remote_copy_message_handler",
@@ -76,7 +76,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
               "Can be controlled via Chrome sign-in."
           })");
 
-base::string16 GetTextNotificationTitle(const std::string& device_name) {
+std::u16string GetTextNotificationTitle(const std::string& device_name) {
   return device_name.empty()
              ? l10n_util::GetStringUTF16(
                    IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE)
@@ -85,7 +85,7 @@ base::string16 GetTextNotificationTitle(const std::string& device_name) {
                    base::UTF8ToUTF16(device_name));
 }
 
-base::string16 GetImageNotificationTitle(const std::string& device_name) {
+std::u16string GetImageNotificationTitle(const std::string& device_name) {
   return device_name.empty()
              ? l10n_util::GetStringUTF16(
                    IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_IMAGE_CONTENT_UNKNOWN_DEVICE)
@@ -93,10 +93,11 @@ base::string16 GetImageNotificationTitle(const std::string& device_name) {
                    IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_IMAGE_CONTENT,
                    base::UTF8ToUTF16(device_name));
 }
+
 }  // namespace
 
 RemoteCopyMessageHandler::RemoteCopyMessageHandler(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), allowed_origin_(kRemoteCopyAllowedOrigin) {}
 
 RemoteCopyMessageHandler::~RemoteCopyMessageHandler() = default;
 
@@ -104,12 +105,11 @@ void RemoteCopyMessageHandler::OnMessage(
     chrome_browser_sharing::SharingMessage message,
     DoneCallback done_callback) {
   DCHECK(message.has_remote_copy_message());
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnMessage");
 
   // First cancel any pending async tasks that might otherwise overwrite the
   // results of the more recent message.
-  url_loader_.reset();
-  ImageDecoder::Cancel(this);
-  resize_callback_.Cancel();
+  CancelAsyncTasks();
 
   device_name_ = message.sender_device_name();
 
@@ -129,6 +129,9 @@ void RemoteCopyMessageHandler::OnMessage(
 }
 
 void RemoteCopyMessageHandler::HandleText(const std::string& text) {
+  TRACE_EVENT1("sharing", "RemoteCopyMessageHandler::HandleText", "text_size",
+               text.size());
+
   if (text.empty()) {
     Finish(RemoteCopyHandleMessageResult::kFailureEmptyText);
     return;
@@ -136,15 +139,28 @@ void RemoteCopyMessageHandler::HandleText(const std::string& text) {
 
   LogRemoteCopyReceivedTextSize(text.size());
 
+  ui::ClipboardSequenceNumberToken old_sequence_number =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste);
+  base::ElapsedTimer write_timer;
   {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteText(base::UTF8ToUTF16(text));
   }
+  LogRemoteCopyWriteTime(write_timer.Elapsed(), /*is_image=*/false);
+  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
+  write_detection_timer_.Start(
+      FROM_HERE, kInitialDetectionTimerDelay,
+      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
+                     base::Unretained(this), old_sequence_number,
+                     base::TimeTicks::Now(), /*is_image=*/false));
   ShowNotification(GetTextNotificationTitle(device_name_), SkBitmap());
   Finish(RemoteCopyHandleMessageResult::kSuccessHandledText);
 }
 
 void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::HandleImage");
+
   GURL url(image_url);
 
   if (!network::IsUrlPotentiallyTrustworthy(url)) {
@@ -152,7 +168,7 @@ void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
     return;
   }
 
-  if (!IsOriginAllowed(url)) {
+  if (!IsImageSourceAllowed(url)) {
     Finish(RemoteCopyHandleMessageResult::kFailureImageOriginNotAllowed);
     return;
   }
@@ -169,27 +185,26 @@ void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
   timer_ = base::ElapsedTimer();
   // Unretained(this) is safe here because |this| owns |url_loader_|.
   url_loader_->DownloadToString(
-      profile_->GetURLLoaderFactory().get(),
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess()
+          .get(),
       base::BindOnce(&RemoteCopyMessageHandler::OnURLLoadComplete,
                      base::Unretained(this)),
       kMaxImageDownloadSize);
 }
 
-bool RemoteCopyMessageHandler::IsOriginAllowed(const GURL& image_url) {
-  url::Origin image_origin = url::Origin::Create(image_url);
-  std::vector<std::string> parts =
-      base::SplitString(kRemoteCopyAllowedOrigins.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& part : parts) {
-    url::Origin allowed_origin = url::Origin::Create(GURL(part));
-    if (image_origin.IsSameOriginWith(allowed_origin))
-      return true;
-  }
-  return false;
+bool RemoteCopyMessageHandler::IsImageSourceAllowed(const GURL& image_url) {
+  // The actual image URL may have a hash in the subdomain. This means we
+  // cannot match the entire host - we'll match the domain instead.
+  return image_url.SchemeIs(allowed_origin_.scheme_piece()) &&
+         image_url.DomainIs(allowed_origin_.host_piece()) &&
+         image_url.EffectiveIntPort() == allowed_origin_.EffectiveIntPort();
 }
 
 void RemoteCopyMessageHandler::OnURLLoadComplete(
     std::unique_ptr<std::string> content) {
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnURLLoadComplete");
+
   int code;
   if (url_loader_->NetError() != net::OK) {
     code = url_loader_->NetError();
@@ -211,10 +226,12 @@ void RemoteCopyMessageHandler::OnURLLoadComplete(
   LogRemoteCopyReceivedImageSizeBeforeDecode(content->size());
 
   timer_ = base::ElapsedTimer();
-  ImageDecoder::Start(this, *content);
+  ImageDecoder::Start(this, std::move(*content));
 }
 
 void RemoteCopyMessageHandler::OnImageDecoded(const SkBitmap& image) {
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnImageDecoded");
+
   if (image.drawsNothing()) {
     Finish(RemoteCopyHandleMessageResult::kFailureDecodedImageDrawsNothing);
     return;
@@ -223,31 +240,7 @@ void RemoteCopyMessageHandler::OnImageDecoded(const SkBitmap& image) {
   LogRemoteCopyDecodeImageTime(timer_.Elapsed());
   LogRemoteCopyReceivedImageSizeAfterDecode(image.computeByteSize());
 
-  double scale = std::min(
-      static_cast<double>(kNotificationImageMaxWidthPx) / image.width(),
-      static_cast<double>(kNotificationImageMaxHeightPx) / image.height());
-
-  // If the image is too large to show in a notification, resize it first.
-  if (scale < 1.0) {
-    int resized_width =
-        base::ClampToRange(static_cast<int>(scale * image.width()), 0,
-                           kNotificationImageMaxWidthPx);
-    int resized_height =
-        base::ClampToRange(static_cast<int>(scale * image.height()), 0,
-                           kNotificationImageMaxHeightPx);
-
-    // Unretained(this) is safe here because |this| owns |resize_callback_|.
-    resize_callback_.Reset(
-        base::BindOnce(&RemoteCopyMessageHandler::WriteImageAndShowNotification,
-                       base::Unretained(this), image));
-    timer_ = base::ElapsedTimer();
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::ThreadPool(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ResizeImage, image, resized_width, resized_height),
-        resize_callback_.callback());
-  } else {
-    WriteImageAndShowNotification(image, image);
-  }
+  WriteImageAndShowNotification(image);
 }
 
 void RemoteCopyMessageHandler::OnDecodeImageFailed() {
@@ -255,39 +248,49 @@ void RemoteCopyMessageHandler::OnDecodeImageFailed() {
 }
 
 void RemoteCopyMessageHandler::WriteImageAndShowNotification(
-    const SkBitmap& original_image,
-    const SkBitmap& resized_image) {
-  if (original_image.dimensions() != resized_image.dimensions())
-    LogRemoteCopyResizeImageTime(timer_.Elapsed());
+    const SkBitmap& image) {
+  TRACE_EVENT1("sharing",
+               "RemoteCopyMessageHandler::WriteImageAndShowNotification",
+               "bytes", image.computeByteSize());
 
+  ui::ClipboardSequenceNumberToken old_sequence_number =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste);
+  base::ElapsedTimer write_timer;
   {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteImage(original_image);
+        .WriteImage(image);
   }
+  LogRemoteCopyWriteTime(write_timer.Elapsed(), /*is_image=*/true);
+  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
+  write_detection_timer_.Start(
+      FROM_HERE, kInitialDetectionTimerDelay,
+      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
+                     base::Unretained(this), old_sequence_number,
+                     base::TimeTicks::Now(), /*is_image=*/true));
 
-  ShowNotification(GetImageNotificationTitle(device_name_), resized_image);
+  ShowNotification(GetImageNotificationTitle(device_name_), image);
   Finish(RemoteCopyHandleMessageResult::kSuccessHandledImage);
 }
 
-void RemoteCopyMessageHandler::ShowNotification(const base::string16& title,
+void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
                                                 const SkBitmap& image) {
-  std::string notification_id = base::GenerateGUID();
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::ShowNotification");
 
+  gfx::Image icon;
   message_center::RichNotificationData rich_notification_data;
-  if (!image.drawsNothing())
-    rich_notification_data.image = gfx::Image::CreateFrom1xBitmap(image);
   rich_notification_data.vector_small_image = &kSendTabToSelfIcon;
+  rich_notification_data.renotify = true;
 
-  message_center::NotificationType type =
-      image.drawsNothing() ? message_center::NOTIFICATION_TYPE_SIMPLE
-                           : message_center::NOTIFICATION_TYPE_IMAGE;
+  ui::Accelerator paste_accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);
 
   message_center::Notification notification(
-      type, notification_id, title,
-      l10n_util::GetStringUTF16(
-          IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION),
-      /*icon=*/gfx::Image(),
-      /*display_source=*/base::string16(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, base::GenerateGUID(), title,
+      l10n_util::GetStringFUTF16(
+          IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION,
+          paste_accelerator.GetShortcutText()),
+      icon,
+      /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
       rich_notification_data,
       /*delegate=*/nullptr);
@@ -296,7 +299,41 @@ void RemoteCopyMessageHandler::ShowNotification(const base::string16& title,
       NotificationHandler::Type::SHARING, notification, /*metadata=*/nullptr);
 }
 
+void RemoteCopyMessageHandler::DetectWrite(
+    const ui::ClipboardSequenceNumberToken& old_sequence_number,
+    base::TimeTicks start_ticks,
+    bool is_image) {
+  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::DetectWrite");
+
+  ui::ClipboardSequenceNumberToken current_sequence_number =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste);
+  base::TimeDelta elapsed = base::TimeTicks::Now() - start_ticks;
+  if (current_sequence_number != old_sequence_number) {
+    LogRemoteCopyWriteDetectionTime(elapsed, is_image);
+    return;
+  }
+
+  if (elapsed > base::Seconds(10))
+    return;
+
+  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
+  base::TimeDelta backoff_delay = write_detection_timer_.GetCurrentDelay() * 2;
+  write_detection_timer_.Start(
+      FROM_HERE, backoff_delay,
+      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
+                     base::Unretained(this), old_sequence_number, start_ticks,
+                     is_image));
+}
+
 void RemoteCopyMessageHandler::Finish(RemoteCopyHandleMessageResult result) {
+  TRACE_EVENT1("sharing", "RemoteCopyMessageHandler::Finish", "result", result);
   LogRemoteCopyHandleMessageResult(result);
   device_name_.clear();
+}
+
+void RemoteCopyMessageHandler::CancelAsyncTasks() {
+  url_loader_.reset();
+  ImageDecoder::Cancel(this);
+  write_detection_timer_.AbandonAndStop();
 }

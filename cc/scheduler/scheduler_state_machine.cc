@@ -4,8 +4,9 @@
 
 #include "cc/scheduler/scheduler_state_machine.h"
 
+#include "base/check_op.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -261,12 +262,10 @@ void SchedulerStateMachine::AsProtozeroInto(
       critical_begin_main_frame_to_activate_is_fast_);
   minor_state->set_main_thread_missed_last_deadline(
       main_thread_missed_last_deadline_);
-  minor_state->set_skip_next_begin_main_frame_to_reduce_latency(
-      skip_next_begin_main_frame_to_reduce_latency_);
   minor_state->set_video_needs_begin_frames(video_needs_begin_frames_);
   minor_state->set_defer_begin_main_frame(defer_begin_main_frame_);
   minor_state->set_last_commit_had_no_updates(last_commit_had_no_updates_);
-  minor_state->set_did_draw_in_last_frame(did_draw_in_last_frame_);
+  minor_state->set_did_draw_in_last_frame(did_attempt_draw_in_last_frame_);
   minor_state->set_did_submit_in_last_frame(did_submit_in_last_frame_);
   minor_state->set_needs_impl_side_invalidation(needs_impl_side_invalidation_);
   minor_state->set_current_pending_tree_is_impl_side(
@@ -412,9 +411,13 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
 
   // We should not activate a second tree before drawing the first one.
   // Even if we need to force activation of the pending tree, we should abort
-  // drawing the active tree first.
-  if (active_tree_needs_first_draw_)
+  // drawing the active tree first. Relax this requirement for synchronous
+  // compositor where scheduler does not control draw, and blocking commit
+  // may lead to bad scheduling.
+  if (!settings_.using_synchronous_renderer_compositor &&
+      active_tree_needs_first_draw_) {
     return false;
+  }
 
   // Delay pending tree activation until paint worklets have completed painting
   // the pending tree. This must occur before the |ShouldAbortCurrentFrame|
@@ -592,9 +595,6 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
       begin_impl_frame_state_ == BeginImplFrameState::INSIDE_DEADLINE &&
       did_submit_in_last_frame_;
   if (IsDrawThrottled() && !just_submitted_in_deadline)
-    return false;
-
-  if (skip_next_begin_main_frame_to_reduce_latency_)
     return false;
 
   return true;
@@ -867,9 +867,17 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
     has_pending_tree_ = true;
     pending_tree_needs_first_draw_on_activation_ = true;
     pending_tree_is_ready_for_activation_ = false;
-    // Wait for the new pending tree to become ready to draw, which may happen
-    // before or after activation.
-    active_tree_is_ready_to_draw_ = false;
+    if (!active_tree_needs_first_draw_ ||
+        !settings_.wait_for_all_pipeline_stages_before_draw) {
+      // Wait for the new pending tree to become ready to draw, which may happen
+      // before or after activation (unless we're in full-pipeline mode and
+      // need first draw to come through).
+      active_tree_is_ready_to_draw_ = false;
+    }
+
+    aborted_begin_main_frame_count_ = 0;
+  } else {
+    aborted_begin_main_frame_count_++;
   }
 
   // Update state related to forced draws.
@@ -977,10 +985,11 @@ void SchedulerStateMachine::WillDraw() {
   // Set this to true to proactively request a new BeginFrame. We can't set this
   // in WillDrawInternal because AbortDraw calls WillDrawInternal but shouldn't
   // request another frame.
-  did_draw_in_last_frame_ = true;
+  did_attempt_draw_in_last_frame_ = true;
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
+  draw_succeeded_in_last_frame_ = draw_result == DRAW_SUCCESS;
   DidDrawInternal(draw_result);
 }
 
@@ -1025,13 +1034,6 @@ void SchedulerStateMachine::WillInvalidateLayerTreeFrameSink() {
   did_invalidate_layer_tree_frame_sink_ = true;
   last_frame_number_invalidate_layer_tree_frame_sink_performed_ =
       current_frame_number_;
-}
-
-void SchedulerStateMachine::SetSkipNextBeginMainFrameToReduceLatency(
-    bool skip) {
-  TRACE_EVENT_INSTANT0("cc", "Scheduler: SkipNextBeginMainFrameToReduceLatency",
-                       TRACE_EVENT_SCOPE_THREAD);
-  skip_next_begin_main_frame_to_reduce_latency_ = skip;
 }
 
 bool SchedulerStateMachine::BeginFrameNeededForVideo() const {
@@ -1122,12 +1124,17 @@ bool SchedulerStateMachine::ProactiveBeginFrameWanted() const {
   // frame soon. This helps avoid negative glitches in our SetNeedsBeginFrame
   // requests, which may propagate to the BeginImplFrame provider and get
   // sampled at an inopportune time, delaying the next BeginImplFrame.
-  if (did_draw_in_last_frame_)
+  if (did_attempt_draw_in_last_frame_)
     return true;
 
   // If the last commit was aborted because of early out (no updates), we should
   // still want a begin frame in case there is a commit coming again.
   if (last_commit_had_no_updates_)
+    return true;
+
+  // If there is active interaction happening (e.g. scroll/pinch), then keep
+  // reqeusting frames.
+  if (tree_priority_ == SMOOTHNESS_TAKES_PRIORITY)
     return true;
 
   return false;
@@ -1145,7 +1152,8 @@ void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameId& frame_id,
   last_frame_events_.did_commit_during_frame = did_commit_during_frame_;
 
   last_commit_had_no_updates_ = false;
-  did_draw_in_last_frame_ = false;
+  did_attempt_draw_in_last_frame_ = false;
+  draw_succeeded_in_last_frame_ = false;
   did_submit_in_last_frame_ = false;
   needs_one_begin_impl_frame_ = false;
 
@@ -1173,14 +1181,10 @@ void SchedulerStateMachine::OnBeginImplFrameIdle() {
   // This is same as the old prepare tiles funnel behavior.
   did_prepare_tiles_ = false;
 
-  skip_next_begin_main_frame_to_reduce_latency_ = false;
-
   // If a new or undrawn active tree is pending after the deadline,
   // then the main thread is in a high latency mode.
   main_thread_missed_last_deadline_ =
       CommitPending() || has_pending_tree_ || active_tree_needs_first_draw_;
-  main_thread_failed_to_respond_last_deadline_ =
-      begin_main_frame_state_ == BeginMainFrameState::SENT;
 
   // If we're entering a state where we won't get BeginFrames set all the
   // funnels so that we don't perform any actions that we shouldn't.
@@ -1341,14 +1345,6 @@ void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
 }
 
-bool SchedulerStateMachine::OnlyImplSideUpdatesExpected() const {
-  bool has_impl_updates = needs_redraw_ || needs_one_begin_impl_frame_;
-  bool main_updates_expected =
-      needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE || has_pending_tree_;
-  return has_impl_updates && !main_updates_expected;
-}
-
 void SchedulerStateMachine::SetNeedsPrepareTiles() {
   if (!needs_prepare_tiles_) {
     TRACE_EVENT0("cc", "SchedulerStateMachine::SetNeedsPrepareTiles");
@@ -1356,8 +1352,9 @@ void SchedulerStateMachine::SetNeedsPrepareTiles() {
   }
 }
 void SchedulerStateMachine::DidSubmitCompositorFrame() {
-  TRACE_EVENT_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames", this,
-                           "pending_frames", pending_submit_frames_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames",
+                                    TRACE_ID_LOCAL(this), "pending_frames",
+                                    pending_submit_frames_);
   DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
 
   pending_submit_frames_++;
@@ -1368,8 +1365,9 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
 }
 
 void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
-  TRACE_EVENT_ASYNC_END1("cc", "Scheduler:pending_submit_frames", this,
-                         "pending_frames", pending_submit_frames_);
+  TRACE_EVENT_NESTABLE_ASYNC_END1("cc", "Scheduler:pending_submit_frames",
+                                  TRACE_ID_LOCAL(this), "pending_frames",
+                                  pending_submit_frames_);
   pending_submit_frames_--;
 }
 
@@ -1425,7 +1423,6 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
   main_thread_missed_last_deadline_ = false;
 
   switch (reason) {
-    case CommitEarlyOutReason::ABORTED_LAYER_TREE_FRAME_SINK_LOST:
     case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
     case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
     case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:

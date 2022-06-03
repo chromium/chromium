@@ -2,31 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
-import("//ui/ozone/ozone.gni")
 
 # See //content/BUILD.gn for how this works.
 group("gpu") {
   visibility = [ "//content/*" ]  # This is an internal content API.
 
   if (is_component_build) {
-    public_deps = [
-      "//content",
-    ]
+    public_deps = [ "//content" ]
   } else {
-    public_deps = [
-      ":gpu_sources",
-    ]
+    public_deps = [ ":gpu_sources" ]
   }
 }
 
 if (is_component_build) {
-  link_target_type = "jumbo_source_set"
+  link_target_type = "source_set"
 } else {
-  link_target_type = "jumbo_static_library"
+  link_target_type = "static_library"
 }
 
 target(link_target_type, "gpu_sources") {
@@ -43,8 +38,6 @@ target(link_target_type, "gpu_sources") {
     "gpu_main.cc",
     "gpu_process.cc",
     "gpu_process.h",
-    "gpu_sandbox_hook_linux.cc",
-    "gpu_sandbox_hook_linux.h",
     "gpu_service_factory.cc",
     "gpu_service_factory.h",
     "in_process_gpu_thread.cc",
@@ -56,7 +49,8 @@ target(link_target_type, "gpu_sources") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//components/tracing",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/viz/service",
     "//content:export",
     "//content/child",
@@ -78,12 +72,9 @@ target(link_target_type, "gpu_sources") {
     "//components/viz/service/main",
     "//media/gpu/ipc/service",
     "//media/mojo/clients:clients",
-    "//services/service_manager/embedder",
+    "//sandbox/policy:chromecast_sandbox_allowlist_buildflags",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
-    "//services/service_manager/sandbox:chromecast_sandbox_whitelist_buildflags",
-    "//services/shape_detection:lib",
-    "//services/shape_detection/public/mojom",
     "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//skia",
@@ -94,31 +85,37 @@ target(link_target_type, "gpu_sources") {
     "//ui/latency/ipc",
   ]
 
-  if (is_android) {
-    deps += [ "//media" ]
+  if (!is_chromeos_ash || !is_chrome_branded) {
+    deps += [
+      "//services/shape_detection:lib",
+      "//services/shape_detection/public/mojom",
+    ]
   }
 
-  if (is_linux) {
-    deps += [ "//services/service_manager/zygote" ]
+  if (is_linux || is_chromeos) {
+    sources += [
+      "gpu_sandbox_hook_linux.cc",
+      "gpu_sandbox_hook_linux.h",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//components/tracing:graphics_provider",
+      "//media",
+    ]
   }
 
   if (mojo_media_host == "gpu") {
     deps += [ "//media/mojo/services" ]
   }
 
-  if (is_linux || is_mac || is_win) {
+  if (is_linux || is_chromeos || is_mac || is_win) {
     deps += [ "//sandbox" ]
   }
 
   if (is_mac) {
     deps += [ "//components/metal_util" ]
-  }
-
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_ozone) {
@@ -130,7 +127,7 @@ target(link_target_type, "gpu_sources") {
   }
 
   # Use DRI on desktop Linux builds.
-  if (current_cpu != "s390x" && current_cpu != "ppc64" && is_desktop_linux &&
+  if (current_cpu != "s390x" && current_cpu != "ppc64" && is_linux &&
       (!is_chromecast || is_cast_desktop_build)) {
     configs += [ "//build/config/linux/dri" ]
   }

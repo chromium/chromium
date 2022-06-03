@@ -17,6 +17,7 @@ enum TextKind {
   kTextCaptions,
   kTextDescriptions,
   kTextMetadata,
+  kTextChapters,
   kTextNone
 };
 
@@ -24,6 +25,7 @@ class MEDIA_EXPORT TextTrackConfig {
  public:
   TextTrackConfig();
   TextTrackConfig(const TextTrackConfig& other);
+  TextTrackConfig& operator=(const TextTrackConfig& other);
   TextTrackConfig(TextKind kind,
                   const std::string& label,
                   const std::string& language,
@@ -36,6 +38,8 @@ class MEDIA_EXPORT TextTrackConfig {
   const std::string& label() const { return label_; }
   const std::string& language() const { return language_; }
   const std::string& id() const { return id_; }
+
+  static TextKind ConvertKind(const std::string& kind);
 
  private:
   TextKind kind_;

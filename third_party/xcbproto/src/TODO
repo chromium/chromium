@@ -1,0 +1,45 @@
+Last Updated: 2006-04-27
+
+Extension Status:
+
+X - Present, tested, works.
+U - Present, untested.
+I - Incomplete.
+
+X BIG-REQUESTS
+X COMPOSITE
+X DAMAGE
+  DOUBLE-BUFFER
+X DPMS
+  Extended-Visual-Information
+X GLX
+  LBX
+X MIT-SCREEN-SAVER
+X MIT-SHM
+  MIT-SUNDRY-NONSTANDARD
+  Multi-Buffering
+X RANDR
+X RECORD
+X RENDER
+  SECURITY
+  SGI-GLX
+X SHAPE
+X SYNC
+  TOG-CUP
+X X-Resource
+  XC-APPGROUP
+X XC-MISC
+X XEVIE
+X XFIXES
+  XFree86-Bigfont
+  XFree86-DGA
+X XFree86-DRI
+  XFree86-Misc
+  XFree86-VidModeExtension
+  XINERAMA
+  XInputExtension
+  XKEYBOARD
+I XpExtension (XPRINT)
+X XTEST
+X XVideo
+U XVideo-MotionCompensation

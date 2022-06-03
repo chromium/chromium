@@ -1,5 +1,5 @@
-// META: global=worker
-// META: script=pako/pako_inflate.min.js
+// META: global=window,worker
+// META: script=third_party/pako/pako_inflate.min.js
 // META: timeout=long
 
 'use strict';
@@ -33,7 +33,7 @@ async function compressArrayBuffer(input, format) {
 }
 
 test(() => {
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     const transformer = new CompressionStream("nonvalid");
   }, "non supported format should throw");
 }, "CompressionStream constructor should throw on invalid format");

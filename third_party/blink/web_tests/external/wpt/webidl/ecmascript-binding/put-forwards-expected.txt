@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Overriding getter of [PutForwards] attribute
+PASS Overriding setter of [PutForwards] target attribute
+PASS Overriding target of [PutForwards] attribute
+PASS Exception propagation from getter of [PutForwards] attribute
+PASS Exception propagation from setter of [PutForwards] target attribute
+PASS TypeError when getter of [PutForwards] attribute returns non-object
+PASS Does not throw when setter of [PutForwards] attribute returns false
+PASS Setting a.relList to noreferrer is reflected in rel
+PASS Setting area.relList to noreferrer is reflected in rel
+FAIL Setting form.relList to noreferrer is reflected in rel assert_true: The attribute is a DOMTokenList expected true got false
+PASS Setting link.relList to stylesheet is reflected in rel
+Harness: the test ran to completion.
+

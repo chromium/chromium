@@ -80,11 +80,11 @@ test(() => {
   assert_equals(animations[0].currentTime, 1000);
   assert_equals(animations[0].effect.getTiming()['duration'], 1500);
 
-  assert_equals(animations[1].currentTime, 2000);
-  assert_equals(animations[1].effect.getTiming()['duration'], 2500);
+  assert_equals(animations[1].currentTime, 3000);
+  assert_equals(animations[1].effect.getTiming()['duration'], 3500);
 
-  assert_equals(animations[2].currentTime, 3000);
-  assert_equals(animations[2].effect.getTiming()['duration'], 3500);
+  assert_equals(animations[2].currentTime, 2000);
+  assert_equals(animations[2].effect.getTiming()['duration'], 2500);
 
   assert_equals(animations[3].currentTime, 4000);
   assert_equals(animations[3].effect.getTiming()['duration'], 4500);
@@ -107,11 +107,11 @@ test(() => {
   assert_equals(animations[0].currentTime, 1000);
   assert_equals(animations[0].effect.getTiming()['duration'], 1500);
 
-  assert_equals(animations[1].currentTime, 2000);
-  assert_equals(animations[1].effect.getTiming()['duration'], 3500);
+  assert_equals(animations[1].currentTime, 0);
+  assert_equals(animations[1].effect.getTiming()['duration'], 2500);
 
-  assert_equals(animations[2].currentTime, 0);
-  assert_equals(animations[2].effect.getTiming()['duration'], 2500);
+  assert_equals(animations[2].currentTime, 2000);
+  assert_equals(animations[2].effect.getTiming()['duration'], 3500);
 }, 'Removing same animation names should cancel animations from the end of the name list.');
 
 test(() => {

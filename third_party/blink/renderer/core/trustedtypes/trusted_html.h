@@ -15,10 +15,11 @@ class CORE_EXPORT TrustedHTML final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TrustedHTML(const String& html);
+  explicit TrustedHTML(String html);
 
   // TrustedHTML.idl
-  String toString() const;
+  const String& toString() const;
+  const String& toJSON() const { return toString(); }
 
  private:
   const String html_;

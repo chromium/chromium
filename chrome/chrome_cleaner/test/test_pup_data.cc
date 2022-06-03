@@ -4,7 +4,8 @@
 
 #include "chrome/chrome_cleaner/test/test_pup_data.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/pup_data/uws_catalog.h"
 

@@ -7,7 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 
 namespace media_session {
 namespace test {
@@ -31,6 +32,24 @@ bool IsPositionEqual(const MediaPosition& p1, const MediaPosition& p2) {
          p2.GetPositionAtTime(p2.last_updated_time());
 }
 
+bool IsPositionGreaterOrEqual(const MediaPosition& p1,
+                              const MediaPosition& p2) {
+  if (p1.duration() != p2.duration() ||
+      p1.playback_rate() != p2.playback_rate()) {
+    return false;
+  }
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (p1.GetPositionAtTime(now) >= p2.GetPositionAtTime(now))
+    return true;
+
+  // To make testing easier we allow position at creation time to be greater or
+  // equal. If we did not do this then the position may advance if the playback
+  // rate is not zero.
+  return p1.GetPositionAtTime(p1.last_updated_time()) >=
+         p2.GetPositionAtTime(p2.last_updated_time());
+}
+
 }  // namespace
 
 MockMediaSessionMojoObserver::MockMediaSessionMojoObserver(
@@ -48,14 +67,21 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
       expected_controllable_ == session_info_->is_controllable) {
     run_loop_->Quit();
     expected_controllable_.reset();
-  } else if (wanted_state_ == session_info_->state ||
-             session_info_->playback_state == wanted_playback_state_) {
-    run_loop_->Quit();
+  } else {
+    if (wanted_state_ == session_info_->state ||
+        session_info_->playback_state == wanted_playback_state_ ||
+        session_info_->microphone_state == wanted_microphone_state_ ||
+        session_info_->camera_state == wanted_camera_state_ ||
+        (wanted_audio_video_states_ &&
+         base::ranges::is_permutation(*session_info_->audio_video_states,
+                                      *wanted_audio_video_states_))) {
+      run_loop_->Quit();
+    }
   }
 }
 
 void MockMediaSessionMojoObserver::MediaSessionMetadataChanged(
-    const base::Optional<MediaMetadata>& metadata) {
+    const absl::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -86,10 +112,10 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 
   if (expected_images_of_type_.has_value()) {
     auto type = expected_images_of_type_->first;
-    auto images = expected_images_of_type_->second;
+    auto expected_images = expected_images_of_type_->second;
     auto it = session_images_->find(type);
 
-    if (it != session_images_->end() && it->second == images) {
+    if (it != session_images_->end() && it->second == expected_images) {
       run_loop_->Quit();
       expected_images_of_type_.reset();
     }
@@ -97,13 +123,17 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 }
 
 void MockMediaSessionMojoObserver::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (position.has_value() && expected_position_.has_value() &&
       IsPositionEqual(*position, *expected_position_)) {
     run_loop_->Quit();
     expected_position_.reset();
+  } else if (position.has_value() && minimum_expected_position_.has_value() &&
+             IsPositionGreaterOrEqual(*position, *minimum_expected_position_)) {
+    run_loop_->Quit();
+    minimum_expected_position_.reset();
   } else if (waiting_for_empty_position_ && !position.has_value()) {
     run_loop_->Quit();
     waiting_for_empty_position_ = false;
@@ -125,6 +155,37 @@ void MockMediaSessionMojoObserver::WaitForPlaybackState(
     return;
 
   wanted_playback_state_ = wanted_state;
+  StartWaiting();
+}
+
+void MockMediaSessionMojoObserver::WaitForMicrophoneState(
+    mojom::MicrophoneState wanted_state) {
+  if (session_info_ && session_info_->microphone_state == wanted_state)
+    return;
+
+  wanted_microphone_state_ = wanted_state;
+  StartWaiting();
+  wanted_microphone_state_.reset();
+}
+
+void MockMediaSessionMojoObserver::WaitForCameraState(
+    mojom::CameraState wanted_state) {
+  if (session_info_ && session_info_->camera_state == wanted_state)
+    return;
+
+  wanted_camera_state_ = wanted_state;
+  StartWaiting();
+  wanted_camera_state_.reset();
+}
+
+void MockMediaSessionMojoObserver::WaitForAudioVideoStates(
+    const std::vector<mojom::MediaAudioVideoState>& wanted_states) {
+  if (session_info_ && base::ranges::is_permutation(
+                           *session_info_->audio_video_states, wanted_states)) {
+    return;
+  }
+
+  wanted_audio_video_states_ = wanted_states;
   StartWaiting();
 }
 
@@ -180,7 +241,7 @@ void MockMediaSessionMojoObserver::WaitForExpectedImagesOfType(
 }
 
 void MockMediaSessionMojoObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in base::Optional so we must check
+  // |session_position_| is doubly wrapped in absl::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -191,13 +252,27 @@ void MockMediaSessionMojoObserver::WaitForEmptyPosition() {
 
 void MockMediaSessionMojoObserver::WaitForExpectedPosition(
     const MediaPosition& position) {
-  if (session_position_.has_value() && session_position_->has_value()) {
-    if (IsPositionEqual(*session_position_.value(), position))
-      return;
+  if (session_position_.has_value() && session_position_->has_value() &&
+      IsPositionEqual(*session_position_.value(), position)) {
+    return;
   }
 
   expected_position_ = position;
   StartWaiting();
+}
+
+base::TimeDelta MockMediaSessionMojoObserver::WaitForExpectedPositionAtLeast(
+    const MediaPosition& position) {
+  if (session_position_.has_value() && session_position_->has_value() &&
+      IsPositionGreaterOrEqual(*session_position_.value(), position)) {
+    return position.GetPositionAtTime(position.last_updated_time());
+  }
+
+  minimum_expected_position_ = position;
+  StartWaiting();
+
+  return (*session_position_)
+      ->GetPositionAtTime((*session_position_)->last_updated_time());
 }
 
 void MockMediaSessionMojoObserver::StartWaiting() {
@@ -303,6 +378,14 @@ void MockMediaSession::ScrubTo(base::TimeDelta seek_time) {
   is_scrubbing_ = true;
 }
 
+void MockMediaSession::EnterPictureInPicture() {
+  // TODO(crbug.com/1040263): Implement EnterPictureinpicture.
+}
+
+void MockMediaSession::ExitPictureInPicture() {
+  // TODO(crbug.com/1040263): Implement ExitPictureinpicture.
+}
+
 void MockMediaSession::SetIsControllable(bool value) {
   is_controllable_ = value;
   NotifyObservers();
@@ -395,14 +478,14 @@ void MockMediaSession::FlushForTesting() {
 }
 
 void MockMediaSession::SimulateMetadataChanged(
-    const base::Optional<MediaMetadata>& metadata) {
+    const absl::optional<MediaMetadata>& metadata) {
   for (auto& observer : observers_) {
     observer->MediaSessionMetadataChanged(metadata);
   }
 }
 
 void MockMediaSession::SimulatePositionChanged(
-    const base::Optional<MediaPosition>& position) {
+    const absl::optional<MediaPosition>& position) {
   for (auto& observer : observers_) {
     observer->MediaSessionPositionChanged(position);
   }

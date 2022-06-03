@@ -3,7 +3,7 @@
 
   await dp.Page.enable();
   dp.Page.navigate({url: testRunner.url('resources/frame-requested-navigation-1.html')});
-  for (let i = 0; i < 5; ++i) {
+  for (let i = 0; i < 6; ++i) {
     const params = (await dp.Page.onceFrameRequestedNavigation()).params;
     testRunner.log(`Frame requested navigation to ${params.url}: ${params.reason}`);
   }

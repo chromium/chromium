@@ -6,7 +6,12 @@
 let ProcessingRoot;
 
 /**
- * @fileoverview This is a simple template engine inspired by JsTemplates
+ * @fileoverview
+ *
+ * This file is deprecated and existing usages should be removed (see
+ * https://crbug.com/1128151). Do not add any additional usages of this file.
+ *
+ * This is a simple template engine inspired by JsTemplates
  * optimized for i18n.
  *
  * It currently supports three handlers:
@@ -44,7 +49,7 @@ var i18nTemplate = (function() {
      * @param {!LoadTimeData} data The data source to draw from.
      * @param {!Set<ProcessingRoot>} visited
      */
-    'i18n-content': function(element, key, data, visited) {
+    'i18n-content'(element, key, data, visited) {
       element.textContent = data.getString(key);
     },
 
@@ -60,7 +65,7 @@ var i18nTemplate = (function() {
      * @param {!LoadTimeData} data The data source to draw from.
      * @param {!Set<ProcessingRoot>} visited
      */
-    'i18n-values': function(element, attributeAndKeys, data, visited) {
+    'i18n-values'(element, attributeAndKeys, data, visited) {
       const parts = attributeAndKeys.replace(/\s/g, '').split(/;/);
       parts.forEach(function(part) {
         if (!part) {
@@ -79,7 +84,7 @@ var i18nTemplate = (function() {
 
         // Allow a property of the form '.foo.bar' to assign a value into
         // element.foo.bar.
-        if (propName[0] == '.') {
+        if (propName[0] === '.') {
           const path = propName.slice(1).split('.');
           let targetObject = element;
           while (targetObject && path.length > 1) {
@@ -89,7 +94,7 @@ var i18nTemplate = (function() {
             targetObject[path] = value;
             // In case we set innerHTML (ignoring others) we need to recursively
             // check the content.
-            if (path == 'innerHTML') {
+            if (path[0] === 'innerHTML') {
               for (let i = 0; i < element.children.length; ++i) {
                 processWithoutCycles(element.children[i], data, visited, false);
               }
@@ -103,12 +108,6 @@ var i18nTemplate = (function() {
   };
 
   const prefixes = [''];
-
-  // Only look through shadow DOM when it's supported. As of April 2015, iOS
-  // Chrome doesn't support shadow DOM.
-  if (Element.prototype.createShadowRoot) {
-    prefixes.push('* /deep/ ');
-  }
 
   const attributeNames = Object.keys(handlers);
   const selector = prefixes
@@ -193,7 +192,7 @@ var i18nTemplate = (function() {
     for (let i = 0; i < attributeNames.length; i++) {
       const name = attributeNames[i];
       const attribute = element.getAttribute(name);
-      if (attribute != null) {
+      if (attribute !== null) {
         handlers[name](element, attribute, data, visited);
       }
     }

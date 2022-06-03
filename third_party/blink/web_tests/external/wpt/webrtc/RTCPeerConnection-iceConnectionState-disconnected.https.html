@@ -13,12 +13,12 @@
     const callee = new RTCPeerConnection();
     t.add_cleanup(() => callee.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const stream = await getNoiseStream({audio:true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
 
     await listenToIceConnected(caller);
 

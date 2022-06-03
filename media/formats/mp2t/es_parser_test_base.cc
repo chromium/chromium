@@ -4,8 +4,8 @@
 
 #include "media/formats/mp2t/es_parser_test_base.h"
 
+#include "base/check_op.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/stream_parser_buffer.h"

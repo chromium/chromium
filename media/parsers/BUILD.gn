@@ -17,9 +17,7 @@ component("parsers") {
     "webp_parser.h",
   ]
   defines = [ "IS_MEDIA_PARSER_IMPL" ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   # This target is used in GPU IPC code and cannot depend on any //media code.
   assert_no_deps = [
@@ -45,9 +43,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("media_jpeg_parser_picture_fuzzer") {
-  sources = [
-    "jpeg_parser_picture_fuzzertest.cc",
-  ]
+  sources = [ "jpeg_parser_picture_fuzzertest.cc" ]
   deps = [
     ":parsers",
     "//base",
@@ -57,9 +53,7 @@ fuzzer_test("media_jpeg_parser_picture_fuzzer") {
 }
 
 fuzzer_test("media_vp8_parser_fuzzer") {
-  sources = [
-    "vp8_parser_fuzzertest.cc",
-  ]
+  sources = [ "vp8_parser_fuzzertest.cc" ]
   deps = [
     ":parsers",
     "//base",
@@ -70,9 +64,7 @@ fuzzer_test("media_vp8_parser_fuzzer") {
 }
 
 fuzzer_test("media_webp_parser_fuzzer") {
-  sources = [
-    "webp_parser_fuzzertest.cc",
-  ]
+  sources = [ "webp_parser_fuzzertest.cc" ]
   deps = [
     ":parsers",
     "//base",

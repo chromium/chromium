@@ -8,11 +8,12 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -182,6 +183,7 @@ AUHALStream::~AUHALStream() {
   DCHECK(thread_checker_.CalledOnValidThread());
   CHECK(!audio_unit_);
 
+  base::AutoLock al(lock_);
   ReportAndResetStats();
 }
 
@@ -208,6 +210,20 @@ bool AUHALStream::Open() {
 
 void AUHALStream::Close() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (audio_unit_) {
+    Stop();
+
+    // Clear the render callback to try and prevent any callbacks from coming
+    // in after we've called stop. https://crbug.com/737527.
+    AURenderCallbackStruct callback = {0};
+    auto result = AudioUnitSetProperty(
+        audio_unit_->audio_unit(), kAudioUnitProperty_SetRenderCallback,
+        kAudioUnitScope_Input, AUElement::OUTPUT, &callback, sizeof(callback));
+    OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
+        << "Failed to clear input callback.";
+  }
+
   audio_unit_.reset();
   // Inform the audio manager that we have been closed. This will cause our
   // destruction. Also include the device ID as a signal to the audio manager
@@ -225,6 +241,7 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
   }
 
   if (!stopped_) {
+    base::AutoLock al(lock_);
     CHECK_EQ(source_, callback);
     return;
   }
@@ -237,14 +254,17 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
         base::BindOnce(&AUHALStream::Start, base::Unretained(this), callback));
     manager_->GetTaskRunner()->PostDelayedTask(
         FROM_HERE, deferred_start_cb_.callback(),
-        base::TimeDelta::FromSeconds(
-            AudioManagerMac::kStartDelayInSecsForPowerEvents));
+        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
 
   stopped_ = false;
-  audio_fifo_.reset();
-  source_ = callback;
+
+  {
+    base::AutoLock al(lock_);
+    audio_fifo_.reset();
+    source_ = callback;
+  }
 
   OSStatus result = AudioOutputUnitStart(audio_unit_->audio_unit());
   if (result == noErr)
@@ -268,10 +288,16 @@ void AUHALStream::Stop() {
   OSStatus result = AudioOutputUnitStop(audio_unit_->audio_unit());
   OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
       << "AudioOutputUnitStop() failed.";
-  if (result != noErr)
-    source_->OnError(AudioSourceCallback::ErrorType::kUnknown);
-  ReportAndResetStats();
-  source_ = nullptr;
+
+  {
+    base::AutoLock al(lock_);
+    if (result != noErr)
+      source_->OnError(AudioSourceCallback::ErrorType::kUnknown);
+
+    ReportAndResetStats();
+    source_ = nullptr;
+  }
+
   stopped_ = true;
 }
 
@@ -295,6 +321,13 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
   TRACE_EVENT2("audio", "AUHALStream::Render", "input buffer size",
                number_of_frames_, "output buffer size", number_of_frames);
 
+  base::AutoLock al(lock_);
+
+  // There's no documentation on what we should return here, but if we're here
+  // something is wrong so just return an AudioUnit error that looks reasonable.
+  if (!source_)
+    return kAudioUnitErr_Uninitialized;
+
   UpdatePlayoutTimestamp(output_time_stamp);
 
   // If the stream parameters change for any reason, we need to insert a FIFO
@@ -308,10 +341,10 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
       number_of_frames_requested_ = number_of_frames;
       DVLOG(1) << "Audio frame size changed from " << number_of_frames_
                << " to " << number_of_frames << " adding FIFO to compensate.";
-      audio_fifo_.reset(
-          new AudioPullFifo(params_.channels(), number_of_frames_,
-                            base::BindRepeating(&AUHALStream::ProvideInput,
-                                                base::Unretained(this))));
+      audio_fifo_ = std::make_unique<AudioPullFifo>(
+          params_.channels(), number_of_frames_,
+          base::BindRepeating(&AUHALStream::ProvideInput,
+                              base::Unretained(this)));
     }
   }
 
@@ -331,6 +364,7 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
 }
 
 void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
+  lock_.AssertAcquired();
   DCHECK(source_);
 
   const base::TimeTicks playout_time =
@@ -377,6 +411,8 @@ base::TimeTicks AUHALStream::GetPlayoutTime(
 }
 
 void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
+  lock_.AssertAcquired();
+
   if ((timestamp->mFlags & kAudioTimeStampSampleTimeValid) == 0)
     return;
 
@@ -402,6 +438,8 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
 }
 
 void AUHALStream::ReportAndResetStats() {
+  lock_.AssertAcquired();
+
   if (!last_sample_time_)
     return;  // No stats gathered to report.
 

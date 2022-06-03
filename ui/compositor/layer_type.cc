@@ -4,7 +4,7 @@
 
 #include "ui/compositor/layer_type.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ui {
 

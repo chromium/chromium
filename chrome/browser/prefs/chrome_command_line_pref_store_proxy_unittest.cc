@@ -8,8 +8,8 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,7 +35,7 @@ struct CommandLineTestParams {
   // Expected outputs (fields of the ProxyConfig).
   bool is_null;
   bool auto_detect;
-  GURL pac_url;
+  std::string pac_url;
   net::ProxyRulesExpectation proxy_rules;
 };
 
@@ -49,9 +49,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
         // Input
         {},
         // Expected result
-        true,    // is_null
-        false,   // auto_detect
-        GURL(),  // pac_url
+        true,   // is_null
+        false,  // auto_detect
+        "",     // pac_url
         net::ProxyRulesExpectation::Empty(),
     },
     {
@@ -61,9 +61,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
             {switches::kNoProxyServer, NULL},
         },
         // Expected result
-        false,   // is_null
-        false,   // auto_detect
-        GURL(),  // pac_url
+        false,  // is_null
+        false,  // auto_detect
+        "",     // pac_url
         net::ProxyRulesExpectation::Empty(),
     },
     {
@@ -74,9 +74,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
             {switches::kProxyServer, "http://proxy:8888"},
         },
         // Expected result
-        false,   // is_null
-        false,   // auto_detect
-        GURL(),  // pac_url
+        false,  // is_null
+        false,  // auto_detect
+        "",     // pac_url
         net::ProxyRulesExpectation::Empty(),
     },
     {
@@ -88,7 +88,7 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
         // Expected result
         false,                                            // is_null
         false,                                            // auto_detect
-        GURL(),                                           // pac_url
+        "",                                               // pac_url
         net::ProxyRulesExpectation::Single("proxy:8888",  // single proxy
                                            ""),           // bypass rules
     },
@@ -101,7 +101,7 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
         // Expected result
         false,                                                   // is_null
         false,                                                   // auto_detect
-        GURL(),                                                  // pac_url
+        "",                                                      // pac_url
         net::ProxyRulesExpectation::PerScheme("httpproxy:8888",  // http
                                               "",                // https
                                               "ftpproxy:8889",   // ftp
@@ -116,9 +116,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
              ".google.com, foo.com:99, 1.2.3.4:22, 127.0.0.1/8"},
         },
         // Expected result
-        false,   // is_null
-        false,   // auto_detect
-        GURL(),  // pac_url
+        false,  // is_null
+        false,  // auto_detect
+        "",     // pac_url
         net::ProxyRulesExpectation::PerScheme(
             "httpproxy:8888",  // http
             "",                // https
@@ -132,9 +132,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
             {switches::kProxyPacUrl, "http://wpad/wpad.dat"},
         },
         // Expected result
-        false,                         // is_null
-        false,                         // auto_detect
-        GURL("http://wpad/wpad.dat"),  // pac_url
+        false,                   // is_null
+        false,                   // auto_detect
+        "http://wpad/wpad.dat",  // pac_url
         net::ProxyRulesExpectation::Empty(),
     },
     {
@@ -144,9 +144,9 @@ static const CommandLineTestParams kCommandLineTestParams[] = {
             {switches::kProxyAutoDetect, NULL},
         },
         // Expected result
-        false,   // is_null
-        true,    // auto_detect
-        GURL(),  // pac_url
+        false,  // is_null
+        true,   // auto_detect
+        "",     // pac_url
         net::ProxyRulesExpectation::Empty(),
     },
 };
@@ -188,7 +188,7 @@ class ChromeCommandLinePrefStoreProxyTest
 
 TEST_P(ChromeCommandLinePrefStoreProxyTest, CommandLine) {
   EXPECT_EQ(GetParam().auto_detect, proxy_config()->value().auto_detect());
-  EXPECT_EQ(GetParam().pac_url, proxy_config()->value().pac_url());
+  EXPECT_EQ(GURL(GetParam().pac_url), proxy_config()->value().pac_url());
   EXPECT_TRUE(
       GetParam().proxy_rules.Matches(proxy_config()->value().proxy_rules()));
 }

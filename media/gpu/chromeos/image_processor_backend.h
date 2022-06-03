@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -49,9 +49,16 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
         Fourcc fourcc,
         const gfx::Size& size,
         const std::vector<ColorPlaneLayout>& planes,
-        const gfx::Size& visible_size,
+        const gfx::Rect& visible_rect,
         const std::vector<VideoFrame::StorageType>& preferred_storage_types);
     ~PortConfig();
+
+    bool operator==(const PortConfig& other) const {
+      return fourcc == other.fourcc && size == other.size &&
+             planes == other.planes && visible_rect == other.visible_rect &&
+             preferred_storage_types == other.preferred_storage_types;
+    }
+    bool operator!=(const PortConfig& other) const { return !(*this == other); }
 
     // Get the first |preferred_storage_types|.
     // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.
@@ -63,7 +70,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
     // Output human readable string of PortConfig.
     // Example:
     // PortConfig(format::NV12, size:640x480, planes:[(640, 0, 307200),
-    // (640,0,153600)], visible_size:640x480, storage_types:[DMABUFS])
+    // (640,0,153600)], visible_rect:0, 0, 640x480, storage_types:[DMABUFS])
     std::string ToString() const;
 
     // Video frame format represented as fourcc type.
@@ -77,7 +84,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
     // Layout property (stride, offset, size of bytes) for each color plane.
     const std::vector<ColorPlaneLayout> planes;
-    const gfx::Size visible_size;
+    const gfx::Rect visible_rect;
     // List of preferred storage types.
     const std::vector<VideoFrame::StorageType> preferred_storage_types;
   };
@@ -112,6 +119,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
+      VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
   virtual ~ImageProcessorBackend();
@@ -123,6 +131,10 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   // TODO(crbug.com/907767): Remove |output_mode_| once ImageProcessor always
   // works as IMPORT mode for output.
   const OutputMode output_mode_;
+
+  // ImageProcessor performs a rotation if the |relative_rotation_| is not equal
+  // to VIDEO_ROTATION_0.
+  const VideoRotation relative_rotation_;
 
   // Call this callback when any error occurs.
   const ErrorCB error_cb_;

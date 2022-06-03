@@ -9,24 +9,26 @@
 
   function replayOptionsXhr() {
     sentReplayXhr = true;
-    dp.Network.replayXHR({requestId: Object.keys(requestsById)[0]});
+    const postRequestId =
+        Object.keys(requestsById)
+            .find(id => requestsById[id].method === 'POST');
+    dp.Network.replayXHR({requestId: postRequestId});
   }
 
   function printResultsAndFinish() {
     const requests = Object.values(requestsById)
-                         .sort((one, two) => one.wallTime - two.wallTime)
+                         .sort((one, two) => {
+                           if (one.method === two.method)
+                             return one.wallTime - two.wallTime;
+                           return one.method.localeCompare(two.method);
+                         })
                          .map(request => {
                            delete request.wallTime;
                            return request;
                          });
 
-    // Ignore OPTIONS preflight requests.
-    // TODO(crbug.com/941297): Add the OPTIONS request back to the test results once this bug is fixed.
-    let postIndex = 0;
-    for (const request of requests) {
-      if (request.method !== 'POST')
-        continue;
-      testRunner.log(`POST request ${postIndex++}: ${JSON.stringify(request, null, 2)}`);
+    for (let i = 0; i < requests.length; i++) {
+      testRunner.log(`request ${i}: ${JSON.stringify(requests[i], null, 2)}`);
     }
     testRunner.completeTest();
   }
@@ -42,16 +44,16 @@
 
   dp.Network.onLoadingFinished(async event => {
     const requestId = event.params.requestId;
+    if (requestsById[requestId].method == 'OPTIONS')
+      return;
     const responseData =
         await dp.Network.getResponseBody({'requestId': requestId});
     requestsById[requestId].responseData = responseData.result.body;
 
-    if (Object.values(requestsById).every(request => request.responseData)) {
-      if (sentReplayXhr)
-        printResultsAndFinish();
-      else
-        replayOptionsXhr();
-    }
+    if (sentReplayXhr)
+      printResultsAndFinish();
+    else
+      replayOptionsXhr();
   });
 
   await session.evaluate(`

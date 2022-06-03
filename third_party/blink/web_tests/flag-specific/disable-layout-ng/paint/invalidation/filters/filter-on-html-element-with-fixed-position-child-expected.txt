@@ -1,8 +1,16 @@
 {
   "layers": [
     {
-      "name": "LayoutBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 10016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 10016],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -20,10 +28,9 @@
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

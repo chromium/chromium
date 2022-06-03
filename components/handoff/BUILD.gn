@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("handoff") {
-  if (is_mac || is_ios) {
+  if (is_apple) {
     sources = [
       "handoff_manager.h",
       "handoff_manager.mm",

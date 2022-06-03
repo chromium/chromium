@@ -4,33 +4,31 @@
 
 #include "components/browser_watcher/exit_code_watcher_win.h"
 
+#include <windows.h>
+
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/process/kill.h"
-#include "base/strings/stringprintf.h"
-#include "base/win/registry.h"
-
-#include <windows.h>
+#include "base/process/process.h"
+#include "base/process/process_handle.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace browser_watcher {
 
-namespace {
+const char kBrowserExitCodeHistogramName[] = "Stability.BrowserExitCodes";
 
-base::string16 GetValueName(const base::Time creation_time,
-                            base::ProcessId pid) {
-  // Convert the PID and creation time to a string value unique to this
-  // process instance.
-  return base::StringPrintf(L"%d-%lld", pid, creation_time.ToInternalValue());
+ExitCodeWatcher::ExitCodeWatcher()
+    : background_thread_("ExitCodeWatcherThread"),
+      exit_code_(STILL_ACTIVE),
+      stop_watching_handle_(CreateEvent(nullptr, TRUE, FALSE, nullptr)) {
+  DCHECK(stop_watching_handle_.IsValid());
 }
 
-}  // namespace
-
-ExitCodeWatcher::ExitCodeWatcher(base::StringPiece16 registry_path)
-    : registry_path_(registry_path.as_string()), exit_code_(STILL_ACTIVE) {}
-
-ExitCodeWatcher::~ExitCodeWatcher() {
-}
+ExitCodeWatcher::~ExitCodeWatcher() {}
 
 bool ExitCodeWatcher::Initialize(base::Process process) {
   if (!process.IsValid()) {
@@ -54,37 +52,54 @@ bool ExitCodeWatcher::Initialize(base::Process process) {
 
   // Success, take ownership of the process.
   process_ = std::move(process);
-  process_creation_time_ = base::Time::FromFileTime(creation_time);
 
-  // Start by writing the value STILL_ACTIVE to registry, to allow detection
-  // of the case where the watcher itself is somehow terminated before it can
-  // write the process' actual exit code.
-  return WriteProcessExitCode(STILL_ACTIVE);
+  return true;
 }
 
-void ExitCodeWatcher::WaitForExit() {
-  if (!process_.WaitForExit(&exit_code_)) {
-    LOG(ERROR) << "Failed to wait for process.";
-    return;
+bool ExitCodeWatcher::StartWatching() {
+  if (!background_thread_.StartWithOptions(
+          base::Thread::Options(base::MessagePumpType::IO, 0))) {
+    return false;
   }
 
-  WriteProcessExitCode(exit_code_);
-}
-
-bool ExitCodeWatcher::WriteProcessExitCode(int exit_code) {
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        registry_path_.c_str(),
-                        KEY_WRITE);
-  base::string16 value_name(
-      GetValueName(process_creation_time_, process_.Pid()));
-
-  ULONG result = key.WriteValue(value_name.c_str(), exit_code);
-  if (result != ERROR_SUCCESS) {
-    LOG(ERROR) << "Unable to write to registry, error " << result;
+  if (!background_thread_.task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(&ExitCodeWatcher::WaitForExit,
+                                    base::Unretained(this)))) {
+    background_thread_.Stop();
     return false;
   }
 
   return true;
+}
+
+void ExitCodeWatcher::StopWatching() {
+  if (stop_watching_handle_.IsValid()) {
+    SetEvent(stop_watching_handle_.Get());
+  }
+}
+
+void ExitCodeWatcher::WaitForExit() {
+  base::Process::WaitExitStatus wait_result =
+      process_.WaitForExitOrEvent(stop_watching_handle_, &exit_code_);
+  if (wait_result == base::Process::WaitExitStatus::PROCESS_EXITED) {
+    WriteProcessExitCode(exit_code_);
+  } else if (wait_result == base::Process::WaitExitStatus::FAILED) {
+    LOG(ERROR) << "Failed to wait for process exit or stop event";
+  }
+}
+
+bool ExitCodeWatcher::WriteProcessExitCode(int exit_code) {
+  if (exit_code != STILL_ACTIVE) {
+    // Record the exit codes in a sparse stability histogram, as the range of
+    // values used to report failures is large.
+    base::HistogramBase* exit_code_histogram =
+        base::SparseHistogram::FactoryGet(
+            kBrowserExitCodeHistogramName,
+            base::HistogramBase::kUmaStabilityHistogramFlag);
+    exit_code_histogram->Add(exit_code);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace browser_watcher

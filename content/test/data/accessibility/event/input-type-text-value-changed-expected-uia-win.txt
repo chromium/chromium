@@ -1,0 +1,2 @@
+Text_TextChanged on role=textbox
+ValueValue changed on role=textbox

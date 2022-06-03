@@ -13,8 +13,9 @@ _libarcore_dir = get_label_info(
 ar_module_desc = {
   name = "ar"
   java_deps = [
-    "//chrome/browser/android/vr:ar_java",
+    "//components/webxr/android:ar_java",
     "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+    "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
   ]
   android_manifest = "//chrome/android/features/ar/AndroidManifest.xml"
   loadable_modules_32_bit = [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]

@@ -26,6 +26,10 @@ class FaviconLoader : public KeyedService {
   typedef void (^FaviconAttributesCompletionBlock)(FaviconAttributes*);
 
   explicit FaviconLoader(favicon::LargeIconService* large_icon_service);
+
+  FaviconLoader(const FaviconLoader&) = delete;
+  FaviconLoader& operator=(const FaviconLoader&) = delete;
+
   ~FaviconLoader() override;
 
   // Tries to find a FaviconAttributes in |favicon_cache_| with |page_url|:
@@ -44,6 +48,19 @@ class FaviconLoader : public KeyedService {
                          float min_size_in_points,
                          bool fallback_to_google_server,
                          FaviconAttributesCompletionBlock faviconBlockHandler);
+
+  // Tries to find a FaviconAttributes in |favicon_cache_| with |page_url|:
+  // If found, invokes |faviconBlockHandler| and exits.
+  // If not found, invokes |faviconBlockHandler| with a default placeholder
+  // then invokes it again asynchronously with the favicon fetched by trying
+  // following methods:
+  //   1. Use |large_icon_service_| to fetch from local DB managed by
+  //      HistoryService;
+  //   2. Create a favicon base on the fallback style from |large_icon_service|.
+  void FaviconForPageUrlOrHost(
+      const GURL& page_url,
+      float size_in_points,
+      FaviconAttributesCompletionBlock favicon_block_handler);
 
   // Tries to find a FaviconAttributes in |favicon_cache_| with |icon_url|:
   // If found, invokes |faviconBlockHandler| and exits.
@@ -72,8 +89,6 @@ class FaviconLoader : public KeyedService {
   // removed during low-memory conditions based on its inherent LRU removal
   // algorithm. Keyed by NSString of URL (page URL or icon URL) spec.
   NSCache<NSString*, FaviconAttributes*>* favicon_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconLoader);
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_LOADER_H_

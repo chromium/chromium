@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_HTTPS_ENGAGEMENT_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_HTTPS_ENGAGEMENT_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 // When user metrics are about to be uploaded, HttpsEngagementMetricsProvider

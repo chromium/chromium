@@ -4,16 +4,16 @@
 
 package org.chromium.webview_shell;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.webkit.TracingConfig;
-import android.webkit.TracingController;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import androidx.webkit.TracingConfig;
+import androidx.webkit.TracingController;
+import androidx.webkit.WebViewClientCompat;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -91,7 +91,6 @@ public class WebViewTracingActivity extends Activity {
         loadUrl(url, enableTracing);
     }
 
-    @SuppressLint("NewApi") // TracingController related methods require API level 28.
     private void loadUrl(final String url, boolean enableTracing) {
         final Activity activity = this;
         WebView webView = new WebView(this);
@@ -100,8 +99,7 @@ public class WebViewTracingActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         final TracingController tracingController = TracingController.getInstance();
 
-        webView.setWebViewClient(new WebViewClient() {
-            @SuppressLint("NewApi") // TracingController related methods require API level 28.
+        webView.setWebViewClient(new WebViewClientCompat() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);

@@ -19,6 +19,7 @@ for cmd in gen-signedexchange gen-certurl dump-signedexchange; do
     if ! command -v $cmd > /dev/null 2>&1; then
         echo "$cmd is not installed. Please run:"
         echo "  go get -u github.com/WICG/webpackage/go/signedexchange/cmd/..."
+        echo '  export PATH=$PATH:$(go env GOPATH)/bin'
         exit 1
     fi
 done
@@ -545,6 +546,7 @@ gen-signedexchange \
   -version $sxg_version \
   -uri $inner_url_origin/signed-exchange/resources/sxg-subresource-script.js \
   -status 200 \
+  -responseHeader "Content-Type: application/javascript" \
   -content sxg-subresource-script-inner.js \
   -certificate $certfile \
   -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
@@ -575,5 +577,39 @@ gen-signedexchange \
   -o sxg/sxg-subresource.sxg \
   -miRecordSize 100 \
   -responseHeader "link:<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=allowed-alt-sxg;header-integrity=\"$header_integrity\",<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=preload;as=script"
+
+# Generate the signed exchange file of signed exchange subresource test with
+# header integrity mismatch.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/resources/sxg-subresource-sxg.html \
+  -status 200 \
+  -content sxg-subresource-sxg-inner.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2030-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/sxg-subresource-header-integrity-mismatch.sxg \
+  -miRecordSize 100 \
+  -responseHeader "link:<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=allowed-alt-sxg;header-integrity=\"sha256-$dummy_sha256\",<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=preload;as=script"
+
+# A Signed Exchange for testing prefetch.
+# The id query value "XXX..." of prefetch-test-cert.py will be replaced with
+# UUID for stash token by prefetch-test-sxg.py.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/resources/inner-url.html \
+  -status 200 \
+  -content sxg-prefetch-test.html \
+  -certificate $certfile \
+  -certUrl $wpt_test_remote_origin/signed-exchange/resources/prefetch-test-cert.py?id=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2020-01-29T00:00:00Z \
+  -expire 168h \
+  -o sxg/sxg-prefetch-test.sxg \
+  -miRecordSize 100
 
 rm -fr $tmpdir

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
@@ -20,6 +19,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_hostname_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -53,7 +53,7 @@ const char kProtocolKey[] = "protocol_str";
 const char kHostKey[] = "host";
 const char kPortKey[] = "port";
 const char kExpirationKey[] = "expiration";
-const char kAdvertisedVersionsKey[] = "advertised_versions";
+const char kAdvertisedAlpnsKey[] = "advertised_alpns";
 const char kNetworkStatsKey[] = "network_stats";
 const char kSrttKey[] = "srtt";
 const char kBrokenAlternativeServicesKey[] = "broken_alternative_services";
@@ -65,7 +65,7 @@ const char kBrokenCountKey[] = "broken_count";
 // services. Also checks if an alternative service for the same canonical suffix
 // has already been saved, and if so, returns an empty list.
 AlternativeServiceInfoVector GetAlternativeServiceToPersist(
-    const base::Optional<AlternativeServiceInfoVector>& alternative_services,
+    const absl::optional<AlternativeServiceInfoVector>& alternative_services,
     const HttpServerProperties::ServerInfoMapKey& server_info_key,
     base::Time now,
     const HttpServerPropertiesManager::GetCannonicalSuffix&
@@ -105,20 +105,22 @@ AlternativeServiceInfoVector GetAlternativeServiceToPersist(
 
 void AddAlternativeServiceFieldsToDictionaryValue(
     const AlternativeService& alternative_service,
-    base::DictionaryValue* dict) {
-  dict->SetInteger(kPortKey, alternative_service.port);
+    base::Value* dict) {
+  DCHECK(dict->is_dict());
+  dict->SetIntKey(kPortKey, alternative_service.port);
   if (!alternative_service.host.empty()) {
-    dict->SetString(kHostKey, alternative_service.host);
+    dict->SetStringKey(kHostKey, alternative_service.host);
   }
-  dict->SetString(kProtocolKey,
-                  NextProtoToString(alternative_service.protocol));
+  dict->SetStringKey(kProtocolKey,
+                     NextProtoToString(alternative_service.protocol));
 }
 
 // Fails in the case of NetworkIsolationKeys that can't be persisted to disk,
 // like unique origins.
 bool TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
     const BrokenAlternativeService& broken_alt_service,
-    base::DictionaryValue* dict) {
+    base::Value* dict) {
+  DCHECK(dict->is_dict());
   base::Value network_isolation_key_value;
   if (!broken_alt_service.network_isolation_key.ToValue(
           &network_isolation_key_value)) {
@@ -226,24 +228,23 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   net_log_.EndEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_INITIALIZATION);
 
-  const base::DictionaryValue* http_server_properties_dict =
+  const base::Value* http_server_properties_dict =
       pref_delegate_->GetServerProperties();
   // If there are no preferences set, do nothing.
-  if (!http_server_properties_dict)
+  if (!http_server_properties_dict || !http_server_properties_dict->is_dict())
     return;
 
   net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_CACHE,
                     [&] { return http_server_properties_dict->Clone(); });
-  int version_number = kMissingVersion;
-  if (!http_server_properties_dict->GetIntegerWithoutPathExpansion(
-          kVersionKey, &version_number) ||
-      version_number != kVersionNumber) {
+  absl::optional<int> maybe_version_number =
+      http_server_properties_dict->FindIntKey(kVersionKey);
+  if (!maybe_version_number.has_value() ||
+      *maybe_version_number != kVersionNumber) {
     DVLOG(1) << "Missing or unsupported. Clearing all properties. "
-             << version_number;
+             << maybe_version_number.value_or(kMissingVersion);
     return;
   }
 
-  const base::ListValue* servers_list = nullptr;
   // For Version 5, data is stored in the following format.
   // |servers| are saved in MRU order. |servers| are in the format flattened
   // representation of (scheme/host/port) where port might be ignored if is
@@ -257,8 +258,9 @@ void HttpServerPropertiesManager::ReadPrefs(
   //          ...
   //      ], ...
   // },
-  if (!http_server_properties_dict->GetListWithoutPathExpansion(
-          kServersKey, &servers_list)) {
+  const base::Value* servers_list =
+      http_server_properties_dict->FindListKey(kServersKey);
+  if (!servers_list) {
     DVLOG(1) << "Malformed http_server_properties for servers list.";
     return;
   }
@@ -277,15 +279,14 @@ void HttpServerPropertiesManager::ReadPrefs(
   // Iterate servers list in reverse MRU order so that entries are inserted
   // into |spdy_servers_map|, |alternative_service_map|, and
   // |server_network_stats_map| from oldest to newest.
-  const base::DictionaryValue* server_dict = nullptr;
-  for (auto it = servers_list->end(); it != servers_list->begin();) {
+  for (auto it = servers_list->GetList().end();
+       it != servers_list->GetList().begin();) {
     --it;
-    if (!it->GetAsDictionary(&server_dict)) {
+    if (!it->is_dict()) {
       DVLOG(1) << "Malformed http_server_properties for servers dictionary.";
       continue;
     }
-    AddServerData(*server_dict, server_info_map->get(),
-                  use_network_isolation_key);
+    AddServerData(*it, server_info_map->get(), use_network_isolation_key);
   }
 
   AddToQuicServerInfoMap(*http_server_properties_dict,
@@ -294,9 +295,9 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   // Read list containing broken and recently-broken alternative services, if
   // it exists.
-  const base::ListValue* broken_alt_svc_list;
-  if (http_server_properties_dict->GetListWithoutPathExpansion(
-          kBrokenAlternativeServicesKey, &broken_alt_svc_list)) {
+  const base::Value* broken_alt_svc_list =
+      http_server_properties_dict->FindListKey(kBrokenAlternativeServicesKey);
+  if (broken_alt_svc_list) {
     *broken_alternative_service_list =
         std::make_unique<BrokenAlternativeServiceList>();
     *recently_broken_alternative_services =
@@ -304,16 +305,15 @@ void HttpServerPropertiesManager::ReadPrefs(
             kMaxRecentlyBrokenAlternativeServiceEntries);
 
     // Iterate list in reverse-MRU order
-    for (auto it = broken_alt_svc_list->end();
-         it != broken_alt_svc_list->begin();) {
+    for (auto it = broken_alt_svc_list->GetList().end();
+         it != broken_alt_svc_list->GetList().begin();) {
       --it;
-      const base::DictionaryValue* entry_dict;
-      if (!it->GetAsDictionary(&entry_dict)) {
+      if (!it->is_dict()) {
         DVLOG(1) << "Malformed broken alterantive service entry.";
         continue;
       }
       AddToBrokenAlternativeServices(
-          *entry_dict, use_network_isolation_key,
+          *it, use_network_isolation_key,
           broken_alternative_service_list->get(),
           recently_broken_alternative_services->get());
     }
@@ -339,7 +339,7 @@ void HttpServerPropertiesManager::ReadPrefs(
 }
 
 void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
-    const base::DictionaryValue& broken_alt_svc_entry_dict,
+    const base::Value& broken_alt_svc_entry_dict,
     bool use_network_isolation_key,
     BrokenAlternativeServiceList* broken_alternative_service_list,
     RecentlyBrokenAlternativeServices* recently_broken_alternative_services) {
@@ -362,33 +362,33 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
 
   // Read broken-count and add an entry for |alt_service| into
   // |recently_broken_alternative_services|.
-  if (broken_alt_svc_entry_dict.HasKey(kBrokenCountKey)) {
-    int broken_count;
-    if (!broken_alt_svc_entry_dict.GetIntegerWithoutPathExpansion(
-            kBrokenCountKey, &broken_count)) {
+  if (broken_alt_svc_entry_dict.FindKey(kBrokenCountKey)) {
+    absl::optional<int> broken_count =
+        broken_alt_svc_entry_dict.FindIntKey(kBrokenCountKey);
+    if (!broken_count.has_value()) {
       DVLOG(1) << "Recently broken alternative service has malformed "
                << "broken-count.";
       return;
     }
-    if (broken_count < 0) {
+    if (broken_count.value() < 0) {
       DVLOG(1) << "Broken alternative service has negative broken-count.";
       return;
     }
     recently_broken_alternative_services->Put(
         BrokenAlternativeService(alt_service, network_isolation_key,
                                  use_network_isolation_key),
-        broken_count);
+        broken_count.value());
     contains_broken_count_or_broken_until = true;
   }
 
   // Read broken-until and add an entry for |alt_service| in
   // |broken_alternative_service_list|.
-  if (broken_alt_svc_entry_dict.HasKey(kBrokenUntilKey)) {
-    std::string expiration_string;
+  if (broken_alt_svc_entry_dict.FindKey(kBrokenUntilKey)) {
+    const std::string* expiration_string =
+        broken_alt_svc_entry_dict.FindStringKey(kBrokenUntilKey);
     int64_t expiration_int64;
-    if (!broken_alt_svc_entry_dict.GetStringWithoutPathExpansion(
-            kBrokenUntilKey, &expiration_string) ||
-        !base::StringToInt64(expiration_string, &expiration_int64)) {
+    if (!expiration_string ||
+        !base::StringToInt64(*expiration_string, &expiration_int64)) {
       DVLOG(1) << "Broken alternative service has malformed broken-until "
                << "string.";
       return;
@@ -413,7 +413,7 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
 }
 
 void HttpServerPropertiesManager::AddServerData(
-    const base::DictionaryValue& server_dict,
+    const base::Value& server_dict,
     HttpServerProperties::ServerInfoMap* server_info_map,
     bool use_network_isolation_key) {
   // Get server's scheme/host/pair.
@@ -449,18 +449,18 @@ void HttpServerPropertiesManager::AddServerData(
 }
 
 bool HttpServerPropertiesManager::ParseAlternativeServiceDict(
-    const base::DictionaryValue& dict,
+    const base::Value& dict,
     bool host_optional,
     const std::string& parsing_under,
     AlternativeService* alternative_service) {
   // Protocol is mandatory.
-  std::string protocol_str;
-  if (!dict.GetStringWithoutPathExpansion(kProtocolKey, &protocol_str)) {
+  const std::string* protocol_str = dict.FindStringKey(kProtocolKey);
+  if (!protocol_str) {
     DVLOG(1) << "Malformed alternative service protocol string under: "
              << parsing_under;
     return false;
   }
-  NextProto protocol = NextProtoFromString(protocol_str);
+  NextProto protocol = NextProtoFromString(*protocol_str);
   if (!IsAlternateProtocolValid(protocol)) {
     DVLOG(1) << "Invalid alternative service protocol string \"" << protocol_str
              << "\" under: " << parsing_under;
@@ -470,12 +470,15 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceDict(
 
   // If host is optional, it defaults to "".
   std::string host = "";
-  if (dict.HasKey(kHostKey)) {
-    if (!dict.GetStringWithoutPathExpansion(kHostKey, &host)) {
+  const std::string* hostp = nullptr;
+  if (dict.FindKey(kHostKey)) {
+    hostp = dict.FindStringKey(kHostKey);
+    if (!hostp) {
       DVLOG(1) << "Malformed alternative service host string under: "
                << parsing_under;
       return false;
     }
+    host = *hostp;
   } else if (!host_optional) {
     DVLOG(1) << "alternative service missing host string under: "
              << parsing_under;
@@ -484,18 +487,18 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceDict(
   alternative_service->host = host;
 
   // Port is mandatory.
-  int port = 0;
-  if (!dict.GetInteger(kPortKey, &port) || !IsPortValid(port)) {
+  absl::optional<int> maybe_port = dict.FindIntKey(kPortKey);
+  if (!maybe_port.has_value() || !IsPortValid(maybe_port.value())) {
     DVLOG(1) << "Malformed alternative service port under: " << parsing_under;
     return false;
   }
-  alternative_service->port = static_cast<uint32_t>(port);
+  alternative_service->port = static_cast<uint32_t>(maybe_port.value());
 
   return true;
 }
 
 bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
-    const base::DictionaryValue& dict,
+    const base::Value& dict,
     const std::string& server_str,
     AlternativeServiceInfo* alternative_service_info) {
   AlternativeService alternative_service;
@@ -506,15 +509,13 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
   alternative_service_info->set_alternative_service(alternative_service);
 
   // Expiration is optional, defaults to one day.
-  if (!dict.HasKey(kExpirationKey)) {
-    alternative_service_info->set_expiration(base::Time::Now() +
-                                             base::TimeDelta::FromDays(1));
+  if (!dict.FindKey(kExpirationKey)) {
+    alternative_service_info->set_expiration(base::Time::Now() + base::Days(1));
   } else {
-    std::string expiration_string;
-    if (dict.GetStringWithoutPathExpansion(kExpirationKey,
-                                           &expiration_string)) {
+    const std::string* expiration_string = dict.FindStringKey(kExpirationKey);
+    if (expiration_string) {
       int64_t expiration_int64 = 0;
-      if (!base::StringToInt64(expiration_string, &expiration_int64)) {
+      if (!base::StringToInt64(*expiration_string, &expiration_int64)) {
         DVLOG(1) << "Malformed alternative service expiration for server: "
                  << server_str;
         return false;
@@ -529,26 +530,26 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
   }
 
   // Advertised versions list is optional.
-  if (dict.HasKey(kAdvertisedVersionsKey)) {
-    const base::ListValue* versions_list = nullptr;
-    if (!dict.GetListWithoutPathExpansion(kAdvertisedVersionsKey,
-                                          &versions_list)) {
+  if (dict.FindKey(kAdvertisedAlpnsKey)) {
+    const base::Value* versions_list = dict.FindListKey(kAdvertisedAlpnsKey);
+    if (!versions_list) {
       DVLOG(1) << "Malformed alternative service advertised versions list for "
                << "server: " << server_str;
       return false;
     }
     quic::ParsedQuicVersionVector advertised_versions;
-    for (const auto& value : *versions_list) {
-      int version;
-      if (!value.GetAsInteger(&version)) {
+    for (const auto& value : versions_list->GetList()) {
+      const std::string* version_string = value.GetIfString();
+      if (!version_string) {
         DVLOG(1) << "Malformed alternative service version for server: "
                  << server_str;
         return false;
       }
-      // TODO(nharper): Support ParsedQuicVersions (instead of
-      // QuicTransportVersions) in AlternativeServiceMap.
-      advertised_versions.push_back(quic::ParsedQuicVersion(
-          quic::PROTOCOL_QUIC_CRYPTO, quic::QuicTransportVersion(version)));
+      quic::ParsedQuicVersion version =
+          quic::ParseQuicVersionString(*version_string);
+      if (version != quic::ParsedQuicVersion::Unsupported()) {
+        advertised_versions.push_back(version);
+      }
     }
     alternative_service_info->set_advertised_versions(advertised_versions);
   }
@@ -558,12 +559,12 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
 
 bool HttpServerPropertiesManager::ParseAlternativeServiceInfo(
     const url::SchemeHostPort& server,
-    const base::DictionaryValue& server_pref_dict,
+    const base::Value& server_pref_dict,
     HttpServerProperties::ServerInfo* server_info) {
   DCHECK(!server_info->alternative_services.has_value());
-  const base::ListValue* alternative_service_list;
-  if (!server_pref_dict.GetListWithoutPathExpansion(
-          kAlternativeServiceKey, &alternative_service_list)) {
+  const base::Value* alternative_service_list =
+      server_pref_dict.FindListKey(kAlternativeServiceKey);
+  if (!alternative_service_list) {
     return true;
   }
   if (server.scheme() != "https") {
@@ -571,13 +572,12 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfo(
   }
 
   AlternativeServiceInfoVector alternative_service_info_vector;
-  for (const auto& alternative_service_list_item : *alternative_service_list) {
-    const base::DictionaryValue* alternative_service_dict;
-    if (!alternative_service_list_item.GetAsDictionary(
-            &alternative_service_dict))
+  for (const auto& alternative_service_list_item :
+       alternative_service_list->GetList()) {
+    if (!alternative_service_list_item.is_dict())
       return false;
     AlternativeServiceInfo alternative_service_info;
-    if (!ParseAlternativeServiceInfoDictOfServer(*alternative_service_dict,
+    if (!ParseAlternativeServiceInfoDictOfServer(alternative_service_list_item,
                                                  server.Serialize(),
                                                  &alternative_service_info)) {
       return false;
@@ -596,56 +596,54 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfo(
 }
 
 void HttpServerPropertiesManager::ReadLastLocalAddressWhenQuicWorked(
-    const base::DictionaryValue& http_server_properties_dict,
+    const base::Value& http_server_properties_dict,
     IPAddress* last_local_address_when_quic_worked) {
-  const base::DictionaryValue* supports_quic_dict = nullptr;
-  if (!http_server_properties_dict.GetDictionaryWithoutPathExpansion(
-          kSupportsQuicKey, &supports_quic_dict)) {
+  const base::Value* supports_quic_dict =
+      http_server_properties_dict.FindDictKey(kSupportsQuicKey);
+  if (!supports_quic_dict) {
     return;
   }
-  bool used_quic = false;
-  if (!supports_quic_dict->GetBooleanWithoutPathExpansion(kUsedQuicKey,
-                                                          &used_quic)) {
+  const base::Value* used_quic = supports_quic_dict->FindKey(kUsedQuicKey);
+  if (!used_quic || !used_quic->is_bool()) {
     DVLOG(1) << "Malformed SupportsQuic";
     return;
   }
-  if (!used_quic)
+  if (!used_quic->GetBool())
     return;
 
-  std::string address;
-  if (!supports_quic_dict->GetStringWithoutPathExpansion(kAddressKey,
-                                                         &address) ||
-      !last_local_address_when_quic_worked->AssignFromIPLiteral(address)) {
+  const std::string* address = supports_quic_dict->FindStringKey(kAddressKey);
+  if (!address ||
+      !last_local_address_when_quic_worked->AssignFromIPLiteral(*address)) {
     DVLOG(1) << "Malformed SupportsQuic";
   }
 }
 
 void HttpServerPropertiesManager::ParseNetworkStats(
     const url::SchemeHostPort& server,
-    const base::DictionaryValue& server_pref_dict,
+    const base::Value& server_pref_dict,
     HttpServerProperties::ServerInfo* server_info) {
   DCHECK(!server_info->server_network_stats.has_value());
-  const base::DictionaryValue* server_network_stats_dict = nullptr;
-  if (!server_pref_dict.GetDictionaryWithoutPathExpansion(
-          kNetworkStatsKey, &server_network_stats_dict)) {
+  const base::Value* server_network_stats_dict =
+      server_pref_dict.FindDictKey(kNetworkStatsKey);
+  if (!server_network_stats_dict) {
     return;
   }
-  int srtt;
-  if (!server_network_stats_dict->GetIntegerWithoutPathExpansion(kSrttKey,
-                                                                 &srtt)) {
+  absl::optional<int> maybe_srtt =
+      server_network_stats_dict->FindIntKey(kSrttKey);
+  if (!maybe_srtt.has_value()) {
     DVLOG(1) << "Malformed ServerNetworkStats for server: "
              << server.Serialize();
     return;
   }
   ServerNetworkStats server_network_stats;
-  server_network_stats.srtt = base::TimeDelta::FromMicroseconds(srtt);
+  server_network_stats.srtt = base::Microseconds(maybe_srtt.value());
   // TODO(rtenneti): When QUIC starts using bandwidth_estimate, then persist
   // bandwidth_estimate.
   server_info->server_network_stats = server_network_stats;
 }
 
 void HttpServerPropertiesManager::AddToQuicServerInfoMap(
-    const base::DictionaryValue& http_server_properties_dict,
+    const base::Value& http_server_properties_dict,
     bool use_network_isolation_key,
     HttpServerProperties::QuicServerInfoMap* quic_server_info_map) {
   const base::Value* quic_server_info_list =
@@ -713,9 +711,9 @@ void HttpServerPropertiesManager::WriteToPrefs(
   std::set<std::pair<std::string, NetworkIsolationKey>>
       persisted_canonical_suffix_set;
   const base::Time now = base::Time::Now();
-  base::DictionaryValue http_server_properties_dict;
+  base::Value http_server_properties_dict(base::Value::Type::DICTIONARY);
 
-  // Convert |server_info_map| to a DictionaryValue and add it to
+  // Convert |server_info_map| to a dictionary Value and add it to
   // |http_server_properties_dict|.
   base::Value servers_list(base::Value::Type::LIST);
   for (auto map_it = server_info_map.rbegin(); map_it != server_info_map.rend();
@@ -729,7 +727,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
     if (!key.network_isolation_key.ToValue(&network_isolation_key_value))
       continue;
 
-    base::DictionaryValue server_dict;
+    base::Value server_dict(base::Value::Type::DICTIONARY);
 
     bool supports_spdy = server_info.supports_spdy.value_or(false);
     if (supports_spdy)
@@ -759,7 +757,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
   }
   http_server_properties_dict.SetKey(kServersKey, std::move(servers_list));
 
-  http_server_properties_dict.SetInteger(kVersionKey, kVersionNumber);
+  http_server_properties_dict.SetIntKey(kVersionKey, kVersionNumber);
 
   SaveLastLocalAddressWhenQuicWorkedToPrefs(last_local_address_when_quic_worked,
                                             &http_server_properties_dict);
@@ -780,71 +778,68 @@ void HttpServerPropertiesManager::WriteToPrefs(
 
 void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(
     const AlternativeServiceInfoVector& alternative_service_info_vector,
-    base::DictionaryValue* server_pref_dict) {
+    base::Value* server_pref_dict) {
   if (alternative_service_info_vector.empty()) {
     return;
   }
-  std::unique_ptr<base::ListValue> alternative_service_list(
-      new base::ListValue);
+  base::Value alternative_service_list(base::Value::Type::LIST);
   for (const AlternativeServiceInfo& alternative_service_info :
        alternative_service_info_vector) {
     const AlternativeService& alternative_service =
         alternative_service_info.alternative_service();
     DCHECK(IsAlternateProtocolValid(alternative_service.protocol));
-    std::unique_ptr<base::DictionaryValue> alternative_service_dict(
-        new base::DictionaryValue);
-    AddAlternativeServiceFieldsToDictionaryValue(
-        alternative_service, alternative_service_dict.get());
+    base::Value alternative_service_dict(base::Value::Type::DICTIONARY);
+    AddAlternativeServiceFieldsToDictionaryValue(alternative_service,
+                                                 &alternative_service_dict);
     // JSON cannot store int64_t, so expiration is converted to a string.
-    alternative_service_dict->SetString(
+    alternative_service_dict.SetStringKey(
         kExpirationKey,
         base::NumberToString(
             alternative_service_info.expiration().ToInternalValue()));
-    std::unique_ptr<base::ListValue> advertised_versions_list =
-        std::make_unique<base::ListValue>();
+    base::Value advertised_versions_list(base::Value::Type::LIST);
     for (const auto& version : alternative_service_info.advertised_versions()) {
-      advertised_versions_list->AppendInteger(version.transport_version);
+      advertised_versions_list.Append(quic::AlpnForVersion(version));
     }
-    alternative_service_dict->SetList(kAdvertisedVersionsKey,
-                                      std::move(advertised_versions_list));
-    alternative_service_list->Append(std::move(alternative_service_dict));
+    alternative_service_dict.SetKey(kAdvertisedAlpnsKey,
+                                    std::move(advertised_versions_list));
+    alternative_service_list.Append(std::move(alternative_service_dict));
   }
-  if (alternative_service_list->GetSize() == 0)
+  if (alternative_service_list.GetList().size() == 0)
     return;
-  server_pref_dict->SetWithoutPathExpansion(
-      kAlternativeServiceKey, std::move(alternative_service_list));
+  server_pref_dict->SetKey(kAlternativeServiceKey,
+                           std::move(alternative_service_list));
 }
 
 void HttpServerPropertiesManager::SaveLastLocalAddressWhenQuicWorkedToPrefs(
     const IPAddress& last_local_address_when_quic_worked,
-    base::DictionaryValue* http_server_properties_dict) {
+    base::Value* http_server_properties_dict) {
   if (!last_local_address_when_quic_worked.IsValid())
     return;
 
-  auto supports_quic_dict = std::make_unique<base::DictionaryValue>();
-  supports_quic_dict->SetBoolean(kUsedQuicKey, true);
-  supports_quic_dict->SetString(kAddressKey,
-                                last_local_address_when_quic_worked.ToString());
-  http_server_properties_dict->SetWithoutPathExpansion(
-      kSupportsQuicKey, std::move(supports_quic_dict));
+  base::Value supports_quic_dict(base::Value::Type::DICTIONARY);
+  supports_quic_dict.SetBoolKey(kUsedQuicKey, true);
+  supports_quic_dict.SetStringKey(
+      kAddressKey, last_local_address_when_quic_worked.ToString());
+  http_server_properties_dict->SetKey(kSupportsQuicKey,
+                                      std::move(supports_quic_dict));
 }
 
 void HttpServerPropertiesManager::SaveNetworkStatsToServerPrefs(
     const ServerNetworkStats& server_network_stats,
-    base::DictionaryValue* server_pref_dict) {
-  auto server_network_stats_dict = std::make_unique<base::DictionaryValue>();
+    base::Value* server_pref_dict) {
+  base::Value server_network_stats_dict(base::Value::Type::DICTIONARY);
   // Becasue JSON doesn't support int64_t, persist int64_t as a string.
-  server_network_stats_dict->SetInteger(
+  server_network_stats_dict.SetIntKey(
       kSrttKey, static_cast<int>(server_network_stats.srtt.InMicroseconds()));
   // TODO(rtenneti): When QUIC starts using bandwidth_estimate, then persist
   // bandwidth_estimate.
-  server_pref_dict->SetWithoutPathExpansion(
-      kNetworkStatsKey, std::move(server_network_stats_dict));
+  server_pref_dict->SetKey(kNetworkStatsKey,
+                           std::move(server_network_stats_dict));
 }
 
 void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
     const HttpServerProperties::QuicServerInfoMap& quic_server_info_map,
-    base::DictionaryValue* http_server_properties_dict) {
+    base::Value* http_server_properties_dict) {
   if (quic_server_info_map.empty())
     return;
   base::Value quic_servers_list(base::Value::Type::LIST);
@@ -864,7 +859,7 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
                                  std::move(network_isolation_key_value));
     quic_server_pref_dict.SetStringKey(kServerInfoKey, it->second);
 
-    quic_servers_list.GetList().emplace_back(std::move(quic_server_pref_dict));
+    quic_servers_list.Append(std::move(quic_server_pref_dict));
   }
   http_server_properties_dict->SetKey(kQuicServers,
                                       std::move(quic_servers_list));
@@ -875,7 +870,7 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
     size_t max_broken_alternative_services,
     const RecentlyBrokenAlternativeServices&
         recently_broken_alternative_services,
-    base::DictionaryValue* http_server_properties_dict) {
+    base::Value* http_server_properties_dict) {
   if (broken_alternative_service_list.empty() &&
       recently_broken_alternative_services.empty()) {
     return;
@@ -883,8 +878,7 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
 
   // JSON list will be in MRU order according to
   // |recently_broken_alternative_services|.
-  std::unique_ptr<base::ListValue> json_list =
-      std::make_unique<base::ListValue>();
+  base::Value json_list(base::Value::Type::LIST);
 
   // Maps recently-broken alternative services to the index where it's stored
   // in |json_list|.
@@ -896,14 +890,14 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
       const BrokenAlternativeService& broken_alt_service = it->first;
       int broken_count = it->second;
 
-      base::DictionaryValue entry_dict;
+      base::Value entry_dict(base::Value::Type::DICTIONARY);
       if (!TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
               broken_alt_service, &entry_dict)) {
         continue;
       }
       entry_dict.SetKey(kBrokenCountKey, base::Value(broken_count));
-      json_list_index_map[broken_alt_service] = json_list->GetList().size();
-      json_list->Append(std::move(entry_dict));
+      json_list_index_map[broken_alt_service] = json_list.GetList().size();
+      json_list.Append(std::move(entry_dict));
     }
   }
 
@@ -926,32 +920,31 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
       auto index_map_it = json_list_index_map.find(broken_alt_service);
       if (index_map_it != json_list_index_map.end()) {
         size_t json_list_index = index_map_it->second;
-        base::DictionaryValue* entry_dict = nullptr;
-        bool result = json_list->GetDictionary(json_list_index, &entry_dict);
-        DCHECK(result);
-        DCHECK(!entry_dict->HasKey(kBrokenUntilKey));
-        entry_dict->SetKey(kBrokenUntilKey,
-                           base::Value(base::NumberToString(expiration_int64)));
+        base::Value& entry_dict = json_list.GetList()[json_list_index];
+        DCHECK(entry_dict.is_dict());
+        DCHECK(!entry_dict.FindKey(kBrokenUntilKey));
+        entry_dict.SetKey(kBrokenUntilKey,
+                          base::Value(base::NumberToString(expiration_int64)));
       } else {
-        base::DictionaryValue entry_dict;
+        base::Value entry_dict(base::Value::Type::DICTIONARY);
         if (!TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
                 broken_alt_service, &entry_dict)) {
           continue;
         }
         entry_dict.SetKey(kBrokenUntilKey,
                           base::Value(base::NumberToString(expiration_int64)));
-        json_list->Append(std::move(entry_dict));
+        json_list.Append(std::move(entry_dict));
       }
     }
   }
 
   // This can happen if all the entries are for NetworkIsolationKeys for opaque
   // origins, which isn't exactly common, but can theoretically happen.
-  if (json_list->empty())
+  if (json_list.GetList().empty())
     return;
 
-  http_server_properties_dict->SetWithoutPathExpansion(
-      kBrokenAlternativeServicesKey, std::move(json_list));
+  http_server_properties_dict->SetKey(kBrokenAlternativeServicesKey,
+                                      std::move(json_list));
 }
 
 void HttpServerPropertiesManager::OnHttpServerPropertiesLoaded() {

@@ -198,8 +198,7 @@ std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
 
 // FacetURI -------------------------------------------------------------------
 
-FacetURI::FacetURI() : is_valid_(false) {
-}
+FacetURI::FacetURI() = default;
 
 // static
 FacetURI FacetURI::FromPotentiallyInvalidSpec(const std::string& spec) {
@@ -247,14 +246,14 @@ bool FacetURI::IsValidAndroidFacetURI() const {
 
 std::string FacetURI::scheme() const {
   return is_valid()
-             ? ComponentString(canonical_spec_, parsed_.scheme).as_string()
+             ? std::string(ComponentString(canonical_spec_, parsed_.scheme))
              : "";
 }
 
 std::string FacetURI::android_package_name() const {
   if (!IsValidAndroidFacetURI())
     return "";
-  return ComponentString(canonical_spec_, parsed_.host).as_string();
+  return std::string(ComponentString(canonical_spec_, parsed_.host));
 }
 
 FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
@@ -265,18 +264,23 @@ FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
                         &parsed_);
 }
 
-
 // AffiliatedFacetsWithUpdateTime ---------------------------------------------
 
-AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime() {
-}
+AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime() = default;
 
 AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime(
     const AffiliatedFacetsWithUpdateTime& other) = default;
 
-AffiliatedFacetsWithUpdateTime::~AffiliatedFacetsWithUpdateTime() {
-}
+AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime(
+    AffiliatedFacetsWithUpdateTime&& other) = default;
 
+AffiliatedFacetsWithUpdateTime& AffiliatedFacetsWithUpdateTime::operator=(
+    const AffiliatedFacetsWithUpdateTime& other) = default;
+
+AffiliatedFacetsWithUpdateTime& AffiliatedFacetsWithUpdateTime::operator=(
+    AffiliatedFacetsWithUpdateTime&& other) = default;
+
+AffiliatedFacetsWithUpdateTime::~AffiliatedFacetsWithUpdateTime() = default;
 
 // Helpers --------------------------------------------------------------------
 

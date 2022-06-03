@@ -49,16 +49,13 @@ template("generate_localizable_strings") {
       forward_variables_from(invoker, [ "testonly" ])
 
       visibility = [ ":${_target_name}" ]
-      public_deps = [
-        ":${_target_name}_generate",
-      ]
+      public_deps = [ ":${_target_name}_generate" ]
       sources = []
       foreach(filename, invoker.output_filenames) {
         sources += [ "${target_gen_dir}/${locale}.lproj/$filename" ]
       }
-      outputs = [
-        "{{bundle_resources_dir}}/${locale}.lproj/{{source_file_part}}",
-      ]
+      outputs =
+          [ "{{bundle_resources_dir}}/${locale}.lproj/{{source_file_part}}" ]
     }
   }
 
@@ -70,9 +67,7 @@ template("generate_localizable_strings") {
     tool = "//ios/chrome/tools/strings:generate_localizable_strings"
 
     outputs = []
-    inputs = [
-      invoker.config_file,
-    ]
+    inputs = [ invoker.config_file ]
 
     foreach(locale, invoker.packed_locales) {
       inputs += [ "${invoker.datapack_dir}/${locale}.lproj/locale.pak" ]

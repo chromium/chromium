@@ -1,14 +1,11 @@
 file://media/OWNERS
-miu@chromium.org
+mfoltz@chromium.org
 
 # WebRTC OWNERS.
 hbos@chromium.org
-perkj@chromium.org
 tommi@chromium.org
 guidou@chromium.org
 olka@chromium.org
 
-# Original (legacy) owner.
-emircan@chromium.org
-
-# COMPONENT: Internals>Media
+# WebAudio OWNERS.
+per-file renderer_webaudiodevice_impl.*=file://third_party/blink/renderer/modules/webaudio/OWNERS

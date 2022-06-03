@@ -20,7 +20,7 @@ class MockAlternativeBrowserDriver : public AlternativeBrowserDriver {
 
   MOCK_CONST_METHOD1(ExpandEnvVars, void(std::string*));
   MOCK_CONST_METHOD1(ExpandPresetBrowsers, void(std::string*));
-  MOCK_METHOD1(TryLaunch, bool(const GURL&));
+  MOCK_METHOD2(TryLaunch, void(const GURL&, LaunchCallback cb));
   MOCK_CONST_METHOD0(GetBrowserName, std::string());
 };
 

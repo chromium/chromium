@@ -11,18 +11,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SaveCardOfferObserver;
@@ -82,8 +82,9 @@ class CreditCardSaveManager {
   // particular actions occur.
   class ObserverForTest {
    public:
-    virtual ~ObserverForTest() {}
+    virtual ~ObserverForTest() = default;
     virtual void OnOfferLocalSave() {}
+    virtual void OnOfferUploadSave() {}
     virtual void OnDecideToRequestUploadSave() {}
     virtual void OnReceivedGetUploadDetailsResponse() {}
     virtual void OnSentUploadCardRequest() {}
@@ -97,14 +98,18 @@ class CreditCardSaveManager {
                         payments::PaymentsClient* payments_client,
                         const std::string& app_locale,
                         PersonalDataManager* personal_data_manager);
+
+  CreditCardSaveManager(const CreditCardSaveManager&) = delete;
+  CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
+
   virtual ~CreditCardSaveManager();
 
   // Begins the process to offer local credit card save to the user.
   // If |has_non_focusable_field| is true, the save is triggered by a form that
   // has non_focusable fields.
   // If |from_dynamic_change_form| is true, the save is triggered by a dynamic
-  // change form.
-  void AttemptToOfferCardLocalSave(bool from_dynamic_change_form,
+  // change form. Returns true if the prompt is shown.
+  bool AttemptToOfferCardLocalSave(bool from_dynamic_change_form,
                                    bool has_non_focusable_field,
                                    const CreditCard& card);
 
@@ -128,11 +133,24 @@ class CreditCardSaveManager {
   // For testing.
   void SetAppLocale(std::string app_locale) { app_locale_ = app_locale; }
 
+  // Set Autofill address profiles that are only preliminarily imported.
+  // A preliminary import may happen when the address is found in the same
+  // form as a credit card that is currently processed by the manager.
+  void SetPreliminarilyImportedAutofillProfile(
+      const std::vector<AutofillProfile>& profiles) {
+    preliminarily_imported_address_profiles_ = profiles;
+  }
+
+  // Clear the preliminarily imported Autofill address profiles.
+  void ClearPreliminarilyImportedAutofillProfile() {
+    preliminarily_imported_address_profiles_.clear();
+  }
+
  protected:
   // Returns the result of an upload request. If |result| ==
-  // |AutofillClient::SUCCESS|, clears strikes for the saved card. Additionally,
-  // |server_id| may, optionally, contain the opaque identifier for the card on
-  // the server. Exposed for testing.
+  // |AutofillClient::PaymentsRpcResult::kSuccess|, clears strikes for the saved
+  // card. Additionally, |server_id| may, optionally, contain the opaque
+  // identifier for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
                                const std::string& server_id);
 
@@ -155,8 +173,10 @@ class CreditCardSaveManager {
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
   CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase();
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Returns the GetLocalCardMigrationStrikeDatabase for |client_|.
   LocalCardMigrationStrikeDatabase* GetLocalCardMigrationStrikeDatabase();
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
   // Returns the legal message retrieved from Payments. On failure or not
   // meeting Payments's conditions for upload, |legal_message| will contain
@@ -165,7 +185,7 @@ class CreditCardSaveManager {
   // and end of the range.
   void OnDidGetUploadDetails(
       AutofillClient::PaymentsRpcResult result,
-      const base::string16& context_token,
+      const std::u16string& context_token,
       std::unique_ptr<base::Value> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
 
@@ -223,13 +243,13 @@ class CreditCardSaveManager {
   // Upload the card details with the user provided cardholder_name.
   // Only relevant for mobile as fix flow is two steps on mobile compared to
   // one step on desktop.
-  void OnUserDidAcceptAccountNameFixFlow(const base::string16& cardholder_name);
+  void OnUserDidAcceptAccountNameFixFlow(const std::u16string& cardholder_name);
 
   // Upload the card details with the user provided expiration date month and
   // year. Only relevant for mobile as fix flow is two steps on mobile compared
   // to one step on desktop.
-  void OnUserDidAcceptExpirationDateFixFlow(const base::string16& month,
-                                            const base::string16& year);
+  void OnUserDidAcceptExpirationDateFixFlow(const std::u16string& month,
+                                            const std::u16string& year);
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
   // Helper function that calls SendUploadCardRequest by setting
@@ -249,7 +269,7 @@ class CreditCardSaveManager {
   // a strike for the given card in order to help deter future offers to save,
   // provided that save was actually offered to the user.
   void OnUserDidIgnoreOrDeclineSave(
-      const base::string16& card_last_four_digits);
+      const std::u16string& card_last_four_digits);
 
   // Used for browsertests. Gives the |observer_for_testing_| a notification
   // a strike change has been made.
@@ -267,6 +287,9 @@ class CreditCardSaveManager {
   // |AutofillMetrics::CardUploadDecisionMetric|.
   void LogCardUploadDecisions(int upload_decision_metrics);
 
+  // Logs the card upload decisions bitmask to chrome://autofill-internals.
+  void LogCardUploadDecisionsToAutofillInternals(int upload_decision_metrics);
+
   // Logs the reason why expiration date was explicitly requested.
   void LogSaveCardRequestExpirationDateReasonMetric();
 
@@ -278,13 +301,13 @@ class CreditCardSaveManager {
   AutofillClient* const client_;
 
   // Handles Payments service requests.
-  // Owned by AutofillManager.
+  // Owned by BrowserAutofillManager.
   payments::PaymentsClient* payments_client_;
 
   std::string app_locale_;
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the AutofillManagerTest.
+  // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
   PersonalDataManager* personal_data_manager_;
@@ -301,8 +324,8 @@ class CreditCardSaveManager {
   int upload_decision_metrics_ = 0;
 
   // |true| if the offer-to-save bubble/infobar should pop-up, |false| if not.
-  // Will be base::nullopt until data has been retrieved from the StrikeSystem.
-  base::Optional<bool> show_save_prompt_;
+  // Will be absl::nullopt until data has been retrieved from the StrikeSystem.
+  absl::optional<bool> show_save_prompt_;
 
   // |true| if the card being offered for upload is already a local card on the
   // device; |false| otherwise.
@@ -347,10 +370,15 @@ class CreditCardSaveManager {
   std::unique_ptr<CreditCardSaveStrikeDatabase>
       credit_card_save_strike_database_;
 
+  // Profiles that are only preliminarily imported. Those profiles are used
+  // during a card import to determine the name and country for storing a new
+  // card.
+  std::vector<AutofillProfile> preliminarily_imported_address_profiles_;
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
   std::unique_ptr<LocalCardMigrationStrikeDatabase>
       local_card_migration_strike_database_;
-
-  std::unique_ptr<CreditCardSaveStrikeDatabase> strike_database_;
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
   // May be null.
   ObserverForTest* observer_for_testing_ = nullptr;
@@ -369,8 +397,6 @@ class CreditCardSaveManager {
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardSaveManagerTest,
       UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate);
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardSaveManager);
 };
 
 }  // namespace autofill

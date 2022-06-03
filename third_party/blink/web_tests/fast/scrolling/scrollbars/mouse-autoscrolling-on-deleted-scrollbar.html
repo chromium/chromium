@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<title>Tests mouse autoscroll when scrollbar is dynamically deleted.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<div id="content" style="height: 10000px; width: 10000px; border: 1px solid;"></div>
+<script>
+
+  function resetScroller() {
+    window.scrollTo(0, 0);
+    document.getElementById("content").style.width = "10000px";
+    document.getElementById("content").style.height = "10000px";
+    document.documentElement.style.overflowX = "visible";
+    document.documentElement.style.overflowY = "visible";
+  }
+
+  function shortenHorizontalScroller() {
+    document.getElementById("content").style.width = "10px";
+  }
+
+
+  function shortenVerticalScroller() {
+    document.getElementById("content").style.height = "10px";
+  }
+
+  function createScrollPromise(callback) {
+    return new Promise((resolve, reject) => {
+      waitForScrollEvent(window).then(() => {
+        callback();
+        resolve();
+      });
+    });
+  }
+
+  // When pointerdown occurs, an autoscroll task gets scheduled to be
+  // executed after 250ms. This code checks that the renderer doesn't
+  // crash when the scrollbar is dynamically deleted while an auto
+  // scroll task is scheduled.
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScroller();
+    assert_equals(document.documentElement.style.overflowY, "visible",
+    "Scroller is expected to be scrollable in the Y direction");
+
+    const scrollPromise = createScrollPromise(shortenVerticalScroller);
+    await mousePressOn(downArrow().x, downArrow().y, 300);
+    await scrollPromise;
+
+    assert_equals(document.getElementById("content").style.height, "10px",
+    "Scroller height should have been reduced to 10px.");
+  },"Test same-axis autoscroll when vertical scrollbar deleted.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScroller();
+    assert_equals(document.documentElement.style.overflowY, "visible",
+    "Scroller is expected to be scrollable in the Y direction");
+
+    const scrollPromise = createScrollPromise(shortenHorizontalScroller);
+    await mousePressOn(downArrow().x, downArrow().y, 300);
+    await scrollPromise;
+
+    assert_equals(document.getElementById("content").style.width, "10px",
+    "Scroller width should have been reduced to 10px.");
+  },"Test cross-axis autoscroll when vertical scrollbar deleted.");
+</script>

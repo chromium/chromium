@@ -19,7 +19,7 @@ import websocket
 
 class WebSocketCommands:
   CREATE_WEBSOCKET = \
-    '/session/:sessionId/chromium/create_websocket'
+    '/session/:sessionId'
   SEND_OVER_WEBSOCKET = \
     '/session/:sessionId/chromium/send_command_from_websocket'
 
@@ -37,3 +37,6 @@ class WebSocketConnection(object):
     cmd_params['id'] = self._command_id
     self._command_id -= 1
     self._websocket.send(json.dumps(cmd_params))
+
+  def Close(self):
+    self._websocket.close();

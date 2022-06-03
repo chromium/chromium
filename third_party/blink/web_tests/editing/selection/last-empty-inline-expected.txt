@@ -1,2 +1,0 @@
-To test this manually, press mouse button below the '!' and drag the mouse to the comma between "Hello" and "world!". It's OK if "world!" is selected.
-PASS

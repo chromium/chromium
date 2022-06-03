@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,18 +23,18 @@
 
 namespace content {
 
-bool ParseDownloadMetadata(const base::string16& metadata,
-                           base::string16* mime_type,
+bool ParseDownloadMetadata(const std::u16string& metadata,
+                           std::u16string* mime_type,
                            base::FilePath* file_name,
                            GURL* url) {
-  const base::char16 separator = L':';
+  const char16_t separator = L':';
 
   size_t mime_type_end_pos = metadata.find(separator);
-  if (mime_type_end_pos == base::string16::npos)
+  if (mime_type_end_pos == std::u16string::npos)
     return false;
 
   size_t file_name_end_pos = metadata.find(separator, mime_type_end_pos + 1);
-  if (file_name_end_pos == base::string16::npos)
+  if (file_name_end_pos == std::u16string::npos)
     return false;
 
   GURL parsed_url = GURL(metadata.substr(file_name_end_pos + 1));
@@ -45,13 +44,9 @@ bool ParseDownloadMetadata(const base::string16& metadata,
   if (mime_type)
     *mime_type = metadata.substr(0, mime_type_end_pos);
   if (file_name) {
-    base::string16 file_name_str = metadata.substr(
-        mime_type_end_pos + 1, file_name_end_pos - mime_type_end_pos  - 1);
-#if defined(OS_WIN)
-    *file_name = base::FilePath(file_name_str);
-#else
-    *file_name = base::FilePath(base::UTF16ToUTF8(file_name_str));
-#endif
+    std::u16string file_name_str = metadata.substr(
+        mime_type_end_pos + 1, file_name_end_pos - mime_type_end_pos - 1);
+    *file_name = base::FilePath::FromUTF16Unsafe(file_name_str);
   }
   if (url)
     *url = parsed_url;
@@ -69,10 +64,9 @@ base::File CreateFileForDrop(base::FilePath* file_path) {
       new_file_path = *file_path;
     } else {
 #if defined(OS_WIN)
-      base::string16 suffix =
-          base::ASCIIToUTF16("-") + base::NumberToString16(seq);
+      std::wstring suffix = L"-" + base::NumberToWString(seq);
 #else
-      std::string suffix = std::string("-") + base::NumberToString(seq);
+      std::string suffix = "-" + base::NumberToString(seq);
 #endif
       new_file_path = file_path->InsertBeforeExtension(suffix);
     }
@@ -97,13 +91,13 @@ PromiseFileFinalizer::PromiseFileFinalizer(
 
 void PromiseFileFinalizer::OnDownloadCompleted(
     const base::FilePath& file_path) {
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&PromiseFileFinalizer::Cleanup, this));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PromiseFileFinalizer::Cleanup, this));
 }
 
 void PromiseFileFinalizer::OnDownloadAborted() {
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&PromiseFileFinalizer::Cleanup, this));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PromiseFileFinalizer::Cleanup, this));
 }
 
 PromiseFileFinalizer::~PromiseFileFinalizer() {}

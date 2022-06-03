@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -52,11 +51,13 @@ class ContentSettingsStore
 
   ContentSettingsStore();
 
+  ContentSettingsStore(const ContentSettingsStore&) = delete;
+  ContentSettingsStore& operator=(const ContentSettingsStore&) = delete;
+
   // //////////////////////////////////////////////////////////////////////////
 
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       bool incognito) const;
 
   // Sets the content |setting| for |pattern| of extension |ext_id|. The
@@ -69,7 +70,6 @@ class ContentSettingsStore
       const ContentSettingsPattern& embedded_pattern,
       const ContentSettingsPattern& top_level_pattern,
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       ContentSetting setting,
       ExtensionPrefsScope scope);
 
@@ -150,8 +150,6 @@ class ContentSettingsStore
   base::ObserverList<Observer, false>::Unchecked observers_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsStore);
 };
 
 }  // namespace extensions

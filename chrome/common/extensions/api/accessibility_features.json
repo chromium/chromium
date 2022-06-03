@@ -61,6 +61,18 @@
         "value": ["cursorHighlight", {"type": "boolean"}],
         "platforms": ["chromeos"]
       },
+      "cursorColor": {
+        "$ref": "types.ChromeSetting",
+        "description": "<p><strong>ChromeOS only.</strong></p><p>Cursor color. The value indicates whether the feature is enabled or not, doesn't indicate the color of it. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
+        "value": ["cursorColor", {"type": "boolean"}],
+        "platforms": ["chromeos"]
+      },
+      "dockedMagnifier": {
+        "$ref": "types.ChromeSetting",
+        "description": "<p><strong>ChromeOS only.</strong></p><p>Docked magnifier. The value indicates whether docked magnifier feature is enabled or not. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
+        "value": ["dockedMagnifier", {"type": "boolean"}],
+        "platforms": ["chromeos"]
+      },
       "focusHighlight": {
         "$ref": "types.ChromeSetting",
         "description": "<p><strong>ChromeOS only.</strong></p><p>Focus highlighting. The value indicates whether the feature is enabled or not. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
@@ -97,6 +109,12 @@
             }]
           }
         ]
+      },
+      "dictation": {
+        "$ref": "types.ChromeSetting",
+        "description": "<p><strong>ChromeOS only.</strong></p><p>Dictation. The value indicates whether the feature is enabled or not. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
+        "value": ["dictation", {"type": "boolean"}],
+        "platforms": ["chromeos"]
       }
     }
   }

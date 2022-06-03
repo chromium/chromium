@@ -5,28 +5,37 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_SHARING_SHARING_NOTIFICATION_HANDLER_H_
 
-#include <map>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
+class Profile;
 
 // Handles SHARING nofication actions.
 class SharingNotificationHandler : public NotificationHandler {
  public:
   SharingNotificationHandler();
+  SharingNotificationHandler(const SharingNotificationHandler&) = delete;
+  SharingNotificationHandler& operator=(const SharingNotificationHandler&) =
+      delete;
   ~SharingNotificationHandler() override;
 
   // NotificationHandler implementation:
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<base::string16>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
+               base::OnceClosure completed_closure) override;
+  void OnClose(Profile* profile,
+               const GURL& origin,
+               const std::string& notification_id,
+               bool by_user,
                base::OnceClosure completed_closure) override;
   void OpenSettings(Profile* profile, const GURL& origin) override;
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(SharingNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_NOTIFICATION_HANDLER_H_

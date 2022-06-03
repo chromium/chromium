@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:minHeight="180dp"
         android:layout_marginTop="10dp"
-        android:background="@color/modern_secondary_color"
+        android:background="@color/default_bg_color_secondary"
         android:padding="16dp"
         android:text="@string/font_size_preview_text"
         android:textAppearance="@style/TextAppearance.AccessibilityTextPreference"

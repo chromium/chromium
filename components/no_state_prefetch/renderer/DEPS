@@ -1,0 +1,7 @@
+include_rules = [
+  "+content/public/common",
+  "+content/public/renderer",
+  "+media/mojo/mojom/media_player.mojom.h",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public",
+]

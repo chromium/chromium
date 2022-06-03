@@ -11,6 +11,9 @@ function createExpectedURLList(prefix, count, last) {
   return array;
 }
 
+var {REDIRECT_LOOP_URL, OTHER_REDIRECT_LOOP_URL, BASE_URL, OTHER_BASE_URL} =
+  get_thorough_test_options();
+
 var TEST_TARGETS = [
   // Redirect loop: same origin -> same origin
   [REDIRECT_LOOP_URL + encodeURIComponent(BASE_URL) + '&Count=20&mode=cors' +

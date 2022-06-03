@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XSL stylsheet content. http://crbug.com/603806\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   NetworkTestRunner.recordNetwork();
   await TestRunner.evaluateInPageAsync(`
@@ -15,7 +15,8 @@
   `);
 
   var resultsOutput = [];
-  for (const request of SDK.networkLog.requests()) {
+  const requests = NetworkTestRunner.networkRequests();
+  for (const request of requests) {
     const content = await TestRunner.NetworkAgent.getResponseBody(request.requestId());
     var output = [];
     output.push(request.url());

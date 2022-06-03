@@ -5,9 +5,9 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 #define SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 
+#include "base/profiler/module_cache.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampler.h"
-#include "base/sampling_heap_profiler/module_cache.h"
 #include "base/threading/platform_thread.h"
 #include "services/tracing/public/cpp/stack_sampling/stack_unwinder_android.h"
 

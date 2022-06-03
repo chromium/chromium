@@ -4,11 +4,13 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -19,6 +21,7 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -100,7 +103,7 @@ class MemoryTracingTest : public ContentBrowserTest {
   void SetUp() override {
     next_request_index_ = 0;
 
-    mock_dump_provider_.reset(new MockDumpProvider());
+    mock_dump_provider_ = std::make_unique<MockDumpProvider>();
     MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         mock_dump_provider_.get(), "MockDumpProvider", nullptr);
     MemoryDumpManager::GetInstance()
@@ -336,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest, DISABLED_QueuedDumps) {
 #endif  // defined(OS_ANDROID)
 
 // Flaky on Mac. crbug.com/809809
-#if defined(OS_MACOSX)
+// Failing on Android ASAN. crbug.com/1041392
+#if defined(OS_MAC) || (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
 #define MAYBE_BrowserInitiatedDump DISABLED_BrowserInitiatedDump
 #else
 #define MAYBE_BrowserInitiatedDump BrowserInitiatedDump
@@ -347,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingTest, MAYBE_BrowserInitiatedDump) {
   Navigate(shell());
 
   EXPECT_CALL(*mock_dump_provider_, OnMemoryDump(_,_)).WillOnce(Return(true));
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // TODO(ssid): Test for dump success once the on start tracing done callback
   // is fixed to be called after enable tracing is acked by all processes,
   // crbug.com/709524. The test still tests if dumping does not crash.

@@ -6,8 +6,8 @@
 
 namespace component_updater {
 
-MockComponentUpdateService::MockComponentUpdateService() {}
+MockComponentUpdateService::MockComponentUpdateService() = default;
 
-MockComponentUpdateService::~MockComponentUpdateService() {}
+MockComponentUpdateService::~MockComponentUpdateService() = default;
 
 }  // namespace component_updater

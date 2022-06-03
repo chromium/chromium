@@ -5,9 +5,7 @@
 #include "chromeos/services/secure_channel/ble_listener_operation.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/ble_connection_manager.h"
 
@@ -20,12 +18,27 @@ BleListenerOperation::Factory* BleListenerOperation::Factory::test_factory_ =
     nullptr;
 
 // static
-BleListenerOperation::Factory* BleListenerOperation::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>>
+BleListenerOperation::Factory::Create(
+    BleConnectionManager* ble_connection_manager,
+    ConnectToDeviceOperation<BleListenerFailureType>::ConnectionSuccessCallback
+        success_callback,
+    const ConnectToDeviceOperation<
+        BleListenerFailureType>::ConnectionFailedCallback& failure_callback,
+    const DeviceIdPair& device_id_pair,
+    ConnectionPriority connection_priority,
+    scoped_refptr<base::TaskRunner> task_runner) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(
+        ble_connection_manager, std::move(success_callback),
+        std::move(failure_callback), device_id_pair, connection_priority,
+        std::move(task_runner));
+  }
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new BleListenerOperation(
+      ble_connection_manager, std::move(success_callback),
+      std::move(failure_callback), device_id_pair, connection_priority,
+      std::move(task_runner)));
 }
 
 // static
@@ -35,22 +48,6 @@ void BleListenerOperation::Factory::SetFactoryForTesting(
 }
 
 BleListenerOperation::Factory::~Factory() = default;
-
-std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>>
-BleListenerOperation::Factory::BuildInstance(
-    BleConnectionManager* ble_connection_manager,
-    ConnectToDeviceOperation<BleListenerFailureType>::ConnectionSuccessCallback
-        success_callback,
-    const ConnectToDeviceOperation<
-        BleListenerFailureType>::ConnectionFailedCallback& failure_callback,
-    const DeviceIdPair& device_id_pair,
-    ConnectionPriority connection_priority,
-    scoped_refptr<base::TaskRunner> task_runner) {
-  return base::WrapUnique(new BleListenerOperation(
-      ble_connection_manager, std::move(success_callback),
-      std::move(failure_callback), device_id_pair, connection_priority,
-      task_runner));
-}
 
 BleListenerOperation::BleListenerOperation(
     BleConnectionManager* ble_connection_manager,

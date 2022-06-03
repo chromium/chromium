@@ -9,9 +9,13 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "ppapi/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
 
 class GURL;
 
@@ -92,7 +96,7 @@ class CONTENT_EXPORT PluginService {
   // the path doesn't identify a plugin, or the plugin has no display name,
   // this will attempt to generate a display name from the path.
   // This can be called from any thread.
-  virtual base::string16 GetPluginDisplayNameByPath(
+  virtual std::u16string GetPluginDisplayNameByPath(
       const base::FilePath& plugin_path) = 0;
 
   // Asynchronously loads plugins if necessary and then calls back to the

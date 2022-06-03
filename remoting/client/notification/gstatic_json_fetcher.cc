@@ -16,19 +16,19 @@ namespace {
 
 constexpr char kGstaticUrlPrefix[] = "https://www.gstatic.com/chromoting/";
 
-base::Optional<base::Value> GetResponse(
+absl::optional<base::Value> GetResponse(
     std::unique_ptr<net::URLFetcher> fetcher) {
   int response_code = fetcher->GetResponseCode();
   if (response_code != net::HTTP_OK) {
     LOG(ERROR) << "Json fetch request failed with error code: "
                << response_code;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string response_string;
   if (!fetcher->GetResponseAsString(&response_string)) {
     LOG(ERROR) << "Failed to retrieve response data";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::JSONReader::Read(response_string);

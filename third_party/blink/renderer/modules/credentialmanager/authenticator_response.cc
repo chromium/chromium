@@ -11,7 +11,7 @@ AuthenticatorResponse::AuthenticatorResponse(DOMArrayBuffer* client_data_json)
 
 AuthenticatorResponse::~AuthenticatorResponse() = default;
 
-void AuthenticatorResponse::Trace(blink::Visitor* visitor) {
+void AuthenticatorResponse::Trace(Visitor* visitor) const {
   visitor->Trace(client_data_json_);
   ScriptWrappable::Trace(visitor);
 }

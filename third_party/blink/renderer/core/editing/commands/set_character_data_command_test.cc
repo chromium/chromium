@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 
 namespace blink {
@@ -122,17 +123,37 @@ TEST_F(SetCharacterDataCommandTest, replaceEntireNode) {
 }
 
 TEST_F(SetCharacterDataCommandTest, CombinedText) {
-  SetBodyContent(
-      "<div contenteditable style='writing-mode:vertical-lr; "
-      "-webkit-text-combine:horizontal' />");
+  InsertStyleElement(
+      "#sample {"
+      "text-combine-upright: all;"
+      "writing-mode:vertical-lr;"
+      "}");
+  SetBodyContent("<div contenteditable id=sample></div>");
 
+  const auto& sample_layout_object =
+      *To<LayoutBlockFlow>(GetElementById("sample")->GetLayoutObject());
   auto* text_node = To<Text>(GetDocument().body()->firstChild()->appendChild(
       GetDocument().CreateEditingTextNode("")));
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_FALSE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  if (sample_layout_object.IsLayoutNGObject()) {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="sample" (editable)
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text ""
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="sample" (editable)
+  +--LayoutTextCombine #text ""
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
+    EXPECT_FALSE(
+        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
+  }
 
   SimpleEditCommand* command =
       MakeGarbageCollected<SetCharacterDataCommand>(text_node, 0, 0, "text");
@@ -140,15 +161,45 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_TRUE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  if (sample_layout_object.IsLayoutNGObject()) {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="sample" (editable)
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text "text"
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="sample" (editable)
+  +--LayoutTextCombine #text "text"
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
+    EXPECT_TRUE(
+        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
+  }
 
   command->DoUnapply();
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_FALSE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  if (sample_layout_object.IsLayoutNGObject()) {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="sample" (editable)
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text ""
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="sample" (editable)
+  +--LayoutTextCombine #text ""
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
+    EXPECT_FALSE(
+        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
+  }
 }
 
 }  // namespace blink

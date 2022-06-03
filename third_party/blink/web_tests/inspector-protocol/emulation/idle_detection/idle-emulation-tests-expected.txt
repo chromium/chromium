@@ -1,0 +1,14 @@
+Verifies that setIdleOverride overrides Idle state
+idleDetector started
+remember initial state
+set isUserActive: false, isScreenUnlocked: false
+userState: idle, screenState: locked
+set isUserActive: true, isScreenUnlocked: true
+userState: active, screenState: unlocked
+set isUserActive: true, isScreenUnlocked: false
+userState: active, screenState: locked
+set isUserActive: false, isScreenUnlocked: true
+userState: idle, screenState: unlocked
+call clearIdleOverride
+State after clearIdleOverride equals initial state
+

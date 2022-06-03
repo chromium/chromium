@@ -49,8 +49,12 @@ namespace demo {
 class DemoClient : public viz::mojom::CompositorFrameSinkClient {
  public:
   DemoClient(const viz::FrameSinkId& frame_sink_id,
-             const viz::LocalSurfaceIdAllocation& local_surface_id,
+             const viz::LocalSurfaceId& local_surface_id,
              const gfx::Rect& bounds);
+
+  DemoClient(const DemoClient&) = delete;
+  DemoClient& operator=(const DemoClient&) = delete;
+
   ~DemoClient() override;
 
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
@@ -69,17 +73,17 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   // LocalSurfaceId, and returns that. The client that should be embedded (i.e.
   // the client represented by |frame_sink_id|) should use the returned
   // LocalSurfaceId to submit visual content (CompositorFrame).
-  viz::LocalSurfaceIdAllocation Embed(const viz::FrameSinkId& frame_sink_id,
-                                      const gfx::Rect& bounds);
+  viz::LocalSurfaceId Embed(const viz::FrameSinkId& frame_sink_id,
+                            const gfx::Rect& bounds);
 
   // When this client is resized, it is important that it also receives a new
   // LocalSurfaceId with the new size.
   void Resize(const gfx::Size& size,
-              const viz::LocalSurfaceIdAllocation& local_surface_id);
+              const viz::LocalSurfaceId& local_surface_id);
 
  private:
   struct EmbedInfo {
-    viz::LocalSurfaceIdAllocation lsid;
+    viz::LocalSurfaceId lsid;
     gfx::Rect bounds;
     float degrees = 0.f;
   };
@@ -96,12 +100,13 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
 
   // viz::mojom::CompositorFrameSinkClient:
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override;
+      std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override;
   void OnBeginFramePausedChanged(bool paused) override;
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   // This thread is created solely to demonstrate that the client can live in
   // its own thread (or even in its own process). A viz client does not need to
@@ -109,7 +114,7 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   base::Thread thread_;
 
   const viz::FrameSinkId frame_sink_id_;
-  viz::LocalSurfaceIdAllocation local_surface_id_ GUARDED_BY(lock_);
+  viz::LocalSurfaceId local_surface_id_ GUARDED_BY(lock_);
   gfx::Rect bounds_ GUARDED_BY(lock_);
 
   mojo::Receiver<viz::mojom::CompositorFrameSinkClient> receiver_{this};
@@ -123,8 +128,6 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   // embeds other clients.
   viz::ParentLocalSurfaceIdAllocator allocator_;
   std::map<viz::FrameSinkId, EmbedInfo> embeds_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(DemoClient);
 };
 
 }  // namespace demo

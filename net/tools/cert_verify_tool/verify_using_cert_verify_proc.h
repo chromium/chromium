@@ -15,9 +15,12 @@ class FilePath;
 namespace net {
 class CertVerifyProc;
 class CRLSet;
+class CertVerifyResult;
 }
 
 struct CertInput;
+
+void PrintCertVerifyResult(const net::CertVerifyResult& result);
 
 // Verifies |target_der_cert| using |cert_verify_proc|. Returns true if the
 // certificate verified successfully, false if it failed to verify or there was

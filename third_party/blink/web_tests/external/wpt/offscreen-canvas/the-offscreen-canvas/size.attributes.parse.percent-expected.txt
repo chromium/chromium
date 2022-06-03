@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Parsing of non-negative integers Failed to set the 'width' property on 'OffscreenCanvas': Value is not of type 'unsigned long'.
-Harness: the test ran to completion.
-

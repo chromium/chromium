@@ -139,7 +139,7 @@ void TextTrackCueList::ValidateCueIndexes() {
   first_invalid_index_ = list_.size();
 }
 
-void TextTrackCueList::Trace(Visitor* visitor) {
+void TextTrackCueList::Trace(Visitor* visitor) const {
   visitor->Trace(list_);
   ScriptWrappable::Trace(visitor);
 }

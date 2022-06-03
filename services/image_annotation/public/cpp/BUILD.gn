@@ -20,9 +20,7 @@ source_set("cpp") {
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "image_processor_unittest.cc",
-  ]
+  sources = [ "image_processor_unittest.cc" ]
 
   deps = [
     ":cpp",

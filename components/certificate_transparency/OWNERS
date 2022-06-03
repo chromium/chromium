@@ -3,6 +3,3 @@ rsleevi@chromium.org
 
 # Secondary
 file://net/OWNERS
-
-# TEAM: net-dev@chromium.org
-# COMPONENT: Internals>Network>CertTrans

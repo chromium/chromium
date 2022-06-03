@@ -28,12 +28,14 @@ ScrollNode::ScrollNode()
       user_scrollable_horizontal(false),
       user_scrollable_vertical(false),
       transform_id(0),
-      overscroll_behavior(OverscrollBehavior::kOverscrollBehaviorTypeAuto) {}
+      overscroll_behavior(OverscrollBehavior::Type::kAuto),
+      is_composited(false) {}
 
 ScrollNode::ScrollNode(const ScrollNode& other) = default;
 
 ScrollNode::~ScrollNode() = default;
 
+#if DCHECK_IS_ON()
 bool ScrollNode::operator==(const ScrollNode& other) const {
   return id == other.id && parent_id == other.parent_id &&
          scrollable == other.scrollable &&
@@ -51,8 +53,10 @@ bool ScrollNode::operator==(const ScrollNode& other) const {
          user_scrollable_vertical == other.user_scrollable_vertical &&
          element_id == other.element_id && transform_id == other.transform_id &&
          overscroll_behavior == other.overscroll_behavior &&
-         snap_container_data == other.snap_container_data;
+         snap_container_data == other.snap_container_data &&
+         is_composited == other.is_composited;
 }
+#endif
 
 void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);
@@ -73,8 +77,10 @@ void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
 
   element_id.AddToTracedValue(value);
   value->SetInteger("transform_id", transform_id);
-  value->SetInteger("overscroll_behavior_x", overscroll_behavior.x);
-  value->SetInteger("overscroll_behavior_y", overscroll_behavior.y);
+  value->SetInteger("overscroll_behavior_x",
+                    static_cast<int>(overscroll_behavior.x));
+  value->SetInteger("overscroll_behavior_y",
+                    static_cast<int>(overscroll_behavior.y));
 
   if (snap_container_data) {
     value->SetString("snap_container_rect",
@@ -87,6 +93,8 @@ void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
       value->EndArray();
     }
   }
+
+  value->SetBoolean("is_composited", is_composited);
 }
 
 }  // namespace cc

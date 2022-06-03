@@ -5,14 +5,13 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#include "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
+#include "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -54,17 +53,16 @@ const CGFloat kVerticalOffset = 6;
     UIView* containerView = [[UIView alloc] init];
     [containerView addSubview:viewController.view];
     _popupContainerView = containerView;
-    if (@available(iOS 13, *)) {
-      UIUserInterfaceStyle userInterfaceStyle =
-          incognito ? UIUserInterfaceStyleDark
-                    : UIUserInterfaceStyleUnspecified;
-      // Both the container view and the popup view controller need
-      // overrideUserInterfaceStyle set because the overall popup background
-      // comes from the container, but overrideUserInterfaceStyle won't
-      // propagate from a view to any subviews in a different view controller.
-      _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
-      viewController.overrideUserInterfaceStyle = userInterfaceStyle;
-    }
+
+    UIUserInterfaceStyle userInterfaceStyle =
+        incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
+    // Both the container view and the popup view controller need
+    // overrideUserInterfaceStyle set because the overall popup background
+    // comes from the container, but overrideUserInterfaceStyle won't
+    // propagate from a view to any subviews in a different view controller.
+    _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
+    viewController.overrideUserInterfaceStyle = userInterfaceStyle;
+
     _popupContainerView.backgroundColor = [configuration backgroundColor];
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -100,7 +98,7 @@ const CGFloat kVerticalOffset = 6;
   if (popupHeightIsZero && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraint.active = NO;
       self.bottomSeparator.hidden = YES;
     }
@@ -122,7 +120,7 @@ const CGFloat kVerticalOffset = 6;
 
     [self initialLayout];
 
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraint.active = YES;
       self.bottomSeparator.hidden = NO;
     }

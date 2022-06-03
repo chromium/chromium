@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "ppapi/c/pp_errors.h"
@@ -65,9 +66,8 @@ PepperExternalFileRefBackend::PepperExternalFileRefBackend(
     : host_(host),
       path_(path),
       render_process_id_(render_process_id),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
 PepperExternalFileRefBackend::~PepperExternalFileRefBackend() {}

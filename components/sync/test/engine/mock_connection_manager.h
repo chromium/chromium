@@ -15,18 +15,26 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine_impl/net/server_connection_manager.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/engine/net/server_connection_manager.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+class SyncEntity;
+class ClientCommand;
+class CommitMessage;
+class CommitResponse;
+class ClientToServerMessage;
+class ClientToServerResponse;
+class DataTypeProgressMarker;
+class GetUpdatesResponse;
+class ClientCommand;
+}  // namespace sync_pb
 
 namespace syncer {
-
-namespace syncable {
-class Directory;
-}
 
 // Mock ServerConnectionManager class for use in client unit tests.
 class MockConnectionManager : public ServerConnectionManager {
@@ -39,62 +47,28 @@ class MockConnectionManager : public ServerConnectionManager {
     virtual ~MidCommitObserver() {}
   };
 
-  explicit MockConnectionManager(syncable::Directory*);
+  MockConnectionManager();
+
+  MockConnectionManager(const MockConnectionManager&) = delete;
+  MockConnectionManager& operator=(const MockConnectionManager&) = delete;
+
   ~MockConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
-  bool PostBufferToPath(PostBufferParams*,
-                        const std::string& path,
-                        const std::string& access_token) override;
+  HttpResponse PostBuffer(const std::string& buffer_in,
+                          const std::string& access_token,
+                          std::string* buffer_out) override;
 
   // Control of commit response.
   // NOTE: Commit callback is invoked only once then reset.
-  void SetMidCommitCallback(const base::Closure& callback);
+  void SetMidCommitCallback(base::OnceClosure callback);
   void SetMidCommitObserver(MidCommitObserver* observer);
-
-  // Set this if you want commit to perform commit time rename. Will request
-  // that the client renames all commited entries, prepending this string.
-  void SetCommitTimeRename(const std::string& prepend);
 
   // Generic versions of AddUpdate functions. Tests using these function should
   // compile for both the int64_t and string id based versions of the server.
   // The SyncEntity returned is only valid until the Sync is completed
   // (e.g. with SyncShare.) It allows to add further entity properties before
   // sync, using SetLastXXX() methods and/or GetMutableLastUpdate().
-  sync_pb::SyncEntity* AddUpdateDirectory(
-      syncable::Id id,
-      syncable::Id parent_id,
-      const std::string& name,
-      int64_t version,
-      int64_t sync_ts,
-      const std::string& originator_cache_guid,
-      const std::string& originator_client_item_id);
-  sync_pb::SyncEntity* AddUpdateBookmark(
-      syncable::Id id,
-      syncable::Id parent_id,
-      const std::string& name,
-      int64_t version,
-      int64_t sync_ts,
-      const std::string& originator_cache_guid,
-      const std::string& originator_client_item_id);
-  // Versions of the AddUpdate functions that accept integer IDs.
-  sync_pb::SyncEntity* AddUpdateDirectory(
-      int id,
-      int parent_id,
-      const std::string& name,
-      int64_t version,
-      int64_t sync_ts,
-      const std::string& originator_cache_guid,
-      const std::string& originator_client_item_id);
-  sync_pb::SyncEntity* AddUpdateBookmark(
-      int id,
-      int parent_id,
-      const std::string& name,
-      int64_t version,
-      int64_t sync_ts,
-      const std::string& originator_cache_guid,
-      const std::string& originator_client_item_id);
-  // New protocol versions of the AddUpdate functions.
   sync_pb::SyncEntity* AddUpdateDirectory(
       const std::string& id,
       const std::string& parent_id,
@@ -113,8 +87,8 @@ class MockConnectionManager : public ServerConnectionManager {
       const std::string& originator_client_item_id);
   // Versions of the AddUpdate function that accept specifics.
   sync_pb::SyncEntity* AddUpdateSpecifics(
-      int id,
-      int parent_id,
+      const std::string& id,
+      const std::string& parent_id,
       const std::string& name,
       int64_t version,
       int64_t sync_ts,
@@ -122,8 +96,8 @@ class MockConnectionManager : public ServerConnectionManager {
       int64_t position,
       const sync_pb::EntitySpecifics& specifics);
   sync_pb::SyncEntity* AddUpdateSpecifics(
-      int id,
-      int parent_id,
+      const std::string& id,
+      const std::string& parent_id,
       const std::string& name,
       int64_t version,
       int64_t sync_ts,
@@ -132,7 +106,7 @@ class MockConnectionManager : public ServerConnectionManager {
       const sync_pb::EntitySpecifics& specifics,
       const std::string& originator_cache_guid,
       const std::string& originator_client_item_id);
-  sync_pb::SyncEntity* SetNigori(int id,
+  sync_pb::SyncEntity* SetNigori(const std::string& id,
                                  int64_t version,
                                  int64_t sync_ts,
                                  const sync_pb::EntitySpecifics& specifics);
@@ -151,7 +125,7 @@ class MockConnectionManager : public ServerConnectionManager {
   // Add a deleted item.  Deletion records typically contain no
   // additional information beyond the deletion, and no specifics.
   // The server may send the originator fields.
-  void AddUpdateTombstone(const syncable::Id& id, ModelType type);
+  void AddUpdateTombstone(const std::string& id, ModelType type);
 
   void SetLastUpdateDeleted();
   void SetLastUpdateServerTag(const std::string& tag);
@@ -179,9 +153,9 @@ class MockConnectionManager : public ServerConnectionManager {
   void SetGUClientCommand(std::unique_ptr<sync_pb::ClientCommand> command);
   void SetCommitClientCommand(std::unique_ptr<sync_pb::ClientCommand> command);
 
-  void SetTransientErrorId(syncable::Id);
+  void SetTransientErrorId(const std::string&);
 
-  const std::vector<syncable::Id>& committed_ids() const {
+  const std::vector<std::string>& committed_ids() const {
     return committed_ids_;
   }
   const std::vector<std::unique_ptr<sync_pb::CommitMessage>>& commit_messages()
@@ -270,12 +244,6 @@ class MockConnectionManager : public ServerConnectionManager {
   void ResetAccessToken() { ClearAccessToken(); }
 
  private:
-  sync_pb::SyncEntity* AddUpdateFull(syncable::Id id,
-                                     syncable::Id parentid,
-                                     const std::string& name,
-                                     int64_t version,
-                                     int64_t sync_ts,
-                                     bool is_dir);
   sync_pb::SyncEntity* AddUpdateFull(const std::string& id,
                                      const std::string& parentid,
                                      const std::string& name,
@@ -302,7 +270,7 @@ class MockConnectionManager : public ServerConnectionManager {
 
   // Determine if the given item's commit request should be refused with
   // a TRANSIENT_ERROR response.
-  bool ShouldTransientErrorThisId(syncable::Id id);
+  bool ShouldTransientErrorThisId(const std::string& id);
 
   // Generate a numeric position_in_parent value.  We use a global counter
   // that only decreases; this simulates new objects always being added to the
@@ -331,10 +299,10 @@ class MockConnectionManager : public ServerConnectionManager {
   bool server_reachable_;
 
   // All IDs that have been committed.
-  std::vector<syncable::Id> committed_ids_;
+  std::vector<std::string> committed_ids_;
 
   // List of IDs which should return a transient error.
-  std::vector<syncable::Id> transient_error_ids_;
+  std::vector<std::string> transient_error_ids_;
 
   // Control of when/if we return conflicts.
   bool conflict_all_commits_;
@@ -352,20 +320,14 @@ class MockConnectionManager : public ServerConnectionManager {
   base::Lock store_birthday_lock_;
   bool store_birthday_sent_;
   bool client_stuck_;
-  std::string commit_time_rename_prepended_string_;
 
   // On each PostBufferToPath() call, we decrement this counter.  The call fails
   // iff we hit zero at that call.
   int countdown_to_postbuffer_fail_;
 
-  // Our directory.  Used only to ensure that we are not holding the transaction
-  // lock when performing network I/O.  Can be null if the test author is
-  // confident this can't happen.
-  syncable::Directory* directory_;
-
   // The updates we'll return to the next request.
   std::list<sync_pb::GetUpdatesResponse> update_queue_;
-  base::Closure mid_commit_callback_;
+  base::OnceClosure mid_commit_callback_;
   MidCommitObserver* mid_commit_observer_;
 
   // The keystore key we return for a GetUpdates with need_encryption_key set.
@@ -400,8 +362,6 @@ class MockConnectionManager : public ServerConnectionManager {
   std::string next_token_;
 
   std::vector<sync_pb::ClientToServerMessage> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionManager);
 };
 
 }  // namespace syncer

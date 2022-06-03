@@ -17,7 +17,7 @@ def l2_pairwise_distance(v1, v2):
     dist_mat = [[0 for _ in range(ncol)] for _ in range(nrow)]
     for i in range(nrow):
         for j in range(ncol):
-            dist_mat[i][j] = math.sqrt((v1[i] - v2[j]) ** 2)
+            dist_mat[i][j] = math.sqrt((v1[i] - v2[j])**2)
     return dist_mat
 
 
@@ -66,7 +66,8 @@ def k_means(x_input, n_cluster=3, n_iter=100, n_tries=10):
 
             for j in range(n_cluster):
                 if count[j] == 0:
-                    centers = sorted([rand.uniform(0.0, 100.0) for i in range(n_cluster)])
+                    centers = sorted(
+                        [rand.uniform(0.0, 100.0) for i in range(n_cluster)])
                     failed = True
                     break
 

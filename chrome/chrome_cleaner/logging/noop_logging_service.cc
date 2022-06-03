@@ -6,8 +6,9 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"
 
 namespace chrome_cleaner {
@@ -56,20 +57,20 @@ void NoOpLoggingService::AddDetectedUwS(const UwS& uws) {}
 void NoOpLoggingService::SetExitCode(ResultCode /*exit_code*/) {}
 
 void NoOpLoggingService::AddLoadedModule(
-    const base::string16& /*name*/,
+    const std::wstring& /*name*/,
     ModuleHost /*host*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void NoOpLoggingService::AddService(
-    const base::string16& /*display_name*/,
-    const base::string16& /*service_name*/,
+    const std::wstring& /*display_name*/,
+    const std::wstring& /*service_name*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void NoOpLoggingService::AddInstalledProgram(
     const base::FilePath& /*folder_path*/) {}
 
 void NoOpLoggingService::AddProcess(
-    const base::string16& /*name*/,
+    const std::wstring& /*name*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void NoOpLoggingService::AddRegistryValue(
@@ -77,34 +78,34 @@ void NoOpLoggingService::AddRegistryValue(
     const std::vector<internal::FileInformation>& /*file_informations*/) {}
 
 void NoOpLoggingService::AddLayeredServiceProvider(
-    const std::vector<base::string16>& /*guids*/,
+    const std::vector<std::wstring>& /*guids*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void NoOpLoggingService::SetWinInetProxySettings(
-    const base::string16& /*config*/,
-    const base::string16& /*bypass*/,
-    const base::string16& /*auto_config_url*/,
+    const std::wstring& /*config*/,
+    const std::wstring& /*bypass*/,
+    const std::wstring& /*auto_config_url*/,
     bool /*autodetect*/) {}
 
 void NoOpLoggingService::SetWinHttpProxySettings(
-    const base::string16& /*config*/,
-    const base::string16& /*bypass*/) {}
+    const std::wstring& /*config*/,
+    const std::wstring& /*bypass*/) {}
 
 void NoOpLoggingService::AddInstalledExtension(
-    const base::string16& extension_id,
+    const std::wstring& extension_id,
     ExtensionInstallMethod install_method,
     const std::vector<internal::FileInformation>& extension_files) {}
 
 void NoOpLoggingService::AddScheduledTask(
-    const base::string16& /*name*/,
-    const base::string16& /*description*/,
+    const std::wstring& /*name*/,
+    const std::wstring& /*description*/,
     const std::vector<internal::FileInformation>& /*actions*/) {}
 
 void NoOpLoggingService::AddShortcutData(
-    const base::string16& /*lnk_path*/,
-    const base::string16& /*executable_path*/,
+    const std::wstring& /*lnk_path*/,
+    const std::wstring& /*executable_path*/,
     const std::string& /*executable _hash*/,
-    const std::vector<base::string16>& /*command_line_arguments*/) {}
+    const std::vector<std::wstring>& /*command_line_arguments*/) {}
 
 void NoOpLoggingService::SetFoundModifiedChromeShortcuts(
     bool /*found_modified_shortcuts*/) {}

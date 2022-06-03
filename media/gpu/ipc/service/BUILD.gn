@@ -36,8 +36,10 @@ target(link_target_type, "service") {
     "//ipc",
     "//media",
     "//media/gpu",
+    "//media/mojo/mojom",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media:media_buildflags",
@@ -47,10 +49,6 @@ target(link_target_type, "service") {
     "//third_party/mesa_headers",
     "//ui/gfx/ipc/color",
   ]
-
-  if (is_win) {
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-  }
 
   if (is_mac) {
     deps += [ "//third_party/webrtc_overrides:webrtc_component" ]

@@ -30,10 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
-#include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -41,50 +38,16 @@ namespace blink {
 
 SVGPoint::SVGPoint() = default;
 
-SVGPoint::SVGPoint(const FloatPoint& point) : value_(point) {}
+SVGPoint::SVGPoint(const gfx::PointF& point) : value_(point) {}
 
 SVGPoint* SVGPoint::Clone() const {
   return MakeGarbageCollected<SVGPoint>(value_);
 }
 
-template <typename CharType>
-SVGParsingError SVGPoint::Parse(const CharType*& ptr, const CharType* end) {
-  float x = 0;
-  float y = 0;
-  if (!ParseNumber(ptr, end, x) ||
-      !ParseNumber(ptr, end, y, kDisallowWhitespace))
-    return SVGParseStatus::kExpectedNumber;
-
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    // Nothing should come after the second number.
-    return SVGParseStatus::kTrailingGarbage;
-  }
-
-  value_ = FloatPoint(x, y);
-  return SVGParseStatus::kNoError;
-}
-
-FloatPoint SVGPoint::MatrixTransform(const AffineTransform& transform) const {
-  double new_x, new_y;
-  transform.Map(static_cast<double>(X()), static_cast<double>(Y()), new_x,
-                new_y);
-  return FloatPoint::NarrowPrecision(new_x, new_y);
-}
-
-SVGParsingError SVGPoint::SetValueAsString(const String& string) {
-  if (string.IsEmpty()) {
-    value_ = FloatPoint(0.0f, 0.0f);
-    return SVGParseStatus::kNoError;
-  }
-
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return Parse(ptr, end);
+SVGPropertyBase* SVGPoint::CloneForAnimation(const String& value) const {
+  // SVGPoint is not animated by itself.
+  NOTREACHED();
+  return nullptr;
 }
 
 String SVGPoint::ValueAsString() const {
@@ -95,26 +58,26 @@ String SVGPoint::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGPoint::Add(SVGPropertyBase* other, SVGElement*) {
-  // SVGPoint is not animated by itself
+void SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
+  // SVGPoint is not animated by itself.
   NOTREACHED();
 }
 
 void SVGPoint::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters&,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement*) {
-  // SVGPoint is not animated by itself
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement*) {
+  // SVGPoint is not animated by itself.
   NOTREACHED();
 }
 
-float SVGPoint::CalculateDistance(SVGPropertyBase* to,
-                                  SVGElement* context_element) {
-  // SVGPoint is not animated by itself
+float SVGPoint::CalculateDistance(const SVGPropertyBase* to,
+                                  const SVGElement* context_element) const {
+  // SVGPoint is not animated by itself.
   NOTREACHED();
   return 0.0f;
 }

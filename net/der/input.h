@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -65,6 +66,11 @@ class NET_EXPORT_PRIVATE Input {
   // StringPiece must not outlive the data that was used to construct this
   // Input.
   base::StringPiece AsStringPiece() const;
+
+  // Returns a base::span pointing to the same data as the Input. The resulting
+  // base::span must not outlive the data that was used to construct this
+  // Input.
+  base::span<const uint8_t> AsSpan() const;
 
  private:
   // This constructor is deleted to prevent constructing an Input from a

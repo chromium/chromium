@@ -6,7 +6,7 @@ package org.chromium.webapk.shell_apk;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowAsyncTask;
+import org.robolectric.shadows.ShadowLegacyAsyncTask;
 
 import java.util.concurrent.Executor;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 @SuppressWarnings("NoAndroidAsyncTaskCheck")
 @Implements(android.os.AsyncTask.class)
 public class CustomAndroidOsShadowAsyncTask<Params, Progress, Result>
-        extends ShadowAsyncTask<Params, Progress, Result> {
+        extends ShadowLegacyAsyncTask<Params, Progress, Result> {
     @Override
     @Implementation
     public final android.os.AsyncTask<Params, Progress, Result> executeOnExecutor(

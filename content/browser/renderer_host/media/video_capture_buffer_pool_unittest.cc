@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -26,10 +25,25 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_MAC)
+#include "ui/gfx/mac/io_surface.h"
+#endif
+
 namespace content {
 
+namespace {
+
+size_t ImageAllocationSize(const media::VideoCaptureFormat& format) {
+  return media::VideoFrame::AllocationSize(format.pixel_format,
+                                           format.frame_size);
+}
+
+}  // namespace
+
 static const media::VideoPixelFormat kCapturePixelFormats[] = {
-    media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_ARGB, media::PIXEL_FORMAT_Y16,
+    media::PIXEL_FORMAT_I420,
+    media::PIXEL_FORMAT_ARGB,
+    media::PIXEL_FORMAT_Y16,
 };
 
 static const int kTestBufferPoolSize = 3;
@@ -40,6 +54,11 @@ static const int kTestBufferPoolSize = 3;
 // this test must live here and not in media/capture/video.
 class VideoCaptureBufferPoolTest
     : public testing::TestWithParam<media::VideoPixelFormat> {
+ public:
+  VideoCaptureBufferPoolTest(const VideoCaptureBufferPoolTest&) = delete;
+  VideoCaptureBufferPoolTest& operator=(const VideoCaptureBufferPoolTest&) =
+      delete;
+
  protected:
   // This is a generic Buffer tracker
   class Buffer {
@@ -62,7 +81,6 @@ class VideoCaptureBufferPoolTest
   VideoCaptureBufferPoolTest()
       : expected_dropped_id_(0),
         pool_(new media::VideoCaptureBufferPoolImpl(
-            std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
             media::VideoCaptureBufferType::kSharedMemory,
             kTestBufferPoolSize)) {}
 
@@ -84,22 +102,18 @@ class VideoCaptureBufferPoolTest
         &buffer_id, &buffer_id_to_drop);
     if (reserve_result !=
         media::VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
-      return std::unique_ptr<Buffer>();
+      return nullptr;
     }
     EXPECT_EQ(expected_dropped_id_, buffer_id_to_drop);
 
     std::unique_ptr<media::VideoCaptureBufferHandle> buffer_handle =
         pool_->GetHandleForInProcessAccess(buffer_id);
-    return std::unique_ptr<Buffer>(
-        new Buffer(pool_, std::move(buffer_handle), buffer_id));
+    return std::make_unique<Buffer>(pool_, std::move(buffer_handle), buffer_id);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   int expected_dropped_id_;
   scoped_refptr<media::VideoCaptureBufferPool> pool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureBufferPoolTest);
 };
 
 TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
@@ -125,9 +139,9 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   ASSERT_NE(nullptr, buffer3.get());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
 
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer1->mapped_size());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer2->mapped_size());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer3->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer1->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer3->mapped_size());
 
   ASSERT_NE(nullptr, buffer1->data());
   ASSERT_NE(nullptr, buffer2->data());
@@ -230,7 +244,7 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   ASSERT_EQ(2.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   buffer2 = ReserveBuffer(size_hi, GetParam());
   ASSERT_NE(nullptr, buffer2.get());
-  ASSERT_LE(format_hi.ImageAllocationSize(), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_hi), buffer2->mapped_size());
   ASSERT_EQ(3, buffer2->id());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   void* const memory_pointer_hi = buffer2->data();
@@ -243,7 +257,7 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
       << "Decrease in resolution should not reallocate buffer";
   ASSERT_NE(nullptr, buffer2.get());
   ASSERT_EQ(3, buffer2->id());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer2->mapped_size());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   ASSERT_FALSE(ReserveBuffer(size_lo, GetParam())) << "Pool should be empty";
   ASSERT_EQ(1.0, pool_->GetBufferPoolUtilization());
@@ -266,8 +280,85 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   buffer4.reset();
 }
 
+#if defined(OS_MAC)
+namespace {
+
+gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
+  gfx::GpuMemoryBufferHandle result;
+  result.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
+  result.id.id = -1;
+  result.io_surface.reset(
+      gfx::CreateIOSurface(gfx::Size(100, 100), gfx::BufferFormat::BGRA_8888));
+  return result;
+}
+
+}  // namespace
+
+TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
+  auto handle0 = CreateIOSurfaceHandle();
+  auto handle1 = CreateIOSurfaceHandle();
+  auto handle2 = CreateIOSurfaceHandle();
+
+  constexpr int kInvalidId = -1;
+  int buffer_id_to_drop;
+
+  int buffer_id0 =
+      pool_->ReserveIdForExternalBuffer(handle0, &buffer_id_to_drop);
+  EXPECT_NE(buffer_id0, kInvalidId);
+  EXPECT_EQ(buffer_id_to_drop, kInvalidId);
+  EXPECT_FALSE(IOSurfaceIsInUse(handle0.io_surface));
+  pool_->HoldForConsumers(buffer_id0, 1);
+  EXPECT_TRUE(IOSurfaceIsInUse(handle0.io_surface));
+  pool_->RelinquishProducerReservation(buffer_id0);
+
+  // We should get a new buffer for handle1.
+  int buffer_id1 =
+      pool_->ReserveIdForExternalBuffer(handle1, &buffer_id_to_drop);
+  EXPECT_NE(buffer_id1, kInvalidId);
+  EXPECT_EQ(buffer_id_to_drop, kInvalidId);
+  pool_->HoldForConsumers(buffer_id1, 1);
+  pool_->RelinquishProducerReservation(buffer_id1);
+  pool_->RelinquishConsumerHold(buffer_id1, 1);
+
+  // We should reuse handle1's buffer.
+  int buffer_id1_reuse =
+      pool_->ReserveIdForExternalBuffer(handle1, &buffer_id_to_drop);
+  EXPECT_EQ(buffer_id1, buffer_id1_reuse);
+  EXPECT_EQ(buffer_id_to_drop, kInvalidId);
+  pool_->HoldForConsumers(buffer_id1_reuse, 1);
+  pool_->RelinquishProducerReservation(buffer_id1_reuse);
+
+  // If we leave buffer_id1 held for a consumer, then we create a new buffer id
+  // for it.
+  int buffer_id1_new =
+      pool_->ReserveIdForExternalBuffer(handle1, &buffer_id_to_drop);
+  EXPECT_NE(buffer_id1, buffer_id1_new);
+  EXPECT_EQ(buffer_id_to_drop, kInvalidId);
+  pool_->HoldForConsumers(buffer_id1_new, 1);
+  pool_->RelinquishProducerReservation(buffer_id1_new);
+  pool_->RelinquishConsumerHold(buffer_id1_new, 1);
+
+  // We have now reached kTestBufferPoolSize buffers. So our next allocation
+  // will return the LRU buffer, which is buffer_id1_new.
+  pool_->RelinquishConsumerHold(buffer_id1_reuse, 1);
+  int buffer_id2 =
+      pool_->ReserveIdForExternalBuffer(handle2, &buffer_id_to_drop);
+  EXPECT_NE(buffer_id0, buffer_id2);
+  EXPECT_NE(buffer_id1, buffer_id2);
+  EXPECT_NE(buffer_id1_new, buffer_id2);
+  EXPECT_EQ(buffer_id_to_drop, buffer_id1_new);
+
+  // Finally, let's reuse handle0.
+  pool_->RelinquishConsumerHold(buffer_id0, 1);
+  int buffer_id0_reuse =
+      pool_->ReserveIdForExternalBuffer(handle0, &buffer_id_to_drop);
+  EXPECT_EQ(buffer_id0, buffer_id0_reuse);
+  EXPECT_EQ(buffer_id_to_drop, kInvalidId);
+}
+#endif
+
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoCaptureBufferPoolTest,
                          testing::ValuesIn(kCapturePixelFormats));
 
-} // namespace content
+}  // namespace content

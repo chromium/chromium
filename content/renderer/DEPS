@@ -15,9 +15,11 @@ include_rules = [
   # If adding a new component dependency, email content/OWNERS first.
   # ****************************************************************************
 
+  "+chromeos/system/core_scheduling.h",
   "+content/public/child",
   "+content/public/renderer",
   "+content/child",
+  "+content/services/shared_storage_worklet",
   "+device/base/synchronization",
   "+device/gamepad/public/cpp",
   "+device/gamepad/public/mojom",
@@ -29,6 +31,7 @@ include_rules = [
   "+third_party/hyphen/hyphen.h",
   "+third_party/webrtc_overrides",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom",
   "+v8/include",
   "+v8/src/third_party/vtune",
 ]
@@ -38,17 +41,15 @@ specific_include_rules = {
     "+content/public/browser",
     "+content/shell",
   ],
+  "renderer_main\.cc": [
+   "+chromeos/memory/userspace_swap",
+  ],
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",
   ],
   "render_thread_impl_discardable_memory_browsertest\.cc": [
     "+components/discardable_memory/service",
     "+content/browser/browser_main_loop.h",
-  ],
-  # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
-  # embedded in mus won't be able to talk to the native ozone.
-  "renderer_main\.cc": [
-    "+ui/ozone/public/client_native_pixmap_factory_ozone.h",
   ],
   ".*_(unit|pixel|perf)test.*\.cc": [
     "+components/viz/test",

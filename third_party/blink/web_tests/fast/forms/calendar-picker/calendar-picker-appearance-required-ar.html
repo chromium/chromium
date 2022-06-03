@@ -4,7 +4,7 @@
 <script>
 window.enablePixelTesting = true;
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 </script>
 <script src="../../../resources/js-test.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
@@ -17,7 +17,7 @@ if (window.internals)
 <div id="console" style="opacity: 0"></div>
 
 <script>
-openPicker(document.getElementById('date'), finishJSTest);
+openPickerAppearanceOnly(document.getElementById('date'), finishJSTest);
 </script>
 </body>
 </html>

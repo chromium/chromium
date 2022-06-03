@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// An enumeration for different scrollbar mode used in FrameOwnerProperties.
+enum ScrollbarMode {
+  // Show the scroll bar only when it's needed.
+  kAuto,
+  // Don't show the scroll bar.
+  kAlwaysOff,
+  // Show the scroll bar.
+  kAlwaysOn
+};

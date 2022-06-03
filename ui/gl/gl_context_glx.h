@@ -5,11 +5,8 @@
 #ifndef UI_GL_GL_CONTEXT_GLX_H_
 #define UI_GL_GL_CONTEXT_GLX_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
 
@@ -22,16 +19,17 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
  public:
   explicit GLContextGLX(GLShareGroup* share_group);
 
-  XDisplay* display();
+  GLContextGLX(const GLContextGLX&) = delete;
+  GLContextGLX& operator=(const GLContextGLX&) = delete;
 
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
-  bool MakeCurrent(GLSurface* surface) override;
+  bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override;
-  unsigned int CheckStickyGraphicsResetStatus() override;
+  unsigned int CheckStickyGraphicsResetStatusImpl() override;
 
  protected:
   ~GLContextGLX() override;
@@ -39,11 +37,9 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
  private:
   void Destroy();
 
-  void* context_;
-  XDisplay* display_;
+  void* context_ = nullptr;
+  x11::Connection* connection_ = nullptr;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextGLX);
 };
 
 }  // namespace gl

@@ -12,31 +12,26 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-#include "media/cdm/cdm_paths.h"
-#include "media/cdm/library_cdm/clear_key_cdm/clear_key_cdm_proxy.h"
-#include "third_party/widevine/cdm/buildflags.h"
-#if BUILDFLAG(ENABLE_WIDEVINE) && defined(OS_WIN)
-#include "chrome/gpu/widevine_cdm_proxy_factory.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
-#endif  // BUILDFLAG(ENABLE_WIDEVINE) && defined(OS_WIN)
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/arc/video_accelerator/protected_buffer_manager.h"
+#include "ui/ozone/public/ozone_platform.h"         // nogncheck
+#include "ui/ozone/public/surface_factory_ozone.h"  // nogncheck
+#endif
 
 #if defined(OS_CHROMEOS)
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
-#endif
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
+#endif  // defined(OS_CHROMEOS)
 
 ChromeContentGpuClient::ChromeContentGpuClient()
     : main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif
 }
@@ -44,13 +39,18 @@ ChromeContentGpuClient::ChromeContentGpuClient()
 ChromeContentGpuClient::~ChromeContentGpuClient() {}
 
 void ChromeContentGpuClient::GpuServiceInitialized() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->SetGetProtectedNativePixmapDelegate(base::BindRepeating(
           &arc::ProtectedBufferManager::GetProtectedNativePixmapFor,
           base::Unretained(protected_buffer_manager_.get())));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+  content::ChildThread::Get()->BindHostReceiver(
+      chromeos::ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver());
+#endif  // defined(OS_CHROMEOS)
 
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -69,18 +69,20 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
 
 void ChromeContentGpuClient::ExposeInterfacesToBrowser(
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
   // NOTE: Do not add binders directly within this method. Instead, modify the
   // definition of |ExposeChromeGpuInterfacesToBrowser()|, as this ensures
   // security review coverage.
-  ExposeChromeGpuInterfacesToBrowser(this, gpu_preferences, binders);
+  ExposeChromeGpuInterfacesToBrowser(this, gpu_preferences, gpu_workarounds,
+                                     binders);
 }
 
 void ChromeContentGpuClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_task_runner) {
   io_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::IO_THREAD));
+                                metrics::CallStackProfileParams::Thread::kIo));
 }
 
 void ChromeContentGpuClient::PostCompositorThreadCreated(
@@ -88,27 +90,12 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                     metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+                     metrics::CallStackProfileParams::Thread::kCompositor));
 }
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-std::unique_ptr<media::CdmProxy> ChromeContentGpuClient::CreateCdmProxy(
-    const base::Token& cdm_guid) {
-  if (cdm_guid == media::kClearKeyCdmGuid)
-    return std::make_unique<media::ClearKeyCdmProxy>();
-
-#if BUILDFLAG(ENABLE_WIDEVINE) && defined(OS_WIN)
-  if (cdm_guid == kWidevineCdmGuid)
-    return CreateWidevineCdmProxy();
-#endif  // BUILDFLAG(ENABLE_WIDEVINE) && defined(OS_WIN)
-
-  return nullptr;
-}
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 scoped_refptr<arc::ProtectedBufferManager>
 ChromeContentGpuClient::GetProtectedBufferManager() {
   return protected_buffer_manager_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,6 +9,7 @@
 #include <process.h>
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/handle_closer_agent.h"
@@ -162,6 +163,38 @@ TargetServicesBase* TargetServicesBase::GetInstance() {
   if (!g_target_services)
     g_target_services = new (g_target_services_memory) TargetServicesBase;
   return g_target_services;
+}
+
+SOCKET TargetServicesBase::CreateBrokeredSocket(int af,
+                                                int type,
+                                                int protocol) {
+  if (!GetState()->InitCalled())
+    return INVALID_SOCKET;
+
+  // IPC must be fully started.
+  void* memory = GetGlobalIPCMemory();
+  if (!memory)
+    return INVALID_SOCKET;
+
+  CrossCallReturn answer = {0};
+  SharedMemIPCClient ipc(memory);
+
+  WSAPROTOCOL_INFOW protocol_info = {};
+
+  InOutCountedBuffer protocol_info_buffer(&protocol_info,
+                                          sizeof(WSAPROTOCOL_INFOW));
+
+  ResultCode code = CrossCall(ipc, IpcTag::WS2SOCKET, af, type, protocol,
+                              protocol_info_buffer, &answer);
+
+  if (code != SBOX_ALL_OK)
+    return INVALID_SOCKET;
+
+  if (answer.extended_count == 1)
+    WSASetLastError(static_cast<int>(answer.extended[0].unsigned_int));
+
+  return ::WSASocket(af, type, protocol, &protocol_info, 0,
+                     WSA_FLAG_OVERLAPPED);
 }
 
 // The broker services a 'test' IPC service with the PING tag.

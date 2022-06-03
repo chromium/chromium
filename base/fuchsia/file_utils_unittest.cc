@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class OpenDirectoryTest : public testing::Test {
  protected:
@@ -22,23 +21,24 @@ class OpenDirectoryTest : public testing::Test {
 };
 
 TEST_F(OpenDirectoryTest, Open) {
-  auto dir = OpenDirectory(temp_dir.GetPath());
+  auto dir = OpenDirectoryHandle(temp_dir.GetPath());
   ASSERT_TRUE(dir);
 }
 
-// OpenDirectory() should fail when opening a directory that doesn't exist.
+// OpenDirectoryHandle() should fail when opening a directory that doesn't
+// exist.
 TEST_F(OpenDirectoryTest, OpenNonExistent) {
-  auto dir = OpenDirectory(temp_dir.GetPath().AppendASCII("non_existent"));
+  auto dir =
+      OpenDirectoryHandle(temp_dir.GetPath().AppendASCII("non_existent"));
   ASSERT_FALSE(dir);
 }
 
-// OpenDirectory() should open only directories.
+// OpenDirectoryHandle() should open only directories.
 TEST_F(OpenDirectoryTest, OpenFile) {
   auto file_path = temp_dir.GetPath().AppendASCII("test_file");
-  ASSERT_TRUE(WriteFile(file_path, "foo", 3));
-  auto dir = OpenDirectory(file_path);
+  ASSERT_TRUE(WriteFile(file_path, "foo"));
+  auto dir = OpenDirectoryHandle(file_path);
   ASSERT_FALSE(dir);
 }
 
-}  // namespace fuchsia
 }  // namespace base

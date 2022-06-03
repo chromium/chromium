@@ -33,7 +33,10 @@ void FidoDeviceDiscovery::Start() {
 }
 
 void FidoDeviceDiscovery::NotifyDiscoveryStarted(bool success) {
-  DCHECK_EQ(state_, State::kStarting);
+  if (state_ == State::kStopped)
+    return;
+
+  DCHECK(state_ == State::kStarting);
   if (success)
     state_ = State::kRunning;
   if (!observer())
@@ -92,10 +95,14 @@ FidoDeviceAuthenticator* FidoDeviceDiscovery::GetAuthenticator(
 }
 
 bool FidoDeviceDiscovery::AddDevice(std::unique_ptr<FidoDevice> device) {
+  if (state_ == State::kStopped)
+    return false;
+
   auto authenticator =
       std::make_unique<FidoDeviceAuthenticator>(std::move(device));
-  const auto result =
-      authenticators_.emplace(authenticator->GetId(), std::move(authenticator));
+  std::string authenticator_id = authenticator->GetId();
+  const auto result = authenticators_.emplace(std::move(authenticator_id),
+                                              std::move(authenticator));
   if (!result.second) {
     return false;  // Duplicate device id.
   }
@@ -105,6 +112,9 @@ bool FidoDeviceDiscovery::AddDevice(std::unique_ptr<FidoDevice> device) {
 }
 
 bool FidoDeviceDiscovery::RemoveDevice(base::StringPiece device_id) {
+  if (state_ == State::kStopped)
+    return false;
+
   auto found = authenticators_.find(device_id);
   if (found == authenticators_.end())
     return false;
@@ -112,6 +122,11 @@ bool FidoDeviceDiscovery::RemoveDevice(base::StringPiece device_id) {
   auto authenticator = std::move(found->second);
   authenticators_.erase(found);
   NotifyAuthenticatorRemoved(authenticator.get());
+  return true;
+}
+
+bool FidoDeviceDiscovery::MaybeStop() {
+  state_ = State::kStopped;
   return true;
 }
 

@@ -38,7 +38,7 @@
   }
 
   function onRequest(event) {
-    var request = event.data;
+    var request = event.data.request;
     if (request.name() !== requestName)
       return;
     requestName = undefined;

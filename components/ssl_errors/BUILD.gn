@@ -23,9 +23,7 @@ static_library("ssl_errors") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "error_classification_unittest.cc",
-  ]
+  sources = [ "error_classification_unittest.cc" ]
 
   deps = [
     ":ssl_errors",

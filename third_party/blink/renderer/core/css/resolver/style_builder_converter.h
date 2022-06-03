@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -36,6 +37,8 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
@@ -44,7 +47,6 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
@@ -87,7 +89,8 @@ class StyleBuilderConverterBase {
   static FontDescription::Size ConvertFontSize(
       const CSSValue&,
       const CSSToLengthConversionData&,
-      FontDescription::Size parent_size);
+      FontDescription::Size parent_size,
+      const Document*);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.
@@ -97,9 +100,6 @@ class StyleBuilderConverter {
  public:
   static scoped_refptr<StyleReflection> ConvertBoxReflect(StyleResolverState&,
                                                           const CSSValue&);
-  static Color ConvertColor(StyleResolverState&,
-                            const CSSValue&,
-                            bool for_visited_link = false);
   template <typename T>
   static T ConvertComputedLength(StyleResolverState&, const CSSValue&);
   static LengthBox ConvertClip(StyleResolverState&, const CSSValue&);
@@ -109,7 +109,8 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&);
   static FilterOperations ConvertFilterOperations(StyleResolverState&,
-                                                  const CSSValue&);
+                                                  const CSSValue&,
+                                                  CSSPropertyID);
   static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
                                                            const Font&);
   template <typename T>
@@ -121,7 +122,7 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&);
   static scoped_refptr<FontVariationSettings> ConvertFontVariationSettings(
-      StyleResolverState&,
+      const StyleResolverState&,
       const CSSValue&);
   static FontDescription::Size ConvertFontSize(StyleResolverState&,
                                                const CSSValue&);
@@ -150,17 +151,18 @@ class StyleBuilderConverter {
   static StyleContentAlignmentData ConvertContentAlignmentData(
       StyleResolverState&,
       const CSSValue&);
-  static GapLength ConvertGapLength(StyleResolverState&, const CSSValue&);
   static GridAutoFlow ConvertGridAutoFlow(StyleResolverState&, const CSSValue&);
   static GridPosition ConvertGridPosition(StyleResolverState&, const CSSValue&);
   static GridTrackSize ConvertGridTrackSize(StyleResolverState&,
                                             const CSSValue&);
-  static Vector<GridTrackSize> ConvertGridTrackSizeList(StyleResolverState&,
-                                                        const CSSValue&);
+  static GridTrackList ConvertGridTrackSizeList(StyleResolverState&,
+                                                const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
-  static float ConvertBorderWidth(StyleResolverState&, const CSSValue&);
-  static GapLength ConvertGapLength(const StyleResolverState&, const CSSValue&);
+  static LayoutUnit ConvertBorderWidth(StyleResolverState&, const CSSValue&);
+  static LayoutUnit ConvertLayoutUnit(StyleResolverState&, const CSSValue&);
+  static absl::optional<Length> ConvertGapLength(const StyleResolverState&,
+                                                 const CSSValue&);
   static Length ConvertLength(const StyleResolverState&, const CSSValue&);
   static UnzoomedLength ConvertUnzoomedLength(const StyleResolverState&,
                                               const CSSValue&);
@@ -201,7 +203,12 @@ class StyleBuilderConverter {
   static StyleAutoColor ConvertStyleAutoColor(StyleResolverState&,
                                               const CSSValue&,
                                               bool for_visited_link = false);
-  static SVGPaint ConvertSVGPaint(StyleResolverState&, const CSSValue&);
+  static SVGPaint ConvertSVGPaint(StyleResolverState&,
+                                  const CSSValue&,
+                                  bool for_visited_link);
+  static TextDecorationThickness ConvertTextDecorationThickness(
+      StyleResolverState&,
+      const CSSValue&);
   static TextEmphasisPosition ConvertTextTextEmphasisPosition(
       StyleResolverState&,
       const CSSValue&);
@@ -211,6 +218,8 @@ class StyleBuilderConverter {
   static TextUnderlinePosition ConvertTextUnderlinePosition(
       StyleResolverState& state,
       const CSSValue& value);
+  static Length ConvertTextUnderlineOffset(StyleResolverState& state,
+                                           const CSSValue& value);
   static TransformOperations ConvertTransformOperations(StyleResolverState&,
                                                         const CSSValue&);
   static TransformOrigin ConvertTransformOrigin(StyleResolverState&,
@@ -218,22 +227,19 @@ class StyleBuilderConverter {
 
   static void ConvertGridTrackList(
       const CSSValue&,
-      Vector<GridTrackSize>&,
+      GridTrackList&,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
-      Vector<GridTrackSize>& auto_repeat_track_sizes,
+      Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
-      size_t& auto_repeat_insertion_point,
+      wtf_size_t& auto_repeat_insertion_point,
       AutoRepeatType&,
       StyleResolverState&);
   static void CreateImplicitNamedGridLinesFromGridArea(
       const NamedGridAreaMap&,
       NamedGridLinesMap&,
       GridTrackSizingDirection);
-  static void ConvertOrderedNamedGridLinesMapToNamedGridLinesMap(
-      const OrderedNamedGridLines&,
-      NamedGridLinesMap&);
 
   static cc::ScrollSnapType ConvertSnapType(StyleResolverState&,
                                             const CSSValue&);
@@ -272,19 +278,38 @@ class StyleBuilderConverter {
       const CSSValue&,
       bool is_animation_tainted);
 
-  static IntrinsicLength ConvertIntrinsicLength(StyleResolverState&,
-                                                const CSSValue&);
+  static StyleAspectRatio ConvertAspectRatio(const StyleResolverState&,
+                                             const CSSValue&);
 
- private:
-  static const CSSToLengthConversionData& CssToLengthConversionData(
-      StyleResolverState&);
+  static bool ConvertInternalAlignSelfBlock(StyleResolverState& state,
+                                            const CSSValue& value);
+  static bool ConvertInternalEmptyLineHeight(StyleResolverState& state,
+                                             const CSSValue& value);
+
+  static AtomicString ConvertPage(StyleResolverState&, const CSSValue&);
+
+  static RubyPosition ConvertRubyPosition(StyleResolverState& state,
+                                          const CSSValue& value);
+
+  static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
+                                                const CSSValue& value);
+
+  static AtomicString ConvertContainerName(StyleResolverState&,
+                                           const CSSValue&);
+
+  static absl::optional<StyleIntrinsicLength> ConvertIntrinsicDimension(
+      const StyleResolverState&,
+      const CSSValue&);
+
+  static void CountSystemColorComputeToSelfUsage(
+      const StyleResolverState& state);
 };
 
 template <typename T>
 T StyleBuilderConverter::ConvertComputedLength(StyleResolverState& state,
                                                const CSSValue& value) {
   return To<CSSPrimitiveValue>(value).ComputeLength<T>(
-      CssToLengthConversionData(state));
+      state.CssToLengthConversionData());
 }
 
 template <typename T>
@@ -302,30 +327,39 @@ T StyleBuilderConverter::ConvertFlags(StyleResolverState& state,
 template <typename T>
 T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
                                           const CSSValue& value) {
+  double result = 0;
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    CSSValueID value_id = identifier_value->GetValueID();
-    if (value_id == CSSValueID::kThin)
-      return 1;
-    if (value_id == CSSValueID::kMedium)
-      return 3;
-    if (value_id == CSSValueID::kThick)
-      return 5;
-    NOTREACHED();
-    return 0;
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kThin:
+        result = 1;
+        break;
+      case CSSValueID::kMedium:
+        result = 3;
+        break;
+      case CSSValueID::kThick:
+        result = 5;
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+    result = state.CssToLengthConversionData().ZoomedComputedPixels(
+        result, CSSPrimitiveValue::UnitType::kPixels);
+  } else {
+    result = To<CSSPrimitiveValue>(value).ComputeLength<double>(
+        state.CssToLengthConversionData());
   }
-  const auto& primitive_value = To<CSSPrimitiveValue>(value);
-  // FIXME: We are moving to use the full page zoom implementation to handle
-  // high-dpi.  In that case specyfing a border-width of less than 1px would
-  // result in a border that is one device pixel thick.  With this change that
-  // would instead be rounded up to 2 device pixels.  Consider clamping it to
-  // device pixels or zoom adjusted CSS pixels instead of raw CSS pixels.
-  // Reference crbug.com/485650 and crbug.com/382483
-  double result =
-      primitive_value.ComputeLength<double>(CssToLengthConversionData(state));
-  if (result > 0.0 && result < 1.0)
+  // TODO(crbug.com/485650, crbug.com/382483): We are moving to use the full
+  // page zoom implementation to handle high-dpi.  In that case specyfing a
+  // border-width of less than 1px would result in a border that is one device
+  // pixel thick.  With this change that would instead be rounded up to 2
+  // device pixels.  Consider clamping it to device pixels or zoom adjusted CSS
+  // pixels instead of raw CSS pixels.
+  double zoomed_result = state.StyleRef().EffectiveZoom() * result;
+  if (zoomed_result > 0.0 && zoomed_result < 1.0)
     return 1.0;
-  return clampTo<T>(RoundForImpreciseConversion<T>(result),
-                    defaultMinimumForClamp<T>(), defaultMaximumForClamp<T>());
+  return ClampTo<T>(RoundForImpreciseConversion<T>(result),
+                    DefaultMinimumForClamp<T>(), DefaultMaximumForClamp<T>());
 }
 
 template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
@@ -368,4 +402,4 @@ AtomicString StyleBuilderConverter::ConvertString(StyleResolverState&,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_

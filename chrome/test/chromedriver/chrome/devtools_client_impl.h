@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -60,7 +59,7 @@ class DevToolsClientImpl : public DevToolsClient {
                      const std::string& url,
                      const std::string& id);
 
-  typedef base::Callback<Status()> FrontendCloserFunc;
+  typedef base::RepeatingCallback<Status()> FrontendCloserFunc;
   DevToolsClientImpl(const SyncWebSocketFactory& factory,
                      const std::string& url,
                      const std::string& id,
@@ -68,18 +67,21 @@ class DevToolsClientImpl : public DevToolsClient {
 
   DevToolsClientImpl(DevToolsClientImpl* parent, const std::string& session_id);
 
-  typedef base::Callback<bool(const std::string&,
-                              int,
-                              std::string*,
-                              internal::InspectorMessageType*,
-                              internal::InspectorEvent*,
-                              internal::InspectorCommandResponse*)>
+  typedef base::RepeatingCallback<bool(const std::string&,
+                                       int,
+                                       std::string*,
+                                       internal::InspectorMessageType*,
+                                       internal::InspectorEvent*,
+                                       internal::InspectorCommandResponse*)>
       ParserFunc;
   DevToolsClientImpl(const SyncWebSocketFactory& factory,
                      const std::string& url,
                      const std::string& id,
                      const FrontendCloserFunc& frontend_closer_func,
                      const ParserFunc& parser_func);
+
+  DevToolsClientImpl(const DevToolsClientImpl&) = delete;
+  DevToolsClientImpl& operator=(const DevToolsClientImpl&) = delete;
 
   ~DevToolsClientImpl() override;
 
@@ -89,6 +91,7 @@ class DevToolsClientImpl : public DevToolsClient {
   const std::string& GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
+  Status SetUpDevTools() override;
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
@@ -120,7 +123,8 @@ class DevToolsClientImpl : public DevToolsClient {
   Status HandleReceivedEvents() override;
   void SetDetached() override;
   void SetOwner(WebViewImpl* owner) override;
-  DevToolsClientImpl* GetRootClient();
+  WebViewImpl* GetOwner() const override;
+  DevToolsClient* GetRootClient() override;
 
  private:
   enum ResponseState {
@@ -154,7 +158,9 @@ class DevToolsClientImpl : public DevToolsClient {
                              bool wait_for_response,
                              int client_command_id,
                              const Timeout* timeout);
-  Status ProcessNextMessage(int expected_id, const Timeout& timeout);
+  Status ProcessNextMessage(int expected_id,
+                            bool log_timeout,
+                            const Timeout& timeout);
   Status HandleMessage(int expected_id, const std::string& message);
   Status ProcessEvent(const internal::InspectorEvent& event);
   Status ProcessCommandResponse(
@@ -189,8 +195,6 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_;  // The id identifying a particular request.
   int stack_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsClientImpl);
 };
 
 namespace internal {

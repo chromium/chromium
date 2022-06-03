@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<title>IndexedDB: Dispatching events from script</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+
+function idb_test(func, name) {
+  async_test(t => {
+    const dbname = location.pathname + ' - ' + t.name;
+    const open_request = indexedDB.open(dbname);
+    t.add_cleanup(() => { indexedDB.deleteDatabase(dbname); });
+    func(t, open_request);
+  }, name);
+}
+
+//
+// IDBOpenDBRequest
+//
+
+// A regression test for http://crbug.com/1032890
+idb_test((t, open_request) => {
+  open_request.onerror = t.unreached_func();
+  open_request.onsuccess = t.step_func_done();
+  open_request.dispatchEvent(new ErrorEvent({}));
+
+}, 'Dispatching a generic event at an IDBOpenDBRequest should not crash');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onblocked = t.step_func(e => {
+    ++events_seen;
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 1, 'Should have seen event');
+  });
+  open_request.dispatchEvent(new Event('blocked'));
+}, 'Dispatching a synthetic blocked event at an IDBOpenDBRequest');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.step_func(e => {
+    ++events_seen;
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 1, 'Should have seen event');
+  });
+  open_request.dispatchEvent(new Event('error'));
+}, 'Dispatching a synthetic error event at an IDBOpenDBRequest');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    ++events_seen;
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 2, 'Should have seen both events');
+  });
+  open_request.dispatchEvent(new Event('upgradeneeded'));
+}, 'Dispatching a synthetic upgradeneeded event at an IDBOpenDBRequest');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onsuccess = t.step_func(e => {
+    ++events_seen;
+    if (e.isTrusted) {
+      assert_equals(events_seen, 2, 'Should have seen both events');
+      t.done();
+    }
+  });
+  open_request.dispatchEvent(new Event('success'));
+}, 'Dispatching a synthetic success event at an IDBOpenDBRequest');
+
+//
+// IDBTransaction
+//
+
+idb_test((t, open_request) => {
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const tx = open_request.transaction;
+    tx.dispatchEvent(new Event('generic'));
+  });
+  open_request.onsuccess = t.step_func_done();
+}, 'Dispatching a generic event at an IDBTransaction should not crash');
+
+[
+  // Events that would be propagated from an IDBRequest:
+  'success', 'error',
+
+  // Events that would be fired at an IDBTransaction:
+  'abort'
+].forEach(type => {
+  idb_test((t, open_request) => {
+    let events_seen = 0;
+    open_request.onerror = t.unreached_func();
+    open_request.onupgradeneeded = t.step_func(e => {
+      const tx = open_request.transaction;
+      tx.addEventListener(type, t.step_func(e => {
+        assert_false(e.isTrusted, 'Event should not be trusted');
+        ++events_seen;
+      }));
+      tx.dispatchEvent(new Event(type));
+    });
+    open_request.onsuccess = t.step_func_done(e => {
+      assert_equals(events_seen, 1, 'Should have seen event');
+    });
+  }, `Dispatching a synthetic ${type} event at an IDBTransaction`);
+});
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const tx = open_request.transaction;
+    tx.oncomplete = t.step_func(e => {
+      ++events_seen;
+    });
+    tx.dispatchEvent(new Event('complete'));
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 2, 'Should have seen both events');
+  });
+}, 'Dispatching a synthetic complete event at an IDBTransaction');
+
+idb_test((t, open_request) => {
+  const targets = []
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    const tx = open_request.transaction;
+    [db, tx].forEach(target => target.addEventListener(
+      'generic',
+      t.step_func(e => { targets.push(e.currentTarget.constructor.name); })
+    ));
+    tx.dispatchEvent(new Event('generic', {bubbles: true}));
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(targets.length, 2, 'Event should propagate');
+    assert_equals(targets[0], 'IDBTransaction',
+                  'First target should be transaction');
+    assert_equals(targets[1], 'IDBDatabase',
+                  'Second target should be database');
+  });
+}, 'Dispatching a generic event at an IDBTransaction propagates correctly');
+
+
+//
+// IDBRequest
+//
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    const store = db.createObjectStore('store');
+    const request = store.get(0);
+    request.dispatchEvent(new Event('generic'));
+  });
+  open_request.onsuccess = t.step_func_done();
+}, 'Dispatching a generic event at an IDBRequest should not crash');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    const store = db.createObjectStore('store');
+    const request = store.get(0);
+    request.onerror = t.step_func(e => {
+      ++events_seen;
+    });
+    request.dispatchEvent(new Event('error'));
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 1, 'Should have seen the event');
+  });
+}, 'Dispatching a synthetic error event at an IDBRequest');
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    const store = db.createObjectStore('store');
+    const request = store.get(0);
+    request.onsuccess = t.step_func(e => {
+      ++events_seen;
+    });
+    request.dispatchEvent(new Event('success'));
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(events_seen, 2, 'Should have seen both events');
+  });
+}, 'Dispatching a synthetic success event at an IDBRequest');
+
+idb_test((t, open_request) => {
+  const targets = []
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    const tx = open_request.transaction;
+    const store = db.createObjectStore('store');
+    const request = store.get(0);
+    [db, tx, request].forEach(target => target.addEventListener(
+      'generic',
+      t.step_func(e => { targets.push(e.currentTarget.constructor.name); })
+    ));
+    request.dispatchEvent(new Event('generic', {bubbles: true}));
+  });
+  open_request.onsuccess = t.step_func_done(e => {
+    assert_equals(targets.length, 3, 'Event should propagate');
+    assert_equals(targets[0], 'IDBRequest',
+                  'First target should be request');
+    assert_equals(targets[1], 'IDBTransaction',
+                  'Second target should be transaction');
+    assert_equals(targets[2], 'IDBDatabase',
+                  'Third target should be database');
+  });
+}, 'Dispatching a generic event at an IDBRequest propagates correctly');
+
+//
+// IDBDatabase
+//
+
+idb_test((t, open_request) => {
+  let events_seen = 0;
+  open_request.onerror = t.unreached_func();
+  open_request.onupgradeneeded = t.step_func(e => {
+    const db = open_request.result;
+    db.dispatchEvent(new Event('generic'));
+  });
+  open_request.onsuccess = t.step_func_done();
+}, 'Dispatching a generic event at an IDBDatabase');
+
+[
+  // Events that would be propagated from an IDBRequest:
+  'success', 'error',
+
+  // Events that would be propagated from an IDBTransaction:
+  'complete', 'abort',
+
+  // Events that would be fired at an IDBDatabase:
+  'versionchange', 'close'
+].forEach(type => {
+   idb_test((t, open_request) => {
+     let events_seen = 0;
+     open_request.onerror = t.unreached_func();
+     open_request.onupgradeneeded = t.step_func(e => {
+       const db = open_request.result;
+       db.addEventListener(type, t.step_func(e => {
+         assert_false(e.isTrusted, 'Event should not be trusted');
+         ++events_seen;
+       }));
+       db.dispatchEvent(new Event(type));
+     });
+     open_request.onsuccess = t.step_func_done(e => {
+       assert_equals(events_seen, 1, 'Should have seen the event');
+     });
+   }, `Dispatching a synthetic ${type} event at an IDBDatabase`);
+ });
+
+</script>

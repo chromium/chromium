@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 
 namespace gfx {
 
@@ -33,7 +34,7 @@ double Vector2dF::LengthSquared() const {
 }
 
 float Vector2dF::Length() const {
-  return static_cast<float>(std::sqrt(LengthSquared()));
+  return hypotf(x_, y_);
 }
 
 void Vector2dF::Scale(float x_scale, float y_scale) {
@@ -55,6 +56,17 @@ Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale) {
   Vector2dF scaled_v(v);
   scaled_v.Scale(x_scale, y_scale);
   return scaled_v;
+}
+
+float Vector2dF::SlopeAngleRadians() const {
+#if defined(OS_MAC)
+  // atan2f(...) returns less accurate results on Mac.
+  // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
+  return static_cast<float>(
+      atan2(static_cast<double>(y_), static_cast<double>(x_)));
+#else
+  return atan2f(y_, x_);
+#endif
 }
 
 }  // namespace gfx

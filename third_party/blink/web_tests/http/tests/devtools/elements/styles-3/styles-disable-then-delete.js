@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that removal of property following its disabling works.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container" style="font-weight:bold">
@@ -16,18 +16,18 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('container', step1);
 
-  function step1() {
+  async function step1() {
     // Disable property
     TestRunner.addResult('Before disable');
-    ElementsTestRunner.dumpSelectedElementStyles(true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true);
     ElementsTestRunner.toggleStyleProperty('font-weight', false);
     ElementsTestRunner.waitForStyleApplied(step2);
   }
 
-  function step2() {
+  async function step2() {
     // Delete style
     TestRunner.addResult('After disable');
-    ElementsTestRunner.dumpSelectedElementStyles(true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true);
 
     var treeItem = ElementsTestRunner.getElementStylePropertyTreeItem('font-weight');
     treeItem.applyStyleText('', false);
@@ -43,9 +43,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('container', step5);
   }
 
-  function step5(node) {
+  async function step5(node) {
     TestRunner.addResult('After delete');
-    ElementsTestRunner.dumpSelectedElementStyles(true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true);
     TestRunner.completeTest();
   }
 })();

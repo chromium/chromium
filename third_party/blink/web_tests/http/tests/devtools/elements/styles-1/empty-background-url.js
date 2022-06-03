@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that empty url in the property value does not break inspector.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -17,8 +17,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('inspected', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false);
     TestRunner.completeTest();
   }
 })();

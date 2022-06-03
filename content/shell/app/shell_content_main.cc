@@ -9,7 +9,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/app/shell_main_delegate.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 int ContentMain(int argc,
                 const char** argv) {
   bool is_browsertest = false;
@@ -24,6 +24,6 @@ int ContentMain(int argc,
   content::ContentMainParams params(&delegate);
   params.argc = argc;
   params.argv = argv;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
-#endif  // OS_MACOSX
+#endif  // OS_MAC

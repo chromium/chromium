@@ -4,6 +4,8 @@
 
 #include "content/common/android/gin_java_bridge_value.h"
 
+#include "base/containers/span.h"
+
 namespace content {
 
 namespace {
@@ -50,6 +52,14 @@ std::unique_ptr<base::Value> GinJavaBridgeValue::CreateObjectIDValue(
     int32_t in_value) {
   GinJavaBridgeValue gin_value(TYPE_OBJECT_ID);
   gin_value.pickle_.WriteInt(in_value);
+  return gin_value.SerializeToBinaryValue();
+}
+
+// static
+std::unique_ptr<base::Value> GinJavaBridgeValue::CreateUInt32Value(
+    uint32_t in_value) {
+  GinJavaBridgeValue gin_value(TYPE_UINT32);
+  gin_value.pickle_.WriteUInt32(in_value);
   return gin_value.SerializeToBinaryValue();
 }
 
@@ -104,6 +114,15 @@ bool GinJavaBridgeValue::GetAsObjectID(int32_t* out_object_id) const {
   }
 }
 
+bool GinJavaBridgeValue::GetAsUInt32(uint32_t* out_value) const {
+  if (GetType() == TYPE_UINT32) {
+    base::PickleIterator iter(pickle_);
+    return iter.ReadUInt32(out_value);
+  } else {
+    return false;
+  }
+}
+
 GinJavaBridgeValue::GinJavaBridgeValue(Type type) :
     pickle_(sizeof(Header)) {
   Header* header = pickle_.headerT<Header>();
@@ -118,8 +137,9 @@ GinJavaBridgeValue::GinJavaBridgeValue(const base::Value* value)
 }
 
 std::unique_ptr<base::Value> GinJavaBridgeValue::SerializeToBinaryValue() {
-  return base::Value::CreateWithCopiedBuffer(
-      reinterpret_cast<const char*>(pickle_.data()), pickle_.size());
+  const auto* data = static_cast<const uint8_t*>(pickle_.data());
+  return base::Value::ToUniquePtrValue(
+      base::Value(base::make_span(data, pickle_.size())));
 }
 
 }  // namespace content

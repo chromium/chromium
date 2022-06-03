@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.metrics;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.CachedMetrics;
-import org.chromium.chrome.browser.ShortcutSource;
-import org.chromium.chrome.browser.webapps.WebApkInfo;
-import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
-import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -53,7 +51,7 @@ public class LaunchMetrics {
         int source = webappInfo.source();
 
         if (webappInfo.isForWebApk() && source == ShortcutSource.UNKNOWN) {
-            // WebApkInfo#source() identifies how the WebAPK was launched (e.g. via deep link).
+            // WebappInfo#source() identifies how the WebAPK was launched (e.g. via deep link).
             // When the WebAPK is launched from the app list (ShortcutSource#UNKNOWN), query
             // WebappDataStorage to determine how the WebAPK was installed (SOURCE_APP_BANNER_WEBAPK
             // vs SOURCE_ADD_TO_HOMESCREEN_PWA). WebAPKs set WebappDataStorage#getSource() at
@@ -82,21 +80,17 @@ public class LaunchMetrics {
     public static void commitLaunchMetrics(WebContents webContents) {
         for (HomeScreenLaunch launch : sHomeScreenLaunches) {
             WebappInfo webappInfo = launch.mWebappInfo;
-            @WebDisplayMode
+            @DisplayMode.EnumType
             int displayMode =
-                    (webappInfo == null) ? WebDisplayMode.UNDEFINED : webappInfo.displayMode();
+                    (webappInfo == null) ? DisplayMode.UNDEFINED : webappInfo.displayMode();
             LaunchMetricsJni.get().recordLaunch(
                     launch.mIsShortcut, launch.mUrl, launch.mSource, displayMode, webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
-                WebApkInfo webApkInfo = (WebApkInfo) webappInfo;
-                WebApkUkmRecorder.recordWebApkLaunch(webApkInfo.manifestUrl(),
-                        webApkInfo.distributor(), webApkInfo.webApkVersionCode(), launch.mSource);
+                WebApkUkmRecorder.recordWebApkLaunch(webappInfo.manifestUrl(),
+                        webappInfo.distributor(), webappInfo.webApkVersionCode(), launch.mSource);
             }
         }
         sHomeScreenLaunches.clear();
-
-        // Record generic cached events.
-        CachedMetrics.commitCachedMetrics();
     }
 
     /**
@@ -138,7 +132,7 @@ public class LaunchMetrics {
     @NativeMethods
     interface Natives {
         void recordLaunch(boolean isShortcut, String url, int source,
-                @WebDisplayMode int displayMode, WebContents webContents);
+                @DisplayMode.EnumType int displayMode, WebContents webContents);
         void recordHomePageLaunchMetrics(
                 boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
     }

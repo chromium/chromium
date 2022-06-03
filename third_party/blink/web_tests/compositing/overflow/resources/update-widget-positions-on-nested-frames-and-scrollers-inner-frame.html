@@ -17,10 +17,8 @@
         return;
 
       var select = document.getElementById('select');
-      // FIXME: it would be really nice to use getBoundingClientRect() and not
-      // hard-code pixel coordinates here, but since it's in an iframe, the
-      // coordinates are translated anyway.
-      clickToOpenPicker(50, 120, callback, function () {
+      var selectRect = select.getBoundingClientRect();
+      clickToOpenPicker(selectRect.left, selectRect.top, callback, function () {
           setTimeout(callback, 0);
       });
     }
@@ -47,7 +45,7 @@
           select.appendChild(option);
         }
 
-        if (x == 24) {
+        if (x == 23) {
           select.id = 'select';
         }
 

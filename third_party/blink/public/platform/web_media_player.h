@@ -31,25 +31,30 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace cc {
 class PaintCanvas;
 class PaintFlags;
 }  // namespace cc
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
+namespace media {
+class PaintCanvasVideoRenderer;
 }
 
 namespace blink {
@@ -59,8 +64,6 @@ class WebMediaPlayerSource;
 class WebString;
 class WebURL;
 enum class WebFullscreenVideoStatus;
-struct WebRect;
-struct WebSize;
 
 class WebMediaPlayer {
  public:
@@ -117,13 +120,18 @@ class WebMediaPlayer {
   // of pre-rendering)
   enum LoadTiming { kImmediate, kDeferred };
 
-  // For last-uploaded-frame-metadata API. https://crbug.com/639174
-  struct VideoFrameUploadMetadata {
-    int frame_id = -1;
-    gfx::Rect visible_rect = {};
-    base::TimeDelta timestamp = {};
-    base::TimeDelta expected_timestamp = {};
-    bool skipped = false;
+  // For video.requestVideoFrameCallback(). https://wicg.github.io/video-rvfc/
+  struct VideoFramePresentationMetadata {
+    uint32_t presented_frames;
+    base::TimeTicks presentation_time;
+    base::TimeTicks expected_display_time;
+    int width;
+    int height;
+    base::TimeDelta media_time;
+    media::VideoFrameMetadata metadata;
+    scoped_refptr<media::VideoFrame> frame;
+    base::TimeDelta rendering_interval;
+    base::TimeDelta average_frame_duration;
   };
 
   // Describes when we use SurfaceLayer for video instead of VideoLayer.
@@ -137,7 +145,10 @@ class WebMediaPlayer {
 
   virtual ~WebMediaPlayer() = default;
 
-  virtual LoadTiming Load(LoadType, const WebMediaPlayerSource&, CorsMode) = 0;
+  virtual LoadTiming Load(LoadType,
+                          const WebMediaPlayerSource&,
+                          CorsMode,
+                          bool is_cache_disabled) = 0;
 
   // Playback controls.
   virtual void Play() = 0;
@@ -152,14 +163,23 @@ class WebMediaPlayer {
   // value if the hint is cleared.
   virtual void SetLatencyHint(double seconds) = 0;
 
+  // Sets a flag indicating that the WebMediaPlayer should apply pitch
+  // adjustments when using a playback rate other than 1.0.
+  virtual void SetPreservesPitch(bool preserves_pitch) = 0;
+
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
+
   // The associated media element is going to enter Picture-in-Picture. This
   // method should make sure the player is set up for this and has a SurfaceId
   // as it will be needed.
   virtual void OnRequestPictureInPicture() = 0;
 
-  virtual void RequestRemotePlayback() {}
-  virtual void RequestRemotePlaybackControl() {}
-  virtual void RequestRemotePlaybackStop() {}
+  // Called to notify about changes of the associated media element's media
+  // time, playback rate, and duration. During uninterrupted playback, the
+  // calls are still made periodically.
+  virtual void OnTimeUpdate() {}
+
   virtual void RequestRemotePlaybackDisabled(bool disabled) {}
   virtual void FlingingStarted() {}
   virtual void FlingingStopped() {}
@@ -168,7 +188,7 @@ class WebMediaPlayer {
   virtual WebTimeRanges Seekable() const = 0;
 
   // Attempts to switch the audio output device.
-  virtual void SetSinkId(const WebString& sing_id,
+  virtual bool SetSinkId(const WebString& sing_id,
                          WebSetSinkIdCompleteCallback) = 0;
 
   // True if the loaded media has a playable video/audio track.
@@ -179,15 +199,19 @@ class WebMediaPlayer {
   virtual bool IsRemote() const { return false; }
 
   // Dimension of the video.
-  virtual WebSize NaturalSize() const = 0;
+  virtual gfx::Size NaturalSize() const = 0;
 
-  virtual WebSize VisibleRect() const = 0;
+  virtual gfx::Size VisibleSize() const = 0;
 
   // Getters of playback state.
   virtual bool Paused() const = 0;
   virtual bool Seeking() const = 0;
+  // MSE allows authors to assign double values for duration.
+  // Here, we return double rather than TimeDelta to ensure
+  // that authors are returned exactly the value that they assign.
   virtual double Duration() const = 0;
   virtual double CurrentTime() const = 0;
+  virtual bool IsEnded() const = 0;
 
   virtual bool PausedWhenHidden() const { return false; }
 
@@ -218,130 +242,42 @@ class WebMediaPlayer {
   virtual uint64_t AudioDecodedByteCount() const = 0;
   virtual uint64_t VideoDecodedByteCount() const = 0;
 
+  // Set the volume multiplier to control audio ducking.
+  // Output volume should be set to |player_volume| * |multiplier|. The range
+  // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
+  virtual void SetVolumeMultiplier(double multiplier) = 0;
+
+  // Set the player as the persistent video. Persistent video should hide its
+  // controls and go fullscreen.
+  virtual void SetPersistentState(bool persistent) {}
+
+  // Notify the player that it is now eligible to start recording power
+  // measurements if |state| is true, else it is no longer eligible.
+  virtual void SetPowerExperimentState(bool enabled) {}
+
+  // Suspends the player for the host frame closed.
+  virtual void SuspendForFrameClosed() = 0;
+
   // Returns true if the player has a frame available for presentation. Usually
   // this just means the first frame has been delivered.
   virtual bool HasAvailableVideoFrame() const = 0;
 
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual void Paint(cc::PaintCanvas*,
-                     const WebRect&,
-                     cc::PaintFlags&,
-                     int already_uploaded_id = -1,
-                     VideoFrameUploadMetadata* out_metadata = nullptr) = 0;
+  // Renders the current frame into the provided cc::PaintCanvas.
+  virtual void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) = 0;
 
-  // Do a GPU-GPU texture copy of the current video frame to |texture|,
-  // reallocating |texture| at the appropriate size with given internal
-  // format, format, and type if necessary.
-  //
-  // Returns true iff the copy succeeded.
-  //
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual bool CopyVideoTextureToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      unsigned target,
-      unsigned texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) {
-    return false;
-  }
+  // Similar to Paint(), but just returns the frame directly instead of trying
+  // to upload or convert it. Note: This may kick off a process to update the
+  // current frame for a future call in some cases. Returns nullptr if no frame
+  // is available.
+  virtual scoped_refptr<media::VideoFrame> GetCurrentFrame() = 0;
 
-  // Do a CPU-GPU, YUV-RGB upload of the current video frame to |texture|,
-  // reallocating |texture| at the appropriate size with given internal
-  // format, format, and type if necessary.
-  //
-  // Returns true iff the copy succeeded.
-  //
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual bool CopyVideoYUVDataToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      unsigned target,
-      unsigned texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) {
-    return false;
-  }
-
-  // Copy sub video frame texture to |texture|.
-  //
-  // Returns true iff the copy succeeded.
-  virtual bool CopyVideoSubTextureToPlatformTexture(gpu::gles2::GLES2Interface*,
-                                                    unsigned target,
-                                                    unsigned texture,
-                                                    int level,
-                                                    int xoffset,
-                                                    int yoffset,
-                                                    bool premultiply_alpha,
-                                                    bool flip_y) {
-    return false;
-  }
-
-  // Do Tex(Sub)Image2D/3D for current frame. If it is not implemented for given
-  // parameters or fails, it returns false.
-  // The method is wrapping calls to glTexImage2D, glTexSubImage2D,
-  // glTexImage3D and glTexSubImage3D and parameters have the same name and
-  // meaning.
-  // Texture |texture| needs to be created and bound to active texture unit
-  // before this call. In addition, TexSubImage2D and TexSubImage3D require that
-  // previous TexImage2D and TexSubImage3D calls, respectively, defined the
-  // texture content.
-  virtual bool TexImageImpl(TexImageFunctionID function_id,
-                            unsigned target,
-                            gpu::gles2::GLES2Interface* gl,
-                            unsigned texture,
-                            int level,
-                            int internalformat,
-                            unsigned format,
-                            unsigned type,
-                            int xoffset,
-                            int yoffset,
-                            int zoffset,
-                            bool flip_y,
-                            bool premultiply_alpha) {
-    return false;
-  }
-
-  // Share video frame texture to |texture|. If the sharing is impossible or
-  // fails, it returns false.
-  virtual bool PrepareVideoFrameForWebGL(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned target,
-      unsigned texture,
-      int already_uploaded_id = -1,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata = nullptr) {
-    return false;
+  // Provides a PaintCanvasVideoRenderer instance owned by this WebMediaPlayer.
+  // Useful for ensuring that the paint/texturing operation for current frame is
+  // cached in cases of repainting/retexturing (since clients may not know that
+  // the underlying frame is unchanged). May only be used on the main thread and
+  // should not be held outside the scope of a single call site.
+  virtual media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() {
+    return nullptr;
   }
 
   virtual scoped_refptr<WebAudioSourceProviderImpl> GetAudioSourceProvider() {
@@ -393,17 +329,6 @@ class WebMediaPlayer {
   // but if the element is using them.
   virtual void OnHasNativeControlsChanged(bool) {}
 
-  enum class DisplayType {
-    // Playback is happening inline.
-    kInline,
-    // Playback is happening either with the video fullscreen. It may also be
-    // set when Blink detects that the video is effectively fullscreen even if
-    // the element is not.
-    kFullscreen,
-    // Playback is happening in a Picture-in-Picture window.
-    kPictureInPicture,
-  };
-
   // Callback called whenever the media element display type changes. By
   // default, the display type is `kInline`.
   virtual void OnDisplayTypeChanged(DisplayType) {}
@@ -423,10 +348,10 @@ class WebMediaPlayer {
   virtual int GetDelegateId() { return -1; }
 
   // Returns the SurfaceId the video element is currently using.
-  // Returns base::nullopt if the element isn't a video or doesn't have a
+  // Returns absl::nullopt if the element isn't a video or doesn't have a
   // SurfaceId associated to it.
-  virtual base::Optional<viz::SurfaceId> GetSurfaceId() {
-    return base::nullopt;
+  virtual absl::optional<viz::SurfaceId> GetSurfaceId() {
+    return absl::nullopt;
   }
 
   // Provide the media URL, after any redirects are applied.  May return an
@@ -434,12 +359,26 @@ class WebMediaPlayer {
   virtual GURL GetSrcAfterRedirects() { return GURL(); }
 
   // Register a request to be notified the next time a video frame is presented
-  // to the compositor. The video frame and its metadata will be surfaced via
-  // WebMediaPlayerClient::OnRequestAnimationFrame().
-  // TODO(https://crbug.com/1022186): Add pointer to spec.
-  virtual void RequestAnimationFrame() {}
+  // to the compositor. The request will be completed via
+  // WebMediaPlayerClient::OnRequestVideoFrameCallback(). The frame info can be
+  // retrieved via GetVideoFramePresentationMetadata().
+  // See https://wicg.github.io/video-rvfc/.
+  virtual void RequestVideoFrameCallback() {}
+  virtual std::unique_ptr<VideoFramePresentationMetadata>
+  GetVideoFramePresentationMetadata() {
+    return nullptr;
+  }
+
+  // Forces the WebMediaPlayer to update its frame if it is stale. This is used
+  // during immersive WebXR sessions with the RequestVideoFrameCallback() API,
+  // when compositors aren't driving frame updates.
+  virtual void UpdateFrameIfStale() {}
 
   virtual base::WeakPtr<WebMediaPlayer> AsWeakPtr() = 0;
+
+  // Adjusts the frame sink hierarchy for the media frame sink.
+  virtual void RegisterFrameSinkHierarchy() {}
+  virtual void UnregisterFrameSinkHierarchy() {}
 };
 
 }  // namespace blink

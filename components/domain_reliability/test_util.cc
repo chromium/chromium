@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/domain_reliability/scheduler.h"
-#include "net/url_request/url_request_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace domain_reliability {
@@ -28,17 +27,16 @@ class MockTimer : public MockableTime::Timer {
   // MockableTime::Timer implementation:
   void Start(const base::Location& posted_from,
              base::TimeDelta delay,
-             const base::Closure& user_task) override {
-    DCHECK(!user_task.is_null());
+             base::OnceClosure user_task) override {
+    DCHECK(user_task);
 
     if (running_)
       ++callback_sequence_number_;
     running_ = true;
-    user_task_ = user_task;
-    time_->AddTask(delay,
-        base::Bind(&MockTimer::OnDelayPassed,
-                   weak_factory_.GetWeakPtr(),
-                   callback_sequence_number_));
+    user_task_ = std::move(user_task);
+    time_->AddTask(delay, base::BindOnce(&MockTimer::OnDelayPassed,
+                                         weak_factory_.GetWeakPtr(),
+                                         callback_sequence_number_));
   }
 
   void Stop() override {
@@ -59,46 +57,50 @@ class MockTimer : public MockableTime::Timer {
     running_ = false;
 
     // Grab user task in case it re-entrantly starts the timer again.
-    base::Closure task_to_run = user_task_;
+    base::OnceClosure task_to_run = std::move(user_task_);
     user_task_.Reset();
-    task_to_run.Run();
+    std::move(task_to_run).Run();
   }
 
   MockTime* time_;
   bool running_;
   int callback_sequence_number_;
-  base::Closure user_task_;
+  base::OnceClosure user_task_;
   base::WeakPtrFactory<MockTimer> weak_factory_{this};
 };
 
 }  // namespace
 
 TestCallback::TestCallback()
-    : callback_(base::Bind(&TestCallback::OnCalled,
-                           base::Unretained(this))),
+    : callback_(
+          base::BindRepeating(&TestCallback::OnCalled, base::Unretained(this))),
       called_(false) {}
 
-TestCallback::~TestCallback() {}
+TestCallback::~TestCallback() = default;
 
 void TestCallback::OnCalled() {
   EXPECT_FALSE(called_);
   called_ = true;
 }
 
-MockUploader::MockUploader(const UploadRequestCallback& callback)
-    : callback_(callback),
-      discard_uploads_(true) {}
+MockUploader::MockUploader(UploadRequestCallback callback)
+    : callback_(callback), discard_uploads_(true) {}
 
-MockUploader::~MockUploader() {}
+MockUploader::~MockUploader() = default;
 
 bool MockUploader::discard_uploads() const { return discard_uploads_; }
 
-void MockUploader::UploadReport(const std::string& report_json,
-                                int max_upload_depth,
-                                const GURL& upload_url,
-                                const UploadCallback& callback) {
-  callback_.Run(report_json, max_upload_depth, upload_url, callback);
+void MockUploader::UploadReport(
+    const std::string& report_json,
+    int max_upload_depth,
+    const GURL& upload_url,
+    const net::NetworkIsolationKey& network_isolation_key,
+    UploadCallback callback) {
+  callback_.Run(report_json, max_upload_depth, upload_url,
+                network_isolation_key, std::move(callback));
 }
+
+void MockUploader::Shutdown() {}
 
 void MockUploader::SetDiscardUploads(bool discard_uploads) {
   discard_uploads_ = discard_uploads;
@@ -108,11 +110,16 @@ int MockUploader::GetDiscardedUploadCount() const {
   return 0;
 }
 
+base::TimeTicks MockTickClock::NowTicks() const {
+  return mock_time_->NowTicks();
+}
+
 MockTime::MockTime()
     : now_(base::Time::Now()),
       now_ticks_(base::TimeTicks::Now()),
       epoch_ticks_(now_ticks_),
-      task_sequence_number_(0) {
+      task_sequence_number_(0),
+      tick_clock_(this) {
   VLOG(1) << "Creating mock time: T=" << elapsed_sec() << "s";
 }
 
@@ -129,12 +136,16 @@ std::unique_ptr<MockableTime::Timer> MockTime::CreateTimer() {
   return std::unique_ptr<MockableTime::Timer>(new MockTimer(this));
 }
 
+const base::TickClock* MockTime::AsTickClock() const {
+  return &tick_clock_;
+}
+
 void MockTime::Advance(base::TimeDelta delta) {
   base::TimeTicks target_ticks = now_ticks_ + delta;
 
   while (!tasks_.empty() && tasks_.begin()->first.time <= target_ticks) {
     TaskKey key = tasks_.begin()->first;
-    base::Closure task = tasks_.begin()->second;
+    base::OnceClosure task = std::move(tasks_.begin()->second);
     tasks_.erase(tasks_.begin());
 
     DCHECK(now_ticks_ <= key.time);
@@ -142,7 +153,7 @@ void MockTime::Advance(base::TimeDelta delta) {
     AdvanceToInternal(key.time);
     VLOG(1) << "Advancing mock time: task at T=" << elapsed_sec() << "s";
 
-    task.Run();
+    std::move(task).Run();
   }
 
   DCHECK(now_ticks_ <= target_ticks);
@@ -150,8 +161,9 @@ void MockTime::Advance(base::TimeDelta delta) {
   VLOG(1) << "Advanced mock time: T=" << elapsed_sec() << "s";
 }
 
-void MockTime::AddTask(base::TimeDelta delay, const base::Closure& task) {
-  tasks_[TaskKey(now_ticks_ + delay, task_sequence_number_++)] = task;
+void MockTime::AddTask(base::TimeDelta delay, base::OnceClosure task) {
+  tasks_[TaskKey(now_ticks_ + delay, task_sequence_number_++)] =
+      std::move(task);
 }
 
 void MockTime::AdvanceToInternal(base::TimeTicks target_ticks) {
@@ -162,9 +174,9 @@ void MockTime::AdvanceToInternal(base::TimeTicks target_ticks) {
 
 DomainReliabilityScheduler::Params MakeTestSchedulerParams() {
   DomainReliabilityScheduler::Params params;
-  params.minimum_upload_delay = base::TimeDelta::FromMinutes(1);
-  params.maximum_upload_delay = base::TimeDelta::FromMinutes(5);
-  params.upload_retry_interval = base::TimeDelta::FromSeconds(15);
+  params.minimum_upload_delay = base::Minutes(1);
+  params.maximum_upload_delay = base::Minutes(5);
+  params.upload_retry_interval = base::Seconds(15);
   return params;
 }
 

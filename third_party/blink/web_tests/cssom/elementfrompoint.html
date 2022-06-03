@@ -8,16 +8,18 @@
 <div style="width: 100.25px;">abc</div>
 <script>
 test(function() {
-    var divElement = document.querySelector("div");
+  var divElement = document.querySelector("div");
 
-    // Test that elementFromPoint hits div element.
-    assert_equals(document.elementFromPoint(100.249, 12), divElement);
+  // Test that elementFromPoint hits div element.
+  assert_equals(document.elementFromPoint(100.249, 12), divElement);
 
+  if (window.testRunner) {
     // Page zoom factor should not affect result.
-    eventSender.setPageZoomFactor(3.0);
+    testRunner.setPageZoomFactor(3.0);
     assert_equals(document.elementFromPoint(100.249, 12), divElement);
 
-    eventSender.setPageZoomFactor(4.0);
+    testRunner.setPageZoomFactor(4.0);
     assert_equals(document.elementFromPoint(100.249, 12), divElement);
+  }
 });
 </script>

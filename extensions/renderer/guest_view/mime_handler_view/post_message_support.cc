@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/guest_view/mime_handler_view_uma_types.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
@@ -20,8 +19,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace extensions {
-
-using UMAType = MimeHandlerViewUMATypes::Type;
 
 namespace {
 
@@ -129,9 +126,6 @@ v8::Local<v8::Object> PostMessageSupport::GetScriptableObject(
 
 void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
                                                v8::Local<v8::Value> message) {
-  if (should_report_internal_messages_)
-    RecordUMAForPostMessage(message);
-
   if (!is_active_) {
     pending_messages_.push_back(v8::Global<v8::Value>(isolate, message));
     return;
@@ -162,14 +156,10 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
 }
 
 void PostMessageSupport::PostMessageFromValue(const base::Value& message) {
-  base::UmaHistogramEnumeration(MimeHandlerViewUMATypes::kUMAName,
-                                UMAType::kPostMessageInternal);
   auto* frame = delegate_->GetSourceFrame();
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(frame->MainWorldScriptContext());
-  base::AutoReset<bool> avoid_recording_internal_messages(
-      &should_report_internal_messages_, false);
   PostJavaScriptMessage(isolate,
                         content::V8ValueConverter::Create()->ToV8Value(
                             &message, frame->MainWorldScriptContext()));
@@ -191,41 +181,6 @@ void PostMessageSupport::SetActive() {
                           v8::Local<v8::Value>::New(isolate, pending_message));
 
   pending_messages_.clear();
-}
-
-void PostMessageSupport::RecordUMAForPostMessage(
-    v8::Local<v8::Value>& message) {
-  auto data = content::V8ValueConverter::Create()->FromV8Value(
-      message, delegate_->GetSourceFrame()->MainWorldScriptContext());
-  std::string message_type;
-  if (data->is_dict()) {
-    base::DictionaryValue::From(std::move(data))
-        ->GetString("type", &message_type);
-  }
-
-  bool accessible = delegate_->IsResourceAccessibleBySource();
-  MimeHandlerViewUMATypes::Type post_message_type;
-  if (message_type == "getSelectedText") {
-    post_message_type = accessible ? UMAType::kAccessibleGetSelectedText
-                                   : UMAType::kInaccessibleGetSelectedText;
-  } else if (message_type == "print") {
-    post_message_type =
-        accessible ? UMAType::kAccessiblePrint : UMAType::kInaccessiblePrint;
-  } else if (message_type == "selectAll") {
-    post_message_type = accessible ? UMAType::kAccessibleSelectAll
-                                   : UMAType::kInaccessibleSelectAll;
-  } else {
-    post_message_type = accessible ? UMAType::kAccessibleInvalid
-                                   : UMAType::kInaccessibleInvalid;
-  }
-  DCHECK_NE(post_message_type, UMAType::kDidCreateMimeHandlerViewContainerBase);
-  base::UmaHistogramEnumeration(MimeHandlerViewUMATypes::kUMAName,
-                                post_message_type);
-  if (delegate_->IsEmbedded()) {
-    base::UmaHistogramEnumeration(
-        MimeHandlerViewUMATypes::kUMAName,
-        UMAType::kPostMessageToEmbeddedMimeHandlerView);
-  }
 }
 
 }  // namespace extensions

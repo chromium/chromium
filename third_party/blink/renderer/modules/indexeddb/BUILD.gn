@@ -16,8 +16,6 @@ blink_modules_sources("indexeddb") {
     "idb_cursor_with_value.h",
     "idb_database.cc",
     "idb_database.h",
-    "idb_database_callbacks.cc",
-    "idb_database_callbacks.h",
     "idb_database_error.h",
     "idb_event_dispatcher.cc",
     "idb_event_dispatcher.h",
@@ -36,12 +34,6 @@ blink_modules_sources("indexeddb") {
     "idb_name_and_version.h",
     "idb_object_store.cc",
     "idb_object_store.h",
-    "idb_observation.cc",
-    "idb_observation.h",
-    "idb_observer.cc",
-    "idb_observer.h",
-    "idb_observer_changes.cc",
-    "idb_observer_changes.h",
     "idb_open_db_request.cc",
     "idb_open_db_request.h",
     "idb_request.cc",
@@ -62,8 +54,6 @@ blink_modules_sources("indexeddb") {
     "indexed_db.h",
     "indexed_db_blink_mojom_traits.cc",
     "indexed_db_blink_mojom_traits.h",
-    "indexed_db_database_callbacks_impl.cc",
-    "indexed_db_database_callbacks_impl.h",
     "indexed_db_dispatcher.cc",
     "indexed_db_dispatcher.h",
     "inspector_indexed_db_agent.cc",
@@ -71,24 +61,51 @@ blink_modules_sources("indexeddb") {
     "web_idb_callbacks.h",
     "web_idb_callbacks_impl.cc",
     "web_idb_callbacks_impl.h",
+    "web_idb_cursor.cc",
     "web_idb_cursor.h",
-    "web_idb_cursor_impl.cc",
-    "web_idb_cursor_impl.h",
+    "web_idb_database.cc",
     "web_idb_database.h",
-    "web_idb_database_callbacks.h",
-    "web_idb_database_callbacks_impl.cc",
-    "web_idb_database_callbacks_impl.h",
-    "web_idb_database_impl.cc",
-    "web_idb_database_impl.h",
-    "web_idb_factory.h",
-    "web_idb_factory_impl.cc",
-    "web_idb_factory_impl.h",
+    "web_idb_transaction.cc",
     "web_idb_transaction.h",
-    "web_idb_transaction_impl.cc",
-    "web_idb_transaction_impl.h",
   ]
 
-  public_deps = [
-    "//third_party/blink/public/mojom:mojom_modules_blink",
+  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "idb_factory_test.cc",
+    "idb_key_path_test.cc",
+    "idb_request_test.cc",
+    "idb_test_helper.cc",
+    "idb_transaction_test.cc",
+    "idb_value_wrapping_test.cc",
+    "indexed_db_blink_mojom_traits_test.cc",
+    "mock_idb_database.cc",
+    "mock_idb_database.h",
+    "mock_idb_transaction.cc",
+    "mock_idb_transaction.h",
+    "mock_web_idb_callbacks.cc",
+    "mock_web_idb_callbacks.h",
+    "web_idb_cursor_unittest.cc",
+    "web_idb_transaction_unittest.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/platform:test_support",
   ]
 }

@@ -5,7 +5,7 @@
 #ifndef UI_BASE_MOJOM_WINDOW_OPEN_DISPOSITION_MOJOM_TRAITS_H_
 #define UI_BASE_MOJOM_WINDOW_OPEN_DISPOSITION_MOJOM_TRAITS_H_
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"

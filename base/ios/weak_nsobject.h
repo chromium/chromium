@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 

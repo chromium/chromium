@@ -13,6 +13,8 @@ namespace offline_pages {
 namespace auto_fetch {
 ClientIdMetadata::ClientIdMetadata() = default;
 ClientIdMetadata::ClientIdMetadata(const ClientIdMetadata&) = default;
+ClientIdMetadata& ClientIdMetadata::operator=(const ClientIdMetadata&) =
+    default;
 
 ClientId MakeClientId(const ClientIdMetadata& metadata) {
   // Here, the 'A' prefix is used so that future versions can easily change the
@@ -21,15 +23,15 @@ ClientId MakeClientId(const ClientIdMetadata& metadata) {
                   base::StrCat({"A", std::to_string(metadata.android_tab_id)}));
 }
 
-base::Optional<ClientIdMetadata> ExtractMetadata(const ClientId& id) {
+absl::optional<ClientIdMetadata> ExtractMetadata(const ClientId& id) {
   if (id.name_space != kAutoAsyncNamespace)
-    return base::nullopt;
+    return absl::nullopt;
   if (id.id.empty() || id.id[0] != 'A')
-    return base::nullopt;
+    return absl::nullopt;
   ClientIdMetadata metadata;
   if (!base::StringToInt(base::StringPiece(id.id).substr(1),
                          &metadata.android_tab_id))
-    return base::nullopt;
+    return absl::nullopt;
   return metadata;
 }
 

@@ -127,8 +127,7 @@ function test2() {
         position = elementCenterPosition(picker._selectElement.children[0]);
         eventSender.updateTouchPoint(0, position[0], position[1]);
         eventSender.touchMove();
-        eventSender.gestureScrollBegin(position[0], position[1]);
-        eventSender.gestureScrollUpdate(0, -130);
+        eventSender.gestureScrollPopup(position[0], position[1], 0, -130);
         setTimeout(test2AfterScrollEvent, 1000);
     }, function () {
         testFailed('picker didn\'t open')
@@ -141,7 +140,6 @@ function test2AfterScrollEvent() {
     shouldBeEqualToString('picker._selectElement.value', '0');
     eventSender.releaseTouchPoint(0);
     eventSender.touchEnd();
-    eventSender.gestureScrollEnd(0, 0);
 
     shouldNotBe('internals.pagePopupWindow', 'null');
     shouldBeEqualToString('menuElement2.value', '2');

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_
 #define CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -22,13 +21,18 @@ class SearchGeolocationDisclosureTabHelper
       public content::WebContentsUserData<
           SearchGeolocationDisclosureTabHelper> {
  public:
+  SearchGeolocationDisclosureTabHelper(
+      const SearchGeolocationDisclosureTabHelper&) = delete;
+  SearchGeolocationDisclosureTabHelper& operator=(
+      const SearchGeolocationDisclosureTabHelper&) = delete;
+
   ~SearchGeolocationDisclosureTabHelper() override;
 
   // content::WebContentsObserver overrides.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
-  void MaybeShowDisclosureForAPIAccess(const GURL& gurl);
+  void MaybeShowDisclosureForAPIAccess(content::RenderFrameHost* rfh,
+                                       const GURL& requesting_origin);
 
   static void ResetDisclosure(Profile* profile);
 
@@ -43,8 +47,8 @@ class SearchGeolocationDisclosureTabHelper
   friend class content::WebContentsUserData<
       SearchGeolocationDisclosureTabHelper>;
 
-  void MaybeShowDisclosureForNavigation(const GURL& gurl);
-  void MaybeShowDisclosureForValidUrl(const GURL& gurl);
+  void MaybeShowDisclosureForValidUrl(content::RenderFrameHost* rfh,
+                                      const GURL& gurl);
 
   // Determines if the disclosure should be shown for the URL when a navigation
   // to the URL occurs. This is the case whenever the URL is a result of an
@@ -63,8 +67,6 @@ class SearchGeolocationDisclosureTabHelper
   Profile* GetProfile();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureTabHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_

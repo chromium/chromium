@@ -6,14 +6,14 @@
 
 namespace media {
 
-MediaUrlParams::MediaUrlParams(GURL media_url,
-                               GURL site_for_cookies,
-                               url::Origin top_frame_origin,
+MediaUrlParams::MediaUrlParams(const GURL& media_url,
+                               const net::SiteForCookies& site_for_cookies,
+                               const url::Origin& top_frame_origin,
                                bool allow_credentials,
                                bool is_hls)
-    : media_url(std::move(media_url)),
-      site_for_cookies(std::move(site_for_cookies)),
-      top_frame_origin(std::move(top_frame_origin)),
+    : media_url(media_url),
+      site_for_cookies(site_for_cookies),
+      top_frame_origin(top_frame_origin),
       allow_credentials(allow_credentials),
       is_hls(is_hls) {}
 

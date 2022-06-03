@@ -42,4 +42,4 @@ bool ParseVDMX(int* ymax,
                unsigned target_pixel_size);
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_VDMX_PARSER_H_

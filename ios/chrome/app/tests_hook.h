@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_APP_TESTS_HOOK_H_
 #define IOS_CHROME_APP_TESTS_HOOK_H_
 
+namespace policy {
+class ConfigurationPolicyProvider;
+}
+
 namespace tests_hook {
 
 // Returns true if app group access should be disabled as tests don't have the
@@ -16,6 +20,10 @@ bool DisableAppGroupAccess();
 // run unimpeded.
 bool DisableContentSuggestions();
 
+// Returns true if Discover feed should be disabled to allow tests to run
+// without it.
+bool DisableDiscoverFeed();
+
 // Returns true if the first_run path should be disabled to allow other tests to
 // run unimpeded.
 bool DisableFirstRun();
@@ -24,16 +32,24 @@ bool DisableFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
-// Returns true if the signin recall promo should be disabled to allow other
+// Returns true if the upgrade sign-in promo should be disabled to allow other
 // tests to run unimpeded.
-bool DisableSigninRecallPromo();
+bool DisableUpgradeSigninPromo();
 
 // Returns true if the update service should be disabled so that the update
 // infobar won't be shown during testing.
 bool DisableUpdateService();
 
-// Global integration tests setup.  This is not used by EarlGrey-based
-// integration tests.
+// The main thread freeze detection is interfering with the EarlGrey
+// synchronization.
+// Return true if it should be disabled.
+bool DisableMainThreadFreezeDetection();
+
+// Returns a policy provider that should be installed as the platform policy
+// provider when testing. May return nullptr.
+policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
+
+// Global integration tests setup.
 void SetUpTestsIfPresent();
 
 // Runs the integration tests.  This is not used by EarlGrey-based integration

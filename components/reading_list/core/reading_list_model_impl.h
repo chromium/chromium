@@ -40,6 +40,9 @@ class ReadingListModelImpl : public ReadingListModel,
 
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
 
+  ReadingListModelImpl(const ReadingListModelImpl&) = delete;
+  ReadingListModelImpl& operator=(const ReadingListModelImpl&) = delete;
+
   ~ReadingListModelImpl() override;
 
   void StoreLoaded(std::unique_ptr<ReadingListEntries> entries) override;
@@ -65,6 +68,13 @@ class ReadingListModelImpl : public ReadingListModel,
 
   void RemoveEntryByURL(const GURL& url) override;
 
+  bool IsUrlSupported(const GURL& url) override;
+
+  const ReadingListEntry& AddEntry(
+      const GURL& url,
+      const std::string& title,
+      reading_list::EntrySource source,
+      base::TimeDelta estimated_read_time) override;
   const ReadingListEntry& AddEntry(const GURL& url,
                                    const std::string& title,
                                    reading_list::EntrySource source) override;
@@ -72,6 +82,8 @@ class ReadingListModelImpl : public ReadingListModel,
   void SetReadStatus(const GURL& url, bool read) override;
 
   void SetEntryTitle(const GURL& url, const std::string& title) override;
+  void SetEstimatedReadTime(const GURL& url,
+                            base::TimeDelta estimated_read_time) override;
   void SetEntryDistilledState(
       const GURL& url,
       ReadingListEntry::DistillationState state) override;
@@ -99,12 +111,16 @@ class ReadingListModelImpl : public ReadingListModel,
    public:
     explicit ScopedReadingListBatchUpdate(ReadingListModelImpl* model);
 
+    ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
+    ScopedReadingListBatchUpdate& operator=(
+        const ScopedReadingListBatchUpdate&) = delete;
+
     ~ScopedReadingListBatchUpdate() override;
+
+    void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
 
    private:
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> storage_token_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };
 
  protected:
@@ -148,8 +164,6 @@ class ReadingListModelImpl : public ReadingListModel,
   bool loaded_;
 
   base::WeakPtrFactory<ReadingListModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelImpl);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_IMPL_H_

@@ -65,7 +65,7 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
 
     @Override
     public View acquireView() {
-        ViewGroup containerView = getContainerView();
+        ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return null;
         View anchorView = new View(containerView.getContext());
         containerView.addView(anchorView);
@@ -77,7 +77,7 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
     @Override
     public void removeView(View anchorView) {
         mAnchorViews.remove(anchorView);
-        ViewGroup containerView = getContainerView();
+        ViewGroup containerView = getContainerViewGroup();
         if (containerView != null) {
             containerView.removeView(anchorView);
         }
@@ -104,7 +104,7 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
     @Override
     public void setViewPosition(View anchorView, float x, float y, float width, float height,
             int leftMargin, int topMargin) {
-        ViewGroup containerView = getContainerView();
+        ViewGroup containerView = getContainerViewGroup();
         if (!mAnchorViews.containsKey(anchorView) || containerView == null) return;
 
         mAnchorViews.put(anchorView, new Position(x, y, width, height, leftMargin, topMargin));

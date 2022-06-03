@@ -4,8 +4,7 @@
 
 #include "ui/gfx/font_fallback_win.h"
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,12 +19,13 @@ class FontFallbackWinTest : public testing::Test {
  public:
   FontFallbackWinTest() = default;
 
+  FontFallbackWinTest(const FontFallbackWinTest&) = delete;
+  FontFallbackWinTest& operator=(const FontFallbackWinTest&) = delete;
+
  private:
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(FontFallbackWinTest);
 };
 
 }  // namespace
@@ -88,18 +88,18 @@ TEST_F(FontFallbackWinTest, NulTerminatedStringPiece) {
   Font base_font;
   Font fallback_font;
   // Multiple ending NUL characters.
-  const wchar_t kTest1[] = {0x0540, 0x0541, 0, 0, 0};
+  const char16_t kTest1[] = {0x0540, 0x0541, 0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                                base::StringPiece16(kTest1, base::size(kTest1)),
                                &fallback_font));
   // No ending NUL character.
-  const wchar_t kTest2[] = {0x0540, 0x0541};
+  const char16_t kTest2[] = {0x0540, 0x0541};
   EXPECT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                               base::StringPiece16(kTest2, base::size(kTest2)),
                               &fallback_font));
 
   // NUL only characters.
-  const wchar_t kTest3[] = {0, 0, 0};
+  const char16_t kTest3[] = {0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                                base::StringPiece16(kTest3, base::size(kTest3)),
                                &fallback_font));
@@ -115,7 +115,7 @@ TEST_F(FontFallbackWinTest, CJKLocaleFallback) {
   // common feature of written Chinese (hanzi), Japanese (kanji), and Korean
   // (hanja). The same text will be rendered using a different font based on
   // locale.
-  const wchar_t kCJKTest[] = L"\u8AA4\u904E\u9AA8";
+  const char16_t kCJKTest[] = u"\u8AA4\u904E\u9AA8";
   Font base_font;
   Font fallback_font;
 

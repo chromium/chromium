@@ -12,7 +12,7 @@ namespace headless {
 namespace {
 
 template <class T>
-const T& ReturnOverriddenValue(const base::Optional<T>& value,
+const T& ReturnOverriddenValue(const absl::optional<T>& value,
                                const T& default_value) {
   return value ? *value : default_value;
 }
@@ -70,7 +70,7 @@ bool HeadlessBrowserContextOptions::block_new_web_contents() const {
                                browser_options_->block_new_web_contents);
 }
 
-base::RepeatingCallback<void(WebPreferences*)>
+base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
 HeadlessBrowserContextOptions::override_web_preferences_callback() const {
   return ReturnOverriddenValue(
       override_web_preferences_callback_,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_GET_PER_CONTEXT_DATA_H_
-#define EXTENSIONS_RENDERER_GET_PER_CONTEXT_DATA_H_
+#ifndef EXTENSIONS_RENDERER_BINDINGS_GET_PER_CONTEXT_DATA_H_
+#define EXTENSIONS_RENDERER_BINDINGS_GET_PER_CONTEXT_DATA_H_
 
 #include "gin/per_context_data.h"
 #include "v8/include/v8.h"
@@ -34,4 +34,4 @@ PerContextData* GetPerContextData(v8::Local<v8::Context> context,
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_GET_PER_CONTEXT_DATA_H_
+#endif  // EXTENSIONS_RENDERER_BINDINGS_GET_PER_CONTEXT_DATA_H_

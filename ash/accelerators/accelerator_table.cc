@@ -4,8 +4,10 @@
 
 #include "ash/accelerators/accelerator_table.h"
 
+#include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -32,46 +34,37 @@ namespace ash {
 // 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
-    {true, ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, LOCK_SCREEN},
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN, SHOW_TASK_MANAGER},
 
     // Deprecated in M59.
     {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     SHOW_IME_MENU_BUBBLE},
-
-    // Deprecated in M61.
-    {true, ui::VKEY_H, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     TOGGLE_HIGH_CONTRAST}};
+     SHOW_IME_MENU_BUBBLE}};
 
 const size_t kDeprecatedAcceleratorsLength =
     base::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
-    {
-        LOCK_SCREEN, "Ash.Accelerators.Deprecated.LockScreen",
-        IDS_DEPRECATED_LOCK_SCREEN_MSG, IDS_SHORTCUT_LOCK_SCREEN_OLD,
-        IDS_SHORTCUT_LOCK_SCREEN_NEW,
-        false  // Old accelerator was disabled in M56.
-    },
+    // The action for the old shortcut was stopped in M92. Delete
+    // completely in M94.
     {SHOW_TASK_MANAGER, "Ash.Accelerators.Deprecated.ShowTaskManager",
      IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_OLD,
-     IDS_SHORTCUT_TASK_MANAGER_NEW, true},
+     IDS_SHORTCUT_TASK_MANAGER_NEW, false},
+    // The action for the old shortcut was stopped in M92. Delete
+    // completely in M94.
     {SHOW_IME_MENU_BUBBLE, "Ash.Accelerators.Deprecated.ShowImeMenuBubble",
      IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG, IDS_SHORTCUT_IME_BUBBLE_OLD,
-     IDS_SHORTCUT_IME_BUBBLE_NEW, true},
-    {
-        TOGGLE_HIGH_CONTRAST, "Ash.Accelerators.Deprecated.ToggleHighContrast",
-        IDS_DEPRECATED_TOGGLE_HIGH_CONTRAST_MSG,
-        IDS_SHORTCUT_TOGGLE_HIGH_CONTRAST_OLD,
-        IDS_SHORTCUT_TOGGLE_HIGH_CONTRAST_NEW,
-        false  // Old accelerator was disabled immediately upon deprecation.
-    }};
+     IDS_SHORTCUT_IME_BUBBLE_NEW, false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     base::size(kDeprecatedAcceleratorsData);
 
+static_assert(kDeprecatedAcceleratorsLength ==
+                  kDeprecatedAcceleratorsDataLength,
+              "Deprecated accelerator tables must be kept in sync");
+
 const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_N, kDebugModifier, TOGGLE_WIFI},
+    {true, ui::VKEY_M, kDebugModifier, DEBUG_MICROPHONE_MUTE_TOGGLE},
     {true, ui::VKEY_O, kDebugModifier, DEBUG_SHOW_TOAST},
     {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      DEBUG_TOGGLE_TOUCH_PAD},
@@ -83,11 +76,11 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_L, kDebugModifier, DEBUG_PRINT_LAYER_HIERARCHY},
     {true, ui::VKEY_V, kDebugModifier, DEBUG_PRINT_VIEW_HIERARCHY},
     {true, ui::VKEY_W, kDebugModifier, DEBUG_PRINT_WINDOW_HIERARCHY},
-    {true, ui::VKEY_D, kDebugModifier, DEBUG_TOGGLE_DEVICE_SCALE_FACTOR},
     {true, ui::VKEY_B, kDebugModifier, DEBUG_TOGGLE_SHOW_DEBUG_BORDERS},
     {true, ui::VKEY_F, kDebugModifier, DEBUG_TOGGLE_SHOW_FPS_COUNTER},
     {true, ui::VKEY_P, kDebugModifier, DEBUG_TOGGLE_SHOW_PAINT_RECTS},
     {true, ui::VKEY_K, kDebugModifier, DEBUG_TRIGGER_CRASH},
+    {true, ui::VKEY_G, kDebugModifier, DEBUG_TOGGLE_HUD_DISPLAY},
 };
 
 const size_t kDebugAcceleratorDataLength = base::size(kDebugAcceleratorData);
@@ -122,6 +115,8 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
     // TODO(wutao): Get a shortcut for the Ambient mode.
     {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
      START_AMBIENT_MODE},
+    // For testing on Linux desktop where it's hard to rebind the caps lock key.
+    {true, ui::VKEY_A, ui::EF_ALT_DOWN, DEV_TOGGLE_APP_LIST},
 };
 
 const size_t kDeveloperAcceleratorDataLength =
@@ -147,6 +142,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     DEBUG_PRINT_LAYER_HIERARCHY,
     DEBUG_PRINT_VIEW_HIERARCHY,
     DEBUG_PRINT_WINDOW_HIERARCHY,
+    DEBUG_TOGGLE_HUD_DISPLAY,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
     DEBUG_TOGGLE_TABLET_MODE,
@@ -156,9 +152,16 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     KEYBOARD_BRIGHTNESS_UP,
     MAGNIFIER_ZOOM_IN,   // Control+F7
     MAGNIFIER_ZOOM_OUT,  // Control+F6
+    MEDIA_FAST_FORWARD,
     MEDIA_NEXT_TRACK,
+    MEDIA_PAUSE,
+    MEDIA_PLAY,
     MEDIA_PLAY_PAUSE,
     MEDIA_PREV_TRACK,
+    MEDIA_REWIND,
+    MEDIA_STOP,
+    MICROPHONE_MUTE_TOGGLE,
+    PRIVACY_SCREEN_TOGGLE,
     PRINT_UI_HIERARCHIES,
     ROTATE_SCREEN,
     SCALE_UI_DOWN,
@@ -168,9 +171,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     START_AMBIENT_MODE,
     SWITCH_TO_LAST_USED_IME,
     SWITCH_TO_NEXT_IME,
-    TAKE_PARTIAL_SCREENSHOT,
     TAKE_SCREENSHOT,
-    TAKE_WINDOW_SCREENSHOT,
     TOGGLE_CAPS_LOCK,
     TOGGLE_DICTATION,
     TOGGLE_DOCKED_MAGNIFIER,
@@ -194,7 +195,8 @@ const size_t kActionsAllowedAtLoginOrLockScreenLength =
     base::size(kActionsAllowedAtLoginOrLockScreen);
 
 const AcceleratorAction kActionsAllowedAtLockScreen[] = {
-    EXIT, SUSPEND,
+    EXIT,
+    SUSPEND,
 };
 
 const size_t kActionsAllowedAtLockScreenLength =
@@ -210,6 +212,7 @@ const size_t kActionsAllowedAtPowerMenuLength =
 const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
     DEV_ADD_REMOVE_DISPLAY,
@@ -220,13 +223,20 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     LOCK_SCREEN,
     MAGNIFIER_ZOOM_IN,
     MAGNIFIER_ZOOM_OUT,
+    MEDIA_FAST_FORWARD,
     MEDIA_NEXT_TRACK,
+    MEDIA_PAUSE,
+    MEDIA_PLAY,
     MEDIA_PLAY_PAUSE,
     MEDIA_PREV_TRACK,
+    MEDIA_REWIND,
+    MEDIA_STOP,
+    MICROPHONE_MUTE_TOGGLE,
     OPEN_FEEDBACK_PAGE,
     POWER_PRESSED,
     POWER_RELEASED,
     PRINT_UI_HIERARCHIES,
+    PRIVACY_SCREEN_TOGGLE,
     ROTATE_SCREEN,
     SCALE_UI_DOWN,
     SCALE_UI_RESET,
@@ -266,8 +276,10 @@ const AcceleratorAction kRepeatableActions[] = {
     KEYBOARD_BRIGHTNESS_UP,
     MAGNIFIER_ZOOM_IN,
     MAGNIFIER_ZOOM_OUT,
+    MEDIA_FAST_FORWARD,
     MEDIA_NEXT_TRACK,
     MEDIA_PREV_TRACK,
+    MEDIA_REWIND,
     RESTORE_TAB,
     VOLUME_DOWN,
     VOLUME_UP,
@@ -278,6 +290,7 @@ const size_t kRepeatableActionsLength = base::size(kRepeatableActions);
 const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_PRINT_LAYER_HIERARCHY,
     DEBUG_PRINT_VIEW_HIERARCHY,
     DEBUG_PRINT_WINDOW_HIERARCHY,
@@ -289,12 +302,19 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     KEYBOARD_BRIGHTNESS_UP,
     MAGNIFIER_ZOOM_IN,   // Control+F7
     MAGNIFIER_ZOOM_OUT,  // Control+F6
+    MEDIA_FAST_FORWARD,
     MEDIA_NEXT_TRACK,
+    MEDIA_PAUSE,
+    MEDIA_PLAY,
     MEDIA_PLAY_PAUSE,
     MEDIA_PREV_TRACK,
+    MEDIA_REWIND,
+    MEDIA_STOP,
+    MICROPHONE_MUTE_TOGGLE,
     POWER_PRESSED,
     POWER_RELEASED,
     PRINT_UI_HIERARCHIES,
+    PRIVACY_SCREEN_TOGGLE,
     ROTATE_SCREEN,
     SCALE_UI_DOWN,
     SCALE_UI_RESET,
@@ -303,6 +323,7 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     SWITCH_TO_LAST_USED_IME,
     SWITCH_TO_NEXT_IME,
     TOGGLE_CAPS_LOCK,
+    TOGGLE_CLIPBOARD_HISTORY,
     TOGGLE_DICTATION,
     TOGGLE_DOCKED_MAGNIFIER,
     TOGGLE_FULLSCREEN_MAGNIFIER,
@@ -331,11 +352,21 @@ const AcceleratorAction kActionsAllowedInPinnedMode[] = {
 const size_t kActionsAllowedInPinnedModeLength =
     base::size(kActionsAllowedInPinnedMode);
 
+const AcceleratorAction kActionsAllowedInAppMode[] = {
+    FOCUS_SHELF,
+};
+
+const size_t kActionsAllowedInAppModeLength =
+    base::size(kActionsAllowedInAppMode);
+
 const AcceleratorAction kActionsNeedingWindow[] = {
     // clang-format off
-    DESKS_MOVE_ACTIVE_ITEM,
+    DESKS_MOVE_ACTIVE_ITEM_LEFT,
+    DESKS_MOVE_ACTIVE_ITEM_RIGHT,
+    DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS,
     MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS,
     ROTATE_WINDOW,
+    TOGGLE_FLOATING,
     TOGGLE_FULLSCREEN,
     TOGGLE_MAXIMIZED,
     WINDOW_CYCLE_SNAP_LEFT,
@@ -349,15 +380,30 @@ const size_t kActionsNeedingWindowLength = base::size(kActionsNeedingWindow);
 const AcceleratorAction kActionsKeepingMenuOpen[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
+    // Keep the menu open when switching desks. The desk activation code will
+    // close the menu without animation manually. Otherwise, the menu will fade
+    // out and a trace will be visible while switching desks.
+    DESKS_ACTIVATE_DESK_LEFT,
+    DESKS_ACTIVATE_DESK_RIGHT,
+    DESKS_NEW_DESK,
+    DESKS_REMOVE_CURRENT_DESK,
     DISABLE_CAPS_LOCK,
     KEYBOARD_BRIGHTNESS_DOWN,
     KEYBOARD_BRIGHTNESS_UP,
+    MEDIA_FAST_FORWARD,
     MEDIA_NEXT_TRACK,
+    MEDIA_PAUSE,
+    MEDIA_PLAY,
     MEDIA_PLAY_PAUSE,
     MEDIA_PREV_TRACK,
+    MEDIA_REWIND,
+    MEDIA_STOP,
+    MICROPHONE_MUTE_TOGGLE,
     PRINT_UI_HIERARCHIES,
+    PRIVACY_SCREEN_TOGGLE,
     SWITCH_TO_LAST_USED_IME,
     SWITCH_TO_NEXT_IME,
     TAKE_PARTIAL_SCREENSHOT,
@@ -366,6 +412,7 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     TOGGLE_APP_LIST,
     TOGGLE_APP_LIST_FULLSCREEN,
     TOGGLE_CAPS_LOCK,
+    TOGGLE_CLIPBOARD_HISTORY,
     TOGGLE_DICTATION,
     TOGGLE_DOCKED_MAGNIFIER,
     TOGGLE_FULLSCREEN_MAGNIFIER,

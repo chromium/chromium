@@ -5,37 +5,13 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/chrome_build.gni")
 
-buildflag_header("ios_multi_window_buildflags") {
-  header = "multi_window_buildflags.h"
-  header_dir = "ios/chrome/browser/ui/util"
-  flags = [ "IOS_MULTIWINDOW_ENABLED=$ios_enable_multi_window" ]
-}
-
-source_set("multiwindow_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  sources = [
-    "multi_window_support.h",
-    "multi_window_support.mm",
-  ]
-
-  deps = [
-    ":ios_multi_window_buildflags",
-    "//base",
-  ]
-}
-
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "CRUILabel+AttributeUtils.h",
-    "CRUILabel+AttributeUtils.mm",
     "accessibility_close_menu_button.h",
     "accessibility_close_menu_button.mm",
     "animation_util.h",
     "animation_util.mm",
-    "core_text_util.h",
-    "core_text_util.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
     "force_touch_long_press_gesture_recognizer.h",
@@ -44,14 +20,8 @@ source_set("util") {
     "i18n_string.mm",
     "keyboard_observer_helper.h",
     "keyboard_observer_helper.mm",
-    "label_link_controller.h",
-    "label_link_controller.mm",
-    "label_observer.h",
-    "label_observer.mm",
     "layout_guide_names.h",
     "layout_guide_names.mm",
-    "manual_text_framer.h",
-    "manual_text_framer.mm",
     "named_guide.h",
     "named_guide.mm",
     "named_guide_util.h",
@@ -64,15 +34,10 @@ source_set("util") {
     "pasteboard_util.mm",
     "property_animator_group.h",
     "property_animator_group.mm",
-    "relaxed_bounds_constraints_hittest.h",
     "reversed_animation.h",
     "reversed_animation.mm",
     "rtl_geometry.h",
     "rtl_geometry.mm",
-    "text_frame.h",
-    "text_frame.mm",
-    "text_region_mapper.h",
-    "text_region_mapper.mm",
     "top_view_controller.h",
     "top_view_controller.mm",
     "transparent_link_button.h",
@@ -91,10 +56,12 @@ source_set("util") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/toolbar/public:feature_flags",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/common:timing",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/web:threads",
+    "//ios/web/common:uikit",
     "//ios/web/public/thread:thread",
     "//ios/web/thread",
     "//net",
@@ -102,7 +69,7 @@ source_set("util") {
     "//ui/gfx",
     "//url",
   ]
-  libs = [
+  frameworks = [
     "Accelerate.framework",
     "CoreGraphics.framework",
     "QuartzCore.framework",
@@ -122,21 +89,24 @@ source_set("terms_util") {
   ]
 }
 
+source_set("url_with_title") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "url_with_title.h",
+    "url_with_title.mm",
+  ]
+  deps = [ "//url" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "CRUILabel+AttributeUtils_unittest.mm",
-    "core_text_util_unittest.mm",
-    "dynamic_type_util_unittest.mm",
     "force_touch_long_press_gesture_recognizer_unittest.mm",
-    "label_link_controller_unittest.mm",
-    "label_observer_unittest.mm",
-    "manual_text_framer_unittest.mm",
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
+    "pasteboard_util_unittest.mm",
     "terms_util_unittest.mm",
-    "text_region_mapper_unittest.mm",
     "ui_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
   ]
@@ -147,6 +117,7 @@ source_set("unit_tests") {
     "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }
@@ -209,30 +180,10 @@ bundle_data("terms_resources") {
     "//components/resources/terms/terms_zh-CN.html",
     "//components/resources/terms/terms_zh-TW.html",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
-}
-
-source_set("test_support") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "keyboard_observer_helper_app_interface.h",
-    "keyboard_observer_helper_app_interface.mm",
-  ]
-  deps = [
-    ":util",
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/test/app:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -251,15 +202,12 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "keyboard_observer_helper_app_interface.h",
-  ]
+  sources = [ "keyboard_observer_helper_app_interface.h" ]
   deps = [
     ":util",
     "//ios/testing/earl_grey:eg_test_support+eg2",

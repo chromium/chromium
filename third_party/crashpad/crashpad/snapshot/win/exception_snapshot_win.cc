@@ -14,6 +14,7 @@
 
 #include "snapshot/win/exception_snapshot_win.h"
 
+#include "base/logging.h"
 #include "client/crashpad_client.h"
 #include "snapshot/capture_memory.h"
 #include "snapshot/memory_snapshot.h"

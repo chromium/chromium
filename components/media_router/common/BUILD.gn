@@ -1,0 +1,104 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("common") {
+  public_deps = [
+    "//base",
+    "//base:i18n",
+    "//net",
+    "//third_party/icu",
+    "//url",
+  ]
+
+  sources = [
+    # media_sink_internal needs to be included with Android due to typemapping.
+    # Ideally, Android shouldn't be the case since it does not use Mojo for
+    # Media Router.
+    "discovery/media_sink_internal.cc",
+    "discovery/media_sink_internal.h",
+    "issue.cc",
+    "issue.h",
+    "media_route.cc",
+    "media_route.h",
+    "media_route_provider_helper.cc",
+    "media_route_provider_helper.h",
+    "media_sink.cc",
+    "media_sink.h",
+    "media_source.cc",
+    "media_source.h",
+    "route_request_result.cc",
+    "route_request_result.h",
+  ]
+
+  deps = [ "mojom:media_route_provider_id" ]
+
+  if (!is_android) {
+    sources += [
+      "discovery/media_sink_service_base.cc",
+      "discovery/media_sink_service_base.h",
+      "discovery/media_sink_service_util.cc",
+      "discovery/media_sink_service_util.h",
+      "pref_names.cc",
+      "pref_names.h",
+      "providers/cast/cast_media_source.cc",
+      "providers/cast/cast_media_source.h",
+    ]
+
+    deps += [
+      "//components/cast_channel:cast_channel",
+      "//third_party/openscreen/src/cast/common:public",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/media_router/common/mojom:logger",
+    "//components/media_router/common/mojom:media_route_provider_id",
+  ]
+  public_deps = [ ":common" ]
+  sources = [
+    "test/mock_logger.cc",
+    "test/mock_logger.h",
+    "test/test_helper.cc",
+    "test/test_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "issue_unittest.cc",
+    "media_route_unittest.cc",
+    "media_sink_unittest.cc",
+    "media_source_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/media_router/common/mojom:media_route_provider_id",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "discovery/media_sink_internal_unittest.cc",
+      "discovery/media_sink_service_base_unittest.cc",
+      "mojom/media_router_mojom_traits_unittest.cc",
+      "providers/cast/cast_media_source_unittest.cc",
+    ]
+
+    deps += [
+      "//components/cast_channel:cast_channel",
+      "//components/media_router/common/mojom:media_router_test_interfaces",
+      "//third_party/openscreen/src/cast/common:public",
+    ]
+  }
+}

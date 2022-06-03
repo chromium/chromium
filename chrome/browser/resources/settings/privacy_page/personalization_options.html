@@ -1,33 +1,5 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../lifetime_browser_proxy.html">
-<link rel="import" href="../people_page/signout_dialog.html">
-<link rel="import" href="../people_page/sync_browser_proxy.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="privacy_page_browser_proxy.html">
-
-<if expr="not chromeos">
-<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
-</if>
-
-<!--
- * Note: If a synced pref is added/removed from this file, the method
- * |GetSyncedServicePrefNames| in
- * chrome/browser/unified_consent/unified_consent_service_factory.cc has to be
- * updated accordingly.
--->
-<dom-module id="settings-personalization-options">
-  <template>
     <style include="settings-shared">
-      :host(.list-frame) settings-toggle-button,
-      :host(.list-frame) .settings-box {
+      :host(.list-frame) settings-toggle-button {
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -36,8 +8,11 @@
         border-top: none;
       }
     </style>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
+    <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
+        class="hr"
+        hidden="[[!signinAvailable_]]"
         disabled="[[syncFirstSetupInProgress_]]"
         pref="{{prefs.signin.allowed_on_next_startup}}"
         label="$i18n{signinAllowedTitle}"
@@ -45,27 +20,28 @@
         on-settings-boolean-control-change="onSigninAllowedChange_"
         no-set-pref>
     </settings-toggle-button>
-</if><!-- not chromeos -->
-    <settings-toggle-button hidden="[[!pageVisibility.searchPrediction]]"
+</if><!-- not chromeos and not lacros -->
+    <settings-toggle-button id="searchSuggestToggle"
+        class="hr"
+        hidden="[[!pageVisibility.searchPrediction]]"
         pref="{{prefs.search.suggest_enabled}}"
         label="$i18n{searchSuggestPref}"
         sub-label="$i18n{searchSuggestPrefDesc}">
     </settings-toggle-button>
-    <settings-toggle-button pref="{{prefs.alternate_error_pages.enabled}}"
-        label="$i18n{linkDoctorPref}"
-        sub-label="$i18n{linkDoctorPrefDesc}">
-    </settings-toggle-button>
 <if expr="_google_chrome">
 <if expr="chromeos">
-    <settings-toggle-button pref="{{prefs.cros.metrics.reportingEnabled}}"
-        label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}">
+    <settings-toggle-button class="hr"
+        pref="{{prefs.cros.metrics.reportingEnabled}}"
+        label="$i18n{enablePersonalizationLogging}"
+        sub-label="$i18n{enablePersonalizationLoggingDesc}">
     </settings-toggle-button>
 </if><!-- chromeos -->
 <if expr="not chromeos">
     <settings-toggle-button id="metricsReportingControl"
-        pref="[[metricsReportingPref_]]" label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}" no-set-pref
+        class="hr"
+        pref="[[metricsReportingPref_]]"
+        label="$i18n{enablePersonalizationLogging}"
+        sub-label="$i18n{enablePersonalizationLoggingDesc}" no-set-pref
         on-settings-boolean-control-change="onMetricsReportingChange_">
       <template is="dom-if" if="[[showRestart_]]" restamp>
         <cr-button on-click="onRestartTap_" id="restart"
@@ -76,13 +52,15 @@
     </settings-toggle-button>
 </if><!-- not chromeos -->
 </if><!-- _google_chrome -->
-    <settings-toggle-button
+    <settings-toggle-button id="urlCollectionToggle"
+        class="hr"
         pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
         label="$i18n{urlKeyedAnonymizedDataCollection}"
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
 <if expr="_google_chrome">
     <settings-toggle-button id="spellCheckControl"
+        class="hr"
         pref="{{prefs.spellcheck.use_spelling_service}}"
         on-settings-boolean-control-change="onUseSpellingServiceToggle_"
         label="$i18n{spellingPref}"
@@ -92,7 +70,7 @@
 </if><!-- _google_chrome -->
     <template is="dom-if" if="[[shouldShowDriveSuggest_(
         syncStatus, syncStatus.signedIn, syncStatus.statusAction)]]" restamp>
-      <settings-toggle-button id="driveSuggestControl"
+      <settings-toggle-button id="driveSuggestControl" class="hr"
           pref="{{prefs.documentsuggest.enabled}}"
           label="$i18n{driveSuggestPref}"
           sub-label="$i18n{driveSuggestPrefDesc}">
@@ -106,11 +84,8 @@
     </template>
 
 <if expr="not chromeos">
-    <cr-toast id="toast" open="[[showRestartToast_]]">
+    <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
       <cr-button on-click="onRestartTap_">$i18n{restart}</cr-button>
     </cr-toast>
 </if>
-  </template>
-  <script src="personalization_options.js"></script>
-</dom-module>

@@ -3,6 +3,7 @@
 <meta name="referrer" content="no-referrer">
 <title>Fetch in a document with &quot;referrer no-referrer&quot; policy</title>
 <body>
+<script src = "/resources/get-host-info.js?pipe=sub"></script>
 <script src = "/resources/testharness.js"></script>
 <script src = "/resources/testharnessreport.js"></script>
 <script src = "/serviceworker/resources/test-helpers.js"></script>
@@ -10,6 +11,7 @@
 <script src = "/fetch/resources/fetch-test-helpers.js"></script>
 <script>
 
+const {BASE_ORIGIN, OTHER_ORIGIN} = get_fetch_test_options();
 const BASE_URL = BASE_ORIGIN + '/fetch/resources/referrer.php';
 const OTHER_URL = OTHER_ORIGIN + '/fetch/resources/referrer.php';
 const REFERRER_SOURCE = location.href;

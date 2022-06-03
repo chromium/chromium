@@ -20,6 +20,18 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("Crashpad"));
       break;
+    case DIR_COMPONENTS_ROOT:
+      if (!base::android::GetDataDirectory(&cur))
+        return false;
+      cur = cur.Append(FILE_PATH_LITERAL("components"))
+                .Append(FILE_PATH_LITERAL("cus"));
+      break;
+    case DIR_COMPONENTS_TEMP:
+      if (!base::android::GetCacheDirectory(&cur))
+        return false;
+      cur = cur.Append(FILE_PATH_LITERAL("components"))
+                .Append(FILE_PATH_LITERAL("cus"));
+      break;
     case DIR_SAFE_BROWSING:
       if (!base::android::GetCacheDirectory(&cur))
         return false;

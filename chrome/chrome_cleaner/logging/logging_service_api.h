@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/utils.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"
 #include "chrome/chrome_cleaner/os/process.h"
@@ -122,14 +120,14 @@ class LoggingServiceAPI {
 
   // Add a loaded module to the system report.
   virtual void AddLoadedModule(
-      const base::string16& name,
+      const std::wstring& name,
       ModuleHost host,
       const internal::FileInformation& file_information) = 0;
 
   // Add a running service to the system report.
   virtual void AddService(
-      const base::string16& display_name,
-      const base::string16& service_name,
+      const std::wstring& display_name,
+      const std::wstring& service_name,
       const internal::FileInformation& file_information) = 0;
 
   // Add an installed program to the system report.
@@ -137,7 +135,7 @@ class LoggingServiceAPI {
 
   // Add a running process to the system report.
   virtual void AddProcess(
-      const base::string16& name,
+      const std::wstring& name,
       const internal::FileInformation& file_information) = 0;
 
   // Add a registry value |registry_value| which may have |file_informations|
@@ -148,37 +146,37 @@ class LoggingServiceAPI {
 
   // Add a layered service provider to the system report.
   virtual void AddLayeredServiceProvider(
-      const std::vector<base::string16>& guids,
+      const std::vector<std::wstring>& guids,
       const internal::FileInformation& file_information) = 0;
 
   // Set the WinInetProxy settings of the system report.
-  virtual void SetWinInetProxySettings(const base::string16& config,
-                                       const base::string16& bypass,
-                                       const base::string16& auto_config_url,
+  virtual void SetWinInetProxySettings(const std::wstring& config,
+                                       const std::wstring& bypass,
+                                       const std::wstring& auto_config_url,
                                        bool autodetect) = 0;
 
   // Set the WinHttpProxy settings of the system report.
-  virtual void SetWinHttpProxySettings(const base::string16& config,
-                                       const base::string16& bypass) = 0;
+  virtual void SetWinHttpProxySettings(const std::wstring& config,
+                                       const std::wstring& bypass) = 0;
 
   // Add an installed extension to the system report.
   virtual void AddInstalledExtension(
-      const base::string16& extension_id,
+      const std::wstring& extension_id,
       ExtensionInstallMethod install_method,
       const std::vector<internal::FileInformation>& extension_files) = 0;
 
   // Add a scheduled task to the system report.
   virtual void AddScheduledTask(
-      const base::string16& name,
-      const base::string16& description,
+      const std::wstring& name,
+      const std::wstring& description,
       const std::vector<internal::FileInformation>& actions) = 0;
 
   // Add a ShortcutData to the system report.
   virtual void AddShortcutData(
-      const base::string16& lnk_path,
-      const base::string16& executable_path,
+      const std::wstring& lnk_path,
+      const std::wstring& executable_path,
       const std::string& executable_hash,
-      const std::vector<base::string16>& command_line_arguments) = 0;
+      const std::vector<std::wstring>& command_line_arguments) = 0;
 
   // Set |found_modified_shortcuts| in the |reporter_logs|.
   virtual void SetFoundModifiedChromeShortcuts(
@@ -207,7 +205,7 @@ class LoggingServiceAPI {
   // If in debug mode or switch --dump-raw-logs is present, save the serialized
   // report proto to |executable||tag|.pb, where |executable| is the current
   // binary name.
-  virtual void MaybeSaveLogsToFile(const base::string16& tag);
+  virtual void MaybeSaveLogsToFile(const std::wstring& tag);
 
  private:
   static LoggingServiceAPI* logging_service_for_testing_;

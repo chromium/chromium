@@ -7,14 +7,13 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
-
-using ::autofill::PasswordForm;
 
 using Label = CSVPassword::Label;
 
@@ -33,7 +32,13 @@ TEST(CSVPasswordIteratorTest, Operations) {
   CSVPasswordIterator iter(kColMap, kCSV);
   // Because kCSV is just one row, it can be used to create a CSVPassword
   // directly.
-  EXPECT_EQ(iter->ParseValid(), CSVPassword(kColMap, kCSV).ParseValid());
+
+  // Mock time so that date_created matches.
+  {
+    base::test::SingleThreadTaskEnvironment env(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    EXPECT_EQ(iter->ParseValid(), CSVPassword(kColMap, kCSV).ParseValid());
+  }
 
   // Copy.
   CSVPasswordIterator copy = iter;

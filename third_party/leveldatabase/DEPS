@@ -8,3 +8,9 @@ include_rules = [
   '+port',
   '+util',
 ]
+
+specific_include_rules = {
+  'env_chromium\.cc': [
+    '+components/services/storage/public/cpp/filesystem',
+  ],
+}

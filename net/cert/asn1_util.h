@@ -5,8 +5,6 @@
 #ifndef NET_CERT_ASN1_UTIL_H_
 #define NET_CERT_ASN1_UTIL_H_
 
-#include <vector>
-
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -33,13 +31,6 @@ NET_EXPORT_PRIVATE bool ExtractSPKIFromDERCert(base::StringPiece cert,
 NET_EXPORT_PRIVATE bool ExtractSubjectPublicKeyFromSPKI(
     base::StringPiece spki,
     base::StringPiece* spk_out);
-
-// HasTLSFeatureExtension parses the DER encoded certificate in |cert|
-// and extracts the TLS feature extension
-// (https://tools.ietf.org/html/rfc7633) if present. Returns true if the
-// TLS feature extension was present, and false if the extension was not
-// present or if there was a parsing failure.
-NET_EXPORT_PRIVATE bool HasTLSFeatureExtension(base::StringPiece cert);
 
 // HasCanSignHttpExchangesDraftExtension parses the DER encoded certificate
 // in |cert| and extracts the canSignHttpExchangesDraft extension

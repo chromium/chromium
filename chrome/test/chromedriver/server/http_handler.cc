@@ -11,16 +11,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -30,6 +30,7 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
+#include "chrome/test/chromedriver/server/http_server.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
@@ -38,12 +39,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "url/url_util.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -65,6 +67,13 @@ bool w3cMode(const std::string& session_id,
   return kW3CDefault;
 }
 
+net::HttpServerResponseInfo createWebSocketRejectResponse(
+    net::HttpStatusCode code,
+    const std::string& msg) {
+  net::HttpServerResponseInfo response(code);
+  response.AddHeader("X-WebSocket-Reject-Reason", msg);
+  return response;
+}
 }  // namespace
 
 // WrapperURLLoaderFactory subclasses mojom::URLLoaderFactory as non-mojo, cross
@@ -77,9 +86,11 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
       : url_loader_factory_(std::move(url_loader_factory)),
         network_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
+  WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;
+
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -88,14 +99,14 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
       override {
     if (network_task_runner_->RunsTasksInCurrentSequence()) {
       url_loader_factory_->CreateLoaderAndStart(
-          std::move(loader), routing_id, request_id, options, request,
-          std::move(client), traffic_annotation);
+          std::move(loader), request_id, options, request, std::move(client),
+          traffic_annotation);
     } else {
       network_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&WrapperURLLoaderFactory::CreateLoaderAndStart,
-                         base::Unretained(this), std::move(loader), routing_id,
-                         request_id, options, request, std::move(client),
+                         base::Unretained(this), std::move(loader), request_id,
+                         options, request, std::move(client),
                          traffic_annotation));
     }
   }
@@ -109,8 +120,6 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Runner for URLRequestContextGetter network thread.
   scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperURLLoaderFactory);
 };
 
 CommandMapping::CommandMapping(HttpMethod method,
@@ -137,18 +146,22 @@ HttpHandler::HttpHandler(const std::string& url_base)
       command_map_(new CommandMap()) {}
 
 HttpHandler::HttpHandler(
-    const base::Closure& quit_func,
+    const base::RepeatingClosure& quit_func,
     const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const std::string& url_base,
     int adb_port)
-    : quit_func_(quit_func), url_base_(url_base), received_shutdown_(false) {
-#if defined(OS_MACOSX)
+    : quit_func_(quit_func),
+      io_task_runner_(io_task_runner),
+      url_base_(url_base),
+      received_shutdown_(false) {
+#if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-  context_getter_ = new URLRequestContextGetter(io_task_runner);
+  context_getter_ = new URLRequestContextGetter(io_task_runner_);
   socket_factory_ = CreateSyncWebSocketFactory(context_getter_.get());
-  adb_.reset(new AdbImpl(io_task_runner, adb_port));
-  device_manager_.reset(new DeviceManager(adb_.get()));
+  adb_ = std::make_unique<AdbImpl>(io_task_runner_, adb_port);
+  device_manager_ = std::make_unique<DeviceManager>(adb_.get());
   url_loader_factory_owner_ =
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           context_getter_.get());
@@ -163,12 +176,14 @@ HttpHandler::HttpHandler(
           kPost, internal::kNewSessionPathPattern,
           base::BindRepeating(
               &ExecuteCreateSession, &session_thread_map_,
-              WrapToCommand("InitSession",
-                            base::BindRepeating(
-                                &ExecuteInitSession,
-                                InitSessionParams(
-                                    wrapper_url_loader_factory_.get(),
-                                    socket_factory_, device_manager_.get()))))),
+              WrapToCommand(
+                  "InitSession",
+                  base::BindRepeating(
+                      &ExecuteInitSession,
+                      InitSessionParams(wrapper_url_loader_factory_.get(),
+                                        socket_factory_, device_manager_.get(),
+                                        cmd_task_runner,
+                                        &session_connection_map_))))),
       CommandMapping(kDelete, "session/:sessionId",
                      base::BindRepeating(
                          &ExecuteSessionCommand, &session_thread_map_, "Quit",
@@ -250,6 +265,20 @@ HttpHandler::HttpHandler(
           WrapToCommand("GetActiveElement",
                         base::BindRepeating(&ExecuteGetActiveElement))),
       CommandMapping(
+          kGet, "session/:sessionId/element/:id/shadow",
+          WrapToCommand("GetElementShadowRoot",
+                        base::BindRepeating(&ExecuteGetElementShadowRoot))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/element",
+          WrapToCommand(
+              "FindChildElementFromShadowRoot",
+              base::BindRepeating(&ExecuteFindChildElementFromShadowRoot, 50))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/elements",
+          WrapToCommand("FindChildElementsFromShadowRoot",
+                        base::BindRepeating(
+                            &ExecuteFindChildElementsFromShadowRoot, 50))),
+      CommandMapping(
           kPost, "session/:sessionId/element",
           WrapToCommand("FindElement",
                         base::BindRepeating(&ExecuteFindElement, 50))),
@@ -297,6 +326,14 @@ HttpHandler::HttpHandler(
           kGet, "session/:sessionId/element/:id/enabled",
           WrapToCommand("IsElementEnabled",
                         base::BindRepeating(&ExecuteIsElementEnabled))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/computedlabel",
+          WrapToCommand("GetComputedLabel",
+                        base::BindRepeating(&ExecuteGetComputedLabel))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/computedrole",
+          WrapToCommand("GetComputedRole",
+                        base::BindRepeating(&ExecuteGetComputedRole))),
       CommandMapping(kPost, "session/:sessionId/element/:id/click",
                      WrapToCommand("ClickElement",
                                    base::BindRepeating(&ExecuteClickElement))),
@@ -380,6 +417,15 @@ HttpHandler::HttpHandler(
           kGet, "session/:sessionId/element/:id/screenshot",
           WrapToCommand("ElementScreenshot",
                         base::BindRepeating(&ExecuteElementScreenshot))),
+
+      CommandMapping(
+          kGet, "session/:sessionId/screenshot/full",
+          WrapToCommand("FullPageScreenshot",
+                        base::BindRepeating(&ExecuteFullPageScreenshot))),
+
+      CommandMapping(
+          kPost, "session/:sessionId/print",
+          WrapToCommand("Print", base::BindRepeating(&ExecutePrint))),
 
       //
       // Json wire protocol endpoints
@@ -811,6 +857,13 @@ HttpHandler::HttpHandler(
                             &ExecuteWebAuthnCommand,
                             base::BindRepeating(&ExecuteSetUserVerified)))),
 
+      // Extensions for Secure Payment Confirmation API:
+      // https://w3c.github.io/secure-payment-confirmation/#sctn-automation
+      CommandMapping(
+          kPost, "session/:sessionId/secure-payment-confirmation/set-mode",
+          WrapToCommand("SetSPCTransactionMode",
+                        base::BindRepeating(&ExecuteSetSPCTransactionMode))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",
@@ -855,13 +908,15 @@ HttpHandler::HttpHandler(
               WrapToCommand("QuitAll", base::BindRepeating(&ExecuteQuit, true)),
               &session_thread_map_)),
 
+      // Set Time Zone command
+      CommandMapping(kPost, "session/:sessionId/time_zone",
+                     WrapToCommand("SetTimeZone",
+                                   base::BindRepeating(&ExecuteSetTimeZone))),
+
       //
       // ChromeDriver specific extension commands.
       //
 
-      CommandMapping(
-          kPost, "session/:sessionId/chromium/launch_app",
-          WrapToCommand("LaunchApp", base::BindRepeating(&ExecuteLaunchApp))),
       CommandMapping(
           kGet, "session/:sessionId/chromium/heap_snapshot",
           WrapToCommand("HeapSnapshot",
@@ -940,7 +995,8 @@ HttpHandler::HttpHandler(
           WrapToCommand("SendCommandFromWebSocket",
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
   };
-  command_map_.reset(new CommandMap(commands, commands + base::size(commands)));
+  command_map_ =
+      std::make_unique<CommandMap>(commands, commands + base::size(commands));
 }
 
 HttpHandler::~HttpHandler() {}
@@ -969,26 +1025,31 @@ void HttpHandler::Handle(const net::HttpServerRequestInfo& request,
     received_shutdown_ = true;
 }
 
+base::WeakPtr<HttpHandler> HttpHandler::WeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 Command HttpHandler::WrapToCommand(const char* name,
                                    const SessionCommand& session_command,
                                    bool w3c_standard_command) {
-  return base::Bind(&ExecuteSessionCommand, &session_thread_map_, name,
-                    session_command, w3c_standard_command, false);
+  return base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_, name,
+                             session_command, w3c_standard_command, false);
 }
 
 Command HttpHandler::WrapToCommand(const char* name,
                                    const WindowCommand& window_command,
                                    bool w3c_standard_command) {
-  return WrapToCommand(name, base::Bind(&ExecuteWindowCommand, window_command),
-                       w3c_standard_command);
+  return WrapToCommand(
+      name, base::BindRepeating(&ExecuteWindowCommand, window_command),
+      w3c_standard_command);
 }
 
 Command HttpHandler::WrapToCommand(const char* name,
                                    const ElementCommand& element_command,
                                    bool w3c_standard_command) {
-  return WrapToCommand(name,
-                       base::Bind(&ExecuteElementCommand, element_command),
-                       w3c_standard_command);
+  return WrapToCommand(
+      name, base::BindRepeating(&ExecuteElementCommand, element_command),
+      w3c_standard_command);
 }
 
 void HttpHandler::HandleCommand(
@@ -1047,13 +1108,14 @@ void HttpHandler::HandleCommand(
                     nullptr, session_id, true);
     return;
   }
-
+  // Pass host instead for potential WebSocketUrl if it's a new session
   iter->command.Run(params,
-                    session_id,
-                    base::Bind(&HttpHandler::PrepareResponse,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               trimmed_path,
-                               send_response_func));
+                    internal::IsNewSession(*iter)
+                        ? request.GetHeaderValue("host")
+                        : session_id,
+                    base::BindRepeating(&HttpHandler::PrepareResponse,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        trimmed_path, send_response_func));
 }
 
 void HttpHandler::PrepareResponse(
@@ -1128,109 +1190,133 @@ HttpHandler::PrepareStandardResponse(
   std::unique_ptr<net::HttpServerResponseInfo> response;
   switch (status.code()) {
     case kOk:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_OK));
+      response = std::make_unique<net::HttpServerResponseInfo>(net::HTTP_OK);
       break;
     // error codes
     case kElementClickIntercepted:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kElementNotInteractable:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidArgument:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidCookieDomain:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidElementState:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSelector:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSessionId:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kJavaScriptError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kMoveTargetOutOfBounds:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kNoSuchAlert:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchCookie:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchElement:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchFrame:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchWindow:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kScriptTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kSessionNotCreated:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kStaleElementReference:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_REQUEST_TIMEOUT));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnableToSetCookie:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnexpectedAlertOpen:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnknownCommand:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kUnknownError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnsupportedOperation:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kTargetDetached:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     // TODO(kereliuk): evaluate the usage of these as they relate to the spec
     case kElementNotVisible:
     case kXPathLookupError:
     case kNoSuchExecutionContext:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kChromeNotReachable:
     case kDisconnected:
     case kForbidden:
     case kTabCrashed:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
+      break;
+    case kNoSuchShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
+      break;
+    case kDetachedShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     default:
       DCHECK(false);
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
   }
 
@@ -1255,7 +1341,9 @@ HttpHandler::PrepareStandardResponse(
         inner_params->SetString("data.text", "");
       } else {
         std::string alertText = message.substr(first, last - first);
-        alertText = alertText.substr(alertText.find(":") + 2);
+        auto colon = alertText.find(":");
+        if (colon != std::string::npos && alertText.size() > (colon + 2))
+          alertText = alertText.substr(colon + 2);
         inner_params->SetString("data.text", alertText);
       }
     }
@@ -1273,6 +1361,67 @@ HttpHandler::PrepareStandardResponse(
   return response;
 }
 
+void HttpHandler::OnWebSocketRequest(HttpServer* http_server,
+                                     int connection_id,
+                                     const net::HttpServerRequestInfo& info) {
+  std::string path = info.path;
+
+  std::vector<std::string> path_parts = base::SplitString(
+      path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (path_parts.size() != 2 || path_parts[0] != "session") {
+    std::string err_msg = "bad request received path " + path;
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  }
+
+  std::string session_id = path_parts[1];
+  auto it = session_connection_map_.find(session_id);
+  if (it == session_connection_map_.end()) {
+    std::string err_msg = "bad request invalid session id " + session_id;
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  } else if (it->second != -1) {
+    std::string err_msg = "bad request only one connection for session id " +
+                          session_id + " is allowed";
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  } else {
+    session_connection_map_[session_id] = connection_id;
+    connection_session_map_[connection_id] = session_id;
+    io_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpServer::AcceptWebSocket,
+                       base::Unretained(http_server), connection_id, info));
+  }
+}
+
+void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
+  auto it = connection_session_map_.find(connection_id);
+  if (it == connection_session_map_.end()) {
+    return;
+  }
+  session_connection_map_[it->second] = -1;
+  connection_session_map_.erase(it);
+}
+
+void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
+                                              int connection_id,
+                                              net::HttpStatusCode code,
+                                              const std::string& msg) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendResponse, base::Unretained(http_server),
+                     connection_id,
+                     createWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
+                     TRAFFIC_ANNOTATION_FOR_TESTS));
+}
 
 namespace internal {
 
@@ -1313,12 +1462,12 @@ bool MatchesCommand(const std::string& method,
       std::string name = command_path_parts[i];
       name.erase(0, 1);
       CHECK(name.length());
-      url::RawCanonOutputT<base::char16> output;
+      url::RawCanonOutputT<char16_t> output;
       url::DecodeURLEscapeSequences(
           path_parts[i].data(), path_parts[i].length(),
           url::DecodeURLMode::kUTF8OrIsomorphic, &output);
-      std::string decoded = base::UTF16ToASCII(
-          base::string16(output.data(), output.length()));
+      std::string decoded =
+          base::UTF16ToASCII(std::u16string(output.data(), output.length()));
       // Due to crbug.com/533361, the url decoding libraries decodes all of the
       // % escape sequences except for %%. We need to handle this case manually.
       // So, replacing all the instances of "%%" with "%".
@@ -1333,6 +1482,11 @@ bool MatchesCommand(const std::string& method,
   }
   out_params->MergeDictionary(&params);
   return true;
+}
+
+bool IsNewSession(const CommandMapping& command) {
+  return command.method == kPost &&
+         command.path_pattern == kNewSessionPathPattern;
 }
 
 }  // namespace internal

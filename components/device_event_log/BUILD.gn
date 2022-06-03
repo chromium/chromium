@@ -14,19 +14,19 @@ component("device_event_log") {
 
   deps = [
     "//base",
+    "//third_party/icu",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "device_event_log_impl_unittest.cc",
-  ]
+  sources = [ "device_event_log_impl_unittest.cc" ]
 
   deps = [
     ":device_event_log",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/icu",
   ]
 }

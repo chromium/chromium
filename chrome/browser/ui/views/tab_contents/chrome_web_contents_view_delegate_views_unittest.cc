@@ -6,8 +6,8 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/context_menu_params.h"
 
 typedef ChromeRenderViewHostTestHarness ChromeWebContentsViewDelegateViewsTest;
 
@@ -18,5 +18,5 @@ TEST_F(ChromeWebContentsViewDelegateViewsTest, ContextMenuNoFocusedFrame) {
       CreateWebContentsViewDelegate(web_contents()));
   EXPECT_FALSE(web_contents()->GetFocusedFrame());
   const content::ContextMenuParams params;
-  delegate_view->ShowContextMenu(web_contents()->GetMainFrame(), params);
+  delegate_view->ShowContextMenu(*web_contents()->GetMainFrame(), params);
 }

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
+#import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
+#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,6 +31,13 @@
   return self;
 }
 
+#pragma mark - Public
+
++ (const OverlayRequestSupport*)requestSupport {
+  NOTREACHED() << "Subclasses implement.";
+  return OverlayRequestSupport::None();
+}
+
 #pragma mark - Private
 
 // Returns an OverlayCompletionCallback to reset the request pointer upon
@@ -40,6 +49,19 @@
   return base::BindOnce(^(OverlayResponse*) {
     weakSelf.request = nullptr;
   });
+}
+
+@end
+
+@implementation OverlayRequestMediator (Subclassing)
+
+- (void)dispatchResponse:(std::unique_ptr<OverlayResponse>)response {
+  if (self.request)
+    self.request->GetCallbackManager()->DispatchResponse(std::move(response));
+}
+
+- (void)dismissOverlay {
+  [self.delegate stopOverlayForMediator:self];
 }
 
 @end

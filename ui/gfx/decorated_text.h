@@ -5,9 +5,9 @@
 #ifndef UI_GFX_DECORATED_TEXT_H_
 #define UI_GFX_DECORATED_TEXT_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/range/range.h"
@@ -33,7 +33,7 @@ struct GFX_EXPORT DecoratedText {
   DecoratedText();
   ~DecoratedText();
 
-  base::string16 text;
+  std::u16string text;
 
   // Vector of RangedAttribute describing styling of non-overlapping ranges
   // in |text|.

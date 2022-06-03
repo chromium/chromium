@@ -20,17 +20,20 @@ void EnterpriseDomainModel::RemoveObserver(EnterpriseDomainObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void EnterpriseDomainModel::SetEnterpriseDisplayDomain(
-    const std::string& enterprise_display_domain,
+void EnterpriseDomainModel::SetEnterpriseDomainInfo(
+    const std::string& enterprise_domain_manager,
     bool active_directory_managed) {
-  enterprise_display_domain_ = enterprise_display_domain;
+  enterprise_domain_manager_ = enterprise_domain_manager;
   active_directory_managed_ = active_directory_managed;
-  NotifyChanged();
-}
-
-void EnterpriseDomainModel::NotifyChanged() {
   for (auto& observer : observers_)
     observer.OnEnterpriseDomainChanged();
+}
+
+void EnterpriseDomainModel::SetEnterpriseAccountDomainInfo(
+    const std::string& account_domain_manager) {
+  account_domain_manager_ = account_domain_manager;
+  for (auto& observer : observers_)
+    observer.OnEnterpriseAccountDomainChanged();
 }
 
 }  // namespace ash

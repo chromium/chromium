@@ -7,15 +7,15 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
-class GridLayout;
+class TableLayout;
 class Textfield;
 }
 
@@ -26,10 +26,13 @@ class CanonicalCookie;
 ///////////////////////////////////////////////////////////////////////////////
 // CookieInfoView
 //
-//  Responsible for displaying a tabular grid of Cookie information.
+//  Responsible for displaying a table of Cookie information.
 class CookieInfoView : public views::ScrollView {
  public:
+  METADATA_HEADER(CookieInfoView);
   CookieInfoView();
+  CookieInfoView(const CookieInfoView&) = delete;
+  CookieInfoView& operator=(const CookieInfoView&) = delete;
   ~CookieInfoView() override;
 
   // Update the display from the specified CookieNode.
@@ -43,30 +46,26 @@ class CookieInfoView : public views::ScrollView {
   // Enables or disables the cookie property text fields.
   void EnableCookieDisplay(bool enabled);
 
- protected:
-  // views::View:
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
+  void OnThemeChanged() override;
 
  private:
+  enum class CookieProperty {
+    kName,
+    kContent,
+    kDomain,
+    kPath,
+    kSendFor,
+    kCreated,
+    kExpires,
+  };
+
   // Layout helper routines.
-  views::Textfield* AddLabelRow(int layout_id,
-                                views::GridLayout* layout,
-                                int label_message_id);
+  views::Textfield* AddTextfieldRow(views::TableLayout* layout,
+                                    int label_message_id);
 
-  // Sets up the view layout.
-  void Init();
+  void SetTextfieldColors();
 
-  // Individual property labels
-  views::Textfield* name_value_field_ = nullptr;
-  views::Textfield* content_value_field_ = nullptr;
-  views::Textfield* domain_value_field_ = nullptr;
-  views::Textfield* path_value_field_ = nullptr;
-  views::Textfield* send_for_value_field_ = nullptr;
-  views::Textfield* created_value_field_ = nullptr;
-  views::Textfield* expires_value_field_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieInfoView);
+  std::unordered_map<CookieProperty, views::Textfield*> property_textfields_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COOKIE_INFO_VIEW_H_

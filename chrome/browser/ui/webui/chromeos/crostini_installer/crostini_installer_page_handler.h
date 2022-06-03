@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/crostini/crostini_installer_types.mojom-forward.h"
+#include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,14 +29,24 @@ class CrostiniInstallerPageHandler
           pending_page_handler,
       mojo::PendingRemote<chromeos::crostini_installer::mojom::Page>
           pending_page,
-      base::OnceClosure close_dialog_callback);
+      base::OnceClosure on_page_closed);
+
+  CrostiniInstallerPageHandler(const CrostiniInstallerPageHandler&) = delete;
+  CrostiniInstallerPageHandler& operator=(const CrostiniInstallerPageHandler&) =
+      delete;
+
   ~CrostiniInstallerPageHandler() override;
 
   // chromeos::crostini_installer::mojom::PageHandler:
-  void Install() override;
+  void Install(int64_t disk_size_bytes, const std::string& username) override;
   void Cancel() override;
   void CancelBeforeStart() override;
-  void Close() override;
+  void OnPageClosed() override;
+  void RequestAmountOfFreeDiskSpace(
+      RequestAmountOfFreeDiskSpaceCallback callback) override;
+
+  // Send a close request to the web page.
+  void RequestClosePage();
 
  private:
   void OnProgressUpdate(crostini::mojom::InstallerState installer_state,
@@ -48,11 +57,9 @@ class CrostiniInstallerPageHandler
   crostini::CrostiniInstallerUIDelegate* installer_ui_delegate_;
   mojo::Receiver<chromeos::crostini_installer::mojom::PageHandler> receiver_;
   mojo::Remote<chromeos::crostini_installer::mojom::Page> page_;
-  base::OnceClosure close_dialog_callback_;
+  base::OnceClosure on_page_closed_;
 
   base::WeakPtrFactory<CrostiniInstallerPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerPageHandler);
 };
 
 }  // namespace chromeos

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head><title>Subresource Web Bundles Origin Trial</title></head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  assert_false(
+    document.createElement('link').relList.supports('webbundle'),
+    'Subresource Web Bundles should not be supported by default.');
+
+  const meta = document.createElement('meta');
+  meta.httpEquiv = "origin-trial";
+  // This Origin Trial token is generated with the command:
+  //   tools/origin_trials/generate_token.py \
+  //     --expire-timestamp=2000000000 \
+  //     --version=3 \
+  //     https://127.0.0.1:8443 SubresourceWebBundles
+  meta.content = "A1nOn5e148yGA6ExfhqzlxQFFC71b03gYEAJEZ1XpUw+Lv8uUA4rpeyhCme0z3bBaRtIy8XkDK8twDUuhVXOegEAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIlN1YnJlc291cmNlV2ViQnVuZGxlcyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+  document.head.appendChild(meta);
+
+  assert_true(
+    document.createElement('link').relList.supports('webbundle'),
+    'Subresource Web Bundles should be supported.');
+
+  const wbn_url = 'https://localhost:8443/loading/wbn/resources/wbn/wbn-subresource-origin-trial.wbn';
+  const script_url = 'https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/script.js';
+
+  const SubresourceWebBundles = 3446;  // From web_feature.mojom
+  assert_false(window.internals.isUseCounted(document, SubresourceWebBundles));
+
+  const link = document.createElement('link');
+  link.rel = 'webbundle';
+  link.href = wbn_url;
+  link.resources.add(script_url);
+  document.body.appendChild(link);
+
+  assert_true(window.internals.isUseCounted(document, SubresourceWebBundles));
+
+  async function loadScriptAndWaitReport(script_url) {
+    const result_promise = new Promise((resolve) => {
+        // This function will be called from script.js
+        window.report_result = resolve;
+      });
+
+    const script = document.createElement('script');
+    script.src = script_url;
+    document.body.appendChild(script);
+    return result_promise;
+  }
+
+  assert_equals(
+    await loadScriptAndWaitReport(script_url),
+    'from web bundle',
+    'Script should be loaded from the web bundle.');
+  document.body.removeChild(link);
+
+  assert_equals(
+    await loadScriptAndWaitReport(script_url),
+    'from server',
+    'Script should be loaded from the server after removing the link ' +
+    'rel=webbundle.');
+}, 'Subresource Web Bundles Origin Trial');
+</script>
+</body>

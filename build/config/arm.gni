@@ -22,11 +22,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # "vfpv3". An empty string means to use the default for the arm_version.
     arm_fpu = ""
 
-    # The ARM floating point mode. This is either the string "hard", "soft", or
-    # "softfp". An empty string means to use the default one for the
-    # arm_version.
-    arm_float_abi = ""
-
     # The ARM variant-specific tuning mode. This will be a string like "armv6"
     # or "cortex-a15". An empty string means to use the default for the
     # arm_version.
@@ -43,6 +38,16 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     arm_use_thumb = true
   }
 
+  if (current_os == "android" || target_os == "android") {
+    arm_float_abi = "softfp"
+  } else {
+    declare_args() {
+      # The ARM floating point mode. This is either the string "hard", "soft",
+      # or "softfp". An empty string means to use the default one for the
+      # arm_version.
+      arm_float_abi = ""
+    }
+  }
   assert(arm_float_abi == "" || arm_float_abi == "hard" ||
          arm_float_abi == "soft" || arm_float_abi == "softfp")
 
@@ -79,9 +84,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     }
 
     if (arm_float_abi == "") {
-      if (current_os == "android" || target_os == "android") {
-        arm_float_abi = "softfp"
-      } else if (current_os == "linux" && target_cpu != v8_target_cpu) {
+      if (current_os == "linux" && target_cpu != v8_target_cpu) {
         # Default to the same as Android for V8 simulator builds.
         arm_float_abi = "softfp"
       } else {
@@ -105,11 +108,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     }
 
     if (arm_float_abi == "") {
-      if (current_os == "android" || target_os == "android") {
-        arm_float_abi = "softfp"
-      } else {
-        arm_float_abi = "hard"
-      }
+      arm_float_abi = "hard"
     }
 
     if (arm_fpu == "") {
@@ -124,4 +123,14 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
   # arm64 supports only "hard".
   arm_float_abi = "hard"
   arm_use_neon = true
+  declare_args() {
+    # Enables the new Armv8 branch protection features. Valid strings are:
+    # - "standard": Enables both Pointer Authentication Code (featured in
+    #               Armv8.3) and Branch Target Identification (Armv8.5).
+    # - "none": No branch protection.
+    arm_control_flow_integrity = "none"
+  }
+  assert(arm_control_flow_integrity == "none" ||
+             arm_control_flow_integrity == "standard",
+         "Invalid branch protection option")
 }

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
 
 namespace chromeos {
@@ -31,6 +30,11 @@ class FakeClientAppMetadataProvider : public ClientAppMetadataProvider {
   };
 
   FakeClientAppMetadataProvider();
+
+  FakeClientAppMetadataProvider(const FakeClientAppMetadataProvider&) = delete;
+  FakeClientAppMetadataProvider& operator=(
+      const FakeClientAppMetadataProvider&) = delete;
+
   ~FakeClientAppMetadataProvider() override;
 
   // ClientAppMetadataProvider:
@@ -50,8 +54,6 @@ class FakeClientAppMetadataProvider : public ClientAppMetadataProvider {
 
  private:
   std::vector<GetMetadataRequest> metadata_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientAppMetadataProvider);
 };
 
 }  // namespace device_sync

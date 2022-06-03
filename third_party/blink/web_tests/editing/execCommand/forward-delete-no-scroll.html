@@ -1,17 +1,25 @@
-<p>Matching other execCommand identifiers, execCommand("ForwardDelete") should not scroll the page to make selection visible.</p>
-<p>This test only works in WebKit, as other engines do not implement this command.</p>
-<div contenteditable>a</div>
-<div style="height:10000"></div>
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-  var text = document.getElementsByTagName('div')[0].firstChild;
-  window.getSelection().setBaseAndExtent(text, 0, text, 0);
-  window.scrollTo(0, 1000);
-  document.execCommand("ForwardDelete");
-
-  var result = (window.pageYOffset == 1000) ? "SUCCESS" : "FAILURE";
-  if (window.testRunner) {
-    testRunner.dumpAsText();
-    document.write(result);
-  } else
-    alert(result);
+// Matching other execCommand identifiers, execCommand("ForwardDelete") should
+// not scroll the page to make selection visible.
+selection_test(
+    [
+        '<div contenteditable>a|x</div>',
+        '<div style="height:10000"></div>',
+    ],
+    selection => {
+        if (!selection.document.queryCommandEnabled('ForwardDelete'))
+            throw 'This test requires "ForwardDelete" command.';
+        selection.window.scrollTo(0, 1000);
+        const pageYOffset = selection.window.pageYOffset;
+        selection.document.execCommand('ForwardDelete');
+        assert_equals(selection.window.pageYOffset, 1000, 'window.pageYOffset');
+    },
+    [
+        '<div contenteditable>a|</div>',
+        '<div style="height:10000"></div>',
+    ]);
 </script>

@@ -5,9 +5,6 @@
 #ifndef CHROMECAST_MEDIA_SERVICE_VIDEO_GEOMETRY_SETTER_SERVICE_H_
 #define CHROMECAST_MEDIA_SERVICE_VIDEO_GEOMETRY_SETTER_SERVICE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -29,11 +26,17 @@ namespace media {
 
 // This service runs and destructs on the sequence where it's constructed, but
 // the public methods can be run on any sequence.
-class VideoGeometrySetterService : public mojom::VideoGeometryChangeSubscriber,
-                                   public mojom::VideoGeometrySetter {
+class VideoGeometrySetterService final
+    : public mojom::VideoGeometryChangeSubscriber,
+      public mojom::VideoGeometrySetter {
  public:
   VideoGeometrySetterService();
-  ~VideoGeometrySetterService() final;
+
+  VideoGeometrySetterService(const VideoGeometrySetterService&) = delete;
+  VideoGeometrySetterService& operator=(const VideoGeometrySetterService&) =
+      delete;
+
+  ~VideoGeometrySetterService() override;
 
   void GetVideoGeometryChangeSubscriber(
       mojo::PendingReceiver<mojom::VideoGeometryChangeSubscriber>
@@ -69,7 +72,6 @@ class VideoGeometrySetterService : public mojom::VideoGeometryChangeSubscriber,
       this};
 
   base::WeakPtrFactory<VideoGeometrySetterService> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(VideoGeometrySetterService);
 };
 
 }  // namespace media

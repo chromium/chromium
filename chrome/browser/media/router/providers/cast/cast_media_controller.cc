@@ -4,11 +4,14 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_media_controller.h"
 
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/media/router/providers/cast/activity_record.h"
+#include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
 
 using cast_channel::V2MessageType;
@@ -16,6 +19,9 @@ using cast_channel::V2MessageType;
 namespace media_router {
 
 namespace {
+
+constexpr int kQueuePrevJumpValue = -1;
+constexpr int kQueueNextJumpValue = 1;
 
 void SetIfValid(std::string* out, const base::Value* value) {
   if (value && value->is_string())
@@ -39,28 +45,33 @@ void SetIfValid(bool* out, const base::Value* value) {
     *out = value->GetBool();
 }
 void SetIfValid(base::TimeDelta* out, const base::Value* value) {
-  if (value && value->is_double())
-    *out = base::TimeDelta::FromSeconds(value->GetDouble());
+  if (!value)
+    return;
+  if (value->is_double()) {
+    *out = base::Seconds(value->GetDouble());
+  } else if (value->is_int()) {
+    *out = base::Seconds(value->GetInt());
+  }
 }
 
 // If |value| has "width" and "height" fields with positive values, it gets
-// converted into gfx::Size. Otherwise base::nullopt is returned.
-base::Optional<gfx::Size> GetValidSize(const base::Value* value) {
-  if (!value)
-    return base::nullopt;
+// converted into gfx::Size. Otherwise absl::nullopt is returned.
+absl::optional<gfx::Size> GetValidSize(const base::Value* value) {
+  if (!value || !value->is_dict())
+    return absl::nullopt;
   int width = 0;
   int height = 0;
   SetIfValid(&width, value->FindPath("width"));
   SetIfValid(&height, value->FindPath("height"));
   if (width <= 0 || height <= 0)
-    return base::nullopt;
-  return base::make_optional<gfx::Size>(width, height);
+    return absl::nullopt;
+  return absl::make_optional<gfx::Size>(width, height);
 }
 
 }  // namespace
 
 CastMediaController::CastMediaController(
-    ActivityRecord* activity,
+    AppActivity* activity,
     mojo::PendingReceiver<mojom::MediaController> receiver,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer)
     : sender_id_("sender-" + base::NumberToString(base::RandUint64())),
@@ -118,15 +129,23 @@ void CastMediaController::Seek(base::TimeDelta time) {
 void CastMediaController::NextTrack() {
   if (session_id_.empty())
     return;
-  activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
-      CreateMediaRequest(V2MessageType::kQueueNext)));
+  // We do not use |kQueueNext| because not all receiver apps support it.
+  // See crbug.com/1078601.
+  base::Value request = CreateMediaRequest(V2MessageType::kQueueUpdate);
+  request.SetIntPath("message.jump", kQueueNextJumpValue);
+  activity_->SendMediaRequestToReceiver(
+      *CastInternalMessage::From(std::move(request)));
 }
 
 void CastMediaController::PreviousTrack() {
   if (session_id_.empty())
     return;
-  activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
-      CreateMediaRequest(V2MessageType::kQueuePrev)));
+  // We do not use |kQueuePrev| because not all receiver apps support it.
+  // See crbug.com/1078601.
+  base::Value request = CreateMediaRequest(V2MessageType::kQueueUpdate);
+  request.SetIntPath("message.jump", kQueuePrevJumpValue);
+  activity_->SendMediaRequestToReceiver(
+      *CastInternalMessage::From(std::move(request)));
 }
 
 void CastMediaController::SetSession(const CastSession& session) {
@@ -189,6 +208,8 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   SetIfValid(&media_session_id_, status_value.FindKey("mediaSessionId"));
   SetIfValid(&media_status_.title,
              status_value.FindPath("media.metadata.title"));
+  SetIfValid(&media_status_.secondary_title,
+             status_value.FindPath("media.metadata.subtitle"));
   SetIfValid(&media_status_.current_time, status_value.FindKey("currentTime"));
   SetIfValid(&media_status_.duration, status_value.FindPath("media.duration"));
 
@@ -196,6 +217,8 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   if (images && images->is_list()) {
     media_status_.images.clear();
     for (const base::Value& image_value : images->GetList()) {
+      if (!image_value.is_dict())
+        continue;
       const std::string* url_string = image_value.FindStringKey("url");
       if (!url_string)
         continue;
@@ -205,17 +228,20 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   }
 
   const base::Value* commands_value =
-      status_value.FindKey("supportedMediaCommands");
-  if (commands_value && commands_value->is_int()) {
-    int commands = commands_value->GetInt();
+      status_value.FindListKey("supportedMediaCommands");
+  if (commands_value) {
+    const base::ListValue& commands_list =
+        base::Value::AsListValue(*commands_value);
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
-    media_status_.can_play_pause = commands & kSupportedMediaCommandPause;
-    media_status_.can_seek = commands & kSupportedMediaCommandSeek;
-    media_status_.can_skip_to_next_track =
-        commands & kSupportedMediaCommandQueueNext;
-    media_status_.can_skip_to_previous_track =
-        commands & kSupportedMediaCommandQueuePrev;
+    media_status_.can_play_pause = base::Contains(
+        commands_list.GetList(), base::Value(kMediaCommandPause));
+    media_status_.can_seek =
+        base::Contains(commands_list.GetList(), base::Value(kMediaCommandSeek));
+    media_status_.can_skip_to_next_track = base::Contains(
+        commands_list.GetList(), base::Value(kMediaCommandQueueNext));
+    media_status_.can_skip_to_previous_track = base::Contains(
+        commands_list.GetList(), base::Value(kMediaCommandQueuePrev));
   }
 
   const base::Value* player_state = status_value.FindKey("playerState");

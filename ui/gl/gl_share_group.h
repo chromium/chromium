@@ -6,9 +6,7 @@
 #define UI_GL_GL_SHARE_GROUP_H_
 
 #include <set>
-#include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
@@ -16,12 +14,14 @@
 namespace gl {
 
 class GLContext;
-class GLSurface;
 
 // A group of GL contexts that share an ID namespace.
 class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
  public:
   GLShareGroup();
+
+  GLShareGroup(const GLShareGroup&) = delete;
+  GLShareGroup& operator=(const GLShareGroup&) = delete;
 
   // These two should only be called from the constructor and destructor of
   // GLContext.
@@ -37,10 +37,10 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
   GLContext* GetContext();
 
   // Sets and returns the shared GL context. Used for context virtualization.
-  void SetSharedContext(GLSurface* compatible, GLContext* context);
-  GLContext* GetSharedContext(GLSurface* compatible);
+  void SetSharedContext(GLContext* context);
+  GLContext* shared_context() { return shared_context_; }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Sets and returns the ID of the renderer that all contexts in this share
   // group should be on.
   void SetRendererID(int renderer_id);
@@ -57,13 +57,11 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
   typedef std::set<GLContext*> ContextSet;
   ContextSet contexts_;
 
-  std::unordered_map<unsigned long, GLContext*> shared_contexts_;
+  GLContext* shared_context_ = nullptr;
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   int renderer_id_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GLShareGroup);
 };
 
 }  // namespace gl

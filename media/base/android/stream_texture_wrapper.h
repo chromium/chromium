@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_ANDROID_STREAM_TEXTURE_WRAPPER_H_
 #define MEDIA_BASE_ANDROID_STREAM_TEXTURE_WRAPPER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "media/base/video_frame.h"
 
@@ -23,7 +23,6 @@ class MEDIA_EXPORT StreamTextureWrapper {
   // See StreamTextureWrapperImpl.
   virtual void Initialize(
       const base::RepeatingClosure& received_frame_cb,
-      const gfx::Size& natural_size,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       StreamTextureWrapperInitCB init_cb) = 0;
 

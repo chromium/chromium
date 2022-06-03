@@ -7,13 +7,13 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_entropy_provider.h"
@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_receiver.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader.h"
@@ -33,8 +34,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
@@ -54,19 +55,18 @@ class IncidentReportingServiceTest : public testing::Test {
   class TestIncidentReportingService
       : public safe_browsing::IncidentReportingService {
    public:
-    using PreProfileAddCallback = base::Callback<void(Profile*)>;
+    using PreProfileAddCallback = base::RepeatingCallback<void(Profile*)>;
 
-    using CollectEnvironmentCallback = base::Callback<void(
+    using CollectEnvironmentCallback = base::RepeatingCallback<void(
         safe_browsing::ClientIncidentReport_EnvironmentData*)>;
 
-    using CreateDownloadFinderCallback =
-        base::Callback<std::unique_ptr<safe_browsing::LastDownloadFinder>(
-            const safe_browsing::LastDownloadFinder::LastDownloadCallback&
-                callback)>;
+    using CreateDownloadFinderCallback = base::RepeatingCallback<
+        std::unique_ptr<safe_browsing::LastDownloadFinder>(
+            safe_browsing::LastDownloadFinder::LastDownloadCallback callback)>;
 
-    using StartUploadCallback =
-        base::Callback<std::unique_ptr<safe_browsing::IncidentReportUploader>(
-            const safe_browsing::IncidentReportUploader::OnResultCallback&,
+    using StartUploadCallback = base::RepeatingCallback<
+        std::unique_ptr<safe_browsing::IncidentReportUploader>(
+            safe_browsing::IncidentReportUploader::OnResultCallback,
             const safe_browsing::ClientIncidentReport& report)>;
 
     TestIncidentReportingService(
@@ -75,9 +75,7 @@ class IncidentReportingServiceTest : public testing::Test {
         const CollectEnvironmentCallback& collect_environment_callback,
         const CreateDownloadFinderCallback& create_download_finder_callback,
         const StartUploadCallback& start_upload_callback)
-        : IncidentReportingService(nullptr,
-                                   base::TimeDelta::FromMilliseconds(5),
-                                   task_runner),
+        : IncidentReportingService(nullptr, base::Milliseconds(5), task_runner),
           pre_profile_add_callback_(pre_profile_add_callback),
           collect_environment_callback_(collect_environment_callback),
           create_download_finder_callback_(create_download_finder_callback),
@@ -115,15 +113,15 @@ class IncidentReportingServiceTest : public testing::Test {
     }
 
     std::unique_ptr<safe_browsing::LastDownloadFinder> CreateDownloadFinder(
-        const safe_browsing::LastDownloadFinder::LastDownloadCallback& callback)
+        safe_browsing::LastDownloadFinder::LastDownloadCallback callback)
         override {
-      return create_download_finder_callback_.Run(callback);
+      return create_download_finder_callback_.Run(std::move(callback));
     }
 
     std::unique_ptr<safe_browsing::IncidentReportUploader> StartReportUpload(
-        const safe_browsing::IncidentReportUploader::OnResultCallback& callback,
+        safe_browsing::IncidentReportUploader::OnResultCallback callback,
         const safe_browsing::ClientIncidentReport& report) override {
-      return start_upload_callback_.Run(callback, report);
+      return start_upload_callback_.Run(std::move(callback), report);
     }
 
    private:
@@ -212,22 +210,27 @@ class IncidentReportingServiceTest : public testing::Test {
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 #endif
     ASSERT_TRUE(profile_manager_.SetUp());
+    // Disable profile metrics reporting, otherwise the calls to
+    // FastForwardUntilNoTasksRemain() never return.
+    profile_manager_.profile_attributes_storage()
+        ->DisableProfileMetricsForTesting();
   }
 
   void CreateIncidentReportingService() {
     scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kIncidentReportingEnableUpload);
 
-    instance_.reset(new TestIncidentReportingService(
+    instance_ = std::make_unique<TestIncidentReportingService>(
         base::ThreadTaskRunnerHandle::Get(),
-        base::Bind(&IncidentReportingServiceTest::PreProfileAdd,
-                   base::Unretained(this)),
-        base::Bind(&IncidentReportingServiceTest::CollectEnvironmentData,
-                   base::Unretained(this)),
-        base::Bind(&IncidentReportingServiceTest::CreateDownloadFinder,
-                   base::Unretained(this)),
-        base::Bind(&IncidentReportingServiceTest::StartUpload,
-                   base::Unretained(this))));
+        base::BindRepeating(&IncidentReportingServiceTest::PreProfileAdd,
+                            base::Unretained(this)),
+        base::BindRepeating(
+            &IncidentReportingServiceTest::CollectEnvironmentData,
+            base::Unretained(this)),
+        base::BindRepeating(&IncidentReportingServiceTest::CreateDownloadFinder,
+                            base::Unretained(this)),
+        base::BindRepeating(&IncidentReportingServiceTest::StartUpload,
+                            base::Unretained(this)));
   }
 
   // Sets the action to be taken by the test fixture when the service creates a
@@ -252,7 +255,7 @@ class IncidentReportingServiceTest : public testing::Test {
         prefs::kSafeBrowsingEnabled,
         safe_browsing_opt_in == SAFE_BROWSING_ONLY ||
             safe_browsing_opt_in == SAFE_BROWSING_AND_EXTENDED_REPORTING);
-    safe_browsing::SetExtendedReportingPref(
+    safe_browsing::SetExtendedReportingPrefForTests(
         prefs.get(),
         safe_browsing_opt_in == EXTENDED_REPORTING_ONLY ||
             safe_browsing_opt_in == SAFE_BROWSING_AND_EXTENDED_REPORTING);
@@ -267,8 +270,7 @@ class IncidentReportingServiceTest : public testing::Test {
         profile_name, std::move(prefs), base::ASCIIToUTF16(profile_name),
         0,              // avatar_id (unused)
         std::string(),  // supervised_user_id (unused)
-        TestingProfile::TestingFactories(),
-        /*override_new_profile=*/base::Optional<bool>(false));
+        TestingProfile::TestingFactories());
     mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
     return profile;
@@ -280,9 +282,8 @@ class IncidentReportingServiceTest : public testing::Test {
   void DeleteProfileOnUpload(Profile* profile) {
     ASSERT_TRUE(on_start_upload_callback_.is_null());
     on_start_upload_callback_ =
-        base::Bind(&IncidentReportingServiceTest::DelayedDeleteProfile,
-                   base::Unretained(this),
-                   profile);
+        base::BindOnce(&IncidentReportingServiceTest::DelayedDeleteProfile,
+                       base::Unretained(this), profile);
   }
 
   // Returns an incident suitable for testing.
@@ -314,8 +315,8 @@ class IncidentReportingServiceTest : public testing::Test {
   void RegisterAnalysis(OnDelayedAnalysisAction on_delayed_analysis_action) {
     on_delayed_analysis_action_ = on_delayed_analysis_action;
     instance_->RegisterDelayedAnalysisCallback(
-        base::Bind(&IncidentReportingServiceTest::OnDelayedAnalysis,
-                   base::Unretained(this)));
+        base::BindOnce(&IncidentReportingServiceTest::OnDelayedAnalysis,
+                       base::Unretained(this)));
   }
 
   // Expects that |incident_count| incidents were uploaded by the service with
@@ -345,7 +346,7 @@ class IncidentReportingServiceTest : public testing::Test {
       disable_purge_for_testing_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<TestIncidentReportingService> instance_;
-  base::Closure on_start_upload_callback_;
+  base::OnceClosure on_start_upload_callback_;
   OnCreateDownloadFinderAction on_create_download_finder_action_;
   OnDelayedAnalysisAction on_delayed_analysis_action_;
   safe_browsing::IncidentReportUploader::Result upload_result_;
@@ -363,61 +364,64 @@ class IncidentReportingServiceTest : public testing::Test {
   class FakeUploader : public safe_browsing::IncidentReportUploader {
    public:
     FakeUploader(
-        const base::Closure& on_deleted,
-        const safe_browsing::IncidentReportUploader::OnResultCallback& callback,
+        base::OnceClosure on_deleted,
+        safe_browsing::IncidentReportUploader::OnResultCallback callback,
         safe_browsing::IncidentReportUploader::Result result)
-        : safe_browsing::IncidentReportUploader(callback),
-          on_deleted_(on_deleted),
+        : safe_browsing::IncidentReportUploader(std::move(callback)),
+          on_deleted_(std::move(on_deleted)),
           result_(result) {
       // Post a task that will provide the response.
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(&FakeUploader::FinishUpload, base::Unretained(this)));
     }
-    ~FakeUploader() override { on_deleted_.Run(); }
+
+    FakeUploader(const FakeUploader&) = delete;
+    FakeUploader& operator=(const FakeUploader&) = delete;
+
+    ~FakeUploader() override { std::move(on_deleted_).Run(); }
 
    private:
     void FinishUpload() {
       // Callbacks have a tendency to delete the uploader, so no touching
       // anything after this.
-      callback_.Run(result_,
-                    std::unique_ptr<safe_browsing::ClientIncidentResponse>());
+      std::move(callback_).Run(
+          result_, std::unique_ptr<safe_browsing::ClientIncidentResponse>());
     }
 
-    base::Closure on_deleted_;
+    base::OnceClosure on_deleted_;
     safe_browsing::IncidentReportUploader::Result result_;
-
-    DISALLOW_COPY_AND_ASSIGN(FakeUploader);
   };
 
   class FakeDownloadFinder : public safe_browsing::LastDownloadFinder {
    public:
     static std::unique_ptr<safe_browsing::LastDownloadFinder> Create(
-        const base::Closure& on_deleted,
+        base::OnceClosure on_deleted,
         std::unique_ptr<safe_browsing::ClientIncidentReport_DownloadDetails>
             binary_download,
         std::unique_ptr<
             safe_browsing::ClientIncidentReport_NonBinaryDownloadDetails>
             non_binary_download,
-        const safe_browsing::LastDownloadFinder::LastDownloadCallback&
-            callback) {
+        safe_browsing::LastDownloadFinder::LastDownloadCallback callback) {
       // Post a task to run the callback.
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(callback, std::move(binary_download),
-                                    std::move(non_binary_download)));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(binary_download),
+                         std::move(non_binary_download)));
       return std::unique_ptr<safe_browsing::LastDownloadFinder>(
-          new FakeDownloadFinder(on_deleted));
+          new FakeDownloadFinder(std::move(on_deleted)));
     }
 
-    ~FakeDownloadFinder() override { on_deleted_.Run(); }
+    FakeDownloadFinder(const FakeDownloadFinder&) = delete;
+    FakeDownloadFinder& operator=(const FakeDownloadFinder&) = delete;
+
+    ~FakeDownloadFinder() override { std::move(on_deleted_).Run(); }
 
    private:
-    explicit FakeDownloadFinder(const base::Closure& on_deleted)
-        : on_deleted_(on_deleted) {}
+    explicit FakeDownloadFinder(base::OnceClosure on_deleted)
+        : on_deleted_(std::move(on_deleted)) {}
 
-    base::Closure on_deleted_;
-
-    DISALLOW_COPY_AND_ASSIGN(FakeDownloadFinder);
+    base::OnceClosure on_deleted_;
   };
 
   // Confirms that the test incident(s) was/were uploaded by the service, then
@@ -512,7 +516,7 @@ class IncidentReportingServiceTest : public testing::Test {
   // A fake CreateDownloadFinder implementation invoked by the service during
   // operation.
   std::unique_ptr<safe_browsing::LastDownloadFinder> CreateDownloadFinder(
-      const safe_browsing::LastDownloadFinder::LastDownloadCallback& callback) {
+      safe_browsing::LastDownloadFinder::LastDownloadCallback callback) {
     download_finder_created_ = true;
     std::unique_ptr<safe_browsing::ClientIncidentReport_DownloadDetails>
         binary_download;
@@ -521,48 +525,50 @@ class IncidentReportingServiceTest : public testing::Test {
         non_binary_download;
     if (on_create_download_finder_action_ ==
         ON_CREATE_DOWNLOAD_FINDER_NO_PROFILES) {
-      return std::unique_ptr<safe_browsing::LastDownloadFinder>();
+      return nullptr;
     }
     if (on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_DOWNLOADS_FOUND ||
         on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_BINARY_DOWNLOAD_FOUND) {
-      binary_download.reset(
-          new safe_browsing::ClientIncidentReport_DownloadDetails);
+      binary_download = std::make_unique<
+          safe_browsing::ClientIncidentReport_DownloadDetails>();
       binary_download->set_token(kFakeDownloadToken);
     }
     if (on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_DOWNLOADS_FOUND ||
         on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_NON_BINARY_DOWNLOAD_FOUND) {
-      non_binary_download.reset(
-          new safe_browsing::ClientIncidentReport_NonBinaryDownloadDetails);
+      non_binary_download = std::make_unique<
+          safe_browsing::ClientIncidentReport_NonBinaryDownloadDetails>();
       non_binary_download->set_host(kFakeDownloadHost);
     }
 
     return std::unique_ptr<safe_browsing::LastDownloadFinder>(
         FakeDownloadFinder::Create(
-            base::Bind(&IncidentReportingServiceTest::OnDownloadFinderDestroyed,
-                       base::Unretained(this)),
+            base::BindOnce(
+                &IncidentReportingServiceTest::OnDownloadFinderDestroyed,
+                base::Unretained(this)),
             std::move(binary_download), std::move(non_binary_download),
-            callback));
+            std::move(callback)));
   }
 
   // A fake StartUpload implementation invoked by the service during operation.
   std::unique_ptr<safe_browsing::IncidentReportUploader> StartUpload(
-      const safe_browsing::IncidentReportUploader::OnResultCallback& callback,
+      safe_browsing::IncidentReportUploader::OnResultCallback callback,
       const safe_browsing::ClientIncidentReport& report) {
     // Remember the report that is being uploaded.
-    uploaded_report_.reset(new safe_browsing::ClientIncidentReport(report));
+    uploaded_report_ =
+        std::make_unique<safe_browsing::ClientIncidentReport>(report);
     // Run and clear the OnStartUpload callback, if provided.
     if (!on_start_upload_callback_.is_null()) {
-      on_start_upload_callback_.Run();
-      on_start_upload_callback_ = base::Closure();
+      std::move(on_start_upload_callback_).Run();
+      on_start_upload_callback_ = base::OnceClosure();
     }
     return std::make_unique<FakeUploader>(
-        base::Bind(&IncidentReportingServiceTest::OnUploaderDestroyed,
-                   base::Unretained(this)),
-        callback, upload_result_);
+        base::BindOnce(&IncidentReportingServiceTest::OnUploaderDestroyed,
+                       base::Unretained(this)),
+        std::move(callback), upload_result_);
   }
 
   void OnDownloadFinderDestroyed() { download_finder_destroyed_ = true; }
@@ -718,7 +724,7 @@ TEST_F(IncidentReportingServiceTest, NoUploadBeforeExtendedReporting) {
   // Ensure that no report processing remains.
   ASSERT_FALSE(instance_->IsProcessingReport());
 
-  safe_browsing::SetExtendedReportingPref(profile->GetPrefs(), true);
+  safe_browsing::SetExtendedReportingPrefForTests(profile->GetPrefs(), true);
 
   // Add a variation on the incident to the service.
   instance_->GetIncidentReceiver()->AddIncidentForProfile(
@@ -1303,8 +1309,8 @@ TEST_F(IncidentReportingServiceTest, UploadsWithBothDownloadTypes) {
 // Test that a profile's prune state is properly cleaned upon load.
 TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   CreateIncidentReportingService();
-  const std::string blacklist_load_type(base::NumberToString(
-      static_cast<int>(safe_browsing::IncidentType::OBSOLETE_BLACKLIST_LOAD)));
+  const std::string blocklist_load_type(base::NumberToString(
+      static_cast<int>(safe_browsing::IncidentType::OBSOLETE_BLOCKLIST_LOAD)));
   const std::string preference_type(base::NumberToString(
       static_cast<int>(safe_browsing::IncidentType::TRACKED_PREFERENCE)));
 
@@ -1313,12 +1319,12 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
       new base::DictionaryValue());
   auto type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("foo", base::Value("47"));
-  incidents_sent->SetWithoutPathExpansion(blacklist_load_type,
-                                          std::move(type_dict));
+  incidents_sent->SetKey(blocklist_load_type,
+                         base::Value::FromUniquePtrValue(std::move(type_dict)));
   type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("bar", base::Value("43"));
-  incidents_sent->SetWithoutPathExpansion(preference_type,
-                                          std::move(type_dict));
+  incidents_sent->SetKey(preference_type,
+                         base::Value::FromUniquePtrValue(std::move(type_dict)));
 
   // Add a profile.
   Profile* profile =
@@ -1331,7 +1337,7 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   const base::DictionaryValue* new_state =
       profile->GetPrefs()->GetDictionary(prefs::kSafeBrowsingIncidentsSent);
   // The legacy value must be gone.
-  ASSERT_FALSE(new_state->HasKey(blacklist_load_type));
+  ASSERT_FALSE(new_state->HasKey(blocklist_load_type));
   // But other data must be untouched.
   ASSERT_TRUE(new_state->HasKey(preference_type));
 }

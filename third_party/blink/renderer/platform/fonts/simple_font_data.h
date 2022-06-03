@@ -33,16 +33,18 @@
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
+#include "third_party/blink/renderer/platform/fonts/font_metrics_override.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/skia/include/core/SkFont.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "third_party/blink/renderer/platform/fonts/glyph_metrics_map.h"
 #endif
 
@@ -82,6 +84,8 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
 
   scoped_refptr<SimpleFontData> SmallCapsFontData(const FontDescription&) const;
   scoped_refptr<SimpleFontData> EmphasisMarkFontData(const FontDescription&) const;
+  scoped_refptr<SimpleFontData> MetricsOverriddenFontData(
+      const FontMetricsOverride&) const;
 
   FontMetrics& GetFontMetrics() { return font_metrics_; }
   const FontMetrics& GetFontMetrics() const { return font_metrics_; }
@@ -93,10 +97,14 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
     return GetFontMetrics().FloatHeight() - PlatformData().size();
   }
 
-  // "em height" metrics.
-  // https://drafts.css-houdini.org/font-metrics-api-1/#fontmetrics
-  LayoutUnit EmHeightAscent(FontBaseline = kAlphabeticBaseline) const;
-  LayoutUnit EmHeightDescent(FontBaseline = kAlphabeticBaseline) const;
+  // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
+  // This metrics can simulate ideographics em-box when the font doesn't have
+  // better ways to compute it.
+  // https://docs.microsoft.com/en-us/typography/opentype/spec/baselinetags#ideoembox
+  FontHeight NormalizedTypoAscentAndDescent(
+      FontBaseline baseline_type = kAlphabeticBaseline) const;
+  LayoutUnit NormalizedTypoAscent(FontBaseline = kAlphabeticBaseline) const;
+  LayoutUnit NormalizedTypoDescent(FontBaseline = kAlphabeticBaseline) const;
 
   LayoutUnit VerticalPosition(FontVerticalPositionType, FontBaseline) const;
 
@@ -135,6 +143,9 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   bool IsLoadingFallback() const override {
     return custom_font_data_ ? custom_font_data_->IsLoadingFallback() : false;
   }
+  bool IsPendingDataUrlCustomFont() const {
+    return custom_font_data_ ? custom_font_data_->IsPendingDataUrl() : false;
+  }
   bool IsSegmented() const override;
   bool ShouldSkipDrawing() const override {
     return custom_font_data_ && custom_font_data_->ShouldSkipDrawing();
@@ -150,19 +161,21 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   }
 
  protected:
-  SimpleFontData(const FontPlatformData&,
-                 scoped_refptr<CustomFontData> custom_data,
-                 bool subpixel_ascent_descent = false);
+  SimpleFontData(
+      const FontPlatformData&,
+      scoped_refptr<CustomFontData> custom_data,
+      bool subpixel_ascent_descent = false,
+      const FontMetricsOverride& metrics_override = FontMetricsOverride());
 
  private:
-  void PlatformInit(bool subpixel_ascent_descent);
+  void PlatformInit(bool subpixel_ascent_descent, const FontMetricsOverride&);
   void PlatformGlyphInit();
 
   scoped_refptr<SimpleFontData> CreateScaledFontData(const FontDescription&,
                                               float scale_factor) const;
 
-  void ComputeEmHeightMetrics() const;
-  bool NormalizeEmHeightMetrics(float, float) const;
+  void ComputeNormalizedTypoAscentAndDescent() const;
+  bool TrySetNormalizedTypoAscentAndDescent(float ascent, float descent) const;
 
   FontMetrics font_metrics_;
   float max_char_width_;
@@ -180,11 +193,11 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
 
    public:
     DerivedFontData() = default;
+    DerivedFontData(const DerivedFontData&) = delete;
+    DerivedFontData& operator=(const DerivedFontData&) = delete;
 
     scoped_refptr<SimpleFontData> small_caps;
     scoped_refptr<SimpleFontData> emphasis_mark;
-
-    DISALLOW_COPY_AND_ASSIGN(DerivedFontData);
   };
 
   mutable std::unique_ptr<DerivedFontData> derived_font_data_;
@@ -197,27 +210,26 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   unsigned visual_overflow_inflation_for_ascent_;
   unsigned visual_overflow_inflation_for_descent_;
 
-  mutable LayoutUnit em_height_ascent_;
-  mutable LayoutUnit em_height_descent_;
+  mutable FontHeight normalized_typo_ascent_descent_;
 
 // See discussion on crbug.com/631032 and Skiaissue
 // https://bugs.chromium.org/p/skia/issues/detail?id=5328 :
 // On Mac we're still using path based glyph metrics, and they seem to be
 // too slow to be able to remove the caching layer we have here.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   mutable std::unique_ptr<GlyphMetricsMap<FloatRect>> glyph_to_bounds_map_;
   mutable GlyphMetricsMap<float> glyph_to_width_map_;
 #endif
 };
 
 ALWAYS_INLINE FloatRect SimpleFontData::BoundsForGlyph(Glyph glyph) const {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   return PlatformBoundsForGlyph(glyph);
 #else
   FloatRect bounds_result;
   if (glyph_to_bounds_map_) {
     bounds_result = glyph_to_bounds_map_->MetricsForGlyph(glyph);
-    if (bounds_result.Width() != kCGlyphSizeUnknown)
+    if (bounds_result.width() != kCGlyphSizeUnknown)
       return bounds_result;
   }
 
@@ -231,7 +243,7 @@ ALWAYS_INLINE FloatRect SimpleFontData::BoundsForGlyph(Glyph glyph) const {
 }
 
 ALWAYS_INLINE float SimpleFontData::WidthForGlyph(Glyph glyph) const {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   return PlatformWidthForGlyph(glyph);
 #else
   float width = glyph_to_width_map_.MetricsForGlyph(glyph);
@@ -245,7 +257,12 @@ ALWAYS_INLINE float SimpleFontData::WidthForGlyph(Glyph glyph) const {
 #endif
 }
 
-DEFINE_FONT_DATA_TYPE_CASTS(SimpleFontData, false);
+template <>
+struct DowncastTraits<SimpleFontData> {
+  static bool AllowFrom(const FontData& fontData) {
+    return !fontData.IsSegmented();
+  }
+};
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SIMPLE_FONT_DATA_H_

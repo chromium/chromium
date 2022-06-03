@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace base {
 class File;
@@ -27,12 +27,12 @@ struct ArchiveAnalyzerResults {
   google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>
       archived_binary;
   std::vector<base::FilePath> archived_archive_filenames;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::vector<uint8_t> signature_blob;
   google::protobuf::RepeatedPtrField<
       ClientDownloadRequest_DetachedCodeSignature>
       detached_code_signatures;
-#endif  // OS_MACOSX
+#endif  // OS_MAC
   int file_count;
   int directory_count;
   ArchiveAnalyzerResults();

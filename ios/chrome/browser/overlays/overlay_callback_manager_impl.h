@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_dispatch_callback_storage.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 
 // Implementation of OverlayCallbackManager.
@@ -27,14 +26,12 @@ class OverlayCallbackManagerImpl : public OverlayCallbackManager {
   OverlayResponse* GetCompletionResponse() const override;
   void AddCompletionCallback(OverlayCompletionCallback callback) override;
   void DispatchResponse(std::unique_ptr<OverlayResponse> response) override;
-  OverlayDispatchCallbackStorage* GetDispatchCallbackStorage() override;
+  void AddDispatchCallback(OverlayDispatchCallback callback) override;
 
  private:
-  // The completion response and callbacks.
   std::unique_ptr<OverlayResponse> completion_response_;
   std::vector<OverlayCompletionCallback> completion_callbacks_;
-  // The storage holding OverlayDispatchCallbacks.
-  OverlayDispatchCallbackStorage dispatch_callback_storage_;
+  std::vector<OverlayDispatchCallback> dispatch_callbacks_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_OVERLAY_CALLBACK_MANAGER_IMPL_H_

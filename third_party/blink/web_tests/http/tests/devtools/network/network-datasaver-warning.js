@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests to ensure datsaver logs warning in console if enabled and only shown once on reloads.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   TestRunner.addResult('Console messages:');
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.addResult('');
 
   TestRunner.addResult('Enabling data saver');
@@ -18,13 +18,13 @@
   await TestRunner.reloadPagePromise();
 
   TestRunner.addResult('Console messages:');
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.addResult('');
 
   TestRunner.addResult('Reloading Page');
   await TestRunner.reloadPagePromise();
   TestRunner.addResult('Console messages:');
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.completeTest();
 })();

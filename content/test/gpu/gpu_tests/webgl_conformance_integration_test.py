@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import logging
 import os
 import re
 import sys
 
+from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 from gpu_tests import webgl_test_util
-
 
 conformance_harness_script = r"""
   var testHarness = {};
@@ -57,11 +59,27 @@ extension_harness_additional_script = r"""
   window.onload = function() { window._loaded = true; }
 """
 
+
+if sys.version_info[0] == 3:
+  # cmp no longer exists in Python 3
+  def cmp(a, b):  # pylint: disable=redefined-builtin
+    return int(a > b) - int(a < b)
+
+
 def _CompareVersion(version1, version2):
   ver_num1 = [int(x) for x in version1.split('.')]
   ver_num2 = [int(x) for x in version2.split('.')]
   size = min(len(ver_num1), len(ver_num2))
   return cmp(ver_num1[0:size], ver_num2[0:size])
+
+
+class WebGLTestArgs(object):
+  """Struct-like class for passing args to a WebGLConformance test."""
+
+  def __init__(self, webgl_version=None, extension=None, extension_list=None):
+    self.webgl_version = webgl_version
+    self.extension = extension
+    self.extension_list = extension_list
 
 
 class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -81,142 +99,147 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def AddCommandlineArgs(cls, parser):
     super(WebGLConformanceIntegrationTest, cls).AddCommandlineArgs(parser)
-    parser.add_option('--webgl-conformance-version',
+    parser.add_option(
+        '--webgl-conformance-version',
         help='Version of the WebGL conformance tests to run.',
         default='1.0.4')
-    parser.add_option('--webgl2-only',
+    parser.add_option(
+        '--webgl2-only',
         help='Whether we include webgl 1 tests if version is 2.0.0 or above.',
         default='false')
-    parser.add_option('--is-asan',
+    parser.add_option(
+        '--is-asan',
         help='Indicates whether currently running an ASAN build',
-        action='store_true', default=False)
+        action='store_true',
+        default=False)
 
   @classmethod
   def GenerateGpuTests(cls, options):
     #
     # Conformance tests
     #
-    test_paths = cls._ParseTests(
-        '00_test_list.txt',
-        options.webgl_conformance_version,
-        (options.webgl2_only == 'true'),
-        None)
+    test_paths = cls._ParseTests('00_test_list.txt',
+                                 options.webgl_conformance_version,
+                                 (options.webgl2_only == 'true'), None)
     cls._webgl_version = [
-        int(x) for x in options.webgl_conformance_version.split('.')][0]
+        int(x) for x in options.webgl_conformance_version.split('.')
+    ][0]
     cls._is_asan = options.is_asan
     for test_path in test_paths:
       test_path_with_args = test_path
       if cls._webgl_version > 1:
         test_path_with_args += '?webglVersion=' + str(cls._webgl_version)
       yield (test_path.replace(os.path.sep, '/'),
-             os.path.join(
-                 webgl_test_util.conformance_relpath, test_path_with_args),
-             ('_RunConformanceTest'))
+             os.path.join(webgl_test_util.conformance_relpath,
+                          test_path_with_args), ('_RunConformanceTest',
+                                                 WebGLTestArgs()))
 
     #
     # Extension tests
     #
     extension_tests = cls._GetExtensionList()
     # Coverage test.
-    yield('WebglExtension_TestCoverage',
-          os.path.join(webgl_test_util.extensions_relpath,
-                       'webgl_extension_test.html'),
-          ('_RunExtensionCoverageTest',
-           extension_tests,
-           cls._webgl_version))
+    yield ('WebglExtension_TestCoverage',
+           os.path.join(webgl_test_util.extensions_relpath,
+                        'webgl_extension_test.html'),
+           ('_RunExtensionCoverageTest',
+            WebGLTestArgs(webgl_version=cls._webgl_version,
+                          extension_list=extension_tests)))
     # Individual extension tests.
     for extension in extension_tests:
-      yield('WebglExtension_%s' % extension,
-            os.path.join(webgl_test_util.extensions_relpath,
-                         'webgl_extension_test.html'),
-            ('_RunExtensionTest',
-             extension,
-             cls._webgl_version))
+      yield ('WebglExtension_%s' % extension,
+             os.path.join(webgl_test_util.extensions_relpath,
+                          'webgl_extension_test.html'),
+             ('_RunExtensionTest',
+              WebGLTestArgs(webgl_version=cls._webgl_version,
+                            extension=extension)))
 
   @classmethod
   def _GetExtensionList(cls):
     if cls._webgl_version == 1:
       return [
-        'ANGLE_instanced_arrays',
-        'EXT_blend_minmax',
-        'EXT_color_buffer_half_float',
-        'EXT_disjoint_timer_query',
-        'EXT_float_blend',
-        'EXT_frag_depth',
-        'EXT_shader_texture_lod',
-        'EXT_sRGB',
-        'EXT_texture_filter_anisotropic',
-        'KHR_parallel_shader_compile',
-        'OES_element_index_uint',
-        'OES_fbo_render_mipmap',
-        'OES_standard_derivatives',
-        'OES_texture_float',
-        'OES_texture_float_linear',
-        'OES_texture_half_float',
-        'OES_texture_half_float_linear',
-        'OES_vertex_array_object',
-        'WEBGL_color_buffer_float',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_pvrtc',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_compressed_texture_s3tc_srgb',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_depth_texture',
-        'WEBGL_draw_buffers',
-        'WEBGL_lose_context',
-        'WEBGL_multi_draw',
-        'WEBGL_video_texture',
+          'ANGLE_instanced_arrays',
+          'EXT_blend_minmax',
+          'EXT_color_buffer_half_float',
+          'EXT_disjoint_timer_query',
+          'EXT_float_blend',
+          'EXT_frag_depth',
+          'EXT_shader_texture_lod',
+          'EXT_sRGB',
+          'EXT_texture_compression_bptc',
+          'EXT_texture_compression_rgtc',
+          'EXT_texture_filter_anisotropic',
+          'KHR_parallel_shader_compile',
+          'OES_element_index_uint',
+          'OES_fbo_render_mipmap',
+          'OES_standard_derivatives',
+          'OES_texture_float',
+          'OES_texture_float_linear',
+          'OES_texture_half_float',
+          'OES_texture_half_float_linear',
+          'OES_vertex_array_object',
+          'WEBGL_color_buffer_float',
+          'WEBGL_compressed_texture_astc',
+          'WEBGL_compressed_texture_etc',
+          'WEBGL_compressed_texture_etc1',
+          'WEBGL_compressed_texture_pvrtc',
+          'WEBGL_compressed_texture_s3tc',
+          'WEBGL_compressed_texture_s3tc_srgb',
+          'WEBGL_debug_renderer_info',
+          'WEBGL_debug_shaders',
+          'WEBGL_depth_texture',
+          'WEBGL_draw_buffers',
+          'WEBGL_lose_context',
+          'WEBGL_multi_draw',
+          'WEBGL_video_texture',
+          'WEBGL_webcodecs_video_frame',
       ]
     else:
       return [
-        'EXT_color_buffer_float',
-        'EXT_disjoint_timer_query_webgl2',
-        'EXT_float_blend',
-        'EXT_texture_filter_anisotropic',
-        'KHR_parallel_shader_compile',
-        'OES_texture_float_linear',
-        'OVR_multiview2',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_pvrtc',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_compressed_texture_s3tc_srgb',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_draw_instanced_base_vertex_base_instance',
-        'WEBGL_lose_context',
-        'WEBGL_multi_draw',
-        'WEBGL_multi_draw_instanced_base_vertex_base_instance',
-        'WEBGL_video_texture',
+          'EXT_color_buffer_float',
+          'EXT_color_buffer_half_float',
+          'EXT_disjoint_timer_query_webgl2',
+          'EXT_float_blend',
+          'EXT_texture_compression_bptc',
+          'EXT_texture_compression_rgtc',
+          'EXT_texture_filter_anisotropic',
+          'EXT_texture_norm16',
+          'KHR_parallel_shader_compile',
+          'OES_draw_buffers_indexed',
+          'OES_texture_float_linear',
+          'OVR_multiview2',
+          'WEBGL_compressed_texture_astc',
+          'WEBGL_compressed_texture_etc',
+          'WEBGL_compressed_texture_etc1',
+          'WEBGL_compressed_texture_pvrtc',
+          'WEBGL_compressed_texture_s3tc',
+          'WEBGL_compressed_texture_s3tc_srgb',
+          'WEBGL_debug_renderer_info',
+          'WEBGL_debug_shaders',
+          'WEBGL_draw_instanced_base_vertex_base_instance',
+          'WEBGL_lose_context',
+          'WEBGL_multi_draw',
+          'WEBGL_multi_draw_instanced_base_vertex_base_instance',
+          'WEBGL_video_texture',
+          'WEBGL_webcodecs_video_frame',
       ]
 
   def RunActualGpuTest(self, test_path, *args):
     # This indirection allows these tests to trampoline through
     # _RunGpuTest.
+    assert len(args) == 2
     test_name = args[0]
-    getattr(self, test_name)(test_path, *args[1:])
-
-  def _GetGPUInfoErrorString(self, gpu_info):
-    primary_gpu = gpu_info.devices[0]
-    error_str = 'primary gpu=' + primary_gpu.device_string
-    if gpu_info.aux_attributes:
-      gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
-      if gl_renderer:
-        error_str += ', gl_renderer=' + gl_renderer
-    return error_str
+    test_args = args[1]
+    getattr(self, test_name)(test_path, test_args)
 
   def _VerifyGLBackend(self, gpu_info):
     # Verify that Chrome's GL backend matches if a specific one was requested
     if self._gl_backend:
-      if (self._gl_backend == 'angle' and
-          gpu_helper.GetANGLERenderer(gpu_info) == 'no_angle'):
+      if (self._gl_backend == 'angle'
+          and gpu_helper.GetANGLERenderer(gpu_info) == 'angle-disabled'):
         self.fail('requested GL backend (' + self._gl_backend + ')' +
                   ' had no effect on the browser: ' +
-                  self._GetGPUInfoErrorString(gpu_info))
+                  _GetGPUInfoErrorString(gpu_info))
         return False
     return True
 
@@ -225,19 +248,23 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # GPU exepections use slightly different names for the angle backends
       # than the Chrome flags
       known_backend_flag_map = {
-        'd3d11': 'd3d11',
-        'd3d9': 'd3d9',
-        'opengl': 'gl',
-        'opengles': 'gles',
-        'vulkan': 'vulkan',
+          'angle-d3d11': ['d3d11'],
+          'angle-d3d9': ['d3d9'],
+          'angle-opengl': ['gl'],
+          'angle-opengles': ['gles'],
+          'angle-metal': ['metal'],
+          'angle-vulkan': ['vulkan'],
+          # Support setting VK_ICD_FILENAMES for swiftshader when requesting
+          # the 'vulkan' backend.
+          'angle-swiftshader': ['swiftshader', 'vulkan'],
       }
       current_angle_backend = gpu_helper.GetANGLERenderer(gpu_info)
       if (current_angle_backend not in known_backend_flag_map or
-          known_backend_flag_map[current_angle_backend] != \
-          self._angle_backend):
+          self._angle_backend not in \
+            known_backend_flag_map[current_angle_backend]):
         self.fail('requested ANGLE backend (' + self._angle_backend + ')' +
                   ' had no effect on the browser: ' +
-                  self._GetGPUInfoErrorString(gpu_info))
+                  _GetGPUInfoErrorString(gpu_info))
         return False
     return True
 
@@ -246,8 +273,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # GPU exepections use slightly different names for the command decoders
       # than the Chrome flags
       known_command_decoder_flag_map = {
-        'passthrough': 'passthrough',
-        'no_passthrough': 'validating',
+          'passthrough': 'passthrough',
+          'no_passthrough': 'validating',
       }
       current_command_decoder = gpu_helper.GetCommandDecoder(gpu_info)
       if (current_command_decoder not in known_command_decoder_flag_map or
@@ -255,7 +282,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           self._command_decoder):
         self.fail('requested command decoder (' + self._command_decoder + ')' +
                   ' had no effect on the browser: ' +
-                  self._GetGPUInfoErrorString(gpu_info))
+                  _GetGPUInfoErrorString(gpu_info))
         return False
     return True
 
@@ -265,9 +292,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not self._verified_flags:
       # If the user specified any flags for ANGLE or the command decoder,
       # verify that the browser is actually using the requested configuration
-      if (self._VerifyGLBackend(gpu_info) and
-          self._VerifyANGLEBackend(gpu_info) and
-          self._VerifyCommandDecoder(gpu_info)):
+      if (self._VerifyGLBackend(gpu_info) and self._VerifyANGLEBackend(gpu_info)
+          and self._VerifyCommandDecoder(gpu_info)):
         self._verified_flags = True
     url = self.UrlOfStaticFilePath(test_path)
     self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
@@ -282,40 +308,34 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     elif not self._DidWebGLTestSucceed(self.tab):
       self.fail(self._WebGLTestMessages(self.tab))
 
-  def _RunConformanceTest(self, test_path, *args):
+  def _RunConformanceTest(self, test_path, _):
     self._NavigateTo(test_path, conformance_harness_script)
     self._CheckTestCompletion()
 
-
-  def _GetExtensionHarnessScript(self):
-    return conformance_harness_script + extension_harness_additional_script
-
-  def _RunExtensionCoverageTest(self, test_path, *args):
-    self._NavigateTo(test_path, self._GetExtensionHarnessScript())
+  def _RunExtensionCoverageTest(self, test_path, test_args):
+    self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
-    extension_list = args[0]
-    webgl_version = args[1]
-    context_type = "webgl2" if webgl_version == 2 else "webgl"
+    context_type = "webgl2" if test_args.webgl_version == 2 else "webgl"
     extension_list_string = "["
-    for extension in extension_list:
+    for extension in test_args.extension_list:
       extension_list_string = extension_list_string + extension + ", "
     extension_list_string = extension_list_string + "]"
     self.tab.action_runner.EvaluateJavaScript(
         'checkSupportedExtensions({{ extensions_string }}, {{context_type}})',
-        extensions_string=extension_list_string, context_type=context_type)
+        extensions_string=extension_list_string,
+        context_type=context_type)
     self._CheckTestCompletion()
 
-  def _RunExtensionTest(self, test_path, *args):
-    self._NavigateTo(test_path, self._GetExtensionHarnessScript())
+  def _RunExtensionTest(self, test_path, test_args):
+    self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
-    extension = args[0]
-    webgl_version = args[1]
-    context_type = "webgl2" if webgl_version == 2 else "webgl"
+    context_type = "webgl2" if test_args.webgl_version == 2 else "webgl"
     self.tab.action_runner.EvaluateJavaScript(
-      'checkExtension({{ extension }}, {{ context_type }})',
-      extension=extension, context_type=context_type)
+        'checkExtension({{ extension }}, {{ context_type }})',
+        extension=test_args.extension,
+        context_type=context_type)
     self._CheckTestCompletion()
 
   def _GetTestTimeout(self):
@@ -326,26 +346,33 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return timeout
 
   @classmethod
-  def SetupWebGLBrowserArgs(cls, browser_args):
+  def GenerateBrowserArgs(cls, additional_args):
+    """Adds default arguments to |additional_args|.
+
+    See the parent class' method documentation for additional information.
+    """
+    default_args = super(WebGLConformanceIntegrationTest,
+                         cls).GenerateBrowserArgs(additional_args)
+
     # --test-type=gpu is used only to suppress the "Google API Keys are missing"
     # infobar, which causes flakiness in tests.
-    browser_args += [
-      '--autoplay-policy=no-user-gesture-required',
-      '--disable-domain-blocking-for-3d-apis',
-      '--disable-gpu-process-crash-limit',
-      '--test-type=gpu',
-      '--enable-webgl-draft-extensions',
-      # Try disabling the GPU watchdog to see if this affects the
-      # intermittent GPU process hangs that have been seen on the
-      # waterfall. crbug.com/596622 crbug.com/609252
-      '--disable-gpu-watchdog',
-      # TODO(http://crbug.com/832952): Remove this when WebXR spec is more
-      # stable and setCompatibleXRDevice is part of the conformance test.
-      '--disable-blink-features=WebXR',
-      # TODO(crbug.com/830901): see whether disabling this feature
-      # makes the WebGL video upload tests reliable again.
-      '--disable-features=UseSurfaceLayerForVideo',
-    ]
+    default_args.extend([
+        cba.AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED,
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        cba.DISABLE_GPU_PROCESS_CRASH_LIMIT,
+        cba.TEST_TYPE_GPU,
+        '--enable-webgl-draft-extensions',
+        # Try disabling the GPU watchdog to see if this affects the
+        # intermittent GPU process hangs that have been seen on the
+        # waterfall. crbug.com/596622 crbug.com/609252
+        '--disable-gpu-watchdog',
+        # TODO(http://crbug.com/832952): Remove this when WebXR spec is more
+        # stable and setCompatibleXRDevice is part of the conformance test.
+        '--disable-blink-features=WebXR',
+        # Force-enable SharedArrayBuffer to be able to test its
+        # support in WEBGL_multi_draw.
+        '--enable-blink-features=SharedArrayBuffer',
+    ])
     # Note that the overriding of the default --js-flags probably
     # won't interact well with RestartBrowserIfNecessaryWithArgs, but
     # we don't use that in this test.
@@ -370,22 +397,24 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.warning(' Original flags: ' + builtin_js_flags)
       logging.warning(' New flags: ' + user_js_flags)
     else:
-      browser_args += [builtin_js_flags]
-    cls.CustomizeBrowserArgs(browser_args)
+      default_args.append(builtin_js_flags)
+
+    return default_args
 
   @classmethod
   def SetUpProcess(cls):
     super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
-    cls.SetupWebGLBrowserArgs([])
+    cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     # By setting multiple server directories, the root of the server
     # implicitly becomes the common base directory, i.e., the Chromium
     # src dir, and all URLs have to be specified relative to that.
     cls.SetStaticServerDirs([
-      os.path.join(path_util.GetChromiumSrcDir(),
-                   webgl_test_util.conformance_relpath),
-      os.path.join(path_util.GetChromiumSrcDir(),
-                   webgl_test_util.extensions_relpath)])
+        os.path.join(path_util.GetChromiumSrcDir(),
+                     webgl_test_util.conformance_relpath),
+        os.path.join(path_util.GetChromiumSrcDir(),
+                     webgl_test_util.extensions_relpath)
+    ])
 
   # Helper functions.
 
@@ -399,14 +428,41 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _ParseTests(cls, path, version, webgl2_only, folder_min_version):
+    def _ParseTestNameAndVersions(line):
+      """Parses any min/max versions and the test name on the given line.
+
+      Args:
+        line: A string containing the line to be parsed.
+
+      Returns:
+        A tuple (test_name, min_version, max_version) containing the test name
+        and parsed minimum/maximum versions found as strings. Min/max values can
+        be None if no version was found.
+      """
+      line_tokens = line.split(' ')
+      test_name = line_tokens[-1]
+
+      i = 0
+      min_version = None
+      max_version = None
+      while i < len(line_tokens):
+        token = line_tokens[i]
+        if token == '--min-version':
+          i += 1
+          min_version = line_tokens[i]
+        elif token == '--max-version':
+          i += 1
+          max_version = line_tokens[i]
+        i += 1
+      return test_name, min_version, max_version
+
     test_paths = []
-    current_dir = os.path.dirname(path)
-    full_path = os.path.normpath(os.path.join(webgl_test_util.conformance_path,
-                                              path))
+    full_path = os.path.normpath(
+        os.path.join(webgl_test_util.conformance_path, path))
 
     if not os.path.exists(full_path):
       raise Exception('The WebGL conformance test path specified ' +
-        'does not exist: ' + full_path)
+                      'does not exist: ' + full_path)
 
     with open(full_path, 'r') as f:
       for line in f:
@@ -414,57 +470,37 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
         if not line:
           continue
-
         if line.startswith('//') or line.startswith('#'):
           continue
 
-        line_tokens = line.split(' ')
-        test_name = line_tokens[-1]
-
-        i = 0
-        min_version = None
-        max_version = None
-        while i < len(line_tokens):
-          token = line_tokens[i]
-          if token == '--min-version':
-            i += 1
-            min_version = line_tokens[i]
-          elif token == '--max-version':
-            i += 1
-            max_version = line_tokens[i]
-          i += 1
-
+        test_name, min_version, max_version = _ParseTestNameAndVersions(line)
         min_version_to_compare = min_version or folder_min_version
 
-        if (min_version_to_compare and
-            _CompareVersion(version, min_version_to_compare) < 0):
+        if (min_version_to_compare
+            and _CompareVersion(version, min_version_to_compare) < 0):
           continue
-
         if max_version and _CompareVersion(version, max_version) > 0:
           continue
-
-        if (webgl2_only and not '.txt' in test_name and
-            (not min_version_to_compare or
-             not min_version_to_compare.startswith('2'))):
+        if (webgl2_only and not '.txt' in test_name
+            and (not min_version_to_compare
+                 or not min_version_to_compare.startswith('2'))):
           continue
 
+        include_path = os.path.join(os.path.dirname(path), test_name)
         if '.txt' in test_name:
-          include_path = os.path.join(current_dir, test_name)
           # We only check min-version >= 2.0.0 for the top level list.
-          test_paths += cls._ParseTests(
-              include_path, version, webgl2_only, min_version_to_compare)
+          test_paths += cls._ParseTests(include_path, version, webgl2_only,
+                                        min_version_to_compare)
         else:
-          test = os.path.join(current_dir, test_name)
-          test_paths.append(test)
+          test_paths.append(include_path)
 
     return test_paths
 
   @classmethod
   def GetPlatformTags(cls, browser):
     tags = super(WebGLConformanceIntegrationTest, cls).GetPlatformTags(browser)
-    tags.extend(
-        [['no-asan', 'asan'][cls._is_asan],
-         'webgl-version-%d' % cls._webgl_version])
+    tags.extend([['no-asan', 'asan'][cls._is_asan],
+                 'webgl-version-%d' % cls._webgl_version])
 
     if gpu_helper.EXPECTATIONS_DRIVER_TAGS:
       system_info = browser.GetSystemInfo()
@@ -491,9 +527,10 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
             match = gpu_helper.MatchDriverTag(tag)
             assert match
-            if (driver_vendor == match.group(1) and
-                gpu_helper.EvaluateVersionComparison(
-                    driver_version, match.group(2), match.group(3))):
+            if (driver_vendor == match.group(1)
+                and gpu_helper.EvaluateVersionComparison(
+                    driver_version, match.group(2), match.group(3),
+                    browser.platform.GetOSName(), driver_vendor)):
               tags.append(tag)
     return tags
 
@@ -505,8 +542,24 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     else:
       file_name = 'webgl2_conformance_expectations.txt'
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations', file_name)]
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
+            file_name)
+    ]
+
+
+def _GetGPUInfoErrorString(gpu_info):
+  primary_gpu = gpu_info.devices[0]
+  error_str = 'primary gpu=' + primary_gpu.device_string
+  if gpu_info.aux_attributes:
+    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
+    if gl_renderer:
+      error_str += ', gl_renderer=' + gl_renderer
+  return error_str
+
+
+def _GetExtensionHarnessScript():
+  return conformance_harness_script + extension_harness_additional_script
 
 
 def load_tests(loader, tests, pattern):

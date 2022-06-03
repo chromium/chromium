@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -67,14 +68,14 @@ class AuraDesktopCapturerTest : public testing::Test,
     bitmap.installPixels(info, const_cast<unsigned char*>(frame_data), 12);
 
     capturer_->OnFrameCaptured(std::make_unique<viz::CopyOutputSkBitmapResult>(
-        gfx::Rect(0, 0, bitmap.width(), bitmap.height()), bitmap));
+        gfx::Rect(0, 0, bitmap.width(), bitmap.height()), std::move(bitmap)));
   }
 
   std::unique_ptr<AuraDesktopCapturer> capturer_;
 };
 
 void AuraDesktopCapturerTest::SetUp() {
-  capturer_.reset(new AuraDesktopCapturer());
+  capturer_ = std::make_unique<AuraDesktopCapturer>();
 }
 
 TEST_F(AuraDesktopCapturerTest, ConvertSkBitmapToDesktopFrame) {

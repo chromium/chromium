@@ -29,7 +29,7 @@ bool IsSystemComponent(const base::win::RegKey& candidate) {
 // could not be retrieved.
 bool GetValue(const base::win::RegKey& key,
               const wchar_t* value,
-              base::string16* result) {
+              std::wstring* result) {
   return key.ReadValue(value, result) == ERROR_SUCCESS && !result->empty();
 }
 
@@ -37,7 +37,7 @@ bool GetValue(const base::win::RegKey& key,
 // value. Return true on success.
 bool GetInstallPathUsingInstallLocation(const base::win::RegKey& candidate,
                                         base::FilePath* install_path) {
-  base::string16 install_location;
+  std::wstring install_location;
   if (GetValue(candidate, L"InstallLocation", &install_location)) {
     *install_path = base::FilePath(std::move(install_location));
     return true;
@@ -49,8 +49,8 @@ bool GetInstallPathUsingInstallLocation(const base::win::RegKey& candidate,
 // paths are characterized by a number instead of a drive letter.
 // See the documentation for ::MsiGetComponentPath():
 // https://msdn.microsoft.com/library/windows/desktop/aa370112.aspx
-bool IsRegistryComponentPath(const base::string16& component_path) {
-  base::string16 drive_letter =
+bool IsRegistryComponentPath(const std::wstring& component_path) {
+  std::wstring drive_letter =
       component_path.substr(0, component_path.find(':'));
 
   for (const wchar_t* registry_drive_letter :
@@ -65,14 +65,14 @@ bool IsRegistryComponentPath(const base::string16& component_path) {
 // Returns all the files installed by the product identified by |product_guid|.
 // Returns true on success.
 bool GetInstalledFilesUsingMsiGuid(
-    const base::string16& product_guid,
+    const std::wstring& product_guid,
     const MsiUtil& msi_util,
-    const base::string16& user_sid,
+    const std::wstring& user_sid,
     std::vector<base::FilePath>* installed_files) {
   // An invalid product guid may have been passed to this function. In this
   // case, GetMsiComponentPaths() will return false so it is not necessary to
   // specifically filter those out.
-  std::vector<base::string16> component_paths;
+  std::vector<std::wstring> component_paths;
   if (!msi_util.GetMsiComponentPaths(product_guid, user_sid, &component_paths))
     return false;
 
@@ -145,7 +145,7 @@ InstalledApplications::InstalledApplications(
 
   // Retrieve the current user's Security Identifier. If it fails, |user_sid|
   // will stay empty.
-  base::string16 user_sid;
+  std::wstring user_sid;
   bool got_user_sid_string = base::win::GetUserSidString(&user_sid);
   UMA_HISTOGRAM_BOOLEAN(
       "ThirdPartyModules.InstalledApplications.GotUserSidString",
@@ -169,12 +169,12 @@ InstalledApplications::InstalledApplications(
 
 void InstalledApplications::CheckRegistryKeyForInstalledApplication(
     HKEY hkey,
-    const base::string16& key_path,
+    const std::wstring& key_path,
     REGSAM wow64access,
-    const base::string16& key_name,
+    const std::wstring& key_name,
     const MsiUtil& msi_util,
-    const base::string16& user_sid) {
-  base::string16 candidate_key_path =
+    const std::wstring& user_sid) {
+  std::wstring candidate_key_path =
       base::StringPrintf(L"%ls\\%ls", key_path.c_str(), key_name.c_str());
   base::win::RegKey candidate(hkey, candidate_key_path.c_str(),
                               KEY_QUERY_VALUE | wow64access);
@@ -187,12 +187,12 @@ void InstalledApplications::CheckRegistryKeyForInstalledApplication(
     return;
 
   // If there is no UninstallString, the Uninstall button is grayed out.
-  base::string16 uninstall_string;
+  std::wstring uninstall_string;
   if (!GetValue(candidate, L"UninstallString", &uninstall_string))
     return;
 
   // Ignore Microsoft applications.
-  base::string16 publisher;
+  std::wstring publisher;
   if (GetValue(candidate, L"Publisher", &publisher) &&
       base::StartsWith(publisher, L"Microsoft", base::CompareCase::SENSITIVE)) {
     return;
@@ -201,7 +201,7 @@ void InstalledApplications::CheckRegistryKeyForInstalledApplication(
   // Because this class is used to display a warning to the user, not having
   // a display name renders the warning somewhat useless. Ignore those
   // candidates.
-  base::string16 display_name;
+  std::wstring display_name;
   if (!GetValue(candidate, L"DisplayName", &display_name))
     return;
 

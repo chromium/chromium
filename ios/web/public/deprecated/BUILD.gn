@@ -13,9 +13,7 @@ source_set("deprecated") {
     "//url",
   ]
   sources = [
-    "crw_context_menu_delegate.h",
     "crw_js_injection_evaluator.h",
-    "crw_js_injection_manager.h",
     "crw_js_injection_receiver.h",
     "global_web_state_observer.h",
     "url_verification_constants.h",
@@ -36,15 +34,6 @@ source_set("deprecated_web_util") {
   sources = [
     "crw_web_controller_util.h",
     "crw_web_controller_util.mm",
-  ]
-}
-
-source_set("deprecated_navigation_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  sources = [
-    "navigation_item_list.h",
-    "navigation_item_list.mm",
   ]
 }
 

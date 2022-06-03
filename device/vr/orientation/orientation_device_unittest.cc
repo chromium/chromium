@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -47,6 +48,11 @@ class FakeScreen : public display::Screen {
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
     return nullptr;
   }
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override {
+    return nullptr;
+  }
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override {
     return display;
@@ -74,13 +80,16 @@ class FakeScreen : public display::Screen {
 
 class VROrientationDeviceTest : public testing::Test {
  public:
+  VROrientationDeviceTest(const VROrientationDeviceTest&) = delete;
+  VROrientationDeviceTest& operator=(const VROrientationDeviceTest&) = delete;
+
   void onDisplaySynced() {}
 
  protected:
   VROrientationDeviceTest() = default;
   ~VROrientationDeviceTest() override = default;
   void SetUp() override {
-    fake_sensor_provider_ = std::make_unique<FakeSensorProvider>(
+    fake_sensor_provider_ = std::make_unique<FakeXRSensorProvider>(
         sensor_provider_.BindNewPipeAndPassReceiver());
 
     fake_sensor_ = std::make_unique<FakeOrientationSensor>(
@@ -137,7 +146,7 @@ class VROrientationDeviceTest : public testing::Test {
         [](base::OnceClosure quit_closure,
            base::OnceCallback<void(mojom::VRPosePtr)> callback,
            mojom::XRFrameDataPtr ptr) {
-          std::move(callback).Run(std::move(ptr->pose));
+          std::move(callback).Run(std::move(ptr->mojo_from_viewer));
           std::move(quit_closure).Run();
         },
         loop.QuitClosure(), std::move(callback)));
@@ -156,10 +165,6 @@ class VROrientationDeviceTest : public testing::Test {
       device_->GetInlineFrameData(base::BindOnce(
           [](device::mojom::XRFrameDataPtr data) { EXPECT_FALSE(data); }));
     }
-  }
-
-  void SetInlinePosesEnabled(bool enabled) {
-    device_->SetInlinePosesEnabled(enabled);
   }
 
   std::unique_ptr<VROrientationSession> MakeDisplay() {
@@ -225,7 +230,7 @@ class VROrientationDeviceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<VROrientationDevice> device_;
-  std::unique_ptr<FakeSensorProvider> fake_sensor_provider_;
+  std::unique_ptr<FakeXRSensorProvider> fake_sensor_provider_;
   mojo::Remote<mojom::SensorProvider> sensor_provider_;
 
   // Fake Sensor Init params objects
@@ -237,8 +242,6 @@ class VROrientationDeviceTest : public testing::Test {
 
   std::unique_ptr<FakeScreen> fake_screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(VROrientationDeviceTest);
 };
 
 TEST_F(VROrientationDeviceTest, InitializationTest) {
@@ -375,14 +378,6 @@ TEST_F(VROrientationDeviceTest, OrientationLandscape270Test) {
                    EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
                    EXPECT_NEAR(ptr->orientation->w(), 0.924, 0.001);
                  }));
-}
-
-TEST_F(VROrientationDeviceTest, NoMagicWindowPosesWhileBrowsing) {
-  InitializeDevice(FakeInitParams());
-
-  AssertInlineFrameDataAvailable(true);
-  SetInlinePosesEnabled(false);
-  AssertInlineFrameDataAvailable(false);
 }
 
 TEST_F(VROrientationDeviceTest, GetFrameDataHelper) {

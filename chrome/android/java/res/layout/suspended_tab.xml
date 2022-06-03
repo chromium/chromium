@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
     <LinearLayout
-        android:background="@color/modern_primary_color"
+        android:background="@color/default_bg_color"
         android:fillViewport="true"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
-            android:textAppearance="@style/TextAppearance.BlackHeadline"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
             android:layout_gravity="start"
             android:text="@string/usage_stats_site_paused" />
 
@@ -49,7 +49,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:paddingBottom="16dp"
-            android:textAppearance="@style/TextAppearance.BlackBody"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:layout_gravity="start"
             app:leading="@dimen/text_size_large_leading" />
 

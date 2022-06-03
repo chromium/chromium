@@ -21,7 +21,7 @@
                 if (window.testRunner)
                     testRunner.setDomainRelaxationForbiddenForURLScheme(true, "http");
 
-                assert_throws("SecurityError", function () {
+                assert_throws_dom("SecurityError", function () {
                     document.domain = 'for.example.test';
                 });
                 assert_equals(document.domain, 'subdomains.for.example.test');

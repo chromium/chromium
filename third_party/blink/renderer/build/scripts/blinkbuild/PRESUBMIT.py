@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+USE_PYTHON3 = True
+
 
 def _RunBindingsTests(input_api, output_api):
     pardir = input_api.os_path.pardir
@@ -13,8 +15,8 @@ def _RunBindingsTests(input_api, output_api):
         print('Running ' + cmd_name)
     else:
         cmd.append('--suppress-diff')
-    test_cmd = input_api.Command(name=cmd_name, cmd=cmd,
-                                 kwargs={}, message=output_api.PresubmitError)
+    test_cmd = input_api.Command(
+        name=cmd_name, cmd=cmd, kwargs={}, message=output_api.PresubmitError)
     return input_api.RunTests([test_cmd])
 
 

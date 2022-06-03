@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Zero initial, no maximum WebAssembly.Memory(): Property 'initial' is required
+FAIL Non-zero initial, no maximum WebAssembly.Memory(): Property 'initial' is required
+FAIL Zero maximum WebAssembly.Memory(): Property 'initial' is required
+FAIL None-zero maximum WebAssembly.Memory(): Property 'initial' is required
+FAIL non-shared memory WebAssembly.Memory(): Property 'initial' is required
+FAIL shared memory WebAssembly.Memory(): Property 'initial' is required
+Harness: the test ran to completion.
+

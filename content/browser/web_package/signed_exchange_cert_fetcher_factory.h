@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 #include "content/common/content_export.h"
+#include "net/base/isolation_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -26,7 +27,6 @@ namespace content {
 
 class SignedExchangeDevToolsProxy;
 class SignedExchangeCertFetcher;
-class SignedExchangeReporter;
 
 // An interface for creating SignedExchangeCertFetcher object.
 class CONTENT_EXPORT SignedExchangeCertFetcherFactory {
@@ -38,15 +38,15 @@ class CONTENT_EXPORT SignedExchangeCertFetcherFactory {
       const GURL& cert_url,
       bool force_fetch,
       SignedExchangeCertFetcher::CertificateCallback callback,
-      SignedExchangeDevToolsProxy* devtools_proxy,
-      SignedExchangeReporter* reporter) = 0;
+      SignedExchangeDevToolsProxy* devtools_proxy) = 0;
 
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>()>;
   static std::unique_ptr<SignedExchangeCertFetcherFactory> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id);
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
+      net::IsolationInfo isolation_info);
 };
 
 }  // namespace content

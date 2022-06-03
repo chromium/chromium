@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
-import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 
 /**
@@ -35,17 +35,10 @@ public class OverlayContentDelegate {
      */
     public void onTitleUpdated(String title) {}
 
-    /*
-     * Called when the URL is requested to be opened in a new, separate tab.
-     * @param url The URL associated with this request.
-     */
-    public void onOpenNewTabRequested(String url) {}
-
     /**
      * Called when content started loading in the panel.
-     * @param url The URL that is loading.
      */
-    public void onContentLoadStarted(String url) {}
+    public void onContentLoadStarted() {}
 
     /**
      * Called when the navigation entry has been committed.
@@ -88,9 +81,4 @@ public class OverlayContentDelegate {
      * Called once the WebContents has been created and set up completely.
      */
     public void onContentViewCreated() {}
-
-    /**
-     * Called once the WebContents has been destroyed.
-     */
-    public void onContentViewDestroyed() {}
 }

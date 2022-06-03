@@ -188,21 +188,12 @@ NSString* ResolvePath(NSString* path) {
   return [NSString stringWithCString:abs_path encoding:NSUTF8StringEncoding];
 }
 
-// Specific for XCode 10.1 and lower,
-// search |simctl_list| for a udid matching |sdk_version|.
-NSArray* GetDevicesBySDKForXcode10AndLower(NSDictionary* simctl_list,
-                                           NSString* sdk_version) {
-  // Pre-Xcode 10.2's simulator, xcrun simctl list -j returned "devices"
-  // that looked like "iOS 12.1".
-  NSString* sdk = [@"iOS " stringByAppendingString:sdk_version];
-  return [simctl_list[@"devices"] objectForKey:sdk];
-}
-
 // Search |simctl_list| for a udid matching |device_name| and |sdk_version|.
 NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
                                 NSString* device_name,
                                 NSString* sdk_version) {
   NSString* sdk = nil;
+  NSString* name = nil;
   // Get runtime identifier based on version property to handle
   // cases when version and identifier are not the same,
   // e.g. below identifer is *13-2 but version is 13.2.2
@@ -215,6 +206,8 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
   for (NSDictionary* runtime in Runtimes(simctl_list)) {
     if ([runtime[@"version"] isEqualToString:sdk_version]) {
       sdk = runtime[@"identifier"];
+      name = runtime[@"name"];
+      break;
     }
   }
   if (sdk == nil) {
@@ -224,7 +217,9 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
   }
   NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
   if (devices == nil || [devices count] == 0) {
-    devices = GetDevicesBySDKForXcode10AndLower(simctl_list, sdk_version);
+    // Specific for XCode 10.1 and lower,
+    // where name from 'runtimes' uses as a key in 'devices'.
+    devices = [simctl_list[@"devices"] objectForKey:name];
   }
   for (NSDictionary* device in devices) {
     if ([device[@"name"] isEqualToString:device_name]) {
@@ -456,11 +451,9 @@ int main(int argc, char* const argv[]) {
       case 'l':
         PrintSupportedDevices(simctl_list);
         exit(kExitSuccess);
-        break;
       case 'h':
         PrintUsage();
         exit(kExitSuccess);
-        break;
       default:
         PrintUsage();
         exit(kExitInvalidArguments);
@@ -503,22 +496,22 @@ int main(int argc, char* const argv[]) {
   // There should be at least one arg left, specifying the app path. Any
   // additional args are passed as arguments to the app.
   if (optind < argc) {
-    NSString* unresolved_path = [[NSFileManager defaultManager]
+    NSString* unresolved_app_path = [[NSFileManager defaultManager]
         stringWithFileSystemRepresentation:argv[optind]
                                     length:strlen(argv[optind])];
-    app_path = ResolvePath(unresolved_path);
+    app_path = ResolvePath(unresolved_app_path);
     if (!app_path) {
-      LogError(@"Unable to resolve app_path %@", unresolved_path);
+      LogError(@"Unable to resolve app_path %@", unresolved_app_path);
       exit(kExitInvalidArguments);
     }
 
     if (++optind < argc) {
-      NSString* unresolved_path = [[NSFileManager defaultManager]
+      NSString* unresolved_xctest_path = [[NSFileManager defaultManager]
           stringWithFileSystemRepresentation:argv[optind]
                                       length:strlen(argv[optind])];
-      xctest_path = ResolvePath(unresolved_path);
+      xctest_path = ResolvePath(unresolved_xctest_path);
       if (!xctest_path) {
-        LogError(@"Unable to resolve xctest_path %@", unresolved_path);
+        LogError(@"Unable to resolve xctest_path %@", unresolved_xctest_path);
         exit(kExitInvalidArguments);
       }
     }

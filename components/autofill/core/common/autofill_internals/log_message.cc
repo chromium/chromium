@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {

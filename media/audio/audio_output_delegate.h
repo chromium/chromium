@@ -6,9 +6,7 @@
 #define MEDIA_AUDIO_AUDIO_OUTPUT_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 

@@ -16,34 +16,31 @@ namespace blink {
 void SVGInlineFlowBoxPainter::PaintSelectionBackground(
     const PaintInfo& paint_info) {
   DCHECK(paint_info.phase == PaintPhase::kForeground ||
-         paint_info.phase == PaintPhase::kSelection);
+         paint_info.phase == PaintPhase::kSelectionDragImage);
 
-  PaintInfo child_paint_info(paint_info);
   for (InlineBox* child = svg_inline_flow_box_.FirstChild(); child;
        child = child->NextOnLine()) {
-    if (child->IsSVGInlineTextBox())
-      SVGInlineTextBoxPainter(*ToSVGInlineTextBox(child))
-          .PaintSelectionBackground(child_paint_info);
-    else if (child->IsSVGInlineFlowBox())
-      SVGInlineFlowBoxPainter(*ToSVGInlineFlowBox(child))
-          .PaintSelectionBackground(child_paint_info);
+    if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(child)) {
+      SVGInlineTextBoxPainter(*svg_inline_text_box)
+          .PaintSelectionBackground(paint_info);
+    } else if (auto* svg_inline_flow_box = DynamicTo<SVGInlineFlowBox>(child)) {
+      SVGInlineFlowBoxPainter(*svg_inline_flow_box)
+          .PaintSelectionBackground(paint_info);
+    }
   }
 }
 
 void SVGInlineFlowBoxPainter::Paint(const PaintInfo& paint_info,
-                                    const LayoutPoint& paint_offset) {
+                                    const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground ||
-         paint_info.phase == PaintPhase::kSelection);
+         paint_info.phase == PaintPhase::kSelectionDragImage);
 
   ScopedSVGPaintState paint_state(*LineLayoutAPIShim::ConstLayoutObjectFrom(
                                       svg_inline_flow_box_.GetLineLayoutItem()),
-                                  paint_info);
-  if (paint_state.ApplyClipMaskAndFilterIfNecessary()) {
-    for (InlineBox* child = svg_inline_flow_box_.FirstChild(); child;
-         child = child->NextOnLine())
-      child->Paint(paint_state.GetPaintInfo(), paint_offset, LayoutUnit(),
-                   LayoutUnit());
-  }
+                                  paint_info, svg_inline_flow_box_);
+  for (InlineBox* child = svg_inline_flow_box_.FirstChild(); child;
+       child = child->NextOnLine())
+    child->Paint(paint_info, paint_offset, LayoutUnit(), LayoutUnit());
 }
 
 }  // namespace blink

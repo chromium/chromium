@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
@@ -36,10 +35,7 @@ class HostVerifierImpl : public HostVerifier,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<HostVerifier> BuildInstance(
+    static std::unique_ptr<HostVerifier> Create(
         HostBackendDelegate* host_backend_delegate,
         device_sync::DeviceSyncClient* device_sync_client,
         PrefService* pref_service,
@@ -48,12 +44,26 @@ class HostVerifierImpl : public HostVerifier,
             std::make_unique<base::OneShotTimer>(),
         std::unique_ptr<base::OneShotTimer> sync_timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<HostVerifier> CreateInstance(
+        HostBackendDelegate* host_backend_delegate,
+        device_sync::DeviceSyncClient* device_sync_client,
+        PrefService* pref_service,
+        base::Clock* clock,
+        std::unique_ptr<base::OneShotTimer> retry_timer,
+        std::unique_ptr<base::OneShotTimer> sync_timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  HostVerifierImpl(const HostVerifierImpl&) = delete;
+  HostVerifierImpl& operator=(const HostVerifierImpl&) = delete;
 
   ~HostVerifierImpl() override;
 
@@ -96,8 +106,6 @@ class HostVerifierImpl : public HostVerifier,
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   std::unique_ptr<base::OneShotTimer> sync_timer_;
   base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostVerifierImpl);
 };
 
 }  // namespace multidevice_setup

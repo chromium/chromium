@@ -4,12 +4,12 @@
 
 package org.chromium.webview_ui_test.test.util;
 
-import static android.support.test.espresso.web.model.Atoms.castOrDie;
+import static androidx.test.espresso.web.model.Atoms.castOrDie;
 
-import android.support.test.espresso.web.model.Atom;
-import android.support.test.espresso.web.model.Evaluation;
-import android.support.test.espresso.web.model.SimpleAtom;
-import android.support.test.espresso.web.model.TransformingAtom;
+import androidx.test.espresso.web.model.Atom;
+import androidx.test.espresso.web.model.Evaluation;
+import androidx.test.espresso.web.model.SimpleAtom;
+import androidx.test.espresso.web.model.TransformingAtom;
 
 /**
  * A collection of Javascript Atoms for WebView testing

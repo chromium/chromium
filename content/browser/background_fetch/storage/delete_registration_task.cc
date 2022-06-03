@@ -8,13 +8,13 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
-#include "content/browser/cache_storage/cache_storage.h"
-#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -44,12 +44,12 @@ void DCheckRegistrationNotActive(const std::string& unique_id,
 DeleteRegistrationTask::DeleteRegistrationTask(
     DatabaseTaskHost* host,
     int64_t service_worker_registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& unique_id,
     HandleBackgroundFetchErrorCallback callback)
     : DatabaseTask(host),
       service_worker_registration_id_(service_worker_registration_id),
-      origin_(origin),
+      storage_key_(storage_key),
       unique_id_(unique_id),
       callback_(std::move(callback)) {}
 
@@ -75,11 +75,10 @@ void DeleteRegistrationTask::Start() {
   DidGetRegistration(barrier_closure, {}, blink::ServiceWorkerStatusCode::kOk);
 #endif  // DCHECK_IS_ON()
 
-  CacheStorageHandle cache_storage = GetOrOpenCacheStorage(origin_, unique_id_);
-  cache_storage.value()->DoomCache(
-      /* cache_name= */ unique_id_, trace_id,
-      base::BindOnce(&DeleteRegistrationTask::DidDeleteCache,
-                     weak_factory_.GetWeakPtr(), barrier_closure, trace_id));
+  DeleteCache(storage_key_, unique_id_, trace_id,
+              base::BindOnce(&DeleteRegistrationTask::DidDeleteCache,
+                             weak_factory_.GetWeakPtr(),
+                             std::move(barrier_closure), trace_id));
 }
 
 void DeleteRegistrationTask::DidGetRegistration(
@@ -102,6 +101,7 @@ void DeleteRegistrationTask::DidGetRegistration(
       SetStorageError(BackgroundFetchStorageError::kServiceWorkerStorageError);
       AbandonFetches(service_worker_registration_id_);
       std::move(done_closure).Run();
+      return;
     }
   }
 #endif  // DCHECK_IS_ON()
@@ -141,8 +141,6 @@ void DeleteRegistrationTask::DidDeleteCache(
   if (error != blink::mojom::CacheStorageError::kSuccess &&
       error != blink::mojom::CacheStorageError::kErrorNotFound) {
     SetStorageError(BackgroundFetchStorageError::kCacheStorageError);
-  } else {
-    ReleaseCacheStorage(unique_id_);
   }
   std::move(done_closure).Run();
 }

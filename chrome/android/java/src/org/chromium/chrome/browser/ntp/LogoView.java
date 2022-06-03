@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -26,12 +27,13 @@ import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.ui.widget.LoadingView;
+import org.chromium.ui.widget.LoadingView;
 
 import java.lang.ref.WeakReference;
 
@@ -132,6 +134,17 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
+     * Clean up member variables when this view is no longer needed.
+     */
+    public void destroy() {
+        // Need to end the animation otherwise it can cause memory leaks since the AnimationHandler
+        // has a reference to the animation callback which then can link back to the
+        // {@code mTransitionProperty}.
+        endFadeAnimation();
+        mLoadingView.destroy();
+    }
+
+    /**
      * Sets the {@link Delegate} to notify when the logo is pressed.
      */
     public void setDelegate(Delegate delegate) {
@@ -205,10 +218,16 @@ public class LogoView extends FrameLayout implements OnClickListener {
         String contentDescription = TextUtils.isEmpty(logo.altText)
                 ? null
                 : getResources().getString(R.string.accessibility_google_doodle, logo.altText);
-        updateLogo(logo.image, contentDescription, false);
+        updateLogo(
+                logo.image, contentDescription, /* isDefaultLogo = */ false, isLogoClickable(logo));
     }
 
-    private void updateLogo(Bitmap logo, final String contentDescription, boolean isDefaultLogo) {
+    private static boolean isLogoClickable(Logo logo) {
+        return !TextUtils.isEmpty(logo.animatedLogoUrl) || !TextUtils.isEmpty(logo.onClickUrl);
+    }
+
+    private void updateLogo(Bitmap logo, final String contentDescription, boolean isDefaultLogo,
+            boolean isClickable) {
         assert logo != null;
 
         if (mFadeAnimation != null) mFadeAnimation.end();
@@ -244,7 +263,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 mTransitionAmount = 0f;
                 mFadeAnimation = null;
                 setContentDescription(contentDescription);
-                setClickable(!mNewLogoIsDefault);
+                setClickable(isClickable);
+                setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
             }
 
             @Override
@@ -261,9 +281,9 @@ public class LogoView extends FrameLayout implements OnClickListener {
      * @return Whether the default search engine logo is available.
      */
     private boolean maybeShowDefaultLogo() {
-        Bitmap defaultLogo = getDefaultLogo();
+        Bitmap defaultLogo = getDefaultGoogleLogo(getResources());
         if (defaultLogo != null) {
-            updateLogo(defaultLogo, null, true);
+            updateLogo(defaultLogo, null, /* isDefaultLogo = */ true, /* isClickable = */ false);
             return true;
         }
         return false;
@@ -301,16 +321,18 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * @return The default logo.
+     * Get the default Google logo if available.
+     * @param resources Used to load resources.
+     * @return The default Google logo.
      */
-    private Bitmap getDefaultLogo() {
+    public static Bitmap getDefaultGoogleLogo(Resources resources) {
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return null;
 
         Bitmap defaultLogo = sDefaultLogo == null ? null : sDefaultLogo.get();
-        final int tint = ApiCompatibilityUtils.getColor(getResources(), R.color.google_logo_tint);
+        final int tint = ApiCompatibilityUtils.getColor(resources, R.color.google_logo_tint);
         if (defaultLogo == null || sDefaultLogoTint != tint) {
             if (tint == Color.TRANSPARENT) {
-                defaultLogo = BitmapFactory.decodeResource(getResources(), R.drawable.google_logo);
+                defaultLogo = BitmapFactory.decodeResource(resources, R.drawable.google_logo);
             } else {
                 // Apply color filter on a bitmap, which will cause some performance overhead, but
                 // it is worth the APK space savings by avoiding adding another large asset for the
@@ -318,8 +340,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 // maximum recommended vector drawable size 200dpx200dp.
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inMutable = true;
-                defaultLogo = BitmapFactory.decodeResource(
-                        getResources(), R.drawable.google_logo, options);
+                defaultLogo =
+                        BitmapFactory.decodeResource(resources, R.drawable.google_logo, options);
                 Paint paint = new Paint();
                 paint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
                 Canvas canvas = new Canvas(defaultLogo);
@@ -399,5 +421,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
         if (view == this && mDelegate != null && !isTransitioning()) {
             mDelegate.onLogoClicked(isAnimatedLogoShowing());
         }
+    }
+
+    @VisibleForTesting
+    void endAnimationsForTesting() {
+        mFadeAnimation.end();
     }
 }

@@ -20,18 +20,24 @@
 # We've modified Victor's version to output hash values that match WTFString,
 # which involves using a specific seed and some different constants.
 
+import sys
+
+if sys.version_info.major != 2:
+    long = int
+
+
 class uint32_t(long):
     def __rshift__(self, other):
-        return uint32_t(long.__rshift__(self, other) & ((1L << 32) - 1))
+        return uint32_t(long.__rshift__(self, other) & ((1 << 32) - 1))
 
     def __lshift__(self, other):
-        return uint32_t(long.__lshift__(self, other) & ((1L << 32) - 1))
+        return uint32_t(long.__lshift__(self, other) & ((1 << 32) - 1))
 
     def __add__(self, other):
-        return uint32_t(long.__add__(self, other) & ((1L << 32) - 1))
+        return uint32_t(long.__add__(self, other) & ((1 << 32) - 1))
 
     def __xor__(self, other):
-        return uint32_t(long.__xor__(self, other) & ((1L << 32) - 1))
+        return uint32_t(long.__xor__(self, other) & ((1 << 32) - 1))
 
 
 def hash(string):
@@ -46,7 +52,7 @@ def hash(string):
     if not string:
         return 0
 
-    result = uint32_t(0x9E3779B9L)
+    result = uint32_t(0x9E3779B9)
     length = len(string)
     remainder = length & 1
     length >>= 1

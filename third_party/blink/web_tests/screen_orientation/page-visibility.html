@@ -3,6 +3,7 @@
 <body>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="../resources/visibility.js"></script>
 <iframe src='about:blank'></iframe>
 <script>
 
@@ -40,17 +41,14 @@ function runEventVisibleTest() {
         });
         eventVisibleTest.done();
 
-        runNoEventHiddenTest();
+        setMainWindowHidden(true).then(runNoEventHiddenTest);
     };
 
     if (window.testRunner)
         testRunner.setMockScreenOrientation("landscape-primary");
 }
 
-function runNoEventHiddenTest() {
-    if (window.testRunner)
-        testRunner.setPageVisibility("hidden");
-
+  function runNoEventHiddenTest() {
     noEventHiddenTest.step(function() {
         assert_true(document.hidden);
     });
@@ -91,8 +89,7 @@ function runOrientationUpdateVisibleTest() {
         runFrameEventsTest();
     };
 
-    if (window.testRunner)
-        testRunner.setPageVisibility("visible");
+    setMainWindowHidden(false);
 }
 
 function runFrameEventsTest() {

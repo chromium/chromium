@@ -14,9 +14,9 @@ class WebContents;
 
 namespace settings {
 
-// Adds the strings needed by the settings page to |html_source|. This function
-// causes |html_source| to expose a strings.js file from its source which
-// contains a mapping from string's name to its translated value.
+// Adds the strings needed by the browser settings page to |html_source|
+// This function causes |html_source| to expose a strings.js file from its
+// source which contains a mapping from string's name to its translated value.
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          Profile* profile,
                          content::WebContents* web_contents);

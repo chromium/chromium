@@ -9,8 +9,8 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "device/gamepad/gamepad_blocklist.h"
 #include "device/gamepad/gamepad_device_mac.h"
@@ -32,14 +32,10 @@ const uint16_t kGameUsageNumber = 0x05;
 const uint16_t kMultiAxisUsageNumber = 0x08;
 
 NSDictionary* DeviceMatching(uint32_t usage_page, uint32_t usage) {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:usage_page],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsagePageKey)),
-                                   [NSNumber numberWithUnsignedInt:usage],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsageKey)),
-                                   nil];
+  return @{
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsagePageKey)) : @(usage_page),
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsageKey)) : @(usage)
+  };
 }
 
 }  // namespace
@@ -166,18 +162,12 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   uint16_t vendor_int = [vendor_id intValue];
   uint16_t product_int = [product_id intValue];
   uint16_t version_int = [version_number intValue];
+  std::string product_name = base::SysNSStringToUTF8(product);
 
   // Filter out devices that have gamepad-like HID usages but aren't gamepads.
   if (GamepadIsExcluded(vendor_int, product_int))
     return;
 
-  // Nintendo devices are handled by the Nintendo data fetcher.
-  if (NintendoController::IsNintendoController(vendor_int, product_int))
-    return;
-
-  // Record the device before excluding Made for iOS gamepads. This allows us to
-  // recognize these devices even though the GameController API masks the vendor
-  // and product IDs. XInput devices are recorded elsewhere.
   const auto& gamepad_id_list = GamepadIdList::Get();
   DCHECK_EQ(kXInputTypeNone,
             gamepad_id_list.GetXInputType(vendor_int, product_int));
@@ -185,37 +175,39 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   if (devices_.find(location_int) != devices_.end())
     return;
 
-  RecordConnectedGamepad(vendor_int, product_int);
+  const GamepadId gamepad_id =
+      gamepad_id_list.GetGamepadId(product_name, vendor_int, product_int);
+
+  // Nintendo devices are handled by the Nintendo data fetcher.
+  if (NintendoController::IsNintendoController(gamepad_id))
+    return;
+
+  // Record the device before excluding Made for iOS gamepads. This allows us to
+  // recognize these devices even though the GameController API masks the vendor
+  // and product IDs. XInput devices are recorded elsewhere.
+  RecordConnectedGamepad(gamepad_id);
 
   // The SteelSeries Nimbus and other Made for iOS gamepads should be handled
   // through the GameController interface.
-  if (gamepad_id_list.GetGamepadId(vendor_int, product_int) ==
-      GamepadId::kSteelSeriesProduct1420) {
+  if (gamepad_id == GamepadId::kSteelSeriesProduct1420) {
     return;
   }
 
-  bool is_recognized = gamepad_id_list.GetGamepadId(vendor_int, product_int) !=
-                       GamepadId::kUnknownGamepad;
+  bool is_recognized = gamepad_id != GamepadId::kUnknownGamepad;
 
   PadState* state = GetPadState(location_int, is_recognized);
   if (!state)
     return;  // No available slot for this device
 
   state->mapper = GetGamepadStandardMappingFunction(
-      vendor_int, product_int, /*hid_specification_version=*/0, version_int,
-      GAMEPAD_BUS_UNKNOWN);
+      product_name, vendor_int, product_int, /*hid_specification_version=*/0,
+      version_int, GAMEPAD_BUS_UNKNOWN);
 
-  NSString* ident =
-      [NSString stringWithFormat:@"%@ (%sVendor: %04x Product: %04x)", product,
-                                 state->mapper ? "STANDARD GAMEPAD " : "",
-                                 vendor_int, product_int];
-  state->data.SetID(base::SysNSStringToUTF16(ident));
+  UpdateGamepadStrings(product_name, vendor_int, product_int,
+                       state->mapper != nullptr, state->data);
 
-  state->data.mapping =
-      state->mapper ? GamepadMapping::kStandard : GamepadMapping::kNone;
-
-  auto new_device = std::make_unique<GamepadDeviceMac>(location_int, device,
-                                                       vendor_int, product_int);
+  auto new_device = std::make_unique<GamepadDeviceMac>(
+      location_int, device, product_name, vendor_int, product_int);
   if (!new_device->AddButtonsAndAxes(&state->data)) {
     new_device->Shutdown();
     return;

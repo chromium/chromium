@@ -6,7 +6,7 @@
 var test = async_test("This test checks if accessing navigator.serviceWorker doesn't crash with invalid frame");
 
 if (window.testRunner)
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 
 function callback() {
     // At this time window.navigator may be replaced with a new iframe's one,

@@ -62,10 +62,8 @@ specify which remote media components you want to enable. For example, with the
 following gn arguments, the media pipeline will enable `MojoRenderer` and
 `MojoCdm`:
 ```
-enable_mojo_media = true
 mojo_media_services = ["renderer", "cdm"]
 ```
-Note that you must set `enable_mojo_media` first.
 
 ### Media Mojo Interface Factory
 
@@ -109,13 +107,13 @@ mojo interface implementations. It comes with some nice benefits.
 Different platforms or products have different requirements on where the remote
 media components should run. For example, a hardware decoder typically should
 run in the GPU process. The `ServiceManagerContext` provides the ability to run
-a service_manager::Service in-process (browser), out-of-process (utility) or in
-the GPU process. Therefore, by using a `MediaService`, it’s very easy to support
-hosting remote media components interfaces in most common Chromium process types
-(Browser/Utility/GPU). This can by set using the gn argument  `mojo_media_host`,
+a service in-process (browser) or in the GPU process. Therefore, by using a
+`MediaService`, it’s very easy to support hosting remote media components
+interfaces in most common Chromium process types (Browser/GPU). This can by set
+using the gn argument  `mojo_media_host`,
 e.g.
 ```
-mojo_media_host = "browser" or “gpu” or “utility”
+mojo_media_host = "browser" or “gpu”
 ```
 
 MediaService is registered in `ServiceManagerContext` using `kMediaServiceName`.
@@ -320,11 +318,6 @@ local media components get services from content layer through the `MediaClient`
 interface. In `MediaService` and `CdmService`, remote media components get
 services from the through **secure auxiliary services**.
 
-Note that as a `service_manager::Service`, `MediaService` and `CdmService` can
-always connect to other `service_manager::Service` hosted by the service_manager
-through the `Connector` interface. However, these are generic services that
-doesn’t belong to any individual `RenderFrame`, or even user profile.
-
 Some services do require `RenderFrame` or user profile identity, e.g. file
 system. Since media components all belong to a given `RenderFrame`, we must
 maintain the frame identity when accessing these services for security reasons.
@@ -332,10 +325,12 @@ These services are called secure auxiliary services. `FrameServiceBase` is a
 base class for all secure auxiliary services to help manage the lifetime of
 these services (e.g. to handle navigation).
 
-In `MediaInterfaceProxy`, when we request `media::mojom::InterfaceFactory` in
-the `MediaService` or `CdmService`, we call `GetFrameServices()` to configure
-which secure auxiliary services are exposed to the remote components over the
-separate `service_manager::mojom::InterfaceProvider`.
+When a `MediaInterfaceProxy` is created, in addition to providing the
+`media::mojom::InterfaceFactory`, the `RenderFrame` is provisioned with a
+`media::mojom::FrameInterfaceFactory` that exposes these secure auxiliary
+services on a per-frame basis. The `FrameInterfaceFactory` directly provides
+services from //content, and it provides a way for //content embedders to
+register additional auxiliary services via the `BindEmbedderReceiver()` method.
 
 Currently only the remote CDM needs secure auxiliary services. This is a list of
 currently supported services:
@@ -344,7 +339,6 @@ currently supported services:
 * `PlatformVerification`: to check whether the platform is secure
 * `CdmFileIO`: for the CDM to store persistent data
 * `ProvisionFetcher`: for Android MediaDrm device provisioning
-* `CdmProxy`: (in progress)
 
 ### Security
 
@@ -363,8 +357,7 @@ which process in production, see [Adoption](#Adoption) below.
 Also note that all the [Secure Auxiliary Services](#Secure-Auxiliary-Services)
 are running in a more privileged process than the process where the media
 components that use them run in. For example, all of the existing services run
-in the browser process except for the `CdmProxy`, which runs in the GPU process.
-They must defend against compromised media components.
+in the browser process. They must defend against compromised media components.
 
 ### Adoption
 
@@ -405,7 +398,6 @@ They must defend against compromised media components.
     * `MediaService` in the GPU process (registered in `GpuServiceFactory` with
       `GpuMojoMediaClient`)
     * `MojoVideoDecoder` + hardware video decoders such as D3D11VideoDecoder
-    * Provides `CdmProxy` to the `CdmService`
 
 ## Other Services
 

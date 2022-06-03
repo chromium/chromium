@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 
-#include "third_party/blink/public/platform/web_pointer_properties.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_touch_event_init.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
-#include "third_party/blink/renderer/core/events/pointer_event_init.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
-#include "third_party/blink/renderer/core/events/touch_event_init.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -189,8 +189,7 @@ TEST_F(MediaControlTimelineElementTest, ChangeResumesPlayback) {
 
   Timeline()->DispatchEvent(
       *TouchEvent::Create("touchstart", GetValidTouchEventInit()));
-  Timeline()->DispatchEvent(
-      *TouchEvent::Create("change", GetValidTouchEventInit()));
+  Timeline()->DispatchEvent(*Event::Create("change", GetValidTouchEventInit()));
   EXPECT_FALSE(Video()->paused());
 }
 
@@ -244,8 +243,7 @@ TEST_F(MediaControlTimelineElementTest, ChangeAfterPointerDoesNotResume) {
 
   Timeline()->DispatchEvent(
       *PointerEvent::Create("pointerdown", GetValidPointerEventInit()));
-  Timeline()->DispatchEvent(
-      *TouchEvent::Create("change", GetValidTouchEventInit()));
+  Timeline()->DispatchEvent(*Event::Create("change", GetValidTouchEventInit()));
   EXPECT_TRUE(Video()->paused());
 }
 

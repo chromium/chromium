@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the coverage list view after finishing recording in the Coverage view.\n`);
-  await TestRunner.loadModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
   await TestRunner.loadHTML(`
       <p class="class">
       </p>
@@ -23,8 +23,8 @@
   TestRunner.addResult('After second session');
   CoverageTestRunner.dumpCoverageListView();
 
-  var coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
-  coverageView._clear();
+  var coverageView = Coverage.CoverageView.instance();
+  coverageView.clear();
   await CoverageTestRunner.startCoverage(true);
   await CoverageTestRunner.stopCoverage();
   TestRunner.addResult('After clear');

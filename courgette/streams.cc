@@ -40,7 +40,7 @@ class Varint {
   static const int kMax32 = 5;
 
   // Parses a Varint32 encoded value from |source| and stores it in |output|,
-  // and returns a pointer to the following byte.  Returns NULL if a valid
+  // and returns a pointer to the following byte.  Returns nullptr if a valid
   // varint value was not found before |limit|.
   static const uint8_t* Parse32WithLimit(const uint8_t* source,
                                          const uint8_t* limit,

@@ -6,10 +6,13 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_ACCESSIBLE_RESOURCES_INFO_H_
 
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/url_pattern_set.h"
 
 namespace extensions {
 
@@ -21,29 +24,57 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
   WebAccessibleResourcesInfo();
   ~WebAccessibleResourcesInfo() override;
 
+  struct Entry {
+    Entry();
+    Entry(Entry&& other);
+    ~Entry();
+
+    Entry(URLPatternSet resources,
+          URLPatternSet matches,
+          std::vector<ExtensionId> extension_ids,
+          bool use_dynamic_url);
+
+    // List of web accessible extension resources.
+    URLPatternSet resources;
+
+    // List of urls allowed to access resources.
+    URLPatternSet matches;
+
+    // List of extension ids allowed to access resources.
+    std::vector<ExtensionId> extension_ids;
+
+    // Optionally true to require dynamic urls from sites not in |matches|.
+    bool use_dynamic_url;
+  };
+
   // Returns true if the specified resource is web accessible.
-  static bool IsResourceWebAccessible(const Extension* extension,
-                                      const std::string& relative_path);
+  static bool IsResourceWebAccessible(
+      const Extension* extension,
+      const std::string& relative_path,
+      const absl::optional<url::Origin>& initiator_origin);
 
   // Returns true when 'web_accessible_resources' are defined for the extension.
   static bool HasWebAccessibleResources(const Extension* extension);
 
-  // Optional list of web accessible extension resources.
-  URLPatternSet web_accessible_resources_;
+  // The list of entries for the web-accessible resources of the extension.
+  std::vector<Entry> web_accessible_resources;
 };
 
 // Parses the "web_accessible_resources" manifest key.
 class WebAccessibleResourcesHandler : public ManifestHandler {
  public:
   WebAccessibleResourcesHandler();
+
+  WebAccessibleResourcesHandler(const WebAccessibleResourcesHandler&) = delete;
+  WebAccessibleResourcesHandler& operator=(
+      const WebAccessibleResourcesHandler&) = delete;
+
   ~WebAccessibleResourcesHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAccessibleResourcesHandler);
 };
 
 }  // namespace extensions

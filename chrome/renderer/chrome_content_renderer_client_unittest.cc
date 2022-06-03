@@ -16,7 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/renderer/searchbox/search_bouncer.h"
+#include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/webplugininfo.h"
@@ -47,6 +47,10 @@ using blink::WebVector;
 using content::WebPluginInfo;
 using content::WebPluginMimeType;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using extensions::mojom::ManifestLocation;
+#endif
+
 namespace {
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -72,7 +76,7 @@ void AddContentTypeHandler(content::WebPluginInfo* info,
   content::WebPluginMimeType mime_type_info;
   mime_type_info.mime_type = mime_type;
   mime_type_info.additional_params.emplace_back(
-      base::UTF8ToUTF16("nacl"), base::UTF8ToUTF16(manifest_url));
+      u"nacl", base::UTF8ToUTF16(manifest_url));
   info->mime_types.push_back(mime_type_info);
 }
 
@@ -90,8 +94,10 @@ class ChromeContentRendererClientTest : public testing::Test {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 scoped_refptr<const extensions::Extension> CreateTestExtension(
-    extensions::Manifest::Location location, bool is_from_webstore,
-    bool is_hosted_app, const std::string& app_url) {
+    ManifestLocation location,
+    bool is_from_webstore,
+    bool is_hosted_app,
+    const std::string& app_url) {
   int flags = is_from_webstore ?
       extensions::Extension::FROM_WEBSTORE:
       extensions::Extension::NO_FLAGS;
@@ -101,9 +107,9 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
   manifest.SetString("version", "1");
   manifest.SetInteger("manifest_version", 2);
   if (is_hosted_app) {
-    auto url_list = std::make_unique<base::ListValue>();
-    url_list->AppendString(app_url);
-    manifest.Set(extensions::manifest_keys::kWebURLs, std::move(url_list));
+    base::ListValue url_list;
+    url_list.Append(app_url);
+    manifest.SetPath(extensions::manifest_keys::kWebURLs, std::move(url_list));
     manifest.SetString(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
   std::string error;
@@ -113,23 +119,21 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
 
 scoped_refptr<const extensions::Extension> CreateExtension(
     bool is_from_webstore) {
-  return CreateTestExtension(
-      extensions::Manifest::INTERNAL, is_from_webstore, kNotHostedApp,
-      std::string());
+  return CreateTestExtension(ManifestLocation::kInternal, is_from_webstore,
+                             kNotHostedApp, std::string());
 }
 
 scoped_refptr<const extensions::Extension> CreateExtensionWithLocation(
-    extensions::Manifest::Location location, bool is_from_webstore) {
+    ManifestLocation location,
+    bool is_from_webstore) {
   return CreateTestExtension(
       location, is_from_webstore, kNotHostedApp, std::string());
 }
 
 scoped_refptr<const extensions::Extension> CreateHostedApp(
     bool is_from_webstore, const std::string& app_url) {
-  return CreateTestExtension(extensions::Manifest::INTERNAL,
-                             is_from_webstore,
-                             kHostedApp,
-                             app_url);
+  return CreateTestExtension(ManifestLocation::kInternal, is_from_webstore,
+                             kHostedApp, app_url);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -160,7 +164,7 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::UNPACKED,
+        CreateExtensionWithLocation(ManifestLocation::kUnpacked,
                                     kExtensionNotFromWebStore)
             .get()));
   }
@@ -168,14 +172,14 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::COMPONENT,
+        CreateExtensionWithLocation(ManifestLocation::kComponent,
                                     kExtensionNotFromWebStore)
             .get()));
   }
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::EXTERNAL_COMPONENT,
+        CreateExtensionWithLocation(ManifestLocation::kExternalComponent,
                                     kExtensionNotFromWebStore)
             .get()));
   }
@@ -184,14 +188,13 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::EXTERNAL_POLICY,
+        CreateExtensionWithLocation(ManifestLocation::kExternalPolicy,
                                     kExtensionNotFromWebStore)
             .get()));
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(
-            extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD,
-            kExtensionNotFromWebStore)
+        CreateExtensionWithLocation(ManifestLocation::kExternalPolicyDownload,
+                                    kExtensionNotFromWebStore)
             .get()));
   }
   // CWS extensions are allowed without --enable-nacl if called from an
@@ -228,24 +231,3 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   }
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
-
-// SearchBouncer doesn't exist on Android.
-#if !defined(OS_ANDROID)
-TEST_F(ChromeContentRendererClientTest, ShouldSuppressErrorPage) {
-  ChromeContentRendererClient client;
-  SearchBouncer::GetInstance()->SetNewTabPageURL(GURL("http://example.com/n"));
-  EXPECT_FALSE(client.ShouldSuppressErrorPage(nullptr,
-                                              GURL("http://example.com")));
-  EXPECT_TRUE(client.ShouldSuppressErrorPage(nullptr,
-                                             GURL("http://example.com/n")));
-  SearchBouncer::GetInstance()->SetNewTabPageURL(GURL::EmptyGURL());
-}
-
-TEST_F(ChromeContentRendererClientTest, ShouldTrackUseCounter) {
-  ChromeContentRendererClient client;
-  SearchBouncer::GetInstance()->SetNewTabPageURL(GURL("http://example.com/n"));
-  EXPECT_TRUE(client.ShouldTrackUseCounter(GURL("http://example.com")));
-  EXPECT_FALSE(client.ShouldTrackUseCounter(GURL("http://example.com/n")));
-  SearchBouncer::GetInstance()->SetNewTabPageURL(GURL::EmptyGURL());
-}
-#endif

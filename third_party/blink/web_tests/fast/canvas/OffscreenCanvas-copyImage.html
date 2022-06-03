@@ -44,7 +44,7 @@ function runTest() {
 }
 
 function copyImage() {
-  testRunner.copyImageAtAndCapturePixelsAsyncThen(128, 128,
+  testRunner.copyImageThen(128, 128,
     t.step_func_done((width, height, snapshot) => {
       assert_equals(width, 256, "The copied image has a width of 256.");
       assert_equals(height, 256, "The copied image has a height of 256.");

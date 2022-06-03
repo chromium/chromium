@@ -4,6 +4,8 @@
 
 #include "media/base/watch_time_keys.h"
 
+#include "base/notreached.h"
+
 namespace media {
 
 // TODO(dalecurtis): Key strings aren't really necessary anymore, so instead

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<canvas id="canvasCPU" width="300" height="300"></canvas>
+<canvas id="canvasGPU" width="300" height="300"></canvas>
+<script>
+// Testing that willReadFrequently works the same with HTMLCanvasElement and
+// OffscreenCanvas
+var offscreenCanvasCPU = new OffscreenCanvas(400, 400);
+var ctxCPU = offscreenCanvasCPU.getContext('2d', { willReadFrequently: true });
+
+var offscreenCanvasGPU = new OffscreenCanvas(400, 400);
+var ctxGPU = offscreenCanvasGPU.getContext('2d', { willReadFrequently: false });
+
+var img = document.createElement('IMG');
+img.onload = function () {
+  ctxCPU.drawImage(img, 0, 0, 300, 300);
+  var c1 = document.getElementById("canvasCPU").getContext("2d");
+  c1.drawImage(offscreenCanvasCPU, 0, 0);
+
+  ctxGPU.drawImage(img, 0, 0, 300, 300);
+  var c2 = document.getElementById("canvasGPU").getContext("2d");
+  c2.drawImage(offscreenCanvasGPU, 0, 0);
+}
+
+// This src image corresponds to a gradient white line that looks different in
+// CPU and GPU backend
+img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQ" +
+"AAAAGklEQVQYlWNgYGD4j4z/////H12MYVQRUYoAkYZrlWt0UekAAAAASUVORK5CYII=";
+
+</script>

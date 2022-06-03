@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_tree_test_helpers.h"
@@ -57,11 +58,26 @@ TEST(PODIntervalTreeTest, TestInsertionAndQuery) {
   PODIntervalTree<float> tree;
   tree.Add(PODInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PODInterval<float>> result =
+  Vector<PODInterval<float>> overlap =
       tree.AllOverlaps(PODInterval<float>(1, 3));
-  EXPECT_EQ(1U, result.size());
-  EXPECT_EQ(2, result[0].Low());
-  EXPECT_EQ(4, result[0].High());
+  EXPECT_EQ(1U, overlap.size());
+  EXPECT_EQ(2, overlap[0].Low());
+  EXPECT_EQ(4, overlap[0].High());
+
+  auto next_point = tree.NextIntervalPoint(1);
+  EXPECT_TRUE(next_point.has_value());
+  EXPECT_EQ(2, next_point.value());
+
+  next_point = tree.NextIntervalPoint(2);
+  EXPECT_TRUE(next_point.has_value());
+  EXPECT_EQ(4, next_point.value());
+
+  next_point = tree.NextIntervalPoint(3);
+  EXPECT_TRUE(next_point.has_value());
+  EXPECT_EQ(4, next_point.value());
+
+  next_point = tree.NextIntervalPoint(4);
+  EXPECT_FALSE(next_point.has_value());
 }
 
 TEST(PODIntervalTreeTest, TestQueryAgainstZeroSizeInterval) {
@@ -214,7 +230,7 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
     tree.Add(interval);
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
     DLOG(ERROR) << "*** Adding element "
-                << ValueToString<PODInterval<int>>::string(interval);
+                << ValueToString<PODInterval<int>>::ToString(interval);
 #endif
     added_elements.push_back(interval);
   }
@@ -224,8 +240,8 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
     int index = NextRandom(added_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
     DLOG(ERROR) << "*** Removing element "
-                << ValueToString<PODInterval<int>>::string(
-                       addedElements[index]);
+                << ValueToString<PODInterval<int>>::ToString(
+                       added_elements[index]);
 #endif
     ASSERT_TRUE(tree.Contains(added_elements[index]))
         << "Test failed for seed " << seed;
@@ -247,8 +263,8 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
       int index = NextRandom(removed_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
       DLOG(ERROR) << "*** Adding element "
-                  << ValueToString<PODInterval<int>>::string(
-                         removedElements[index]);
+                  << ValueToString<PODInterval<int>>::ToString(
+                         removed_elements[index]);
 #endif
       tree.Add(removed_elements[index]);
       added_elements.push_back(removed_elements[index]);
@@ -257,8 +273,8 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
       int index = NextRandom(added_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
       DLOG(ERROR) << "*** Removing element "
-                  << ValueToString<PODInterval<int>>::string(
-                         addedElements[index]);
+                  << ValueToString<PODInterval<int>>::ToString(
+                         added_elements[index]);
 #endif
       ASSERT_TRUE(tree.Contains(added_elements[index]))
           << "Test failed for seed " << seed;

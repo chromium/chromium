@@ -8,8 +8,10 @@ import android.view.KeyEvent;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Java peer of the native class of the same name.
@@ -26,12 +28,13 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_ERROR = 3;
 
     /**
+     * @param url
      * @param disposition         The new tab disposition, defined in
      *                            //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative
-    public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {}
 
     @CalledByNative
@@ -63,16 +66,16 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, String targetUrl,
+            long openerRenderFrameId, String frameName, GURL targetUrl,
             WebContents newWebContents) {}
 
     @CalledByNative
-    public boolean shouldCreateWebContents(String targetUrl) {
+    public boolean shouldCreateWebContents(GURL targetUrl) {
         return true;
     }
 
     @CalledByNative
-    public void onUpdateUrl(String url) {}
+    public void onUpdateUrl(GURL url) {}
 
     @CalledByNative
     public boolean takeFocus(boolean reverse) {
@@ -111,6 +114,9 @@ public class WebContentsDelegateAndroid {
     public void enterFullscreenModeForTab(boolean prefersNavigationBar) {}
 
     @CalledByNative
+    public void fullscreenStateChangedForTab(boolean prefersNavigationBar) {}
+
+    @CalledByNative
     public void exitFullscreenModeForTab() {}
 
     @CalledByNative
@@ -124,7 +130,7 @@ public class WebContentsDelegateAndroid {
      * @return true to prevent the resource from being loaded.
      */
     @CalledByNative
-    public boolean shouldBlockMediaRequest(String url) {
+    public boolean shouldBlockMediaRequest(GURL url) {
         return false;
     }
 
@@ -174,5 +180,24 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public boolean controlsResizeView() {
         return false;
+    }
+
+    /**
+     * Check and return the {@link DisplayMode} value.
+     *
+     * @return The {@link DisplayMode} value.
+     */
+    @CalledByNative
+    protected final int getDisplayModeChecked() {
+        int displayMode = getDisplayMode();
+        assert DisplayMode.isKnownValue(displayMode);
+        return displayMode;
+    }
+
+    /**
+     * @return The {@link DisplayMode} value.
+     */
+    public int getDisplayMode() {
+        return DisplayMode.UNDEFINED;
     }
 }

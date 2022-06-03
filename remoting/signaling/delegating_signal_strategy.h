@@ -39,6 +39,10 @@ class DelegatingSignalStrategy : public SignalStrategy {
       const SignalingAddress& local_address,
       scoped_refptr<base::SingleThreadTaskRunner> client_task_runner,
       const IqCallback& send_iq_callback);
+
+  DelegatingSignalStrategy(const DelegatingSignalStrategy&) = delete;
+  DelegatingSignalStrategy& operator=(const DelegatingSignalStrategy&) = delete;
+
   ~DelegatingSignalStrategy() override;
 
   IqCallback GetIncomingMessageCallback();
@@ -52,6 +56,8 @@ class DelegatingSignalStrategy : public SignalStrategy {
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
   bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) override;
+  bool SendMessage(const SignalingAddress& destination_address,
+                   const ftl::ChromotingMessage& message) override;
   std::string GetNextId() override;
 
  private:
@@ -71,8 +77,6 @@ class DelegatingSignalStrategy : public SignalStrategy {
   base::ObserverList<Listener> listeners_;
 
   base::WeakPtrFactory<DelegatingSignalStrategy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatingSignalStrategy);
 };
 
 }  // namespace remoting

@@ -16,31 +16,68 @@
 
 namespace blink {
 
+namespace {
+
+CueInterval CreateCueInterval(TextTrackCue* cue) {
+  // Negative duration cues need be treated in the interval tree as
+  // zero-length cues.
+  double const interval_end_time = std::max(cue->startTime(), cue->endTime());
+  return CueIntervalTree::CreateInterval(cue->startTime(), interval_end_time,
+                                         cue);
+}
+
+base::TimeDelta CalculateEventTimeout(double event_time,
+                                      HTMLMediaElement const& media_element) {
+  static_assert(HTMLMediaElement::kMinPlaybackRate >= 0,
+                "The following code assumes playback rates are never negative");
+  DCHECK_NE(media_element.playbackRate(), 0);
+
+  auto const timeout =
+      base::Seconds((event_time - media_element.currentTime()) /
+                    media_element.playbackRate());
+
+  // Only allow timeouts of multiples of 1ms to prevent "polling-by-timer"
+  // and excessive calls to `TimeMarchesOn`.
+  constexpr base::TimeDelta kMinTimeoutInterval = base::Milliseconds(1);
+  return std::max(timeout.CeilToMultiple(kMinTimeoutInterval),
+                  kMinTimeoutInterval);
+}
+
+}  // namespace
+
 CueTimeline::CueTimeline(HTMLMediaElement& media_element)
     : media_element_(&media_element),
       last_update_time_(-1),
-      ignore_update_(0) {}
+      cue_event_timer_(
+          media_element.GetDocument().GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &CueTimeline::CueEventTimerFired),
+      cue_timestamp_event_timer_(
+          media_element.GetDocument().GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &CueTimeline::CueTimestampEventTimerFired),
+      ignore_update_(0),
+      update_requested_while_ignoring_(false) {}
 
 void CueTimeline::AddCues(TextTrack* track, const TextTrackCueList* cues) {
   DCHECK_NE(track->mode(), TextTrack::DisabledKeyword());
   for (wtf_size_t i = 0; i < cues->length(); ++i)
     AddCueInternal(cues->AnonymousIndexedGetter(i));
-  UpdateActiveCues(MediaElement().currentTime());
+  if (!MediaElement().IsShowPosterFlagSet()) {
+    InvokeTimeMarchesOn();
+  }
 }
 
 void CueTimeline::AddCue(TextTrack* track, TextTrackCue* cue) {
   DCHECK_NE(track->mode(), TextTrack::DisabledKeyword());
   AddCueInternal(cue);
-  UpdateActiveCues(MediaElement().currentTime());
+  if (!MediaElement().IsShowPosterFlagSet()) {
+    InvokeTimeMarchesOn();
+  }
 }
 
 void CueTimeline::AddCueInternal(TextTrackCue* cue) {
-  // Negative duration cues need be treated in the interval tree as
-  // zero-length cues.
-  double end_time = std::max(cue->startTime(), cue->endTime());
-
-  CueInterval interval =
-      cue_tree_.CreateInterval(cue->startTime(), end_time, cue);
+  CueInterval interval = CreateCueInterval(cue);
   if (!cue_tree_.Contains(interval))
     cue_tree_.Add(interval);
 }
@@ -48,21 +85,20 @@ void CueTimeline::AddCueInternal(TextTrackCue* cue) {
 void CueTimeline::RemoveCues(TextTrack*, const TextTrackCueList* cues) {
   for (wtf_size_t i = 0; i < cues->length(); ++i)
     RemoveCueInternal(cues->AnonymousIndexedGetter(i));
-  UpdateActiveCues(MediaElement().currentTime());
+  if (!MediaElement().IsShowPosterFlagSet()) {
+    InvokeTimeMarchesOn();
+  }
 }
 
 void CueTimeline::RemoveCue(TextTrack*, TextTrackCue* cue) {
   RemoveCueInternal(cue);
-  UpdateActiveCues(MediaElement().currentTime());
+  if (!MediaElement().IsShowPosterFlagSet()) {
+    InvokeTimeMarchesOn();
+  }
 }
 
 void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
-  // Negative duration cues need to be treated in the interval tree as
-  // zero-length cues.
-  double end_time = std::max(cue->startTime(), cue->endTime());
-
-  CueInterval interval =
-      cue_tree_.CreateInterval(cue->startTime(), end_time, cue);
+  CueInterval interval = CreateCueInterval(cue);
   cue_tree_.Remove(interval);
 
   wtf_size_t index = currently_active_cues_.Find(interval);
@@ -112,22 +148,33 @@ static Event* CreateEventWithTarget(const AtomicString& event_name,
   return event;
 }
 
-void CueTimeline::UpdateActiveCues(double movie_time) {
+void CueTimeline::TimeMarchesOn() {
+  DCHECK(!MediaElement().IsShowPosterFlagSet());
+
   // 4.8.10.8 Playing the media resource
 
   //  If the current playback position changes while the steps are running,
   //  then the user agent must wait for the steps to complete, and then must
   //  immediately rerun the steps.
-  if (IgnoreUpdateRequests())
+  if (InsideIgnoreUpdateScope()) {
+    update_requested_while_ignoring_ = true;
     return;
+  }
+
+  // Prevent recursive updates
+  auto scope = BeginIgnoreUpdateScope();
 
   HTMLMediaElement& media_element = MediaElement();
+  double const movie_time = media_element.currentTime();
 
   // Don't run the "time marches on" algorithm if the document has been
   // detached. This primarily guards against dispatch of events w/
   // HTMLTrackElement targets.
   if (media_element.GetDocument().IsDetached())
     return;
+
+  // Get the next cue event after this update
+  next_cue_event_ = cue_tree_.NextIntervalPoint(movie_time);
 
   // https://html.spec.whatwg.org/C/#time-marches-on
 
@@ -148,7 +195,6 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
   }
 
   CueList previous_cues;
-  CueList missed_cues;
 
   // 2 - Let other cues be a list of cues, initialized to contain all the cues
   // of hidden, showing, and showing by default text tracks of the media
@@ -167,9 +213,11 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
   // cues whose start times are greater than or equal to last time and whose
   // end times are less than or equal to the current playback position.
   // Otherwise, let missed cues be an empty list.
+  CueList missed_cues;
   if (last_time >= 0 && last_seek_time < movie_time) {
     CueList potentially_skipped_cues =
         cue_tree_.AllOverlaps(cue_tree_.CreateInterval(last_time, movie_time));
+    missed_cues.ReserveInitialCapacity(potentially_skipped_cues.size());
 
     for (CueInterval cue : potentially_skipped_cues) {
       // Consider cues that may have been missed since the last seek time.
@@ -324,9 +372,8 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
 
     // ... if the text track has a corresponding track element, to then fire a
     // simple event named cuechange at the track element as well.
-    if (track->TrackType() == TextTrack::kTrackElement) {
-      HTMLTrackElement* track_element =
-          ToLoadableTextTrack(track.Get())->TrackElement();
+    if (auto* loadable_text_track = DynamicTo<LoadableTextTrack>(track.Get())) {
+      HTMLTrackElement* track_element = loadable_text_track->TrackElement();
       DCHECK(track_element);
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_type_names::kCuechange, track_element));
@@ -352,19 +399,151 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
   media_element.UpdateTextTrackDisplay();
 }
 
-void CueTimeline::BeginIgnoringUpdateRequests() {
-  ++ignore_update_;
+void CueTimeline::UpdateActiveCuePastAndFutureNodes() {
+  double const movie_time = MediaElement().currentTime();
+
+  for (auto cue : currently_active_cues_) {
+    DCHECK(cue.Data()->IsActive());
+    if (!cue.Data()->track() || !cue.Data()->track()->IsRendered())
+      continue;
+
+    cue.Data()->UpdatePastAndFutureNodes(movie_time);
+  }
+
+  SetCueTimestampEventTimer();
 }
 
-void CueTimeline::EndIgnoringUpdateRequests() {
+CueTimeline::IgnoreUpdateScope CueTimeline::BeginIgnoreUpdateScope() {
+  DCHECK(!ignore_update_ || !update_requested_while_ignoring_);
+  ++ignore_update_;
+
+  IgnoreUpdateScope scope(*this);
+  return scope;
+}
+
+void CueTimeline::EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>,
+                                       IgnoreUpdateScope const& scope) {
   DCHECK(ignore_update_);
   --ignore_update_;
-  if (!ignore_update_)
-    UpdateActiveCues(MediaElement().currentTime());
+
+  // If this is the last scope and an update was requested, then perform it
+  if (!ignore_update_ && update_requested_while_ignoring_) {
+    update_requested_while_ignoring_ = false;
+    if (!MediaElement().IsShowPosterFlagSet()) {
+      InvokeTimeMarchesOn();
+    }
+  }
 }
 
-void CueTimeline::Trace(Visitor* visitor) {
+void CueTimeline::InvokeTimeMarchesOn() {
+  TimeMarchesOn();
+  SetCueEventTimer();
+  SetCueTimestampEventTimer();
+}
+
+void CueTimeline::OnPause() {
+  CancelCueEventTimer();
+  CancelCueTimestampEventTimer();
+}
+
+void CueTimeline::OnPlaybackRateUpdated() {
+  SetCueEventTimer();
+  SetCueTimestampEventTimer();
+}
+
+void CueTimeline::OnReadyStateReset() {
+  auto& media_element = MediaElement();
+  DCHECK(media_element.getReadyState() == HTMLMediaElement::kHaveNothing);
+
+  // Deactivate all active cues
+  // "The user agent must synchronously unset this flag ... whenever the media
+  // element's readyState is changed back to HAVE_NOTHING."
+  for (auto cue : currently_active_cues_) {
+    cue.Data()->SetIsActive(false);
+  }
+  currently_active_cues_.clear();
+
+  CancelCueEventTimer();
+  CancelCueTimestampEventTimer();
+  last_update_time_ = -1;
+
+  if (media_element.IsHTMLVideoElement() && media_element.TextTracksVisible()) {
+    media_element.UpdateTextTrackDisplay();
+  }
+}
+
+void CueTimeline::SetCueEventTimer() {
+  auto const& media_element = MediaElement();
+  if (!next_cue_event_.has_value() || media_element.paused() ||
+      media_element.playbackRate() == 0) {
+    CancelCueEventTimer();
+    return;
+  }
+
+  auto const timeout =
+      CalculateEventTimeout(next_cue_event_.value(), media_element);
+  cue_event_timer_.StartOneShot(timeout, FROM_HERE);
+}
+
+void CueTimeline::CancelCueEventTimer() {
+  if (cue_event_timer_.IsActive()) {
+    cue_event_timer_.Stop();
+  }
+}
+
+void CueTimeline::CueEventTimerFired(TimerBase*) {
+  InvokeTimeMarchesOn();
+}
+
+void CueTimeline::CueTimestampEventTimerFired(TimerBase*) {
+  UpdateActiveCuePastAndFutureNodes();
+  SetCueTimestampEventTimer();
+}
+
+void CueTimeline::SetCueTimestampEventTimer() {
+  double constexpr kInfinity = std::numeric_limits<double>::infinity();
+  auto const& media_element = MediaElement();
+
+  if (media_element.paused() || media_element.playbackRate() == 0) {
+    CancelCueTimestampEventTimer();
+    return;
+  }
+
+  double const movie_time = media_element.currentTime();
+  double next_cue_timestamp_event = kInfinity;
+  for (auto cue : currently_active_cues_) {
+    auto const timestamp = cue.Data()->GetNextIntraCueTime(movie_time);
+    next_cue_timestamp_event =
+        std::min(next_cue_timestamp_event, timestamp.value_or(kInfinity));
+  }
+
+  if (std::isinf(next_cue_timestamp_event)) {
+    CancelCueTimestampEventTimer();
+    return;
+  }
+
+  auto const timeout =
+      CalculateEventTimeout(next_cue_timestamp_event, media_element);
+  cue_timestamp_event_timer_.StartOneShot(timeout, FROM_HERE);
+}
+
+void CueTimeline::CancelCueTimestampEventTimer() {
+  if (cue_timestamp_event_timer_.IsActive()) {
+    cue_timestamp_event_timer_.Stop();
+  }
+}
+
+void CueTimeline::DidMoveToNewDocument(Document& /*old_document*/) {
+  cue_event_timer_.MoveToNewTaskRunner(
+      MediaElement().GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+  cue_timestamp_event_timer_.MoveToNewTaskRunner(
+      MediaElement().GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+}
+
+void CueTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
+  visitor->Trace(cue_event_timer_);
+  visitor->Trace(cue_timestamp_event_timer_);
 }
 
 }  // namespace blink

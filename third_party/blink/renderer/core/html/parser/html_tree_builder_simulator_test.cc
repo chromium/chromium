@@ -20,22 +20,25 @@ TEST(HTMLTreeBuilderSimulatorTest, SelfClosingSVGFollowedByScript) {
   HTMLToken token;
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kOtherToken,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kValidScriptStart,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 
   EXPECT_EQ(HTMLTokenizer::kScriptDataState, tokenizer->GetState());
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptEnd,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 }
 
 TEST(HTMLTreeBuilderSimulatorTest, SelfClosingMathFollowedByScript) {
@@ -47,22 +50,25 @@ TEST(HTMLTreeBuilderSimulatorTest, SelfClosingMathFollowedByScript) {
   HTMLToken token;
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kOtherToken,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kValidScriptStart,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 
   EXPECT_EQ(HTMLTokenizer::kScriptDataState, tokenizer->GetState());
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptEnd,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 }
 
 TEST(HTMLTreeBuilderSimulatorTest, DetectInvalidScriptType) {
@@ -74,14 +80,16 @@ TEST(HTMLTreeBuilderSimulatorTest, DetectInvalidScriptType) {
   HTMLToken token;
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_NE(HTMLTreeBuilderSimulator::kValidScriptStart,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
   EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptEnd,
-            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
-                               tokenizer.get()));
+            simulator.Simulate(
+                CompactHTMLToken(&token, TextPosition::MinimumPosition()),
+                tokenizer.get()));
 }
 
 }  // namespace blink

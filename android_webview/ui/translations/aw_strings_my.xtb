@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
-<translation id="6106989379647458772"><ph name="PAGE" /> ပေါ်က ဝဘ်စာမျက်နှာမှာ ယာယီ ဒေါင်းနေတာ ဖြစ်နိုင်သည် သို့မဟုတ် ၎င်းသည် ဝဘ် လိပ်စာ သစ်ဆီသို့ ထာဝရ ရွှေ့ပြောင်းသွားတာ ဖြစ်နိုင်သည်။</translation>
-<translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> ပေါ်က ဝက်ဘ်စာမျက်နှာကို တင်မရနိုင်ခြင်းရဲ့ အကြောင်းက:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />အကြံပေးချက်များ:<ph name="MARKUP_2" />သင့်ဆီတွင် ဒေတာ ချိတ်ဆက်မှု ရှိနေတာ စစ်ကြည့်ပါ<ph name="MARKUP_3" />ဒီဝက်ဘ်စာမျက်နှာကို နောက်မှာ ပြန်တင်ပါ<ph name="MARKUP_4" />သင် ထည့်ပေးခဲ့တဲ့ လိပ်စာကို စစ်ကြည့်ပါ<ph name="MARKUP_5" /></translation>
 </translationbundle>

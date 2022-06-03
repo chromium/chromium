@@ -1,0 +1,22 @@
+div.debug-sources {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+}
+
+@keyframes debug-fade {
+  0% { background-color: green; }
+  100% { background-color: initial; }
+}
+
+div.debug-sources span.evstate {
+  font-family: monospace;
+  border: 1px solid green;
+  margin-right: 4px;
+}
+
+div.debug-sources span.evstate.changed {
+  animation: debug-fade 1s;
+}

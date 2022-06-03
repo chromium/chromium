@@ -4,53 +4,58 @@
 
 #include "third_party/blink/renderer/core/fileapi/file.h"
 
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 namespace {
 
-class MockFileUtilitiesHost : public mojom::blink::FileUtilitiesHost {
+class MockBlob : public FakeBlob {
  public:
-  MockFileUtilitiesHost()
-      : broker_(*Platform::Current()->GetBrowserInterfaceBroker()) {
-    broker_.SetBinderForTesting(
-        FileUtilitiesHost::Name_,
-        WTF::BindRepeating(&MockFileUtilitiesHost::BindReceiver,
-                           WTF::Unretained(this)));
-    RebindFileUtilitiesForTesting();
+  static void Create(File* file, base::Time modified_time) {
+    mojo::PendingRemote<mojom::blink::Blob> remote;
+    PostCrossThreadTask(
+        *base::ThreadPool::CreateSingleThreadTaskRunner({}), FROM_HERE,
+        CrossThreadBindOnce(
+            [](const String& uuid,
+               mojo::PendingReceiver<mojom::blink::Blob> receiver,
+               base::Time modified_time) {
+              mojo::MakeSelfOwnedReceiver(
+                  std::make_unique<MockBlob>(uuid, modified_time),
+                  std::move(receiver));
+            },
+            file->Uuid(), remote.InitWithNewPipeAndPassReceiver(),
+            modified_time));
+    file->GetBlobDataHandle()->SetBlobRemoteForTesting(std::move(remote));
   }
 
-  ~MockFileUtilitiesHost() override {
-    broker_.SetBinderForTesting(FileUtilitiesHost::Name_, {});
-    RebindFileUtilitiesForTesting();
+  MockBlob(const String& uuid, base::Time modified_time)
+      : FakeBlob(uuid), modified_time_(modified_time) {}
+
+  void Clone(mojo::PendingReceiver<mojom::blink::Blob> receiver) override {
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<MockBlob>(uuid_, modified_time_), std::move(receiver));
   }
 
-  void SetFileInfoToBeReturned(const base::File::Info info) {
-    file_info_ = info;
+  void CaptureSnapshot(CaptureSnapshotCallback callback) override {
+    std::move(callback).Run(
+        /*size=*/0, NullableTimeToOptionalTime(modified_time_));
   }
 
  private:
-  void BindReceiver(mojo::ScopedMessagePipeHandle handle) {
-    receivers_.Add(this,
-                   mojo::PendingReceiver<FileUtilitiesHost>(std::move(handle)));
-  }
-
-  // FileUtilitiesHost function:
-  void GetFileInfo(const base::FilePath& path,
-                   GetFileInfoCallback callback) override {
-    std::move(callback).Run(file_info_);
-  }
-
-  ThreadSafeBrowserInterfaceBrokerProxy& broker_;
-  mojo::ReceiverSet<FileUtilitiesHost> receivers_;
-  base::File::Info file_info_;
+  base::Time modified_time_;
 };
 
 void ExpectTimestampIsNow(const File& file) {
@@ -65,12 +70,9 @@ void ExpectTimestampIsNow(const File& file) {
 }  // namespace
 
 TEST(FileTest, NativeFileWithoutTimestamp) {
-  MockFileUtilitiesHost host;
-  base::File::Info info;
-  info.last_modified = base::Time();
-  host.SetFileInfoToBeReturned(info);
-
   auto* const file = MakeGarbageCollected<File>("/native/path");
+  MockBlob::Create(file, base::Time());
+
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ("/native/path", file->GetPath());
   EXPECT_TRUE(file->FileSystemURL().IsEmpty());
@@ -78,24 +80,18 @@ TEST(FileTest, NativeFileWithoutTimestamp) {
 }
 
 TEST(FileTest, NativeFileWithUnixEpochTimestamp) {
-  MockFileUtilitiesHost host;
-  base::File::Info info;
-  info.last_modified = base::Time::UnixEpoch();
-  host.SetFileInfoToBeReturned(info);
-
   auto* const file = MakeGarbageCollected<File>("/native/path");
+  MockBlob::Create(file, base::Time::UnixEpoch());
+
   EXPECT_TRUE(file->HasBackingFile());
   EXPECT_EQ(0, file->lastModified());
   EXPECT_EQ(base::Time::UnixEpoch(), file->LastModifiedTime());
 }
 
 TEST(FileTest, NativeFileWithApocalypseTimestamp) {
-  MockFileUtilitiesHost host;
-  base::File::Info info;
-  info.last_modified = base::Time::Max();
-  host.SetFileInfoToBeReturned(info);
-
   auto* const file = MakeGarbageCollected<File>("/native/path");
+  MockBlob::Create(file, base::Time::Max());
+
   EXPECT_TRUE(file->HasBackingFile());
 
   EXPECT_EQ((base::Time::Max() - base::Time::UnixEpoch()).InMilliseconds(),
@@ -104,7 +100,7 @@ TEST(FileTest, NativeFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithoutTimestamp) {
-  auto* const file = MakeGarbageCollected<File>("name", base::nullopt,
+  auto* const file = MakeGarbageCollected<File>("name", absl::nullopt,
                                                 BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
   EXPECT_TRUE(file->GetPath().IsEmpty());
@@ -219,6 +215,7 @@ TEST(FileTest, FileSystemFileWithApocalypseTimestamp) {
 TEST(FileTest, fileSystemFileWithoutNativeSnapshot) {
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   FileMetadata metadata;
+  metadata.length = 0;
   File* const file =
       File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible);
   EXPECT_FALSE(file->HasBackingFile());
@@ -244,6 +241,7 @@ TEST(FileTest, hsaSameSource) {
   KURL url_a("filesystem:http://example.com/isolated/hash/non-native-file-A");
   KURL url_b("filesystem:http://example.com/isolated/hash/non-native-file-B");
   FileMetadata metadata;
+  metadata.length = 0;
   File* const file_system_file_a1 =
       File::CreateForFileSystemFile(url_a, metadata, File::kIsUserVisible);
   File* const file_system_file_a2 =

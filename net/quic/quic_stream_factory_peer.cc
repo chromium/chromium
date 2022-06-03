@@ -9,6 +9,7 @@
 
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
@@ -16,6 +17,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
+#include "url/scheme_host_port.h"
 
 using std::string;
 
@@ -38,32 +40,25 @@ bool QuicStreamFactoryPeer::HasActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
     const NetworkIsolationKey& network_isolation_key) {
-  return factory->HasActiveSession(
-      QuicSessionKey(server_id, SocketTag(), network_isolation_key,
-                     false /* disable_secure_dns */));
+  return factory->HasActiveSession(QuicSessionKey(
+      server_id, SocketTag(), network_isolation_key, SecureDnsPolicy::kAllow));
 }
 
 bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
                                          const quic::QuicServerId& server_id) {
-  return factory->HasActiveJob(QuicSessionKey(server_id, SocketTag(),
-                                              NetworkIsolationKey(),
-                                              false /* disable_secure_dns */));
-}
-
-bool QuicStreamFactoryPeer::HasActiveCertVerifierJob(
-    QuicStreamFactory* factory,
-    const quic::QuicServerId& server_id) {
-  return factory->HasActiveCertVerifierJob(server_id);
+  return factory->HasActiveJob(QuicSessionKey(
+      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow));
 }
 
 // static
 QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const HostPortPair& destination) {
+    url::SchemeHostPort destination) {
   QuicSessionKey session_key(server_id, SocketTag(), NetworkIsolationKey(),
-                             false /* disable_secure_dns */);
-  QuicStreamFactory::QuicSessionAliasKey key(destination, session_key);
+                             SecureDnsPolicy::kAllow);
+  QuicStreamFactory::QuicSessionAliasKey key(std::move(destination),
+                                             session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
   DCHECK(key == factory->all_sessions_.begin()->second);
@@ -75,20 +70,19 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
     const quic::QuicServerId& server_id,
     const NetworkIsolationKey& network_isolation_key) {
   QuicSessionKey session_key(server_id, SocketTag(), network_isolation_key,
-                             false /* disable_secure_dns */);
+                             SecureDnsPolicy::kAllow);
   DCHECK(factory->HasActiveSession(session_key));
   return factory->active_sessions_[session_key];
 }
 
 bool QuicStreamFactoryPeer::HasLiveSession(
     QuicStreamFactory* factory,
-    const HostPortPair& destination,
+    url::SchemeHostPort destination,
     const quic::QuicServerId& server_id) {
-  QuicSessionKey session_key =
-      QuicSessionKey(server_id, SocketTag(), NetworkIsolationKey(),
-                     false /* disable_secure_dns */);
-  QuicStreamFactory::QuicSessionAliasKey alias_key =
-      QuicStreamFactory::QuicSessionAliasKey(destination, session_key);
+  QuicSessionKey session_key = QuicSessionKey(
+      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
+                                                   session_key);
   for (auto it = factory->all_sessions_.begin();
        it != factory->all_sessions_.end(); ++it) {
     if (it->second == alias_key)
@@ -121,27 +115,6 @@ void QuicStreamFactoryPeer::SetTickClock(QuicStreamFactory* factory,
 quic::QuicTime::Delta QuicStreamFactoryPeer::GetPingTimeout(
     QuicStreamFactory* factory) {
   return factory->ping_timeout_;
-}
-
-bool QuicStreamFactoryPeer::GetRaceCertVerification(
-    QuicStreamFactory* factory) {
-  return factory->params_.race_cert_verification;
-}
-
-void QuicStreamFactoryPeer::SetRaceCertVerification(
-    QuicStreamFactory* factory,
-    bool race_cert_verification) {
-  factory->params_.race_cert_verification = race_cert_verification;
-}
-
-quic::QuicAsyncStatus QuicStreamFactoryPeer::StartCertVerifyJob(
-    QuicStreamFactory* factory,
-    const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key,
-    int cert_verify_flags,
-    const NetLogWithSource& net_log) {
-  return factory->StartCertVerifyJobForTesting(server_id, network_isolation_key,
-                                               cert_verify_flags, net_log);
 }
 
 void QuicStreamFactoryPeer::SetYieldAfterPackets(QuicStreamFactory* factory,
@@ -202,14 +175,14 @@ void QuicStreamFactoryPeer::CacheDummyServerConfig(
   DCHECK(!cached->certs().empty());
 }
 
-quic::QuicClientPushPromiseIndex* QuicStreamFactoryPeer::GetPushPromiseIndex(
-    QuicStreamFactory* factory) {
-  return &factory->push_promise_index_;
-}
-
 int QuicStreamFactoryPeer::GetNumPushStreamsCreated(
     QuicStreamFactory* factory) {
   return factory->num_push_streams_created_;
+}
+
+size_t QuicStreamFactoryPeer::GetNumDegradingSessions(
+    QuicStreamFactory* factory) {
+  return factory->connectivity_monitor_.GetNumDegradingSessions();
 }
 
 void QuicStreamFactoryPeer::SetAlarmFactory(

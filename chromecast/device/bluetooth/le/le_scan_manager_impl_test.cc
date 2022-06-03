@@ -5,10 +5,11 @@
 #include "chromecast/device/bluetooth/le/le_scan_manager_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
@@ -47,11 +48,14 @@ class MockLeScanManagerObserver : public LeScanManager::Observer {
 };
 
 class LeScanManagerTest : public ::testing::Test {
+ public:
+  LeScanManagerTest(const LeScanManagerTest&) = delete;
+  LeScanManagerTest& operator=(const LeScanManagerTest&) = delete;
+
  protected:
   LeScanManagerTest()
-      : io_task_runner_(base::CreateSingleThreadTaskRunner(
-            {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
-             base::MayBlock()})),
+      : io_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
+            {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
         le_scan_manager_(&le_scanner_) {
     le_scan_manager_.Initialize(io_task_runner_);
     le_scan_manager_.AddObserver(&mock_observer_);
@@ -71,9 +75,6 @@ class LeScanManagerTest : public ::testing::Test {
   bluetooth_v2_shlib::MockLeScanner le_scanner_;
   LeScanManagerImpl le_scan_manager_;
   MockLeScanManagerObserver mock_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LeScanManagerTest);
 };
 
 }  // namespace
@@ -97,14 +98,14 @@ TEST_F(LeScanManagerTest, TestEnableDisableScan) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(LeScanManagerTest, TestPauseRestartScan) {
+TEST_F(LeScanManagerTest, TestPauseResumeScan) {
   std::unique_ptr<LeScanManager::ScanHandle> scan_handle;
 
   // Don't call StartScan or StopScan if there is no handle.
   EXPECT_CALL(le_scanner_, StopScan()).Times(0);
   le_scan_manager_.PauseScan();
   EXPECT_CALL(le_scanner_, StartScan()).Times(0);
-  le_scan_manager_.RestartScan();
+  le_scan_manager_.ResumeScan();
   task_environment_.RunUntilIdle();
 
   // Create a handle.
@@ -121,10 +122,10 @@ TEST_F(LeScanManagerTest, TestPauseRestartScan) {
   le_scan_manager_.PauseScan();
   task_environment_.RunUntilIdle();
 
-  // Restart scan.
+  // Resume scan.
   EXPECT_CALL(mock_observer_, OnScanEnableChanged(_)).Times(0);
   EXPECT_CALL(le_scanner_, StartScan()).WillOnce(Return(true));
-  le_scan_manager_.RestartScan();
+  le_scan_manager_.ResumeScan();
   task_environment_.RunUntilIdle();
 
   // Delete the handle.

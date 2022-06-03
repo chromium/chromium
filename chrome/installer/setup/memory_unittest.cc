@@ -10,7 +10,7 @@
 #include "base/process/memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/allocator/allocator_interception_mac.h"
 #endif
 
@@ -31,13 +31,13 @@ TEST(OutOfMemoryHandledTest, UncheckedMalloc) {
 
   // Make test size as large as possible minus a few pages so that alignment or
   // other rounding doesn't make it wrap.
-  const size_t kUnsafeMallocSize(
-      std::numeric_limits<std::size_t>::max() - 12 * 1024);
+  const size_t kUnsafeMallocSize(std::numeric_limits<std::size_t>::max() -
+                                 12 * 1024);
 
   EXPECT_FALSE(base::UncheckedMalloc(kUnsafeMallocSize, &value));
   EXPECT_EQ(nullptr, value);
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::allocator::UninterceptMallocZonesForTesting();
 #endif
 }

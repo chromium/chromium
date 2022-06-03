@@ -5,27 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Lorem ipsu'",
-          "rect": [8, 74, 72, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [8, 74, 46, 36],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'Lorem'",
-          "rect": [8, 74, 46, 36],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'ipsum'",
-          "rect": [8, 74, 46, 36],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [8, 74, 72, 19],
+        [8, 74, 43, 36]
       ]
     }
   ]

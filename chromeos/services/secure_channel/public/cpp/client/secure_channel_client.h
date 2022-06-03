@@ -7,17 +7,16 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
 class ConnectionAttempt;
+class NearbyConnector;
 
 // Provides clients access to the SecureChannel API.
 //
@@ -39,7 +38,9 @@ class ConnectionAttempt;
 //    |local_device| but different features, those clients will share the same
 //    underlying connection, but their messages will be routed to the correct
 //    clients based on the |feature| identifier of the message.
-// 4) |connection_priority|:
+// 4) |connection_medium|:
+//    The medium (e.g., BLE) to use.
+// 5) |connection_priority|:
 //    The priority of this connection request. Please make higher priority
 //    requests only when necessary.
 //
@@ -51,28 +52,39 @@ class ConnectionAttempt;
 // devices over BLE. In the future, more connection mediums will be offered.
 class SecureChannelClient {
  public:
+  SecureChannelClient(const SecureChannelClient&) = delete;
+  SecureChannelClient& operator=(const SecureChannelClient&) = delete;
+
   virtual ~SecureChannelClient() = default;
 
   virtual std::unique_ptr<ConnectionAttempt> InitiateConnectionToDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
   virtual std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
+  virtual void SetNearbyConnector(NearbyConnector* nearby_connector) = 0;
 
  protected:
   SecureChannelClient() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClient);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::SecureChannelClient;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_H_

@@ -25,22 +25,22 @@ test(function() {
   assert_equals(transformList.getItem(1).toString(), "type=SVG_TRANSFORM_TRANSLATE matrix=[1.0 0.0 0.0 1.0 10.0 10.0]");
 
   // Test uncommon arguments for initialize().
-  assert_throws(new TypeError(), function() { transformList.initialize(30); });
-  assert_throws(new TypeError(), function() { transformList.initialize('aString'); });
-  assert_throws(new TypeError(), function() { transformList.initialize(circle1); });
-  assert_throws(new TypeError(), function() { transformList.initialize(null); });
+  assert_throws_js(TypeError, function() { transformList.initialize(30); });
+  assert_throws_js(TypeError, function() { transformList.initialize('aString'); });
+  assert_throws_js(TypeError, function() { transformList.initialize(circle1); });
+  assert_throws_js(TypeError, function() { transformList.initialize(null); });
 
   // Test uncommon arguments for getItem().
-  assert_throws("IndexSizeError", function() { transformList.getItem(30); });
+  assert_throws_dom("IndexSizeError", function() { transformList.getItem(30); });
   assert_equals(transformList.getItem('aString').toString(), "type=SVG_TRANSFORM_SCALE matrix=[2.0 0.0 0.0 2.0 0.0 0.0]");
   assert_equals(transformList.getItem(circle1).toString(), "type=SVG_TRANSFORM_SCALE matrix=[2.0 0.0 0.0 2.0 0.0 0.0]");
   assert_equals(transformList.getItem(null).toString(), "type=SVG_TRANSFORM_SCALE matrix=[2.0 0.0 0.0 2.0 0.0 0.0]");
 
   // Test uncommon arguments for insertItemBefore().
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(30); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore('aString'); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(circle1); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(null); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(30); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore('aString'); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(circle1); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(null); });
 
   assert_equals(transformList.insertItemBefore(transformList.getItem(1), 'aString').toString(), "type=SVG_TRANSFORM_TRANSLATE matrix=[1.0 0.0 0.0 1.0 10.0 10.0]");
   assert_equals(transformList.numberOfItems, 3);
@@ -76,10 +76,10 @@ test(function() {
   assert_equals(transformList.getItem(5).toString(), "type=SVG_TRANSFORM_TRANSLATE matrix=[1.0 0.0 0.0 1.0 10.0 10.0]");
   assert_equals(circle1.getAttribute('transform'), "scale(2 2) translate(10 10) scale(2 2) translate(10 10) scale(2 2) translate(10 10)");
 
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(30, 0); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore('aString', 0); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(circle1, 0); });
-  assert_throws(new TypeError(), function() { transformList.insertItemBefore(null, 0); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(30, 0); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore('aString', 0); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(circle1, 0); });
+  assert_throws_js(TypeError, function() { transformList.insertItemBefore(null, 0); });
 
   // Set transform='rotate(90) scale(2 2) translate(10 10) skewX(45)' for circle1.
   circle1.setAttribute('transform', 'rotate(90) scale(2 2) translate(10 10) skewX(45)');
@@ -91,20 +91,20 @@ test(function() {
   assert_equals(circle1.getAttribute('transform'), "rotate(90) scale(2 2) translate(10 10) skewX(45)");
 
   // Test uncommon arguments for replaceItem().
-  assert_throws(new TypeError(), function() { transformList.replaceItem(30); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem('aString'); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem(circle1); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem(null); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem(30, 0); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem('aString', 0); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem(circle1, 0); });
-  assert_throws(new TypeError(), function() { transformList.replaceItem(null, 0); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(30); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem('aString'); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(circle1); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(null); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(30, 0); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem('aString', 0); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(circle1, 0); });
+  assert_throws_js(TypeError, function() { transformList.replaceItem(null, 0); });
 
   // Test uncommon values for indexed setter.
-  assert_throws(new TypeError(), function() { transformList[0] = 30; });
-  assert_throws(new TypeError(), function() { transformList[0] = 'aString'; });
-  assert_throws(new TypeError(), function() { transformList[0] = circle1; });
-  assert_throws(new TypeError(), function() { transformList[0] = null; });
+  assert_throws_js(TypeError, function() { transformList[0] = 30; });
+  assert_throws_js(TypeError, function() { transformList[0] = 'aString'; });
+  assert_throws_js(TypeError, function() { transformList[0] = circle1; });
+  assert_throws_js(TypeError, function() { transformList[0] = null; });
 
   assert_equals(transformList.replaceItem(transformList.getItem(3), 0).toString(), "type=SVG_TRANSFORM_SKEWX matrix=[1.0 0.0 1.0 1.0 0.0 0.0]");
   assert_equals(transformList.numberOfItems, 4);
@@ -140,7 +140,7 @@ test(function() {
   circle1.setAttribute('transform', 'rotate(90) scale(2 2) translate(10 10) skewX(45)');
 
   // Test uncommon arguments for removeItem().
-  assert_throws("IndexSizeError", function() { transformList.removeItem(30); });
+  assert_throws_dom("IndexSizeError", function() { transformList.removeItem(30); });
 
   assert_equals(transformList.removeItem(0).toString(), "type=SVG_TRANSFORM_ROTATE matrix=[0.0 1.0 -1.0 0.0 0.0 0.0]");
   assert_equals(transformList.numberOfItems, 3);
@@ -161,13 +161,13 @@ test(function() {
   assert_equals(circle1.getAttribute('transform'), "skewX(45)");
 
   // Test uncommon arguments for appendItem().
-  assert_throws(new TypeError(), function() { transformList.appendItem(30); });
-  assert_throws(new TypeError(), function() { transformList.appendItem('aString'); });
-  assert_throws(new TypeError(), function() { transformList.appendItem(circle1); });
-  assert_throws(new TypeError(), function() { transformList.appendItem(null); });
+  assert_throws_js(TypeError, function() { transformList.appendItem(30); });
+  assert_throws_js(TypeError, function() { transformList.appendItem('aString'); });
+  assert_throws_js(TypeError, function() { transformList.appendItem(circle1); });
+  assert_throws_js(TypeError, function() { transformList.appendItem(null); });
 
   // Testing animVal clear throws.
-  assert_throws("NoModificationAllowedError", function() { circle1.transform.animVal.clear(); });
+  assert_throws_dom("NoModificationAllowedError", function() { circle1.transform.animVal.clear(); });
   transformList.clear();
 
   // Creating new SVGTransform, with 45 deg rotation about x=50, y=100 and append it to the transform list.

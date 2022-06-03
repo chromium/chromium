@@ -6,14 +6,20 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
+import org.chromium.chrome.browser.attribution_reporting.AttributionParameters;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.AttributionReporter;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -29,48 +35,92 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabNavigationEventObserver mNavigationEventObserver;
     private final Lazy<CustomTabObserver> mCustomTabObserver;
+    private final AttributionReporter mAttributionReporter;
+    private final AttributionIntentHandler mAttributionIntentHandler;
 
     @Inject
     public DefaultCustomTabIntentHandlingStrategy(CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabNavigationEventObserver navigationEventObserver,
-            Lazy<CustomTabObserver> customTabObserver) {
+            Lazy<CustomTabObserver> customTabObserver, AttributionReporter attributionReporter,
+            AttributionIntentHandler attributionIntentHandler) {
         mTabProvider = tabProvider;
         mNavigationController = navigationController;
         mNavigationEventObserver = navigationEventObserver;
         mCustomTabObserver = customTabObserver;
+        mAttributionReporter = attributionReporter;
+        mAttributionIntentHandler = attributionIntentHandler;
     }
 
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        if (mTabProvider.getInitialTabCreationMode() == TabCreationMode.HIDDEN) {
-            handleInitialLoadForHiddedTab(intentDataProvider);
+        @TabCreationMode
+        int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
+        if (initialTabCreationMode == TabCreationMode.HIDDEN
+                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
+            handleInitialLoadForHiddedTab(initialTabCreationMode, intentDataProvider);
         } else {
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
             mNavigationController.navigate(params, getTimestamp(intentDataProvider));
         }
     }
 
+    // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided
+    // GURL. This depends on switching *IntentDataProvider over to GURL.
+    // https://crbug.com/783819
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public GURL getGurlForUrl(String url) {
+        // TODO(mthiesse): As this is user-provided it should be going through UrlFormatter.fixupUrl
+        return new GURL(url);
+    }
+
     // The hidden tab case needs a bit of special treatment.
-    private void handleInitialLoadForHiddedTab(
+    private void handleInitialLoadForHiddedTab(@TabCreationMode int initialTabCreationMode,
             BrowserServicesIntentDataProvider intentDataProvider) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
             throw new IllegalStateException("handleInitialIntent called before Tab created");
         }
         String url = intentDataProvider.getUrlToLoad();
+        GURL gurl = getGurlForUrl(url);
 
         // Manually generating metrics in case the hidden tab has completely finished loading.
         if (!tab.isLoading() && !tab.isShowingErrorPage()) {
-            mCustomTabObserver.get().onPageLoadStarted(tab, url);
-            mCustomTabObserver.get().onPageLoadFinished(tab, url);
-            mNavigationEventObserver.onPageLoadStarted(tab, url);
-            mNavigationEventObserver.onPageLoadFinished(tab, url);
+            mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
+            mCustomTabObserver.get().onPageLoadFinished(tab, gurl);
+            mNavigationEventObserver.onPageLoadStarted(tab, gurl);
+            mNavigationEventObserver.onPageLoadFinished(tab, gurl);
         }
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
-        if (TextUtils.equals(speculatedUrl, url)) {
+        if (TextUtils.equals(speculatedUrl, url)
+                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
+            // In the TabCreationMode.FROM_STARTUP_TAB_PRELOADER case:
+            // - CustomActivityTabProvider#getSpeculatedUrl() is not set.
+            // - The tab creation mode is only set in CustomTabActivityTabController if the URL
+            // being loaded is the one we want.
+
+            if (tab.isLoading()) {
+                // CustomTabObserver and CustomTabActivityNavigationObserver are attached
+                // as observers in CustomTabActivityTabController, not when the navigation is
+                // initiated in HiddenTabHolder or StartupTabPreloader.
+                mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
+                mNavigationEventObserver.onPageLoadStarted(tab, gurl);
+            }
+
+            if (initialTabCreationMode == TabCreationMode.HIDDEN) {
+                AttributionParameters attributionParams =
+                        mAttributionIntentHandler.getAndClearPendingAttributionParameters(
+                                intentDataProvider.getIntent());
+                if (attributionParams != null) {
+                    mAttributionReporter.reportAttributionForCurrentNavigation(tab.getWebContents(),
+                            attributionParams.getSourcePackageName(),
+                            attributionParams.getSourceEventId(),
+                            attributionParams.getDestination(), attributionParams.getReportTo(),
+                            attributionParams.getExpiry());
+                }
+            }
             return;
         }
 
@@ -83,6 +133,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
             params.setShouldReplaceCurrentEntry(true);
         }
 
+        IntentHandler.setAttributionParamsFromIntent(params, intentDataProvider.getIntent());
+
         mNavigationController.navigate(params, getTimestamp(intentDataProvider));
     }
 
@@ -91,6 +143,15 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         String url = intentDataProvider.getUrlToLoad();
         if (TextUtils.isEmpty(url)) return;
         LoadUrlParams params = new LoadUrlParams(url);
+
+        if (intentDataProvider.isWebApkActivity()) {
+            // The back stack should be cleared when a WebAPK receives a deep link intent. This is
+            // unnecessary for Trusted Web Activities and new-style WebAPKs because Trusted Web
+            // Activities and new-style WebAPKs are restarted when they receive an intent from a
+            // deep link.
+            params.setShouldClearHistoryList(true);
+        }
+
         mNavigationController.navigate(params, getTimestamp(intentDataProvider));
     }
 

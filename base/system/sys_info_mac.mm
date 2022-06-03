@@ -4,8 +4,6 @@
 
 #include "base/system/sys_info.h"
 
-#include <ApplicationServices/ApplicationServices.h>
-#include <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
@@ -14,12 +12,12 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_port.h"
-#import "base/mac/sdk_forward_declarations.h"
+#include "base/notreached.h"
 #include "base/process/process_metrics.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -63,6 +61,17 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
   *major_version = version.majorVersion;
   *minor_version = version.minorVersion;
   *bugfix_version = version.patchVersion;
+}
+
+// static
+std::string SysInfo::OperatingSystemArchitecture() {
+  switch (mac::GetCPUType()) {
+    case mac::CPUType::kIntel:
+      return "x86_64";
+    case mac::CPUType::kTranslatedIntel:
+    case mac::CPUType::kArm:
+      return "arm64";
+  }
 }
 
 // static

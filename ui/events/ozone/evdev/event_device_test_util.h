@@ -68,6 +68,7 @@ extern const DeviceCapabilities kLinkKeyboard;
 extern const DeviceCapabilities kLinkTouchscreen;
 extern const DeviceCapabilities kLinkWithToolTypeTouchscreen;
 extern const DeviceCapabilities kLinkTouchpad;
+extern const DeviceCapabilities kMorphiusPointingStick;
 extern const DeviceCapabilities kHpUsbKeyboard;
 extern const DeviceCapabilities kHpUsbKeyboard_Extra;
 extern const DeviceCapabilities kLogitechUsbMouse;
@@ -87,6 +88,20 @@ extern const DeviceCapabilities kNocturneTouchScreen;
 extern const DeviceCapabilities kNocturneStylus;
 extern const DeviceCapabilities kKohakuTouchscreen;
 extern const DeviceCapabilities kKohakuStylus;
+extern const DeviceCapabilities kXboxElite;
+extern const DeviceCapabilities kDrallionStylus;
+extern const DeviceCapabilities kDellActivePenButton;
+extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
+extern const DeviceCapabilities kDrawciaStylusGarage;
+extern const DeviceCapabilities kEveKeyboard;
+extern const DeviceCapabilities kSarienKeyboard;
+extern const DeviceCapabilities kWoomaxKeyboard;
+extern const DeviceCapabilities kDrobitKeyboard;
+extern const DeviceCapabilities kDrobitNumberpad;
+extern const DeviceCapabilities kLogitechKeyboardK120;
+extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
+extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
+extern const DeviceCapabilities kHPProBook6560bTouchpad;
 }  // namspace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_

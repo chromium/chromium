@@ -1,0 +1,9 @@
+Verifies that we can successfully retrieve the security isolation status of a service worker.
+COEP status
+{
+    reportOnlyValue : None
+    value : None
+}
+COOP status
+undefined
+

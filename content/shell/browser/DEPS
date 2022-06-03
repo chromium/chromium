@@ -1,22 +1,18 @@
 include_rules = [
-  "-content/shell/browser/layout_test",
+  "+chromeos/lacros",
   "+components/keyed_service/content",
+  "+components/metrics",
   "+components/network_session_configurator/common",
+  "+components/prefs",
+  "+components/variations",
   "+services/device/public/cpp",
   "+services/network/public",
   "+services/service_manager/public/cpp",
-  "+services/service_manager/sandbox",
   "+ui/ozone/public",
 ]
 
 specific_include_rules = {
-  "shell\.cc": [
-    "+content/shell/browser/layout_test",
-  ],
-  "shell_browser_main_parts_mac\.mm": [
-    "+content/browser/sandbox_parameters_mac.h",
-  ],
-  "shell_devtools_manager_delegate\.cc": [
-    "+content/shell/browser/layout_test",
+  "shell_browser_main_parts\.cc": [
+    "+ui/gtk",
   ],
 }

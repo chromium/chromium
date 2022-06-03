@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include <windows.h>
+
 #include <mshtmhst.h>
 #include <urlmon.h>
 
+#include "base/strings/string_util.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/installer/util/html_dialog.h"
 
@@ -38,10 +40,10 @@ namespace installer {
 
 class HTMLDialogWin : public HTMLDialog {
  public:
-  HTMLDialogWin(const base::string16& url, const base::string16& param)
+  HTMLDialogWin(const std::wstring& url, const std::wstring& param)
       : url_(url), param_(param) {
     if (!mshtml_)
-       mshtml_ = LoadLibrary(L"MSHTML.DLL");
+      mshtml_ = LoadLibrary(L"MSHTML.DLL");
   }
 
   DialogResult ShowModal(void* parent_window,
@@ -52,28 +54,28 @@ class HTMLDialogWin : public HTMLDialog {
     return static_cast<DialogResult>(result);
   }
 
-  base::string16 GetExtraResult() override { return extra_result_; }
+  std::wstring GetExtraResult() override { return extra_result_; }
 
  private:
   bool InternalDoDialog(CustomizationCallback* callback, int* result);
   static LRESULT CALLBACK MsgFilter(int code, WPARAM wParam, LPARAM lParam);
 
-  base::string16 url_;
-  base::string16 param_;
+  std::wstring url_;
+  std::wstring param_;
   static HHOOK hook_;
   static HINSTANCE mshtml_;
   static CustomizationCallback* callback_;
-  base::string16 extra_result_;
+  std::wstring extra_result_;
 };
 
-HTMLDialog* CreateNativeHTMLDialog(const base::string16& url,
-                                   const base::string16& param) {
+HTMLDialog* CreateNativeHTMLDialog(const std::wstring& url,
+                                   const std::wstring& param) {
   return new HTMLDialogWin(url, param);
 }
 
-HHOOK HTMLDialogWin::hook_ = NULL;
-HINSTANCE HTMLDialogWin::mshtml_ = NULL;
-HTMLDialogWin::CustomizationCallback* HTMLDialogWin::callback_ = NULL;
+HHOOK HTMLDialogWin::hook_ = nullptr;
+HINSTANCE HTMLDialogWin::mshtml_ = nullptr;
+HTMLDialogWin::CustomizationCallback* HTMLDialogWin::callback_ = nullptr;
 
 // This hook function gets called for messages bound to the windows that
 // ShowHTMLDialog creates. We tell apart the top window because it has the
@@ -98,22 +100,21 @@ bool HTMLDialogWin::InternalDoDialog(CustomizationCallback* callback,
                                      int* result) {
   if (!mshtml_)
     return false;
-  SHOWHTMLDIALOGFN* show_html_dialog =
-      reinterpret_cast<SHOWHTMLDIALOGFN*>(
-          GetProcAddress(mshtml_, "ShowHTMLDialog"));
+  SHOWHTMLDIALOGFN* show_html_dialog = reinterpret_cast<SHOWHTMLDIALOGFN*>(
+      GetProcAddress(mshtml_, "ShowHTMLDialog"));
   if (!show_html_dialog)
     return false;
 
-  IMoniker *url_moniker = NULL;
-  ::CreateURLMonikerEx(NULL, url_.c_str(), &url_moniker, URL_MK_UNIFORM);
+  IMoniker* url_moniker = nullptr;
+  ::CreateURLMonikerEx(nullptr, url_.c_str(), &url_moniker, URL_MK_UNIFORM);
   if (!url_moniker)
     return false;
 
-  wchar_t* extra_args = NULL;
+  wchar_t* extra_args = nullptr;
   if (callback) {
     callback->OnBeforeCreation(&extra_args);
     // Sets a windows hook for this thread only.
-    hook_ = ::SetWindowsHookEx(WH_GETMESSAGE, MsgFilter, NULL,
+    hook_ = ::SetWindowsHookEx(WH_GETMESSAGE, MsgFilter, nullptr,
                                GetCurrentThreadId());
     if (hook_)
       callback_ = callback;
@@ -127,11 +128,8 @@ bool HTMLDialogWin::InternalDoDialog(CustomizationCallback* callback,
   ::VariantInit(&v_result);
 
   // Creates the window with the embedded IE control in a modal loop.
-  HRESULT hr = show_html_dialog(NULL,
-                                url_moniker,
-                                dialog_args.AsInput(),
-                                extra_args,
-                                &v_result);
+  HRESULT hr = show_html_dialog(nullptr, url_moniker, dialog_args.AsInput(),
+                                extra_args, &v_result);
   url_moniker->Release();
 
   if (v_result.vt == VT_I4) {
@@ -145,16 +143,15 @@ bool HTMLDialogWin::InternalDoDialog(CustomizationCallback* callback,
 
   if (hook_) {
     ::UnhookWindowsHookEx(hook_);
-    callback_ = NULL;
-    hook_ = NULL;
+    callback_ = nullptr;
+    hook_ = nullptr;
   }
   return SUCCEEDED(hr);
 }
 
 // EulaHTMLDialog implementation ---------------------------------------------
 
-void EulaHTMLDialog::Customizer::OnBeforeCreation(wchar_t** extra) {
-}
+void EulaHTMLDialog::Customizer::OnBeforeCreation(wchar_t** extra) {}
 
 // The customization of the window consists in removing the close button and
 // replacing the existing 'e' icon with the standard informational icon.
@@ -164,13 +161,13 @@ void EulaHTMLDialog::Customizer::OnBeforeDisplay(void* window) {
   HWND top_window = static_cast<HWND>(window);
   LONG_PTR style = ::GetWindowLongPtrW(top_window, GWL_STYLE);
   ::SetWindowLongPtrW(top_window, GWL_STYLE, style & ~WS_SYSMENU);
-  HICON ico = ::LoadIcon(NULL, IDI_INFORMATION);
+  HICON ico = ::LoadIcon(nullptr, IDI_INFORMATION);
   ::SendMessageW(top_window, WM_SETICON, ICON_SMALL,
                  reinterpret_cast<LPARAM>(ico));
 }
 
-EulaHTMLDialog::EulaHTMLDialog(const base::string16& file,
-                               const base::string16& param) {
+EulaHTMLDialog::EulaHTMLDialog(const std::wstring& file,
+                               const std::wstring& param) {
   dialog_ = CreateNativeHTMLDialog(file, param);
 }
 
@@ -180,7 +177,7 @@ EulaHTMLDialog::~EulaHTMLDialog() {
 
 EulaHTMLDialog::Outcome EulaHTMLDialog::ShowModal() {
   Customizer customizer;
-  HTMLDialog::DialogResult dr = dialog_->ShowModal(NULL, &customizer);
+  HTMLDialog::DialogResult dr = dialog_->ShowModal(nullptr, &customizer);
   if (HTMLDialog::HTML_DLG_ACCEPT == dr)
     return EulaHTMLDialog::ACCEPTED;
   else if (HTMLDialog::HTML_DLG_EXTRA == dr)

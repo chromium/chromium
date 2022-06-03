@@ -1,0 +1,36 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/location/nearby/sharing/v1/rpcs/contacts.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/324307508.
+
+syntax = "proto3";
+
+package nearbyshare.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "rpc_resources.proto";
+
+// Request to list ContactRecord of a user.
+message ListContactPeopleRequest {
+  // Optional limit on the number of ContactRecord in
+  // [ListContactPeopleResponse.contact_records]. Defaults to 500 if not set.
+  int32 page_size = 1;
+
+  // Optional pagination token, returned earlier via
+  // [ListContactPeopleResponse.next_page_token]
+  string page_token = 2;
+}
+
+// Response from a ListContactPeopleRequest.
+message ListContactPeopleResponse {
+  // The ContactRecord in this collection.
+  repeated ContactRecord contact_records = 1;
+
+  // Optional. A token to retrieve the next page of results when used in
+  // [ListContactPeopleRequest]. Empty if no page is available.
+  string next_page_token = 2;
+}

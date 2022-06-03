@@ -15,7 +15,7 @@ class LatestLocalSurfaceIdLookupDelegate {
       const FrameSinkId& frame_sink_id) const = 0;
 
  protected:
-  virtual ~LatestLocalSurfaceIdLookupDelegate() {}
+  virtual ~LatestLocalSurfaceIdLookupDelegate() = default;
 };
 
 }  // namespace viz

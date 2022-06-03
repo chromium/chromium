@@ -9,10 +9,12 @@
 namespace dom_distiller {
 
 DistillerJavaScriptServiceImpl::DistillerJavaScriptServiceImpl(
-    DistillerUIHandle* distiller_ui_handle)
-    : distiller_ui_handle_(distiller_ui_handle) {}
+    DistillerUIHandle* distiller_ui_handle,
+    DistilledPagePrefs* distilled_page_prefs)
+    : distiller_ui_handle_(distiller_ui_handle),
+      distilled_page_prefs_(distilled_page_prefs) {}
 
-DistillerJavaScriptServiceImpl::~DistillerJavaScriptServiceImpl() {}
+DistillerJavaScriptServiceImpl::~DistillerJavaScriptServiceImpl() = default;
 
 void DistillerJavaScriptServiceImpl::HandleDistillerOpenSettingsCall() {
   if (!distiller_ui_handle_) {
@@ -22,12 +24,27 @@ void DistillerJavaScriptServiceImpl::HandleDistillerOpenSettingsCall() {
   distiller_ui_handle_->OpenSettings();
 }
 
+void DistillerJavaScriptServiceImpl::HandleStoreThemePref(mojom::Theme theme) {
+  distilled_page_prefs_->SetTheme(theme);
+}
+
+void DistillerJavaScriptServiceImpl::HandleStoreFontFamilyPref(
+    mojom::FontFamily font_family) {
+  distilled_page_prefs_->SetFontFamily(font_family);
+}
+
+void DistillerJavaScriptServiceImpl::HandleStoreFontScalingPref(
+    float font_scale) {
+  distilled_page_prefs_->SetFontScaling(font_scale);
+}
+
 void CreateDistillerJavaScriptService(
     DistillerUIHandle* distiller_ui_handle,
+    DistilledPagePrefs* distilled_page_prefs,
     mojo::PendingReceiver<mojom::DistillerJavaScriptService> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<DistillerJavaScriptServiceImpl>(distiller_ui_handle),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<DistillerJavaScriptServiceImpl>(
+                                  distiller_ui_handle, distilled_page_prefs),
+                              std::move(receiver));
 }
 
 }  // namespace dom_distiller

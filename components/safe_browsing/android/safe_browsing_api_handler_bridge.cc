@@ -11,15 +11,15 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/android/jni_headers/SafeBrowsingApiBridge_jni.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -41,8 +41,8 @@ void RunCallbackOnIOThread(
     const ThreatMetadata& metadata) {
   CHECK(callback);              // Remove after fixing crbug.com/889972
   CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(std::move(*callback), threat_type, metadata));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(*callback), threat_type, metadata));
 }
 
 void ReportUmaResult(safe_browsing::UmaRemoteCallResult result) {
@@ -63,7 +63,7 @@ int SBThreatTypeToJavaThreatType(const SBThreatType& sb_threat_type) {
       return safe_browsing::JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION;
     case SB_THREAT_TYPE_URL_UNWANTED:
       return safe_browsing::JAVA_THREAT_TYPE_UNWANTED_SOFTWARE;
-    case SB_THREAT_TYPE_CSD_WHITELIST:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
       return safe_browsing::JAVA_THREAT_TYPE_CSD_ALLOWLIST;
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       return safe_browsing::JAVA_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST;
@@ -106,11 +106,6 @@ static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
 
 }  // namespace
 
-// Java->Native call, to check whether the feature to use local blacklists is
-// enabled.
-jboolean JNI_SafeBrowsingApiBridge_AreLocalBlacklistsEnabled(JNIEnv* env) {
-  return base::FeatureList::IsEnabled(kUseLocalBlacklistsV2);
-}
 
 // Respond to the URL reputation request by looking up the callback information
 // stored in |pending_callbacks|.
@@ -193,8 +188,8 @@ void JNI_SafeBrowsingApiBridge_OnUrlCheckDone(
   TRACE_EVENT1("safe_browsing", "SafeBrowsingApiHandlerBridge::OnUrlCheckDone",
                "metadata", metadata_str);
 
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&OnUrlCheckDoneOnIOThread, callback_id,
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OnUrlCheckDoneOnIOThread, callback_id,
                                 result_status, metadata_str));
 }
 
@@ -231,23 +226,6 @@ bool SafeBrowsingApiHandlerBridge::StartAllowlistCheck(
                                                          j_url, j_threat_type);
 }
 
-std::string SafeBrowsingApiHandlerBridge::GetSafetyNetId() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bool feature_enabled = base::FeatureList::IsEnabled(kCaptureSafetyNetId);
-  DCHECK(feature_enabled);
-
-  static std::string safety_net_id;
-  if (feature_enabled && CheckApiIsSupported() && safety_net_id.empty()) {
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jstring> jsafety_net_id =
-        Java_SafeBrowsingApiBridge_getSafetyNetId(env, j_api_handler_);
-    safety_net_id =
-        jsafety_net_id ? ConvertJavaStringToUTF8(env, jsafety_net_id) : "";
-  }
-
-  return safety_net_id;
-}
-
 void SafeBrowsingApiHandlerBridge::StartURLCheck(
     std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
     const GURL& url,
@@ -278,7 +256,7 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
-  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST);
+  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
 }
 
 bool SafeBrowsingApiHandlerBridge::StartHighConfidenceAllowlistCheck(

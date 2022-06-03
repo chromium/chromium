@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 
 namespace extensions {
@@ -32,8 +32,8 @@ void IdentityMintRequestQueue::RequestStart(
     IdentityMintRequestQueue::MintType type,
     const ExtensionTokenKey& key,
     IdentityMintRequestQueue::Request* request) {
-  TRACE_EVENT_ASYNC_BEGIN1(
-      "identity", "IdentityMintRequestQueue", request, "type", type);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("identity", "IdentityMintRequestQueue",
+                                    request, "type", type);
   RequestQueue& request_queue = GetRequestQueueMap(type)[key];
   request_queue.push_back(request);
   // If this is the first request, start it now. RequestComplete will start
@@ -46,11 +46,8 @@ void IdentityMintRequestQueue::RequestComplete(
     IdentityMintRequestQueue::MintType type,
     const ExtensionTokenKey& key,
     IdentityMintRequestQueue::Request* request) {
-  TRACE_EVENT_ASYNC_END1("identity",
-                         "IdentityMintRequestQueue",
-                         request,
-                         "completed",
-                         "RequestComplete");
+  TRACE_EVENT_NESTABLE_ASYNC_END1("identity", "IdentityMintRequestQueue",
+                                  request, "completed", "RequestComplete");
   RequestQueue& request_queue = GetRequestQueueMap(type)[key];
   CHECK_EQ(request_queue.front(), request);
   request_queue.pop_front();
@@ -61,11 +58,8 @@ void IdentityMintRequestQueue::RequestComplete(
 void IdentityMintRequestQueue::RequestCancel(
     const ExtensionTokenKey& key,
     IdentityMintRequestQueue::Request* request) {
-  TRACE_EVENT_ASYNC_END1("identity",
-                         "IdentityMintRequestQueue",
-                         request,
-                         "completed",
-                         "RequestCancel");
+  TRACE_EVENT_NESTABLE_ASYNC_END1("identity", "IdentityMintRequestQueue",
+                                  request, "completed", "RequestCancel");
   GetRequestQueueMap(MINT_TYPE_INTERACTIVE)[key].remove(request);
   GetRequestQueueMap(MINT_TYPE_NONINTERACTIVE)[key].remove(request);
 }
@@ -87,8 +81,8 @@ IdentityMintRequestQueue::GetRequestQueueMap(
 void IdentityMintRequestQueue::RunRequest(
     IdentityMintRequestQueue::MintType type,
     RequestQueue& request_queue) {
-  TRACE_EVENT_ASYNC_STEP_INTO0(
-      "identity", "IdentityMintRequestQueue", request_queue.front(), "RUNNING");
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "RunRequest",
+                                      request_queue.front());
   request_queue.front()->StartMintToken(type);
 }
 

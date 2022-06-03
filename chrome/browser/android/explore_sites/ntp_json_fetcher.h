@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/catalog.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -33,6 +32,10 @@ class NTPJsonFetcher {
   typedef base::OnceCallback<void(std::unique_ptr<NTPCatalog>)> Callback;
 
   explicit NTPJsonFetcher(content::BrowserContext* browser_context);
+
+  NTPJsonFetcher(const NTPJsonFetcher&) = delete;
+  NTPJsonFetcher& operator=(const NTPJsonFetcher&) = delete;
+
   ~NTPJsonFetcher();
 
   // Starts to fetch results for the given |query_url|.
@@ -50,8 +53,6 @@ class NTPJsonFetcher {
   content::BrowserContext* browser_context_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::WeakPtrFactory<NTPJsonFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NTPJsonFetcher);
 };
 
 }  // namespace explore_sites

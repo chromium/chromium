@@ -6,70 +6,62 @@
 
 #include <utility>
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/modules/idle/idle_options.h"
-#include "third_party/blink/renderer/modules/idle/idle_state.h"
+#include "third_party/blink/renderer/modules/idle/idle_manager.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 namespace {
 
-const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"idle-detection\" is disallowed by feature policy.";
+using mojom::blink::IdleManagerError;
 
-const uint32_t kDefaultThresholdSeconds = 60;
-const int32_t kMinThresholdSeconds = 60;
+const char kAbortMessage[] = "Idle detection aborted.";
+const char kFeaturePolicyBlocked[] =
+    "Access to the feature \"idle-detection\" is disallowed by permissions "
+    "policy.";
+
+constexpr base::TimeDelta kMinimumThreshold = base::Seconds(60);
+constexpr base::TimeDelta kUserInputThreshold =
+    base::Milliseconds(mojom::blink::IdleManager::kUserInputThresholdMs);
+
+static_assert(
+    kMinimumThreshold >= kUserInputThreshold,
+    "Browser threshold can't be less than the minimum allowed by the API");
 
 }  // namespace
 
-IdleDetector* IdleDetector::Create(ScriptState* script_state,
-                                   const IdleOptions* options,
-                                   ExceptionState& exception_state) {
-  int32_t threshold_seconds =
-      options->hasThreshold() ? options->threshold() : kDefaultThresholdSeconds;
-
-  if (threshold_seconds < kMinThresholdSeconds) {
-    exception_state.ThrowTypeError("Minimum threshold is 60 seconds.");
-    return nullptr;
-  }
-
-  base::TimeDelta threshold = base::TimeDelta::FromSeconds(threshold_seconds);
-
-  auto* detector = MakeGarbageCollected<IdleDetector>(
-      ExecutionContext::From(script_state), threshold);
-  return detector;
+IdleDetector* IdleDetector::Create(ScriptState* script_state) {
+  return MakeGarbageCollected<IdleDetector>(
+      ExecutionContext::From(script_state));
 }
 
-// static
-IdleDetector* IdleDetector::Create(ScriptState* script_state,
-                                   ExceptionState& exception_state) {
-  return Create(script_state, IdleOptions::Create(), exception_state);
-}
-
-IdleDetector::IdleDetector(ExecutionContext* context, base::TimeDelta threshold)
-    : ContextClient(context), threshold_(threshold), receiver_(this) {}
+IdleDetector::IdleDetector(ExecutionContext* context)
+    : ExecutionContextClient(context),
+      task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
+      timer_(task_runner_, this, &IdleDetector::DispatchUserIdleEvent),
+      receiver_(this, context) {}
 
 IdleDetector::~IdleDetector() = default;
-
-void IdleDetector::Dispose() {
-  StopMonitoring();
-}
 
 const AtomicString& IdleDetector::InterfaceName() const {
   return event_target_names::kIdleDetector;
 }
 
 ExecutionContext* IdleDetector::GetExecutionContext() const {
-  return ContextClient::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 bool IdleDetector::HasPendingActivity() const {
@@ -78,79 +70,202 @@ bool IdleDetector::HasPendingActivity() const {
   return GetExecutionContext() && HasEventListeners();
 }
 
+String IdleDetector::userState() const {
+  if (!has_state_)
+    return String();
+
+  return user_idle_ ? "idle" : "active";
+}
+
+String IdleDetector::screenState() const {
+  if (!has_state_)
+    return String();
+
+  return screen_locked_ ? "locked" : "unlocked";
+}
+
+// static
+ScriptPromise IdleDetector::requestPermission(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid())
+    return ScriptPromise();
+
+  auto* context = ExecutionContext::From(script_state);
+  return IdleManager::From(context)->RequestPermission(script_state,
+                                                       exception_state);
+}
+
 ScriptPromise IdleDetector::start(ScriptState* script_state,
+                                  const IdleOptions* options,
                                   ExceptionState& exception_state) {
-  // Validate options.
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  if (!context->IsFeatureEnabled(mojom::FeaturePolicyFeature::kIdleDetection,
-                                 ReportOptions::kReportOnFailure)) {
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kIdleDetection,
+          ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
   }
 
-  StartMonitoring();
-
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-void IdleDetector::stop() {
-  StopMonitoring();
-}
-
-void IdleDetector::StartMonitoring() {
   if (receiver_.is_bound()) {
-    return;
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Idle detector is already started.");
+    return ScriptPromise();
   }
 
-  // See https://bit.ly/2S0zRAS for task types.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-
-  if (!service_) {
-    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        service_.BindNewPipeAndPassReceiver(task_runner));
+  if (options->hasThreshold()) {
+    auto threshold = base::Milliseconds(options->threshold());
+    if (threshold < kMinimumThreshold) {
+      exception_state.ThrowTypeError("Minimum threshold is 1 minute.");
+      return ScriptPromise();
+    }
+    threshold_ = threshold;
   }
 
-  mojo::PendingRemote<mojom::blink::IdleMonitor> idle_monitor_remote;
-  receiver_.Bind(idle_monitor_remote.InitWithNewPipeAndPassReceiver(),
-                 task_runner);
+  if (options->hasSignal()) {
+    signal_ = options->signal();
+    signal_->AddAlgorithm(WTF::Bind(&IdleDetector::Abort,
+                                    WrapWeakPersistent(this),
+                                    WrapWeakPersistent(signal_.Get())));
+  }
 
-  service_->AddMonitor(
-      threshold_, std::move(idle_monitor_remote),
-      WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this)));
+  if (signal_ && signal_->aborted()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      kAbortMessage);
+    return ScriptPromise();
+  }
+
+  mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
+  receiver_.Bind(remote.InitWithNewPipeAndPassReceiver(), task_runner_);
+  receiver_.set_disconnect_handler(WTF::Bind(
+      &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  IdleManager::From(context)->AddMonitor(
+      std::move(remote),
+      WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
 }
 
-void IdleDetector::StopMonitoring() {
+void IdleDetector::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  task_runner_ = std::move(task_runner);
+  timer_.MoveToNewTaskRunner(task_runner_);
+}
+
+void IdleDetector::Abort(AbortSignal* signal) {
+  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+  // bound to this callback to the one last passed to start().
+  if (signal_ != signal)
+    return;
+
+  if (resolver_) {
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, kAbortMessage));
+    resolver_ = nullptr;
+  }
+
+  has_state_ = false;
   receiver_.reset();
 }
 
-void IdleDetector::OnAddMonitor(mojom::blink::IdleStatePtr state) {
-  Update(std::move(state));
+void IdleDetector::OnMonitorDisconnected() {
+  if (resolver_) {
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Idle detection not available."));
+    resolver_ = nullptr;
+  }
+
+  has_state_ = false;
+  receiver_.reset();
 }
 
-blink::IdleState* IdleDetector::state() const {
-  return state_;
+void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
+                                IdleManagerError error,
+                                mojom::blink::IdleStatePtr state) {
+  switch (error) {
+    case IdleManagerError::kPermissionDisabled:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Idle detection permission denied"));
+      break;
+    case IdleManagerError::kSuccess:
+      DCHECK(state);
+      resolver->Resolve();
+      Update(std::move(state), /*is_overridden_by_devtools=*/false);
+      break;
+  }
+
+  resolver_ = nullptr;
 }
 
-void IdleDetector::Update(mojom::blink::IdleStatePtr state) {
+void IdleDetector::Update(mojom::blink::IdleStatePtr state,
+                          bool is_overridden_by_devtools) {
   DCHECK(receiver_.is_bound());
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  if (state_ && state.get()->Equals(state_->state()))
-    return;
+  bool fire_event = false;
+  if (!has_state_) {
+    has_state_ = true;
+    fire_event = true;
+  }
 
-  state_ = MakeGarbageCollected<blink::IdleState>(std::move(state));
+  if (state->screen_locked != screen_locked_) {
+    screen_locked_ = state->screen_locked;
+    fire_event = true;
+  }
 
+  if (state->idle_time.has_value()) {
+    DCHECK_GE(threshold_, kUserInputThreshold);
+    if (!is_overridden_by_devtools &&
+        threshold_ > kUserInputThreshold + *state->idle_time) {
+      base::TimeDelta delay =
+          threshold_ - kUserInputThreshold - *state->idle_time;
+      timer_.StartOneShot(delay, FROM_HERE);
+
+      // Normally this condition is unsatisfiable because state->idle_time
+      // cannot move backwards but it can if the state was previously overridden
+      // by DevTools.
+      if (user_idle_) {
+        user_idle_ = false;
+        fire_event = true;
+      }
+    } else if (!user_idle_) {
+      user_idle_ = true;
+      fire_event = true;
+    }
+  } else {
+    // The user is now active, so cancel any scheduled task to notify script
+    // that the user is idle.
+    timer_.Stop();
+
+    if (user_idle_) {
+      user_idle_ = false;
+      fire_event = true;
+    }
+  }
+
+  if (fire_event) {
+    DispatchEvent(*Event::Create(event_type_names::kChange));
+  }
+}
+
+void IdleDetector::DispatchUserIdleEvent(TimerBase*) {
+  user_idle_ = true;
   DispatchEvent(*Event::Create(event_type_names::kChange));
 }
 
-void IdleDetector::Trace(blink::Visitor* visitor) {
-  visitor->Trace(state_);
+void IdleDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(timer_);
+  visitor->Trace(signal_);
+  visitor->Trace(resolver_);
+  visitor->Trace(receiver_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
 }
 

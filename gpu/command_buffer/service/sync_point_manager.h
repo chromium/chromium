@@ -15,7 +15,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
@@ -40,6 +40,9 @@ class SyncPointManager;
 class GPU_EXPORT SyncPointOrderData
     : public base::RefCountedThreadSafe<SyncPointOrderData> {
  public:
+  SyncPointOrderData(const SyncPointOrderData&) = delete;
+  SyncPointOrderData& operator=(const SyncPointOrderData&) = delete;
+
   void Destroy();
 
   SequenceId sequence_id() { return sequence_id_; }
@@ -152,13 +155,14 @@ class GPU_EXPORT SyncPointOrderData
   // follow the invariant:
   //   unprocessed_order_nums_.front() < n <= unprocessed_order_nums_.back().
   OrderFenceQueue order_fence_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointOrderData);
 };
 
 class GPU_EXPORT SyncPointClientState
     : public base::RefCountedThreadSafe<SyncPointClientState> {
  public:
+  SyncPointClientState(const SyncPointClientState&) = delete;
+  SyncPointClientState& operator=(const SyncPointClientState&) = delete;
+
   void Destroy();
 
   CommandBufferNamespace namespace_id() const { return namespace_id_; }
@@ -250,8 +254,6 @@ class GPU_EXPORT SyncPointClientState
   // In well defined fence sync operations, fence syncs are released in order
   // so simply having a priority queue for callbacks is enough.
   ReleaseCallbackQueue release_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointClientState);
 };
 
 // This class manages the sync points, which allow cross-channel
@@ -259,6 +261,10 @@ class GPU_EXPORT SyncPointClientState
 class GPU_EXPORT SyncPointManager {
  public:
   SyncPointManager();
+
+  SyncPointManager(const SyncPointManager&) = delete;
+  SyncPointManager& operator=(const SyncPointManager&) = delete;
+
   ~SyncPointManager();
 
   scoped_refptr<SyncPointOrderData> CreateSyncPointOrderData();
@@ -338,11 +344,9 @@ class GPU_EXPORT SyncPointManager {
   // Map of sequence id to order data.
   OrderDataMap order_data_map_;
 
-  uint32_t next_sequence_id_ = 1;
+  SequenceId::Generator sequence_id_generator_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointManager);
 };
 
 }  // namespace gpu

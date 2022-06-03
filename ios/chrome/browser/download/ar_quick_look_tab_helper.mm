@@ -14,9 +14,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -31,6 +32,11 @@ const char kIOSDownloadARModelStateHistogram[] =
 const char kUsdzMimeTypeHistogramSuffix[] = ".USDZ";
 
 namespace {
+
+// When an AR Quick Look URL contains this fragment, scaling the displayed
+// image (e.g., by pinch-zooming) is disallowed. See
+// https://developer.apple.com/videos/play/wwdc2019/612/
+const char kDisallowContentScalingUrlFragment[] = "allowsContentScaling=0";
 
 // Returns a suffix for Download.IOSDownloadARModelState histogram for the
 // |download_task|.
@@ -100,7 +106,7 @@ void ARQuickLookTabHelper::Download(
   LogHistogram(download_task.get());
 
   base::FilePath download_dir;
-  if (!GetDownloadsDirectory(&download_dir)) {
+  if (!GetTempDownloadsDirectory(&download_dir)) {
     return;
   }
 
@@ -110,9 +116,8 @@ void ARQuickLookTabHelper::Download(
   // Take ownership of |download_task| and start the download.
   download_task_ = std::move(download_task);
   download_task_->AddObserver(this);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&base::CreateDirectory, download_dir),
       base::BindOnce(&ARQuickLookTabHelper::DownloadWithDestinationDir,
                      AsWeakPtr(), download_dir, download_task_.get()));
@@ -128,12 +133,17 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     return;
   }
 
-  net::URLFetcherFileWriter* file_writer =
-      download_task_->GetResponseWriter()->AsFileWriter();
-  base::FilePath path = file_writer->file_path();
-  NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
-  [delegate_ ARQuickLookTabHelper:this didFinishDowloadingFileWithURL:fileURL];
+  NSURL* fileURL = [NSURL
+      fileURLWithPath:base::SysUTF8ToNSString(
+                          download_task_->GetResponsePath().AsUTF8Unsafe())];
+  bool allow_content_scaling = true;
+  if (download_task_->GetOriginalUrl().ref() ==
+      kDisallowContentScalingUrlFragment) {
+    allow_content_scaling = false;
+  }
+  [delegate_ ARQuickLookTabHelper:this
+      didFinishDowloadingFileWithURL:fileURL
+                allowsContentScaling:allow_content_scaling];
 }
 
 void ARQuickLookTabHelper::RemoveCurrentDownload() {
@@ -155,31 +165,12 @@ void ARQuickLookTabHelper::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  base::string16 file_name = download_task_->GetSuggestedFilename();
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  std::u16string file_name = download_task_->GetSuggestedFilename();
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
-  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
-  writer->Initialize(base::BindRepeating(
-      &ARQuickLookTabHelper::DownloadWithWriter, AsWeakPtr(),
-      base::Passed(std::move(writer)), download_task_.get()));
-}
-
-void ARQuickLookTabHelper::DownloadWithWriter(
-    std::unique_ptr<net::URLFetcherFileWriter> writer,
-    web::DownloadTask* download_task,
-    int writer_initialization_status) {
-  // Return early if |download_task_| has changed.
-  if (download_task != download_task_.get()) {
-    return;
-  }
-
-  if (writer_initialization_status == net::OK) {
-    download_task_->Start(std::move(writer));
-    LogHistogram(download_task_.get());
-  } else {
-    RemoveCurrentDownload();
-  }
+  download_task->Start(path, web::DownloadTask::Destination::kToDisk);
+  LogHistogram(download_task_.get());
 }
 
 void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {

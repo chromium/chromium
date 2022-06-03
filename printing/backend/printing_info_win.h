@@ -11,14 +11,16 @@
 
 #include <memory>
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
 namespace internal {
 
-PRINTING_EXPORT uint8_t* GetDriverInfo(HANDLE printer, int level);
-PRINTING_EXPORT uint8_t* GetPrinterInfo(HANDLE printer, int level);
+COMPONENT_EXPORT(PRINT_BACKEND)
+uint8_t* GetDriverInfo(HANDLE printer, int level);
+COMPONENT_EXPORT(PRINT_BACKEND)
+uint8_t* GetPrinterInfo(HANDLE printer, int level);
 
 // This class is designed to work with PRINTER_INFO_X structures
 // and calls GetPrinter internally with correctly allocated buffer.

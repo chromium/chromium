@@ -16,7 +16,8 @@ namespace ui_devtools {
 // The connector is used in TracingAgent to hook up with the tracing service.
 std::unique_ptr<UiDevToolsServer> CreateUiDevToolsServerForViews(
     network::mojom::NetworkContext* network_context,
-    std::unique_ptr<ConnectorDelegate> connector);
+    std::unique_ptr<ConnectorDelegate> connector,
+    const base::FilePath& active_port_output_directory);
 
 }  // namespace ui_devtools
 

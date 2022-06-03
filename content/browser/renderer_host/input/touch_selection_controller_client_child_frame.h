@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/quads/selection.h"
 #include "content/common/content_export.h"
 #include "ui/touch_selection/touch_selection_controller.h"
@@ -31,12 +30,19 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   TouchSelectionControllerClientChildFrame(
       RenderWidgetHostViewChildFrame* rwhv,
       TouchSelectionControllerClientManager* manager);
+
+  TouchSelectionControllerClientChildFrame(
+      const TouchSelectionControllerClientChildFrame&) = delete;
+  TouchSelectionControllerClientChildFrame& operator=(
+      const TouchSelectionControllerClientChildFrame&) = delete;
+
   ~TouchSelectionControllerClientChildFrame() override;
 
   void DidStopFlinging();
   void UpdateSelectionBoundsIfNeeded(
       const viz::Selection<gfx::SelectionBound>& selection,
       float device_scale_factor);
+  void ShowTouchSelectionContextMenu(const gfx::Point& location) override;
 
  private:
   void TransformSelectionBoundsAndUpdate();
@@ -49,7 +55,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   void SelectBetweenCoordinates(const gfx::PointF& base,
                                 const gfx::PointF& extent) override;
   void OnSelectionEvent(ui::SelectionEventType event) override;
-  void OnDragUpdate(const gfx::PointF& position) override;
+  void OnDragUpdate(const ui::TouchSelectionDraggable::Type type,
+                    const gfx::PointF& position) override;
   std::unique_ptr<ui::TouchHandleDrawable> CreateDrawable() override;
   void DidScroll() override;
 
@@ -58,7 +65,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
   bool ShouldShowQuickMenu() override;
-  base::string16 GetSelectedText() override;
+  std::u16string GetSelectedText() override;
 
   gfx::Point ConvertFromRoot(const gfx::PointF& point) const;
 
@@ -69,8 +76,6 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   // The last selection bounds reported by the view, in view coordinates.
   gfx::SelectionBound selection_start_;
   gfx::SelectionBound selection_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientChildFrame);
 };
 
 }  // namespace content

@@ -7,14 +7,15 @@
 #include <windows.h>
 
 #include <cstdint>
+#include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/typed_buffer.h"
@@ -42,6 +43,9 @@ class RdpClient::Core
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       RdpClient::EventHandler* event_handler);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Initiates a loopback RDP connection.
   void Connect(const ScreenResolution& resolution,
@@ -85,8 +89,6 @@ class RdpClient::Core
 
   // A self-reference to keep the object alive during connection shutdown.
   scoped_refptr<Core> self_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RdpClient::RdpClient(
@@ -139,7 +141,7 @@ void RdpClient::Core::Connect(const ScreenResolution& resolution,
     return;
   }
 
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(!rdp_client_window_);
   DCHECK(!self_.get());
 
@@ -147,8 +149,8 @@ void RdpClient::Core::Connect(const ScreenResolution& resolution,
                                   base::checked_cast<uint16_t>(port_number));
 
   // Create the ActiveX control window.
-  rdp_client_window_.reset(new RdpClientWindow(server_endpoint, terminal_id,
-                                               this));
+  rdp_client_window_ =
+      std::make_unique<RdpClientWindow>(server_endpoint, terminal_id, this);
   if (!rdp_client_window_->Connect(resolution)) {
     rdp_client_window_.reset();
 

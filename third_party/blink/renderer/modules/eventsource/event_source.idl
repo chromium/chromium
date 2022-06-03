@@ -35,7 +35,7 @@
     ActiveScriptWrappable,
     Exposed=(Window,Worker)
 ] interface EventSource : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(USVString url, optional EventSourceInit eventSourceInitDict);
+    [CallWith=ExecutionContext, RaisesException] constructor(USVString url, optional EventSourceInit eventSourceInitDict = {});
     readonly attribute USVString url;
     readonly attribute boolean withCredentials;
 

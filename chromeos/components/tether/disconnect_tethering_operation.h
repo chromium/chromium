@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_DISCONNECT_TETHERING_OPERATION_H_
 #define CHROMEOS_COMPONENTS_TETHER_DISCONNECT_TETHERING_OPERATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/tether/message_transfer_operation.h"
@@ -26,18 +27,19 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
  public:
   class Factory {
    public:
-    static std::unique_ptr<DisconnectTetheringOperation> NewInstance(
+    static std::unique_ptr<DisconnectTetheringOperation> Create(
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<DisconnectTetheringOperation> BuildInstance(
+    virtual ~Factory();
+    virtual std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client);
+        secure_channel::SecureChannelClient* secure_channel_client) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -51,6 +53,10 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
     virtual void OnOperationFinished(const std::string& device_id,
                                      bool success) = 0;
   };
+
+  DisconnectTetheringOperation(const DisconnectTetheringOperation&) = delete;
+  DisconnectTetheringOperation& operator=(const DisconnectTetheringOperation&) =
+      delete;
 
   ~DisconnectTetheringOperation() override;
 
@@ -88,8 +94,6 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
 
   base::Clock* clock_;
   base::Time disconnect_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringOperation);
 };
 
 }  // namespace tether

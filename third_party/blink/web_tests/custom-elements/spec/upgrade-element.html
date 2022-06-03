@@ -115,7 +115,7 @@ test_with_window((w) => {
     }
   }
   w.customElements.define('a-a', X);
-  assert_array_equals(error_log, ['InvalidStateError'], 'returning object that is different from element should throw "InvalidStateError"');
+  assert_array_equals(error_log, ['TypeError'], 'returning object that is different from element should throw "TypeError"');
 }, 'Upgrading an element with constructor that returns different object');
 </script>
 </body>

@@ -10,9 +10,7 @@
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
+class Browser;
 
 namespace sync_encryption_passphrase {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -38,12 +36,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* syncErrorMessage;
 
 // |browserState| must not be nil.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

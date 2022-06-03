@@ -42,7 +42,6 @@
 #include <stddef.h>
 #include "internal_logging.h"
 #include "linked_list.h"
-#include "system-alloc.h"
 
 namespace tcmalloc {
 
@@ -51,110 +50,17 @@ namespace tcmalloc {
 // size class information for common.h.
 static const bool kSupportsDoublyLinkedList = true;
 
+void FL_InitPtrMask(uintptr_t seed);
+void FL_Init(void* t);
 void FL_PopRange(void** head, int n, void** start, void** end);
 void FL_PushRange(void** head, void* start, void* end);
 size_t FL_Size(void* head);
 
-template <typename T>
-inline void FL_EqualityCheck(const T& v0,
-                             const T& v1,
-                             const char* file,
-                             int line) {
-  if (v0 != v1)
-    Log(kCrash, file, line, "Memory corruption detected.");
-}
-
-inline void EnsureNonLoop(void* node, void* next) {
-  // We only have time to do minimal checking.  We don't traverse the list, but
-  // only look for an immediate loop (cycle back to ourself).
-  if (node != next)
-    return;
-  Log(kCrash, __FILE__, __LINE__, "Circular loop in list detected: ", next);
-}
-
-inline void* MaskPtr(void* p) {
-  // Maximize ASLR entropy and guarantee the result is an invalid address.
-  const uintptr_t mask =
-      ~(reinterpret_cast<uintptr_t>(TCMalloc_SystemAlloc) >> 13);
-  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(p) ^ mask);
-}
-
-inline void* UnmaskPtr(void* p) {
-  return MaskPtr(p);
-}
-
-// Returns value of the |previous| pointer w/out running a sanity
-// check.
-inline void* FL_Previous_No_Check(void* t) {
-  return UnmaskPtr(reinterpret_cast<void**>(t)[1]);
-}
-
-// Returns value of the |next| pointer w/out running a sanity check.
-inline void* FL_Next_No_Check(void* t) {
-  return UnmaskPtr(reinterpret_cast<void**>(t)[0]);
-}
-
-inline void* FL_Previous(void* t) {
-  void* previous = FL_Previous_No_Check(t);
-  if (previous) {
-    FL_EqualityCheck(FL_Next_No_Check(previous), t, __FILE__, __LINE__);
-  }
-  return previous;
-}
-
-inline void FL_SetPrevious(void* t, void* n) {
-  EnsureNonLoop(t, n);
-  reinterpret_cast<void**>(t)[1] = MaskPtr(n);
-}
-
-inline void FL_SetNext(void* t, void* n) {
-  EnsureNonLoop(t, n);
-  reinterpret_cast<void**>(t)[0] = MaskPtr(n);
-}
-
-inline void* FL_Next(void* t) {
-  void* next = FL_Next_No_Check(t);
-  if (next) {
-    FL_EqualityCheck(FL_Previous_No_Check(next), t, __FILE__, __LINE__);
-  }
-  return next;
-}
-
-// Pops the top element off the linked list whose first element is at
-// |*list|, and updates |*list| to point to the next element in the
-// list.  Returns the address of the element that was removed from the
-// linked list.  |list| must not be NULL.
-inline void* FL_Pop(void** list) {
-  void* result = *list;
-  ASSERT(FL_Previous_No_Check(result) == NULL);
-  *list = FL_Next(result);
-  if (*list != NULL) {
-    FL_SetPrevious(*list, NULL);
-  }
-  return result;
-}
-
-// Makes the element at |t| a singleton doubly linked list.
-inline void FL_Init(void* t) {
-  FL_SetPrevious(t, NULL);
-  FL_SetNext(t, NULL);
-}
-
-// Pushes element to a linked list whose first element is at
-// |*list|. When this call returns, |list| will point to the new head
-// of the linked list.
-inline void FL_Push(void** list, void* element) {
-  void* old = *list;
-  if (old == NULL) {  // Builds singleton list.
-    FL_Init(element);
-  } else {
-    ASSERT(FL_Previous_No_Check(old) == NULL);
-    FL_SetNext(element, old);
-    FL_SetPrevious(old, element);
-    FL_SetPrevious(element, NULL);
-  }
-  *list = element;
-}
+void FL_SetPrevious(void* t, void* n);
+void FL_SetNext(void* t, void* n);
+void* FL_Next(void* t);
+void* FL_Pop(void** list);
+void FL_Push(void** list, void* element);
 
 #else  // TCMALLOC_USE_DOUBLYLINKED_FREELIST not defined
 static const bool kSupportsDoublyLinkedList = false;

@@ -6,17 +6,24 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_PENDING_REMOTE_H_
 
 #include <cstdint>
+#include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
+
+template <typename T>
+class PendingReceiver;
+
+template <typename T>
+struct PendingRemoteConverter;
 
 // A valid PendingRemote is entangled with exactly one Receiver or
 // PendingReceiver, and can be consumed to bind a Remote in order to begin
@@ -59,6 +66,24 @@ class PendingRemote {
   PendingRemote(ScopedMessagePipeHandle pipe, uint32_t version)
       : state_(std::move(pipe), version) {}
 
+  // Disabled on NaCl since it crashes old version of clang.
+#if !defined(OS_NACL)
+  // Move conversion operator for custom remote types. Only participates in
+  // overload resolution if a typesafe conversion is supported.
+  template <
+      typename T,
+      std::enable_if_t<std::is_same<
+          PendingRemote<Interface>,
+          std::result_of_t<decltype (&PendingRemoteConverter<T>::template To<
+                                     Interface>)(T&&)>>::value>* = nullptr>
+  PendingRemote(T&& other)
+      : PendingRemote(PendingRemoteConverter<T>::template To<Interface>(
+            std::move(other))) {}
+#endif  // !defined(OS_NACL)
+
+  PendingRemote(const PendingRemote&) = delete;
+  PendingRemote& operator=(const PendingRemote&) = delete;
+
   ~PendingRemote() = default;
 
   PendingRemote& operator=(PendingRemote&&) noexcept = default;
@@ -72,7 +97,9 @@ class PendingRemote {
   // Temporary helper for transitioning away from old bindings types. This is
   // intentionally an implicit conversion.
   operator InterfacePtrInfo<Interface>() && {
-    return InterfacePtrInfo<Interface>(PassPipe(), version());
+    // |PassPipe()| invalidates all state, so capture |version()| first.
+    uint32_t version = this->version();
+    return InterfacePtrInfo<Interface>(PassPipe(), version);
   }
 
   // Resets this PendingRemote to an invalid state. If it was entangled with a
@@ -97,21 +124,14 @@ class PendingRemote {
   // Creates a new message pipe, retaining one end in the PendingRemote (making
   // it valid) and returning the other end as its entangled PendingReceiver. May
   // only be called on an invalid PendingRemote.
-  PendingReceiver<Interface> InitWithNewPipeAndPassReceiver()
-      WARN_UNUSED_RESULT {
-    DCHECK(!is_valid()) << "PendingRemote already has a receiver";
-    MessagePipe pipe;
-    state_.pipe = std::move(pipe.handle0);
-    return PendingReceiver<Interface>(std::move(pipe.handle1));
-  }
+  REINITIALIZES_AFTER_MOVE PendingReceiver<Interface>
+  InitWithNewPipeAndPassReceiver() WARN_UNUSED_RESULT;
 
   // For internal Mojo use only.
   internal::PendingRemoteState* internal_state() { return &state_; }
 
  private:
   internal::PendingRemoteState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingRemote);
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullRemote {
@@ -131,6 +151,21 @@ bool FusePipes(PendingReceiver<Interface> receiver,
                PendingRemote<Interface> remote) {
   MojoResult result = FuseMessagePipes(receiver.PassPipe(), remote.PassPipe());
   return result == MOJO_RESULT_OK;
+}
+
+}  // namespace mojo
+
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace mojo {
+
+template <typename Interface>
+PendingReceiver<Interface>
+PendingRemote<Interface>::InitWithNewPipeAndPassReceiver() {
+  DCHECK(!is_valid()) << "PendingReceiver already has a remote";
+  MessagePipe pipe;
+  state_.pipe = std::move(pipe.handle0);
+  return PendingReceiver<Interface>(std::move(pipe.handle1));
 }
 
 }  // namespace mojo

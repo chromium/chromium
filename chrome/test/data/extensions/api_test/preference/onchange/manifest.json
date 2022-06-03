@@ -5,6 +5,7 @@
   "description" : "Preferences API Test Extension (Events)",
   "permissions": [ "privacy" ],
   "background": {
-    "scripts": [ "test.js" ]
+    "scripts": [ "test.js" ],
+    "persistent": false
   }
 }

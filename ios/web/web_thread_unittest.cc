@@ -6,15 +6,11 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/web_thread_impl.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-using testing::NotNull;
 
 namespace web {
 
@@ -66,39 +62,6 @@ TEST_F(WebThreadTest, PostTaskViaSingleThreadTaskRunner) {
       FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
                                 WebThread::IO)));
   run_loop.Run();
-}
-
-TEST_F(WebThreadTest, CurrentThread) {
-  base::RunLoop run_loop;
-
-  base::PostTask(
-      FROM_HERE, {base::CurrentThread()}, base::BindLambdaForTesting([&]() {
-        PostTask(FROM_HERE, {base::CurrentThread()}, run_loop.QuitClosure());
-      }));
-
-  run_loop.Run();
-}
-
-TEST_F(WebThreadTest, GetContinuationTaskRunner) {
-  base::RunLoop run_loop;
-  auto task_runner =
-      base::CreateSingleThreadTaskRunner({base::CurrentThread()});
-
-  task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                          EXPECT_EQ(task_runner,
-                                    base::GetContinuationTaskRunner());
-                          run_loop.Quit();
-                        }));
-
-  run_loop.Run();
-}
-
-TEST_F(WebThreadTest, GetContinuationTaskRunnerWithNoTaskRunning) {
-  // TODO(scheduler-dev): GetContinuationTaskRunner should DCHECK if there's no
-  // task running.
-  EXPECT_EQ(base::CreateSequencedTaskRunner({base::CurrentThread()}),
-            base::GetContinuationTaskRunner());
-  EXPECT_THAT(base::GetContinuationTaskRunner().get(), NotNull());
 }
 
 }  // namespace web

@@ -4,8 +4,20 @@
 
 package org.chromium.android_webview;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.SystemClock;
+
 import org.chromium.android_webview.AwContents.VisualStateCallback;
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -13,8 +25,10 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * Routes notifications from WebContents to AwContentsClient and other listeners.
@@ -32,6 +46,17 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
     // Temporarily stores the URL passed the last time to didFinishLoad callback.
     private String mLastDidFinishLoadUrl;
+
+    // The start time for measuring time spent on a page, from commit to the start of the next
+    // navigation.
+    private long mStartTimeSpentMillis = -1;
+
+    // The scheme for the page we're currently on and measuring time spent for.
+    private String mCurrentSchemeForTimeSpent;
+
+    // Whether we're currently on a first party web page. This means the scheme is http or https
+    // and a web intent with the url resolves to an activity for the current app.
+    private boolean mOnFirstPartyWebPage;
 
     public AwWebContentsObserver(
             WebContents webContents, AwContents awContents, AwContentsClient awContentsClient) {
@@ -52,18 +77,22 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFinishLoad(long frameId, String validatedUrl, boolean isMainFrame) {
-        if (isMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
+    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+        if (rfhLifecycleState != LifecycleState.ACTIVE) return;
+        String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
+        if (isInPrimaryMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
         }
     }
 
     @Override
-    public void didStopLoading(String validatedUrl) {
-        if (validatedUrl.length() == 0) validatedUrl = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
-        AwContentsClient client = getClientIfNeedToFireCallback(validatedUrl);
-        if (client != null && validatedUrl.equals(mLastDidFinishLoadUrl)) {
-            client.getCallbackHelper().postOnPageFinished(validatedUrl);
+    public void didStopLoading(GURL gurl, boolean isKnownValid) {
+        String url = isKnownValid ? gurl.getSpec() : gurl.getPossiblyInvalidSpec();
+        if (url.length() == 0) url = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
+        AwContentsClient client = getClientIfNeedToFireCallback(url);
+        if (client != null && url.equals(mLastDidFinishLoadUrl)) {
+            client.getCallbackHelper().postOnPageFinished(url);
             mLastDidFinishLoadUrl = null;
         }
     }
@@ -76,17 +105,32 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(
-            boolean isMainFrame, @NetError int errorCode, String description, String failingUrl) {
+    public void didFailLoad(boolean isInPrimaryMainFrame, @NetError int errorCode, GURL failingGurl,
+            @LifecycleState int frameLifecycleState) {
+        processFailedLoad(isInPrimaryMainFrame, errorCode, failingGurl);
+    }
+
+    private void processFailedLoad(
+            boolean isPrimaryMainFrame, @NetError int errorCode, GURL failingGurl) {
+        String failingUrl = failingGurl.getPossiblyInvalidSpec();
         AwContentsClient client = mAwContentsClient.get();
         if (client == null) return;
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         boolean isErrorUrl =
                 unreachableWebDataUrl != null && unreachableWebDataUrl.equals(failingUrl);
-        if (isMainFrame && !isErrorUrl && errorCode == NetError.ERR_ABORTED) {
-            // Need to call onPageFinished for backwards compatibility with the classic webview.
-            // See also AwContents.IoThreadClientImpl.onReceivedError.
-            client.getCallbackHelper().postOnPageFinished(failingUrl);
+        if (isPrimaryMainFrame && !isErrorUrl) {
+            if (errorCode == NetError.ERR_ABORTED) {
+                // Need to call onPageFinished for backwards compatibility with the classic webview.
+                // See also AwContentsClientBridge.onReceivedError.
+                client.getCallbackHelper().postOnPageFinished(failingUrl);
+            } else if (errorCode == NetError.ERR_HTTP_RESPONSE_CODE_FAILURE) {
+                // This is a HTTP error that results in an error page. We need to call onPageStarted
+                // and onPageFinished to have the same behavior with HTTP error navigations that
+                // don't result in an error page. See also
+                // AwContentsClientBridge.onReceivedHttpError.
+                client.getCallbackHelper().postOnPageStarted(failingUrl);
+                client.getCallbackHelper().postOnPageFinished(failingUrl);
+            }
         }
     }
 
@@ -97,19 +141,129 @@ public class AwWebContentsObserver extends WebContentsObserver {
         client.updateTitle(title, true);
     }
 
+    /**
+     * Converts a scheme to a histogram Scheme key used in
+     * Android.WebView.PageTimeSpent2.{Scheme}{Party}. These must be kept in sync.
+     */
+    private static String pageTimeSpentSchemeToHistogramKey(String scheme) {
+        switch (scheme) {
+            case UrlConstants.APP_INTENT_SCHEME:
+                return "App";
+            case UrlConstants.BLOB_SCHEME:
+                return "Blob";
+            case UrlConstants.CHROME_SCHEME:
+                return "Chrome";
+            case UrlConstants.CHROME_NATIVE_SCHEME:
+                return "ChromeNative";
+            case UrlConstants.CONTENT_SCHEME:
+                return "Content";
+            case UrlConstants.CUSTOM_TAB_SCHEME:
+                return "CustomTab";
+            case UrlConstants.DATA_SCHEME:
+                return "Data";
+            case UrlConstants.DEVTOOLS_SCHEME:
+                return "Devtools";
+            case UrlConstants.DOCUMENT_SCHEME:
+                return "Document";
+            case UrlConstants.FILE_SCHEME:
+                return "File";
+            case UrlConstants.FILESYSTEM_SCHEME:
+                return "Filesystem";
+            case UrlConstants.FTP_SCHEME:
+                return "Ftp";
+            case UrlConstants.HTTP_SCHEME:
+                return "Http";
+            case UrlConstants.HTTPS_SCHEME:
+                return "Https";
+            case UrlConstants.INLINE_SCHEME:
+                return "Inline";
+            case UrlConstants.INTENT_SCHEME:
+                return "Intent";
+            case UrlConstants.JAR_SCHEME:
+                return "Jar";
+            case UrlConstants.JAVASCRIPT_SCHEME:
+                return "JavaScript";
+            case UrlConstants.SMS_SCHEME:
+                return "Sms";
+            case UrlConstants.TEL_SCHEME:
+                return "Tel";
+            default:
+                return "Other";
+        }
+    }
+
+    /**
+     * Converts a boolean to a histogram Party key used in
+     * Android.WebView.PageTimeSpent2.{Scheme}{Party}. These must be kept in sync.
+     */
+    private static String pageTimeSpentPartyBooleanToHistogramKey(boolean firstParty) {
+        return firstParty ? ".FirstParty" : ".ThirdParty";
+    }
+
+    @Override
+    public void didStartNavigation(NavigationHandle navigation) {
+        // Time spent on page is measured from navigation commit to the start of the next
+        // navigation.
+        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()
+                && mStartTimeSpentMillis != -1 && mCurrentSchemeForTimeSpent != null) {
+            long timeSpentMillis = SystemClock.uptimeMillis() - mStartTimeSpentMillis;
+            String schemeKey = pageTimeSpentSchemeToHistogramKey(mCurrentSchemeForTimeSpent);
+            RecordHistogram.recordLongTimesHistogram100(
+                    "Android.WebView.PageTimeSpent2." + schemeKey, timeSpentMillis);
+            if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_LOG_FIRST_PARTY_PAGE_TIME_SPENT)
+                    && (UrlConstants.HTTP_SCHEME.equals(mCurrentSchemeForTimeSpent)
+                            || UrlConstants.HTTPS_SCHEME.equals(mCurrentSchemeForTimeSpent))) {
+                String partyKey = pageTimeSpentPartyBooleanToHistogramKey(mOnFirstPartyWebPage);
+                RecordHistogram.recordLongTimesHistogram100(
+                        "Android.WebView.PageTimeSpent2." + schemeKey + partyKey, timeSpentMillis);
+            }
+            mStartTimeSpentMillis = -1;
+            mCurrentSchemeForTimeSpent = null;
+            mOnFirstPartyWebPage = false;
+        }
+    }
+
     @Override
     public void didFinishNavigation(NavigationHandle navigation) {
-        String url = navigation.getUrl();
-        if (navigation.errorCode() != 0 && !navigation.isDownload()) {
-            didFailLoad(navigation.isInMainFrame(), navigation.errorCode(),
-                    navigation.errorDescription(), url);
+        String url = navigation.getUrl().getPossiblyInvalidSpec();
+        if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
+            processFailedLoad(
+                    navigation.isInPrimaryMainFrame(), navigation.errorCode(), navigation.getUrl());
+        }
+
+        // Time spent on page is measured from navigation commit to the start of the next
+        // navigation.
+        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+            if (navigation.hasCommitted()) {
+                mStartTimeSpentMillis = SystemClock.uptimeMillis();
+                mCurrentSchemeForTimeSpent =
+                        navigation.getUrl().getScheme().toLowerCase(Locale.ROOT);
+                mOnFirstPartyWebPage = false;
+
+                if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_LOG_FIRST_PARTY_PAGE_TIME_SPENT)
+                        && (UrlConstants.HTTP_SCHEME.equals(mCurrentSchemeForTimeSpent)
+                                || UrlConstants.HTTPS_SCHEME.equals(mCurrentSchemeForTimeSpent))) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+                    if (PackageManagerUtils.resolveActivity(
+                                intent, PackageManager.MATCH_DEFAULT_ONLY)
+                            != null) {
+                        mOnFirstPartyWebPage = true;
+                    }
+                }
+
+            } else {
+                mStartTimeSpentMillis = -1;
+                mCurrentSchemeForTimeSpent = null;
+                mOnFirstPartyWebPage = false;
+            }
         }
 
         if (!navigation.hasCommitted()) return;
 
         mCommittedNavigation = true;
 
-        if (!navigation.isInMainFrame()) return;
+        if (!navigation.isInPrimaryMainFrame()) return;
 
         AwContentsClient client = mAwContentsClient.get();
         if (client != null) {

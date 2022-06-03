@@ -11,13 +11,13 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/watchdog.h"
 #include "chrome/chrome_cleaner/cleaner/cleaner.h"
@@ -174,10 +174,10 @@ class MainController : public ComponentManagerDelegate,
   // dumped to disk, |tag| will be appended to the filename. If |quit_when_done|
   // is true, then the current UI message loop will be told to QuitWhenIdle
   // after all the log uploads have completed.
-  void UploadLogs(const base::string16& tag, bool quit_when_done);
+  void UploadLogs(const std::wstring& tag, bool quit_when_done);
 
   // Handles the completion of a logs upload.
-  void LogsUploadComplete(const base::string16& tag, bool success);
+  void LogsUploadComplete(const std::wstring& tag, bool success);
 
   // Logs |exit_code| and any other metrics that should be saved on an early
   // exit, such as a watchdog timeout or sandbox error.
@@ -208,7 +208,7 @@ class MainController : public ComponentManagerDelegate,
   ResultCode result_code_;
 
   // Tracks the progress of multiple logs uploads.
-  std::map<base::string16, bool> logs_upload_complete_;
+  std::map<std::wstring, bool> logs_upload_complete_;
 
   // Whether we should quit after all the logs uploads are done or not.
   bool quit_when_logs_upload_complete_ = false;

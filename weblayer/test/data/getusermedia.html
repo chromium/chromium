@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <script>
+      (async () => {
+          let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+          audio.srcObject = new MediaStream(stream.getAudioTracks());
+          video.srcObject = new MediaStream(stream.getVideoTracks());
+      })();
+    </script>
+  </head>
+  <body>
+    <audio id="audio" controls autoplay></audio><br>
+    <video id="video" width="160" height="120" controls autoplay></video>
+    <div id="div"></div>
+  </body>
+</html>

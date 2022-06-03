@@ -21,7 +21,7 @@ namespace blink {
 class WebNodeTest : public PageTestBase {
  protected:
   void SetInnerHTML(const String& html) {
-    GetDocument().documentElement()->SetInnerHTMLFromString(html);
+    GetDocument().documentElement()->setInnerHTML(html);
   }
 
   WebNode Root() { return WebNode(GetDocument().documentElement()); }
@@ -67,7 +67,7 @@ TEST_F(WebNodeSimTest, IsFocused) {
                                      "text/css");
 
   LoadURL("https://example.com/test.html");
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   main_resource.Write(R"HTML(
     <!DOCTYPE html>
@@ -79,18 +79,11 @@ TEST_F(WebNodeSimTest, IsFocused) {
 
   WebNode input_node(GetDocument().getElementById("focusable"));
   EXPECT_FALSE(input_node.IsFocusable());
-  EXPECT_EQ(!RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled(),
-            GetDocument().GetStyleEngine().HasPendingRenderBlockingSheets());
+  EXPECT_TRUE(GetDocument().GetStyleEngine().HasPendingRenderBlockingSheets());
 
   main_resource.Finish();
   css_resource.Complete("dummy {}");
   test::RunPendingTasks();
-
-  if (RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
-    // Need to re-initialize the WebNode since it was null on construction.
-    EXPECT_TRUE(input_node.IsNull());
-    input_node = GetDocument().getElementById("focusable");
-  }
   EXPECT_TRUE(input_node.IsFocusable());
 }
 

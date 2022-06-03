@@ -8,19 +8,19 @@
 #include <set>
 #include <string>
 
-#include "google_apis/gaia/core_account_id.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace extensions {
 
 struct ExtensionTokenKey {
   ExtensionTokenKey(const std::string& extension_id,
-                    const CoreAccountId& account_id,
+                    const CoreAccountInfo& account_info,
                     const std::set<std::string>& scopes);
   ExtensionTokenKey(const ExtensionTokenKey& other);
   ~ExtensionTokenKey();
   bool operator<(const ExtensionTokenKey& rhs) const;
   std::string extension_id;
-  CoreAccountId account_id;
+  CoreAccountInfo account_info;
   std::set<std::string> scopes;
 };
 

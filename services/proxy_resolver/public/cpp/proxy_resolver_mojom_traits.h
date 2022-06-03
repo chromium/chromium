@@ -12,7 +12,7 @@
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom-shared.h"
 
 namespace net {
 class ProxyInfo;

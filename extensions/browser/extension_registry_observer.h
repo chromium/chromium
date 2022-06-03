@@ -6,15 +6,15 @@
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRY_OBSERVER_H_
 
 #include "extensions/browser/uninstall_reason.h"
-#include "extensions/common/extension.h"
 
 namespace content {
 class BrowserContext;
 }
 
 namespace extensions {
-
+class Extension;
 class ExtensionRegistry;
+enum class UnloadedExtensionReason;
 
 // Observer for ExtensionRegistry. Exists in a separate header file to reduce
 // the include file burden for typical clients of ExtensionRegistry.
@@ -63,7 +63,7 @@ class ExtensionRegistryObserver {
 
   // Called after an extension is unloaded. The extension no longer exists in
   // the set |ExtensionRegistry::enabled_extensions()|, but it can still be a
-  // member of one of the other sets, like disabled, blacklisted or terminated.
+  // member of one of the other sets, like disabled, blocklisted or terminated.
   virtual void OnExtensionUnloaded(content::BrowserContext* browser_context,
                                    const Extension* extension,
                                    UnloadedExtensionReason reason) {}
@@ -73,7 +73,7 @@ class ExtensionRegistryObserver {
   // the name of the extension's previous version.
   // The ExtensionRegistry will not be tracking |extension| at the time this
   // event is fired, but will be immediately afterwards (note: not necessarily
-  // enabled; it might be installed in the disabled or even blacklisted sets,
+  // enabled; it might be installed in the disabled or even blocklisted sets,
   // for example).
   // Note that it's much more common to care about extensions being loaded
   // (OnExtensionLoaded).
@@ -99,6 +99,11 @@ class ExtensionRegistryObserver {
   virtual void OnExtensionUninstalled(content::BrowserContext* browser_context,
                                       const Extension* extension,
                                       UninstallReason reason) {}
+
+  // Called after the uninstallation of an extension is denied.
+  virtual void OnExtensionUninstallationDenied(
+      content::BrowserContext* browser_context,
+      const Extension* extension) {}
 
   // Notifies observers that the observed object is going away.
   virtual void OnShutdown(ExtensionRegistry* registry) {}

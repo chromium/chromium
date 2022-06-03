@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/verified_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_paths.h"
@@ -25,14 +25,10 @@ namespace {
 const char kContentVerifierDirectory[] = "content_verifier/";
 const char kPublicKeyPem[] = "public_key.pem";
 
-// Whether or not dot and space suffixes of filename are ignored in the
-// current OS.
-const bool kDotSpaceSuffixIgnored =
-#if defined(OS_WIN)
-    true;
-#else
-    false;
-#endif  // defined(OS_WIN)
+constexpr bool kIsFileAccessCaseInsensitive =
+    !content_verifier_utils::IsFileAccessCaseSensitive();
+constexpr bool kIsDotSpaceSuffixIgnored =
+    content_verifier_utils::IsDotSpaceFilenameSuffixIgnored();
 
 std::string DecodeBase64Url(const std::string& encoded) {
   std::string decoded;
@@ -73,8 +69,8 @@ std::unique_ptr<VerifiedContents> CreateTestVerifiedContents(
 
   base::FilePath verified_contents_path =
       path.AppendASCII(verified_contents_filename);
-  return VerifiedContents::Create(base::as_bytes(base::make_span(public_key)),
-                                  verified_contents_path);
+  return VerifiedContents::CreateFromFile(
+      base::as_bytes(base::make_span(public_key)), verified_contents_path);
 }
 
 }  // namespace
@@ -108,51 +104,81 @@ TEST(VerifiedContents, Simple) {
   base::FilePath nonexistent = base::FilePath::FromUTF8Unsafe("nonexistent");
   EXPECT_FALSE(contents.HasTreeHashRoot(nonexistent));
 
+  std::map<std::string, std::string> hashes = {
+      {"lowercase.html", "HpLotLGCmmOdKYvGQmD3OkXMKGs458dbanY4WcfAZI0"},
+      {"ALLCAPS.html", "bl-eV8ENowvtw6P14D4X1EP0mlcMoG-_aOx5o9C1364"},
+      {"MixedCase.Html", "zEAO9FwciigMNy3NtU2XNb-dS5TQMmVNx0T9h7WvXbQ"},
+      {"mIxedcAse.Html", "nKRqUcJg1_QZWAeCb4uFd5ouC0McuGavKp8TFDRqBgg"},
+  };
+
+  // Resource is "lowercase.html".
   EXPECT_TRUE(contents.TreeHashRootEquals(
       base::FilePath::FromUTF8Unsafe("lowercase.html"),
-      DecodeBase64Url("HpLotLGCmmOdKYvGQmD3OkXMKGs458dbanY4WcfAZI0")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("Lowercase.Html"),
-      DecodeBase64Url("HpLotLGCmmOdKYvGQmD3OkXMKGs458dbanY4WcfAZI0")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("LOWERCASE.HTML"),
-      DecodeBase64Url("HpLotLGCmmOdKYvGQmD3OkXMKGs458dbanY4WcfAZI0")));
+      DecodeBase64Url(hashes["lowercase.html"])));
+  // Only case-insensitive systems should be able to get hashes with incorrect
+  // case.
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("Lowercase.Html"),
+                DecodeBase64Url(hashes["lowercase.html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("LOWERCASE.HTML"),
+                DecodeBase64Url(hashes["lowercase.html"])));
 
+  // Resource is "ALLCAPS.HTML"
   EXPECT_TRUE(contents.TreeHashRootEquals(
       base::FilePath::FromUTF8Unsafe("ALLCAPS.HTML"),
-      DecodeBase64Url("bl-eV8ENowvtw6P14D4X1EP0mlcMoG-_aOx5o9C1364")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("AllCaps.Html"),
-      DecodeBase64Url("bl-eV8ENowvtw6P14D4X1EP0mlcMoG-_aOx5o9C1364")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("allcaps.html"),
-      DecodeBase64Url("bl-eV8ENowvtw6P14D4X1EP0mlcMoG-_aOx5o9C1364")));
+      DecodeBase64Url(hashes["ALLCAPS.html"])));
+  // Only case-insensitive systems should be able to get hashes with incorrect
+  // case.
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("AllCaps.Html"),
+                DecodeBase64Url(hashes["ALLCAPS.html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("allcaps.html"),
+                DecodeBase64Url(hashes["ALLCAPS.html"])));
 
+  // Resources are "MixedCase.Html", "mIxedcAse.Html".
   EXPECT_TRUE(contents.TreeHashRootEquals(
       base::FilePath::FromUTF8Unsafe("MixedCase.Html"),
-      DecodeBase64Url("zEAO9FwciigMNy3NtU2XNb-dS5TQMmVNx0T9h7WvXbQ")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("MIXEDCASE.HTML"),
-      DecodeBase64Url("zEAO9FwciigMNy3NtU2XNb-dS5TQMmVNx0T9h7WvXbQ")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("mixedcase.html"),
-      DecodeBase64Url("zEAO9FwciigMNy3NtU2XNb-dS5TQMmVNx0T9h7WvXbQ")));
+      DecodeBase64Url(hashes["MixedCase.Html"])));
   EXPECT_TRUE(contents.TreeHashRootEquals(
       base::FilePath::FromUTF8Unsafe("mIxedcAse.Html"),
-      DecodeBase64Url("zEAO9FwciigMNy3NtU2XNb-dS5TQMmVNx0T9h7WvXbQ")));
-
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("mIxedcAse.Html"),
-      DecodeBase64Url("nKRqUcJg1_QZWAeCb4uFd5ouC0McuGavKp8TFDRqBgg")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("MIXEDCASE.HTML"),
-      DecodeBase64Url("nKRqUcJg1_QZWAeCb4uFd5ouC0McuGavKp8TFDRqBgg")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("mixedcase.html"),
-      DecodeBase64Url("nKRqUcJg1_QZWAeCb4uFd5ouC0McuGavKp8TFDRqBgg")));
-  EXPECT_TRUE(contents.TreeHashRootEquals(
-      base::FilePath::FromUTF8Unsafe("MixedCase.Html"),
-      DecodeBase64Url("nKRqUcJg1_QZWAeCb4uFd5ouC0McuGavKp8TFDRqBgg")));
+      DecodeBase64Url(hashes["mIxedcAse.Html"])));
+  // In case-sensitive systems, swapping hashes within MixedCase.Html and
+  // mIxedcAse.Html always would mismatch hash, but it matches for
+  // case-insensitive systems.
+  // TODO(https:://crbug.com/1040702): Fix if this becomes a problem.
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("mIxedcAse.Html"),
+                DecodeBase64Url(hashes["MixedCase.Html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("MixedCase.Html"),
+                DecodeBase64Url(hashes["mIxedcAse.Html"])));
+  // Continuing from above, in case-insensitive systems, there is non
+  // deterministic behavior here, e.g. MIXEDCASE.HTML will match both hashes of
+  // MixedCase.Html and mIxedcAse.Html.
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("MIXEDCASE.HTML"),
+                DecodeBase64Url(hashes["MixedCase.Html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("MIXEDCASE.HTML"),
+                DecodeBase64Url(hashes["mIxedcAse.Html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("mixedcase.html"),
+                DecodeBase64Url(hashes["MixedCase.Html"])));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            contents.TreeHashRootEquals(
+                base::FilePath::FromUTF8Unsafe("mixedcase.html"),
+                DecodeBase64Url(hashes["mIxedcAse.Html"])));
 
   // Regression test for https://crbug.com/776609.
   EXPECT_FALSE(contents.TreeHashRootEquals(
@@ -235,17 +261,18 @@ TEST(VerifiedContents, DotSpaceSuffixedFiles) {
 
     // Verify that the discovery of tree hashes is also correct when the
     // filenames are appended with dot and space characters:
-    //   - they should still succeed on windows (kDotSpaceSuffixIgnored = true).
-    //   - they should fail otherwise (kDotSpaceSuffixIgnored = false).
+    //   - they should still succeed on windows (kIsDotSpaceSuffixIgnored
+    //     = true).
+    //   - they should fail otherwise (kIsDotSpaceSuffixIgnored = false).
     for (const std::string& suffix : kSuffixes) {
       std::string path_with_suffix = std::string(info.filename).append(suffix);
-      EXPECT_EQ(kDotSpaceSuffixIgnored, has_tree_hash_root(path_with_suffix));
+      EXPECT_EQ(kIsDotSpaceSuffixIgnored, has_tree_hash_root(path_with_suffix));
     }
   }
 
   // For background.js, additionally verify that reading the file with and
   // without the suffixes described above matches our expectations, taking
-  // kDotSpaceSuffixIgnored into account.
+  // kIsDotSpaceSuffixIgnored into account.
   const char* kBackgroundJSFilename = "background.js";
   const char* kBackgroundJSContents = "console.log('hello');\n";
   base::FilePath test_dir = GetTestDir("dot_space_suffix");
@@ -264,9 +291,9 @@ TEST(VerifiedContents, DotSpaceSuffixedFiles) {
     for (const std::string& suffix : kSuffixes) {
       base::FilePath background_js_suffix_path = test_dir.AppendASCII(
           std::string(kBackgroundJSFilename).append(suffix));
-      EXPECT_EQ(kDotSpaceSuffixIgnored,
+      EXPECT_EQ(kIsDotSpaceSuffixIgnored,
                 base::PathExists(background_js_suffix_path));
-      if (kDotSpaceSuffixIgnored) {
+      if (kIsDotSpaceSuffixIgnored) {
         std::string background_js_suffix_contents;
         EXPECT_TRUE(base::ReadFileToString(background_js_suffix_path,
                                            &background_js_suffix_contents));
@@ -300,24 +327,26 @@ TEST(VerifiedContents, VerifiedContentsFileContainsDotSuffixedFilename) {
         DecodeBase64Url(expected_hash));
   };
 
-  // The original key "doT.html.", and its case variants should succeed.
+  // The original key "doT.html." should always succeed.
   EXPECT_TRUE(has_tree_hash_root("doT.html."));
   EXPECT_TRUE(tree_hash_root_equals(
       "doT.html.", "jEsJEk-0azFYx7G91rSUPuzPBXp95863lG4MDwZcSog"));
-  EXPECT_TRUE(has_tree_hash_root("dot.html."));
-  EXPECT_TRUE(tree_hash_root_equals(
-      "dot.html.", "jEsJEk-0azFYx7G91rSUPuzPBXp95863lG4MDwZcSog"));
+  // Its case variants would only succeed for case-insensitive system.
+  EXPECT_EQ(kIsFileAccessCaseInsensitive, has_tree_hash_root("dot.html."));
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            tree_hash_root_equals(
+                "dot.html.", "jEsJEk-0azFYx7G91rSUPuzPBXp95863lG4MDwZcSog"));
 
-  // Keys with dot stripped succeeds if kDotSpaceSuffixIgnored is true.
+  // Keys with dot stripped succeeds if kIsDotSpaceSuffixIgnored is true.
   {
     const char* kKey = "dot.html";
-    EXPECT_EQ(kDotSpaceSuffixIgnored, has_tree_hash_root(kKey));
-    EXPECT_EQ(kDotSpaceSuffixIgnored,
+    EXPECT_EQ(kIsDotSpaceSuffixIgnored, has_tree_hash_root(kKey));
+    EXPECT_EQ(kIsDotSpaceSuffixIgnored,
               tree_hash_root_equals(
                   kKey, "jEsJEk-0azFYx7G91rSUPuzPBXp95863lG4MDwZcSog"));
   }
 
-  // Also, adding (.| )+ suffix would succeed if kDotSpaceSuffixIgnored is
+  // Also, adding (.| )+ suffix would succeed if kIsDotSpaceSuffixIgnored is
   // true. This is already part of VerifiedContents.DotSpaceSuffixedFiles test.
 }
 

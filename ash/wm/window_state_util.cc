@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_state_util.h"
 
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -15,8 +16,11 @@ void ToggleFullScreen(WindowState* window_state,
   // Window which cannot be maximized should not be full screen'ed.
   // It can, however, be restored if it was full screen'ed.
   bool is_fullscreen = window_state->IsFullscreen();
-  if (!is_fullscreen && !window_state->CanMaximize())
+  if (!is_fullscreen && !window_state->CanMaximize()) {
+    // If `window` cannot be maximized, then do a window bounce animation.
+    wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     return;
+  }
 
   if (delegate && delegate->ToggleFullscreen(window_state))
     return;

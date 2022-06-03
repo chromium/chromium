@@ -78,7 +78,8 @@ class AudioParamTimeline {
   std::tuple<bool, float> ValueForContextTime(AudioDestinationHandler&,
                                               float default_value,
                                               float min_value,
-                                              float max_value);
+                                              float max_value,
+                                              unsigned render_quantum_frames);
 
   // Given the time range in frames, calculates parameter values into the values
   // buffer and returns the last parameter value calculated for "values" or the
@@ -95,12 +96,15 @@ class AudioParamTimeline {
                             double sample_rate,
                             double control_rate,
                             float min_value,
-                            float max_value);
+                            float max_value,
+                            unsigned render_quantum_frames);
 
   // Returns true if the AudioParam timeline needs to run in this
   // rendering quantum.  This means some automation is already running
   // or is scheduled to run in the current rendering quantuym.
-  bool HasValues(size_t current_frame, double sample_rate) const;
+  bool HasValues(size_t current_frame,
+                 double sample_rate,
+                 unsigned render_quantum_frames) const;
 
   float SmoothedValue() { return smoothed_value_; }
   void SetSmoothedValue(float v) { smoothed_value_ = v; }
@@ -306,7 +310,8 @@ class AudioParamTimeline {
                                 float* values,
                                 unsigned number_of_values,
                                 double sample_rate,
-                                double control_rate);
+                                double control_rate,
+                                unsigned render_quantum_frames);
 
   // Produce a nice string describing the event in human-readable form.
   String EventToString(const ParamEvent&) const;
@@ -367,7 +372,8 @@ class AudioParamTimeline {
                                 double sample_rate,
                                 float& default_value,
                                 unsigned number_of_values,
-                                float* values);
+                                float* values,
+                                unsigned render_quantum_frames);
 
   // Handle processing of CancelValue event. If cancellation happens, value2,
   // time2, and nextEventType will be updated with the new value due to

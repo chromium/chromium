@@ -26,6 +26,10 @@ class WebViewStrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
       WebViewBrowserState* browser_state);
   static WebViewStrikeDatabaseFactory* GetInstance();
 
+  WebViewStrikeDatabaseFactory(const WebViewStrikeDatabaseFactory&) = delete;
+  WebViewStrikeDatabaseFactory& operator=(const WebViewStrikeDatabaseFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<WebViewStrikeDatabaseFactory>;
 
@@ -35,8 +39,6 @@ class WebViewStrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewStrikeDatabaseFactory);
 };
 
 }  // namespace ios_web_view

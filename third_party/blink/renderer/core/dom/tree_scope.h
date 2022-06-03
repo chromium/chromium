@@ -45,6 +45,7 @@ class Element;
 class HTMLMapElement;
 class HitTestResult;
 class IdTargetObserverRegistry;
+class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
 
@@ -102,12 +103,14 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   Element* AdjustedFocusedElementInternal(const Element& target) const;
 
-  // Find first anchor with the given name.
+  // Find first anchor which matches the given URL fragment.
   // First searches for an element with the given ID, but if that fails, then
   // looks for an anchor with the given name. ID matching is always case
   // sensitive, but Anchor name matching is case sensitive in strict mode and
   // not case sensitive in quirks mode for historical compatibility reasons.
-  Element* FindAnchor(const String& name);
+  // First searches for the raw fragment if not an SVG document, then searches
+  // with the URL decoded fragment.
+  Node* FindAnchor(const String& fragment);
 
   // Used by the basic DOM mutation methods (e.g., appendChild()).
   void AdoptIfNeeded(Node&);
@@ -130,7 +133,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   Element* GetElementByAccessKey(const String& key) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   ScopedStyleResolver* GetScopedStyleResolver() const {
     return scoped_style_resolver_.Get();
@@ -148,7 +151,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
  protected:
   TreeScope(ContainerNode&, Document&);
-  TreeScope(Document&);
+  explicit TreeScope(Document&);
   virtual ~TreeScope();
 
   void ResetTreeScope();
@@ -158,6 +161,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
  private:
   Element* HitTestPointInternal(Node*, HitTestPointType) const;
+  Element* FindAnchorWithName(const String& name);
 
   Member<ContainerNode> root_node_;
   Member<Document> document_;

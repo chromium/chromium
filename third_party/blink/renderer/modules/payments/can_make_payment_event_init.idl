@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/w3c/payment-handler/pull/170
+// https://w3c.github.io/payment-handler/#canmakepaymenteventinit-dictionary
 
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
     USVString topOrigin;

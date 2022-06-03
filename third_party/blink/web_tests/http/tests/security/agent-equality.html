@@ -164,9 +164,8 @@ async_test(t => {
       if (evt.data[0] !== 'same-origin detach test') {
         return;
       }
-      assert_equals(evt.data.length, 4);
+      assert_equals(evt.data.length, 3);
       assert_equals(evt.data[1], evt.data[2]);
-      assert_equals(evt.data[1], evt.data[3]);
       t.done();
     }));
 

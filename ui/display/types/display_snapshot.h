@@ -12,13 +12,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_static_metadata.h"
 
 namespace display {
 
@@ -29,37 +30,62 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
  public:
   using DisplayModeList = std::vector<std::unique_ptr<const DisplayMode>>;
 
-  DisplaySnapshot(int64_t display_id,
-                  const gfx::Point& origin,
-                  const gfx::Size& physical_size,
-                  DisplayConnectionType type,
-                  bool is_aspect_preserving_scaling,
-                  bool has_overscan,
-                  bool has_color_correction_matrix,
-                  bool color_correction_in_linear_space,
-                  const gfx::ColorSpace& color_space,
-                  uint32_t bits_per_channel,
-                  std::string display_name,
-                  const base::FilePath& sys_path,
-                  DisplayModeList modes,
-                  PanelOrientation panel_orientation,
-                  const std::vector<uint8_t>& edid,
-                  const DisplayMode* current_mode,
-                  const DisplayMode* native_mode,
-                  int64_t product_code,
-                  int32_t year_of_manufacture,
-                  const gfx::Size& maximum_cursor_size);
+  DisplaySnapshot(
+      int64_t display_id,
+      int64_t port_display_id,
+      int64_t edid_display_id,
+      uint16_t connector_index,
+      const gfx::Point& origin,
+      const gfx::Size& physical_size,
+      DisplayConnectionType type,
+      uint64_t base_connector_id,
+      const std::vector<uint64_t>& path_topology,
+      bool is_aspect_preserving_scaling,
+      bool has_overscan,
+      PrivacyScreenState privacy_screen_state,
+      bool has_color_correction_matrix,
+      bool color_correction_in_linear_space,
+      const gfx::ColorSpace& color_space,
+      uint32_t bits_per_channel,
+      const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
+      std::string display_name,
+      const base::FilePath& sys_path,
+      DisplayModeList modes,
+      PanelOrientation panel_orientation,
+      const std::vector<uint8_t>& edid,
+      const DisplayMode* current_mode,
+      const DisplayMode* native_mode,
+      int64_t product_code,
+      int32_t year_of_manufacture,
+      const gfx::Size& maximum_cursor_size);
+
+  DisplaySnapshot(const DisplaySnapshot&) = delete;
+  DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
+
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
+
+  // port_display_id() and edid_display_id() are required for
+  // backward-compatibility and will eventually be removed once the migration to
+  // EDID-based display IDs is completed. See http://b/193060019.
+  int64_t port_display_id() const { return port_display_id_; }
+  int64_t edid_display_id() const { return edid_display_id_; }
+
+  uint16_t connector_index() const { return connector_index_; }
   const gfx::Point& origin() const { return origin_; }
   void set_origin(const gfx::Point& origin) { origin_ = origin; }
   const gfx::Size& physical_size() const { return physical_size_; }
   DisplayConnectionType type() const { return type_; }
+  uint64_t base_connector_id() const { return base_connector_id_; }
+  const std::vector<uint64_t>& path_topology() const { return path_topology_; }
   bool is_aspect_preserving_scaling() const {
     return is_aspect_preserving_scaling_;
   }
   bool has_overscan() const { return has_overscan_; }
+  PrivacyScreenState privacy_screen_state() const {
+    return privacy_screen_state_;
+  }
   bool has_color_correction_matrix() const {
     return has_color_correction_matrix_;
   }
@@ -67,8 +93,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
     return color_correction_in_linear_space_;
   }
   const gfx::ColorSpace& color_space() const { return color_space_; }
-  void reset_color_space() { color_space_ = gfx::ColorSpace(); }
   uint32_t bits_per_channel() const { return bits_per_channel_; }
+  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+    return hdr_static_metadata_;
+  }
   const std::string& display_name() const { return display_name_; }
   const base::FilePath& sys_path() const { return sys_path_; }
   const DisplayModeList& modes() const { return modes_; }
@@ -95,9 +123,21 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Returns the buffer format to be used for the primary plane buffer.
   static gfx::BufferFormat PrimaryFormat();
 
+  // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
+  // is not plumbed via mojom to limit and control usage across processes.
+  void AddIndexToDisplayId();
+
  private:
   // Display id for this output.
   const int64_t display_id_;
+  // Port-based display ID.
+  const int64_t port_display_id_;
+  // EDID-based display ID.
+  int64_t edid_display_id_;
+
+  // Used by AddIndexToDisplayId() to resolve display ID collisions when two
+  // (or more) displays produce identical IDs due to incomplete EDIDs.
+  const uint16_t connector_index_;
 
   // Display's origin on the framebuffer.
   gfx::Point origin_;
@@ -106,9 +146,58 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   const DisplayConnectionType type_;
 
+  // The next two private members represent the connection path between the
+  // source device and this display. Consider the following three-display setup:
+  // +-------------+
+  // | Source      |    +-------------+
+  // | (Device)    |    | BranchX     |
+  // |             |    | (MST)       |
+  // |       [conn6]--->|       [port1]--->DisplayA
+  // +-------------+    |             |
+  //                    |             |    +-------------+
+  //                    |             |    | BranchY     |
+  //                    |             |    | (MST)       |
+  //                    |       [port2]--->|       [port1]----->DisplayB
+  //                    +-------------+    |             |
+  //                                       |       [port2]----->DisplayC
+  //                                       +-------------+
+  // [conn6]: is the root of the topology tree (a.k.a. the base connector),
+  // which maps to a physical connector on the device. This value can be used to
+  // determine if two or more external displays are sharing the same physical
+  // port.
+  // Important: Do not confuse this value with a display's connector ID!
+  // The base connector will be listed as disconnected when a branch device is
+  // attached to it to signal that it is not available for use, while new
+  // connector IDs are spawned for connected monitors down the path. A display's
+  // connector ID will be equal to the base connector ID only when the display
+  // is connected directly to the source device.
+  // [BranchX|port1]: is an output port to which DisplayA is connected.
+  // [BranchX|port2]: is an output port to which BranchY is connected.
+  // The ports on BranchY follow the same logic. Notice that port numbers across
+  // branch devices are NOT unique.
+  //
+  // Example 1: if |this| represents DisplayB:
+  // |base_connector_id_| == 6
+  // |path_topology_| == {2, 1}
+  // |base_connector_id_| != |this| connector id.
+  //
+  // Example 2: if |this| represents a display that is connected directly to the
+  // source device above:
+  // |base_connector_id_| == 6
+  // |path_topology_| == {}
+  // |base_connector_id_| == |this| connector id.
+  //
+  // The path is in a failed/error state if |base_connector_id_| == 0. This
+  // indicates that the display is connected to one or more branch devices, but
+  // the path could not be parsed.
+  const uint64_t base_connector_id_;
+  const std::vector<uint64_t> path_topology_;
+
   const bool is_aspect_preserving_scaling_;
 
   const bool has_overscan_;
+
+  const PrivacyScreenState privacy_screen_state_;
 
   // Whether this display has advanced color correction available.
   const bool has_color_correction_matrix_;
@@ -116,9 +205,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // instead of gamma compressed one.
   const bool color_correction_in_linear_space_;
 
-  gfx::ColorSpace color_space_;
-
+  const gfx::ColorSpace color_space_;
   uint32_t bits_per_channel_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
 
   const std::string display_name_;
 
@@ -146,9 +235,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplaySnapshot);
 };
 
 }  // namespace display

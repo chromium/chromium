@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * A network client that returns configurable responses

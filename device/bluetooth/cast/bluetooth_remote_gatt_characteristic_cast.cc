@@ -8,12 +8,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/containers/queue.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
+#include "chromecast/public/bluetooth/gatt.h"
 #include "device/bluetooth/cast/bluetooth_remote_gatt_descriptor_cast.h"
 #include "device/bluetooth/cast/bluetooth_remote_gatt_service_cast.h"
 #include "device/bluetooth/cast/bluetooth_utils.h"
@@ -133,15 +134,39 @@ BluetoothRemoteGattService* BluetoothRemoteGattCharacteristicCast::GetService()
 }
 
 void BluetoothRemoteGattCharacteristicCast::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   remote_characteristic_->Read(base::BindOnce(
       &BluetoothRemoteGattCharacteristicCast::OnReadRemoteCharacteristic,
-      weak_factory_.GetWeakPtr(), std::move(callback),
-      std::move(error_callback)));
+      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BluetoothRemoteGattCharacteristicCast::WriteRemoteCharacteristic(
+    const std::vector<uint8_t>& value,
+    WriteType write_type,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  using ChromecastWriteType = chromecast::bluetooth_v2_shlib::Gatt::WriteType;
+
+  ChromecastWriteType chromecast_write_type;
+  switch (write_type) {
+    case WriteType::kWithResponse:
+      chromecast_write_type = ChromecastWriteType::WRITE_TYPE_DEFAULT;
+      break;
+    case WriteType::kWithoutResponse:
+      chromecast_write_type = ChromecastWriteType::WRITE_TYPE_NO_RESPONSE;
+      break;
+  }
+
+  remote_characteristic_->WriteAuth(
+      chromecast::bluetooth_v2_shlib::Gatt::Client::AUTH_REQ_NONE,
+      chromecast_write_type, value,
+      base::BindOnce(
+          &BluetoothRemoteGattCharacteristicCast::OnWriteRemoteCharacteristic,
+          weak_factory_.GetWeakPtr(), value, std::move(callback),
+          std::move(error_callback)));
+}
+
+void BluetoothRemoteGattCharacteristicCast::DeprecatedWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -187,15 +212,15 @@ void BluetoothRemoteGattCharacteristicCast::UnsubscribeFromNotifications(
 
 void BluetoothRemoteGattCharacteristicCast::OnReadRemoteCharacteristic(
     ValueCallback callback,
-    ErrorCallback error_callback,
     bool success,
     const std::vector<uint8_t>& result) {
   if (success) {
     value_ = result;
-    std::move(callback).Run(result);
+    std::move(callback).Run(/*error_code=*/absl::nullopt, result);
     return;
   }
-  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
+  std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+                          /*value=*/std::vector<uint8_t>());
 }
 
 void BluetoothRemoteGattCharacteristicCast::OnWriteRemoteCharacteristic(

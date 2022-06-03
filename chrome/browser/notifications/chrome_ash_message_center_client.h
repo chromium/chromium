@@ -9,24 +9,34 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_platform_bridge_chromeos.h"
+#include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chrome/browser/notifications/notifier_controller.h"
 
-// This class serves as Chrome's AshMessageCenterClient, as well as the
-// NotificationPlatformBridge for ChromeOS. It dispatches notifications to Ash
+// Helper for NotificationPlatformBridgeChromeOs. Sends notifications to Ash
 // and handles interactions with those notifications, plus it keeps track of
 // NotifierControllers to provide notifier settings information to Ash (visible
-// in NotifierSettingsView).
-class ChromeAshMessageCenterClient : public ash::NotifierSettingsController,
+// in NotifierSettingsView). With Lacros, runs in the ash-chrome process.
+class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
+                                     public ash::NotifierSettingsController,
                                      public NotifierController::Observer {
  public:
   explicit ChromeAshMessageCenterClient(
       NotificationPlatformBridgeDelegate* delegate);
-
+  ChromeAshMessageCenterClient(const ChromeAshMessageCenterClient&) = delete;
+  ChromeAshMessageCenterClient& operator=(const ChromeAshMessageCenterClient&) =
+      delete;
   ~ChromeAshMessageCenterClient() override;
 
-  void Display(const message_center::Notification& notification);
-  void Close(const std::string& notification_id);
+  // NotificationPlatformBridge:
+  void Display(NotificationHandler::Type notification_type,
+               Profile* profile,
+               const message_center::Notification& notification,
+               std::unique_ptr<NotificationCommon::Metadata> metadata) override;
+  void Close(Profile* profile, const std::string& notification_id) override;
+  void GetDisplayed(Profile* profile,
+                    GetDisplayedNotificationsCallback callback) const override;
+  void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
+  void DisplayServiceShutDown(Profile* profile) override {}
 
   // ash::NotifierSettingsController:
   void GetNotifiers() override;
@@ -53,8 +63,6 @@ class ChromeAshMessageCenterClient : public ash::NotifierSettingsController,
   base::ObserverList<ash::NotifierSettingsObserver> notifier_observers_;
 
   base::WeakPtrFactory<ChromeAshMessageCenterClient> weak_ptr_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAshMessageCenterClient);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_CHROME_ASH_MESSAGE_CENTER_CLIENT_H_

@@ -1,0 +1,125 @@
+diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
+index 4865b3fd02e2..c292b0e00285 100644
+--- a/third_party/unrar/src/secpassword.cpp
++++ b/third_party/unrar/src/secpassword.cpp
+@@ -25,6 +25,7 @@ class CryptLoader
+     }
+     ~CryptLoader()
+     {
++      // We need to call FreeLibrary when RAR is exiting.
+       if (hCrypt!=NULL)
+         FreeLibrary(hCrypt);
+       hCrypt=NULL;
+@@ -46,12 +47,14 @@ class CryptLoader
+       }
+     }
+ 
++    static CryptLoader& GetInstance() {
++      static CryptLoader cryptLoader;
++      return cryptLoader;
++    }
++
+     CRYPTPROTECTMEMORY pCryptProtectMemory;
+     CRYPTUNPROTECTMEMORY pCryptUnprotectMemory;
+ };
+-
+-// We need to call FreeLibrary when RAR is exiting.
+-CryptLoader GlobalCryptLoader;
+ #endif
+ 
+ SecPassword::SecPassword()
+@@ -169,16 +172,15 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
+   // increases data size not allowing in place conversion.
+ #if defined(_WIN_ALL)
+   // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
+-  if (GlobalCryptLoader.pCryptProtectMemory==NULL)
+-    GlobalCryptLoader.Load();
++  if (CryptLoader::GetInstance().pCryptProtectMemory == NULL)
++    CryptLoader::GetInstance().Load();
+   size_t Aligned=DataSize-DataSize%CRYPTPROTECTMEMORY_BLOCK_SIZE;
+   DWORD Flags=CrossProcess ? CRYPTPROTECTMEMORY_CROSS_PROCESS : CRYPTPROTECTMEMORY_SAME_PROCESS;
+   if (Encode)
+   {
+-    if (GlobalCryptLoader.pCryptProtectMemory!=NULL)
+-    {
+-      if (!GlobalCryptLoader.pCryptProtectMemory(Data,DWORD(Aligned),Flags))
+-      {
++    if (CryptLoader::GetInstance().pCryptProtectMemory != NULL) {
++      if (!CryptLoader::GetInstance().pCryptProtectMemory(Data, DWORD(Aligned),
++                                                          Flags)) {
+         ErrHandler.GeneralErrMsg(L"CryptProtectMemory failed");
+         ErrHandler.SysErrMsg();
+         ErrHandler.Exit(RARX_FATAL);
+@@ -188,10 +190,9 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
+   }
+   else
+   {
+-    if (GlobalCryptLoader.pCryptUnprotectMemory!=NULL)
+-    {
+-      if (!GlobalCryptLoader.pCryptUnprotectMemory(Data,DWORD(Aligned),Flags))
+-      {
++    if (CryptLoader::GetInstance().pCryptUnprotectMemory != NULL) {
++      if (!CryptLoader::GetInstance().pCryptUnprotectMemory(
++              Data, DWORD(Aligned), Flags)) {
+         ErrHandler.GeneralErrMsg(L"CryptUnprotectMemory failed");
+         ErrHandler.SysErrMsg();
+         ErrHandler.Exit(RARX_FATAL);
+diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
+index e84d9c1de02e..b2015b8be649 100644
+--- a/third_party/unrar/src/unicode.cpp
++++ b/third_party/unrar/src/unicode.cpp
+@@ -569,7 +569,6 @@ int64 atoilw(const wchar *s)
+ 
+ 
+ #ifdef DBCS_SUPPORTED
+-SupportDBCS gdbcs;
+ 
+ SupportDBCS::SupportDBCS()
+ {
+@@ -586,6 +585,11 @@ void SupportDBCS::Init()
+     IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
+ }
+ 
++// static
++SupportDBCS& SupportDBCS::GetInstance() {
++  static SupportDBCS supportDBCS;
++  return supportDBCS;
++}
+ 
+ char* SupportDBCS::charnext(const char *s)
+ {
+diff --git a/third_party/unrar/src/unicode.hpp b/third_party/unrar/src/unicode.hpp
+index e38667d9868d..0efb4c91cfe4 100644
+--- a/third_party/unrar/src/unicode.hpp
++++ b/third_party/unrar/src/unicode.hpp
+@@ -33,6 +33,7 @@ class SupportDBCS
+   public:
+     SupportDBCS();
+     void Init();
++    static SupportDBCS& GetInstance();
+ 
+     char* charnext(const char *s);
+     size_t strlend(const char *s);
+@@ -44,15 +45,13 @@ class SupportDBCS
+     bool DBCSMode;
+ };
+ 
+-extern SupportDBCS gdbcs;
+-
+-inline char* charnext(const char *s) {return (char *)(gdbcs.DBCSMode ? gdbcs.charnext(s):s+1);}
+-inline size_t strlend(const char *s) {return (uint)(gdbcs.DBCSMode ? gdbcs.strlend(s):strlen(s));}
+-inline char* strchrd(const char *s, int c) {return (char *)(gdbcs.DBCSMode ? gdbcs.strchrd(s,c):strchr(s,c));}
+-inline char* strrchrd(const char *s, int c) {return (char *)(gdbcs.DBCSMode ? gdbcs.strrchrd(s,c):strrchr(s,c));}
+-inline void copychrd(char *dest,const char *src) {if (gdbcs.DBCSMode) gdbcs.copychrd(dest,src); else *dest=*src;}
+-inline bool IsDBCSMode() {return(gdbcs.DBCSMode);}
+-inline void InitDBCS() {gdbcs.Init();}
++inline char* charnext(const char *s) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().charnext(s):s+1);}
++inline size_t strlend(const char *s) {return (uint)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strlend(s):strlen(s));}
++inline char* strchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strchrd(s,c):strchr(s,c));}
++inline char* strrchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strrchrd(s,c):strrchr(s,c));}
++inline void copychrd(char *dest,const char *src) {if (SupportDBCS::GetInstance().DBCSMode) SupportDBCS::GetInstance().copychrd(dest,src); else *dest=*src;}
++inline bool IsDBCSMode() {return(SupportDBCS::GetInstance().DBCSMode);}
++inline void InitDBCS() {SupportDBCS::GetInstance().Init();}
+ 
+ #else
+ #define charnext(s) ((s)+1)

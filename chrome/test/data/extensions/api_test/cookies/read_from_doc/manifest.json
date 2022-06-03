@@ -1,0 +1,10 @@
+{
+  "name": "chrome.cookies.invalid_schemes",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests Cookies API.",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["cookies"]
+}

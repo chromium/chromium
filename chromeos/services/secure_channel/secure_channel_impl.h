@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
@@ -29,7 +28,11 @@ namespace chromeos {
 namespace secure_channel {
 
 class BleConnectionManager;
-class BleServiceDataHelper;
+class BleScanner;
+class BluetoothHelper;
+class BleSynchronizerBase;
+class NearbyConnectionManager;
+class SecureChannelDisconnector;
 class TimerFactory;
 
 // Concrete SecureChannelImpl implementation, which contains three pieces:
@@ -44,15 +47,21 @@ class SecureChannelImpl : public mojom::SecureChannel,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<mojom::SecureChannel> BuildInstance(
+    static std::unique_ptr<mojom::SecureChannel> Create(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<mojom::SecureChannel> CreateInstance(
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  SecureChannelImpl(const SecureChannelImpl&) = delete;
+  SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
 
   ~SecureChannelImpl() override;
 
@@ -60,7 +69,11 @@ class SecureChannelImpl : public mojom::SecureChannel,
   explicit SecureChannelImpl(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
 
-  enum class InvalidRemoteDeviceReason { kInvalidPublicKey, kInvalidPsk };
+  enum class InvalidRemoteDeviceReason {
+    kInvalidPublicKey,
+    kInvalidPsk,
+    kInvalidBluetoothAddress
+  };
 
   enum class ApiFunctionName { kListenForConnection, kInitiateConnection };
   friend std::ostream& operator<<(std::ostream& stream,
@@ -93,14 +106,18 @@ class SecureChannelImpl : public mojom::SecureChannel,
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+  void SetNearbyConnector(
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
@@ -136,7 +153,15 @@ class SecureChannelImpl : public mojom::SecureChannel,
       ApiFunctionName api_fn_name,
       const multidevice::RemoteDevice& device,
       ClientConnectionParameters* client_connection_parameters,
+      ConnectionMedium connection_medium,
       bool is_local_device);
+
+  // Checks for whether |connection_role| is valid for a connection via the
+  // Nearby Connections library.
+  bool CheckForInvalidNearbyRequest(
+      ApiFunctionName api_fn_name,
+      ClientConnectionParameters* client_connection_parameters,
+      ConnectionRole connection_role);
 
   // Checks if |bluetooth_adapter_| is disabled or not present and rejects the
   // connection request if so. Returns whether the request was rejected.
@@ -147,23 +172,26 @@ class SecureChannelImpl : public mojom::SecureChannel,
   // Validates |device| and adds it to the |remote_device_cache_| if it is
   // valid. If it is not valid, the reason is provided as a return type, and the
   // device is not added to the cache.
-  base::Optional<InvalidRemoteDeviceReason> AddDeviceToCacheIfPossible(
+  absl::optional<InvalidRemoteDeviceReason> AddDeviceToCacheIfPossible(
       ApiFunctionName api_fn_name,
-      const multidevice::RemoteDevice& device);
+      const multidevice::RemoteDevice& device,
+      ConnectionMedium connection_medium);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::unique_ptr<TimerFactory> timer_factory_;
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
-  std::unique_ptr<BleServiceDataHelper> ble_service_data_helper_;
+  std::unique_ptr<BluetoothHelper> bluetooth_helper_;
+  std::unique_ptr<BleSynchronizerBase> ble_synchronizer_;
+  std::unique_ptr<BleScanner> ble_scanner_;
+  std::unique_ptr<SecureChannelDisconnector> secure_channel_disconnector_;
   std::unique_ptr<BleConnectionManager> ble_connection_manager_;
+  std::unique_ptr<NearbyConnectionManager> nearby_connection_manager_;
   std::unique_ptr<PendingConnectionManager> pending_connection_manager_;
   std::unique_ptr<ActiveConnectionManager> active_connection_manager_;
 
   base::flat_map<ConnectionDetails,
                  std::vector<ConnectionRequestWaitingForDisconnection>>
       disconnecting_details_to_requests_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelImpl);
 };
 
 std::ostream& operator<<(std::ostream& stream,

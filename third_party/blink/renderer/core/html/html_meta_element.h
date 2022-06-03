@@ -57,6 +57,7 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
 
   const AtomicString& Content() const;
   const AtomicString& HttpEquiv() const;
+  const AtomicString& Media() const;
   const AtomicString& GetName() const;
 
  private:

@@ -23,8 +23,7 @@
     if (self.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
-        testRunner.setCloseRemainingWindowsWhenComplete(true);
+        testRunner.setPopupBlockingEnabled(false);
         testRunner.setDumpJavaScriptDialogs(false);
 
         // Some tests intentionally load mixed content in order to test the
@@ -113,18 +112,24 @@
         if (pathAndBase.startsWith('/fullscreen/')) {
             // Fullscreen tests all use the same automation script.
             src = automationPath + '/fullscreen/auto-click.js';
+        } else if (pathAndBase.startsWith('/file-system-access/local_')) {
+            // local_ File System Access tests all use the same automation script.
+            src = automationPath + '/file-system-access/auto-pick-folder.js';
+        } else if (pathAndBase.startsWith('/file-system-access/')) {
+            // Per-test automation scripts.
+            src = automationPath + pathAndBase + '-automation.sub.js';
         } else if (
             pathAndBase.startsWith('/css/') ||
             pathAndBase.startsWith('/pointerevents/') ||
             pathAndBase.startsWith('/uievents/') ||
-            pathAndBase.startsWith('/pointerlock/') ||
             pathAndBase.startsWith('/html/') ||
             pathAndBase.startsWith('/input-events/') ||
             pathAndBase.startsWith('/css/selectors/') ||
             pathAndBase.startsWith('/css/cssom-view/') ||
             pathAndBase.startsWith('/css/css-scroll-snap/') ||
             pathAndBase.startsWith('/dom/events/') ||
-            pathAndBase.startsWith('/feature-policy/experimental-features/')) {
+            pathAndBase.startsWith('/feature-policy/experimental-features/') ||
+            pathAndBase.startsWith('/permissions-policy/experimental-features/')) {
             // Per-test automation scripts.
             src = automationPath + pathAndBase + '-automation.js';
         } else {
@@ -170,7 +175,7 @@
         }
 
         // Output failure metrics if there are many.
-        resultCounts = countResultTypes(tests);
+        const resultCounts = countResultTypes(tests);
         if (outputDocument.URL.indexOf('://web-platform.test') >= 0 &&
             tests.length >= 50 &&
             (resultCounts[1] || resultCounts[2] || resultCounts[3])) {

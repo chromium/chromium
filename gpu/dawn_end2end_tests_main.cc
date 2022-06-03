@@ -25,9 +25,13 @@ void InitDawnEnd2EndTestEnvironment(int argc, char** argv);
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
+
+  // Environment initialization is done before test initialization
+  // so tests can be instantiated for each available GPU adapter.
+  InitDawnEnd2EndTestEnvironment(argc, argv);
+
   testing::InitGoogleMock(&argc, argv);
   base::TestSuite test_suite(argc, argv);
-  InitDawnEnd2EndTestEnvironment(argc, argv);
   int rt = base::LaunchUnitTestsWithOptions(
       argc, argv,
       1,     // Run tests serially.

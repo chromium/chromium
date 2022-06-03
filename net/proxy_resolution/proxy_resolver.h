@@ -6,10 +6,8 @@
 #define NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 
 #include "base/callback_forward.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
@@ -36,6 +34,9 @@ class NET_EXPORT_PRIVATE ProxyResolver {
 
   ProxyResolver() {}
 
+  ProxyResolver(const ProxyResolver&) = delete;
+  ProxyResolver& operator=(const ProxyResolver&) = delete;
+
   virtual ~ProxyResolver() {}
 
   // Gets a list of proxy servers to use for |url|. If the request will
@@ -54,9 +55,6 @@ class NET_EXPORT_PRIVATE ProxyResolver {
                              CompletionOnceCallback callback,
                              std::unique_ptr<Request>* request,
                              const NetLogWithSource& net_log) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolver);
 };
 
 }  // namespace net

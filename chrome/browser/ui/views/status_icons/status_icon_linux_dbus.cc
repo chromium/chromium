@@ -10,17 +10,19 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/nix/xdg_util.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "components/dbus/menu/menu.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
@@ -173,7 +175,7 @@ base::FilePath WriteIconFile(size_t icon_file_id,
   base::FilePath file_path = temp_dir.Append(
       "status_icon_" + base::NumberToString(icon_file_id) + ".png");
   if (!base::WriteFile(file_path, data->front_as<char>(), data->size())) {
-    base::DeleteFileRecursively(temp_dir);
+    base::DeletePathRecursively(temp_dir);
     return {};
   }
 
@@ -184,9 +186,8 @@ base::FilePath WriteIconFile(size_t icon_file_id,
 
 StatusIconLinuxDbus::StatusIconLinuxDbus()
     : should_write_icon_to_file_(ShouldWriteIconToFile()),
-      icon_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+      icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::Bus::Options bus_options;
@@ -202,7 +203,7 @@ void StatusIconLinuxDbus::SetIcon(const gfx::ImageSkia& image) {
   SetIconImpl(image, true);
 }
 
-void StatusIconLinuxDbus::SetToolTip(const base::string16& tool_tip) {
+void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!properties_)
     return;
@@ -252,8 +253,8 @@ void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
   writer.AppendString(kServiceStatusNotifierWatcher);
   bus_proxy->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindRepeating(&StatusIconLinuxDbus::OnNameHasOwnerResponse,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&StatusIconLinuxDbus::OnNameHasOwnerResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
@@ -274,8 +275,8 @@ void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
   writer.AppendString(kPropertyIsStatusNotifierHostRegistered);
   watcher_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindRepeating(&StatusIconLinuxDbus::OnHostRegisteredResponse,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&StatusIconLinuxDbus::OnHostRegisteredResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
@@ -295,8 +296,8 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
   service_id_ = NextServiceId();
   bus_->RequestOwnership(ServiceNameFromId(service_id_),
                          dbus::Bus::ServiceOwnershipOptions::REQUIRE_PRIMARY,
-                         base::BindRepeating(&StatusIconLinuxDbus::OnOwnership,
-                                             weak_factory_.GetWeakPtr()));
+                         base::BindOnce(&StatusIconLinuxDbus::OnOwnership,
+                                        weak_factory_.GetWeakPtr()));
 }
 
 void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
@@ -331,8 +332,8 @@ void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
     item_->ExportMethod(
         kInterfaceStatusNotifierItem, method.name,
         base::BindRepeating(method.callback, weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&StatusIconLinuxDbus::OnExported,
-                            weak_factory_.GetWeakPtr()));
+        base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                       weak_factory_.GetWeakPtr()));
   }
 
   menu_ = std::make_unique<DbusMenu>(
@@ -343,7 +344,7 @@ void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
   properties_->RegisterInterface(kInterfaceStatusNotifierItem);
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kInterfaceStatusNotifierItem, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property(kPropertyItemIsMenu, DbusBoolean(false));
   set_property(kPropertyWindowId, DbusInt32(0));
@@ -383,8 +384,8 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
   dbus::MessageWriter writer(&method_call);
   writer.AppendString(ServiceNameFromId(service_id_));
   watcher_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindRepeating(&StatusIconLinuxDbus::OnRegistered,
-                                           weak_factory_.GetWeakPtr()));
+                       base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
+                                      weak_factory_.GetWeakPtr()));
 }
 
 void StatusIconLinuxDbus::OnRegistered(dbus::Response* response) {
@@ -514,7 +515,7 @@ void StatusIconLinuxDbus::CleanupIconFile() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!icon_file_.empty()) {
     icon_task_runner_->PostTask(
-        FROM_HERE, (base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                   icon_file_.DirName(), true)));
+        FROM_HERE, (base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                                   icon_file_.DirName())));
   }
 }

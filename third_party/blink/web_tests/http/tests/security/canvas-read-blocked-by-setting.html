@@ -13,7 +13,7 @@ canvas.height = 100;
 var context = canvas.getContext('2d');
 
 test(function () {
-    assert_throws(
+    assert_throws_dom(
         "SecurityError",
         function() {
             var imageData = context.getImageData(0, 0, 100, 100);
@@ -22,7 +22,7 @@ test(function () {
 }, 'getImageData');
 
 test(function () {
-    assert_throws(
+    assert_throws_dom(
         "SecurityError",
         function() {
             var data_url = canvas.toDataURL();
@@ -31,7 +31,7 @@ test(function () {
 }, 'toDataURL');
 
 test(function () {
-    assert_throws(
+    assert_throws_dom(
         "SecurityError",
         function() {
             context.drawImage(image, 0, 0, 100, 100);
@@ -41,7 +41,7 @@ test(function () {
 }, 'getImageData');
 
 test(function () {
-    assert_throws(
+    assert_throws_dom(
         "SecurityError",
         function() {
             context.drawImage(image, 0, 0, 100, 100);
@@ -51,7 +51,7 @@ test(function () {
 }, 'toDataURL');
 
 test(function () {
-    assert_throws(
+    assert_throws_dom(
         "SecurityError",
         function() {
             context.drawImage(image, 0, 0, 100, 100);

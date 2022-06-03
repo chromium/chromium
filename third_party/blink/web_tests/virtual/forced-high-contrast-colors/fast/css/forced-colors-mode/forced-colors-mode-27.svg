@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+  <foreignObject x="20" y="100" width="160" height="160">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+    This text should be CanvasText color in forced colors mode.
+    </div>
+  </foreignObject>
+</svg>

@@ -12,8 +12,7 @@ namespace media {
 
 // Minimum time that we require after a failed overlay attempt before we'll try
 // again for an overlay.
-constexpr base::TimeDelta MinimumDelayAfterFailedOverlay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta MinimumDelayAfterFailedOverlay = base::Seconds(5);
 
 AndroidVideoSurfaceChooserImpl::AndroidVideoSurfaceChooserImpl(
     bool allow_dynamic,
@@ -35,7 +34,7 @@ void AndroidVideoSurfaceChooserImpl::SetClientCallbacks(
 }
 
 void AndroidVideoSurfaceChooserImpl::UpdateState(
-    base::Optional<AndroidOverlayFactoryCB> new_factory,
+    absl::optional<AndroidOverlayFactoryCB> new_factory,
     const State& new_state) {
   DCHECK(use_overlay_cb_);
   bool entered_fullscreen =
@@ -53,8 +52,9 @@ void AndroidVideoSurfaceChooserImpl::UpdateState(
       // Note that we ignore |is_expecting_relayout| here, since it's transient.
       // We don't want to pick TextureOwner permanently for that.
       if (overlay_factory_ &&
-          (current_state_.is_fullscreen || current_state_.is_secure ||
-           current_state_.is_required) &&
+          ((current_state_.is_fullscreen &&
+            !current_state_.promote_secure_only) ||
+           current_state_.is_secure || current_state_.is_required) &&
           current_state_.video_rotation == VIDEO_ROTATION_0) {
         SwitchToOverlay(false);
       } else {
@@ -87,15 +87,10 @@ void AndroidVideoSurfaceChooserImpl::Choose() {
 
   // TODO(liberato): should this depend on resolution?
   OverlayState new_overlay_state =
-      current_state_.promote_aggressively ? kUsingOverlay : kUsingTextureOwner;
-  // Do we require a power-efficient overlay?
-  bool needs_power_efficient = current_state_.promote_aggressively;
+      current_state_.promote_secure_only ? kUsingTextureOwner : kUsingOverlay;
 
-  // In player element fullscreen, we want to use overlays if we can.  Note that
-  // this does nothing if |promote_aggressively|, which is fine since switching
-  // from "want power efficient" from "don't care" is problematic.
-  if (current_state_.is_fullscreen)
-    new_overlay_state = kUsingOverlay;
+  // Do we require a power-efficient overlay?
+  bool needs_power_efficient = true;
 
   // Try to use an overlay if possible for protected content.  If the compositor
   // won't promote, though, it's okay if we switch out.  Set |is_required| in
@@ -213,19 +208,20 @@ void AndroidVideoSurfaceChooserImpl::SwitchToOverlay(
   // We bind all of our callbacks with weak ptrs, since we don't know how long
   // the client will hold on to overlays.  They could, in principle, show up
   // long after the client is destroyed too, if codec destruction hangs.
-  config.ready_cb = base::Bind(&AndroidVideoSurfaceChooserImpl::OnOverlayReady,
-                               weak_factory_.GetWeakPtr());
+  config.ready_cb =
+      base::BindOnce(&AndroidVideoSurfaceChooserImpl::OnOverlayReady,
+                     weak_factory_.GetWeakPtr());
   config.failed_cb =
-      base::Bind(&AndroidVideoSurfaceChooserImpl::OnOverlayFailed,
-                 weak_factory_.GetWeakPtr());
+      base::BindOnce(&AndroidVideoSurfaceChooserImpl::OnOverlayFailed,
+                     weak_factory_.GetWeakPtr());
   config.rect = current_state_.initial_position;
   config.secure = current_state_.is_secure;
 
   // Request power efficient overlays and callbacks if we're supposed to.
   config.power_efficient = needs_power_efficient;
-  config.power_cb =
-      base::Bind(&AndroidVideoSurfaceChooserImpl::OnPowerEfficientState,
-                 weak_factory_.GetWeakPtr());
+  config.power_cb = base::BindRepeating(
+      &AndroidVideoSurfaceChooserImpl::OnPowerEfficientState,
+      weak_factory_.GetWeakPtr());
 
   overlay_ = overlay_factory_.Run(std::move(config));
   if (!overlay_)
@@ -240,8 +236,8 @@ void AndroidVideoSurfaceChooserImpl::OnOverlayReady(AndroidOverlay* overlay) {
   // Notify the overlay that we'd like to know if it's destroyed, so that we can
   // update our internal state if the client drops it without being told.
   overlay_->AddOverlayDeletedCallback(
-      base::Bind(&AndroidVideoSurfaceChooserImpl::OnOverlayDeleted,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AndroidVideoSurfaceChooserImpl::OnOverlayDeleted,
+                     weak_factory_.GetWeakPtr()));
 
   client_overlay_state_ = kUsingOverlay;
   use_overlay_cb_.Run(std::move(overlay_));

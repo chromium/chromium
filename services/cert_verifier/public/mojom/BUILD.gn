@@ -1,0 +1,29 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//net/features.gni")
+
+mojom("mojom") {
+  sources = [ "cert_verifier_service_factory.mojom" ]
+
+  deps = [ "//mojo/public/mojom/base" ]
+
+  public_deps = [ "//services/network/public/mojom" ]
+
+  enabled_features = []
+
+  if (trial_comparison_cert_verifier_supported) {
+    enabled_features += [ "is_trial_comparison_cert_verifier_supported" ]
+    sources += [ "trial_comparison_cert_verifier.mojom" ]
+  }
+
+  if (builtin_cert_verifier_feature_supported) {
+    enabled_features += [ "is_builtin_cert_verifier_feature_supported" ]
+  }
+
+  if (chrome_root_store_supported) {
+    enabled_features += [ "is_chrome_root_store_supported" ]
+  }
+}

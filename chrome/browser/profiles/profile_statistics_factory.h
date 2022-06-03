@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_FACTORY_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -18,6 +17,8 @@ class ProfileStatistics;
 // Singleton that owns all ProfileStatistics and associates them with Profiles.
 class ProfileStatisticsFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ProfileStatisticsFactory(const ProfileStatisticsFactory&) = delete;
+  ProfileStatisticsFactory& operator=(const ProfileStatisticsFactory&) = delete;
   static ProfileStatistics* GetForProfile(Profile* profile);
 
   static ProfileStatisticsFactory* GetInstance();
@@ -30,8 +31,6 @@ class ProfileStatisticsFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileStatisticsFactory);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_FACTORY_H_

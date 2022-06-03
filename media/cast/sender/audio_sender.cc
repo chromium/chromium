@@ -7,7 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/audio_encoder.h"
@@ -17,7 +18,7 @@ namespace cast {
 
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
-                         const StatusChangeCallback& status_change_cb,
+                         StatusChangeOnceCallback status_change_cb,
                          CastTransport* const transport_sender)
     : FrameSender(cast_environment,
                   transport_sender,
@@ -25,22 +26,21 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                   NewFixedCongestionControl(audio_config.max_bitrate)),
       samples_in_encoder_(0) {
   if (!audio_config.use_external_encoder) {
-    audio_encoder_.reset(new AudioEncoder(
+    audio_encoder_ = std::make_unique<AudioEncoder>(
         cast_environment, audio_config.channels, audio_config.rtp_timebase,
         audio_config.max_bitrate, audio_config.codec,
-        base::Bind(&AudioSender::OnEncodedAudioFrame, AsWeakPtr(),
-                   audio_config.max_bitrate)));
+        base::BindRepeating(&AudioSender::OnEncodedAudioFrame, AsWeakPtr(),
+                            audio_config.max_bitrate));
   }
 
   // AudioEncoder provides no operational status changes during normal use.
   // Post a task now with its initialization result status to allow the client
   // to start sending frames.
   cast_environment_->PostTask(
-      CastEnvironment::MAIN,
-      FROM_HERE,
-      base::Bind(status_change_cb,
-                 audio_encoder_ ? audio_encoder_->InitializationResult() :
-                     STATUS_INVALID_CONFIGURATION));
+      CastEnvironment::MAIN, FROM_HERE,
+      base::BindOnce(std::move(status_change_cb),
+                     audio_encoder_ ? audio_encoder_->InitializationResult()
+                                    : STATUS_INVALID_CONFIGURATION));
 
   // The number of samples per encoded audio frame depends on the codec and its
   // initialization parameters. Now that we have an encoder, we can calculate

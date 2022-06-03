@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -27,12 +29,7 @@ std::unique_ptr<net::ClientCertStore> CreateNullCertStore() {
 class BackgroundHeaderTest : public ExtensionBrowserTest {
  public:
   BackgroundHeaderTest()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        {network::features::kFetchMetadata,
-         network::features::kFetchMetadataDestination},
-        {});
-  }
+      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   BackgroundHeaderTest(const BackgroundHeaderTest& other) = delete;
   BackgroundHeaderTest& operator=(const BackgroundHeaderTest& other) = delete;
@@ -72,16 +69,16 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
         content::JsReplace("executeFetch($1);", url));
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
-    base::JSONReader reader(base::JSON_ALLOW_TRAILING_COMMAS);
-    base::Optional<base::Value> value = reader.ReadToValue(json);
-    std::string result;
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     if (!value) {
       ADD_FAILURE() << "Received invalid response: " << json;
       return std::string();
     }
-    EXPECT_TRUE(value->GetAsString(&result));
+    EXPECT_TRUE(value->is_string());
     std::string trimmed_result;
-    base::TrimWhitespaceASCII(result, base::TRIM_ALL, &trimmed_result);
+    base::TrimWhitespaceASCII(value->GetString(), base::TRIM_ALL,
+                              &trimmed_result);
     return trimmed_result;
   }
 

@@ -34,11 +34,10 @@
 
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <memory>
 
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/message_loop/timer_slack.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 
 #if defined(__OBJC__)
@@ -81,6 +80,16 @@ typedef NSAutoreleasePool AutoreleasePoolType;
 
 class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
  public:
+  enum class LudicrousSlackSetting : uint8_t {
+    kLudicrousSlackUninitialized,
+    kLudicrousSlackOff,
+    kLudicrousSlackOn,
+    kLudicrousSlackSuspended,
+  };
+
+  MessagePumpCFRunLoopBase(const MessagePumpCFRunLoopBase&) = delete;
+  MessagePumpCFRunLoopBase& operator=(const MessagePumpCFRunLoopBase&) = delete;
+
   // MessagePump:
   void Run(Delegate* delegate) override;
   void Quit() override;
@@ -96,6 +105,11 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   virtual void Attach(Delegate* delegate);
   virtual void Detach();
 #endif  // OS_IOS
+
+  // Exposed for testing.
+  LudicrousSlackSetting GetLudicrousSlackStateForTesting() const {
+    return GetLudicrousSlackState();
+  }
 
  protected:
   // Needs access to CreateAutoreleasePool.
@@ -145,38 +159,19 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // Get the current mode mask from |enabled_modes_|.
   int GetModeMask() const;
 
-  // Controls whether the timer invalidation performance optimization is
-  // allowed.
-  void SetTimerInvalidationAllowed(bool allowed);
-
  private:
   class ScopedModeEnabler;
 
   // The maximum number of run loop modes that can be monitored.
   static constexpr int kNumModes = 4;
 
+  // Returns the current ludicrous slack state, which implies reading both the
+  // feature flag and the suspension state.
+  LudicrousSlackSetting GetLudicrousSlackState() const;
+
   // All sources of delayed work scheduling converge to this, using TimeDelta
   // avoids querying Now() for key callers.
   void ScheduleDelayedWorkImpl(TimeDelta delta);
-
-  // Marking timers as invalid at the right time helps significantly reduce
-  // power use (see the comment in RunDelayedWorkTimer()), however there is no
-  // public API for doing so. CFRuntime.h states that CFRuntimeBase, upon which
-  // the above timer invalidation functions are based, can change from release
-  // to release and should not be accessed directly (this struct last changed at
-  // least in 2008 in CF-476).
-  //
-  // This function uses private API to modify a test timer's valid state and
-  // uses public API to confirm that the private API changed the right bit.
-  static bool CanInvalidateCFRunLoopTimers();
-
-  // Sets a Core Foundation object's "invalid" bit to |valid|. Based on code
-  // from CFRunLoop.c.
-  static void ChromeCFRunLoopTimerSetValid(CFRunLoopTimerRef timer, bool valid);
-
-  // Controls the validity of the delayed work timer. Does nothing if timer
-  // invalidation is disallowed.
-  void SetDelayedWorkTimerValid(bool valid);
 
   // Timer callback scheduled by ScheduleDelayedWork.  This does not do any
   // work, but it signals |work_source_| so that delayed work can be performed
@@ -205,6 +200,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // permits nestable tasks.
   static void RunNestingDeferredWorkSource(void* info);
   void RunNestingDeferredWork();
+
+  // Called before the run loop goes to sleep to notify delegate.
+  void BeforeWait();
 
   // Schedules possible nesting-deferred work to be processed before the run
   // loop goes to sleep, exits, or begins processing sources at the top of its
@@ -255,6 +253,10 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   base::TimerSlack timer_slack_;
 
+  // Cache the ludicrous slack setting.
+  LudicrousSlackSetting ludicrous_slack_setting_ =
+      LudicrousSlackSetting::kLudicrousSlackUninitialized;
+
   // The recursion depth of the currently-executing CFRunLoopRun loop on the
   // run loop's thread.  0 if no run loops are running inside of whatever scope
   // the object was created in.
@@ -279,21 +281,15 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // work on entry and redispatch it as needed once a delegate is available.
   bool delegateless_work_;
   bool delegateless_idle_work_;
-
-  // Whether or not timer invalidation can be used in order to reduce the number
-  // of reschedulings.
-  bool allow_timer_invalidation_;
-
-  // If changing timer validitity was attempted while it was disallowed, this
-  // value tracks the desired state of the timer.
-  Optional<bool> pending_timer_validity_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpCFRunLoopBase);
 };
 
 class BASE_EXPORT MessagePumpCFRunLoop : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpCFRunLoop();
+
+  MessagePumpCFRunLoop(const MessagePumpCFRunLoop&) = delete;
+  MessagePumpCFRunLoop& operator=(const MessagePumpCFRunLoop&) = delete;
+
   ~MessagePumpCFRunLoop() override;
 
   void DoRun(Delegate* delegate) override;
@@ -306,13 +302,15 @@ class BASE_EXPORT MessagePumpCFRunLoop : public MessagePumpCFRunLoopBase {
   // (|innermost_quittable_|) but some other CFRunLoopRun loop
   // (|nesting_level_|) is running inside the MessagePump's innermost Run call.
   bool quit_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpCFRunLoop);
 };
 
 class BASE_EXPORT MessagePumpNSRunLoop : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpNSRunLoop();
+
+  MessagePumpNSRunLoop(const MessagePumpNSRunLoop&) = delete;
+  MessagePumpNSRunLoop& operator=(const MessagePumpNSRunLoop&) = delete;
+
   ~MessagePumpNSRunLoop() override;
 
   void DoRun(Delegate* delegate) override;
@@ -323,8 +321,6 @@ class BASE_EXPORT MessagePumpNSRunLoop : public MessagePumpCFRunLoopBase {
   // attached to the run loop.  This source will be signalled when Quit
   // is called, to cause the loop to wake up so that it can stop.
   CFRunLoopSourceRef quit_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpNSRunLoop);
 };
 
 #if defined(OS_IOS)
@@ -334,6 +330,10 @@ class BASE_EXPORT MessagePumpNSRunLoop : public MessagePumpCFRunLoopBase {
 class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpUIApplication();
+
+  MessagePumpUIApplication(const MessagePumpUIApplication&) = delete;
+  MessagePumpUIApplication& operator=(const MessagePumpUIApplication&) = delete;
+
   ~MessagePumpUIApplication() override;
   void DoRun(Delegate* delegate) override;
   bool DoQuit() override;
@@ -347,8 +347,6 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
 
  private:
   RunLoop* run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpUIApplication);
 };
 
 #else
@@ -358,17 +356,24 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
 class BASE_EXPORT ScopedPumpMessagesInPrivateModes {
  public:
   ScopedPumpMessagesInPrivateModes();
+
+  ScopedPumpMessagesInPrivateModes(const ScopedPumpMessagesInPrivateModes&) =
+      delete;
+  ScopedPumpMessagesInPrivateModes& operator=(
+      const ScopedPumpMessagesInPrivateModes&) = delete;
+
   ~ScopedPumpMessagesInPrivateModes();
 
   int GetModeMaskForTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPumpMessagesInPrivateModes);
 };
 
 class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpNSApplication();
+
+  MessagePumpNSApplication(const MessagePumpNSApplication&) = delete;
+  MessagePumpNSApplication& operator=(const MessagePumpNSApplication&) = delete;
+
   ~MessagePumpNSApplication() override;
 
   void DoRun(Delegate* delegate) override;
@@ -388,27 +393,30 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   // True if Quit() was called while a modal window was shown and needed to be
   // deferred.
   bool quit_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpNSApplication);
 };
 
 class MessagePumpCrApplication : public MessagePumpNSApplication {
  public:
   MessagePumpCrApplication();
+
+  MessagePumpCrApplication(const MessagePumpCrApplication&) = delete;
+  MessagePumpCrApplication& operator=(const MessagePumpCrApplication&) = delete;
+
   ~MessagePumpCrApplication() override;
 
  protected:
   // Returns nil if NSApp is currently in the middle of calling
   // -sendEvent.  Requires NSApp implementing CrAppProtocol.
   AutoreleasePoolType* CreateAutoreleasePool() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpCrApplication);
 };
 #endif  // !defined(OS_IOS)
 
 class BASE_EXPORT MessagePumpMac {
  public:
+  MessagePumpMac() = delete;
+  MessagePumpMac(const MessagePumpMac&) = delete;
+  MessagePumpMac& operator=(const MessagePumpMac&) = delete;
+
   // If not on the main thread, returns a new instance of
   // MessagePumpNSRunLoop.
   //
@@ -431,9 +439,6 @@ class BASE_EXPORT MessagePumpMac {
   // Requires NSApp to implement CrAppProtocol.
   static bool IsHandlingSendEvent();
 #endif  // !defined(OS_IOS)
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MessagePumpMac);
 };
 
 // Tasks posted to the message loop are posted under this mode, as well

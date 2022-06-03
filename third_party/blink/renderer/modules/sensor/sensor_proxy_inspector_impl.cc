@@ -22,7 +22,7 @@ SensorProxyInspectorImpl::SensorProxyInspectorImpl(
 
 SensorProxyInspectorImpl::~SensorProxyInspectorImpl() {}
 
-void SensorProxyInspectorImpl::Trace(blink::Visitor* visitor) {
+void SensorProxyInspectorImpl::Trace(Visitor* visitor) const {
   SensorProxy::Trace(visitor);
 }
 

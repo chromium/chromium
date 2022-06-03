@@ -27,7 +27,7 @@ using blink::mojom::FileChooserParamsPtr;
 // static
 void FileSelectHelper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<content::FileSelectListener> listener,
+    scoped_refptr<content::FileSelectListener> listener,
     const FileChooserParams& params) {
   // TODO: Should we handle text/json+contacts accept type?
 
@@ -49,14 +49,15 @@ FileSelectHelper::~FileSelectHelper() {
 
 void FileSelectHelper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<content::FileSelectListener> listener,
+    scoped_refptr<content::FileSelectListener> listener,
     FileChooserParamsPtr params) {
-  DCHECK(!web_contents());
+  DCHECK(!web_contents_);
   DCHECK(listener);
   DCHECK(!listener_);
 
   listener_ = std::move(listener);
-  Observe(content::WebContents::FromRenderFrameHost(render_frame_host));
+  web_contents_ = content::WebContents::FromRenderFrameHost(render_frame_host)
+                      ->GetWeakPtr();
 
   select_file_dialog_ = ui::SelectFileDialog::Create(this, nullptr);
 
@@ -83,20 +84,20 @@ void FileSelectHelper::RunFileChooser(
 
   gfx::NativeWindow owning_window;
 #if defined(OS_ANDROID)
-  owning_window = web_contents()->GetNativeView()->GetWindowAndroid();
+  owning_window = web_contents_->GetNativeView()->GetWindowAndroid();
 #else
-  owning_window = web_contents()->GetNativeView()->GetToplevelWindow();
+  owning_window = web_contents_->GetNativeView()->GetToplevelWindow();
 #endif
 
 #if defined(OS_ANDROID)
   // Android needs the original MIME types and an additional capture value.
-  std::pair<std::vector<base::string16>, bool> accept_types =
+  std::pair<std::vector<std::u16string>, bool> accept_types =
       std::make_pair(params->accept_types, params->use_media_capture);
 #endif
 
   // Many of these params are not used in the Android SelectFileDialog
   // implementation, so we can safely pass empty values.
-  select_file_dialog_->SelectFile(dialog_type_, base::string16(),
+  select_file_dialog_->SelectFile(dialog_type_, std::u16string(),
                                   base::FilePath(), nullptr, 0,
                                   base::FilePath::StringType(), owning_window,
 #if defined(OS_ANDROID)
@@ -153,8 +154,10 @@ void FileSelectHelper::FileSelectionCanceled(void* params) {
 
 void FileSelectHelper::ConvertToFileChooserFileInfoList(
     const std::vector<ui::SelectedFileInfo>& files) {
-  if (AbortIfWebContentsDestroyed())
+  if (!web_contents_) {
+    RunFileChooserEnd();
     return;
+  }
 
   std::vector<FileChooserFileInfoPtr> chooser_files;
   for (const auto& file : files) {
@@ -170,15 +173,6 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
 
   // No members should be accessed from here on.
   RunFileChooserEnd();
-}
-
-bool FileSelectHelper::AbortIfWebContentsDestroyed() {
-  if (web_contents() == nullptr) {
-    RunFileChooserEnd();
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace weblayer

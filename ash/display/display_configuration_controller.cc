@@ -4,6 +4,8 @@
 
 #include "ash/display/display_configuration_controller.h"
 
+#include <memory>
+
 #include "ash/display/display_animator.h"
 #include "ash/display/display_util.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,6 +15,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "chromeos/system/devicemode.h"
@@ -61,17 +64,17 @@ class DisplayConfigurationController::DisplayChangeLimiter {
  public:
   DisplayChangeLimiter() : throttle_timeout_(base::Time::Now()) {}
 
+  DisplayChangeLimiter(const DisplayChangeLimiter&) = delete;
+  DisplayChangeLimiter& operator=(const DisplayChangeLimiter&) = delete;
+
   void SetThrottleTimeout(int64_t throttle_ms) {
-    throttle_timeout_ =
-        base::Time::Now() + base::TimeDelta::FromMilliseconds(throttle_ms);
+    throttle_timeout_ = base::Time::Now() + base::Milliseconds(throttle_ms);
   }
 
   bool IsThrottled() const { return base::Time::Now() < throttle_timeout_; }
 
  private:
   base::Time throttle_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayChangeLimiter);
 };
 
 // static
@@ -86,9 +89,9 @@ DisplayConfigurationController::DisplayConfigurationController(
       window_tree_host_manager_(window_tree_host_manager) {
   window_tree_host_manager_->AddObserver(this);
   if (chromeos::IsRunningAsSystemCompositor())
-    limiter_.reset(new DisplayChangeLimiter);
+    limiter_ = std::make_unique<DisplayChangeLimiter>();
   if (!g_disable_animator_for_test)
-    display_animator_.reset(new DisplayAnimator());
+    display_animator_ = std::make_unique<DisplayAnimator>();
 }
 
 DisplayConfigurationController::~DisplayConfigurationController() {
@@ -140,7 +143,9 @@ void DisplayConfigurationController::SetDisplayRotation(
     display::Display::Rotation rotation,
     display::Display::RotationSource source,
     DisplayConfigurationController::RotationAnimation mode) {
-  if (display_manager_->IsDisplayIdValid(display_id)) {
+  // No need to apply animation if the wallpaper isn't set yet during startup.
+  if (display_manager_->IsDisplayIdValid(display_id) &&
+      Shell::Get()->wallpaper_controller()->is_wallpaper_set()) {
     if (GetTargetRotation(display_id) == rotation)
       return;
     if (display_animator_) {
@@ -203,7 +208,7 @@ void DisplayConfigurationController::SetAnimatorForTest(bool enable) {
   if (display_animator_ && !enable)
     display_animator_.reset();
   else if (!display_animator_ && enable)
-    display_animator_.reset(new DisplayAnimator());
+    display_animator_ = std::make_unique<DisplayAnimator>();
 }
 
 // Private
@@ -227,7 +232,7 @@ void DisplayConfigurationController::SetDisplayLayoutImpl(
 void DisplayConfigurationController::SetMirrorModeImpl(bool mirror) {
   display_manager_->SetMirrorMode(
       mirror ? display::MirrorMode::kNormal : display::MirrorMode::kOff,
-      base::nullopt);
+      absl::nullopt);
   if (display_animator_)
     display_animator_->StartFadeInAnimation();
 }

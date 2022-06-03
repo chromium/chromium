@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -26,12 +24,10 @@ public class AutofillLogger {
             mProfileFullName = profileFullName;
         }
 
-        @VisibleForTesting
         public String getAutofilledValue() {
             return mAutofilledValue;
         }
 
-        @VisibleForTesting
         public String getProfileFullName() {
             return mProfileFullName;
         }
@@ -48,12 +44,10 @@ public class AutofillLogger {
     private static Logger sLogger;
     private static Logger sLoggerForTest;
 
-    @VisibleForTesting
     public static void setLogger(Logger logger) {
         sLogger = logger;
     }
 
-    @VisibleForTesting
     public static void setLoggerForTesting(Logger logger) {
         sLoggerForTest = logger;
     }

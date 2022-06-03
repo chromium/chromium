@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/resource_message_params.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_messages.h"

@@ -8,7 +8,7 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /** Provides delegate interfaces that can be used to call into VR.  */
 @ModuleInterface(module = "vr", impl = "org.chromium.chrome.browser.vr.VrDelegateProviderImpl")
-/* package */ interface VrDelegateProvider {
+public interface VrDelegateProvider {
     VrDelegate getDelegate();
     VrIntentDelegate getIntentDelegate();
 }

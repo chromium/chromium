@@ -43,6 +43,13 @@ const char kEnforceGLMinimums[]             = "enforce-gl-minimums";
 // Sets the total amount of memory that may be allocated for GPU resources
 const char kForceGpuMemAvailableMb[]        = "force-gpu-mem-available-mb";
 
+// Sets the maximum GPU memory to use for discardable caches.
+const char kForceGpuMemDiscardableLimitMb[] =
+    "force-gpu-mem-discardable-limit-mb";
+
+// Sets the maximum texture size in pixels.
+const char kForceMaxTextureSize[] = "force-max-texture-size";
+
 // Sets the maximum size of the in-memory gpu program cache, in kb
 const char kGpuProgramCacheSizeKb[]         = "gpu-program-cache-size-kb";
 
@@ -58,32 +65,16 @@ const char kEnableThreadedTextureMailboxes[] =
 // compilation info logs.
 const char kGLShaderIntermOutput[] = "gl-shader-interm-output";
 
-// Emulate ESSL lowp and mediump float precisions by mutating the shaders to
-// round intermediate values in ANGLE.
-const char kEmulateShaderPrecision[] = "emulate-shader-precision";
-
-// Selects the type of the GrContext.
-const char kGrContextType[] = "gr-context-type";
-const char kGrContextTypeGL[] = "gl";
-const char kGrContextTypeVulkan[] = "vulkan";
-const char kGrContextTypeMetal[] = "metal";
-const char kGrContextTypeDawn[] = "dawn";
 // Enable Vulkan support and select Vulkan implementation, must also have
-// ENABLE_VULKAN defined.
+// ENABLE_VULKAN defined. This only initializes Vulkan, the flag
+// --enable-features=Vulkan must also be used to select Vulkan for compositing
+// and rasterization.
 const char kUseVulkan[] = "use-vulkan";
 const char kVulkanImplementationNameNative[] = "native";
 const char kVulkanImplementationNameSwiftshader[] = "swiftshader";
 
-// Forces to use protected memory for vulkan compositing.
-const char kEnforceVulkanProtectedMemory[] = "enforce-vulkan-protected-memory";
-
 // Disables VK_KHR_surface extension. Instead of using swapchain, bitblt will be
 // used for present render result on screen.
 const char kDisableVulkanSurface[] = "disable-vulkan-surface";
-
-// Disables falling back to GL based hardware rendering if initializing Vulkan
-// fails. This is to allow tests to catch regressions in Vulkan.
-const char kDisableVulkanFallbackToGLForTesting[] =
-    "disable-vulkan-fallback-to-gl-for-testing";
 
 }  // namespace switches

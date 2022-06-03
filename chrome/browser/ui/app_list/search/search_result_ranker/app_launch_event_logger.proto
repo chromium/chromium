@@ -22,7 +22,6 @@ message AppLaunchEvent {
     OTHER = 0;
     CHROME = 1;
     PLAY = 2;
-    // PWA AppType includes bookmark apps in addition to PWAs.
     PWA = 3;
   }
   // The type of App.

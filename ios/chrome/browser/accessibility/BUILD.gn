@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("accessibility") {
+  sources = [
+    "window_accessibility_change_notifier_app_agent.h",
+    "window_accessibility_change_notifier_app_agent.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ui/base",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

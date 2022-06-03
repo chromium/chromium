@@ -42,10 +42,17 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
 
   void AddLog(std::string name, std::string value);
   void AddLogs(SystemLogsMap logs);
+  // Remove a log with the specified name.
+  // Returns true iff there was a log with the specified name.
+  bool RemoveLog(std::string name);
 
   // Fill in |feedback_data| with all the data that we have collected.
   // CompressLogs() must have already been called.
   void PrepareReport(userfeedback::ExtensionSubmit* feedback_data) const;
+
+  // Return true if we want to include the feedback item with a key of |key| in
+  // the feedback report's system logs.
+  static bool IncludeInSystemLogs(const std::string& key, bool is_google_email);
 
   // Getters
   const std::string& category_tag() const { return category_tag_; }

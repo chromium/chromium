@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animating with infinite duration</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+"use strict";
+
+test(function(t) {
+  // (crbug.com/1088218) This is a regression test to prevent a crash.
+  // This test passes as long as there is no crash.
+  const duration = 18446744073709551534;
+  function createAnimation(keyframes, effect, className) {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    effect.duration = duration;
+    div.animate(keyframes, effect);
+  }
+  createAnimation({ opacity: [0, 1] },
+                  { fill: "backwards", iterationStart: 18446744073709551383 },
+                    "fill-backwards-with-delay-iterationstart");
+}, "An animation with infinite duraction won't crash.");
+</script>
+</body>

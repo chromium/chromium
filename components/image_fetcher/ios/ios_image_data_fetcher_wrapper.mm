@@ -5,7 +5,9 @@
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 
 #include "base/bind.h"
+#import "base/ios/ios_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "components/image_fetcher/ios/webp_decoder.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -40,7 +42,7 @@ void IOSImageDataFetcherWrapper::FetchImageDataWebpDecoded(
     const GURL& image_url,
     ImageDataFetcherBlock callback,
     const std::string& referrer,
-    net::URLRequest::ReferrerPolicy referrer_policy,
+    net::ReferrerPolicy referrer_policy,
     bool send_cookies) {
   DCHECK(callback);
 
@@ -57,8 +59,10 @@ IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     // Create a NSData from the returned data and notify the callback.
     NSData* data =
         [NSData dataWithBytes:image_data.data() length:image_data.size()];
-
-    if (!webp_transcode::WebpDecoder::IsWebpImage(image_data)) {
+    // TODO(crbug.com/1129484): Remove once minimum supported version is at
+    // least 14 for all consumers of ios/web_view
+    if (base::ios::IsRunningOnIOS14OrLater() ||
+        !webp_transcode::WebpDecoder::IsWebpImage(image_data)) {
       callback(data, metadata);
       return;
     }
@@ -66,10 +70,9 @@ IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     // The image is a webp image.
     RequestMetadata webp_metadata = metadata;
 
-    base::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {
-            base::ThreadPool(),
             base::TaskPriority::BEST_EFFORT,
             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
         },

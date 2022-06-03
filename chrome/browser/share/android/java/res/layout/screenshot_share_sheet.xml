@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/screenshot"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="16dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginEnd="36dp"
+                android:weightSum="4"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_gravity="start|bottom">
+
+                <TextView
+                    android:id="@+id/edit"
+                    android:text="@string/screenshot_edit_title"
+                    style="@style/SplitToolbarButton"
+                    android:drawableTop="@drawable/edit_icon"
+                    android:drawableTint="@color/default_icon_color_tint_list"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="end|bottom"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <TextView
+                    android:id="@+id/delete"
+                    android:text="@string/screenshot_delete_title"
+                    style="@style/SplitToolbarButton"
+                    android:drawableTop="@drawable/delete_icon"
+                    android:drawableTint="@color/default_icon_color_tint_list"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center|bottom"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <TextView
+                    android:id="@+id/save"
+                    android:text="@string/screenshot_save_title"
+                    style="@style/SplitToolbarButton"
+                    android:drawableTop="@drawable/save_icon"
+                    android:drawableTint="@color/default_icon_color_tint_list"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center|bottom"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <TextView
+                    android:id="@+id/share"
+                    android:text="@string/screenshot_share_title"
+                    style="@style/SplitToolbarButton"
+                    android:drawableTop="@drawable/share_icon"
+                    android:drawableTint="@color/default_icon_color_tint_list"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="start|bottom"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/close_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </RelativeLayout>
+
+</org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetView>

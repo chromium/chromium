@@ -4,19 +4,21 @@
 
 #include "chrome/browser/extensions/device_permissions_dialog_controller.h"
 
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 DevicePermissionsDialogController::DevicePermissionsDialogController(
     content::RenderFrameHost* owner,
     scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt)
-    : ChooserController(
+    : ChooserController(CreateExtensionAwareChooserTitle(
           owner,
           prompt->multiple() ? IDS_DEVICE_PERMISSIONS_PROMPT_MULTIPLE_SELECTION
                              : IDS_DEVICE_PERMISSIONS_PROMPT_SINGLE_SELECTION,
           prompt->multiple() ? IDS_DEVICE_PERMISSIONS_PROMPT_MULTIPLE_SELECTION
-                             : IDS_DEVICE_PERMISSIONS_PROMPT_SINGLE_SELECTION),
+                             : IDS_DEVICE_PERMISSIONS_PROMPT_SINGLE_SELECTION)),
       prompt_(prompt) {
   prompt_->SetObserver(this);
 }
@@ -33,21 +35,29 @@ bool DevicePermissionsDialogController::AllowMultipleSelection() const {
   return prompt_->multiple();
 }
 
-base::string16 DevicePermissionsDialogController::GetNoOptionsText() const {
+std::u16string DevicePermissionsDialogController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 DevicePermissionsDialogController::GetOkButtonLabel() const {
+std::u16string DevicePermissionsDialogController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_SELECT);
+}
+
+std::pair<std::u16string, std::u16string>
+DevicePermissionsDialogController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_LOADING_LABEL),
+      l10n_util::GetStringUTF16(
+          IDS_DEVICE_PERMISSIONS_DIALOG_LOADING_LABEL_TOOLTIP)};
 }
 
 size_t DevicePermissionsDialogController::NumOptions() const {
   return prompt_->GetDeviceCount();
 }
 
-base::string16 DevicePermissionsDialogController::GetOption(
+std::u16string DevicePermissionsDialogController::GetOption(
     size_t index) const {
-  base::string16 device_name = prompt_->GetDeviceName(index);
+  std::u16string device_name = prompt_->GetDeviceName(index);
   const auto& it = device_name_map_.find(device_name);
   DCHECK(it != device_name_map_.end());
   return it->second == 1
@@ -74,9 +84,15 @@ void DevicePermissionsDialogController::Close() {
 
 void DevicePermissionsDialogController::OpenHelpCenterUrl() const {}
 
+void DevicePermissionsDialogController::OnDevicesInitialized() {
+  if (view()) {
+    view()->OnOptionsInitialized();
+  }
+}
+
 void DevicePermissionsDialogController::OnDeviceAdded(
     size_t index,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (view()) {
     ++device_name_map_[device_name];
     view()->OnOptionAdded(index);
@@ -85,7 +101,7 @@ void DevicePermissionsDialogController::OnDeviceAdded(
 
 void DevicePermissionsDialogController::OnDeviceRemoved(
     size_t index,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (view()) {
     DCHECK_GT(device_name_map_[device_name], 0);
     if (--device_name_map_[device_name] == 0)

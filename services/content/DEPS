@@ -1,8 +1,0 @@
-include_rules = [
-  "+services/network/public",
-
-  "+ui/aura",
-  "+ui/base",
-  "+ui/gfx",
-  "+ui/views",
-]

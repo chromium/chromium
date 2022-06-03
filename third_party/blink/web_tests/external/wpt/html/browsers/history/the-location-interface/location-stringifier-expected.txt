@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Location stringifier
-PASS Location stringifier 1
-PASS Location stringifier 2
-PASS Location stringifier 3
-PASS Location stringifier 4
-FAIL Location stringifier 5 assert_equals: expected "function" but got "undefined"
-Harness: the test ran to completion.
-

@@ -28,7 +28,8 @@ constexpr base::FilePath::CharType kChromeProxyExecutable[] =
 // in the same directory and use the icon specified in there for the start menu
 // pin. Because bookmark app shortcuts are shortcuts to Chrome (plus a few
 // command line parameters) Windows ends up using the Chrome icon specified in
-// chrome.exe.manifest instead of the site's icon stored inside the shortcut.
+// chrome.VisualElementsManifest.xml instead of the site's icon stored inside
+// the shortcut.
 //
 // The chrome_proxy.exe binary workaround "fixes" this by having bookmark app
 // shortcuts target chrome_proxy.exe instead of chrome.exe such that Windows
@@ -50,7 +51,7 @@ int WINAPI wWinMain(HINSTANCE instance,
   base::CommandLine chrome_command_line(chrome_dir.Append(kChromeExecutable));
 
   // Forward all command line arguments.
-  const std::vector<base::string16>& argv =
+  const std::vector<std::wstring>& argv =
       base::CommandLine::ForCurrentProcess()->argv();
   // The first one is always the current executable path.
   CHECK(argv.size() > 0);

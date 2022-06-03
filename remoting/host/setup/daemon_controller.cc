@@ -4,12 +4,13 @@
 
 #include "remoting/host/setup/daemon_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,7 +26,7 @@ DaemonController::DaemonController(std::unique_ptr<Delegate> delegate)
     : caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       delegate_(std::move(delegate)) {
   // Launch the delegate thread.
-  delegate_thread_.reset(new AutoThread(kDaemonControllerThreadName));
+  delegate_thread_ = std::make_unique<AutoThread>(kDaemonControllerThreadName);
 #if defined(OS_WIN)
   delegate_thread_->SetComInitType(AutoThread::COM_INIT_STA);
   delegate_task_runner_ =
@@ -41,14 +42,15 @@ DaemonController::State DaemonController::GetState() {
   return delegate_->GetState();
 }
 
-void DaemonController::GetConfig(const GetConfigCallback& done) {
+void DaemonController::GetConfig(GetConfigCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::GetConfigCallback wrapped_done = base::Bind(
-      &DaemonController::InvokeConfigCallbackAndScheduleNext, this, done);
-  base::Closure request = base::Bind(
-      &DaemonController::DoGetConfig, this, wrapped_done);
-  ServiceOrQueueRequest(request);
+  GetConfigCallback wrapped_done =
+      base::BindOnce(&DaemonController::InvokeConfigCallbackAndScheduleNext,
+                     this, std::move(done));
+  base::OnceClosure request = base::BindOnce(&DaemonController::DoGetConfig,
+                                             this, std::move(wrapped_done));
+  ServiceOrQueueRequest(std::move(request));
 }
 
 void DaemonController::CheckPermission(bool it2me, BoolCallback callback) {
@@ -59,49 +61,52 @@ void DaemonController::CheckPermission(bool it2me, BoolCallback callback) {
 void DaemonController::SetConfigAndStart(
     std::unique_ptr<base::DictionaryValue> config,
     bool consent,
-    const CompletionCallback& done) {
+    CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::CompletionCallback wrapped_done = base::Bind(
-      &DaemonController::InvokeCompletionCallbackAndScheduleNext, this, done);
-  base::Closure request = base::Bind(
-      &DaemonController::DoSetConfigAndStart, this, base::Passed(&config),
-      consent, wrapped_done);
-  ServiceOrQueueRequest(request);
+  CompletionCallback wrapped_done =
+      base::BindOnce(&DaemonController::InvokeCompletionCallbackAndScheduleNext,
+                     this, std::move(done));
+  base::OnceClosure request =
+      base::BindOnce(&DaemonController::DoSetConfigAndStart, this,
+                     std::move(config), consent, std::move(wrapped_done));
+  ServiceOrQueueRequest(std::move(request));
 }
 
 void DaemonController::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
-    const CompletionCallback& done) {
+    CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::CompletionCallback wrapped_done = base::Bind(
-      &DaemonController::InvokeCompletionCallbackAndScheduleNext, this, done);
-  base::Closure request = base::Bind(
-      &DaemonController::DoUpdateConfig, this, base::Passed(&config),
-      wrapped_done);
-  ServiceOrQueueRequest(request);
+  CompletionCallback wrapped_done =
+      base::BindOnce(&DaemonController::InvokeCompletionCallbackAndScheduleNext,
+                     this, std::move(done));
+  base::OnceClosure request =
+      base::BindOnce(&DaemonController::DoUpdateConfig, this, std::move(config),
+                     std::move(wrapped_done));
+  ServiceOrQueueRequest(std::move(request));
 }
 
-void DaemonController::Stop(const CompletionCallback& done) {
+void DaemonController::Stop(CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::CompletionCallback wrapped_done = base::Bind(
-      &DaemonController::InvokeCompletionCallbackAndScheduleNext, this, done);
-  base::Closure request = base::Bind(
-      &DaemonController::DoStop, this, wrapped_done);
-  ServiceOrQueueRequest(request);
+  CompletionCallback wrapped_done =
+      base::BindOnce(&DaemonController::InvokeCompletionCallbackAndScheduleNext,
+                     this, std::move(done));
+  base::OnceClosure request =
+      base::BindOnce(&DaemonController::DoStop, this, std::move(wrapped_done));
+  ServiceOrQueueRequest(std::move(request));
 }
 
-void DaemonController::GetUsageStatsConsent(
-    const GetUsageStatsConsentCallback& done) {
+void DaemonController::GetUsageStatsConsent(GetUsageStatsConsentCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::GetUsageStatsConsentCallback wrapped_done = base::Bind(
-      &DaemonController::InvokeConsentCallbackAndScheduleNext, this, done);
-  base::Closure request = base::Bind(
-      &DaemonController::DoGetUsageStatsConsent, this, wrapped_done);
-  ServiceOrQueueRequest(request);
+  GetUsageStatsConsentCallback wrapped_done =
+      base::BindOnce(&DaemonController::InvokeConsentCallbackAndScheduleNext,
+                     this, std::move(done));
+  base::OnceClosure request = base::BindOnce(
+      &DaemonController::DoGetUsageStatsConsent, this, std::move(wrapped_done));
+  ServiceOrQueueRequest(std::move(request));
 }
 
 DaemonController::~DaemonController() {
@@ -113,97 +118,100 @@ DaemonController::~DaemonController() {
   caller_task_runner_->DeleteSoon(FROM_HERE, delegate_thread_.release());
 }
 
-void DaemonController::DoGetConfig(const GetConfigCallback& done) {
+void DaemonController::DoGetConfig(GetConfigCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
   std::unique_ptr<base::DictionaryValue> config = delegate_->GetConfig();
-  caller_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(done, std::move(config)));
+  caller_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(done), std::move(config)));
 }
 
 void DaemonController::DoSetConfigAndStart(
     std::unique_ptr<base::DictionaryValue> config,
     bool consent,
-    const CompletionCallback& done) {
+    CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  delegate_->SetConfigAndStart(std::move(config), consent, done);
+  delegate_->SetConfigAndStart(std::move(config), consent, std::move(done));
 }
 
 void DaemonController::DoUpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
-    const CompletionCallback& done) {
+    CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  delegate_->UpdateConfig(std::move(config), done);
+  delegate_->UpdateConfig(std::move(config), std::move(done));
 }
 
-void DaemonController::DoStop(const CompletionCallback& done) {
+void DaemonController::DoStop(CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  delegate_->Stop(done);
+  delegate_->Stop(std::move(done));
 }
 
 void DaemonController::DoGetUsageStatsConsent(
-    const GetUsageStatsConsentCallback& done) {
+    GetUsageStatsConsentCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  DaemonController::UsageStatsConsent consent =
-      delegate_->GetUsageStatsConsent();
-  caller_task_runner_->PostTask(FROM_HERE, base::BindOnce(done, consent));
+  UsageStatsConsent consent = delegate_->GetUsageStatsConsent();
+  caller_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(std::move(done), consent));
 }
 
 void DaemonController::InvokeCompletionCallbackAndScheduleNext(
-    const CompletionCallback& done,
+    CompletionCallback done,
     AsyncResult result) {
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &DaemonController::InvokeCompletionCallbackAndScheduleNext, this,
-            done, result));
+            std::move(done), result));
     return;
   }
 
-  done.Run(result);
-  ScheduleNext();
+  std::move(done).Run(result);
+  OnServicingDone();
 }
 
 void DaemonController::InvokeConfigCallbackAndScheduleNext(
-    const GetConfigCallback& done,
+    GetConfigCallback done,
     std::unique_ptr<base::DictionaryValue> config) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  done.Run(std::move(config));
-  ScheduleNext();
+  std::move(done).Run(std::move(config));
+  OnServicingDone();
 }
 
 void DaemonController::InvokeConsentCallbackAndScheduleNext(
-    const GetUsageStatsConsentCallback& done,
+    GetUsageStatsConsentCallback done,
     const UsageStatsConsent& consent) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  done.Run(consent);
-  ScheduleNext();
+  std::move(done).Run(consent);
+  OnServicingDone();
 }
 
-void DaemonController::ScheduleNext() {
+void DaemonController::OnServicingDone() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  pending_requests_.pop();
+  servicing_request_ = false;
   ServiceNextRequest();
 }
 
-void DaemonController::ServiceOrQueueRequest(const base::Closure& request) {
-  bool servicing_request = !pending_requests_.empty();
-  pending_requests_.push(request);
-  if (!servicing_request)
+void DaemonController::ServiceOrQueueRequest(base::OnceClosure request) {
+  pending_requests_.push(std::move(request));
+  if (!servicing_request_)
     ServiceNextRequest();
 }
 
 void DaemonController::ServiceNextRequest() {
-  if (!pending_requests_.empty())
-    delegate_task_runner_->PostTask(FROM_HERE, pending_requests_.front());
+  if (!pending_requests_.empty()) {
+    base::OnceClosure request = std::move(pending_requests_.front());
+    pending_requests_.pop();
+    delegate_task_runner_->PostTask(FROM_HERE, std::move(request));
+    servicing_request_ = true;
+  }
 }
 
 }  // namespace remoting

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -28,6 +27,10 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
  public:
   OverscanCalibrator(const display::Display& target_display,
                      const gfx::Insets& initial_insets);
+
+  OverscanCalibrator(const OverscanCalibrator&) = delete;
+  OverscanCalibrator& operator=(const OverscanCalibrator&) = delete;
+
   ~OverscanCalibrator() override;
 
   // Commits the current insets data to the system.
@@ -70,7 +73,8 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
   // The visualization layer for the current calibration region.
   std::unique_ptr<ui::Layer> calibration_layer_;
 
-  DISALLOW_COPY_AND_ASSIGN(OverscanCalibrator);
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

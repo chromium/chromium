@@ -248,7 +248,6 @@ public class WebApkServiceConnectionManager {
     private void destroyTaskRunner() {
         if (mTaskRunner == null) return;
 
-        mTaskRunner.destroy();
         mTaskRunner = null;
     }
 }

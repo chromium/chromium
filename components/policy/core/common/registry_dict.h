@@ -9,9 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -28,7 +28,7 @@ class Schema;
 // Converts a value (as read from the registry) to meet |schema|, converting
 // types as necessary. Unconvertible types will show up as null values in the
 // result.
-std::unique_ptr<base::Value> POLICY_EXPORT
+absl::optional<base::Value> POLICY_EXPORT
 ConvertRegistryValue(const base::Value& value, const Schema& schema);
 
 // A case-insensitive string comparison functor.
@@ -49,6 +49,8 @@ class POLICY_EXPORT RegistryDict {
                             CaseInsensitiveStringCompare>;
 
   RegistryDict();
+  RegistryDict(const RegistryDict&) = delete;
+  RegistryDict& operator=(const RegistryDict&) = delete;
   ~RegistryDict();
 
   // Returns a pointer to an existing key, NULL if not present.
@@ -79,7 +81,7 @@ class POLICY_EXPORT RegistryDict {
 
 #if defined(OS_WIN)
   // Read a Windows registry subtree into this registry dictionary object.
-  void ReadRegistry(HKEY hive, const base::string16& root);
+  void ReadRegistry(HKEY hive, const std::wstring& root);
 
   // Converts the dictionary to base::Value representation. For key/value name
   // collisions, the key wins. |schema| is used to determine the expected type
@@ -94,8 +96,6 @@ class POLICY_EXPORT RegistryDict {
  private:
   KeyMap keys_;
   ValueMap values_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryDict);
 };
 
 }  // namespace policy

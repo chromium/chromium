@@ -5,8 +5,6 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_SETTINGS_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_SETTINGS_MOJOM_TRAITS_H_
 
-#include <utility>
-
 #include "components/viz/common/resources/resource_settings.h"
 #include "services/viz/public/mojom/compositing/resource_settings.mojom.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"

@@ -5,8 +5,7 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_CHANNEL_H_
 #define HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_CHANNEL_H_
 
-#include <string>
-
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "headless/public/headless_export.h"
 
@@ -20,7 +19,7 @@ class HEADLESS_EXPORT HeadlessDevToolsChannel {
    public:
     virtual ~Client() {}
     // Receives an incoming protocol message from DevTools.
-    virtual void ReceiveProtocolMessage(const std::string& message) = 0;
+    virtual void ReceiveProtocolMessage(base::span<const uint8_t> message) = 0;
     // Notifies about channel being closed from the DevTools side.
     virtual void ChannelClosed() = 0;
   };
@@ -31,7 +30,7 @@ class HEADLESS_EXPORT HeadlessDevToolsChannel {
   // multiple times.
   virtual void SetClient(Client* client) = 0;
   // Sends an outgoing protocol message to DevTools.
-  virtual void SendProtocolMessage(const std::string& message) = 0;
+  virtual void SendProtocolMessage(base::span<const uint8_t> message) = 0;
 };
 
 }  // namespace headless

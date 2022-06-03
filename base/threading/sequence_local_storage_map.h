@@ -15,7 +15,7 @@ namespace internal {
 // A SequenceLocalStorageMap holds (slot_id) -> (value, destructor) items for a
 // sequence. When a task runs, it is expected that a pointer to its sequence's
 // SequenceLocalStorageMap is set in TLS using
-// ScopedSetSequenceMapLocalStorageForCurrentThread. When a
+// ScopedSetSequenceLocalStorageMapForCurrentThread. When a
 // SequenceLocalStorageMap is destroyed, it invokes the destructors associated
 // with values stored within it.
 // The Get() and Set() methods should not be accessed directly.
@@ -24,12 +24,21 @@ namespace internal {
 class BASE_EXPORT SequenceLocalStorageMap {
  public:
   SequenceLocalStorageMap();
+
+  SequenceLocalStorageMap(const SequenceLocalStorageMap&) = delete;
+  SequenceLocalStorageMap& operator=(const SequenceLocalStorageMap&) = delete;
+
   ~SequenceLocalStorageMap();
 
   // Returns the SequenceLocalStorage bound to the current thread. It is invalid
   // to call this outside the scope of a
   // ScopedSetSequenceLocalStorageForCurrentThread.
   static SequenceLocalStorageMap& GetForCurrentThread();
+
+  // Indicates whether the current thread has a SequenceLocalStorageMap
+  // available and thus whether it can safely call GetForCurrentThread and
+  // dereference SequenceLocalStorageSlots.
+  static bool IsSetForCurrentThread();
 
   // Holds a pointer to a value alongside a destructor for this pointer.
   // Calls the destructor on the value upon destruction.
@@ -38,6 +47,10 @@ class BASE_EXPORT SequenceLocalStorageMap {
     using DestructorFunc = void(void*);
 
     ValueDestructorPair(void* value, DestructorFunc* destructor);
+
+    ValueDestructorPair(const ValueDestructorPair&) = delete;
+    ValueDestructorPair& operator=(const ValueDestructorPair&) = delete;
+
     ~ValueDestructorPair();
 
     ValueDestructorPair(ValueDestructorPair&& value_destructor_pair);
@@ -49,8 +62,6 @@ class BASE_EXPORT SequenceLocalStorageMap {
    private:
     void* value_;
     DestructorFunc* destructor_;
-
-    DISALLOW_COPY_AND_ASSIGN(ValueDestructorPair);
   };
 
   // Returns the value stored in |slot_id| or nullptr if no value was stored.
@@ -66,8 +77,6 @@ class BASE_EXPORT SequenceLocalStorageMap {
   // in the map. For low number of entries, flat_map is known to perform better
   // than other map implementations.
   base::flat_map<int, ValueDestructorPair> sls_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceLocalStorageMap);
 };
 
 // Within the scope of this object,
@@ -79,10 +88,12 @@ class BASE_EXPORT ScopedSetSequenceLocalStorageMapForCurrentThread {
   ScopedSetSequenceLocalStorageMapForCurrentThread(
       SequenceLocalStorageMap* sequence_local_storage);
 
-  ~ScopedSetSequenceLocalStorageMapForCurrentThread();
+  ScopedSetSequenceLocalStorageMapForCurrentThread(
+      const ScopedSetSequenceLocalStorageMapForCurrentThread&) = delete;
+  ScopedSetSequenceLocalStorageMapForCurrentThread& operator=(
+      const ScopedSetSequenceLocalStorageMapForCurrentThread&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetSequenceLocalStorageMapForCurrentThread);
+  ~ScopedSetSequenceLocalStorageMapForCurrentThread();
 };
 }  // namespace internal
 }  // namespace base

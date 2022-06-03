@@ -152,11 +152,14 @@ if (is_android) {
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
 
+      # Disable orderfile instrumentation. Code in this target is in a different
+      # .so, cannot call unexported instrumentation functions from another one
+      # (link time error).
+      configs -= [ "//build/config/android:default_orderfile_instrumentation" ]
+
       # This is used to allow shared memory regions to work on Android Q+
       # See http://crbug.com/949804
-      deps = [
-        "//third_party/ashmem",
-      ]
+      deps = [ "//third_party/ashmem" ]
     }
   }
 
@@ -240,66 +243,44 @@ if (is_android) {
   }
 
   crazy_linker_test_library("crazy_linker_tests_libfoo") {
-    sources = [
-      "src/tests/foo.cpp",
-    ]
+    sources = [ "src/tests/foo.cpp" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libfoo_with_gnu_hash_table") {
-    sources = [
-      "src/tests/foo.cpp",
-    ]
+    sources = [ "src/tests/foo.cpp" ]
     ldflags = [ "-Wl,--hash-style=gnu" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libfoo2") {
-    sources = [
-      "src/tests/foo2.cpp",
-    ]
+    sources = [ "src/tests/foo2.cpp" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libfoo_with_relro") {
-    sources = [
-      "src/tests/foo_with_relro.cpp",
-    ]
+    sources = [ "src/tests/foo_with_relro.cpp" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libfoo_with_relro_and_relr") {
-    sources = [
-      "src/tests/foo_with_relro.cpp",
-    ]
+    sources = [ "src/tests/foo_with_relro.cpp" ]
     ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
   }
 
   crazy_linker_test_library(
       "crazy_linker_tests_libfoo_with_static_constructor") {
-    sources = [
-      "src/tests/foo_with_static_constructor.cpp",
-    ]
+    sources = [ "src/tests/foo_with_static_constructor.cpp" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libbar") {
-    sources = [
-      "src/tests/bar.cpp",
-    ]
-    deps = [
-      ":crazy_linker_tests_libfoo",
-    ]
+    sources = [ "src/tests/bar.cpp" ]
+    deps = [ ":crazy_linker_tests_libfoo" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libbar_with_relro") {
-    sources = [
-      "src/tests/bar_with_relro.cpp",
-    ]
-    deps = [
-      ":crazy_linker_tests_libfoo_with_relro",
-    ]
+    sources = [ "src/tests/bar_with_relro.cpp" ]
+    deps = [ ":crazy_linker_tests_libfoo_with_relro" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libbar_with_two_dlopens") {
-    sources = [
-      "src/tests/bar_with_two_dlopens.cpp",
-    ]
+    sources = [ "src/tests/bar_with_two_dlopens.cpp" ]
     data_deps = [
       ":crazy_linker_tests_libfoo",
       ":crazy_linker_tests_libfoo2",
@@ -308,296 +289,170 @@ if (is_android) {
   }
 
   crazy_linker_test_library("crazy_linker_tests_libzoo") {
-    sources = [
-      "src/tests/zoo.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libbar",
-    ]
+    sources = [ "src/tests/zoo.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libbar" ]
   }
 
   crazy_linker_test_library(
       "crazy_linker_tests_libzoo_with_android_dlopen_ext") {
-    sources = [
-      "src/tests/zoo_with_android_dlopen_ext.cpp",
-    ]
+    sources = [ "src/tests/zoo_with_android_dlopen_ext.cpp" ]
     libs = [ "dl" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libzoo_with_dlopen_handle") {
-    sources = [
-      "src/tests/zoo_with_dlopen_handle.cpp",
-    ]
+    sources = [ "src/tests/zoo_with_dlopen_handle.cpp" ]
     libs = [ "dl" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libzoo_dlopen_in_initializer") {
-    sources = [
-      "src/tests/zoo_with_dlopen_in_elf_initializer.cpp",
-    ]
+    sources = [ "src/tests/zoo_with_dlopen_in_elf_initializer.cpp" ]
     defines = [
       "THIS_LIB_NAME=\"libzoo_dlopen_in_initializer\"",
       "LIB_NAME=\"libcrazy_linker_tests_libzoo_dlopen_in_initializer_inner.so\"",
     ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo_dlopen_in_initializer_inner",
-    ]
+    data_deps = [ ":crazy_linker_tests_libzoo_dlopen_in_initializer_inner" ]
     libs = [ "dl" ]
   }
 
   crazy_linker_test_library(
       "crazy_linker_tests_libzoo_dlopen_in_initializer_inner") {
-    sources = [
-      "src/tests/zoo_with_dlopen_in_elf_initializer.cpp",
-    ]
+    sources = [ "src/tests/zoo_with_dlopen_in_elf_initializer.cpp" ]
     defines = [
       "THIS_LIB_NAME=\"libzoo_dlopen_in_initializer_inner\"",
       "LIB_NAME=\"libcrazy_linker_tests_libzoo.so\"",
     ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo",
-    ]
+    data_deps = [ ":crazy_linker_tests_libzoo" ]
     libs = [ "dl" ]
   }
 
   crazy_linker_test_library("crazy_linker_tests_libjni_lib") {
-    sources = [
-      "src/tests/jni_lib.cpp",
-    ]
+    sources = [ "src/tests/jni_lib.cpp" ]
   }
 
   # Integration tests are provided as standalone executables for now.
 
   executable("crazy_linker_bench_load_library") {
-    sources = [
-      "src/tests/bench_load_library.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/bench_load_library.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_jni_hooks") {
-    sources = [
-      "src/tests/test_jni_hooks.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libjni_lib",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_jni_hooks.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libjni_lib" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library") {
-    sources = [
-      "src/tests/test_load_library.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_load_library.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library_with_fd") {
-    sources = [
-      "src/tests/test_load_library_with_fd.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_load_library_with_fd.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library_with_reserved_map") {
-    sources = [
-      "src/tests/test_load_library_with_reserved_map.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_load_library_with_reserved_map.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library_with_relr_relocations") {
-    sources = [
-      "src/tests/test_load_library.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo_with_relro_and_relr",
-    ]
+    sources = [ "src/tests/test_load_library.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo_with_relro_and_relr" ]
     defines =
         [ "LIB_NAME=\"libcrazy_linker_tests_libfoo_with_relro_and_relr.so\"" ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library_depends") {
-    sources = [
-      "src/tests/test_load_library_depends.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libbar",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_load_library_depends.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libbar" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_constructors_destructors") {
-    sources = [
-      "src/tests/test_constructors_destructors.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo_with_static_constructor",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_constructors_destructors.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo_with_static_constructor" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_load_library_with_gnu_hash_table") {
-    sources = [
-      "src/tests/test_load_library.cpp",
-    ]
+    sources = [ "src/tests/test_load_library.cpp" ]
     defines =
         [ "LIB_NAME=\"libcrazy_linker_tests_libfoo_with_gnu_hash_table.so\"" ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo_with_gnu_hash_table",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    data_deps = [ ":crazy_linker_tests_libfoo_with_gnu_hash_table" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_dl_wrappers") {
-    sources = [
-      "src/tests/test_dl_wrappers.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_dl_wrappers.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libzoo" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_dl_wrappers_recursive") {
-    sources = [
-      "src/tests/test_dl_wrappers_recursive.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo_dlopen_in_initializer",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_dl_wrappers_recursive.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libzoo_dlopen_in_initializer" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_dl_wrappers_with_system_handle") {
-    sources = [
-      "src/tests/test_dl_wrappers_with_system_handle.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo_with_dlopen_handle",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_dl_wrappers_with_system_handle.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libzoo_with_dlopen_handle" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_dl_wrappers_with_android_dlopen_ext") {
-    sources = [
-      "src/tests/test_dl_wrappers_with_android_dlopen_ext.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libzoo_with_android_dlopen_ext",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_dl_wrappers_with_android_dlopen_ext.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libzoo_with_android_dlopen_ext" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_dl_wrappers_valid_handles") {
-    sources = [
-      "src/tests/test_dl_wrappers_valid_handles.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libbar_with_two_dlopens",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_dl_wrappers_valid_handles.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libbar_with_two_dlopens" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_search_path_list") {
-    sources = [
-      "src/tests/test_search_path_list.cpp",
-    ]
+    sources = [ "src/tests/test_search_path_list.cpp" ]
     data_deps = [
       ":crazy_linker_tests_libfoo",
       ":crazy_linker_tests_libfoo2",
     ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_relocated_shared_relro") {
-    sources = [
-      "src/tests/test_relocated_shared_relro.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo_with_relro",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_relocated_shared_relro.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo_with_relro" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_shared_relro") {
-    sources = [
-      "src/tests/test_shared_relro.cpp",
-    ]
-    data_deps = [
-      ":crazy_linker_tests_libfoo_with_relro",
-    ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    sources = [ "src/tests/test_shared_relro.cpp" ]
+    data_deps = [ ":crazy_linker_tests_libfoo_with_relro" ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   executable("crazy_linker_test_two_shared_relros") {
-    sources = [
-      "src/tests/test_two_shared_relros.cpp",
-    ]
+    sources = [ "src/tests/test_two_shared_relros.cpp" ]
     data_deps = [
       ":crazy_linker_tests_libbar_with_relro",
       ":crazy_linker_tests_libfoo_with_relro",
     ]
-    deps = [
-      ":android_crazy_linker",
-    ]
+    deps = [ ":android_crazy_linker" ]
   }
 
   # Copy the script that runs all integration tests to the right directory.
   copy("run_android_crazy_linker_tests") {
-    sources = [
-      "src/run_tests.sh",
-    ]
-    outputs = [
-      "$root_out_dir/bin/run_android_crazy_linker_tests",
-    ]
+    sources = [ "src/run_tests.sh" ]
+    outputs = [ "$root_out_dir/bin/run_android_crazy_linker_tests" ]
   }
 }  # is_android
 

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Test display math lowercase
+PASS Test inline math lowercase
+FAIL Test width on display=block math lowercase assert_approx_equals: math must be centered. expected 308 +/- 1 but got 58
+PASS Test display math uppercase
+PASS Test inline math uppercase
+FAIL Test width on display=block math uppercase assert_approx_equals: math must be centered. expected 308 +/- 1 but got 58
+PASS Test display math alternate_case
+PASS Test inline math alternate_case
+FAIL Test width on display=block math alternate_case assert_approx_equals: math must be centered. expected 308 +/- 1 but got 58
+PASS Test dynamically setting display=block
+PASS Test dynamically setting display=inline
+Harness: the test ran to completion.
+

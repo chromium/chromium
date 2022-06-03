@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
@@ -167,7 +167,7 @@ DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
   properties_->RegisterInterface(kInterfaceDbusMenu);
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kInterfaceDbusMenu, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property(kPropertyIconThemePath, DbusArray<DbusString>());
   set_property(kPropertyMenuStatus, DbusString(kPropertyValueStatusNormal));

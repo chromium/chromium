@@ -11,7 +11,7 @@ test(() => {
   const response = new Response(rs);
   try {
     // This throws different errors depending on how Blink is built, so
-    // assert_throws() cannot be used.
+    // assert_throws_{js, dom}() cannot be used.
     fillStackAndRun(() => response.clone(), 784);
     assert_unreached('stack should overflow');
   } catch (e) {

@@ -9,8 +9,9 @@ import android.app.Activity;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.feedback.FeedbackCollector;
+import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
+import org.chromium.chrome.browser.feedback.ScreenshotTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -20,21 +21,23 @@ import org.chromium.ui.base.WindowAndroid;
 public final class ChildAccountFeedbackReporter {
     private static FeedbackReporter sFeedbackReporter;
 
-    public static void reportFeedback(Activity activity, String description, String url) {
+    public static void reportFeedback(
+            Activity activity, String description, String url, Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sFeedbackReporter == null) {
             sFeedbackReporter = AppHooks.get().createFeedbackReporter();
         }
 
-        new FeedbackCollector(activity, Profile.getLastUsedProfile(), url, null /* categoryTag */,
-                description, null, true /* takeScreenshot */,
+        new ChromeFeedbackCollector(activity, null /* categoryTag */, description,
+                new ScreenshotTask(activity),
+                new ChromeFeedbackCollector.InitParams(profile, url, null),
                 collector -> { sFeedbackReporter.reportFeedback(collector); });
     }
 
     @CalledByNative
     public static void reportFeedbackWithWindow(
-            WindowAndroid window, String description, String url) {
-        reportFeedback(window.getActivity().get(), description, url);
+            WindowAndroid window, String description, String url, Profile profile) {
+        reportFeedback(window.getActivity().get(), description, url, profile);
     }
 
     private ChildAccountFeedbackReporter() {}

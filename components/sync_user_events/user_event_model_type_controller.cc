@@ -7,10 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -28,18 +26,27 @@ UserEventModelTypeController::~UserEventModelTypeController() {
   sync_service_->RemoveObserver(this);
 }
 
+void UserEventModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
+                                        StopCallback callback) {
+  DCHECK(CalledOnValidThread());
+  switch (shutdown_reason) {
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      // Special case: For USER_EVENT, we want to clear all data even when Sync
+      // is stopped temporarily.
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
+      break;
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      break;
+  }
+  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+}
+
 DataTypeController::PreconditionState
 UserEventModelTypeController::GetPreconditionState() const {
-  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()) {
-    return PreconditionState::kMustStopAndClearData;
-  }
-  // TODO(crbug.com/906995): Remove the syncer::IsWebSignout() check once we
-  // stop sync in this state. Also remove the "+google_apis/gaia" include
-  // dependency and the "//google_apis" build dependency of sync_user_events.
-  if (syncer::IsWebSignout(sync_service_->GetAuthError())) {
-    return PreconditionState::kMustStopAndClearData;
-  }
-  return PreconditionState::kPreconditionsMet;
+  return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()
+             ? PreconditionState::kMustStopAndClearData
+             : PreconditionState::kPreconditionsMet;
 }
 
 void UserEventModelTypeController::OnStateChanged(syncer::SyncService* sync) {

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_ADD_LANGUAGE_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_ADD_LANGUAGE_TABLE_VIEW_CONTROLLER_H_
 
+#include <string>
+
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @class AddLanguageTableViewController;
@@ -30,10 +32,7 @@
 - (instancetype)initWithDataSource:(id<LanguageSettingsDataSource>)dataSource
                           delegate:(id<AddLanguageTableViewControllerDelegate>)
                                        delegate NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Called when the list of supported languages changes so that the view
 // controller can update its model from |dataSource|.

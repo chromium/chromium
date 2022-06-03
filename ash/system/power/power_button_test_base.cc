@@ -4,7 +4,6 @@
 
 #include "ash/system/power/power_button_test_base.h"
 
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -24,6 +23,9 @@
 namespace ash {
 
 PowerButtonTestBase::PowerButtonTestBase() = default;
+PowerButtonTestBase::PowerButtonTestBase(
+    base::test::TaskEnvironment::TimeSource time)
+    : AshTestBase(time) {}
 
 PowerButtonTestBase::~PowerButtonTestBase() = default;
 
@@ -122,7 +124,7 @@ void PowerButtonTestBase::EnableTabletMode(bool enable) {
 
 void PowerButtonTestBase::AdvanceClockToAvoidIgnoring() {
   tick_clock_.Advance(PowerButtonController::kIgnoreRepeatedButtonUpDelay +
-                      base::TimeDelta::FromMilliseconds(1));
+                      base::Milliseconds(1));
 }
 
 }  // namespace ash

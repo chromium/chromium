@@ -1,0 +1,19 @@
+Name: libxcb-keysyms
+Short Name: libxcb-keysyms
+URL: https://gitlab.freedesktop.org/xorg/lib/libxcb-keysyms
+Version: 691515491a4a3c119adc6c769c29de264b3f3806
+License: MIT
+License File: LICENSE
+Security Critical: no
+
+Description:
+Standard X key constants and conversion to/from keycodes
+
+Local Modifications:
+The code contained in this directory is not pulled directly from the upstream
+repo.  Only a subset of certain functions are ported.  Each function links back
+to its original upstream implementation.  The directory structure and original
+file names are preserved from upstream.  There's no build target for this
+directory; instead, source files are directly #include'd in //ui/gfx/x.  The
+LICENSE file is not copied from the upstream repo -- rather, it's obtained from
+the copyright header at the top of each source file copied from the repo.

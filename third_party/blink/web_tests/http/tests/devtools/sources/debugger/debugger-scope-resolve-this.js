@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests resolving this object name via source maps.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/resolve-this.js');
 
@@ -13,7 +13,7 @@
   function onSourceMapLoaded() {
     SourcesTestRunner.startDebuggerTest(() => SourcesTestRunner.runTestFunctionAndWaitUntilPaused());
     TestRunner.addSniffer(
-        Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest', onSidebarRendered, true);
+        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest', onSidebarRendered, true);
   }
 
   function onSidebarRendered() {

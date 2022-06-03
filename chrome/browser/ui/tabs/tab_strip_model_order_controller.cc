@@ -10,10 +10,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // TabStripModelOrderController, public:
 
-TabStripModelOrderController::TabStripModelOrderController(
-    TabStripModel* tabstrip)
-    : tabstrip_(tabstrip) {
-  tabstrip_->AddObserver(this);
+TabStripModelOrderController::TabStripModelOrderController(TabStripModel* model)
+    : model_(model) {
+  model_->AddObserver(this);
 }
 
 TabStripModelOrderController::~TabStripModelOrderController() {}
@@ -21,94 +20,105 @@ TabStripModelOrderController::~TabStripModelOrderController() {}
 int TabStripModelOrderController::DetermineInsertionIndex(
     ui::PageTransition transition,
     bool foreground) {
-  int tab_count = tabstrip_->count();
+  int tab_count = model_->count();
   if (!tab_count)
     return 0;
 
   // NOTE: TabStripModel enforces that all non-mini-tabs occur after mini-tabs,
   // so we don't have to check here too.
   if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK) &&
-      tabstrip_->active_index() != -1) {
+      model_->active_index() != -1) {
     if (foreground) {
       // If the page was opened in the foreground by a link click in another
       // tab, insert it adjacent to the tab that opened that link.
-      return tabstrip_->active_index() + 1;
+      return model_->active_index() + 1;
     }
-    content::WebContents* opener = tabstrip_->GetActiveWebContents();
+    content::WebContents* opener = model_->GetActiveWebContents();
     // Get the index of the next item opened by this tab, and insert after
     // it...
-    int index = tabstrip_->GetIndexOfLastWebContentsOpenedBy(
-        opener, tabstrip_->active_index());
+    int index = model_->GetIndexOfLastWebContentsOpenedBy(
+        opener, model_->active_index());
     if (index != TabStripModel::kNoTab)
       return index + 1;
     // Otherwise insert adjacent to opener...
-    return tabstrip_->active_index() + 1;
+    return model_->active_index() + 1;
   }
   // In other cases, such as Ctrl+T, open at the end of the strip.
-  return tabstrip_->count();
+  return model_->count();
 }
 
-base::Optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
+absl::optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
     int removing_index) const {
-  DCHECK(tabstrip_->ContainsIndex(removing_index));
+  DCHECK(model_->ContainsIndex(removing_index));
 
   // The case where the closed tab is inactive is handled directly in
   // TabStripModel.
-  if (removing_index != tabstrip_->active_index())
-    return base::nullopt;
+  if (removing_index != model_->active_index())
+    return absl::nullopt;
 
   // The case where multiple tabs are selected is handled directly in
   // TabStripModel.
-  if (tabstrip_->selection_model().size() > 1)
-    return base::nullopt;
+  if (model_->selection_model().size() > 1)
+    return absl::nullopt;
 
   content::WebContents* parent_opener =
-      tabstrip_->GetOpenerOfWebContentsAt(removing_index);
+      model_->GetOpenerOfWebContentsAt(removing_index);
   // First see if the index being removed has any "child" tabs. If it does, we
   // want to select the first that child opened, not the next tab opened by the
   // removed tab.
   content::WebContents* removed_contents =
-      tabstrip_->GetWebContentsAt(removing_index);
+      model_->GetWebContentsAt(removing_index);
   // The parent opener should never be the same as the controller being removed.
   DCHECK(parent_opener != removed_contents);
-  int index = tabstrip_->GetIndexOfNextWebContentsOpenedBy(removed_contents,
-                                                           removing_index);
-  if (index != TabStripModel::kNoTab)
+  int index = model_->GetIndexOfNextWebContentsOpenedBy(removed_contents,
+                                                        removing_index);
+  if (index != TabStripModel::kNoTab && !model_->IsTabCollapsed(index))
     return GetValidIndex(index, removing_index);
 
   if (parent_opener) {
     // If the tab has an opener, shift selection to the next tab with the same
     // opener.
-    int index = tabstrip_->GetIndexOfNextWebContentsOpenedBy(parent_opener,
-                                                             removing_index);
-    if (index != TabStripModel::kNoTab)
+    index = model_->GetIndexOfNextWebContentsOpenedBy(parent_opener,
+                                                      removing_index);
+    if (index != TabStripModel::kNoTab && !model_->IsTabCollapsed(index))
       return GetValidIndex(index, removing_index);
 
     // If we can't find another tab with the same opener, fall back to the
     // opener itself.
-    index = tabstrip_->GetIndexOfWebContents(parent_opener);
-    if (index != TabStripModel::kNoTab)
+    index = model_->GetIndexOfWebContents(parent_opener);
+    if (index != TabStripModel::kNoTab && !model_->IsTabCollapsed(index))
       return GetValidIndex(index, removing_index);
   }
 
   // If closing a grouped tab, return a tab that is still in the group, if any.
-  const base::Optional<tab_groups::TabGroupId> current_group =
-      tabstrip_->GetTabGroupForTab(removing_index);
+  const absl::optional<tab_groups::TabGroupId> current_group =
+      model_->GetTabGroupForTab(removing_index);
   if (current_group.has_value()) {
     // Match the default behavior below: prefer the tab to the right.
-    const base::Optional<tab_groups::TabGroupId> right_group =
-        tabstrip_->GetTabGroupForTab(removing_index + 1);
+    const absl::optional<tab_groups::TabGroupId> right_group =
+        model_->GetTabGroupForTab(removing_index + 1);
     if (current_group == right_group)
       return removing_index;
 
-    const base::Optional<tab_groups::TabGroupId> left_group =
-        tabstrip_->GetTabGroupForTab(removing_index - 1);
+    const absl::optional<tab_groups::TabGroupId> left_group =
+        model_->GetTabGroupForTab(removing_index - 1);
     if (current_group == left_group)
       return removing_index - 1;
   }
 
+  // At this point, the tab detaching is either not inside a group, or the last
+  // tab in the group. If there are any tabs in a not collapsed group,
+  // |GetNextExpandedActiveTab()| will return the index of that tab.
+  absl::optional<int> next_available =
+      model_->GetNextExpandedActiveTab(removing_index, absl::nullopt);
+  if (next_available.has_value())
+    return GetValidIndex(next_available.value(), removing_index);
+
   // By default, return the tab on the right, unless this is the last tab.
-  if (removing_index >= (tabstrip_->count() - 1))
+  // Reaching this point means there are no other tabs in an uncollapsed group.
+  // The tab at the specified index will become automatically expanded by the
+  // caller.
+  if (removing_index >= (model_->count() - 1))
     return removing_index - 1;
 
   return removing_index;
@@ -127,26 +137,26 @@ void TabStripModelOrderController::OnTabStripModelChanged(
   int reason = selection.reason;
 
   if (old_contents) {
-    int index = tabstrip_->GetIndexOfWebContents(old_contents);
+    int index = model_->GetIndexOfWebContents(old_contents);
     if (index != TabStripModel::kNoTab) {
-      old_opener = tabstrip_->GetOpenerOfWebContentsAt(index);
+      old_opener = model_->GetOpenerOfWebContentsAt(index);
 
       // Forget the opener relationship if it needs to be reset whenever the
       // active tab changes (see comment in TabStripModel::AddWebContents, where
       // the flag is set).
-      if (tabstrip_->ShouldResetOpenerOnActiveTabChange(old_contents))
-        tabstrip_->ForgetOpener(old_contents);
+      if (model_->ShouldResetOpenerOnActiveTabChange(old_contents))
+        model_->ForgetOpener(old_contents);
     }
   }
   content::WebContents* new_opener =
-      tabstrip_->GetOpenerOfWebContentsAt(selection.new_model.active());
+      model_->GetOpenerOfWebContentsAt(selection.new_model.active());
 
   if ((reason & CHANGE_REASON_USER_GESTURE) && new_opener != old_opener &&
       ((old_contents == nullptr && new_opener == nullptr) ||
        new_opener != old_contents) &&
       ((new_contents == nullptr && old_opener == nullptr) ||
        old_opener != new_contents)) {
-    tabstrip_->ForgetAllOpeners();
+    model_->ForgetAllOpeners();
   }
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <if expr="is_android or is_ios">
+  <if expr="is_ios">
     <message name="IDS_NTP_TITLE_NO_SUGGESTIONS" desc="On the New Tab Page, title text explaining there is no content." formatter_data="android_java">
       That’s all for now
     </message>
@@ -23,41 +23,8 @@
     </message>
   </if>
 
-  <if expr="use_titlecase">
-    <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_HEADER_BRANDED" desc="Branded version of the the articles section header, which is a list of news articles displayed as cards on the New Tab Page.">
-      Suggestions by Google
-    </message>
-  </if>
-
-  <if expr="not use_titlecase">
-    <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_HEADER_BRANDED" desc="Branded version of the the articles section header, which is a list of news articles displayed as cards on the New Tab Page." formatter_data="android_java">
-      Suggestions by Google
-    </message>
-  </if>
-
-  <if expr="use_titlecase">
-    <message name="IDS_NTP_SUGGESTIONS_SECTION_HEADER" desc="Header of the suggested content section, which is a list of suggested content displayed as cards on the New Tab Page. This will replace a string 'Articles for You', which was used when the suggested content was just news articles. ">
-      For You
-    </message>
-  </if>
-
-  <if expr="not use_titlecase">
-    <message name="IDS_NTP_SUGGESTIONS_SECTION_HEADER" desc="Header of the suggested content section, which is a list of suggested content displayed as cards on the New Tab Page. This will replace a string 'Articles for You', which was used when the suggested content was just news articles. " formatter_data="android_java">
-      For you
-    </message>
-  </if>
-
-  <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see suggested articles in this area in the future.">
+  <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see suggested articles in this area in the future." formatter_data="android_java">
     Your suggested articles appear here
-  </message>
-
-  <!-- When you change this string, please change IDS_NTP_PHYSICAL_WEB_PAGE_SUGGESTIONS_SECTION_EMPTY description accordingly. -->
-  <message name="IDS_NTP_PHYSICAL_WEB_PAGE_SUGGESTIONS_SECTION_HEADER" desc="Header of the physical web section. The physical web section shows a list of physical web pages available near the user. A physical web page is a URL transmitted over bluetooth by a low power device (a beacon). The user must be at most 100 meters (generally even closer) away from the beacon to receive the URL. This allows the URL to be context based (e.g. one is at a train station and the schedule is available as a physical web page).">
-    Nearby
-  </message>
-
-  <message name="IDS_NTP_PHYSICAL_WEB_PAGE_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see physical web page suggestions in this area in the future, but currently this area is empty. Connection to the physical web section header (which is currently 'Nearby') must be clear, but the words (i.e. translation of 'nearby') may differ. The physical web section shows a list of physical web pages available near the user. A physical web page is a URL transmitted over bluetooth by a low power device (a beacon). The user must be at most 100 meters (generally even closer) away from the beacon to receive the URL. This allows the URL to be context based (e.g. one is at a train station and the schedule is available as a physical web page).">
-    Your nearby suggestions appear here
   </message>
 
   <if expr="use_titlecase">

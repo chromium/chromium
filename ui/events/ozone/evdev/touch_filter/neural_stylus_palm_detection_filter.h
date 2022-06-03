@@ -7,10 +7,10 @@
 
 #include <bitset>
 #include <cstdint>
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -36,6 +36,12 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
       const EventDeviceInfo& devinfo,
       std::unique_ptr<NeuralStylusPalmDetectionFilterModel> palm_model,
       SharedPalmDetectionFilterState* shared_palm_state);
+
+  NeuralStylusPalmDetectionFilter(const NeuralStylusPalmDetectionFilter&) =
+      delete;
+  NeuralStylusPalmDetectionFilter& operator=(
+      const NeuralStylusPalmDetectionFilter&) = delete;
+
   ~NeuralStylusPalmDetectionFilter() override;
   void Filter(const std::vector<InProgressTouchEvdev>& touches,
               base::TimeTicks time,
@@ -44,6 +50,10 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
 
   static bool CompatibleWithNeuralStylusPalmDetectionFilter(
       const EventDeviceInfo& devinfo);
+
+  static bool CompatibleWithNeuralStylusPalmDetectionFilter(
+      const EventDeviceInfo& devinfo,
+      const std::string& ozone_params_switch_string);
 
   static const int kFeaturesPerSample;
   static const int kExtraFeaturesForNeighbor;
@@ -59,6 +69,7 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
       std::vector<std::pair<float, int>>* nearest_strokes) const;
   void FindBiggestNeighborsWithin(
       int neighbor_count,
+      unsigned long min_sample_count,
       float max_distance,
       const PalmFilterStroke& stroke,
       std::vector<std::pair<float, int>>* biggest_strokes) const;
@@ -81,13 +92,12 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
   std::bitset<kNumTouchEvdevSlots> is_palm_;
   std::bitset<kNumTouchEvdevSlots> is_delay_;
   std::map<int, PalmFilterStroke> strokes_;
+  base::TimeTicks previous_report_time_;
+  std::unordered_set<int> active_tracking_ids_;
+  int tracking_ids_count_within_session_;
   int tracking_ids_[kNumTouchEvdevSlots];
   const PalmFilterDeviceInfo palm_filter_dev_info_;
   std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model_;
-
-  static const std::vector<int> kRequiredAbsMtCodes;
-
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilter);
 };
 
 }  // namespace ui

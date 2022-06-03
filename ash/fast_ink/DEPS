@@ -1,0 +1,6 @@
+include_rules = [
+  "+cc",
+  "+components/viz/common",
+  "+gpu/command_buffer/client",
+  "+gpu/command_buffer/common",
+]

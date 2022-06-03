@@ -24,7 +24,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/annotation_snapshot.h"
 #include "snapshot/module_snapshot.h"
 #include "util/file/file_reader.h"
@@ -37,6 +36,10 @@ namespace internal {
 class ModuleSnapshotMinidump final : public ModuleSnapshot {
  public:
   ModuleSnapshotMinidump();
+
+  ModuleSnapshotMinidump(const ModuleSnapshotMinidump&) = delete;
+  ModuleSnapshotMinidump& operator=(const ModuleSnapshotMinidump&) = delete;
+
   ~ModuleSnapshotMinidump() override;
 
   //! \brief Initializes the object.
@@ -103,8 +106,6 @@ class ModuleSnapshotMinidump final : public ModuleSnapshot {
   std::string debug_file_name_;
   uint32_t age_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotMinidump);
 };
 
 }  // namespace internal

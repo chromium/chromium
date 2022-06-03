@@ -5,9 +5,8 @@
 #include "components/ntp_snippets/remote/cached_image_fetcher.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/ntp_snippets/remote/remote_suggestions_database.h"

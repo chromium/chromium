@@ -5,12 +5,12 @@
 #include "chrome/installer/setup/setup_singleton.h"
 
 #include <functional>
+#include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/installer/setup/installer_state.h"
@@ -20,14 +20,14 @@ namespace installer {
 
 std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
     const base::CommandLine& command_line,
-    const MasterPreferences& master_preferences,
+    const InitialPreferences& initial_preferences,
     InstallationState* original_state,
     InstallerState* installer_state) {
   DCHECK(original_state);
   DCHECK(installer_state);
 
-  const base::string16 sync_primitive_name_suffix(
-      base::NumberToString16(std::hash<base::FilePath::StringType>()(
+  const std::wstring sync_primitive_name_suffix(
+      base::NumberToWString(std::hash<base::FilePath::StringType>()(
           installer_state->target_path().value())));
 
   base::win::ScopedHandle setup_mutex(::CreateMutex(
@@ -84,7 +84,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
 
   // Update |original_state| and |installer_state|.
   original_state->Initialize();
-  installer_state->Initialize(command_line, master_preferences,
+  installer_state->Initialize(command_line, initial_preferences,
                               *original_state);
 
   // UMA data indicates that this method succeeds > 99% of the time.
@@ -110,8 +110,7 @@ bool SetupSingleton::ScopedHoldMutex::Acquire(HANDLE mutex) {
   DCHECK_EQ(INVALID_HANDLE_VALUE, mutex_);
 
   const DWORD wait_return_value = ::WaitForSingleObject(
-      mutex,
-      static_cast<DWORD>(base::TimeDelta::FromSeconds(5).InMilliseconds()));
+      mutex, static_cast<DWORD>(base::Seconds(5).InMilliseconds()));
   if (wait_return_value == WAIT_ABANDONED ||
       wait_return_value == WAIT_OBJECT_0) {
     mutex_ = mutex;

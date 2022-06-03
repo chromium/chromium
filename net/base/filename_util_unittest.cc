@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -35,18 +36,18 @@ struct GenerateFilenameCase {
 };
 
 // The expected filenames are coded as wchar_t for convenience.
-// TODO(https://crbug.com/911896): Make these char16_t once base::string16 is
+// TODO(https://crbug.com/911896): Make these char16_t once std::u16string is
 // std::u16string.
 std::wstring FilePathAsWString(const base::FilePath& path) {
 #if defined(OS_WIN)
-  return base::UTF16ToWide(path.value());
+  return path.value();
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::UTF8ToWide(path.value());
 #endif
 }
 base::FilePath WStringAsFilePath(const std::wstring& str) {
 #if defined(OS_WIN)
-  return base::FilePath(base::WideToUTF16(str));
+  return base::FilePath(str);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::FilePath(base::WideToUTF8(str));
 #endif
@@ -192,13 +193,15 @@ TEST(FilenameUtilTest, FileURLConversion) {
     // Other percent-encoded characters that are left alone when displaying a
     // URL are decoded in a file path (https://crbug.com/585422).
     {L"C:\\foo\\\U0001F512.txt",
-     "file:///C:/foo/%F0%9F%94%92.txt"},                       // Blocked.
-    {L"C:\\foo\\\u2001.txt", "file:///C:/foo/%E2%80%81.txt"},  // Blocked.
+     "file:///C:/foo/%F0%9F%94%92.txt"},                         // Blocked.
+    {L"C:\\foo\\\u2001.txt", "file:///C:/foo/%E2%80%81.txt"},    // Blocked.
+    {L"C:\\foo\\\a\tbar\n ", "file:///C:/foo/%07%09bar%0A%20"},  // Blocked.
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     {L"/foo/bar.txt", "file:///foo/bar.txt"},
     {L"/foo/BAR.txt", "file:///foo/BAR.txt"},
     {L"/C:/foo/bar.txt", "file:///C:/foo/bar.txt"},
     {L"/foo/bar?.txt", "file:///foo/bar%3F.txt"},
+    {L"/foo/\a\tbar\n ", "file:///foo/%07%09bar%0A%20"},
     // %5C ('\\') is not special on POSIX, and is therefore decoded as normal.
     {L"/foo/..\\bar", "file:///foo/..%5Cbar"},
     {L"/some computer/foo/bar.txt", "file:///some%20computer/foo/bar.txt"},
@@ -763,7 +766,7 @@ TEST(FilenameUtilTest, GenerateFileName) {
     {__LINE__, "http://www.example.com/goat.tgz?wearing_hat=true", "", "", "",
      "application/x-gzip", L"", L"goat.tgz"},
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {// http://crosbug.com/26028
      __LINE__, "http://www.example.com/fooa%cc%88.txt", "", "", "",
      "image/jpeg", L"foo\xe4", L"foo\xe4.txt"},

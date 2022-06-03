@@ -55,17 +55,13 @@ generated_types("generated_api_types") {
 json_features("api_features") {
   feature_type = "APIFeature"
   method_name = "AddChromeAppsAPIFeatures"
-  sources = [
-    "_api_features.json",
-  ]
+  sources = [ "_api_features.json" ]
   visibility = [ ":apps_features" ]
 }
 
 json_features("permission_features") {
   feature_type = "PermissionFeature"
   method_name = "AddChromeAppsPermissionFeatures"
-  sources = [
-    "_permission_features.json",
-  ]
+  sources = [ "_permission_features.json" ]
   visibility = [ ":apps_features" ]
 }

@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_H_
 #define COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -26,6 +24,8 @@ extern const char kGCMScope[];
 // Encapsulates Instance ID functionalities that need to be implemented for
 // different platforms. One instance is created per application. Life of
 // Instance ID is managed by the InstanceIDDriver.
+//
+// Create instances of this class by calling |InstanceIDDriver::GetInstanceID|.
 class InstanceID {
  public:
   // Used in UMA. Can add enum values, but never renumber or delete and reuse.
@@ -64,9 +64,9 @@ class InstanceID {
 
   // Asynchronous callbacks. Must not synchronously delete |this| (using
   // InstanceIDDriver::RemoveInstanceID).
-  using GetIDCallback = base::Callback<void(const std::string& id)>;
+  using GetIDCallback = base::OnceCallback<void(const std::string& id)>;
   using GetCreationTimeCallback =
-      base::Callback<void(const base::Time& creation_time)>;
+      base::OnceCallback<void(const base::Time& creation_time)>;
   using GetTokenCallback =
       base::OnceCallback<void(const std::string& token, Result result)>;
   using ValidateTokenCallback = base::OnceCallback<void(bool is_valid)>;
@@ -84,34 +84,43 @@ class InstanceID {
   static std::unique_ptr<InstanceID> CreateInternal(const std::string& app_id,
                                                     gcm::GCMDriver* gcm_driver);
 
+  InstanceID(const InstanceID&) = delete;
+  InstanceID& operator=(const InstanceID&) = delete;
+
   virtual ~InstanceID();
 
   // Returns the Instance ID.
-  virtual void GetID(const GetIDCallback& callback) = 0;
+  virtual void GetID(GetIDCallback callback) = 0;
 
-  // Returns the time when the InstanceID has been generated.
-  virtual void GetCreationTime(const GetCreationTimeCallback& callback) = 0;
+  // Returns the time when the Instance ID has been generated.
+  virtual void GetCreationTime(GetCreationTimeCallback callback) = 0;
 
   // Retrieves a token that allows the authorized entity to access the service
-  // defined as "scope".
+  // defined as "scope". This may cause network requests but the result is
+  // cached on disk for up to a week. Token validity will be checked
+  // automatically. Thus you should not store tokens for long periods yourself,
+  // instead call this function each time it's needed.
+  //
+  // To receive messages, register an |AppIdHandler| on |gcm_driver()|.
+  //
   // |authorized_entity|: identifies the entity that is authorized to access
   //                      resources associated with this Instance ID. It can be
-  //                      another Instance ID or a project ID.
+  //                      another Instance ID or a numeric project ID.
   // |scope|: identifies authorized actions that the authorized entity can take.
   //          E.g. for sending GCM messages, "GCM" scope should be used.
-  // |options|: allows including a small number of string key/value pairs that
-  //            will be associated with the token and may be used in processing
-  //            the request.
+  // |time_to_live|: TTL of retrieved token, unlimited if zero value passed.
   // |flags|: Flags used to create this token.
   // |callback|: to be called once the asynchronous operation is done.
   virtual void GetToken(const std::string& authorized_entity,
                         const std::string& scope,
-                        const std::map<std::string, std::string>& options,
+                        base::TimeDelta time_to_live,
                         std::set<Flags> flags,
                         GetTokenCallback callback) = 0;
 
   // Checks that the provided |token| matches the stored token for (|app_id()|,
-  // |authorized_entity|, |scope|).
+  // |authorized_entity|, |scope|). If you follow the guidance for |GetToken|,
+  // and call that function each time you need the token, then you will not
+  // need to use this function.
   virtual void ValidateToken(const std::string& authorized_entity,
                              const std::string& scope,
                              const std::string& token,
@@ -140,6 +149,8 @@ class InstanceID {
 
   std::string app_id() const { return app_id_; }
 
+  gcm::GCMDriver* gcm_driver() { return gcm_driver_; }
+
  protected:
   InstanceID(const std::string& app_id, gcm::GCMDriver* gcm_driver);
 
@@ -150,8 +161,6 @@ class InstanceID {
   virtual void DeleteIDImpl(DeleteIDCallback callback) = 0;
 
   void NotifyTokenRefresh(bool update_id);
-
-  gcm::GCMDriver* gcm_driver() { return gcm_driver_; }
 
  private:
   void DidDelete(const std::string& authorized_entity,
@@ -165,8 +174,6 @@ class InstanceID {
   std::string app_id_;
 
   base::WeakPtrFactory<InstanceID> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceID);
 };
 
 }  // namespace instance_id

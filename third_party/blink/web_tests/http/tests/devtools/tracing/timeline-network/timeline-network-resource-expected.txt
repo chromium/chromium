@@ -26,6 +26,7 @@ ResourceReceiveResponse Properties:
         fromServiceWorker : false
         mimeType : "text/html"
         requestId : <string>
+        responseTime : <number>
         statusCode : 200
         timing : <object>
     }
@@ -56,6 +57,7 @@ ResourceSendRequest Properties:
     data : {
         frame : <string>
         priority : "Low"
+        renderBlocking : "non_blocking"
         requestId : <string>
         requestMethod : "GET"
         stackTrace : <object>
@@ -78,6 +80,7 @@ ResourceReceiveResponse Properties:
         fromServiceWorker : false
         mimeType : "application/x-javascript"
         requestId : <string>
+        responseTime : <number>
         statusCode : 200
         timing : <object>
     }

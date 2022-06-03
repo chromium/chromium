@@ -74,8 +74,8 @@ TEST_F(WebSearchableFormDataTest, HttpSearchString) {
   WebViewImpl* web_view =
       web_view_helper_.InitializeAndLoad(base_url + "search_form_http.html");
 
-  WebVector<WebFormElement> forms;
-  web_view->MainFrameImpl()->GetDocument().Forms(forms);
+  WebVector<WebFormElement> forms =
+      web_view->MainFrameImpl()->GetDocument().Forms();
 
   EXPECT_EQ(forms.size(), 1U);
 
@@ -90,8 +90,8 @@ TEST_F(WebSearchableFormDataTest, HttpsSearchString) {
   WebViewImpl* web_view =
       web_view_helper_.InitializeAndLoad(base_url + "search_form_https.html");
 
-  WebVector<WebFormElement> forms;
-  web_view->MainFrameImpl()->GetDocument().Forms(forms);
+  WebVector<WebFormElement> forms =
+      web_view->MainFrameImpl()->GetDocument().Forms();
 
   EXPECT_EQ(forms.size(), 1U);
 

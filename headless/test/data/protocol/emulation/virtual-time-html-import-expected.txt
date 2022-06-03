@@ -1,6 +1,0 @@
-Tests that an html import followed by a pending script does not break virtual time.
-[
-    [0] : imported html
-    [1] : ran module
-    [2] : ran script
-]

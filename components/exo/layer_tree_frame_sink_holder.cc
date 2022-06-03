@@ -4,7 +4,7 @@
 
 #include "components/exo/layer_tree_frame_sink_holder.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/surface_tree_host.h"
@@ -55,10 +55,9 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   frame.metadata.begin_frame_ack.has_damage = true;
   frame.metadata.frame_token = ++holder->next_frame_token_;
   frame.metadata.device_scale_factor = holder->last_frame_device_scale_factor_;
-  frame.metadata.local_surface_id_allocation_time =
-      holder->last_local_surface_id_allocation_time_;
-  std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-  pass->SetNew(1, gfx::Rect(holder->last_frame_size_in_pixels_),
+  auto pass = viz::CompositorRenderPass::Create();
+  pass->SetNew(viz::CompositorRenderPassId{1},
+               gfx::Rect(holder->last_frame_size_in_pixels_),
                gfx::Rect(holder->last_frame_size_in_pixels_), gfx::Transform());
   frame.render_pass_list.push_back(std::move(pass));
   holder->last_frame_resources_.clear();
@@ -89,8 +88,6 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
 
   last_frame_size_in_pixels_ = frame.size_in_pixels();
   last_frame_device_scale_factor_ = frame.metadata.device_scale_factor;
-  last_local_surface_id_allocation_time_ =
-      frame.metadata.local_surface_id_allocation_time;
   last_frame_resources_.clear();
   for (auto& resource : frame.resource_list)
     last_frame_resources_.push_back(resource.id);
@@ -102,26 +99,26 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
 void LayerTreeFrameSinkHolder::DidNotProduceFrame(
     const viz::BeginFrameAck& ack) {
   DCHECK(!is_lost_);
-  frame_sink_->DidNotProduceFrame(ack);
+  frame_sink_->DidNotProduceFrame(ack, cc::FrameSkippedReason::kNoDamage);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // cc::LayerTreeFrameSinkClient overrides:
 
-base::Optional<viz::HitTestRegionList>
+absl::optional<viz::HitTestRegionList>
 LayerTreeFrameSinkHolder::BuildHitTestData() {
   return {};
 }
 
 void LayerTreeFrameSinkHolder::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   for (auto& resource : resources) {
     // Skip resources that are also in last frame. This can happen if
     // the frame sink id changed.
     if (base::Contains(last_frame_resources_, resource.id)) {
       continue;
     }
-    resource_manager_.ReclaimResource(resource);
+    resource_manager_.ReclaimResource(std::move(resource));
   }
 
   if (lifetime_manager_ && resource_manager_.HasNoCallbacks())

@@ -4,19 +4,30 @@
 
 package org.chromium.components.navigation_interception;
 
-import android.text.TextUtils;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * Navigation parameters container used to keep parameters for navigation interception.
  */
 public class NavigationParams {
-    /** Target URL of the navigation. */
-    public final String url;
+    /**
+     * Target URL of the navigation. Note that this URL is possibly invalid for webview, but
+     * otherwise should always be valid.
+     */
+    public final GURL url;
 
     /** The referrer URL for the navigation. */
-    public final String referrer;
+    public final GURL referrer;
+
+    /**
+     * The ID of the C++-side NavigationHandle that this instance corresponds to, or 0 if
+     * this instance was not constructed from a NavigationHandle.
+     */
+    public final long navigationId;
 
     /** True if the the navigation method is "POST". */
     public final boolean isPost;
@@ -45,11 +56,16 @@ public class NavigationParams {
     /** True if navigation is renderer initiated. Eg clicking on a link. */
     public final boolean isRendererInitiated;
 
-    public NavigationParams(String url, String referrer, boolean isPost, boolean hasUserGesture,
-            int pageTransitionType, boolean isRedirect, boolean isExternalProtocol,
-            boolean isMainFrame, boolean isRendererInitiated, boolean hasUserGestureCarryover) {
+    /** Initiator origin of the request, could be null. */
+    public final Origin initiatorOrigin;
+
+    public NavigationParams(GURL url, GURL referrer, long navigationId, boolean isPost,
+            boolean hasUserGesture, int pageTransitionType, boolean isRedirect,
+            boolean isExternalProtocol, boolean isMainFrame, boolean isRendererInitiated,
+            boolean hasUserGestureCarryover, @Nullable Origin initiatorOrigin) {
         this.url = url;
-        this.referrer = TextUtils.isEmpty(referrer) ? null : referrer;
+        this.referrer = referrer;
+        this.navigationId = navigationId;
         this.isPost = isPost;
         this.hasUserGesture = hasUserGesture;
         this.pageTransitionType = pageTransitionType;
@@ -58,15 +74,16 @@ public class NavigationParams {
         this.isMainFrame = isMainFrame;
         this.isRendererInitiated = isRendererInitiated;
         this.hasUserGestureCarryover = hasUserGestureCarryover;
+        this.initiatorOrigin = initiatorOrigin;
     }
 
     @CalledByNative
-    public static NavigationParams create(String url, String referrer, boolean isPost,
-            boolean hasUserGesture, int pageTransitionType, boolean isRedirect,
+    public static NavigationParams create(GURL url, GURL referrer, long navigationId,
+            boolean isPost, boolean hasUserGesture, int pageTransitionType, boolean isRedirect,
             boolean isExternalProtocol, boolean isMainFrame, boolean isRendererInitiated,
-            boolean hasUserGestureCarryover) {
-        return new NavigationParams(url, referrer, isPost, hasUserGesture, pageTransitionType,
-                isRedirect, isExternalProtocol, isMainFrame, isRendererInitiated,
-                hasUserGestureCarryover);
+            boolean hasUserGestureCarryover, @Nullable Origin initiatorOrigin) {
+        return new NavigationParams(url, referrer, navigationId, isPost, hasUserGesture,
+                pageTransitionType, isRedirect, isExternalProtocol, isMainFrame,
+                isRendererInitiated, hasUserGestureCarryover, initiatorOrigin);
     }
 }

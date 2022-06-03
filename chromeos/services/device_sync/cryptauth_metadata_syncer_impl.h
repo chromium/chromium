@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -22,6 +20,10 @@
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace chromeos {
 
@@ -42,17 +44,30 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthMetadataSyncer> BuildInstance(
+    static std::unique_ptr<CryptAuthMetadataSyncer> Create(
         CryptAuthClientFactory* client_factory,
+        PrefService* pref_service,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthMetadataSyncer> CreateInstance(
+        CryptAuthClientFactory* client_factory,
+        PrefService* pref_service,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  // Registers the prefs used by this class to the given |registry|.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  CryptAuthMetadataSyncerImpl(const CryptAuthMetadataSyncerImpl&) = delete;
+  CryptAuthMetadataSyncerImpl& operator=(const CryptAuthMetadataSyncerImpl&) =
+      delete;
 
   ~CryptAuthMetadataSyncerImpl() override;
 
@@ -65,6 +80,7 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
     kWaitingForSecondSyncMetadataResponse,
     kFinished
   };
+  friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
   // kKeyExistsButNotConfirmedWithCryptAuth: A local group public key exists but
   //     CryptAuth has yet to confirm or deny that it is the correct group key.
@@ -86,11 +102,11 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
     kNewKeyReceivedFromCryptAuth,
     kEstablished
   };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const GroupPublicKeyState& state);
 
-  friend std::ostream& operator<<(std::ostream& stream, const State& state);
-
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
-  static base::Optional<CryptAuthDeviceSyncResult::ResultCode>
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<CryptAuthDeviceSyncResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   // CryptAuthMetadataSyncer:
@@ -100,6 +116,7 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
       const CryptAuthKey* initial_group_key) override;
 
   CryptAuthMetadataSyncerImpl(CryptAuthClientFactory* client_factory,
+                              PrefService* pref_service,
                               std::unique_ptr<base::OneShotTimer> timer);
 
   void SetState(State state);
@@ -110,14 +127,23 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
 
   void AttemptNextStep();
 
+  // If the local device metadata and the encrypting group public key have not
+  // changed since they were last cached, reuse the cached encrypted local
+  // device metadata. Because the ECIES encryptor uses a different session key
+  // for each encryption, the blob could change even if the underlying metadata
+  // and group public key have not changed. We do not want the CryptAuth server
+  // to act as though device metadata has changed if the underlying data and
+  // encrypting key remain the same.
+  bool ShouldUseCachedEncryptedLocalDeviceMetadata();
+
   void EncryptLocalDeviceMetadata();
   void OnLocalDeviceMetadataEncrypted(
-      const base::Optional<std::string>& encrypted_metadata);
+      const absl::optional<std::string>& encrypted_metadata);
   void CreateGroupKey();
   void OnGroupKeyCreated(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& new_keys,
-      const base::Optional<CryptAuthKey>& client_ephemeral_dh);
+                           absl::optional<CryptAuthKey>>& new_keys,
+      const absl::optional<CryptAuthKey>& client_ephemeral_dh);
   void MakeSyncMetadataCall();
   void OnSyncMetadataSuccess(const cryptauthv2::SyncMetadataResponse& response);
   void OnSyncMetadataFailure(NetworkRequestError error);
@@ -128,9 +154,9 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
   size_t num_sync_metadata_calls_ = 0;
   cryptauthv2::RequestContext request_context_;
   cryptauthv2::BetterTogetherDeviceMetadata local_device_metadata_;
-  base::Optional<std::string> encrypted_local_device_metadata_;
+  absl::optional<std::string> encrypted_local_device_metadata_;
 
-  base::Optional<cryptauthv2::SyncMetadataResponse> sync_metadata_response_;
+  absl::optional<cryptauthv2::SyncMetadataResponse> sync_metadata_response_;
 
   // The filtered map of DeviceMetadataPackets from the SyncMetadataResponse,
   // keyed by device ID. All DeviceMetadataPackets are guaranteed to have a
@@ -162,9 +188,8 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
   State state_ = State::kNotStarted;
   const CryptAuthKey* initial_group_key_;
   CryptAuthClientFactory* client_factory_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthMetadataSyncerImpl);
 };
 
 }  // namespace device_sync

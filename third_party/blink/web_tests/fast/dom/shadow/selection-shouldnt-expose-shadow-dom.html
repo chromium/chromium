@@ -24,7 +24,7 @@ function dragFromTo(elementFrom, elementTo) {
 
 var container = document.getElementById('container');
 
-var shadowRoot1 = container.createShadowRoot();
+var shadowRoot1 = container.attachShadow({mode: 'open'});
 shadowRoot1.innerHTML =
     '<div id="div1" title="div1">You Satoh</div>' +
     '<div id="div2" title="div2">Sen Yarizui</div>' +
@@ -33,7 +33,7 @@ var div1 = shadowRoot1.getElementById('div1');
 var div2 = shadowRoot1.getElementById('div2');
 var div3 = shadowRoot1.getElementById('div3');
 
-var shadowRoot2 = div2.createShadowRoot();
+var shadowRoot2 = div2.attachShadow({mode: 'open'});
 shadowRoot2.innerHTML =
     '<div id="div4" title="div4">Hana Oshiroi</div>' +
     '<div id="div5" title="div5">Ume Shiraume</div>' +

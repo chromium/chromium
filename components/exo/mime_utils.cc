@@ -4,6 +4,8 @@
 
 #include "components/exo/mime_utils.h"
 
+#include "ui/base/clipboard/clipboard_constants.h"
+
 namespace {
 
 constexpr char kCharset[] = ";charset=";
@@ -15,8 +17,8 @@ constexpr char kEncodingUTF8Charset[] = "UTF-8";
 namespace exo {
 
 std::string GetCharset(const std::string& mime_type) {
-  // We special case UTF8_STRING to provide minimal handling of X11 apps.
-  if (mime_type == kEncodingUTF8Legacy)
+  // We special case UTF-8 to provide minimal handling of X11 apps.
+  if (mime_type == ui::kMimeTypeLinuxUtf8String)
     return std::string(kEncodingUTF8Charset);
 
   auto pos = mime_type.find(kCharset);

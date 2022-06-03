@@ -29,6 +29,8 @@
 ++[link] name='doc-noteref' xml-roles:doc-noteref
 ++[comment] name='doc-notice' xml-roles:doc-notice
 ++[separator] name='doc-pagebreak' xml-roles:doc-pagebreak
+++[footer] name='doc-pagefooter' xml-roles:doc-pagefooter
+++[header] name='doc-pageheader' xml-roles:doc-pageheader
 ++[landmark] name='doc-pagelist' xml-roles:doc-pagelist
 ++[landmark] name='doc-part' xml-roles:doc-part
 ++[landmark] name='doc-preface' xml-roles:doc-preface

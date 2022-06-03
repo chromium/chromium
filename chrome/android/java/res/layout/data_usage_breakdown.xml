@@ -3,8 +3,9 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.settings.datareduction.DataReductionSiteBreakdownView
+<org.chromium.chrome.browser.datareduction.settings.DataReductionSiteBreakdownView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/breakdown"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
@@ -20,7 +21,7 @@
         android:paddingTop="26dp"
         android:singleLine="true"
         android:text="@string/details_link"
-        android:textAppearance="@style/TextAppearance.BlueLink3" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Blue" />
 
     <TableLayout
         android:id="@+id/data_reduction_proxy_breakdown_table"
@@ -33,7 +34,8 @@
         <TableRow
             android:id="@+id/data_reduction_proxy_breakdown_table_labels"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/data_reduction_breakdown_site_title"
@@ -72,4 +74,4 @@
 
     </TableLayout>
 
-</org.chromium.chrome.browser.settings.datareduction.DataReductionSiteBreakdownView>
+</org.chromium.chrome.browser.datareduction.settings.DataReductionSiteBreakdownView>

@@ -10,7 +10,7 @@ sandbox.appendChild(
               createShadowRoot({'id': 'shadow-root'},
                                createDOM('div', {'id': 'shadow-root-child'},
                                          document.createTextNode('Shadow Root Child')),
-                               createDOM('content', {})),
+                               createDOM('slot', {})),
               createDOM('div', {'id': 'host-child'},
                         document.createTextNode('Host Child'))));
 

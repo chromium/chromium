@@ -9,9 +9,9 @@
 
 namespace blink {
 
-struct PaintInfo;
-class LayoutPoint;
 class SVGInlineFlowBox;
+struct PaintInfo;
+struct PhysicalOffset;
 
 class SVGInlineFlowBoxPainter {
   STACK_ALLOCATED();
@@ -21,7 +21,7 @@ class SVGInlineFlowBoxPainter {
       : svg_inline_flow_box_(svg_inline_flow_box) {}
 
   void PaintSelectionBackground(const PaintInfo&);
-  void Paint(const PaintInfo&, const LayoutPoint& paint_offset);
+  void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
   const SVGInlineFlowBox& svg_inline_flow_box_;

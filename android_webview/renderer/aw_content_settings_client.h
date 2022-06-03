@@ -17,6 +17,9 @@ class AwContentSettingsClient : public content::RenderFrameObserver,
  public:
   explicit AwContentSettingsClient(content::RenderFrame* render_view);
 
+  AwContentSettingsClient(const AwContentSettingsClient&) = delete;
+  AwContentSettingsClient& operator=(const AwContentSettingsClient&) = delete;
+
  private:
   ~AwContentSettingsClient() override;
 
@@ -24,11 +27,14 @@ class AwContentSettingsClient : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   // blink::WebContentSettingsClient implementation.
+  bool AllowImage(bool enabled_per_settings,
+                  const blink::WebURL& image_url) override;
+  bool AllowScript(bool enabled_per_settings) override;
   bool AllowRunningInsecureContent(bool enabled_per_settings,
                                    const blink::WebURL& url) override;
   bool ShouldAutoupgradeMixedContent() override;
 
-  DISALLOW_COPY_AND_ASSIGN(AwContentSettingsClient);
+  bool ShouldAllowlistForContentSettings() const;
 };
 
 }  // namespace android_webview

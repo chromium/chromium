@@ -39,7 +39,7 @@ class MemoryMappedFileTest : public PlatformTest {
     CreateTemporaryFile(&temp_file_path_);
   }
 
-  void TearDown() override { EXPECT_TRUE(DeleteFile(temp_file_path_, false)); }
+  void TearDown() override { EXPECT_TRUE(DeleteFile(temp_file_path_)); }
 
   void CreateTemporaryTestFile(size_t size) {
     File file(temp_file_path_,

@@ -9,34 +9,31 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/i18n/message_formatter.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/time/time.h"
+#include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -44,9 +41,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
-#include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -54,23 +49,24 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "v8/include/v8-version-string.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/image_source.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/statistics_provider.h"
@@ -83,7 +79,7 @@ using content::BrowserThread;
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The directory containing the regulatory labels for supported
 // models/regions, relative to chromeos-assets directory
@@ -101,33 +97,15 @@ struct RegulatoryLabel {
   const std::string image_url;
 };
 
-// Returns the link to the safety info for the device (if it exists).
-std::string GetSafetyInfoLink() {
-  const std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (board[0] == "nocturne") {
-    return chrome::kChromeUISafetyPixelSlateURL;
-  }
-  if (board[0] == "eve" || board[0] == "atlas") {
-    return chrome::kChromeUISafetyPixelbookURL;
-  }
-
-  return std::string();
-}
-
 // Returns message that informs user that for update it's better to
 // connect to a network of one of the allowed types.
-base::string16 GetAllowedConnectionTypesMessage() {
-  const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
-                                              ->network_state_handler()
-                                              ->DefaultNetwork();
-  const bool mobile_data =
-      network && network->IsConnectedState() && network->IsUsingMobileData();
-
+std::u16string GetAllowedConnectionTypesMessage() {
   if (help_utils_chromeos::IsUpdateOverCellularAllowed(
-          true /* interactive */)) {
-    return mobile_data
+          /*interactive=*/true)) {
+    const bool metered = chromeos::NetworkHandler::Get()
+                             ->network_state_handler()
+                             ->default_network_is_metered();
+    return metered
                ? l10n_util::GetStringUTF16(
                      IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED_NOT_AUTOMATIC)
                : l10n_util::GetStringUTF16(
@@ -138,21 +116,13 @@ base::string16 GetAllowedConnectionTypesMessage() {
   }
 }
 
-// Returns true if the device is enterprise managed, false otherwise.
-bool IsEnterpriseManaged() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->IsEnterpriseManaged();
-}
-
 // Returns true if current user can change channel, false otherwise.
 bool CanChangeChannel(Profile* profile) {
-  if (IsEnterpriseManaged()) {
+  if (webui::IsEnterpriseManaged()) {
     bool value = false;
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.
-    chromeos::CrosSettings::Get()->GetBoolean(
-        chromeos::kReleaseChannelDelegated, &value);
+    ash::CrosSettings::Get()->GetBoolean(ash::kReleaseChannelDelegated, &value);
     if (!value)
       return false;
 
@@ -164,9 +134,9 @@ bool CanChangeChannel(Profile* profile) {
   }
 
   // On non-managed machines, only the local owner can change the channel.
-  chromeos::OwnerSettingsServiceChromeOS* service =
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetInstance()
-          ->GetForBrowserContext(profile);
+  ash::OwnerSettingsServiceAsh* service =
+      ash::OwnerSettingsServiceAshFactory::GetInstance()->GetForBrowserContext(
+          profile);
   return service && service->IsOwner();
 }
 
@@ -227,7 +197,20 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
   return std::string();
 }
 
-#endif  // defined(OS_CHROMEOS)
+std::unique_ptr<base::DictionaryValue> GetVersionInfo() {
+  std::unique_ptr<base::DictionaryValue> version_info(
+      new base::DictionaryValue);
+  version_info->SetString("osVersion",
+                          chromeos::version_loader::GetVersion(
+                              chromeos::version_loader::VERSION_FULL));
+  version_info->SetString("arcVersion",
+                          chromeos::version_loader::GetARCVersion());
+  version_info->SetString("osFirmware",
+                          chromeos::version_loader::GetFirmware());
+  return version_info;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string UpdateStatusToString(VersionUpdater::Status status) {
   std::string status_str;
@@ -249,6 +232,12 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
     case VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED:
       status_str = "failed";
       break;
+    case VersionUpdater::FAILED_HTTP:
+      status_str = "failed_http";
+      break;
+    case VersionUpdater::FAILED_DOWNLOAD:
+      status_str = "failed_download";
+      break;
     case VersionUpdater::DISABLED:
       status_str = "disabled";
       break;
@@ -267,7 +256,10 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
 
 namespace settings {
 
-AboutHandler::AboutHandler() : apply_changes_from_upgrade_observer_(false) {
+AboutHandler::AboutHandler(Profile* profile)
+    : profile_(profile),
+      apply_changes_from_upgrade_observer_(false),
+      clock_(base::DefaultClock::GetInstance()) {
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
@@ -275,150 +267,83 @@ AboutHandler::~AboutHandler() {
   UpgradeDetector::GetInstance()->RemoveObserver(this);
 }
 
-AboutHandler* AboutHandler::Create(content::WebUIDataSource* html_source,
-                                   Profile* profile) {
-  html_source->AddString(
-      "aboutBrowserVersion",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
-          base::UTF8ToUTF16(version_info::GetVersionNumber()),
-          l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
-                                        ? IDS_VERSION_UI_OFFICIAL
-                                        : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(chrome::GetChannelName()),
-          l10n_util::GetStringUTF16(sizeof(void*) == 8
-                                        ? IDS_VERSION_UI_64BIT
-                                        : IDS_VERSION_UI_32BIT)));
-
-  html_source->AddString(
-      "aboutProductCopyright",
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
-          base::Time::Now()));
-
-  base::string16 license = l10n_util::GetStringFUTF16(
-      IDS_VERSION_UI_LICENSE, base::ASCIIToUTF16(chrome::kChromiumProjectURL),
-      base::ASCIIToUTF16(chrome::kChromeUICreditsURL));
-  html_source->AddString("aboutProductLicense", license);
-
-  html_source->AddBoolean("aboutObsoleteNowOrSoon",
-                          ObsoleteSystem::IsObsoleteNowOrSoon());
-  html_source->AddBoolean("aboutObsoleteEndOfTheLine",
-                          ObsoleteSystem::IsObsoleteNowOrSoon() &&
-                              ObsoleteSystem::IsEndOfTheLine());
-  html_source->AddString("aboutObsoleteSystem",
-                         ObsoleteSystem::LocalizedObsoleteString());
-  html_source->AddString("aboutObsoleteSystemURL",
-                         ObsoleteSystem::GetLinkURL());
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 tos = l10n_util::GetStringFUTF16(
-      IDS_ABOUT_TERMS_OF_SERVICE, base::UTF8ToUTF16(chrome::kChromeUITermsURL));
-  html_source->AddString("aboutProductTos", tos);
-#endif
-
-#if defined(OS_CHROMEOS)
-  std::string safetyInfoLink = GetSafetyInfoLink();
-  html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddString(
-      "aboutProductSafety",
-      l10n_util::GetStringUTF16(IDS_ABOUT_SAFETY_INFORMATION));
-  html_source->AddString("aboutProductSafetyURL",
-                         base::UTF8ToUTF16(safetyInfoLink));
-#endif
-
-  base::string16 os_license = l10n_util::GetStringFUTF16(
-      IDS_ABOUT_CROS_VERSION_LICENSE,
-      base::ASCIIToUTF16(chrome::kChromeUIOSCreditsURL));
-  html_source->AddString("aboutProductOsLicense", os_license);
-  base::string16 os_with_linux_license = l10n_util::GetStringFUTF16(
-      IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE,
-      base::ASCIIToUTF16(chrome::kChromeUIOSCreditsURL),
-      base::ASCIIToUTF16(chrome::kChromeUILinuxCreditsURL));
-  html_source->AddString("aboutProductOsWithLinuxLicense",
-                         os_with_linux_license);
-  html_source->AddBoolean("aboutEnterpriseManaged", IsEnterpriseManaged());
-
-  html_source->AddString(
-      "endOfLifeMessage",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE,
-                                 ui::GetChromeOSDeviceName()));
-  html_source->AddString("endOfLifeLearnMoreURL",
-                         base::ASCIIToUTF16(chrome::kEolNotificationURL));
-#endif
-
-  return new AboutHandler();
-}
-
 void AboutHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "aboutPageReady", base::BindRepeating(&AboutHandler::HandlePageReady,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&AboutHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
-  web_ui()->RegisterMessageCallback(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "openDiagnostics",
+      base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
                                            base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUpdateOverCellular",
       base::BindRepeating(&AboutHandler::HandleRequestUpdateOverCellular,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "getVersionInfo", base::BindRepeating(&AboutHandler::HandleGetVersionInfo,
+                                            base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getRegulatoryInfo",
       base::BindRepeating(&AboutHandler::HandleGetRegulatoryInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getChannelInfo", base::BindRepeating(&AboutHandler::HandleGetChannelInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "canChangeChannel",
+      base::BindRepeating(&AboutHandler::HandleCanChangeChannel,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshTPMFirmwareUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshTPMFirmwareUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getEnabledReleaseNotes",
-      base::BindRepeating(&AboutHandler::HandleGetEnabledReleaseNotes,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchReleaseNotes",
       base::BindRepeating(&AboutHandler::HandleLaunchReleaseNotes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "checkInternetConnection",
       base::BindRepeating(&AboutHandler::HandleCheckInternetConnection,
                           base::Unretained(this)));
 #endif
-#if defined(OS_MACOSX)
-  web_ui()->RegisterMessageCallback(
+#if defined(OS_MAC)
+  web_ui()->RegisterDeprecatedMessageCallback(
       "promoteUpdater", base::BindRepeating(&AboutHandler::PromoteUpdater,
                                             base::Unretained(this)));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Handler for the product label image, which will be shown if available.
-  content::URLDataSource::Add(Profile::FromWebUI(web_ui()),
+  content::URLDataSource::Add(profile_,
                               std::make_unique<chromeos::ImageSource>());
 #endif
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<ThemeSource>(profile_));
 }
 
 void AboutHandler::OnJavascriptAllowed() {
@@ -429,8 +354,8 @@ void AboutHandler::OnJavascriptAllowed() {
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
-      base::Bind(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
+                          base::Unretained(this)));
 }
 
 void AboutHandler::OnJavascriptDisallowed() {
@@ -451,12 +376,16 @@ void AboutHandler::OnDeviceAutoUpdatePolicyChanged(
     const base::Value* previous_policy,
     const base::Value* current_policy) {
   bool previous_auto_update_disabled = false;
-  if (previous_policy)
-    CHECK(previous_policy->GetAsBoolean(&previous_auto_update_disabled));
+  if (previous_policy) {
+    CHECK(previous_policy->is_bool());
+    previous_auto_update_disabled = previous_policy->GetBool();
+  }
 
   bool current_auto_update_disabled = false;
-  if (current_policy)
-    CHECK(current_policy->GetAsBoolean(&current_auto_update_disabled));
+  if (current_policy) {
+    CHECK(current_policy->is_bool());
+    current_auto_update_disabled = current_policy->GetBool();
+  }
 
   if (current_auto_update_disabled != previous_auto_update_disabled) {
     // Refresh the update status to refresh the status of the UI.
@@ -474,23 +403,23 @@ void AboutHandler::HandleRefreshUpdateStatus(const base::ListValue* args) {
 
 void AboutHandler::RefreshUpdateStatus() {
 // On Chrome OS, do not check for an update automatically.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static_cast<VersionUpdaterCros*>(version_updater_.get())
-      ->GetUpdateStatus(
-          base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)));
+      ->GetUpdateStatus(base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                                            base::Unretained(this)));
 #else
   RequestUpdate();
 #endif
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 void AboutHandler::PromoteUpdater(const base::ListValue* args) {
   version_updater_->PromoteUpdater();
 }
 #endif
 
 void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
@@ -498,26 +427,21 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
 }
 
-#if defined(OS_CHROMEOS)
-void AboutHandler::HandleGetEnabledReleaseNotes(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(base::FeatureList::IsEnabled(
-                                chromeos::features::kReleaseNotes)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
+  DCHECK(args->GetList().empty());
+  chrome::ShowDiagnosticsApp(profile_);
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
@@ -528,80 +452,95 @@ void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
-  DCHECK(args->empty());
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
-  if (network && network->IsOnline()) {
-    base::RecordAction(
-        base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
-    chrome::LaunchReleaseNotes(Profile::FromWebUI(web_ui()));
-  }
+  DCHECK(args->GetList().empty());
+  // We can always show the release notes since the Help app caches it, or can
+  // show an appropriate error state (e.g. No internet connection).
+  base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
+  chrome::LaunchReleaseNotes(profile_,
+                             apps::mojom::LaunchSource::kFromOtherApp);
 }
 
 void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
 }
 
 void AboutHandler::HandleSetChannel(const base::ListValue* args) {
-  DCHECK(args->GetSize() == 2);
+  DCHECK(args->GetList().size() == 2);
 
-  if (!CanChangeChannel(Profile::FromWebUI(web_ui()))) {
+  if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
     return;
   }
 
-  base::string16 channel;
-  bool is_powerwash_allowed;
-  if (!args->GetString(0, &channel) ||
-      !args->GetBoolean(1, &is_powerwash_allowed)) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_bool()) {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }
+  const std::string& channel = args->GetList()[0].GetString();
+  const bool& is_powerwash_allowed = args->GetList()[1].GetBool();
 
-  version_updater_->SetChannel(base::UTF16ToUTF8(channel),
-                               is_powerwash_allowed);
+  version_updater_->SetChannel(channel, is_powerwash_allowed);
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
-        base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
+        base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                            base::Unretained(this)),
         VersionUpdater::PromoteCallback());
   }
 }
 
-void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetVersionInfo),
+      base::BindOnce(&AboutHandler::OnGetVersionInfoReady,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::Bind(&FindRegulatoryLabelDir),
-      base::Bind(&AboutHandler::OnRegulatoryLabelDirFound,
-                 weak_factory_.GetWeakPtr(), callback_id));
+void AboutHandler::OnGetVersionInfoReady(
+    std::string callback_id,
+    std::unique_ptr<base::DictionaryValue> version_info) {
+  ResolveJavascriptCallback(base::Value(callback_id), *version_info);
+}
+
+void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&FindRegulatoryLabelDir),
+      base::BindOnce(&AboutHandler::OnRegulatoryLabelDirFound,
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetChannel(
       true /* get current channel */,
-      base::Bind(&AboutHandler::OnGetCurrentChannel, weak_factory_.GetWeakPtr(),
-                 callback_id));
+      base::BindOnce(&AboutHandler::OnGetCurrentChannel,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(CanChangeChannel(profile_)));
 }
 
 void AboutHandler::OnGetCurrentChannel(std::string callback_id,
                                        const std::string& current_channel) {
   version_updater_->GetChannel(
       false /* get target channel */,
-      base::Bind(&AboutHandler::OnGetTargetChannel, weak_factory_.GetWeakPtr(),
-                 callback_id, current_channel));
+      base::BindOnce(&AboutHandler::OnGetTargetChannel,
+                     weak_factory_.GetWeakPtr(), callback_id, current_channel));
 }
 
 void AboutHandler::OnGetTargetChannel(std::string callback_id,
@@ -611,8 +550,13 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
       new base::DictionaryValue);
   channel_info->SetString("currentChannel", current_channel);
   channel_info->SetString("targetChannel", target_channel);
-  channel_info->SetBoolean("canChangeChannel",
-                           CanChangeChannel(Profile::FromWebUI(web_ui())));
+
+  // For the LTS pilot simply check whether the device policy is set and ignore
+  // its value.
+  std::string value;
+  bool is_lts =
+      ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
+  channel_info->SetBoolean("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);
 }
@@ -623,14 +567,11 @@ void AboutHandler::HandleRequestUpdate(const base::ListValue* args) {
 
 void AboutHandler::HandleRequestUpdateOverCellular(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
-  std::string update_version;
-  std::string update_size_string;
+  const std::string& update_version = args->GetList()[0].GetString();
+  const std::string& update_size_string = args->GetList()[1].GetString();
   int64_t update_size;
-
-  CHECK(args->GetString(0, &update_version));
-  CHECK(args->GetString(1, &update_size_string));
   CHECK(base::StringToInt64(update_size_string, &update_size));
 
   RequestUpdateOverCellular(update_version, update_size);
@@ -639,29 +580,29 @@ void AboutHandler::HandleRequestUpdateOverCellular(
 void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
                                              int64_t update_size) {
   version_updater_->SetUpdateOverCellularOneTimePermission(
-      base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
+      base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                          base::Unretained(this)),
       update_version, update_size);
 }
 
 void AboutHandler::HandleRefreshTPMFirmwareUpdateStatus(
     const base::ListValue* args) {
-  chromeos::tpm_firmware_update::GetAvailableUpdateModes(
-      base::Bind(&AboutHandler::RefreshTPMFirmwareUpdateStatus,
-                 weak_factory_.GetWeakPtr()),
+  ash::tpm_firmware_update::GetAvailableUpdateModes(
+      base::BindOnce(&AboutHandler::RefreshTPMFirmwareUpdateStatus,
+                     weak_factory_.GetWeakPtr()),
       base::TimeDelta());
 }
 
 void AboutHandler::RefreshTPMFirmwareUpdateStatus(
-    const std::set<chromeos::tpm_firmware_update::Mode>& modes) {
+    const std::set<ash::tpm_firmware_update::Mode>& modes) {
   std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue);
   event->SetBoolean("updateAvailable", !modes.empty());
   FireWebUIListener("tpm-firmware-update-status-changed", *event);
 }
 
 void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
                                               weak_factory_.GetWeakPtr(),
                                               callback_id));
@@ -672,12 +613,19 @@ void AboutHandler::OnGetEndOfLifeInfo(
     chromeos::UpdateEngineClient::EolInfo eol_info) {
   base::Value response(base::Value::Type::DICTIONARY);
   if (!eol_info.eol_date.is_null()) {
-    response.SetBoolKey("hasEndOfLife", eol_info.eol_date <= base::Time::Now());
-    response.SetStringKey("aboutPageEndOfLifeMessage",
-                          l10n_util::GetStringFUTF16(
-                              IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE,
-                              base::TimeFormatMonthAndYear(eol_info.eol_date),
-                              base::ASCIIToUTF16(chrome::kEolNotificationURL)));
+    bool has_eol_passed = eol_info.eol_date <= clock_->Now();
+    response.SetBoolKey("hasEndOfLife", has_eol_passed);
+    int eol_string_id =
+        has_eol_passed ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
+                       : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
+    response.SetStringKey(
+        "aboutPageEndOfLifeMessage",
+        l10n_util::GetStringFUTF16(
+            eol_string_id,
+            base::TimeFormatMonthAndYear(eol_info.eol_date,
+                                         /*time_zone=*/icu::TimeZone::getGMT()),
+            base::ASCIIToUTF16(has_eol_passed ? chrome::kEolNotificationURL
+                                              : chrome::kAutoUpdatePolicyURL)));
   } else {
     response.SetBoolKey("hasEndOfLife", false);
     response.SetStringKey("aboutPageEndOfLifeMessage", "");
@@ -685,24 +633,27 @@ void AboutHandler::OnGetEndOfLifeInfo(
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AboutHandler::RequestUpdate() {
   version_updater_->CheckForUpdate(
-      base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
-#if defined(OS_MACOSX)
-      base::Bind(&AboutHandler::SetPromotionState, base::Unretained(this)));
+      base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                          base::Unretained(this)),
+#if defined(OS_MAC)
+      base::BindRepeating(&AboutHandler::SetPromotionState,
+                          base::Unretained(this)));
 #else
       VersionUpdater::PromoteCallback());
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 }
 
 void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
                                    int progress,
                                    bool rollback,
+                                   bool powerwash,
                                    const std::string& version,
                                    int64_t size,
-                                   const base::string16& message) {
+                                   const std::u16string& message) {
   // Only UPDATING state should have progress set.
   DCHECK(status == VersionUpdater::UPDATING || progress == 0);
 
@@ -711,13 +662,14 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   event->SetString("message", message);
   event->SetInteger("progress", progress);
   event->SetBoolean("rollback", rollback);
+  event->SetBoolean("powerwash", powerwash);
   event->SetString("version", version);
   // DictionaryValue does not support int64_t, so convert to string.
   event->SetString("size", base::NumberToString(size));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (status == VersionUpdater::FAILED_OFFLINE ||
       status == VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED) {
-    base::string16 types_msg = GetAllowedConnectionTypesMessage();
+    std::u16string types_msg = GetAllowedConnectionTypesMessage();
     if (!types_msg.empty())
       event->SetString("connectionTypes", types_msg);
     else
@@ -725,12 +677,12 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   } else {
     event->Set("connectionTypes", std::make_unique<base::Value>());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   FireWebUIListener("update-status-changed", *event);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
   // Worth noting: PROMOTE_DISABLED indicates that promotion is possible,
   // there's just something else going on right now (e.g. checking for update).
@@ -741,7 +693,7 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
   bool actionable = state == VersionUpdater::PROMOTE_DISABLED ||
                     state == VersionUpdater::PROMOTE_ENABLED;
 
-  base::string16 text = base::string16();
+  std::u16string text = std::u16string();
   if (actionable)
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL);
   else if (state == VersionUpdater::PROMOTED)
@@ -756,9 +708,9 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
 
   FireWebUIListener("promotion-state-changed", promo_state);
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AboutHandler::OnRegulatoryLabelDirFound(
     std::string callback_id,
     const base::FilePath& label_dir_path) {
@@ -767,12 +719,11 @@ void AboutHandler::OnRegulatoryLabelDirFound(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::Bind(&ReadRegulatoryLabelText, label_dir_path),
-      base::Bind(&AboutHandler::OnRegulatoryLabelTextRead,
-                 weak_factory_.GetWeakPtr(), callback_id, label_dir_path));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ReadRegulatoryLabelText, label_dir_path),
+      base::BindOnce(&AboutHandler::OnRegulatoryLabelTextRead,
+                     weak_factory_.GetWeakPtr(), callback_id, label_dir_path));
 }
 
 void AboutHandler::OnRegulatoryLabelTextRead(
@@ -792,6 +743,6 @@ void AboutHandler::OnRegulatoryLabelTextRead(
 
   ResolveJavascriptCallback(base::Value(callback_id), *regulatory_info);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace settings

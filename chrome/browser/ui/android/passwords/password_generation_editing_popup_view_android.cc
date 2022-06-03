@@ -9,9 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
 #include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
-#include "chrome/browser/ui/android/view_android_helper.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -36,23 +34,29 @@ void PasswordGenerationEditingPopupViewAndroid::Dismissed(
 }
 
 PasswordGenerationEditingPopupViewAndroid::
-    ~PasswordGenerationEditingPopupViewAndroid() {}
+    ~PasswordGenerationEditingPopupViewAndroid() = default;
 
-void PasswordGenerationEditingPopupViewAndroid::Show() {
+bool PasswordGenerationEditingPopupViewAndroid::Show() {
   ui::ViewAndroid* view_android = controller_->container_view();
 
-  DCHECK(view_android);
+  if (!view_android)
+    return false;
 
   popup_ = view_android->AcquireAnchorView();
   const ScopedJavaLocalRef<jobject> view = popup_.view();
   if (view.is_null())
-    return;
+    return false;
+
+  ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
+  if (!window_android)
+    return false;
+
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_PasswordGenerationPopupBridge_create(
       env, view, reinterpret_cast<intptr_t>(this),
-      view_android->GetWindowAndroid()->GetJavaObject()));
+      window_android->GetJavaObject()));
 
-  UpdateBoundsAndRedrawPopup();
+  return UpdateBoundsAndRedrawPopup();
 }
 
 void PasswordGenerationEditingPopupViewAndroid::Hide() {
@@ -68,17 +72,18 @@ void PasswordGenerationEditingPopupViewAndroid::Hide() {
 
 void PasswordGenerationEditingPopupViewAndroid::UpdateState() {}
 
-void PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
+bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
   if (java_object_.is_null())
-    return;
+    return false;
 
   const ScopedJavaLocalRef<jobject> view = popup_.view();
   if (view.is_null())
-    return;
+    return false;
 
   ui::ViewAndroid* view_android = controller_->container_view();
+  if (!view_android)
+    return false;
 
-  DCHECK(view_android);
   view_android->SetAnchorRect(view, controller_->element_bounds());
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> help =
@@ -86,15 +91,10 @@ void PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
 
   Java_PasswordGenerationPopupBridge_show(env, java_object_,
                                           controller_->IsRTL(), help);
+  return true;
 }
 
 void PasswordGenerationEditingPopupViewAndroid::PasswordSelectionUpdated() {}
-
-bool PasswordGenerationEditingPopupViewAndroid::IsPointInPasswordBounds(
-    const gfx::Point& point) {
-  NOTREACHED();
-  return false;
-}
 
 // static
 PasswordGenerationPopupView* PasswordGenerationPopupView::Create(

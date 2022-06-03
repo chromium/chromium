@@ -40,10 +40,10 @@ class DomDistillerKeyedService : public KeyedService,
                             std::move(distilled_page_prefs),
                             std::move(distiller_ui_handle)) {}
 
-  ~DomDistillerKeyedService() override {}
+  DomDistillerKeyedService(const DomDistillerKeyedService&) = delete;
+  DomDistillerKeyedService& operator=(const DomDistillerKeyedService&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerKeyedService);
+  ~DomDistillerKeyedService() override {}
 };
 }  // namespace
 
@@ -57,7 +57,7 @@ DomDistillerServiceFactory* DomDistillerServiceFactory::GetInstance() {
 
 // static
 DomDistillerService* DomDistillerServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<DomDistillerKeyedService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -86,7 +86,7 @@ DomDistillerServiceFactory::BuildServiceInstanceFor(
           std::move(distiller_url_fetcher_factory), options);
   std::unique_ptr<DistilledPagePrefs> distilled_page_prefs =
       std::make_unique<DistilledPagePrefs>(
-          ios::ChromeBrowserState::FromBrowserState(context)->GetPrefs());
+          ChromeBrowserState::FromBrowserState(context)->GetPrefs());
 
   return std::make_unique<DomDistillerKeyedService>(
       std::move(distiller_factory), std::move(distiller_page_factory),

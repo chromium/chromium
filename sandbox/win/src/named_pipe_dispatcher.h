@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_NAMED_PIPE_DISPATCHER_H__
-#define SANDBOX_SRC_NAMED_PIPE_DISPATCHER_H__
+#ifndef SANDBOX_WIN_SRC_NAMED_PIPE_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_NAMED_PIPE_DISPATCHER_H_
 
 #include <stdint.h>
 
@@ -20,6 +20,10 @@ namespace sandbox {
 class NamedPipeDispatcher : public Dispatcher {
  public:
   explicit NamedPipeDispatcher(PolicyBase* policy_base);
+
+  NamedPipeDispatcher(const NamedPipeDispatcher&) = delete;
+  NamedPipeDispatcher& operator=(const NamedPipeDispatcher&) = delete;
+
   ~NamedPipeDispatcher() override {}
 
   // Dispatcher interface.
@@ -38,9 +42,8 @@ class NamedPipeDispatcher : public Dispatcher {
                        uint32_t default_timeout);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(NamedPipeDispatcher);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_NAMED_PIPE_DISPATCHER_H__
+#endif  // SANDBOX_WIN_SRC_NAMED_PIPE_DISPATCHER_H_

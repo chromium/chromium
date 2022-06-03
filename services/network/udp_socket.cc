@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/socket/udp_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -30,8 +30,7 @@ const uint32_t kMaxPacketSize = kMaxReadSize - 1;
 int ClampUDPBufferSize(int requested_buffer_size) {
   constexpr int kMinBufferSize = 0;
   constexpr int kMaxBufferSize = 128 * 1024;
-  return base::ClampToRange(requested_buffer_size, kMinBufferSize,
-                            kMaxBufferSize);
+  return base::clamp(requested_buffer_size, kMinBufferSize, kMaxBufferSize);
 }
 
 class SocketWrapperImpl : public UDPSocket::SocketWrapper {
@@ -40,6 +39,10 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
                     net::NetLog* net_log,
                     const net::NetLogSource& source)
       : socket_(bind_type, net_log, source) {}
+
+  SocketWrapperImpl(const SocketWrapperImpl&) = delete;
+  SocketWrapperImpl& operator=(const SocketWrapperImpl&) = delete;
+
   ~SocketWrapperImpl() override {}
 
   int Connect(const net::IPEndPoint& remote_addr,
@@ -143,8 +146,6 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
   }
 
   net::UDPSocket socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketWrapperImpl);
 };
 
 }  // namespace
@@ -167,7 +168,7 @@ void UDPSocket::Connect(const net::IPEndPoint& remote_addr,
                         mojom::UDPSocketOptionsPtr options,
                         ConnectCallback callback) {
   if (IsConnectedOrBound()) {
-    std::move(callback).Run(net::ERR_SOCKET_IS_CONNECTED, base::nullopt);
+    std::move(callback).Run(net::ERR_SOCKET_IS_CONNECTED, absl::nullopt);
     return;
   }
   DCHECK(!wrapped_socket_);
@@ -177,7 +178,7 @@ void UDPSocket::Connect(const net::IPEndPoint& remote_addr,
                                         &local_addr_out);
   if (result != net::OK) {
     wrapped_socket_.reset();
-    std::move(callback).Run(result, base::nullopt);
+    std::move(callback).Run(result, absl::nullopt);
     return;
   }
   is_connected_ = true;
@@ -188,7 +189,7 @@ void UDPSocket::Bind(const net::IPEndPoint& local_addr,
                      mojom::UDPSocketOptionsPtr options,
                      BindCallback callback) {
   if (IsConnectedOrBound()) {
-    std::move(callback).Run(net::ERR_SOCKET_IS_CONNECTED, base::nullopt);
+    std::move(callback).Run(net::ERR_SOCKET_IS_CONNECTED, absl::nullopt);
     return;
   }
   DCHECK(!wrapped_socket_);
@@ -198,7 +199,7 @@ void UDPSocket::Bind(const net::IPEndPoint& local_addr,
       wrapped_socket_->Bind(local_addr, std::move(options), &local_addr_out);
   if (result != net::OK) {
     wrapped_socket_.reset();
-    std::move(callback).Run(result, base::nullopt);
+    std::move(callback).Run(result, absl::nullopt);
     return;
   }
   is_bound_ = true;
@@ -263,7 +264,7 @@ void UDPSocket::ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
   if (!listener_)
     return;
   if (!IsConnectedOrBound()) {
-    listener_->OnReceived(net::ERR_UNEXPECTED, base::nullopt, base::nullopt);
+    listener_->OnReceived(net::ERR_UNEXPECTED, absl::nullopt, absl::nullopt);
     return;
   }
   if (num_additional_datagrams == 0)
@@ -343,8 +344,8 @@ void UDPSocket::DoRecvFrom(uint32_t buffer_size) {
   // base::Unretained(this) is safe because socket is owned by |this|.
   int net_result = wrapped_socket_->RecvFrom(
       recvfrom_buffer_.get(), buffer_size, &recvfrom_address_,
-      base::BindRepeating(&UDPSocket::OnRecvFromCompleted,
-                          base::Unretained(this), buffer_size));
+      base::BindOnce(&UDPSocket::OnRecvFromCompleted, base::Unretained(this),
+                     buffer_size));
   if (net_result != net::ERR_IO_PENDING)
     OnRecvFromCompleted(buffer_size, net_result);
 }
@@ -400,14 +401,12 @@ void UDPSocket::DoSendToOrWriteBuffer(
   if (dest_addr) {
     net_result = wrapped_socket_->SendTo(
         buffer.get(), buffer->size(), *dest_addr,
-        base::BindRepeating(&UDPSocket::OnSendToCompleted,
-                            base::Unretained(this)),
+        base::BindOnce(&UDPSocket::OnSendToCompleted, base::Unretained(this)),
         traffic_annotation);
   } else {
     net_result = wrapped_socket_->Write(
         buffer.get(), buffer->size(),
-        base::BindRepeating(&UDPSocket::OnSendToCompleted,
-                            base::Unretained(this)),
+        base::BindOnce(&UDPSocket::OnSendToCompleted, base::Unretained(this)),
         traffic_annotation);
   }
   if (net_result != net::ERR_IO_PENDING)
@@ -420,12 +419,12 @@ void UDPSocket::OnRecvFromCompleted(uint32_t buffer_size, int net_result) {
   if (net_result >= 0) {
     listener_->OnReceived(
         net::OK,
-        is_bound_ ? base::make_optional(recvfrom_address_) : base::nullopt,
+        is_bound_ ? absl::make_optional(recvfrom_address_) : absl::nullopt,
         base::span<const uint8_t>(
             reinterpret_cast<const uint8_t*>(recvfrom_buffer_->data()),
             static_cast<size_t>(net_result)));
   } else {
-    listener_->OnReceived(net_result, base::nullopt, base::nullopt);
+    listener_->OnReceived(net_result, absl::nullopt, absl::nullopt);
   }
   recvfrom_buffer_ = nullptr;
   DCHECK_GT(remaining_recv_slots_, 0u);

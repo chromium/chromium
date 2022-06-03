@@ -1,16 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="certificate_entry.html">
-<link rel="import" href="certificate_manager_types.html">
-<link rel="import" href="certificate_shared_css.html">
-<link rel="import" href="certificates_browser_proxy.html">
-
-<dom-module id="certificate-list">
-  <template>
     <style include="certificate-shared iron-flex">
       .button-box {
         align-items: center;
@@ -31,7 +18,7 @@
       <cr-button id="import" on-click="onImportTap_"
           hidden="[[!canImport_(certificateType, importAllowed, isKiosk_)]]">
         [[i18n('certificateManagerImport')]]</cr-button>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
       <cr-button id="importAndBind" on-click="onImportAndBindTap_"
           hidden="[[!canImportAndBind_(certificateType, importAllowed,
                  isGuest_)]]">
@@ -43,6 +30,3 @@
           certificate-type="[[certificateType]]">
       </certificate-entry>
     </template>
-  </template>
-  <script src="certificate_list.js"></script>
-</dom-module>

@@ -1,0 +1,110 @@
+<style>
+  :host {
+    --emoji-background: transparent;
+    --emoji-hover-background: var(--cros-ripple-color);
+    height: var(--emoji-size);
+    position: relative;
+    width: var(--emoji-size);
+  }
+
+  #emoji-button {
+    background: var(--emoji-background);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: block;
+    font-family: 'Noto Color Emoji';
+    font-size: 19px; /*This gives emoji with height of 22px*/
+    height: 100%;
+    line-height: var(--emoji-size);
+    outline: none;
+    padding: 0;
+    text-align: center;
+    user-select: none;
+    width: 100%;
+  }
+
+  #emoji-button:focus,
+  #emoji-button:active {
+    outline-color: var(--cros-focus-ring-color);
+    outline-style: solid;
+    outline-width: 2px;
+  }
+
+  #emoji-button:disabled {
+    /* chrome makes disabled buttons semitransparent.
+     * we set a solid colour here to prevent that
+     * (exactly which colour is not important).
+     */
+    color: red;
+    cursor: default;
+  }
+
+  #emoji-button:hover {
+    background-color: var(--emoji-hover-background);
+  }
+
+  /* Implement has-variants as ::after so that it still works with hover
+   * ripple.
+   */
+  .has-variants::after {
+    /* 4px grey triangle in bottom-right.
+    * 315 degrees means starting at bottom-right towards top-left.
+    * Manual color here because there isn't something easy to use, but fine for
+    * dark mode since dark mode is the same.
+    */
+    background: linear-gradient(
+        315deg, var(--google-grey-refresh-500) 4px,
+        var(--emoji-background) 4px, var(--emoji-background));
+    content: '';
+    display: block;
+    height: var(--emoji-size);
+    position: relative;
+    top: calc(0px - var(--emoji-size));
+    width: var(--emoji-size);
+  }
+
+  #tooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    --paper-tooltip-delay-in: 500ms;
+    --paper-tooltip-delay-out: 500ms;
+    --paper-tooltip-duration-in: 0;
+    --paper-tooltip-duration-out: 0;
+
+    /* CSS mixin goes against style guide, but this is the only way to style
+     * the paper tooltip without changing the source code (which is in
+     * third_party)
+     */
+    --paper-tooltip: {
+      box-shadow: var(--cr-elevation-1);
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      margin: 4px;
+      padding: 4px 8px 4px 8px;
+      white-space: nowrap;
+    };
+  }
+</style>
+
+
+<button
+    id="emoji-button"
+    class$="[[_className(variants)]]"
+    on-click="onClick"
+    on-contextmenu="onContextMenu"
+    disabled="[[disabled]]"
+    aria-label="[[_label(emoji, variants)]]">
+  [[emoji]]
+</button>
+<template is="dom-if" if="[[!variant]]">
+  <paper-tooltip id="tooltip" for="emoji-button" fit-to-visible-bounds
+    part="tooltip" offset="8">
+    [[tooltip]]
+  </paper-tooltip>
+</tooltip>
+<template is="dom-if" if="[[variantsVisible]]">
+  <emoji-variants variants="[[variants]]" tooltip="[[tooltip]]">
+  </emoji-variants>
+</template>

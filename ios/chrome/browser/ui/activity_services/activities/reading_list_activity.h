@@ -14,9 +14,6 @@ class GURL;
 // Activity that triggers the add-to-reading-list service.
 @interface ReadingListActivity : UIActivity
 
-// Identifier for the add-to-reading-list activity.
-+ (NSString*)activityIdentifier;
-
 - (instancetype)initWithURL:(const GURL&)activityURL
                       title:(NSString*)title
                  dispatcher:(id<BrowserCommands>)dispatcher;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -10,6 +11,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -21,6 +23,10 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   FullscreenWebContentsObserver(content::WebContents* web_contents,
                                 content::RenderFrameHost* wanted_rfh)
       : content::WebContentsObserver(web_contents), wanted_rfh_(wanted_rfh) {}
+
+  FullscreenWebContentsObserver(const FullscreenWebContentsObserver&) = delete;
+  FullscreenWebContentsObserver& operator=(
+      const FullscreenWebContentsObserver&) = delete;
 
   // WebContentsObserver override.
   void DidAcquireFullscreen(content::RenderFrameHost* rfh) override {
@@ -42,8 +48,6 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool found_value_ = false;
   content::RenderFrameHost* wanted_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };
 
 }  // namespace
@@ -51,6 +55,12 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
 class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
  public:
   FullscreenInteractiveBrowserTest() {}
+
+  FullscreenInteractiveBrowserTest(const FullscreenInteractiveBrowserTest&) =
+      delete;
+  FullscreenInteractiveBrowserTest& operator=(
+      const FullscreenInteractiveBrowserTest&) = delete;
+
   ~FullscreenInteractiveBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -61,11 +71,10 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenInteractiveBrowserTest);
 };
 
+// TODO(jonross): Investigate the flakiness on Linux and Mac. Sheriff if this
+// fails update (https://crbug.com/1087875).
 IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
                        NotifyFullscreenAcquired) {
   content::WebContents* web_contents =
@@ -73,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 
@@ -113,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 

@@ -8,7 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -26,6 +27,16 @@ namespace chromeos {
 namespace multidevice_setup {
 
 namespace {
+
+// Parameterized test types, indicating the following test scenarios:
+enum class TestType {
+  // Use v1 DeviceSync and host does not have an Instance ID.
+  kYesV1NoInstanceId,
+  // Use v1 DeviceSync and host has an Instance ID.
+  kYesV1YesInstanceId,
+  // Do not use v1 DeviceSync and host has an Instance ID.
+  kNoV1YesInstanceId
+};
 
 const int64_t kTestTimeMs = 1500000000000;
 
@@ -58,7 +69,13 @@ enum class HostState {
 }  // namespace
 
 class MultiDeviceSetupHostVerifierImplTest
-    : public ::testing::TestWithParam<bool> {
+    : public ::testing::TestWithParam<TestType> {
+ public:
+  MultiDeviceSetupHostVerifierImplTest(
+      const MultiDeviceSetupHostVerifierImplTest&) = delete;
+  MultiDeviceSetupHostVerifierImplTest& operator=(
+      const MultiDeviceSetupHostVerifierImplTest&) = delete;
+
  protected:
   MultiDeviceSetupHostVerifierImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
@@ -66,7 +83,9 @@ class MultiDeviceSetupHostVerifierImplTest
 
   // testing::Test:
   void SetUp() override {
-    if (GetParam())
+    SetDeviceSyncFeatureFlags();
+
+    if (!HasInstanceId())
       GetMutableRemoteDevice(test_device_)->instance_id.clear();
 
     fake_host_backend_delegate_ = std::make_unique<FakeHostBackendDelegate>();
@@ -102,7 +121,7 @@ class MultiDeviceSetupHostVerifierImplTest
     auto mock_sync_timer = std::make_unique<base::MockOneShotTimer>();
     mock_sync_timer_ = mock_sync_timer.get();
 
-    host_verifier_ = HostVerifierImpl::Factory::Get()->BuildInstance(
+    host_verifier_ = HostVerifierImpl::Factory::Create(
         fake_host_backend_delegate_.get(), fake_device_sync_client_.get(),
         test_pref_service_.get(), test_clock_.get(),
         std::move(mock_retry_timer), std::move(mock_sync_timer));
@@ -126,7 +145,7 @@ class MultiDeviceSetupHostVerifierImplTest
     }
 
     if (host_state == HostState::kHostNotSet)
-      fake_host_backend_delegate_->NotifyHostChangedOnBackend(base::nullopt);
+      fake_host_backend_delegate_->NotifyHostChangedOnBackend(absl::nullopt);
     else
       fake_host_backend_delegate_->NotifyHostChangedOnBackend(test_device_);
 
@@ -151,7 +170,26 @@ class MultiDeviceSetupHostVerifierImplTest
   }
 
   void InvokePendingDeviceNotificationCall(bool success) {
-    if (test_device_.instance_id().empty()) {
+    if (HasInstanceId()) {
+      // Verify input parameters to NotifyDevices().
+      EXPECT_EQ(std::vector<std::string>{test_device_.instance_id()},
+                fake_device_sync_client_->notify_devices_inputs_queue()
+                    .front()
+                    .device_instance_ids);
+      EXPECT_EQ(cryptauthv2::TargetService::DEVICE_SYNC,
+                fake_device_sync_client_->notify_devices_inputs_queue()
+                    .front()
+                    .target_service);
+      EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
+                fake_device_sync_client_->notify_devices_inputs_queue()
+                    .front()
+                    .feature);
+
+      fake_device_sync_client_->InvokePendingNotifyDevicesCallback(
+          success
+              ? device_sync::mojom::NetworkRequestResult::kSuccess
+              : device_sync::mojom::NetworkRequestResult::kInternalServerError);
+    } else {
       // Verify input parameters to FindEligibleDevices().
       EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
                 fake_device_sync_client_->find_eligible_devices_inputs_queue()
@@ -164,27 +202,7 @@ class MultiDeviceSetupHostVerifierImplTest
               : device_sync::mojom::NetworkRequestResult::kInternalServerError,
           multidevice::RemoteDeviceRefList() /* eligible_devices */,
           multidevice::RemoteDeviceRefList() /* ineligible_devices */);
-      return;
     }
-
-    // Verify input parameters to NotifyDevices().
-    EXPECT_EQ(std::vector<std::string>{test_device_.instance_id()},
-              fake_device_sync_client_->notify_devices_inputs_queue()
-                  .front()
-                  .device_instance_ids);
-    EXPECT_EQ(cryptauthv2::TargetService::DEVICE_SYNC,
-              fake_device_sync_client_->notify_devices_inputs_queue()
-                  .front()
-                  .target_service);
-    EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-              fake_device_sync_client_->notify_devices_inputs_queue()
-                  .front()
-                  .feature);
-
-    fake_device_sync_client_->InvokePendingNotifyDevicesCallback(
-        success
-            ? device_sync::mojom::NetworkRequestResult::kSuccess
-            : device_sync::mojom::NetworkRequestResult::kInternalServerError);
   }
 
   void SimulateRetryTimePassing(const base::TimeDelta& delta,
@@ -203,15 +221,54 @@ class MultiDeviceSetupHostVerifierImplTest
     SetHostState(HostState::kHostSetAndFeaturesEnabled);
   }
 
-  bool DoesTestDeviceHaveInstanceId() const {
-    return !test_device_.instance_id().empty();
-  }
-
   FakeHostBackendDelegate* fake_host_backend_delegate() {
     return fake_host_backend_delegate_.get();
   }
 
  private:
+  bool HasInstanceId() {
+    switch (GetParam()) {
+      case TestType::kYesV1YesInstanceId:
+        FALLTHROUGH;
+      case TestType::kNoV1YesInstanceId:
+        return true;
+      case TestType::kYesV1NoInstanceId:
+        return false;
+    }
+  }
+
+  void SetDeviceSyncFeatureFlags() {
+    bool use_v1;
+    switch (GetParam()) {
+      case TestType::kYesV1YesInstanceId:
+        FALLTHROUGH;
+      case TestType::kYesV1NoInstanceId:
+        use_v1 = true;
+        break;
+      case TestType::kNoV1YesInstanceId:
+        use_v1 = false;
+        break;
+    }
+
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    // These flags have no direct effect; however, v2 Enrollment and v2
+    // DeviceSync are prerequisites for disabling v1 DeviceSync.
+    enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+    enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+
+    if (use_v1) {
+      disabled_features.push_back(
+          chromeos::features::kDisableCryptAuthV1DeviceSync);
+    } else {
+      enabled_features.push_back(
+          chromeos::features::kDisableCryptAuthV1DeviceSync);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   multidevice::RemoteDeviceRef test_device_;
 
   std::unique_ptr<FakeHostVerifierObserver> fake_observer_;
@@ -225,7 +282,7 @@ class MultiDeviceSetupHostVerifierImplTest
 
   std::unique_ptr<HostVerifier> host_verifier_;
 
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupHostVerifierImplTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(MultiDeviceSetupHostVerifierImplTest, StartWithoutHost_SetAndVerify) {
@@ -238,7 +295,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest, StartWithoutHost_SetAndVerify) {
       kTestTimeMs + kFirstRetryDeltaMs /* expected_retry_timestamp_value */,
       kFirstRetryDeltaMs /* expected_retry_delta_value */);
 
-  SimulateRetryTimePassing(base::TimeDelta::FromMinutes(1));
+  SimulateRetryTimePassing(base::Minutes(1));
   SetHostState(HostState::kHostSetAndFeaturesEnabled);
   VerifyState(true /* expected_is_verified */,
               1u /* expected_num_verified_events */,
@@ -287,9 +344,8 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest, StartWithoutHost_Retry) {
       kFirstRetryDeltaMs /* expected_retry_delta_value */);
 
   // Simulate enough time pasing to time out and retry.
-  SimulateRetryTimePassing(
-      base::TimeDelta::FromMilliseconds(kFirstRetryDeltaMs),
-      true /* simulate_timeout */);
+  SimulateRetryTimePassing(base::Milliseconds(kFirstRetryDeltaMs),
+                           true /* simulate_timeout */);
   InvokePendingDeviceNotificationCall(true /* success */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
@@ -301,8 +357,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest, StartWithoutHost_Retry) {
 
   // Simulate the next retry timeout passing.
   SimulateRetryTimePassing(
-      base::TimeDelta::FromMilliseconds(kFirstRetryDeltaMs *
-                                        kExponentialBackoffMultiplier),
+      base::Milliseconds(kFirstRetryDeltaMs * kExponentialBackoffMultiplier),
       true /* simulate_timeout */);
   InvokePendingDeviceNotificationCall(true /* success */);
   VerifyState(false /* expected_is_verified */,
@@ -340,16 +395,15 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
   // Simulate starting up the device to find that the retry timer is in 5
   // minutes.
   CreateVerifier(HostState::kHostSetButFeaturesDisabled,
-                 kTestTimeMs + base::TimeDelta::FromMinutes(5).InMilliseconds()
+                 kTestTimeMs + base::Minutes(5).InMilliseconds()
                  /* initial_timer_pref_value */,
                  kFirstRetryDeltaMs /* initial_time_delta_pref_value */);
 
-  SimulateRetryTimePassing(base::TimeDelta::FromMinutes(5),
-                           true /* simulate_timeout */);
+  SimulateRetryTimePassing(base::Minutes(5), true /* simulate_timeout */);
   InvokePendingDeviceNotificationCall(true /* success */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
-              kTestTimeMs + base::TimeDelta::FromMinutes(5).InMilliseconds() +
+              kTestTimeMs + base::Minutes(5).InMilliseconds() +
                   kFirstRetryDeltaMs * kExponentialBackoffMultiplier
               /* expected_retry_timestamp_value */,
               kFirstRetryDeltaMs * kExponentialBackoffMultiplier
@@ -361,14 +415,14 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
   // Simulate starting up the device to find that the retry timer had already
   // fired 5 minutes ago.
   CreateVerifier(HostState::kHostSetButFeaturesDisabled,
-                 kTestTimeMs - base::TimeDelta::FromMinutes(5).InMilliseconds()
+                 kTestTimeMs - base::Minutes(5).InMilliseconds()
                  /* initial_timer_pref_value */,
                  kFirstRetryDeltaMs /* initial_time_delta_pref_value */);
 
   InvokePendingDeviceNotificationCall(true /* success */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
-              kTestTimeMs - base::TimeDelta::FromMinutes(5).InMilliseconds() +
+              kTestTimeMs - base::Minutes(5).InMilliseconds() +
                   kFirstRetryDeltaMs * kExponentialBackoffMultiplier
               /* expected_retry_timestamp_value */,
               kFirstRetryDeltaMs * kExponentialBackoffMultiplier
@@ -380,7 +434,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
   // Simulate starting up the device to find that the retry timer had already
   // fired 20 minutes ago.
   CreateVerifier(HostState::kHostSetButFeaturesDisabled,
-                 kTestTimeMs - base::TimeDelta::FromMinutes(20).InMilliseconds()
+                 kTestTimeMs - base::Minutes(20).InMilliseconds()
                  /* initial_timer_pref_value */,
                  kFirstRetryDeltaMs /* initial_time_delta_pref_value */);
 
@@ -390,7 +444,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
   InvokePendingDeviceNotificationCall(true /* success */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
-              kTestTimeMs - base::TimeDelta::FromMinutes(20).InMilliseconds() +
+              kTestTimeMs - base::Minutes(20).InMilliseconds() +
                   kFirstRetryDeltaMs * kExponentialBackoffMultiplier +
                   kFirstRetryDeltaMs * kExponentialBackoffMultiplier *
                       kExponentialBackoffMultiplier
@@ -431,7 +485,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
               0 /* expected_retry_delta_value */);
 
   fake_host_backend_delegate()->AttemptToSetMultiDeviceHostOnBackend(
-      base::nullopt /* host_device */);
+      absl::nullopt /* host_device */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
               0 /* expected_retry_timestamp_value */,
@@ -450,12 +504,17 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest, HostMissingCryptoData) {
       kFirstRetryDeltaMs /* expected_retry_delta_value */);
 }
 
-// Runs tests for a host device with and without an Instance ID.
+// Runs tests for the following scenarios.
+//   - Use v1 DeviceSync and host does not have an Instance ID.
+//   - Use v1 DeviceSync and host has an Instance ID.
+//   - Do not use v1 DeviceSync and host has an Instance ID.
 // TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled, when
 // all devices should have an Instance ID.
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiDeviceSetupHostVerifierImplTest,
-                         ::testing::Bool());
+                         ::testing::Values(TestType::kYesV1NoInstanceId,
+                                           TestType::kYesV1YesInstanceId,
+                                           TestType::kNoV1YesInstanceId));
 
 }  // namespace multidevice_setup
 

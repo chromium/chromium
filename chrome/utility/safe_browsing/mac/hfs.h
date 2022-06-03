@@ -9,9 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
-
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
 
 namespace safe_browsing {
 namespace dmg {
@@ -39,6 +37,10 @@ class HFSIterator {
  public:
   // Constructs an iterator from a stream.
   explicit HFSIterator(ReadStream* stream);
+
+  HFSIterator(const HFSIterator&) = delete;
+  HFSIterator& operator=(const HFSIterator&) = delete;
+
   ~HFSIterator();
 
   // Opens the filesystem and initializes the iterator. The iterator is
@@ -65,7 +67,7 @@ class HFSIterator {
   bool IsDecmpfsCompressed();
 
   // Returns the full filesystem path of the current iterator item.
-  base::string16 GetPath();
+  std::u16string GetPath();
 
   // Returns a stream for the data fork of the current iterator item. This may
   // only be called if IsDirectory() and IsHardLink() returns false.
@@ -89,8 +91,6 @@ class HFSIterator {
       catalog_file_;  // Data of the catalog file.
   std::unique_ptr<HFSBTreeIterator>
       catalog_;  // Iterator over the catalog file.
-
-  DISALLOW_COPY_AND_ASSIGN(HFSIterator);
 };
 
 }  // namespace dmg

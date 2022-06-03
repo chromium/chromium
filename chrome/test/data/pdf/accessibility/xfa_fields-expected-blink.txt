@@ -1,0 +1,2 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true

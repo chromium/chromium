@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
-<translation id="6106989379647458772"><ph name="PAGE" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
-<translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
-<translation id="8681531050781943054">다음 이유로 <ph name="PAGE" />의 웹페이지를 로드할 수 없습니다.</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />제안사항:<ph name="MARKUP_2" />데이터 연결 상태 확인<ph name="MARKUP_3" />나중에 페이지 새로고침<ph name="MARKUP_4" />입력한 주소 확인<ph name="MARKUP_5" /></translation>
 </translationbundle>

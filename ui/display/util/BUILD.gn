@@ -2,12 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//ui/ozone/ozone.gni")
 
-jumbo_component("util") {
+component("util") {
   output_name = "display_util"
   sources = [
     "display_util.cc",
@@ -29,17 +28,24 @@ jumbo_component("util") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/display/types" ]
   } else if (is_mac) {
-    libs = [ "IOSurface.framework" ]
+    frameworks = [ "IOSurface.framework" ]
   }
 }
 
-fuzzer_test("edid_parser_fuzzer") {
+source_set("gpu_info_util") {
   sources = [
-    "edid_parser_fuzzer.cc",
+    "gpu_info_util.cc",
+    "gpu_info_util.h",
   ]
+
+  deps = [ "//base" ]
+}
+
+fuzzer_test("edid_parser_fuzzer") {
+  sources = [ "edid_parser_fuzzer.cc" ]
   deps = [
     ":util",
     "//base",

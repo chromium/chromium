@@ -1,0 +1,32 @@
+Document PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=1 Level=0
+++++ListItem Name='Level 1, item 1 of set size unknown' PositionInSet=1 SizeOfSet=-1 Level=1
+++++++Text Name='Level 1, item 1 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=1 Level=0
+++++ListItem Name='++Level 2, item 1 of set size unknown' PositionInSet=1 SizeOfSet=-1 Level=2
+++++++Text Name='++Level 2, item 1 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=2 Level=0
+++++ListItem Name='++Level 2, item 2 of set size unknown' PositionInSet=2 SizeOfSet=-1 Level=2
+++++++Text Name='++Level 2, item 2 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=3 Level=0
+++++ListItem Name='++Level 2, item 3 of set size unknown' PositionInSet=3 SizeOfSet=-1 Level=2
+++++++Text Name='++Level 2, item 3 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=1 Level=0
+++++ListItem Name='++++Level 3, item 1 of set size unknown' PositionInSet=1 SizeOfSet=-1 Level=3
+++++++Text Name='++++Level 3, item 1 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=2 Level=0
+++++ListItem Name='++++Level 3, item 2 of set size unknown' PositionInSet=2 SizeOfSet=-1 Level=3
+++++++Text Name='++++Level 3, item 2 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=2 Level=0
+++++ListItem Name='Level 1, item 2 of set size unknown' PositionInSet=2 SizeOfSet=-1 Level=1
+++++++Text Name='Level 1, item 2 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=3 Level=0
+++++ListItem Name='Level 1, item 3 of set size unknown' PositionInSet=3 SizeOfSet=-1 Level=1
+++++++Text Name='Level 1, item 3 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
+++List PositionInSet=0 SizeOfSet=0 Level=0
+++++List PositionInSet=0 SizeOfSet=4 Level=0
+++++++ListItem Name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4' PositionInSet=4 SizeOfSet=4 Level=2
+++++++++Text Name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4' PositionInSet=0 SizeOfSet=0 Level=0
+++++List PositionInSet=0 SizeOfSet=5 Level=0
+++++++ListItem Name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5' PositionInSet=5 SizeOfSet=5 Level=2
+++++++++Text Name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5' PositionInSet=0 SizeOfSet=0 Level=0

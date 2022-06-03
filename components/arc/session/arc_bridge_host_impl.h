@@ -8,12 +8,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/arc_bridge.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_holder.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
@@ -21,9 +22,9 @@ class ArcBridgeService;
 class MojoChannelBase;
 
 // Implementation of the ArcBridgeHost.
-// The lifetime of ArcBridgeHost and ArcBridgeInstance mojo channels are tied
-// to this instance. Also, any ARC related Mojo channel will be closed if
-// either ArcBridgeHost or ArcBridgeInstance Mojo channels is closed on error.
+// The lifetime of ArcBridgeHost mojo channel is tied to this instance.
+// Also, any ARC related Mojo channel will be closed if ArcBridgeHost Mojo
+// channel is closed on error.
 // When ARC Instance (not Host) Mojo channel gets ready (= passed via
 // OnFooInstanceReady(), and the QueryVersion() gets completed), then this sets
 // the raw pointer to the ArcBridgeService so that other services can access
@@ -31,93 +32,160 @@ class MojoChannelBase;
 // Note that ArcBridgeService must be alive while ArcBridgeHostImpl is alive.
 class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
  public:
-  ArcBridgeHostImpl(ArcBridgeService* arc_bridge_service,
-                    mojom::ArcBridgeInstancePtr instance);
+  ArcBridgeHostImpl(
+      ArcBridgeService* arc_bridge_service,
+      mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
+
+  ArcBridgeHostImpl(const ArcBridgeHostImpl&) = delete;
+  ArcBridgeHostImpl& operator=(const ArcBridgeHostImpl&) = delete;
+
   ~ArcBridgeHostImpl() override;
 
   // ArcBridgeHost overrides.
   void OnAccessibilityHelperInstanceReady(
-      mojom::AccessibilityHelperInstancePtr accessibility_helper_ptr) override;
-  void OnAppInstanceReady(mojom::AppInstancePtr app_ptr) override;
+      mojo::PendingRemote<mojom::AccessibilityHelperInstance>
+          accessibility_helper_remote) override;
+  void OnAdbdMonitorInstanceReady(
+      mojo::PendingRemote<mojom::AdbdMonitorInstance> adbd_monitor_remote)
+      override;
+  void OnAppInstanceReady(
+      mojo::PendingRemote<mojom::AppInstance> app_ptr) override;
   void OnAppPermissionsInstanceReady(
-      mojom::AppPermissionsInstancePtr app_permissions_ptr) override;
-  void OnAppfuseInstanceReady(mojom::AppfuseInstancePtr appfuse_ptr) override;
-  void OnAudioInstanceReady(mojom::AudioInstancePtr audio_ptr) override;
-  void OnAuthInstanceReady(mojom::AuthInstancePtr auth_ptr) override;
+      mojo::PendingRemote<mojom::AppPermissionsInstance> app_permissions_remote)
+      override;
+  void OnAppfuseInstanceReady(
+      mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) override;
+  void OnAudioInstanceReady(
+      mojo::PendingRemote<mojom::AudioInstance> audio_remote) override;
+  void OnAuthInstanceReady(
+      mojo::PendingRemote<mojom::AuthInstance> auth_remote) override;
   void OnBackupSettingsInstanceReady(
-      mojom::BackupSettingsInstancePtr backup_settings_ptr) override;
+      mojo::PendingRemote<mojom::BackupSettingsInstance> backup_settings_remote)
+      override;
   void OnBluetoothInstanceReady(
-      mojom::BluetoothInstancePtr bluetooth_ptr) override;
+      mojo::PendingRemote<mojom::BluetoothInstance> bluetooth_remote) override;
   void OnBootPhaseMonitorInstanceReady(
-      mojom::BootPhaseMonitorInstancePtr boot_phase_monitor_ptr) override;
-  void OnCameraInstanceReady(mojom::CameraInstancePtr camera_ptr) override;
+      mojo::PendingRemote<mojom::BootPhaseMonitorInstance>
+          boot_phase_monitor_remote) override;
+  void OnCameraInstanceReady(
+      mojo::PendingRemote<mojom::CameraInstance> camera_remote) override;
   void OnCastReceiverInstanceReady(
-      mojom::CastReceiverInstancePtr cast_receiver_ptr) override;
+      mojo::PendingRemote<mojom::CastReceiverInstance> cast_receiver_remote)
+      override;
   void OnCertStoreInstanceReady(
-      mojom::CertStoreInstancePtr instance_ptr) override;
+      mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) override;
   void OnClipboardInstanceReady(
-      mojom::ClipboardInstancePtr clipboard_ptr) override;
+      mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) override;
+  void OnCompatibilityModeInstanceReady(
+      mojo::PendingRemote<mojom::CompatibilityModeInstance>
+          compatibility_mode_remote) override;
   void OnCrashCollectorInstanceReady(
-      mojom::CrashCollectorInstancePtr crash_collector_ptr) override;
+      mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote)
+      override;
+  void OnDarkThemeInstanceReady(
+      mojo::PendingRemote<mojom::DarkThemeInstance> dark_theme_remote) override;
+  void OnDigitalGoodsInstanceReady(
+      mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote)
+      override;
   void OnDiskQuotaInstanceReady(
-      mojom::DiskQuotaInstancePtr disk_quota_ptr) override;
+      mojo::PendingRemote<mojom::DiskQuotaInstance> disk_quota_remote) override;
   void OnEnterpriseReportingInstanceReady(
-      mojom::EnterpriseReportingInstancePtr enterprise_reporting_ptr) override;
-  void OnFileSystemInstanceReady(
-      mojom::FileSystemInstancePtr file_system_ptr) override;
-  void OnImeInstanceReady(mojom::ImeInstancePtr ime_ptr) override;
+      mojo::PendingRemote<mojom::EnterpriseReportingInstance>
+          enterprise_reporting_remote) override;
+  void OnFileSystemInstanceReady(mojo::PendingRemote<mojom::FileSystemInstance>
+                                     file_system_remote) override;
+  void OnIioSensorInstanceReady(
+      mojo::PendingRemote<mojom::IioSensorInstance> iio_sensor_remote) override;
+  void OnImeInstanceReady(
+      mojo::PendingRemote<mojom::ImeInstance> ime_remote) override;
   void OnInputMethodManagerInstanceReady(
-      mojom::InputMethodManagerInstancePtr input_method_manager_ptr) override;
+      mojo::PendingRemote<mojom::InputMethodManagerInstance>
+          input_method_manager_remote) override;
   void OnIntentHelperInstanceReady(
-      mojom::IntentHelperInstancePtr intent_helper_ptr) override;
+      mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote)
+      override;
+  void OnKeyboardShortcutInstanceReady(
+      mojo::PendingRemote<mojom::KeyboardShortcutInstance>
+          keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
-      mojom::KeymasterInstancePtr keymaster_ptr) override;
-  void OnKioskInstanceReady(mojom::KioskInstancePtr kiosk_ptr) override;
-  void OnLockScreenInstanceReady(
-      mojom::LockScreenInstancePtr lock_screen_ptr) override;
+      mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
+  void OnKioskInstanceReady(
+      mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
+  void OnLockScreenInstanceReady(mojo::PendingRemote<mojom::LockScreenInstance>
+                                     lock_screen_remote) override;
   void OnMediaSessionInstanceReady(
-      mojom::MediaSessionInstancePtr media_session_ptr) override;
-  void OnMetricsInstanceReady(mojom::MetricsInstancePtr metrics_ptr) override;
-  void OnMidisInstanceReady(mojom::MidisInstancePtr midis_ptr) override;
-  void OnNetInstanceReady(mojom::NetInstancePtr net_ptr) override;
+      mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
+      override;
+  void OnMemoryInstanceReady(
+      mojo::PendingRemote<mojom::MemoryInstance> memory_remote) override;
+  void OnMetricsInstanceReady(
+      mojo::PendingRemote<mojom::MetricsInstance> metrics_remote) override;
+  void OnMidisInstanceReady(
+      mojo::PendingRemote<mojom::MidisInstance> midis_remote) override;
+  void OnNearbyShareInstanceReady(
+      mojo::PendingRemote<mojom::NearbyShareInstance> nearby_share_remote)
+      override;
+  void OnNetInstanceReady(
+      mojo::PendingRemote<mojom::NetInstance> net_remote) override;
   void OnNotificationsInstanceReady(
-      mojom::NotificationsInstancePtr notifications_ptr) override;
-  void OnObbMounterInstanceReady(
-      mojom::ObbMounterInstancePtr obb_mounter_ptr) override;
+      mojo::PendingRemote<mojom::NotificationsInstance> notifications_remote)
+      override;
+  void OnObbMounterInstanceReady(mojo::PendingRemote<mojom::ObbMounterInstance>
+                                     obb_mounter_remote) override;
   void OnOemCryptoInstanceReady(
-      mojom::OemCryptoInstancePtr oemcrypto_ptr) override;
-  void OnPipInstanceReady(mojom::PipInstancePtr policy_ptr) override;
-  void OnPolicyInstanceReady(mojom::PolicyInstancePtr policy_ptr) override;
-  void OnPowerInstanceReady(mojom::PowerInstancePtr power_ptr) override;
-  void OnPrintInstanceReady(mojom::PrintInstancePtr print_ptr) override;
+      mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) override;
+  void OnPaymentAppInstanceReady(mojo::PendingRemote<mojom::PaymentAppInstance>
+                                     payment_app_remote) override;
+  void OnPipInstanceReady(
+      mojo::PendingRemote<mojom::PipInstance> policy_remote) override;
+  void OnPolicyInstanceReady(
+      mojo::PendingRemote<mojom::PolicyInstance> policy_remote) override;
+  void OnPowerInstanceReady(
+      mojo::PendingRemote<mojom::PowerInstance> power_remote) override;
   void OnPrintSpoolerInstanceReady(
-      mojom::PrintSpoolerInstancePtr print_spooler_ptr) override;
-  void OnProcessInstanceReady(mojom::ProcessInstancePtr process_ptr) override;
+      mojo::PendingRemote<mojom::PrintSpoolerInstance> print_spooler_remote)
+      override;
+  void OnProcessInstanceReady(
+      mojo::PendingRemote<mojom::ProcessInstance> process_remote) override;
   void OnPropertyInstanceReady(
-      mojom::PropertyInstancePtr property_ptr) override;
+      mojo::PendingRemote<mojom::PropertyInstance> property_remote) override;
   void OnRotationLockInstanceReady(
-      mojom::RotationLockInstancePtr rotation_lock_ptr) override;
+      mojo::PendingRemote<mojom::RotationLockInstance> rotation_lock_remote)
+      override;
   void OnScreenCaptureInstanceReady(
-      mojom::ScreenCaptureInstancePtr screen_capture_ptr) override;
+      mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote)
+      override;
+  void OnSensorInstanceReady(
+      mojo::PendingRemote<mojom::SensorInstance> sensor_ptr) override;
+  void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
+                                     sharesheet_remote) override;
   void OnSmartCardManagerInstanceReady(
-      mojom::SmartCardManagerInstancePtr smart_card_manager_ptr) override;
+      mojo::PendingRemote<mojom::SmartCardManagerInstance>
+          smart_card_manager_remote) override;
   void OnStorageManagerInstanceReady(
-      mojom::StorageManagerInstancePtr storage_manager_ptr) override;
-  void OnTimerInstanceReady(mojom::TimerInstancePtr timer_ptr) override;
-  void OnTracingInstanceReady(mojom::TracingInstancePtr trace_ptr) override;
-  void OnTtsInstanceReady(mojom::TtsInstancePtr tts_ptr) override;
-  void OnUsbHostInstanceReady(mojom::UsbHostInstancePtr usb_host_ptr) override;
-  void OnVideoInstanceReady(mojom::VideoInstancePtr video_ptr) override;
-  void OnVoiceInteractionArcHomeInstanceReady(
-      mojom::VoiceInteractionArcHomeInstancePtr home_ptr) override;
-  void OnVoiceInteractionFrameworkInstanceReady(
-      mojom::VoiceInteractionFrameworkInstancePtr framework_ptr) override;
+      mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
+      override;
+  void OnTimerInstanceReady(
+      mojo::PendingRemote<mojom::TimerInstance> timer_remote) override;
+  void OnTracingInstanceReady(
+      mojo::PendingRemote<mojom::TracingInstance> trace_remote) override;
+  void OnTtsInstanceReady(
+      mojo::PendingRemote<mojom::TtsInstance> tts_remote) override;
+  void OnUsbHostInstanceReady(
+      mojo::PendingRemote<mojom::UsbHostInstance> usb_host_remote) override;
+  void OnVideoInstanceReady(
+      mojo::PendingRemote<mojom::VideoInstance> video_remote) override;
   void OnVolumeMounterInstanceReady(
-      mojom::VolumeMounterInstancePtr volume_mounter_ptr) override;
+      mojo::PendingRemote<mojom::VolumeMounterInstance> volume_mounter_remote)
+      override;
   void OnWakeLockInstanceReady(
-      mojom::WakeLockInstancePtr wake_lock_ptr) override;
+      mojo::PendingRemote<mojom::WakeLockInstance> wake_lock_remote) override;
   void OnWallpaperInstanceReady(
-      mojom::WallpaperInstancePtr wallpaper_ptr) override;
+      mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) override;
+  void OnWebApkInstanceReady(
+      mojo::PendingRemote<mojom::WebApkInstance> webapk_remote) override;
+
+  size_t GetNumMojoChannelsForTesting() const;
 
  private:
   // Called when the bridge channel is closed. This typically only happens when
@@ -128,7 +196,7 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   // |T| is a ARC Mojo Instance type.
   template <typename InstanceType, typename HostType>
   void OnInstanceReady(ConnectionHolder<InstanceType, HostType>* holder,
-                       mojo::InterfacePtr<InstanceType> ptr);
+                       mojo::PendingRemote<InstanceType> remote);
 
   // Called if one of the established channels is closed.
   void OnChannelClosed(MojoChannelBase* channel);
@@ -139,13 +207,10 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   ArcBridgeService* const arc_bridge_service_;
 
   mojo::Receiver<mojom::ArcBridgeHost> receiver_;
-  mojom::ArcBridgeInstancePtr instance_;
 
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
   std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeHostImpl);
 };
 
 }  // namespace arc

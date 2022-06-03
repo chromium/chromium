@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.chrome.browser.ui.system.StatusBarColorController.DEFAULT_STATUS_BAR_COLOR;
 import static org.chromium.chrome.browser.ui.system.StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController.ToolbarColorType;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
-import org.chromium.chrome.browser.webapps.WebappExtras;
 
 import javax.inject.Inject;
 
@@ -43,25 +44,18 @@ public class CustomTabStatusBarColorProvider {
         mStatusBarColorController.updateStatusBarColor();
     }
 
-    int getBaseStatusBarColor(boolean activityHasTab, int fallbackStatusBarColor) {
-        if (mIntentDataProvider.isOpenedByChrome()) return fallbackStatusBarColor;
-
-        if (shouldUseDefaultThemeColorForFullscreen()) {
-            return DEFAULT_STATUS_BAR_COLOR;
+    int getBaseStatusBarColor(Tab tab) {
+        @ToolbarColorType
+        int toolbarColorType = CustomTabToolbarColorController.computeToolbarColorType(
+                mIntentDataProvider, mUseTabThemeColor, tab);
+        switch (toolbarColorType) {
+            case ToolbarColorType.THEME_COLOR:
+                return UNDEFINED_STATUS_BAR_COLOR;
+            case ToolbarColorType.DEFAULT_COLOR:
+                return DEFAULT_STATUS_BAR_COLOR;
+            case ToolbarColorType.INTENT_TOOLBAR_COLOR:
+                return mIntentDataProvider.getColorProvider().getToolbarColor();
         }
-
-        if (activityHasTab && mUseTabThemeColor) return UNDEFINED_STATUS_BAR_COLOR;
-
-        return mIntentDataProvider.hasCustomToolbarColor() ? mIntentDataProvider.getToolbarColor()
-                                                           : DEFAULT_STATUS_BAR_COLOR;
-    }
-
-    private boolean shouldUseDefaultThemeColorForFullscreen() {
-        // Don't use the theme color provided by the page if we're in display: fullscreen. This
-        // works around an issue where the status bars go transparent and can't be seen on top of
-        // the page content when users swipe them in or they appear because the on-screen keyboard
-        // was triggered.
-        WebappExtras webappExtras = mIntentDataProvider.getWebappExtras();
-        return (webappExtras != null && webappExtras.displayMode == WebDisplayMode.FULLSCREEN);
+        return DEFAULT_STATUS_BAR_COLOR;
     }
 }

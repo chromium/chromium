@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -33,7 +32,8 @@ bool Image::LoadMetafile(const Metafile& metafile) {
     return false;
 
   size_ = rect.size();
-  gfx::CreateBitmapV4Header(rect.width(), rect.height(), &hdr);
+  // The data in this `bitmap` will be tightly-packed 32-bit ARGB data.
+  gfx::CreateBitmapV4HeaderForARGB888(rect.width(), rect.height(), &hdr);
   unsigned char* bits = NULL;
   base::win::ScopedBitmap bitmap(
       ::CreateDIBSection(hdc.Get(), reinterpret_cast<BITMAPINFO*>(&hdr), 0,

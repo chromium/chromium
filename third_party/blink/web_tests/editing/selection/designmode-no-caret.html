@@ -1,29 +1,15 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-function log(msg)
-{
-document.getElementById("console").appendChild(document.createTextNode(msg + "\n"));
-}
-
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-This tests to see that a caret is placed inside an editable document that is entirely editable even when no caret is requested programmatically.  We do this as a convenience.  Right now, we only do this convenience when a document's frame becomes first responder or when a document's window becomes key.
-<pre id="console"></pre>
-<script>
-document.designMode = "on";
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.setMainFrameIsFirstResponder(false);
-    testRunner.setMainFrameIsFirstResponder(true);
-
-    var sel = window.getSelection();
-    if (sel.anchorNode && sel.anchorNode == sel.focusNode && sel.anchorOffset == sel.focusOffset)
-        log("Test Passed");
-    else
-        log("Test Failed - there should be a caret\n");
-
-    testRunner.notifyDone();
-}
+// We don't set caret automatically when editable document that is entirely
+// editable even when no caret is requested programmatically.
+//
+// Note: WebKit set caret this case, but Bink doesn't since the CL[1].
+// [1] https://codereview.chromium.org/14891003
+selection_test(
+    'abc',
+    selection => selection.document.designMode = 'on',
+    'abc');
 </script>

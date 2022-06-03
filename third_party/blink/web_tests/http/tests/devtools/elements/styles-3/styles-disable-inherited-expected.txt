@@ -13,11 +13,6 @@ div { (user agent stylesheet)
 Style Attribute { ()
     font-weight: bold;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 After disable:
 [expanded] 
 element.style { ()
@@ -25,10 +20,5 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

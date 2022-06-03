@@ -25,6 +25,11 @@ class CastDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   static CastDevToolsManagerDelegate* GetInstance();
 
   CastDevToolsManagerDelegate();
+
+  CastDevToolsManagerDelegate(const CastDevToolsManagerDelegate&) = delete;
+  CastDevToolsManagerDelegate& operator=(const CastDevToolsManagerDelegate&) =
+      delete;
+
   ~CastDevToolsManagerDelegate() override;
 
   void EnableWebContentsForDebugging(content::WebContents* web_contents);
@@ -37,7 +42,6 @@ class CastDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
 
  private:
   std::unordered_set<content::WebContents*> enabled_webcontents_;
-  DISALLOW_COPY_AND_ASSIGN(CastDevToolsManagerDelegate);
 };
 
 }  // namespace shell

@@ -13,7 +13,7 @@
         "description": "Debuggee identifier. Either tabId or extensionId must be specified",
         "properties": {
           "tabId": { "type": "integer", "optional": true, "description": "The id of the tab which you intend to debug." },
-          "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when 'silent-debugger-extension-api' flag is enabled on the target browser." },
+          "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when the <code>--silent-debugger-extension-api</code> command-line switch is used." },
           "targetId": { "type": "string", "optional": true, "description": "The opaque id of the debug target." }
         }
       },
@@ -63,15 +63,14 @@
             "type": "string",
             "name": "requiredVersion",
             "description": "Required debugging protocol version (\"0.1\"). One can only attach to the debuggee with matching major version and greater or equal minor version. List of the protocol versions can be obtained <a href='https://developer.chrome.com/devtools/docs/debugger-protocol'>here</a>."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [],
-            "description": "Called once the attach operation succeeds or fails. Callback receives no arguments. If the attach fails, $(ref:runtime.lastError) will be set to the error message."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called once the attach operation succeeds or fails. Callback receives no arguments. If the attach fails, $(ref:runtime.lastError) will be set to the error message."
+        }
       },
       {
         "name": "detach",
@@ -82,15 +81,14 @@
             "$ref": "Debuggee",
             "name": "target",
             "description": "Debugging target from which you want to detach."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [],
-            "description": "Called once the detach operation succeeds or fails. Callback receives no arguments. If the detach fails, $(ref:runtime.lastError) will be set to the error message."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called once the detach operation succeeds or fails. Callback receives no arguments. If the detach fails, $(ref:runtime.lastError) will be set to the error message."
+        }
       },
       {
         "name": "sendCommand",
@@ -113,42 +111,39 @@
             "optional": true,
             "additionalProperties": { "type": "any" },
             "description": "JSON object with request parameters. This object must conform to the remote debugging params scheme for given method."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "type": "object",
-                "name": "result",
-                "optional": true,
-                "additionalProperties": { "type": "any" },
-                "description": "JSON object with the response. Structure of the response varies depending on the method name and is defined by the 'returns' attribute of the command description in the remote debugging protocol."
-              }
-            ],
-            "description": "Response body. If an error occurs while posting the message, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "type": "object",
+              "name": "result",
+              "optional": true,
+              "additionalProperties": { "type": "any" },
+              "description": "JSON object with the response. Structure of the response varies depending on the method name and is defined by the 'returns' attribute of the command description in the remote debugging protocol."
+            }
+          ],
+          "description": "Response body. If an error occurs while posting the message, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
+        }
       },
       {
         "name": "getTargets",
         "type": "function",
         "description": "Returns the list of available debug targets.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "type": "array",
-                "name": "result",
-                "items": {"$ref": "TargetInfo"},
-                "description": "Array of TargetInfo objects corresponding to the available debug targets."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "array",
+              "name": "result",
+              "items": {"$ref": "TargetInfo"},
+              "description": "Array of TargetInfo objects corresponding to the available debug targets."
+            }
+          ]
+        }
       }
     ],
     "events": [

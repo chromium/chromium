@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/allocator/buildflags.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -38,6 +40,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/background_page_watcher.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
@@ -76,21 +79,22 @@ int GetNumRenderers(Browser* browser) {
   return static_cast<int>(render_process_hosts.size());
 }
 
-void RequestGlobalDumpCallback(base::Closure quit_closure,
+void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
                                bool success,
                                uint64_t) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(quit_closure));
   ASSERT_TRUE(success);
 }
 
 void OnStartTracingDoneCallback(
-    base::trace_event::MemoryDumpLevelOfDetail explicit_dump_type,
-    base::Closure quit_closure) {
+    base::trace_event::MemoryDumpLevelOfDetail dump_type,
+    base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
+          MemoryDumpType::PERIODIC_INTERVAL, dump_type,
           MemoryDumpDeterminism::NONE,
-          Bind(&RequestGlobalDumpCallback, quit_closure));
+          BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
 
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
@@ -98,6 +102,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   explicit ProcessMemoryMetricsEmitterFake(base::RunLoop* run_loop,
                                            ukm::TestUkmRecorder* recorder)
       : run_loop_(run_loop), recorder_(recorder) {}
+
+  ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
+      delete;
+  ProcessMemoryMetricsEmitterFake& operator=(
+      const ProcessMemoryMetricsEmitterFake&) = delete;
 
  private:
   ~ProcessMemoryMetricsEmitterFake() override {}
@@ -129,8 +138,6 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   bool finished_memory_dump_ = false;
   bool finished_process_info_ = false;
   ukm::TestUkmRecorder* recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 
 void CheckMemoryMetric(const std::string& name,
@@ -180,6 +187,16 @@ void CheckExperimentalMemoryMetricsForProcessType(
   CheckMemoryMetric(std::string("Memory.Experimental.") + process_type + "2.V8",
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // It's a small metric, so should not be strictly zero in theory, but could be
+  // if purge comes at the wrong time, or the thread cache is not available on
+  // this platform.
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Small.Malloc.ThreadCache",
+                    histogram_tester, count, ValueRestriction::NONE,
+                    number_of_processes);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void CheckExperimentalMemoryMetrics(
@@ -208,13 +225,13 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
                               int number_of_renderer_processes,
                               int number_of_extension_processes) {
   const int count_for_resident_set =
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       0;
 #else
       count;
 #endif
   const int count_for_private_swap_footprint =
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
       count;
 #else
       0;
@@ -298,6 +315,11 @@ class ProcessMemoryMetricsEmitterTest
   ProcessMemoryMetricsEmitterTest() {
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
   }
+
+  ProcessMemoryMetricsEmitterTest(const ProcessMemoryMetricsEmitterTest&) =
+      delete;
+  ProcessMemoryMetricsEmitterTest& operator=(
+      const ProcessMemoryMetricsEmitterTest&) = delete;
 
   ~ProcessMemoryMetricsEmitterTest() override {}
 
@@ -387,7 +409,7 @@ class ProcessMemoryMetricsEmitterTest
     CheckMemoryMetricWithName(entry, UkmEntry::kMallocName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     CheckMemoryMetricWithName(entry, UkmEntry::kResidentName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
@@ -417,7 +439,7 @@ class ProcessMemoryMetricsEmitterTest
     CheckMemoryMetricWithName(entry, UkmEntry::kMallocName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     CheckMemoryMetricWithName(entry, UkmEntry::kResidentName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
@@ -467,14 +489,14 @@ class ProcessMemoryMetricsEmitterTest
   // Create an barebones extension with a background page for the given name.
   const Extension* CreateExtension(const std::string& name) {
     auto dir = std::make_unique<TestExtensionDir>();
-    dir->WriteManifestWithSingleQuotes(
-        base::StringPrintf("{"
-                           "'name': '%s',"
-                           "'version': '1',"
-                           "'manifest_version': 2,"
-                           "'background': {'page': 'bg.html'}"
-                           "}",
-                           name.c_str()));
+    constexpr char kManifestTemplate[] =
+        R"({
+             "name": "%s",
+             "version": "1",
+             "manifest_version": 2,
+             "background": {"page": "bg.html"}
+           })";
+    dir->WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str()));
     dir->WriteFile(FILE_PATH_LITERAL("bg.html"), "");
 
     const Extension* extension = LoadExtension(dir->UnpackedPath());
@@ -485,15 +507,17 @@ class ProcessMemoryMetricsEmitterTest
 
   const Extension* CreateHostedApp(const std::string& name,
                                    const GURL& app_url) {
-    std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
-    dir->WriteManifestWithSingleQuotes(base::StringPrintf(
-        "{"
-        "'name': '%s',"
-        "'version': '1',"
-        "'manifest_version': 2,"
-        "'app': {'urls': ['%s'], 'launch': {'web_url': '%s'}}"
-        "}",
-        name.c_str(), app_url.spec().c_str(), app_url.spec().c_str()));
+    auto dir = std::make_unique<TestExtensionDir>();
+    constexpr char kManifestTemplate[] =
+        R"({
+             "name": "%s",
+             "version": "1",
+             "manifest_version": 2,
+             "app": {"urls": ["%s"], "launch": {"web_url": "%s"}}
+           })";
+    dir->WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str(),
+                                          app_url.spec().c_str(),
+                                          app_url.spec().c_str()));
 
     const Extension* extension = LoadExtension(dir->UnpackedPath());
     EXPECT_TRUE(extension);
@@ -508,8 +532,6 @@ class ProcessMemoryMetricsEmitterTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterTest);
 };
 
 // TODO(crbug.com/732501): Re-enable on Win once not flaky.
@@ -524,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -551,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 // TODO(https://crbug.com/990148): Re-enable on Win and Linux once not flaky.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(OS_WIN) || defined(OS_LINUX)
+    defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_FetchAndEmitMetricsWithExtensions \
   DISABLED_FetchAndEmitMetricsWithExtensions
 #else
@@ -574,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -614,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("app.org", "/empty.html");
   const Extension* app = CreateHostedApp("App", GURL("http://app.org"));
-  ui_test_utils::NavigateToURL(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   // Verify that the hosted app has loaded.
   ProcessManager* pm = ProcessManager::Get(profile());
@@ -623,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -649,12 +671,23 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true);
 }
 
+// TODO(crbug.com/1201588): Fix flakiness on Windows.
+#if defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
+  DISABLED_FetchAndEmitMetricsWithExtensionsAndHostReuse
+#else
+#define MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse \
+  FetchAndEmitMetricsWithExtensionsAndHostReuse
+#endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       FetchAndEmitMetricsWithExtensionsAndHostReuse) {
-  // This test does not work with --site-per-process flag since this test
-  // combines multiple extensions in the same process.
-  if (content::AreAllSitesIsolatedForTesting())
+                       MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse) {
+  // When strict extension isolation is enabled, there is no process reuse for
+  // extensions, and this becomes the same as FetchAndEmitMetricsWithExtensions.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kStrictExtensionIsolation)) {
     return;
+  }
+
   // Limit the number of renderer processes to force reuse.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
   const Extension* extension1 = CreateExtension("Extension 1");
@@ -671,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -687,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   run_loop.Run();
 
-  constexpr int kNumRenderers = 2;
+  constexpr int kNumRenderers = 1;
   EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));
   constexpr int kNumExtensionProcesses = 1;
 
@@ -705,8 +738,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/989810): Re-enable on Win once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || defined(OS_WIN)
+// TODO(crbug.com/989810): Re-enable on Win and Mac once not flaky.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_FetchDuringTrace DISABLED_FetchDuringTrace
 #else
 #define MAYBE_FetchDuringTrace FetchDuringTrace
@@ -717,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
 
@@ -728,9 +762,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
         base::trace_event::TraceConfigMemoryTestUtil::
             GetTraceConfig_EmptyTriggers());
     ASSERT_TRUE(tracing::BeginTracingWithTraceConfig(
-        trace_config, Bind(&OnStartTracingDoneCallback,
-                           base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
-                           run_loop.QuitClosure())));
+        trace_config,
+        BindOnce(&OnStartTracingDoneCallback,
+                 base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+                 run_loop.QuitClosure())));
     run_loop.Run();
   }
 
@@ -756,8 +791,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   ASSERT_GT(events.size(), 1u);
   ASSERT_TRUE(trace_analyzer::CountMatches(
-      events, trace_analyzer::Query::EventNameIs(MemoryDumpTypeToString(
-                  MemoryDumpType::EXPLICITLY_TRIGGERED))));
+      events, trace_analyzer::Query::EventNameIs(
+                  MemoryDumpTypeToString(MemoryDumpType::PERIODIC_INTERVAL))));
 
   constexpr int kNumRenderers = 2;
   EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));
@@ -774,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -799,8 +834,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
 // Test is flaky on chromeos and linux. https://crbug.com/938054.
 // Test is flaky on mac and win: https://crbug.com/948674.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||         \
-    defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MACOSX) || \
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||      \
+    defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
     defined(OS_WIN)
 #define MAYBE_ForegroundAndBackgroundPages DISABLED_ForegroundAndBackgroundPages
 #else
@@ -814,13 +849,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   const GURL url2 = embedded_test_server()->GetURL("b.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* tab1 = add_tab.Wait();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab2;
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* tab2 = add_tab2.Wait();
 
   base::HistogramTester histogram_tester;

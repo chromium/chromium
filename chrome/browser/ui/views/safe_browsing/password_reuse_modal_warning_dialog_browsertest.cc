@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -14,8 +13,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/safe_browsing/features.h"
-#include "components/safe_browsing/password_protection/password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "content/public/test/browser_test.h"
 
 namespace safe_browsing {
 
@@ -23,6 +23,10 @@ class PasswordReuseModalWarningTest : public DialogBrowserTest {
  public:
   PasswordReuseModalWarningTest()
       : dialog_(nullptr), latest_user_action_(WarningAction::SHOWN) {}
+
+  PasswordReuseModalWarningTest(const PasswordReuseModalWarningTest&) = delete;
+  PasswordReuseModalWarningTest& operator=(
+      const PasswordReuseModalWarningTest&) = delete;
 
   ~PasswordReuseModalWarningTest() override {}
 
@@ -54,9 +58,6 @@ class PasswordReuseModalWarningTest : public DialogBrowserTest {
  protected:
   PasswordReuseModalWarningDialog* dialog_;
   WarningAction latest_user_action_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseModalWarningTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordReuseModalWarningTest, InvokeUi_default) {

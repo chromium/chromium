@@ -1,0 +1,2 @@
+mixins: "//services/device/generic_sensor/COMMON_METADATA"
+team_email: "device-dev@chromium.org"

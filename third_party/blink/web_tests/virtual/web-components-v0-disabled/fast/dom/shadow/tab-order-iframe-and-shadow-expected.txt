@@ -1,8 +1,0 @@
-CONSOLE ERROR: line 28: Uncaught TypeError: shadowHost.createShadowRoot is not a function
-This tests that pressing Tab key should traverse into iframe and shadow tree, and pressing Shift-Tab should reverse the order.
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-
-

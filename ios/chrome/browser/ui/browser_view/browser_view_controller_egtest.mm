@@ -5,13 +5,16 @@
 #include <map>
 
 #include "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
@@ -25,10 +28,16 @@
 
 // This test suite only tests javascript in the omnibox. Nothing to do with BVC
 // really, the name is a bit misleading.
-@interface BrowserViewControllerTestCase : ChromeTestCase
+@interface BrowserViewControllerTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BrowserViewControllerTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kStartSurface);
+  return config;
+}
 
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
@@ -44,8 +53,7 @@
                                                             block:^BOOL {
                                                               return NO;
                                                             }];
-    BOOL success = [myCondition waitWithTimeout:0.05];
-    success = NO;
+    ignore_result([myCondition waitWithTimeout:0.05]);
 
     [ChromeEarlGrey openNewTab];
   }  // End of the sync disabler scope.
@@ -56,9 +64,9 @@
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -70,9 +78,9 @@
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -140,12 +148,16 @@
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:"File Picker Test"];
 
-  // Invoke the file picker and tap on the "Cancel" button to dismiss the file
-  // picker.
+  // Invoke the file picker.
   [ChromeEarlGrey tapWebStateElementWithID:@"file"];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+
+  // Tap on the toolbar to dismiss the file picker on iOS14.  In iOS14 a
+  // UIDropShadowView covers the entire app, so tapping anywhere should
+  // dismiss the file picker.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::PrimaryToolbar()]
       performAction:grey_tap()];
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 #pragma mark - Open URL
@@ -153,7 +165,7 @@
 // Tests that BVC properly handles open URL. When NTP is visible, the URL
 // should be opened in the same tab (not create a new tab).
 - (void)testOpenURLFromNTP {
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
@@ -169,7 +181,7 @@
 // tab, the URL should be opened in a new tab, adding to the tab count.
 - (void)testOpenURLFromTab {
   [ChromeEarlGrey loadURL:GURL("https://invalid")];
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
@@ -181,11 +193,61 @@
 - (void)testOpenURLFromTabSwitcher {
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey waitForMainTabCount:0];
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForMainTabCount:1];
+}
+
+#pragma mark - Multiwindow
+
+- (void)testMultiWindowURLLoading {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Preps the http server with two URLs serving content.
+  std::map<GURL, std::string> responses;
+  const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
+  const GURL secondURL = web::test::HttpServer::MakeUrl("http://second");
+  responses[firstURL] = "First window";
+  responses[secondURL] = "Second window";
+  web::test::SetUpSimpleHttpServer(responses);
+
+  // Loads url in first window.
+  [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
+
+  // Opens second window and loads url.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
+
+  // Checks loads worked.
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:1];
+
+  // Closes first window and renumbers second window as first
+  [ChromeEarlGrey closeWindowWithNumber:0];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [ChromeEarlGrey changeWindowWithNumber:1 toNewNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:0];
+
+  // Opens a 'new' second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Loads urls in both windows, and verifies.
+  [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
+  [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:1];
 }
 
 @end

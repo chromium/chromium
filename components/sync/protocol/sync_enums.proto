@@ -6,6 +6,8 @@
 
 // If you change or add any enums in this file, update
 // proto_enum_conversions.{h, cc}.
+// If you deprecate enum or enum values, mark any corresponding entry in
+// tools/metrics/histograms/enums.xml as <obsolete>.
 
 syntax = "proto2";
 
@@ -34,15 +36,15 @@ message SyncEnums {
     // the server in the absence of bugs.
     STOP_SYNCING_PERMANENTLY = 6;
     // Client has finished encrypting all data.
-    ENCRYPTION_COMPLETE = 7;
+    // DEPRECATED_ENCRYPTION_COMPLETE = 7;
     // Client received an actionable error.
     ACTIONABLE_ERROR = 8;
     // Set of encrypted types has changed.
     ENCRYPTED_TYPES_CHANGED = 9;
     // The encryption passphrase state changed.
     PASSPHRASE_TYPE_CHANGED = 10;
-    // A new keystore encryption token was persisted.
-    KEYSTORE_TOKEN_UPDATED = 11;
+    // A new keystore encryption token was persisted. Deprecated 11/2021.
+    DEPRECATED_KEYSTORE_TOKEN_UPDATED = 11;
     // The datatype manager has finished an at least partially successful
     // configuration and is once again syncing with the server.
     CONFIGURE_COMPLETE = 12;
@@ -74,8 +76,8 @@ message SyncEnums {
     // actually transition qualifiers, and are set independently of other
     // qualifiers and of the main transitions. See session_specifics.proto for
     // the list of synced transition qualifiers.
-    // CHAIN_START = 12;     Deprecated.
-    // CHAIN_END = 13;       Deprecated.
+    // DEPRECATED_CHAIN_START = 12;
+    // DEPRECATED_CHAIN_END = 13;
   }
 
   // Types of redirects that triggered a transition.
@@ -86,45 +88,54 @@ message SyncEnums {
 
   enum ErrorType {
     SUCCESS = 0;
-    DEPRECATED_ACCESS_DENIED = 1;
-    NOT_MY_BIRTHDAY = 2;  // Returned when the server and client disagree
-                          // on the store birthday.
-    THROTTLED = 3;        // Returned when the store has exceeded the
-                          // allowed bandwidth utilization.
-    DEPRECATED_AUTH_EXPIRED = 4;
-    DEPRECATED_USER_NOT_ACTIVATED = 5;
-    DEPRECATED_AUTH_INVALID = 6;
-    CLEAR_PENDING = 7;       // A clear of the user data is pending (e.g.
-                             // initiated by privacy request).  Client should
-                             // come back later.
-    TRANSIENT_ERROR = 8;     // A transient error occured (eg. backend
-                             // timeout). Client should try again later.
-    MIGRATION_DONE = 9;      // Migration has finished for one or more data
-                             // types.  Client should clear the cache for
-                             // these data types only and then re-sync with
-                             // a server.
-    DISABLED_BY_ADMIN = 10;  // An administrator disabled sync for this
-                             // domain.
-    DEPRECATED_USER_ROLLBACK = 11;  // Deprecated in M50.
-    PARTIAL_FAILURE = 12;           // Return when client want to update several
-                                    // data types, but some of them failed(e.g.
-                                    // throttled).
-    CLIENT_DATA_OBSOLETE = 13;      // Returned when server detects that this
-                                    // client's data is obsolete. Client should
-                                    // reset local data and restart syncing.
-    UNKNOWN = 100;                  // Unknown value. This should never be
-    // explicitly used; it is the default value when
-    // an out-of-date client parses a value it
-    // doesn't recognize.
+    // DEPRECATED_ACCESS_DENIED = 1;
+    // Returned when the server and client disagree on the store birthday. This
+    // should be interpreted as all local sync metadata requiring cleanup,
+    // obviously including the locally-cached store birthday.
+    NOT_MY_BIRTHDAY = 2;
+    // Returned when the store has exceeded the allowed bandwidth utilization.
+    THROTTLED = 3;
+    // DEPRECATED_AUTH_EXPIRED = 4;
+    // DEPRECATED_USER_NOT_ACTIVATED = 5;
+    // DEPRECATED_AUTH_INVALID = 6;
+    // A clear of the user data is pending (e.g. initiated by privacy request).
+    // The client should come back later.
+    CLEAR_PENDING = 7;
+    // A transient error occurred (e.g. a backend timeout). The client should
+    // try again later.
+    TRANSIENT_ERROR = 8;
+    // A server-side migration has taken place for one or more data types. The
+    // client should clear the cache for these data types only and then re-sync
+    // with a server.
+    MIGRATION_DONE = 9;
+    // An administrator disabled sync for this domain.
+    DISABLED_BY_ADMIN = 10;
+    // Deprecated in M50.
+    // DEPRECATED_USER_ROLLBACK = 11;
+    // Returned when the client wants to update several data types, but some of
+    // them failed (e.g. throttled).
+    PARTIAL_FAILURE = 12;
+    // Returned when the server detects that this client's sync metadata is
+    // obsolete. The client should reset local sync metadata and restart
+    // syncing.
+    CLIENT_DATA_OBSOLETE = 13;
+    // Returned when the server detects that the encryption state (Nigori,
+    // keystore keys) has been reset/overridden, which means the local
+    // Nigori-related state is obsolete and should be cleared.
+    // Introduced in M84.
+    ENCRYPTION_OBSOLETE = 14;
+    // Unknown value. This should never be explicitly used; it is the default
+    // value when an out-of-date client parses a value it doesn't recognize.
+    UNKNOWN = 100;
   }
 
   enum Action {
-    UPGRADE_CLIENT = 0;              // Upgrade the client to latest version.
-    DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
-    DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
-    DEPRECATED_STOP_AND_RESTART_SYNC = 3;
-    DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
-    UNKNOWN_ACTION = 5;              // This is the default.
+    UPGRADE_CLIENT = 0;  // Upgrade the client to latest version.
+    // DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
+    // DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
+    // DEPRECATED_STOP_AND_RESTART_SYNC = 3;
+    // DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
+    UNKNOWN_ACTION = 5;  // This is the default.
   }
 
   // Please keep in sync with chrome/android/java/.../ForeignSessionHelper.java

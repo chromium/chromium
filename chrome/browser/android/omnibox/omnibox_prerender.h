@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 #define CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 
 class Profile;
 struct AutocompleteMatch;
@@ -26,6 +22,10 @@ class WebContents;
 class OmniboxPrerender {
  public:
   OmniboxPrerender(JNIEnv* env, jobject obj);
+
+  OmniboxPrerender(const OmniboxPrerender&) = delete;
+  OmniboxPrerender& operator=(const OmniboxPrerender&) = delete;
+
   virtual ~OmniboxPrerender();
 
   // Clears the transitional matches. This should be called when the user
@@ -65,8 +65,6 @@ class OmniboxPrerender {
                    content::WebContents* web_contents);
   void DoPreconnect(const AutocompleteMatch& match, Profile* profile);
   JavaObjectWeakGlobalRef weak_java_omnibox_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxPrerender);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_

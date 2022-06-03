@@ -5,14 +5,13 @@
 #ifndef ASH_DRAG_DROP_DRAG_IMAGE_VIEW_H_
 #define ASH_DRAG_DROP_DRAG_IMAGE_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace aura {
 class Window;
@@ -20,10 +19,6 @@ class Window;
 
 namespace gfx {
 class Image;
-}
-
-namespace views {
-class Widget;
 }
 
 namespace ash {
@@ -34,13 +29,17 @@ namespace ash {
 // desktop in screen coordinates.
 class ASH_EXPORT DragImageView : public views::ImageView {
  public:
+  DragImageView(const DragImageView&) = delete;
+  DragImageView& operator=(const DragImageView&) = delete;
+
+  ~DragImageView() override;
+
   // |root_window| is the root window on which to create the drag image widget.
   // |source| is the event source that started this drag drop operation (touch
   // or mouse). It is used to determine attributes of the drag image such as
   // whether to show drag operation hint on top of the image.
-  DragImageView(aura::Window* root_window,
-                ui::DragDropTypes::DragEventSource source);
-  ~DragImageView() override;
+  static views::UniqueWidgetPtr Create(aura::Window* root_window,
+                                       ui::mojom::DragEventSource source);
 
   // Sets the bounds of the native widget in screen
   // coordinates.
@@ -73,6 +72,8 @@ class ASH_EXPORT DragImageView : public views::ImageView {
   gfx::Size GetMinimumSize() const override;
 
  private:
+  explicit DragImageView(ui::mojom::DragEventSource source);
+
   gfx::Image* DragHint() const;
   // Drag hint images are only drawn when the input source is touch.
   bool ShouldDrawDragHint() const;
@@ -83,21 +84,17 @@ class ASH_EXPORT DragImageView : public views::ImageView {
   // Overridden from views::view
   void Layout() override;
 
-  std::unique_ptr<views::Widget> widget_;
-
   // Save the requested drag image size. We may need to display a drag hint
   // image, which potentially expands |widget_|'s size. That drag hint image
   // may be disabled (e.g. during the drag cancel animation). In that case,
   // we need to know the originally requested size to render the drag image.
   gfx::Size drag_image_size_;
 
-  ui::DragDropTypes::DragEventSource drag_event_source_;
+  ui::mojom::DragEventSource drag_event_source_;
 
   // Bitmask of ui::DragDropTypes::DragOperation values.
-  int touch_drag_operation_;
+  int touch_drag_operation_ = ui::DragDropTypes::DRAG_NONE;
   gfx::Point touch_drag_operation_indicator_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragImageView);
 };
 
 }  // namespace ash

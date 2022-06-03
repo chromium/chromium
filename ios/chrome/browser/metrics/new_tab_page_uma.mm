@@ -8,8 +8,6 @@
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/tabs/tab_model_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
@@ -20,7 +18,7 @@
 
 namespace new_tab_page_uma {
 
-void RecordAction(ios::ChromeBrowserState* browser_state,
+void RecordAction(ChromeBrowserState* browser_state,
                   web::WebState* web_state,
                   ActionType action) {
   DCHECK(browser_state);
@@ -34,16 +32,7 @@ void RecordAction(ios::ChromeBrowserState* browser_state,
   counter->Add(action);
 }
 
-void RecordAction(ios::ChromeBrowserState* browser_state, ActionType action) {
-  DCHECK(browser_state);
-  WebStateList* web_state_list =
-      TabModelList::GetLastActiveTabModelForChromeBrowserState(browser_state)
-          .webStateList;
-  return RecordAction(browser_state, web_state_list->GetActiveWebState(),
-                      action);
-}
-
-void RecordActionFromOmnibox(ios::ChromeBrowserState* browser_state,
+void RecordActionFromOmnibox(ChromeBrowserState* browser_state,
                              web::WebState* web_state,
                              const GURL& url,
                              ui::PageTransition transition,

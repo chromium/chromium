@@ -725,8 +725,8 @@ promise_test(async t => {
 
   const event = await eventWatcher.wait_for('remove');
 
-  assert_equals(event.timelineTime, document.timeline.currentTime);
-  assert_equals(event.currentTime, 1);
+  assert_times_equal(event.timelineTime, document.timeline.currentTime);
+  assert_times_equal(event.currentTime, 1);
 }, 'Dispatches an event when removing');
 
 promise_test(async t => {
@@ -988,17 +988,15 @@ promise_test(async t => {
 }, 'Queues all remove events before running them');
 
 promise_test(async t => {
-  const outerIframe = createElement(t, 'iframe');
+  const outerIframe = document.createElement('iframe');
   outerIframe.width = 10;
   outerIframe.height = 10;
+  await insertFrameAndAwaitLoad(t, outerIframe, document);
 
-  await new Promise(resolve => outerIframe.addEventListener('load', resolve));
-
-  const innerIframe = createElement(t, 'iframe', outerIframe.contentDocument);
+  const innerIframe = document.createElement('iframe');
   innerIframe.width = 10;
   innerIframe.height = 10;
-
-  await new Promise(resolve => innerIframe.addEventListener('load', resolve));
+  await insertFrameAndAwaitLoad(t, innerIframe, outerIframe.contentDocument);
 
   const div = createDiv(t, innerIframe.contentDocument);
 

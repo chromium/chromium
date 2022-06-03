@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_TEXT_FORMAT_UPDATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_TEXT_FORMAT_UPDATE_EVENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 
 namespace blink {
 
 class TextFormatUpdateEventInit;
-class TextFormatUpdateEvent;
+class TextFormat;
 
 // The textformatupdate event is fired when the input method desires a specific
 // region to be styled in a certain fashion, limited to the style properties
@@ -27,32 +26,19 @@ class CORE_EXPORT TextFormatUpdateEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  TextFormatUpdateEvent(const TextFormatUpdateEventInit* dict);
-  TextFormatUpdateEvent(uint32_t format_range_start,
-                        uint32_t format_range_end,
-                        const String& underline_color,
-                        const String& background_color,
-                        const String& text_decoration_color,
-                        const String& text_underline_style);
+  explicit TextFormatUpdateEvent(const TextFormatUpdateEventInit* dict);
+  explicit TextFormatUpdateEvent(HeapVector<Member<TextFormat>>& textFormats);
   static TextFormatUpdateEvent* Create(const TextFormatUpdateEventInit* dict);
   ~TextFormatUpdateEvent() override;
 
-  uint32_t formatRangeStart() const;
-  uint32_t formatRangeEnd() const;
-  String underlineColor() const;
-  String backgroundColor() const;
-  String textDecorationColor() const;
-  String textUnderlineStyle() const;
+  HeapVector<Member<TextFormat>> getTextFormats() const;
 
   const AtomicString& InterfaceName() const override;
-  // member variables to keep track of the event parameters
+
+  void Trace(Visitor*) const override;
+
  private:
-  uint32_t format_range_start_ = 0;
-  uint32_t format_range_end_ = 0;
-  String underline_color_;
-  String background_color_;
-  String text_decoration_color_;
-  String text_underline_style_;
+  HeapVector<Member<TextFormat>> text_formats_;
 };
 
 }  // namespace blink

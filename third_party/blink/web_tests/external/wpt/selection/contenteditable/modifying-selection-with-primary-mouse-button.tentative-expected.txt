@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_true: Selection should be modified before mouseup event expected true got false
+PASS Primary click should set focus to clicked editable element and collapse selection around the clicked point
+PASS Primary click should move caret in an editable element
+PASS Primary click shouldn't move caret in an editable element if the default of mousedown event is prevented
+PASS Primary click shouldn't move caret in an editable element if the default of pointerdown event is prevented
+FAIL Shift + Primary click should extend the selection promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Shift + Primary click in a link shouldn't extend the selection promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Primary mouse button down should move caret, and primary mouse button up should extend the selection assert_equals: Selection#anchorNode should stay in the second <span> element which mousedown occurred on expected Text node "second span." but got Text node "first span."
+Harness: the test ran to completion.
+

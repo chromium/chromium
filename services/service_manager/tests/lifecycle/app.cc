@@ -6,7 +6,8 @@
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/tests/lifecycle/app_client.h"
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  service_manager::test::AppClient(std::move(request)).RunUntilTermination();
+  service_manager::test::AppClient(std::move(receiver)).RunUntilTermination();
 }

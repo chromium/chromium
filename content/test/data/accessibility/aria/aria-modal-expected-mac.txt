@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup AXDescription='modal dialog'
+++++AXStaticText AXValue='Modal'
+++++AXButton AXTitle='Focus Me'

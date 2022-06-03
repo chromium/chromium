@@ -5,16 +5,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        8,
-        "Q",
-        121,
-        8,
-        145,
-        31,
-        "Q",
-        168,
-        55,
         168,
         88,
         "Q",
@@ -47,6 +37,16 @@ circle{
         8,
         88,
         8,
+        "Q",
+        121,
+        8,
+        145,
+        31,
+        "Q",
+        168,
+        55,
+        168,
+        88,
         "Z"
       ],
       "fillColor": "rgba(0, 0, 0, 0)"
@@ -54,16 +54,6 @@ circle{
     {
       "path": [
         "M",
-        88,
-        -24,
-        "Q",
-        134,
-        -24,
-        167,
-        9,
-        "Q",
-        200,
-        42,
         200,
         88,
         "Q",
@@ -96,6 +86,16 @@ circle{
         -24,
         88,
         -24,
+        "Q",
+        134,
+        -24,
+        167,
+        9,
+        "Q",
+        200,
+        42,
+        200,
+        88,
         "Z"
       ],
       "fillColor": "rgba(128, 128, 128, 0)"
@@ -180,12 +180,19 @@ circle{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "circle",
     "className": ".float.circle",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 insetSimpleRound{
@@ -368,12 +375,19 @@ insetSimpleRound{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "insetSimpleRound",
     "className": ".float.insetSimpleRound",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 insetComplexRound{
@@ -580,12 +594,19 @@ insetComplexRound{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "insetComplexRound",
     "className": ".float.insetComplexRound",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 ellipse{
@@ -593,16 +614,6 @@ ellipse{
     {
       "path": [
         "M",
-        568,
-        8,
-        "Q",
-        601,
-        8,
-        625,
-        24,
-        "Q",
-        648,
-        41,
         648,
         64,
         "Q",
@@ -635,6 +646,16 @@ ellipse{
         8,
         568,
         8,
+        "Q",
+        601,
+        8,
+        625,
+        24,
+        "Q",
+        648,
+        41,
+        648,
+        64,
         "Z"
       ],
       "fillColor": "rgba(0, 0, 0, 0)"
@@ -642,16 +663,6 @@ ellipse{
     {
       "path": [
         "M",
-        568,
-        -24,
-        "Q",
-        614,
-        -24,
-        647,
-        2,
-        "Q",
-        680,
-        28,
         680,
         64,
         "Q",
@@ -684,6 +695,16 @@ ellipse{
         -24,
         568,
         -24,
+        "Q",
+        614,
+        -24,
+        647,
+        2,
+        "Q",
+        680,
+        28,
+        680,
+        64,
         "Z"
       ],
       "fillColor": "rgba(128, 128, 128, 0)"
@@ -768,12 +789,19 @@ ellipse{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "ellipse",
     "className": ".float.ellipse",
     "nodeWidth": "128",
-    "nodeHeight": "80"
+    "nodeHeight": "80",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 contentBox{
@@ -980,12 +1008,19 @@ contentBox{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "contentBox",
     "className": ".float.contentBox",
     "nodeWidth": "176",
-    "nodeHeight": "160"
+    "nodeHeight": "160",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 polygon{
@@ -1085,12 +1120,19 @@ polygon{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "polygon",
     "className": ".float.polygon",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 raster{
@@ -1523,12 +1565,19 @@ raster{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "raster",
     "className": ".float.raster",
     "nodeWidth": "128",
-    "nodeHeight": "128"
+    "nodeHeight": "128",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 

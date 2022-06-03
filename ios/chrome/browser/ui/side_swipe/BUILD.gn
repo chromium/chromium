@@ -25,43 +25,45 @@ source_set("side_swipe") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:util",
-    "//ios/chrome/browser/ui/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:page_placeholder",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/web/common",
     "//ui/base",
     "//url",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "side_swipe_controller_unittest.mm",
-  ]
+  sources = [ "side_swipe_controller_unittest.mm" ]
   deps = [
     ":side_swipe",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//testing/gtest",
@@ -69,40 +71,13 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  defines = [ "CHROME_EARL_GREY_1" ]
-  testonly = true
-  sources = [
-    "side_swipe_egtest.mm",
-  ]
-
-  deps = [
-    ":side_swipe",
-    "//base",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web/public/test/http_server",
-    "//net:test_support",
-  ]
-  libs = [ "XCTest.framework" ]
-}
-
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "side_swipe_egtest.mm",
-  ]
+  sources = [ "side_swipe_egtest.mm" ]
   deps = [
     "//base",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -111,5 +86,5 @@ source_set("eg2_tests") {
     "//ios/web/public/test/http_server",
     "//net:test_support",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

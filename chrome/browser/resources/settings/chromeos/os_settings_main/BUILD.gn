@@ -3,22 +3,27 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":os_settings_main",
-  ]
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [ ":os_settings_main" ]
 }
 
 js_library("os_settings_main") {
   deps = [
-    "../..:page_visibility",
-    "../..:route",
-    "../..:search_settings",
-    "../../settings_page:main_page_behavior",
+    "..:os_page_visibility.m",
+    "..:os_route.m",
+    "..:route_observer_behavior",
+    "../..:router",
     "../os_settings_page:os_settings_page",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "os_settings_main.js" ]
 }

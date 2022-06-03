@@ -26,15 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_event_init.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result_list.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
-
-class Document;
 
 class SpeechRecognitionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -58,15 +56,10 @@ class SpeechRecognitionEvent final : public Event {
   uint32_t resultIndex() const { return result_index_; }
   SpeechRecognitionResultList* results() const { return results_; }
 
-  // These two methods are here to satisfy the specification which requires
-  // these attributes to exist.
-  Document* interpretation() { return nullptr; }
-  Document* emma() { return nullptr; }
-
   // Event
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   uint32_t result_index_;

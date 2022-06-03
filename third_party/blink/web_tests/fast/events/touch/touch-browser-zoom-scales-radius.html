@@ -29,7 +29,7 @@
         if (window.testRunner)
             testRunner.waitUntilDone();
 
-        if (window.eventSender) {
+        if (window.testRunner) {
           description("This tests makes sure the touch event's radius "
                       + "property is scaled to account for browser zoom.");
 
@@ -40,14 +40,14 @@
           shouldBe("radiusX", "4");
           shouldBe("radiusY", "10");
 
-          eventSender.setPageZoomFactor(2.0);
+          testRunner.setPageZoomFactor(2.0);
 
           debug("===Zoom 2X===");
           sendTouchStart(100, 100, 4, 10);
           shouldBe("radiusX", "2");
           shouldBe("radiusY", "5");
 
-          eventSender.setPageZoomFactor(0.5);
+          testRunner.setPageZoomFactor(0.5);
 
           debug("===Zoom 0.5X===");
           sendTouchStart(100, 100, 4, 10);

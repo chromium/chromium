@@ -6,6 +6,33 @@
     </output>
     <if expr="is_android">
       <output filename="platform_locale_settings_af.pak" type="data_package" lang="af" />
+      <output filename="platform_locale_settings_as.pak" type="data_package" lang="as" />
+      <output filename="platform_locale_settings_az.pak" type="data_package" lang="az" />
+      <output filename="platform_locale_settings_be.pak" type="data_package" lang="be" />
+      <output filename="platform_locale_settings_bs.pak" type="data_package" lang="bs" />
+      <output filename="platform_locale_settings_eu.pak" type="data_package" lang="eu" />
+      <output filename="platform_locale_settings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="platform_locale_settings_gl.pak" type="data_package" lang="gl" />
+      <output filename="platform_locale_settings_hy.pak" type="data_package" lang="hy" />
+      <output filename="platform_locale_settings_is.pak" type="data_package" lang="is" />
+      <output filename="platform_locale_settings_ka.pak" type="data_package" lang="ka" />
+      <output filename="platform_locale_settings_kk.pak" type="data_package" lang="kk" />
+      <output filename="platform_locale_settings_km.pak" type="data_package" lang="km" />
+      <output filename="platform_locale_settings_ky.pak" type="data_package" lang="ky" />
+      <output filename="platform_locale_settings_lo.pak" type="data_package" lang="lo" />
+      <output filename="platform_locale_settings_mk.pak" type="data_package" lang="mk" />
+      <output filename="platform_locale_settings_mn.pak" type="data_package" lang="mn" />
+      <output filename="platform_locale_settings_my.pak" type="data_package" lang="my" />
+      <output filename="platform_locale_settings_ne.pak" type="data_package" lang="ne" />
+      <output filename="platform_locale_settings_or.pak" type="data_package" lang="or" />
+      <output filename="platform_locale_settings_pa.pak" type="data_package" lang="pa" />
+      <output filename="platform_locale_settings_si.pak" type="data_package" lang="si" />
+      <output filename="platform_locale_settings_sq.pak" type="data_package" lang="sq" />
+      <output filename="platform_locale_settings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="platform_locale_settings_ur.pak" type="data_package" lang="ur" />
+      <output filename="platform_locale_settings_uz.pak" type="data_package" lang="uz" />
+      <output filename="platform_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="platform_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="platform_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="platform_locale_settings_ar.pak" type="data_package" lang="ar" />
@@ -22,7 +49,6 @@
     <output filename="platform_locale_settings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="platform_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="platform_locale_settings_fa.pak" type="data_package" lang="fa" />
-    <output filename="platform_locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="platform_locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="platform_locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="platform_locale_settings_fr.pak" type="data_package" lang="fr" />
@@ -63,6 +89,10 @@
     <output filename="platform_locale_settings_vi.pak" type="data_package" lang="vi" />
     <output filename="platform_locale_settings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="platform_locale_settings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="platform_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="platform_locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="platform_locale_settings/locale_settings_linux_am.xtb" lang="am" />

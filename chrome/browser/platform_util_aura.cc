@@ -4,7 +4,7 @@
 
 #include "chrome/browser/platform_util.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 

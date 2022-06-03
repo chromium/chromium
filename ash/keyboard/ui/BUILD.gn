@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//third_party/google_input_tools/closure.gni")
@@ -11,7 +10,7 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos)
 
-jumbo_component("ui") {
+component("ui") {
   sources = [
     "container_behavior.cc",
     "container_behavior.h",
@@ -75,9 +74,7 @@ jumbo_component("ui") {
     deps += [ "//ui/ozone" ]
   }
 
-  data_deps = [
-    ":resources",
-  ]
+  data_deps = [ ":resources" ]
 }
 
 static_library("test_support") {
@@ -120,21 +117,13 @@ grit("resources_grit") {
     "inputview_gen_js=" + rebase_path(inputview_gen_js, root_build_dir),
   ]
 
-  deps = [
-    ":inputview",
-  ]
+  deps = [ ":inputview" ]
 }
 
 copy("resources") {
-  sources = [
-    "$target_gen_dir/keyboard_resources.pak",
-  ]
-  outputs = [
-    "$root_out_dir/keyboard_resources.pak",
-  ]
-  public_deps = [
-    ":resources_grit",
-  ]
+  sources = [ "$target_gen_dir/keyboard_resources.pak" ]
+  outputs = [ "$root_out_dir/keyboard_resources.pak" ]
+  public_deps = [ ":resources_grit" ]
 }
 
 build_closure("inputview") {
@@ -144,6 +133,8 @@ build_closure("inputview") {
 }
 
 test("keyboard_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "container_floating_behavior_unittest.cc",
     "container_full_width_behavior_unittest.cc",
@@ -179,9 +170,7 @@ test("keyboard_unittests") {
     "//ui/wm",
   ]
 
-  data_deps = [
-    "//ui/resources:ui_test_pak_data",
-  ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]

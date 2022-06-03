@@ -75,4 +75,4 @@ void RecordFetchAction();
 }  // namespace metrics
 }  // namespace ntp_snippets
 
-#endif  // COMPONENTS_NTP_SNIPPETS_CONTENT_SUGGESTIONS_SERVICE_H_
+#endif  // COMPONENTS_NTP_SNIPPETS_CONTENT_SUGGESTIONS_METRICS_H_

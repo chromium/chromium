@@ -22,8 +22,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CURSOR_IMAGE_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -33,21 +33,21 @@ class CSSCursorImageValue : public CSSValue {
  public:
   CSSCursorImageValue(const CSSValue& image_value,
                       bool hot_spot_specified,
-                      const IntPoint& hot_spot);
+                      const gfx::Point& hot_spot);
 
   bool HotSpotSpecified() const { return hot_spot_specified_; }
-  const IntPoint& HotSpot() const { return hot_spot_; }
+  const gfx::Point& HotSpot() const { return hot_spot_; }
   const CSSValue& ImageValue() const { return *image_value_; }
 
   String CustomCSSText() const;
 
   bool Equals(const CSSCursorImageValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<const CSSValue> image_value_;
-  IntPoint hot_spot_;
+  gfx::Point hot_spot_;
   bool hot_spot_specified_;
 };
 

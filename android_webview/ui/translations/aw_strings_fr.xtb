@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
-<translation id="6106989379647458772">Il est possible que la page Web située à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une nouvelle adresse Web.</translation>
-<translation id="6312113039770857350">Page Web non disponible</translation>
-<translation id="8681531050781943054">Impossible de charger la page Web <ph name="PAGE" /> pour la raison suivante :</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions :<ph name="MARKUP_2" />Assurez-vous que vous disposez d'une connexion de données.<ph name="MARKUP_3" />Actualisez cette page ultérieurement.<ph name="MARKUP_4" />Vérifiez l'adresse que vous avez saisie.<ph name="MARKUP_5" /></translation>
 </translationbundle>

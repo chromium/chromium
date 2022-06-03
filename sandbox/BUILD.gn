@@ -9,23 +9,17 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 # Several targets want to include this header file. We separate it out
 # here so multiple targets can depend on it.
 source_set("sandbox_export") {
-  sources = [
-    "sandbox_export.h",
-  ]
+  sources = [ "sandbox_export.h" ]
 }
 
 source_set("common") {
-  sources = [
-    "constants.h",
-  ]
+  sources = [ "constants.h" ]
 }
 
 # Meta-target that forwards to the proper platform one.
 group("sandbox") {
   if (is_win) {
-    public_deps = [
-      "//sandbox/win:sandbox",
-    ]
+    public_deps = [ "//sandbox/win:sandbox" ]
   } else if (is_mac) {
     public_deps = [
       "//sandbox/mac:seatbelt",
@@ -33,16 +27,17 @@ group("sandbox") {
       "//sandbox/mac:system_services",
       "//sandbox/mac/mojom",
     ]
-  } else if (is_linux || is_android) {
-    public_deps = [
-      "//sandbox/linux:sandbox",
-    ]
+  } else if (is_linux || is_chromeos || is_android) {
+    public_deps = [ "//sandbox/linux:sandbox" ]
   }
 }
 
 buildflag_header("sandbox_buildflags") {
   header = "sandbox_buildflags.h"
-  flags = [ "USE_SECCOMP_BPF=$use_seccomp_bpf" ]
+  flags = [
+    "USE_SECCOMP_BPF=$use_seccomp_bpf",
+    "DISABLE_SECCOMP_SSBD=$disable_seccomp_ssbd",
+  ]
 }
 
 # This target must be here and not in win/ otherwise it would require a full
@@ -51,7 +46,6 @@ buildflag_header("sandbox_buildflags") {
 # Although the code is Windows-based, the fuzzer is designed to work on Linux,
 # so do not disable this fuzzer on non-Windows platforms.
 fuzzer_test("sandbox_ipc_fuzzer") {
-  set_sources_assignment_filter([])
   sources = [
     "win/fuzzer/fuzzer_types.h",
     "win/fuzzer/sandbox_ipc_fuzzer.cc",
@@ -62,6 +56,7 @@ fuzzer_test("sandbox_ipc_fuzzer") {
     defines = [ "SANDBOX_FUZZ_TARGET" ]
   }
   deps = [
+    ":sandbox",
     "//base",
   ]
   dict = "ipc.dict"

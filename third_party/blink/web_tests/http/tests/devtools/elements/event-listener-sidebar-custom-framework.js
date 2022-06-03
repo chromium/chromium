@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in the Elements sidebar panel.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="inspectedNode">Inspect Me</button>
@@ -123,8 +123,8 @@
     ElementsTestRunner.eventListenersWidget().doUpdate();
   }
 
-  function step5() {
-    ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+  async function step5() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }
 })();

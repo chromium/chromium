@@ -44,7 +44,7 @@ void StackSamplerAndroid::RecordStackFrames(
     uintptr_t address = reinterpret_cast<uintptr_t>(pcs[i]);
     frames.emplace_back(address, module_cache_->GetModuleForAddress(address));
   }
-  profile_builder->OnSampleCompleted(std::move(frames));
+  profile_builder->OnSampleCompleted(std::move(frames), TRACE_TIME_TICKS_NOW());
 }
 
 }  // namespace tracing

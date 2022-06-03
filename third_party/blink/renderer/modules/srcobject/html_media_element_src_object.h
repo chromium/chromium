@@ -23,4 +23,4 @@ class MODULES_EXPORT HTMLMediaElementSrcObject {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SRCOBJECT_HTML_MEDIA_ELEMENT_SRC_OBJECT_H_

@@ -29,6 +29,10 @@ class ReadingListWebStateObserver
   static void CreateForWebState(web::WebState* web_state,
                                 ReadingListModel* reading_list_model);
 
+  ReadingListWebStateObserver(const ReadingListWebStateObserver&) = delete;
+  ReadingListWebStateObserver& operator=(const ReadingListWebStateObserver&) =
+      delete;
+
   ~ReadingListWebStateObserver() override;
 
   // ReadingListModelObserver implementation.
@@ -89,8 +93,6 @@ class ReadingListWebStateObserver
   web::PageLoadCompletionStatus last_load_result_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListWebStateObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_WEB_STATE_OBSERVER_H_

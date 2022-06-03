@@ -1,0 +1,13 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQAQMAAADdiHD7AAAABlBMVEUAAAAAAAClZ7nPAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAGklEQVRIie3BMQEAAADCoPVPbQ0PoAAA4NcACrAAAcLJlncAAAAASUVORK5CYII=",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "browser",
+  "display_override": [ "standalone" ]
+}

@@ -1,0 +1,55 @@
+<!--
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+@WIN-DENY:EVENT_OBJECT_STATECHANGE*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+-->
+<html>
+  <body>
+    <!-- Show/Hide events only need to occur on the root of what's shown/hidden,
+     not for each descendant. -->
+    <div role="tree" id="tree">
+      <div role="article" id="article">
+        <div role="group">
+          <div role="treeitem" tabindex="0">
+            <div role="link" id="child1">
+              <div id="grandchild1">grandchild1</div>
+            </div>
+          </div>
+          <div role="treeitem" tabindex="0">
+            <div role="link" id="child2">
+              <div id="grandchild2">grandchild2</div>
+            </div>
+          </div>
+          <div role="treeitem" tabindex="0">
+            <div role="link" id="child3">
+              <div id="grandchild3">grandchild3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const go_passes = [
+        // Hide action.
+        () => {
+          document.getElementById("article").setAttribute("aria-hidden", "true");
+          document.getElementById("article").setAttribute("style", "width: 0px; height: 0px;");
+        },
+
+        // Show action.
+        () => {
+          document.getElementById("article").setAttribute("aria-hidden", "false");
+          document.getElementById("article").setAttribute("style", "width: auto; height: auto;");
+        }
+      ];
+
+      let current_pass = 0;
+
+      function go() {
+        go_passes[current_pass++].call();
+        return current_pass < go_passes.length;
+      }
+    </script>
+  </body>
+</html>

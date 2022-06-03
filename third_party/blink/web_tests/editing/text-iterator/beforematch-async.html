@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+.hidden-matchable {
+  content-visibility: hidden-matchable;
+}
+</style>
+
+<div class="spacer"></div>
+<div id=hiddendiv class="hidden-matchable">
+  <div class="spacer"></div>
+  <div id=hiddentext>hiddentext</div>
+</div>
+
+<script>
+hiddentext.addEventListener('beforematch', () => {
+  setTimeout(() => {
+    hiddendiv.classList.remove('hidden-matchable');
+  }, 0);
+});
+
+async_test(t => {
+  testRunner.findString('hiddentext', ['Async']);
+
+  assert_equals(window.pageYOffset, 0, 'find-in-page scrolling should be async, not sync.');
+
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func_done(() => {
+      // verify hiddentext is scrolled into view
+      const offsetBeforeScroll = window.pageYOffset;
+      hiddentext.scrollIntoView();
+      const offsetAfterScroll = window.pageYOffset;
+
+      assert_not_equals(window.pageYOffset, 0, 'find-in-page should scroll after two rAFs.');
+      assert_equals(offsetAfterScroll, offsetBeforeScroll,
+        `scrollIntoView shouldn't affect the scroll offset because the element should already be scrolled into view.`);
+    }));
+  }));
+
+}, 'Verifies that find-in-page wait a frame between firing the beforematch event and scrolling.');
+</script>

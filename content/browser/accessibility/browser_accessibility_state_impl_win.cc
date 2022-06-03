@@ -11,13 +11,16 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace content {
 
@@ -25,24 +28,24 @@ namespace {
 
 static bool g_jaws = false;
 static bool g_nvda = false;
+static bool g_supernova = false;
 static bool g_zoomtext = false;
 
-// Enables accessibility based on three possible clues that indicate
-// accessibility API usage.
-//
-// TODO(dmazzoni): Rename IAccessible2UsageObserver to something more general.
-class WindowsAccessibilityEnabler : public ui::IAccessible2UsageObserver {
+// Enables accessibility based on clues that indicate accessibility API usage.
+class WindowsAccessibilityEnabler
+    : public ui::WinAccessibilityAPIUsageObserver {
  public:
   WindowsAccessibilityEnabler() {}
 
  private:
-  // IAccessible2UsageObserver
+  // WinAccessibilityAPIUsageObserver
   void OnIAccessible2Used() override {
     // When IAccessible2 APIs have been used elsewhere in the codebase,
     // enable basic web accessibility support. (Full screen reader support is
     // detected later when specific more advanced APIs are accessed.)
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+        ui::kAXModeBasic);
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -54,8 +57,9 @@ class WindowsAccessibilityEnabler : public ui::IAccessible2UsageObserver {
     screen_reader_honeypot_queried_ = true;
     if (acc_name_called_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnAccNameCalled() override {
@@ -65,10 +69,63 @@ class WindowsAccessibilityEnabler : public ui::IAccessible2UsageObserver {
     acc_name_called_ = true;
     if (screen_reader_honeypot_queried_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
+  void OnBasicUIAutomationUsed() override {
+    AddAXModeForUIA(ui::AXMode::kNativeAPIs);
+  }
+
+  void OnAdvancedUIAutomationUsed() override {
+    AddAXModeForUIA(ui::AXMode::kWebContents);
+  }
+
+  void OnUIAutomationIdRequested() override {
+    // TODO(janewman): Currently, UIA_AutomationIdPropertyId currently uses
+    // GetAuthorUniqueId. This implementation requires html to be enabled, we
+    // should avoid needing all of kHTML by either modifying what we return for
+    // this property or serializing the author supplied ID attribute separately.
+    // Separating out the id is being tracked by crbug 703277
+    AddAXModeForUIA(ui::AXMode::kHTML);
+  }
+
+  void OnProbableUIAutomationScreenReaderDetected() override {
+    // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
+    AddAXModeForUIA(ui::kAXModeCompleteNoHTML);
+  }
+
+  void OnTextPatternRequested() override {
+    AddAXModeForUIA(ui::AXMode::kInlineTextBoxes);
+  }
+
+  void AddAXModeForUIA(ui::AXMode mode) {
+    DCHECK(::switches::IsExperimentalAccessibilityPlatformUIAEnabled());
+
+    // Firing a UIA event can cause UIA to call back into our APIs, don't
+    // consider this to be usage.
+    if (firing_uia_events_)
+      return;
+
+    // UI Automation insulates providers from knowing about the client(s) asking
+    // for information. When IsSelectiveUIAEnablement is Enabled, we turn on
+    // various parts of accessibility depending on what APIs have been called.
+    if (!features::IsSelectiveUIAEnablementEnabled())
+      mode = ui::kAXModeComplete;
+    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+        mode);
+    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+  }
+
+  void StartFiringUIAEvents() override { firing_uia_events_ = true; }
+
+  void EndFiringUIAEvents() override { firing_uia_events_ = false; }
+
+  // This should be set to true while we are firing uia events. Firing UIA
+  // events causes UIA to call back into our APIs, this should not be considered
+  // usage.
+  bool firing_uia_events_ = false;
   bool screen_reader_honeypot_queried_ = false;
   bool acc_name_called_ = false;
 };
@@ -78,30 +135,41 @@ void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   if (message == WM_SETTINGCHANGE && wparam == SPI_SETCLIENTAREAANIMATION) {
     gfx::Animation::UpdatePrefersReducedMotion();
     for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-      wc->GetRenderViewHost()->OnWebkitPreferencesChanged();
+      wc->OnWebPreferencesChanged();
     }
   }
 }
 
 }  // namespace
 
-void BrowserAccessibilityStateImpl::PlatformInitialize() {
-  ui::GetIAccessible2UsageObserverList().AddObserver(
+class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplWin();
+  ~BrowserAccessibilityStateImplWin() override {}
+
+ protected:
+  void UpdateHistogramsOnOtherThread() override;
+  void UpdateUniqueUserHistograms() override;
+
+ private:
+  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+};
+
+BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
+  ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
       new WindowsAccessibilityEnabler());
 
-  singleton_hwnd_observer_.reset(
-      new gfx::SingletonHwndObserver(base::BindRepeating(&OnWndProc)));
+  singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+      base::BindRepeating(&OnWndProc));
 }
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnUIThread() {}
+void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
+  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnOtherThread() {
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly. Code that
   // needs to run in the UI thread can be run in
-  // UpdatePlatformSpecificHistogramsOnUIThread instead.
+  // UpdateHistogramsOnUIThread instead.
 
   AUDIODESCRIPTION audio_description = {0};
   audio_description.cbSize = sizeof(AUDIODESCRIPTION);
@@ -155,7 +223,7 @@ void BrowserAccessibilityStateImpl::
   for (size_t i = 0; i < module_count; i++) {
     TCHAR filename[MAX_PATH];
     GetModuleFileName(modules[i], filename, base::size(filename));
-    base::string16 module_name(base::FilePath(filename).BaseName().value());
+    std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
     if (base::LowerCaseEqualsASCII(module_name, "fsdomsrv.dll"))
       g_jaws = true;
     if (base::LowerCaseEqualsASCII(module_name, "vbufbackend_gecko_ia2.dll") ||
@@ -163,6 +231,8 @@ void BrowserAccessibilityStateImpl::
       g_nvda = true;
     if (base::LowerCaseEqualsASCII(module_name, "stsaw32.dll"))
       satogo = true;
+    if (base::LowerCaseEqualsASCII(module_name, "dolwinhk.dll"))
+      g_supernova = true;
     if (base::LowerCaseEqualsASCII(module_name, "zslhook.dll") ||
         base::LowerCaseEqualsASCII(module_name, "zslhook64.dll"))
       g_zoomtext = true;
@@ -171,16 +241,31 @@ void BrowserAccessibilityStateImpl::
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", g_jaws);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", g_nvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSAToGo", satogo);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", g_zoomtext);
 }
 
-void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
+void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
+  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
+
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS.EveryReport", g_jaws);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", g_nvda);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport", g_zoomtext);
+}
+
+//
+// BrowserAccessibilityStateImpl::GetInstance implementation that constructs
+// this class instead of the base class.
+//
+
+// static
+BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
+  static base::NoDestructor<BrowserAccessibilityStateImplWin> instance;
+  return &*instance;
 }
 
 }  // namespace content

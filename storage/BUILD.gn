@@ -8,4 +8,6 @@ test("storage_unittests") {
     "//storage/browser:unittests",
     "//storage/common:unittests",
   ]
+
+  data = [ "//storage/test/data/" ]
 }

@@ -8,9 +8,10 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -37,7 +38,6 @@ namespace {
 // Hardcode these constants to avoid dependences on //chrome and //content.
 const char kChromeUIScheme[] = "chrome";
 const char kDevToolsScheme[] = "devtools";
-const char kDevToolsFallbackScheme[] = "chrome-devtools";
 const char kChromeUIDefaultHost[] = "version";
 const char kViewSourceScheme[] = "view-source";
 
@@ -56,9 +56,9 @@ url::Component UTF8ComponentToUTF16Component(
       text_utf8.substr(0, component_utf8.begin);
   std::string component_string =
       text_utf8.substr(component_utf8.begin, component_utf8.len);
-  base::string16 before_component_string_16 =
+  std::u16string before_component_string_16 =
       base::UTF8ToUTF16(before_component_string);
-  base::string16 component_string_16 = base::UTF8ToUTF16(component_string);
+  std::u16string component_string_16 = base::UTF8ToUTF16(component_string);
   url::Component component_16(before_component_string_16.length(),
                               component_string_16.length());
   return component_16;
@@ -84,6 +84,16 @@ void UTF8PartsToUTF16Parts(const std::string& text_utf8,
   parts->ref = UTF8ComponentToUTF16Component(text_utf8, parts_utf8.ref);
 }
 
+base::TrimPositions TrimWhitespace(const std::u16string& input,
+                                   base::TrimPositions positions,
+                                   std::string* output) {
+  std::u16string output16;
+  base::TrimPositions result =
+      base::TrimWhitespace(input, positions, &output16);
+  *output = base::UTF16ToUTF8(output16);
+  return result;
+}
+
 base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
                                        base::TrimPositions positions,
                                        std::string* output) {
@@ -91,33 +101,23 @@ base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
   // twice. Please feel free to file a bug if this function hurts the
   // performance of Chrome.
   DCHECK(base::IsStringUTF8(input));
-  base::string16 input16 = base::UTF8ToUTF16(input);
-  base::string16 output16;
-  base::TrimPositions result =
-      base::TrimWhitespace(input16, positions, &output16);
-  *output = base::UTF16ToUTF8(output16);
-  return result;
+  return TrimWhitespace(base::UTF8ToUTF16(input), positions, output);
 }
 
 // does some basic fixes for input that we want to test for file-ness
-void PrepareStringForFileOps(const base::FilePath& text,
-                             base::FilePath::StringType* output) {
+void PrepareStringForFileOps(const base::FilePath& text, std::string* output) {
+  TrimWhitespace(text.AsUTF16Unsafe(), base::TRIM_ALL, output);
 #if defined(OS_WIN)
-  base::TrimWhitespace(text.value(), base::TRIM_ALL, output);
-  replace(output->begin(), output->end(), '/', '\\');
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  TrimWhitespaceUTF8(text.value(), base::TRIM_ALL, output);
-#else
-#error Unsupported platform
+  base::ranges::replace(*output, '/', '\\');
 #endif
 }
 
 // Tries to create a full path from |text|.  If the result is valid and the
 // file exists, returns true and sets |full_path| to the result.  Otherwise,
 // returns false and leaves |full_path| unchanged.
-bool ValidPathForFile(const base::FilePath::StringType& text,
-                      base::FilePath* full_path) {
-  base::FilePath file_path = base::MakeAbsoluteFilePath(base::FilePath(text));
+bool ValidPathForFile(const std::string& text, base::FilePath* full_path) {
+  base::FilePath file_path =
+      base::MakeAbsoluteFilePath(base::FilePath::FromUTF8Unsafe(text));
   if (file_path.empty())
     return false;
 
@@ -157,7 +157,7 @@ std::string FixupHomedir(const std::string& text) {
 // user foobar's home directory.  Officially, we should use getpwent(),
 // but that is a nasty blocking call.
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   static const char kHome[] = "/Users/";
 #else
   static const char kHome[] = "/home/";
@@ -174,7 +174,7 @@ std::string FixupHomedir(const std::string& text) {
 std::string FixupPath(const std::string& text) {
   DCHECK(!text.empty());
 
-  base::FilePath::StringType filename;
+  std::string filename;
 #if defined(OS_WIN)
   base::FilePath input_path(base::UTF8ToWide(text));
   PrepareStringForFileOps(input_path, &filename);
@@ -190,7 +190,8 @@ std::string FixupPath(const std::string& text) {
 #endif
 
   // Here, we know the input looks like a file.
-  GURL file_url = net::FilePathToFileURL(base::FilePath(filename));
+  GURL file_url =
+      net::FilePathToFileURL(base::FilePath::FromUTF8Unsafe(filename));
   if (file_url.is_valid()) {
     return base::UTF16ToUTF8(url_formatter::FormatUrl(
         file_url, url_formatter::kFormatUrlOmitUsernamePassword,
@@ -395,6 +396,9 @@ bool GetValidScheme(const std::string& text,
 
   // We need to fix up the segmentation for "www.example.com:/".  For this
   // case, we guess that schemes with a "." are not actually schemes.
+  //
+  // Note: This logic deviates from GURL, where "www.example.com:" would be
+  // parsed as having "www.example.com" as the scheme with an empty hostname.
   if (canon_scheme->find('.') != std::string::npos)
     return false;
 
@@ -461,7 +465,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   // Proceed with about, chrome, and devtools schemes,
   // but not file or nonstandard schemes.
   if ((scheme != url::kAboutScheme) && (scheme != kChromeUIScheme) &&
-      (scheme != kDevToolsScheme) && (scheme != kDevToolsFallbackScheme) &&
+      (scheme != kDevToolsScheme) &&
       !url::IsStandard(scheme.c_str(),
                        url::Component(0, static_cast<int>(scheme.length())))) {
     return scheme;
@@ -477,14 +481,6 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     // Have the GURL parser do the heavy lifting for us.
     url::ParseFileSystemURL(text->data(), text_length, parts);
     return scheme;
-  }
-
-  if (scheme == kDevToolsFallbackScheme) {
-    // Have the GURL parser do the heavy lifting for us.
-    url::ParseStandardURL(text->data(), text_length, parts);
-    // Now replace the fallback scheme alias with the real one
-    parts->scheme.reset();
-    return kDevToolsScheme;
   }
 
   if (parts->scheme.is_valid()) {
@@ -535,7 +531,7 @@ std::string SegmentURL(const std::string& text, url::Parsed* parts) {
   return SegmentURLInternal(&mutable_text, parts);
 }
 
-base::string16 SegmentURL(const base::string16& text, url::Parsed* parts) {
+std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts) {
   std::string text_utf8 = base::UTF16ToUTF8(text);
   url::Parsed parts_utf8;
   std::string scheme_utf8 = SegmentURL(text_utf8, &parts_utf8);
@@ -585,22 +581,15 @@ GURL FixupURL(const std::string& text, const std::string& desired_tld) {
       return about_url;
   }
 
-  // Parse and rebuild about: and chrome: URLs.
+  // For some schemes whose layouts we understand, we rebuild the URL.
   bool chrome_url =
       (scheme == url::kAboutScheme) || (scheme == kChromeUIScheme);
-
-  // Parse and rebuild devtools: and the fallback chrome-devtools: URLs.
-  bool devtools_url =
-      (scheme == kDevToolsScheme) || (scheme == kDevToolsFallbackScheme);
-
-  // For some schemes whose layouts we understand, we rebuild it.
+  bool devtools_url = (scheme == kDevToolsScheme);
   if (chrome_url || devtools_url ||
       url::IsStandard(scheme.c_str(),
                       url::Component(0, static_cast<int>(scheme.length())))) {
-    // Replace the about: scheme with the chrome: scheme, or
-    // chrome-devtoools: scheme with the devtools: scheme.
-    std::string url(chrome_url ? kChromeUIScheme
-                               : devtools_url ? kDevToolsScheme : scheme);
+    // Replace the about: scheme with the chrome: scheme.
+    std::string url(scheme == url::kAboutScheme ? kChromeUIScheme : scheme);
     url.append(url::kStandardSchemeSeparator);
 
     // We need to check whether the |username| is valid because it is our
@@ -648,7 +637,7 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
   }
 
   // Allow funny input with extra whitespace and the wrong kind of slashes.
-  base::FilePath::StringType trimmed;
+  std::string trimmed;
   PrepareStringForFileOps(text, &trimmed);
 
   bool is_file = true;
@@ -661,17 +650,10 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
 // Not a path as entered, try unescaping it in case the user has
 // escaped things. We need to go through 8-bit since the escaped values
 // only represent 8-bit values.
-#if defined(OS_WIN)
-    std::wstring unescaped = base::UTF8ToWide(net::UnescapeURLComponent(
-        base::WideToUTF8(trimmed),
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-            net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     std::string unescaped = net::UnescapeURLComponent(
         trimmed,
         net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
             net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-#endif
 
     if (!ValidPathForFile(unescaped, &full_path))
       is_file = false;
@@ -716,9 +698,7 @@ bool IsEquivalentScheme(const std::string& scheme1,
                         const std::string& scheme2) {
   return scheme1 == scheme2 ||
          (scheme1 == url::kAboutScheme && scheme2 == kChromeUIScheme) ||
-         (scheme1 == kChromeUIScheme && scheme2 == url::kAboutScheme) ||
-         (scheme1 == kDevToolsScheme && scheme2 == kDevToolsFallbackScheme) ||
-         (scheme1 == kDevToolsFallbackScheme && scheme2 == kDevToolsScheme);
+         (scheme1 == kChromeUIScheme && scheme2 == url::kAboutScheme);
 }
 
 }  // namespace url_formatter

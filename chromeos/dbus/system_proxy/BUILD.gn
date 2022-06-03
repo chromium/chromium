@@ -1,0 +1,30 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("system_proxy") {
+  defines = [ "IS_SYSTEM_PROXY_IMPL" ]
+
+  deps = [
+    ":system_proxy_proto",
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_system_proxy_client.cc",
+    "fake_system_proxy_client.h",
+    "system_proxy_client.cc",
+    "system_proxy_client.h",
+  ]
+}
+
+proto_library("system_proxy_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/system_proxy/system_proxy_service.proto" ]
+
+  proto_out_dir = "chromeos/dbus/system_proxy"
+}

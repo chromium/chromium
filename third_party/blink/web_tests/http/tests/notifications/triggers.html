@@ -21,7 +21,7 @@
           assert_equals(trigger.timestamp, timestamp);
 
           // timestamp is required in constructor
-          assert_throws(new TypeError, () => new TimestampTrigger());
+          assert_throws_js(TypeError, () => new TimestampTrigger());
 
           // invalid timestamps get set to 0
           assert_equals((new TimestampTrigger('fail')).timestamp, 0);

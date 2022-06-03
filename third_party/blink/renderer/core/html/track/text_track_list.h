@@ -70,7 +70,7 @@ class CORE_EXPORT TextTrackList final : public EventTargetWithInlineData {
 
   bool HasShowingTracks();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void ScheduleTrackEvent(const AtomicString& event_name, TextTrack*);

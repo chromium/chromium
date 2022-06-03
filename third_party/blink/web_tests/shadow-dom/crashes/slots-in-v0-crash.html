@@ -4,7 +4,7 @@
 <div id=host></div>
 <script>
 test(() => {
-  let shadowRoot = host.createShadowRoot();
+  let shadowRoot = host.attachShadow({mode: 'open'});
   let slot1 = document.createElement('slot');
   shadowRoot.appendChild(slot1);
   document.body.appendChild(slot1);

@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 
@@ -52,13 +52,11 @@ void CheckRepositionedCorrectly(const TestCase& test_case) {
       gfx::Quaternion({0, 1, 0}, test_case.head_up_vector));
 
   repositioner->set_laser_direction(test_case.laser_direction);
-  scene.OnBeginFrame(MsToTicks(0), head_pose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), head_pose);
   repositioner->SetEnabled(false);
 
-  gfx::Point3F center = element->GetCenter();
-  EXPECT_NEAR(center.x(), test_case.expected_element_center.x(), kEpsilon);
-  EXPECT_NEAR(center.y(), test_case.expected_element_center.y(), kEpsilon);
-  EXPECT_NEAR(center.z(), test_case.expected_element_center.z(), kEpsilon);
+  EXPECT_POINT3F_NEAR(element->GetCenter(), test_case.expected_element_center,
+                      kEpsilon);
   gfx::Vector3dF right_vector = {1, 0, 0};
   element->world_space_transform().TransformVector(&right_vector);
   EXPECT_VECTOR3DF_NEAR(right_vector, test_case.expected_right_vector,

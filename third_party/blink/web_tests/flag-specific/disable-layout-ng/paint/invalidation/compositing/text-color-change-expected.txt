@@ -1,131 +1,23 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 221, 48, 16],
+        [8, 205, 48, 16],
+        [8, 189, 48, 16],
+        [8, 173, 48, 16],
+        [8, 157, 48, 16],
+        [8, 141, 48, 16],
+        [8, 125, 48, 16],
+        [8, 109, 48, 16],
+        [8, 93, 48, 16],
+        [8, 77, 48, 16],
+        [8, 61, 48, 16],
+        [8, 237, 48, 9]
       ]
     }
   ]

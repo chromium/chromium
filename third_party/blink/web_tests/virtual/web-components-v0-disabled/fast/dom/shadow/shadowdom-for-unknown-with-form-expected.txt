@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: Uncaught TypeError: tCF5.createShadowRoot is not a function
-

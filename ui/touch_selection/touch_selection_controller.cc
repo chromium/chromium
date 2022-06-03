@@ -4,10 +4,13 @@
 
 #include "ui/touch_selection/touch_selection_controller.h"
 
+#include <memory>
+
 #include "base/auto_reset.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 
 namespace ui {
 namespace {
@@ -43,7 +46,7 @@ TouchHandleOrientation ToTouchHandleOrientation(
 }  // namespace
 
 TouchSelectionController::Config::Config()
-    : max_tap_duration(base::TimeDelta::FromMilliseconds(300)),
+    : max_tap_duration(base::Milliseconds(300)),
       tap_slop(8),
       enable_adaptive_handle_orientation(false),
       enable_longpress_drag_selection(false),
@@ -114,6 +117,14 @@ void TouchSelectionController::OnSelectionBoundsChanged(
     if (need_swap)
       start_selection_handle_.swap(end_selection_handle_);
   }
+
+  // Update |anchor_drag_to_selection_start_| for long press drag selector.
+  // Since selection can be updated with only one end at a time, if one end is
+  // equal to the previous value, the updated end is the other.
+  if (start_ == start)
+    anchor_drag_to_selection_start_ = false;
+  else if (end_ == end)
+    anchor_drag_to_selection_start_ = true;
 
   start_ = start;
   end_ = end;
@@ -365,6 +376,23 @@ bool TouchSelectionController::WillHandleTouchEventImpl(
   return false;
 }
 
+void TouchSelectionController::OnSwipeToMoveCursorBegin() {
+  if (config_.hide_active_handle) {
+    // Hide the handle when magnifier is showing since it can confuse the user.
+    SetTemporarilyHidden(true);
+
+    // If the user has typed something, the insertion handle might be hidden.
+    // Prepare to show touch handles on end.
+    show_touch_handles_ = true;
+  }
+}
+
+void TouchSelectionController::OnSwipeToMoveCursorEnd() {
+  // Show the handle at the end if magnifier was showing.
+  if (config_.hide_active_handle)
+    SetTemporarilyHidden(false);
+}
+
 void TouchSelectionController::OnDragBegin(
     const TouchSelectionDraggable& draggable,
     const gfx::PointF& drag_position) {
@@ -428,11 +456,20 @@ void TouchSelectionController::OnDragUpdate(
   else
     client_->MoveRangeSelectionExtent(line_position);
 
-  // We use the bound middle point to restrict the ability to move up and down,
-  // but let user move it more freely in horizontal direction.
-  if (&draggable != &longpress_drag_selector_) {
-    float y = GetActiveHandleMiddleY();
-    client_->OnDragUpdate(gfx::PointF(drag_position.x(), y));
+  // We use the bound middle point to restrict the ability to move up and
+  // down, but let user move it more freely in horizontal direction.
+  if (&draggable == &longpress_drag_selector_) {
+    // Show magnifier at the selection edge.
+    const gfx::SelectionBound* bound =
+        anchor_drag_to_selection_start_ ? &start_ : &end_;
+    const float x = bound->edge_start().x();
+    const float y = (bound->edge_start().y() + bound->edge_end().y()) / 2.f;
+    client_->OnDragUpdate(TouchSelectionDraggable::Type::kLongpress,
+                          gfx::PointF(x, y));
+  } else {
+    const float y = GetActiveHandleMiddleY();
+    client_->OnDragUpdate(TouchSelectionDraggable::Type::kTouchHandle,
+                          gfx::PointF(drag_position.x(), y));
   }
 }
 
@@ -527,8 +564,8 @@ bool TouchSelectionController::ActivateInsertionIfNecessary() {
   DCHECK_NE(SELECTION_ACTIVE, active_status_);
 
   if (!insertion_handle_) {
-    insertion_handle_.reset(
-        new TouchHandle(this, TouchHandleOrientation::CENTER, viewport_rect_));
+    insertion_handle_ = std::make_unique<TouchHandle>(
+        this, TouchHandleOrientation::CENTER, viewport_rect_);
   }
 
   if (active_status_ == INACTIVE || response_pending_input_event_ == TAP ||
@@ -555,16 +592,16 @@ bool TouchSelectionController::ActivateSelectionIfNecessary() {
   DCHECK_NE(INSERTION_ACTIVE, active_status_);
 
   if (!start_selection_handle_) {
-    start_selection_handle_.reset(
-        new TouchHandle(this, start_orientation_, viewport_rect_));
+    start_selection_handle_ =
+        std::make_unique<TouchHandle>(this, start_orientation_, viewport_rect_);
   } else {
     start_selection_handle_->SetEnabled(true);
     start_selection_handle_->SetViewportRect(viewport_rect_);
   }
 
   if (!end_selection_handle_) {
-    end_selection_handle_.reset(
-        new TouchHandle(this, end_orientation_, viewport_rect_));
+    end_selection_handle_ =
+        std::make_unique<TouchHandle>(this, end_orientation_, viewport_rect_);
   } else {
     end_selection_handle_->SetEnabled(true);
     end_selection_handle_->SetViewportRect(viewport_rect_);
@@ -666,10 +703,8 @@ void TouchSelectionController::LogSelectionEnd() {
   if (selection_handle_dragged_) {
     base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.WasDraggedDuration",
-                               duration,
-                               base::TimeDelta::FromMilliseconds(500),
-                               base::TimeDelta::FromSeconds(60),
-                               60);
+                               duration, base::Milliseconds(500),
+                               base::Seconds(60), 60);
   }
 }
 

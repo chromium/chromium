@@ -10,7 +10,7 @@
     <message name="IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK" desc="Title of the button for removing the bookmark">
       Remove
     </message>
-    <message name="IDS_BOOKMARK_MANAGER_NAME_INPUT_PLACE_HOLDER" desc="Text to show in the URL input field when editing or creating bookmarks.">
+    <message name="IDS_BOOKMARK_MANAGER_NAME_INPUT_PLACE_HOLDER" desc="Text to show in the URL input field when editing or creating bookmarks." meaning="Name of an inanimate object">
       Name
     </message>
     <message name="IDS_BOOKMARK_MANAGER_URL_INPUT_PLACE_HOLDER" desc="Text to show in the URL input field when editing or creating bookmarks.">
@@ -21,7 +21,7 @@
     <message name="IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK" desc="In Title Case: Title of the button for removing the bookmark">
       Remove
     </message>
-    <message name="IDS_BOOKMARK_MANAGER_NAME_INPUT_PLACE_HOLDER" desc="In Title Case: Text to show in the URL input field when editing or creating bookmarks.">
+    <message name="IDS_BOOKMARK_MANAGER_NAME_INPUT_PLACE_HOLDER" desc="In Title Case: Text to show in the URL input field when editing or creating bookmarks." meaning="Name of an inanimate object">
       Name
     </message>
     <message name="IDS_BOOKMARK_MANAGER_URL_INPUT_PLACE_HOLDER" desc="In Title Case: Text to show in the URL input field when editing or creating bookmarks.">

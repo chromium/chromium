@@ -11,6 +11,9 @@
       document.forms[1].submit();
       break;
     case "3":
+      document.getElementById("a").click();
+      break;
+    case "4":
       window.location.reload();
       break;
     default:
@@ -26,5 +29,6 @@
     <form method="GET" action="frame-requested-navigation-2.html">
       <input type="hidden" name="step" value="3">
     </form>
+    <a id="a" href="frame-requested-navigation-2.html?step=4">Click me</a>
   </body>
 </html>

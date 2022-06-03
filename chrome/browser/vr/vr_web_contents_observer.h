@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_VR_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -25,6 +24,10 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
                         BrowserUiInterface* ui_interface,
                         LocationBarHelper* toolbar,
                         base::OnceClosure on_destroy);
+
+  VrWebContentsObserver(const VrWebContentsObserver&) = delete;
+  VrWebContentsObserver& operator=(const VrWebContentsObserver&) = delete;
+
   ~VrWebContentsObserver() override;
 
  private:
@@ -49,8 +52,6 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
   LocationBarHelper* toolbar_;
 
   base::OnceClosure on_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrWebContentsObserver);
 };
 
 }  // namespace vr

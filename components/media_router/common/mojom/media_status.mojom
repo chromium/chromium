@@ -1,0 +1,86 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_router.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+struct MediaImage {
+  // URL of the image.
+  url.mojom.Url url;
+  // |size| is not set if it is unknown.
+  gfx.mojom.Size? size;
+};
+
+// Represents the current state of a media content. This struct should be kept
+// free of details specific to Media Router, so that it can be moved to the
+// media namespace and be reused for other features in the future.
+struct MediaStatus {
+  enum PlayState {
+    PLAYING,
+    PAUSED,
+    BUFFERING
+  };
+
+  // The title of the currently playing media. For example, in a MediaStatus
+  // representing a YouTube Cast route, this is the title of the video.
+  // For a tab mirroring or media remoting route, it's the page title.
+  // For a Presentation API route, it is the presentation page title.
+  string title;
+
+  // The secondary label for the currently playing media. For example, this may
+  // be the artist name for a video or a song. It may be empty for mirroring or
+  // non-Cast-SDK Presentation API routes.
+  string secondary_title;
+
+  // If this is true, the media can be played and paused through its
+  // MediaController.
+  bool can_play_pause;
+
+  // If this is true, the media can be muted and unmuted through its
+  // MediaController.
+  bool can_mute;
+
+  // If this is true, the media's volume can be changed through its
+  // MediaController.
+  bool can_set_volume;
+
+  // If this is true, the media's current playback position can be changed
+  // through its MediaController.
+  bool can_seek;
+
+  bool can_skip_to_next_track;
+
+  bool can_skip_to_previous_track;
+
+  // Whether the media is playing, paused, or buffering.
+  PlayState play_state;
+
+  bool is_muted;
+
+  // Current volume of the media, with 1 being the highest and 0 being the
+  // lowest/no sound. When |is_muted| is true, there should be no sound
+  // regardless of |volume|.
+  float volume;
+
+  // The length of the media. A value of 0 indicates that this is a media with
+  // no set duration (e.g. a live stream).
+  mojo_base.mojom.TimeDelta duration;
+
+  // Current playback position. Must be less than or equal to |duration|.
+  mojo_base.mojom.TimeDelta current_time;
+
+  // Images associated with the media.
+  array<MediaImage> images;
+};
+
+// Interface for being notified whenever the MediaStatus of a media changes.
+// This interface should be kept free of details specific to Media Router, so
+// that it can be moved to the media namespace and be reused for other features
+// in the future.
+interface MediaStatusObserver {
+  OnMediaStatusUpdated(MediaStatus status);
+};

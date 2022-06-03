@@ -26,6 +26,10 @@ class PPAPI_PROXY_EXPORT MediaStreamTrackResourceBase
 
   MediaStreamTrackResourceBase(Connection connection, PP_Instance instance);
 
+  MediaStreamTrackResourceBase(const MediaStreamTrackResourceBase&) = delete;
+  MediaStreamTrackResourceBase& operator=(const MediaStreamTrackResourceBase&) =
+      delete;
+
   ~MediaStreamTrackResourceBase() override;
 
   std::string id() const { return id_; }
@@ -64,8 +68,6 @@ class PPAPI_PROXY_EXPORT MediaStreamTrackResourceBase
   std::string id_;
 
   bool has_ended_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamTrackResourceBase);
 };
 
 }  // namespace proxy

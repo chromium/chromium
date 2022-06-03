@@ -40,6 +40,42 @@ TEST(DequeTest, Basic) {
   EXPECT_EQ(0ul, int_deque.size());
 }
 
+TEST(DequeTest, Iterators) {
+  Deque<int, 2> deque;
+  deque.push_back(0);
+  deque.push_back(1);
+
+  {
+    auto it = deque.begin();
+    EXPECT_EQ(*it, 0);
+    EXPECT_EQ(*++it, 1);
+    EXPECT_EQ(++it, deque.end());
+  }
+
+  {
+    auto it = deque.begin();
+    EXPECT_EQ(*it++, 0);
+    EXPECT_EQ(*it++, 1);
+    EXPECT_EQ(it, deque.end());
+  }
+
+  {
+    const Deque<int, 2>& c_deque = deque;
+    auto c_it = c_deque.begin();
+    EXPECT_EQ(*c_it, 0);
+    EXPECT_EQ(*++c_it, 1);
+    EXPECT_EQ(++c_it, c_deque.end());
+  }
+
+  {
+    const Deque<int, 2>& c_deque = deque;
+    auto c_it = c_deque.begin();
+    EXPECT_EQ(*c_it++, 0);
+    EXPECT_EQ(*c_it++, 1);
+    EXPECT_EQ(c_it, c_deque.end());
+  }
+}
+
 template <wtf_size_t inlineCapacity>
 void CheckNumberSequence(Deque<int, inlineCapacity>& deque,
                          int from,
@@ -436,10 +472,10 @@ TEST(DequeTest, ValuesMovedAndSwappedWithInlineCapacity) {
 TEST(DequeTest, UniquePtr) {
   using Pointer = std::unique_ptr<int>;
   Deque<Pointer> deque;
-  deque.push_back(Pointer(new int(1)));
-  deque.push_back(Pointer(new int(2)));
-  deque.push_front(Pointer(new int(-1)));
-  deque.push_front(Pointer(new int(-2)));
+  deque.push_back(std::make_unique<int>(1));
+  deque.push_back(std::make_unique<int>(2));
+  deque.push_front(std::make_unique<int>(-1));
+  deque.push_front(std::make_unique<int>(-2));
   ASSERT_EQ(4u, deque.size());
   EXPECT_EQ(-2, *deque[0]);
   EXPECT_EQ(-1, *deque[1]);
@@ -456,8 +492,8 @@ TEST(DequeTest, UniquePtr) {
   deque.pop_back();
   EXPECT_EQ(0u, deque.size());
 
-  deque.push_back(Pointer(new int(42)));
-  deque[0] = Pointer(new int(24));
+  deque.push_back(std::make_unique<int>(42));
+  deque[0] = std::make_unique<int>(24);
   ASSERT_EQ(1u, deque.size());
   EXPECT_EQ(24, *deque[0]);
 

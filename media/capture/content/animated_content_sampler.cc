@@ -22,23 +22,23 @@ namespace {
 // These values were established by experimenting with a wide variety of
 // scenarios, including 24/25/30 FPS videos, 60 FPS WebGL demos, and the
 // transitions between static and animated content.
-const int kMinObservationWindowMillis = 1000;
-const int kMaxObservationWindowMillis = 2000;
+constexpr auto kMinObservationWindow = base::Seconds(1);
+constexpr auto kMaxObservationWindow = base::Seconds(2);
 
 // The maximum amount of time that can elapse before declaring two subsequent
 // events as "not animating."  This is the same value found in
 // cc::FrameRateCounter.
-const int kNonAnimatingThresholdMillis = 250;  // 4 FPS
+constexpr auto kNonAnimatingThreshold = base::Seconds(1) / 4;
 
 // The slowest that content can be animating in order for AnimatedContentSampler
 // to lock-in.  This is the threshold at which the "smoothness" problem is no
 // longer relevant.
-const int kMaxLockInPeriodMicros = 83333;  // 12 FPS
+constexpr auto kMaxLockInPeriod = base::Seconds(1) / 12;
 
 // The amount of time over which to fully correct the drift of the rewritten
 // frame timestamps from the presentation event timestamps.  The lower the
 // value, the higher the variance in frame timestamps.
-const int kDriftCorrectionMillis = 2000;
+constexpr auto kDriftCorrection = base::Seconds(2);
 
 }  // anonymous namespace
 
@@ -67,8 +67,7 @@ void AnimatedContentSampler::ConsiderPresentationEvent(
   AddObservation(damage_rect, event_time);
   if (!AnalyzeObservations(event_time, &detected_region_, &detected_period_) ||
       detected_period_ <= base::TimeDelta() ||
-      detected_period_ >
-          base::TimeDelta::FromMicroseconds(kMaxLockInPeriodMicros)) {
+      detected_period_ > kMaxLockInPeriod) {
     // Animated content not detected.
     detected_region_ = gfx::Rect();
     detected_period_ = base::TimeDelta();
@@ -156,9 +155,8 @@ void AnimatedContentSampler::AddObservation(const gfx::Rect& damage_rect,
   observations_.push_back(Observation(damage_rect, event_time));
 
   // Prune-out old observations.
-  const base::TimeDelta threshold =
-      base::TimeDelta::FromMilliseconds(kMaxObservationWindowMillis);
-  while ((event_time - observations_.front().event_time) > threshold)
+  while ((event_time - observations_.front().event_time) >
+         kMaxObservationWindow)
     observations_.pop_front();
 }
 
@@ -213,14 +211,12 @@ bool AnimatedContentSampler::AnalyzeObservations(
     num_pixels_damaged_in_chosen += area;
     if (last_event_time.is_null()) {
       last_event_time = i->event_time;
-      if ((event_time - last_event_time) >=
-          base::TimeDelta::FromMilliseconds(kNonAnimatingThresholdMillis)) {
+      if ((event_time - last_event_time) >= kNonAnimatingThreshold) {
         return false;  // Content animation has recently ended.
       }
     } else {
       const base::TimeDelta frame_duration = first_event_time - i->event_time;
-      if (frame_duration >=
-          base::TimeDelta::FromMilliseconds(kNonAnimatingThresholdMillis)) {
+      if (frame_duration >= kNonAnimatingThreshold) {
         break;  // Content not animating before this point.
       }
       sum_frame_durations += frame_duration;
@@ -229,8 +225,7 @@ bool AnimatedContentSampler::AnalyzeObservations(
     first_event_time = i->event_time;
   }
 
-  if ((last_event_time - first_event_time) <
-      base::TimeDelta::FromMilliseconds(kMinObservationWindowMillis)) {
+  if ((last_event_time - first_event_time) < kMinObservationWindow) {
     return false;  // Content has not animated for long enough for accuracy.
   }
   if (num_pixels_damaged_in_chosen <= (num_pixels_damaged_in_all * 2 / 3))
@@ -256,8 +251,7 @@ base::TimeTicks AnimatedContentSampler::ComputeNextFrameTimestamp(
   // media/base/audio_shifter.cc.  Consider refactor-and-reuse here.
   const base::TimeDelta drift = ideal_timestamp - event_time;
   const int64_t correct_over_num_frames =
-      base::TimeDelta::FromMilliseconds(kDriftCorrectionMillis) /
-      sampling_period_;
+      kDriftCorrection.IntDiv(sampling_period_);
   DCHECK_GT(correct_over_num_frames, 0);
 
   return ideal_timestamp - drift / correct_over_num_frames;
@@ -282,7 +276,7 @@ base::TimeDelta AnimatedContentSampler::ComputeSamplingPeriod(
   // 42/3 = 14, and so on.  Of these candidates, 21 FPS is closest to 30.
   base::TimeDelta sampling_period;
   if (animation_period < target_sampling_period) {
-    const int64_t ratio = target_sampling_period / animation_period;
+    const int64_t ratio = target_sampling_period.IntDiv(animation_period);
     const double target_fps = 1.0 / target_sampling_period.InSecondsF();
     const double animation_fps = 1.0 / animation_period.InSecondsF();
     if (std::abs(animation_fps / ratio - target_fps) <

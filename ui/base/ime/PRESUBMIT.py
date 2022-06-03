@@ -11,6 +11,8 @@ for more details about the presubmit API built into depot_tools.
 import filecmp
 import os
 
+USE_PYTHON3 = True
+
 CHARACTER_COMPOSER_DATA_SOURCES=['character_composer_sequences.txt']
 CHARACTER_COMPOSER_DATA_HEADER='character_composer_data.h'
 CHARACTER_COMPOSER_DATA_GENERATOR='generate_character_composer_data.py'
@@ -18,10 +20,9 @@ CHARACTER_COMPOSER_DATA_GENERATOR='generate_character_composer_data.py'
 def CheckCharacterComposerData(input_api, output_api):
   results = []
   whereami = input_api.PresubmitLocalPath()
-  files = map(lambda x: input_api.os_path.join(whereami, x),
-              (CHARACTER_COMPOSER_DATA_SOURCES +
-               [CHARACTER_COMPOSER_DATA_HEADER,
-                CHARACTER_COMPOSER_DATA_GENERATOR]))
+  files = [input_api.os_path.join(whereami, x) for x in
+           CHARACTER_COMPOSER_DATA_SOURCES +
+           [CHARACTER_COMPOSER_DATA_HEADER, CHARACTER_COMPOSER_DATA_GENERATOR]]
 
   if not input_api.AffectedFiles(
     file_filter=lambda x: x.AbsoluteLocalPath() in files):

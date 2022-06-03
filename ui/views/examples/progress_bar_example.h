@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_PROGRESS_BAR_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_PROGRESS_BAR_EXAMPLE_H_
 
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -14,25 +12,23 @@ class ProgressBar;
 
 namespace examples {
 
-class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase,
-                                                 public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
  public:
   ProgressBarExample();
+
+  ProgressBarExample(const ProgressBarExample&) = delete;
+  ProgressBarExample& operator=(const ProgressBarExample&) = delete;
+
   ~ProgressBarExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* button, const ui::Event& event) override;
+  void ButtonPressed(double step);
 
-  Button* minus_button_ = nullptr;
-  Button* plus_button_ = nullptr;
   ProgressBar* progress_bar_ = nullptr;
   double current_percent_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressBarExample);
 };
 
 }  // namespace examples

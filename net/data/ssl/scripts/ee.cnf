@@ -55,6 +55,17 @@ CN = SS B
 [req_punycode_dn]
 CN = xn--wgv71a119e.com
 
+[req_ev_dn]
+C = US
+ST = California
+L = Mountain View
+O = Test Org
+
+[req_ev_state_only_dn]
+C = US
+ST = California
+O = Test Org
+
 [req_extensions]
 subjectAltName = IP:127.0.0.1
 

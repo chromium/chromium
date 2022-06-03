@@ -64,7 +64,7 @@ struct ScrollData {
 
 // This mirrors the C++ class of the same name, see it for details.
 struct PointerDetails {
-  PointerKind pointer_type;
+  EventPointerType pointer_type;
   float radius_x;
   float radius_y;
   float force;
@@ -83,6 +83,7 @@ struct MouseData {
   PointerDetails pointer_details;
   // Only used for mouse wheel.
   gfx.mojom.Vector2d wheel_offset;
+  gfx.mojom.Vector2d tick_120ths;
 };
 
 // This is used for TouchEvents.

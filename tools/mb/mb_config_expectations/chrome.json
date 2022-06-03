@@ -1,0 +1,189 @@
+{
+  "chromeos-arm-generic-cfi-thin-lto-chrome": {
+    "args_file": "//build/args/chromeos/arm-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 2,
+      "use_cfi_cast": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "chromeos-betty-arc-r-chrome": {
+    "args_file": "//build/args/chromeos/betty-arc-r.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    }
+  },
+  "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
+    "args_file": "//build/args/chromeos/betty-pi-arc.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 2,
+      "use_cfi_cast": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "chromeos-betty-pi-arc-chrome": {
+    "args_file": "//build/args/chromeos/betty-pi-arc.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    }
+  },
+  "chromeos-eve-arc-r-chrome": {
+    "args_file": "//build/args/chromeos/eve-arc-r.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
+  "chromeos-eve-chrome": {
+    "args_file": "//build/args/chromeos/eve.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
+  "chromeos-kevin-chrome": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
+  "lacros-amd64-generic-chrome": {
+    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "lacros-amd64-generic-chrome-skylab": {
+    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "lacros-arm-generic-chrome": {
+    "args_file": "//build/args/chromeos/arm-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_i386-sysroot",
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "linux-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "linux-chromeos-chrome": {
+    "gn_args": {
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
+  "mac-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "win-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win64-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "x64",
+      "use_goma": true
+    }
+  }
+}

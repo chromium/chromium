@@ -1,0 +1,17 @@
+<html>
+  <body>
+    <input id="x" type="text"/>
+    <p>Content for on screen keyboard testing.</p>
+  </body>
+  <script>
+    var actionCount = 0;
+    function doAction() {
+      if (actionCount++ == 1) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.getElementById("x").focus();
+      }
+    }
+    document.addEventListener('click', function(e) { doAction(); }, false);
+  </script>
+</html>

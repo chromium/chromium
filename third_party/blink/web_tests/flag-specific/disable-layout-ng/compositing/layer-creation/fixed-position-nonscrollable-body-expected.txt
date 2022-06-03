@@ -1,0 +1,29 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 4021],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

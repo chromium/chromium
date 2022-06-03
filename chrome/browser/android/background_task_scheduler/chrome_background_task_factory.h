@@ -5,12 +5,10 @@
 #ifndef CHROME_BROWSER_ANDROID_BACKGROUND_TASK_SCHEDULER_CHROME_BACKGROUND_TASK_FACTORY_H_
 #define CHROME_BROWSER_ANDROID_BACKGROUND_TASK_SCHEDULER_CHROME_BACKGROUND_TASK_FACTORY_H_
 
-// Intermediate that sets the ChromeBackgroundTaskFactory from C++. The C++ code
-// does not call ChromeApplication (java initializations), so this setting was
-// necessary for associating task ids with corresponding BackgroundTask classes
-// for BackgroundTaskScheduler. This class can be used to set the default
-// factory class to ChromeBackgroundTaskFactory by calling
-// ChromeBackgroundTaskFactory::SetAsDefault().
+#include "components/background_task_scheduler/background_task.h"
+
+// Given a task id, creates the corresponding BackgroundTask.
+// Also provides methods to initialize the Java factory from native.
 class ChromeBackgroundTaskFactory {
  public:
   // Disable default constructor.
@@ -23,9 +21,16 @@ class ChromeBackgroundTaskFactory {
 
   ~ChromeBackgroundTaskFactory();
 
-  // Sets the default factory implementation in //chrome for associating task
-  // ids with corresponding BackgroundTask classes.
+  // Sets the ChromeBackgroundTaskFactory in Java. The C++ code
+  // does not call ChromeApplication (java initializations), so this setting was
+  // necessary for associating task ids with corresponding BackgroundTask
+  // classes for BackgroundTaskScheduler. This method can be used to set the
+  // default factory class to ChromeBackgroundTaskFactory.
   static void SetAsDefault();
+
+  // Creates and returns a BackgroundTask for the given |task_id|.
+  static std::unique_ptr<background_task::BackgroundTask>
+  GetNativeBackgroundTaskFromTaskId(int task_id);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BACKGROUND_TASK_SCHEDULER_CHROME_BACKGROUND_TASK_FACTORY_H_

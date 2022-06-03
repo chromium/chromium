@@ -1,5 +1,0 @@
-Test for bug 564698.
-
-Zero size font should not crash.
-
-Font size is 0in.

@@ -2,9 +2,6 @@
 
 include_rules = [
   "+components/discardable_memory/public/mojom",
-  "+components/ui_devtools/buildflags.h",
-  "+components/viz/common/features.h",
-  "-components/viz/common/switches.h",
   "+media/base/video_types.h",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
@@ -12,7 +9,7 @@ include_rules = [
   "+gpu/ipc/client",
   "+gpu/ipc/common",
   "+gpu/ipc/host",
-  "+media/capture/mojom/video_capture_types.mojom.h",
+  "+media/capture/mojom",
   "+mojo/public/cpp",
   "+services/service_manager/public",
   "+services/viz/privileged/mojom",
@@ -25,12 +22,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "host_frame_sink_manager*": [
-    "+components/viz/service/frame_sinks/compositor_frame_sink_support.h",
-    "+components/viz/service/frame_sinks/compositor_frame_sink_support_manager.h",
-    "+components/viz/service/frame_sinks/frame_sink_manager_impl.h",
-    "+components/viz/service/surfaces/surface_manager.h",
-  ],
   "renderer_settings_creation\.cc": [
     "+components/viz/common/switches.h",
   ],

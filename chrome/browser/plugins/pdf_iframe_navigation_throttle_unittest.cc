@@ -7,10 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -20,8 +17,11 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
+#include "chrome/browser/plugins/plugin_prefs.h"
 #include "content/public/browser/plugin_service.h"
 #endif
+
+using testing::NiceMock;
 
 namespace {
 
@@ -79,11 +79,8 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
         ->InitializeRenderFrameIfNeeded();
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
-
-    feature_list_.InitAndEnableFeature(features::kClickToOpenPDFPlaceholder);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   content::RenderFrameHost* subframe_;
 };
 
@@ -110,7 +107,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   // Load plugins to keep this test synchronous.
 #if BUILDFLAG(ENABLE_PLUGINS)
   base::RunLoop run_loop;
-  content::PluginService::GetInstance()->GetPlugins(base::BindRepeating(
+  content::PluginService::GetInstance()->GetPlugins(base::BindOnce(
       [](base::RunLoop* run_loop,
          const std::vector<content::WebPluginInfo>& plugins) {
         run_loop->Quit();
@@ -119,7 +116,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   run_loop.Run();
 #endif
 
-  content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
+  NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
 
   // Verify that we CANCEL for PDF mime type.
@@ -193,7 +190,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, ProceedIfPDFViewerIsEnabled) {
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
-  content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
+  NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
 
   SetAlwaysOpenPdfExternallyForTests(true);

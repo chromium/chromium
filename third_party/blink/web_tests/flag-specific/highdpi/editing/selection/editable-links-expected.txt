@@ -1,0 +1,14 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutText {#text} at (0,0) size 100x26
+        text run at (0,0) width 100: "This is an "
+      LayoutInline {A} at (100,0) size 122x26 [color=#0000EE]
+        LayoutText {#text} at (100,0) size 122x26
+          text run at (100,0) width 122: "editable link"
+      LayoutText {#text} at (222,0) size 6x26
+        text run at (222,0) width 6: "."
+caret: position 6 of child 0 {#text} of child 3 {A} of body

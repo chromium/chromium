@@ -1,0 +1,3 @@
+android.webkit.WebView focusable scrollable
+++android.widget.Button role_description='button' clickable focusable invisible name='Button 1'
+++android.widget.Button role_description='button' clickable focusable focused name='Button 2'

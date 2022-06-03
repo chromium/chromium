@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "subresource_redirect_browser_test_util.cc",
+    "subresource_redirect_browser_test_util.h",
+    "subresource_redirect_test_util.cc",
+    "subresource_redirect_test_util.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//components/metrics:content",
+    "//components/subresource_redirect/proto:proto",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest:gtest",
+    "//url:url",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
+}

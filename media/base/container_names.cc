@@ -5,13 +5,14 @@
 #include "media/base/container_names.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include <cctype>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/base/bit_reader.h"
 
 namespace media {

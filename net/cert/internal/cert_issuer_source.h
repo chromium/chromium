@@ -25,6 +25,10 @@ class NET_EXPORT CertIssuerSource {
   class NET_EXPORT Request {
    public:
     Request() = default;
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     // Destruction of the Request cancels it.
     virtual ~Request() = default;
 
@@ -36,9 +40,6 @@ class NET_EXPORT CertIssuerSource {
     // indicates that the issuers have been exhausted and GetNext() should
     // not be called again.
     virtual void GetNext(ParsedCertificateList* issuers) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   virtual ~CertIssuerSource() = default;

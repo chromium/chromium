@@ -5,22 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DATE_TIME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DATE_TIME_HANDLER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace base {
 class ListValue;
-}
-
-namespace content {
-class WebUIDataSource;
 }
 
 namespace chromeos {
@@ -30,10 +23,12 @@ namespace settings {
 class DateTimeHandler : public ::settings::SettingsPageUIHandler,
                         public SystemClockClient::Observer {
  public:
-  ~DateTimeHandler() override;
+  DateTimeHandler();
 
-  // Adds load-time values to html_source before creating the handler.
-  static DateTimeHandler* Create(content::WebUIDataSource* html_source);
+  DateTimeHandler(const DateTimeHandler&) = delete;
+  DateTimeHandler& operator=(const DateTimeHandler&) = delete;
+
+  ~DateTimeHandler() override;
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -41,8 +36,6 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  DateTimeHandler();
-
   // SystemClockClient::Observer implementation.
   void SystemClockCanSetTimeChanged(bool can_set_time) override;
 
@@ -67,17 +60,14 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   // setting according to policy.
   void NotifyTimezoneAutomaticDetectionPolicy();
 
-  std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
-      system_timezone_policy_subscription_;
+  base::CallbackListSubscription system_timezone_policy_subscription_;
 
   // Used to listen to changes to the system time zone detection policy.
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-  ScopedObserver<SystemClockClient, SystemClockClient::Observer>
-      scoped_observer_;
+  base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
+      scoped_observation_{this};
   base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHandler);
 };
 
 }  // namespace settings

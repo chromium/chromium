@@ -1,0 +1,16 @@
+AXGroup AXDescription='PDF document containing 1 page'
+++AXGroup AXDescription='Page 1'
+++++AXGroup
+++++++AXStaticText AXValue='Test Form<newline>'
+++++AXGroup
+++++++AXStaticText AXValue='Read Only:<newline>'
+++++AXGroup
+++++++AXStaticText AXValue='Sample Text<newline>'
+++++AXGroup
+++++++AXStaticText AXValue='*required field<newline>'
+++++AXGroup
+++++++AXStaticText AXValue='Password:'
+++++++AXTextField AXDescription='Text Box' AXValue='Text'
+++++++AXTextField AXDescription='ReadOnly' AXValue='Elephant'
+++++++AXTextField AXDescription='Required' AXValue='Required Field'
+++++++AXTextField AXDescription='Password'

@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 
@@ -42,6 +43,8 @@ class ConfigFileWatcherImpl
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const base::FilePath& config_path);
 
+  ConfigFileWatcherImpl(const ConfigFileWatcherImpl&) = delete;
+  ConfigFileWatcherImpl& operator=(const ConfigFileWatcherImpl&) = delete;
 
   // Notify |delegate| of config changes.
   void Watch(ConfigWatcher::Delegate* delegate);
@@ -84,8 +87,6 @@ class ConfigFileWatcherImpl
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<ConfigFileWatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherImpl);
 };
 
 ConfigFileWatcher::ConfigFileWatcher(
@@ -134,15 +135,14 @@ void ConfigFileWatcherImpl::WatchOnIoThread() {
 
   // Create the timer that will be used for delayed-reading the configuration
   // file.
-  config_updated_timer_.reset(
-      new base::DelayTimer(FROM_HERE, base::TimeDelta::FromSeconds(2), this,
-                           &ConfigFileWatcherImpl::ReloadConfig));
+  config_updated_timer_ = std::make_unique<base::DelayTimer>(
+      FROM_HERE, base::Seconds(2), this, &ConfigFileWatcherImpl::ReloadConfig);
 
   // Start watching the configuration file.
-  config_watcher_.reset(new base::FilePathWatcher());
+  config_watcher_ = std::make_unique<base::FilePathWatcher>();
   if (!config_watcher_->Watch(
-          config_path_, false,
-          base::Bind(&ConfigFileWatcherImpl::OnConfigUpdated, this))) {
+          config_path_, base::FilePathWatcher::Type::kNonRecursive,
+          base::BindRepeating(&ConfigFileWatcherImpl::OnConfigUpdated, this))) {
     PLOG(ERROR) << "Couldn't watch file '" << config_path_.value() << "'";
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ConfigFileWatcherImpl::NotifyError,

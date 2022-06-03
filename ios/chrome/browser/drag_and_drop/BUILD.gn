@@ -5,29 +5,20 @@
 source_set("drag_and_drop") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "drag_and_drop_flag.h",
-    "drag_and_drop_flag.mm",
-    "drop_and_navigate_delegate.h",
-    "drop_and_navigate_interaction.h",
-    "drop_and_navigate_interaction.mm",
+    "drag_item_util.h",
+    "drag_item_util.mm",
+    "table_view_url_drag_drop_handler.h",
+    "table_view_url_drag_drop_handler.mm",
+    "url_drag_drop_handler.h",
+    "url_drag_drop_handler.mm",
   ]
   deps = [
     "//base",
-    "//net:net",
-    "//url:url",
+    "//ios/chrome/browser/web:tab_id_tab_helper",
+    "//ios/chrome/browser/window_activities",
+    "//ios/web/public",
+    "//net",
+    "//url",
   ]
-  libs = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "drop_and_navigate_interaction_unittest.mm",
-  ]
-  deps = [
-    ":drag_and_drop",
-    "//base",
-    "//testing/gtest",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }

@@ -1,8 +1,0 @@
-<?xml-stylesheet href="css3-modsel-23.css" type="text/css"?>
-<test>
-<p xmlns="http://www.w3.org/1999/xhtml">
- <button>A button (enabled) with green background</button>
- <br></br>
- <input type="text" size="36" value="a text area (enabled) with green background"></input>
-</p>
-</test>

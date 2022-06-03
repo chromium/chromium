@@ -13,10 +13,12 @@ config("system_zlib") {
   defines = [ "USE_SYSTEM_ZLIB=1" ]
 }
 
+config("zlib_config") {
+  configs = [ ":system_zlib" ]
+}
+
 source_set("zlib") {
-  deps = [
-    ":zlib_shim",
-  ]
+  deps = [ ":zlib_shim" ]
   libs = [ "z" ]
   public_configs = [ ":system_zlib" ]
 }
@@ -34,9 +36,7 @@ shim_headers("minizip_shim") {
 }
 
 source_set("minizip") {
-  deps = [
-    ":minizip_shim",
-  ]
+  deps = [ ":minizip_shim" ]
   libs = [ "minizip" ]
 }
 
@@ -60,7 +60,5 @@ static_library("compression_utils") {
     "google/compression_utils.cc",
     "google/compression_utils.h",
   ]
-  deps = [
-    ":zlib",
-  ]
+  deps = [ ":zlib" ]
 }

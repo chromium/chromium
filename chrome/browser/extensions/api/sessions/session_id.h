@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace extensions {
 
 class SessionId {
@@ -26,6 +24,9 @@ class SessionId {
   // uniquely identifies either a window or tab object in the local or the
   // |session_tag| session.
   SessionId(const std::string& session_tag, int id);
+
+  SessionId(const SessionId&) = delete;
+  SessionId& operator=(const SessionId&) = delete;
 
   // Returns true if the SessionId represents a foreign session.
   bool IsForeign() const;
@@ -44,8 +45,6 @@ class SessionId {
 
   // ID corresponding to a window or tab object.
   int id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionId);
 };
 
 }  // namespace extensions

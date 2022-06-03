@@ -11,11 +11,7 @@ blink_modules_sources("battery") {
     "battery_manager.cc",
     "battery_manager.h",
     "battery_status.h",
-    "navigator_battery.cc",
-    "navigator_battery.h",
   ]
 
-  deps = [
-    "//services/service_manager/public/cpp",
-  ]
+  deps = [ "//services/service_manager/public/cpp" ]
 }

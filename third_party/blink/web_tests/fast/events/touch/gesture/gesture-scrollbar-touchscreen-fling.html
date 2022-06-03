@@ -53,6 +53,6 @@ promise_test (async () => {
   var scrollThumbSafeOffset = 80;
   var scrollbarY = movingDiv.offsetTop + scrollThumbSafeOffset;
   await swipe(10, scrollbarX, scrollbarY, "down");
-  await waitFor(() => {return movingDiv.scrollTop > 90; })
+  await conditionHolds(() => {return movingDiv.scrollTop < 90; })
 });
 </script>

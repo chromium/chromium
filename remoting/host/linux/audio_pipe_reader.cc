@@ -13,9 +13,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 
 namespace remoting {
 
@@ -68,9 +68,10 @@ void AudioPipeReader::RemoveObserver(StreamObserver* observer) {
 void AudioPipeReader::StartOnAudioThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!file_watcher_.Watch(pipe_path_.DirName(), true,
-                           base::Bind(&AudioPipeReader::OnDirectoryChanged,
-                                      base::Unretained(this)))) {
+  if (!file_watcher_.Watch(
+          pipe_path_.DirName(), base::FilePathWatcher::Type::kRecursive,
+          base::BindRepeating(&AudioPipeReader::OnDirectoryChanged,
+                              base::Unretained(this)))) {
     LOG(ERROR) << "Failed to watch pulseaudio directory "
                << pipe_path_.DirName().value();
   }
@@ -122,8 +123,8 @@ void AudioPipeReader::TryOpenPipe() {
     }
 
     // Read from the pipe twice per buffer length, to avoid starving the stream.
-    capture_period_ = base::TimeDelta::FromSeconds(1) * pipe_buffer_size_ /
-                      kSampleBytesPerSecond / 2;
+    capture_period_ =
+        base::Seconds(1) * pipe_buffer_size_ / kSampleBytesPerSecond / 2;
 
     WaitForPipeReadable();
   }
@@ -199,8 +200,8 @@ void AudioPipeReader::WaitForPipeReadable() {
   timer_.Stop();
   DCHECK(!pipe_watch_controller_);
   pipe_watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      pipe_.GetPlatformFile(),
-      base::Bind(&AudioPipeReader::StartTimer, base::Unretained(this)));
+      pipe_.GetPlatformFile(), base::BindRepeating(&AudioPipeReader::StartTimer,
+                                                   base::Unretained(this)));
 }
 
 // static

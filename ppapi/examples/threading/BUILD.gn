@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("threading") {
   output_name = "ppapi_example_threading"
-  sources = [
-    "threading.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "threading.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

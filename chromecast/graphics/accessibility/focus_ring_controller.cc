@@ -29,6 +29,7 @@ FocusRingController::FocusRingController(
 
 FocusRingController::~FocusRingController() {
   SetVisible(false);
+  CHECK(!IsInObserverList());
 }
 
 void FocusRingController::SetVisible(bool visible) {

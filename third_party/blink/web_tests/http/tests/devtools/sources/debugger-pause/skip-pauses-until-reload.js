@@ -5,9 +5,9 @@
 (async function() {
   TestRunner.addResult(
       `Tests that 'skip all pauses' mode blocks breakpoint and gets cancelled right at page reload.`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('resources/skip-pauses-until-reload.html')
@@ -19,11 +19,11 @@
         'skip-pauses-until-reload.html', didShowScriptSource);
   }
 
-  function didShowScriptSource(sourceFrame) {
+  async function didShowScriptSource(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
     TestRunner.addResult('Set up breakpoints.');
-    SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
-    SourcesTestRunner.setBreakpoint(sourceFrame, 9, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 9, '', true);
     TestRunner.addResult('Set up to pause on all exceptions.');
     // FIXME: Test is flaky with PauseOnAllExceptions due to races in debugger.
     TestRunner.DebuggerAgent.setPauseOnExceptions(
@@ -36,11 +36,11 @@
     testRunner.logToStderr('didResolveNode');
     TestRunner.addResult('Set up DOM breakpoints.');
     TestRunner.domDebuggerModel.setDOMBreakpoint(
-        node, SDK.DOMDebuggerModel.DOMBreakpoint.Type.SubtreeModified);
+        node, Protocol.DOMDebugger.DOMBreakpointType.SubtreeModified);
     TestRunner.domDebuggerModel.setDOMBreakpoint(
-        node, SDK.DOMDebuggerModel.DOMBreakpoint.Type.AttributeModified);
+        node, Protocol.DOMDebugger.DOMBreakpointType.AttributeModified);
     TestRunner.domDebuggerModel.setDOMBreakpoint(
-        node, SDK.DOMDebuggerModel.DOMBreakpoint.Type.NodeRemoved);
+        node, Protocol.DOMDebugger.DOMBreakpointType.NodeRemoved);
     setUpEventBreakpoints();
   }
 
@@ -57,9 +57,9 @@
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
   }
 
-  function didPause(callFrames) {
+  async function didPause(callFrames) {
     testRunner.logToStderr('didPause');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     TestRunner.DebuggerAgent.setSkipAllPauses(true).then(didSetSkipAllPauses);
   }
 
@@ -82,10 +82,10 @@
     completeTest();
   }
 
-  function didPauseAfterReload(callFrames) {
+  async function didPauseAfterReload(callFrames) {
     testRunner.logToStderr('didPauseAfterReload');
     TestRunner.addResult('FAIL: Should not pause while reloading the page!');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.waitUntilPausedNextTime(didPauseAfterReload);
     SourcesTestRunner.resumeExecution();
   }

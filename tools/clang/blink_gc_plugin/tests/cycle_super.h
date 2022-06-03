@@ -16,20 +16,20 @@ class D;
 
 class A : public GarbageCollected<A> {
  public:
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
-  RefPtr<D> m_d;
+  scoped_refptr<D> m_d;
 };
 
 class B : public A {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
 };
 
 class C : public B {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
 };
 
 class D : public RefCounted<C> {

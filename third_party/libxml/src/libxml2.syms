@@ -2070,27 +2070,27 @@ LIBXML2_2.6.21 {
   xmlAutomataNewNegTrans;
 
 # xmlregexp
-  emptyExp; # variable
-  forbiddenExp; # variable
-  xmlExpCtxtNbCons;
-  xmlExpCtxtNbNodes;
-  xmlExpDump;
-  xmlExpExpDerive;
-  xmlExpFreeCtxt;
-  xmlExpFree;
-  xmlExpGetLanguage;
-  xmlExpGetStart;
-  xmlExpIsNillable;
-  xmlExpMaxToken;
-  xmlExpNewAtom;
-  xmlExpNewCtxt;
-  xmlExpNewOr;
-  xmlExpNewRange;
-  xmlExpNewSeq;
-  xmlExpParse;
-  xmlExpRef;
-  xmlExpStringDerive;
-  xmlExpSubsume;
+# emptyExp; removed in 2.9.10
+# forbiddenExp; removed in 2.9.10
+# xmlExpCtxtNbCons; removed in 2.9.10
+# xmlExpCtxtNbNodes; removed in 2.9.10
+# xmlExpDump; removed in 2.9.10
+# xmlExpExpDerive; removed in 2.9.10
+# xmlExpFreeCtxt; removed in 2.9.10
+# xmlExpFree; removed in 2.9.10
+# xmlExpGetLanguage; removed in 2.9.10
+# xmlExpGetStart; removed in 2.9.10
+# xmlExpIsNillable; removed in 2.9.10
+# xmlExpMaxToken; removed in 2.9.10
+# xmlExpNewAtom; removed in 2.9.10
+# xmlExpNewCtxt; removed in 2.9.10
+# xmlExpNewOr; removed in 2.9.10
+# xmlExpNewRange; removed in 2.9.10
+# xmlExpNewSeq; removed in 2.9.10
+# xmlExpParse; removed in 2.9.10
+# xmlExpRef; removed in 2.9.10
+# xmlExpStringDerive; removed in 2.9.10
+# xmlExpSubsume; removed in 2.9.10
 
 # parser
   xmlHasFeature;
@@ -2285,4 +2285,11 @@ LIBXML2_2.9.8 {
 # hash
   xmlHashDefaultDeallocator;
 } LIBXML2_2.9.1;
+
+LIBXML2_2.9.11 {
+    global:
+
+# xmlIO
+  xmlPopOutputCallbacks;
+} LIBXML2_2.9.8;
 

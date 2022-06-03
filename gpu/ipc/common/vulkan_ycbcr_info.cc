@@ -4,7 +4,7 @@
 
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PageLoadMetrics_jni.h"
 #include "chrome/browser/browser_process.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -62,12 +63,6 @@ AndroidPageLoadMetricsObserver::OnHidden(
   return CONTINUE_OBSERVING;
 }
 
-void AndroidPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
-    content::NavigationHandle* navigation_handle) {
-  largest_contentful_paint_handler_.OnDidFinishSubFrameNavigation(
-      navigation_handle, GetDelegate());
-}
-
 void AndroidPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   ReportBufferedMetrics(timing);
@@ -115,8 +110,8 @@ void AndroidPageLoadMetricsObserver::OnLoadedResource(
     const page_load_metrics::ExtraRequestCompleteInfo&
         extra_request_complete_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (extra_request_complete_info.resource_type ==
-      content::ResourceType::kMainFrame) {
+  if (extra_request_complete_info.request_destination ==
+      network::mojom::RequestDestination::kDocument) {
     DCHECK(!did_dispatch_on_main_resource_);
     if (did_dispatch_on_main_resource_) {
       // We are defensive for the case of something strange happening and return
@@ -142,13 +137,6 @@ void AndroidPageLoadMetricsObserver::OnLoadedResource(
     ReportLoadedMainResource(dns_start, dns_end, connect_start, connect_end,
                              request_start, send_start, send_end);
   }
-}
-
-void AndroidPageLoadMetricsObserver::OnTimingUpdate(
-    content::RenderFrameHost* subframe_rfh,
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  largest_contentful_paint_handler_.RecordTiming(timing.paint_timing,
-                                                 subframe_rfh);
 }
 
 void AndroidPageLoadMetricsObserver::ReportNewNavigation() {
@@ -179,8 +167,10 @@ void AndroidPageLoadMetricsObserver::ReportBufferedMetrics(
   int64_t navigation_start_tick =
       (GetDelegate().GetNavigationStart() - base::TimeTicks()).InMicroseconds();
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
-      largest_contentful_paint_handler_.MergeMainFrameAndSubframes();
-  if (!largest_contentful_paint.IsEmpty()) {
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (largest_contentful_paint.ContainsValidTime()) {
     Java_PageLoadMetrics_onLargestContentfulPaint(
         env, java_web_contents, static_cast<jlong>(navigation_id_),
         static_cast<jlong>(navigation_start_tick),

@@ -1,0 +1,13 @@
+{
+  "name": "<webview> which loads a.com",
+  "manifest_version": 2,
+  "version": "1",
+  "permissions": [
+    "webview"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}

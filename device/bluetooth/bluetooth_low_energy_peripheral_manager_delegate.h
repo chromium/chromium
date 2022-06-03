@@ -5,13 +5,12 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_PERIPHERAL_MANAGER_DELEGATE_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_PERIPHERAL_MANAGER_DELEGATE_H_
 
-#include "base/mac/sdk_forward_declarations.h"
+#import <CoreBluetooth/CoreBluetooth.h>
+
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
-#import <CoreBluetooth/CoreBluetooth.h>
-#else
+#if !defined(OS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 

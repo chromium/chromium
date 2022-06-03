@@ -1,23 +1,18 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "ContentsLayer for LayoutVideo VIDEO id='video'",
+      "name": "LayoutVideo VIDEO id='video'",
       "bounds": [320, 240],
       "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small test-mode phase-ready state-scrubbing'",
-      "bounds": [320, 240],
-      "transform": 1
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV)",
+      "name": "LayoutFlexibleBox DIV class='sizing-small test-mode phase-ready state-scrubbing'",
       "bounds": [320, 240],
       "transform": 1
     }

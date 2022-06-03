@@ -12,8 +12,10 @@
 namespace crash_reporter {
 namespace internal {
 
-using TransitionalCrashKeyStorage = google_breakpad::
-    NonAllocatingMap<40, kCrashKeyStorageValueSize, kCrashKeyStorageNumEntries>;
+using TransitionalCrashKeyStorage =
+    google_breakpad::NonAllocatingMap<kCrashKeyStorageKeySize,
+                                      kCrashKeyStorageValueSize,
+                                      kCrashKeyStorageNumEntries>;
 
 // Accesses the underlying storage for crash keys for non-Crashpad clients.
 CRASH_KEY_EXPORT TransitionalCrashKeyStorage* GetCrashKeyStorage();

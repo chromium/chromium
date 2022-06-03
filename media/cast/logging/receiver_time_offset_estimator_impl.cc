@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/logging/receiver_time_offset_estimator_impl.h"
 

@@ -5,20 +5,16 @@
 #ifndef BASE_LOCATION_H_
 #define BASE_LOCATION_H_
 
-#include <stddef.h>
-
-#include <cassert>
-#include <functional>
 #include <string>
 
 #include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/hash/hash.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
 namespace base {
 
-#if defined(__has_builtin)
+#if defined(__clang__)
 // Clang allows detection of these builtins.
 #define SUPPORTS_LOCATION_BUILTINS                                       \
   (__has_builtin(__builtin_FUNCTION) && __has_builtin(__builtin_FILE) && \
@@ -37,6 +33,7 @@ class BASE_EXPORT Location {
  public:
   Location();
   Location(const Location& other);
+  Location& operator=(const Location& other);
 
   // Only initializes the file name and program counter, the source information
   // will be null for the strings, and -1 for the line number.
@@ -51,7 +48,7 @@ class BASE_EXPORT Location {
            int line_number,
            const void* program_counter);
 
-  // Comparator for hash map insertion. The program counter should uniquely
+  // Comparator for testing. The program counter should uniquely
   // identify a location.
   bool operator==(const Location& other) const {
     return program_counter_ == other.program_counter_;
@@ -83,10 +80,18 @@ class BASE_EXPORT Location {
   // are not available, this will return "pc:<hex address>".
   std::string ToString() const;
 
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
+#if !BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
+#if !BUILDFLAG(ENABLE_LOCATION_SOURCE)
   static Location CreateFromHere(const char* file_name);
+#else
   static Location CreateFromHere(const char* function_name,
                                  const char* file_name,
                                  int line_number);
+#endif
+#endif
 
 #if SUPPORTS_LOCATION_BUILTINS && BUILDFLAG(ENABLE_LOCATION_SOURCE)
   static Location Current(const char* function_name = __builtin_FUNCTION(),
@@ -107,36 +112,23 @@ class BASE_EXPORT Location {
 
 BASE_EXPORT const void* GetProgramCounter();
 
+#if BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
+
+#define FROM_HERE ::base::Location::Current()
+
 // The macros defined here will expand to the current function.
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
+#elif BUILDFLAG(ENABLE_LOCATION_SOURCE)
 
 // Full source information should be included.
-#define FROM_HERE FROM_HERE_WITH_EXPLICIT_FUNCTION(__func__)
-#define FROM_HERE_WITH_EXPLICIT_FUNCTION(function_name) \
-  ::base::Location::CreateFromHere(function_name, __FILE__, __LINE__)
+#define FROM_HERE ::base::Location::CreateFromHere(__func__, __FILE__, __LINE__)
 
 #else
 
 // TODO(http://crbug.com/760702) remove the __FILE__ argument from these calls.
 #define FROM_HERE ::base::Location::CreateFromHere(__FILE__)
-#define FROM_HERE_WITH_EXPLICIT_FUNCTION(function_name) \
-  ::base::Location::CreateFromHere(function_name, __FILE__, -1)
 
 #endif
 
 }  // namespace base
-
-namespace std {
-
-// Specialization for using Location in hash tables.
-template <>
-struct hash<::base::Location> {
-  std::size_t operator()(const ::base::Location& loc) const {
-    const void* program_counter = loc.program_counter();
-    return base::FastHash(base::as_bytes(base::make_span(&program_counter, 1)));
-  }
-};
-
-}  // namespace std
 
 #endif  // BASE_LOCATION_H_

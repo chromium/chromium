@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that computed styles are cached across synchronous requests.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -35,7 +35,7 @@
   function step1(node) {
     var callsLeft = 2;
     nodeId = node.id;
-    TestRunner.addSniffer(Protocol.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
+    TestRunner.addSniffer(ProtocolClient.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
     TestRunner.cssModel.computedStylePromise(nodeId).then(styleCallback);
     TestRunner.cssModel.computedStylePromise(nodeId).then(styleCallback);
     function styleCallback() {

@@ -29,7 +29,6 @@ extern const char kEnableLocalFileAccesses[];
 extern const char kOverrideMetricsUploadUrl[];
 
 // Network switches
-extern const char kNoWifi[];
 extern const char kRequireWlan[];
 
 // Switches to communicate app state information
@@ -84,15 +83,24 @@ extern const char kSystemGestureStartHeight[];
 extern const char kBottomSystemGestureStartHeight[];
 extern const char kBackGestureHorizontalThreshold[];
 extern const char kEnableTopDragGesture[];
+extern const char kEnableRoundedWindowCorners[];
+extern const char kManagedMode[];
 
 // Background color used when Chromium hasn't rendered anything yet.
 extern const char kCastAppBackgroundColor[];
 
 extern const char kMixerServiceEndpoint[];
+extern const char kMixerServicePort[];
+
 extern const char kCastMemoryPressureCriticalFraction[];
 extern const char kCastMemoryPressureModerateFraction[];
 
 extern const char kDisableMojoRenderer[];
+
+// OTA update related switches.
+extern const char kForceUpdateRemoteUrl[];
+
+extern const char kSysInfoFilePath[];
 
 }  // namespace switches
 

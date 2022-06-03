@@ -11,11 +11,11 @@ import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ import java.util.List;
  * be made on the UI thread, as they can result in UI manipulations.
  */
 public class FakeMostVisitedSites implements MostVisitedSites {
-    private final List<String> mBlacklistedUrls = new ArrayList<>();
+    private final List<GURL> mBlocklistedUrls = new ArrayList<>();
 
     private List<SiteSuggestion> mSites = new ArrayList<>();
     private Observer mObserver;
@@ -40,13 +40,13 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     }
 
     @Override
-    public void addBlacklistedUrl(String url) {
-        mBlacklistedUrls.add(url);
+    public void addBlocklistedUrl(GURL url) {
+        mBlocklistedUrls.add(url);
     }
 
     @Override
-    public void removeBlacklistedUrl(String url) {
-        mBlacklistedUrls.remove(url);
+    public void removeBlocklistedUrl(GURL url) {
+        mBlocklistedUrls.remove(url);
     }
 
     @Override
@@ -64,9 +64,9 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         //  Metrics are stubbed out.
     }
 
-    /** @return Whether {@link #addBlacklistedUrl} has been called on the given URL. */
-    public boolean isUrlBlacklisted(String url) {
-        return mBlacklistedUrls.contains(url);
+    /** @return Whether {@link #addBlocklistedUrl} has been called on the given URL. */
+    public boolean isUrlBlocklisted(GURL url) {
+        return mBlocklistedUrls.contains(url);
     }
 
     /**
@@ -116,8 +116,8 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     }
 
     public static SiteSuggestion createSiteSuggestion(String title, String url) {
-        return new SiteSuggestion(title, url, "", TileTitleSource.TITLE_TAG, TileSource.TOP_SITES,
-                TileSectionType.PERSONALIZED, new Date());
+        return new SiteSuggestion(title, new GURL(url), TileTitleSource.TITLE_TAG,
+                TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
     }
 
     private void notifyTileSuggestionsAvailable() {

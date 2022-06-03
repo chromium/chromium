@@ -1,7 +1,7 @@
-AXWebArea AXBlockQuoteLevel='0'
-++AXGroup AXBlockQuoteLevel='1'
-++++AXStaticText AXValue='Top level' AXBlockQuoteLevel='1'
-++++AXGroup AXBlockQuoteLevel='2'
-++++++AXStaticText AXValue='Sub' AXBlockQuoteLevel='2'
-++++++AXGroup AXBlockQuoteLevel='3'
-++++++++AXStaticText AXValue='Sub-sub' AXBlockQuoteLevel='3'
+AXWebArea AXBlockQuoteLevel=0
+++AXGroup AXBlockQuoteLevel=1
+++++AXStaticText AXBlockQuoteLevel=1 AXValue='Top level'
+++++AXGroup AXBlockQuoteLevel=2
+++++++AXStaticText AXBlockQuoteLevel=2 AXValue='Sub'
+++++++AXGroup AXBlockQuoteLevel=3
+++++++++AXStaticText AXBlockQuoteLevel=3 AXValue='Sub-sub'

@@ -6,6 +6,8 @@ package org.chromium.net.test.util;
 
 import android.util.Base64;
 
+import androidx.annotation.GuardedBy;
+
 import org.chromium.base.Log;
 
 import java.io.ByteArrayInputStream;
@@ -25,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.concurrent.GuardedBy;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

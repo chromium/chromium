@@ -48,7 +48,7 @@ class CORE_EXPORT SizesMathFunctionParser {
   void AppendOperator(const CSSParserToken&);
 
   Vector<SizesMathValue> value_list_;
-  Member<MediaValues> media_values_;
+  MediaValues* media_values_;
   bool is_valid_;
   float result_;
 };

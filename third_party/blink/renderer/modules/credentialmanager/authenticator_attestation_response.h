@@ -23,20 +23,34 @@ class MODULES_EXPORT AuthenticatorAttestationResponse final
   AuthenticatorAttestationResponse(
       DOMArrayBuffer* client_data_json,
       DOMArrayBuffer* attestation_object,
-      Vector<mojom::AuthenticatorTransport> transports);
+      Vector<mojom::AuthenticatorTransport> transports,
+      DOMArrayBuffer* authenticator_data,
+      DOMArrayBuffer* public_key_der,
+      int32_t public_key_algorithm);
   ~AuthenticatorAttestationResponse() override;
 
   DOMArrayBuffer* attestationObject() const {
     return attestation_object_.Get();
   }
 
+  DOMArrayBuffer* getAuthenticatorData() const {
+    return authenticator_data_.Get();
+  }
+
+  DOMArrayBuffer* getPublicKey() const { return public_key_der_.Get(); }
+
+  int32_t getPublicKeyAlgorithm() const { return public_key_algo_; }
+
   Vector<String> getTransports() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   const Member<DOMArrayBuffer> attestation_object_;
   const Vector<mojom::AuthenticatorTransport> transports_;
+  const Member<DOMArrayBuffer> authenticator_data_;
+  const Member<DOMArrayBuffer> public_key_der_;
+  const int32_t public_key_algo_;
 };
 
 }  // namespace blink

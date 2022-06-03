@@ -17,14 +17,14 @@
 namespace crdtp {
 std::string UTF16ToUTF8(span<uint16_t> in) {
   std::string out;
-  bool success = base::UTF16ToUTF8(
-      reinterpret_cast<const base::char16*>(in.data()), in.size(), &out);
+  bool success = base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(in.data()),
+                                   in.size(), &out);
   CHECK(success);
   return out;
 }
 
 std::vector<uint16_t> UTF8ToUTF16(span<uint8_t> in) {
-  base::string16 tmp;
+  std::u16string tmp;
   bool success = base::UTF8ToUTF16(reinterpret_cast<const char*>(in.data()),
                                    in.size(), &tmp);
   CHECK(success);

@@ -17,20 +17,4 @@ document.body.addEventListener('click', () => {
 
   top.postMessage(result, '*');
 }, { once: true });
-
-const elementBoundingRect = document.body.getBoundingClientRect();
-const xPos = elementBoundingRect.left + elementBoundingRect.width / 2;
-const yPos = elementBoundingRect.top + elementBoundingRect.height / 2;
-const leftButton = 0;
-
-chrome.gpuBenchmarking.pointerActionSequence([
-  {
-    source: 'mouse',
-    actions: [
-      { name: 'pointerMove', x: xPos, y: yPos },
-      { name: 'pointerDown', x: xPos, y: yPos, button: leftButton },
-      { name: 'pointerUp' }
-    ]
-  }
-]);
 </script>

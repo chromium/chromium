@@ -2,45 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('settings', function() {
-  /** @implements {settings.LanguagesBrowserProxy} */
-  class TestLanguagesBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      const methodNames = [];
-      if (cr.isChromeOS || cr.isWindows) {
-        methodNames.push('getProspectiveUILanguage');
-      }
+// clang-format off
+import {isWindows} from 'chrome://resources/js/cr.m.js';
 
-      super(methodNames);
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-      /** @private {!LanguageSettingsPrivate} */
-      this.languageSettingsPrivate_ =
-          new settings.FakeLanguageSettingsPrivate();
+import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
+// clang-format on
 
-      /** @private {!InputMethodPrivate} */
-      this.inputMethodPrivate_ = new settings.FakeInputMethodPrivate();
+/** @implements {LanguagesBrowserProxy} */
+export class TestLanguagesBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    const methodNames = [];
+    if (isWindows) {
+      methodNames.push('getProspectiveUILanguage', 'setProspectiveUILanguage');
     }
 
-    /** @override */
-    getLanguageSettingsPrivate() {
-      return this.languageSettingsPrivate_;
-    }
+    super(methodNames);
 
-    /** @override */
-    getInputMethodPrivate() {
-      return this.inputMethodPrivate_;
-    }
+    /** @private {!LanguageSettingsPrivate} */
+    this.languageSettingsPrivate_ = new FakeLanguageSettingsPrivate();
   }
 
-  if (cr.isChromeOS || cr.isWindows) {
-    /** @override */
-    TestLanguagesBrowserProxy.prototype.getProspectiveUILanguage = function() {
-      this.methodCalled('getProspectiveUILanguage');
-      return Promise.resolve('en-US');
-    };
+  /** @override */
+  getLanguageSettingsPrivate() {
+    return this.languageSettingsPrivate_;
   }
 
-  return {
-    TestLanguagesBrowserProxy: TestLanguagesBrowserProxy,
+  /** @param {!LanguageSettingsPrivate} languageSettingsPrivate */
+  setLanguageSettingsPrivate(languageSettingsPrivate) {
+    this.languageSettingsPrivate_ = languageSettingsPrivate;
+  }
+}
+
+if (isWindows) {
+  /** @override */
+  TestLanguagesBrowserProxy.prototype.getProspectiveUILanguage = function() {
+    this.methodCalled('getProspectiveUILanguage');
+    return Promise.resolve('en-US');
   };
-});
+
+  /** @override */
+  TestLanguagesBrowserProxy.prototype.setProspectiveUILanguage = function(
+      language) {
+    this.methodCalled('setProspectiveUILanguage', language);
+  };
+}

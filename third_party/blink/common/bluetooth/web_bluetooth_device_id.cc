@@ -4,6 +4,9 @@
 
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 
+#include <ostream>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/strings/string_util.h"
 #include "crypto/random.h"
@@ -81,6 +84,11 @@ bool WebBluetoothDeviceId::operator==(
 bool WebBluetoothDeviceId::operator!=(
     const WebBluetoothDeviceId& device_id) const {
   return !(*this == device_id);
+}
+
+bool WebBluetoothDeviceId::operator<(
+    const WebBluetoothDeviceId& device_id) const {
+  return str() < device_id.str();
 }
 
 std::ostream& operator<<(std::ostream& out,

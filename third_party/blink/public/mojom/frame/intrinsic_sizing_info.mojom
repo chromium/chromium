@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The intrinsic dimensions of the embedded object.
+struct IntrinsicSizingInfo {
+  // The specified width and height.
+  gfx.mojom.SizeF size;
+  // The ratio between the width and height.
+  // https://www.w3.org/TR/css-images-3/#intrinsic-aspect-ratio
+  gfx.mojom.SizeF aspect_ratio;
+
+  // True if it has a width.
+  bool has_width;
+  // True if it has a height.
+  bool has_height;
+};

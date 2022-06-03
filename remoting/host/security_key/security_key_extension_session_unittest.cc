@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
@@ -55,6 +57,10 @@ const unsigned char kRequestData[] = {
 class TestClientStub : public protocol::ClientStub {
  public:
   TestClientStub();
+
+  TestClientStub(const TestClientStub&) = delete;
+  TestClientStub& operator=(const TestClientStub&) = delete;
+
   ~TestClientStub() override;
 
   // protocol::ClientStub implementation.
@@ -63,6 +69,7 @@ class TestClientStub : public protocol::ClientStub {
       const protocol::PairingResponse& pairing_response) override;
   void DeliverHostMessage(const protocol::ExtensionMessage& message) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
+  void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
 
   // protocol::ClipboardStub implementation.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
@@ -80,8 +87,6 @@ class TestClientStub : public protocol::ClientStub {
  private:
   protocol::ExtensionMessage message_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientStub);
 };
 
 TestClientStub::TestClientStub() : run_loop_(new base::RunLoop) {}
@@ -102,6 +107,9 @@ void TestClientStub::DeliverHostMessage(
 
 void TestClientStub::SetVideoLayout(const protocol::VideoLayout& layout) {}
 
+void TestClientStub::SetTransportInfo(
+    const protocol::TransportInfo& transport_info) {}
+
 void TestClientStub::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {}
 
@@ -115,7 +123,7 @@ void TestClientStub::WaitForDeliverHostMessage(base::TimeDelta max_timeout) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), max_timeout);
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void TestClientStub::CheckHostDataMessage(int id, const std::string& data) {
@@ -131,6 +139,10 @@ void TestClientStub::CheckHostDataMessage(int id, const std::string& data) {
 class TestClientSessionDetails : public ClientSessionDetails {
  public:
   TestClientSessionDetails();
+
+  TestClientSessionDetails(const TestClientSessionDetails&) = delete;
+  TestClientSessionDetails& operator=(const TestClientSessionDetails&) = delete;
+
   ~TestClientSessionDetails() override;
 
   // ClientSessionDetails interface.
@@ -141,8 +153,6 @@ class TestClientSessionDetails : public ClientSessionDetails {
 
  private:
   uint32_t desktop_session_id_ = UINT32_MAX;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientSessionDetails);
 };
 
 TestClientSessionDetails::TestClientSessionDetails() = default;
@@ -152,6 +162,12 @@ TestClientSessionDetails::~TestClientSessionDetails() = default;
 class SecurityKeyExtensionSessionTest : public testing::Test {
  public:
   SecurityKeyExtensionSessionTest();
+
+  SecurityKeyExtensionSessionTest(const SecurityKeyExtensionSessionTest&) =
+      delete;
+  SecurityKeyExtensionSessionTest& operator=(
+      const SecurityKeyExtensionSessionTest&) = delete;
+
   ~SecurityKeyExtensionSessionTest() override;
 
   void WaitForAndVerifyHostMessage();
@@ -169,9 +185,6 @@ class SecurityKeyExtensionSessionTest : public testing::Test {
 
   TestClientStub client_stub_;
   TestClientSessionDetails client_details_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyExtensionSessionTest);
 };
 
 SecurityKeyExtensionSessionTest::SecurityKeyExtensionSessionTest()
@@ -190,13 +203,12 @@ SecurityKeyExtensionSessionTest::SecurityKeyExtensionSessionTest()
 SecurityKeyExtensionSessionTest::~SecurityKeyExtensionSessionTest() = default;
 
 void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
-  client_stub_.WaitForDeliverHostMessage(
-      base::TimeDelta::FromMilliseconds(500));
+  client_stub_.WaitForDeliverHostMessage(base::Milliseconds(500));
   base::ListValue expected_data;
 
   // Skip first four bytes.
   for (size_t i = 4; i < sizeof(kRequestData); ++i) {
-    expected_data.AppendInteger(kRequestData[i]);
+    expected_data.Append(kRequestData[i]);
   }
 
   std::string expected_data_json;
@@ -449,8 +461,7 @@ TEST_F(SecurityKeyExtensionSessionTest, SendMessageToClient_ValidData) {
   // Inject data into SendMessageCallback to simulate a security key request.
   mock_security_key_auth_handler_->GetSendMessageCallback().Run(42, "test_msg");
 
-  client_stub_.WaitForDeliverHostMessage(
-      base::TimeDelta::FromMilliseconds(500));
+  client_stub_.WaitForDeliverHostMessage(base::Milliseconds(500));
 
   // Expects a JSON array of the ASCII character codes for "test_msg".
   client_stub_.CheckHostDataMessage(42, "[116,101,115,116,95,109,115,103]");

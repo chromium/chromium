@@ -6,20 +6,16 @@
 
 namespace blink {
 
-void OffHeapObject::Trace(Visitor* visitor)
-{
-    visitor->Trace(m_obj);
-    visitor->Trace(m_weak);
+void OffHeapObject::Trace(Visitor* visitor) const {
+  visitor->Trace(m_obj);
+  visitor->Trace(m_weak);
 }
 
-void PartObject::Trace(Visitor* visitor)
-{
-    visitor->Trace(m_obj);
+void PartObject::Trace(Visitor* visitor) const {
+  visitor->Trace(m_obj);
 }
 
-void InlineObject::Trace(Visitor* visitor)
-{
-    visitor->Trace(m_obj);
+void InlineObject::Trace(Visitor* visitor) const {
+  visitor->Trace(m_obj);
 }
-
 }

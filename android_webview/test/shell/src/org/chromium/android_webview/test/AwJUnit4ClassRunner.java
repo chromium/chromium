@@ -6,17 +6,14 @@ package org.chromium.android_webview.test;
 
 import androidx.annotation.CallSuper;
 
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
-import org.chromium.android_webview.AwSwitches;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.OnlyRunIn.ProcessMode;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.BaseTestResult.PreTestHook;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.policy.test.annotations.Policies;
+import org.chromium.components.policy.test.annotations.Policies;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +29,12 @@ import java.util.List;
  * which exercise code which cannot depend on single vs. multi process.
  */
 public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
+    private final TestHook mWebViewMultiProcessHook = (targetContext, testMethod) -> {
+        if (testMethod instanceof WebViewMultiProcessFrameworkMethod) {
+            CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+        }
+    };
+
     /**
      * Create an AwJUnit4ClassRunner to run {@code klass} and initialize values
      *
@@ -44,8 +47,9 @@ public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
     @CallSuper
     @Override
-    protected List<PreTestHook> getPreTestHooks() {
-        return addToList(super.getPreTestHooks(), Policies.getRegistrationHook());
+    protected List<TestHook> getPreTestHooks() {
+        return addToList(
+                super.getPreTestHooks(), Policies.getRegistrationHook(), mWebViewMultiProcessHook);
     }
 
     private ProcessMode processModeForMethod(FrameworkMethod method) {
@@ -86,15 +90,6 @@ public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
             }
         }
         return result;
-    }
-
-    @Override
-    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        CommandLineFlags.setUp(method.getMethod());
-        if (method instanceof WebViewMultiProcessFrameworkMethod) {
-            CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
-        }
-        super.runChild(method, notifier);
     }
 
     /**

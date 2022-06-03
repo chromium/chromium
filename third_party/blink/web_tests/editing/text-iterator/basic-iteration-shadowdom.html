@@ -19,7 +19,7 @@ function appendBrElement(node)
 
 function addShadowTreeWithDivElement(node)
 {
-    node.createShadowRoot();
+    node.attachShadow({mode: 'open'});
     node.shadowRoot.innerHTML = '<div>b</div>';
 }
 

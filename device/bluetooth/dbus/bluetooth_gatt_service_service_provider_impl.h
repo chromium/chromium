@@ -33,6 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceServiceProviderImpl
       bool is_primary,
       const std::vector<dbus::ObjectPath>& includes);
 
+  BluetoothGattServiceServiceProviderImpl(
+      const BluetoothGattServiceServiceProviderImpl&) = delete;
+  BluetoothGattServiceServiceProviderImpl& operator=(
+      const BluetoothGattServiceServiceProviderImpl&) = delete;
+
   ~BluetoothGattServiceServiceProviderImpl() override;
 
  private:
@@ -93,8 +98,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattServiceServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattServiceServiceProviderImpl);
 };
 
 }  // namespace bluez

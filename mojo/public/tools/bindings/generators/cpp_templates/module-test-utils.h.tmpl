@@ -59,6 +59,10 @@ class {{export_attribute}} {{interface.name}}InterceptorForTesting : public {{in
 class {{export_attribute}} {{interface.name}}AsyncWaiter {
  public:
   explicit {{interface.name}}AsyncWaiter({{interface.name}}* proxy);
+
+  {{interface.name}}AsyncWaiter(const {{interface.name}}AsyncWaiter&) = delete;
+  {{interface.name}}AsyncWaiter& operator=(const {{interface.name}}AsyncWaiter&) = delete;
+
   ~{{interface.name}}AsyncWaiter();
 
 {%- for method in interface.methods if method.response_parameters != None %}
@@ -68,8 +72,6 @@ class {{export_attribute}} {{interface.name}}AsyncWaiter {
 
  private:
   {{interface.name}}* const proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN({{interface.name}}AsyncWaiter);
 };
 
 {%  endfor %}

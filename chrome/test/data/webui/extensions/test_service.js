@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {FakeChromeEvent} from '../fake_chrome_event.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** An extensions.Service implementation to be used in tests. */
 export class TestService extends TestBrowserProxy {
@@ -19,6 +19,7 @@ export class TestService extends TestBrowserProxy {
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
       'loadUnpacked',
+      'recordUserAction',
       'retryLoadUnpacked',
       'reloadItem',
       'removeRuntimeHostPermission',
@@ -46,6 +47,9 @@ export class TestService extends TestBrowserProxy {
 
     /** @type {!chrome.activityLogPrivate.ActivityResultSet|undefined} */
     this.testActivities;
+
+    /** @type {boolean} */
+    this.loadUnpackedSuccess_ = true;
   }
 
   /**
@@ -60,6 +64,13 @@ export class TestService extends TestBrowserProxy {
    */
   setForceReloadItemError(force) {
     this.forceReloadItemError_ = force;
+  }
+
+  /**
+   * @param {boolean} success
+   */
+  setLoadUnpackedSuccess(success) {
+    this.loadUnpackedSuccess_ = success;
   }
 
   /** @override */
@@ -133,7 +144,7 @@ export class TestService extends TestBrowserProxy {
   /** @override */
   loadUnpacked() {
     this.methodCalled('loadUnpacked');
-    return Promise.resolve();
+    return Promise.resolve(this.loadUnpackedSuccess_);
   }
 
   /** @override */
@@ -156,9 +167,9 @@ export class TestService extends TestBrowserProxy {
   }
 
   /** @override */
-  updateAllExtensions() {
+  updateAllExtensions(extensions) {
     this.methodCalled('updateAllExtensions');
-    return Promise.resolve();
+    return this.forceReloadItemError_ ? Promise.reject() : Promise.resolve();
   }
 
   /** @override */
@@ -217,5 +228,10 @@ export class TestService extends TestBrowserProxy {
   /** @override */
   downloadActivities(rawActivityData, fileName) {
     this.methodCalled('downloadActivities', [rawActivityData, fileName]);
+  }
+
+  /** @override */
+  recordUserAction(metricName) {
+    this.methodCalled('recordUserAction', metricName);
   }
 }

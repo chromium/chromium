@@ -36,8 +36,14 @@
 </div>
 <div id='fs'>fullscreen</div>
 <script>
+  function waitForVideoPresentation(video) {
+    return new Promise(resolve => {
+      video.requestVideoFrameCallback(resolve);
+    });
+  }
   var video = document.querySelector('video');
   video.src = 'content/test.ogv';
+  let videoPresentation = waitForVideoPresentation(video);
 
   document.querySelector('#fs').addEventListener('click', e => {
     document.querySelector('#player').webkitRequestFullscreen();
@@ -55,7 +61,9 @@
     });
 
     document.addEventListener('webkitfullscreenchange', e => {
-      testRunner.notifyDone();
+      videoPresentation.then(() => {
+        testRunner.notifyDone();
+      });
     });
   }
 </script>

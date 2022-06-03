@@ -5,28 +5,29 @@
 package org.chromium.chrome.browser.tab;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
-import android.text.TextUtils;
 
-import org.junit.After;
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -40,14 +41,18 @@ import java.util.concurrent.TimeoutException;
  * Integration tests verifying that form resubmission dialogs are correctly displayed and handled.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class RepostFormWarningTest {
     // Active tab.
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private Tab mTab;
     // Callback helper that manages waiting for pageloads to finish.
@@ -57,16 +62,9 @@ public class RepostFormWarningTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = sActivityTestRule.getActivity().getActivityTab();
         mCallbackHelper = new TestCallbackHelperContainer(mTab.getWebContents());
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        mTestServer = sActivityTestRule.getTestServer();
     }
 
     /** Verifies that the form resubmission warning is not displayed upon first POST navigation. */
@@ -151,7 +149,8 @@ public class RepostFormWarningTest {
         waitForRepostFormWarningDialog();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> mActivityTestRule.getActivity().getCurrentTabModel().closeTab(mTab));
+                (Runnable) ()
+                        -> sActivityTestRule.getActivity().getCurrentTabModel().closeTab(mTab));
 
         waitForNoReportFormWarningDialog();
     }
@@ -159,36 +158,26 @@ public class RepostFormWarningTest {
     private PropertyModel getCurrentModalDialog() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
-                        -> mActivityTestRule.getActivity()
+                        -> sActivityTestRule.getActivity()
                                    .getModalDialogManager()
                                    .getCurrentDialogForTest());
     }
 
     private void waitForNoReportFormWarningDialog() {
-        CriteriaHelper.pollUiThread(
-                new Criteria("Form resubmission dialog not dismissed correctly") {
-                    @Override
-                    public boolean isSatisfied() {
-                        return getCurrentModalDialog() == null;
-                    }
-                });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Form resubmission dialog not dismissed correctly",
+                    getCurrentModalDialog(), Matchers.nullValue());
+        });
     }
 
     private PropertyModel waitForRepostFormWarningDialog() {
-        CriteriaHelper.pollUiThread(new Criteria("Form resubmission warning not shown") {
-            @Override
-            public boolean isSatisfied() {
-                PropertyModel dialogModel = getCurrentModalDialog();
-                if (dialogModel == null) {
-                    updateFailureReason("No modal dialog shown");
-                    return false;
-                }
-
-                updateFailureReason("Modal dialog is not a HTTP post dialog");
-                return TextUtils.equals(
-                        mActivityTestRule.getActivity().getString(R.string.http_post_warning_title),
-                        dialogModel.get(ModalDialogProperties.TITLE));
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            PropertyModel dialogModel = getCurrentModalDialog();
+            Criteria.checkThat("No modal dialog shown", dialogModel, Matchers.notNullValue());
+            Criteria.checkThat("Modal dialog is not a HTTP post dialog",
+                    dialogModel.get(ModalDialogProperties.TITLE),
+                    Matchers.is(sActivityTestRule.getActivity().getString(
+                            R.string.http_post_warning_title)));
         });
         return getCurrentModalDialog();
     }

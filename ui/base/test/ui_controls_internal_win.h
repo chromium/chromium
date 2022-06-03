@@ -20,7 +20,7 @@ bool SendKeyPressImpl(HWND hwnd,
                       bool shift,
                       bool alt,
                       base::OnceClosure task);
-bool SendMouseMoveImpl(long screen_x, long screen_y, base::OnceClosure task);
+bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task);
 bool SendMouseEventsImpl(MouseButton type,
                          int button_state,
                          base::OnceClosure task,

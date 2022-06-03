@@ -4,13 +4,16 @@
 
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 
-#include "third_party/blink/public/platform/web_size.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 
 namespace blink {
 
-WebMediaPlayer::LoadTiming
-EmptyWebMediaPlayer::Load(LoadType, const WebMediaPlayerSource&, CorsMode) {
+WebMediaPlayer::LoadTiming EmptyWebMediaPlayer::Load(
+    LoadType,
+    const WebMediaPlayerSource&,
+    CorsMode,
+    bool is_cache_disabled) {
   return LoadTiming::kImmediate;
 }
 
@@ -22,16 +25,20 @@ WebTimeRanges EmptyWebMediaPlayer::Seekable() const {
   return WebTimeRanges();
 }
 
-WebSize EmptyWebMediaPlayer::NaturalSize() const {
-  return WebSize(0, 0);
+gfx::Size EmptyWebMediaPlayer::NaturalSize() const {
+  return gfx::Size();
 }
 
-WebSize EmptyWebMediaPlayer::VisibleRect() const {
-  return WebSize();
+gfx::Size EmptyWebMediaPlayer::VisibleSize() const {
+  return gfx::Size();
 }
 
 WebString EmptyWebMediaPlayer::GetErrorMessage() const {
   return WebString();
+}
+
+scoped_refptr<media::VideoFrame> EmptyWebMediaPlayer::GetCurrentFrame() {
+  return nullptr;
 }
 
 }  // namespace blink

@@ -4,8 +4,10 @@
 
 #include "cc/paint/paint_cache.h"
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
 namespace cc {
@@ -21,6 +23,8 @@ void EraseFromMap(T* map, size_t n, const volatile PaintCacheId* ids) {
 
 }  // namespace
 
+constexpr size_t ClientPaintCache::kNoCachingBudget;
+
 ClientPaintCache::ClientPaintCache(size_t max_budget_bytes)
     : cache_map_(CacheMap::NO_AUTO_EVICT), max_budget_(max_budget_bytes) {}
 ClientPaintCache::~ClientPaintCache() = default;
@@ -32,6 +36,8 @@ bool ClientPaintCache::Get(PaintCacheDataType type, PaintCacheId id) {
 void ClientPaintCache::Put(PaintCacheDataType type,
                            PaintCacheId id,
                            size_t size) {
+  if (max_budget_ == kNoCachingBudget)
+    return;
   auto key = std::make_pair(type, id);
   DCHECK(cache_map_.Peek(key) == cache_map_.end());
 

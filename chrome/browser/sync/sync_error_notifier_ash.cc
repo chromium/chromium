@@ -5,13 +5,10 @@
 #include "chrome/browser/sync/sync_error_notifier_ash.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,8 +22,10 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,6 +38,7 @@ namespace {
 const char kProfileSyncNotificationId[] = "chrome://settings/sync/";
 
 struct BubbleViewParameters {
+  int title_id;
   int message_id;
   base::RepeatingClosure click_action;
 };
@@ -57,14 +57,24 @@ void ShowSyncSetup(Profile* profile) {
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  sync_ui_util::OpenTabForSyncKeyRetrieval(displayer.browser());
+  OpenTabForSyncKeyRetrieval(
+      displayer.browser(),
+      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+}
+
+void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  OpenTabForSyncKeyRecoverabilityDegraded(
+      displayer.browser(),
+      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 BubbleViewParameters GetBubbleViewParameters(
     Profile* profile,
     syncer::SyncService* sync_service) {
-  if (sync_ui_util::ShouldShowPassphraseError(sync_service)) {
+  if (ShouldShowSyncPassphraseError(sync_service)) {
     BubbleViewParameters params;
+    params.title_id = IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE;
     params.message_id = IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
     // |profile| is guaranteed to outlive the callback because the ownership of
     // the notification gets transferred to NotificationDisplayService, which is
@@ -74,16 +84,34 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  DCHECK(sync_ui_util::ShouldShowSyncKeysMissingError(sync_service));
+  if (ShouldShowSyncKeysMissingError(sync_service, profile->GetPrefs())) {
+    BubbleViewParameters params;
+    params.title_id =
+        sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+            ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
+            : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE;
+    params.message_id =
+        sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+            ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
+            : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+
+    params.click_action = base::BindRepeating(&TriggerSyncKeyRetrieval,
+                                              base::Unretained(profile));
+    return params;
+  }
+
+  DCHECK(ShouldShowTrustedVaultDegradedRecoverabilityError(
+      sync_service, profile->GetPrefs()));
 
   BubbleViewParameters params;
+  params.title_id = IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE;
   params.message_id =
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-          ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
-          : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+          ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
+          : IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
 
-  params.click_action =
-      base::BindRepeating(&TriggerSyncKeyRetrieval, base::Unretained(profile));
+  params.click_action = base::BindRepeating(
+      &TriggerSyncRecoverabilityDegradedFix, base::Unretained(profile));
   return params;
 }
 
@@ -112,11 +140,11 @@ void SyncErrorNotifier::Shutdown() {
 void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   DCHECK_EQ(service, sync_service_);
 
-  // TODO(crbug.com/1019687): A sync error should also be prompted for
-  // sync_ui_util::ShouldShowSyncKeysMissingError().
   const bool should_display_notification =
-      sync_ui_util::ShouldShowPassphraseError(sync_service_) ||
-      sync_ui_util::ShouldShowSyncKeysMissingError(sync_service_);
+      ShouldShowSyncPassphraseError(sync_service_) ||
+      ShouldShowSyncKeysMissingError(service, profile_->GetPrefs()) ||
+      ShouldShowTrustedVaultDegradedRecoverabilityError(service,
+                                                        profile_->GetPrefs());
 
   if (should_display_notification == notification_displayed_) {
     return;
@@ -128,17 +156,6 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
     display_service->Close(NotificationHandler::Type::TRANSIENT,
                            notification_id_);
     return;
-  }
-
-  if (user_manager::UserManager::IsInitialized()) {
-    chromeos::UserFlow* user_flow =
-        chromeos::ChromeUserManager::Get()->GetCurrentUserFlow();
-
-    // Check whether Chrome OS user flow allows launching browser.
-    // Example: Supervised user creation flow which handles token invalidation
-    // itself and notifications should be suppressed. http://crbug.com/359045
-    if (!user_flow->ShouldLaunchBrowser())
-      return;
   }
 
   // Error state just got triggered. There shouldn't be previous notification.
@@ -160,14 +177,13 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE),
-          l10n_util::GetStringUTF16(parameters.message_id),
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
+          l10n_util::GetStringUTF16(parameters.title_id),
+          l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
           GURL(notification_id_), notifier_id,
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               parameters.click_action),
-          ash::kNotificationWarningIcon,
+          chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   display_service->Display(NotificationHandler::Type::TRANSIENT, *notification,

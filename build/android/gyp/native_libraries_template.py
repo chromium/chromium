@@ -7,7 +7,7 @@ NATIVE_LIBRARIES_TEMPLATE = """\
 //     build/android/gyp/write_native_libraries_java.py
 // Please do not change its content.
 
-package org.chromium.base.library_loader;
+package org.chromium.build;
 
 public class NativeLibraries {{
     public static final int CPU_FAMILY_UNKNOWN = 0;
@@ -18,7 +18,6 @@ public class NativeLibraries {{
     // Set to true to enable the use of the Chromium Linker.
     public static {MAYBE_FINAL}boolean sUseLinker{USE_LINKER};
     public static {MAYBE_FINAL}boolean sUseLibraryInZipFile{USE_LIBRARY_IN_ZIP_FILE};
-    public static {MAYBE_FINAL}boolean sEnableLinkerTests{ENABLE_LINKER_TESTS};
     public static {MAYBE_FINAL}boolean sUseModernLinker{USE_MODERN_LINKER};
 
     // This is the list of native libraries to be loaded (in the correct order)

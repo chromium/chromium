@@ -9,9 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -22,20 +20,22 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/color_chooser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/web_contents_sizer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_stream_request.h"
@@ -51,8 +51,12 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
+#endif
+
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -123,15 +127,23 @@ void ChromeAppDelegate::RelinquishKeepAliveAfterTimeout(
   // Resetting the ScopedKeepAlive may cause nested destruction of the
   // ChromeAppDelegate which also resets the ScopedKeepAlive. To avoid this,
   // move the ScopedKeepAlive out to here and let it fall out of scope.
-  if (chrome_app_delegate.get() && chrome_app_delegate->is_hidden_)
-    std::unique_ptr<ScopedKeepAlive>(
-        std::move(chrome_app_delegate->keep_alive_));
+  if (chrome_app_delegate.get() && chrome_app_delegate->is_hidden_) {
+    std::unique_ptr<ScopedKeepAlive> keep_alive =
+        std::move(chrome_app_delegate->keep_alive_);
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+        std::move(chrome_app_delegate->profile_keep_alive_);
+  }
 }
 
 class ChromeAppDelegate::NewWindowContentsDelegate
     : public content::WebContentsDelegate {
  public:
   NewWindowContentsDelegate() {}
+
+  NewWindowContentsDelegate(const NewWindowContentsDelegate&) = delete;
+  NewWindowContentsDelegate& operator=(const NewWindowContentsDelegate&) =
+      delete;
+
   ~NewWindowContentsDelegate() override {}
 
   void BecomeOwningDeletageOf(
@@ -146,8 +158,6 @@ class ChromeAppDelegate::NewWindowContentsDelegate
 
  private:
   std::vector<std::unique_ptr<content::WebContents>> owned_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewWindowContentsDelegate);
 };
 
 content::WebContents*
@@ -176,22 +186,24 @@ ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
     // tasks.
     scoped_refptr<shell_integration::DefaultBrowserWorker>
         check_if_default_browser_worker =
-            new shell_integration::DefaultBrowserWorker(
-                base::Bind(&OpenURLAfterCheckIsDefaultBrowser,
-                           base::Passed(&owned_source), params));
-    check_if_default_browser_worker->StartCheckIsDefault();
+            new shell_integration::DefaultBrowserWorker();
+    check_if_default_browser_worker->StartCheckIsDefault(base::BindOnce(
+        &OpenURLAfterCheckIsDefaultBrowser, std::move(owned_source), params));
   }
-  return NULL;
+  return nullptr;
 }
 
-ChromeAppDelegate::ChromeAppDelegate(bool keep_alive)
+ChromeAppDelegate::ChromeAppDelegate(Profile* profile, bool keep_alive)
     : has_been_shown_(false),
       is_hidden_(true),
       for_lock_screen_app_(false),
+      profile_(profile),
       new_window_contents_delegate_(new NewWindowContentsDelegate()) {
   if (keep_alive) {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kAppWindow);
   }
   registrar_.Add(this,
                  chrome::NOTIFICATION_APP_TERMINATING,
@@ -218,19 +230,25 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 
+#if defined(OS_CHROMEOS)
+  policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+#endif
+
   zoom::ZoomController::CreateForWebContents(web_contents);
 }
 
-void ChromeAppDelegate::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  if (!chrome::IsRunningInForcedAppMode()) {
+void ChromeAppDelegate::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  // Only do this for the primary main frame.
+  if (!chrome::IsRunningInForcedAppMode() &&
+      frame_host->IsInPrimaryMainFrame()) {
     // Due to a bug in the way apps reacted to default zoom changes, some apps
     // can incorrectly have host level zoom settings. These aren't wanted as
     // apps cannot be zoomed, so are removed. This should be removed if apps
     // can be made to zoom again.
     // See http://crbug.com/446759 for more details.
     content::WebContents* web_contents =
-        content::WebContents::FromRenderViewHost(render_view_host);
+        content::WebContents::FromRenderFrameHost(frame_host);
     DCHECK(web_contents);
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(web_contents);
@@ -241,7 +259,7 @@ void ChromeAppDelegate::RenderViewCreated(
 
 void ChromeAppDelegate::ResizeWebContents(content::WebContents* web_contents,
                                           const gfx::Size& size) {
-  ::ResizeWebContents(web_contents, gfx::Rect(size));
+  web_contents->Resize(gfx::Rect(size));
 }
 
 content::WebContents* ChromeAppDelegate::OpenURLFromTab(
@@ -254,6 +272,7 @@ content::WebContents* ChromeAppDelegate::OpenURLFromTab(
 void ChromeAppDelegate::AddNewContents(
     content::BrowserContext* context,
     std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture) {
@@ -274,19 +293,13 @@ void ChromeAppDelegate::AddNewContents(
   disposition = disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB
                     ? disposition
                     : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  chrome::AddWebContents(displayer.browser(), NULL, std::move(new_contents),
-                         disposition, initial_rect);
-}
-
-content::ColorChooser* ChromeAppDelegate::ShowColorChooser(
-    content::WebContents* web_contents,
-    SkColor initial_color) {
-  return chrome::ShowColorChooser(web_contents, initial_color);
+  chrome::AddWebContents(displayer.browser(), nullptr, std::move(new_contents),
+                         target_url, disposition, initial_rect);
 }
 
 void ChromeAppDelegate::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<content::FileSelectListener> listener,
+    scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
@@ -312,7 +325,7 @@ bool ChromeAppDelegate::CheckMediaAccessPermission(
 }
 
 int ChromeAppDelegate::PreferredIconSize() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use a size appropriate for the ash shelf (see ash::kShelfSize).
   return extension_misc::EXTENSION_ICON_MEDIUM;
 #else
@@ -340,24 +353,25 @@ bool ChromeAppDelegate::IsWebContentsVisible(
   return platform_util::IsVisible(web_contents->GetNativeView());
 }
 
-void ChromeAppDelegate::SetTerminatingCallback(const base::Closure& callback) {
-  terminating_callback_ = callback;
+void ChromeAppDelegate::SetTerminatingCallback(base::OnceClosure callback) {
+  terminating_callback_ = std::move(callback);
 }
 
 void ChromeAppDelegate::OnHide() {
   is_hidden_ = true;
   if (has_been_shown_) {
+    profile_keep_alive_.reset();
     keep_alive_.reset();
     return;
   }
 
   // Hold on to the keep alive for some time to give the app a chance to show
   // the window.
-  base::PostDelayedTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&ChromeAppDelegate::RelinquishKeepAliveAfterTimeout,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kAppWindowFirstShowTimeoutSeconds));
+      base::Seconds(kAppWindowFirstShowTimeoutSeconds));
 }
 
 void ChromeAppDelegate::OnShow() {
@@ -365,13 +379,15 @@ void ChromeAppDelegate::OnShow() {
   is_hidden_ = false;
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kAppWindow);
 }
 
 bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
                                   bool reverse) {
   if (!for_lock_screen_app_)
     return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return lock_screen_apps::StateController::Get()->HandleTakeFocus(web_contents,
                                                                    reverse);
 #else
@@ -396,5 +412,5 @@ void ChromeAppDelegate::Observe(int type,
                                 const content::NotificationDetails& details) {
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
   if (!terminating_callback_.is_null())
-    terminating_callback_.Run();
+    std::move(terminating_callback_).Run();
 }

@@ -5,12 +5,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/browser_interface_binders.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -30,6 +31,9 @@ class VibrationTest : public ContentBrowserTest,
         &VibrationTest::BindVibrationManager, base::Unretained(this)));
   }
 
+  VibrationTest(const VibrationTest&) = delete;
+  VibrationTest& operator=(const VibrationTest&) = delete;
+
   ~VibrationTest() override {
     OverrideVibrationManagerBinderForTesting(base::NullCallback());
   }
@@ -40,15 +44,13 @@ class VibrationTest : public ContentBrowserTest,
   }
 
  protected:
-  bool TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
+  void TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
 
-    bool result;
     RenderFrameHost* frame = shell()->web_contents()->GetMainFrame();
-    std::string script = "domAutomationController.send(navigator.vibrate(" +
-                         base::NumberToString(duration) + "))";
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(frame, script, &result));
-    return result;
+    std::string script =
+        "navigator.vibrate(" + base::NumberToString(duration) + ")";
+    EXPECT_TRUE(ExecJs(frame, script));
   }
 
   int64_t vibrate_milliseconds() { return vibrate_milliseconds_; }
@@ -65,8 +67,6 @@ class VibrationTest : public ContentBrowserTest,
   int64_t vibrate_milliseconds_ = -1;
   base::OnceClosure vibrate_done_;
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VibrationTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VibrationTest, Vibrate) {
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(VibrationTest, Vibrate) {
 
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "simple_page.html")));
   base::RunLoop run_loop;
-  ASSERT_TRUE(TriggerVibrate(1234, run_loop.QuitClosure()));
+  TriggerVibrate(1234, run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_EQ(1234, vibrate_milliseconds());

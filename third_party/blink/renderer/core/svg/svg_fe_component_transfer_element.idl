@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEComponentTransferElement
 
-interface SVGFEComponentTransferElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEComponentTransferElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
 };
 

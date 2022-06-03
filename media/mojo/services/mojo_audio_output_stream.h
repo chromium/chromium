@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MOJO_AUDIO_OUTPUT_STREAM_H_
 
 #include <memory>
-#include <string>
 
 #include "base/sequence_checker.h"
 #include "media/audio/audio_output_delegate.h"
@@ -41,6 +40,9 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStream
                         StreamCreatedCallback stream_created_callback,
                         DeleterCallback deleter_callback);
 
+  MojoAudioOutputStream(const MojoAudioOutputStream&) = delete;
+  MojoAudioOutputStream& operator=(const MojoAudioOutputStream&) = delete;
+
   ~MojoAudioOutputStream() override;
 
  private:
@@ -66,8 +68,6 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStream
   mojo::Receiver<AudioOutputStream> receiver_{this};
   std::unique_ptr<AudioOutputDelegate> delegate_;
   base::WeakPtrFactory<MojoAudioOutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputStream);
 };
 
 }  // namespace media

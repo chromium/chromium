@@ -16,6 +16,15 @@ source_set("signin") {
     "authentication_service_delegate.h",
     "authentication_service_factory.h",
     "authentication_service_factory.mm",
+    "authentication_service_observer.h",
+    "authentication_service_observer_bridge.h",
+    "authentication_service_observer_bridge.mm",
+    "chrome_account_manager_service.h",
+    "chrome_account_manager_service.mm",
+    "chrome_account_manager_service_factory.h",
+    "chrome_account_manager_service_factory.mm",
+    "chrome_account_manager_service_observer_bridge.h",
+    "chrome_account_manager_service_observer_bridge.mm",
     "chrome_identity_service_observer_bridge.h",
     "chrome_identity_service_observer_bridge.mm",
     "constants.h",
@@ -28,8 +37,6 @@ source_set("signin") {
     "gaia_auth_fetcher_ios_bridge.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge.h",
     "gaia_auth_fetcher_ios_ns_url_session_bridge.mm",
-    "gaia_auth_fetcher_ios_wk_webview_bridge.h",
-    "gaia_auth_fetcher_ios_wk_webview_bridge.mm",
     "identity_manager_factory.cc",
     "identity_manager_factory.h",
     "identity_manager_factory_observer.h",
@@ -37,6 +44,10 @@ source_set("signin") {
     "ios_chrome_signin_client.mm",
     "ios_chrome_signin_status_metrics_provider_delegate.cc",
     "ios_chrome_signin_status_metrics_provider_delegate.h",
+    "pattern_account_restriction.h",
+    "pattern_account_restriction.mm",
+    "resized_avatar_cache.h",
+    "resized_avatar_cache.mm",
     "signin_browser_state_info_updater.h",
     "signin_browser_state_info_updater.mm",
     "signin_browser_state_info_updater_factory.h",
@@ -47,9 +58,10 @@ source_set("signin") {
     "signin_error_controller_factory.h",
     "signin_util.h",
     "signin_util.mm",
+    "user_approved_account_list_manager.h",
+    "user_approved_account_list_manager.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
@@ -73,27 +85,21 @@ source_set("signin") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/reading_list:reading_list_remover",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/common",
     "//ios/web/common:web_view_creation_util",
     "//net",
     "//url",
-  ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [
-    "//base",
   ]
 }
 
@@ -111,7 +117,6 @@ source_set("test_support") {
     "//base",
     "//components/image_fetcher/core:test_support",
     "//components/keyed_service/core",
-    "//components/signin/public/base",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/browser_state",
@@ -119,6 +124,8 @@ source_set("test_support") {
     "//ios/chrome/browser/sync",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:constants",
+    "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }
 
@@ -126,19 +133,25 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "authentication_service_observer_bridge_unittest.mm",
     "authentication_service_unittest.mm",
+    "chrome_account_manager_service_observer_bridge_unittest.mm",
+    "chrome_account_manager_service_unittest.mm",
     "chrome_identity_service_observer_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
+    "pattern_account_restriction_unittest.mm",
+    "resized_avatar_cache_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
+    "user_approved_account_list_manager_unittest.mm",
   ]
   deps = [
-    ":feature_flags",
     ":signin",
     ":test_support",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -158,6 +171,7 @@ source_set("unit_tests") {
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/common",
     "//ios/web/public/test",

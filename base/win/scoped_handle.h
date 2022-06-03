@@ -8,11 +8,13 @@
 #include "base/win/windows_types.h"
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 
 // TODO(rvargas): remove this with the rest of the verifier.
 #if defined(COMPILER_MSVC)
@@ -20,7 +22,7 @@
 #define BASE_WIN_GET_CALLER _ReturnAddress()
 #elif defined(COMPILER_GCC)
 #define BASE_WIN_GET_CALLER \
-  __builtin_extract_return_addr(\ __builtin_return_address(0))
+  __builtin_extract_return_addr(__builtin_return_address(0))
 #endif
 
 namespace base {
@@ -38,7 +40,7 @@ namespace win {
 template <class Traits, class Verifier>
 class GenericScopedHandle {
  public:
-  typedef typename Traits::Handle Handle;
+  using Handle = typename Traits::Handle;
 
   GenericScopedHandle() : handle_(Traits::NullHandle()) {}
 
@@ -50,6 +52,9 @@ class GenericScopedHandle {
       : handle_(Traits::NullHandle()) {
     Set(other.Take());
   }
+
+  GenericScopedHandle(const GenericScopedHandle&) = delete;
+  GenericScopedHandle& operator=(const GenericScopedHandle&) = delete;
 
   ~GenericScopedHandle() { Close(); }
 
@@ -101,11 +106,9 @@ class GenericScopedHandle {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, ActiveVerifierWrongOwner);
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, ActiveVerifierUntrackedHandle);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierWrongOwner);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierUntrackedHandle);
   Handle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericScopedHandle);
 };
 
 #undef BASE_WIN_GET_CALLER
@@ -113,7 +116,11 @@ class GenericScopedHandle {
 // The traits class for Win32 handles that can be closed via CloseHandle() API.
 class HandleTraits {
  public:
-  typedef HANDLE Handle;
+  using Handle = HANDLE;
+
+  HandleTraits() = delete;
+  HandleTraits(const HandleTraits&) = delete;
+  HandleTraits& operator=(const HandleTraits&) = delete;
 
   // Closes the handle.
   static bool BASE_EXPORT CloseHandle(HANDLE handle);
@@ -125,15 +132,16 @@ class HandleTraits {
 
   // Returns NULL handle value.
   static HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(HandleTraits);
 };
 
 // Do-nothing verifier.
 class DummyVerifierTraits {
  public:
-  typedef HANDLE Handle;
+  using Handle = HANDLE;
+
+  DummyVerifierTraits() = delete;
+  DummyVerifierTraits(const DummyVerifierTraits&) = delete;
+  DummyVerifierTraits& operator=(const DummyVerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -143,15 +151,16 @@ class DummyVerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2) {}
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DummyVerifierTraits);
 };
 
 // Performs actual run-time tracking.
 class BASE_EXPORT VerifierTraits {
  public:
-  typedef HANDLE Handle;
+  using Handle = HANDLE;
+
+  VerifierTraits() = delete;
+  VerifierTraits(const VerifierTraits&) = delete;
+  VerifierTraits& operator=(const VerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -161,12 +170,17 @@ class BASE_EXPORT VerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VerifierTraits);
 };
 
-typedef GenericScopedHandle<HandleTraits, VerifierTraits> ScopedHandle;
+using UncheckedScopedHandle =
+    GenericScopedHandle<HandleTraits, DummyVerifierTraits>;
+using CheckedScopedHandle = GenericScopedHandle<HandleTraits, VerifierTraits>;
+
+#if DCHECK_IS_ON() && !defined(ARCH_CPU_64_BITS)
+using ScopedHandle = CheckedScopedHandle;
+#else
+using ScopedHandle = UncheckedScopedHandle;
+#endif
 
 // This function may be called by the embedder to disable the use of
 // VerifierTraits at runtime. It has no effect if DummyVerifierTraits is used

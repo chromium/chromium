@@ -11,10 +11,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
@@ -33,7 +32,6 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/url_request/url_request_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -57,7 +55,8 @@ void VideoInputDevicesEnumerated(base::OnceClosure quit_closure,
                                  const url::Origin& security_origin,
                                  blink::WebMediaDeviceInfoArray* out,
                                  const MediaDeviceEnumeration& enumeration) {
-  for (const auto& info : enumeration[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT]) {
+  for (const auto& info : enumeration[static_cast<size_t>(
+           blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
     std::string device_id = MediaStreamManager::GetHMACForMediaDeviceID(
         salt, security_origin, info.device_id);
     out->push_back(
@@ -69,9 +68,9 @@ void VideoInputDevicesEnumerated(base::OnceClosure quit_closure,
 // Id used to identify the capture session between renderer and
 // video_capture_host. This is an arbitrary value.
 const base::UnguessableToken& DeviceId() {
-  static const base::NoDestructor<base::UnguessableToken> device_id(
+  static const base::UnguessableToken device_id(
       base::UnguessableToken::Deserialize(555, 555));
-  return *device_id;
+  return device_id;
 }
 
 }  // namespace
@@ -100,6 +99,10 @@ class VideoCaptureTest : public testing::Test,
         audio_system_(
             std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
         task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+  VideoCaptureTest(const VideoCaptureTest&) = delete;
+  VideoCaptureTest& operator=(const VideoCaptureTest&) = delete;
+
   ~VideoCaptureTest() override { audio_manager_->Shutdown(); }
 
   void SetUp() override {
@@ -112,8 +115,8 @@ class VideoCaptureTest : public testing::Test,
         &VideoCaptureTest::CreateFakeUI, base::Unretained(this)));
 
     // Create a Host and connect it to a simulated IPC channel.
-    host_.reset(new VideoCaptureHost(0 /* render_process_id */,
-                                     media_stream_manager_.get()));
+    host_ = std::make_unique<VideoCaptureHost>(0 /* render_process_id */,
+                                               media_stream_manager_.get());
 
     OpenSession();
   }
@@ -144,7 +147,8 @@ class VideoCaptureTest : public testing::Test,
     {
       base::RunLoop run_loop;
       MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-      devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] = true;
+      devices_to_enumerate[static_cast<size_t>(
+          blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
       MediaDeviceSaltAndOrigin salt_and_origin =
           GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
@@ -188,9 +192,10 @@ class VideoCaptureTest : public testing::Test,
     DoOnNewBuffer(buffer_id);
   }
   MOCK_METHOD1(DoOnNewBuffer, void(int32_t));
-  void OnBufferReady(int32_t buffer_id,
-                     media::mojom::VideoFrameInfoPtr info) override {
-    DoOnBufferReady(buffer_id);
+  void OnBufferReady(
+      media::mojom::ReadyBufferPtr buffer,
+      std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) override {
+    DoOnBufferReady(buffer->buffer_id);
   }
   MOCK_METHOD1(DoOnBufferReady, void(int32_t));
   MOCK_METHOD1(OnBufferDestroyed, void(int32_t));
@@ -303,7 +308,7 @@ class VideoCaptureTest : public testing::Test,
   }
 
   // |media_stream_manager_| needs to outlive |task_environment_| because it is
-  // a MessageLoopCurrent::DestructionObserver.
+  // a CurrentThread::DestructionObserver.
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
   const content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<media::AudioManager> audio_manager_;
@@ -316,8 +321,6 @@ class VideoCaptureTest : public testing::Test,
 
   std::unique_ptr<VideoCaptureHost> host_;
   mojo::Receiver<media::mojom::VideoCaptureObserver> observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureTest);
 };
 
 // Construct and destruct all objects. This is a non trivial sequence.
@@ -346,7 +349,7 @@ TEST_F(VideoCaptureTest, StartAndCaptureAndError) {
   StartCapture();
   WaitForOneCapturedBuffer();
   SimulateError();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
 }
 
 TEST_F(VideoCaptureTest, StartAndPauseAndResumeAndStop) {

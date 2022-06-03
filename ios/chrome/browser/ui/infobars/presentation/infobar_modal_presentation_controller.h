@@ -12,8 +12,18 @@
 // PresentationController for the ModalInfobar.
 @interface InfobarModalPresentationController : UIPresentationController
 
-// Delegate used to position the ModalInfobar.
-@property(nonatomic, assign) id<InfobarModalPositioner> modalPositioner;
+// Designated initializer. |modalPositioner| is used to position the
+// ModalInfobar, it can't be nil.
+- (instancetype)
+    initWithPresentedViewController:(UIViewController*)presentedViewController
+           presentingViewController:(UIViewController*)presentingViewController
+                    modalPositioner:(id<InfobarModalPositioner>)modalPositioner
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)
+    initWithPresentedViewController:(UIViewController*)presentedViewController
+           presentingViewController:(UIViewController*)presentingViewController
+    NS_UNAVAILABLE;
 
 @end
 

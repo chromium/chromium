@@ -27,11 +27,35 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
     return input.flags;
   }
 
+  static base::TimeTicks available_timestamp(
+      const gfx::PresentationFeedback& input) {
+    return input.available_timestamp;
+  }
+
+  static base::TimeTicks ready_timestamp(
+      const gfx::PresentationFeedback& input) {
+    return input.ready_timestamp;
+  }
+
+  static base::TimeTicks latch_timestamp(
+      const gfx::PresentationFeedback& input) {
+    return input.latch_timestamp;
+  }
+
+  static base::TimeTicks writes_done_timestamp(
+      const gfx::PresentationFeedback& input) {
+    return input.writes_done_timestamp;
+  }
+
   static bool Read(gfx::mojom::PresentationFeedbackDataView data,
                    gfx::PresentationFeedback* out) {
     out->flags = data.flags();
     return data.ReadTimestamp(&out->timestamp) &&
-           data.ReadInterval(&out->interval);
+           data.ReadInterval(&out->interval) &&
+           data.ReadAvailableTimestamp(&out->available_timestamp) &&
+           data.ReadReadyTimestamp(&out->ready_timestamp) &&
+           data.ReadLatchTimestamp(&out->latch_timestamp) &&
+           data.ReadWritesDoneTimestamp(&out->writes_done_timestamp);
   }
 };
 

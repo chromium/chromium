@@ -14,7 +14,7 @@ CallbackFunctionBase::CallbackFunctionBase(
   DCHECK(!callback_function.IsEmpty());
 
   v8::Isolate* isolate = callback_function->GetIsolate();
-  callback_function_.Set(isolate, callback_function);
+  callback_function_.Reset(isolate, callback_function);
 
   incumbent_script_state_ = ScriptState::From(isolate->GetIncumbentContext());
 
@@ -30,15 +30,15 @@ CallbackFunctionBase::CallbackFunctionBase(
   }
 }
 
-void CallbackFunctionBase::Trace(Visitor* visitor) {
+void CallbackFunctionBase::Trace(Visitor* visitor) const {
   visitor->Trace(callback_function_);
   visitor->Trace(callback_relevant_script_state_);
   visitor->Trace(incumbent_script_state_);
 }
 
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
-    const char* interface,
-    const char* operation) {
+    const char* interface_name,
+    const char* operation_name) {
   if (callback_relevant_script_state_)
     return callback_relevant_script_state_;
 
@@ -46,8 +46,9 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
   v8::TryCatch try_catch(GetIsolate());
   try_catch.SetVerbose(true);
-  ExceptionState exception_state(
-      GetIsolate(), ExceptionState::kExecutionContext, interface, operation);
+  ExceptionState exception_state(GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 interface_name, operation_name);
   exception_state.ThrowSecurityError(
       "An invocation of the provided callback failed due to cross origin "
       "access.");
@@ -55,15 +56,16 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
 }
 
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
-    const char* interface,
-    const char* operation) {
+    const char* interface_name,
+    const char* operation_name) {
   if (callback_relevant_script_state_)
     return callback_relevant_script_state_;
 
   // Throw a SecurityError due to a cross origin callback object.
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
-  ExceptionState exception_state(
-      GetIsolate(), ExceptionState::kExecutionContext, interface, operation);
+  ExceptionState exception_state(GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 interface_name, operation_name);
   exception_state.ThrowSecurityError(
       "An invocation of the provided callback failed due to cross origin "
       "access.");
@@ -75,7 +77,7 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
   if (!callback_relevant_script_state_)
     return;
 
-  // https://heycam.github.io/webidl/#es-invoking-callback-functions
+  // https://webidl.spec.whatwg.org/#es-invoking-callback-functions
   // step 8: Prepare to run script with relevant settings.
   ScriptState::Scope callback_relevant_context_scope(
       callback_relevant_script_state_);

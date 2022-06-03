@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_MARK_OPERATION_DONE_TASK_H_
 
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -38,10 +37,11 @@ class MarkOperationDoneTask : public Task {
   MarkOperationDoneTask(PrefetchDispatcher* prefetch_dispatcher,
                         PrefetchStore* prefetch_store,
                         const std::string& operation_name);
-  ~MarkOperationDoneTask() override;
 
-  // Task implementation.
-  void Run() override;
+  MarkOperationDoneTask(const MarkOperationDoneTask&) = delete;
+  MarkOperationDoneTask& operator=(const MarkOperationDoneTask&) = delete;
+
+  ~MarkOperationDoneTask() override;
 
   StoreResult store_result() const { return std::get<0>(result_); }
 
@@ -50,6 +50,8 @@ class MarkOperationDoneTask : public Task {
   int64_t change_count() const { return std::get<1>(result_); }
 
  private:
+  // Task implementation.
+  void Run() override;
   void MarkOperationDone(int updated_entry_count);
   void Done(TaskResult result);
 
@@ -59,8 +61,6 @@ class MarkOperationDoneTask : public Task {
   TaskResult result_ = std::make_pair(StoreResult::UNFINISHED, -1);
 
   base::WeakPtrFactory<MarkOperationDoneTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MarkOperationDoneTask);
 };
 
 }  // namespace offline_pages

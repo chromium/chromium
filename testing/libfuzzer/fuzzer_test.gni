@@ -14,6 +14,7 @@ import("//testing/test.gni")
 # - (required) sources - fuzzer test source files
 # - deps - test dependencies
 # - libs - Additional libraries to link.
+# - frameworks - Apple-only. Additional frameworks to link.
 # - additional_configs - additional configs to be used for compilation
 # - dict - a dictionary file for the fuzzer.
 # - environment_variables - certain whitelisted environment variables for the
@@ -24,6 +25,7 @@ import("//testing/test.gni")
 # - ubsan_options - UndefinedBehaviorSanitizer options.
 # - seed_corpus - a directory with seed corpus.
 # - seed_corpus_deps - dependencies for generating the seed corpus.
+# - grammar_options - defines a grammar used by a grammar based mutator.
 #
 # If use_libfuzzer gn flag is defined, then proper fuzzer would be build.
 # Without use_libfuzzer or use_afl a unit-test style binary would be built on
@@ -47,6 +49,9 @@ template("fuzzer_test") {
       test_data_deps += invoker.data_deps
     }
 
+    supporting_file_test_deps = []
+    supporting_file_test_data_deps = []
+
     if (defined(invoker.seed_corpus) || defined(invoker.seed_corpuses)) {
       assert(!(defined(invoker.seed_corpus) && defined(invoker.seed_corpuses)),
              "Do not use both seed_corpus and seed_corpuses for $target_name.")
@@ -61,6 +66,8 @@ template("fuzzer_test") {
 
       action(target_name + "_seed_corpus") {
         script = "//testing/libfuzzer/archive_corpus.py"
+
+        testonly = true
 
         args = [
           "--output",
@@ -77,33 +84,28 @@ template("fuzzer_test") {
           }
         }
 
-        outputs = [
-          out,
-        ]
+        outputs = [ out ]
 
         deps = [ "//testing/libfuzzer:seed_corpus" ] + seed_corpus_deps
       }
 
       if (archive_seed_corpus) {
-        test_deps += [ ":" + target_name + "_seed_corpus" ]
+        supporting_file_test_deps += [ ":" + target_name + "_seed_corpus" ]
       }
     }
 
     if (defined(invoker.dict) || defined(invoker.libfuzzer_options) ||
         defined(invoker.asan_options) || defined(invoker.msan_options) ||
         defined(invoker.ubsan_options) ||
-        defined(invoker.environment_variables)) {
+        defined(invoker.environment_variables) ||
+        defined(invoker.grammar_options)) {
       if (defined(invoker.dict)) {
         # Copy dictionary to output.
         copy(target_name + "_dict_copy") {
-          sources = [
-            invoker.dict,
-          ]
-          outputs = [
-            "$root_build_dir/" + target_name + ".dict",
-          ]
+          sources = [ invoker.dict ]
+          outputs = [ "$root_build_dir/" + target_name + ".dict" ]
         }
-        test_deps += [ ":" + target_name + "_dict_copy" ]
+        supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
       # Generate .options file.
@@ -148,14 +150,17 @@ template("fuzzer_test") {
           args += invoker.environment_variables
         }
 
-        outputs = [
-          "$root_build_dir/$config_file_name",
-        ]
+        if (defined(invoker.grammar_options)) {
+          args += [ "--grammar_options" ]
+          args += invoker.grammar_options
+        }
+
+        outputs = [ "$root_build_dir/$config_file_name" ]
       }
-      test_deps += [ ":" + config_file_name ]
+      supporting_file_test_deps += [ ":" + config_file_name ]
     }
 
-    if (use_fuzzing_engine) {
+    if (generate_fuzzer_owners) {
       # Generating owners files is slow, only enable when fuzzing engine is
       # used.
       owners_file_name = target_name + ".owners"
@@ -182,11 +187,68 @@ template("fuzzer_test") {
                   ] + _full_deps
         }
 
-        outputs = [
-          "$root_build_dir/$owners_file_name",
-        ]
+        outputs = [ "$root_build_dir/$owners_file_name" ]
       }
-      test_data_deps += [ ":" + owners_file_name ]
+      supporting_file_test_data_deps += [ ":" + owners_file_name ]
+    }
+
+    # Copy to executable folder and codesign for catalyst
+    if (is_ios) {
+      # iOS only supports fuzzer in catalyst environment.
+      assert(target_environment == "catalyst")
+
+      # Loop over two kinds of deps to codesign these in two |action_foreach|s.
+      # Use the "test_deps", "test_data_deps" as identifiers in for loop.
+      foreach(_deps_type_label,
+              [
+                "test_deps",
+                "test_data_deps",
+              ]) {
+        _dep_list = []
+        if (_deps_type_label == "test_deps") {
+          _dep_list = supporting_file_test_deps
+        } else {
+          _dep_list = supporting_file_test_data_deps
+        }
+        _files_to_sign = []
+        foreach(dep, _dep_list) {
+          _files_to_sign += get_target_outputs(dep)
+        }
+        if (_files_to_sign != []) {
+          _codesign_action_name =
+              target_name + "_codesign_supporting_files_" + _deps_type_label
+          action_foreach(_codesign_action_name) {
+            testonly = true
+            script = "//build/config/ios/codesign.py"
+            sources = _files_to_sign
+            _codesign_output_path =
+                "${root_build_dir}/codesign/{{source_file_part}}"
+            outputs = [ _codesign_output_path ]
+            args = [
+              "code-sign-file",
+              "--identity=" + ios_code_signing_identity,
+              "--output=" + rebase_path(_codesign_output_path, root_build_dir),
+              "{{source}}",
+            ]
+            deps = _dep_list
+          }
+          _bundle_data_name = target_name + "_bundle_data_" + _deps_type_label
+          bundle_data(_bundle_data_name) {
+            testonly = true
+            sources = get_target_outputs(":${_codesign_action_name}")
+            outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+            public_deps = [ ":${_codesign_action_name}" ]
+          }
+          if (_deps_type_label == "test_deps") {
+            test_deps += [ ":${_bundle_data_name}" ]
+          } else {
+            test_data_deps += [ ":${_bundle_data_name}" ]
+          }
+        }
+      }
+    } else {
+      test_deps += supporting_file_test_deps
+      test_data_deps += supporting_file_test_data_deps
     }
 
     test(target_name) {
@@ -199,6 +261,7 @@ template("fuzzer_test") {
                                "include_dirs",
                                "sources",
                                "libs",
+                               "frameworks",
                              ])
       deps = test_deps
       data_deps = test_data_deps
@@ -215,6 +278,11 @@ template("fuzzer_test") {
 
       if (defined(invoker.generated_sources)) {
         sources += invoker.generated_sources
+      }
+
+      if (is_ios) {
+        info_plist =
+            "//testing/libfuzzer/fuzzer_support_ios/libfuzzer-Info.plist"
       }
 
       if (is_mac) {

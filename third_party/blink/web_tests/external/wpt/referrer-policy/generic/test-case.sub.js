@@ -1,10 +1,28 @@
-// NOTE: This method only strips the fragment and is not in accordance to the
-// recommended draft specification:
-// https://w3c.github.io/webappsec/specs/referrer-policy/#null
-// TODO(kristijanburnik): Implement this helper as defined by spec once added
-// scenarios for URLs containing username/password/etc.
-function stripUrlForUseAsReferrer(url) {
-  return url.replace(/#.*$/, "");
+// https://w3c.github.io/webappsec-referrer-policy/#strip-url
+function stripUrlForUseAsReferrer(url, originOnly) {
+  // Step 2. If url’s scheme is a local scheme, then return no referrer.
+  const parsedUrl = new URL(url);
+
+  if (["about:", "blob:", "data:"].includes(parsedUrl.protocol))
+    return undefined;
+
+  // Step 3. Set url’s username to the empty string.
+  parsedUrl.username = '';
+
+  // Step 4. Set url’s password to null.
+  parsedUrl.password = '';
+
+  // Step 5. Set url’s fragment to null.
+  parsedUrl.hash = '';
+
+  //  Step 6. If the origin-only flag is true, then:
+  if (originOnly) {
+    // Step 6.1. Set url’s path to null.
+    parsedUrl.pathname = '';
+    // Step 6.2. Set url’s query to null.
+    parsedUrl.search = '';
+  }
+  return parsedUrl.href;
 }
 
 function invokeScenario(scenario) {
@@ -22,111 +40,88 @@ function invokeScenario(scenario) {
   return invokeRequest(subresource, scenario.source_context_list);
 }
 
-function TestCase(scenario, testDescription, sanityChecker) {
-  // This check is A NOOP in release.
-  sanityChecker.checkScenario(scenario);
+const referrerUrlResolver = {
+  // The spec allows UAs to "enforce arbitrary policy considerations in the
+  // interests of minimizing data leakage"; to start to vaguely approximate
+  // this, we allow stronger policies to be used instead of what's specificed.
+  "omitted": function(sourceUrl) {
+    return [undefined];
+  },
+  "origin": function(sourceUrl) {
+    return [stripUrlForUseAsReferrer(sourceUrl, true),
+            undefined];
+  },
+  "stripped-referrer": function(sourceUrl) {
+    return [stripUrlForUseAsReferrer(sourceUrl, false),
+            stripUrlForUseAsReferrer(sourceUrl, true),
+            undefined];
+  }
+};
 
-  const referrerUrlResolver = {
-    "omitted": function(sourceUrl) {
-      return undefined;
-    },
-    "origin": function(sourceUrl) {
-      return new URL(sourceUrl).origin + "/";
-    },
-    "stripped-referrer": function(sourceUrl) {
-      return stripUrlForUseAsReferrer(sourceUrl);
-    }
-  };
+function checkResult(scenario, expectation, result) {
+// https://w3c.github.io/webappsec-referrer-policy/#determine-requests-referrer
+  let referrerSource = result.sourceContextUrl;
+  const sentFromSrcdoc = scenario.source_context_list.length > 0 &&
+      scenario.source_context_list[scenario.source_context_list.length - 1]
+      .sourceContextType === 'srcdoc';
+  if (sentFromSrcdoc) {
+    // Step 3. While document is an iframe srcdoc document, let document be
+    // document's browsing context's browsing context container's node
+    // document. [spec text]
 
-  const checkResult = (expectation, result) => {
-    // https://w3c.github.io/webappsec-referrer-policy/#determine-requests-referrer
-    let referrerSource = result.sourceContextUrl;
-    const sentFromSrcdoc = scenario.source_context_list.length > 0 &&
-        scenario.source_context_list[scenario.source_context_list.length - 1]
-        .sourceContextType === 'srcdoc';
-    if (sentFromSrcdoc) {
-      // Step 3. While document is an iframe srcdoc document, let document be
-      // document's browsing context's browsing context container's node
-      // document. [spec text]
+    // Workaround for srcdoc cases. Currently we only test <iframe srcdoc>
+    // inside the top-level Document, so |document| in the spec here is
+    // the top-level Document.
+    // This doesn't work if e.g. we test <iframe srcdoc> inside another
+    // external <iframe>.
+    referrerSource = location.toString();
+  }
+  const possibleReferrerUrls =
+    referrerUrlResolver[expectation](referrerSource);
 
-      // Workaround for srcdoc cases. Currently we only test <iframe srcdoc>
-      // inside the top-level Document, so |document| in the spec here is
-      // the top-level Document.
-      // This doesn't work if e.g. we test <iframe srcdoc> inside another
-      // external <iframe>.
-      referrerSource = location.toString();
-    }
-    const expectedReferrerUrl =
-      referrerUrlResolver[expectation](referrerSource);
+  // Check the reported URL.
+  assert_in_array(result.referrer,
+                  possibleReferrerUrls,
+                  "document.referrer");
+  assert_in_array(result.headers.referer,
+                  possibleReferrerUrls,
+                  "HTTP Referer header");
+}
 
-    // Check the reported URL.
-    assert_equals(result.referrer,
-                  expectedReferrerUrl,
-                  "Reported Referrer URL is '" +
-                  expectation + "'.");
-    assert_equals(result.headers.referer,
-                  expectedReferrerUrl,
-                  "Reported Referrer URL from HTTP header is '" +
-                  expectedReferrerUrl + "'");
-  };
+function runLengthTest(scenario, urlLength, expectation, testDescription) {
+  // `Referer` headers with length over 4k are culled down to an origin, so,
+  // let's test around that boundary for tests that would otherwise return
+  // the complete URL.
+  history.pushState(null, null, "/");
+  history.replaceState(null, null,
+      "A".repeat(urlLength - location.href.length));
 
-  function runTest() {
-    function historyBackPromise(t, scenario) {
-      history.back();
-      return new Promise(resolve => {
-          // Wait for completion of `history.back()` by listening the
-          // popstate events that are fired near the end of
-          // `history.back()` processing.
-          window.addEventListener('popstate', resolve, {once: true});
+  promise_test(t => {
+    assert_equals(scenario.expectation, "stripped-referrer");
+    // Only on top-level Window, due to navigations using `history`.
+    assert_equals(scenario.source_context_list.length, 0);
 
-          // Workaround for Safari: Waiting for popstate events causes
-          // timeout in a-tag tests. To avoid timeout, we anyway resolve
-          // the promise.
-          if (scenario.subresource === 'a-tag') {
-            t.step_timeout(resolve, 1000);
-          }
-        });
-    }
+    return invokeScenario(scenario)
+      .then(result => checkResult(scenario, expectation, result));
+  }, testDescription);
+}
+
+function TestCase(scenarios, sanityChecker) {
+  function runTest(scenario) {
+    // This check is A NOOP in release.
+    sanityChecker.checkScenario(scenario);
 
     promise_test(_ => {
       return invokeScenario(scenario)
-        .then(result => checkResult(scenario.expectation, result));
-    }, testDescription);
+        .then(result => checkResult(scenario, scenario.expectation, result));
+    }, scenario.test_description);
+  }
 
-    // `Referer` headers with length over 4k are culled down to an origin, so,
-    // let's test around that boundary for tests that would otherwise return
-    // the complete URL.
-    // The following tests run only on top-level Documents, because they rely
-    // on navigations using `history`.
-    // Different subresource URLs are used because getRequestURLs() is called
-    // for each sub test which returns a unique URL.
-    if (scenario.expectation == "stripped-referrer" &&
-        scenario.source_context_list.length == 0) {
-      promise_test(t => {
-        history.pushState(null, null, "/");
-        history.replaceState(null, null, "A".repeat(4096 - location.href.length - 1));
-        return invokeScenario(scenario)
-          .then(result => checkResult(scenario.expectation, result))
-          .finally(_ => historyBackPromise(t, scenario));
-      }, "`Referer` header with length < 4k is not stripped to an origin.");
-
-      promise_test(t => {
-        history.pushState(null, null, "/");
-        history.replaceState(null, null, "A".repeat(4096 - location.href.length));
-        return invokeScenario(scenario)
-          .then(result => checkResult(scenario.expectation, result))
-          .finally(_ => historyBackPromise(t, scenario));
-      }, "`Referer` header with length == 4k is not stripped to an origin.");
-
-      promise_test(t => {
-        history.pushState(null, null, "/");
-        history.replaceState(null, null, "A".repeat(4096 - location.href.length + 1));
-        return invokeScenario(scenario)
-          .then(result => checkResult("origin", result))
-          .finally(_ => historyBackPromise(t, scenario));
-      }, "`Referer` header with length > 4k is stripped to an origin.");
+  function runTests() {
+    for (const scenario of scenarios) {
+      runTest(scenario);
     }
   }
 
-  return {start: runTest};
+  return {start: runTests};
 }

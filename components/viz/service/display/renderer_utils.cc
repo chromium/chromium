@@ -4,7 +4,6 @@
 
 #include "components/viz/service/display/renderer_utils.h"
 
-#include "base/logging.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkScalar.h"
 

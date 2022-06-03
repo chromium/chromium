@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -753,11 +753,11 @@ ChineseScriptClassifier::ChineseScriptClassifier() {
 
   // Create UnicodeSets for zh-Hans and zh-Hant for later reference.
   UErrorCode status = U_ZERO_ERROR;
-  hans_set_.reset(new icu::UnicodeSet(
-      icu::UnicodeString::fromUTF8(hans_codepoints), status));
+  hans_set_ = std::make_unique<icu::UnicodeSet>(
+      icu::UnicodeString::fromUTF8(hans_codepoints), status);
   DVLOG(1) << u_errorName(status);
-  hant_set_.reset(new icu::UnicodeSet(
-      icu::UnicodeString::fromUTF8(hant_codepoints), status));
+  hant_set_ = std::make_unique<icu::UnicodeSet>(
+      icu::UnicodeString::fromUTF8(hant_codepoints), status);
   DVLOG(1) << u_errorName(status);
 
   // Make these sets immutable. This keeps the class threadsafe and

@@ -121,9 +121,7 @@ class AppSearchResultRankerSerializationTest
 TEST_F(AppSearchResultRankerSerializationTest, LoadFromDiskSucceed) {
   // Prepare file to be loaded.
   const std::string proto_str = proto_.SerializeAsString();
-  EXPECT_NE(
-      base::WriteFile(predictor_filename_, proto_str.c_str(), proto_str.size()),
-      -1);
+  EXPECT_TRUE(base::WriteFile(predictor_filename_, proto_str));
   // Construct ranker.
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);
 
@@ -159,9 +157,7 @@ TEST_F(AppSearchResultRankerSerializationTest,
        LoadFromDiskFailWithInvalidProto) {
   const std::string wrong_proto = "abc";
   // Prepare file to be loaded.
-  EXPECT_NE(base::WriteFile(predictor_filename_, wrong_proto.c_str(),
-                            wrong_proto.size()),
-            -1);
+  EXPECT_TRUE(base::WriteFile(predictor_filename_, wrong_proto));
 
   // Construct ranker.
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);

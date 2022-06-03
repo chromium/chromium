@@ -5,25 +5,14 @@
     <script>
         function init()
         {
+            var videosPresented = allVideosPresentedPromise();
             setSrcByTagName("video", "content/test.ogv");
 
-            var totalCount = document.getElementsByTagName('video').length;
-            var count = totalCount;
-            document.addEventListener("canplaythrough", function () {
-                if (!--count) {
-                    if (window.testRunner)
-                        setTimeout(function() { testRunner.notifyDone(); }, totalCount * 150);
-                }
-            }, true);
+            if (!window.testRunner)
+                return;
+            testRunner.waitUntilDone();
 
-            if (window.testRunner) {
-                testRunner.waitUntilDone();
-                setTimeout(function() {
-                    document.body.appendChild(document.createTextNode('FAIL'));
-                    if (window.testRunner)
-                        testRunner.notifyDone();
-                }, 1500);
-            }
+            videosPresented.then(() => testRunner.notifyDone());
         }
     </script>
 

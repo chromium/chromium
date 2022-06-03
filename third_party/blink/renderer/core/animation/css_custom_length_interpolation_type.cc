@@ -32,7 +32,7 @@ const CSSValue* CSSCustomLengthInterpolationType::CreateCSSValue(
     const StyleResolverState&) const {
   const auto& interpolable_length = To<InterpolableLength>(interpolable_value);
   DCHECK(!interpolable_length.HasPercentage());
-  return interpolable_length.CreateCSSValue(kValueRangeAll);
+  return interpolable_length.CreateCSSValue(Length::ValueRange::kAll);
 }
 
 }  // namespace blink

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -15,8 +16,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // static
-void PageInfoInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+void PageInfoInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager) {
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new PageInfoInfoBarDelegate())));
 }
 
@@ -33,7 +35,7 @@ const gfx::VectorIcon& PageInfoInfoBarDelegate::GetVectorIcon() const {
   return vector_icons::kSettingsIcon;
 }
 
-base::string16 PageInfoInfoBarDelegate::GetMessageText() const {
+std::u16string PageInfoInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_INFOBAR_TEXT);
 }
 
@@ -41,7 +43,7 @@ int PageInfoInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 PageInfoInfoBarDelegate::GetButtonLabel(
+std::u16string PageInfoInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_INFOBAR_BUTTON);
@@ -49,7 +51,7 @@ base::string16 PageInfoInfoBarDelegate::GetButtonLabel(
 
 bool PageInfoInfoBarDelegate::Accept() {
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(infobar());
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
   web_contents->GetController().Reload(content::ReloadType::NORMAL, true);
   return true;
 }

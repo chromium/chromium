@@ -7,13 +7,12 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -46,10 +45,10 @@ class CryptAuthScheduler {
     //   |client_directive_policy_reference|: Identifies the CryptAuth policy
     //       associated with the ClientDirective parameters used to schedule
     //       this Enrollment attempt. If no ClientDirective was used by the
-    //       scheduler, base::nullopt is passed.
+    //       scheduler, absl::nullopt is passed.
     virtual void OnEnrollmentRequested(
         const cryptauthv2::ClientMetadata& client_metadata,
-        const base::Optional<cryptauthv2::PolicyReference>&
+        const absl::optional<cryptauthv2::PolicyReference>&
             client_directive_policy_reference) = 0;
   };
 
@@ -65,6 +64,9 @@ class CryptAuthScheduler {
     virtual void OnDeviceSyncRequested(
         const cryptauthv2::ClientMetadata& client_metadata) = 0;
   };
+
+  CryptAuthScheduler(const CryptAuthScheduler&) = delete;
+  CryptAuthScheduler& operator=(const CryptAuthScheduler&) = delete;
 
   virtual ~CryptAuthScheduler();
 
@@ -82,10 +84,10 @@ class CryptAuthScheduler {
   // Enrollment/DeviceSync.
   virtual void RequestEnrollment(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const base::Optional<std::string>& session_id) = 0;
+      const absl::optional<std::string>& session_id) = 0;
   virtual void RequestDeviceSync(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const base::Optional<std::string>& session_id) = 0;
+      const absl::optional<std::string>& session_id) = 0;
 
   // Processes the result of the previous Enrollment/DeviceSync attempt.
   virtual void HandleEnrollmentResult(
@@ -94,10 +96,10 @@ class CryptAuthScheduler {
       const CryptAuthDeviceSyncResult& device_sync_result) = 0;
 
   // Returns the time of the last known successful Enrollment/DeviceSync. If no
-  // successful Enrollment/DeviceSync has occurred, base::nullopt is returned.
-  virtual base::Optional<base::Time> GetLastSuccessfulEnrollmentTime()
+  // successful Enrollment/DeviceSync has occurred, absl::nullopt is returned.
+  virtual absl::optional<base::Time> GetLastSuccessfulEnrollmentTime()
       const = 0;
-  virtual base::Optional<base::Time> GetLastSuccessfulDeviceSyncTime()
+  virtual absl::optional<base::Time> GetLastSuccessfulDeviceSyncTime()
       const = 0;
 
   // Returns the scheduler's time period between a successful Enrollment and its
@@ -106,9 +108,9 @@ class CryptAuthScheduler {
 
   // Returns the time until the next scheduled Enrollment/DeviceSync request.
   // Returns null if there is no request scheduled.
-  virtual base::Optional<base::TimeDelta> GetTimeToNextEnrollmentRequest()
+  virtual absl::optional<base::TimeDelta> GetTimeToNextEnrollmentRequest()
       const = 0;
-  virtual base::Optional<base::TimeDelta> GetTimeToNextDeviceSyncRequest()
+  virtual absl::optional<base::TimeDelta> GetTimeToNextDeviceSyncRequest()
       const = 0;
 
   // Returns true after the Enrollment/DeviceSync delegate has been alerted of a
@@ -136,7 +138,7 @@ class CryptAuthScheduler {
   // been requested.
   void NotifyEnrollmentRequested(
       const cryptauthv2::ClientMetadata& client_metadata,
-      const base::Optional<cryptauthv2::PolicyReference>&
+      const absl::optional<cryptauthv2::PolicyReference>&
           client_directive_policy_reference) const;
   void NotifyDeviceSyncRequested(
       const cryptauthv2::ClientMetadata& client_metadata) const;
@@ -144,8 +146,6 @@ class CryptAuthScheduler {
  private:
   base::WeakPtr<EnrollmentDelegate> enrollment_delegate_;
   base::WeakPtr<DeviceSyncDelegate> device_sync_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthScheduler);
 };
 
 }  // namespace device_sync

@@ -24,6 +24,7 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/test_configurator.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -36,7 +37,7 @@ class PingManagerTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
  public:
   PingManagerTest();
-  ~PingManagerTest() override {}
+  ~PingManagerTest() override = default;
 
   PingManager::Callback MakePingCallback();
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
@@ -103,8 +104,9 @@ void PingManagerTest::PingSentCallback(int error, const std::string& response) {
 scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
   return base::MakeRefCounted<UpdateContext>(
       config_, false, std::vector<std::string>(),
-      UpdateClient::CrxDataCallback(), UpdateEngine::NotifyObserversCallback(),
-      UpdateEngine::Callback(), nullptr);
+      UpdateClient::CrxStateChangeCallback(),
+      UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
+      nullptr);
 }
 
 // This test is parameterized for using JSON or XML serialization. |true| means
@@ -139,7 +141,7 @@ TEST_P(PingManagerTest, SendPing) {
       ASSERT_TRUE(request);
       EXPECT_TRUE(request->FindKey("@os"));
       EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-      EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
+      EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
       EXPECT_TRUE(request->FindKey("arch"));
       EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
       EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
@@ -291,8 +293,9 @@ TEST_P(PingManagerTest, SendPing) {
     // Test a valid |previouversion| and |next_version| = base::Version("0")
     // are serialized correctly under <event...> for uninstall.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.Uninstall(base::Version("1.2.3.4"), 0);
+    CrxComponent crx_component;
+    crx_component.version = base::Version("1.2.3.4");
+    component.Uninstall(crx_component, 0);
     component.AppendEvent(component.MakeEventUninstalled());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
@@ -312,6 +315,34 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(4, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("1.2.3.4", event.FindKey("previousversion")->GetString());
       EXPECT_EQ("0", event.FindKey("nextversion")->GetString());
+    interceptor->Reset();
+  }
+
+  {
+    // Test registrationEvent.
+    Component component(*update_context, "abc");
+    CrxComponent crx_component;
+    crx_component.version = base::Version("1.2.3.4");
+    component.Registration(crx_component);
+    component.AppendEvent(component.MakeEventRegistration());
+
+    EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
+    ping_manager_->SendPing(component, MakePingCallback());
+    RunThreads();
+
+    EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
+    const auto msg = interceptor->GetRequestBody(0);
+
+    const auto root = base::JSONReader::Read(msg);
+    ASSERT_TRUE(root);
+    const auto* request = root->FindKey("request");
+    const auto& app = request->FindKey("app")->GetList()[0];
+    EXPECT_EQ("abc", app.FindKey("appid")->GetString());
+    EXPECT_EQ("1.2.3.4", app.FindKey("version")->GetString());
+    const auto& event = app.FindKey("event")->GetList()[0];
+    EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
+    EXPECT_EQ(2, event.FindKey("eventtype")->GetInt());
+    EXPECT_EQ("1.2.3.4", event.FindKey("nextversion")->GetString());
     interceptor->Reset();
   }
 

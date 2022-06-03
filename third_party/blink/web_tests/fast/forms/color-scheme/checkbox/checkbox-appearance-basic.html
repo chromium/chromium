@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../resources/common.js"></script>
+<body style="background-color: blue">
+
+<!-- no style for reference -->
+<input type="checkbox">
+<input type="checkbox" checked>
+<br>
+
+<!-- border -->
+<input type="checkbox" style="border: 3px solid lime;">
+<input type="checkbox" style="border-radius: 6px;"> <br>
+
+<!-- background -->
+<input type="checkbox" style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);"> <br>
+
+<!-- shadow -->
+<input type="checkbox" style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"> <br>
+
+<!-- size -->
+<input type="checkbox" style="width: 8px; height; 8px;">
+<input type="checkbox" style="width: 16px; height; 16px;">
+<input type="checkbox" style="width: 24px; height; 24px;">
+<input type="checkbox" style="width: 26px; height: 20px;">
+<input type="checkbox" style="width: 1px; height: 1px;"> <br>
+
+<!-- disabled -->
+<input type="checkbox" disabled>
+<input type="checkbox" disabled checked> <br>
+
+<!-- indeterminate -->
+<input type="checkbox" id="indeterminateCheckbox">
+<input type="checkbox" id="indeterminateDisabledCheckbox" disabled> <br>
+<input type="checkbox" id="indeterminateCheckbox24px" style="width: 24px; height: 24px;">
+<input type="checkbox" id="indeterminateCheckboxZoom4" style="zoom: 4;">
+<input type="checkbox" id="indeterminateDisabledCheckboxZoom" style="zoom: 4;" disabled> <br>
+
+<!-- zoom -->
+<input type="checkbox" style="zoom: 1.5;">
+<input type="checkbox" style="zoom: 2;">
+<input type="checkbox" style="zoom: 4;"> <br>
+
+<div style="background-color: white">
+  <input type="checkbox" disabled>
+  <input type="checkbox" id="indeterminateDisabledWhiteBG" disabled>
+  <input type="checkbox" disabled checked>
+  <input type="checkbox" checked>
+  <input type="checkbox" id="hoverTarget" /> <br>
+  <input type="checkbox" id="indeterminateWhiteBG">
+  <input type="checkbox" checked style="zoom: 4;">
+  <input type="checkbox" checked style="zoom: 4;" disabled>
+  <input type="checkbox" id="indeterminateCheckboxZoom4WhiteBG" style="zoom: 4;" disabled>
+</div>
+<div style="background-color: black">
+  <input type="checkbox" disabled>
+  <input type="checkbox" id="indeterminateDisabledBlackBG" disabled>
+  <input type="checkbox" disabled checked>
+  <input type="checkbox" checked> <br>
+  <input type="checkbox" id="indeterminateBlackBG">
+  <input type="checkbox" checked style="zoom: 4;">
+  <input type="checkbox" checked style="zoom: 4;" disabled>
+  <input type="checkbox" id="indeterminateCheckboxZoom4BlackBG" style="zoom: 4;" disabled>
+</div>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  indeterminateCheckbox.indeterminate = true;
+  indeterminateDisabledCheckbox.indeterminate = true;
+  indeterminateCheckbox24px.indeterminate = true;
+  indeterminateCheckboxZoom4.indeterminate = true;
+  indeterminateDisabledCheckboxZoom.indeterminate = true;
+  indeterminateDisabledWhiteBG.indeterminate = true;
+  indeterminateDisabledBlackBG.indeterminate = true;
+  indeterminateWhiteBG.indeterminate = true;
+  indeterminateBlackBG.indeterminate = true;
+  indeterminateCheckboxZoom4WhiteBG.indeterminate = true;
+  indeterminateCheckboxZoom4BlackBG.indeterminate = true;
+
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+</script>
+</body>

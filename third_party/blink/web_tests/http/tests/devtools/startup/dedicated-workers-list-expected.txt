@@ -1,7 +1,0 @@
-Tests that dedicated workers created before worker inspection was enabled will be reported to the front-end. Bug 72020 https://bugs.webkit.org/show_bug.cgi?id=72020
-
-Worker inspection enabled
-Added worker: 1
-Added worker: 2
-Done.
-

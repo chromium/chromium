@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/grit",
+  "+components/strings",
+  "+net",
+  "+third_party/blink/public",
+  "+ui/base",
+]

@@ -164,7 +164,7 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-if (window.internals && internals.runtimeFlags.sharedArrayBufferEnabled && window.SharedArrayBuffer) {
+if (window.SharedArrayBuffer) {
     var worker = new Worker('../resources/worker-sharedarraybuffer-transfer.js');
     var secondaryWorker = new Worker('../resources/worker-sharedarraybuffer-transfer.js');
     var pendingWorkerReplies = 0;

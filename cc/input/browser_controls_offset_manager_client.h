@@ -5,6 +5,10 @@
 #ifndef CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CLIENT_H_
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CLIENT_H_
 
+namespace gfx {
+class Vector2dF;
+}
+
 namespace cc {
 
 class CC_EXPORT BrowserControlsOffsetManagerClient {
@@ -17,7 +21,9 @@ class CC_EXPORT BrowserControlsOffsetManagerClient {
                                                    float bottom_ratio) = 0;
   virtual float CurrentTopControlsShownRatio() const = 0;
   virtual float CurrentBottomControlsShownRatio() const = 0;
+  virtual gfx::Vector2dF ViewportScrollOffset() const = 0;
   virtual void DidChangeBrowserControlsPosition() = 0;
+  virtual bool OnlyExpandTopControlsAtPageTop() const = 0;
   virtual bool HaveRootScrollNode() const = 0;
   virtual void SetNeedsCommit() = 0;
 

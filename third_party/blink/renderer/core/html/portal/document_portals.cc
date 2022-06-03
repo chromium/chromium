@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/portal/portal_contents.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -28,15 +30,26 @@ DocumentPortals::DocumentPortals(Document& document)
 
 void DocumentPortals::RegisterPortalContents(PortalContents* portal) {
   portals_.push_back(portal);
+  auto* frame = GetSupplementable()->GetFrame();
+  if (!frame)
+    return;
+  if (auto* page = frame->GetPage())
+    page->IncrementSubframeCount();
 }
 
 void DocumentPortals::DeregisterPortalContents(PortalContents* portal) {
   wtf_size_t index = portals_.Find(portal);
-  if (index != WTF::kNotFound)
+  if (index != WTF::kNotFound) {
     portals_.EraseAt(index);
+    auto* frame = GetSupplementable()->GetFrame();
+    if (!frame)
+      return;
+    if (auto* page = frame->GetPage())
+      page->DecrementSubframeCount();
+  }
 }
 
-void DocumentPortals::Trace(Visitor* visitor) {
+void DocumentPortals::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
   visitor->Trace(portals_);
   visitor->Trace(activating_portal_);

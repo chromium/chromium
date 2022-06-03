@@ -1,21 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutHTMLCanvas (positioned) CANVAS id='canvas'",
-          "rect": [50, 50, 500, 500],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutHTMLCanvas (positioned) CANVAS id='canvas'",
-          "rect": [550, 50, 100, 500],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [50, 50, 500, 500],
+        [550, 50, 100, 500]
       ]
     }
   ]

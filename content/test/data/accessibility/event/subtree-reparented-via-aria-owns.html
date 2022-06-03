@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div role="group" id="group"></div>
+<div role="search" id="search">
+  <input id="input" aria-label="Search all issues">
+</div>
+<script>
+  function go() {
+    // Note: originally this test caught a case where
+    // AXTreeSerializer::SerializeChanges cleared the subtree whose
+    // least common ancestor was the ignored generic container
+    // parent of the group, which caused all of its descendants are treated
+    // as reparented.
+    //
+    // This behavior no longer happens, it's just a straighforward case
+    // of reparenting one node.
+    document.getElementById("group").setAttribute("aria-owns", "search");
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+    <style include="settings-shared md-select">
+      #automaticRadioButton {
+        align-items: flex-start;
+        padding: 6px 0;
+        --cr-radio-button-disc-margin-block-start: calc(
+            (1.54em /* line-height */ - var(--cr-radio-button-size)) / 2);
+      }
+
+      #secureResolverSelectRadioButton {
+        align-items: flex-start;
+        --cr-radio-button-disc-margin-block-start: calc(
+            (1.54em /* line-height */ + 12px /* md-select padding */ -
+             var(--cr-radio-button-size)) / 2);
+      }
+
+      #secureRadioButtonItem {
+        align-items: baseline;
+      }
+
+      #secureRadioButtonItemInner {
+        margin-inline-start: 0.5em;
+        width: 80%;
+      }
+
+      #privacyPolicy {
+        display: none;
+        padding: 8px /* md-select left padding */;
+      }
+
+      #secureDnsInput {
+        margin-top: 6px;
+      }
+    </style>
+    <settings-toggle-button
+        id="secureDnsToggle"
+        class="hr"
+        pref="{{secureDnsToggle_}}"
+        label="$i18n{secureDns}"
+        sub-label="[[secureDnsDescription_]]"
+        on-change="onToggleChanged_">
+    </settings-toggle-button>
+    <cr-radio-group id="secureDnsRadioGroup" class="list-frame"
+        selected="{{secureDnsRadio_}}"
+        on-selected-changed="onRadioSelectionChanged_"
+        hidden="[[!showRadioGroup_]]">
+      <cr-radio-button id="automaticRadioButton" class="list-item"
+          name="[[secureDnsModeEnum_.AUTOMATIC]]"
+          label="$i18n{secureDnsAutomaticModeDescription}">
+        <div class="secondary">
+          $i18n{secureDnsAutomaticModeDescriptionSecondary}
+        </div>
+      </cr-radio-button>
+      <cr-radio-button id="secureResolverSelectRadioButton" class="list-item"
+          name="[[secureDnsModeEnum_.SECURE]]"
+          aria-label="$i18n{secureDnsSecureModeA11yLabel}">
+        <div id="secureRadioButtonItem" class="list-item">
+          $i18n{secureDnsSecureDropdownModeDescription}
+          <div id="secureRadioButtonItemInner">
+            <select id="secureResolverSelect" class="md-select"
+                aria-label="$i18n{secureDnsDropdownA11yLabel}"
+                on-click="stopEventPropagation_"
+                on-change="onDropdownSelectionChanged_">
+              <template is="dom-repeat" items="[[resolverOptions_]]">
+                <option value="[[item.value]]">[[item.name]]</option>
+              </template>
+            </select>
+            <div id="privacyPolicy" class="secondary"
+                inner-h-t-m-l="[[privacyPolicyString_]]"></div>
+            <secure-dns-input id="secureDnsInput"
+                value="[[secureDnsInputValue_]]"
+                on-value-update="onSecureDnsInputEvaluated_"
+                on-click="stopEventPropagation_">
+          </div>
+        </secure-dns-input>
+      </cr-radio-button>
+    </cr-radio-group>

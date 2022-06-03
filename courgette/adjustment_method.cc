@@ -214,6 +214,9 @@ class AssignmentProblem {
         m_root_(nullptr),
         p_root_(nullptr) {}
 
+  AssignmentProblem(const AssignmentProblem&) = delete;
+  AssignmentProblem& operator=(const AssignmentProblem&) = delete;
+
   ~AssignmentProblem() {
     for (size_t i = 0;  i < all_nodes_.size();  ++i)
       delete all_nodes_[i];
@@ -562,14 +565,16 @@ class AssignmentProblem {
   NodeQueue unsolved_;
 
   std::vector<Node*> all_nodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssignmentProblem);
 };
 
 class GraphAdjuster : public AdjustmentMethod {
  public:
   GraphAdjuster()
       : prog_(nullptr), model_(nullptr), debug_label_index_gen_(0) {}
+
+  GraphAdjuster(const GraphAdjuster&) = delete;
+  GraphAdjuster& operator=(const GraphAdjuster&) = delete;
+
   ~GraphAdjuster() = default;
 
   bool Adjust(const AssemblyProgram& model, AssemblyProgram* program) {
@@ -659,9 +664,6 @@ class GraphAdjuster : public AdjustmentMethod {
   // Note LabelInfo is allocated inside map, so the LabelInfo lifetimes are
   // managed by the map.
   std::map<Label*, LabelInfo> label_infos_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphAdjuster);
 };
 
 

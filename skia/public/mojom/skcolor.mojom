@@ -5,6 +5,7 @@
 module skia.mojom;
 
 // Mirror of SkColor
+[Stable]
 struct SkColor {
     uint32 value;
 };

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//testing/test.gni")
@@ -12,7 +11,7 @@ import("//ui/base/ui_features.gni")
 aggregate_vector_icons("message_center_vector_icons") {
   icon_directory = "vector_icons"
 
-  icons = [
+  sources = [
     "notification_close_button.icon",
     "notification_expand_less.icon",
     "notification_expand_more.icon",
@@ -24,17 +23,16 @@ aggregate_vector_icons("message_center_vector_icons") {
 }
 
 # TODO(msw|mukai|dewittj): Move ash-specific files: crbug.com/585175
-jumbo_component("message_center") {
+component("message_center") {
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/base",
     "//ui/strings",
     "//url",
   ]
 
-  public_deps = [
-    "//ui/message_center/public/cpp",
-  ]
+  public_deps = [ "//ui/message_center/public/cpp" ]
 
   defines = [ "MESSAGE_CENTER_IMPLEMENTATION" ]
 
@@ -75,6 +73,7 @@ jumbo_component("message_center") {
       "notification_blocker.h",
       "notification_list.cc",
       "notification_list.h",
+      "notification_view_controller.h",
       "popup_timer.cc",
       "popup_timer.h",
       "popup_timers_controller.cc",
@@ -98,21 +97,22 @@ jumbo_component("message_center") {
         "views/message_popup_collection.h",
         "views/message_popup_view.cc",
         "views/message_popup_view.h",
-        "views/message_popup_view_mac.mm",
         "views/message_view.cc",
         "views/message_view.h",
-        "views/message_view_factory.cc",
-        "views/message_view_factory.h",
         "views/notification_background_painter.cc",
         "views/notification_background_painter.h",
-        "views/notification_button.cc",
-        "views/notification_button.h",
         "views/notification_control_buttons_view.cc",
         "views/notification_control_buttons_view.h",
         "views/notification_header_view.cc",
         "views/notification_header_view.h",
-        "views/notification_view_md.cc",
-        "views/notification_view_md.h",
+        "views/notification_input_container.cc",
+        "views/notification_input_container.h",
+        "views/notification_view.cc",
+        "views/notification_view.h",
+        "views/notification_view_base.cc",
+        "views/notification_view_base.h",
+        "views/notification_view_util.cc",
+        "views/notification_view_util.h",
         "views/padded_button.cc",
         "views/padded_button.h",
         "views/proportional_image_view.cc",
@@ -120,20 +120,25 @@ jumbo_component("message_center") {
         "views/relative_time_formatter.cc",
         "views/relative_time_formatter.h",
       ]
+      if (is_mac) {
+        sources += [ "views/message_popup_view_mac.mm" ]
+      }
       deps += [
+        "//ui/color",
         "//ui/compositor",
         "//ui/events",
         "//ui/views",
       ]
       if (is_mac) {
-        libs = [ "Foundation.framework" ]
+        frameworks = [ "Foundation.framework" ]
       }
+    }
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
     }
   } else {
     # Notification service disabled.
-    sources = [
-      "dummy_message_center.cc",
-    ]
+    sources = [ "dummy_message_center.cc" ]
   }
 }
 
@@ -144,6 +149,8 @@ if (enable_message_center) {
     sources = [
       "fake_message_center.cc",
       "fake_message_center.h",
+      "lock_screen/fake_lock_screen_controller.cc",
+      "lock_screen/fake_lock_screen_controller.h",
     ]
 
     deps = [
@@ -161,9 +168,9 @@ if (enable_message_center) {
   }
 
   test("message_center_unittests") {
+    use_xvfb = use_xvfb_in_this_config
+
     sources = [
-      "lock_screen/fake_lock_screen_controller.cc",
-      "lock_screen/fake_lock_screen_controller.h",
       "message_center_impl_unittest.cc",
       "notification_list_unittest.cc",
       "public/cpp/notification_delegate_unittest.cc",
@@ -175,6 +182,7 @@ if (enable_message_center) {
       ":test_support",
       "//base",
       "//base/test:test_support",
+      "//build:chromeos_buildflags",
       "//mojo/core/embedder",
       "//skia",
       "//testing/gmock",
@@ -189,6 +197,7 @@ if (enable_message_center) {
       "//ui/gl",
       "//ui/gl:test_support",
       "//ui/message_center/public/cpp",
+      "//ui/native_theme",
       "//ui/resources",
       "//ui/resources:ui_test_pak",
       "//url",
@@ -202,15 +211,25 @@ if (enable_message_center) {
     if (toolkit_views) {
       sources += [
         "views/message_popup_collection_unittest.cc",
+        "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",
-        "views/notification_view_md_unittest.cc",
+        "views/notification_view_base_unittest.cc",
+        "views/notification_view_unittest.cc",
         "views/relative_time_formatter_unittest.cc",
       ]
       deps += [
+        "//ui/color",
         "//ui/display",
         "//ui/strings",
         "//ui/views",
         "//ui/views:test_support",
+      ]
+    }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/font_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
       ]
     }
   }

@@ -6,7 +6,7 @@
 #include "base/android/build_info.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/features.h"
 #include "content/browser/browser_main_loop.h"
@@ -16,6 +16,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -44,6 +45,10 @@ class CompositorImplBrowserTest
       public ContentBrowserTest {
  public:
   CompositorImplBrowserTest() {}
+
+  CompositorImplBrowserTest(const CompositorImplBrowserTest&) = delete;
+  CompositorImplBrowserTest& operator=(const CompositorImplBrowserTest&) =
+      delete;
 
   void SetUp() override {
     std::vector<base::Feature> features;
@@ -93,8 +98,6 @@ class CompositorImplBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorImplBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(P,
@@ -123,6 +126,10 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
+
+  ContextLostRunLoop(const ContextLostRunLoop&) = delete;
+  ContextLostRunLoop& operator=(const ContextLostRunLoop&) = delete;
+
   ~ContextLostRunLoop() override { context_provider_->RemoveObserver(this); }
 
   void RunUntilContextLost() {
@@ -140,7 +147,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
  private:
@@ -150,17 +157,21 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   viz::ContextProvider* const context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
 // RunLoop implementation that runs until it observes a swap with size.
 class CompositorSwapRunLoop {
  public:
   CompositorSwapRunLoop(CompositorImpl* compositor) : compositor_(compositor) {
+    static_cast<Compositor*>(compositor_)
+        ->SetDidSwapBuffersCallbackEnabled(true);
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::BindRepeating(
         &CompositorSwapRunLoop::DidSwap, base::Unretained(this)));
   }
+
+  CompositorSwapRunLoop(const CompositorSwapRunLoop&) = delete;
+  CompositorSwapRunLoop& operator=(const CompositorSwapRunLoop&) = delete;
+
   ~CompositorSwapRunLoop() {
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::DoNothing());
   }
@@ -175,12 +186,10 @@ class CompositorSwapRunLoop {
 
   CompositorImpl* compositor_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);
 };
 
 IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
-                       CompositorImplDropsResourcesOnBackground) {
+                       DISABLED_CompositorImplDropsResourcesOnBackground) {
   auto* rwhva = render_widget_host_view_android();
   auto* compositor = compositor_impl();
   auto context = GpuBrowsertestCreateContext(
@@ -227,6 +236,32 @@ IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTest,
   CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
 }
 
+// This test waits for a presentation feedback token to arrive from the GPU. If
+// this test is timing out then it demonstrates a bug.
+IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTest,
+                       CompositorImplReceivesPresentationTimeCallbacks) {
+  // OOP-R is required for this test to succeed with SkDDL, but is disabled on
+  // Android L and lower.
+  if (GetParam() == CompositorImplMode::kSkiaRenderer &&
+      base::android::BuildInfo::GetInstance()->sdk_int() <
+          base::android::SDK_VERSION_MARSHMALLOW) {
+    return;
+  }
+
+  // Presentation feedback occurs after the GPU has presented content to the
+  // display. This is later than the buffers swap.
+  base::RunLoop loop;
+  // The callback will cancel the loop used to wait.
+  static_cast<content::Compositor*>(compositor_impl())
+      ->RequestPresentationTimeForNextFrame(base::BindOnce(
+          [](base::OnceClosure quit,
+             const gfx::PresentationFeedback& feedback) {
+            std::move(quit).Run();
+          },
+          loop.QuitClosure()));
+  loop.Run();
+}
+
 class CompositorImplBrowserTestRefreshRate
     : public CompositorImplBrowserTest,
       public ui::WindowAndroid::TestHooks {
@@ -240,6 +275,12 @@ class CompositorImplBrowserTestRefreshRate
   void SetPreferredRate(float refresh_rate) override {
     if (fabs(refresh_rate - expected_refresh_rate_) < 2.f)
       run_loop_->Quit();
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kAutoplayPolicy,
+        switches::autoplay::kNoUserGestureRequiredPolicy);
   }
 
   float expected_refresh_rate_ = 0.f;

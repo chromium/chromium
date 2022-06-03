@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/alsa/alsa_output.h"
 #include "media/audio/alsa/alsa_util.h"
 #include "media/audio/alsa/alsa_wrapper.h"
@@ -38,13 +38,13 @@ AlsaPcmInputStream::AlsaPcmInputStream(AudioManagerBase* audio_manager,
       params_(params),
       bytes_per_buffer_(params.GetBytesPerBuffer(kSampleFormat)),
       wrapper_(wrapper),
-      buffer_duration_(base::TimeDelta::FromMicroseconds(
+      buffer_duration_(base::Microseconds(
           params.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
           static_cast<float>(params.sample_rate()))),
-      callback_(NULL),
-      device_handle_(NULL),
-      mixer_handle_(NULL),
-      mixer_element_handle_(NULL),
+      callback_(nullptr),
+      device_handle_(nullptr),
+      mixer_handle_(nullptr),
+      mixer_element_handle_(nullptr),
       read_callback_behind_schedule_(false),
       audio_bus_(AudioBus::Create(params)),
       capture_thread_("AlsaInput"),
@@ -52,9 +52,9 @@ AlsaPcmInputStream::AlsaPcmInputStream(AudioManagerBase* audio_manager,
 
 AlsaPcmInputStream::~AlsaPcmInputStream() = default;
 
-bool AlsaPcmInputStream::Open() {
+AudioInputStream::OpenOutcome AlsaPcmInputStream::Open() {
   if (device_handle_)
-    return false;  // Already open.
+    return OpenOutcome::kAlreadyOpen;
 
   uint32_t packet_us = buffer_duration_.InMicroseconds();
   uint32_t buffer_us = packet_us * kNumPacketsInRingBuffer;
@@ -91,7 +91,8 @@ bool AlsaPcmInputStream::Open() {
     }
   }
 
-  return device_handle_ != NULL;
+  return device_handle_ != nullptr ? OpenOutcome::kSuccess
+                                   : OpenOutcome::kFailed;
 }
 
 void AlsaPcmInputStream::Start(AudioInputCallback* callback) {
@@ -108,11 +109,11 @@ void AlsaPcmInputStream::Start(AudioInputCallback* callback) {
   }
 
   if (error < 0) {
-    callback_ = NULL;
+    callback_ = nullptr;
   } else {
     base::Thread::Options options;
     options.priority = base::ThreadPriority::REALTIME_AUDIO;
-    CHECK(capture_thread_.StartWithOptions(options));
+    CHECK(capture_thread_.StartWithOptions(std::move(options)));
 
     // We start reading data half |buffer_duration_| later than when the
     // buffer might have got filled, to accommodate some delays in the audio
@@ -219,7 +220,7 @@ void AlsaPcmInputStream::ReadAudio() {
                      << wrapper_->StrError(avail_frames);
         avail_frames = 0;  // Error getting number of avail frames, set it to 0
       }
-      base::TimeDelta hardware_delay = base::TimeDelta::FromSecondsD(
+      base::TimeDelta hardware_delay = base::Seconds(
           avail_frames / static_cast<double>(params_.sample_rate()));
 
       callback_->OnData(audio_bus_.get(),
@@ -240,7 +241,7 @@ void AlsaPcmInputStream::ReadAudio() {
 
   next_read_time_ += buffer_duration_;
   base::TimeDelta delay = next_read_time_ - base::TimeTicks::Now();
-  if (delay < base::TimeDelta()) {
+  if (delay.is_negative()) {
     DVLOG(1) << "Audio read callback behind schedule by "
              << (buffer_duration_ - delay).InMicroseconds()
              << " (us).";
@@ -268,7 +269,7 @@ void AlsaPcmInputStream::Stop() {
   if (error < 0)
     HandleError("PcmDrop", error);
 
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void AlsaPcmInputStream::Close() {
@@ -282,9 +283,9 @@ void AlsaPcmInputStream::Close() {
       alsa_util::CloseMixer(wrapper_, mixer_handle_, device_name_);
 
     audio_buffer_.reset();
-    device_handle_ = NULL;
-    mixer_handle_ = NULL;
-    mixer_element_handle_ = NULL;
+    device_handle_ = nullptr;
+    mixer_handle_ = nullptr;
+    mixer_element_handle_ = nullptr;
   }
 
   audio_manager_->ReleaseInputStream(this);

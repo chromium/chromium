@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80D9FF'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+let t = async_test('Color picker: Moving the color well\'s selection ring using accelerated keyboard movement.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+    const colorWellSelectionRingRect = colorWellSelectionRing.getBoundingClientRect();
+    eventSender.mouseMoveTo(colorWellSelectionRingRect.left + (colorWellSelectionRingRect.width / 2),
+        colorWellSelectionRingRect.top + (colorWellSelectionRingRect.height / 2));
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    for (let i = 0; i < 3; i++) {
+      eventSender.keyDown('ArrowDown', ['ctrlKey']);
+    }
+    eventSender.keyDown('ArrowLeft', ['ctrlKey']);
+    eventSender.keyDown('ArrowUp', ['ctrlKey']);
+    for (let i = 0; i < 3; i++) {
+      eventSender.keyDown('ArrowRight', ['ctrlKey']);
+    }
+    const rValueContainer = popupDocument.getElementById('rValueContainer');
+    const gValueContainer = popupDocument.getElementById('gValueContainer');
+    const bValueContainer = popupDocument.getElementById('bValueContainer');
+    assert_equals(rValueContainer.value, '60');
+    assert_equals(gValueContainer.value, '144');
+    assert_equals(bValueContainer.value, '180');
+  }));
+});
+</script>
+</body>
+</html>

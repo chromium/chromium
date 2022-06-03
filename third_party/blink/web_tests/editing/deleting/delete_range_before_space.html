@@ -1,0 +1,17 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests deleting a selection that ends just before a space. There was a
+// bug where it would be treated like a smart delete (the space would be
+// incorrectly removed).
+selection_test(
+    '<div contenteditable>Th^is| is a test.</div>',
+    selection => {
+        if (!window.eventSender)
+            throw 'This test requires eventSender.';
+        eventSender.keyDown('Delete');
+    },
+    '<div contenteditable>Th| is a test.</div>');
+</script>

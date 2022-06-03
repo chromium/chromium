@@ -7,35 +7,56 @@
 #include <ostream>
 #include <sstream>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/accelerators.h"
+#include "base/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
 namespace {
+
+using chromeos::assistant::prefs::AssistantOnboardingMode;
+
+#define PRINT_VALUE(value) PrintValue(&result, #value, value())
+
+template <typename T, std::enable_if_t<std::is_enum<T>::value>* = nullptr>
+void PrintValue(std::stringstream* result, const absl::optional<T>& value) {
+  *result << base::NumberToString(static_cast<int>(value.value()));
+}
+
+template <typename T, std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
+void PrintValue(std::stringstream* result, const absl::optional<T>& value) {
+  *result << value.value();
+}
+
 template <typename T>
 void PrintValue(std::stringstream* result,
                 const std::string& name,
-                const base::Optional<T>& value) {
+                const absl::optional<T>& value) {
   *result << std::endl << "  " << name << ": ";
   if (value.has_value())
-    *result << value.value();
+    PrintValue(result, value);
   else
     *result << ("(no value)");
 }
 
-#define PRINT_VALUE(value) PrintValue(&result, #value, value())
 }  // namespace
 
 AssistantStateBase::AssistantStateBase() = default;
 
-AssistantStateBase::~AssistantStateBase() = default;
+AssistantStateBase::~AssistantStateBase() {
+  for (auto& observer : observers_)
+    observer.OnAssistantStateDestroyed();
+}
 
 std::string AssistantStateBase::ToString() const {
   std::stringstream result;
-  result << "AssistantState:";
-  result << assistant_state_;
+  result << "AssistantStatus: ";
+  result << assistant_status_;
   PRINT_VALUE(settings_enabled);
   PRINT_VALUE(context_enabled);
   PRINT_VALUE(hotword_enabled);
@@ -43,6 +64,7 @@ std::string AssistantStateBase::ToString() const {
   PRINT_VALUE(locale);
   PRINT_VALUE(arc_play_store_enabled);
   PRINT_VALUE(locked_full_screen_enabled);
+  PRINT_VALUE(onboarding_mode);
   return result.str();
 }
 
@@ -92,6 +114,10 @@ void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {
       chromeos::assistant::prefs::kAssistantNotificationEnabled,
       base::BindRepeating(&AssistantStateBase::UpdateNotificationEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      chromeos::assistant::prefs::kAssistantOnboardingMode,
+      base::BindRepeating(&AssistantStateBase::UpdateOnboardingMode,
+                          base::Unretained(this)));
 
   UpdateConsentStatus();
   UpdateContextEnabled();
@@ -100,6 +126,24 @@ void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {
   UpdateHotwordEnabled();
   UpdateLaunchWithMicOpen();
   UpdateNotificationEnabled();
+  UpdateOnboardingMode();
+}
+
+bool AssistantStateBase::IsScreenContextAllowed() const {
+  return allowed_state() ==
+             chromeos::assistant::AssistantAllowedState::ALLOWED &&
+         settings_enabled().value_or(false) &&
+         context_enabled().value_or(false);
+}
+
+bool AssistantStateBase::HasAudioInputDevice() const {
+  ash::AudioDeviceList devices;
+  ash::CrasAudioHandler::Get()->GetAudioDevices(&devices);
+  for (const chromeos::AudioDevice& device : devices) {
+    if (device.is_input)
+      return true;
+  }
+  return false;
 }
 
 void AssistantStateBase::InitializeObserver(AssistantStateObserver* observer) {
@@ -117,13 +161,10 @@ void AssistantStateBase::InitializeObserver(AssistantStateObserver* observer) {
     observer->OnAssistantLaunchWithMicOpen(launch_with_mic_open_.value());
   if (notification_enabled_.has_value())
     observer->OnAssistantNotificationEnabled(notification_enabled_.value());
+  if (onboarding_mode_.has_value())
+    observer->OnAssistantOnboardingModeChanged(onboarding_mode_.value());
 
-  InitializeObserverMojom(observer);
-}
-
-void AssistantStateBase::InitializeObserverMojom(
-    mojom::AssistantStateObserver* observer) {
-  observer->OnAssistantStatusChanged(assistant_state_);
+  observer->OnAssistantStatusChanged(assistant_status_);
   if (allowed_state_.has_value())
     observer->OnAssistantFeatureAllowedChanged(allowed_state_.value());
   if (locale_.has_value())
@@ -216,14 +257,29 @@ void AssistantStateBase::UpdateNotificationEnabled() {
     observer.OnAssistantNotificationEnabled(notification_enabled_.value());
 }
 
-void AssistantStateBase::UpdateAssistantStatus(mojom::AssistantState state) {
-  assistant_state_ = state;
+void AssistantStateBase::UpdateOnboardingMode() {
+  AssistantOnboardingMode onboarding_mode =
+      chromeos::assistant::prefs::ToOnboardingMode(
+          pref_change_registrar_->prefs()->GetString(
+              chromeos::assistant::prefs::kAssistantOnboardingMode));
+
+  if (onboarding_mode_ == onboarding_mode)
+    return;
+
+  onboarding_mode_ = onboarding_mode;
   for (auto& observer : observers_)
-    observer.OnAssistantStatusChanged(assistant_state_);
+    observer.OnAssistantOnboardingModeChanged(onboarding_mode_.value());
+}
+
+void AssistantStateBase::UpdateAssistantStatus(
+    chromeos::assistant::AssistantStatus status) {
+  assistant_status_ = status;
+  for (auto& observer : observers_)
+    observer.OnAssistantStatusChanged(assistant_status_);
 }
 
 void AssistantStateBase::UpdateFeatureAllowedState(
-    mojom::AssistantAllowedState state) {
+    chromeos::assistant::AssistantAllowedState state) {
   allowed_state_ = state;
   for (auto& observer : observers_)
     observer.OnAssistantFeatureAllowedChanged(allowed_state_.value());

@@ -24,19 +24,20 @@ SurfaceFactoryOzone::SurfaceFactoryOzone() {}
 
 SurfaceFactoryOzone::~SurfaceFactoryOzone() {}
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 SurfaceFactoryOzone::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>();
+  return std::vector<gl::GLImplementationParts>();
 }
 
-GLOzone* SurfaceFactoryOzone::GetGLOzone(gl::GLImplementation implementation) {
+GLOzone* SurfaceFactoryOzone::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
   return nullptr;
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
-SurfaceFactoryOzone::CreateVulkanImplementation(bool allow_protected_memory,
-                                                bool enforce_protected_memory) {
+SurfaceFactoryOzone::CreateVulkanImplementation(bool use_swiftshader,
+                                                bool allow_protected_memory) {
   return nullptr;
 }
 
@@ -66,8 +67,7 @@ std::unique_ptr<OverlaySurface> SurfaceFactoryOzone::CreateOverlaySurface(
 }
 
 std::unique_ptr<SurfaceOzoneCanvas> SurfaceFactoryOzone::CreateCanvasForWidget(
-    gfx::AcceleratedWidget widget,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    gfx::AcceleratedWidget widget) {
   return nullptr;
 }
 
@@ -76,7 +76,8 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
     VkDevice vk_device,
     gfx::Size size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    absl::optional<gfx::Size> framebuffer_size) {
   return nullptr;
 }
 

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 

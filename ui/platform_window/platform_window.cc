@@ -4,6 +4,9 @@
 
 #include "ui/platform_window/platform_window.h"
 
+#include <string>
+
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -47,5 +50,23 @@ bool PlatformWindow::IsTranslucentWindowOpacitySupported() const {
 void PlatformWindow::SetOpacity(float opacity) {}
 
 void PlatformWindow::SetVisibilityChangedAnimationsEnabled(bool enabled) {}
+
+std::string PlatformWindow::GetWindowUniqueId() const {
+  return std::string();
+}
+
+bool PlatformWindow::ShouldUpdateWindowShape() const {
+  return false;
+}
+
+bool PlatformWindow::CanSetDecorationInsets() const {
+  return false;
+}
+
+void PlatformWindow::SetDecorationInsets(const gfx::Insets* insets_px) {}
+
+void PlatformWindow::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {}
+
+void PlatformWindow::SetInputRegion(const gfx::Rect* region_px) {}
 
 }  // namespace ui

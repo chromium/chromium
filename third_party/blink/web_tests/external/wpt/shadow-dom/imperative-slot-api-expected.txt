@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS attachShadow can take slotAssignment parameter.
+PASS slot.attach() should take variadic not sequence.
+PASS Imperative slot API can assign nodes in manual slot assignment.
+PASS Order of slottables is preserved in manual slot assignment.
+PASS Previously assigned slottable is moved to new slot when it's reassigned.
+PASS Order and assignment of nodes are preserved during multiple assignment in a row.
+PASS Assigning invalid nodes should be allowed.
+PASS Moving a slot to a new host, the slot loses its previously assigned slottables.
+PASS Moving a slot's tree order position within a shadow host has no impact on its assigned slottables.
+PASS Appending slottable to different host, it loses slot assignment. It can be re-assigned within a new host.
+FAIL Previously assigned node should not be assigned if slot moved to a new shadow root. The node is re-assigned when moved back. assert_array_equals: lengths differ, expected array [Element node <div id="c1"></div>] length 1, got [] length 0
+PASS Assignment with the same node in parameters should be ignored, first one wins.
+PASS Removing a slot from DOM resets its slottable's slot assignment.
+PASS Nodes can be assigned even if slots or nodes aren't in the same tree.
+PASS Removing a node from the document does not break manually assigned slot linkage.
+Harness: the test ran to completion.
+

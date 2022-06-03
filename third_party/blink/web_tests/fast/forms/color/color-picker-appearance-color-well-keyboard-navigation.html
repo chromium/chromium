@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80D9FF'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), openPickerSuccessfulCallback);
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+  const colorWellSelectionRingRect = colorWellSelectionRing.getBoundingClientRect();
+  eventSender.mouseMoveTo(colorWellSelectionRingRect.left + (colorWellSelectionRingRect.width / 2),
+      colorWellSelectionRingRect.top + (colorWellSelectionRingRect.height / 2));
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  for (let i = 0; i < 12; i++) {
+    eventSender.keyDown('ArrowDown');
+  }
+  for (let i = 0; i < 25; i++) {
+    eventSender.keyDown('ArrowLeft');
+  }
+  for (let i = 0; i < 2; i++) {
+    eventSender.keyDown('ArrowUp');
+  }
+  for (let i = 0; i < 5; i++) {
+    eventSender.keyDown('ArrowRight');
+  }
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

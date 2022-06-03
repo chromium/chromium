@@ -4,6 +4,8 @@
 
 package org.chromium.base.metrics;
 
+import android.os.SystemClock;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
@@ -21,8 +23,6 @@ import java.util.Map;
 @JNINamespace("base::android")
 @MainDex
 /* package */ final class NativeUmaRecorder implements UmaRecorder {
-    /* package */ NativeUmaRecorder() {}
-
     /**
      * Internally, histograms objects are cached on the Java side by their pointer
      * values (converted to long). This is safe to do because C++ Histogram objects
@@ -47,6 +47,7 @@ import java.util.Map;
                 name, oldHint, sample, min, max, numBuckets);
         maybeUpdateNativeHint(name, oldHint, newHint);
     }
+
     @Override
     public void recordLinearHistogram(String name, int sample, int min, int max, int numBuckets) {
         long oldHint = getNativeHint(name);
@@ -60,6 +61,13 @@ import java.util.Map;
         long oldHint = getNativeHint(name);
         long newHint = NativeUmaRecorderJni.get().recordSparseHistogram(name, oldHint, sample);
         maybeUpdateNativeHint(name, oldHint, newHint);
+    }
+
+    @Override
+    public void recordUserAction(String name, long elapsedRealtimeMillis) {
+        // Java and native code use different clocks. We need a relative elapsed time.
+        long millisSinceEvent = SystemClock.elapsedRealtime() - elapsedRealtimeMillis;
+        NativeUmaRecorderJni.get().recordUserAction(name, millisSinceEvent);
     }
 
     private long getNativeHint(String name) {
@@ -79,12 +87,23 @@ import java.util.Map;
 
     /** Natives API to record metrics. */
     @NativeMethods
-    /* package */ interface Natives {
+    interface Natives {
         long recordBooleanHistogram(String name, long nativeHint, boolean sample);
         long recordExponentialHistogram(
                 String name, long nativeHint, int sample, int min, int max, int numBuckets);
         long recordLinearHistogram(
                 String name, long nativeHint, int sample, int min, int max, int numBuckets);
         long recordSparseHistogram(String name, long nativeHint, int sample);
+
+        /**
+         * Records that the user performed an action. See {@code base::RecordComputedActionAt}.
+         * <p>
+         * Uses relative time, because Java and native code can use different clocks.
+         *
+         * @param name Name of the user-generated event.
+         * @param millisSinceEvent difference between now and the time when the event was observed.
+         *         Should be positive.
+         */
+        void recordUserAction(String name, long millisSinceEvent);
     }
 }

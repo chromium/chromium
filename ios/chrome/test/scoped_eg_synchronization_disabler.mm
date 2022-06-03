@@ -10,20 +10,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// EG1 and EG2 have different API to obtain shared GREYConfiguration object.
-// This function abstracts the API access.
-GREYConfiguration* GetSharedGREYConfiguration() {
-#if defined(CHROME_EARL_GREY_1)
-  return [GREYConfiguration sharedInstance];
-#elif defined(CHROME_EARL_GREY_2)
-  return [GREYConfiguration sharedConfiguration];
-#else
-#error Either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2 must be defined
-#endif
-}
-}  // namespace
-
 ScopedSynchronizationDisabler::ScopedSynchronizationDisabler()
     : saved_eg_synchronization_enabled_value_(GetEgSynchronizationEnabled()) {
   SetEgSynchronizationEnabled(NO);
@@ -34,11 +20,12 @@ ScopedSynchronizationDisabler::~ScopedSynchronizationDisabler() {
 }
 
 bool ScopedSynchronizationDisabler::GetEgSynchronizationEnabled() {
-  return [GetSharedGREYConfiguration()
+  return [[GREYConfiguration sharedConfiguration]
       boolValueForConfigKey:kGREYConfigKeySynchronizationEnabled];
 }
 
 void ScopedSynchronizationDisabler::SetEgSynchronizationEnabled(BOOL flag) {
-  [GetSharedGREYConfiguration() setValue:@(flag)
-                            forConfigKey:kGREYConfigKeySynchronizationEnabled];
+  [[GREYConfiguration sharedConfiguration]
+          setValue:@(flag)
+      forConfigKey:kGREYConfigKeySynchronizationEnabled];
 }

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that inline style sourceMappingURL is resolved properly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <body id="inspect">
@@ -29,8 +29,8 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('inspect', onSelected);
   }
 
-  function onSelected() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, false);
+  async function onSelected() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false);
     TestRunner.completeTest();
   }
 })();

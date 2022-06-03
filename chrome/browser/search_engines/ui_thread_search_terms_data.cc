@@ -4,7 +4,7 @@
 
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "components/rlz/rlz_tracker.h"
+#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
 using content::BrowserThread;
@@ -48,11 +48,11 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
 
 // Android implementations are in ui_thread_search_terms_data_android.cc.
 #if !defined(OS_ANDROID)
-base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
+std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-  base::string16 rlz_string;
+  std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcodes do not use rlz at all. Empty brandcode usually
   // means a chromium install. This is ok.
@@ -84,6 +84,7 @@ std::string UIThreadSearchTermsData::GetSuggestClient() const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if defined(OS_ANDROID)
+  // Android does not send non-searchbox suggest requests from NTP at this time.
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ?
       "chrome" : "chrome-omni";
 #else
@@ -110,7 +111,9 @@ std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
   if (version_info::IsOfficialBuild())
     version += " (Official)";
   version += " " + version_info::GetOSType();
-  std::string modifier(chrome::GetChannelName());
+  // Do not distinguish extended from regular stable in image search queries.
+  std::string modifier(
+      chrome::GetChannelName(chrome::WithExtendedStable(false)));
   if (!modifier.empty())
     version += " " + modifier;
   return version;

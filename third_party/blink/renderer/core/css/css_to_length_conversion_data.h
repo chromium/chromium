@@ -32,11 +32,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_
 
 #include <limits>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -44,6 +46,7 @@ namespace blink {
 class ComputedStyle;
 class LayoutView;
 class Font;
+class Element;
 
 class CORE_EXPORT CSSToLengthConversionData {
   STACK_ALLOCATED();
@@ -85,19 +88,47 @@ class CORE_EXPORT CSSToLengthConversionData {
     DoubleSize size_;
   };
 
+  class CORE_EXPORT ContainerSizes {
+    STACK_ALLOCATED();
+
+   public:
+    ContainerSizes() = default;
+    explicit ContainerSizes(Element* nearest_container)
+        : nearest_container_(nearest_container) {}
+
+    absl::optional<double> Width() const;
+    absl::optional<double> Height() const;
+    absl::optional<double> InlineSize() const;
+    absl::optional<double> BlockSize() const;
+
+   private:
+    void CacheSizeIfNeeded(LogicalAxes, absl::optional<double>& cache) const;
+    void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
+
+    Element* nearest_container_{nullptr};
+    mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
+    mutable LogicalAxes cached_logical_axes_{kLogicalAxisNone};
+    mutable absl::optional<double> cached_width_;
+    mutable absl::optional<double> cached_height_;
+    mutable absl::optional<double> cached_inline_size_;
+    mutable absl::optional<double> cached_block_size_;
+  };
+
   CSSToLengthConversionData() : style_(nullptr), zoom_(1) {}
   CSSToLengthConversionData(const ComputedStyle*,
                             const FontSizes&,
                             const ViewportSize&,
+                            const ContainerSizes&,
                             float zoom);
   CSSToLengthConversionData(const ComputedStyle* curr_style,
                             const ComputedStyle* root_style,
                             const LayoutView*,
+                            Element* nearest_container,
                             float zoom);
 
   float Zoom() const { return zoom_; }
 
-  float EmFontSize() const { return font_sizes_.Em(); }
+  float EmFontSize() const;
   float RemFontSize() const;
   float ExFontSize() const;
   float ChFontSize() const;
@@ -109,16 +140,27 @@ class CORE_EXPORT CSSToLengthConversionData {
   double ViewportMinPercent() const;
   double ViewportMaxPercent() const;
 
+  // Accessing these marks the style as having container relative units.
+  double ContainerWidthPercent() const;
+  double ContainerHeightPercent() const;
+  double ContainerInlineSizePercent() const;
+  double ContainerBlockSizePercent() const;
+  double ContainerMinPercent() const;
+  double ContainerMaxPercent() const;
+
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
   void SetZoom(float zoom) {
     DCHECK(std::isfinite(zoom));
     DCHECK_GT(zoom, 0);
     zoom_ = zoom;
   }
+  void SetContainerSizes(const ContainerSizes& container_sizes) {
+    container_sizes_ = container_sizes;
+  }
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
     return CSSToLengthConversionData(style_, font_sizes_, viewport_size_,
-                                     new_zoom);
+                                     container_sizes_, new_zoom);
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
@@ -127,9 +169,10 @@ class CORE_EXPORT CSSToLengthConversionData {
   const ComputedStyle* style_;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
+  ContainerSizes container_sizes_;
   float zoom_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_

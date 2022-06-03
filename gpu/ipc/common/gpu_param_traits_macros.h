@@ -21,8 +21,6 @@
 
 IPC_ENUM_TRAITS_MAX_VALUE(gpu::SchedulingPriority,
                           gpu::SchedulingPriority::kLast)
-IPC_ENUM_TRAITS_MAX_VALUE(gpu::ContextResult,
-                          gpu::ContextResult::kLastContextResult)
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::SwapBuffersCompleteParams)
   IPC_STRUCT_TRAITS_MEMBER(ca_layer_params)

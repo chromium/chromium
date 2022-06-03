@@ -1,0 +1,4 @@
+per-file ukm_smoothness_data.h=set noparent
+per-file ukm_smoothness_data.h=file://ipc/SECURITY_OWNERS
+per-file shared_metrics_buffer.h=set noparent
+per-file shared_metrics_buffer.h=file://ipc/SECURITY_OWNERS

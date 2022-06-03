@@ -42,14 +42,6 @@ namespace automationInternal {
     long requestID;
   };
 
-  // Actions internally used by automation.
-  enum ActionTypePrivate {
-    resumeMedia,
-    startDuckingMedia,
-    stopDuckingMedia,
-    suspendMedia
-  };
-
   // Arguments required for all actions supplied to performAction.
   dictionary PerformActionRequiredParams {
     DOMString treeID;
@@ -85,6 +77,19 @@ namespace automationInternal {
   // Arguments for the setValue action supplied to performAction.
   dictionary SetValueParams {
     DOMString value;
+  };
+
+
+  // Arguments for the scrollToPoint action supplied to performAction.
+  dictionary ScrollToPointParams {
+    long x;
+    long y;
+  };
+
+  // Arguments for the SetScrollOffset action supplied to performAction.
+  dictionary SetScrollOffsetParams {
+    long x;
+    long y;
   };
 
   // Arguments for the querySelector function.
@@ -136,8 +141,8 @@ namespace automationInternal {
     static void enableTab(EnableTabParams args,
                           EnableTabCallback callback);
 
-    // Enable automation of the frame with the given tree id.
-    static void enableFrame(DOMString tree_id);
+    // Enable automation of the tree with the given id.
+    static void enableTree(DOMString tree_id);
 
     // Enables desktop automation.
     static void enableDesktop(EnableDesktopCallback callback);

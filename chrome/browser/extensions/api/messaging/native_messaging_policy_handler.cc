@@ -28,12 +28,10 @@ bool NativeMessagingHostListPolicyHandler::CheckListEntry(
   return NativeMessagingHostManifest::IsValidName(str);
 }
 
-void NativeMessagingHostListPolicyHandler::ApplyList(
-    std::unique_ptr<base::ListValue> filtered_list,
-    PrefValueMap* prefs) {
-  DCHECK(filtered_list);
-  prefs->SetValue(pref_path_,
-                  base::Value::FromUniquePtrValue(std::move(filtered_list)));
+void NativeMessagingHostListPolicyHandler::ApplyList(base::Value filtered_list,
+                                                     PrefValueMap* prefs) {
+  DCHECK(filtered_list.is_list());
+  prefs->SetValue(pref_path_, std::move(filtered_list));
 }
 
 }  // namespace extensions

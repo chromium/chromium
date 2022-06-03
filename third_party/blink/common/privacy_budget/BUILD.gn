@@ -1,0 +1,106 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+component("privacy_budget") {
+  visibility = [
+    ":*",
+    "//third_party/blink/common:common",
+    "//third_party/blink/public/common:common",
+  ]
+
+  configs += [ "//third_party/blink/common:blink_common_implementation" ]
+
+  sources = [
+    "aggregating_sample_collector.cc",
+    "aggregating_sample_collector.h",
+    "identifiability_metric_builder.cc",
+    "identifiability_metrics.cc",
+    "identifiability_sample_collector.cc",
+    "identifiability_sample_collector_test_utils.h",
+    "identifiability_study_settings.cc",
+    "identifiable_token_builder.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom",
+    "//third_party/blink/public/common:common_export",
+    "//third_party/blink/public/common/privacy_budget:privacy_budget",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "aggregating_sample_collector_unittest.cc",
+    "identifiability_internal_templates_unittest.cc",
+    "identifiability_metric_builder_unittest.cc",
+    "identifiability_metrics_unittest.cc",
+    "identifiability_study_settings_unittest.cc",
+    "identifiable_surface_unittest.cc",
+    "identifiable_token_builder_unittest.cc",
+    "identifiable_token_unittest.cc",
+    "test_ukm_recorder.cc",
+    "test_ukm_recorder.h",
+  ]
+
+  deps = [
+    ":privacy_budget",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/common/privacy_budget:internal",
+    "//third_party/blink/public/common/privacy_budget:test_support",
+  ]
+}
+
+component("test_support") {
+  testonly = true
+
+  defines = [ "IS_PRIVACY_BUDGET_TEST_SUPPORT_IMPL" ]
+
+  sources = [
+    "scoped_identifiability_test_sample_collector.cc",
+    "scoped_switch_sample_collector.cc",
+  ]
+
+  deps = [
+    ":privacy_budget",
+    "//base",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom:mojom",
+    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common/privacy_budget:test_support",
+  ]
+}
+
+fuzzer_test("identifiable_token_builder_fuzzer") {
+  sources = [ "identifiable_token_builder_fuzzer.cc" ]
+
+  deps = [
+    "//base",
+    "//third_party/blink/public/common",
+  ]
+}
+
+fuzzer_test("identifiable_token_builder_atomic_fuzzer") {
+  sources = [ "identifiable_token_builder_atomic_fuzzer.cc" ]
+
+  deps = [
+    "//base",
+    "//third_party/blink/public/common",
+  ]
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_TEST_TEST_MEMORY_H_
-#define PPAPI_TEST_TEST_MEMORY_H_
+#ifndef PPAPI_TESTS_TEST_MEMORY_H_
+#define PPAPI_TESTS_TEST_MEMORY_H_
 
 #include <string>
 
@@ -26,4 +26,4 @@ class TestMemory : public TestCase {
   const PPB_Memory_Dev* memory_dev_interface_;
 };
 
-#endif  // PPAPI_TEST_TEST_VAR_H_
+#endif  // PPAPI_TESTS_TEST_MEMORY_H_

@@ -10,11 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -31,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/mhtml_generation_params.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -61,6 +60,9 @@ class FindTrackingDelegate : public WebContentsDelegate {
  public:
   explicit FindTrackingDelegate(const std::string& search)
       : search_(search), matches_(-1) {}
+
+  FindTrackingDelegate(const FindTrackingDelegate&) = delete;
+  FindTrackingDelegate& operator=(const FindTrackingDelegate&) = delete;
 
   // Returns number of results.
   int Wait(WebContents* web_contents) {
@@ -98,8 +100,6 @@ class FindTrackingDelegate : public WebContentsDelegate {
   std::string search_;
   int matches_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindTrackingDelegate);
 };
 
 // static
@@ -113,6 +113,10 @@ const char kTestData[] =
 class MockWriterBase : public mojom::MhtmlFileWriter {
  public:
   MockWriterBase() = default;
+
+  MockWriterBase(const MockWriterBase&) = delete;
+  MockWriterBase& operator=(const MockWriterBase&) = delete;
+
   ~MockWriterBase() override = default;
 
   void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -123,7 +127,7 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
  protected:
   void SendResponse(SerializeAsMHTMLCallback callback) {
     std::vector<std::string> dummy_digests;
-    base::TimeDelta dummy_time_delta = base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta dummy_time_delta = base::Milliseconds(100);
     std::move(callback).Run(mojom::MhtmlSaveStatus::kSuccess, dummy_digests,
                             dummy_time_delta);
   }
@@ -143,9 +147,6 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
   }
 
   mojo::AssociatedReceiver<mojom::MhtmlFileWriter> receiver_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWriterBase);
 };
 
 // This Mock injects our overwritten interface, running the callback
@@ -155,6 +156,11 @@ class RespondAndDisconnectMockWriter
       public base::RefCountedThreadSafe<RespondAndDisconnectMockWriter> {
  public:
   RespondAndDisconnectMockWriter() {}
+
+  RespondAndDisconnectMockWriter(const RespondAndDisconnectMockWriter&) =
+      delete;
+  RespondAndDisconnectMockWriter& operator=(
+      const RespondAndDisconnectMockWriter&) = delete;
 
   void SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
                         SerializeAsMHTMLCallback callback) override {
@@ -256,8 +262,8 @@ class RespondAndDisconnectMockWriter
   }
 
   void TaskY() {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&RespondAndDisconnectMockWriter::TaskZ,
                        scoped_refptr<RespondAndDisconnectMockWriter>(this)));
   }
@@ -268,20 +274,17 @@ class RespondAndDisconnectMockWriter
   friend base::RefCountedThreadSafe<RespondAndDisconnectMockWriter>;
 
   ~RespondAndDisconnectMockWriter() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(RespondAndDisconnectMockWriter);
 };
 
 }  // namespace
 
-class MHTMLGenerationTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class MHTMLGenerationTest : public ContentBrowserTest,
+                            public testing::WithParamInterface<bool> {
  public:
   MHTMLGenerationTest()
       : has_mhtml_callback_run_(false),
         file_size_(0),
-        file_digest_(base::nullopt),
+        file_digest_(absl::nullopt),
         well_formedness_check_(true) {}
 
   enum TaskOrder { WriteThenRespond, RespondThenWrite };
@@ -317,10 +320,9 @@ class MHTMLGenerationTest
 
   void GenerateMHTMLForCurrentPage(MHTMLGenerationParams& params) {
     base::RunLoop run_loop;
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
-    bool use_result_callback;
-    std::tie(params.compute_contents_hash, use_result_callback) = GetParam();
+    bool use_result_callback = GetParam();
 
     if (use_result_callback) {
       shell()->web_contents()->GenerateMHTMLWithResult(
@@ -342,35 +344,24 @@ class MHTMLGenerationTest
 
     // TODO(crbug.com/997408): Add tests which will let MHTMLGeneration manager
     // fail during file write operation. This will allow us to actually test if
-    // we receive a bogus hash instead of a base::nullopt.
-    bool generation_failed = file_size() == -1;
-    if (use_result_callback && !generation_failed &&
-        params.compute_contents_hash) {
-      // File contents write was successful, verify compute contents hash.
-      TestComputeContentsHash(params.file_path);
-    } else {
-      // expect that no hash was produced
-      EXPECT_EQ(base::nullopt, file_digest());
-    }
+    // we receive a bogus hash instead of a absl::nullopt.
+    EXPECT_EQ(absl::nullopt, file_digest());
 
     // Skip well formedness check if explicitly disabled or there was a
     // generation error.
+    bool generation_failed = file_size() == -1;
     if (!well_formedness_check_ || generation_failed)
       return;
 
     // Loads the generated file to check if it is well formed.
-    WebContentsDelegate* old_delegate = shell()->web_contents()->GetDelegate();
-    ConsoleObserverDelegate console_delegate(shell()->web_contents(),
-                                             "Malformed multipart archive: *");
-    shell()->web_contents()->SetDelegate(&console_delegate);
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern("Malformed multipart archive: *");
 
     EXPECT_TRUE(
         NavigateToURL(shell(), net::FilePathToFileURL(params.file_path)))
         << "Error navigating to the generated MHTML file";
-    EXPECT_EQ(0U, console_delegate.message().length())
+    EXPECT_TRUE(console_observer.messages().empty())
         << "The generated MHTML file is malformed";
-
-    shell()->web_contents()->SetDelegate(old_delegate);
   }
 
   void TwoStepSyncTestFor(const TaskOrder order);
@@ -422,7 +413,8 @@ class MHTMLGenerationTest
       const std::vector<std::string>& expected_substrings,
       const std::vector<std::string>& forbidden_substrings) {
     int actual_number_of_frames =
-        shell()->web_contents()->GetAllFrames().size();
+        CollectAllRenderFrameHosts(shell()->web_contents()->GetPrimaryPage())
+            .size();
     EXPECT_EQ(expected_number_of_frames, actual_number_of_frames);
 
     for (const auto& expected_substring : expected_substrings) {
@@ -479,7 +471,7 @@ class MHTMLGenerationTest
 
   bool has_mhtml_callback_run() const { return has_mhtml_callback_run_; }
   int64_t file_size() const { return file_size_; }
-  base::Optional<std::string> file_digest() const { return file_digest_; }
+  absl::optional<std::string> file_digest() const { return file_digest_; }
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   base::ScopedTempDir temp_dir_;
@@ -500,7 +492,7 @@ class MHTMLGenerationTest
 
   bool has_mhtml_callback_run_;
   int64_t file_size_;
-  base::Optional<std::string> file_digest_;
+  absl::optional<std::string> file_digest_;
   bool well_formedness_check_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
@@ -688,6 +680,11 @@ class MHTMLGenerationSitePerProcessTest : public MHTMLGenerationTest {
  public:
   MHTMLGenerationSitePerProcessTest() {}
 
+  MHTMLGenerationSitePerProcessTest(const MHTMLGenerationSitePerProcessTest&) =
+      delete;
+  MHTMLGenerationSitePerProcessTest& operator=(
+      const MHTMLGenerationSitePerProcessTest&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MHTMLGenerationTest::SetUpCommandLine(command_line);
@@ -702,9 +699,6 @@ class MHTMLGenerationSitePerProcessTest : public MHTMLGenerationTest {
 
     MHTMLGenerationTest::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MHTMLGenerationSitePerProcessTest);
 };
 
 // Test for crbug.com/538766.
@@ -828,118 +822,13 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithMultipleFrames) {
     EXPECT_THAT(mhtml, ContainsRegex(regex));
 }
 
-// Tests for the synchronization logic that waits for both the Mojo
-// response and the data pipe closure to consider a frame serialization done.
-// This is only relevant when a Mojo data pipe is being used (hash computation
-// case) and is skipped if writing directly to file.
-namespace {
-class OrderedTaskMockWriter : public MockWriterBase {
- public:
-  explicit OrderedTaskMockWriter(MHTMLGenerationTest::TaskOrder order)
-      : order_(order) {}
-
-  void SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
-                        SerializeAsMHTMLCallback callback) override {
-    DCHECK(params->output_handle->is_producer_handle());
-    DCHECK(params->output_handle->get_producer_handle()->is_valid());
-
-    switch (order_) {
-      case MHTMLGenerationTest::TaskOrder::RespondThenWrite:
-        delayed_callback_ = base::BindOnce(
-            &OrderedTaskMockWriter::WriteDataToProducerPipe,
-            base::Unretained(this),
-            std::move(params->output_handle->get_producer_handle()));
-        SendResponse(std::move(callback));
-        PostClosure();
-        break;
-      case MHTMLGenerationTest::TaskOrder::WriteThenRespond:
-        delayed_callback_ =
-            base::BindOnce(&OrderedTaskMockWriter::SendResponse,
-                           base::Unretained(this), std::move(callback));
-        WriteDataToProducerPipe(
-            std::move(params->output_handle->get_producer_handle()));
-        // For this case, we must post to the download sequence first to
-        // ensure we run the closure after the write operation completes.
-        download::GetDownloadTaskRunner()->PostTask(
-            FROM_HERE, base::BindOnce(&OrderedTaskMockWriter::PostClosure,
-                                      base::Unretained(this)));
-        break;
-    }
-  }
-
-  // Posts the quit closure to the UI thread to unblock the serialization Job
-  // after receiving the first task complete notification.
-  void PostClosure() {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   std::move(first_run_loop_closure_));
-  }
-
-  base::OnceClosure first_run_loop_closure_;
-  base::OnceClosure delayed_callback_;
-
- private:
-  MHTMLGenerationTest::TaskOrder order_;
-
-  DISALLOW_COPY_AND_ASSIGN(OrderedTaskMockWriter);
-};
-}  // namespace
-
-void MHTMLGenerationTest::TwoStepSyncTestFor(
-    const MHTMLGenerationTest::TaskOrder order) {
-  OrderedTaskMockWriter mock_writer(order);
-
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-
-  MHTMLGenerationParams params(path);
-
-  OverrideInterface(&mock_writer);
-
-  base::RunLoop first_run_loop;
-  base::RunLoop second_run_loop;
-
-  params.compute_contents_hash = true;
-  mock_writer.first_run_loop_closure_ = first_run_loop.QuitWhenIdleClosure();
-
-  shell()->web_contents()->GenerateMHTML(
-      params,
-      base::BindOnce(&MHTMLGenerationTest::MHTMLGenerated,
-                     base::Unretained(this), second_run_loop.QuitClosure()));
-
-  // Run serialization pipeline until stalled.
-  first_run_loop.Run();
-  ASSERT_FALSE(has_mhtml_callback_run())
-      << "MHTML generation complete but should be waiting on operation.";
-
-  // Run stalled task and block until MHTML generation completes.
-  DCHECK(mock_writer.delayed_callback_);
-  std::move(mock_writer.delayed_callback_).Run();
-  second_run_loop.Run();
-
-  ASSERT_TRUE(has_mhtml_callback_run())
-      << "MHTML generation has not been complete despite unblocking the Job.";
-
-  // Verify the file has some contents written to it.
-  EXPECT_GT(ReadFileSizeFromDisk(path), 100);
-  // Verify the reported file size matches the file written to disk.
-  EXPECT_EQ(ReadFileSizeFromDisk(path), file_size_);
-}
-
-// These tests do not depend on the parameter declared by the
-// MHTMLGenerationTest test suite, so we only want to run them once.
-IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTMLButDelayWrite) {
-  TwoStepSyncTestFor(TaskOrder::RespondThenWrite);
-}
-
-IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTMLButDelayResponse) {
-  TwoStepSyncTestFor(TaskOrder::WriteThenRespond);
-}
-
-// We instantiate the MHTML Generation Tests with a matrix of boolean values
-// because we want to test both compute_contents_hash enabled, and using
-// GenerateMHTMLWithResults callback independently.
+// We instantiate the MHTML Generation Tests both using and not using the
+// GenerateMHTMLWithResults callback.
 INSTANTIATE_TEST_SUITE_P(MHTMLGenerationTest,
                          MHTMLGenerationTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(MHTMLGenerationSitePerProcessTest,
+                         MHTMLGenerationSitePerProcessTest,
+                         testing::Bool());
 
 }  // namespace content

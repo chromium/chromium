@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests saving objects to temporary variables while paused.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var thisObj;
@@ -81,8 +81,8 @@
     TestRunner.evaluateInPage('checkThisObject()', dumpConsoleMessages);
   }
 
-  function dumpConsoleMessages() {
-    ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+  async function dumpConsoleMessages() {
+    await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

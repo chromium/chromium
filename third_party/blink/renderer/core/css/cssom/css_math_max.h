@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_MAX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_MAX_H_
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_variadic.h"
 
 namespace blink {
@@ -17,13 +17,15 @@ class CORE_EXPORT CSSMathMax final : public CSSMathVariadic {
 
  public:
   // The constructor defined in the IDL.
-  static CSSMathMax* Create(const HeapVector<CSSNumberish>& args,
-                            ExceptionState&);
+  static CSSMathMax* Create(const HeapVector<Member<V8CSSNumberish>>& args,
+                            ExceptionState& exception_state);
   // Blink-internal constructor.
   static CSSMathMax* Create(CSSNumericValueVector);
 
   CSSMathMax(CSSNumericArray* values, const CSSNumericValueType& type)
       : CSSMathVariadic(values, type) {}
+  CSSMathMax(const CSSMathMax&) = delete;
+  CSSMathMax& operator=(const CSSMathMax&) = delete;
 
   String getOperator() const final { return "max"; }
 
@@ -35,8 +37,7 @@ class CORE_EXPORT CSSMathMax final : public CSSMathVariadic {
  private:
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
-  base::Optional<CSSNumericSumValue> SumValue() const final;
-  DISALLOW_COPY_AND_ASSIGN(CSSMathMax);
+  absl::optional<CSSNumericSumValue> SumValue() const final;
 };
 
 }  // namespace blink

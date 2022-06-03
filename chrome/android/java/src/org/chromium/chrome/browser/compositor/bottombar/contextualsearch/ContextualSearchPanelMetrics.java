@@ -17,7 +17,9 @@ import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
- * This class is responsible for all the logging related to Contextual Search.
+ * This class is responsible for all the logging triggered by activity of the
+ * {@link ContextualSearchPanel}. Typically this consists of tracking user activity
+ * logging that to UMA when the interaction ends as the panel is dismissed.
  */
 public class ContextualSearchPanelMetrics {
     // Flags for logging.
@@ -153,6 +155,12 @@ public class ContextualSearchPanelMetrics {
                 ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
+            if (mWasSearchContentViewSeen) {
+                // TODO(donnd): check that this does not get logged when Related Searches are
+                // shown in the Bar and a user clicks one while in peeking state.
+                // Tracking bug for RS in the Bar: https://crbug.com/1210674.
+                ContextualSearchUma.logAllSearches(/* wasRelatedSearches */ false);
+            }
 
             // Notifications to Feature Engagement.
             ContextualSearchIPH.doSearchFinishedNotifications(profile, mWasSearchContentViewSeen,

@@ -15,9 +15,10 @@ namespace shape_detection {
 
 namespace {
 
-mojom::LandmarkPtr BuildLandmark(VNFaceLandmarkRegion2D* landmark_region,
-                                 mojom::LandmarkType landmark_type,
-                                 gfx::RectF bounding_box) {
+mojom::LandmarkPtr API_AVAILABLE(macos(10.13))
+    BuildLandmark(VNFaceLandmarkRegion2D* landmark_region,
+                  mojom::LandmarkType landmark_type,
+                  gfx::RectF bounding_box) {
   auto landmark = mojom::Landmark::New();
   landmark->type = landmark_type;
   landmark->locations.reserve(landmark_region.pointCount);
@@ -34,15 +35,10 @@ mojom::LandmarkPtr BuildLandmark(VNFaceLandmarkRegion2D* landmark_region,
 }
 
 FaceDetectionImplMacVision::FaceDetectionImplMacVision() : weak_factory_(this) {
-  Class request_class = NSClassFromString(@"VNDetectFaceLandmarksRequest");
-  if (!request_class) {
-    DLOG(ERROR) << "Failed to load VNDetectFaceLandmarksRequest class";
-    return;
-  }
   // The repeating callback will not be run if FaceDetectionImplMacVision object
   // has already been destroyed.
   landmarks_async_request_ = VisionAPIAsyncRequestMac::Create(
-      request_class,
+      [VNDetectFaceLandmarksRequest class],
       base::BindRepeating(&FaceDetectionImplMacVision::OnFacesDetected,
                           weak_factory_.GetWeakPtr()));
 }

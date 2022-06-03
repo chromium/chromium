@@ -4,7 +4,9 @@
 
 #include "net/dns/address_info_test_util.h"
 
-#include "base/logging.h"
+#include <cstring>
+
+#include "base/check.h"
 #include "base/sys_byteorder.h"
 #include "net/base/sys_addrinfo.h"
 

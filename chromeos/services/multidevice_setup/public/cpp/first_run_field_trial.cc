@@ -4,12 +4,12 @@
 
 #include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "components/variations/service/variations_field_trial_creator.h"
+#include "base/system/sys_info.h"
 
 namespace chromeos {
 
@@ -30,9 +30,8 @@ constexpr const char* const kBoardsToEnableInstantTethering[] = {"eve",
 void CreateFirstRunFieldTrial(base::FeatureList* feature_list) {
   // If the hardware name of the current device is not one of the board names in
   // |kBoardsToEnableInstantTethering|, nothing needs to be done.
-  if (!base::Contains(
-          kBoardsToEnableInstantTethering,
-          variations::VariationsFieldTrialCreator::GetShortHardwareClass())) {
+  if (!base::Contains(kBoardsToEnableInstantTethering,
+                      base::SysInfo::HardwareModelName())) {
     return;
   }
 

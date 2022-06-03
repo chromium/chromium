@@ -21,16 +21,14 @@ source_set("overscroll_actions") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "overscroll_actions_tab_helper_unittest.mm",
-  ]
+  sources = [ "overscroll_actions_tab_helper_unittest.mm" ]
   deps = [
     ":overscroll_actions",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ui/overscroll_actions",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test/fakes",
     "//ios/web/public",
     "//ios/web/public/test",

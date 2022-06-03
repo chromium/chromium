@@ -11,9 +11,7 @@ source_set("run_all_unittests") {
 
   testonly = true
 
-  sources = [
-    "run_all_unittests.cc",
-  ]
+  sources = [ "run_all_unittests.cc" ]
 
   deps = [
     "//base",
@@ -25,9 +23,7 @@ source_set("run_all_unittests") {
   if (is_ios) {
     deps += [ ":tests_bundle_data" ]
   } else {
-    data = [
-      "data/",
-    ]
+    data = [ "data/" ]
   }
 
   data_deps = [
@@ -65,8 +61,6 @@ bundle_data("tests_bundle_data") {
     "//services/test/data/simple_page.html",
     "//services/test/data/title1.html",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

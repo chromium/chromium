@@ -8,8 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,13 +33,17 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
  public:
   NetworkTasks(Cronet_UploadDataSinkImpl* upload_data_sink,
                Cronet_Executor* upload_data_provider_executor);
+
+  NetworkTasks(const NetworkTasks&) = delete;
+  NetworkTasks& operator=(const NetworkTasks&) = delete;
+
   ~NetworkTasks() override;
 
  private:
   // CronetUploadDataStream::Delegate implementation:
   void InitializeOnNetworkThread(
       base::WeakPtr<CronetUploadDataStream> upload_data_stream) override;
-  void Read(net::IOBuffer* buffer, int buf_len) override;
+  void Read(scoped_refptr<net::IOBuffer> buffer, int buf_len) override;
   void Rewind() override;
   void OnUploadDataStreamDestroyed() override;
 
@@ -56,7 +59,6 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
   Cronet_ExecutorPtr const upload_data_provider_executor_ = nullptr;
 
   THREAD_CHECKER(network_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
 };
 
 Cronet_UploadDataSinkImpl::NetworkTasks::NetworkTasks(
@@ -195,7 +197,8 @@ void Cronet_UploadDataSinkImpl::PostCloseToExecutor() {
   Cronet_Executor_Execute(upload_data_provider_executor_, runnable);
 }
 
-void Cronet_UploadDataSinkImpl::Read(net::IOBuffer* buffer, int buf_len) {
+void Cronet_UploadDataSinkImpl::Read(scoped_refptr<net::IOBuffer> buffer,
+                                     int buf_len) {
   if (url_request_->IsDone())
     return;
   Cronet_UploadDataProviderPtr upload_data_provider = nullptr;
@@ -207,7 +210,8 @@ void Cronet_UploadDataSinkImpl::Read(net::IOBuffer* buffer, int buf_len) {
     in_which_user_callback_ = READ;
     upload_data_provider = upload_data_provider_;
   }
-  buffer_ = std::make_unique<Cronet_BufferWithIOBuffer>(buffer, buf_len);
+  buffer_ =
+      std::make_unique<Cronet_BufferWithIOBuffer>(std::move(buffer), buf_len);
   Cronet_UploadDataProvider_Read(upload_data_provider, this,
                                  buffer_->cronet_buffer());
 }
@@ -261,12 +265,13 @@ void Cronet_UploadDataSinkImpl::NetworkTasks::InitializeOnNetworkThread(
                      base::ThreadTaskRunnerHandle::Get()));
 }
 
-void Cronet_UploadDataSinkImpl::NetworkTasks::Read(net::IOBuffer* buffer,
-                                                   int buf_len) {
+void Cronet_UploadDataSinkImpl::NetworkTasks::Read(
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   PostTaskToExecutor(base::BindOnce(&Cronet_UploadDataSinkImpl::Read,
                                     base::Unretained(upload_data_sink_),
-                                    base::Passed(&buffer), buf_len));
+                                    std::move(buffer), buf_len));
 }
 
 void Cronet_UploadDataSinkImpl::NetworkTasks::Rewind() {

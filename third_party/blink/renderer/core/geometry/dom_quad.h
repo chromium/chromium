@@ -43,7 +43,7 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(p1_);
     visitor->Trace(p2_);
     visitor->Trace(p3_);
@@ -72,4 +72,4 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_QUAD_H_

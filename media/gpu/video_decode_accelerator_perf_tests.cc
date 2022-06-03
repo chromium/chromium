@@ -9,13 +9,15 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "media/base/test_data_util.h"
+#include "media/gpu/buildflags.h"
+#include "media/gpu/test/video.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/video.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
+#include "sandbox/linux/services/resource_limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -29,8 +31,8 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_decode_accelerator_perf_tests\n"
     "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
-    "           [--use_vd] [--gtest_help] [--help]\n"
-    "           [<video path>] [<video metadata path>]\n";
+    "           ([--use-legacy]|[--use_vd]|[--use_vd_vda]) [--gtest_help]\n"
+    "           [--help] [<video path>] [<video metadata path>]\n";
 
 // Video decoder perf tests help message.
 constexpr const char* help_msg =
@@ -47,8 +49,13 @@ constexpr const char* help_msg =
     "  --output_folder      overwrite the output folder used to store\n"
     "                       performance metrics, if not specified results\n"
     "                       will be stored in the current working directory.\n"
-    "  --use_vd             use the new VD-based video decoders, instead of\n"
-    "                       the default VDA-based video decoders.\n"
+    "  --use-legacy         use the legacy VDA-based video decoders.\n"
+    "  --use_vd             use the new VD-based video decoders.\n"
+    "                       (enabled by default)\n"
+    "  --use_vd_vda         use the new VD-based video decoders with a\n"
+    "                       wrapper that translates to the VDA interface,\n"
+    "                       used to test interaction with older components\n"
+    "                       expecting the VDA interface.\n"
     "  --gtest_help         display the gtest help and exit.\n"
     "  --help               display this help and exit.\n";
 
@@ -302,8 +309,8 @@ class VideoDecoderTest : public ::testing::Test {
     base::TimeDelta frame_duration;
     base::TimeDelta vsync_interval_duration;
     if (render_frame_rate > 0) {
-      frame_duration = base::TimeDelta::FromSeconds(1) / render_frame_rate;
-      vsync_interval_duration = base::TimeDelta::FromSeconds(1) / vsync_rate;
+      frame_duration = base::Seconds(1) / render_frame_rate;
+      vsync_interval_duration = base::Seconds(1) / vsync_rate;
     }
     auto frame_renderer =
         FrameRendererDummy::Create(frame_duration, vsync_interval_duration);
@@ -316,11 +323,7 @@ class VideoDecoderTest : public ::testing::Test {
 
     // Use the new VD-based video decoders if requested.
     VideoDecoderClientConfig config;
-    config.use_vd = g_env->UseVD();
-
-    // Force allocate mode if import mode is not supported.
-    if (!g_env->ImportSupported())
-      config.allocation_mode = AllocationMode::kAllocate;
+    config.implementation = g_env->GetDecoderImplementation();
 
     auto video_player = VideoPlayer::Create(
         config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
@@ -372,6 +375,45 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
   EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
 }
 
+// Play multiple videos simultaneously from start to finish.
+TEST_F(VideoDecoderTest,
+       MeasureUncappedPerformance_MultipleConcurrentDecoders) {
+  // Set RLIMIT_NOFILE soft limit to its hard limit value.
+  if (sandbox::ResourceLimits::AdjustCurrent(
+          RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
+    DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
+  }
+
+// The minimal number of concurrent decoders we expect to be supported on
+// platforms.
+#if defined(USE_VAAPI)
+  constexpr size_t kMinSupportedConcurrentDecoders =
+      VaapiVideoDecoder::kMaxNumOfInstances;
+#elif defined(USE_V4L2_CODEC)
+  constexpr size_t kMinSupportedConcurrentDecoders = 10;
+#else
+  constexpr size_t kMinSupportedConcurrentDecoders = 10;
+#endif
+
+  std::vector<std::unique_ptr<VideoPlayer>> players(
+      kMinSupportedConcurrentDecoders);
+  for (auto&& player : players)
+    player = CreateVideoPlayer(g_env->Video());
+
+  performance_evaluator_->StartMeasuring();
+
+  for (auto&& player : players)
+    player->Play();
+
+  for (auto&& player : players) {
+    EXPECT_TRUE(player->WaitForFlushDone());
+    EXPECT_EQ(player->GetFlushDoneCount(), 1u);
+    EXPECT_EQ(player->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  }
+  performance_evaluator_->StopMeasuring();
+  performance_evaluator_->WriteMetricsToFile();
+}
+
 }  // namespace test
 }  // namespace media
 
@@ -382,7 +424,7 @@ int main(int argc, char** argv) {
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   LOG_ASSERT(cmd_line);
   if (cmd_line->HasSwitch("help")) {
     std::cout << media::test::usage_msg << "\n" << media::test::help_msg;
@@ -398,7 +440,11 @@ int main(int argc, char** argv) {
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
+  bool use_legacy = false;
   bool use_vd = false;
+  bool use_vd_vda = false;
+  media::test::DecoderImplementation implementation =
+      media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
@@ -409,8 +455,15 @@ int main(int argc, char** argv) {
 
     if (it->first == "output_folder") {
       output_folder = it->second;
+    } else if (it->first == "use-legacy") {
+      use_legacy = true;
+      implementation = media::test::DecoderImplementation::kVDA;
     } else if (it->first == "use_vd") {
       use_vd = true;
+      implementation = media::test::DecoderImplementation::kVD;
+    } else if (it->first == "use_vd_vda") {
+      use_vd_vda = true;
+      implementation = media::test::DecoderImplementation::kVDVDA;
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -418,12 +471,34 @@ int main(int argc, char** argv) {
     }
   }
 
+  if (use_legacy && use_vd) {
+    std::cout << "--use-legacy and --use_vd cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
+  if (use_legacy && use_vd_vda) {
+    std::cout << "--use-legacy and --use_vd_vda cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
+  if (use_vd && use_vd_vda) {
+    std::cout << "--use_vd and --use_vd_vda cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
+
   testing::InitGoogleTest(&argc, argv);
+
+  // Add the command line flag for HEVC testing which will be checked by the
+  // video decoder to allow clear HEVC decoding.
+  cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
 
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =
       media::test::VideoPlayerTestEnvironment::Create(
-          video_path, video_metadata_path, false, use_vd,
+          video_path, video_metadata_path, /*validator_type=*/
+          media::test::VideoPlayerTestEnvironment::ValidatorType::kNone,
+          implementation,
           base::FilePath(output_folder));
   if (!test_environment)
     return EXIT_FAILURE;

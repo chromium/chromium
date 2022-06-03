@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_MOJO_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_MOJO_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -76,8 +74,13 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
 
   FrameSinkManagerImpl* const frame_sink_manager_;
 
-  mojo::AssociatedReceiver<mojom::ExternalBeginFrameController> receiver_;
+  // The pending_frame_callback_ needs to be destroyed after the mojo receiver,
+  // or else we may get a DCHECK that the callback was dropped while the
+  // receiver is open. Since destruction order is well defined, ensuring that
+  // the callback is listed before the receiver is enough to guarantee this.
   base::OnceCallback<void(const BeginFrameAck& ack)> pending_frame_callback_;
+
+  mojo::AssociatedReceiver<mojom::ExternalBeginFrameController> receiver_;
   // The frame source id as specified in BeginFrameArgs passed to
   // IssueExternalBeginFrame. Note this is likely to be different from our
   // source id, but this is what will be reported to FrameSinkObserver methods.

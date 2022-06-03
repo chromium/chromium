@@ -6,9 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/build_time.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -16,7 +17,6 @@
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_with_source.h"
@@ -46,13 +46,13 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto enforcer = std::make_unique<ChromeCTPolicyEnforcer>(
-        base::GetBuildTime(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
+        base::Time::Now(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
     enforcer->SetClockForTesting(&clock_);
-    policy_enforcer_.reset(enforcer.release());
+    policy_enforcer_ = std::move(enforcer);
 
     std::string der_test_cert(net::ct::GetDerEncodedX509Cert());
-    chain_ = X509Certificate::CreateFromBytes(der_test_cert.data(),
-                                              der_test_cert.size());
+    chain_ = X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(der_test_cert)));
     ASSERT_TRUE(chain_.get());
     google_log_id_ = std::string(kGoogleAviatorLogID, crypto::kSHA256Length);
     non_google_log_id_.assign(crypto::kSHA256Length, 1);
@@ -196,7 +196,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
 
-  clock_.Advance(base::TimeDelta::FromDays(71));
+  clock_.Advance(base::Days(71));
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -445,19 +445,19 @@ TEST_F(ChromeCTPolicyEnforcerTest,
     ASSERT_TRUE(net::x509_util::CreateSelfSignedCert(
         private_key->key(), net::x509_util::DIGEST_SHA256, "CN=test",
         i * 10 + required_scts, start, end, {}, &cert_data));
-    scoped_refptr<X509Certificate> cert(
-        X509Certificate::CreateFromBytes(cert_data.data(), cert_data.size()));
+    scoped_refptr<X509Certificate> cert(X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(cert_data))));
     ASSERT_TRUE(cert);
 
-    for (size_t i = 0; i < required_scts - 1; ++i) {
+    for (size_t j = 0; j < required_scts - 1; ++j) {
       SCTList scts;
-      FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, i,
+      FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, j,
                                std::vector<std::string>(), false, &scts);
       EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
                 policy_enforcer_->CheckCompliance(cert.get(), scts,
                                                   NetLogWithSource()))
           << " for: " << (end - start).InDays() << " and " << required_scts
-          << " scts=" << scts.size() << " i=" << i;
+          << " scts=" << scts.size() << " j=" << j;
     }
     SCTList scts;
     FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
@@ -469,6 +469,67 @@ TEST_F(ChromeCTPolicyEnforcerTest,
         << " for: " << (end - start).InDays() << " and " << required_scts
         << " scts=" << scts.size();
   }
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should fail since the Google Aviator log is no longer in the
+  // list after the update with an empty list.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+
+  // Update the list again, this time including all the known operated by Google
+  // logs.
+  operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should now succeed.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+
+  // Clear the log list and set the last updated time to more than 10 weeks ago.
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now() - base::Days(71),
+                                          disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should return build not timely even though the Google Aviator log
+  // is no longer in the list, since the last update time is greater than 10
+  // weeks.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+
+  // Update the last update time value again, this time with a recent time.
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should now fail
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
 }
 
 }  // namespace

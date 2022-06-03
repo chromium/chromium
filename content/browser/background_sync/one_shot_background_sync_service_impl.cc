@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,10 +16,12 @@ namespace content {
 
 OneShotBackgroundSyncServiceImpl::OneShotBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
+      origin_(origin),
       receiver_(this, std::move(receiver)) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(background_sync_context_);
 
   registration_helper_ = std::make_unique<BackgroundSyncRegistrationHelper>(
@@ -32,7 +33,7 @@ OneShotBackgroundSyncServiceImpl::OneShotBackgroundSyncServiceImpl(
 }
 
 OneShotBackgroundSyncServiceImpl::~OneShotBackgroundSyncServiceImpl() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 void OneShotBackgroundSyncServiceImpl::OnMojoDisconnect() {
@@ -44,11 +45,18 @@ void OneShotBackgroundSyncServiceImpl::Register(
     blink::mojom::SyncRegistrationOptionsPtr options,
     int64_t sw_registration_id,
     RegisterCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(options);
 
   if (options->min_interval != -1) {
     registration_helper_->NotifyInvalidOptionsProvided(std::move(callback));
+    return;
+  }
+
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* registrations= */ nullptr);
     return;
   }
 
@@ -58,7 +66,7 @@ void OneShotBackgroundSyncServiceImpl::Register(
 
 void OneShotBackgroundSyncServiceImpl::DidResolveRegistration(
     blink::mojom::BackgroundSyncRegistrationInfoPtr registration_info) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   registration_helper_->DidResolveRegistration(std::move(registration_info));
 }
@@ -66,7 +74,14 @@ void OneShotBackgroundSyncServiceImpl::DidResolveRegistration(
 void OneShotBackgroundSyncServiceImpl::GetRegistrations(
     int64_t sw_registration_id,
     GetRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* options= */ {});
+    return;
+  }
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();

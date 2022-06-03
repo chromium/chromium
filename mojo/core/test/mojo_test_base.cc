@@ -269,6 +269,9 @@ MojoResult MojoTestBase::WaitForSignals(MojoHandle handle,
               state);
 }
 
+// static
+constexpr size_t MojoTestBase::kMaxMessageSizeInTests;
+
 }  // namespace test
 }  // namespace core
 }  // namespace mojo

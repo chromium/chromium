@@ -7,18 +7,19 @@
 #include <sstream>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_util.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
@@ -37,12 +38,6 @@ void OnModemResetError(const std::string& error_name,
                  << error_message << ".";
 }
 
-void OnNetworkConnectionError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  NET_LOG(ERROR) << "ConnectToNetwork() failed. Error name: " << error_name;
-}
-
 }  // namespace
 
 // static
@@ -54,16 +49,16 @@ std::unique_ptr<OtaActivator> OtaActivatorImpl::Factory::Create(
     NetworkActivationHandler* network_activation_handler,
     scoped_refptr<base::TaskRunner> task_runner) {
   if (g_test_factory) {
-    return g_test_factory->BuildInstance(
+    return g_test_factory->CreateInstance(
         std::move(activation_delegate), std::move(on_finished_callback),
         network_state_handler, network_connection_handler,
-        network_activation_handler, task_runner);
+        network_activation_handler, std::move(task_runner));
   }
 
   return base::WrapUnique(new OtaActivatorImpl(
       std::move(activation_delegate), std::move(on_finished_callback),
       network_state_handler, network_connection_handler,
-      network_activation_handler, task_runner));
+      network_activation_handler, std::move(task_runner)));
 }
 
 // static
@@ -72,6 +67,12 @@ void OtaActivatorImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
 }
 
 OtaActivatorImpl::Factory::~Factory() = default;
+
+// static
+const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay = base::Seconds(3);
+
+// static
+const size_t OtaActivatorImpl::kMaxConnectRetryAttempt = 3;
 
 OtaActivatorImpl::OtaActivatorImpl(
     mojo::PendingRemote<mojom::ActivationDelegate> activation_delegate,
@@ -139,11 +140,15 @@ const DeviceState* OtaActivatorImpl::GetCellularDeviceState() const {
 }
 
 const NetworkState* OtaActivatorImpl::GetCellularNetworkState() const {
-  // Note: Chrome OS only supports up to one Cellular network at a time. Other
-  // configurations (e.g., a USB modem dongle in addition to an integrated SIM)
-  // are not supported.
-  return network_state_handler_->FirstNetworkByType(
-      NetworkTypePattern::Cellular());
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &network_list);
+  for (const NetworkState* network_state : network_list) {
+    if (network_state->iccid() == iccid_) {
+      return network_state;
+    }
+  }
+  return nullptr;
 }
 
 void OtaActivatorImpl::StartActivation() {
@@ -195,6 +200,8 @@ void OtaActivatorImpl::FinishActivationAttempt(
   network_state_handler_ = nullptr;
 
   NET_LOG(EVENT) << "Finished attempt with result " << activation_result << ".";
+  base::UmaHistogramEnumeration("Network.Cellular.PSim.OtaActivationResult",
+                                activation_result);
 
   if (activation_delegate_)
     activation_delegate_->OnActivationFinished(activation_result);
@@ -213,30 +220,37 @@ void OtaActivatorImpl::AttemptToDiscoverSim() {
   if (!cellular_device)
     return;
 
+  // Find status of first available pSIM slot.
+  // Note: We currently only support setting up devices with single physical
+  // SIM slots. This excludes other configurations such as multiple physical
+  // SIM slots and SIM cards in external dongles.
+  bool has_psim_slots = false;
+  for (const CellularSIMSlotInfo& sim_slot_info :
+       GetSimSlotInfosWithUpdatedEid(cellular_device)) {
+    if (sim_slot_info.eid.empty()) {
+      has_psim_slots = true;
+      iccid_ = sim_slot_info.iccid;
+      break;
+    }
+  }
+
+  if (!has_psim_slots) {
+    NET_LOG(ERROR) << "No PSim slots found";
+    FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+    return;
+  }
+
   // If no SIM card is present, it may be due to the fact that some devices do
   // not have hardware support for determining whether a SIM has been inserted.
   // Restart the modem to see if the SIM is detected when the modem powers back
   // on.
-  if (!cellular_device->sim_present()) {
+  if (iccid_.empty()) {
     NET_LOG(DEBUG) << "No SIM detected; restarting modem.";
     ShillDeviceClient::Get()->Reset(
         dbus::ObjectPath(cellular_device->path()),
-        base::Bind(&OtaActivatorImpl::AttemptNextActivationStep,
-                   weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&OnModemResetError));
-    return;
-  }
-
-  // The device must have the properties required for the activation flow;
-  // namely, the operator name, IMEI, and MDN must be available. Return
-  // and wait to see if DevicePropertiesUpdated() is invoked with valid
-  // properties.
-  if (cellular_device->operator_name().empty() ||
-      cellular_device->imei().empty() || cellular_device->mdn().empty()) {
-    NET_LOG(DEBUG) << "Insufficient activation data: "
-                   << "Operator name: " << cellular_device->operator_name()
-                   << ", IMEI: " << cellular_device->imei() << ", "
-                   << "MDN: " << cellular_device->mdn();
+        base::BindOnce(&OtaActivatorImpl::AttemptNextActivationStep,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&OnModemResetError));
     return;
   }
 
@@ -253,11 +267,44 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
   if (!cellular_network)
     return;
 
+  // The network is disconnected; trigger a connection and wait for
+  // NetworkPropertiesUpdated() to be called when the network connects.
+  if (!cellular_network->IsConnectingOrConnected()) {
+    if (connect_retry_timer_.IsRunning()) {
+      return;
+    }
+    network_connection_handler_->ConnectToNetwork(
+        cellular_network->path(), base::DoNothing(),
+        base::BindOnce(&OtaActivatorImpl::OnNetworkConnectionError,
+                       weak_ptr_factory_.GetWeakPtr()),
+        false /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
+    return;
+  }
+
+  // The network is connecting; return early and wait for
+  // NetworkPropertiesUpdated() to be called if/when the network connects.
+  if (cellular_network->IsConnectingState())
+    return;
+
+  connect_retry_timer_.Stop();
+
   // If the network is already activated, there is no need to complete the rest
   // of the flow.
   if (cellular_network->activation_state() ==
       shill::kActivationStateActivated) {
     FinishActivationAttempt(mojom::ActivationResult::kAlreadyActivated);
+    return;
+  }
+
+  const DeviceState* cellular_device = GetCellularDeviceState();
+  // The device must have the properties required for the actication flow;
+  // namely, the operator name and IMEI. Return and wait to see if
+  // DevicePropertiesUpdated() is invoked with valid properties.
+  if (cellular_device->operator_name().empty() ||
+      cellular_device->imei().empty()) {
+    NET_LOG(DEBUG) << "Insufficient activation data: "
+                   << "Operator name: " << cellular_device->operator_name()
+                   << ", IMEI: " << cellular_device->imei();
     return;
   }
 
@@ -270,21 +317,6 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
                    << "Post Data: " << cellular_network->payment_post_data();
     return;
   }
-
-  // The network is disconnected; trigger a connection and wait for
-  // NetworkPropertiesUpdated() to be called when the network connects.
-  if (!cellular_network->IsConnectingOrConnected()) {
-    network_connection_handler_->ConnectToNetwork(
-        cellular_network->path(), base::DoNothing(),
-        base::Bind(&OnNetworkConnectionError), false /* check_error_state */,
-        ConnectCallbackMode::ON_STARTED);
-    return;
-  }
-
-  // The network is connecting; return early and wait for
-  // NetworkPropertiesUpdated() to be called if/when the network connects.
-  if (cellular_network->IsConnectingState())
-    return;
 
   ChangeStateAndAttemptNextStep(State::kWaitingForCellularPayment);
 }
@@ -314,8 +346,15 @@ void OtaActivatorImpl::AttemptToSendMetadataToDelegate() {
   }
 
   // The user must successfully pay via the carrier portal before continuing.
+  // The carrier portal may also load but fail to notify the UI of payment
+  // success. The UI will send kPortalLoadedButErrorOccurredDuringPayment
+  // in this case. Optimistically complete activation in case the user did
+  // complete payment.
   if (last_carrier_portal_status_ !=
-      mojom::CarrierPortalStatus::kPortalLoadedAndUserCompletedPayment) {
+          mojom::CarrierPortalStatus::kPortalLoadedAndUserCompletedPayment &&
+      last_carrier_portal_status_ !=
+          mojom::CarrierPortalStatus::
+              kPortalLoadedButErrorOccurredDuringPayment) {
     return;
   }
 
@@ -332,11 +371,11 @@ void OtaActivatorImpl::AttemptToCompleteActivation() {
 
   network_activation_handler_->CompleteActivation(
       GetCellularNetworkState()->path(),
-      base::Bind(&OtaActivatorImpl::FinishActivationAttempt,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 mojom::ActivationResult::kSuccessfullyStartedActivation),
-      base::Bind(&OtaActivatorImpl::OnCompleteActivationError,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&OtaActivatorImpl::FinishActivationAttempt,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     mojom::ActivationResult::kSuccessfullyStartedActivation),
+      base::BindOnce(&OtaActivatorImpl::OnCompleteActivationError,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OtaActivatorImpl::OnCompleteActivationError(
@@ -344,6 +383,27 @@ void OtaActivatorImpl::OnCompleteActivationError(
     std::unique_ptr<base::DictionaryValue> error_data) {
   NET_LOG(ERROR) << "CompleteActivation() failed. Error name: " << error_name;
   FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+}
+
+void OtaActivatorImpl::OnNetworkConnectionError(
+    const std::string& error_name,
+    std::unique_ptr<base::DictionaryValue> error_data) {
+  if (connect_retry_attempts_ >= kMaxConnectRetryAttempt) {
+    NET_LOG(ERROR) << "Reached max connection retry attempts.";
+    FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+    return;
+  }
+
+  base::TimeDelta retry_delay =
+      kConnectRetryDelay * (1 << connect_retry_attempts_);
+  connect_retry_attempts_++;
+  NET_LOG(DEBUG) << "Network connect for activation failed. Error="
+                 << error_name << ". Retrying in " << retry_delay;
+
+  connect_retry_timer_.Start(
+      FROM_HERE, retry_delay,
+      base::BindOnce(&OtaActivatorImpl::AttemptNextActivationStep,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OtaActivatorImpl::FlushForTesting() {

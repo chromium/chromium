@@ -41,8 +41,8 @@ class PaperCalculatorHitTest(polymer.PolymerPage):
     action_runner.WaitForJavaScriptCondition(
         'window.__tapTarget != null')
 
-    for _ in xrange(100):
-        self.TapButton(action_runner)
+    for _ in range(100):
+      self.TapButton(action_runner)
 
   def TapButton(self, action_runner):
     with action_runner.CreateInteraction('Action_TapAction'):

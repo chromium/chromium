@@ -28,6 +28,8 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -106,7 +108,8 @@ bool TextTrackLoader::Load(const KURL& url,
                            CrossOriginAttributeValue cross_origin) {
   CancelLoad();
 
-  ResourceLoaderOptions options;
+  ResourceLoaderOptions options(
+      GetDocument().GetExecutionContext()->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kTrack;
 
   // Let |request| be the result of creating a potential-CORS request
@@ -119,7 +122,7 @@ bool TextTrackLoader::Load(const KURL& url,
         network::mojom::RequestMode::kSameOrigin);
   } else {
     cue_fetch_params.SetCrossOriginAccessControl(
-        GetDocument().GetSecurityOrigin(), cross_origin);
+        GetDocument().GetExecutionContext()->GetSecurityOrigin(), cross_origin);
   }
 
   ResourceFetcher* fetcher = GetDocument().Fetcher();
@@ -157,10 +160,11 @@ void TextTrackLoader::GetNewStyleSheets(
     cue_parser_->GetNewStyleSheets(output_sheets);
 }
 
-void TextTrackLoader::Trace(blink::Visitor* visitor) {
+void TextTrackLoader::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(cue_parser_);
   visitor->Trace(document_);
+  visitor->Trace(cue_load_timer_);
   RawResourceClient::Trace(visitor);
   VTTParserClient::Trace(visitor);
 }

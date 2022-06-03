@@ -28,8 +28,10 @@
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
+#include "absl/base/options.h"
 
-#ifdef __ANDROID__
+#if defined(ABSL_HAVE_STD_STRING_VIEW) || defined(__ANDROID__)
+// We don't control the death messaging when using std::string_view.
 // Android assert messages only go to system log, so death tests cannot inspect
 // the message for matching.
 #define ABSL_EXPECT_DEATH_IF_SUPPORTED(statement, regex) \
@@ -372,7 +374,7 @@ TEST(StringViewTest, STL1) {
 #ifdef ABSL_HAVE_EXCEPTIONS
   EXPECT_THROW(a.copy(buf, 1, 27), std::out_of_range);
 #else
-  EXPECT_DEATH(a.copy(buf, 1, 27), "absl::string_view::copy");
+  ABSL_EXPECT_DEATH_IF_SUPPORTED(a.copy(buf, 1, 27), "absl::string_view::copy");
 #endif
 }
 
@@ -409,7 +411,7 @@ TEST(StringViewTest, STL2) {
   EXPECT_EQ(a.find(e, 17), 17);
   absl::string_view g("xx not found bb");
   EXPECT_EQ(a.find(g), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.find(b), absl::string_view::npos);
   EXPECT_EQ(e.find(b), absl::string_view::npos);
   EXPECT_EQ(d.find(b, 4), absl::string_view::npos);
@@ -437,7 +439,7 @@ TEST(StringViewTest, STL2) {
   EXPECT_EQ(g.find('o', 4), 4);
   EXPECT_EQ(g.find('o', 5), 8);
   EXPECT_EQ(a.find('b', 5), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.find('\0'), absl::string_view::npos);
   EXPECT_EQ(e.find('\0'), absl::string_view::npos);
   EXPECT_EQ(d.find('\0', 4), absl::string_view::npos);
@@ -446,6 +448,24 @@ TEST(StringViewTest, STL2) {
   EXPECT_EQ(e.find('x'), absl::string_view::npos);
   EXPECT_EQ(d.find('x', 4), absl::string_view::npos);
   EXPECT_EQ(e.find('x', 7), absl::string_view::npos);
+
+  EXPECT_EQ(a.find(b.data(), 1, 0), 1);
+  EXPECT_EQ(a.find(c.data(), 9, 0), 9);
+  EXPECT_EQ(a.find(c.data(), absl::string_view::npos, 0),
+            absl::string_view::npos);
+  EXPECT_EQ(b.find(c.data(), absl::string_view::npos, 0),
+            absl::string_view::npos);
+  // empty string nonsense
+  EXPECT_EQ(d.find(b.data(), 4, 0), absl::string_view::npos);
+  EXPECT_EQ(e.find(b.data(), 7, 0), absl::string_view::npos);
+
+  EXPECT_EQ(a.find(b.data(), 1), absl::string_view::npos);
+  EXPECT_EQ(a.find(c.data(), 9), 23);
+  EXPECT_EQ(a.find(c.data(), absl::string_view::npos), absl::string_view::npos);
+  EXPECT_EQ(b.find(c.data(), absl::string_view::npos), absl::string_view::npos);
+  // empty string nonsense
+  EXPECT_EQ(d.find(b.data(), 4), absl::string_view::npos);
+  EXPECT_EQ(e.find(b.data(), 7), absl::string_view::npos);
 
   EXPECT_EQ(a.rfind(b), 0);
   EXPECT_EQ(a.rfind(b, 1), 0);
@@ -464,7 +484,7 @@ TEST(StringViewTest, STL2) {
   EXPECT_EQ(e.rfind(b), absl::string_view::npos);
   EXPECT_EQ(d.rfind(b, 4), absl::string_view::npos);
   EXPECT_EQ(e.rfind(b, 7), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.rfind(d, 4), std::string().rfind(std::string()));
   EXPECT_EQ(e.rfind(d, 7), std::string().rfind(std::string()));
   EXPECT_EQ(d.rfind(e, 4), std::string().rfind(std::string()));
@@ -483,11 +503,19 @@ TEST(StringViewTest, STL2) {
   EXPECT_EQ(f.rfind('\0', 12), 3);
   EXPECT_EQ(f.rfind('3'), 2);
   EXPECT_EQ(f.rfind('5'), 5);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.rfind('o'), absl::string_view::npos);
   EXPECT_EQ(e.rfind('o'), absl::string_view::npos);
   EXPECT_EQ(d.rfind('o', 4), absl::string_view::npos);
   EXPECT_EQ(e.rfind('o', 7), absl::string_view::npos);
+
+  EXPECT_EQ(a.rfind(b.data(), 1, 0), 1);
+  EXPECT_EQ(a.rfind(c.data(), 22, 0), 22);
+  EXPECT_EQ(a.rfind(c.data(), 1, 0), 1);
+  EXPECT_EQ(a.rfind(c.data(), 0, 0), 0);
+  EXPECT_EQ(b.rfind(c.data(), 0, 0), 0);
+  EXPECT_EQ(d.rfind(b.data(), 4, 0), 0);
+  EXPECT_EQ(e.rfind(b.data(), 7, 0), 0);
 }
 
 // Continued from STL2
@@ -519,7 +547,7 @@ TEST(StringViewTest, STL2FindFirst) {
   EXPECT_EQ(g.find_first_of(c), 0);
   EXPECT_EQ(a.find_first_of(f), absl::string_view::npos);
   EXPECT_EQ(f.find_first_of(a), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(a.find_first_of(d), absl::string_view::npos);
   EXPECT_EQ(a.find_first_of(e), absl::string_view::npos);
   EXPECT_EQ(d.find_first_of(b), absl::string_view::npos);
@@ -537,7 +565,7 @@ TEST(StringViewTest, STL2FindFirst) {
   EXPECT_EQ(a.find_first_not_of(f), 0);
   EXPECT_EQ(a.find_first_not_of(d), 0);
   EXPECT_EQ(a.find_first_not_of(e), 0);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(a.find_first_not_of(d), 0);
   EXPECT_EQ(a.find_first_not_of(e), 0);
   EXPECT_EQ(a.find_first_not_of(d, 1), 1);
@@ -565,7 +593,7 @@ TEST(StringViewTest, STL2FindFirst) {
   EXPECT_EQ(f.find_first_not_of('\0'), 0);
   EXPECT_EQ(f.find_first_not_of('\0', 3), 4);
   EXPECT_EQ(f.find_first_not_of('\0', 2), 2);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.find_first_not_of('x'), absl::string_view::npos);
   EXPECT_EQ(e.find_first_not_of('x'), absl::string_view::npos);
   EXPECT_EQ(d.find_first_not_of('\0'), absl::string_view::npos);
@@ -605,7 +633,7 @@ TEST(StringViewTest, STL2FindLast) {
   EXPECT_EQ(f.find_last_of(i, 5), 5);
   EXPECT_EQ(f.find_last_of(i, 6), 6);
   EXPECT_EQ(f.find_last_of(a, 4), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(f.find_last_of(d), absl::string_view::npos);
   EXPECT_EQ(f.find_last_of(e), absl::string_view::npos);
   EXPECT_EQ(f.find_last_of(d, 4), absl::string_view::npos);
@@ -631,7 +659,7 @@ TEST(StringViewTest, STL2FindLast) {
   EXPECT_EQ(a.find_last_not_of(c, 24), 22);
   EXPECT_EQ(a.find_last_not_of(b, 3), 3);
   EXPECT_EQ(a.find_last_not_of(b, 2), absl::string_view::npos);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(f.find_last_not_of(d), f.size()-1);
   EXPECT_EQ(f.find_last_not_of(e), f.size()-1);
   EXPECT_EQ(f.find_last_not_of(d, 4), 4);
@@ -655,7 +683,7 @@ TEST(StringViewTest, STL2FindLast) {
   EXPECT_EQ(h.find_last_not_of('x', 2), 2);
   EXPECT_EQ(h.find_last_not_of('=', 2), absl::string_view::npos);
   EXPECT_EQ(b.find_last_not_of('b', 1), 0);
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.find_last_not_of('x'), absl::string_view::npos);
   EXPECT_EQ(e.find_last_not_of('x'), absl::string_view::npos);
   EXPECT_EQ(d.find_last_not_of('\0'), absl::string_view::npos);
@@ -676,8 +704,9 @@ TEST(StringViewTest, STL2Substr) {
   EXPECT_EQ(a.substr(23, 3), c);
   EXPECT_EQ(a.substr(23, 99), c);
   EXPECT_EQ(a.substr(0), a);
+  EXPECT_EQ(a.substr(), a);
   EXPECT_EQ(a.substr(3, 2), "de");
-  // empty std::string nonsense
+  // empty string nonsense
   EXPECT_EQ(d.substr(0, 99), e);
   // use of npos
   EXPECT_EQ(a.substr(0, absl::string_view::npos), a);
@@ -686,7 +715,8 @@ TEST(StringViewTest, STL2Substr) {
 #ifdef ABSL_HAVE_EXCEPTIONS
   EXPECT_THROW((void)a.substr(99, 2), std::out_of_range);
 #else
-  EXPECT_DEATH((void)a.substr(99, 2), "absl::string_view::substr");
+  ABSL_EXPECT_DEATH_IF_SUPPORTED((void)a.substr(99, 2),
+                                 "absl::string_view::substr");
 #endif
 }
 
@@ -816,21 +846,35 @@ TEST(StringViewTest, FrontBackSingleChar) {
   EXPECT_EQ(&c, &csp.back());
 }
 
+TEST(StringViewTest, FrontBackEmpty) {
+#ifndef ABSL_USES_STD_STRING_VIEW
+#if !defined(NDEBUG) || ABSL_OPTION_HARDENED
+  // Abseil's string_view implementation has debug assertions that check that
+  // front() and back() are not called on an empty string_view.
+  absl::string_view sv;
+  ABSL_EXPECT_DEATH_IF_SUPPORTED(sv.front(), "");
+  ABSL_EXPECT_DEATH_IF_SUPPORTED(sv.back(), "");
+#endif
+#endif
+}
+
 // `std::string_view::string_view(const char*)` calls
 // `std::char_traits<char>::length(const char*)` to get the string length. In
 // libc++, it doesn't allow `nullptr` in the constexpr context, with the error
 // "read of dereferenced null pointer is not allowed in a constant expression".
 // At run time, the behavior of `std::char_traits::length()` on `nullptr` is
 // undefined by the standard and usually results in crash with libc++.
+// GCC also started rejected this in libstdc++ starting in GCC9.
 // In MSVC, creating a constexpr string_view from nullptr also triggers an
 // "unevaluable pointer value" error. This compiler implementation conforms
 // to the standard, but `absl::string_view` implements a different
 // behavior for historical reasons. We work around tests that construct
 // `string_view` from `nullptr` when using libc++.
-#if !defined(ABSL_HAVE_STD_STRING_VIEW) || \
-    (!defined(_LIBCPP_VERSION) && !defined(_MSC_VER))
+#if !defined(ABSL_USES_STD_STRING_VIEW) ||                    \
+    (!(defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE >= 9) && \
+     !defined(_LIBCPP_VERSION) && !defined(_MSC_VER))
 #define ABSL_HAVE_STRING_VIEW_FROM_NULLPTR 1
-#endif  // !defined(ABSL_HAVE_STD_STRING_VIEW) || !defined(_LIBCPP_VERSION)
+#endif
 
 TEST(StringViewTest, NULLInput) {
   absl::string_view s;
@@ -843,7 +887,7 @@ TEST(StringViewTest, NULLInput) {
   EXPECT_EQ(s.size(), 0);
 
   // .ToString() on a absl::string_view with nullptr should produce the empty
-  // std::string.
+  // string.
   EXPECT_EQ("", std::string(s));
 #endif  // ABSL_HAVE_STRING_VIEW_FROM_NULLPTR
 }
@@ -892,6 +936,18 @@ TEST(StringViewTest, Comparisons2) {
   EXPECT_LT(digits.compare(0, npos, "0123456789", 3, 5), 0);  // 6
 }
 
+TEST(StringViewTest, At) {
+  absl::string_view abc = "abc";
+  EXPECT_EQ(abc.at(0), 'a');
+  EXPECT_EQ(abc.at(1), 'b');
+  EXPECT_EQ(abc.at(2), 'c');
+#ifdef ABSL_HAVE_EXCEPTIONS
+  EXPECT_THROW((void)abc.at(3), std::out_of_range);
+#else
+  ABSL_EXPECT_DEATH_IF_SUPPORTED((void)abc.at(3), "absl::string_view::at");
+#endif
+}
+
 struct MyCharAlloc : std::allocator<char> {};
 
 TEST(StringViewTest, ExplicitConversionOperator) {
@@ -915,6 +971,31 @@ TEST(StringViewTest, NullSafeStringView) {
   }
 }
 
+TEST(StringViewTest, ConstexprNullSafeStringView) {
+  {
+    constexpr absl::string_view s = absl::NullSafeStringView(nullptr);
+    EXPECT_EQ(nullptr, s.data());
+    EXPECT_EQ(0, s.size());
+    EXPECT_EQ(absl::string_view(), s);
+  }
+#if !defined(_MSC_VER) || _MSC_VER >= 1910
+  // MSVC 2017+ is required for good constexpr string_view support.
+  // See the implementation of `absl::string_view::StrlenInternal()`.
+  {
+    static constexpr char kHi[] = "hi";
+    absl::string_view s = absl::NullSafeStringView(kHi);
+    EXPECT_EQ(kHi, s.data());
+    EXPECT_EQ(strlen(kHi), s.size());
+    EXPECT_EQ(absl::string_view("hi"), s);
+  }
+  {
+    constexpr absl::string_view s = absl::NullSafeStringView("hello");
+    EXPECT_EQ(s.size(), 5);
+    EXPECT_EQ("hello", s);
+  }
+#endif
+}
+
 TEST(StringViewTest, ConstexprCompiles) {
   constexpr absl::string_view sp;
 #ifdef ABSL_HAVE_STRING_VIEW_FROM_NULLPTR
@@ -922,9 +1003,9 @@ TEST(StringViewTest, ConstexprCompiles) {
 #endif
   constexpr absl::string_view cstr_len("cstr", 4);
 
-#if defined(ABSL_HAVE_STD_STRING_VIEW)
+#if defined(ABSL_USES_STD_STRING_VIEW)
   // In libstdc++ (as of 7.2), `std::string_view::string_view(const char*)`
-  // calls `std::char_traits<char>::length(const char*)` to get the std::string
+  // calls `std::char_traits<char>::length(const char*)` to get the string
   // length, but it is not marked constexpr yet. See GCC bug:
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78156
   // Also, there is a LWG issue that adds constexpr to length() which was just
@@ -936,7 +1017,7 @@ TEST(StringViewTest, ConstexprCompiles) {
 #define ABSL_HAVE_CONSTEXPR_STRING_VIEW_FROM_CSTR 1
 #endif  // !__GLIBCXX__
 
-#else  // ABSL_HAVE_STD_STRING_VIEW
+#else  // ABSL_USES_STD_STRING_VIEW
 
 // This duplicates the check for __builtin_strlen in the header.
 #if ABSL_HAVE_BUILTIN(__builtin_strlen) || \
@@ -951,13 +1032,36 @@ TEST(StringViewTest, ConstexprCompiles) {
 #define ABSL_HAVE_CONSTEXPR_STRING_VIEW_FROM_CSTR 1
 #endif
 
-#endif  // ABSL_HAVE_STD_STRING_VIEW
+#endif  // ABSL_USES_STD_STRING_VIEW
 
 #ifdef ABSL_HAVE_CONSTEXPR_STRING_VIEW_FROM_CSTR
   constexpr absl::string_view cstr_strlen("foo");
   EXPECT_EQ(cstr_strlen.length(), 3);
   constexpr absl::string_view cstr_strlen2 = "bar";
   EXPECT_EQ(cstr_strlen2, "bar");
+
+#if ABSL_HAVE_BUILTIN(__builtin_memcmp) || \
+    (defined(__GNUC__) && !defined(__clang__))
+#define ABSL_HAVE_CONSTEXPR_STRING_VIEW_COMPARISON 1
+#endif
+#ifdef ABSL_HAVE_CONSTEXPR_STRING_VIEW_COMPARISON
+  constexpr absl::string_view foo = "foo";
+  constexpr absl::string_view bar = "bar";
+  constexpr bool foo_eq_bar = foo == bar;
+  constexpr bool foo_ne_bar = foo != bar;
+  constexpr bool foo_lt_bar = foo < bar;
+  constexpr bool foo_le_bar = foo <= bar;
+  constexpr bool foo_gt_bar = foo > bar;
+  constexpr bool foo_ge_bar = foo >= bar;
+  constexpr int foo_compare_bar = foo.compare(bar);
+  EXPECT_FALSE(foo_eq_bar);
+  EXPECT_TRUE(foo_ne_bar);
+  EXPECT_FALSE(foo_lt_bar);
+  EXPECT_FALSE(foo_le_bar);
+  EXPECT_TRUE(foo_gt_bar);
+  EXPECT_TRUE(foo_ge_bar);
+  EXPECT_GT(foo_compare_bar, 0);
+#endif
 #endif
 
 #if !defined(__clang__) || 3 < __clang_major__ || \
@@ -1010,6 +1114,31 @@ TEST(StringViewTest, ConstexprCompiles) {
   EXPECT_EQ(sp_npos, -1);
 }
 
+constexpr char ConstexprMethodsHelper() {
+#if defined(__cplusplus) && __cplusplus >= 201402L
+  absl::string_view str("123", 3);
+  str.remove_prefix(1);
+  str.remove_suffix(1);
+  absl::string_view bar;
+  str.swap(bar);
+  return bar.front();
+#else
+  return '2';
+#endif
+}
+
+TEST(StringViewTest, ConstexprMethods) {
+  // remove_prefix, remove_suffix, swap
+  static_assert(ConstexprMethodsHelper() == '2', "");
+
+  // substr
+  constexpr absl::string_view foobar("foobar", 6);
+  constexpr absl::string_view foo = foobar.substr(0, 3);
+  constexpr absl::string_view bar = foobar.substr(3);
+  EXPECT_EQ(foo, "foo");
+  EXPECT_EQ(bar, "bar");
+}
+
 TEST(StringViewTest, Noexcept) {
   EXPECT_TRUE((std::is_nothrow_constructible<absl::string_view,
                                              const std::string&>::value));
@@ -1042,6 +1171,17 @@ TEST(StringViewTest, Noexcept) {
   EXPECT_TRUE(noexcept(sp.find_first_not_of('f')));
   EXPECT_TRUE(noexcept(sp.find_last_not_of(sp)));
   EXPECT_TRUE(noexcept(sp.find_last_not_of('f')));
+}
+
+TEST(StringViewTest, BoundsCheck) {
+#ifndef ABSL_USES_STD_STRING_VIEW
+#if !defined(NDEBUG) || ABSL_OPTION_HARDENED
+  // Abseil's string_view implementation has bounds-checking in debug mode.
+  absl::string_view h = "hello";
+  ABSL_EXPECT_DEATH_IF_SUPPORTED(h[5], "");
+  ABSL_EXPECT_DEATH_IF_SUPPORTED(h[-1], "");
+#endif
+#endif
 }
 
 TEST(ComparisonOpsTest, StringCompareNotAmbiguous) {
@@ -1081,11 +1221,11 @@ TEST(FindOneCharTest, EdgeCases) {
   EXPECT_EQ(absl::string_view::npos, a.rfind('x'));
 }
 
-#ifndef THREAD_SANITIZER  // Allocates too much memory for tsan.
+#ifndef ABSL_HAVE_THREAD_SANITIZER  // Allocates too much memory for tsan.
 TEST(HugeStringView, TwoPointTwoGB) {
-  if (sizeof(size_t) <= 4 || AbslRunningOnValgrind())
+  if (sizeof(size_t) <= 4)
     return;
-  // Try a huge std::string piece.
+  // Try a huge string piece.
   const size_t size = size_t{2200} * 1000 * 1000;
   std::string s(size, 'a');
   absl::string_view sp(s);
@@ -1095,9 +1235,9 @@ TEST(HugeStringView, TwoPointTwoGB) {
   sp.remove_suffix(2);
   EXPECT_EQ(size - 1 - 2, sp.length());
 }
-#endif  // THREAD_SANITIZER
+#endif  // ABSL_HAVE_THREAD_SANITIZER
 
-#if !defined(NDEBUG) && !defined(ABSL_HAVE_STD_STRING_VIEW)
+#if !defined(NDEBUG) && !defined(ABSL_USES_STD_STRING_VIEW)
 TEST(NonNegativeLenTest, NonNegativeLen) {
   ABSL_EXPECT_DEATH_IF_SUPPORTED(absl::string_view("xyz", -1),
                                  "len <= kMaxSize");
@@ -1113,7 +1253,7 @@ TEST(LenExceedsMaxSizeTest, LenExceedsMaxSize) {
   ABSL_EXPECT_DEATH_IF_SUPPORTED(absl::string_view("", max_size + 1),
                                  "len <= kMaxSize");
 }
-#endif  // !defined(NDEBUG) && !defined(ABSL_HAVE_STD_STRING_VIEW)
+#endif  // !defined(NDEBUG) && !defined(ABSL_USES_STD_STRING_VIEW)
 
 class StringViewStreamTest : public ::testing::Test {
  public:

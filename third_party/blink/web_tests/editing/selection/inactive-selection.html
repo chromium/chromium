@@ -16,13 +16,16 @@ window.onload = function() {
     frames[0].getSelection().setBaseAndExtent(div, 0, div, 1);
     frames[0].focus();
 
+    window.addEventListener('focus', afterFocus);
     window.focus();
-    document.getElementById('input').focus();
+    function afterFocus() {
+        document.getElementById('input').focus();
 
-    var selectionString = frames[0].getSelection().toString();
-    if (div.innerText == selectionString)
-        document.getElementById('console').innerHTML = 'PASS: inactive selection retained.';
-    else
-        document.getElementById('console').innerHTML = 'FAIL: inactive selection should be "' + div.innerText + '" but instead is ' + selectionString  + '.';
+        var selectionString = frames[0].getSelection().toString();
+        if (div.innerText == selectionString)
+            document.getElementById('console').innerHTML = 'PASS: inactive selection retained.';
+        else
+            document.getElementById('console').innerHTML = 'FAIL: inactive selection should be "' + div.innerText + '" but instead is ' + selectionString  + '.';
+    }
 }
 </script>

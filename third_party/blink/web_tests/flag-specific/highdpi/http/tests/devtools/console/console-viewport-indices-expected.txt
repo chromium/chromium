@@ -1,0 +1,19 @@
+Verifies viewport's visible and active message ranges.
+
+
+Running: testEmptyViewport
+Expected and actual visible ranges match
+
+Running: testFirstLastVisibleIndices
+Logging 100 Normal messages
+Force item to be first: 0
+Expected and actual visible ranges match
+Force item to be first: 1
+Expected and actual visible ranges match
+Scroll a bit down: 15px
+Expected and actual visible ranges match
+Force item to be last: 50
+TEST ENDED IN ERROR: viewport is calculated incorrect visible indices!
+Calculated visible range: 40 to 51, Total: 12
+Actual visible range: 40 to 50, Total: 11
+

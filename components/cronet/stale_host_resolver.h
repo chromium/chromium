@@ -11,7 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -66,6 +70,9 @@ class StaleHostResolver : public net::HostResolver {
   StaleHostResolver(std::unique_ptr<net::ContextHostResolver> inner_resolver,
                     const StaleOptions& stale_options);
 
+  StaleHostResolver(const StaleHostResolver&) = delete;
+  StaleHostResolver& operator=(const StaleHostResolver&) = delete;
+
   ~StaleHostResolver() override;
 
   // HostResolver implementation:
@@ -79,16 +86,21 @@ class StaleHostResolver : public net::HostResolver {
   // If stale data is returned, the StaleHostResolver allows the underlying
   // request to continue in order to repopulate the cache.
   std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      net::NetworkIsolationKey network_isolation_key,
+      net::NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
       const net::HostPortPair& host,
       const net::NetworkIsolationKey& network_isolation_key,
       const net::NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
 
   // The remaining public methods pass through to the inner resolver:
 
   net::HostCache* GetHostCache() override;
-  std::unique_ptr<base::Value> GetDnsConfigAsValue() const override;
+  base::Value GetDnsConfigAsValue() const override;
   void SetRequestContext(net::URLRequestContext* request_context) override;
 
  private:
@@ -125,8 +137,6 @@ class StaleHostResolver : public net::HostResolver {
       detached_requests_;
 
   base::WeakPtrFactory<StaleHostResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StaleHostResolver);
 };
 
 }  // namespace cronet

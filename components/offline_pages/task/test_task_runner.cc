@@ -18,9 +18,8 @@ void TestTaskRunner::RunTask(std::unique_ptr<Task> task) {
 void TestTaskRunner::RunTask(Task* task) {
   DCHECK(task);
   base::RunLoop run_loop;
-  task->SetTaskCompletionCallbackForTesting(base::BindOnce(
-      [](base::RunLoop* run_loop, Task*) { run_loop->Quit(); }, &run_loop));
-  task->Run();
+  task->Execute(base::BindOnce(
+      [](base::RunLoop* run_loop) { run_loop->Quit(); }, &run_loop));
   run_loop.Run();
 }
 

@@ -10,29 +10,34 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/tracing/crash_service_uploader.h"
+#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -40,7 +45,21 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
+#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/crosapi_pref_observer.h"
+#endif
+
 namespace {
+
+constexpr char kTracingStateKey[] = "state";
+constexpr char kUploadTimesKey[] = "upload_times";
+constexpr char kScenarioKey[] = "scenario";
+constexpr char kUploadTimestampKey[] = "time";
 
 const int kMinDaysUntilNextUpload = 7;
 
@@ -55,7 +74,8 @@ enum class TracingFinalizationDisallowedReason {
   kLastSessionCrashed = 3,
   kMetricsReportingDisabled = 4,
   kTraceUploadedRecently = 5,
-  kMaxValue = kTraceUploadedRecently
+  kLastTracingSessionDidNotEnd = 6,
+  kMaxValue = kLastTracingSessionDidNotEnd
 };
 
 void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
@@ -63,18 +83,234 @@ void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
                             reason);
 }
 
-}  // namespace
-
-void ChromeTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(prefs::kBackgroundTracingLastUpload, 0);
+bool IsBackgroundTracingCommandLine() {
+  if (tracing::GetBackgroundTracingSetupMode() ==
+      tracing::BackgroundTracingSetupMode::kFromConfigFile) {
+    return true;
+  }
+  return false;
 }
 
-ChromeTracingDelegate::ChromeTracingDelegate() : incognito_launched_(false) {
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+// Removes any version numbers from the scenario name.
+std::string StripScenarioName(const std::string& scenario_name) {
+  std::string stripped_scenario_name;
+  base::RemoveChars(scenario_name, "1234567890", &stripped_scenario_name);
+  return stripped_scenario_name;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Helper for reading the value of device policy from ash-chrome.
+class DevicePolicyObserver {
+ public:
+  DevicePolicyObserver()
+      : pref_observer_(
+            crosapi::mojom::PrefPath::kDeviceSystemWideTracingEnabled,
+            base::BindRepeating(&DevicePolicyObserver::OnPrefChanged,
+                                base::Unretained(this))) {}
+
+  bool system_wide_tracing_enabled() const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return system_wide_tracing_enabled_;
+  }
+
+  static const DevicePolicyObserver& GetInstance() {
+    static base::NoDestructor<DevicePolicyObserver> instance;
+    return *instance;
+  }
+
+ private:
+  void OnPrefChanged(base::Value value) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    system_wide_tracing_enabled_ = value.GetBool();
+  }
+
+  ~DevicePolicyObserver() = default;
+
+  CrosapiPrefObserver pref_observer_;
+  bool system_wide_tracing_enabled_ = false;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
+
+ChromeTracingDelegate::BackgroundTracingStateManager::
+    BackgroundTracingStateManager() = default;
+ChromeTracingDelegate::BackgroundTracingStateManager::
+    ~BackgroundTracingStateManager() = default;
+
+ChromeTracingDelegate::BackgroundTracingStateManager&
+ChromeTracingDelegate::BackgroundTracingStateManager::GetInstance() {
+  static base::NoDestructor<BackgroundTracingStateManager> instance;
+  return *instance;
+}
+
+void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (initialized_)
+    return;
+  initialized_ = true;
+
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  const base::Value* dict =
+      local_state->GetDictionary(prefs::kBackgroundTracingSessionState);
+  if (!dict) {
+    SaveState();
+    return;
+  }
+  absl::optional<int> state = dict->FindIntKey(kTracingStateKey);
+  if (state) {
+    if (*state >= 0 &&
+        *state <= static_cast<int>(BackgroundTracingState::LAST)) {
+      last_session_end_state_ = static_cast<BackgroundTracingState>(*state);
+    } else {
+      last_session_end_state_ = BackgroundTracingState::NOT_ACTIVATED;
+    }
+  }
+
+  const base::Value* upload_times = dict->FindListKey(kUploadTimesKey);
+  if (upload_times) {
+    for (const auto& scenario_dict : upload_times->GetList()) {
+      DCHECK(scenario_dict.is_dict());
+      const std::string* scenario = scenario_dict.FindStringKey(kScenarioKey);
+      const base::Value* timestamp_val =
+          scenario_dict.FindKey(kUploadTimestampKey);
+      if (!scenario || !timestamp_val) {
+        continue;
+      }
+      absl::optional<base::Time> upload_time = base::ValueToTime(timestamp_val);
+      if (!upload_time) {
+        continue;
+      }
+      if ((base::Time::Now() - *upload_time) >
+          base::Days(kMinDaysUntilNextUpload)) {
+        continue;
+      }
+      scenario_last_upload_timestamp_[*scenario] = *upload_time;
+    }
+  }
+
+  // Save state to update the current session state, replacing the previous
+  // session state.
+  SaveState();
+}
+
+void ChromeTracingDelegate::BackgroundTracingStateManager::SaveState() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(initialized_);
+  SaveState(scenario_last_upload_timestamp_, state_);
+}
+
+// static
+void ChromeTracingDelegate::BackgroundTracingStateManager::SaveState(
+    const ChromeTracingDelegate::ScenarioUploadTimestampMap&
+        scenario_upload_times,
+    ChromeTracingDelegate::BackgroundTracingState state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey(kTracingStateKey, static_cast<int>(state));
+  base::Value upload_times(base::Value::Type::LIST);
+  for (const auto& it : scenario_upload_times) {
+    base::Value scenario(base::Value::Type::DICTIONARY);
+    scenario.SetStringKey(kScenarioKey, StripScenarioName(it.first));
+    scenario.SetKey(kUploadTimestampKey, base::TimeToValue(it.second));
+    upload_times.Append(std::move(scenario));
+  }
+  dict.SetKey(kUploadTimesKey, std::move(upload_times));
+
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->Set(prefs::kBackgroundTracingSessionState, std::move(dict));
+  local_state->CommitPendingWrite();
+}
+
+bool ChromeTracingDelegate::BackgroundTracingStateManager::
+    DidLastSessionEndUnexpectedly() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(initialized_);
+  switch (last_session_end_state_) {
+    case BackgroundTracingState::NOT_ACTIVATED:
+    case BackgroundTracingState::RAN_30_SECONDS:
+    case BackgroundTracingState::FINALIZATION_STARTED:
+      return false;
+    case BackgroundTracingState::STARTED:
+      // If Chrome did not run for 30 seconds after tracing started in previous
+      // session then do not start tracing in current session as a safeguard.
+      // This would be impacted by short sessions (eg: on Android), but worth
+      // the tradeoff of crashing loop on startup. Checking for previous session
+      // crash status is platform dependent and the crash status is initialized
+      // at later point than when tracing begins. So, this check is safer than
+      // waiting for crash metrics to be available. Note that this setting only
+      // checks for last session and not sessions before that. So, the next
+      // session might still crash due to tracing if the user has another
+      // tracing experiment. But, meanwhile we would be able to turn off tracing
+      // experiments based on uploaded crash metrics.
+      return true;
+  }
+}
+
+bool ChromeTracingDelegate::BackgroundTracingStateManager::
+    DidRecentlyUploadForScenario(
+        const content::BackgroundTracingConfig& config) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(initialized_);
+  std::string stripped_scenario_name =
+      StripScenarioName(config.scenario_name());
+  auto it = scenario_last_upload_timestamp_.find(stripped_scenario_name);
+  if (it != scenario_last_upload_timestamp_.end()) {
+    return (base::Time::Now() - it->second) <=
+           base::Days(kMinDaysUntilNextUpload);
+  }
+  return false;
+}
+
+void ChromeTracingDelegate::BackgroundTracingStateManager::SetState(
+    BackgroundTracingState new_state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(initialized_);
+  if (state_ == new_state) {
+    return;
+  }
+  // If finalization started before 30 seconds, skip recording the new state.
+  if (new_state == BackgroundTracingState::RAN_30_SECONDS &&
+      state_ == BackgroundTracingState::FINALIZATION_STARTED) {
+    return;
+  }
+  state_ = new_state;
+  SaveState();
+}
+
+void ChromeTracingDelegate::BackgroundTracingStateManager::OnScenarioUploaded(
+    const std::string& scenario_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(initialized_);
+
+  scenario_last_upload_timestamp_[StripScenarioName(scenario_name)] =
+      base::Time::Now();
+  SaveState();
+}
+
+void ChromeTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
+  // TODO(ssid): This is no longer used, remove the pref once the new one is
+  // stable.
+  registry->RegisterInt64Pref(prefs::kBackgroundTracingLastUpload, 0);
+  registry->RegisterDictionaryPref(prefs::kBackgroundTracingSessionState);
+}
+
+ChromeTracingDelegate::ChromeTracingDelegate() {
+  // Ensure that this code is called on the UI thread, except for
+  // tests where a UI thread might not have been initialized at this point.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
 #if !defined(OS_ANDROID)
   BrowserList::AddObserver(this);
 #else
   TabModelList::AddObserver(this);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This sets up the pref observer.
+  DevicePolicyObserver::GetInstance();
 #endif
 }
 
@@ -89,9 +325,8 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 
 #if defined(OS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded() {
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    if ((*i)->GetProfile()->IsOffTheRecord())
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile()->IsOffTheRecord())
       incognito_launched_ = true;
   }
 }
@@ -106,157 +341,138 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // defined(OS_ANDROID)
 
-std::unique_ptr<content::TraceUploader> ChromeTracingDelegate::GetTraceUploader(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  return std::unique_ptr<content::TraceUploader>(
-      new TraceCrashServiceUploader(std::move(factory)));
-}
-
-namespace {
-
-enum PermitMissingProfile { PROFILE_REQUIRED, PROFILE_NOT_REQUIRED };
-
-Profile* GetProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
-    return nullptr;
-
-  return profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
-}
-
-bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
-                           PermitMissingProfile profile_permission) {
+bool ChromeTracingDelegate::IsActionAllowed(
+    BackgroundScenarioAction action,
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data,
+    bool ignore_trace_limit) const {
   // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
-      command_line->HasSwitch(switches::kTraceUploadURL)) {
+  // any scenario to be traced and uploaded.
+  if (IsBackgroundTracingCommandLine())
     return true;
-  }
 
-  // If the profile hasn't loaded or been created yet, we allow the scenario
-  // to start up, but not be finalized.
-  Profile* profile = GetProfile();
-  if (!profile) {
-    if (profile_permission == PROFILE_REQUIRED) {
-      RecordDisallowedMetric(
-          TracingFinalizationDisallowedReason::kProfileNotLoaded);
-    }
-    return profile_permission != PROFILE_REQUIRED;
-  }
-
-// Safeguard, in case background tracing is responsible for a crash on
-// startup.
-#if !defined(OS_ANDROID)
-  if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kLastSessionCrashed);
-    return false;
-  }
-#else
-  // If the metrics haven't loaded, we allow the scenario to start up, but not
-  // be finalized.
-  if (!CrashUploadListAndroid::BrowserCrashMetricsInitialized()) {
-    if (profile_permission == PROFILE_REQUIRED) {
-      RecordDisallowedMetric(
-          TracingFinalizationDisallowedReason::kCrashMetricsNotLoaded);
-    }
-    return profile_permission != PROFILE_REQUIRED;
-  }
-
-  if (CrashUploadListAndroid::DidBrowserCrashRecently()) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kLastSessionCrashed);
-    return false;
-  }
-#endif
-
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-
-#if !defined(OS_CHROMEOS) && defined(OFFICIAL_BUILD)
-  if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kMetricsReportingDisabled);
-    return false;
-  }
-#endif // !OS_CHROMEOS && OFFICIAL_BUILD
-
-  if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE) {
-    const base::Time last_upload_time = base::Time::FromInternalValue(
-        local_state->GetInt64(prefs::kBackgroundTracingLastUpload));
-    if (!last_upload_time.is_null()) {
-      base::Time computed_next_allowed_time =
-          last_upload_time + base::TimeDelta::FromDays(kMinDaysUntilNextUpload);
-      if (computed_next_allowed_time > base::Time::Now()) {
-        RecordDisallowedMetric(
-            TracingFinalizationDisallowedReason::kTraceUploadedRecently);
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
-
-bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
-    const content::BackgroundTracingConfig& config,
-    bool requires_anonymized_data) {
-  if (!ProfileAllowsScenario(config, PROFILE_NOT_REQUIRED))
-    return false;
-
-  if (requires_anonymized_data && chrome::IsIncognitoSessionActive())
-    return false;
-
-  return true;
-}
-
-bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
-    const content::BackgroundTracingConfig& config,
-    bool requires_anonymized_data) {
   if (requires_anonymized_data &&
-      (incognito_launched_ || chrome::IsIncognitoSessionActive())) {
+      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
 
-  if (!ProfileAllowsScenario(config, PROFILE_REQUIRED))
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
+
+  // Don't start a new trace if the previous trace did not end.
+  if (action == BackgroundScenarioAction::kStartTracing &&
+      state.DidLastSessionEndUnexpectedly()) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd);
     return false;
+  }
 
-  if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE) {
-    PrefService* local_state = g_browser_process->local_state();
-    DCHECK(local_state);
-    local_state->SetInt64(prefs::kBackgroundTracingLastUpload,
-                          base::Time::Now().ToInternalValue());
-
-    // We make sure we've persisted the value in case finalizing the tracing
-    // causes a crash.
-    local_state->CommitPendingWrite();
+  // Check the trace limit for both kStartTracing and kUploadTrace actions
+  // because there is no point starting a trace that can't be uploaded.
+  if (!ignore_trace_limit && state.DidRecentlyUploadForScenario(config)) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kTraceUploadedRecently);
+    return false;
   }
 
   return true;
 }
 
-bool ChromeTracingDelegate::IsProfileLoaded() {
-  return GetProfile() != nullptr;
+bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data) {
+  // We call Initialize() only when a tracing scenario tries to start, and
+  // unless this happens we never save state. In particular, if the background
+  // tracing experiment is disabled, Initialize() will never be called, and we
+  // will thus not save state. This means that when we save the background
+  // tracing session state for one session, and then later read the state in a
+  // future session, there might have been sessions between these two where
+  // tracing was disabled. Therefore, when IsActionAllowed records
+  // TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd, it
+  // might not be the directly preceding session, but instead it is the
+  // previous session where tracing was enabled.
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
+  state.Initialize();
+
+  // If the config includes a crash scenario, ignore the trace limit so that a
+  // trace can be taken on crash. We check if the trigger is actually due to a
+  // crash later before uploading.
+  const bool ignore_trace_limit = config.has_crash_scenario();
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
+    return false;
+  }
+
+  state.SetState(BackgroundTracingState::STARTED);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce([]() {
+        BackgroundTracingStateManager::GetInstance().SetState(
+            BackgroundTracingState::RAN_30_SECONDS);
+      }),
+      base::Seconds(30));
+  return true;
 }
 
-std::unique_ptr<base::DictionaryValue>
-ChromeTracingDelegate::GenerateMetadataDict() {
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data,
+    bool is_crash_scenario) {
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
+  state.SetState(BackgroundTracingState::FINALIZATION_STARTED);
+
+  // If a crash scenario triggered, ignore the trace upload limit and continue
+  // uploading.
+  const bool ignore_trace_limit = is_crash_scenario;
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kUploadTrace, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
+    return false;
+  }
+
+  state.OnScenarioUploaded(config.scenario_name());
+  return true;
+}
+
+bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Always allow system tracing in dev mode images.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode)) {
+    return true;
+  }
+  // In non-dev images, honor the pref for system-wide tracing.
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  return local_state->GetBoolean(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This is a temporary solution that observes the ash pref
+  // chromeos::prefs::kDeviceSystemWideTracingEnabled via mojo IPC provided by
+  // CrosapiPrefObserver.
+  // crbug.com/1201582 is a long term solution for this which assumes that
+  // device flags will be available to Lacros.
+  return DevicePolicyObserver::GetInstance().system_wide_tracing_enabled();
+#else
+  return false;
+#endif
+}
+
+absl::optional<base::Value> ChromeTracingDelegate::GenerateMetadataDict() {
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
   std::vector<std::string> variations;
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
                                                    &variations);
 
-  std::unique_ptr<base::ListValue> variations_list(new base::ListValue());
+  base::Value variations_list(base::Value::Type::LIST);
   for (const auto& it : variations)
-    variations_list->AppendString(it);
+    variations_list.Append(it);
 
-  metadata_dict->Set("field-trials", std::move(variations_list));
-  metadata_dict->SetString("revision", version_info::GetLastChange());
+  metadata_dict.SetKey("field-trials", std::move(variations_list));
+  metadata_dict.SetStringKey("revision", version_info::GetLastChange());
   return metadata_dict;
 }

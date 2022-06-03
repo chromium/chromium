@@ -1,0 +1,32 @@
+<style include="settings-shared cr-shared-style iron-flex">
+  #topicSourceTitle {
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
+
+  topic-source-item {
+    align-items: center;
+    height: 64px;
+  }
+
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+<h2 id="topicSourceTitle" aria-hidden="true">
+  $i18n{ambientModeTopicSourceTitle}
+</h2>
+
+<iron-list id="topicSourceList" items="[[topicSources]]">
+  <template>
+    <topic-source-item item="[[item]]" disabled$="[[disabled]]"
+        tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"
+        has-google-photos-albums="[[hasGooglePhotosAlbums]]"
+        checked="[[isSelected_(item, selectedTopicSource)]]">
+    </topic-source-item>
+  </template>
+</iron-list>

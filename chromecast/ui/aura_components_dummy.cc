@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 
 namespace chromecast {
 
-AuraComponents::AuraComponents(CastWindowManager* cast_window_manager)
-    : media_overlay_(nullptr) {}
-
-AuraComponents::~AuraComponents() = default;
+// static
+std::unique_ptr<AuraComponents> AuraComponents::Create(
+    CastWindowManager* cast_window_manager) {
+  return std::make_unique<AuraComponents>();
+}
 
 }  // namespace chromecast

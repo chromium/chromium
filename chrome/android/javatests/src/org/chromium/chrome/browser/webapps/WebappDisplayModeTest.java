@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.webapps;
 
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -17,16 +18,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.test.util.UiRestriction;
@@ -50,7 +52,7 @@ public class WebappDisplayModeTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testStandalone() {
-        WebappActivity activity = startActivity(WebDisplayMode.STANDALONE, "");
+        WebappActivity activity = startActivity(DisplayMode.STANDALONE, "");
 
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
         Assert.assertFalse(isFullscreen(activity));
@@ -60,7 +62,7 @@ public class WebappDisplayModeTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testFullScreen() {
-        WebappActivity activity = startActivity(WebDisplayMode.FULLSCREEN, "");
+        WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "");
 
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
         Assert.assertTrue(isFullscreen(activity));
@@ -70,7 +72,7 @@ public class WebappDisplayModeTest {
     @MediumTest
     @Feature({"Webapps"})
     public void testFullScreenInFullscreen() {
-        WebappActivity activity = startActivity(WebDisplayMode.FULLSCREEN, "fullscreen_on_click");
+        WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "fullscreen_on_click");
 
         Assert.assertFalse(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
         Assert.assertTrue(isFullscreen(activity));
@@ -94,7 +96,7 @@ public class WebappDisplayModeTest {
     @Feature({"Webapps"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMinimalUi() {
-        WebappActivity activity = startActivity(WebDisplayMode.MINIMAL_UI, "");
+        WebappActivity activity = startActivity(DisplayMode.MINIMAL_UI, "");
 
         Assert.assertFalse(isFullscreen(activity));
         Assert.assertTrue(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
@@ -119,17 +121,14 @@ public class WebappDisplayModeTest {
         }
     }
 
-    private WebappActivity startActivity(@WebDisplayMode int displayMode, String action) {
+    private WebappActivity startActivity(@DisplayMode.EnumType int displayMode, String action) {
         String url = WebappTestPage.getServiceWorkerUrlWithAction(
                 mActivityTestRule.getTestServer(), action);
         mActivityTestRule.startWebappActivity(
                 mActivityTestRule.createIntent()
-                        .putExtra(ShortcutHelper.EXTRA_URL, url)
-                        .putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, displayMode)
-                        .putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
-
-        mActivityTestRule.waitUntilSplashscreenHides();
-        mActivityTestRule.waitUntilIdle();
+                        .putExtra(WebappConstants.EXTRA_URL, url)
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode)
+                        .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         return mActivityTestRule.getActivity();
     }

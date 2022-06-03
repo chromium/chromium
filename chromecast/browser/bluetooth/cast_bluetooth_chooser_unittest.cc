@@ -16,6 +16,11 @@ namespace {
 class SimpleDeviceAccessProvider : public mojom::BluetoothDeviceAccessProvider {
  public:
   SimpleDeviceAccessProvider() = default;
+
+  SimpleDeviceAccessProvider(const SimpleDeviceAccessProvider&) = delete;
+  SimpleDeviceAccessProvider& operator=(const SimpleDeviceAccessProvider&) =
+      delete;
+
   ~SimpleDeviceAccessProvider() override = default;
 
   // mojom::BluetoothDeviceAccessProvider implementation:
@@ -42,8 +47,6 @@ class SimpleDeviceAccessProvider : public mojom::BluetoothDeviceAccessProvider {
   mojo::Remote<mojom::BluetoothDeviceAccessProviderClient> client_;
   base::MockCallback<base::OnceClosure> connection_closed_;
   std::vector<std::string> approved_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDeviceAccessProvider);
 };
 
 }  // namespace
@@ -58,10 +61,13 @@ class CastBluetoothChooserTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  CastBluetoothChooserTest(const CastBluetoothChooserTest&) = delete;
+  CastBluetoothChooserTest& operator=(const CastBluetoothChooserTest&) = delete;
+
   ~CastBluetoothChooserTest() override = default;
 
   void AddDeviceToChooser(const std::string& address) {
-    chooser().AddOrUpdateDevice(address, false, base::string16(), false, false,
+    chooser().AddOrUpdateDevice(address, false, std::u16string(), false, false,
                                 0);
   }
 
@@ -76,8 +82,6 @@ class CastBluetoothChooserTest : public testing::Test {
   SimpleDeviceAccessProvider provider_;
   mojo::Receiver<mojom::BluetoothDeviceAccessProvider> provider_receiver_;
   std::unique_ptr<CastBluetoothChooser> cast_bluetooth_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBluetoothChooserTest);
 };
 
 TEST_F(CastBluetoothChooserTest, GrantAccessBeforeDeviceAvailable) {
@@ -92,7 +96,7 @@ TEST_F(CastBluetoothChooserTest, GrantAccessBeforeDeviceAvailable) {
   AddDeviceToChooser("99:88:77:66:55:44");
 
   // Now make the approved device available. |handler| should be called.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::SELECTED,
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::SELECTED,
                             "aa:bb:cc:dd:ee:ff"));
   EXPECT_CALL(provider().connection_closed(), Run());
   AddDeviceToChooser("aa:bb:cc:dd:ee:ff");
@@ -108,7 +112,7 @@ TEST_F(CastBluetoothChooserTest, DiscoverDeviceBeforeAccessGranted) {
   AddDeviceToChooser("99:88:77:66:55:44");
 
   // Now approve one of those devices. |handler| should run.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::SELECTED,
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::SELECTED,
                             "00:00:00:11:00:00"));
   EXPECT_CALL(provider().connection_closed(), Run());
   provider().client()->GrantAccess("00:00:00:11:00:00");
@@ -122,7 +126,7 @@ TEST_F(CastBluetoothChooserTest, GrantAccessToAllDevicesBeforeDiscovery) {
   task_environment_.RunUntilIdle();
 
   // Now make the some device available. |handler| should be called.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::SELECTED,
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::SELECTED,
                             "aa:bb:cc:dd:ee:ff"));
   EXPECT_CALL(provider().connection_closed(), Run());
   AddDeviceToChooser("aa:bb:cc:dd:ee:ff");
@@ -138,7 +142,7 @@ TEST_F(CastBluetoothChooserTest, GrantAccessToAllDevicesAfterDiscovery) {
 
   // Now grant access to all devices. |handler| should be called with one of the
   // available devices.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::SELECTED,
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::SELECTED,
                             AnyOf("11:22:33:44:55:66", "aa:bb:cc:dd:ee:ff",
                                   "00:00:00:11:00:00")));
   EXPECT_CALL(provider().connection_closed(), Run());
@@ -160,7 +164,7 @@ TEST_F(CastBluetoothChooserTest, TearDownClientAfterAllAccessGranted) {
   task_environment_.RunUntilIdle();
 
   // As soon as a device is available, run the handler.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::SELECTED,
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::SELECTED,
                             "aa:bb:cc:dd:ee:ff"));
   AddDeviceToChooser("aa:bb:cc:dd:ee:ff");
 }
@@ -172,8 +176,8 @@ TEST_F(CastBluetoothChooserTest, TearDownClientBeforeApprovedDeviceDiscovered) {
   AddDeviceToChooser("aa:bb:cc:dd:ee:ff");
 
   // Tear the client down before any access is granted. |handler| should run,
-  // but with Event::CANCELLED.
-  EXPECT_CALL(handler_, Run(content::BluetoothChooser::Event::CANCELLED, ""));
+  // but with content::BluetoothChooserEvent::CANCELLED.
+  EXPECT_CALL(handler_, Run(content::BluetoothChooserEvent::CANCELLED, ""));
   provider().reset_client();
   EXPECT_FALSE(provider().client());
   task_environment_.RunUntilIdle();

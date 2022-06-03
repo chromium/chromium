@@ -1,6 +1,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=./RTCPeerConnection-helper.js
+// META: timeout=long
 
 'use strict';
 
@@ -102,7 +103,7 @@ function asyncInit() {
 
 idl_test(
   ['webrtc'],
-  ['WebIDL', 'mediacapture-streams', 'dom', 'html'],
+  ['webidl', 'mediacapture-streams', 'dom', 'html'],
   async idlArray => {
     idlArray.add_objects({
       RTCPeerConnection: [`new RTCPeerConnection()`],
@@ -114,7 +115,7 @@ idl_test(
       RTCRtpReceiver: [`new RTCPeerConnection().addTransceiver('audio').receiver`],
       RTCPeerConnectionIceEvent: [`new RTCPeerConnectionIceEvent('ice')`],
       RTCPeerConnectionIceErrorEvent: [
-        `new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 });`
+        `new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 });`
       ],
       RTCTrackEvent: [`initTrackEvent()`],
       RTCErrorEvent: [`new RTCErrorEvent('error')`],

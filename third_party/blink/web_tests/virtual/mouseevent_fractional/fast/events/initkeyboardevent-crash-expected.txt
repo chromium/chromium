@@ -1,3 +1,0 @@
-This tests that dispatching a keyboard event created via javascript does not crash.
-
-PASSED

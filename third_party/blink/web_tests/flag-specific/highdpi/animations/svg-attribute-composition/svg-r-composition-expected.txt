@@ -1,0 +1,70 @@
+This is a testharness.js-based test.
+PASS This test uses interpolation-test.js.
+PASS SMIL: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0) is [10ch]
+PASS SMIL: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0.2) is [20ch]
+PASS SMIL: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0.6) is [40ch]
+PASS SMIL: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (-0.4) is [0ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0) is [10ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0.2) is [20ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (0.6) is [40ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [5ch] from add [5ch] to add [55ch] at (1.4) is [80ch]
+PASS SMIL: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0) is [10mm]
+PASS SMIL: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0.2) is [20mm]
+PASS SMIL: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0.6) is [40mm]
+PASS SMIL: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (-0.4) is [0mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0) is [10mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0.2) is [20mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (0.6) is [40mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [5mm] from add [5mm] to add [5.5cm] at (1.4) is [80mm]
+PASS SMIL: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0) is [180]
+PASS SMIL: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0.2) is [188]
+PASS SMIL: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0.6) is [204]
+PASS SMIL: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (1) is [220]
+FAIL Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (-0.4) is [164] assert_equals: expected "164 " but got "124 "
+PASS Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0) is [180]
+FAIL Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0.2) is [188] assert_equals: expected "188 " but got "208 "
+FAIL Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (0.6) is [204] assert_equals: expected "204 " but got "264 "
+FAIL Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (1) is [220] assert_equals: expected "220 " but got "320 "
+FAIL Web Animations: Interpolate attribute <r> with underlying [20] from add [10pc] to add [20ch] at (1.4) is [236] assert_equals: expected "236 " but got "376 "
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (-0.4) is [0ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (0) is [10ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (0.2) is [20ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (0.6) is [40ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [20ch] from replace [10ch] to add [40ch] at (1.4) is [80ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (-0.4) is [0mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (0) is [10mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (0.2) is [20mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (0.6) is [40mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [2cm] from replace [10mm] to add [4cm] at (1.4) is [80mm]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (-0.4) is [144] assert_equals: expected "144 " but got "104 "
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (0) is [10pc]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (0.2) is [168] assert_equals: expected "168 " but got "188 "
+FAIL Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (0.6) is [184] assert_equals: expected "184 " but got "244 "
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (1) is [20ch]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10ch] from replace [10pc] to add [10ch] at (1.4) is [216] assert_equals: expected "216 " but got "356 "
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (-0.4) is [0ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (0) is [10ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (0.2) is [20ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (0.6) is [40ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (1) is [60ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10ch] from neutral to replace [60ch] at (1.4) is [80ch]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (-0.4) is [0mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (0) is [10mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (0.2) is [20mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (0.6) is [40mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (1) is [60mm]
+PASS Web Animations: Interpolate attribute <r> with underlying [10mm] from neutral to replace [6cm] at (1.4) is [80mm]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (-0.4) is [144] assert_equals: expected "144 " but got "104 "
+PASS Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (0) is [10pc]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (0.2) is [168] assert_equals: expected "168 " but got "188 "
+FAIL Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (0.6) is [184] assert_equals: expected "184 " but got "244 "
+PASS Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (1) is [20ch]
+FAIL Web Animations: Interpolate attribute <r> with underlying [10pc] from neutral to replace [20ch] at (1.4) is [216] assert_equals: expected "216 " but got "356 "
+Harness: the test ran to completion.
+

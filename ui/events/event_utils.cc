@@ -4,17 +4,33 @@
 
 #include "ui/events/event_utils.h"
 
+#include <limits>
+#include <map>
 #include <vector>
 
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/notreached.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+
+#include "ui/events/win/events_win_utils.h"
+#endif
 
 namespace ui {
 
 namespace {
+
 int g_custom_event_types = ET_LAST;
+
+#define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)           \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Minutes(1), 50)
+
 }  // namespace
 
 std::unique_ptr<Event> EventFromNative(const PlatformEvent& native_event) {
@@ -62,22 +78,6 @@ int RegisterCustomEventType() {
   return ++g_custom_event_types;
 }
 
-bool IsValidTimebase(base::TimeTicks now, base::TimeTicks timestamp) {
-  int64_t delta = (now - timestamp).InMilliseconds();
-  return delta >= 0 && delta <= 60 * 1000;
-}
-
-void ValidateEventTimeClock(base::TimeTicks* timestamp) {
-  // Some fraction of devices, across all platforms provide bogus event
-  // timestamps. See https://crbug.com/650338#c1. Correct timestamps which are
-  // clearly bogus.
-  // TODO(861855): Replace this with an approach that doesn't require an extra
-  // read of the current time per event.
-  base::TimeTicks now = EventTimeForNow();
-  if (!IsValidTimebase(now, *timestamp))
-    *timestamp = now;
-}
-
 bool ShouldDefaultToNaturalScroll() {
   return GetInternalDisplayTouchSupport() ==
          display::Display::TouchSupport::AVAILABLE;
@@ -98,12 +98,22 @@ display::Display::TouchSupport GetInternalDisplayTouchSupport() {
 
 void ComputeEventLatencyOS(const PlatformEvent& native_event) {
   base::TimeTicks current_time = EventTimeForNow();
-  base::TimeTicks time_stamp = EventTimeFromNative(native_event);
+  base::TimeTicks time_stamp =
+      EventLatencyTimeFromNative(native_event, current_time);
+  EventType type = EventTypeFromNative(native_event);
+  ComputeEventLatencyOS(type, time_stamp, current_time);
+}
+
+void ComputeEventLatencyOS(EventType type,
+                           base::TimeTicks time_stamp,
+                           base::TimeTicks current_time) {
   base::TimeDelta delta = current_time - time_stamp;
 
-  EventType type = EventTypeFromNative(native_event);
+  // TODO(crbug.com/1189656): Remove the legacy Event.Latency.OS.* histograms
+  // after M92 (which introduced Event.Latency.OS2.*) has been replaced in the
+  // stable channel.
   switch (type) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     // On Mac, ET_SCROLL and ET_MOUSEWHEEL represent the same class of events.
     case ET_SCROLL:
 #endif
@@ -111,26 +121,85 @@ void ComputeEventLatencyOS(const PlatformEvent& native_event) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.MOUSE_WHEEL",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_WHEEL", delta);
       return;
     case ET_TOUCH_MOVED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.TOUCH_MOVED",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_MOVED", delta);
       return;
     case ET_TOUCH_PRESSED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.TOUCH_PRESSED",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_PRESSED",
+                                        delta);
       return;
     case ET_TOUCH_RELEASED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.TOUCH_RELEASED",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_RELEASED",
+                                        delta);
+      return;
+    case ET_TOUCH_CANCELLED:
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Event.Latency.OS.TOUCH_CANCELLED",
+          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_CANCELLED",
+                                        delta);
+      return;
+    case ET_KEY_PRESSED:
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Event.Latency.OS.KEY_PRESSED",
+          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.KEY_PRESSED", delta);
+      return;
+    case ET_MOUSE_PRESSED:
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Event.Latency.OS.MOUSE_PRESSED",
+          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
+      UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_PRESSED",
+                                        delta);
       return;
     default:
       return;
   }
 }
+
+#if defined(OS_WIN)
+
+void ComputeEventLatencyOSFromTOUCHINPUT(EventType event_type,
+                                         TOUCHINPUT touch_input,
+                                         base::TimeTicks current_time) {
+  base::TimeTicks time_stamp =
+      EventLatencyTimeFromTickClock(touch_input.dwTime, current_time);
+  ComputeEventLatencyOS(event_type, time_stamp, current_time);
+}
+
+void ComputeEventLatencyOSFromPOINTER_INFO(EventType event_type,
+                                           POINTER_INFO pointer_info,
+                                           base::TimeTicks current_time) {
+  base::TimeTicks time_stamp;
+  if (pointer_info.PerformanceCount) {
+    if (!base::TimeTicks::IsHighResolution()) {
+      // The tick clock will be incompatible with |event_time|.
+      return;
+    }
+    time_stamp =
+        EventLatencyTimeFromPerformanceCounter(pointer_info.PerformanceCount);
+  } else if (pointer_info.dwTime) {
+    time_stamp =
+        EventLatencyTimeFromTickClock(pointer_info.dwTime, current_time);
+  } else {
+    // Bad POINTER_INFO with no timestamp.
+    return;
+  }
+  ComputeEventLatencyOS(event_type, time_stamp, current_time);
+}
+
+#endif  // defined(OS_WIN)
 
 void ConvertEventLocationToTargetWindowLocation(
     const gfx::Point& target_window_origin,
@@ -144,10 +213,9 @@ void ConvertEventLocationToTargetWindowLocation(
   gfx::PointF location_in_pixel_in_host =
       located_event->location_f() + gfx::Vector2dF(offset);
   located_event->set_location_f(location_in_pixel_in_host);
-  located_event->set_root_location_f(location_in_pixel_in_host);
 }
 
-const char* EventTypeName(EventType type) {
+base::StringPiece EventTypeName(EventType type) {
   if (type >= ET_LAST)
     return "";
 
@@ -204,6 +272,94 @@ const char* EventTypeName(EventType type) {
 
   NOTREACHED();
   return "";
+}
+
+std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names;
+  names.reserve(5);  // Seems like a good starting point.
+  if (!event_flags) {
+    names.push_back("NONE");
+    return names;
+  }
+
+  if (event_flags & EF_IS_SYNTHESIZED)
+    names.push_back("IS_SYNTHESIZED");
+  if (event_flags & EF_SHIFT_DOWN)
+    names.push_back("SHIFT_DOWN");
+  if (event_flags & EF_CONTROL_DOWN)
+    names.push_back("CONTROL_DOWN");
+  if (event_flags & EF_ALT_DOWN)
+    names.push_back("ALT_DOWN");
+  if (event_flags & EF_COMMAND_DOWN)
+    names.push_back("COMMAND_DOWN");
+  if (event_flags & EF_ALTGR_DOWN)
+    names.push_back("ALTGR_DOWN");
+  if (event_flags & EF_MOD3_DOWN)
+    names.push_back("MOD3_DOWN");
+  if (event_flags & EF_NUM_LOCK_ON)
+    names.push_back("NUM_LOCK_ON");
+  if (event_flags & EF_CAPS_LOCK_ON)
+    names.push_back("CAPS_LOCK_ON");
+  if (event_flags & EF_SCROLL_LOCK_ON)
+    names.push_back("SCROLL_LOCK_ON");
+  if (event_flags & EF_LEFT_MOUSE_BUTTON)
+    names.push_back("LEFT_MOUSE_BUTTON");
+  if (event_flags & EF_MIDDLE_MOUSE_BUTTON)
+    names.push_back("MIDDLE_MOUSE_BUTTON");
+  if (event_flags & EF_RIGHT_MOUSE_BUTTON)
+    names.push_back("RIGHT_MOUSE_BUTTON");
+  if (event_flags & EF_BACK_MOUSE_BUTTON)
+    names.push_back("BACK_MOUSE_BUTTON");
+  if (event_flags & EF_FORWARD_MOUSE_BUTTON)
+    names.push_back("FORWARD_MOUSE_BUTTON");
+
+  return names;
+}
+
+std::vector<base::StringPiece> KeyEventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+  if (!event_flags)
+    return names;
+
+  if (event_flags & EF_IME_FABRICATED_KEY)
+    names.push_back("IME_FABRICATED_KEY");
+  if (event_flags & EF_IS_REPEAT)
+    names.push_back("IS_REPEAT");
+  if (event_flags & EF_FINAL)
+    names.push_back("FINAL");
+  if (event_flags & EF_IS_EXTENDED_KEY)
+    names.push_back("IS_EXTENDED_KEY");
+  if (event_flags & EF_IS_STYLUS_BUTTON)
+    names.push_back("IS_STYLUS_BUTTON");
+
+  return names;
+}
+
+std::vector<base::StringPiece> MouseEventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+  if (!event_flags)
+    return names;
+
+  if (event_flags & EF_IS_DOUBLE_CLICK)
+    names.push_back("IS_DOUBLE_CLICK");
+  if (event_flags & EF_IS_TRIPLE_CLICK)
+    names.push_back("IS_TRIPLE_CLICK");
+  if (event_flags & EF_IS_NON_CLIENT)
+    names.push_back("IS_NON_CLIENT");
+  if (event_flags & EF_FROM_TOUCH)
+    names.push_back("FROM_TOUCH");
+  if (event_flags & EF_TOUCH_ACCESSIBILITY)
+    names.push_back("TOUCH_ACCESSIBILITY");
+  if (event_flags & EF_CURSOR_HIDE)
+    names.push_back("CURSOR_HIDE");
+  if (event_flags & EF_PRECISION_SCROLLING_DELTA)
+    names.push_back("PRECISION_SCROLLING_DELTA");
+  if (event_flags & EF_SCROLL_BY_PAGE)
+    names.push_back("SCROLL_BY_PAGE");
+  if (event_flags & EF_UNADJUSTED_MOUSE)
+    names.push_back("UNADJUSTED_MOUSE");
+
+  return names;
 }
 
 }  // namespace ui

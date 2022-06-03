@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 
 // HistoryIndexRestoreObserver is used when blocking until the InMemoryURLIndex
@@ -18,6 +17,9 @@ class HistoryIndexRestoreObserver
  public:
   explicit HistoryIndexRestoreObserver(base::OnceClosure task);
   ~HistoryIndexRestoreObserver() override;
+  HistoryIndexRestoreObserver(const HistoryIndexRestoreObserver&) = delete;
+  HistoryIndexRestoreObserver& operator=(const HistoryIndexRestoreObserver&) =
+      delete;
 
   bool succeeded() const { return succeeded_; }
 
@@ -27,8 +29,6 @@ class HistoryIndexRestoreObserver
  private:
   base::OnceClosure task_;
   bool succeeded_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryIndexRestoreObserver);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_HISTORY_INDEX_RESTORE_OBSERVER_H_

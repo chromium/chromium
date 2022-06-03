@@ -45,7 +45,7 @@ class RTCLegacyStatsReport final : public ScriptWrappable {
   ScriptValue timestamp(ScriptState* script_state) const;
   String id() { return id_; }
   String type() { return type_; }
-  String stat(const String& name) { return stats_.at(name); }
+  String stat(const String& name);
   Vector<String> names() const;
 
   void AddStatistic(const String& name, const String& value);

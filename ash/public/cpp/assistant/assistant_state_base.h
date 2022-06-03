@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/mojom/assistant_state_controller.mojom.h"
-#include "base/macros.h"
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -21,11 +21,13 @@ class PrefService;
 namespace ash {
 
 // A checked observer which receives Assistant state change.
-class ASH_PUBLIC_EXPORT AssistantStateObserver
-    : public mojom::AssistantStateObserver,
-      public base::CheckedObserver {
+class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
  public:
   AssistantStateObserver() = default;
+
+  AssistantStateObserver(const AssistantStateObserver&) = delete;
+  AssistantStateObserver& operator=(const AssistantStateObserver&) = delete;
+
   ~AssistantStateObserver() override = default;
 
   virtual void OnAssistantConsentStatusChanged(int consent_status) {}
@@ -35,17 +37,16 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver
   virtual void OnAssistantHotwordEnabled(bool enabled) {}
   virtual void OnAssistantLaunchWithMicOpen(bool launch_with_mic_open) {}
   virtual void OnAssistantNotificationEnabled(bool notification_enabled) {}
-
-  // mojom::AssistantStateObserver:
-  void OnAssistantStatusChanged(ash::mojom::AssistantState state) override {}
-  void OnAssistantFeatureAllowedChanged(
-      ash::mojom::AssistantAllowedState state) override {}
-  void OnArcPlayStoreEnabledChanged(bool enabled) override {}
-  void OnLocaleChanged(const std::string& locale) override {}
-  void OnLockedFullScreenStateChanged(bool enabled) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateObserver);
+  virtual void OnAssistantOnboardingModeChanged(
+      chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) {}
+  virtual void OnAssistantStateDestroyed() {}
+  virtual void OnAssistantStatusChanged(
+      chromeos::assistant::AssistantStatus status) {}
+  virtual void OnAssistantFeatureAllowedChanged(
+      chromeos::assistant::AssistantAllowedState state) {}
+  virtual void OnArcPlayStoreEnabledChanged(bool enabled) {}
+  virtual void OnLocaleChanged(const std::string& locale) {}
+  virtual void OnLockedFullScreenStateChanged(bool enabled) {}
 };
 
 // Plain data class that holds Assistant related prefs and states. This is
@@ -56,47 +57,59 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver
 class ASH_PUBLIC_EXPORT AssistantStateBase {
  public:
   AssistantStateBase();
+
+  AssistantStateBase(const AssistantStateBase&) = delete;
+  AssistantStateBase& operator=(const AssistantStateBase&) = delete;
+
   virtual ~AssistantStateBase();
 
-  mojom::AssistantState assistant_state() const { return assistant_state_; }
+  chromeos::assistant::AssistantStatus assistant_status() const {
+    return assistant_status_;
+  }
 
-  const base::Optional<bool>& settings_enabled() const {
+  const absl::optional<bool>& settings_enabled() const {
     return settings_enabled_;
   }
 
-  const base::Optional<int>& consent_status() const { return consent_status_; }
+  const absl::optional<int>& consent_status() const { return consent_status_; }
 
-  const base::Optional<bool>& context_enabled() const {
+  const absl::optional<bool>& context_enabled() const {
     return context_enabled_;
   }
 
-  const base::Optional<bool>& hotword_enabled() const {
+  const absl::optional<bool>& hotword_enabled() const {
     return hotword_enabled_;
   }
 
-  const base::Optional<bool>& hotword_always_on() const {
+  const absl::optional<bool>& hotword_always_on() const {
     return hotword_always_on_;
   }
 
-  const base::Optional<bool>& launch_with_mic_open() const {
+  const absl::optional<bool>& launch_with_mic_open() const {
     return launch_with_mic_open_;
   }
 
-  const base::Optional<bool>& notification_enabled() const {
+  const absl::optional<bool>& notification_enabled() const {
     return notification_enabled_;
   }
 
-  const base::Optional<mojom::AssistantAllowedState>& allowed_state() const {
+  const absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>&
+  onboarding_mode() const {
+    return onboarding_mode_;
+  }
+
+  const absl::optional<chromeos::assistant::AssistantAllowedState>&
+  allowed_state() const {
     return allowed_state_;
   }
 
-  const base::Optional<std::string>& locale() const { return locale_; }
+  const absl::optional<std::string>& locale() const { return locale_; }
 
-  const base::Optional<bool>& arc_play_store_enabled() const {
+  const absl::optional<bool>& arc_play_store_enabled() const {
     return arc_play_store_enabled_;
   }
 
-  const base::Optional<bool>& locked_full_screen_enabled() const {
+  const absl::optional<bool>& locked_full_screen_enabled() const {
     return locked_full_screen_enabled_;
   }
 
@@ -107,9 +120,12 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
 
   void RegisterPrefChanges(PrefService* pref_service);
 
+  bool IsScreenContextAllowed() const;
+
+  bool HasAudioInputDevice() const;
+
  protected:
   void InitializeObserver(AssistantStateObserver* observer);
-  void InitializeObserverMojom(mojom::AssistantStateObserver* observer);
 
   // Called when the related preferences are obtained from the pref service.
   void UpdateConsentStatus();
@@ -119,61 +135,65 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   void UpdateHotwordEnabled();
   void UpdateLaunchWithMicOpen();
   void UpdateNotificationEnabled();
+  void UpdateOnboardingMode();
 
   // Called when new values of the listened states are received.
-  void UpdateAssistantStatus(mojom::AssistantState state);
-  void UpdateFeatureAllowedState(mojom::AssistantAllowedState state);
+  void UpdateAssistantStatus(chromeos::assistant::AssistantStatus status);
+  void UpdateFeatureAllowedState(
+      chromeos::assistant::AssistantAllowedState state);
   void UpdateLocale(const std::string& locale);
   void UpdateArcPlayStoreEnabled(bool enabled);
   void UpdateLockedFullScreenState(bool enabled);
 
-  mojom::AssistantState assistant_state_ = mojom::AssistantState::NOT_READY;
+  chromeos::assistant::AssistantStatus assistant_status_ =
+      chromeos::assistant::AssistantStatus::NOT_READY;
 
   // TODO(b/138679823): Maybe remove Optional for preference values.
   // Whether the Assistant is enabled in system settings. nullopt if the
   // data is not available yet.
-  base::Optional<bool> settings_enabled_;
+  absl::optional<bool> settings_enabled_;
 
   // The status of the user's consent. nullopt if the data is not available yet.
-  base::Optional<int> consent_status_;
+  absl::optional<int> consent_status_;
 
   // Whether screen context is enabled. nullopt if the data is not available
   // yet.
-  base::Optional<bool> context_enabled_;
+  absl::optional<bool> context_enabled_;
 
   // Whether hotword listening is enabled.
-  base::Optional<bool> hotword_enabled_;
+  absl::optional<bool> hotword_enabled_;
 
   // Whether hotword listening is always on/only with power source. nullopt
   // if the data is not available yet.
-  base::Optional<bool> hotword_always_on_;
+  absl::optional<bool> hotword_always_on_;
 
   // Whether the Assistant should launch with mic open;
-  base::Optional<bool> launch_with_mic_open_;
+  absl::optional<bool> launch_with_mic_open_;
 
   // Whether notification is enabled.
-  base::Optional<bool> notification_enabled_;
+  absl::optional<bool> notification_enabled_;
+
+  // The mode for the Assistant onboarding experience.
+  absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>
+      onboarding_mode_;
 
   // Whether the Assistant feature is allowed or disallowed for what reason.
   // nullopt if the data is not available yet.
-  base::Optional<mojom::AssistantAllowedState> allowed_state_;
+  absl::optional<chromeos::assistant::AssistantAllowedState> allowed_state_;
 
-  base::Optional<std::string> locale_;
+  absl::optional<std::string> locale_;
 
   // Whether play store is enabled. nullopt if the data is not available yet.
-  base::Optional<bool> arc_play_store_enabled_;
+  absl::optional<bool> arc_play_store_enabled_;
 
   // Whether locked full screen state is enabled. nullopt if the data is not
   // available yet.
-  base::Optional<bool> locked_full_screen_enabled_;
+  absl::optional<bool> locked_full_screen_enabled_;
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::ObserverList<AssistantStateObserver> observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateBase);
 };
 
 }  // namespace ash

@@ -1,0 +1,44 @@
+[document web]
+++[section]
+++++[static] name='item1item2'
+++++[image]
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[static] name='code'
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[image] name='star'
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[image]
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[static] name='a list of items'
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[image]
+++++[static] name=' '
+++++[section]
+++++++[static] name='Some Text'
+++[section]
+++++[paragraph]
+++++++[static] name='Some Text'
+++[image] name='alt'
+++[section]
+++++[static] name='DOM Text'
+++[section]
+++++[static] name='DOM Text'

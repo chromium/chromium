@@ -21,13 +21,12 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/memory/page_size.h"
 #include "base/path_service.h"
-#include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -58,8 +57,6 @@
 #else
 #include <unistd.h>
 #endif
-
-using content::BrowserThread;
 
 namespace {
 
@@ -102,9 +99,10 @@ class FakeLauncher : public NativeProcessLauncher {
 
   void Launch(const GURL& origin,
               const std::string& native_host_name,
-              const LaunchedCallback& callback) const override {
-    callback.Run(NativeProcessLauncher::RESULT_SUCCESS, base::Process(),
-                 std::move(read_file_), std::move(write_file_));
+              LaunchedCallback callback) const override {
+    std::move(callback).Run(NativeProcessLauncher::RESULT_SUCCESS,
+                            base::Process(), std::move(read_file_),
+                            std::move(write_file_));
   }
 
  private:
@@ -125,8 +123,8 @@ class NativeMessagingTest : public ::testing::Test,
 
   void TearDown() override {
     if (native_message_host_) {
-      base::DeleteSoon(FROM_HERE, {BrowserThread::IO},
-                       native_message_host_.release());
+      content::GetIOThreadTaskRunner({})->DeleteSoon(
+          FROM_HERE, native_message_host_.release());
     }
     base::RunLoop().RunUntilIdle();
   }
@@ -166,12 +164,9 @@ class NativeMessagingTest : public ::testing::Test,
       return base::FilePath();
 
     std::string message_with_header = FormatMessage(message);
-    int bytes_written = base::WriteFile(
-        filename, message_with_header.data(), message_with_header.size());
-    if (bytes_written < 0 ||
-        (message_with_header.size() != static_cast<size_t>(bytes_written))) {
+    if (!base::WriteFile(filename, message_with_header))
       return base::FilePath();
-    }
+
     return filename;
   }
 
@@ -202,8 +197,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   base::File read_file(pipe_handles[0]);
   std::string formatted_message = FormatMessage(kTestMessage);
   ASSERT_GT(base::GetPageSize(), formatted_message.size());
-  ASSERT_TRUE(base::WriteFileDescriptor(
-      pipe_handles[1], formatted_message.data(), formatted_message.size()));
+  ASSERT_TRUE(base::WriteFileDescriptor(pipe_handles[1], formatted_message));
   base::File write_file(pipe_handles[1]);
   std::unique_ptr<NativeProcessLauncher> launcher =
       FakeLauncher::CreateWithPipeInput(std::move(read_file), temp_output_file);
@@ -215,7 +209,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   native_message_host_->Start(this);
 
   ASSERT_TRUE(native_message_host_);
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_EQ(kTestMessage, last_message_);
@@ -228,7 +222,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
 
   base::File read_file;
 #if defined(OS_WIN)
-  base::string16 pipe_name = base::StringPrintf(
+  std::wstring pipe_name = base::StringPrintf(
       L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", base::RandUint64());
   base::File write_handle =
       base::File(base::ScopedPlatformFile(CreateNamedPipeW(
@@ -290,16 +284,14 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
 
   std::string expected_url = std::string("chrome-extension://") +
       ScopedTestNativeMessagingHost::kExtensionId + "/";
-  int id;
-  EXPECT_TRUE(last_message_parsed_->GetInteger("id", &id));
-  EXPECT_EQ(1, id);
+  EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
   std::string text;
   EXPECT_TRUE(last_message_parsed_->GetString("echo.text", &text));
   EXPECT_EQ("Hello.", text);
@@ -308,10 +300,9 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   EXPECT_EQ(expected_url, url);
 
   native_message_host_->OnMessage("{\"foo\": \"bar\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
-  EXPECT_TRUE(last_message_parsed_->GetInteger("id", &id));
-  EXPECT_EQ(2, id);
+  EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
   EXPECT_TRUE(last_message_parsed_->GetString("echo.foo", &text));
   EXPECT_EQ("bar", text);
   EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
@@ -351,7 +342,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -359,11 +350,11 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   const base::ListValue* args_value = nullptr;
   ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
   std::vector<base::CommandLine::StringType> args;
-  args.reserve(args_value->GetSize());
+  args.reserve(args_value->GetList().size());
   for (auto& arg : args_value->GetList()) {
     ASSERT_TRUE(arg.is_string());
 #if defined(OS_WIN)
-    args.push_back(base::UTF8ToUTF16(arg.GetString()));
+    args.push_back(base::UTF8ToWide(arg.GetString()));
 #else
     args.push_back(arg.GetString());
 #endif
@@ -382,7 +373,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
       cmd_line.GetSwitchValueASCII(switches::kNativeMessagingConnectExtension));
   EXPECT_EQ(features::kOnConnectNative.name,
             cmd_line.GetSwitchValueASCII(switches::kEnableFeatures));
-  EXPECT_EQ(profile_.GetPath().BaseName(),
+  EXPECT_EQ(profile_.GetBaseName(),
             cmd_line.GetSwitchValuePath(switches::kProfileDirectory));
   EXPECT_EQ(profile_.GetPath().DirName(),
             cmd_line.GetSwitchValuePath(switches::kUserDataDir));
@@ -405,7 +396,7 @@ TEST_F(NativeMessagingTest, ReconnectArgs_Disabled) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -433,7 +424,7 @@ TEST_F(NativeMessagingTest, ReconnectArgsIfNativeConnectionDisallowed) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -459,7 +450,7 @@ TEST_F(NativeMessagingTest, UserLevel) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -475,7 +466,7 @@ TEST_F(NativeMessagingTest, DisallowUserLevel) {
       ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // The host should fail to start.

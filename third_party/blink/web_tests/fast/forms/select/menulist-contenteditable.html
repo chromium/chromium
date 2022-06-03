@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body>
+
+<div contenteditable=true>
+<select><option>option 1</option></select>
+</div>
+
+<script>
+function pointerActionSequencePromise(seq) {
+  return new Promise((resolve, reject) => {
+    chrome.gpuBenchmarking.pointerActionSequence(seq, resolve);
+  });
+}
+
+promise_test(async () => {
+  const select = document.querySelector('select');
+  const bounds = select.getBoundingClientRect();
+  const x = bounds.x + bounds.width / 2;
+  const y = bounds.y + bounds.height / 2;
+  const RIGHT_BUTTON = 2;
+  await pointerActionSequencePromise([{
+    source: 'mouse',
+    actions: [
+      {name: 'pointerMove', x: x, y: y},
+      {name: 'pointerDown', x: x, y: y, button: RIGHT_BUTTON},
+      {name: 'pointerUp', buton: RIGHT_BUTTON}
+    ]
+  }]);
+  eventSender.keyDown('X');
+  assert_equals(internals.shadowRoot(select).textContent,
+      document.querySelector('option').textContent);
+}, 'Text label in a menulist SELECT should not be editable');
+</script>
+</body>
+

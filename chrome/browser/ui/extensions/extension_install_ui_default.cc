@@ -5,11 +5,10 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -20,18 +19,18 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_installed_bubble.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/extensions/extension_installed_notification.h"
 #else
 #include "chrome/common/url_constants.h"
@@ -48,21 +47,12 @@ Browser* FindOrCreateVisibleBrowser(Profile* profile) {
   // TODO(mpcomplete): remove this workaround for http://crbug.com/244246
   // after fixing http://crbug.com/38676.
   if (!IncognitoModePrefs::CanOpenBrowser(profile))
-    return NULL;
+    return nullptr;
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
   if (browser->tab_strip_model()->count() == 0)
     chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;
-}
-
-void ShowExtensionInstalledBubble(
-    scoped_refptr<const extensions::Extension> extension,
-    Profile* profile,
-    const SkBitmap& icon) {
-  Browser* browser = FindOrCreateVisibleBrowser(profile);
-  if (browser)
-    ExtensionInstalledBubble::ShowBubble(extension, browser, icon);
 }
 
 }  // namespace
@@ -91,27 +81,23 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
   // Extensions aren't enabled by default in incognito so we confirm
   // the install in a normal window.
   Profile* current_profile = profile_->GetOriginalProfile();
+  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
   if (extension->is_app()) {
-    bool use_bubble = false;
-
-#if defined(TOOLKIT_VIEWS)  || defined(OS_MACOSX)
-    use_bubble = use_app_installed_bubble_;
-#endif
-
-    if (use_bubble) {
-      ShowExtensionInstalledBubble(extension, current_profile, *icon);
+    if (use_app_installed_bubble_) {
+      if (browser)
+        ShowPlatformBubble(extension, browser, *icon);
       return;
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ExtensionInstalledNotification::Show(extension.get(), current_profile);
-#else  // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
     OpenAppInstalledUI(extension->id());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
 
-  ShowExtensionInstalledBubble(extension, current_profile, *icon);
+  ShowPlatformBubble(extension, browser, *icon);
 }
 
 void ExtensionInstallUIDefault::OnInstallFailure(
@@ -121,18 +107,18 @@ void ExtensionInstallUIDefault::OnInstallFailure(
     return;
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (!browser)  // Can be NULL in unittests.
+  if (!browser)  // Can be nullptr in unittests.
     return;
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
   InstallationErrorInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents), error);
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), error);
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notification always enabled on ChromeOS, so always handled in
   // OnInstallSuccess.
   NOTREACHED();
@@ -143,11 +129,6 @@ void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
     NavigateParams params(
         GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
     Navigate(&params);
-
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_APP_INSTALLED_TO_NTP,
-        content::Source<WebContents>(params.navigated_or_inserted_contents),
-        content::Details<const std::string>(&app_id));
   }
 #endif
 }
@@ -167,5 +148,5 @@ gfx::NativeWindow ExtensionInstallUIDefault::GetDefaultInstallDialogParent() {
         browser->tab_strip_model()->GetActiveWebContents();
     return contents->GetTopLevelNativeWindow();
   }
-  return NULL;
+  return nullptr;
 }

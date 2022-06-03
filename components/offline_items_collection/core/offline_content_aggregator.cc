@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -74,7 +73,7 @@ void OfflineContentAggregator::UnregisterProvider(
   }
 }
 
-void OfflineContentAggregator::OpenItem(LaunchLocation location,
+void OfflineContentAggregator::OpenItem(const OpenParams& open_params,
                                         const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = providers_.find(id.name_space);
@@ -82,7 +81,7 @@ void OfflineContentAggregator::OpenItem(LaunchLocation location,
   if (it == providers_.end())
     return;
 
-  it->second->OpenItem(location, id);
+  it->second->OpenItem(open_params, id);
 }
 
 void OfflineContentAggregator::RemoveItem(const ContentId& id) {
@@ -132,7 +131,7 @@ void OfflineContentAggregator::GetItemById(const ContentId& id,
   auto it = providers_.find(id.name_space);
   if (it == providers_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -143,7 +142,7 @@ void OfflineContentAggregator::GetItemById(const ContentId& id,
 
 void OfflineContentAggregator::OnGetItemByIdDone(
     SingleItemCallback callback,
-    const base::Optional<OfflineItem>& item) {
+    const absl::optional<OfflineItem>& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(item);
 }
@@ -234,44 +233,37 @@ void OfflineContentAggregator::RenameItem(const ContentId& id,
   it->second->RenameItem(id, name, std::move(callback));
 }
 
-void OfflineContentAggregator::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (observers_.HasObserver(observer))
+void OfflineContentAggregator::ChangeSchedule(
+    const ContentId& id,
+    absl::optional<OfflineItemSchedule> schedule) {
+  auto it = providers_.find(id.name_space);
+  if (it == providers_.end())
     return;
 
-  observers_.AddObserver(observer);
-}
-
-void OfflineContentAggregator::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (!observers_.HasObserver(observer))
-    return;
-
-  observers_.RemoveObserver(observer);
+  it->second->ChangeSchedule(id, std::move(schedule));
 }
 
 void OfflineContentAggregator::OnItemsAdded(const OfflineItemList& items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 }
 
 void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void OfflineContentAggregator::OnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(item, update_delta);
+  NotifyItemUpdated(item, update_delta);
+}
+
+void OfflineContentAggregator::OnContentProviderGoingDown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Providers already call UnregisterProvider() manually for cleanup.
+  // TODO(nicolaso): Find a less error-prone way to do this.
 }
 
 }  // namespace offline_items_collection

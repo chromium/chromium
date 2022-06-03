@@ -5,7 +5,6 @@
 #include "chromeos/services/multidevice_setup/host_device_timestamp_manager_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -24,13 +23,18 @@ HostDeviceTimestampManagerImpl::Factory*
     HostDeviceTimestampManagerImpl::Factory::test_factory_ = nullptr;
 
 // static
-HostDeviceTimestampManagerImpl::Factory*
-HostDeviceTimestampManagerImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<HostDeviceTimestampManager>
+HostDeviceTimestampManagerImpl::Factory::Create(
+    HostStatusProvider* host_status_provider,
+    PrefService* pref_service,
+    base::Clock* clock) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(host_status_provider, pref_service,
+                                         clock);
+  }
 
-  static base::NoDestructor<HostDeviceTimestampManagerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new HostDeviceTimestampManagerImpl(
+      host_status_provider, pref_service, clock));
 }
 
 // static
@@ -40,15 +44,6 @@ void HostDeviceTimestampManagerImpl::Factory::SetFactoryForTesting(
 }
 
 HostDeviceTimestampManagerImpl::Factory::~Factory() = default;
-
-std::unique_ptr<HostDeviceTimestampManager>
-HostDeviceTimestampManagerImpl::Factory::BuildInstance(
-    HostStatusProvider* host_status_provider,
-    PrefService* pref_service,
-    base::Clock* clock) {
-  return base::WrapUnique(new HostDeviceTimestampManagerImpl(
-      host_status_provider, pref_service, clock));
-}
 
 // static
 const char
@@ -91,19 +86,19 @@ bool HostDeviceTimestampManagerImpl::WasHostSetFromThisChromebook() {
   return pref_service_->GetBoolean(kWasHostSetFromThisChromebookPrefName);
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestSetupFlowCompletionTimestamp() {
   if (pref_service_->GetInt64(kSetupFlowCompletedPrefName) == kTimestampNotSet)
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJavaTime(
       pref_service_->GetInt64(kSetupFlowCompletedPrefName));
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestVerificationTimestamp() {
   if (pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName) ==
       kTimestampNotSet)
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJavaTime(
       pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName));
 }

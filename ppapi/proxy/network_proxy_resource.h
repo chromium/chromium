@@ -21,6 +21,10 @@ class PPAPI_PROXY_EXPORT NetworkProxyResource
         public thunk::PPB_NetworkProxy_API {
  public:
   NetworkProxyResource(Connection connection, PP_Instance instance);
+
+  NetworkProxyResource(const NetworkProxyResource&) = delete;
+  NetworkProxyResource& operator=(const NetworkProxyResource&) = delete;
+
   ~NetworkProxyResource() override;
 
  private:
@@ -38,8 +42,6 @@ class PPAPI_PROXY_EXPORT NetworkProxyResource
                                       scoped_refptr<TrackedCallback> callback,
                                       const ResourceMessageReplyParams& params,
                                       const std::string& proxy_string);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkProxyResource);
 };
 
 }  // namespace proxy

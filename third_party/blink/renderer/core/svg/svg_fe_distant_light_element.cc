@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_distant_light_element.h"
 
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/distant_light_source.h"
 

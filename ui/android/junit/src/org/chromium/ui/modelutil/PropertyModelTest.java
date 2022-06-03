@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -210,6 +211,8 @@ public class PropertyModelTest {
 
     @Test
     public void ensureValidKey() {
+        if (!BuildConfig.ENABLE_ASSERTS) return;
+
         PropertyModel model = new PropertyModel(BOOLEAN_PROPERTY_A, BOOLEAN_PROPERTY_B);
         thrown.expect(IllegalArgumentException.class);
         model.set(BOOLEAN_PROPERTY_C, true);

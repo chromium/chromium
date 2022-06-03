@@ -34,6 +34,8 @@ const ClientState kDefaultClientState;
 class ImpressionStoreTest : public testing::Test {
  public:
   ImpressionStoreTest() : load_result_(false), db_(nullptr) {}
+  ImpressionStoreTest(const ImpressionStoreTest&) = delete;
+  ImpressionStoreTest& operator=(const ImpressionStoreTest&) = delete;
   ~ImpressionStoreTest() override = default;
 
   void SetUp() override {}
@@ -97,8 +99,6 @@ class ImpressionStoreTest : public testing::Test {
 
   FakeDB<proto::ClientState, ClientState>* db_;
   std::unique_ptr<CollectionStore<ClientState>> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImpressionStoreTest);
 };
 
 // Initializes an empty database should success.

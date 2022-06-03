@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<script>
+var imgHeight = 2048;
+var imgWidth = 2048;
+var canvas = document.createElement("canvas");
+canvas.width = imgWidth;
+canvas.height = imgHeight;
+var context = canvas.getContext('2d');
+document.body.appendChild(canvas);
+
+function fullClearRect() {
+  // Test how many times fillRect can be flushed in a second.
+  context.fillRect(50, 50, imgHeight/2, imgWidth/2);
+  context.clearRect(0, 0, imgHeight, imgWidth);
+  context.fillRect(500, 500, imgHeight/2, imgWidth/2);
+  context.drawImage(canvas, 0, 0, 1, 1, 0, 0, 1, 1);
+  requestAnimationFrame(fullClearRect);
+}
+
+window.onload = function () {
+  fullClearRect();
+}
+
+</script>
+</body>
+</html>

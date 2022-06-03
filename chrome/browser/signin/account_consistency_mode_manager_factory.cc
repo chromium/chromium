@@ -4,7 +4,7 @@
 
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

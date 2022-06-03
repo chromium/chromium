@@ -10,7 +10,7 @@ instead of "initial value".
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -55,15 +55,6 @@ instead of "initial value".
 |           shadow:pseudoId="-webkit-datetime-edit-year-field"
 |           "2014"
 |     <div>
-|       id="clear"
-|       pseudo="-webkit-clear-button"
-|       style=""
-|       shadow:pseudoId="-webkit-clear-button"
-|     <div>
-|       id="spin"
-|       pseudo="-webkit-inner-spin-button"
-|       shadow:pseudoId="-webkit-inner-spin-button"
-|     <div>
 |       id="picker"
 |       pseudo="-webkit-calendar-picker-indicator"
 |       shadow:pseudoId="-webkit-calendar-picker-indicator"
@@ -74,7 +65,7 @@ instead of "initial value".
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -90,8 +81,10 @@ instead of "initial value".
 |     <shadow:root>
 |       "inserted value"
 |   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       "initial value"
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

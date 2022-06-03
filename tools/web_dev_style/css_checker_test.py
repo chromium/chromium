@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import css_checker
+from . import css_checker
 from os import path as os_path
 import re
 from sys import path as sys_path
@@ -94,7 +94,6 @@ class CssCheckerTest(unittest.TestCase):
 body.alternate-logo #logo {
   -webkit-mask-image: url(images/google_logo.png@2x);
   background: none;
-  @apply(--some-variable);
 }
 
 div {
@@ -133,13 +132,6 @@ div {
     self.VerifyContentIsValid("""
 #id {
   --zzyxx-xylophone: 3px;
-  --ignore-me: {
-    /* TODO(dbeam): fix this by creating a "sort context". If we simply strip
-     * off the mixin, the inside contents will be compared to the outside
-     * contents, which isn't what we want. */
-    visibility: hidden;
-    color: black;
-  };
   --aardvark-animal: var(--zzyxz-xylophone);
 }
 """)
@@ -157,9 +149,6 @@ blah /* hey! */
 
 .mixed-in {
   display: none;
-  --css-mixin: {
-    color: red;
-  };  /* This should be ignored. */
 }
 
 .this.is { /* allowed */
@@ -168,6 +157,18 @@ blah /* hey! */
 - Start braces ({) end a selector, have a space before them and no rules after.
     div{
     {""")
+
+  def testMixins(self):
+    self.VerifyContentsProducesOutput(
+        """
+.mixed-in {
+  --css-mixin: {
+    color: red;
+  }
+}""", """
+- Avoid using CSS mixins. Use CSS shadow parts, CSS variables, or common CSS \
+classes instead.
+    --css-mixin: {""")
 
   def testCssClassesUseDashes(self):
     self.VerifyContentsProducesOutput("""
@@ -193,15 +194,6 @@ blah /* hey! */
 #id { /* $i18n{*} and $i18nRaw{*} should be ignored. */
   rule: $i18n{someValue};
   rule2: $i18nRaw{someValue};
-  --css-mixin: {
-    color: red;
-  };
-}
-
-.paper-wrapper {
-  --paper-thinger: {
-    background: blue;
-  };
 }
 
 #rule {
@@ -310,22 +302,18 @@ div {
   rule: value; /* rule: value; */
   rule: value; rule: value;
 }
-
-.remix {
-  --dj: {
-    spin: that;
-  };
-}
 """, """
 - One rule per line (what not to do: color: red; margin: 0;).
     rule: value; rule: value;""")
 
   def testCssOneSelectorPerLine(self):
-    self.VerifyContentsProducesOutput("""
+    self.VerifyContentsProducesOutput(
+        """
 a,
 div,a,
 div,/* Hello! */ span,
-#id.class([dir=rtl):not(.class):any(a, b, d) {
+#id.class([dir=rtl]):not(.class):any(a, b, d),
+div :is(:not(a), #b, .c) {
   rule: value;
 }
 
@@ -358,7 +346,8 @@ b:before,
     """)
 
   def testCssRgbIfNotGray(self):
-    self.VerifyContentsProducesOutput("""
+    self.VerifyContentsProducesOutput(
+        """
 #abc,
 #aaa,
 #aabbcc {
@@ -368,7 +357,7 @@ b:before,
 }""", """
 - Use rgb() over #hex when not a shade of gray (like #333).
     background: -webkit-linear-gradient(left, from(#abc), to(#def)); """
-"""(replace with rgb(170, 187, 204), rgb(221, 238, 255))
+        """(replace with rgb(170, 187, 204), rgb(221, 238, 255))
     color: #bad; (replace with rgb(187, 170, 221))
     color: #bada55; (replace with rgb(186, 218, 85))""")
 

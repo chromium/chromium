@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a network resource load\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.NetworkAgent.setCacheDisabled(true);
 
@@ -32,28 +32,28 @@
   const sendRequests = PerformanceTestRunner.mainTrackEvents().
       filter(e => e.name === TimelineModel.TimelineModel.RecordType.ResourceSendRequest);
   for (let event of sendRequests) {
-    printEvent(event);
-    printEventsWithId(event.args['data'].requestId);
+    await printEvent(event);
+    await printEventsWithId(event.args['data'].requestId);
   }
   TestRunner.completeTest();
 
-  function printEventsWithId(id) {
+  async function printEventsWithId(id) {
     var model = PerformanceTestRunner.timelineModel();
-    PerformanceTestRunner.mainTrackEvents().forEach(event => {
-        if (event.name !== TimelineModel.TimelineModel.RecordType.ResourceReceiveResponse &&
-            event.name !== TimelineModel.TimelineModel.RecordType.ResourceFinish) {
-          return;
-        }
-        if (event.args['data'].requestId !== id)
-          return;
-        printEvent(event);
-    });
+    for (const event of PerformanceTestRunner.mainTrackEvents()) {
+      if (event.name !== TimelineModel.TimelineModel.RecordType.ResourceReceiveResponse &&
+          event.name !== TimelineModel.TimelineModel.RecordType.ResourceFinish) {
+        continue;
+      }
+      if (event.args['data'].requestId !== id)
+        continue;
+      await printEvent(event);
+    }
   }
 
-  function printEvent(event) {
+  async function printEvent(event) {
     TestRunner.addResult('');
     PerformanceTestRunner.printTraceEventProperties(event);
     TestRunner.addResult(
-        `Text details for ${event.name}: ` + Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(event));
+        `Text details for ${event.name}: ` + await Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(event));
   }
 })();

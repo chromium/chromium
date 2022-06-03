@@ -12,12 +12,10 @@
 #include "ash/highlighter/highlighter_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/shell_state.h"
 #include "ash/system/palette/palette_utils.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
@@ -97,42 +95,42 @@ void HighlighterController::SetEnabled(bool enabled) {
         "Ash.Shelf.Palette.Assistant.GesturesPerSession.Recognized",
         recognized_gesture_counter_);
 
-    // If |highlighter_view_| is animating it will delete itself when done
-    // animating. |result_view_| will exist only if |highlighter_view_| is
-    // animating, and it will also delete itself when done animating.
-    if (highlighter_view_ && !highlighter_view_->animating())
+    // If |highlighter_view_widget_| is animating it will delete itself when
+    // done animating. |result_view_widget_| will exist only if
+    // |highlighter_view_widget_| is animating, and it will also delete itself
+    // when done animating.
+    if (highlighter_view_widget_ && !GetHighlighterView()->animating())
       DestroyPointerView();
   }
 }
 
 views::View* HighlighterController::GetPointerView() const {
-  return highlighter_view_.get();
+  return const_cast<HighlighterController*>(this)->GetHighlighterView();
 }
 
 void HighlighterController::CreatePointerView(
     base::TimeDelta presentation_delay,
     aura::Window* root_window) {
-  highlighter_view_ = std::make_unique<HighlighterView>(
+  highlighter_view_widget_ = HighlighterView::Create(
       presentation_delay,
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer));
-  result_view_.reset();
+  result_view_widget_.reset();
 }
 
 void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
   interrupted_stroke_timer_.reset();
 
-  highlighter_view_->AddNewPoint(event->root_location_f(), event->time_stamp());
+  GetHighlighterView()->AddNewPoint(event->root_location_f(),
+                                    event->time_stamp());
 
   if (event->type() != ui::ET_TOUCH_RELEASED)
     return;
 
-  gfx::Rect bounds = highlighter_view_->GetWidget()
-                         ->GetNativeWindow()
-                         ->GetRootWindow()
-                         ->bounds();
+  gfx::Rect bounds =
+      highlighter_view_widget_->GetNativeWindow()->GetRootWindow()->bounds();
   bounds.Inset(kScreenEdgeMargin, kScreenEdgeMargin);
 
-  const gfx::PointF pos = highlighter_view_->points().GetNewest().location;
+  const gfx::PointF pos = GetHighlighterView()->points().GetNewest().location;
   if (bounds.Contains(
           gfx::Point(static_cast<int>(pos.x()), static_cast<int>(pos.y())))) {
     // The stroke has ended far enough from the screen edge, process it
@@ -143,11 +141,11 @@ void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
 
   // The stroke has ended close to the screen edge. Delay gesture recognition
   // a little to give the pen a chance to re-enter the screen.
-  highlighter_view_->AddGap();
+  GetHighlighterView()->AddGap();
 
   interrupted_stroke_timer_ = std::make_unique<base::OneShotTimer>();
   interrupted_stroke_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kInterruptedStrokeTimeoutMs),
+      FROM_HERE, base::Milliseconds(kInterruptedStrokeTimeoutMs),
       base::BindOnce(&HighlighterController::RecognizeGesture,
                      base::Unretained(this)));
 }
@@ -156,10 +154,10 @@ void HighlighterController::RecognizeGesture() {
   interrupted_stroke_timer_.reset();
 
   aura::Window* current_window =
-      highlighter_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+      highlighter_view_widget_->GetNativeWindow()->GetRootWindow();
   const gfx::Rect bounds = current_window->bounds();
 
-  const fast_ink::FastInkPoints& points = highlighter_view_->points();
+  const fast_ink::FastInkPoints& points = GetHighlighterView()->points();
   gfx::RectF box = points.GetBoundingBoxF();
 
   const HighlighterGestureType gesture_type =
@@ -177,7 +175,7 @@ void HighlighterController::RecognizeGesture() {
                              static_cast<int>(fraction * 100));
   }
 
-  highlighter_view_->Animate(
+  GetHighlighterView()->Animate(
       box.CenterPoint(), gesture_type,
       base::BindOnce(&HighlighterController::DestroyHighlighterView,
                      base::Unretained(this)));
@@ -191,18 +189,17 @@ void HighlighterController::RecognizeGesture() {
   if (!box.IsEmpty() &&
       gesture_type != HighlighterGestureType::kNotRecognized) {
     // The window for selection should be the root window to show assistant.
-    Shell::Get()->shell_state()->SetRootWindowForNewWindows(
-        current_window->GetRootWindow());
+    Shell::SetRootWindowForNewWindows(current_window->GetRootWindow());
 
     const gfx::Rect selection_rect = gfx::ToEnclosingRect(box);
     for (auto& observer : observers_)
       observer.OnHighlighterSelectionRecognized(selection_rect);
 
-    result_view_ = std::make_unique<HighlighterResultView>(current_window);
-    result_view_->Animate(
-        box, gesture_type,
-        base::BindOnce(&HighlighterController::DestroyResultView,
-                       base::Unretained(this)));
+    result_view_widget_ = HighlighterResultView::Create(current_window);
+    static_cast<HighlighterResultView*>(result_view_widget_->GetContentsView())
+        ->Animate(box, gesture_type,
+                  base::BindOnce(&HighlighterController::DestroyResultView,
+                                 base::Unretained(this)));
 
     recognized_gesture_counter_++;
     CallExitCallback();
@@ -235,28 +232,45 @@ void HighlighterController::DestroyPointerView() {
   DestroyResultView();
 }
 
-bool HighlighterController::CanStartNewGesture(ui::TouchEvent* event) {
+bool HighlighterController::CanStartNewGesture(ui::LocatedEvent* event) {
   // Ignore events over the palette.
-  if (ash::palette_utils::PaletteContainsPointInScreen(event->root_location()))
+  if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return false;
   return !interrupted_stroke_timer_ &&
          FastInkPointerController::CanStartNewGesture(event);
 }
 
+bool HighlighterController::ShouldProcessEvent(ui::LocatedEvent* event) {
+  // Allow mouse clicking when Assistant tool is enabled.
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_MOUSE_RELEASED) {
+    return false;
+  }
+
+  return FastInkPointerController::ShouldProcessEvent(event);
+}
+
 void HighlighterController::DestroyHighlighterView() {
-  highlighter_view_.reset();
+  highlighter_view_widget_.reset();
   // |interrupted_stroke_timer_| should never be non null when
-  // |highlighter_view_| is null.
+  // |highlighter_view_widget_| is null.
   interrupted_stroke_timer_.reset();
 }
 
 void HighlighterController::DestroyResultView() {
-  result_view_.reset();
+  result_view_widget_.reset();
 }
 
 void HighlighterController::CallExitCallback() {
   if (!exit_callback_.is_null())
     std::move(exit_callback_).Run();
+}
+
+HighlighterView* HighlighterController::GetHighlighterView() {
+  return highlighter_view_widget_
+             ? static_cast<HighlighterView*>(
+                   highlighter_view_widget_->GetContentsView())
+             : nullptr;
 }
 
 }  // namespace ash

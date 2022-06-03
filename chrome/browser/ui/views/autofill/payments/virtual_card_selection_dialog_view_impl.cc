@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/grit/components_scaled_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
@@ -27,10 +29,20 @@ namespace autofill {
 VirtualCardSelectionDialogViewImpl::VirtualCardSelectionDialogViewImpl(
     VirtualCardSelectionDialogController* controller)
     : controller_(controller) {
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
-                                   controller_->GetOkButtonLabel());
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
-                                   controller_->GetCancelButtonLabel());
+  SetShowTitle(true);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetCancelButtonLabel());
+  SetAcceptCallback(
+      base::BindOnce(&VirtualCardSelectionDialogController::OnOkButtonClicked,
+                     base::Unretained(controller_)));
+  SetCancelCallback(base::BindOnce(
+      &VirtualCardSelectionDialogController::OnCancelButtonClicked,
+      base::Unretained(controller_)));
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
 VirtualCardSelectionDialogViewImpl::~VirtualCardSelectionDialogViewImpl() {
@@ -61,24 +73,8 @@ void VirtualCardSelectionDialogViewImpl::Hide() {
   GetWidget()->Close();
 }
 
-gfx::Size VirtualCardSelectionDialogViewImpl::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 void VirtualCardSelectionDialogViewImpl::AddedToWidget() {
   // TODO(crbug.com/1020740): The header image is not ready. Implement it later.
-}
-
-bool VirtualCardSelectionDialogViewImpl::Accept() {
-  controller_->OnOkButtonClicked();
-  return true;
-}
-
-bool VirtualCardSelectionDialogViewImpl::Cancel() {
-  controller_->OnCancelButtonClicked();
-  return true;
 }
 
 bool VirtualCardSelectionDialogViewImpl::IsDialogButtonEnabled(
@@ -87,12 +83,8 @@ bool VirtualCardSelectionDialogViewImpl::IsDialogButtonEnabled(
                                         : true;
 }
 
-ui::ModalType VirtualCardSelectionDialogViewImpl::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
-  RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -100,11 +92,12 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   SetBorder(views::CreateEmptyBorder(
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::CONTROL)));
+          views::DialogContentType::kText,
+          views::DialogContentType::kControl)));
 
   auto* instructions = AddChildView(std::make_unique<views::Label>(
-      controller_->GetContentExplanation(), CONTEXT_BODY_TEXT_LARGE,
-      views::style::STYLE_SECONDARY));
+      controller_->GetContentExplanation(),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   instructions->SetMultiLine(true);
   instructions->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
@@ -113,16 +106,11 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
   return this;
 }
 
-base::string16 VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
+std::u16string VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
   return controller_->GetContentTitle();
 }
 
-bool VirtualCardSelectionDialogViewImpl::ShouldShowWindowTitle() const {
-  return true;
-}
-
-bool VirtualCardSelectionDialogViewImpl::ShouldShowCloseButton() const {
-  return false;
-}
+BEGIN_METADATA(VirtualCardSelectionDialogViewImpl, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace autofill

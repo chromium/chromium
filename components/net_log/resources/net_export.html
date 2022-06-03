@@ -1,21 +1,15 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
 <if expr="is_android">
 <meta name="viewport" content="width=device-width">
 </if>
-
-<if expr="is_ios">
-<!-- TODO(crbug.com/487000): Remove this once injected by web. -->
-<script src="chrome://resources/js/ios/web_ui.js"></script>
-</if>
-
-<script src="chrome://resources/js/util.js"></script>
-<script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://net-export/net_export.js"></script>
+<script type="module" src="net_export.js"></script>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="net_export.css">
+<link rel="icon" id="fav-icon">
 <title>Network Log Export</title>
 </head>
 <body>
@@ -44,9 +38,19 @@
       <div class="section-container">
         Click the button to start logging future network activity to a file on
         disk.
+        <if expr="not(is_ios)">
+        The log includes details of network activity from all of Chrome,
+        including incognito and non-incognito tabs, visited URLs, and
+        information about the network configuration.
+        </if>
+        <if expr="is_ios">
+        The log includes details of network activity handled by Chrome's
+        internal network stack. Note, this does not include network requests
+        for ordinary web content, which are instead handled by WKWebView.
+        </if>
         <a href="https://dev.chromium.org/for-testers/providing-network-details"
            target="_blank">
-        See the Chromium website for more detailed instructions.</a>
+        See the Chromium website for more detailed instructions</a>.
       </div>
 
       <div class="outline-box">
@@ -76,8 +80,8 @@
         <div>
           <label>
             Maximum log size (megabytes):
-            <input id='log-max-filesize' value="100" size="4" />
-            (Blank means unlimited).
+            <input id="log-max-filesize" type="number" min="0" step="5" />
+            (Blank means unlimited)
           </label>
         </div>
       </div>
@@ -154,7 +158,7 @@
               logging once the issue has reproduced.</li>
             <li>Existing log files can be shrunk using
               <a
-                href="https://chromium.googlesource.com/chromium/src/+/master/net/tools/truncate_net_log.py"
+                href="https://chromium.googlesource.com/chromium/src/+/main/net/tools/truncate_net_log.py"
                 target="_blank">
                 net/tools/truncate_net_log.py</a>.</li>
           </ul>
@@ -170,7 +174,7 @@
 
       <div class="section-container">
         The log file can be loaded using the
-        <a href="https://chromium.googlesource.com/catapult/+/master/netlog_viewer/"
+        <a href="https://netlog-viewer.appspot.com/"
            target="_blank">netlog_viewer</a>.
       </div>
 
@@ -178,7 +182,7 @@
         <b><span class="warning">PRIVACY</span></b>: Be aware when
         sharing your network logs that they may contain private information. At
         a minimum, they list the URLs and hostnames of sites visited while
-        logging was enabled. 
+        logging was enabled.
         <a href="#" id="privacy-read-more-link">Read more...</a>
 
         <div id="privacy-read-more">

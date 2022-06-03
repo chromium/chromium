@@ -7,8 +7,6 @@
 
 #include <deque>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -32,15 +30,21 @@ class BleSynchronizer : public BleSynchronizerBase {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<BleSynchronizerBase> BuildInstance(
+    static std::unique_ptr<BleSynchronizerBase> Create(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<BleSynchronizerBase> CreateInstance(
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  BleSynchronizer(const BleSynchronizer&) = delete;
+  BleSynchronizer& operator=(const BleSynchronizer&) = delete;
 
   ~BleSynchronizer() override;
 
@@ -82,7 +86,7 @@ class BleSynchronizer : public BleSynchronizerBase {
       std::unique_ptr<device::BluetoothDiscoverySession> discovery_session);
   void OnErrorStartingDiscoverySession();
   void OnDiscoverySessionStopped();
-  void OnErrorStoppingDiscoverySession();
+  void OnDiscoverySessionStoppedError();
 
   void ScheduleCommandCompletion();
   void CompleteCurrentCommand();
@@ -104,8 +108,6 @@ class BleSynchronizer : public BleSynchronizerBase {
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Time last_command_end_timestamp_;
   base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleSynchronizer);
 };
 
 }  // namespace secure_channel

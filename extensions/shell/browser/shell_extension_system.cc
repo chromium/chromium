@@ -11,34 +11,29 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/info_map.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
-#include "extensions/browser/value_store/value_store_factory_impl.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/file_util.h"
 #include "extensions/shell/browser/shell_extension_loader.h"
 
 using content::BrowserContext;
-using content::BrowserThread;
-
 namespace extensions {
 
 ShellExtensionSystem::ShellExtensionSystem(BrowserContext* browser_context)
     : browser_context_(browser_context),
-      store_factory_(new ValueStoreFactoryImpl(browser_context->GetPath())) {}
+      store_factory_(
+          new value_store::ValueStoreFactoryImpl(browser_context->GetPath())) {}
 
 ShellExtensionSystem::~ShellExtensionSystem() = default;
 
@@ -54,10 +49,6 @@ const Extension* ShellExtensionSystem::LoadApp(const base::FilePath& app_dir) {
 void ShellExtensionSystem::FinishInitialization() {
   // Inform the rest of the extensions system to start.
   ready_.Signal();
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_EXTENSIONS_READY_DEPRECATED,
-      content::Source<BrowserContext>(browser_context_),
-      content::NotificationService::NoDetails());
 }
 
 void ShellExtensionSystem::LaunchApp(const ExtensionId& extension_id) {
@@ -83,19 +74,14 @@ void ShellExtensionSystem::Shutdown() {
 void ShellExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(browser_context_));
   quota_service_ = std::make_unique<QuotaService>();
   app_sorting_ = std::make_unique<NullAppSorting>();
   extension_loader_ = std::make_unique<ShellExtensionLoader>(browser_context_);
+  user_script_manager_ = std::make_unique<UserScriptManager>(browser_context_);
 }
 
 ExtensionService* ShellExtensionSystem::extension_service() {
   return nullptr;
-}
-
-RuntimeData* ShellExtensionSystem::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* ShellExtensionSystem::management_policy() {
@@ -106,8 +92,8 @@ ServiceWorkerManager* ShellExtensionSystem::service_worker_manager() {
   return service_worker_manager_.get();
 }
 
-SharedUserScriptMaster* ShellExtensionSystem::shared_user_script_master() {
-  return nullptr;
+UserScriptManager* ShellExtensionSystem::user_script_manager() {
+  return user_script_manager_.get();
 }
 
 StateStore* ShellExtensionSystem::state_store() {
@@ -118,7 +104,12 @@ StateStore* ShellExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> ShellExtensionSystem::store_factory() {
+StateStore* ShellExtensionSystem::dynamic_user_scripts_store() {
+  return nullptr;
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+ShellExtensionSystem::store_factory() {
   return store_factory_;
 }
 
@@ -138,12 +129,13 @@ AppSorting* ShellExtensionSystem::app_sorting() {
 
 void ShellExtensionSystem::RegisterExtensionWithRequestContexts(
     const Extension* extension,
-    const base::Closure& callback) {
-  base::PostTaskAndReply(
-      FROM_HERE, {BrowserThread::IO},
-      base::Bind(&InfoMap::AddExtension, info_map(),
-                 base::RetainedRef(extension), base::Time::Now(), false, false),
-      callback);
+    base::OnceClosure callback) {
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&InfoMap::AddExtension, info_map(),
+                     base::RetainedRef(extension), base::Time::Now(), false,
+                     false),
+      std::move(callback));
 }
 
 void ShellExtensionSystem::UnregisterExtensionWithRequestContexts(
@@ -152,6 +144,10 @@ void ShellExtensionSystem::UnregisterExtensionWithRequestContexts(
 
 const base::OneShotEvent& ShellExtensionSystem::ready() const {
   return ready_;
+}
+
+bool ShellExtensionSystem::is_ready() const {
+  return ready_.is_signaled();
 }
 
 ContentVerifier* ShellExtensionSystem::content_verifier() {
@@ -170,7 +166,13 @@ void ShellExtensionSystem::InstallUpdate(
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
   NOTREACHED();
-  base::DeleteFileRecursively(temp_dir);
+  base::DeletePathRecursively(temp_dir);
+}
+
+void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
+    const std::string& extension_id,
+    const base::Value& attributes) {
+  NOTREACHED();
 }
 
 bool ShellExtensionSystem::FinishDelayedInstallationIfReady(

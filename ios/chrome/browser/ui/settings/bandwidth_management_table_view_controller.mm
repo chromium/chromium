@@ -5,18 +5,21 @@
 #import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/settings/dataplan_usage_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -43,7 +46,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface BandwidthManagementTableViewController ()<PrefObserverDelegate> {
-  ios::ChromeBrowserState* _browserState;  // weak
+  ChromeBrowserState* _browserState;  // weak
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -58,12 +61,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation BandwidthManagementTableViewController
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_BANDWIDTH_MANAGEMENT_SETTINGS);
     _browserState = browserState;
@@ -73,10 +72,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Register to observe any changes on Perf backed values displayed by the
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionEnabled,
-        &_prefChangeRegistrarApplicationContext);
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionWifiOnly,
+        prefs::kNetworkPredictionSetting,
         &_prefChangeRegistrarApplicationContext);
   }
   return self;
@@ -108,6 +104,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
       forSectionWithIdentifier:SectionIdentifierActions];
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileBandwidthSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileBandwidthSettingsBack"));
+}
+
 #pragma mark - UITableViewDelegate
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -131,8 +137,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
     UIViewController* controller = [[DataplanUsageTableViewController alloc]
         initWithPrefs:_browserState->GetPrefs()
-             basePref:prefs::kNetworkPredictionEnabled
-             wifiPref:prefs::kNetworkPredictionWifiOnly
+          settingPref:prefs::kNetworkPredictionSetting
                 title:preloadTitle];
     [self.navigationController pushViewController:controller animated:YES];
   }
@@ -141,12 +146,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kNetworkPredictionEnabled ||
-      preferenceName == prefs::kNetworkPredictionWifiOnly) {
+  if (preferenceName == prefs::kNetworkPredictionSetting) {
     NSString* detailText = [DataplanUsageTableViewController
         currentLabelForPreference:_browserState->GetPrefs()
-                         basePref:prefs::kNetworkPredictionEnabled
-                         wifiPref:prefs::kNetworkPredictionWifiOnly];
+                      settingPref:prefs::kNetworkPredictionSetting];
 
     _preloadWebpagesDetailItem.detailText = detailText;
 
@@ -161,8 +164,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewDetailIconItem*)preloadWebpagesItem {
   NSString* detailText = [DataplanUsageTableViewController
       currentLabelForPreference:_browserState->GetPrefs()
-                       basePref:prefs::kNetworkPredictionEnabled
-                       wifiPref:prefs::kNetworkPredictionWifiOnly];
+                    settingPref:prefs::kNetworkPredictionSetting];
   _preloadWebpagesDetailItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypePreload];
 
@@ -172,6 +174,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _preloadWebpagesDetailItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   _preloadWebpagesDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _preloadWebpagesDetailItem.accessibilityIdentifier = kSettingsPreloadCellId;
   return _preloadWebpagesDetailItem;
 }
 
@@ -183,8 +186,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   item.text = l10n_util::GetNSString(
       IDS_IOS_BANDWIDTH_MANAGEMENT_DESCRIPTION_LEARN_MORE);
-  item.linkURL =
-      GURL(l10n_util::GetStringUTF8(IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL));
+  item.urls = std::vector<GURL>{
+      GURL(l10n_util::GetStringUTF8(IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL))};
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   return item;
 }

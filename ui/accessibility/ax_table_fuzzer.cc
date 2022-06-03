@@ -36,7 +36,7 @@ ax::mojom::Role GetInterestingTableRole(unsigned char byte) {
     case 10:
       return ax::mojom::Role::kGenericContainer;
     case 11:
-      return ax::mojom::Role::kIgnored;
+      return ax::mojom::Role::kNone;
     case 12:
       return ax::mojom::Role::kLayoutTable;
     case 13:
@@ -98,15 +98,24 @@ void TestTableAPIs(const ui::AXNode* node) {
   // crash. Normally |ids| is an out argument only, but
   // there's no reason we shouldn't be able to pass a vector
   // that was previously used by another call.
-  std::vector<int32_t> ids;
+  std::vector<ui::AXNodeID> ids;
   for (int i = 0; i < 3; i++) {
-    node->GetTableColHeaderNodeIds(i, &ids);
-    node->GetTableRowHeaderNodeIds(i, &ids);
+    std::vector<ui::AXNodeID> col_header_node_ids =
+        node->GetTableColHeaderNodeIds(i);
+    ids.insert(ids.end(), col_header_node_ids.begin(),
+               col_header_node_ids.end());
+
+    std::vector<ui::AXNodeID> row_header_node_ids =
+        node->GetTableRowHeaderNodeIds(i);
+    ids.insert(ids.end(), row_header_node_ids.begin(),
+               row_header_node_ids.end());
   }
-  node->GetTableUniqueCellIds(&ids);
+  std::vector<ui::AXNodeID> unique_cell_ids = node->GetTableUniqueCellIds();
+  ids.insert(ids.end(), unique_cell_ids.begin(), unique_cell_ids.end());
+
   ignore_result(node->IsTableRow());
   ignore_result(node->GetTableRowRowIndex());
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   ignore_result(node->IsTableColumn());
   ignore_result(node->GetTableColColIndex());
 #endif
@@ -118,8 +127,14 @@ void TestTableAPIs(const ui::AXNode* node) {
   ignore_result(node->GetTableCellRowSpan());
   ignore_result(node->GetTableCellAriaColIndex());
   ignore_result(node->GetTableCellAriaRowIndex());
-  node->GetTableCellColHeaderNodeIds(&ids);
-  node->GetTableCellRowHeaderNodeIds(&ids);
+  std::vector<ui::AXNodeID> cell_col_header_node_ids =
+      node->GetTableCellColHeaderNodeIds();
+  ids.insert(ids.end(), cell_col_header_node_ids.begin(),
+             cell_col_header_node_ids.end());
+  std::vector<ui::AXNodeID> cell_row_header_node_ids =
+      node->GetTableCellRowHeaderNodeIds();
+  ids.insert(ids.end(), cell_row_header_node_ids.begin(),
+             cell_row_header_node_ids.end());
   std::vector<ui::AXNode*> headers;
   node->GetTableCellColHeaders(&headers);
   node->GetTableCellRowHeaders(&headers);

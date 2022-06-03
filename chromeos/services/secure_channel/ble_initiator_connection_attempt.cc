@@ -5,7 +5,6 @@
 #include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/services/secure_channel/ble_initiator_operation.h"
 
 namespace chromeos {
@@ -17,13 +16,18 @@ BleInitiatorConnectionAttempt::Factory*
     BleInitiatorConnectionAttempt::Factory::test_factory_ = nullptr;
 
 // static
-BleInitiatorConnectionAttempt::Factory*
-BleInitiatorConnectionAttempt::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<ConnectionAttempt<BleInitiatorFailureType>>
+BleInitiatorConnectionAttempt::Factory::Create(
+    BleConnectionManager* ble_connection_manager,
+    ConnectionAttemptDelegate* delegate,
+    const ConnectionAttemptDetails& connection_attempt_details) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(ble_connection_manager, delegate,
+                                         connection_attempt_details);
+  }
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new BleInitiatorConnectionAttempt(
+      ble_connection_manager, delegate, connection_attempt_details));
 }
 
 // static
@@ -33,15 +37,6 @@ void BleInitiatorConnectionAttempt::Factory::SetFactoryForTesting(
 }
 
 BleInitiatorConnectionAttempt::Factory::~Factory() = default;
-
-std::unique_ptr<ConnectionAttempt<BleInitiatorFailureType>>
-BleInitiatorConnectionAttempt::Factory::BuildInstance(
-    BleConnectionManager* ble_connection_manager,
-    ConnectionAttemptDelegate* delegate,
-    const ConnectionAttemptDetails& connection_attempt_details) {
-  return base::WrapUnique(new BleInitiatorConnectionAttempt(
-      ble_connection_manager, delegate, connection_attempt_details));
-}
 
 BleInitiatorConnectionAttempt::BleInitiatorConnectionAttempt(
     BleConnectionManager* ble_connection_manager,
@@ -62,7 +57,7 @@ BleInitiatorConnectionAttempt::CreateConnectToDeviceOperation(
         success_callback,
     const ConnectToDeviceOperation<
         BleInitiatorFailureType>::ConnectionFailedCallback& failure_callback) {
-  return BleInitiatorOperation::Factory::Get()->BuildInstance(
+  return BleInitiatorOperation::Factory::Create(
       ble_connection_manager_, std::move(success_callback), failure_callback,
       device_id_pair, connection_priority);
 }

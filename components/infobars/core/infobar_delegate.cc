@@ -4,8 +4,6 @@
 
 #include "components/infobars/core/infobar_delegate.h"
 
-#include "base/logging.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -34,8 +32,8 @@ int InfoBarDelegate::GetIconId() const {
 }
 
 const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
-  static base::NoDestructor<gfx::VectorIcon> empty_icon;
-  return *empty_icon;
+  static gfx::VectorIcon empty_icon;
+  return empty_icon;
 }
 
 gfx::Image InfoBarDelegate::GetIcon() const {
@@ -54,6 +52,14 @@ gfx::Image InfoBarDelegate::GetIcon() const {
                    icon_id);
 }
 
+std::u16string InfoBarDelegate::GetLinkText() const {
+  return std::u16string();
+}
+
+GURL InfoBarDelegate::GetLinkURL() const {
+  return GURL();
+}
+
 bool InfoBarDelegate::EqualsDelegate(InfoBarDelegate* delegate) const {
   return false;
 }
@@ -67,6 +73,11 @@ bool InfoBarDelegate::ShouldExpire(const NavigationDetails& details) const {
       // want reloads to dismiss infobars, but they will have unchanged entry
       // IDs.
       ((nav_entry_id_ != details.entry_id) || details.is_reload);
+}
+
+bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
+  infobar()->owner()->OpenURL(GetLinkURL(), disposition);
+  return false;
 }
 
 void InfoBarDelegate::InfoBarDismissed() {
@@ -88,7 +99,8 @@ HungRendererInfoBarDelegate* InfoBarDelegate::AsHungRendererInfoBarDelegate() {
   return nullptr;
 }
 
-PopupBlockedInfoBarDelegate* InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
+blocked_content::PopupBlockedInfoBarDelegate*
+InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
   return nullptr;
 }
 
@@ -109,7 +121,6 @@ InfoBarDelegate::AsOfflinePageInfoBarDelegate() {
 }
 #endif
 
-InfoBarDelegate::InfoBarDelegate() : nav_entry_id_(0) {
-}
+InfoBarDelegate::InfoBarDelegate() = default;
 
 }  // namespace infobars

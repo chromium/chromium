@@ -1,2 +1,0 @@
-ALERT: viewport size 160x160 scale 2 with limits [2, -1] and userScalable true
-

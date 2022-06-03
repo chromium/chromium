@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<link rel="match" href="counters-ref.html">
+<title>Test counters depending on container queries</title>
+<style>
+  #container {
+    contain: size layout style;
+    width: 200px;
+    height: 200px;
+  }
+
+  #counter::before {
+    content: counter(my-counter);
+  }
+
+  @container (min-width: 200px) {
+    #counter {
+      counter-reset: my-counter 100;
+    }
+  }
+</style>
+<p>Pass if you see the number 100 below.</p>
+<div id="container">
+  <div id="counter"></div>
+</div>

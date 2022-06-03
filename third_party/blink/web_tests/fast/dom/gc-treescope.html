@@ -24,9 +24,9 @@ function reloadUntil(max) {
 }
 
 function init() {
-    var shadowHost = document.createElement("SHADOWHOST");
-    var shadowRoot = shadowHost.createShadowRoot();
-    var child = document.createElement("CHILD");
+    var shadowHost = document.createElement("div");
+    var shadowRoot = shadowHost.attachShadow({mode: 'open'});
+    var child = document.createElement("span");
     shadowRoot.appendChild(child);
     child.style.zoom = 34;
     var styleAttr = child.attributes[0];

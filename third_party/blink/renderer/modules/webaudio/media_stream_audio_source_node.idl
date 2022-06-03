@@ -25,9 +25,9 @@
 
 // See https://webaudio.github.io/web-audio-api/#mediastreamaudiosourcenode
 [
-    Measure,
-    ActiveScriptWrappable
+    ActiveScriptWrappable,
+    Exposed=Window
 ] interface MediaStreamAudioSourceNode : AudioNode {
-  [RaisesException] constructor(AudioContext context, MediaStreamAudioSourceOptions options);
+  [RaisesException, Measure] constructor(AudioContext context, MediaStreamAudioSourceOptions options);
   [SameObject, ImplementedAs=getMediaStream] readonly attribute MediaStream mediaStream;
 };

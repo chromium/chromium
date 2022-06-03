@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_BROWSER_LIFETIME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_BROWSER_LIFETIME_HANDLER_H_
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
@@ -17,6 +17,10 @@ namespace settings {
 class BrowserLifetimeHandler : public SettingsPageUIHandler {
  public:
   BrowserLifetimeHandler();
+
+  BrowserLifetimeHandler(const BrowserLifetimeHandler&) = delete;
+  BrowserLifetimeHandler& operator=(const BrowserLifetimeHandler&) = delete;
+
   ~BrowserLifetimeHandler() override;
 
   // SettingsPageUIHandler:
@@ -27,12 +31,10 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
  private:
   void HandleRestart(const base::ListValue* /*args*/);
   void HandleRelaunch(const base::ListValue* /*args*/);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleSignOutAndRestart(const base::ListValue* /*args*/);
   void HandleFactoryReset(const base::ListValue* /*args*/);
-#endif  // defined(OS_CHROMEOS)
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLifetimeHandler);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace settings

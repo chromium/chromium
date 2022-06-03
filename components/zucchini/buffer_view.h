@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {

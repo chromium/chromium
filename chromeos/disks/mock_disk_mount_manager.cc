@@ -141,8 +141,14 @@ void MockDiskMountManager::SetupDefaultReplies() {
   EXPECT_CALL(*this, UnmountPath(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, RemountAllRemovableDrives(_)).Times(AnyNumber());
   EXPECT_CALL(*this, FormatMountedDevice(_, _, _)).Times(AnyNumber());
+  EXPECT_CALL(*this, SinglePartitionFormatDevice(_, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, UnmountDeviceRecursively(_, _))
       .Times(AnyNumber());
+}
+
+void MockDiskMountManager::CreateDiskEntryForMountDevice(
+    std::unique_ptr<Disk> disk) {
+  disks_[disk->device_path()] = std::move(disk);
 }
 
 void MockDiskMountManager::CreateDiskEntryForMountDevice(
@@ -175,7 +181,7 @@ void MockDiskMountManager::CreateDiskEntryForMountDevice(
           .SetOnRemovableDevice(on_removable_device)
           .SetFileSystemType(file_system_type)
           .Build();
-  disks_[std::string(mount_info.source_path)] = std::move(disk_ptr);
+  CreateDiskEntryForMountDevice(std::move(disk_ptr));
 }
 
 void MockDiskMountManager::RemoveDiskEntryForMountDevice(

@@ -27,7 +27,7 @@ def FormatCheckstyleOutput(checkstyle_output):
     return checkstyle_output
 
 
-def RunCheckstyle(input_api, output_api, style_file, black_list=None):
+def RunCheckstyle(input_api, output_api, style_file, files_to_skip=None):
   # Android toolchain is only available on Linux.
   if not sys.platform.startswith('linux'):
     return []
@@ -38,9 +38,11 @@ def RunCheckstyle(input_api, output_api, style_file, black_list=None):
     return [output_api.PresubmitError(file_error)]
 
   # Filter out non-Java files and files that were deleted.
-  java_files = [x.AbsoluteLocalPath() for x in input_api.AffectedSourceFiles(
-                lambda f: input_api.FilterSourceFile(f, black_list=black_list))
-                if os.path.splitext(x.LocalPath())[1] == '.java']
+  java_files = [
+      x.AbsoluteLocalPath() for x in input_api.AffectedSourceFiles(
+          lambda f: input_api.FilterSourceFile(f, files_to_skip=files_to_skip))
+      if os.path.splitext(x.LocalPath())[1] == '.java'
+  ]
   if not java_files:
     return []
 
@@ -50,7 +52,7 @@ def RunCheckstyle(input_api, output_api, style_file, black_list=None):
                             'com.puppycrawl.tools.checkstyle.Main', '-c',
                             style_file, '-f', 'xml'] + java_files,
                             stdout=subprocess.PIPE)
-  stdout, _ = check.communicate()
+  stdout = check.communicate()[0].decode('utf-8')
 
   result_errors = []
   result_warnings = []

@@ -1,1 +1,8 @@
-steimel@chromium.org
+file://components/global_media_controls/OWNERS
+
+per-file cast_*=muyaoxu@google.com
+per-file cast_*=takumif@chromium.org
+per-file cast_*=file://components/media_router/OWNERS
+per-file presentation_request_*=muyaoxu@google.com
+per-file presentation_request_*=takumif@chromium.org
+per-file presentation_request_*=file://components/media_router/OWNERS

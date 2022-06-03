@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://html.spec.whatwg.org/C/custom-elements.html#customelementregistry
+// https://html.spec.whatwg.org/C/#customelementregistry
 
 [Exposed=Window]
 interface CustomElementRegistry {
-    [CallWith=ScriptState, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options);
+    [CallWith=ScriptState, CEReactions, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options = {});
     any get(DOMString name);
     [CallWith=ScriptState,RaisesException] Promise<void> whenDefined(DOMString name);
     [CEReactions] void upgrade(Node root);

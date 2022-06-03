@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_item_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_item_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -31,10 +31,13 @@ ClipboardItem* ClipboardItem::Create(
 ClipboardItem::ClipboardItem(
     const HeapVector<std::pair<String, Member<Blob>>>& items,
     const ClipboardItemOptions* options)
-    : items_(items),
-      is_raw_(base::FeatureList::IsEnabled(blink::features::kRawClipboard) &&
-              options->raw()) {
+    : items_(items) {
   DCHECK(items_.size());
+  if (options->hasUnsanitized()) {
+    for (const auto& unsanitized_item : options->unsanitized()) {
+      custom_format_items_.push_back(unsanitized_item);
+    }
+  }
 }
 
 Vector<String> ClipboardItem::types() const {
@@ -44,10 +47,6 @@ Vector<String> ClipboardItem::types() const {
     types.push_back(item.first);
   }
   return types;
-}
-
-bool ClipboardItem::raw() const {
-  return is_raw_;
 }
 
 ScriptPromise ClipboardItem::getType(ScriptState* script_state,
@@ -67,7 +66,7 @@ ScriptPromise ClipboardItem::getType(ScriptState* script_state,
   return promise;
 }
 
-void ClipboardItem::Trace(blink::Visitor* visitor) {
+void ClipboardItem::Trace(Visitor* visitor) const {
   visitor->Trace(items_);
   ScriptWrappable::Trace(visitor);
 }

@@ -49,7 +49,7 @@ class SQLStatementBackend final : public GarbageCollected<SQLStatementBackend> {
                       const Vector<SQLValue>& arguments,
                       int permissions);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   bool Execute(Database*);
   bool LastExecutionFailedDueToQuota() const;

@@ -1,0 +1,31 @@
+Verifies that making cross-party requests which set SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyFromCrossPartyContext
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            sameSite : None
+            secure : true
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+        cookieLine : name=value; SameSite=None; SameParty; Secure
+    }
+]
+Javascript initiated navigation blocked set-cookies:[
+]
+Browser initiated navigation blocked set-cookies:[
+]
+

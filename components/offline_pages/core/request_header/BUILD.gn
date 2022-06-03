@@ -22,9 +22,7 @@ static_library("request_header") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "offline_page_header_unittest.cc",
-  ]
+  sources = [ "offline_page_header_unittest.cc" ]
 
   deps = [
     ":request_header",

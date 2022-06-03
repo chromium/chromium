@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<style>
+iframe {
+  width: 10px;
+  height: 10px;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+body {
+  padding: 0;
+  margin: 0;
+  height: 200px;
+}
+</style>
+<div id=d>
+<iframe id=frame></iframe>
+</div>
+
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  d.style = "content-visibility: hidden";
+  frame.srcdoc = '<table> <marquee></marquee></table>';
+  if (window.testRunner) {
+      testRunner.dumpAsLayout();
+      testRunner.notifyDone();
+  }
+}));
+</script>
+

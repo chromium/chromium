@@ -23,15 +23,24 @@ namespace chromeos {
 // The format currently is a list of dictionaries, each with the following keys:
 // * "public_key_spki" - contains the base64-encoded DER blob of the X.509
 //   Subject Public Key Info.
+// * "extension_id" - contains the base64-encoded id of the extension that is
+//   used to sign the key.
 base::Value COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
     SerializeChallengeResponseKeysForKnownUser(
         const std::vector<ChallengeResponseKey>& challenge_response_keys);
 
 bool COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
-    DeserializeChallengeResponseKeysFromKnownUser(
+    DeserializeChallengeResponseKeyFromKnownUser(
         const base::Value& pref_value,
-        std::vector<std::string>* public_key_spki_list);
+        std::vector<DeserializedChallengeResponseKey>*
+            deserialized_challenge_response_keys);
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SerializeChallengeResponseKeysForKnownUser;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_CHALLENGE_RESPONSE_KNOWN_USER_PREF_UTILS_H_

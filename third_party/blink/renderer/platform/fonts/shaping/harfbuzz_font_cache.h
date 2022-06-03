@@ -5,29 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 
+#include <hb.h>
+
 #include <memory>
 
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-
-struct hb_font_t;
-struct hb_face_t;
+#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 namespace blink {
 
 struct HarfBuzzFontData;
-
-struct HbFontDeleter {
-  void operator()(hb_font_t* font);
-};
-
-using HbFontUniquePtr = std::unique_ptr<hb_font_t, HbFontDeleter>;
-
-struct HbFaceDeleter {
-  void operator()(hb_face_t* face);
-};
-
-using HbFaceUniquePtr = std::unique_ptr<hb_face_t, HbFaceDeleter>;
 
 // Though we have FontCache class, which provides the cache mechanism for
 // WebKit's font objects, we also need additional caching layer for HarfBuzz to
@@ -50,16 +38,18 @@ class HbFontCacheEntry : public RefCounted<HbFontCacheEntry> {
  private:
   explicit HbFontCacheEntry(hb_font_t* font);
 
-  HbFontUniquePtr hb_font_;
+  HbScoped<hb_font_t> hb_font_;
   std::unique_ptr<HarfBuzzFontData> hb_font_data_;
 };
 
-typedef HashMap<uint64_t,
-                scoped_refptr<HbFontCacheEntry>,
-                WTF::IntHash<uint64_t>,
-                WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>
-    HarfBuzzFontCache;
+// Declare as derived class in order to be able to forward-declare it as class
+// in FontGlobalContext.
+class HarfBuzzFontCache
+    : public HashMap<uint64_t,
+                     scoped_refptr<HbFontCacheEntry>,
+                     WTF::IntHash<uint64_t>,
+                     WTF::UnsignedWithZeroKeyHashTraits<uint64_t>> {};
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_

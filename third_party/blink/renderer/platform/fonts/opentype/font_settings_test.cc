@@ -50,15 +50,39 @@ TEST(FontSettingsTest, ToString) {
   {
     scoped_refptr<FontVariationSettings> settings =
         MakeSettings<FontVariationSettings, FontVariationAxis>(
-            {FontVariationAxis{"a", 42}, FontVariationAxis{"b", 8118}});
-    EXPECT_EQ("a=42,b=8118", settings->ToString());
+            {FontVariationAxis{"aaaa", 42}, FontVariationAxis{"bbbb", 8118}});
+    EXPECT_EQ("aaaa=42,bbbb=8118", settings->ToString());
   }
   {
     scoped_refptr<FontFeatureSettings> settings =
         MakeSettings<FontFeatureSettings, FontFeature>(
-            {FontFeature{"a", 42}, FontFeature{"b", 8118}});
-    EXPECT_EQ("a=42,b=8118", settings->ToString());
+            {FontFeature{"aaaa", 42}, FontFeature{"bbbb", 8118}});
+    EXPECT_EQ("aaaa=42,bbbb=8118", settings->ToString());
   }
+}
+TEST(FontSettingsTest, FindTest) {
+  {
+    scoped_refptr<FontVariationSettings> settings =
+        MakeSettings<FontVariationSettings, FontVariationAxis>(
+            {FontVariationAxis{"abcd", 42}, FontVariationAxis{"efgh", 8118}});
+    FontVariationAxis found_axis(0, 0);
+    ASSERT_FALSE(settings->FindPair('aaaa', &found_axis));
+    ASSERT_FALSE(settings->FindPair('bbbb', &found_axis));
+    ASSERT_EQ(found_axis.Value(), 0);
+    ASSERT_TRUE(settings->FindPair('abcd', &found_axis));
+    ASSERT_EQ(found_axis.TagString(), AtomicString("abcd"));
+    ASSERT_EQ(found_axis.Value(), 42);
+    ASSERT_TRUE(settings->FindPair('efgh', &found_axis));
+    ASSERT_EQ(found_axis.TagString(), AtomicString("efgh"));
+    ASSERT_EQ(found_axis.Value(), 8118);
+  }
+}
+
+TEST(FontSettingsTest, FindTestEmpty) {
+  scoped_refptr<FontVariationSettings> settings =
+      MakeSettings<FontVariationSettings, FontVariationAxis>({});
+  FontVariationAxis found_axis(0, 0);
+  ASSERT_FALSE(settings->FindPair('aaaa', &found_axis));
 }
 
 }  // namespace blink

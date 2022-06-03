@@ -5,11 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "multidevice_setup.mojom",
-  ]
+  sources = [ "multidevice_setup.mojom" ]
 
-  public_deps = [
-    "//chromeos/services/device_sync/public/mojom",
-  ]
+  public_deps = [ "//chromeos/services/device_sync/public/mojom" ]
 }

@@ -41,7 +41,18 @@ TargetServices* SandboxFactory::GetTargetServices() {
 
 }  // namespace sandbox
 
+// Allow calling to SetInterceptionHint from any loaded DLL.
+extern "C" {
+
 // Allows querying for whether the current process has been sandboxed.
-extern "C" bool __declspec(dllexport) IsSandboxedProcess() {
+__declspec(dllexport) bool IsSandboxedProcess() {
   return !!sandbox::g_shared_section;
 }
+
+__declspec(dllexport) sandbox::TargetServicesBase* GetMainTargetServices() {
+  if (!sandbox::g_shared_section)
+    return nullptr;
+  return sandbox::TargetServicesBase::GetInstance();
+}
+
+}  // extern "C"

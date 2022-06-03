@@ -18,7 +18,6 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -39,9 +38,6 @@ void InstantUnitTestBase::SetUp() {
 
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
-
-  instant_service_->SetImageFetcherForTesting(
-      new testing::NiceMock<image_fetcher::MockImageFetcher>());
 }
 
 void InstantUnitTestBase::TearDown() {
@@ -49,6 +45,10 @@ void InstantUnitTestBase::TearDown() {
   clock_ = nullptr;
 
   BrowserWithTestWindowTest::TearDown();
+}
+
+ntp_tiles::MostVisitedSites* InstantUnitTestBase::most_visited_sites() {
+  return instant_service_->most_visited_sites_.get();
 }
 
 void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(

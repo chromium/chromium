@@ -126,6 +126,10 @@ GLboolean GLStubApiBase::glIsEnabledFn(GLenum cap) {
   return 0;
 }
 
+GLboolean GLStubApiBase::glIsEnablediOESFn(GLenum target, GLuint index) {
+  return 0;
+}
+
 GLboolean GLStubApiBase::glIsFenceAPPLEFn(GLuint fence) {
   return 0;
 }

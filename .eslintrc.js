@@ -6,10 +6,10 @@ module.exports = {
   'root': true,
   'env': {
     'browser': true,
-    'es6': true,
+    'es2020': true,
   },
   'parserOptions': {
-    'ecmaVersion': 2017,
+    'ecmaVersion': 2020,
     'sourceType': 'module',
   },
   'rules': {
@@ -44,6 +44,11 @@ module.exports = {
         'property': '__defineSetter__',
         'message': 'Use Object.defineProperty',
       },
+      {
+        'object': 'cr',
+        'property': 'exportPath',
+        'message': 'Use ES modules or cr.define() instead',
+      },
     ],
     'no-var': 'error',
     'prefer-const': 'error',
@@ -51,4 +56,9 @@ module.exports = {
 
     // TODO(dpapad): Add more checks according to our styleguide.
   },
+
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'parser': './third_party/node/node_modules/@typescript-eslint/parser',
+  }]
 };

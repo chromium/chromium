@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -20,6 +22,11 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace {
 
@@ -97,16 +104,34 @@ void SyncEncryptionKeysExtension::Install() {
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
-  v8::Local<v8::Function> function =
-      gin::CreateFunctionTemplate(
-          isolate, base::BindRepeating(
-                       &SyncEncryptionKeysExtension::SetSyncEncryptionKeys,
-                       weak_ptr_factory_.GetWeakPtr()))
-          ->GetFunction(context)
-          .ToLocalChecked();
+
   chrome
-      ->Set(context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
-            function)
+      ->Set(
+          context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
+          gin::CreateFunctionTemplate(
+              isolate, base::BindRepeating(
+                           &SyncEncryptionKeysExtension::SetSyncEncryptionKeys,
+                           weak_ptr_factory_.GetWeakPtr()))
+              ->GetFunction(context)
+              .ToLocalChecked())
+      .Check();
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncTrustedVaultPassphraseRecovery)) {
+    return;
+  }
+
+  chrome
+      ->Set(context,
+            gin::StringToSymbol(isolate,
+                                "addTrustedSyncEncryptionRecoveryMethod"),
+            gin::CreateFunctionTemplate(
+                isolate,
+                base::BindRepeating(&SyncEncryptionKeysExtension::
+                                        AddTrustedSyncEncryptionRecoveryMethod,
+                                    weak_ptr_factory_.GetWeakPtr()))
+                ->GetFunction(context)
+                .ToLocalChecked())
       .Check();
 }
 
@@ -114,13 +139,16 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
   DCHECK(render_frame());
 
   // This function as exposed to the web has the following signature:
-  //   setSyncEncryptionKeys(callback, gaia_id, encryption_keys)
+  //   setSyncEncryptionKeys(callback, gaia_id, encryption_keys,
+  //                         last_key_version)
   //
   // Where:
   //   callback: Allows caller to get notified upon completion.
   //   gaia_id: String representing the user's server-provided ID.
   //   encryption_keys: Array where each element is an ArrayBuffer representing
   //                    an encryption key (binary blob).
+  //   last_key_version: Key version corresponding to the last key in
+  //                     |encryption_keys|.
 
   v8::HandleScope handle_scope(args->isolate());
 
@@ -151,6 +179,13 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
     return;
   }
 
+  int last_key_version = 0;
+  if (!args->GetNext(&last_key_version)) {
+    DLOG(ERROR) << "No version provided";
+    args->ThrowError();
+    return;
+  }
+
   auto global_callback =
       std::make_unique<v8::Global<v8::Function>>(args->isolate(), callback);
 
@@ -159,7 +194,67 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
   }
 
   remote_->SetEncryptionKeys(
-      EncryptionKeysAsBytes(encryption_keys), gaia_id,
+      gaia_id, EncryptionKeysAsBytes(encryption_keys), last_key_version,
+      base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(global_callback)));
+}
+
+void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
+    gin::Arguments* args) {
+  DCHECK(render_frame());
+
+  // This function as exposed to the web has the following signature:
+  //   addTrustedSyncEncryptionRecoveryMethod(callback, gaia_id, public_key,
+  //                                          method_type_hint)
+  //
+  // Where:
+  //   callback: Allows caller to get notified upon completion.
+  //   gaia_id: String representing the user's server-provided ID.
+  //   public_key: A public key representing the recovery method to be added.
+  //   method_type_hint: An enum-like integer representing the added method's
+  //   type. This value is opaque to the client and may only be used for
+  //   future related interactions with the server.
+
+  v8::HandleScope handle_scope(args->isolate());
+
+  v8::Local<v8::Function> callback;
+  if (!args->GetNext(&callback)) {
+    DLOG(ERROR) << "No callback";
+    args->ThrowError();
+    return;
+  }
+
+  std::string gaia_id;
+  if (!args->GetNext(&gaia_id)) {
+    DLOG(ERROR) << "No account ID";
+    args->ThrowError();
+    return;
+  }
+
+  v8::Local<v8::ArrayBuffer> public_key;
+  if (!args->GetNext(&public_key)) {
+    DLOG(ERROR) << "No public key";
+    args->ThrowError();
+    return;
+  }
+
+  int method_type_hint = 0;
+  if (!args->GetNext(&method_type_hint)) {
+    DLOG(ERROR) << "No method type hint";
+    args->ThrowError();
+    return;
+  }
+
+  auto global_callback =
+      std::make_unique<v8::Global<v8::Function>>(args->isolate(), callback);
+
+  if (!remote_.is_bound()) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
+  }
+
+  remote_->AddTrustedRecoveryMethod(
+      gaia_id, ArrayBufferAsBytes(public_key), method_type_hint,
       base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(global_callback)));

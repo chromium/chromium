@@ -4,7 +4,7 @@
 
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace download {
 

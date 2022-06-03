@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
+
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [
+    ":parental_controls_browser_proxy.m",
+    ":parental_controls_page.m",
+  ]
+}
+
+js_library("parental_controls_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/parental_controls_page/parental_controls_browser_proxy.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("parental_controls_page.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/parental_controls_page/parental_controls_page.m.js" ]
+  deps = [
+    ":parental_controls_browser_proxy.m",
+    "../..:router",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":parental_controls_page_module" ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":modulize",
+    ":parental_controls_page_module",
+  ]
+}
+
+polymer_modulizer("parental_controls_page") {
+  js_file = "parental_controls_page.js"
+  html_file = "parental_controls_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+js_modulizer("modulize") {
+  input_files = [ "parental_controls_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
+}

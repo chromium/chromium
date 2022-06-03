@@ -22,14 +22,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_MARKER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_MARKER_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
+#include "third_party/blink/renderer/core/svg/svg_angle.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedAngle;
+class SVGAnimatedLength;
 
 enum SVGMarkerUnitsType {
   kSVGMarkerUnitsUnknown = 0,
@@ -40,7 +42,6 @@ DECLARE_SVG_ENUM_MAP(SVGMarkerUnitsType);
 
 class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGMarkerElement);
 
  public:
   // Forward declare enumerations in the W3C naming scheme, for IDL generation.
@@ -58,8 +59,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
 
   explicit SVGMarkerElement(Document&);
 
-  AffineTransform ViewBoxToViewTransform(float view_width,
-                                         float view_height) const;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
   void setOrientToAuto();
   void setOrientToAngle(SVGAngleTearOff*);
@@ -72,14 +72,12 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
     return marker_units_.Get();
   }
   SVGAnimatedAngle* orientAngle() { return orient_angle_.Get(); }
-  SVGAnimatedEnumeration<SVGMarkerOrientType>* orientType() {
-    return orient_angle_->OrientType();
-  }
+  SVGAnimatedEnumeration<SVGMarkerOrientType>* orientType();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;

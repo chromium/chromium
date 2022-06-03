@@ -18,6 +18,8 @@ static_library("browser") {
     "distiller_page_web_contents.h",
     "dom_distiller_viewer_source.cc",
     "dom_distiller_viewer_source.h",
+    "uma_helper.cc",
+    "uma_helper.h",
   ]
 
   public_deps = [
@@ -26,6 +28,7 @@ static_library("browser") {
   ]
   deps = [
     "//base",
+    "//components/back_forward_cache",
     "//components/dom_distiller/content/common/mojom",
     "//components/resources",
     "//components/strings",
@@ -52,10 +55,21 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "dom_distiller_viewer_source_unittest.cc",
+    "uma_helper_unittest.cc",
   ]
   deps = [
     ":browser",
+    "//base/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_distillability_observer.cc",
+    "test_distillability_observer.h",
+  ]
+  deps = [ ":browser" ]
 }

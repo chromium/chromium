@@ -1,0 +1,13 @@
+Name: Plexus Common Utilities
+Short Name: plexus-utils
+URL: https://codehaus-plexus.github.io/
+Version: 1.5.15
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A collection of various utility classes to ease working with strings, files, command lines, XML and more.
+
+Local Modifications:
+No modifications.

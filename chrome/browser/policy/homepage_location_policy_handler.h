@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_HOMEPAGE_LOCATION_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_HOMEPAGE_LOCATION_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -21,6 +20,9 @@ class PolicyMap;
 class HomepageLocationPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   HomepageLocationPolicyHandler();
+  HomepageLocationPolicyHandler(const HomepageLocationPolicyHandler&) = delete;
+  HomepageLocationPolicyHandler& operator=(
+      const HomepageLocationPolicyHandler&) = delete;
   ~HomepageLocationPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -29,9 +31,6 @@ class HomepageLocationPolicyHandler : public TypeCheckingPolicyHandler {
 
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HomepageLocationPolicyHandler);
 };
 
 }  // namespace policy

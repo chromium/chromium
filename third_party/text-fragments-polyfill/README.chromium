@@ -1,0 +1,24 @@
+Name: Text Fragments Polyfill
+Short Name: text-fragments-polyfill
+URL: https://github.com/GoogleChromeLabs/text-fragments-polyfill
+Version: 0.0.7
+License: Apache 2.0
+License File: ./LICENSE
+Security Critical: yes
+CPEPrefix: unknown
+
+Description:
+This library implements the Text Fragments draft spec[1] in JavaScript. This
+spec accepts URLs with fragments indicating text to be highlighted and scrolled
+into view once the page has been loaded.
+(e.g.: foo.com/bar#:~:text=example%20highlighted%20text)
+
+This functionality is implemented in Blink on Android and Desktop; on iOS, we
+instead rely on injecting this JavaScript implementation. The library is
+maintained by Chromium committers & DevRel; it ships on GitHub because it is
+shared with an extension and a polyfill.
+
+[1]: https://wicg.github.io/scroll-to-text-fragment/
+
+Local Modifications:
+none

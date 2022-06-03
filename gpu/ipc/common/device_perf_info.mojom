@@ -1,0 +1,40 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+// Corresponds to D3D_FEATURE_LEVEL in <d3dcommon.h>
+enum Direct3DFeatureLevel {
+  k1_0_Core,
+  k9_1,
+  k9_2,
+  k9_3,
+  k10_0,
+  k10_1,
+  k11_0,
+  k11_1,
+  k12_0,
+  k12_1,
+};
+
+// Corresponds to |gpu::HasDisceretGpu| in "gpu/config/device_perf_info.h"
+enum HasDiscreteGpu {
+  kUnknown,
+  kNo,
+  kYes,
+};
+
+// Corresponds to |gpu::DevicePerfInfo| in "gpu/config/device_perf_info.h"
+struct DevicePerfInfo {
+  uint32 total_physical_memory_mb;
+  uint32 total_disk_space_mb;
+  uint32 hardware_concurrency;
+
+  [EnableIf=is_win]
+  uint32 system_commit_limit_mb;
+  [EnableIf=is_win]
+  Direct3DFeatureLevel d3d11_feature_level;
+  [EnableIf=is_win]
+  HasDiscreteGpu has_discrete_gpu;
+};

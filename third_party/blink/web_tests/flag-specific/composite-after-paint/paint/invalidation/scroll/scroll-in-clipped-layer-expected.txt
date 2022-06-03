@@ -5,17 +5,8 @@
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='absolute red'",
-          "rect": [100, 150, 100, 100],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='relative green'",
-          "rect": [100, 150, 100, 100],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [100, 150, 100, 100]
       ]
     },
     {

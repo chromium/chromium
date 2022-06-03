@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
 
@@ -30,6 +29,10 @@ class COMPONENT_EXPORT(LEARNING_COMMON) FeatureDictionary {
   using Dictionary = std::map<std::string, FeatureValue>;
 
   FeatureDictionary();
+
+  FeatureDictionary(const FeatureDictionary&) = delete;
+  FeatureDictionary& operator=(const FeatureDictionary&) = delete;
+
   ~FeatureDictionary();
 
   // Add features for |task| to |features| from our dictionary.  Features that
@@ -42,8 +45,6 @@ class COMPONENT_EXPORT(LEARNING_COMMON) FeatureDictionary {
 
  private:
   Dictionary dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureDictionary);
 };
 
 }  // namespace learning

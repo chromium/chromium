@@ -15,8 +15,8 @@ ThemeHelper* ThemeHelper::GetInstance() {
   return s_theme_helper.get();
 }
 
-ThemeHelper::ThemeHelper() : theme_observer_(this) {
-  theme_observer_.Add(ui::NativeTheme::GetInstanceForWeb());
+ThemeHelper::ThemeHelper() : theme_observation_(this) {
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 }
 
 ThemeHelper::~ThemeHelper() {}
@@ -26,8 +26,7 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
   mojom::UpdateSystemColorInfoParamsPtr params =
       mojom::UpdateSystemColorInfoParams::New();
   params->is_dark_mode = native_theme->ShouldUseDarkColors();
-  params->is_high_contrast = native_theme->UsesHighContrastColors();
-  params->preferred_color_scheme = native_theme->GetPreferredColorScheme();
+  params->forced_colors = native_theme->InForcedColorsMode();
   const auto& colors = native_theme->GetSystemColors();
   params->colors.insert(colors.begin(), colors.end());
 
@@ -35,7 +34,7 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
 }
 
 void ThemeHelper::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  DCHECK(theme_observer_.IsObserving(observed_theme));
+  DCHECK(theme_observation_.IsObservingSource(observed_theme));
 
   mojom::UpdateSystemColorInfoParamsPtr params =
       MakeUpdateSystemColorInfoParams(observed_theme);

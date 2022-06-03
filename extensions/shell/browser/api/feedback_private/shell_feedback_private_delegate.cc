@@ -6,10 +6,11 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
+#include "components/feedback/content/feedback_uploader_factory.h"
 #include "components/feedback/feedback_uploader.h"
-#include "components/feedback/feedback_uploader_factory.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/browser_context.h"
@@ -27,13 +28,15 @@ std::unique_ptr<base::DictionaryValue> ShellFeedbackPrivateDelegate::GetStrings(
   return nullptr;
 }
 
-system_logs::SystemLogsFetcher*
-ShellFeedbackPrivateDelegate::CreateSystemLogsFetcher(
-    content::BrowserContext* context) const {
-  return system_logs::BuildShellSystemLogsFetcher(context);
+void ShellFeedbackPrivateDelegate::FetchSystemInformation(
+    content::BrowserContext* context,
+    system_logs::SysLogsFetcherCallback callback) const {
+  // self-deleting object
+  auto* fetcher = system_logs::BuildShellSystemLogsFetcher(context);
+  fetcher->Fetch(std::move(callback));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<system_logs::SystemLogsSource>
 ShellFeedbackPrivateDelegate::CreateSingleLogSource(
     api::feedback_private::LogSource source_type) const {
@@ -57,6 +60,12 @@ api::feedback_private::LandingPageType
 ShellFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   return api::feedback_private::LANDING_PAGE_TYPE_NOLANDINGPAGE;
+}
+
+void ShellFeedbackPrivateDelegate::GetLacrosHistograms(
+    GetHistogramsCallback callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(std::string());
 }
 #endif
 

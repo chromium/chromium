@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_rotate.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
@@ -80,9 +81,9 @@ CSSRotate* CSSRotate::Create(CSSNumericValue* angle,
       angle, true /* is2D */);
 }
 
-CSSRotate* CSSRotate::Create(const CSSNumberish& x,
-                             const CSSNumberish& y,
-                             const CSSNumberish& z,
+CSSRotate* CSSRotate::Create(const V8CSSNumberish* x,
+                             const V8CSSNumberish* y,
+                             const V8CSSNumberish* z,
                              CSSNumericValue* angle,
                              ExceptionState& exception_state) {
   CSSNumericValue* x_value = CSSNumericValue::FromNumberish(x);
@@ -162,11 +163,6 @@ DOMMatrix* CSSRotate::toMatrix(ExceptionState& exception_state) const {
 }
 
 const CSSFunctionValue* CSSRotate::ToCSSValue() const {
-  DCHECK(x_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(y_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(z_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(angle_->to(CSSPrimitiveValue::UnitType::kRadians));
-
   CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(
       is2D() ? CSSValueID::kRotate : CSSValueID::kRotate3d);
   if (!is2D()) {
@@ -185,11 +181,28 @@ const CSSFunctionValue* CSSRotate::ToCSSValue() const {
   if (!angle)
     return nullptr;
 
+  DCHECK(x_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(y_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(z_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(angle_->to(CSSPrimitiveValue::UnitType::kRadians));
+
   result->Append(*angle);
   return result;
 }
 
-void CSSRotate::setX(const CSSNumberish& x, ExceptionState& exception_state) {
+V8CSSNumberish* CSSRotate::x() {
+  return MakeGarbageCollected<V8CSSNumberish>(x_);
+}
+
+V8CSSNumberish* CSSRotate::y() {
+  return MakeGarbageCollected<V8CSSNumberish>(y_);
+}
+
+V8CSSNumberish* CSSRotate::z() {
+  return MakeGarbageCollected<V8CSSNumberish>(z_);
+}
+
+void CSSRotate::setX(const V8CSSNumberish* x, ExceptionState& exception_state) {
   CSSNumericValue* value = CSSNumericValue::FromNumberish(x);
   if (!IsValidRotateCoord(value)) {
     exception_state.ThrowTypeError("Must specify a number unit");
@@ -198,7 +211,7 @@ void CSSRotate::setX(const CSSNumberish& x, ExceptionState& exception_state) {
   x_ = value;
 }
 
-void CSSRotate::setY(const CSSNumberish& y, ExceptionState& exception_state) {
+void CSSRotate::setY(const V8CSSNumberish* y, ExceptionState& exception_state) {
   CSSNumericValue* value = CSSNumericValue::FromNumberish(y);
   if (!IsValidRotateCoord(value)) {
     exception_state.ThrowTypeError("Must specify a number unit");
@@ -207,7 +220,7 @@ void CSSRotate::setY(const CSSNumberish& y, ExceptionState& exception_state) {
   y_ = value;
 }
 
-void CSSRotate::setZ(const CSSNumberish& z, ExceptionState& exception_state) {
+void CSSRotate::setZ(const V8CSSNumberish* z, ExceptionState& exception_state) {
   CSSNumericValue* value = CSSNumericValue::FromNumberish(z);
   if (!IsValidRotateCoord(value)) {
     exception_state.ThrowTypeError("Must specify a number unit");

@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -46,18 +48,18 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
   void SetUp() override {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    ASSERT_TRUE(io_thread_.StartWithOptions(options));
+    ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(MockLaunchd::MakeABundle(GetTempDirPath(), "Test",
                                          &bundle_path_, &executable_path_));
-    mock_launchd_.reset(new MockLaunchd(
+    mock_launchd_ = std::make_unique<MockLaunchd>(
         executable_path_, task_environment_.GetMainThreadTaskRunner(),
-        run_loop_.QuitClosure(), true));
-    scoped_launchd_instance_.reset(
-        new Launchd::ScopedInstance(mock_launchd_.get()));
+        run_loop_.QuitClosure(), true);
+    scoped_launchd_instance_ =
+        std::make_unique<Launchd::ScopedInstance>(mock_launchd_.get());
     ASSERT_TRUE(service_process_state_.Initialize());
     ASSERT_TRUE(service_process_state_.SignalReady(
-        io_thread_.task_runner().get(), base::Closure()));
+        io_thread_.task_runner().get(), base::OnceClosure()));
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitWhenIdleClosure(),
         TestTimeouts::action_max_timeout());
@@ -88,7 +90,7 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
 };
 
 void DeleteFunc(const base::FilePath& file) {
-  EXPECT_TRUE(base::DeleteFileRecursively(file));
+  EXPECT_TRUE(base::DeletePathRecursively(file));
 }
 
 void MoveFunc(const base::FilePath& from, const base::FilePath& to) {
@@ -178,7 +180,7 @@ TEST_F(ServiceProcessStateFileManipulationTest, TrashBundle) {
   ASSERT_TRUE(mock_launchd()->delete_called());
   std::string path(base::SysNSStringToUTF8([trashed_url_ path]));
   base::FilePath file_path(path);
-  ASSERT_TRUE(base::DeleteFileRecursively(file_path));
+  ASSERT_TRUE(base::DeletePathRecursively(file_path));
 }
 
 TEST_F(ServiceProcessStateFileManipulationTest, ChangeAttr) {

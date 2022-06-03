@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package storage;
 
-message LocalStorageOriginMetaData {
+message LocalStorageStorageKeyMetaData {
   // Serialized by base::Time::ToInternalValue().
   required int64 last_modified = 1;
   required uint64 size_bytes = 2;

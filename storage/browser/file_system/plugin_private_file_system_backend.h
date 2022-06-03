@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -22,15 +22,19 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
-namespace content {
-class PluginPrivateFileSystemBackendTest;
-}
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace leveldb {
 class Env;
-}
+}  // namespace leveldb
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace storage {
 
@@ -38,6 +42,10 @@ class ObfuscatedFileUtil;
 class ObfuscatedFileUtilMemoryDelegate;
 class SpecialStoragePolicy;
 class WatcherManager;
+
+// TODO(crbug.com/1231162): Remove this when removing the plugin private FS.
+// Name of the root directory in the plugin private file system.
+const char kPluginPrivateRootName[] = "pluginprivate";
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
     : public FileSystemBackend,
@@ -47,11 +55,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
   PluginPrivateFileSystemBackend(
-      base::SequencedTaskRunner* file_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       const base::FilePath& profile_path,
-      storage::SpecialStoragePolicy* special_storage_policy,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
       const FileSystemOptions& file_system_options,
       leveldb::Env* env_override);
+
+  PluginPrivateFileSystemBackend(const PluginPrivateFileSystemBackend&) =
+      delete;
+  PluginPrivateFileSystemBackend& operator=(
+      const PluginPrivateFileSystemBackend&) = delete;
+
   ~PluginPrivateFileSystemBackend() override;
 
   // This must be used to open 'private' filesystem instead of regular
@@ -60,7 +74,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   // isolation, e.g. name, MIME type etc.
   // NOTE: |plugin_id| must be sanitized ASCII string that doesn't
   // include *any* dangerous character like '/'.
-  void OpenPrivateFileSystem(const GURL& origin_url,
+  void OpenPrivateFileSystem(const url::Origin& origin,
                              FileSystemType type,
                              const std::string& filesystem_id,
                              const std::string& plugin_id,
@@ -78,14 +92,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(
       FileSystemType type,
       base::File::Error* error_code) override;
-  FileSystemOperation* CreateFileSystemOperation(
+  std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const override;
   bool SupportsStreaming(const FileSystemURL& url) const override;
-  bool HasInplaceCopyImplementation(
-      storage::FileSystemType type) const override;
-  std::unique_ptr<storage::FileStreamReader> CreateFileStreamReader(
+  bool HasInplaceCopyImplementation(FileSystemType type) const override;
+  std::unique_ptr<FileStreamReader> CreateFileStreamReader(
       const FileSystemURL& url,
       int64_t offset,
       int64_t max_bytes_to_read,
@@ -104,24 +117,25 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
       FileSystemType type) const override;
 
   // FileSystemQuotaUtil overrides.
-  base::File::Error DeleteOriginDataOnFileTaskRunner(
+  base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
       FileSystemContext* context,
-      storage::QuotaManagerProxy* proxy,
-      const GURL& origin_url,
+      QuotaManagerProxy* proxy,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override;
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
-                                             storage::QuotaManagerProxy* proxy,
+                                             QuotaManagerProxy* proxy,
                                              FileSystemType type) override;
-  void GetOriginsForTypeOnFileTaskRunner(FileSystemType type,
-                                         std::set<GURL>* origins) override;
-  void GetOriginsForHostOnFileTaskRunner(FileSystemType type,
-                                         const std::string& host,
-                                         std::set<GURL>* origins) override;
-  int64_t GetOriginUsageOnFileTaskRunner(FileSystemContext* context,
-                                         const GURL& origin_url,
-                                         FileSystemType type) override;
+  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
+      FileSystemType type) override;
+  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
+      FileSystemType type,
+      const std::string& host) override;
+  int64_t GetStorageKeyUsageOnFileTaskRunner(
+      FileSystemContext* context,
+      const blink::StorageKey& storage_key,
+      FileSystemType type) override;
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
-      const GURL& origin_url,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override;
 
   // Get details on the files saved for the specified |origin_url|. Returns
@@ -129,26 +143,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   // for the particular origin. |total_size| = 0 and |last_modified_time| =
   // base::Time::UnixEpoch() if no files found.
   void GetOriginDetailsOnFileTaskRunner(FileSystemContext* context,
-                                        const GURL& origin_url,
+                                        const url::Origin& origin,
                                         int64_t* total_size,
                                         base::Time* last_modified_time);
 
   ObfuscatedFileUtilMemoryDelegate* obfuscated_file_util_memory_delegate();
 
  private:
-  friend class content::PluginPrivateFileSystemBackendTest;
+  friend class PluginPrivateFileSystemBackendTest;
 
   ObfuscatedFileUtil* obfuscated_file_util();
   const base::FilePath& base_path() const { return base_path_; }
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   const FileSystemOptions file_system_options_;
   const base::FilePath base_path_;
   std::unique_ptr<AsyncFileUtil> file_util_;
   FileSystemIDToPluginMap* plugin_map_;  // Owned by file_util_.
   base::WeakPtrFactory<PluginPrivateFileSystemBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPrivateFileSystemBackend);
 };
 
 }  // namespace storage

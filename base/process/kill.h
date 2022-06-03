@@ -13,6 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -53,7 +54,7 @@ enum TerminationStatus {
   TERMINATION_STATUS_PROCESS_WAS_KILLED,   // e.g. SIGKILL or task manager kill
   TERMINATION_STATUS_PROCESS_CRASHED,      // e.g. Segmentation fault
   TERMINATION_STATUS_STILL_RUNNING,        // child hasn't exited yet
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Used for the case when oom-killer kills a process on ChromeOS.
   TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM,
 #endif
@@ -82,12 +83,6 @@ enum TerminationStatus {
 BASE_EXPORT bool KillProcesses(const FilePath::StringType& executable_name,
                                int exit_code,
                                const ProcessFilter* filter);
-
-#if defined(OS_POSIX)
-// Attempts to kill the process group identified by |process_group_id|. Returns
-// true on success.
-BASE_EXPORT bool KillProcessGroup(ProcessHandle process_group_id);
-#endif  // defined(OS_POSIX)
 
 // Get the termination status of the process by interpreting the
 // circumstances of the child process' death. |exit_code| is set to
@@ -118,11 +113,11 @@ BASE_EXPORT TerminationStatus GetTerminationStatus(ProcessHandle handle,
 BASE_EXPORT TerminationStatus GetKnownDeadTerminationStatus(
     ProcessHandle handle, int* exit_code);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Spawns a thread to wait asynchronously for the child |process| to exit
 // and then reaps it.
 BASE_EXPORT void EnsureProcessGetsReaped(Process process);
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 #endif  // defined(OS_POSIX)
 
 // Registers |process| to be asynchronously monitored for termination, forcibly

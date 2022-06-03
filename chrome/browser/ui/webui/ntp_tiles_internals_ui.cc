@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "build/build_config.h"
@@ -12,10 +14,9 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/suggestions/suggestions_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/dev_ui_components_resources.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/features.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -40,6 +42,11 @@ class ChromeNTPTilesInternalsMessageHandlerClient
       favicon::FaviconService* favicon_service)
       : handler_(favicon_service) {}
 
+  ChromeNTPTilesInternalsMessageHandlerClient(
+      const ChromeNTPTilesInternalsMessageHandlerClient&) = delete;
+  ChromeNTPTilesInternalsMessageHandlerClient& operator=(
+      const ChromeNTPTilesInternalsMessageHandlerClient&) = delete;
+
  private:
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -51,6 +58,10 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
       const std::string& message,
+      base::RepeatingCallback<void(base::Value::ConstListView)> callback)
+      override;
+  void RegisterDeprecatedMessageCallback(
+      const std::string& message,
       const base::RepeatingCallback<void(const base::ListValue*)>& callback)
       override;
   void CallJavascriptFunctionVector(
@@ -58,8 +69,6 @@ class ChromeNTPTilesInternalsMessageHandlerClient
       const std::vector<const base::Value*>& values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNTPTilesInternalsMessageHandlerClient);
 };
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessages() {
@@ -75,8 +84,7 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
     ntp_tiles::TileSource source) {
   switch (source) {
     case ntp_tiles::TileSource::TOP_SITES:
-    case ntp_tiles::TileSource::SUGGESTIONS_SERVICE:
-    case ntp_tiles::TileSource::WHITELIST:
+    case ntp_tiles::TileSource::ALLOWLIST:
     case ntp_tiles::TileSource::HOMEPAGE:
       return true;
     case ntp_tiles::TileSource::POPULAR_BAKED_IN:
@@ -88,10 +96,10 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
       return false;
 #endif
     case ntp_tiles::TileSource::CUSTOM_LINKS:
-#if !defined(OS_ANDROID)
-      return true;
-#else
+#if defined(OS_ANDROID)
       return false;
+#else
+      return true;
 #endif
   }
   NOTREACHED();
@@ -110,8 +118,15 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
     const std::string& message,
-    const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
-  web_ui()->RegisterMessageCallback(message, callback);
+    base::RepeatingCallback<void(base::Value::ConstListView)> callback) {
+  web_ui()->RegisterMessageCallback(message, std::move(callback));
+}
+
+void ChromeNTPTilesInternalsMessageHandlerClient::
+    RegisterDeprecatedMessageCallback(
+        const std::string& message,
+        const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
+  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionVector(
@@ -123,8 +138,12 @@ void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionVector(
 content::WebUIDataSource* CreateNTPTilesInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINTPTilesInternalsHost);
-  source->OverrideContentSecurityPolicyScriptSrc(
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types jstemplate;");
 
   source->AddResourcePath("ntp_tiles_internals.js", IDR_NTP_TILES_INTERNALS_JS);
   source->AddResourcePath("ntp_tiles_internals.css",

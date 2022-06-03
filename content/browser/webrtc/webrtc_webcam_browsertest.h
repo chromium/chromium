@@ -20,14 +20,17 @@ namespace content {
 class UsingRealWebcam_WebRtcWebcamBrowserTest : public ContentBrowserTest {
  public:
   UsingRealWebcam_WebRtcWebcamBrowserTest() = default;
+
+  UsingRealWebcam_WebRtcWebcamBrowserTest(
+      const UsingRealWebcam_WebRtcWebcamBrowserTest&) = delete;
+  UsingRealWebcam_WebRtcWebcamBrowserTest& operator=(
+      const UsingRealWebcam_WebRtcWebcamBrowserTest&) = delete;
+
   ~UsingRealWebcam_WebRtcWebcamBrowserTest() override = default;
 
   // ContentBrowserTest implementation.
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsingRealWebcam_WebRtcWebcamBrowserTest);
 };
 
 }  // namespace content

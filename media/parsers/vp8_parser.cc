@@ -7,6 +7,9 @@
 
 #include "media/parsers/vp8_parser.h"
 
+#include <cstring>
+
+#include "base/check_op.h"
 #include "base/logging.h"
 
 namespace media {
@@ -47,6 +50,17 @@ namespace media {
 
 Vp8FrameHeader::Vp8FrameHeader() {
   memset(this, 0, sizeof(*this));
+}
+
+Vp8FrameHeader::~Vp8FrameHeader() = default;
+
+Vp8FrameHeader::Vp8FrameHeader(const Vp8FrameHeader& fhdr) {
+  memcpy(this, &fhdr, sizeof(*this));
+}
+
+Vp8FrameHeader& Vp8FrameHeader::operator=(const Vp8FrameHeader& fhdr) {
+  memcpy(this, &fhdr, sizeof(*this));
+  return *this;
 }
 
 Vp8Parser::Vp8Parser() : stream_(nullptr), bytes_left_(0) {
@@ -139,6 +153,9 @@ bool Vp8Parser::ParseFrameHeader(Vp8FrameHeader* fhdr) {
     unsigned int data;
     BD_READ_UNSIGNED_OR_RETURN(1, &data);  // color_space
     BD_READ_UNSIGNED_OR_RETURN(1, &data);  // clamping_type
+    fhdr->is_full_range = data == 1;
+  } else {
+    fhdr->is_full_range = false;
   }
 
   if (!ParseSegmentationHeader(keyframe))

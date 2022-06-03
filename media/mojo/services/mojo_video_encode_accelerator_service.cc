@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
+#include "media/mojo/mojom/video_encoder_info.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -18,21 +19,22 @@ namespace media {
 // static
 void MojoVideoEncodeAcceleratorService::Create(
     mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
-    const CreateAndInitializeVideoEncodeAcceleratorCallback&
-        create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences) {
+    CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<MojoVideoEncodeAcceleratorService>(create_vea_callback,
-                                                          gpu_preferences),
+      std::make_unique<MojoVideoEncodeAcceleratorService>(
+          std::move(create_vea_callback), gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
 
 MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
-    const CreateAndInitializeVideoEncodeAcceleratorCallback&
-        create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences)
-    : create_vea_callback_(create_vea_callback),
+    CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
+      gpu_workarounds_(gpu_workarounds),
       output_buffer_size_(0) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -49,10 +51,39 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     InitializeCallback success_callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!encoder_);
   DCHECK(config.input_format == PIXEL_FORMAT_I420 ||
          config.input_format == PIXEL_FORMAT_NV12)
-      << "Only I420 or NV12 format supported";
+      << "Only I420 or NV12 format supported, got "
+      << VideoPixelFormatToString(config.input_format);
+
+  if (gpu_workarounds_.disable_accelerated_vp8_encode &&
+      config.output_profile == VP8PROFILE_ANY) {
+    LOG(ERROR) << __func__ << " VP8 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
+
+  if (gpu_workarounds_.disable_accelerated_vp9_encode &&
+      config.output_profile >= VP9PROFILE_PROFILE0 &&
+      config.output_profile <= VP9PROFILE_PROFILE3) {
+    LOG(ERROR) << __func__ << " VP9 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
+
+  if (gpu_workarounds_.disable_accelerated_h264_encode &&
+      config.output_profile >= H264PROFILE_MIN &&
+      config.output_profile <= H264PROFILE_MAX) {
+    LOG(ERROR) << __func__ << " H.264 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
+
+  if (encoder_) {
+    DLOG(ERROR) << __func__ << " VEA is already initialized";
+    std::move(success_callback).Run(false);
+    return;
+  }
 
   if (!client) {
     DLOG(ERROR) << __func__ << "null |client|";
@@ -70,7 +101,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     return;
   }
 
-  encoder_ = create_vea_callback_.Run(config, this, gpu_preferences_);
+  encoder_ = std::move(create_vea_callback_)
+                 .Run(config, this, gpu_preferences_, gpu_workarounds_);
   if (!encoder_) {
     DLOG(ERROR) << __func__ << " Error creating or initializing VEA";
     std::move(success_callback).Run(false);
@@ -87,8 +119,11 @@ void MojoVideoEncodeAcceleratorService::Encode(
     EncodeCallback callback) {
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!encoder_)
+  if (!encoder_) {
+    DLOG(ERROR) << __func__ << " Failed to encode, the encoder is invalid";
+    std::move(callback).Run();
     return;
+  }
 
   if (frame->coded_size() != input_coded_size_ &&
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
@@ -140,9 +175,10 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
       BitstreamBuffer(bitstream_buffer_id, std::move(region), memory_size));
 }
 
-void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(
-    const media::VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+void MojoVideoEncodeAcceleratorService::
+    RequestEncodingParametersChangeWithLayers(
+        const media::VideoBitrateAllocation& bitrate_allocation,
+        uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!encoder_)
@@ -152,6 +188,49 @@ void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(
            << " framerate=" << framerate;
 
   encoder_->RequestEncodingParametersChange(bitrate_allocation, framerate);
+}
+
+void MojoVideoEncodeAcceleratorService::
+    RequestEncodingParametersChangeWithBitrate(const media::Bitrate& bitrate,
+                                               uint32_t framerate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_)
+    return;
+
+  DVLOG(2) << __func__ << " bitrate=" << bitrate.target()
+           << " framerate=" << framerate;
+
+  encoder_->RequestEncodingParametersChange(bitrate, framerate);
+}
+
+void MojoVideoEncodeAcceleratorService::IsFlushSupported(
+    IsFlushSupportedCallback callback) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_) {
+    DLOG(ERROR) << __func__
+                << " Failed to detect flush support, the encoder is invalid";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool flush_support = encoder_->IsFlushSupported();
+  std::move(callback).Run(flush_support);
+}
+
+void MojoVideoEncodeAcceleratorService::Flush(FlushCallback callback) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_) {
+    DLOG(ERROR) << __func__ << " Failed to flush, the encoder is invalid";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  encoder_->Flush(std::move(callback));
 }
 
 void MojoVideoEncodeAcceleratorService::RequireBitstreamBuffers(
@@ -193,6 +272,16 @@ void MojoVideoEncodeAcceleratorService::NotifyError(
     return;
 
   vea_client_->NotifyError(error);
+}
+
+void MojoVideoEncodeAcceleratorService::NotifyEncoderInfoChange(
+    const ::media::VideoEncoderInfo& info) {
+  DVLOG(4) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!vea_client_)
+    return;
+
+  vea_client_->NotifyEncoderInfoChange(info);
 }
 
 }  // namespace media

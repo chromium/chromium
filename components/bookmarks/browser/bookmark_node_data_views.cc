@@ -4,7 +4,7 @@
 
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,9 +58,9 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
   } else {
     // See if there is a URL on the clipboard.
     GURL url;
-    base::string16 title;
-    if (data.GetURLAndTitle(
-            ui::OSExchangeData::CONVERT_FILENAMES, &url, &title))
+    std::u16string title;
+    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
+                            &title))
       ReadFromTuple(url, title);
   }
 

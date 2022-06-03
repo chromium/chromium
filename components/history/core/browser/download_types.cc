@@ -6,7 +6,8 @@
 
 #include <ostream>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "components/history/core/browser/download_constants.h"
 
 namespace history {
@@ -63,7 +64,7 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::USER_VALIDATED:
     case DownloadDangerType::DANGEROUS_HOST:
     case DownloadDangerType::POTENTIALLY_UNWANTED:
-    case DownloadDangerType::WHITELISTED_BY_POLICY:
+    case DownloadDangerType::ALLOWLISTED_BY_POLICY:
     case DownloadDangerType::ASYNC_SCANNING:
     case DownloadDangerType::BLOCKED_PASSWORD_PROTECTED:
     case DownloadDangerType::BLOCKED_TOO_LARGE:
@@ -72,6 +73,8 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::DEEP_SCANNED_SAFE:
     case DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS:
     case DownloadDangerType::PROMPT_FOR_SCANNING:
+    case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
@@ -109,8 +112,8 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
       return stream << "history::DownloadDangerType::DANGEROUS_HOST";
     case DownloadDangerType::POTENTIALLY_UNWANTED:
       return stream << "history::DownloadDangerType::POTENTIALLY_UNWANTED";
-    case DownloadDangerType::WHITELISTED_BY_POLICY:
-      return stream << "history::DownloadDangerType::WHITELISTED_BY_POLICY";
+    case DownloadDangerType::ALLOWLISTED_BY_POLICY:
+      return stream << "history::DownloadDangerType::ALLOWLISTED_BY_POLICY";
     case DownloadDangerType::ASYNC_SCANNING:
       return stream << "history::DownloadDangerType::ASYNC_SCANNING";
     case DownloadDangerType::BLOCKED_PASSWORD_PROTECTED:
@@ -129,6 +132,12 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
              << "history::DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS";
     case DownloadDangerType::PROMPT_FOR_SCANNING:
       return stream << "history::DownloadDangerType::PROMPT_FOR_SCANNING";
+    case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
+      return stream
+             << "history::DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE";
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
+      return stream
+             << "history::DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE";
   }
   NOTREACHED();
   return stream;

@@ -85,6 +85,10 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     bool* skip_other_interceptors,
     bool* will_return_unsafe_redirect) {
   DCHECK(!signed_exchange_loader_);
+
+  // Navigation ResourceRequests always have non-empty |trusted_params|.
+  DCHECK(request.trusted_params);
+
   if (!signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           request.url, **response_head)) {
     return false;
@@ -93,23 +97,26 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   *client_receiver = client.InitWithNewPipeAndPassReceiver();
 
+  const net::NetworkIsolationKey& network_isolation_key =
+      request.trusted_params->isolation_info.network_isolation_key();
   // This lets the SignedExchangeLoader directly returns an artificial redirect
   // to the downstream client without going through blink::ThrottlingURLLoader,
   // which means some checks like SafeBrowsing may not see the redirect. Given
   // that the redirected request will be checked when it's restarted we suppose
   // this is fine.
-  auto reporter =
-      SignedExchangeReporter::MaybeCreate(request.url, request.referrer.spec(),
-                                          **response_head, frame_tree_node_id_);
+  auto reporter = SignedExchangeReporter::MaybeCreate(
+      request.url, request.referrer.spec(), **response_head,
+      network_isolation_key, frame_tree_node_id_);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       request.url, response_head->Clone(), frame_tree_node_id_,
-      devtools_navigation_token_, request.report_raw_headers);
+      devtools_navigation_token_, request.devtools_request_id.has_value());
   signed_exchange_loader_ = std::make_unique<SignedExchangeLoader>(
       request, std::move(*response_head), std::move(*response_body),
       std::move(client), url_loader->Unbind(), url_loader_options_,
       true /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), url_loader_factory_, url_loader_throttles_getter_,
-      frame_tree_node_id_, metric_recorder_, accept_langs_);
+      network_isolation_key, frame_tree_node_id_, metric_recorder_,
+      accept_langs_, false /* keep_entry_for_prefetch_cache */);
 
   *skip_other_interceptors = true;
   return true;

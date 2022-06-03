@@ -28,7 +28,7 @@ enum LoginTableColumns {
 std::vector<InteractionsStats> StatementToInteractionsStats(sql::Statement* s) {
   std::vector<InteractionsStats> results;
   while (s->Step()) {
-    results.push_back(InteractionsStats());
+    results.emplace_back();
     results.back().origin_domain = GURL(s->ColumnString(COLUMN_ORIGIN_DOMAIN));
     results.back().username_value = s->ColumnString16(COLUMN_USERNAME);
     results.back().dismissal_count = s->ColumnInt(COLUMN_DISMISSALS);
@@ -48,8 +48,7 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs) {
          lhs.update_time == rhs.update_time;
 }
 
-StatisticsTable::StatisticsTable() : db_(nullptr) {
-}
+StatisticsTable::StatisticsTable() = default;
 
 StatisticsTable::~StatisticsTable() = default;
 
@@ -108,14 +107,6 @@ bool StatisticsTable::RemoveRow(const GURL& domain) {
   return s.Run();
 }
 
-std::vector<InteractionsStats> StatisticsTable::GetAllRows() {
-  static constexpr char query[] =
-      "SELECT origin_domain, username_value, "
-      "dismissal_count, update_time FROM stats";
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
-  return StatementToInteractionsStats(&s);
-}
-
 std::vector<InteractionsStats> StatisticsTable::GetRows(const GURL& domain) {
   if (!domain.is_valid())
     return std::vector<InteractionsStats>();
@@ -128,7 +119,7 @@ std::vector<InteractionsStats> StatisticsTable::GetRows(const GURL& domain) {
 }
 
 bool StatisticsTable::RemoveStatsByOriginAndTime(
-    const base::Callback<bool(const GURL&)>& origin_filter,
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::Time delete_begin,
     base::Time delete_end) {
   if (delete_end.is_null())
@@ -177,28 +168,18 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
   return success;
 }
 
-int StatisticsTable::GetNumDomainsWithAtLeastNDismissals(int64_t n) {
-  sql::Statement select_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "SELECT COUNT(DISTINCT origin_domain) FROM stats "
-                              "WHERE dismissal_count >= ?"));
-  select_statement.BindInt64(0, n);
-  return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
-}
-
-int StatisticsTable::GetNumAccountsWithAtLeastNDismissals(int64_t n) {
-  sql::Statement select_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "SELECT COUNT(1) FROM stats "
-                              "WHERE dismissal_count >= ?"));
-  select_statement.BindInt64(0, n);
-  return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
-}
-
 int StatisticsTable::GetNumAccounts() {
   sql::Statement select_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(1) FROM stats"));
   return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
+}
+
+std::vector<InteractionsStats> StatisticsTable::GetAllRowsForTest() {
+  static constexpr char query[] =
+      "SELECT origin_domain, username_value, "
+      "dismissal_count, update_time FROM stats";
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
+  return StatementToInteractionsStats(&s);
 }
 
 }  // namespace password_manager

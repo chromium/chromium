@@ -12,9 +12,11 @@ FakeWakeLockInstance::FakeWakeLockInstance() = default;
 
 FakeWakeLockInstance::~FakeWakeLockInstance() = default;
 
-void FakeWakeLockInstance::Init(mojom::WakeLockHostPtr host_ptr,
-                                InitCallback callback) {
-  host_ptr_ = std::move(host_ptr);
+void FakeWakeLockInstance::Init(
+    mojo::PendingRemote<mojom::WakeLockHost> host_remote,
+    InitCallback callback) {
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 

@@ -2,23 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/session/remoting_client.h"
 
 #include <memory>
 
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
-#import "remoting/ios/audio/audio_playback_sink_ios.h"
-#import "remoting/ios/display/gl_display_handler.h"
-#import "remoting/ios/domain/client_session_details.h"
-#import "remoting/ios/domain/host_info.h"
-#import "remoting/ios/persistence/host_pairing_info.h"
-#import "remoting/ios/persistence/remoting_preferences.h"
+#import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/client/audio/audio_playback_stream.h"
 #include "remoting/client/chromoting_client_runtime.h"
@@ -26,11 +17,21 @@
 #include "remoting/client/connect_to_host_info.h"
 #include "remoting/client/gesture_interpreter.h"
 #include "remoting/client/input/keyboard_interpreter.h"
+#import "remoting/ios/audio/audio_playback_sink_ios.h"
+#import "remoting/ios/display/gl_display_handler.h"
+#import "remoting/ios/domain/client_session_details.h"
+#import "remoting/ios/domain/host_info.h"
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
+#import "remoting/ios/persistence/host_pairing_info.h"
+#import "remoting/ios/persistence/remoting_preferences.h"
 #include "remoting/ios/session/remoting_client_session_delegate.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/video_renderer.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 NSString* const kHostSessionStatusChanged = @"kHostSessionStatusChanged";
 NSString* const kHostSessionPinProvided = @"kHostSessionPinProvided";
@@ -129,7 +130,7 @@ static void ResolveFeedbackDataCallback(
   info.capabilities = "";
   if ([RemotingPreferences.instance boolForFlag:RemotingFlagUseWebRTC]) {
     info.flags = "useWebrtc";
-    [MDCSnackbarManager
+    [MDCSnackbarManager.defaultManager
         showMessage:[MDCSnackbarMessage messageWithText:@"Using WebRTC"]];
   }
 

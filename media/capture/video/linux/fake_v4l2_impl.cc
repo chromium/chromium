@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "media/base/video_frame.h"
@@ -25,10 +24,18 @@ static const int kInvalidId = -1;
 static const int kSuccessReturnValue = 0;
 static const int kErrorReturnValue = -1;
 static const uint32_t kMaxBufferCount = 5;
+static const int kDefaultWidth = 640;
+static const int kDefaultHeight = 480;
+static const unsigned int kMaxWidth = 3840;
+static const unsigned int kMaxHeight = 2160;
+
+// 20 fps.
+static const int kDefaultFrameInternvalNumerator = 50;
+static const int kDefaultFrameInternvalDenominator = 1000;
 
 __u32 RoundUpToMultipleOfPageSize(__u32 size) {
   CHECK(base::bits::IsPowerOfTwo(getpagesize()));
-  return base::bits::Align(size, getpagesize());
+  return base::bits::AlignUp(size, getpagesize());
 }
 
 struct FakeV4L2Buffer {
@@ -56,8 +63,6 @@ class FakeV4L2Impl::OpenedDevice {
         wait_for_outgoing_queue_event_(
             base::WaitableEvent::ResetPolicy::AUTOMATIC),
         frame_production_thread_("FakeV4L2Impl FakeProductionThread") {
-    static const int kDefaultWidth = 640;
-    static const int kDefaultHeight = 480;
     selected_format_.width = kDefaultWidth;
     selected_format_.height = kDefaultHeight;
     selected_format_.pixelformat = V4L2_PIX_FMT_YUV420;
@@ -68,9 +73,8 @@ class FakeV4L2Impl::OpenedDevice {
     selected_format_.colorspace = V4L2_COLORSPACE_REC709;
     selected_format_.priv = 0;
 
-    // 20 fps
-    timeperframe_.numerator = 50;
-    timeperframe_.denominator = 1000;
+    timeperframe_.numerator = kDefaultFrameInternvalNumerator;
+    timeperframe_.denominator = kDefaultFrameInternvalDenominator;
   }
 
   const std::string& device_id() const { return config_.descriptor.device_id; }
@@ -96,7 +100,7 @@ class FakeV4L2Impl::OpenedDevice {
       }
     }
     return wait_for_outgoing_queue_event_.TimedWait(
-        base::TimeDelta::FromMilliseconds(timeout_in_milliseconds));
+        base::Milliseconds(timeout_in_milliseconds));
   }
 
   int enum_fmt(v4l2_fmtdesc* fmtdesc) {
@@ -132,11 +136,36 @@ class FakeV4L2Impl::OpenedDevice {
 
   int s_ext_ctrls(v4l2_ext_controls* control) { return kSuccessReturnValue; }
 
-  int queryctrl(v4l2_queryctrl* control) { return EINVAL; }
+  int queryctrl(v4l2_queryctrl* control) {
+    switch (control->id) {
+      case V4L2_CID_PAN_ABSOLUTE:
+        if (!config_.descriptor.control_support().pan)
+          return EINVAL;
+        break;
+      case V4L2_CID_TILT_ABSOLUTE:
+        if (!config_.descriptor.control_support().tilt)
+          return EINVAL;
+        break;
+      case V4L2_CID_ZOOM_ABSOLUTE:
+        if (!config_.descriptor.control_support().zoom)
+          return EINVAL;
+        break;
+      default:
+        return EINVAL;
+    }
+    control->flags = 0;
+    control->minimum = 100;
+    control->maximum = 400;
+    control->step = 1;
+    return 0;
+  }
 
   int s_fmt(v4l2_format* format) {
-    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+        format->fmt.pix.width > kMaxWidth ||
+        format->fmt.pix.height > kMaxHeight) {
       return EINVAL;
+    }
     v4l2_pix_format& pix_format = format->fmt.pix;
     // We only support YUV420 output for now. Tell this to the client by
     // overwriting whatever format it requested.
@@ -284,6 +313,28 @@ class FakeV4L2Impl::OpenedDevice {
     return kSuccessReturnValue;
   }
 
+  int enum_framesizes(v4l2_frmsizeenum* frame_size) {
+    if (frame_size->index > 0)
+      return -1;
+
+    frame_size->type = V4L2_FRMSIZE_TYPE_DISCRETE;
+    frame_size->discrete.width = kDefaultWidth;
+    frame_size->discrete.height = kDefaultHeight;
+    return 0;
+  }
+
+  int enum_frameintervals(v4l2_frmivalenum* frame_interval) {
+    if (frame_interval->index > 0 || frame_interval->width != kDefaultWidth ||
+        frame_interval->height != kDefaultWidth) {
+      return -1;
+    }
+
+    frame_interval->type = V4L2_FRMIVAL_TYPE_DISCRETE;
+    frame_interval->discrete.numerator = kDefaultFrameInternvalNumerator;
+    frame_interval->discrete.denominator = kDefaultFrameInternvalDenominator;
+    return 0;
+  }
+
  private:
   void RunFrameProductionLoop() {
     while (!should_quit_frame_production_loop_.IsSet()) {
@@ -291,7 +342,7 @@ class FakeV4L2Impl::OpenedDevice {
       // Sleep for a bit.
       // We ignore the requested frame rate here, and just sleep for a fixed
       // duration.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
   }
 
@@ -333,10 +384,16 @@ FakeV4L2Impl::~FakeV4L2Impl() = default;
 
 void FakeV4L2Impl::AddDevice(const std::string& device_name,
                              const FakeV4L2DeviceConfig& config) {
+  base::AutoLock lock(lock_);
   device_configs_.emplace(device_name, config);
 }
 
 int FakeV4L2Impl::open(const char* device_name, int flags) {
+  if (!device_name)
+    return kInvalidId;
+
+  base::AutoLock lock(lock_);
+
   std::string device_name_as_string(device_name);
   auto device_configs_iter = device_configs_.find(device_name_as_string);
   if (device_configs_iter == device_configs_.end())
@@ -356,6 +413,7 @@ int FakeV4L2Impl::open(const char* device_name, int flags) {
 }
 
 int FakeV4L2Impl::close(int fd) {
+  base::AutoLock lock(lock_);
   auto device_iter = opened_devices_.find(fd);
   if (device_iter == opened_devices_.end())
     return kErrorReturnValue;
@@ -365,12 +423,13 @@ int FakeV4L2Impl::close(int fd) {
 }
 
 int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
+  base::AutoLock lock(lock_);
   auto device_iter = opened_devices_.find(fd);
   if (device_iter == opened_devices_.end())
     return EBADF;
   auto* opened_device = device_iter->second.get();
 
-  switch (request) {
+  switch (static_cast<uint32_t>(request)) {
     case VIDIOC_ENUM_FMT:
       return opened_device->enum_fmt(reinterpret_cast<v4l2_fmtdesc*>(argp));
     case VIDIOC_QUERYCAP:
@@ -401,6 +460,13 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
       return opened_device->streamon(reinterpret_cast<int*>(argp));
     case VIDIOC_STREAMOFF:
       return opened_device->streamoff(reinterpret_cast<int*>(argp));
+    case VIDIOC_ENUM_FRAMESIZES:
+      return opened_device->enum_framesizes(
+          reinterpret_cast<v4l2_frmsizeenum*>(argp));
+    case VIDIOC_ENUM_FRAMEINTERVALS:
+      return opened_device->enum_frameintervals(
+          reinterpret_cast<v4l2_frmivalenum*>(argp));
+
     case VIDIOC_CROPCAP:
     case VIDIOC_DBG_G_REGISTER:
     case VIDIOC_DBG_S_REGISTER:
@@ -408,8 +474,6 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_TRY_ENCODER_CMD:
     case VIDIOC_ENUMAUDIO:
     case VIDIOC_ENUMAUDOUT:
-    case VIDIOC_ENUM_FRAMESIZES:
-    case VIDIOC_ENUM_FRAMEINTERVALS:
     case VIDIOC_ENUMINPUT:
     case VIDIOC_ENUMOUTPUT:
     case VIDIOC_ENUMSTD:
@@ -466,6 +530,7 @@ void* FakeV4L2Impl::mmap(void* /*start*/,
                          int flags,
                          int fd,
                          off_t offset) {
+  base::AutoLock lock(lock_);
   if (flags & MAP_FIXED) {
     errno = EINVAL;
     return MAP_FAILED;
@@ -491,10 +556,12 @@ void* FakeV4L2Impl::mmap(void* /*start*/,
 }
 
 int FakeV4L2Impl::munmap(void* start, size_t length) {
+  base::AutoLock lock(lock_);
   return kSuccessReturnValue;
 }
 
 int FakeV4L2Impl::poll(struct pollfd* ufds, unsigned int nfds, int timeout) {
+  base::AutoLock lock(lock_);
   if (nfds != 1) {
     // We only support polling of a single device.
     errno = EINVAL;

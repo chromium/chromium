@@ -14,7 +14,7 @@ class WebElement(object):
   def _Execute(self, command, params=None):
     if params is None:
       params = {}
-    params['id'] = self._id;
+    params['id'] = self._id
     return self._chromedriver.ExecuteCommand(command, params)
 
   def FindElement(self, strategy, target):
@@ -25,6 +25,9 @@ class WebElement(object):
     return self._Execute(
         Command.FIND_CHILD_ELEMENTS, {'using': strategy, 'value': target})
 
+  def GetElementShadowRoot(self):
+    return self._Execute(Command.GET_ELEMENT_SHADOW_ROOT)
+
   def GetText(self):
     return self._Execute(Command.GET_ELEMENT_TEXT)
 
@@ -33,6 +36,12 @@ class WebElement(object):
 
   def GetProperty(self,name):
     return self._Execute(Command.GET_ELEMENT_PROPERTY, {'name': name})
+
+  def GetComputedLabel(self):
+    return self._Execute(Command.GET_ELEMENT_COMPUTED_LABEL)
+
+  def GetComputedRole(self):
+    return self._Execute(Command.GET_ELEMENT_COMPUTED_ROLE)
 
   def Click(self):
     self._Execute(Command.CLICK_ELEMENT)

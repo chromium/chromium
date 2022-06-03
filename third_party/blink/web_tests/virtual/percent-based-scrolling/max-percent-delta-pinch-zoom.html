@@ -1,0 +1,64 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/scrollbar-util.js"></script>
+<script src="../../resources/blink-coordinates-util.js"></script>
+<script src="resources/scroller-util.js"></script>
+<script src="resources/percent-based-util.js"></script>
+
+<style>
+  .scroller {
+    width: 300px;
+    height: 300px;
+    overflow: scroll;
+  }
+
+  .scroller>.child {
+    width: 4000px;
+    height: 4000px;
+  }
+</style>
+
+<div id="scroller" class="scroller">
+  <div class="child"></div>
+</div>
+<script>
+window.onload = async function () {
+  const onMacPlatform = navigator.userAgent.includes("Mac OS X");
+  const ZOOM_RATIO = 3;
+  // Pinch-zoom to start testing
+  internals.setPageScaleFactor(ZOOM_RATIO);
+
+  // 1 - Test arrows
+  promise_test(async function () {
+    // Mac doesn't have scrollbar arrows.
+    if (onMacPlatform)
+      return;
+
+    const expected_y =
+      Math.round(SCROLLBAR_SCROLL_PERCENTAGE * window.innerHeight / ZOOM_RATIO);
+    const expected_x =
+      Math.round(SCROLLBAR_SCROLL_PERCENTAGE * window.innerWidth / ZOOM_RATIO);
+
+    await runScrollbarArrowsTest(scroller, expected_x, expected_y);
+  }, "Percent scrolling using scrollbar arrows are clamped by " +
+    "visual viewport size after a pinch zoom");
+
+
+  // 2 - Test mousewheel
+  promise_test(async function () {
+    const SCROLL_PERCENTAGE = 0.6;
+
+    const expected_x =
+      Math.round(SCROLL_PERCENTAGE * window.innerWidth / ZOOM_RATIO);
+    const expected_y =
+      Math.round(SCROLL_PERCENTAGE * window.innerHeight / ZOOM_RATIO);
+
+    // Check if mousewheel scrolls are clamping by its maximum value.
+    await runMousewheelTest(scroller, expected_x, expected_y, SCROLL_PERCENTAGE);
+
+  }, "Percent scrolling using mousewheel are clamped by " +
+    "visual viewport size after a pinch zoom");
+};
+</script>

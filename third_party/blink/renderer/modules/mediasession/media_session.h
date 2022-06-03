@@ -5,36 +5,38 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 
-#include <memory>
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace base {
+class TickClock;
+}  // namespace base
 
 namespace blink {
 
-class ExecutionContext;
 class ExceptionState;
 class MediaMetadata;
 class MediaPositionState;
+class Navigator;
 class V8MediaSessionActionHandler;
 
 class MODULES_EXPORT MediaSession final
     : public ScriptWrappable,
-      public ContextClient,
-      blink::mojom::blink::MediaSessionClient {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaSession);
+      public Supplement<Navigator>,
+      public blink::mojom::blink::MediaSessionClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(MediaSession, Dispose);
 
  public:
-  explicit MediaSession(ExecutionContext*);
-
-  void Dispose();
+  static const char kSupplementName[];
+  static MediaSession* mediaSession(Navigator&);
+  explicit MediaSession(Navigator&);
 
   void setPlaybackState(const String&);
   String playbackState();
@@ -48,11 +50,15 @@ class MODULES_EXPORT MediaSession final
 
   void setPositionState(MediaPositionState*, ExceptionState&);
 
+  void setMicrophoneActive(bool active);
+
+  void setCameraActive(bool active);
+
   // Called by the MediaMetadata owned by |this| when it has updates. Also used
   // internally when a new MediaMetadata object is set.
   void OnMetadataChanged();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class V8MediaSession;
@@ -65,14 +71,18 @@ class MODULES_EXPORT MediaSession final
 
   void NotifyActionChange(const String& action, ActionChangeType);
 
-  void RecalculatePositionState(bool notify);
+  base::TimeDelta GetPositionNow() const;
+
+  void RecalculatePositionState(bool was_set);
 
   // blink::mojom::blink::MediaSessionClient implementation.
   void DidReceiveAction(media_session::mojom::blink::MediaSessionAction,
                         mojom::blink::MediaSessionActionDetailsPtr) override;
 
-  // Returns null when the ExecutionContext is not document.
+  // Returns null if the associated window is detached.
   mojom::blink::MediaSessionService* GetService();
+
+  const base::TickClock* clock_ = nullptr;
 
   mojom::blink::MediaSessionPlaybackState playback_state_;
   media_session::mojom::blink::MediaPositionPtr position_state_;
@@ -80,8 +90,8 @@ class MODULES_EXPORT MediaSession final
   Member<MediaMetadata> metadata_;
   HeapHashMap<String, Member<V8MediaSessionActionHandler>> action_handlers_;
   mojo::Remote<mojom::blink::MediaSessionService> service_;
-  mojo::Receiver<blink::mojom::blink::MediaSessionClient> client_receiver_{
-      this};
+  HeapMojoReceiver<blink::mojom::blink::MediaSessionClient, MediaSession>
+      client_receiver_;
 };
 
 }  // namespace blink

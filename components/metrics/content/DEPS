@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/crash",
+  "+content/public/browser",
+  "+content/public/common",
+  "+gpu/config",
+  "+ppapi/buildflags/buildflags.h",
+]
+
+specific_include_rules = {
+  "subprocess_metrics_provider_browsertest\.cc": [
+    "+content/shell/browser/shell.h",
+    "+net/dns/mock_host_resolver.h",
+  ]
+}

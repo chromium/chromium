@@ -23,7 +23,7 @@ InterpolationValue CreateNoneValue() {
 }
 
 bool IsNoneValue(const InterpolationValue& value) {
-  return ToInterpolableList(*value.interpolable_value).length() == 0;
+  return To<InterpolableList>(*value.interpolable_value).length() == 0;
 }
 
 class InheritedTranslateChecker
@@ -141,8 +141,9 @@ PairwiseInterpolationValue CSSTranslateInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
   size_t start_list_length =
-      ToInterpolableList(*start.interpolable_value).length();
-  size_t end_list_length = ToInterpolableList(*end.interpolable_value).length();
+      To<InterpolableList>(*start.interpolable_value).length();
+  size_t end_list_length =
+      To<InterpolableList>(*end.interpolable_value).length();
   if (start_list_length < end_list_length)
     start.interpolable_value = CreateTranslateIdentity();
   else if (end_list_length < start_list_length)
@@ -181,7 +182,7 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,
     StyleResolverState& state) const {
-  const InterpolableList& list = ToInterpolableList(interpolable_value);
+  const auto& list = To<InterpolableList>(interpolable_value);
   if (list.length() == 0) {
     state.Style()->SetTranslate(nullptr);
     return;
@@ -189,11 +190,11 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
   const CSSToLengthConversionData& conversion_data =
       state.CssToLengthConversionData();
   Length x = To<InterpolableLength>(*list.Get(kTranslateX))
-                 .CreateLength(conversion_data, kValueRangeAll);
+                 .CreateLength(conversion_data, Length::ValueRange::kAll);
   Length y = To<InterpolableLength>(*list.Get(kTranslateY))
-                 .CreateLength(conversion_data, kValueRangeAll);
+                 .CreateLength(conversion_data, Length::ValueRange::kAll);
   float z = To<InterpolableLength>(*list.Get(kTranslateZ))
-                .CreateLength(conversion_data, kValueRangeAll)
+                .CreateLength(conversion_data, Length::ValueRange::kAll)
                 .Pixels();
 
   scoped_refptr<TranslateTransformOperation> result =

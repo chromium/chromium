@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import os.path
 import sys
 import argparse
@@ -144,6 +145,7 @@ def dash_to_camelcase(word):
 
 
 def to_snake_case(name):
+  name = re.sub(r"([A-Z]{2,})([A-Z][a-z])", r"\1_\2", name)
   return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name, sys.maxsize).lower()
 
 
@@ -371,7 +373,6 @@ class Protocol(object):
                                  for rule in config.imported.options]
 
     self.patch_full_qualified_refs()
-    self.create_notification_types()
     self.create_type_definitions()
     self.generate_used_types()
 
@@ -434,8 +435,6 @@ class Protocol(object):
         for event in domain["events"]:
           if self.generate_event(domain_name, event["name"]):
             all_refs |= self.all_references(event)
-            all_refs.add('%s.%sNotification' % (domain_name,
-                                                to_title_case(event["name"])))
 
     dependencies = self.generate_type_dependencies()
     queue = set(all_refs)
@@ -456,20 +455,6 @@ class Protocol(object):
         if len(related_types):
           dependencies[domain_name + "." + type["id"]] = related_types
     return dependencies
-
-  def create_notification_types(self):
-    for domain in self.json_api["domains"]:
-      if "events" in domain:
-        for event in domain["events"]:
-          event_type = dict()
-          event_type["description"] = "Wrapper for notification params"
-          event_type["type"] = "object"
-          event_type["id"] = to_title_case(event["name"]) + "Notification"
-          if "parameters" in event:
-            event_type["properties"] = copy.deepcopy(event["parameters"])
-          if "types" not in domain:
-            domain["types"] = list()
-          domain["types"].append(event_type)
 
   def create_type_definitions(self):
     imported_namespace = ""
@@ -655,26 +640,20 @@ def main():
     # Note these should be sorted in the right order.
     # TODO(dgozman): sort them programmatically based on commented includes.
     protocol_h_templates = [
-      "ErrorSupport_h.template",
       "Values_h.template",
       "Object_h.template",
       "ValueConversions_h.template",
-      "DispatcherBase_h.template",
-      "Parser_h.template",
     ]
 
     protocol_cpp_templates = [
       "Protocol_cpp.template",
-      "ErrorSupport_cpp.template",
       "Values_cpp.template",
       "Object_cpp.template",
-      "DispatcherBase_cpp.template",
-      "Parser_cpp.template",
+      "ValueConversions_cpp.template",
     ]
 
     forward_h_templates = [
       "Forward_h.template",
-      "FrontendChannel_h.template",
     ]
 
     base_string_adapter_h_templates = [
@@ -716,6 +695,11 @@ def main():
     sys.exit()
 
   for file_name, content in outputs.items():
+    # Remove output file first to account for potential case changes.
+    try:
+      os.remove(file_name)
+    except OSError:
+      pass
     out_file = open(file_name, "w")
     out_file.write(content)
     out_file.close()

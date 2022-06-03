@@ -4,54 +4,40 @@
 
 #include "chrome/browser/web_applications/web_app_provider.h"
 
-#include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 
 namespace web_app {
 
-enum class ProviderType { kBookmarkApps, kWebApps };
-
-class WebAppProviderUnitTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<ProviderType> {
+class WebAppProviderUnitTest : public WebAppTest {
  public:
-  WebAppProviderUnitTest() {
-    if (GetParam() == ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  WebAppProviderUnitTest() = default;
+  WebAppProviderUnitTest(const WebAppProviderUnitTest&) = delete;
+  WebAppProviderUnitTest& operator=(const WebAppProviderUnitTest&) = delete;
   ~WebAppProviderUnitTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = WebAppProvider::Get(profile());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    provider_ = WebAppProvider::GetForLocalAppsUnchecked(profile());
   }
 
   WebAppProvider* provider() { return provider_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   WebAppProvider* provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppProviderUnitTest);
 };
 
-TEST_P(WebAppProviderUnitTest, Registrar) {
-  AppRegistrar& registrar = provider()->registrar();
+TEST_F(WebAppProviderUnitTest, Registrar) {
+  WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_FALSE(registrar.IsInstalled("unknown"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppProviderUnitTest,
-                         ::testing::ValuesIn({ProviderType::kBookmarkApps,
-                                              ProviderType::kWebApps}));
 
 }  // namespace web_app

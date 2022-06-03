@@ -4,11 +4,12 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -20,6 +21,7 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 using base::StringPiece;
@@ -36,7 +38,7 @@ class LDBComparator : public leveldb::Comparator {
   int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
     return content::Compare(leveldb_env::MakeStringPiece(a),
                             leveldb_env::MakeStringPiece(b),
-                            false /*index_keys*/);
+                            /*index_keys=*/false);
   }
   const char* Name() const override { return "idb_cmp1"; }
   void FindShortestSeparator(std::string* start,
@@ -52,43 +54,51 @@ const base::FilePath::CharType kLevelDBExtension[] =
     FILE_PATH_LITERAL(".leveldb");
 
 // static
-base::FilePath GetBlobStoreFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
+base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
+  // TODO(crbug.com/1199077): This will be replaced when the new storage is
+  // implemented.
+  std::string storage_key_id =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
   return base::FilePath()
-      .AppendASCII(origin_id)
+      .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
       .AddExtension(kBlobExtension);
 }
 
 // static
-base::FilePath GetLevelDBFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
+base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key) {
+  // TODO(crbug.com/1199077): This will be replaced when the new storage is
+  // implemented.
+  std::string storage_key_id =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
   return base::FilePath()
-      .AppendASCII(origin_id)
+      .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
       .AddExtension(kLevelDBExtension);
 }
 
-base::FilePath ComputeCorruptionFileName(const url::Origin& origin) {
-  return GetLevelDBFileName(origin).Append(
-      FILE_PATH_LITERAL("corruption_info.json"));
+base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key) {
+  return GetLevelDBFileName(storage_key)
+      .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
-bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  int limit = base::GetMaximumPathComponentLength(leveldb_dir.DirName());
-  if (limit == -1) {
+bool IsPathTooLong(storage::FilesystemProxy* filesystem,
+                   const base::FilePath& leveldb_dir) {
+  absl::optional<int> limit =
+      filesystem->GetMaximumPathComponentLength(leveldb_dir.DirName());
+  if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     limit = 143;
 #else
     limit = 255;
 #endif
   }
   size_t component_length = leveldb_dir.BaseName().value().length();
-  if (component_length > static_cast<uint32_t>(limit)) {
+  if (component_length > static_cast<uint32_t>(*limit)) {
     DLOG(WARNING) << "Path component length (" << component_length
-                  << ") exceeds maximum (" << limit
+                  << ") exceeds maximum (" << *limit
                   << ") allowed by this filesystem.";
     const int min = 140;
     const int max = 300;
@@ -101,37 +111,46 @@ bool IsPathTooLong(const base::FilePath& leveldb_dir) {
   return false;
 }
 
-std::string ReadCorruptionInfo(const base::FilePath& path_base,
-                               const url::Origin& origin) {
+std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
+                               const base::FilePath& path_base,
+                               const blink::StorageKey& storage_key) {
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(origin));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(storage_key));
   std::string message;
-  if (IsPathTooLong(info_path))
+  if (IsPathTooLong(filesystem_proxy, info_path))
     return message;
 
   const int64_t kMaxJsonLength = 4096;
-  int64_t file_size = 0;
-  if (!base::GetFileSize(info_path, &file_size))
+
+  absl::optional<base::File::Info> file_info =
+      filesystem_proxy->GetFileInfo(info_path);
+  if (!file_info.has_value())
     return message;
-  if (!file_size || file_size > kMaxJsonLength) {
-    base::DeleteFile(info_path, false);
+  if (!file_info->size || file_info->size > kMaxJsonLength) {
+    filesystem_proxy->DeleteFile(info_path);
     return message;
   }
 
-  base::File file(info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (file.IsValid()) {
-    std::string input_js(file_size, '\0');
-    if (file_size == file.Read(0, base::data(input_js), file_size)) {
-      base::JSONReader reader;
-      std::unique_ptr<base::DictionaryValue> val(
-          base::DictionaryValue::From(reader.ReadToValueDeprecated(input_js)));
-      if (val)
-        val->GetString("message", &message);
+  base::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
+      info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file_or_error.is_error()) {
+    auto& file = file_or_error.value();
+    if (file.IsValid()) {
+      std::string input_js(file_info->size, '\0');
+      if (file_info->size ==
+          file.Read(0, base::data(input_js), file_info->size)) {
+        absl::optional<base::Value> val = base::JSONReader::Read(input_js);
+        if (val && val->is_dict()) {
+          std::string* s = val->FindStringKey("message");
+          if (s)
+            message = *s;
+        }
+      }
+      file.Close();
     }
-    file.Close();
   }
 
-  base::DeleteFile(info_path, false);
+  filesystem_proxy->DeleteFile(info_path);
 
   return message;
 }
@@ -207,7 +226,7 @@ template leveldb::Status PutVarInt<LevelDBWriteBatch>(
 template <typename DBOrTransaction>
 Status GetString(DBOrTransaction* db,
                  const StringPiece& key,
-                 base::string16* found_string,
+                 std::u16string* found_string,
                  bool* found) {
   std::string result;
   *found = false;
@@ -225,17 +244,17 @@ Status GetString(DBOrTransaction* db,
 template Status GetString<TransactionalLevelDBTransaction>(
     TransactionalLevelDBTransaction* txn,
     const StringPiece& key,
-    base::string16* found_string,
+    std::u16string* found_string,
     bool* found);
 template Status GetString<TransactionalLevelDBDatabase>(
     TransactionalLevelDBDatabase* db,
     const StringPiece& key,
-    base::string16* found_string,
+    std::u16string* found_string,
     bool* found);
 
 leveldb::Status PutString(TransactionalLevelDBTransaction* transaction,
                           const StringPiece& key,
-                          const base::string16& value) {
+                          const std::u16string& value) {
   std::string buffer;
   EncodeString(value, &buffer);
   return transaction->Put(key, &buffer);
@@ -293,7 +312,7 @@ Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
 
   DCHECK_GE(max_object_store_id, 0);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(SET_MAX_OBJECT_STORE_ID);
+    INTERNAL_READ_ERROR(SET_MAX_OBJECT_STORE_ID);
     return s;
   }
 
@@ -317,7 +336,7 @@ Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
   bool found = false;
   Status s = GetInt(transaction, last_version_key, &last_version, &found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_VERSION_NUMBER);
+    INTERNAL_READ_ERROR(GET_NEW_VERSION_NUMBER);
     return s;
   }
   if (!found)
@@ -328,7 +347,7 @@ Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
   int64_t version = last_version + 1;
   s = PutInt(transaction, last_version_key, version);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_VERSION_NUMBER);
+    INTERNAL_READ_ERROR(GET_NEW_VERSION_NUMBER);
     return s;
   }
 
@@ -349,14 +368,14 @@ Status SetMaxIndexId(TransactionalLevelDBTransaction* transaction,
   bool found = false;
   Status s = GetInt(transaction, max_index_id_key, &max_index_id, &found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(SET_MAX_INDEX_ID);
+    INTERNAL_READ_ERROR(SET_MAX_INDEX_ID);
     return s;
   }
   if (!found)
     max_index_id = kMinimumIndexId;
 
   if (index_id <= max_index_id) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(SET_MAX_INDEX_ID);
+    INTERNAL_CONSISTENCY_ERROR(SET_MAX_INDEX_ID);
     return InternalInconsistencyStatus();
   }
 
@@ -375,7 +394,7 @@ Status VersionExists(TransactionalLevelDBTransaction* transaction,
 
   Status s = transaction->Get(key, &data, exists);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(VERSION_EXISTS);
+    INTERNAL_READ_ERROR(VERSION_EXISTS);
     return s;
   }
   if (!*exists)
@@ -405,7 +424,7 @@ Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
   Status s = indexed_db::GetInt(transaction, MaxDatabaseIdKey::Encode(),
                                 &max_database_id, &found);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_DATABASE_ID);
+    INTERNAL_READ_ERROR(GET_NEW_DATABASE_ID);
     return s;
   }
   if (!found)
@@ -416,7 +435,7 @@ Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
   int64_t database_id = max_database_id + 1;
   s = indexed_db::PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
   if (!s.ok()) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_DATABASE_ID);
+    INTERNAL_READ_ERROR(GET_NEW_DATABASE_ID);
     return s;
   }
   *new_id = database_id;
@@ -466,7 +485,12 @@ bool FindGreatestKeyLessThanOrEqual(
     std::string* found_key,
     Status* s) {
   std::unique_ptr<TransactionalLevelDBIterator> it =
-      transaction->CreateIterator();
+      transaction->CreateIterator(*s);
+  if (!s->ok()) {
+    INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
+    return false;
+  }
+
   *s = it->Seek(target);
   if (!s->ok())
     return false;
@@ -484,7 +508,7 @@ bool FindGreatestKeyLessThanOrEqual(
   }
 
   do {
-    *found_key = it->Key().as_string();
+    *found_key = std::string(it->Key());
 
     // There can be several index keys that compare equal. We want the last one.
     *s = it->Next();
@@ -507,14 +531,14 @@ bool GetBlobNumberGeneratorCurrentNumber(
   bool found = false;
   bool ok = leveldb_transaction->Get(key_gen_key, &data, &found).ok();
   if (!ok) {
-    INTERNAL_READ_ERROR_UNTESTED(GET_BLOB_KEY_GENERATOR_CURRENT_NUMBER);
+    INTERNAL_READ_ERROR(GET_BLOB_KEY_GENERATOR_CURRENT_NUMBER);
     return false;
   }
   if (found) {
     StringPiece slice(data);
     if (!DecodeVarInt(&slice, &cur_number) || !slice.empty() ||
         !DatabaseMetaDataKey::IsValidBlobNumber(cur_number)) {
-      INTERNAL_READ_ERROR_UNTESTED(GET_BLOB_KEY_GENERATOR_CURRENT_NUMBER);
+      INTERNAL_READ_ERROR(GET_BLOB_KEY_GENERATOR_CURRENT_NUMBER);
       return false;
     }
   }
@@ -557,7 +581,7 @@ Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
     time_micros = 0;
 
   DCHECK_GE(time_micros, 0);
-  *earliest_sweep += base::TimeDelta::FromMicroseconds(time_micros);
+  *earliest_sweep += base::Microseconds(time_micros);
 
   return s;
 }
@@ -575,6 +599,42 @@ leveldb::Status SetEarliestSweepTime(Transaction* txn,
   const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
   int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
   return indexed_db::PutInt(txn, earliest_sweep_time_key, time_micros);
+}
+
+Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
+                                 base::Time* earliest_compaction) {
+  const std::string earliest_compaction_time_key =
+      EarliestCompactionKey::Encode();
+  *earliest_compaction = base::Time();
+  bool found = false;
+  int64_t time_micros = 0;
+  Status s = indexed_db::GetInt(db, earliest_compaction_time_key, &time_micros,
+                                &found);
+  if (!s.ok())
+    return s;
+  if (!found)
+    time_micros = 0;
+
+  DCHECK_GE(time_micros, 0);
+  *earliest_compaction += base::Microseconds(time_micros);
+
+  return s;
+}
+
+template leveldb::Status SetEarliestCompactionTime<
+    TransactionalLevelDBTransaction>(TransactionalLevelDBTransaction* db,
+                                     base::Time earliest_compaction);
+template leveldb::Status SetEarliestCompactionTime<LevelDBDirectTransaction>(
+    LevelDBDirectTransaction* db,
+    base::Time earliest_compaction);
+
+template <typename Transaction>
+leveldb::Status SetEarliestCompactionTime(Transaction* txn,
+                                          base::Time earliest_compaction) {
+  const std::string earliest_compaction_time_key =
+      EarliestCompactionKey::Encode();
+  int64_t time_micros = (earliest_compaction - base::Time()).InMicroseconds();
+  return indexed_db::PutInt(txn, earliest_compaction_time_key, time_micros);
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {

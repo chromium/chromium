@@ -21,13 +21,11 @@ DeleteRegValueWorkItem::DeleteRegValueWorkItem(HKEY predefined_root,
       wow64_access_(wow64_access),
       status_(DELETE_VALUE),
       previous_type_(0) {
-  DCHECK(wow64_access == 0 ||
-         wow64_access == KEY_WOW64_32KEY ||
+  DCHECK(wow64_access == 0 || wow64_access == KEY_WOW64_32KEY ||
          wow64_access == KEY_WOW64_64KEY);
 }
 
-DeleteRegValueWorkItem::~DeleteRegValueWorkItem() {
-}
+DeleteRegValueWorkItem::~DeleteRegValueWorkItem() {}
 
 bool DeleteRegValueWorkItem::DoImpl() {
   DCHECK_EQ(DELETE_VALUE, status_);
@@ -37,11 +35,10 @@ bool DeleteRegValueWorkItem::DoImpl() {
   RegKey key;
   DWORD type = 0;
   DWORD size = 0;
-  LONG result = key.Open(predefined_root_,
-                         key_path_.c_str(),
+  LONG result = key.Open(predefined_root_, key_path_.c_str(),
                          KEY_READ | KEY_WRITE | wow64_access_);
   if (result == ERROR_SUCCESS)
-    result = key.ReadValue(value_name_.c_str(), NULL, &size, &type);
+    result = key.ReadValue(value_name_.c_str(), nullptr, &size, &type);
 
   if (result == ERROR_FILE_NOT_FOUND) {
     VLOG(1) << "(delete value) Key: " << key_path_
@@ -88,18 +85,16 @@ void DeleteRegValueWorkItem::RollbackImpl() {
   DCHECK_EQ(VALUE_DELETED, status_);
 
   RegKey key;
-  LONG result = key.Open(predefined_root_,
-                         key_path_.c_str(),
+  LONG result = key.Open(predefined_root_, key_path_.c_str(),
                          KEY_READ | KEY_WRITE | wow64_access_);
   if (result == ERROR_SUCCESS) {
     // try to restore the previous value
     DWORD previous_size = static_cast<DWORD>(previous_value_.size());
-    const char* previous_value =
-        previous_size ? &previous_value_[0] : NULL;
-    result = key.WriteValue(value_name_.c_str(), previous_value,
-                            previous_size, previous_type_);
-    VLOG_IF(1, result != ERROR_SUCCESS) << "rollback: restoring "
-                                        << value_name_ << " error: " << result;
+    const char* previous_value = previous_size ? &previous_value_[0] : nullptr;
+    result = key.WriteValue(value_name_.c_str(), previous_value, previous_size,
+                            previous_type_);
+    VLOG_IF(1, result != ERROR_SUCCESS)
+        << "rollback: restoring " << value_name_ << " error: " << result;
   } else {
     VLOG(1) << "can not open " << key_path_ << " error: " << result;
   }

@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 

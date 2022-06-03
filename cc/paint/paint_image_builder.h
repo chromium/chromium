@@ -5,12 +5,15 @@
 #ifndef CC_PAINT_PAINT_IMAGE_BUILDER_H_
 #define CC_PAINT_PAINT_IMAGE_BUILDER_H_
 
+#include <utility>
+
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/skia_paint_image_generator.h"
+#include "cc/paint/texture_backing.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace cc {
@@ -42,7 +45,14 @@ class CC_PAINT_EXPORT PaintImageBuilder {
 
   PaintImageBuilder&& set_image(sk_sp<SkImage> sk_image,
                                 PaintImage::ContentId content_id) {
+    DCHECK(!sk_image->isTextureBacked());
     paint_image_.sk_image_ = std::move(sk_image);
+    paint_image_.content_id_ = content_id;
+    return std::move(*this);
+  }
+  PaintImageBuilder&& set_texture_backing(sk_sp<TextureBacking> texture_backing,
+                                          PaintImage::ContentId content_id) {
+    paint_image_.texture_backing_ = std::move(texture_backing);
     paint_image_.content_id_ = content_id;
     return std::move(*this);
   }
@@ -61,7 +71,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.paint_image_generator_ = std::move(generator);
     return std::move(*this);
   }
-
   PaintImageBuilder&& set_animation_type(PaintImage::AnimationType type) {
     paint_image_.animation_type_ = type;
     return std::move(*this);
@@ -88,12 +97,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     return std::move(*this);
   }
 
-  // Makes the PaintImage represent a subset of the original image. The
-  // subset must be non-empty and lie within the image bounds.
-  PaintImageBuilder&& make_subset(const gfx::Rect& subset) {
-    paint_image_ = paint_image_.MakeSubset(subset);
-    return std::move(*this);
-  }
   PaintImageBuilder&& set_decoding_mode(
       PaintImage::DecodingMode decoding_mode) {
     paint_image_.decoding_mode_ = decoding_mode;
@@ -108,8 +111,21 @@ class CC_PAINT_EXPORT PaintImageBuilder {
   PaintImage TakePaintImage();
 
  private:
+  friend class PaintOpReader;
+  friend class PaintShader;
+  friend class ImagePaintFilter;
+  friend PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size);
+
   PaintImageBuilder();
   PaintImageBuilder(PaintImage starting_image, bool clear_contents);
+
+  // For GPU process callers using a texture backed SkImage.
+  PaintImageBuilder&& set_texture_image(sk_sp<SkImage> sk_image,
+                                        PaintImage::ContentId content_id) {
+    paint_image_.sk_image_ = std::move(sk_image);
+    paint_image_.content_id_ = content_id;
+    return std::move(*this);
+  }
 
   PaintImage paint_image_;
 #if DCHECK_IS_ON()

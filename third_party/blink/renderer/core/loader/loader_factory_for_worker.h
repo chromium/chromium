@@ -25,14 +25,16 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
                          scoped_refptr<WebWorkerFetchContext> web_context)
       : global_scope_(global_scope), web_context_(std::move(web_context)) {}
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   // LoaderFactory implementations
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  std::unique_ptr<CodeCacheLoader> CreateCodeCacheLoader() override;
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      WebBackForwardCacheLoaderHelper) override;
+  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
  private:
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>

@@ -19,7 +19,7 @@ BluetoothGattApplicationServiceProviderImpl::
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       bus_(bus),
       object_path_(object_path) {
-  VLOG(1) << "Creating Bluetooth GATT application: " << object_path_.value();
+  DVLOG(1) << "Creating Bluetooth GATT application: " << object_path_.value();
   DCHECK(object_path_.IsValid());
   if (!bus_)
     return;
@@ -29,18 +29,18 @@ BluetoothGattApplicationServiceProviderImpl::
   exported_object_->ExportMethod(
       dbus::kDBusObjectManagerInterface,
       dbus::kDBusObjectManagerGetManagedObjects,
-      base::Bind(
+      base::BindRepeating(
           &BluetoothGattApplicationServiceProviderImpl::GetManagedObjects,
           weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattApplicationServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&BluetoothGattApplicationServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   CreateAttributeServiceProviders(bus, services);
 }
 
 BluetoothGattApplicationServiceProviderImpl::
     ~BluetoothGattApplicationServiceProviderImpl() {
-  VLOG(1) << "Cleaning up Bluetooth GATT service: " << object_path_.value();
+  DVLOG(1) << "Cleaning up Bluetooth GATT service: " << object_path_.value();
   if (bus_)
     bus_->UnregisterExportedObject(object_path_);
 }
@@ -92,8 +92,8 @@ void BluetoothGattApplicationServiceProviderImpl::WriteInterfaceDict(
 void BluetoothGattApplicationServiceProviderImpl::GetManagedObjects(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(2) << "BluetoothGattApplicationServiceProvider::GetManagedObjects: "
-          << object_path_.value();
+  DVLOG(2) << "BluetoothGattApplicationServiceProvider::GetManagedObjects: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
@@ -126,8 +126,8 @@ void BluetoothGattApplicationServiceProviderImpl::GetManagedObjects(
   }
 
   writer.CloseContainer(&array_writer);
-  VLOG(3) << "Sending response to BlueZ for GetManagedObjects: \n"
-          << response->ToString();
+  DVLOG(3) << "Sending response to BlueZ for GetManagedObjects: \n"
+           << response->ToString();
   std::move(response_sender).Run(std::move(response));
 }
 
@@ -136,8 +136,8 @@ void BluetoothGattApplicationServiceProviderImpl::OnExported(
     const std::string& interface_name,
     const std::string& method_name,
     bool success) {
-  LOG_IF(WARNING, !success) << "Failed to export " << interface_name << "."
-                            << method_name;
+  DVLOG_IF(1, !success) << "Failed to export " << interface_name << "."
+                        << method_name;
 }
 
 }  // namespace bluez

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,25 +28,21 @@ int64_t GetFileSizeBlocking(const base::FilePath& file_path) {
 
 SiteDataSizeCollector::SiteDataSizeCollector(
     const base::FilePath& default_storage_partition_path,
-    BrowsingDataCookieHelper* cookie_helper,
-    BrowsingDataDatabaseHelper* database_helper,
-    BrowsingDataLocalStorageHelper* local_storage_helper,
-    BrowsingDataAppCacheHelper* appcache_helper,
-    BrowsingDataIndexedDBHelper* indexed_db_helper,
-    BrowsingDataFileSystemHelper* file_system_helper,
-    BrowsingDataServiceWorkerHelper* service_worker_helper,
-    BrowsingDataCacheStorageHelper* cache_storage_helper,
-    BrowsingDataFlashLSOHelper* flash_lso_helper)
+    scoped_refptr<browsing_data::CookieHelper> cookie_helper,
+    scoped_refptr<browsing_data::DatabaseHelper> database_helper,
+    scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
+    scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+    scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
+    scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
+    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : default_storage_partition_path_(default_storage_partition_path),
-      appcache_helper_(appcache_helper),
-      cookie_helper_(cookie_helper),
-      database_helper_(database_helper),
-      local_storage_helper_(local_storage_helper),
-      indexed_db_helper_(indexed_db_helper),
-      file_system_helper_(file_system_helper),
-      service_worker_helper_(service_worker_helper),
-      cache_storage_helper_(cache_storage_helper),
-      flash_lso_helper_(flash_lso_helper),
+      cookie_helper_(std::move(cookie_helper)),
+      database_helper_(std::move(database_helper)),
+      local_storage_helper_(std::move(local_storage_helper)),
+      indexed_db_helper_(std::move(indexed_db_helper)),
+      file_system_helper_(std::move(file_system_helper)),
+      service_worker_helper_(std::move(service_worker_helper)),
+      cache_storage_helper_(std::move(cache_storage_helper)),
       in_flight_operations_(0),
       total_bytes_(0) {}
 
@@ -60,12 +57,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   total_bytes_ = 0;
   in_flight_operations_ = 0;
 
-  if (appcache_helper_.get()) {
-    appcache_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnAppCacheModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
   if (cookie_helper_.get()) {
     cookie_helper_->StartFetching(
         base::BindOnce(&SiteDataSizeCollector::OnCookiesModelInfoLoaded,
@@ -108,23 +99,8 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
                        weak_ptr_factory_.GetWeakPtr()));
     in_flight_operations_++;
   }
-  if (flash_lso_helper_.get()) {
-    flash_lso_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnFlashLSOInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
   // TODO(fukino): SITE_USAGE_DATA and WEB_APP_DATA should be counted too.
   // All data types included in REMOVE_SITE_USAGE_DATA should be counted.
-}
-
-void SiteDataSizeCollector::OnAppCacheModelInfoLoaded(
-    const std::list<content::StorageUsageInfo>& info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& info : info_list)
-    total_size += info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
 }
 
 void SiteDataSizeCollector::OnCookiesModelInfoLoaded(
@@ -137,9 +113,8 @@ void SiteDataSizeCollector::OnCookiesModelInfoLoaded(
   }
   base::FilePath cookie_file_path = default_storage_partition_path_
       .Append(chrome::kCookieFilename);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetFileSizeBlocking, cookie_file_path),
       base::BindOnce(&SiteDataSizeCollector::OnStorageSizeFetched,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -199,26 +174,6 @@ void SiteDataSizeCollector::OnCacheStorageModelInfoLoaded(
   for (const auto& cache_storage_info : cache_storage_info_list)
     total_size += cache_storage_info.total_size_bytes;
   OnStorageSizeFetched(total_size);
-}
-
-void SiteDataSizeCollector::OnFlashLSOInfoLoaded(
-    const FlashLSODomainList& domains) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(fukino): Flash is not the only plugin. We should check all types of
-  // plugin data.
-  if (domains.empty()) {
-    OnStorageSizeFetched(0);
-    return;
-  }
-  base::FilePath pepper_data_dir_path = default_storage_partition_path_
-      .Append(content::kPepperDataDirname);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&base::ComputeDirectorySize, pepper_data_dir_path),
-      base::BindOnce(&SiteDataSizeCollector::OnStorageSizeFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SiteDataSizeCollector::OnStorageSizeFetched(int64_t size) {

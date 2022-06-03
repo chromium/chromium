@@ -5,14 +5,14 @@
 #ifndef REMOTING_HOST_FILE_TRANSFER_FAKE_FILE_OPERATIONS_H_
 #define REMOTING_HOST_FILE_TRANSFER_FAKE_FILE_OPERATIONS_H_
 
+#include <cstdint>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -23,7 +23,7 @@ class FakeFileOperations : public FileOperations {
   struct OutputFile {
     OutputFile(base::FilePath filename,
                bool failed,
-               std::vector<std::string> chunks);
+               std::vector<std::vector<std::uint8_t>> chunks);
     OutputFile(const OutputFile& other);
     OutputFile(OutputFile&& other);
     OutputFile& operator=(const OutputFile&);
@@ -38,14 +38,14 @@ class FakeFileOperations : public FileOperations {
     bool failed;
 
     // All of the chunks successfully written before close/cancel/error.
-    std::vector<std::string> chunks;
+    std::vector<std::vector<std::uint8_t>> chunks;
   };
 
   struct InputFile {
     InputFile();
     InputFile(base::FilePath filename,
-              std::string data,
-              base::Optional<protocol::FileTransfer_Error> io_error);
+              std::vector<std::uint8_t> data,
+              absl::optional<protocol::FileTransfer_Error> io_error);
     InputFile(const InputFile& other);
     InputFile(InputFile&& other);
     InputFile& operator=(const InputFile&);
@@ -56,11 +56,11 @@ class FakeFileOperations : public FileOperations {
     base::FilePath filename;
 
     // The file data to provide in response to read requests.
-    std::string data;
+    std::vector<std::uint8_t> data;
 
     // If set, this error will be returned instead of EOF once the provided data
     // has been read.
-    base::Optional<protocol::FileTransfer_Error> io_error;
+    absl::optional<protocol::FileTransfer_Error> io_error;
   };
 
   // Used to interact with FakeFileOperations after ownership is passed
@@ -78,7 +78,7 @@ class FakeFileOperations : public FileOperations {
     std::vector<OutputFile> files_written;
 
     // If set, file operations will return this error.
-    base::Optional<protocol::FileTransfer_Error> io_error = base::nullopt;
+    absl::optional<protocol::FileTransfer_Error> io_error = absl::nullopt;
   };
 
   explicit FakeFileOperations(TestIo* test_io);

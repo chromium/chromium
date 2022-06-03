@@ -24,7 +24,7 @@ void ActivateMruUnminimizedWindowOnActiveDesk() {
           DesksMruType::kActiveDesk));
   for (auto* window : mru_windows) {
     if (WindowState::Get(window)->GetStateType() !=
-        WindowStateType::kMinimized) {
+        chromeos::WindowStateType::kMinimized) {
       WindowState::Get(window)->Activate();
       return;
     }
@@ -70,8 +70,7 @@ void WallpaperWindowStateManager::RestoreMinimizedWindows(
   UserIDHashWindowListMap::iterator it =
       user_id_hash_window_list_map_.find(user_id_hash);
   if (it == user_id_hash_window_list_map_.end()) {
-    DCHECK(false) << "This should only be called after calling "
-                  << "MinimizeInactiveWindows.";
+    DVLOG(1) << "No minimized window state saved";
     return;
   }
 

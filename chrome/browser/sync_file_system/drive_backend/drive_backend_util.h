@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/blob/scoped_file.h"
 
 namespace sync_file_system {
@@ -39,12 +39,12 @@ bool IsAppRoot(const FileTracker& tracker);
 
 std::string GetTrackerTitle(const FileTracker& tracker);
 
-SyncStatusCode DriveApiErrorCodeToSyncStatusCode(
-    google_apis::DriveApiErrorCode error);
+SyncStatusCode ApiErrorCodeToSyncStatusCode(google_apis::ApiErrorCode error);
 
 // Returns true if |str| starts with |prefix|, and removes |prefix| from |str|.
 // If |out| is not NULL, the result is stored in it.
-bool RemovePrefix(const std::string& str, const std::string& prefix,
+bool RemovePrefix(const std::string& str,
+                  const std::string& prefix,
                   std::string* out);
 
 std::unique_ptr<ServiceMetadata> InitializeServiceMetadata(LevelDBWrapper* db);
@@ -63,19 +63,6 @@ const typename Container::mapped_type& LookUpMap(
   if (found == container.end())
     return default_value;
   return found->second;
-}
-
-template <typename R, typename S, typename T>
-R ComposeFunction(const base::Callback<T()>& g,
-                  const base::Callback<R(S)>& f) {
-  return f.Run(g.Run());
-}
-
-template <typename R, typename S, typename T>
-base::Callback<R()> CreateComposedFunction(
-    const base::Callback<T()>& g,
-    const base::Callback<R(S)>& f) {
-  return base::Bind(&ComposeFunction<R, S, T>, g, f);
 }
 
 }  // namespace drive_backend

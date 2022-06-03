@@ -1,0 +1,49 @@
+{
+  "doc_root": null,
+  "ws_doc_root": null,
+  "check_subdomains": false,
+  "server_host": "127.0.0.1",
+  "log_level": "info",
+  "ports": {
+    "http": [8001, 8081],
+    "http-private": [8082],
+    "http-public": [8083],
+    "https": [8444, 8445],
+    "https-private": [8446],
+    "https-public": [8447],
+    "h2": [9000],
+    "ws": [9001],
+    "wss": [9444],
+    "webtransport-h3": [11000]
+  },
+  "ssl": {
+    "type": "pregenerated",
+    "encrypt_after_connect": false,
+    "pregenerated": {
+      "host_key_path": "../certs/127.0.0.1.key",
+      "host_cert_path": "../certs/127.0.0.1.pem"
+    }
+  },
+  "aliases": [
+    {
+      "url-path": "/wpt_internal/",
+      "local-dir": "../../blink/web_tests/wpt_internal"
+    },
+    {
+      "url-path": "/wpt_automation/",
+      "local-dir": "../../blink/web_tests/external/wpt_automation"
+    },
+    {
+      "url-path": "/resources/testharnessreport.js",
+      "local-dir": "../../blink/web_tests/resources"
+    },
+    {
+      "url-path": "/resources/testdriver-vendor.js",
+      "local-dir": "../../blink/web_tests/resources"
+    },
+    {
+      "url-path": "/common/vendor-prefix.js",
+      "local-dir": "../../blink/web_tests/resources"
+    }
+  ]
+}

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
-<translation id="6106989379647458772"><ph name="PAGE" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀ ରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
-<translation id="6312113039770857350">ୱେବ୍ ପୃଷ୍ଠା ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />ରେ ୱେବ୍‌ପୃଷ୍ଠା ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ, କାରଣ:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />ପ୍ରସ୍ତାବଗୁଡ଼ିକ:<ph name="MARKUP_2" />ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣଙ୍କର ଗୋଟିଏ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଅଛି <ph name="MARKUP_3" />ଏହି ୱେବ୍-ପୃଷ୍ଠାକୁ ପରେ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ<ph name="MARKUP_4" /> ଆପଣ ଲେଖିଥିବା ଠିକଣାକୁ ଯାଞ୍ଚ କରନ୍ତୁ<ph name="MARKUP_5" /></translation>
 </translationbundle>

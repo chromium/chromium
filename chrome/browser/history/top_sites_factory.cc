@@ -10,18 +10,15 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/ntp_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,6 +30,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,7 +112,7 @@ scoped_refptr<history::TopSites> TopSitesFactory::BuildTopSites(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
       profile->GetPrefs(), history_service, prepopulated_page_list,
-      base::Bind(CanAddURLToHistory)));
+      base::BindRepeating(CanAddURLToHistory)));
   top_sites->Init(context->GetPath().Append(history::kTopSitesFilename));
   return top_sites;
 }
@@ -126,7 +125,7 @@ TopSitesFactory::TopSitesFactory()
 
   // This dependency is only used when the experimental
   // kTopSitesFromSiteEngagement feature is active.
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 TopSitesFactory::~TopSitesFactory() {

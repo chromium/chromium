@@ -43,6 +43,7 @@ namespace blink {
 
 class DOMException;
 class ExceptionState;
+class NewScriptFunction;
 
 // ScriptPromise is the class for representing Promise values in C++ world.
 // ScriptPromise holds a Promise.
@@ -69,6 +70,8 @@ class CORE_EXPORT ScriptPromise final {
 
   ScriptPromise Then(v8::Local<v8::Function> on_fulfilled,
                      v8::Local<v8::Function> on_rejected = {});
+  ScriptPromise Then(NewScriptFunction* on_fulfilled,
+                     NewScriptFunction* on_rejected = nullptr);
 
   bool IsObject() const { return promise_.IsObject(); }
 
@@ -78,9 +81,14 @@ class CORE_EXPORT ScriptPromise final {
     return promise_.IsUndefined() || promise_.IsNull();
   }
 
-  ScriptValue GetScriptValue() const { return promise_; }
+  ScriptValue AsScriptValue() const { return promise_; }
 
   v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
+  v8::Local<v8::Promise> V8Promise() const {
+    // This is safe because `promise_` always stores a promise value as long
+    // as it's non-empty.
+    return V8Value().As<v8::Promise>();
+  }
 
   v8::Isolate* GetIsolate() const { return script_state_->GetIsolate(); }
 
@@ -124,7 +132,7 @@ class CORE_EXPORT ScriptPromise final {
   static ScriptPromise All(ScriptState*,
                            const HeapVector<ScriptPromise>& promises);
 
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(promise_);
     visitor->Trace(script_state_);
   }
@@ -142,7 +150,7 @@ class CORE_EXPORT ScriptPromise final {
     void Reject(v8::Local<v8::Value>);
     void Clear() { resolver_.Clear(); }
     ScriptState* GetScriptState() const { return script_state_; }
-    void Trace(blink::Visitor* visitor) {
+    void Trace(Visitor* visitor) const {
       visitor->Trace(script_state_);
       visitor->Trace(resolver_);
     }
@@ -151,6 +159,10 @@ class CORE_EXPORT ScriptPromise final {
     Member<ScriptState> script_state_;
     ScriptValue resolver_;
   };
+
+  bool IsAssociatedWith(ScriptState* script_state) const {
+    return script_state == script_state_;
+  }
 
  private:
   static void IncreaseInstanceCount();

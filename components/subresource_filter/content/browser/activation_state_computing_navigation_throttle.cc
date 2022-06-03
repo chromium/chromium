@@ -22,7 +22,7 @@ ActivationStateComputingNavigationThrottle::CreateForMainFrame(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->IsInMainFrame());
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, base::Optional<mojom::ActivationState>(), nullptr));
+      navigation_handle, absl::optional<mojom::ActivationState>(), nullptr));
 }
 
 // static
@@ -42,7 +42,7 @@ ActivationStateComputingNavigationThrottle::CreateForSubframe(
 ActivationStateComputingNavigationThrottle::
     ActivationStateComputingNavigationThrottle(
         content::NavigationHandle* navigation_handle,
-        const base::Optional<mojom::ActivationState> parent_activation_state,
+        const absl::optional<mojom::ActivationState> parent_activation_state,
         VerifiedRuleset::Handle* ruleset_handle)
     : content::NavigationThrottle(navigation_handle),
       parent_activation_state_(parent_activation_state),

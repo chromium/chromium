@@ -4,72 +4,52 @@
 
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
 
-#include "base/stl_util.h"
+#include <memory>
+#include <string>
+
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/metrics/demographics/demographic_metrics_test_utils.h"
+#include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/network_time/network_time_tracker.h"
 #include "components/ukm/ukm_service.h"
+#include "components/ukm/ukm_test_helper.h"
 #include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/testing/nserror_util.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/ukm/report.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Constant for timeout while waiting for asynchronous sync and UKM operations.
-const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 
 bool g_metrics_enabled = false;
 
 chrome_test_util::HistogramTester* g_histogram_tester = nullptr;
+
+PrefService* GetProfilePrefs() {
+  return GetApplicationContext()
+      ->GetChromeBrowserStateManager()
+      ->GetLastUsedBrowserState()
+      ->GetPrefs();
+}
+
+ukm::UkmService* GetUkmService() {
+  return GetApplicationContext()->GetMetricsServicesManager()->GetUkmService();
+}
+
+metrics::MetricsService* GetMetricsService() {
+  return GetApplicationContext()->GetMetricsService();
+}
+
 }  // namespace
-
-namespace metrics {
-
-// Helper class that provides access to UKM internals.
-// This class is a friend of UKMService and UkmRecorderImpl.
-class UkmEGTestHelper {
- public:
-  UkmEGTestHelper() {}
-  UkmEGTestHelper(const UkmEGTestHelper&) = delete;
-  UkmEGTestHelper& operator=(UkmEGTestHelper&) = delete;
-
-  static bool ukm_enabled() {
-    auto* service = ukm_service();
-    return service ? service->recording_enabled_ : false;
-  }
-
-  static uint64_t client_id() {
-    auto* service = ukm_service();
-    return service ? service->client_id_ : 0;
-  }
-
-  static bool HasDummySource(int64_t source_id_as_int64) {
-    auto* service = ukm_service();
-    ukm::SourceId source_id = source_id_as_int64;
-    return service && base::Contains(service->sources(), source_id);
-  }
-
-  static void RecordDummySource(ukm::SourceId source_id_as_int64) {
-    ukm::UkmService* service = ukm_service();
-    ukm::SourceId source_id = source_id_as_int64;
-    if (service)
-      service->UpdateSourceURL(source_id, GURL("http://example.com"));
-  }
-
- private:
-  static ukm::UkmService* ukm_service() {
-    return GetApplicationContext()
-        ->GetMetricsServicesManager()
-        ->GetUkmService();
-  }
-};
-
-}  // namespace metrics
 
 @implementation MetricsAppInterface : NSObject
 
@@ -92,23 +72,99 @@ class UkmEGTestHelper {
 }
 
 + (BOOL)checkUKMRecordingEnabled:(BOOL)enabled {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+
   ConditionBlock condition = ^{
-    return metrics::UkmEGTestHelper::ukm_enabled() == enabled;
+    return ukm_test_helper.IsRecordingEnabled() == enabled;
   };
-  return base::test::ios::WaitUntilConditionOrTimeout(kSyncUKMOperationsTimeout,
-                                                      condition);
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncUKMOperationsTimeout, condition);
+}
+
++ (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled {
+  return ukm::UkmTestHelper::IsReportUserNoisedUserBirthYearAndGenderEnabled();
 }
 
 + (uint64_t)UKMClientID {
-  return metrics::UkmEGTestHelper::client_id();
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  return ukm_test_helper.GetClientId();
 }
 
-+ (BOOL)UKMHasDummySource:(int64_t)sourceId {
-  return metrics::UkmEGTestHelper::HasDummySource(sourceId);
++ (BOOL)UKMHasDummySource:(int64_t)sourceID {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  return ukm_test_helper.HasSource(sourceID);
 }
 
 + (void)UKMRecordDummySource:(int64_t)sourceID {
-  return metrics::UkmEGTestHelper::RecordDummySource(sourceID);
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  ukm_test_helper.RecordSourceForTesting(sourceID);
+}
+
++ (void)updateNetworkTime:(base::Time)now {
+  metrics::test::UpdateNetworkTime(
+      now, GetApplicationContext()->GetNetworkTimeTracker());
+}
+
++ (int)maximumEligibleBirthYearForTime:(base::Time)now {
+  return metrics::test::GetMaximumEligibleBirthYear(now);
+}
+
++ (void)buildAndStoreUKMLog {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  ukm_test_helper.BuildAndStoreLog();
+}
+
++ (BOOL)hasUnsentUKMLogs {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  return ukm_test_helper.HasUnsentLogs();
+}
+
++ (BOOL)UKMReportHasBirthYear:(int)year
+                       gender:(metrics::UserDemographicsProto::Gender)gender {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
+  int noisedBirthYear =
+      metrics::test::GetNoisedBirthYear(*GetProfilePrefs(), year);
+
+  return report && gender == report->user_demographics().gender() &&
+         noisedBirthYear == report->user_demographics().birth_year();
+}
+
++ (BOOL)UKMReportHasUserDemographics {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
+  return report && report->has_user_demographics();
+}
+
++ (void)buildAndStoreUMALog {
+  metrics::test::BuildAndStoreLog(GetMetricsService());
+}
+
++ (BOOL)hasUnsentUMALogs {
+  return metrics::test::HasUnsentLogs(GetMetricsService());
+}
+
++ (BOOL)UMALogHasBirthYear:(int)year
+                    gender:(metrics::UserDemographicsProto::Gender)gender {
+  if (![self UMALogHasUserDemographics]) {
+    return NO;
+  }
+  std::unique_ptr<metrics::ChromeUserMetricsExtension> log =
+      metrics::test::GetLastUmaLog(GetMetricsService());
+  int noisedBirthYear =
+      metrics::test::GetNoisedBirthYear(*GetProfilePrefs(), year);
+
+  return noisedBirthYear == log->user_demographics().birth_year() &&
+         gender == log->user_demographics().gender();
+}
+
++ (BOOL)UMALogHasUserDemographics {
+  if (![self hasUnsentUMALogs]) {
+    return NO;
+  }
+  std::unique_ptr<metrics::ChromeUserMetricsExtension> log =
+      metrics::test::GetLastUmaLog(GetMetricsService());
+  return log && log->has_user_demographics();
 }
 
 + (NSError*)setupHistogramTester {

@@ -4,7 +4,7 @@
 
 ## Debugging
 
-[Linux Debugging](linux_debugging.md) has some Emacs-specific debugging tips.
+[Linux Debugging](linux/debugging.md) has some Emacs-specific debugging tips.
 
 ## Syntax-error Highlighting
 
@@ -37,9 +37,15 @@ flycheck provides:
 ### Setup
 
 1.  Clone, update external git repositories and build.sh ycmd from
-    https://github.com/Valloric/ycmd into a directory, e.g. `~/dev/ycmd`
-1.  Test `ycmd` by running `~/dev/ycmd$ python ycmd/__main__.py` You should see
-    `KeyError: 'hmac_secret'`
+    https://github.com/ycm-core/YouCompleteMe into a directory, e.g. `~/dev/ycmd`
+    * The ycmd packaging changed, the server is in a different location. To
+     build it, run:
+     ```shell
+      cd ~/dev/ycmd
+      git submodule update --init --recursive
+      python3 install.py --clang-completer
+      ```
+1.  Test `ycmd` by running `~/dev/ycmd$ python third_party/ycmd/__main__.py --options_file /tmp/test.json`. The options file can be created with e.g. `echo '{"hmac_secret": "1234567812345678"}' > /tmp/test.json`. The server should start normally.
 1.  Install the following packages to emacs, for example from melpa:
     *   `ycmd`
     *   `company-ycmd`
@@ -77,7 +83,7 @@ flycheck provides:
 (add-hook 'c++-mode-hook 'flycheck-mode)
 
 ;; Replace the directory information with where you downloaded ycmd to
-(set-variable 'ycmd-server-command (list "python" (substitute-in-file-name "$HOME/dev/ycmd/ycmd/__main__.py")))
+(set-variable 'ycmd-server-command (list "python3" (substitute-in-file-name "$HOME/dev/ycmd/third_party/ycmd/ycmd/__main__.py")))
 
 ;; Edit according to where you have your Chromium/Blink checkout
 (add-to-list 'ycmd-extra-conf-whitelist (substitute-in-file-name "$HOME/dev/blink/.ycm_extra_conf.py"))
@@ -104,6 +110,9 @@ flycheck provides:
 (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
 ```
+* ycmd depends on the installed version of python. For googlers running gLinux,
+  a system update may have changed the python version. In this case, you need to
+  recompile ycmd first.
 
 ## ff-get-other-file
 
@@ -277,7 +286,17 @@ for details.
 
 See [ErcIrc](erc_irc.md).
 
-## TODO
+## Compilation with M-x compile
 
-*   Figure out how to make `M-x compile` default to
-    `cd /path/to/chrome/root; make -r chrome`.
+It's usually useful to first find the top directory with locate-dominating-file,
+and run `M-x compile`
+
+```lisp
+(defun chromium-compile ()
+  "Run compile for chromium."
+  (interactive)
+  (let ((chrome-dir (locate-dominating-file "." "chrome/BUILD.gn")))
+    (when chrome-dir
+      (let* ((default-directory chrome-dir))
+        (compile "ninja -C out/Debug chrome chrome_sandbox ")))))
+```

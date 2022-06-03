@@ -4,30 +4,24 @@
 
 package org.chromium.weblayer.test;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.weblayer.BrowsingDataType.CACHE;
 import static org.chromium.weblayer.BrowsingDataType.COOKIES_AND_SITE_DATA;
 
-import android.support.test.filters.SmallTest;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.shell.InstrumentationActivity;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Example test that just starts the weblayer shell.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(WebLayerJUnit4ClassRunner.class)
 public class DataClearingTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
@@ -35,37 +29,37 @@ public class DataClearingTest {
 
     @Test
     @SmallTest
-    public void clearDataWithPersistedProfile_TriggersCallback() throws InterruptedException {
+    public void clearDataWithPersistedProfile_TriggersCallback() {
         checkTriggersCallbackOnClearData(new int[] {COOKIES_AND_SITE_DATA}, "Profile");
     }
 
     @Test
     @SmallTest
-    public void clearDataWithInMemoryProfile_TriggersCallback() throws InterruptedException {
+    public void clearDataWithInMemoryProfile_TriggersCallback() {
         checkTriggersCallbackOnClearData(new int[] {COOKIES_AND_SITE_DATA}, null);
     }
 
     @Test
     @SmallTest
-    public void clearCacheWithPersistedProfile_TriggersCallback() throws InterruptedException {
+    public void clearCacheWithPersistedProfile_TriggersCallback() {
         checkTriggersCallbackOnClearData(new int[] {CACHE}, "Profile");
     }
 
     @Test
     @SmallTest
-    public void clearCacheWithInMemoryProfile_TriggersCallback() throws InterruptedException {
+    public void clearCacheWithInMemoryProfile_TriggersCallback() {
         checkTriggersCallbackOnClearData(new int[] {CACHE}, null);
     }
 
     @Test
     @SmallTest
-    public void clearMultipleTypes_TriggersCallback() throws InterruptedException {
+    public void clearMultipleTypes_TriggersCallback() {
         checkTriggersCallbackOnClearData(new int[] {COOKIES_AND_SITE_DATA, CACHE}, "Profile");
     }
 
     @Test
     @SmallTest
-    public void clearUnknownType_TriggersCallback() throws InterruptedException {
+    public void clearUnknownType_TriggersCallback() {
         // This is a forward compatibility test: the older versions of Chrome that don't yet
         // implement clearing some data type should just ignore it and call the callback.
         checkTriggersCallbackOnClearData(new int[] {9999}, "Profile");
@@ -73,38 +67,38 @@ public class DataClearingTest {
 
     @Test
     @SmallTest
-    public void twoSuccesiveRequestsTriggerCallbacks() throws InterruptedException {
+    public void twoSuccesiveRequestsTriggerCallbacks() {
         InstrumentationActivity activity = mActivityTestRule.launchWithProfile("profile");
 
-        CountDownLatch latch = new CountDownLatch(2);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(2);
         runOnUiThreadBlocking(() -> {
             Profile profile = activity.getBrowser().getProfile();
             profile.clearBrowsingData(new int[] {COOKIES_AND_SITE_DATA}, latch::countDown);
             profile.clearBrowsingData(new int[] {CACHE}, latch::countDown);
         });
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        latch.timedAwait();
     }
 
     @Test
     @SmallTest
-    public void clearingAgainAfterClearFinished_TriggersCallback() throws InterruptedException {
+    public void clearingAgainAfterClearFinished_TriggersCallback() {
         InstrumentationActivity activity = mActivityTestRule.launchWithProfile("profile");
 
-        CountDownLatch latch = new CountDownLatch(1);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         runOnUiThreadBlocking(() -> {
             Profile profile = activity.getBrowser().getProfile();
             profile.clearBrowsingData(new int[] {COOKIES_AND_SITE_DATA},
                     () -> { profile.clearBrowsingData(new int[] {CACHE}, latch::countDown); });
         });
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        latch.timedAwait();
     }
 
     @Test
     @SmallTest
-    public void destroyingProfileDuringDataClear_DoesntCrash() throws InterruptedException {
+    public void destroyingProfileDuringDataClear_DoesntCrash() {
         InstrumentationActivity activity = mActivityTestRule.launchWithProfile("profile");
 
-        CountDownLatch latch = new CountDownLatch(1);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         runOnUiThreadBlocking(() -> {
             Profile profile = activity.getBrowser().getProfile();
             profile.clearBrowsingData(new int[] {COOKIES_AND_SITE_DATA}, () -> {});
@@ -116,16 +110,15 @@ public class DataClearingTest {
             profile.destroy();
             latch.countDown();
         });
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        latch.timedAwait();
     }
 
-    private void checkTriggersCallbackOnClearData(int[] dataTypes, String profileName)
-            throws InterruptedException {
+    private void checkTriggersCallbackOnClearData(int[] dataTypes, String profileName) {
         InstrumentationActivity activity = mActivityTestRule.launchWithProfile(profileName);
-        CountDownLatch latch = new CountDownLatch(1);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         runOnUiThreadBlocking(() -> {
             activity.getBrowser().getProfile().clearBrowsingData(dataTypes, latch::countDown);
         });
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        latch.timedAwait();
     }
 }

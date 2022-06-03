@@ -29,6 +29,6 @@
 [
     Exposed=Window
 ] interface MediaStreamEvent : Event {
-    constructor(DOMString type, optional MediaStreamEventInit eventInitDict);
+    constructor(DOMString type, optional MediaStreamEventInit eventInitDict = {});
     readonly attribute MediaStream? stream;
 };

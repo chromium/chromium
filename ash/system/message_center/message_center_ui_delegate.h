@@ -25,10 +25,9 @@ class MessageCenterUiDelegate {
   virtual void HidePopups() = 0;
 
   // Display the message center containing all undismissed notifications to the
-  // user. Set |show_by_click| to true if message center is shown by mouse or
-  // gesture click. Returns true if the center was actually displayed to the
+  // user. Returns true if the center was actually displayed to the
   // user.
-  virtual bool ShowMessageCenter(bool show_by_click) = 0;
+  virtual bool ShowMessageCenter() = 0;
 
   // Remove the message center from the UI.
   virtual void HideMessageCenter() = 0;

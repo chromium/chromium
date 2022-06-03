@@ -87,7 +87,7 @@
     // Testing outside initial containing block (mid-page)
     testsWithBaseline(bottomBaseline, elementBottom.firstChild);
 
-    eventSender.zoomPageOut();
+    testRunner.zoomPageOut();
     testsWithBaseline(topBaseline, elementTop.firstChild);
 
     if (window.testRunner) {

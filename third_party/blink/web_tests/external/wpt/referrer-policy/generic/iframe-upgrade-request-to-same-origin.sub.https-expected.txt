@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL If an insecure iframe request is upgraded to https to be same-origin, referrer policies that consider same-origin-ness should be applied correctly assert_equals: The referrer header sent for the iframe request should not be redacted expected "https://web-platform.test:8444/referrer-policy/generic/iframe-upgrade-request-to-same-origin.sub.https.html" but got "https://web-platform.test:8444/"
+Harness: the test ran to completion.
+

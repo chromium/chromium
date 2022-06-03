@@ -52,14 +52,14 @@ namespace tcmalloc {
 // sure the central_cache locks remain in a consisten state in the forked
 // version of the thread.
 
-void CentralCacheLockAll()
+void CentralCacheLockAll() NO_THREAD_SAFETY_ANALYSIS
 {
   Static::pageheap_lock()->Lock();
   for (int i = 0; i < Static::num_size_classes(); ++i)
     Static::central_cache()[i].Lock();
 }
 
-void CentralCacheUnlockAll()
+void CentralCacheUnlockAll() NO_THREAD_SAFETY_ANALYSIS
 {
   for (int i = 0; i < Static::num_size_classes(); ++i)
     Static::central_cache()[i].Unlock();

@@ -34,13 +34,14 @@
 #include <config.h>
 #include "thread_cache.h"
 #include <errno.h>
-#include <string.h>                     // for memcpy
-#include <algorithm>                    // for max, min
-#include "base/commandlineflags.h"      // for SpinLockHolder
-#include "base/spinlock.h"              // for SpinLockHolder
-#include "getenv_safe.h"                // for TCMallocGetenvSafe
-#include "central_freelist.h"           // for CentralFreeListPadded
+#include <string.h>                 // for memcpy
+#include <algorithm>                // for max, min
+#include "base/commandlineflags.h"  // for SpinLockHolder
+#include "base/spinlock.h"          // for SpinLockHolder
+#include "central_freelist.h"       // for CentralFreeListPadded
+#include "getenv_safe.h"            // for TCMallocGetenvSafe
 #include "maybe_threads.h"
+#include "system-alloc.h"
 
 using std::min;
 using std::max;
@@ -300,6 +301,9 @@ void ThreadCache::InitModule() {
     if (tcb) {
       set_overall_thread_cache_size(strtoll(tcb, NULL, 10));
     }
+#if defined(TCMALLOC_USE_DOUBLYLINKED_FREELIST)
+    FL_InitPtrMask(reinterpret_cast<uintptr_t>(TCMalloc_SystemAlloc));
+#endif
     Static::InitStaticVars();
     threadcache_allocator.Init();
     phinited = 1;

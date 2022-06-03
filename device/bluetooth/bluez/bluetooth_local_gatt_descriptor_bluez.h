@@ -27,6 +27,12 @@ class BluetoothLocalGattDescriptorBlueZ
       const device::BluetoothUUID& uuid,
       device::BluetoothGattCharacteristic::Permissions permissions,
       BluetoothLocalGattCharacteristicBlueZ* characteristic);
+
+  BluetoothLocalGattDescriptorBlueZ(const BluetoothLocalGattDescriptorBlueZ&) =
+      delete;
+  BluetoothLocalGattDescriptorBlueZ& operator=(
+      const BluetoothLocalGattDescriptorBlueZ&) = delete;
+
   ~BluetoothLocalGattDescriptorBlueZ() override;
 
   // device::BluetoothLocalGattDescriptor overrides.
@@ -52,8 +58,6 @@ class BluetoothLocalGattDescriptorBlueZ
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothLocalGattDescriptorBlueZ> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattDescriptorBlueZ);
 };
 
 }  // namespace bluez

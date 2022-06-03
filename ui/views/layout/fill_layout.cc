@@ -33,8 +33,7 @@ ProposedLayout FillLayout::CalculateProposedLayout(
   // Because we explicitly override GetPreferredSize and
   // GetPreferredHeightForWidth(), we should always call this method with well-
   // defined bounds.
-  DCHECK(size_bounds.width().has_value());
-  DCHECK(size_bounds.height().has_value());
+  DCHECK(size_bounds.is_fully_bounded());
 
   ProposedLayout layout;
   layout.host_size = host_view()->size();
@@ -43,7 +42,8 @@ ProposedLayout FillLayout::CalculateProposedLayout(
   for (View* child : host_view()->children()) {
     if (ShouldIncludeChild(child)) {
       layout.child_layouts.push_back(
-          {child, child->GetVisible(), contents_bounds});
+          ChildLayout{child, child->GetVisible(), contents_bounds,
+                      SizeBounds(contents_bounds.size())});
     }
   }
 

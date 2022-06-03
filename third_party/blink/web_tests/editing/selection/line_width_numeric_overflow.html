@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// Because line width has numeric overflow, we fail to calculate end of line
+// position. See http://crbug.com/1098795
+selection_test(
+    [
+        '<div style="white-space: pre-wrap">',
+            '|<select style="margin-left: 1e9px"><option>ab</option></select>xy',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'lineboundary'),
+    [
+        '<div style="white-space: pre-wrap">',
+            '<select style="margin-left: 1e9px"><option>ab</option></select>|xy',
+        '</div>',
+    ]);
+</script>

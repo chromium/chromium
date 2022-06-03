@@ -50,7 +50,7 @@ String TextCodecReplacement::Decode(const char*,
   if (!replacement_error_returned_) {
     replacement_error_returned_ = true;
     saw_error = true;
-    return String(&kReplacementCharacter, 1);
+    return String(&kReplacementCharacter, 1u);
   }
 
   // 3. Return finished.

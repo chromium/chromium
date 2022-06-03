@@ -48,6 +48,15 @@ worker.postMessage({
 })
 ```
 
+### 4. Stopping the animation
+```js
+worker.postMessage({
+  control: {
+    stop: true
+  }
+})
+```
+
 ## Message field description
 ```python
 data: {
@@ -63,6 +72,7 @@ data: {
   },
   control: {
     play: 'Set "true" to play a paused animation or "false" to pause a playing animation',
+    stop: 'Set "true" to stop a playing animation. This will clear the canvas',
   }
 },
 ```
@@ -89,7 +99,13 @@ its parent thread:
     name: 'paused'
 }
 ```
-4. **'resized'**
+4. **'stopped'**
+```javascript
+{
+    name: 'stopped'
+}
+```
+5. **'resized'**
 ```javascript
 {
     name: 'resized',

@@ -1,4 +1,0 @@
-CONSOLE ERROR: line 28: Uncaught TypeError: div1.createShadowRoot is not a function
-1
-
-This test should not crash on ASAN

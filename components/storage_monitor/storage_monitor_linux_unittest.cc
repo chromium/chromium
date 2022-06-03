@@ -15,11 +15,11 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
@@ -88,8 +88,7 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
   StorageInfo::Type type = kTestDeviceData[i].type;
   auto storage_info = std::make_unique<StorageInfo>(
       StorageInfo::MakeDeviceId(type, kTestDeviceData[i].unique_id),
-      mount_point.value(), base::ASCIIToUTF16("volume label"),
-      base::ASCIIToUTF16("vendor name"), base::ASCIIToUTF16("model name"),
+      mount_point.value(), u"volume label", u"vendor name", u"model name",
       kTestDeviceData[i].partition_size_in_bytes);
   return storage_info;
 }
@@ -120,6 +119,10 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
       : StorageMonitorLinux(path) {
     SetGetDeviceInfoCallbackForTest(base::BindRepeating(&GetDeviceInfo));
   }
+
+  TestStorageMonitorLinux(const TestStorageMonitorLinux&) = delete;
+  TestStorageMonitorLinux& operator=(const TestStorageMonitorLinux&) = delete;
+
   ~TestStorageMonitorLinux() override = default;
 
  private:
@@ -136,8 +139,6 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestStorageMonitorLinux);
 };
 
 class StorageMonitorLinuxTest : public testing::Test {
@@ -157,6 +158,10 @@ class StorageMonitorLinuxTest : public testing::Test {
   };
 
   StorageMonitorLinuxTest() = default;
+
+  StorageMonitorLinuxTest(const StorageMonitorLinuxTest&) = delete;
+  StorageMonitorLinuxTest& operator=(const StorageMonitorLinuxTest&) = delete;
+
   ~StorageMonitorLinuxTest() override = default;
 
  protected:
@@ -229,7 +234,7 @@ class StorageMonitorLinuxTest : public testing::Test {
   void RemoveDCIMDirFromMountPoint(const std::string& dir) {
     base::FilePath dcim =
         scoped_temp_dir_.GetPath().AppendASCII(dir).Append(kDCIMDirectoryName);
-    base::DeleteFile(dcim, false);
+    base::DeleteFile(dcim);
   }
 
   MockRemovableStorageObserver& observer() {
@@ -308,8 +313,6 @@ class StorageMonitorLinuxTest : public testing::Test {
   base::FilePath mtab_file_;
 
   std::unique_ptr<TestStorageMonitorLinux> monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorLinuxTest);
 };
 
 // Simple test case where we attach and detach a media device.
@@ -548,7 +551,7 @@ TEST_F(StorageMonitorLinuxTest,
   MtabTestData test_data5[] = {
     MtabTestData(kDeviceNoDCIM, test_path_b.value(), kValidFS),
   };
-  base::DeleteFile(test_path_b.Append(kDCIMDirectoryName), false);
+  base::DeleteFile(test_path_b.Append(kDCIMDirectoryName));
   AppendToMtabAndRunLoop(test_data5, base::size(test_data5));
   EXPECT_EQ(4, observer().attach_calls());
   EXPECT_EQ(2, observer().detach_calls());
@@ -604,9 +607,9 @@ TEST_F(StorageMonitorLinuxTest, DeviceLookUp) {
   EXPECT_EQ(GetDeviceId(kDeviceDCIM1), device_info.device_id());
   EXPECT_EQ(test_path_a.value(), device_info.location());
   EXPECT_EQ(88788ULL, device_info.total_size_in_bytes());
-  EXPECT_EQ(base::ASCIIToUTF16("volume label"), device_info.storage_label());
-  EXPECT_EQ(base::ASCIIToUTF16("vendor name"), device_info.vendor_name());
-  EXPECT_EQ(base::ASCIIToUTF16("model name"), device_info.model_name());
+  EXPECT_EQ(u"volume label", device_info.storage_label());
+  EXPECT_EQ(u"vendor name", device_info.vendor_name());
+  EXPECT_EQ(u"model name", device_info.model_name());
 
   EXPECT_TRUE(notifier()->GetStorageInfoForPath(test_path_b, &device_info));
   EXPECT_EQ(GetDeviceId(kDeviceNoDCIM), device_info.device_id());

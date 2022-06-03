@@ -1,0 +1,18 @@
+{
+  "chromium_linux64_debug": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "chromium_mac_debug": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  }
+}

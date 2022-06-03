@@ -19,8 +19,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<FaviconLoader>(
       IOSChromeLargeIconServiceFactory::GetForBrowserState(browser_state));
 }
@@ -28,13 +28,13 @@ std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
 }  // namespace
 
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<FaviconLoader*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<FaviconLoader*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }

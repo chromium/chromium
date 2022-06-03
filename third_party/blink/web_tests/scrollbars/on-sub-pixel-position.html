@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>crbug.com/1056936: LayoutNG had an issue about scrollbar positioning</title>
+<style>
+.spacer {
+  display: inline-block;
+  width: 59.5px;
+}
+
+.container {
+  border: 1px solid lime;
+  display: inline-block;
+  height: 4em;
+  width: 39.5px;
+  overflow-y: scroll
+}
+</style>
+<body>
+<div><span class=spacer></span><div class="container"></div></div>
+<!-- The test passes if lime border is correctly drawn on top/right/bottom/left
+     sides. -->
+</body>

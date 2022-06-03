@@ -25,22 +25,26 @@ source_set("lib") {
     "//components/autofill/core/common",
     "//components/crash/core/common",
     "//components/gwp_asan/buildflags",
+    "//components/metrics",
+    "//components/power_scheduler",
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//components/viz/common",
-    "//content/public/app:both",
+    "//content/public/app",
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:content_descriptor_keys",
+    "//device/base:base",
     "//gin",
     "//gpu/command_buffer/service",
     "//gpu/config",
     "//gpu/ipc:gl_in_process_context",
     "//media",
     "//media:media_buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/events:gesture_detection",
   ]
@@ -59,12 +63,10 @@ source_set("webview_entry_point") {
     ":lib",
     "//base",
   ]
-  sources = [
-    "webview_entry_point.cc",
-  ]
+  sources = [ "webview_entry_point.cc" ]
 
   if (webview_includes_weblayer) {
     defines = [ "WEBVIEW_INCLUDES_WEBLAYER" ]
-    deps += [ "//weblayer:weblayer_lib" ]
+    deps += [ "//weblayer:weblayer_lib_webview" ]
   }
 }

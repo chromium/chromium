@@ -67,6 +67,15 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
     std::move(frame_cb_).Run();
 }
 
+void MockVideoCaptureClient::OnIncomingCapturedExternalBuffer(
+    CapturedExternalVideoBuffer buffer,
+    std::vector<CapturedExternalVideoBuffer> scaled_buffers,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  if (frame_cb_)
+    std::move(frame_cb_).Run();
+}
+
 // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
 VideoCaptureDevice::Client::ReserveResult
 MockVideoCaptureClient::ReserveOutputBuffer(

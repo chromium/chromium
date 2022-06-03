@@ -9,23 +9,25 @@
 #include <unordered_set>
 #include <vector>
 
-#ifdef OS_WIN
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
 #include "device/vr/windows/d3d11_device_helpers.h"
-#endif  // OS_WIN
+#endif  // defined(OS_WIN)
 
 namespace vr {
 
 std::string CheckDirectX_11_1() {
-#ifndef OS_WIN
-  return "DirectX 11.1 required, but not on Windows";
-#else
+#if defined(OS_WIN)
   int32_t adapter_index;
   GetD3D11_1AdapterIndex(&adapter_index);
   if (adapter_index == -1) {
     return "DirectX 11.1 required, but no suitable device found";
   }
   return "";
-#endif  // OS_WIN
+#else
+  return "DirectX 11.1 required, but not on Windows";
+#endif  // defined(OS_WIN)
 }
 
 std::string CheckXrRequirements(

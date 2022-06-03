@@ -26,7 +26,7 @@ const expectedValues = [
 
 function setupTest() {
     var target = document.getElementById('target');
-    var root = target.createShadowRoot();
+    var root = target.attachShadow({mode: 'open'});
     root.innerHTML = "<div style='height: 100px; width: 100px;'><content></content></div>";
     target.classList.add('fade');
 }

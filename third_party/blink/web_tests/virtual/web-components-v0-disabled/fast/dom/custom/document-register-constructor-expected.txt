@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL constructor type document.registerElement is not a function
-FAIL constructor name document.registerElement is not a function
-FAIL prototype "constructor" property document.registerElement is not a function
-FAIL constructor "prototype" property document.registerElement is not a function
-Harness: the test ran to completion.
-

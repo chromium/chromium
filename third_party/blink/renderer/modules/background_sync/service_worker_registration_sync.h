@@ -19,8 +19,6 @@ class ServiceWorkerRegistration;
 class ServiceWorkerRegistrationSync final
     : public GarbageCollected<ServiceWorkerRegistrationSync>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationSync);
-
  public:
   static const char kSupplementName[];
 
@@ -33,19 +31,21 @@ class ServiceWorkerRegistrationSync final
 
   explicit ServiceWorkerRegistrationSync(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationSync(const ServiceWorkerRegistrationSync&) = delete;
+  ServiceWorkerRegistrationSync& operator=(
+      const ServiceWorkerRegistrationSync&) = delete;
+
   virtual ~ServiceWorkerRegistrationSync();
 
   PeriodicSyncManager* periodicSync();
   SyncManager* sync();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<SyncManager> sync_manager_;
   Member<PeriodicSyncManager> periodic_sync_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationSync);
 };
 
 }  // namespace blink

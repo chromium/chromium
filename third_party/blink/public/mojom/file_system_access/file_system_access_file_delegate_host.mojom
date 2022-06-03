@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/file_error.mojom";
+
+// Routes file operations to the browser to interact with an in-memory file.
+// Used by a SyncAccessHandle in incognito mode, which creates an in-memory file
+// for the Origin-Private File System.
+// Methods are sync or async as appropriate to match the web-exposed
+// behavior of the corresponding methods of the SyncAccessHandle.
+interface FileSystemAccessFileDelegateHost {
+  // Read up to `bytes_to_read` from the associated file starting at `offset`.
+  // If the read is successful, returns a buffer with the read data, the number
+  // of bytes read (which may be less than the length of `data`), and an `error`
+  //  of `base::File::Error::FILE_OK`.
+  // `data` is null and `bytes_to_read` is 0 if the read fails.
+  [Sync]
+  Read(uint64 offset, uint64 bytes_to_read) => (mojo_base.mojom.BigBuffer? data,
+                                              mojo_base.mojom.FileError error,
+                                              int32 bytes_read);
+
+  // Writes `data` to the associated file starting at `offset`.
+  // Returns the number of bytes written and a file error, which is
+  // `base::File::Error::FILE_OK` if the write completed successfully.
+  [Sync]
+  Write(uint64 offset, handle<data_pipe_consumer> data) =>
+      (mojo_base.mojom.FileError error, int32 bytes_written);
+
+  // Returns the `length` of the associated file and a file error, which is
+  // `base::File::Error::FILE_OK` if the operation completed successfully.
+  // The returned length of the file will never be more than the max int64.
+  GetLength() => (mojo_base.mojom.FileError error, uint64 length);
+
+  // Truncates a file to `length`. If `length` is larger than the file size, the
+  // file will be extended with null bytes.
+  // Returns whether the operation completed successfully.
+  SetLength(uint64 length) => (bool success);
+};

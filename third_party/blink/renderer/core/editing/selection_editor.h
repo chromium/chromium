@@ -27,7 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_EDITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_EDITOR_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -41,10 +41,10 @@ namespace blink {
 // |SelectionModifier| class.
 class SelectionEditor final : public GarbageCollected<SelectionEditor>,
                               public SynchronousMutationObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(SelectionEditor);
-
  public:
   explicit SelectionEditor(LocalFrame&);
+  SelectionEditor(const SelectionEditor&) = delete;
+  SelectionEditor& operator=(const SelectionEditor&) = delete;
   virtual ~SelectionEditor();
   void Dispose();
 
@@ -64,7 +64,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   void MarkCacheDirty();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Document& GetDocument() const;
@@ -88,7 +88,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   void DidFinishDOMMutation();
 
   // Implementation of |SynchronousMutationObsderver| member functions.
-  void ContextDestroyed(Document*) final;
+  void ContextDestroyed() final;
   void DidChangeChildren(const ContainerNode&) final;
   void DidMergeTextNodes(const Text& merged_node,
                          const NodeWithIndex& node_to_be_removed_with_index,
@@ -127,8 +127,6 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   mutable uint64_t style_version_for_absolute_bounds_ =
       static_cast<uint64_t>(-1);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionEditor);
 };
 
 }  // namespace blink

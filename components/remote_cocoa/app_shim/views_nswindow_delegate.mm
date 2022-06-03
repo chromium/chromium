@@ -5,13 +5,14 @@
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/mac_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/gfx/geometry/resize_utils.h"
 
 @implementation ViewsNSWindowDelegate
 
@@ -101,6 +102,35 @@
   DCHECK(!_parent->target_fullscreen_state());
 }
 
+- (void)setAspectRatio:(float)aspectRatio {
+  _aspectRatio = aspectRatio;
+}
+
+- (NSSize)windowWillResize:(NSWindow*)window toSize:(NSSize)size {
+  if (!_aspectRatio)
+    return size;
+
+  if (!_resizingHorizontally) {
+    const auto widthDelta = size.width - [window frame].size.width;
+    const auto heightDelta = size.height - [window frame].size.height;
+    _resizingHorizontally = std::abs(widthDelta) > std::abs(heightDelta);
+  }
+
+  gfx::Rect resizedWindowRect(gfx::Point([window frame].origin),
+                              gfx::Size(size));
+  gfx::SizeRectToAspectRatio(*_resizingHorizontally ? gfx::ResizeEdge::kRight
+                                                    : gfx::ResizeEdge::kBottom,
+                             *_aspectRatio, gfx::Size([window minSize]),
+                             gfx::Size([window maxSize]), &resizedWindowRect);
+  // Discard any updates to |resizedWindowRect| origin as Cocoa takes care of
+  // that.
+  return resizedWindowRect.size().ToCGSize();
+}
+
+- (void)windowDidEndLiveResize:(NSNotification*)notification {
+  _resizingHorizontally.reset();
+}
+
 - (void)windowDidResize:(NSNotification*)notification {
   _parent->OnSizeChanged();
 }
@@ -117,12 +147,18 @@
 }
 
 - (void)windowDidResignKey:(NSNotification*)notification {
+  // If our app is still active and we're still the key window, ignore this
+  // message, since it just means that a menu extra (on the "system status bar")
+  // was activated; we'll get another |-windowDidResignKey| if we ever really
+  // lose key window status.
+  if ([NSApp isActive] && ([NSApp keyWindow] == notification.object))
+    return;
   _parent->OnWindowKeyStatusChangedTo(false);
 }
 
 - (BOOL)windowShouldClose:(id)sender {
   bool canWindowClose = true;
-  _parent->host()->GetCanWindowClose(&canWindowClose);
+  _parent->host()->OnWindowCloseRequested(&canWindowClose);
   return canWindowClose;
 }
 

@@ -1,10 +1,12 @@
 include_rules = [
     "+base",
+    "+components/performance_manager/public",
     "+mojo/public",
     "+third_party/blink/public/web",
     "+third_party/blink/renderer/bindings",
     "+third_party/blink/renderer/controller",
     "+third_party/blink/renderer/core",
     "+third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/platform",
     "+web",
 ]

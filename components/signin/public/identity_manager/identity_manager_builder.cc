@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -23,7 +24,6 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 
 #if !defined(OS_ANDROID)
 #include "components/signin/public/webdata/token_web_data.h"
@@ -41,7 +41,7 @@
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #endif
 
@@ -59,17 +59,16 @@ std::unique_ptr<AccountTrackerService> BuildAccountTrackerService(
 
 std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     SigninClient* client,
-    AccountConsistencyMethod account_consistency,
     AccountTrackerService* account_tracker_service,
     ProfileOAuth2TokenService* token_service,
     PrefService* local_state) {
   std::unique_ptr<PrimaryAccountManager> primary_account_manager;
   std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_IOS)
   policy_manager = std::make_unique<PrimaryAccountPolicyManagerImpl>(client);
 #endif
   primary_account_manager = std::make_unique<PrimaryAccountManager>(
-      client, token_service, account_tracker_service, account_consistency,
+      client, token_service, account_tracker_service,
       std::move(policy_manager));
   primary_account_manager->Initialize(local_state);
   return primary_account_manager;
@@ -106,7 +105,7 @@ IdentityManagerBuildParams::IdentityManagerBuildParams() = default;
 
 IdentityManagerBuildParams::~IdentityManagerBuildParams() = default;
 
-std::unique_ptr<IdentityManager> BuildIdentityManager(
+IdentityManager::InitParameters BuildIdentityManagerInitParameters(
     IdentityManagerBuildParams* params) {
   std::unique_ptr<AccountTrackerService> account_tracker_service =
       BuildAccountTrackerService(params->pref_service, params->profile_path);
@@ -115,9 +114,9 @@ std::unique_ptr<IdentityManager> BuildIdentityManager(
       BuildProfileOAuth2TokenService(
           params->pref_service, account_tracker_service.get(),
           params->network_connection_tracker, params->account_consistency,
-#if defined(OS_CHROMEOS)
-          params->account_manager, params->is_regular_profile,
-#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+          params->account_manager_facade, params->is_regular_profile,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if !defined(OS_ANDROID)
           params->delete_signin_cookies_on_exit, params->token_web_data,
 #endif
@@ -134,43 +133,59 @@ std::unique_ptr<IdentityManager> BuildIdentityManager(
 
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       BuildPrimaryAccountManager(params->signin_client,
-                                 params->account_consistency,
                                  account_tracker_service.get(),
                                  token_service.get(), params->local_state);
 
-  auto primary_account_mutator = std::make_unique<PrimaryAccountMutatorImpl>(
-      account_tracker_service.get(), primary_account_manager.get(),
-      params->pref_service);
+  IdentityManager::InitParameters init_params;
 
-  std::unique_ptr<AccountsMutator> accounts_mutator =
+  init_params.primary_account_mutator =
+      std::make_unique<PrimaryAccountMutatorImpl>(
+          account_tracker_service.get(), token_service.get(),
+          primary_account_manager.get(), params->pref_service,
+          params->account_consistency);
+
+  init_params.accounts_mutator =
       BuildAccountsMutator(params->pref_service, account_tracker_service.get(),
                            token_service.get(), primary_account_manager.get());
 
-  auto accounts_cookie_mutator = std::make_unique<AccountsCookieMutatorImpl>(
-      gaia_cookie_manager_service.get(), account_tracker_service.get());
+  init_params.accounts_cookie_mutator =
+      std::make_unique<AccountsCookieMutatorImpl>(
+          params->signin_client, token_service.get(),
+          gaia_cookie_manager_service.get(), account_tracker_service.get());
 
-  auto diagnostics_provider = std::make_unique<DiagnosticsProviderImpl>(
+  init_params.diagnostics_provider = std::make_unique<DiagnosticsProviderImpl>(
       token_service.get(), gaia_cookie_manager_service.get());
 
-  std::unique_ptr<AccountFetcherService> account_fetcher_service =
-      BuildAccountFetcherService(params->signin_client, token_service.get(),
-                                 account_tracker_service.get(),
-                                 std::move(params->image_decoder));
+  init_params.account_fetcher_service = BuildAccountFetcherService(
+      params->signin_client, token_service.get(), account_tracker_service.get(),
+      std::move(params->image_decoder));
 
-  std::unique_ptr<DeviceAccountsSynchronizer> device_accounts_synchronizer;
 #if defined(OS_IOS) || defined(OS_ANDROID)
-  device_accounts_synchronizer =
+  init_params.device_accounts_synchronizer =
       std::make_unique<DeviceAccountsSynchronizerImpl>(
           token_service->GetDelegate());
 #endif
 
+  init_params.account_tracker_service = std::move(account_tracker_service);
+  init_params.gaia_cookie_manager_service =
+      std::move(gaia_cookie_manager_service);
+  init_params.primary_account_manager = std::move(primary_account_manager);
+  init_params.token_service = std::move(token_service);
+  init_params.account_consistency = params->account_consistency;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params.signin_client = params->signin_client;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params.account_manager_facade = params->account_manager_facade;
+#endif
+
+  return init_params;
+}
+
+std::unique_ptr<IdentityManager> BuildIdentityManager(
+    IdentityManagerBuildParams* params) {
   return std::make_unique<IdentityManager>(
-      std::move(account_tracker_service), std::move(token_service),
-      std::move(gaia_cookie_manager_service),
-      std::move(primary_account_manager), std::move(account_fetcher_service),
-      std::move(primary_account_mutator), std::move(accounts_mutator),
-      std::move(accounts_cookie_mutator), std::move(diagnostics_provider),
-      std::move(device_accounts_synchronizer));
+      BuildIdentityManagerInitParameters(params));
 }
 
 }  // namespace signin

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_GET_REQUESTS_TASK_H_
-#define COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_GET_REQUESTS_TASK_H_
+#ifndef COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_GET_REQUESTS_TASK_H_
+#define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_GET_REQUESTS_TASK_H_
 
 #include <memory>
 #include <vector>
@@ -18,12 +18,15 @@ class GetRequestsTask : public Task {
  public:
   GetRequestsTask(RequestQueueStore* store,
                   RequestQueueStore::GetRequestsCallback callback);
+
+  GetRequestsTask(const GetRequestsTask&) = delete;
+  GetRequestsTask& operator=(const GetRequestsTask&) = delete;
+
   ~GetRequestsTask() override;
 
+ private:
   // Task implementation:
   void Run() override;
-
- private:
   // Step 1: Read the requests from he store.
   void ReadRequest();
   // Step 2: Calls the callback with result, completes the task.
@@ -37,9 +40,8 @@ class GetRequestsTask : public Task {
   RequestQueueStore::GetRequestsCallback callback_;
 
   base::WeakPtrFactory<GetRequestsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetRequestsTask);
 };
 
 }  // namespace offline_pages
 
-#endif  // COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_GET_REQUESTS_TASK_H_
+#endif  // COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_GET_REQUESTS_TASK_H_

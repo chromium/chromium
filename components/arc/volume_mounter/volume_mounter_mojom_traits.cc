@@ -4,7 +4,7 @@
 
 #include "components/arc/volume_mounter/volume_mounter_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace mojo {
 

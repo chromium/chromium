@@ -1,0 +1,99 @@
+{
+  "WebRTC Chromium FYI Android Builder": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Android Builder (dbg)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Android Builder ARM64 (dbg)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Linux Builder": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Linux Builder (dbg)": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Mac Builder": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Mac Builder (dbg)": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Win Builder": {
+    "gn_args": {
+      "com_init_check_hook_disabled": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI Win Builder (dbg)": {
+    "gn_args": {
+      "com_init_check_hook_disabled": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

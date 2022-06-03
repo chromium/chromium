@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -102,7 +102,7 @@ void BookmarksFileImporter::StartImport(
       &bookmarks, &search_engines, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
-    base::string16 first_folder_name =
+    std::u16string first_folder_name =
         bridge->GetLocalizedString(IDS_BOOKMARK_GROUP);
     bridge->AddBookmarks(bookmarks, first_folder_name);
   }

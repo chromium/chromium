@@ -33,7 +33,6 @@ message StoredPaymentInstrumentProto {
   repeated StoredPaymentInstrumentImageObject icons = 6;
   optional string decoded_instrument_icon = 7;
   repeated int32 supported_card_networks = 8;
-  repeated int32 supported_card_types = 9;
 }
 
 message StoredRelatedApplicationProto {

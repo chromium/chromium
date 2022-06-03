@@ -28,38 +28,38 @@
 
 namespace blink {
 
+class CascadeLayerMap;
 class StyleRulePage;
 
 class PageRuleCollector {
   STACK_ALLOCATED();
 
  public:
-  PageRuleCollector(const ComputedStyle* root_element_style, int page_index);
+  PageRuleCollector(const ComputedStyle* root_element_style,
+                    uint32_t page_index,
+                    const AtomicString& page_name,
+                    MatchResult&);
 
-  void MatchPageRules(RuleSet* rules);
+  void MatchPageRules(RuleSet* rules, const CascadeLayerMap* layer_map);
   const MatchResult& MatchedResult() { return result_; }
 
  private:
   bool IsLeftPage(const ComputedStyle* root_element_style,
-                  int page_index) const;
+                  uint32_t page_index) const;
   bool IsRightPage(const ComputedStyle* root_element_style,
-                   int page_index) const {
+                   uint32_t page_index) const {
     return !IsLeftPage(root_element_style, page_index);
   }
-  bool IsFirstPage(int page_index) const;
-  String PageName(int page_index) const;
+  bool IsFirstPage(uint32_t page_index) const;
 
   void MatchPageRulesForList(HeapVector<Member<StyleRulePage>>& matched_rules,
-                             const HeapVector<Member<StyleRulePage>>& rules,
-                             bool is_left_page,
-                             bool is_first_page,
-                             const String& page_name);
+                             const HeapVector<Member<StyleRulePage>>& rules);
 
   const bool is_left_page_;
   const bool is_first_page_;
-  const String page_name_;
+  const AtomicString page_name_;
 
-  MatchResult result_;
+  MatchResult& result_;
 };
 
 }  // namespace blink

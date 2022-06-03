@@ -17,42 +17,43 @@ move the core Chrome code into `src/content` ([content not
 chrome](http://blog.chromium.org/2008/10/content-not-chrome.html) :) ).
 
 ## content vs chrome
-As discussed above, `content` should only have the core code needed to render a
-page. Chrome features use APIs that are provided by `content` to filter IPCs and
-get notified of events that they require. [How to Add New Features (without
-bloating
-RenderView/RenderViewHost/WebContents)](https://www.chromium.org/developers/design-documents/multi-process-architecture/how-to-add-new-features)
-describes how to do this.
+`content` should only contain code that is required to implement the web
+platform. Generally, a feature belongs in this category if and only if all of
+the following are true:
 
-As an example, here's a (non-exhaustive) list of features that are Chrome only,
-and so are not in content. This means that `content` code shouldn't have to know
-anything about them, only providing generic APIs that they can be built upon.
+- Its launch is tracked on the <https://chromestatus.com/> dashboard.
+- It has an associated spec.
+- It is going through the [feature development
+  lifecycle](https://www.chromium.org/blink/launching-features).
+
+In contrast, many features that are common to modern web browsers do not satisfy
+these criteria and thus, are not implemented in `content`. A non-exhaustive
+list:
+
 - Extensions
 - NaCl
 - SpellCheck
 - Autofill
 - Sync
-- Prerendering
 - Safe Browsing
 - Translate
 
-As the list above shows, even browser features that are common to modern
-browsers are not in `content`. The dividing line is that `src/content` only has
-code that is required to implement the web platform. Features that aren't
-covered by web specs should live in `src/chrome`. If a feature is being
-implemented and the team foresees that it would be a spec, it should still go in
-`src/chrome`. Once it has a spec, then it can move to `src/content`.
+Instead, these features are implemented in `chrome`, while `content` only
+provides generic extension points that allow these features to subscribe to the
+events they require. Some features will require adding new extension points: for
+more information, see [How to Add New Features (without bloating
+RenderView/RenderViewHost/WebContents)](https://www.chromium.org/developers/design-documents/multi-process-architecture/how-to-add-new-features).
 
-Where code interacts with online network services that must be supplied by the
-vendor, the favored approach is to fully implement that feature outside of the
-`content` module. E.g. from the list above Safe Browsing, Translate, Sync and
-Autofill require various network services to function, and the `chrome` layer is
-the natural place to encapsulate that behavior. For those few cases where we
-need to make network requests using code in the content module in order to
-implement generic HTML5 features (e.g. the network location service for
-Geolocation), the embedder must fully define the the endpoint to connect to,
-typically it might do this by injecting the service URL. We do not want any such
-policy coded into the `content` module at all, again to keep it generic.
+Finally, there are a number of browser features that require interaction with
+online services supplied by the vendor, e.g. from the above list, Safe Browsing,
+Translate, Sync, and Autofill all require various network services to function.
+The `chrome` layer is the natural place to encapsulate that vendor-specific
+integration behavior. For the rare cases where a web platform feature
+implemented in `content` has a dependency on a network service (e.g. the network
+location service used by Geolocation), `content` should provide a way for the
+embedder to inject an endpoint (e.g. `chrome` might provide the service URL to
+use). The `content` module itself must remain generic, with no hardcoded
+vendor-specific logic.
 
 ## Architectural Diagram
 TODO: Draw a modern diagram.

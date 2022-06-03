@@ -31,12 +31,11 @@ namespace chrome_test_util {
 // Matcher for bookmarks tool tip star. (used in iPad)
 id<GREYMatcher> StarButton();
 
+// Matcher for the Edit button in the Bookmark context menu.
+id<GREYMatcher> BookmarksContextMenuEditButton();
+
 // Matcher for the Delete button on the bookmarks UI.
 id<GREYMatcher> BookmarksDeleteSwipeButton();
-
-// Matcher for the Back button to |previousViewControllerLabel| on the bookmarks
-// UI.
-id<GREYMatcher> NavigateBackButtonTo(NSString* previousViewControllerLabel);
 
 // Matcher for the DONE button on the bookmarks UI.
 id<GREYMatcher> BookmarkHomeDoneButton();
@@ -72,6 +71,10 @@ id<GREYMatcher> SearchIconButton();
 // Navigates to the bookmark manager UI.
 - (void)openBookmarks;
 
+// Navigates to the bookmark manager UI in window with number |windowNumber|.
+// Sets and Leaves the root matcher to the given window.
+- (void)openBookmarksInWindowWithNumber:(int)windowNumber;
+
 // Selects MobileBookmarks to open.
 - (void)openMobileBookmarks;
 
@@ -98,7 +101,17 @@ id<GREYMatcher> SearchIconButton();
 // Must be called after previously calling [BookmarkEarlGreyUI openBookmarks].
 - (void)selectUrlsAndTapOnContextBarButtonWithLabelId:(int)buttonLabelId;
 
-- (void)verifyContextMenuForSingleURL;
+- (void)verifyContextMenuForSingleURLWithEditEnabled:(BOOL)editEnabled;
+
+- (void)verifyContextMenuForSingleFolderWithEditEnabled:(BOOL)editEnabled;
+
+- (void)dismissContextMenu;
+
+- (void)verifyActionSheetsForSingleURLWithEditEnabled:(BOOL)editEnabled;
+
+- (void)verifyActionSheetsForSingleFolderWithEditEnabled:(BOOL)editEnabled;
+
+- (void)dismissActionSheets;
 
 - (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
                                        newFolderEnabled:(BOOL)newFolderEnabled;
@@ -108,6 +121,10 @@ id<GREYMatcher> SearchIconButton();
 - (void)verifyFolderFlowIsClosed;
 
 - (void)verifyEmptyBackgroundAppears;
+
+- (void)verifyEmptyBackgroundIsAbsent;
+
+- (void)verifyEmptyState;
 
 - (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder;
 
@@ -122,7 +139,7 @@ id<GREYMatcher> SearchIconButton();
              setParentFolderTo:(NSString*)destinationFolder
                           from:(NSString*)sourceFolder;
 
-- (void)tapOnLongPressContextMenuButton:(int)menuButtonId
+- (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher
                                  onItem:(id<GREYMatcher>)item
                              openEditor:(NSString*)editorId
                         modifyTextField:(NSString*)textFieldId

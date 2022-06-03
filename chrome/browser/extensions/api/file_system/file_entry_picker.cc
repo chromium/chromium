@@ -5,10 +5,10 @@
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "content/public/browser/web_contents.h"
@@ -34,7 +34,7 @@ FileEntryPicker::FileEntryPicker(
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
   select_file_dialog_->SelectFile(
-      picker_type, base::string16(), suggested_name, &file_type_info, 0,
+      picker_type, std::u16string(), suggested_name, &file_type_info, 0,
       base::FilePath::StringType(), owning_window, nullptr);
 }
 

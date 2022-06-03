@@ -23,14 +23,14 @@ PopupTouchHandleDrawable::PopupTouchHandleDrawable(
 PopupTouchHandleDrawable::~PopupTouchHandleDrawable() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null())
+  if (obj)
     Java_PopupTouchHandleDrawable_destroy(env, obj);
 }
 
 void PopupTouchHandleDrawable::SetEnabled(bool enabled) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (!obj)
     return;
   if (enabled)
     Java_PopupTouchHandleDrawable_show(env, obj);
@@ -44,7 +44,7 @@ void PopupTouchHandleDrawable::SetOrientation(
     bool mirror_horizontal) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null()) {
+  if (obj) {
     Java_PopupTouchHandleDrawable_setOrientation(
         env, obj, static_cast<int>(orientation), mirror_vertical,
         mirror_horizontal);
@@ -54,7 +54,7 @@ void PopupTouchHandleDrawable::SetOrientation(
 void PopupTouchHandleDrawable::SetOrigin(const gfx::PointF& origin) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null()) {
+  if (obj) {
     Java_PopupTouchHandleDrawable_setOrigin(env, obj, origin.x(), origin.y());
   }
 }
@@ -63,14 +63,14 @@ void PopupTouchHandleDrawable::SetAlpha(float alpha) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   bool visible = alpha > 0;
-  if (!obj.is_null())
+  if (obj)
     Java_PopupTouchHandleDrawable_setVisible(env, obj, visible);
 }
 
 gfx::RectF PopupTouchHandleDrawable::GetVisibleBounds() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (!obj)
     return gfx::RectF();
   return gfx::RectF(
       Java_PopupTouchHandleDrawable_getOriginXDip(env, obj),

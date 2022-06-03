@@ -4,14 +4,13 @@
 
 #include "chrome/install_static/install_modes.h"
 
+#include "chrome/install_static/buildflags.h"
+
 namespace install_static {
 
 namespace {
 
-std::wstring GetUnregisteredKeyPathForProduct(const wchar_t* product) {
-  return std::wstring(L"Software\\").append(product);
-}
-
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 std::wstring GetClientsKeyPathForApp(const wchar_t* app_guid) {
   return std::wstring(L"Software\\Google\\Update\\Clients\\").append(app_guid);
 }
@@ -25,43 +24,36 @@ std::wstring GetClientStateMediumKeyPathForApp(const wchar_t* app_guid) {
   return std::wstring(L"Software\\Google\\Update\\ClientStateMedium\\")
       .append(app_guid);
 }
+#else
+std::wstring GetUnregisteredKeyPathForProduct() {
+  return std::wstring(L"Software\\").append(kProductPathName);
+}
+#endif
 
 }  // namespace
 
 std::wstring GetClientsKeyPath(const wchar_t* app_guid) {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kProductPathName);
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  return GetUnregisteredKeyPathForProduct();
+#else
   return GetClientsKeyPathForApp(app_guid);
+#endif
 }
 
 std::wstring GetClientStateKeyPath(const wchar_t* app_guid) {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kProductPathName);
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  return GetUnregisteredKeyPathForProduct();
+#else
   return GetClientStateKeyPathForApp(app_guid);
-}
-
-std::wstring GetBinariesClientsKeyPath() {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kBinariesPathName);
-  return GetClientsKeyPathForApp(kBinariesAppGuid);
-}
-
-std::wstring GetBinariesClientStateKeyPath() {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kBinariesPathName);
-  return GetClientStateKeyPathForApp(kBinariesAppGuid);
+#endif
 }
 
 std::wstring GetClientStateMediumKeyPath(const wchar_t* app_guid) {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kProductPathName);
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  return GetUnregisteredKeyPathForProduct();
+#else
   return GetClientStateMediumKeyPathForApp(app_guid);
-}
-
-std::wstring GetBinariesClientStateMediumKeyPath() {
-  if (!kUseGoogleUpdateIntegration)
-    return GetUnregisteredKeyPathForProduct(kBinariesPathName);
-  return GetClientStateMediumKeyPathForApp(kBinariesAppGuid);
+#endif
 }
 
 }  // namespace install_static

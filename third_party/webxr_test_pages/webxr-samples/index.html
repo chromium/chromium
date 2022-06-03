@@ -144,6 +144,7 @@
 
             { title: 'Gamepad', category: 'Input',
               path: 'gamepad.html',
+              variants: [{name: 'Show raw data', query: '?displayTables=true'}],
               description: 'Demonstrates handling input from Gamepads attached to XRInputSources.' },
 
             { title: 'Framebuffer Scaling', category: 'Performance',
@@ -212,8 +213,18 @@
             polyfillLink.innerHTML = 'Open with Polyfill';
             links.appendChild(polyfillLink);
 
+            if (page.variants) {
+              for (let i = 0; i < page.variants.length; ++i) {
+                let variant = page.variants[i];
+                let link = document.createElement('a');
+                link.href = page.path + variant.query;
+                link.innerHTML = variant.name;
+                links.appendChild(link);
+              }
+            }
+
             let sourceLink = document.createElement('a');
-            sourceLink.href = 'https://github.com/immersive-web/webxr-samples/blob/master/' + page.path;
+            sourceLink.href = 'https://cs.chromium.org/chromium/src/third_party/webxr_test_pages/webxr-samples/' + page.path;
             sourceLink.innerHTML = 'Source';
             links.appendChild(sourceLink);
 

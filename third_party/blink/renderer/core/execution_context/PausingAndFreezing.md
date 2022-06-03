@@ -18,17 +18,17 @@ There are 4 lifecycle states [defined](https://cs.chromium.org/chromium/src/thir
 
 ## kPaused
 * Used for synchronous mechanisms for a single thread, eg. window.print, V8 inspector debugging.
-* Fires [ContextLifecycleStateObserver][ContextLifecycleStateObserver] changed for kPaused.
-* Some [ContextLifecycleStateObserver][ContextLifecycleStateObserver] may drop mojo connections.
+* Fires [ExecutionContextLifecycleStateObserver][ExecutionContextLifecycleStateObserver] changed for kPaused.
+* Some [ExecutionContextLifecycleStateObserver][ExecutionContextLifecycleStateObserver] may drop mojo connections.
 * Not visible to page in terms of state transitions.
 * Does *not* [freeze](https://wicg.github.io/page-lifecycle/spec.html#freeze-steps) or [resume](https://wicg.github.io/page-lifecycle/spec.html#resume-steps) the document.
 * Pauses execution of [pausable task queues][TaskQueues] in MainThreadScheduler.
 
 ## kFrozen
 * Used iframe feature policies, Resource Coordinator background policies. (Should be used for bfcache in the future)
-* Fires [ContextLifecycleStateObserver][ContextLifecycleStateObserver] change for kFrozen.
+* Fires [ExecutionContextLifecycleStateObserver][ExecutionContextLifecycleStateObserver] change for kFrozen.
 * Executes [freeze](https://wicg.github.io/page-lifecycle/spec.html#freeze-steps) and [resume](https://wicg.github.io/page-lifecycle/spec.html#resume-steps) algorithms.
-* [Dedicated workers][DedicatedWorker] freeze via a [ContextLifecycleStateObserver][ContextLifecycleStateObserver] callback.
+* [Dedicated workers][DedicatedWorker] freeze via a [ExecutionContextLifecycleStateObserver][ExecutionContextLifecycleStateObserver] callback.
 * Freezes execution of [frozen task queues][TaskQueues] in MainThreadScheduler.
 * Pauses execution of [pausable task queues][TaskQueues] in MainThreadScheduler. (This is a proposed feature, with it we would remove the definition of frozen
 task queues in the scheduler).
@@ -58,11 +58,11 @@ In order to freeze a worker/worklet an implementation will pauses execution of a
 nested event loop. Only the none pausable tasks will execute in the nested event loop. Explicitly the Internal Worker task queue will
 be used to resume the worker.
 
-To freeze workers the Workers themselves are [ContextLifecycleStateObservers][ContextLifecycleStateObserver] and they listen to
+To freeze workers the Workers themselves are [ExecutionContextLifecycleStateObservers][ExecutionContextLifecycleStateObserver] and they listen to
 the kFrozen/kResume state of the owning execution context and then propagate that to their own execution context.
 
 
-[ContextLifecycleStateObserver]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h
+[ExecutionContextLifecycleStateObserver]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h
 [DedicatedWorker]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/workers/dedicated_worker.h
 [PageScheduler]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h
 [TaskQueues]: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/public/platform/TaskTypes.md

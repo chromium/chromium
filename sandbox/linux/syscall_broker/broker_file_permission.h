@@ -5,34 +5,41 @@
 #ifndef SANDBOX_LINUX_SYSCALL_BROKER_BROKER_FILE_PERMISSION_H_
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_FILE_PERMISSION_H_
 
+#include <bitset>
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
 namespace syscall_broker {
 
+// Recursive: allow everything under |path| (must be a dir).
 enum class RecursionOption { kNonRecursive = 0, kRecursive };
+// Temporary: file will be unlink'd after opening.
 enum class PersistenceOption { kPermanent = 0, kTemporaryOnly };
 enum class ReadPermission { kBlockRead = 0, kAllowRead };
 enum class WritePermission { kBlockWrite = 0, kAllowWrite };
 enum class CreatePermission { kBlockCreate = 0, kAllowCreate };
+// Allow stat() for the path and all intermediate dirs.
 enum class StatWithIntermediatesPermission {
   kBlockStatWithIntermediates = 0,
   kAllowStatWithIntermediates
 };
 
-// BrokerFilePermission defines a path for whitelisting.
+// BrokerFilePermission defines a path for allowlisting.
 // Pick the correct static factory method to create a permission.
 // CheckOpen and CheckAccess are async signal safe.
-// Constuction and Destruction are not async signal safe.
-// |path| is the path to be whitelisted.
+// Construction and Destruction are not async signal safe.
+// |path| is the path to be allowlisted.
 class SANDBOX_EXPORT BrokerFilePermission {
  public:
-  ~BrokerFilePermission() {}
-  BrokerFilePermission(const BrokerFilePermission&) = default;
-  BrokerFilePermission& operator=(const BrokerFilePermission&) = default;
+  // Movable and copyable.
+  BrokerFilePermission(BrokerFilePermission&&);
+  BrokerFilePermission& operator=(BrokerFilePermission&&);
+  BrokerFilePermission(const BrokerFilePermission&);
+  BrokerFilePermission& operator=(const BrokerFilePermission&);
+
+  ~BrokerFilePermission();
 
   static BrokerFilePermission ReadOnly(const std::string& path) {
     return BrokerFilePermission(
@@ -116,7 +123,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // by this permission as per access(2).
   // If |file_to_access| is not NULL, it is set to point to either
   // the |requested_filename| in the case of a recursive match,
-  // or a pointer to the matched path in the whitelist if an absolute
+  // or a pointer to the matched path in the allowlist if an absolute
   // match.
   // |mode| is per mode argument of access(2).
   // Async signal safe if |file_to_access| is NULL
@@ -128,7 +135,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // by this permission.
   // If |file_to_open| is not NULL it is set to point to either
   // the |requested_filename| in the case of a recursive match,
-  // or a pointer the matched path in the whitelist if an absolute
+  // or a pointer the matched path in the allowlist if an absolute
   // match.
   // If not NULL, |unlink_after_open| is set to point to true if the
   // caller is required to unlink the path after opening.
@@ -144,7 +151,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // stat() on all of its leading components.
   // If |file_to_open| is not NULL, it is set to point to either
   // the |requested_filename| in the case of a recursive match,
-  // or a pointer to the matched path in the whitelist if an absolute
+  // or a pointer to the matched path in the allowlist if an absolute
   // match.
   // Async signal safe if |file_to_access| is NULL
   bool CheckStat(const char* requested_filename,
@@ -153,14 +160,47 @@ class SANDBOX_EXPORT BrokerFilePermission {
  private:
   friend class BrokerFilePermissionTester;
 
+  enum BitPositions {
+    kRecursiveBitPos = 0,
+    kTemporaryOnlyBitPos,
+    kAllowReadBitPos,
+    kAllowWriteBitPos,
+    kAllowCreateBitPos,
+    kAllowStatWithIntermediatesBitPos,
+
+    kMaxValueBitPos = kAllowStatWithIntermediatesBitPos
+  };
+
   // NOTE: Validates the permission and dies if invalid!
-  BrokerFilePermission(const std::string& path,
+  BrokerFilePermission(std::string path,
                        RecursionOption recurse_opt,
                        PersistenceOption persist_opt,
                        ReadPermission read_perm,
                        WritePermission write_perm,
                        CreatePermission create_perm,
                        StatWithIntermediatesPermission stat_perm);
+
+  // Allows construction from the raw bitset.
+  BrokerFilePermission(std::string path, uint64_t flags);
+
+  const std::string& path() const { return path_; }
+
+  // Returns a serialiazable version of |flags_|.
+  uint64_t flags() const { return flags_.to_ullong(); }
+
+  bool recursive() const { return flags_.test(kRecursiveBitPos); }
+
+  bool temporary_only() const { return flags_.test(kTemporaryOnlyBitPos); }
+
+  bool allow_read() const { return flags_.test(kAllowReadBitPos); }
+
+  bool allow_write() const { return flags_.test(kAllowWriteBitPos); }
+
+  bool allow_create() const { return flags_.test(kAllowCreateBitPos); }
+
+  bool allow_stat_with_intermediates() const {
+    return flags_.test(kAllowStatWithIntermediatesBitPos);
+  }
 
   // ValidatePath checks |path| and returns true if these conditions are met
   // * Greater than 0 length
@@ -181,17 +221,13 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // Used in by BrokerFilePermissionTester for tests.
   static const char* GetErrorMessageForTests();
 
+  void DieOnInvalidPermission();
+
   // These are not const as std::vector requires copy-assignment and this class
   // is stored in vectors. All methods are marked const so the compiler will
   // still enforce no changes outside of the constructor.
   std::string path_;
-  bool recursive_;       // Allow everything under |path| (must be a dir).
-  bool temporary_only_;  // File must be unlink'd after opening.
-  bool allow_read_;
-  bool allow_write_;
-  bool allow_create_;
-  // Allow stat() for |path| and all intermediate dirs.
-  bool allow_stat_with_intermediates_;
+  std::bitset<kMaxValueBitPos + 1> flags_;
 };
 
 }  // namespace syscall_broker

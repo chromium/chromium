@@ -23,10 +23,18 @@
 #include <limits>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"
 
+#if defined(_AIX)
+extern "C" {
+extern long altzone;
+}
+#endif
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 namespace cctz {
 
@@ -42,7 +50,7 @@ auto tm_zone(const std::tm& tm) -> decltype(_tzname[0]) {
   const bool is_dst = tm.tm_isdst > 0;
   return _tzname[is_dst];
 }
-#elif defined(__sun)
+#elif defined(__sun) || defined(_AIX)
 // Uses the globals: 'timezone', 'altzone' and 'tzname'.
 auto tm_gmtoff(const std::tm& tm) -> decltype(timezone) {
   const bool is_dst = tm.tm_isdst > 0;
@@ -84,9 +92,7 @@ auto tm_gmtoff(const T& tm) -> decltype(tm.__tm_gmtoff) {
 }
 #endif  // tm_gmtoff
 #if defined(tm_zone)
-auto tm_zone(const std::tm& tm) -> decltype(tm.tm_zone) {
-  return tm.tm_zone;
-}
+auto tm_zone(const std::tm& tm) -> decltype(tm.tm_zone) { return tm.tm_zone; }
 #elif defined(__tm_zone)
 auto tm_zone(const std::tm& tm) -> decltype(tm.__tm_zone) {
   return tm.__tm_zone;
@@ -103,19 +109,19 @@ auto tm_zone(const T& tm) -> decltype(tm.__tm_zone) {
 #endif  // tm_zone
 #endif
 
-inline std::tm* gm_time(const std::time_t *timep, std::tm *result) {
+inline std::tm* gm_time(const std::time_t* timep, std::tm* result) {
 #if defined(_WIN32) || defined(_WIN64)
-    return gmtime_s(result, timep) ? nullptr : result;
+  return gmtime_s(result, timep) ? nullptr : result;
 #else
-    return gmtime_r(timep, result);
+  return gmtime_r(timep, result);
 #endif
 }
 
-inline std::tm* local_time(const std::time_t *timep, std::tm *result) {
+inline std::tm* local_time(const std::time_t* timep, std::tm* result) {
 #if defined(_WIN32) || defined(_WIN64)
-    return localtime_s(result, timep) ? nullptr : result;
+  return localtime_s(result, timep) ? nullptr : result;
 #else
-    return localtime_r(timep, result);
+  return localtime_r(timep, result);
 #endif
 }
 
@@ -153,7 +159,8 @@ std::time_t find_trans(std::time_t lo, std::time_t hi, int offset) {
   std::tm tm;
   while (lo + 1 != hi) {
     const std::time_t mid = lo + (hi - lo) / 2;
-    if (std::tm* tmp = local_time(&mid, &tm)) {
+    std::tm* tmp = local_time(&mid, &tm);
+    if (tmp != nullptr) {
       if (tm_gmtoff(*tmp) == offset) {
         hi = mid;
       } else {
@@ -163,7 +170,8 @@ std::time_t find_trans(std::time_t lo, std::time_t hi, int offset) {
       // If std::tm cannot hold some result we resort to a linear search,
       // ignoring all failed conversions.  Slow, but never really happens.
       while (++lo != hi) {
-        if (std::tm* tmp = local_time(&lo, &tm)) {
+        tmp = local_time(&lo, &tm);
+        if (tmp != nullptr) {
           if (tm_gmtoff(*tmp) == offset) break;
         }
       }
@@ -208,8 +216,8 @@ time_zone::absolute_lookup TimeZoneLibC::BreakTime(
   }
 
   const year_t year = tmp->tm_year + year_t{1900};
-  al.cs = civil_second(year, tmp->tm_mon + 1, tmp->tm_mday,
-                       tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+  al.cs = civil_second(year, tmp->tm_mon + 1, tmp->tm_mday, tmp->tm_hour,
+                       tmp->tm_min, tmp->tm_sec);
   al.offset = static_cast<int>(tm_gmtoff(*tmp));
   al.abbr = local_ ? tm_zone(*tmp) : "UTC";  // as expected by cctz
   al.is_dst = tmp->tm_isdst > 0;
@@ -223,11 +231,10 @@ time_zone::civil_lookup TimeZoneLibC::MakeTime(const civil_second& cs) const {
         civil_second() + ToUnixSeconds(time_point<seconds>::min());
     static const civil_second max_tp_cs =
         civil_second() + ToUnixSeconds(time_point<seconds>::max());
-    const time_point<seconds> tp =
-        (cs < min_tp_cs)
-            ? time_point<seconds>::min()
-            : (cs > max_tp_cs) ? time_point<seconds>::max()
-                               : FromUnixSeconds(cs - civil_second());
+    const time_point<seconds> tp = (cs < min_tp_cs) ? time_point<seconds>::min()
+                                   : (cs > max_tp_cs)
+                                       ? time_point<seconds>::max()
+                                       : FromUnixSeconds(cs - civil_second());
     return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
   }
 
@@ -304,4 +311,5 @@ std::string TimeZoneLibC::Description() const {
 
 }  // namespace cctz
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

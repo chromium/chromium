@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
@@ -67,18 +64,25 @@ class CC_EXPORT SchedulerStateMachine {
       BeginImplFrameState
       BeginImplFrameStateToProtozeroEnum(BeginImplFrameState state);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // TODO(weiliangc): The histogram is used to understanding what type of
+  // deadline mode do we encounter in real world and is set to expire after
+  // 2022. The Enum can be changed after the histogram is removed.
   // The scheduler uses a deadline to wait for main thread updates before
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.
   enum class BeginImplFrameDeadlineMode {
-    NONE,  // No deadline should be scheduled e.g. for synchronous compositor.
-    IMMEDIATE,  // Deadline should be scheduled to run immediately.
-    REGULAR,  // Deadline should be scheduled to run at the deadline provided by
-              // in the BeginFrameArgs.
-    LATE,  // Deadline should be scheduled run when the next frame is expected
-           // to arrive.
-    BLOCKED,  // Deadline should be blocked indefinitely until the next frame
-              // arrives.
+    NONE = 0,  // No deadline should be scheduled e.g. for synchronous
+               // compositor.
+    IMMEDIATE = 1,  // Deadline should be scheduled to run immediately.
+    REGULAR = 2,    // Deadline should be scheduled to run at the deadline
+                    // provided by in the BeginFrameArgs.
+    LATE = 3,       // Deadline should be scheduled run when the next frame is
+                    // expected to arrive.
+    BLOCKED = 4,    // Deadline should be blocked indefinitely until the next
+                    // frame arrives.
+    kMaxValue = BLOCKED,
   };
   // TODO(nuskos): Update Scheduler::ScheduleBeginImplFrameDeadline event to
   // used typed macros so we can remove this ToString function.
@@ -204,11 +208,16 @@ class CC_EXPORT SchedulerStateMachine {
   bool begin_frame_source_paused() const { return begin_frame_source_paused_; }
 
   // Indicates that a redraw is required, either due to the impl tree changing
-  // or the screen being damaged and simply needing redisplay.
+  // or the screen being damaged and simply needing redisplay. Note that if the
+  // changes in the impl tree has not been activated yet, then |needs_redraw()|
+  // can return false. For checking any invalidations, check
+  // |did_invalidate_layer_tree_frame_sink()|.
   void SetNeedsRedraw();
   bool needs_redraw() const { return needs_redraw_; }
 
-  bool OnlyImplSideUpdatesExpected() const;
+  bool did_invalidate_layer_tree_frame_sink() const {
+    return did_invalidate_layer_tree_frame_sink_;
+  }
 
   // Indicates that prepare-tiles is required. This guarantees another
   // PrepareTiles will occur shortly (even if no redraw is required).
@@ -260,9 +269,6 @@ class CC_EXPORT SchedulerStateMachine {
   // Call this only in response to receiving an Action::SEND_BEGIN_MAIN_FRAME
   // from NextAction if the client rejects the BeginMainFrame message.
   void BeginMainFrameAborted(CommitEarlyOutReason reason);
-
-  // Indicates production should be skipped to recover latency.
-  void SetSkipNextBeginMainFrameToReduceLatency(bool skip);
 
   // For Android WebView, resourceless software draws are allowed even when
   // invisible.
@@ -323,6 +329,9 @@ class CC_EXPORT SchedulerStateMachine {
   bool video_needs_begin_frames() const { return video_needs_begin_frames_; }
 
   bool did_submit_in_last_frame() const { return did_submit_in_last_frame_; }
+  bool draw_succeeded_in_last_frame() const {
+    return draw_succeeded_in_last_frame_;
+  }
 
   bool needs_impl_side_invalidation() const {
     return needs_impl_side_invalidation_;
@@ -340,9 +349,10 @@ class CC_EXPORT SchedulerStateMachine {
   bool should_defer_invalidation_for_fast_main_frame() const {
     return should_defer_invalidation_for_fast_main_frame_;
   }
+  bool did_commit_during_frame() const { return did_commit_during_frame_; }
 
-  bool main_thread_failed_to_respond_last_deadline() const {
-    return main_thread_failed_to_respond_last_deadline_;
+  int aborted_begin_main_frame_count() const {
+    return aborted_begin_main_frame_count_;
   }
 
  protected:
@@ -445,12 +455,12 @@ class CC_EXPORT SchedulerStateMachine {
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
-  bool skip_next_begin_main_frame_to_reduce_latency_ = false;
   bool defer_begin_main_frame_ = false;
   bool video_needs_begin_frames_ = false;
   bool last_commit_had_no_updates_ = false;
   bool active_tree_is_ready_to_draw_ = true;
-  bool did_draw_in_last_frame_ = false;
+  bool did_attempt_draw_in_last_frame_ = false;
+  bool draw_succeeded_in_last_frame_ = false;
   bool did_submit_in_last_frame_ = false;
   bool needs_impl_side_invalidation_ = false;
   bool next_invalidation_needs_first_draw_on_activation_ = false;
@@ -467,10 +477,6 @@ class CC_EXPORT SchedulerStateMachine {
   // tree. During this time we should not activate the pending tree.
   bool processing_paint_worklets_for_pending_tree_ = false;
 
-  // Set to true if the main thread fails to respond with a commit or abort the
-  // main frame before the draw deadline on the previous impl frame.
-  bool main_thread_failed_to_respond_last_deadline_ = false;
-
   bool previous_pending_tree_was_impl_side_ = false;
   bool current_pending_tree_is_impl_side_ = false;
 
@@ -479,6 +485,9 @@ class CC_EXPORT SchedulerStateMachine {
   // If set to true, the pending tree must be drawn at least once after
   // activation before a new tree can be activated.
   bool pending_tree_needs_first_draw_on_activation_ = false;
+
+  // Number of consecutive BeginMainFrames that were aborted without updates.
+  int aborted_begin_main_frame_count_ = 0;
 };
 
 }  // namespace cc

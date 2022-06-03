@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_manager_base.h"
 
@@ -23,6 +22,10 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
                     AudioLogFactory* audio_log_factory,
                     pa_threaded_mainloop* pa_mainloop,
                     pa_context* pa_context);
+
+  AudioManagerPulse(const AudioManagerPulse&) = delete;
+  AudioManagerPulse& operator=(const AudioManagerPulse&) = delete;
+
   ~AudioManagerPulse() override;
 
   // Implementation of AudioManager.
@@ -89,11 +92,13 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
 
   // Called by MakeLinearOutputStream and MakeLowLatencyOutputStream.
   AudioOutputStream* MakeOutputStream(const AudioParameters& params,
-                                      const std::string& device_id);
+                                      const std::string& device_id,
+                                      LogCallback log_callback);
 
   // Called by MakeLinearInputStream and MakeLowLatencyInputStream.
   AudioInputStream* MakeInputStream(const AudioParameters& params,
-                                    const std::string& device_id);
+                                    const std::string& device_id,
+                                    LogCallback log_callback);
 
   // Updates |native_input_sample_rate_| and |native_channel_count_|.
   void UpdateNativeAudioHardwareInfo();
@@ -105,8 +110,6 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
   int native_channel_count_;
   std::string default_source_name_;
   bool default_source_is_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerPulse);
 };
 
 }  // namespace media

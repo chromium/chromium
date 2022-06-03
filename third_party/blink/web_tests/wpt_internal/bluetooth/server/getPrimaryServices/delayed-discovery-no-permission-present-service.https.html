@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('DelayedServicesDiscoveryAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{name: 'Heart Rate Device'}],
+      optionalServices: ['battery_service']}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => assert_promise_rejects_with_message(
+      gattServer.getPrimaryServices(),
+      new DOMException('No Services found in device.', 'NotFoundError')));
+}, 'Delayed service discovery, request for present service without permission for that service. Reject with NotFoundError.');
+</script>

@@ -1,1 +1,0 @@
-Tests that WebKit does not crash when a frame is removed during keydown event processing. To test manually, press any letter key. The iframe below should disappear and Safari should not crash.

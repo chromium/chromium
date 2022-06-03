@@ -39,10 +39,10 @@ class Authenticator {
   // If the authentication protocol succeeds, then |secure_context| will be
   // contain the SecureContext used to securely exchange messages. Otherwise, it
   // will be null if the protocol fails.
-  typedef base::Callback<void(Result result,
-                              std::unique_ptr<SecureContext> secure_context)>
+  typedef base::OnceCallback<
+      void(Result result, std::unique_ptr<SecureContext> secure_context)>
       AuthenticationCallback;
-  virtual void Authenticate(const AuthenticationCallback& callback) = 0;
+  virtual void Authenticate(AuthenticationCallback callback) = 0;
 };
 
 }  // namespace secure_channel

@@ -9,11 +9,11 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class V8LaunchConsumer;
-class Visitor;
 
 class LaunchQueue final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -28,7 +28,7 @@ class LaunchQueue final : public ScriptWrappable {
   void setConsumer(V8LaunchConsumer*);
 
   // ScriptWrappable:
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   HeapVector<Member<LaunchParams>> unconsumed_launch_params_;

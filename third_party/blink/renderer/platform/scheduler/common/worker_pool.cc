@@ -5,24 +5,27 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 
 #include "base/location.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 
 namespace blink {
 
 namespace worker_pool {
 
 void PostTask(const base::Location& location, CrossThreadOnceClosure closure) {
-  PostTask(
-      location,
-      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      std::move(closure));
+  PostTask(location, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+           std::move(closure));
 }
 
 void PostTask(const base::Location& location,
               const base::TaskTraits& traits,
               CrossThreadOnceClosure closure) {
-  base::PostTask(location, traits,
-                 ConvertToBaseOnceCallback(std::move(closure)));
+  base::ThreadPool::PostTask(location, traits,
+                             ConvertToBaseOnceCallback(std::move(closure)));
+}
+
+scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner(
+    const base::TaskTraits& traits) {
+  return base::ThreadPool::CreateSequencedTaskRunner(traits);
 }
 
 }  // namespace worker_pool

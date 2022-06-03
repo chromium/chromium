@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -18,6 +17,10 @@ class ChildAccountServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static ChildAccountServiceFactory* GetInstance();
 
+  ChildAccountServiceFactory(const ChildAccountServiceFactory&) = delete;
+  ChildAccountServiceFactory& operator=(const ChildAccountServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ChildAccountServiceFactory>;
 
@@ -27,8 +30,6 @@ class ChildAccountServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildAccountServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_FACTORY_H_

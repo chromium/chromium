@@ -9,19 +9,23 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 
 namespace chromeos {
 
 class DeviceState;
-class NetworkState;
 
 // Observer class for all network state changes, including changes to
 // active (connecting or connected) services.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
  public:
   NetworkStateHandlerObserver();
+
+  NetworkStateHandlerObserver(const NetworkStateHandlerObserver&) = delete;
+  NetworkStateHandlerObserver& operator=(const NetworkStateHandlerObserver&) =
+      delete;
+
   virtual ~NetworkStateHandlerObserver();
 
   // The list of networks changed.
@@ -35,8 +39,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   // changed. This won't be called if the WiFi signal strength property
   // changes. If interested in those events, use NetworkPropertiesUpdated()
   // below.
-  // |network| will be NULL if there is no longer a default network.
+  // |network| will be null if there is no longer a default network.
   virtual void DefaultNetworkChanged(const NetworkState* network);
+
+  // The portal state or the proxy configuration of the default network changed.
+  // Note: |default_network| may be null if there is no default network, in
+  // which case |portal_state| will always be kUnknown.
+  virtual void PortalStateChanged(const NetworkState* default_network,
+                                  NetworkState::PortalState portal_state);
 
   // The connection state of |network| changed.
   virtual void NetworkConnectionStateChanged(const NetworkState* network);
@@ -60,17 +70,32 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   // A scan for a given network type has been requested.
   virtual void ScanRequested(const NetworkTypePattern& type);
 
+  // A scan for |device| started.
+  virtual void ScanStarted(const DeviceState* device);
+
   // A scan for |device| completed.
   virtual void ScanCompleted(const DeviceState* device);
+
+  // A network has updated its identifiers (path and GUID).
+  virtual void NetworkIdentifierTransitioned(
+      const std::string& old_service_path,
+      const std::string& new_service_path,
+      const std::string& old_guid,
+      const std::string& new_guid);
+
+  // The DHCP Hostname changed.
+  virtual void HostnameChanged(const std::string& hostname);
 
   // Called just before NetworkStateHandler is destroyed so that observers
   // can safely stop observing.
   virtual void OnShuttingDown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandlerObserver);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkStateHandlerObserver;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_HANDLER_OBSERVER_H_

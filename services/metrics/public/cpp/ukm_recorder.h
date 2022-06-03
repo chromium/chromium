@@ -5,8 +5,6 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
@@ -20,19 +18,36 @@
 class PermissionUmaUtil;
 class WebApkUkmRecorder;
 
-namespace blink {
-class Document;
-}  // namespace blink
-
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
+
+namespace content {
+class PaymentAppProviderUtil;
+class RenderFrameHostImpl;
+}  // namespace content
+
+namespace web_app {
+class DesktopWebAppUkmRecorder;
+}
+
+namespace weblayer {
+class BackgroundSyncDelegateImpl;
+}
 
 namespace ukm {
 
 class DelegatingUkmRecorder;
 class TestRecordingHelper;
 class UkmBackgroundRecorderService;
+
+enum class AppType {
+  kArc,
+  kPWA,
+  kExtension,
+  kChromeApp,
+  kCrostini,
+};
 
 namespace internal {
 class SourceUrlRecorderWebContentsObserver;
@@ -45,6 +60,10 @@ METRICS_EXPORT extern const base::Feature kUkmFeature;
 class METRICS_EXPORT UkmRecorder {
  public:
   UkmRecorder();
+
+  UkmRecorder(const UkmRecorder&) = delete;
+  UkmRecorder& operator=(const UkmRecorder&) = delete;
+
   virtual ~UkmRecorder();
 
   // Provides access to a global UkmRecorder instance for recording metrics.
@@ -60,28 +79,48 @@ class METRICS_EXPORT UkmRecorder {
   // Add an entry to the UkmEntry list.
   virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
 
-  // Disables sampling for testing purposes.
-  virtual void DisableSamplingForTesting() {}
+  // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
+  virtual void SetSamplingForTesting(int rate) {}
 
  protected:
   // Type-safe wrappers for Update<X> functions.
-  void RecordOtherURL(base::UkmSourceId source_id, const GURL& url);
-  void RecordAppURL(base::UkmSourceId source_id, const GURL& url);
+  void RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url);
+  void RecordAppURL(ukm::SourceIdObj source_id,
+                    const GURL& url,
+                    const AppType app_type);
+
+  // Gets new source Id for WEBAPK_ID type and updates the manifest url. This
+  // method should only be called by WebApkUkmRecorder class.
+  static SourceId GetSourceIdForWebApkManifestUrl(const GURL& manifest_url);
+
+  // Gets new source ID for a desktop web app, using the start_url from the web
+  // app manifest. This method should only be called by DailyMetricsHelper.
+  static SourceId GetSourceIdForDesktopWebAppStartUrl(const GURL& start_url);
+
+  // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
+  // the scope of the app. This method should only be called by
+  // PaymentAppProviderUtil class when the payment app window is opened.
+  static SourceId GetSourceIdForPaymentAppFromScope(
+      const GURL& service_worker_scope);
 
  private:
+  friend weblayer::BackgroundSyncDelegateImpl;
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;
-  friend blink::Document;
   friend metrics::UkmRecorderInterface;
   friend PermissionUmaUtil;
+  friend content::PaymentAppProviderUtil;
+  friend content::RenderFrameHostImpl;
 
-  // WebApkUkmRecorder records metrics about installed Webapps. Instead of using
-  // the current main frame URL, we want to record the URL of the Webapp
-  // manifest which identifies the current app. Therefore, WebApkUkmRecorder
-  // needs to be a friend so that it can access the private UpdateSourceURL()
-  // method.
+  // WebApkUkmRecorder and DesktopWebAppUkmRecorder record metrics about
+  // installed web apps. Instead of using
+  // the current main frame URL, we want to record the URL which identifies the
+  // current app: the web app manifest url or start url, respectively.
+  // Therefore, they need to be friends so that they can access the private
+  // GetSourceIdForWebApkManifestUrl() method.
   friend WebApkUkmRecorder;
+  friend web_app::DesktopWebAppUkmRecorder;
 
   // Associates the SourceId with a URL. Most UKM recording code should prefer
   // to use a shared SourceId that is already associated with a URL, rather
@@ -91,7 +130,9 @@ class METRICS_EXPORT UkmRecorder {
 
   // Associates the SourceId with an app URL for APP_ID sources. This method
   // should only be called by AppSourceUrlRecorder and DelegatingUkmRecorder.
-  virtual void UpdateAppURL(SourceId source_id, const GURL& url) = 0;
+  virtual void UpdateAppURL(SourceId source_id,
+                            const GURL& url,
+                            const AppType app_type) = 0;
 
   // Associates navigation data with the UkmSource keyed by |source_id|. This
   // should only be called by SourceUrlRecorderWebContentsObserver, for
@@ -104,8 +145,6 @@ class METRICS_EXPORT UkmRecorder {
   // SourceUrlRecorderWebContentsObserver when a browser tab or its WebContents
   // are no longer alive. Not to be used through mojo interface.
   virtual void MarkSourceForDeletion(ukm::SourceId source_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmRecorder);
 };
 
 }  // namespace ukm

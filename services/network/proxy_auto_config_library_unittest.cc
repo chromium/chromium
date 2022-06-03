@@ -77,6 +77,9 @@ class MockUDPSocket : public net::DatagramClientSocket {
                 net::Error connect_error)
       : peer_ip_(peer_ip), local_ip_(local_ip), connect_error_(connect_error) {}
 
+  MockUDPSocket(const MockUDPSocket&) = delete;
+  MockUDPSocket& operator=(const MockUDPSocket&) = delete;
+
   ~MockUDPSocket() override = default;
 
   // Socket implementation.
@@ -202,8 +205,6 @@ class MockUDPSocket : public net::DatagramClientSocket {
   net::IPAddress peer_ip_;
   net::IPAddress local_ip_;
   net::Error connect_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUDPSocket);
 };
 
 class MockSocketFactory : public net::ClientSocketFactory {
@@ -228,6 +229,9 @@ class MockSocketFactory : public net::ClientSocketFactory {
         net::ERR_ADDRESS_UNREACHABLE));
   }
 
+  MockSocketFactory(const MockSocketFactory&) = delete;
+  MockSocketFactory& operator=(const MockSocketFactory&) = delete;
+
   ~MockSocketFactory() override {
     EXPECT_EQ(0u, udp_sockets_.size())
         << "Not all of the mock sockets were consumed.";
@@ -250,6 +254,7 @@ class MockSocketFactory : public net::ClientSocketFactory {
   std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
       const net::AddressList& addresses,
       std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher,
+      net::NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
       const net::NetLogSource& source) override {
     ADD_FAILURE() << "Called CreateTransportClientSocket()";
@@ -280,8 +285,6 @@ class MockSocketFactory : public net::ClientSocketFactory {
 
  private:
   std::vector<std::unique_ptr<MockUDPSocket>> udp_sockets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSocketFactory);
 };
 
 // Tests myIpAddress() when there is a route to 8.8.8.8.

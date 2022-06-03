@@ -1,0 +1,21 @@
+<style include="edu-coexistence-css">
+  :host {
+    overflow-y: hidden;
+    --background-gradient-0: linear-gradient(0deg,
+        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+    --background-gradient-180: linear-gradient(180deg,
+        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+  }
+</style>
+<div class="template-container">
+  <div class ="content-container">
+    <div class="main" scrollable>
+      <slot name="main"></slot>
+    </div>
+  </div>
+  <div class="footer" hidden$="[[!showButtonFooter_]]">
+    <slot name="buttons"></slot>
+  </div>
+</div>

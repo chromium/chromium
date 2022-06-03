@@ -1,0 +1,48 @@
+==== NEW ANNOTATION ====
+ValidFile.java
+12
+Definition
+id1
+
+semantics {
+sender: 'sender1'
+description: 'desc1'
+trigger: 'trigger1'
+data: 'data1'
+destination: GOOGLE_OWNED_SERVICE
+}
+policy {
+cookies_allowed: NO
+setting: 'setting1'
+chrome_policy {
+SpellCheckServiceEnabled {
+SpellCheckServiceEnabled: false
+}
+}
+}
+comments: 'comment1'
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+39
+Definition
+test
+
+Traffic annotation for unit, browser and other tests
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+38
+Definition
+missing
+
+Function called without traffic annotation.
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+37
+Definition
+undefined
+
+Nothing here yet.
+==== ANNOTATION ENDS ====

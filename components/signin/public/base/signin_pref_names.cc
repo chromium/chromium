@@ -4,16 +4,15 @@
 
 #include "components/signin/public/base/signin_pref_names.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace prefs {
 
-#if defined(OS_CHROMEOS)
-// Boolean identifying if Mirror account consistency is required for profile.
-// If Chrome OS Account Manager is not available, this has the effect of
-// disabling secondary account sign-ins within the content area.
-// TODO(https://crbug.com/938835): Clean this up after releasing Chrome OS
-// Account Manager.
-const char kAccountConsistencyMirrorRequired[] =
-    "account_consistency_mirror.required";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A boolean pref - should unauthenticated user should be logged out
+// automatically. Default value is false.
+const char kForceLogoutUnauthenticatedUserEnabled[] =
+    "profile.force_logout_unauthenticated_user_enabled";
 #endif
 
 // An integer property indicating the state of account id migration from
@@ -49,10 +48,6 @@ const char kGoogleServicesAccountId[] = "google.services.account_id";
 // Boolean indicating if the user gave consent for Sync.
 const char kGoogleServicesConsentedToSync[] =
     "google.services.consented_to_sync";
-
-// The profile's hosted domain; empty if unset; kNoHostedDomainFound if there
-// is none.
-const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
 
 // Similar to kGoogleServicesLastUsername, this is the corresponding version of
 // kGoogleServicesAccountId that is not cleared on signout.
@@ -93,18 +88,12 @@ const char kSigninAllowed[] = "signin.allowed";
 // True if the token service has been prepared for Dice migration.
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 
-// Boolean which stores if the ProfileOAuth2TokenService should ignore secondary
-// accounts.
-const char kTokenServiceExcludeAllSecondaryAccounts[] =
-    "token_service.exclude_all_secondary_accounts";
-
-// List that identifies the account id that should be ignored by the token
-// service.
-const char kTokenServiceExcludedSecondaryAccounts[] =
-    "token_service.excluded_secondary_accounts";
-
 // Contains last |ListAccounts| data which corresponds to Gaia cookies.
 const char kGaiaCookieLastListAccountsData[] =
     "gaia_cookie.last_list_accounts_data";
+
+// List of patterns to determine the account visibility.
+const char kRestrictAccountsToPatterns[] =
+    "signin.restrict_accounts_to_patterns";
 
 }  // namespace prefs

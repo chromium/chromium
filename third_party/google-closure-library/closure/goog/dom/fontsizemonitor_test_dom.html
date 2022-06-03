@@ -1,0 +1,22 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<!-- iframe to be used to test DomHelper support -->
+<iframe></iframe>
+
+<!--
+This div has a script in it that creates a FontSizeMonitor.  This ensures that
+we do not get an "Operation abort" error in IE.
+-->
+<div>
+  <script>
+    var operationAbortTester = new goog.dom.FontSizeMonitor();
+    // Close script tag before disposing.
+  </script>
+  <script>
+    operationAbortTester.dispose();
+  </script>
+</div>

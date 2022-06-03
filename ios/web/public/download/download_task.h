@@ -8,21 +8,23 @@
 #import <Foundation/Foundation.h>
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
 
-namespace net {
-class URLFetcherResponseWriter;
-}  // namespace net
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace web {
 
 class DownloadTaskObserver;
+class WebState;
 
 // Provides API for a single browser download task. This is the model class that
 // stores all the state for a download. Must be used on the UI thread.
@@ -42,20 +44,36 @@ class DownloadTask {
     kComplete,
   };
 
+  enum class Destination {
+    // Destination hint to tell DownloadTask to write to disk
+    kToDisk,
+
+    // Destination hint to tell DownloadTask to write to memory
+    kToMemory,
+  };
+
+  // Returns WebState which requested this download.
+  virtual WebState* GetWebState() = 0;
+
   // Returns the download task state.
   virtual State GetState() const = 0;
 
-  // Starts the download. |writer| allows clients to perform in-memory or
-  // in-file downloads and must not be null. Start() can only be called if
-  // DownloadTask is not in progress.
-  virtual void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) = 0;
+  // Starts the download. If |destination_hint| is |kToMemory|,
+  // then if possible the download will not be written in to a
+  // file, otherwise |path| must be non-empty and correspond to
+  // the file where the download will be saved. It is an error
+  // if the file already exists, or if the parent directory does not.
+  virtual void Start(const base::FilePath& path,
+                     Destination destination_hint) = 0;
 
   // Cancels the download.
   virtual void Cancel() = 0;
 
-  // Response writer, which was passed to Start(). Can be used to obtain the
-  // download data.
-  virtual net::URLFetcherResponseWriter* GetResponseWriter() const = 0;
+  // Returns downloaded data, if any.
+  virtual NSData* GetResponseData() const = 0;
+
+  // Returns the path to the downloaded data, if saved to disk.
+  virtual const base::FilePath& GetResponsePath() const = 0;
 
   // Unique indentifier for this task. Also can be used to resume unfinished
   // downloads after the application relaunch (see example in DownloadController
@@ -104,11 +122,8 @@ class DownloadTask {
   // Effective MIME type of downloaded content.
   virtual std::string GetMimeType() const = 0;
 
-  // The page transition type associated with the download request.
-  virtual ui::PageTransition GetTransitionType() const = 0;
-
   // Suggested name for the downloaded file.
-  virtual base::string16 GetSuggestedFilename() const = 0;
+  virtual std::u16string GetSuggestedFilename() const = 0;
 
   // Returns true if the last download operation was fully or partially
   // performed while the application was not active.
@@ -120,9 +135,11 @@ class DownloadTask {
   virtual void RemoveObserver(DownloadTaskObserver* observer) = 0;
 
   DownloadTask() = default;
-  virtual ~DownloadTask() = default;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadTask);
+  DownloadTask(const DownloadTask&) = delete;
+  DownloadTask& operator=(const DownloadTask&) = delete;
+
+  virtual ~DownloadTask() = default;
 };
 
 }  // namespace web

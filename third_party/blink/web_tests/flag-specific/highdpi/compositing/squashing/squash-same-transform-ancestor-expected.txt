@@ -1,0 +1,46 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='squashing'",
+      "bounds": [2, 2],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 2
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='squashed')",
+      "position": [-150, 0],
+      "bounds": [300, 300],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [0.866025403784439, -0.5, 0, 0],
+        [0.5, 0.866025403784439, 0, 0],
+        [0, 0, 1, 0],
+        [150, 150, 0, 1]
+      ],
+      "origin": [75, 75]
+    }
+  ]
+}
+

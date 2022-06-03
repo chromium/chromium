@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -20,14 +19,14 @@ class NativeAppWindow;
 class FullscreenChangeWaiter {
  public:
   explicit FullscreenChangeWaiter(extensions::NativeAppWindow* window);
+  FullscreenChangeWaiter(const FullscreenChangeWaiter&) = delete;
+  FullscreenChangeWaiter& operator=(const FullscreenChangeWaiter&) = delete;
 
   void Wait();
 
  private:
   extensions::NativeAppWindow* window_;
   bool initial_fullscreen_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenChangeWaiter);
 };
 
 // Interactive test class for testing app windows (fullscreen, show, hide,
@@ -36,6 +35,8 @@ class FullscreenChangeWaiter {
 class AppWindowInteractiveTest : public extensions::PlatformAppBrowserTest {
  public:
   AppWindowInteractiveTest() = default;
+  AppWindowInteractiveTest(const AppWindowInteractiveTest&) = delete;
+  AppWindowInteractiveTest& operator=(const AppWindowInteractiveTest&) = delete;
 
   bool RunAppWindowInteractiveTest(const char* testName);
 
@@ -46,9 +47,6 @@ class AppWindowInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   // This test is a method so that we can test with each frame type.
   void TestOuterBoundsHelper(const std::string& frame_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppWindowInteractiveTest);
 };
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_APP_WINDOW_INTERACTIVE_UITEST_BASE_H_

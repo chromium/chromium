@@ -7,14 +7,17 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -44,6 +47,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
       SCDynamicStoreCopyProxies(NULL));
   DCHECK(config_dict);
   ProxyConfig proxy_config;
+  proxy_config.set_from_system(true);
 
   // auto-detect
 
@@ -69,11 +73,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesFTPEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesFTPProxy,
-                                    kSCPropNetProxiesFTPPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesFTPProxy,
+        kSCPropNetProxiesFTPPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -84,11 +86,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesHTTPEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesHTTPProxy,
-                                    kSCPropNetProxiesHTTPPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesHTTPProxy,
+        kSCPropNetProxiesHTTPPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -99,11 +99,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesHTTPSEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesHTTPSProxy,
-                                    kSCPropNetProxiesHTTPSPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(),
+        kSCPropNetProxiesHTTPSProxy, kSCPropNetProxiesHTTPSPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -114,11 +112,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesSOCKSEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_SOCKS5,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesSOCKSProxy,
-                                    kSCPropNetProxiesSOCKSPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_SOCKS5, config_dict.get(),
+        kSCPropNetProxiesSOCKSProxy, kSCPropNetProxiesSOCKSPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -208,7 +204,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_.reset(new NetworkConfigWatcherMac(&forwarder_));
+  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {

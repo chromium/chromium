@@ -41,7 +41,7 @@
 
 namespace blink {
 
-void SQLStatement::OnSuccessV8Impl::Trace(blink::Visitor* visitor) {
+void SQLStatement::OnSuccessV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   OnSuccessCallback::Trace(visitor);
 }
@@ -56,7 +56,7 @@ bool SQLStatement::OnSuccessV8Impl::OnSuccess(SQLTransaction* transaction,
   return callback_->handleEvent(nullptr, transaction, result_set).IsJust();
 }
 
-void SQLStatement::OnErrorV8Impl::Trace(blink::Visitor* visitor) {
+void SQLStatement::OnErrorV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   OnErrorCallback::Trace(visitor);
 }
@@ -94,7 +94,7 @@ SQLStatement::SQLStatement(Database* database,
   }
 }
 
-void SQLStatement::Trace(blink::Visitor* visitor) {
+void SQLStatement::Trace(Visitor* visitor) const {
   visitor->Trace(backend_);
   visitor->Trace(success_callback_);
   visitor->Trace(error_callback_);

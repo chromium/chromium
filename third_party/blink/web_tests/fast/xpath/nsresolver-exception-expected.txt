@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 14: Uncaught Error: this is an exception
+CONSOLE ERROR: Uncaught Error: this is an exception
 SUCCESS

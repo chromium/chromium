@@ -4,11 +4,13 @@
 
 #include "ui/views/layout/grid_layout.h"
 
+#include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
@@ -88,8 +90,8 @@ class LayoutElement {
         if (--resized == 0) {
           to_give = remaining;
         } else {
-          to_give = static_cast<int>(delta *
-                                    (element->resize_percent_ / total_percent));
+          to_give = static_cast<int>(
+              delta * (element->resize_percent_ / total_percent));
           remaining -= to_give;
         }
         element->SetSize(element->Size() + to_give);
@@ -104,7 +106,7 @@ class LayoutElement {
                        std::vector<std::unique_ptr<T>>* elements) {
     DCHECK_GE(start, 0);
     DCHECK_GT(length, 0);
-    DCHECK_LE(size_t{start + length}, elements->size());
+    DCHECK_LE(static_cast<size_t>(start + length), elements->size());
     return std::accumulate(
         elements->cbegin() + start, elements->cbegin() + start + length, 0,
         [](int size, const auto& elem) { return size + elem->Size(); });
@@ -112,57 +114,40 @@ class LayoutElement {
 
   explicit LayoutElement(float resize_percent)
       : resize_percent_(resize_percent) {
-    DCHECK(resize_percent >= 0);
+    DCHECK_GE(resize_percent, 0);
   }
+
+  LayoutElement(const LayoutElement&) = delete;
+  LayoutElement& operator=(const LayoutElement&) = delete;
 
   virtual ~LayoutElement() = default;
 
-  void SetLocation(int location) {
-    location_ = location;
-  }
+  void SetLocation(int location) { location_ = location; }
 
-  int Location() {
-    return location_;
-  }
+  int Location() { return location_; }
 
   // Adjusts the size of this LayoutElement to be the max of the current size
   // and the specified size.
-  virtual void AdjustSize(int size) {
-    size_ = std::max(size_, size);
-  }
+  virtual void AdjustSize(int size) { size_ = std::max(size_, size); }
 
   // Resets the size to the initial size. This sets the size to 0, but
   // subclasses that have a different initial size should override.
-  virtual void ResetSize() {
-    SetSize(0);
-  }
+  virtual void ResetSize() { SetSize(0); }
 
-  void SetSize(int size) {
-    size_ = size;
-  }
+  void SetSize(int size) { size_ = size; }
 
-  int Size() {
-    return size_;
-  }
+  int Size() { return size_; }
 
-  void SetResizePercent(float percent) {
-    resize_percent_ = percent;
-  }
+  void SetResizePercent(float percent) { resize_percent_ = percent; }
 
-  float ResizePercent() {
-    return resize_percent_;
-  }
+  float ResizePercent() { return resize_percent_; }
 
-  bool IsResizable() {
-    return resize_percent_ > 0;
-  }
+  bool IsResizable() { return resize_percent_ > 0; }
 
  private:
   float resize_percent_;
   int location_;
   int size_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutElement);
 };
 
 // Column -------------------------------------------------------------
@@ -174,7 +159,7 @@ class Column : public LayoutElement {
   Column(GridLayout::Alignment h_align,
          GridLayout::Alignment v_align,
          float resize_percent,
-         GridLayout::SizeType size_type,
+         GridLayout::ColumnSize size_type,
          int fixed_width,
          int min_width,
          bool is_padding)
@@ -186,7 +171,10 @@ class Column : public LayoutElement {
         fixed_width_(fixed_width),
         min_width_(min_width),
         is_padding_(is_padding),
-        master_column_(nullptr) {}
+        primary_column_(nullptr) {}
+
+  Column(const Column&) = delete;
+  Column& operator=(const Column&) = delete;
 
   ~Column() override = default;
 
@@ -200,17 +188,17 @@ class Column : public LayoutElement {
   friend class ColumnSet;
   friend class GridLayout;
 
-  Column* GetLastMasterColumn();
+  Column* GetLastPrimaryColumn();
 
   // Determines the max size of all linked columns, and sets each column
-  // to that size. This should only be used for the master column.
+  // to that size. This should only be used for the primary column.
   void UnifyLinkedColumnSizes(int size_limit);
 
   void AdjustSize(int size) override;
 
   const GridLayout::Alignment h_align_;
   const GridLayout::Alignment v_align_;
-  const GridLayout::SizeType size_type_;
+  const GridLayout::ColumnSize size_type_;
   int same_size_column_;
   const int fixed_width_;
   const int min_width_;
@@ -218,39 +206,37 @@ class Column : public LayoutElement {
   const bool is_padding_;
 
   // If multiple columns have their sizes linked, one is the
-  // master column. The master column is identified by the
-  // master_column field being equal to itself. The master columns
+  // primary column. The primary column is identified by the
+  // primary_column field being equal to itself. The primary columns
   // same_size_columns field contains the set of Columns with the
   // the same size. Columns who are linked to other columns, but
-  // are not the master column have their master_column pointing to
-  // one of the other linked columns. Use the method GetLastMasterColumn
-  // to resolve the true master column.
+  // are not the primary column have their primary_column pointing to
+  // one of the other linked columns. Use the method GetLastprimaryColumn
+  // to resolve the true primary column.
   std::vector<Column*> same_size_columns_;
-  Column* master_column_;
-
-  DISALLOW_COPY_AND_ASSIGN(Column);
+  Column* primary_column_;
 };
 
 void Column::ResetSize() {
-  if (size_type_ == GridLayout::FIXED) {
+  if (size_type_ == GridLayout::ColumnSize::kFixed) {
     SetSize(fixed_width_);
   } else {
     SetSize(min_width_);
   }
 }
 
-Column* Column::GetLastMasterColumn() {
-  if (master_column_ == nullptr) {
+Column* Column::GetLastPrimaryColumn() {
+  if (primary_column_ == nullptr) {
     return nullptr;
   }
-  if (master_column_ == this) {
+  if (primary_column_ == this) {
     return this;
   }
-  return master_column_->GetLastMasterColumn();
+  return primary_column_->GetLastPrimaryColumn();
 }
 
 void Column::UnifyLinkedColumnSizes(int size_limit) {
-  DCHECK(master_column_ == this);
+  DCHECK(primary_column_ == this);
 
   // Accumulate the size first.
   int size = 0;
@@ -265,7 +251,7 @@ void Column::UnifyLinkedColumnSizes(int size_limit) {
 }
 
 void Column::AdjustSize(int size) {
-  if (size_type_ == GridLayout::USE_PREF)
+  if (size_type_ == GridLayout::ColumnSize::kUsePreferred)
     LayoutElement::AdjustSize(size);
 }
 
@@ -274,12 +260,14 @@ void Column::AdjustSize(int size) {
 class Row : public LayoutElement {
  public:
   Row(int height, float resize_percent, ColumnSet* column_set)
-    : LayoutElement(resize_percent),
-      height_(height),
-      column_set_(column_set),
-      max_ascent_(0),
-      max_descent_(0) {
-  }
+      : LayoutElement(resize_percent),
+        height_(height),
+        column_set_(column_set),
+        max_ascent_(0),
+        max_descent_(0) {}
+
+  Row(const Row&) = delete;
+  Row& operator=(const Row&) = delete;
 
   ~Row() override = default;
 
@@ -288,9 +276,7 @@ class Row : public LayoutElement {
     SetSize(height_);
   }
 
-  ColumnSet* column_set() {
-    return column_set_;
-  }
+  ColumnSet* column_set() { return column_set_; }
 
   // Adjusts the size to accommodate the specified ascent/descent.
   void AdjustSizeForBaseline(int ascent, int descent) {
@@ -299,13 +285,9 @@ class Row : public LayoutElement {
     AdjustSize(max_ascent_ + max_descent_);
   }
 
-  int max_ascent() const {
-    return max_ascent_;
-  }
+  int max_ascent() const { return max_ascent_; }
 
-  int max_descent() const {
-    return max_descent_;
-  }
+  int max_descent() const { return max_descent_; }
 
  private:
   const int height_;
@@ -314,8 +296,6 @@ class Row : public LayoutElement {
 
   int max_ascent_;
   int max_descent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Row);
 };
 
 // ViewState -------------------------------------------------------------
@@ -365,7 +345,7 @@ struct ViewState {
   const bool pref_height_fixed;
 
   // The preferred size, only set during the preferred size pass
-  // (SizeCalculationType::PREFERRED).
+  // (SizeCalculationType::kPreferred).
   gfx::Size pref_size;
 
   // The width/height. This is one of possible three values:
@@ -405,17 +385,17 @@ ColumnSet::~ColumnSet() = default;
 
 void ColumnSet::AddPaddingColumn(float resize_percent, int width) {
   AddColumn(GridLayout::FILL, GridLayout::FILL, resize_percent,
-            GridLayout::FIXED, width, width, true);
+            GridLayout::ColumnSize::kFixed, width, width, true);
 }
 
 void ColumnSet::AddColumn(GridLayout::Alignment h_align,
                           GridLayout::Alignment v_align,
                           float resize_percent,
-                          GridLayout::SizeType size_type,
+                          GridLayout::ColumnSize size_type,
                           int fixed_width,
                           int min_width) {
-  AddColumn(h_align, v_align, resize_percent, size_type, fixed_width,
-            min_width, false);
+  AddColumn(h_align, v_align, resize_percent, size_type, fixed_width, min_width,
+            false);
 }
 
 void ColumnSet::LinkColumnSizes(const std::vector<int>& columns) {
@@ -434,7 +414,7 @@ void ColumnSet::LinkColumnSizes(const std::vector<int>& columns) {
 void ColumnSet::AddColumn(GridLayout::Alignment h_align,
                           GridLayout::Alignment v_align,
                           float resize_percent,
-                          GridLayout::SizeType size_type,
+                          GridLayout::ColumnSize size_type,
                           int fixed_width,
                           int min_width,
                           bool is_padding) {
@@ -450,82 +430,82 @@ void ColumnSet::AddViewState(ViewState* view_state) {
   view_states_.insert(i, view_state);
 }
 
-void ColumnSet::CalculateMasterColumns() {
+void ColumnSet::CalculatePrimaryColumns() {
   for (const auto& column : columns_) {
     int same_size_column_index = column->same_size_column_;
     if (same_size_column_index != -1) {
       DCHECK(same_size_column_index >= 0 &&
              same_size_column_index < static_cast<int>(columns_.size()));
-      Column* master_column = column->master_column_;
+      Column* primary_column = column->primary_column_;
       Column* same_size_column = columns_[same_size_column_index].get();
-      Column* same_size_column_master = same_size_column->master_column_;
-      if (master_column == nullptr) {
+      Column* same_size_column_primary = same_size_column->primary_column_;
+      if (primary_column == nullptr) {
         // Current column is not linked to any other column.
-        if (same_size_column_master == nullptr) {
+        if (same_size_column_primary == nullptr) {
           // Both columns are not linked.
-          column->master_column_ = column.get();
-          same_size_column->master_column_ = column.get();
+          column->primary_column_ = column.get();
+          same_size_column->primary_column_ = column.get();
           column->same_size_columns_.push_back(same_size_column);
           column->same_size_columns_.push_back(column.get());
         } else {
           // Column to link to is linked with other columns.
           // Add current column to list of linked columns in other columns
-          // master column.
-          same_size_column->GetLastMasterColumn()->same_size_columns_.push_back(
-              column.get());
-          // And update the master column for the current column to that
+          // primary column.
+          same_size_column->GetLastPrimaryColumn()
+              ->same_size_columns_.push_back(column.get());
+          // And update the primary column for the current column to that
           // of the same sized column.
-          column->master_column_ = same_size_column;
+          column->primary_column_ = same_size_column;
         }
       } else {
         // Current column is already linked with another column.
-        if (same_size_column_master == nullptr) {
+        if (same_size_column_primary == nullptr) {
           // Column to link with is not linked to any other columns.
-          // Update it's master_column.
-          same_size_column->master_column_ = column.get();
+          // Update it's primary_column.
+          same_size_column->primary_column_ = column.get();
           // Add linked column to list of linked column.
-          column->GetLastMasterColumn()->same_size_columns_.
-              push_back(same_size_column);
-        } else if (column->GetLastMasterColumn() !=
-                   same_size_column->GetLastMasterColumn()) {
+          column->GetLastPrimaryColumn()->same_size_columns_.push_back(
+              same_size_column);
+        } else if (column->GetLastPrimaryColumn() !=
+                   same_size_column->GetLastPrimaryColumn()) {
           // The two columns are already linked with other columns.
           std::vector<Column*>* same_size_columns =
-              &(column->GetLastMasterColumn()->same_size_columns_);
+              &(column->GetLastPrimaryColumn()->same_size_columns_);
           std::vector<Column*>* other_same_size_columns =
-              &(same_size_column->GetLastMasterColumn()->same_size_columns_);
-          // Add all the columns from the others master to current columns
-          // master.
+              &(same_size_column->GetLastPrimaryColumn()->same_size_columns_);
+          // Add all the columns from the others primary to current columns
+          // primary.
           same_size_columns->insert(same_size_columns->end(),
-                                     other_same_size_columns->begin(),
-                                     other_same_size_columns->end());
-          // The other master is no longer a master, clear its vector of
-          // linked columns, and reset its master_column.
+                                    other_same_size_columns->begin(),
+                                    other_same_size_columns->end());
+          // The other primary is no longer a primary, clear its vector of
+          // linked columns, and reset its primary_column.
           other_same_size_columns->clear();
-          same_size_column->GetLastMasterColumn()->master_column_ =
+          same_size_column->GetLastPrimaryColumn()->primary_column_ =
               column.get();
         }
       }
     }
   }
-  AccumulateMasterColumns();
+  AccumulatePrimaryColumns();
 }
 
-void ColumnSet::AccumulateMasterColumns() {
-  DCHECK(master_columns_.empty());
+void ColumnSet::AccumulatePrimaryColumns() {
+  DCHECK(primary_columns_.empty());
   for (const auto& column : columns_) {
-    Column* master_column = column->GetLastMasterColumn();
-    if (master_column && !base::Contains(master_columns_, master_column)) {
-      master_columns_.push_back(master_column);
+    Column* primary_column = column->GetLastPrimaryColumn();
+    if (primary_column && !base::Contains(primary_columns_, primary_column)) {
+      primary_columns_.push_back(primary_column);
     }
-    // At this point, GetLastMasterColumn may not == master_column
-    // (may have to go through a few Columns)_. Reset master_column to
+    // At this point, GetLastPrimaryColumn may not == primary_column
+    // (may have to go through a few Columns)_. Reset primary_column to
     // avoid hops.
-    column->master_column_ = master_column;
+    column->primary_column_ = primary_column;
   }
 }
 
 void ColumnSet::UnifyLinkedColumnSizes() {
-  for (auto* column : master_columns_)
+  for (auto* column : primary_columns_)
     column->UnifyLinkedColumnSizes(linked_column_size_limit_);
 }
 
@@ -556,7 +536,8 @@ void ColumnSet::DistributeRemainingWidth(ViewState* view_state) {
     if (columns_[i]->IsResizable()) {
       total_resize += columns_[i]->ResizePercent();
       resizable_columns++;
-    } else if (columns_[i]->size_type_ == GridLayout::USE_PREF) {
+    } else if (columns_[i]->size_type_ ==
+               GridLayout::ColumnSize::kUsePreferred) {
       pref_size_columns++;
     }
   }
@@ -568,9 +549,11 @@ void ColumnSet::DistributeRemainingWidth(ViewState* view_state) {
     for (int i = start_col, resize_i = 0; i < max_col; ++i) {
       if (columns_[i]->IsResizable()) {
         resize_i++;
-        int delta = (resize_i == resizable_columns) ? remaining_width :
-            static_cast<int>(width * columns_[i]->ResizePercent() /
-                             total_resize);
+        int delta =
+            (resize_i == resizable_columns)
+                ? remaining_width
+                : static_cast<int>(width * columns_[i]->ResizePercent() /
+                                   total_resize);
         remaining_width -= delta;
         columns_[i]->SetSize(columns_[i]->Size() + delta);
       }
@@ -580,7 +563,7 @@ void ColumnSet::DistributeRemainingWidth(ViewState* view_state) {
     // that use the preferred size.
     int to_distribute = width / pref_size_columns;
     for (int i = start_col; i < max_col; ++i) {
-      if (columns_[i]->size_type_ == GridLayout::USE_PREF) {
+      if (columns_[i]->size_type_ == GridLayout::ColumnSize::kUsePreferred) {
         width -= to_distribute;
         if (width < to_distribute)
           to_distribute += width;
@@ -608,17 +591,17 @@ void ColumnSet::ResetColumnXCoordinates() {
 
 void ColumnSet::CalculateSize(SizeCalculationType type) {
 #if DCHECK_IS_ON()
-  // SizeCalculationType::MINIMUM must be preceeded by a request for
-  // SizeCalculationType::PREFERRED.
-  DCHECK(type == SizeCalculationType::PREFERRED ||
-         last_calculation_type_ == PREFERRED);
+  // SizeCalculationType::kMinimum must be preceded by a request for
+  // SizeCalculationType::kPreferred.
+  DCHECK(type == SizeCalculationType::kPreferred ||
+         last_calculation_type_ == SizeCalculationType::kPreferred);
   last_calculation_type_ = type;
 #endif
   // Reset the size and remaining sizes.
   for (auto* view_state : view_states_) {
     if (!view_state->pref_width_fixed || !view_state->pref_height_fixed) {
       gfx::Size size;
-      if (type == SizeCalculationType::MINIMUM && CanUseMinimum(*view_state)) {
+      if (type == SizeCalculationType::kMinimum && CanUseMinimum(*view_state)) {
         // If the min size is bigger than the preferred, use the preferred.
         // This relies on MINIMUM being calculated immediately after PREFERRED,
         // which the rest of this code relies on as well.
@@ -645,7 +628,8 @@ void ColumnSet::CalculateSize(SizeCalculationType type) {
   // Distribute the size of each view with a col span == 1.
   auto view_state_iterator = view_states_.begin();
   for (; view_state_iterator != view_states_.end() &&
-         (*view_state_iterator)->col_span == 1; ++view_state_iterator) {
+         (*view_state_iterator)->col_span == 1;
+       ++view_state_iterator) {
     ViewState* view_state = *view_state_iterator;
     Column* column = columns_[view_state->start_col].get();
     column->AdjustSize(view_state->width);
@@ -695,7 +679,7 @@ void ColumnSet::ResizeUsingMin(int total_delta) {
     preferred_column_sizes[i] = columns_[i]->Size();
 
   // Recalculate the sizes using the min.
-  CalculateSize(ColumnSet::SizeCalculationType::MINIMUM);
+  CalculateSize(ColumnSet::SizeCalculationType::kMinimum);
 
   // Build up the set of columns that can be shrunk in |resize_data|, this
   // iteration also resets the size of the column back to the preferred size.
@@ -760,7 +744,8 @@ void ColumnSet::ResizeUsingMin(int total_delta) {
 
 bool ColumnSet::CanUseMinimum(const ViewState& view_state) const {
   const auto resizable = [](const auto& col) {
-    return col->ResizePercent() > 0 && col->size_type_ != GridLayout::FIXED;
+    return col->ResizePercent() > 0 &&
+           col->size_type_ != GridLayout::ColumnSize::kFixed;
   };
   return std::all_of(
       columns_.cbegin() + view_state.start_col,
@@ -787,8 +772,10 @@ ColumnSet* GridLayout::GetColumnSet(int id) {
   return (i == column_sets_.cend()) ? nullptr : i->get();
 }
 
-void GridLayout::StartRowWithPadding(float vertical_resize, int column_set_id,
-                                     float padding_resize, int padding) {
+void GridLayout::StartRowWithPadding(float vertical_resize,
+                                     int column_set_id,
+                                     float padding_resize,
+                                     int padding) {
   AddPaddingRow(padding_resize, padding);
   StartRow(vertical_resize, column_set_id);
 }
@@ -807,7 +794,7 @@ void GridLayout::AddPaddingRow(float vertical_resize, int pixel_count) {
 }
 
 void GridLayout::SkipColumns(int col_count) {
-  DCHECK(col_count > 0);
+  DCHECK_GT(col_count, 0);
   next_column_ += col_count;
   DCHECK(current_row_col_set_ &&
          next_column_ <= current_row_col_set_->num_columns());
@@ -875,8 +862,10 @@ void GridLayout::AddViewImpl(std::unique_ptr<View> view,
       row_span, h_align, v_align, pref_width, pref_height));
 }
 
-static void CalculateSize(int pref_size, GridLayout::Alignment alignment,
-                          int* location, int* size) {
+static void CalculateSize(int pref_size,
+                          GridLayout::Alignment alignment,
+                          int* location,
+                          int* size) {
   if (alignment != GridLayout::FILL) {
     int available_size = *size;
     *size = std::min(*size, pref_size);
@@ -926,8 +915,8 @@ void GridLayout::Layout(View* host) {
     const gfx::Insets& insets = host_->GetInsets();
     int x =
         column_set->columns_[view_state->start_col]->Location() + insets.left();
-    int width = column_set->GetColumnWidth(view_state->start_col,
-                                           view_state->col_span);
+    int width =
+        column_set->GetColumnWidth(view_state->start_col, view_state->col_span);
     CalculateSize(view_state->width, view_state->h_align, &x, &width);
     int y = rows_[view_state->start_row]->Location() + insets.top();
     int height = LayoutElement::TotalSize(view_state->start_row,
@@ -958,15 +947,17 @@ int GridLayout::GetPreferredHeightForWidth(const View* host, int width) const {
   return pref.height();
 }
 
-void GridLayout::SizeRowsAndColumns(bool layout, int width, int height,
+void GridLayout::SizeRowsAndColumns(bool layout,
+                                    int width,
+                                    int height,
                                     gfx::Size* pref) const {
   // Protect against clients asking for metrics during the addition of a View.
   // The View is in the hierarchy, but it will not be accounted for in the
   // layout calculations at this point, so the result will be incorrect.
   DCHECK(!adding_view_) << "GridLayout queried while adding a view.";
 
-  // Make sure the master columns have been calculated.
-  CalculateMasterColumnsIfNecessary();
+  // Make sure the primary columns have been calculated.
+  CalculatePrimaryColumnsIfNecessary();
   pref->SetSize(0, 0);
   if (rows_.empty())
     return;
@@ -975,7 +966,7 @@ void GridLayout::SizeRowsAndColumns(bool layout, int width, int height,
   // preferred heights are derived from their width, as such we need to
   // calculate the size of the columns first.
   for (const auto& column_set : column_sets_) {
-    column_set->CalculateSize(ColumnSet::SizeCalculationType::PREFERRED);
+    column_set->CalculateSize(ColumnSet::SizeCalculationType::kPreferred);
     pref->set_width(std::max(pref->width(), column_set->LayoutWidth()));
   }
   const gfx::Insets& insets = host_->GetInsets();
@@ -1026,7 +1017,8 @@ void GridLayout::SizeRowsAndColumns(bool layout, int width, int height,
   // Update the height/ascent/descent of each row from the views.
   auto view_states_iterator = view_states_.begin();
   for (; view_states_iterator != view_states_.end() &&
-      (*view_states_iterator)->row_span == 1; ++view_states_iterator) {
+         (*view_states_iterator)->row_span == 1;
+       ++view_states_iterator) {
     ViewState* view_state = view_states_iterator->get();
     Row* row = rows_[view_state->start_row].get();
     row->AdjustSize(view_state->remaining_height);
@@ -1066,11 +1058,11 @@ void GridLayout::SizeRowsAndColumns(bool layout, int width, int height,
   }
 }
 
-void GridLayout::CalculateMasterColumnsIfNecessary() const {
-  if (!calculated_master_columns_) {
-    calculated_master_columns_ = true;
+void GridLayout::CalculatePrimaryColumnsIfNecessary() const {
+  if (!calculated_primary_columns_) {
+    calculated_primary_columns_ = true;
     for (const auto& column_set : column_sets_)
-      column_set->CalculateMasterColumns();
+      column_set->CalculatePrimaryColumns();
   }
 }
 

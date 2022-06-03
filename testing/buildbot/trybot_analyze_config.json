@@ -8,22 +8,18 @@
     "exclusions": [
       ".*isolate",
       ".vpython",
-      "build/.*gyp[i]?",
       "build/check_gn_headers.py",
       "build/check_gn_headers_whitelist.txt",
-      "build/cipd/android/android.ensure",
-      "build/fuchsia/.*py",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",
+      "build/toolchain/apple/.*py",
       "build/toolchain/get_concurrent_links.py",
-      "build/toolchain/mac/.*py",
       "build/util/lib/common/unittest_util.py",
       "build/vs_toolchain.py",
-      "infra/scripts/.*",
       "DEPS",
-      "testing/buildbot/.*json",
-      "testing/buildbot/.*pyl",
+      "infra/scripts/.*",
+      "testing/buildbot/gn_isolate_map.pyl",
       "testing/merge_scripts/.*",
       "testing/scripts/.*",
       "testing/test_env.py",
@@ -35,8 +31,15 @@
       "infra/recipes/.*"
     ]
   },
+  "chromeos": {
+    "exclusions": [
+      "chromeos/CHROMEOS_LKGM"
+    ]
+  },
   "chromium": {
     "exclusions": [
+      "buildtools/checkdeps/.*",
+      "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/.*(css|html|js)",
       "chrome/browser/ui/webui/.*browsertest.*js",
       "chrome/test/data/.*",
@@ -56,12 +59,16 @@
       "third_party/angle/DEPS",
       "third_party/chaijs/.*(css|html|js)",
       "third_party/closure_compiler/.*(css|html|js)",
+      "third_party/dawn/DEPS",
       "third_party/hunspell_dictionaries/.*",
       "third_party/jstemplate/.*(css|html|js)",
       "third_party/mocha/.*(css|html|js)",
+      "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
+      "third_party/vulkan-deps/DEPS",
       "third_party/web-animations-js/.*(css|html|js)",
       "third_party/zlib/google/test/data/.*",
+      "tools/android/avd/proto/creation/.*",
       "tools/clang/scripts/update.py",
       "tools/grit/.*",
       "tools/mb/.*",
@@ -86,8 +93,7 @@
     "exclusions": [
       "build/linux/sysroot_ld_path.sh",
       "build/linux/sysroot_scripts/sysroots.json",
-      "testing/xvfb.py",
-      "third_party/binutils/Linux_x64/binutils.tar.bz2.sha1"
+      "testing/xvfb.py"
     ]
   },
   "win": {

@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -35,7 +35,7 @@ void SetPINRequestHandler::ProvidePIN(const std::string& old_pin,
                                       const std::string& new_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(State::kWaitingForPIN, state_);
-  DCHECK(pin::IsValid(new_pin));
+  DCHECK_EQ(pin::ValidatePIN(new_pin), pin::PINEntryError::kNoError);
 
   if (authenticator_ == nullptr) {
     // Authenticator was detached.
@@ -44,10 +44,18 @@ void SetPINRequestHandler::ProvidePIN(const std::string& old_pin,
     return;
   }
 
-  state_ = State::kGetEphemeralKey;
-  authenticator_->GetEphemeralKey(base::BindOnce(
-      &SetPINRequestHandler::OnHaveEphemeralKey, weak_factory_.GetWeakPtr(),
-      std::move(old_pin), std::move(new_pin)));
+  state_ = State::kSettingPIN;
+
+  if (old_pin.empty()) {
+    authenticator_->SetPIN(
+        new_pin, base::BindOnce(&SetPINRequestHandler::OnSetPINComplete,
+                                weak_factory_.GetWeakPtr()));
+  } else {
+    authenticator_->ChangePIN(
+        old_pin, new_pin,
+        base::BindOnce(&SetPINRequestHandler::OnSetPINComplete,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void SetPINRequestHandler::DispatchRequest(FidoAuthenticator* authenticator) {
@@ -90,7 +98,7 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
         kSupportedAndPinSet:
       state_ = State::kGettingRetries;
       CancelActiveAuthenticators(authenticator->GetId());
-      authenticator_->GetRetries(
+      authenticator_->GetPinRetries(
           base::BindOnce(&SetPINRequestHandler::OnRetriesResponse,
                          weak_factory_.GetWeakPtr()));
       break;
@@ -99,14 +107,16 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
         kSupportedButPinNotSet:
       state_ = State::kWaitingForPIN;
       CancelActiveAuthenticators(authenticator->GetId());
-      std::move(get_pin_callback_).Run(base::nullopt);
+      std::move(get_pin_callback_)
+          .Run(authenticator->CurrentMinPINLength(),
+               authenticator->NewMinPINLength(), absl::nullopt);
       break;
   }
 }
 
 void SetPINRequestHandler::OnRetriesResponse(
     CtapDeviceResponseCode status,
-    base::Optional<pin::RetriesResponse> response) {
+    absl::optional<pin::RetriesResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
 
@@ -117,41 +127,14 @@ void SetPINRequestHandler::OnRetriesResponse(
   }
 
   state_ = State::kWaitingForPIN;
-  std::move(get_pin_callback_).Run(response->retries);
-}
-
-void SetPINRequestHandler::OnHaveEphemeralKey(
-    std::string old_pin,
-    std::string new_pin,
-    CtapDeviceResponseCode status,
-    base::Optional<pin::KeyAgreementResponse> response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  DCHECK_EQ(state_, State::kGetEphemeralKey);
-
-  if (status != CtapDeviceResponseCode::kSuccess) {
-    state_ = State::kFinished;
-    finished_callback_.Run(status);
-    return;
-  }
-
-  state_ = State::kSettingPIN;
-
-  if (old_pin.empty()) {
-    authenticator_->SetPIN(
-        new_pin, *response,
-        base::BindOnce(&SetPINRequestHandler::OnSetPINComplete,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    authenticator_->ChangePIN(
-        old_pin, new_pin, *response,
-        base::BindOnce(&SetPINRequestHandler::OnSetPINComplete,
-                       weak_factory_.GetWeakPtr()));
-  }
+  std::move(get_pin_callback_)
+      .Run(authenticator_->CurrentMinPINLength(),
+           authenticator_->NewMinPINLength(), response->retries);
 }
 
 void SetPINRequestHandler::OnSetPINComplete(
     CtapDeviceResponseCode status,
-    base::Optional<pin::EmptyResponse> response) {
+    absl::optional<pin::EmptyResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kSettingPIN);
 

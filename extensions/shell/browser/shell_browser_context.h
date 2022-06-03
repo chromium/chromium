@@ -17,21 +17,18 @@ namespace extensions {
 class ShellBrowserContext final : public content::ShellBrowserContext {
  public:
   explicit ShellBrowserContext();
+
+  ShellBrowserContext(const ShellBrowserContext&) = delete;
+  ShellBrowserContext& operator=(const ShellBrowserContext&) = delete;
+
   ~ShellBrowserContext() override;
 
   // content::BrowserContext implementation.
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
-  void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
 
  private:
   scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserContext);
 };
 
 }  // namespace extensions

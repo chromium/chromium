@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(t => {
+  // Both devices support the Heart Rate service, but things need to
+  // support both services to pass the filter, and neither has a Battery
+  // service.
+  return setBluetoothFakeAdapter('GlucoseHeartRateAdapter')
+      .then(
+          () => promise_rejects_dom(
+              t, 'NotFoundError',
+              requestDeviceWithTrustedClick(
+                  {filters: [{services: ['heart_rate', 'battery_service']}]})));
+}, 'Too-strict filters do prevent matching.');
+</script>

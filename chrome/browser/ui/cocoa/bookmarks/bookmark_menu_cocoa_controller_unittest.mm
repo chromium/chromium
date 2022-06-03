@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
+
+#include <string>
+
 #import "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
-#import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
+#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bookmarks::BookmarkModel;
@@ -21,14 +25,14 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* _nodes[2];
   BOOL _opened[2];
 }
-- (id)initWithProfile:(Profile*)profile;
+- (instancetype)initWithProfile:(Profile*)profile;
 @end
 
 @implementation FakeBookmarkMenuController
 
-- (id)initWithProfile:(Profile*)profile {
+- (instancetype)initWithProfile:(Profile*)profile {
   if ((self = [super init])) {
-    base::string16 empty;
+    std::u16string empty;
     BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
     const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
     _nodes[0] = model->AddURL(bookmark_bar, 0, empty, GURL("http://0.com"));
@@ -53,19 +57,26 @@ using bookmarks::BookmarkNode;
 
 @end  // FakeBookmarkMenuController
 
-class BookmarkMenuCocoaControllerTest : public CocoaProfileTest {
+class BookmarkMenuCocoaControllerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    CocoaProfileTest::SetUp();
-    ASSERT_TRUE(profile());
+    BrowserWithTestWindowTest::SetUp();
 
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        BookmarkModelFactory::GetForBrowserContext(profile()));
     controller_.reset(
         [[FakeBookmarkMenuController alloc] initWithProfile:profile()]);
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{BookmarkModelFactory::GetInstance(),
+             BookmarkModelFactory::GetDefaultFactory()}};
   }
 
   FakeBookmarkMenuController* controller() { return controller_.get(); }
 
  private:
+  CocoaTestHelper cocoa_test_helper_;
   base::scoped_nsobject<FakeBookmarkMenuController> controller_;
 };
 

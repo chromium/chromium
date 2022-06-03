@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+let matching_services = [heart_rate.uuid];
+let matching_name = 'Heart Rate Device';
+let matching_namePrefix = 'Heart';
+let matching_manufacturerData = [{ companyIdentifier: 0x0001 }];
+
+let non_matching_services = ['battery_service'];
+let non_matching_name = 'Some Device';
+let non_matching_namePrefix = 'Some';
+let non_matching_manufacturerData = [{ companyIdentifier: 0x000f }];
+
+let test_specs = [
+  {
+    filters: [{
+      services: non_matching_services,
+      name: non_matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: non_matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: non_matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: non_matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: non_matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: non_matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: non_matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: matching_name,
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+      name: non_matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      name: non_matching_name,
+    }]
+  },
+  {
+    filters: [{
+      manufacturerData: non_matching_manufacturerData,
+    }]
+  },
+  {
+    filters: [{
+      services: non_matching_services,
+      manufacturerData: non_matching_manufacturerData,
+    }]
+  },
+  {
+    filters: [{
+      name: non_matching_name,
+      manufacturerData: non_matching_manufacturerData,
+    }]
+  },
+  {
+    filters: [{
+      namePrefix: non_matching_namePrefix,
+      manufacturerData: non_matching_manufacturerData,
+    }]
+  },
+  {
+    filters:
+        [{services: non_matching_services, namePrefix: non_matching_namePrefix}]
+  },
+  {
+    filters: [{
+      name: non_matching_name,
+    }]
+  },
+  {filters: [{name: non_matching_name, namePrefix: non_matching_namePrefix}]},
+  {filters: [{namePrefix: non_matching_namePrefix}]}
+];
+
+bluetooth_test(t => {
+  return setBluetoothFakeAdapter('GlucoseHeartRateAdapter').then(() => {
+    let test_promises = Promise.resolve();
+    test_specs.forEach(args => {
+      test_promises = test_promises.then(
+          () => promise_rejects_dom(
+              t, 'NotFoundError', requestDeviceWithTrustedClick(args)));
+    });
+    return test_promises;
+  });
+}, 'If at least one filter member doesn\'t match the promise must reject.');
+</script>

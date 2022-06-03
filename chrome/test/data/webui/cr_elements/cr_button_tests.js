@@ -3,29 +3,35 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-// #import {eventToPromise} from '../test_util.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.js';
+
 // clang-format on
 
 suite('cr-button', function() {
+  /** @type {!CrButtonElement} */
   let button;
 
   setup(() => {
-    PolymerTest.clearBody();
-    button = document.createElement('cr-button');
+    document.body.innerHTML = '';
+    button =
+        /** @type {!CrButtonElement} */ (document.createElement('cr-button'));
     document.body.appendChild(button);
   });
 
   /** @param {string} key */
   function press(key) {
-    button.dispatchEvent(new KeyboardEvent('keydown', {key: key}));
-    button.dispatchEvent(new KeyboardEvent('keyup', {key: key}));
+    button.dispatchEvent(new KeyboardEvent('keydown', {key}));
+    button.dispatchEvent(new KeyboardEvent('keyup', {key}));
   }
 
   test('label is displayed', async () => {
     const widthWithoutLabel = button.offsetWidth;
     document.body.innerHTML = '<cr-button>Long Label</cr-button>';
-    button = document.body.querySelector('cr-button');
+    button = /** @type {!CrButtonElement} */ (
+        document.body.querySelector('cr-button'));
     assertTrue(widthWithoutLabel < button.offsetWidth);
   });
 
@@ -66,9 +72,23 @@ suite('cr-button', function() {
   });
 
   test('when tabindex is -1, it stays -1', async () => {
-    document.body.innerHTML = '<cr-button tabindex="-1"></cr-button>';
-    button = document.body.querySelector('cr-button');
+    document.body.innerHTML = '<cr-button custom-tab-index="-1"></cr-button>';
+    button = /** @type {!CrButtonElement} */ (
+        document.body.querySelector('cr-button'));
     assertEquals('-1', button.getAttribute('tabindex'));
+    button.disabled = true;
+    assertEquals('-1', button.getAttribute('tabindex'));
+    button.disabled = false;
+    assertEquals('-1', button.getAttribute('tabindex'));
+  });
+
+  test('tabindex update', async () => {
+    document.body.innerHTML = '<cr-button></cr-button>';
+    button = /** @type {!CrButtonElement} */ (
+        document.body.querySelector('cr-button'));
+    assertEquals('0', button.getAttribute('tabindex'));
+    button.customTabIndex = 1;
+    assertEquals('1', button.getAttribute('tabindex'));
   });
 
   test('hidden', () => {
@@ -83,9 +103,27 @@ suite('cr-button', function() {
     assertNotEquals('none', getComputedStyle(button).display);
   });
 
-  test('tap event is emitted on click', async () => {
-    const wait = test_util.eventToPromise('tap', button);
-    button.click();
-    await wait;
+  test('space up does not click without space down', () => {
+    let clicked = false;
+    button.addEventListener('click', () => {
+      clicked = true;
+    }, {once: true});
+    button.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
+    assertFalse(clicked);
+    press(' ');
+    assertTrue(clicked);
+  });
+
+  test('space up events will not result in one click if loses focus', () => {
+    let clicked = false;
+    button.addEventListener('click', () => {
+      clicked = true;
+    }, {once: true});
+    button.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    button.dispatchEvent(new Event('blur'));
+    button.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
+    assertFalse(clicked);
+    press(' ');
+    assertTrue(clicked);
   });
 });

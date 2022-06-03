@@ -7,6 +7,7 @@
 #include "components/pdf/browser/pdf_web_contents_helper_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "ui/gfx/selection_bound.h"

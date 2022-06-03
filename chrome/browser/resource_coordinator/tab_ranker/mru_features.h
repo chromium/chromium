@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_RANKER_MRU_FEATURES_H_
 
 #include <stdint.h>
-#include <string>
 
 namespace tab_ranker {
 

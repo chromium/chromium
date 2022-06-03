@@ -25,11 +25,11 @@ SpeechChannel g_speech_channel;
 // |command_id|.
 base::i18n::TextDirection GetTextDirectionFromCommandId(int command_id) {
   switch (command_id) {
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT:
+    case ui::TextServicesContextMenu::kWritingDirectionDefault:
       return base::i18n::UNKNOWN_DIRECTION;
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR:
+    case ui::TextServicesContextMenu::kWritingDirectionLtr:
       return base::i18n::LEFT_TO_RIGHT;
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL:
+    case ui::TextServicesContextMenu::kWritingDirectionRtl:
       return base::i18n::RIGHT_TO_LEFT;
     default:
       NOTREACHED();
@@ -47,23 +47,20 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
       delegate_(delegate) {
   DCHECK(delegate);
 
-  speech_submenu_model_.AddItemWithStringId(IDS_SPEECH_START_SPEAKING_MAC,
+  speech_submenu_model_.AddItemWithStringId(kSpeechStartSpeaking,
                                             IDS_SPEECH_START_SPEAKING_MAC);
-  speech_submenu_model_.AddItemWithStringId(IDS_SPEECH_STOP_SPEAKING_MAC,
+  speech_submenu_model_.AddItemWithStringId(kSpeechStopSpeaking,
                                             IDS_SPEECH_STOP_SPEAKING_MAC);
 
   bidi_submenu_model_.AddCheckItemWithStringId(
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT,
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT);
+      kWritingDirectionDefault, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT);
   bidi_submenu_model_.AddCheckItemWithStringId(
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR,
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR);
+      kWritingDirectionLtr, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR);
   bidi_submenu_model_.AddCheckItemWithStringId(
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL,
-      IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
+      kWritingDirectionRtl, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
 }
 
-void TextServicesContextMenu::SpeakText(const base::string16& text) {
+void TextServicesContextMenu::SpeakText(const std::u16string& text) {
   if (IsSpeaking())
     StopSpeaking();
 
@@ -88,7 +85,7 @@ bool TextServicesContextMenu::IsSpeaking() {
 
 void TextServicesContextMenu::AppendToContextMenu(SimpleMenuModel* model) {
   model->AddSeparator(NORMAL_SEPARATOR);
-  model->AddSubMenuWithStringId(IDS_SPEECH_MAC, IDS_SPEECH_MAC,
+  model->AddSubMenuWithStringId(kSpeechMenu, IDS_SPEECH_MAC,
                                 &speech_submenu_model_);
 }
 
@@ -96,20 +93,20 @@ void TextServicesContextMenu::AppendEditableItems(SimpleMenuModel* model) {
   // MacOS provides a contextual menu to set writing direction for BiDi
   // languages. This functionality is exposed as a keyboard shortcut on
   // Windows and Linux.
-  model->AddSubMenuWithStringId(IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU,
+  model->AddSubMenuWithStringId(kWritingDirectionMenu,
                                 IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU,
                                 &bidi_submenu_model_);
 }
 
 bool TextServicesContextMenu::SupportsCommand(int command_id) const {
   switch (command_id) {
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL:
-    case IDS_SPEECH_MAC:
-    case IDS_SPEECH_START_SPEAKING_MAC:
-    case IDS_SPEECH_STOP_SPEAKING_MAC:
+    case kWritingDirectionMenu:
+    case kWritingDirectionDefault:
+    case kWritingDirectionLtr:
+    case kWritingDirectionRtl:
+    case kSpeechMenu:
+    case kSpeechStartSpeaking:
+    case kSpeechStopSpeaking:
       return true;
   }
 
@@ -118,13 +115,13 @@ bool TextServicesContextMenu::SupportsCommand(int command_id) const {
 
 bool TextServicesContextMenu::IsCommandIdChecked(int command_id) const {
   switch (command_id) {
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL:
+    case kWritingDirectionDefault:
+    case kWritingDirectionLtr:
+    case kWritingDirectionRtl:
       return delegate_->IsTextDirectionChecked(
           GetTextDirectionFromCommandId(command_id));
-    case IDS_SPEECH_START_SPEAKING_MAC:
-    case IDS_SPEECH_STOP_SPEAKING_MAC:
+    case kSpeechStartSpeaking:
+    case kSpeechStopSpeaking:
       return false;
   }
 
@@ -134,17 +131,17 @@ bool TextServicesContextMenu::IsCommandIdChecked(int command_id) const {
 
 bool TextServicesContextMenu::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
-    case IDS_SPEECH_MAC:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU:
+    case kSpeechMenu:
+    case kWritingDirectionMenu:
       return true;
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL:
+    case kWritingDirectionDefault:
+    case kWritingDirectionLtr:
+    case kWritingDirectionRtl:
       return delegate_->IsTextDirectionEnabled(
           GetTextDirectionFromCommandId(command_id));
-    case IDS_SPEECH_START_SPEAKING_MAC:
+    case kSpeechStartSpeaking:
       return true;
-    case IDS_SPEECH_STOP_SPEAKING_MAC:
+    case kSpeechStopSpeaking:
       return IsSpeaking();
   }
 
@@ -154,15 +151,15 @@ bool TextServicesContextMenu::IsCommandIdEnabled(int command_id) const {
 
 void TextServicesContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR:
-    case IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL:
+    case kWritingDirectionDefault:
+    case kWritingDirectionLtr:
+    case kWritingDirectionRtl:
       delegate_->UpdateTextDirection(GetTextDirectionFromCommandId(command_id));
       break;
-    case IDS_SPEECH_START_SPEAKING_MAC:
+    case kSpeechStartSpeaking:
       SpeakText(delegate_->GetSelectedText());
       break;
-    case IDS_SPEECH_STOP_SPEAKING_MAC:
+    case kSpeechStopSpeaking:
       StopSpeaking();
       break;
     default:

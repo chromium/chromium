@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
@@ -37,6 +37,9 @@ class UrlIndex : public HistoryBookmarkModel {
  public:
   explicit UrlIndex(std::unique_ptr<BookmarkNode> root);
 
+  UrlIndex(const UrlIndex&) = delete;
+  UrlIndex& operator=(const UrlIndex&) = delete;
+
   BookmarkNode* root() { return root_.get(); }
 
   // Adds |node| to |parent| at |index|.
@@ -44,12 +47,16 @@ class UrlIndex : public HistoryBookmarkModel {
            size_t index,
            std::unique_ptr<BookmarkNode> node);
 
-  // Removes |node| and all its descendants from the map, returns the set of
-  // urls that are no longer contained in the index.
+  // Removes |node| and all its descendants from the map, adds urls that are no
+  // longer contained in the index to the |removed_urls| set if provided
+  // (doesn't clean up existing items in the set).
   std::unique_ptr<BookmarkNode> Remove(BookmarkNode* node,
                                        std::set<GURL>* removed_urls);
 
+  // Mutation of bookmark node fields that are exposed to HistoryBookmarkModel,
+  // which means must acquire a lock. Must be called from the UI thread.
   void SetUrl(BookmarkNode* node, const GURL& url);
+  void SetTitle(BookmarkNode* node, const std::u16string& title);
 
   // Returns the nodes whose icon_url is |icon_url|.
   void GetNodesWithIconUrl(const GURL& icon_url,
@@ -60,8 +67,24 @@ class UrlIndex : public HistoryBookmarkModel {
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;
 
-  // Returns the number of URL bookmarks stored.
-  size_t UrlCount() const;
+  // Returns some stats about number of URL bookmarks stored, for UMA purposes.
+  struct Stats {
+    // Number of bookmark in the index excluding folders.
+    size_t total_url_bookmark_count = 0;
+    // Number of bookmarks (excluding folders) with a URL that is used by at
+    // least one other bookmark, excluding one bookmark per unique URL (i.e. all
+    // except one are considered duplicates).
+    size_t duplicate_url_bookmark_count = 0;
+    // Number of bookmarks (excluding folders) with the pair <URL, title> that
+    // is used by at least one other bookmark, excluding one bookmark per unique
+    // URL (i.e. all except one are considered duplicates).
+    size_t duplicate_url_and_title_bookmark_count = 0;
+    // Number of bookmarks (excluding folders) with the triple <URL, title,
+    // parent> that is used by at least one other bookmark, excluding one
+    // bookmark per unique URL (i.e. all except one are considered duplicates).
+    size_t duplicate_url_and_title_and_parent_bookmark_count = 0;
+  };
+  Stats ComputeStats() const;
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;
@@ -94,8 +117,6 @@ class UrlIndex : public HistoryBookmarkModel {
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
   mutable base::Lock url_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlIndex);
 };
 
 }  // namespace bookmarks

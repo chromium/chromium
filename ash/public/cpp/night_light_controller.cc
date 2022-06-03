@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/night_light_controller.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 namespace {

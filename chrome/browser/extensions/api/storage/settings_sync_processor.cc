@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/storage/settings_sync_processor.h"
+
+#include "base/logging.h"
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
@@ -29,19 +32,19 @@ SettingsSyncProcessor::~SettingsSyncProcessor() {
   DCHECK(IsOnBackendSequence());
 }
 
-void SettingsSyncProcessor::Init(const base::DictionaryValue& initial_state) {
+void SettingsSyncProcessor::Init(const base::Value& initial_state) {
   DCHECK(IsOnBackendSequence());
   CHECK(!initialized_) << "Init called multiple times";
 
-  for (base::DictionaryValue::Iterator i(initial_state); !i.IsAtEnd();
-       i.Advance())
-    synced_keys_.insert(i.key());
+  for (auto iter : initial_state.DictItems()) {
+    synced_keys_.insert(iter.first);
+  }
 
   initialized_ = true;
 }
 
-syncer::SyncError SettingsSyncProcessor::SendChanges(
-    const ValueStoreChangeList& changes) {
+absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
+    const value_store::ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 
@@ -76,11 +79,11 @@ syncer::SyncError SettingsSyncProcessor::SendChanges(
   }
 
   if (sync_changes.empty())
-    return syncer::SyncError();
+    return absl::nullopt;
 
-  syncer::SyncError error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_changes);
-  if (error.IsSet())
+  if (error.has_value())
     return error;
 
   synced_keys_.insert(added_keys.begin(), added_keys.end());
@@ -88,10 +91,11 @@ syncer::SyncError SettingsSyncProcessor::SendChanges(
     synced_keys_.erase(*i);
   }
 
-  return syncer::SyncError();
+  return absl::nullopt;
 }
 
-void SettingsSyncProcessor::NotifyChanges(const ValueStoreChangeList& changes) {
+void SettingsSyncProcessor::NotifyChanges(
+    const value_store::ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 

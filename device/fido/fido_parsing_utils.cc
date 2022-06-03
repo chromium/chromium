@@ -4,7 +4,7 @@
 
 #include "device/fido/fido_parsing_utils.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -27,11 +27,11 @@ std::vector<uint8_t> Materialize(base::span<const uint8_t> span) {
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
-base::Optional<std::vector<uint8_t>> MaterializeOrNull(
-    base::Optional<base::span<const uint8_t>> span) {
+absl::optional<std::vector<uint8_t>> MaterializeOrNull(
+    absl::optional<base::span<const uint8_t>> span) {
   if (span)
     return Materialize(*span);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void Append(std::vector<uint8_t>* target, base::span<const uint8_t> in_values) {
@@ -59,9 +59,7 @@ std::vector<uint8_t> ExtractSuffix(base::span<const uint8_t> span, size_t pos) {
 
 base::span<const uint8_t> ExtractSuffixSpan(base::span<const uint8_t> span,
                                             size_t pos) {
-  if (pos > span.size())
-    return std::vector<uint8_t>();
-  return span.subspan(pos);
+  return span.subspan(std::min(pos, span.size()));
 }
 
 std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,

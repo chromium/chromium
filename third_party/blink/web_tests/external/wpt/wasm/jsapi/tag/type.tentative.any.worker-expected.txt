@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL [] WebAssembly.Tag is not a constructor
+FAIL [i32 i64] WebAssembly.Tag is not a constructor
+FAIL [i32 i64 f32 f64] WebAssembly.Tag is not a constructor
+Harness: the test ran to completion.
+

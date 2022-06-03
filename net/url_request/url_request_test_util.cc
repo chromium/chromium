@@ -4,30 +4,34 @@
 
 #include "net/url_request/url_request_test_util.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
+#include "net/cookies/same_party_context.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/quic_context.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -83,9 +87,13 @@ void TestURLRequestContext::Init() {
 
   if (!host_resolver())
     context_storage_.set_host_resolver(
-        std::unique_ptr<HostResolver>(new MockCachingHostResolver()));
+        std::unique_ptr<HostResolver>(new MockCachingHostResolver(
+            /*cache_invalidation_num=*/0,
+            /*default_result=*/net::MockHostResolverBase::RuleResolver::
+                GetLocalhostResult())));
   if (!proxy_resolution_service())
-    context_storage_.set_proxy_resolution_service(ProxyResolutionService::CreateDirect());
+    context_storage_.set_proxy_resolution_service(
+        ConfiguredProxyResolutionService::CreateDirect());
   if (!cert_verifier()) {
     context_storage_.set_cert_verifier(
         CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
@@ -93,10 +101,6 @@ void TestURLRequestContext::Init() {
   if (!transport_security_state()) {
     context_storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
-  }
-  if (!cert_transparency_verifier()) {
-    context_storage_.set_cert_transparency_verifier(
-        std::make_unique<DoNothingCTVerifier>());
   }
   if (!ct_policy_enforcer()) {
     context_storage_.set_ct_policy_enforcer(
@@ -132,17 +136,16 @@ void TestURLRequestContext::Init() {
     // Make sure we haven't been passed an object we're not going to use.
     EXPECT_FALSE(client_socket_factory_);
   } else {
-    HttpNetworkSession::Params session_params;
+    HttpNetworkSessionParams session_params;
     if (http_network_session_params_)
       session_params = *http_network_session_params_;
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     if (http_network_session_context_)
       session_context = *http_network_session_context_;
     session_context.client_socket_factory = client_socket_factory();
     session_context.host_resolver = host_resolver();
     session_context.cert_verifier = cert_verifier();
-    session_context.cert_transparency_verifier = cert_transparency_verifier();
     session_context.ct_policy_enforcer = ct_policy_enforcer();
     session_context.transport_security_state = transport_security_state();
     session_context.proxy_resolution_service = proxy_resolution_service();
@@ -164,8 +167,7 @@ void TestURLRequestContext::Init() {
         HttpCache::DefaultBackend::InMemory(0), true /* is_main_cache */));
   }
   if (!job_factory()) {
-    context_storage_.set_job_factory(
-        std::make_unique<URLRequestJobFactoryImpl>());
+    context_storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   }
 }
 
@@ -199,7 +201,7 @@ TestURLRequestContext* TestURLRequestContextGetter::GetURLRequestContext() {
     return nullptr;
 
   if (!context_.get())
-    context_.reset(new TestURLRequestContext);
+    context_ = std::make_unique<TestURLRequestContext>();
   return context_.get();
 }
 
@@ -243,6 +245,20 @@ void TestDelegate::RunUntilAuthRequired() {
   base::RunLoop run_loop;
   on_auth_required_ = run_loop.QuitClosure();
   run_loop.Run();
+}
+
+int TestDelegate::OnConnected(URLRequest* request,
+                              const TransportInfo& info,
+                              CompletionOnceCallback callback) {
+  transports_.push_back(info);
+
+  if (on_connected_run_callback_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), on_connected_result_));
+    return net::ERR_IO_PENDING;
+  }
+
+  return on_connected_result_;
 }
 
 void TestDelegate::OnReceivedRedirect(URLRequest* request,
@@ -384,14 +400,12 @@ TestNetworkDelegate::TestNetworkDelegate()
       completed_requests_(0),
       canceled_requests_(0),
       cookie_options_bit_mask_(0),
-      blocked_get_cookies_count_(0),
+      blocked_annotate_cookies_count_(0),
       blocked_set_cookie_count_(0),
       set_cookie_count_(0),
-      before_send_headers_with_proxy_count_(0),
       before_start_transaction_count_(0),
       headers_received_count_(0),
       has_load_timing_info_before_redirect_(false),
-      experimental_cookie_features_enabled_(false),
       cancel_request_with_policy_violating_referrer_(false),
       before_start_transaction_fails_(false),
       add_header_to_first_response_(false),
@@ -440,8 +454,8 @@ int TestNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
 
 int TestNetworkDelegate::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   if (before_start_transaction_fails_)
     return ERR_FAILED;
 
@@ -450,24 +464,10 @@ int TestNetworkDelegate::OnBeforeStartTransaction(
   event_order_[req_id] += "OnBeforeStartTransaction\n";
   EXPECT_TRUE(next_states_[req_id] & kStageBeforeStartTransaction)
       << event_order_[req_id];
-  next_states_[req_id] = kStageHeadersReceived | kStageCompletedError;
+  next_states_[req_id] =
+      kStageHeadersReceived | kStageCompletedError | kStageBeforeRedirect;
   before_start_transaction_count_++;
   return OK;
-}
-
-void TestNetworkDelegate::OnBeforeSendHeaders(
-    URLRequest* request,
-    const ProxyInfo& proxy_info,
-    const ProxyRetryInfoMap& proxy_retry_info,
-    HttpRequestHeaders* headers) {
-  if (!proxy_info.is_http() && !proxy_info.is_https() && !proxy_info.is_quic())
-    return;
-  if (!request || request->url().SchemeIs("https") ||
-      request->url().SchemeIsWSOrWSS()) {
-    return;
-  }
-  ++before_send_headers_with_proxy_count_;
-  last_observed_proxy_ = proxy_info.proxy_server().host_port_pair();
 }
 
 int TestNetworkDelegate::OnHeadersReceived(
@@ -476,7 +476,7 @@ int TestNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   EXPECT_FALSE(preserve_fragment_on_redirect_url->has_value());
   int req_id = GetRequestId(request);
   bool is_first_response =
@@ -499,18 +499,18 @@ int TestNetworkDelegate::OnHeadersReceived(
         new HttpResponseHeaders(original_response_headers->raw_headers());
     (*override_response_headers)->ReplaceStatusLine("HTTP/1.1 302 Found");
     (*override_response_headers)->RemoveHeader("Location");
-    (*override_response_headers)->AddHeader(
-        "Location: " + redirect_on_headers_received_url_.spec());
+    (*override_response_headers)
+        ->AddHeader("Location", redirect_on_headers_received_url_.spec());
 
     redirect_on_headers_received_url_ = GURL();
 
-    // Since both values are base::Optionals, can just copy this over.
+    // Since both values are absl::optionals, can just copy this over.
     *preserve_fragment_on_redirect_url = preserve_fragment_on_redirect_url_;
   } else if (add_header_to_first_response_ && is_first_response) {
     *override_response_headers =
         new HttpResponseHeaders(original_response_headers->raw_headers());
     (*override_response_headers)
-        ->AddHeader("X-Network-Delegate: Greetings, planet");
+        ->AddHeader("X-Network-Delegate", "Greetings, planet");
   }
 
   headers_received_count_++;
@@ -604,22 +604,30 @@ void TestNetworkDelegate::OnURLRequestDestroyed(URLRequest* request) {
   destroyed_requests_++;
 }
 
-void TestNetworkDelegate::OnPACScriptError(int line_number,
-                                           const base::string16& error) {
-}
-
-bool TestNetworkDelegate::OnCanGetCookies(const URLRequest& request,
-                                          const CookieList& cookie_list,
-                                          bool allowed_from_caller) {
+bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
+    const URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
+    bool allowed_from_caller) {
   bool allow = allowed_from_caller;
   if (cookie_options_bit_mask_ & NO_GET_COOKIES)
     allow = false;
 
   if (!allow) {
-    blocked_get_cookies_count_++;
+    blocked_annotate_cookies_count_++;
+    ExcludeAllCookies(CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
   }
 
   return allow;
+}
+
+bool TestNetworkDelegate::OnForcePrivacyMode(
+    const GURL& url,
+    const SiteForCookies& site_for_cookies,
+    const absl::optional<url::Origin>& top_frame_origin,
+    SamePartyContext::Type same_party_context_type) const {
+  return false;
 }
 
 bool TestNetworkDelegate::OnCanSetCookie(const URLRequest& request,
@@ -657,19 +665,116 @@ int TestNetworkDelegate::GetRequestId(URLRequest* request) {
   return id;
 }
 
-TestJobInterceptor::TestJobInterceptor() = default;
+FilteringTestNetworkDelegate::FilteringTestNetworkDelegate() = default;
+FilteringTestNetworkDelegate::~FilteringTestNetworkDelegate() = default;
 
-TestJobInterceptor::~TestJobInterceptor() = default;
+bool FilteringTestNetworkDelegate::OnCanSetCookie(
+    const URLRequest& request,
+    const net::CanonicalCookie& cookie,
+    CookieOptions* options,
+    bool allowed_from_caller) {
+  // Filter out cookies with the same name as |cookie_name_filter_| and
+  // combine with |allowed_from_caller|.
+  bool allowed = allowed_from_caller && !(cookie.Name() == cookie_name_filter_);
 
-URLRequestJob* TestJobInterceptor::MaybeCreateJob(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) const {
-  return main_intercept_job_.release();
+  ++set_cookie_called_count_;
+
+  if (!allowed)
+    ++blocked_set_cookie_count_;
+
+  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options, allowed);
 }
 
-void TestJobInterceptor::set_main_intercept_job(
-    std::unique_ptr<URLRequestJob> job) {
-  main_intercept_job_ = std::move(job);
+bool FilteringTestNetworkDelegate::OnForcePrivacyMode(
+    const GURL& url,
+    const SiteForCookies& site_for_cookies,
+    const absl::optional<url::Origin>& top_frame_origin,
+    SamePartyContext::Type same_party_context_type) const {
+  if (force_privacy_mode_)
+    return true;
+
+  return TestNetworkDelegate::OnForcePrivacyMode(
+      url, site_for_cookies, top_frame_origin, same_party_context_type);
+}
+
+bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
+    const URLRequest& request,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies,
+    bool allowed_from_caller) {
+  // Filter out cookies if |block_annotate_cookies_| is set and
+  // combine with |allowed_from_caller|.
+  bool allowed = allowed_from_caller && !block_annotate_cookies_;
+
+  ++annotate_cookies_called_count_;
+
+  if (!allowed) {
+    ++blocked_annotate_cookies_count_;
+    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
+  }
+
+  if (allowed && block_get_cookies_by_name_ && !cookie_name_filter_.empty()) {
+    for (auto& cookie : maybe_included_cookies) {
+      if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
+        cookie.access_result.status.AddExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      }
+    }
+    for (auto& cookie : excluded_cookies) {
+      if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
+        cookie.access_result.status.AddExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      }
+    }
+
+    MoveExcludedCookies(maybe_included_cookies, excluded_cookies);
+  }
+
+  return TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
+      request, maybe_included_cookies, excluded_cookies, allowed);
+}
+
+// URLRequestInterceptor that intercepts only the first request it sees,
+// returning the provided URLRequestJob.
+class TestScopedURLInterceptor::TestRequestInterceptor
+    : public URLRequestInterceptor {
+ public:
+  explicit TestRequestInterceptor(std::unique_ptr<URLRequestJob> intercept_job)
+      : intercept_job_(std::move(intercept_job)) {}
+
+  ~TestRequestInterceptor() override { CHECK(safe_to_delete_); }
+
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::move(intercept_job_);
+  }
+
+  bool job_used() const { return intercept_job_.get() == nullptr; }
+  void set_safe_to_delete() { safe_to_delete_ = true; }
+
+ private:
+  mutable std::unique_ptr<URLRequestJob> intercept_job_;
+  // This is used to catch chases where the TestRequestInterceptor is destroyed
+  // before the TestScopedURLInterceptor.
+  bool safe_to_delete_ = false;
+};
+
+TestScopedURLInterceptor::TestScopedURLInterceptor(
+    const GURL& url,
+    std::unique_ptr<URLRequestJob> intercept_job)
+    : url_(url) {
+  std::unique_ptr<TestRequestInterceptor> interceptor =
+      std::make_unique<TestRequestInterceptor>(std::move(intercept_job));
+  interceptor_ = interceptor.get();
+  URLRequestFilter::GetInstance()->AddUrlInterceptor(url_,
+                                                     std::move(interceptor));
+}
+
+TestScopedURLInterceptor::~TestScopedURLInterceptor() {
+  DCHECK(interceptor_->job_used());
+  interceptor_->set_safe_to_delete();
+  URLRequestFilter::GetInstance()->RemoveUrlHandler(url_);
 }
 
 }  // namespace net

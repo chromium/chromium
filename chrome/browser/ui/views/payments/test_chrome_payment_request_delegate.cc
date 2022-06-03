@@ -9,29 +9,32 @@
 namespace payments {
 
 TestChromePaymentRequestDelegate::TestChromePaymentRequestDelegate(
-    content::WebContents* web_contents,
-    PaymentRequestDialogView::ObserverForTest* observer,
+    content::RenderFrameHost* render_frame_host,
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer,
     PrefService* pref_service,
-    bool is_incognito,
+    bool is_off_the_record,
     bool is_valid_ssl,
     bool is_browser_window_active,
     bool skip_ui_for_basic_card)
-    : ChromePaymentRequestDelegate(web_contents),
+    : ChromePaymentRequestDelegate(render_frame_host),
       region_data_loader_(nullptr),
       observer_(observer),
       pref_service_(pref_service),
-      is_incognito_(is_incognito),
+      is_off_the_record_(is_off_the_record),
       is_valid_ssl_(is_valid_ssl),
       is_browser_window_active_(is_browser_window_active),
       skip_ui_for_basic_card_(skip_ui_for_basic_card) {}
 
-void TestChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
-  shown_dialog_ = new PaymentRequestDialogView(request, observer_);
+TestChromePaymentRequestDelegate::~TestChromePaymentRequestDelegate() = default;
+
+void TestChromePaymentRequestDelegate::ShowDialog(
+    base::WeakPtr<PaymentRequest> request) {
+  shown_dialog_ = PaymentRequestDialogView::Create(request, observer_);
   shown_dialog_->ShowDialog();
 }
 
-bool TestChromePaymentRequestDelegate::IsIncognito() const {
-  return is_incognito_;
+bool TestChromePaymentRequestDelegate::IsOffTheRecord() const {
+  return is_off_the_record_;
 }
 
 autofill::RegionDataLoader*

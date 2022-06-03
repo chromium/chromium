@@ -31,8 +31,8 @@ TEST_F(LocalSyncPolicyTest, Default) {
 // RoamingProfileLocation policy expects a string; give it a boolean.
 TEST_F(LocalSyncPolicyTest, SetPolicyInvalid) {
   policy_.Set(key::kRoamingProfileLocation, POLICY_LEVEL_MANDATORY,
-              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              std::make_unique<base::Value>(false), nullptr);
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+              nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
   EXPECT_FALSE(prefs_.GetValue(syncer::prefs::kLocalSyncBackendDir, nullptr));
 }
@@ -41,8 +41,7 @@ TEST_F(LocalSyncPolicyTest, SetPolicyInvalid) {
 TEST_F(LocalSyncPolicyTest, SetPolicyValid) {
   const std::string in = "${user_name}/foo";
   policy_.Set(key::kRoamingProfileLocation, POLICY_LEVEL_MANDATORY,
-              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              std::make_unique<base::Value>(in), nullptr);
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(in), nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
 
   const base::Value* value;

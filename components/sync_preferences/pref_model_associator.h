@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/sync_data.h"
@@ -28,7 +27,7 @@ class Value;
 namespace sync_pb {
 class EntitySpecifics;
 class PreferenceSpecifics;
-}
+}  // namespace sync_pb
 
 namespace sync_preferences {
 
@@ -46,6 +45,10 @@ class PrefModelAssociator : public syncer::SyncableService {
   PrefModelAssociator(const PrefModelAssociatorClient* client,
                       syncer::ModelType type,
                       PersistentPrefStore* user_pref_store);
+
+  PrefModelAssociator(const PrefModelAssociator&) = delete;
+  PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
+
   ~PrefModelAssociator() override;
 
   // See description above field for details.
@@ -59,20 +62,20 @@ class PrefModelAssociator : public syncer::SyncableService {
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  syncer::SyncMergeResult MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
   void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncError ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
-  // Note for GetAllSyncData: This will build a model of all preferences
-  // registered as syncable with user controlled data. We do not track any
-  // information for preferences not registered locally as syncable and do not
-  // inform the syncer of non-user controlled preferences.
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override;
+  // Note for GetAllSyncDataForTesting: This will build a model of all
+  // preferences registered as syncable with user controlled data. We do not
+  // track any information for preferences not registered locally as syncable
+  // and do not inform the syncer of non-user controlled preferences.
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
 
   // Register a preference with the specified name for syncing. We do not care
   // about the type at registration time, but when changes arrive from the
@@ -148,7 +151,7 @@ class PrefModelAssociator : public syncer::SyncableService {
                                            const base::Value& to_value);
 
   // Extract preference value from sync specifics.
-  static base::Value* ReadPreferenceSpecifics(
+  static absl::optional<base::Value> ReadPreferenceSpecifics(
       const sync_pb::PreferenceSpecifics& specifics);
 
   void NotifySyncedPrefObservers(const std::string& path, bool from_sync) const;
@@ -168,6 +171,10 @@ class PrefModelAssociator : public syncer::SyncableService {
   // matches the type of any persisted value. On mismatch, the persisted value
   // gets removed.
   void EnforceRegisteredTypeInStore(const std::string& pref_name);
+
+  // Notifies the synced pref observers that the pref for the given |path| is
+  // synced.
+  void NotifyStartedSyncing(const std::string& path) const;
 
   // Do we have an active association between the preferences and sync models?
   // Set when start syncing, reset in StopSyncing. While this is not set, we
@@ -226,8 +233,6 @@ class PrefModelAssociator : public syncer::SyncableService {
   PersistentPrefStore* const user_pref_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefModelAssociator);
 };
 
 }  // namespace sync_preferences

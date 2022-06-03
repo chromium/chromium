@@ -63,9 +63,7 @@ source_set("common") {
 }
 
 source_set("disabled_cleaner_sandbox_interface") {
-  sources = [
-    "noop_cleaner_engine_requests_impl.cc",
-  ]
+  sources = [ "noop_cleaner_engine_requests_impl.cc" ]
 
   deps = [
     ":common",
@@ -112,9 +110,7 @@ source_set("engine_client_mock") {
 }
 
 source_set("interface_metadata_observer") {
-  sources = [
-    "interface_metadata_observer.h",
-  ]
+  sources = [ "interface_metadata_observer.h" ]
 }
 
 source_set("noop_interface_metadata_observer") {
@@ -141,9 +137,8 @@ source_set("interface_log_service") {
     "//chrome/chrome_cleaner/os:common_os",
   ]
 
-  public_deps = [
-    "//chrome/chrome_cleaner/logging/proto:interface_logger_proto",
-  ]
+  public_deps =
+      [ "//chrome/chrome_cleaner/logging/proto:interface_logger_proto" ]
 
   all_dependent_configs = [ "//third_party/protobuf:using_proto" ]
 }

@@ -22,10 +22,9 @@ class FakeInstallationState : public InstallationState {
     FakeProductState chrome_state;
     chrome_state.set_version(version);
     base::FilePath setup_exe(GetChromeInstallPath(system_install));
-    setup_exe = setup_exe
-        .AppendASCII(version->GetString())
-        .Append(kInstallerDir)
-        .Append(kSetupExe);
+    setup_exe = setup_exe.AppendASCII(version->GetString())
+                    .Append(kInstallerDir)
+                    .Append(kSetupExe);
     chrome_state.SetUninstallProgram(setup_exe);
     chrome_state.AddUninstallSwitch(switches::kUninstall);
     SetProductState(system_install, chrome_state);

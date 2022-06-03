@@ -7,19 +7,22 @@
 
 #include <fuchsia/ui/input/cpp/fidl.h>
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
 
-class InputEventDispatcherDelegate;
+class InputEventSink;
 
 // Translates Fuchsia input events to Chrome ui::Events.
 class EVENTS_EXPORT InputEventDispatcher {
  public:
-  // |delegate|: The recipient of any Chrome events that are processed from
+  // |event_sink|: The recipient of any Chrome events that are processed from
   // Fuchsia events.
-  explicit InputEventDispatcher(InputEventDispatcherDelegate* delegate);
+  explicit InputEventDispatcher(InputEventSink* event_sink);
+
+  InputEventDispatcher(const InputEventDispatcher&) = delete;
+  InputEventDispatcher& operator=(const InputEventDispatcher&) = delete;
+
   ~InputEventDispatcher();
 
   // Processes a Fuchsia |event| and dispatches Chrome ui::Events from it.
@@ -31,12 +34,8 @@ class EVENTS_EXPORT InputEventDispatcher {
  private:
   bool ProcessMouseEvent(const fuchsia::ui::input::PointerEvent& event) const;
   bool ProcessTouchEvent(const fuchsia::ui::input::PointerEvent& event) const;
-  bool ProcessKeyboardEvent(
-      const fuchsia::ui::input::KeyboardEvent& event) const;
 
-  InputEventDispatcherDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEventDispatcher);
+  InputEventSink* event_sink_;
 };
 
 }  // namespace ui

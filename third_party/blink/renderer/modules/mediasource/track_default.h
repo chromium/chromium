@@ -18,9 +18,9 @@ class TrackDefault final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const AtomicString& AudioKeyword();
-  static const AtomicString& VideoKeyword();
-  static const AtomicString& TextKeyword();
+  static AtomicString AudioKeyword();
+  static AtomicString VideoKeyword();
+  static AtomicString TextKeyword();
 
   static TrackDefault* Create(const AtomicString& type,
                               const String& language,

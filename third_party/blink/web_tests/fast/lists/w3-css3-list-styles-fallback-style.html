@@ -66,7 +66,7 @@
     <h1>CSS3 Fallback to Decimal List Style</h1>
     <div id="description">
         <p>This tests that we fallback to the decimal list style type when the ordinal is outside the representable range for the list style type as per the <a href="http://www.w3.org/TR/css-counter-styles-3/">CSS3 Counter Styles Level 3 module</a> (CR 3 Februari 2015). This test PASSED if the list item matches its marker for every list item (below).</p>
-        <p>Note, as of 12/04/2010, ethiopic-numeric; japanese-formal; japanese-informal; simp-chinese-formal; simp-chinese-informal; syriac; tamil; trad-chinese-formal; and trad-chinese-informal are unsupported and hence have expected failure results.</p>
+        <p>Note, as of 02/05/2021, syriac is unsupported and hence have expected failure results.</p>
     </div>
     <hr/>
     <h2>Algorithmic</h2>
@@ -93,12 +93,11 @@
     </div>
     
     <div class="test">
-        <!-- FIXME: We don't currently support this list-style-type. These are expected failure results. -->
         <h2>ethiopic-numeric</h2>
         <ol class="ethiopic-numeric" start="-1">
             <li>-1</li>
             <li>0</li>
-            <li>1</li>
+            <li>&#x1369;</li>
         </ol>
     </div>
     
@@ -119,31 +118,29 @@
         <h2>hebrew</h2>
         <ol class="hebrew" start="-1">
             <li>-1</li>
-            <li>&#x5E1;&#x5E4;&#x5D0;</li>
+            <li>&#x5D0;&#x5E4;&#x5E1;</li>
             <li>&#x5D0;</li>
         </ol>
         <ol class="hebrew" start="999999">
-            <li>&#x5D8;&#x5E6;&#x5E7;&#x5EA;&#x5EA;&#x27;&#x5D8;&#x5E6;&#x5E7;&#x5EA;&#x5EA;</li>
+            <li>&#x5EA;&#x5EA;&#x5E7;&#x5E6;&#x5D8;&#x5F3;&#x5EA;&#x5EA;&#x5E7;&#x5E6;&#x5D8;</li>
             <li>1000000</li>
             <li>1000001</li>
         </ol>
     </div>
     <div class="test">
-        <!-- FIXME: We don't currently support this list-style-type. These are expected failure results. -->
         <h2>japanese-formal</h2>
         <ol class="japanese-formal" start="-1">
-            <li>-1</li>
-            <li>0</li>
-            <li>1</li>
+            <li>マイナス壱</li>
+            <li>零</li>
+            <li>壱</li>
         </ol>
     </div>
     <div class="test">
-        <!-- FIXME: We don't currently support this list-style-type. These are expected failure results. -->
         <h2>japanese-informal</h2>
         <ol class="japanese-informal" start="-1">
-            <li>-1</li>
-            <li>0</li>
-            <li>1</li>
+            <li>マイナス一</li>
+            <li>〇</li>
+            <li>一</li>
         </ol>
     </div>
     <div class="test">
@@ -192,12 +189,11 @@
         </ol>
     </div>
     <div class="test">
-        <!-- FIXME: We don't currently support this list-style-type. These are expected failure results. -->
         <h2>tamil</h2>
         <ol class="tamil" start="-1">
-            <li>-1</li>
-            <li>0</li>
-            <li>1</li>
+            <li>-௧</li>
+            <li>௦</li>
+            <li>௧</li>
         </ol>
     </div>
     <div class="test">

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/page_info/page_info.h"
+#include "components/page_info/page_info.h"
 
 #include <memory>
 #include <set>
@@ -12,33 +12,46 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/infobars/mock_infobar_service.h"
-#include "chrome/browser/ssl/chrome_ssl_host_state_delegate.h"
-#include "chrome/browser/ssl/chrome_ssl_host_state_delegate_factory.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
-#include "chrome/browser/ui/page_info/page_info_ui.h"
+#include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/page_info/features.h"
+#include "components/page_info/page_info_ui.h"
+#include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_state/core/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -56,16 +69,22 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::SSLStatus;
 using testing::_;
 using testing::AnyNumber;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
 
@@ -107,29 +126,29 @@ class MockPageInfoUI : public PageInfoUI {
     }
   }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  std::unique_ptr<PageInfoUI::SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse() const override {
-    std::unique_ptr<PageInfoUI::SecurityDescription> security_description(
-        new PageInfoUI::SecurityDescription());
-    security_description->summary_style = SecuritySummaryColor::RED;
-    security_description->summary =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-    security_description->details =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS);
-    security_description->type = SecurityDescriptionType::SAFE_BROWSING;
-    return security_description;
-  }
-#endif
-
-  base::Callback<void(const PermissionInfoList& permission_info_list,
-                      ChosenObjectInfoList chosen_object_info_list)>
+  base::RepeatingCallback<void(const PermissionInfoList& permission_info_list,
+                               ChosenObjectInfoList chosen_object_info_list)>
       set_permission_info_callback_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeAffiliatedUser : public user_manager::User {
+ public:
+  explicit FakeAffiliatedUser(const AccountId& account_id) : User(account_id) {
+    SetAffiliation(true);
+  }
+
+  user_manager::UserType GetType() const override {
+    return user_manager::USER_TYPE_REGULAR;
+  }
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PageInfoTest : public ChromeRenderViewHostTestHarness {
  public:
-  PageInfoTest() { SetURL("http://www.example.com"); }
+  PageInfoTest() : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
+    SetURL("http://www.example.com");
+  }
 
   ~PageInfoTest() override {}
 
@@ -144,17 +163,39 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
     ASSERT_TRUE(cert_);
 
-    TabSpecificContentSettings::CreateForWebContents(web_contents());
-    MockInfoBarService::CreateForWebContents(web_contents());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(profile()->GetProfileUserName(), "id");
+    user_ = std::make_unique<FakeAffiliatedUser>(account_id);
+    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+        user_.get());
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user_.get(), profile());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        web_contents(),
+        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+            web_contents()));
 
     // Setup mock ui.
     ResetMockUI();
   }
 
   void TearDown() override {
-    ASSERT_TRUE(page_info_.get()) << "No PageInfo instance created.";
+    ASSERT_TRUE(page_info_ || incognito_page_info_)
+        << "No PageInfo instance created.";
+    incognito_web_contents_.reset();
     RenderViewHostTestHarness::TearDown();
     page_info_.reset();
+    incognito_page_info_.reset();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {
+        {StatefulSSLHostStateDelegateFactory::GetInstance(),
+         StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()}};
   }
 
   void SetDefaultUIExpectations(MockPageInfoUI* mock_ui) {
@@ -178,11 +219,11 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ResetMockUI() {
-    mock_ui_ = std::make_unique<MockPageInfoUI>();
+    mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
     // Use this rather than gmock's ON_CALL.WillByDefault(Invoke(... because
     // gmock doesn't handle move-only types well.
-    mock_ui_->set_permission_info_callback_ =
-        base::Bind(&PageInfoTest::SetPermissionInfo, base::Unretained(this));
+    mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+        &PageInfoTest::SetPermissionInfo, base::Unretained(this));
   }
 
 
@@ -198,10 +239,6 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   const url::Origin& origin() const { return origin_; }
   scoped_refptr<net::X509Certificate> cert() { return cert_; }
   MockPageInfoUI* mock_ui() { return mock_ui_.get(); }
-  security_state::SecurityLevel security_level() { return security_level_; }
-  const security_state::VisibleSecurityState& visible_security_state() {
-    return visible_security_state_;
-  }
   const std::vector<std::unique_ptr<PageInfoUI::ChosenObjectInfo>>&
   last_chosen_object_info() {
     return last_chosen_object_info_;
@@ -209,28 +246,80 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   const PermissionInfoList& last_permission_info_list() {
     return last_permission_info_list_;
   }
-  TabSpecificContentSettings* tab_specific_content_settings() {
-    return TabSpecificContentSettings::FromWebContents(web_contents());
-  }
-  InfoBarService* infobar_service() {
-    return InfoBarService::FromWebContents(web_contents());
+  infobars::ContentInfoBarManager* infobar_manager() {
+    return infobars::ContentInfoBarManager::FromWebContents(web_contents());
   }
 
   PageInfo* page_info() {
     if (!page_info_.get()) {
-      page_info_ = std::make_unique<PageInfo>(
-          mock_ui(), profile(), tab_specific_content_settings(), web_contents(),
-          url(), security_level(), visible_security_state());
+      auto delegate = std::make_unique<ChromePageInfoDelegate>(web_contents());
+      delegate->SetSecurityStateForTests(security_level_,
+                                         visible_security_state_);
+      page_info_ = std::make_unique<PageInfo>(std::move(delegate),
+                                              web_contents(), url());
+      base::RunLoop run_loop;
+      page_info_->InitializeUiState(mock_ui(), run_loop.QuitClosure());
+      run_loop.Run();
     }
     return page_info_.get();
+  }
+
+  PageInfo* incognito_page_info() {
+    if (!incognito_page_info_.get()) {
+      // Build the incognito profile manually in order to override testing
+      // factories.
+      TestingProfile::Builder incognito_profile_builder;
+      incognito_profile_builder.AddTestingFactories(GetTestingFactories());
+      incognito_profile_builder.BuildIncognito(profile());
+
+      incognito_web_contents_ =
+          content::WebContentsTester::CreateTestWebContents(
+              profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+              nullptr);
+
+      content_settings::PageSpecificContentSettings::CreateForWebContents(
+          incognito_web_contents_.get(),
+          std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+              incognito_web_contents_.get()));
+
+      incognito_mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
+      incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+          &PageInfoTest::SetPermissionInfo, base::Unretained(this));
+
+      auto delegate = std::make_unique<ChromePageInfoDelegate>(
+          incognito_web_contents_.get());
+      delegate->SetSecurityStateForTests(security_level_,
+                                         visible_security_state_);
+      incognito_page_info_ = std::make_unique<PageInfo>(
+          std::move(delegate), incognito_web_contents_.get(), url());
+      base::RunLoop run_loop;
+      incognito_page_info_->InitializeUiState(incognito_mock_ui_.get(),
+                                              run_loop.QuitClosure());
+      run_loop.Run();
+    }
+    return incognito_page_info_.get();
   }
 
   security_state::SecurityLevel security_level_;
   security_state::VisibleSecurityState visible_security_state_;
 
  private:
+  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<PageInfo> page_info_;
   std::unique_ptr<MockPageInfoUI> mock_ui_;
+
+  std::unique_ptr<content::WebContents> incognito_web_contents_;
+  std::unique_ptr<PageInfo> incognito_page_info_;
+  std::unique_ptr<NiceMock<MockPageInfoUI>> incognito_mock_ui_;
+
+#if !defined(OS_ANDROID)
+  ChromeLayoutProvider layout_provider_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<FakeAffiliatedUser> user_;
+#endif
+
   scoped_refptr<net::X509Certificate> cert_;
   GURL url_;
   url::Origin origin_;
@@ -248,7 +337,47 @@ bool PermissionInfoListContainsPermission(const PermissionInfoList& permissions,
   return false;
 }
 
+void ExpectPermissionInfoList(
+    const std::set<ContentSettingsType>& expected_permissions,
+    const PermissionInfoList& permissions) {
+  EXPECT_EQ(expected_permissions.size(), permissions.size());
+  for (ContentSettingsType type : expected_permissions) {
+    EXPECT_TRUE(PermissionInfoListContainsPermission(permissions, type))
+        << "expected: " << static_cast<int>(type);
+  }
+}
+
 }  // namespace
+
+TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
+  page_info();
+  for (const PageInfoUI::PermissionUIInfo& info :
+       PageInfoUI::GetContentSettingsUIInfoForTesting()) {
+    std::u16string normal = l10n_util::GetStringUTF16(info.string_id);
+    std::u16string mid_sentence =
+        l10n_util::GetStringUTF16(info.string_id_mid_sentence);
+    switch (info.type) {
+      case ContentSettingsType::MIDI_SYSEX:
+      case ContentSettingsType::NFC:
+      case ContentSettingsType::USB_GUARD:
+#if !defined(OS_ANDROID)
+      case ContentSettingsType::HID_GUARD:
+#endif
+        EXPECT_EQ(normal, mid_sentence);
+        break;
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+      case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
+        break;
+#endif
+      default:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
+        break;
+    }
+  }
+}
 
 TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   page_info()->PresentSitePermissions();
@@ -260,69 +389,124 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // on because this test isn't testing with a default search engine origin.
   expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
 #endif
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   // Change some default-ask settings away from the default.
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
   page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::NOTIFICATIONS);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   expected_visible_permissions.insert(ContentSettingsType::POPUPS);
   // Change a default-block setting to a user-preference block instead.
   page_info()->OnSitePermissionChanged(ContentSettingsType::POPUPS,
-                                       CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+                                       CONTENT_SETTING_BLOCK,
+                                       /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   expected_visible_permissions.insert(ContentSettingsType::JAVASCRIPT);
   // Change a default-allow setting away from the default.
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
-                                       CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+                                       CONTENT_SETTING_BLOCK,
+                                       /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   // Make sure changing a setting to its default causes it to show up, since it
   // has been recently changed.
   expected_visible_permissions.insert(ContentSettingsType::MEDIASTREAM_CAMERA);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                       CONTENT_SETTING_DEFAULT);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+                                       CONTENT_SETTING_DEFAULT,
+                                       /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   // Set the Javascript setting to default should keep it shown.
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
-                                       CONTENT_SETTING_DEFAULT);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+                                       CONTENT_SETTING_DEFAULT,
+                                       /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   // Change the default setting for Javascript away from the factory default.
-  page_info()->content_settings_->SetDefaultContentSetting(
+  page_info()->GetContentSettings()->SetDefaultContentSetting(
       ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);
   page_info()->PresentSitePermissions();
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 
   // Change it back to ALLOW, which is its factory default, but has a source
   // from the user preference (i.e. it counts as non-factory default).
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
-                                       CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(expected_visible_permissions.size(),
-            last_permission_info_list().size());
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
 
-  // Sanity check the correct permissions are being shown.
-  for (ContentSettingsType type : expected_visible_permissions) {
-    EXPECT_TRUE(PermissionInfoListContainsPermission(
-        last_permission_info_list(), type));
-  }
+TEST_F(PageInfoTest, IncognitoPermissionsEmptyByDefault) {
+  incognito_page_info()->PresentSitePermissions();
+  EXPECT_EQ(0u, last_permission_info_list().size());
+}
+
+TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
+  page_info()->PresentSitePermissions();
+  std::set<ContentSettingsType> expected_permissions;
+  std::set<ContentSettingsType> expected_incognito_permissions;
+#if defined(OS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_permissions, last_permission_info_list());
+
+  // Add some permissions to regular page info.
+  page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
+
+  page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
+                                       CONTENT_SETTING_BLOCK,
+                                       /*is_one_time=*/false);
+  expected_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
+  expected_incognito_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
+
+  // Both permissions should show in regular page info.
+  EXPECT_EQ(2u, last_permission_info_list().size());
+
+  // Only the block permissions should show in incognito mode as ALLOW
+  // permissions are inherited as ASK.
+  incognito_page_info()->PresentSitePermissions();
+  ExpectPermissionInfoList(expected_incognito_permissions,
+                           last_permission_info_list());
+
+  // Changing the permission to BLOCK should show it.
+  incognito_page_info()->OnSitePermissionChanged(
+      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK,
+      /*is_one_time=*/false);
+  expected_incognito_permissions.insert(ContentSettingsType::GEOLOCATION);
+  ExpectPermissionInfoList(expected_incognito_permissions,
+                           last_permission_info_list());
+
+  // Switching a permission back to default should not hide the permission.
+  incognito_page_info()->OnSitePermissionChanged(
+      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT,
+      /*is_one_time=*/false);
+  ExpectPermissionInfoList(expected_incognito_permissions,
+                           last_permission_info_list());
 }
 
 TEST_F(PageInfoTest, OnPermissionsChanged) {
@@ -330,24 +514,19 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSetting setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::POPUPS, std::string());
+      url(), url(), ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#if BUILDFLAG(ENABLE_PLUGINS)
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::PLUGINS, std::string());
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#endif
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string());
+      url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::NOTIFICATIONS, std::string());
+      url(), url(), ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_MIC, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
@@ -355,49 +534,40 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
 
 // SetPermissionInfo() is called once initially, and then again every time
 // OnSitePermissionChanged() is called.
-#if !BUILDFLAG(ENABLE_PLUGINS)
-  // SetPermissionInfo for plugins didn't get called.
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(6);
-#else
-  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(7);
-#endif
 
   // Execute code under tests.
   page_info()->OnSitePermissionChanged(ContentSettingsType::POPUPS,
-                                       CONTENT_SETTING_ALLOW);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  page_info()->OnSitePermissionChanged(ContentSettingsType::PLUGINS,
-                                       CONTENT_SETTING_BLOCK);
-#endif
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
 
   // Verify that the site permissions were changed correctly.
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::POPUPS, std::string());
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::PLUGINS, std::string());
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-#endif
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string());
+  setting = content_settings->GetContentSetting(url(), url(),
+                                                ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::NOTIFICATIONS, std::string());
+      url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_MIC, std::string());
+      url(), url(), ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_MIC);
+  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+  setting = content_settings->GetContentSetting(
+      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
 }
 
@@ -412,7 +582,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
 
   auto device_info = usb_device_manager.CreateAndAddDevice(
       0, 0, "Google", "Gizmo", "1234567890");
-  store->GrantDevicePermission(origin(), origin(), *device_info);
+  store->GrantDevicePermission(origin(), *device_info);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_));
@@ -428,7 +598,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
   page_info()->OnSiteChosenObjectDeleted(info->ui_info,
                                          info->chooser_object->value);
 
-  EXPECT_FALSE(store->HasDevicePermission(origin(), origin(), *device_info));
+  EXPECT_FALSE(store->HasDevicePermission(origin(), *device_info));
   EXPECT_EQ(0u, last_chosen_object_info().size());
 }
 
@@ -535,7 +705,6 @@ TEST_F(PageInfoTest, HTTPSConnection) {
 
 // Define some dummy constants for Android-only resources.
 #if !defined(OS_ANDROID)
-#define IDR_PAGEINFO_WARNING_MINOR 0
 #define IDR_PAGEINFO_BAD 0
 #define IDR_PAGEINFO_GOOD 0
 #endif
@@ -561,7 +730,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Passive mixed content with a nonsecure form. The nonsecure form is the
       // more severe problem.
       {security_state::NONE, 0, false /* ran_mixed_content */,
@@ -569,21 +738,21 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Only nonsecure form.
       {security_state::NONE, 0, false /* ran_mixed_content */,
        false /* displayed_mixed_content */, true,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Passive mixed content with a cert error on the main resource.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
        false /* ran_mixed_content */, true /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
       // Active and passive mixed content.
       {security_state::DANGEROUS, 0, true /* ran_mixed_content */,
        true /* displayed_mixed_content */, false,
@@ -627,7 +796,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Passive subresources with cert errors, with a cert error on the
       // main resource also. In this case, the subresources with
       // certificate errors are ignored: if the main resource had a cert
@@ -674,13 +843,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        true /* displayed_content_with_cert_errors */, false,
        false /* ran_mixed_content */, true /* displayed_mixed_content */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
-      // Passive mixed content and subresources with cert errors.
-      {security_state::NONE, 0, false /* ran_content_with_cert_errors */,
-       true /* displayed_content_with_cert_errors */, false,
-       false /* ran_mixed_content */, true /* displayed_mixed_content */,
-       PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Passive mixed content, a nonsecure form, and subresources with cert
       // errors.
       {security_state::NONE, 0, false /* ran_mixed_content */,
@@ -688,7 +851,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
       // Passive mixed content and active subresources with cert errors.
       {security_state::DANGEROUS, 0, false /* ran_mixed_content */,
        true /* displayed_mixed_content */, false,
@@ -710,7 +873,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        true /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_WARNING_MINOR},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
   };
 
   for (const auto& test : kTestCases) {
@@ -750,8 +913,7 @@ TEST_F(PageInfoTest, InsecureContent) {
 
 TEST_F(PageInfoTest, HTTPSEVCert) {
   scoped_refptr<net::X509Certificate> ev_cert =
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der));
+      net::X509Certificate::CreateFromBytes(google_der);
   ASSERT_TRUE(ev_cert);
 
   security_level_ = security_state::NONE;
@@ -794,7 +956,7 @@ TEST_F(PageInfoTest, HTTPSConnectionError) {
             page_info()->site_identity_status());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PageInfoTest, HTTPSPolicyCertConnection) {
   security_level_ = security_state::SECURE_WITH_POLICY_INSTALLED_CERT;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
@@ -834,30 +996,22 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
             page_info()->site_identity_status());
 #if defined(OS_ANDROID)
-  EXPECT_EQ(IDR_PAGEINFO_WARNING_MINOR,
+  EXPECT_EQ(IDR_PAGEINFO_BAD,
             PageInfoUI::GetIdentityIconID(page_info()->site_identity_status()));
 #endif
 }
 
-#if !defined(OS_ANDROID)
-// Tests that the site connection status is correctly set for Legacy TLS sites
-// when the kLegacyTLSWarnings feature is enabled.
+// Tests that the site connection status is correctly set for Legacy TLS sites.
 TEST_F(PageInfoTest, LegacyTLS) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
-
   security_level_ = security_state::WARNING;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
   visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
+  visible_security_state_.cert_status = net::CERT_STATUS_LEGACY_TLS;
   int status = 0;
   status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
   status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
   visible_security_state_.connection_status = status;
   visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = false;
 
   SetDefaultUIExpectations(mock_ui());
 
@@ -867,42 +1021,13 @@ TEST_F(PageInfoTest, LegacyTLS) {
             page_info()->site_identity_status());
 }
 
-// Tests that the site connection status is not set to LEGACY_TLS when a site
-// using legacy TLS is marked as a control site in the visible security state,
-// when the kLegacyTLSWarnings feature is enabled.
-TEST_F(PageInfoTest, LegacyTLSControlSite) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
-
-  security_level_ = security_state::SECURE;
-  visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
-  visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
-  int status = 0;
-  status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
-  status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
-  visible_security_state_.connection_status = status;
-  visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = true;
-
-  SetDefaultUIExpectations(mock_ui());
-
-  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-            page_info()->site_connection_status());
-  EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
-            page_info()->site_identity_status());
-}
-#endif
-
 #if !defined(OS_ANDROID)
 TEST_F(PageInfoTest, NoInfoBar) {
   SetDefaultUIExpectations(mock_ui());
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
 }
 
 TEST_F(PageInfoTest, ShowInfoBar) {
@@ -911,36 +1036,38 @@ TEST_F(PageInfoTest, ShowInfoBar) {
 
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(2);
 
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
-                                       CONTENT_SETTING_ALLOW);
+                                       CONTENT_SETTING_ALLOW,
+                                       /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  ASSERT_EQ(1u, infobar_service()->infobar_count());
+  ASSERT_EQ(1u, infobar_manager()->infobar_count());
 
-  infobar_service()->RemoveInfoBar(infobar_service()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
 }
 
 TEST_F(PageInfoTest, NoInfoBarWhenSoundSettingChanged) {
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
-  page_info()->OnSitePermissionChanged(ContentSettingsType::SOUND,
-                                       CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  page_info()->OnSitePermissionChanged(
+      ContentSettingsType::SOUND, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
 }
 
 TEST_F(PageInfoTest, ShowInfoBarWhenSoundSettingAndAnotherSettingChanged) {
-  EXPECT_EQ(0u, infobar_service()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobar_count());
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
-                                       CONTENT_SETTING_BLOCK);
-  page_info()->OnSitePermissionChanged(ContentSettingsType::SOUND,
-                                       CONTENT_SETTING_BLOCK);
+                                       CONTENT_SETTING_BLOCK,
+                                       /*is_one_time=*/false);
+  page_info()->OnSitePermissionChanged(
+      ContentSettingsType::SOUND, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(1u, infobar_service()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobar_count());
 
-  infobar_service()->RemoveInfoBar(infobar_service()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
 }
 #endif
 
@@ -984,8 +1111,8 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
       "interstitial.ssl.did_user_revoke_decisions2";
   for (const auto& test : kTestCases) {
     base::HistogramTester histograms;
-    ChromeSSLHostStateDelegate* ssl_state =
-        ChromeSSLHostStateDelegateFactory::GetForProfile(profile());
+    StatefulSSLHostStateDelegate* ssl_state =
+        StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
     const std::string host = GURL(test.url).host();
 
     ssl_state->RevokeUserAllowExceptionsHard(host);
@@ -995,11 +1122,12 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
       // In the case where the button should be visible, add an exception to
       // the profile settings for the site (since the exception is what
       // will make the button visible).
-      ssl_state->AllowCert(host, *cert(), net::ERR_CERT_DATE_INVALID);
+      ssl_state->AllowCert(host, *cert(), net::ERR_CERT_DATE_INVALID,
+                           web_contents());
       page_info();
       if (test.button_clicked) {
         page_info()->OnRevokeSSLErrorBypassButtonPressed();
-        EXPECT_FALSE(ssl_state->HasAllowException(host));
+        EXPECT_FALSE(ssl_state->HasAllowException(host, web_contents()));
         ClearPageInfo();
         histograms.ExpectTotalCount(kGenericHistogram, 1);
         histograms.ExpectBucketCount(
@@ -1009,7 +1137,7 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
             1);
       } else {  // Case where button is visible but not clicked.
         ClearPageInfo();
-        EXPECT_TRUE(ssl_state->HasAllowException(host));
+        EXPECT_TRUE(ssl_state->HasAllowException(host, web_contents()));
         histograms.ExpectTotalCount(kGenericHistogram, 1);
         histograms.ExpectBucketCount(
             kGenericHistogram,
@@ -1020,7 +1148,7 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
     } else {
       page_info();
       ClearPageInfo();
-      EXPECT_FALSE(ssl_state->HasAllowException(host));
+      EXPECT_FALSE(ssl_state->HasAllowException(host, web_contents()));
       // Button is not visible, so check histogram is empty after opening and
       // closing page info.
       histograms.ExpectTotalCount(kGenericHistogram, 0);
@@ -1028,60 +1156,6 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
   }
   // Test class expects PageInfo to exist during Teardown.
   page_info();
-}
-
-// Tests that metrics are recorded on a PageInfo for pages with
-// various security levels.
-TEST_F(PageInfoTest, SecurityLevelMetrics) {
-  struct TestCase {
-    const std::string url;
-    const security_state::SecurityLevel security_level;
-    const std::string histogram_name;
-  };
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  const TestCase kTestCases[] = {
-      {"https://example.test", security_state::SECURE,
-       "Security.PageInfo.Action.HttpsUrl.ValidNonEV"},
-      {"https://example.test", security_state::EV_SECURE,
-       "Security.PageInfo.Action.HttpsUrl.ValidEV"},
-      {"https://example2.test", security_state::NONE,
-       "Security.PageInfo.Action.HttpsUrl.Downgraded"},
-      {"https://example.test", security_state::DANGEROUS,
-       "Security.PageInfo.Action.HttpsUrl.Dangerous"},
-      {"http://example.test", security_state::WARNING,
-       "Security.PageInfo.Action.HttpUrl.Warning"},
-      {"http://example.test", security_state::DANGEROUS,
-       "Security.PageInfo.Action.HttpUrl.Dangerous"},
-      {"http://example.test", security_state::NONE,
-       "Security.PageInfo.Action.HttpUrl.Neutral"},
-  };
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL(test.url);
-    security_level_ = test.security_level;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(test.histogram_name, 0);
-
-    page_info()->RecordPageInfoAction(
-        PageInfo::PageInfoAction::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo
-    // creation in addition to the explicit RecordPageInfoAction()
-    // call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
-
-    histograms.ExpectTotalCount(test.histogram_name, 2);
-    histograms.ExpectBucketCount(test.histogram_name,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
-  }
 }
 
 // Tests that the duration of time the PageInfo is open is recorded for pages
@@ -1100,13 +1174,9 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
       // PAGE_INFO_COUNT used as shorthand for "take no action".
       {"https://example.test", security_state::SECURE, "SECURE",
        PageInfo::PAGE_INFO_COUNT},
-      {"https://example.test", security_state::EV_SECURE, "EV_SECURE",
-       PageInfo::PAGE_INFO_COUNT},
       {"http://example.test", security_state::NONE, "NONE",
        PageInfo::PAGE_INFO_COUNT},
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {"https://example.test", security_state::EV_SECURE, "EV_SECURE",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
@@ -1151,7 +1221,13 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
 
 // Tests that metrics are recorded on a PageInfo for pages with
 // various Safety Tip statuses.
-TEST_F(PageInfoTest, SafetyTipMetrics) {
+// See https://crbug.com/1114659 for why the test is disabled on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_SafetyTipMetrics DISABLED_SafetyTipMetrics
+#else
+#define MAYBE_SafetyTipMetrics SafetyTipMetrics
+#endif
+TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       security_state::features::kSafetyTipUI);
@@ -1181,19 +1257,18 @@ TEST_F(PageInfoTest, SafetyTipMetrics) {
     histograms.ExpectTotalCount(kGenericHistogram, 0);
     histograms.ExpectTotalCount(test.histogram_name, 0);
 
-    page_info()->RecordPageInfoAction(
-        PageInfo::PageInfoAction::PAGE_INFO_OPENED);
+    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
 
     // RecordPageInfoAction() is called during PageInfo
     // creation in addition to the explicit RecordPageInfoAction()
     // call, so it is called twice in total.
     histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
+    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
+                                 2);
 
     histograms.ExpectTotalCount(test.histogram_name, 2);
     histograms.ExpectBucketCount(test.histogram_name,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
+                                 PageInfo::PAGE_INFO_OPENED, 2);
   }
 }
 
@@ -1263,122 +1338,6 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   page_info();
 }
 
-// Tests that metrics are recorded on a PageInfo for pages with
-// various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
-    const std::string histogram_suffix;
-  } kTestCases[] = {
-      {true, false, "LegacyTLS_Triggered"},
-      {true, true, "LegacyTLS_NotTriggered"},
-      {false, false, "LegacyTLS_NotTriggered"},
-  };
-
-  const std::string kHistogramPrefix("Security.LegacyTLS.PageInfo.Action");
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  InitializeEmptyLegacyTLSConfig();
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                0);
-
-    page_info()->RecordPageInfoAction(
-        PageInfo::PageInfoAction::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo creation in addition to
-    // the explicit RecordPageInfoAction() call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
-
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                2);
-    histograms.ExpectBucketCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                 PageInfo::PageInfoAction::PAGE_INFO_OPENED, 2);
-  }
-}
-
-// Tests that the duration of time the PageInfo is open is recorded for pages
-// with various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSTimeOpenMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
-    const std::string legacy_tls_status_name;
-    const PageInfo::PageInfoAction action;
-  } kTestCases[] = {
-      // PAGE_INFO_COUNT used as shorthand for "take no action".
-      {true, false, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_COUNT},
-      {true, true, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {false, false, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {true, false, "LegacyTLS_Triggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {true, true, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {false, false, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-  };
-
-  const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
-
-  InitializeEmptyLegacyTLSConfig();
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "Action." + test.legacy_tls_status_name, 0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 0);
-
-    PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      test_page_info->RecordPageInfoAction(test.action);
-    }
-    ClearPageInfo();
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                1);
-
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "Action." + test.legacy_tls_status_name, 1);
-    } else {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 1);
-    }
-  }
-
-  // PageInfoTest expects a valid PageInfo instance to exist at end of test.
-  ResetMockUI();
-  SetDefaultUIExpectations(mock_ui());
-  page_info();
-}
-
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
@@ -1397,13 +1356,18 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   ClearPageInfo();
   SetDefaultUIExpectations(mock_ui());
 
-  // Now, simulate activation on that origin, which is encoded by the existence
-  // of the website setting. The setting should then appear in page_info.
-  HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  content_settings->SetWebsiteSettingDefaultScope(
-      url(), GURL(), ContentSettingsType::ADS_DATA, std::string(),
-      std::make_unique<base::DictionaryValue>());
+  // Now, explicitly set site activation metadata to simulate activation on
+  // that origin, which is encoded by the existence of the website setting. The
+  // setting should then appear in page_info.
+  subresource_filter::SubresourceFilterContentSettingsManager*
+      settings_manager =
+          SubresourceFilterProfileContextFactory::GetForProfile(profile())
+              ->settings_manager();
+  settings_manager->SetSiteMetadataBasedOnActivation(
+      url(), true,
+      subresource_filter::SubresourceFilterContentSettingsManager::
+          ActivationSource::kSafeBrowsing);
+
   page_info();
   EXPECT_TRUE(showing_setting(last_permission_info_list()));
 }
@@ -1419,9 +1383,8 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   ~UnifiedAutoplaySoundSettingsPageInfoTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings},
-        {});
+    scoped_feature_list_.InitWithFeatures({media::kAutoplayDisableSettings},
+                                          {});
     ChromeRenderViewHostTestHarness::SetUp();
   }
 
@@ -1433,16 +1396,26 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
     default_setting_ = default_setting;
   }
 
-  base::string16 GetDefaultSoundSettingString() {
+  std::u16string GetDefaultSoundSettingString() {
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
-        profile(), ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
-        default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER);
+        &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
+        default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER,
+        /*is_one_time=*/false);
   }
 
-  base::string16 GetSoundSettingString(ContentSetting setting) {
+  std::u16string GetSoundSettingString(ContentSetting setting) {
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
-        profile(), ContentSettingsType::SOUND, setting, default_setting_,
-        content_settings::SettingSource::SETTING_SOURCE_USER);
+        &delegate, ContentSettingsType::SOUND, setting, default_setting_,
+        content_settings::SettingSource::SETTING_SOURCE_USER,
+        /*is_one_time=*/false);
   }
 
  private:
@@ -1529,12 +1502,296 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, DefaultBlock_PrefOff) {
 // This test checks that the string for a permission dropdown that is not the
 // sound setting is unaffected.
 TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionActionToUIString(
-          profile(), ContentSettingsType::ADS, CONTENT_SETTING_DEFAULT,
+          &delegate, ContentSettingsType::ADS, CONTENT_SETTING_DEFAULT,
           CONTENT_SETTING_ALLOW,
-          content_settings::SettingSource::SETTING_SOURCE_USER));
+          content_settings::SettingSource::SETTING_SOURCE_USER,
+          /*is_one_time=*/false));
 }
 
 #endif  // !defined(OS_ANDROID)
+
+// Unit tests for logic in the PageInfoUI that toggles permission between
+// allow/block and remember/forget.
+class PageInfoToggleStatesUnitTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kOneTimeGeolocationPermission);
+    ::testing::Test::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Testing all possible state transitions for a permission that doesn't
+// support allow once.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithoutAllowOnceDefaultAskTest) {
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithoutAllowOnceDefaultBlockTest) {
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_BLOCK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block (default) -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Block -> Allow
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  camera_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
+  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+// Testing all possible state transitions for a permission that supports
+// allow once and default setting ask.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithAllowOnceDefaultAskTest) {
+  PageInfo::PermissionInfo location_permission;
+  location_permission.type = ContentSettingsType::GEOLOCATION;
+  location_permission.setting = CONTENT_SETTING_ALLOW;
+  location_permission.default_setting = CONTENT_SETTING_ASK;
+  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.is_one_time = false;
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Allow -> Allow once
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Allow
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // Allow -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Default
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Default -> Block
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Default
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Default -> Allow once
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Default
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(location_permission.is_one_time, false);
+}
+
+// Testing all possible state transitions for a permission that supports
+// allow once and default setting block.
+TEST_F(PageInfoToggleStatesUnitTest,
+       TogglePermissionWithAllowOnceDefaultBlockTest) {
+  PageInfo::PermissionInfo location_permission;
+  location_permission.type = ContentSettingsType::GEOLOCATION;
+  location_permission.setting = CONTENT_SETTING_ALLOW;
+  location_permission.default_setting = CONTENT_SETTING_BLOCK;
+  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.is_one_time = false;
+
+  // If the default setting matches target setting, no site exception will be
+  // created and permission will be in the default state.
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block (default) -> Allow once
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Allow
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // Allow -> Allow once
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(location_permission.is_one_time, true);
+
+  // Allow once -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(location_permission.is_one_time, false);
+
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  // Block -> Allow
+  location_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  // Block -> Block (default)
+  location_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
+  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_DEFAULT);
+}
+
+// Testing all possible state transitions for a content settings with a default
+// setting allow.
+TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultAllowTest) {
+  PageInfo::PermissionInfo images_permission;
+  images_permission.type = ContentSettingsType::IMAGES;
+  images_permission.setting = CONTENT_SETTING_DEFAULT;
+  images_permission.default_setting = CONTENT_SETTING_ALLOW;
+  images_permission.source = content_settings::SETTING_SOURCE_USER;
+  images_permission.is_one_time = false;
+
+  // Allow (default) -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Allow (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Allow -> Block
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  images_permission.setting = CONTENT_SETTING_ALLOW;
+  PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
+  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+}
+
+// Testing all possible state transitions for a content settings with a default
+// setting block.
+TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultBlockTest) {
+  PageInfo::PermissionInfo popups_permission;
+  popups_permission.type = ContentSettingsType::POPUPS;
+  popups_permission.setting = CONTENT_SETTING_DEFAULT;
+  popups_permission.default_setting = CONTENT_SETTING_BLOCK;
+  popups_permission.source = content_settings::SETTING_SOURCE_USER;
+  popups_permission.is_one_time = false;
+
+  // Block (default) -> Allow
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+
+  // Allow -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block -> Allow
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  popups_permission.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
+  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+}
+
+// TODO(olesiamarukhno): Add test for guard content setting for
+// chooser-based permissions (ex. ContentSettingsType::USB_GUARD for
+// ContentSettingsType::USB_CHOOSER_DATA). Guard content settings support only
+// ask and block state, don't support allow.
+
+// Testing all possible state transitions for a guard content settings with a
+// default setting ask.
+TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultAskTest) {
+  PageInfo::PermissionInfo usb_guard;
+  usb_guard.type = ContentSettingsType::USB_GUARD;
+  usb_guard.setting = CONTENT_SETTING_DEFAULT;
+  usb_guard.default_setting = CONTENT_SETTING_ASK;
+  usb_guard.source = content_settings::SETTING_SOURCE_USER;
+  usb_guard.is_one_time = false;
+
+  // Ask (default) -> Block
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+
+  // Block -> Ask (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_DEFAULT);
+
+  // Ask -> Block
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  usb_guard.setting = CONTENT_SETTING_ASK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
+  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+}
+
+// Testing all possible state transitions for a guard content settings with a
+// default setting block.
+TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultBlockTest) {
+  PageInfo::PermissionInfo hid_guard;
+  hid_guard.type = ContentSettingsType::HID_GUARD;
+  hid_guard.setting = CONTENT_SETTING_DEFAULT;
+  hid_guard.default_setting = CONTENT_SETTING_BLOCK;
+  hid_guard.source = content_settings::SETTING_SOURCE_USER;
+  hid_guard.is_one_time = false;
+
+  // Block (default) -> Ask
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+
+  // Ask -> Block (default)
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_DEFAULT);
+
+  // Block -> Ask
+  // If there is a site exception created, that matches the default setting,
+  // permission setting still will be toggled to the opposite but there won't
+  // be an option to recreate the site setting.
+  hid_guard.setting = CONTENT_SETTING_BLOCK;
+  PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
+  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+}

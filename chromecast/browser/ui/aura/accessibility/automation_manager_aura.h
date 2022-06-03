@@ -12,7 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "chromecast/browser/ui/aura/accessibility/ax_tree_source_aura.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -22,13 +24,8 @@
 
 class AXRootObjWrapper;
 
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
-
-namespace ui {
-class AXEventBundleSink;
+namespace extensions {
+class AutomationEventRouterInterface;
 }
 
 namespace views {
@@ -37,8 +34,7 @@ class AXAuraObjWrapper;
 class View;
 }  // namespace views
 
-using AuraAXTreeSerializer = ui::
-    AXTreeSerializer<views::AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>;
+using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
 
 // Manages a tree of automation nodes.
 class AutomationManagerAura : public ui::AXActionHandler,
@@ -47,6 +43,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
  public:
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
+
+  AutomationManagerAura(const AutomationManagerAura&) = delete;
+  AutomationManagerAura& operator=(const AutomationManagerAura&) = delete;
 
   // Enable automation support for views.
   void Enable();
@@ -70,8 +69,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
 
-  void set_event_bundle_sink(ui::AXEventBundleSink* sink) {
-    event_bundle_sink_ = sink;
+  void set_automation_event_router_interface(
+      extensions::AutomationEventRouterInterface* router) {
+    automation_event_router_interface_ = router;
   }
 
   int32_t GetIDFromWindow(aura::Window* window) { return cache_.GetID(window); }
@@ -115,13 +115,12 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // The handler for AXEvents (e.g. the extensions subsystem in production, or
   // a fake for tests).
-  ui::AXEventBundleSink* event_bundle_sink_ = nullptr;
+  extensions::AutomationEventRouterInterface*
+      automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
 
   views::AXAuraObjCache cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };
 
 #endif  // CHROMECAST_BROWSER_UI_AURA_ACCESSIBILITY_AUTOMATION_MANAGER_AURA_H_

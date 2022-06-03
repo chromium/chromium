@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 
-#include "base/optional.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
-#include "third_party/blink/public/common/screen_orientation/web_screen_orientation_lock_type.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
@@ -68,7 +68,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
 
   // NativeEventListener implementation.
   void Invoke(ExecutionContext*, Event*) override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class MediaControlsOrientationLockDelegateTest;
@@ -93,7 +93,8 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
 
   // Returns the orientation in which the video should be locked based on its
   // size.
-  MODULES_EXPORT WebScreenOrientationLockType ComputeOrientationLock() const;
+  MODULES_EXPORT device::mojom::blink::ScreenOrientationLockType
+  ComputeOrientationLock() const;
 
   // Locks the screen orientation if the video has metadata information
   // available. Delays locking orientation until metadata are available
@@ -122,21 +123,21 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
   // Emprically, 200ms is too short, but 250ms avoids glitches. 500ms gives us
   // a 2x margin in case the device is running slow, without being noticeable.
   MODULES_EXPORT static constexpr base::TimeDelta kLockToAnyDelay =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
 
   // Current state of the object. See comment at the top of the file for a
   // detailed description.
   State state_ = State::kPendingFullscreen;
 
   // Which lock is currently applied by this delegate.
-  WebScreenOrientationLockType locked_orientation_ =
-      kWebScreenOrientationLockDefault /* unlocked */;
+  device::mojom::blink::ScreenOrientationLockType locked_orientation_ =
+      device::mojom::blink::ScreenOrientationLockType::DEFAULT /* unlocked */;
 
   TaskHandle lock_to_any_task_;
 
-  mojo::Remote<device::mojom::blink::ScreenOrientationListener> monitor_;
+  HeapMojoRemote<device::mojom::blink::ScreenOrientationListener> monitor_;
 
-  base::Optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
+  absl::optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
 
   // `video_element_` owns MediaControlsImpl that owns |this|.
   Member<HTMLVideoElement> video_element_;

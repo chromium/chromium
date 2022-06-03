@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>Prerendered iframe</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+assert_true(document.prerendering);
+
+const bc = new BroadcastChannel('iframe-channel');
+bc.postMessage('prerender success');
+bc.close();
+</script>
+</body>

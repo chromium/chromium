@@ -25,17 +25,18 @@ function getUserMedia(dictionary, callback) {
 }
 
 function onStateChange(event) {
-    testPassed('onStateChange was called.');
-    shouldBe("pc.signalingState", "'closed'");
-    finishJSTest();
+    testFailed('onStateChange was called on close.');
 }
 
 function onNegotiationNeeded(event) {
     testPassed('onNegotiationNeeded was called.');
     pc.onsignalingstatechange = onStateChange;
     pc.onnegotiationneeded = onNegotiationNeededAgain;
+    // There should be no event fired from pc.close().
     pc.close();
+    shouldBe("pc.signalingState", "'closed'");
     testPassed('onNegotiationNeeded done.')
+    finishJSTest();
 }
 
 function onNegotiationNeededAgain(event) {

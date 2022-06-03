@@ -5,8 +5,8 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests content is available for failed image request.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadData()
@@ -35,7 +35,8 @@
   }
 
   async function step3() {
-    const requests = NetworkTestRunner.networkRequests();
+    var requests =
+        NetworkTestRunner.networkRequests().filter((e, i, a) => i % 2 == 0);
     requests.sort(function(a, b) {
       return a.url().localeCompare(b.url());
     });

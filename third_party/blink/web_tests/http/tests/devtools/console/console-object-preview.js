@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console produces instant previews for arrays and objects.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
           console.log("Mutating object in a loop");
@@ -96,12 +96,12 @@
           console.log(new IHavePrivateProperties)
   `);
 
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.addResult('Expanded all messages');
   ConsoleTestRunner.expandConsoleMessages(step3);
 
-  function step3() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step3() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

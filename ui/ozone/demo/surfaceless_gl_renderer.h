@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/demo/gl_renderer.h"
 
@@ -27,6 +26,10 @@ class SurfacelessGlRenderer : public RendererBase {
                         std::unique_ptr<PlatformWindowSurface> window_surface,
                         const scoped_refptr<gl::GLSurface>& surface,
                         const gfx::Size& size);
+
+  SurfacelessGlRenderer(const SurfacelessGlRenderer&) = delete;
+  SurfacelessGlRenderer& operator=(const SurfacelessGlRenderer&) = delete;
+
   ~SurfacelessGlRenderer() override;
 
   // Renderer:
@@ -34,8 +37,7 @@ class SurfacelessGlRenderer : public RendererBase {
 
  private:
   void RenderFrame();
-  void PostRenderFrameTask(gfx::SwapResult result,
-                           std::unique_ptr<gfx::GpuFence> gpu_fence);
+  void PostRenderFrameTask(gfx::SwapCompletionResult result);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   class BufferWrapper {
@@ -77,8 +79,6 @@ class SurfacelessGlRenderer : public RendererBase {
   scoped_refptr<gl::GLContext> context_;
 
   base::WeakPtrFactory<SurfacelessGlRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SurfacelessGlRenderer);
 };
 
 }  // namespace ui

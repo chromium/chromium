@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when Geolocation permission has been denied prior to a call to watchPosition, and the watch is cleared in the error callback, there is no crash. This a regression test for https://bugs.webkit.org/show_bug.cgi?id=32111.");
+
+let error;
+
+// Prime the Geolocation instance by denying permission.
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(false);
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+navigator.geolocation.getCurrentPosition(function(p) {
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(e) {
+    error = e;
+    assert_equals(error.code, error.PERMISSION_DENIED);
+    assert_equals(error.message, "User denied Geolocation");
+    continueTest();
+});
+
+function continueTest()
+{
+    // Make another request, with permission already denied.
+    const watchId = navigator.geolocation.watchPosition(function(p) {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        error = e;
+        assert_equals(error.code, error.PERMISSION_DENIED);
+        assert_equals(error.message, "User denied Geolocation");
+        navigator.geolocation.clearWatch(watchId);
+        window.setTimeout(finishJSTest, 0);
+    });
+}
+</script>
+</body>
+</html>

@@ -34,8 +34,8 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -74,36 +74,37 @@ class KeyboardTest : public testing::Test {
   // OSModifier is the platform's standard modifier key: control on most
   // platforms, but meta (command) on Mac.
   const char* InterpretOSModifierKeyPress(char key_code) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     WebInputEvent::Modifiers os_modifier = WebInputEvent::kMetaKey;
 #else
     WebInputEvent::Modifiers os_modifier = WebInputEvent::kControlKey;
 #endif
     return InterpretKeyEvent(CreateFakeKeyboardEvent(
-        key_code, os_modifier, WebInputEvent::kRawKeyDown));
+        key_code, os_modifier, WebInputEvent::Type::kRawKeyDown));
   }
 
   // Like interpretKeyEvent, but with pressing down ctrl+|keyCode|.
   const char* InterpretCtrlKeyPress(char key_code) {
-    return InterpretKeyEvent(CreateFakeKeyboardEvent(
-        key_code, WebInputEvent::kControlKey, WebInputEvent::kRawKeyDown));
+    return InterpretKeyEvent(
+        CreateFakeKeyboardEvent(key_code, WebInputEvent::kControlKey,
+                                WebInputEvent::Type::kRawKeyDown));
   }
 
   // Like interpretKeyEvent, but with typing a tab.
   const char* InterpretTab(int modifiers) {
     return InterpretKeyEvent(
-        CreateFakeKeyboardEvent('\t', modifiers, WebInputEvent::kChar));
+        CreateFakeKeyboardEvent('\t', modifiers, WebInputEvent::Type::kChar));
   }
 
   // Like interpretKeyEvent, but with typing a newline.
   const char* InterpretNewLine(int modifiers) {
     return InterpretKeyEvent(
-        CreateFakeKeyboardEvent('\r', modifiers, WebInputEvent::kChar));
+        CreateFakeKeyboardEvent('\r', modifiers, WebInputEvent::Type::kChar));
   }
 
   const char* InterpretDomKey(const char* key) {
     return InterpretKeyEvent(CreateFakeKeyboardEvent(
-        0, kNoModifiers, WebInputEvent::kRawKeyDown, key));
+        0, kNoModifiers, WebInputEvent::Type::kRawKeyDown, key));
   }
 
   // A name for "no modifiers set".
@@ -115,44 +116,44 @@ TEST_F(KeyboardTest, TestCtrlReturn) {
 }
 
 TEST_F(KeyboardTest, TestOSModifierZ) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("Undo", InterpretOSModifierKeyPress('Z'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierY) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("Redo", InterpretOSModifierKeyPress('Y'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierA) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("SelectAll", InterpretOSModifierKeyPress('A'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierX) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("Cut", InterpretOSModifierKeyPress('X'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierC) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("Copy", InterpretOSModifierKeyPress('C'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierV) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_STREQ("Paste", InterpretOSModifierKeyPress('V'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestEscape) {
   const char* result = InterpretKeyEvent(CreateFakeKeyboardEvent(
-      VKEY_ESCAPE, kNoModifiers, WebInputEvent::kRawKeyDown));
+      VKEY_ESCAPE, kNoModifiers, WebInputEvent::Type::kRawKeyDown));
   EXPECT_STREQ("Cancel", result);
 }
 

@@ -4,37 +4,25 @@
 
 component("app_list_model") {
   sources = [
+    "app_icon_load_helper.cc",
+    "app_icon_load_helper.h",
     "app_list_folder_item.cc",
     "app_list_folder_item.h",
     "app_list_item.cc",
     "app_list_item.h",
     "app_list_item_list.cc",
     "app_list_item_list.h",
+    "app_list_item_list_observer.cc",
     "app_list_item_list_observer.h",
+    "app_list_item_observer.cc",
     "app_list_item_observer.h",
     "app_list_model.cc",
     "app_list_model.h",
+    "app_list_model_export.h",
+    "app_list_model_observer.cc",
     "app_list_model_observer.h",
     "folder_image.cc",
     "folder_image.h",
-  ]
-
-  defines = [ "APP_LIST_MODEL_IMPLEMENTATION" ]
-
-  deps = [
-    "//ash/public/cpp:cpp",
-    "//base:i18n",
-    "//cc/paint",
-    "//components/sync",
-    "//skia",
-    "//third_party/icu",
-    "//ui/base",
-    "//ui/gfx",
-  ]
-}
-
-component("search_model") {
-  sources = [
     "search/search_box_model.cc",
     "search/search_box_model.h",
     "search/search_box_model_observer.h",
@@ -50,6 +38,10 @@ component("search_model") {
   deps = [
     "//ash/public/cpp:cpp",
     "//base:i18n",
+    "//cc/paint",
+    "//components/sync",
+    "//skia",
+    "//third_party/icu",
     "//ui/base",
     "//ui/gfx",
   ]

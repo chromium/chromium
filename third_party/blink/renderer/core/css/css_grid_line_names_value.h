@@ -43,7 +43,7 @@ class CSSGridLineNamesValue : public CSSValueList {
 
   String CustomCSSText() const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }
 };
@@ -59,4 +59,4 @@ struct DowncastTraits<cssvalue::CSSGridLineNamesValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GRID_LINE_NAMES_VALUE_H_

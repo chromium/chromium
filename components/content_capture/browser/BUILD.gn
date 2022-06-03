@@ -4,10 +4,13 @@
 
 source_set("browser") {
   sources = [
+    "content_capture_consumer.h",
+    "content_capture_frame.cc",
+    "content_capture_frame.h",
     "content_capture_receiver.cc",
     "content_capture_receiver.h",
-    "content_capture_receiver_manager.cc",
-    "content_capture_receiver_manager.h",
+    "onscreen_content_provider.cc",
+    "onscreen_content_provider.h",
   ]
 
   public_deps = [
@@ -23,9 +26,7 @@ source_set("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_capture_receiver_test.cc",
-  ]
+  sources = [ "content_capture_receiver_test.cc" ]
 
   deps = [
     ":browser",

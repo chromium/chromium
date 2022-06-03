@@ -15,17 +15,13 @@ namespace gpu {
 // launched.
 
 #if defined(CYGPROFILE_INSTRUMENTATION)
-constexpr base::TimeDelta kGpuWatchdogTimeout =
-    base::TimeDelta::FromSeconds(30);
-#elif defined(OS_WIN) || defined(OS_ANDROID)
-constexpr base::TimeDelta kGpuWatchdogTimeout =
-    base::TimeDelta::FromSeconds(15);
-#elif defined(OS_MACOSX)
-constexpr base::TimeDelta kGpuWatchdogTimeout =
-    base::TimeDelta::FromSeconds(17);
+constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
+#elif defined(OS_MAC)
+constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(25);
+#elif defined(OS_WIN)
+constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
 #else
-constexpr base::TimeDelta kGpuWatchdogTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(15);
 #endif
 
 // It usually takes longer to finish a GPU task when the system just resumes
@@ -40,13 +36,6 @@ constexpr int kInitFactor = 2;
 #else
 constexpr int kInitFactor = 1;
 #endif
-
-// Do not change this number. It's for histogram "GPU.GPUChannelHostWaitTime".
-// This is the max wait time when waiting for sync in the GPU channel Host. It
-// needs to be bigger than (kGpuWatchdogTimeout * kRestartFactor) for all
-// platforms.
-constexpr base::TimeDelta kGpuChannelHostMaxWaitTime =
-    base::TimeDelta::FromSeconds(120);
 
 }  // namespace gpu
 

@@ -19,36 +19,38 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 // An arbitrary index for the result view under test. Used to test the selection
 // state. There are 6 results total so the index should be in the range 0-5.
-static constexpr int kTestResultViewIndex = 4;
+static constexpr size_t kTestResultViewIndex = 4;
 
 class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
  public:
-  explicit TestOmniboxPopupContentsView(OmniboxEditModel* edit_model,
-                                        const ui::ThemeProvider* theme_provider)
+  explicit TestOmniboxPopupContentsView(OmniboxEditModel* edit_model)
       : OmniboxPopupContentsView(
             /*omnibox_view=*/nullptr,
             edit_model,
-            /*location_bar_view=*/nullptr,
-            theme_provider),
-        selected_index_(0) {}
+            /*location_bar_view=*/nullptr),
+        selection_(OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL)) {}
 
-  void SetSelectedLine(size_t index) override { selected_index_ = index; }
+  TestOmniboxPopupContentsView(const TestOmniboxPopupContentsView&) = delete;
+  TestOmniboxPopupContentsView& operator=(const TestOmniboxPopupContentsView&) =
+      delete;
 
-  bool IsSelectedIndex(size_t index) const override {
-    return selected_index_ == index;
-  }
+  void SetSelectedIndex(size_t index) override { selection_.line = index; }
+
+  size_t GetSelectedIndex() const override { return selection_.line; }
+
+  OmniboxPopupSelection GetSelection() const override { return selection_; }
 
  private:
-  size_t selected_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxPopupContentsView);
+  OmniboxPopupSelection selection_;
 };
 
 }  // namespace
@@ -59,20 +61,22 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Create a widget and assign bounds to support calls to HitTestPoint.
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams init_params =
-        CreateParams(views::Widget::InitParams::TYPE_POPUP);
-    init_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_->Init(std::move(init_params));
+    widget_ = CreateTestWidget();
 
-    const ui::ThemeProvider* theme_provider = widget_->GetThemeProvider();
+    // Install |test_screen_| after superclass setup and widget creation; on Ash
+    // both these require the Screen to work well with the underlying Shell, and
+    // TestScreen has no knowledge of that.
+    test_screen_ = std::make_unique<display::test::TestScreen>();
+    scoped_screen_override_ =
+        std::make_unique<display::test::ScopedScreenOverride>(
+            test_screen_.get());
+
     edit_model_ = std::make_unique<OmniboxEditModel>(
         nullptr, nullptr, std::make_unique<TestOmniboxClient>());
-    popup_view_ = std::make_unique<TestOmniboxPopupContentsView>(
-        edit_model_.get(), theme_provider);
-    result_view_ = new OmniboxResultView(popup_view_.get(),
-                                         kTestResultViewIndex, theme_provider);
+    popup_view_ =
+        std::make_unique<TestOmniboxPopupContentsView>(edit_model_.get());
+    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model_.get(),
+                                         kTestResultViewIndex);
 
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
@@ -84,6 +88,8 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    scoped_screen_override_.reset();
+    test_screen_.reset();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -98,7 +104,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                                 int flags,
                                 float x,
                                 float y) {
-    test_screen_.set_cursor_screen_point(gfx::Point(x, y));
+    test_screen_->set_cursor_screen_point(gfx::Point(x, y));
     return ui::MouseEvent(type, gfx::Point(x, y), gfx::Point(),
                           ui::EventTimeForNow(), flags, 0);
   }
@@ -112,68 +118,68 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
   OmniboxResultView* result_view_;
   std::unique_ptr<views::Widget> widget_;
 
-  display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
+  std::unique_ptr<display::test::TestScreen> test_screen_;
+  std::unique_ptr<display::test::ScopedScreenOverride> scoped_screen_override_;
 };
 
 TEST_F(OmniboxResultViewTest, MousePressedWithLeftButtonSelectsThisResult) {
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Right button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Middle button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_MIDDLE_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Multi-button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED,
                      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Left button press should select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_TRUE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_EQ(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 }
 
 TEST_F(OmniboxResultViewTest, MouseDragWithLeftButtonSelectsThisResult) {
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Right button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Middle button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_MIDDLE_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Multi-button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED,
                      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Left button drag should select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_TRUE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_EQ(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 }
 
 TEST_F(OmniboxResultViewTest, MouseDragWithNonLeftButtonSetsHoveredState) {
@@ -222,14 +228,14 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredState) {
 
 TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   // Check accessibility of result.
-  base::string16 match_url = base::ASCIIToUTF16("https://google.com");
+  std::u16string match_url = u"https://google.com";
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
   match.destination_url = GURL(match_url);
-  match.description = base::ASCIIToUTF16("Google");
+  match.description = u"Google";
   match.allowed_to_be_default_match = true;
   result_view()->SetMatch(match);
   ui::AXNodeData result_node_data;
@@ -239,12 +245,13 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_FALSE(
       result_node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
-  EXPECT_EQ(
-      result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      base::ASCIIToUTF16("Google https://google.com location from history"));
+  // TODO(tommycli) Find a way to test this.
+  // EXPECT_EQ(
+  //   result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+  //   u"Google https://google.com location from history");
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
-      kTestResultViewIndex + 1);
+      int{kTestResultViewIndex} + 1);
   // TODO(accessibility) Find a way to test this.
   // EXPECT_EQ(result_node_data.GetIntAttribute(
   //   ax::mojom::IntAttribute::kSetSize), 1);
@@ -264,4 +271,6 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(
+      popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
 }

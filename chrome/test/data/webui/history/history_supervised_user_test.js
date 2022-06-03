@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {createHistoryEntry, createHistoryInfo} from 'chrome://test/history/test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 suite('history-list supervised-user', function() {
   let app;
   let historyList;
@@ -11,9 +16,9 @@ suite('history-list supervised-user', function() {
       [createHistoryEntry('2016-03-15', 'https://www.google.com')];
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     testService.setQueryResult({
       info: createHistoryInfo(),
@@ -26,15 +31,15 @@ suite('history-list supervised-user', function() {
     toolbar = app.$.toolbar;
     return Promise.all([
       testService.whenCalled('queryHistory'),
-      history.ensureLazyLoaded(),
+      ensureLazyLoaded(),
     ]);
   });
 
   test('checkboxes disabled for supervised user', function() {
-    return test_util.flushTasks().then(function() {
+    return flushTasks().then(function() {
       const items = historyList.shadowRoot.querySelectorAll('history-item');
 
-      MockInteractions.tap(items[0].$['checkbox']);
+      items[0].$['checkbox'].click();
 
       assertFalse(items[0].selected);
     });
@@ -50,6 +55,7 @@ suite('history-list supervised-user', function() {
   test('remove history menu button disabled', function() {
     const listContainer = app.$['history'];
     listContainer.$.sharedMenu.get();
-    assertTrue(listContainer.$$('#menuRemoveButton').hidden);
+    assertTrue(
+        listContainer.shadowRoot.querySelector('#menuRemoveButton').hidden);
   });
 });

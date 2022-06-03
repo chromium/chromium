@@ -12,3 +12,7 @@ SharingDialogData::SharingDialogData(SharingDialogData&& other) = default;
 
 SharingDialogData& SharingDialogData::operator=(SharingDialogData&& other) =
     default;
+
+SharingDialogData::HeaderIcons::HeaderIcons(const gfx::VectorIcon* light,
+                                            const gfx::VectorIcon* dark)
+    : light(light), dark(dark) {}

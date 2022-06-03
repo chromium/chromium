@@ -70,11 +70,15 @@ def main(argv):
   out_dir = os.path.join(SRC_ROOT, build_rel)
   gn_path = options.output or os.path.join(out_dir, 'gn')
   gn_build_dir = os.path.join(out_dir, 'gn_build')
+  ninja_binary = os.environ.get('NINJA', 'ninja')
 
-  # TODO(thomasanderson): Remove this once Ubuntu Trusty reaches EOL, or when
-  # Chromium's infrastructure is upgraded from Trusty to Xenial, whichever comes
-  # second ideally.  This can be done by reverting this CL:
-  # https://chromium-review.googlesource.com/c/chromium/src/+/1460187/
+  def append_to_env(var, vals):
+    os.environ[var] = os.environ.get(var, '') + ' ' + ' '.join(vals)
+
+  # https://crbug.com/1166707
+  append_to_env('CXXFLAGS',
+                ['-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS'])
+
   if options.use_custom_libcxx:
     libcxx_dir = os.path.join(gn_build_dir, 'libc++')
     if not os.path.exists(libcxx_dir):
@@ -90,11 +94,9 @@ def main(argv):
               os.environ.get('CFLAGS', '').split() +
               os.environ.get('CXXFLAGS', '').split()),
       ]) + '\n')
-    subprocess.check_call(['ninja', '-C', libcxx_dir])
+    subprocess.check_call([ninja_binary, '-C', libcxx_dir])
     shutil.copy2(os.path.join(gn_build_dir, 'libc++.gn.so'), out_dir)
 
-    def append_to_env(var, vals):
-      os.putenv(var, os.environ.get(var, '') + ' ' + ' '.join(vals))
 
     append_to_env('LDFLAGS', [
         '-nodefaultlibs', 'libc++.gn.so',
@@ -120,7 +122,7 @@ def main(argv):
   shutil.copy2(
       os.path.join(BOOTSTRAP_DIR, 'last_commit_position.h'), gn_build_dir)
   subprocess.check_call(
-      ['ninja', '-C', gn_build_dir, 'gn', '-w', 'dupbuild=err'])
+      [ninja_binary, '-C', gn_build_dir, '-w', 'dupbuild=err', 'gn'])
   shutil.copy2(os.path.join(gn_build_dir, 'gn'), gn_path)
 
   if not options.skip_generate_buildfiles:

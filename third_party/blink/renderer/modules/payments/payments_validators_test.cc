@@ -6,10 +6,13 @@
 
 #include <ostream>  // NOLINT
 
+#include "base/test/scoped_command_line.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/modules/payments/address_errors.h"
-#include "third_party/blink/renderer/modules/payments/payer_errors.h"
-#include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -359,14 +362,19 @@ TEST(PaymentMethodValidatorTest, IsValidPaymentMethod) {
   }
 }
 
-TEST(PaymentMethodValidatorTest, IsValidPaymentMethodWhitelisted) {
+TEST(PaymentMethodValidatorTest, IsValidPaymentMethodSafelisted) {
   EXPECT_FALSE(PaymentsValidators::IsValidMethodFormat("http://alicepay.com"))
       << "http://alicepay.com is not a valid method format by default";
 
-  SecurityPolicy::AddOriginToTrustworthySafelist("http://alicepay.com");
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+      "http://alicepay.com");
+  network::SecureOriginAllowlist::GetInstance().ResetForTesting();
 
   EXPECT_TRUE(PaymentsValidators::IsValidMethodFormat("http://alicepay.com"))
-      << "http://alicepay.com should be valid if whitelisted";
+      << "http://alicepay.com should be valid if safelisted";
 }
 
 }  // namespace

@@ -8,12 +8,20 @@
 
 module ipp_parser.mojom;
 
-[Extensible]
-enum ValueType {
+import "sandbox/policy/mojom/sandbox.mojom";
+
+[Extensible] enum ValueType {
   BOOLEAN,
   DATE,
   INTEGER,
   STRING,
+  OCTET,
+  RESOLUTION,
+};
+
+struct Resolution {
+  int32 xres;
+  int32 yres;
 };
 
 union IppAttributeValue {
@@ -25,6 +33,8 @@ union IppAttributeValue {
 
   array<int32> ints;
   array<string> strings;
+  array<array<uint8>> octets;
+  array<Resolution> resolutions;
 };
 
 struct IppAttribute {
@@ -52,8 +62,10 @@ struct IppRequest {
   array<uint8> data;
 };
 
+
 // Implemented by the CupsIppParserService; supports parsing arbitrary IPP
 // requests.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface IppParser {
   // Treats |to_parse| as an IPP request and attempts to parse into IppRequest
   // format. Returns empty IppRequest on failure.

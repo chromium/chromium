@@ -55,9 +55,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 
 struct SuddenMotionSensor::GenericMacbookSensor {
   // Name of device to be read.

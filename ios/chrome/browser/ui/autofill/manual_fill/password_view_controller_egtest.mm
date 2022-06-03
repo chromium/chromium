@@ -4,7 +4,13 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -14,12 +20,14 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ManualFallbackKeyboardIconMatcher;
 using chrome_test_util::ManualFallbackPasswordIconMatcher;
@@ -30,6 +38,7 @@ using chrome_test_util::ManualFallbackOtherPasswordsMatcher;
 using chrome_test_util::ManualFallbackOtherPasswordsDismissMatcher;
 using chrome_test_util::ManualFallbackPasswordButtonMatcher;
 using chrome_test_util::ManualFallbackPasswordTableViewWindowMatcher;
+using chrome_test_util::ManualFallbackSuggestPasswordMatcher;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::SettingsPasswordMatcher;
@@ -37,6 +46,7 @@ using chrome_test_util::SettingsPasswordSearchMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::TapWebElementWithIdInFrame;
+using chrome_test_util::UseSuggestedPasswordMatcher;
 
 namespace {
 
@@ -59,34 +69,45 @@ id<GREYMatcher> NotSecureWebsiteAlert() {
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id value = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [value isEqual:@YES];
-  };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition =
-      [GREYCondition conditionWithName:condition_name block:verify_block];
-  return [condition waitWithTimeout:timeout];
+// Matcher for the confirmation dialog Continue button.
+id<GREYMatcher> ConfirmUsingOtherPasswordButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(
+                        IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
+                    grey_interactable(), nullptr);
+}
+
+// Matcher for the confirmation dialog Cancel button.
+id<GREYMatcher> CancelUsingOtherPasswordButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_CANCEL),
+                    grey_interactable(), nullptr);
 }
 
 }  // namespace
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
 @interface PasswordViewControllerTestCase : ChromeTestCase
+
+// URL of the current page.
+@property(assign) GURL URL;
+
 @end
 
 @implementation PasswordViewControllerTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testPasswordGenerationOnManualFallback)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEnableManualPasswordGeneration);
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
+  self.URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:self.URL];
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
   [AutofillAppInterface saveExamplePasswordForm];
 }
@@ -148,7 +169,8 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
 // icons in the right state.
-- (void)testPasswordsStateAfterPresentingManagePasswords {
+// TODO(crbug.com/1234759): Re-enable after fixing flake.
+- (void)DISABLED_testPasswordsStateAfterPresentingManagePasswords {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -200,10 +222,45 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
       performAction:grey_tap()];
 
+  std::u16string origin = base::ASCIIToUTF16(
+      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
+  NSString* title = l10n_util::GetNSStringF(
+      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION, origin);
+  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+      assertWithMatcher:grey_notNil()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
   // Verify the use other passwords opened.
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the "Use Other Password..." screen won't open if canceled.
+- (void)testUseOtherPasswordActionCloses {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the "Manage Passwords..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Cancel using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:CancelUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
+  // Verify the use other passwords not opened.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that returning from "Use Other Password..." leaves the view and icons
@@ -223,6 +280,10 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 
   // Tap the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
       performAction:grey_tap()];
 
   // Verify the use other passwords opened.
@@ -266,79 +327,13 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:grey_tap()];
 
   // Verify keyboard is shown without the password controller.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
-}
 
-// Tests that the Password View Controller is resumed after selecting other
-// password.
-// TODO(crbug.com/981922): Re-enable this test due to failing DB call.
-- (void)DISABLED_testPasswordControllerResumes {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
       performAction:grey_tap()];
-
-  // Tap the "Other Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the password search.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      performAction:grey_tap()];
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Select a username.
-  [[EarlGrey selectElementWithMatcher:UsernameButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Wait for the password list to disappear. Using the search bar, since the
-  // popover doesn't have it.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the Password View Controller is resumed after dismissing "Other
-// Passwords".
-// TODO(crbug.com/984977): Support this behavior again.
-- (void)DISABLED_testPasswordControllerResumesWhenOtherPasswordsDismiss {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Other Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Dismiss the Other Passwords view.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      performAction:grey_tap()];
-
-  // Wait for the password list to disappear. Using the search bar, since the
-  // popover doesn't have it.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
@@ -439,34 +434,6 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that after switching fields the content size of the table view didn't
-// grow.
-- (void)testPasswordControllerKeepsRightSize {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the "Manage Passwords..." is on screen.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap the second element.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementPassword)];
-
-  // Try to scroll.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Verify the "Manage Passwords..." is on screen.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests that the Password View Controller stays on rotation.
 - (void)testPasswordControllerSupportsRotation {
   // Bring up the keyboard.
@@ -481,8 +448,8 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
 
   // Verify the password controller table view is still visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
@@ -502,7 +469,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:TapWebElementWithIdInFrame(kFormElementUsername, 0)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Tap on the passwords icon.
@@ -522,7 +489,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       stringWithFormat:
           @"window.frames[0].document.getElementById('%s').value === '%s'",
           kFormElementUsername, kExampleUsername];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 // Tests that an alert is shown when trying to fill a password in an unsecure
@@ -538,7 +505,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Tap on the passwords icon.
@@ -558,35 +525,53 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       assertWithMatcher:grey_not(grey_nil())];
 }
 
-// Tests that the password icon is hidden when no passwords are available.
+// Tests that the password icon is not present when no passwords are available.
 - (void)testPasswordIconIsNotVisibleWhenPasswordStoreEmpty {
-  // Test failing on iOS13.2 (crbug.com/1019535)
-  if (@available(iOS 13.2, *))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.2");
   [AutofillAppInterface clearPasswordStore];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
 
-  // Wait for the keyboard to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Assert the password icon is not visible.
+  // Assert the password icon is not enabled and not visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       assertWithMatcher:grey_notVisible()];
+}
 
-  // Store one password.
-  [AutofillAppInterface saveExamplePasswordForm];
+// Tests password generation on manual fallback.
+- (void)testPasswordGenerationOnManualFallback {
+  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
 
-  // Tap another field to trigger form activity.
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementPassword)];
 
-  // Assert the password icon is visible now.
+  // Tap on the passwords icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the password controller table view is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select a 'Suggest Password...' option.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
+      performAction:grey_tap()];
+
+  // Confirm by tapping on the 'Use Suggested Password' button.
+  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordMatcher()]
+      performAction:grey_tap()];
+
+  // Verify Web Content.
+  NSString* javaScriptCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
+                                 kFormElementPassword];
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 @end

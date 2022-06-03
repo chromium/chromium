@@ -10,9 +10,10 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/InstantAppsSettings_jni.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/installable/installable_logging.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -43,22 +44,20 @@ void RecordShouldShowBannerMetric(AiaBannerReason reason) {
 void InstantAppsSettings::RecordInfoBarShowEvent(
     content::WebContents* web_contents,
     const std::string& url) {
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents,
-      GURL(url),
-      AppBannerSettingsHelper::kInstantAppsKey,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
+  webapps::AppBannerSettingsHelper::RecordBannerEvent(
+      web_contents, GURL(url),
+      webapps::AppBannerSettingsHelper::kInstantAppsKey,
+      webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
       base::Time::Now());
 }
 
 void InstantAppsSettings::RecordInfoBarDismissEvent(
     content::WebContents* web_contents,
     const std::string& url) {
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents,
-      GURL(url),
-      AppBannerSettingsHelper::kInstantAppsKey,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_BLOCK,
+  webapps::AppBannerSettingsHelper::RecordBannerEvent(
+      web_contents, GURL(url),
+      webapps::AppBannerSettingsHelper::kInstantAppsKey,
+      webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_BLOCK,
       base::Time::Now());
 }
 
@@ -72,31 +71,29 @@ static void JNI_InstantAppsSettings_SetInstantAppDefault(
 
   std::string url(ConvertJavaStringToUTF8(env, jurl));
 
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents,
-      GURL(url),
-      AppBannerSettingsHelper::kInstantAppsKey,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+  webapps::AppBannerSettingsHelper::RecordBannerEvent(
+      web_contents, GURL(url),
+      webapps::AppBannerSettingsHelper::kInstantAppsKey,
+      webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       base::Time::Now());
 }
 
 static jboolean JNI_InstantAppsSettings_GetInstantAppDefault(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jstring>& jurl) {
+    const JavaParamRef<jobject>& jurl) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
-  std::string url(ConvertJavaStringToUTF8(env, jurl));
+  absl::optional<base::Time> added_time =
+      webapps::AppBannerSettingsHelper::GetSingleBannerEvent(
+          web_contents, *url::GURLAndroid::ToNativeGURL(env, jurl),
+          webapps::AppBannerSettingsHelper::kInstantAppsKey,
+          webapps::AppBannerSettingsHelper::
+              APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN);
 
-  base::Time added_time = AppBannerSettingsHelper::GetSingleBannerEvent(
-      web_contents,
-      GURL(url),
-      AppBannerSettingsHelper::kInstantAppsKey,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN);
-
-  return !added_time.is_null();
+  return added_time && !added_time->is_null();
 }
 
 static jboolean JNI_InstantAppsSettings_ShouldShowBanner(
@@ -108,22 +105,23 @@ static jboolean JNI_InstantAppsSettings_ShouldShowBanner(
   DCHECK(web_contents);
 
   GURL url(ConvertJavaStringToUTF8(env, jurl));
-  const std::string& key = AppBannerSettingsHelper::kInstantAppsKey;
+  const std::string& key = webapps::AppBannerSettingsHelper::kInstantAppsKey;
   base::Time now = base::Time::Now();
 
-  if (AppBannerSettingsHelper::HasBeenInstalled(web_contents, url, key)) {
+  if (webapps::AppBannerSettingsHelper::HasBeenInstalled(web_contents, url,
+                                                         key)) {
     RecordShouldShowBannerMetric(AiaBannerReason::AIA_ALREADY_INSTALLED);
     return false;
   }
 
-  if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(web_contents, url, key,
-                                                        now)) {
+  if (webapps::AppBannerSettingsHelper::WasBannerRecentlyBlocked(
+          web_contents, url, key, now)) {
     RecordShouldShowBannerMetric(AiaBannerReason::AIA_RECENTLY_BLOCKED);
     return false;
   }
 
-  if (AppBannerSettingsHelper::WasBannerRecentlyIgnored(web_contents, url, key,
-                                                        now)) {
+  if (webapps::AppBannerSettingsHelper::WasBannerRecentlyIgnored(
+          web_contents, url, key, now)) {
     RecordShouldShowBannerMetric(AiaBannerReason::AIA_RECENTLY_IGNORED);
     return false;
   }

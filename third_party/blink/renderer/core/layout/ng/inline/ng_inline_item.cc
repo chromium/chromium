@@ -6,11 +6,22 @@
 
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 namespace {
+
+struct SameSizeAsNGInlineItem {
+  void* pointers[1];
+  UntracedMember<void*> members[1];
+  unsigned integers[3];
+  unsigned bit_fields : 32;
+};
+
+ASSERT_SIZE(NGInlineItem, SameSizeAsNGInlineItem);
 
 const char* kNGInlineItemTypeStrings[] = {
     "Text",     "Control",  "AtomicInline",        "OpenTag",
@@ -65,15 +76,14 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
       end_offset_(end),
       layout_object_(layout_object),
       type_(type),
-      segment_data_(0),
-      bidi_level_(UBIDI_LTR),
-      shape_options_(kPreContext | kPostContext),
-      is_empty_item_(false),
-      is_block_level_(false),
+      text_type_(static_cast<unsigned>(NGTextType::kNormal)),
       style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),
       end_collapse_type_(kNotCollapsible),
+      bidi_level_(UBIDI_LTR),
+      segment_data_(0),
+      is_empty_item_(false),
+      is_block_level_(false),
       is_end_collapsible_newline_(false),
-      is_symbol_marker_(false),
       is_generated_for_line_break_(false) {
   DCHECK_GE(end, start);
   ComputeBoxProperties();
@@ -88,15 +98,14 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
       shape_result_(shape_result),
       layout_object_(other.layout_object_),
       type_(other.type_),
-      segment_data_(other.segment_data_),
-      bidi_level_(other.bidi_level_),
-      shape_options_(other.shape_options_),
-      is_empty_item_(other.is_empty_item_),
-      is_block_level_(other.is_block_level_),
+      text_type_(other.text_type_),
       style_variant_(other.style_variant_),
       end_collapse_type_(other.end_collapse_type_),
+      bidi_level_(other.bidi_level_),
+      segment_data_(other.segment_data_),
+      is_empty_item_(other.is_empty_item_),
+      is_block_level_(other.is_block_level_),
       is_end_collapsible_newline_(other.is_end_collapsible_newline_),
-      is_symbol_marker_(other.is_symbol_marker_),
       is_generated_for_line_break_(other.is_generated_for_line_break_) {
   DCHECK_GE(end, start);
 }
@@ -122,8 +131,9 @@ void NGInlineItem::ComputeBoxProperties() {
     return;
   }
 
-  if (type_ == kListMarker) {
-    is_empty_item_ = false;
+  if (type_ == kBlockInInline) {
+    // |is_empty_item_| can't be determined until this item is laid out.
+    // |false| is a safer approximation.
     return;
   }
 
@@ -138,7 +148,7 @@ const char* NGInlineItem::NGInlineItemTypeToString(int val) const {
 }
 
 void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                                  Vector<NGInlineItem>* items) {
+                                  HeapVector<NGInlineItem>* items) {
   unsigned segment_data = NGInlineItemSegment::PackSegmentData(range);
   for (NGInlineItem& item : *items) {
     if (item.Type() == NGInlineItem::kText)
@@ -155,25 +165,43 @@ void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
 // @param end_offset The exclusive end offset to set.
 // @param level The level to set.
 // @return The index of the next item.
-unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
+unsigned NGInlineItem::SetBidiLevel(HeapVector<NGInlineItem>& items,
                                     unsigned index,
                                     unsigned end_offset,
                                     UBiDiLevel level) {
   for (; items[index].end_offset_ < end_offset; index++)
     items[index].SetBidiLevel(level);
-  items[index].SetBidiLevel(level);
+  NGInlineItem* item = &items[index];
+  item->SetBidiLevel(level);
 
-  if (items[index].end_offset_ == end_offset) {
+  if (item->end_offset_ == end_offset) {
     // Let close items have the same bidi-level as the previous item.
     while (index + 1 < items.size() &&
            items[index + 1].Type() == NGInlineItem::kCloseTag) {
       items[++index].SetBidiLevel(level);
     }
   } else {
+    // If a reused item needs to split, |SetNeedsLayout| to ensure the line is
+    // not reused.
+    LayoutObject* layout_object = item->GetLayoutObject();
+    if (layout_object->EverHadLayout() && !layout_object->NeedsLayout())
+      layout_object->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+
     Split(items, index, end_offset);
   }
 
   return index + 1;
+}
+
+const Font& NGInlineItem::FontWithSvgScaling() const {
+  if (const auto* svg_text =
+          DynamicTo<LayoutSVGInlineText>(layout_object_.Get())) {
+    DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
+    // We don't need to care about StyleVariant(). SVG 1.1 doesn't support
+    // ::first-line.
+    return svg_text->ScaledFont();
+  }
+  return Style()->GetFont();
 }
 
 String NGInlineItem::ToString() const {
@@ -188,7 +216,7 @@ String NGInlineItem::ToString() const {
 // @param items The list of NGInlineItem.
 // @param index The index to split.
 // @param offset The offset to split at.
-void NGInlineItem::Split(Vector<NGInlineItem>& items,
+void NGInlineItem::Split(HeapVector<NGInlineItem>& items,
                          unsigned index,
                          unsigned offset) {
   DCHECK_GT(offset, items[index].start_offset_);
@@ -197,6 +225,10 @@ void NGInlineItem::Split(Vector<NGInlineItem>& items,
   items.insert(index + 1, items[index]);
   items[index].end_offset_ = offset;
   items[index + 1].start_offset_ = offset;
+}
+
+void NGInlineItem::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
 }
 
 }  // namespace blink

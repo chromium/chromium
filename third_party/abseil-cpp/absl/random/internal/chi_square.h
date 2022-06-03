@@ -26,7 +26,10 @@
 
 #include <cassert>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
 constexpr const char kChiSquared[] = "chi-squared";
@@ -80,6 +83,7 @@ double ChiSquareValue(int dof, double p);
 double ChiSquarePValue(double chi_square, int dof);
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_CHI_SQUARE_H_

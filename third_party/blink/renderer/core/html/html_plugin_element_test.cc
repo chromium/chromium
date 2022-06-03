@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
@@ -25,10 +26,6 @@ class TestPluginLocalFrameClient : public EmptyLocalFrameClient {
   int plugin_created_count() const { return plugin_created_count_; }
 
  private:
-  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
-    return Platform::Current()->CreateDefaultURLLoaderFactory();
-  }
-
   WebPluginContainerImpl* CreatePlugin(HTMLPlugInElement& element,
                                        const KURL& url,
                                        const Vector<String>& param_names,
@@ -108,7 +105,7 @@ TEST_P(HTMLPlugInElementTest, RemovePlugin) {
   )HTML";
 
   const char* container_type = GetParam();
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       String::Format(kDivWithPlugin, container_type, container_type));
 
   auto* plugin =

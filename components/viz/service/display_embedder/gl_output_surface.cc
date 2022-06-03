@@ -19,8 +19,9 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/swap_buffers_flags.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/overlay_transform_utils.h"
-#include "ui/gl/color_space_utils.h"
 
 namespace viz {
 
@@ -35,7 +36,7 @@ GLOutputSurface::GLOutputSurface(
           context_provider->ContextCapabilities()
               .use_gpu_fences_for_overlay_planes) {
   const auto& context_capabilities = context_provider->ContextCapabilities();
-  capabilities_.flipped_output_surface = context_capabilities.flips_vertically;
+  capabilities_.output_surface_origin = context_capabilities.surface_origin;
   capabilities_.supports_stencil = context_capabilities.num_stencil_bits > 0;
   // Since one of the buffers is used by the surface for presentation, there can
   // be at most |num_surface_buffers - 1| pending buffers that the compositor
@@ -44,13 +45,12 @@ GLOutputSurface::GLOutputSurface(
       context_capabilities.num_surface_buffers - 1;
   capabilities_.supports_gpu_vsync = context_capabilities.gpu_vsync;
   capabilities_.supports_dc_layers = context_capabilities.dc_layers;
-  capabilities_.supports_dc_video_overlays =
-      context_capabilities.use_dc_overlays_for_video;
   capabilities_.supports_surfaceless = context_capabilities.surfaceless;
   capabilities_.android_surface_control_feature_enabled =
       context_provider->GetGpuFeatureInfo()
           .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
       gpu::kGpuFeatureStatusEnabled;
+  capabilities_.max_render_target_size = context_capabilities.max_texture_size;
 }
 
 GLOutputSurface::~GLOutputSurface() {
@@ -91,16 +91,22 @@ void GLOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
       rect.x(), rect.y(), rect.width(), rect.height());
 }
 
+void GLOutputSurface::SetEnableDCLayers(bool enable) {
+  DCHECK(capabilities_.supports_dc_layers);
+  context_provider()->ContextGL()->SetEnableDCLayersCHROMIUM(enable);
+}
+
 void GLOutputSurface::Reshape(const gfx::Size& size,
                               float device_scale_factor,
                               const gfx::ColorSpace& color_space,
-                              bool has_alpha,
+                              gfx::BufferFormat format,
                               bool use_stencil) {
   size_ = size;
   has_set_draw_rectangle_since_last_resize_ = false;
+  set_draw_rectangle_for_frame_ = false;
   context_provider()->ContextGL()->ResizeCHROMIUM(
       size.width(), size.height(), device_scale_factor,
-      gl::ColorSpaceUtils::GetGLColorSpace(color_space), has_alpha);
+      color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
 }
 
 void GLOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
@@ -149,10 +155,6 @@ unsigned GLOutputSurface::GetOverlayTextureId() const {
   return 0;
 }
 
-gfx::BufferFormat GLOutputSurface::GetOverlayBufferFormat() const {
-  return gfx::BufferFormat::RGBX_8888;
-}
-
 bool GLOutputSurface::HasExternalStencilTest() const {
   return false;
 }
@@ -160,8 +162,9 @@ bool GLOutputSurface::HasExternalStencilTest() const {
 void GLOutputSurface::ApplyExternalStencil() {}
 
 void GLOutputSurface::DidReceiveSwapBuffersAck(
-    const gfx::SwapResponse& response) {
-  client_->DidReceiveSwapBuffersAck(response.timings);
+    const gfx::SwapResponse& response,
+    gfx::GpuFenceHandle release_fence) {
+  client_->DidReceiveSwapBuffersAck(response.timings, std::move(release_fence));
 }
 
 void GLOutputSurface::HandlePartialSwap(
@@ -178,16 +181,17 @@ void GLOutputSurface::OnGpuSwapBuffersCompleted(
     std::vector<ui::LatencyInfo> latency_info,
     bool top_controls_visible_height_changed,
     const gfx::Size& pixel_size,
-    const gpu::SwapBuffersCompleteParams& params) {
+    const gpu::SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {
   if (!params.texture_in_use_responses.empty())
     client_->DidReceiveTextureInUseResponses(params.texture_in_use_responses);
   if (!params.ca_layer_params.is_empty)
     client_->DidReceiveCALayerParams(params.ca_layer_params);
-  DidReceiveSwapBuffersAck(params.swap_response);
+  DidReceiveSwapBuffersAck(params.swap_response, std::move(release_fence));
 
   UpdateLatencyInfoOnSwap(params.swap_response, &latency_info);
   latency_tracker_.OnGpuSwapBuffersCompleted(
-      latency_info, top_controls_visible_height_changed);
+      std::move(latency_info), top_controls_visible_height_changed);
 
   if (needs_swap_size_notifications_)
     client_->DidSwapWithSize(pixel_size);
@@ -249,4 +253,13 @@ base::ScopedClosureRunner GLOutputSurface::GetCacheBackBufferCb() {
 gpu::SurfaceHandle GLOutputSurface::GetSurfaceHandle() const {
   return surface_handle_;
 }
+
+void GLOutputSurface::SetFrameRate(float frame_rate) {
+  viz_context_provider_->ContextSupport()->SetFrameRate(frame_rate);
+}
+
+void GLOutputSurface::SetNeedsMeasureNextDrawLatency() {
+  viz_context_provider_->SetNeedsMeasureNextDrawLatency();
+}
+
 }  // namespace viz

@@ -5,7 +5,6 @@
 #include "chromeos/services/device_sync/cryptauth_key_registry_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -20,12 +19,12 @@ CryptAuthKeyRegistryImpl::Factory*
     CryptAuthKeyRegistryImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthKeyRegistryImpl::Factory* CryptAuthKeyRegistryImpl::Factory::Get() {
+std::unique_ptr<CryptAuthKeyRegistry> CryptAuthKeyRegistryImpl::Factory::Create(
+    PrefService* pref_service) {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance(pref_service);
 
-  static base::NoDestructor<CryptAuthKeyRegistryImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthKeyRegistryImpl(pref_service));
 }
 
 // static
@@ -35,11 +34,6 @@ void CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(
 }
 
 CryptAuthKeyRegistryImpl::Factory::~Factory() = default;
-
-std::unique_ptr<CryptAuthKeyRegistry>
-CryptAuthKeyRegistryImpl::Factory::BuildInstance(PrefService* pref_service) {
-  return base::WrapUnique(new CryptAuthKeyRegistryImpl(pref_service));
-}
 
 // static
 void CryptAuthKeyRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -58,7 +52,7 @@ CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
     if (!bundle_dict)
       continue;
 
-    base::Optional<CryptAuthKeyBundle> bundle =
+    absl::optional<CryptAuthKeyBundle> bundle =
         CryptAuthKeyBundle::FromDictionary(*bundle_dict);
     if (!bundle) {
       PA_LOG(ERROR) << "Error retrieving key bundle " << name_string

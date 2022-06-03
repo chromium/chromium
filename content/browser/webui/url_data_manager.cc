@@ -10,13 +10,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/thread_annotations.h"
 #include "content/browser/resource_context_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -43,23 +42,6 @@ URLDataManager* GetFromBrowserContext(BrowserContext* context) {
       context->GetUserData(kURLDataManagerKeyName));
 }
 
-// Invoked on the IO thread to do the actual adding of the DataSource.
-static void AddDataSourceOnIOThread(
-    ResourceContext* resource_context,
-    scoped_refptr<URLDataSourceImpl> data_source) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetURLDataManagerForResourceContext(resource_context)->AddDataSource(
-      data_source.get());
-}
-
-static void UpdateWebUIDataSourceOnIOThread(
-    ResourceContext* resource_context,
-    std::string source_name,
-    const base::DictionaryValue* update) {
-  GetURLDataManagerForResourceContext(resource_context)
-      ->UpdateWebUIDataSource(source_name, *update);
-}
-
 }  // namespace
 
 // static
@@ -75,20 +57,16 @@ URLDataManager::~URLDataManager() {
 
 void URLDataManager::AddDataSource(URLDataSourceImpl* source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&AddDataSourceOnIOThread,
-                                browser_context_->GetResourceContext(),
-                                base::WrapRefCounted(source)));
+  URLDataManagerBackend::GetForBrowserContext(browser_context_)
+      ->AddDataSource(source);
 }
 
 void URLDataManager::UpdateWebUIDataSource(
     const std::string& source_name,
     std::unique_ptr<base::DictionaryValue> update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&UpdateWebUIDataSourceOnIOThread,
-                                browser_context_->GetResourceContext(),
-                                source_name, base::Owned(update.release())));
+  URLDataManagerBackend::GetForBrowserContext(browser_context_)
+      ->UpdateWebUIDataSource(source_name, *update);
 }
 
 // static
@@ -126,8 +104,8 @@ void URLDataManager::DeleteDataSource(const URLDataSourceImpl* data_source) {
   }
   if (schedule_delete) {
     // Schedule a task to delete the DataSource back on the UI thread.
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&URLDataManager::DeleteDataSources));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&URLDataManager::DeleteDataSources));
   }
 }
 
@@ -135,8 +113,9 @@ void URLDataManager::DeleteDataSource(const URLDataSourceImpl* data_source) {
 void URLDataManager::AddDataSource(BrowserContext* browser_context,
                                    std::unique_ptr<URLDataSource> source) {
   std::string name = source->GetSource();
-  GetFromBrowserContext(browser_context)
-      ->AddDataSource(new URLDataSourceImpl(name, std::move(source)));
+  auto source_impl =
+      base::MakeRefCounted<URLDataSourceImpl>(name, std::move(source));
+  GetFromBrowserContext(browser_context)->AddDataSource(source_impl.get());
 }
 
 // static

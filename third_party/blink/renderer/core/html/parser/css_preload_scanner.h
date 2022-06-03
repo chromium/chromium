@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -41,6 +40,8 @@ class CSSPreloadScanner {
 
  public:
   CSSPreloadScanner();
+  CSSPreloadScanner(const CSSPreloadScanner&) = delete;
+  CSSPreloadScanner& operator=(const CSSPreloadScanner&) = delete;
   ~CSSPreloadScanner();
 
   void Reset();
@@ -48,11 +49,13 @@ class CSSPreloadScanner {
   void Scan(const HTMLToken::DataVector&,
             const SegmentedString&,
             PreloadRequestStream&,
-            const KURL&);
+            const KURL&,
+            const PreloadRequest::ExclusionInfo*);
   void Scan(const String&,
             const SegmentedString&,
             PreloadRequestStream&,
-            const KURL&);
+            const KURL&,
+            const PreloadRequest::ExclusionInfo*);
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
 
@@ -75,10 +78,13 @@ class CSSPreloadScanner {
                   const Char* end,
                   const SegmentedString&,
                   PreloadRequestStream&,
-                  const KURL&);
+                  const KURL&,
+                  const PreloadRequest::ExclusionInfo*);
 
   inline void Tokenize(UChar, const SegmentedString&);
   void EmitRule(const SegmentedString&);
+
+  bool HasFinishedRuleValue() const;
 
   State state_ = kInitial;
   StringBuilder rule_;
@@ -90,10 +96,9 @@ class CSSPreloadScanner {
   // Below members only non-null during scan()
   PreloadRequestStream* requests_ = nullptr;
   const KURL* predicted_base_element_url_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSPreloadScanner);
+  const PreloadRequest::ExclusionInfo* exclusion_info_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_

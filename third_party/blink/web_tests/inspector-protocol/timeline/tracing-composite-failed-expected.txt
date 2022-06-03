@@ -1,0 +1,12 @@
+Tests animation started and records composite failure reasons in trace event.
+Recording started
+Animation created
+Animation started
+Tracing complete
+Name:Animation,Phase:b
+Name:Animation,Phase:n
+Name:Animation,Phase:n
+Name:Animation,Phase:e
+Animation composite failed reasons: 8225
+Unsupported CSS Property: width
+

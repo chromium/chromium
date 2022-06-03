@@ -12,6 +12,10 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 ntp_tiles::TileVisualType VisualTypeFromAttributes(
@@ -43,20 +47,18 @@ void RecordNTPTileImpression(int index,
                              ntp_tiles::TileSource source,
                              ntp_tiles::TileTitleSource title_source,
                              const FaviconAttributes* attributes,
-                             base::Time data_generation_time,
                              const GURL& url) {
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
       index, source, title_source, VisualTypeFromAttributes(attributes),
-      IconTypeFromAttributes(attributes), data_generation_time, url));
+      IconTypeFromAttributes(attributes), url));
 }
 
 void RecordNTPTileClick(int index,
                         ntp_tiles::TileSource source,
                         ntp_tiles::TileTitleSource title_source,
                         const FaviconAttributes* attributes,
-                        base::Time data_generation_time,
                         const GURL& url) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, source, title_source, VisualTypeFromAttributes(attributes),
-      IconTypeFromAttributes(attributes), data_generation_time, url));
+      IconTypeFromAttributes(attributes), url));
 }

@@ -8,6 +8,10 @@
 #include "ios/web/public/session/crw_navigation_item_storage.h"
 #include "ios/web/public/session/crw_session_storage.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace sessions {
 
 RestoreIOSLiveTab::RestoreIOSLiveTab(CRWSessionStorage* session)
@@ -43,9 +47,13 @@ int RestoreIOSLiveTab::GetEntryCount() {
   return session_.itemStorages.count;
 }
 
-const std::string& RestoreIOSLiveTab::GetUserAgentOverride() {
-  // Dynamic user agent overrides are not supported on iOS.
-  return user_agent_override_;
+sessions::SerializedUserAgentOverride
+RestoreIOSLiveTab::GetUserAgentOverride() {
+  return sessions::SerializedUserAgentOverride();
+}
+
+const web::WebState* RestoreIOSLiveTab::GetWebState() const {
+  return nullptr;
 }
 
 }  // namespace sessions

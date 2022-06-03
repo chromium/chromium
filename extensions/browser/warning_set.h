@@ -40,6 +40,9 @@ class Warning {
     kReloadTooFrequent,
     // The declarative net request ruleset for the extension failed to load.
     kRulesetFailedToLoad,
+    // The declarative net request ruleset for the extension could not be
+    // enabled because it would exceed the global rules limit.
+    kEnabledRuleCountExceeded,
     kMaxWarningType
   };
 
@@ -61,6 +64,8 @@ class Warning {
   static Warning CreateReloadTooFrequentWarning(
       const std::string& extension_id);
   static Warning CreateRulesetFailedToLoadWarning(
+      const ExtensionId& extension_id);
+  static Warning CreateEnabledRuleCountExceededWarning(
       const ExtensionId& extension_id);
 
   // Compare Warnings based on the tuple of (extension_id, type).

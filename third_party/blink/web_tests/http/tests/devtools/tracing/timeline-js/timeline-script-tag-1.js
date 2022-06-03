@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of an HTML script tag.\n`);
-  await TestRunner.loadModule('performance_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
@@ -16,7 +16,7 @@
       }
   `);
 
-  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.startTimeline();
   TestRunner.evaluateInPage('performActions()');
   await ConsoleTestRunner.waitUntilMessageReceivedPromise();

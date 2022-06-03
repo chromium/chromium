@@ -7,8 +7,8 @@ Bug 85343
 
 
 TEST CASE: Mouse idle, change cursor should not fire mousemove event
-Cursor Info: type=Pointer hotSpot=0,0
-Cursor Info: type=Help hotSpot=0,0
+Cursor Info: type=Pointer
+Cursor Info: type=Help
 
 
 PASS successfullyParsed is true

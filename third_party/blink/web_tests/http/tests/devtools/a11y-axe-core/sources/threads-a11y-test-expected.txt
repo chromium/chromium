@@ -1,0 +1,7 @@
+Testing accessibility in the threads sidebar pane.
+Threads sidebar pane content:
+ Mainworker-source.jspaused
+Running the axe-core linter on the threads sidebar pane.
+aXe violations: []
+
+

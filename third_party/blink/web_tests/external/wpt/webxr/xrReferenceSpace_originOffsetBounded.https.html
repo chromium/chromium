@@ -4,7 +4,6 @@
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
 <script src="resources/webxr_test_asserts.js"></script>
-<canvas id="webgl-canvas"></canvas>
 
 <script>
 
@@ -28,12 +27,13 @@ const VIEWS_WITH_OFFSET = [{
 }];
 
 const FLOOR_TRANSFORM = {
-  position: [0.1, 0.2, 0.3],
+  position: [-0.1, -0.2, -0.3],
   orientation: [0, 0, 0, 1]
 };
 
 const fakeDeviceInitParams = {
   supportsImmersive: true,
+  supportedModes: ["inline", "immersive-vr"],
   views: VIEWS_WITH_OFFSET,
   viewerOrigin: IDENTITY_TRANSFORM,
   floorOrigin: FLOOR_TRANSFORM,
@@ -53,7 +53,7 @@ function testFunction(session, fakeDeviceController, t) {
   };
 
   const LOCAL_POINTER_TRANSFORM = {
-    position: [0.01, 0.02, 0.03],
+    position: [1.01, 2.02, 3.03],
     orientation: [0, 0, 0, 1]
   }
 
@@ -66,10 +66,9 @@ function testFunction(session, fakeDeviceController, t) {
   });
 
   return new Promise((resolve, reject) => {
-    session.requestAnimationFrame((time, frame) => {
-      let input_source = session.inputSources[0];
-
-      session.requestReferenceSpace('bounded-floor').then((referenceSpace) => {
+    session.requestReferenceSpace('bounded-floor').then((referenceSpace) => {
+      requestSkipAnimationFrame(session, (time, frame) => {
+        let input_source = session.inputSources[0];
 
         function CheckState(
           reference_space,

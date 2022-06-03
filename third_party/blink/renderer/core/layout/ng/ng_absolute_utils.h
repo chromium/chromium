@@ -5,83 +5,66 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
-#include "third_party/blink/renderer/core/layout/min_max_size.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
-class ComputedStyle;
-class LayoutObject;
+class NGBoxFragmentBuilder;
+class NGBlockNode;
 class NGConstraintSpace;
+class NGLayoutResult;
 struct NGLogicalStaticPosition;
 
-struct CORE_EXPORT NGLogicalOutOfFlowPosition {
+struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   NGBoxStrut inset;
-  LogicalSize size;
+  LogicalSize size = {kIndefiniteSize, kIndefiniteSize};
   NGBoxStrut margins;
 };
-
-// Implements <dialog> static positioning.
-//
-// Returns new dialog top position if layout_dialog requires <dialog>
-// OOF-positioned centering.
-CORE_EXPORT base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
-    const LayoutObject& layout_dialog,
-    LayoutUnit height);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
 //
-// The size is computed as |NGLogicalOutOfFlowPosition|.
-// It needs to be computed in 4 stages:
-// 1. If |AbsoluteNeedsChildInlineSize| is true, compute estimated inline_size
-//    using |NGBlockNode::MinMaxSize|.
-// 2. Compute part of the |NGLogicalOutOfFlowPosition| which depends on the
-//    child inline-size with |ComputePartialAbsoluteWithChildInlineSize|.
-// 3. If |AbsoluteNeedsChildBlockSize| is true, compute estimated block_size by
-//    performing layout with the inline_size calculated from (2).
-// 4. Compute the full |NGLogicalOutOfFlowPosition| with
-//    |ComputeFullAbsoluteWithChildBlockSize|.
+// The size is computed as |NGLogicalOutOfFlowDimensions|.
+// It needs to be computed in 2 stages:
+// 1. The inline-dimensions with |ComputeOutOfFlowInlineDimensions|.
+// 2. The block-dimensions with |ComputeOutOfFlowBlockDimensions|.
+//
+// NOTE: |ComputeOutOfFlowInlineDimensions| may call
+// |ComputeOutOfFlowBlockDimensions| if its required to correctly determine the
+// min/max content sizes.
 
-// Returns true if |ComputePartialAbsoluteWithChildInlineSize| will need an
-// estimated inline-size.
-CORE_EXPORT bool AbsoluteNeedsChildInlineSize(const ComputedStyle&);
-
-// Returns true if |ComputeFullAbsoluteWithChildBlockSize| will need an
-// estimated block-size.
-CORE_EXPORT bool AbsoluteNeedsChildBlockSize(const ComputedStyle&);
-
-// Computes part of the absolute position which depends on the child's
-// inline-size.
 // |replaced_size| should be set if and only if element is replaced element.
-// Returns the partially filled position.
-CORE_EXPORT NGLogicalOutOfFlowPosition
-ComputePartialAbsoluteWithChildInlineSize(
+// Will return true if |NGBlockNode::ComputeMinMaxSizes| was called.
+CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
+    const NGBlockNode&,
     const NGConstraintSpace&,
-    const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const base::Optional<MinMaxSize>& child_minmax,
-    const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction);
+    const absl::optional<LogicalSize>& replaced_size,
+    const WritingDirectionMode container_writing_direction,
+    NGLogicalOutOfFlowDimensions* dimensions);
 
-// Computes the rest of the absolute position which depends on child's
-// block-size.
-CORE_EXPORT void ComputeFullAbsoluteWithChildBlockSize(
+// If layout was performed to determine the position, this will be returned
+// otherwise it will return nullptr.
+CORE_EXPORT scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
+    const NGBlockNode&,
     const NGConstraintSpace&,
-    const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const base::Optional<LayoutUnit>& child_block_size,
-    const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction,
-    NGLogicalOutOfFlowPosition* position);
+    const absl::optional<LogicalSize>& replaced_size,
+    const WritingDirectionMode container_writing_direction,
+    NGLogicalOutOfFlowDimensions* dimensions);
+
+CORE_EXPORT void AdjustOffsetForSplitInline(
+    const NGBlockNode& node,
+    const NGBoxFragmentBuilder* container_builder,
+    LogicalOffset& offset);
 
 }  // namespace blink
 

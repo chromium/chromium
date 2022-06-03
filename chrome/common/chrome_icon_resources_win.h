@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_CHROME_ICON_RESOURCES_WIN_H_
 #define CHROME_COMMON_CHROME_ICON_RESOURCES_WIN_H_
 
+#include "build/branding_buildflags.h"
+
 namespace icon_resources {
 
 // This file contains the indices of icon resources in chrome_exe.rc.
@@ -13,7 +15,7 @@ enum {
   // The main application icon is always index 0.
   kApplicationIndex = 0,
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Legacy indices that are no longer used.
   kApplication2Index = 1,
   kApplication3Index = 2,
@@ -36,13 +38,13 @@ enum {
 
   // The Chrome Beta application icon.
   kBetaApplicationIndex = 9,
-#else   // defined(GOOGLE_CHROME_BUILD)
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Chromium App Launcher icon.
   kAppLauncherIndex = 1,
 
   // The Chromium incognito icon.
   kIncognitoIndex = 2,
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 
 }  // namespace icon_resources

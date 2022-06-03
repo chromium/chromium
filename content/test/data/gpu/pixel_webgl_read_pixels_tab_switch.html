@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>WebGL Canvas Read Pixels And Tab Switch Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+let g_swapsBeforeAck = 15;
+let g_canvas;
+let g_gl;
+
+function sendResult(status) {
+  if (domAutomationController) {
+    domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function waitForFinish() {
+  if (g_swapsBeforeAck == 0) {
+    sendResult("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState == "visible") {
+    waitForFinish();
+  } else {
+    // Read pixels will cause drawing buffer to be cleared, but it shouldn't
+    // cause it to be recomposited after the tab switches back.
+    let pixels = new Uint8Array(4);
+    g_gl.readPixels(0, 0, 1, 1, g_gl.RGBA, g_gl.UNSIGNED_BYTE, pixels);
+  }
+}
+
+function main() {
+  document.addEventListener("visibilitychange", handleVisibilityChange, false);
+
+  g_canvas = document.getElementById("c");
+  g_gl = g_canvas.getContext("webgl");
+
+  let width = g_canvas.width;
+  let height = g_canvas.height;
+
+  g_gl.enable(g_gl.SCISSOR_TEST);
+  g_gl.scissor(0, 0, width, height);
+  g_gl.clearColor(1, 0, 0, 1);
+  g_gl.clear(g_gl.COLOR_BUFFER_BIT);
+
+  g_gl.scissor(0, 0, width / 2, height / 2);
+  g_gl.clearColor(0, 1, 0, 1);
+  g_gl.clear(g_gl.COLOR_BUFFER_BIT);
+
+  g_gl.scissor(width / 2, height / 2, width / 2, height / 2);
+  g_gl.clearColor(0, 0, 1, 1);
+  g_gl.clear(g_gl.COLOR_BUFFER_BIT);
+
+  sendResult("READY");
+}
+</script>
+</head>
+<body onload="main()" class="nomargin">
+<canvas id="c" width="100" height="100" class="nomargin" style="background-color:black"></canvas>
+</body>
+</html>

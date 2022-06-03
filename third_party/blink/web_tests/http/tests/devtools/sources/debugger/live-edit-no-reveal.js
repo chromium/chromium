@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests live edit feature.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me-when-paused-no-reveal.js');
 
@@ -20,9 +20,9 @@
   function testLiveEditWhenPausedDoesNotCauseCursorMove(oldText, newText, next) {
     SourcesTestRunner.showScriptSource('edit-me-when-paused-no-reveal.js', didShowScriptSource);
 
-    function didShowScriptSource(sourceFrame) {
+    async function didShowScriptSource(sourceFrame) {
       SourcesTestRunner.waitUntilPaused(paused);
-      SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
       TestRunner.evaluateInPage('f1()', didEvaluateInPage);
     }
 
@@ -54,9 +54,9 @@
   function testLiveEditWhenPausedThenStepIntoCausesCursorMove(oldText, newText, next) {
     SourcesTestRunner.showScriptSource('edit-me-when-paused-no-reveal.js', didShowScriptSource);
 
-    function didShowScriptSource(sourceFrame) {
+    async function didShowScriptSource(sourceFrame) {
       SourcesTestRunner.waitUntilPaused(paused);
-      SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
       TestRunner.evaluateInPage('f1()', didEvaluateInPage);
     }
 

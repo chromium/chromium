@@ -26,13 +26,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import logging
 
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
-from blinkpy.web_tests.models.test_expectations import TestExpectations
-from blinkpy.web_tests.models.test_expectations import TestExpectationsModel
+from blinkpy.web_tests.models.typ_types import Expectation
+from blinkpy.web_tests.port.base import Port
 from blinkpy.tool.commands.command import Command
-
 
 _log = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class FlakyTests(Command):
 
     FLAKINESS_DASHBOARD_URL = (
         'https://test-results.appspot.com/dashboards/flakiness_dashboard.html'
-        '#testType=webkit_layout_tests&tests=%s')
+        '#testType=blink_web_tests&tests=%s')
 
     BUG_TEMPLATE = (
         'https://code.google.com/p/chromium/issues/entry?owner=FILL_ME_IN&status=Assigned&'
@@ -74,52 +75,53 @@ class FlakyTests(Command):
     def _filter_build_type_specifiers(self, specifiers):
         filtered = []
         for specifier in specifiers:
-            if specifier.lower() not in TestExpectations.BUILD_TYPES:
+            if specifier.lower() not in Port.ALL_BUILD_TYPES:
                 filtered.append(specifier)
         return filtered
 
     def _collect_expectation_lines(self, builder_names, factory):
-        models = []
+        exps = []
         for builder_name in builder_names:
-            model = TestExpectationsModel()
-            models.append(model)
 
             expectations = factory.expectations_for_builder(builder_name)
 
             # TODO(ojan): We should also skip bots that haven't uploaded recently,
             # e.g. if they're >24h stale.
             if not expectations:
-                _log.error("Can't load flakiness data for builder: %s", builder_name)
+                _log.error("Can't load flakiness data for builder: %s",
+                           builder_name)
                 continue
 
-            for line in expectations.expectation_lines(only_ignore_very_flaky=True):
+            for line in expectations.expectation_lines(
+                    only_consider_very_flaky=True):
                 # TODO(ojan): Find a way to merge specifiers instead of removing build types.
                 # We can't just union because some specifiers will change the meaning of others.
                 # For example, it's not clear how to merge [ Mac Release ] with [ Linux Debug ].
                 # But, in theory we should be able to merge [ Mac Release ] and [ Mac Debug ].
-                line.specifiers = self._filter_build_type_specifiers(line.specifiers)
-                model.add_expectation_line(line)
-
-        final_model = None
-        for model in models:
-            if final_model:
-                final_model.merge_model(model)
-            else:
-                final_model = model
-        return final_model._test_to_expectation_line.values()
+                tags = self._filter_build_type_specifiers(line.tags)
+                exps.append(
+                    Expectation(
+                        tags=tags, results=line.results, test=line.test))
+        return exps
 
     def execute(self, options, args, tool):
         factory = self.expectations_factory(tool.builders)
-        lines = self._collect_expectation_lines(tool.builders.all_continuous_builder_names(), factory)
-        lines.sort(key=lambda line: line.path)
+        lines = self._collect_expectation_lines(
+            tool.builders.all_continuous_builder_names(), factory)
+        lines.sort(key=lambda line: line.test)
 
         port = tool.port_factory.get()
         # Skip any tests which are mentioned in the dashboard but not in our checkout:
         fs = tool.filesystem
-        lines = [line for line in lines if fs.exists(fs.join(port.web_tests_dir(), line.path))]
+        lines = [
+            line for line in lines
+            if fs.exists(fs.join(port.web_tests_dir(), line.test))
+        ]
 
-        test_names = [line.name for line in lines]
-        flakiness_dashboard_url = self.FLAKINESS_DASHBOARD_URL % ','.join(test_names)
-        expectations_string = TestExpectations.list_to_string(lines)
+        test_names = [line.test for line in lines]
+        flakiness_dashboard_url = self.FLAKINESS_DASHBOARD_URL % \
+            ','.join(test_names)
+        expectations_string = '\n'.join(line.to_string() for line in lines)
 
-        print self.OUTPUT % (self.HEADER, expectations_string, flakiness_dashboard_url)
+        print(self.OUTPUT %
+              (self.HEADER, expectations_string, flakiness_dashboard_url))

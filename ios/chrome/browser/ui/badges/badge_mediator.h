@@ -11,16 +11,14 @@
 
 @protocol BadgeConsumer;
 @protocol BadgeItem;
+class Browser;
 @protocol BrowserCoordinatorCommands;
 @protocol InfobarCommands;
-class WebStateList;
 
 // A mediator object that updates the consumer when the state of badges changes.
 @interface BadgeMediator : NSObject <BadgeDelegate>
 
-- (instancetype)initWithConsumer:(id<BadgeConsumer>)consumer
-                    webStateList:(WebStateList*)webStateList
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Stops observing all objects.
@@ -29,6 +27,10 @@ class WebStateList;
 // The dispatcher for badge related actions.
 @property(nonatomic, weak) id<InfobarCommands, BrowserCoordinatorCommands>
     dispatcher;
+
+// The consumer being set up by this mediator.  Setting to a new value updates
+// the new consumer.
+@property(nonatomic, weak) id<BadgeConsumer> consumer;
 
 @end
 

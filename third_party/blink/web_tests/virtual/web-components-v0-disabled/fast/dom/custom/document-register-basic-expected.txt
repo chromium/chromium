@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 21: Uncaught TypeError: document.registerElement is not a function
-Testing document.registerElement() basic behaviors.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

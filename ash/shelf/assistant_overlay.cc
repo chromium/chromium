@@ -16,6 +16,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -57,7 +57,6 @@ constexpr float kRippleCircleInitRadiusDip = 40.f;
 constexpr float kRippleCircleStartRadiusDip = 1.f;
 constexpr float kRippleCircleRadiusDip = 77.f;
 constexpr float kRippleCircleBurstRadiusDip = 96.f;
-constexpr SkColor kRippleColor = SK_ColorWHITE;
 constexpr int kRippleExpandDurationMs = 400;
 constexpr int kRippleOpacityDurationMs = 100;
 constexpr int kRippleOpacityRetractDurationMs = 200;
@@ -67,11 +66,12 @@ constexpr int kHideDurationMs = 200;
 
 }  // namespace
 
-
 AssistantOverlay::AssistantOverlay(HomeButton* host_view)
     : ripple_layer_(std::make_unique<ui::Layer>()),
       host_view_(host_view),
-      circle_layer_delegate_(kRippleColor, kRippleCircleInitRadiusDip) {
+      circle_layer_delegate_(
+          AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
+          kRippleCircleInitRadiusDip) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetName("AssistantOverlay:ROOT_LAYER");
   layer()->SetMasksToBounds(false);
@@ -85,17 +85,24 @@ AssistantOverlay::AssistantOverlay(HomeButton* host_view)
   layer()->Add(ripple_layer_.get());
 }
 
-AssistantOverlay::~AssistantOverlay() = default;
+AssistantOverlay::~AssistantOverlay() {
+  StopObservingImplicitAnimations();
+}
 
 void AssistantOverlay::StartAnimation(bool show_icon) {
   animation_state_ = AnimationState::STARTING;
   show_icon_ = show_icon;
   SetVisible(true);
 
+  // Remove clip_rect from host_view_ and its ancestors as the animation goes
+  // beyond its size. We delete the object once end/hide/burst animation ends
+  // which will follow this starting animation.
+  scoped_no_clip_rect_ = host_view_->CreateScopedNoClipRect();
+
   // Setup ripple initial state.
   ripple_layer_->SetOpacity(0);
 
-  SkMScalar scale_factor =
+  SkScalar scale_factor =
       kRippleCircleStartRadiusDip / kRippleCircleInitRadiusDip;
   gfx::Transform transform;
 
@@ -114,14 +121,13 @@ void AssistantOverlay::StartAnimation(bool show_icon) {
     transform.Scale(scale_factor, scale_factor);
 
     ui::ScopedLayerAnimationSettings settings(ripple_layer_->GetAnimator());
-    settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kRippleExpandDurationMs));
+    settings.SetTransitionDuration(base::Milliseconds(kRippleExpandDurationMs));
     settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
 
     ripple_layer_->SetTransform(transform);
 
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kRippleOpacityDurationMs));
+        base::Milliseconds(kRippleOpacityDurationMs));
     ripple_layer_->SetOpacity(kRippleOpacity);
   }
 }
@@ -134,18 +140,18 @@ void AssistantOverlay::BurstAnimation() {
 
   // Setup ripple animations.
   {
-    SkMScalar scale_factor =
+    SkScalar scale_factor =
         kRippleCircleBurstRadiusDip / kRippleCircleInitRadiusDip;
     transform.Translate(center.x() - kRippleCircleBurstRadiusDip,
                         center.y() - kRippleCircleBurstRadiusDip);
     transform.Scale(scale_factor, scale_factor);
 
     ui::ScopedLayerAnimationSettings settings(ripple_layer_->GetAnimator());
-    settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kFullBurstDurationMs));
+    settings.SetTransitionDuration(base::Milliseconds(kFullBurstDurationMs));
     settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
+    settings.AddObserver(this);
 
     ripple_layer_->SetTransform(transform);
     ripple_layer_->SetOpacity(0);
@@ -161,7 +167,7 @@ void AssistantOverlay::EndAnimation() {
 
   // Play reverse animation
   // Setup ripple animations.
-  SkMScalar scale_factor =
+  SkScalar scale_factor =
       kRippleCircleStartRadiusDip / kRippleCircleInitRadiusDip;
   gfx::Transform transform;
 
@@ -174,14 +180,14 @@ void AssistantOverlay::EndAnimation() {
     ui::ScopedLayerAnimationSettings settings(ripple_layer_->GetAnimator());
     settings.SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
                                        IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kFullRetractDurationMs));
+    settings.SetTransitionDuration(base::Milliseconds(kFullRetractDurationMs));
     settings.SetTweenType(gfx::Tween::SLOW_OUT_LINEAR_IN);
+    settings.AddObserver(this);
 
     ripple_layer_->SetTransform(transform);
 
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kRippleOpacityRetractDurationMs));
+        base::Milliseconds(kRippleOpacityRetractDurationMs));
     ripple_layer_->SetOpacity(0);
   }
 }
@@ -192,11 +198,11 @@ void AssistantOverlay::HideAnimation() {
   // Setup ripple animations.
   {
     ui::ScopedLayerAnimationSettings settings(ripple_layer_->GetAnimator());
-    settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kHideDurationMs));
+    settings.SetTransitionDuration(base::Milliseconds(kHideDurationMs));
     settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
+    settings.AddObserver(this);
 
     ripple_layer_->SetOpacity(0);
   }
@@ -204,6 +210,17 @@ void AssistantOverlay::HideAnimation() {
 
 const char* AssistantOverlay::GetClassName() const {
   return "AssistantOverlay";
+}
+
+void AssistantOverlay::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  circle_layer_delegate_.set_color(
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
+  SchedulePaint();
+}
+
+void AssistantOverlay::OnImplicitAnimationsCompleted() {
+  scoped_no_clip_rect_.reset();
 }
 
 }  // namespace ash

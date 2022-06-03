@@ -9,16 +9,12 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @class BookmarkFolderEditorViewController;
-@protocol BrowserCommands;
+class Browser;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
-
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
 
 @protocol BookmarkFolderEditorViewControllerDelegate
 // Called when the controller successfully created or edited |folder|.
@@ -55,20 +51,17 @@ class ChromeBrowserState;
 + (instancetype)
     folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                       parentFolder:(const bookmarks::BookmarkNode*)parentFolder
-                        dispatcher:(id<BrowserCommands>)dispatcher;
+                           browser:(Browser*)browser;
 
 // |bookmarkModel| must not be null and must be loaded.
 // |folder| must not be NULL and be editable.
-// |browserState| must not be null.
+// |browser| must not be null.
 + (instancetype)
     folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                            folder:(const bookmarks::BookmarkNode*)folder
-                     browserState:(ios::ChromeBrowserState*)browserState
-                       dispatcher:(id<BrowserCommands>)dispatcher;
+                          browser:(Browser*)browser;
 
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:(ChromeTableViewControllerStyle)style
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

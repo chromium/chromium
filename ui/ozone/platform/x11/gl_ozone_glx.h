@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_X11_GL_OZONE_GLX_H_
 #define UI_OZONE_PLATFORM_X11_GL_OZONE_GLX_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/ozone/public/gl_ozone.h"
 
@@ -14,10 +13,15 @@ namespace ui {
 class GLOzoneGLX : public GLOzone {
  public:
   GLOzoneGLX() {}
+
+  GLOzoneGLX(const GLOzoneGLX&) = delete;
+  GLOzoneGLX& operator=(const GLOzoneGLX&) = delete;
+
   ~GLOzoneGLX() override {}
 
   bool InitializeGLOneOffPlatform() override;
-  bool InitializeStaticGLBindings(gl::GLImplementation implementation) override;
+  bool InitializeStaticGLBindings(
+      const gl::GLImplementationParts& implementation) override;
   void SetDisabledExtensionsPlatform(
       const std::string& disabled_extensions) override;
   bool InitializeExtensionSettingsOneOffPlatform() override;
@@ -35,9 +39,6 @@ class GLOzoneGLX : public GLOzone {
       gfx::AcceleratedWidget window) override;
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneGLX);
 };
 
 }  // namespace ui

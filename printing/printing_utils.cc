@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "printing/units.h"
@@ -27,27 +28,33 @@ constexpr gfx::Size kIsoA4Microns = gfx::Size(210000, 297000);
 
 }  // namespace
 
-base::string16 SimplifyDocumentTitleWithLength(const base::string16& title,
+std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
                                                size_t length) {
-  base::string16 no_controls(title);
+  std::u16string no_controls(title);
   no_controls.erase(
       std::remove_if(no_controls.begin(), no_controls.end(), &u_iscntrl),
       no_controls.end());
-  base::ReplaceChars(no_controls, base::ASCIIToUTF16("\\"),
-                     base::ASCIIToUTF16("_"), &no_controls);
-  base::string16 result;
+
+  static constexpr const char* kCharsToReplace[] = {
+      "\\", "/", "<", ">", ":", "\"", "'", "|", "?", "*", "~",
+  };
+  for (const char* c : kCharsToReplace) {
+    base::ReplaceChars(no_controls, base::ASCIIToUTF16(c), u"_", &no_controls);
+  }
+
+  std::u16string result;
   gfx::ElideString(no_controls, length, &result);
   return result;
 }
 
-base::string16 FormatDocumentTitleWithOwnerAndLength(
-    const base::string16& owner,
-    const base::string16& title,
+std::u16string FormatDocumentTitleWithOwnerAndLength(
+    const std::u16string& owner,
+    const std::u16string& title,
     size_t length) {
-  const base::string16 separator = base::ASCIIToUTF16(": ");
+  const std::u16string separator = u": ";
   DCHECK_LT(separator.size(), length);
 
-  base::string16 short_title =
+  std::u16string short_title =
       SimplifyDocumentTitleWithLength(owner, length - separator.size());
   short_title += separator;
   if (short_title.size() < length) {
@@ -58,12 +65,12 @@ base::string16 FormatDocumentTitleWithOwnerAndLength(
   return short_title;
 }
 
-base::string16 SimplifyDocumentTitle(const base::string16& title) {
+std::u16string SimplifyDocumentTitle(const std::u16string& title) {
   return SimplifyDocumentTitleWithLength(title, kMaxDocumentTitleLength);
 }
 
-base::string16 FormatDocumentTitleWithOwner(const base::string16& owner,
-                                            const base::string16& title) {
+std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
+                                            const std::u16string& title) {
   return FormatDocumentTitleWithOwnerAndLength(owner, title,
                                                kMaxDocumentTitleLength);
 }
@@ -75,7 +82,7 @@ gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
   int32_t width = 0;
   int32_t height = 0;
   UErrorCode error = U_ZERO_ERROR;
-  ulocdata_getPaperSize(locale.as_string().c_str(), &height, &width, &error);
+  ulocdata_getPaperSize(std::string(locale).c_str(), &height, &width, &error);
   if (error > U_ZERO_ERROR) {
     // If the call failed, assume Letter paper size.
     LOG(WARNING) << "ulocdata_getPaperSize failed, using ISO A4 Paper, error: "

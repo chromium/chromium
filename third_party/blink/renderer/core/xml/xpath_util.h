@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_UTIL_H_
 
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -44,6 +45,9 @@ String StringValue(Node*);
 
 // @return whether the given node is a valid context node
 bool IsValidContextNode(Node*);
+
+// https://www.w3.org/TR/REC-xml/#NT-S
+bool IsXMLSpace(UChar ch);
 
 }  // namespace xpath
 

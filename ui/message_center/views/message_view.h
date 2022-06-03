@@ -6,10 +6,10 @@
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_VIEW_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
+#include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -18,10 +18,10 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -40,24 +40,22 @@ class NotificationControlButtonsView;
 
 // An base class for a notification entry. Contains background and other
 // elements shared by derived notification views.
-// TODO(pkasting): This class only subclasses InkDropHostView because the
-// NotificationViewMD subclass needs ink drop functionality.  Rework ink drops
-// to not need to be the base class of views which use them, and move the
-// functionality to the subclass that uses these.
 class MESSAGE_CENTER_EXPORT MessageView
-    : public views::InkDropHostView,
+    : public views::View,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
   static const char kViewClassName[];
 
-  class SlideObserver {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~SlideObserver() = default;
-
     virtual void OnSlideStarted(const std::string& notification_id) {}
     virtual void OnSlideChanged(const std::string& notification_id) {}
+    virtual void OnPreSlideOut(const std::string& notification_id) {}
     virtual void OnSlideOut(const std::string& notification_id) {}
+    virtual void OnCloseButtonPressed(const std::string& notification_id) {}
+    virtual void OnSettingsButtonPressed(const std::string& notification_id) {}
+    virtual void OnSnoozeButtonPressed(const std::string& notification_id) {}
   };
 
   enum class Mode {
@@ -79,7 +77,25 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   explicit MessageView(const Notification& notification);
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() override;
+
+  // Updates this view with an additional grouped notification. If the view
+  // wasn't previously grouped it also takes care of converting the view to
+  // the grouped notification state.
+  virtual void AddGroupNotification(const Notification& notification,
+                                    bool newest_first) {}
+
+  // Populates this view with a list of grouped notifications, this is intended
+  // to be used for initializing of grouped notifications so it does not
+  // explicitly update the size of the view unlike `AddGroupNotification`.
+  virtual void PopulateGroupNotifications(
+      const std::vector<const Notification*>& notifications) {}
+
+  virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
   // Updates this view with the new data contained in the notification.
   virtual void UpdateWithNotification(const Notification& notification);
@@ -113,7 +129,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-  // views::InkDropHostView:
+  // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -126,6 +142,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   void RemovedFromWidget() override;
   void AddedToWidget() override;
   const char* GetClassName() const final;
+  void OnThemeChanged() override;
 
   // views::SlideOutControllerDelegate:
   ui::Layer* GetSlideOutLayer() override;
@@ -137,8 +154,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
-  void AddSlideObserver(SlideObserver* observer);
-  void RemoveSlideObserver(SlideObserver* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   Mode GetMode() const;
 
@@ -157,24 +174,45 @@ class MESSAGE_CENTER_EXPORT MessageView
   void SetSlideButtonWidth(int coutrol_button_width);
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
+  void set_notification_id(const std::string& notification_id) {
+    notification_id_ = notification_id;
+  }
   std::string notification_id() const { return notification_id_; }
+  NotifierId notifier_id() const { return notifier_id_; }
+
+  bool is_active() const { return is_active_; }
 
  protected:
+  class HighlightPathGenerator : public views::HighlightPathGenerator {
+   public:
+    HighlightPathGenerator();
+    HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+    HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
+    // views::HighlightPathGenerator:
+    SkPath GetHighlightPath(const views::View* view) override;
+  };
+
   virtual void UpdateControlButtonsVisibility();
 
   // Changes the background color and schedules a paint.
   virtual void SetDrawBackgroundAsActive(bool active);
 
+  void UpdateControlButtonsVisibilityWithNotification(
+      const Notification& notification);
+
   void SetCornerRadius(int top_radius, int bottom_radius);
 
   views::ScrollView* scroller() { return scroller_; }
 
+  base::ObserverList<Observer>* observers() { return &observers_; }
+
   bool is_nested() const { return is_nested_; }
+
+  int bottom_radius() const { return bottom_radius_; }
 
  private:
   friend class test::MessagePopupCollectionTest;
-
-  class HighlightPathGenerator;
 
   // Gets the highlight path for the notification based on bounds and corner
   // radii.
@@ -186,10 +224,22 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
 
+  // Updates the background painter using the themed background color and radii.
+  void UpdateBackgroundPainter();
+
+  void UpdateNestedBorder();
+
   std::string notification_id_;
+
+  const NotifierId notifier_id_;
+
   views::ScrollView* scroller_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
+
+  // Tracks whether background should be drawn as active based on gesture
+  // events.
+  bool is_active_ = false;
 
   // Flag if the notification is set to pinned or not. See the comment in
   // MessageView::Mode for detail.
@@ -199,24 +249,22 @@ class MESSAGE_CENTER_EXPORT MessageView
   bool setting_mode_ = false;
 
   views::SlideOutController slide_out_controller_;
-  base::ObserverList<SlideObserver>::Unchecked slide_observers_;
+  base::ObserverList<Observer> observers_;
 
   // True if |this| is embedded in another view. Equivalent to |!top_level| in
   // MessageViewFactory parlance.
   bool is_nested_ = false;
 
+  bool is_grouped_ = false;
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
   views::FocusManager* focus_manager_ = nullptr;
-  std::unique_ptr<views::FocusRing> focus_ring_;
 
   // Radius values used to determine the rounding for the rounded rectangular
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace message_center

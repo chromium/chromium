@@ -12,10 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -31,12 +28,17 @@ class WebContents;
 class SearchGeolocationDisclosureInfoBarDelegate
     : public infobars::InfoBarDelegate {
  public:
+  SearchGeolocationDisclosureInfoBarDelegate(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+  SearchGeolocationDisclosureInfoBarDelegate& operator=(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+
   ~SearchGeolocationDisclosureInfoBarDelegate() override;
 
   // Create and show the infobar.
   static void Create(content::WebContents* web_contents,
                      const GURL& search_url,
-                     const base::string16& search_engine_name);
+                     const std::u16string& search_engine_name);
 
   // Determine if there is a search geolocation disclosure infobar already open.
   static bool IsSearchGeolocationDisclosureOpen(
@@ -45,7 +47,7 @@ class SearchGeolocationDisclosureInfoBarDelegate
   void RecordSettingsClicked();
 
   // The translated text of the message to display.
-  const base::string16& message_text() const { return message_text_; }
+  const std::u16string& message_text() const { return message_text_; }
 
   // The range of the message that should be a link.
   const gfx::Range& inline_link_range() const { return inline_link_range_; }
@@ -59,7 +61,7 @@ class SearchGeolocationDisclosureInfoBarDelegate
   explicit SearchGeolocationDisclosureInfoBarDelegate(
       content::WebContents* web_contents,
       const GURL& search_url,
-      const base::string16& search_engine_name);
+      const std::u16string& search_engine_name);
 
   // InfoBarDelegate:
   void InfoBarDismissed() override;
@@ -67,7 +69,7 @@ class SearchGeolocationDisclosureInfoBarDelegate
   int GetIconId() const override;
 
   // The translated text of the message to display.
-  base::string16 message_text_;
+  std::u16string message_text_;
 
   // The range of the message that should be a link.
   gfx::Range inline_link_range_;
@@ -83,8 +85,6 @@ class SearchGeolocationDisclosureInfoBarDelegate
 
   // The time the infobar was created.
   base::Time creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_H_

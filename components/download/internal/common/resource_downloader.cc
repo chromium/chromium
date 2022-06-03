@@ -23,6 +23,10 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
   using URLLoaderStatusChangeCallback =
       base::OnceCallback<void(const network::URLLoaderCompletionStatus&)>;
   explicit URLLoaderStatusMonitor(URLLoaderStatusChangeCallback callback);
+
+  URLLoaderStatusMonitor(const URLLoaderStatusMonitor&) = delete;
+  URLLoaderStatusMonitor& operator=(const URLLoaderStatusMonitor&) = delete;
+
   ~URLLoaderStatusMonitor() override = default;
 
   // network::mojom::URLLoaderClient
@@ -40,7 +44,6 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
 
  private:
   URLLoaderStatusChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderStatusMonitor);
 };
 
 URLLoaderStatusMonitor::URLLoaderStatusMonitor(
@@ -79,8 +82,7 @@ std::unique_ptr<ResourceDownloader> ResourceDownloader::BeginDownload(
 }
 
 // static
-std::unique_ptr<ResourceDownloader>
-ResourceDownloader::InterceptNavigationResponse(
+void ResourceDownloader::InterceptNavigationResponse(
     base::WeakPtr<UrlDownloadHandler::Delegate> delegate,
     std::unique_ptr<network::ResourceRequest> resource_request,
     int render_process_id,
@@ -102,10 +104,17 @@ ResourceDownloader::InterceptNavigationResponse(
       site_url, tab_url, tab_referrer_url, true, task_runner,
       std::move(url_loader_factory), url_security_policy,
       std::move(wake_lock_provider));
-  downloader->InterceptResponse(
+  ResourceDownloader* raw_downloader = downloader.get();
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &UrlDownloadHandler::Delegate::OnUrlDownloadHandlerCreated, delegate,
+          UrlDownloadHandler::UniqueUrlDownloadHandlerPtr(
+              std::move(downloader).release(),
+              base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()))));
+  raw_downloader->InterceptResponse(
       std::move(url_chain), cert_status, std::move(response_head),
       std::move(response_body), std::move(url_loader_client_endpoints));
-  return downloader;
 }
 
 ResourceDownloader::ResourceDownloader(
@@ -155,7 +164,7 @@ void ResourceDownloader::Start(
   url_loader_client_ = std::make_unique<DownloadResponseHandler>(
       resource_request_.get(), this,
       std::make_unique<DownloadSaveInfo>(
-          download_url_parameters->GetSaveInfo()),
+          download_url_parameters->TakeSaveInfo()),
       is_parallel_request, download_url_parameters->is_transient(),
       download_url_parameters->fetch_error_body(),
       download_url_parameters->cross_origin_redirects(),
@@ -173,9 +182,9 @@ void ResourceDownloader::Start(
   // Set up the URLLoader
   url_loader_factory_->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(),
-      0,  // routing_id
       0,  // request_id
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse,
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+          network::mojom::kURLLoadOptionSniffMimeType,
       *(resource_request_.get()), std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(
           download_url_parameters->GetNetworkTrafficAnnotation()));
@@ -243,9 +252,11 @@ void ResourceDownloader::OnResponseStarted(
 }
 
 void ResourceDownloader::OnReceiveRedirect() {
-  url_loader_->FollowRedirect(std::vector<std::string>() /* removed_headers */,
-                              net::HttpRequestHeaders() /* modified_headers */,
-                              base::nullopt);
+  url_loader_->FollowRedirect(
+      std::vector<std::string>() /* removed_headers */,
+      net::HttpRequestHeaders() /* modified_headers */,
+      net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
+      absl::nullopt);
 }
 
 void ResourceDownloader::OnResponseCompleted() {
@@ -264,10 +275,6 @@ void ResourceDownloader::OnUploadProgress(uint64_t bytes_uploaded) {
 
   delegate_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(upload_callback_, bytes_uploaded));
-}
-
-void ResourceDownloader::CancelRequest() {
-  Destroy();
 }
 
 void ResourceDownloader::Destroy() {

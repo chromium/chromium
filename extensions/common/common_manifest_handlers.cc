@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/common/api/bluetooth/bluetooth_manifest_handler.h"
 #include "extensions/common/api/declarative/declarative_manifest_handler.h"
@@ -13,11 +14,14 @@
 #include "extensions/common/api/printer_provider/usb_printer_manifest_handler.h"
 #include "extensions/common/api/sockets/sockets_manifest_handler.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/extension_action_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -35,7 +39,7 @@
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #endif
 
@@ -46,19 +50,22 @@ void RegisterCommonManifestHandlers() {
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
 
   DCHECK(!ManifestHandler::IsRegistrationFinalized());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterHandler(std::make_unique<ActionHandlersHandler>());
 #endif
+  registry->RegisterHandler(std::make_unique<AutomationHandler>());
   registry->RegisterHandler(std::make_unique<BackgroundManifestHandler>());
   registry->RegisterHandler(std::make_unique<BluetoothManifestHandler>());
   registry->RegisterHandler(std::make_unique<ContentCapabilitiesHandler>());
   registry->RegisterHandler(std::make_unique<ContentScriptsHandler>());
+  registry->RegisterHandler(std::make_unique<CrossOriginIsolationHandler>());
   registry->RegisterHandler(std::make_unique<CSPHandler>());
   registry->RegisterHandler(
       std::make_unique<declarative_net_request::DNRManifestHandler>());
   registry->RegisterHandler(std::make_unique<DeclarativeManifestHandler>());
   registry->RegisterHandler(std::make_unique<DefaultLocaleHandler>());
   registry->RegisterHandler(std::make_unique<ExternallyConnectableHandler>());
+  registry->RegisterHandler(std::make_unique<ExtensionActionHandler>());
   registry->RegisterHandler(std::make_unique<FileHandlersParser>());
   registry->RegisterHandler(std::make_unique<IconsHandler>());
   registry->RegisterHandler(std::make_unique<IncognitoHandler>());

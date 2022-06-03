@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -23,7 +24,7 @@ bool StructTraits<arc::mojom::IntentFilterDataView, arc::IntentFilter>::Read(
   if (!data.ReadDataPaths(&paths))
     return false;
 
-  std::string package_name;
+  absl::optional<std::string> package_name;
   if (!data.ReadPackageName(&package_name))
     return false;
 
@@ -31,8 +32,28 @@ bool StructTraits<arc::mojom::IntentFilterDataView, arc::IntentFilter>::Read(
   if (!data.ReadDataSchemes(&schemes))
     return false;
 
-  *out = arc::IntentFilter(package_name, std::move(authorities),
-                           std::move(paths), std::move(schemes));
+  std::vector<std::string> actions;
+  if (!data.ReadActions(&actions))
+    return false;
+
+  std::vector<std::string> mime_types;
+  if (!data.ReadMimeTypes(&mime_types))
+    return false;
+
+  absl::optional<std::string> activity_name;
+  if (!data.ReadActivityName(&activity_name))
+    return false;
+
+  absl::optional<std::string> activity_label;
+  if (!data.ReadActivityLabel(&activity_label))
+    return false;
+
+  *out = arc::IntentFilter(std::move(package_name).value_or(std::string()),
+                           std::move(activity_name).value_or(std::string()),
+                           std::move(activity_label).value_or(std::string()),
+                           std::move(actions), std::move(authorities),
+                           std::move(paths), std::move(schemes),
+                           std::move(mime_types));
   return true;
 }
 

@@ -10,15 +10,18 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
-#include "third_party/blink/public/web/web_user_media_request.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_processor.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace base {
@@ -45,17 +48,25 @@ class MODULES_EXPORT UserMediaClient
   UserMediaClient(LocalFrame* frame,
                   UserMediaProcessor* user_media_processor,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  UserMediaClient(const UserMediaClient&) = delete;
+  UserMediaClient& operator=(const UserMediaClient&) = delete;
+
   virtual ~UserMediaClient();
 
-  void RequestUserMedia(const blink::WebUserMediaRequest& web_request);
-  void CancelUserMediaRequest(const blink::WebUserMediaRequest& web_request);
-  void ApplyConstraints(blink::ApplyConstraintsRequest* web_request);
-  void StopTrack(const blink::WebMediaStreamTrack& web_track);
+  void RequestUserMedia(UserMediaRequest* user_media_request);
+  void CancelUserMediaRequest(UserMediaRequest* user_media_request);
+  void ApplyConstraints(blink::ApplyConstraintsRequest* user_media_request);
+  void StopTrack(MediaStreamComponent* track);
   void ContextDestroyed();
 
   bool IsCapturing();
 
-  void Trace(Visitor*);
+#if !defined(OS_ANDROID)
+  void FocusCapturedSurface(const String& label, bool focus);
+#endif
+
+  void Trace(Visitor*) const;
 
   void SetMediaDevicesDispatcherForTesting(
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
@@ -64,35 +75,37 @@ class MODULES_EXPORT UserMediaClient
  private:
   class Request final : public GarbageCollected<Request> {
    public:
-    explicit Request(std::unique_ptr<UserMediaRequestInfo> request);
+    explicit Request(UserMediaRequest* request);
     explicit Request(blink::ApplyConstraintsRequest* request);
-    explicit Request(const blink::WebMediaStreamTrack& request);
+    explicit Request(MediaStreamComponent* request);
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
-    std::unique_ptr<UserMediaRequestInfo> MoveUserMediaRequest();
+    UserMediaRequest* MoveUserMediaRequest();
 
-    UserMediaRequestInfo* user_media_request() const {
-      return user_media_request_.get();
-    }
+    UserMediaRequest* user_media_request() const { return user_media_request_; }
     blink::ApplyConstraintsRequest* apply_constraints_request() const {
       return apply_constraints_request_;
     }
-    const blink::WebMediaStreamTrack& web_track_to_stop() const {
-      return web_track_to_stop_;
-    }
+    MediaStreamComponent* track_to_stop() const { return track_to_stop_; }
 
     bool IsUserMedia() const { return !!user_media_request_; }
-    bool IsApplyConstraints() const { return apply_constraints_request_; }
-    bool IsStopTrack() const { return !web_track_to_stop_.IsNull(); }
+    bool IsApplyConstraints() const { return !!apply_constraints_request_; }
+    bool IsStopTrack() const { return !!track_to_stop_; }
 
-    void Trace(Visitor* visitor) { visitor->Trace(apply_constraints_request_); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(user_media_request_);
+      visitor->Trace(apply_constraints_request_);
+      visitor->Trace(track_to_stop_);
+    }
 
    private:
-    std::unique_ptr<UserMediaRequestInfo> user_media_request_;
+    Member<UserMediaRequest> user_media_request_;
     Member<blink::ApplyConstraintsRequest> apply_constraints_request_;
-    blink::WebMediaStreamTrack web_track_to_stop_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
+    Member<MediaStreamComponent> track_to_stop_;
   };
 
   void MaybeProcessNextRequestInfo();
@@ -113,7 +126,7 @@ class MODULES_EXPORT UserMediaClient
   // problems in builds that do not include WebRTC.
   Member<ApplyConstraintsProcessor> apply_constraints_processor_;
 
-  mojo::Remote<blink::mojom::blink::MediaDevicesDispatcherHost>
+  HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
 
   // UserMedia requests are processed sequentially. |is_processing_request_|
@@ -124,8 +137,6 @@ class MODULES_EXPORT UserMediaClient
   HeapDeque<Member<Request>> pending_request_infos_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(UserMediaClient);
 };
 
 }  // namespace blink

@@ -20,9 +20,7 @@ shim_headers("opus_shim") {
 }
 
 source_set("opus") {
-  deps = [
-    ":opus_shim",
-  ]
+  deps = [ ":opus_shim" ]
   public_configs = [ ":opus_config" ]
 }
 

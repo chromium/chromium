@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -21,6 +22,11 @@
 namespace extensions {
 
 class ShellKeepAliveRequesterTest : public ExtensionsTest {
+ public:
+  ShellKeepAliveRequesterTest(const ShellKeepAliveRequesterTest&) = delete;
+  ShellKeepAliveRequesterTest& operator=(const ShellKeepAliveRequesterTest&) =
+      delete;
+
  protected:
   ShellKeepAliveRequesterTest() = default;
   ~ShellKeepAliveRequesterTest() override = default;
@@ -43,9 +49,6 @@ class ShellKeepAliveRequesterTest : public ExtensionsTest {
 
  protected:
   std::unique_ptr<ShellKeepAliveRequester> keep_alive_requester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellKeepAliveRequesterTest);
 };
 
 // Tests with an extension.

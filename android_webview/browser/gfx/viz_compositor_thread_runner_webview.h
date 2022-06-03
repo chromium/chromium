@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "components/ui_devtools/buildflags.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 
 namespace base {
@@ -20,6 +19,7 @@ class Location;
 
 namespace viz {
 class FrameSinkManagerImpl;
+class ServerSharedBitmapManager;
 }  // namespace viz
 
 namespace android_webview {
@@ -40,6 +40,11 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
  public:
   static VizCompositorThreadRunnerWebView* GetInstance();
 
+  VizCompositorThreadRunnerWebView(const VizCompositorThreadRunnerWebView&) =
+      delete;
+  VizCompositorThreadRunnerWebView& operator=(
+      const VizCompositorThreadRunnerWebView&) = delete;
+
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
   // Must be called from the TaskQueueWebView thread. |task| is allowed to call
@@ -51,18 +56,17 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   void PostTaskAndBlock(const base::Location& from_here,
                         base::OnceClosure task);
 
+  viz::GpuServiceImpl* GetGpuService();
+
   // viz::VizCompositorThreadRunner overrides.
+  base::PlatformThreadId thread_id() override;
   base::SingleThreadTaskRunner* task_runner() override;
   void CreateFrameSinkManager(
       viz::mojom::FrameSinkManagerParamsPtr params) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
                               gpu::CommandBufferTaskExecutor* task_executor,
-                              viz::GpuServiceImpl* gpu_service) override;
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  void CreateVizDevTools(viz::mojom::VizDevToolsParamsPtr params) override;
-#endif
-  void CleanupForShutdown(base::OnceClosure cleanup_finished_callback) override;
-
+                              viz::GpuServiceImpl* gpu_service,
+                              gfx::RenderingPipeline* gpu_pipeline) override;
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;
 
@@ -70,16 +74,17 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   ~VizCompositorThreadRunnerWebView() override;
 
   void InitFrameSinkManagerOnViz();
-  void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params);
+  void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params,
+                                 viz::GpuServiceImpl* gpu_service_impl);
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
 
   // Only accessed on |viz_task_runner_|.
   THREAD_CHECKER(viz_thread_checker_);
+  std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VizCompositorThreadRunnerWebView);
+  viz::GpuServiceImpl* gpu_service_impl_ = nullptr;
 };
 
 }  // namespace android_webview

@@ -1,0 +1,99 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# [VPYTHON:BEGIN]
+# python_version: "3"
+# wheel: <
+#   name: "infra/python/wheels/pywin32/${vpython_platform}"
+#    version: "version:300"
+# >
+# [VPYTHON:END]
+
+"""Run the given command as the standard user.
+
+All arguments provided to this program will be used to reconstruct the command
+line for the child process. For example,
+    vpython run_command_as_standard_user.py --command notepad "hello world.txt"
+will launch a process with command line:
+    notepad "hello world.txt"
+
+This command must be run as an elevated user.
+"""
+
+import argparse
+import distutils
+import logging
+import os
+import subprocess
+import sys
+
+import rpc_client
+import updater_test_service_control
+
+
+
+def ParseCommandLine():
+  """Parse the command line arguments."""
+  cmd_parser = argparse.ArgumentParser(description='Run command as user')
+
+  cmd_parser.add_argument(
+      '--command',
+      dest='command',
+      type=str,
+      help='The command to run.')
+  return cmd_parser.parse_known_args()
+
+
+def LogToSTDERR(title, output):
+  if not output:
+    return
+
+  logging.error('%s %s starts %s', '=' * 30, title, '=' * 30)
+
+  # Directly dump the output to STDERR so we don't have logging prefix each
+  # line, to make it easier to read.
+  sys.stderr.write(output)
+
+  logging.error('%s  %s ends  %s', '=' * 30, title, '=' * 30)
+
+
+def main():
+  flags, remaining_args = ParseCommandLine()
+
+  if not flags.command:
+    logging.error('Must specify a command to run.')
+    sys.exit(-1)
+
+  # Find the location of the command. shutil.which() looks suitable for this,
+  # only if https://bugs.python.org/issue24505 is closed. For now, use the
+  # one from distutils module.
+  command = distutils.spawn.find_executable(flags.command)
+  if not command:
+    logging.error('Cannot find command: %s', flags.command)
+    sys.exit(-2)
+
+  # Command may be in relative path. Make it absolute so that the RPC server
+  # can find it.
+  command = os.path.abspath(command)
+
+  # RunAsStandardUser() takes a full command line string (as it is forwarded to
+  # the underlying win32 implementation). We have sys.argv, but the value is
+  # already processed by shell. It is possible that the reconstructed command
+  # line is skewed (for example, expansion of environment variable), but
+  # hopefully this works well enough in all real scenarios.
+  command_line = subprocess.list2cmdline([command] + remaining_args)
+  logging.error('Full command line: %s', command_line)
+  with updater_test_service_control.OpenService():
+    pid, exit_code, stdout, stderr = rpc_client.RunAsStandardUser(command_line)
+    if pid is None:
+      logging.error('Failed to launch command: %s', command_line)
+      sys.exit(-3)
+    LogToSTDERR('STDOUT', stdout)
+    if exit_code != 0:
+      LogToSTDERR('STDERR', stderr)
+    sys.exit(exit_code)
+
+
+if __name__ == '__main__':
+  main()

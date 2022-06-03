@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -101,7 +102,7 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
       LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
                  << ": Domain not allowed.";
       return std::make_unique<RejectingAuthenticator>(
-          Authenticator::INVALID_ACCOUNT);
+          Authenticator::INVALID_ACCOUNT_ID);
     }
   }
 

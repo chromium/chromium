@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <sys/sysctl.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 

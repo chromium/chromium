@@ -2,5 +2,6 @@ include_rules = {
   "+cc/base/switches.h",
   "+components/viz/common/switches.h",
   "+sandbox/mac",
+  "+third_party/blink/public/common/switches.h",
 }
 

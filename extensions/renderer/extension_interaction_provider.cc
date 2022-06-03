@@ -12,8 +12,6 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_scoped_user_gesture.h"
-#include "third_party/blink/public/web/web_user_gesture_indicator.h"
 
 namespace extensions {
 
@@ -45,14 +43,6 @@ ExtensionInteractionProvider::Scope::ForWorker(
   auto scope = base::WrapUnique(new Scope());
   scope->worker_thread_interaction_ =
       std::make_unique<ScopedWorkerInteraction>(v8_context, false);
-  return scope;
-}
-
-// static.
-std::unique_ptr<ExtensionInteractionProvider::Scope>
-ExtensionInteractionProvider::Scope::ForFrame(blink::WebLocalFrame* web_frame) {
-  auto scope = base::WrapUnique(new Scope());
-  blink::WebScopedUserGesture gesture(web_frame);
   return scope;
 }
 
@@ -128,8 +118,9 @@ bool ExtensionInteractionProvider::HasActiveExtensionInteraction(
   // RenderFrame based context:
   ScriptContext* script_context =
       GetScriptContextFromV8ContextChecked(v8_context);
-  return blink::WebUserGestureIndicator::IsProcessingUserGesture(
-      script_context->web_frame());
+  if (!script_context->web_frame())
+    return false;
+  return script_context->web_frame()->HasTransientUserActivation();
 }
 
 std::unique_ptr<InteractionProvider::Token>

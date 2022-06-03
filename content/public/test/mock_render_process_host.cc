@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/macros.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -22,8 +22,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/child_process_host_impl.h"
-#include "content/common/frame_messages.h"
-#include "content/common/input_messages.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/browser_context.h"
@@ -35,7 +33,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/test/not_implemented_network_url_loader_factory.h"
+#include "content/test/fake_network_url_loader_factory.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -51,23 +49,46 @@ GetNetworkFactoryCallback() {
   return *callback;
 }
 
+StoragePartitionConfig GetOrCreateStoragePartitionConfig(
+    BrowserContext* browser_context,
+    SiteInstance* site_instance) {
+  if (site_instance) {
+    SiteInstanceImpl* site_instance_impl =
+        static_cast<SiteInstanceImpl*>(site_instance);
+    return site_instance_impl->GetSiteInfo().storage_partition_config();
+  }
+  return StoragePartitionConfig::CreateDefault(browser_context);
+}
+
 }  // namespace
 
-MockRenderProcessHost::MockRenderProcessHost(BrowserContext* browser_context)
+MockRenderProcessHost::MockRenderProcessHost(BrowserContext* browser_context,
+                                             bool is_for_guests_only)
+    : MockRenderProcessHost(
+          browser_context,
+          StoragePartitionConfig::CreateDefault(browser_context),
+          is_for_guests_only) {}
+
+MockRenderProcessHost::MockRenderProcessHost(
+    BrowserContext* browser_context,
+    const StoragePartitionConfig& storage_partition_config,
+    bool is_for_guests_only)
     : bad_msg_count_(0),
-      factory_(nullptr),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       has_connection_(false),
       browser_context_(browser_context),
+      storage_partition_config_(storage_partition_config),
       prev_routing_id_(0),
+      shutdown_requested_(false),
       fast_shutdown_started_(false),
       deletion_callback_called_(false),
-      is_for_guests_only_(false),
+      is_for_guests_only_(is_for_guests_only),
       is_process_backgrounded_(false),
       is_unused_(true),
       keep_alive_ref_count_(0),
+      worker_ref_count_(0),
       foreground_service_worker_count_(0),
-      url_loader_factory_(nullptr) {
+      url_loader_factory_(std::make_unique<FakeNetworkURLLoaderFactory>()) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -77,9 +98,6 @@ MockRenderProcessHost::MockRenderProcessHost(BrowserContext* browser_context)
 
 MockRenderProcessHost::~MockRenderProcessHost() {
   ChildProcessSecurityPolicyImpl::GetInstance()->Remove(GetID());
-  if (factory_)
-    factory_->Remove(this);
-
   // In unit tests, Cleanup() might not have been called.
   if (!deletion_callback_called_) {
     for (auto& observer : observers_)
@@ -100,7 +118,6 @@ void MockRenderProcessHost::SimulateRenderProcessExit(
   termination_info.status = status;
   termination_info.exit_code = exit_code;
   termination_info.renderer_has_visible_clients = VisibleClientCount() > 0;
-  termination_info.renderer_was_subframe = GetFrameDepth() > 0;
   NotificationService::current()->Notify(
       NOTIFICATION_RENDERER_PROCESS_CLOSED, Source<RenderProcessHost>(this),
       Details<ChildProcessTerminationInfo>(&termination_info));
@@ -149,13 +166,10 @@ void MockRenderProcessHost::RemoveObserver(
 void MockRenderProcessHost::ShutdownForBadMessage(
     CrashReportMode crash_report_mode) {
   ++bad_msg_count_;
+  shutdown_requested_ = true;
 }
 
 void MockRenderProcessHost::UpdateClientPriority(PriorityClient* client) {}
-
-void MockRenderProcessHost::UpdateFrameWithPriority(
-    base::Optional<FramePriority> previous_priority,
-    base::Optional<FramePriority> new_priority) {}
 
 int MockRenderProcessHost::VisibleClientCount() {
   int count = 0;
@@ -182,6 +196,14 @@ bool MockRenderProcessHost::IsForGuestsOnly() {
   return is_for_guests_only_;
 }
 
+bool MockRenderProcessHost::IsJitDisabled() {
+  return false;
+}
+
+bool MockRenderProcessHost::IsPdf() {
+  return false;
+}
+
 void MockRenderProcessHost::OnMediaStreamAdded() {}
 
 void MockRenderProcessHost::OnMediaStreamRemoved() {}
@@ -196,14 +218,18 @@ void MockRenderProcessHost::OnForegroundServiceWorkerRemoved() {
 }
 
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
-  return BrowserContext::GetDefaultStoragePartition(browser_context_);
+  return browser_context_->GetStoragePartition(storage_partition_config_);
 }
 
-void MockRenderProcessHost::AddWord(const base::string16& word) {
-}
+void MockRenderProcessHost::AddWord(const std::u16string& word) {}
 
 bool MockRenderProcessHost::Shutdown(int exit_code) {
+  shutdown_requested_ = true;
   return true;
+}
+
+bool MockRenderProcessHost::ShutdownRequested() {
+  return shutdown_requested_;
 }
 
 bool MockRenderProcessHost::FastShutdownIfPossible(size_t page_count,
@@ -255,26 +281,27 @@ bool MockRenderProcessHost::IsBlocked() {
   return false;
 }
 
-std::unique_ptr<base::CallbackList<void(bool)>::Subscription>
+base::CallbackListSubscription
 MockRenderProcessHost::RegisterBlockStateChangedCallback(
-    const base::RepeatingCallback<void(bool)>& cb) {
-  return nullptr;
-}
-
-static void DeleteIt(base::WeakPtr<MockRenderProcessHost> h) {
-  if (h)
-    delete h.get();
+    const BlockStateChangedCallback& cb) {
+  return {};
 }
 
 void MockRenderProcessHost::Cleanup() {
-  if (listeners_.IsEmpty()) {
+  if (listeners_.IsEmpty() && !deletion_callback_called_) {
+    if (IsInitializedAndNotDead()) {
+      ChildProcessTerminationInfo termination_info;
+      termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+      termination_info.exit_code = 0;
+      termination_info.renderer_has_visible_clients = VisibleClientCount() > 0;
+      for (auto& observer : observers_)
+        observer.RenderProcessExited(this, termination_info);
+    }
+
     for (auto& observer : observers_)
       observer.RenderProcessHostDestroyed(this);
-    // Post the delete of |this| as a WeakPtr so that if |this| is deleted by a
-    // test directly, we don't double free.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&DeleteIt, weak_ptr_factory_.GetWeakPtr()));
     RenderProcessHostImpl::UnregisterHost(GetID());
+    has_connection_ = false;
     deletion_callback_called_ = true;
   }
 }
@@ -324,8 +351,7 @@ BrowserContext* MockRenderProcessHost::GetBrowserContext() {
 
 bool MockRenderProcessHost::InSameStoragePartition(
     StoragePartition* partition) {
-  // Mock RPHs only have one partition.
-  return true;
+  return GetStoragePartition() == partition;
 }
 
 IPC::ChannelProxy* MockRenderProcessHost::GetChannel() {
@@ -336,7 +362,7 @@ void MockRenderProcessHost::AddFilter(BrowserMessageFilter* filter) {
 }
 
 base::TimeDelta MockRenderProcessHost::GetChildProcessIdleTime() {
-  return base::TimeDelta::FromMilliseconds(0);
+  return base::Milliseconds(0);
 }
 
 void MockRenderProcessHost::BindReceiver(
@@ -351,8 +377,7 @@ MockRenderProcessHost::TakeMetricsAllocator() {
   return nullptr;
 }
 
-const base::TimeTicks&
-MockRenderProcessHost::GetInitTimeForNavigationMetrics() {
+const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
   static base::TimeTicks dummy_time = base::TimeTicks::Now();
   return dummy_time;
 }
@@ -365,40 +390,72 @@ size_t MockRenderProcessHost::GetKeepAliveRefCount() const {
   return keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::IncrementKeepAliveRefCount() {
+void MockRenderProcessHost::IncrementKeepAliveRefCount(uint64_t handle_id) {
   ++keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::DecrementKeepAliveRefCount() {
+void MockRenderProcessHost::DecrementKeepAliveRefCount(uint64_t handle_id) {
   --keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::DisableKeepAliveRefCount() {
-  keep_alive_ref_count_ = 0;
+std::string MockRenderProcessHost::GetKeepAliveDurations() const {
+  return std::string("MockRenderProcessHost: durations not tracked.");
+}
 
-  // RenderProcessHost::DisableKeepAliveRefCount() virtual method gets called as
-  // part of BrowserContext::NotifyWillBeDestroyed(...).  Normally
-  // MockRenderProcessHost::DisableKeepAliveRefCount doesn't call Cleanup,
-  // because the MockRenderProcessHost might be owned by a test.  However, when
-  // the MockRenderProcessHost is the spare RenderProcessHost, we know that it
-  // is owned by the SpareRenderProcessHostManager and we need to delete the
-  // spare to avoid reports/DCHECKs about memory leaks.
+size_t MockRenderProcessHost::GetShutdownDelayRefCount() const {
+  return 0;
+}
+
+int MockRenderProcessHost::GetRenderFrameHostCount() const {
+  return 0;
+}
+
+void MockRenderProcessHost::RegisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {}
+
+void MockRenderProcessHost::UnregisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {}
+
+void MockRenderProcessHost::ForEachRenderFrameHost(
+    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {}
+
+void MockRenderProcessHost::IncrementWorkerRefCount() {
+  ++worker_ref_count_;
+}
+
+void MockRenderProcessHost::DecrementWorkerRefCount() {
+  --worker_ref_count_;
+}
+
+size_t MockRenderProcessHost::GetWorkerRefCount() const {
+  return worker_ref_count_;
+}
+
+void MockRenderProcessHost::DisableRefCounts() {
+  keep_alive_ref_count_ = 0;
+  worker_ref_count_ = 0;
+
+  // RenderProcessHost::DisableRefCounts() virtual method gets called as part of
+  // BrowserContext::NotifyWillBeDestroyed(...).  Normally
+  // MockRenderProcessHost::DisableRefCounts() doesn't call Cleanup, because the
+  // MockRenderProcessHost might be owned by a test.  However, when the
+  // MockRenderProcessHost is the spare RenderProcessHost, we know that it is
+  // owned by the SpareRenderProcessHostManager and we need to delete the spare
+  // to avoid reports/DCHECKs about memory leaks.
   if (this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting())
     Cleanup();
 }
 
-bool MockRenderProcessHost::IsKeepAliveRefCountDisabled() {
+bool MockRenderProcessHost::AreRefCountsDisabled() {
   return false;
 }
-
-void MockRenderProcessHost::Resume() {}
 
 mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
   if (!renderer_interface_) {
     renderer_interface_ =
         std::make_unique<mojo::AssociatedRemote<mojom::Renderer>>();
-    ignore_result(renderer_interface_
-                      ->BindNewEndpointAndPassDedicatedReceiverForTesting());
+    ignore_result(
+        renderer_interface_->BindNewEndpointAndPassDedicatedReceiver());
   }
   return renderer_interface_->get();
 }
@@ -433,29 +490,52 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && GetKeepAliveRefCount() == 0;
 }
 
-void MockRenderProcessHost::LockToOrigin(
+void MockRenderProcessHost::SetProcessLock(
     const IsolationContext& isolation_context,
-    const GURL& lock_url) {
-  ChildProcessSecurityPolicyImpl::GetInstance()->LockToOrigin(
-      isolation_context, GetID(), lock_url);
-  if (SiteInstanceImpl::IsOriginLockASite(lock_url))
+    const ProcessLock& process_lock) {
+  ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
+      isolation_context, GetID(), process_lock);
+  if (process_lock.IsASiteOrOrigin())
     is_renderer_locked_to_site_ = true;
 }
 
+bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
+  ProcessLock lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+  return lock.is_locked_to_site();
+}
+
 void MockRenderProcessHost::BindCacheStorage(
-    const url::Origin& origin,
+    const network::CrossOriginEmbedderPolicy&,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   cache_storage_receiver_ = std::move(receiver);
 }
 
 void MockRenderProcessHost::BindIndexedDB(
-    int render_frame_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   idb_factory_receiver_ = std::move(receiver);
 }
 
-void MockRenderProcessHost::CleanupCorbExceptionForPluginUponDestruction() {}
+void MockRenderProcessHost::
+    CleanupNetworkServicePluginExceptionsUponDestruction() {}
+
+std::string
+MockRenderProcessHost::GetInfoForBrowserContextDestructionCrashReporting() {
+  return std::string();
+}
+
+void MockRenderProcessHost::WriteIntoTrace(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", GetID());
+}
+
+void MockRenderProcessHost::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  proto->set_id(GetID());
+}
 
 void MockRenderProcessHost::FilterURL(bool empty_allowed, GURL* url) {
   RenderProcessHostImpl::FilterURL(this, empty_allowed, url);
@@ -473,10 +553,6 @@ MockRenderProcessHost::StartRtpDump(bool incoming,
                                     WebRtcRtpPacketCallback packet_callback) {
   return base::NullCallback();
 }
-
-void MockRenderProcessHost::EnableWebRtcEventLogOutput(int lid,
-                                                       int output_period_ms) {}
-void MockRenderProcessHost::DisableWebRtcEventLogOutput(int lid) {}
 
 bool MockRenderProcessHost::OnMessageReceived(const IPC::Message& msg) {
   IPC::Listener* listener = listeners_.Lookup(msg.routing_id());
@@ -499,37 +575,27 @@ void MockRenderProcessHost::OverrideRendererInterfaceForTesting(
   renderer_interface_ = std::move(renderer_interface);
 }
 
-void MockRenderProcessHost::OverrideURLLoaderFactory(
-    network::mojom::URLLoaderFactory* factory) {
-  url_loader_factory_ = factory;
-}
-
-MockRenderProcessHostFactory::MockRenderProcessHostFactory()
-    : default_mock_url_loader_factory_(
-          std::make_unique<NotImplementedNetworkURLLoaderFactory>()) {}
+MockRenderProcessHostFactory::MockRenderProcessHostFactory() = default;
 
 MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {
-  // Detach this object from MockRenderProcesses to prevent them from calling
-  // MockRenderProcessHostFactory::Remove() when destroyed.
-  for (const auto& process : processes_)
-    process->SetFactory(nullptr);
 }
 
 RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstance* site_instance) {
+  const bool is_for_guests_only = site_instance && site_instance->IsGuest();
+  StoragePartitionConfig storage_partition_config =
+      GetOrCreateStoragePartitionConfig(browser_context, site_instance);
   std::unique_ptr<MockRenderProcessHost> host =
-      std::make_unique<MockRenderProcessHost>(browser_context);
-  host->OverrideURLLoaderFactory(default_mock_url_loader_factory_.get());
+      std::make_unique<MockRenderProcessHost>(
+          browser_context, storage_partition_config, is_for_guests_only);
   processes_.push_back(std::move(host));
-  processes_.back()->SetFactory(this);
   return processes_.back().get();
 }
 
 void MockRenderProcessHostFactory::Remove(MockRenderProcessHost* host) const {
   for (auto it = processes_.begin(); it != processes_.end(); ++it) {
     if (it->get() == host) {
-      it->release();
       processes_.erase(it);
       break;
     }

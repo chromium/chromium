@@ -33,42 +33,41 @@ void FakeSyncWorker::Initialize(
 }
 
 void FakeSyncWorker::RegisterOrigin(const GURL& origin,
-                                    const SyncStatusCallback& callback) {
+                                    SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on installing installed app?
   status_map_[origin] = REGISTERED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::EnableOrigin(const GURL& origin,
-                                  const SyncStatusCallback& callback) {
+                                  SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on enabling non-installed app?
   status_map_[origin] = ENABLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::DisableOrigin(const GURL& origin,
-                                   const SyncStatusCallback& callback) {
+                                   SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on disabling non-installed app?
   status_map_[origin] = DISABLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::UninstallOrigin(const GURL& origin,
                                      RemoteFileSyncService::UninstallFlag flag,
-                                     const SyncStatusCallback& callback) {
+                                     SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on uninstalling non-installed app?
   status_map_[origin] = UNINSTALLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
-void FakeSyncWorker::ProcessRemoteChange(
-    const SyncFileCallback& callback) {
+void FakeSyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  callback.Run(SYNC_STATUS_OK, storage::FileSystemURL());
+  std::move(callback).Run(SYNC_STATUS_OK, storage::FileSystemURL());
 }
 
 void FakeSyncWorker::SetRemoteChangeProcessor(
@@ -82,7 +81,7 @@ RemoteServiceState FakeSyncWorker::GetCurrentState() const {
 }
 
 void FakeSyncWorker::GetOriginStatusMap(
-    const RemoteFileSyncService::StatusMapCallback& callback) {
+    RemoteFileSyncService::StatusMapCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map(
@@ -107,7 +106,7 @@ void FakeSyncWorker::GetOriginStatusMap(
       break;
     }
   }
-  callback.Run(std::move(status_map));
+  std::move(callback).Run(std::move(status_map));
 }
 
 std::unique_ptr<base::ListValue> FakeSyncWorker::DumpFiles(const GURL& origin) {
@@ -130,20 +129,20 @@ void FakeSyncWorker::SetSyncEnabled(bool enabled) {
     UpdateServiceState(REMOTE_SERVICE_DISABLED, "Disabled FakeSyncWorker.");
 }
 
-void FakeSyncWorker::PromoteDemotedChanges(const base::Closure& callback) {
+void FakeSyncWorker::PromoteDemotedChanges(base::OnceClosure callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   for (auto& observer : observers_)
     observer.OnPendingFileListUpdated(10);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void FakeSyncWorker::ApplyLocalChange(const FileChange& local_change,
                                       const base::FilePath& local_path,
                                       const SyncFileMetadata& local_metadata,
                                       const storage::FileSystemURL& url,
-                                      const SyncStatusCallback& callback) {
+                                      SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::ActivateService(RemoteServiceState service_state,

@@ -1,11 +1,13 @@
 // META: script=/common/get-host-info.sub.js
 
 var redirectLocation = "cors-top.txt";
+const { ORIGIN, REMOTE_ORIGIN } = get_host_info();
 
 function testRedirect(origin, redirectStatus, redirectMode, corsMode) {
   var url = new URL("../resources/redirect.py", self.location);
   if (origin === "cross-origin") {
     url.host = get_host_info().REMOTE_HOST;
+    url.port = get_host_info().HTTP_PORT;
   }
 
   var urlParameters = "?redirect_status=" + redirectStatus;
@@ -16,7 +18,7 @@ function testRedirect(origin, redirectStatus, redirectMode, corsMode) {
   promise_test(function(test) {
     if (redirectMode === "error" ||
         (corsMode === "no-cors" && redirectMode !== "follow" && origin !== "same-origin"))
-      return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
+      return promise_rejects_js(test, TypeError, fetch(url + urlParameters, requestInit));
     if (redirectMode === "manual")
       return fetch(url + urlParameters, requestInit).then(function(resp) {
         assert_equals(resp.status, 0, "Response's status is 0");
@@ -45,5 +47,13 @@ for (var origin of ["same-origin", "cross-origin"]) {
     }
   }
 }
+
+promise_test(async (t) => {
+  const destination = `${ORIGIN}/common/blank.html`;
+  // We use /common/redirect.py intentionally, as we want a CORS error.
+  const url =
+    `${REMOTE_ORIGIN}/common/redirect.py?location=${destination}`;
+  await promise_rejects_js(t, TypeError,  fetch(url, { redirect: "manual" }));
+}, "manual redirect with a CORS error should be rejected");
 
 done();

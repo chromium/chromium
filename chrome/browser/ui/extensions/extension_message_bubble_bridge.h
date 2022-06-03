@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 
 namespace extensions {
@@ -21,6 +20,11 @@ class ExtensionMessageBubbleBridge : public ToolbarActionsBarBubbleDelegate {
  public:
   explicit ExtensionMessageBubbleBridge(
       std::unique_ptr<extensions::ExtensionMessageBubbleController> controller);
+
+  ExtensionMessageBubbleBridge(const ExtensionMessageBubbleBridge&) = delete;
+  ExtensionMessageBubbleBridge& operator=(const ExtensionMessageBubbleBridge&) =
+      delete;
+
   ~ExtensionMessageBubbleBridge() override;
 
  private:
@@ -28,20 +32,18 @@ class ExtensionMessageBubbleBridge : public ToolbarActionsBarBubbleDelegate {
   bool ShouldShow() override;
   bool ShouldCloseOnDeactivate() override;
   bool IsPolicyIndicationNeeded(const extensions::Extension* extension);
-  base::string16 GetHeadingText() override;
-  base::string16 GetBodyText(bool anchored_to_action) override;
-  base::string16 GetItemListText() override;
-  base::string16 GetActionButtonText() override;
-  base::string16 GetDismissButtonText() override;
+  std::u16string GetHeadingText() override;
+  std::u16string GetBodyText(bool anchored_to_action) override;
+  std::u16string GetItemListText() override;
+  std::u16string GetActionButtonText() override;
+  std::u16string GetDismissButtonText() override;
   ui::DialogButton GetDefaultDialogButton() override;
   std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() override;
   std::string GetAnchorActionId() override;
-  void OnBubbleShown(const base::Closure& close_bubble_callback) override;
+  void OnBubbleShown(base::OnceClosure close_bubble_callback) override;
   void OnBubbleClosed(CloseAction action) override;
 
   std::unique_ptr<extensions::ExtensionMessageBubbleController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_MESSAGE_BUBBLE_BRIDGE_H_

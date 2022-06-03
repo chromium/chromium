@@ -8,14 +8,13 @@
 
 namespace autofill {
 
-TestRegionDataLoader::TestRegionDataLoader() {}
+TestRegionDataLoader::TestRegionDataLoader() = default;
 
-TestRegionDataLoader::~TestRegionDataLoader() {}
+TestRegionDataLoader::~TestRegionDataLoader() = default;
 
 void TestRegionDataLoader::LoadRegionData(
     const std::string& country_code,
-    autofill::RegionDataLoader::RegionDataLoaded callback,
-    int64_t unused_timeout_ms) {
+    autofill::RegionDataLoader::RegionDataLoaded callback) {
   if (synchronous_callback_) {
     SendRegionData(regions_, callback);
   } else {
@@ -45,9 +44,8 @@ void TestRegionDataLoader::SendRegionData(
     const std::vector<std::pair<std::string, std::string>>& regions,
     autofill::RegionDataLoader::RegionDataLoaded callback) {
   ::i18n::addressinput::RegionData root_region("");
-  for (const auto& region : regions) {
+  for (const auto& region : regions)
     root_region.AddSubRegion(region.first, region.second);
-  }
 
   callback.Run(root_region.sub_regions());
 }

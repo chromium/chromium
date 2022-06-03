@@ -30,21 +30,14 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkImageSource.h"
-#include "third_party/skia/include/effects/SkOffsetImageFilter.h"
-#include "third_party/skia/include/effects/SkPictureImageFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
-#include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {
 namespace paint_filter_builder {
 
 void PopulateSourceGraphicImageFilters(
     FilterEffect* source_graphic,
-    sk_sp<PaintFilter> input,
     InterpolationSpace input_interpolation_space) {
   // Prepopulate SourceGraphic with two image filters: one with a null image
   // filter, and the other with a colorspace conversion filter.
@@ -53,9 +46,9 @@ void PopulateSourceGraphicImageFilters(
   // Since we know SourceGraphic is always PM-valid, we also use these for
   // the PM-validated options.
   sk_sp<PaintFilter> device_filter = TransformInterpolationSpace(
-      input, input_interpolation_space, kInterpolationSpaceSRGB);
+      nullptr, input_interpolation_space, kInterpolationSpaceSRGB);
   sk_sp<PaintFilter> linear_filter = TransformInterpolationSpace(
-      input, input_interpolation_space, kInterpolationSpaceLinear);
+      nullptr, input_interpolation_space, kInterpolationSpaceLinear);
   source_graphic->SetImageFilter(kInterpolationSpaceSRGB, false, device_filter);
   source_graphic->SetImageFilter(kInterpolationSpaceLinear, false,
                                  linear_filter);
@@ -111,17 +104,6 @@ sk_sp<PaintFilter> TransformInterpolationSpace(
                                             std::move(input));
 }
 
-void BuildSourceGraphic(FilterEffect* source_graphic,
-                        sk_sp<PaintRecord> record,
-                        const FloatRect& record_bounds) {
-  DCHECK(record);
-  sk_sp<PaintFilter> filter =
-      sk_make_sp<RecordPaintFilter>(record, record_bounds);
-  PopulateSourceGraphicImageFilters(
-      source_graphic, std::move(filter),
-      source_graphic->OperatingInterpolationSpace());
-}
-
 static const float kMaxMaskBufferSize =
     50.f * 1024.f * 1024.f / 4.f;  // 50MB / 4 bytes per pixel
 
@@ -160,8 +142,9 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
           SkBlendMode::kSrcIn,
           sk_make_sp<OffsetPaintFilter>(
               mask_record_bounds.x(), mask_record_bounds.y(),
-              sk_make_sp<ImagePaintFilter>(std::move(image), image_rect,
-                                           image_rect, kHigh_SkFilterQuality)),
+              sk_make_sp<ImagePaintFilter>(
+                  std::move(image), image_rect, image_rect,
+                  cc::PaintFlags::FilterQuality::kHigh)),
           input, &crop_rect);
     } else {
       // If the buffer is excessively big, give up and make an
@@ -177,11 +160,10 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     masked_input = input;
   }
   sk_sp<PaintFilter> flip_image_filter = sk_make_sp<MatrixPaintFilter>(
-      reflection.ReflectionMatrix(), kLow_SkFilterQuality,
+      reflection.ReflectionMatrix(), cc::PaintFlags::FilterQuality::kLow,
       std::move(masked_input));
-  return sk_make_sp<XfermodePaintFilter>(SkBlendMode::kSrcOver,
-                                         std::move(flip_image_filter),
-                                         std::move(input), nullptr);
+  return sk_make_sp<XfermodePaintFilter>(
+      SkBlendMode::kSrcOver, std::move(flip_image_filter), std::move(input));
 }
 
 }  // namespace paint_filter_builder

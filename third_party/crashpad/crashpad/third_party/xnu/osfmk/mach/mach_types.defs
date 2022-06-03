@@ -1,0 +1,652 @@
+/*
+ * Copyright (c) 2000-2016 Apple Inc. All rights reserved.
+ *
+ * @APPLE_OSREFERENCE_LICENSE_HEADER_START@
+ * 
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apple Public Source License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. The rights granted to you under the License
+ * may not be used to create, or enable the creation or redistribution of,
+ * unlawful or unlicensed copies of an Apple operating system, or to
+ * circumvent, violate, or enable the circumvention or violation of, any
+ * terms of an Apple operating system software license agreement.
+ * 
+ * Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ * 
+ * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+ */
+/*
+ * @OSF_COPYRIGHT@
+ */
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ * NOTICE: This file was modified by McAfee Research in 2004 to introduce
+ * support for mandatory and extensible security protections.  This notice
+ * is included in support of clause 2.2 (b) of the Apple Public License,
+ * Version 2.0.
+ */
+/*
+ */
+/*
+ *	Mach kernel interface type declarations
+ */
+
+#ifndef	_MACH_MACH_TYPES_DEFS_
+#define _MACH_MACH_TYPES_DEFS_
+
+
+#include <mach/std_types.defs>
+
+type memory_object_offset_t 	= uint64_t;
+type memory_object_size_t 	= uint64_t;
+type memory_object_cluster_size_t = uint32_t;
+type memory_object_fault_info_t = array[16] of integer_t;
+
+#ifdef KERNEL_PRIVATE
+
+/* Universal Page Lists - restricted to (in-kernel) pagers for now */
+type upl_size_t			= uint32_t;
+type upl_offset_t			= uint32_t;
+type upl_page_info_t		= struct[2] of integer_t;
+type upl_page_info_array_t	= array[*:256] of upl_page_info_t;
+
+type upl_t = mach_port_t
+		intran: upl_t convert_port_to_upl(mach_port_t)
+		outtran: mach_port_t convert_upl_to_port(upl_t)
+		destructor: upl_deallocate(upl_t)
+		;
+
+#endif /* KERNEL_PRIVATE */
+
+type mach_port_status_t = struct[10] of integer_t;	/* obsolete */
+type mach_port_info_ext_t = struct[17] of integer_t;
+
+		/* mach_port_info_t: can hold either a
+		 * mach_port_status_t (9 ints) or a
+		 * mach_port_limits_t (1 int) or a 
+		 * mach_port_info_ext_t (17 ints). If new flavors of
+		 * mach_port_{get,set}_attributes are added, the size of
+		 * this array may have to be increased. (See mach/port.h)
+		 */
+type mach_port_flavor_t 	= int;
+type mach_port_info_t		= array[*:17] of integer_t;
+
+     		/*
+		 * mach_msg_max_trailer_t: can hold
+		 * mach_msg_trailer_type_t (1 int)
+		 * mach_msg_trailer_size_t (1 int)
+		 * mach_port_seqno_t (1 int)
+		 * security_token_t (2 ints)
+		 * audit_token_t (8 ints)
+		 * mach_port_context_t (2 ints)
+		 * msgh_ad (1 int)
+		 * msg_labels_t (1 int)
+		 */
+type mach_msg_trailer_type_t = int;
+type mach_msg_trailer_info_t	= array[*:68] of char;
+
+type task_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_t convert_port_to_task(mach_port_t)
+		outtran: mach_port_t convert_task_to_port(task_t)
+		destructor: task_deallocate(task_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_name_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_name_t convert_port_to_task_name(mach_port_t)
+		outtran: mach_port_t convert_task_name_to_port(task_name_t)
+		destructor: task_name_deallocate(task_name_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_inspect_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: task_inspect_t convert_port_to_task_inspect(mach_port_t)
+		outtran: mach_port_t convert_task_inspect_to_port(task_inspect_t)
+		destructor: task_inspect_deallocate(task_inspect_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type thread_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: thread_t convert_port_to_thread(mach_port_t)
+		outtran: mach_port_t convert_thread_to_port(thread_t)
+		destructor: thread_deallocate(thread_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type thread_inspect_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: thread_inspect_t convert_port_to_thread_inspect(mach_port_t)
+		outtran: mach_port_t convert_thread_inspect_to_port(thread_inspect_t)
+		destructor: thread_inspect_deallocate(thread_inspect_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type thread_act_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: thread_act_t convert_port_to_thread(mach_port_t)
+		outtran: mach_port_t convert_thread_to_port(thread_act_t)
+		destructor: thread_deallocate(thread_act_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type thread_act_consume_ref_t = mach_port_move_send_t
+		cusertype: thread_act_t
+#if	KERNEL_SERVER
+		intran: thread_act_t convert_port_to_thread(mach_port_t)
+		destructor: thread_deallocate(thread_act_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+		/* thread_state_t: This inline array can hold
+		 * a machine-dependent amount of data, defined in
+		 * mach/machine/???? (currently THREAD_STATE_MAX,
+		 * in mach/thread_state.h)
+		 */
+#include <mach/machine/thread_state.h>
+type thread_state_flavor_t	= int;
+type thread_state_t		= array[*:THREAD_STATE_MAX] of natural_t;
+
+type task_array_t = ^array[] of task_t;
+type thread_array_t = ^array[] of thread_t;
+type thread_act_array_t = ^array[] of thread_act_t;
+type act_params_t = array[6] of int;
+
+type vm_map_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: vm_map_t convert_port_to_map(mach_port_t)
+		destructor: vm_map_deallocate(vm_map_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type vm_task_entry_t = mach_port_t
+		cusertype: vm_map_t
+#if	KERNEL_SERVER
+		intran: vm_map_t convert_port_entry_to_map(mach_port_t)
+		destructor: vm_map_deallocate(vm_map_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type ipc_space_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_space_t convert_port_to_space(mach_port_t)
+		destructor: space_deallocate(ipc_space_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type ipc_space_inspect_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_space_inspect_t convert_port_to_space_inspect(mach_port_t)
+		destructor: space_inspect_deallocate(ipc_space_inspect_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type arcade_register_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: arcade_register_t convert_port_to_arcade_register(mach_port_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type vm_prot_t = int;
+type vm_inherit_t = int;
+type vm_purgable_t = int;
+type xxx_vm_statistics_data_t = struct[13] of integer_t;
+type vm_behavior_t = int;
+type vm_statistics_data_t = struct[15] of integer_t;
+type vm_machine_attribute_t = int;
+type vm_machine_attribute_val_t = int;
+type vm_sync_t = int;
+
+		/* thread_info_t: this inline array can hold any of:
+		 * thread_basic_info_t (10 ints)
+		 * policy_timeshare_info_t (5 ints)
+		 * policy_fifo_info_t (4 ints)
+		 * policy_rr_info_t (5 ints)
+		 * thread_extended_info (12 ints + 64 chars)
+		 * if other thread_info flavors are added, this
+		 * definition may need to be changed. (See
+		 * mach/thread_info.h and mach/policy.h) */
+type thread_flavor_t		= int;
+type thread_info_t		= array[*:32] of integer_t;
+
+type thread_policy_flavor_t	= natural_t;
+type thread_policy_t		= array[*:16] of integer_t;
+
+		/* task_info_t: this inline array can hold any of:
+		 * task_basic_info_32_t (8 ints)
+		 * task_basic_info_64_t (10 ints)
+		 * task_events_info_t (8 ints)
+		 * task_thread_times_info_t (4 ints)
+		 * policy_timeshare_info_t (5 ints)
+		 * policy_fifo_info_t (4 ints)
+		 * policy_rr_info_t (5 ints)
+		 * task security token (2 ints)
+		 * task audit token (8 ints)
+		 * dyld info (2 64-bit ints and 1 int)
+		 * task_extmod_info_t (8 64-bit ints)
+		 * task_basic_info_64_2_t
+		 * mach_task_basic_info_t (12 ints)
+		 * task_power_info_t (18 ints)
+		 * task_vm_info_t (87 ints)
+		 * If other task_info flavors are added, this
+		 * definition may need to be changed. (See
+		 * mach/task_info.h and mach/policy.h) */
+type task_flavor_t		= int;
+type task_info_t		= array[*:87] of integer_t;
+
+type task_purgable_info_t	= struct[68] of integer_t;
+
+type task_policy_flavor_t	= natural_t;
+type task_policy_t		= array[*:16] of integer_t;
+
+type task_inspect_flavor_t = natural_t;
+type task_inspect_info_t = array[*:4] of integer_t;
+
+type task_exc_guard_behavior_t = uint32_t;
+
+type mem_entry_name_port_t = mach_port_t
+#if     KERNEL_SERVER
+		intran: mem_entry_name_port_t null_conversion(mach_port_t)
+		outtran: mach_port_t null_conversion(mem_entry_name_port_t)
+#endif  /* KERNEL_SERVER */
+		;
+
+type mem_entry_name_port_move_send_t = mach_port_move_send_t
+	cusertype: mem_entry_name_port_t
+#if     KERNEL_SERVER
+		intran: mem_entry_name_port_t null_conversion(mach_port_t)
+		outtran: mach_port_t null_conversion(mem_entry_name_port_t)
+#endif  /* KERNEL_SERVER */
+		;
+
+type memory_object_default_t = mach_port_t
+#if	KERNEL_PRIVATE
+		intran: memory_object_default_t null_conversion(mach_port_t)
+		outtran: mach_port_t null_conversion(memory_object_default_t)
+#endif	/* KERNEL_PRIVATE */
+		;
+ 
+type memory_object_t = mach_port_t
+#if	KERNEL_PRIVATE
+		intran: memory_object_t convert_port_to_memory_object(mach_port_t)
+		outtran: mach_port_t convert_memory_object_to_port(memory_object_t)
+#endif	/* KERNEL_PRIVATE */
+		;
+
+
+type memory_object_control_t = mach_port_t
+#if	KERNEL_PRIVATE
+		intran: memory_object_control_t convert_port_to_mo_control(mach_port_t)
+		outtran: mach_port_t convert_mo_control_to_port(memory_object_control_t)
+		destructor: memory_object_control_deallocate(memory_object_control_t)
+#endif	/* KERNEL_PRIVATE */
+		;
+
+type memory_object_name_t = mach_port_t
+		ctype: mach_port_t
+		;
+
+
+type memory_object_copy_strategy_t = int;
+type memory_object_return_t = int;
+
+type machine_info_data_t = struct[5] of integer_t;
+type machine_slot_data_t = struct[8] of integer_t;
+
+type host_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: host_t convert_port_to_host(mach_port_t)
+		outtran: mach_port_t convert_host_to_port(host_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type host_priv_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: host_priv_t convert_port_to_host_priv(mach_port_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type host_security_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: host_security_t convert_port_to_host_security(mach_port_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+		/* 
+		 * host_info_t: variable-sized inline array that can contain:
+		 * 
+		 * 	host_basic_info_old_t (5 ints)
+		 * 	host_basic_info_t (12 ints)
+		 * 	host_sched_info_t (2 ints)
+		 * 	kernel_resource_sizes_t (5 ints)
+		 * 	host_load_info_t (6 ints)
+		 * 	vm_statistics32_t (15 ints)
+		 * 	host_purgable_info_t (68 ints)
+		 *	host_expired_task_info uses a task_power_info (18 ints)
+		 * 
+		 * If other host_info flavors are added, this definition may
+		 * need to be changed. (See mach/{host_info,vm_statistics}.h)
+		 */
+type host_flavor_t		= int;
+type host_info_t 		= array[*:68] of integer_t;
+		/* 
+		 * host_info64_t: variable-sized inline array that can contain:
+		 * 
+		 *	vm_statistics_t (6 ints and 9 longs)
+		 *	vm_extmod_statistics_t (6 64-bit ints)
+		 */
+type host_info64_t		= array[*:256] of integer_t;
+
+type processor_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: processor_t convert_port_to_processor(mach_port_t)
+		outtran: mach_port_t convert_processor_to_port(processor_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type processor_array_t = ^array[] of processor_t;
+
+		/*
+		 * processor_info_t: variable-sized inline array that can
+		 * contain:
+		 *
+		 * - processor_basic_info_t:    (5 ints)
+		 * - processor_cpu_load_info_t: (4 ints)
+		 * - processor_machine_info_t:  (12 ints)
+		 * - processor_cpu_stat_t:      (10 ints)
+		 * - processor_cpu_stat64_t:    (20 ints)
+		 *
+		 * If other processor_info flavors are added, this definition
+		 * may need to be changed.
+		 *
+		 * See mach/processor_info.h and mach/arm/processor_info.h.
+		 */
+
+type processor_flavor_t     = int;
+type processor_info_t       = array[*:20] of integer_t;
+type processor_info_array_t = ^array[] of integer_t;
+
+type processor_set_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: processor_set_t convert_port_to_pset(mach_port_t)
+		outtran: mach_port_t convert_pset_to_port(processor_set_t)
+		destructor: pset_deallocate(processor_set_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type processor_set_array_t = ^array[] of processor_set_t;
+
+type processor_set_name_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: processor_set_name_t convert_port_to_pset_name(mach_port_t)
+		outtran: mach_port_t convert_pset_name_to_port(processor_set_name_t)
+		destructor: pset_deallocate(processor_set_name_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type processor_set_name_array_t = ^array[] of processor_set_name_t;
+
+		/* processor_set_info_t: variable-size inline array
+		 * that can hold:
+		 * processor_set_basic_info (5 ints)
+		 * processor_set_load_info (4 ints)
+		 * policy_timeshare_base_t (1 int)
+		 * policy_fifo_base_t (1 int)
+		 * policy_rr_base_t (1 int)
+		 * policy_timeshare_base_t (1 int)
+		 * policy_fifo_base_t (1 int)
+		 * policy_rr_base_t (1 int)
+		 * policy_t (1 int)
+		 * If other flavors are added, this definition may
+		 * need to be changed. (see mach/processor.h) */
+type processor_set_flavor_t	= int;
+type processor_set_info_t	= array[*:5] of integer_t;	
+
+type bootstrap_t = mach_port_t;
+
+type kernel_version_t           = c_string[*:512];
+type kernel_boot_info_t         = c_string[*:4096];
+
+type time_value_t = struct[2] of integer_t;
+
+type mach_port_qos_t = struct[2] of integer_t;
+
+type mach_port_options_t = struct[3] of uint64_t;
+type mach_port_options_ptr_t = ^ mach_port_options_t;
+
+type emulation_vector_t		= ^array[] of vm_offset_t;
+
+type inline_existence_map_t	= array[*:512] of char;
+
+type policy_t			= int;
+		/* policy_info_t: variable-size inline array. Can hold:
+		 * policy_timeshare_info_t (5 ints)
+		 * policy_fifo_info_t (4 ints)
+		 * policy_rr_info_t (5 ints) */
+type policy_base_t		= array[*:5] of integer_t;
+type policy_info_t		= array[*:2] of integer_t;
+type policy_limit_t		= array[*:1] of integer_t;
+
+type ledger_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ledger_t convert_port_to_ledger(mach_port_t)
+		outtran: mach_port_t convert_ledger_to_port(ledger_t)
+#endif	/* KERNEL_SERVER */
+                ;
+
+type ledger_array_t	 	= ^array[] of ledger_t;
+type ledger_item_t		= integer_t;
+     				  /* DEPRECATED */
+
+type ledger_amount_t		= int64_t;
+
+type security_token_t		= struct[2] of uint32_t;
+type audit_token_t		= struct[8] of uint32_t;
+
+type msg_labels_t = mach_port_t;
+
+		/* memory_object_info_t: variable-size inline array:
+		 * memory_object_attr_info_t (5 ints)
+		 * XXX actually it's 6 ints temporarily (object_ready!)
+		 * memory_object_behave_info_t (4 ints)
+		 * memory_object_perf_info_t (2 ints)
+		 * old_memory_object_attr_info_t (3 ints)
+		 * If other flavors are added, this definition may
+		 * need to be changed. (see mach/memory_object.h) */
+type memory_object_flavor_t	= int;
+type memory_object_info_t	= array[*:6] of int;
+
+		/* vm_region_info_t: variable-size inline array that can hold:
+		 * vm_region_basic_info_t (8 ints)
+		 * If other flavors are added, this definition may
+		 * need to be changed. (see mach/vm_region.h) */
+type vm_region_flavor_t		= int;
+type vm_region_info_t		= array[*:10] of int;
+type vm_region_recurse_info_t	= array[*:19] of int;
+
+type vm_page_info_flavor_t	= int;
+type vm_page_info_t		= array[*:32] of int;
+
+type mach_vm_read_entry_t = array[512] of mach_vm_offset_t;
+type vm_read_entry_t = array[512] of vm_offset_t;
+#ifdef VM32_SUPPORT
+type vm32_read_entry_t = array[512] of vm32_offset_t;
+#endif
+
+type exception_mask_t		= int;
+type exception_behavior_t	= int;
+
+type    exception_handler_t = mach_port_t;
+
+type	exception_handler_array_t	=
+			array[*:32] of exception_handler_t;
+
+type	exception_behavior_array_t	=
+			array[*:32] of exception_behavior_t;
+
+type	exception_flavor_array_t	=
+			array[*:32] of thread_state_flavor_t;
+
+type	exception_mask_array_t	=
+			array[*:32] of exception_mask_t;
+
+type semaphore_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: semaphore_t convert_port_to_semaphore(mach_port_t)
+		outtran: mach_port_t convert_semaphore_to_port(semaphore_t)
+		destructor: semaphore_dereference(semaphore_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type semaphore_consume_ref_t = mach_port_move_send_t
+		cusertype: semaphore_t
+#if	KERNEL_SERVER
+		intran: semaphore_t convert_port_to_semaphore(mach_port_t)
+		outtran: mach_port_t convert_semaphore_to_port(semaphore_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type lock_set_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: lock_set_t convert_port_to_lock_set(mach_port_t)
+		outtran: mach_port_t convert_lock_set_to_port(lock_set_t)
+		destructor: lock_set_dereference(lock_set_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type task_suspension_token_t = mach_port_move_send_once_t
+#if	KERNEL_SERVER
+		intran: task_suspension_token_t convert_port_to_task_suspension_token(mach_port_t)
+		outtran: mach_port_t convert_task_suspension_token_to_port(task_suspension_token_t)
+#endif	/* KERNEL_SERVER */
+		;
+
+type vfs_path_t = c_string[4096];
+type nspace_path_t = c_string[1024];	/* 1024 == PATH_MAX */
+
+/* public voucher types */
+
+/* Mach voucher object */
+type mach_voucher_t = mach_port_t;
+type mach_voucher_name_t = mach_port_name_t;
+
+type mach_voucher_attr_manager_t = mach_port_t;
+type mach_voucher_attr_control_t = mach_port_t;
+
+/* IPC voucher internal object */
+type ipc_voucher_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_voucher_t convert_port_to_voucher(mach_port_t)
+		outtran: mach_port_t convert_voucher_to_port(ipc_voucher_t)
+		destructor: ipc_voucher_release(ipc_voucher_t)
+#endif	/* KERNEL_SERVER */
+	        ;
+
+/* IPC voucher attribute control internal object */
+type ipc_voucher_attr_control_t = mach_port_t
+#if	KERNEL_SERVER
+		intran: ipc_voucher_attr_control_t convert_port_to_voucher_attr_control(mach_port_t)
+		outtran: mach_port_t convert_voucher_attr_control_to_port(ipc_voucher_attr_control_t)
+		destructor: ipc_voucher_attr_control_release(ipc_voucher_attr_control_t)
+#endif	/* KERNEL_SERVER */
+                ;
+
+type mach_voucher_attr_key_t = uint32_t;
+
+type mach_voucher_attr_command_t = uint32_t;
+type mach_voucher_attr_recipe_command_t = uint32_t;
+
+type mach_voucher_attr_content_size_t = uint32_t;
+type mach_voucher_attr_content_t = array[*:4096] of uint8_t;
+type mach_voucher_attr_content_array_t = array[*:5120] of uint8_t;
+
+type mach_voucher_attr_raw_recipe_size_t = uint32_t;
+type mach_voucher_attr_raw_recipe_t = array[*:4096] of uint8_t;
+type mach_voucher_attr_raw_recipe_array_t = array[*:5120] of uint8_t;
+
+type mach_voucher_selector_t = uint32_t;
+
+type mach_voucher_attr_value_handle_t = uint64_t;
+type mach_voucher_attr_value_handle_array_t = array[*:4] of mach_voucher_attr_value_handle_t;
+type mach_voucher_attr_value_reference_t = uint32_t;
+
+/* kernel module loader */
+type kmod_t = int;
+type kmod_control_flavor_t = int;
+
+type kmod_args_t = ^array[] of MACH_MSG_TYPE_BYTE
+	ctype: kmod_args_t;
+
+type io_master_t = mach_port_t;
+type UNDServerRef = mach_port_t;
+
+/* These must be kept in sync with definitions in osfmk/mach/dyld_kernel.h */
+type dyld_kernel_image_info_t = struct[40] of MACH_MSG_TYPE_BYTE;
+type dyld_kernel_image_info_array_t = ^array[] of dyld_kernel_image_info_t;
+type dyld_kernel_process_info_t = struct[64] of MACH_MSG_TYPE_BYTE;
+
+#if KERNEL_SERVER
+#ifdef	MACH_KERNEL_PRIVATE
+simport <ipc/ipc_voucher.h>;	/* for voucher conversions */
+simport <kern/ipc_kobject.h>;	/* for null conversion */
+simport <kern/ipc_tt.h>;	/* for task/thread conversion */
+simport <kern/ipc_host.h>;	/* for host/processor/pset conversions */
+simport <kern/ipc_sync.h>;      /* for lock_set and semaphore conversions */
+simport <kern/ledger.h>;	/* for ledger conversions */
+simport <kern/processor.h>;	/* for processor conversions */
+simport <kern/sync_lock.h>;	/* for lock-set conversions */
+simport <kern/sync_sema.h>;	/* for semaphore conversions */
+simport <vm/memory_object.h>;	/* for memory object type conversions */
+simport <vm/vm_map.h>;		/* for vm_map conversions */
+#if CONFIG_ARCADE
+simport <kern/arcade.h>;    /* for arcade_register conversions */
+#endif
+#endif	/* MACH_KERNEL_PRIVATE */
+
+simport <kern/ipc_mig.h>;	/* pick up kernel-specific MIG things */
+
+#endif /* KERNEL_SERVER */
+
+import <mach/mig.h>;
+import <mach/mach_types.h>;
+
+#endif	/* _MACH_MACH_TYPES_DEFS_ */
+
+/* vim: set ft=c : */

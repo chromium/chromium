@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -20,12 +19,12 @@ class WebScopedPagePauser {
  public:
   BLINK_EXPORT static std::unique_ptr<WebScopedPagePauser> Create();
 
+  WebScopedPagePauser(const WebScopedPagePauser&) = delete;
+  WebScopedPagePauser& operator=(const WebScopedPagePauser&) = delete;
   BLINK_EXPORT ~WebScopedPagePauser();
 
  private:
   WebScopedPagePauser();
-
-  DISALLOW_COPY_AND_ASSIGN(WebScopedPagePauser);
 };
 
 }  // namespace blink

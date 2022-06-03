@@ -41,15 +41,17 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
       DeleterCallback deleter_callback,
       std::unique_ptr<mojom::AudioOutputStreamObserver> observer);
 
+  MojoAudioOutputStreamProvider(const MojoAudioOutputStreamProvider&) = delete;
+  MojoAudioOutputStreamProvider& operator=(
+      const MojoAudioOutputStreamProvider&) = delete;
+
   ~MojoAudioOutputStreamProvider() override;
 
  private:
   // mojom::AudioOutputStreamProvider implementation.
-  void Acquire(
-      const AudioParameters& params,
-      mojo::PendingRemote<mojom::AudioOutputStreamProviderClient>
-          provider_client,
-      const base::Optional<base::UnguessableToken>& processing_id) override;
+  void Acquire(const AudioParameters& params,
+               mojo::PendingRemote<mojom::AudioOutputStreamProviderClient>
+                   provider_client) override;
 
   // Called when |audio_output_| had an error.
   void CleanUp(bool had_error);
@@ -64,10 +66,8 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
   DeleterCallback deleter_callback_;
   std::unique_ptr<mojom::AudioOutputStreamObserver> observer_;
   mojo::Receiver<mojom::AudioOutputStreamObserver> observer_receiver_;
-  base::Optional<MojoAudioOutputStream> audio_output_;
+  absl::optional<MojoAudioOutputStream> audio_output_;
   mojo::Remote<mojom::AudioOutputStreamProviderClient> provider_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputStreamProvider);
 };
 
 }  // namespace media

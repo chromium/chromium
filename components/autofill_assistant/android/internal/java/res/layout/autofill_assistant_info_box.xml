@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/info_box_explanation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:padding="@dimen/autofill_assistant_bottombar_vertical_spacing"
+    android:paddingBottom="@dimen/autofill_assistant_info_box_spacing"
+    android:drawablePadding="@dimen/autofill_assistant_bottombar_vertical_spacing"
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>

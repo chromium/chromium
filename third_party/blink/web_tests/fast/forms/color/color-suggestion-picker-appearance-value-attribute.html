@@ -2,39 +2,34 @@
 <html>
 <head>
 <script>
-pixelTestingOnly = true;
+testRunner.waitUntilDone();
 </script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
-<input type=color id=color value="#ff0000" list=gray focus>
-<datalist id=gray>
-    <option value="#ffffff">F</option>
-    <option value="#eeeeee">E</option>
-    <option value="#dddddd">D</option>
-    <option value="#cccccc">C</option>
-    <option value="#bbbbbb">B</option>
-    <option value="#aaaaaa">A</option>
-    <option value="#999999">9</option>
-    <option value="#880088">8</option>
-    <option value="#777700">7</option>
-    <option value="#006666">6</option>
-    <option value="#555555">5</option>
-    <option value="#444444">4</option>
-    <option value="#333333">3</option>
-    <option value="#222222">2</option>
-    <option value="#111111">1</option>
-    <option value="#000000">0</option>
-    <option value="#F00">f00</option> <!--invalid-->
-    <option value="red">red</option> <!--invalid-->
+<input type='color' id='color' value='#ff0000' list='colors'>
+<datalist id='colors'>
+    <option value='#ff00ff'>F</option>
+    <option value='#eee00e'>E</option>
+    <option value='#d00ddd'>D</option>
+    <option value='#00cccc'>C</option>
+    <option value='#bbbb00'>B</option>
+    <option value='#aa00aa'>A</option>
+    <option value='#009999'>9</option>
+    <option value='#800888'>8</option>
+    <option value='#777700'>7</option>
+    <option value='#006666'>6</option>
+    <option value='#550055'>5</option>
+    <option value='#444004'>4</option>
+    <option value='#333300'>3</option>
+    <option value='#200222'>2</option>
+    <option value='#111001'>1</option>
+    <option value='#000000'>0</option>
+    <option value='#F00'>f00</option> <!--invalid-->
+    <option value='red'>red</option> <!--invalid-->
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
 <script>
-openPicker(document.getElementById('color'), finishJSTest);
+openPickerAppearanceOnly(document.getElementById('color'), () => testRunner.notifyDone());
 </script>
 </body>
 </html>

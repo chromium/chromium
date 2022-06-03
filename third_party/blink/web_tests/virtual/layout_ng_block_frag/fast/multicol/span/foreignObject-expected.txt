@@ -1,1 +1,0 @@
-PASS if no assertion failure or crash.

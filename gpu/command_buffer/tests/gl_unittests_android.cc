@@ -8,7 +8,6 @@
 #include <android/native_window_jni.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"

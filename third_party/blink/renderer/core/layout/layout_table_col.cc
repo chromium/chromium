@@ -41,6 +41,7 @@ LayoutTableCol::LayoutTableCol(Element* element)
 
 void LayoutTableCol::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   DCHECK(StyleRef().Display() == EDisplay::kTableColumn ||
          StyleRef().Display() == EDisplay::kTableColumnGroup);
 
@@ -71,6 +72,7 @@ void LayoutTableCol::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutTableCol::UpdateFromElement() {
+  NOT_DESTROYED();
   unsigned old_span = span_;
 
   if (auto* tc = DynamicTo<HTMLTableColElement>(GetNode())) {
@@ -79,47 +81,47 @@ void LayoutTableCol::UpdateFromElement() {
     span_ = 1;
   }
   if (span_ != old_span && Style() && Parent()) {
-    SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+    SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
   }
 }
 
 void LayoutTableCol::InsertedIntoTree() {
+  NOT_DESTROYED();
   LayoutTableBoxComponent::InsertedIntoTree();
   Table()->AddColumn(this);
 }
 
 void LayoutTableCol::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
   LayoutTableBoxComponent::WillBeRemovedFromTree();
   Table()->RemoveColumn(this);
 }
 
 bool LayoutTableCol::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle& style) const {
+  NOT_DESTROYED();
   // We cannot use isTableColumn here as style() may return 0.
   return child->IsLayoutTableCol() && style.Display() == EDisplay::kTableColumn;
 }
 
 bool LayoutTableCol::CanHaveChildren() const {
+  NOT_DESTROYED();
   // Cols cannot have children. This is actually necessary to fix a bug
   // with libraries.uc.edu, which makes a <p> be a table-column.
   return IsTableColumnGroup();
 }
 
-bool LayoutTableCol::PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const {
-  // LayoutTableCol paints nothing by itself. Its background is painted by
-  // LayoutTableSection.
-  return true;
-}
-
-void LayoutTableCol::ClearPreferredLogicalWidthsDirtyBits() {
-  ClearPreferredLogicalWidthsDirty();
+void LayoutTableCol::ClearIntrinsicLogicalWidthsDirtyBits() {
+  NOT_DESTROYED();
+  ClearIntrinsicLogicalWidthsDirty();
 
   for (LayoutObject* child = FirstChild(); child; child = child->NextSibling())
-    child->ClearPreferredLogicalWidthsDirty();
+    child->ClearIntrinsicLogicalWidthsDirty();
 }
 
 LayoutTable* LayoutTableCol::Table() const {
+  NOT_DESTROYED();
   LayoutObject* table = Parent();
   if (table && !table->IsTable())
     table = table->Parent();
@@ -127,20 +129,22 @@ LayoutTable* LayoutTableCol::Table() const {
 }
 
 LayoutTableCol* LayoutTableCol::EnclosingColumnGroup() const {
+  NOT_DESTROYED();
   if (!Parent()->IsLayoutTableCol())
     return nullptr;
 
-  LayoutTableCol* parent_column_group = ToLayoutTableCol(Parent());
+  auto* parent_column_group = To<LayoutTableCol>(Parent());
   DCHECK(parent_column_group->IsTableColumnGroup());
   DCHECK(IsTableColumn());
   return parent_column_group;
 }
 
 LayoutTableCol* LayoutTableCol::NextColumn() const {
+  NOT_DESTROYED();
   // If |this| is a column-group, the next column is the colgroup's first child
   // column.
   if (LayoutObject* first_child = FirstChild())
-    return ToLayoutTableCol(first_child);
+    return To<LayoutTableCol>(first_child);
 
   // Otherwise it's the next column along.
   LayoutObject* next = NextSibling();
@@ -153,7 +157,7 @@ LayoutTableCol* LayoutTableCol::NextColumn() const {
   for (; next && !next->IsLayoutTableCol(); next = next->NextSibling()) {
   }
 
-  return ToLayoutTableCol(next);
+  return To<LayoutTableCol>(next);
 }
 
 }  // namespace blink

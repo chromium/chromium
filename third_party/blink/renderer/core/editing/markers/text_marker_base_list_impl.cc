@@ -59,7 +59,7 @@ bool TextMarkerBaseListImpl::ShiftMarkers(const String&,
       &markers_, offset, old_length, new_length);
 }
 
-void TextMarkerBaseListImpl::Trace(Visitor* visitor) {
+void TextMarkerBaseListImpl::Trace(Visitor* visitor) const {
   visitor->Trace(markers_);
   DocumentMarkerList::Trace(visitor);
 }

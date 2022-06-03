@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -28,9 +27,14 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
           destructor_callback =
               base::OnceCallback<void(const base::UnguessableToken&)>());
 
+  FakeClientConnectionParameters(const FakeClientConnectionParameters&) =
+      delete;
+  FakeClientConnectionParameters& operator=(
+      const FakeClientConnectionParameters&) = delete;
+
   ~FakeClientConnectionParameters() override;
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   failure_reason() {
     return failure_reason_;
   }
@@ -66,7 +70,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   std::unique_ptr<mojo::Receiver<mojom::MessageReceiver>>
       message_receiver_receiver_;
 
-  base::Optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
+  absl::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
 
   mojo::Remote<mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;
@@ -74,8 +78,6 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback_;
 
   base::WeakPtrFactory<FakeClientConnectionParameters> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientConnectionParameters);
 };
 
 // Test ClientConnectionParameters::Observer implementation.
@@ -83,6 +85,12 @@ class FakeClientConnectionParametersObserver
     : public ClientConnectionParameters::Observer {
  public:
   FakeClientConnectionParametersObserver();
+
+  FakeClientConnectionParametersObserver(
+      const FakeClientConnectionParametersObserver&) = delete;
+  FakeClientConnectionParametersObserver& operator=(
+      const FakeClientConnectionParametersObserver&) = delete;
+
   ~FakeClientConnectionParametersObserver() override;
 
   void set_closure_for_next_callback(
@@ -101,8 +109,6 @@ class FakeClientConnectionParametersObserver
   bool has_connection_request_been_canceled_ = false;
 
   base::OnceClosure closure_for_next_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientConnectionParametersObserver);
 };
 
 }  // namespace secure_channel

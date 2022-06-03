@@ -7,12 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
@@ -36,14 +37,13 @@ namespace {
 base::Value NetLogParameterChannelBindings(
     const std::string& channel_binding_token,
     NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   if (!NetLogCaptureIncludesSocketBytes(capture_mode))
-    return std::move(dict);
+    return dict;
 
-  dict.Clear();
-  dict.SetString("token", base::HexEncode(channel_binding_token.data(),
-                                          channel_binding_token.size()));
-  return std::move(dict);
+  dict.SetStringKey("token", base::HexEncode(channel_binding_token.data(),
+                                             channel_binding_token.size()));
+  return dict;
 }
 
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise
@@ -86,6 +86,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key,
     const GURL& origin,
     CreateReason reason,
     int digest_nonce_count,
@@ -114,7 +115,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
 #elif defined(OS_POSIX)
   if (is_unsupported_)
     return ERR_UNSUPPORTED_AUTH_SCHEME;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Note: Don't set is_unsupported_ = true here. AllowGssapiLibraryLoad()
   // might change to true during a session.
   if (!http_auth_preferences()->AllowGssapiLibraryLoad())
@@ -131,9 +132,10 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
                        negotiate_auth_system_factory_),
       http_auth_preferences(), host_resolver));
 #endif
-  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info, origin,
-                                      net_log))
+  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
+                                      network_isolation_key, origin, net_log)) {
     return ERR_INVALID_RESPONSE;
+  }
   handler->swap(tmp_handler);
   return OK;
 }
@@ -171,8 +173,11 @@ bool HttpAuthHandlerNegotiate::AllowsExplicitCredentials() {
 
 // The Negotiate challenge header looks like:
 //   WWW-Authenticate: NEGOTIATE auth-data
-bool HttpAuthHandlerNegotiate::Init(HttpAuthChallengeTokenizer* challenge,
-                                    const SSLInfo& ssl_info) {
+bool HttpAuthHandlerNegotiate::Init(
+    HttpAuthChallengeTokenizer* challenge,
+    const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key) {
+  network_isolation_key_ = network_isolation_key;
 #if defined(OS_POSIX)
   if (!auth_system_->Init(net_log())) {
     VLOG(1) << "can't initialize GSSAPI library";
@@ -341,8 +346,9 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalName() {
   // TODO(cbentzel): Add reverse DNS lookup for numeric addresses.
   HostResolver::ResolveHostParameters parameters;
   parameters.include_canonical_name = true;
-  resolve_host_request_ = resolver_->CreateRequest(
-      HostPortPair(origin_.host(), 0), net_log(), parameters);
+  resolve_host_request_ =
+      resolver_->CreateRequest(HostPortPair(origin_.host(), 0),
+                               network_isolation_key_, net_log(), parameters);
   return resolve_host_request_->Start(base::BindOnce(
       &HttpAuthHandlerNegotiate::OnIOComplete, base::Unretained(this)));
 }
@@ -354,7 +360,7 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
     if (rv == OK) {
       DCHECK(resolve_host_request_->GetAddressResults());
       const std::string& canonical_name =
-          resolve_host_request_->GetAddressResults().value().canonical_name();
+          resolve_host_request_->GetAddressResults().value().GetCanonicalName();
       if (!canonical_name.empty())
         server = canonical_name;
     } else {

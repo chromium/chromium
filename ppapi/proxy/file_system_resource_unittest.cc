@@ -233,8 +233,8 @@ TEST_F(FileSystemResourceTest, RequestQuota) {
 
   MockRequestQuotaCallback cb1;
   int64_t result = file_system_api->RequestQuota(
-      kQuotaRequestAmount1,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb1)));
+      kQuotaRequestAmount1, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb1)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
 
   // Should have sent a "reserve quota" message, with the amount of the request
@@ -257,8 +257,8 @@ TEST_F(FileSystemResourceTest, RequestQuota) {
   // Make another request while the "reserve quota" message is pending.
   MockRequestQuotaCallback cb2;
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount2,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb2)));
+      kQuotaRequestAmount2, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb2)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
   // No new "reserve quota" message should be sent while one is pending.
   ASSERT_FALSE(sink().GetFirstResourceCallMatching(
@@ -283,12 +283,12 @@ TEST_F(FileSystemResourceTest, RequestQuota) {
   // All requests should fail when insufficient quota is returned to satisfy
   // the first request.
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount1,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb1)));
+      kQuotaRequestAmount1, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb1)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount2,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb2)));
+      kQuotaRequestAmount2, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb2)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
 
   ASSERT_TRUE(sink().GetFirstResourceCallMatching(
@@ -314,12 +314,12 @@ TEST_F(FileSystemResourceTest, RequestQuota) {
   // A new request should be made if the quota reservation is enough to satisfy
   // at least one request.
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount1,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb1)));
+      kQuotaRequestAmount1, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb1)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount2,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb2)));
+      kQuotaRequestAmount2, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb2)));
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, result);
 
   ASSERT_TRUE(sink().GetFirstResourceCallMatching(
@@ -362,8 +362,8 @@ TEST_F(FileSystemResourceTest, RequestQuota) {
   // There is kQuotaRequestAmount1 of quota left, and a request for it should
   // succeed immediately.
   result = file_system_api->RequestQuota(
-      kQuotaRequestAmount1,
-      base::Bind(&MockRequestQuotaCallback::Callback, base::Unretained(&cb1)));
+      kQuotaRequestAmount1, base::BindOnce(&MockRequestQuotaCallback::Callback,
+                                           base::Unretained(&cb1)));
   ASSERT_EQ(kQuotaRequestAmount1, result);
 }
 

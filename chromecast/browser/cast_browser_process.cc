@@ -6,14 +6,13 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_network_contexts.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/browser/metrics/cast_browser_metrics.h"
-#include "chromecast/browser/tts/tts_controller.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "chromecast/net/connectivity_checker.h"
 #include "chromecast/service/cast_service.h"
@@ -48,8 +47,7 @@ CastBrowserProcess::CastBrowserProcess()
       cast_screen_(nullptr),
 #endif
       web_view_factory_(nullptr),
-      cast_content_browser_client_(nullptr),
-      net_log_(nullptr) {
+      cast_content_browser_client_(nullptr) {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -138,17 +136,6 @@ void CastBrowserProcess::SetConnectivityChecker(
     scoped_refptr<ConnectivityChecker> connectivity_checker) {
   DCHECK(!connectivity_checker_);
   connectivity_checker_.swap(connectivity_checker);
-}
-
-void CastBrowserProcess::SetNetLog(net::NetLog* net_log) {
-  DCHECK(!net_log_);
-  net_log_ = net_log;
-}
-
-void CastBrowserProcess::SetTtsController(
-    std::unique_ptr<TtsController> tts_controller) {
-  DCHECK(!tts_controller_);
-  tts_controller_ = std::move(tts_controller);
 }
 
 void CastBrowserProcess::SetWebViewFactory(

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -62,7 +63,7 @@ void DedicatedWorkerObjectProxy::PostMessageToWorkerObject(
       FROM_HERE,
       CrossThreadBindOnce(
           &DedicatedWorkerMessagingProxy::PostMessageToWorkerObject,
-          messaging_proxy_weak_ptr_, WTF::Passed(std::move(message))));
+          messaging_proxy_weak_ptr_, std::move(message)));
 }
 
 void DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject(
@@ -89,7 +90,7 @@ void DedicatedWorkerObjectProxy::ReportException(
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          WTF::Passed(location->Clone()), exception_id));
+                          location->Clone(), exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {
@@ -108,15 +109,7 @@ void DedicatedWorkerObjectProxy::DidFailToFetchModuleScript() {
                           messaging_proxy_weak_ptr_));
 }
 
-void DedicatedWorkerObjectProxy::DidEvaluateClassicScript(bool success) {
-  PostCrossThreadTask(
-      *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
-      FROM_HERE,
-      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
-                          messaging_proxy_weak_ptr_, success));
-}
-
-void DedicatedWorkerObjectProxy::DidEvaluateModuleScript(bool success) {
+void DedicatedWorkerObjectProxy::DidEvaluateTopLevelScript(bool success) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -126,8 +119,10 @@ void DedicatedWorkerObjectProxy::DidEvaluateModuleScript(bool success) {
 
 DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(
     DedicatedWorkerMessagingProxy* messaging_proxy_weak_ptr,
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
+    ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
+    const DedicatedWorkerToken& token)
     : ThreadedObjectProxyBase(parent_execution_context_task_runners),
+      token_(token),
       messaging_proxy_weak_ptr_(messaging_proxy_weak_ptr) {}
 
 CrossThreadWeakPersistent<ThreadedMessagingProxyBase>

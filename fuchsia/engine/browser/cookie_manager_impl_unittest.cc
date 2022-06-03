@@ -9,18 +9,21 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/result_receiver.h"
+#include "base/test/test_future.h"
+#include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/engine/browser/cookie_manager_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/cookie_access_result.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -32,16 +35,18 @@ const char kCookieValue1[] = "Eats";
 const char kCookieValue2[] = "Cookies";
 const char kCookieValue3[] = "Nyom nyom nyom";
 
-// Creates a CanonicalCookie with |name| and |value|, for kTestCookieUrlHost.
+// Creates a CanonicalCookie with |name| and |value|, for kTestCookieUrl.
 std::unique_ptr<net::CanonicalCookie> CreateCookie(base::StringPiece name,
                                                    base::StringPiece value) {
   return net::CanonicalCookie::CreateSanitizedCookie(
-      GURL(kTestCookieUrl), name.as_string(), value.as_string(), /*domain=*/"",
+      GURL(kTestCookieUrl), std::string(name), std::string(value),
+      /*domain=*/"",
       /*path=*/"", /*creation_time=*/base::Time(),
       /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
       /*secure=*/true,
       /*httponly*/ false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_MEDIUM);
+      net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt);
 }
 
 class CookieManagerImplTest : public testing::Test {
@@ -53,33 +58,42 @@ class CookieManagerImplTest : public testing::Test {
         cookie_manager_(
             base::BindRepeating(&CookieManagerImplTest::GetNetworkContext,
                                 base::Unretained(this))) {}
+
+  CookieManagerImplTest(const CookieManagerImplTest&) = delete;
+  CookieManagerImplTest& operator=(const CookieManagerImplTest&) = delete;
+
   ~CookieManagerImplTest() override = default;
 
  protected:
   network::mojom::NetworkContext* GetNetworkContext() {
     if (!network_context_.is_bound()) {
+      network::mojom::NetworkContextParamsPtr params =
+          network::mojom::NetworkContextParams::New();
+      // Use a dummy CertVerifier that always passes cert verification, since
+      // these unittests don't need to test CertVerifier behavior.
+      params->cert_verifier_params =
+          network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
       network_service_->CreateNetworkContext(
-          network_context_.BindNewPipeAndPassReceiver(),
-          network::mojom::NetworkContextParams::New());
+          network_context_.BindNewPipeAndPassReceiver(), std::move(params));
       network_context_.reset_on_disconnect();
     }
     return network_context_.get();
   }
 
-  // Adds the specified cookie under kTestCookieUrlHost.
+  // Adds the specified cookie under kTestCookieUrl.
   void CreateAndSetCookieAsync(base::StringPiece name,
                                base::StringPiece value) {
     EnsureMojoCookieManager();
 
     net::CookieOptions options;
     mojo_cookie_manager_->SetCanonicalCookie(
-        *CreateCookie(name, value), "https", options,
-        base::BindOnce([](net::CanonicalCookie::CookieInclusionStatus status) {
-          EXPECT_TRUE(status.IsInclude());
+        *CreateCookie(name, value), GURL(kTestCookieUrl), options,
+        base::BindOnce([](net::CookieAccessResult result) {
+          EXPECT_TRUE(result.status.IsInclude());
         }));
   }
 
-  // Removes the specified cookie from under kTestCookieUrlHost.
+  // Removes the specified cookie from under kTestCookieUrl.
   void DeleteCookieAsync(base::StringPiece name, base::StringPiece value) {
     EnsureMojoCookieManager();
 
@@ -89,8 +103,8 @@ class CookieManagerImplTest : public testing::Test {
   }
 
   // Synchronously fetches all cookies via the |cookie_manager_|.
-  // Returns a base::nullopt if the iterator closes before a GetNext() returns.
-  base::Optional<std::vector<fuchsia::web::Cookie>> GetAllCookies() {
+  // Returns a absl::nullopt if the iterator closes before a GetNext() returns.
+  absl::optional<std::vector<fuchsia::web::Cookie>> GetAllCookies() {
     base::RunLoop get_cookies_loop;
     fuchsia::web::CookiesIteratorPtr cookies_iterator;
     cookies_iterator.set_error_handler([&](zx_status_t status) {
@@ -99,7 +113,7 @@ class CookieManagerImplTest : public testing::Test {
     });
     cookie_manager_.GetCookieList(nullptr, nullptr,
                                   cookies_iterator.NewRequest());
-    base::Optional<std::vector<fuchsia::web::Cookie>> cookies;
+    absl::optional<std::vector<fuchsia::web::Cookie>> cookies;
     std::function<void(std::vector<fuchsia::web::Cookie>)> get_next_callback =
         [&](std::vector<fuchsia::web::Cookie> new_cookies) {
           if (!cookies.has_value()) {
@@ -130,41 +144,40 @@ class CookieManagerImplTest : public testing::Test {
   mojo::Remote<network::mojom::CookieManager> mojo_cookie_manager_;
 
   CookieManagerImpl cookie_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieManagerImplTest);
 };
 
 // Calls GetNext() on the supplied |iterator| and lets the caller express
 // expectations on the results.
 class GetNextCookiesIteratorResult {
  public:
-  explicit GetNextCookiesIteratorResult(fuchsia::web::CookiesIterator* iterator)
-      : result_(loop_.QuitClosure()) {
-    iterator->GetNext(
-        cr_fuchsia::CallbackToFitFunction(result_.GetReceiveCallback()));
+  explicit GetNextCookiesIteratorResult(
+      fuchsia::web::CookiesIterator* iterator) {
+    iterator->GetNext(cr_fuchsia::CallbackToFitFunction(result_.GetCallback()));
   }
+
+  GetNextCookiesIteratorResult(const GetNextCookiesIteratorResult&) = delete;
+  GetNextCookiesIteratorResult& operator=(const GetNextCookiesIteratorResult&) =
+      delete;
 
   ~GetNextCookiesIteratorResult() = default;
 
   void ExpectSingleCookie(base::StringPiece name,
-                          base::Optional<base::StringPiece> value) {
+                          absl::optional<base::StringPiece> value) {
     ExpectCookieUpdates({{name, value}});
   }
 
   void ExpectDeleteSingleCookie(base::StringPiece name) {
-    ExpectCookieUpdates({{name, base::nullopt}});
+    ExpectCookieUpdates({{name, absl::nullopt}});
   }
 
   // Specifies the cookie name/value pairs expected in the GetNext() results.
-  // Deletions expectations are specified by using base::nullopt as the value.
+  // Deletions expectations are specified by using absl::nullopt as the value.
   void ExpectCookieUpdates(
-      std::map<base::StringPiece, base::Optional<base::StringPiece>> expected) {
-    loop_.Run();
-    ASSERT_TRUE(result_.has_value());
-    ASSERT_EQ(result_->size(), expected.size());
+      std::map<base::StringPiece, absl::optional<base::StringPiece>> expected) {
+    ASSERT_TRUE(result_.Wait());
+    ASSERT_EQ(result_.Get().size(), expected.size());
     std::map<base::StringPiece, base::StringPiece> result_updates;
-    for (auto& cookie_update : *result_) {
+    for (const auto& cookie_update : result_.Get()) {
       ASSERT_TRUE(cookie_update.has_id());
       ASSERT_TRUE(cookie_update.id().has_name());
       auto it = expected.find(cookie_update.id().name());
@@ -181,14 +194,11 @@ class GetNextCookiesIteratorResult {
     // If we ran |loop_| then this would hang, so just ensure any pending work
     // has been processed.
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(result_.has_value());
+    EXPECT_FALSE(result_.IsReady());
   }
 
  protected:
-  base::RunLoop loop_;
-  cr_fuchsia::ResultReceiver<std::vector<fuchsia::web::Cookie>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetNextCookiesIteratorResult);
+  base::test::TestFuture<std::vector<fuchsia::web::Cookie>> result_;
 };
 
 }  // namespace
@@ -328,8 +338,19 @@ TEST_F(CookieManagerImplTest, UpdateBatching) {
     CreateAndSetCookieAsync(kCookieName1, kCookieValue1);
     CreateAndSetCookieAsync(kCookieName2, kCookieValue2);
     CreateAndSetCookieAsync(kCookieName1, kCookieValue3);
+
+    // Flush the Cookie Manager so that all cookie changes are processed.
     mojo_cookie_manager_.FlushForTesting();
 
+    // Run all pending tasks so that CookiesIteratorImpl receives all cookie
+    // changes through network::mojom::CookieChangeListener::OnCookieChange().
+    // This is important because fuchsia::web::CookiesIterator::GetNext() only
+    // returns cookie updates that have already been received by the iterator
+    // implementation.
+    base::RunLoop().RunUntilIdle();
+
+    // Request cookie updates through fuchsia::web::CookiesIterator::GetNext().
+    // Multiple updates to the same cookie should be coalesced.
     GetNextCookiesIteratorResult global_updates(global_changes.get());
     global_updates.ExpectCookieUpdates(
         {{kCookieName1, kCookieValue3}, {kCookieName2, kCookieValue2}});
@@ -343,7 +364,7 @@ TEST_F(CookieManagerImplTest, UpdateBatching) {
 
     GetNextCookiesIteratorResult global_updates(global_changes.get());
     global_updates.ExpectCookieUpdates(
-        {{kCookieName1, base::nullopt}, {kCookieName2, base::nullopt}});
+        {{kCookieName1, absl::nullopt}, {kCookieName2, absl::nullopt}});
   }
 }
 

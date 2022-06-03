@@ -4,11 +4,14 @@
 
 #include "ui/gfx/image/image_skia_rep_default.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/color_palette.h"
 
 namespace gfx {
 
@@ -19,7 +22,7 @@ ImageSkiaRep::ImageSkiaRep(const gfx::Size& size, float scale)
     : type_(ImageRepType::kImageTypeBitmap), scale_(scale) {
   bitmap_.allocN32Pixels(static_cast<int>(size.width() * this->scale()),
                          static_cast<int>(size.height() * this->scale()));
-  bitmap_.eraseColor(SK_ColorRED);
+  bitmap_.eraseColor(kPlaceholderColor);
   bitmap_.setImmutable();
   pixel_size_.SetSize(bitmap_.width(), bitmap_.height());
   paint_image_ = cc::PaintImage::CreateFromBitmap(bitmap_);
@@ -30,6 +33,8 @@ ImageSkiaRep::ImageSkiaRep(const SkBitmap& src, float scale)
       pixel_size_(gfx::Size(src.width(), src.height())),
       bitmap_(src),
       scale_(scale) {
+  CHECK_EQ(bitmap_.colorType(), kN32_SkColorType);
+  DCHECK(!bitmap_.drawsNothing());
   bitmap_.setImmutable();
   paint_image_ = cc::PaintImage::CreateFromBitmap(src);
 }
@@ -40,7 +45,9 @@ ImageSkiaRep::ImageSkiaRep(sk_sp<cc::PaintRecord> paint_record,
     : paint_record_(std::move(paint_record)),
       type_(ImageRepType::kImageTypeDrawable),
       pixel_size_(pixel_size),
-      scale_(scale) {}
+      scale_(scale) {
+  DCHECK(!pixel_size.IsEmpty());
+}
 
 ImageSkiaRep::ImageSkiaRep(const ImageSkiaRep& other)
     : paint_image_(other.paint_image_),
@@ -77,7 +84,7 @@ sk_sp<cc::PaintRecord> ImageSkiaRep::GetPaintRecord() const {
       display_item_list.get(), SkRect::MakeIWH(pixel_width(), pixel_height()));
 
   display_item_list->StartPaint();
-  record_canvas.drawImage(paint_image(), 0, 0, nullptr);
+  record_canvas.drawImage(paint_image(), 0, 0);
   display_item_list->EndPaintOfPairedEnd();
   display_item_list->Finalize();
 
@@ -96,7 +103,7 @@ const SkBitmap& ImageSkiaRep::GetBitmap() const {
     // as it forces a rasterization on the UI thread.
     bitmap_.allocN32Pixels(pixel_width(), pixel_height());
     bitmap_.eraseColor(SK_ColorTRANSPARENT);
-    SkCanvas canvas(bitmap_);
+    SkCanvas canvas(bitmap_, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
     paint_record_->Playback(&canvas);
     bitmap_.setImmutable();
   }

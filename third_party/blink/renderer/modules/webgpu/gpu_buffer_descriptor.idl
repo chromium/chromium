@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUBufferDescriptor : GPUObjectDescriptorBase {
-    required GPUBufferSize size;
+    required GPUSize64 size;
     required GPUBufferUsageFlags usage;
+    boolean mappedAtCreation = false;
 };

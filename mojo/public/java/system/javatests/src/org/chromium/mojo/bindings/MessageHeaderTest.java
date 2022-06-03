@@ -11,12 +11,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.mojo.bindings.test.mojom.imported.Point;
 
 /**
  * Testing internal classes of interfaces.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class MessageHeaderTest {
     /**
      * Testing that headers are identical after being serialized/deserialized.

@@ -13,14 +13,14 @@ def main(argv):
     application = Application(backend="uia")
     application.connect(title_re='.*Chrome|.*Chromium')
 
-    print "Looking for apps shortcut..."
+    print("Looking for apps shortcut...")
     for desc in application.top_window().descendants():
-      print desc.window_text()
+      print(desc.window_text())
       if "Apps" == desc.window_text():
-        print "TRUE"
+        print("TRUE")
         return
 
-    print "FALSE"
+    print("FALSE")
   finally:
     driver.quit()
 

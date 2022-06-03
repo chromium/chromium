@@ -6,11 +6,15 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
+#include "base/strings/string_util.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/pepper/url_request_info_util.h"
 #include "content/renderer/pepper/url_response_info_util.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
@@ -124,6 +128,24 @@ bool PepperURLLoaderHost::WillFollowRedirect(
     const WebURL& new_url,
     const WebURLResponse& redirect_response) {
   DCHECK(out_of_order_replies_.empty());
+  if (base::FeatureList::IsEnabled(
+          features::kPepperCrossOriginRedirectRestriction)) {
+    // Follows the Firefox approach
+    // (https://bugzilla.mozilla.org/show_bug.cgi?id=1436241) to disallow
+    // cross-origin 307/308 POST redirects for requests from plugins. But we try
+    // allowing only GET and HEAD methods rather than disallowing POST.
+    // See http://crbug.com/332023 for details.
+    int status = redirect_response.HttpStatusCode();
+    if ((status == 307 || status == 308)) {
+      std::string method = base::ToUpperASCII(request_data_.method);
+      // method can be an empty string for default behavior, GET.
+      if (!method.empty() && method != net::HttpRequestHeaders::kGetMethod &&
+          method != net::HttpRequestHeaders::kHeadMethod) {
+        return false;
+      }
+    }
+  }
+
   if (!request_data_.follow_redirects) {
     SaveResponse(redirect_response);
     SetDefersLoading(true);
@@ -278,7 +300,7 @@ int32_t PepperURLLoaderHost::InternalOnHostMsgOpen(
     }
   }
 
-  loader_.reset(frame->CreateAssociatedURLLoader(options));
+  loader_ = frame->CreateAssociatedURLLoader(options);
   if (!loader_.get())
     return PP_ERROR_FAILED;
 
@@ -369,7 +391,7 @@ void PepperURLLoaderHost::Close() {
     // crbug.com/384197.
     WebLocalFrame* frame = GetFrame();
     if (frame)
-      frame->StopLoading();
+      frame->DeprecatedStopLoading();
   }
 }
 

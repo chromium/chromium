@@ -56,8 +56,7 @@ function testSetUp(param) {
     // Wait for the cursor shape to go back to normal.
     await waitFor(() => {
       var cursorInfo = internals.getCurrentCursorInfo();
-      return cursorInfo == "type=Pointer hotSpot=0,0" ||
-          cursorInfo == "type=IBeam hotSpot=0,0";
+      return cursorInfo == "type=Pointer" || cursorInfo == "type=IBeam";
     });
 
     finishTest();

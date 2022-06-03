@@ -84,11 +84,9 @@ function verifySenderParameters(parameters, kind) {
   assert_greater_than(parameters.encodings.length, 0);
   for(let encoding of parameters.encodings) {
     assert_false(encoding.hasOwnProperty("codecPayloadType"), "unset codecPayloadType");
-    assert_false(encoding.hasOwnProperty("dtx"), "unset dtx");
-    assert_equals(encoding.rid, '');
+    assert_not_own_property(encoding, "rid");
     assert_true(encoding.active);
     assert_equals(encoding.priority, "low");
-    assert_false(encoding.hasOwnProperty("ptime"), "unset ptime");
     assert_false(encoding.hasOwnProperty("maxBitrate"), "unset maxBitrate");
     assert_false(encoding.hasOwnProperty("maxFramerate"), "unset maxFramerate");
     assert_false(encoding.hasOwnProperty("scaleResolutionDownBy"), "unset scaleResolutionDownBy");

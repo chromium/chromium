@@ -28,8 +28,14 @@ namespace blink {
 
 LayoutSVGTSpan::LayoutSVGTSpan(Element* element) : LayoutSVGInline(element) {}
 
+bool LayoutSVGTSpan::IsOfType(LayoutObjectType type) const {
+  NOT_DESTROYED();
+  return type == kLayoutObjectSVGTSpan || LayoutSVGInline::IsOfType(type);
+}
+
 bool LayoutSVGTSpan::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
+  NOT_DESTROYED();
   // Always allow text (except empty textnodes and <br>).
   if (child->IsText())
     return SVGLayoutSupport::IsLayoutableTextNode(child);

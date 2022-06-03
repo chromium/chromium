@@ -4,21 +4,25 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.hasTypefaceSpan;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.widget.TextView;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,11 +31,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBox;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -46,6 +51,10 @@ public class AutofillAssistantInfoBoxUiTest {
 
     private TextView getExplanationView(AssistantInfoBoxCoordinator coordinator) {
         return coordinator.getView().findViewById(R.id.info_box_explanation);
+    }
+
+    private AssistantInfoBoxModel createModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantInfoBoxModel::new);
     }
 
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
@@ -68,14 +77,15 @@ public class AutofillAssistantInfoBoxUiTest {
 
     @Before
     public void setUp() {
-        AutofillAssistantUiTestUtil.startOnBlankPage(mTestRule);
+        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getTargetContext(), "about:blank"));
     }
 
     /** Tests assumptions about the initial state of the infobox. */
     @Test
     @MediumTest
     public void testInitialState() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
 
         assertThat(model.get(AssistantInfoBoxModel.INFO_BOX), nullValue());
@@ -86,7 +96,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testMessageNoImage() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("", "Message");
 
@@ -96,13 +106,21 @@ public class AutofillAssistantInfoBoxUiTest {
         // Image should not be set.
         assertThat(getExplanationView(coordinator).getCompoundDrawables()[1], nullValue());
         onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
+
+        // Test that info message supports typeface span.
+        AssistantInfoBox boldInfoBox = new AssistantInfoBox("", "<b>Message</b>");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantInfoBoxModel.INFO_BOX, boldInfoBox));
+        onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
+        onView(withText("Message"))
+                .check(matches(hasTypefaceSpan(0, "Message".length() - 1, Typeface.BOLD)));
     }
 
     /** Tests for an infobox with message and image. */
     @Test
     @MediumTest
     public void testImage() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("x", "Message");
 
@@ -117,7 +135,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testVisibility() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("", "");
 

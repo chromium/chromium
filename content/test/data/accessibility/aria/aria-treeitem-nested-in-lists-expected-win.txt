@@ -1,0 +1,12 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_OUTLINE xml-roles:tree setsize:5
+++++ROLE_SYSTEM_OUTLINEITEM name='treeitem 2 of 5, level 1' xml-roles:treeitem level:1 setsize:5 posinset:2
+++++++ROLE_SYSTEM_STATICTEXT name='treeitem 2 of 5, level 1'
+++++ROLE_SYSTEM_OUTLINEITEM name='treeitem 3 of 5, level 1' xml-roles:treeitem level:1 setsize:5 posinset:3
+++++++ROLE_SYSTEM_STATICTEXT name='treeitem 3 of 5, level 1'
+++++ROLE_SYSTEM_OUTLINEITEM name='treeitem 1 of 2, level 2' xml-roles:treeitem level:2 setsize:2 posinset:1
+++++++ROLE_SYSTEM_STATICTEXT name='treeitem 1 of 2, level 2'
+++++ROLE_SYSTEM_OUTLINEITEM name='treeitem 1 of 1, level 3' xml-roles:treeitem level:3 setsize:1 posinset:1
+++++++ROLE_SYSTEM_STATICTEXT name='treeitem 1 of 1, level 3'
+++++ROLE_SYSTEM_OUTLINEITEM name='treeitem 2 of 2, level 2' xml-roles:treeitem level:2 setsize:2 posinset:2
+++++++ROLE_SYSTEM_STATICTEXT name='treeitem 2 of 2, level 2'

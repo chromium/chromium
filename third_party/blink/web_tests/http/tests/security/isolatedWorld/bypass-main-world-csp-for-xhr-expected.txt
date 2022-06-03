@@ -1,8 +1,8 @@
-CONSOLE ERROR: line 106: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
 
 CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
 
-CONSOLE ERROR: line 106: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
 
 Tests that isolated worlds can have XHRs that the page's CSP wouldn't allow.
 

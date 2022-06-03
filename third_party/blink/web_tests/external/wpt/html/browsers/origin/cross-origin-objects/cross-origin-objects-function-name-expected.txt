@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Cross-origin Window methods have correct 'name' assert_equals: w.close via [[Get]] expected "close" but got ""
+FAIL Cross-origin Window accessors have correct 'name' assert_equals: expected "get window" but got ""
+FAIL Cross-origin Location `replace` method has correct 'name' assert_equals: expected "replace" but got ""
+FAIL Cross-origin Location `href` setter has correct 'name' assert_equals: expected "set href" but got ""
+Harness: the test ran to completion.
+

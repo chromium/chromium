@@ -1,0 +1,10 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - TitleWasSet: Test console messages for serving constraints violation of subresource Web Bundles
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn-wrong-mime-type: Web Bundle response must have "application/webbundle" content-type.
+CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn-without-nosniff: Web Bundle response must have "X-Content-Type-Options: nosniff" header.
+

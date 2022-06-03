@@ -4,7 +4,7 @@
 
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace bookmarks {
 

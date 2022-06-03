@@ -4,7 +4,7 @@
 
 #include "weblayer/test/test_navigation_observer.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "url/gurl.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
@@ -16,7 +16,12 @@ namespace weblayer {
 TestNavigationObserver::TestNavigationObserver(const GURL& url,
                                                NavigationEvent target_event,
                                                Shell* shell)
-    : url_(url), target_event_(target_event), tab_(shell->tab()) {
+    : TestNavigationObserver(url, target_event, shell->tab()) {}
+
+TestNavigationObserver::TestNavigationObserver(const GURL& url,
+                                               NavigationEvent target_event,
+                                               Tab* tab)
+    : url_(url), target_event_(target_event), tab_(tab) {
   tab_->GetNavigationController()->AddObserver(this);
 }
 
@@ -24,15 +29,25 @@ TestNavigationObserver::~TestNavigationObserver() {
   tab_->GetNavigationController()->RemoveObserver(this);
 }
 
+void TestNavigationObserver::NavigationStarted(Navigation* navigation) {
+  // Note: We don't go through CheckNavigationCompleted() here as that waits
+  // for the load to be complete, which isn't appropriate when just waiting for
+  // the navigation to be started.
+  if (navigation->GetURL() == url_ &&
+      target_event_ == NavigationEvent::kStart) {
+    run_loop_.Quit();
+  }
+}
+
 void TestNavigationObserver::NavigationCompleted(Navigation* navigation) {
   if (navigation->GetURL() == url_)
-    observed_event_ = NavigationEvent::Completion;
+    observed_event_ = NavigationEvent::kCompletion;
   CheckNavigationCompleted();
 }
 
 void TestNavigationObserver::NavigationFailed(Navigation* navigation) {
   if (navigation->GetURL() == url_)
-    observed_event_ = NavigationEvent::Failure;
+    observed_event_ = NavigationEvent::kFailure;
   CheckNavigationCompleted();
 }
 

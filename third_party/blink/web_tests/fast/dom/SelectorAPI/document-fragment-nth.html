@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<script src="../../../resources/js-test.js"></script>
+<title>DocumentFragment.querySelector matching nth-child of fragment.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-description("DocumentFragment.querySelector matching nth-child of fragment.");
+setup({ single_test: true });
+
 
 var fragment = document.createDocumentFragment();
 for (var i = 0; i < 12; i++) {
-    var child = document.createElement("span");
-    if (i == 11)
-        child.id = "pass";
-    fragment.appendChild(child);
+  var child = document.createElement("span");
+  if (i == 11)
+    child.id = "pass";
+  fragment.appendChild(child);
 }
 
-shouldBe('fragment.querySelector(":nth-child(12)").id', '"pass"');
+assert_equals(fragment.querySelector(":nth-child(12)").id, "pass");
+done();
 </script>

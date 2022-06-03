@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -44,12 +43,21 @@ ChromeAppIconLoader::~ChromeAppIconLoader() {}
 bool ChromeAppIconLoader::CanLoadImageForApp(const std::string& id) {
   if (map_.find(id) != map_.end())
     return true;
-  return GetExtensionByID(profile(), id) != nullptr;
+
+  const Extension* extension = GetExtensionByID(profile(), id);
+  if (!extension || (extensions_only_ && !extension->is_extension()))
+    return false;
+
+  return true;
 }
 
 void ChromeAppIconLoader::FetchImage(const std::string& id) {
-  if (map_.find(id) != map_.end())
-    return;  // Already loading the image.
+  auto it = map_.find(id);
+  if (it != map_.end()) {
+    if (it->second && !it->second->image_skia().isNull())
+      OnIconUpdated(it->second.get());
+    return;  // Already loaded the image.
+  }
 
   const Extension* extension = GetExtensionByID(profile(), id);
   if (!extension)
@@ -75,6 +83,10 @@ void ChromeAppIconLoader::UpdateImage(const std::string& id) {
     return;
 
   it->second->UpdateIcon();
+}
+
+void ChromeAppIconLoader::SetExtensionsOnly() {
+  extensions_only_ = true;
 }
 
 void ChromeAppIconLoader::OnIconUpdated(ChromeAppIcon* icon) {

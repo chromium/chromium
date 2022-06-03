@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "fake_shill_device_client.cc": [
+    "+ash/constants/ash_features.h",
+  ],
+  "shill_device_client_unittest.cc": [
+    "+ash/constants/ash_features.h",
+  ],
+}

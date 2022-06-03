@@ -7,7 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # TODO(slan): This likely falls in the class of interfaces that are provided by
 # the browser. We should consider putting these in a common location.
 mojom("mojom") {
-  sources = [
-    "web_bluetooth.mojom",
-  ]
+  sources = [ "web_bluetooth.mojom" ]
 }

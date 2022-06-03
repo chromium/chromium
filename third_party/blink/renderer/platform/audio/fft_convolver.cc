@@ -31,7 +31,7 @@
 
 namespace blink {
 
-FFTConvolver::FFTConvolver(size_t fft_size)
+FFTConvolver::FFTConvolver(unsigned fft_size)
     : frame_(fft_size),
       read_write_index_(0),
       input_buffer_(fft_size),  // 2nd half of buffer is always zeroed
@@ -42,7 +42,7 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
                            const float* source_p,
                            float* dest_p,
                            uint32_t frames_to_process) {
-  size_t half_size = FftSize() / 2;
+  unsigned half_size = FftSize() / 2;
 
   // framesToProcess must be an exact multiple of halfSize,
   // or halfSize is a multiple of framesToProcess when halfSize >

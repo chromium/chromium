@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 
@@ -22,14 +21,20 @@ class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<SecureChannelDisconnector> Create();
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<SecureChannelDisconnector> BuildInstance();
+    virtual std::unique_ptr<SecureChannelDisconnector> CreateInstance() = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  SecureChannelDisconnectorImpl(const SecureChannelDisconnectorImpl&) = delete;
+  SecureChannelDisconnectorImpl& operator=(
+      const SecureChannelDisconnectorImpl&) = delete;
 
   ~SecureChannelDisconnectorImpl() override;
 
@@ -47,8 +52,6 @@ class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
       const SecureChannel::Status& new_status) override;
 
   base::flat_set<std::unique_ptr<SecureChannel>> disconnecting_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDisconnectorImpl);
 };
 
 }  // namespace secure_channel

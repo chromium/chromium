@@ -52,78 +52,78 @@ message ModuleGroup {
   repeated Module modules = 3;
 }
 
-// Describes a whitelist of modules that will always be allowed to load, and for
-// which there is no associated user messaging.
+// Describes an allowlist of modules that will always be allowed to load, and
+// for which there is no associated user messaging.
 // Next id: 2
-message ModuleWhitelist {
+message ModuleAllowlist {
   // A collection of modules, grouped by publisher/installation path
   // information.
   repeated ModuleGroup module_groups = 1;
 }
 
-// The user message to display when a blacklisted module is matched at runtime.
+// The user message to display when a blocklisted module is matched at runtime.
 // Next id: 3
-enum BlacklistMessageType {
+enum BlocklistMessageType {
   // The user will be presented with a message to uninstall the software. This
   // message will only be displayed if a matching software entry with
   // uninstallation registry entries can be found. This is the default action
-  // that is applied to all modules that are not specifically whitelisted.
-  // It's presence in this list allows a module to remain blacklisted, but be
+  // that is applied to all modules that are not specifically allowlisted.
+  // It's presence in this list allows a module to remain blocklisted, but be
   // allowed to load. If this is specified then |message_url| should be empty
   // and is otherwise ignored.
   UNINSTALL = 0;
   // The user will be presented with a message about the incompatibility of
   // the related software, and provided with a link to follow for further
   // information. The URL is specified via |message_url| in an associated
-  // BlacklistAction.
+  // BlocklistAction.
   FURTHER_INFORMATION = 1;
   // The user will be presented with a message about the incompatiblity of
   // the related software, and provided with a link to follow in order to
   // upgrade the software to a compatible version. The URL is specified via
-  // |message_url| in an associated BlacklistAction.
+  // |message_url| in an associated BlocklistAction.
   SUGGEST_UPGRADE = 2;
 };
 
-// The actions to take when a blacklisted module is encountered.
+// The actions to take when a blocklisted module is encountered.
 // Next id: 4
-message BlacklistAction {
+message BlocklistAction {
   // Indicates whether or not this module should be allowed to load. This can be
   // used to explicitly allow modules to load that when blocked cause problems,
   // but otherwise to allow messaging to encourage users to remove them.
   optional bool allow_load = 1;
 
-  // The URL associated with the user message. See BlacklistMessageType for full
+  // The URL associated with the user message. See BlocklistMessageType for full
   // details.
-  optional BlacklistMessageType message_type = 2;
+  optional BlocklistMessageType message_type = 2;
   optional string message_url = 3;
 }
 
-// Describes a group in the module blacklist. Modules not whitelisted are
-// blacklisted by default, but fine-grained control over the user messaging is
-// possible using an explicit blacklist entry.
+// Describes a group in the module blocklist. Modules not allowlisted are
+// blocklisted by default, but fine-grained control over the user messaging is
+// possible using an explicit blocklist entry.
 // Next id: 3
-message BlacklistModuleGroup {
+message BlocklistModuleGroup {
   // The action to take when modules in this group are encountered.
-  optional BlacklistAction action = 1;
+  optional BlocklistAction action = 1;
 
   // The group of modules itself.
   optional ModuleGroup modules = 2;
 }
 
-// Describes a blacklist of modules that are to be handled specially when
+// Describes a blocklist of modules that are to be handled specially when
 // encountered.
 // Next id: 2
-message ModuleBlacklist {
-  repeated BlacklistModuleGroup module_groups = 1;
+message ModuleBlocklist {
+  repeated BlocklistModuleGroup module_groups = 1;
 }
 
-// The entire module list itself consists of a whitelist and a blacklist.
+// The entire module list itself consists of an allowlist and a blocklist.
 // Next id: 3
 message ModuleList {
-  // The whitelisted modules.
-  optional ModuleWhitelist whitelist = 1;
+  // The allowlisted modules.
+  optional ModuleAllowlist allowlist = 1;
 
-  // The blacklisted modules, and the associated actions to take upon
+  // The blocklisted modules, and the associated actions to take upon
   // encountering them.
-  optional ModuleBlacklist blacklist = 2;
+  optional ModuleBlocklist blocklist = 2;
 }

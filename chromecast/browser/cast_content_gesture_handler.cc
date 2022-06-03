@@ -4,6 +4,8 @@
 
 #include "chromecast/browser/cast_content_gesture_handler.h"
 
+#include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "chromecast/base/chromecast_switches.h"
 
 namespace chromecast {
@@ -13,7 +15,7 @@ constexpr int kDefaultBackGestureHorizontalThreshold = 80;
 }  // namespace
 
 CastContentGestureHandler::CastContentGestureHandler(
-    base::WeakPtr<CastContentWindow::Delegate> delegate,
+    GestureRouter* delegate,
     bool enable_top_drag_gesture)
     : priority_(Priority::NONE),
       enable_top_drag_gesture_(enable_top_drag_gesture),
@@ -24,8 +26,7 @@ CastContentGestureHandler::CastContentGestureHandler(
   DCHECK(delegate_);
 }
 
-CastContentGestureHandler::CastContentGestureHandler(
-    base::WeakPtr<CastContentWindow::Delegate> delegate)
+CastContentGestureHandler::CastContentGestureHandler(GestureRouter* delegate)
     : CastContentGestureHandler(
           delegate,
           GetSwitchValueBoolean(switches::kEnableTopDragGesture, false)) {}
@@ -93,10 +94,10 @@ void CastContentGestureHandler::HandleSideSwipe(
       if (gesture_type == GestureType::GO_BACK &&
           touch_location.x() < back_horizontal_threshold_) {
         DVLOG(1) << "swipe gesture cancelled";
-        delegate_->CancelGesture(GestureType::GO_BACK, touch_location);
+        delegate_->CancelGesture(GestureType::GO_BACK);
         return;
       }
-      delegate_->ConsumeGesture(gesture_type);
+      delegate_->ConsumeGesture(gesture_type, base::DoNothing());
       DVLOG(1) << "gesture complete, elapsed time: "
                << current_swipe_time_.Elapsed().InMilliseconds() << "ms";
       break;
@@ -108,7 +109,7 @@ void CastContentGestureHandler::HandleTapDownGesture(
   if (!delegate_ || !delegate_->CanHandleGesture(GestureType::TAP_DOWN)) {
     return;
   }
-  delegate_->ConsumeGesture(GestureType::TAP_DOWN);
+  delegate_->ConsumeGesture(GestureType::TAP_DOWN, base::DoNothing());
 }
 
 void CastContentGestureHandler::HandleTapGesture(
@@ -116,7 +117,7 @@ void CastContentGestureHandler::HandleTapGesture(
   if (!delegate_ || !delegate_->CanHandleGesture(GestureType::TAP)) {
     return;
   }
-  delegate_->ConsumeGesture(GestureType::TAP);
+  delegate_->ConsumeGesture(GestureType::TAP, base::DoNothing());
 }
 
 }  // namespace chromecast

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests event listener breakpoint to break on the first statement of new scripts.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">
@@ -43,10 +43,10 @@
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
   }
 
-  function didPause(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+  async function didPause(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
     var eventName = (auxData && auxData.eventName || '').replace(/^instrumentation:/, '');
     TestRunner.addResult('\nPaused on ' + eventName);
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
 
     if (--numberOfPauses)
       SourcesTestRunner.resumeExecution(SourcesTestRunner.waitUntilPaused.bind(SourcesTestRunner, didPause));

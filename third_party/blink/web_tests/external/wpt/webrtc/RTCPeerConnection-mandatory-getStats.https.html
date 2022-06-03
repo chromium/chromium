@@ -24,12 +24,17 @@ const mandatory = {
     "packetsLost",
     "jitter",
     "packetsDiscarded",
+    "framesDropped"
   ],
   RTCInboundRtpStreamStats: [
-    "trackId",
     "receiverId",
     "remoteId",
     "framesDecoded",
+    "nackCount",
+    "framesReceived",
+    "bytesReceived",
+    "totalAudioEnergy",
+    "totalSamplesDuration"
   ],
   RTCRemoteInboundRtpStreamStats: [
     "localId",
@@ -40,10 +45,11 @@ const mandatory = {
     "bytesSent"
   ],
   RTCOutboundRtpStreamStats: [
-    "trackId",
     "senderId",
     "remoteId",
     "framesEncoded",
+    "nackCount",
+    "framesSent"
   ],
   RTCRemoteOutboundRtpStreamStats: [
     "localId",
@@ -54,6 +60,7 @@ const mandatory = {
     "dataChannelsClosed",
   ],
   RTCDataChannelStats: [
+    "label",
     "protocol",
     "dataChannelIdentifier",
     "state",
@@ -62,35 +69,38 @@ const mandatory = {
     "messagesReceived",
     "bytesReceived",
   ],
-  RTCMediaStreamStats: [
-    "streamIdentifer",
-    "trackIds",
+  RTCMediaSourceStats: [
+    "trackIdentifier",
+     "kind"
+  ],
+  RTCAudioSourceStats: [
+    "totalAudioEnergy",
+     "totalSamplesDuration"
+  ],
+  RTCVideoSourceStats: [
+    "width",
+    "height",
+    "framesPerSecond"
   ],
   RTCMediaHandlerStats: [
     "trackIdentifier",
-    "remoteSource",
-    "ended",
   ],
   RTCAudioHandlerStats: [
-    "audioLevel",
   ],
   RTCVideoHandlerStats: [
-    "frameWidth",
-    "frameHeight",
-    "framesPerSecond",
   ],
   RTCVideoSenderStats: [
-    "framesSent",
   ],
   RTCVideoReceiverStats: [
-    "framesReceived",
-    "framesDecoded",
-    "framesDropped",
-    "partialFramesLost",
   ],
   RTCCodecStats: [
     "payloadType",
-    "codecType",
+    /* codecType is part of MTI but is not systematically set
+       per https://www.w3.org/TR/webrtc-stats/#dom-rtccodecstats-codectype
+       If the dictionary member is not present, it means that
+      this media format can be both encoded and decoded. */
+    // "codecType",
+    "mimeType",
     "clockRate",
     "channels",
     "sdpFmtpLine",
@@ -98,7 +108,6 @@ const mandatory = {
   RTCTransportStats: [
     "bytesSent",
     "bytesReceived",
-    "rtcpTransportStatsId",
     "selectedCandidatePairId",
     "localCertificateId",
     "remoteCertificateId",
@@ -108,12 +117,11 @@ const mandatory = {
     "localCandidateId",
     "remoteCandidateId",
     "state",
-    "priority",
     "nominated",
     "bytesSent",
     "bytesReceived",
     "totalRoundTripTime",
-    "currentRoundTripTime",
+    "currentRoundTripTime"
   ],
   RTCIceCandidateStats: [
     "address",
@@ -126,7 +134,11 @@ const mandatory = {
     "fingerprint",
     "fingerprintAlgorithm",
     "base64Certificate",
-    "issuerCertificateId",
+    /* issuerCertificateId is part of MTI but is not systematically set
+       per https://www.w3.org/TR/webrtc-stats/#dom-rtccertificatestats-issuercertificateid
+       If the current certificate is at the end of the chain
+       (i.e. a self-signed certificate), this will not be set. */
+    // "issuerCertificateId",
   ],
 };
 
@@ -141,7 +153,10 @@ const dictionaryNames = {
   "csrc": "RTCRtpContributingSourceStats",
   "peer-connection": "RTCPeerConnectionStats",
   "data-channel": "RTCDataChannelStats",
-  "stream": "RTCMediaStreamStats",
+  "media-source": {
+    audio: "RTCAudioSourceStats",
+    video: "RTCVideoSourceStats"
+  },
   "track": {
     video: "RTCSenderVideoTrackAttachmentStats",
     audio: "RTCSenderAudioTrackAttachmentStats"
@@ -166,10 +181,12 @@ const dictionaryNames = {
 const parents = {
   RTCVideoHandlerStats: "RTCMediaHandlerStats",
   RTCVideoSenderStats: "RTCVideoHandlerStats",
+  RTCVideoSourceStats: "RTCMediaSourceStats",
   RTCSenderVideoTrackAttachmentStats: "RTCVideoSenderStats",
   RTCVideoReceiverStats: "RTCVideoHandlerStats",
   RTCAudioHandlerStats: "RTCMediaHandlerStats",
   RTCAudioSenderStats: "RTCAudioHandlerStats",
+  RTCAudioSourceStats: "RTCMediaSourceStats",
   RTCSenderAudioTrackAttachmentStats: "RTCAudioSenderStats",
   RTCAudioReceiverStats: "RTCAudioHandlerStats",
   RTCReceivedRtpStreamStats: "RTCRtpStreamStats",
@@ -203,17 +220,15 @@ async function getAllStats(t, pc) {
   return stats;
 }
 
-let succeed;
-const success = new Promise(r => succeed = r);
-
 promise_test(async t => {
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc2.close());
 
-  pc1.createDataChannel("dummy", {negotiated: true, id: 0});
-  pc2.createDataChannel("dummy", {negotiated: true, id: 0});
+  const dc1 = pc1.createDataChannel("dummy", {negotiated: true, id: 0});
+  const dc2 = pc2.createDataChannel("dummy", {negotiated: true, id: 0});
+
   const stream = await getNoiseStream({video: true, audio:true});
   for (const track of stream.getTracks()) {
     pc1.addTrack(track, stream);
@@ -221,46 +236,47 @@ promise_test(async t => {
     t.add_cleanup(() => track.stop());
   }
   exchangeIceCandidates(pc1, pc2);
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   const stats = await getAllStats(t, pc1);
 
   // The focus of this test is not API correctness, but rather to provide an
   // accessible metric of implementation progress by dictionary member. We count
   // whether we've seen each dictionary's mandatory members in getStats().
 
-  for (const stat of stats.values()) {
-    let dictName = dictionaryNames[stat.type];
-    if (!dictName) continue;
-    if (typeof dictName == "object") {
-      dictName = dictName[stat.kind];
-    }
-    assert_equals(typeof dictName, "string", "Test error. String.");
-    if (dictName && mandatory[dictName]) {
-      do {
-        const memberNames = mandatory[dictName];
-        const remainingNames = remaining[dictName];
-        assert_true(memberNames.length > 0, "Test error. Parent not found.");
-        for (const memberName of memberNames) {
-          if (memberName in stat) {
-            assert_not_equals(stat[memberName], undefined, "Not undefined");
-            remainingNames.delete(memberName);
-          }
-        }
-        dictName = parents[dictName];
-      } while (dictName);
-    }
-  }
-  succeed();
-}, 'getStats succeeds');
+  test(t => {
+    for (const stat of stats.values()) {
+      let dictName = dictionaryNames[stat.type];
+      if (!dictName) continue;
+      if (typeof dictName == "object") {
+        dictName = dictName[stat.kind];
+      }
 
-for (const dictName in mandatory) {
-  for (const memberName of mandatory[dictName]) {
-    promise_test(async t => {
-      await success;
-      assert_true(!remaining[dictName].has(memberName),
-                  `Is ${memberName} present`);
-    }, `${dictName}'s ${memberName}`);
+      assert_equals(typeof dictName, "string", "Test error. String.");
+      if (dictName && mandatory[dictName]) {
+        do {
+          const memberNames = mandatory[dictName];
+          const remainingNames = remaining[dictName];
+          assert_true(memberNames.length > 0, "Test error. Parent not found.");
+          for (const memberName of memberNames) {
+            if (memberName in stat) {
+              assert_not_equals(stat[memberName], undefined, "Not undefined");
+              remainingNames.delete(memberName);
+            }
+          }
+          dictName = parents[dictName];
+        } while (dictName);
+      }
+    }
+  }, "Validating stats");
+
+  for (const dictName in mandatory) {
+    for (const memberName of mandatory[dictName]) {
+      test(t => {
+        assert_true(!remaining[dictName].has(memberName),
+                    `Is ${memberName} present`);
+      }, `${dictName}'s ${memberName}`);
+    }
   }
-}
+}, 'getStats succeeds');
 
 </script>

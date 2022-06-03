@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 
 namespace storage_monitor {
@@ -23,7 +22,7 @@ std::string GetDeviceIdFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 
 // Helper function to get device label from storage information.
-base::string16 GetDeviceLabelFromStorageInfo(
+std::u16string GetDeviceLabelFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 
 }  // namespace storage_monitor

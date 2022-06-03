@@ -23,17 +23,18 @@ class SimpleMediaTaskRunner : public MediaTaskRunner {
   SimpleMediaTaskRunner(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  SimpleMediaTaskRunner(const SimpleMediaTaskRunner&) = delete;
+  SimpleMediaTaskRunner& operator=(const SimpleMediaTaskRunner&) = delete;
+
   // MediaTaskRunner implementation.
   bool PostMediaTask(const base::Location& from_here,
-                     const base::Closure& task,
+                     base::OnceClosure task,
                      base::TimeDelta timestamp) override;
 
  private:
   ~SimpleMediaTaskRunner() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> const task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleMediaTaskRunner);
 };
 
 }  // namespace media

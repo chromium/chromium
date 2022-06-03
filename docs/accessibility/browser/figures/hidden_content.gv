@@ -1,0 +1,40 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+
+    subgraph cluster_ax_tree {
+        label = "Accessibility Tree";
+		
+        document [label="Document"];
+        document -> button;
+        button [label="Button 'Show Sidebar'"];
+	document -> main;
+	main [label="Main"];
+	main -> heading;
+	heading [label="Heading"];
+	main -> main_rest;
+	main_rest [label="..."];
+    }
+
+    subgraph cluster_ui_tree {
+        label = "DOM Tree";
+
+        Body [label="<body>"];
+        Body -> Sidebar;
+        Sidebar [label="<div id='sidebar'\naria-hidden='true'>"];
+	Sidebar -> SidebarContents;
+        SidebarContents [label="..."];
+	Body -> Button;
+	Button [label="<button>"];
+	Button -> ButtonContents;
+	ButtonContents [label="Show Sidebar"];
+	Body -> Main;
+	Main [label="<main>"];
+	Main -> H1;
+	H1 [label="<h1>"];
+	H1 -> H1Contents;
+	H1Contents [label="..."];
+	Main -> MainRest;
+	MainRest [label="..."];
+    }
+}

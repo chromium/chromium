@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "base/bits.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/parsers/vp8_parser.h"
@@ -104,7 +104,7 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
 
   // Check that the size of the encoded data is consistent.
   const size_t vp8_padded_frame_size =
-      base::bits::Align(base::strict_cast<size_t>(vp8_frame_size), 2u);
+      base::bits::AlignUp(base::strict_cast<size_t>(vp8_frame_size), 2u);
   if (encoded_data.size() - kWebPFileAndVp8ChunkHeaderSizeInBytes !=
       vp8_padded_frame_size) {
     return nullptr;

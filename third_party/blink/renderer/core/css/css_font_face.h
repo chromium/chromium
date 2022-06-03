@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
@@ -52,7 +51,13 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
         font_face_(font_face) {
     DCHECK(font_face_);
   }
+  CSSFontFace(const CSSFontFace&) = delete;
+  CSSFontFace& operator=(const CSSFontFace&) = delete;
 
+  // Front source is the first successfully loaded source.
+  const CSSFontFaceSource* FrontSource() const {
+    return sources_.IsEmpty() ? nullptr : sources_.front();
+  }
   FontFace* GetFontFace() const { return font_face_; }
 
   scoped_refptr<UnicodeRangeSet> Ranges() { return ranges_; }
@@ -80,9 +85,14 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   void Load();
   void Load(const FontDescription&);
 
+  // Recalculate the font loading timeline period for the font face.
+  // https://drafts.csswg.org/css-fonts-4/#font-display-timeline
+  // Returns true if the display period is changed.
+  bool UpdatePeriod();
+
   bool HadBlankText() { return IsValid() && sources_.front()->HadBlankText(); }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   void SetLoadStatus(FontFace::LoadStatusType);
@@ -91,9 +101,8 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   HeapHashSet<Member<CSSSegmentedFontFace>> segmented_font_faces_;
   HeapDeque<Member<CSSFontFaceSource>> sources_;
   Member<FontFace> font_face_;
-  DISALLOW_COPY_AND_ASSIGN(CSSFontFace);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_H_

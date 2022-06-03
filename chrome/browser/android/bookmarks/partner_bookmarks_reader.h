@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/favicon_base/favicon_types.h"
 
 namespace favicon {
 class LargeIconService;
@@ -26,6 +26,10 @@ class PartnerBookmarksReader {
  public:
   PartnerBookmarksReader(PartnerBookmarksShim* partner_bookmarks_shim,
                          Profile* profile);
+
+  PartnerBookmarksReader(const PartnerBookmarksReader&) = delete;
+  PartnerBookmarksReader& operator=(const PartnerBookmarksReader&) = delete;
+
   ~PartnerBookmarksReader();
 
   // JNI methods
@@ -47,6 +51,9 @@ class PartnerBookmarksReader {
   void PartnerBookmarksCreationComplete(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+
+  static std::unique_ptr<bookmarks::BookmarkNode>
+  CreatePartnerBookmarksRootForTesting();
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -120,8 +127,6 @@ class PartnerBookmarksReader {
   // JNI
   std::unique_ptr<bookmarks::BookmarkNode> wip_partner_bookmarks_root_;
   int64_t wip_next_available_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartnerBookmarksReader);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_PARTNER_BOOKMARKS_READER_H_

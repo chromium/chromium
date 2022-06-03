@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 
 namespace service_manager {
 
@@ -21,6 +21,9 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
     // thread from the one which constructed it.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
+
+  ServiceKeepaliveRefImpl(const ServiceKeepaliveRefImpl&) = delete;
+  ServiceKeepaliveRefImpl& operator=(const ServiceKeepaliveRefImpl&) = delete;
 
   ~ServiceKeepaliveRefImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -52,13 +55,11 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
   base::WeakPtr<ServiceKeepalive> keepalive_;
   scoped_refptr<base::SequencedTaskRunner> keepalive_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceKeepaliveRefImpl);
 };
 
-ServiceKeepalive::ServiceKeepalive(ServiceBinding* binding,
-                                   base::Optional<base::TimeDelta> idle_timeout)
-    : binding_(binding), idle_timeout_(idle_timeout) {}
+ServiceKeepalive::ServiceKeepalive(ServiceReceiver* receiver,
+                                   absl::optional<base::TimeDelta> idle_timeout)
+    : receiver_(receiver), idle_timeout_(idle_timeout) {}
 
 ServiceKeepalive::~ServiceKeepalive() = default;
 
@@ -101,8 +102,8 @@ void ServiceKeepalive::ReleaseRef() {
   // doomsday clock!
   idle_timer_.emplace();
   idle_timer_->Start(FROM_HERE, *idle_timeout_,
-                     base::BindRepeating(&ServiceKeepalive::OnTimerExpired,
-                                         base::Unretained(this)));
+                     base::BindOnce(&ServiceKeepalive::OnTimerExpired,
+                                    base::Unretained(this)));
 }
 
 void ServiceKeepalive::OnTimerExpired() {
@@ -111,10 +112,10 @@ void ServiceKeepalive::OnTimerExpired() {
   for (auto& observer : observers_)
     observer.OnIdleTimeout();
 
-  // NOTE: We allow for a null |binding_| because it's convenient in some
+  // NOTE: We allow for a null |receiver_| because it's convenient in some
   // testing scenarios and adds no real complexity to this implementation.
-  if (binding_)
-    binding_->RequestClose();
+  if (receiver_)
+    receiver_->RequestClose();
 }
 
 }  // namespace service_manager

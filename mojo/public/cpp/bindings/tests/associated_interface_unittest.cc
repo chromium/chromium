@@ -4,17 +4,21 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
@@ -52,6 +56,10 @@ class IntegerSenderImpl : public IntegerSender {
   }
 
   void Echo(int32_t value, EchoCallback callback) override {
+    if (value == -1) {
+      receiver_.ReportBadMessage("Reporting bad message for value == -1");
+      return;
+    }
     std::move(callback).Run(value);
   }
   void Send(int32_t value) override { notify_send_method_called_.Run(value); }
@@ -110,12 +118,12 @@ class AssociatedInterfaceTest : public testing::Test {
   void CreateRouterPair(scoped_refptr<MultiplexRouter>* router0,
                         scoped_refptr<MultiplexRouter>* router1) {
     MessagePipe pipe;
-    *router0 = new MultiplexRouter(std::move(pipe.handle0),
-                                   MultiplexRouter::MULTI_INTERFACE, true,
-                                   main_runner_);
-    *router1 = new MultiplexRouter(std::move(pipe.handle1),
-                                   MultiplexRouter::MULTI_INTERFACE, false,
-                                   main_runner_);
+    *router0 = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle0), MultiplexRouter::MULTI_INTERFACE, true,
+        main_runner_);
+    *router1 = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle1), MultiplexRouter::MULTI_INTERFACE, false,
+        main_runner_);
   }
 
   void CreateIntegerSenderWithExistingRouters(
@@ -210,7 +218,7 @@ TEST_F(AssociatedInterfaceTest, InterfacesAtBothEnds) {
 class TestSender {
  public:
   TestSender()
-      : task_runner_(base::CreateSequencedTaskRunner({base::ThreadPool()})),
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
         next_sender_(nullptr),
         max_value_to_send_(-1) {}
 
@@ -257,7 +265,7 @@ class TestSender {
 class TestReceiver {
  public:
   TestReceiver()
-      : task_runner_(base::CreateSequencedTaskRunner({base::ThreadPool()})),
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
         expected_calls_(0) {}
 
   void SetUp(PendingAssociatedReceiver<IntegerSender> receiver0,
@@ -266,10 +274,10 @@ class TestReceiver {
              base::OnceClosure notify_finish) {
     CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-    impl0_.reset(new IntegerSenderImpl(std::move(receiver0)));
+    impl0_ = std::make_unique<IntegerSenderImpl>(std::move(receiver0));
     impl0_->set_notify_send_method_called(base::BindRepeating(
         &TestReceiver::SendMethodCalled, base::Unretained(this)));
-    impl1_.reset(new IntegerSenderImpl(std::move(receiver1)));
+    impl1_ = std::make_unique<IntegerSenderImpl>(std::move(receiver1));
     impl1_->set_notify_send_method_called(base::BindRepeating(
         &TestReceiver::SendMethodCalled, base::Unretained(this)));
 
@@ -387,22 +395,22 @@ TEST_F(AssociatedInterfaceTest, MultiThreadAccess) {
   run_loop.Run();
 
   for (size_t i = 0; i < 4; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     senders[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestSender::TearDown, base::Unretained(&senders[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   for (size_t i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     receivers[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestReceiver::TearDown,
                        base::Unretained(&receivers[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   EXPECT_EQ(static_cast<size_t>(kMaxValue / 2), receivers[0].values().size());
@@ -468,22 +476,22 @@ TEST_F(AssociatedInterfaceTest, FIFO) {
   run_loop.Run();
 
   for (size_t i = 0; i < 4; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     senders[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestSender::TearDown, base::Unretained(&senders[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   for (size_t i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     receivers[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestReceiver::TearDown,
                        base::Unretained(&receivers[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   EXPECT_EQ(static_cast<size_t>(kMaxValue / 2), receivers[0].values().size());
@@ -957,8 +965,7 @@ TEST_F(AssociatedInterfaceTest, SharedAssociatedRemote) {
   // Test the thread safe pointer can be used from another thread.
   base::RunLoop run_loop;
 
-  auto sender_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+  auto sender_task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
   auto quit_closure = run_loop.QuitClosure();
   sender_task_runner->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&] {
@@ -982,7 +989,7 @@ struct ForwarderTestContext {
 
 TEST_F(AssociatedInterfaceTest, SharedAssociatedRemoteWithTaskRunner) {
   const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+      base::ThreadPool::CreateSequencedTaskRunner({});
 
   ForwarderTestContext* context = new ForwarderTestContext();
   PendingAssociatedRemote<IntegerSender> pending_remote;
@@ -1049,10 +1056,10 @@ TEST_F(AssociatedInterfaceTest, AssociateWithDisconnectedPipe) {
   sender->Send(42);
 }
 
-TEST_F(AssociatedInterfaceTest, AsyncErrorHandlersWhenClosingMasterInterface) {
+TEST_F(AssociatedInterfaceTest, AsyncErrorHandlersWhenClosingPrimaryInterface) {
   // Ensures that associated interface error handlers are not invoked
-  // synchronously when the master interface pipe is closed. Regression test for
-  // https://crbug.com/864731.
+  // synchronously when the primary interface pipe is closed. Regression test
+  // for https://crbug.com/864731.
 
   Remote<IntegerSenderConnection> connection_remote;
   IntegerSenderConnectionImpl connection(
@@ -1074,6 +1081,92 @@ TEST_F(AssociatedInterfaceTest, AsyncErrorHandlersWhenClosingMasterInterface) {
   // ...but it should be triggered once we spin the scheduler.
   loop.Run();
   EXPECT_TRUE(error_handler_invoked);
+}
+
+TEST_F(AssociatedInterfaceTest, AssociatedReceiverReportBadMessage) {
+  PendingAssociatedReceiver<IntegerSender> pending_receiver;
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  CreateIntegerSender(&pending_remote, &pending_receiver);
+
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  bool called = false;
+  base::RunLoop run_loop;
+  remote.set_disconnect_handler(base::BindLambdaForTesting([&] {
+    called = true;
+    run_loop.Quit();
+  }));
+
+  std::string received_error;
+  SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  remote->Echo(-1, IntegerSenderImpl::EchoCallback());
+  EXPECT_FALSE(called);
+  run_loop.Run();
+  EXPECT_TRUE(called);
+  EXPECT_EQ("Reporting bad message for value == -1", received_error);
+
+  SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
+TEST_F(AssociatedInterfaceTest, AssociatedReceiverDedicatedPipe) {
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  PendingAssociatedReceiver<IntegerSender> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+  pending_receiver.EnableUnassociatedUsage();
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  {
+    base::RunLoop run_loop;
+    impl.set_notify_send_method_called(
+        base::BindLambdaForTesting([&](int32_t x) {
+          EXPECT_EQ(88, x);
+          run_loop.Quit();
+        }));
+
+    remote->Send(88);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    remote->Echo(888, base::BindLambdaForTesting([&](int32_t x) {
+                   EXPECT_EQ(888, x);
+                   run_loop.Quit();
+                 }));
+  }
+}
+
+TEST_F(AssociatedInterfaceTest, AssociatedRemoteDedicatedPipe) {
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  PendingAssociatedReceiver<IntegerSender> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  pending_remote.EnableUnassociatedUsage();
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  {
+    base::RunLoop run_loop;
+    impl.set_notify_send_method_called(
+        base::BindLambdaForTesting([&](int32_t x) {
+          EXPECT_EQ(88, x);
+          run_loop.Quit();
+        }));
+
+    remote->Send(88);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    remote->Echo(888, base::BindLambdaForTesting([&](int32_t x) {
+                   EXPECT_EQ(888, x);
+                   run_loop.Quit();
+                 }));
+  }
 }
 
 }  // namespace

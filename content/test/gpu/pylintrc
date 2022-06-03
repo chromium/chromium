@@ -1,8 +1,69 @@
 [MESSAGES CONTROL]
 
 # Disable the message, report, category or checker with the given id(s).
-# TODO(gpu-team): Shrink this list to as small as possible.
-disable=abstract-class-little-used,abstract-class-not-used,bad-continuation,broad-except,fixme,global-statement,interface-not-implemented,invalid-name,locally-disabled,locally-enabled,missing-docstring,no-self-use,protected-access,star-args,too-few-public-methods,too-many-arguments,too-many-branches,too-many-function-args,too-many-instance-attributes,too-many-lines,too-many-locals,too-many-public-methods,too-many-return-statements,too-many-statements,unused-argument, duplicate-code
+disable=abstract-class-little-used,
+        duplicate-code,
+        fixme,
+        invalid-name,
+        locally-disabled,
+        locally-enabled,
+        missing-docstring,
+        too-few-public-methods,
+        too-many-instance-attributes
+
+# Pylint, or at least v1.5.6, does not properly handle adding comments between
+# lines of disable= entries, nor does it allow multiple disable= lines, so
+# we can't comment inline about why any of the above can't be removed. Thus,
+# that information is here.
+
+# abstract-class-little-used
+# There is a bug in Pylint that prevents inline disables of this warning.
+# Supposedly https://www.logilab.org/ticket/111138 is a bug report for this.
+# See https://stackoverflow.com/q/11543992.
+
+# duplicate-code
+# There is a bug in Pylint that prevents duplicate-code from being disabled for
+# blocks of code, see https://github.com/PyCQA/pylint/issues/214. Since
+# duplicate-code causes parts of the harness_script strings to be detected as
+# duplicates, and there isn't a good solution to actually fix that, we need to
+# keep this disabled until a fix is implemented and the Pylint version we use is
+# upgraded.
+
+# fixme
+# This complains about TODOs, which are perfectly valid to have.
+
+# invalid-name
+# The default regular expressions for name validation don't like the conventions
+# many Chromium Python files use, namely the use of upper camel case for method
+# names. The regular expressions could be updated to handle this properly, but
+# that would likely be part of a repo-wide linter update.
+
+# locally-disabled/locally-enabled
+# There are valid cases where we want to selectively enable/disable lint errors
+# in a particular file/scope, e.g. allowing protected access in unittests.
+
+# missing-docstring
+# Docstrings are important, and proper use of them should be enforced. However,
+# requiring a docstring on *every* method and class is overkill, as many are
+# self-documenting due to being short and well-named.
+
+# too-few-public-methods
+# This is supposedly to catch "functions disguised as classes", but we have
+# never had issues with that. We do, however, use a handful of struct-like
+# classes, which this complains about.
+
+# too-many-instance-attributes
+# Only ends up complaining about struct-like classes. So, like
+# too-few-public-methods, leave disabled instead of disabling on a per-class
+# basis.
+
+# Other notes
+
+# too-many-arguments
+# This one is borderline. There are legitimate cases of having too many
+# arguments, but it also tends to flag cases that can't be fixed more often
+# than fixable issues. There also doesn't appear to be an easy way to bump up
+# the limit, as 5 is pretty small.
 
 
 [REPORTS]

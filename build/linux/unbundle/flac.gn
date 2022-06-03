@@ -25,8 +25,6 @@ shim_headers("flac_shim") {
 }
 
 source_set("flac") {
-  deps = [
-    ":flac_shim",
-  ]
+  deps = [ ":flac_shim" ]
   public_configs = [ ":system_flac" ]
 }

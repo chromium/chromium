@@ -1,0 +1,6 @@
+[document web]
+++[page tab list] horizontal
+++++[page tab] name='tab1' selectable selected
+++++[page tab] name='tab2' selectable selected
+++++[page tab] name='tab3' selectable
+++[static] name='Done'

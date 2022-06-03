@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "ios/chrome/browser/chrome_url_util.h"
 #include "url/url_util.h"

@@ -7,15 +7,6 @@
 import os.path
 
 
-def GetHistogramsFile():
-  """Returns the path to histograms.xml.
-
-  Prefer using this function instead of just open("histograms.xml"), so that
-  scripts work properly even if run from outside the histograms directory.
-  """
-  return GetInputFile('tools/metrics/histograms/histograms.xml')
-
-
 def GetInputFile(src_relative_file_path):
   """Converts a src/-relative file path into a path that can be opened."""
   depth = [os.path.dirname(__file__), '..', '..', '..']

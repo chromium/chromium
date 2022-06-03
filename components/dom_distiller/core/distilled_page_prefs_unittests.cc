@@ -4,6 +4,8 @@
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -16,21 +18,17 @@ namespace {
 class TestingObserver : public DistilledPagePrefs::Observer {
  public:
   TestingObserver()
-      : font_(DistilledPagePrefs::FONT_FAMILY_SANS_SERIF),
-        theme_(DistilledPagePrefs::THEME_LIGHT),
-        scaling_(1.0f) {}
+      : font_(mojom::FontFamily::kSansSerif), theme_(mojom::Theme::kLight) {}
 
-  void OnChangeFontFamily(DistilledPagePrefs::FontFamily new_font) override {
+  void OnChangeFontFamily(mojom::FontFamily new_font) override {
     font_ = new_font;
   }
 
-  DistilledPagePrefs::FontFamily GetFontFamily() { return font_; }
+  mojom::FontFamily GetFontFamily() { return font_; }
 
-  void OnChangeTheme(DistilledPagePrefs::Theme new_theme) override {
-    theme_ = new_theme;
-  }
+  void OnChangeTheme(mojom::Theme new_theme) override { theme_ = new_theme; }
 
-  DistilledPagePrefs::Theme GetTheme() { return theme_; }
+  mojom::Theme GetTheme() { return theme_; }
 
   void OnChangeFontScaling(float new_scaling) override {
     scaling_ = new_scaling;
@@ -39,9 +37,9 @@ class TestingObserver : public DistilledPagePrefs::Observer {
   float GetFontScaling() { return scaling_; }
 
  private:
-  DistilledPagePrefs::FontFamily font_;
-  DistilledPagePrefs::Theme theme_;
-  float scaling_;
+  mojom::FontFamily font_;
+  mojom::Theme theme_;
+  float scaling_{1.0f};
 };
 
 }  // namespace
@@ -49,9 +47,11 @@ class TestingObserver : public DistilledPagePrefs::Observer {
 class DistilledPagePrefsTest : public testing::Test {
  protected:
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable());
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DistilledPagePrefs::RegisterProfilePrefs(pref_service_->registry());
-    distilled_page_prefs_.reset(new DistilledPagePrefs(pref_service_.get()));
+    distilled_page_prefs_ =
+        std::make_unique<DistilledPagePrefs>(pref_service_.get());
   }
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -65,15 +65,14 @@ TEST_F(DistilledPagePrefsTest, TestingOnChangeFontIsBeingCalled) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
 
-  distilled_page_prefs_->SetFontFamily(
-      DistilledPagePrefs::FONT_FAMILY_MONOSPACE);
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_SANS_SERIF, obs.GetFontFamily());
+  distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kMonospace);
+  EXPECT_EQ(mojom::FontFamily::kSansSerif, obs.GetFontFamily());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_MONOSPACE, obs.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kMonospace, obs.GetFontFamily());
 
-  distilled_page_prefs_->SetFontFamily(DistilledPagePrefs::FONT_FAMILY_SERIF);
+  distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kSerif);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_SERIF, obs.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kSerif, obs.GetFontFamily());
   distilled_page_prefs_->RemoveObserver(&obs);
 }
 
@@ -83,18 +82,17 @@ TEST_F(DistilledPagePrefsTest, TestingMultipleObserversFont) {
   TestingObserver obs2;
   distilled_page_prefs_->AddObserver(&obs2);
 
-  distilled_page_prefs_->SetFontFamily(DistilledPagePrefs::FONT_FAMILY_SERIF);
+  distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kSerif);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_SERIF, obs.GetFontFamily());
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_SERIF, obs2.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kSerif, obs.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kSerif, obs2.GetFontFamily());
 
   distilled_page_prefs_->RemoveObserver(&obs);
 
-  distilled_page_prefs_->SetFontFamily(
-      DistilledPagePrefs::FONT_FAMILY_MONOSPACE);
+  distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kMonospace);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_SERIF, obs.GetFontFamily());
-  EXPECT_EQ(DistilledPagePrefs::FONT_FAMILY_MONOSPACE, obs2.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kSerif, obs.GetFontFamily());
+  EXPECT_EQ(mojom::FontFamily::kMonospace, obs2.GetFontFamily());
 
   distilled_page_prefs_->RemoveObserver(&obs2);
 }
@@ -103,14 +101,14 @@ TEST_F(DistilledPagePrefsTest, TestingOnChangeThemeIsBeingCalled) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
 
-  distilled_page_prefs_->SetTheme(DistilledPagePrefs::THEME_SEPIA);
-  EXPECT_EQ(DistilledPagePrefs::THEME_LIGHT, obs.GetTheme());
+  distilled_page_prefs_->SetTheme(mojom::Theme::kSepia);
+  EXPECT_EQ(mojom::Theme::kLight, obs.GetTheme());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::THEME_SEPIA, obs.GetTheme());
+  EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
 
-  distilled_page_prefs_->SetTheme(DistilledPagePrefs::THEME_DARK);
+  distilled_page_prefs_->SetTheme(mojom::Theme::kDark);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::THEME_DARK, obs.GetTheme());
+  EXPECT_EQ(mojom::Theme::kDark, obs.GetTheme());
 
   distilled_page_prefs_->RemoveObserver(&obs);
 }
@@ -121,17 +119,17 @@ TEST_F(DistilledPagePrefsTest, TestingMultipleObserversTheme) {
   TestingObserver obs2;
   distilled_page_prefs_->AddObserver(&obs2);
 
-  distilled_page_prefs_->SetTheme(DistilledPagePrefs::THEME_SEPIA);
+  distilled_page_prefs_->SetTheme(mojom::Theme::kSepia);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::THEME_SEPIA, obs.GetTheme());
-  EXPECT_EQ(DistilledPagePrefs::THEME_SEPIA, obs2.GetTheme());
+  EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
+  EXPECT_EQ(mojom::Theme::kSepia, obs2.GetTheme());
 
   distilled_page_prefs_->RemoveObserver(&obs);
 
-  distilled_page_prefs_->SetTheme(DistilledPagePrefs::THEME_LIGHT);
+  distilled_page_prefs_->SetTheme(mojom::Theme::kLight);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DistilledPagePrefs::THEME_SEPIA, obs.GetTheme());
-  EXPECT_EQ(DistilledPagePrefs::THEME_LIGHT, obs2.GetTheme());
+  EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
+  EXPECT_EQ(mojom::Theme::kLight, obs2.GetTheme());
 
   distilled_page_prefs_->RemoveObserver(&obs2);
 }

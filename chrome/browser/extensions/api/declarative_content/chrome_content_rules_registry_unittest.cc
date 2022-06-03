@@ -5,14 +5,12 @@
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/frame_navigate_params.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/common/extension.h"
@@ -30,14 +28,15 @@ class TestPredicate : public ContentPredicate {
       : evaluator_(evaluator) {
   }
 
+  TestPredicate(const TestPredicate&) = delete;
+  TestPredicate& operator=(const TestPredicate&) = delete;
+
   ContentPredicateEvaluator* GetEvaluator() const override {
     return evaluator_;
   }
 
  private:
   ContentPredicateEvaluator* evaluator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicate);
 };
 
 class TestPredicateEvaluator : public ContentPredicateEvaluator {
@@ -47,6 +46,9 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
         contents_for_next_operation_evaluation_(nullptr),
         next_evaluation_result_(false) {
   }
+
+  TestPredicateEvaluator(const TestPredicateEvaluator&) = delete;
+  TestPredicateEvaluator& operator=(const TestPredicateEvaluator&) = delete;
 
   std::string GetPredicateApiAttributeName() const override {
     return "test_predicate";
@@ -81,6 +83,12 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
     RequestEvaluationIfSpecified();
   }
 
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override {
+    RequestEvaluationIfSpecified();
+  }
+
   bool EvaluatePredicate(const ContentPredicate* predicate,
                          content::WebContents* tab) const override {
     bool result = next_evaluation_result_;
@@ -110,8 +118,6 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
   ContentPredicateEvaluator::Delegate* delegate_;
   content::WebContents* contents_for_next_operation_evaluation_;
   mutable bool next_evaluation_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicateEvaluator);
 };
 
 // Create the test evaluator and set |evaluator| to its pointer.
@@ -130,6 +136,11 @@ class DeclarativeChromeContentRulesRegistryTest : public testing::Test {
  public:
   DeclarativeChromeContentRulesRegistryTest() {}
 
+  DeclarativeChromeContentRulesRegistryTest(
+      const DeclarativeChromeContentRulesRegistryTest&) = delete;
+  DeclarativeChromeContentRulesRegistryTest& operator=(
+      const DeclarativeChromeContentRulesRegistryTest&) = delete;
+
  protected:
   TestExtensionEnvironment* env() { return &env_; }
 
@@ -138,16 +149,14 @@ class DeclarativeChromeContentRulesRegistryTest : public testing::Test {
 
   // Must come after |env_| so only one UI MessageLoop is created.
   content::RenderViewHostTestEnabler rvh_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeChromeContentRulesRegistryTest);
 };
 
 TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
   TestPredicateEvaluator* evaluator = nullptr;
   scoped_refptr<ChromeContentRulesRegistry> registry(
-      new ChromeContentRulesRegistry(env()->profile(), nullptr,
-                                     base::Bind(&CreateTestEvaluator,
-                                                &evaluator)));
+      new ChromeContentRulesRegistry(
+          env()->profile(), nullptr,
+          base::BindOnce(&CreateTestEvaluator, &evaluator)));
 
   EXPECT_EQ(0u, registry->GetActiveRulesCountForTesting());
 
@@ -161,25 +170,23 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
 
   // Add a rule.
   api::events::Rule rule;
-  api::events::Rule::Populate(
-      *base::test::ParseJsonDeprecated(
-          "{\n"
-          "  \"id\": \"rule1\",\n"
-          "  \"priority\": 100,\n"
-          "  \"conditions\": [\n"
-          "    {\n"
-          "      \"instanceType\": \"declarativeContent.PageStateMatcher\",\n"
-          "      \"test_predicate\": []\n"
-          "    }],\n"
-          "  \"actions\": [\n"
-          "    { \"instanceType\": \"declarativeContent.ShowAction\" }\n"
-          "  ]\n"
-          "}"),
-      &rule);
+  api::events::Rule::Populate(base::test::ParseJson(R"({
+          "id": "rule1",
+          "priority": 100,
+          "conditions": [
+           {
+             "instanceType": "declarativeContent.PageStateMatcher",
+             "test_predicate": []
+           }],
+          "actions": [
+            {"instanceType": "declarativeContent.ShowAction"}
+          ]
+      })"),
+                              &rule);
   std::vector<const api::events::Rule*> rules({&rule});
 
-  const Extension* extension = env()->MakeExtension(
-      *base::test::ParseJsonDeprecated("{\"page_action\": {}}"));
+  const Extension* extension =
+      env()->MakeExtension(base::test::ParseJson("{\"page_action\": {}}"));
   registry->AddRulesImpl(extension->id(), rules);
 
   registry->DidFinishNavigation(tab.get(), &navigation_handle);
@@ -188,7 +195,10 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
   evaluator->RequestImmediateEvaluation(tab.get(), true);
   EXPECT_EQ(1u, registry->GetActiveRulesCountForTesting());
 
-  // Closing the tab should erase its entry from active_rules_.
+  // Closing the tab should erase its entry from active_rules_. Invoke
+  // WebContentsDestroyed on the registry to mock it being notified that the tab
+  // has closed.
+  registry->WebContentsDestroyed(tab.get());
   tab.reset();
   EXPECT_EQ(0u, registry->GetActiveRulesCountForTesting());
 

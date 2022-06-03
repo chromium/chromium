@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fil">
+<translation id="1113173431709655881">Camera mode</translation>
+<translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
+<translation id="1276998909102132017">Mga larawan sa gallery</translation>
+<translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
+<translation id="1430915738399379752">I-print</translation>
+<translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
+<translation id="1473110567575736769">3 segundong timer</translation>
+<translation id="1545749641540134597">I-scan ang QR Code</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Camera</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Walang na-record</translation>
+<translation id="1838104802459806957">Mag-tilt pataas</translation>
+<translation id="1851169887664797861">Available ang mga karagdagang kontrol sa camera</translation>
+<translation id="1851616744363735765">NAKA-PAUSE</translation>
+<translation id="1862930711583847113">Hindi ma-export ang <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Resolution ng larawan</translation>
+<translation id="2022953316617983419">QR code</translation>
+<translation id="2036868001356139588">Tagal ng timer</translation>
+<translation id="2050339315714019657">Portrait</translation>
+<translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
+<translation id="2144806332417375165">Mga custom na parameter ng video</translation>
+<translation id="2175927920773552910">QR Code</translation>
+<translation id="229579744168541441">I-export sa disk</translation>
+<translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
+<translation id="2501278716633472235">Bumalik</translation>
+<translation id="2501853267655415902">Itinigil ang pag-record</translation>
+<translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
+<translation id="2517472476991765520">I-scan</translation>
+<translation id="2549985041256363841">Simulang mag-record</translation>
+<translation id="2599796128805996109">Camera sa likod</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
+<translation id="2761536921376153655">Uri ng pag-scan</translation>
+<translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
+<translation id="2968794441791257519">Ililipat sa folder na Mga Download ang mga larawan at video na kinunan gamit ang camera. Maa-access mo ang mga ito sa Mga File.
+
+        Magkakaroon ng access sa iyong mga larawan at video ang mga app na may mga pahintulot sa storage.</translation>
+<translation id="3067436040345934772">Mag-pan sa kanan</translation>
+<translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Uri ng grid</translation>
+<translation id="3227137524299004712">Mikropono</translation>
+<translation id="3240426699337459095">Nakopya ang link</translation>
+<translation id="3259149966178251584">Resolution ng camera</translation>
+<translation id="3260401663013584785">Walang ma-detect na dokumento</translation>
+<translation id="3305962767867348165">Ayusin</translation>
+<translation id="3448774564454087943">Hindi na-save ang video dahil masyado itong maikli</translation>
+<translation id="346539236881580388">Kunan ulit</translation>
+<translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
+<translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Lumipat sa scan mode</translation>
+<translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">I-scan ang barcode</translation>
+<translation id="3892148308691398805">Kopyahin ang text</translation>
+<translation id="4118525110028899586">I-pause ang pag-record</translation>
+<translation id="4121305183798804752">Na-detect ang dokumento</translation>
+<translation id="4269820728363426813">Kopyahin ang address ng link</translation>
+<translation id="4279490309300973883">Nagmi-mirror</translation>
+<translation id="4329152592498422850">Lumipat para kumuha ng parisukat na larawan</translation>
+<translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
+<translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
+<translation id="4570032796877367747">Camera sa harap</translation>
+<translation id="4628948037717959914">Larawan</translation>
+<translation id="4649291346448517080">Hindi ma-save ang file</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Pag-record ng multistream video</translation>
+<translation id="5057360777601936059">Kasalukuyang hindi available ang iyong camera.
+        Pakitingnan kung maayos na nakakonekta ang camera.</translation>
+<translation id="5152121255775685072">Pumunta sa gallery</translation>
+<translation id="520537883758714667">Available na ang pag-scan ng dokumento</translation>
+<translation id="5317780077021120954">I-save</translation>
+<translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
+<translation id="5671277269877808209">Parisukat</translation>
+<translation id="5746169159649715125">I-save bilang PDF</translation>
+<translation id="5753488212459587150">I-enable ang expert mode</translation>
+<translation id="5759254179196327752">I-scan ang dokumento</translation>
+<translation id="5775960006311140197">Expert mode</translation>
+<translation id="5869546221129391014">Grid</translation>
+<translation id="5975083100439434680">Mag-zoom out</translation>
+<translation id="6073451960410192870">Ihinto ang pag-record</translation>
+<translation id="6197807149213783179">I-save ang metadata</translation>
+<translation id="6233780560267770709">3 by 3</translation>
+<translation id="6243827288366940320">Golden ratio</translation>
+<translation id="6248749904681914629">External na camera</translation>
+<translation id="6353688143752491039">Salamat sa pagbibigay ng feedback sa Camera app.
+
+Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng halimbawang larawan o video at ilarawan kung ano ang mali rito. (Halimbawa, masyadong madilim ang larawan o hindi naka-focus ang paksa.)</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
+<translation id="6527303717912515753">Ibahagi</translation>
+<translation id="667999046851023355">Dokumento</translation>
+<translation id="6681668084120808868">Kumuha ng larawan</translation>
+<translation id="6778482348691154169">Hindi makakuha ng larawan</translation>
+<translation id="695140971690006676">I-reset lahat</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 segundo</translation>
+<translation id="712848772518857951">Gusto mo ba talagang alisin ang <ph name="COUNT" /> (na) item?</translation>
+<translation id="7134221860976209830">10 segundong timer</translation>
+<translation id="7191890674911603392">Uri ng pag-record</translation>
+<translation id="7243947652761655814">Resolution ng video</translation>
+<translation id="7337660886763914220">Mga error sa file system.</translation>
+<translation id="7450541714075000668">Nakopya ang text</translation>
+<translation id="7476762461674917065">Ipakita ang opsyon sa pag-record ng GIF</translation>
+<translation id="7488619942230388918">Mag-record ng GIF na video</translation>
+<translation id="7557677699350329807">Lumipat sa susunod na camera</translation>
+<translation id="7607002721634913082">I-pause</translation>
+<translation id="7608223098072244877">4 by 4</translation>
+<translation id="7649070708921625228">Tulong</translation>
+<translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Mag-record ng karaniwang video</translation>
+<translation id="7983668134180549431">Na-detect na text.</translation>
+<translation id="8067883171444229417">I-play ang video</translation>
+<translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>
+<translation id="8131740175452115882">Kumpirmahin</translation>
+<translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
+<translation id="8167081290930651932">I-save bilang Larawan</translation>
+<translation id="8239780215768881278">Kumuha ng video snapshot</translation>
+<translation id="8261506727792406068">I-delete</translation>
+<translation id="8425673304802773841">I-tilt pababa</translation>
+<translation id="8428213095426709021">Mga Setting</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Nakuha ko</translation>
+<translation id="8730621377337864115">Tapos na</translation>
+<translation id="8732462232047530626">I-preview ang metadata</translation>
+<translation id="8815966864175525708">Lumipat para kumuha ng portrait na larawan</translation>
+<translation id="8828441885228359828">Ituloy ang pag-record</translation>
+<translation id="8870695351537079478">Hindi masimulan ang pag-record</translation>
+<translation id="8903921497873541725">Mag-zoom in</translation>
+<translation id="9045010116236796332">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento</translation>
+<translation id="9045155556724273246">10 segundo</translation>
+<translation id="906331135292332864">Pinoproseso ang larawan...</translation>
+<translation id="945522503751344254">Magpadala ng feedback</translation>
+</translationbundle>

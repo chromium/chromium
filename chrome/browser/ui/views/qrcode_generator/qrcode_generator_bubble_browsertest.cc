@@ -11,11 +11,17 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 class QRCodeGeneratorBubbleBrowserTest : public DialogBrowserTest {
  public:
   QRCodeGeneratorBubbleBrowserTest() = default;
+
+  QRCodeGeneratorBubbleBrowserTest(const QRCodeGeneratorBubbleBrowserTest&) =
+      delete;
+  QRCodeGeneratorBubbleBrowserTest& operator=(
+      const QRCodeGeneratorBubbleBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -25,9 +31,6 @@ class QRCodeGeneratorBubbleBrowserTest : public DialogBrowserTest {
         qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
     bubble_controller->ShowBubble(url);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(QRCodeGeneratorBubbleBrowserTest,

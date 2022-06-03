@@ -4,7 +4,7 @@
 
 #include "net/nqe/effective_connection_type.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace {
 
@@ -43,7 +43,7 @@ const char* GetNameForEffectiveConnectionType(EffectiveConnectionType type) {
   return "";
 }
 
-base::Optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
+absl::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     base::StringPiece connection_type_name) {
   if (connection_type_name == kEffectiveConnectionTypeUnknown)
     return EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
@@ -61,7 +61,7 @@ base::Optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     return EFFECTIVE_CONNECTION_TYPE_3G;
   if (connection_type_name == kEffectiveConnectionType4G)
     return EFFECTIVE_CONNECTION_TYPE_4G;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const char* DeprecatedGetNameForEffectiveConnectionType(

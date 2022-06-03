@@ -5,6 +5,6 @@
 // https://w3c.github.io/speech-api/#dictdef-speechrecognitioneventinit
 
 dictionary SpeechRecognitionEventInit : EventInit {
-    unsigned long resultIndex;
+    unsigned long resultIndex = 0;
     SpeechRecognitionResultList? results;
 };

@@ -8,9 +8,7 @@
     Exposed=Window,
     RuntimeEnabled=WebXRHitTest
 ] interface XRRay {
-  [RaisesException] constructor();
-  [RaisesException] constructor(DOMPointInit origin);
-  [RaisesException] constructor(DOMPointInit origin, DOMPointInit direction);
+  [RaisesException] constructor(optional DOMPointInit origin = {}, optional XRRayDirectionInit direction = {});
   [RaisesException] constructor(XRRigidTransform transform);
   [SameObject] readonly attribute DOMPointReadOnly origin;
   [SameObject] readonly attribute DOMPointReadOnly direction;

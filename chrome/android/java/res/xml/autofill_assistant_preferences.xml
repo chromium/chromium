@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:key="web_assistance"
+        android:title="@string/prefs_web_assistance_section_title">
+
+      <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+          android:key="autofill_assistant_switch"
+          android:title="@string/prefs_autofill_assistant_get_help_title"
+          android:summary="@string/prefs_autofill_assistant_get_help_summary"
+          android:persistent="false"/>
+
+      <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+          android:key="proactive_help_switch"
+          android:title="@string/prefs_autofill_assistant_proactive_help_title"
+          android:summary="@string/prefs_autofill_assistant_proactive_help_summary"
+          android:persistent="false"/>
+
+      <org.chromium.components.browser_ui.settings.TextMessagePreference
+          android:key="google_services_settings_link"
+          android:summary="@string/prefs_proactive_help_sync_link"
+          app:allowDividerAbove="false"
+          app:allowDividerBelow="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="voice_assistance"
+        android:title="@string/avs_setting_category_title"
+        app:allowDividerBelow="false">
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="voice_assistance_enabled"
+            android:title="@string/avs_setting_enabled_title"
+            android:summary="@string/avs_setting_enabled_description"
+            android:persistent="false" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

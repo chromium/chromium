@@ -10,12 +10,13 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 #include "chrome/browser/devtools/device/usb/android_usb_socket.h"
@@ -57,7 +58,7 @@ uint32_t Checksum(const std::string& data) {
 
 void DumpMessage(bool outgoing, const uint8_t* data, size_t length) {
 #if 0
-  std::string result = "";
+  std::string result;
   if (length == kHeaderSize) {
     for (size_t i = 0; i < 24; ++i) {
       result += base::StringPrintf("%02x", data[i]);
@@ -83,7 +84,7 @@ void DumpMessage(bool outgoing, const uint8_t* data, size_t length) {
 #endif  // 0
 }
 
-void OnProbeFinished(const AndroidUsbDevicesCallback& callback,
+void OnProbeFinished(AndroidUsbDevicesCallback callback,
                      AndroidUsbDevices* new_devices) {
   std::unique_ptr<AndroidUsbDevices> devices(new_devices);
 
@@ -94,7 +95,7 @@ void OnProbeFinished(const AndroidUsbDevicesCallback& callback,
 
   // Return all claimed devices.
   AndroidUsbDevices result(g_devices.Get().begin(), g_devices.Get().end());
-  callback.Run(result);
+  std::move(callback).Run(result);
 }
 
 void OnDeviceClosed(const std::string& guid,
@@ -115,8 +116,8 @@ void CreateDeviceOnInterfaceClaimed(
     AndroidDeviceInfo android_device_info,
     mojo::Remote<device::mojom::UsbDevice> device,
     const base::RepeatingClosure& barrier,
-    bool success) {
-  if (success) {
+    device::mojom::UsbClaimInterfaceResult result) {
+  if (result == device::mojom::UsbClaimInterfaceResult::kSuccess) {
     devices->push_back(
         new AndroidUsbDevice(rsa_key, android_device_info, std::move(device)));
     barrier.Run();
@@ -158,13 +159,13 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
 }
 
 void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
-                        const AndroidUsbDevicesCallback& callback,
+                        AndroidUsbDevicesCallback callback,
                         std::vector<AndroidDeviceInfo> device_info_list) {
   // Add new devices.
   AndroidUsbDevices* devices = new AndroidUsbDevices();
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(device_info_list.size(),
-                           base::BindOnce(&OnProbeFinished, callback, devices));
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      device_info_list.size(),
+      base::BindOnce(&OnProbeFinished, std::move(callback), devices));
 
   for (const auto& device_info : device_info_list) {
     if (base::Contains(g_open_devices.Get(), device_info.guid)) {
@@ -196,9 +197,9 @@ AdbMessage::~AdbMessage() {}
 
 // static
 void AndroidUsbDevice::Enumerate(crypto::RSAPrivateKey* rsa_key,
-                                 const AndroidUsbDevicesCallback& callback) {
+                                 AndroidUsbDevicesCallback callback) {
   UsbDeviceManagerHelper::GetInstance()->GetAndroidDevices(
-      base::BindOnce(&OpenAndroidDevices, rsa_key, callback));
+      base::BindOnce(&OpenAndroidDevices, rsa_key, std::move(callback)));
 }
 
 AndroidUsbDevice::AndroidUsbDevice(
@@ -232,7 +233,7 @@ net::StreamSocket* AndroidUsbDevice::CreateSocket(const std::string& command) {
   uint32_t socket_id = ++last_socket_id_;
   sockets_[socket_id] = new AndroidUsbSocket(
       this, socket_id, command,
-      base::Bind(&AndroidUsbDevice::SocketDeleted, this, socket_id));
+      base::BindOnce(&AndroidUsbDevice::SocketDeleted, this, socket_id));
   return sockets_[socket_id];
 }
 
@@ -307,10 +308,10 @@ void AndroidUsbDevice::ProcessOutgoing() {
   outgoing_queue_.pop();
   DumpMessage(true, message->front(), message->size());
 
-  device_->GenericTransferOut(android_device_info_.outbound_address,
-                              message->data(), kUsbTimeout,
-                              base::Bind(&AndroidUsbDevice::OutgoingMessageSent,
-                                         weak_factory_.GetWeakPtr()));
+  device_->GenericTransferOut(
+      android_device_info_.outbound_address, message->data(), kUsbTimeout,
+      base::BindOnce(&AndroidUsbDevice::OutgoingMessageSent,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AndroidUsbDevice::OutgoingMessageSent(UsbTransferStatus status) {
@@ -326,13 +327,14 @@ void AndroidUsbDevice::ReadHeader() {
   if (!device_)
     return;
 
-  device_->GenericTransferIn(
-      android_device_info_.inbound_address, kHeaderSize, kUsbTimeout,
-      base::Bind(&AndroidUsbDevice::ParseHeader, weak_factory_.GetWeakPtr()));
+  device_->GenericTransferIn(android_device_info_.inbound_address, kHeaderSize,
+                             kUsbTimeout,
+                             base::BindOnce(&AndroidUsbDevice::ParseHeader,
+                                            weak_factory_.GetWeakPtr()));
 }
 
 void AndroidUsbDevice::ParseHeader(UsbTransferStatus status,
-                                   const std::vector<uint8_t>& buffer) {
+                                   base::span<const uint8_t> buffer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (status == UsbTransferStatus::TIMEOUT) {
@@ -380,15 +382,15 @@ void AndroidUsbDevice::ReadBody(std::unique_ptr<AdbMessage> message,
 
   device_->GenericTransferIn(
       android_device_info_.inbound_address, data_length, kUsbTimeout,
-      base::Bind(&AndroidUsbDevice::ParseBody, weak_factory_.GetWeakPtr(),
-                 base::Passed(&message), data_length, data_check));
+      base::BindOnce(&AndroidUsbDevice::ParseBody, weak_factory_.GetWeakPtr(),
+                     std::move(message), data_length, data_check));
 }
 
 void AndroidUsbDevice::ParseBody(std::unique_ptr<AdbMessage> message,
                                  uint32_t data_length,
                                  uint32_t data_check,
                                  UsbTransferStatus status,
-                                 const std::vector<uint8_t>& buffer) {
+                                 base::span<const uint8_t> buffer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (status == UsbTransferStatus::TIMEOUT) {
@@ -494,8 +496,9 @@ void AndroidUsbDevice::Terminate() {
 
   // Iterate over copy.
   AndroidUsbSockets sockets(sockets_);
-  for (auto it = sockets.begin(); it != sockets.end(); ++it) {
-    it->second->Terminated(true);
+  for (auto socket_it = sockets.begin(); socket_it != sockets.end();
+       ++socket_it) {
+    socket_it->second->Terminated(true);
   }
   DCHECK(sockets_.empty());
 

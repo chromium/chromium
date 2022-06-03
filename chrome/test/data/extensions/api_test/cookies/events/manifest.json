@@ -5,6 +5,7 @@
   "description": "Tests cookie events.",
   "permissions": ["cookies", "http://a.com/"],
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": false
   }
 }

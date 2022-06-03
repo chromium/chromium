@@ -6,23 +6,23 @@
 #define MEDIA_GPU_CHROMEOS_GPU_BUFFER_LAYOUT_H_
 
 #include <ostream>
-#include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/base/color_plane_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class MEDIA_GPU_EXPORT GpuBufferLayout {
  public:
-  static base::Optional<GpuBufferLayout> Create(
+  static absl::optional<GpuBufferLayout> Create(
       const Fourcc& fourcc,
       const gfx::Size& size,
-      const std::vector<ColorPlaneLayout>& planes);
+      const std::vector<ColorPlaneLayout>& planes,
+      uint64_t modifier);
   GpuBufferLayout() = delete;
   GpuBufferLayout(const GpuBufferLayout&);
   GpuBufferLayout(GpuBufferLayout&&);
@@ -35,11 +35,13 @@ class MEDIA_GPU_EXPORT GpuBufferLayout {
   const Fourcc& fourcc() const { return fourcc_; }
   const gfx::Size& size() const { return size_; }
   const std::vector<ColorPlaneLayout>& planes() const { return planes_; }
+  uint64_t modifier() const { return modifier_; }
 
  private:
   GpuBufferLayout(const Fourcc& fourcc,
                   const gfx::Size& size,
-                  const std::vector<ColorPlaneLayout>& planes);
+                  const std::vector<ColorPlaneLayout>& planes,
+                  uint64_t modifier);
 
   // Fourcc format of the buffer.
   Fourcc fourcc_;
@@ -51,6 +53,8 @@ class MEDIA_GPU_EXPORT GpuBufferLayout {
   gfx::Size size_;
   // Layout property for each color planes, e.g. stride and buffer offset.
   std::vector<ColorPlaneLayout> planes_;
+  // DRM format modifier associated with buffer.
+  uint64_t modifier_;
 };
 
 // Outputs GpuBufferLayout to stream.

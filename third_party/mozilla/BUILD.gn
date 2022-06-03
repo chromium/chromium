@@ -22,12 +22,12 @@ component("mozilla") {
     "//url",
   ]
 
-  if (is_component_build && (is_mac || is_ios)) {
+  if (is_component_build && is_apple) {
     # Needed to link to Obj-C static libraries.
     ldflags = [ "-Wl,-ObjC" ]
   }
 
-  libs = [
+  frameworks = [
     "AppKit.framework",
     "ApplicationServices.framework",
     "Carbon.framework",

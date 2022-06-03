@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pl">
+<translation id="1113173431709655881">Tryb kamery</translation>
+<translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
+<translation id="1276998909102132017">Zdjęcia z galerii</translation>
+<translation id="1300209025925956156">Skanowanie dokumentu</translation>
+<translation id="1303487788671416818">Włącz funkcję stopklatki w pełnym rozmiarze</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
+<translation id="1430915738399379752">Drukuj</translation>
+<translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
+<translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
+<translation id="1545749641540134597">Zeskanuj kod QR</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normalny</translation>
+<translation id="1620510694547887537">Aparat</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Nic nie zostało nagrane</translation>
+<translation id="1838104802459806957">Przechyl do góry</translation>
+<translation id="1851169887664797861">Dostępne dodatkowe ustawienia aparatu</translation>
+<translation id="1851616744363735765">WSTRZYMANO</translation>
+<translation id="1862930711583847113">Nie udało się wyeksportować pliku <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Rozdzielczość zdjęcia</translation>
+<translation id="2022953316617983419">Kod QR</translation>
+<translation id="2036868001356139588">Czas samowyzwalacza</translation>
+<translation id="2050339315714019657">Pionowo</translation>
+<translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
+<translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
+<translation id="2175927920773552910">Kod QR</translation>
+<translation id="229579744168541441">Eksportuj na dysk</translation>
+<translation id="2320741269052147773">Przesuń w lewo</translation>
+<translation id="2501278716633472235">Wróć</translation>
+<translation id="2501853267655415902">Nagrywanie zatrzymane</translation>
+<translation id="2501953888035679275">Aparatem możesz robić zdjęcia i nagrywać filmy.</translation>
+<translation id="2517472476991765520">Skanuj</translation>
+<translation id="2549985041256363841">Zacznij nagrywanie</translation>
+<translation id="2599796128805996109">Tylny aparat</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Typ skanowania</translation>
+<translation id="2879583609344924966">Podłączono kamerę <ph name="CAMERA" />.</translation>
+<translation id="2968794441791257519">Zdjęcia i filmy pochodzące z aparatu zostaną przeniesione do folderu Pobrane pliki. Dostęp do nich możesz uzyskać w aplikacji Pliki.
+
+        Do Twoich zdjęć i filmów będą mieć dostęp aplikacje z uprawnieniami dostępu do pamięci.</translation>
+<translation id="3067436040345934772">Przesuń w prawo</translation>
+<translation id="3081586908890909590">Przełącz, by nagrać film</translation>
+<translation id="313467653172006084">30 kl./s</translation>
+<translation id="3183731565330012717">Typ siatki</translation>
+<translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3240426699337459095">Link skopiowany</translation>
+<translation id="3259149966178251584">Rozdzielczość aparatu</translation>
+<translation id="3260401663013584785">Nie udało się wykryć dokumentu</translation>
+<translation id="3305962767867348165">Rozwiąż problem</translation>
+<translation id="3448774564454087943">Film nie został zapisany, ponieważ jest za krótki</translation>
+<translation id="346539236881580388">Zrób ponownie</translation>
+<translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
+<translation id="3569311554794739032">Czy na pewno chcesz usunąć plik <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Przełącz w tryb skanowania</translation>
+<translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
+<translation id="3810838688059735925">Wideo</translation>
+<translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
+<translation id="3892148308691398805">Kopiuj tekst</translation>
+<translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
+<translation id="4121305183798804752">Wykryto dokument</translation>
+<translation id="4269820728363426813">Kopiuj adres linku</translation>
+<translation id="4279490309300973883">Odbicie lustrzane</translation>
+<translation id="4329152592498422850">Przełącz, by zrobić kwadratowe zdjęcie</translation>
+<translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
+<translation id="4445542136948522167">Nie rób zdjęcia</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
+<translation id="4570032796877367747">Przedni aparat</translation>
+<translation id="4628948037717959914">Zdjęcie</translation>
+<translation id="4649291346448517080">Nie udało się zapisać pliku</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Nagrywanie kilku strumieni wideo</translation>
+<translation id="5057360777601936059">Aparat jest obecnie niedostępny.
+        Sprawdź, czy jest prawidłowo podłączony.</translation>
+<translation id="5152121255775685072">Otwórz galerię</translation>
+<translation id="520537883758714667">Skanowanie dokumentów jest teraz dostępne</translation>
+<translation id="5317780077021120954">Zapisz</translation>
+<translation id="5444515100983837161">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki. Skanowanie działa najlepiej, jeśli dokument i tło mają różne kolory.</translation>
+<translation id="5671277269877808209">Kwadrat</translation>
+<translation id="5746169159649715125">Zapisz jako PDF</translation>
+<translation id="5753488212459587150">Włącz tryb eksperta</translation>
+<translation id="5759254179196327752">Skanuj dokument</translation>
+<translation id="5775960006311140197">Tryb eksperta</translation>
+<translation id="5869546221129391014">Siatka</translation>
+<translation id="5975083100439434680">Pomniejsz</translation>
+<translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
+<translation id="6197807149213783179">Zapisz metadane</translation>
+<translation id="6233780560267770709">3 na 3</translation>
+<translation id="6243827288366940320">Złoty podział</translation>
+<translation id="6248749904681914629">Aparat zewnętrzny</translation>
+<translation id="6353688143752491039">Dziękujemy za opinię o aplikacji Aparat.
+
+Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe zdjęcie lub film i opisz, na czym polega problem (na przykład zdjęcie jest za ciemne lub obiekt jest nieostry).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
+<translation id="6527303717912515753">Udostępnij</translation>
+<translation id="667999046851023355">Dokument</translation>
+<translation id="6681668084120808868">Zrób zdjęcie</translation>
+<translation id="6778482348691154169">Nie udało się zrobić zdjęcia</translation>
+<translation id="695140971690006676">Zresetuj wszystko</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 sekundy</translation>
+<translation id="712848772518857951">Czy na pewno chcesz usunąć te elementy (<ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
+<translation id="7191890674911603392">Typ rekordu</translation>
+<translation id="7243947652761655814">Rozdzielczość wideo</translation>
+<translation id="7337660886763914220">Błędy systemu plików.</translation>
+<translation id="7450541714075000668">Tekst został skopiowany</translation>
+<translation id="7476762461674917065">Pokaż opcje zapisywania GIF-a</translation>
+<translation id="7488619942230388918">Nagraj film GIF</translation>
+<translation id="7557677699350329807">Przełącz na następny aparat</translation>
+<translation id="7607002721634913082">Wstrzymano</translation>
+<translation id="7608223098072244877">4 na 4</translation>
+<translation id="7649070708921625228">Pomoc</translation>
+<translation id="7658239707568436148">Anuluj</translation>
+<translation id="7670511624014457267">60 kl./s</translation>
+<translation id="7726641833034062494">Nagraj zwykły film</translation>
+<translation id="7983668134180549431">Wykryto tekst.</translation>
+<translation id="8067883171444229417">Odtwórz film</translation>
+<translation id="8120146556401698679">Przesuń, przechyl, powiększ</translation>
+<translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8145038249676204903">Przełącz, by zrobić zdjęcie</translation>
+<translation id="8167081290930651932">Zapisz jako zdjęcie</translation>
+<translation id="8239780215768881278">Zapisz stopklatkę</translation>
+<translation id="8261506727792406068">Usuń</translation>
+<translation id="8425673304802773841">Pochyl w dół</translation>
+<translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Rozumiem</translation>
+<translation id="8730621377337864115">Gotowe</translation>
+<translation id="8732462232047530626">Wyświetl podgląd metadanych</translation>
+<translation id="8815966864175525708">Przełącz, by zrobić zdjęcie w orientacji pionowej</translation>
+<translation id="8828441885228359828">Wznów nagrywanie</translation>
+<translation id="8870695351537079478">Nie udało się rozpocząć nagrywania</translation>
+<translation id="8903921497873541725">Powiększ</translation>
+<translation id="9045010116236796332">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki</translation>
+<translation id="9045155556724273246">10 sekund</translation>
+<translation id="906331135292332864">Przetwarzam obraz...</translation>
+<translation id="945522503751344254">Prześlij opinię</translation>
+</translationbundle>

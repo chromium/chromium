@@ -1,0 +1,4 @@
+include_rules = [
+  # For dbus/cryptohome/dbus-constants.h
+  "+third_party/cros_system_api/dbus",
+]

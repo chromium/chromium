@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "extensions/browser/extension_function.h"
 
@@ -18,6 +17,10 @@ class WebstoreWidgetPrivateInstallWebstoreItemFunction
     : public ExtensionFunction {
  public:
   WebstoreWidgetPrivateInstallWebstoreItemFunction();
+  WebstoreWidgetPrivateInstallWebstoreItemFunction(
+      const WebstoreWidgetPrivateInstallWebstoreItemFunction&) = delete;
+  WebstoreWidgetPrivateInstallWebstoreItemFunction& operator=(
+      const WebstoreWidgetPrivateInstallWebstoreItemFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("webstoreWidgetPrivate.installWebstoreItem",
                              WEBSTOREWIDGETPRIVATE_INSTALLWEBSTOREITEM)
@@ -32,8 +35,6 @@ class WebstoreWidgetPrivateInstallWebstoreItemFunction
   void OnInstallComplete(bool success,
                          const std::string& error,
                          extensions::webstore_install::Result result);
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreWidgetPrivateInstallWebstoreItemFunction);
 };
 
 }  // namespace api

@@ -7,8 +7,6 @@ div, span {
 };
 </style>
 <script>
-var dropReceived;
-var beforeUnloadReceived = false;
 function log(str)
 {
     var result = document.getElementById('result');
@@ -18,7 +16,7 @@ function log(str)
 function dragDrop(target)
 {
     log('Starting drag...');
-    eventSender.beginDragWithFiles(['test']);
+    eventSender.beginDragWithFiles(['resources/notify-done.html']);
     eventSender.leapForward(100);
     eventSender.mouseMoveTo(target.offsetLeft + target.offsetWidth / 2,
                             target.offsetTop + target.offsetHeight / 2);
@@ -30,7 +28,6 @@ window.onload = function()
     var drop2 = document.getElementById('drop2');
 
     document.body.addEventListener('dragover', function () {
-        dropReceived = false;
     }, false);
 
     drop1.addEventListener('dragover', function(e) {
@@ -38,7 +35,6 @@ window.onload = function()
     }, false);
     drop1.addEventListener('drop', function(e) {
         e.preventDefault();
-        dropReceived = true;
         log('Drop received in drop target 1');
     }, false);
 
@@ -46,8 +42,7 @@ window.onload = function()
     }, false);
     drop2.addEventListener('drop', function(e) {
         e.preventDefault();
-        dropReceived = true;
-        log('Drop received in drop target 2');
+        log('FAIL: Drop unexpectedly received in drop target 2');
     }, false);
 
     if (!window.testRunner)
@@ -59,29 +54,20 @@ window.onload = function()
     testRunner.setShouldStayOnPageAfterHandlingBeforeUnload(true);
 
     window.addEventListener('beforeunload', function (e) {
-        if (!dropReceived)
-            log('Drop not received');
-        beforeUnloadReceived = true;
-        e.returnValue = "foo";
+        log('FAIL: navigation should have occurred in new tab');
         testRunner.notifyDone();
+        e.returnValue = "foo";
     });
 
     dragDrop(drop1);
     dragDrop(drop2);
-    window.stop();
-    window.setTimeout(function () {
-        // Deadman's switch to fail quickly.
-        if (!beforeUnloadReceived)
-            log('FAIL: navigation expected');
-        testRunner.notifyDone();
-    }, 0);
 }
 </script>
 </head>
 <body>
 <p>To run this test manually, drag a file to one of the two boxes below.
 <div id="drop1">Dropping in drop target 1 should result in a drop event.</div>
-<div id="drop2">Dropping in drop target 2 should NOT result in a drop event (page will navigate).</div>
+<div id="drop2">Dropping in drop target 2 should NOT result in a drop event (new tab will navigate).</div>
 <div id="result">
 </div>
 </body>

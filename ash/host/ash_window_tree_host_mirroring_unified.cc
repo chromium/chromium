@@ -7,7 +7,7 @@
 #include "ash/host/ash_window_tree_host_mirroring_delegate.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ash {
@@ -37,8 +37,8 @@ AshWindowTreeHostMirroringUnified::GetRootTransformForLocalEventCoordinates()
     DCHECK(display);
     // Undo the translation in the root window transform, since this transform
     // should be applied on local points to this host.
-    trans.Translate(SkIntToMScalar(display->bounds().x()),
-                    SkIntToMScalar(display->bounds().y()));
+    trans.Translate(SkIntToScalar(display->bounds().x()),
+                    SkIntToScalar(display->bounds().y()));
   }
 
   return trans;

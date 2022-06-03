@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 12: Uncaught TypeError: host.createShadowRoot is not a function
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-
-
-Pressing TAB key to navigate a shadow insertion point in the oldest shadow tree should not make the browser crash.

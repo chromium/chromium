@@ -16,15 +16,18 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/common/mojom/constants.mojom.h"
+#include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
+#include "chromecast/media/audio/cast_audio_output_utils.h"
 #include "chromecast/media/audio/cma_audio_output_stream.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
-#include "chromecast/media/cma/backend/cma_backend_factory.h"
+#include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -52,9 +55,10 @@
 
 namespace {
 // Below are settings for MixerService and the DirectAudio it uses.
-constexpr base::TimeDelta kFadeTime = base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kMixerStartThreshold =
-    base::TimeDelta::FromMilliseconds(60);
+constexpr base::TimeDelta kFadeTime = base::Milliseconds(5);
+constexpr base::TimeDelta kCommunicationsMaxBufferedFrames =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kMediaMaxBufferedFrames = base::Milliseconds(70);
 }  // namespace
 
 namespace chromecast {
@@ -68,27 +72,16 @@ AudioContentType GetContentType(const std::string& device_id) {
   return AudioContentType::kMedia;
 }
 
-mixer_service::ContentType ConvertContentType(AudioContentType content_type) {
+audio_service::ContentType ConvertContentType(AudioContentType content_type) {
   switch (content_type) {
     case AudioContentType::kMedia:
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
     case AudioContentType::kCommunication:
-      return mixer_service::CONTENT_TYPE_COMMUNICATION;
+      return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
       NOTREACHED();
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
   }
-}
-
-bool IsValidDeviceId(CastAudioManager* manager, const std::string& device_id) {
-  ::media::AudioDeviceNames valid_names;
-  manager->GetAudioOutputDeviceNames(&valid_names);
-  for (const auto& v : valid_names) {
-    if (v.unique_id == device_id) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace
@@ -98,6 +91,10 @@ class CastAudioOutputStream::MixerServiceWrapper
  public:
   MixerServiceWrapper(const ::media::AudioParameters& audio_params,
                       const std::string& device_id);
+
+  MixerServiceWrapper(const MixerServiceWrapper&) = delete;
+  MixerServiceWrapper& operator=(const MixerServiceWrapper&) = delete;
+
   ~MixerServiceWrapper() override = default;
 
   void SetRunning(bool running);
@@ -105,6 +102,7 @@ class CastAudioOutputStream::MixerServiceWrapper
   void Stop(base::WaitableEvent* finished);
   void Close(base::OnceClosure closure);
   void SetVolume(double volume);
+  int64_t GetMaxBufferedFrames();
   void Flush();
 
   base::SingleThreadTaskRunner* io_task_runner() {
@@ -115,7 +113,8 @@ class CastAudioOutputStream::MixerServiceWrapper
   // mixer_service::OutputStreamConnection::Delegate implementation:
   void FillNextBuffer(void* buffer,
                       int frames,
-                      int64_t playout_timestamp) override;
+                      int64_t delay_timestamp,
+                      int64_t delay) override;
   // We don't push an EOS buffer.
   void OnEosPlayed() override { NOTREACHED(); }
 
@@ -125,6 +124,7 @@ class CastAudioOutputStream::MixerServiceWrapper
   AudioSourceCallback* source_callback_;
   std::unique_ptr<mixer_service::OutputStreamConnection> mixer_connection_;
   double volume_;
+  int64_t max_buffered_frames_;
 
   base::Lock running_lock_;
   bool running_ = true;
@@ -133,8 +133,6 @@ class CastAudioOutputStream::MixerServiceWrapper
   // Task runner on |io_thread_|.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   THREAD_CHECKER(io_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerServiceWrapper);
 };
 
 CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(
@@ -144,13 +142,14 @@ CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(
       device_id_(device_id),
       source_callback_(nullptr),
       volume_(1.0f),
+      max_buffered_frames_(GetMaxBufferedFrames()),
       io_thread_("CastAudioOutputStream IO") {
   DETACH_FROM_THREAD(io_thread_checker_);
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.priority = base::ThreadPriority::REALTIME_AUDIO;
-  CHECK(io_thread_.StartWithOptions(options));
+  CHECK(io_thread_.StartWithOptions(std::move(options)));
   io_task_runner_ = io_thread_.task_runner();
   DCHECK(io_task_runner_);
 }
@@ -165,19 +164,19 @@ void CastAudioOutputStream::MixerServiceWrapper::Start(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   mixer_service::OutputStreamParams params;
-  params.set_content_type(ConvertContentType(GetContentType(device_id_)));
+  params.set_content_type(audio_service::CONTENT_TYPE_MEDIA);
+  params.set_focus_type(ConvertContentType(GetContentType(device_id_)));
   params.set_device_id(device_id_);
   params.set_stream_type(
       mixer_service::OutputStreamParams::STREAM_TYPE_DEFAULT);
-  params.set_sample_format(mixer_service::SAMPLE_FORMAT_FLOAT_P);
+  params.set_sample_format(audio_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_sample_rate(audio_params_.sample_rate());
   params.set_num_channels(audio_params_.channels());
-  int64_t start_threshold_frames = ::media::AudioTimestampHelper::TimeToFrames(
-      kMixerStartThreshold, audio_params_.sample_rate());
-  params.set_start_threshold_frames(start_threshold_frames);
 
+  params.set_start_threshold_frames(max_buffered_frames_);
+  params.set_max_buffered_frames(max_buffered_frames_);
   params.set_fill_size_frames(audio_params_.frames_per_buffer());
-  params.set_use_fader(true);
+
   params.set_fade_frames(::media::AudioTimestampHelper::TimeToFrames(
       kFadeTime, audio_params_.sample_rate()));
   params.set_use_start_timestamp(false);
@@ -212,6 +211,36 @@ void CastAudioOutputStream::MixerServiceWrapper::Close(
   std::move(closure).Run();
 }
 
+int64_t CastAudioOutputStream::MixerServiceWrapper::GetMaxBufferedFrames() {
+  int fill_size_frames = audio_params_.frames_per_buffer();
+  base::TimeDelta target_max_buffered_ms = kMediaMaxBufferedFrames;
+  if (GetContentType(device_id_) == AudioContentType::kCommunication) {
+    target_max_buffered_ms = kCommunicationsMaxBufferedFrames;
+  }
+
+  int64_t target_max_buffered_frames =
+      ::media::AudioTimestampHelper::TimeToFrames(target_max_buffered_ms,
+                                                  audio_params_.sample_rate());
+
+  // Calculate the buffer size necessary to achieve at least the desired buffer
+  // duration, while minimizing latency.
+  int64_t max_buffered_frames = 0;
+  if (fill_size_frames > target_max_buffered_frames) {
+    max_buffered_frames = target_max_buffered_frames;
+  } else {
+    // Find the largest multiple of |fill_size_frames| that is still no larger
+    // than |target_max_buffered_frames|.
+    max_buffered_frames =
+        (target_max_buffered_frames / fill_size_frames) * fill_size_frames;
+  }
+
+  if (max_buffered_frames != target_max_buffered_frames) {
+    max_buffered_frames += 1;
+  }
+
+  return max_buffered_frames;
+}
+
 void CastAudioOutputStream::MixerServiceWrapper::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   volume_ = volume;
@@ -223,7 +252,8 @@ void CastAudioOutputStream::MixerServiceWrapper::SetVolume(double volume) {
 void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
     void* buffer,
     int frames,
-    int64_t playout_timestamp) {
+    int64_t delay_timestamp,
+    int64_t delay) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Round down to closest multiple of 4 to ensure correct channel alignment.
@@ -238,6 +268,8 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   if (!running_)
     return;
 
+  int64_t playout_timestamp =
+      (delay_timestamp == INT64_MIN ? INT64_MIN : delay_timestamp + delay);
   if (playout_timestamp < 0) {
     // Assume any negative timestamp is invalid.
     playout_timestamp = 0;
@@ -253,33 +285,31 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   }
   audio_bus_->set_frames(frames);
 
-  base::TimeDelta delay = kMixerStartThreshold;
-  base::TimeTicks delay_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(playout_timestamp);
+  base::TimeDelta reported_delay = ::media::AudioTimestampHelper::FramesToTime(
+      max_buffered_frames_, audio_params_.sample_rate());
+  base::TimeTicks reported_delay_timestamp =
+      base::TimeTicks() + base::Microseconds(playout_timestamp);
 
-  int frames_filled =
-      source_callback_->OnMoreData(delay, delay_timestamp, 0, audio_bus_.get());
+  int frames_filled = source_callback_->OnMoreData(
+      reported_delay, reported_delay_timestamp, 0, audio_bus_.get());
   DCHECK_EQ(frames_filled, frames);
   mixer_connection_->SendNextBuffer(frames);
 }
 
 CastAudioOutputStream::CastAudioOutputStream(
-    CastAudioManager* audio_manager,
-    chromecast::mojom::ServiceConnector* connector,
+    CastAudioManagerHelper* audio_manager,
     const ::media::AudioParameters& audio_params,
     const std::string& device_id_or_group_id,
     bool use_mixer_service)
     : volume_(1.0),
       audio_thread_state_(AudioOutputState::kClosed),
       audio_manager_(audio_manager),
-      connector_(connector),
+      connector_(audio_manager_->GetConnector()),
       audio_params_(audio_params),
-      device_id_(IsValidDeviceId(audio_manager, device_id_or_group_id)
+      device_id_(IsValidDeviceId(device_id_or_group_id)
                      ? device_id_or_group_id
                      : ::media::AudioDeviceDescription::kDefaultDeviceId),
-      group_id_(IsValidDeviceId(audio_manager, device_id_or_group_id)
-                    ? ""
-                    : device_id_or_group_id),
+      group_id_(GetGroupId(device_id_or_group_id)),
       use_mixer_service_(use_mixer_service),
       audio_weak_factory_(this) {
   DCHECK(audio_manager_);
@@ -315,12 +345,13 @@ bool CastAudioOutputStream::Open() {
 
   const std::string application_session_id =
       audio_manager_->GetSessionId(group_id_);
+  LOG_IF(WARNING, application_session_id.empty()) << "Session id is empty.";
   DVLOG(1) << this << ": " << __func__
            << ", session_id=" << application_session_id;
 
   // Connect to the Multiroom interface and fetch the current info.
-  connector_->Connect(chromecast::mojom::kChromecastServiceName,
-                      multiroom_manager_.BindNewPipeAndPassReceiver());
+  connector_->BindInterface(chromecast::mojom::kChromecastServiceName,
+                            multiroom_manager_.BindNewPipeAndPassReceiver());
   multiroom_manager_.set_disconnect_handler(base::BindOnce(
       &CastAudioOutputStream::OnGetMultiroomInfo, audio_weak_this_, "error",
       chromecast::mojom::MultiroomInfo::New()));
@@ -354,8 +385,9 @@ void CastAudioOutputStream::Close() {
     // AudioSourceCallback::OnMoreData() will not be called anymore.
     mixer_service_wrapper_->SetRunning(false);
     POST_TO_MIXER_SERVICE_WRAPPER(
-        Close, BindToTaskRunner(audio_manager_->GetTaskRunner(),
-                                std::move(finish_callback)));
+        Close,
+        base::BindPostTask(audio_manager_->audio_manager()->GetTaskRunner(),
+                           std::move(finish_callback)));
   } else if (cma_wrapper_) {
     // Synchronously set running to false to guarantee that
     // AudioSourceCallback::OnMoreData() will not be called anymore.
@@ -370,7 +402,7 @@ void CastAudioOutputStream::FinishClose() {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   // Signal to the manager that we're closed and can be removed.
   // This should be the last call during the close process as it deletes "this".
-  audio_manager_->ReleaseOutputStream(this);
+  audio_manager_->audio_manager()->ReleaseOutputStream(this);
 }
 
 void CastAudioOutputStream::Start(AudioSourceCallback* source_callback) {
@@ -484,17 +516,20 @@ void CastAudioOutputStream::OnGetMultiroomInfo(
   if (audio_thread_state_ == AudioOutputState::kPendingClose)
     return;
 
+  const std::string& device_id = (multiroom_info->output_device_id.empty()
+                                      ? device_id_
+                                      : multiroom_info->output_device_id);
   if (!use_mixer_service_) {
     cma_wrapper_ = std::make_unique<CmaAudioOutputStream>(
-        audio_params_, audio_params_.GetBufferDuration(), device_id_,
-        audio_manager_->cma_backend_factory());
+        audio_params_, audio_params_.GetBufferDuration(), device_id,
+        audio_manager_->GetCmaBackendFactory());
     POST_TO_CMA_WRAPPER(Initialize, application_session_id,
                         std::move(multiroom_info));
   } else {
     DCHECK(!(audio_params_.effects() & ::media::AudioParameters::MULTIZONE));
 
     mixer_service_wrapper_ =
-        std::make_unique<MixerServiceWrapper>(audio_params_, device_id_);
+        std::make_unique<MixerServiceWrapper>(audio_params_, device_id);
   }
 
   if (pending_start_)

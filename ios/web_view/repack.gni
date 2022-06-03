@@ -26,9 +26,7 @@ template("_ios_web_view_repack_one_scale") {
       # TODO(crbug.com/842244): Bundle less resources.
       "${root_gen_dir}/components/components_resources_${invoker.scale}_percent.pak",
     ]
-    deps = [
-      "//components/resources:components_scaled_resources",
-    ]
+    deps = [ "//components/resources:components_scaled_resources" ]
 
     output = "$target_gen_dir/web_view_${invoker.scale}_percent.pak"
     copy_data_to_bundle = true

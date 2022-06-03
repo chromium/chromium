@@ -10,19 +10,19 @@ namespace internal {
 
 FileInformation::FileInformation() = default;
 
-FileInformation::FileInformation(const base::string16& path,
+FileInformation::FileInformation(const std::wstring& path,
                                  const std::string& creation_date,
                                  const std::string& last_modified_date,
                                  const std::string& sha256,
                                  int64_t size,
-                                 const base::string16& company_name,
-                                 const base::string16& company_short_name,
-                                 const base::string16& product_name,
-                                 const base::string16& product_short_name,
-                                 const base::string16& internal_name,
-                                 const base::string16& original_filename,
-                                 const base::string16& file_description,
-                                 const base::string16& file_version,
+                                 const std::wstring& company_name,
+                                 const std::wstring& company_short_name,
+                                 const std::wstring& product_name,
+                                 const std::wstring& product_short_name,
+                                 const std::wstring& internal_name,
+                                 const std::wstring& original_filename,
+                                 const std::wstring& file_description,
+                                 const std::wstring& file_version,
                                  bool active_file)
     : path(path),
       creation_date(creation_date),

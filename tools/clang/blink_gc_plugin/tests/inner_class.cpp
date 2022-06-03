@@ -6,9 +6,7 @@
 
 namespace blink {
 
-void SomeObject::InnerObject::Trace(Visitor* visitor)
-{
-    // Missing: visitor->Trace(m_obj);
+void SomeObject::InnerObject::Trace(Visitor* visitor) const {
+  // Missing: visitor->Trace(m_obj);
 }
-
 }

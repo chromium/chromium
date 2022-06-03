@@ -8,8 +8,8 @@ const spanElem = document.createElement('span');
 document.documentElement.appendChild(spanElem);
 
 // span > #shadowRoot
-const shadowRoot = spanElem.createShadowRoot();
-shadowRoot.appendChild(document.createElement('content'));
+const shadowRoot = spanElem.attachShadow({mode: 'open'});
+shadowRoot.appendChild(document.createElement('span'));
 
 // "Hello"
 const textNode1 = document.createTextNode('Hello');

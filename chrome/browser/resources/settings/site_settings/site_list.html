@@ -1,37 +1,10 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="add_site_dialog.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="edit_exception_dialog.html">
-<link rel="import" href="site_list_entry.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-<if expr="chromeos">
-  <link rel="import" href="../multidevice_page/multidevice_browser_proxy.html">
-</if>
-
-<dom-module id="site-list">
-  <template>
-    <style include="settings-shared">
-      paper-tooltip {
-        --paper-tooltip: var(--cr-tooltip);
-      }
+    <style include="cr-shared-style settings-shared iron-flex">
     </style>
     <div id="category">
-      <div class="settings-box first">
-        <h2 class="start">[[categoryHeader]]</h2>
+      <div class="cr-row first">
+        <h2 class="flex secondary">
+          [[categoryHeader]]
+        </h2>
         <cr-button id="addSite" class="header-aligned-button"
             hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteTap_">
           $i18n{add}
@@ -69,7 +42,8 @@
           hidden$="[[!showNoSearchResults_(searchFilter, sites.*)]]">
         <div class="list-item secondary">$i18n{searchNoResults}</div>
       </div>
-      <div class="list-frame menu-content vertical-list" id="listContainer">
+      <div class="list-frame menu-content vertical-list" id="listContainer"
+          hidden$="[[!hasSites_(sites.*)]]">
         <iron-list items="[[getFilteredSites_(searchFilter, sites.*)]]"
             preserve-focus risk-selection>
           <template>
@@ -83,8 +57,8 @@
         </iron-list>
       </div>
     </div>
-    <paper-tooltip id="tooltip" fit-to-visible-bounds manual-mode
-        position="top">
+    <paper-tooltip id="tooltip" hidden="[[!tooltipText_]]"
+        fit-to-visible-bounds manual-mode position="top">
       [[tooltipText_]]
     </paper-tooltip>
     <template is="dom-if" if="[[showEditExceptionDialog_]]" restamp>
@@ -98,6 +72,3 @@
           on-close="onAddSiteDialogClosed_">
       </add-site-dialog>
     </template>
-  </template>
-  <script src="site_list.js"></script>
-</dom-module>

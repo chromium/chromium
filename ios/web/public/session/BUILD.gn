@@ -9,6 +9,7 @@ source_set("session") {
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/navigation",
+    "//ios/web/public/security",
     "//net",
     "//url",
   ]
@@ -18,5 +19,6 @@ source_set("session") {
     "crw_session_storage.h",
     "serializable_user_data_manager.h",
     "session_certificate_policy_cache.h",
+    "session_certificate_policy_cache.mm",
   ]
 }

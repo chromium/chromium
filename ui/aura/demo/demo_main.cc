@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/power_monitor/power_monitor.h"
@@ -38,13 +37,9 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
-
-#if defined(USE_X11)
-#include "ui/gfx/x/x11_connection.h"  // nogncheck
-#endif
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"
@@ -56,6 +51,9 @@ namespace {
 class DemoWindowDelegate : public aura::WindowDelegate {
  public:
   explicit DemoWindowDelegate(SkColor color) : color_(color) {}
+
+  DemoWindowDelegate(const DemoWindowDelegate&) = delete;
+  DemoWindowDelegate& operator=(const DemoWindowDelegate&) = delete;
 
   // Overridden from WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -102,8 +100,6 @@ class DemoWindowDelegate : public aura::WindowDelegate {
  private:
   SkColor color_;
   gfx::Rect window_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindowDelegate);
 };
 
 class DemoWindowParentingClient : public aura::client::WindowParentingClient {
@@ -111,6 +107,10 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   explicit DemoWindowParentingClient(aura::Window* window) : window_(window) {
     aura::client::SetWindowParentingClient(window_, this);
   }
+
+  DemoWindowParentingClient(const DemoWindowParentingClient&) = delete;
+  DemoWindowParentingClient& operator=(const DemoWindowParentingClient&) =
+      delete;
 
   ~DemoWindowParentingClient() override {
     aura::client::SetWindowParentingClient(window_, nullptr);
@@ -120,8 +120,8 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds) override {
     if (!capture_client_) {
-      capture_client_.reset(
-          new aura::client::DefaultCaptureClient(window_->GetRootWindow()));
+      capture_client_ = std::make_unique<aura::client::DefaultCaptureClient>(
+          window_->GetRootWindow());
     }
     return window_;
   }
@@ -130,8 +130,6 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   aura::Window* window_;
 
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindowParentingClient);
 };
 
 // Runs a base::RunLoop until receiving OnHostCloseRequested from |host|.
@@ -141,13 +139,15 @@ void RunRunLoopUntilOnHostCloseRequested(aura::WindowTreeHost* host) {
     explicit Observer(base::OnceClosure quit_closure)
         : quit_closure_(std::move(quit_closure)) {}
 
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     void OnHostCloseRequested(aura::WindowTreeHost* host) override {
       std::move(quit_closure_).Run();
     }
 
    private:
     base::OnceClosure quit_closure_;
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   base::RunLoop run_loop;
@@ -158,12 +158,6 @@ void RunRunLoopUntilOnHostCloseRequested(aura::WindowTreeHost* host) {
 }
 
 int DemoMain() {
-#if defined(USE_X11)
-  // This demo uses InProcessContextFactory which uses X on a separate Gpu
-  // thread.
-  gfx::InitializeThreadedX11();
-#endif
-
   gl::init::InitializeGLOneOff();
 
 #if defined(OS_WIN)
@@ -178,7 +172,8 @@ int DemoMain() {
   // The ContextFactory must exist before any Compositors are created.
   viz::HostFrameSinkManager host_frame_sink_manager;
   viz::ServerSharedBitmapManager server_shared_bitmap_manager;
-  viz::FrameSinkManagerImpl frame_sink_manager(&server_shared_bitmap_manager);
+  viz::FrameSinkManagerImpl frame_sink_manager{
+      viz::FrameSinkManagerImpl::InitParams(&server_shared_bitmap_manager)};
   host_frame_sink_manager.SetLocalManager(&frame_sink_manager);
   frame_sink_manager.SetLocalClient(&host_frame_sink_manager);
   auto context_factory = std::make_unique<ui::InProcessContextFactory>(
@@ -190,22 +185,19 @@ int DemoMain() {
 
   std::unique_ptr<aura::Env> env = aura::Env::CreateInstance();
   env->set_context_factory(context_factory.get());
-  env->set_context_factory_private(context_factory.get());
   std::unique_ptr<aura::TestScreen> test_screen(
       aura::TestScreen::Create(gfx::Size()));
   display::Screen::SetScreenInstance(test_screen.get());
   std::unique_ptr<aura::WindowTreeHost> host(
       test_screen->CreateHostForPrimaryDisplay());
-  std::unique_ptr<DemoWindowParentingClient> window_parenting_client(
-      new DemoWindowParentingClient(host->window()));
-  aura::test::TestFocusClient focus_client;
-  aura::client::SetFocusClient(host->window(), &focus_client);
+  DemoWindowParentingClient window_parenting_client(host->window());
+  aura::test::TestFocusClient focus_client(host->window());
 
   // Create a hierarchy of test windows.
   gfx::Rect window1_bounds(100, 100, 400, 400);
   DemoWindowDelegate window_delegate1(SK_ColorBLUE);
   aura::Window window1(&window_delegate1);
-  window1.set_id(1);
+  window1.SetId(1);
   window1.Init(ui::LAYER_TEXTURED);
   window1.SetBounds(window1_bounds);
   window1.Show();
@@ -214,7 +206,7 @@ int DemoMain() {
   gfx::Rect window2_bounds(200, 200, 350, 350);
   DemoWindowDelegate window_delegate2(SK_ColorRED);
   aura::Window window2(&window_delegate2);
-  window2.set_id(2);
+  window2.SetId(2);
   window2.Init(ui::LAYER_TEXTURED);
   window2.SetBounds(window2_bounds);
   window2.Show();
@@ -223,7 +215,7 @@ int DemoMain() {
   gfx::Rect window3_bounds(10, 10, 50, 50);
   DemoWindowDelegate window_delegate3(SK_ColorGREEN);
   aura::Window window3(&window_delegate3);
-  window3.set_id(3);
+  window3.SetId(3);
   window3.Init(ui::LAYER_TEXTURED);
   window3.SetBounds(window3_bounds);
   window3.Show();

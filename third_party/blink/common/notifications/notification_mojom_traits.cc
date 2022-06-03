@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 
@@ -27,7 +29,7 @@ bool ValidateVibrationPattern(const std::vector<int>& vibration_pattern) {
 }
 
 bool ValidateActions(
-    const std::vector<blink::PlatformNotificationAction>& actions) {
+    const std::vector<blink::mojom::NotificationActionPtr>& actions) {
   return actions.size() <= kMaximumActions;
 }
 
@@ -40,56 +42,6 @@ bool ValidateData(const std::vector<char>& data) {
 
 namespace mojo {
 
-using blink::mojom::NotificationActionType;
-
-// static
-NotificationActionType
-EnumTraits<NotificationActionType, blink::PlatformNotificationActionType>::
-    ToMojom(blink::PlatformNotificationActionType input) {
-  switch (input) {
-    case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON:
-      return NotificationActionType::BUTTON;
-    case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT:
-      return NotificationActionType::TEXT;
-  }
-
-  NOTREACHED();
-  return NotificationActionType::BUTTON;
-}
-
-// static
-bool EnumTraits<NotificationActionType, blink::PlatformNotificationActionType>::
-    FromMojom(NotificationActionType input,
-              blink::PlatformNotificationActionType* out) {
-  switch (input) {
-    case NotificationActionType::BUTTON:
-      *out = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON;
-      return true;
-    case NotificationActionType::TEXT:
-      *out = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT;
-      return true;
-  }
-
-  return false;
-}
-
-// static
-bool StructTraits<blink::mojom::NotificationActionDataView,
-                  blink::PlatformNotificationAction>::
-    Read(blink::mojom::NotificationActionDataView notification_action,
-         blink::PlatformNotificationAction* out) {
-  base::Optional<base::string16> placeholder;
-  if (!notification_action.ReadType(&out->type) ||
-      !notification_action.ReadTitle(&out->title) ||
-      !notification_action.ReadAction(&out->action) ||
-      !notification_action.ReadIcon(&out->icon) ||
-      !notification_action.ReadPlaceholder(&placeholder)) {
-    return false;
-  }
-  out->placeholder = base::NullableString16(placeholder);
-  return true;
-}
-
 // static
 bool StructTraits<blink::mojom::NotificationDataDataView,
                   blink::PlatformNotificationData>::
@@ -99,10 +51,11 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
   // platform_notification_data.data once it stores a vector of ints not chars.
   std::vector<uint8_t> data;
 
+  absl::optional<std::string> lang;
   if (!notification_data.ReadTitle(&platform_notification_data->title) ||
       !notification_data.ReadDirection(
           &platform_notification_data->direction) ||
-      !notification_data.ReadLang(&platform_notification_data->lang) ||
+      !notification_data.ReadLang(&lang) ||
       !notification_data.ReadBody(&platform_notification_data->body) ||
       !notification_data.ReadTag(&platform_notification_data->tag) ||
       !notification_data.ReadImage(&platform_notification_data->image) ||
@@ -116,6 +69,8 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
           &platform_notification_data->show_trigger_timestamp)) {
     return false;
   }
+
+  platform_notification_data->lang = std::move(lang).value_or(std::string());
 
   platform_notification_data->data.assign(data.begin(), data.end());
 

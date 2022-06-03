@@ -6,45 +6,24 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/app_list/model/app_list_model_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/selection_model.h"
 
 namespace ash {
 
 class SearchBoxModelObserver;
 
-// SearchBoxModel consists of an icon, a hint text, a user text and a selection
-// model. The icon is rendered to the side of the query editor. The hint text
-// is used as query edit control's placeholder text and displayed when there is
-// no user text in the control. The selection model and the text represents the
-// text, cursor position and selected text in edit control.
+// SearchBoxModel provides the user entered text, and the system state that
+// influences the search box behavior.
 class APP_LIST_MODEL_EXPORT SearchBoxModel {
  public:
   SearchBoxModel();
+  SearchBoxModel(const SearchBoxModel&) = delete;
+  SearchBoxModel& operator=(const SearchBoxModel&) = delete;
   ~SearchBoxModel();
-
-  // Sets/gets the hint text to display when there is in input.
-  void SetHintText(const base::string16& hint_text);
-  const base::string16& hint_text() const { return hint_text_; }
-
-  // Sets the text for screen readers on the search box, and updates the
-  // |accessible_name_|.
-  void SetTabletAndClamshellAccessibleName(
-      base::string16 tablet_accessible_name,
-      base::string16 clamshell_accessible_name);
-
-  // Changes the accessible name to clamshell or tablet friendly based on tablet
-  // mode.
-  void UpdateAccessibleName();
-  const base::string16& accessible_name() const { return accessible_name_; }
-
-  void SetTabletMode(bool is_tablet_mode);
-  bool is_tablet_mode() const { return is_tablet_mode_; }
 
   void SetShowAssistantButton(bool show);
   bool show_assistant_button() const { return show_assistant_button_; }
@@ -54,26 +33,18 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
 
   // Sets/gets the text for the search box's Textfield and the voice search
   // flag.
-  void Update(const base::string16& text,
-              bool initiated_by_user);
-  const base::string16& text() const { return text_; }
+  void Update(const std::u16string& text, bool initiated_by_user);
+  const std::u16string& text() const { return text_; }
 
   void AddObserver(SearchBoxModelObserver* observer);
   void RemoveObserver(SearchBoxModelObserver* observer);
 
  private:
-  base::string16 hint_text_;
-  base::string16 tablet_accessible_name_;
-  base::string16 clamshell_accessible_name_;
-  base::string16 accessible_name_;
-  base::string16 text_;
+  std::u16string text_;
   bool search_engine_is_google_ = false;
-  bool is_tablet_mode_ = false;
   bool show_assistant_button_ = false;
 
-  base::ObserverList<SearchBoxModelObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxModel);
+  base::ObserverList<SearchBoxModelObserver> observers_;
 };
 
 }  // namespace ash

@@ -12,6 +12,8 @@ import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
+import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
+import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/notifications/notification.mojom";
 import "third_party/blink/public/mojom/payments/payment_app.mojom";
@@ -131,11 +133,18 @@ enum FetchHandlerExistence {
   DOES_NOT_EXIST,
 };
 
-// The number of seconds for which a 'push' event should be allowed to run.
-// This is not in the spec but for a Chrome-specific timeout. Each
-// event dispatched to service workers has a 5 minute timeout in the Chrome
-// implementation, but this makes the timeout for push events shorter.
+// The number of seconds for which a 'push' and the 'pushsubsciptionchange'
+// event should be allowed to run. This is not in the spec but for a
+// Chrome-specific timeout. Each event dispatched to service workers has a 5
+// minute timeout in the Chrome implementation, but this makes the timeout for
+// push events shorter.
 const int32 kPushEventTimeoutSeconds = 90;
+
+// The default number of seconds for idle timeouts. A service worker requests
+// termination when no event is running on the thread with a delay. This is the
+// default value for the delay, and the delay can be updated by SetIdleDelay()
+// in blink.mojom.ServiceWorker interface.
+const int32 kServiceWorkerDefaultIdleDelayInSeconds = 30;
 
 // An interface for talking to a running service worker thread. The browser
 // process uses this interface to request the renderer to do things like
@@ -170,14 +179,27 @@ interface ServiceWorker {
   // ServiceWorkerGlobalScope#registration object and
   // ServiceWorkerGlobalScope#serviceWorker object. JavaScript execution of the
   // service worker does not start until this message is received.
+  // When the service worker is new and going to be registered,
+  // |subresource_loader_factories| is non-null and it should be used for all
+  // subsequent requests.
+  // |reporting_observer_receiver| will be set to the worker global scope so
+  // that reports queued to the remote of |reporting_observer_receiver| will
+  // be notified to ReportingObservers registered with the global scope.
   InitializeGlobalScope(
       pending_associated_remote<ServiceWorkerHost> service_worker_host,
       ServiceWorkerRegistrationObjectInfo registration_info,
       ServiceWorkerObjectInfo service_worker_info,
-      FetchHandlerExistence fetch_handler_existence);
+      FetchHandlerExistence fetch_handler_existence,
+      URLLoaderFactoryBundle? subresource_loader_factories,
+      pending_receiver<ReportingObserver>? reporting_observer_receiver);
 
+  // These methods dispatch InstallEvent and ActivateEvent to the
+  // ServiceWorkerGlobalScope.
+  // The |fetch_count| return value is the number of network fetches performed
+  // from the service worker context during the event handler.  This is used
+  // for metrics.
   DispatchInstallEvent()
-      => (ServiceWorkerEventStatus status, bool has_fetch_handler);
+      => (ServiceWorkerEventStatus status, uint32 fetch_count);
   DispatchActivateEvent()
       => (ServiceWorkerEventStatus status);
 
@@ -230,11 +252,18 @@ interface ServiceWorker {
   // content, or null.
   DispatchPushEvent(string? payload)
       => (ServiceWorkerEventStatus status);
-  // Whenever a PushSubscription changes, a change event is generated with (optionally)
-  // the previous subscription and the new subscription.
+  // Whenever a PushSubscription changes, a change event is generated with
+  // (optionally) the previous subscription and the new subscription.
+  // |old_subscription| can be null when there was a partial database corruption
+  // so that the full subscription information about the subscription that is
+  // going to become invalid cannot be found anymore.
+  // |new_subscription| is the subscription that is going to replace the
+  // |old_subscription| and is null when permission is revoked or the
+  // subscription is lost.
+  // Ref: https://w3c.github.io/push-api/#dfn-pushsubscriptionchange
   DispatchPushSubscriptionChangeEvent(
-      PushSubscription old_subscription,
-      PushSubscription new_subscription)
+      PushSubscription? old_subscription,
+      PushSubscription? new_subscription)
       => (ServiceWorkerEventStatus status);
   // Arguments are passed to the event handler as parameters of SyncEvent.
   // Ref: https://wicg.github.io/BackgroundSync/spec/#sync-event
@@ -272,9 +301,9 @@ interface ServiceWorker {
   // worker.
   Ping() => ();
 
-  // Lets the idle timer request termination immediately after all inflight
-  // events are handled without delay.
-  SetIdleTimerDelayToZero();
+  // Changes the delay until the idle timer requests termination after all
+  // events are handled.
+  SetIdleDelay(mojo_base.mojom.TimeDelta delay);
 
   // Adds a message to DevTools console which is associated with this worker.
   AddMessageToConsole(ConsoleMessageLevel level, string message);

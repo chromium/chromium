@@ -29,6 +29,21 @@ var workerRegisterAndClaimPromise = function() {
 };
 
 var workerControlsPagePromise = function() {
+  return new Promise((resolve) => {
+    if (navigator.serviceWorker.controller) {
+      resolve();
+      return;
+    }
+    navigator.serviceWorker.oncontrollerchange = function(e) {
+      if (navigator.serviceWorker.controller) {
+        resolve();
+        return;
+      }
+    };
+  });
+};
+
+var fetchWithControlledPagePromise = function() {
   return new Promise(function(resolve, reject) {
     fetch(getTestURL()).then(function(response) {
       return response.text();
@@ -57,6 +72,8 @@ var test = function() {
   }).then(function(registration) {
     serviceWorkerRegistration = registration;
     return workerControlsPagePromise();
+  }).then(function() {
+    return fetchWithControlledPagePromise();
   }).then(function() {
     return serviceWorkerRegistration.unregister();
   }).then(function() {

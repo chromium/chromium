@@ -15,10 +15,9 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/input.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/network.h"
@@ -34,12 +33,15 @@ class DevtoolsClient : public MessageDispatcher,
                        public content::DevToolsAgentHostClient {
  public:
   explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
+
+  DevtoolsClient(const DevtoolsClient&) = delete;
+  DevtoolsClient& operator=(const DevtoolsClient&) = delete;
+
   ~DevtoolsClient() override;
 
   input::Domain* GetInput();
   dom::Domain* GetDOM();
   runtime::Domain* GetRuntime();
-  network::Domain* GetNetwork();
   target::ExperimentalDomain* GetTarget();
 
   // MessageDispatcher implementation:
@@ -60,7 +62,7 @@ class DevtoolsClient : public MessageDispatcher,
 
   // content::DevToolsAgentHostClient overrides:
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
-                               const std::string& message) override;
+                               base::span<const uint8_t> message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
 
  private:
@@ -88,6 +90,10 @@ class DevtoolsClient : public MessageDispatcher,
     // Register the event handlers and start tracking new targets. |client|
     // must outlive this frame tracker.
     FrameTracker(DevtoolsClient* client);
+
+    FrameTracker(const FrameTracker&) = delete;
+    FrameTracker& operator=(const FrameTracker&) = delete;
+
     ~FrameTracker();
 
     void Start();
@@ -117,7 +123,6 @@ class DevtoolsClient : public MessageDispatcher,
     std::unordered_map<std::string, std::string> sessions_map_;
 
     base::WeakPtrFactory<FrameTracker> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(FrameTracker);
   };
 
   // If the frame is known to devtools, return the session id for it.
@@ -126,7 +131,7 @@ class DevtoolsClient : public MessageDispatcher,
   template <typename CallbackType>
   void SendMessageWithParams(const char* method,
                              std::unique_ptr<base::Value> params,
-                             const std::string& optional_node_frame_id,
+                             const std::string& optional_session_id,
                              CallbackType callback);
   bool DispatchMessageReply(std::unique_ptr<base::Value> owning_message,
                             const base::DictionaryValue& message_dict);
@@ -152,16 +157,13 @@ class DevtoolsClient : public MessageDispatcher,
   input::ExperimentalDomain input_domain_;
   dom::ExperimentalDomain dom_domain_;
   runtime::ExperimentalDomain runtime_domain_;
-  network::ExperimentalDomain network_domain_;
   target::ExperimentalDomain target_domain_;
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
-  bool renderer_crashed_;
   int next_message_id_;
   FrameTracker frame_tracker_;
 
   base::WeakPtrFactory<DevtoolsClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DevtoolsClient);
 };
 
 }  // namespace autofill_assistant.

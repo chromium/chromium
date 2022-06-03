@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -30,12 +29,16 @@ class LocalFileSyncStatus;
 // Expected to be called on and will callback on IO thread.
 class RootDeleteHelper {
  public:
-  typedef base::Callback<void(base::File::Error)> FileStatusCallback;
+  typedef base::OnceCallback<void(base::File::Error)> FileStatusCallback;
 
   RootDeleteHelper(storage::FileSystemContext* file_system_context,
                    LocalFileSyncStatus* sync_status,
                    const storage::FileSystemURL& url,
-                   const FileStatusCallback& callback);
+                   FileStatusCallback callback);
+
+  RootDeleteHelper(const RootDeleteHelper&) = delete;
+  RootDeleteHelper& operator=(const RootDeleteHelper&) = delete;
+
   ~RootDeleteHelper();
 
   void Run();
@@ -55,8 +58,6 @@ class RootDeleteHelper {
   LocalFileSyncStatus* sync_status_;
 
   base::WeakPtrFactory<RootDeleteHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RootDeleteHelper);
 };
 
 }  // namespace sync_file_system

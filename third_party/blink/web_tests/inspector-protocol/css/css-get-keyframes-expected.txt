@@ -2,29 +2,36 @@ Test that keyframe rules are reported.
 Dumping CSS keyframed animations: 
 @keyframes animName {
     0% {
-        width: 100px;
+        width: 100px; @[7:8-7:21]
+        width: 100px; @[undefined-undefined]
     }
     10% {
-        width: 150px;
+        width: 150px; @[10:8-10:21]
+        width: 150px; @[undefined-undefined]
     }
     100% {
-        width: 200px;
+        width: 200px; @[13:8-13:21]
+        width: 200px; @[undefined-undefined]
     }
 }
 @keyframes mediaAnim {
     0% {
-        opacity: 0;
+        opacity: 0; @[20:12-20:23]
+        opacity: 0; @[undefined-undefined]
     }
     100% {
-        opacity: 1;
+        opacity: 1; @[23:12-23:23]
+        opacity: 1; @[undefined-undefined]
     }
 }
 @keyframes styleSheetAnim {
     0% {
-        color: red;
+        color: red; @[2:8-2:19]
+        color: red; @[undefined-undefined]
     }
     100% {
-        color: blue;
+        color: blue; @[5:8-5:20]
+        color: blue; @[undefined-undefined]
     }
 }
 

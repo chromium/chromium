@@ -20,10 +20,11 @@ namespace password_manager {
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
     ukm::SourceId source_id,
-    const GURL& main_frame_url)
-    : main_frame_url_(main_frame_url),
-      ukm_entry_builder_(
-          std::make_unique<ukm::builders::PageWithPassword>(source_id)) {}
+    std::unique_ptr<NavigationMetricRecorderDelegate>
+        navigation_metric_recorder)
+    : ukm_entry_builder_(
+          std::make_unique<ukm::builders::PageWithPassword>(source_id)),
+      navigation_metric_recorder_(std::move(navigation_metric_recorder)) {}
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
     PasswordManagerMetricsRecorder&& that) noexcept = default;
@@ -41,7 +42,17 @@ PasswordManagerMetricsRecorder& PasswordManagerMetricsRecorder::operator=(
     PasswordManagerMetricsRecorder&& that) = default;
 
 void PasswordManagerMetricsRecorder::RecordUserModifiedPasswordField() {
+  if (!user_modified_password_field_ && navigation_metric_recorder_) {
+    navigation_metric_recorder_->OnUserModifiedPasswordFieldFirstTime();
+  }
   user_modified_password_field_ = true;
+}
+
+void PasswordManagerMetricsRecorder::RecordUserFocusedPasswordField() {
+  if (!user_focused_password_field_ && navigation_metric_recorder_) {
+    navigation_metric_recorder_->OnUserFocusedPasswordFieldFirstTime();
+  }
+  user_focused_password_field_ = true;
 }
 
 void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
@@ -67,9 +78,6 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
       case NO_MATCHING_FORM:
         logger->LogMessage(Logger::STRING_NO_MATCHING_FORM);
         break;
-      case FORM_BLACKLISTED:
-        logger->LogMessage(Logger::STRING_FORM_BLACKLISTED);
-        break;
       case INVALID_FORM:
         logger->LogMessage(Logger::STRING_INVALID_FORM);
         break;
@@ -79,7 +87,8 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
       case SAVING_ON_HTTP_AFTER_HTTPS:
         logger->LogSuccessiveOrigins(
             Logger::STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
-            main_frame_url.GetOrigin(), form_origin.GetOrigin());
+            main_frame_url.DeprecatedGetOriginAsURL(),
+            form_origin.DeprecatedGetOriginAsURL());
         break;
       case MAX_FAILURE_VALUE:
         NOTREACHED();

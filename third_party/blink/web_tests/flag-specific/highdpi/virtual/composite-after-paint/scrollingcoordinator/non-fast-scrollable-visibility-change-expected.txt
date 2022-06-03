@@ -1,0 +1,34 @@
+This should be covered by a green overlay.
+
+Two squares should be visible and fully covered by green overlays.
+
+This test ensures that changing visibility of a non-fast scrollable area correctly updates list of non-fast scrollable areas (See http://crbug.com/434982). Two types of non-fast scrollable regions are covered: div, and iframe.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+running tests for non-fast scrollable div
+PASS document.getElementById("div").style.display is "block"
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 350, 200, 200]. Was [0, 525, 300, 300].
+PASS internals.needsLayoutCount() is 0
+PASS nonFastScrollableRects.length is 2
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 50, 200, 200]. Was [0, 75, 300, 300].
+FAIL rectToString(nonFastScrollableRects[1]) should be [0, 350, 200, 200]. Was [0, 525, 300, 300].
+PASS internals.needsLayoutCount() is 0
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 50, 200, 200]. Was [0, 75, 300, 300].
+running tests for non-fast scrollable iframe
+PASS document.getElementById("iframe").style.display is "block"
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 350, 222, 222]. Was [0, 525, 333, 333].
+PASS internals.needsLayoutCount() is 0
+PASS nonFastScrollableRects.length is 2
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 50, 222, 222]. Was [0, 75, 333, 333].
+FAIL rectToString(nonFastScrollableRects[1]) should be [0, 350, 222, 222]. Was [0, 525, 333, 333].
+PASS internals.needsLayoutCount() is 0
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 50, 222, 222]. Was [0, 75, 333, 333].
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

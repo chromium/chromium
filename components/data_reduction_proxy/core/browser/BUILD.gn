@@ -9,39 +9,19 @@ if (is_android) {
 browser_sources = [
   "data_reduction_proxy_compression_stats.cc",
   "data_reduction_proxy_compression_stats.h",
-  "data_reduction_proxy_config.cc",
-  "data_reduction_proxy_config.h",
-  "data_reduction_proxy_config_service_client.cc",
-  "data_reduction_proxy_config_service_client.h",
-  "data_reduction_proxy_configurator.cc",
-  "data_reduction_proxy_configurator.h",
-  "data_reduction_proxy_data.cc",
-  "data_reduction_proxy_data.h",
   "data_reduction_proxy_metrics.h",
-  "data_reduction_proxy_mutable_config_values.cc",
-  "data_reduction_proxy_mutable_config_values.h",
   "data_reduction_proxy_prefs.cc",
   "data_reduction_proxy_prefs.h",
-  "data_reduction_proxy_request_options.cc",
-  "data_reduction_proxy_request_options.h",
   "data_reduction_proxy_service.cc",
   "data_reduction_proxy_service.h",
   "data_reduction_proxy_settings.cc",
   "data_reduction_proxy_settings.h",
-  "data_reduction_proxy_util.cc",
-  "data_reduction_proxy_util.h",
   "data_store.cc",
   "data_store.h",
   "data_usage_store.cc",
   "data_usage_store.h",
   "db_data_owner.cc",
   "db_data_owner.h",
-  "network_properties_manager.cc",
-  "network_properties_manager.h",
-  "secure_proxy_checker.cc",
-  "secure_proxy_checker.h",
-  "warmup_url_fetcher.cc",
-  "warmup_url_fetcher.h",
 ]
 
 if (is_android) {
@@ -56,22 +36,15 @@ if (is_android) {
       "//components/data_use_measurement/core:ascriber",
       "//components/pref_registry",
       "//components/prefs",
-      "//components/previews/core:core",
-      "//components/variations",
-      "//components/variations/net",
-      "//content/public/browser",
       "//crypto",
       "//google_apis",
       "//net:net",
-      "//services/network/public/cpp",
       "//url:url",
     ]
   }
 
   java_cpp_enum("data_reduction_proxy_savings_cleared_enum_java") {
-    sources = [
-      "data_reduction_proxy_compression_stats.h",
-    ]
+    sources = [ "data_reduction_proxy_compression_stats.h" ]
   }
 }
 
@@ -92,15 +65,10 @@ static_library("browser") {
     "//components/data_use_measurement/core:ascriber",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/previews/core:core",
-    "//components/variations",
-    "//components/variations/net",
-    "//content/public/browser",
     "//crypto",
     "//google_apis",
     "//net",
     "//services/network:network_service",
-    "//services/network/public/cpp",
     "//third_party/leveldatabase",
     "//url",
   ]
@@ -114,27 +82,19 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "data_reduction_proxy_config_service_client_test_utils.cc",
-    "data_reduction_proxy_config_service_client_test_utils.h",
-    "data_reduction_proxy_config_test_utils.cc",
-    "data_reduction_proxy_config_test_utils.h",
     "data_reduction_proxy_settings_test_utils.cc",
     "data_reduction_proxy_settings_test_utils.h",
     "data_reduction_proxy_test_utils.cc",
     "data_reduction_proxy_test_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
-  public_deps = [
-    ":browser",
-  ]
+  public_deps = [ ":browser" ]
   deps = [
     "//base",
     "//components/data_reduction_proxy/core/common",
-    "//components/data_reduction_proxy/core/common:test_support",
+    "//components/data_use_measurement/core",
+    "//components/data_use_measurement/core:ascriber",
     "//components/prefs:test_support",
-    "//components/previews/core:core",
     "//net",
     "//net:test_support",
     "//services/network:test_support",
@@ -156,33 +116,18 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/data_reduction_proxy/proxy/noblock.html",
     "//components/test/data/data_reduction_proxy/proxy/noblock.html.mock-http-headers",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "data_reduction_proxy_bypass_protocol_unittest.cc",
     "data_reduction_proxy_compression_stats_unittest.cc",
-    "data_reduction_proxy_config_service_client_unittest.cc",
-    "data_reduction_proxy_config_unittest.cc",
-    "data_reduction_proxy_configurator_unittest.cc",
-    "data_reduction_proxy_data_unittest.cc",
-    "data_reduction_proxy_mutable_config_values_unittest.cc",
     "data_reduction_proxy_prefs_unittest.cc",
-    "data_reduction_proxy_request_options_unittest.cc",
-    "data_reduction_proxy_service_unittest.cc",
     "data_reduction_proxy_settings_unittest.cc",
-    "data_reduction_proxy_util_unittest.cc",
     "data_usage_store_unittest.cc",
-    "network_properties_manager_unittest.cc",
-    "warmup_url_fetcher_unittest.cc",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   deps = [
     ":browser",
@@ -190,16 +135,12 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
-    "//components/data_reduction_proxy/core/common:test_support",
+    "//build:chromeos_buildflags",
     "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
     "//components/data_use_measurement/core:ascriber",
     "//components/prefs:test_support",
-    "//components/previews/core",
-    "//components/variations",
-    "//content/public/browser",
-    "//content/test:test_support",
+    "//components/variations:test_support",
     "//net:test_support",
-    "//services/network:network_service",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

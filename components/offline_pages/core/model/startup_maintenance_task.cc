@@ -73,7 +73,7 @@ std::set<base::FilePath> GetAllArchives(const base::FilePath& archives_dir) {
 bool DeleteFiles(const std::vector<base::FilePath>& file_paths) {
   bool result = true;
   for (const auto& file_path : file_paths)
-    result = base::DeleteFile(file_path, false) && result;
+    result = base::DeleteFile(file_path) && result;
   return result;
 }
 

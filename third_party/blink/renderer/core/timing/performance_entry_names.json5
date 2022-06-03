@@ -17,5 +17,6 @@
     "paint",
     "resource",
     "taskattribution",
+    "visibility-state",
   ],
 }

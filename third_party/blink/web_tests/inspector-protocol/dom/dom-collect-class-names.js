@@ -14,7 +14,7 @@
 
   await session.evaluate(() => {
     var host = document.querySelector('#shadow-host');
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = '<div class="shadow-class"></div>';
   });
 

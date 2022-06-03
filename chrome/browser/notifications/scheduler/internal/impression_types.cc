@@ -22,7 +22,8 @@ bool Impression::operator==(const Impression& other) const {
          impression == other.impression && integrated == other.integrated &&
          guid == other.guid && type == other.type &&
          impression_mapping == other.impression_mapping &&
-         custom_data == other.custom_data;
+         custom_data == other.custom_data &&
+         ignore_timeout_duration == other.ignore_timeout_duration;
 }
 
 SuppressionInfo::SuppressionInfo(const base::Time& last_trigger,
@@ -41,7 +42,9 @@ base::Time SuppressionInfo::ReleaseTime() const {
 }
 
 ClientState::ClientState()
-    : type(SchedulerClientType::kUnknown), current_max_daily_show(0) {}
+    : type(SchedulerClientType::kUnknown),
+      current_max_daily_show(0),
+      negative_events_count(0) {}
 
 ClientState::ClientState(const ClientState& other) = default;
 
@@ -58,7 +61,9 @@ bool ClientState::operator==(const ClientState& other) const {
 
   return type == other.type &&
          current_max_daily_show == other.current_max_daily_show &&
-         suppression_info == other.suppression_info;
+         suppression_info == other.suppression_info &&
+         negative_events_count == other.negative_events_count &&
+         last_negative_event_ts == other.last_negative_event_ts &&
+         last_shown_ts == other.last_shown_ts;
 }
-
 }  // namespace notifications

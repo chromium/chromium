@@ -9,14 +9,11 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-      "position": [10, 0],
-      "bounds": [12, 12],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-          "rect": [0, 0, 12, 12],
-          "reason": "paint property change"
-        }
+      "bounds": [100, 50],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 12, 12],
+        [10, 0, 12, 12]
       ],
       "transform": 1
     }
@@ -44,14 +41,11 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-      "position": [9, 0],
-      "bounds": [13, 12],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-          "rect": [0, 0, 13, 12],
-          "reason": "paint property change"
-        }
+      "bounds": [100, 50],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [11, 0, 13, 12],
+        [9, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -79,14 +73,11 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-      "position": [10, 0],
-      "bounds": [13, 12],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-          "rect": [0, 0, 13, 12],
-          "reason": "paint property change"
-        }
+      "bounds": [100, 50],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -114,14 +105,11 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-      "position": [10, 0],
-      "bounds": [13, 12],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-          "rect": [0, 0, 13, 12],
-          "reason": "paint property change"
-        }
+      "bounds": [100, 50],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }
@@ -149,14 +137,11 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-      "position": [10, 0],
-      "bounds": [13, 12],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
-          "rect": [0, 0, 13, 12],
-          "reason": "paint property change"
-        }
+      "bounds": [100, 50],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [12, 0, 13, 12],
+        [10, 0, 13, 12]
       ],
       "transform": 1
     }

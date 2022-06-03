@@ -3,5 +3,5 @@ include_rules = [
   "+native_client/src/trusted/service_runtime/nacl_error_code.h",
   "+mojo/core/embedder",
   "+mojo/public",
-  "+services/service_manager/sandbox",
+  "+sandbox/policy",
 ]

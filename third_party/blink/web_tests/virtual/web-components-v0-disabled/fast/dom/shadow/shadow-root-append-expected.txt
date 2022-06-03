@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 19: Uncaught TypeError: div.createShadowRoot is not a function
-This test checks that appending shadow root as a child does not crash.
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

@@ -10,9 +10,9 @@
 namespace vr {
 
 TextEditAction::TextEditAction(TextEditActionType type)
-    : TextEditAction(type, base::UTF8ToUTF16(""), 0) {}
+    : TextEditAction(type, u"", 0) {}
 TextEditAction::TextEditAction(TextEditActionType type,
-                               base::string16 text,
+                               std::u16string text,
                                int new_cursor_position)
     : type_(type), text_(text), new_cursor_position_(new_cursor_position) {}
 

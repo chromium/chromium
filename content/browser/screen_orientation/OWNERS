@@ -1,4 +1,0 @@
-file://third_party/blink/renderer/modules/screen_orientation/OWNERS
-
-# COMPONENT: Blink>ScreenOrientation
-# TEAM: media-dev@chromium.org

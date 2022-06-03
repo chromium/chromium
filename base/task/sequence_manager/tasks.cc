@@ -11,22 +11,22 @@ Task::Task(internal::PostedTask posted_task,
            TimeTicks delayed_run_time,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
-           internal::WakeUpResolution resolution)
+           WakeUpResolution resolution)
     : PendingTask(posted_task.location,
                   std::move(posted_task.callback),
-                  delayed_run_time,
-                  posted_task.nestable),
+                  posted_task.queue_time,
+                  delayed_run_time),
+      nestable(posted_task.nestable),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order) {
-  // We use |sequence_num| in DelayedWakeUp for ordering purposes and it
-  // may wrap around to a negative number during the static cast, hence,
-  // the relevant code is especially sensitive to a potential change of
-  // |PendingTask::sequence_num|'s type.
+  // We use |sequence_num| when comparing PendingTask for ordering purposes
+  // and it may wrap around to a negative number during the static cast, hence,
+  // TaskQueueImpl::DelayedIncomingQueue is especially sensitive to a potential
+  // change of |PendingTask::sequence_num|'s type.
   static_assert(std::is_same<decltype(sequence_num), int>::value, "");
   sequence_num = static_cast<int>(sequence_order);
-  this->is_high_res = resolution == internal::WakeUpResolution::kHigh;
-  queue_time = posted_task.queue_time;
+  this->is_high_res = resolution == WakeUpResolution::kHigh;
 }
 
 Task::Task(Task&& move_from) = default;

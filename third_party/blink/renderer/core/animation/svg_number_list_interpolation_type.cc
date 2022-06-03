@@ -36,7 +36,7 @@ InterpolationValue SVGNumberListInterpolationType::MaybeConvertSVGValue(
   if (svg_value.GetType() != kAnimatedNumberList)
     return nullptr;
 
-  const SVGNumberList& number_list = ToSVGNumberList(svg_value);
+  const SVGNumberList& number_list = To<SVGNumberList>(svg_value);
   auto result = std::make_unique<InterpolableList>(number_list.length());
   for (wtf_size_t i = 0; i < number_list.length(); i++) {
     result->Set(
@@ -48,8 +48,9 @@ InterpolationValue SVGNumberListInterpolationType::MaybeConvertSVGValue(
 PairwiseInterpolationValue SVGNumberListInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  size_t start_length = ToInterpolableList(*start.interpolable_value).length();
-  size_t end_length = ToInterpolableList(*end.interpolable_value).length();
+  size_t start_length =
+      To<InterpolableList>(*start.interpolable_value).length();
+  size_t end_length = To<InterpolableList>(*end.interpolable_value).length();
   if (start_length != end_length)
     return nullptr;
   return InterpolationType::MaybeMergeSingles(std::move(start), std::move(end));
@@ -57,7 +58,7 @@ PairwiseInterpolationValue SVGNumberListInterpolationType::MaybeMergeSingles(
 
 static void PadWithZeroes(std::unique_ptr<InterpolableValue>& list_pointer,
                           wtf_size_t padded_length) {
-  InterpolableList& list = ToInterpolableList(*list_pointer);
+  auto& list = To<InterpolableList>(*list_pointer);
 
   if (list.length() >= padded_length)
     return;
@@ -76,14 +77,14 @@ void SVGNumberListInterpolationType::Composite(
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
-  const InterpolableList& list = ToInterpolableList(*value.interpolable_value);
+  const auto& list = To<InterpolableList>(*value.interpolable_value);
 
-  if (ToInterpolableList(*underlying_value_owner.Value().interpolable_value)
+  if (To<InterpolableList>(*underlying_value_owner.Value().interpolable_value)
           .length() <= list.length())
     PadWithZeroes(underlying_value_owner.MutableValue().interpolable_value,
                   list.length());
 
-  InterpolableList& underlying_list = ToInterpolableList(
+  auto& underlying_list = To<InterpolableList>(
       *underlying_value_owner.MutableValue().interpolable_value);
 
   DCHECK_GE(underlying_list.length(), list.length());
@@ -99,10 +100,10 @@ SVGPropertyBase* SVGNumberListInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
   auto* result = MakeGarbageCollected<SVGNumberList>();
-  const InterpolableList& list = ToInterpolableList(interpolable_value);
+  const auto& list = To<InterpolableList>(interpolable_value);
   for (wtf_size_t i = 0; i < list.length(); i++) {
     result->Append(MakeGarbageCollected<SVGNumber>(
-        ToInterpolableNumber(list.Get(i))->Value()));
+        To<InterpolableNumber>(list.Get(i))->Value()));
   }
   return result;
 }

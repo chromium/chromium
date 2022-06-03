@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test network status of non http request.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function addScriptElement(src)
@@ -29,14 +29,15 @@
   var seenRequests = 0;
 
   function dumpRequests() {
-    var logView = UI.panels.network._networkLogView;
-    logView._refresh();
+    var logView = UI.panels.network.networkLogView;
+    logView.refresh();
     var dataGrid = logView.element.querySelector('table.data');
     var urls = document.evaluate(
         '//tbody/tr/td[position()=1]/@title', dataGrid, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     var outputStrings = [];
 
-    for (var request of SDK.networkLog.requests()) {
+    const requests = NetworkTestRunner.networkRequests();
+    for (var request of requests) {
       var line = request.displayName + ':' + request.statusCode + ' ' + request.statusText;
       if (request.failed)
         line += '(failed)';

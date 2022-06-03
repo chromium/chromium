@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/proxy_resolver/mojo_proxy_resolver_v8_tracing_bindings.h"
@@ -23,6 +24,10 @@ class ProxyResolverImpl::Job {
   Job(mojo::PendingRemote<mojom::ProxyResolverRequestClient> client,
       ProxyResolverImpl* resolver,
       const GURL& url);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   void Start(const net::NetworkIsolationKey& network_isolation_key);
@@ -41,8 +46,6 @@ class ProxyResolverImpl::Job {
   GURL url_;
   std::unique_ptr<net::ProxyResolver::Request> request_;
   bool done_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverImpl::ProxyResolverImpl(
@@ -95,7 +98,7 @@ void ProxyResolverImpl::Job::GetProxyDone(int error) {
   DVLOG(1) << "GetProxyForUrl(" << url_ << ") finished with error " << error
            << ". " << result_.proxy_list().size() << " Proxies returned:";
   for (const auto& proxy : result_.proxy_list().GetAll()) {
-    DVLOG(1) << proxy.ToURI();
+    DVLOG(1) << net::ProxyServerToProxyUri(proxy);
   }
   if (error == net::OK)
     client_->ReportResult(error, result_);

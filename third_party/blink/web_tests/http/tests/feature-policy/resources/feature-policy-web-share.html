@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Feature-Policy web-share</title>
+<div>web-share</div>
+<script>
+
+document.addEventListener('keypress', function() {
+  navigator.share({}).catch(error => {
+    parent.postMessage({ type: 'result', enabled: error.constructor === TypeError }, '*');
+  });
+});
+
+window.onload = function() {
+  focus();
+  eventSender.keyDown('a', []);
+}
+</script>

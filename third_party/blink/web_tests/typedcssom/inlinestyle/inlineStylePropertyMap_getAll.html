@@ -33,7 +33,7 @@ test(function() {
 }, "getAll() returns an empty list if the property isn't set");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.getAll('lemons');
   });
 }, "getAll() throws if you try to get an invalid property");

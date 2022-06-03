@@ -4,7 +4,7 @@
 
 #include "components/arc/file_system/file_system_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/arc/mojom/file_system.mojom.h"
 
 namespace mojo {

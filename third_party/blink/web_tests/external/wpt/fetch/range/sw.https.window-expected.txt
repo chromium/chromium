@@ -1,12 +1,12 @@
 This is a testharness.js-based test.
 PASS Defer range header filter tests to service worker
 PASS Defer range header passthrough tests to service worker
-FAIL Ranged response not allowed following no-cors ranged request assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Non-opaque ranged response executed promise_test: Unhandled rejection with value: object "Error: Script load failed"
+PASS Ranged response not allowed following no-cors ranged request
+PASS Non-opaque ranged response executed
 FAIL Accept-Encoding should not appear in a service worker assert_equals: Accept-Encoding should not be set for media expected (object) null but got (string) "identity;q=1, *;q=0"
-FAIL Range headers correctly preserved assert_equals: Untampered expected (string) "bytes=0-" but got (object) null
+PASS Range headers correctly preserved
 PASS Range headers correctly removed
-FAIL Headers correctly filtered assert_equals: Preserved if no header actually removed expected (string) "bytes=0-" but got (object) null
-FAIL Include range header in network request assert_equals: expected (string) "range-header-received" but got (object) null
+PASS Headers correctly filtered
+PASS Include range header in network request
 Harness: the test ran to completion.
 

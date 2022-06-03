@@ -1,8 +1,8 @@
-document
-++group IsControlElement=false
-++++description Name='The aside tag defines some content aside from the content it is placed in.'
-++complementary
-++++heading Name='Aside tag'
-++++++description Name='Aside tag' IsControlElement=false
-++++group IsControlElement=false
-++++++description Name='The aside content should be related to the surrounding content.'
+Document
+++Group IsControlElement=false
+++++Text Name='The aside tag defines some content aside from the content it is placed in.'
+++Group
+++++Text Name='Aside tag'
+++++++Text Name='Aside tag' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='The aside content should be related to the surrounding content.'

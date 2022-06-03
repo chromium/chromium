@@ -64,9 +64,8 @@ const AtomicString& SpeechRecognitionEvent::InterfaceName() const {
 SpeechRecognitionEvent::SpeechRecognitionEvent(
     const AtomicString& event_name,
     const SpeechRecognitionEventInit* initializer)
-    : Event(event_name, initializer), result_index_(0) {
-  if (initializer->hasResultIndex())
-    result_index_ = initializer->resultIndex();
+    : Event(event_name, initializer),
+      result_index_(initializer->resultIndex()) {
   if (initializer->hasResults())
     results_ = initializer->results();
 }
@@ -81,7 +80,7 @@ SpeechRecognitionEvent::SpeechRecognitionEvent(
 
 SpeechRecognitionEvent::~SpeechRecognitionEvent() = default;
 
-void SpeechRecognitionEvent::Trace(blink::Visitor* visitor) {
+void SpeechRecognitionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(results_);
   Event::Trace(visitor);
 }

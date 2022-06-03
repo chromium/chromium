@@ -9,9 +9,9 @@
 
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/accessibility_observer.h"
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/macros.h"
+#include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -30,15 +30,25 @@ namespace ash {
 class HoverHighlightView;
 class DetailedViewDelegate;
 class TrayAccessibilityLoginScreenTest;
+class TrayAccessibilitySodaTest;
 class TrayAccessibilityTest;
 
 namespace tray {
 
 // Create the detailed view of accessibility tray.
-class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
+class ASH_EXPORT AccessibilityDetailedView
+    : public TrayDetailedView,
+      public speech::SodaInstaller::Observer {
  public:
+  static constexpr char kClassName[] = "AccessibilityDetailedView";
+
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
-  ~AccessibilityDetailedView() override {}
+
+  AccessibilityDetailedView(const AccessibilityDetailedView&) = delete;
+  AccessibilityDetailedView& operator=(const AccessibilityDetailedView&) =
+      delete;
+
+  ~AccessibilityDetailedView() override;
 
   void OnAccessibilityStatusChanged();
 
@@ -47,13 +57,12 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
 
  private:
   friend class ::ash::TrayAccessibilityLoginScreenTest;
+  friend class ::ash::TrayAccessibilitySodaTest;
   friend class ::ash::TrayAccessibilityTest;
   friend class chromeos::TrayAccessibilityTest;
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
   void CreateExtraTitleRowButtons() override;
 
   // Launches the WebUI settings in a browser and closes the system menu.
@@ -65,6 +74,23 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   // Add the accessibility feature list.
   void AppendAccessibilityList();
 
+  void UpdateSodaInstallerObserverStatus();
+  void OnSodaInstallSucceeded();
+  void OnSodaInstallProgress(int progress, speech::LanguageCode language_code);
+  void OnSodaInstallFailed(speech::LanguageCode language_code);
+
+  // SodaInstaller::Observer:
+  void OnSodaInstalled() override;
+  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
+  void OnSodaError() override;
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
+  void OnSodaProgress(int combined_progress) override {}
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override;
+
+  void SetDictationViewSubtitleTextForTesting(std::u16string text);
+  std::u16string GetDictationViewSubtitleTextForTesting();
+
   HoverHighlightView* spoken_feedback_view_ = nullptr;
   HoverHighlightView* select_to_speak_view_ = nullptr;
   HoverHighlightView* dictation_view_ = nullptr;
@@ -75,6 +101,7 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   HoverHighlightView* autoclick_view_ = nullptr;
   HoverHighlightView* virtual_keyboard_view_ = nullptr;
   HoverHighlightView* switch_access_view_ = nullptr;
+  HoverHighlightView* live_caption_view_ = nullptr;
   HoverHighlightView* mono_audio_view_ = nullptr;
   HoverHighlightView* caret_highlight_view_ = nullptr;
   HoverHighlightView* highlight_mouse_cursor_view_ = nullptr;
@@ -94,6 +121,7 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   bool autoclick_enabled_ = false;
   bool virtual_keyboard_enabled_ = false;
   bool switch_access_enabled_ = false;
+  bool live_caption_enabled_ = false;
   bool mono_audio_enabled_ = false;
   bool caret_highlight_enabled_ = false;
   bool highlight_mouse_cursor_enabled_ = false;
@@ -101,8 +129,6 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   bool sticky_keys_enabled_ = false;
 
   LoginStatus login_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityDetailedView);
 };
 
 }  // namespace tray

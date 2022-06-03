@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
@@ -18,20 +17,21 @@ class WebContents;
 class VersionUpdaterCros : public VersionUpdater,
                            public chromeos::UpdateEngineClient::Observer {
  public:
+  VersionUpdaterCros(const VersionUpdaterCros&) = delete;
+  VersionUpdaterCros& operator=(const VersionUpdaterCros&) = delete;
+
   // VersionUpdater implementation.
-  void CheckForUpdate(const StatusCallback& callback,
-                      const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override;
-  void GetChannel(bool get_current_channel,
-                  const ChannelCallback& callback) override;
+  void GetChannel(bool get_current_channel, ChannelCallback callback) override;
   void GetEolInfo(EolInfoCallback callback) override;
-  void SetUpdateOverCellularOneTimePermission(const StatusCallback& callback,
+  void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override;
 
   // Gets the last update status, without triggering a new check or download.
-  void GetUpdateStatus(const StatusCallback& callback);
+  void GetUpdateStatus(StatusCallback callback);
 
  protected:
   friend class VersionUpdater;
@@ -51,8 +51,7 @@ class VersionUpdaterCros : public VersionUpdater,
   void OnSetUpdateOverCellularOneTimePermission(bool success);
 
   // Callback from UpdateEngineClient::GetChannel().
-  void OnGetChannel(const ChannelCallback& cb,
-                    const std::string& current_channel);
+  void OnGetChannel(ChannelCallback cb, const std::string& current_channel);
 
   // Callback from UpdateEngineClient::GetEolInfo().
   void OnGetEolInfo(EolInfoCallback cb,
@@ -71,8 +70,6 @@ class VersionUpdaterCros : public VersionUpdater,
   bool check_for_update_when_idle_;
 
   base::WeakPtrFactory<VersionUpdaterCros> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterCros);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SERVER_FAKE_SERVER_NETWORK_RESOURCES_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SERVER_FAKE_SERVER_NETWORK_RESOURCES_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 

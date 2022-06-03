@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL window.onerror - compile error in cross-origin setInterval assert_equals: first arg expected "Script error." but got "Uncaught SyntaxError: Unexpected end of input"
-FAIL window.onerror - compile error in cross-origin setInterval (column) assert_equals: fourth arg expected 0 but got 2
-Harness: the test ran to completion.
-

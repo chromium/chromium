@@ -48,7 +48,9 @@ class ParameterizedCharacterIteratorTest
   ParameterizedCharacterIteratorTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
-  bool LayoutNGEnabled() const { return GetParam(); }
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -307,18 +309,6 @@ TEST_P(ParameterizedCharacterIteratorTest, GetPositionWithEmitChar16Before) {
   EXPECT_EQ(Position(text_a, 2), it.GetPositionAfter());
   EXPECT_EQ(Position(text_a, 1), it.StartPosition());
   EXPECT_EQ(Position(text_a, 2), it.EndPosition());
-
-  if (!LayoutNGEnabled()) {
-    // TODO(editing-dev): TextIterator with legacy layout incorrectly emits a
-    // space character for "white-space: pre" element after trailing whitespace.
-    // A space character emitted by |EmitChar16Before()|. Fix it.
-    ASSERT_FALSE(it.AtEnd());
-    it.Advance(1);
-    EXPECT_EQ(Position(text_c, 0), it.GetPositionBefore());
-    EXPECT_EQ(Position(text_c, 0), it.GetPositionAfter());
-    EXPECT_EQ(Position(text_c, 0), it.StartPosition());
-    EXPECT_EQ(Position(text_c, 0), it.EndPosition());
-  }
 
   ASSERT_FALSE(it.AtEnd());
   it.Advance(1);

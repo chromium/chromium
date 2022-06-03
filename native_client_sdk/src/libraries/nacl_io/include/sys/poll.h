@@ -34,4 +34,4 @@ int poll(struct pollfd* __fds, nfds_t __nfds, int __timeout);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_SYS_POLL_H_ */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_SYS_POLL_H_

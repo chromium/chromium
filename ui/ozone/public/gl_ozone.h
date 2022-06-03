@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -35,7 +34,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
 
   // Initializes static GL bindings and sets GL implementation.
   virtual bool InitializeStaticGLBindings(
-      gl::GLImplementation implementation) = 0;
+      const gl::GLImplementationParts& implementation) = 0;
 
   // Performs any one off initialization for GL implementation.
   virtual bool InitializeGLOneOffPlatform() = 0;

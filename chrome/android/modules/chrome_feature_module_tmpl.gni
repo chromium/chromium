@@ -54,6 +54,12 @@ template("chrome_feature_module") {
     _shared_libraries += [
       "//chrome/android:${_base_target_name}_${_module_desc.name}${_toolchain}",
     ]
+
+    if (android_64bit_target_cpu && _is_monochrome_or_trichrome &&
+        invoker.is_64_bit_browser && build_hwasan_splits) {
+      _hwasan_toolchain = "//build/toolchain/android:android_clang_arm64_hwasan"
+      _shared_libraries += [ "//chrome/android:${_base_target_name}_${_module_desc.name}($_hwasan_toolchain)" ]
+    }
   } else {
     not_needed([ "_is_monochrome_or_trichrome" ])
   }
@@ -72,33 +78,41 @@ template("chrome_feature_module") {
     if (defined(_module_desc.pak_deps)) {
       paks = _module_desc.paks
     }
+    if (defined(_module_desc.load_native_on_get_impl)) {
+      load_native_on_get_impl = _module_desc.load_native_on_get_impl
+    }
   }
 
   android_app_bundle_module(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "base_module_target",
                              "manifest_package",
                              "min_sdk_version",
                              "package_id",
+                             "target_sdk_version",
                              "uncompress_shared_libraries",
                              "version_code",
                              "version_name",
                            ])
     android_manifest = _module_desc.android_manifest
-    target_sdk_version = android_sdk_version
-    deps = [
-      ":${target_name}__module_desc_java",
-    ]
+    if (defined(_module_desc.android_manifest_dep)) {
+      android_manifest_dep = _module_desc.android_manifest_dep
+    }
+    deps = [ ":${target_name}__module_desc_java" ]
     if (defined(_module_desc.pak_deps)) {
       deps += [ ":${target_name}__pak_assets" ]
     }
     if (defined(_module_desc.java_deps)) {
       deps += _module_desc.java_deps
     }
+    if (defined(_module_desc.uses_split)) {
+      uses_split = _module_desc.uses_split
+    }
 
     # Don't embed more translations than required (http://crbug.com/932017).
-    aapt_locale_whitelist = locales
+    aapt_locale_allowlist = locales
     proguard_enabled = !is_java_debug
     package_name = _module_desc.name
 

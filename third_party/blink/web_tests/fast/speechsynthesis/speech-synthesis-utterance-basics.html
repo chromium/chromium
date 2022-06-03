@@ -14,8 +14,8 @@ test(function() {
   for (var i in restrictedFloatAttributes) {
     var attr = restrictedFloatAttributes[i];
     var before = utterance[attr];
-    assert_throws(new TypeError, function() { utterance[attr] = NaN; }, attr);
-    assert_throws(new TypeError, function() { utterance[attr] = Infinity; }, attr);
+    assert_throws_js(TypeError, function() { utterance[attr] = NaN; }, attr);
+    assert_throws_js(TypeError, function() { utterance[attr] = Infinity; }, attr);
     assert_equals(utterance[attr], before, 'value is unchanged.');
   }
 }, 'SpeechSynthesisUtterance, setting non-finite values.');

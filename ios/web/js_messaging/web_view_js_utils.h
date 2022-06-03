@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
+@class WKContentWorld;
+@class WKFrameInfo;
 @class WKWebView;
 
 namespace base {
@@ -38,6 +40,20 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id result);
 void ExecuteJavaScript(WKWebView* web_view,
                        NSString* script,
                        void (^completion_handler)(id, NSError*));
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+// Executes JavaScript for |web_view| in |frame_info| within |content_world| and
+// calls |completion_handler| with the result. |content_world| is optional,
+// however, if specified and not equal to WKContentWorld.pageWorld, |frame_info|
+// is required. If the web view cannot execute JS at the moment,
+// |completion_handler| is called with an NSError.
+void ExecuteJavaScript(WKWebView* web_view,
+                       WKContentWorld* content_world,
+                       WKFrameInfo* frame_info,
+                       NSString* script,
+                       void (^completion_handler)(id, NSError*))
+    API_AVAILABLE(ios(14.0));
+#endif  // defined(__IPHONE14_0)
 
 }  // namespace web
 

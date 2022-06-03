@@ -167,6 +167,10 @@ class TabsCaptureVisibleTabFunction : public ExtensionFunction {
  public:
   TabsCaptureVisibleTabFunction();
 
+  TabsCaptureVisibleTabFunction(const TabsCaptureVisibleTabFunction&) = delete;
+  TabsCaptureVisibleTabFunction& operator=(
+      const TabsCaptureVisibleTabFunction&) = delete;
+
   // ExtensionFunction implementation.
   ResponseAction Run() override;
 
@@ -175,8 +179,6 @@ class TabsCaptureVisibleTabFunction : public ExtensionFunction {
 
  private:
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
-
-  DISALLOW_COPY_AND_ASSIGN(TabsCaptureVisibleTabFunction);
 };
 
 // Implement API call tabs.executeScript and tabs.insertCSS.
@@ -189,6 +191,8 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
 
   // Initializes |execute_tab_id_| and |details_|.
   InitResult Init() override;
+  bool ShouldInsertCSS() const override;
+  bool ShouldRemoveCSS() const override;
   bool CanExecuteScriptOnPage(std::string* error) override;
   ScriptExecutor* GetScriptExecutor(std::string* error) override;
   bool IsWebView() const override;
@@ -200,9 +204,6 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
 };
 
 class TabsExecuteScriptFunction : public ExecuteCodeInTabFunction {
- protected:
-  bool ShouldInsertCSS() const override;
-
  private:
   ~TabsExecuteScriptFunction() override {}
 
@@ -216,6 +217,15 @@ class TabsInsertCSSFunction : public ExecuteCodeInTabFunction {
   bool ShouldInsertCSS() const override;
 
   DECLARE_EXTENSION_FUNCTION("tabs.insertCSS", TABS_INSERTCSS)
+};
+
+class TabsRemoveCSSFunction : public ExecuteCodeInTabFunction {
+ private:
+  ~TabsRemoveCSSFunction() override {}
+
+  bool ShouldRemoveCSS() const override;
+
+  DECLARE_EXTENSION_FUNCTION("tabs.removeCSS", TABS_REMOVECSS)
 };
 
 class TabsSetZoomFunction : public ExtensionFunction {
@@ -260,13 +270,14 @@ class TabsDiscardFunction : public ExtensionFunction {
 
   TabsDiscardFunction();
 
+  TabsDiscardFunction(const TabsDiscardFunction&) = delete;
+  TabsDiscardFunction& operator=(const TabsDiscardFunction&) = delete;
+
  private:
   ~TabsDiscardFunction() override;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsDiscardFunction);
 };
 
 }  // namespace api

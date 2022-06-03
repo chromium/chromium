@@ -8,13 +8,14 @@
 
 #include <cmath>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
@@ -333,18 +334,19 @@ void ContextState::RestoreSamplerBinding(GLuint unit,
                                          const ContextState* prev_state) const {
   if (!feature_info_->IsES3Capable())
     return;
-  const scoped_refptr<Sampler>& cur_sampler = sampler_units[unit];
-  GLuint cur_id = cur_sampler ? cur_sampler->service_id() : 0;
-  GLuint prev_id = 0;
-  if (prev_state && prev_state->track_texture_and_sampler_units) {
-    const scoped_refptr<Sampler>& prev_sampler =
-        prev_state->sampler_units[unit];
-    prev_id = prev_sampler ? prev_sampler->service_id() : 0;
+
+  GLuint cur_id = 0u;
+  if (const auto& cur_sampler = sampler_units[unit])
+    cur_id = cur_sampler->service_id();
+
+  absl::optional<GLuint> prev_id;
+  if (prev_state) {
+    const auto& prev_sampler = prev_state->sampler_units[unit];
+    prev_id.emplace(prev_sampler ? prev_sampler->service_id() : 0);
   }
-  if (!prev_state || !prev_state->sampler_units_in_ground_state ||
-      cur_id != prev_id) {
+
+  if (!prev_id || cur_id != *prev_id)
     api()->glBindSamplerFn(unit, cur_id);
-  }
 }
 
 void ContextState::PushTextureUnpackState() const {
@@ -371,8 +373,7 @@ void ContextState::RestoreUnpackState() const {
 }
 
 void ContextState::DoLineWidth(GLfloat width) const {
-  api()->glLineWidthFn(
-      base::ClampToRange(width, line_width_min_, line_width_max_));
+  api()->glLineWidthFn(base::clamp(width, line_width_min_, line_width_max_));
 }
 
 void ContextState::RestoreBufferBindings() const {
@@ -450,8 +451,6 @@ void ContextState::RestoreAllTextureUnitAndSamplerBindings(
       if (!prev_state->track_texture_and_sampler_units) {
         texture_units_in_ground_state =
             prev_state->texture_units_in_ground_state;
-        sampler_units_in_ground_state =
-            prev_state->sampler_units_in_ground_state;
         return;
       }
 
@@ -463,22 +462,21 @@ void ContextState::RestoreAllTextureUnitAndSamplerBindings(
         }
       }
 
-      // If the current gl texture units are not in ground state, then we do
-      // need reset texture unit 0.
+      // Make sure all texture units are in ground state, we need to reset the
+      // 0th texture units. If some of non zero textures aren't in ground state,
+      // when another context is being make current, we will restore all texture
+      // units, then it is not necessary to reset the 0th texture units anymore.
       if (texture_units_in_ground_state)
         RestoreTextureUnitBindings(0, prev_state);
-
-      sampler_units_in_ground_state = true;
-      for (auto& sampler : prev_state->sampler_units) {
-        if (sampler) {
-          sampler_units_in_ground_state = false;
-          break;
-        }
-      }
     } else {
       texture_units_in_ground_state = false;
-      sampler_units_in_ground_state = false;
     }
+
+    // GrContext is not aware of sampler objects and skia will not restore them,
+    // so we need to reset them to ground state.
+    // TODO(penghuang): Remove it when GrContext is created for ES 3.0.
+    for (size_t i = 0; i < sampler_units.size(); ++i)
+      RestoreSamplerBinding(i, prev_state);
   } else {
     // Restore Texture state.
     for (size_t i = 0; i < texture_units.size(); ++i) {

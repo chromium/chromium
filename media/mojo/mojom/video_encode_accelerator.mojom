@@ -7,6 +7,7 @@ module media.mojom;
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "media/mojo/mojom/video_encoder_info.mojom";
 
 // This file is the Mojo version of the media::VideoEncodeAccelerator interface
 // and describes the communication between a Client and a remote "service"
@@ -32,16 +33,59 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // time the Client can send a RequestEncodingParametersChange() to the VEA. None
 // of these messages are acknowledged.
 
+
+struct VideoEncodeAcceleratorSupportedProfile {
+  VideoCodecProfile profile;
+  gfx.mojom.Size min_resolution;
+  gfx.mojom.Size max_resolution;
+  uint32 max_framerate_numerator;
+  uint32 max_framerate_denominator;
+  array<SVCScalabilityMode> scalability_modes;
+};
+
+// A renderer process calls this interface's functions. GPU process implements
+// this interface.
 interface VideoEncodeAcceleratorProvider {
   // Creates a VideoEncodeAccelerator bound to |receiver|.
   CreateVideoEncodeAccelerator(
         pending_receiver<VideoEncodeAccelerator> receiver);
+
+  // Get a VideoEncodeAccelerator supported profiles.
+  GetVideoEncodeAcceleratorSupportedProfiles()
+      => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
 };
 
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
   array<int32> bitrates;
+};
+
+// This defines a mojo transport format for
+// media::VideoEncodeAccelerator::Config::SpatialLayer.
+struct SpatialLayer {
+  int32 width;
+  int32 height;
+  uint32 bitrate_bps;
+  uint32 framerate;
+  uint8 max_qp;
+  uint8 num_of_temporal_layers;
+};
+
+// This defines a mojo transport format for media::Bitrate
+struct Bitrate {
+  // See media::Bitrate::Mode
+  [Extensible]
+  enum Mode {
+    [Default] kConstant,
+    kVariable
+  };
+
+  // The defaults here match those in media::Bitrate (CBR, which has no peak).
+  // Target must be set for all bitrates.
+  Mode mode = kConstant;
+  uint32 target;
+  uint32 peak = 0;
 };
 
 // This defines a mojo transport format for
@@ -53,25 +97,36 @@ struct VideoEncodeAcceleratorConfig {
     kDisplay
   };
 
+  // See media::VideoEncodeAccelerator::Config::InterLayerPredMode
+  enum InterLayerPredMode {
+    kOff,
+    kOn,
+    kOnKeyPic
+  };
+
   // See media::VideoEncodeAccelerator::Config::StorageType
   enum StorageType {
     kShmem,
-    kDmabuf
+    kGpuMemoryBuffer,
   };
 
   VideoPixelFormat input_format;
   gfx.mojom.Size input_visible_size;
   VideoCodecProfile output_profile;
-  uint32 initial_bitrate;
+  Bitrate bitrate;
   uint32 initial_framerate;
   bool has_initial_framerate;  // Whether or not config has initial framerate
   uint32 gop_length;
   bool has_gop_length;  // Whether or not config has group of picture length
   uint8 h264_output_level;
   bool has_h264_output_level;  // Whether or not config has H264 output level
+  bool is_constrained_h264;
   StorageType storage_type;
   bool has_storage_type;  // Whether or not config has storage type config
   ContentType content_type;
+  array<SpatialLayer> spatial_layers;
+  InterLayerPredMode inter_layer_pred;
+  bool require_low_delay;
 };
 
 interface VideoEncodeAccelerator {
@@ -83,7 +138,6 @@ interface VideoEncodeAccelerator {
   };
 
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
-  // TODO(mcasas): Update to asynchronous, https://crbug.com/744210.
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
              pending_remote<VideoEncodeAcceleratorClient> client)
@@ -95,9 +149,50 @@ interface VideoEncodeAccelerator {
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
                            handle<shared_buffer> buffer);
 
-  RequestEncodingParametersChange(
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is intended for use with
+  // spatial or temporal layers, and is implicitly a constant bitrate encoding.
+  // Parameters:
+  //  |bitrate_allocation| is the requested new bitrate, per spatial and
+  //                       temporal layer.
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithLayers(
     VideoBitrateAllocation bitrate_allocation,
     uint32 framerate);
+
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is for use with non-layered
+  // bitrates, and may make requests for constant or variable bitrates based on
+  // the initially-configured bitrate mode.
+  // Parameters:
+  //  |bitrate| is the requested new bitrate for non-layered encoding, which
+  //            may be constant or variable bitrate. This should not change the
+  //            encoding mode (constant -> variable or variable -> constant).
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithBitrate(
+    Bitrate bitrate,
+    uint32 framerate);
+
+  [Sync]
+  IsFlushSupported() => (bool result);
+
+  Flush() => (bool result);
+};
+
+// H264Metadata, Vp8Metadata, Vp9Metadata define mojo transport formats for
+// media::H264Metadata, media::Vp8Metadata and media::Vp9Metadata, respectively.
+// See the structures defined video_encode_accelerator.h for the descriptions of
+// the variables.
+// Either of them is filled in GPU process only in the case of temporal/spatial
+// SVC encoding. That is, none of them is filled in the case of non
+// temporal/spatial SVC encoding. Thus CodecMetadata is union and CodecMetadata
+// exists as optional in BitstreamBufferMetadata.
+// BitstreamBufferMetadata is metadata about a bitstream buffer produced by a
+// hardware encoder. The structure is passed from GPU process to renderer
+// process in BitstreamBufferReady() call.
+struct H264Metadata {
+  uint8 temporal_idx;
+  bool layer_sync;
 };
 
 struct Vp8Metadata {
@@ -106,11 +201,30 @@ struct Vp8Metadata {
   bool layer_sync;
 };
 
+struct Vp9Metadata {
+  bool inter_pic_predicted;
+  bool temporal_up_switch;
+  bool referenced_by_upper_spatial_layers;
+  bool reference_lower_spatial_layers;
+  bool end_of_picture;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
+  array<uint8> p_diffs;
+};
+
+// Codec specific metadata.
+union CodecMetadata {
+  H264Metadata h264;
+  Vp8Metadata vp8;
+  Vp9Metadata vp9;
+};
+
 struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
-  Vp8Metadata? vp8;
+  CodecMetadata? codec_metadata;
 };
 
 interface VideoEncodeAcceleratorClient {
@@ -123,4 +237,8 @@ interface VideoEncodeAcceleratorClient {
                        BitstreamBufferMetadata metadata);
 
   NotifyError(VideoEncodeAccelerator.Error error);
+
+  // VideoEncodeAccelerator calls this when its VideoEncoderInfo is changed.
+  // |info| is the updated VideoEncoderInfo.
+  NotifyEncoderInfoChange(VideoEncoderInfo info);
 };

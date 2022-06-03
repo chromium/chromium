@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
 import org.chromium.chrome.browser.compositor.TitleCache;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -24,6 +26,7 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
 
     private final Context mContext;
     private boolean mPortrait = true;
+    private final BrowserControlsManager mBrowserControlsManager;
 
     static class MockTitleCache implements TitleCache {
         @Override
@@ -42,6 +45,8 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
 
     MockLayoutHost(Context context) {
         mContext = context;
+        mBrowserControlsManager =
+                new BrowserControlsManager(null, BrowserControlsManager.ControlsPosition.TOP);
     }
 
     public void setOrientation(boolean portrait) {
@@ -132,7 +137,12 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     }
 
     @Override
-    public ChromeFullscreenManager getFullscreenManager() {
+    public BrowserControlsManager getBrowserControlsManager() {
+        return mBrowserControlsManager;
+    }
+
+    @Override
+    public FullscreenManager getFullscreenManager() {
         return null;
     }
 
@@ -148,7 +158,7 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public void onContentChanged() {}
 
     @Override
-    public int getBrowserControlsBackgroundColor() {
+    public int getBrowserControlsBackgroundColor(Resources res) {
         return 0;
     }
 

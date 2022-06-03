@@ -1,0 +1,29 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where empty table rows well after the selection to
+// delete were removed. There should be five rows in the table below, before and
+// after the deletion.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<table><tbody>',
+                '<tr><td>^11</td><td>12</td><td>13|</td></tr>',
+                '<tr><td>21</td><td>22</td><td>33</td></tr>',
+                '<tr><td><br></td><td><br></td><td><br></td></tr>',
+            '</tbody></table>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<table><tbody>',
+                '<tr><td>|<br></td><td></td><td><br></td></tr>',
+                '<tr><td>21</td><td>22</td><td>33</td></tr>',
+                '<tr><td><br></td><td><br></td><td><br></td></tr>',
+            '</tbody></table>',
+        '</div>',
+    ]);
+</script>

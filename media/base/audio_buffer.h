@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -65,6 +64,15 @@ class MEDIA_EXPORT AudioBuffer
       const base::TimeDelta timestamp,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
+  // Create an AudioBuffer from a copy of the data in |audio_bus|.
+  // For optimal efficiency when many buffers are being created, a
+  // AudioBufferMemoryPool can be provided to avoid thrashing memory.
+  static scoped_refptr<AudioBuffer> CopyFrom(
+      int sample_rate,
+      const base::TimeDelta timestamp,
+      const AudioBus* audio_bus,
+      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
+
   // Create an AudioBuffer for compressed bitstream. Its channel data is copied
   // from |data|, and the size is |data_size|. |data| must not be null and
   // |frame_count| must be >= 0.
@@ -110,10 +118,21 @@ class MEDIA_EXPORT AudioBuffer
       int frame_count,
       const base::TimeDelta timestamp);
 
+  // Helper function that creates a new AudioBus which wraps |audio_buffer| and
+  // takes a reference on it, if the memory layout (e.g. |sample_format_|) is
+  // compatible with wrapping. Otherwise, this copies |audio_buffer| to a new
+  // AudioBus, using ReadFrames().
+  static std::unique_ptr<AudioBus> WrapOrCopyToAudioBus(
+      scoped_refptr<AudioBuffer> audio_buffer);
+
   // Create a AudioBuffer indicating we've reached end of stream.
   // Calling any method other than end_of_stream() on the resulting buffer
   // is disallowed.
   static scoped_refptr<AudioBuffer> CreateEOSBuffer();
+
+  AudioBuffer() = delete;
+  AudioBuffer(const AudioBuffer&) = delete;
+  AudioBuffer& operator=(const AudioBuffer&) = delete;
 
   // Update sample rate and computed duration.
   // TODO(chcunningham): Remove this upon patching FFmpeg's AAC decoder to
@@ -124,8 +143,8 @@ class MEDIA_EXPORT AudioBuffer
   // Copy frames into |dest|. |frames_to_copy| is the number of frames to copy.
   // |source_frame_offset| specifies how many frames in the buffer to skip
   // first. |dest_frame_offset| is the frame offset in |dest|. The frames are
-  // converted from their source format into planar float32 data (which is all
-  // that AudioBus handles).
+  // converted and clipped from their source format into planar float32 data
+  // (which is all that AudioBus handles).
   void ReadFrames(int frames_to_copy,
                   int source_frame_offset,
                   int dest_frame_offset,
@@ -156,6 +175,10 @@ class MEDIA_EXPORT AudioBuffer
 
   // Return the sample rate.
   int sample_rate() const { return sample_rate_; }
+
+  // Return the sample format of the internal buffer, not that of what is
+  // returned by ReadFrames().
+  SampleFormat sample_format() const { return sample_format_; }
 
   // Return the channel layout.
   ChannelLayout channel_layout() const { return channel_layout_; }
@@ -221,8 +244,6 @@ class MEDIA_EXPORT AudioBuffer
 
   // Allows recycling of memory data to avoid repeated allocations.
   scoped_refptr<AudioBufferMemoryPool> pool_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioBuffer);
 };
 
 // Basic memory pool for reusing AudioBuffer internal memory to avoid thrashing.
@@ -241,6 +262,9 @@ class MEDIA_EXPORT AudioBufferMemoryPool
  public:
   AudioBufferMemoryPool();
 
+  AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
+  AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;
+
   size_t GetPoolSizeForTesting();
 
  private:
@@ -256,8 +280,6 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   base::Lock entry_lock_;
   using MemoryEntry = std::pair<AudioMemory, size_t>;
   std::list<MemoryEntry> entries_ GUARDED_BY(entry_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBufferMemoryPool);
 };
 
 }  // namespace media

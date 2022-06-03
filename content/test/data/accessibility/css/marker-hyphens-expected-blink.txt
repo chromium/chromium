@@ -1,0 +1,31 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText ignored name='foo%C2%ADbar'

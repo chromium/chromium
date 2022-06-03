@@ -10,13 +10,12 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/child_process_host.h"
@@ -39,7 +38,7 @@ std::string FirstPackage(const std::vector<std::string>& packages) {
   return packages.empty() ? std::string() : packages[0];
 }
 
-base::string16 MakeTitle(const arc::ArcProcess& arc_process) {
+std::u16string MakeTitle(const arc::ArcProcess& arc_process) {
   int name_template = IDS_TASK_MANAGER_ARC_PREFIX;
   switch (arc_process.process_state()) {
     case arc::mojom::ProcessState::PERSISTENT:
@@ -60,7 +59,7 @@ base::string16 MakeTitle(const arc::ArcProcess& arc_process) {
     default:
       break;
   }
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       name_template, base::UTF8ToUTF16(arc_process.process_name()));
   base::i18n::AdjustStringForLocaleDirection(&title);
   return title;
@@ -74,7 +73,6 @@ constexpr char kEmptyActivityName[] = "";
 
 ArcProcessTask::ArcProcessTask(arc::ArcProcess arc_process)
     : Task(MakeTitle(arc_process),
-           arc_process.process_name(),
            nullptr /* icon */,
            arc_process.pid()),
       arc_process_(std::move(arc_process)) {
@@ -159,8 +157,8 @@ void ArcProcessTask::OnConnectionReady() {
   // Instead of calling into StartIconLoading() directly, return to the main
   // loop first to make sure other ArcBridgeService observers are notified.
   // Otherwise, arc::ArcIntentHelperBridge::GetActivityIcon() may fail again.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&ArcProcessTask::StartIconLoading,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ArcProcessTask::StartIconLoading,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 

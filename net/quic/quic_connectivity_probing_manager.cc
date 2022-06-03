@@ -60,7 +60,9 @@ QuicConnectivityProbingManager::QuicConnectivityProbingManager(
       network_(NetworkChangeNotifier::kInvalidNetworkHandle),
       retry_count_(0),
       probe_start_time_(base::TimeTicks()),
-      task_runner_(task_runner) {
+      task_runner_(task_runner),
+      last_self_address_(IPEndPoint()),
+      stateless_reset_received_(false) {
   retransmit_timer_.SetTaskRunner(task_runner_);
 }
 
@@ -98,14 +100,19 @@ void QuicConnectivityProbingManager::CancelProbing(
 
 void QuicConnectivityProbingManager::CancelProbingIfAny() {
   if (is_running_) {
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.StatelessResetDuringProbing",
+                          stateless_reset_received_);
     net_log_.AddEvent(
         NetLogEventType::QUIC_CONNECTIVITY_PROBING_MANAGER_CANCEL_PROBING, [&] {
           return NetLogProbingDestinationParams(network_, &peer_address_);
         });
   }
   is_running_ = false;
+  if (socket_ != nullptr) {
+    socket_->GetLocalAddress(&last_self_address_);
+  }
   network_ = NetworkChangeNotifier::kInvalidNetworkHandle;
-  peer_address_ = quic::QuicSocketAddress();
+  stateless_reset_received_ = false;
   socket_.reset();
   writer_.reset();
   reader_.reset();
@@ -198,6 +205,43 @@ void QuicConnectivityProbingManager::OnPacketReceived(
   CancelProbingIfAny();
 }
 
+bool QuicConnectivityProbingManager::ValidateStatelessReset(
+    const quic::QuicSocketAddress& self_address,
+    const quic::QuicSocketAddress& peer_address) {
+  IPEndPoint local_address;
+  if (!socket_) {
+    local_address = last_self_address_;
+  } else {
+    socket_->GetLocalAddress(&local_address);
+  }
+
+  if (local_address != ToIPEndPoint(self_address) ||
+      peer_address_ != peer_address) {
+    DVLOG(1) << "Probing lives at different path:";
+    DVLOG(1) << " peer_address: " << local_address.ToString();
+    DVLOG(1) << " self_address: " << self_address.ToString();
+    return false;
+  }
+
+  if (is_running_) {
+    stateless_reset_received_ = true;
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.StatelessResetAfterProbingCancelled",
+                          true);
+  }
+
+  net_log_.AddEvent(
+      NetLogEventType::
+          QUIC_CONNECTIVITY_PROBING_MANAGER_STATELESS_RESET_RECEIVED,
+      [&] {
+        return NetLogProbeReceivedParams(network_, &local_address,
+                                         &peer_address_);
+      });
+
+  NotifyDelegateProbeFailed();
+  return true;
+}
+
 void QuicConnectivityProbingManager::SendConnectivityProbingPacket(
     base::TimeDelta timeout) {
   net_log_.AddEventWithInt64Params(
@@ -231,7 +275,7 @@ void QuicConnectivityProbingManager::MaybeResendConnectivityProbingPacket() {
     NotifyDelegateProbeFailed();
     return;
   }
-  SendConnectivityProbingPacket(base::TimeDelta::FromMilliseconds(timeout_ms));
+  SendConnectivityProbingPacket(base::Milliseconds(timeout_ms));
 }
 
 }  // namespace net

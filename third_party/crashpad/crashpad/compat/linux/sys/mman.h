@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-int memfd_create(const char* name, unsigned int flags);
+int memfd_create(const char* name, unsigned int flags) __THROW;
 
 #ifdef __cplusplus
 }  // extern "C"

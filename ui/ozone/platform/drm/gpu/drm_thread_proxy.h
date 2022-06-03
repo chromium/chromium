@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/ozone/platform/drm/gpu/drm_thread.h"
@@ -27,6 +26,10 @@ class InterThreadMessagingProxy;
 class DrmThreadProxy {
  public:
   DrmThreadProxy();
+
+  DrmThreadProxy(const DrmThreadProxy&) = delete;
+  DrmThreadProxy& operator=(const DrmThreadProxy&) = delete;
+
   ~DrmThreadProxy();
 
   void BindThreadIntoMessagingProxy(InterThreadMessagingProxy* messaging_proxy);
@@ -38,6 +41,7 @@ class DrmThreadProxy {
 
   void CreateBuffer(gfx::AcceleratedWidget widget,
                     const gfx::Size& size,
+                    const gfx::Size& framebuffer_size,
                     gfx::BufferFormat format,
                     gfx::BufferUsage usage,
                     uint32_t flags,
@@ -74,13 +78,19 @@ class DrmThreadProxy {
       const std::vector<OverlaySurfaceCandidate>& candidates,
       DrmThread::OverlayCapabilitiesCallback callback);
 
+  // Similar to CheckOverlayCapabilities() but returns the result synchronously.
+  std::vector<OverlayStatus> CheckOverlayCapabilitiesSync(
+      gfx::AcceleratedWidget widget,
+      const std::vector<OverlaySurfaceCandidate>& candidates);
+
   void AddDrmDeviceReceiver(
       mojo::PendingReceiver<ozone::mojom::DrmDevice> receiver);
 
+  bool WaitUntilDrmThreadStarted();
+  scoped_refptr<base::SingleThreadTaskRunner> GetDrmThreadTaskRunner();
+
  private:
   DrmThread drm_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmThreadProxy);
 };
 
 }  // namespace ui

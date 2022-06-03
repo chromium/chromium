@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/strings/string16.h"
+
 #import "ios/chrome/browser/ui/commands/omnibox_suggestion_commands.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 
@@ -23,10 +23,7 @@ typedef enum {
 // Initialize the omnibox with the given frame, text color, and tint color.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                    tintColor:(UIColor*)tintColor NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
+                    tintColor:(UIColor*)tintColor;
 
 // Sets the field's text to |text|.  If |userTextLength| is less than the length
 // of |text|, the excess is displayed as inline autocompleted text.  When the
@@ -41,10 +38,13 @@ typedef enum {
 
 // Returns the text that is displayed in the field, including any inline
 // autocomplete text that may be present.
-- (base::string16)displayedText;
+- (NSString*)displayedText;
+
+// Returns self.text without the autocomplete part, if it's available.
+- (NSString*)userText;
 
 // Returns just the portion of |-displayedText| that is inline autocompleted.
-- (base::string16)autocompleteText;
+- (NSString*)autocompleteText;
 
 // Returns YES if this field is currently displaying any inline autocompleted
 // text.

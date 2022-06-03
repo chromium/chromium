@@ -34,13 +34,13 @@ try {
     } else if ($_GET["expectation"] == "blocked") {
 ?>
 test(function (t) {
-    assert_throws(EvalError(),
-                  function () { eval("1 + 1"); },
-                  "`eval()` should throw 'EvalError'.");
+    assert_throws_js(EvalError,
+                     function () { eval("1 + 1"); },
+                     "`eval()` should throw 'EvalError'.");
 
-    assert_throws(EvalError(),
-                  function () { var x = new Function("1 + 1"); },
-                  "`new Function()` should throw 'EvalError'.");
+    assert_throws_js(EvalError,
+                     function () { var x = new Function("1 + 1"); },
+                     "`new Function()` should throw 'EvalError'.");
 
     assert_equals(setTimeout("assert_unreached('setTimeout([string]) should not execute.')", 0), 0, "`setTimeout([string])` should return 0.");
 }, "`eval()` with '<?php echo $_GET["csp"] ?>' blocked");

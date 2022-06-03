@@ -50,8 +50,6 @@ class PaintWorkletPaintDispatcherAsyncTest : public ::testing::Test {
 class MockPaintWorkletPainter
     : public GarbageCollected<MockPaintWorkletPainter>,
       public PaintWorkletPainter {
-  USING_GARBAGE_COLLECTED_MIXIN(MockPaintWorkletPainter);
-
  public:
   MockPaintWorkletPainter(int worklet_id) {
     ON_CALL(*this, GetWorkletId).WillByDefault(Return(worklet_id));
@@ -76,6 +74,7 @@ class MockPaintWorkletInput : public cc::PaintWorkletInput {
   MOCK_CONST_METHOD0(WorkletId, int());
   MOCK_CONST_METHOD0(GetPropertyKeys,
                      const std::vector<PaintWorkletInput::PropertyKey>&());
+  MOCK_CONST_METHOD0(IsCSSPaintWorkletInput, bool());
 };
 
 cc::PaintWorkletInput* AddPaintWorkletInputToMap(cc::PaintWorkletJobMap& map,

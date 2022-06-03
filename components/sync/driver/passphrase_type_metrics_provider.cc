@@ -4,9 +4,10 @@
 
 #include "components/sync/driver/passphrase_type_metrics_provider.h"
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -15,10 +16,10 @@ namespace syncer {
 
 namespace {
 
-base::Optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
+absl::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
     const SyncService& sync_service) {
   if (sync_service.GetTransportState() != SyncService::TransportState::ACTIVE) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const SyncUserSettings* user_settings = sync_service.GetUserSettings();
@@ -39,12 +40,12 @@ base::Optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 PassphraseTypeForMetrics GetPassphraseTypeForAllProfiles(
     const std::vector<const SyncService*>& sync_services) {
-  base::flat_set<base::Optional<PassphraseTypeForMetrics>> passphrase_types;
+  base::flat_set<absl::optional<PassphraseTypeForMetrics>> passphrase_types;
   for (const SyncService* sync_service : sync_services) {
     DCHECK(sync_service);
     passphrase_types.insert(GetPassphraseTypeForSingleProfile(*sync_service));

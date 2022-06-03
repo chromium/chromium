@@ -30,19 +30,7 @@ ScopedTestNSSDB::ScopedTestNSSDB() {
 ScopedTestNSSDB::~ScopedTestNSSDB() {
   // Remove trust from any certs in the test DB before closing it. Otherwise NSS
   // may cache verification results even after the test DB is gone.
-  if (slot_) {
-    CERTCertList* cert_list = PK11_ListCertsInSlot(slot_.get());
-    for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
-         !CERT_LIST_END(node, cert_list);
-         node = CERT_LIST_NEXT(node)) {
-      CERTCertTrust trust = {0};
-      if (CERT_ChangeCertTrust(CERT_GetDefaultCertDB(), node->cert, &trust) !=
-          SECSuccess) {
-        LOG(ERROR) << "CERT_ChangeCertTrust failed: " << PORT_GetError();
-      }
-    }
-    CERT_DestroyCertList(cert_list);
-  }
+  RemoveTrustFromAllCerts();
 
   // NSS is allowed to do IO on the current thread since dispatching
   // to a dedicated thread would still have the affect of blocking
@@ -57,6 +45,25 @@ ScopedTestNSSDB::~ScopedTestNSSDB() {
 
   if (!temp_dir_.Delete())
     LOG(ERROR) << "Could not delete temporary directory.";
+}
+
+void ScopedTestNSSDB::RemoveTrustFromAllCerts() {
+  if (!slot_)
+    return;
+
+  CERTCertList* cert_list = PK11_ListCertsInSlot(slot_.get());
+  if (!cert_list)
+    return;
+
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    CERTCertTrust trust = {0};
+    if (CERT_ChangeCertTrust(CERT_GetDefaultCertDB(), node->cert, &trust) !=
+        SECSuccess) {
+      LOG(ERROR) << "CERT_ChangeCertTrust failed: " << PORT_GetError();
+    }
+  }
+  CERT_DestroyCertList(cert_list);
 }
 
 }  // namespace crypto

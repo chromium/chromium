@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "media/gpu/buildflags.h"
+#include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
@@ -44,9 +45,9 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
 
 #if BUILDFLAG(USE_VAAPI)
   return VaapiDmaBufVideoFrameMapper::Create(format);
-#endif  // BUILDFLAG(USE_VAAPI)
-
+#else
   return nullptr;
+#endif  // BUILDFLAG(USE_VAAPI)
 }
 
 }  // namespace media

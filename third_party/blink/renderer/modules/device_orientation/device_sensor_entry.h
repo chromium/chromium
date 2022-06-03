@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace device {
 union SensorReading;
@@ -22,8 +24,6 @@ class DeviceSensorEventPump;
 
 class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
                           public device::mojom::blink::SensorClient {
-  USING_PRE_FINALIZER(DeviceSensorEntry, Dispose);
-
  public:
   // The sensor state is an automaton with allowed transitions as follows:
   // NOT_INITIALIZED -> INITIALIZING
@@ -43,8 +43,8 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
   };
 
   DeviceSensorEntry(DeviceSensorEventPump* pump,
+                    ExecutionContext* context,
                     device::mojom::blink::SensorType sensor_type);
-  void Dispose();
   ~DeviceSensorEntry() override;
 
   void Start(device::mojom::blink::SensorProvider* sensor_provider);
@@ -55,7 +55,7 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
 
   State state() const { return state_; }
 
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
  private:
   // device::mojom::SensorClient:
@@ -75,8 +75,9 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
 
   State state_ = State::NOT_INITIALIZED;
 
-  mojo::Remote<device::mojom::blink::Sensor> sensor_remote_;
-  mojo::Receiver<device::mojom::blink::SensorClient> client_receiver_{this};
+  HeapMojoRemote<device::mojom::blink::Sensor> sensor_remote_;
+  HeapMojoReceiver<device::mojom::blink::SensorClient, DeviceSensorEntry>
+      client_receiver_;
 
   device::mojom::blink::SensorType type_;
 

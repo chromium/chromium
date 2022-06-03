@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -44,6 +43,10 @@ class WebstoreInstallWithPrompt : public WebstoreStandaloneInstaller {
                             gfx::NativeWindow parent_window,
                             Callback callback);
 
+  WebstoreInstallWithPrompt(const WebstoreInstallWithPrompt&) = delete;
+  WebstoreInstallWithPrompt& operator=(const WebstoreInstallWithPrompt&) =
+      delete;
+
  protected:
   friend class base::RefCountedThreadSafe<WebstoreInstallWithPrompt>;
   ~WebstoreInstallWithPrompt() override;
@@ -67,8 +70,6 @@ class WebstoreInstallWithPrompt : public WebstoreStandaloneInstaller {
 
   gfx::NativeWindow parent_window_;
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreInstallWithPrompt);
 };
 
 }  // namespace extensions

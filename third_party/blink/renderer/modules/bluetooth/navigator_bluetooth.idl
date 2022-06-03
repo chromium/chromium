@@ -5,7 +5,7 @@
 // https://webbluetoothcg.github.io/web-bluetooth/#navigator-extensions
 
 [
-    ImplementedAs=NavigatorBluetooth,
+    ImplementedAs=Bluetooth,
     RuntimeEnabled=WebBluetooth,
     SecureContext
 ] partial interface Navigator {

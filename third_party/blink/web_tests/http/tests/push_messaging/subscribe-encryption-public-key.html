@@ -63,7 +63,7 @@
                         assert_true(auth.byteLength >= MINIMUM_AUTH_LENGTH);
 
                         // Getting a key with an unsupported algorithm should throw an exception.
-                        assert_throws(TypeError(), () => pushSubscription.getKey('petercurve9001'));
+                        assert_throws_js(TypeError, () => pushSubscription.getKey('petercurve9001'));
 
                         encryptionKey = SerializeArrayBuffer(key);
                         encryptionAuth = SerializeArrayBuffer(auth);

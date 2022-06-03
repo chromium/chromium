@@ -6,9 +6,10 @@ module viz.mojom;
 
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
-import "gpu/ipc/common/gpu_extra_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
+import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
 
 // Communication channel from the gpu process to the gpu host. This interface
@@ -21,7 +22,7 @@ interface GpuHost {
                 gpu.mojom.GpuFeatureInfo gpu_feature_info,
                 gpu.mojom.GpuInfo? gpu_info_for_hardware_gpu,
                 gpu.mojom.GpuFeatureInfo? gpu_feature_info_for_hardware_gpu,
-                gpu.mojom.GpuExtraInfo gpu_extra_info);
+                gfx.mojom.GpuExtraInfo gpu_extra_info);
   DidFailInitialize();
 
   DidCreateContextSuccessfully();
@@ -29,9 +30,26 @@ interface GpuHost {
   DidDestroyOffscreenContext(url.mojom.Url url);
 
   DidDestroyChannel(int32 client_id);
+  // Called when all channels are destroyed by client. Not called for tearing
+  // down all channels due to lost context.
+  DidDestroyAllChannels();
   DidLoseContext(bool offscreen,
                  ContextLostReason reason,
                  url.mojom.Url active_url);
+
+  // Tells the GPU host that the GPUInfo has been updated in the GPU
+  // process.
+  DidUpdateGPUInfo(gpu.mojom.GpuInfo gpu_info);
+
+  // Tells the GPU host that the overlay info has been updated in the GPU
+  // process.
+  [EnableIf=is_win]
+  DidUpdateOverlayInfo(gpu.mojom.OverlayInfo overlay_info);
+
+  // Tells the GPU host that the HDR status has been updated in the GPU
+  // process.
+  [EnableIf=is_win]
+  DidUpdateHDRStatus(bool hdr_enabled);
 
   // GPU process has decided to disable GPU compositing. Host process keeps
   // track of this decision in case the GPU process crashes.
@@ -41,7 +59,9 @@ interface GpuHost {
   SetChildSurface(gpu.mojom.SurfaceHandle parent,
                   gpu.mojom.SurfaceHandle child);
 
-  StoreShaderToDisk(int32 client_id, string key, string shader);
+  StoreShaderToDisk(int32 client_id,
+                    string key,
+                    mojo_base.mojom.ByteString shader);
 
   RecordLogMessage(int32 severity, string header, string message);
 };

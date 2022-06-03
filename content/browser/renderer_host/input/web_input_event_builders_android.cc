@@ -6,7 +6,7 @@
 
 #include <android/input.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "ui/events/android/key_event_utils.h"
 #include "ui/events/base_event_utils.h"
@@ -129,7 +129,8 @@ WebMouseEvent WebMouseEventBuilder::Build(
   int button = action_button;
   // For events other than MouseDown/Up, action_button is not defined. So we are
   // determining |button| value from |modifiers| as is done in other platforms.
-  if (type != WebInputEvent::kMouseDown && type != WebInputEvent::kMouseUp) {
+  if (type != WebInputEvent::Type::kMouseDown &&
+      type != WebInputEvent::Type::kMouseUp) {
     if (modifiers & ui::EF_LEFT_MOUSE_BUTTON)
       button = ui::MotionEvent::BUTTON_PRIMARY;
     else if (modifiers & ui::EF_MIDDLE_MOUSE_BUTTON)
@@ -152,14 +153,13 @@ WebMouseEvent WebMouseEventBuilder::Build(
 
 WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     const ui::MotionEventAndroid& motion_event) {
-  WebMouseWheelEvent result(WebInputEvent::kMouseWheel,
+  WebMouseWheelEvent result(WebInputEvent::Type::kMouseWheel,
                             WebInputEvent::kNoModifiers,
                             motion_event.GetEventTime());
   result.SetPositionInWidget(motion_event.GetX(0), motion_event.GetY(0));
   result.SetPositionInScreen(motion_event.GetRawX(0), motion_event.GetRawY(0));
   result.button = WebMouseEvent::Button::kNoButton;
-  result.delta_units =
-      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+  result.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
   result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
   result.delta_y = motion_event.ticks_y() * motion_event.GetTickMultiplier();
   result.wheel_ticks_x = motion_event.ticks_x();

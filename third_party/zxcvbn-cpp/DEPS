@@ -1,0 +1,6 @@
+include_rules = [
+    "+base",
+    "+testing",
+    "+third_party/icu/source/common/unicode",
+    "+third_party/icu/source/i18n/unicode",
+]

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>media controls volume slider should be controlled by scrolling</title>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<body></body>
+<script>
+// Ensure that we will show the volume slider.
+internals.settings.setPreferHiddenVolumeControls(false);
+
+var video = document.createElement('video');
+var videoWithAudio = document.createElement('video');
+var audio = document.createElement('audio');
+
+const testElements = [video, videoWithAudio, audio];
+let currentTest = 0;
+
+testElements.forEach(element => {
+  element.controls = true;
+  element.preload = 'none';
+});
+
+video.id = 'video';
+videoWithAudio.id = 'video-with-audio';
+audio.id = 'audio';
+
+video.src = '../content/test.webm'
+videoWithAudio.src = '../content/test.oga';
+audio.src = '../content/test.oga';
+
+
+async_test(function(t) {
+  runNextTest(t);
+});
+
+// Need to run each test synchronously to avoid the race conditions causing the
+// slider to open/close.
+function runNextTest(t) {
+  if (currentTest == testElements.length) {
+    t.done();
+  }
+
+  const testElement = testElements[currentTest];
+  currentTest++;
+
+  document.body.append(testElement);
+  testMediaElement(t, testElement);
+}
+
+function testMediaElement(t, element) {
+  const muteBtn = muteButton(element);
+  const volumeSlider = volumeSliderElement(element);
+  const currentTime = currentTimeElement(element);
+
+  element.onloadedmetadata = t.step_func(function() {
+    // Hovering over the mute button after preloading should open the volume
+    // slider.
+    hoverMuteButton(element, t.step_func(() => {
+      assert_true(isVolumeSliderOpen(element), element.id + ': volume slider should open when hovering the mute button');
+      assert_equals(element.volume, 1, element.id + ': volume should start at 1');
+
+      wheelTick(0, 20, elementCenter(muteBtn)).then(t.step_func(() => {
+        assert_less_than(element.volume, 1, element.id + ': volume should change when scrolling on the mute button');
+
+        wheelTick(0, -30, elementCenter(volumeSlider)).then(t.step_func(() => {
+          assert_equals(element.volume, 1, element.id + ': volume should change when scrolling on the volume slider');
+          runNextTest(t);
+        }));
+      }));
+    }));
+  });
+
+  element.load();
+}
+</script>

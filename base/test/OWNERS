@@ -11,5 +11,9 @@ per-file *_win*=file://base/win/OWNERS
 per-file *android*=file://base/test/android/OWNERS
 per-file BUILD.gn=file://base/test/android/OWNERS
 
+# For iOS-specific changes:
+per-file *ios*=file://base/test/ios/OWNERS
+per-file BUILD.gn=file://base/test/ios/OWNERS
+
 # Linux fontconfig changes
 per-file *fontconfig*=file://base/nix/OWNERS

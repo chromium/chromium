@@ -50,6 +50,12 @@ body, html {
   <div class="spacer" style="background-color: PaleGreen"></div>
   <div class="spacer" style="background-color: PaleGreen"></div>
   <div id="initial-snap-area"></div>
+  <!--
+    Needed because otherwise the other snap-area's snap offset would get
+    clipped to the same offset as the initial snap area, which would make either
+    snap area a valid choice.
+  -->
+  <div style="height:10px;"></div>
   <div id="snap-area"></div>
 </div>
 
@@ -86,7 +92,7 @@ promise_test(async function () {
   assert_equals(window.internals.effectiveRootScroller(document),
     root_scroller,
     "#root-scroller must be the effective root scroller");
-  // Should be snapped to the closer snap area (0,0) on the initial layout.
+  // Should be snapped to the closer snap area on the initial layout.
   assert_equals(visualViewport.offsetTop + root_scroller.scrollTop,
       initial_area.offsetTop);
 
@@ -107,11 +113,9 @@ promise_test(async function () {
     'down',
     SPEED_INSTANT);
 
-  const max_frames = 500;
-  const max_unchanged_frames = 15;
-  await waitForAnimationEnd(() => {
+  await waitForAnimationEndTimeBased(() => {
     return root_scroller.scrollTop;
-  }, max_frames, max_unchanged_frames);
+  });
 
   // The offset of the visual viewport and the layout viewport combined should
   // be at the snap point.

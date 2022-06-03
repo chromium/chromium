@@ -1,0 +1,17 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x27
+        LayoutText {#text} at (0,0) size 349x26
+          text run at (0,0) width 349: "Only 'baz' should be selected below."
+      LayoutNGBlockFlow {DIV} at (75,51) size 78x57 [border: (1.50px solid #000000)]
+        LayoutText {#text} at (1,1) size 70x27
+          text run at (1,1) width 70: "foo bar"
+        LayoutInline {A} at (1,28) size 35x27 [color=#0000EE]
+          LayoutText {#text} at (1,28) size 35x27
+            text run at (1,28) width 35: "baz"
+selection start: position 0 of child 0 {#text} of child 1 {A} of child 2 {DIV} of body
+selection end:   position 3 of child 0 {#text} of child 1 {A} of child 2 {DIV} of body

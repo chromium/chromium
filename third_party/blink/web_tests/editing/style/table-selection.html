@@ -1,37 +1,21 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<title>An upstream caret can be impossible to create</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    var selection = window.getSelection();
-    selection.collapse(document.getElementById("selStart"), 0);
-    extendSelectionForwardByLineCommand();
-    extendSelectionForwardByLineCommand();
-    justifyCenterCommand();
-    fontSizeDeltaCommand();
-}
-
+selection_test(
+    [
+        '<div contenteditable><table style="font-size: 20px;"><tbody>',
+            '<tr><td>^foo</td></tr>',
+            '<tr><td>bar|</td></tr>',
+        '</tbody></table></div>',
+    ],
+    'fontSizeDelta 10px',
+    [
+        '<div contenteditable><table style="font-size: 20px;"><tbody>',
+            '<tr><td style="font-size: 30px;">^foo</td></tr>',
+            '<tr><td style="font-size: 30px;">bar|</td></tr>',
+        '</tbody></table></div>',
+    ]);
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body id="root" contenteditable>
-<div id="test" class="editing">
-<table> <tr> <td id="selStart"> foo </td> </tr> <tr> <td id="selEnd"> bar </td> </tr> </table>
-</div>
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

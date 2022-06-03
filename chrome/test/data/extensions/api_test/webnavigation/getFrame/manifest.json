@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests the webNavigation API events - getFrame.",
   "background": {
-    "page": "test_getFrame.html"
+    "scripts": ["test_getFrame.js"],
+    "persistent": false
   },
   "permissions": ["webNavigation", "tabs"]
 }

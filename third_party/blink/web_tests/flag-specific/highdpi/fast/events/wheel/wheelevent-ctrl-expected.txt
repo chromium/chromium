@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Div: Ctrl+wheel doesn't scroll. assert_equals: expected 53 but got 79.5
+FAIL Div: No-Ctrl wheel scrolls. assert_equals: expected 53 but got 79.5
+FAIL Doc: Ctrl+wheel doesn't scroll. assert_equals: expected 53 but got 79.5
+FAIL Doc: Ctrl+high precision touchpad scroll scrolls. assert_equals: expected 53 but got 79.5
+FAIL Doc: No-Ctrl wheel scrolls. assert_equals: expected 53 but got 79.5
+Harness: the test ran to completion.
+

@@ -1,0 +1,154 @@
+[
+    {
+        "duration": "63.0",
+        "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/declarative-api.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-appendchild.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assign.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assigned-elements.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assigned-slot.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary-large.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api-detail-summary-large.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api-detail-summary.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-insertbefore.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/imperative-api.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.shadow_dom/shadow-dom-overhead.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-attr-selectors.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-media-query.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-with-distribution.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/style-sheet-insert.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-distribution-disconnected-and-reconnected.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-distribution.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-host-child-append.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-large-deep-distribution.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.shadow_dom/v1-large-deep-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-append-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-distribution.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-prepend-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-re-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-assigned-nodes.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-flatten.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-re-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-slot-assigned-nodes.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-slot-flatten.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-slot-append.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-small-deep-distribution.html"
+    },
+    {
+        "duration": "2.0",
+        "name": "blink_perf.shadow_dom/v1-small-deep-layout.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-small-shallow-distribution.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.shadow_dom/v1-small-shallow-layout.html"
+    }
+]

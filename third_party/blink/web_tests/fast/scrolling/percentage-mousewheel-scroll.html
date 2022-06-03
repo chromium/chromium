@@ -1,0 +1,65 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<div id="outerScroller" style="width: 400px; height: 400px; overflow: scroll;">
+  <div id="innerScroller" style="width: 200px; height: 200px; overflow: scroll;">
+    <div style="width: 1000px; height:1000px;"></div>
+  </div>
+  <div style="width: 1000px; height:1000px;"></div>
+</div>
+<script>
+
+const SCROLL_PERCENTAGE = 0.6;
+
+function scrollAt(x, y) {
+  return percentScroll(0, SCROLL_PERCENTAGE, x, y,
+                       GestureSourceType.MOUSE_INPUT);
+}
+
+async function test_scroller(t, scrollElement, x, y) {
+  let sawWheelEvent = false;
+  let deltaY = 0;
+  const wheelListener =  evt => {
+    sawWheelEvent = true;
+    deltaY = evt.deltaY;
+  };
+  document.addEventListener("wheel", wheelListener);
+  t.add_cleanup(() => {
+    document.removeEventListener('wheel', wheelListener);
+    innerScroller.scrollTop = 0;
+    outerScroller.scrollTop = 0;
+  });
+
+  await mouseMoveTo(x, y);
+  await scrollAt(x, y);
+
+  function isCorrectOffset() {
+    return Math.abs(scrollElement.scrollTop -
+        scrollElement.clientHeight * SCROLL_PERCENTAGE) <= 0.5;
+  }
+  await waitForScrollEnd(
+            scrollElement, isCorrectOffset, true,
+            "Scrolling by percentage must scroll the correct amount.");
+  await conditionHolds(
+            isCorrectOffset,
+            "Scrolling must not scroll past the correct amount");
+
+  // The delay in the conditionHolds check is multiple frames, which is
+  // sufficient to ensure that any wheel events accompanying the scroll are
+  // dispatched.
+  assert_true(sawWheelEvent, "Timeout waiting on wheel event");
+  assert_equals(deltaY, WHEEL_DELTA,
+                "Wheel scrolling must report the correct value.");
+  scrollElement.removeEventListener("wheel", wheelListener);
+}
+
+promise_test(function() {
+  return test_scroller(this, innerScroller, 100, 100);
+}, "innerScroller percentage resolved correctly");
+
+promise_test(function() {
+  return test_scroller(this, outerScroller, 300, 300);
+}, "outerScroller percentage resolved correctly");
+
+</script>

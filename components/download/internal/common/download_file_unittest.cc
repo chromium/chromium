@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -14,8 +15,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -28,6 +29,10 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -114,7 +119,7 @@ class TestDownloadFileImpl : public DownloadFileImpl {
 
  protected:
   base::TimeDelta GetRetryDelayForFailedRename(int attempt_count) override {
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
   }
 
 #if !defined(OS_WIN)
@@ -169,6 +174,9 @@ class DownloadFileTest : public testing::Test {
   }
 
   void SetUp() override {
+#if defined(OS_WIN)
+    ASSERT_TRUE(com_initializer_.Succeeded());
+#endif
     EXPECT_CALL(*(observer_.get()), DestinationUpdate(_, _, _))
         .Times(AnyNumber())
         .WillRepeatedly(Invoke(this, &DownloadFileTest::SetUpdateDownloadInfo));
@@ -193,12 +201,12 @@ class DownloadFileTest : public testing::Test {
     download_file_->StreamActive(stream, MOJO_RESULT_OK);
   }
 
-  void SetInterruptReasonCallback(const base::Closure& closure,
+  void SetInterruptReasonCallback(base::OnceClosure closure,
                                   DownloadInterruptReason* reason_p,
                                   DownloadInterruptReason reason,
                                   int64_t bytes_wasted) {
     *reason_p = reason;
-    closure.Run();
+    std::move(closure).Run();
   }
 
   bool CreateDownloadFile(bool calculate_hash) {
@@ -238,7 +246,8 @@ class DownloadFileTest : public testing::Test {
       int data_len = strlen(kTestData1);
       while (len > 0) {
         int bytes_to_write = len > data_len ? data_len : len;
-        base::AppendToFile(save_info->file_path, kTestData1, bytes_to_write);
+        base::AppendToFile(save_info->file_path,
+                           base::StringPiece(kTestData1, bytes_to_write));
         len -= bytes_to_write;
       }
     }
@@ -246,10 +255,10 @@ class DownloadFileTest : public testing::Test {
     save_info->offset = 0;
     save_info->file_offset = file_offset;
 
-    download_file_.reset(new TestDownloadFileImpl(
+    download_file_ = std::make_unique<TestDownloadFileImpl>(
         std::move(save_info), download_dir_.GetPath(),
         std::unique_ptr<MockInputStream>(input_stream_),
-        DownloadItem::kInvalidId, observer_factory_.GetWeakPtr()));
+        DownloadItem::kInvalidId, observer_factory_.GetWeakPtr());
 
     EXPECT_CALL(*input_stream_, Read(_, _))
         .WillOnce(Return(InputStream::EMPTY))
@@ -264,7 +273,7 @@ class DownloadFileTest : public testing::Test {
         base::BindRepeating(&DownloadFileTest::SetInterruptReasonCallback,
                             weak_ptr_factory.GetWeakPtr(),
                             loop_runner.QuitClosure(), &result),
-        DownloadFile::CancelRequestCallback(), received_slices, true);
+        DownloadFile::CancelRequestCallback(), received_slices);
     loop_runner.Run();
 
     ::testing::Mock::VerifyAndClearExpectations(input_stream_);
@@ -473,6 +482,14 @@ class DownloadFileTest : public testing::Test {
     return download_file_->TotalBytesReceived();
   }
 
+ private:
+#if defined(OS_WIN)
+  // This must occur early in the member list to ensure COM is initialized first
+  // and uninitialized last.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
+
+ protected:
   std::unique_ptr<StrictMock<MockDownloadDestinationObserver>> observer_;
   base::WeakPtrFactory<DownloadDestinationObserver> observer_factory_;
 
@@ -499,7 +516,7 @@ class DownloadFileTest : public testing::Test {
   std::string expected_data_;
 
  private:
-  void SetRenameResult(const base::Closure& closure,
+  void SetRenameResult(base::OnceClosure closure,
                        DownloadInterruptReason* reason_p,
                        base::FilePath* result_path_p,
                        DownloadInterruptReason reason,
@@ -508,7 +525,7 @@ class DownloadFileTest : public testing::Test {
       *reason_p = reason;
     if (result_path_p)
       *result_path_p = result_path;
-    closure.Run();
+    std::move(closure).Run();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -744,13 +761,13 @@ TEST_P(DownloadFileTestWithRename, RenameError) {
 
 namespace {
 
-void TestRenameCompletionCallback(const base::Closure& closure,
+void TestRenameCompletionCallback(base::OnceClosure closure,
                                   bool* did_run_callback,
                                   DownloadInterruptReason interrupt_reason,
                                   const base::FilePath& new_path) {
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
   *did_run_callback = true;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 }  // namespace
@@ -762,7 +779,7 @@ void TestRenameCompletionCallback(const base::Closure& closure,
 // succeed.
 //
 // Note that there is only one queue of tasks to run, and that is in the tests'
-// base::MessageLoopCurrent::Get(). Each RunLoop processes that queue until it
+// base::CurrentThread::Get(). Each RunLoop processes that queue until it
 // sees a QuitClosure() targeted at itself, at which point it stops processing.
 TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
   ASSERT_TRUE(CreateDownloadFile(true));
@@ -802,7 +819,7 @@ TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
     // the completion callback.
     InvokeRenameMethod(
         GetParam(), target_path,
-        base::Bind(&TestRenameCompletionCallback, succeeding_run.QuitClosure(),
+        base::BindOnce(&TestRenameCompletionCallback, succeeding_run.QuitClosure(),
                    &did_run_callback));
     EXPECT_FALSE(did_run_callback);
 

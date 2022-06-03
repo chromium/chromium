@@ -14,40 +14,19 @@
 
 #include "util/stdlib/strlcpy.h"
 
-#include "base/logging.h"
-#include "build/build_config.h"
-
-#if defined(OS_WIN) && defined(WCHAR_T_IS_UTF16)
-#include <strsafe.h>
-#endif
+#include <string>
 
 namespace crashpad {
 
-#if defined(OS_WIN) && defined(WCHAR_T_IS_UTF16)
-
-size_t c16lcpy(base::char16* destination,
-               const base::char16* source,
-               size_t length) {
-  HRESULT result = StringCchCopyW(destination, length, source);
-  CHECK(result == S_OK || result == STRSAFE_E_INSUFFICIENT_BUFFER);
-  return wcslen(source);
-}
-
-#elif defined(WCHAR_T_IS_UTF32)
-
-size_t c16lcpy(base::char16* destination,
-               const base::char16* source,
-               size_t length) {
-  size_t source_length = base::c16len(source);
+size_t c16lcpy(char16_t* destination, const char16_t* source, size_t length) {
+  size_t source_length = std::char_traits<char16_t>::length(source);
   if (source_length < length) {
-    base::c16memcpy(destination, source, source_length + 1);
+    std::char_traits<char16_t>::copy(destination, source, source_length + 1);
   } else if (length != 0) {
-    base::c16memcpy(destination, source, length - 1);
+    std::char_traits<char16_t>::copy(destination, source, length - 1);
     destination[length - 1] = '\0';
   }
   return source_length;
 }
-
-#endif  // WCHAR_T_IS_UTF32
 
 }  // namespace crashpad

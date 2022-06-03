@@ -7,7 +7,6 @@
 # This file is shared with all modules' BUILD files which shouldn't need access
 # to the huge and slow lists of sources. If sharing is necessary, make a
 # separate .gni.
-import("//build/config/jumbo.gni")
 import("//third_party/blink/renderer/config.gni")
 blink_modules_output_dir = "$root_gen_dir/third_party/blink/renderer/modules"
 
@@ -26,7 +25,7 @@ template("blink_modules_sources") {
     target_type = "static_library"
   }
 
-  target("jumbo_" + target_type, target_name) {
+  target(target_type, target_name) {
     # The visibility will get overridden by forward_variables_from below if the
     # invoker defined it.
     visibility = [ "//third_party/blink/renderer/modules/*" ]
@@ -50,8 +49,6 @@ set_defaults("blink_modules_sources") {
   # is the list normally applied to static libraries and source sets.
   configs = default_compiler_configs
   configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer/modules:modules_implementation",
     "//third_party/blink/renderer:non_test_config",

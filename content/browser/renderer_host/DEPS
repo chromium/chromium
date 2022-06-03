@@ -2,7 +2,6 @@ include_rules = [
   "+cc/switches.h", # For cc command line switches.
   "+components/viz/common",
   "+components/viz/host",
-  "+components/viz/service",
   "+jni",
   "+net/dns/public",
   "+third_party/blink/public/platform/web_gesture_curve.h",
@@ -12,7 +11,6 @@ include_rules = [
 
   # The renderer_host files should only call upwards in the layering via the
   # delegate interfaces.
-  "-content/browser/frame_host",
   "-content/browser/web_contents",
   "-content/public/browser/web_contents.h",
   "-content/public/browser/web_contents_delegate.h",
@@ -21,8 +19,6 @@ include_rules = [
 
 specific_include_rules = {
   ".*_(unit|browser)test\.(cc|mm)": [
-    "+components/rappor/test_rappor_service.h",
-    "+content/browser/frame_host",
     "+content/browser/web_contents",
     "+content/public/browser/web_contents.h",
     "+content/public/browser/web_contents_delegate.h",
@@ -32,26 +28,20 @@ specific_include_rules = {
     "+content/app_shim_remote_cocoa",
     "+components/remote_cocoa",
   ],
+  "embedded_frame_sink_provider_impl_unittest\.cc": [
+    "+components/viz/service",
+  ],
   "render_process_host_impl\.cc": [
-    "+content/browser/frame_host/render_frame_message_filter.h",
+    "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",
     # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
   ],
   "render_widget_host_view_mac\.mm": [
-    "+content/browser/frame_host",
     "+content/public/browser/web_contents.h",
   ],
-  # TODO(nasko): Remove these exceptions once we've untangled the dependency
-  # of RenderViewHost on the FrameTree.
-  "render_view_host_impl\.(cc|h)": [
-    "+content/browser/frame_host/frame_tree.h",
-  ],
-  "render_widget_host_view_aura\.cc": [
-    "+content/browser/frame_host",
-  ],
-  "render_widget_host_view_event_handler\.cc": [
-    "+content/browser/frame_host",
-  ],
+  "popup_menu_helper_mac.mm": [
+    "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
+  ]
 }

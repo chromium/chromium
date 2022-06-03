@@ -15,6 +15,7 @@ component("shared_typemap_traits") {
     "bitmap_skbitmap_mojom_traits.h",
     "image_info_mojom_traits.cc",
     "image_info_mojom_traits.h",
+    "surface_origin_mojom_traits.h",
   ]
 
   defines = [ "IS_SKIA_SHARED_TRAITS_IMPL" ]
@@ -23,6 +24,7 @@ component("shared_typemap_traits") {
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//skia",
+    "//skia:skcms",
     "//skia/public/mojom:mojom_shared",
   ]
 }
@@ -31,23 +33,108 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "bitmap.mojom",
-    "blur_image_filter_tile_mode.mojom",
     "image_info.mojom",
     "skcolor.mojom",
+    "surface_origin.mojom",
+    "tile_mode.mojom",
   ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
-}
+  public_deps = [ "//mojo/public/mojom/base" ]
 
-mojom("test_interfaces") {
-  testonly = true
-  sources = [
-    "test/traits_test_service.mojom",
+  shared_skia_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "skia.mojom.TileMode"
+          cpp = "::SkTileMode"
+        },
+      ]
+      traits_headers = [ "tile_mode_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.BitmapN32"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.BitmapWithArbitraryBpp"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.BitmapWithArbitraryBpp"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.BitmapMappedFromTrustedProcess"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.InlineBitmap"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "bitmap_skbitmap_mojom_traits.h" ]
+      traits_public_deps = [
+        ":shared_typemap_traits",
+        "//skia",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkColor"
+          cpp = "::SkColor"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "skcolor_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.AlphaType"
+          cpp = "::SkAlphaType"
+        },
+        {
+          mojom = "skia.mojom.ColorType"
+          cpp = "::SkColorType"
+        },
+        {
+          mojom = "skia.mojom.ImageInfo"
+          cpp = "::SkImageInfo"
+        },
+        {
+          mojom = "skia.mojom.BitmapN32ImageInfo"
+          cpp = "::SkImageInfo"
+        },
+      ]
+      traits_headers = [ "image_info_mojom_traits.h" ]
+      traits_public_deps = [
+        ":shared_typemap_traits",
+        "//skia",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SurfaceOrigin"
+          cpp = "::GrSurfaceOrigin"
+        },
+      ]
+      traits_headers = [ "surface_origin_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_typemap_traits" ]
+    },
   ]
 
-  public_deps = [
-    ":mojom",
-  ]
+  cpp_typemaps = shared_skia_cpp_typemaps
+  blink_cpp_typemaps = shared_skia_cpp_typemaps
+  webui_module_path = "chrome://resources/mojo/skia/public/mojom/"
 }

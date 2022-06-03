@@ -6,6 +6,8 @@
 module gpu.mojom;
 
 import "gpu/ipc/common/dx_diag_node.mojom";
+[EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -18,7 +20,7 @@ struct GpuDevice {
   uint32 device_id;
   [EnableIf=is_win]
   uint32 sub_sys_id;
-  [EnableIf=is_win]
+  [EnableIf=has_gpu_revision_info]
   uint32 revision;
   bool active;
   string vendor_string;
@@ -26,6 +28,8 @@ struct GpuDevice {
   string driver_vendor;
   string driver_version;
   int32 cuda_compute_capability_major;
+  [EnableIf=is_win]
+  Luid luid;
 };
 
 // gpu::VideoCodecProfile
@@ -113,15 +117,18 @@ enum OverlaySupport {
   NONE,
   DIRECT,
   SCALING,
+  SOFTWARE,
 };
 
-// gpu::Dx12VulkanVersionInfo
+// gpu::OverlayInfo
 [EnableIf=is_win]
-struct Dx12VulkanVersionInfo {
-  bool supports_dx12;
-  bool supports_vulkan;
-  uint32 d3d12_feature_level;
-  uint32 vulkan_version;
+struct OverlayInfo {
+  bool direct_composition;
+  bool supports_overlays;
+  OverlaySupport yuy2_overlay_support;
+  OverlaySupport nv12_overlay_support;
+  OverlaySupport bgra8_overlay_support;
+  OverlaySupport rgb10a2_overlay_support;
 };
 
 // Corresponds to |gpu::GPUInfo| in gpu/config/gpu_info.h
@@ -151,20 +158,20 @@ struct GpuInfo {
   bool passthrough_cmd_decoder;
   bool can_support_threaded_texture_mailbox;
 
-  [EnableIf=is_win]
-  bool direct_composition;
-  [EnableIf=is_win]
-  bool supports_overlays;
-  [EnableIf=is_win]
-  OverlaySupport yuy2_overlay_support;
-  [EnableIf=is_win]
-  OverlaySupport nv12_overlay_support;
+  [EnableIf=is_mac]
+  uint32 macos_specific_texture_target;
+
   [EnableIf=is_win]
   DxDiagNode dx_diagnostics;
   [EnableIf=is_win]
-  Dx12VulkanVersionInfo dx12_vulkan_version_info;
+  uint32 d3d12_feature_level;
+  [EnableIf=is_win]
+  uint32 vulkan_version;
+  [EnableIf=is_win]
+  OverlayInfo overlay_info;
 
   VideoDecodeAcceleratorCapabilities video_decode_accelerator_capabilities;
+  array<VideoDecodeAcceleratorSupportedProfile> video_decoder_capabilities;
   array<VideoEncodeAcceleratorSupportedProfile>
     video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
@@ -172,10 +179,9 @@ struct GpuInfo {
   array<ImageDecodeAcceleratorSupportedProfile>
     image_decode_accelerator_supported_profiles;
 
-  uint64 system_visual;
-  uint64 rgba_visual;
   bool oop_rasterization_supported;
   bool subpixel_font_rendering;
+  uint32 visibility_callback_call_count;
 
   [EnableIf=supports_vulkan]
   VulkanInfo? vulkan_info;

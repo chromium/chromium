@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/cookie-store/explainer.html
+
+enum CookieSameSite {
+  "strict",
+  "lax",
+  "none"
+};
+
+dictionary CookieInit {
+  required USVString name;
+  required USVString value;
+  USVString? domain = null;
+  USVString path = "/";
+  DOMTimeStamp? expires = null;
+  CookieSameSite sameSite = "strict";
+  [RuntimeEnabled=PartitionedCookies] boolean partitioned = false;
+};

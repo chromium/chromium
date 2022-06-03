@@ -17,8 +17,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/numerics/ranges.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -344,7 +345,7 @@ std::vector<Swatch> CalculateProminentColors(
     const SkBitmap& bitmap,
     const std::vector<ColorBracket>& color_brackets,
     const gfx::Rect& region,
-    base::Optional<ColorSwatchFilter> filter) {
+    absl::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
 
@@ -638,7 +639,7 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   // we can end up creating a larger buffer than we have data for, and the end
   // of the buffer will remain uninitialized after we copy/UnPreMultiply the
   // image data into it).
-  height = base::ClampToRange(height, 0, bitmap.height());
+  height = base::clamp(height, 0, bitmap.height());
 
   // SkBitmap uses pre-multiplied alpha but the KMean clustering function
   // above uses non-pre-multiplied alpha. Transform the bitmap before we
@@ -678,7 +679,7 @@ std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
-    base::Optional<ColorSwatchFilter> filter) {
+    absl::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
   DCHECK(!region.IsEmpty());
@@ -961,22 +962,6 @@ bool ApplyColorReduction(const SkBitmap& source_bitmap,
   }
 
   return true;
-}
-
-bool ComputePrincipalComponentImage(const SkBitmap& source_bitmap,
-                                    SkBitmap* target_bitmap) {
-  if (!target_bitmap) {
-    NOTREACHED();
-    return false;
-  }
-
-  gfx::Matrix3F covariance = ComputeColorCovariance(source_bitmap);
-  gfx::Matrix3F eigenvectors = gfx::Matrix3F::Zeros();
-  gfx::Vector3dF eigenvals = covariance.SolveEigenproblem(&eigenvectors);
-  gfx::Vector3dF principal = eigenvectors.get_column(0);
-  if (eigenvals == gfx::Vector3dF() || principal == gfx::Vector3dF())
-    return false;  // This may happen for some edge cases.
-  return ApplyColorReduction(source_bitmap, principal, true, target_bitmap);
 }
 
 }  // color_utils

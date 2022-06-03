@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 using blink::mojom::ServiceWorkerResponseError;
 
@@ -47,13 +48,14 @@ void PaymentHandlerUtils::ReportResponseError(
     case ServiceWorkerResponseError::kResponseTypeCorsForRequestModeSameOrigin:
     case ServiceWorkerResponseError::kResponseBodyBroken:
     case ServiceWorkerResponseError::kDisallowedByCorp:
+    case ServiceWorkerResponseError::kRequestBodyUnusable:
       NOTREACHED();
       error_message = error_message + "an unexpected error occurred.";
       break;
   }
 
   DCHECK(execution_context);
-  execution_context->AddConsoleMessage(ConsoleMessage::Create(
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, error_message));
 }

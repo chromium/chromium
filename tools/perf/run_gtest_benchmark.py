@@ -8,6 +8,7 @@ Runs gtest and processes traces (run metrics) to produce perf results.
 """
 
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -49,8 +50,40 @@ def RunGTest(options, gtest_args):
   return return_code
 
 
+def _MapDeviceTracePath(trace_dir, result_json):
+  """Maps trace file paths to |trace_dir|. It is needed when gtest runs
+  on a real device and trace file is the absolute path on the device. If
+  gtest runs on a bot, the returned result should be the same as input.
+
+  Args:
+    result_json: JSON string of a test result.
+
+  Returns the JSON string of a LUCI test result with trace file path mapped.
+  """
+  result = json.loads(result_json)
+  test_result = result.get('testResult', {})
+  artifacts = test_result.get('outputArtifacts', {})
+  trace_names = [name for name in artifacts if name.startswith('trace/')]
+  for name in trace_names:
+    trace_file = artifacts[name]['filePath']
+    trace_file = os.path.join(trace_dir, os.path.basename(trace_file))
+    artifacts[name]['filePath'] = trace_file
+
+  if artifacts:
+    result['testResult']['outputArtifacts'] = artifacts
+
+  return json.dumps(result)
+
+
 def _MergeResultsJson(trace_dir, output_file):
-  """Merge results json files generated in each test case into output_file."""
+  """Merge results json files generated in each test case into output_file.
+
+  Gtest test cases store results in LUCI test results format.
+  See: go/luci-test-results-design
+
+  This function reads the individual LUCI test results JSON files and
+  concatenates them into a jsonl file to feed result processor scripts later on.
+  """
   result_files = [
       os.path.join(trace_dir, trace)
       for trace in os.listdir(trace_dir)
@@ -61,7 +94,7 @@ def _MergeResultsJson(trace_dir, output_file):
       with open(result_file) as f:
         stripped_lines = [line.rstrip() for line in f]
         for line in stripped_lines:
-          output.write('%s\n' % line)
+          output.write('%s\n' % _MapDeviceTracePath(trace_dir, line))
 
 
 def ProcessResults(options):

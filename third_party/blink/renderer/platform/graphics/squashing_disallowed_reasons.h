@@ -18,19 +18,20 @@ using SquashingDisallowedReasons = unsigned;
   V(ClippingContainerMismatch)                  \
   V(OpacityAncestorMismatch)                    \
   V(TransformAncestorMismatch)                  \
+  V(Preserve3DSortingContextMismatch)           \
   V(FilterMismatch)                             \
   V(WouldBreakPaintOrder)                       \
   V(SquashingVideoIsDisallowed)                 \
   V(SquashingLayoutEmbeddedContentIsDisallowed) \
   V(SquashingBlendingIsDisallowed)              \
   V(NearestFixedPositionMismatch)               \
-  V(ScrollChildWithCompositedDescendants)       \
   V(SquashingLayerIsAnimating)                  \
   V(RenderingContextMismatch)                   \
   V(FragmentedContent)                          \
   V(ClipPathMismatch)                           \
   V(MaskMismatch)                               \
-  V(CrossesLayoutContainmentBoundary)
+  V(CrossesLayoutContainmentBoundary)           \
+  V(Disabled)
 
 class PLATFORM_EXPORT SquashingDisallowedReason {
   DISALLOW_NEW();

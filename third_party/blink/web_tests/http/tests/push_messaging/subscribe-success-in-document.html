@@ -3,6 +3,7 @@
 <head>
 <title>subscribe() succeeds when permission is granted and resolves with a valid subscription</title>
 <link rel="manifest" href="resources/push_manifest.json">
+<script src="resources/push-constants.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="../serviceworker/resources/test-helpers.js"></script>
@@ -18,19 +19,25 @@ async_test(function(test) {
             swRegistration = serviceWorkerRegistration;
             return wait_for_state(test, swRegistration.installing, 'activated');
         })
-        .then(function() {
+        .then(async function() {
             // If running manually, grant permission when prompted.
-            if (window.testRunner)
-                testRunner.setPermission('push-messaging', 'granted', location.origin, location.origin);
+            if (window.internals) {
+                await window.internals.setPermission(
+                    {name: 'push', userVisibleOnly: true}, 'granted',
+                    location.origin, location.origin);
+            }
             return swRegistration.pushManager.subscribe({ userVisibleOnly: true });
         })
         .then(function(pushSubscription) {
             assert_idl_attribute(pushSubscription, 'endpoint');
             assert_equals(typeof pushSubscription.endpoint, 'string');
 
+            // Expiration time should be in the expected window
             assert_idl_attribute(pushSubscription, 'expirationTime');
-            assert_equals(pushSubscription.expirationTime, null);
-
+            assert_true(typeof pushSubscription.expirationTime === 'number');
+            assert_approx_equals(pushSubscription.expirationTime, Date.now() +
+                                 EXPIRATION_WINDOW, EXPIRATION_TIME_TOLERANCE,
+                                 `Expiration time should be in expected window: ${EXPIRATION_TIME_TOLERANCE} ms`);
             try {
                 var endpointUrl = new URL(pushSubscription.endpoint);
             } catch(e) {

@@ -1,0 +1,2 @@
+Accept-CH: sec-ch-device-memory, device-memory, sec-ch-dpr, dpr, sec-ch-viewport-width, viewport-width, rtt, downlink, ect, lang
+Feature-Policy: ch-device-memory *; ch-dpr 'none'; ch-viewport-width 'self'; ch-lang 'none'

@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
@@ -42,6 +43,11 @@ struct KeyValuePairKeyExtractor {
   template <typename T>
   static const typename T::KeyType& Extract(const T& p) {
     return p.key;
+  }
+  // Assumes out points to a buffer of size at least sizeof(T::KeyType).
+  template <typename T>
+  static void ExtractSafe(const T& p, void* out) {
+    AtomicReadMemcpy<sizeof(typename T::KeyType)>(out, &p.key);
   }
 };
 
@@ -150,6 +156,7 @@ class HashMap {
   iterator find(KeyPeekInType);
   const_iterator find(KeyPeekInType) const;
   bool Contains(KeyPeekInType) const;
+  // Returns a reference to the mapped value. Crashes if no mapped value exists.
   MappedPeekType at(KeyPeekInType) const;
 
   // replaces value but not key if key is already present return value is a
@@ -186,23 +193,12 @@ class HashMap {
   template <typename HashTranslator, typename T>
   bool Contains(const T&) const;
 
-  // An alternate version of insert() that finds the object by hashing and
-  // comparing with some other type, to avoid the cost of type conversion if
-  // the object is already in the table. HashTranslator must have the
-  // following function members:
-  //   static unsigned hash(const T&);
-  //   static bool equal(const ValueType&, const T&);
-  //   static translate(ValueType&, const T&, unsigned hashCode);
-  template <typename HashTranslator,
-            typename IncomingKeyType,
-            typename IncomingMappedType>
-  AddResult Insert(IncomingKeyType&&, IncomingMappedType&&);
-
   template <typename IncomingKeyType>
   static bool IsValidKey(const IncomingKeyType&);
 
   template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher visitor) {
+  std::enable_if_t<A::kIsGarbageCollected> Trace(
+      VisitorDispatcher visitor) const {
     impl_.Trace(visitor);
   }
 
@@ -575,24 +571,6 @@ template <typename T,
           typename W,
           typename X,
           typename Y>
-template <typename HashTranslator,
-          typename IncomingKeyType,
-          typename IncomingMappedType>
-auto HashMap<T, U, V, W, X, Y>::Insert(IncomingKeyType&& key,
-                                       IncomingMappedType&& mapped)
-    -> AddResult {
-  return impl_.template AddPassingHashCode<
-      HashMapTranslatorAdapter<ValueTraits, HashTranslator>>(
-      std::forward<IncomingKeyType>(key),
-      std::forward<IncomingMappedType>(mapped));
-}
-
-template <typename T,
-          typename U,
-          typename V,
-          typename W,
-          typename X,
-          typename Y>
 template <typename IncomingKeyType, typename IncomingMappedType>
 typename HashMap<T, U, V, W, X, Y>::AddResult HashMap<T, U, V, W, X, Y>::insert(
     IncomingKeyType&& key,
@@ -610,8 +588,8 @@ template <typename T,
 typename HashMap<T, U, V, W, X, Y>::MappedPeekType
 HashMap<T, U, V, W, X, Y>::at(KeyPeekInType key) const {
   const ValueType* entry = impl_.Lookup(key);
-  if (!entry)
-    return MappedTraits::Peek(MappedTraits::EmptyValue());
+  CHECK(entry) << "HashMap::at found no value for the given key. See "
+                  "https://crbug.com/1058527.";
   return MappedTraits::Peek(entry->value);
 }
 

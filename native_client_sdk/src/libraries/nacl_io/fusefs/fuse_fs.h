@@ -14,6 +14,10 @@
 namespace nacl_io {
 
 class FuseFs : public Filesystem {
+ public:
+  FuseFs(const FuseFs&) = delete;
+  FuseFs& operator=(const FuseFs&) = delete;
+
  protected:
   FuseFs();
 
@@ -35,7 +39,6 @@ class FuseFs : public Filesystem {
 
   friend class FuseFsNode;
   friend class FuseFsFactory;
-  DISALLOW_COPY_AND_ASSIGN(FuseFs);
 };
 
 class FuseFsNode : public Node {
@@ -70,6 +73,9 @@ class FileFuseFsNode : public FuseFsNode {
                  struct fuse_file_info& info,
                  const std::string& path);
 
+  FileFuseFsNode(const FileFuseFsNode&) = delete;
+  FileFuseFsNode& operator=(const FileFuseFsNode&) = delete;
+
  protected:
   virtual void Destroy();
 
@@ -87,7 +93,6 @@ class FileFuseFsNode : public FuseFsNode {
 
  private:
   friend class FuseFs;
-  DISALLOW_COPY_AND_ASSIGN(FileFuseFsNode);
 };
 
 class DirFuseFsNode : public FuseFsNode {
@@ -96,6 +101,9 @@ class DirFuseFsNode : public FuseFsNode {
                 struct fuse_operations* fuse_ops,
                 struct fuse_file_info& info,
                 const std::string& path);
+
+  DirFuseFsNode(const DirFuseFsNode&) = delete;
+  DirFuseFsNode& operator=(const DirFuseFsNode&) = delete;
 
  protected:
   virtual void Destroy();
@@ -115,7 +123,6 @@ class DirFuseFsNode : public FuseFsNode {
 
  private:
   friend class FuseFs;
-  DISALLOW_COPY_AND_ASSIGN(DirFuseFsNode);
 };
 
 }  // namespace nacl_io

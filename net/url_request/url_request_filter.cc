@@ -5,10 +5,10 @@
 #include "net/url_request/url_request_filter.h"
 
 #include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/stl_util.h"
+#include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job.h"
+#include "net/url_request/url_request_job_factory.h"
 
 namespace net {
 
@@ -22,15 +22,14 @@ bool OnMessageLoopForInterceptorAddition() {
   // MessageLoop is required for some tests where there is no chance to insert
   // an interceptor between a networking thread being started and a resource
   // request being issued.
-  return base::MessageLoopCurrentForIO::IsSet() ||
-         !base::MessageLoopCurrent::IsSet();
+  return base::CurrentIOThread::IsSet() || !base::CurrentThread::IsSet();
 }
 
 // When removing interceptors, DCHECK that this function returns true.
 bool OnMessageLoopForInterceptorRemoval() {
-  // Checking for a MessageLoopCurrentForIO is a best effort at determining
+  // Checking for a CurrentIOThread is a best effort at determining
   // whether the current thread is a networking thread.
-  return base::MessageLoopCurrentForIO::IsSet();
+  return base::CurrentIOThread::IsSet();
 }
 
 }  // namespace
@@ -109,13 +108,13 @@ void URLRequestFilter::ClearHandlers() {
   hit_count_ = 0;
 }
 
-URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) const {
-  DCHECK(base::MessageLoopCurrentForIO::Get());
-  URLRequestJob* job = nullptr;
+std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
+    URLRequest* request) const {
+  DCHECK(base::CurrentIOThread::Get());
   if (!request->url().is_valid())
     return nullptr;
+
+  std::unique_ptr<URLRequestJob> job;
 
   // Check the hostname map first.
   const std::string hostname = request->url().host();
@@ -124,7 +123,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
   {
     auto it = hostname_interceptor_map_.find(make_pair(scheme, hostname));
     if (it != hostname_interceptor_map_.end())
-      job = it->second->MaybeInterceptRequest(request, network_delegate);
+      job = it->second->MaybeInterceptRequest(request);
   }
 
   if (!job) {
@@ -132,7 +131,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
     const std::string& url = request->url().spec();
     auto it = url_interceptor_map_.find(url);
     if (it != url_interceptor_map_.end())
-      job = it->second->MaybeInterceptRequest(request, network_delegate);
+      job = it->second->MaybeInterceptRequest(request);
   }
   if (job) {
     DVLOG(1) << "URLRequestFilter hit for " << request->url().spec();
@@ -143,12 +142,12 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
 
 URLRequestFilter::URLRequestFilter() : hit_count_(0) {
   DCHECK(OnMessageLoopForInterceptorAddition());
-  URLRequestJobFactoryImpl::SetInterceptorForTesting(this);
+  URLRequestJobFactory::SetInterceptorForTesting(this);
 }
 
 URLRequestFilter::~URLRequestFilter() {
   DCHECK(OnMessageLoopForInterceptorRemoval());
-  URLRequestJobFactoryImpl::SetInterceptorForTesting(nullptr);
+  URLRequestJobFactory::SetInterceptorForTesting(nullptr);
 }
 
 }  // namespace net

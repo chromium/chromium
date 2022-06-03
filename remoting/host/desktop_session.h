@@ -17,6 +17,9 @@ class ScreenResolution;
 // has a unique identifier used by cross-platform code to refer to it.
 class DesktopSession {
  public:
+  DesktopSession(const DesktopSession&) = delete;
+  DesktopSession& operator=(const DesktopSession&) = delete;
+
   virtual ~DesktopSession();
 
   // Changes the screen resolution of the desktop session.
@@ -37,8 +40,6 @@ class DesktopSession {
 
   // A unique identifier of the terminal.
   const int id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSession);
 };
 
 }  // namespace remoting

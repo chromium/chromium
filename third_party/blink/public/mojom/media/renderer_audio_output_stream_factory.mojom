@@ -1,0 +1,30 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "media/mojo/mojom/audio_output_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// This interface is used to create output streams. The client supplies a
+// mojo receiver for a stream provider, and then supplies the desired audio
+// parameters to that to create the stream.
+interface RendererAudioOutputStreamFactory {
+  // Used to request a device. If successful, |stream_provider_receiver| will be
+  // bound to an AudioOutputStreamProvider implementation, otherwise it will
+  // simply be discarded (won't be bound). If |session_id| is provided, it will
+  // be taken into account together with |device_id| in the selection of the
+  // audio output device to request. If not provided, only |device_id| will be
+  // taken into account in the selection of the audio output device.
+  RequestDeviceAuthorization(
+      pending_receiver<media.mojom.AudioOutputStreamProvider>
+          stream_provider_receiver,
+      mojo_base.mojom.UnguessableToken? session_id,
+      string device_id) =>
+      (media.mojom.OutputDeviceStatus state,
+       media.mojom.AudioParameters output_params,
+       string matched_device_id);
+};

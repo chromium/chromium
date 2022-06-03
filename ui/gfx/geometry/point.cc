@@ -13,7 +13,7 @@
 #include <windows.h>
 #elif defined(OS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -34,7 +34,7 @@ Point& Point::operator=(const POINT& point) {
   y_ = point.y;
   return *this;
 }
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
 Point::Point(const CGPoint& point) : x_(point.x), y_(point.y) {
 }
 #endif
@@ -46,20 +46,20 @@ POINT Point::ToPOINT() const {
   p.y = y();
   return p;
 }
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
 CGPoint Point::ToCGPoint() const {
   return CGPointMake(x(), y());
 }
 #endif
 
 void Point::SetToMin(const Point& other) {
-  x_ = x_ <= other.x_ ? x_ : other.x_;
-  y_ = y_ <= other.y_ ? y_ : other.y_;
+  x_ = std::min(x_, other.x_);
+  y_ = std::min(y_, other.y_);
 }
 
 void Point::SetToMax(const Point& other) {
-  x_ = x_ >= other.x_ ? x_ : other.x_;
-  y_ = y_ >= other.y_ ? y_ : other.y_;
+  x_ = std::max(x_, other.x_);
+  y_ = std::max(y_, other.y_);
 }
 
 std::string Point::ToString() const {

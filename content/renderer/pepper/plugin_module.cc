@@ -20,20 +20,20 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/nacl/common/buildflags.h"
-#include "content/common/frame_messages.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/host_dispatcher_wrapper.h"
 #include "content/renderer/pepper/host_globals.h"
+#include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/pepper_plugin_registry.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/ppapi_preferences_builder.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "content/renderer/pepper/ppb_proxy_impl.h"
 #include "content/renderer/pepper/ppb_var_deprecated_impl.h"
 #include "content/renderer/pepper/ppb_video_decoder_impl.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
@@ -50,7 +50,6 @@
 #include "ppapi/c/dev/ppb_printing_dev.h"
 #include "ppapi/c/dev/ppb_text_input_dev.h"
 #include "ppapi/c/dev/ppb_trace_event_dev.h"
-#include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"
@@ -62,7 +61,6 @@
 #include "ppapi/c/ppb_audio.h"
 #include "ppapi/c/ppb_audio_buffer.h"
 #include "ppapi/c/ppb_audio_config.h"
-#include "ppapi/c/ppb_audio_encoder.h"
 #include "ppapi/c/ppb_console.h"
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/ppb_file_io.h"
@@ -107,15 +105,7 @@
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
 #include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppb_flash.h"
-#include "ppapi/c/private/ppb_flash_clipboard.h"
-#include "ppapi/c/private/ppb_flash_drm.h"
-#include "ppapi/c/private/ppb_flash_file.h"
 #include "ppapi/c/private/ppb_flash_font_file.h"
-#include "ppapi/c/private/ppb_flash_fullscreen.h"
-#include "ppapi/c/private/ppb_flash_menu.h"
-#include "ppapi/c/private/ppb_flash_message_loop.h"
-#include "ppapi/c/private/ppb_flash_print.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
@@ -127,7 +117,6 @@
 #include "ppapi/c/private/ppb_udp_socket_private.h"
 #include "ppapi/c/private/ppb_uma_private.h"
 #include "ppapi/c/private/ppb_x509_certificate_private.h"
-#include "ppapi/c/trusted/ppb_broker_trusted.h"
 #include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 #include "ppapi/c/trusted/ppb_char_set_trusted.h"
 #include "ppapi/c/trusted/ppb_file_chooser_trusted.h"
@@ -143,6 +132,9 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_graphics_2d_api.h"
 #include "ppapi/thunk/thunk.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
 
 using ppapi::InputEventData;
 using ppapi::PpapiGlobals;
@@ -176,72 +168,6 @@ PluginModuleSet* GetLivePluginSet() {
   return live_plugin_libs.get();
 }
 
-class PowerSaverTestPluginDelegate : public PluginInstanceThrottler::Observer {
- public:
-  explicit PowerSaverTestPluginDelegate(PluginInstanceThrottlerImpl* throttler)
-      : throttler_(throttler) {
-    throttler_->AddObserver(this);
-    PostPowerSaverStatusToJavaScript("initial");
-  }
-
-  virtual ~PowerSaverTestPluginDelegate() { throttler_->RemoveObserver(this); }
-
-  static void PostPowerSaverStatusToJavaScript(
-      PepperPluginInstanceImpl* instance,
-      const std::string& source) {
-    DCHECK(instance);
-
-    bool is_hidden_for_placeholder = false;
-    bool is_peripheral = false;
-    bool is_throttled = false;
-
-    if (instance->throttler()) {
-      PluginInstanceThrottlerImpl* throttler = instance->throttler();
-      is_hidden_for_placeholder = throttler->IsHiddenForPlaceholder();
-      is_peripheral = throttler->power_saver_enabled();
-      is_throttled = throttler->IsThrottled();
-    }
-
-    // Refcounted by the returned PP_Var.
-    ppapi::DictionaryVar* dictionary = new ppapi::DictionaryVar;
-    dictionary->Set(ppapi::StringVar::StringToPPVar("source"),
-                    ppapi::StringVar::StringToPPVar(source));
-    dictionary->Set(ppapi::StringVar::StringToPPVar("isHiddenForPlaceholder"),
-                    PP_MakeBool(PP_FromBool(is_hidden_for_placeholder)));
-    dictionary->Set(ppapi::StringVar::StringToPPVar("isPeripheral"),
-                    PP_MakeBool(PP_FromBool(is_peripheral)));
-    dictionary->Set(ppapi::StringVar::StringToPPVar("isThrottled"),
-                    PP_MakeBool(PP_FromBool(is_throttled)));
-
-    instance->PostMessageToJavaScript(dictionary->GetPPVar());
-  }
-
- private:
-  void OnThrottleStateChange() override {
-    PostPowerSaverStatusToJavaScript("throttleStatusChange");
-  }
-
-  void OnPeripheralStateChange() override {
-    PostPowerSaverStatusToJavaScript("peripheralStatusChange");
-  }
-
-  void OnHiddenForPlaceholder(bool hidden) override {
-    PostPowerSaverStatusToJavaScript("hiddenForPlaceholderStatusChange");
-  }
-
-  void OnThrottlerDestroyed() override { delete this; }
-
-  void PostPowerSaverStatusToJavaScript(const std::string& source) {
-    if (!throttler_->GetWebPlugin() || !throttler_->GetWebPlugin()->instance())
-      return;
-    PostPowerSaverStatusToJavaScript(throttler_->GetWebPlugin()->instance(),
-                                     source);
-  }
-
-  // Non-owning pointer.
-  PluginInstanceThrottlerImpl* const throttler_;
-};
-
 // PPB_Core --------------------------------------------------------------------
 
 void AddRefResource(PP_Resource resource) {
@@ -264,7 +190,7 @@ void CallOnMainThread(int delay_in_msec,
   if (callback.func) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostDelayedTask(
         FROM_HERE, base::BindOnce(callback.func, callback.user_data, result),
-        base::TimeDelta::FromMilliseconds(delay_in_msec));
+        base::Milliseconds(delay_in_msec));
   }
 }
 
@@ -303,32 +229,6 @@ uint32_t GetLiveObjectsForInstance(PP_Instance instance_id) {
 }
 
 PP_Bool IsOutOfProcess() { return PP_FALSE; }
-
-void PostPowerSaverStatus(PP_Instance instance_id) {
-  PepperPluginInstanceImpl* plugin_instance =
-      host_globals->GetInstance(instance_id);
-  if (!plugin_instance)
-    return;
-
-  PowerSaverTestPluginDelegate::PostPowerSaverStatusToJavaScript(
-      plugin_instance, "getPowerSaverStatusResponse");
-}
-
-void SubscribeToPowerSaverNotifications(PP_Instance instance_id) {
-  PepperPluginInstanceImpl* plugin_instance =
-      host_globals->GetInstance(instance_id);
-  if (!plugin_instance)
-    return;
-
-  if (plugin_instance->throttler()) {
-    // Manages its own lifetime.
-    new PowerSaverTestPluginDelegate(plugin_instance->throttler());
-  } else {
-    // Just send an initial status. This status will never be updated.
-    PowerSaverTestPluginDelegate::PostPowerSaverStatusToJavaScript(
-        plugin_instance, "initial");
-  }
-}
 
 void SimulateInputEvent(PP_Instance instance, PP_Resource input_event) {
   PepperPluginInstanceImpl* plugin_instance =
@@ -380,8 +280,6 @@ const PPB_Testing_Private testing_interface = {
     &QuitMessageLoop,
     &GetLiveObjectsForInstance,
     &IsOutOfProcess,
-    &PostPowerSaverStatus,
-    &SubscribeToPowerSaverNotifications,
     &SimulateInputEvent,
     &GetDocumentURL,
     &GetLiveVars,
@@ -492,7 +390,6 @@ PluginModule::PluginModule(const std::string& name,
     : callback_tracker_(new ppapi::CallbackTracker),
       is_in_destructor_(false),
       is_crashed_(false),
-      broker_(nullptr),
       library_(nullptr),
       name_(name),
       version_(version),
@@ -697,13 +594,6 @@ bool PluginModule::ReserveInstanceID(PP_Instance instance) {
   return true;  // Instance ID is usable.
 }
 
-void PluginModule::SetBroker(PepperBroker* broker) {
-  DCHECK(!broker_ || !broker);
-  broker_ = broker;
-}
-
-PepperBroker* PluginModule::GetBroker() { return broker_; }
-
 RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
     RenderFrameImpl* render_frame,
     const base::FilePath& path,
@@ -713,8 +603,13 @@ RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
     int plugin_child_id,
     bool is_external,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  scoped_refptr<PepperHungPluginFilter> hung_filter(new PepperHungPluginFilter(
-      path, render_frame->GetRoutingID(), plugin_child_id));
+  mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host;
+  render_frame->GetPepperHost()->BindHungDetectorHost(
+      hung_host.InitWithNewPipeAndPassReceiver(), plugin_child_id, path);
+  scoped_refptr<PepperHungPluginFilter> hung_filter(
+      new PepperHungPluginFilter());
+  hung_filter->BindHungDetectorHost(std::move(hung_host));
+
   std::unique_ptr<HostDispatcherWrapper> dispatcher(new HostDispatcherWrapper(
       this, peer_pid, plugin_child_id, permissions, is_external));
 
@@ -728,11 +623,12 @@ RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
   const gpu::GpuFeatureInfo& gpu_feature_info =
       channel ? channel->gpu_feature_info() : default_gpu_feature_info;
 
-  if (!dispatcher->Init(channel_handle, &GetInterface,
-                        ppapi::Preferences(PpapiPreferencesBuilder::Build(
-                            render_frame->render_view()->webkit_preferences(),
-                            gpu_feature_info)),
-                        hung_filter.get(), task_runner)) {
+  if (!dispatcher->Init(
+          channel_handle, &GetInterface,
+          ppapi::Preferences(PpapiPreferencesBuilder::Build(
+              render_frame->GetWebFrame()->View()->GetWebPreferences(),
+              gpu_feature_info)),
+          hung_filter.get(), task_runner)) {
     return nullptr;
   }
 
@@ -768,7 +664,7 @@ bool PluginModule::InitializeModule(
 scoped_refptr<PluginModule> PluginModule::Create(
     RenderFrameImpl* render_frame,
     const WebPluginInfo& webplugin_info,
-    const base::Optional<url::Origin>& origin_lock,
+    const absl::optional<url::Origin>& origin_lock,
     bool* pepper_plugin_was_registered,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   *pepper_plugin_was_registered = true;
@@ -801,12 +697,16 @@ scoped_refptr<PluginModule> PluginModule::Create(
   }
 
   // Out of process: have the browser start the plugin process for us.
-  IPC::ChannelHandle channel_handle;
+  mojo::ScopedMessagePipeHandle channel_handle;
   base::ProcessId peer_pid = 0;
   int plugin_child_id = 0;
-  render_frame->Send(new FrameHostMsg_OpenChannelToPepperPlugin(
-      path, origin_lock, &channel_handle, &peer_pid, &plugin_child_id));
-  if (!channel_handle.is_mojo_channel_handle()) {
+
+  auto* browser_connection = PepperBrowserConnection::Get(render_frame);
+  mojom::PepperHost* host = browser_connection->GetHost();
+  host->OpenChannelToPepperPlugin(
+      render_frame->GetWebFrame()->GetSecurityOrigin(), path, origin_lock,
+      &channel_handle, &peer_pid, &plugin_child_id);
+  if (!channel_handle.is_valid()) {
     // Couldn't be initialized.
     return scoped_refptr<PluginModule>();
   }
@@ -820,7 +720,7 @@ scoped_refptr<PluginModule> PluginModule::Create(
                                                      module.get());
 
   if (!module->CreateOutOfProcessModule(render_frame, path, permissions,
-                                        channel_handle, peer_pid,
+                                        channel_handle.release(), peer_pid,
                                         plugin_child_id, false,
                                         task_runner))  // is_external = false
     return scoped_refptr<PluginModule>();

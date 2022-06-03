@@ -4,26 +4,22 @@
 
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#include "ui/gfx/geometry/safe_integer_conversions.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace gfx {
 
 Vector2d ToFlooredVector2d(const Vector2dF& vector2d) {
-  int x = ToFlooredInt(vector2d.x());
-  int y = ToFlooredInt(vector2d.y());
-  return Vector2d(x, y);
+  return Vector2d(base::ClampFloor(vector2d.x()),
+                  base::ClampFloor(vector2d.y()));
 }
 
 Vector2d ToCeiledVector2d(const Vector2dF& vector2d) {
-  int x = ToCeiledInt(vector2d.x());
-  int y = ToCeiledInt(vector2d.y());
-  return Vector2d(x, y);
+  return Vector2d(base::ClampCeil(vector2d.x()), base::ClampCeil(vector2d.y()));
 }
 
 Vector2d ToRoundedVector2d(const Vector2dF& vector2d) {
-  int x = ToRoundedInt(vector2d.x());
-  int y = ToRoundedInt(vector2d.y());
-  return Vector2d(x, y);
+  return Vector2d(base::ClampRound(vector2d.x()),
+                  base::ClampRound(vector2d.y()));
 }
 
 }  // namespace gfx

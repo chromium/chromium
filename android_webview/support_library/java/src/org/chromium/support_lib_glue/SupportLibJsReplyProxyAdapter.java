@@ -4,9 +4,12 @@
 
 package org.chromium.support_lib_glue;
 
+import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
+
 import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.support_lib_boundary.JsReplyProxyBoundaryInterface;
+import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 /**
  * Adapter between JsReplyProxyBoundaryInterface and JsReplyProxy.
@@ -21,6 +24,7 @@ class SupportLibJsReplyProxyAdapter
 
     @Override
     public void postMessage(String message) {
+        recordApiCall(ApiCall.JS_REPLY_POST_MESSAGE);
         mReplyProxy.postMessage(message);
     }
 

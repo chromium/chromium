@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NINE_PIECE_IMAGE_GRID_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
@@ -62,11 +63,12 @@ class CORE_EXPORT NinePieceImageGrid {
 
  public:
   NinePieceImageGrid(const NinePieceImage&,
-                     IntSize image_size,
+                     FloatSize image_size,
+                     const FloatSize& slice_scale,
+                     float zoom,
                      IntRect border_image_area,
                      const IntRectOutsets& border_widths,
-                     bool include_left_edge = true,
-                     bool include_rigt_edge = true);
+                     PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
   struct CORE_EXPORT NinePieceDrawInfo {
     STACK_ALLOCATED();
@@ -85,13 +87,13 @@ class CORE_EXPORT NinePieceImageGrid {
       ENinePieceImageRule vertical;
     } tile_rule;
   };
-  NinePieceDrawInfo GetNinePieceDrawInfo(NinePiece, float) const;
+  NinePieceDrawInfo GetNinePieceDrawInfo(NinePiece) const;
 
   struct Edge {
     DISALLOW_NEW();
     bool IsDrawable() const { return slice > 0 && width > 0; }
-    float Scale() const { return IsDrawable() ? (float)width / slice : 1; }
-    int slice;
+    float Scale() const { return IsDrawable() ? width / slice : 1; }
+    float slice;
     int width;
   };
 
@@ -101,7 +103,7 @@ class CORE_EXPORT NinePieceImageGrid {
   void SetDrawInfoMiddle(NinePieceDrawInfo&) const;
 
   IntRect border_image_area_;
-  IntSize image_size_;
+  FloatSize image_size_;
   ENinePieceImageRule horizontal_tile_rule_;
   ENinePieceImageRule vertical_tile_rule_;
   bool fill_;

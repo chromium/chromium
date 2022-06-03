@@ -24,26 +24,26 @@ bool CreditCardCloudTokenData::operator!=(
   return Compare(other_data) != 0;
 }
 
-base::string16 CreditCardCloudTokenData::ExpirationMonthAsString() const {
+std::u16string CreditCardCloudTokenData::ExpirationMonthAsString() const {
   return data_util::Expiration2DigitMonthAsString(exp_month);
 }
 
-base::string16 CreditCardCloudTokenData::Expiration2DigitYearAsString() const {
+std::u16string CreditCardCloudTokenData::Expiration2DigitYearAsString() const {
   return data_util::Expiration2DigitYearAsString(exp_year);
 }
 
-base::string16 CreditCardCloudTokenData::Expiration4DigitYearAsString() const {
+std::u16string CreditCardCloudTokenData::Expiration4DigitYearAsString() const {
   return data_util::Expiration4DigitYearAsString(exp_year);
 }
 
 void CreditCardCloudTokenData::SetExpirationMonthFromString(
-    const base::string16& month) {
+    const std::u16string& month) {
   data_util::ParseExpirationMonth(month, /*app_locale=*/std::string(),
                                   &exp_month);
 }
 
 void CreditCardCloudTokenData::SetExpirationYearFromString(
-    const base::string16& year) {
+    const std::u16string& year) {
   data_util::ParseExpirationYear(year, &exp_year);
 }
 

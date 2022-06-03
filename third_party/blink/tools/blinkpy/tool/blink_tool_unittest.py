@@ -9,16 +9,15 @@ from blinkpy.tool.blink_tool import BlinkTool
 
 
 class BlinkToolTest(unittest.TestCase):
-
     def test_split_args_basic(self):
         self.assertEqual(
-            BlinkTool._split_command_name_from_args(['--global-option', 'command', '--option', 'arg']),
+            BlinkTool._split_command_name_from_args(
+                ['--global-option', 'command', '--option', 'arg']),
             ('command', ['--global-option', '--option', 'arg']))
 
     def test_split_args_empty(self):
         self.assertEqual(
-            BlinkTool._split_command_name_from_args([]),
-            (None, []))
+            BlinkTool._split_command_name_from_args([]), (None, []))
 
     def test_split_args_with_no_options(self):
         self.assertEqual(

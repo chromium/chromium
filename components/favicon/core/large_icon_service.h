@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_H_
 #define COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -20,9 +17,13 @@ class GURL;
 
 namespace favicon {
 
-// The large icon service provides methods to access large icons.
+// The large icon service provides methods to access large icons. The actual
+// implementation of this uses Google's favicon service.
 class LargeIconService : public KeyedService {
  public:
+  LargeIconService(const LargeIconService&) = delete;
+  LargeIconService& operator=(const LargeIconService&) = delete;
+
   // Requests the best large icon for the page at |page_url|.
   // Case 1. An icon exists whose size is >= MAX(|min_source_size_in_pixel|,
   // |desired_size_in_pixel|):
@@ -66,6 +67,16 @@ class LargeIconService : public KeyedService {
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
+  // Requests the best icon for the page at |page_url|. Fallbacks to the host's
+  // favicon, and resizes the most similar bitmat to |desired_size_in_pizel| if
+  // no exact match is found.
+  virtual base::CancelableTaskTracker::TaskId
+  GetIconRawBitmapOrFallbackStyleForPageUrl(
+      const GURL& page_url,
+      int desired_size_in_pixel,
+      favicon_base::LargeIconCallback callback,
+      base::CancelableTaskTracker* tracker) = 0;
+
   // Fetches the best large icon for the page at |page_url| from a Google
   // favicon server and stores the result in the FaviconService database
   // (implemented in HistoryService). The write will be a no-op if the local
@@ -96,8 +107,6 @@ class LargeIconService : public KeyedService {
   // TODO(crbug.com/903826): It is not clear from the name of this function,
   // that it actually adds the icon to the local cache. Maybe
   // "StoreLargeIcon..."?
-  // TODO(victorvianna): Consider moving |may_page_url_be_private| and/or
-  // |should_trim_page_url_path| inside the parameters struct.
   virtual void GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
       const GURL& page_url,
       bool may_page_url_be_private,
@@ -115,9 +124,6 @@ class LargeIconService : public KeyedService {
 
  protected:
   LargeIconService() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeIconService);
 };
 
 }  // namespace favicon

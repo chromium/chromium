@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,14 +16,20 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/cbor/values.h"
+#include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/fido_request_handler_base.h"
+#include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
 class AuthenticatorDialogTest : public DialogBrowserTest {
  public:
   AuthenticatorDialogTest() = default;
+
+  AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
+  AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -34,104 +42,175 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     ::device::FidoRequestHandlerBase::TransportAvailabilityInfo
         transport_availability;
     transport_availability.available_transports = {
-        AuthenticatorTransport::kBluetoothLowEnergy,
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
-        AuthenticatorTransport::kNearFieldCommunication,
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
-    model->set_cable_transport_info(/*cable_extension_provided=*/true,
-                                    /*have_paired_phones=*/false,
-                                    device::CableDiscoveryData::NewQRKey());
-    model->StartFlow(std::move(transport_availability), base::nullopt, nullptr);
+    if (name == "cable_server_link_activate") {
+      transport_availability.available_transports.insert(
+          AuthenticatorTransport::kAndroidAccessory);
+    }
+    transport_availability.has_recognized_platform_authenticator_credential =
+        false;
+    transport_availability.request_type =
+        device::FidoRequestType::kGetAssertion;
+    model->StartFlow(std::move(transport_availability),
+                     /*use_location_bar_bubble=*/false);
 
     // The dialog should immediately close as soon as it is displayed.
-    if (name == "transports") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kTransportSelection);
+    if (name == "mechanisms") {
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     } else if (name == "activate_usb") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate);
     } else if (name == "timeout") {
-      model->SetCurrentStep(AuthenticatorRequestDialogModel::Step::kTimedOut);
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kTimedOut);
     } else if (name == "no_available_transports") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
     } else if (name == "key_not_registered") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kKeyNotRegistered);
     } else if (name == "key_already_registered") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kKeyAlreadyRegistered);
     } else if (name == "internal_unrecognized_error") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kErrorInternalUnrecognized);
     } else if (name == "ble_power_on_manual") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kBlePowerOnManual);
-    } else if (name == "ble_pairing_begin") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBlePairingBegin);
-    } else if (name == "ble_enter_pairing_mode") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBleEnterPairingMode);
-    } else if (name == "ble_device_selection") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBleDeviceSelection);
-    } else if (name == "ble_pin_entry") {
-      model->SetSelectedAuthenticatorForTesting(AuthenticatorReference(
-          "test_authenticator_id" /* authenticator_id */,
-          base::string16() /* authenticator_display_name */,
-          AuthenticatorTransport::kInternal, false /* is_in_pairing_mode */,
-          false /* is_paired */, true /* requires_ble_pairing_pin */));
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBlePinEntry);
-    } else if (name == "ble_verifying") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBleVerifying);
-    } else if (name == "ble_activate") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kBleActivate);
     } else if (name == "touchid_incognito") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kTouchIdIncognitoSpeedBump);
-    } else if (name == "cable_activate") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
+    } else if (name == "cable_activate" ||
+               name == "cable_server_link_activate") {
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/false,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
+    } else if (name == "cable_v2_activate") {
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableActivate);
+    } else if (name == "cable_v2_pair") {
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "set_pin") {
-      model->CollectPIN(base::nullopt, base::Bind([](std::string pin) {}));
+      model->CollectPIN(device::pin::PINEntryReason::kSet,
+                        device::pin::PINEntryError::kNoError, 6, 0,
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin") {
-      model->CollectPIN(8, base::Bind([](std::string pin) {}));
+      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                        device::pin::PINEntryError::kNoError, 6, 8,
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_two_tries_remaining") {
-      model->set_has_attempted_pin_entry_for_testing();
-      model->CollectPIN(2, base::Bind([](std::string pin) {}));
+      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                        device::pin::PINEntryError::kWrongPIN, 6, 2,
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_one_try_remaining") {
-      model->set_has_attempted_pin_entry_for_testing();
-      model->CollectPIN(1, base::Bind([](std::string pin) {}));
+      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                        device::pin::PINEntryError::kWrongPIN, 6, 1,
+                        base::BindOnce([](std::u16string pin) {}));
+    } else if (name == "get_pin_fallback") {
+      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                        device::pin::PINEntryError::kInternalUvLocked, 6, 8,
+                        base::BindOnce([](std::u16string pin) {}));
+    } else if (name == "inline_bio_enrollment") {
+      model->StartInlineBioEnrollment(base::DoNothing());
+      timer_.Start(
+          FROM_HERE, base::Seconds(2),
+          base::BindLambdaForTesting([&, weak_model = model->GetWeakPtr()] {
+            if (!weak_model || weak_model->current_step() !=
+                                   AuthenticatorRequestDialogModel::Step::
+                                       kInlineBioEnrollment) {
+              return;
+            }
+            weak_model->OnSampleCollected(--bio_samples_remaining_);
+            if (bio_samples_remaining_ <= 0)
+              timer_.Stop();
+          }));
+    } else if (name == "retry_uv") {
+      model->OnRetryUserVerification(5);
+    } else if (name == "retry_uv_two_tries_remaining") {
+      model->OnRetryUserVerification(2);
+    } else if (name == "retry_uv_one_try_remaining") {
+      model->OnRetryUserVerification(1);
+    } else if (name == "force_pin_change") {
+      model->CollectPIN(device::pin::PINEntryReason::kChange,
+                        device::pin::PINEntryError::kNoError, 6, 0,
+                        base::BindOnce([](std::u16string pin) {}));
+    } else if (name == "force_pin_change_same_as_current") {
+      model->CollectPIN(device::pin::PINEntryReason::kChange,
+                        device::pin::PINEntryError::kSameAsCurrentPIN, 6, 0,
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "second_tap") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);
     } else if (name == "soft_block") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinErrorSoftBlock);
     } else if (name == "hard_block") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinErrorHardBlock);
     } else if (name == "authenticator_removed") {
-      model->SetCurrentStep(AuthenticatorRequestDialogModel::Step::
-                                kClientPinErrorAuthenticatorRemoved);
+      model->SetCurrentStepForTesting(AuthenticatorRequestDialogModel::Step::
+                                          kClientPinErrorAuthenticatorRemoved);
     } else if (name == "missing_capability") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMissingCapability);
     } else if (name == "storage_full") {
-      model->SetCurrentStep(
+      model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kStorageFull);
     } else if (name == "account_select") {
+      // These strings attempt to exercise the encoding of direction and
+      // language from https://github.com/w3c/webauthn/pull/1530.
+
+      // lang_and_dir_encoded contains a string with right-to-left and ar-SA
+      // tags. It's the UTF-8 encoding of the code points {0xE0001, 0xE0061,
+      // 0xE0072, 0xE002D, 0xE0053, 0xE0041, 0x200F, 0xFEA2, 0xFE92, 0xFBFF,
+      // 0xFE91, 0x20, 0xFE8E, 0xFEDF, 0xFEAE, 0xFEA4, 0xFEE3, 0xFE8E, 0xFEE7}.
+      const std::string lang_and_dir_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xa1\xf3\xa0\x81\xb2\xf3\xa0\x80\xad\xf3"
+          "\xa0\x81\x93\xf3\xa0\x81\x81\xe2\x80\x8f\xef\xba\xa2\xef\xba\x92\xef"
+          "\xaf\xbf\xef\xba\x91\x20\xef\xba\x8e\xef\xbb\x9f\xef\xba\xae\xef\xba"
+          "\xa4\xef\xbb\xa3\xef\xba\x8e\xef\xbb\xa7";
+      // lang_jp_encoded specifies a kanji with language jp. This is the middle
+      // glyph from the example given in
+      // https://www.w3.org/TR/string-meta/#capturing-the-text-processing-language.
+      // It's the UTF-8 encoding of the code points {0xE0001, 0xE006a, 0xE0070,
+      // 0x76f4}.
+      const std::string lang_jp_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xaa\xf3\xa0\x81\xb0\xe7\x9b\xb4";
+      // lang_zh_hant_encoded specifies the same code point as
+      // |lang_jp_encoded|, but with the language set to zh-Hant. According to
+      // the W3C document referenced above, this should display differently.
+      // It's the UTF-8 encoding of the code points {0xE0001, 0xe007a, 0xe0068,
+      // 0xe002d, 0xe0048, 0xe0061, 0xe006e, 0xe0074}.
+      const std::string lang_zh_hant_encoded =
+          "\xf3\xa0\x80\x81\xf3\xa0\x81\xba\xf3\xa0\x81\xa8\xf3\xa0\x80\xad\xf3"
+          "\xa0\x81\x88\xf3\xa0\x81\xa1\xf3\xa0\x81\xae\xf3\xa0\x81\xb4";
+
       const std::vector<std::pair<std::string, std::string>> infos = {
           {"foo@example.com", "Test User 1"},
           {"", "Test User 2"},
           {"", ""},
           {"bat@example.com", "Test User 4"},
-          {"verylong@reallylongreallylongreallylongreallylongreallylong.com",
+          {"encoded@example.com", lang_and_dir_encoded},
+          {"encoded2@example.com", lang_jp_encoded},
+          {"encoded3@example.com", lang_zh_hant_encoded},
+          {"verylong@"
+           "reallylongreallylongreallylongreallylongreallylongreallylong.com",
            "Very Long String Very Long String Very Long String Very Long "
            "String Very Long String Very Long String "},
       };
@@ -141,23 +220,23 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         static const uint8_t kAppParam[32] = {0};
         static const uint8_t kSignatureCounter[4] = {0};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
-                                            kSignatureCounter, base::nullopt);
+                                            kSignatureCounter, absl::nullopt);
         device::AuthenticatorGetAssertionResponse response(
             std::move(auth_data), {10, 11, 12, 13} /* signature */);
         device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
         user.name = info.first;
         user.display_name = info.second;
-        response.SetUserEntity(std::move(user));
+        response.user_entity = std::move(user);
         responses.emplace_back(std::move(response));
       }
 
       model->SelectAccount(
           std::move(responses),
-          base::Bind([](device::AuthenticatorGetAssertionResponse) {}));
+          base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
     } else if (name == "request_attestation_permission") {
-      model->RequestAttestationPermission(base::DoNothing());
-    } else if (name == "qr_code") {
-      model->SetCurrentStep(AuthenticatorRequestDialogModel::Step::kQRCode);
+      model->RequestAttestationPermission(false, base::DoNothing());
+    } else if (name == "request_enterprise_attestation_permission") {
+      model->RequestAttestationPermission(true, base::DoNothing());
     }
 
     ShowAuthenticatorRequestDialog(
@@ -165,7 +244,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorDialogTest);
+  base::RepeatingTimer timer_;
+  int bio_samples_remaining_ = 5;
 };
 
 // Run with:
@@ -175,7 +255,16 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_transports) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_force_pin_change) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_force_pin_change_same_as_current) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_mechanisms) {
   ShowAndVerifyUi();
 }
 
@@ -210,32 +299,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_power_on_manual) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_pairing_begin) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
-                       InvokeUi_ble_enter_pairing_mode) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_device_selection) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_pin_entry) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_verifying) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_activate) {
-  ShowAndVerifyUi();
-}
-
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid) {
   ShowAndVerifyUi();
 }
@@ -243,9 +307,22 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid) {
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid_incognito) {
   ShowAndVerifyUi();
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_activate) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_cable_server_link_activate) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
   ShowAndVerifyUi();
 }
 
@@ -264,6 +341,29 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_get_pin_one_try_remaining) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_get_pin_fallback) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_inline_bio_enrollment) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_retry_uv) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_retry_uv_two_tries_remaining) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_retry_uv_one_try_remaining) {
   ShowAndVerifyUi();
 }
 
@@ -306,6 +406,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_qr_code) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_request_enterprise_attestation_permission) {
   ShowAndVerifyUi();
 }

@@ -6,8 +6,10 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,12 +19,12 @@ class DialInternalMessageUtilTest : public ::testing::Test {
  public:
   DialInternalMessageUtilTest()
       : launch_info_("YouTube",
-                     base::nullopt,
+                     absl::nullopt,
                      "152127444812943594",
                      GURL("http://172.17.32.151/app/YouTube")),
         util_("hash-token") {
-    MediaSink sink("dial:<29a400068c051073801508058128105d>", "Lab Roku",
-                   SinkIconType::GENERIC);
+    MediaSink sink{
+        CreateDialSink("dial:<29a400068c051073801508058128105d>", "Lab Roku")};
     DialSinkExtraData extra_data;
     extra_data.ip_address = net::IPAddress(172, 17, 32, 151);
     sink_ = MediaSinkInternal(sink, extra_data);
@@ -47,7 +49,7 @@ class DialInternalMessageUtilTest : public ::testing::Test {
 };
 
 TEST_F(DialInternalMessageUtilTest, ParseClientConnectMessage) {
-  const char kClientConnectMessage[] = R"(
+  constexpr char kClientConnectMessage[] = R"(
         {
           "type":"client_connect",
           "message":"15212681945883010",
@@ -65,7 +67,7 @@ TEST_F(DialInternalMessageUtilTest, ParseClientConnectMessage) {
 }
 
 TEST_F(DialInternalMessageUtilTest, ParseCustomDialLaunchMessage) {
-  const char kCustomDialLaunchMessage[] = R"(
+  constexpr char kCustomDialLaunchMessage[] = R"(
   {
     "type":"custom_dial_launch",
     "message": {
@@ -90,7 +92,7 @@ TEST_F(DialInternalMessageUtilTest, ParseCustomDialLaunchMessage) {
 }
 
 TEST_F(DialInternalMessageUtilTest, ParseV2StopSessionMessage) {
-  const char kV2StopSessionMessage[] = R"(
+  constexpr char kV2StopSessionMessage[] = R"(
   {
     "type":"v2_message",
     "message": {
@@ -111,7 +113,7 @@ TEST_F(DialInternalMessageUtilTest, ParseV2StopSessionMessage) {
 }
 
 TEST_F(DialInternalMessageUtilTest, CreateReceiverActionCastMessage) {
-  const char kReceiverActionCastMessage[] = R"(
+  constexpr char kReceiverActionCastMessage[] = R"(
     {
       "clientId":"152127444812943594",
       "message": {
@@ -132,13 +134,14 @@ TEST_F(DialInternalMessageUtilTest, CreateReceiverActionCastMessage) {
       "type":"receiver_action"
     })";
 
-  auto message = util_.CreateReceiverActionCastMessage(launch_info_, sink_);
+  auto message =
+      util_.CreateReceiverActionCastMessage(launch_info_.client_id, sink_);
   ASSERT_TRUE(message->message);
   ExpectMessagesEqual(kReceiverActionCastMessage, message->message.value());
 }
 
 TEST_F(DialInternalMessageUtilTest, CreateReceiverActionStopMessage) {
-  const char kReceiverActionStopMessage[] = R"(
+  constexpr char kReceiverActionStopMessage[] = R"(
     {
       "clientId":"152127444812943594",
       "message": {
@@ -159,13 +162,14 @@ TEST_F(DialInternalMessageUtilTest, CreateReceiverActionStopMessage) {
       "type":"receiver_action"
     })";
 
-  auto message = util_.CreateReceiverActionStopMessage(launch_info_, sink_);
+  auto message =
+      util_.CreateReceiverActionStopMessage(launch_info_.client_id, sink_);
   ASSERT_TRUE(message->message);
   ExpectMessagesEqual(kReceiverActionStopMessage, message->message.value());
 }
 
 TEST_F(DialInternalMessageUtilTest, CreateNewSessionMessage) {
-  const char kNewSessionMessage[] = R"(
+  constexpr char kNewSessionMessage[] = R"(
   {
     "clientId":"152127444812943594",
     "message": {
@@ -195,13 +199,14 @@ TEST_F(DialInternalMessageUtilTest, CreateNewSessionMessage) {
     "type":"new_session"
   })";
 
-  auto message = util_.CreateNewSessionMessage(launch_info_, sink_);
+  auto message = util_.CreateNewSessionMessage(launch_info_.app_name,
+                                               launch_info_.client_id, sink_);
   ASSERT_TRUE(message->message);
   ExpectMessagesEqual(kNewSessionMessage, message->message.value());
 }
 
 TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
-  const char kCustomDialLaunchMessage[] = R"(
+  constexpr char kCustomDialLaunchMessage[] = R"(
   {
     "clientId":"152127444812943594",
     "message": {
@@ -215,7 +220,8 @@ TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
         "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
         "receiverType":"dial",
         "volume":null
-      }
+      },
+      "extraData": {}
     },
     "sequenceNumber":%d,
     "timeoutMillis":0,
@@ -224,13 +230,61 @@ TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
 
   ParsedDialAppInfo app_info =
       CreateParsedDialAppInfo("YouTube", DialAppState::kStopped);
-  auto message_and_seq_num =
-      util_.CreateCustomDialLaunchMessage(launch_info_, sink_, app_info);
+  auto message_and_seq_num = util_.CreateCustomDialLaunchMessage(
+      launch_info_.client_id, sink_, app_info);
   const auto& message = message_and_seq_num.first;
   int seq_num = message_and_seq_num.second;
   ASSERT_TRUE(message->message);
   ExpectMessagesEqual(base::StringPrintf(kCustomDialLaunchMessage, seq_num),
                       message->message.value());
+}
+
+TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoParsingErrorMessage) {
+  constexpr char kClientId[] = "152127444812943594";
+  constexpr char kErrorMessage[] = R"(
+  {
+    "clientId": "%s",
+    "type": "error",
+    "message": {
+      "code": "parsing_error",
+      "description": "XML parsing error"
+    },
+    "sequenceNumber": %d,
+    "timeoutMillis": 0
+  })";
+  const int kSequenceNumber = 42;
+
+  auto message = util_.CreateDialAppInfoErrorMessage(
+      DialAppInfoResultCode::kParsingError, kClientId, kSequenceNumber,
+      "XML parsing error");
+  ExpectMessagesEqual(
+      base::StringPrintf(kErrorMessage, kClientId, kSequenceNumber),
+      message->message.value());
+}
+
+TEST_F(DialInternalMessageUtilTest, CreateDialAppInfoHttpErrorMessage) {
+  constexpr char kClientId[] = "152127444812943594";
+  constexpr char kErrorMessage[] = R"(
+  {
+    "clientId": "%s",
+    "type": "error",
+    "message": {
+      "code": "http_error",
+      "description": "",
+      "details": {
+        "http_error_code": 404
+      }
+    },
+    "sequenceNumber": %d,
+    "timeoutMillis": 0
+  })";
+  const int kSequenceNumber = 42;
+
+  auto message = util_.CreateDialAppInfoErrorMessage(
+      DialAppInfoResultCode::kHttpError, kClientId, kSequenceNumber, "", 404);
+  ExpectMessagesEqual(
+      base::StringPrintf(kErrorMessage, kClientId, kSequenceNumber),
+      message->message.value());
 }
 
 }  // namespace media_router

@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -64,6 +62,10 @@ class UnifiedConsentService
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service,
                         const std::vector<std::string>& service_pref_names);
+
+  UnifiedConsentService(const UnifiedConsentService&) = delete;
+  UnifiedConsentService& operator=(const UnifiedConsentService&) = delete;
+
   ~UnifiedConsentService() override;
 
   // Register the prefs used by this UnifiedConsentService.
@@ -76,8 +78,8 @@ class UnifiedConsentService
   void Shutdown() override;
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   friend class UnifiedConsentServiceTest;
@@ -111,8 +113,6 @@ class UnifiedConsentService
   const std::vector<std::string> service_pref_names_;
   std::map<std::string, base::Value> service_pref_changes_;
   PrefChangeRegistrar service_pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentService);
 };
 
 }  // namespace unified_consent

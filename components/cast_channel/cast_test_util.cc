@@ -8,7 +8,6 @@
 
 #include "base/token.h"
 #include "net/base/ip_address.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace cast_channel {
 

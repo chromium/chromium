@@ -20,11 +20,16 @@ class DecoderBufferBase;
 
 class CodedFrameProvider {
  public:
-  typedef base::Callback<void(const scoped_refptr<DecoderBufferBase>&,
-                              const ::media::AudioDecoderConfig&,
-                              const ::media::VideoDecoderConfig&)> ReadCB;
+  typedef base::OnceCallback<void(const scoped_refptr<DecoderBufferBase>&,
+                                  const ::media::AudioDecoderConfig&,
+                                  const ::media::VideoDecoderConfig&)>
+      ReadCB;
 
   CodedFrameProvider();
+
+  CodedFrameProvider(const CodedFrameProvider&) = delete;
+  CodedFrameProvider& operator=(const CodedFrameProvider&) = delete;
+
   virtual ~CodedFrameProvider();
 
   // Request a coded frame which is provided asynchronously through callback
@@ -33,17 +38,14 @@ class CodedFrameProvider {
   // these configurations are returned as part of the |read_cb| callback.
   // Invoking the |read_cb| callback with invalid audio/video configurations
   // means the configurations have not changed.
-  virtual void Read(const ReadCB& read_cb) = 0;
+  virtual void Read(ReadCB read_cb) = 0;
 
   // Flush the coded frames held by the frame provider.
   // Invoke callback |flush_cb| when completed.
   // Note: any pending read is cancelled, meaning that any pending |read_cb|
   // callback will not be invoked.
   // TODO(alokp): Delete this function once CmaRenderer is deprecated.
-  virtual void Flush(const base::Closure& flush_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodedFrameProvider);
+  virtual void Flush(base::OnceClosure flush_cb) = 0;
 };
 
 }  // namespace media

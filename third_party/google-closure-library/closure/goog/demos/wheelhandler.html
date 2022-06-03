@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<title>goog.events.WheelHandler</title>
+<link rel="stylesheet" href="../css/checkbox.css">
+<style>
+#out {
+  background-color: #eee;
+  width: 500px;
+  height: 500px;
+  position: relative;
+  display: inline-block;
+}
+
+#h-line, #v-line {
+  position: absolute;
+  background: black;
+}
+
+#h-line {
+  width: 20px;
+  height: 1px;
+}
+
+#v-line {
+  width: 1px;
+  height: 20px;
+}
+
+#status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font: 70% sans-serif;
+}
+
+#debug {
+  font-family: monospace;
+  white-space: pre;
+  display: inline-block;
+}
+
+</style>
+<script src="../base.js"></script>
+<script>
+
+goog.require('goog.events');
+goog.require('goog.events.WheelHandler');
+
+</script>
+</head>
+<body>
+
+<h1>goog.events.WheelHandler</h1>
+
+<p>Use your mousewheel on the gray box below to move the cross hair.
+
+<div id=out>
+  <div id=h-line></div>
+  <div id=v-line></div>
+  <div id=status></div>
+</div>
+
+<div id=debug>
+</div>
+
+<script>
+
+var WheelHandler = goog.events.WheelHandler;
+var WheelEvent = goog.events.WheelEvent;
+var WHEEL = WheelEvent.EventType.WHEEL;
+
+function $(id) {
+  return document.getElementById(id)
+}
+
+var x = 250, y = 250;
+var out = $('out');
+var hLine= $('h-line');
+var vLine = $('v-line');
+var statusLine = $('status');
+var debug = $('debug');
+
+var availWidth = out.clientWidth - vLine.offsetWidth;
+var availHeight = out.clientHeight - hLine.offsetHeight;
+
+function handleWheel(e) {
+  x += e.pixelDeltaX;
+  x = Math.max(0, Math.min(availWidth, x));
+  y += e.pixelDeltaY;
+  y = Math.max(0, Math.min(availHeight, y));
+  updateLines();
+  e.preventDefault();
+  var deltaModeString = 'unknown';
+  var DeltaMode = WheelEvent.DeltaMode;
+  switch (e.deltaMode) {
+    case DeltaMode.PIXEL:
+      deltaModeString = 'DeltaMode.PIXEL';
+      break;
+    case DeltaMode.LINE:
+      deltaModeString = 'DeltaMode.LINE';
+      break;
+    case DeltaMode.PAGE:
+      deltaModeString = 'DeltaMode.PAGE';
+      break;
+  }
+  var debugObject = {
+    type: e.type,
+    deltaMode: deltaModeString,
+    deltaX: e.deltaX,
+    deltaY: e.deltaY,
+    deltaZ: e.deltaZ,
+    pixelDeltaX: e.pixelDeltaX,
+    pixelDeltaY: e.pixelDeltaY,
+    pixelDeltaZ: e.pixelDeltaZ,
+  };
+  debug.innerText = JSON.stringify(debugObject, undefined, 4);
+}
+
+function updateLines() {
+  vLine.style.left = x + 'px';
+  hLine.style.left = x - hLine.offsetWidth / 2 + 'px';
+  hLine.style.top = y + 'px';
+  vLine.style.top = y - vLine.offsetHeight / 2 + 'px';
+  statusLine.innerText = x + ', ' + y;
+}
+
+updateLines();
+
+var mwh = new WheelHandler(out);
+goog.events.listen(mwh, WHEEL, handleWheel);
+
+goog.events.listen(window, 'unload', function(e) {
+  goog.events.unlisten(mwh, WHEEL, handleWheel);
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+self.globalVar = 2020;

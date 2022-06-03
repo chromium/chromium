@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("cookie_store_proto") {
-  sources = [
-    "cookie_change_subscriptions.proto",
-  ]
+  sources = [ "cookie_change_subscriptions.proto" ]
 }

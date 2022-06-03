@@ -8,73 +8,61 @@
 #include <memory>
 #include <utility>
 
+#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
-ScopedFakeAffiliationAPI::ScopedFakeAffiliationAPI() {
-}
+FakeAffiliationAPI::FakeAffiliationAPI() = default;
 
-ScopedFakeAffiliationAPI::~ScopedFakeAffiliationAPI() {
-  // Note that trying to provide details of dangling fetchers would be unwise,
-  // as it is quite possible that they have been destroyed already.
-  EXPECT_FALSE(HasPendingRequest())
-      << "Pending AffilitionFetcher on shutdown.\n"
-      << "Call IgnoreNextRequest() if this is intended.";
-}
+FakeAffiliationAPI::~FakeAffiliationAPI() = default;
 
-void ScopedFakeAffiliationAPI::AddTestEquivalenceClass(
+void FakeAffiliationAPI::AddTestEquivalenceClass(
     const AffiliatedFacets& affiliated_facets) {
   preset_equivalence_relation_.push_back(affiliated_facets);
 }
 
-bool ScopedFakeAffiliationAPI::HasPendingRequest() {
-  return fake_fetcher_factory_.has_pending_fetchers();
+bool FakeAffiliationAPI::HasPendingRequest() {
+  return fake_fetcher_factory_->has_pending_fetchers();
 }
 
-std::vector<FacetURI> ScopedFakeAffiliationAPI::GetNextRequestedFacets() {
-  if (fake_fetcher_factory_.has_pending_fetchers())
-    return fake_fetcher_factory_.PeekNextFetcher()->requested_facet_uris();
+std::vector<FacetURI> FakeAffiliationAPI::GetNextRequestedFacets() {
+  if (fake_fetcher_factory_->has_pending_fetchers())
+    return fake_fetcher_factory_->PeekNextFetcher()->GetRequestedFacetURIs();
   return std::vector<FacetURI>();
 }
 
-void ScopedFakeAffiliationAPI::ServeNextRequest() {
-  if (!fake_fetcher_factory_.has_pending_fetchers())
+void FakeAffiliationAPI::ServeNextRequest() {
+  if (!fake_fetcher_factory_->has_pending_fetchers())
     return;
 
-  FakeAffiliationFetcher* fetcher = fake_fetcher_factory_.PopNextFetcher();
+  FakeAffiliationFetcher* fetcher = fake_fetcher_factory_->PopNextFetcher();
   std::unique_ptr<AffiliationFetcherDelegate::Result> fake_response(
       new AffiliationFetcherDelegate::Result);
-  for (const auto& preset_equivalence_class : preset_equivalence_relation_) {
-    bool had_intersection_with_request = false;
-    for (const auto& requested_facet_uri : fetcher->requested_facet_uris()) {
-      if (std::any_of(preset_equivalence_class.begin(),
-                      preset_equivalence_class.end(),
-                      [&requested_facet_uri](const Facet& facet) {
-                        return facet.uri == requested_facet_uri;
-                      })) {
-        had_intersection_with_request = true;
-        break;
-      }
-    }
+  for (const auto& facets : preset_equivalence_relation_) {
+    bool had_intersection_with_request = base::ranges::any_of(
+        fetcher->GetRequestedFacetURIs(), [&facets](const auto& uri) {
+          return base::ranges::find(facets, uri, &Facet::uri) != facets.end();
+        });
     if (had_intersection_with_request)
-      fake_response->push_back(preset_equivalence_class);
+      fake_response->affiliations.push_back(facets);
   }
   fetcher->SimulateSuccess(std::move(fake_response));
 }
 
-void ScopedFakeAffiliationAPI::FailNextRequest() {
-  if (!fake_fetcher_factory_.has_pending_fetchers())
+void FakeAffiliationAPI::FailNextRequest() {
+  if (!fake_fetcher_factory_->has_pending_fetchers())
     return;
 
-  FakeAffiliationFetcher* fetcher = fake_fetcher_factory_.PopNextFetcher();
+  FakeAffiliationFetcher* fetcher = fake_fetcher_factory_->PopNextFetcher();
   fetcher->SimulateFailure();
 }
 
-void ScopedFakeAffiliationAPI::IgnoreNextRequest() {
-  if (!fake_fetcher_factory_.has_pending_fetchers())
+void FakeAffiliationAPI::IgnoreNextRequest() {
+  if (!fake_fetcher_factory_->has_pending_fetchers())
     return;
-  ignore_result(fake_fetcher_factory_.PopNextFetcher());
+  ignore_result(fake_fetcher_factory_->PopNextFetcher());
 }
 
 }  // namespace password_manager

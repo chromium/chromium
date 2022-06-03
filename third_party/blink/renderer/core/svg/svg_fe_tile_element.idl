@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFETileElement
 
-interface SVGFETileElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFETileElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
 };
 

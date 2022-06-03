@@ -4,13 +4,7 @@
 
 declare_args() {
   # Controls if cronet is included.
-  ios_web_view_include_cronet = true
-
-  # Controls if sync APIs are exposed.
-  ios_web_view_enable_sync = true
-
-  # Controls if autofill APIs are exposed.
-  ios_web_view_enable_autofill = true
+  ios_web_view_include_cronet = false
 
   # Controls the output name of the built framework.
   ios_web_view_output_name = "ChromeWebView"

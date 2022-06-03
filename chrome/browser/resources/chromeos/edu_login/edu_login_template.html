@@ -1,0 +1,43 @@
+<style>
+  :host {
+    overflow-y: hidden;
+    --background-gradient-0: linear-gradient(0deg,
+        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+    --background-gradient-180: linear-gradient(180deg,
+        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+  }
+
+  .main {
+    height: calc(100% - 90px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .main[scrollable].can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
+    background: var(--background-gradient-0);
+  }
+
+  .main[scrollable].can-scroll.is-scrolled:not(.scrolled-to-bottom) {
+    background: var(--background-gradient-0), var(--background-gradient-180);
+  }
+
+  .main[scrollable].is-scrolled.scrolled-to-bottom {
+    background: var(--background-gradient-180);
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    height: 90px;
+    padding-inline-end: 32px;
+    padding-inline-start: 32px;
+  }
+</style>
+<div class="main" scrollable>
+  <slot name="main"></slot>
+</div>
+<div class="footer">
+  <slot name="buttons"></slot>
+</div>

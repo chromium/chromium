@@ -4,6 +4,8 @@
 
 static_library("upload_list") {
   sources = [
+    "combining_upload_list.cc",
+    "combining_upload_list.h",
     "crash_upload_list.cc",
     "crash_upload_list.h",
     "text_log_upload_list.cc",
@@ -12,14 +14,13 @@ static_library("upload_list") {
     "upload_list.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "combining_upload_list_unittest.cc",
     "text_log_upload_list_unittest.cc",
   ]
 

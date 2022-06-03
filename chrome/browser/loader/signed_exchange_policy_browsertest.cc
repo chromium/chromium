@@ -11,12 +11,19 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 
 class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
  public:
   SignedExchangePolicyBrowserTest() = default;
+
+  SignedExchangePolicyBrowserTest(const SignedExchangePolicyBrowserTest&) =
+      delete;
+  SignedExchangePolicyBrowserTest& operator=(
+      const SignedExchangePolicyBrowserTest&) = delete;
+
   ~SignedExchangePolicyBrowserTest() override = default;
 
  protected:
@@ -28,13 +35,14 @@ class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     CertVerifierBrowserTest::SetUpInProcessBrowserTestFixture();
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
   }
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
   void SetUp() override {
@@ -47,8 +55,6 @@ class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
   }
 
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePolicyBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
@@ -59,22 +65,22 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   const GURL url =
       embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
 
-  base::string16 expected_title(base::UTF8ToUTF16(inner_url.spec()));
+  std::u16string expected_title(base::UTF8ToUTF16(inner_url.spec()));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(contents, expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   base::ListValue blacklist;
-  blacklist.AppendString("test.example.org");
+  blacklist.Append("test.example.org");
   policy::PolicyMap policies;
   policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               blacklist.CreateDeepCopy(), nullptr);
+               blacklist.Clone(), nullptr);
 
 #if defined(OS_CHROMEOS)
-  policy::SetEnterpriseUsersDefaults(&policies);
+  policy::SetEnterpriseUsersProfileDefaults(&policies);
 #endif
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop loop;
@@ -86,9 +92,9 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   content::RunAllTasksUntilIdle();
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::string16 blocked_page_title(base::UTF8ToUTF16("test.example.org"));
+  std::u16string blocked_page_title(u"test.example.org");
   EXPECT_EQ(blocked_page_title, contents->GetTitle());
 
   // Verify that the expected error page is being displayed.

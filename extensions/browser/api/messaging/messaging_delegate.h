@@ -86,7 +86,7 @@ class MessagingDelegate {
       const Extension* extension,
       content::WebContents* web_contents,
       const GURL& url,
-      const base::Callback<void(bool)>& callback);
+      base::OnceCallback<void(bool)> callback);
 };
 
 }  // namespace extensions

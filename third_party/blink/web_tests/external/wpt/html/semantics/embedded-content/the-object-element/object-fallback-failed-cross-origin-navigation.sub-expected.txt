@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Verify fallback content for failed cross-origin navigations is shown correctly: http://www.not-web-platform.test:8001/foo.html assert_equals: expected 0 but got 1
+FAIL Verify fallback content for failed cross-origin navigations is shown correctly: http://nonexistent.not-web-platform.test:8001/foo.html assert_equals: expected 0 but got 1
+Harness: the test ran to completion.
+

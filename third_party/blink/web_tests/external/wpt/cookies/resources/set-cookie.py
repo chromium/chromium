@@ -1,6 +1,4 @@
-
-import sys
-import urlparse
+from datetime import date
 
 def main(request, response):
     """
@@ -15,15 +13,20 @@ def main(request, response):
     >
     < HTTP/1.1 200 OK
     < Content-Type: application/json
-    < Set-Cookie: match-slash=1; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT
+    < Set-Cookie: match-slash=1; Path=/; Expires=09 Jun 2021 10:18:14 GMT
     < Server: BaseHTTP/0.3 Python/2.7.12
     < Date: Tue, 04 Oct 2016 18:16:06 GMT
     < Content-Length: 80
     """
-    params = urlparse.parse_qs(request.url_parts.query)
+
+    name = request.GET[b'name']
+    path = request.GET[b'path']
+    expiry_year = date.today().year + 1
+    cookie = b"%s=1; Path=%s; Expires=09 Jun %d 10:18:14 GMT" % (name, path, expiry_year)
+
     headers = [
-        ("Content-Type", "application/json"),
-        ("Set-Cookie", "{name[0]}=1; Path={path[0]}; Expires=Wed, 09 Jun 2021 10:18:14 GMT".format(**params))
+        (b"Content-Type", b"application/json"),
+        (b"Set-Cookie", cookie)
     ]
-    body = "{}"
+    body = b"{}"
     return headers, body

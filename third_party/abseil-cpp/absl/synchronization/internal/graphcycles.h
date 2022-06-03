@@ -36,11 +36,14 @@
 //   InsertEdge() is very fast when the edge already exists, and reasonably fast
 //   otherwise.
 //   FindPath() is linear in the size of the graph.
-// The current implemenation uses O(|V|+|E|) space.
+// The current implementation uses O(|V|+|E|) space.
 
 #include <cstdint>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace synchronization_internal {
 
 // Opaque identifier for a graph node.
@@ -132,6 +135,7 @@ class GraphCycles {
 };
 
 }  // namespace synchronization_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif

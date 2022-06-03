@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [0, 8, 1, 1],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [0, 8, 1, 1]
       ]
     }
   ]

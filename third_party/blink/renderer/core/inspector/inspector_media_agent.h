@@ -5,22 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_MEDIA_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_MEDIA_AGENT_H_
 
-#include <memory>
-#include <vector>
-
 #include "third_party/blink/public/web/web_media_inspector.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Media.h"
+#include "third_party/blink/renderer/core/inspector/protocol/media.h"
 
 namespace blink {
+
+class InspectedFrames;
+class WorkerGlobalScope;
+class ExecutionContext;
 
 class CORE_EXPORT InspectorMediaAgent final
     : public InspectorBaseAgent<protocol::Media::Metainfo> {
  public:
-  explicit InspectorMediaAgent(InspectedFrames*);
+  explicit InspectorMediaAgent(InspectedFrames*, WorkerGlobalScope*);
+  InspectorMediaAgent(const InspectorMediaAgent&) = delete;
+  InspectorMediaAgent& operator=(const InspectorMediaAgent&) = delete;
   ~InspectorMediaAgent() override;
+
+  ExecutionContext* GetTargetExecutionContext() const;
 
   // BaseAgent methods.
   void Restore() override;
@@ -30,20 +34,27 @@ class CORE_EXPORT InspectorMediaAgent final
   protocol::Response disable() override;
 
   // Protocol send messages.
+  void PlayerErrorsRaised(const WebString&,
+                          const Vector<InspectorPlayerError>&);
+  void PlayerEventsAdded(const WebString&, const Vector<InspectorPlayerEvent>&);
+  void PlayerMessagesLogged(const WebString&,
+                            const Vector<InspectorPlayerMessage>&);
   void PlayerPropertiesChanged(const WebString&,
                                const Vector<InspectorPlayerProperty>&);
-  void PlayerEventsAdded(const WebString&, const Vector<InspectorPlayerEvent>&);
   void PlayersCreated(const Vector<WebString>&);
 
   // blink-gc methods.
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void RegisterAgent();
 
-  Member<LocalFrame> local_frame_;
+  // This is null while inspecting workers.
+  Member<InspectedFrames> inspected_frames_;
+  // This is null while inspecting frames.
+  Member<WorkerGlobalScope> worker_global_scope_;
+
   InspectorAgentState::Boolean enabled_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorMediaAgent);
 };
 
 }  // namespace blink

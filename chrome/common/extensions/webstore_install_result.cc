@@ -13,7 +13,7 @@ const char kWebstoreRequestError[] =
 const char kInvalidWebstoreResponseError[] = "Invalid Chrome Web Store reponse";
 const char kInvalidManifestError[] = "Invalid manifest";
 const char kUserCancelledError[] = "User cancelled install";
-const char kExtensionIsBlacklisted[] = "Extension is blacklisted";
+const char kExtensionIsBlocklisted[] = "Extension is blocklisted";
 const char kInstallInProgressError[] = "An install is already in progress";
 
 }  // namespace webstore_install

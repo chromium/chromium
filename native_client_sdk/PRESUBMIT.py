@@ -8,6 +8,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
+
 
 def CommonChecks(input_api, output_api):
   output = []
@@ -19,15 +21,16 @@ def CommonChecks(input_api, output_api):
     'E1103',  # subprocess.communicate() generates these :(
     'R0201',  # method could be function (doesn't reference self)
   ]
-  black_list = [
+  files_to_skip = [
     r'src[\\\/]build_tools[\\\/]tests[\\\/].*',
     r'src[\\\/]build_tools[\\\/]sdk_tools[\\\/]third_party[\\\/].*',
     r'src[\\\/]doc[\\\/]*',
     r'src[\\\/]gonacl_appengine[\\\/]*',
   ]
   canned = input_api.canned_checks
-  output.extend(canned.RunPylint(input_api, output_api, black_list=black_list,
-                disabled_warnings=disabled_warnings))
+  output.extend(canned.RunPylint(input_api, output_api,
+                                 files_to_skip=files_to_skip,
+                                 disabled_warnings=disabled_warnings))
   return output
 
 
@@ -37,20 +40,3 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
   return CommonChecks(input_api, output_api)
-
-
-def GetPreferredTryMasters(project, change):
-  return {
-    'master.tryserver.chromium.linux': {
-      'linux_nacl_sdk': set(['defaulttests']),
-      'linux_nacl_sdk_build': set(['defaulttests']),
-    },
-    'master.tryserver.chromium.win': {
-      'win_nacl_sdk': set(['defaulttests']),
-      'win_nacl_sdk_build': set(['defaulttests']),
-    },
-    'master.tryserver.chromium.mac': {
-      'mac_nacl_sdk': set(['defaulttests']),
-      'mac_nacl_sdk_build': set(['defaulttests']),
-    }
-  }

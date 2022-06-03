@@ -9,9 +9,9 @@
 #include <sys/param.h>
 #include <sys/sysctl.h>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics_iocounters.h"
-#include "base/stl_util.h"
 
 namespace base {
 

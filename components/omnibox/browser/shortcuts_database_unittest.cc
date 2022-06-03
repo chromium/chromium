@@ -6,11 +6,10 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -178,12 +177,10 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
       info.guid, ASCIIToUTF16(info.text),
       ShortcutsDatabase::Shortcut::MatchCore(
           ASCIIToUTF16(info.fill_into_edit), GURL(info.destination_url),
-          static_cast<int>(info.document_type), ASCIIToUTF16(info.contents),
-          info.contents_class, ASCIIToUTF16(info.description),
-          info.description_class, info.transition, info.type,
-          ASCIIToUTF16(info.keyword)),
-      base::Time::Now() - base::TimeDelta::FromDays(info.days_from_now),
-      info.number_of_hits);
+          info.document_type, ASCIIToUTF16(info.contents), info.contents_class,
+          ASCIIToUTF16(info.description), info.description_class,
+          info.transition, info.type, ASCIIToUTF16(info.keyword)),
+      base::Time::Now() - base::Days(info.days_from_now), info.number_of_hits);
 }
 
 void ShortcutsDatabaseTest::AddAll() {
@@ -210,7 +207,7 @@ TEST_F(ShortcutsDatabaseTest, UpdateShortcut) {
   AddAll();
   ShortcutsDatabase::Shortcut shortcut(
       ShortcutFromTestInfo(shortcut_test_db[1]));
-  shortcut.match_core.contents = ASCIIToUTF16("gro.todhsals");
+  shortcut.match_core.contents = u"gro.todhsals";
   EXPECT_TRUE(db_->UpdateShortcut(shortcut));
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);

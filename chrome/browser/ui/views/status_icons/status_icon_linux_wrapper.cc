@@ -10,14 +10,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/status_icons/status_icon_button_linux.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if defined(USE_DBUS)
 #include "chrome/browser/ui/views/status_icons/status_icon_linux_dbus.h"
-#endif
-
-#if defined(USE_X11)
-#include "chrome/browser/ui/views/status_icons/status_icon_linux_x11.h"
 #endif
 
 namespace {
@@ -33,7 +30,7 @@ gfx::ImageSkia GetBestImageRep(const gfx::ImageSkia& image) {
   }
   // All status icon implementations want the image in pixel coordinates, so use
   // a scale factor of 1.
-  return gfx::ImageSkia(gfx::ImageSkiaRep(best_rep, 1.0f));
+  return gfx::ImageSkia::CreateFromBitmap(best_rep, 1.0f);
 }
 
 }  // namespace
@@ -42,7 +39,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     views::StatusIconLinux* status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : status_icon_(status_icon),
       status_icon_type_(status_icon_type),
       image_(GetBestImageRep(image)),
@@ -55,7 +52,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
 StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     scoped_refptr<StatusIconLinuxDbus> status_icon,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : StatusIconLinuxWrapper(status_icon.get(), kTypeDbus, image, tool_tip) {
   status_icon_dbus_ = status_icon;
 }
@@ -65,7 +62,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     std::unique_ptr<views::StatusIconLinux> status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : StatusIconLinuxWrapper(status_icon.get(),
                              status_icon_type,
                              image,
@@ -84,7 +81,7 @@ void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
     status_icon_->SetIcon(image_);
 }
 
-void StatusIconLinuxWrapper::SetToolTip(const base::string16& tool_tip) {
+void StatusIconLinuxWrapper::SetToolTip(const std::u16string& tool_tip) {
   tool_tip_ = tool_tip;
   if (status_icon_)
     status_icon_->SetToolTip(tool_tip);
@@ -92,8 +89,8 @@ void StatusIconLinuxWrapper::SetToolTip(const base::string16& tool_tip) {
 
 void StatusIconLinuxWrapper::DisplayBalloon(
     const gfx::ImageSkia& icon,
-    const base::string16& title,
-    const base::string16& contents,
+    const std::u16string& title,
+    const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
   notification_.DisplayBalloon(icon, title, contents, notifier_id);
 }
@@ -110,7 +107,7 @@ const gfx::ImageSkia& StatusIconLinuxWrapper::GetImage() const {
   return image_;
 }
 
-const base::string16& StatusIconLinuxWrapper::GetToolTip() const {
+const std::u16string& StatusIconLinuxWrapper::GetToolTip() const {
   return tool_tip_;
 }
 
@@ -121,19 +118,15 @@ ui::MenuModel* StatusIconLinuxWrapper::GetMenuModel() const {
 void StatusIconLinuxWrapper::OnImplInitializationFailed() {
   switch (status_icon_type_) {
     case kTypeDbus:
-#if defined(USE_X11)
+#if defined(USE_DBUS)
       status_icon_dbus_.reset();
-      status_icon_linux_ = std::make_unique<StatusIconLinuxX11>();
+#endif
+      status_icon_linux_ = std::make_unique<StatusIconButtonLinux>();
       status_icon_ = status_icon_linux_.get();
-      status_icon_type_ = kTypeX11;
+      status_icon_type_ = kTypeWindowed;
       status_icon_->SetDelegate(this);
       return;
-#else
-      // Fallthrough needs to be omitted if USE_X11, otherwise clang will
-      // complain about an unreachable fallthrough.
-      FALLTHROUGH;
-#endif
-    case kTypeX11:
+    case kTypeWindowed:
       status_icon_linux_.reset();
       status_icon_ = nullptr;
       status_icon_type_ = kTypeNone;
@@ -154,15 +147,14 @@ void StatusIconLinuxWrapper::OnMenuStateChanged() {
 std::unique_ptr<StatusIconLinuxWrapper>
 StatusIconLinuxWrapper::CreateWrappedStatusIcon(
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
 #if defined(USE_DBUS)
   return base::WrapUnique(new StatusIconLinuxWrapper(
       base::MakeRefCounted<StatusIconLinuxDbus>(), image, tool_tip));
-#elif defined(USE_X11)
-  return base::WrapUnique(new StatusIconLinuxWrapper(
-      std::make_unique<StatusIconLinuxX11>(), kTypeX11, image, tool_tip));
 #else
-  return nullptr;
+  return base::WrapUnique(
+      new StatusIconLinuxWrapper(std::make_unique<StatusIconButtonLinux>(),
+                                 kTypeWindowed, image, tool_tip));
 #endif
 }
 

@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/strings/string_split.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -56,6 +57,18 @@ NET_EXPORT bool GetPreferredExtensionForMimeType(
 // Checks for absolute matching and wildcards. MIME types are case insensitive.
 NET_EXPORT bool MatchesMimeType(const std::string& mime_type_pattern,
                                 const std::string& mime_type);
+
+// Parses |type_str| for |mime_type| and any |params|. Returns false if mime
+// cannot be parsed, and does not modify |mime_type| or |params|.
+//
+// Returns true when mime can be parsed and:
+// If |mime_type| is non-NULL, sets it to parsed mime string.
+// If |params| is non-NULL, clears it and sets it with name-value pairs of
+// parsed parameters. Parsing of parameters is lenient, and invalid params are
+// ignored.
+NET_EXPORT bool ParseMimeType(const std::string& type_str,
+                              std::string* mime_type,
+                              base::StringPairs* params);
 
 // Returns true if the |type_string| is a correctly-formed mime type specifier
 // with no parameter, i.e. string that matches the following ABNF (see the

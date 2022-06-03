@@ -19,6 +19,10 @@ class SerializedVarReceiveInput;
 class PPP_Messaging_Proxy : public InterfaceProxy {
  public:
   PPP_Messaging_Proxy(Dispatcher* dispatcher);
+
+  PPP_Messaging_Proxy(const PPP_Messaging_Proxy&) = delete;
+  PPP_Messaging_Proxy& operator=(const PPP_Messaging_Proxy&) = delete;
+
   ~PPP_Messaging_Proxy() override;
 
   // InterfaceProxy implementation.
@@ -36,8 +40,6 @@ class PPP_Messaging_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_Messaging* ppp_messaging_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Messaging_Proxy);
 };
 
 }  // namespace proxy

@@ -8,8 +8,10 @@ import android.util.Pair;
 
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.DoNotInline;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content.browser.remoteobjects.RemoteObjectInjector;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -31,23 +33,43 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
                 JavascriptInjectorImpl::new;
     }
 
+    // The set is passed to native and stored in a weak reference, so ensure this
+    // strong reference is not optimized away by R8.
+    @DoNotInline
     private final Set<Object> mRetainedObjects = new HashSet<>();
     private final Map<String, Pair<Object, Class>> mInjectedObjects = new HashMap<>();
     private long mNativePtr;
+    private RemoteObjectInjector mInjector;
+    private Boolean mUseMojo;
 
     /**
      * @param webContents {@link WebContents} object.
+     * @param useMojo Whether to use {@link RemoteObjectInjector} methods
      * @return {@link JavascriptInjector} object used for the give WebContents.
      *         Creates one if not present.
      */
-    public static JavascriptInjector fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+    public static JavascriptInjector fromWebContents(WebContents webContents, boolean useMojo) {
+        JavascriptInjectorImpl javascriptInjector =
+                ((WebContentsImpl) webContents)
+                        .getOrSetUserData(
+                                JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+        javascriptInjector.setUseMojo(useMojo);
+        return javascriptInjector;
     }
 
     public JavascriptInjectorImpl(WebContents webContents) {
         mNativePtr = JavascriptInjectorImplJni.get().init(
                 JavascriptInjectorImpl.this, webContents, mRetainedObjects);
+        mInjector = new RemoteObjectInjector(webContents);
+        webContents.addObserver(mInjector);
+    }
+
+    public void setUseMojo(boolean useMojo) {
+        if (mUseMojo == null) {
+            mUseMojo = useMojo;
+        } else {
+            assert mUseMojo == useMojo;
+        }
     }
 
     @CalledByNative
@@ -62,15 +84,24 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void setAllowInspection(boolean allow) {
-        if (mNativePtr != 0)
+        assert mUseMojo != null;
+        if (mUseMojo) {
+            mInjector.setAllowInspection(allow);
+        } else if (mNativePtr != 0) {
             JavascriptInjectorImplJni.get().setAllowInspection(
                     mNativePtr, JavascriptInjectorImpl.this, allow);
+        }
     }
 
     @Override
     public void addPossiblyUnsafeInterface(
             Object object, String name, Class<? extends Annotation> requiredAnnotation) {
-        if (mNativePtr != 0 && object != null) {
+        if (object == null) return;
+
+        assert mUseMojo != null;
+        if (mUseMojo) {
+            mInjector.addInterface(object, name, requiredAnnotation);
+        } else if (mNativePtr != 0) {
             mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
             JavascriptInjectorImplJni.get().addInterface(
                     mNativePtr, JavascriptInjectorImpl.this, object, name, requiredAnnotation);
@@ -79,10 +110,16 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void removeInterface(String name) {
-        mInjectedObjects.remove(name);
-        if (mNativePtr != 0)
-            JavascriptInjectorImplJni.get().removeInterface(
-                    mNativePtr, JavascriptInjectorImpl.this, name);
+        assert mUseMojo != null;
+        if (mUseMojo) {
+            mInjector.removeInterface(name);
+        } else {
+            mInjectedObjects.remove(name);
+            if (mNativePtr != 0) {
+                JavascriptInjectorImplJni.get().removeInterface(
+                        mNativePtr, JavascriptInjectorImpl.this, name);
+            }
+        }
     }
 
     @NativeMethods

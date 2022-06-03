@@ -4,33 +4,26 @@
 
 #include "chrome/browser/sessions/session_service_factory.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_data_deleter.h"
+#include "chrome/browser/sessions/session_data_service.h"
+#include "chrome/browser/sessions/session_data_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 SessionService* SessionServiceFactory::GetForProfile(Profile* profile) {
-#if defined(OS_ANDROID)
-  // For Android we do not store sessions in the SessionService.
-  return NULL;
-#else
+  if (profile->IsOffTheRecord() || profile->IsGuestSession())
+    return nullptr;
+
   return static_cast<SessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
-#endif
 }
 
 // static
 SessionService* SessionServiceFactory::GetForProfileIfExisting(
     Profile* profile) {
-#if defined(OS_ANDROID)
-  // For Android we do not store sessions in the SessionService.
-  return NULL;
-#else
   return static_cast<SessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, false));
-#endif
 }
 
 // static
@@ -38,7 +31,7 @@ SessionService* SessionServiceFactory::GetForProfileForSessionRestore(
     Profile* profile) {
   SessionService* service = GetForProfile(profile);
   if (!service) {
-    // If the service has been shutdown, remove the reference to NULL for
+    // If the service has been shutdown, remove the reference to nullptr for
     // |profile| so GetForProfile will recreate it.
     GetInstance()->Disassociate(profile);
     service = GetForProfile(profile);
@@ -48,7 +41,8 @@ SessionService* SessionServiceFactory::GetForProfileForSessionRestore(
 
 // static
 void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
-  DeleteSessionOnlyData(profile);
+  if (SessionDataServiceFactory::GetForProfile(profile))
+    SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
 
   // We're about to exit, force creation of the session service if it hasn't
   // been created yet. We do this to ensure session state matches the point in
@@ -57,10 +51,10 @@ void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
   factory->GetServiceForBrowserContext(profile, true);
 
   // Shut down and remove the reference to the session service, and replace it
-  // with an explicit NULL to prevent it being recreated on the next access.
+  // with an explicit nullptr to prevent it being recreated on the next access.
   factory->BrowserContextShutdown(profile);
   factory->BrowserContextDestroyed(profile);
-  factory->Associate(profile, NULL);
+  factory->Associate(profile, nullptr);
 }
 
 SessionServiceFactory* SessionServiceFactory::GetInstance() {
@@ -71,15 +65,15 @@ SessionServiceFactory::SessionServiceFactory()
     : BrowserContextKeyedServiceFactory(
         "SessionService",
         BrowserContextDependencyManager::GetInstance()) {
+  // Ensure that session data is cleared before session restore can happen.
+  DependsOn(SessionDataServiceFactory::GetInstance());
 }
 
-SessionServiceFactory::~SessionServiceFactory() {
-}
+SessionServiceFactory::~SessionServiceFactory() = default;
 
 KeyedService* SessionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  SessionService* service = NULL;
-  service = new SessionService(static_cast<Profile*>(profile));
+  SessionService* service = new SessionService(static_cast<Profile*>(profile));
   service->ResetFromCurrentBrowsers();
   return service;
 }

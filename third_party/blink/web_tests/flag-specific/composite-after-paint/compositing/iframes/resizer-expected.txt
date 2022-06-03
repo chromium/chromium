@@ -9,8 +9,21 @@
     {
       "name": "LayoutIFrame IFRAME class='container'",
       "bounds": [304, 154],
-      "backgroundColor": "#9A9A9A",
+      "contentsOpaqueForText": true,
       "transform": 1
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [285, 230],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [285, 0],
+      "bounds": [15, 150],
+      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
@@ -18,6 +31,13 @@
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 3
+    },
+    {
+      "name": "Scroll corner of LayoutIFrame IFRAME class='container'",
+      "position": [287, 137],
+      "bounds": [15, 15],
+      "contentsOpaqueForText": true,
+      "transform": 1
     }
   ],
   "transforms": [

@@ -11,7 +11,7 @@ ExtensionUpdateData::ExtensionUpdateData() : is_corrupt_reinstall(false) {}
 ExtensionUpdateData::ExtensionUpdateData(const ExtensionUpdateData& other) =
     default;
 
-ExtensionUpdateData::~ExtensionUpdateData() {}
+ExtensionUpdateData::~ExtensionUpdateData() = default;
 
 ExtensionUpdateCheckParams::ExtensionUpdateCheckParams()
     : priority(BACKGROUND), install_immediately(false) {}
@@ -19,6 +19,6 @@ ExtensionUpdateCheckParams::ExtensionUpdateCheckParams()
 ExtensionUpdateCheckParams::ExtensionUpdateCheckParams(
     const ExtensionUpdateCheckParams& other) = default;
 
-ExtensionUpdateCheckParams::~ExtensionUpdateCheckParams() {}
+ExtensionUpdateCheckParams::~ExtensionUpdateCheckParams() = default;
 
 }  // namespace extensions

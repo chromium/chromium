@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.para {
+  line-height: 1;
+  font-family: 'Osaka', 'Noto Sans CJK JP';
+  font-size: 40px;
+  padding: 0px;
+}
+</style>
+
+<p id="p1" class="para">
+諸行<br>
+無常の<br>
+<ruby>響きあり</ruby>
+</p>
+
+<p id="p2" class="para">
+諸行<br>
+無常の<br>
+響きあり
+</p>
+
+<script>
+test(() => {
+  const p1 = document.querySelector('#p1');
+  const p2 = document.querySelector('#p2');
+  assert_equals(p1.offsetHeight, p2.offsetHeight);
+}, 'RUBY without RT should not affect line height');
+</script>
+</body>

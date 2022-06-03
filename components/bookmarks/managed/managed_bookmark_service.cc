@@ -8,14 +8,12 @@
 #include <stdlib.h>
 
 #include <memory>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/check.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -30,15 +28,19 @@ namespace {
 // representation, title id and starting node id.
 class BookmarkPermanentNodeLoader {
  public:
-  BookmarkPermanentNodeLoader(
-      std::unique_ptr<BookmarkPermanentNode> node,
-      std::unique_ptr<base::ListValue> initial_bookmarks,
-      int title_id)
+  BookmarkPermanentNodeLoader(std::unique_ptr<BookmarkPermanentNode> node,
+                              base::Value initial_bookmarks,
+                              int title_id)
       : node_(std::move(node)),
         initial_bookmarks_(std::move(initial_bookmarks)),
         title_id_(title_id) {
     DCHECK(node_);
+    DCHECK(initial_bookmarks_.is_list());
   }
+
+  BookmarkPermanentNodeLoader(const BookmarkPermanentNodeLoader&) = delete;
+  BookmarkPermanentNodeLoader& operator=(const BookmarkPermanentNodeLoader&) =
+      delete;
 
   ~BookmarkPermanentNodeLoader() {}
 
@@ -48,18 +50,15 @@ class BookmarkPermanentNodeLoader {
   std::unique_ptr<BookmarkPermanentNode> Load(int64_t* next_node_id) {
     node_->set_id(*next_node_id);
     *next_node_id = ManagedBookmarksTracker::LoadInitial(
-        node_.get(), initial_bookmarks_.get(), node_->id() + 1);
-    node_->set_visible(!node_->children().empty());
+        node_.get(), &initial_bookmarks_, node_->id() + 1);
     node_->SetTitle(l10n_util::GetStringUTF16(title_id_));
     return std::move(node_);
   }
 
  private:
   std::unique_ptr<BookmarkPermanentNode> node_;
-  std::unique_ptr<base::ListValue> initial_bookmarks_;
+  base::Value initial_bookmarks_;
   int title_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkPermanentNodeLoader);
 };
 
 // Returns a std::unique_ptr<BookmarkPermanentNode> using |next_node_id| for
@@ -100,8 +99,8 @@ LoadManagedNodeCallback ManagedBookmarkService::GetLoadManagedNodeCallback() {
   // Create a BookmarkPermanentNode with a temporary id of 0. It will be
   // populated and assigned a proper id in the LoadManagedNode callback. Until
   // then, it is owned by the returned closure.
-  std::unique_ptr<BookmarkPermanentNode> managed(
-      new BookmarkPermanentNode(0, BookmarkNode::FOLDER));
+  std::unique_ptr<BookmarkPermanentNode> managed =
+      BookmarkPermanentNode::CreateManagedBookmarks(/*id=*/0);
 
   managed_node_ = managed.get();
 

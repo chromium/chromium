@@ -1,0 +1,153 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/crypto.gni")
+import("//build/config/devtools.gni")
+import("//build/config/ui.gni")
+
+shared_intermediate_dir = rebase_path(root_gen_dir, root_build_dir)
+devtools_grd_path = "$shared_intermediate_dir/$devtools_grd_location"
+devtools_grd_path_no_ext = get_path_info(devtools_grd_path, "dir") + "/" +
+                           get_path_info(devtools_grd_path, "name")
+
+grit_defines = [
+  "-E",
+  "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  "-E",
+  "root_src_dir=" + rebase_path("//", root_build_dir),
+  "-D",
+  "SHARED_INTERMEDIATE_DIR=" + shared_intermediate_dir,
+  "-D",
+  "DEVTOOLS_GRD_PATH=" + devtools_grd_path_no_ext,
+]
+
+if (is_mac || is_win || is_linux || is_chromeos || is_ios) {
+  grit_defines += [
+    "-D",
+    "scale_factors=2x",
+  ]
+}
+
+# Mac and iOS want Title Case strings.
+use_titlecase_in_grd_files = is_apple
+if (use_titlecase_in_grd_files) {
+  grit_defines += [
+    "-D",
+    "use_titlecase",
+  ]
+}
+
+if (is_chrome_branded) {
+  grit_defines += [
+    "-D",
+    "_google_chrome",
+    "-E",
+    "CHROMIUM_BUILD=google_chrome",
+  ]
+} else {
+  grit_defines += [
+    "-D",
+    "_chromium",
+    "-E",
+    "CHROMIUM_BUILD=chromium",
+  ]
+}
+
+if (is_chromeos_ash) {
+  grit_defines += [
+    "-D",
+    "chromeos",
+  ]
+}
+
+if (is_chromeos_lacros) {
+  grit_defines += [
+    "-D",
+    "lacros",
+  ]
+}
+
+if (is_linux || is_chromeos_lacros) {
+  grit_defines += [
+    "-D",
+    "desktop_linux",
+  ]
+}
+
+if (toolkit_views) {
+  grit_defines += [
+    "-D",
+    "toolkit_views",
+  ]
+}
+
+if (use_aura) {
+  grit_defines += [
+    "-D",
+    "use_aura",
+  ]
+}
+
+if (use_nss_certs) {
+  grit_defines += [
+    "-D",
+    "use_nss_certs",
+  ]
+}
+
+if (use_ozone) {
+  grit_defines += [
+    "-D",
+    "use_ozone",
+  ]
+}
+
+if (is_android) {
+  grit_defines += [
+    "-E",
+    "ANDROID_JAVA_TAGGED_ONLY=true",
+  ]
+}
+
+# When cross-compiling, explicitly pass the target system to grit.
+if (current_toolchain != host_toolchain) {
+  if (is_android) {
+    grit_defines += [
+      "-t",
+      "android",
+    ]
+  }
+  if (is_ios) {
+    grit_defines += [
+      "-t",
+      "ios",
+    ]
+  }
+  if (is_linux || is_chromeos) {
+    grit_defines += [
+      "-t",
+      "linux2",
+    ]
+  }
+  if (is_mac) {
+    grit_defines += [
+      "-t",
+      "darwin",
+    ]
+  }
+  if (is_win) {
+    grit_defines += [
+      "-t",
+      "win32",
+    ]
+  }
+  if (is_fuchsia) {
+    grit_defines += [
+      "-t",
+      "fuchsia",
+    ]
+  }
+}

@@ -1,5 +1,0 @@
-CACHE MANIFEST
-FALLBACK:
-/resources/network-simulator.php? simple.txt
-fallback-redirect simple.txt
-does-not-exist simple.txt

@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
+
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertisement_service_provider.h"
-#include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -45,7 +46,7 @@ void FakeBluetoothLEAdvertisingManagerClient::RegisterAdvertisement(
     const dbus::ObjectPath& advertisement_object_path,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  VLOG(1) << "RegisterAdvertisment: " << advertisement_object_path.value();
+  DVLOG(1) << "RegisterAdvertisment: " << advertisement_object_path.value();
 
   if (manager_object_path != dbus::ObjectPath(kAdvertisingManagerPath)) {
     std::move(error_callback)
@@ -74,7 +75,7 @@ void FakeBluetoothLEAdvertisingManagerClient::UnregisterAdvertisement(
     const dbus::ObjectPath& advertisement_object_path,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  VLOG(1) << "UnregisterAdvertisment: " << advertisement_object_path.value();
+  DVLOG(1) << "UnregisterAdvertisment: " << advertisement_object_path.value();
 
   if (manager_object_path != dbus::ObjectPath(kAdvertisingManagerPath)) {
     std::move(error_callback)

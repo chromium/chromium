@@ -2,9 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/channel.gni")
+
 declare_args() {
   # Include the //weblayer code in WebView implementation APKs.
   webview_includes_weblayer = true
+
+  # Whether WebLayer will be included as a DFM.
+  weblayer_in_split = true
 }
 
 weblayer_product_config_java_package = "org.chromium.weblayer_private"

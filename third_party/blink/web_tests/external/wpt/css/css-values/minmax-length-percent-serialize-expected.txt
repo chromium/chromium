@@ -1,64 +1,55 @@
 This is a testharness.js-based test.
-Found 60 tests; 22 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL e.style['margin-left'] = "min(1px + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1px)" but got "min(1px + 1%)"
-FAIL e.style['margin-left'] = "min(1cm + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1cm)" but got "min(1cm + 1%)"
-FAIL e.style['margin-left'] = "min(1mm + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1mm)" but got "min(1mm + 1%)"
-FAIL e.style['margin-left'] = "min(1Q + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1q)" but got "min(1q + 1%)"
-FAIL e.style['margin-left'] = "min(1in + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1in)" but got "min(1in + 1%)"
-FAIL e.style['margin-left'] = "min(1pc + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1pc)" but got "min(1pc + 1%)"
-FAIL e.style['margin-left'] = "min(1pt + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1pt)" but got "min(1pt + 1%)"
-FAIL e.style['margin-left'] = "min(1em + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1em)" but got "min(1em + 1%)"
-FAIL e.style['margin-left'] = "min(1ex + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1ex)" but got "min(1ex + 1%)"
-FAIL e.style['margin-left'] = "min(1ch + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1ch)" but got "min(1ch + 1%)"
-FAIL e.style['margin-left'] = "min(1rem + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1rem)" but got "min(1rem + 1%)"
-FAIL e.style['margin-left'] = "min(1vh + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1vh)" but got "min(1vh + 1%)"
-FAIL e.style['margin-left'] = "min(1vw + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1vw)" but got "min(1vw + 1%)"
-FAIL e.style['margin-left'] = "min(1vmin + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1vmin)" but got "min(1vmin + 1%)"
-FAIL e.style['margin-left'] = "min(1vmax + 1%)" should set the property value assert_equals: serialization should be canonical expected "min(1% + 1vmax)" but got "min(1vmax + 1%)"
-FAIL e.style['margin-left'] = "max(1px + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1px)" but got "max(1px + 1%)"
-FAIL e.style['margin-left'] = "max(1cm + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1cm)" but got "max(1cm + 1%)"
-FAIL e.style['margin-left'] = "max(1mm + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1mm)" but got "max(1mm + 1%)"
-FAIL e.style['margin-left'] = "max(1Q + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1q)" but got "max(1q + 1%)"
-FAIL e.style['margin-left'] = "max(1in + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1in)" but got "max(1in + 1%)"
-FAIL e.style['margin-left'] = "max(1pc + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1pc)" but got "max(1pc + 1%)"
-FAIL e.style['margin-left'] = "max(1pt + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1pt)" but got "max(1pt + 1%)"
-FAIL e.style['margin-left'] = "max(1em + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1em)" but got "max(1em + 1%)"
-FAIL e.style['margin-left'] = "max(1ex + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1ex)" but got "max(1ex + 1%)"
-FAIL e.style['margin-left'] = "max(1ch + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1ch)" but got "max(1ch + 1%)"
-FAIL e.style['margin-left'] = "max(1rem + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1rem)" but got "max(1rem + 1%)"
-FAIL e.style['margin-left'] = "max(1vh + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1vh)" but got "max(1vh + 1%)"
-FAIL e.style['margin-left'] = "max(1vw + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1vw)" but got "max(1vw + 1%)"
-FAIL e.style['margin-left'] = "max(1vmin + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1vmin)" but got "max(1vmin + 1%)"
-FAIL e.style['margin-left'] = "max(1vmax + 1%)" should set the property value assert_equals: serialization should be canonical expected "max(1% + 1vmax)" but got "max(1vmax + 1%)"
-PASS e.style['margin-left'] = "min(20px, 10%)" should set the property value
-PASS e.style['margin-left'] = "min(1em, 10%)" should set the property value
-PASS e.style['margin-left'] = "max(20px, 10%)" should set the property value
-PASS e.style['margin-left'] = "max(1em, 10%)" should set the property value
-PASS e.style['margin-left'] = "min(10%, 20px)" should set the property value
-PASS e.style['margin-left'] = "min(10%, 1em)" should set the property value
-PASS e.style['margin-left'] = "max(10%, 20px)" should set the property value
-PASS e.style['margin-left'] = "max(10%, 1em)" should set the property value
-PASS e.style['margin-left'] = "min(10% + 30px, 5% + 60px)" should set the property value
-PASS e.style['margin-left'] = "max(10% + 2em, 5% + 1em)" should set the property value
-PASS e.style['margin-left'] = "calc(min(10%) + max(1em) + min(20px))" should set the property value
-PASS e.style['margin-left'] = "calc(max(20px) + min(1em) + max(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(max(10%) + min(1em) + max(20px))" should set the property value
-PASS e.style['margin-left'] = "calc(min(20px) + max(1em) + min(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(20px + min(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(10% + min(20px))" should set the property value
-PASS e.style['margin-left'] = "calc(1em + min(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(10% + min(1em))" should set the property value
-FAIL e.style['margin-left'] = "calc(min(10%) + 20px)" should set the property value assert_equals: serialization should be canonical expected "calc(20px + min(10%))" but got "calc(min(10%) + 20px)"
-FAIL e.style['margin-left'] = "calc(min(20px) + 10%)" should set the property value assert_equals: serialization should be canonical expected "calc(10% + min(20px))" but got "calc(min(20px) + 10%)"
-FAIL e.style['margin-left'] = "calc(min(10%) + 1em)" should set the property value assert_equals: serialization should be canonical expected "calc(1em + min(10%))" but got "calc(min(10%) + 1em)"
-FAIL e.style['margin-left'] = "calc(min(1em) + 10%)" should set the property value assert_equals: serialization should be canonical expected "calc(10% + min(1em))" but got "calc(min(1em) + 10%)"
-PASS e.style['margin-left'] = "calc(20px + max(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(10% + max(20px))" should set the property value
-PASS e.style['margin-left'] = "calc(1em + max(10%))" should set the property value
-PASS e.style['margin-left'] = "calc(10% + max(1em))" should set the property value
-FAIL e.style['margin-left'] = "calc(max(10%) + 20px)" should set the property value assert_equals: serialization should be canonical expected "calc(20px + max(10%))" but got "calc(max(10%) + 20px)"
-FAIL e.style['margin-left'] = "calc(max(20px) + 10%)" should set the property value assert_equals: serialization should be canonical expected "calc(10% + max(20px))" but got "calc(max(20px) + 10%)"
-FAIL e.style['margin-left'] = "calc(max(10%) + 1em)" should set the property value assert_equals: serialization should be canonical expected "calc(1em + max(10%))" but got "calc(max(10%) + 1em)"
-FAIL e.style['margin-left'] = "calc(max(1em) + 10%)" should set the property value assert_equals: serialization should be canonical expected "calc(10% + max(1em))" but got "calc(max(1em) + 10%)"
+Found 51 tests; 34 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL 'min(1px)' as a specified value should serialize as 'calc(1px)'. assert_equals: 'min(1px)' and 'calc(1px)' should serialize the same in specified values. expected "calc(1px)" but got "min(1px)"
+PASS 'min(1px)' as a computed value should serialize as '1px'.
+PASS 'min(1px)' as a used value should serialize as '1px'.
+FAIL 'max(1px)' as a specified value should serialize as 'calc(1px)'. assert_equals: 'max(1px)' and 'calc(1px)' should serialize the same in specified values. expected "calc(1px)" but got "max(1px)"
+PASS 'max(1px)' as a computed value should serialize as '1px'.
+PASS 'max(1px)' as a used value should serialize as '1px'.
+PASS 'min(1% + 1px)' as a specified value should serialize as 'min(1% + 1px)'.
+PASS 'min(1% + 1px)' as a computed value should serialize as 'min(1% + 1px)'.
+PASS 'min(1% + 1px)' as a used value should serialize as '2px'.
+FAIL 'min(1px + 1%)' as a specified value should serialize as 'min(1% + 1px)'. assert_equals: 'min(1px + 1%)' and 'min(1% + 1px)' should serialize the same in specified values. expected "min(1% + 1px)" but got "min(1px + 1%)"
+PASS 'min(1px + 1%)' as a computed value should serialize as 'min(1% + 1px)'.
+PASS 'min(1px + 1%)' as a used value should serialize as '2px'.
+FAIL 'max(1px + 1%)' as a specified value should serialize as 'max(1% + 1px)'. assert_equals: 'max(1px + 1%)' and 'max(1% + 1px)' should serialize the same in specified values. expected "max(1% + 1px)" but got "max(1px + 1%)"
+PASS 'max(1px + 1%)' as a computed value should serialize as 'max(1% + 1px)'.
+PASS 'max(1px + 1%)' as a used value should serialize as '2px'.
+PASS 'min(20px, 10%)' as a specified value should serialize as 'min(20px, 10%)'.
+FAIL 'min(20px, 10%)' as a computed value should serialize as 'min(20px, 10%)'. assert_equals: 'min(20px, 10%)' should round-trip exactly in computed values. expected "min(20px, 10%)" but got "min(0% + 20px, 10% + 0px)"
+PASS 'min(20px, 10%)' as a used value should serialize as '10px'.
+PASS 'min(1em, 10%)' as a specified value should serialize as 'min(1em, 10%)'.
+FAIL 'min(1em, 10%)' as a computed value should serialize as 'min(16px, 10%)'. assert_equals: 'min(16px, 10%)' should round-trip exactly in computed values. expected "min(16px, 10%)" but got "min(0% + 16px, 10% + 0px)"
+PASS 'min(1em, 10%)' as a used value should serialize as '10px'.
+PASS 'min(10%, 20px)' as a specified value should serialize as 'min(10%, 20px)'.
+FAIL 'min(10%, 20px)' as a computed value should serialize as 'min(10%, 20px)'. assert_equals: 'min(10%, 20px)' should round-trip exactly in computed values. expected "min(10%, 20px)" but got "min(10% + 0px, 0% + 20px)"
+PASS 'min(10%, 20px)' as a used value should serialize as '10px'.
+PASS 'min(10%, 1em)' as a specified value should serialize as 'min(10%, 1em)'.
+FAIL 'min(10%, 1em)' as a computed value should serialize as 'min(10%, 16px)'. assert_equals: 'min(10%, 16px)' should round-trip exactly in computed values. expected "min(10%, 16px)" but got "min(10% + 0px, 0% + 16px)"
+PASS 'min(10%, 1em)' as a used value should serialize as '10px'.
+PASS 'max(20px, 10%)' as a specified value should serialize as 'max(20px, 10%)'.
+FAIL 'max(20px, 10%)' as a computed value should serialize as 'max(20px, 10%)'. assert_equals: 'max(20px, 10%)' should round-trip exactly in computed values. expected "max(20px, 10%)" but got "max(0% + 20px, 10% + 0px)"
+PASS 'max(20px, 10%)' as a used value should serialize as '20px'.
+PASS 'max(1em, 10%)' as a specified value should serialize as 'max(1em, 10%)'.
+FAIL 'max(1em, 10%)' as a computed value should serialize as 'max(16px, 10%)'. assert_equals: 'max(16px, 10%)' should round-trip exactly in computed values. expected "max(16px, 10%)" but got "max(0% + 16px, 10% + 0px)"
+PASS 'max(1em, 10%)' as a used value should serialize as '16px'.
+PASS 'max(10%, 20px)' as a specified value should serialize as 'max(10%, 20px)'.
+FAIL 'max(10%, 20px)' as a computed value should serialize as 'max(10%, 20px)'. assert_equals: 'max(10%, 20px)' should round-trip exactly in computed values. expected "max(10%, 20px)" but got "max(10% + 0px, 0% + 20px)"
+PASS 'max(10%, 20px)' as a used value should serialize as '20px'.
+PASS 'max(10%, 1em)' as a specified value should serialize as 'max(10%, 1em)'.
+FAIL 'max(10%, 1em)' as a computed value should serialize as 'max(10%, 16px)'. assert_equals: 'max(10%, 16px)' should round-trip exactly in computed values. expected "max(10%, 16px)" but got "max(10% + 0px, 0% + 16px)"
+PASS 'max(10%, 1em)' as a used value should serialize as '16px'.
+FAIL 'min(10% + 30px, 5em + 5%)' as a specified value should serialize as 'min(10% + 30px, 5% + 5em)'. assert_equals: 'min(10% + 30px, 5em + 5%)' and 'min(10% + 30px, 5% + 5em)' should serialize the same in specified values. expected "min(10% + 30px, 5% + 5em)" but got "min(10% + 30px, 5em + 5%)"
+PASS 'min(10% + 30px, 5em + 5%)' as a computed value should serialize as 'min(10% + 30px, 5% + 80px)'.
+PASS 'min(10% + 30px, 5em + 5%)' as a used value should serialize as '40px'.
+FAIL 'max(10% + 30px, 5em + 5%)' as a specified value should serialize as 'max(10% + 30px, 5% + 5em)'. assert_equals: 'max(10% + 30px, 5em + 5%)' and 'max(10% + 30px, 5% + 5em)' should serialize the same in specified values. expected "max(10% + 30px, 5% + 5em)" but got "max(10% + 30px, 5em + 5%)"
+PASS 'max(10% + 30px, 5em + 5%)' as a computed value should serialize as 'max(10% + 30px, 5% + 80px)'.
+PASS 'max(10% + 30px, 5em + 5%)' as a used value should serialize as '85px'.
+FAIL 'calc(min(10% + 1px) + max(1em + 10%) + min(10% + 20px))' as a specified value should serialize as 'calc(min(10% + 1px) + max(10% + 1em) + min(10% + 20px))'. assert_equals: 'calc(min(10% + 1px) + max(1em + 10%) + min(10% + 20px))' and 'calc(min(10% + 1px) + max(10% + 1em) + min(10% + 20px))' should serialize the same in specified values. expected "calc(min(10% + 1px) + max(10% + 1em) + min(10% + 20px))" but got "calc(min(10% + 1px) + max(1em + 10%) + min(10% + 20px))"
+PASS 'calc(min(10% + 1px) + max(1em + 10%) + min(10% + 20px))' as a computed value should serialize as 'calc(min(10% + 1px) + max(10% + 16px) + min(10% + 20px))'.
+PASS 'calc(min(10% + 1px) + max(1em + 10%) + min(10% + 20px))' as a used value should serialize as '67px'.
+FAIL 'calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)' as a specified value should serialize as 'calc(5% + 1em + 10px + max(10% + 20px) + min(10% + 1em))'. assert_equals: 'calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)' and 'calc(5% + 1em + 10px + max(10% + 20px) + min(10% + 1em))' should serialize the same in specified values. expected "calc(5% + 1em + 10px + max(10% + 20px) + min(10% + 1em))" but got "calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)"
+FAIL 'calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)' as a computed value should serialize as 'calc(5% + 26px + max(10% + 20px) + min(10% + 16px))'. assert_equals: 'calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)' and 'calc(5% + 26px + max(10% + 20px) + min(10% + 16px))' should serialize the same in computed values. expected "calc(5% + 26px + max(10% + 20px) + min(10% + 16px))" but got "calc(0% + 16px + max(10% + 20px) + 5% + 0px + min(10% + 16px) + 0% + 10px)"
+PASS 'calc(1em + max(10% + 20px) + 5% + min(1em + 10%) + 10px)' as a used value should serialize as '87px'.
 Harness: the test ran to completion.
 

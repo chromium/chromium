@@ -16,6 +16,10 @@ namespace vr {
 class VectorIconTexture : public UiTexture {
  public:
   VectorIconTexture() {}
+
+  VectorIconTexture(const VectorIconTexture&) = delete;
+  VectorIconTexture& operator=(const VectorIconTexture&) = delete;
+
   ~VectorIconTexture() override {}
 
   void SetColor(SkColor color) { SetAndDirty(&color_, color); }
@@ -44,7 +48,6 @@ class VectorIconTexture : public UiTexture {
   gfx::SizeF size_;
   const gfx::VectorIcon* icon_ = nullptr;
   SkColor color_ = SK_ColorWHITE;
-  DISALLOW_COPY_AND_ASSIGN(VectorIconTexture);
 };
 
 VectorIcon::VectorIcon(int texture_width)

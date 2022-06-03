@@ -12,8 +12,8 @@
 #include "cc/paint/paint_canvas.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/render_text.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 
@@ -24,14 +24,17 @@ namespace {
 // Strips accelerator character prefixes in |text| if needed, based on |flags|.
 // Returns a range in |text| to underline or Range::InvalidRange() if
 // underlining is not needed.
-Range StripAcceleratorChars(int flags, base::string16* text) {
-  if (flags & (Canvas::SHOW_PREFIX | Canvas::HIDE_PREFIX)) {
+Range StripAcceleratorChars(int flags, std::u16string* text) {
+  if (flags & Canvas::SHOW_PREFIX) {
     int char_pos = -1;
     int char_span = 0;
-    *text = RemoveAcceleratorChar(*text, '&', &char_pos, &char_span);
-    if ((flags & Canvas::SHOW_PREFIX) && char_pos != -1)
+    *text = LocateAndRemoveAcceleratorChar(*text, &char_pos, &char_span);
+    if (char_pos != -1)
       return Range(char_pos, char_pos + char_span);
+  } else if (flags & Canvas::HIDE_PREFIX) {
+    *text = RemoveAccelerator(*text);
   }
+
   return Range::InvalidRange();
 }
 
@@ -39,10 +42,10 @@ Range StripAcceleratorChars(int flags, base::string16* text) {
 // to no longer point to the same character in |text|, |range| is made invalid.
 void ElideTextAndAdjustRange(const FontList& font_list,
                              float width,
-                             base::string16* text,
+                             std::u16string* text,
                              Range* range) {
-  const base::char16 start_char =
-      (range->IsValid() ? text->at(range->start()) : 0);
+  const char16_t start_char =
+      (range->IsValid() ? text->at(range->start()) : u'\0');
   *text = ElideText(*text, font_list, width, ELIDE_TAIL);
   if (!range->IsValid())
     return;
@@ -54,7 +57,7 @@ void ElideTextAndAdjustRange(const FontList& font_list,
 
 // Updates |render_text| from the specified parameters.
 void UpdateRenderText(const Rect& rect,
-                      const base::string16& text,
+                      const std::u16string& text,
                       const FontList& font_list,
                       int flags,
                       SkColor color,
@@ -96,7 +99,7 @@ void UpdateRenderText(const Rect& rect,
 }  // namespace
 
 // static
-void Canvas::SizeStringFloat(const base::string16& text,
+void Canvas::SizeStringFloat(const std::u16string& text,
                              const FontList& font_list,
                              float* width,
                              float* height,
@@ -112,14 +115,14 @@ void Canvas::SizeStringFloat(const base::string16& text,
     else if (!(flags & NO_ELLIPSIS))
       wrap_behavior = ELIDE_LONG_WORDS;
 
-    std::vector<base::string16> strings;
+    std::vector<std::u16string> strings;
     ElideRectangleText(text, font_list, *width, INT_MAX, wrap_behavior,
                        &strings);
     Rect rect(base::saturated_cast<int>(*width), INT_MAX);
 
     std::unique_ptr<RenderText> render_text = RenderText::CreateRenderText();
 
-    UpdateRenderText(rect, base::string16(), font_list, flags, 0,
+    UpdateRenderText(rect, std::u16string(), font_list, flags, 0,
                      render_text.get());
 
     float h = 0;
@@ -140,7 +143,7 @@ void Canvas::SizeStringFloat(const base::string16& text,
 
     Rect rect(base::saturated_cast<int>(*width),
               base::saturated_cast<int>(*height));
-    base::string16 adjusted_text = text;
+    std::u16string adjusted_text = text;
     StripAcceleratorChars(flags, &adjusted_text);
     UpdateRenderText(rect, adjusted_text, font_list, flags, 0,
                      render_text.get());
@@ -150,7 +153,7 @@ void Canvas::SizeStringFloat(const base::string16& text,
   }
 }
 
-void Canvas::DrawStringRectWithFlags(const base::string16& text,
+void Canvas::DrawStringRectWithFlags(const std::u16string& text,
                                      const FontList& font_list,
                                      SkColor color,
                                      const Rect& text_bounds,
@@ -172,7 +175,7 @@ void Canvas::DrawStringRectWithFlags(const base::string16& text,
     else if (!(flags & NO_ELLIPSIS))
       wrap_behavior = ELIDE_LONG_WORDS;
 
-    std::vector<base::string16> strings;
+    std::vector<std::u16string> strings;
     ElideRectangleText(text, font_list,
                        static_cast<float>(text_bounds.width()),
                        text_bounds.height(), wrap_behavior, &strings);
@@ -202,11 +205,11 @@ void Canvas::DrawStringRectWithFlags(const base::string16& text,
       rect += Vector2d(0, line_height);
     }
   } else {
-    base::string16 adjusted_text = text;
+    std::u16string adjusted_text = text;
     Range range = StripAcceleratorChars(flags, &adjusted_text);
     bool elide_text = ((flags & NO_ELLIPSIS) == 0);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // On Linux, eliding really means fading the end of the string. But only
     // for LTR text. RTL text is still elided (on the left) with "...".
     if (elide_text) {

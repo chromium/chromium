@@ -2,15 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import { Base, flush, html,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {waitBeforeNextRender} from '../test_util.js';
+// clang-format on
+
 suite('cr-scrollable-behavior', function() {
-  /** @type {CrScrollableListElement} */ let testElement;
-  /** @type {HTMLDivElement} */ let container;
-  /** @type {IronListElement} */ let ironList;
+  /** @type {!TestElementElement} */ let testElement;
+  /** @type {!HTMLDivElement} */ let container;
+  /** @type {!IronListElement} */ let ironList;
 
   suiteSetup(function() {
-    document.body.innerHTML = `
-      <dom-module id="test-element">
-        <template>
+    if (window.location.origin === 'chrome://test') {
+      // Polymer 3 setup
+      Polymer({
+        is: 'test-element',
+
+        _template: html`
           <style>
             #container {
               height: 30px;
@@ -24,38 +35,71 @@ suite('cr-scrollable-behavior', function() {
               </template>
             </iron-list>
           </div>
-        </template>
-      </dom-module>
-    `;
+        `,
 
-    Polymer({
-      is: 'test-element',
-
-      properties: {
-        items: {
-          type: Array,
-          value: function() {
-            return ['apple', 'bannana', 'cucumber', 'doughnut'];
+        properties: {
+          items: {
+            type: Array,
+            value: function() {
+              return ['apple', 'bannana', 'cucumber', 'doughnut'];
+            },
           },
         },
-      },
 
-      behaviors: [CrScrollableBehavior],
-    });
+        behaviors: [CrScrollableBehavior],
+      });
+    } else {
+      // Polymer 2 setup
+      document.body.innerHTML = `
+        <dom-module id="test-element">
+          <template>
+            <style>
+              #container {
+                height: 30px;
+                overflow-y: auto;
+              }
+            </style>
+            <div id="container" scrollable>
+              <iron-list scroll-target="container" items="[[items]]">
+                <template>
+                  <div>[[item]]</div>
+                </template>
+              </iron-list>
+            </div>
+          </template>
+        </dom-module>
+      `;
+
+      Polymer({
+        is: 'test-element',
+
+        properties: {
+          items: {
+            type: Array,
+            value: function() {
+              return ['apple', 'bannana', 'cucumber', 'doughnut'];
+            },
+          },
+        },
+
+        behaviors: [CrScrollableBehavior],
+      });
+    }
   });
 
   setup(function(done) {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
-    testElement = document.createElement('test-element');
+    testElement = /** @type {!TestElementElement} */ (
+        document.createElement('test-element'));
     document.body.appendChild(testElement);
-    container = testElement.$$('#container');
-    ironList = testElement.$$('iron-list');
+    container = /** @type {!HTMLDivElement} */ (testElement.$$('#container'));
+    ironList = /** @type {!IronListElement} */ (testElement.$$('iron-list'));
 
     // Wait for CrScrollableBehavior to set the initial scrollable class
     // properties.
     window.requestAnimationFrame(() => {
-      test_util.waitBeforeNextRender().then(done);
+      waitBeforeNextRender(testElement).then(done);
     });
   });
 
@@ -64,7 +108,7 @@ suite('cr-scrollable-behavior', function() {
   function scrollToIndex(index) {
     ironList.scrollToIndex(index);
     container.dispatchEvent(new CustomEvent('scroll'));
-    Polymer.dom.flush();
+    flush();
   }
 
   test('scroll', function() {
@@ -86,8 +130,8 @@ suite('cr-scrollable-behavior', function() {
     testElement.saveScroll(ironList);
     testElement.items = ['apple', 'bannana', 'cactus', 'cucumber', 'doughnut'];
     testElement.restoreScroll(ironList);
-    Polymer.dom.flush();
-    Polymer.Base.async(function() {
+    flush();
+    Base.async(function() {
       assertEquals(scrollTop, container.scrollTop);
       done();
     });

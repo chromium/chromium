@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS <input type="checkbox"> click()
+PASS <input type="radio"> click()
+PASS <input type="text"> typing
+PASS <input type="search"> typing
+PASS <input type="tel"> typing
+PASS <input type="url"> typing
+PASS <input type="email"> typing
+PASS <input type="password"> typing
+PASS <input type="number"> typing
+PASS <textarea></textarea> typing
+FAIL <select> pressing down arrow promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'bubbles')"
+Harness: the test ran to completion.
+

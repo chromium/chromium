@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
+#include "base/notreached.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -351,12 +354,10 @@ const CGFloat kControlPointEnd = 0.514375;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      self.arrowLayer.fillColor = BubbleColor().CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.arrowLayer.fillColor = BubbleColor().CGColor;
   }
 }
 

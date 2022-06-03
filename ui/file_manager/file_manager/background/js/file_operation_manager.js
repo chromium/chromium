@@ -2,12 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {TrashEntry, TrashRootEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
+import {metadataProxy} from './metadata_proxy.js';
+import {Trash} from './trash.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
+
 /**
  * FileOperationManagerImpl: implementation of {FileOperationManager}.
  *
  * @implements {FileOperationManager}
  */
-class FileOperationManagerImpl {
+export class FileOperationManagerImpl {
   constructor() {
     /**
      * @private {VolumeManager}
@@ -43,6 +60,12 @@ class FileOperationManagerImpl {
      * @const
      */
     this.eventRouter_ = new fileOperationUtil.EventRouter();
+
+    /**
+     * @private {!Trash}
+     * @const
+     */
+    this.trash_ = new Trash();
   }
 
   /**
@@ -107,15 +130,16 @@ class FileOperationManagerImpl {
    * Returns status information for a running task.
    * @param {fileOperationUtil.Task} task The task we use to retrieve status
    *     from.
-   * @return {Object} Status object with optional volume information.
+   * @return {!fileOperationUtil.Status} Status object with optional volume
+   *     information.
    */
   getTaskStatus(task) {
-    let status = task.getStatus();
+    const status = task.getStatus();
     // If there's no target directory name, use the volume name for UI display.
-    if (status['targetDirEntryName'] === '' && task.targetDirEntry) {
+    if (status.targetDirEntryName === '' && task.targetDirEntry) {
       const entry = /** {Entry} */ (task.targetDirEntry);
       if (this.volumeManager_) {
-        status['targetDirEntryName'] = this.getVolumeLabel_(entry);
+        status.targetDirEntryName = this.getVolumeLabel_(entry);
       }
     }
     return status;
@@ -129,14 +153,14 @@ class FileOperationManagerImpl {
     let task = null;
 
     // If the task is not on progress, remove it immediately.
-    for (var i = 0; i < this.pendingCopyTasks_.length; i++) {
+    for (let i = 0; i < this.pendingCopyTasks_.length; i++) {
       task = this.pendingCopyTasks_[i];
       if (task.taskId !== taskId) {
         continue;
       }
       task.requestCancel();
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.CANCELED,
+          FileOperationProgressEvent.EventType.CANCELED,
           this.getTaskStatus(task), task.taskId);
       this.pendingCopyTasks_.splice(i, 1);
     }
@@ -148,7 +172,7 @@ class FileOperationManagerImpl {
       }
     }
 
-    for (var i = 0; i < this.deleteTasks_.length; i++) {
+    for (let i = 0; i < this.deleteTasks_.length; i++) {
       task = this.deleteTasks_[i];
       if (task.taskId !== taskId) {
         continue;
@@ -157,7 +181,7 @@ class FileOperationManagerImpl {
       // If the task is not on progress, remove it immediately.
       if (i !== 0) {
         this.eventRouter_.sendDeleteEvent(
-            fileOperationUtil.EventRouter.EventType.CANCELED, task);
+            FileOperationProgressEvent.EventType.CANCELED, task);
         this.deleteTasks_.splice(i, 1);
       }
     }
@@ -171,26 +195,16 @@ class FileOperationManagerImpl {
    *     target directory.
    * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
    *     if the operation is "copy") false.
-   * @return {Promise} Promise fulfilled with the filtered entry. This is not
-   *     rejected.
+   * @return {!Promise<Array<Entry>>} Promise fulfilled with the filtered entry.
+   *     This is not rejected.
    */
-  filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {
+  async filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {
     if (!isMove) {
-      return Promise.resolve(sourceEntries);
+      return sourceEntries;
     }
-    // Utility function to concat arrays.
-    const compactArrays = arrays => {
-      return arrays.filter(element => {
-        return !!element;
-      });
-    };
-    // Call processEntry for each item of entries.
-    const processEntries = entries => {
-      const promises = entries.map(processFileOrDirectoryEntries);
-      return Promise.all(promises).then(compactArrays);
-    };
+
     // Check all file entries and keeps only those need sharing operation.
-    var processFileOrDirectoryEntries = entry => {
+    const processEntry = entry => {
       return new Promise(resolve => {
         entry.getParent(
             inParentEntry => {
@@ -206,7 +220,12 @@ class FileOperationManagerImpl {
             });
       });
     };
-    return processEntries(sourceEntries);
+
+    // Call processEntry for each item of sourceEntries.
+    const result = await Promise.all(sourceEntries.map(processEntry));
+
+    // Remove null entries.
+    return result.filter(entry => !!entry);
   }
 
   /**
@@ -230,6 +249,13 @@ class FileOperationManagerImpl {
     this.filterSameDirectoryEntry(sourceEntries, targetEntry, isMove)
         .then(entries => {
           if (entries.length === 0) {
+            return;
+          }
+          if (!this.volumeManager_) {
+            volumeManagerFactory.getInstance().then(volumeManager => {
+              this.volumeManager_ = volumeManager;
+              this.queueCopy_(targetEntry, entries, isMove, opt_taskId);
+            });
             return;
           }
           this.queueCopy_(targetEntry, entries, isMove, opt_taskId);
@@ -258,8 +284,26 @@ class FileOperationManagerImpl {
       // When moving between different volumes, moving is implemented as a copy
       // and delete. This is because moving between volumes is slow, and
       // moveTo() is not cancellable nor provides progress feedback.
-      if (util.isSameFileSystem(
-              entries[0].filesystem, targetDirEntry.filesystem)) {
+      const sameFileSystem = util.isSameFileSystem(
+          entries[0].filesystem, targetDirEntry.filesystem);
+      let moveBetweenDownloadsAndMyFiles = false;
+      if (sameFileSystem &&
+          this.volumeManager_.getLocationInfo(assert(entries[0]))
+                  .volumeInfo.volumeType ===
+              VolumeManagerCommon.VolumeType.DOWNLOADS) {
+        // My files and Downloads should be seen as different filesystems, since
+        // a local move is not possible between these locations
+        // (crbug.com/1200251).
+        // TODO(crbug/959083): Remove this special case when move between
+        // MyFiles and Downloads is atomic.
+        const sourceInDownloads = entries[0].fullPath.startsWith('/Downloads/');
+        const destinationInDownloads =
+            targetDirEntry.fullPath.startsWith('/Downloads/') ||
+            targetDirEntry.fullPath === '/Downloads';
+        moveBetweenDownloadsAndMyFiles =
+            sourceInDownloads !== destinationInDownloads;
+      }
+      if (sameFileSystem && !moveBetweenDownloadsAndMyFiles) {
         task = new fileOperationUtil.MoveTask(taskId, entries, targetDirEntry);
       } else {
         task = new fileOperationUtil.CopyTask(
@@ -271,7 +315,7 @@ class FileOperationManagerImpl {
     }
 
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.BEGIN, this.getTaskStatus(task),
+        FileOperationProgressEvent.EventType.BEGIN, this.getTaskStatus(task),
         task.taskId);
 
     task.initialize(() => {
@@ -291,7 +335,7 @@ class FileOperationManagerImpl {
     if (this.pendingCopyTasks_.length === 0 &&
         Object.keys(this.runningCopyTasks_).length === 0) {
       // All tasks have been serviced, clean up and exit.
-      chrome.power.releaseKeepAwake();
+      xfm.power.releaseKeepAwake();
       return;
     }
 
@@ -304,7 +348,7 @@ class FileOperationManagerImpl {
     }
 
     // Prevent the system from sleeping while copy is in progress.
-    chrome.power.requestKeepAwake('system');
+    xfm.power.requestKeepAwake('system');
 
     // Find next task which can run at now.
     let nextTask = null;
@@ -318,9 +362,9 @@ class FileOperationManagerImpl {
           /** @type {!DirectoryEntry} */ (task.targetDirEntry));
       if (volumeInfo === null) {
         this.eventRouter_.sendProgressEvent(
-            fileOperationUtil.EventRouter.EventType.ERROR,
+            FileOperationProgressEvent.EventType.ERROR,
             this.getTaskStatus(task), task.taskId,
-            new fileOperationUtil.Error(
+            new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.NOT_FOUND_ERR)));
 
@@ -345,7 +389,7 @@ class FileOperationManagerImpl {
 
     const onTaskProgress = function(task) {
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.PROGRESS,
+          FileOperationProgressEvent.EventType.PROGRESS,
           this.getTaskStatus(task), task.taskId);
     }.bind(this, nextTask);
 
@@ -360,8 +404,8 @@ class FileOperationManagerImpl {
       delete this.runningCopyTasks_[volumeId];
 
       const reason = err.data.name === util.FileError.ABORT_ERR ?
-          fileOperationUtil.EventRouter.EventType.CANCELED :
-          fileOperationUtil.EventRouter.EventType.ERROR;
+          FileOperationProgressEvent.EventType.CANCELED :
+          FileOperationProgressEvent.EventType.ERROR;
       this.eventRouter_.sendProgressEvent(
           reason, this.getTaskStatus(task), task.taskId, err);
       this.serviceAllTasks_();
@@ -372,7 +416,7 @@ class FileOperationManagerImpl {
       delete this.runningCopyTasks_[volumeId];
 
       this.eventRouter_.sendProgressEvent(
-          fileOperationUtil.EventRouter.EventType.SUCCESS,
+          FileOperationProgressEvent.EventType.SUCCESS,
           this.getTaskStatus(task), task.taskId);
       this.serviceAllTasks_();
     }.bind(this, nextTaskVolumeId);
@@ -381,25 +425,63 @@ class FileOperationManagerImpl {
     this.runningCopyTasks_[nextTaskVolumeId] = nextTask;
 
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.PROGRESS,
+        FileOperationProgressEvent.EventType.PROGRESS,
         this.getTaskStatus(nextTask), nextTask.taskId);
     nextTask.run(onEntryChanged, onTaskProgress, onTaskSuccess, onTaskError);
   }
 
   /**
+   * Returns true if all entries will use trash for delete.
+   *
+   * @param {!VolumeManager} volumeManager
+   * @param {!Array<!Entry>} entries The entries.
+   * @return {boolean}
+   */
+  willUseTrash(volumeManager, entries) {
+    return entries.every(
+        entry => this.trash_.shouldMoveToTrash(volumeManager, entry));
+  }
+
+  /**
    * Schedules the files deletion.
    *
-   * @param {Array<Entry>} entries The entries.
+   * @param {!Array<!Entry>} entries The entries.
+   * @param {boolean=} permanentlyDelete if true, entries will be deleted rather
+   *     than moved to trash.
    */
-  deleteEntries(entries) {
+  deleteEntries(entries, permanentlyDelete = false) {
+    if (permanentlyDelete) {
+      if (window.isSWA) {
+        chrome.fileManagerPrivate.startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.DELETE, entries, {});
+        return;
+      }
+    }
+    this.deleteOrRestore_(
+        util.FileOperationType.DELETE, entries, permanentlyDelete);
+  }
+
+  /**
+   * Schedule delete or restore.
+   *
+   * @param {!util.FileOperationType} operationType DELETE or RESTORE.
+   * @param {!Array<!Entry|!TrashEntry>} entries The entries.
+   * @param {boolean=} permanentlyDelete if true, entries will be deleted rather
+   *     than moved to trash. Only applies to operationType DELETE.
+   * @private
+   */
+  deleteOrRestore_(operationType, entries, permanentlyDelete = false) {
     const task =
         /** @type {!fileOperationUtil.DeleteTask} */ (Object.preventExtensions({
+          operationType: operationType,
           entries: entries,
           taskId: this.generateTaskId(),
           entrySize: {},
           totalBytes: 0,
           processedBytes: 0,
-          cancelRequested: false
+          cancelRequested: false,
+          trashedEntries: [],
+          permanentlyDelete
         }));
 
     // Obtains entry size and sum them up.
@@ -425,7 +507,7 @@ class FileOperationManagerImpl {
     group.run(() => {
       this.deleteTasks_.push(task);
       this.eventRouter_.sendDeleteEvent(
-          fileOperationUtil.EventRouter.EventType.BEGIN, task);
+          FileOperationProgressEvent.EventType.BEGIN, task);
       if (this.deleteTasks_.length === 1) {
         this.serviceAllDeleteTasks_();
       }
@@ -433,14 +515,45 @@ class FileOperationManagerImpl {
   }
 
   /**
-   * Service all pending delete tasks, as well as any that might appear during
-   * the deletion.
+   * Schedules the Trash to be emptied.
+   */
+  emptyTrash() {
+    if (!this.volumeManager_) {
+      volumeManagerFactory.getInstance().then(volumeManager => {
+        this.volumeManager_ = volumeManager;
+        this.emptyTrash();
+      });
+      return;
+    }
+
+    const root = new TrashRootEntry(this.volumeManager_);
+    const reader = root.createReader();
+    const onRead = (entries) => {
+      if (entries.length > 0) {
+        this.deleteEntries(entries, /*permanentlyDelete=*/ true);
+        reader.readEntries(onRead);
+      }
+    };
+    reader.readEntries(onRead);
+  }
+
+  /**
+   * Service all pending delete/restore tasks, as well as any that might appear
+   * during the deletion.
    *
-   * Must not be called if there is an in-flight delete task.
+   * Must not be called if there is an in-flight delete/restore task.
    *
    * @private
    */
   serviceAllDeleteTasks_() {
+    if (!this.volumeManager_) {
+      volumeManagerFactory.getInstance().then(volumeManager => {
+        this.volumeManager_ = volumeManager;
+        this.serviceAllDeleteTasks_();
+      });
+      return;
+    }
+
     this.serviceDeleteTask_(this.deleteTasks_[0], () => {
       this.deleteTasks_.shift();
       if (this.deleteTasks_.length) {
@@ -450,16 +563,16 @@ class FileOperationManagerImpl {
   }
 
   /**
-   * Performs the deletion.
+   * Performs the deletion or restore.
    *
-   * @param {!Object} task The delete task (see deleteEntries function).
+   * @param {!Object} task The delete task (see deleteOrRestore_()).
    * @param {function()} callback Callback run on task end.
    * @private
    */
   serviceDeleteTask_(task, callback) {
     const queue = new AsyncUtil.Queue();
 
-    // Delete each entry.
+    // Delete or restore each entry.
     let error = null;
     const deleteOneEntry = inCallback => {
       if (!task.entries.length || task.cancelRequested || error) {
@@ -467,18 +580,43 @@ class FileOperationManagerImpl {
         return;
       }
       this.eventRouter_.sendDeleteEvent(
-          fileOperationUtil.EventRouter.EventType.PROGRESS, task);
-      util.removeFileOrDirectory(
-          task.entries[0],
-          () => {
+          FileOperationProgressEvent.EventType.PROGRESS, task);
+
+      // Operation will be either delete, or restore.
+      let operation;
+      switch (task.operationType) {
+        case util.FileOperationType.DELETE:
+          operation = this.trash_
+                          .removeFileOrDirectory(
+                              assert(this.volumeManager_), task.entries[0],
+                              task.permanentlyDelete)
+                          .then(trashEntry => {
+                            if (trashEntry) {
+                              task.trashedEntries.push(trashEntry);
+                            }
+                          });
+          break;
+
+        case util.FileOperationType.RESTORE:
+          operation =
+              this.trash_.restore(assert(this.volumeManager_), task.entries[0]);
+          break;
+
+        default:
+          operation =
+              Promise.reject('Unkonwn operation type ' + task.operationType);
+      }
+
+      operation
+          .then(() => {
             this.eventRouter_.sendEntryChangedEvent(
                 util.EntryChangedKind.DELETED, task.entries[0]);
             task.processedBytes += task.entrySize[task.entries[0].toURL()];
             task.entries.shift();
             deleteOneEntry(inCallback);
-          },
-          inError => {
-            error = inError;
+          })
+          .catch(inError => {
+            error = inError.message;
             inCallback();
           });
     };
@@ -486,7 +624,7 @@ class FileOperationManagerImpl {
 
     // Send an event and finish the async steps.
     queue.run(inCallback => {
-      const EventType = fileOperationUtil.EventRouter.EventType;
+      const EventType = FileOperationProgressEvent.EventType;
       let reason;
       if (error) {
         reason = EventType.ERROR;
@@ -495,10 +633,22 @@ class FileOperationManagerImpl {
       } else {
         reason = EventType.SUCCESS;
       }
-      this.eventRouter_.sendDeleteEvent(reason, task);
+      this.eventRouter_.sendDeleteEvent(
+          reason, task,
+          new FileOperationError(
+              util.FileOperationErrorType.FILESYSTEM_ERROR, error));
       inCallback();
       callback();
     });
+  }
+
+  /**
+   * Schedules the files to be restored.
+   *
+   * @param {!Array<!TrashEntry>} entries The trash entries.
+   */
+  restoreDeleted(entries) {
+    this.deleteOrRestore_(util.FileOperationType.RESTORE, entries);
   }
 
   /**
@@ -511,11 +661,35 @@ class FileOperationManagerImpl {
     const zipTask = new fileOperationUtil.ZipTask(
         this.generateTaskId(), selectionEntries, dirEntry, dirEntry);
     this.eventRouter_.sendProgressEvent(
-        fileOperationUtil.EventRouter.EventType.BEGIN,
-        this.getTaskStatus(zipTask), zipTask.taskId);
+        FileOperationProgressEvent.EventType.BEGIN, this.getTaskStatus(zipTask),
+        zipTask.taskId);
     zipTask.initialize(() => {
       this.pendingCopyTasks_.push(zipTask);
       this.serviceAllTasks_();
+    });
+  }
+
+  /**
+   * Writes file to destination dir. This function is called when an image is
+   * dragged from a web page. In this case there is no FileSystem Entry to copy
+   * or move, just the JS File object with attached Blob. This operation does
+   * not use EventRouter or queue the task since it is not possible to track
+   * progress of the FileWriter.write().
+   *
+   * @param {!File} file The file entry to be written.
+   * @param {!DirectoryEntry} dir The destination directory to write to.
+   * @return {!Promise<!FileEntry>}
+   */
+  async writeFile(file, dir) {
+    const name = await fileOperationUtil.deduplicatePath(dir, file.name);
+    return new Promise((resolve, reject) => {
+      dir.getFile(name, {create: true, exclusive: true}, f => {
+        f.createWriter(writer => {
+          writer.onwriteend = () => resolve(f);
+          writer.onerror = reject;
+          writer.write(file);
+        }, reject);
+      }, reject);
     });
   }
 

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/encoding/text_decoder.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
@@ -77,23 +78,34 @@ String TextDecoder::encoding() const {
   return name;
 }
 
-String TextDecoder::decode(const BufferSource& input,
+String TextDecoder::decode(const V8BufferSource* input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
-  DCHECK(!input.IsNull());
-  if (input.IsArrayBufferView()) {
-    const char* start = static_cast<const char*>(
-        input.GetAsArrayBufferView().View()->BaseAddress());
-    uint32_t length =
-        input.GetAsArrayBufferView().View()->deprecatedByteLengthAsUnsigned();
-    return decode(start, length, options, exception_state);
+  // In case of `input` == IDL "missing" special value, default to (nullptr, 0).
+  void* start = nullptr;
+  size_t length = 0;
+  if (input) {
+    switch (input->GetContentType()) {
+      case V8BufferSource::ContentType::kArrayBuffer:
+        start = input->GetAsArrayBuffer()->Data();
+        length = input->GetAsArrayBuffer()->ByteLength();
+        break;
+      case V8BufferSource::ContentType::kArrayBufferView:
+        start = input->GetAsArrayBufferView()->BaseAddress();
+        length = input->GetAsArrayBufferView()->byteLength();
+        break;
+    }
   }
-  DCHECK(input.IsArrayBuffer());
-  const char* start =
-      static_cast<const char*>(input.GetAsArrayBuffer()->Data());
-  uint32_t length = input.GetAsArrayBuffer()->DeprecatedByteLengthAsUnsigned();
-  return decode(start, length, options, exception_state);
+
+  if (length > std::numeric_limits<uint32_t>::max()) {
+    exception_state.ThrowRangeError(
+        "Buffer size exceeds maximum heap object size.");
+    return String();
+  }
+
+  return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
+                options, exception_state);
 }
 
 String TextDecoder::decode(const char* start,
@@ -102,7 +114,15 @@ String TextDecoder::decode(const char* start,
                            ExceptionState& exception_state) {
   DCHECK(options);
   if (!do_not_flush_) {
-    codec_ = NewTextCodec(encoding_);
+    if (!codec_) {
+      // In the spec, a new decoder is created unconditionally here, but that
+      // requires an extra allocation. Since the TextCodec would be flushed
+      // here by the previous call if `!do_not_flush` (sorry about the double
+      // negatives), then we don't need a new TextCodec to match the spec
+      // behavior.
+      // https://encoding.spec.whatwg.org/#dom-textdecoder-decode
+      codec_ = NewTextCodec(encoding_);
+    }
     bom_seen_ = false;
   }
 
@@ -115,6 +135,10 @@ String TextDecoder::decode(const char* start,
   String s = codec_->Decode(start, length, flush, fatal_, saw_error);
 
   if (fatal_ && saw_error) {
+    if (!do_not_flush_) {
+      // If flushing, the error should not persist.
+      codec_.reset();
+    }
     exception_state.ThrowTypeError("The encoded data was not valid.");
     return String();
   }

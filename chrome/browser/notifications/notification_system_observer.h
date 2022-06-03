@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_SYSTEM_OBSERVER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_SYSTEM_OBSERVER_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -25,6 +24,9 @@ class NotificationSystemObserver : public content::NotificationObserver,
                                    extensions::ExtensionRegistryObserver {
  public:
   explicit NotificationSystemObserver(NotificationUIManager* ui_manager);
+  NotificationSystemObserver(const NotificationSystemObserver&) = delete;
+  NotificationSystemObserver& operator=(const NotificationSystemObserver&) =
+      delete;
   ~NotificationSystemObserver() override;
 
  protected:
@@ -44,11 +46,9 @@ class NotificationSystemObserver : public content::NotificationObserver,
   content::NotificationRegistrar registrar_;
   NotificationUIManager* ui_manager_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationSystemObserver);
+  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
+                                     extensions::ExtensionRegistryObserver>
+      extension_registry_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_SYSTEM_OBSERVER_H_

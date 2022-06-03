@@ -6,6 +6,8 @@
  * @fileoverview Polymer element for Enterprise Enrollment screen.
  */
 
+(function() {
+
 /* Code which is embedded inside of the webview. See below for details.
 /** @const */
 var INJECTED_WEBVIEW_SCRIPT = String.raw`
@@ -14,13 +16,22 @@ var INJECTED_WEBVIEW_SCRIPT = String.raw`
                        keyboard.initializeKeyboardFlow(true);
                      })();`;
 
-/** @const */ var ENROLLMENT_STEP = {
+/**
+ * @const
+ * When making changes to any of these parameters, make sure that their use in
+ * chrome/browser/resources/chromeos/login/cr_ui.js is updated as well.
+ * TODO(crbug.com/1111387) - Remove this dependency when fully migrated
+ * to JS modules.
+ * */
+var ENROLLMENT_STEP = {
   SIGNIN: 'signin',
   AD_JOIN: 'ad-join',
   WORKING: 'working',
   ATTRIBUTE_PROMPT: 'attribute-prompt',
   ERROR: 'error',
   SUCCESS: 'success',
+  CHECKING: 'checking',
+  TPM_CHECKING: 'tpm-checking',
 
   /* TODO(dzhioev): define this step on C++ side.
    */
@@ -28,47 +39,42 @@ var INJECTED_WEBVIEW_SCRIPT = String.raw`
   ACTIVE_DIRECTORY_JOIN_ERROR: 'active-directory-join-error',
 };
 
-Polymer({
-  is: 'enterprise-enrollment',
+/**
+ * The same steps as in offline-ad-login-element.
+ */
+const adLoginStep = {
+  UNLOCK: 'unlock',
+  CREDS: 'creds',
+};
 
-  behaviors: [I18nBehavior, OobeDialogHostBehavior],
+Polymer({
+  is: 'enterprise-enrollment-element',
+
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
+
+  EXTERNAL_API: [
+    'doReload',
+    'setAdJoinConfiguration',
+    'setAdJoinParams',
+    'setEnterpriseDomainInfo',
+    'setIsBrandedBuild',
+    'showAttributePromptStep',
+    'showError',
+    'showOSNotInstalledError',
+    'showStep',
+  ],
 
   properties: {
-    /**
-     * Reference to OOBE screen object.
-     * @type {!{
-     *     onAuthFrameLoaded_: function(),
-     *     onAuthCompleted_: function(string),
-     *     onAdCompleteLogin_: function(string, string, string, string, string),
-     *     onAdUnlockConfiguration_: function(string),
-     *     closeEnrollment_: function(string),
-     *     onAttributesEntered_: function(string, string),
-     * }}
-     */
-    screen: {
-      type: Object,
-    },
 
     /**
-     * The current step. This is the last value passed to showStep().
+     * Manager of the enrolled domain. Either a domain (foo.com) or an email
+     * address (admin@foo.com).
      */
-    currentStep_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * Indicates if authenticator have shown internal dialog.
-     */
-    authenticatorDialogDisplayed_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Domain the device was enrolled to.
-     */
-    enrolledDomain_: {
+    domainManager_: {
       type: String,
       value: '',
     },
@@ -90,7 +96,10 @@ Polymer({
     },
 
     /**
-     * Controls if there will be "retry" button on the error screen.
+     * Controls if there will be "Try Again" button on the error screen.
+     *
+     * True:  Error Nature Recoverable
+     * False: Error Nature Fatal
      */
     canRetryAfterError_: {
       type: Boolean,
@@ -112,12 +121,65 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /**
+     * Whether account identifier should be sent for check.
+     */
+    hasAccountCheck_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether the enrollment is automatic
+     *
+     * True:  Automatic (Attestation-based)
+     * False: Manual (OAuth)
+     */
+    isAutoEnroll_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether the enrollment is enforced and cannot be skipped.
+     *
+     * True:  Enrollment Enforced
+     * False: Enrollment Optional
+     */
+    isForced_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Bound to gaia-dialog::authFlow.
+     * @private
+     */
+    authFlow_: {
+      type: Number,
+    },
+
+    isMeet_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('flowType') &&
+            (loadTimeData.getString('flowType') == 'meet');
+      },
+      readOnly: true,
+    },
+
+    isBranded: {
+      type: Boolean,
+      value: true,
+    },
   },
 
-  /**
-   * Authenticator object that wraps GAIA webview.
-   */
-  authenticator_: null,
+  defaultUIStep() {
+    return ENROLLMENT_STEP.SIGNIN;
+  },
+
+  UI_STEPS: ENROLLMENT_STEP,
 
   /**
    * We block esc, back button and cancel button until gaia is loaded to
@@ -134,38 +196,28 @@ Polymer({
 
   isManualEnrollment_: undefined,
 
-  /**
-   * An element containing navigation buttons.
-   */
-  navigation_: undefined,
+  get authenticator_() {
+    return this.$['step-signin'].getAuthenticator();
+  },
 
-  /**
-   * An element containing UI to join an AD domain.
-   * @type {OfflineAdLoginElement}
-   * @private
-   */
-  offlineAdUi_: undefined,
+  get authView_() {
+    return this.$['step-signin'].getFrame();
+  },
 
-  /**
-   * Value contained in the last received 'backButton' event.
-   * @type {boolean}
-   * @private
-   */
-  lastBackMessageValue_: false,
-
-  ready: function() {
-    this.navigation_ = this.$['oauth-enroll-navigation'];
-    this.offlineAdUi_ = this.$['oauth-enroll-ad-join-ui'];
-
-    let authView = this.$['oauth-enroll-auth-view'];
-    this.authenticator_ = new cr.login.Authenticator(authView);
+  ready() {
+    this.initializeLoginScreen('OAuthEnrollmentScreen', {
+      resetAllowed: true,
+    });
 
     // Establish an initial messaging between content script and
     // host script so that content script can message back.
-    authView.addEventListener('loadstop', function(e) {
-      e.target.contentWindow.postMessage(
-          'initialMessage', authView.src);
-    });
+    this.authView_.addEventListener('loadstop', function(e) {
+      // Could be null in tests.
+      if (e.target && e.target.contentWindow) {
+        e.target.contentWindow.postMessage(
+            'initialMessage', this.authView_.src);
+      }
+    }.bind(this));
 
     // When we get the advancing focus command message from injected content
     // script, we can execute it on host script context.
@@ -176,75 +228,19 @@ Polymer({
         keyboard.onAdvanceFocus(true);
     });
 
-    this.authenticator_.addEventListener(
-        'ready', (function() {
-                   if (this.currentStep_ != ENROLLMENT_STEP.SIGNIN)
-                     return;
-                   this.isCancelDisabled = false;
-                   this.screen.onAuthFrameLoaded_();
-                 }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'authCompleted',
-        (function(e) {
-          var detail = e.detail;
-          if (!detail.email) {
-            this.showError(
-                loadTimeData.getString('fatalEnrollmentError'), false);
-            return;
-          }
-          this.screen.onAuthCompleted_(detail.email);
-        }).bind(this));
-
-    this.offlineAdUi_.addEventListener('authCompleted', function(e) {
-      this.offlineAdUi_.disabled = true;
-      this.offlineAdUi_.loading = true;
-      this.screen.onAdCompleteLogin_(
-        e.detail.machine_name,
-        e.detail.distinguished_name,
-        e.detail.encryption_types,
-        e.detail.username,
-        e.detail.password);
+    this.$["step-ad-join"].addEventListener('authCompleted', function(e) {
+      this.$["step-ad-join"].disabled = true;
+      this.$["step-ad-join"].loading = true;
+      chrome.send('oauthEnrollAdCompleteLogin', [
+        e.detail.machine_name, e.detail.distinguished_name,
+        e.detail.encryption_types, e.detail.username, e.detail.password
+      ]);
     }.bind(this));
-    this.offlineAdUi_.addEventListener('unlockPasswordEntered', function(e) {
-      this.offlineAdUi_.disabled = true;
-      this.screen.onAdUnlockConfiguration_(e.detail.unlock_password);
+    this.$["step-ad-join"].addEventListener('unlockPasswordEntered', function(e) {
+      this.$["step-ad-join"].disabled = true;
+      chrome.send(
+          'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
     }.bind(this));
-
-    this.authenticator_.addEventListener(
-        'authFlowChange', (function(e) {
-                            var isSAML = this.authenticator_.authFlow ==
-                                cr.login.Authenticator.AuthFlow.SAML;
-                            if (isSAML) {
-                              this.$['oauth-saml-notice-message'].textContent =
-                                  loadTimeData.getStringF(
-                                      'samlNotice',
-                                      this.authenticator_.authDomain);
-                            }
-                            this.classList.toggle('saml', isSAML);
-                            if (Oobe.getInstance().currentScreen == this)
-                              Oobe.getInstance().updateScreenSize(this);
-                            this.lastBackMessageValue_ = false;
-                            this.updateControlsState();
-                          }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'backButton', (function(e) {
-                        this.lastBackMessageValue_ = !!e.detail;
-                        this.$['oauth-enroll-auth-view'].focus();
-                        this.updateControlsState();
-                      }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'dialogShown', (function(e) {
-                         this.authenticatorDialogDisplayed_ = true;
-                       }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'dialogHidden', (function(e) {
-                          this.authenticatorDialogDisplayed_ = false;
-                        }).bind(this));
-
     this.authenticator_.insecureContentBlockedCallback =
         (function(url) {
           this.showError(
@@ -257,11 +253,6 @@ Polymer({
           this.showError(
               loadTimeData.getString('fatalEnrollmentError'), false);
         }).bind(this);
-
-    this.$['oauth-enroll-learn-more-link']
-        .addEventListener('click', function(event) {
-          chrome.send('oauthEnrollOnLearnMore');
-        });
   },
 
   /**
@@ -269,13 +260,17 @@ Polymer({
    * @param {Object} data Screen init payload, contains the signin frame
    * URL.
    */
-  onBeforeShow: function(data) {
+  onBeforeShow(data) {
+    if (data == undefined) {
+      return;
+    }
+
     if (Oobe.getInstance().forceKeyboardFlow) {
       // We run the tab remapping logic inside of the webview so that the
       // simulated tab events will use the webview tab-stops. Simulated tab
       // events created from the webui treat the entire webview as one tab
       // stop. Real tab events do not do this. See crbug.com/543865.
-      this.$['oauth-enroll-auth-view'].addContentScripts([{
+      this.authView_.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
         js: {code: INJECTED_WEBVIEW_SCRIPT},
@@ -283,10 +278,10 @@ Polymer({
       }]);
     }
 
-    this.authenticator_.setWebviewPartition(data.webviewPartitionName);
-
-    Oobe.getInstance().setSigninUIState(SIGNIN_UI_STATE.ENROLLMENT);
-    this.classList.remove('saml');
+    // TODO(crbug.com/1187024) - Improve the type checking in `data`
+    //
+    this.authenticator_.setWebviewPartition(
+      'webviewPartitionName' in data ? data.webviewPartitionName : '');
 
     var gaiaParams = {};
     gaiaParams.gaiaUrl = data.gaiaUrl;
@@ -298,117 +293,106 @@ Polymer({
       gaiaParams.emailDomain = data.management_domain;
     }
     gaiaParams.flow = data.flow;
+    gaiaParams.enableGaiaActionButtons = true;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
 
-    var modes = ['manual', 'forced', 'recovery'];
-    for (var i = 0; i < modes.length; ++i) {
-      this.classList.toggle(
-          'mode-' + modes[i], data.enrollment_mode == modes[i]);
-    }
-    this.isManualEnrollment_ = data.enrollment_mode === 'manual';
-    this.authenticatorDialogDisplayed_ = false;
+    this.isManualEnrollment_ = 'enrollment_mode' in data ?
+                               data.enrollment_mode === 'manual' : undefined;
+    this.isForced_ = 'is_enrollment_enforced' in data ?
+                     data.is_enrollment_enforced : undefined;
+    this.isAutoEnroll_ = 'attestationBased' in data ?
+                         data.attestationBased : undefined;
+    this.hasAccountCheck_ =
+        'flow' in data ? (data.flow == 'enterpriseLicense') : false;
 
-    this.offlineAdUi_.onBeforeShow();
-    if (!this.currentStep_) {
-      this.showStep(data.attestationBased ?
-          ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
-    }
-    this.behaviors.forEach((behavior) => {
-      if (behavior.onBeforeShow)
-        behavior.onBeforeShow.call(this);
-    });
+    cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
+    this.showStep(
+        this.isAutoEnroll_ ? ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
   },
 
-  onBeforeHide: function() {
-    Oobe.getInstance().setSigninUIState(SIGNIN_UI_STATE.HIDDEN);
+  /**
+   * Initial UI State for screen
+   */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.ENROLLMENT;
   },
+
 
   /**
    * Shows attribute-prompt step with pre-filled asset ID and
    * location.
    */
-  showAttributePromptStep: function(annotatedAssetId, annotatedLocation) {
+  showAttributePromptStep(annotatedAssetId, annotatedLocation) {
     this.assetId_ = annotatedAssetId;
     this.deviceLocation_ = annotatedLocation;
     this.showStep(ENROLLMENT_STEP.ATTRIBUTE_PROMPT);
   },
 
+
   /**
-   * Shows a success card for attestation-based enrollment that shows
-   * which domain the device was enrolled into.
+   * Sets the type of the device and the enterprise domain to be shown.
+   *
+   * @param {string} manager
+   * @param {string} device_type
    */
-  showAttestationBasedEnrollmentSuccess: function(
-      device, enterpriseEnrollmentDomain) {
-    this.enrolledDomain_ = enterpriseEnrollmentDomain;
-    this.deviceName_ = device;
-    this.showStep(ENROLLMENT_STEP.SUCCESS);
+  setEnterpriseDomainInfo(manager, device_type) {
+    this.domainManager_ = manager;
+    this.deviceName_ = device_type;
+  },
+
+  /**
+   * Invoked when identifierEntered message received.
+   * @param {!CustomEvent<!{accountIdentifier: string}>} e Event with payload
+   *     containing: {string} accountIdentifier User identifier.
+   * @private
+   */
+  onIdentifierEnteredMessage_(e) {
+    if (this.hasAccountCheck_) {
+      this.showStep(ENROLLMENT_STEP.CHECKING);
+      chrome.send('enterpriseIdentifierEntered', [e.detail.accountIdentifier]);
+    }
   },
 
   /**
    * Cancels the current authentication and drops the user back to the next
    * screen (either the next authentication or the login screen).
    */
-  cancel: function() {
+  cancel() {
     if (this.isCancelDisabled)
       return;
     this.isCancelDisabled = true;
-    this.screen.closeEnrollment_('cancel');
+    this.closeEnrollment_('cancel');
   },
 
   /**
    * Switches between the different steps in the enrollment flow.
    * @param {string} step the steps to show, one of "signin", "working",
    * "attribute-prompt", "error", "success".
+   * @suppress {missingProperties} setOobeUIState() exists
    */
-  showStep: function(step) {
+  showStep(step) {
+    this.setUIStep(step);
+    if (step === ENROLLMENT_STEP.AD_JOIN) {
+      this.$["step-ad-join"].disabled = false;
+      this.$["step-ad-join"].loading = false;
+      this.$["step-ad-join"].focus();
+    }
     this.isCancelDisabled =
-        (step == ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
-        step == ENROLLMENT_STEP.AD_JOIN || step == ENROLLMENT_STEP.WORKING;
-
-    this.currentStep_ = step;
-
-    if (this.isErrorStep_(step)) {
-      this.$['oauth-enroll-error-card'].submitButton.focus();
-    } else if (step == ENROLLMENT_STEP.SIGNIN) {
-      this.$['oauth-enroll-auth-view'].focus();
-    } else if (step == ENROLLMENT_STEP.SUCCESS) {
-      this.$['oauth-enroll-success-card'].show();
-    } else if (step == ENROLLMENT_STEP.ATTRIBUTE_PROMPT) {
-      this.$['oauth-enroll-attribute-prompt-card'].show();
-    } else if (step == ENROLLMENT_STEP.AD_JOIN) {
-      this.offlineAdUi_.disabled = false;
-      this.offlineAdUi_.loading = false;
-      this.offlineAdUi_.focus();
-    }
-
-    this.lastBackMessageValue_ = false;
-    this.updateControlsState();
-  },
-
-  /**
-   * Sets an error message and switches to the error screen.
-   * @param {string} message the error message.
-   * @param {boolean} retry whether the retry link should be shown.
-   */
-  showError: function(message, retry) {
-    this.errorText_ = message;
-    this.canRetryAfterError_ = retry;
-
-    if (this.currentStep_ == ENROLLMENT_STEP.ATTRIBUTE_PROMPT) {
-      this.showStep(ENROLLMENT_STEP.ATTRIBUTE_PROMPT_ERROR);
-    } else if (this.currentStep_ == ENROLLMENT_STEP.AD_JOIN) {
-      this.showStep(ENROLLMENT_STEP.ACTIVE_DIRECTORY_JOIN_ERROR);
+        (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
+        step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING ||
+        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS ||
+        step == ENROLLMENT_STEP.TPM_CHECKING;
+    if (this.isCancelDisabled) {
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
-      this.showStep(ENROLLMENT_STEP.ERROR);
+      Oobe.getInstance().setOobeUIState(
+          OOBE_UI_STATE.ENROLLMENT_CANCEL_ENABLED);
     }
   },
 
-  doReload: function() {
-    this.lastBackMessageValue_ = false;
-    this.authenticatorDialogDisplayed_ = false;
+  doReload() {
     this.authenticator_.reload();
-    this.updateControlsState();
   },
 
   /**
@@ -419,39 +403,38 @@ Polymer({
    * @param {boolean} showUnlockConfig true if there is an encrypted
    * configuration (and not unlocked yet).
    */
-  setAdJoinParams: function(
-      machineName, userName, errorState, showUnlockConfig) {
-    this.offlineAdUi_.disabled = false;
-    this.offlineAdUi_.machineName = machineName;
-    this.offlineAdUi_.userName = userName;
-    this.offlineAdUi_.errorState = errorState;
-    this.offlineAdUi_.unlockPasswordStep = showUnlockConfig;
+  setAdJoinParams(machineName, userName, errorState, showUnlockConfig) {
+    this.$["step-ad-join"].disabled = false;
+    this.$["step-ad-join"].machineName = machineName;
+    this.$["step-ad-join"].userName = userName;
+    this.$["step-ad-join"].errorState = errorState;
+    if (showUnlockConfig) {
+      this.$["step-ad-join"].setUIStep(adLoginStep.UNLOCK);
+    } else {
+      this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
+    }
   },
 
   /**
    * Sets Active Directory join screen with the unlocked configuration.
    * @param {Array<JoinConfigType>} options
    */
-  setAdJoinConfiguration: function(options) {
-    this.offlineAdUi_.disabled = false;
-    this.offlineAdUi_.setJoinConfigurationOptions(options);
-    this.offlineAdUi_.unlockPasswordStep = false;
+  setAdJoinConfiguration(options) {
+    this.$["step-ad-join"].disabled = false;
+    this.$["step-ad-join"].setJoinConfigurationOptions(options);
+    this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
+    this.$["step-ad-join"].focus();
   },
 
-  /**
-   * Retries the enrollment process after an error occurred in a previous
-   * attempt. This goes to the C++ side through |chrome| first to clean up the
-   * profile, so that the next attempt is performed with a clean state.
-   */
-  doRetry_: function() {
-    chrome.send('oauthEnrollRetry');
+  clickPrimaryButtonForTesting() {
+    this.$['step-signin'].clickPrimaryButtonForTesting();
   },
 
   /**
    * Skips the device attribute update,
    * shows the successful enrollment step.
    */
-  skipAttributes_: function() {
+  skipAttributes_() {
     this.showStep(ENROLLMENT_STEP.SUCCESS);
   },
 
@@ -459,111 +442,174 @@ Polymer({
    * Uploads the device attributes to server. This goes to C++ side through
    * |chrome| and launches the device attribute update negotiation.
    */
-  submitAttributes_: function() {
-    this.screen.onAttributesEntered_(this.assetId_, this.deviceLocation_);
+  submitAttributes_() {
+    chrome.send('oauthEnrollAttributes', [this.assetId_, this.deviceLocation_]);
   },
 
   /**
-   * Skips the device attribute update,
-   * shows the successful enrollment step.
+   * Shows the learn more dialog.
    */
-  onBackButtonClicked_: function() {
-    if (this.currentStep_ == ENROLLMENT_STEP.SIGNIN) {
-      if (this.lastBackMessageValue_) {
-        this.lastBackMessageValue_ = false;
-        this.$['oauth-enroll-auth-view'].back();
-      } else {
-        this.cancel();
-      }
-    }
+  onLearnMore_() {
+    chrome.send('oauthEnrollOnLearnMore');
   },
 
-  /**
-   * Returns true if we are at the begging of enrollment flow (i.e. the email
-   * page).
-   *
-   * @type {boolean}
-   */
-  isAtTheBeginning: function() {
-    return !this.lastBackMessageValue_ &&
-        this.currentStep_ == ENROLLMENT_STEP.SIGNIN;
-  },
-
-  /**
-   * Updates visibility of navigation buttons.
-   */
-  updateControlsState: function() {
-    this.navigation_.refreshVisible = this.isAtTheBeginning() &&
-        this.isManualEnrollment_ === false;
-    this.navigation_.closeVisible =
-        (this.currentStep_ == ENROLLMENT_STEP.ERROR &&
-         !this.navigation_.refreshVisible);
+  closeEnrollment_(result) {
+    chrome.send('oauthEnrollClose', [result]);
   },
 
   /**
    * Notifies chrome that enrollment have finished.
    */
-  onEnrollmentFinished_: function() {
-    this.screen.closeEnrollment_('done');
-  },
-
-  /*
-   * Executed on language change.
-   */
-  updateLocalizedContent: function() {
-    this.offlineAdUi_.i18nUpdateLocale();
-    this.i18nUpdateLocale();
-  },
-
-  onErrorButtonPressed_: function () {
-    if (this.currentStep_ == ENROLLMENT_STEP.ACTIVE_DIRECTORY_JOIN_ERROR) {
-      this.showStep(ENROLLMENT_STEP.AD_JOIN);
-    } else if (this.currentStep_ == ENROLLMENT_STEP.ATTRIBUTE_PROMPT_ERROR) {
-      this.onEnrollmentFinished_();
-    } else {
-      this.doRetry_();
-    }
+  onEnrollmentFinished_() {
+    this.closeEnrollment_('done');
   },
 
   /**
    * Generates message on the success screen.
    */
-  successText_: function(locale, device, domain) {
+  successText_(locale, device, domain) {
     return this.i18nAdvanced(
         'oauthEnrollAbeSuccessDomain', {substitutions: [device, domain]});
   },
 
-  isEmpty_: function(str) {
+  isEmpty_(str) {
     return !str;
   },
 
-  /**
-   * Simple equality comparison function.
-   */
-  eq_: function(currentStep, expectedStep) {
-    return currentStep == expectedStep;
-  },
-
-  /**
-   * Simple equality comparison function.
-   */
-  isErrorStep_: function(currentStep) {
-    return currentStep == ENROLLMENT_STEP.ERROR ||
-           currentStep == ENROLLMENT_STEP.ATTRIBUTE_PROMPT_ERROR ||
-           currentStep == ENROLLMENT_STEP.ACTIVE_DIRECTORY_JOIN_ERROR;
-  },
-
-  /**
-   * Text for error screen button depending on type of error.
-   */
-  errorAction_: function(locale, step, retry) {
-    if (this.currentStep_ == ENROLLMENT_STEP.ACTIVE_DIRECTORY_JOIN_ERROR) {
-      return this.i18n('oauthEnrollRetry');
-    } else if (this.currentStep_ == ENROLLMENT_STEP.ATTRIBUTE_PROMPT_ERROR) {
-      return this.i18n('oauthEnrollDone');
-    } else if (this.currentStep_ == ENROLLMENT_STEP.ERROR) {
-      return retry ? this.i18n('oauthEnrollRetry') : '';
+  onAuthCompleted_(e) {
+    var detail = e.detail;
+    if (!detail.email) {
+      this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
+      return;
     }
-  }
+    chrome.send('oauthEnrollCompleteLogin', [detail.email]);
+  },
 
+  onReady() {
+    if (this.uiStep != ENROLLMENT_STEP.SIGNIN)
+      return;
+    this.isCancelDisabled = false;
+    chrome.send('frameLoadingCompleted');
+  },
+
+  /**
+   * ERROR DIALOG LOGIC:
+   *
+   *    The error displayed on the enrollment error dialog depends on the nature
+   *    of the error (_recoverable_/_fatal_), on the authentication mechanism
+   *    (_manual_/_automatic_), and on whether the enrollment is _enforced_ or
+   *    _optional_.
+   *
+   *    AUTH MECH |  ENROLLMENT |  ERROR NATURE            Buttons Layout
+   *    ----------------------------------------
+   *    AUTOMATIC |   ENFORCED  |  RECOVERABLE    [    [Enroll Man.][Try Again]]
+   *    AUTOMATIC |   ENFORCED  |  FATAL          [               [Enroll Man.]]
+   *    AUTOMATIC |   OPTIONAL  |  RECOVERABLE    [    [Enroll Man.][Try Again]]
+   *    AUTOMATIC |   OPTIONAL  |  FATAL          [               [Enroll Man.]]
+   *
+   *    MANUAL    |   ENFORCED  |  RECOVERABLE    [[Back]           [Try Again]]
+   *    MANUAL    |   ENFORCED  |  FATAL          [[Back]                      ]
+   *    MANUAL    |   OPTIONAL  |  RECOVERABLE    [           [Skip][Try Again]]
+   *    MANUAL    |   OPTIONAL  |  FATAL          [                      [Skip]]
+   *
+   *    -  The buttons [Back], [Enroll Manually] and [Skip] all call 'cancel'.
+   *    - [Enroll Manually] and [Skip] are the same button (GENERIC CANCEL) and
+   *      are relabeled depending on the situation.
+   *    - [Back] is only shown the button "GENERIC CANCEL" above isn't shown.
+   */
+
+  /**
+   * Sets an error message and switches to the error screen.
+   * @param {string} message the error message.
+   * @param {boolean} retry whether the retry link should be shown.
+   */
+  showError: function(message, retry) {
+    this.errorText_ = message;
+    this.canRetryAfterError_ = retry;
+
+    if (this.uiStep === ENROLLMENT_STEP.ATTRIBUTE_PROMPT) {
+      this.showStep(ENROLLMENT_STEP.ATTRIBUTE_PROMPT_ERROR);
+    } else if (this.uiStep === ENROLLMENT_STEP.AD_JOIN) {
+      this.showStep(ENROLLMENT_STEP.ACTIVE_DIRECTORY_JOIN_ERROR);
+    } else {
+      this.showStep(ENROLLMENT_STEP.ERROR);
+    }
+  },
+
+  showOSNotInstalledError() {
+    this.canRetryAfterError_ = false;
+    this.errorText_ = this.i18nDynamic(
+        this.locale, 'oauthOSNotInstalledError',
+        this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
+                         loadTimeData.getString('osInstallChromiumOS'));
+    this.showStep(ENROLLMENT_STEP.ERROR);
+  },
+
+  /**
+   *  Provides the label for the generic cancel button (Skip / Enroll Manually)
+   *
+   *  During automatic enrollment, the label is 'Enroll Manually'.
+   *  During manual enrollment, the label is 'Skip'.
+   * @private
+   */
+  getCancelButtonLabel_(locale_, is_automatic) {
+    if (this.isAutoEnroll_) {
+      return 'oauthEnrollManualEnrollment';
+    } else {
+      return 'oauthEnrollSkip';
+    }
+  },
+
+  /**
+   *  Whether the "GENERIC CANCEL" (SKIP / ENROLL_MANUALLY ) button should be
+   *  shown. It is only shown when in 'AUTOMATIC' mode OR when in
+   *  manual mode without enrollment enforcement.
+   *
+   *  When the enrollment is manual AND forced, a 'BACK' button will be shown.
+   * @param {Boolean} automatic - Whether the enrollment is automatic
+   * @param {Boolean} enforced  - Whether the enrollment is enforced
+   * @private
+   */
+  isGenericCancel_(automatic, enforced) {
+    return automatic || (!automatic && !enforced);
+  },
+
+  /**
+   * Retries the enrollment process after an error occurred in a previous
+   * attempt. This goes to the C++ side through |chrome| first to clean up the
+   * profile, so that the next attempt is performed with a clean state.
+   */
+  doRetry_() {
+    chrome.send('oauthEnrollRetry');
+  },
+
+  /**
+   *  Event handler for the 'Try again' button that is shown upon an error
+   *  during ActiveDirectory join.
+   */
+  onAdJoinErrorRetry_() {
+    this.showStep(ENROLLMENT_STEP.AD_JOIN);
+  },
+
+  /*
+   * Whether authFlow is the SAML.
+   */
+  isSaml_(authFlow) {
+    return authFlow === cr.login.Authenticator.AuthFlow.SAML;
+  },
+
+  /*
+   * Called when we cancel TPM check early.
+   */
+  onTPMCheckCanceled_() {
+    this.userActed('cancel-tpm-check');
+  },
+
+  /**
+   * @param {boolean} is_branded
+   */
+  setIsBrandedBuild(is_branded) {
+    this.isBranded = is_branded;
+  },
 });
+})();

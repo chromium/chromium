@@ -15,8 +15,7 @@
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace base {
@@ -35,6 +34,9 @@ class SyncChannel;
 class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
                                                 public Sender {
  public:
+  SyncMessageFilter(const SyncMessageFilter&) = delete;
+  SyncMessageFilter& operator=(const SyncMessageFilter&) = delete;
+
   // Sender implementation.
   bool Send(Message* message) override;
 
@@ -50,12 +52,13 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   //
   // NOTE: This must ONLY be called on the Channel's thread, after
   // OnFilterAdded.
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver);
+
   template <typename Interface>
   void GetRemoteAssociatedInterface(
       mojo::PendingAssociatedRemote<Interface>* proxy) {
-    auto receiver = proxy->InitWithNewEndpointAndPassReceiver();
-    GetGenericRemoteAssociatedInterface(Interface::Name_,
-                                        receiver.PassHandle());
+    GetRemoteAssociatedInterface(proxy->InitWithNewEndpointAndPassReceiver());
   }
 
  protected:
@@ -68,11 +71,6 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   void SendOnIOThread(Message* message);
   // Signal all the pending sends as done, used in an error condition.
   void SignalAllEvents();
-
-  // NOTE: This must ONLY be called on the Channel's thread.
-  void GetGenericRemoteAssociatedInterface(
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle handle);
 
   // The channel to which this filter was added.
   Channel* channel_;
@@ -93,8 +91,6 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   base::Lock lock_;
 
   base::WaitableEvent* const shutdown_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncMessageFilter);
 };
 
 }  // namespace IPC

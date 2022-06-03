@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
+
 namespace cc {
 
 ReverseSpiralIterator::ReverseSpiralIterator()

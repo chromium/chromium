@@ -222,7 +222,7 @@ def GetTestName(desc, toolchain, config):
 
 def IsTestDisabled(desc, toolchain, config):
   def AsList(value):
-    if type(value) not in (list, tuple):
+    if not isinstance(value, (list, tuple)):
       return [value]
     return value
 

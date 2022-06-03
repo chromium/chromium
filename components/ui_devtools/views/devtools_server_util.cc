@@ -20,11 +20,13 @@ namespace ui_devtools {
 
 std::unique_ptr<UiDevToolsServer> CreateUiDevToolsServerForViews(
     network::mojom::NetworkContext* network_context,
-    std::unique_ptr<ConnectorDelegate> connector) {
+    std::unique_ptr<ConnectorDelegate> connector,
+    const base::FilePath& active_port_output_directory) {
   constexpr int kUiDevToolsDefaultPort = 9223;
   int port = UiDevToolsServer::GetUiDevToolsPort(switches::kEnableUiDevTools,
                                                  kUiDevToolsDefaultPort);
-  auto server = UiDevToolsServer::CreateForViews(network_context, port);
+  auto server = UiDevToolsServer::CreateForViews(network_context, port,
+                                                 active_port_output_directory);
   DCHECK(server);
   auto client =
       std::make_unique<UiDevToolsClient>("UiDevToolsClient", server.get());

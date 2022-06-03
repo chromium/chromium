@@ -6,27 +6,18 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
+#include "third_party/blink/renderer/core/html/loading_attribute.h"
 
 namespace blink {
 
 namespace {
-
-enum class LoadingAttrValue { kAuto, kLazy, kEager };
-
-LoadingAttrValue GetLoadingAttrValue(const HTMLImageElement& html_image) {
-  const auto& attribute_value =
-      html_image.FastGetAttribute(html_names::kLoadingAttr);
-  return EqualIgnoringASCIICase(attribute_value, "eager")
-             ? LoadingAttrValue::kEager
-             : EqualIgnoringASCIICase(attribute_value, "lazy")
-                   ? LoadingAttrValue::kLazy
-                   : LoadingAttrValue::kAuto;
-}
 
 // Returns true if absolute dimension is specified in the width and height
 // attributes or in the inline style.
@@ -82,12 +73,13 @@ void LazyImageHelper::StartMonitoring(blink::Element* element) {
   using DeferralMessage = LazyLoadImageObserver::DeferralMessage;
   auto deferral_message = DeferralMessage::kNone;
   if (auto* html_image = DynamicTo<HTMLImageElement>(element)) {
-    LoadingAttrValue loading_attr = GetLoadingAttrValue(*html_image);
-    DCHECK_NE(loading_attr, LoadingAttrValue::kEager);
-    if (loading_attr == LoadingAttrValue::kAuto) {
+    LoadingAttributeValue effective_loading_attr = GetLoadingAttributeValue(
+        html_image->FastGetAttribute(html_names::kLoadingAttr));
+    DCHECK_NE(effective_loading_attr, LoadingAttributeValue::kEager);
+    if (effective_loading_attr == LoadingAttributeValue::kAuto) {
       deferral_message = DeferralMessage::kLoadEventsDeferred;
     } else if (!IsDimensionAbsoluteLarge(*html_image)) {
-      DCHECK_EQ(loading_attr, LoadingAttrValue::kLazy);
+      DCHECK_EQ(effective_loading_attr, LoadingAttributeValue::kLazy);
       deferral_message = DeferralMessage::kMissingDimensionForLazy;
     }
   }
@@ -104,33 +96,34 @@ void LazyImageHelper::StopMonitoring(Element* element) {
 // static
 LazyImageHelper::Eligibility
 LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
-    const LocalFrame& frame,
+    LocalFrame& frame,
     HTMLImageElement* html_image,
     const KURL& url) {
   if (!url.ProtocolIsInHTTPFamily())
     return LazyImageHelper::Eligibility::kDisabled;
 
+  // Do not lazyload image elements when JavaScript is disabled, regardless of
+  // the `loading` attribute.
+  if (!frame.DomWindow()->CanExecuteScripts(kNotAboutToExecuteScript))
+    return LazyImageHelper::Eligibility::kDisabled;
+
   const auto lazy_load_image_setting = frame.GetLazyLoadImageSetting();
-  LoadingAttrValue loading_attr = GetLoadingAttrValue(*html_image);
+  LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
+      html_image->FastGetAttribute(html_names::kLoadingAttr));
   bool is_fully_loadable =
       IsFullyLoadableFirstKImageAndDecrementCount(html_image);
-  if (loading_attr == LoadingAttrValue::kLazy) {
+  if (loading_attr == LoadingAttributeValue::kLazy) {
     StartMonitoringVisibility(html_image);
     UseCounter::Count(frame.GetDocument(),
                       WebFeature::kLazyLoadImageLoadingAttributeLazy);
     if (lazy_load_image_setting !=
         LocalFrame::LazyLoadImageSetting::kDisabled) {
       // Developer opt-in lazyload.
-      if (!RuntimeEnabledFeatures::LazyImageLoadingMetadataFetchEnabled() ||
-          IsDimensionAbsoluteLarge(*html_image)) {
-        return LazyImageHelper::Eligibility::kEnabledFullyDeferred;
-      }
-      return LazyImageHelper::Eligibility::kEnabledFetchPlaceholder;
+      return LazyImageHelper::Eligibility::kEnabledFullyDeferred;
     }
   }
 
-  if (loading_attr == LoadingAttrValue::kEager &&
-      !frame.GetDocument()->IsLazyLoadPolicyEnforced()) {
+  if (loading_attr == LoadingAttributeValue::kEager) {
     UseCounter::Count(frame.GetDocument(),
                       WebFeature::kLazyLoadImageLoadingAttributeEager);
     return LazyImageHelper::Eligibility::kDisabled;
@@ -168,11 +161,7 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
       lazy_load_image_setting ==
           LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
     // Automatic lazyload
-    if (!RuntimeEnabledFeatures::LazyImageLoadingMetadataFetchEnabled() ||
-        IsDimensionAbsoluteLarge(*html_image)) {
-      return LazyImageHelper::Eligibility::kEnabledFullyDeferred;
-    }
-    return LazyImageHelper::Eligibility::kEnabledFetchPlaceholder;
+    return LazyImageHelper::Eligibility::kEnabledFullyDeferred;
   }
   return LazyImageHelper::Eligibility::kDisabled;
 }

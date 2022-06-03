@@ -4,14 +4,22 @@
 
 // <include src="post_message_channel.js">
 // <include src="webview_event_manager.js">
-// <include src="../chromeos/login/saml_password_attributes.js">
+// <include src="saml_password_attributes.js">
+
+// clang-format off
+// #import {Channel} from './channel.m.js';
+// #import {PostMessageChannel} from './post_message_channel.m.js';
+// #import {WebviewEventManager} from './webview_event_manager.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js'
+// #import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.m.js';
+// clang-format on
 
 /**
  * @fileoverview Saml support for webview based auth.
  */
 
 cr.define('cr.login', function() {
-  'use strict';
+  /* #ignore */ 'use strict';
 
   /**
    * The lowest version of the credentials passing API supported.
@@ -43,15 +51,60 @@ cr.define('cr.login', function() {
       'x-verified-access-challenge-response';
 
   /** @const */
+  const BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----';
+
+  /** @const */
+  const END_CERTIFICATE = '-----END CERTIFICATE-----';
+
+  /** @const */
   const injectedScriptName = 'samlInjected';
 
   /**
    * The script to inject into webview and its sub frames.
    * @type {string}
    */
-  const injectedJs = String.raw`
-      // <include src="webview_saml_injected.js">
-  `;
+  const injectedJs = 'webview_saml_injected.js';
+
+  /**
+   * @typedef {{
+   *   method: string,
+   *   requestedVersion: number,
+   *   keyType: string,
+   *   token: string,
+   *   passwordBytes: string
+   * }}
+   */
+  let ApiCallMessageCall;
+
+  /**
+   * @typedef {{
+   *   name: string,
+   *   call: ApiCallMessageCall
+   * }}
+   */
+  let ApiCallMessage;
+
+  /**
+   * Details about the request.
+   * @typedef {{
+   *   method: string,
+   *   requestBody: Object,
+   *   url: string
+   * }}
+   * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onBeforeRequest#details
+   */
+  /* #export */ let OnBeforeRequestDetails;
+
+  /**
+   * Details of the request.
+   * @typedef {{
+   *   responseHeaders: Array<HttpHeader>,
+   *   statusCode: number,
+   *   url: string,
+   * }}
+   * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#details
+   */
+  /* #export */ let OnHeadersReceivedDetails;
 
   /**
    * Creates a new URL by striping all query parameters.
@@ -63,23 +116,12 @@ cr.define('cr.login', function() {
   }
 
   /**
-   * Extract domain name from an URL.
-   * @param {string} url An URL string.
-   * @return {string} The host name of the URL.
-   */
-  function extractDomain(url) {
-    const a = document.createElement('a');
-    a.href = url;
-    return a.hostname;
-  }
-
-  /**
    * A handler to provide saml support for the given webview that hosts the
    * auth IdP pages.
    */
-  class SamlHandler extends cr.EventTarget {
+  /* #export */ class SamlHandler extends cr.EventTarget {
     /**
-     * @param {webview} webview
+     * @param {!WebView} webview
      * @param {boolean} startsOnSamlPage - whether initial URL is already SAML
      *                  page
      * */
@@ -108,25 +150,26 @@ cr.define('cr.login', function() {
 
       /**
        * The webview that serves IdP pages.
-       * @type {webview}
+       * @private {!WebView}
        */
       this.webview_ = webview;
 
       /**
        * Whether a Saml page is in the webview from the start.
+       * @private {boolean}
        */
       this.startsOnSamlPage_ = startsOnSamlPage;
 
       /**
        * Whether a Saml IdP page is display in the webview.
-       * @type {boolean}
+       * @private {boolean}
        */
       this.isSamlPage_ = this.startsOnSamlPage_;
 
       /**
        * Pending Saml IdP page flag that is set when a SAML_HEADER is received
        * and is copied to |isSamlPage_| in loadcommit.
-       * @type {boolean}
+       * @private {boolean}
        */
       this.pendingIsSamlPage_ = this.startsOnSamlPage_;
 
@@ -134,50 +177,44 @@ cr.define('cr.login', function() {
        * The last aborted top level url. It is recorded in loadabort event and
        * used to skip injection into Chrome's error page in the following
        * loadcommit event.
-       * @type {string}
+       * @private {?string}
        */
       this.abortedTopLevelUrl_ = null;
 
       /**
-       * The domain of the Saml IdP.
-       * @type {string}
-       */
-      this.authDomain = '';
-
-      /**
        * Scraped password stored in an id to password field value map.
-       * @type {Object<string, string>}
-       * @private
+       * @private {!Object<string, string>}
        */
       this.passwordStore_ = {};
 
       /**
        * Whether Saml API is initialized.
-       * @type {boolean}
+       * @private {boolean}
        */
       this.apiInitialized_ = false;
 
       /**
        * Saml API version to use.
-       * @type {number}
+       * @private {number}
        */
       this.apiVersion_ = 0;
 
       /**
        * Saml API tokens received.
-       * @type {Object}
+       * @private {!Object}
        */
       this.apiTokenStore_ = {};
 
       /**
        * Saml API confirmation token. Set by last 'confirm' call.
+       * @private {?string}
        */
       this.confirmToken_ = null;
 
       /**
        * Saml API password bytes set by last 'add' call. Needed to not break
        * existing behavior.
-       * @type {string}
+       * @private {?string}
        */
       this.lastApiPasswordBytes_ = null;
 
@@ -190,36 +227,39 @@ cr.define('cr.login', function() {
 
       /**
        * Whether to attempt to extract password attributes from the SAMLResponse
-       * XML. See ../chromeos/login/saml_password_attributes.js
+       * XML. See saml_password_attributes.js
        * @type {boolean}
        */
       this.extractSamlPasswordAttributes = false;
 
       /**
        * Current stage of device attestation flow.
-       * @type {DeviceAttestationStage}
-       * @private
+       * @private {!SamlHandler.DeviceAttestationStage}
        */
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
 
       /**
        * Challenge from IdP to perform device attestation.
-       * @type {?string}
-       * @private
+       * @private {?string}
        */
       this.verifiedAccessChallenge_ = null;
 
       /**
        * Response for a device attestation challenge.
-       * @type {?string}
-       * @private
+       * @private {?string}
        */
       this.verifiedAccessChallengeResponse_ = null;
 
       /**
+       * Certificate that were extracted from the SAMLResponse.
+       * @public {?string}
+       */
+      this.x509certificate = null;
+
+      /**
        * The password-attributes that were extracted from the SAMLResponse, if
        * any. (Doesn't contain the password itself).
-       * @type {PasswordAttributes}
+       * @private {!PasswordAttributes}
        */
       this.passwordAttributes_ =
           samlPasswordAttributes.PasswordAttributes.EMPTY;
@@ -271,7 +311,7 @@ cr.define('cr.login', function() {
       this.webview_.addContentScripts([{
         name: injectedScriptName,
         matches: ['http://*/*', 'https://*/*'],
-        js: {code: injectedJs},
+        js: {files: [injectedJs]},
         all_frames: true,
         run_at: 'document_start'
       }]);
@@ -289,7 +329,7 @@ cr.define('cr.login', function() {
 
     /**
      * Returns the Saml API password bytes.
-     * @return {string}
+     * @return {?string}
      */
     get apiPasswordBytes() {
       if (this.confirmToken_ != null &&
@@ -350,7 +390,7 @@ cr.define('cr.login', function() {
 
     /**
      * Gets the password attributes extracted from SAML Response.
-     * @return {PasswordAttributes}
+     * @return {Object}
      */
     get passwordAttributes() {
       return this.passwordAttributes_;
@@ -394,6 +434,7 @@ cr.define('cr.login', function() {
       this.lastApiPasswordBytes_ = null;
       this.passwordAttributes_ =
           samlPasswordAttributes.PasswordAttributes.EMPTY;
+      this.x509certificate = null;
     }
 
     /**
@@ -480,21 +521,52 @@ cr.define('cr.login', function() {
     }
 
     /**
+     * Set x509certificate in pem-format which is extracted from samlResponse
+     * and will be used to record SAML provider
+     * @param {string} samlResponse SAML response which is received from SAML
+     *     page.
+     * @private
+     */
+    setX509certificate_(samlResponse) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(samlResponse, 'text/xml');
+      let certificate = xmlDoc.getElementsByTagName('ds:X509Certificate');
+      if (!certificate || certificate.length == 0) {
+        // tag 'ds:X509Certificate' doesn't exist
+        certificate = xmlDoc.getElementsByTagName('X509Certificate');
+      }
+
+      if (certificate && certificate.length > 0 && certificate[0].childNodes &&
+          certificate[0].childNodes[0] &&
+          certificate[0].childNodes[0].nodeValue) {
+        certificate = certificate[0].childNodes[0].nodeValue;
+        this.x509certificate = BEGIN_CERTIFICATE + '\n' + certificate.trim() +
+            '\n' + END_CERTIFICATE + '\n';
+      }
+    }
+
+    /**
      * Handler for webRequest.onBeforeRequest that looks for the Base64
      * encoded SAMLResponse in the POST-ed formdata sent from the SAML page.
      * Non-blocking.
-     * @param {Object} details The web-request details.
+     * @param {OnBeforeRequestDetails} details The web-request details.
      */
     onMainFrameWebRequest(details) {
-      if (!this.extractSamlPasswordAttributes) return;
-      if (!this.isSamlPage_ || details.method != 'POST') return;
+      if (!this.extractSamlPasswordAttributes) {
+        return;
+      }
+      if (!this.isSamlPage_ || details.method != 'POST') {
+        return;
+      }
 
       const formData = details.requestBody.formData;
       let samlResponse = (formData && formData.SAMLResponse);
       if (!samlResponse) {
         samlResponse = new URL(details.url).searchParams.get('SAMLResponse');
       }
-      if (!samlResponse) return;
+      if (!samlResponse) {
+        return;
+      }
 
       try {
         // atob means asciiToBinary, which actually means base64Decode:
@@ -503,6 +575,8 @@ cr.define('cr.login', function() {
         console.warn('SAMLResponse is not Base64 encoded');
         return;
       }
+
+      this.setX509certificate_(samlResponse);
 
       this.passwordAttributes_ =
           samlPasswordAttributes.readPasswordAttributes(samlResponse);
@@ -684,6 +758,8 @@ cr.define('cr.login', function() {
           'pageLoaded', this.onPageLoaded_.bind(this, channel));
       channel.registerMessage(
           'getSAMLFlag', this.onGetSAMLFlag_.bind(this, channel));
+      channel.registerMessage(
+          'scrollInfo', this.onScrollInfo_.bind(this, channel));
     }
 
     sendInitializationSuccess_(channel) {
@@ -705,7 +781,7 @@ cr.define('cr.login', function() {
     /**
      * Handlers for channel messages.
      * @param {Channel} channel A channel to send back response.
-     * @param {Object} msg Received message.
+     * @param {ApiCallMessage} msg Received message.
      * @private
      */
     onAPICall_(channel, msg) {
@@ -736,7 +812,7 @@ cr.define('cr.login', function() {
 
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
       } else if (call.method == 'confirm') {
-        if (!call.token in this.apiTokenStore_) {
+        if (!(call.token in this.apiTokenStore_)) {
           console.error('SamlHandler.onAPICall_: token mismatch');
         } else {
           this.confirmToken_ = call.token;
@@ -753,14 +829,24 @@ cr.define('cr.login', function() {
     }
 
     onPageLoaded_(channel, msg) {
-      this.authDomain = extractDomain(msg.url);
-      this.dispatchEvent(new CustomEvent('authPageLoaded', {
-        detail: {
-          url: msg.url,
-          isSAMLPage: this.isSamlPage_,
-          domain: this.authDomain
-        }
-      }));
+      this.dispatchEvent(new CustomEvent(
+          'authPageLoaded', {detail: {isSAMLPage: this.isSamlPage_}}));
+    }
+
+    onScrollInfo_(channel, msg) {
+      const scrollTop = msg.scrollTop;
+      const scrollHeight = msg.scrollHeight;
+      const clientHeight = this.webview_.clientHeight;
+
+      if (scrollTop === undefined || scrollHeight === undefined) {
+        return;
+      }
+
+      this.webview_.classList.toggle('can-scroll', clientHeight < scrollHeight);
+      this.webview_.classList.toggle('is-scrolled', scrollTop > 0);
+      const scrolledToBottom = (scrollTop > 0) /*is-scrolled*/ &&
+          (Math.ceil(scrollTop + clientHeight) >= scrollHeight);
+      this.webview_.classList.toggle('scrolled-to-bottom', scrolledToBottom);
     }
 
     onPermissionRequest_(permissionEvent) {
@@ -777,5 +863,6 @@ cr.define('cr.login', function() {
     }
   }
 
+  // #cr_define_end
   return {SamlHandler: SamlHandler};
 });

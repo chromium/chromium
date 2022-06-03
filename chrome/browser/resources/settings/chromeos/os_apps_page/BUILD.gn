@@ -3,29 +3,37 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
     ":os_apps_page",
+    ":permission_constants",
+    ":permission_util",
   ]
 }
 
 js_library("android_apps_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("android_apps_subpage") {
   deps = [
     ":android_apps_browser_proxy",
-    "../..:route",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "..:prefs_behavior",
+    "..:route_observer_behavior",
+    "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
 }
 
@@ -33,14 +41,39 @@ js_library("os_apps_page") {
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
-    "../../:route",
-    "../../prefs:prefs_behavior",
-    "../../settings_page:settings_animated_pages",
-    "../localized_link:localized_link",
-    "app_management_page",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "..:prefs_behavior",
+    "../../:router",
+    "./app_management_page:constants",
+    "./app_management_page:store_client",
+    "./app_notifications_page:mojo_interface_provider",
+    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list = [
+    "$externs_path/metrics_private.js",
+    "../settings_controls_types.js",
+  ]
+}
 
-  externs_list = [ "$externs_path/metrics_private.js" ]
+js_library("permission_util") {
+  deps = [
+    ":permission_constants",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("permission_constants") {
+  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "android_apps_subpage.js",
+    "os_apps_page.js",
+  ]
 }

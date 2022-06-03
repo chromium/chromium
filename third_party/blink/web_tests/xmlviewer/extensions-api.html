@@ -1,40 +1,29 @@
 <html>
 <head>
-    <script>
-        if (window.testRunner) {
-           testRunner.dumpAsText();
-           testRunner.setCanOpenWindows();
-           testRunner.waitUntilDone();
-        }
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+async_test((t) => {
+  let xmlWindow;
 
-        var xmlWindow;
+  t.add_cleanup(() => { xmlWindow.close(); });
 
-        function print(str)
-        {
-            document.getElementById('output').textContent = str;
-            xmlWindow.close();
-            testRunner.notifyDone();
-        }
+  function checkSourceXML() {
+    var sourceXML = xmlWindow.document.getElementById('webkit-xml-viewer-source-xml');
+    assert_equals(typeof(sourceXML), 'object');
+    assert_equals(sourceXML.firstChild.nodeName, 'root', 'Content of source XML.');
 
-        function checkSourceXML()
-        {
-            var sourceXML = xmlWindow.document.getElementById('webkit-xml-viewer-source-xml');
-            if (sourceXML && sourceXML.firstChild.nodeName == 'root')
-                print('SUCCESS');
-            else
-                print('FAIL');
-        }
+    t.done();
+  }
 
-        function onload()
-        {
-            xmlWindow = window.open('resources/sample.xml', "XMLViewerTestWindow");
-            xmlWindow.onload = checkSourceXML;
-        }
-
-    </script>
+  window.addEventListener("load", (e) => {
+    xmlWindow = window.open('resources/sample.xml',
+                            'XMLViewerTestWindow');
+    xmlWindow.onload = t.step_func(checkSourceXML);
+  });
+}, 'XMLTreeConverted');
+</script>
 </head>
-<body onload="onload();">
-    <p>Tests extensions hooks in xml viewer.</p>
-    <div id='output'></div>
+<body>
 </body>
 </html>

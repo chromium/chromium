@@ -12,13 +12,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
@@ -33,18 +33,46 @@ class SingleThreadTaskRunner;
 
 namespace user_manager {
 
-// Hides all Supervised Users.
-USER_MANAGER_EXPORT extern const base::Feature kHideSupervisedUsers;
-
-class RemoveUserDelegate;
-
 // Base implementation of the UserManager interface.
 class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
  public:
+  // These enum values represent a legacy supervised user's (LSU) status on the
+  // sign in screen.
+  // TODO(crbug/1155729): Remove once all LSUs deleted in the wild. LSUs were
+  // first hidden on the login screen in M74. Assuming a five year AUE, we
+  // should stop supporting devices with LSUs by 2024.
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+  enum class LegacySupervisedUserStatus {
+    // Non-LSU Gaia user displayed on login screen.
+    kGaiaUserDisplayed = 0,
+    // LSU hidden on login screen. Expect this count to decline to zero over
+    // time as we delete LSUs.
+    kLSUHidden = 1,
+    // LSU attempted to delete cryptohome. Expect this count to decline to zero
+    // over time as we delete LSUs.
+    kLSUDeleted = 2,
+    // Add future entires above this comment, in sync with
+    // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+    // Update kMaxValue to the last value.
+    kMaxValue = kLSUDeleted
+  };
+
   // Creates UserManagerBase with |task_runner| for UI thread.
   explicit UserManagerBase(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  UserManagerBase(const UserManagerBase&) = delete;
+  UserManagerBase& operator=(const UserManagerBase&) = delete;
+
   ~UserManagerBase() override;
+
+  // Histogram for tracking the number of deprecated legacy supervised user
+  // cryptohomes remaining in the wild.
+  static const char kLegacySupervisedUsersHistogramName[];
+  // Feature that removes legacy supervised users.
+  static const base::Feature kRemoveLegacySupervisedUsersOnStartup;
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -55,6 +83,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   const UserList& GetLoggedInUsers() const override;
   const UserList& GetLRULoggedInUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
+  const AccountId& GetLastSessionActiveAccountId() const override;
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& user_id_hash,
                     bool browser_restart,
@@ -63,6 +92,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
   void RemoveUser(const AccountId& account_id,
+                  UserRemovalReason reason,
                   RemoveUserDelegate* delegate) override;
   void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
@@ -76,8 +106,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SaveForceOnlineSignin(const AccountId& account_id,
                              bool force_online_signin) override;
   void SaveUserDisplayName(const AccountId& account_id,
-                           const base::string16& display_name) override;
-  base::string16 GetUserDisplayName(const AccountId& account_id) const override;
+                           const std::u16string& display_name) override;
+  std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override;
   void SaveUserType(const User* user) override;
@@ -93,7 +123,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   bool IsLoggedInAsChildUser() const override;
   bool IsLoggedInAsPublicAccount() const override;
   bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsSupervisedUser() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsArcKioskApp() const override;
   bool IsLoggedInAsWebKioskApp() const override;
@@ -116,6 +145,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) override;
   void NotifyUsersSignInConstraintsChanged() override;
+  void NotifyUserToBeRemoved(const AccountId& account_id) override;
+  void NotifyUserRemoved(const AccountId& account_id,
+                         UserRemovalReason reason) override;
   void Initialize() override;
 
   // This method updates "User was added to the device in this session nad is
@@ -160,11 +192,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Subsequent calls have no effect. Must be called on the UI thread.
   virtual void EnsureUsersLoaded();
 
-  // Handle OAuth token |status| change for |account_id|.
-  virtual void HandleUserOAuthTokenStatusChange(
-      const AccountId& account_id,
-      User::OAuthTokenStatus status) const = 0;
-
   // Loads device local accounts from the Local state and fills in
   // |device_local_accounts_set|.
   virtual void LoadDeviceLocalAccounts(
@@ -182,9 +209,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void NotifyUserAddedToSession(const User* added_user,
                                         bool user_switch_pending);
 
-  // Performs any additional actions before user list is loaded.
-  virtual void PerformPreUserListLoadingActions() = 0;
-
   // Performs any additional actions after user list is loaded.
   virtual void PerformPostUserListLoadingActions() = 0;
 
@@ -197,6 +221,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Implementation for RemoveUser method. It is synchronous. It is called from
   // RemoveUserInternal after owner check.
   virtual void RemoveNonOwnerUserInternal(const AccountId& account_id,
+                                          UserRemovalReason reason,
                                           RemoveUserDelegate* delegate);
 
   // Removes a regular or supervised user from the user list.
@@ -211,6 +236,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // method, that verifies that owner will not get deleted, and calls
   // |RemoveNonOwnerUserInternal|.
   virtual void RemoveUserInternal(const AccountId& account_id,
+                                  UserRemovalReason reason,
                                   RemoveUserDelegate* delegate);
 
   // Removes data stored or cached outside the user's cryptohome (wallpaper,
@@ -219,25 +245,13 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Check for a particular user type.
 
-  // Returns true if |account_id| represents demo app.
-  virtual bool IsDemoApp(const AccountId& account_id) const = 0;
-
   // These methods are called when corresponding user type has signed in.
-
-  // Indicates that the demo account has just logged in.
-  virtual void DemoAccountLoggedIn() = 0;
 
   // Indicates that a user just logged in as guest.
   virtual void GuestUserLoggedIn();
 
   // Indicates that a kiosk app robot just logged in.
   virtual void KioskAppLoggedIn(User* user) = 0;
-
-  // Indicates that an ARC kiosk app robot just logged in.
-  virtual void ArcKioskAppLoggedIn(User* user) = 0;
-
-  // Indicates that an web kiosk app robot just logged in.
-  virtual void WebKioskAppLoggedIn(User* user) = 0;
 
   // Indicates that a user just logged into a public session.
   virtual void PublicAccountUserLoggedIn(User* user) = 0;
@@ -249,9 +263,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Indicates that a regular user just logged in as ephemeral.
   virtual void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                               const UserType user_type);
-
-  // Indicates that a supervised user just logged in.
-  virtual void SupervisedUserLoggedIn(const AccountId& account_id) = 0;
 
   // Should be called when regular user was removed.
   virtual void OnUserRemoved(const AccountId& account_id) = 0;
@@ -349,6 +360,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void DoUpdateAccountLocale(const AccountId& account_id,
                              std::unique_ptr<std::string> resolved_locale);
 
+  void RemoveLegacySupervisedUser(const AccountId& account_id);
+
   // Indicates stage of loading user from prefs.
   UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;
 
@@ -395,8 +408,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserManagerBase);
 };
 
 }  // namespace user_manager

@@ -7,16 +7,19 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 
 class PaymentRequestEmptyUpdateTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestEmptyUpdateTest(const PaymentRequestEmptyUpdateTest&) = delete;
+  PaymentRequestEmptyUpdateTest& operator=(
+      const PaymentRequestEmptyUpdateTest&) = delete;
+
  protected:
   PaymentRequestEmptyUpdateTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestEmptyUpdateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestEmptyUpdateTest, NoCrash) {

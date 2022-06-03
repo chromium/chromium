@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/proxy_config/proxy_config_export.h"
 #include "components/proxy_config/proxy_prefs.h"
@@ -30,6 +29,11 @@ class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
  public:
   // Takes ownership of |dict| (|dict| will be moved to |dict_|).
   explicit ProxyConfigDictionary(base::Value dict);
+  ProxyConfigDictionary(ProxyConfigDictionary&& other);
+
+  ProxyConfigDictionary(const ProxyConfigDictionary&) = delete;
+  ProxyConfigDictionary& operator=(const ProxyConfigDictionary&) = delete;
+
   ~ProxyConfigDictionary();
 
   bool GetMode(ProxyPrefs::ProxyMode* out) const;
@@ -65,8 +69,6 @@ class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
                                       const std::string& bypass_list);
 
   base::Value dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigDictionary);
 };
 
 #endif  // COMPONENTS_PROXY_CONFIG_PROXY_CONFIG_DICTIONARY_H_

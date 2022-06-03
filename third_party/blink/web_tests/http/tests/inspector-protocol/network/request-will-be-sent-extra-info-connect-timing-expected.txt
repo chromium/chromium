@@ -1,0 +1,5 @@
+Tests that connectTiming is reported on requestWillBeSentExtraInfo.
+Network Enabled
+"connectTiming" in event.params: true
+connectTiming.requestTime == requestTiming.requestTime: true
+

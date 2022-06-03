@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_PROCESS_THREAD_DISPATCHER_H_
-#define SANDBOX_SRC_PROCESS_THREAD_DISPATCHER_H_
+#ifndef SANDBOX_WIN_SRC_PROCESS_THREAD_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_PROCESS_THREAD_DISPATCHER_H_
 
 #include <stdint.h>
 
@@ -20,6 +20,10 @@ namespace sandbox {
 class ThreadProcessDispatcher : public Dispatcher {
  public:
   explicit ThreadProcessDispatcher(PolicyBase* policy_base);
+
+  ThreadProcessDispatcher(const ThreadProcessDispatcher&) = delete;
+  ThreadProcessDispatcher& operator=(const ThreadProcessDispatcher&) = delete;
+
   ~ThreadProcessDispatcher() override {}
 
   // Dispatcher interface.
@@ -61,9 +65,8 @@ class ThreadProcessDispatcher : public Dispatcher {
                     DWORD creation_flags);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadProcessDispatcher);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_PROCESS_THREAD_DISPATCHER_H_
+#endif  // SANDBOX_WIN_SRC_PROCESS_THREAD_DISPATCHER_H_

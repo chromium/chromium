@@ -9,19 +9,22 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
 #include "printing/units.h"
@@ -41,6 +44,9 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PdfRenderSettings& settings,
                            const PwgRasterSettings& bitmap_settings);
 
+  PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
+  PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
+
   void Convert(const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
@@ -57,8 +63,6 @@ class PwgRasterConverterHelper
   mojo::Remote<printing::mojom::PdfToPwgRasterConverter>
       pdf_to_pwg_raster_converter_remote_;
   PwgRasterConverter::ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterHelper);
 };
 
 PwgRasterConverterHelper::PwgRasterConverterHelper(
@@ -122,6 +126,10 @@ void PwgRasterConverterHelper::RunCallback(
 class PwgRasterConverterImpl : public PwgRasterConverter {
  public:
   PwgRasterConverterImpl();
+
+  PwgRasterConverterImpl(const PwgRasterConverterImpl&) = delete;
+  PwgRasterConverterImpl& operator=(const PwgRasterConverterImpl&) = delete;
+
   ~PwgRasterConverterImpl() override;
 
   void Start(const base::RefCountedMemory* data,
@@ -135,8 +143,6 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
   // Cancelable version of PwgRasterConverter::ResultCallback.
   base::CancelableOnceCallback<void(base::ReadOnlySharedMemoryRegion)>
       cancelable_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterImpl);
 };
 
 PwgRasterConverterImpl::PwgRasterConverterImpl() = default;
@@ -243,7 +249,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   PwgRasterSettings result;
   switch (duplex_value) {
     case cloud_devices::printer::DuplexType::NO_DUPLEX:
-      result.duplex_mode = DuplexMode::SIMPLEX;
+      result.duplex_mode = mojom::DuplexMode::kSimplex;
       result.odd_page_transform = TRANSFORM_NORMAL;
       break;
     case cloud_devices::printer::DuplexType::LONG_EDGE:
@@ -256,7 +262,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       }
       break;
     case cloud_devices::printer::DuplexType::SHORT_EDGE:
-      result.duplex_mode = DuplexMode::SHORT_EDGE;
+      result.duplex_mode = mojom::DuplexMode::kShortEdge;
       if (document_sheet_back ==
           cloud_devices::printer::DocumentSheetBack::MANUAL_TUMBLE) {
         result.odd_page_transform = TRANSFORM_ROTATE_180;

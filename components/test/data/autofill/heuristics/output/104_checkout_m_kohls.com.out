@@ -15,4 +15,4 @@ CREDIT_CARD_NAME_FULL | nameOnCard | Name on Card |  | credit-card-cc
 CREDIT_CARD_NUMBER | cardNumber | Card Number |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | expMonth | Expiration Month: |  | credit-card-cc
 CREDIT_CARD_EXP_4_DIGIT_YEAR | expYear | Expiration Year: |  | credit-card-cc
-UNKNOWN_TYPE | creditCardID | Credit Card ID |  | paymentType_1-default
+UNKNOWN_TYPE | creditCardID | Credit Card ID |  | paymentType_2-default

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_VIEW_TARGETER_DELEGATE_H_
 #define UI_VIEWS_VIEW_TARGETER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -24,6 +23,10 @@ class View;
 class VIEWS_EXPORT ViewTargeterDelegate {
  public:
   ViewTargeterDelegate() = default;
+
+  ViewTargeterDelegate(const ViewTargeterDelegate&) = delete;
+  ViewTargeterDelegate& operator=(const ViewTargeterDelegate&) = delete;
+
   virtual ~ViewTargeterDelegate() = default;
 
   // Returns true if |target| should be considered as a candidate target for
@@ -44,9 +47,6 @@ class VIEWS_EXPORT ViewTargeterDelegate {
   // |rect|. See http://goo.gl/3Jp2BD for more information about rect-based
   // targeting.
   virtual View* TargetForRect(View* root, const gfx::Rect& rect);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewTargeterDelegate);
 };
 
 }  // namespace views

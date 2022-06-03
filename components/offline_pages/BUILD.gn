@@ -17,6 +17,12 @@ if (!is_ios) {
       "//components/test:run_all_unittests",
     ]
 
+    if (!is_fuchsia) {
+      # On Fuchsia, components/test/data seems to change spuriously,
+      # breaking incremental compilation.
+      data = [ "../test" ]
+    }
+
     if (is_android) {
       # renovations tests depend on content shell and UI.  For some reason.
       # these deps need to be on the test() target and not the source_set

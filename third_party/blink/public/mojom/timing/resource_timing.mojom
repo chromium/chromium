@@ -1,0 +1,121 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/load_timing_info.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+
+// This struct holds the information from PerformanceServerTiming that needs
+// to be passed between processes. This is currently used to send timing
+// information about cross-process iframes for window.performance.
+// Note: Please update CrossThreadCopier whenever a new field is added.
+// See https://w3c.github.io/server-timing/#the-performanceservertiming-interface
+struct ServerTimingInfo {
+  // Server specific metric name. Corresponds to |name| in
+  // PerformanceServerTiming.
+  // (https://w3c.github.io/server-timing/#the-performanceservertiming-interface).
+  string name;
+
+  // Server specific duration. Corresponds to |duration| in
+  // PerformanceServerTiming.
+  // (https://w3c.github.io/server-timing/#the-performanceservertiming-interface).
+  double duration;
+
+  // Server specific description. Corresponds to |description| in
+  // PerformanceServerTiming.
+  // (https://w3c.github.io/server-timing/#the-performanceservertiming-interface).
+  string description;
+};
+
+// https://fetch.spec.whatwg.org/#concept-response-cache-state
+enum CacheState {
+  kNone,
+  kLocal,
+  kValidated,
+};
+
+// This struct holds the information from PerformanceResourceTiming that needs
+// to be passed between processes. This is currently used to send timing
+// information about cross-process iframes for window.performance.
+// Note: Please update CrossThreadCopier whenever a new field is added.
+struct ResourceTimingInfo {
+
+  // The name to associate with the performance entry. For iframes, this is
+  // typically the initial URL of the iframe resource. Corresponds to |name|
+  // in PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-1/).
+  string name;
+
+  // The start time of the request. Corresponds to
+  // |requestStart| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-1/).
+  mojo_base.mojom.TimeTicks start_time;
+
+  // Corresponds to |nextHopProtocol| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-2/).
+  string alpn_negotiated_protocol;
+
+  // Corresponds to the result of calling
+  // HttpResponseInfo::ConnectionInfoToString on the associated response
+  // object.
+  string connection_info;
+
+  // The load timing data.
+  network.mojom.LoadTimingInfo? timing;
+
+  // Corresponds to |next_hop_protocol| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-1/).
+  mojo_base.mojom.TimeTicks last_redirect_end_time;
+
+  // Corresponds to |responseEnd| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-1/).
+  mojo_base.mojom.TimeTicks response_end;
+
+  // Deprecated, use |request_destination| instead in new code.
+  // TODO(crbug.com/889751): Remove this once all the code migrates.
+  RequestContextType context_type;
+  network.mojom.RequestDestination request_destination;
+
+  // https://w3c.github.io/resource-timing/#dfn-cache-mode
+  CacheState cache_state;
+
+  // Corresponds to |encodedBodySize| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-2/).
+  uint64 encoded_body_size;
+
+  // Corresponds to |decodedBodySize| in PerformanceResourceTiming
+  // (http://www.w3.org/TR/resource-timing-2/).
+  uint64 decoded_body_size;
+
+  // Whether the connection was reused or not.
+  bool did_reuse_connection;
+
+  // Whether the connection used secured transport or not.
+  bool is_secure_transport;
+
+  // TODO(dcheng): The way this code works is fairly confusing: it might seem
+  // unusual to store policy members like |allow_timing_details| inline, rather
+  // than just clearing the fields. The reason for this complexity is because
+  // PerformanceNavigationTiming inherits and shares many of the same fields
+  // exposed by PerformanceResourceTiming, but the underlying behavior is a
+  // little different.
+  bool allow_timing_details;
+  bool allow_redirect_details;
+
+  // Normally, the timestamps are relative to the time origin. In most cases,
+  // these timestamps should be positive value, so 0 is used to mark invalid
+  // negative values.
+  //
+  // However, ServiceWorker navigation preloads may be negative, since these
+  // requests may be started before the service worker started. In those cases,
+  // this flag should be set to true.
+  bool allow_negative_values;
+
+  // Sequence of server timing. Corresponds to |serverTiming| in
+  // PerformanceResourceTiming. See
+  // https://w3c.github.io/server-timing/#extension-to-the-performanceresourcetiming-interface
+  array<ServerTimingInfo> server_timing;
+};

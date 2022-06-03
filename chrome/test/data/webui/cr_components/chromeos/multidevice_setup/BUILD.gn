@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/data/webui/namespace_rewrites.gni")
+import("//chrome/test/data/webui/settings/chromeos/os_namespace_rewrites.gni")
+import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_modulizer("modulize") {
+  input_files = [
+    "integration_test.js",
+    "setup_succeeded_page_test.js",
+    "start_setup_page_test.js",
+  ]
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites +
+                       os_test_namespace_rewrites + test_namespace_rewrites
+}

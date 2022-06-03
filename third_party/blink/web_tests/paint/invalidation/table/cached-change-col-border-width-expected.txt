@@ -1,26 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 59, 113, 53],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 8, 113, 53],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 58, 109, 52],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 8, 113, 104]
       ]
     }
   ]

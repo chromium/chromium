@@ -45,9 +45,9 @@ enum class EventListenersChanged {
 };
 
 // Whether promises are supported in a given API function.
-enum class PromiseSupport {
-  kAllowed,
-  kDisallowed,
+enum class APIPromiseSupport {
+  kSupported,
+  kUnsupported,
 };
 
 // The type of async response handler an API caller can have.

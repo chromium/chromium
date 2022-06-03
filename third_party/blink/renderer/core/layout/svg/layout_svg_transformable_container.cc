@@ -24,13 +24,16 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 
 namespace blink {
 
 LayoutSVGTransformableContainer::LayoutSVGTransformableContainer(
     SVGGraphicsElement* node)
-    : LayoutSVGContainer(node), needs_transform_update_(true) {}
+    : LayoutSVGContainer(node),
+      needs_transform_update_(true),
+      transform_uses_reference_box_(false) {}
 
 static bool HasValidPredecessor(const Node* node) {
   DCHECK(node);
@@ -45,6 +48,7 @@ static bool HasValidPredecessor(const Node* node) {
 bool LayoutSVGTransformableContainer::IsChildAllowed(
     LayoutObject* child,
     const ComputedStyle& style) const {
+  NOT_DESTROYED();
   DCHECK(GetElement());
   Node* child_node = child->GetNode();
   if (IsA<SVGSwitchElement>(*GetElement())) {
@@ -69,40 +73,36 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
 }
 
 void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
+  NOT_DESTROYED();
   // The transform paint property relies on the SVG transform being up-to-date
   // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
   SetNeedsPaintPropertyUpdate();
   needs_transform_update_ = true;
 }
 
-bool LayoutSVGTransformableContainer::IsUseElement() const {
-  const SVGElement& element = *GetElement();
-  if (IsA<SVGUseElement>(element))
-    return true;
-  // Nested <use> are replaced by <g> during shadow tree expansion.
-  if (IsA<SVGGElement>(element) && To<SVGGElement>(element).InUseShadowTree())
-    return IsA<SVGUseElement>(element.CorrespondingElement());
-  return false;
-}
-
-SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform() {
+SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
+    bool bounds_changed) {
+  NOT_DESTROYED();
   SVGElement* element = GetElement();
   DCHECK(element);
 
-  // If we're either the LayoutObject for a <use> element, or for any <g>
-  // element inside the shadow tree, that was created during the use/symbol/svg
-  // expansion in SVGUseElement. These containers need to respect the
-  // translations induced by their corresponding use elements x/y attributes.
-  if (IsUseElement()) {
+  // If we're the LayoutObject for a <use> element, this container needs to
+  // respect the translations induced by their corresponding use elements x/y
+  // attributes.
+  if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
-    const SVGComputedStyle& svg_style = style.SvgStyle();
     SVGLengthContext length_context(element);
-    FloatSize translation(ToFloatSize(
-        length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style)));
+    gfx::Vector2dF translation =
+        length_context.ResolveLengthPair(style.X(), style.Y(), style);
     // TODO(fs): Signal this on style update instead.
     if (translation != additional_translation_)
       SetNeedsTransformUpdate();
     additional_translation_ = translation;
+  }
+
+  if (!needs_transform_update_ && transform_uses_reference_box_) {
+    if (CheckForImplicitTransformChange(bounds_changed))
+      SetNeedsTransformUpdate();
   }
 
   if (!needs_transform_update_)
@@ -111,10 +111,20 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform() {
   SVGTransformChangeDetector change_detector(local_transform_);
   local_transform_ =
       element->CalculateTransform(SVGElement::kIncludeMotionTransform);
-  local_transform_.Translate(additional_translation_.Width(),
-                             additional_translation_.Height());
+  local_transform_.Translate(additional_translation_.x(),
+                             additional_translation_.y());
   needs_transform_update_ = false;
   return change_detector.ComputeChange(local_transform_);
+}
+
+void LayoutSVGTransformableContainer::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutSVGContainer::StyleDidChange(diff, old_style);
+
+  transform_uses_reference_box_ =
+      TransformHelper::DependsOnReferenceBox(StyleRef());
 }
 
 }  // namespace blink

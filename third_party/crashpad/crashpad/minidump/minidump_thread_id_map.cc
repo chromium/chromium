@@ -18,7 +18,7 @@
 #include <set>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "snapshot/thread_snapshot.h"
 

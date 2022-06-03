@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXAMPLES_VIDEO_DECODE_TESTDATA_H_
-#define EXAMPLES_VIDEO_DECODE_TESTDATA_H_
+#ifndef EXAMPLES_API_VIDEO_DECODE_TESTDATA_H_
+#define EXAMPLES_API_VIDEO_DECODE_TESTDATA_H_
 
 namespace {
 
@@ -32903,4 +32903,4 @@ const unsigned char kData[] = {
 #endif  // USE_VP8_TESTDATA_INSTEAD_OF_H264
 
 }  //  namespace
-#endif  // EXAMPLES_VIDEO_DECODE_TESTDATA_H_
+#endif  // EXAMPLES_API_VIDEO_DECODE_TESTDATA_H_

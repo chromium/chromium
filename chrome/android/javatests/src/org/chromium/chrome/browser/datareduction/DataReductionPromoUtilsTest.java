@@ -6,36 +6,36 @@ package org.chromium.chrome.browser.datareduction;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
-import android.support.test.rule.UiThreadTestRule;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.about_settings.AboutSettingsBridge;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.settings.about.AboutSettingsBridge;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 /**
  * Unit test suite for DataReductionPromoUtils.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class DataReductionPromoUtilsTest {
     @Rule
-    public final RuleChain mChain =
-            RuleChain.outerRule(new ChromeBrowserTestRule()).around(new UiThreadTestRule());
+    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final String SHARED_PREF_DISPLAYED_INFOBAR_PROMO_VERSION =
             "displayed_data_reduction_infobar_promo_version";

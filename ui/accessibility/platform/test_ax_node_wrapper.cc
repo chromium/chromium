@@ -4,11 +4,11 @@
 
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
-#include <unordered_map>
+#include <map>
 #include <utility>
 
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeWrappers.
-std::unordered_map<AXNode::AXID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
+std::map<AXNodeID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
 
 // A global coordinate offset.
 gfx::Vector2d g_offset;
@@ -34,7 +34,7 @@ float g_scale_factor = 1.0;
 //     map associated with such tree, i.e. a pair {tree, nullptr} is invalid.
 //   - For testing purposes, assume there is a single node being focused in the
 //     entire tree and if such node is deleted, focus is completely lost.
-std::unordered_map<AXTree*, AXNode*> g_focused_node_in_tree;
+std::map<AXTree*, AXNode*> g_focused_node_in_tree;
 
 // A global indicating the last node which ShowContextMenu was called from.
 AXNode* g_node_from_last_show_context_menu;
@@ -45,6 +45,10 @@ AXNode* g_node_from_last_default_action;
 
 // A global indicating that AXPlatformNodeDelegate objects are web content.
 bool g_is_web_content = false;
+
+// A map of hit test results - a map from source node ID to destination node
+// ID.
+std::map<AXNodeID, AXNodeID> g_hit_test_result;
 
 // A simple implementation of AXTreeObserver to catch when AXNodes are
 // deleted so we can delete their wrappers.
@@ -95,13 +99,37 @@ const AXNode* TestAXNodeWrapper::GetNodeFromLastDefaultAction() {
 }
 
 // static
+void TestAXNodeWrapper::SetNodeFromLastDefaultAction(AXNode* node) {
+  g_node_from_last_default_action = node;
+}
+
+// static
 std::unique_ptr<base::AutoReset<float>> TestAXNodeWrapper::SetScaleFactor(
     float value) {
   return std::make_unique<base::AutoReset<float>>(&g_scale_factor, value);
 }
 
+// static
 void TestAXNodeWrapper::SetGlobalIsWebContent(bool is_web_content) {
   g_is_web_content = is_web_content;
+}
+
+// static
+void TestAXNodeWrapper::SetHitTestResult(AXNodeID src_node_id,
+                                         AXNodeID dst_node_id) {
+  g_hit_test_result[src_node_id] = dst_node_id;
+}
+
+// static
+void TestAXNodeWrapper::ResetGlobalState() {
+  g_node_id_to_wrapper_map.clear();
+  g_focused_node_in_tree.clear();
+  g_hit_test_result.clear();
+  g_node_from_last_show_context_menu = nullptr;
+  g_node_from_last_default_action = nullptr;
+  g_scale_factor = 1.0;
+  g_offset.set_x(0);
+  g_offset.set_y(0);
 }
 
 TestAXNodeWrapper::~TestAXNodeWrapper() {
@@ -120,18 +148,29 @@ const AXTree::Selection TestAXNodeWrapper::GetUnignoredSelection() const {
   return tree_->GetUnignoredSelection();
 }
 
+AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  if (node_->IsLeaf()) {
+    return ui::AXNodePosition::CreateTextPosition(
+        GetTreeData().tree_id, node_->id(), offset, affinity);
+  }
+  return ui::AXNodePosition::CreateTreePosition(GetTreeData().tree_id,
+                                                node_->id(), offset);
+}
+
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreateTextPositionAt(
-    int offset) const {
-  return ui::AXNodePosition::CreateTextPosition(
-      GetTreeData().tree_id, node_->id(), offset,
-      ax::mojom::TextAffinity::kDownstream);
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  return ui::AXNodePosition::CreateTextPosition(GetTreeData().tree_id,
+                                                node_->id(), offset, affinity);
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {
   return ax_platform_node()->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() {
+gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() const {
   TestAXNodeWrapper* parent_wrapper =
       GetOrCreate(tree_, node_->GetUnignoredParent());
   return parent_wrapper ?
@@ -139,7 +178,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() {
       nullptr;
 }
 
-int TestAXNodeWrapper::GetChildCount() {
+int TestAXNodeWrapper::GetChildCount() const {
   return InternalChildCount();
 }
 
@@ -155,7 +194,10 @@ gfx::Rect TestAXNodeWrapper::GetBoundsRect(
     const AXClippingBehavior clipping_behavior,
     AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
-    case AXCoordinateSystem::kScreen: {
+    case AXCoordinateSystem::kScreenPhysicalPixels:
+      // For unit testing purposes, assume a device scale factor of 1 and fall
+      // through.
+    case AXCoordinateSystem::kScreenDIPs: {
       // We could optionally add clipping here if ever needed.
       gfx::RectF bounds = GetLocation();
       bounds.Offset(g_offset);
@@ -183,19 +225,22 @@ gfx::Rect TestAXNodeWrapper::GetInnerTextRangeBoundsRect(
     const AXClippingBehavior clipping_behavior,
     AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
-    case AXCoordinateSystem::kScreen: {
+    case AXCoordinateSystem::kScreenPhysicalPixels:
+    // For unit testing purposes, assume a device scale factor of 1 and fall
+    // through.
+    case AXCoordinateSystem::kScreenDIPs: {
       gfx::RectF bounds = GetLocation();
       // This implementation currently only deals with text node that has role
       // kInlineTextBox and kStaticText.
       // For test purposes, assume node with kStaticText always has a single
       // child with role kInlineTextBox.
-      if (GetData().role == ax::mojom::Role::kInlineTextBox) {
+      if (GetRole() == ax::mojom::Role::kInlineTextBox) {
         bounds = GetInlineTextRect(start_offset, end_offset);
-      } else if (GetData().role == ax::mojom::Role::kStaticText &&
+      } else if (GetRole() == ax::mojom::Role::kStaticText &&
                  InternalChildCount() > 0) {
         TestAXNodeWrapper* child = InternalGetChild(0);
         if (child != nullptr &&
-            child->GetData().role == ax::mojom::Role::kInlineTextBox) {
+            child->GetRole() == ax::mojom::Role::kInlineTextBox) {
           bounds = child->GetInlineTextRect(start_offset, end_offset);
         }
       }
@@ -225,7 +270,10 @@ gfx::Rect TestAXNodeWrapper::GetHypertextRangeBoundsRect(
     const AXClippingBehavior clipping_behavior,
     AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
-    case AXCoordinateSystem::kScreen: {
+    case AXCoordinateSystem::kScreenPhysicalPixels:
+    // For unit testing purposes, assume a device scale factor of 1 and fall
+    // through.
+    case AXCoordinateSystem::kScreenDIPs: {
       // Ignoring start, len, and clipped, as there's no clean way to map these
       // via unit tests.
       gfx::RectF bounds = GetLocation();
@@ -240,8 +288,14 @@ gfx::Rect TestAXNodeWrapper::GetHypertextRangeBoundsRect(
 }
 
 TestAXNodeWrapper* TestAXNodeWrapper::HitTestSyncInternal(int x, int y) {
+  if (g_hit_test_result.find(node_->id()) != g_hit_test_result.end()) {
+    int result_id = g_hit_test_result[node_->id()];
+    AXNode* result_node = tree_->GetFromId(result_id);
+    return GetOrCreate(tree_, result_node);
+  }
+
   // Here we find the deepest child whose bounding box contains the given point.
-  // The assuptions are that there are no overlapping bounding rects and that
+  // The assumptions are that there are no overlapping bounding rects and that
   // all children have smaller bounding rects than their parents.
   if (!GetClippedScreenBoundsRect().Contains(gfx::Rect(x, y, 0, 0)))
     return nullptr;
@@ -259,14 +313,18 @@ TestAXNodeWrapper* TestAXNodeWrapper::HitTestSyncInternal(int x, int y) {
   return this;
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(int x, int y) {
-  TestAXNodeWrapper* wrapper =
-      HitTestSyncInternal(x / g_scale_factor, y / g_scale_factor);
+gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(
+    int screen_physical_pixel_x,
+    int screen_physical_pixel_y) const {
+  const TestAXNodeWrapper* wrapper =
+      const_cast<TestAXNodeWrapper*>(this)->HitTestSyncInternal(
+          screen_physical_pixel_x / g_scale_factor,
+          screen_physical_pixel_y / g_scale_factor);
   return wrapper ? wrapper->ax_platform_node()->GetNativeViewAccessible()
                  : nullptr;
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() {
+gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
   auto focused = g_focused_node_in_tree.find(tree_);
   if (focused != g_focused_node_in_tree.end() &&
       focused->second->IsDescendantOf(node_)) {
@@ -318,7 +376,7 @@ AXPlatformNode* TestAXNodeWrapper::GetFromTreeIDAndNodeID(
 }
 
 int TestAXNodeWrapper::GetIndexInParent() {
-  return node_ ? int{node_->index_in_parent()} : -1;
+  return node_ ? static_cast<int>(node_->GetUnignoredIndexInParent()) : -1;
 }
 
 void TestAXNodeWrapper::ReplaceIntAttribute(int32_t node_id,
@@ -397,64 +455,61 @@ void TestAXNodeWrapper::ReplaceTreeDataTextSelection(int32_t anchor_node_id,
   new_tree_data.sel_focus_object_id = focus_node_id;
   new_tree_data.sel_focus_offset = focus_offset;
 
-  tree_->UpdateData(new_tree_data);
+  tree_->UpdateDataForTesting(new_tree_data);
 }
 
 bool TestAXNodeWrapper::IsTable() const {
   return node_->IsTable();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableRowCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableRowCount() const {
   return node_->GetTableRowCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableColCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableColCount() const {
   return node_->GetTableColCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableAriaRowCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableAriaRowCount() const {
   return node_->GetTableAriaRowCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableAriaColCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableAriaColCount() const {
   return node_->GetTableAriaColCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellCount() const {
   return node_->GetTableCellCount();
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds() const {
-  std::vector<int32_t> header_ids;
-  node_->GetTableCellColHeaderNodeIds(&header_ids);
-  return header_ids;
+absl::optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
+    const {
+  return node_->GetTableHasColumnOrRowHeaderNode();
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
+  return node_->GetTableColHeaderNodeIds();
+}
+
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds(
     int col_index) const {
-  std::vector<int32_t> header_ids;
-  node_->GetTableColHeaderNodeIds(col_index, &header_ids);
-  return header_ids;
+  return node_->GetTableColHeaderNodeIds(col_index);
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
-  std::vector<int32_t> header_ids;
-  node_->GetTableCellRowHeaderNodeIds(&header_ids);
-  return header_ids;
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
+  return node_->GetTableCellRowHeaderNodeIds();
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds(
     int row_index) const {
-  std::vector<int32_t> header_ids;
-  node_->GetTableRowHeaderNodeIds(row_index, &header_ids);
-  return header_ids;
+  return node_->GetTableRowHeaderNodeIds(row_index);
 }
 
 bool TestAXNodeWrapper::IsTableRow() const {
   return node_->IsTableRow();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableRowRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableRowRowIndex() const {
   return node_->GetTableRowRowIndex();
 }
 
@@ -462,39 +517,39 @@ bool TestAXNodeWrapper::IsTableCellOrHeader() const {
   return node_->IsTableCellOrHeader();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellIndex() const {
   return node_->GetTableCellIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellColIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellColIndex() const {
   return node_->GetTableCellColIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellRowIndex() const {
   return node_->GetTableCellRowIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellColSpan() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellColSpan() const {
   return node_->GetTableCellColSpan();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellRowSpan() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellRowSpan() const {
   return node_->GetTableCellRowSpan();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellAriaColIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellAriaColIndex() const {
   return node_->GetTableCellAriaColIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellAriaRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellAriaRowIndex() const {
   return node_->GetTableCellAriaRowIndex();
 }
 
-base::Optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
+absl::optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
                                                      int col_index) const {
   AXNode* cell = node_->GetTableCellFromCoords(row_index, col_index);
   if (!cell)
-    return base::nullopt;
+    return absl::nullopt;
   return cell->id();
 }
 
@@ -503,19 +558,15 @@ TestAXNodeWrapper::GetTargetForNativeAccessibilityEvent() {
   return native_event_target_;
 }
 
-base::Optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
+absl::optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
   AXNode* cell = node_->GetTableCellFromIndex(cell_index);
   if (!cell)
-    return base::nullopt;
+    return absl::nullopt;
   return cell->id();
 }
 
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIATable() const {
-  return node_->IsCellOrHeaderOfARIATable();
-}
-
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIAGrid() const {
-  return node_->IsCellOrHeaderOfARIAGrid();
+bool TestAXNodeWrapper::IsCellOrHeaderOfAriaGrid() const {
+  return node_->IsCellOrHeaderOfAriaGrid();
 }
 
 bool TestAXNodeWrapper::AccessibilityPerformAction(
@@ -525,18 +576,14 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       g_offset = gfx::Vector2d(data.target_point.x(), data.target_point.y());
       return true;
     case ax::mojom::Action::kSetScrollOffset: {
-      int scroll_x_min =
-          GetData().GetIntAttribute(ax::mojom::IntAttribute::kScrollXMin);
-      int scroll_x_max =
-          GetData().GetIntAttribute(ax::mojom::IntAttribute::kScrollXMax);
-      int scroll_y_min =
-          GetData().GetIntAttribute(ax::mojom::IntAttribute::kScrollYMin);
-      int scroll_y_max =
-          GetData().GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax);
+      int scroll_x_min = GetIntAttribute(ax::mojom::IntAttribute::kScrollXMin);
+      int scroll_x_max = GetIntAttribute(ax::mojom::IntAttribute::kScrollXMax);
+      int scroll_y_min = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMin);
+      int scroll_y_max = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax);
       int scroll_x =
-          base::ClampToRange(data.target_point.x(), scroll_x_min, scroll_x_max);
+          base::clamp(data.target_point.x(), scroll_x_min, scroll_x_max);
       int scroll_y =
-          base::ClampToRange(data.target_point.y(), scroll_y_min, scroll_y_max);
+          base::clamp(data.target_point.y(), scroll_y_min, scroll_y_max);
 
       ReplaceIntAttribute(node_->id(), ax::mojom::IntAttribute::kScrollX,
                           scroll_x);
@@ -550,22 +597,49 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       return true;
     }
 
-    case ax::mojom::Action::kDoDefault:
-      if (GetData().role == ax::mojom::Role::kListBoxOption ||
-          GetData().role == ax::mojom::Role::kCell) {
-        bool current_value =
-            GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-        ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                             !current_value);
+    case ax::mojom::Action::kDoDefault: {
+      // If a default action such as a click is performed on an element, it
+      // could result in a selected state change. In which case, the element's
+      // selected state no longer comes from focus action, so we should set
+      // |kSelectedFromFocus| to false.
+      if (HasBoolAttribute(ax::mojom::BoolAttribute::kSelectedFromFocus))
+        ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelectedFromFocus,
+                             false);
+
+      switch (GetRole()) {
+        case ax::mojom::Role::kListBoxOption:
+        case ax::mojom::Role::kCell: {
+          bool current_value =
+              GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+          ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                               !current_value);
+          break;
+        }
+        case ax::mojom::Role::kRadioButton:
+        case ax::mojom::Role::kMenuItemRadio: {
+          if (GetData().GetCheckedState() == ax::mojom::CheckedState::kTrue)
+            ReplaceIntAttribute(
+                node_->id(), ax::mojom::IntAttribute::kCheckedState,
+                static_cast<int32_t>(ax::mojom::CheckedState::kFalse));
+          else if (GetData().GetCheckedState() ==
+                   ax::mojom::CheckedState::kFalse)
+            ReplaceIntAttribute(
+                node_->id(), ax::mojom::IntAttribute::kCheckedState,
+                static_cast<int32_t>(ax::mojom::CheckedState::kTrue));
+          break;
+        }
+        default:
+          break;
       }
-      g_node_from_last_default_action = node_;
+      SetNodeFromLastDefaultAction(node_);
       return true;
+    }
 
     case ax::mojom::Action::kSetValue:
       if (GetData().IsRangeValueSupported()) {
         ReplaceFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
                               std::stof(data.value));
-      } else if (GetData().role == ax::mojom::Role::kTextField) {
+      } else if (GetRole() == ax::mojom::Role::kTextField) {
         ReplaceStringAttribute(ax::mojom::StringAttribute::kValue, data.value);
       }
       return true;
@@ -582,9 +656,21 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       return true;
     }
 
-    case ax::mojom::Action::kFocus:
+    case ax::mojom::Action::kFocus: {
       g_focused_node_in_tree[tree_] = node_;
+
+      // The platform has select follows focus behavior:
+      // https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_selection_follows_focus
+      // For test purposes, we support select follows focus for all elements,
+      // and not just single-selection container elements.
+      if (IsSelectSupported(GetRole())) {
+        ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+        ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelectedFromFocus,
+                             true);
+      }
+
       return true;
+    }
 
     case ax::mojom::Action::kShowContextMenu:
       g_node_from_last_show_context_menu = node_;
@@ -595,29 +681,28 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedRoleDescriptionForUnlabeledImage()
+std::u16string TestAXNodeWrapper::GetLocalizedRoleDescriptionForUnlabeledImage()
     const {
-  return base::ASCIIToUTF16("Unlabeled image");
+  return u"Unlabeled image";
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
-  const AXNodeData& data = GetData();
-  switch (data.role) {
+std::u16string TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
+  switch (GetRole()) {
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kHeader:
-      return base::ASCIIToUTF16("banner");
+      return u"banner";
 
     case ax::mojom::Role::kComplementary:
-      return base::ASCIIToUTF16("complementary");
+      return u"complementary";
 
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kFooter:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kSection:
-      if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("region");
+      if (HasStringAttribute(ax::mojom::StringAttribute::kName))
+        return u"region";
       FALLTHROUGH;
 
     default:
@@ -625,138 +710,146 @@ base::string16 TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
-  const AXNodeData& data = GetData();
-
-  switch (data.role) {
+std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
+  switch (GetRole()) {
     case ax::mojom::Role::kArticle:
-      return base::ASCIIToUTF16("article");
+      return u"article";
 
     case ax::mojom::Role::kAudio:
-      return base::ASCIIToUTF16("audio");
+      return u"audio";
 
     case ax::mojom::Role::kCode:
-      return base::ASCIIToUTF16("code");
+      return u"code";
 
     case ax::mojom::Role::kColorWell:
-      return base::ASCIIToUTF16("color picker");
+      return u"color picker";
+
+    case ax::mojom::Role::kComment:
+      return u"comment";
 
     case ax::mojom::Role::kContentInfo:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kDate:
-      return base::ASCIIToUTF16("date picker");
+      return u"date picker";
 
     case ax::mojom::Role::kDateTime: {
       std::string input_type;
-      if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                  &input_type)) {
+      if (GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                             &input_type)) {
         if (input_type == "datetime-local") {
-          return base::ASCIIToUTF16("local date and time picker");
+          return u"local date and time picker";
         } else if (input_type == "week") {
-          return base::ASCIIToUTF16("week picker");
+          return u"week picker";
         }
       }
       return {};
     }
 
+    case ax::mojom::Role::kDefinition:
+      return u"definition";
+
     case ax::mojom::Role::kDetails:
-      return base::ASCIIToUTF16("details");
+      return u"details";
+
+    case ax::mojom::Role::kDocEndnote:
+      return u"endnote";
+
+    case ax::mojom::Role::kDocFootnote:
+      return u"footnote";
 
     case ax::mojom::Role::kEmphasis:
-      return base::ASCIIToUTF16("emphasis");
+      return u"emphasis";
 
     case ax::mojom::Role::kFigure:
-      return base::ASCIIToUTF16("figure");
+      return u"figure";
 
     case ax::mojom::Role::kFooter:
     case ax::mojom::Role::kFooterAsNonLandmark:
-      return base::ASCIIToUTF16("footer");
+      return u"footer";
 
     case ax::mojom::Role::kHeader:
     case ax::mojom::Role::kHeaderAsNonLandmark:
-      return base::ASCIIToUTF16("header");
+      return u"header";
 
     case ax::mojom::Role::kMark:
-      return base::ASCIIToUTF16("highlight");
+      return u"highlight";
 
     case ax::mojom::Role::kMeter:
-      return base::ASCIIToUTF16("meter");
+      return u"meter";
 
     case ax::mojom::Role::kSearchBox:
-      return base::ASCIIToUTF16("search box");
+      return u"search box";
 
     case ax::mojom::Role::kSection: {
-      if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("section");
+      if (HasStringAttribute(ax::mojom::StringAttribute::kName))
+        return u"section";
 
       return {};
     }
 
     case ax::mojom::Role::kStatus:
-      return base::ASCIIToUTF16("output");
+      return u"output";
 
     case ax::mojom::Role::kStrong:
-      return base::ASCIIToUTF16("strong");
+      return u"strong";
 
     case ax::mojom::Role::kTextField: {
       std::string input_type;
-      if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                  &input_type)) {
+      if (GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                             &input_type)) {
         if (input_type == "email") {
-          return base::ASCIIToUTF16("email");
+          return u"email";
         } else if (input_type == "tel") {
-          return base::ASCIIToUTF16("telephone");
+          return u"telephone";
         } else if (input_type == "url") {
-          return base::ASCIIToUTF16("url");
+          return u"url";
         }
       }
       return {};
     }
 
     case ax::mojom::Role::kTime:
-      return base::ASCIIToUTF16("time");
+      return u"time";
 
     default:
       return {};
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
+std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   switch (status) {
     case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-      return base::ASCIIToUTF16(
-          "To get missing image descriptions, open the context menu.");
+      return u"To get missing image descriptions, open the context menu.";
     case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-      return base::ASCIIToUTF16("Getting description...");
+      return u"Getting description...";
     case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-      return base::ASCIIToUTF16(
-          "Appears to contain adult content. No description available.");
+      return u"Appears to contain adult content. No description available.";
     case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
     case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      return base::ASCIIToUTF16("No description available.");
+      return u"No description available.";
     case ax::mojom::ImageAnnotationStatus::kNone:
     case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
     case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      return base::string16();
+      return std::u16string();
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
+std::u16string TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
     const {
   AXNode* current_node = node_;
   while (current_node) {
-    if (current_node->data().role == ax::mojom::Role::kMark)
-      return base::ASCIIToUTF16("mark");
+    if (current_node->GetRole() == ax::mojom::Role::kMark)
+      return u"mark";
     current_node = current_node->parent();
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool TestAXNodeWrapper::ShouldIgnoreHoveredStateForTesting() {
@@ -771,9 +864,9 @@ bool TestAXNodeWrapper::HasVisibleCaretOrSelection() const {
     return false;
 
   // Selection or caret will be visible in a focused editable area.
-  if (GetData().HasState(ax::mojom::State::kEditable)) {
-    return GetData().IsPlainTextField() ? focus_object == node_
-                                        : focus_object->IsDescendantOf(node_);
+  if (HasState(ax::mojom::State::kEditable)) {
+    return GetData().IsAtomicTextField() ? focus_object == node_
+                                         : focus_object->IsDescendantOf(node_);
   }
 
   // The selection will be visible in non-editable content only if it is not
@@ -819,12 +912,20 @@ bool TestAXNodeWrapper::IsOrderedSet() const {
   return node_->IsOrderedSet();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetPosInSet() const {
+absl::optional<int> TestAXNodeWrapper::GetPosInSet() const {
   return node_->GetPosInSet();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetSetSize() const {
+absl::optional<int> TestAXNodeWrapper::GetSetSize() const {
   return node_->GetSetSize();
+}
+
+SkColor TestAXNodeWrapper::GetColor() const {
+  return node_->ComputeColor();
+}
+
+SkColor TestAXNodeWrapper::GetBackgroundColor() const {
+  return node_->ComputeBackgroundColor();
 }
 
 gfx::RectF TestAXNodeWrapper::GetLocation() const {
@@ -832,50 +933,56 @@ gfx::RectF TestAXNodeWrapper::GetLocation() const {
 }
 
 int TestAXNodeWrapper::InternalChildCount() const {
-  return int{node_->children().size()};
+  return static_cast<int>(node_->GetUnignoredChildCount());
 }
 
 TestAXNodeWrapper* TestAXNodeWrapper::InternalGetChild(int index) const {
   CHECK_GE(index, 0);
   CHECK_LT(index, InternalChildCount());
-  return GetOrCreate(tree_, node_->children()[size_t{index}]);
+  return GetOrCreate(
+      tree_, node_->GetUnignoredChildAtIndex(static_cast<size_t>(index)));
 }
 
-// Recursive helper function for GetDescendants. Aggregates all of the
-// descendants for a given node within the descendants vector.
-void TestAXNodeWrapper::Descendants(
-    const AXNode* node,
-    std::vector<gfx::NativeViewAccessible>* descendants) const {
-  for (auto it = node->UnignoredChildrenBegin();
-       it != node->UnignoredChildrenEnd(); ++it) {
-    descendants->emplace_back(ax_platform_node()
-                                  ->GetDelegate()
-                                  ->GetFromNodeID(it->id())
-                                  ->GetNativeViewAccessible());
-    Descendants(it.get(), descendants);
+const std::vector<gfx::NativeViewAccessible>
+TestAXNodeWrapper::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
+  return {};
+}
+
+// static
+// Needs to stay in sync with AXPlatformNodeWin::ShouldHideChildrenForUIA.
+bool TestAXNodeWrapper::ShouldHideChildrenForUIA(const AXNode* node) {
+  if (!node)
+    return false;
+
+  auto role = node->GetRole();
+
+  if (ui::HasPresentationalChildren(role))
+    return true;
+
+  switch (role) {
+    case ax::mojom::Role::kLink:
+    case ax::mojom::Role::kTextField:
+      return true;
+    default:
+      return false;
   }
-}
-
-const std::vector<gfx::NativeViewAccessible> TestAXNodeWrapper::GetDescendants()
-    const {
-  std::vector<gfx::NativeViewAccessible> descendants;
-  Descendants(node_, &descendants);
-  return descendants;
 }
 
 gfx::RectF TestAXNodeWrapper::GetInlineTextRect(const int start_offset,
                                                 const int end_offset) const {
   DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
-  const std::vector<int32_t>& character_offsets = GetData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
+  const std::vector<int32_t>& character_offsets =
+      GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   gfx::RectF location = GetLocation();
   gfx::RectF bounds;
 
-  switch (static_cast<ax::mojom::TextDirection>(
-      GetData().GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
+  switch (static_cast<ax::mojom::WritingDirection>(
+      GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
     // Currently only kNone and kLtr are supported text direction.
-    case ax::mojom::TextDirection::kNone:
-    case ax::mojom::TextDirection::kLtr: {
+    case ax::mojom::WritingDirection::kNone:
+    case ax::mojom::WritingDirection::kLtr: {
       int start_pixel_offset =
           start_offset > 0 ? character_offsets[start_offset - 1] : location.x();
       int end_pixel_offset =
@@ -889,6 +996,17 @@ gfx::RectF TestAXNodeWrapper::GetInlineTextRect(const int start_offset,
       NOTIMPLEMENTED();
   }
   return bounds;
+}
+
+bool TestAXNodeWrapper::Intersects(gfx::RectF rect1, gfx::RectF rect2) const {
+  // The logic below is based on gfx::RectF::Intersects.
+  // gfx::RectF::Intersects returns false if either of the two rects is empty.
+  // This function is used in tests to determine offscreen status. We want to
+  // include empty rect in our logic since the bounding box of a degenerate text
+  // range is initially empty (width=0), and we do not want to mark it as
+  // offscreen.
+  return rect1.x() < rect2.right() && rect1.right() > rect2.x() &&
+         rect1.y() < rect2.bottom() && rect1.bottom() > rect2.y();
 }
 
 AXOffscreenResult TestAXNodeWrapper::DetermineOffscreenResult(
@@ -905,13 +1023,14 @@ AXOffscreenResult TestAXNodeWrapper::DetermineOffscreenResult(
   // the bounds of the immediate parent of the node for determining offscreen
   // status.
   // We only determine offscreen result if the root web area bounds is actually
-  // set in the test. We default the offscreen result of every other situation
-  // to AXOffscreenResult::kOnscreen.
-  if (!root_web_area_bounds.IsEmpty()) {
-    bounds.Intersect(root_web_area_bounds);
-    if (bounds.IsEmpty())
-      return AXOffscreenResult::kOffscreen;
+  // set in the test, and we mark a node as offscreen only when |bounds| is
+  // completely outside of |root_web_area_bounds|. We default the offscreen
+  // result of every other situation to AXOffscreenResult::kOnscreen.
+  if (!root_web_area_bounds.IsEmpty() &&
+      !Intersects(root_web_area_bounds, bounds)) {
+    return AXOffscreenResult::kOffscreen;
   }
+
   return AXOffscreenResult::kOnscreen;
 }
 

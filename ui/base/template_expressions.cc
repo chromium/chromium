@@ -6,11 +6,15 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include <ostream>
+
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/re2/src/re2/re2.h"  // nogncheck
@@ -65,22 +69,23 @@ HtmlTemplate FindHtmlTemplate(const base::StringPiece& source) {
 }
 
 // Escape quotes and backslashes ('"\).
-std::string PolymerParameterEscape(const std::string& in_string) {
+std::string PolymerParameterEscape(const std::string& in_string,
+                                   bool is_javascript) {
   std::string out;
   out.reserve(in_string.size() * 2);
   for (const char c : in_string) {
     switch (c) {
       case '\\':
-        out.append("\\\\");
+        out.append(is_javascript ? R"(\\\\)" : R"(\\)");
         break;
       case '\'':
-        out.append("\\'");
+        out.append(is_javascript ? R"(\\')" : R"(\')");
         break;
       case '"':
         out.append("&quot;");
         break;
       case ',':
-        out.append("\\\\,");
+        out.append(is_javascript ? R"(\\,)" : R"(\,)");
         break;
       default:
         out += c;
@@ -90,7 +95,7 @@ std::string PolymerParameterEscape(const std::string& in_string) {
 }
 
 bool EscapeForJS(const std::string& in_string,
-                 base::Optional<char> in_previous,
+                 absl::optional<char> in_previous,
                  std::string* out_string) {
   out_string->reserve(in_string.size() * 2);
   bool last_was_dollar = in_previous && in_previous.value() == '$';
@@ -118,7 +123,7 @@ bool EscapeForJS(const std::string& in_string,
 bool HasUnexpectedPlaceholder(const std::string& key,
                               const std::string& replacement) {
   // TODO(crbug.com/988031): Fix display aria labels.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (key == "displayResolutionText")
     return false;
 #endif
@@ -130,7 +135,8 @@ bool ReplaceTemplateExpressionsInternal(
     base::StringPiece source,
     const ui::TemplateReplacements& replacements,
     bool is_javascript,
-    std::string* formatted) {
+    std::string* formatted,
+    bool skip_unexpected_placeholder_check = false) {
   const size_t kValueLengthGuess = 16;
   formatted->reserve(source.length() + replacements.size() * kValueLengthGuess);
   // Two position markers are used as cursors through the |source|.
@@ -140,26 +146,22 @@ bool ReplaceTemplateExpressionsInternal(
     size_t next_pos = source.find(kLeader, current_pos);
 
     if (next_pos == std::string::npos) {
-      source.substr(current_pos).AppendToString(formatted);
+      formatted->append(source.begin() + current_pos, source.end());
       break;
     }
 
-    source.substr(current_pos, next_pos - current_pos)
-        .AppendToString(formatted);
+    formatted->append(source.data() + current_pos, next_pos - current_pos);
     current_pos = next_pos + kLeaderSize;
 
     size_t context_end = source.find(kKeyOpen, current_pos);
     CHECK_NE(context_end, std::string::npos);
-    std::string context;
-    source.substr(current_pos, context_end - current_pos)
-        .AppendToString(&context);
+    std::string context(source.substr(current_pos, context_end - current_pos));
     current_pos = context_end + sizeof(kKeyOpen);
 
     size_t key_end = source.find(kKeyClose, current_pos);
     CHECK_NE(key_end, std::string::npos);
 
-    std::string key =
-        source.substr(current_pos, key_end - current_pos).as_string();
+    std::string key(source.substr(current_pos, key_end - current_pos));
     CHECK(!key.empty());
 
     auto value = replacements.find(key);
@@ -169,9 +171,9 @@ bool ReplaceTemplateExpressionsInternal(
     std::string replacement = value->second;
     if (is_javascript) {
       // Run JS escaping first.
-      base::Optional<char> last = formatted->empty()
-                                      ? base::nullopt
-                                      : base::make_optional(formatted->back());
+      absl::optional<char> last = formatted->empty()
+                                      ? absl::nullopt
+                                      : absl::make_optional(formatted->back());
       std::string escaped_replacement;
       if (!EscapeForJS(replacement, last, &escaped_replacement))
         return false;
@@ -185,7 +187,7 @@ bool ReplaceTemplateExpressionsInternal(
       // Pass the replacement through unchanged.
     } else if (context == "Polymer") {
       // Escape quotes and backslash for '$i18nPolymer{}' use (i.e. quoted).
-      replacement = PolymerParameterEscape(replacement);
+      replacement = PolymerParameterEscape(replacement, is_javascript);
     } else {
       CHECK(false) << "Unknown context " << context;
     }
@@ -193,7 +195,7 @@ bool ReplaceTemplateExpressionsInternal(
 #if DCHECK_IS_ON()
     // Replacements in Polymer WebUI may invoke JavaScript to replace string
     // placeholders. In other contexts, placeholders should already be replaced.
-    if (context != "Polymer") {
+    if (!skip_unexpected_placeholder_check && context != "Polymer") {
       DCHECK(!HasUnexpectedPlaceholder(key, replacement))
           << "Dangling placeholder found in " << key;
     }
@@ -211,13 +213,12 @@ bool ReplaceTemplateExpressionsInternal(
 namespace ui {
 
 void TemplateReplacementsFromDictionaryValue(
-    const base::DictionaryValue& dictionary,
+    const base::Value& dictionary,
     TemplateReplacements* replacements) {
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    std::string str_value;
-    if (it.value().GetAsString(&str_value))
-      (*replacements)[it.key()] = str_value;
+  for (auto pair : dictionary.DictItems()) {
+    const std::string* value = pair.second.GetIfString();
+    if (value)
+      (*replacements)[pair.first] = pair.second.GetString();
   }
 }
 
@@ -238,12 +239,12 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     // If there are no more templates, copy the remaining JS to the output and
     // return true.
     if (current_template.type == NONE) {
-      formatted->append(remaining.as_string());
+      formatted->append(std::string(remaining));
       return true;
     }
 
     // Copy the JS before the template to the output.
-    formatted->append(remaining.substr(0, current_template.start).as_string());
+    formatted->append(std::string(remaining.substr(0, current_template.start)));
 
     // Retrieve the HTML portion of the source.
     base::StringPiece html_template =
@@ -263,14 +264,14 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     remaining =
         remaining.substr(current_template.start + current_template.length);
   }
-  return true;
 }
 
-std::string ReplaceTemplateExpressions(
-    base::StringPiece source,
-    const TemplateReplacements& replacements) {
+std::string ReplaceTemplateExpressions(base::StringPiece source,
+                                       const TemplateReplacements& replacements,
+                                       bool skip_unexpected_placeholder_check) {
   std::string formatted;
-  ReplaceTemplateExpressionsInternal(source, replacements, false, &formatted);
+  ReplaceTemplateExpressionsInternal(source, replacements, false, &formatted,
+                                     skip_unexpected_placeholder_check);
   return formatted;
 }
 }  // namespace ui

@@ -4,7 +4,7 @@
 
 import("//build/config/ui.gni")
 
-if (is_linux && use_x11 && current_cpu != "arm") {
+if (ozone_platform_x11 && current_cpu != "arm") {
   executable("compositor_model_bench") {
     sources = [
       "compositor_model_bench.cc",
@@ -22,10 +22,10 @@ if (is_linux && use_x11 && current_cpu != "arm") {
 
     libs = [ "GL" ]
 
-    configs += [ "//build/config/linux:x11" ]
-
     deps = [
       "//base",
+      "//ui/base/x",
+      "//ui/gfx/x",
       "//ui/gl",
       "//ui/gl/init",
     ]

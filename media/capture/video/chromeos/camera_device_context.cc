@@ -4,25 +4,54 @@
 
 #include "media/capture/video/chromeos/camera_device_context.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
+
 namespace media {
 
-CameraDeviceContext::CameraDeviceContext(
-    std::unique_ptr<VideoCaptureDevice::Client> client)
+CameraDeviceContext::CameraDeviceContext()
     : state_(State::kStopped),
       sensor_orientation_(0),
       screen_rotation_(0),
-      client_(std::move(client)) {
-  DCHECK(client_);
+      frame_rotation_at_source_(true) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 CameraDeviceContext::~CameraDeviceContext() = default;
 
+bool CameraDeviceContext::AddClient(
+    ClientType client_type,
+    std::unique_ptr<VideoCaptureDevice::Client> client) {
+  DCHECK(client);
+  base::AutoLock lock(client_lock_);
+  if (!clients_.insert({client_type, std::move(client)}).second) {
+    SetErrorState(
+        media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient,
+        FROM_HERE,
+        std::string("Duplicated client in camera device context: ") +
+            base::NumberToString(static_cast<uint32_t>(client_type)));
+    return false;
+  }
+  return true;
+}
+
+void CameraDeviceContext::RemoveClient(ClientType client_type) {
+  base::AutoLock lock(client_lock_);
+  auto client = clients_.find(client_type);
+  if (client == clients_.end()) {
+    return;
+  }
+  clients_.erase(client);
+}
+
 void CameraDeviceContext::SetState(State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = state;
   if (state_ == State::kCapturing) {
-    client_->OnStarted();
+    base::AutoLock lock(client_lock_);
+    for (const auto& client : clients_) {
+      client.second->OnStarted();
+    }
   }
 }
 
@@ -35,45 +64,60 @@ void CameraDeviceContext::SetErrorState(media::VideoCaptureError error,
                                         const std::string& reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = State::kError;
-  LOG(ERROR) << reason;
-  client_->OnError(error, from_here, reason);
+  LOG(ERROR) << from_here.ToString() << ": " << reason;
+  base::AutoLock lock(client_lock_);
+  for (const auto& client : clients_) {
+    client.second->OnError(error, from_here, reason);
+  }
 }
 
 void CameraDeviceContext::LogToClient(std::string message) {
-  client_->OnLog(message);
+  base::AutoLock lock(client_lock_);
+  for (const auto& client : clients_) {
+    client.second->OnLog(message);
+  }
 }
 
 void CameraDeviceContext::SubmitCapturedVideoCaptureBuffer(
+    ClientType client_type,
     VideoCaptureDevice::Client::Buffer buffer,
     const VideoCaptureFormat& frame_format,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
-  VideoFrameMetadata metadata;
-  // All frames are pre-rotated to the display orientation.
-  metadata.SetRotation(VideoFrameMetadata::Key::ROTATION,
-                       VideoRotation::VIDEO_ROTATION_0);
-  // TODO: Figure out the right color space for the camera frame.  We may need
-  // to populate the camera metadata with the color space reported by the V4L2
-  // device.
-  client_->OnIncomingCapturedBufferExt(
+    base::TimeDelta timestamp,
+    const VideoFrameMetadata& metadata) {
+  base::AutoLock lock(client_lock_);
+  auto client = clients_.find(client_type);
+  if (client == clients_.end()) {
+    return;
+  }
+
+  client->second->OnIncomingCapturedBufferExt(
       std::move(buffer), frame_format, gfx::ColorSpace(), reference_time,
       timestamp, gfx::Rect(frame_format.frame_size), std::move(metadata));
 }
 
 void CameraDeviceContext::SubmitCapturedGpuMemoryBuffer(
+    ClientType client_type,
     gfx::GpuMemoryBuffer* buffer,
     const VideoCaptureFormat& frame_format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
-  client_->OnIncomingCapturedGfxBuffer(buffer, frame_format,
-                                       GetCameraFrameOrientation(),
-                                       reference_time, timestamp);
+  base::AutoLock lock(client_lock_);
+  auto client = clients_.find(client_type);
+  if (client == clients_.end()) {
+    return;
+  }
+
+  client->second->OnIncomingCapturedGfxBuffer(buffer, frame_format,
+                                              GetCameraFrameRotation(),
+                                              reference_time, timestamp);
 }
 
 void CameraDeviceContext::SetSensorOrientation(int sensor_orientation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sensor_orientation >= 0 && sensor_orientation < 360 &&
          sensor_orientation % 90 == 0);
+  base::AutoLock lock(rotation_state_lock_);
   sensor_orientation_ = sensor_orientation;
 }
 
@@ -81,22 +125,49 @@ void CameraDeviceContext::SetScreenRotation(int screen_rotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(screen_rotation >= 0 && screen_rotation < 360 &&
          screen_rotation % 90 == 0);
+  base::AutoLock lock(rotation_state_lock_);
   screen_rotation_ = screen_rotation;
 }
 
-int CameraDeviceContext::GetCameraFrameOrientation() {
+void CameraDeviceContext::SetCameraFrameRotationEnabledAtSource(
+    bool is_enabled) {
+  base::AutoLock lock(rotation_state_lock_);
+  frame_rotation_at_source_ = is_enabled;
+}
+
+int CameraDeviceContext::GetCameraFrameRotation() {
+  base::AutoLock lock(rotation_state_lock_);
   return (sensor_orientation_ + screen_rotation_) % 360;
 }
 
+bool CameraDeviceContext::IsCameraFrameRotationEnabledAtSource() {
+  base::AutoLock lock(rotation_state_lock_);
+  return !base::FeatureList::IsEnabled(
+             features::kDisableCameraFrameRotationAtSource) &&
+         frame_rotation_at_source_;
+}
+
 bool CameraDeviceContext::ReserveVideoCaptureBufferFromPool(
+    ClientType client_type,
     gfx::Size size,
     VideoPixelFormat format,
     VideoCaptureDevice::Client::Buffer* buffer) {
+  base::AutoLock lock(client_lock_);
+  auto client = clients_.find(client_type);
+  if (client == clients_.end()) {
+    return false;
+  }
+
   // Use a dummy frame feedback id as we don't need it.
   constexpr int kDummyFrameFeedbackId = 0;
-  auto result =
-      client_->ReserveOutputBuffer(size, format, kDummyFrameFeedbackId, buffer);
+  auto result = client->second->ReserveOutputBuffer(
+      size, format, kDummyFrameFeedbackId, buffer);
   return result == VideoCaptureDevice::Client::ReserveResult::kSucceeded;
+}
+
+bool CameraDeviceContext::HasClient() {
+  base::AutoLock lock(client_lock_);
+  return !clients_.empty();
 }
 
 }  // namespace media

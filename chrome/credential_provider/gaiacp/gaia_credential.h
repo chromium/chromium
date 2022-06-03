@@ -34,6 +34,11 @@ class ATL_NO_VTABLE CGaiaCredential
   END_COM_MAP()
 
   DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+  // CGaiaCredentialBase
+
+  // Adds additional command line switches like showing ToS.
+  HRESULT GetUserGlsCommandline(base::CommandLine* command_line) override;
 };
 
 }  // namespace credential_provider

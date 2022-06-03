@@ -6,7 +6,6 @@
 #define CHROMECAST_PUBLIC_BLUETOOTH_LE_SCANNER_H_
 
 #include <cstdint>
-#include <string>
 #include <vector>
 
 #include "bluetooth_types.h"    // NOLINT(build/include)

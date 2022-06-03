@@ -15,9 +15,6 @@ class GURL;
 namespace image_fetcher {
 class ImageFetcher;
 }
-namespace ntp_snippets {
-class ContentSuggestionsService;
-}
 
 class PrefService;
 
@@ -32,9 +29,7 @@ class PrefetchGCMHandler;
 class PrefetchImporter;
 class PrefetchNetworkRequestFactory;
 class PrefetchStore;
-class SuggestedArticlesObserver;
 class SuggestionsProvider;
-class ThumbnailFetcher;
 
 // TODO(https://crbug.com/874293): This class is midway through a refactoring so
 // it might look as it offers an inconsistent API.
@@ -55,19 +50,6 @@ class PrefetchService : public KeyedService {
       base::OnceCallback<void(const std::string& gcm_token)>;
 
   // Externally used functions. They will remain part of this class.
-
-  // Note: The source of article suggestions is being migrated from Zine to the
-  // Feed. The old suggestion interface uses the
-  // ntp_snippets::ContentSuggestionsService / SuggestedArticlesObserver. The
-  // new suggestion interface is SuggestionProvider, and NewSuggestionsAvailable
-  // / RemoveSuggestion methods located here. These two suggestion interfaces
-  // are mutually exclusive, and currently determined by the Feed feature flag.
-  // See PrefetchServiceFactory.
-
-  // Sets the SuggestionsProvider instance. Should be called at startup time and
-  // before any other suggestion related calls are made.
-  virtual void SetContentSuggestionsService(
-      ntp_snippets::ContentSuggestionsService* content_suggestions) = 0;
 
   // Sets the SuggestionsProvider instance. Should be called at startup time and
   // before any other suggestion related calls are made.
@@ -112,17 +94,8 @@ class PrefetchService : public KeyedService {
   virtual PrefetchStore* GetPrefetchStore() = 0;
   virtual PrefetchImporter* GetPrefetchImporter() = 0;
   virtual PrefetchBackgroundTaskHandler* GetPrefetchBackgroundTaskHandler() = 0;
-  // Zine/Feed: Null when using the Feed.
-  virtual ThumbnailFetcher* GetThumbnailFetcher() = 0;
   virtual OfflinePageModel* GetOfflinePageModel() = 0;
   virtual image_fetcher::ImageFetcher* GetImageFetcher() = 0;
-
-  // Test-only methods.
-
-  // May be |nullptr| in tests.  The PrefetchService does not depend on the
-  // SuggestedArticlesObserver, it merely owns it for lifetime purposes.
-  virtual SuggestedArticlesObserver*
-  GetSuggestedArticlesObserverForTesting() = 0;
 };
 
 }  // namespace offline_pages

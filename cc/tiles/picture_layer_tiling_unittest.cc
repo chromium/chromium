@@ -80,7 +80,8 @@ class TestablePictureLayerTiling : public PictureLayerTiling {
                            raster_source,
                            client,
                            min_preraster_distance,
-                           max_preraster_distance) {}
+                           max_preraster_distance,
+                           /*can_use_lcd_text*/ false) {}
 };
 
 class PictureLayerTilingIteratorTest : public testing::Test {
@@ -1313,6 +1314,19 @@ TEST_F(PictureLayerTilingIteratorTest, EdgeCaseLargeIntBounds2) {
        iter; ++iter) {
     EXPECT_FALSE(iter.geometry_rect().IsEmpty());
   }
+}
+
+TEST_F(PictureLayerTilingIteratorTest, SmallRasterTransforms) {
+  gfx::Size tile_size(1, 1);
+  gfx::Size layer_bounds(4357, 4357);
+  float scale = 1.f / layer_bounds.width();
+  Initialize(tile_size, scale, layer_bounds);
+  EXPECT_EQ(tiling_->tiling_size(), tile_size);
+
+  layer_bounds = {378, 378};
+  scale = 1.f / layer_bounds.width();
+  Initialize(tile_size, scale, layer_bounds);
+  EXPECT_EQ(tiling_->tiling_size(), tile_size);
 }
 
 }  // namespace

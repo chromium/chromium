@@ -17,10 +17,17 @@ namespace device {
 
 // A class used to monitor the power state change and communicate it to child
 // processes via IPC.
-class PowerMonitorMessageBroadcaster : public base::PowerObserver,
+class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
+                                       public base::PowerSuspendObserver,
                                        public device::mojom::PowerMonitor {
  public:
   PowerMonitorMessageBroadcaster();
+
+  PowerMonitorMessageBroadcaster(const PowerMonitorMessageBroadcaster&) =
+      delete;
+  PowerMonitorMessageBroadcaster& operator=(
+      const PowerMonitorMessageBroadcaster&) = delete;
+
   ~PowerMonitorMessageBroadcaster() override;
 
   void Bind(mojo::PendingReceiver<device::mojom::PowerMonitor> receiver);
@@ -29,16 +36,16 @@ class PowerMonitorMessageBroadcaster : public base::PowerObserver,
   void AddClient(mojo::PendingRemote<device::mojom::PowerMonitorClient>
                      power_monitor_client) override;
 
-  // base::PowerObserver:
+  // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;
+
+  // base::PowerSuspendObserver:
   void OnSuspend() override;
   void OnResume() override;
 
  private:
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcaster);
 };
 
 }  // namespace device

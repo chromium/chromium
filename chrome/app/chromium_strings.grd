@@ -10,6 +10,36 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     </output>
     <if expr="is_android">
       <output filename="chromium_strings_af.pak" type="data_package" lang="af" />
+      <output filename="chromium_strings_as.pak" type="data_package" lang="as" />
+      <output filename="chromium_strings_az.pak" type="data_package" lang="az" />
+      <output filename="chromium_strings_be.pak" type="data_package" lang="be" />
+      <output filename="chromium_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="chromium_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="chromium_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="chromium_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="chromium_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="chromium_strings_is.pak" type="data_package" lang="is" />
+      <output filename="chromium_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="chromium_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="chromium_strings_km.pak" type="data_package" lang="km" />
+      <output filename="chromium_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="chromium_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="chromium_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="chromium_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="chromium_strings_my.pak" type="data_package" lang="my" />
+      <output filename="chromium_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="chromium_strings_or.pak" type="data_package" lang="or" />
+      <output filename="chromium_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="chromium_strings_si.pak" type="data_package" lang="si" />
+      <output filename="chromium_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="chromium_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="chromium_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="chromium_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="chromium_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="chromium_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="chromium_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="chromium_strings_am.pak" type="data_package" lang="am" />
     <output filename="chromium_strings_ar.pak" type="data_package" lang="ar" />
@@ -26,7 +56,6 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="chromium_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="chromium_strings_et.pak" type="data_package" lang="et" />
     <output filename="chromium_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="chromium_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="chromium_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="chromium_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="chromium_strings_fr.pak" type="data_package" lang="fr" />
@@ -66,6 +95,96 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="chromium_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/chromium_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/chromium_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/chromium_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/chromium_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/chromium_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/chromium_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/chromium_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/chromium_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/chromium_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/chromium_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/chromium_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/chromium_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/chromium_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/chromium_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/chromium_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/chromium_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/chromium_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/chromium_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/chromium_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/chromium_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/chromium_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/chromium_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/chromium_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/chromium_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/chromium_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/chromium_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/chromium_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/chromium_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/chromium_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/chromium_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/chromium_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/chromium_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/chromium_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/chromium_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/chromium_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/chromium_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/chromium_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/chromium_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/chromium_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/chromium_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/chromium_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/chromium_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/chromium_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/chromium_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/chromium_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/chromium_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/chromium_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/chromium_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/chromium_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/chromium_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/chromium_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/chromium_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/chromium_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/chromium_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/chromium_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/chromium_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/chromium_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/chromium_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/chromium_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/chromium_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/chromium_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/chromium_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/chromium_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/chromium_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/chromium_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/chromium_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/chromium_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/chromium_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/chromium_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/chromium_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/chromium_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/chromium_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/chromium_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/chromium_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/chromium_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/chromium_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/chromium_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/chromium_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/chromium_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/chromium_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/chromium_strings.xml" lang="zu" type="android" context="android_java" />
+    </if>
+
+    <!-- Pseudolocales -->
+    <output filename="chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/chromium_strings_af.xtb" lang="af" />
@@ -134,6 +253,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <file path="resources/chromium_strings_sl.xtb" lang="sl" />
     <file path="resources/chromium_strings_sq.xtb" lang="sq" />
     <file path="resources/chromium_strings_sr.xtb" lang="sr" />
+    <file path="resources/chromium_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="resources/chromium_strings_sv.xtb" lang="sv" />
     <file path="resources/chromium_strings_sw.xtb" lang="sw" />
     <file path="resources/chromium_strings_ta.xtb" lang="ta" />
@@ -149,7 +269,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <file path="resources/chromium_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/chromium_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Settings specific strings -->
       <if expr="not is_android">
@@ -172,6 +292,14 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         <message name="IDS_PRODUCT_DESCRIPTION" desc="Browser description">
           Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.
         </message>
+        <message name="IDS_WELCOME_TO_CHROME" desc="Welcoming text announced via screen readers the first time Chrome is launched at the conclusion of installation.">
+          Welcome to Chromium; new browser window opened
+        </message>
+      </if>
+      <if expr="is_macosx or is_linux">
+        <message name="IDS_FIRST_RUN_DIALOG_WINDOW_TITLE" desc="Window title of First Run dialog on Mac and Linux, displayed in title bar">
+          Welcome to Chromium
+        </message>
       </if>
       <if expr="chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
@@ -180,10 +308,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
           Chromium OS
         </message>
+        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+          Chromium OS
+        </message>
       </if>
-      <message name="IDS_SHORT_PRODUCT_LOGO_ALT_TEXT" desc="Alt text for the Chromium logo image.">
-        Chromium logo
-      </message>
       <!-- Chrome enterprise logo won't be used in Chromium -->
       <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chromium Enterprise logo image."/>
       <if expr="is_win">
@@ -191,9 +319,16 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           New window
         </message>
       </if>
-      <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
-        Task Manager - Chromium
-      </message>
+      <if expr="is_macosx or chromeos">
+        <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
+          Task Manager
+        </message>
+      </if>
+      <if expr="not is_macosx and not chromeos">
+        <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
+          Task Manager - Chromium
+        </message>
+      </if>
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
@@ -207,6 +342,24 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabbed browser windows">
           Chromium - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
+        </message>
+      </if>
+      <if expr="not chromeos and not is_macosx">
+        <!-- Captive Portal Browser Window Title Format -->
+        <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
+          <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Network Sign-in - Chromium
+        </message>
+      </if>
+      <if expr="chromeos">
+        <!-- Captive Portal Browser Window Title Format -->
+        <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
+          Chromium - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <!-- Captive Portal Browser Window Title Format -->
+        <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
+          <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Network Sign-in
         </message>
       </if>
       <!-- Accessible window title format - includes the channel, and the same
@@ -234,18 +387,18 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
         </message>
         <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS when Crostini is installed.">
-          Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux (Beta)<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
         </message>
         <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box." translateable="false">
           Not used in Chromium. Placeholder to keep resource maps in sync.
         </message>
       </if>
       <message name="IDS_ABOUT_TERMS_OF_SERVICE" desc="The terms of service label in the About box." translateable="false">
-        Not used in Chromium. Placeholder to keep resource maps in sync. It expects one argument: <ph name="ARGUMENT">$1</ph>.
+        Not used in Chromium. Placeholder to keep resource maps in sync.
       </message>
       <if expr="is_macosx">
-        <message name="IDS_MAC_10_9_OBSOLETE_NOW" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using is no longer supported.">
-          Chromium may not function correctly because it is no longer supported on Mac OS X 10.9.
+        <message name="IDS_MAC_10_10_OBSOLETE_SOON" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
+          To get future Chromium updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.
         </message>
       </if>
       <if expr="is_win">
@@ -262,6 +415,16 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium is unresponsive. Relaunch now?
         </message>
       </if>
+      <!-- Sharing messages -->
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
+        To send a number from here to your Android phone, sign in to Chromium on both devices.
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
+        To send a number from <ph name="ORIGIN">$1<ex>www.google.com</ex></ph> to your Android phone, sign in to Chromium on both devices.
+      </message>
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_NOT_FOUND" desc="The text to be shown on the dialog when an error occurred because the device is not synced.">
+        Make sure you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME">$1<ex>Pixel XL</ex></ph> and then try sending again.
+      </message>
       <!-- Uninstall messages -->
       <if expr="is_win">
         <message name="IDS_UNINSTALL_CLOSE_APP" desc="Message to user when uninstall detects other app instance running">
@@ -278,7 +441,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         Make Chromium the default browser
       </message>
       <if expr="chromeos">
-        <message name="IDS_EXTERNAL_PROTOCOL_TITLE" desc="External Protocol Dialog Title">
+        <message name="IDS_EXTERNAL_PROTOCOL_NO_HANDLER_TITLE" desc="External Protocol Dialog Title">
           Chromium OS can't open this page.
         </message>
       </if>
@@ -299,7 +462,7 @@ Chromium cannot read and write to its data directory:
       </message>
       <if expr="chromeos">
         <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging">
-          Optional: Help make Chromium better by automatically sending usage statistics and crash reports to Google.
+          Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.
         </message>
       </if>
       <message name="IDS_PROFILE_TOO_NEW_ERROR" desc="Error displayed on startup when the profile is from a newer version of the product and can not be read">
@@ -341,6 +504,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
           Chromium is trying to show passwords.
         </message>
+        <message name="IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before copying plaintext passwords into the clipboard.">
+          Chromium is trying to copy passwords.
+        </message>
+        <message name="IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before editing plaintext passwords on the password page.">
+          Chromium is trying to edit passwords.
+        </message>
         <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
           Chromium wants to export your passwords.
         </message>
@@ -348,6 +517,12 @@ Chromium is unable to recover your settings.
       <if expr="is_win">
         <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
           Chromium is trying to show passwords. Type your Windows password to allow this.
+        </message>
+        <message name="IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before copying plaintext passwords into the clipboard.">
+          Chromium is trying to copy passwords. Type your Windows password to allow this.
+        </message>
+        <message name="IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before editing plaintext passwords on the password page.">
+          Chromium is trying to edit passwords. Type your Windows password to allow this.
         </message>
         <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
           Chromium wants to export your passwords. Type your Windows password to allow this.
@@ -426,11 +601,6 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Print Preview -->
-      <message name="IDS_PRINT_PREVIEW_NO_PLUGIN" desc="Message to display when the PDF viewer is missing.">
-        Chromium cannot show the print preview when the built-in PDF viewer is missing.
-      </message>
-
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"
                desc="Message shown when a CRX has been downloaded and is being unpacked.">
@@ -459,6 +629,11 @@ Chromium is unable to recover your settings.
         This file may be dangerous, so Chromium has blocked it.
       </message>
 
+      <message name="IDS_PROMPT_CONFIRM_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE_BODY"
+        desc="Body prompt text for the confirmation dialog asking whether the user really meant to keep a download deemed to be associated with account compromise by safebrowsing">
+        Chromium recommends that you don't download or open this file
+      </message>
+
       <!-- Abandon in-progress downloads confirmation dialog -->
       <if expr="not is_macosx">
         <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, Chrome OS, and Linux, which all use 'Exit' to refer to closing a browser.">
@@ -483,7 +658,6 @@ Chromium is unable to recover your settings.
         Google API keys are missing. Some functionality of Chromium will be disabled.
       </message>
 
-      <!-- Extension/App install prompt -->
       <if expr="enable_extensions">
         <!-- Extension installed bubble -->
         <message name="IDS_EXTENSION_INSTALLED_HEADING" desc="Title of the extension-installed bubble. Instructs that the extension was installed.">
@@ -495,22 +669,18 @@ Chromium is unable to recover your settings.
           Also clear data from Chromium (<ph name="URL">$1<ex>www.google.com</ex></ph>)
         </message>
 
-        <!-- Extension context menu -->
-        <if expr="not use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (sentence case).">
-            Hide in Chromium menu
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (title case).">
-            Hide in Chromium Menu
-          </message>
-        </if>
+        <!-- Extension alerts. -->
+        <message name="IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE" desc="A statement that an extension has been newly blocklisted for malware.">
+          Chromium found that "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" contains malware
+        </message>
+        <message name="IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE" desc="A statement that multiple extension/apps have been newly blocklisted for malware.">
+          Chromium found that these items contain malware:
+        </message>
       </if>
 
       <!-- chrome://settings/extensions page -->
-      <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in incognito mode. Displayed in extensions management UI after an extension is selected to be run in incognito mode.">
-        Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in incognito mode, unselect this option.
+      <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in Incognito mode. Displayed in extensions management UI after an extension is selected to be run in Incognito mode.">
+        Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.
       </message>
       <message name="IDS_EXTENSIONS_UNINSTALL" desc="The link for uninstalling extensions.">
         Remove from Chromium...
@@ -549,27 +719,24 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="In Title Case: The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the relaunch to update Chrome menu item">
+          Relaunch to Update &amp;Chromium
         </message>
       </if>
       <if expr="not use_titlecase and not chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome menu item">
+          Relaunch to update &amp;Chromium
         </message>
       </if>
       <if expr="chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_ABOUT_OS" desc="The text label of the About Chrome OS menu item">
-          About &amp;Chromium OS
-        </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome OS Now menu item">
-          Update &amp;Chromium OS
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
+          Relaunch to update &amp;Chromium OS
         </message>
       </if>
 
@@ -623,10 +790,22 @@ Chromium is unable to recover your settings.
         <message name="IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITH_PROFILE_CREATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. Additionally notifies the user that they can create a new profile instead. This message is followed by a 'Learn more' link.">
           You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords, and other settings will become permanently tied to <ph name="USER_NAME">$1<ex>pat@example.com</ex></ph>. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chromium data separate. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
         </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_TITLE" desc="The title of the dialog to confirm adding a new work profile with the signed-in enterprise account">
+          Add Work Profile to this browser
+        </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_CREATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. This message is followed by a 'Learn more' link.">
+          You are adding a work profile to this browser and giving your administrator control over just the work profile.
+        </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_ISOLATION_NOTICE" desc="Notice that work profiles are separated from any personal profile">
+          This work profile is completely separate from your personal profile.
+        </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_EXPLANATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. This message is followed by a 'Learn more' link.">
+          Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords, and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="is_win or is_macosx or (is_linux and not is_chromeos)">
+      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -635,10 +814,42 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- NTP strings -->
+      <message name="IDS_NTP_CUSTOMIZE_BUTTON_LABEL" desc="Label for button on the New Tab Page that opens dialog to customize Chromium browser.">
+        Customize Chromium
+      </message>
+
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
           <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph> was previously using Chromium
+        </message>
+      </if>
+
+      <if expr="not chromeos and not is_android">
+        <!-- Dice Web Signin Interception Bubble-->
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
+          Continue in a new Chromium profile?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE" desc="Title for the profile switch interception bubble">
+          Switch to existing Chromium profile?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC" desc="Description for the profile switch interception bubble">
+          A Chromium profile with this account already exists
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC" desc="Body of the web signin interception bubble">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in to this Chromium profile. To keep your browsing separate, Chromium can create your own profile for you.
+        </message>
+          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble on a managed device">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in to this Chromium profile. This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$2<ex>foo@gmail.com</ex></ph>
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble when the new account is personal and the existing account is managed on a managed device">
+          This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
+        </message>
+
+        <!-- Profile Customization Bubble-->
+        <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
+          Customize your new Chromium profile
         </message>
       </if>
 
@@ -667,15 +878,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chromium OS Secondary Accounts.">
           Chromium OS System
         </message>
-        <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
-          Chromium OS could not sync your data. Fix now.
-        </message>
-        <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
-          Chromium OS could not sync your passwords. Fix now.
-        </message>
-        <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to update their sync passphrase.">
-          Chromium OS could not sync your data. Please update your Sync passphrase.
-        </message>
         <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
           Chromium OS could not sync your data because your account sign-in details are out of date.
         </message>
@@ -686,12 +888,6 @@ Chromium is unable to recover your settings.
           Chromium OS could not sync your data due to an error signing in.
         </message>
       </if>
-      <message name="IDS_SYNC_PAUSED_REASON_CLEAR_COOKIES_ON_EXIT" desc="Info text displayed in the user menu when sync is paused due to cookies cleared on exit.">
-        You clear cookies when you quit Chromium. To keep syncing, change this <ph name="COOKIE_SETTINGS_LINK">$1<ex>settings</ex></ph>.
-      </message>
-      <message name="IDS_SYNC_PAUSED_REASON_CLEAR_COOKIES_ON_EXIT_LINK_TEXT" desc="Link text part of the sync paused info text when sync is paused due to cookies cleared on exit.">
-        settings
-      </message>
 
       <!-- App list -->
       <if expr="chromeos">
@@ -716,8 +912,8 @@ Chromium is unable to recover your settings.
 
       <!-- Chrome OS OOBE Terms of Service screen-->
       <if expr="chromeos">
-        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen.">
-          <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
+        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
         </message>
       </if>
 
@@ -838,7 +1034,7 @@ Chromium is unable to recover your settings.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP" desc="The name of the command to open a link in a newly created browser tab when the user is in an app window">
             Open link in new Chromium &amp;tab
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP" desc="The name of the command to open a link in an incognito browser window when the user is in an app window">
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP" desc="The name of the command to open a link in an Incognito browser window when the user is in an app window">
             Open link in Chromium inco&amp;gnito window
           </message>
         </if>
@@ -846,7 +1042,7 @@ Chromium is unable to recover your settings.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP" desc="In Title Case: The name of the command to open a link in a newly created browser tab when the user is in an app window">
             Open Link in New Chromium &amp;tab
           </message>
-          <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP" desc="In Title Case: The name of the command to open a link in an incognito browser window when the user is in an app window">
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP" desc="In Title Case: The name of the command to open a link in an Incognito browser window when the user is in an app window">
             Open Link in Chromium Inco&amp;gnito Window
           </message>
         </if>
@@ -857,7 +1053,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Relaunch Chromium
         </message>
-        <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog with a count of open incognito windows.">
+        <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog with a count of open Incognito windows.">
           {COUNT, plural,
           =0 {A new update for Chromium is available and will be applied as soon as you relaunch.}
           =1 {A new update for Chromium is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}
@@ -878,17 +1074,6 @@ Chromium is unable to recover your settings.
           Restart
         </message>
       </if>
-
-      <!-- Cannot update when other instances open dialog -->
-      <message name="IDS_UPDATE_OTHER_INSTANCES_SAME_USER_DIALOG_TITLE" desc="The title for the dialog shown when multiple copies of Chromium are running during a requested update.">
-        Quit all copies of Chromium.
-      </message>
-      <message name="IDS_UPDATE_OTHER_INSTANCES_SAME_USER_DIALOG_MESSAGE" desc="The message for the dialog shown when multiple copies of Chromium are running during a requested update.">
-        Other copies of Chromium are running. To update, close them.
-      </message>
-      <message name="IDS_UPDATE_OTHER_INSTANCES_OTHER_USER_AUTHENTICATION_PROMPT" desc="The window title for the other instances dialog.">
-        To update, Chromium needs to stop running on this computer. This may cause other users logged into this computer to lose unsaved changes.
-      </message>
 
       <!-- Update bubble -->
       <message name="IDS_REINSTALL_APP" desc="Text for the button the user clicks to reinstall the app.">
@@ -912,9 +1097,6 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- User menu errors -->
-      <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_MESSAGE" desc="Message of the out-of-date Chrome client error in the header of desktop user menu.">
-        Chromium is out of date
-      </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to update Chrome to fix the out-of-date Chrome client error.">
         Update Chromium
       </message>
@@ -924,7 +1106,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
           Update Chromium to start sync
         </message>
-        <message name="IDS_SYNC_UPGRADE_CLIENT_LINK_LABEL" desc="Hyperlink text indicating client needs to be upgraded to the latest version.">
+        <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
           Update Chromium
         </message>
       </if>
@@ -965,15 +1147,11 @@ Chromium is unable to recover your settings.
         Chromium Tab
       </message>
 
-      <!-- Plugin Placeholders -->
-      <if expr="is_linux">
-        <message name="IDS_PLUGIN_RESTART_REQUIRED" desc="The placeholder text for a plugin that can't be loaded until the browser is restarted.">
-          Restart Chromium to enable <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph>
-        </message>
-      </if>
-
       <!-- Runtime permission strings -->
       <if expr="is_android">
+        <message name="IDS_INFOBAR_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
+          Chromium needs permission to access your camera to create a 3D map of your surroundings
+        </message>
         <message name="IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chromium needs permission to access your camera for this site
         </message>
@@ -988,6 +1166,25 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
           Chromium needs storage access to download files
+        </message>
+
+        <message name="IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
+          Chromium needs camera permission to create a 3D map of your surroundings
+        </message>
+        <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
+          Chromium needs camera permission for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
+          Chromium needs microphone permission for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone and camera capabilities, but Chrome is missing the Android microphone and camera permissions.">
+          Chromium needs camera and microphone permissions for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the location capabilities, but Chrome is missing the Android location permission.">
+          Chromium needs location permission for this site
+        </message>
+        <message name="IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
+          Chromium needs storage access permission to download files
         </message>
       </if>
 
@@ -1085,6 +1282,87 @@ Chromium is unable to recover your settings.
           Help us improve Chromium
         </message>
       </if>
+      <!-- Chrome parent extension/app install blocking dialog. -->
+      <if expr="chromeos">
+        <message name="IDS_EXTENSION_INSTALL_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
+         Your parent has turned off "Permissions for sites, apps and extensions" for Chromium. Adding this <ph name="EXTENSION_TYPE_PARAMETER">$1<ex>extension</ex></ph> is not allowed.
+        </message>
+        <message name="IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
+         Your parent has turned off "Permissions for sites, apps and extensions" for Chromium. Enabling this <ph name="EXTENSION_TYPE_PARAMETER">$1<ex>extension</ex></ph> is not allowed.
+        </message>
+      </if>
+
+      <if expr="not chromeos and not is_android">
+        <!-- Profile Picker -->
+        <if expr="lacros">
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">
+            With Chromium profiles you can separate all of your Chromium stuff. This makes it easier to split between work and fun.
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS" desc="Profile picker profile type choice subtitle">
+            To access your Chromium browser stuff across all your devices, sign in, then turn on sync
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
+            The following accounts are available for this Chromium profile
+          </message>
+        </if>
+        <if expr="not lacros">
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
+            Welcome to Chromium profiles
+          </message>
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2" desc="Title of a screen that lets the user choose which profile to use when browsing the web. *If the EN source doesn't translate well in your language, an alternative string 'Which Chromium profile would you like to use?' may be used instead">
+            Who's using Chromium?
+          </message>
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
+            With Chromium profiles you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE" desc="Profile picker profile type choice subtitle">
+            To access your Chromium stuff across all your devices, sign in, then turn on sync.
+          </message>
+        </if>
+        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
+          Set up your new Chromium profile
+        </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
+          Customize your Chromium profile
+        </message>
+        <message name="IDS_PROFILE_PICKER_IPH_FOR_PROFILES_TEXT" desc="Text of the IPH bubble for introducing profiles.">
+          Each profile holds its own Chromium info like bookmarks, history, passwords, and more
+        </message>
+        <message name="IDS_PROFILE_PICKER_IPH_FOR_ADD_PROFILE_TEXT" desc="Text of the IPH bubble for adding new profiles.">
+          If you share a device, friends and family can browse separately and set up Chromium just the way they want
+        </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE" desc="Profile picker profile switch title">
+          Switch to existing Chromium profile?
+        </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
+          A Chromium profile with this account already exists on this device
+        </message>
+
+        <!-- Profile switch IPH -->
+        <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
+          You can switch between Chromium profiles here
+        </message>
+        <message name="IDS_PROFILE_SWITCH_PROMO_SCREENREADER" desc="Text announced by screenreaders to explain how to switch between profiles.">
+          <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+M</ex></ph> can switch between Chromium profiles
+        </message>
+      </if>
+
+      <!-- Strings for full restore notifications -->
+      <if expr="chromeos">
+        <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
+          Chromium OS system
+        </message>
+      </if>
+
+      <!-- ChromeLabs bubble -->
+      <message name="IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Labs bubble when relaunch is needed for changes to take effect.">
+        Your changes will take effect the next time you relaunch Chromium.
+      </message>
+
+      <!-- Device Chooser Prompt -->
+      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
+        Chromium needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

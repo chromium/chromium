@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 63: Uncaught [object Object]
-CONSOLE ERROR: line 63: Uncaught [object Object]
+CONSOLE ERROR: Uncaught [object Object]
+CONSOLE ERROR: Uncaught [object Object]
 This test confirms that SQLTransactionErrorCallback is invoked correctly and regardless of its output, the transaction is always rolled back on failure.
 Testing transaction failing mid-way and error callback returning true : SUCCESS
 Testing transaction failing mid-way and error callback return false : SUCCESS

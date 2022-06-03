@@ -1,0 +1,31 @@
+<style include="shared-style">
+  :host {
+    --standard-border: 1px solid black;
+  }
+
+  #clearButton {
+    float: right;
+  }
+</style>
+<cr-button on-click="onUpdateDeviceClicked_" class="internals-button">
+  Call UpdateDevice RPC
+</cr-button>
+<cr-button on-click="onListContactPeopleClicked_" class="internals-button">
+  Call ListContactPeople RPC
+</cr-button>
+<cr-button on-click="onListPublicCertificatesClicked_" class="internals-button">
+  Call ListPublicCertificates RPC
+</cr-button>
+<cr-button on-click="onClearMessagesButtonClicked_" class="internals-button"
+    id="clearButton" disabled="[[!httpMessageList_.length]]">
+ Clear Messages
+</cr-button>
+<dom-repeat items="[[httpMessageList_]]" as="http-message"
+    hidden="[[!httpMessageList_.length]]">
+    <!-- TODO(https://crbug.com/1120668): Add missing bottom border to HTTP
+    Messages list. -->
+  <template>
+    <http-message-object item="[[http-message]]">
+    </http-message-object>
+  </template>
+</dom-repeat>

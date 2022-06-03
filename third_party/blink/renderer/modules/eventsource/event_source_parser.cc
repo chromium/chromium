@@ -4,10 +4,9 @@
 
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -132,7 +131,7 @@ String EventSourceParser::FromUTF8(const char* bytes, uint32_t size) {
   return codec_->Decode(bytes, size, WTF::FlushBehavior::kDataEOF);
 }
 
-void EventSourceParser::Trace(blink::Visitor* visitor) {
+void EventSourceParser::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
 }
 

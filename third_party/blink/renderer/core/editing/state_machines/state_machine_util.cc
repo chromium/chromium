@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -84,13 +83,6 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
   if (Character::IsRegionalIndicator(prev_code_point) &&
       Character::IsRegionalIndicator(next_code_point))
     NOTREACHED() << "Do not use this function for regional indicators.";
-
-  // This is an exception for Myanmar IMEs that uses zwnj character as base
-  // character during a composition to avoid merging the actively composed text
-  // into the previous character. We intentionally diverge from UAX#29.
-  // Please see crbug.com/1027695 for more details.
-  if (next_code_point == kZeroWidthNonJoinerCharacter)
-    return true;
 
   // Rule GB9, x (Extend | ZWJ)
   // Rule GB9a, x SpacingMark

@@ -3,7 +3,7 @@
 self.getterRejects = (t, obj, getterName, target) => {
   const getter = Object.getOwnPropertyDescriptor(obj, getterName).get;
 
-  return promise_rejects(t, new TypeError(), getter.call(target), getterName + ' should reject with a TypeError');
+  return promise_rejects_js(t, TypeError, getter.call(target), getterName + ' should reject with a TypeError');
 };
 
 self.getterRejectsForAll = (t, obj, getterName, targets) => {
@@ -13,7 +13,7 @@ self.getterRejectsForAll = (t, obj, getterName, targets) => {
 self.methodRejects = (t, obj, methodName, target, args) => {
   const method = obj[methodName];
 
-  return promise_rejects(t, new TypeError(), method.apply(target, args),
+  return promise_rejects_js(t, TypeError, method.apply(target, args),
                          methodName + ' should reject with a TypeError');
 };
 
@@ -24,7 +24,7 @@ self.methodRejectsForAll = (t, obj, methodName, targets, args) => {
 self.getterThrows = (obj, getterName, target) => {
   const getter = Object.getOwnPropertyDescriptor(obj, getterName).get;
 
-  assert_throws(new TypeError(), () => getter.call(target), getterName + ' should throw a TypeError');
+  assert_throws_js(TypeError, () => getter.call(target), getterName + ' should throw a TypeError');
 };
 
 self.getterThrowsForAll = (obj, getterName, targets) => {
@@ -35,7 +35,7 @@ self.methodThrows = (obj, methodName, target, args) => {
   const method = obj[methodName];
   assert_equals(typeof method, 'function', methodName + ' should exist');
 
-  assert_throws(new TypeError(), () => method.apply(target, args), methodName + ' should throw a TypeError');
+  assert_throws_js(TypeError, () => method.apply(target, args), methodName + ' should throw a TypeError');
 };
 
 self.methodThrowsForAll = (obj, methodName, targets, args) => {
@@ -43,8 +43,8 @@ self.methodThrowsForAll = (obj, methodName, targets, args) => {
 };
 
 self.constructorThrowsForAll = (constructor, firstArgs) => {
-  firstArgs.forEach(firstArg => assert_throws(new TypeError(), () => new constructor(firstArg),
-                                              'constructor should throw a TypeError'));
+  firstArgs.forEach(firstArg => assert_throws_js(TypeError, () => new constructor(firstArg),
+                                                 'constructor should throw a TypeError'));
 };
 
 self.garbageCollect = () => {

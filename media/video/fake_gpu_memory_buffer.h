@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -15,7 +16,15 @@ namespace media {
 // A fake implementation of gfx::GpuMemoryBuffer for testing purposes.
 class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
+  FakeGpuMemoryBuffer() = delete;
+
   FakeGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format);
+  FakeGpuMemoryBuffer(const gfx::Size& size,
+                      gfx::BufferFormat format,
+                      uint64_t modifier);
+
+  FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
+  FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
 
   // gfx::GpuMemoryBuffer implementation.
   ~FakeGpuMemoryBuffer() override;
@@ -39,9 +48,9 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  private:
   gfx::Size size_;
   gfx::BufferFormat format_;
+  VideoPixelFormat video_pixel_format_ = PIXEL_FORMAT_UNKNOWN;
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FakeGpuMemoryBuffer);
 };
 
 class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
@@ -51,7 +60,9 @@ class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback callback) override;
+      gpu::GpuMemoryBufferImpl::DestructionCallback callback,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr) override;
 };
 
 }  // namespace media

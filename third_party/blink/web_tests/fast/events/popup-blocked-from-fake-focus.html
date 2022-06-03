@@ -14,9 +14,7 @@
             }
 
             if (window.testRunner) {
-                testRunner.setCanOpenWindows();
                 testRunner.setPopupBlockingEnabled(true);
-                testRunner.setCloseRemainingWindowsWhenComplete(true);
             }
 
             test(() => document.getElementById("test").focus(), 'focus');

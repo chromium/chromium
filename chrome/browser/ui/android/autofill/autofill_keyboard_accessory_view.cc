@@ -9,17 +9,21 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
+#include "base/strings/utf_string_conversions.h"
+
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/ui/android/view_android_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/autofill/autofill_popup_layout_model.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/android/gurl_android.h"
 
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -38,16 +42,17 @@ AutofillKeyboardAccessoryView::~AutofillKeyboardAccessoryView() {
       base::android::AttachCurrentThread(), java_object_);
 }
 
-void AutofillKeyboardAccessoryView::Initialize(
-    unsigned int animation_duration_millis,
-    bool should_limit_label_width) {
+bool AutofillKeyboardAccessoryView::Initialize() {
   ui::ViewAndroid* view_android = controller_->container_view();
-  DCHECK(view_android);
+  if (!view_android)
+    return false;
+  ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
+  if (!window_android)
+    return false;  // The window might not be attached (yet or anymore).
   Java_AutofillKeyboardAccessoryViewBridge_init(
       base::android::AttachCurrentThread(), java_object_,
-      reinterpret_cast<intptr_t>(this),
-      view_android->GetWindowAndroid()->GetJavaObject(),
-      animation_duration_millis, should_limit_label_width);
+      reinterpret_cast<intptr_t>(this), window_android->GetJavaObject());
+  return true;
 }
 
 void AutofillKeyboardAccessoryView::Hide() {
@@ -66,24 +71,47 @@ void AutofillKeyboardAccessoryView::Show() {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     int android_icon_id = 0;
     if (!suggestion.icon.empty()) {
-      android_icon_id = ResourceMapper::MapFromChromiumId(
-          controller_->layout_model().GetIconResourceID(suggestion.icon));
+      android_icon_id = ResourceMapper::MapToJavaDrawableId(
+          GetIconResourceID(suggestion.icon));
     }
 
+    std::u16string value;
+    std::u16string label;
+    if (controller_->GetSuggestionMinorTextAt(i).empty()) {
+      value = controller_->GetSuggestionMainTextAt(i);
+      label = controller_->GetSuggestionLabelAt(i);
+    } else {
+      value = controller_->GetSuggestionMainTextAt(i);
+      label = controller_->GetSuggestionMinorTextAt(i);
+    }
+
+    // Set the offer title to display as the item tag.
+    std::u16string item_tag = std::u16string();
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableOffersInClankKeyboardAccessory) &&
+        !suggestion.offer_label.empty()) {
+      item_tag = suggestion.offer_label;
+      // If the offer label is not empty then replace the network icon by the
+      // offer tag.
+      android_icon_id =
+          ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
+    }
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++,
-        ConvertUTF16ToJavaString(env, controller_->GetElidedValueAt(i)),
-        ConvertUTF16ToJavaString(env, controller_->GetElidedLabelAt(i)),
-        android_icon_id, suggestion.frontend_id,
-        controller_->GetRemovalConfirmationText(i, nullptr, nullptr));
+        env, data_array, position++, ConvertUTF16ToJavaString(env, value),
+        ConvertUTF16ToJavaString(env, label),
+        ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        suggestion.frontend_id,
+        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
+        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
+        url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
                                                 controller_->IsRTL());
 }
 
 void AutofillKeyboardAccessoryView::ConfirmDeletion(
-    const base::string16& confirmation_title,
-    const base::string16& confirmation_body,
+    const std::u16string& confirmation_title,
+    const std::u16string& confirmation_body,
     base::OnceClosure confirm_deletion) {
   JNIEnv* env = base::android::AttachCurrentThread();
   confirm_deletion_ = std::move(confirm_deletion);

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_OVERLAY_PANEL_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_OVERLAY_PANEL_LAYER_H_
 
-#include <memory>
-
 #include "chrome/browser/android/compositor/layer/layer.h"
 
 namespace cc {
@@ -57,7 +55,8 @@ class OverlayPanelLayer : public Layer {
                      int icon_tint,
                      int drag_handlebar_tint,
                      float icon_opacity,
-                     int separator_line_color);
+                     int separator_line_color,
+                     float in_bar_related_searches_height);
 
   void SetProgressBar(int progress_bar_background_resource_id,
                       int progress_bar_resource_id,
@@ -81,7 +80,6 @@ class OverlayPanelLayer : public Layer {
   scoped_refptr<cc::Layer> layer_;
 
   scoped_refptr<cc::NinePatchLayer> panel_shadow_;
-  scoped_refptr<cc::NinePatchLayer> panel_shadow_right_;
   scoped_refptr<cc::NinePatchLayer> rounded_bar_top_;
   scoped_refptr<cc::SolidColorLayer> bar_background_;
   scoped_refptr<cc::UIResourceLayer> bar_text_;

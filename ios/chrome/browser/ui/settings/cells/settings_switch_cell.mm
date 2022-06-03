@@ -7,9 +7,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -18,11 +17,10 @@
 #endif
 
 namespace {
-// Padding used between the icon and the text labels.
-const CGFloat kIconTrailingPadding = 12;
 
-// Size of the icon image.
-const CGFloat kIconImageSize = 28;
+// Padding used between the |switchView| and the end of the |contentView|.
+const CGFloat kSwitchTrailingPadding = 22;
+
 }  // namespace
 
 @interface SettingsSwitchCell ()
@@ -66,7 +64,7 @@ const CGFloat kIconImageSize = 28;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
-    _textLabel.textColor = UIColor.cr_labelColor;
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.numberOfLines = 0;
     [self.contentView addSubview:_textLabel];
 
@@ -75,7 +73,7 @@ const CGFloat kIconImageSize = 28;
     _detailTextLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.numberOfLines = 0;
     [self.contentView addSubview:_detailTextLabel];
 
@@ -92,7 +90,7 @@ const CGFloat kIconImageSize = 28;
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
-                       constant:kIconTrailingPadding];
+                       constant:kTableViewImagePadding];
     _iconHiddenConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
@@ -108,7 +106,7 @@ const CGFloat kIconImageSize = 28;
 
       [_switchView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
+                         constant:-kSwitchTrailingPadding],
     ];
     _accessibilityConstraints = @[
       [_switchView.topAnchor
@@ -129,8 +127,10 @@ const CGFloat kIconImageSize = 28;
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
-      [_iconImageView.heightAnchor constraintEqualToConstant:kIconImageSize],
+      [_iconImageView.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_iconImageView.heightAnchor
+          constraintEqualToAnchor:_iconImageView.widthAnchor],
 
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
@@ -150,6 +150,10 @@ const CGFloat kIconImageSize = 28;
           constraintEqualToAnchor:_detailTextLabel.bottomAnchor],
       [_textLabel.bottomAnchor
           constraintEqualToAnchor:_detailTextLabel.topAnchor],
+
+      // Leading constraint for |customSepartor|.
+      [self.customSeparator.leadingAnchor
+          constraintEqualToAnchor:_textLabel.leadingAnchor],
     ]];
 
     if (UIContentSizeCategoryIsAccessibilityCategory(
@@ -166,8 +170,9 @@ const CGFloat kIconImageSize = 28;
 }
 
 + (UIColor*)defaultTextColorForState:(UIControlState)state {
-  return (state & UIControlStateDisabled) ? UIColor.cr_secondaryLabelColor
-                                          : UIColor.cr_labelColor;
+  return (state & UIControlStateDisabled)
+             ? [UIColor colorNamed:kTextSecondaryColor]
+             : [UIColor colorNamed:kTextPrimaryColor];
 }
 
 - (void)setIconImage:(UIImage*)image {

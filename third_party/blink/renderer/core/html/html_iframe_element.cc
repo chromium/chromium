@@ -24,22 +24,31 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_html.h"
+#include "base/metrics/histogram_macros.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
-#include "third_party/blink/renderer/core/feature_policy/iframe_policy.h"
+#include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/sandbox_flags.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
+#include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -50,7 +59,7 @@ HTMLIFrameElement::HTMLIFrameElement(Document& document)
       sandbox_(MakeGarbageCollected<HTMLIFrameElementSandbox>(this)),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {}
 
-void HTMLIFrameElement::Trace(Visitor* visitor) {
+void HTMLIFrameElement::Trace(Visitor* visitor) const {
   visitor->Trace(sandbox_);
   visitor->Trace(policy_);
   HTMLFrameElementBase::Trace(visitor);
@@ -62,7 +71,7 @@ HTMLIFrameElement::~HTMLIFrameElement() = default;
 const AttrNameToTrustedType& HTMLIFrameElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"srcdoc", SpecificTrustedType::kTrustedHTML}}));
+                      ({{"srcdoc", SpecificTrustedType::kHTML}}));
   return attribute_map;
 }
 
@@ -86,10 +95,10 @@ DOMTokenList* HTMLIFrameElement::sandbox() const {
 }
 
 DOMFeaturePolicy* HTMLIFrameElement::featurePolicy() {
-  if (!policy_) {
+  if (!policy_ && GetExecutionContext()) {
     policy_ = MakeGarbageCollected<IFramePolicy>(
-        &GetDocument(), GetFramePolicy().container_policy,
-        GetOriginForFeaturePolicy());
+        GetExecutionContext(), GetFramePolicy().container_policy,
+        GetOriginForPermissionsPolicy());
   }
   return policy_.Get();
 }
@@ -133,10 +142,10 @@ void HTMLIFrameElement::ParseAttribute(
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
   if (name == html_names::kNameAttr) {
-    if (IsInDocumentTree() && GetDocument().IsHTMLDocument()) {
-      HTMLDocument& document = ToHTMLDocument(GetDocument());
-      document.RemoveNamedItem(name_);
-      document.AddNamedItem(value);
+    auto* document = DynamicTo<HTMLDocument>(GetDocument());
+    if (document && IsInDocumentTree()) {
+      document->RemoveNamedItem(name_);
+      document->AddNamedItem(value);
     }
     AtomicString old_name = name_;
     name_ = value;
@@ -144,47 +153,29 @@ void HTMLIFrameElement::ParseAttribute(
       FrameOwnerPropertiesChanged();
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
-    String invalid_tokens;
-    bool feature_policy_for_sandbox =
-        RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled();
-    WebSandboxFlags current_flags =
-        value.IsNull()
-            ? WebSandboxFlags::kNone
-            : ParseSandboxPolicy(sandbox_->TokenSet(), invalid_tokens);
-    SetAllowedToDownload((current_flags & WebSandboxFlags::kDownloads) ==
-                         WebSandboxFlags::kNone);
-    // With FeaturePolicyForSandbox, sandbox flags are represented as part of
-    // the container policies. However, not all sandbox flags are yet converted
-    // and for now the residue will stay around in the stored flags.
-    // (see https://crbug.com/812381).
-    WebSandboxFlags sandbox_to_set = current_flags;
-    sandbox_flags_converted_to_feature_policies_ = WebSandboxFlags::kNone;
-    if (feature_policy_for_sandbox && current_flags != WebSandboxFlags::kNone) {
-      // Residue sandbox which will not be mapped to feature policies.
-      sandbox_to_set =
-          GetSandboxFlagsNotImplementedAsFeaturePolicy(current_flags);
-      // The part of sandbox which will be mapped to feature policies.
-      sandbox_flags_converted_to_feature_policies_ =
-          current_flags & ~sandbox_to_set;
-    }
-    SetSandboxFlags(sandbox_to_set);
-    if (!invalid_tokens.IsNull()) {
-      GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          mojom::ConsoleMessageSource::kOther,
-          mojom::ConsoleMessageLevel::kError,
-          "Error while parsing the 'sandbox' attribute: " + invalid_tokens));
-    }
-    if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-      Vector<String> messages;
-      UpdateContainerPolicy(&messages);
-      if (!messages.IsEmpty()) {
-        for (const String& message : messages) {
-          GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-              mojom::ConsoleMessageSource::kOther,
-              mojom::ConsoleMessageLevel::kWarning, message));
-        }
+
+    network::mojom::blink::WebSandboxFlags current_flags =
+        network::mojom::blink::WebSandboxFlags::kNone;
+    if (!value.IsNull()) {
+      using network::mojom::blink::WebSandboxFlags;
+      WebSandboxFlags ignored_flags =
+          !RuntimeEnabledFeatures::StorageAccessAPIEnabled()
+              ? WebSandboxFlags::kStorageAccessByUserActivation
+              : WebSandboxFlags::kNone;
+
+      auto parsed = network::ParseWebSandboxPolicy(sandbox_->value().Utf8(),
+                                                   ignored_flags);
+      current_flags = parsed.flags;
+      if (!parsed.error_message.empty()) {
+        GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Error while parsing the 'sandbox' attribute: " +
+                parsed.error_message)));
       }
     }
+    SetSandboxFlags(current_flags);
     UseCounter::Count(GetDocument(), WebFeature::kSandboxViaIFrame);
   } else if (name == html_names::kReferrerpolicyAttr) {
     referrer_policy_ = network::mojom::ReferrerPolicy::kDefault;
@@ -217,45 +208,55 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateContainerPolicy();
     }
   } else if (name == html_names::kCspAttr) {
-    if (!ContentSecurityPolicy::IsValidCSPAttr(
-            value.GetString(), GetDocument().RequiredCSP().GetString())) {
+    static const size_t kMaxLengthCSPAttribute = 4096;
+    if (value && (value.Contains('\n') || value.Contains('\r') ||
+                  !MatchesTheSerializedCSPGrammar(value.GetString()))) {
+      // TODO(antoniosartori): It would be safer to block loading iframes with
+      // invalid 'csp' attribute.
       required_csp_ = g_null_atom;
-      GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          mojom::ConsoleMessageSource::kOther,
-          mojom::ConsoleMessageLevel::kError,
-          "'csp' attribute is not a valid policy: " + value));
-      return;
-    }
-    if (required_csp_ != value) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "'csp' attribute is invalid: " + value));
+    } else if (value && value.length() > kMaxLengthCSPAttribute) {
+      // TODO(antoniosartori): It would be safer to block loading iframes with
+      // invalid 'csp' attribute.
+      required_csp_ = g_null_atom;
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          String::Format("'csp' attribute too long. The max length for the "
+                         "'csp' attribute is %zu bytes.",
+                         kMaxLengthCSPAttribute)));
+    } else if (required_csp_ != value) {
       required_csp_ = value;
-      FrameOwnerPropertiesChanged();
+      DidChangeAttributes();
+      UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
+    }
+  } else if (name == html_names::kAnonymousAttr &&
+             RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
+    bool new_value = !value.IsNull();
+    if (anonymous_ != new_value) {
+      anonymous_ = new_value;
+      DidChangeAttributes();
     }
   } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
       allow_ = value;
-      Vector<String> messages;
-      UpdateContainerPolicy(&messages);
-      if (!messages.IsEmpty()) {
-        for (const String& message : messages) {
-          GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-              mojom::ConsoleMessageSource::kOther,
-              mojom::ConsoleMessageLevel::kWarning, message));
-        }
-      }
+      UpdateContainerPolicy();
       if (!value.IsEmpty()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
     }
-  } else if (name == html_names::kDisallowdocumentaccessAttr) {
-    disallow_document_access_ = !value.IsNull();
-    // We don't need to call tell the client frame properties
-    // changed since this attribute only stays inside the renderer.
   } else if (name == html_names::kPolicyAttr) {
     if (required_policy_ != value) {
       required_policy_ = value;
       UpdateRequiredPolicy();
     }
+  } else if (name == html_names::kTrusttokenAttr) {
+    UseCounter::Count(GetDocument(), WebFeature::kTrustTokenIframe);
+    trust_token_ = value;
   } else {
     // Websites picked up a Chromium article that used this non-specified
     // attribute which ended up changing shape after the specification process.
@@ -264,16 +265,16 @@ void HTMLIFrameElement::ParseAttribute(
     // To avoid polluting the console, this is being recorded only once per
     // page.
     if (name == "gesture" && value == "media" && GetDocument().Loader() &&
-        !GetDocument().Loader()->GetUseCounterHelper().HasRecordedMeasurement(
+        !GetDocument().Loader()->GetUseCounter().IsCounted(
             WebFeature::kHTMLIFrameElementGestureMedia)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLIFrameElementGestureMedia);
-      GetDocument().AddConsoleMessage(
-          ConsoleMessage::Create(mojom::ConsoleMessageSource::kOther,
-                                 mojom::ConsoleMessageLevel::kWarning,
-                                 "<iframe gesture=\"media\"> is not supported. "
-                                 "Use <iframe allow=\"autoplay\">, "
-                                 "https://goo.gl/ximf56"));
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kOther,
+          mojom::ConsoleMessageLevel::kWarning,
+          "<iframe gesture=\"media\"> is not supported. "
+          "Use <iframe allow=\"autoplay\">, "
+          "https://goo.gl/ximf56"));
     }
 
     if (name == html_names::kSrcAttr)
@@ -282,55 +283,71 @@ void HTMLIFrameElement::ParseAttribute(
   }
 }
 
-DocumentPolicy::FeatureState HTMLIFrameElement::ConstructRequiredPolicy()
-    const {
-  return DocumentPolicy::Parse(required_policy_.Ascii())
-      .value_or(DocumentPolicy::FeatureState{});
-}
+DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
+  if (!RuntimeEnabledFeatures::DocumentPolicyNegotiationEnabled(
+          GetExecutionContext()))
+    return {};
 
-ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy(
-    Vector<String>* messages) const {
-  scoped_refptr<const SecurityOrigin> src_origin = GetOriginForFeaturePolicy();
-  scoped_refptr<const SecurityOrigin> self_origin =
-      GetDocument().GetSecurityOrigin();
-
-  // Start with the allow attribute
-  ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
-      allow_, self_origin, src_origin, messages, &GetDocument());
-
-  // Next, process sandbox flags. These all only take effect if a corresponding
-  // policy does *not* exist in the allow attribute's value.
-  if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    // If the frame is sandboxed at all, then warn if feature policy attributes
-    // will override the sandbox attributes.
-    if (messages && (sandbox_flags_converted_to_feature_policies_ &
-                     WebSandboxFlags::kNavigation) != WebSandboxFlags::kNone) {
-      for (const auto& pair : SandboxFlagsWithFeaturePolicies()) {
-        if ((sandbox_flags_converted_to_feature_policies_ & pair.first) !=
-                WebSandboxFlags::kNone &&
-            IsFeatureDeclared(pair.second, container_policy)) {
-          messages->push_back(String::Format(
-              "Allow and Sandbox attributes both mention '%s'. Allow will take "
-              "precedence.",
-              GetNameForFeature(pair.second).Utf8().c_str()));
-        }
-      }
-    }
-    ApplySandboxFlagsToParsedFeaturePolicy(
-        sandbox_flags_converted_to_feature_policies_, container_policy);
+  if (!required_policy_.IsEmpty()) {
+    UseCounter::Count(
+        GetDocument(),
+        mojom::blink::WebFeature::kDocumentPolicyIframePolicyAttribute);
   }
 
-  // Finally, process the allow* attribuets. Like sandbox attributes, they only
-  // take effect if the corresponding feature is not present in the allow
-  // attribute's value.
+  PolicyParserMessageBuffer logger;
+  DocumentPolicy::ParsedDocumentPolicy new_required_policy =
+      DocumentPolicyParser::Parse(required_policy_, logger)
+          .value_or(DocumentPolicy::ParsedDocumentPolicy{});
+
+  for (const auto& message : logger.GetMessages()) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther, message.level,
+        message.content));
+  }
+
+  if (!new_required_policy.endpoint_map.empty()) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Iframe policy attribute cannot specify reporting endpoint."));
+  }
+
+  for (const auto& policy_entry : new_required_policy.feature_state) {
+    mojom::blink::DocumentPolicyFeature feature = policy_entry.first;
+    if (!GetDocument().DocumentPolicyFeatureObserved(feature)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Blink.UseCounter.DocumentPolicy.PolicyAttribute", feature);
+    }
+  }
+  return new_required_policy.feature_state;
+}
+
+ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
+  if (!GetExecutionContext())
+    return ParsedPermissionsPolicy();
+
+  scoped_refptr<const SecurityOrigin> src_origin =
+      GetOriginForPermissionsPolicy();
+  scoped_refptr<const SecurityOrigin> self_origin =
+      GetExecutionContext()->GetSecurityOrigin();
+
+  PolicyParserMessageBuffer logger;
+
+  // Start with the allow attribute
+  ParsedPermissionsPolicy container_policy =
+      PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
+                                              logger, GetExecutionContext());
+
+  // Process the allow* attributes. These only take effect if the corresponding
+  // feature is not present in the allow attribute's value.
 
   // If allowfullscreen attribute is present and no fullscreen policy is set,
   // enable the feature for all origins.
   if (AllowFullscreen()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::FeaturePolicyFeature::kFullscreen, container_policy);
-    if (!policy_changed && messages) {
-      messages->push_back(
+        mojom::blink::PermissionsPolicyFeature::kFullscreen, container_policy);
+    if (!policy_changed) {
+      logger.Warn(
           "Allow attribute will take precedence over 'allowfullscreen'.");
     }
   }
@@ -338,9 +355,9 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy(
   // set, enable the feature for all origins.
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::FeaturePolicyFeature::kPayment, container_policy);
-    if (!policy_changed && messages) {
-      messages->push_back(
+        mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
+    if (!policy_changed) {
+      logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
     }
   }
@@ -349,6 +366,14 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy(
   // exists.
   if (policy_)
     policy_->UpdateContainerPolicy(container_policy, src_origin);
+
+  for (const auto& message : logger.GetMessages()) {
+    GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther, message.level,
+            message.content),
+        /* discard_duplicates */ true);
+  }
 
   return container_policy;
 }
@@ -360,7 +385,7 @@ bool HTMLIFrameElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 
 LayoutObject* HTMLIFrameElement::CreateLayoutObject(const ComputedStyle&,
                                                     LegacyLayout) {
-  return new LayoutIFrame(this);
+  return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
 Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(
@@ -368,31 +393,18 @@ Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(
   InsertionNotificationRequest result =
       HTMLFrameElementBase::InsertedInto(insertion_point);
 
-  if (insertion_point.IsInDocumentTree() && GetDocument().IsHTMLDocument()) {
-    ToHTMLDocument(GetDocument()).AddNamedItem(name_);
-
-    if (!ContentSecurityPolicy::IsValidCSPAttr(
-            required_csp_, GetDocument().RequiredCSP().GetString())) {
-      if (!required_csp_.IsEmpty()) {
-        GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-            mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kError,
-            "'csp' attribute is not a valid policy: " + required_csp_));
-      }
-      if (required_csp_ != GetDocument().RequiredCSP()) {
-        required_csp_ = GetDocument().RequiredCSP();
-        FrameOwnerPropertiesChanged();
-      }
-    }
-  }
+  auto* html_doc = DynamicTo<HTMLDocument>(GetDocument());
+  if (html_doc && insertion_point.IsInDocumentTree())
+    html_doc->AddNamedItem(name_);
   LogAddElementIfIsolatedWorldAndInDocument("iframe", html_names::kSrcAttr);
   return result;
 }
 
 void HTMLIFrameElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLFrameElementBase::RemovedFrom(insertion_point);
-  if (insertion_point.IsInDocumentTree() && GetDocument().IsHTMLDocument())
-    ToHTMLDocument(GetDocument()).RemoveNamedItem(name_);
+  auto* html_doc = DynamicTo<HTMLDocument>(GetDocument());
+  if (html_doc && insertion_point.IsInDocumentTree())
+    html_doc->RemoveNamedItem(name_);
 }
 
 bool HTMLIFrameElement::IsInteractiveContent() const {
@@ -401,6 +413,96 @@ bool HTMLIFrameElement::IsInteractiveContent() const {
 
 network::mojom::ReferrerPolicy HTMLIFrameElement::ReferrerPolicyAttribute() {
   return referrer_policy_;
+}
+
+network::mojom::blink::TrustTokenParamsPtr
+HTMLIFrameElement::ConstructTrustTokenParams() const {
+  if (!trust_token_)
+    return nullptr;
+
+  JSONParseError parse_error;
+  std::unique_ptr<JSONValue> parsed_attribute =
+      ParseJSON(trust_token_, &parse_error);
+  if (!parsed_attribute) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "iframe trusttoken attribute was invalid JSON: " + parse_error.message +
+            String::Format(" (line %d, col %d)", parse_error.line,
+                           parse_error.column)));
+    return nullptr;
+  }
+
+  network::mojom::blink::TrustTokenParamsPtr parsed_params =
+      internal::TrustTokenParamsFromJson(std::move(parsed_attribute));
+  if (!parsed_params) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Couldn't parse iframe trusttoken attribute (was it missing a "
+        "field?)"));
+    return nullptr;
+  }
+
+  // Trust token redemption and signing (but not issuance) require that the
+  // trust-token-redemption permissions policy be present.
+  bool operation_requires_permissions_policy =
+      parsed_params->type ==
+          network::mojom::blink::TrustTokenOperationType::kRedemption ||
+      parsed_params->type ==
+          network::mojom::blink::TrustTokenOperationType::kSigning;
+
+  if (operation_requires_permissions_policy &&
+      (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption))) {
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "Trust Tokens: Attempted redemption or signing without the "
+            "trust-token-redemption Permissions Policy feature present."));
+    return nullptr;
+  }
+
+  if (parsed_params->type ==
+          network::mojom::blink::TrustTokenOperationType::kIssuance &&
+      !IsTrustTokenIssuanceAvailableInExecutionContext(
+          *GetExecutionContext())) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Trust Tokens issuance is disabled except in "
+        "contexts with the TrustTokens Origin Trial enabled."));
+    return nullptr;
+  }
+
+  return parsed_params;
+}
+
+void HTMLIFrameElement::DidChangeAttributes() {
+  // Don't notify about updates if ContentFrame() is null, for example when
+  // the subframe hasn't been created yet; or if we are in the middle of
+  // swapping one frame for another, in which case the final state
+  // will be propagated at the end of the swapping operation.
+  if (is_swapping_frames() || !ContentFrame())
+    return;
+
+  // ParseContentSecurityPolicies needs a url to resolve report endpoints and
+  // for matching the keyword 'self'. However, the csp attribute does not allow
+  // report endpoints. Moreover, in the csp attribute, 'self' should not match
+  // the owner's url, but rather the frame src url. This is taken care by the
+  // Content-Security-Policy Embedded Enforcement algorithm, implemented in the
+  // NavigationRequest. That's why we pass an empty url here.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+      ParseContentSecurityPolicies(
+          required_csp_,
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
+  DCHECK_LE(csp.size(), 1u);
+
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
+      ContentFrame()->GetFrameToken(),
+      csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
 }
 
 }  // namespace blink

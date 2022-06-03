@@ -94,6 +94,10 @@ typedef std::vector<BlockHeader> BlockFilesBitmaps;
 class NET_EXPORT_PRIVATE BlockFiles {
  public:
   explicit BlockFiles(const base::FilePath& path);
+
+  BlockFiles(const BlockFiles&) = delete;
+  BlockFiles& operator=(const BlockFiles&) = delete;
+
   ~BlockFiles();
 
   // Performs the object initialization. create_files indicates if the backing
@@ -116,9 +120,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
   // Close all the files and set the internal state to be initializad again. The
   // cache is being purged.
   void CloseFiles();
-
-  // Sends UMA stats.
-  void ReportStats();
 
   // Returns true if the blocks pointed by a given address are currently used.
   // This method is only intended for debugging.
@@ -147,9 +148,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
   // Restores the header of a potentially inconsistent file.
   bool FixBlockFileHeader(MappedFile* file);
 
-  // Retrieves stats for the given file index.
-  void GetFileStats(int index, int* used_count, int* load);
-
   // Returns the filename for a given file index.
   base::FilePath Name(int index);
 
@@ -163,8 +161,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_TruncatedFile);
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_InvalidFile);
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_Stats);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockFiles);
 };
 
 }  // namespace disk_cache

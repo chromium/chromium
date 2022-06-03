@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* Derived from /ui/webui/resources/css/table.css. */
+/* Derived from /ui/webui/resources/css/tree.css. */
 
 tree {
   display: block;
@@ -15,25 +15,6 @@ tree {
   position: relative;
   user-select: none;
   white-space: nowrap;
-}
-
-.tree-row > .expand-icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/expand_more.png) 1x,
-      url(../images/files/ui/2x/expand_more.png) 2x);
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
-  position: relative;
-  transform: rotate(-90deg);
-  transition: all 150ms;
-  vertical-align: top;
-}
-
-.tree-row[selected] > .expand-icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/expand_more_active.png) 1x,
-      url(../images/files/ui/2x/expand_more_active.png) 2x);
 }
 
 /* All .tree-row > .file-row > ... rules are files-ng specific. */
@@ -88,12 +69,6 @@ html[dir=rtl] .tree-row > .file-row > .expand-icon {
 
 .tree-children {
   display: none;
-}
-
-/* Not used in files-ng: restrict by #directory-tree:not([files-ng]) to block
-   the trailing > * matching the files-ng .tree-row > .file-row structure. */
-#directory-tree:not([files-ng]) .tree-item > .tree-row > * {
-  display: inline-block;
 }
 
 .tree-label {

@@ -33,8 +33,8 @@ MusicManagerPrivateGetDeviceIdFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DeviceId::GetDeviceId(
       extension_id(),
-      base::Bind(&MusicManagerPrivateGetDeviceIdFunction::DeviceIdCallback,
-                 this));
+      base::BindOnce(&MusicManagerPrivateGetDeviceIdFunction::DeviceIdCallback,
+                     this));
   // GetDeviceId will respond asynchronously.
   return RespondLater();
 }
@@ -45,7 +45,7 @@ void MusicManagerPrivateGetDeviceIdFunction::DeviceIdCallback(
   if (device_id.empty()) {
     Respond(Error(kDeviceIdNotSupported));
   } else {
-    Respond(OneArgument(std::make_unique<base::Value>(device_id)));
+    Respond(OneArgument(base::Value(device_id)));
   }
 }
 

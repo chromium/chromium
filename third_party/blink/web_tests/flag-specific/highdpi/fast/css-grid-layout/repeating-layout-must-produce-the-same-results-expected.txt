@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+FAIL .grid 1 assert_equals: 
+<div class="grid fit-content" data-expected-width="160" data-expected-height="60">
+  <div class="i1" data-expected-width="50" data-expected-height="50">XX X</div>
+  <div class="i2" data-expected-width="100" data-expected-height="50">XX X</div>
+</div>
+width expected 160 but got 159
+FAIL .grid 2 assert_equals: 
+<div class="grid min-content" data-expected-width="110" data-expected-height="60">
+  <div class="i1" data-expected-width="50" data-expected-height="50">XX X</div>
+  <div class="i2" data-expected-width="50" data-expected-height="50">XX X</div>
+</div>
+width expected 110 but got 109
+FAIL .grid 3 assert_equals: 
+<div class="grid max-content" data-expected-width="160" data-expected-height="60">
+  <div class="i1" data-expected-width="50" data-expected-height="50">XX X</div>
+  <div class="i2" data-expected-width="100" data-expected-height="50">XX X</div>
+</div>
+width expected 160 but got 159
+Harness: the test ran to completion.
+

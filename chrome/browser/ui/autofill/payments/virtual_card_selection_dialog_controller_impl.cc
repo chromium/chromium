@@ -13,7 +13,8 @@ namespace autofill {
 
 VirtualCardSelectionDialogControllerImpl::
     VirtualCardSelectionDialogControllerImpl(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<VirtualCardSelectionDialogControllerImpl>(
+          *web_contents) {}
 
 VirtualCardSelectionDialogControllerImpl::
     ~VirtualCardSelectionDialogControllerImpl() {
@@ -40,7 +41,7 @@ void VirtualCardSelectionDialogControllerImpl::ShowDialog(
 
   callback_ = std::move(callback);
   dialog_view_ =
-      VirtualCardSelectionDialogView::CreateAndShow(this, web_contents());
+      VirtualCardSelectionDialogView::CreateAndShow(this, &GetWebContents());
 }
 
 bool VirtualCardSelectionDialogControllerImpl::IsOkButtonEnabled() {
@@ -49,27 +50,27 @@ bool VirtualCardSelectionDialogControllerImpl::IsOkButtonEnabled() {
   return !selected_card_id_.empty();
 }
 
-base::string16 VirtualCardSelectionDialogControllerImpl::GetContentTitle()
+std::u16string VirtualCardSelectionDialogControllerImpl::GetContentTitle()
     const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_TITLE,
       candidates_.size());
 }
 
-base::string16 VirtualCardSelectionDialogControllerImpl::GetContentExplanation()
+std::u16string VirtualCardSelectionDialogControllerImpl::GetContentExplanation()
     const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_EXPLANATION,
       candidates_.size());
 }
 
-base::string16 VirtualCardSelectionDialogControllerImpl::GetOkButtonLabel()
+std::u16string VirtualCardSelectionDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_OK_BUTTON_LABEL);
 }
 
-base::string16 VirtualCardSelectionDialogControllerImpl::GetCancelButtonLabel()
+std::u16string VirtualCardSelectionDialogControllerImpl::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CANCEL_BUTTON_LABEL);
@@ -101,6 +102,6 @@ void VirtualCardSelectionDialogControllerImpl::OnDialogClosed() {
   callback_.Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardSelectionDialogControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardSelectionDialogControllerImpl);
 
 }  // namespace autofill

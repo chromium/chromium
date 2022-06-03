@@ -1,0 +1,50 @@
+    <style include="cr-shared-style settings-shared iron-flex">
+      #safetyCheckCollapse .list-item.selected {
+         min-height: var(--settings-row-two-line-min-height);
+      }
+
+      iron-icon {
+        display: flex;
+        flex-shrink: 0;
+        padding-inline-end: var(--cr-icon-button-margin-start);
+        width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+      }
+    </style>
+    <div id="safetyCheckParent" class="cr-row first two-line">
+      <iron-icon icon="settings20:safety-check" aria-hidden="true">
+      </iron-icon>
+      <div class="flex cr-padded-text" no-search>
+        [[parentDisplayString_]]
+      </div>
+      <template is="dom-if" if="[[shouldShowParentButton_(parentStatus_)]]"
+          restamp>
+        <cr-button id="safetyCheckParentButton" class="action-button"
+            on-click="onRunSafetyCheckClick_" no-search
+            aria-label="$i18n{safetyCheckParentButtonAriaLabel}">
+          $i18n{safetyCheckParentButton}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[shouldShowParentIconButton_(parentStatus_)]]"
+          restamp>
+        <cr-icon-button
+            iron-icon="settings:refresh"
+            on-click="onRunSafetyCheckClick_"
+            aria-label="$i18n{safetyCheckParentRunAgainButtonAriaLabel}">
+        </cr-icon-button>
+      </template>
+    </div>
+    <iron-collapse id="safetyCheckCollapse"
+        opened="[[shouldShowChildren_(parentStatus_)]]">
+      <settings-safety-check-updates-child>
+      </settings-safety-check-updates-child>
+      <settings-safety-check-passwords-child>
+      </settings-safety-check-passwords-child>
+      <settings-safety-check-safe-browsing-child>
+      </settings-safety-check-safe-browsing-child>
+      <settings-safety-check-extensions-child>
+      </settings-safety-check-extensions-child>
+<if expr="_google_chrome and is_win">
+      <settings-safety-check-chrome-cleaner-child id="chromeCleanerChild">
+      </settings-safety-check-chrome-cleaner-child>
+</if>
+    </iron-collapse>

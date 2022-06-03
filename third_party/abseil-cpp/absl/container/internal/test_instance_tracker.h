@@ -21,6 +21,7 @@
 #include "absl/types/compare.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace test_internal {
 
 // A type that counts number of occurrences of the type, the live occurrences of
@@ -267,6 +268,7 @@ class MovableOnlyInstance : public BaseCountedInstance {
 };
 
 }  // namespace test_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_TEST_INSTANCE_TRACKER_H_

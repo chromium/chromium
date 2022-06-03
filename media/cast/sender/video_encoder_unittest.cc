@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,7 +27,7 @@
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "media/cast/sender/h264_vt_encoder.h"
 #endif
 
@@ -36,11 +36,14 @@ namespace cast {
 
 class VideoEncoderTest
     : public ::testing::TestWithParam<std::pair<Codec, bool>> {
+ public:
+  VideoEncoderTest(const VideoEncoderTest&) = delete;
+  VideoEncoderTest& operator=(const VideoEncoderTest&) = delete;
+
  protected:
   VideoEncoderTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)),
-        thread_task_runner_override_reverter_(
-            base::ThreadTaskRunnerHandle::OverrideForTesting(task_runner_)),
+        task_runner_handle_override_(task_runner_),
         cast_environment_(new CastEnvironment(&testing_clock_,
                                               task_runner_,
                                               task_runner_,
@@ -57,8 +60,10 @@ class VideoEncoderTest
     video_config_.codec = GetParam().first;
     video_config_.use_external_encoder = GetParam().second;
 
-    if (video_config_.use_external_encoder)
-      vea_factory_.reset(new FakeVideoEncodeAcceleratorFactory(task_runner_));
+    if (video_config_.use_external_encoder) {
+      vea_factory_ =
+          std::make_unique<FakeVideoEncodeAcceleratorFactory>(task_runner_);
+    }
   }
 
   void TearDown() final {
@@ -71,13 +76,11 @@ class VideoEncoderTest
     video_config_.video_codec_params.max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
         cast_environment_, video_config_,
-        base::Bind(&VideoEncoderTest::OnOperationalStatusChange,
-                   base::Unretained(this)),
-        base::Bind(
+        base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
+                            base::Unretained(this)),
+        base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
-            base::Unretained(vea_factory_.get())),
-        base::Bind(&FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
-                   base::Unretained(vea_factory_.get())));
+            base::Unretained(vea_factory_.get())));
     RunTasksAndAdvanceClock();
     if (is_encoder_present())
       ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
@@ -94,7 +97,7 @@ class VideoEncoderTest
 
   bool is_testing_video_toolbox_encoder() const {
     return
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
         (!video_config_.use_external_encoder &&
          H264VideoToolboxEncoder::IsSupported(video_config_)) ||
 #endif
@@ -122,9 +125,9 @@ class VideoEncoderTest
 
   void RunTasksAndAdvanceClock() {
     DCHECK_GT(video_config_.max_frame_rate, 0);
-    const base::TimeDelta frame_duration = base::TimeDelta::FromMicroseconds(
-        1000000.0 / video_config_.max_frame_rate);
-#if defined(OS_MACOSX)
+    const base::TimeDelta frame_duration =
+        base::Microseconds(1000000.0 / video_config_.max_frame_rate);
+#if defined(OS_MAC)
     if (is_testing_video_toolbox_encoder()) {
       // The H264VideoToolboxEncoder (on MAC_OSX and IOS) is not a faked
       // implementation in these tests, and performs its encoding asynchronously
@@ -161,13 +164,10 @@ class VideoEncoderTest
   // If the implementation of |video_encoder_| is ExternalVideoEncoder, check
   // that the VEA factory has responded (by running the callbacks) a specific
   // number of times.  Otherwise, check that the VEA factory is inactive.
-  void ExpectVEAResponsesForExternalVideoEncoder(
-      int vea_response_count,
-      int shm_response_count) const {
+  void ExpectVEAResponseForExternalVideoEncoder(int vea_response_count) const {
     if (!vea_factory_)
       return;
     EXPECT_EQ(vea_response_count, vea_factory_->vea_response_count());
-    EXPECT_EQ(shm_response_count, vea_factory_->shm_response_count());
   }
 
   void SetVEAFactoryAutoRespond(bool auto_respond) {
@@ -192,7 +192,7 @@ class VideoEncoderTest
 
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
-  base::ScopedClosureRunner thread_task_runner_override_reverter_;
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override_;
   const scoped_refptr<CastEnvironment> cast_environment_;
   FrameSenderConfig video_config_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
@@ -200,8 +200,6 @@ class VideoEncoderTest
   OperationalStatus operational_status_;
   std::unique_ptr<VideoEncoder> video_encoder_;
   std::unique_ptr<VideoFrameFactory> video_frame_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderTest);
 };
 
 // Tests that the encoder outputs encoded frames, and also responds to frame
@@ -217,7 +215,7 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
   CreateEncoder();
   SetVEAFactoryAutoRespond(true);
 
-  ExpectVEAResponsesForExternalVideoEncoder(0, 0);
+  ExpectVEAResponseForExternalVideoEncoder(0);
 
   std::vector<gfx::Size> frame_sizes;
   frame_sizes.push_back(gfx::Size(128, 72));
@@ -255,7 +253,7 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
       const base::TimeDelta timestamp = video_frame->timestamp();
       const bool accepted_request = video_encoder()->EncodeVideoFrame(
           std::move(video_frame), reference_time,
-          base::BindRepeating(
+          base::BindOnce(
               [](base::WeakPtr<EncodedFrames> encoded_frames,
                  RtpTimeTicks expected_rtp_timestamp,
                  base::TimeTicks expected_reference_time,
@@ -343,19 +341,18 @@ TEST_P(VideoEncoderTest, MAYBE_CanBeDestroyedBeforeVEAIsCreated) {
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
   video_encoder()->EncodeVideoFrame(
       CreateTestVideoFrame(gfx::Size(128, 72)), Now(),
-      base::BindRepeating(
-          [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Destroy the encoder, and confirm the VEA Factory did not respond yet.
   DestroyEncoder();
-  ExpectVEAResponsesForExternalVideoEncoder(0, 0);
+  ExpectVEAResponseForExternalVideoEncoder(0);
 
   // Allow the VEA Factory to respond by running the creation callback.  When
   // the task runs, it will be a no-op since the weak pointers to the
   // ExternalVideoEncoder were invalidated.
   SetVEAFactoryAutoRespond(true);
   RunTasksAndAdvanceClock();
-  ExpectVEAResponsesForExternalVideoEncoder(1, 0);
+  ExpectVEAResponseForExternalVideoEncoder(1);
 }
 
 namespace {
@@ -367,7 +364,7 @@ std::vector<std::pair<Codec, bool>> DetermineEncodersToTest() {
   values.push_back(std::make_pair(CODEC_VIDEO_VP8, false));
   // Hardware-accelerated encoder (faked).
   values.push_back(std::make_pair(CODEC_VIDEO_VP8, true));
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // VideoToolbox encoder (when VideoToolbox is present).
   FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
   video_config.use_external_encoder = false;

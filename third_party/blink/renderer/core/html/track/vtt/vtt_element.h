@@ -82,7 +82,7 @@ class VTTElement final : public Element {
   const TextTrack* GetTrack() const { return track_; }
 
   void SetTrack(TextTrack*);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<TextTrack> track_;

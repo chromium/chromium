@@ -1,0 +1,122 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm <<
+    /Fields [4 0 R 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R]
+  >>
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 <<
+        /Type /Font
+        /Subtype /Type1
+        /BaseFont /Helvetica
+      >>
+    >>
+  >>
+  /MediaBox [0 0 300 600]
+  /Annots [4 0 R 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R]
+>>
+endobj
+4 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 0
+  /T (Listbox_SingleSelect)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 350 200 380]
+  /Opt [[(foo) (Foo)] [(bar) (Bar)] [(qux) (Qux)]]
+>>
+endobj
+5 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 131072
+  /T (Combo1)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 400 200 430]
+  /Opt [(Apple) (Banana) (Cherry)]
+  /V (Banana)
+>>
+endobj
+6 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 1
+  /T (Listbox_ReadOnly)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 500 200 530]
+  /Opt [(Dog) (Elephant) (Frog)]
+>>
+endobj
+7 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 2097152
+  /T (Listbox_MultiSelectMultipleIndices)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 250 200 280]
+  /Opt [(Albania) (Belgium) (Croatia) (Denmark) (Estonia)]
+  /I [1 3]
+>>
+endobj
+8 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 2097152
+  /T (Listbox_MultiSelectMultipleValues)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 200 200 230]
+  /Opt [(Alpha) (Beta) (Gamma) (Delta) (Epsilon)]
+  /V [(Epsilon) (Gamma)]
+>>
+endobj
+9 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Ch
+  /Ff 2097152
+  /T (Listbox_MultiSelectMultipleMismatch)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [100 150 200 180]
+  /Opt [(Alligator) (Bear) (Cougar) (Deer) (Echidna)]
+  /V [(Alligator) (Cougar)]
+  /I [1 3 4]
+>>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000138 00000 n 
+0000000201 00000 n 
+0000000462 00000 n 
+0000000667 00000 n 
+0000000861 00000 n 
+0000001044 00000 n 
+0000001288 00000 n 
+0000001536 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 10
+>>
+startxref
+1806
+%%EOF

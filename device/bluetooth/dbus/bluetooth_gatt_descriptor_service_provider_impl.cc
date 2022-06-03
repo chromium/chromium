@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_attribute_helpers.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -40,8 +41,8 @@ BluetoothGattDescriptorServiceProviderImpl::
       delegate_(std::move(delegate)),
       object_path_(object_path),
       characteristic_path_(characteristic_path) {
-  VLOG(1) << "Created Bluetooth GATT characteristic descriptor: "
-          << object_path.value() << " UUID: " << uuid;
+  DVLOG(1) << "Created Bluetooth GATT characteristic descriptor: "
+           << object_path.value() << " UUID: " << uuid;
   if (!bus_)
     return;
 
@@ -57,53 +58,55 @@ BluetoothGattDescriptorServiceProviderImpl::
 
   exported_object_->ExportMethod(
       dbus::kDBusPropertiesInterface, dbus::kDBusPropertiesGet,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::Get,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&BluetoothGattDescriptorServiceProviderImpl::Get,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   exported_object_->ExportMethod(
       dbus::kDBusPropertiesInterface, dbus::kDBusPropertiesSet,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::Set,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&BluetoothGattDescriptorServiceProviderImpl::Set,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   exported_object_->ExportMethod(
       dbus::kDBusPropertiesInterface, dbus::kDBusPropertiesGetAll,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::GetAll,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&BluetoothGattDescriptorServiceProviderImpl::GetAll,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // org.bluez.GattDescriptor1 interface:
   exported_object_->ExportMethod(
       bluetooth_gatt_descriptor::kBluetoothGattDescriptorInterface,
       bluetooth_gatt_descriptor::kReadValue,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::ReadValue,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &BluetoothGattDescriptorServiceProviderImpl::ReadValue,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
   exported_object_->ExportMethod(
       bluetooth_gatt_descriptor::kBluetoothGattDescriptorInterface,
       bluetooth_gatt_descriptor::kWriteValue,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::WriteValue,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &BluetoothGattDescriptorServiceProviderImpl::WriteValue,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 BluetoothGattDescriptorServiceProviderImpl::
     ~BluetoothGattDescriptorServiceProviderImpl() {
-  VLOG(1) << "Cleaning up Bluetooth GATT characteristic descriptor: "
-          << object_path_.value();
+  DVLOG(1) << "Cleaning up Bluetooth GATT characteristic descriptor: "
+           << object_path_.value();
   if (bus_)
     bus_->UnregisterExportedObject(object_path_);
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::SendValueChanged(
     const std::vector<uint8_t>& value) {
-  VLOG(2) << "Emitting a PropertiesChanged signal for descriptor value.";
+  DVLOG(2) << "Emitting a PropertiesChanged signal for descriptor value.";
   dbus::Signal signal(dbus::kDBusPropertiesInterface,
                       dbus::kDBusPropertiesChangedSignal);
   dbus::MessageWriter writer(&signal);
@@ -139,8 +142,8 @@ bool BluetoothGattDescriptorServiceProviderImpl::OnOriginThread() {
 void BluetoothGattDescriptorServiceProviderImpl::Get(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(2) << "BluetoothGattDescriptorServiceProvider::Get: "
-          << object_path_.value();
+  DVLOG(2) << "BluetoothGattDescriptorServiceProvider::Get: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
@@ -197,8 +200,8 @@ void BluetoothGattDescriptorServiceProviderImpl::Get(
 void BluetoothGattDescriptorServiceProviderImpl::Set(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(2) << "BluetoothGattDescriptorServiceProviderImpl::Set: "
-          << object_path_.value();
+  DVLOG(2) << "BluetoothGattDescriptorServiceProviderImpl::Set: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
   // All of the properties on this interface are read-only, so just return
   // error.
@@ -211,8 +214,8 @@ void BluetoothGattDescriptorServiceProviderImpl::Set(
 void BluetoothGattDescriptorServiceProviderImpl::GetAll(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(2) << "BluetoothGattDescriptorServiceProvider::GetAll: "
-          << object_path_.value();
+  DVLOG(2) << "BluetoothGattDescriptorServiceProvider::GetAll: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
@@ -247,8 +250,8 @@ void BluetoothGattDescriptorServiceProviderImpl::GetAll(
 void BluetoothGattDescriptorServiceProviderImpl::ReadValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(3) << "BluetoothGattDescriptorServiceProvider::ReadValue: "
-          << object_path_.value();
+  DVLOG(3) << "BluetoothGattDescriptorServiceProvider::ReadValue: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
@@ -267,25 +270,22 @@ void BluetoothGattDescriptorServiceProviderImpl::ReadValue(
   }
 
   // GetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->GetValue(
       device_path,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnReadValue,
-                 weak_ptr_factory_.GetWeakPtr(), method_call,
-                 response_sender_adapted),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnFailure,
-                 weak_ptr_factory_.GetWeakPtr(), method_call,
-                 response_sender_adapted));
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnReadValue,
+                     weak_ptr_factory_.GetWeakPtr(), method_call,
+                     std::move(split_response_sender.first)));
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::WriteValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(3) << "BluetoothGattDescriptorServiceProvider::WriteValue: "
-          << object_path_.value();
+  DVLOG(3) << "BluetoothGattDescriptorServiceProvider::WriteValue: "
+           << object_path_.value();
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
@@ -316,34 +316,45 @@ void BluetoothGattDescriptorServiceProviderImpl::WriteValue(
   }
 
   // SetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->SetValue(
       device_path, value,
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnWriteValue,
-                 weak_ptr_factory_.GetWeakPtr(), method_call,
-                 response_sender_adapted),
-      base::Bind(&BluetoothGattDescriptorServiceProviderImpl::OnFailure,
-                 weak_ptr_factory_.GetWeakPtr(), method_call,
-                 response_sender_adapted));
+      base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnWriteValue,
+                     weak_ptr_factory_.GetWeakPtr(), method_call,
+                     std::move(split_response_sender.first)),
+      base::BindOnce(
+          &BluetoothGattDescriptorServiceProviderImpl::OnWriteFailure,
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.second)));
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::OnExported(
     const std::string& interface_name,
     const std::string& method_name,
     bool success) {
-  LOG_IF(WARNING, !success) << "Failed to export " << interface_name << "."
-                            << method_name;
+  DVLOG_IF(1, !success) << "Failed to export " << interface_name << "."
+                        << method_name;
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::OnReadValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
-  VLOG(3) << "Descriptor value obtained from delegate. Responding to "
-             "ReadValue.";
+  if (error_code.has_value()) {
+    DVLOG(2) << "Failed to get descriptor value. Report error.";
+    std::unique_ptr<dbus::ErrorResponse> error_response =
+        dbus::ErrorResponse::FromMethodCall(method_call, kErrorFailed,
+                                            "Failed to get descriptor value.");
+    std::move(response_sender).Run(std::move(error_response));
+    return;
+  }
+
+  DVLOG(3) << "Descriptor value obtained from delegate. Responding to "
+              "ReadValue.";
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
@@ -355,7 +366,7 @@ void BluetoothGattDescriptorServiceProviderImpl::OnReadValue(
 void BluetoothGattDescriptorServiceProviderImpl::OnWriteValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(3) << "Responding to WriteValue.";
+  DVLOG(3) << "Responding to WriteValue.";
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
@@ -394,13 +405,13 @@ void BluetoothGattDescriptorServiceProviderImpl::WriteProperties(
   writer->CloseContainer(&array_writer);
 }
 
-void BluetoothGattDescriptorServiceProviderImpl::OnFailure(
+void BluetoothGattDescriptorServiceProviderImpl::OnWriteFailure(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  VLOG(2) << "Failed to get/set descriptor value. Report error.";
+  DVLOG(2) << "Failed to set descriptor value. Report error.";
   std::unique_ptr<dbus::ErrorResponse> error_response =
-      dbus::ErrorResponse::FromMethodCall(
-          method_call, kErrorFailed, "Failed to get/set descriptor value.");
+      dbus::ErrorResponse::FromMethodCall(method_call, kErrorFailed,
+                                          "Failed to set descriptor value.");
   std::move(response_sender).Run(std::move(error_response));
 }
 

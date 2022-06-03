@@ -7,48 +7,72 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 struct WGPUDeviceProperties;
 
 namespace blink {
 
+class GPUAdapter;
+class GPUBuffer;
 class GPURequestAdapterOptions;
+class NavigatorBase;
 class ScriptPromiseResolver;
 class ScriptState;
-class WebGraphicsContext3DProvider;
 class DawnControlClientHolder;
 
-class GPU final : public ScriptWrappable, public ContextLifecycleObserver {
+class GPU final : public ScriptWrappable,
+                  public Supplement<NavigatorBase>,
+                  public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(GPU);
 
  public:
-  static GPU* Create(ExecutionContext& execution_context);
-  explicit GPU(ExecutionContext& execution_context,
-               std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
+  static const char kSupplementName[];
+
+  // Getter for navigator.gpu
+  static GPU* gpu(NavigatorBase&);
+
+  explicit GPU(NavigatorBase&);
+
+  GPU(const GPU&) = delete;
+  GPU& operator=(const GPU&) = delete;
+
   ~GPU() override;
 
   // ScriptWrappable overrides
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
-  // ContextLifecycleObserver overrides
-  void ContextDestroyed(ExecutionContext* execution_context) override;
+  // ExecutionContextLifecycleObserver overrides
+  void ContextDestroyed() override;
 
   // gpu.idl
   ScriptPromise requestAdapter(ScriptState* script_state,
                                const GPURequestAdapterOptions* options);
 
+  // Store the buffer in a weak hash set so we can destroy it when the
+  // context is destroyed. Note: there is no need to "untrack" buffers
+  // because Oilpan automatically removes them from the weak hash set
+  // when the GPUBuffer is garbage-collected.
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
+  void TrackMappableBuffer(GPUBuffer* buffer);
+
  private:
-  void OnRequestAdapterCallback(ScriptPromiseResolver* resolver,
-                                uint32_t adapter_server_id,
-                                const WGPUDeviceProperties& properties);
+  void OnRequestAdapterCallback(ScriptState* script_state,
+                                const GPURequestAdapterOptions* options,
+                                ScriptPromiseResolver* resolver,
+                                int32_t adapter_server_id,
+                                const WGPUDeviceProperties& properties,
+                                const char* error_message);
+
+  void RecordAdapterForIdentifiability(ScriptState* script_state,
+                                       const GPURequestAdapterOptions* options,
+                                       GPUAdapter* adapter) const;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPU);
+  HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 };
 
 }  // namespace blink

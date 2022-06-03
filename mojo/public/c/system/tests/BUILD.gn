@@ -26,9 +26,7 @@ source_set("tests") {
 source_set("perftests") {
   testonly = true
 
-  sources = [
-    "core_perftest.cc",
-  ]
+  sources = [ "core_perftest.cc" ]
 
   deps = [
     "//mojo/public/cpp/system",

@@ -1,0 +1,23 @@
+/* This file is generated from:
+{%- for path in in_files %}
+ *  {{path}}
+{%-  endfor %}
+ */
+
+syntax = "proto3";
+
+package chromeos;
+
+// Non-premultiplied 8-bit ARGB values.
+message Color {
+  // Color value to use in light mode.
+  uint32 light_value = 1;
+  // Color value to use in dark mode.
+  uint32 dark_value = 2;
+}
+
+message Colors {
+{%- for field in fields %}
+  map<string, Color> {{field.name}} = {{field.id}};
+{%-  endfor %}
+}

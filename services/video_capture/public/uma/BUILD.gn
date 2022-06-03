@@ -8,7 +8,5 @@ source_set("uma") {
     "video_capture_service_event.h",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -68,9 +67,12 @@ class ConstrainedWebDialogUI : public content::WebUIController {
  public:
   explicit ConstrainedWebDialogUI(content::WebUI* web_ui);
   ~ConstrainedWebDialogUI() override;
+  ConstrainedWebDialogUI(const ConstrainedWebDialogUI&) = delete;
+  ConstrainedWebDialogUI& operator=(const ConstrainedWebDialogUI&) = delete;
 
   // WebUIController implementation:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 
   // Sets the delegate on the WebContents.
   static void SetConstrainedDelegate(content::WebContents* web_contents,
@@ -85,8 +87,6 @@ class ConstrainedWebDialogUI : public content::WebUIController {
  private:
   // JS Message Handler
   void OnDialogCloseMessage(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWebDialogUI);
 };
 
 // Create and show a constrained HTML dialog. The actual object that gets

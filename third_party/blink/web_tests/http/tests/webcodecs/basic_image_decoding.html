@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>basic image decoding</title>
+<canvas width="128" height="128"></canvas>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(t) {
+  fetch("/resources/square.png").then(t.step_func(response => {
+    response.arrayBuffer().then(t.step_func(buffer => {
+      let decoder = new ImageDecoder({data: buffer, type: "image/png"})
+      decoder.decode({frameIndex: 0}).then(t.step_func(frame => {
+        let ctx = document.querySelector('canvas').getContext('2d');
+        ctx.drawImage(frame.image, 0, 0);
+        t.done();
+      })).catch(t.unreached_func());
+    })).catch(t.unreached_func());
+  })).catch(t.unreached_func());
+});
+</script>

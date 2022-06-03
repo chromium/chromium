@@ -5,16 +5,26 @@
 #ifndef CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
 #define CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
 
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/tts_platform.h"
 
 // This class includes extension-based tts through LoadBuiltInTtsExtension and
 // native tts through ARC.
 class TtsPlatformImplChromeOs : public content::TtsPlatform {
  public:
+  TtsPlatformImplChromeOs(const TtsPlatformImplChromeOs&) = delete;
+  TtsPlatformImplChromeOs& operator=(const TtsPlatformImplChromeOs&) = delete;
+
+  // Sets the voices exposed by this TtsPlatform.
+  void SetVoices(std::vector<content::VoiceData> voices);
+
+  // Called by ArcTtsService when it receives a word event.
+  void ReceivedWordEvent();
+
   // TtsPlatform overrides:
-  bool PlatformImplAvailable() override;
-  bool LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
+  bool PlatformImplSupported() override;
+  bool PlatformImplInitialized() override;
+  void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
@@ -27,6 +37,7 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   bool IsSpeaking() override;
+  bool PreferEngineDelegateVoices() override;
 
   // Unimplemented.
   void Pause() override {}
@@ -34,13 +45,19 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   void WillSpeakUtteranceWithVoice(
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
+  void Shutdown() override {}
+  void GetVoicesForBrowserContext(
+      content::BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<content::VoiceData>* out_voices) override {}
 
   // Get the single instance of this class.
   static TtsPlatformImplChromeOs* GetInstance();
 
  private:
+  friend base::NoDestructor<TtsPlatformImplChromeOs>;
   TtsPlatformImplChromeOs();
-  virtual ~TtsPlatformImplChromeOs();
+  ~TtsPlatformImplChromeOs();
 
   void ProcessSpeech(int utterance_id,
                      const std::string& lang,
@@ -49,13 +66,11 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
-  friend struct base::DefaultSingletonTraits<TtsPlatformImplChromeOs>;
-
   std::string error_;
 
-  base::WeakPtrFactory<TtsPlatformImplChromeOs> weak_factory_{this};
+  std::vector<content::VoiceData> voices_;
 
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplChromeOs);
+  bool received_word_event_ = false;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_

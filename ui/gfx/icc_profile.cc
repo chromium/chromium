@@ -8,9 +8,9 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
@@ -22,9 +22,9 @@ namespace {
 
 static const size_t kMaxCachedICCProfiles = 16;
 
-// An MRU cache mapping data to ICCProfile objects, to avoid re-parsing
+// An LRU cache mapping data to ICCProfile objects, to avoid re-parsing
 // profiles every time they are read.
-using DataToProfileCacheBase = base::MRUCache<std::vector<char>, ICCProfile>;
+using DataToProfileCacheBase = base::LRUCache<std::vector<char>, ICCProfile>;
 class DataToProfileCache : public DataToProfileCacheBase {
  public:
   DataToProfileCache() : DataToProfileCacheBase(kMaxCachedICCProfiles) {}
@@ -38,16 +38,16 @@ base::LazyInstance<base::Lock>::Leaky g_icc_profile_lock =
 
 }  // namespace
 
-ICCProfile::Internals::AnalyzeResult ICCProfile::Internals::Initialize() {
+void ICCProfile::Internals::Initialize() {
   // Start out with no parametric data.
   if (data_.empty())
-    return kICCNoProfile;
+    return;
 
   // Parse the profile.
   skcms_ICCProfile profile;
   if (!skcms_Parse(data_.data(), data_.size(), &profile)) {
     DLOG(ERROR) << "Failed to parse ICC profile.";
-    return kICCFailedToParse;
+    return;
   }
 
   // We have seen many users with profiles that don't have a D50 white point.
@@ -64,8 +64,12 @@ ICCProfile::Internals::AnalyzeResult ICCProfile::Internals::Initialize() {
   if (fabsf(wX - kD50_WhitePoint[0]) > 0.04f ||
       fabsf(wY - kD50_WhitePoint[1]) > 0.04f ||
       fabsf(wZ - kD50_WhitePoint[2]) > 0.04f) {
-    return kICCFailedToParse;
+    return;
   }
+
+  // At this point, the profile is considered valid. We still need to determine
+  // if it's representable with a parametric transfer function.
+  is_valid_ = true;
 
   // Extract the primary matrix, and assume that transfer function is sRGB until
   // we get something more precise.
@@ -78,7 +82,7 @@ ICCProfile::Internals::AnalyzeResult ICCProfile::Internals::Initialize() {
   if (!skcms_MakeUsableAsDestinationWithSingleCurve(&profile)) {
     DLOG(ERROR) << "Parsed ICC profile but can't make usable as destination, "
                    "using sRGB gamma";
-    return kICCFailedToMakeUsable;
+    return;
   }
 
   // If SkColorSpace will treat the gamma as that of sRGB, then use the named
@@ -87,10 +91,14 @@ ICCProfile::Internals::AnalyzeResult ICCProfile::Internals::Initialize() {
   if (!sk_color_space) {
     DLOG(ERROR) << "Parsed ICC profile but cannot create SkColorSpace from it, "
                    "using sRGB gamma.";
-    return kICCFailedToMakeUsable;
+    return;
   }
+
+  // We were able to get a parametric representation of the transfer function.
+  is_parametric_ = true;
+
   if (sk_color_space->gammaCloseToSRGB())
-    return kICCExtractedMatrixAndTrFn;
+    return;
 
   // We assume that if we accurately approximated the profile, then the
   // single-curve version (which may have higher error) is also okay. If we
@@ -98,7 +106,6 @@ ICCProfile::Internals::AnalyzeResult ICCProfile::Internals::Initialize() {
   // we could check to see if the single-curve version is/ approximately equal
   // to the original (or to the multi-channel approximation).
   transfer_fn_ = profile.trc[0].parametric;
-  return kICCExtractedMatrixAndTrFn;
 }
 
 ICCProfile::ICCProfile() = default;
@@ -212,52 +219,10 @@ ICCProfile ICCProfile::FromColorSpace(const ColorSpace& color_space) {
 
 ICCProfile::Internals::Internals(std::vector<char> data)
     : data_(std::move(data)) {
-  // Early out for empty entries.
-  if (data_.empty())
-    return;
-
   // Parse the ICC profile
-  analyze_result_ = Initialize();
-  switch (analyze_result_) {
-    case kICCExtractedMatrixAndTrFn:
-      // Successfully and accurately extracted color space.
-      is_valid_ = true;
-      is_parametric_ = true;
-      break;
-    case kICCFailedToMakeUsable:
-      // We have a usable gamut, but the transfer function may be messed up.
-      is_valid_ = true;
-      is_parametric_ = false;
-      break;
-    case kICCFailedToParse:
-    case kICCNoProfile:
-      // We can't use anything from this profile.
-      is_valid_ = false;
-      is_parametric_ = false;
-      break;
-  }
+  Initialize();
 }
 
 ICCProfile::Internals::~Internals() {}
-
-void ICCProfile::HistogramDisplay(int64_t display_id) const {
-  if (!internals_) {
-    // If this is an uninitialized profile, histogram it using an empty profile,
-    // so that we only histogram this display as empty once.
-    FromData(nullptr, 0).HistogramDisplay(display_id);
-  } else {
-    internals_->HistogramDisplay(display_id);
-  }
-}
-
-void ICCProfile::Internals::HistogramDisplay(int64_t display_id) {
-  // Ensure that we histogram this profile only once per display id.
-  if (histogrammed_display_ids_.count(display_id))
-    return;
-  histogrammed_display_ids_.insert(display_id);
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.ColorSpace.Destination.ICCResult",
-                            analyze_result_);
-}
 
 }  // namespace gfx

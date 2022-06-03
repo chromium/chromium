@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_METRICS_MOCK_NOTIFICATION_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_METRICS_MOCK_NOTIFICATION_METRICS_LOGGER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"

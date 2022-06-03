@@ -4,6 +4,9 @@
 
 #include "components/exo/client_controlled_accelerators.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+
 namespace exo {
 
 ClientControlledAcceleratorTarget::ClientControlledAcceleratorTarget(
@@ -34,12 +37,15 @@ bool ClientControlledAcceleratorTarget::AcceleratorPressed(
   switch (action) {
     case ClientControlledAcceleratorAction::ZOOM_IN:
       surface_->ChangeZoomLevel(ZoomChange::IN);
+      base::RecordAction(base::UserMetricsAction("Accel_ARC_Zoom_Ui_In"));
       break;
     case ClientControlledAcceleratorAction::ZOOM_OUT:
       surface_->ChangeZoomLevel(ZoomChange::OUT);
+      base::RecordAction(base::UserMetricsAction("Accel_ARC_Zoom_Ui_Out"));
       break;
     case ClientControlledAcceleratorAction::ZOOM_RESET:
       surface_->ChangeZoomLevel(ZoomChange::RESET);
+      base::RecordAction(base::UserMetricsAction("Accel_ARC_Zoom_Ui_Reset"));
       break;
   }
   return true;

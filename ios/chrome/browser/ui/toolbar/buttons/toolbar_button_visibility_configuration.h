@@ -36,8 +36,6 @@
     ToolbarComponentVisibility reloadButtonVisibility;
 @property(nonatomic, readonly) ToolbarComponentVisibility stopButtonVisibility;
 @property(nonatomic, readonly)
-    ToolbarComponentVisibility bookmarkButtonVisibility;
-@property(nonatomic, readonly)
     ToolbarComponentVisibility voiceSearchButtonVisibility;
 @property(nonatomic, readonly)
     ToolbarComponentVisibility contractButtonVisibility;

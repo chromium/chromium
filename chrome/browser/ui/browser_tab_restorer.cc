@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -14,9 +13,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
-#include "chrome/browser/ui/in_product_help/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/in_product_help/reopen_tab_in_product_help_factory.h"
-#include "components/feature_engagement/buildflags.h"
+#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
+#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
@@ -35,6 +33,9 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
                            public BrowserListObserver,
                            public base::SupportsUserData::Data {
  public:
+  BrowserTabRestorer(const BrowserTabRestorer&) = delete;
+  BrowserTabRestorer& operator=(const BrowserTabRestorer&) = delete;
+
   ~BrowserTabRestorer() override;
 
   static void CreateIfNecessary(Browser* browser);
@@ -52,8 +53,6 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
 
   Browser* browser_;
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTabRestorer);
 };
 
 BrowserTabRestorer::~BrowserTabRestorer() {

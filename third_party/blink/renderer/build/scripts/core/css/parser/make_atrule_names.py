@@ -11,8 +11,9 @@ import template_expander
 class AtRuleNamesWriter(json5_generator.Writer):
     """
     Generates AtRuleNames. This class provides utility methods for parsing
-    @rules (e.g. @font-face, @viewport, etc)
+    @rules (e.g. @font-face, @keyframes, etc)
     """
+
     def __init__(self, json5_file_paths, output_dir):
         super(AtRuleNamesWriter, self).__init__(json5_file_paths, output_dir)
 
@@ -36,8 +37,7 @@ class AtRuleNamesWriter(json5_generator.Writer):
             self._character_offsets.append(chars_used)
             chars_used += len(descriptor['name'].original)
             self._longest_name_length = max(
-                len(descriptor['name'].original),
-                len(descriptor['alias']),
+                len(descriptor['name'].original), len(descriptor['alias']),
                 self._longest_name_length)
 
     @template_expander.use_jinja(
@@ -58,6 +58,7 @@ class AtRuleNamesWriter(json5_generator.Writer):
             'longest_name_length': self._longest_name_length,
             'gperf_path': self.gperf_path
         }
+
 
 if __name__ == '__main__':
     json5_generator.Maker(AtRuleNamesWriter).main()

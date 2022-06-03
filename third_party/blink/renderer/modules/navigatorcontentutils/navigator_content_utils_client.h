@@ -20,13 +20,11 @@ class MODULES_EXPORT NavigatorContentUtilsClient
   explicit NavigatorContentUtilsClient(LocalFrame*);
   virtual ~NavigatorContentUtilsClient() = default;
 
-  virtual void RegisterProtocolHandler(const String& scheme,
-                                       const KURL&,
-                                       const String& title);
+  virtual void RegisterProtocolHandler(const String& scheme, const KURL&);
 
   virtual void UnregisterProtocolHandler(const String& scheme, const KURL&);
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   Member<LocalFrame> frame_;

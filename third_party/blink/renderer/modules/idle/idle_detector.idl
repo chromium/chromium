@@ -4,6 +4,15 @@
 
 // https://github.com/samuelgoto/idle-detection
 
+enum UserIdleState {
+    "active",
+    "idle"
+};
+
+enum ScreenIdleState {
+    "locked",
+    "unlocked"
+};
 
 [
   SecureContext,
@@ -11,9 +20,10 @@
   ActiveScriptWrappable,
   RuntimeEnabled=IdleDetection
 ] interface IdleDetector : EventTarget {
-  [CallWith=ScriptState, RaisesException] constructor(optional IdleOptions options);
-  readonly attribute IdleState state;
+  [CallWith=ScriptState] constructor();
+  readonly attribute UserIdleState? userState;
+  readonly attribute ScreenIdleState? screenState;
   attribute EventHandler onchange;
-  [CallWith=ScriptState, RaisesException, MeasureAs=IdleDetectionStart] Promise<void> start();
-  void stop();
+  [Exposed=Window, CallWith=ScriptState, RaisesException, MeasureAs=IdleDetectionPermissionRequested] static Promise<PermissionState> requestPermission();
+  [CallWith=ScriptState, RaisesException, MeasureAs=IdleDetectionStart] Promise<void> start(optional IdleOptions options = {});
 };

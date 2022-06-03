@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/keyboard/ui/keyboard_export.h"
+#include "ui/events/event.h"
 
 namespace display {
 class Display;
@@ -32,6 +33,11 @@ class KEYBOARD_EXPORT KeyboardLayoutDelegate {
   // Get the container window for a particular display. |display| must be valid.
   virtual aura::Window* GetContainerForDisplay(
       const display::Display& display) = 0;
+
+  // Transfer a gesture event to the Ash shelf. Any remaining gestures will be
+  // sent directly to the shelf. Used for accessing the shelf and the home
+  // screen even when the virtual keyboard is blocking the shelf.
+  virtual void TransferGestureEventToShelf(const ui::GestureEvent& e) = 0;
 };
 
 }  // namespace keyboard

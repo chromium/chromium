@@ -6,7 +6,13 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 config("minizip_compiler_flags") {
   if (is_clang) {
-    cflags = [ "-Wno-unused-function" ]
+    cflags = [
+      # mz_zip.c does |UINT_MAX == UINT16_MAX && ...|.
+      "-Wno-unreachable-code",
+      "-Wno-unused-but-set-variable",
+      "-Wno-unused-function",
+      "-Wno-implicit-fallthrough",
+    ]
 
     if (!is_nacl && (target_cpu == "x86" || target_cpu == "x64")) {
       cflags += [
@@ -92,14 +98,11 @@ static_library("minizip") {
     # NOTE: Modifying visibility list requires approval from security team.
     ":minizip_compress_fuzzer",
     ":minizip_uncompress_fuzzer",
-    "//chrome/browser/resources/chromeos/zip_archiver/cpp:zip_archiver_library",
   ]
 }
 
 fuzzer_test("minizip_compress_fuzzer") {
-  sources = [
-    "minizip_compress_fuzzer.cc",
-  ]
+  sources = [ "minizip_compress_fuzzer.cc" ]
   deps = [
     ":minizip",
     "//base",
@@ -108,11 +111,7 @@ fuzzer_test("minizip_compress_fuzzer") {
 }
 
 fuzzer_test("minizip_uncompress_fuzzer") {
-  sources = [
-    "minizip_uncompress_fuzzer.cc",
-  ]
-  deps = [
-    ":minizip",
-  ]
+  sources = [ "minizip_uncompress_fuzzer.cc" ]
+  deps = [ ":minizip" ]
   seed_corpus = "minizip_uncompress_corpus"
 }

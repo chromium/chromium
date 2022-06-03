@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_RUNNER_CHROMEOS_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "base/memory/weak_ptr.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
@@ -24,12 +24,18 @@ class TouchSelectionMenuRunnerChromeOS
     : public views::TouchSelectionMenuRunnerViews {
  public:
   TouchSelectionMenuRunnerChromeOS();
+
+  TouchSelectionMenuRunnerChromeOS(const TouchSelectionMenuRunnerChromeOS&) =
+      delete;
+  TouchSelectionMenuRunnerChromeOS& operator=(
+      const TouchSelectionMenuRunnerChromeOS&) = delete;
+
   ~TouchSelectionMenuRunnerChromeOS() override;
 
  private:
   // Called asynchronously with the result from the container.
   void OpenMenuWithTextSelectionAction(
-      ui::TouchSelectionMenuClient* client,
+      base::WeakPtr<ui::TouchSelectionMenuClient> client,
       const gfx::Rect& anchor_rect,
       const gfx::Size& handle_image_size,
       std::unique_ptr<aura::WindowTracker> tracker,
@@ -50,8 +56,6 @@ class TouchSelectionMenuRunnerChromeOS
 
   base::WeakPtrFactory<TouchSelectionMenuRunnerChromeOS> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_RUNNER_CHROMEOS_H_

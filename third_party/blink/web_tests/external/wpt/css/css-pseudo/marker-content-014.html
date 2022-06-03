@@ -56,8 +56,10 @@ const code = `
 const iframe = document.createElement("iframe");
 iframe.src = "data:text/html," + encodeURI(code);
 iframe.addEventListener("load", function() {
-  iframe.classList.add("big");
-  takeScreenshot();
+  requestAnimationFrame(() => {
+    iframe.classList.add("big");
+    takeScreenshot();
+  });
 }, {once: true});
 document.body.appendChild(iframe);
 </script>

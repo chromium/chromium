@@ -202,7 +202,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
 
     rctext = util.ReadFile(path, self.input_encoding)
     grd_text = six.text_type(self.Process(rctext, path))
-    with util.WrapOutputStream(file(out_path, 'w'), 'utf-8') as outfile:
+    with util.WrapOutputStream(open(out_path, 'wb'), 'utf-8') as outfile:
       outfile.write(grd_text)
 
     print('Wrote output file %s.\nPlease check for TODO items in the file.' %

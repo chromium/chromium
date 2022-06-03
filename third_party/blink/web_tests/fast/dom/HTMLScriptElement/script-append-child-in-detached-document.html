@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<body>
+<iframe id="i" src="about:blank"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+var i_doc = i.contentDocument;
+i.remove();
+var script = i_doc.createElement("script");
+script.appendChild(i_doc.createTextNode("foo"));
+i_doc.body.appendChild(script);
+</script>
+<p>PASS unless crash</p>
+</body>

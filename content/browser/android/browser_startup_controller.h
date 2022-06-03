@@ -9,7 +9,7 @@ namespace content {
 
 void BrowserStartupComplete(int result);
 bool ShouldStartGpuProcessOnBrowserStartup();
-void ServiceManagerStartupComplete();
+void MinimalBrowserStartupComplete();
 
 }  // namespace content
 #endif  // CONTENT_BROWSER_ANDROID_BROWSER_STARTUP_CONTROLLER_H_

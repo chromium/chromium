@@ -14,7 +14,7 @@ test(() => {
       '<div contenteditable id="div1">|</div>',
       '<div contenteditable id="div2">bar</div>'
     ].join(''),
-    selection => {
+    (selection, testRunner) => {
       const document = selection.document;
       const source = document.getElementById('source');
       const div1 = document.getElementById('div1');

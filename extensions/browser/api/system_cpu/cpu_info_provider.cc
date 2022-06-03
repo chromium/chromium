@@ -5,6 +5,7 @@
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/system/cpu_temperature_reader.h"

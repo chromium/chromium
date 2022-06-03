@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,12 +16,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -47,6 +50,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -56,7 +60,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 #endif
@@ -76,34 +80,33 @@ const int kDefaultHeight = 384;
 
 void SetConstraintProperty(const std::string& name,
                            int value,
-                           base::DictionaryValue* bounds_properties) {
+                           base::Value* bounds_properties) {
+  DCHECK(bounds_properties->is_dict());
   if (value != SizeConstraints::kUnboundedSize)
-    bounds_properties->SetInteger(name, value);
+    bounds_properties->SetIntKey(name, value);
   else
-    bounds_properties->Set(name, std::make_unique<base::Value>());
+    bounds_properties->SetKey(name, base::Value());
 }
 
 void SetBoundsProperties(const gfx::Rect& bounds,
                          const gfx::Size& min_size,
                          const gfx::Size& max_size,
                          const std::string& bounds_name,
-                         base::DictionaryValue* window_properties) {
-  std::unique_ptr<base::DictionaryValue> bounds_properties(
-      new base::DictionaryValue());
+                         base::Value* window_properties) {
+  DCHECK(window_properties->is_dict());
+  base::Value bounds_properties(base::Value::Type::DICTIONARY);
 
-  bounds_properties->SetInteger("left", bounds.x());
-  bounds_properties->SetInteger("top", bounds.y());
-  bounds_properties->SetInteger("width", bounds.width());
-  bounds_properties->SetInteger("height", bounds.height());
+  bounds_properties.SetIntKey("left", bounds.x());
+  bounds_properties.SetIntKey("top", bounds.y());
+  bounds_properties.SetIntKey("width", bounds.width());
+  bounds_properties.SetIntKey("height", bounds.height());
 
-  SetConstraintProperty("minWidth", min_size.width(), bounds_properties.get());
-  SetConstraintProperty(
-      "minHeight", min_size.height(), bounds_properties.get());
-  SetConstraintProperty("maxWidth", max_size.width(), bounds_properties.get());
-  SetConstraintProperty(
-      "maxHeight", max_size.height(), bounds_properties.get());
+  SetConstraintProperty("minWidth", min_size.width(), &bounds_properties);
+  SetConstraintProperty("minHeight", min_size.height(), &bounds_properties);
+  SetConstraintProperty("maxWidth", max_size.width(), &bounds_properties);
+  SetConstraintProperty("maxHeight", max_size.height(), &bounds_properties);
 
-  window_properties->Set(bounds_name, std::move(bounds_properties));
+  window_properties->SetKey(bounds_name, std::move(bounds_properties));
 }
 
 // Combines the constraints of the content and window, and returns constraints
@@ -260,7 +263,7 @@ void AppWindow::Init(const GURL& url,
   initial_url_ = url;
 
   content::WebContentsObserver::Observe(web_contents());
-  SetViewType(web_contents(), VIEW_TYPE_APP_WINDOW);
+  SetViewType(web_contents(), mojom::ViewType::kAppWindow);
   app_delegate_->InitWebContents(web_contents());
 
   ExtensionWebContentsObserver::GetForWebContents(web_contents())->
@@ -275,9 +278,6 @@ void AppWindow::Init(const GURL& url,
   // Initialize the window
   CreateParams new_params = LoadDefaults(params);
   window_type_ = new_params.window_type;
-  UMA_HISTOGRAM_ENUMERATION("Apps.Window.Type", new_params.window_type,
-                            WINDOW_TYPE_COUNT);
-
   window_key_ = new_params.window_key;
 
   // Windows cannot be always-on-top in fullscreen mode for security reasons.
@@ -297,8 +297,8 @@ void AppWindow::Init(const GURL& url,
   native_app_window_.reset(
       app_window_client->CreateNativeAppWindow(this, &new_params));
 
-  helper_.reset(new AppWebContentsHelper(
-      browser_context_, extension_id_, web_contents(), app_delegate_.get()));
+  helper_ = std::make_unique<AppWebContentsHelper>(
+      browser_context_, extension_id_, web_contents(), app_delegate_.get());
 
   native_app_window_->UpdateWindowIcon();
 
@@ -312,8 +312,6 @@ void AppWindow::Init(const GURL& url,
     // notifies observers of the window being hidden.
     Hide();
   } else {
-    Show(SHOW_INACTIVE);
-
     // These states may cause the window to show, so they are ignored if the
     // window is initially hidden.
     if (new_params.state == ui::SHOW_STATE_FULLSCREEN)
@@ -331,9 +329,8 @@ void AppWindow::Init(const GURL& url,
   ExtensionRegistry::Get(browser_context_)->AddObserver(this);
 
   // Close when the browser process is exiting.
-  app_delegate_->SetTerminatingCallback(
-      base::Bind(&NativeAppWindow::Close,
-                 base::Unretained(native_app_window_.get())));
+  app_delegate_->SetTerminatingCallback(base::BindOnce(
+      &NativeAppWindow::Close, base::Unretained(native_app_window_.get())));
 
   app_window_contents_->LoadContents(new_params.creator_process_id);
 }
@@ -369,13 +366,15 @@ WebContents* AppWindow::OpenURLFromTab(WebContents* source,
 
 void AppWindow::AddNewContents(WebContents* source,
                                std::unique_ptr<WebContents> new_contents,
+                               const GURL& target_url,
                                WindowOpenDisposition disposition,
                                const gfx::Rect& initial_rect,
                                bool user_gesture,
                                bool* was_blocked) {
   DCHECK(new_contents->GetBrowserContext() == browser_context_);
   app_delegate_->AddNewContents(browser_context_, std::move(new_contents),
-                                disposition, initial_rect, user_gesture);
+                                target_url, disposition, initial_rect,
+                                user_gesture);
 }
 
 content::KeyboardEventProcessingResult AppWindow::PreHandleKeyboardEvent(
@@ -396,7 +395,7 @@ content::KeyboardEventProcessingResult AppWindow::PreHandleKeyboardEvent(
   if (event.windows_key_code == ui::VKEY_ESCAPE && IsFullscreen() &&
       !IsForcedFullscreen() &&
       !extension->permissions_data()->HasAPIPermission(
-          APIPermission::kOverrideEscFullscreen)) {
+          mojom::APIPermissionID::kOverrideEscFullscreen)) {
     Restore();
     return content::KeyboardEventProcessingResult::HANDLED;
   }
@@ -431,13 +430,6 @@ bool AppWindow::PreHandleGestureEvent(WebContents* source,
   return AppWebContentsHelper::ShouldSuppressGestureEvent(event);
 }
 
-std::unique_ptr<content::BluetoothChooser> AppWindow::RunBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  return ExtensionsBrowserClient::Get()->CreateBluetoothChooser(frame,
-                                                                event_handler);
-}
-
 bool AppWindow::TakeFocus(WebContents* source, bool reverse) {
   return app_delegate_->TakeFocus(source, reverse);
 }
@@ -455,7 +447,11 @@ void AppWindow::ExitPictureInPicture() {
 }
 
 bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
+#if defined(OS_CHROMEOS)
   return true;
+#else
+  return false;
+#endif  // defined(OS_CHROMEOS)
 }
 
 bool AppWindow::OnMessageReceived(const IPC::Message& message,
@@ -468,8 +464,8 @@ bool AppWindow::OnMessageReceived(const IPC::Message& message,
   return handled;
 }
 
-void AppWindow::RenderViewCreated(content::RenderViewHost* render_view_host) {
-  app_delegate_->RenderViewCreated(render_view_host);
+void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
+  app_delegate_->RenderFrameCreated(frame_host);
 }
 
 void AppWindow::AddOnDidFinishFirstNavigationCallback(
@@ -513,7 +509,7 @@ void AppWindow::OnNativeWindowChanged() {
   if (!native_app_window_)
     return;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On Mac the user can change the window's fullscreen state. If that has
   // happened, update AppWindow's internal state.
   if (native_app_window_->IsFullscreen()) {
@@ -568,15 +564,15 @@ gfx::Rect AppWindow::GetClientBounds() const {
   return bounds;
 }
 
-base::string16 AppWindow::GetTitle() const {
+std::u16string AppWindow::GetTitle() const {
   const Extension* extension = GetExtension();
   if (!extension)
-    return base::string16();
+    return std::u16string();
 
   // WebContents::GetTitle() will return the page's URL if there's no <title>
   // specified. However, we'd prefer to show the name of the extension in that
   // case, so we directly inspect the NavigationEntry's title.
-  base::string16 title;
+  std::u16string title;
   content::NavigationEntry* entry = web_contents() ?
       web_contents()->GetController().GetLastCommittedEntry() : nullptr;
   if (!entry || entry->GetTitle().empty()) {
@@ -584,7 +580,7 @@ base::string16 AppWindow::GetTitle() const {
   } else {
     title = web_contents()->GetTitle();
   }
-  base::RemoveChars(title, base::ASCIIToUTF16("\n"), &title);
+  base::RemoveChars(title, u"\n", &title);
   return title;
 }
 
@@ -619,7 +615,7 @@ void AppWindow::SetFullscreen(FullscreenType type, bool enable) {
   DCHECK_NE(FULLSCREEN_TYPE_NONE, type);
 
   if (enable) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     // Do not enter fullscreen mode if disallowed by pref.
     // TODO(bartfab): Add a test once it becomes possible to simulate a user
     // gesture. http://crbug.com/174178
@@ -747,16 +743,17 @@ void AppWindow::RestoreAlwaysOnTop() {
     UpdateNativeAlwaysOnTop();
 }
 
-void AppWindow::GetSerializedState(base::DictionaryValue* properties) const {
+void AppWindow::GetSerializedState(base::Value* properties) const {
   DCHECK(properties);
+  DCHECK(properties->is_dict());
 
-  properties->SetBoolean("fullscreen",
+  properties->SetBoolKey("fullscreen",
                          native_app_window_->IsFullscreenOrPending());
-  properties->SetBoolean("minimized", native_app_window_->IsMinimized());
-  properties->SetBoolean("maximized", native_app_window_->IsMaximized());
-  properties->SetBoolean("alwaysOnTop", IsAlwaysOnTop());
-  properties->SetBoolean("hasFrameColor", native_app_window_->HasFrameColor());
-  properties->SetBoolean(
+  properties->SetBoolKey("minimized", native_app_window_->IsMinimized());
+  properties->SetBoolKey("maximized", native_app_window_->IsMaximized());
+  properties->SetBoolKey("alwaysOnTop", IsAlwaysOnTop());
+  properties->SetBoolKey("hasFrameColor", native_app_window_->HasFrameColor());
+  properties->SetBoolKey(
       "alphaEnabled",
       requested_alpha_enabled_ && native_app_window_->CanHaveAlphaEnabled());
 
@@ -764,10 +761,10 @@ void AppWindow::GetSerializedState(base::DictionaryValue* properties) const {
   // removed to
   // make the values easier to check.
   SkColor transparent_white = ~SK_ColorBLACK;
-  properties->SetInteger(
+  properties->SetIntKey(
       "activeFrameColor",
       native_app_window_->ActiveFrameColor() & transparent_white);
-  properties->SetInteger(
+  properties->SetIntKey(
       "inactiveFrameColor",
       native_app_window_->InactiveFrameColor() & transparent_white);
 
@@ -800,10 +797,12 @@ void AppWindow::StartAppIconDownload() {
 
   // Avoid using any previous icons that were being downloaded.
   image_loader_ptr_factory_.InvalidateWeakPtrs();
+  const gfx::Size preferred_size(app_delegate_->PreferredIconSize(),
+                                 app_delegate_->PreferredIconSize());
   web_contents()->DownloadImage(
       app_icon_url_,
       true,  // is a favicon
-      app_delegate_->PreferredIconSize(),
+      preferred_size,
       0,      // no maximum size
       false,  // normal cache policy
       base::BindOnce(&AppWindow::DidDownloadFavicon,
@@ -888,16 +887,9 @@ bool AppWindow::ShouldSuppressDialogs(WebContents* source) {
   return true;
 }
 
-content::ColorChooser* AppWindow::OpenColorChooser(
-    WebContents* web_contents,
-    SkColor initial_color,
-    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return app_delegate_->ShowColorChooser(web_contents, initial_color);
-}
-
 void AppWindow::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<content::FileSelectListener> listener,
+    scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   app_delegate_->RunFileChooser(render_frame_host, std::move(listener), params);
 }
@@ -916,10 +908,10 @@ void AppWindow::NavigationStateChanged(content::WebContents* source,
 }
 
 void AppWindow::EnterFullscreenModeForTab(
-    content::WebContents* source,
-    const GURL& origin,
+    content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
-  ToggleFullscreenModeForTab(source, true);
+  ToggleFullscreenModeForTab(WebContents::FromRenderFrameHost(requesting_frame),
+                             true);
 }
 
 void AppWindow::ExitFullscreenModeForTab(content::WebContents* source) {
@@ -940,7 +932,8 @@ void AppWindow::ToggleFullscreenModeForTab(content::WebContents* source,
     return;
 
   if (!IsExtensionWithPermissionOrSuggestInConsole(
-          APIPermission::kFullscreen, extension, source->GetMainFrame())) {
+          mojom::APIPermissionID::kFullscreen, extension,
+          source->GetMainFrame())) {
     return;
   }
 

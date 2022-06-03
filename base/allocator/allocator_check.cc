@@ -11,11 +11,11 @@
 #include "base/allocator/winheap_stubs_win.h"
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/allocator/allocator_interception_mac.h"
 #endif
 
@@ -27,14 +27,15 @@ bool IsAllocatorInitialized() {
   // Set by allocator_shim_override_ucrt_symbols_win.h when the
   // shimmed _set_new_mode() is called.
   return g_is_win_shim_layer_initialized;
-#elif defined(OS_LINUX) && BUILDFLAG(USE_TCMALLOC) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+    BUILDFLAG(USE_TCMALLOC) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // From third_party/tcmalloc/chromium/src/gperftools/tcmalloc.h.
 // TODO(primiano): replace with an include once base can depend on allocator.
 #define TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC 0xbeef42
   return (mallopt(TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC, 0) ==
           TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC);
-#elif defined(OS_MACOSX) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#elif defined(OS_APPLE) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
+    !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // From allocator_interception_mac.mm.
   return base::allocator::g_replaced_default_zone;
 #else

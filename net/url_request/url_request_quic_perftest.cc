@@ -4,14 +4,16 @@
 
 #include <inttypes.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -24,6 +26,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_status_code.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
@@ -81,10 +84,11 @@ std::unique_ptr<test_server::HttpResponse> HandleRequest(
     const test_server::HttpRequest& request) {
   std::unique_ptr<test_server::BasicHttpResponse> http_response(
       new test_server::BasicHttpResponse());
+  std::string alpn =
+      quic::AlpnForVersion(DefaultSupportedQuicVersions().front());
   http_response->AddCustomHeader(
-      "Alt-Svc",
-      base::StringPrintf("quic=\"%s:%d\"; v=\"%u\"", kAltSvcHost, kAltSvcPort,
-                         kDefaultSupportedQuicVersion.transport_version));
+      "Alt-Svc", base::StringPrintf("%s=\"%s:%d\"", alpn.c_str(), kAltSvcHost,
+                                    kAltSvcPort));
   http_response->set_code(HTTP_OK);
   http_response->set_content(kHelloOriginResponse);
   http_response->set_content_type("text/plain");
@@ -110,15 +114,14 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     // Host mapping.
     std::unique_ptr<MockHostResolver> resolver(new MockHostResolver());
     resolver->rules()->AddRule(kAltSvcHost, "127.0.0.1");
-    host_resolver_.reset(new MappedHostResolver(std::move(resolver)));
+    host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
     std::string map_rule = base::StringPrintf("MAP %s 127.0.0.1:%d",
                                               kOriginHost, tcp_server_->port());
     EXPECT_TRUE(host_resolver_->AddRuleFromString(map_rule));
 
-    net::HttpNetworkSession::Context network_session_context;
+    net::HttpNetworkSessionContext network_session_context;
     network_session_context.cert_verifier = &cert_verifier_;
-    std::unique_ptr<HttpNetworkSession::Params> params(
-        new HttpNetworkSession::Params);
+    auto params = std::make_unique<HttpNetworkSessionParams>();
     params->enable_quic = true;
     params->enable_user_alternate_protocol_ports = true;
     quic_context_.params()->allow_remote_alt_svc = true;
@@ -155,10 +158,10 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     quic::QuicConfig config;
     memory_cache_backend_.AddSimpleResponse(kOriginHost, kHelloPath,
                                             kHelloStatus, kHelloAltSvcResponse);
-    quic_server_.reset(new QuicSimpleServer(
+    quic_server_ = std::make_unique<QuicSimpleServer>(
         quic::test::crypto_test_utils::ProofSourceForTesting(), config,
         quic::QuicCryptoServerConfig::ConfigOptions(),
-        quic::AllSupportedVersions(), &memory_cache_backend_));
+        quic::AllSupportedVersions(), &memory_cache_backend_);
     int rv = quic_server_->Listen(
         net::IPEndPoint(net::IPAddress::IPv4AllZeros(), kAltSvcPort));
     ASSERT_GE(rv, 0) << "Quic server fails to start";
@@ -240,7 +243,7 @@ TEST_F(URLRequestQuicPerfTest, TestGetRequest) {
       base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
 
   auto on_memory_dump_done =
-      [](base::Closure quit_closure, const URLRequestContext* context,
+      [](base::OnceClosure quit_closure, const URLRequestContext* context,
          bool success, uint64_t dump_guid,
          std::unique_ptr<base::trace_event::ProcessMemoryDump> pmd) {
         ASSERT_TRUE(success);
@@ -275,7 +278,7 @@ TEST_F(URLRequestQuicPerfTest, TestGetRequest) {
             reinterpret_cast<uintptr_t>(
                 context->http_transaction_factory()->GetSession()));
         ASSERT_EQ(0u, allocator_dumps.count(stream_factory_dump_name));
-        quit_closure.Run();
+        std::move(quit_closure).Run();
       };
   base::trace_event::MemoryDumpManager::GetInstance()->CreateProcessDump(
       args,

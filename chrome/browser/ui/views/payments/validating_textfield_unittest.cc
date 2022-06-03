@@ -5,10 +5,9 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -20,41 +19,43 @@ namespace payments {
 class ValidatingTextfieldTest : public ChromeViewsTestBase {
  public:
   ValidatingTextfieldTest() {}
+
+  ValidatingTextfieldTest(const ValidatingTextfieldTest&) = delete;
+  ValidatingTextfieldTest& operator=(const ValidatingTextfieldTest&) = delete;
+
   ~ValidatingTextfieldTest() override {}
 
  protected:
   class TestValidationDelegate : public ValidationDelegate {
    public:
     TestValidationDelegate() {}
+
+    TestValidationDelegate(const TestValidationDelegate&) = delete;
+    TestValidationDelegate& operator=(const TestValidationDelegate&) = delete;
+
     ~TestValidationDelegate() override {}
 
     // ValidationDelegate:
     bool TextfieldValueChanged(views::Textfield* textfield,
                                bool was_blurred) override {
-      base::string16 unused;
+      std::u16string unused;
       return !was_blurred || IsValidTextfield(textfield, &unused);
     }
-    bool ComboboxValueChanged(views::Combobox* combobox) override {
-      base::string16 unused;
+    bool ComboboxValueChanged(ValidatingCombobox* combobox) override {
+      std::u16string unused;
       return IsValidCombobox(combobox, &unused);
     }
     bool IsValidTextfield(views::Textfield* textfield,
-                          base::string16* error_message) override {
+                          std::u16string* error_message) override {
       // We really don't like textfields with more than 5 characters in them.
       return textfield->GetText().size() <= 5u;
     }
-    bool IsValidCombobox(views::Combobox* combobox,
-                         base::string16* error_message) override {
+    bool IsValidCombobox(ValidatingCombobox* combobox,
+                         std::u16string* error_message) override {
       return true;
     }
-    void ComboboxModelChanged(views::Combobox* combobox) override {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestValidationDelegate);
+    void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
   };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ValidatingTextfieldTest);
 };
 
 TEST_F(ValidatingTextfieldTest, Validation) {
@@ -64,7 +65,7 @@ TEST_F(ValidatingTextfieldTest, Validation) {
       new ValidatingTextfield(std::move(delegate)));
 
   // Set an invalid string (>5 characters).
-  textfield->SetText(base::ASCIIToUTF16("evilstring"));
+  textfield->SetText(u"evilstring");
   // This should be called on new contents by the textfield controller.
   textfield->OnContentsChanged();
 
@@ -77,7 +78,7 @@ TEST_F(ValidatingTextfieldTest, Validation) {
 
   // On further text adjustements, the validation runs now. Set a valid string
   // (<=5 characters).
-  textfield->SetText(base::ASCIIToUTF16("good"));
+  textfield->SetText(u"good");
   textfield->OnContentsChanged();
 
   // No longer invalid.

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
 #include "url/gurl.h"
 
 namespace gaia {
@@ -122,42 +124,46 @@ bool ParseListAccountsData(const std::string& data,
   if (!value)
     return false;
 
-  base::ListValue* list;
-  if (!value->GetAsList(&list) || list->GetSize() < 2)
+  if (!value->is_list())
+    return false;
+  base::Value::ConstListView list = value->GetList();
+  if (list.size() < 2u)
     return false;
 
   // Get list of account info.
-  base::ListValue* account_list;
-  if (!list->GetList(1, &account_list))
+  if (!list[1].is_list())
     return false;
+  base::Value::ConstListView account_list = list[1].GetList();
 
   // Build a vector of accounts from the cookie.  Order is important: the first
   // account in the list is the primary account.
-  for (size_t i = 0; i < account_list->GetSize(); ++i) {
-    base::ListValue* account;
-    if (account_list->GetList(i, &account) && account != nullptr) {
+  for (size_t i = 0; i < account_list.size(); ++i) {
+    if (account_list[i].is_list()) {
+      base::Value::ConstListView account = account_list[i].GetList();
       std::string email;
       // Canonicalize the email since ListAccounts returns "display email".
-      if (account->GetString(3, &email) && !email.empty()) {
+      if (3u < account.size() && account[3].is_string() &&
+          !(email = account[3].GetString()).empty()) {
         // New version if ListAccounts indicates whether the email's session
         // is still valid or not.  If this value is present and false, assume
         // its invalid.  Otherwise assume it's valid to remain compatible with
         // old version.
         int is_email_valid = 1;
-        if (!account->GetInteger(9, &is_email_valid))
-          is_email_valid = 1;
+        if (9u < account.size() && account[9].is_int())
+          is_email_valid = account[9].GetInt();
 
         int signed_out = 0;
-        if (!account->GetInteger(14, &signed_out))
-          signed_out = 0;
+        if (14u < account.size() && account[14].is_int())
+          signed_out = account[14].GetInt();
 
         int verified = 1;
-        if (!account->GetInteger(15, &verified))
-          verified = 1;
+        if (15u < account.size() && account[15].is_int())
+          verified = account[15].GetInt();
 
         std::string gaia_id;
         // ListAccounts must also return the Gaia Id.
-        if (account->GetString(10, &gaia_id) && !gaia_id.empty()) {
+        if (10u < account.size() && account[10].is_string() &&
+            !(gaia_id = account[10].GetString()).empty()) {
           ListedAccount listed_account;
           listed_account.email = CanonicalizeEmail(email);
           listed_account.gaia_id = gaia_id;
@@ -165,15 +171,40 @@ bool ParseListAccountsData(const std::string& data,
           listed_account.signed_out = signed_out != 0;
           listed_account.verified = verified != 0;
           listed_account.raw_email = email;
-          auto* list =
+          auto* accounts_ptr =
               listed_account.signed_out ? signed_out_accounts : accounts;
-          if (list)
-            list->push_back(listed_account);
+          if (accounts_ptr)
+            accounts_ptr->push_back(listed_account);
         }
       }
     }
   }
 
+  return true;
+}
+
+bool ParseOAuth2MintTokenConsentResult(const std::string& consent_result,
+                                       bool* approved,
+                                       std::string* gaia_id) {
+  DCHECK(approved);
+  DCHECK(gaia_id);
+
+  std::string decoded_result;
+  if (!base::Base64UrlDecode(consent_result,
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &decoded_result)) {
+    VLOG(1) << "Base64UrlDecode() failed to decode the consent result";
+    return false;
+  }
+
+  OAuth2MintTokenConsentResult parsed_result;
+  if (!parsed_result.ParseFromString(decoded_result)) {
+    VLOG(1) << "Failed to parse the consent result protobuf message";
+    return false;
+  }
+
+  *approved = parsed_result.approved();
+  *gaia_id = parsed_result.obfuscated_id();
   return true;
 }
 

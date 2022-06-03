@@ -22,6 +22,10 @@ class BrowserContext;
 class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
  public:
   explicit PermissionControllerImpl(BrowserContext* browser_context);
+
+  PermissionControllerImpl(const PermissionControllerImpl&) = delete;
+  PermissionControllerImpl& operator=(const PermissionControllerImpl&) = delete;
+
   ~PermissionControllerImpl() override;
 
   static PermissionControllerImpl* FromBrowserContext(
@@ -31,13 +35,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   enum class OverrideStatus { kOverrideNotSet, kOverrideSet };
 
   // For the given |origin|, grant permissions in |overrides| and reject all
-  // others.
+  // others. If no |origin| is specified, grant permissions to all origins in
+  // the browser context.
   OverrideStatus GrantOverridesForDevTools(
-      const url::Origin& origin,
+      const absl::optional<url::Origin>& origin,
       const std::vector<PermissionType>& permissions);
   OverrideStatus SetOverrideForDevTools(
-      const url::Origin& origin,
-      const PermissionType& permission,
+      const absl::optional<url::Origin>& origin,
+      PermissionType permission,
       const blink::mojom::PermissionStatus& status);
   void ResetOverridesForDevTools();
 
@@ -52,14 +57,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
 
-  int RequestPermission(
+  void RequestPermission(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
 
-  int RequestPermissions(
+  void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -71,35 +76,41 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
                        const GURL& requesting_origin,
                        const GURL& embedding_origin);
 
-  int SubscribePermissionStatusChange(
+  SubscriptionId SubscribePermissionStatusChange(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
           callback);
 
-  void UnsubscribePermissionStatusChange(int subscription_id);
+  void UnsubscribePermissionStatusChange(SubscriptionId subscription_id);
 
  private:
   struct Subscription;
-  using SubscriptionsMap = base::IDMap<std::unique_ptr<Subscription>>;
+  using SubscriptionsMap =
+      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, blink::mojom::PermissionStatus>;
 
   blink::mojom::PermissionStatus GetSubscriptionCurrentValue(
       const Subscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
-      const base::Optional<GURL>& origin = base::nullopt);
+      const absl::optional<GURL>& origin = absl::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
-  void OnDelegatePermissionStatusChange(Subscription* subscription,
+  void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
                                         blink::mojom::PermissionStatus status);
-  void UpdateDelegateOverridesForDevTools(const url::Origin& origin);
+  void UpdateDelegateOverridesForDevTools(
+      const absl::optional<url::Origin>& origin);
 
   DevToolsPermissionOverrides devtools_permission_overrides_;
-  SubscriptionsMap subscriptions_;
-  BrowserContext* browser_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(PermissionControllerImpl);
+  // Note that SubscriptionId is distinct from
+  // PermissionControllerDelegate::SubscriptionId, and the concrete ID values
+  // may be different as well.
+  SubscriptionsMap subscriptions_;
+  SubscriptionId::Generator subscription_id_generator_;
+
+  BrowserContext* browser_context_;
 };
 
 }  // namespace content

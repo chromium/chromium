@@ -21,6 +21,10 @@ class AudioIoThread {
   static AudioIoThread* Get();
 
   AudioIoThread();
+
+  AudioIoThread(const AudioIoThread&) = delete;
+  AudioIoThread& operator=(const AudioIoThread&) = delete;
+
   ~AudioIoThread();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() const {
@@ -29,8 +33,6 @@ class AudioIoThread {
 
  private:
   base::Thread thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioIoThread);
 };
 
 }  // namespace chromecast

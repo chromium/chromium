@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Note: This target is separated from the rest of //chrome/browser/chromeos so
+# that it can depend on the bluetooth::mojom::Adapter interface, which is only
+# visible to a limited set of clients.
+source_set("bluetooth_adapter_manager") {
+  sources = [
+    "bluetooth_adapter_manager.cc",
+    "bluetooth_adapter_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/nearby/public/cpp",
+    "//dbus",
+    "//device/bluetooth",
+    "//device/bluetooth:deprecated_experimental_mojo",
+    "//mojo/public/cpp/bindings",
+  ]
+}

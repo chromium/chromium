@@ -10,7 +10,6 @@
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
@@ -19,6 +18,16 @@ MediaInterfaceFactory::MediaInterfaceFactory(
     blink::BrowserInterfaceBrokerProxy* interface_broker)
     : interface_broker_(interface_broker) {
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
+MediaInterfaceFactory::MediaInterfaceFactory(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory)
+    : media_interface_factory_(std::move(interface_factory)),
+      task_runner_(std::move(task_runner)) {
+  // `interface_broker_` remains null, but we don't need it since we already
+  // have `media_interface_factory_`.
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -129,41 +138,43 @@ void MediaInterfaceFactory::CreateFlingingRenderer(
 }
 #endif  // defined(OS_ANDROID)
 
-void MediaInterfaceFactory::CreateCdm(
-    const std::string& key_system,
-    mojo::PendingReceiver<media::mojom::ContentDecryptionModule> receiver) {
+#if defined(OS_WIN)
+void MediaInterfaceFactory::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateCdm, weak_this_,
-                                  key_system, std::move(receiver)));
-    return;
-  }
-
-  DVLOG(1) << __func__ << ": key_system = " << key_system;
-  GetMediaInterfaceFactory()->CreateCdm(key_system, std::move(receiver));
-}
-
-void MediaInterfaceFactory::CreateDecryptor(
-    int cdm_id,
-    mojo::PendingReceiver<media::mojom::Decryptor> receiver) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateDecryptor,
-                                  weak_this_, cdm_id, std::move(receiver)));
+        FROM_HERE,
+        base::BindOnce(&MediaInterfaceFactory::CreateMediaFoundationRenderer,
+                       weak_this_, std::move(media_log_remote),
+                       std::move(receiver),
+                       std::move(renderer_extension_receiver)));
     return;
   }
 
   DVLOG(1) << __func__;
-  GetMediaInterfaceFactory()->CreateDecryptor(cdm_id, std::move(receiver));
+  GetMediaInterfaceFactory()->CreateMediaFoundationRenderer(
+      std::move(media_log_remote), std::move(receiver),
+      std::move(renderer_extension_receiver));
 }
+#endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-void MediaInterfaceFactory::CreateCdmProxy(
-    const base::Token& cdm_guid,
-    mojo::PendingReceiver<media::mojom::CdmProxy> receiver) {
-  NOTREACHED() << "CdmProxy should only be connected from a library CDM";
+void MediaInterfaceFactory::CreateCdm(const std::string& key_system,
+                                      const media::CdmConfig& cdm_config,
+                                      CreateCdmCallback callback) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateCdm, weak_this_,
+                                  key_system, cdm_config, std::move(callback)));
+    return;
+  }
+
+  DVLOG(1) << __func__ << ": key_system = " << key_system;
+  GetMediaInterfaceFactory()->CreateCdm(key_system, cdm_config,
+                                        std::move(callback));
 }
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 media::mojom::InterfaceFactory*
 MediaInterfaceFactory::GetMediaInterfaceFactory() {

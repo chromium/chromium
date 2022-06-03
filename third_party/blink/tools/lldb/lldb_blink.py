@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
     LLDB Support for Blink Types
 
@@ -34,31 +33,56 @@ import lldb
 
 
 def __lldb_init_module(debugger, dict):
-    debugger.HandleCommand('type summary add --expand -F lldb_blink.WTFString_SummaryProvider WTF::String')
-    debugger.HandleCommand('type summary add --expand -F lldb_blink.WTFStringImpl_SummaryProvider WTF::StringImpl')
-    debugger.HandleCommand('type summary add --expand -F lldb_blink.WTFAtomicString_SummaryProvider WTF::AtomicString')
-    debugger.HandleCommand('type summary add --expand -F lldb_blink.WTFVector_SummaryProvider -x "WTF::Vector<.+>$"')
-    debugger.HandleCommand('type summary add --expand -F lldb_blink.WTFHashTable_SummaryProvider -x "WTF::HashTable<.+>$"')
-    debugger.HandleCommand('type synthetic add -x "WTF::Vector<.+>$" --python-class lldb_blink.WTFVectorProvider')
-    debugger.HandleCommand('type synthetic add -x "WTF::HashTable<.+>$" --python-class lldb_blink.WTFHashTableProvider')
-    debugger.HandleCommand('type summary add -F lldb_blink.BlinkLayoutUnit_SummaryProvider blink::LayoutUnit')
-    debugger.HandleCommand('type summary add -F lldb_blink.BlinkLayoutSize_SummaryProvider blink::LayoutSize')
-    debugger.HandleCommand('type summary add -F lldb_blink.BlinkLayoutPoint_SummaryProvider blink::LayoutPoint')
-    debugger.HandleCommand('type summary add -F lldb_blink.BlinkLength_SummaryProvider blink::Length')
+    debugger.HandleCommand(
+        'type summary add --expand -F lldb_blink.WTFString_SummaryProvider WTF::String'
+    )
+    debugger.HandleCommand(
+        'type summary add --expand -F lldb_blink.WTFStringImpl_SummaryProvider WTF::StringImpl'
+    )
+    debugger.HandleCommand(
+        'type summary add --expand -F lldb_blink.WTFAtomicString_SummaryProvider WTF::AtomicString'
+    )
+    debugger.HandleCommand(
+        'type summary add --expand -F lldb_blink.WTFVector_SummaryProvider -x "WTF::Vector<.+>$"'
+    )
+    debugger.HandleCommand(
+        'type summary add --expand -F lldb_blink.WTFHashTable_SummaryProvider -x "WTF::HashTable<.+>$"'
+    )
+    debugger.HandleCommand(
+        'type synthetic add -x "WTF::Vector<.+>$" --python-class lldb_blink.WTFVectorProvider'
+    )
+    debugger.HandleCommand(
+        'type synthetic add -x "WTF::HashTable<.+>$" --python-class lldb_blink.WTFHashTableProvider'
+    )
+    debugger.HandleCommand(
+        'type summary add -F lldb_blink.BlinkLayoutUnit_SummaryProvider blink::LayoutUnit'
+    )
+    debugger.HandleCommand(
+        'type summary add -F lldb_blink.BlinkLayoutSize_SummaryProvider blink::LayoutSize'
+    )
+    debugger.HandleCommand(
+        'type summary add -F lldb_blink.BlinkLayoutPoint_SummaryProvider blink::LayoutPoint'
+    )
+    debugger.HandleCommand(
+        'type summary add -F lldb_blink.BlinkLength_SummaryProvider blink::Length'
+    )
 
 
 def WTFString_SummaryProvider(valobj, dict):
     provider = WTFStringProvider(valobj, dict)
-    return "{ length = %d, contents = '%s' }" % (provider.get_length(), provider.to_string())
+    return "{ length = %d, contents = '%s' }" % (provider.get_length(),
+                                                 provider.to_string())
 
 
 def WTFStringImpl_SummaryProvider(valobj, dict):
     provider = WTFStringImplProvider(valobj, dict)
-    return "{ length = %d, is8bit = %d, contents = '%s' }" % (provider.get_length(), provider.is_8bit(), provider.to_string())
+    return "{ length = %d, is8bit = %d, contents = '%s' }" % (
+        provider.get_length(), provider.is_8bit(), provider.to_string())
 
 
 def WTFAtomicString_SummaryProvider(valobj, dict):
-    return WTFString_SummaryProvider(valobj.GetChildMemberWithName('string_'), dict)
+    return WTFString_SummaryProvider(
+        valobj.GetChildMemberWithName('string_'), dict)
 
 
 def WTFVector_SummaryProvider(valobj, dict):
@@ -68,7 +92,8 @@ def WTFVector_SummaryProvider(valobj, dict):
 
 def WTFHashTable_SummaryProvider(valobj, dict):
     provider = WTFHashTableProvider(valobj, dict)
-    return "{ tableSize = %d, keyCount = %d }" % (provider.tableSize(), provider.keyCount())
+    return "{ tableSize = %d, keyCount = %d }" % (provider.tableSize(),
+                                                  provider.keyCount())
 
 
 def BlinkLayoutUnit_SummaryProvider(valobj, dict):
@@ -78,7 +103,8 @@ def BlinkLayoutUnit_SummaryProvider(valobj, dict):
 
 def BlinkLayoutSize_SummaryProvider(valobj, dict):
     provider = BlinkLayoutSizeProvider(valobj, dict)
-    return "{ width = %s, height = %s }" % (provider.get_width(), provider.get_height())
+    return "{ width = %s, height = %s }" % (provider.get_width(),
+                                            provider.get_height())
 
 
 def BlinkLayoutPoint_SummaryProvider(valobj, dict):
@@ -89,6 +115,7 @@ def BlinkLayoutPoint_SummaryProvider(valobj, dict):
 def BlinkLength_SummaryProvider(valobj, dict):
     provider = BlinkLengthProvider(valobj, dict)
     return "{ %s }" % (provider.to_string())
+
 
 # FIXME: Provide support for the following types:
 # def WTFCString_SummaryProvider(valobj, dict):
@@ -140,7 +167,8 @@ class WTFStringImplProvider:
         self.valobj = valobj
 
     def get_length(self):
-        return self.valobj.GetChildMemberWithName('length_').GetValueAsUnsigned(0)
+        return self.valobj.GetChildMemberWithName(
+            'length_').GetValueAsUnsigned(0)
 
     def to_string(self):
         val_type = self.valobj.GetType()
@@ -150,22 +178,26 @@ class WTFStringImplProvider:
         offset = val_type.GetPointeeType().GetByteSize()
 
         char_start = self.valobj.GetValueAsUnsigned(0) + offset
-        pointer = lldb.SBData.CreateDataFromUInt64Array(endianness, pointer_size, [char_start])
+        pointer = lldb.SBData.CreateDataFromUInt64Array(
+            endianness, pointer_size, [char_start])
         error = lldb.SBError()
         if self.is_8bit():
             return lstring_to_string(
                 self.valobj.CreateValueFromData(
                     'str_impl', pointer,
-                    val_type.GetBasicType(lldb.eBasicTypeChar).GetPointerType()),
-                error, self.get_length())
+                    val_type.GetBasicType(
+                        lldb.eBasicTypeChar).GetPointerType()), error,
+                self.get_length())
         return ustring_to_string(
             self.valobj.CreateValueFromData(
                 'str_impl', pointer,
-                val_type.GetBasicType(lldb.eBasicTypeUnsignedChar).GetPointerType()),
-            error, self.get_length())
+                val_type.GetBasicType(
+                    lldb.eBasicTypeUnsignedChar).GetPointerType()), error,
+            self.get_length())
 
     def is_8bit(self):
-        return self.valobj.GetChildMemberWithName('is_8bit_').GetValueAsUnsigned(0)
+        return self.valobj.GetChildMemberWithName(
+            'is_8bit_').GetValueAsUnsigned(0)
 
 
 class WTFStringProvider:
@@ -173,7 +205,8 @@ class WTFStringProvider:
         self.valobj = valobj
 
     def stringimpl(self):
-        impl_ptr = self.valobj.GetChildMemberWithName('impl_').GetChildMemberWithName('ptr_')
+        impl_ptr = self.valobj.GetChildMemberWithName(
+            'impl_').GetChildMemberWithName('ptr_')
         return WTFStringImplProvider(impl_ptr, dict)
 
     def get_length(self):
@@ -191,39 +224,48 @@ class WTFStringProvider:
 
 class BlinkLayoutUnitProvider:
     "Print a blink::LayoutUnit"
+
     def __init__(self, valobj, dict):
         self.valobj = valobj
 
     def to_string(self):
-        return "%.14gpx" % (self.valobj.GetChildMemberWithName('value_').GetValueAsSigned(0) / 64.0)
+        return "%.14gpx" % (self.valobj.GetChildMemberWithName('value_').
+                            GetValueAsSigned(0) / 64.0)
 
 
 class BlinkLayoutSizeProvider:
     "Print a blink::LayoutSize"
+
     def __init__(self, valobj, dict):
         self.valobj = valobj
 
     def get_width(self):
-        return BlinkLayoutUnitProvider(self.valobj.GetChildMemberWithName('width_'), dict).to_string()
+        return BlinkLayoutUnitProvider(
+            self.valobj.GetChildMemberWithName('width_'), dict).to_string()
 
     def get_height(self):
-        return BlinkLayoutUnitProvider(self.valobj.GetChildMemberWithName('height_'), dict).to_string()
+        return BlinkLayoutUnitProvider(
+            self.valobj.GetChildMemberWithName('height_'), dict).to_string()
 
 
 class BlinkLayoutPointProvider:
     "Print a blink::LayoutPoint"
+
     def __init__(self, valobj, dict):
         self.valobj = valobj
 
     def get_x(self):
-        return BlinkLayoutUnitProvider(self.valobj.GetChildMemberWithName('x_'), dict).to_string()
+        return BlinkLayoutUnitProvider(
+            self.valobj.GetChildMemberWithName('x_'), dict).to_string()
 
     def get_y(self):
-        return BlinkLayoutUnitProvider(self.valobj.GetChildMemberWithName('y_'), dict).to_string()
+        return BlinkLayoutUnitProvider(
+            self.valobj.GetChildMemberWithName('y_'), dict).to_string()
 
 
 class BlinkLengthProvider:
     "Print a blink::Length"
+
     def __init__(self, valobj, dict):
         self.valobj = valobj
 
@@ -297,15 +339,18 @@ class WTFVectorProvider:
             return self.buffer
         elif index < self.size:
             offset = index * self.data_size
-            child = self.buffer.CreateChildAtOffset('[' + str(index) + ']', offset, self.data_type)
+            child = self.buffer.CreateChildAtOffset('[' + str(index) + ']',
+                                                    offset, self.data_type)
             return child
         else:
             return None
 
     def update(self):
         self.buffer = self.valobj.GetChildMemberWithName('buffer_')
-        self.size = self.valobj.GetChildMemberWithName('size_').GetValueAsUnsigned(0)
-        self.capacity = self.buffer.GetChildMemberWithName('capacity_').GetValueAsUnsigned(0)
+        self.size = self.valobj.GetChildMemberWithName(
+            'size_').GetValueAsUnsigned(0)
+        self.capacity = self.buffer.GetChildMemberWithName(
+            'capacity_').GetValueAsUnsigned(0)
         self.data_type = self.buffer.GetType().GetPointeeType()
         self.data_size = self.data_type.GetByteSize()
 
@@ -348,15 +393,18 @@ class WTFHashTableProvider:
             return self.valobj.GetChildMemberWithName('deleted_count_')
         elif index < self.tableSize():
             table = self.valobj.GetChildMemberWithName('table_')
-            return table.CreateChildAtOffset('[' + str(index) + ']', index * self.data_size, self.data_type)
+            return table.CreateChildAtOffset(
+                '[' + str(index) + ']', index * self.data_size, self.data_type)
         else:
             return None
 
     def tableSize(self):
-        return self.valobj.GetChildMemberWithName('table_size_').GetValueAsUnsigned(0)
+        return self.valobj.GetChildMemberWithName(
+            'table_size_').GetValueAsUnsigned(0)
 
     def keyCount(self):
-        return self.valobj.GetChildMemberWithName('key_count_').GetValueAsUnsigned(0)
+        return self.valobj.GetChildMemberWithName(
+            'key_count_').GetValueAsUnsigned(0)
 
     def update(self):
         self.data_type = self.valobj.GetType().GetTemplateArgumentType(0)

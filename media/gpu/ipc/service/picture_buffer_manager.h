@@ -10,15 +10,15 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/video/picture.h"
+#include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -77,7 +77,8 @@ class PictureBufferManager
       VideoPixelFormat pixel_format,
       uint32_t planes,
       gfx::Size texture_size,
-      uint32_t texture_target) = 0;
+      uint32_t texture_target,
+      VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
 
   // Dismisses a picture buffer from the pool.
   //
@@ -104,6 +105,9 @@ class PictureBufferManager
       gfx::Rect visible_rect,
       gfx::Size natural_size) = 0;
 
+  PictureBufferManager(const PictureBufferManager&) = delete;
+  PictureBufferManager& operator=(const PictureBufferManager&) = delete;
+
  protected:
   PictureBufferManager() = default;
 
@@ -112,8 +116,6 @@ class PictureBufferManager
 
  private:
   friend class base::RefCountedThreadSafe<PictureBufferManager>;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureBufferManager);
 };
 
 }  // namespace media

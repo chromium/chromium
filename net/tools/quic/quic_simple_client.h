@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <string>
 
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -41,7 +40,11 @@ class QuicSimpleClient : public quic::QuicSpdyClientBase {
   QuicSimpleClient(quic::QuicSocketAddress server_address,
                    const quic::QuicServerId& server_id,
                    const quic::ParsedQuicVersionVector& supported_versions,
+                   const quic::QuicConfig& config,
                    std::unique_ptr<quic::ProofVerifier> proof_verifier);
+
+  QuicSimpleClient(const QuicSimpleClient&) = delete;
+  QuicSimpleClient& operator=(const QuicSimpleClient&) = delete;
 
   ~QuicSimpleClient() override;
 
@@ -62,8 +65,6 @@ class QuicSimpleClient : public quic::QuicSpdyClientBase {
   bool initialized_;
 
   base::WeakPtrFactory<QuicSimpleClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicSimpleClient);
 };
 
 }  // namespace net

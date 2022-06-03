@@ -1,9 +1,0 @@
-include_rules = [
-  "+ash/components/fast_ink",
-  "+base",
-  "+components/viz/common",
-  "+ui/aura",
-  "+ui/events",
-  "+ui/gfx",
-  "+ui/views",
-]

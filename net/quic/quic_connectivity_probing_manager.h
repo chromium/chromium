@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_packet_reader.h"
@@ -51,6 +52,12 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
 
   QuicConnectivityProbingManager(Delegate* delegate,
                                  base::SequencedTaskRunner* task_runner);
+
+  QuicConnectivityProbingManager(const QuicConnectivityProbingManager&) =
+      delete;
+  QuicConnectivityProbingManager& operator=(
+      const QuicConnectivityProbingManager&) = delete;
+
   ~QuicConnectivityProbingManager();
 
   // QuicChromiumPacketWriter::Delegate interface.
@@ -95,6 +102,11 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
             peer_address == peer_address_);
   }
 
+  // Returns true if both |self_address| and |peer_address|
+  // match with the probing manager's socket address. Returns false otherwise.
+  bool ValidateStatelessReset(const quic::QuicSocketAddress& self_address,
+                              const quic::QuicSocketAddress& peer_address);
+
  private:
   // Cancels undergoing probing.
   void CancelProbingIfAny();
@@ -116,6 +128,8 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
   // if |is_running_| is true.
   bool is_running_;
   NetworkChangeNotifier::NetworkHandle network_;
+  // If |is_running| is false, |peer_address_| caches the peer address of the
+  // last probing path.
   quic::QuicSocketAddress peer_address_;
 
   std::unique_ptr<DatagramClientSocket> socket_;
@@ -129,8 +143,12 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
 
   base::SequencedTaskRunner* task_runner_;
 
+  // The cached local address set when probing is cancelled.
+  IPEndPoint last_self_address_;
+
+  bool stateless_reset_received_;
+
   base::WeakPtrFactory<QuicConnectivityProbingManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(QuicConnectivityProbingManager);
 };
 
 }  // namespace net

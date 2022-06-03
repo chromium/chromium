@@ -12,9 +12,7 @@ source_set("support") {
     "ruleset_format.h",
   ]
 
-  public_deps = [
-    "//components/url_pattern_index/proto:url_pattern_index",
-  ]
+  public_deps = [ "//components/url_pattern_index/proto:url_pattern_index" ]
 
   deps = [
     "../rule_parser",

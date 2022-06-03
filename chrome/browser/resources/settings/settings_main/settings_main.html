@@ -1,23 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_components/managed_footnote/managed_footnote.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/search_highlight_utils.html">
-<link rel="import" href="chrome://resources/html/promise_resolver.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../about_page/about_page.html">
-<link rel="import" href="../basic_page/basic_page.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-
-<dom-module id="settings-main">
-  <template>
-    <style include="cr-hidden-style settings-shared">
+    <style include="cr-shared-style cr-hidden-style settings-shared">
       #overscroll {
         margin-top: 64px;
       }
@@ -61,7 +42,9 @@
       <managed-footnote></managed-footnote>
     </template>
     <template is="dom-if" if="[[showPages_.settings]]">
-      <settings-basic-page prefs="{{prefs}}"
+      <settings-basic-page
+          class="cr-centered-card-container"
+          prefs="{{prefs}}"
           page-visibility="[[pageVisibility]]"
           on-showing-section="onShowingSection_"
           on-subpage-expand="onShowingSubpage_"
@@ -72,15 +55,8 @@
     </template>
     <template is="dom-if" if="[[showPages_.about]]">
       <settings-about-page role="main"
-          in-search-mode="[[inSearchMode_]]"
-          on-subpage-expand="onShowingSubpage_"
-          on-showing-main-page="onShowingMainPage_"
-          prefs="{{prefs}}"
-          show-crostini="[[showCrostini]]">
+          class="cr-centered-card-container"
+          prefs="{{prefs}}">
       </settings-about-page>
     </template>
     <div id="overscroll" style="padding-bottom: [[overscroll_]]px"></div>
-  </template>
-  <script src="settings_main.js"></script>
-  <script src="../search_settings.js"></script>
-</dom-module>

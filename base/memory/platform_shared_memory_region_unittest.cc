@@ -4,16 +4,18 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_shared_memory_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <mach/mach_vm.h>
 #include <sys/mman.h>
 #elif defined(OS_POSIX) && !defined(OS_IOS)
@@ -21,6 +23,7 @@
 #include "base/debug/proc_maps_linux.h"
 #elif defined(OS_WIN)
 #include <windows.h>
+#include "base/logging.h"
 #elif defined(OS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
@@ -208,8 +211,7 @@ TEST_F(PlatformSharedMemoryRegionTest, MapAtWithOverflowTest) {
   EXPECT_FALSE(mapping.IsValid());
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && \
-    (!defined(OS_MACOSX) || defined(OS_IOS))
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
 // Tests that the second handle is closed after a conversion to read-only on
 // POSIX.
 TEST_F(PlatformSharedMemoryRegionTest,
@@ -235,7 +237,7 @@ TEST_F(PlatformSharedMemoryRegionTest, ConvertToUnsafeInvalidatesSecondHandle) {
 #endif
 
 void CheckReadOnlyMapProtection(void* addr) {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   vm_region_basic_info_64 basic_info;
   mach_vm_size_t dummy_size = 0;
   void* temp_addr = addr;
@@ -250,11 +252,10 @@ void CheckReadOnlyMapProtection(void* addr) {
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;
   ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
-  auto it =
-      std::find_if(regions.begin(), regions.end(),
-                   [addr](const base::debug::MappedMemoryRegion& region) {
-                     return region.start == reinterpret_cast<uintptr_t>(addr);
-                   });
+  auto it = ranges::find_if(
+      regions, [addr](const base::debug::MappedMemoryRegion& region) {
+        return region.start == reinterpret_cast<uintptr_t>(addr);
+      });
   ASSERT_TRUE(it != regions.end());
   // PROT_READ may imply PROT_EXEC on some architectures, so just check that
   // permissions don't contain PROT_WRITE bit.
@@ -285,8 +286,8 @@ bool TryToRestoreWritablePermissions(void* addr, size_t len) {
   return VirtualProtect(addr, len, PAGE_READWRITE, &old_protection);
 #elif defined(OS_FUCHSIA)
   zx_status_t status =
-      zx::vmar::root_self()->protect(reinterpret_cast<uintptr_t>(addr), len,
-                                     ZX_VM_PERM_READ | ZX_VM_PERM_WRITE);
+      zx::vmar::root_self()->protect(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE,
+                                     reinterpret_cast<uintptr_t>(addr), len);
   return status == ZX_OK;
 #else
   return false;

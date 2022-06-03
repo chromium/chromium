@@ -4,6 +4,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
   test(() => {
-      assert_throws("SyntaxError", () => { self.open("http:"); });
+      assert_throws_dom("SyntaxError", () => { self.open("http:"); });
   }, "Check that window.open() throws on an invalid URL.");
 </script>

@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/prefs",
+  "+components/safe_browsing/core/common",
+  "+content/public/test",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+]

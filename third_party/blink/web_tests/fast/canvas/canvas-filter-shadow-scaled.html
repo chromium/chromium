@@ -1,0 +1,20 @@
+<canvas id="c" width="200" height="100"></canvas>
+<script>
+// Test that validates that the shadow offset is not modified when doing a scale
+// with or without a filter.
+// Note: The color seem pretty randome. That's to add robustness to the test.
+const canvas = document.getElementById('c')
+const ctx = canvas.getContext('2d')
+ctx.scale(2, 2)
+ctx.filter = 'none'
+ctx.shadowOffsetX = 10
+ctx.shadowOffsetY = 10
+ctx.shadowColor = 'rgba(75,27,42,0.5)'
+ctx.fillStyle = 'rgba(27,75,42,0.5)'
+ctx.fillRect(0, 0, 20, 20)
+ctx.restore()
+
+ctx.filter = 'hue-rotate(180deg)';
+ctx.fillRect(50, 0, 20, 20);
+
+</script>

@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Verify that multiple SpeechRecognition objects can co-exist in tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+async_test(t => {
+  const objectCount = 4;
+  let count = objectCount;
+
+  for (let i = 0; i < objectCount; ++i) {
+      const recog = new webkitSpeechRecognition();
+      recog.onend = t.step_func(() => {
+          if (--count == 0)
+              t.done();
+      });
+      recog.start();
+  }
+});
+</script>

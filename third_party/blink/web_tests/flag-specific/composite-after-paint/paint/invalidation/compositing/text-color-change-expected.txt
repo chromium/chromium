@@ -5,67 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '  Text'",
-          "rect": [8, 61, 48, 185],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 61, 48, 185]
       ]
     }
   ]

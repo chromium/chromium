@@ -9,9 +9,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
-#include "ash/session/session_observer.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
@@ -24,12 +24,15 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public SessionObserver {
  public:
   ToastManagerImpl();
+
+  ToastManagerImpl(const ToastManagerImpl&) = delete;
+  ToastManagerImpl& operator=(const ToastManagerImpl&) = delete;
+
   ~ToastManagerImpl() override;
 
   // ToastManager overrides:
   void Show(const ToastData& data) override;
-
-  void Cancel(const std::string& id);
+  void Cancel(const std::string& id) override;
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
@@ -48,7 +51,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void ResetSerialForTesting() { serial_ = 0; }
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
-  base::Optional<ToastData> current_toast_data_;
+  absl::optional<ToastData> current_toast_data_;
 
   int serial_ = 0;
   bool locked_;
@@ -57,8 +60,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ToastManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToastManagerImpl);
 };
 
 }  // namespace ash

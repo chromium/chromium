@@ -30,7 +30,7 @@ const CSSValue* CSSPercentageInterpolationType::CreateCSSValue(
     const NonInterpolableValue*,
     const StyleResolverState&) const {
   return CSSNumericLiteralValue::Create(
-      ToInterpolableNumber(value).Value(),
+      To<InterpolableNumber>(value).Value(),
       CSSPrimitiveValue::UnitType::kPercentage);
 }
 

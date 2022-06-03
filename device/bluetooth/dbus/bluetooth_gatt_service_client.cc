@@ -5,6 +5,7 @@
 #include "device/bluetooth/dbus/bluetooth_gatt_service_client.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -32,6 +33,11 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
                                        public dbus::ObjectManager::Interface {
  public:
   BluetoothGattServiceClientImpl() : object_manager_(nullptr) {}
+
+  BluetoothGattServiceClientImpl(const BluetoothGattServiceClientImpl&) =
+      delete;
+  BluetoothGattServiceClientImpl& operator=(
+      const BluetoothGattServiceClientImpl&) = delete;
 
   ~BluetoothGattServiceClientImpl() override {
     object_manager_->UnregisterInterface(
@@ -69,17 +75,16 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
       dbus::ObjectProxy* object_proxy,
       const dbus::ObjectPath& object_path,
       const std::string& interface_name) override {
-    Properties* properties = new Properties(
+    return new Properties(
         object_proxy, interface_name,
-        base::Bind(&BluetoothGattServiceClientImpl::OnPropertyChanged,
-                   weak_ptr_factory_.GetWeakPtr(), object_path));
-    return static_cast<dbus::PropertySet*>(properties);
+        base::BindRepeating(&BluetoothGattServiceClientImpl::OnPropertyChanged,
+                            weak_ptr_factory_.GetWeakPtr(), object_path));
   }
 
   // dbus::ObjectManager::Interface override.
   void ObjectAdded(const dbus::ObjectPath& object_path,
                    const std::string& interface_name) override {
-    VLOG(2) << "Remote GATT service added: " << object_path.value();
+    DVLOG(2) << "Remote GATT service added: " << object_path.value();
     for (auto& observer : observers_)
       observer.GattServiceAdded(object_path);
   }
@@ -87,7 +92,7 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
   // dbus::ObjectManager::Interface override.
   void ObjectRemoved(const dbus::ObjectPath& object_path,
                      const std::string& interface_name) override {
-    VLOG(2) << "Remote GATT service removed: " << object_path.value();
+    DVLOG(2) << "Remote GATT service removed: " << object_path.value();
     for (auto& observer : observers_)
       observer.GattServiceRemoved(object_path);
   }
@@ -110,8 +115,8 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
   // observers.
   virtual void OnPropertyChanged(const dbus::ObjectPath& object_path,
                                  const std::string& property_name) {
-    VLOG(2) << "Remote GATT service property changed: " << object_path.value()
-            << ": " << property_name;
+    DVLOG(2) << "Remote GATT service property changed: " << object_path.value()
+             << ": " << property_name;
     for (auto& observer : observers_)
       observer.GattServicePropertyChanged(object_path, property_name);
   }
@@ -127,8 +132,6 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattServiceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattServiceClientImpl);
 };
 
 BluetoothGattServiceClient::BluetoothGattServiceClient() = default;

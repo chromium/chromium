@@ -4,7 +4,7 @@
 <script>
     description("Multiple :host(-context) pseudos in same compound.");
 
-    host.createShadowRoot();
+    host.attachShadow({mode: 'open'});
 
     [
         ":host:host-context(body)",
@@ -13,10 +13,10 @@
         ":host-context(body):host-context(html)",
         ":host(:not(.nomatch)):host"
     ].forEach((selector) => {
-        host.shadowRoot.innerHTML = "<style>" + selector + "{color:green}</style><content/>";
+        host.shadowRoot.innerHTML = "<style>" + selector + "{color:green}</style><slot/>";
         shouldBeEqualToString("getComputedStyle(host).color", "rgb(0, 128, 0)");
 
-        host.shadowRoot.innerHTML = "<style>" + selector + "::before" + "{color:green;content:'green'}</style><content/>";
+        host.shadowRoot.innerHTML = "<style>" + selector + "::before" + "{color:green;content:'green'}</style><slot/>";
         shouldBeEqualToString("getComputedStyle(host, '::before').color", "rgb(0, 128, 0)");
     });
 

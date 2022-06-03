@@ -19,6 +19,10 @@ namespace ui {
 class MediaKeyboardHookWinTest : public testing::Test {
  public:
   MediaKeyboardHookWinTest();
+
+  MediaKeyboardHookWinTest(const MediaKeyboardHookWinTest&) = delete;
+  MediaKeyboardHookWinTest& operator=(const MediaKeyboardHookWinTest&) = delete;
+
   ~MediaKeyboardHookWinTest() override;
 
   // testing::Test overrides.
@@ -48,8 +52,6 @@ class MediaKeyboardHookWinTest : public testing::Test {
   std::unique_ptr<KeyboardHookWinBase> keyboard_hook_;
   std::vector<KeyEvent> key_events_;
   bool should_handle_keys_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeyboardHookWinTest);
 };
 
 MediaKeyboardHookWinTest::MediaKeyboardHookWinTest() = default;

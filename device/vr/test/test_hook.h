@@ -5,16 +5,15 @@
 #ifndef DEVICE_VR_TEST_TEST_HOOK_H_
 #define DEVICE_VR_TEST_TEST_HOOK_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include <cstdint>
 
 namespace device {
 
 // Update this string whenever either interface changes.
-constexpr char kChromeOpenVRTestHookAPI[] = "ChromeTestHook_3";
 constexpr unsigned int kMaxTrackedDevices = 64;
 constexpr unsigned int kMaxNumAxes = 5;
 
@@ -29,6 +28,10 @@ enum XrButtonId {
   kDpadRight = 5,
   kDpadDown = 6,
   kA = 7,
+  kB = 8,
+  kX = 9,
+  kY = 10,
+  kThumbRest = 11,
   kProximitySensor = 31,
   kAxisTrackpad = 32,
   kAxisTrigger = 33,

@@ -5,10 +5,13 @@ include_rules = [
     "+media/base/audio_bus.h",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_decoder.h",
+    "+media/base/audio_power_monitor.h",
     "+media/base/audio_latency.h",
     "+media/base/audio_parameters.h",
     "+media/base/audio_pull_fifo.h",
     "+media/base/audio_renderer_sink.h",
+    "+media/base/audio_timestamp_helper.h",
+    "+media/base/bind_to_current_loop.h",
     "+media/base/channel_layout.h",
     "+media/base/sample_rates.h",
 

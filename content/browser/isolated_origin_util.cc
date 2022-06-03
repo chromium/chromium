@@ -6,8 +6,11 @@
 
 #include "content/browser/isolated_origin_util.h"
 
+#include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 
 const char* kAllSubdomainsWildcard = "[*.]";
@@ -33,7 +36,7 @@ IsolatedOriginPattern& IsolatedOriginPattern::operator=(
     IsolatedOriginPattern&& other) = default;
 
 bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
-  pattern_ = unparsed_pattern.as_string();
+  pattern_ = std::string(unparsed_pattern);
   origin_ = url::Origin();
   isolate_all_subdomains_ = false;
   is_valid_ = false;
@@ -54,7 +57,7 @@ bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
   if (host_part.size() == 0)
     return false;
 
-  if (host_part.starts_with(kAllSubdomainsWildcard)) {
+  if (base::StartsWith(host_part, kAllSubdomainsWildcard)) {
     isolate_all_subdomains_ = true;
     host_part.remove_prefix(strlen(kAllSubdomainsWildcard));
   }
@@ -106,6 +109,22 @@ bool IsolatedOriginUtil::DoesOriginMatchIsolatedOrigin(
 
 // static
 bool IsolatedOriginUtil::IsValidIsolatedOrigin(const url::Origin& origin) {
+  return IsValidIsolatedOriginImpl(origin, true);
+}
+
+// static
+bool IsolatedOriginUtil::IsValidOriginForOptInIsolation(
+    const url::Origin& origin) {
+  // Per https://html.spec.whatwg.org/C/#initialise-the-document-object,
+  // non-secure contexts cannot be isolated via opt-in origin isolation.
+  return IsValidIsolatedOriginImpl(origin, false) &&
+         network::IsOriginPotentiallyTrustworthy(origin);
+}
+
+// static
+bool IsolatedOriginUtil::IsValidIsolatedOriginImpl(
+    const url::Origin& origin,
+    bool check_has_registry_domain) {
   if (origin.opaque())
     return false;
 
@@ -122,13 +141,19 @@ bool IsolatedOriginUtil::IsValidIsolatedOrigin(const url::Origin& origin) {
   // Disallow hosts such as http://co.uk/, which don't have a valid
   // registry-controlled domain.  This prevents subdomain matching from
   // grouping unrelated sites on a registry into the same origin.
-  const bool has_registry_domain =
-      net::registry_controlled_domains::HostHasRegistryControlledDomain(
-          origin.host(),
-          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  if (!has_registry_domain)
-    return false;
+  //
+  // This is not relevant for opt-in origin isolation, which doesn't need to
+  // match subdomains. (And it'd be bad to check this in that case, as it
+  // prohibits http://localhost/; see https://crbug.com/1142894.)
+  if (check_has_registry_domain) {
+    const bool has_registry_domain =
+        net::registry_controlled_domains::HostHasRegistryControlledDomain(
+            origin.host(),
+            net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (!has_registry_domain)
+      return false;
+  }
 
   // For now, disallow hosts with a trailing dot.
   // TODO(alexmos): Enabling this would require carefully thinking about

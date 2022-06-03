@@ -20,15 +20,14 @@
 
       // Test type error
       promise_test(function() {
-        return promise_rejects(this, new TypeError(), pc.createOffer(1));
+        return promise_rejects_js(this, TypeError, pc.createOffer(1));
       }, 'createOffer(1)' );
 
       // Test closed connection
       closedPC = new RTCPeerConnection();
       closedPC.close();
       promise_test(function() {
-        var invalidStateError = new DOMException('', 'InvalidStateError');
-        return promise_rejects(this, invalidStateError, closedPC.createOffer({iceRestart:true}));
+        return promise_rejects_dom(this, 'InvalidStateError', closedPC.createOffer({iceRestart:true}));
       }, 'createOffer() with closed peer connection' );
     </script>
   </body>

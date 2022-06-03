@@ -11,7 +11,7 @@ namespace blink {
 
 class HeapObject : public GarbageCollected<HeapObject> {
 public:
-    void Trace(Visitor*) { }
+ void Trace(Visitor*) const {}
 };
 
 class NonPolymorphicBase {
@@ -26,7 +26,8 @@ class IsLeftMostPolymorphic
     : public GarbageCollected<IsLeftMostPolymorphic>,
       public PolymorphicBase {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     Member<HeapObject> m_obj;
 };
@@ -36,7 +37,8 @@ class IsNotLeftMostPolymorphic
       public NonPolymorphicBase,
       public PolymorphicBase {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     Member<HeapObject> m_obj;
 };
@@ -45,7 +47,8 @@ template<typename T>
 class TemplatedNonPolymorphicBase
     : public GarbageCollected<TemplatedNonPolymorphicBase<T> > {
 public:
-    void Trace(Visitor* visitor) { visitor->Trace(m_obj); }
+ void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }
+
 private:
     Member<HeapObject> m_obj;
 };

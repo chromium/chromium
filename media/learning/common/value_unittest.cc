@@ -39,11 +39,14 @@ TEST_F(LearnerValueTest, IntsCompareCorrectly) {
   Value v2(i1);
   Value v3(i2);
   EXPECT_TRUE(v1 == v2);
+  EXPECT_TRUE(v1 >= v2);
   EXPECT_TRUE(v1 != v3);
   EXPECT_TRUE(v1 < v3);
+  EXPECT_FALSE(v1 >= v3);
   EXPECT_FALSE(v3 < v1);
   EXPECT_FALSE(v3 < v3);
   EXPECT_FALSE(v1 < v1);
+  EXPECT_TRUE(v1 >= v1);
   EXPECT_TRUE(v3 > v1);
   EXPECT_FALSE(v1 > v3);
   EXPECT_FALSE(v1 > v1);

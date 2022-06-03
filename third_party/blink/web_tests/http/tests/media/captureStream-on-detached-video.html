@@ -9,8 +9,9 @@ async_test(function(t) {
 
     iframe.onload = t.step_func_done(function() {
         var video = iframe.contentDocument.getElementById("v");
+        var iframeDOMException = iframe.contentWindow.DOMException;
         iframe.remove();
-        assert_throws("NotSupportedError",
+        assert_throws_dom("NotSupportedError", iframeDOMException,
             function() { video.captureStream(1.0); },
             "Failed to execute 'captureStream' on 'HTMLMediaElement': The context has been destroyed.");
     });

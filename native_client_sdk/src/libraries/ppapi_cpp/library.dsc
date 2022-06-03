@@ -17,7 +17,6 @@
         'audio.cc',
         'audio_buffer.cc',
         'audio_config.cc',
-        'audio_encoder.cc',
         'core.cc',
         'directory_entry.cc',
         'file_io.cc',
@@ -68,7 +67,6 @@
         'memory_dev.cc',
         'printing_dev.cc',
         'scriptable_object_deprecated.cc',
-        'truetype_font_dev.cc',
         'view_dev.cc',
 
         # ppapi/utility/graphics
@@ -90,7 +88,6 @@
         'array_output.h',
         'audio_buffer.h',
         'audio_config.h',
-        'audio_encoder.h',
         'audio.h',
         'completion_callback.h',
         'core.h',
@@ -155,7 +152,6 @@
         'memory_dev.h',
         'printing_dev.h',
         'scriptable_object_deprecated.h',
-        'truetype_font_dev.h',
         'video_capture_client_dev.h',
         'video_decoder_client_dev.h',
         'view_dev.h',

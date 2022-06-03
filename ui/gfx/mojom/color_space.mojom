@@ -47,10 +47,11 @@ enum ColorSpaceTransferID {
   SMPTEST2084,
   SMPTEST428_1,
   ARIB_STD_B67,
-  SMPTEST2084_NON_HDR,
   IEC61966_2_1_HDR,
   LINEAR_HDR,
-  CUSTOM
+  CUSTOM,
+  CUSTOM_HDR,
+  PIECEWISE_HDR
 };
 
 enum ColorSpaceMatrixID {
@@ -81,5 +82,5 @@ struct ColorSpace {
   ColorSpaceMatrixID matrix;
   ColorSpaceRangeID range;
   array<float, 9> custom_primary_matrix;
-  array<float, 7> custom_transfer_params;
+  array<float, 7> transfer_params;
 };

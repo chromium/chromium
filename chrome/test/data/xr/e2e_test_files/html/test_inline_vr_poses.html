@@ -20,6 +20,8 @@ test can query for whether each submitted frame used the correct pose.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       // Override the reference space map to only request eye-level stationary
       // reference spaces, as opposed to the identity MagicWindow/AR spaces.
       referenceSpaceMap = {

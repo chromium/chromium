@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,6 +27,10 @@ class BrowserSideSender
     : mojom::blink::ServiceWorkerInstalledScriptsManagerHost {
  public:
   BrowserSideSender() = default;
+
+  BrowserSideSender(const BrowserSideSender&) = delete;
+  BrowserSideSender& operator=(const BrowserSideSender&) = delete;
+
   ~BrowserSideSender() override = default;
 
   mojom::blink::ServiceWorkerInstalledScriptsInfoPtr CreateAndBind(
@@ -52,9 +58,9 @@ class BrowserSideSender
     script_info->encoding = encoding;
     script_info->headers = headers;
     EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(nullptr, &body_handle_, &script_info->body));
-    EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &meta_data_handle_,
-                                                   &script_info->meta_data));
+              mojo::CreateDataPipe(nullptr, body_handle_, script_info->body));
+    EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, meta_data_handle_,
+                                                   script_info->meta_data));
     script_info->body_size = body_size;
     script_info->meta_data_size = meta_data_size;
     manager_->TransferInstalledScript(std::move(script_info));
@@ -92,7 +98,7 @@ class BrowserSideSender
                     const mojo::DataPipeProducerHandle& handle) {
     // Send |data| with null terminator.
     ASSERT_TRUE(handle.is_valid());
-    uint32_t written_bytes = data.size() + 1;
+    uint32_t written_bytes = static_cast<uint32_t>(data.size() + 1);
     MojoResult rv = handle.WriteData(data.c_str(), &written_bytes,
                                      MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
@@ -108,8 +114,6 @@ class BrowserSideSender
 
   mojo::ScopedDataPipeProducerHandle body_handle_;
   mojo::ScopedDataPipeProducerHandle meta_data_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSideSender);
 };
 
 CrossThreadHTTPHeaderMapData ToCrossThreadHTTPHeaderMapData(
@@ -135,6 +139,11 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {}
 
+  ServiceWorkerInstalledScriptsManagerTest(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
+  ServiceWorkerInstalledScriptsManagerTest& operator=(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
+
  protected:
   using RawScriptData = ThreadSafeScriptContainer::RawScriptData;
 
@@ -144,8 +153,8 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
     auto installed_scripts_manager_params =
         std::make_unique<WebServiceWorkerInstalledScriptsManagerParams>(
             std::move(installed_scripts_info->installed_urls),
-            installed_scripts_info->manager_receiver.PassPipe(),
-            installed_scripts_info->manager_host_remote.PassPipe());
+            std::move(installed_scripts_info->manager_receiver),
+            std::move(installed_scripts_info->manager_host_remote));
     installed_scripts_manager_ =
         std::make_unique<ServiceWorkerInstalledScriptsManager>(
             std::move(installed_scripts_manager_params),
@@ -198,8 +207,6 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
 
   std::unique_ptr<ServiceWorkerInstalledScriptsManager>
       installed_scripts_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptsManagerTest);
 };
 
 TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetRawScriptData) {

@@ -1,0 +1,72 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Types of user activation notification triggers.  Used for histograms only.
+enum UserActivationNotificationType {
+
+  // This is used only as (temporary) default value parameters in activation
+  // notification related functions in intermediate CLs.  This value would go
+  // away when the plumbing is complete.
+  kNone,
+
+  // A trusted user interaction caused the notification call.
+  kInteraction,
+
+  // A Devtools interaction caused the notification call.
+  kDevTools,
+
+  // An extension API event caused the notification call.
+  kExtensionEvent,
+
+  // An extension API caused the notification call through GuestView.
+  kExtensionGuestView,
+
+  // An extension messaging API caused the notification call.  Deprecated,
+  // preserved only for UMA consistency.  See more specific enums below.
+  kExtensionMessaging,
+
+  // A media API caused the notification call.
+  kMedia,
+
+  // A File System Access API caused the notification call.
+  kFileSystemAccess,
+
+  // A plugin API caused the notification call.  Deprecated, preserved only for
+  // UMA consistency.
+  kPlugin,
+
+  // A test API caused the notification call.  This should not affect
+  // any histgrams in production but in the past we have seen (and
+  // sometimes fixed) some test APIs being accidentally used in
+  // production.  We want to verify that there is no such callers
+  // left in our code.
+  kTest,
+
+  // A WebScriptExecutor instance caused the notification call.
+  kWebScriptExec,
+
+  // Android voice search API caused the notification call.
+  kVoiceSearch,
+
+  // An extension messaging API caused the notification call, where the script
+  // contexts of both the sender and the receiver of the message are privileged.
+  kExtensionMessagingBothPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of only the sender (and not the receiver) of the message is
+  // privileged.
+  kExtensionMessagingSenderPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of only the receiver (and not the sender) of the message is
+  // privileged.
+  kExtensionMessagingReceiverPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of neither the sender nor the receiver of the message is
+  // privileged.
+  kExtensionMessagingNeitherPrivileged
+};

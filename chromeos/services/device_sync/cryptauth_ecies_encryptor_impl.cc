@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
+#include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace chromeos {
 
@@ -26,20 +25,20 @@ constexpr securemessage::EncScheme kSecureMessageEncryptionScheme =
 constexpr securemessage::SigScheme kSecureMessageSignatureScheme =
     securemessage::HMAC_SHA256;
 
-base::Optional<securemessage::Header> ParseHeaderFromSerializedSecureMessage(
+absl::optional<securemessage::Header> ParseHeaderFromSerializedSecureMessage(
     const std::string& serialized_secure_message) {
   securemessage::SecureMessage secure_message;
   if (!secure_message.ParseFromString(serialized_secure_message)) {
     PA_LOG(ERROR) << "Error parsing SecureMessage: "
                   << util::EncodeAsString(serialized_secure_message);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   securemessage::HeaderAndBody header_and_body;
   if (!header_and_body.ParseFromString(secure_message.header_and_body())) {
     PA_LOG(ERROR) << "Error parsing SecureMessage HeaderAndBody: "
                   << util::EncodeAsString(secure_message.header_and_body());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return header_and_body.header();
@@ -63,13 +62,13 @@ bool VerifyEncryptionAndSignatureSchemes(const securemessage::Header& header) {
   return true;
 }
 
-base::Optional<std::string> GetSessionPublicKeyFromSecureMessageHeader(
+absl::optional<std::string> GetSessionPublicKeyFromSecureMessageHeader(
     const securemessage::Header& header) {
   std::string session_public_key = header.decryption_key_id();
   if (session_public_key.empty()) {
     PA_LOG(ERROR) << "The session public key stored in SecureMessage "
                   << "decryption_key_id is empty.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return session_public_key;
@@ -82,13 +81,12 @@ CryptAuthEciesEncryptorImpl::Factory*
     CryptAuthEciesEncryptorImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthEciesEncryptorImpl::Factory*
-CryptAuthEciesEncryptorImpl::Factory::Get() {
+std::unique_ptr<CryptAuthEciesEncryptor>
+CryptAuthEciesEncryptorImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<CryptAuthEciesEncryptorImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthEciesEncryptorImpl());
 }
 
 // static
@@ -99,20 +97,15 @@ void CryptAuthEciesEncryptorImpl::Factory::SetFactoryForTesting(
 
 CryptAuthEciesEncryptorImpl::Factory::~Factory() = default;
 
-std::unique_ptr<CryptAuthEciesEncryptor>
-CryptAuthEciesEncryptorImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new CryptAuthEciesEncryptorImpl());
-}
-
 CryptAuthEciesEncryptorImpl::CryptAuthEciesEncryptorImpl()
     : secure_message_delegate_(
-          multidevice::SecureMessageDelegateImpl::Factory::NewInstance()) {}
+          multidevice::SecureMessageDelegateImpl::Factory::Create()) {}
 
 CryptAuthEciesEncryptorImpl::~CryptAuthEciesEncryptorImpl() = default;
 
 void CryptAuthEciesEncryptorImpl::OnSingleOutputFinished(
     const std::string& id,
-    const base::Optional<std::string>& output) {
+    const absl::optional<std::string>& output) {
   DCHECK_GT(remaining_batch_size_, 0u);
   DCHECK(base::Contains(id_to_input_map_, id));
   DCHECK(!output || !output->empty());
@@ -132,8 +125,8 @@ void CryptAuthEciesEncryptorImpl::OnBatchEncryptionStarted() {
   remaining_batch_size_ = id_to_input_map_.size();
 
   secure_message_delegate_->GenerateKeyPair(
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated,
+                     base::Unretained(this)));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated(
@@ -142,7 +135,7 @@ void CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated(
   for (const auto& id_input_pair : id_to_input_map_) {
     secure_message_delegate_->DeriveKey(
         session_private_key, id_input_pair.second.key,
-        base::Bind(
+        base::BindOnce(
             &CryptAuthEciesEncryptorImpl::OnDiffieHellmanEncryptionKeyDerived,
             base::Unretained(this), id_input_pair.first, session_public_key));
   }
@@ -159,8 +152,8 @@ void CryptAuthEciesEncryptorImpl::OnDiffieHellmanEncryptionKeyDerived(
 
   secure_message_delegate_->CreateSecureMessage(
       id_to_input_map_[id].payload, dh_key, options,
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSecureMessageCreated,
-                 base::Unretained(this), id));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSecureMessageCreated,
+                     base::Unretained(this), id));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSecureMessageCreated(
@@ -168,7 +161,7 @@ void CryptAuthEciesEncryptorImpl::OnSecureMessageCreated(
     const std::string& serialized_encrypted_secure_message) {
   if (serialized_encrypted_secure_message.empty()) {
     PA_LOG(ERROR) << "Error creating SecureMessage. Input ID: " << id;
-    OnSingleOutputFinished(id, base::nullopt /* output */);
+    OnSingleOutputFinished(id, absl::nullopt /* output */);
     return;
   }
 
@@ -181,28 +174,28 @@ void CryptAuthEciesEncryptorImpl::OnBatchDecryptionStarted() {
   remaining_batch_size_ = id_to_input_map_.size();
 
   for (const auto& id_input_pair : id_to_input_map_) {
-    base::Optional<securemessage::Header> header =
+    absl::optional<securemessage::Header> header =
         ParseHeaderFromSerializedSecureMessage(id_input_pair.second.payload);
     if (!header) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
     if (!VerifyEncryptionAndSignatureSchemes(*header)) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
-    base::Optional<std::string> session_public_key =
+    absl::optional<std::string> session_public_key =
         GetSessionPublicKeyFromSecureMessageHeader(*header);
     if (!session_public_key) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
     secure_message_delegate_->DeriveKey(
         id_input_pair.second.key, *session_public_key,
-        base::Bind(
+        base::BindOnce(
             &CryptAuthEciesEncryptorImpl::OnDiffieHellmanDecryptionKeyDerived,
             base::Unretained(this), id_input_pair.first,
             id_input_pair.second.payload));
@@ -219,8 +212,8 @@ void CryptAuthEciesEncryptorImpl::OnDiffieHellmanDecryptionKeyDerived(
 
   secure_message_delegate_->UnwrapSecureMessage(
       serialized_encrypted_secure_message, dh_key, options,
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped,
-                 base::Unretained(this), id));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped,
+                     base::Unretained(this), id));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped(
@@ -231,7 +224,7 @@ void CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped(
   if (!verified || payload.empty()) {
     PA_LOG(ERROR) << "Error verifying and decrypting SecureMessage. Input ID: "
                   << id;
-    OnSingleOutputFinished(id, base::nullopt /* output */);
+    OnSingleOutputFinished(id, absl::nullopt /* output */);
     return;
   }
 

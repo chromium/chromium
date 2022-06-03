@@ -7,10 +7,9 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -20,19 +19,25 @@ class FakePendingNetworkConfigurationTracker
     : public PendingNetworkConfigurationTracker {
  public:
   FakePendingNetworkConfigurationTracker();
+
+  FakePendingNetworkConfigurationTracker(
+      const FakePendingNetworkConfigurationTracker&) = delete;
+  FakePendingNetworkConfigurationTracker& operator=(
+      const FakePendingNetworkConfigurationTracker&) = delete;
+
   ~FakePendingNetworkConfigurationTracker() override;
 
   // sync_wifi::PendingNetworkConfigurationtracker::
   std::string TrackPendingUpdate(
       const NetworkIdentifier& id,
-      const base::Optional<sync_pb::WifiConfigurationSpecificsData>& specifics)
+      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics)
       override;
   void MarkComplete(const std::string& change_guid,
                     const NetworkIdentifier& id) override;
   void IncrementCompletedAttempts(const std::string& change_id,
                                   const NetworkIdentifier& id) override;
   std::vector<PendingNetworkConfigurationUpdate> GetPendingUpdates() override;
-  base::Optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
+  absl::optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
       const std::string& change_guid,
       const NetworkIdentifier& id) override;
 
@@ -52,8 +57,6 @@ class FakePendingNetworkConfigurationTracker
   // This map is not cleared when MarkComplete is called to allow tests to
   // verify that the expected number of retries were performed before removal.
   std::map<NetworkIdentifier, int> id_to_completed_attempts_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingNetworkConfigurationTracker);
 };
 
 }  // namespace sync_wifi

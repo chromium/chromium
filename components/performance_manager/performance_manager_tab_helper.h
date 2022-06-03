@@ -7,10 +7,9 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
@@ -18,12 +17,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
 namespace performance_manager {
 
 class FrameNodeImpl;
 class PageNodeImpl;
-class PerformanceManagerImpl;
 
 // This tab helper maintains a page node, and its associated tree of frame nodes
 // in the performance manager graph. It also sources a smattering of attributes
@@ -44,9 +43,19 @@ class PerformanceManagerTabHelper
         content::WebContents*) = 0;
   };
 
+  PerformanceManagerTabHelper(const PerformanceManagerTabHelper&) = delete;
+  PerformanceManagerTabHelper& operator=(const PerformanceManagerTabHelper&) =
+      delete;
+
   ~PerformanceManagerTabHelper() override;
 
-  PageNodeImpl* page_node() { return page_node_.get(); }
+  // Returns the PageNode associated with the primary page. This can change
+  // during the WebContents lifetime.
+  PageNodeImpl* primary_page_node() { return primary_page_->page_node.get(); }
+
+  // Returns the PageNode assicated with the given RenderFrameHost, or nullptr
+  // if it doesn't exist.
+  PageNodeImpl* GetPageNodeForRenderFrameHost(content::RenderFrameHost* rfh);
 
   // Registers an observer that is notified when the PerformanceManagerTabHelper
   // is destroyed. Can only be set to non-nullptr if it was previously nullptr,
@@ -62,28 +71,36 @@ class PerformanceManagerTabHelper
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void DidStartLoading() override;
-  void DidStopLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void OnAudioStateChanged(bool audible) override;
+  void OnFrameAudioStateChanged(content::RenderFrameHost* render_frame_host,
+                                bool is_audible) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
+  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
+                                content::RenderFrameHost* render_frame_host,
+                                bool is_full_page) override;
+  void InnerWebContentsDetached(
+      content::WebContents* inner_web_contents) override;
   void WebContentsDestroyed() override;
   void DidUpdateFaviconURL(
-      const std::vector<content::FaviconURL>& candidates) override;
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
-  // WebContentsProxyImpl overrides.
+  // WebContentsProxyImpl overrides. Note that `LastNavigationId()` and
+  // `LastNewDocNavigationId()` refer to navigations associated with the
+  // primary page.
   content::WebContents* GetWebContents() const override;
   int64_t LastNavigationId() const override;
+  int64_t LastNewDocNavigationId() const override;
 
   void BindDocumentCoordinationUnit(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver);
 
-  void SetUkmSourceIdForTesting(ukm::SourceId id) { ukm_source_id_ = id; }
-
-  // Retrieves the frame node associated with |render_frame_host|.
+  // Retrieves the frame node associated with |render_frame_host|. Returns
+  // nullptr if none exist for that frame.
   FrameNodeImpl* GetFrameNode(content::RenderFrameHost* render_frame_host);
 
   class Observer : public base::CheckedObserver {
@@ -102,6 +119,8 @@ class PerformanceManagerTabHelper
   friend class content::WebContentsUserData<PerformanceManagerTabHelper>;
   friend class PerformanceManagerRegistryImpl;
   friend class WebContentsProxyImpl;
+  FRIEND_TEST_ALL_PREFIXES(PerformanceManagerFencedFrameBrowserTest,
+                           FencedFrameDoesNotHaveParentFrameNode);
 
   explicit PerformanceManagerTabHelper(content::WebContents* web_contents);
 
@@ -109,33 +128,78 @@ class PerformanceManagerTabHelper
   // PerformanceManagerRegistry.
   using WebContentsUserData<PerformanceManagerTabHelper>::CreateForWebContents;
 
-  // Post a task to run in the performance manager sequence. The |node| will be
-  // passed as unretained, and the closure will be created with BindOnce.
-  template <typename Functor, typename NodeType, typename... Args>
-  void PostToGraph(const base::Location& from_here,
-                   Functor&& functor,
-                   NodeType* node,
-                   Args&&... args);
+  void OnMainFrameNavigation(int64_t navigation_id, bool same_doc);
 
-  void OnMainFrameNavigation(int64_t navigation_id);
+  // Data that is tracked per page.
+  struct PageData {
+    PageData();
+    ~PageData();
 
-  // The performance manager for this process, if any.
-  PerformanceManagerImpl* const performance_manager_;
-  std::unique_ptr<PageNodeImpl> page_node_;
-  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+    // The actual page node.
+    std::unique_ptr<PageNodeImpl> page_node;
 
-  // Favicon and title are set when a page is loaded, we only want to send
-  // signals to the page node about title and favicon update from the previous
-  // title and favicon, thus we want to ignore the very first update since it is
-  // always supposed to happen.
-  bool first_time_favicon_set_ = false;
-  bool first_time_title_set_ = false;
+    // The frame tree node ID of the main frame of this PageNode. This is the
+    // primary sort key for the PageNode, as it remains constant over its
+    // lifetime.  It allows an abitrary RFH to be mapped to the appropriate
+    // page via RFH::GetMainFrame()->GetFrameTreeNodeId().
+    // TODO(crbug.com/1211368): This is not true under MPArch, because the
+    // frame tree node ID of a prerendered RFH changes when it's activated.
+    // (Also, until PM's MPArch support is finished, the "main" FrameNode for a
+    // PageNode can change.) Fortunately `main_frame_tree_node_id` is currently
+    // only used as a DCHECK that pages are not added twice to the `pages_`
+    // set. Make `pages_` a simple list, or a set keyed on something else.
+    int main_frame_tree_node_id = 0;
 
-  // The last navigation ID that was committed to a main frame in this web
-  // contents.
-  int64_t last_navigation_id_ = 0;
+    // The UKM source ID for this page.
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
 
-  // Maps from RenderFrameHost to the associated PM node.
+    // Favicon and title are set when a page is loaded, we only want to send
+    // signals to the page node about title and favicon update from the previous
+    // title and favicon, thus we want to ignore the very first update since it
+    // is always supposed to happen.
+    bool first_time_favicon_set = false;
+    bool first_time_title_set = false;
+
+    // The last navigation ID that was committed to a main frame in this web
+    // contents.
+    int64_t last_navigation_id = 0;
+    // Similar to the above, but for the last non same-document navigation
+    // associated with this WebContents. This is always for a navigation that is
+    // older or equal to |last_navigation_id_|.
+    int64_t last_new_doc_navigation_id = 0;
+  };
+
+  // A transparent comparator for PageData. These are keyed by FrameTreeNodeId,
+  // which is unique per Page.
+  struct PageDataComparator {
+    using is_transparent = void;
+
+    bool operator()(const std::unique_ptr<PageData>& pd1,
+                    const std::unique_ptr<PageData>& pd2) const {
+      return pd1->main_frame_tree_node_id < pd2->main_frame_tree_node_id;
+    }
+
+    bool operator()(const std::unique_ptr<PageData>& pd1,
+                    int main_frame_tree_node_id2) const {
+      return pd1->main_frame_tree_node_id < main_frame_tree_node_id2;
+    }
+
+    bool operator()(int main_frame_tree_node_id1,
+                    const std::unique_ptr<PageData>& pd2) const {
+      return main_frame_tree_node_id1 < pd2->main_frame_tree_node_id;
+    }
+  };
+
+  // Stores data related to all pages associated with this WebContents. Multiple
+  // pages may exist due to things like BFCache, Portals, Prerendering, etc.
+  // Exactly *one* page will be primary.
+  base::flat_set<std::unique_ptr<PageData>, PageDataComparator> pages_;
+
+  // Tracks the primary page associated with this WebContents.
+  PageData* primary_page_ = nullptr;
+
+  // Maps from RenderFrameHost to the associated PM node. This is a single
+  // map across all pages associated with this WebContents.
   std::map<content::RenderFrameHost*, std::unique_ptr<FrameNodeImpl>> frames_;
 
   DestructionObserver* destruction_observer_ = nullptr;
@@ -144,8 +208,6 @@ class PerformanceManagerTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<PerformanceManagerTabHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerTabHelper);
 };
 
 }  // namespace performance_manager

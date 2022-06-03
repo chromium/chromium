@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/strings/string_util.h"
 
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,48 +29,48 @@ const char kOnlyInvalidUTF8Chars[] = "\x80 \x80 ";
 const char kNoCharsLeftOnlySpaces[] = "  ";
 const char kSingleInvalidUTF8Char[] = "\xf1";
 
-bool WildcardMatchInsensitive(const base::string16& text,
-                              const base::string16& pattern) {
-  return String16WildcardMatchInsensitive(text, pattern, L'\\');
+bool WildcardMatchInsensitive(const std::wstring& text,
+                              const std::wstring& pattern) {
+  return WStringWildcardMatchInsensitive(text, pattern, L'\\');
 }
 
 }  // namespace
 
-TEST(StringUtilTest, String16EqualsCaseInsensitive) {
-  EXPECT_FALSE(String16EqualsCaseInsensitive(kFooStr, kEmptyStr));
-  EXPECT_TRUE(String16EqualsCaseInsensitive(kFooStr, kFooStr));
-  EXPECT_TRUE(String16EqualsCaseInsensitive(kFooStr, kFooLowerCaseStr));
-  EXPECT_FALSE(String16EqualsCaseInsensitive(kFooStr, kBarStr));
-  EXPECT_FALSE(String16EqualsCaseInsensitive(kFooStr, kFooSetStr));
+TEST(StringUtilTest, WStringEqualsCaseInsensitive) {
+  EXPECT_FALSE(WStringEqualsCaseInsensitive(kFooStr, kEmptyStr));
+  EXPECT_TRUE(WStringEqualsCaseInsensitive(kFooStr, kFooStr));
+  EXPECT_TRUE(WStringEqualsCaseInsensitive(kFooStr, kFooLowerCaseStr));
+  EXPECT_FALSE(WStringEqualsCaseInsensitive(kFooStr, kBarStr));
+  EXPECT_FALSE(WStringEqualsCaseInsensitive(kFooStr, kFooSetStr));
 }
 
-TEST(StringUtilTest, String16ContainsCaseInsensitive) {
-  EXPECT_TRUE(String16ContainsCaseInsensitive(kFooStr, kEmptyStr));
-  EXPECT_FALSE(String16ContainsCaseInsensitive(kEmptyStr, kFooStr));
-  EXPECT_TRUE(String16ContainsCaseInsensitive(kFooStr, kFooStr));
-  EXPECT_TRUE(String16ContainsCaseInsensitive(kFooLowerCaseStr, kFooStr));
-  EXPECT_FALSE(String16ContainsCaseInsensitive(kBarStr, kFooStr));
-  EXPECT_TRUE(String16ContainsCaseInsensitive(kFooSetStr, kFooStr));
-  EXPECT_TRUE(String16ContainsCaseInsensitive(kFoooSetStr, kFooStr));
+TEST(StringUtilTest, WStringContainsCaseInsensitive) {
+  EXPECT_TRUE(WStringContainsCaseInsensitive(kFooStr, kEmptyStr));
+  EXPECT_FALSE(WStringContainsCaseInsensitive(kEmptyStr, kFooStr));
+  EXPECT_TRUE(WStringContainsCaseInsensitive(kFooStr, kFooStr));
+  EXPECT_TRUE(WStringContainsCaseInsensitive(kFooLowerCaseStr, kFooStr));
+  EXPECT_FALSE(WStringContainsCaseInsensitive(kBarStr, kFooStr));
+  EXPECT_TRUE(WStringContainsCaseInsensitive(kFooSetStr, kFooStr));
+  EXPECT_TRUE(WStringContainsCaseInsensitive(kFoooSetStr, kFooStr));
 }
 
-TEST(StringUtilTest, String16SetMatchEntry) {
-  EXPECT_TRUE(String16SetMatchEntry(kFooSetStr, kSeparators, kFooStr,
-                                    String16ContainsCaseInsensitive));
-  EXPECT_FALSE(String16SetMatchEntry(kFooSetStr, kSeparators, kBatStr,
-                                     String16ContainsCaseInsensitive));
-  EXPECT_TRUE(String16SetMatchEntry(kFoooSetStr, kSeparators, kFooStr,
-                                    String16ContainsCaseInsensitive));
+TEST(StringUtilTest, WStringSetMatchEntry) {
+  EXPECT_TRUE(WStringSetMatchEntry(kFooSetStr, kSeparators, kFooStr,
+                                   WStringContainsCaseInsensitive));
+  EXPECT_FALSE(WStringSetMatchEntry(kFooSetStr, kSeparators, kBatStr,
+                                    WStringContainsCaseInsensitive));
+  EXPECT_TRUE(WStringSetMatchEntry(kFoooSetStr, kSeparators, kFooStr,
+                                   WStringContainsCaseInsensitive));
 
-  EXPECT_TRUE(String16SetMatchEntry(kFooSetStr, kSeparators, kFooStr,
-                                    String16EqualsCaseInsensitive));
-  EXPECT_FALSE(String16SetMatchEntry(kFooSetStr, kSeparators, kBatStr,
-                                     String16EqualsCaseInsensitive));
-  EXPECT_FALSE(String16SetMatchEntry(kFoooSetStr, kSeparators, kFooStr,
-                                     String16EqualsCaseInsensitive));
+  EXPECT_TRUE(WStringSetMatchEntry(kFooSetStr, kSeparators, kFooStr,
+                                   WStringEqualsCaseInsensitive));
+  EXPECT_FALSE(WStringSetMatchEntry(kFooSetStr, kSeparators, kBatStr,
+                                    WStringEqualsCaseInsensitive));
+  EXPECT_FALSE(WStringSetMatchEntry(kFoooSetStr, kSeparators, kFooStr,
+                                    WStringEqualsCaseInsensitive));
 }
 
-TEST(StringUtilTest, String16MatchPatternTest) {
+TEST(StringUtilTest, WStringMatchPatternTest) {
   // Test matching on an empty text or pattern.
   EXPECT_TRUE(WildcardMatchInsensitive(L"", L""));
   EXPECT_FALSE(WildcardMatchInsensitive(L"", L"*.*"));
@@ -116,22 +118,22 @@ TEST(StringUtilTest, String16MatchPatternTest) {
   EXPECT_TRUE(WildcardMatchInsensitive(L"Hello*1234", L"He??o\\*1*"));
   EXPECT_FALSE(WildcardMatchInsensitive(L"Hello*1234", L"He??o\\?1*"));
 
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L":", L"::", L':'));
-  EXPECT_FALSE(String16WildcardMatchInsensitive(L"*", L"\\*", L':'));
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L"*", L":*", L':'));
-  EXPECT_FALSE(String16WildcardMatchInsensitive(L"?", L"\\?", L':'));
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L"?", L":?", L':'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L":", L"::", L':'));
+  EXPECT_FALSE(WStringWildcardMatchInsensitive(L"*", L"\\*", L':'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L"*", L":*", L':'));
+  EXPECT_FALSE(WStringWildcardMatchInsensitive(L"?", L"\\?", L':'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L"?", L":?", L':'));
 
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L"*", L"%*", L'%'));
-  EXPECT_FALSE(String16WildcardMatchInsensitive(L"a", L"%*", L'%'));
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L"?", L"%?", L'%'));
-  EXPECT_FALSE(String16WildcardMatchInsensitive(L"a", L"%?", L'%'));
-  EXPECT_TRUE(String16WildcardMatchInsensitive(L"*?*", L"%*%?%*", L'%'));
-  EXPECT_FALSE(String16WildcardMatchInsensitive(L"*x*", L"%*%?%*", L'%'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L"*", L"%*", L'%'));
+  EXPECT_FALSE(WStringWildcardMatchInsensitive(L"a", L"%*", L'%'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L"?", L"%?", L'%'));
+  EXPECT_FALSE(WStringWildcardMatchInsensitive(L"a", L"%?", L'%'));
+  EXPECT_TRUE(WStringWildcardMatchInsensitive(L"*?*", L"%*%?%*", L'%'));
+  EXPECT_FALSE(WStringWildcardMatchInsensitive(L"*x*", L"%*%?%*", L'%'));
   EXPECT_TRUE(
-      String16WildcardMatchInsensitive(L"Hello*1234", L"He??o%*1*", L'%'));
+      WStringWildcardMatchInsensitive(L"Hello*1234", L"He??o%*1*", L'%'));
   EXPECT_FALSE(
-      String16WildcardMatchInsensitive(L"Hello*1234", L"He??o%?1*", L'%'));
+      WStringWildcardMatchInsensitive(L"Hello*1234", L"He??o%?1*", L'%'));
 
   // Test the algorithmic complexity.
   EXPECT_TRUE(WildcardMatchInsensitive(L"", L"********************"));
@@ -195,8 +197,8 @@ TEST(StringUtilTest, RemoveInvalidUTF8Chars) {
   EXPECT_STREQ("", RemoveInvalidUTF8Chars(kSingleInvalidUTF8Char).c_str());
 }
 
-TEST(StringUtilTest, String16InsensitiveLess) {
-  String16InsensitiveLess less;
+TEST(StringUtilTest, WStringInsensitiveLess) {
+  WStringInsensitiveLess less;
   EXPECT_TRUE(less(L"a", L"b"));
   EXPECT_TRUE(less(L"A", L"b"));
   EXPECT_TRUE(less(L"a", L"B"));
@@ -213,8 +215,8 @@ TEST(StringUtilTest, String16InsensitiveLess) {
   EXPECT_FALSE(less(L"A", L"A"));
 }
 
-TEST(StringUtilTest, String16InsensitiveSet) {
-  String16CaseInsensitiveSet set = {L"a", L"B"};
+TEST(StringUtilTest, WStringInsensitiveSet) {
+  WStringCaseInsensitiveSet set = {L"a", L"B"};
   EXPECT_NE(set.find(L"a"), set.end());
   EXPECT_NE(set.find(L"A"), set.end());
   EXPECT_NE(set.find(L"b"), set.end());

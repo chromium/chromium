@@ -17,7 +17,7 @@ namespace ports {
 
 class NodeDelegate {
  public:
-  virtual ~NodeDelegate() {}
+  virtual ~NodeDelegate() = default;
 
   // Forward an event (possibly asynchronously) to the specified node.
   virtual void ForwardEvent(const NodeName& node, ScopedEvent event) = 0;

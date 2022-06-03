@@ -39,7 +39,7 @@ class CORE_EXPORT SVGTests : public GarbageCollectedMixin {
 
   bool IsValid() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit SVGTests(SVGElement* context_element);

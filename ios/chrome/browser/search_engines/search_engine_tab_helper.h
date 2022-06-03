@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -37,15 +37,22 @@ class SearchEngineTabHelper
       public web::WebStateUserData<SearchEngineTabHelper>,
       public favicon::FaviconDriverObserver {
  public:
+  SearchEngineTabHelper(const SearchEngineTabHelper&) = delete;
+  SearchEngineTabHelper& operator=(const SearchEngineTabHelper&) = delete;
+
   ~SearchEngineTabHelper() override;
+
+  // Saves the page |url| generated from a <form> submission to create the
+  // TemplateURL when the submission leads to a successful navigation.
+  void SetSearchableUrl(GURL url);
+
+  // Adds a TemplateURL by downloading and parsing the OSDD.
+  void AddTemplateURLByOSDD(const GURL& page_url, const GURL& osdd_url);
 
  private:
   friend class web::WebStateUserData<SearchEngineTabHelper>;
 
   explicit SearchEngineTabHelper(web::WebState* web_state);
-
-  // Adds a TemplateURL by downloading and parsing the OSDD.
-  void AddTemplateURLByOSDD(const GURL& page_url, const GURL& osdd_url);
 
   // Adds a TemplateURL by |searchable_url|.
   void AddTemplateURLBySearchableURL(const GURL& searchable_url);
@@ -55,15 +62,7 @@ class SearchEngineTabHelper
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Handles messages from JavaScript. Messages can be:
-  //   1. A OSDD <link> is found;
-  //   2. A searchable URL is generated from <form> submission.
-  void OnJsMessage(const base::DictionaryValue& message,
-                   const GURL& page_url,
-                   bool user_is_interacting,
-                   web::WebFrame* sender_frame);
-
-  // favicon::FaviconDriverObserver implementation.
+  // favicon::FaviconDriverObserver:
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
                         NotificationIconType notification_icon_type,
                         const GURL& icon_url,
@@ -71,8 +70,9 @@ class SearchEngineTabHelper
                         const gfx::Image& image) override;
 
   // Manages observation relationship between |this| and WebFaviconDriver.
-  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
-      favicon_driver_observer_{this};
+  base::ScopedObservation<favicon::FaviconDriver,
+                          favicon::FaviconDriverObserver>
+      favicon_driver_observation_{this};
 
   // WebState this tab helper is attached to.
   web::WebState* web_state_ = nullptr;
@@ -85,12 +85,7 @@ class SearchEngineTabHelper
   // will be set to empty GURL again.
   GURL searchable_url_;
 
-  // Subscription for JS message.
-  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
-
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <limits>
-
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
 namespace ppapi {

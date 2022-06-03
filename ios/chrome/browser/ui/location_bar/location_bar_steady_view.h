@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/infobars/badge/infobar_badge_button.h"
-
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
 
@@ -20,7 +18,6 @@
 @property(nonatomic, strong) UIColor* trailingButtonColor;
 
 + (LocationBarSteadyViewColorScheme*)standardScheme;
-+ (LocationBarSteadyViewColorScheme*)incognitoScheme;
 
 @end
 

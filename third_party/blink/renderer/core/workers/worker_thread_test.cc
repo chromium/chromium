@@ -11,7 +11,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
@@ -103,7 +103,7 @@ void CreateNestedWorkerThenTerminateParent(
               WillEvaluateClassicScriptMock(_, _))
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
-              DidEvaluateClassicScript(true))
+              DidEvaluateTopLevelScript(true))
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
               WillDestroyWorkerGlobalScope())
@@ -191,7 +191,7 @@ class WorkerThreadTest : public testing::Test {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(true)).Times(1);
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(true)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
   }
@@ -200,7 +200,7 @@ class WorkerThreadTest : public testing::Test {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(AtMost(1));
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(_))
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(_))
         .Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope())
         .Times(AtMost(1));
@@ -211,7 +211,7 @@ class WorkerThreadTest : public testing::Test {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(false)).Times(1);
+    EXPECT_CALL(*reporting_proxy_, DidEvaluateTopLevelScript(false)).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
     EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
   }
@@ -317,7 +317,7 @@ TEST_F(WorkerThreadTest, SyncTerminate_ImmediatelyAfterStart) {
 }
 
 TEST_F(WorkerThreadTest, AsyncTerminate_WhileTaskIsRunning) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -353,7 +353,7 @@ TEST_F(WorkerThreadTest, SyncTerminate_WhileTaskIsRunning) {
 
 TEST_F(WorkerThreadTest,
        AsyncTerminateAndThenSyncTerminate_WhileTaskIsRunning) {
-  SetForcibleTerminationDelay(base::TimeDelta::FromMilliseconds(10));
+  SetForcibleTerminationDelay(base::Milliseconds(10));
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
@@ -373,22 +373,20 @@ TEST_F(WorkerThreadTest,
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
   EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
   EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
 
-  Vector<CSPHeaderAndType> headers{
-      {"contentSecurityPolicy", kContentSecurityPolicyHeaderTypeReport}};
-
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(
-          KURL("http://fake.url/"), mojom::ScriptType::kClassic,
-          OffMainThreadWorkerScriptFetchOption::kDisabled,
-          "fake global scope name", "fake user agent",
-          nullptr /* web_worker_fetch_context */, headers,
+          KURL("http://fake.url/"), mojom::blink::ScriptType::kClassic,
+          "fake global scope name", "fake user agent", UserAgentMetadata(),
+          nullptr /* web_worker_fetch_context */,
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
           false /* starter_secure_context */,
           CalculateHttpsState(security_origin_.get()),
@@ -397,7 +395,8 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
           network::mojom::IPAddressSpace::kLocal,
           nullptr /* originTrialToken */, base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
-          kV8CacheOptionsDefault, nullptr /* worklet_module_responses_map */);
+          mojom::blink::V8CacheOptions::kDefault,
+          nullptr /* worklet_module_responses_map */);
 
   // Set wait_for_debugger so that the worker thread can pause
   // on initialization to run debugger tasks.
@@ -447,7 +446,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();
@@ -492,7 +491,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   EXPECT_EQ(ExitCode::kGracefullyTerminated, GetExitCode());
 }
 
-// Disabled due to flakiness: https://crbug.com/935231
+// TODO(https://crbug.com/1072997): This test occasionally crashes.
 TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
   ExpectReportingCalls();
   Start();
@@ -520,7 +519,7 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
 
 // Tests terminating a worker when debugger is paused.
 TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -541,7 +540,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -569,7 +568,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -608,7 +607,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
 }
 
 TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreezeNoInterrupts) {
-  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();

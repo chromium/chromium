@@ -44,4 +44,4 @@ class BluetoothManufacturerDataMap final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_MANUFACTURER_DATA_MAP_H_

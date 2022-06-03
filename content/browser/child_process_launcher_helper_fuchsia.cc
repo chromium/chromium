@@ -10,32 +10,37 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
-#include "services/service_manager/embedder/result_codes.h"
-#include "services/service_manager/embedder/switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
 namespace internal {
 
 namespace {
 
-const char* ProcessNameFromSandboxType(
-    service_manager::SandboxType sandbox_type) {
+const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
   switch (sandbox_type) {
-    case service_manager::SandboxType::kNoSandbox:
+    case sandbox::mojom::Sandbox::kNoSandbox:
       return nullptr;
-    case service_manager::SandboxType::kWebContext:
-      return "context";
-    case service_manager::SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       return "renderer";
-    case service_manager::SandboxType::kUtility:
+    case sandbox::mojom::Sandbox::kUtility:
       return "utility";
-    case service_manager::SandboxType::kGpu:
+    case sandbox::mojom::Sandbox::kService:
+      return "service";
+    case sandbox::mojom::Sandbox::kGpu:
       return "gpu";
-    case service_manager::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       return "network";
-    default:
-      NOTREACHED() << "Unknown sandbox_type.";
-      return nullptr;
+    case sandbox::mojom::Sandbox::kVideoCapture:
+      return "video-capture";
+    case sandbox::mojom::Sandbox::kAudio:
+      return "audio";
+    case sandbox::mojom::Sandbox::kCdm:
+      return "cdm";
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+      return "print-compositor";
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
+      return "speech-recognition";
   }
 }
 
@@ -66,13 +71,14 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
 
-  sandbox_policy_.Initialize(delegate_->GetSandboxType());
+  sandbox_policy_ = std::make_unique<sandbox::policy::SandboxPolicyFuchsia>(
+      delegate_->GetSandboxType());
 }
 
 std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  return std::unique_ptr<FileMappedForLaunch>();
+  return nullptr;
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
@@ -82,7 +88,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
   mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_transfer,
                                              command_line());
-  sandbox_policy_.UpdateLaunchOptionsForSandbox(options);
+  sandbox_policy_->UpdateLaunchOptionsForSandbox(options);
 
   // Set process name suffix to make it easier to identify the process.
   const char* process_type =
@@ -117,7 +123,7 @@ void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  process.process.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, true);
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, true);
 }
 
 }  // namespace internal

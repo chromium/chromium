@@ -4,8 +4,12 @@
 
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
+if (is_linux) {
+  import("//build/linux/strip_binary.gni")
+}
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
 
 action("embed_js_in_cpp") {
   script = "embed_js_in_cpp.py"
@@ -55,34 +59,14 @@ action("embed_user_data_dir_in_cpp") {
   args += rebase_path(files, root_build_dir)
 }
 
-action("embed_extension_in_cpp") {
-  script = "embed_extension_in_cpp.py"
-
-  files = [
-    "extension/background.js",
-    "extension/manifest.json",
-  ]
-
-  inputs = [ "cpp_source.py" ] + files
-  outputs = [
-    "$target_gen_dir/chrome/embedded_automation_extension.cc",
-    "$target_gen_dir/chrome/embedded_automation_extension.h",
-  ]
-
-  args = [
-    "--directory",
-    rebase_path("$target_gen_dir/chrome", root_build_dir),
-  ]
-  args += rebase_path(files, root_build_dir)
-}
-
 source_set("automation_client_lib") {
+  testonly = true
   sources = [
     "chrome/adb.h",
     "chrome/adb_impl.cc",
     "chrome/adb_impl.h",
-    "chrome/automation_extension.cc",
-    "chrome/automation_extension.h",
+    "chrome/browser_info.cc",
+    "chrome/browser_info.h",
     "chrome/cast_tracker.cc",
     "chrome/cast_tracker.h",
     "chrome/chrome.h",
@@ -92,19 +76,17 @@ source_set("automation_client_lib") {
     "chrome/chrome_desktop_impl.h",
     "chrome/chrome_finder.cc",
     "chrome/chrome_finder.h",
-    "chrome/chrome_finder_mac.mm",
     "chrome/chrome_impl.cc",
     "chrome/chrome_impl.h",
     "chrome/chrome_remote_impl.cc",
     "chrome/chrome_remote_impl.h",
     "chrome/console_logger.cc",
     "chrome/console_logger.h",
-    "chrome/debugger_tracker.cc",
-    "chrome/debugger_tracker.h",
     "chrome/device_manager.cc",
     "chrome/device_manager.h",
     "chrome/device_metrics.cc",
     "chrome/device_metrics.h",
+    "chrome/devtools_client.cc",
     "chrome/devtools_client.h",
     "chrome/devtools_client_impl.cc",
     "chrome/devtools_client_impl.h",
@@ -147,17 +129,18 @@ source_set("automation_client_lib") {
     "chrome/non_blocking_navigation_tracker.h",
     "chrome/page_load_strategy.cc",
     "chrome/page_load_strategy.h",
+    "chrome/scoped_temp_dir_with_retry.cc",
+    "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
     "chrome/status.h",
     "chrome/ui_events.cc",
     "chrome/ui_events.h",
     "chrome/util.cc",
     "chrome/util.h",
-    "chrome/version.cc",
-    "chrome/version.h",
     "chrome/web_view.h",
     "chrome/web_view_impl.cc",
     "chrome/web_view_impl.h",
+    "constants/version.h",
     "log_replay/chrome_replay_impl.cc",
     "log_replay/chrome_replay_impl.h",
     "log_replay/devtools_log_reader.cc",
@@ -172,6 +155,8 @@ source_set("automation_client_lib") {
     "net/command_id.h",
     "net/net_util.cc",
     "net/net_util.h",
+    "net/pipe_handler.cc",
+    "net/pipe_handler.h",
     "net/sync_websocket.h",
     "net/sync_websocket_factory.cc",
     "net/sync_websocket_factory.h",
@@ -185,22 +170,24 @@ source_set("automation_client_lib") {
     "net/websocket.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  if (is_mac) {
+    sources += [ "chrome/chrome_finder_mac.mm" ]
+  }
 
   # Also compile the generated files.
-  sources += get_target_outputs(":embed_extension_in_cpp")
   sources += get_target_outputs(":embed_js_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
 
   deps = [
-    ":embed_extension_in_cpp",
     ":embed_js_in_cpp",
     ":embed_user_data_dir_in_cpp",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
+    "//chrome/common:non_code_constants",
     "//chrome/common:version_header",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/blink/public:buildflags",
@@ -208,6 +195,7 @@ source_set("automation_client_lib") {
     "//third_party/zlib/google:zip",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
+    "//ui/events:dom_keycode_converter",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
@@ -215,6 +203,7 @@ source_set("automation_client_lib") {
 }
 
 source_set("lib") {
+  testonly = true
   sources = [
     "//third_party/webdriver/atoms.cc",
     "//third_party/webdriver/atoms.h",
@@ -224,10 +213,6 @@ source_set("lib") {
     "basic_types.h",
     "capabilities.cc",
     "capabilities.h",
-    "chrome/browser_info.cc",
-    "chrome/browser_info.h",
-    "chrome/scoped_temp_dir_with_retry.cc",
-    "chrome/scoped_temp_dir_with_retry.h",
     "chrome_launcher.cc",
     "chrome_launcher.h",
     "command.h",
@@ -236,7 +221,7 @@ source_set("lib") {
     "command_listener_proxy.h",
     "commands.cc",
     "commands.h",
-    "constants/version.h",
+    "connection_session_map.h",
     "devtools_events_logger.cc",
     "devtools_events_logger.h",
     "element_commands.cc",
@@ -246,18 +231,19 @@ source_set("lib") {
     "key_converter.cc",
     "key_converter.h",
     "keycode_text_conversion.h",
-    "keycode_text_conversion_mac.mm",
-    "keycode_text_conversion_win.cc",
     "logging.cc",
     "logging.h",
     "performance_logger.cc",
     "performance_logger.h",
     "server/http_handler.cc",
     "server/http_handler.h",
+    "server/http_server.cc",
+    "server/http_server.h",
     "session.cc",
     "session.h",
     "session_commands.cc",
     "session_commands.h",
+    "session_connection_map.h",
     "session_thread_map.h",
     "util.cc",
     "util.h",
@@ -267,11 +253,12 @@ source_set("lib") {
     "window_commands.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  if (is_mac) {
+    sources += [ "keycode_text_conversion_mac.mm" ]
+  }
 
-  if (use_x11) {
-    sources += [ "keycode_text_conversion_x.cc" ]
+  if (is_win) {
+    sources += [ "keycode_text_conversion_win.cc" ]
   }
 
   deps = [
@@ -279,19 +266,22 @@ source_set("lib") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/common:version_header",
     "//chrome/test/chromedriver/constants:version_header",
     "//components/crx_file",
-    "//components/embedder_support:switches",
+    "//components/embedder_support",
     "//components/version_info:generate_version_info",
     "//crypto",
     "//net",
     "//net/server:http_server",
+    "//net/traffic_annotation:test_support",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/zlib",
+    "//third_party/zlib/google:zip",
     "//ui/base",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
@@ -299,39 +289,65 @@ source_set("lib") {
     "//ui/gfx/geometry",
   ]
 
-  # The X11 implementation uses part of Ozone implementation.
-  if (use_ozone || use_x11) {
+  if (use_ozone) {
     sources += [ "keycode_text_conversion_ozone.cc" ]
-    deps += [ "//ui/events/ozone/layout" ]
-  }
+    deps += [
+      "//ui/events/ozone/layout",
+      "//ui/ozone:buildflags",
+    ]
 
-  if (use_x11) {
-    configs += [ "//build/config/linux:x11" ]
-    deps += [ "//ui/gfx/x" ]
+    # TODO(1239521): clean up usages of ozone_platform_x11.
+    # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,
+    # use plain X11 keyboard conversion code until Ozone/X11 uses a non-stub
+    # engine.
+    if (ozone_platform_x11) {
+      sources += [ "keycode_text_conversion_x.cc" ]
+      deps += [
+        "//ui/base/x",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
   if (is_mac) {
-    libs = [ "Carbon.framework" ]
+    frameworks = [ "Carbon.framework" ]
   }
 }
 
-executable("chromedriver") {
-  testonly = true
-  sources = [
-    "server/chromedriver_server.cc",
-  ]
+if (is_linux) {
+  chromedriver_output = "chromedriver.unstripped"
+} else {
+  chromedriver_output = "chromedriver"
+}
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+executable("$chromedriver_output") {
+  testonly = true
+  sources = [ "server/chromedriver_server.cc" ]
 
   deps = [
+    ":automation_client_lib",
     ":lib",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//mojo/core/embedder",
     "//net/server:http_server",
     "//net/traffic_annotation:test_support",
     "//services/network/public/mojom",
   ]
+
+  if (is_mac && is_component_ffmpeg) {
+    ldflags = [ "-Wl,-rpath,@executable_path/." ]
+  }
+}
+
+if (is_linux) {
+  strip_binary("chromedriver") {
+    testonly = true
+    binary_input = "$root_out_dir/$chromedriver_output"
+    symbol_output = "$root_out_dir/chromedriver.debug"
+    stripped_binary_output = "$root_out_dir/chromedriver"
+    deps = [ ":$chromedriver_output" ]
+  }
 }
 
 python_library("chromedriver_py_tests") {
@@ -344,13 +360,13 @@ python_library("chromedriver_py_tests") {
   pydeps_file = "test/run_py_tests.pydeps"
   data = [
     "//chrome/test/data/chromedriver/",
+    "//chrome/test/chromedriver/js/",
     "//testing/scripts/run_chromedriver_tests.py",
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
   ]
 
   data_deps = [
     "//chrome/test/chromedriver",
+    "//testing:test_scripts_shared",
   ]
   if (is_component_build && is_mac) {
     data_deps += [ "//chrome:chrome_framework" ]
@@ -364,9 +380,9 @@ python_library("chromedriver_py_tests") {
 
 python_library("chromedriver_replay_unittests") {
   testonly = true
-  deps = [
-    ":chromedriver",
-  ]
+  deps = [ ":chromedriver" ]
+
+  data_deps = [ "//testing:test_scripts_shared" ]
 
   pydeps_file = "log_replay/client_replay_unittest.pydeps"
 }
@@ -404,6 +420,7 @@ test("chromedriver_unittests") {
     "chrome_launcher_unittest.cc",
     "command_listener_proxy_unittest.cc",
     "commands_unittest.cc",
+    "element_commands_unittest.cc",
     "key_converter_unittest.cc",
     "keycode_text_conversion_unittest.cc",
     "log_replay/devtools_log_reader_unittest.cc",
@@ -423,18 +440,18 @@ test("chromedriver_unittests") {
     "window_commands_unittest.cc",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   data = [
     "//chrome/test/data/chromedriver/",
     "//chrome/test/chromedriver/log_replay/test_data",
   ]
 
   deps = [
+    ":automation_client_lib",
     ":lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//build:chromeos_buildflags",
+    "//chrome/common",
     "//mojo/core/embedder",
     "//net",
     "//net:test_support",

@@ -5,21 +5,22 @@
 #include "chrome/chrome_cleaner/engines/controllers/elevating_facade.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
+#include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
@@ -31,7 +32,7 @@ namespace chrome_cleaner {
 
 namespace {
 
-constexpr base::TimeDelta kCheckPeriod = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCheckPeriod = base::Seconds(1);
 
 // Returns true if the class name of |window| begins with the typical Chrome
 // window class prefix.
@@ -52,9 +53,9 @@ bool IsChromeWindow(HWND window) {
     return false;
 
   return base::EqualsCaseInsensitiveASCII(
-      base::StringPiece16(window_class_prefix, class_name_length),
-      base::StringPiece16(kChromeWindowClassPrefix,
-                          base::size(kChromeWindowClassPrefix) - 1));
+      base::WStringPiece(window_class_prefix, class_name_length),
+      base::WStringPiece(kChromeWindowClassPrefix,
+                         base::size(kChromeWindowClassPrefix) - 1));
 }
 
 // Returns a handle to the foreground window if it is a Chrome window, otherwise
@@ -128,17 +129,29 @@ class ElevatingCleaner : public Cleaner {
     done_callback_ = std::move(done_callback);
 
     // Re-launch with administrator privileges.
-    privileged_process_ =
-        chrome_cleaner::HasAdminRights()
-            ? base::LaunchProcess(GetElevatedCommandLine(),
-                                  base::LaunchOptions())
-            : LaunchElevatedProcessWithAssociatedWindow(
-                  GetElevatedCommandLine(), GetForegroundChromeWindow());
+    DCHECK(!privileged_process_.IsValid());
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kDenyElevationForTestingSwitch)) {
+      privileged_process_ =
+          chrome_cleaner::HasAdminRights()
+              ? base::LaunchProcess(GetElevatedCommandLine(),
+                                    base::LaunchOptions())
+              : LaunchElevatedProcessWithAssociatedWindow(
+                    GetElevatedCommandLine(), GetForegroundChromeWindow());
+    }
 
     if (!privileged_process_.IsValid()) {
       ReportDone(RESULT_CODE_ELEVATION_PROMPT_DECLINED);
     } else {
       process_started_at_ = base::Time::Now();
+
+      // The privileged process will take over logs uploading. It's not
+      // important to clear pending uploads from the registry logger since the
+      // user is not opting out here - if the privileged process fails, pending
+      // logs should still be uploaded.
+      LoggingServiceAPI::GetInstance()->EnableUploads(
+          false, /*registry_logger=*/nullptr);
+
       CheckDone();
     }
   }

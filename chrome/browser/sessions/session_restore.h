@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/history/core/browser/history_service.h"
@@ -38,7 +37,7 @@ class SessionRestore {
 
   enum {
     // Indicates the active tab of the supplied browser should be closed.
-    CLOBBER_CURRENT_TAB          = 1 << 0,
+    CLOBBER_CURRENT_TAB = 1 << 0,
 
     // Indicates that if there is a problem restoring the last session then a
     // new tabbed browser should be created.
@@ -46,16 +45,21 @@ class SessionRestore {
 
     // Restore blocks until complete. This is intended for use during startup
     // when we want to block until restore is complete.
-    SYNCHRONOUS                  = 1 << 2,
+    SYNCHRONOUS = 1 << 2,
+
+    // Restore apps as well.
+    RESTORE_APPS = 1 << 3,
+
+    // Restores normal browsers.
+    RESTORE_BROWSER = 1 << 4,
   };
 
   // Notification callback list.
-  using CallbackList = base::CallbackList<void(int)>;
+  using CallbackList = base::RepeatingCallbackList<void(Profile*, int)>;
+  using RestoredCallback = base::RepeatingCallback<void(Profile*, int)>;
 
-  // Used by objects calling RegisterOnSessionRestoredCallback() to de-register
-  // themselves when they are destroyed.
-  using CallbackSubscription =
-      std::unique_ptr<base::CallbackList<void(int)>::Subscription>;
+  SessionRestore(const SessionRestore&) = delete;
+  SessionRestore& operator=(const SessionRestore&) = delete;
 
   // Restores the last session. |behavior| is a bitmask of Behaviors, see it
   // for details. If |browser| is non-null the tabs for the first window are
@@ -102,8 +106,8 @@ class SessionRestore {
   // Note that 'complete' means all the browsers and tabs have been created but
   // have not necessarily finished loading. The integer supplied to the callback
   // indicates the number of tabs that were created.
-  static CallbackSubscription RegisterOnSessionRestoredCallback(
-      const base::Callback<void(int)>& callback);
+  static base::CallbackListSubscription RegisterOnSessionRestoredCallback(
+      const RestoredCallback& callback);
 
   // Add/remove an observer to/from this session restore.
   static void AddObserver(SessionRestoreObserver* observer);
@@ -115,6 +119,9 @@ class SessionRestore {
 
   // Is called when session restore is going to restore a tab.
   static void OnWillRestoreTab(content::WebContents* web_contents);
+
+  // Is called when windows are read from the last session restore file.
+  static void OnGotSession(Profile* profile, bool for_apps, int window_count);
 
  private:
   friend class SessionRestoreImpl;
@@ -161,8 +168,6 @@ class SessionRestore {
 
   // Whether session restore started or not.
   static bool session_restore_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestore);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_H_

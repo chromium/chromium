@@ -22,7 +22,7 @@ class FormDataEvent : public Event {
   FormDataEvent(FormData& form_data);
   FormDataEvent(const AtomicString& type, const FormDataEventInit* event_init);
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   FormData* formData() const { return form_data_; }
 

@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
@@ -49,6 +51,10 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
   RuntimeHooksDelegateTest() {}
+
+  RuntimeHooksDelegateTest(const RuntimeHooksDelegateTest&) = delete;
+  RuntimeHooksDelegateTest& operator=(const RuntimeHooksDelegateTest&) = delete;
+
   ~RuntimeHooksDelegateTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -94,8 +100,6 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeHooksDelegateTest);
 };
 
 TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
@@ -187,19 +191,19 @@ TEST_F(RuntimeHooksDelegateTest, Connect) {
   SendMessageTester tester(ipc_message_sender(), script_context(), 0,
                            "runtime");
   MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
-  tester.TestConnect("", "", self_target, false);
-  tester.TestConnect("{name: 'channel'}", "channel", self_target, false);
-  tester.TestConnect("{includeTlsChannelId: true}", "", self_target, true);
+  tester.TestConnect("", "", self_target);
+  tester.TestConnect("{name: 'channel'}", "channel", self_target);
+  tester.TestConnect("{includeTlsChannelId: true}", "", self_target);
   tester.TestConnect("{includeTlsChannelId: true, name: 'channel'}", "channel",
-                     self_target, true);
+                     self_target);
 
   std::string other_id = crx_file::id_util::GenerateId("other");
   MessageTarget other_target = MessageTarget::ForExtension(other_id);
   tester.TestConnect(base::StringPrintf("'%s'", other_id.c_str()), "",
-                     other_target, false);
+                     other_target);
   tester.TestConnect(
       base::StringPrintf("'%s', {name: 'channel'}", other_id.c_str()),
-      "channel", other_target, false);
+      "channel", other_target);
 }
 
 // Tests the end-to-end (renderer) flow for a call to runtime.sendMessage
@@ -221,46 +225,45 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
                            "runtime");
 
   MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
-  tester.TestSendMessage("''", R"("")", self_target, false,
-                         SendMessageTester::CLOSED);
+  tester.TestSendMessage("''", R"("")", self_target, SendMessageTester::CLOSED);
 
   constexpr char kStandardMessage[] = R"({"data":"hello"})";
   tester.TestSendMessage("{data: 'hello'}", kStandardMessage, self_target,
-                         false, SendMessageTester::CLOSED);
+                         SendMessageTester::CLOSED);
   tester.TestSendMessage("{data: 'hello'}, function() {}", kStandardMessage,
-                         self_target, false, SendMessageTester::OPEN);
+                         self_target, SendMessageTester::OPEN);
   tester.TestSendMessage("{data: 'hello'}, {includeTlsChannelId: true}",
-                         kStandardMessage, self_target, true,
+                         kStandardMessage, self_target,
                          SendMessageTester::CLOSED);
   tester.TestSendMessage(
       "{data: 'hello'}, {includeTlsChannelId: true}, function() {}",
-      kStandardMessage, self_target, true, SendMessageTester::OPEN);
+      kStandardMessage, self_target, SendMessageTester::OPEN);
 
   std::string other_id_str = crx_file::id_util::GenerateId("other");
   const char* other_id = other_id_str.c_str();  // For easy StringPrintf()ing.
   MessageTarget other_target = MessageTarget::ForExtension(other_id_str);
 
   tester.TestSendMessage(base::StringPrintf("'%s', {data: 'hello'}", other_id),
-                         kStandardMessage, other_target, false,
+                         kStandardMessage, other_target,
                          SendMessageTester::CLOSED);
   tester.TestSendMessage(
       base::StringPrintf("'%s', {data: 'hello'}, function() {}", other_id),
-      kStandardMessage, other_target, false, SendMessageTester::OPEN);
+      kStandardMessage, other_target, SendMessageTester::OPEN);
   tester.TestSendMessage(base::StringPrintf("'%s', 'string message'", other_id),
-                         R"("string message")", other_target, false,
+                         R"("string message")", other_target,
                          SendMessageTester::CLOSED);
 
   // The sender could omit the ID by passing null or undefined explicitly.
   // Regression tests for https://crbug.com/828664.
   tester.TestSendMessage("null, {data: 'hello'}, function() {}",
-                         kStandardMessage, self_target, false,
+                         kStandardMessage, self_target,
                          SendMessageTester::OPEN);
   tester.TestSendMessage("null, 'test', function() {}", R"("test")",
-                         self_target, false, SendMessageTester::OPEN);
-  tester.TestSendMessage("null, 'test'", R"("test")", self_target, false,
+                         self_target, SendMessageTester::OPEN);
+  tester.TestSendMessage("null, 'test'", R"("test")", self_target,
                          SendMessageTester::CLOSED);
   tester.TestSendMessage("undefined, 'test', function() {}", R"("test")",
-                         self_target, false, SendMessageTester::OPEN);
+                         self_target, SendMessageTester::OPEN);
 
   // Funny case. The only required argument is `message`, which can be any type.
   // This means that if an extension provides a <string, object> pair for the
@@ -275,13 +278,12 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
   // But probably not worth it at this time.
   tester.TestSendMessage(
       base::StringPrintf("'%s', {includeTlsChannelId: true}", other_id),
-      R"({"includeTlsChannelId":true})", other_target, false,
+      R"({"includeTlsChannelId":true})", other_target,
       SendMessageTester::CLOSED);
   tester.TestSendMessage(
       base::StringPrintf("'%s', {includeTlsChannelId: true}, function() {}",
                          other_id),
-      R"({"includeTlsChannelId":true})", other_target, false,
-      SendMessageTester::OPEN);
+      R"({"includeTlsChannelId":true})", other_target, SendMessageTester::OPEN);
 }
 
 // Test that some incorrect invocations of sendMessage() throw errors.
@@ -298,7 +300,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessageErrors) {
   send_message("'some id', 'some message', {}, {}");
 }
 
-TEST_F(RuntimeHooksDelegateTest, SendMessageWithTrickyOptions) {
+TEST_F(RuntimeHooksDelegateTest, ConnectWithTrickyOptions) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -306,41 +308,37 @@ TEST_F(RuntimeHooksDelegateTest, SendMessageWithTrickyOptions) {
                            "runtime");
 
   MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
-  constexpr char kStandardMessage[] = R"({"data":"hello"})";
   {
     // Even though we parse the message options separately, we do a conversion
     // of the object passed into the API. This means that something subtle like
     // this, which throws on the second access of a property, shouldn't trip us
     // up.
     constexpr char kTrickyConnectOptions[] =
-        R"({data: 'hello'},
-           {
-             get includeTlsChannelId() {
+        R"({
+             get name() {
                if (this.checkedOnce)
                  throw new Error('tricked!');
                this.checkedOnce = true;
-               return true;
+               return 'foo';
              }
            })";
-    tester.TestSendMessage(kTrickyConnectOptions, kStandardMessage, self_target,
-                           true, SendMessageTester::CLOSED);
+    tester.TestConnect(kTrickyConnectOptions, "foo", self_target);
   }
   {
     // A different form of trickiness: the options object doesn't have the
-    // includeTlsChannelId key (which is acceptable, since its optional), but
+    // name key (which is acceptable, since its optional), but
     // any attempt to access the key on an object without a value for it results
     // in an error. Our argument parsing code should protect us from this.
     constexpr const char kMessWithObjectPrototype[] =
         R"((function() {
              Object.defineProperty(
-                 Object.prototype, 'includeTlsChannelId',
+                 Object.prototype, 'name',
                  { get() { throw new Error('tricked!'); } });
            }))";
     v8::Local<v8::Function> mess_with_proto =
         FunctionFromString(context, kMessWithObjectPrototype);
     RunFunction(mess_with_proto, context, 0, nullptr);
-    tester.TestSendMessage("{data: 'hello'}, {}", kStandardMessage, self_target,
-                           false, SendMessageTester::CLOSED);
+    tester.TestConnect("{}", "", self_target);
   }
 }
 
@@ -363,21 +361,20 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
   auto run_connect_native = [this, context, &next_context_port_id](
                                 const std::string& args,
                                 const std::string& expected_app_name) {
-    // connectNative() doesn't name channels or ever include the TLS channel ID.
+    // connectNative() doesn't name channels.
     const std::string kEmptyExpectedChannel;
-    const bool kExpectedIncludeTlsChannelId = false;
 
     SCOPED_TRACE(base::StringPrintf("Args: '%s'", args.c_str()));
     constexpr char kAddPortTemplate[] =
         "(function() { return chrome.runtime.connectNative(%s); })";
     PortId expected_port_id(script_context()->context_id(),
-                            next_context_port_id++, true);
+                            next_context_port_id++, true,
+                            SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_app_name));
     EXPECT_CALL(*ipc_message_sender(),
                 SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, kEmptyExpectedChannel,
-                                       kExpectedIncludeTlsChannelId));
+                                       expected_target, kEmptyExpectedChannel));
 
     v8::Local<v8::Function> add_port = FunctionFromString(
         context, base::StringPrintf(kAddPortTemplate, args.c_str()));
@@ -412,24 +409,22 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
                                  const std::string& expected_message,
                                  const std::string& expected_application_name,
                                  PortStatus expected_port_status) {
-    // sendNativeMessage() doesn't name channels or ever include the TLS channel
-    // ID.
+    // sendNativeMessage() doesn't name channels.
     const std::string kEmptyExpectedChannel;
-    const bool kExpectedIncludeTlsChannelId = false;
 
     SCOPED_TRACE(base::StringPrintf("Args: '%s'", args));
     constexpr char kSendMessageTemplate[] =
         "(function() { chrome.runtime.sendNativeMessage(%s); })";
 
     PortId expected_port_id(script_context()->context_id(),
-                            next_context_port_id++, true);
+                            next_context_port_id++, true,
+                            SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_application_name));
     EXPECT_CALL(*ipc_message_sender(),
                 SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, kEmptyExpectedChannel,
-                                       kExpectedIncludeTlsChannelId));
-    Message message(expected_message, false);
+                                       expected_target, kEmptyExpectedChannel));
+    Message message(expected_message, SerializationFormat::kJson, false);
     EXPECT_CALL(*ipc_message_sender(),
                 SendPostMessageToPort(expected_port_id, message));
     // Note: we don't close native message ports immediately. See comment in

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_HOST_POWER_SAVER_BLOCKER_H_
-#define REMOTING_HOST_HOST_POWER_SAVER_BLOCKER_H_
+#ifndef REMOTING_HOST_HOST_POWER_SAVE_BLOCKER_H_
+#define REMOTING_HOST_HOST_POWER_SAVE_BLOCKER_H_
 
 #include <memory>
 #include <string>
@@ -52,4 +52,4 @@ class HostPowerSaveBlocker : public HostStatusObserver {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_HOST_POWER_SAVER_BLOCKER_H_
+#endif  // REMOTING_HOST_HOST_POWER_SAVE_BLOCKER_H_

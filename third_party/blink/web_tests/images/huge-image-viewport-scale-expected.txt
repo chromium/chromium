@@ -4,5 +4,5 @@ Passes if the image shinks to fit the width.
 
 
 viewport meta: <meta name="viewport" content="width=device-width, minimum-scale=0.1">
-image style: -webkit-user-select: none;margin: auto;cursor: zoom-in;
+image style: -webkit-user-select: none;margin: auto;cursor: zoom-in;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;
 image actual width: 100

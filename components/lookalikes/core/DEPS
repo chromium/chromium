@@ -1,0 +1,8 @@
+include_rules = [
+  # This code is shared with ios, so content/ dependencies
+  # should not be introduced.
+  "-content",
+  "-ios/web",
+  # components/reputation contains the lookalike (safety tips) component.
+  "+components/reputation/core",
+]

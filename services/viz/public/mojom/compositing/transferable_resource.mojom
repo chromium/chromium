@@ -6,37 +6,16 @@ module viz.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "services/viz/public/mojom/compositing/resource_format.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
-
-// Corresponds to viz::ResourceFormat.
-enum ResourceFormat {
-  RGBA_8888,
-  RGBA_4444,
-  BGRA_8888,
-  ALPHA_8,
-  LUMINANCE_8,
-  RGB_565,
-  BGR_565,
-  ETC1,
-  RED_8,
-  RG_88,
-  LUMINANCE_F16,
-  RGBA_F16,
-  R16_EXT,
-  RGBX_8888,
-  BGRX_8888,
-  RGBX_1010102,
-  BGRX_1010102,
-  YVU_420,
-  YUV_420_BIPLANAR,
-  P010,
-};
+import "ui/gfx/mojom/hdr_metadata.mojom";
 
 // See components/viz/common/resources/transferable_resource.h.
 struct TransferableResource {
-  uint32 id;
+  ResourceId id;
   ResourceFormat format;
   uint32 filter;
   gfx.mojom.Size size;
@@ -47,5 +26,6 @@ struct TransferableResource {
   bool is_backed_by_surface_texture;
   bool wants_promotion_hint;
   gfx.mojom.ColorSpace color_space;
+  gfx.mojom.HDRMetadata? hdr_metadata;
   gpu.mojom.VulkanYCbCrInfo ? ycbcr_info;
 };

@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
-#include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -18,37 +17,25 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
-
-bool IsFetchMetadataEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableExperimentalWebPlatformFeatures) ||
-         base::FeatureList::IsEnabled(network::features::kFetchMetadata);
-}
-
-bool IsFetchMetadataDestinationEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableExperimentalWebPlatformFeatures) ||
-         base::FeatureList::IsEnabled(
-             network::features::kFetchMetadataDestination);
-}
 
 void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     net::HttpRequestHeaders* headers,
     BrowserContext* browser_context,
     bool should_update_existing_headers,
-    const blink::mojom::RendererPreferences& renderer_preferences) {
+    const blink::RendererPreferences& renderer_preferences) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Set the DoNotTrack header if appropriate.
   // https://w3c.github.io/dnt/drafts/tracking-dnt.html#expression-format
   if (renderer_preferences.enable_do_not_track) {
     if (should_update_existing_headers) {
-      headers->RemoveHeader(kDoNotTrackHeader);
+      headers->RemoveHeader(blink::kDoNotTrackHeader);
     }
-    headers->SetHeaderIfMissing(kDoNotTrackHeader, "1");
+    headers->SetHeaderIfMissing(blink::kDoNotTrackHeader, "1");
   }
 
   // Set the Save-Data header if appropriate.

@@ -4,14 +4,16 @@
 
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
+#include "media/mojo/mojom/video_encoder_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -29,6 +31,11 @@ class VideoEncodeAcceleratorClient
   VideoEncodeAcceleratorClient(
       VideoEncodeAccelerator::Client* client,
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver);
+
+  VideoEncodeAcceleratorClient(const VideoEncodeAcceleratorClient&) = delete;
+  VideoEncodeAcceleratorClient& operator=(const VideoEncodeAcceleratorClient&) =
+      delete;
+
   ~VideoEncodeAcceleratorClient() override = default;
 
   // mojom::VideoEncodeAcceleratorClient impl.
@@ -39,12 +46,11 @@ class VideoEncodeAcceleratorClient
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
   void NotifyError(VideoEncodeAccelerator::Error error) override;
+  void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
   VideoEncodeAccelerator::Client* client_;
   mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncodeAcceleratorClient);
 };
 
 VideoEncodeAcceleratorClient::VideoEncodeAcceleratorClient(
@@ -80,11 +86,17 @@ void VideoEncodeAcceleratorClient::NotifyError(
   client_->NotifyError(error);
 }
 
+void VideoEncodeAcceleratorClient::NotifyEncoderInfoChange(
+    const VideoEncoderInfo& info) {
+  DVLOG(2) << __func__;
+  client_->NotifyEncoderInfoChange(info);
+}
+
 }  // anonymous namespace
 
 MojoVideoEncodeAccelerator::MojoVideoEncodeAccelerator(
     mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
-    const gpu::VideoEncodeAcceleratorSupportedProfiles& supported_profiles)
+    const SupportedProfiles& supported_profiles)
     : vea_(std::move(vea)), supported_profiles_(supported_profiles) {
   DVLOG(1) << __func__;
   DCHECK(vea_);
@@ -95,8 +107,7 @@ MojoVideoEncodeAccelerator::GetSupportedProfiles() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
-      supported_profiles_);
+  return supported_profiles_;
 }
 
 bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
@@ -121,85 +132,40 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(VideoFrame::NumPlanes(frame->format()),
-            frame->layout().num_planes());
+  size_t num_planes = VideoFrame::NumPlanes(frame->format());
+  DCHECK_EQ(num_planes, frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
-#if defined(OS_LINUX)
-  // TODO(crbug.com/1003197): Remove this once we stop supporting STORAGE_DMABUF
-  // in VideoEncodeAccelerator.
-  if (frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
-    DCHECK(frame->HasDmaBufs());
-    vea_->Encode(
-        frame, force_keyframe,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                       frame));
-    return;
-  }
-#endif
+  // GPU memory path: Pass-through.
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    vea_->Encode(
-        frame, force_keyframe,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                       frame));
+    vea_->Encode(frame, force_keyframe,
+                 base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
     return;
   }
 
-  if (frame->format() != PIXEL_FORMAT_I420 ||
-      VideoFrame::STORAGE_SHMEM != frame->storage_type() ||
-      !frame->shm_region()->IsValid()) {
-    DLOG(ERROR) << "Unexpected video frame buffer";
+  // Mappable memory path: Copy buffer to shared memory.
+  if (frame->format() != PIXEL_FORMAT_I420 &&
+      frame->format() != PIXEL_FORMAT_NV12) {
+    DLOG(ERROR) << "Unexpected pixel format: "
+                << VideoPixelFormatToString(frame->format());
+    return;
+  }
+  if (frame->storage_type() != VideoFrame::STORAGE_SHMEM &&
+      frame->storage_type() != VideoFrame::STORAGE_UNOWNED_MEMORY) {
+    DLOG(ERROR) << "Unexpected storage type: "
+                << VideoFrame::StorageTypeToString(frame->storage_type());
     return;
   }
 
-  // Oftentimes |frame|'s underlying planes will be aligned and not tightly
-  // packed, so don't use VideoFrame::AllocationSize().
-  const size_t allocation_size = frame->shm_region()->GetSize();
-
-  // A MojoSharedBufferVideoFrame is created with an owned writable handle. As
-  // the handle in |frame| is not owned, a new region must be created and
-  // |frame| copied into it.
-  mojo::ScopedSharedBufferHandle dst_handle =
-      mojo::SharedBufferHandle::Create(allocation_size);
-  if (!dst_handle->is_valid()) {
-    DLOG(ERROR) << "Can't create new frame backing memory";
-    return;
-  }
-  mojo::ScopedSharedBufferMapping dst_mapping =
-      dst_handle->Map(allocation_size);
-  if (!dst_mapping) {
-    DLOG(ERROR) << "Can't map new frame backing memory";
-    return;
-  }
-  DCHECK(frame->shm_region());
-  base::WritableSharedMemoryMapping src_mapping = frame->shm_region()->Map();
-  if (!src_mapping.IsValid()) {
-    DLOG(ERROR) << "Can't map src frame backing memory";
-    return;
-  }
-  memcpy(dst_mapping.get(), src_mapping.memory(), allocation_size);
-
-  const size_t y_offset = frame->shared_memory_offset();
-  const size_t u_offset = y_offset + frame->data(VideoFrame::kUPlane) -
-                          frame->data(VideoFrame::kYPlane);
-  const size_t v_offset = y_offset + frame->data(VideoFrame::kVPlane) -
-                          frame->data(VideoFrame::kYPlane);
-  // Temporary Mojo VideoFrame to allow for marshalling.
   scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
-      MojoSharedBufferVideoFrame::Create(
-          frame->format(), frame->coded_size(), frame->visible_rect(),
-          frame->natural_size(), std::move(dst_handle), allocation_size,
-          y_offset, u_offset, v_offset, frame->stride(VideoFrame::kYPlane),
-          frame->stride(VideoFrame::kUPlane),
-          frame->stride(VideoFrame::kVPlane), frame->timestamp());
-
-  // Encode() is synchronous: clients will assume full ownership of |frame| when
-  // this gets destroyed and probably recycle its shared_memory_handle(): keep
-  // the former alive until the remote end is actually finished.
+      MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
+  if (!mojo_frame) {
+    DLOG(ERROR) << "Failed creating MojoSharedBufferVideoFrame from YUV";
+    return;
+  }
   vea_->Encode(
       std::move(mojo_frame), force_keyframe,
-      base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                     std::move(frame)));
+      base::BindOnce([](scoped_refptr<VideoFrame>) {}, std::move(frame)));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -217,15 +183,13 @@ void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(vea_.is_bound());
 
-  media::VideoBitrateAllocation bitrate_allocation;
-  bitrate_allocation.SetBitrate(0, 0, bitrate);
-  vea_->RequestEncodingParametersChange(bitrate_allocation, framerate);
+  vea_->RequestEncodingParametersChangeWithBitrate(bitrate, framerate);
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -235,7 +199,25 @@ void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(vea_.is_bound());
 
-  vea_->RequestEncodingParametersChange(bitrate, framerate);
+  vea_->RequestEncodingParametersChangeWithLayers(bitrate, framerate);
+}
+
+bool MojoVideoEncodeAccelerator::IsFlushSupported() {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(vea_.is_bound());
+
+  bool flush_support = false;
+  vea_->IsFlushSupported(&flush_support);
+  return flush_support;
+}
+
+void MojoVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(vea_.is_bound());
+
+  vea_->Flush(std::move(flush_callback));
 }
 
 void MojoVideoEncodeAccelerator::Destroy() {

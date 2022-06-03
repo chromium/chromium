@@ -31,11 +31,10 @@
 import logging
 import sys
 
-from StringIO import StringIO
+from six import StringIO
 
 
 class OutputCapture(object):
-
     def __init__(self):
         self.saved_outputs = dict()
         self._log_level = logging.INFO
@@ -70,7 +69,8 @@ class OutputCapture(object):
         self._orig_log_level = self._logger.level
         self._logger.addHandler(self._logs_handler)
         self._logger.setLevel(min(self._log_level, self._orig_log_level))
-        return (self._capture_output_with_name('stdout'), self._capture_output_with_name('stderr'))
+        return (self._capture_output_with_name('stdout'),
+                self._capture_output_with_name('stderr'))
 
     def restore_output(self):
         self._logger.removeHandler(self._logs_handler)
@@ -80,16 +80,25 @@ class OutputCapture(object):
         logs_string = self._logs.getvalue()
         delattr(self, '_logs_handler')
         delattr(self, '_logs')
-        return (self._restore_output_with_name('stdout'), self._restore_output_with_name('stderr'), logs_string)
+        return (self._restore_output_with_name('stdout'),
+                self._restore_output_with_name('stderr'), logs_string)
 
-    def assert_outputs(self, testcase, function, args=None, kwargs=None, expected_stdout='',
-                       expected_stderr='', expected_exception=None, expected_logs=None):
+    def assert_outputs(self,
+                       testcase,
+                       function,
+                       args=None,
+                       kwargs=None,
+                       expected_stdout='',
+                       expected_stderr='',
+                       expected_exception=None,
+                       expected_logs=None):
         args = args or []
         kwargs = kwargs or {}
         self.capture_output()
         try:
             if expected_exception:
-                return_value = testcase.assertRaises(expected_exception, function, *args, **kwargs)
+                return_value = testcase.assertRaises(expected_exception,
+                                                     function, *args, **kwargs)
             else:
                 return_value = function(*args, **kwargs)
         finally:

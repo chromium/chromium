@@ -4,7 +4,7 @@
 
 #include "chromeos/components/multidevice/software_feature.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace chromeos {
 
@@ -29,6 +29,22 @@ SoftwareFeature FromCryptAuthFeature(
       return SoftwareFeature::kMessagesForWebHost;
     case cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT:
       return SoftwareFeature::kMessagesForWebClient;
+    case cryptauth::SoftwareFeature::PHONE_HUB_HOST:
+      return SoftwareFeature::kPhoneHubHost;
+    case cryptauth::SoftwareFeature::PHONE_HUB_CLIENT:
+      return SoftwareFeature::kPhoneHubClient;
+    case cryptauth::SoftwareFeature::WIFI_SYNC_HOST:
+      return SoftwareFeature::kWifiSyncHost;
+    case cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT:
+      return SoftwareFeature::kWifiSyncClient;
+    case cryptauth::SoftwareFeature::ECHE_HOST:
+      return SoftwareFeature::kEcheHost;
+    case cryptauth::SoftwareFeature::ECHE_CLIENT:
+      return SoftwareFeature::kEcheClient;
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST:
+      return SoftwareFeature::kPhoneHubCameraRollHost;
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
+      return SoftwareFeature::kPhoneHubCameraRollClient;
     case cryptauth::SoftwareFeature::UNKNOWN_FEATURE:
       NOTREACHED();
   }
@@ -57,6 +73,22 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
       return cryptauth::SoftwareFeature::SMS_CONNECT_HOST;
     case SoftwareFeature::kMessagesForWebClient:
       return cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT;
+    case SoftwareFeature::kPhoneHubHost:
+      return cryptauth::SoftwareFeature::PHONE_HUB_HOST;
+    case SoftwareFeature::kPhoneHubClient:
+      return cryptauth::SoftwareFeature::PHONE_HUB_CLIENT;
+    case SoftwareFeature::kWifiSyncHost:
+      return cryptauth::SoftwareFeature::WIFI_SYNC_HOST;
+    case SoftwareFeature::kWifiSyncClient:
+      return cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT;
+    case SoftwareFeature::kEcheHost:
+      return cryptauth::SoftwareFeature::ECHE_HOST;
+    case SoftwareFeature::kEcheClient:
+      return cryptauth::SoftwareFeature::ECHE_CLIENT;
+    case SoftwareFeature::kPhoneHubCameraRollHost:
+      return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST;
+    case SoftwareFeature::kPhoneHubCameraRollClient:
+      return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
   NOTREACHED();
@@ -88,6 +120,30 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature) {
       break;
     case SoftwareFeature::kMessagesForWebClient:
       stream << "[Messages for Web client]";
+      break;
+    case SoftwareFeature::kPhoneHubHost:
+      stream << "[Phone Hub host]";
+      break;
+    case SoftwareFeature::kPhoneHubClient:
+      stream << "[Phone Hub client]";
+      break;
+    case SoftwareFeature::kWifiSyncHost:
+      stream << "[Wifi Sync host]";
+      break;
+    case SoftwareFeature::kWifiSyncClient:
+      stream << "[Wifi Sync client]";
+      break;
+    case SoftwareFeature::kEcheHost:
+      stream << "[Eche host]";
+      break;
+    case SoftwareFeature::kEcheClient:
+      stream << "[Eche client]";
+      break;
+    case SoftwareFeature::kPhoneHubCameraRollHost:
+      stream << "[Phone Hub Camera Roll host]";
+      break;
+    case SoftwareFeature::kPhoneHubCameraRollClient:
+      stream << "[Phone Hub Camera Roll client]";
       break;
   }
   return stream;

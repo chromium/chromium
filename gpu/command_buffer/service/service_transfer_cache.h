@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -21,8 +21,9 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
-class GrContext;
+class GrDirectContext;
 class SkImage;
 
 namespace gpu {
@@ -48,12 +49,16 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     uint32_t entry_id;
   };
 
-  ServiceTransferCache();
+  explicit ServiceTransferCache(const GpuPreferences& preferences);
+
+  ServiceTransferCache(const ServiceTransferCache&) = delete;
+  ServiceTransferCache& operator=(const ServiceTransferCache&) = delete;
+
   ~ServiceTransferCache() override;
 
   bool CreateLockedEntry(const EntryKey& key,
                          ServiceDiscardableHandle handle,
-                         GrContext* context,
+                         GrDirectContext* context,
                          base::span<uint8_t> data);
   void CreateLocalEntry(const EntryKey& key,
                         std::unique_ptr<cc::ServiceTransferCacheEntry> entry);
@@ -72,9 +77,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
       int decoder_id,
       uint32_t entry_id,
       ServiceDiscardableHandle handle,
-      GrContext* context,
+      GrDirectContext* context,
       std::vector<sk_sp<SkImage>> plane_images,
-      cc::YUVDecodeFormat plane_images_format,
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling,
       SkYUVColorSpace yuv_color_space,
       size_t buffer_byte_size,
       bool needs_mips);
@@ -100,12 +106,12 @@ class GPU_GLES2_EXPORT ServiceTransferCache
 
  private:
   struct CacheEntryInternal {
-    CacheEntryInternal(base::Optional<ServiceDiscardableHandle> handle,
+    CacheEntryInternal(absl::optional<ServiceDiscardableHandle> handle,
                        std::unique_ptr<cc::ServiceTransferCacheEntry> entry);
     CacheEntryInternal(CacheEntryInternal&& other);
     CacheEntryInternal& operator=(CacheEntryInternal&& other);
     ~CacheEntryInternal();
-    base::Optional<ServiceDiscardableHandle> handle;
+    absl::optional<ServiceDiscardableHandle> handle;
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry;
   };
 
@@ -119,7 +125,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     }
   };
 
-  using EntryCache = base::MRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
+  using EntryCache = base::LRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
 
   void EnforceLimits();
 
@@ -137,12 +143,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   int total_image_count_ = 0;
 
   // The limit above which the cache will start evicting resources.
-  size_t cache_size_limit_ = 0;
+  size_t cache_size_limit_;
 
   // The max number of entries we will hold in the cache.
-  size_t max_cache_entries_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTransferCache);
+  size_t max_cache_entries_;
 };
 
 }  // namespace gpu

@@ -8,6 +8,9 @@ import android.text.SpannableString;
 import android.text.Spanned;
 
 import org.chromium.chrome.R;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBarControlLayout;
+import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
 /**

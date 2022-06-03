@@ -12,12 +12,66 @@
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace android_webview {
+
+namespace {
+enum WebViewDrawAndSubmissionType {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  kNoInvalidateNoSubmissionSameParams = 0,
+  kNoInvalidateNoSubmissionDifferentParams = 1,
+  kNoInvalidateSubmittedFrameSameParams = 2,
+  kNoInvalidateSubmittedFrameDifferentParams = 3,
+  kInvalidateNoSubmissionSameParams = 4,
+  kInvalidateNoSubmissionDifferentParams = 5,
+  kInvalidateSubmittedFrameSameParams = 6,
+  kInvalidateSubmittedFrameDifferentParams = 7,
+  kMaxValue = kInvalidateSubmittedFrameDifferentParams
+};
+
+WebViewDrawAndSubmissionType GetDrawAndSubmissionType(bool invalidated,
+                                                      bool submitted_frame,
+                                                      bool params_changed) {
+  if (invalidated) {
+    if (submitted_frame) {
+      return params_changed ? kInvalidateSubmittedFrameDifferentParams
+                            : kInvalidateSubmittedFrameSameParams;
+    } else {
+      return params_changed ? kInvalidateNoSubmissionDifferentParams
+                            : kInvalidateNoSubmissionSameParams;
+    }
+  } else {
+    if (submitted_frame) {
+      return params_changed ? kNoInvalidateSubmittedFrameDifferentParams
+                            : kNoInvalidateSubmittedFrameSameParams;
+    } else {
+      return params_changed ? kNoInvalidateNoSubmissionDifferentParams
+                            : kNoInvalidateNoSubmissionSameParams;
+    }
+  }
+}
+
+}  // namespace
+
+bool HardwareRendererDrawParams::operator==(
+    const HardwareRendererDrawParams& other) const {
+  return clip_left == other.clip_left && clip_top == other.clip_top &&
+         clip_right == other.clip_right && clip_bottom == other.clip_bottom &&
+         width == other.width && height == other.height &&
+         color_space == other.color_space &&
+         !memcmp(transform, other.transform, sizeof(transform));
+}
+
+bool HardwareRendererDrawParams::operator!=(
+    const HardwareRendererDrawParams& other) const {
+  return !(*this == other);
+}
 
 HardwareRenderer::HardwareRenderer(RenderThreadManager* state)
     : render_thread_manager_(state),
@@ -56,7 +110,21 @@ void HardwareRenderer::CommitFrame() {
   child_frame_queue_.emplace_back(std::move(child_frames.front()));
 }
 
-void HardwareRenderer::Draw(HardwareRendererDrawParams* params) {
+void HardwareRenderer::ReportDrawMetric(
+    const HardwareRendererDrawParams& params) {
+  const bool params_changed = last_draw_params_ == params;
+
+  auto type = GetDrawAndSubmissionType(
+      did_invalidate_, did_submit_compositor_frame_, params_changed);
+  UMA_HISTOGRAM_ENUMERATION("Android.WebView.Gfx.HardwareDrawType", type);
+
+  last_draw_params_ = params;
+  did_invalidate_ = false;
+  did_submit_compositor_frame_ = false;
+}
+
+void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
+                            const OverlaysParams& overlays_params) {
   TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
 
   for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_))
@@ -65,11 +133,18 @@ void HardwareRenderer::Draw(HardwareRendererDrawParams* params) {
   if (!child_frame_queue_.empty()) {
     child_frame_ = std::move(child_frame_queue_.front());
     child_frame_queue_.clear();
+
+    did_invalidate_ = child_frame_->did_invalidate;
+    did_submit_compositor_frame_ = !!child_frame_->frame;
   }
-  if (child_frame_) {
+  // 0u is not a valid frame_sink_id, but can happen when renderer did not
+  // produce a frame. Keep the existing id in that case.
+  if (child_frame_ && child_frame_->layer_tree_frame_sink_id > 0u) {
     last_committed_layer_tree_frame_sink_id_ =
         child_frame_->layer_tree_frame_sink_id;
   }
+
+  ReportDrawMetric(params);
 
   if (last_egl_context_) {
     // We need to watch if the current Android context has changed and enforce a
@@ -82,7 +157,7 @@ void HardwareRenderer::Draw(HardwareRendererDrawParams* params) {
       DLOG(WARNING) << "EGLContextChanged";
   }
 
-  DrawAndSwap(params);
+  DrawAndSwap(params, overlays_params);
 }
 
 void HardwareRenderer::ReturnChildFrame(
@@ -96,18 +171,19 @@ void HardwareRenderer::ReturnChildFrame(
 
   // The child frame's frame_sink_id is not necessarily same as
   // |child_frame_sink_id_|.
-  ReturnResourcesToCompositor(resources_to_return, child_frame->frame_sink_id,
+  ReturnResourcesToCompositor(std::move(resources_to_return),
+                              child_frame->frame_sink_id,
                               child_frame->layer_tree_frame_sink_id);
 }
 
 void HardwareRenderer::ReturnResourcesToCompositor(
-    const std::vector<viz::ReturnedResource>& resources,
+    std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
   if (layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_)
     return;
-  render_thread_manager_->InsertReturnedResourcesOnRT(resources, frame_sink_id,
-                                                      layer_tree_frame_sink_id);
+  render_thread_manager_->InsertReturnedResourcesOnRT(
+      std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
 }
 
 namespace {
@@ -161,6 +237,11 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
       pruned_frames.emplace_back(std::move(frame));
   }
   return pruned_frames;
+}
+
+void HardwareRenderer::SetChildFrameForTesting(
+    std::unique_ptr<ChildFrame> child_frame) {
+  child_frame_ = std::move(child_frame);
 }
 
 }  // namespace android_webview

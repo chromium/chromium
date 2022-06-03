@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "third_party/blink/renderer/modules/xr/xr_render_state_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
 namespace blink {
@@ -55,14 +55,14 @@ HTMLCanvasElement* XRRenderState::output_canvas() const {
   return nullptr;
 }
 
-double XRRenderState::inlineVerticalFieldOfView(bool& is_null) const {
-  is_null = immersive_ || !inline_vertical_fov_.has_value();
-  return is_null ? 0 : *inline_vertical_fov_;
+absl::optional<double> XRRenderState::inlineVerticalFieldOfView() const {
+  if (immersive_)
+    return absl::nullopt;
+  return inline_vertical_fov_;
 }
 
-void XRRenderState::Trace(blink::Visitor* visitor) {
+void XRRenderState::Trace(Visitor* visitor) const {
   visitor->Trace(base_layer_);
-  visitor->Trace(inline_vertical_fov_);
   ScriptWrappable::Trace(visitor);
 }
 

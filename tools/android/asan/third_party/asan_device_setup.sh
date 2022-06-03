@@ -1,10 +1,9 @@
 #!/bin/bash
 #===- lib/asan/scripts/asan_device_setup -----------------------------------===#
 #
-#                     The LLVM Compiler Infrastructure
-#
-# This file is distributed under the University of Illinois Open Source
-# License. See LICENSE.TXT for details.
+# Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+# See https://llvm.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
 # Prepare Android device to run ASan applications.
 #
@@ -52,7 +51,7 @@ function adb_remount {
     local STORAGE=`$ADB shell mount | grep /system | cut -d ' ' -f1`
     if [ "$STORAGE" != "" ]; then
       echo Remounting $STORAGE at /system
-      $ADB shell su -c "mount -o remount,rw $STORAGE /system"
+      $ADB shell su -c "mount -o rw,remount $STORAGE /system"
     else
       echo Failed to get storage device name for "/system" mount point
     fi
@@ -181,6 +180,17 @@ if [[ -n $ARCH64 ]]; then
   ASAN_RT64="libclang_rt.asan-$ARCH64-android.so"
 fi
 
+RELEASE=$(adb_shell getprop ro.build.version.release)
+PRE_L=0
+if echo "$RELEASE" | grep '^4\.' >&/dev/null; then
+    PRE_L=1
+fi
+ANDROID_O=0
+if echo "$RELEASE" | grep '^8\.0\.' >&/dev/null; then
+    # 8.0.x is for Android O
+    ANDROID_O=1
+fi
+
 if [[ x$revert == xyes ]]; then
     echo '>> Uninstalling ASan'
 
@@ -200,6 +210,10 @@ if [[ x$revert == xyes ]]; then
       adb_shell rm /system/bin/asanwrapper
       adb_shell rm /system/bin/app_process
       adb_shell ln -s /system/bin/app_process32 /system/bin/app_process
+    fi
+
+    if [[ ANDROID_O -eq 1 ]]; then
+      adb_shell mv /system/etc/ld.config.txt.saved /system/etc/ld.config.txt
     fi
 
     echo '>> Restarting shell'
@@ -251,12 +265,6 @@ TMPDIROLD="$TMPDIRBASE/old"
 TMPDIR="$TMPDIRBASE/new"
 mkdir "$TMPDIROLD"
 
-RELEASE=$(adb_shell getprop ro.build.version.release)
-PRE_L=0
-if echo "$RELEASE" | grep '^4\.' >&/dev/null; then
-    PRE_L=1
-fi
-
 if ! adb_shell ls -l /system/bin/app_process | grep -o '\->.*app_process' >&/dev/null; then
 
     if adb_pull /system/bin/app_process.real /dev/null >&/dev/null; then
@@ -300,30 +308,36 @@ if [[ -n "$ASAN_RT64" ]]; then
   cp "$ASAN_RT_PATH/$ASAN_RT64" "$TMPDIR/"
 fi
 
-ASAN_OPTIONS=start_deactivated=1,malloc_context_size=0
+ASAN_OPTIONS=start_deactivated=1
 
-function generate_zygote_wrapper { # from, to, asan_rt
+# The name of a symlink to libclang_rt.asan-$ARCH-android.so used in LD_PRELOAD.
+# The idea is to have the same name in lib and lib64 to keep it from falling
+# apart when a 64-bit process spawns a 32-bit one, inheriting the environment.
+ASAN_RT_SYMLINK=symlink-to-libclang_rt.asan
+
+function generate_zygote_wrapper { # from, to
   local _from=$1
   local _to=$2
-  local _asan_rt=$3
   if [[ PRE_L -eq 0 ]]; then
     # LD_PRELOAD parsing is broken in N if it starts with ":". Luckily, it is
     # unset in the system environment since L.
-    local _ld_preload=$_asan_rt
+    local _ld_preload=$ASAN_RT_SYMLINK
   else
-    local _ld_preload=\$LD_PRELOAD:$_asan_rt
+    local _ld_preload=\$LD_PRELOAD:$ASAN_RT_SYMLINK
   fi
   cat <<EOF >"$TMPDIR/$_from"
 #!/system/bin/sh-from-zygote
 ASAN_OPTIONS=$ASAN_OPTIONS \\
 ASAN_ACTIVATION_OPTIONS=include_if_exists=/data/local/tmp/asan.options.%b \\
 LD_PRELOAD=$_ld_preload \\
-exec $_to \$@
+exec $_to "\$@"
 
 EOF
 }
 
 # On Android-L not allowing user segv handler breaks some applications.
+# Since ~May 2017 this is the default setting; included for compatibility with
+# older library versions.
 if [[ PRE_L -eq 0 ]]; then
     ASAN_OPTIONS="$ASAN_OPTIONS,allow_user_segv_handler=1"
 fi
@@ -340,18 +354,18 @@ if [[ -f "$TMPDIR/app_process64" ]]; then
     mv "$TMPDIR/app_process32" "$TMPDIR/app_process32.real"
     mv "$TMPDIR/app_process64" "$TMPDIR/app_process64.real"
   fi
-  generate_zygote_wrapper "app_process32" "/system/bin/app_process32.real" "$ASAN_RT"
-  generate_zygote_wrapper "app_process64" "/system/bin/app_process64.real" "$ASAN_RT64"
+  generate_zygote_wrapper "app_process32" "/system/bin/app_process32.real"
+  generate_zygote_wrapper "app_process64" "/system/bin/app_process64.real"
 else
   # A 32-bit device.
-  generate_zygote_wrapper "app_process.wrap" "/system/bin/app_process32" "$ASAN_RT"
+  generate_zygote_wrapper "app_process.wrap" "/system/bin/app_process32"
 fi
 
 # General command-line tool wrapper (use for anything that's not started as
 # zygote).
 cat <<EOF >"$TMPDIR/asanwrapper"
 #!/system/bin/sh
-LD_PRELOAD=$ASAN_RT \\
+LD_PRELOAD=$ASAN_RT_SYMLINK \\
 exec \$@
 
 EOF
@@ -359,7 +373,7 @@ EOF
 if [[ -n "$ASAN_RT64" ]]; then
   cat <<EOF >"$TMPDIR/asanwrapper64"
 #!/system/bin/sh
-LD_PRELOAD=$ASAN_RT64 \\
+LD_PRELOAD=$ASAN_RT_SYMLINK \\
 exec \$@
 
 EOF
@@ -410,11 +424,19 @@ if ! ( cd "$TMPDIRBASE" && diff -qr old/ new/ ) ; then
       install "$TMPDIR/app_process64.real" /system/bin 755 $CTX
       install "$TMPDIR/asanwrapper" /system/bin 755
       install "$TMPDIR/asanwrapper64" /system/bin 755
+
+      adb_shell rm -f /system/lib/$ASAN_RT_SYMLINK
+      adb_shell ln -s $ASAN_RT /system/lib/$ASAN_RT_SYMLINK
+      adb_shell rm -f /system/lib64/$ASAN_RT_SYMLINK
+      adb_shell ln -s $ASAN_RT64 /system/lib64/$ASAN_RT_SYMLINK
     else
       install "$TMPDIR/$ASAN_RT" /system/lib 644
       install "$TMPDIR/app_process32" /system/bin 755 $CTX
       install "$TMPDIR/app_process.wrap" /system/bin 755 $CTX
       install "$TMPDIR/asanwrapper" /system/bin 755 $CTX
+
+      adb_shell rm -f /system/lib/$ASAN_RT_SYMLINK
+      adb_shell ln -s $ASAN_RT /system/lib/$ASAN_RT_SYMLINK
 
       adb_shell rm /system/bin/app_process
       adb_shell ln -s /system/bin/app_process.wrap /system/bin/app_process
@@ -422,6 +444,11 @@ if ! ( cd "$TMPDIRBASE" && diff -qr old/ new/ ) ; then
 
     adb_shell cp /system/bin/sh /system/bin/sh-from-zygote
     adb_shell chcon $CTX /system/bin/sh-from-zygote
+
+    if [[ ANDROID_O -eq 1 ]]; then
+      # For Android O, the linker namespace is temporarily disabled.
+      adb_shell mv /system/etc/ld.config.txt /system/etc/ld.config.txt.saved
+    fi
 
     if [ $ENFORCING == 1 ]; then
         adb_shell setenforce 1

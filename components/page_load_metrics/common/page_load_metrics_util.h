@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -16,9 +16,9 @@ namespace page_load_metrics {
 // Returns the minimum value of the optional TimeDeltas, if both values are
 // set. Otherwise, if one value is set, returns that value. Otherwise, returns
 // an unset value.
-base::Optional<base::TimeDelta> OptionalMin(
-    const base::Optional<base::TimeDelta>& a,
-    const base::Optional<base::TimeDelta>& b);
+absl::optional<base::TimeDelta> OptionalMin(
+    const absl::optional<base::TimeDelta>& a,
+    const absl::optional<base::TimeDelta>& b);
 
 // Whether the given url has a google hostname.
 bool IsGoogleHostname(const GURL& url);
@@ -33,7 +33,14 @@ bool IsGoogleHostname(const GURL& url);
 //   https://www.google.com/foo => returns 'www'
 //   https://news.google.com/foo => returns 'news'
 //   https://a.b.c.google.com/foo => returns 'a.b.c'
-base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url);
+absl::optional<std::string> GetGoogleHostnamePrefix(const GURL& url);
+
+// Distinguishes the renderer-side timer from the browser-side timer.
+enum class TimerType { kRenderer = 0, kBrowser = 1 };
+
+// Returns the maximum amount of time to delay dispatch of metrics updates
+// from the renderer process.
+int GetBufferTimerDelayMillis(TimerType timer_type);
 
 }  // namespace page_load_metrics
 

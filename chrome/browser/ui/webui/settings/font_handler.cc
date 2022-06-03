@@ -10,142 +10,70 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/font_list_async.h"
 #include "content/public/browser/web_ui.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/common/extension_urls.h"
 
-#if defined(OS_MACOSX)
-#include "chrome/browser/ui/webui/settings_utils.h"
+#if defined(OS_MAC)
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #endif
-
-namespace {
-
-const char kAdvancedFontSettingsExtensionId[] =
-    "caclkomlalccbpcdllchkeecicepbmbm";
-
-}  // namespace
 
 namespace settings {
 
-FontHandler::FontHandler(content::WebUI* webui)
-    : profile_(Profile::FromWebUI(webui)) {
-#if defined(OS_MACOSX)
+FontHandler::FontHandler(Profile* profile) {
+#if defined(OS_MAC)
   // Perform validation for saved fonts.
-  settings_utils::ValidateSavedFonts(profile_->GetPrefs());
+  settings_utils::ValidateSavedFonts(profile->GetPrefs());
 #endif
 }
 
 FontHandler::~FontHandler() {}
 
 void FontHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "fetchFontsData", base::BindRepeating(&FontHandler::HandleFetchFontsData,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "observeAdvancedFontExtensionAvailable",
-      base::BindRepeating(
-          &FontHandler::HandleObserveAdvancedFontExtensionAvailable,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openAdvancedFontSettings",
-      base::BindRepeating(&FontHandler::HandleOpenAdvancedFontSettings,
-                          base::Unretained(this)));
 }
 
-void FontHandler::OnJavascriptAllowed() {
-  extension_registry_observer_.Add(
-      extensions::ExtensionRegistry::Get(profile_));
-}
+void FontHandler::OnJavascriptAllowed() {}
 
-void FontHandler::OnJavascriptDisallowed() {
-  extension_registry_observer_.RemoveAll();
-}
+void FontHandler::OnJavascriptDisallowed() {}
 
 void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
-  content::GetFontListAsync(base::Bind(&FontHandler::FontListHasLoaded,
-                                       weak_ptr_factory_.GetWeakPtr(),
-                                       callback_id));
-}
-
-void FontHandler::HandleObserveAdvancedFontExtensionAvailable(
-    const base::ListValue* /*args*/) {
   AllowJavascript();
-  NotifyAdvancedFontSettingsAvailability();
-}
-
-void FontHandler::HandleOpenAdvancedFontSettings(
-    const base::ListValue* /*args*/) {
-  const extensions::Extension* extension = GetAdvancedFontSettingsExtension();
-  if (!extension)
-    return;
-  extensions::ExtensionTabUtil::OpenOptionsPage(
-      extension,
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
-}
-
-const extensions::Extension* FontHandler::GetAdvancedFontSettingsExtension() {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service->IsExtensionEnabled(kAdvancedFontSettingsExtensionId))
-    return nullptr;
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_);
-  return registry->GetInstalledExtension(kAdvancedFontSettingsExtensionId);
-}
-
-void FontHandler::NotifyAdvancedFontSettingsAvailability() {
-  FireWebUIListener("advanced-font-settings-installed",
-                    base::Value(GetAdvancedFontSettingsExtension() != nullptr));
-}
-
-void FontHandler::OnExtensionLoaded(content::BrowserContext*,
-                                    const extensions::Extension*) {
-  NotifyAdvancedFontSettingsAvailability();
-}
-
-void FontHandler::OnExtensionUnloaded(content::BrowserContext*,
-                                      const extensions::Extension*,
-                                      extensions::UnloadedExtensionReason) {
-  NotifyAdvancedFontSettingsAvailability();
+  content::GetFontListAsync(base::BindOnce(&FontHandler::FontListHasLoaded,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           callback_id));
 }
 
 void FontHandler::FontListHasLoaded(std::string callback_id,
                                     std::unique_ptr<base::ListValue> list) {
+  base::Value::ListView list_view = list->GetList();
   // Font list. Selects the directionality for the fonts in the given list.
-  for (size_t i = 0; i < list->GetSize(); i++) {
-    base::ListValue* font;
-    bool has_font = list->GetList(i, &font);
-    DCHECK(has_font);
+  for (auto& i : list_view) {
+    DCHECK(i.is_list());
+    base::Value::ConstListView font = i.GetList();
 
-    base::string16 value;
-    bool has_value = font->GetString(1, &value);
-    DCHECK(has_value);
+    DCHECK(font.size() >= 2u && font[1].is_string());
+    std::u16string value = base::UTF8ToUTF16(font[1].GetString());
 
     bool has_rtl_chars = base::i18n::StringContainsStrongRTLChars(value);
-    font->AppendString(has_rtl_chars ? "rtl" : "ltr");
+    i.Append(has_rtl_chars ? "rtl" : "ltr");
   }
 
   base::DictionaryValue response;
-  response.Set("fontList", std::move(list));
-
-  GURL extension_url(extension_urls::GetWebstoreItemDetailURLPrefix());
-  response.SetString(
-      "extensionUrl",
-      extension_url.Resolve(kAdvancedFontSettingsExtensionId).spec());
+  response.SetKey("fontList", base::Value::FromUniquePtrValue(std::move(list)));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

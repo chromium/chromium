@@ -36,6 +36,6 @@ chrome.storage.local.get(key, function(items) {
       chrome.storage.local.set(items, sendMessage.bind(null, "ready"));
     });
   } else {
-    sendMessage(sendMessage("second run ready"));
+    sendMessage("second run ready");
   }
 });

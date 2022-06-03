@@ -31,6 +31,11 @@ void SanityCheckContext(const NativeCPUContext& context) {
             implicit_cast<thread_state_flavor_t>(x86_THREAD_STATE64));
   ASSERT_EQ(implicit_cast<uint32_t>(context.tsh.count),
             implicit_cast<uint32_t>(x86_THREAD_STATE64_COUNT));
+#elif defined(ARCH_CPU_ARM64)
+  ASSERT_EQ(implicit_cast<thread_state_flavor_t>(context.ash.flavor),
+            implicit_cast<thread_state_flavor_t>(ARM_THREAD_STATE64));
+  ASSERT_EQ(implicit_cast<uint32_t>(context.ash.count),
+            implicit_cast<uint32_t>(ARM_THREAD_STATE64_COUNT));
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -61,6 +66,18 @@ void SanityCheckContext(const NativeCPUContext& context) {
   EXPECT_EQ(context.uts.ts64.__gs & ~UINT64_C(0xffff), 0u);
   EXPECT_EQ(context.uts.ts64.__rflags & UINT64_C(0xffffffffffc0802a), 2u);
 #endif
+
+#elif defined(ARCH_CPU_ARM64)
+  // Check that the bits other than nzcv in __cpsr read 0.
+  EXPECT_EQ(context.ts_64.__cpsr & 0x0fffffff, 0u);
+
+  // Check that __pad is entirely zeroed out.
+  EXPECT_EQ(context.ts_64.__pad, 0u);
+
+  // Because ARM ret doesn’t change %lr, and because CaptureContext captures the
+  // the state at CaptureContext’s return to its caller, check for equivalence
+  // of __lr and __pc.
+  EXPECT_EQ(context.ts_64.__lr, context.ts_64.__pc);
 #endif
 }
 
@@ -69,6 +86,8 @@ uintptr_t ProgramCounterFromContext(const NativeCPUContext& context) {
   return context.uts.ts32.__eip;
 #elif defined(ARCH_CPU_X86_64)
   return context.uts.ts64.__rip;
+#elif defined(ARCH_CPU_ARM64)
+  return context.ts_64.__pc;
 #endif
 }
 
@@ -77,6 +96,8 @@ uintptr_t StackPointerFromContext(const NativeCPUContext& context) {
   return context.uts.ts32.__esp;
 #elif defined(ARCH_CPU_X86_64)
   return context.uts.ts64.__rsp;
+#elif defined(ARCH_CPU_ARM64)
+  return context.ts_64.__sp;
 #endif
 }
 

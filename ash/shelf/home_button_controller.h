@@ -11,8 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/session/session_observer.h"
-#include "base/macros.h"
 
 namespace ui {
 class GestureEvent;
@@ -27,12 +25,15 @@ class HomeButton;
 // action (for Assistant).
 // Behavior is tested indirectly in HomeButtonTest and ShelfViewInkDropTest.
 class HomeButtonController : public AppListControllerObserver,
-                             public SessionObserver,
                              public TabletModeObserver,
                              public AssistantStateObserver,
                              public AssistantUiModelObserver {
  public:
   explicit HomeButtonController(HomeButton* button);
+
+  HomeButtonController(const HomeButtonController&) = delete;
+  HomeButtonController& operator=(const HomeButtonController&) = delete;
+
   ~HomeButtonController() override;
 
   // Maybe handles a gesture event based on the event and whether the Assistant
@@ -50,24 +51,22 @@ class HomeButtonController : public AppListControllerObserver,
 
  private:
   // AppListControllerObserver:
-  void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
-
-  // SessionObserver:
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(mojom::AssistantState state) override;
+  void OnAssistantFeatureAllowedChanged(
+      chromeos::assistant::AssistantAllowedState) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   void OnAppListShown();
   void OnAppListDismissed();
@@ -84,12 +83,9 @@ class HomeButtonController : public AppListControllerObserver,
   // The button that owns this controller.
   HomeButton* const button_;
 
-  // Owned by the button's view hierarchy. Null if the Assistant is not
-  // enabled.
+  // Owned by the button's view hierarchy.
   AssistantOverlay* assistant_overlay_ = nullptr;
   std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeButtonController);
 };
 
 }  // namespace ash

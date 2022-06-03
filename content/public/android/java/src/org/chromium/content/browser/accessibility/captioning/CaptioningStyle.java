@@ -4,10 +4,7 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.view.accessibility.CaptioningManager.CaptionStyle;
 
 /**
@@ -18,7 +15,6 @@ import android.view.accessibility.CaptioningManager.CaptionStyle;
  * For information on CaptionStyle, introduced in KitKat, see:
  * @link https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle.html
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class CaptioningStyle {
     private Integer mBackgroundColor;
     private Integer mEdgeColor;
@@ -105,7 +101,6 @@ public class CaptioningStyle {
      * @param captionStyle an Android platform CaptionStyle object
      * @return a Chromium CaptioningStyle object
      */
-    @SuppressLint("NewApi")
     public static CaptioningStyle createFrom(CaptionStyle captionStyle) {
         if (captionStyle == null) {
             return new CaptioningStyle(null, null, null, null, null, null);
@@ -116,27 +111,20 @@ public class CaptioningStyle {
         Integer edgeType = null;
         Integer foregroundColor = null;
         Integer windowColor = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (captionStyle.hasBackgroundColor()) {
-                backgroundColor = Integer.valueOf(captionStyle.backgroundColor);
-            }
-            if (captionStyle.hasEdgeColor()) {
-                edgeColor = Integer.valueOf(captionStyle.edgeColor);
-            }
-            if (captionStyle.hasEdgeType()) {
-                edgeType = Integer.valueOf(captionStyle.edgeType);
-            }
-            if (captionStyle.hasForegroundColor()) {
-                foregroundColor = Integer.valueOf(captionStyle.foregroundColor);
-            }
-            if (captionStyle.hasWindowColor()) {
-                windowColor = Integer.valueOf(captionStyle.windowColor);
-            }
-        } else {
+        if (captionStyle.hasBackgroundColor()) {
             backgroundColor = Integer.valueOf(captionStyle.backgroundColor);
+        }
+        if (captionStyle.hasEdgeColor()) {
             edgeColor = Integer.valueOf(captionStyle.edgeColor);
+        }
+        if (captionStyle.hasEdgeType()) {
             edgeType = Integer.valueOf(captionStyle.edgeType);
+        }
+        if (captionStyle.hasForegroundColor()) {
             foregroundColor = Integer.valueOf(captionStyle.foregroundColor);
+        }
+        if (captionStyle.hasWindowColor()) {
+            windowColor = Integer.valueOf(captionStyle.windowColor);
         }
 
         return new CaptioningStyle(backgroundColor, edgeColor, edgeType, foregroundColor,

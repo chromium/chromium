@@ -8,17 +8,72 @@
 #include <zircon/process.h>
 #include <zircon/syscalls.h>
 
-#include "base/clang_coverage_buildflags.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/fuchsia/default_job.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(CLANG_COVERAGE)
-#include "base/test/clang_coverage.h"
+#if BUILDFLAG(CLANG_PROFILING)
+#include "base/test/clang_profiling.h"
 #endif
 
 namespace base {
+
+namespace {
+
+zx::process FindProcessInJobTree(const zx::job& job, ProcessId pid) {
+  zx::process process;
+  zx_status_t status = job.get_child(pid, ZX_RIGHT_SAME_RIGHTS, &process);
+
+  if (status == ZX_OK)
+    return process;
+
+  if (status == ZX_ERR_NOT_FOUND) {
+    std::vector<zx_koid_t> job_koids(32);
+    while (true) {
+      // Fetch the KOIDs of the job children of |job|.
+      size_t actual = 0u;
+      size_t available = 0u;
+      status = job.get_info(ZX_INFO_JOB_CHILDREN, job_koids.data(),
+                            job_koids.size() * sizeof(zx_koid_t), &actual,
+                            &available);
+
+      if (status != ZX_OK) {
+        ZX_DLOG(ERROR, status) << "zx_object_get_info(JOB_CHILDREN)";
+        return zx::process();
+      }
+
+      // If |job_koids| was too small then resize it and try again.
+      if (available > actual) {
+        job_koids.resize(available);
+        continue;
+      }
+
+      // Break out of the loop and iterate over |job_koids|, to find the PID.
+      job_koids.resize(actual);
+      break;
+    }
+
+    for (zx_koid_t job_koid : job_koids) {
+      zx::job child_job;
+      if (job.get_child(job_koid, ZX_RIGHT_SAME_RIGHTS, &child_job) != ZX_OK)
+        continue;
+      process = FindProcessInJobTree(child_job, pid);
+      if (process)
+        return process;
+    }
+
+    return zx::process();
+  }
+
+  ZX_DLOG(ERROR, status) << "zx_object_get_child";
+  return zx::process();
+}
+
+}  // namespace
 
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
@@ -54,16 +109,7 @@ Process Process::Open(ProcessId pid) {
   if (pid == GetCurrentProcId())
     return Current();
 
-  // While a process with object id |pid| might exist, the job returned by
-  // zx::job::default_job() might not contain it, so this call can fail.
-  zx::process process;
-  zx_status_t status =
-      GetDefaultJob()->get_child(pid, ZX_RIGHT_SAME_RIGHTS, &process);
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "zx_object_get_child";
-    return Process();
-  }
-  return Process(process.release());
+  return Process(FindProcessInJobTree(*GetDefaultJob(), pid).release());
 }
 
 // static
@@ -73,28 +119,14 @@ Process Process::OpenWithExtraPrivileges(ProcessId pid) {
 }
 
 // static
-Process Process::DeprecatedGetProcessFromHandle(ProcessHandle handle) {
-  DCHECK_NE(handle, GetCurrentProcessHandle());
-  zx::process out;
-  zx_status_t result =
-      zx::unowned_process(handle)->duplicate(ZX_RIGHT_SAME_RIGHTS, &out);
-  if (result != ZX_OK) {
-    ZX_DLOG(ERROR, result) << "zx_handle_duplicate(from_handle)";
-    return Process();
-  }
-
-  return Process(out.release());
-}
-
-// static
 bool Process::CanBackgroundProcesses() {
   return false;
 }
 
 // static
 void Process::TerminateCurrentProcessImmediately(int exit_code) {
-#if BUILDFLAG(CLANG_COVERAGE)
-  WriteClangCoverageProfile();
+#if BUILDFLAG(CLANG_PROFILING)
+  WriteClangProfilingProfile();
 #endif
   _exit(exit_code);
 }
@@ -124,15 +156,43 @@ Process Process::Duplicate() const {
   return Process(out.release());
 }
 
+ProcessHandle Process::Release() {
+  if (is_current()) {
+    // Caller expects to own the reference, so duplicate the self handle.
+    zx::process handle;
+    zx_status_t result =
+        zx::process::self()->duplicate(ZX_RIGHT_SAME_RIGHTS, &handle);
+    if (result != ZX_OK) {
+      return kNullProcessHandle;
+    }
+    is_current_process_ = false;
+    return handle.release();
+  }
+  return process_.release();
+}
+
 ProcessId Process::Pid() const {
   DCHECK(IsValid());
   return GetProcId(Handle());
 }
 
 Time Process::CreationTime() const {
-  // TODO(https://crbug.com/726484): There is no syscall providing this data.
-  NOTIMPLEMENTED();
-  return Time();
+  zx_info_process_t proc_info;
+  zx_status_t status =
+      zx_object_get_info(Handle(), ZX_INFO_PROCESS, &proc_info,
+                         sizeof(proc_info), nullptr, nullptr);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "zx_process_get_info";
+    return Time();
+  }
+  if ((proc_info.flags & ZX_INFO_PROCESS_FLAG_STARTED) == 0) {
+    DLOG(WARNING) << "zx_process_get_info: Not started.";
+    return Time();
+  }
+  // Process creation times are expressed in ticks since system boot, so
+  // perform a best-effort translation from that to UTC "wall-clock" time.
+  return Time::Now() +
+         (TimeTicks::FromZxTime(proc_info.start_time) - TimeTicks::Now());
 }
 
 bool Process::is_current() const {
@@ -171,23 +231,33 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   if (is_current_process_)
     return false;
 
-  // Record the event that this thread is blocking upon (for hang diagnosis).
-  base::debug::ScopedProcessWaitActivity process_activity(this);
+  TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
 
-  zx_time_t deadline = timeout == TimeDelta::Max()
-                           ? ZX_TIME_INFINITE
-                           : (TimeTicks::Now() + timeout).ToZxTime();
+  // Record the event that this thread is blocking upon (for hang diagnosis).
+  absl::optional<debug::ScopedProcessWaitActivity> process_activity;
+  if (!timeout.is_zero()) {
+    process_activity.emplace(this);
+    // Assert that this thread is allowed to wait below. This intentionally
+    // doesn't use ScopedBlockingCallWithBaseSyncPrimitives because the process
+    // being waited upon tends to itself be using the CPU and considering this
+    // thread non-busy causes more issue than it fixes: http://crbug.com/905788
+    internal::AssertBaseSyncPrimitivesAllowed();
+  }
+
+  zx::time deadline = timeout == TimeDelta::Max()
+                          ? zx::time::infinite()
+                          : zx::time((TimeTicks::Now() + timeout).ToZxTime());
   zx_signals_t signals_observed = 0;
-  zx_status_t status = zx_object_wait_one(process_.get(), ZX_TASK_TERMINATED,
-                                          deadline, &signals_observed);
+  zx_status_t status =
+      process_.wait_one(ZX_TASK_TERMINATED, deadline, &signals_observed);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_object_wait_one";
     return false;
   }
 
   zx_info_process_t proc_info;
-  status = zx_object_get_info(process_.get(), ZX_INFO_PROCESS, &proc_info,
-                              sizeof(proc_info), nullptr, nullptr);
+  status = process_.get_info(ZX_INFO_PROCESS, &proc_info, sizeof(proc_info),
+                             nullptr, nullptr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_object_get_info";
     if (exit_code)
@@ -210,8 +280,8 @@ bool Process::IsProcessBackgrounded() const {
 }
 
 bool Process::SetProcessBackgrounded(bool value) {
-  // No process priorities on Fuchsia. TODO(fuchsia): See MG-783, and update
-  // this later if priorities are implemented.
+  // No process priorities on Fuchsia.
+  // TODO(fxbug.dev/30735): Update this later if priorities are implemented.
   return false;
 }
 

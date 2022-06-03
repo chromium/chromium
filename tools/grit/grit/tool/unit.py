@@ -10,7 +10,10 @@ import getopt
 import sys
 import unittest
 
-import grit.test_suite_all
+try:
+  import grit.test_suite_all
+except ImportError:
+  pass
 from grit.tool import interface
 
 

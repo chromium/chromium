@@ -12,9 +12,9 @@ namespace content {
 
 BrowsingDataRemoverCompletionObserver::BrowsingDataRemoverCompletionObserver(
     BrowsingDataRemover* remover)
-    : observer_(this),
+    : observation_(this),
       origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
-  observer_.Add(remover);
+  observation_.Observe(remover);
 }
 
 BrowsingDataRemoverCompletionObserver::
@@ -27,9 +27,12 @@ void BrowsingDataRemoverCompletionObserver::BlockUntilCompletion() {
   run_loop_.Run();
 }
 
-void BrowsingDataRemoverCompletionObserver::OnBrowsingDataRemoverDone() {
+void BrowsingDataRemoverCompletionObserver::OnBrowsingDataRemoverDone(
+    uint64_t failed_data_types) {
   browsing_data_remover_done_ = true;
-  observer_.RemoveAll();
+  failed_data_types_ = failed_data_types;
+  DCHECK(observation_.IsObserving());
+  observation_.Reset();
   QuitRunLoopWhenTasksComplete();
 }
 

@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_UPDATE_EVENT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_request_update_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/payments/payment_request_update_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -23,7 +23,6 @@ class ScriptState;
 class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
                                                  public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(PaymentRequestUpdateEvent);
 
  public:
   PaymentRequestUpdateEvent(ExecutionContext*,
@@ -44,7 +43,7 @@ class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
   void start_waiting_for_update(bool value) { wait_for_update_ = value; }
   bool is_waiting_for_update() const { return wait_for_update_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // True after event.updateWith() was called.

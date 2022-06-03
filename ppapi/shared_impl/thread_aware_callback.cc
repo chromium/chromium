@@ -5,7 +5,7 @@
 #include "ppapi/shared_impl/thread_aware_callback.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/ppb_message_loop_shared.h"
 
@@ -18,9 +18,9 @@ class ThreadAwareCallbackBase::Core : public base::RefCountedThreadSafe<Core> {
 
   void MarkAsAborted() { aborted_ = true; }
 
-  void RunIfNotAborted(const base::Closure& closure) {
+  void RunIfNotAborted(base::OnceClosure closure) {
     if (!aborted_)
-      CallWhileUnlocked(closure);
+      CallWhileUnlocked(std::move(closure));
   }
 
  private:
@@ -44,14 +44,15 @@ bool ThreadAwareCallbackBase::HasTargetLoop() {
 }
 
 void ThreadAwareCallbackBase::InternalRunOnTargetThread(
-    const base::Closure& closure) {
+    base::OnceClosure closure) {
   if (target_loop_.get() != PpapiGlobals::Get()->GetCurrentMessageLoop()) {
     target_loop_->PostClosure(
         FROM_HERE,
-        RunWhileLocked(base::Bind(&Core::RunIfNotAborted, core_, closure)),
+        RunWhileLocked(
+            base::BindOnce(&Core::RunIfNotAborted, core_, std::move(closure))),
         0);
   } else {
-    CallWhileUnlocked(closure);
+    CallWhileUnlocked(std::move(closure));
   }
 }
 

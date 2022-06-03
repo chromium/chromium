@@ -11,41 +11,16 @@
     <item name="bookmark_page" type="id"/>
     <item name="foreground_drawable" type="id"/>
     <item name="fre_pager" type="id"/>
-    <item name="page_info_click_callback" type="id" />
     <item name="refine_view_id" type="id"/>
     <item name="tabswitcher_multiple_drawable" type="id"/>
     <item name="tabswitcher_single_drawable" type="id"/>
     <item name="custom_tab_bottom_bar_wrapper" type="id"/>
-    <item name="default_search_engine_dialog_options" type="id"/>
-
-    <!-- Tab Actions -->
-    <item type="id" name="close_tab" />
-    <item type="id" name="ungroup_tab" />
-
-    <!-- InfoBar constants -->
-    <item type="id" name="infobar_icon" />
-    <item type="id" name="infobar_close_button" />
-    <item type="id" name="infobar_extra_check" />
-    <item type="id" name="infobar_message" />
-    <item type="id" name="permission_infobar_persist_toggle" />
-    <item type="id" name="translate_infobar_always_toggle" />
-    <item type="id" name="translate_infobar_source_spinner" />
-    <item type="id" name="translate_infobar_target_spinner" />
-    <item type="id" name="subresource_filter_infobar_toggle" />
-
-    <!-- Menu items IDs in Settings -->
-    <item type="id" name="menu_id_close" />
-    <item type="id" name="menu_id_general_help" />
-    <item type="id" name="menu_id_targeted_help" />
-    <item type="id" name="menu_id_reset" />
-    <item type="id" name="menu_id_refresh" />
-    <item type="id" name="menu_id_settings" />
-
-    <!-- Cast notification -->
-    <item type="id" name="remote_notification" />
 
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
+
+    <!-- Remote Playback API notification -->
+    <item type="id" name="remote_playback_notification" />
 
     <!-- Presentation API notification -->
     <item type="id" name="presentation_notification" />
@@ -62,16 +37,6 @@
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
 
-    <!-- PaymentRequest -->
-    <item type="id" name="payments_section" />
-    <item type="id" name="payments_left_summary_label" />
-    <item type="id" name="payments_first_radio_button" />
-    <item type="id" name="payments_add_option_button" />
-    <item type="id" name="payments_edit_cancel_button" />
-    <item type="id" name="payments_edit_checkbox" />
-    <item type="id" name="payments_description_label" />
-    <item type="id" name="payments_warning_label" />
-
     <!-- Password update prompt -->
     <item type="id" name="password_infobar_accounts_spinner" />
 
@@ -83,13 +48,17 @@
 
     <!-- Link Group -->
     <item type="id" name="contextmenu_open_in_new_tab" />
+    <item type="id" name="contextmenu_open_in_new_tab_in_group" />
     <item type="id" name="contextmenu_open_in_incognito_tab" />
     <item type="id" name="contextmenu_open_in_other_window" />
+    <item type="id" name="contextmenu_open_in_new_window" />
     <item type="id" name="contextmenu_open_in_ephemeral_tab" />
     <item type="id" name="contextmenu_copy_link_address" />
     <item type="id" name="contextmenu_copy_link_text" />
     <item type="id" name="contextmenu_save_link_as" />
     <item type="id" name="contextmenu_share_link" />
+    <item type="id" name="contextmenu_direct_share_link" />
+    <item type="id" name="contextmenu_read_later" />
 
     <!--Image Group -->
     <item type="id" name="contextmenu_load_original_image" />
@@ -97,15 +66,25 @@
     <item type="id" name="contextmenu_open_image" />
     <item type="id" name="contextmenu_open_image_in_new_tab" />
     <item type="id" name="contextmenu_open_image_in_ephemeral_tab" />
+    <item type="id" name="contextmenu_copy_image" />
     <item type="id" name="contextmenu_search_by_image" />
     <item type="id" name="contextmenu_search_with_google_lens" />
     <item type="id" name="contextmenu_share_image" />
+    <item type="id" name="contextmenu_direct_share_image" />
+    <item type="id" name="contextmenu_shop_similar_products" />
+    <item type="id" name="contextmenu_shop_image_with_google_lens" />
+    <item type="id" name="contextmenu_search_similar_products" />
 
     <!-- Message Group -->
     <item type="id" name="contextmenu_call" />
     <item type="id" name="contextmenu_send_message" />
     <item type="id" name="contextmenu_add_to_contacts" />
     <item type="id" name="contextmenu_copy" />
+
+    <!-- Shared Highlighting Group -->
+    <item type="id" name="contextmenu_share_highlight" />
+    <item type="id" name="contextmenu_remove_highlight" />
+    <item type="id" name="contextmenu_learn_more" />
 
     <!-- Other Group -->
     <item type="id" name="contextmenu_save_video" />
@@ -117,7 +96,21 @@
     <item type="id" name="vr_overlay_view" />
 
     <!-- Tags -->
-    <item type="id" name="item_animator" />
     <item type="id" name="highlight_color" />
     <item type="id" name="context_menu_delegate" />
+
+    <!-- NTP-->
+    <item type="id" name="ntp_feed_header_menu_item_manage" />
+    <item type="id" name="ntp_feed_header_menu_item_activity" />
+    <item type="id" name="ntp_feed_header_menu_item_interest" />
+    <item type="id" name="ntp_feed_header_menu_item_reactions" />
+    <item type="id" name="ntp_feed_header_menu_item_autoplay" />
+    <item type="id" name="ntp_feed_header_menu_item_learn" />
+    <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
+
+    <!-- Enhanced Protection Promo -->
+    <item type="id" name="enhanced_protection_promo" />
+
+    <!-- Custom Tabs -->
+    <item type="id" name="view_id_tag_key" />
 </resources>

@@ -7,12 +7,15 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
 
 class ExtensionPrefValueMap;
 class PrefService;
@@ -40,6 +43,8 @@ class ExtensionsTest : public testing::Test {
       : ExtensionsTest(
             std::make_unique<content::BrowserTaskEnvironment>(args...)) {}
 
+  ExtensionsTest(const ExtensionsTest&) = delete;
+  ExtensionsTest& operator=(const ExtensionsTest&) = delete;
   ~ExtensionsTest() override;
 
   // Allows setting a custom TestExtensionsBrowserClient. Must only be called
@@ -79,6 +84,10 @@ class ExtensionsTest : public testing::Test {
   explicit ExtensionsTest(
       std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
+#endif
+
   content::TestContentClientInitializer content_client_initializer_;
   std::unique_ptr<content::ContentUtilityClient> content_utility_client_;
   std::unique_ptr<content::BrowserContext> browser_context_;
@@ -94,8 +103,6 @@ class ExtensionsTest : public testing::Test {
   // The existence of this object enables tests via
   // RenderViewHostTester.
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsTest);
 };
 
 }  // namespace extensions

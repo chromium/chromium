@@ -6,13 +6,15 @@ import 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {triggerInputEvent} from './print_preview_test_utils.js';
 
 window.number_settings_section_test = {};
 number_settings_section_test.suiteName = 'NumberSettingsSectionTest';
 /** @enum {string} */
 number_settings_section_test.TestNames = {
   BlocksInvalidKeys: 'blocks invalid keys',
+  UpdatesErrorMessage: 'updates error message',
 };
 
 suite(number_settings_section_test.suiteName, function() {
@@ -77,5 +79,23 @@ suite(number_settings_section_test.suiteName, function() {
             .then(e => {
               assertFalse(e.defaultPrevented);
             });
+      });
+
+  test(
+      assert(number_settings_section_test.TestNames.UpdatesErrorMessage),
+      function() {
+        const input = numberSettings.$.userValue;
+
+        // The error message should be empty initially, since the input is
+        // valid.
+        assertTrue(numberSettings.inputValid);
+        assertEquals('', input.errorMessage);
+
+        // Enter an out of range value, and confirm that the error message is
+        // updated correctly.
+        return triggerInputEvent(input, '300', numberSettings).then(() => {
+          assertFalse(numberSettings.inputValid);
+          assertEquals('incorrect value entered', input.errorMessage);
+        });
       });
 });

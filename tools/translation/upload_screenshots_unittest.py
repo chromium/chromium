@@ -19,11 +19,11 @@ class UploadTests(unittest.TestCase):
     screenshots = upload_screenshots.find_screenshots(
         testdata_path,
         os.path.join(testdata_path, 'translation_expectations.pyl'))
-    self.assertEquals(2, len(screenshots))
-    self.assertEquals(
+    self.assertEqual(2, len(screenshots))
+    self.assertEqual(
         os.path.join(testdata_path, 'test_grd', 'IDS_TEST_STRING1.png'),
         screenshots[0])
-    self.assertEquals(
+    self.assertEqual(
         os.path.join(testdata_path, 'part_grdp', 'IDS_PART_STRING2.png'),
         screenshots[1])
 

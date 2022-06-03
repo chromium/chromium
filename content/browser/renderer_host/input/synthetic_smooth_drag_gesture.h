@@ -25,11 +25,10 @@ class CONTENT_EXPORT SyntheticSmoothDragGesture : public SyntheticGesture {
 
  private:
   static SyntheticSmoothMoveGestureParams::InputType GetInputSourceType(
-      SyntheticGestureParams::GestureSourceType gesture_source_type);
+      content::mojom::GestureSourceType gesture_source_type);
 
-  bool InitializeMoveGesture(
-      SyntheticGestureParams::GestureSourceType gesture_type,
-      SyntheticGestureTarget* target);
+  bool InitializeMoveGesture(content::mojom::GestureSourceType gesture_type,
+                             SyntheticGestureTarget* target);
 
   std::unique_ptr<SyntheticSmoothMoveGesture> move_gesture_;
   SyntheticSmoothDragGestureParams params_;

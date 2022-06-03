@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Media Capture and Streams (https://w3c.github.io/mediacapture-main/)
 
 [Exposed=Window]
@@ -13,8 +13,8 @@ interface MediaStream : EventTarget {
   sequence<MediaStreamTrack> getVideoTracks();
   sequence<MediaStreamTrack> getTracks();
   MediaStreamTrack? getTrackById(DOMString trackId);
-  void addTrack(MediaStreamTrack track);
-  void removeTrack(MediaStreamTrack track);
+  undefined addTrack(MediaStreamTrack track);
+  undefined removeTrack(MediaStreamTrack track);
   MediaStream clone();
   readonly attribute boolean active;
   attribute EventHandler onaddtrack;
@@ -33,11 +33,11 @@ interface MediaStreamTrack : EventTarget {
   readonly attribute MediaStreamTrackState readyState;
   attribute EventHandler onended;
   MediaStreamTrack clone();
-  void stop();
+  undefined stop();
   MediaTrackCapabilities getCapabilities();
   MediaTrackConstraints getConstraints();
   MediaTrackSettings getSettings();
-  Promise<void> applyConstraints(optional MediaTrackConstraints constraints = {});
+  Promise<undefined> applyConstraints(optional MediaTrackConstraints constraints = {});
 };
 
 enum MediaStreamTrackState {
@@ -143,6 +143,12 @@ dictionary MediaStreamTrackEventInit : EventInit {
   required MediaStreamTrack track;
 };
 
+[Exposed=Window]
+interface OverconstrainedError : DOMException {
+  constructor(DOMString constraint, optional DOMString message = "");
+  readonly attribute DOMString constraint;
+};
+
 partial interface Navigator {
   [SameObject, SecureContext] readonly attribute MediaDevices mediaDevices;
 };
@@ -174,7 +180,7 @@ interface InputDeviceInfo : MediaDeviceInfo {
 };
 
 partial interface Navigator {
-  [SecureContext] void getUserMedia(MediaStreamConstraints constraints,
+  [SecureContext] undefined getUserMedia(MediaStreamConstraints constraints,
                                     NavigatorUserMediaSuccessCallback successCallback,
                                     NavigatorUserMediaErrorCallback errorCallback);
 };
@@ -189,11 +195,9 @@ dictionary MediaStreamConstraints {
   (boolean or MediaTrackConstraints) audio = false;
 };
 
-callback NavigatorUserMediaSuccessCallback = void (MediaStream stream);
+callback NavigatorUserMediaSuccessCallback = undefined (MediaStream stream);
 
-callback NavigatorUserMediaErrorCallback = void (MediaStreamError error);
-
-typedef object MediaStreamError;
+callback NavigatorUserMediaErrorCallback = undefined (DOMException error);
 
 dictionary DoubleRange {
   double max;
@@ -234,13 +238,3 @@ typedef (boolean or ConstrainBooleanParameters) ConstrainBoolean;
 typedef (DOMString or
 sequence<DOMString> or
 ConstrainDOMStringParameters) ConstrainDOMString;
-
-dictionary Capabilities {};
-
-dictionary Settings {};
-
-dictionary ConstraintSet {};
-
-dictionary Constraints : ConstraintSet {
-  sequence<ConstraintSet> advanced;
-};

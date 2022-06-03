@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_MESSAGE_PORT_DESCRIPTOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_MESSAGE_PORT_DESCRIPTOR_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
+
+class ExecutionContext;
 
 // Defines a message port descriptor, which is a mojo::MessagePipeHandle and
 // some associated state which follows the handle around as it is passed from
@@ -43,6 +46,9 @@ namespace blink {
 //   message_port.Entangle(channel0)
 //   message_port.postMessage(...);
 //   channel0 = message_port.Disentangle();
+//
+// Note that there is a Java wrapper to this class implemented by
+// org.chromium.content.browser.AppWebMessagePortDescriptor.
 class BLINK_COMMON_EXPORT MessagePortDescriptor {
  public:
   // Delegate used to provide information about the state of message ports.
@@ -69,33 +75,47 @@ class BLINK_COMMON_EXPORT MessagePortDescriptor {
   const base::UnguessableToken& id() const { return id_; }
   uint64_t sequence_number() const { return sequence_number_; }
 
+  // Helper accessor for getting the underlying Mojo handle. Makes tests a
+  // little easier to write.
+  MojoHandle GetMojoHandleForTesting() const;
+
   // Returns true if this is a valid descriptor.
   bool IsValid() const;
 
   // Returns true if this descriptor is currently entangled (meaning that the
-  // handle has been vended out via "TakeHandleToEntangle").
+  // handle has been vended out via "TakeHandleToEntangle*").
   bool IsEntangled() const;
 
   // Returns true if this is a default initialized descriptor.
   bool IsDefault() const;
 
+  // Resets the descriptor, closing the pipe if this is a valid descriptor.
+  // After calling this "IsDefault" will return true. It is not valid to call
+  // this on a descriptor whose handle is currently entangled (taken via
+  // "TakeHandleToEntangle*" but not yet returned) or in the process of being
+  // serialized.
   void Reset();
 
- protected:
-  friend class MessagePort;
-  friend class MessagePortSerializationAccess;
-  friend class MessagePortDescriptorTestHelper;
-
   // These are only meant to be used for serialization, and as such the values
-  // should always be non-default initialized when they are called. Intended for
-  // use via MessagePortSerializationAccess. These should only be called for
-  // descriptors that actually host non-default values.
-  void Init(mojo::ScopedMessagePipeHandle handle,
-            base::UnguessableToken id,
-            uint64_t sequence_number);
-  mojo::ScopedMessagePipeHandle TakeHandle();
-  base::UnguessableToken TakeId();
-  uint64_t TakeSequenceNumber();
+  // should always be non-default initialized when they are called. These should
+  // only be called for descriptors that actually host non-default values. If
+  // you start serializing an object by calling any of the
+  // "TakeFooForSerialization" functions it is expected (and enforced by
+  // DCHECKs) that you will call all of them. Don't use these unless you really
+  // need to!
+  void InitializeFromSerializedValues(mojo::ScopedMessagePipeHandle handle,
+                                      const base::UnguessableToken& id,
+                                      uint64_t sequence_number);
+  mojo::ScopedMessagePipeHandle TakeHandleForSerialization();
+  base::UnguessableToken TakeIdForSerialization();
+  uint64_t TakeSequenceNumberForSerialization();
+
+  // The following functions are only intended to be used by classes that
+  // implemented message port endpoints, like blink::MessagePort (for internal
+  // use from content and blink), blink::WebMessagePort (for embedder use from
+  // C++ code) and org.chromium.content.browser.AppWebMessagePort
+  // (implementation of org.chromium.content_public.browser.MessagePort, which
+  // is intended for embedder use in Java code).
 
   // Intended for use by MessagePort, for binding/unbinding the handle to/from a
   // mojo::Connector. The handle must be bound directly to a mojo::Connector in
@@ -106,7 +126,18 @@ class BLINK_COMMON_EXPORT MessagePortDescriptor {
   // MessagePortDescriptor, and releases the MessagePortDescriptor to the
   // caller. See MessagePort::Entangle and MessagePort::Disentangle.
   mojo::ScopedMessagePipeHandle TakeHandleToEntangle(
-      const base::UnguessableToken& execution_context_id);
+      ExecutionContext* execution_context);
+
+  // Intended for use by WebMessagePort and the corresponding
+  // org.chromium.content.browser.AppWebMessagePort, which are the interfaces
+  // that embedders use for communicating with hosted content.
+  mojo::ScopedMessagePipeHandle TakeHandleToEntangleWithEmbedder();
+
+  // Returns a handle that was previously taken for entangling via
+  // "TakeHandleToEntangle*". Passing an invalid handle indicates that the
+  // handle was forcibly closed due to error while vended out by the descriptor.
+  // TODO(chrisha): Close the loop and move the connector inside of the
+  // descriptor, by making TakeHandleToEntangle vend a bound Connector.
   void GiveDisentangledHandle(mojo::ScopedMessagePipeHandle handle);
 
  private:
@@ -120,9 +151,15 @@ class BLINK_COMMON_EXPORT MessagePortDescriptor {
 
   // Helper functions for forwarding notifications to the
   // InstrumentationDelegate if it exists.
-  void NotifyAttached(const base::UnguessableToken& execution_context_id);
+  void NotifyAttached(ExecutionContext* execution_context);
+  void NotifyAttachedToEmbedder();
   void NotifyDetached();
   void NotifyDestroyed();
+
+  // Checks that the serialization state of the object is valid. Only
+  // meaningful in DCHECK builds.
+  void EnsureNotSerialized() const;
+  void EnsureValidSerializationState() const;
 
   static constexpr size_t kInvalidSequenceNumber = 0;
   static constexpr size_t kFirstValidSequenceNumber = 1;
@@ -131,12 +168,13 @@ class BLINK_COMMON_EXPORT MessagePortDescriptor {
   mojo::ScopedMessagePipeHandle handle_;
 
 #if DCHECK_IS_ON()
-  // The underlying handle, unmanaged. This is used to enforce that the same
-  // handle is given back to this descriptor when it is unentangled. This value
-  // is not part of the corresponding Mojo type, as it need not be transferred.
-  // It is treated as an extension of |handle_| as far as "TakeHandle*"" is
-  // concerned.
-  mojo::MessagePipeHandle raw_handle_;
+  // Keeps track of serialization status. An object will explode if
+  // serialization is only ever half-completed.
+  struct SerializationState {
+    bool took_handle_for_serialization_ : 1;
+    bool took_id_for_serialization_ : 1;
+    bool took_sequence_number_for_serialization_ : 1;
+  } serialization_state_ = {};
 #endif
 
   // The randomly generated ID of this message handle. The ID follows this
@@ -184,24 +222,30 @@ class BLINK_COMMON_EXPORT MessagePortDescriptorPair {
 // NotifyMessagePortsCreated is special in that it introduces new ports and
 // starts new sequence numbers. The next message received (either a PortAttached
 // or PortDestroyed message) will use the subsequent sequence number.
-//
-// TODO(chrisha): Kill this delegate entirely and move these functions into
-// dedicated interfaces, with the MessagePortDescriptor impl directly invoking
-// them.
 class BLINK_COMMON_EXPORT MessagePortDescriptor::InstrumentationDelegate {
  public:
   virtual ~InstrumentationDelegate() = default;
 
   // Notifies the instrumentation that a pair of matching ports was created.
   virtual void NotifyMessagePortPairCreated(
-      const MessagePortDescriptorPair& pair) = 0;
+      const base::UnguessableToken& port0_id,
+      const base::UnguessableToken& port1_id) = 0;
 
   // Notifies the instrumentation that a handle has been attached to an
-  // execution context.
+  // execution context. Note that |execution_context| should never be null, but
+  // it is valid for "execution_context->IsContextDestroyed()" to return true.
+  // Further note that this should only ever be called by blink::MessagePort.
+  // All other contexts should be calling NotifyMessagePortAttachedToEmbedder.
   virtual void NotifyMessagePortAttached(
       const base::UnguessableToken& port_id,
       uint64_t sequence_number,
-      const base::UnguessableToken& execution_context_id) = 0;
+      ExecutionContext* execution_context) = 0;
+
+  // Notifies the instrumentation that a handle has been attached to an
+  // embedder.
+  virtual void NotifyMessagePortAttachedToEmbedder(
+      const base::UnguessableToken& port_id,
+      uint64_t sequence_number) = 0;
 
   // Notifies the instrumentation that a handle has been detached from an
   // execution context.

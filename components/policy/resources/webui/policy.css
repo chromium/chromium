@@ -50,6 +50,10 @@ body > main {
   border: 1px solid rgba(0, 0, 0, .06);
 }
 
+.policy-precedence-data {
+  border: 1px solid rgba(0, 0, 0, .06);
+}
+
 .name {
   border-inline-end: 1px solid rgba(0, 0, 0, .06);
   flex: 0 0 15%;
@@ -76,13 +80,16 @@ body > main {
 }
 
 .expanded .policy.row:not(.conflict),
-.policy.row:not(.conflict):hover {
+.policy.row:not(.conflict):hover,
+.precedence.row:hover {
   background-color: rgb(250, 250, 250);
 }
 
 .warnings.row .value,
 .errors.row .value,
-.value.row .value {
+.infos.row .value,
+.value.row .value,
+.precedence.row .value {
   flex-grow: 1;
   max-height: 200px;
   overflow: auto;
@@ -94,8 +101,10 @@ body > main {
 <if expr="not is_android and not is_ios">
 .errors.row .name,
 .warnings.row .name,
+.infos.row .name,
 .conflict.row .name,
-.value.row .name {
+.value.row .name,
+.precedence.row .name {
   text-align: end;
 }
 </if>
@@ -113,6 +122,10 @@ fieldset {
 
 fieldset + fieldset {
   margin-inline-start: 20px;
+}
+
+div.status-entry * {
+  white-space: pre-wrap
 }
 
 div.status-entry:not([hidden]) {
@@ -135,9 +148,20 @@ body > header {
   height: 56px;
 }
 
-.sshow-unset-checkbox,
+.show-unset-checkbox,
 .search-field-container {
+  flex: 0 1 200px;
   margin-inline-start: auto;
+}
+
+.show-unset-checkbox > label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.show-unset-checkbox > label > input {
+  margin: 0;
 }
 
 .no-policy:not([hidden]) {
@@ -180,6 +204,11 @@ a {
 
 .no-help-link .link img {
   display: none;
+}
+
+#screen-reader-message {
+  clip: rect(0,0,0,0);
+  position: fixed;
 }
 
 <if expr="is_android or is_ios">

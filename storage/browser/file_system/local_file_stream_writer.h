@@ -16,12 +16,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "storage/browser/file_system/file_stream_writer.h"
-
-namespace content {
-class LocalFileStreamWriterTest;
-}
 
 namespace net {
 class FileStream;
@@ -33,6 +29,9 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
     : public FileStreamWriter {
  public:
+  LocalFileStreamWriter(const LocalFileStreamWriter&) = delete;
+  LocalFileStreamWriter& operator=(const LocalFileStreamWriter&) = delete;
+
   ~LocalFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -43,8 +42,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
   int Flush(net::CompletionOnceCallback callback) override;
 
  private:
-  friend class content::LocalFileStreamWriterTest;
   friend class FileStreamWriter;
+  friend class LocalFileStreamWriterTest;
+
   LocalFileStreamWriter(base::TaskRunner* task_runner,
                         const base::FilePath& file_path,
                         int64_t initial_offset,
@@ -88,7 +88,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
   net::CompletionOnceCallback cancel_callback_;
 
   base::WeakPtrFactory<LocalFileStreamWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LocalFileStreamWriter);
 };
 
 }  // namespace storage

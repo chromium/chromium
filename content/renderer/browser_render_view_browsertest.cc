@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_view.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -33,11 +34,9 @@
 #include "content/shell/renderer/shell_content_renderer_client.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/http/failing_http_transaction_factory.h"
 #include "net/http/http_cache.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -156,18 +155,8 @@ IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
   GURL test_url(embedded_test_server()->GetURL("/nocache-with-etag.html"));
   NavigateToURLAndWaitForTitle(test_url, "Nocache Test Page", 1);
 
-  // Reload same URL after forcing an error from the the network layer;
-  // confirm that the error page is told the cached copy exists.
-  {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    content::StoragePartition* partition = shell()
-                                               ->web_contents()
-                                               ->GetMainFrame()
-                                               ->GetProcess()
-                                               ->GetStoragePartition();
-    partition->GetNetworkContext()->SetFailingHttpTransactionForTesting(
-        net::ERR_FAILED);
-  }
+  // Shut down the server to force a network error.
+  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
   // An error results in one completed navigation.
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
@@ -175,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
   bool stale_cache_entry_present = false;
   ASSERT_TRUE(GetLatestErrorFromRendererClient(
       &error_code, &stale_cache_entry_present));
-  EXPECT_EQ(net::ERR_FAILED, error_code);
+  EXPECT_EQ(net::ERR_CONNECTION_REFUSED, error_code);
   EXPECT_TRUE(stale_cache_entry_present);
 
   // Clear the cache and repeat; confirm lack of entry in cache reported.
@@ -198,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
   stale_cache_entry_present = true;
   ASSERT_TRUE(GetLatestErrorFromRendererClient(
       &error_code, &stale_cache_entry_present));
-  EXPECT_EQ(net::ERR_FAILED, error_code);
+  EXPECT_EQ(net::ERR_CONNECTION_REFUSED, error_code);
   EXPECT_FALSE(stale_cache_entry_present);
 }
 

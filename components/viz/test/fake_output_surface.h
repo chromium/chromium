@@ -7,11 +7,13 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/callback.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -67,10 +69,11 @@ class FakeOutputSurface : public OutputSurface {
   void DiscardBackbuffer() override {}
   void BindFramebuffer() override;
   void SetDrawRectangle(const gfx::Rect& rect) override;
+  void SetEnableDCLayers(bool enabled) override;
   void Reshape(const gfx::Size& size,
                float device_scale_factor,
                const gfx::ColorSpace& color_space,
-               bool has_alpha,
+               gfx::BufferFormat format,
                bool use_stencil) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
   uint32_t GetFramebufferCopyTextureFormat() override;
@@ -78,13 +81,14 @@ class FakeOutputSurface : public OutputSurface {
   void ApplyExternalStencil() override {}
   bool IsDisplayedAsOverlayPlane() const override;
   unsigned GetOverlayTextureId() const override;
-  gfx::BufferFormat GetOverlayBufferFormat() const override;
   unsigned UpdateGpuFence() override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #endif

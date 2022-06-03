@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -16,10 +16,11 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 
 #if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #endif
 
-#if defined(USE_X11)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 bool ConvertKeyCodeToTextOzone
 #else
 bool ConvertKeyCodeToText
@@ -28,13 +29,14 @@ bool ConvertKeyCodeToText
      int modifiers,
      std::string* text,
      std::string* error_msg) {
-#if defined(USE_OZONE)
   ui::KeyboardLayoutEngine* keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-#else
-  auto keyboard_layout_engine =
-      std::make_unique<ui::StubKeyboardLayoutEngine>();
-#endif
+
+  std::unique_ptr<ui::StubKeyboardLayoutEngine> stub_layout_engine;
+  if (!keyboard_layout_engine) {
+    stub_layout_engine = std::make_unique<ui::StubKeyboardLayoutEngine>();
+    keyboard_layout_engine = stub_layout_engine.get();
+  }
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
   int event_flags = ui::EF_NONE;
 
@@ -63,16 +65,16 @@ bool ConvertKeyCodeToText
   return true;
 }
 
-#if defined(USE_X11)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 bool ConvertCharToKeyCodeOzone
 #else
 bool ConvertCharToKeyCode
 #endif
-    (base::char16 key,
+    (char16_t key,
      ui::KeyboardCode* key_code,
      int* necessary_modifiers,
      std::string* error_msg) {
-  base::string16 key_string;
+  std::u16string key_string;
   key_string.push_back(key);
   std::string key_string_utf8 = base::UTF16ToUTF8(key_string);
   bool found_code = false;

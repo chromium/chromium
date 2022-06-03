@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include "base/logging.h"
 #include "base/win/scoped_handle.h"
 
 namespace chrome_cleaner {
@@ -14,6 +15,10 @@ namespace chrome_cleaner {
 class ScHandleTraits {
  public:
   typedef SC_HANDLE Handle;
+
+  ScHandleTraits() = delete;
+  ScHandleTraits(const ScHandleTraits&) = delete;
+  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
 
   // Closes the handle.
   static bool CloseHandle(SC_HANDLE handle) {
@@ -25,9 +30,6 @@ class ScHandleTraits {
 
   // Returns null handle value.
   static SC_HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<ScHandleTraits,

@@ -18,8 +18,8 @@ ExtensionError::ExtensionError(Type type,
                                const std::string& extension_id,
                                bool from_incognito,
                                logging::LogSeverity level,
-                               const base::string16& source,
-                               const base::string16& message)
+                               const std::u16string& source,
+                               const std::u16string& message)
     : type_(type),
       extension_id_(extension_id),
       id_(0),
@@ -27,8 +27,7 @@ ExtensionError::ExtensionError(Type type,
       level_(level),
       source_(source),
       message_(message),
-      occurrences_(1u) {
-}
+      occurrences_(1u) {}
 
 ExtensionError::~ExtensionError() {
 }
@@ -55,9 +54,9 @@ bool ExtensionError::IsEqual(const ExtensionError* rhs) const {
 // ManifestError
 
 ManifestError::ManifestError(const std::string& extension_id,
-                             const base::string16& message,
-                             const base::string16& manifest_key,
-                             const base::string16& manifest_specific)
+                             const std::u16string& message,
+                             const std::u16string& manifest_key,
+                             const std::u16string& manifest_specific)
     : ExtensionError(ExtensionError::MANIFEST_ERROR,
                      extension_id,
                      false,  // extensions can't be installed while incognito.
@@ -65,8 +64,7 @@ ManifestError::ManifestError(const std::string& extension_id,
                      base::FilePath(kManifestFilename).AsUTF16Unsafe(),
                      message),
       manifest_key_(manifest_key),
-      manifest_specific_(manifest_specific) {
-}
+      manifest_specific_(manifest_specific) {}
 
 ManifestError::~ManifestError() {
 }
@@ -87,8 +85,8 @@ bool ManifestError::IsEqualImpl(const ExtensionError* rhs) const {
 
 RuntimeError::RuntimeError(const std::string& extension_id,
                            bool from_incognito,
-                           const base::string16& source,
-                           const base::string16& message,
+                           const std::u16string& source,
+                           const std::u16string& message,
                            const StackTrace& stack_trace,
                            const GURL& context_url,
                            logging::LogSeverity level,
@@ -164,15 +162,14 @@ void RuntimeError::CleanUpInit() {
 // InternalError
 
 InternalError::InternalError(const std::string& extension_id,
-                             const base::string16& message,
+                             const std::u16string& message,
                              logging::LogSeverity level)
     : ExtensionError(ExtensionError::INTERNAL_ERROR,
                      extension_id,
                      false,  // not incognito.
                      level,
-                     base::string16(),
-                     message) {
-}
+                     std::u16string(),
+                     message) {}
 
 InternalError::~InternalError() {
 }

@@ -6,8 +6,10 @@
 
 #include <link.h>
 #include <sys/mman.h>
+#include "base/bit_cast.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/memory/swap_configuration.h"
 
 namespace chromeos {
 
@@ -81,6 +83,10 @@ CHROMEOS_EXPORT void LockMainProgramText() {
   if (base::FeatureList::IsEnabled(chromeos::kCrOSLockMainProgramText)) {
     MlockAllText();
   }
+}
+
+CHROMEOS_EXPORT void UpdateMemoryParameters() {
+  ConfigureSwap();
 }
 
 }  // namespace chromeos

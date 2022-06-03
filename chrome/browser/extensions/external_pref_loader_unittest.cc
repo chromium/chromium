@@ -4,19 +4,31 @@
 
 #include "chrome/browser/extensions/external_pref_loader.h"
 
+#include <memory>
+#include <utility>
+
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync_preferences/pref_model_associator.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -25,6 +37,10 @@ namespace {
 class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() {}
+
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   ~TestSyncService() override {}
 
   // syncer::SyncService:
@@ -43,8 +59,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -66,62 +80,196 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
             profile),
         load_callback_(std::move(load_callback)) {}
 
+  TestExternalPrefLoader(const TestExternalPrefLoader&) = delete;
+  TestExternalPrefLoader& operator=(const TestExternalPrefLoader&) = delete;
+
   void LoadOnFileThread() override {
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   std::move(load_callback_));
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(load_callback_));
   }
 
  private:
   ~TestExternalPrefLoader() override {}
   base::OnceClosure load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExternalPrefLoader);
 };
 
-class ExternalPrefLoaderTest : public testing::Test {
+class ExternalPrefLoaderTestBase : public ::testing::Test {
  public:
-  ExternalPrefLoaderTest() {}
-  ~ExternalPrefLoaderTest() override {}
+  ExternalPrefLoaderTestBase(ExternalPrefLoaderTestBase&) = delete;
+  ExternalPrefLoaderTestBase& operator=(ExternalPrefLoaderTestBase&) = delete;
 
-  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+  void SetUp() override {
+    profile_ = std::make_unique<TestingProfile>();
+    sync_service_ = static_cast<TestSyncService*>(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
+    sync_service_->SetFirstSetupComplete(true);
+  }
 
   void TearDown() override { profile_.reset(); }
 
-  Profile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
+
+  TestSyncService* sync_service() { return sync_service_; }
+
+ protected:
+  ExternalPrefLoaderTestBase() = default;
+  ~ExternalPrefLoaderTestBase() override = default;
+
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  TestSyncService* sync_service_ = nullptr;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoaderTest);
+// TODO(https://crbug.com/1249845): Remove parameterization after rolling out
+//                                  SyncSettingsCategorization.
+class ExternalPrefLoaderTest : public ExternalPrefLoaderTestBase,
+                               public ::testing::WithParamInterface<bool> {
+ public:
+  ExternalPrefLoaderTest() {
+    if (ShouldEnableSyncSettingsCategorization()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::
+                                    kSyncSettingsCategorization},
+          /*disabled_features=*/{chromeos::features::kSyncConsentOptional});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              chromeos::features::kSyncSettingsCategorization,
+              chromeos::features::kSyncConsentOptional});
+    }
+  }
+  ~ExternalPrefLoaderTest() override = default;
+  ExternalPrefLoaderTest(ExternalPrefLoaderTest&) = delete;
+  ExternalPrefLoaderTest& operator=(ExternalPrefLoaderTest&) = delete;
+
+ private:
+  bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
 };
 
 // TODO(lazyboy): Add a test to cover
 // PrioritySyncReadyWaiter::OnIsSyncingChanged().
 
 // Tests that we fire pref reading correctly after priority sync state
-// is resolved by ExternalPrefLoader.
-TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
-  TestSyncService* test_service = static_cast<TestSyncService*>(
-      ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-  test_service->SetFirstSetupComplete(true);
-
+// is resolved by ExternalPrefLoader. This test checks that the flow works
+// without SyncSettingsCategorization and SyncConsentOptional.
+TEST_P(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader(
       new TestExternalPrefLoader(profile(), run_loop.QuitWhenIdleClosure()));
   ExternalProviderImpl provider(
-      nullptr, loader, profile(), Manifest::INVALID_LOCATION,
-      Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      nullptr, loader, profile(), ManifestLocation::kInvalidLocation,
+      ManifestLocation::kInvalidLocation, Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
   // Initially CanSyncFeatureStart() returns true, returning false will let
   // |loader| proceed.
-  test_service->SetDisableReasons(
+  sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
-  ASSERT_FALSE(test_service->CanSyncFeatureStart());
-  test_service->FireOnStateChanged();
+  ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
+  sync_service()->FireOnStateChanged();
   run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         ExternalPrefLoaderTest,
+                         ::testing::Bool());
+
+class ExternalPrefLoaderSyncConsentOptionalTest
+    : public ExternalPrefLoaderTestBase {
+ public:
+  ExternalPrefLoaderSyncConsentOptionalTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kSyncSettingsCategorization,
+                              chromeos::features::kSyncConsentOptional},
+        /*disabled_features=*/{});
+  }
+  ~ExternalPrefLoaderSyncConsentOptionalTest() override = default;
+  ExternalPrefLoaderSyncConsentOptionalTest(
+      ExternalPrefLoaderSyncConsentOptionalTest&) = delete;
+  ExternalPrefLoaderSyncConsentOptionalTest& operator=(
+      ExternalPrefLoaderSyncConsentOptionalTest&) = delete;
+};
+
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, OsSyncEnabled) {
+  base::RunLoop run_loop;
+  scoped_refptr<ExternalPrefLoader> loader =
+      base::MakeRefCounted<TestExternalPrefLoader>(
+          profile(), run_loop.QuitWhenIdleClosure());
+  ExternalProviderImpl provider(
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
+  provider.VisitRegisteredExtension();
+
+  PrefService* prefs = profile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
+
+  // Simulate OOBE screen completion with OS sync enabled.
+  sync_service()->GetUserSettings()->SetOsSyncFeatureEnabled(true);
+  prefs->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
+
+  // Simulate OS prefs starting to sync.
+  sync_preferences::PrefServiceSyncable* pref_sync =
+      profile()->GetTestingPrefService();
+  // This is an ugly cast, but it's how other tests do it.
+  sync_preferences::PrefModelAssociator* pref_sync_service =
+      static_cast<sync_preferences::PrefModelAssociator*>(
+          pref_sync->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES));
+  pref_sync_service->MergeDataAndStartSyncing(
+      syncer::OS_PRIORITY_PREFERENCES, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+
+  run_loop.Run();
+  // |loader| completed loading.
+}
+
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, OsSyncDisable) {
+  base::RunLoop run_loop;
+  scoped_refptr<ExternalPrefLoader> loader =
+      base::MakeRefCounted<TestExternalPrefLoader>(
+          profile(), run_loop.QuitWhenIdleClosure());
+  ExternalProviderImpl provider(
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
+  provider.VisitRegisteredExtension();
+
+  PrefService* prefs = profile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
+
+  // Simulate OOBE screen completion with OS sync disabled.
+  sync_service()->GetUserSettings()->SetOsSyncFeatureEnabled(false);
+  prefs->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
+
+  // Loader doesn't need to wait, since OS pref sync is disabled.
+  run_loop.Run();
+  // |loader| completed loading.
+}
+
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, SyncDisabledByPolicy) {
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
+
+  base::RunLoop run_loop;
+  scoped_refptr<ExternalPrefLoader> loader =
+      base::MakeRefCounted<TestExternalPrefLoader>(
+          profile(), run_loop.QuitWhenIdleClosure());
+  ExternalProviderImpl provider(
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
+  provider.VisitRegisteredExtension();
+
+  // Loader doesn't need to wait, because sync will never enable.
+  run_loop.Run();
+  // |loader| completed loading.
 }
 
 }  // namespace extensions

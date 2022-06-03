@@ -8,53 +8,56 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
+#import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
-#import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
+#import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
+#import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
+@protocol ActivityServicePositioner;
 class Browser;
-@protocol ApplicationCommands;
-@protocol BrowserCommands;
-@protocol BrowsingDataCommands;
 @class BrowserContainerViewController;
 @class BrowserViewControllerDependencyFactory;
 @class CommandDispatcher;
-@protocol OmniboxFocuser;
-@protocol PasswordBreachCommands;
-@protocol PopupMenuCommands;
-@protocol FakeboxFocuser;
-@protocol SnackbarCommands;
-@class TabModel;
-@protocol ToolbarCommands;
-
-namespace ios {
-class ChromeBrowserState;
-}
+@protocol CRWResponderInputView;
+@class DefaultBrowserPromoNonModalScheduler;
+@protocol DefaultPromoNonModalPresentationDelegate;
+@class ToolbarAccessoryPresenter;
+@protocol IncognitoReauthCommands;
 
 // The top-level view controller for the browser UI. Manages other controllers
 // which implement the interface.
 @interface BrowserViewController
-    : UIViewController <LogoAnimationControllerOwnerOwner,
+    : UIViewController <FindBarPresentationDelegate,
+                        IncognitoReauthConsumer,
+                        LogoAnimationControllerOwnerOwner,
                         PageInfoPresentation,
+                        PrintControllerDelegate,
                         SyncPresenter,
-                        ToolbarCoordinatorDelegate>
+                        ThumbStripSupporting,
+                        ToolbarCoordinatorDelegate,
+                        WebNavigationNTPDelegate,
+                        WebStateContainerViewProvider>
 
-// Initializes a new BVC from its nib. |model| must not be nil. The
-// webUsageSuspended property for this BVC will be based on |model|, and future
-// changes to |model|'s suspension state should be made through this BVC
-// instead of directly on the model.
-// TODO(crbug.com/992582): Remove references to model objects from this class.
+// Initializes a new BVC.
+// |browser| is the browser whose tabs this BVC will display.
+// |factory| is the dependency factory created for this BVC instance.
+// |browserContainerViewController| is the container object this BVC will exist
+// inside.
+// |dispatcher| is the dispatcher instance this BVC will use.
+// TODO(crbug.com/992582): Remove references to model objects -- including
+//   |browser| and |dispatcher| -- from this class.
 - (instancetype)initWithBrowser:(Browser*)browser
                  dependencyFactory:
                      (BrowserViewControllerDependencyFactory*)factory
-        applicationCommandEndpoint:
-            (id<ApplicationCommands>)applicationCommandEndpoint
-       browsingDataCommandEndpoint:
-           (id<BrowsingDataCommands>)browsingDataCommandEndpoint
-                 commandDispatcher:(CommandDispatcher*)commandDispatcher
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
+                        dispatcher:(CommandDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
@@ -62,53 +65,53 @@ class ChromeBrowserState;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-@property(nonatomic, readonly) id<ApplicationCommands,
-                                  BrowserCommands,
-                                  BrowsingDataCommands,
-                                  OmniboxFocuser,
-                                  PasswordBreachCommands,
-                                  PopupMenuCommands,
-                                  FakeboxFocuser,
-                                  SnackbarCommands,
-                                  ToolbarCommands>
-    dispatcher;
+// Command dispatcher.
+@property(nonatomic, weak) CommandDispatcher* commandDispatcher;
 
-// The top-level browser container view.
-@property(nonatomic, strong, readonly) UIView* contentArea;
-
-// Invisible button used to dismiss the keyboard.
-@property(nonatomic, strong) UIButton* typingShield;
+// Handler for reauth commands.
+@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 
 // Returns whether or not text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
 
-// The Browser's TabModel.
-@property(nonatomic, weak, readonly) TabModel* tabModel;
+// The container used for infobar banner overlays.
+@property(nonatomic, strong)
+    UIViewController* infobarBannerOverlayContainerViewController;
 
-// The Browser's ChromeBrowserState.
-@property(nonatomic, assign, readonly) ios::ChromeBrowserState* browserState;
+// The container used for infobar modal overlays.
+@property(nonatomic, strong)
+    UIViewController* infobarModalOverlayContainerViewController;
+
+// Presenter used to display accessories over the toolbar (e.g. Find In Page).
+@property(nonatomic, strong)
+    ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
+
+// Positioner for activity services attached to the toolbar.
+@property(nonatomic, readonly) id<ActivityServicePositioner>
+    activityServicePositioner;
+
+// Scheduler for the non-modal default browser promo.
+// TODO(crbug.com/1204120): The BVC should not need this model-level object.
+@property(nonatomic, weak)
+    DefaultBrowserPromoNonModalScheduler* nonModalPromoScheduler;
+
+// Presentation delegate for the non-modal default browser promo.
+@property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
+    nonModalPromoPresentationDelegate;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
 
-// Called when the typing shield is tapped.
-- (void)shieldWasTapped:(id)sender;
-
 // Called when the user explicitly opens the tab switcher.
 - (void)userEnteredTabSwitcher;
 
-// Presents either in-product help bubbles if the the user is in a valid state
-// to see one of them. At most one bubble will be shown. If the feature
-// engagement tracker determines it is not valid to see one of the bubbles, that
-// bubble will not be shown.
-- (void)presentBubblesIfEligible;
-
 // Opens a new tab as if originating from |originPoint| and |focusOmnibox|.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
-                     focusOmnibox:(BOOL)focusOmnibox;
+                     focusOmnibox:(BOOL)focusOmnibox
+                    inheritOpener:(BOOL)inheritOpener;
 
 // Adds |tabAddedCompletion| to the completion block (if any) that will be run
-// the next time a tab is added to the TabModel this object was initialized
+// the next time a tab is added to the Browser this object was initialized
 // with.
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion;
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -24,10 +23,6 @@ namespace download {
 class DownloadItem;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace safe_browsing {
 
 class DownloadFeedback;
@@ -38,8 +33,12 @@ class DownloadFeedback;
 class DownloadFeedbackService {
  public:
   DownloadFeedbackService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      DownloadProtectionService* download_protection_service,
       base::TaskRunner* file_task_runner);
+
+  DownloadFeedbackService(const DownloadFeedbackService&) = delete;
+  DownloadFeedbackService& operator=(const DownloadFeedbackService&) = delete;
+
   ~DownloadFeedbackService();
 
   // Stores the request and response ping data from the download check, if the
@@ -64,30 +63,31 @@ class DownloadFeedbackService {
       std::string* ping,
       std::string* response);
 
-  // Records histogram for download feedback option shown to user.
-  static void RecordEligibleDownloadShown(
-      download::DownloadDangerType danger_type);
-
-  // Begin download feedback for |download|. Then delete download file if
-  // |download_command| is DISCARD, or run the KEEP command otherwise.This must
-  // only be called if IsEnabledForDownload is true for |download|.
-  void BeginFeedbackForDownload(download::DownloadItem* download,
+  // Begin download feedback for the given |download| in the given |profile|.
+  // Then delete download file if |download_command| is DISCARD, or run the KEEP
+  // command otherwise. This must only be called if IsEnabledForDownload is true
+  // for |download|.
+  void BeginFeedbackForDownload(Profile* profile,
+                                download::DownloadItem* download,
                                 DownloadCommands::Command download_command);
 
  private:
   static void BeginFeedbackOrDeleteFile(
       const scoped_refptr<base::TaskRunner>& file_task_runner,
       const base::WeakPtr<DownloadFeedbackService>& service,
+      Profile* profile,
       const std::string& ping_request,
       const std::string& ping_response,
       const base::FilePath& path);
   void StartPendingFeedback();
-  void BeginFeedback(const std::string& ping_request,
+  void BeginFeedback(Profile* profile,
+                     const std::string& ping_request,
                      const std::string& ping_response,
                      const base::FilePath& path);
   void FeedbackComplete();
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  // Safe because the DownloadProtectionService owns this.
+  DownloadProtectionService* download_protection_service_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
 
   // Currently active & pending uploads. The first item is active, remaining
@@ -95,8 +95,6 @@ class DownloadFeedbackService {
   base::queue<std::unique_ptr<DownloadFeedback>> active_feedback_;
 
   base::WeakPtrFactory<DownloadFeedbackService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackService);
 };
 }  // namespace safe_browsing
 

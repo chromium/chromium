@@ -9,6 +9,7 @@ namespace dom_distiller {
 const char kDomDistillerScheme[] = "chrome-distiller";
 const char kEntryIdKey[] = "entry_id";
 const char kUrlKey[] = "url";
+const char kTitleKey[] = "title";
 const char kTimeKey[] = "time";
 const char kViewerCssPath[] = "dom_distiller_viewer.css";
 const char kViewerLoadingImagePath[] = "dom_distiller_material_spinner.svg";

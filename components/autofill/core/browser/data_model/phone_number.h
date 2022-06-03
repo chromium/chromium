@@ -8,9 +8,7 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
@@ -32,11 +30,14 @@ class PhoneNumber : public FormGroup {
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }
 
   // FormGroup implementation:
-  void GetMatchingTypes(const base::string16& text,
+  void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         ServerFieldTypeSet* matching_types) const override;
-  base::string16 GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfo(ServerFieldType type, const base::string16& value) override;
+  std::u16string GetRawInfo(ServerFieldType type) const override;
+  void SetRawInfoWithVerificationStatus(
+      ServerFieldType type,
+      const std::u16string& value,
+      structured_address::VerificationStatus status) override;
 
   // Size and offset of the prefix and suffix portions of phone numbers.
   static const size_t kPrefixOffset = 0;
@@ -51,8 +52,8 @@ class PhoneNumber : public FormGroup {
     ~PhoneCombineHelper();
 
     // If |type| is a phone field type, saves the |value| accordingly and
-    // returns true.  For all other field types returs false.
-    bool SetInfo(const AutofillType& type, const base::string16& value);
+    // returns true.  For all other field types returns false.
+    bool SetInfo(const AutofillType& type, const std::u16string& value);
 
     // Parses the number built up from pieces stored via SetInfo() according to
     // the specified |profile|'s country code, falling back to the given
@@ -60,33 +61,35 @@ class PhoneNumber : public FormGroup {
     // true if parsing was successful, false otherwise.
     bool ParseNumber(const AutofillProfile& profile,
                      const std::string& app_locale,
-                     base::string16* value);
+                     std::u16string* value);
 
     // Returns true if both |phone_| and |whole_number_| are empty.
     bool IsEmpty() const;
 
    private:
-    base::string16 country_;
-    base::string16 city_;
-    base::string16 phone_;
-    base::string16 whole_number_;
+    std::u16string country_;
+    std::u16string city_;
+    std::u16string phone_;
+    std::u16string whole_number_;
   };
 
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
-  base::string16 GetInfoImpl(const AutofillType& type,
+  std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
-  bool SetInfoImpl(const AutofillType& type,
-                   const base::string16& value,
-                   const std::string& app_locale) override;
+  bool SetInfoWithVerificationStatusImpl(
+      const AutofillType& type,
+      const std::u16string& value,
+      const std::string& app_locale,
+      structured_address::VerificationStatus status) override;
 
   // Updates the cached parsed number if the profile's region has changed
   // since the last time the cache was updated.
   void UpdateCacheIfNeeded(const std::string& app_locale) const;
 
   // The phone number.
-  base::string16 number_;
+  std::u16string number_;
   // Profile which stores the region used as hint when normalizing the number.
   const AutofillProfile* profile_;  // WEAK
 

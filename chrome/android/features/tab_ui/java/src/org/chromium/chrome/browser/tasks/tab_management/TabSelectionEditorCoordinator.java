@@ -4,20 +4,27 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorProperties.IS_VISIBLE;
+
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -61,17 +68,24 @@ class TabSelectionEditorCoordinator {
         /**
          * Configure the Toolbar for TabSelectionEditor. The default button text is "Group".
          * @param actionButtonText Button text for the action button.
+         * @param actionButtonDescriptionResourceId Content description template resource Id for the
+         *         action button. This should be in a plurals form.
          * @param actionProvider The {@link TabSelectionEditorActionProvider} that specifies the
          *         action when action button gets clicked.
          * @param actionButtonEnablingThreshold The minimum threshold to enable the action button.
          *         If it's -1 use the default value.
          * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
-         *                           the action when navigation button gets clicked.
          */
         void configureToolbar(@Nullable String actionButtonText,
+                @Nullable Integer actionButtonDescriptionResourceId,
                 @Nullable TabSelectionEditorActionProvider actionProvider,
                 int actionButtonEnablingThreshold,
                 @Nullable TabSelectionEditorNavigationProvider navigationProvider);
+
+        /**
+         * @return Whether the TabSelectionEditor is visible.
+         */
+        boolean isVisible();
     }
 
     /**
@@ -97,32 +111,41 @@ class TabSelectionEditorCoordinator {
     }
 
     private final Context mContext;
-    private final View mParentView;
+    private final ViewGroup mParentView;
     private final TabModelSelector mTabModelSelector;
     private final TabSelectionEditorLayout mTabSelectionEditorLayout;
     private final TabListCoordinator mTabListCoordinator;
     private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
-    private final PropertyModel mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+    private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mTabSelectionEditorLayoutChangeProcessor;
     private final TabSelectionEditorMediator mTabSelectionEditorMediator;
 
-    public TabSelectionEditorCoordinator(Context context, View parentView,
+    public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            @Nullable TabSelectionEditorMediator
-                    .TabSelectionEditorPositionProvider positionProvider) {
+            @TabListMode int mode, ViewGroup rootView) {
         mContext = context;
         mParentView = parentView;
         mTabModelSelector = tabModelSelector;
+        assert mode == TabListCoordinator.TabListMode.GRID
+                || mode == TabListCoordinator.TabListMode.LIST;
 
-        // TODO(crbug.com/1007598): construct TabListCoordinator with List mode if it's a low end
-        // device, and TabGroupContinuation is turned on.
-        mTabListCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.GRID, context,
-                mTabModelSelector, tabContentManager::getTabThumbnailWithCallback, null, false,
-                null, null, null, TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
-                null, false, COMPONENT_NAME);
-        mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER, () -> {
-            return LayoutInflater.from(context).inflate(R.layout.divider_preference, null, false);
-        }, (model, view, propertyKey) -> {});
+        mTabSelectionEditorLayout =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.tab_selection_editor_layout, parentView, false)
+                        .findViewById(R.id.selectable_list);
+
+        mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
+                tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
+                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
+                mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView);
+
+        // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
+        assert LibraryLoader.getInstance().isInitialized();
+        mTabListCoordinator.initWithNative(null);
+
+        mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
+                new LayoutViewBuilder(R.layout.divider_preference),
+                (model, view, propertyKey) -> {});
         RecyclerView.LayoutManager layoutManager =
                 mTabListCoordinator.getContainerView().getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
@@ -142,18 +165,19 @@ class TabSelectionEditorCoordinator {
                     });
         }
 
-        mTabSelectionEditorLayout = LayoutInflater.from(context)
-                .inflate(R.layout.tab_selection_editor_layout, null)
-                .findViewById(R.id.selectable_list);
         mTabSelectionEditorLayout.initialize(mParentView, mTabListCoordinator.getContainerView(),
                 mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
         mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
-        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind);
+        mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
+                         .with(IS_VISIBLE, false)
+                         .build();
 
-        mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext, mTabModelSelector,
-                this::resetWithListOfTabs, mModel, mSelectionDelegate, positionProvider);
+        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
+                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
+
+        mTabSelectionEditorMediator = new TabSelectionEditorMediator(
+                mContext, mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
     }
 
     /**
@@ -171,10 +195,9 @@ class TabSelectionEditorCoordinator {
     void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount) {
         mTabListCoordinator.resetWithListOfTabs(tabs);
 
-        if (tabs != null && preSelectedCount > 0) {
-            assert preSelectedCount < tabs.size();
-            mTabListCoordinator.addSpecialListItem(
-                    preSelectedCount, TabProperties.UiType.DIVIDER, new PropertyModel());
+        if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
+            mTabListCoordinator.addSpecialListItem(preSelectedCount, TabProperties.UiType.DIVIDER,
+                    new PropertyModel.Builder(CARD_TYPE).with(CARD_TYPE, OTHERS).build());
         }
     }
 
@@ -189,9 +212,23 @@ class TabSelectionEditorCoordinator {
      * Destroy any members that needs clean up.
      */
     public void destroy() {
-        mTabListCoordinator.destroy();
+        mTabListCoordinator.onDestroy();
         mTabSelectionEditorLayout.destroy();
         mTabSelectionEditorMediator.destroy();
         mTabSelectionEditorLayoutChangeProcessor.destroy();
+    }
+
+    /**
+     * @return The {@link TabSelectionEditorLayout} for testing.
+     */
+    TabSelectionEditorLayout getTabSelectionEditorLayoutForTesting() {
+        return mTabSelectionEditorLayout;
+    }
+
+    /**
+     * @return The {@link TabListRecyclerView} for testing.
+     */
+    TabListRecyclerView getTabListRecyclerViewForTesting() {
+        return mTabListCoordinator.getContainerView();
     }
 }

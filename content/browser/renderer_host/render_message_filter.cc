@@ -11,14 +11,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
@@ -33,29 +33,26 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
-#include "content/browser/resource_context_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/render_message_filter.mojom.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/context_menu_params.h"
 #include "content/public/common/url_constants.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_platform_file.h"
-#include "media/base/media_log_event.h"
+#include "media/base/media_log_record.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_util.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,10 +64,10 @@
 #include "base/file_descriptor_posix.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/linux_util.h"
 #include "base/threading/platform_thread.h"
 #endif
@@ -78,7 +75,16 @@
 namespace content {
 namespace {
 
-const uint32_t kRenderFilteredMessageClasses[] = {ViewMsgStart};
+void GotHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback,
+                      bool has_gpu) {
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), has_gpu));
+}
+
+void GetHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback) {
+  GpuProcessHost::GetHasGpuProcess(
+      base::BindOnce(GotHasGpuProcess, std::move(callback)));
+}
 
 }  // namespace
 
@@ -87,10 +93,7 @@ RenderMessageFilter::RenderMessageFilter(
     BrowserContext* browser_context,
     RenderWidgetHelper* render_widget_helper,
     MediaInternals* media_internals)
-    : BrowserMessageFilter(kRenderFilteredMessageClasses,
-                           base::size(kRenderFilteredMessageClasses)),
-      BrowserAssociatedInterface<mojom::RenderMessageFilter>(this, this),
-      resource_context_(browser_context->GetResourceContext()),
+    : BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
       render_widget_helper_(render_widget_helper),
       render_process_id_(render_process_id),
       media_internals_(media_internals) {
@@ -104,24 +107,11 @@ RenderMessageFilter::~RenderMessageFilter() {
 }
 
 bool RenderMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_MediaLogEvents, OnMediaLogEvents)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
+  return false;
 }
 
 void RenderMessageFilter::OnDestruct() const {
-  const_cast<RenderMessageFilter*>(this)->resource_context_ = nullptr;
   BrowserThread::DeleteOnIOThread::Destruct(this);
-}
-
-void RenderMessageFilter::OverrideThreadForMessage(const IPC::Message& message,
-                                                   BrowserThread::ID* thread) {
-  if (message.type() == ViewHostMsg_MediaLogEvents::ID)
-    *thread = BrowserThread::UI;
 }
 
 void RenderMessageFilter::GenerateRoutingID(
@@ -129,27 +119,17 @@ void RenderMessageFilter::GenerateRoutingID(
   std::move(callback).Run(render_widget_helper_->GetNextRoutingID());
 }
 
-void RenderMessageFilter::CreateNewWidget(
-    int32_t opener_id,
-    mojo::PendingRemote<mojom::Widget> widget,
-    CreateNewWidgetCallback callback) {
-  int route_id = MSG_ROUTING_NONE;
-  render_widget_helper_->CreateNewWidget(opener_id, std::move(widget),
-                                         &route_id);
-  std::move(callback).Run(route_id);
+void RenderMessageFilter::GenerateFrameRoutingID(
+    GenerateFrameRoutingIDCallback callback) {
+  int32_t routing_id = render_widget_helper_->GetNextRoutingID();
+  auto frame_token = blink::LocalFrameToken();
+  auto devtools_frame_token = base::UnguessableToken::Create();
+  render_widget_helper_->StoreNextFrameRoutingID(routing_id, frame_token,
+                                                 devtools_frame_token);
+  std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
 }
 
-void RenderMessageFilter::CreateFullscreenWidget(
-    int opener_id,
-    mojo::PendingRemote<mojom::Widget> widget,
-    CreateFullscreenWidgetCallback callback) {
-  int route_id = 0;
-  render_widget_helper_->CreateNewFullscreenWidget(opener_id, std::move(widget),
-                                                   &route_id);
-  std::move(callback).Run(route_id);
-}
-
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void RenderMessageFilter::SetThreadPriorityOnFileThread(
     base::PlatformThreadId ns_tid,
     base::ThreadPriority priority) {
@@ -166,26 +146,26 @@ void RenderMessageFilter::SetThreadPriorityOnFileThread(
     return;
   }
 
-  base::PlatformThread::SetThreadPriority(peer_tid, priority);
+  base::PlatformThread::SetThreadPriority(peer_pid(), peer_tid, priority);
 }
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void RenderMessageFilter::SetThreadPriority(int32_t ns_tid,
                                             base::ThreadPriority priority) {
   constexpr base::TaskTraits kTraits = {
-      base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::MayBlock(), base::TaskPriority::USER_BLOCKING,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE, kTraits,
       base::BindOnce(&RenderMessageFilter::SetThreadPriorityOnFileThread, this,
                      static_cast<base::PlatformThreadId>(ns_tid), priority));
 }
 #endif
 
-void RenderMessageFilter::OnMediaLogEvents(
-    const std::vector<media::MediaLogEvent>& events) {
-  // OnMediaLogEvents() is always dispatched to the UI thread for handling.
+void RenderMessageFilter::OnMediaLogRecords(
+    const std::vector<media::MediaLogRecord>& events) {
+  // OnMediaLogRecords() is always dispatched to the UI thread for handling.
   // See OverrideThreadForMessage().
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (media_internals_)
@@ -193,7 +173,8 @@ void RenderMessageFilter::OnMediaLogEvents(
 }
 
 void RenderMessageFilter::HasGpuProcess(HasGpuProcessCallback callback) {
-  GpuProcessHost::GetHasGpuProcess(std::move(callback));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(GetHasGpuProcess, std::move(callback)));
 }
 
 }  // namespace content

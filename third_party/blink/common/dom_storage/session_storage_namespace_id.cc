@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/guid.h"
-#include "base/logging.h"
 
 namespace blink {
 

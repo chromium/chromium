@@ -1,77 +1,64 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  :host {
+    display: inline-flex;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_behavior.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
-<link rel="import" href="../settings_vars_css.html">
-<link rel="import" href="../i18n_setup.html">
+  cr-policy-pref-indicator {
+    align-self: center;
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
 
-<dom-module id="settings-slider">
-  <template>
-    <style>
-      :host {
-        display: inline-flex;
-      }
+  #labels[disabled] {
+    color: var(--paper-grey-400);
+  }
 
-      cr-policy-pref-indicator {
-        align-self: center;
-        margin-inline-start: var(--settings-controlled-by-spacing);
-      }
+  @media (prefers-color-scheme: dark) {
+    #labels[disabled] {
+      color: var(--google-grey-refresh-500);
+    }
+  }
 
-      #labels[disabled] {
-        color: var(--paper-grey-400);
-      }
+  div.outer {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+    min-width: 200px;
+  }
 
-      @media (prefers-color-scheme: dark) {
-        #labels[disabled] {
-          color: var(--google-grey-refresh-500);
-        }
-      }
+  #labels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: -4px 16px 0 16px;
+  }
 
-      div.outer {
-        align-items: stretch;
-        display: flex;
-        flex-direction: column;
-        margin: 8px 0;
-        min-width: 200px;
-      }
+  #labels > div {
+    font-size: 12px;
+  }
 
-      #labels {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin: -4px 16px 0 16px;
-      }
+  #label-begin {
+    margin-inline-end: 4px;
+  }
 
-      #labels > div {
-        font-size: 12px;
-      }
-
-      #label-begin {
-        margin-inline-end: 4px;
-      }
-
-      #label-end {
-        margin-inline-start: 4px;
-      }
-    </style>
-    <template is="dom-if" if="[[pref.controlledBy]]" restamp>
-      <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
-    </template>
-    <div class="outer">
-      <cr-slider id="slider" disabled$="[[disableSlider_]]" ticks="[[ticks]]"
-          on-cr-slider-value-changed="onSliderChanged_" max="[[max]]"
-          min="[[min]]" on-dragging-changed="onSliderChanged_"
-          on-updating-from-key="onSliderChanged_"
-          aria-roledescription$="[[getRoleDescription_()]]"
-          aria-label$="[[labelAria]]">
-      </cr-slider>
-      <!-- aria-hidden because role description on #slider contains min/max. -->
-      <div id="labels" disabled$="[[disableSlider_]]" aria-hidden="true">
-        <div id="label-begin">[[labelMin]]</div>
-        <div id="label-end">[[labelMax]]</div>
-      </div>
-    </div>
-  </template>
-  <script src="settings_slider.js"></script>
-</dom-module>
+  #label-end {
+    margin-inline-start: 4px;
+  }
+</style>
+<template is="dom-if" if="[[pref.controlledBy]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+<div class="outer">
+  <cr-slider id="slider" disabled$="[[disableSlider_]]" ticks="[[ticks]]"
+      on-cr-slider-value-changed="onSliderChanged_" max="[[max]]"
+      min="[[min]]" on-dragging-changed="onSliderChanged_"
+      on-updating-from-key="onSliderChanged_"
+      aria-roledescription$="[[getRoleDescription_()]]"
+      aria-label$="[[labelAria]]">
+  </cr-slider>
+  <!-- aria-hidden because role description on #slider contains min/max. -->
+  <div id="labels" disabled$="[[disableSlider_]]" aria-hidden="true">
+    <div id="label-begin">[[labelMin]]</div>
+    <div id="label-end">[[labelMax]]</div>
+  </div>
+</div>

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -28,6 +27,7 @@ class SharedURLLoaderFactory;
 namespace update_client {
 
 class ActivityDataService;
+class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatchChromiumFactory;
 class ProtocolHandlerFactory;
@@ -69,10 +69,12 @@ const uint8_t gjpm_hash[] = {0x69, 0xfc, 0x41, 0xf6, 0x17, 0x20, 0xc6, 0x36,
 
 class TestConfigurator : public Configurator {
  public:
-  TestConfigurator();
+  explicit TestConfigurator(PrefService* pref_service = nullptr);
+  TestConfigurator(const TestConfigurator&) = delete;
+  TestConfigurator& operator=(const TestConfigurator&) = delete;
 
-  // Overrrides for Configurator.
-  int InitialDelay() const override;
+  // Overrides for Configurator.
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -87,6 +89,7 @@ class TestConfigurator : public Configurator {
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<NetworkFetcherFactory> GetNetworkFetcherFactory() override;
+  scoped_refptr<CrxDownloaderFactory> GetCrxDownloaderFactory() override;
   scoped_refptr<UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
@@ -101,12 +104,15 @@ class TestConfigurator : public Configurator {
 
   void SetBrand(const std::string& brand);
   void SetOnDemandTime(int seconds);
-  void SetInitialDelay(int seconds);
+  void SetInitialDelay(double seconds);
   void SetDownloadPreference(const std::string& download_preference);
   void SetEnabledCupSigning(bool use_cup_signing);
   void SetEnabledComponentUpdates(bool enabled_component_updates);
   void SetUpdateCheckUrl(const GURL& url);
   void SetPingUrl(const GURL& url);
+  void SetCrxDownloaderFactory(
+      scoped_refptr<CrxDownloaderFactory> crx_downloader_factory);
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -118,11 +124,12 @@ class TestConfigurator : public Configurator {
   class TestPatchService;
 
   std::string brand_;
-  int initial_time_;
-  int ondemand_time_;
+  double initial_time_{0};
+  int ondemand_time_{0};
   std::string download_preference_;
   bool enabled_cup_signing_;
   bool enabled_component_updates_;
+  PrefService* pref_service_;  // Not owned by this class.
   GURL update_check_url_;
   GURL ping_url_;
 
@@ -132,8 +139,7 @@ class TestConfigurator : public Configurator {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<NetworkFetcherFactory> network_fetcher_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConfigurator);
+  scoped_refptr<CrxDownloaderFactory> crx_downloader_factory_;
 };
 
 }  // namespace update_client

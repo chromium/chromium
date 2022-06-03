@@ -14,8 +14,6 @@ void FakeBluetoothDebugManagerClient::Init(
     const std::string& bluetooth_service_name) {}
 
 void FakeBluetoothDebugManagerClient::SetLogLevels(
-    const uint8_t dispatcher_level,
-    const uint8_t newblue_level,
     const uint8_t bluez_level,
     const uint8_t kernel_level,
     base::OnceClosure callback,
@@ -27,7 +25,7 @@ void FakeBluetoothDebugManagerClient::SetLogLevels(
     return;
   }
 
-  dispatcher_level_ = dispatcher_level;
+  bluez_level_ = bluez_level;
   std::move(callback).Run();
 }
 

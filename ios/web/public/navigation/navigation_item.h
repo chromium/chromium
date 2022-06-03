@@ -6,8 +6,8 @@
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_ITEM_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #import "ios/web/common/user_agent.h"
@@ -22,6 +22,11 @@ namespace web {
 struct FaviconStatus;
 struct Referrer;
 struct SSLStatus;
+
+// User interface limits the length of the title, so placing limit does not
+// have any functional side effects, and allows to use less memory for
+// navigation session.
+extern const size_t kMaxTitleLength;
 
 // A NavigationItem is a data structure that captures all the information
 // required to recreate a browsing state. It represents one point in the
@@ -68,8 +73,8 @@ class NavigationItem : public base::SupportsUserData {
   // The caller is responsible for detecting when there is no title and
   // displaying the appropriate "Untitled" label if this is being displayed to
   // the user.
-  virtual void SetTitle(const base::string16& title) = 0;
-  virtual const base::string16& GetTitle() const = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
   // Stores the NavigationItem's last recorded scroll offset and zoom scale.
   virtual void SetPageDisplayState(const PageDisplayState& page_state) = 0;
@@ -79,7 +84,7 @@ class NavigationItem : public base::SupportsUserData {
 
   // Returns the title to be displayed on the tab. This could be the title of
   // the page if it is available or the URL.
-  virtual const base::string16& GetTitleForDisplay() const = 0;
+  virtual const std::u16string& GetTitleForDisplay() const = 0;
 
   // Tracking stuff ------------------------------------------------------------
 
@@ -110,21 +115,9 @@ class NavigationItem : public base::SupportsUserData {
   virtual base::Time GetTimestamp() const = 0;
 
   // The type of user agent requested for the navigation.
-  // If |update_inherited_user_agent| is false, then the user agent type used
-  // for inheritance won't be changed. If it is true, the the user agent for
-  // inheritance will be updated to |type|.
-  // See NavigationManager UserAgentOverrideOption::INHERIT.
   // TODO(crbug.com/697512): Create equivalent enum type for WebContents.
-  virtual void SetUserAgentType(UserAgentType type,
-                                bool update_inherited_user_agent) = 0;
+  virtual void SetUserAgentType(UserAgentType type) = 0;
   virtual UserAgentType GetUserAgentType() const = 0;
-
-  // Returns the type of user agent to be used for inheritance. Inheritance is
-  // used to know the User Agent type when a new navigation is started. This
-  // type could be different from GetUserAgentType() as if the Inherited user
-  // agent could be the automatic one, whereas the GetUserAgentType is the one
-  // actually used by this item.
-  virtual UserAgentType GetUserAgentForInheritance() const = 0;
 
   // |true| if this item is the result of a POST request with data.
   virtual bool HasPostData() const = 0;
@@ -135,6 +128,17 @@ class NavigationItem : public base::SupportsUserData {
   // Adds headers from |additional_headers| to the item's http request headers.
   // Existing headers with the same key will be overridden.
   virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
+
+  // Returns true if the navigation was typed without a scheme and upgraded
+  // by the omnibox to use https:// as the scheme. (e.g. example.com is
+  // upgraded to https://example.com instead of http://example.com). This has
+  // the same purpose as
+  // ChromeNavigationUIData::is_using_https_as_default_scheme().
+  virtual bool IsUpgradedToHttps() const = 0;
+  // Sets the upgraded bit to true. Called from NavigationManager. Once this bit
+  // is set, it's never reset to false. Navigations defaulting to https but fail
+  // to load end up creating new navigations with this bit cleared.
+  virtual void SetUpgradedToHttps() = 0;
 };
 
 }  // namespace web

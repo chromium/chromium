@@ -16,9 +16,20 @@
 @property(nonatomic, strong, readonly)
     TableViewModel<TableViewItem*>* tableViewModel;
 
+// Inserts sections at |sections| indexes. Does nothing if the model is not
+// loaded yet.
+- (void)insertSections:(NSIndexSet*)sections;
+
+// Deletes sections at |sections| indexes. Does nothing if the model is not
+// loaded yet.
+- (void)deleteSections:(NSIndexSet*)sections;
+
 // Reloads only a specific |item|. Does nothing if the model is not loaded
 // yet.
 - (void)reloadItem:(TableViewItem*)item;
+
+// Reloads |sections|. Does nothing if the model is not loaded yet.
+- (void)reloadSections:(NSIndexSet*)sections;
 
 @end
 

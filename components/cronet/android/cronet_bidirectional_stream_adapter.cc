@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h"
 #include "components/cronet/android/cronet_url_request_context_adapter.h"
@@ -273,14 +274,15 @@ void CronetBidirectionalStreamAdapter::OnStreamReady(
 }
 
 void CronetBidirectionalStreamAdapter::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get http status code from response headers.
   jint http_status_code = 0;
   const auto http_status_header = response_headers.find(":status");
   if (http_status_header != response_headers.end())
-    base::StringToInt(http_status_header->second, &http_status_code);
+    base::StringToInt(base::StringViewToStringPiece(http_status_header->second),
+                      &http_status_code);
 
   std::string protocol;
   switch (bidi_stream_->GetProtocol()) {
@@ -329,7 +331,7 @@ void CronetBidirectionalStreamAdapter::OnDataSent() {
 }
 
 void CronetBidirectionalStreamAdapter::OnTrailersReceived(
-    const spdy::SpdyHeaderBlock& response_trailers) {
+    const spdy::Http2HeaderBlock& response_trailers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetBidirectionalStream_onResponseTrailersReceived(
@@ -436,12 +438,12 @@ void CronetBidirectionalStreamAdapter::DestroyOnNetworkThread(
 base::android::ScopedJavaLocalRef<jobjectArray>
 CronetBidirectionalStreamAdapter::GetHeadersArray(
     JNIEnv* env,
-    const spdy::SpdyHeaderBlock& header_block) {
+    const spdy::Http2HeaderBlock& header_block) {
   DCHECK(context_->IsOnNetworkThread());
 
   std::vector<std::string> headers;
   for (const auto& header : header_block) {
-    std::string value = header.second.as_string();
+    auto value = std::string(header.second);
     size_t start = 0;
     size_t end = 0;
     // The do loop will split headers by '\0' so that applications can skip it.
@@ -453,7 +455,7 @@ CronetBidirectionalStreamAdapter::GetHeadersArray(
       } else {
         split_value = value.substr(start);
       }
-      headers.push_back(header.first.as_string());
+      headers.push_back(std::string(header.first));
       headers.push_back(split_value);
       start = end + 1;
     } while (end != value.npos);

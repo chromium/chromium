@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_safe_worker.h"
 
 namespace syncer {
+
 struct DataTypeActivationResponse;
 
 // An interface into the core parts of sync for model types. By adding/removing
@@ -18,17 +18,17 @@ struct DataTypeActivationResponse;
 // syncing (receiving updates and committing local changes).
 // In addition it handles creating the connection between the ModelTypeWorker
 // (CommitQueue) on the sync side and the (Shared)ModelTypeProcessor on the
-// model type side for non-blocking types.
+// model type side.
 class ModelTypeConnector {
  public:
-  ModelTypeConnector();
-  virtual ~ModelTypeConnector();
+  ModelTypeConnector() = default;
+  virtual ~ModelTypeConnector() = default;
 
   // Connect a worker on the sync thread and |type|'s processor on the model
   // thread. Note that in production |activation_response| actually
   // owns a processor proxy that forwards calls to the model thread and is safe
   // to call from the sync thread.
-  virtual void ConnectNonBlockingType(
+  virtual void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
@@ -37,16 +37,13 @@ class ModelTypeConnector {
   // This is the sync thread's chance to clear state associated with the type.
   // It also causes the syncer to stop requesting updates for this type, and to
   // abort any in-progress commit requests.
-  virtual void DisconnectNonBlockingType(ModelType type) = 0;
+  //
+  // No-op if the type is not connected.
+  virtual void DisconnectDataType(ModelType type) = 0;
 
-  // Registers directory based type with sync engine. Sync engine will create
-  // update handler and commit contributor objects for this type. It will start
-  // including the type in GetUpdates and commit requests.
-  virtual void RegisterDirectoryType(ModelType type, ModelSafeGroup group) = 0;
-
-  // Unregisters directory based type from sync engine. Type will no longer be
-  // included in communications with server.
-  virtual void UnregisterDirectoryType(ModelType type) = 0;
+  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
+  // the server during commits.
+  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

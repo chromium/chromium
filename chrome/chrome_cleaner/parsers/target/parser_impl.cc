@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {
 
@@ -24,37 +23,32 @@ ParserImpl::~ParserImpl() = default;
 
 void ParserImpl::ParseJson(const std::string& json,
                            ParseJsonCallback callback) {
-  int error_code;
-  std::string error;
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          json,
-          base::JSON_ALLOW_TRAILING_COMMAS |
-              base::JSON_REPLACE_INVALID_CHARACTERS,
-          &error_code, &error);
-  if (value) {
-    std::move(callback).Run(base::make_optional(std::move(*value)),
-                            base::nullopt);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          json, base::JSON_ALLOW_TRAILING_COMMAS |
+                    base::JSON_REPLACE_INVALID_CHARACTERS);
+  if (parsed_json.value) {
+    std::move(callback).Run(std::move(parsed_json.value), absl::nullopt);
   } else {
-    std::move(callback).Run(base::nullopt,
-                            base::make_optional(std::move(error)));
+    std::move(callback).Run(
+        absl::nullopt,
+        absl::make_optional(std::move(parsed_json.error_message)));
   }
 }
 
-void ParserImpl::ParseShortcut(mojo::ScopedHandle lnk_file_handle,
+void ParserImpl::ParseShortcut(mojo::PlatformHandle lnk_file_handle,
                                ParserImpl::ParseShortcutCallback callback) {
-  HANDLE raw_shortcut_handle;
-  if (mojo::UnwrapPlatformFile(std::move(lnk_file_handle),
-                               &raw_shortcut_handle) != MOJO_RESULT_OK) {
+  base::win::ScopedHandle shortcut_handle = lnk_file_handle.TakeHandle();
+  if (!shortcut_handle.IsValid()) {
     LOG(ERROR) << "Unable to get raw file HANDLE from mojo.";
     std::move(callback).Run(mojom::LnkParsingResult::INVALID_HANDLE,
-                            base::make_optional<base::string16>(),
-                            base::make_optional<base::string16>(),
-                            base::make_optional<base::string16>());
+                            absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            /*icon_index=*/-1);
     return;
   }
-
-  base::win::ScopedHandle shortcut_handle(raw_shortcut_handle);
 
   ParsedLnkFile parsed_shortcut;
   mojom::LnkParsingResult result =
@@ -62,17 +56,19 @@ void ParserImpl::ParseShortcut(mojo::ScopedHandle lnk_file_handle,
 
   if (result != mojom::LnkParsingResult::SUCCESS) {
     LOG(ERROR) << "Error parsing the shortcut";
-    std::move(callback).Run(result, base::make_optional<base::string16>(),
-                            base::make_optional<base::string16>(),
-                            base::make_optional<base::string16>());
+    std::move(callback).Run(result, absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            absl::make_optional<std::wstring>(),
+                            /*icon_index=*/-1);
     return;
   }
-
   std::move(callback).Run(
-      result, base::make_optional<base::string16>(parsed_shortcut.target_path),
-      base::make_optional<base::string16>(
-          parsed_shortcut.command_line_arguments),
-      base::make_optional<base::string16>(parsed_shortcut.icon_location));
+      result, absl::make_optional<std::wstring>(parsed_shortcut.target_path),
+      absl::make_optional<std::wstring>(parsed_shortcut.working_dir),
+      absl::make_optional<std::wstring>(parsed_shortcut.command_line_arguments),
+      absl::make_optional<std::wstring>(parsed_shortcut.icon_location),
+      parsed_shortcut.icon_index);
 }
 
 }  // namespace chrome_cleaner

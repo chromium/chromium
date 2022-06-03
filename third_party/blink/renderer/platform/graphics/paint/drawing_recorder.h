@@ -5,23 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DRAWING_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DRAWING_RECORDER_H_
 
-#include "third_party/blink/renderer/platform/platform_export.h"
-
 #include "base/auto_reset.h"
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "base/dcheck_is_on.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 class GraphicsContext;
 
-class PLATFORM_EXPORT DrawingRecorder final {
-  DISALLOW_NEW();
+class PLATFORM_EXPORT DrawingRecorder {
+  STACK_ALLOCATED();
 
  public:
   static bool UseCachedDrawingIfPossible(GraphicsContext& context,
@@ -37,10 +36,33 @@ class PLATFORM_EXPORT DrawingRecorder final {
         context, client, DisplayItem::PaintPhaseToDrawingType(phase));
   }
 
+  // See DisplayItem::VisualRect() for the definition of visual rect.
   DrawingRecorder(GraphicsContext&,
                   const DisplayItemClient&,
-                  DisplayItem::Type);
+                  DisplayItem::Type,
+                  const gfx::Rect& visual_rect);
 
+  DrawingRecorder(GraphicsContext& context,
+                  const DisplayItemClient& client,
+                  PaintPhase phase,
+                  const gfx::Rect& visual_rect)
+      : DrawingRecorder(context,
+                        client,
+                        DisplayItem::PaintPhaseToDrawingType(phase),
+                        visual_rect) {}
+
+  // This form is for recording with a transient paint controller, e.g. when
+  // we are recording into a PaintRecordBuilder, where visual rect doesn't
+  // matter.
+  DrawingRecorder(GraphicsContext& context,
+                  const DisplayItemClient& client,
+                  DisplayItem::Type type)
+      : DrawingRecorder(context, client, type, gfx::Rect()) {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(PaintController::kTransient,
+              context.GetPaintController().GetUsage());
+#endif
+  }
   DrawingRecorder(GraphicsContext& context,
                   const DisplayItemClient& client,
                   PaintPhase phase)
@@ -48,27 +70,21 @@ class PLATFORM_EXPORT DrawingRecorder final {
                         client,
                         DisplayItem::PaintPhaseToDrawingType(phase)) {}
 
+  DrawingRecorder(const DrawingRecorder&) = delete;
+  DrawingRecorder& operator=(const DrawingRecorder&) = delete;
   ~DrawingRecorder();
 
-  void SetKnownToBeOpaque() {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    known_to_be_opaque_ = true;
-  }
+  // Sometimes we don't the the exact visual rect when we create a
+  // DrawingRecorder. This method allows visual rect to be added during
+  // painting.
+  void UniteVisualRect(const gfx::Rect& rect) { visual_rect_.Union(rect); }
 
  private:
   GraphicsContext& context_;
   const DisplayItemClient& client_;
   const DisplayItem::Type type_;
-
-  // True if there are no transparent areas. Only used for CompositeAfterPaint.
-  bool known_to_be_opaque_;
-
-#if DCHECK_IS_ON()
-  // Ensures the list size does not change during the recorder's scope.
-  size_t initial_display_item_list_size_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(DrawingRecorder);
+  gfx::Rect visual_rect_;
+  absl::optional<DOMNodeId> dom_node_id_to_restore_;
 };
 
 #if DCHECK_IS_ON()
@@ -77,11 +93,12 @@ class DisableListModificationCheck {
 
  public:
   DisableListModificationCheck();
+  DisableListModificationCheck(const DisableListModificationCheck&) = delete;
+  DisableListModificationCheck& operator=(const DisableListModificationCheck&) =
+      delete;
 
  private:
   base::AutoReset<bool> disabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisableListModificationCheck);
 };
 #endif  // DCHECK_IS_ON()
 

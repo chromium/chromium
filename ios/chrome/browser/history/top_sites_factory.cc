@@ -23,7 +23,7 @@ namespace ios {
 
 // static
 scoped_refptr<history::TopSites> TopSitesFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return base::WrapRefCounted(static_cast<history::TopSites*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
@@ -46,14 +46,15 @@ TopSitesFactory::~TopSitesFactory() {
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
-      browser_state->GetPrefs(), history_service,
-      history::PrepopulatedPageList(), base::Bind(CanAddURLToHistory)));
+  scoped_refptr<history::TopSitesImpl> top_sites(
+      new history::TopSitesImpl(browser_state->GetPrefs(), history_service,
+                                history::PrepopulatedPageList(),
+                                base::BindRepeating(CanAddURLToHistory)));
   top_sites->Init(
       browser_state->GetStatePath().Append(history::kTopSitesFilename));
   return top_sites;

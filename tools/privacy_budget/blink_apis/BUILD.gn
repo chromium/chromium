@@ -1,0 +1,61 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//third_party/blink/renderer/bindings/bindings.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("protos") {
+  sources = [ "proto/blink_apis.proto" ]
+  generate_python = true
+
+  visibility = [ ":*" ]
+}
+
+action("blink_apis") {
+  testonly = true
+  script = "generate_blink_api_db.py"
+
+  inputs = [
+    web_idl_database_filepath,
+    "//third_party/blink/renderer/build/scripts/blinkbuild/name_style_converter.py",
+    "blink_api_proto.py",
+    "generate_blink_api_db.py",
+    "web_feature.py",
+  ]
+  output_data_file = "${root_build_dir}/blink_apis.textpb"
+  outputs = [ output_data_file ]
+
+  args = [
+    "--web_idl_database",
+    rebase_path(web_idl_database_filepath, root_build_dir),
+    "--output",
+    rebase_path(output_data_file, root_build_dir),
+    "--web_feature_mojom",
+    rebase_path(
+        "//third_party/blink/public/mojom/web_feature/web_feature.mojom",
+        root_build_dir),
+    "--path",
+    string_join(":",
+                [
+                  rebase_path("//third_party/blink/renderer/bindings/scripts",
+                              root_build_dir),
+                  rebase_path("//third_party/blink/renderer/build/scripts",
+                              root_build_dir),
+                  rebase_path("pyproto/tools/privacy_budget/blink_apis/proto",
+                              root_build_dir,
+                              root_out_dir),
+                  rebase_path("pyproto", root_build_dir, root_out_dir),
+                  rebase_path("pyproto/google/third_party/six",
+                              root_build_dir,
+                              root_out_dir),
+                ]),
+  ]
+
+  deps = [
+    ":protos",
+    "//third_party/blink/renderer/bindings:web_idl_database",
+    "//third_party/protobuf:py_proto_runtime",
+  ]
+}

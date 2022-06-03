@@ -18,16 +18,21 @@ namespace crypto {
 class CRYPTO_EXPORT ScopedTestNSSDB {
  public:
   ScopedTestNSSDB();
+
+  ScopedTestNSSDB(const ScopedTestNSSDB&) = delete;
+  ScopedTestNSSDB& operator=(const ScopedTestNSSDB&) = delete;
+
   ~ScopedTestNSSDB();
 
   bool is_open() const { return !!slot_; }
   PK11SlotInfo* slot() const { return slot_.get(); }
 
  private:
+  // Removes trust from all certificates found in |slot_|.
+  void RemoveTrustFromAllCerts();
+
   base::ScopedTempDir temp_dir_;
   ScopedPK11Slot slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestNSSDB);
 };
 
 }  // namespace crypto

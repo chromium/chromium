@@ -31,6 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,9 +42,12 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
-
 template <typename T>
 class WebVector;
+
+using FileSystemAccessDropData =
+    base::RefCountedData<blink::CrossVariantMojoRemote<
+        mojom::FileSystemAccessDataTransferTokenInterfaceBase>>;
 
 // Holds data that may be exchanged through a drag-n-drop operation. It is
 // inexpensive to copy a WebDragData object.
@@ -77,9 +84,11 @@ class WebDragData {
     // Only valid when storage_type == kStorageTypeFilename.
     WebString filename_data;
     WebString display_name_data;
+    scoped_refptr<FileSystemAccessDropData> file_system_access_entry;
 
     // Only valid when storage_type == kStorageTypeBinaryData.
     WebData binary_data;
+    bool binary_data_accessible_from_start_frame;
     WebURL binary_data_source_url;
     WebString binary_data_filename_extension;
     WebString binary_data_content_disposition;
@@ -90,7 +99,7 @@ class WebDragData {
     WebString file_system_id;
   };
 
-  WebDragData() : valid_(false), modifier_key_state_(0) {}
+  WebDragData() = default;
 
   WebDragData(const WebDragData& object) = default;
 
@@ -105,13 +114,6 @@ class WebDragData {
   // Instead, use SwapItems.
   void SwapItems(WebVector<Item>& item_list) { item_list_.Swap(item_list); }
 
-  void Initialize() { valid_ = true; }
-  bool IsNull() const { return !valid_; }
-  void Reset() {
-    item_list_ = WebVector<Item>();
-    valid_ = false;
-  }
-
   BLINK_PLATFORM_EXPORT void AddItem(const Item&);
 
   WebString FilesystemId() const { return filesystem_id_; }
@@ -121,17 +123,25 @@ class WebDragData {
     filesystem_id_ = filesystem_id;
   }
 
-  int ModifierKeyState() const { return modifier_key_state_; }
+  network::mojom::ReferrerPolicy ReferrerPolicy() const {
+    return referrer_policy_;
+  }
 
-  void SetModifierKeyState(int state) { modifier_key_state_ = state; }
+  void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) {
+    referrer_policy_ = referrer_policy;
+  }
 
  private:
-  bool valid_;
   WebVector<Item> item_list_;
-  int modifier_key_state_;  // State of Shift/Ctrl/Alt/Meta keys.
   WebString filesystem_id_;
+
+  // Used for items where string_type == "downloadurl". Stores the referrer
+  // policy for usage when dragging a link out of the webview results in a
+  // download.
+  network::mojom::ReferrerPolicy referrer_policy_ =
+      network::mojom::ReferrerPolicy::kDefault;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_

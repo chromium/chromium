@@ -13,12 +13,16 @@ class Value;
 
 namespace printing {
 
+namespace mojom {
+enum class PrinterType;
+}
+
 extern const char kDummyPrinterName[];
 const int kTestPrinterDpi = 600;
 
 // Creates a print ticket with some default values. Based on ticket creation in
 // chrome/browser/resources/print_preview/native_layer.js.
-base::Value GetPrintTicket(PrinterType type);
+base::Value GetPrintTicket(mojom::PrinterType type);
 
 }  // namespace printing
 

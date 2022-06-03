@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {expandTreeItem, isSinglePartitionFormat, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {waitAndAcceptDialog} from './keyboard_operations.js';
+import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
  * Info for the source or destination of a transfer.
@@ -118,10 +123,6 @@ async function transferBetweenVolumes(transferInfo) {
             entry => entry.type !== EntryType.SHARED_DRIVE &&
                 entry.teamDriveName === ''));
   }
-  const myDriveContent =
-      TestEntryInfo.getExpectedRows(transferInfo.source.initialEntries.filter(
-          entry => entry.type !== EntryType.SHARED_DRIVE &&
-              entry.teamDriveName === ''));
 
   let dstContents;
   if (transferInfo.destination.isTeamDrive) {
@@ -140,7 +141,10 @@ async function transferBetweenVolumes(transferInfo) {
   const driveFiles = (transferInfo.source.isTeamDrive ||
                       transferInfo.destination.isTeamDrive) ?
       SHARED_DRIVE_ENTRY_SET :
-      BASIC_DRIVE_ENTRY_SET;
+      BASIC_DRIVE_ENTRY_SET.concat([
+        ENTRIES.sharedDirectory,
+        ENTRIES.sharedDirectoryFile,
+      ]);
 
   // Open files app.
   const appId =
@@ -148,11 +152,10 @@ async function transferBetweenVolumes(transferInfo) {
 
   // Expand Drive root if either src or dst is within Drive.
   if (transferInfo.source.isTeamDrive || transferInfo.destination.isTeamDrive) {
+    const myDriveContent = TestEntryInfo.getExpectedRows(
+        driveFiles.filter(e => e.teamDriveName === '' && e.computerName === ''));
     // Select + expand + wait for its content.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'selectFolderInTree', appId, ['Google Drive']));
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'expandSelectedFolderInTree', appId, []));
+    await navigateWithDirectoryTree(appId, '/My Drive');
     await remoteCall.waitForFiles(appId, myDriveContent);
   }
 
@@ -208,7 +211,7 @@ async function transferBetweenVolumes(transferInfo) {
 
   // If we expected the transfer to succeed, add the pasted file to the list
   // of expected rows.
-  if (!transferInfo.expectFailure && !transferInfo.isMove &&
+  if (!transferInfo.expectFailure &&
       transferInfo.source !== transferInfo.destination) {
     const pasteFile = transferInfo.fileToTransfer.getExpectedRow();
     // Check if we need to add (1) to the filename, in the case of a
@@ -234,19 +237,27 @@ async function transferBetweenVolumes(transferInfo) {
 
 /**
  * A list of transfer locations, for use with transferBetweenVolumes.
- * @enum{TransferLocationInfo}
+ * @enum {TransferLocationInfo}
  */
-const TRANSFER_LOCATIONS = Object.freeze({
+const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
-    initialEntries: BASIC_DRIVE_ENTRY_SET
+    initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
+      ENTRIES.sharedDirectory,
+    ])
   }),
 
   driveWithTeamDriveEntries: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
     initialEntries: SHARED_DRIVE_ENTRY_SET
+  }),
+
+  driveSharedDirectory: new TransferLocationInfo({
+    breadcrumbsPath: '/My Drive/Shared',
+    volumeName: 'drive',
+    initialEntries: [ENTRIES.sharedDirectoryFile]
   }),
 
   downloads: new TransferLocationInfo({
@@ -258,7 +269,10 @@ const TRANSFER_LOCATIONS = Object.freeze({
   sharedWithMe: new TransferLocationInfo({
     breadcrumbsPath: '/Shared with me',
     volumeName: 'drive_shared_with_me',
-    initialEntries: SHARED_WITH_ME_ENTRY_SET
+    initialEntries: SHARED_WITH_ME_ENTRY_SET.concat([
+      ENTRIES.sharedDirectory,
+      ENTRIES.sharedDirectoryFile,
+    ])
   }),
 
   driveOffline: new TransferLocationInfo({
@@ -309,9 +323,18 @@ const TRANSFER_LOCATIONS = Object.freeze({
         sizeText: '--',
         typeText: 'Folder'
       }),
+      new TestEntryInfo({
+        type: EntryType.DIRECTORY,
+        targetPath: 'Trash',
+        nameText: 'Trash',
+        lastModifiedTime: '...',
+        sizeText: '--',
+        typeText: 'Folder'
+      }),
     ]
   }),
-});
+};
+Object.freeze(TRANSFER_LOCATIONS);
 
 /**
  * Tests copying from Drive to Downloads.
@@ -327,7 +350,11 @@ testcase.transferFromDriveToDownloads = () => {
 /**
  * Tests moving files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
-testcase.transferFromDownloadsToMyFilesMove = () => {
+testcase.transferFromDownloadsToMyFilesMove = async () => {
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    TRANSFER_LOCATIONS.my_files.initialEntries.pop();
+  }
+
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -339,7 +366,11 @@ testcase.transferFromDownloadsToMyFilesMove = () => {
 /**
  * Tests copying files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
-testcase.transferFromDownloadsToMyFiles = () => {
+testcase.transferFromDownloadsToMyFiles = async () => {
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    TRANSFER_LOCATIONS.my_files.initialEntries.pop();
+  }
+
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -360,9 +391,9 @@ testcase.transferFromDownloadsToDrive = () => {
 };
 
 /**
- * Tests copying from Drive shared with me to Downloads.
+ * Tests copying from Drive "Shared with me" to Downloads.
  */
-testcase.transferFromSharedToDownloads = () => {
+testcase.transferFromSharedWithMeToDownloads = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedFile,
     source: TRANSFER_LOCATIONS.sharedWithMe,
@@ -371,13 +402,54 @@ testcase.transferFromSharedToDownloads = () => {
 };
 
 /**
- * Tests copying from Drive shared with me to Drive.
+ * Tests copying from Drive "Shared with me" to Drive.
  */
-testcase.transferFromSharedToDrive = () => {
+testcase.transferFromSharedWithMeToDrive = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedDocument,
     source: TRANSFER_LOCATIONS.sharedWithMe,
     destination: TRANSFER_LOCATIONS.drive,
+  }));
+};
+
+
+/**
+ * Tests copying from Downloads to a shared folder on Drive.
+ */
+testcase.transferFromDownloadsToSharedFolder = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.downloads,
+    destination: TRANSFER_LOCATIONS.driveSharedDirectory,
+    expectedDialogText:
+        'Copying this item will share it with everyone who can see the ' +
+        'shared folder \'Shared\'.CopyCancel',
+  }));
+};
+
+/**
+ * Tests moving from Downloads to a shared folder on Drive.
+ */
+testcase.transferFromDownloadsToSharedFolderMove = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.downloads,
+    destination: TRANSFER_LOCATIONS.driveSharedDirectory,
+    expectedDialogText:
+        'Moving this item will share it with everyone who can see the ' +
+        'shared folder \'Shared\'.MoveCancel',
+    isMove: true,
+  }));
+};
+
+/**
+ * Tests copying from a shared folder on Drive to Downloads.
+ */
+testcase.transferFromSharedFolderToDownloads = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.sharedDirectoryFile,
+    source: TRANSFER_LOCATIONS.driveSharedDirectory,
+    destination: TRANSFER_LOCATIONS.downloads,
   }));
 };
 
@@ -448,7 +520,7 @@ testcase.transferHostedFileFromTeamDriveToDownloads = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.teamDriveAHostedFile,
     source: TRANSFER_LOCATIONS.driveTeamDriveA,
-    destination: TRANSFER_LOCATIONS.driveWithTeamDriveEntries,
+    destination: TRANSFER_LOCATIONS.downloads,
     expectFailure: true,
   }));
 };
@@ -491,14 +563,326 @@ testcase.transferFromDownloadsToDownloads = async () => {
     destination: TRANSFER_LOCATIONS.downloads,
     isMove: true,
   }));
-  chrome.test.assertEq(
-      '',
-      (await remoteCall.waitForElement(appId, '.progress-frame label')).text);
+
+  // Check: No feedback panel items.
+  const panelItems = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, [['#progress-panel', '#panel']]);
+  chrome.test.assertEq(0, panelItems.length);
 };
 
 /**
- * Tests that we can drag a file from #file-list to #directory-tree.
- * It copies the file from Downloads to Downloads/photos.
+ * Tests that the root html element .drag-drop-active class appears when drag
+ * drop operations are active, and is removed when the operations complete.
+ */
+testcase.transferDragDropActiveLeave = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="My files"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Check: the html element should not have drag-drop-active class.
+  const htmlDragDropActive = ['html.drag-drop-active'];
+  await remoteCall.waitForElementLost(appId, htmlDragDropActive);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: the html element should have drag-drop-active class.
+  await remoteCall.waitForElementsCount(appId, htmlDragDropActive, 1);
+
+  // Send a dragleave event to the target to end drag-drop operations.
+  const dragLeave = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Check: the html element should not have drag-drop-active class.
+  await remoteCall.waitForElementLost(appId, htmlDragDropActive);
+};
+
+/**
+ * Tests that the root html element .drag-drop-active class appears when drag
+ * drop operations are active, and is removed when the operations complete.
+ */
+testcase.transferDragDropActiveDrop = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Expand Downloads to display "photos" folder in the directory tree.
+  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="photos"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Check: the html element should not have drag-drop-active class.
+  const htmlDragDropActive = ['html.drag-drop-active'];
+  await remoteCall.waitForElementLost(appId, htmlDragDropActive);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: the html element should have drag-drop-active class.
+  await remoteCall.waitForElementsCount(appId, htmlDragDropActive, 1);
+
+  // Send a drop event to the target to end drag-drop operations.
+  const dragLeave = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Check: the html element should not have drag-drop-active class.
+  await remoteCall.waitForElementLost(appId, htmlDragDropActive);
+};
+
+/**
+ * Tests that dragging a file over a directory tree item that can accept the
+ * drop changes the class of that tree item to 'accepts'.
+ */
+testcase.transferDragDropTreeItemAccepts = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.photos.nameText}"] .entry-name`;
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="My files"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+
+  // Check: the target should have accepts class.
+  const willAcceptDrop = '#directory-tree [entry-label="My files"].accepts';
+  await remoteCall.waitForElement(appId, willAcceptDrop);
+
+  // Check: the target should not have denies class.
+  const willDenyDrop = '#directory-tree [entry-label="My files"].denies';
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+
+  // Send a dragleave event to the target to end drag-drop operations.
+  const dragLeave = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Check: the target should not have accepts class.
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+
+  // Check: the target should not have denies class.
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+};
+
+/**
+ * Tests that dragging a file over a directory tree item that cannot accept
+ * the drop changes the class of that tree item to 'denies'.
+ */
+testcase.transferDragDropTreeItemDenies = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="Recent"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Recent');
+
+  // Check: the target should have denies class.
+  const willDenyDrop = '#directory-tree [entry-label="Recent"].denies';
+  await remoteCall.waitForElement(appId, willDenyDrop);
+
+  // Check: the target should not have accepts class.
+  const willAcceptDrop = '#directory-tree [entry-label="Recent"].accepts';
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+
+  // Send a dragleave event to the target to end drag-drop operations.
+  const dragLeave = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Check: the target should not have denies class.
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+
+  // Check: the target should not have accepts class.
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+};
+
+/**
+ * Tests that dragging a file over an EntryList directory tree item (here a
+ * partitioned USB drive) does not raise an error.
+ */
+testcase.transferDragAndHoverTreeItemEntryList = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Mount a partitioned USB.
+  await sendTestMessage({name: 'mountUsbWithPartitions'});
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="Drive Label"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Drive Label');
+};
+
+/**
+ * Tests that dragging a file over a FakeEntry directory tree item (here a
+ * USB drive) does not raise an error.
+ */
+testcase.transferDragAndHoverTreeItemFakeEntry = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Mount a USB.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="fake-usb"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  let navigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    navigationPath = '/FAKEUSB/fake-usb';
+  }
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, navigationPath);
+};
+
+/**
+ * Tests that dragging a file list item selects its file list row.
+ */
+testcase.transferDragFileListItemSelects = async () => {
+  const entries = [ENTRIES.hello, ENTRIES.photos];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const listItem = `#file-list li[file-name="${ENTRIES.hello.nameText}"]`;
+  const source = listItem + ' .entry-name';
+
+  // Wait for the source.
+  await remoteCall.waitForElement(appId, source);
+
+  // Wait for the target.
+  const target = listItem + ' .detail-icon';
+  await remoteCall.waitForElement(appId, target);
+
+  // Check: the file list row should not be selected
+  await remoteCall.waitForElement(appId, listItem + ':not([selected])');
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: the file list row should be selected.
+  await remoteCall.waitForElement(appId, listItem + '[selected]');
+};
+
+/**
+ * Tests that dropping a file on a directory tree item (folder) copies the
+ * file to that folder.
  */
 testcase.transferDragAndDrop = async () => {
   const entries = [ENTRIES.hello, ENTRIES.photos];
@@ -509,67 +893,89 @@ testcase.transferDragAndDrop = async () => {
   // Expand Downloads to display "photos" folder in the directory tree.
   await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
 
-  // Drag has to start in the file list column "name" text content, otherwise it
-  // starts a selection instead of a drag.
-  const src =
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
       `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
-  const dst = '#directory-tree [entry-label="photos"]';
 
-  // Select the file to be dragged.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [src]),
-      'fakeMouseClick failed');
+  // Wait for the source.
+  await remoteCall.waitForElement(appId, source);
 
-  // Drag and drop it.
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="photos"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and drop it on the target.
+  const skipDrop = false;
   chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeDragAndDrop', appId, [src, dst]),
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
       'fakeDragAndDrop failed');
 
-  // Navigate to the dst folder.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [dst]),
-      'fakeMouseClick failed');
+  // Navigate the file list to the target.
+  await remoteCall.waitAndClickElement(appId, target);
 
   // Wait for navigation to finish.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/My files/Downloads/photos');
 
-  // Wait for the expected files to appear in the file list.
+  // Check: the dropped file should appear in the file list.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]),
       {ignoreLastModifiedTime: true});
 };
 
-/**
- * Tests that we can drag a file from #file-list and hover above USB root as
- * EntryList without raising an error.
+/*
+ * Tests that dragging a file over a directory tree item (folder) navigates
+ * the file list to that folder.
  */
 testcase.transferDragAndHover = async () => {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
-  await sendTestMessage({name: 'mountUsbWithPartitions'});
-  await sendTestMessage({name: 'mountFakeUsb'});
-
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
-  // Drag has to start in the file list column "name" text content, otherwise it
-  // starts a selection instead of a drag.
-  const src =
+  // Expand Downloads to display "photos" folder in the directory tree.
+  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
       `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
-  const dst1 = '#directory-tree [entry-label="Drive Label"]';
-  const dst2 = '#directory-tree [entry-label="fake-usb"]';
 
-  // Wait for USB roots to be ready.
-  await remoteCall.waitForElement(appId, dst1);
-  await remoteCall.waitForElement(appId, dst2);
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="photos"]';
+  await remoteCall.waitForElement(appId, target);
 
-  // Drag and hover it.
+  // Drag the source and hover it over the target.
   const skipDrop = true;
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId, [src, dst1, skipDrop]),
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
       'fakeDragAndDrop failed');
+
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My files/Downloads/photos');
+};
+
+/**
+ * Tests dropping a file originated from the browser.
+ */
+testcase.transferDropBrowserFile = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Send drop event on current directory.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDropBrowserFile', appId,
+          ['browserfile', 'content', 'text/plain', '#file-list']),
+      'fakeDropBrowserFile failed');
+
+  // File should be created.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="browserfile"]');
 };
 
 /**
@@ -594,18 +1000,35 @@ testcase.transferDeletedFile = async () => {
       'deleteFile', appId, [entry.nameText]));
 
   // Confirm deletion.
-  await waitAndAcceptDialog(appId);
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    await waitAndAcceptDialog(appId);
+  }
+
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(
+      appId, `#file-list [file-name="${entry.nameText}"]`);
 
   // Paste the file.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
 
   // Check that the error appears in the feedback panel.
-  const element = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq(
-      `Whoops, ${entry.nameText} no longer exists.`,
-      element.attributes['primary-text']);
+  let element = {};
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    element = await remoteCall.waitForElement(
+        appId, ['#progress-panel', 'xf-panel-item']);
+    const expectedMsg = `Whoops, ${entry.nameText} no longer exists.`;
+    const actualMsg = element.attributes['primary-text'];
+
+    if (actualMsg === expectedMsg) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
+  });
 
   // Check that only one line of text is shown.
   chrome.test.assertFalse(!!element.attributes['secondary-text']);
@@ -659,7 +1082,6 @@ testcase.transferInfoIsRemembered = async () => {
  * Tests that destination text line shows name for USB targets.
  */
 testcase.transferToUsbHasDestinationText = async () => {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
   const entry = ENTRIES.hello;
 
   // Open files app.
@@ -669,6 +1091,7 @@ testcase.transferToUsbHasDestinationText = async () => {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
+  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
   await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
 
   // Select the file.
@@ -679,9 +1102,12 @@ testcase.transferToUsbHasDestinationText = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
 
+  let navigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    navigationPath = '/FAKEUSB/fake-usb';
+  }
   // Select USB volume.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectInDirectoryTree', appId, [USB_VOLUME_QUERY]));
+  await navigateWithDirectoryTree(appId, navigationPath);
 
   // Tell the background page to never finish the file copy.
   await remoteCall.callRemoteTestUtil(
@@ -694,7 +1120,10 @@ testcase.transferToUsbHasDestinationText = async () => {
   // Check the feedback panel destination message contains the target device.
   const panel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
-  chrome.test.assertEq('To fake-usb', panel.attributes['secondary-text']);
+
+  chrome.test.assertTrue(
+      panel.attributes['primary-text'].includes('to fake-usb'),
+      'Feedback panel does not contain device name.');
 };
 
 /**
@@ -769,4 +1198,91 @@ testcase.transferDismissedErrorIsRemembered = async () => {
   const progressPanel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
   chrome.test.assertEq('progress', progressPanel.attributes['indicator']);
+};
+
+/**
+ * Tests no remaining time displayed for not supported operations like format.
+ */
+testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |format| progress panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id-1',
+    /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.PROGRESSING */ 'progressing', 'Formatting'
+  ]);
+
+  // Check the progress panel is open.
+  let panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check no remaining time shown for 'format' panel type.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+
+  // Show a |format| error panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id-2', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed'
+  ]);
+
+  // Check the progress panel is open.
+  panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item#item-id-2']);
+
+  // Check no remaining time shown for 'format' error panel type.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+};
+
+/**
+ * Tests updating same panel keeps same message.
+ * Use case: crbug/1137229
+ */
+testcase.transferUpdateSamePanelItem = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |format| error in feedback panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed'
+  ]);
+
+  // Check the error panel is open.
+  let panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Dispatch another |format| feedback panel with the same id and panel type.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed new message'
+  ]);
+
+  // Check the progress panel is open.
+  panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check secondary text is still empty for the error panel.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+};
+
+/**
+ * Tests pending message shown when the remaining time is zero.
+ */
+testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |copy| progress in feedback panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.COPY */ 'copy',
+    /* ProgressItemState.PROGRESSING */ 'progressing',
+    'Copying File1.txt to Downloads',
+    /* remainingTime*/ 0
+  ]);
+
+  // Check the error panel is open.
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check secondary text is pending message.
+  chrome.test.assertEq('Pending', panel.attributes['secondary-text']);
 };

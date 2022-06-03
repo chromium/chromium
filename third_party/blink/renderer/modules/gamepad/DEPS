@@ -5,10 +5,10 @@ include_rules = [
     "+device/gamepad/public/cpp/gamepad.h",
     "+device/gamepad/public/cpp/gamepads.h",
 
+    "+device/gamepad/public/cpp/gamepad_features.h",
     "+device/gamepad/public/mojom/gamepad.mojom-blink.h",
     "+device/gamepad/public/mojom/gamepad.mojom-blink-forward.h",
     "+device/gamepad/public/mojom/gamepad_hardware_buffer.h",
-    "+mojo/public/cpp/bindings/binding.h",
     "+mojo/public/cpp/system/buffer.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",

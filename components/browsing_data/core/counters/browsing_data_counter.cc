@@ -28,25 +28,26 @@ BrowsingDataCounter::~BrowsingDataCounter() {}
 
 void BrowsingDataCounter::Init(PrefService* pref_service,
                                ClearBrowsingDataTab clear_browsing_data_tab,
-                               const Callback& callback) {
+                               ResultCallback callback) {
   DCHECK(!initialized_);
-  callback_ = callback;
+  callback_ = std::move(callback);
   clear_browsing_data_tab_ = clear_browsing_data_tab;
   pref_.Init(GetPrefName(), pref_service,
-             base::Bind(&BrowsingDataCounter::Restart, base::Unretained(this)));
-  period_.Init(
-      GetTimePeriodPreferenceName(GetTab()), pref_service,
-      base::Bind(&BrowsingDataCounter::Restart, base::Unretained(this)));
+             base::BindRepeating(&BrowsingDataCounter::Restart,
+                                 base::Unretained(this)));
+  period_.Init(GetTimePeriodPreferenceName(GetTab()), pref_service,
+               base::BindRepeating(&BrowsingDataCounter::Restart,
+                                   base::Unretained(this)));
 
   initialized_ = true;
   OnInitialized();
 }
 
 void BrowsingDataCounter::InitWithoutPref(base::Time begin_time,
-                                          const Callback& callback) {
+                                          ResultCallback callback) {
   DCHECK(!initialized_);
   use_delay_ = false;
-  callback_ = callback;
+  callback_ = std::move(callback);
   clear_browsing_data_tab_ = ClearBrowsingDataTab::ADVANCED;
   begin_time_ = begin_time;
   initialized_ = true;
@@ -69,8 +70,9 @@ base::Time BrowsingDataCounter::GetPeriodEnd() {
 
 void BrowsingDataCounter::Restart() {
   DCHECK(initialized_);
-  TRACE_EVENT_ASYNC_BEGIN1("browsing_data", "BrowsingDataCounter::Restart",
-                           this, "data_type", GetPrefName());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
+      "data_type", GetPrefName());
   if (state_ == State::IDLE) {
     DCHECK(!timer_.IsRunning());
     DCHECK(!staged_result_);
@@ -83,10 +85,8 @@ void BrowsingDataCounter::Restart() {
   state_transitions_.push_back(state_);
 
   if (use_delay_) {
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kDelayUntilShowCalculatingMs), this,
-        &BrowsingDataCounter::TransitionToShowCalculating);
+    timer_.Start(FROM_HERE, base::Milliseconds(kDelayUntilShowCalculatingMs),
+                 this, &BrowsingDataCounter::TransitionToShowCalculating);
   } else {
     state_ = State::READY_TO_REPORT_RESULT;
   }
@@ -102,8 +102,9 @@ void BrowsingDataCounter::ReportResult(ResultInt value) {
 void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
   DCHECK(initialized_);
   DCHECK(result->Finished());
-  TRACE_EVENT_ASYNC_END1("browsing_data", "BrowsingDataCounter::Restart", this,
-                         "data_type", GetPrefName());
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
+      "data_type", GetPrefName());
   switch (state_) {
     case State::RESTARTED:
     case State::READY_TO_REPORT_RESULT:
@@ -147,10 +148,8 @@ void BrowsingDataCounter::TransitionToShowCalculating() {
   state_transitions_.push_back(state_);
 
   callback_.Run(std::make_unique<Result>(this));
-  timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kDelayUntilReadyToShowResultMs),
-      this, &BrowsingDataCounter::TransitionToReadyToReportResult);
+  timer_.Start(FROM_HERE, base::Milliseconds(kDelayUntilReadyToShowResultMs),
+               this, &BrowsingDataCounter::TransitionToReadyToReportResult);
 }
 
 void BrowsingDataCounter::TransitionToReadyToReportResult() {

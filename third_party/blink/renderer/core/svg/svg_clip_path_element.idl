@@ -29,6 +29,8 @@
 // TODO(foolip): SVGClipPathElement should inherit from SVGElement and
 // implement SVGUnitTypes. The transform attribute (which is on
 // SVGGraphicsElement) should also be on SVGClipPathElement.
-interface SVGClipPathElement : SVGGraphicsElement {
+[
+    Exposed=Window
+] interface SVGClipPathElement : SVGGraphicsElement {
     [Measure] readonly attribute SVGAnimatedEnumeration clipPathUnits;
 };

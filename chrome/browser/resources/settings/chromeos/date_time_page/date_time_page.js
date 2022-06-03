@@ -8,10 +8,41 @@
  * settings.
  */
 
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import './date_time_types.js';
+import './timezone_selector.js';
+import './timezone_subpage.js';
+
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-date-time-page',
 
-  behaviors: [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    PrefsBehavior,
+    RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -36,11 +67,11 @@ Polymer({
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
-      value: function() {
+      value() {
         const map = new Map();
-        if (settings.routes.DATETIME_TIMEZONE_SUBPAGE) {
+        if (routes.DATETIME_TIMEZONE_SUBPAGE) {
           map.set(
-              settings.routes.DATETIME_TIMEZONE_SUBPAGE.path,
+              routes.DATETIME_TIMEZONE_SUBPAGE.path,
               '#timeZoneSettingsTrigger');
         }
         return map;
@@ -56,9 +87,6 @@ Polymer({
           prefs.generated.resolve_timezone_by_geolocation_method_short.value)`
     },
 
-    /** @private */
-    isChild_: {type: Boolean, value: loadTimeData.getBoolean('isChild')},
-
     /**
      * Whether the icon informing that this action is managed by a parent is
      * displayed.
@@ -66,40 +94,68 @@ Polymer({
      */
     displayManagedByParentIcon_: {
       type: Boolean,
-      value: loadTimeData.getBoolean('isChild') &&
-          loadTimeData.getBoolean('timeActionsProtectedForChild')
+      value: loadTimeData.getBoolean('isChild'),
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.k24HourClock,
+        chromeos.settings.mojom.Setting.kChangeTimeZone,
+      ]),
     },
   },
 
+  /** @private {?TimeZoneBrowserProxy} */
+  browserProxy_: null,
+
   /** @override */
-  attached: function() {
+  created() {
+    this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  attached() {
     this.addWebUIListener(
         'can-set-date-time-changed', this.onCanSetDateTimeChanged_.bind(this));
-    this.addWebUIListener(
-        'access-code-validation-complete',
-        this.openTimeZoneSubpage_.bind(this));
+    this.browserProxy_.dateTimePageReady();
+  },
 
-    chrome.send('dateTimePageReady');
+  /**
+   * @param {!Route} route
+   * @param {!Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.DATETIME) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**
    * @param {boolean} canSetDateTime Whether date and time are settable.
    * @private
    */
-  onCanSetDateTimeChanged_: function(canSetDateTime) {
+  onCanSetDateTimeChanged_(canSetDateTime) {
     this.canSetDateTime_ = canSetDateTime;
   },
 
   /** @private */
-  onSetDateTimeTap_: function() {
-    chrome.send('showSetDateTimeUI');
+  onSetDateTimeTap_() {
+    this.browserProxy_.showSetDateTimeUI();
   },
 
   /**
    * @return {string}
    * @private
    */
-  computeTimeZoneSettingSubLabel_: function() {
+  computeTimeZoneSettingSubLabel_() {
     if (!this.getPref('generated.resolve_timezone_by_geolocation_on_off')
              .value) {
       return this.activeTimeZoneDisplayName;
@@ -116,24 +172,13 @@ Polymer({
     return id ? this.i18n(id) : '';
   },
 
-  /**
-   * Called when the timezone row is clicked. Child accounts need parental
-   * approval to modify their timezone, this method starts this process on the
-   * C++ side, and once it is complete the 'access-code-validation-complete'
-   * event is triggered which invokes openTimeZoneSubpage_. For non-child
-   * accounts the method is invoked immediately.
-   * @private
-   */
-  onTimeZoneSettings_: function() {
-    if (this.isChild_) {
-      chrome.send('handleShowParentAccessForTimeZone');
-      return;
-    }
+  /** @private */
+  onTimeZoneSettings_() {
     this.openTimeZoneSubpage_();
   },
 
   /** @private */
-  openTimeZoneSubpage_: function() {
-    settings.navigateTo(settings.routes.DATETIME_TIMEZONE_SUBPAGE);
+  openTimeZoneSubpage_() {
+    Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
   },
 });

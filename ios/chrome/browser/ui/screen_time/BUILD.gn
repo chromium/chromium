@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+assert(
+    ios_enable_screen_time,
+    "ios_enable_screen_time must be true to depend on //ios/chrome/browser/ui/screen_time")
+
+source_set("screen_time") {
+  sources = [
+    "screen_time_consumer.h",
+    "screen_time_coordinator.h",
+    "screen_time_coordinator.mm",
+    "screen_time_mediator.h",
+    "screen_time_mediator.mm",
+    "screen_time_view_controller.h",
+    "screen_time_view_controller.mm",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "ScreenTime.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/screen_time",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//net",
+  ]
+}

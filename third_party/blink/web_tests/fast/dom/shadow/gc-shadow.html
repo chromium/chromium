@@ -17,7 +17,7 @@ if (window.internals) {
         var p = document.createElement('p');
         ps.push(p);
 
-        var shadow = p.createShadowRoot();
+        var shadow = p.attachShadow({mode: 'open'});
         shadow.tattoo = 'I <3 WebKit';
         shadow.innerHTML = '<style>background-color: red;</style><div>Shadow</div>';
         shadow.styleSheets.tattoo = 'I <3 WebKit cssom';

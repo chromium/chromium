@@ -35,6 +35,7 @@ class TestURLLoader : public TestCase {
                                      std::string* body);
   std::string LoadAndCompareBody(const pp::URLRequestInfo& request,
                                  const std::string& expected_body);
+  std::string LoadAndFail(const pp::URLRequestInfo& request);
   int32_t OpenFileSystem(pp::FileSystem* file_system, std::string* message);
   int32_t PrepareFileForPost(const pp::FileRef& file_ref,
                              const std::string& data,
@@ -76,6 +77,9 @@ class TestURLLoader : public TestCase {
   std::string TestTrustedHttpRequests();
   std::string TestFollowURLRedirect();
   std::string TestAuditURLRedirect();
+  std::string TestRestrictURLRedirectCommon();
+  std::string TestRestrictURLRedirectEnabled();
+  std::string TestRestrictURLRedirectDisabled();
   std::string TestAbortCalls();
   std::string TestUntendedLoad();
   std::string TestPrefetchBufferThreshold();

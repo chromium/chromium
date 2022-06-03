@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -27,31 +27,42 @@ struct TtsVoice {
   std::set<std::string> event_types;
 };
 
+// TODO(dtseng): Rename this to TtsEngine, as it encapsulates all data regarding
+// an engine, not just its voices.
 struct TtsVoices : public Extension::ManifestData {
   TtsVoices();
   ~TtsVoices() override;
-  static bool Parse(const base::ListValue* tts_voices,
+  static bool Parse(base::Value::ConstListView tts_voices,
                     TtsVoices* out_voices,
-                    base::string16* error,
+                    std::u16string* error,
                     Extension* extension);
 
   std::vector<extensions::TtsVoice> voices;
 
+  // The sample rate at which this engine encodes its audio data.
+  absl::optional<int> sample_rate;
+
+  // The number of samples in one audio buffer.
+  absl::optional<int> buffer_size;
+
   static const std::vector<TtsVoice>* GetTtsVoices(const Extension* extension);
+  static const TtsVoices* GetTtsEngineInfo(const Extension* extension);
 };
 
 // Parses the "tts_engine" manifest key.
 class TtsEngineManifestHandler : public ManifestHandler {
  public:
   TtsEngineManifestHandler();
+
+  TtsEngineManifestHandler(const TtsEngineManifestHandler&) = delete;
+  TtsEngineManifestHandler& operator=(const TtsEngineManifestHandler&) = delete;
+
   ~TtsEngineManifestHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsEngineManifestHandler);
 };
 
 }  // namespace extensions

@@ -4,10 +4,10 @@
 
 #include "content/common/input/gesture_event_stream_validator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
 using blink::WebInputEvent;
@@ -31,18 +31,18 @@ bool GestureEventStreamValidator::Validate(
         "Invalid gesture type: %s", WebInputEvent::GetName(event.GetType())));
   }
   switch (event.GetType()) {
-    case WebInputEvent::kGestureScrollBegin:
+    case WebInputEvent::Type::kGestureScrollBegin:
       if (scrolling_)
         error_msg->append("Scroll begin during scroll\n");
       if (pinching_)
         error_msg->append("Scroll begin during pinch\n");
       scrolling_ = true;
       break;
-    case WebInputEvent::kGestureScrollUpdate:
+    case WebInputEvent::Type::kGestureScrollUpdate:
       if (!scrolling_)
         error_msg->append("Scroll update outside of scroll\n");
       break;
-    case WebInputEvent::kGestureFlingStart:
+    case WebInputEvent::Type::kGestureFlingStart:
       if (event.SourceDevice() == blink::WebGestureDevice::kTouchscreen &&
           !event.data.fling_start.velocity_x &&
           !event.data.fling_start.velocity_y) {
@@ -55,47 +55,47 @@ bool GestureEventStreamValidator::Validate(
       // Don't reset scrolling_ since the GSE sent by the fling_controller_ at
       // the end of the fling resets it.
       break;
-    case WebInputEvent::kGestureScrollEnd:
+    case WebInputEvent::Type::kGestureScrollEnd:
       if (!scrolling_)
         error_msg->append("Scroll end outside of scroll\n");
       if (pinching_)
         error_msg->append("Ending scroll while pinching\n");
       scrolling_ = false;
       break;
-    case WebInputEvent::kGesturePinchBegin:
+    case WebInputEvent::Type::kGesturePinchBegin:
       if (pinching_)
         error_msg->append("Pinch begin during pinch\n");
       pinching_ = true;
       break;
-    case WebInputEvent::kGesturePinchUpdate:
+    case WebInputEvent::Type::kGesturePinchUpdate:
       if (!pinching_)
         error_msg->append("Pinch update outside of pinch\n");
       break;
-    case WebInputEvent::kGesturePinchEnd:
+    case WebInputEvent::Type::kGesturePinchEnd:
       if (!pinching_)
         error_msg->append("Pinch end outside of pinch\n");
       pinching_ = false;
       break;
-    case WebInputEvent::kGestureTapDown:
+    case WebInputEvent::Type::kGestureTapDown:
       if (waiting_for_tap_end_)
         error_msg->append("Missing tap ending event before TapDown\n");
       waiting_for_tap_end_ = true;
       break;
-    case WebInputEvent::kGestureTapUnconfirmed:
+    case WebInputEvent::Type::kGestureTapUnconfirmed:
       if (!waiting_for_tap_end_)
         error_msg->append("Missing TapDown event before TapUnconfirmed\n");
       break;
-    case WebInputEvent::kGestureTapCancel:
+    case WebInputEvent::Type::kGestureTapCancel:
       if (!waiting_for_tap_end_)
         error_msg->append("Missing TapDown event before TapCancel\n");
       waiting_for_tap_end_ = false;
       break;
-    case WebInputEvent::kGestureTap:
+    case WebInputEvent::Type::kGestureTap:
       if (!waiting_for_tap_end_)
         error_msg->append("Missing TapDown event before Tap\n");
       waiting_for_tap_end_ = false;
       break;
-    case WebInputEvent::kGestureDoubleTap:
+    case WebInputEvent::Type::kGestureDoubleTap:
       // DoubleTap gestures may be synthetically inserted, and do not require a
       // preceding TapDown.
       waiting_for_tap_end_ = false;

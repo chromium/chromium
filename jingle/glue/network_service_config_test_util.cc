@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,7 +46,7 @@ NetworkServiceConfigTestUtil::NetworkServiceConfigTestUtil(
 
 NetworkServiceConfigTestUtil::NetworkServiceConfigTestUtil(
     NetworkContextGetter network_context_getter)
-    : net_runner_(base::CreateSingleThreadTaskRunner({base::ThreadPool()})),
+    : net_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
       mojo_runner_(base::SequencedTaskRunnerHandle::Get()),
       network_context_getter_(network_context_getter) {}
 

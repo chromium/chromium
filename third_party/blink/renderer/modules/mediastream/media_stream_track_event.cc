@@ -57,7 +57,7 @@ const AtomicString& MediaStreamTrackEvent::InterfaceName() const {
   return event_interface_names::kMediaStreamTrackEvent;
 }
 
-void MediaStreamTrackEvent::Trace(blink::Visitor* visitor) {
+void MediaStreamTrackEvent::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   Event::Trace(visitor);
 }

@@ -37,14 +37,14 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
 
   scoped_refptr<Extension> CreateExtension(const std::string& schema) {
     std::string error;
-    scoped_refptr<Extension> extension =
-        Extension::Create(temp_dir_.GetPath(), Manifest::UNPACKED, manifest_,
-                          Extension::NO_FLAGS, "", &error);
+    scoped_refptr<Extension> extension = Extension::Create(
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_,
+        Extension::NO_FLAGS, "", &error);
     if (!extension.get())
       return nullptr;
     base::FilePath schema_path = temp_dir_.GetPath().AppendASCII("schema.json");
     if (schema.empty()) {
-      base::DeleteFile(schema_path, false);
+      base::DeleteFile(schema_path);
     } else {
       if (base::WriteFile(schema_path, schema.data(), schema.size()) !=
           static_cast<int>(schema.size())) {
@@ -87,7 +87,7 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
   base::ListValue permissions;
-  permissions.AppendString("storage");
+  permissions.Append("storage");
   manifest_.SetKey("permissions", permissions.Clone());
 
   // Absolute path.

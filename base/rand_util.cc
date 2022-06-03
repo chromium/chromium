@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -77,6 +77,47 @@ std::string RandBytesAsString(size_t length) {
   std::string result;
   RandBytes(WriteInto(&result, length + 1), length);
   return result;
+}
+
+InsecureRandomGenerator::InsecureRandomGenerator() {
+  a_ = base::RandUint64();
+  b_ = base::RandUint64();
+}
+
+void InsecureRandomGenerator::ReseedForTesting(uint64_t seed) {
+  a_ = seed;
+  b_ = seed;
+}
+
+uint64_t InsecureRandomGenerator::RandUint64() {
+  // Using XorShift128+, which is simple and widely used. See
+  // https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
+  uint64_t t = a_;
+  const uint64_t s = b_;
+
+  a_ = s;
+  t ^= t << 23;
+  t ^= t >> 17;
+  t ^= s ^ (s >> 26);
+  b_ = t;
+
+  return t + s;
+}
+
+uint32_t InsecureRandomGenerator::RandUint32() {
+  // The generator usually returns an uint64_t, truncate it.
+  //
+  // It is noted in this paper (https://arxiv.org/abs/1810.05313) that the
+  // lowest 32 bits fail some statistical tests from the Big Crush
+  // suite. Use the higher ones instead.
+  return this->RandUint64() >> 32;
+}
+
+double InsecureRandomGenerator::RandDouble() {
+  uint64_t x = RandUint64();
+  // From https://vigna.di.unimi.it/xorshift/.
+  // 53 bits of mantissa, hence the "hexadecimal exponent" 1p-53.
+  return (x >> 11) * 0x1.0p-53;
 }
 
 }  // namespace base

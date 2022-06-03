@@ -18,7 +18,7 @@ class ShellBrowserMainDelegate {
   virtual ~ShellBrowserMainDelegate() {}
 
   // Called to start an application after all initialization processes that are
-  // necesary to run apps are completed.
+  // necessary to run apps are completed.
   virtual void Start(content::BrowserContext* context) = 0;
 
   // Called after the main message looop has stopped, but before

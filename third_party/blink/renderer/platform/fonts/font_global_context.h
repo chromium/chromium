@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 struct hb_font_funcs_t;
 
@@ -17,8 +19,7 @@ namespace blink {
 
 class FontCache;
 class FontUniqueNameLookup;
-
-enum CreateIfNeeded { kDoNotCreate, kCreate };
+class HarfBuzzFontCache;
 
 // FontGlobalContext contains non-thread-safe, thread-specific data used for
 // font formatting.
@@ -28,21 +29,42 @@ class PLATFORM_EXPORT FontGlobalContext {
  public:
   static FontGlobalContext* Get(CreateIfNeeded = kCreate);
 
-  static inline FontCache& GetFontCache() { return Get()->font_cache_; }
+  FontGlobalContext(const FontGlobalContext&) = delete;
+  FontGlobalContext& operator=(const FontGlobalContext&) = delete;
 
-  static inline HarfBuzzFontCache& GetHarfBuzzFontCache() {
-    return Get()->harfbuzz_font_cache_;
+  static inline FontCache* GetFontCache(CreateIfNeeded create = kCreate) {
+    FontGlobalContext* context = Get(create);
+    return context ? &context->font_cache_ : nullptr;
   }
 
-  static hb_font_funcs_t* GetHarfBuzzFontFuncs() {
-    return Get()->harfbuzz_font_funcs_;
+  static HarfBuzzFontCache* GetHarfBuzzFontCache();
+
+  enum HorizontalAdvanceSource {
+    kSkiaHorizontalAdvances,
+    kHarfBuzzHorizontalAdvances
+  };
+
+  static hb_font_funcs_t* GetHarfBuzzFontFuncs(
+      HorizontalAdvanceSource advance_source) {
+    if (advance_source == kHarfBuzzHorizontalAdvances) {
+      return Get()->harfbuzz_font_funcs_harfbuzz_advances_;
+    }
+    return Get()->harfbuzz_font_funcs_skia_advances_;
   }
 
-  static void SetHarfBuzzFontFuncs(hb_font_funcs_t* funcs) {
-    Get()->harfbuzz_font_funcs_ = funcs;
+  static void SetHarfBuzzFontFuncs(HorizontalAdvanceSource advance_source,
+                                   hb_font_funcs_t* funcs) {
+    if (advance_source == kHarfBuzzHorizontalAdvances) {
+      Get()->harfbuzz_font_funcs_harfbuzz_advances_ = funcs;
+    }
+    Get()->harfbuzz_font_funcs_skia_advances_ = funcs;
   }
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
+
+  IdentifiableToken GetOrComputeTypefaceDigest(const FontPlatformData& source);
+  IdentifiableToken GetOrComputePostScriptNameDigest(
+      const FontPlatformData& source);
 
   // Called by MemoryPressureListenerRegistry to clear memory.
   static void ClearMemory();
@@ -54,13 +76,14 @@ class PLATFORM_EXPORT FontGlobalContext {
   ~FontGlobalContext();
 
   FontCache font_cache_;
-  HarfBuzzFontCache harfbuzz_font_cache_;
-  hb_font_funcs_t* harfbuzz_font_funcs_;
+  std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
+  hb_font_funcs_t* harfbuzz_font_funcs_skia_advances_;
+  hb_font_funcs_t* harfbuzz_font_funcs_harfbuzz_advances_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontGlobalContext);
+  WTF::LruCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
+  WTF::LruCache<SkFontID, IdentifiableToken> postscript_name_digest_cache_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_

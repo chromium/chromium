@@ -1,0 +1,59 @@
+<!--
+@BLINK-ALLOW:language=*
+@BLINK-DENY-NODE:internalRole=inlineTextBox
+@WIN-ALLOW:language:*
+@MAC-ALLOW:AXLanguage
+@WAIT-FOR:Dies ist ein
+-->
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <script>
+    // Perform multiple updates to content in order to exercise dynamic language
+    // detection.
+    //
+    // This test will likely run language detection four times. Once initially
+    // for static content after page load which will see no text, then
+    // dynamically after each of our 3 updates.
+    //
+    // This means we have covered the case of the first dynamic detection run,
+    // running after initial static detection, as well as the case for
+    // subsequent runs where dynamic detection is running multiple times on the
+    // same page.
+    //
+    // We want to perform at least two updates to test that dynamic language
+    // detection doesn't invalidate its state or prevent itself from running
+    // more than once (e.g. if it unregistered its Observer).
+
+    // Strings to dynamically insert into the page, one at a time.
+    var translated_strings = [
+      "This is text created using Google Translate, it is unlikely to be idiomatic in the given target language. This text is only used to test language detection",
+      "Ce texte a été créé avec Google Translate, il est peu probable qu'il soit idiomatique dans la langue cible indiquée Ce texte est uniquement utilisé pour tester la détection de la langue.",
+      "Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet."
+    ];
+
+    // Insert one string into page and, if there are more strings to insert,
+    // will schedule itself to re-run at a later time.
+    function perform_update() {
+      // Take first string out of array and insert it into the page.
+      const str = translated_strings.shift();
+      const new_div = document.createElement("div");
+      new_div.innerHTML = str;
+      translations.appendChild(new_div);
+
+      // If there is more work to do in the future, schedule myself to do it.
+      if (translated_strings.length) {
+        setTimeout(perform_update, 50);
+      }
+    }
+
+    setTimeout(perform_update, 50);
+  </script>
+
+  <div id="translations"></div>
+
+</body>
+</html>

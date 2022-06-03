@@ -12,22 +12,23 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/constants/software_reporter_tool_branding.h"
@@ -128,6 +129,10 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
 
   base::AtExitManager at_exit;
 
+#if !DCHECK_IS_ON()
+  base::win::DisableHandleVerifier();
+#endif
+
   // This must be done BEFORE constructing ScopedLogging, which calls
   // InitLogging to set the name of the log file, which needs to read
   // from the command line.
@@ -146,7 +151,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
       sandbox::SandboxFactory::GetTargetServices();
   const bool is_sandbox_target = (sandbox_target_services != nullptr);
   chrome_cleaner::ScopedLogging scoped_logging(
-      is_sandbox_target ? chrome_cleaner::kSandboxLogFileSuffix : nullptr);
+      is_sandbox_target ? chrome_cleaner::kSandboxLogFileSuffix : L"");
 
   // If there is a command line argument to add a registry suffix, set
   // the value for the registry_logger.
@@ -172,7 +177,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
   // will use the handler process that was started by the reporter.
   if (command_line->HasSwitch(chrome_cleaner::kUseCrashHandlerWithIdSwitch)) {
     DCHECK(is_sandbox_target);
-    const base::string16 ipc_pipe_name = command_line->GetSwitchValueNative(
+    const std::wstring ipc_pipe_name = command_line->GetSwitchValueNative(
         chrome_cleaner::kUseCrashHandlerWithIdSwitch);
     CHECK(!ipc_pipe_name.empty());
     UseCrashReporter(ipc_pipe_name);
@@ -247,12 +252,12 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
 
   chrome_cleaner::InitializePUPDataWithCatalog(settings->engine());
 
-  base::string16 interface_log_file;
+  std::wstring interface_log_file;
   if (command_line->HasSwitch(chrome_cleaner::kLogInterfaceCallsToSwitch)) {
     interface_log_file = command_line->GetSwitchValueNative(
         chrome_cleaner::kLogInterfaceCallsToSwitch);
     base::FilePath passed_name(interface_log_file);
-    std::vector<base::string16> components;
+    std::vector<std::wstring> components;
     passed_name.GetComponents(&components);
     if (components.size() != 1) {
       LOG(ERROR) << "Invalid file name passed for logging!";

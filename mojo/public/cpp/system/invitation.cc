@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/system/invitation.h"
 
+#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/invitation.h"
@@ -46,7 +47,7 @@ void RunErrorCallback(uintptr_t context,
   std::string error_message;
   if (details->error_message) {
     error_message =
-        std::string(details->error_message, details->error_message_length - 1);
+        std::string(details->error_message, details->error_message_length);
     callback->Run(error_message);
   } else if (details->flags & MOJO_PROCESS_ERROR_FLAG_DISCONNECTED) {
     delete callback;

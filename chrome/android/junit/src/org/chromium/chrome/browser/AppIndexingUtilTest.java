@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,12 +21,12 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.blink.mojom.document_metadata.CopylessPaste;
-import org.chromium.blink.mojom.document_metadata.WebPage;
+import org.chromium.blink.mojom.DocumentMetadata;
+import org.chromium.blink.mojom.WebPage;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.mojom.Url;
 
 /**
@@ -36,14 +35,12 @@ import org.chromium.url.mojom.Url;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppIndexingUtilTest {
-    @Rule
-    public DisableHistogramsRule mDisableHistogramsRule = new DisableHistogramsRule();
     @Spy
     private AppIndexingUtil mUtil = new AppIndexingUtil(null);
     @Mock
     private AppIndexingReporter mReporter;
     @Mock
-    private CopylessPasteTestImpl mCopylessPaste;
+    private DocumentMetadataTestImpl mDocumentMetadata;
     @Mock
     private Tab mTab;
 
@@ -51,75 +48,81 @@ public class AppIndexingUtilTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mReporter).when(mUtil).getAppIndexingReporter();
-        doReturn(mCopylessPaste).when(mUtil).getCopylessPasteInterface(any(Tab.class));
+        doReturn(mDocumentMetadata).when(mUtil).getDocumentMetadataInterface(any(Tab.class));
         doReturn(true).when(mUtil).isEnabledForDevice();
         doReturn(false).when(mTab).isIncognito();
 
-        doReturn("http://www.test.com").when(mTab).getUrl();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mTab).getUrl();
         doReturn("My neat website").when(mTab).getTitle();
         doReturn(0L).when(mUtil).getElapsedTime();
         doAnswer(invocation -> {
-            CopylessPaste.GetEntitiesResponse callback =
-                    (CopylessPaste.GetEntitiesResponse) invocation.getArguments()[0];
+            DocumentMetadata.GetEntitiesResponse callback =
+                    (DocumentMetadata.GetEntitiesResponse) invocation.getArguments()[0];
             WebPage webpage = new WebPage();
-            webpage.url = createUrl("http://www.test.com");
+            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL);
             webpage.title = "My neat website";
             callback.call(webpage);
             return null;
-        }).when(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
+        })
+                .when(mDocumentMetadata)
+                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
     }
 
     @Test
-    public void testExtractCopylessPasteMetadata_Incognito() {
+    public void testExtractDocumentMetadata_Incognito() {
         doReturn(true).when(mTab).isIncognito();
 
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mCopylessPaste, never()).getEntities(any());
+        mUtil.extractDocumentMetadata(mTab);
+        verify(mDocumentMetadata, never()).getEntities(any());
         verify(mReporter, never()).reportWebPage(any());
     }
 
     @Test
-    public void testExtractCopylessPasteMetadata_NoCacheHit() {
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
+    public void testExtractDocumentMetadata_NoCacheHit() {
+        mUtil.extractDocumentMetadata(mTab);
+        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
         verify(mReporter).reportWebPage(any(WebPage.class));
     }
 
     @Test
-    public void testExtractCopylessPasteMetadata_CacheHit() {
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
-        verify(mCopylessPaste).close();
+    public void testExtractDocumentMetadata_CacheHit() {
+        mUtil.extractDocumentMetadata(mTab);
+        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+        verify(mDocumentMetadata).close();
         verify(mReporter).reportWebPage(any(WebPage.class));
 
         doReturn(1L).when(mUtil).getElapsedTime();
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verifyNoMoreInteractions(mCopylessPaste);
+        mUtil.extractDocumentMetadata(mTab);
+        verifyNoMoreInteractions(mDocumentMetadata);
         verifyNoMoreInteractions(mReporter);
     }
 
     @Test
-    public void testExtractCopylessPasteMetadata_CacheHit_Expired() {
-        mUtil.extractCopylessPasteMetadata(mTab);
+    public void testExtractDocumentMetadata_CacheHit_Expired() {
+        mUtil.extractDocumentMetadata(mTab);
 
         doReturn(60 * 60 * 1000L + 1).when(mUtil).getElapsedTime();
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mCopylessPaste, times(2)).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
+        mUtil.extractDocumentMetadata(mTab);
+        verify(mDocumentMetadata, times(2))
+                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
     }
 
     @Test
-    public void testExtractCopylessPasteMetadata_CacheHit_NoEntity() {
+    public void testExtractDocumentMetadata_CacheHit_NoEntity() {
         doAnswer(invocation -> {
-            CopylessPaste.GetEntitiesResponse callback =
-                    (CopylessPaste.GetEntitiesResponse) invocation.getArguments()[0];
+            DocumentMetadata.GetEntitiesResponse callback =
+                    (DocumentMetadata.GetEntitiesResponse) invocation.getArguments()[0];
             callback.call(null);
             return null;
-        }).when(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
-        mUtil.extractCopylessPasteMetadata(mTab);
+        })
+                .when(mDocumentMetadata)
+                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+        mUtil.extractDocumentMetadata(mTab);
 
         doReturn(1L).when(mUtil).getElapsedTime();
-        mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mCopylessPaste, times(1)).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
+        mUtil.extractDocumentMetadata(mTab);
+        verify(mDocumentMetadata, times(1))
+                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
         verifyNoMoreInteractions(mReporter);
     }
 
@@ -134,7 +137,7 @@ public class AppIndexingUtilTest {
     @Test
     public void testReportPageView() {
         mUtil.reportPageView(mTab);
-        verify(mReporter).reportWebPageView(eq("http://www.test.com"), eq("My neat website"));
+        verify(mReporter).reportWebPageView(eq(JUnitTestGURLs.EXAMPLE_URL), eq("My neat website"));
     }
 
     private Url createUrl(String s) {
@@ -143,5 +146,5 @@ public class AppIndexingUtilTest {
         return url;
     }
 
-    abstract static class CopylessPasteTestImpl implements CopylessPaste {}
+    abstract static class DocumentMetadataTestImpl implements DocumentMetadata {}
 }

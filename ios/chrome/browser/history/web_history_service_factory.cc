@@ -11,7 +11,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -20,9 +20,9 @@ namespace {
 
 // Returns true if the user is signed-in and full history sync is enabled,
 // false otherwise.
-bool IsHistorySyncEnabled(ios::ChromeBrowserState* browser_state) {
+bool IsHistorySyncEnabled(ChromeBrowserState* browser_state) {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
   return sync_service && sync_service->IsSyncFeatureActive() &&
          sync_service->GetActiveDataTypes().Has(
              syncer::HISTORY_DELETE_DIRECTIVES);
@@ -32,7 +32,7 @@ bool IsHistorySyncEnabled(ios::ChromeBrowserState* browser_state) {
 
 // static
 history::WebHistoryService* WebHistoryServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   // Ensure that the service is not instantiated or used if the user is not
   // signed into sync, or if web history is not enabled.
   if (!IsHistorySyncEnabled(browser_state))
@@ -52,7 +52,7 @@ WebHistoryServiceFactory::WebHistoryServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "WebHistoryService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -61,8 +61,8 @@ WebHistoryServiceFactory::~WebHistoryServiceFactory() {
 
 std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<history::WebHistoryService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("printing") {
   output_name = "ppapi_example_printing"
-  sources = [
-    "printing.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "printing.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

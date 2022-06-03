@@ -8,16 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 
 namespace printing {
@@ -38,11 +36,11 @@ PrinterQuery::~PrinterQuery() {
 
 void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
                                    std::unique_ptr<PrintSettings> new_settings,
-                                   PrintingContext::Result result) {
+                                   mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   is_print_dialog_box_shown_ = false;
   last_status_ = result;
-  if (result != PrintingContext::FAILED) {
+  if (result == mojom::ResultCode::kSuccess) {
     settings_ = std::move(new_settings);
     cookie_ = PrintSettings::NewCookie();
   } else {
@@ -56,10 +54,10 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
 void PrinterQuery::PostSettingsDoneToIO(
     base::OnceClosure callback,
     std::unique_ptr<PrintSettings> new_settings,
-    PrintingContext::Result result) {
+    mojom::ResultCode result) {
   // |this| is owned by |callback|, so |base::Unretained()| is safe.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&PrinterQuery::GetSettingsDone, base::Unretained(this),
                      std::move(callback), std::move(new_settings), result));
 }
@@ -88,9 +86,9 @@ int PrinterQuery::cookie() const {
 }
 
 void PrinterQuery::GetSettings(GetSettingsAskParam ask_user_for_settings,
-                               int expected_page_count,
+                               uint32_t expected_page_count,
                                bool has_selection,
-                               MarginType margin_type,
+                               mojom::MarginType margin_type,
                                bool is_scripted,
                                bool is_modifiable,
                                base::OnceClosure callback) {
@@ -170,8 +168,8 @@ void PrinterQuery::StopWorker() {
 
 bool PrinterQuery::PostTask(const base::Location& from_here,
                             base::OnceClosure task) {
-  return base::PostTask(from_here, {content::BrowserThread::IO},
-                        std::move(task));
+  return content::GetIOThreadTaskRunner({})->PostTask(from_here,
+                                                      std::move(task));
 }
 
 bool PrinterQuery::is_valid() const {

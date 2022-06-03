@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
 
@@ -31,12 +32,47 @@ ukm::SourceId UkmRecorder::GetNewSourceID() {
   return AssignNewSourceId();
 }
 
-void UkmRecorder::RecordOtherURL(base::UkmSourceId source_id, const GURL& url) {
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForPaymentAppFromScope(
+    const GURL& service_worker_scope) {
+  ukm::SourceId source_id = ukm::SourceIdObj::FromOtherId(
+                                GetNewSourceID(), SourceIdType::PAYMENT_APP_ID)
+                                .ToInt64();
+  ukm::UkmRecorder::Get()->UpdateSourceURL(source_id, service_worker_scope);
+  return source_id;
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
+    const GURL& manifest_url) {
+  ukm::SourceId source_id =
+      ukm::SourceIdObj::FromOtherId(GetNewSourceID(), SourceIdType::WEBAPK_ID)
+          .ToInt64();
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm_recorder->UpdateSourceURL(source_id, manifest_url);
+  return source_id;
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(
+    const GURL& start_url) {
+  ukm::SourceId source_id =
+      ukm::SourceIdObj::FromOtherId(GetNewSourceID(),
+                                    SourceIdType::DESKTOP_WEB_APP_ID)
+          .ToInt64();
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm_recorder->UpdateSourceURL(source_id, start_url);
+  return source_id;
+}
+
+void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }
 
-void UkmRecorder::RecordAppURL(base::UkmSourceId source_id, const GURL& url) {
-  UpdateAppURL(source_id.ToInt64(), url);
+void UkmRecorder::RecordAppURL(ukm::SourceIdObj source_id,
+                               const GURL& url,
+                               const AppType app_type) {
+  UpdateAppURL(source_id.ToInt64(), url, app_type);
 }
 
 }  // namespace ukm

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_DELETE_SELECTION_OPTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_DELETE_SELECTION_OPTIONS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -43,6 +42,8 @@ class CORE_EXPORT DeleteSelectionOptions::Builder final {
 
  public:
   Builder();
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder*) = delete;
 
   DeleteSelectionOptions Build() const;
 
@@ -53,8 +54,6 @@ class CORE_EXPORT DeleteSelectionOptions::Builder final {
 
  private:
   DeleteSelectionOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace blink

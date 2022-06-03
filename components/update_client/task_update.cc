@@ -13,15 +13,18 @@
 
 namespace update_client {
 
-TaskUpdate::TaskUpdate(scoped_refptr<UpdateEngine> update_engine,
-                       bool is_foreground,
-                       const std::vector<std::string>& ids,
-                       UpdateClient::CrxDataCallback crx_data_callback,
-                       Callback callback)
+TaskUpdate::TaskUpdate(
+    scoped_refptr<UpdateEngine> update_engine,
+    bool is_foreground,
+    const std::vector<std::string>& ids,
+    UpdateClient::CrxDataCallback crx_data_callback,
+    UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+    Callback callback)
     : update_engine_(update_engine),
       is_foreground_(is_foreground),
       ids_(ids),
       crx_data_callback_(std::move(crx_data_callback)),
+      crx_state_change_callback_(crx_state_change_callback),
       callback_(std::move(callback)) {}
 
 TaskUpdate::~TaskUpdate() {
@@ -37,6 +40,7 @@ void TaskUpdate::Run() {
   }
 
   update_engine_->Update(is_foreground_, ids_, std::move(crx_data_callback_),
+                         std::move(crx_state_change_callback_),
                          base::BindOnce(&TaskUpdate::TaskComplete, this));
 }
 
@@ -53,9 +57,16 @@ std::vector<std::string> TaskUpdate::GetIds() const {
 void TaskUpdate::TaskComplete(Error error) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  // NOTE: Do not post the callback_ directly to the task thread to ensure the
+  // UpdateClient reference (to which the callback is bound) does not get
+  // released before the callback is run during shutdown, when the task runner
+  // gets destroyed.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                scoped_refptr<TaskUpdate>(this), error));
+      FROM_HERE, base::BindOnce(&TaskUpdate::RunCallback, this, error));
+}
+
+void TaskUpdate::RunCallback(Error error) {
+  std::move(callback_).Run(this, error);
 }
 
 }  // namespace update_client

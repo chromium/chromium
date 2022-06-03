@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/embedder_support/android",
+  "+components/url_formatter/android",
+]

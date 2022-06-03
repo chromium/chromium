@@ -14,7 +14,7 @@
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crashpad.h"
 #include "content/public/common/content_switches.h"
 
 namespace {
@@ -27,7 +27,7 @@ class GcpDllCrashReporterClient
 
  protected:
   base::FilePath GetPathForFileVersionInfo(
-      const base::string16& exe_path) override;
+      const std::wstring& exe_path) override;
 };
 
 // When the DLL is loaded through rundll32. |exe_path| will point to
@@ -35,7 +35,7 @@ class GcpDllCrashReporterClient
 // version for rundll32.exe instead of querying the version of the DLL that
 // contains the credential provider.
 base::FilePath GcpDllCrashReporterClient::GetPathForFileVersionInfo(
-    const base::string16& exe_path) {
+    const std::wstring& exe_path) {
   base::FilePath path_to_current_dll;
   HRESULT hr = credential_provider::GetPathToDllFromHandle(
       CURRENT_MODULE(), &path_to_current_dll);
@@ -65,7 +65,7 @@ void ConfigureGcpCrashReporting(const base::CommandLine& command_line) {
   HRESULT hr = GetCommandLineForEntrypoint(
       CURRENT_MODULE(), kRunAsCrashpadHandlerEntryPoint, &dll_main_cmd_line);
   if (hr == S_FALSE) {
-    LOGFN(INFO) << "Failed to get command line to run crashpad handler";
+    LOGFN(WARNING) << "Failed to get command line to run crashpad handler";
     return;
   }
   if (FAILED(hr)) {
@@ -74,19 +74,19 @@ void ConfigureGcpCrashReporting(const base::CommandLine& command_line) {
   }
 
   // Check if this is the initial client for the crashpad handler or a sub
-  // process started by the GCPW dll (e.g. the SaveAccountInfo process). Only
-  // the initial client should start the crashpad handler process. Once this
-  // process is started it will communicate via a named pipe (name is saved in a
-  // process level environment variable) with all processes that wish to report
-  // a crash. Subsequent child processes that are started should specify a
-  // "process-type" flag so that they can re-use the shared named pipe without
-  // having to start another crash handler process.
+  // process started by the GCPW dll (e.g. the PerformPostSigninActions
+  // process). Only the initial client should start the crashpad handler
+  // process. Once this process is started it will communicate via a named pipe
+  // (name is saved in a process level environment variable) with all processes
+  // that wish to report a crash. Subsequent child processes that are started
+  // should specify a "process-type" flag so that they can re-use the shared
+  // named pipe without having to start another crash handler process.
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
   crash_reporter::InitializeCrashpadWithDllEmbeddedHandler(
       process_type.empty(), "GCPW DLL", "", dll_main_cmd_line.GetProgram(),
-      {base::UTF16ToUTF8(dll_main_cmd_line.GetArgs()[0])});
+      {base::WideToUTF8(dll_main_cmd_line.GetArgs()[0])});
 
   SetCommonCrashKeys(command_line);
 }

@@ -6,14 +6,14 @@
 // access data of the clipboard. This is a temporary solution for
 // chromeos platform apps until open-web alternative is available. It will be
 // deprecated once open-web solution is available, which could be in 2017 Q4.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="extensions/browser/api/clipboard/clipboard_api.h"]
 namespace clipboard {
   // Supported image types.
   enum ImageType {png, jpeg};
-  
+
   enum DataItemType {textPlain, textHtml};
-  
+
   // Additional data item to be added along with the |image_data| to describe
   // the |image_data|.
   dictionary AdditionalDataItem {
@@ -25,7 +25,7 @@ namespace clipboard {
     // data can not exceed 2MB.
     DOMString data;
   };
-  
+
   interface Events {
     // Fired when clipboard data changes.
     // Requires clipboard and clipboardRead permissions for adding listener to
@@ -46,9 +46,10 @@ namespace clipboard {
     // The callback is called with <code>chrome.runtime.lastError</code>
     // set to error code if there is an error.
     // Requires clipboard and clipboardWrite permissions.
-    static void setImageData(ArrayBuffer imageData,
-                             ImageType type,
-                             optional AdditionalDataItem[] additionalItems,
-                             optional SetImageDataCallback callback);
+    [supportsPromises] static void setImageData(
+        ArrayBuffer imageData,
+        ImageType type,
+        optional AdditionalDataItem[] additionalItems,
+        optional SetImageDataCallback callback);
   };
 };

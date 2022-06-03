@@ -10,14 +10,11 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.PopupMenu;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -26,10 +23,17 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
-import org.chromium.chrome.browser.ui.widget.textbubble.TextBubble;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Object responsible for handling the creation, showing, hiding of the AppMenu and notifying the
@@ -39,18 +43,17 @@ class AppMenuHandlerImpl
         implements AppMenuHandler, StartStopWithNativeObserver, ConfigurationChangedObserver {
     private AppMenu mAppMenu;
     private AppMenuDragHelper mAppMenuDragHelper;
-    private Menu mMenu;
     private final List<AppMenuBlocker> mBlockers;
     private final List<AppMenuObserver> mObservers;
-    private final int mMenuResourceId;
     private final View mHardwareButtonMenuAnchor;
 
+    private final Context mContext;
     private final AppMenuPropertiesDelegate mDelegate;
     private final AppMenuDelegate mAppMenuDelegate;
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
-    private Callback<MenuItem> mTestOptionsItemSelectedListener;
+    private Callback<Integer> mTestOptionsItemSelectedListener;
 
     /**
      * The resource id of the menu item to highlight when the menu next opens. A value of
@@ -60,12 +63,8 @@ class AppMenuHandlerImpl
     private Integer mHighlightMenuId;
 
     /**
-     *  Whether the highlighted item should use a circle highlight or not.
-     */
-    private boolean mCircleHighlight;
-
-    /**
      * Constructs an AppMenuHandlerImpl object.
+     * @param context The activity context.
      * @param delegate Delegate used to check the desired AppMenu properties on show.
      * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
      * @param menuResourceId Resource Id that should be used as the source for the menu items.
@@ -77,16 +76,16 @@ class AppMenuHandlerImpl
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
      */
-    public AppMenuHandlerImpl(AppMenuPropertiesDelegate delegate, AppMenuDelegate appMenuDelegate,
-            int menuResourceId, View decorView,
+    public AppMenuHandlerImpl(Context context, AppMenuPropertiesDelegate delegate,
+            AppMenuDelegate appMenuDelegate, View decorView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View hardwareButtonAnchorView) {
+        mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
         mDecorView = decorView;
         mBlockers = new ArrayList<>();
         mObservers = new ArrayList<>();
-        mMenuResourceId = menuResourceId;
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -113,15 +112,14 @@ class AppMenuHandlerImpl
 
     @Override
     public void clearMenuHighlight() {
-        setMenuHighlight(null, false);
+        setMenuHighlight(null);
     }
 
     @Override
-    public void setMenuHighlight(Integer highlightItemId, boolean circleHighlight) {
+    public void setMenuHighlight(Integer highlightItemId) {
         if (mHighlightMenuId == null && highlightItemId == null) return;
         if (mHighlightMenuId != null && mHighlightMenuId.equals(highlightItemId)) return;
         mHighlightMenuId = highlightItemId;
-        mCircleHighlight = circleHighlight;
         boolean highlighting = mHighlightMenuId != null;
         for (AppMenuObserver observer : mObservers) observer.onMenuHighlightChanged(highlighting);
     }
@@ -135,26 +133,24 @@ class AppMenuHandlerImpl
      *                      dragging down on the menu button, this should be true. Note that if
      *                      anchorView is null, this must be false since we no longer support
      *                      hardware menu button dragging.
-     * @param showFromBottom Whether the menu should be shown from the bottom up.
      * @return              True, if the menu is shown, false, if menu is not shown, example
      *                      reasons: the menu is not yet available to be shown, or the menu is
      *                      already showing.
      */
     // TODO(crbug.com/635567): Fix this properly.
     @SuppressLint("ResourceType")
-    boolean showAppMenu(View anchorView, boolean startDragging, boolean showFromBottom) {
+    boolean showAppMenu(View anchorView, boolean startDragging) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;
 
         TextBubble.dismissBubbles();
         boolean isByPermanentButton = false;
 
-        Context context = mDecorView.getContext();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        int rotation = wm.getDefaultDisplay().getRotation();
+        Display display = DisplayAndroidManager.getDefaultDisplayForContext(mContext);
+        int rotation = display.getRotation();
         if (anchorView == null) {
             // This fixes the bug where the bottom of the menu starts at the top of
             // the keyboard, instead of overlapping the keyboard as it should.
-            int displayHeight = context.getResources().getDisplayMetrics().heightPixels;
+            int displayHeight = mContext.getResources().getDisplayMetrics().heightPixels;
             Rect rect = new Rect();
             mDecorView.getWindowVisibleDisplayFrame(rect);
             int statusBarHeight = rect.top;
@@ -164,31 +160,40 @@ class AppMenuHandlerImpl
             isByPermanentButton = true;
         }
 
+        // If the anchor view used to show the popup or the activity's decor view is not attached
+        // to window, we don't show the app menu because the window manager might have revoked
+        // the window token for this activity. See https://crbug.com/1105831.
+        if (!mDecorView.isAttachedToWindow() || !anchorView.isAttachedToWindow()
+                || !anchorView.getRootView().isAttachedToWindow()) {
+            return false;
+        }
+
         assert !(isByPermanentButton && startDragging);
 
-        if (mMenu == null) {
-            // Use a PopupMenu to create the Menu object. Note this is not the same as the
-            // AppMenu (mAppMenu) created below.
-            PopupMenu tempMenu = new PopupMenu(context, anchorView);
-            tempMenu.inflate(mMenuResourceId);
-            mMenu = tempMenu.getMenu();
-        }
-        mDelegate.prepareMenu(mMenu, this);
+        List<CustomViewBinder> customViewBinders = mDelegate.getCustomViewBinders();
+        Map<CustomViewBinder, Integer> customViewTypeOffsetMap =
+                populateCustomViewBinderOffsetMap(customViewBinders, AppMenuItemType.NUM_ENTRIES);
+        ModelList modelList = mDelegate.getMenuItems(((id) -> {
+            return getCustomItemViewType(id, customViewBinders, customViewTypeOffsetMap);
+        }),
+                this);
 
         ContextThemeWrapper wrapper =
-                new ContextThemeWrapper(context, R.style.OverflowMenuThemeOverlay);
+                new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
 
         if (mAppMenu == null) {
-            TypedArray a = wrapper.obtainStyledAttributes(new int[] {
-                    android.R.attr.listPreferredItemHeightSmall, android.R.attr.listDivider});
+            TypedArray a = wrapper.obtainStyledAttributes(
+                    new int[] {android.R.attr.listPreferredItemHeightSmall});
             int itemRowHeight = a.getDimensionPixelSize(0, 0);
-            Drawable itemDivider = a.getDrawable(1);
-            int itemDividerHeight = itemDivider != null ? itemDivider.getIntrinsicHeight() : 0;
             a.recycle();
-            mAppMenu = new AppMenu(
-                    mMenu, itemRowHeight, itemDividerHeight, this, context.getResources());
-            mAppMenuDragHelper = new AppMenuDragHelper(context, mAppMenu, itemRowHeight);
+            mAppMenu = new AppMenu(itemRowHeight, this, mContext.getResources());
+            mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
+        setupModelForHighlightAndClick(modelList, mHighlightMenuId, mAppMenu);
+        ModelListAdapter adapter = new ModelListAdapter(modelList);
+        mAppMenu.updateMenu(modelList, adapter);
+        registerViewBinders(customViewBinders, customViewTypeOffsetMap, adapter,
+                mDelegate.shouldShowIconBeforeItem());
 
         // Get the height and width of the display.
         Rect appRect = new Rect();
@@ -202,7 +207,7 @@ class AppMenuHandlerImpl
             appRect.bottom = mDecorView.getHeight();
         }
         Point pt = new Point();
-        wm.getDefaultDisplay().getSize(pt);
+        display.getSize(pt);
 
         int footerResourceId = 0;
         if (mDelegate.shouldShowFooter(appRect.height())) {
@@ -213,8 +218,8 @@ class AppMenuHandlerImpl
             headerResourceId = mDelegate.getHeaderResourceId();
         }
         mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
-                footerResourceId, headerResourceId, mHighlightMenuId, mCircleHighlight,
-                showFromBottom, mDelegate.getCustomViewBinders());
+                footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
+                customViewBinders);
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
@@ -282,14 +287,14 @@ class AppMenuHandlerImpl
     }
 
     @VisibleForTesting
-    void onOptionsItemSelected(MenuItem item) {
+    void onOptionsItemSelected(int itemId, boolean highlighted) {
         if (mTestOptionsItemSelectedListener != null) {
-            mTestOptionsItemSelectedListener.onResult(item);
+            mTestOptionsItemSelectedListener.onResult(itemId);
             return;
         }
 
-        mAppMenuDelegate.onOptionsItemSelected(
-                item.getItemId(), mDelegate.getBundleForMenuItem(item));
+        mAppMenuDelegate.onOptionsItemSelected(itemId, mDelegate.getBundleForMenuItem(itemId));
+        if (highlighted) mDelegate.recordHighlightedMenuItemClicked(itemId);
     }
 
     /**
@@ -342,12 +347,110 @@ class AppMenuHandlerImpl
 
     @VisibleForTesting
     void overrideOnOptionItemSelectedListenerForTests(
-            Callback<MenuItem> onOptionsItemSelectedListener) {
+            Callback<Integer> onOptionsItemSelectedListener) {
         mTestOptionsItemSelectedListener = onOptionsItemSelectedListener;
     }
 
     @VisibleForTesting
     AppMenuPropertiesDelegate getDelegateForTests() {
         return mDelegate;
+    }
+
+    private void registerViewBinders(@Nullable List<CustomViewBinder> customViewBinders,
+            Map<CustomViewBinder, Integer> customViewTypeOffsetMap, ModelListAdapter adapter,
+            boolean iconBeforeItem) {
+        int standardItemResId = R.layout.menu_item;
+        if (iconBeforeItem) {
+            standardItemResId = R.layout.menu_item_start_with_icon;
+        }
+
+        adapter.registerType(AppMenuItemType.STANDARD, new LayoutViewBuilder(standardItemResId),
+                AppMenuItemViewBinder::bindStandardItem);
+        adapter.registerType(AppMenuItemType.TITLE_BUTTON,
+                new LayoutViewBuilder(R.layout.title_button_menu_item),
+                AppMenuItemViewBinder::bindTitleButtonItem);
+        adapter.registerType(AppMenuItemType.THREE_BUTTON_ROW,
+                new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                AppMenuItemViewBinder::bindIconRowItem);
+        adapter.registerType(AppMenuItemType.FOUR_BUTTON_ROW,
+                new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                AppMenuItemViewBinder::bindIconRowItem);
+        adapter.registerType(AppMenuItemType.FIVE_BUTTON_ROW,
+                new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                AppMenuItemViewBinder::bindIconRowItem);
+
+        if (customViewBinders == null) return;
+        for (int i = 0; i < customViewBinders.size(); i++) {
+            CustomViewBinder binder = customViewBinders.get(i);
+            if (customViewTypeOffsetMap.get(binder) == null) {
+                continue;
+            }
+
+            for (int j = 0; j < binder.getViewTypeCount(); j++) {
+                adapter.registerType(customViewTypeOffsetMap.get(binder) + j,
+                        new LayoutViewBuilder(binder.getLayoutId(j)), binder);
+            }
+        }
+    }
+
+    void setupModelForHighlightAndClick(
+            ModelList modelList, Integer highlightedId, AppMenuClickHandler appMenuClickHandler) {
+        if (modelList == null) {
+            return;
+        }
+
+        for (int i = 0; i < modelList.size(); i++) {
+            PropertyModel model = modelList.get(i).model;
+            // Not like other keys which is set by AppMenuPropertiesDelegateImpl, CLICK_HANDLER and
+            // HIGHLIGHTED should not be set yet.
+            assert model.get(AppMenuItemProperties.CLICK_HANDLER) == null;
+            assert !model.get(AppMenuItemProperties.HIGHLIGHTED);
+            model.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
+            model.set(AppMenuItemProperties.POSITION, i);
+
+            if (highlightedId != null) {
+                model.set(AppMenuItemProperties.HIGHLIGHTED,
+                        model.get(AppMenuItemProperties.MENU_ITEM_ID) == highlightedId);
+                if (model.get(AppMenuItemProperties.SUBMENU) != null) {
+                    ModelList subList = model.get(AppMenuItemProperties.SUBMENU);
+                    for (int j = 0; j < subList.size(); j++) {
+                        PropertyModel subModel = subList.get(j).model;
+                        subModel.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
+                        subModel.set(AppMenuItemProperties.HIGHLIGHTED,
+                                subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == highlightedId);
+                    }
+                }
+            }
+        }
+    }
+
+    private Map<CustomViewBinder, Integer> populateCustomViewBinderOffsetMap(
+            @Nullable List<CustomViewBinder> customViewBinders, int startingOffset) {
+        Map<CustomViewBinder, Integer> customViewTypeOffsetMap = new HashMap<>();
+        if (customViewBinders == null) return customViewTypeOffsetMap;
+
+        int currentOffset = startingOffset;
+        for (int i = 0; i < customViewBinders.size(); i++) {
+            CustomViewBinder binder = customViewBinders.get(i);
+            customViewTypeOffsetMap.put(binder, currentOffset);
+            currentOffset += binder.getViewTypeCount();
+        }
+        return customViewTypeOffsetMap;
+    }
+
+    private int getCustomItemViewType(int id, List<CustomViewBinder> customViewBinders,
+            Map<CustomViewBinder, Integer> customViewTypeOffsetMap) {
+        if (customViewBinders == null || customViewTypeOffsetMap == null) {
+            return CustomViewBinder.NOT_HANDLED;
+        }
+
+        for (int i = 0; i < customViewBinders.size(); i++) {
+            CustomViewBinder binder = customViewBinders.get(i);
+            int binderViewType = binder.getItemViewType(id);
+            if (binderViewType != CustomViewBinder.NOT_HANDLED) {
+                return binderViewType + customViewTypeOffsetMap.get(binder);
+            }
+        }
+        return CustomViewBinder.NOT_HANDLED;
     }
 }

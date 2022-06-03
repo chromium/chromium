@@ -170,6 +170,7 @@ template("nacl_test_data") {
                            ])
     deps = [
       "//build/config/nacl:nacl_base",
+      "//ppapi/c",
       "//ppapi/native_client:ppapi_lib",
     ]
     ldflags = [ "-pthread" ]
@@ -208,12 +209,8 @@ template("nacl_test_data") {
         nexe = "${root_out_dir}/${output_name}_${suffix}.nexe"
 
         script = "${nacl_toolchain_bindir}/pydir/loader.py"
-        sources = [
-          pexe,
-        ]
-        outputs = [
-          nexe,
-        ]
+        sources = [ pexe ]
+        outputs = [ nexe ]
 
         if (is_nacl_nonsfi) {
           if (translate_cpu == "x86" || translate_cpu == "x64") {
@@ -256,12 +253,8 @@ template("nacl_test_data") {
               rebase_path(get_label_info(pnacl_irt_shim, "target_out_dir"),
                           root_build_dir),
         ]
-        deps = [
-          ":$nexe_target_name(//build/toolchain/nacl:newlib_pnacl)",
-        ]
-        data_deps = [
-          pnacl_irt_shim,
-        ]
+        deps = [ ":$nexe_target_name(//build/toolchain/nacl:newlib_pnacl)" ]
+        data_deps = [ pnacl_irt_shim ]
       }
     }
 
@@ -287,18 +280,13 @@ template("nacl_test_data") {
           sources += get_target_outputs(":${extra_pexe_translate_target_name}")
         }
       } else if (defined(invoker.nonstable_pexe) && invoker.nonstable_pexe) {
-        sources = [
-          "${root_out_dir}/exe.unstripped/${suffixed_output_name}.pexe",
-        ]
+        sources =
+            [ "${root_out_dir}/exe.unstripped/${suffixed_output_name}.pexe" ]
       } else {
-        sources = [
-          "${root_out_dir}/${suffixed_output_name}.pexe",
-        ]
+        sources = [ "${root_out_dir}/${suffixed_output_name}.pexe" ]
       }
     } else {
-      sources = [
-        "${root_out_dir}/${suffixed_output_name}.nexe",
-      ]
+      sources = [ "${root_out_dir}/${suffixed_output_name}.nexe" ]
       if (defined(extra_nmf_cpu)) {
         extra_root_out_dir =
             get_label_info(":${nexe_target_name}(${extra_toolchain})",
@@ -307,20 +295,14 @@ template("nacl_test_data") {
             [ "${extra_root_out_dir}/${extra_suffixed_output_name}.nexe" ]
       }
     }
-    outputs = [
-      "${target_dir}/{{source_file_part}}",
-    ]
+    outputs = [ "${target_dir}/{{source_file_part}}" ]
     if (current_cpu == "pnacl" && pretranslate_pexe) {
-      deps = [
-        ":$pexe_translate_target_name",
-      ]
+      deps = [ ":$pexe_translate_target_name" ]
       if (defined(extra_tc_cpu)) {
         deps += [ ":$extra_pexe_translate_target_name" ]
       }
     } else {
-      deps = [
-        ":$nexe_target_name",
-      ]
+      deps = [ ":$nexe_target_name" ]
       if (defined(extra_nmf_cpu)) {
         deps += [ ":${nexe_target_name}(${extra_toolchain})" ]
       }
@@ -331,15 +313,10 @@ template("nacl_test_data") {
     if (defined(invoker.debug_pexe) && invoker.debug_pexe) {
       copy(pexe_copy_debug_target_name) {
         visibility = [ ":$final_target_name" ]
-        sources = [
-          "${root_out_dir}/exe.unstripped/${suffixed_output_name}.pexe",
-        ]
-        outputs = [
-          "${target_dir}/{{source_name_part}}.pexe.debug",
-        ]
-        deps = [
-          ":$nexe_target_name",
-        ]
+        sources =
+            [ "${root_out_dir}/exe.unstripped/${suffixed_output_name}.pexe" ]
+        outputs = [ "${target_dir}/{{source_name_part}}.pexe.debug" ]
+        deps = [ ":$nexe_target_name" ]
       }
     }
   }
@@ -352,9 +329,7 @@ template("nacl_test_data") {
         nmf = "${target_dir}/${nmf_name}.nmf"
         files = get_target_outputs(":$nexe_copy_target_name")
         executable = files[0]
-        deps = [
-          ":$nexe_copy_target_name",
-        ]
+        deps = [ ":$nexe_copy_target_name" ]
       }
     } else {
       generate_nmf(nmf_target_name) {
@@ -366,9 +341,7 @@ template("nacl_test_data") {
           lib_prefix = "${output_name}_libs"
           stage_dependencies = target_dir
         }
-        deps = [
-          ":$nexe_copy_target_name",
-        ]
+        deps = [ ":$nexe_copy_target_name" ]
       }
     }
   }
@@ -377,16 +350,12 @@ template("nacl_test_data") {
     copy(test_files_target_name) {
       visibility = [ ":$final_target_name" ]
       sources = invoker.test_files
-      outputs = [
-        "${target_dir}/{{source_file_part}}",
-      ]
+      outputs = [ "${target_dir}/{{source_file_part}}" ]
     }
   }
 
   group(final_target_name) {
-    data_deps = [
-      ":$nexe_copy_target_name",
-    ]
+    data_deps = [ ":$nexe_copy_target_name" ]
     if (current_cpu == "pnacl" && !is_nacl_nonsfi) {
       if (defined(invoker.debug_pexe) && invoker.debug_pexe) {
         data_deps += [ ":$pexe_copy_debug_target_name" ]

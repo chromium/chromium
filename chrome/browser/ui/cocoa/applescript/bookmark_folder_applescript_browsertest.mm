@@ -11,6 +11,7 @@
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -26,8 +27,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, BookmarkFolders) {
 
   EXPECT_EQ(2U, [bookmarkFolders count]);
 
-  BookmarkFolderAppleScript* f1 = [bookmarkFolders objectAtIndex:0];
-  BookmarkFolderAppleScript* f2 = [bookmarkFolders objectAtIndex:1];
+  BookmarkFolderAppleScript* f1 = bookmarkFolders[0];
+  BookmarkFolderAppleScript* f2 = bookmarkFolders[1];
   EXPECT_NSEQ(@"f1", [f1 title]);
   EXPECT_NSEQ(@"f2", [f2 title]);
   EXPECT_EQ(2, [[f1 index] intValue]);
@@ -52,8 +53,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkFolder) {
   [bookmarkBar_.get() insertInBookmarkFolders:bookmarkFolder.get()];
 
   // Represents the bookmark folder after it's added.
-  BookmarkFolderAppleScript* bf =
-      [[bookmarkBar_.get() bookmarkFolders] objectAtIndex:2];
+  BookmarkFolderAppleScript* bf = [bookmarkBar_.get() bookmarkFolders][2];
   EXPECT_NSEQ(@"foo", [bf title]);
   EXPECT_EQ([bf container], bookmarkBar_.get());
   EXPECT_NSEQ(AppleScript::kBookmarkFoldersProperty,
@@ -74,8 +74,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   [bookmarkBar_.get() insertInBookmarkFolders:bookmarkFolder.get() atIndex:1];
 
   // Represents the bookmark folder after it's added.
-  BookmarkFolderAppleScript* bf =
-      [[bookmarkBar_.get() bookmarkFolders] objectAtIndex:1];
+  BookmarkFolderAppleScript* bf = [bookmarkBar_.get() bookmarkFolders][1];
   EXPECT_NSEQ(@"foo", [bf title]);
   EXPECT_EQ([bf container], bookmarkBar_.get());
   EXPECT_NSEQ(AppleScript::kBookmarkFoldersProperty, [bf containerProperty]);
@@ -98,9 +97,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, BookmarkItems) {
 
   EXPECT_EQ(3U, [bookmarkItems count]);
 
-  BookmarkItemAppleScript* i1 = [bookmarkItems objectAtIndex:0];
-  BookmarkItemAppleScript* i2 = [bookmarkItems objectAtIndex:1];
-  BookmarkItemAppleScript* i3 = [bookmarkItems objectAtIndex:2];
+  BookmarkItemAppleScript* i1 = bookmarkItems[0];
+  BookmarkItemAppleScript* i2 = bookmarkItems[1];
+  BookmarkItemAppleScript* i3 = bookmarkItems[2];
   EXPECT_NSEQ(@"a", [i1 title]);
   EXPECT_NSEQ(@"d", [i2 title]);
   EXPECT_NSEQ(@"h", [i3 title]);
@@ -128,8 +127,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkItem) {
   [bookmarkBar_.get() insertInBookmarkItems:bookmarkItem.get()];
 
   // Represents the bookmark item after it's added.
-  BookmarkItemAppleScript* bi =
-      [[bookmarkBar_.get() bookmarkItems] objectAtIndex:3];
+  BookmarkItemAppleScript* bi = [bookmarkBar_.get() bookmarkItems][3];
   EXPECT_NSEQ(@"Google", [bi title]);
   EXPECT_EQ(GURL("http://google.com/"),
             GURL(base::SysNSStringToUTF8([bi URL])));
@@ -162,8 +160,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   [bookmarkBar_.get() insertInBookmarkItems:bookmarkItem.get() atIndex:1];
 
   // Represents the bookmark item after its added.
-  BookmarkItemAppleScript* bi =
-      [[bookmarkBar_.get() bookmarkItems] objectAtIndex:1];
+  BookmarkItemAppleScript* bi = [bookmarkBar_.get() bookmarkItems][1];
   EXPECT_NSEQ(@"XKCD", [bi title]);
   EXPECT_EQ(GURL("http://xkcd.org/"),
             GURL(base::SysNSStringToUTF8([bi URL])));
@@ -194,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, DeleteBookmarkItems) {
 // Set and get title.
 IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, GetAndSetTitle) {
   NSArray* bookmarkFolders = [bookmarkBar_.get() bookmarkFolders];
-  BookmarkFolderAppleScript* folder1 = [bookmarkFolders objectAtIndex:0];
+  BookmarkFolderAppleScript* folder1 = bookmarkFolders[0];
   [folder1 setTitle:@"Foo"];
   EXPECT_NSEQ(@"Foo", [folder1 title]);
 }

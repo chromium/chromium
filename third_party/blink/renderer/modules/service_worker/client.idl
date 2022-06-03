@@ -17,7 +17,7 @@ enum ClientLifecycleState {
     readonly attribute DOMString id;
     readonly attribute ClientType type;
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
-    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options);
+    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options = {});
 
     // FIXME: frameType is non-standard, see https://crbug.com/697110
     [CallWith=ScriptState] readonly attribute ContextFrameType frameType;

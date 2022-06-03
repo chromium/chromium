@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -36,7 +37,7 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <mach/port.h>
 
 #include "base/mac/mach_logging.h"
@@ -56,9 +57,9 @@ namespace {
 #if defined(OS_WIN)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
-  base::string16 pipe_name = base::UTF8ToUTF16(base::StringPrintf(
-      "\\\\.\\pipe\\mojo.%lu.%lu.%I64u", ::GetCurrentProcessId(),
-      ::GetCurrentThreadId(), base::RandUint64()));
+  std::wstring pipe_name = base::StringPrintf(
+      L"\\\\.\\pipe\\mojo.%lu.%lu.%I64u", ::GetCurrentProcessId(),
+      ::GetCurrentThreadId(), base::RandUint64());
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;
@@ -101,7 +102,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
   DCHECK(local_endpoint->is_valid());
   DCHECK(remote_endpoint->is_valid());
 }
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   // Mach messaging is simplex; and in order to enable full-duplex
@@ -151,7 +152,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
   PCHECK(fcntl(fds[0], F_SETFL, O_NONBLOCK) == 0);
   PCHECK(fcntl(fds[1], F_SETFL, O_NONBLOCK) == 0);
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // This turns off |SIGPIPE| when writing to a closed socket, causing the call
   // to fail with |EPIPE| instead. On Linux we have to use |send...()| with
   // |MSG_NOSIGNAL| instead, which is not supported on Mac.
@@ -160,7 +161,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
                     sizeof(no_sigpipe)) == 0);
   PCHECK(setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
                     sizeof(no_sigpipe)) == 0);
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 #endif  // defined(OS_NACL_SFI)
 
   *local_endpoint = PlatformHandle(base::ScopedFD(fds[0]));
@@ -208,7 +209,7 @@ void PlatformChannel::PrepareToPassRemoteEndpoint(HandlePassingInfo* info,
   int mapped_fd = kAndroidClientHandleDescriptor + info->size();
   info->emplace_back(fd, mapped_fd);
   *value = base::NumberToString(mapped_fd);
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   DCHECK(remote_endpoint_.platform_handle().is_mach_receive());
   base::mac::ScopedMachReceiveRight receive_right =
       remote_endpoint_.TakePlatformHandle().TakeMachReceiveRight();
@@ -253,7 +254,7 @@ void PlatformChannel::PrepareToPassRemoteEndpoint(
   PrepareToPassRemoteEndpoint(&options->handles_to_inherit, command_line);
 #elif defined(OS_FUCHSIA)
   PrepareToPassRemoteEndpoint(&options->handles_to_transfer, command_line);
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
                               command_line);
 #elif defined(OS_POSIX)
@@ -302,7 +303,7 @@ PlatformChannelEndpoint PlatformChannel::RecoverPassedEndpointFromString(
   }
   return PlatformChannelEndpoint(PlatformHandle(
       base::ScopedFD(base::GlobalDescriptors::GetInstance()->Get(key))));
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   auto* client = base::MachPortRendezvousClient::GetInstance();
   if (!client) {
     DLOG(ERROR) << "Mach rendezvous failed.";
@@ -335,6 +336,12 @@ PlatformChannelEndpoint PlatformChannel::RecoverPassedEndpointFromCommandLine(
     const base::CommandLine& command_line) {
   return RecoverPassedEndpointFromString(
       command_line.GetSwitchValueASCII(kHandleSwitch));
+}
+
+// static
+bool PlatformChannel::CommandLineHasPassedEndpoint(
+    const base::CommandLine& command_line) {
+  return command_line.HasSwitch(kHandleSwitch);
 }
 
 }  // namespace mojo

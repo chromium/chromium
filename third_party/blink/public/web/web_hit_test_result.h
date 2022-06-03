@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HIT_TEST_RESULT_H_
 
 #include "third_party/blink/public/platform/web_private_ptr.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -35,7 +36,6 @@ class WebElement;
 class WebHitTestResultPrivate;
 class WebNode;
 class WebURL;
-struct WebPoint;
 
 // Properties of a hit test result, i.e. properties of the nodes at a given
 // point (the hit point) on the page. Both urls may be populated at the same
@@ -53,16 +53,6 @@ class WebHitTestResult {
   // The node that was hit (only one for point-based tests).
   BLINK_EXPORT WebNode GetNode() const;
 
-  // Coordinates of the point that was hit. Relative to the node.
-  BLINK_EXPORT WebPoint LocalPoint() const;
-
-  // Coordinates of the point that was hit. Relative to the node, but with
-  // ContentBoxOffset removed if the node has box layout.
-  BLINK_EXPORT WebPoint LocalPointWithoutContentBoxOffset() const;
-
-  // Returns whether the content box contains the hit test point.
-  BLINK_EXPORT bool ContentBoxContainsPoint() const;
-
   // If a link (eg. anchor or area tag) is hit, return the element.
   // Return null otheriwse.
   BLINK_EXPORT WebElement UrlElement() const;
@@ -76,6 +66,10 @@ class WebHitTestResult {
   // Return whether an editable input element was hit.
   BLINK_EXPORT bool IsContentEditable() const;
 
+  // Return the ElementId of the first scrollable containing block ancestor
+  // of the target, including the target itself if it is scrollable
+  BLINK_EXPORT uint64_t GetScrollableContainerId() const;
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebHitTestResult(const HitTestResult&);
   BLINK_EXPORT WebHitTestResult& operator=(const HitTestResult&);
@@ -87,4 +81,4 @@ class WebHitTestResult {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HIT_TEST_RESULT_H_

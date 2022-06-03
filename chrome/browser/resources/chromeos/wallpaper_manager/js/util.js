@@ -373,8 +373,11 @@ WallpaperUtil.fetchURL = function(url, type, onSuccess, onFailure, opt_xhr) {
  */
 WallpaperUtil.setOnlineWallpaperWithoutPreview = function(
     url, layout, onSuccess, onFailure) {
+  // Skip setting the |asset_id| and |collection_id| to avoid logging another
+  // impression when the wallpaper is automatically refreshed.
   chrome.wallpaperPrivate.setWallpaperIfExists(
-      url, layout, false /*previewMode=*/, exists => {
+      /*asset_id=*/ '', url, /*collection_id=*/ '', layout,
+      /*previewMode=*/ false, exists => {
         if (exists) {
           onSuccess();
           return;
@@ -383,7 +386,7 @@ WallpaperUtil.setOnlineWallpaperWithoutPreview = function(
         this.fetchURL(url, 'arraybuffer', xhr => {
           if (xhr.response != null) {
             chrome.wallpaperPrivate.setWallpaper(
-                xhr.response, layout, url, false /*previewMode=*/, onSuccess);
+                xhr.response, layout, url, /*previewMode=*/ false, onSuccess);
           } else {
             onFailure();
           }

@@ -80,11 +80,23 @@ On Windows, for `clang_base_path` use something like this instead:
 clang_base_path = "c:/src/llvm-build"
 ```
 
-You can then run `head out/gn/toolchain.ninja` and check that the first to
-lines set `cc` and `cxx` to your clang binary. If things look good, run `ninja
+You can then look in `out/gn/toolchain.ninja` and check that the `rule cc` and
+`rule cxx` commands run your clang binary.  If things look good, run `ninja
 -C out/gn` to build.
 
 Chromium tries to be buildable with its currently pinned clang, and with clang
 trunk. Set `llvm_force_head_revision = true` in your args.gn if the clang you're
 trying to build with is closer to clang trunk than to Chromium's pinned clang
 (which `tools/clang/scripts/update.py --print-revision` prints).
+
+## Related documents
+
+* [Toolchain support](toolchain_support.md) gives an overview of clang
+  rolls, and documents when to revert clang rolls and how to file good
+  toolchain bugs.
+
+* [Updating clang](updating_clang.md) documents the mechanics of updating clang,
+  and which files are included in the default clang package.
+
+* [Clang Sheriffing](clang_sheriffing.md) contains instructions for how to debug
+  compiler bugs, for clang sheriffs.

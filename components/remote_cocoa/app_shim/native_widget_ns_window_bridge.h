@@ -11,7 +11,6 @@
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -30,6 +29,7 @@
 @class ModalShowAnimationWithLayer;
 @class NativeWidgetMacNSWindow;
 @class ViewsNSWindowDelegate;
+@class WindowControlsOverlayNSView;
 
 namespace views {
 namespace test {
@@ -83,6 +83,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       NativeWidgetNSWindowHost* host,
       NativeWidgetNSWindowHostHelper* host_helper,
       remote_cocoa::mojom::TextInputHost* text_input_host);
+
+  NativeWidgetNSWindowBridge(const NativeWidgetNSWindowBridge&) = delete;
+  NativeWidgetNSWindowBridge& operator=(const NativeWidgetNSWindowBridge&) =
+      delete;
+
   ~NativeWidgetNSWindowBridge() override;
 
   // Bind |bridge_mojo_receiver_| to |receiver|, and set the connection error
@@ -201,12 +206,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetParent(uint64_t parent_id) override;
   void CreateSelectFileDialog(
       mojo::PendingReceiver<mojom::SelectFileDialog> receiver) override;
+  void ShowCertificateViewer(
+      const scoped_refptr<net::X509Certificate>& certificate) override;
   void StackAbove(uint64_t sibling_id) override;
   void StackAtTop() override;
   void ShowEmojiPanel() override;
   void InitWindow(
       remote_cocoa::mojom::NativeWidgetNSWindowInitParamsPtr params) override;
-  void InitCompositorView() override;
+  void InitCompositorView(InitCompositorViewCallback callback) override;
   void CreateContentView(uint64_t ns_view_id, const gfx::Rect& bounds) override;
   void DestroyContentView() override;
   void CloseWindow() override;
@@ -233,9 +240,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
                           bool is_maximizable) override;
   void SetOpacity(float opacity) override;
   void SetWindowLevel(int32_t level) override;
-  void SetContentAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void SetCALayerParams(const gfx::CALayerParams& ca_layer_params) override;
-  void SetWindowTitle(const base::string16& title) override;
+  void SetWindowTitle(const std::u16string& title) override;
   void SetIgnoresMouseEvents(bool ignores_mouse_events) override;
   void MakeFirstResponder() override;
   void SortSubviews(
@@ -246,6 +253,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void ReleaseCapture() override;
   void RedispatchKeyEvent(
       const std::vector<uint8_t>& native_event_data) override;
+  void CreateWindowControlsOverlayNSView(
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
+  void UpdateWindowControlsOverlayNSView(
+      const gfx::Rect& bounds,
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
+  void RemoveWindowControlsOverlayNSView(
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.
@@ -254,9 +268,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Compute the window and content size, and forward them to |host_|. This will
   // update widget and compositor size.
   void UpdateWindowGeometry();
-
-  // The offset in screen pixels for positioning child windows owned by |this|.
-  gfx::Vector2d GetChildWindowOffset() const;
 
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
@@ -288,6 +299,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Returns true if capture exists and is currently active.
   bool HasCapture();
 
+  // Returns true if window restoration data exists from session restore.
+  bool HasWindowRestorationData();
+
   // CocoaMouseCaptureDelegate:
   void PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
@@ -312,8 +326,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
-  bool widget_is_top_level_ = false;
-  bool position_window_in_screen_coords_ = false;
+
+  // Intended for PWAs with window controls overlay display override. These two
+  // NSViews are added on top of the non client area to route events to the
+  // BridgedContentView instead of the RenderWidgetHostView.
+  base::scoped_nsobject<WindowControlsOverlayNSView>
+      caption_buttons_overlay_nsview_;
+  base::scoped_nsobject<WindowControlsOverlayNSView>
+      web_app_frame_toolbar_overlay_nsview_;
 
   NativeWidgetNSWindowBridge* parent_ =
       nullptr;  // Weak. If non-null, owns this.
@@ -372,12 +392,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool invalidate_shadow_on_frame_swap_ = false;
 
   // A blob representing the window's saved state, which is applied and cleared
-  // the first time it's shown.
+  // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_mojo_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetNSWindowBridge);
 };
 
 }  // namespace remote_cocoa

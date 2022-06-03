@@ -31,7 +31,7 @@
 // constructable by web content at all, and so does not provide the usual
 // EventInit pattern for Event construction.
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface ResourceProgressEvent : ProgressEvent {
     readonly attribute DOMString url;
 };

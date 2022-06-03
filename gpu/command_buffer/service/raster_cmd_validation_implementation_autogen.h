@@ -71,6 +71,17 @@ static const gfx::BufferUsage valid_gfx_buffer_usage_table[] = {
     gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
 };
 
+bool Validators::GpuRasterMsaaModeValidator::IsValid(
+    const gpu::raster::MsaaMode value) const {
+  switch (value) {
+    case gpu::raster::MsaaMode::kNoMSAA:
+    case gpu::raster::MsaaMode::kMSAA:
+    case gpu::raster::MsaaMode::kDMSAA:
+      return true;
+  }
+  return false;
+}
+
 static const viz::ResourceFormat valid_viz_resource_format_table[] = {
     viz::ResourceFormat::RGBA_8888,    viz::ResourceFormat::RGBA_4444,
     viz::ResourceFormat::BGRA_8888,    viz::ResourceFormat::ALPHA_8,
@@ -79,8 +90,9 @@ static const viz::ResourceFormat valid_viz_resource_format_table[] = {
     viz::ResourceFormat::RG_88,        viz::ResourceFormat::LUMINANCE_F16,
     viz::ResourceFormat::RGBA_F16,     viz::ResourceFormat::R16_EXT,
     viz::ResourceFormat::RGBX_8888,    viz::ResourceFormat::BGRX_8888,
-    viz::ResourceFormat::RGBA_1010102, viz::ResourceFormat::BGRX_1010102,
+    viz::ResourceFormat::RGBA_1010102, viz::ResourceFormat::BGRA_1010102,
     viz::ResourceFormat::YVU_420,      viz::ResourceFormat::YUV_420_BIPLANAR,
+    viz::ResourceFormat::P010,
 };
 
 Validators::Validators()

@@ -9,11 +9,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -80,9 +81,8 @@ void CRLSetData::ConfigureNetworkService() {
   if (crl_set_path_.empty())
     return;
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadCRLSet, crl_set_path_),
       base::BindOnce(&CRLSetData::UpdateCRLSetOnUI, base::Unretained(this)));
 }
@@ -112,7 +112,7 @@ void CRLSetPolicy::ReconfigureAfterNetworkRestart() {
   g_crl_set_data.Get().ConfigureNetworkService();
 }
 
-bool CRLSetPolicy::VerifyInstallation(const base::DictionaryValue& manifest,
+bool CRLSetPolicy::VerifyInstallation(const base::Value& manifest,
                                       const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kCRLSetFile));
 }
@@ -126,17 +126,16 @@ bool CRLSetPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result CRLSetPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
 
 void CRLSetPolicy::OnCustomUninstall() {}
 
-void CRLSetPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void CRLSetPolicy::ComponentReady(const base::Version& version,
+                                  const base::FilePath& install_dir,
+                                  base::Value manifest) {
   g_crl_set_data.Get().set_crl_set_path(install_dir.Append(kCRLSetFile));
   g_crl_set_data.Get().ConfigureNetworkService();
 }
@@ -159,12 +158,7 @@ update_client::InstallerAttributes CRLSetPolicy::GetInstallerAttributes()
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> CRLSetPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
-void RegisterCRLSetComponent(ComponentUpdateService* cus,
-                             const base::FilePath& user_data_dir) {
+void RegisterCRLSetComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<CRLSetPolicy>());
   installer->Register(cus, base::OnceClosure());

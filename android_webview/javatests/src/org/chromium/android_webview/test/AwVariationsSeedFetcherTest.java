@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview.test;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.annotation.SuppressLint;
@@ -12,20 +15,28 @@ import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobWorkItem;
 import android.content.ComponentName;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+import android.content.Context;
+import android.os.PersistableBundle;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
+import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 
 import java.io.File;
@@ -41,21 +52,26 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class AwVariationsSeedFetcherTest {
-    // Jan 1, 2019 12:00AM GMT
-    private static final long FAKE_NOW_MS = 1546300800000L;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
+    private static final long DOWNLOAD_DURATION = 10;
+    private static final long JOB_DELAY = 2000;
+    private static final long START_TIME = 100;
 
-    // A mock JobScheduler which only holds one job, and never does anything with it.
-    private class MockJobScheduler extends JobScheduler {
+    // A test JobScheduler which only holds one job, and never does anything with it.
+    private class TestJobScheduler extends JobScheduler {
         public JobInfo mJob;
 
         public void clear() {
             mJob = null;
         }
 
-        public void assertScheduledWithDelayEqualTo(long delay) {
+        public void assertScheduled() {
             Assert.assertNotNull("No job scheduled", mJob);
-            Assert.assertEquals(
-                    "Job scheduled with wrong delay", delay, mJob.getMinLatencyMillis());
+        }
+
+        public void assertNotScheduled() {
+            Assert.assertNull("Job should not have been scheduled", mJob);
         }
 
         @Override
@@ -88,45 +104,96 @@ public class AwVariationsSeedFetcherTest {
 
         @Override
         public int schedule(JobInfo job) {
-            Assert.assertEquals(
-                    "Job scheduled with wrong ID", AwVariationsSeedFetcher.JOB_ID, job.getId());
+            Assert.assertEquals("Job scheduled with wrong ID", JOB_ID, job.getId());
             Assert.assertEquals("Job scheduled with wrong network type",
                     JobInfo.NETWORK_TYPE_ANY, job.getNetworkType());
-            Assert.assertTrue("Job scheduled without charging requirement",
-                    job.isRequireCharging());
             mJob = job;
             return JobScheduler.RESULT_SUCCESS;
         }
     }
 
-    // A mock VariationsSeedFetcher which doesn't actually download seeds, but verifies the request
+    // A test VariationsSeedFetcher which doesn't actually download seeds, but verifies the request
     // parameters.
-    private class MockFetcher extends VariationsSeedFetcher {
-        public CallbackHelper helper = new CallbackHelper();
+    private class TestVariationsSeedFetcher extends VariationsSeedFetcher {
+        public int fetchResult;
 
         @Override
-        public SeedInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
+        public SeedFetchInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
                 String restrictMode, String milestone, String channel) {
             Assert.assertEquals(VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, platform);
             Assert.assertTrue(Integer.parseInt(milestone) > 0);
-            helper.notifyCalled();
-            return null;
+            mClock.timestamp += DOWNLOAD_DURATION;
+
+            SeedFetchInfo fetchInfo = new SeedFetchInfo();
+            fetchInfo.seedFetchResult = fetchResult;
+            return fetchInfo;
         }
     }
 
-    private MockJobScheduler mScheduler = new MockJobScheduler();
-    private MockFetcher mDownloader = new MockFetcher();
+    // A test VariationsSeedFetcher that fails all seed requests.
+    private class FailingVariationsSeedFetcher extends VariationsSeedFetcher {
+        @Override
+        public SeedFetchInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
+                String restrictMode, String milestone, String channel) {
+            SeedFetchInfo fetchInfo = new SeedFetchInfo();
+            fetchInfo.seedFetchResult = -1;
+            return fetchInfo;
+        }
+    }
+
+    // A fake clock instance with a controllable timestamp.
+    private class TestClock implements AwVariationsSeedFetcher.Clock {
+        public long timestamp;
+
+        @Override
+        public long currentTimeMillis() {
+            return timestamp;
+        }
+    }
+
+    // A test AwVariationsSeedFetcher that doesn't call JobFinished.
+    private class TestAwVariationsSeedFetcher extends AwVariationsSeedFetcher {
+        public CallbackHelper helper = new CallbackHelper();
+        private JobParameters mJobParameters;
+        private boolean mNeededReschedule;
+
+        public JobParameters getFinishedJobParameters() {
+            return mJobParameters;
+        }
+
+        public boolean neededReschedule() {
+            return mNeededReschedule;
+        }
+
+        // p is null in this test. Don't actually call JobService.jobFinished.
+        @Override
+        protected void onFinished(JobParameters jobParameters, boolean needsReschedule) {
+            mJobParameters = jobParameters;
+            mNeededReschedule = needsReschedule;
+            helper.notifyCalled();
+        }
+    }
+
+    private TestJobScheduler mScheduler = new TestJobScheduler();
+    private TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
+    private TestClock mClock = new TestClock();
+    private Context mContext;
+
+    @Mock
+    private JobParameters mMockJobParameters;
 
     @Before
     public void setUp() throws IOException {
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
-        AwVariationsSeedFetcher.setMinJobPeriodMillisForTesting(TimeUnit.DAYS.toMillis(1));
         VariationsTestUtils.deleteSeeds();
+        mContext = ContextUtils.getApplicationContext();
+        initMocks(this);
     }
 
     @After
     public void tearDown() throws IOException {
         AwVariationsSeedFetcher.setMocks(null, null);
+        AwVariationsSeedFetcher.setTestClock(null);
         VariationsTestUtils.deleteSeeds();
     }
 
@@ -135,8 +202,8 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testScheduleWithNoStamp() {
         try {
-            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
-            mScheduler.assertScheduledWithDelayEqualTo(0);
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            mScheduler.assertScheduled();
         } finally {
             mScheduler.clear();
         }
@@ -152,30 +219,25 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertFalse("Stamp file already exists", stamp.exists());
             Assert.assertTrue("Failed to create stamp file", stamp.createNewFile());
             Assert.assertTrue("Failed to set stamp time", stamp.setLastModified(0));
-            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
-            mScheduler.assertScheduledWithDelayEqualTo(0);
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            mScheduler.assertScheduled();
         } finally {
             mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
         }
     }
 
-    // Create a stamp file with time = 7 hours ago, indicating the download job ran recently. Then
-    // test scheduleIfNeeded(), which should schedule the job 17 hours in the future.
+    // Create a stamp file with time = now, indicating the download job ran recently. Then test
+    // scheduleIfNeeded(), which should not schedule a job.
     @Test
     @MediumTest
     public void testScheduleWithFreshStamp() throws IOException {
-        long seedAge = TimeUnit.HOURS.toMillis(7);
         File stamp = VariationsUtils.getStampFile();
         try {
-            long stampLastModified = FAKE_NOW_MS - seedAge;
             Assert.assertFalse("Stamp file already exists", stamp.exists());
             Assert.assertTrue("Failed to create stamp file", stamp.createNewFile());
-            Assert.assertTrue("Failed to set stamp time", stamp.setLastModified(stampLastModified));
-
-            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
-
-            mScheduler.assertScheduledWithDelayEqualTo(TimeUnit.HOURS.toMillis(17));
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            mScheduler.assertNotScheduled();
         } finally {
             mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
@@ -192,15 +254,93 @@ public class AwVariationsSeedFetcherTest {
             @SuppressLint("JobSchedulerService")
             ComponentName component = new ComponentName(
                     ContextUtils.getApplicationContext(), AwVariationsSeedFetcher.class);
-            JobInfo job = new JobInfo.Builder(AwVariationsSeedFetcher.JOB_ID, component)
-                                  .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                                  .setRequiresCharging(true)
-                                  .build();
+            JobInfo job = new JobInfo.Builder(JOB_ID, component)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setRequiresCharging(true)
+                    .build();
             mScheduler.schedule(job);
-            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
+            AwVariationsSeedFetcher.scheduleIfNeeded();
             // Check that our job object hasn't been replaced (meaning that scheduleIfNeeded didn't
             // schedule a job).
-            Assert.assertSame(job, mScheduler.getPendingJob(AwVariationsSeedFetcher.JOB_ID));
+            Assert.assertSame(job, mScheduler.getPendingJob(JOB_ID));
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    // Tests that the --finch-seed-min-download-period flag can override the job throttling.
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(AwSwitches.FINCH_SEED_MIN_DOWNLOAD_PERIOD + "=0")
+    public void testFinchSeedMinDownloadPeriodFlag() throws IOException {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            // Create a recent stamp file that would usually prevent job scheduling.
+            Assert.assertFalse("Stamp file already exists", stamp.exists());
+            Assert.assertTrue("Failed to create stamp file", stamp.createNewFile());
+
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+
+            mScheduler.assertScheduled();
+        } finally {
+            mScheduler.clear();
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    // Tests that the --finch-seed-ignore-pending-download flag results in jobs being rescheduled.
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(AwSwitches.FINCH_SEED_IGNORE_PENDING_DOWNLOAD)
+    public void testFinchSeedIgnorePendingDownloadFlag() {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            JobInfo originalJob = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", originalJob);
+
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+
+            // Check that the job got rescheduled.
+            JobInfo rescheduledJob = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been rescheduled", rescheduledJob);
+            Assert.assertNotSame(
+                    "Rescheduled job should not be equal to the originally scheduled job",
+                    originalJob, rescheduledJob);
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    // Tests the default behavior (without --finch-seed-no-charging-requirement flag) requires the
+    // device to be charging.
+    @Test
+    @SmallTest
+    public void testFinchSeedChargingRequiredByDefault() {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            JobInfo job = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", job);
+            Assert.assertTrue("Job should require charging but does not", job.isRequireCharging());
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    // Tests that the --finch-seed-no-charging-requirement flag means the job does not require
+    // charging.
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(AwSwitches.FINCH_SEED_NO_CHARGING_REQUIREMENT)
+    public void testFinchSeedChargingNotRequiredWithSwitch() {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            JobInfo job = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", job);
+            Assert.assertFalse("Job should not require charging when flag is set but it does",
+                    job.isRequireCharging());
         } finally {
             mScheduler.clear();
         }
@@ -210,19 +350,183 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testFetch() throws IOException, TimeoutException {
         try {
-            AwVariationsSeedFetcher fetcher = new AwVariationsSeedFetcher() {
-                // p is null in this test. Don't actually call JobService.jobFinished.
-                @Override
-                protected void jobFinished(JobParameters p) {}
-            };
-            int downloads = mDownloader.helper.getCallCount();
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+
             fetcher.onStartJob(null);
-            mDownloader.helper.waitForCallback(
-                    "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent",
-                    downloads);
+
+            Assert.assertFalse("neededReschedule should be false before making a request",
+                    fetcher.neededReschedule());
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+            Assert.assertFalse("neededReschedule should be false after a successful seed request.",
+                    fetcher.neededReschedule());
             File stamp = VariationsUtils.getStampFile();
             Assert.assertTrue("AwVariationsSeedFetcher should have updated stamp file " + stamp,
                     stamp.exists());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testRetryFetch() throws IOException, TimeoutException {
+        try {
+            AwVariationsSeedFetcher.setMocks(mScheduler, new FailingVariationsSeedFetcher());
+
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+
+            JobInfo originalJob = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", originalJob);
+            Assert.assertEquals("Initial request count should be 0", 0,
+                    originalJob.getExtras().getInt(
+                            AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY, -1));
+
+            // This TestAwVariationsSeedFetcher instance will delegate its HTTP requests to the
+            // failing VariationsSeedFetcher that we set as the mock instance above.
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            when(mMockJobParameters.getExtras()).thenAnswer(invocation -> {
+                return mScheduler.getPendingJob(JOB_ID).getExtras();
+            });
+
+            fetcher.onStartJob(mMockJobParameters);
+
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+            Assert.assertTrue("neededReschedule should be true after a failed seed request.",
+                    fetcher.neededReschedule());
+            int requestCount = fetcher.getFinishedJobParameters().getExtras().getInt(
+                    AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY);
+            Assert.assertEquals("Request count should have increased", requestCount, 1);
+
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testNoRetryAfterMaxFailedAttempts() throws IOException, TimeoutException {
+        try {
+            AwVariationsSeedFetcher.setMocks(mScheduler, new FailingVariationsSeedFetcher());
+
+            // This TestAwVariationsSeedFetcher instance will delegate its HTTP requests to the
+            // failing VariationsSeedFetcher that we set as the mock instance above.
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            PersistableBundle jobInfoExtras = new PersistableBundle();
+            jobInfoExtras.putInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY,
+                    AwVariationsSeedFetcher.JOB_MAX_REQUEST_COUNT);
+            when(mMockJobParameters.getExtras()).thenReturn(jobInfoExtras);
+
+            fetcher.onStartJob(mMockJobParameters);
+
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+            Assert.assertFalse("neededReschedule should be false after the max "
+                            + "failed seed requests has been reached.",
+                    fetcher.neededReschedule());
+
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    // Tests that metrics are written to SharedPreferences when there's no previous data.
+    @Test
+    @MediumTest
+    public void testMetricsWrittenToPrefsWithoutPreviousData()
+            throws IOException, TimeoutException {
+        try {
+            AwVariationsSeedFetcher.setTestClock(mClock);
+            mClock.timestamp = START_TIME;
+            mDownloader.fetchResult = HTTP_NOT_FOUND;
+
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            fetcher.onStartJob(null);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
+
+            VariationsServiceMetricsHelper metrics =
+                    VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
+            Assert.assertEquals(START_TIME, metrics.getLastJobStartTime());
+            Assert.assertFalse(metrics.hasLastEnqueueTime());
+            Assert.assertFalse(metrics.hasJobInterval());
+            Assert.assertFalse(metrics.hasJobQueueTime());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    // Tests that metrics are written to SharedPreferences when there is information about the
+    // previous job scheduling, but not the previous download.
+    @Test
+    @MediumTest
+    public void testMetricsWrittenToPrefsWithPreviousJobData()
+            throws IOException, TimeoutException {
+        try {
+            AwVariationsSeedFetcher.setTestClock(mClock);
+            mClock.timestamp = START_TIME;
+            mDownloader.fetchResult = HTTP_NOT_FOUND;
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            mScheduler.assertScheduled();
+
+            VariationsServiceMetricsHelper initialMetrics =
+                    VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
+            Assert.assertEquals(START_TIME, initialMetrics.getLastEnqueueTime());
+
+            mClock.timestamp += JOB_DELAY;
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            fetcher.onStartJob(null);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
+
+            VariationsServiceMetricsHelper metrics =
+                    VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
+            Assert.assertEquals(START_TIME + JOB_DELAY, metrics.getLastJobStartTime());
+            Assert.assertEquals(JOB_DELAY, metrics.getJobQueueTime());
+            Assert.assertFalse(metrics.hasLastEnqueueTime());
+            Assert.assertFalse(metrics.hasJobInterval());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+            mScheduler.clear();
+        }
+    }
+
+    // Tests that metrics are written to SharedPreferences when there is information about the
+    // previous job scheduling and download.
+    @Test
+    @MediumTest
+    public void testMetricsWrittenToPrefsWithPreviousJobAndFetchData()
+            throws IOException, TimeoutException {
+        long appRunDelay = TimeUnit.DAYS.toMillis(2);
+        try {
+            AwVariationsSeedFetcher.setTestClock(mClock);
+            VariationsServiceMetricsHelper initialMetrics =
+                    VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
+            mClock.timestamp = START_TIME;
+            mDownloader.fetchResult = HTTP_NOT_FOUND;
+            initialMetrics.setLastJobStartTime(mClock.timestamp);
+            mClock.timestamp += appRunDelay;
+            initialMetrics.setLastEnqueueTime(mClock.timestamp);
+            boolean committed = initialMetrics.writeMetricsToVariationsSharedPreferences(mContext);
+            Assert.assertTrue("Failed to commit initial variations SharedPreferences", committed);
+
+            mClock.timestamp += JOB_DELAY;
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            fetcher.onStartJob(null);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
+
+            VariationsServiceMetricsHelper metrics =
+                    VariationsServiceMetricsHelper.fromVariationsSharedPreferences(mContext);
+            Assert.assertEquals(
+                    START_TIME + appRunDelay + JOB_DELAY, metrics.getLastJobStartTime());
+            Assert.assertEquals(appRunDelay + JOB_DELAY, metrics.getJobInterval());
+            Assert.assertEquals(JOB_DELAY, metrics.getJobQueueTime());
+            Assert.assertFalse(metrics.hasLastEnqueueTime());
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
         }

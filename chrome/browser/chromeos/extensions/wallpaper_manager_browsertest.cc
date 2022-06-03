@@ -10,6 +10,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -79,14 +80,13 @@ class WallpaperManagerJsTest : public InProcessBrowserTest {
         base::FilePath(
             FILE_PATH_LITERAL("chromeos/wallpaper_manager/unit_tests")),
         file);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
 
-    const std::vector<int> empty_libraries;
-    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, empty_libraries));
+    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
   }
 };
 

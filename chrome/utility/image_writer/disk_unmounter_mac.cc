@@ -10,9 +10,9 @@
 #include "base/message_loop/message_pump_mac.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/utility/image_writer/error_messages.h"
+#include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {
@@ -21,7 +21,7 @@ DiskUnmounterMac::DiskUnmounterMac() : cf_thread_("ImageWriterDiskArb") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::UI;
 
-  cf_thread_.StartWithOptions(options);
+  cf_thread_.StartWithOptions(std::move(options));
 }
 
 DiskUnmounterMac::~DiskUnmounterMac() {

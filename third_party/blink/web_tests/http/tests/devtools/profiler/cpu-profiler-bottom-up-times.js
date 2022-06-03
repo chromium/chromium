@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests bottom-up view self and total time calculation in CPU profiler.\n`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profileAndExpectations = {
     'title': 'profile1',
@@ -73,7 +73,7 @@
   };
   var view = new Profiler.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
-  view._changeView();
+  view.changeView();
   var tree = view.profileDataGridTree;
   if (!tree)
     TestRunner.addResult('no tree');

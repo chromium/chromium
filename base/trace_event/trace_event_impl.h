@@ -10,17 +10,13 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/thread_instruction_count.h"
@@ -71,6 +67,8 @@ class BASE_EXPORT TraceEvent {
              TraceArguments* args,
              unsigned int flags);
 
+  TraceEvent(const TraceEvent&) = delete;
+  TraceEvent& operator=(const TraceEvent&) = delete;
   ~TraceEvent();
 
   // Allow move operations.
@@ -111,13 +109,6 @@ class BASE_EXPORT TraceEvent {
       std::string* out,
       const ArgumentFilterPredicate& argument_filter_predicate) const;
   void AppendPrettyPrinted(std::ostringstream* out) const;
-
-  // TODO(898794): Remove once caller has been updated.
-  static void AppendValueAsJSON(unsigned char type,
-                                TraceValue value,
-                                std::string* out) {
-    value.AppendAsJSON(type, out);
-  }
 
   TimeTicks timestamp() const { return timestamp_; }
   ThreadTicks thread_timestamp() const { return thread_timestamp_; }
@@ -196,8 +187,6 @@ class BASE_EXPORT TraceEvent {
   unsigned int flags_ = 0;
   unsigned long long bind_id_ = 0;
   char phase_ = TRACE_EVENT_PHASE_BEGIN;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEvent);
 };
 
 }  // namespace trace_event

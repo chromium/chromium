@@ -23,7 +23,8 @@
     TestRunner.evaluateInPage('document.querySelector("form").submit();');
     await snifferPromise;
 
-    var request = NetworkTestRunner.networkRequests().peekLast();
+    const networkRequests = NetworkTestRunner.networkRequests();
+    var request = networkRequests[networkRequests.length - 1];
     if (request.url().endsWith('/')) {
       await TestRunner.addSnifferPromise(SDK.NetworkDispatcher.prototype, 'requestWillBeSent');
       request = NetworkTestRunner.networkRequests().pop();
@@ -54,7 +55,7 @@
   ];
 
   TestRunner.addResult('Tests that form submissions appear and are parsed in the network panel');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await runFormTest(formValues);
@@ -66,7 +67,7 @@
     `--${newBoundary}\r\nContent-Disposition: form-data; name=\"a\r\nb\"\r\n\r\na\r\nv\r\n` +
     `--${newBoundary}\r\nContent-Disposition: form-data; name=\"a\r\nc\"; filename="a.gif"\r\nContent-Type: application/octer-stream\r\n\r\na\r\nv\r\n` +
     `--${newBoundary}--\r\n\u0000`;
-  const nonURLEncodedNameFormData = SDK.NetworkRequest.prototype._parseMultipartFormDataParameters(nonURLEncodedNameRequestBody, newBoundary);
+  const nonURLEncodedNameFormData = SDK.NetworkRequest.prototype.parseMultipartFormDataParameters(nonURLEncodedNameRequestBody, newBoundary);
 
   TestRunner.addResult(JSON.stringify(nonURLEncodedNameFormData, ' ', 1));
 

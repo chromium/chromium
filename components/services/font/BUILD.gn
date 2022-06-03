@@ -24,16 +24,14 @@ source_set("lib") {
     "//ui/gfx",
   ]
 
-  public_deps = [
-    "//skia",
-  ]
+  public_deps = [ "//skia" ]
 
-  if (is_linux && enable_plugins) {
+  if ((is_linux || is_chromeos) && enable_plugins) {
     deps += [ ":ppapi_fontconfig_matching" ]
   }
 }
 
-if (is_linux && enable_plugins) {
+if ((is_linux || is_chromeos) && enable_plugins) {
   source_set("ppapi_fontconfig_matching") {
     sources = [
       "ppapi_fontconfig_matching.cc",
@@ -49,9 +47,7 @@ if (is_linux && enable_plugins) {
 }
 
 test("font_service_unittests") {
-  sources = [
-    "font_loader_unittest.cc",
-  ]
+  sources = [ "font_loader_unittest.cc" ]
 
   deps = [
     ":lib",

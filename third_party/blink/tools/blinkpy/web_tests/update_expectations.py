@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Updates TestExpectations based on results in builder bots.
 
 Scans the TestExpectations file and uses results from actual builder bots runs
@@ -35,71 +34,100 @@ import logging
 import webbrowser
 
 from blinkpy.tool.commands.flaky_tests import FlakyTests
-from blinkpy.web_tests.models.test_expectations import CHROMIUM_BUG_PREFIX
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import TestExpectations, SPECIAL_PREFIXES
+from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
+
+CHROMIUM_BUG_PREFIX = 'crbug.com/'
 
 
 def main(host, bot_test_expectations_factory, argv):
     parser = argparse.ArgumentParser(
         epilog=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--type',
-                        choices=['flake', 'fail', 'all'],
-                        default='all',
-                        help='type of expectations to update (default: %(default)s)')
-    parser.add_argument('--verbose', '-v',
-                        action='store_true',
-                        default=False,
-                        help='enable more verbose logging')
-    parser.add_argument('--remove-missing',
-                        action='store_true',
-                        default=False,
-                        help='also remove lines if there were no results, '
-                             'e.g. Android-only expectations for tests '
-                             'that are not in SmokeTests')
-    parser.add_argument('--show-results', '-s',
-                        action='store_true',
-                        default=False,
-                        help='Open results dashboard for all removed lines')
+    parser.add_argument(
+        '--type',
+        choices=['flake', 'fail', 'all'],
+        default='all',
+        help='type of expectations to update (default: %(default)s)')
+    parser.add_argument(
+        '--verbose',
+        '-v',
+        action='store_true',
+        default=False,
+        help='enable more verbose logging')
+    parser.add_argument(
+        '--remove-missing',
+        action='store_true',
+        default=False,
+        help='also remove lines if there were no results, '
+        'e.g. Android-only expectations for tests '
+        'that are not in SmokeTests')
+    # TODO(crbug.com/1077883): Including cq results might introduce false
+    # negatives. An in-review change that caused a test with fail test
+    # expectation but no longer fails, to fail again, will result in
+    # the test expectation not being removed even if the change
+    # does not ultimately land.
+    parser.add_argument(
+        '--include-cq-results',
+        action='store_true',
+        default=False,
+        help='include results from cq.')
+    parser.add_argument(
+        '--show-results',
+        '-s',
+        action='store_true',
+        default=False,
+        help='Open results dashboard for all removed lines')
     args = parser.parse_args(argv)
 
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format='%(levelname)s: %(message)s')
 
     port = host.port_factory.get()
     expectations_file = port.path_to_generic_test_expectations_file()
     if not host.filesystem.isfile(expectations_file):
-        _log.warning("Didn't find generic expectations file at: " + expectations_file)
+        _log.warning("Didn't find generic expectations file at: " +
+                     expectations_file)
         return 1
 
-    remover = ExpectationsRemover(
-        host, port, bot_test_expectations_factory, webbrowser,
-        args.type, args.remove_missing)
+    remover = ExpectationsRemover(host, port, bot_test_expectations_factory,
+                                  webbrowser, args.type, args.remove_missing,
+                                  args.include_cq_results)
 
     test_expectations = remover.get_updated_test_expectations()
-
     if args.show_results:
         remover.show_removed_results()
 
-    remover.write_test_expectations(test_expectations, expectations_file)
+    host.filesystem.write_text_file(expectations_file, test_expectations)
     remover.print_suggested_commit_description()
     return 0
 
 
 class ExpectationsRemover(object):
-
-    def __init__(self, host, port, bot_test_expectations_factory, browser,
-                 type_flag='all', remove_missing=False):
+    def __init__(self,
+                 host,
+                 port,
+                 bot_test_expectations_factory,
+                 browser,
+                 type_flag='all',
+                 remove_missing=False,
+                 include_cq_results=False):
         self._host = host
         self._port = port
         self._expectations_factory = bot_test_expectations_factory
-        self._builder_results_by_path = {}
         self._browser = browser
         self._expectations_to_remove_list = None
         self._type = type_flag
+        self._bug_numbers = set()
         self._remove_missing = remove_missing
+        self._include_cq_results = include_cq_results
+        self._builder_results_by_path = self._get_builder_results_by_path()
+        self._removed_test_names = set()
+        self._version_to_os = {}
 
-    def _can_delete_line(self, test_expectation_line):
+    def _can_delete_line(self, expectation):
         """Returns whether a given line in the expectations can be removed.
 
         Uses results from builder bots to determine if a given line is stale and
@@ -115,125 +143,90 @@ class ExpectationsRemover(object):
         Returns:
             True if the line can be removed, False otherwise.
         """
-        expectations = test_expectation_line.expectations
-        if not expectations:
+        expected_results = expectation.results
+
+        if not expected_results:
             return False
 
-        # Don't check lines that have expectations like Skip.
-        if self._has_unstrippable_expectations(expectations):
+        # Don't check lines that have expectations like Skip or Slow.
+        if ResultType.Skip in expected_results or expectation.is_slow_test:
             return False
 
         # Don't check consistent passes.
-        if self._pass_expectation_only(expectations):
+        if len(expected_results) == 1 and ResultType.Pass in expected_results:
             return False
 
         # Don't check flakes in fail mode.
-        if self._type == 'fail' and self._has_pass_expectation(expectations):
+        if self._type == 'fail' and ResultType.Pass in expected_results:
             return False
 
         # Don't check failures in flake mode.
-        if self._type == 'flake' and not self._has_pass_expectation(expectations):
+        if self._type == 'flake' and ResultType.Pass not in expected_results:
             return False
 
-        # Don't check lines that have expectations for directories, since
-        # the flakiness of all sub-tests isn't as easy to check.
-        if self._port.test_isdir(test_expectation_line.name):
-            return False
+        # Initialize OS version to OS dictionary.
+        if not self._version_to_os:
+            for os, os_versions in \
+                self._port.configuration_specifier_macros().items():
+                for version in os_versions:
+                    self._version_to_os[version.lower()] = os.lower()
 
         # The line can be deleted if none of the expectations appear in the
         # actual results or only a PASS expectation appears in the actual
         # results.
         builders_checked = []
-        for config in test_expectation_line.matching_configurations:
-            builder_name = self._host.builders.builder_name_for_specifiers(config.version, config.build_type)
+        builders = []
+        for config in self._port.all_test_configurations():
+            if set(expectation.tags).issubset(
+                    set([
+                        self._version_to_os[config.version.lower()],
+                        config.version.lower(),
+                        config.build_type.lower()
+                    ])):
+                try_server_configs = [False]
+                if self._include_cq_results:
+                    try_server_configs.append(True)
+                for is_try_server in try_server_configs:
+                    builder_name = self._host.builders.builder_name_for_specifiers(
+                            config.version, config.build_type, is_try_server)
+                    if not builder_name:
+                        _log.debug('No builder with config %s for %s',
+                                   config, 'CQ' if is_try_server else 'CI')
+                        # For many configurations, there is no matching builder in
+                        # blinkpy/common/config/builders.json. We ignore these
+                        # configurations and make decisions based only on configurations
+                        # with actual builders.
+                        continue
+                    builders.append(builder_name)
 
-            if not builder_name:
-                _log.debug('No builder with config %s', config)
-                # For many configurations, there is no matching builder in
-                # blinkpy/common/config/builders.json. We ignore these
-                # configurations and make decisions based only on configurations
-                # with actual builders.
-                continue
+        for builder_name in builders:
 
             builders_checked.append(builder_name)
 
             if builder_name not in self._builder_results_by_path.keys():
-                _log.error('Failed to find results for builder "%s"', builder_name)
+                _log.error('Failed to find results for builder "%s"',
+                           builder_name)
                 return False
 
             results_by_path = self._builder_results_by_path[builder_name]
 
             # No results means the tests were all skipped, or all results are passing.
-            if test_expectation_line.path not in results_by_path.keys():
+            if expectation.test not in results_by_path.keys():
                 if self._remove_missing:
                     continue
                 return False
 
-            results_for_single_test = results_by_path[test_expectation_line.path]
-
-            expectations_met = self._expectations_that_were_met(test_expectation_line, results_for_single_test)
-            if expectations_met != set(['PASS']) and expectations_met != set([]):
+            results_for_single_test = set(results_by_path[expectation.test])
+            expectations_met = expected_results & results_for_single_test
+            if (expectations_met != set([ResultType.Pass])
+                    and expectations_met != set([])):
                 return False
-
         if builders_checked:
-            _log.debug('Checked builders:\n  %s', '\n  '.join(builders_checked))
+            _log.debug('Checked builders:\n  %s',
+                       '\n  '.join(builders_checked))
         else:
             _log.warning('No matching builders for line, deleting line.')
-        _log.info('Deleting line "%s"', test_expectation_line.original_string.strip())
         return True
-
-    def _has_pass_expectation(self, expectations):
-        return 'PASS' in expectations
-
-    def _pass_expectation_only(self, expectations):
-        return len(expectations) == 1 and self._has_pass_expectation(expectations)
-
-    def _expectations_that_were_met(self, test_expectation_line, results_for_single_test):
-        """Returns the set of expectations that appear in the given results.
-
-        e.g. If the test expectations is "bug(test) fast/test.html [Crash Failure Pass]"
-        and the results are ['TEXT', 'PASS', 'PASS', 'TIMEOUT'], then this method would
-        return [Pass Failure] since the Failure expectation is satisfied by 'TEXT', Pass
-        by 'PASS' but Crash doesn't appear in the results.
-
-        Args:
-            test_expectation_line: A TestExpectationLine object
-            results_for_single_test: A list of result strings.
-                e.g. ['IMAGE', 'IMAGE', 'PASS']
-
-        Returns:
-            A set containing expectations that occurred in the results.
-        """
-        # TODO(bokan): Does this not exist in a more central place?
-        def replace_failing_with_fail(expectation):
-            if expectation in ('TEXT', 'IMAGE', 'IMAGE+TEXT', 'AUDIO'):
-                return 'FAIL'
-            else:
-                return expectation
-
-        actual_results = {replace_failing_with_fail(r) for r in results_for_single_test}
-
-        return set(test_expectation_line.expectations) & actual_results
-
-    def _has_unstrippable_expectations(self, expectations):
-        """Returns whether any of the given expectations are considered unstrippable.
-
-        Unstrippable expectations are those which should stop a line from being
-        removed regardless of builder bot results.
-
-        Args:
-            expectations: A list of string expectations.
-                E.g. ['PASS', 'FAIL' 'CRASH']
-
-        Returns:
-            True if at least one of the expectations is unstrippable. False
-            otherwise.
-        """
-        unstrippable_expectations = (
-            'SKIP',
-            'SLOW',
-        )
-        return any(s in expectations for s in unstrippable_expectations)
 
     def _get_builder_results_by_path(self):
         """Returns a dictionary of results for each builder.
@@ -253,7 +246,13 @@ class ExpectationsRemover(object):
         }
         """
         builder_results_by_path = {}
-        for builder_name in self._host.builders.all_continuous_builder_names():
+        builders = []
+        if self._include_cq_results:
+            builders = self._host.builders.all_builder_names()
+        else:
+            builders = self._host.builders.all_continuous_builder_names()
+
+        for builder_name in builders:
             expectations_for_builder = (
                 self._expectations_factory.expectations_for_builder(builder_name)
             )
@@ -262,77 +261,14 @@ class ExpectationsRemover(object):
                 # This is not fatal since we may not need to check these
                 # results. If we do need these results we'll log an error later
                 # when trying to check against them.
-                _log.warning('Downloaded results are missing results for builder "%s"', builder_name)
+                _log.warning(
+                    'Downloaded results are missing results for builder "%s"',
+                    builder_name)
                 continue
 
             builder_results_by_path[builder_name] = (
-                expectations_for_builder.all_results_by_path()
-            )
+                expectations_for_builder.all_results_by_path())
         return builder_results_by_path
-
-    def _remove_associated_comments_and_whitespace(self, expectations, removed_index):
-        """Removes comments and whitespace from an empty expectation block.
-
-        If the removed expectation was the last in a block of expectations, this method
-        will remove any associated comments and whitespace.
-
-        Args:
-            expectations: A list of TestExpectationLine objects to be modified.
-            removed_index: The index in the above list that was just removed.
-        """
-        was_last_expectation_in_block = (removed_index == len(expectations)
-                                         or expectations[removed_index].is_whitespace()
-                                         or expectations[removed_index].is_comment())
-
-        # If the line immediately below isn't another expectation, then the block of
-        # expectations definitely isn't empty so we shouldn't remove their associated comments.
-        if not was_last_expectation_in_block:
-            return
-
-        did_remove_whitespace = False
-
-        # We may have removed the last expectation in a block. Remove any whitespace above.
-        while removed_index > 0 and expectations[removed_index - 1].is_whitespace():
-            removed_index -= 1
-            expectations.pop(removed_index)
-            did_remove_whitespace = True
-
-        # If we did remove some whitespace then we shouldn't remove any comments above it
-        # since those won't have belonged to this expectation block. For example, commented
-        # out expectations, or a section header.
-        if did_remove_whitespace:
-            return
-
-        # Remove all comments above the removed line.
-        while removed_index > 0 and expectations[removed_index - 1].is_comment():
-            removed_index -= 1
-            expectations.pop(removed_index)
-
-        # Remove all whitespace above the comments.
-        while removed_index > 0 and expectations[removed_index - 1].is_whitespace():
-            removed_index -= 1
-            expectations.pop(removed_index)
-
-    def _expectations_to_remove(self):
-        """Computes and returns the expectation lines that should be removed.
-
-        Returns:
-            A list of TestExpectationLine objects for lines that can be removed
-            from the test expectations file. The result is memoized so that
-            subsequent calls will not recompute the result.
-        """
-        if self._expectations_to_remove_list is not None:
-            return self._expectations_to_remove_list
-
-        self._builder_results_by_path = self._get_builder_results_by_path()
-        self._expectations_to_remove_list = []
-        test_expectations = TestExpectations(self._port, include_overrides=False).expectations()
-
-        for expectation in test_expectations:
-            if self._can_delete_line(expectation):
-                self._expectations_to_remove_list.append(expectation)
-
-        return self._expectations_to_remove_list
 
     def get_updated_test_expectations(self):
         """Filters out passing lines from TestExpectations file.
@@ -344,18 +280,39 @@ class ExpectationsRemover(object):
         Returns:
             A TestExpectations object with the passing lines filtered out.
         """
+        generic_exp_path = self._port.path_to_generic_test_expectations_file()
+        raw_test_expectations = self._host.filesystem.read_text_file(
+            generic_exp_path)
+        expectations_dict = {generic_exp_path: raw_test_expectations}
+        test_expectations = TestExpectations(
+            port=self._port, expectations_dict=expectations_dict)
+        removed_exps = []
+        lines = []
 
-        test_expectations = TestExpectations(self._port, include_overrides=False).expectations()
-        for expectation in self._expectations_to_remove():
-            index = test_expectations.index(expectation)
-            test_expectations.remove(expectation)
+        for exp in test_expectations.get_updated_lines(generic_exp_path):
+            # only get expectations objects for non glob patterns
+            if not exp.test or exp.is_glob:
+                continue
 
-            # Remove associated comments and whitespace if we've removed the last expectation under
-            # a comment block. Only remove a comment block if it's not separated from the test
-            # expectation line by whitespace.
-            self._remove_associated_comments_and_whitespace(test_expectations, index)
+            if self._can_delete_line(exp):
+                reason = exp.reason or ''
+                self._bug_numbers.update([
+                    reason[len(CHROMIUM_BUG_PREFIX):]
+                    for reason in reason.split()
+                    if reason.startswith(CHROMIUM_BUG_PREFIX)
+                ])
+                self._removed_test_names.add(exp.test)
+                removed_exps.append(exp)
+                _log.info('Deleting line "%s"' % exp.to_string().strip())
 
-        return test_expectations
+        if removed_exps:
+            test_expectations.remove_expectations(generic_exp_path,
+                                                  removed_exps)
+
+        return '\n'.join([
+            e.to_string()
+            for e in test_expectations.get_updated_lines(generic_exp_path)
+        ])
 
     def show_removed_results(self):
         """Opens a browser showing the removed lines in the results dashboard.
@@ -368,18 +325,6 @@ class ExpectationsRemover(object):
         _log.info('Opening results dashboard: ' + url)
         self._browser.open(url)
 
-    def write_test_expectations(self, test_expectations, test_expectations_file):
-        """Writes the given TestExpectations object to the filesystem.
-
-        Args:
-            test_expectations: The TestExpectations object to write.
-            test_expectations_file: The full file path of the Blink
-                TestExpectations file. This file will be overwritten.
-        """
-        self._host.filesystem.write_text_file(
-            test_expectations_file,
-            TestExpectations.list_to_string(test_expectations, reconstitute_only_these=[]))
-
     def print_suggested_commit_description(self):
         """Prints the body of a suggested CL description after removing some lines."""
 
@@ -387,22 +332,14 @@ class ExpectationsRemover(object):
         if self._type != 'all':
             expectation_type = self._type + ' '
         dashboard_url = self._flakiness_dashboard_url()
-        bugs = ', '.join(self._bug_numbers())
-        message = ('Remove %sTestExpectations which are not failing in the specified way.\n\n'
-                   'This change was made by the update_expectations.py script.\n\n'
-                   'Recent test results history:\n%s\n\n'
-                   'Bug: %s') % (expectation_type, dashboard_url, bugs)
+        bugs = ', '.join(sorted(self._bug_numbers))
+        message = (
+            'Remove %sTestExpectations which are not failing in the specified way.\n\n'
+            'This change was made by the update_expectations.py script.\n\n'
+            'Recent test results history:\n%s\n\n'
+            'Bug: %s') % (expectation_type, dashboard_url, bugs)
         _log.info('Suggested commit description:\n' + message)
 
     def _flakiness_dashboard_url(self):
-        removed_test_names = ','.join(x.name for x in self._expectations_to_remove())
+        removed_test_names = ','.join(sorted(self._removed_test_names))
         return FlakyTests.FLAKINESS_DASHBOARD_URL % removed_test_names
-
-    def _bug_numbers(self):
-        """Returns the list of all bug numbers affected by this change."""
-        numbers = set()
-        for line in self._expectations_to_remove():
-            for bug in line.bugs:
-                if bug.startswith(CHROMIUM_BUG_PREFIX):
-                    numbers.add(bug[len(CHROMIUM_BUG_PREFIX):])
-        return sorted(numbers)

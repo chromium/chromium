@@ -25,23 +25,15 @@ source_set("common") {
 }
 
 source_set("resources_header") {
-  sources = [
-    "engine_resources.h",
-  ]
+  sources = [ "engine_resources.h" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
-  public_deps = [
-    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
-  ]
+  public_deps = [ "//chrome/chrome_cleaner/logging/proto:shared_data_proto" ]
 }
 
 source_set("dummy_engine_resources") {
-  sources = [
-    "dummy_engine_resources.cc",
-  ]
+  sources = [ "dummy_engine_resources.cc" ]
 
   deps = [
     ":resources_header",
@@ -53,9 +45,7 @@ source_set("dummy_engine_resources") {
 source_set("unittest_sources") {
   testonly = true
 
-  sources = [
-    "registry_util_unittest.cc",
-  ]
+  sources = [ "registry_util_unittest.cc" ]
 
   deps = [
     ":common",

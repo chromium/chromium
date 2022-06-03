@@ -34,11 +34,11 @@ function install() { // eslint-disable-line no-unused-vars
               }
 
               registration.paymentManager.instruments
-                  .set('123456', {name: 'Echo Pay', method: 'basic-card'})
+                  .set(
+                      '123456',
+                      {name: 'Echo Pay', method: window.location.href})
                   .then(() => {
-                    output(
-                        'instruments.set()',
-                        'Payment handler installed.');
+                    output('instruments.set()', 'Payment handler installed.');
                   })
                   .catch((error) => {
                     output('instruments.set()', error);

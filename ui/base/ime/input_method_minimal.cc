@@ -8,7 +8,7 @@
 
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 

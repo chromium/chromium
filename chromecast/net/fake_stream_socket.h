@@ -23,6 +23,10 @@ class FakeStreamSocket : public net::StreamSocket {
  public:
   FakeStreamSocket();
   explicit FakeStreamSocket(const net::IPEndPoint& local_address);
+
+  FakeStreamSocket(const FakeStreamSocket&) = delete;
+  FakeStreamSocket& operator=(const FakeStreamSocket&) = delete;
+
   ~FakeStreamSocket() override;
 
   // Sets the peer for this socket.
@@ -61,13 +65,13 @@ class FakeStreamSocket : public net::StreamSocket {
   void ApplySocketTag(const net::SocketTag& tag) override;
 
  private:
+  void RemoteDisconnected();
+
   const net::IPEndPoint local_address_;
   const std::unique_ptr<SocketBuffer> buffer_;
   FakeStreamSocket* peer_;
   net::NetLogWithSource net_log_;
   bool bad_sender_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStreamSocket);
 };
 
 }  // namespace chromecast

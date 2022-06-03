@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/process/process_handle.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -22,7 +22,7 @@ struct CONTENT_EXPORT ServiceProcessIdTypeMarker {};
 // An opaque ID type used to uniquely identify service process instances. This
 // is separate from system PID. Values are never reused.
 using ServiceProcessId =
-    util::IdType<internal::ServiceProcessIdTypeMarker, uint64_t, 0u>;
+    base::IdType<internal::ServiceProcessIdTypeMarker, uint64_t, 0u>;
 
 // Information about a running (or very recently running) service process.
 struct CONTENT_EXPORT ServiceProcessInfo {

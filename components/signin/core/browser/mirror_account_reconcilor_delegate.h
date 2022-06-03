@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_MIRROR_ACCOUNT_RECONCILOR_DELEGATE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_MIRROR_ACCOUNT_RECONCILOR_DELEGATE_H_
 
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -19,6 +17,12 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
                                         public IdentityManager::Observer {
  public:
   explicit MirrorAccountReconcilorDelegate(IdentityManager* identity_manager);
+
+  MirrorAccountReconcilorDelegate(const MirrorAccountReconcilorDelegate&) =
+      delete;
+  MirrorAccountReconcilorDelegate& operator=(
+      const MirrorAccountReconcilorDelegate&) = delete;
+
   ~MirrorAccountReconcilorDelegate() override;
 
  protected:
@@ -27,11 +31,13 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   // |ChromeOSAccountReconcilorDelegate|.
   bool IsReconcileEnabled() const override;
 
+  IdentityManager* GetIdentityManager() const { return identity_manager_; }
+
  private:
   // AccountReconcilorDelegate:
-  bool IsAccountConsistencyEnforced() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
+  ConsentLevel GetConsentLevelForPrimaryAccount() const override;
   CoreAccountId GetFirstGaiaAccountForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
@@ -42,17 +48,17 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution,
+      bool primary_has_error,
       const gaia::MultiloginMode mode) const override;
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
+
+  void UpdateReconcilorStatus();
 
   IdentityManager* identity_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorAccountReconcilorDelegate);
+  bool reconcile_enabled_;
 };
 
 }  // namespace signin

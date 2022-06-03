@@ -11,10 +11,10 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
@@ -41,11 +41,11 @@ using storage::ScopedTextBlob;
 namespace sync_file_system {
 
 namespace {
-const std::string kParent = "foo";
-const std::string kFile   = "foo/file";
-const std::string kDir    = "foo/dir";
-const std::string kChild  = "foo/dir/bar";
-const std::string kOther  = "bar";
+const char kParent[] = "foo";
+const char kFile[] = "foo/file";
+const char kDir[] = "foo/dir";
+const char kChild[] = "foo/dir/bar";
+const char kOther[] = "bar";
 }  // namespace
 
 class SyncableFileOperationRunnerTest : public testing::Test {
@@ -66,6 +66,11 @@ class SyncableFileOperationRunnerTest : public testing::Test {
         write_status_(File::FILE_ERROR_FAILED),
         write_bytes_(0),
         write_complete_(false) {}
+
+  SyncableFileOperationRunnerTest(const SyncableFileOperationRunnerTest&) =
+      delete;
+  SyncableFileOperationRunnerTest& operator=(
+      const SyncableFileOperationRunnerTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -110,14 +115,14 @@ class SyncableFileOperationRunnerTest : public testing::Test {
 
   StatusCallback ExpectStatus(const base::Location& location,
                               File::Error expect) {
-    return base::Bind(&SyncableFileOperationRunnerTest::DidFinish,
-                      weak_factory_.GetWeakPtr(), location, expect);
+    return base::BindOnce(&SyncableFileOperationRunnerTest::DidFinish,
+                          weak_factory_.GetWeakPtr(), location, expect);
   }
 
   FileSystemOperation::WriteCallback GetWriteCallback(
       const base::Location& location) {
-    return base::Bind(&SyncableFileOperationRunnerTest::DidWrite,
-                      weak_factory_.GetWeakPtr(), location);
+    return base::BindRepeating(&SyncableFileOperationRunnerTest::DidWrite,
+                               weak_factory_.GetWeakPtr(), location);
   }
 
   void DidWrite(const base::Location& location,
@@ -160,8 +165,6 @@ class SyncableFileOperationRunnerTest : public testing::Test {
 
  private:
   base::WeakPtrFactory<SyncableFileOperationRunnerTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileOperationRunnerTest);
 };
 
 TEST_F(SyncableFileOperationRunnerTest, SimpleQueue) {
@@ -201,7 +204,9 @@ TEST_F(SyncableFileOperationRunnerTest, SimpleQueue) {
   EXPECT_EQ(1, callback_count_);
 }
 
-TEST_F(SyncableFileOperationRunnerTest, WriteToParentAndChild) {
+// Disabled because the implementation doesn't actually give the ordering
+// guarantees this test expects. https://crbug.com/1092668
+TEST_F(SyncableFileOperationRunnerTest, DISABLED_WriteToParentAndChild) {
   // First create the kDir directory and kChild in the dir.
   EXPECT_EQ(File::FILE_OK, file_system_.CreateDirectory(URL(kDir)));
   EXPECT_EQ(File::FILE_OK, file_system_.CreateFile(URL(kChild)));
@@ -255,14 +260,16 @@ TEST_F(SyncableFileOperationRunnerTest, CopyAndMove) {
   // (since the source directory is in syncing).
   ResetCallbackStatus();
   file_system_.operation_runner()->Copy(
-      URL(kDir), URL("dest-copy"), storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-copy"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperationRunner::CopyProgressCallback(),
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));
   file_system_.operation_runner()->Move(
-      URL(kDir),
-      URL("dest-move"),
-      storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-move"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, callback_count_);
@@ -279,9 +286,10 @@ TEST_F(SyncableFileOperationRunnerTest, CopyAndMove) {
   // Now the destination is also locked copying kDir should be queued.
   ResetCallbackStatus();
   file_system_.operation_runner()->Copy(
-      URL(kDir), URL("dest-copy2"), storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-copy2"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperationRunner::CopyProgressCallback(),
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(0, callback_count_);
@@ -384,12 +392,9 @@ TEST_F(SyncableFileOperationRunnerTest, CopyInForeignFile) {
   EXPECT_EQ(1, callback_count_);
 
   // Now the file must have been created and have the same content as temp_path.
-  // TODO(mek): AdaptCallbackForRepeating is needed here because
-  // CannedSyncableFileSystem hasn't switched to OnceCallback yet.
   ResetCallbackStatus();
-  file_system_.DoVerifyFile(
-      URL(kFile), kTestData,
-      base::AdaptCallbackForRepeating(ExpectStatus(FROM_HERE, File::FILE_OK)));
+  file_system_.DoVerifyFile(URL(kFile), kTestData,
+                            ExpectStatus(FROM_HERE, File::FILE_OK));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, callback_count_);
 }

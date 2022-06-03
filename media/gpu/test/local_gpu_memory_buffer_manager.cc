@@ -28,6 +28,7 @@ namespace {
 const int32_t kDrmNumNodes = 64;
 const int32_t kMinNodeNumber = 128;
 
+// TODO(https://crbug.com/1043007): use ui/gfx/linux/gbm_device.h instead.
 gbm_device* CreateGbmDevice() {
   int fd;
   int32_t min_node = kMinNodeNumber;
@@ -81,9 +82,13 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
       return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_READ |
-             GBM_BO_USE_CAMERA_WRITE;
+             GBM_BO_USE_CAMERA_WRITE | GBM_BO_USE_SW_READ_OFTEN;
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_READ |
+             GBM_BO_USE_CAMERA_WRITE | GBM_BO_USE_TEXTURING |
+             GBM_BO_USE_HW_VIDEO_ENCODER | GBM_BO_USE_SW_READ_OFTEN;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
-      return GBM_BO_USE_LINEAR;
+      return GBM_BO_USE_LINEAR | GBM_BO_USE_SW_READ_OFTEN;
     default:
       return 0;
   }
@@ -91,12 +96,16 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
  public:
+  GpuMemoryBufferImplGbm() = delete;
+
   GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object)
       : format_(format), buffer_object_(buffer_object), mapped_(false) {
     handle_.type = gfx::NATIVE_PIXMAP;
     // Set a dummy id since this is for testing only.
     handle_.id = gfx::GpuMemoryBufferId(0);
-    for (size_t i = 0; i < gbm_bo_get_plane_count(buffer_object); ++i) {
+
+    for (size_t i = 0;
+         i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
       handle_.native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
           gbm_bo_get_stride_for_plane(buffer_object, i),
           gbm_bo_get_offset(buffer_object, i),
@@ -104,6 +113,9 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
           base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
     }
   }
+
+  GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
+  GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
 
   ~GpuMemoryBufferImplGbm() override {
     if (mapped_) {
@@ -123,9 +135,9 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
     for (size_t i = 0; i < num_planes; ++i) {
       void* mapped_data;
       void* addr =
-          gbm_bo_map(buffer_object_, 0, 0, gbm_bo_get_width(buffer_object_),
-                     gbm_bo_get_height(buffer_object_),
-                     GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
+          gbm_bo_map2(buffer_object_, 0, 0, gbm_bo_get_width(buffer_object_),
+                      gbm_bo_get_height(buffer_object_),
+                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
       if (!addr) {
         LOG(ERROR) << "Failed to map GpuMemoryBufferImplGbm plane " << i;
         Unmap();
@@ -217,7 +229,6 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle handle_;
   bool mapped_;
   std::vector<MappedPlane> mapped_planes_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuMemoryBufferImplGbm);
 };
 
 }  // namespace
@@ -237,7 +248,8 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   if (!gbm_device_) {
     LOG(ERROR) << "Invalid GBM device";
     return nullptr;
@@ -273,6 +285,19 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
 void LocalGpuMemoryBufferManager::SetDestructionSyncToken(
     gfx::GpuMemoryBuffer* buffer,
     const gpu::SyncToken& sync_token) {}
+
+void LocalGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
+bool LocalGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  return false;
+}
 
 std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,

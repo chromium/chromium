@@ -2,7 +2,7 @@ Tests that dragging a file into an editable area does not insert a filename.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS window.attemptedFileNavigation is true
+PASS window.attemptedSameTabFileNavigation is false
 PASS successfullyParsed is true
 
 TEST COMPLETE

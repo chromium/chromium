@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGViewportContainer svg id='huge-symbol'",
-          "rect": [8, 8, 25, 25],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGViewportContainer svg id='huge-symbol'",
-          "rect": [8, 8, 20, 20],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [8, 8, 25, 25]
       ]
     }
   ]

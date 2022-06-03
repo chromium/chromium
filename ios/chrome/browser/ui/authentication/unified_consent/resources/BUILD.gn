@@ -12,6 +12,14 @@ imageset("identity_picker_view_arrow_down") {
   ]
 }
 
+imageset("identity_picker_view_arrow_right") {
+  sources = [
+    "identity_picker_view_arrow_right.imageset/Contents.json",
+    "identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@2x.png",
+    "identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@3x.png",
+  ]
+}
+
 imageset("unified_consent_header") {
   sources = [
     "unified_consent_header.imageset/Contents.json",

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
@@ -24,9 +24,6 @@ namespace {
 
 // Speed up the initial component checking.
 const char kSwitchFastUpdate[] = "fast-update";
-
-// Add "testrequest=1" attribute to the update check request.
-const char kSwitchTestRequestParam[] = "test-request";
 
 // Disables pings. Pings are the requests sent to the update server that report
 // the success or the failure of component install or update attempts.
@@ -68,6 +65,9 @@ std::string GetSwitchArgument(const std::vector<std::string>& vec,
 
 }  // namespace
 
+// Add "testrequest=1" attribute to the update check request.
+const char kSwitchTestRequestParam[] = "test-request";
+
 ComponentUpdaterCommandLineConfigPolicy::
     ComponentUpdaterCommandLineConfigPolicy(const base::CommandLine* cmdline) {
   DCHECK(cmdline);
@@ -97,8 +97,8 @@ ComponentUpdaterCommandLineConfigPolicy::
 
   const std::string initial_delay =
       GetSwitchArgument(switch_values, kInitialDelay);
-  int initial_delay_seconds = 0;
-  if (base::StringToInt(initial_delay, &initial_delay_seconds))
+  double initial_delay_seconds = 0;
+  if (base::StringToDouble(initial_delay, &initial_delay_seconds))
     initial_delay_ = initial_delay_seconds;
 }
 
@@ -127,7 +127,7 @@ GURL ComponentUpdaterCommandLineConfigPolicy::UrlSourceOverride() const {
   return url_source_override_;
 }
 
-int ComponentUpdaterCommandLineConfigPolicy::InitialDelay() const {
+double ComponentUpdaterCommandLineConfigPolicy::InitialDelay() const {
   return initial_delay_;
 }
 

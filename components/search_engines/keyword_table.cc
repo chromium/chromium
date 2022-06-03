@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/database_utils/url_converter.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -103,6 +104,10 @@ const std::string ColumnsForVersion(int version, bool concatenated) {
     // Column added in version 82.
     columns.push_back("created_from_play_api");
   }
+  if (version >= 97) {
+    // Column added in version 97
+    columns.push_back("is_active");
+  }
 
   return base::JoinString(columns, std::string(concatenated ? " || " : ", "));
 }
@@ -121,21 +126,23 @@ void BindURLToStatement(const TemplateURLData& data,
   // See: crbug.com/153520
   base::ListValue alternate_urls_value;
   for (size_t i = 0; i < data.alternate_urls.size(); ++i)
-    alternate_urls_value.AppendString(data.alternate_urls[i]);
+    alternate_urls_value.Append(data.alternate_urls[i]);
   std::string alternate_urls;
   base::JSONWriter::Write(alternate_urls_value, &alternate_urls);
 
   s->BindInt64(id_column, data.id);
   s->BindString16(starting_column, data.short_name());
   s->BindString16(starting_column + 1, data.keyword());
-  s->BindString(starting_column + 2, data.favicon_url.is_valid() ?
-      history::URLDatabase::GURLToDatabaseURL(data.favicon_url) :
-      std::string());
+  s->BindString(starting_column + 2,
+                data.favicon_url.is_valid()
+                    ? database_utils::GurlToDatabaseUrl(data.favicon_url)
+                    : std::string());
   s->BindString(starting_column + 3, data.url());
   s->BindBool(starting_column + 4, data.safe_for_autoreplace);
-  s->BindString(starting_column + 5, data.originating_url.is_valid() ?
-      history::URLDatabase::GURLToDatabaseURL(data.originating_url) :
-      std::string());
+  s->BindString(starting_column + 5,
+                data.originating_url.is_valid()
+                    ? database_utils::GurlToDatabaseUrl(data.originating_url)
+                    : std::string());
   s->BindInt64(starting_column + 6,
                data.date_created.since_origin().InMicroseconds());
   s->BindInt(starting_column + 7, data.usage_count);
@@ -156,6 +163,7 @@ void BindURLToStatement(const TemplateURLData& data,
   s->BindInt64(starting_column + 20,
                data.last_visited.since_origin().InMicroseconds());
   s->BindBool(starting_column + 21, data.created_from_play_api);
+  s->BindInt(starting_column + 22, static_cast<int>(data.is_active));
 }
 
 WebDatabaseTable::TypeKey GetKey() {
@@ -206,7 +214,8 @@ bool KeywordTable::CreateTablesIfNecessary() {
              "image_url_post_params VARCHAR,"
              "new_tab_url VARCHAR,"
              "last_visited INTEGER DEFAULT 0, "
-             "created_from_play_api INTEGER DEFAULT 0)");
+             "created_from_play_api INTEGER DEFAULT 0, "
+             "is_active INTEGER DEFAULT 0)");
 }
 
 bool KeywordTable::IsSyncable() {
@@ -236,6 +245,8 @@ bool KeywordTable::MigrateToVersion(int version,
       return MigrateToVersion77IncreaseTimePrecision();
     case 82:
       return MigrateToVersion82AddCreatedFromPlayApiColumn();
+    case 97:
+      return MigrateToVersion97AddIsActiveColumn();
   }
 
   return true;
@@ -450,8 +461,13 @@ bool KeywordTable::MigrateToVersion82AddCreatedFromPlayApiColumn() {
       "0");
 }
 
+bool KeywordTable::MigrateToVersion97AddIsActiveColumn() {
+  return db_->Execute(
+      "ALTER TABLE keywords ADD COLUMN is_active INTEGER DEFAULT 0");
+}
+
 // static
-bool KeywordTable::GetKeywordDataFromStatement(const sql::Statement& s,
+bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
                                                TemplateURLData* data) {
   DCHECK(data);
 
@@ -476,31 +492,26 @@ bool KeywordTable::GetKeywordDataFromStatement(const sql::Statement& s,
   data->input_encodings = base::SplitString(
       s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   data->id = s.ColumnInt64(0);
-  data->date_created =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(7));
-  data->last_modified =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(13));
+  data->date_created = base::Time() + base::Microseconds(s.ColumnInt64(7));
+  data->last_modified = base::Time() + base::Microseconds(s.ColumnInt64(13));
   data->created_by_policy = s.ColumnBool(12);
   data->created_from_play_api = s.ColumnBool(22);
   data->usage_count = s.ColumnInt(8);
   data->prepopulate_id = s.ColumnInt(11);
   data->sync_guid = s.ColumnString(14);
+  data->is_active = static_cast<TemplateURLData::ActiveStatus>(s.ColumnInt(23));
 
   data->alternate_urls.clear();
-  base::JSONReader json_reader;
-  std::unique_ptr<base::Value> value(
-      json_reader.ReadToValueDeprecated(s.ColumnString(15)));
-  base::ListValue* alternate_urls_value;
-  if (value.get() && value->GetAsList(&alternate_urls_value)) {
-    std::string alternate_url;
-    for (size_t i = 0; i < alternate_urls_value->GetSize(); ++i) {
-      if (alternate_urls_value->GetString(i, &alternate_url))
-        data->alternate_urls.push_back(alternate_url);
+  absl::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
+  if (value && value->is_list()) {
+    for (const base::Value& alternate_url : value->GetList()) {
+      if (alternate_url.is_string()) {
+        data->alternate_urls.push_back(alternate_url.GetString());
+      }
     }
   }
 
-  data->last_visited =
-      base::Time() + base::TimeDelta::FromMicroseconds(s.ColumnInt64(21));
+  data->last_visited = base::Time() + base::Microseconds(s.ColumnInt64(21));
 
   return true;
 }
@@ -509,7 +520,7 @@ bool KeywordTable::AddKeyword(const TemplateURLData& data) {
   DCHECK(data.id);
   std::string query("INSERT INTO keywords (" + GetKeywordColumns() +
                     ") "
-                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
   sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query.c_str()));
   BindURLToStatement(data, &s, 0, 1);
 
@@ -535,8 +546,8 @@ bool KeywordTable::UpdateKeyword(const TemplateURLData& data) {
       "created_by_policy=?, last_modified=?, sync_guid=?, alternate_urls=?, "
       "image_url=?, search_url_post_params=?, suggest_url_post_params=?, "
       "image_url_post_params=?, new_tab_url=?, last_visited=?, "
-      "created_from_play_api=? WHERE id=?"));
-  BindURLToStatement(data, &s, 22, 0);  // "22" binds id() as the last item.
+      "created_from_play_api=?, is_active=? WHERE id=?"));
+  BindURLToStatement(data, &s, 23, 0);  // "23" binds id() as the last item.
 
   return s.Run();
 }

@@ -2,8 +2,10 @@ include_rules = [
     # Line layout can only use the LineLayout API, not LayoutObject and kids.
     "-third_party/blink/renderer/core/layout",
     "+third_party/blink/renderer/core/layout/api",
+    "+third_party/blink/renderer/core/layout/geometry",
     "+third_party/blink/renderer/core/layout/line",
     "+third_party/blink/renderer/core/layout/logical_values.h",
+    "+third_party/blink/renderer/core/layout/ng",
     "+third_party/blink/renderer/core/layout/ng/inline",
     "+third_party/blink/renderer/platform",
 

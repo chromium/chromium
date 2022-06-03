@@ -37,19 +37,17 @@ class SourceKeyedCachedMetadataHandler;
 
 class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
  public:
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Only used by Document::open for deciding if its safe to act on a
   // JavaScript document.open() call right now, or it should be ignored.
   virtual bool IsExecutingScript() const { return false; }
 
-  // FIXME: Only the HTMLDocumentParser ever blocks script execution on
-  // stylesheet load, which is likely a bug in the XMLDocumentParser.
-  virtual void ExecuteScriptsWaitingForResources() {}
+  virtual void ExecuteScriptsWaitingForResources() = 0;
 
   virtual bool IsWaitingForScripts() const = 0;
-  virtual void DidAddPendingParserBlockingStylesheet() {}
-  virtual void DidLoadAllPendingParserBlockingStylesheets() {}
+  virtual void DidAddPendingParserBlockingStylesheet() = 0;
+  virtual void DidLoadAllPendingParserBlockingStylesheets() = 0;
 
   // These are used to expose the current line/column to the scripting system.
   virtual bool IsParsingAtLineNumber() const;

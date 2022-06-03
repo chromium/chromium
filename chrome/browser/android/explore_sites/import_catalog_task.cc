@@ -5,6 +5,7 @@
 #include "chrome/browser/android/explore_sites/import_catalog_task.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -98,7 +99,7 @@ bool ImportCatalogSync(std::string version_token,
     return false;
 
   // Then insert each category.
-  for (auto category : catalog_proto->categories()) {
+  for (const auto& category : catalog_proto->categories()) {
     sql::Statement category_statement(
         db->GetCachedStatement(SQL_FROM_HERE, kInsertCategorySql));
 
@@ -112,8 +113,7 @@ bool ImportCatalogSync(std::string version_token,
     category_statement.BindString(col++, version_token);
     category_statement.BindInt(col++, static_cast<int>(category.type()));
     category_statement.BindString(col++, category.localized_title());
-    category_statement.BindBlob(col++, category.icon().data(),
-                                category.icon().length());
+    category_statement.BindBlob(col++, category.icon());
     category_statement.BindInt(col++, old_category_info.ntp_click_count);
     category_statement.BindInt(col++, old_category_info.ntp_shown_count);
 
@@ -129,7 +129,7 @@ bool ImportCatalogSync(std::string version_token,
       site_statement.BindString(col++, site.site_url());
       site_statement.BindInt64(col++, category_id);
       site_statement.BindString(col++, site.title());
-      site_statement.BindBlob(col++, site.icon().data(), site.icon().length());
+      site_statement.BindBlob(col++, site.icon());
 
       site_statement.Run();
     }

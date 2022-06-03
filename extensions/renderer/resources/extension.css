@@ -115,14 +115,14 @@ select {
 :-webkit-any(button,
              input[type='button'],
              input[type='submit']) {
-  -webkit-padding-end: 10px;
-  -webkit-padding-start: 10px;
+  padding-inline-end: 10px;
+  padding-inline-start: 10px;
 }
 
 select {
   -webkit-appearance: none;
-  -webkit-padding-end: 20px;
-  -webkit-padding-start: 6px;
+  padding-inline-end: 20px;
+  padding-inline-start: 6px;
   /* OVERRIDE */
   background-image: url(../../../ui/webui/resources/images/select.png),
       linear-gradient(#ededed, #ededed 38%, #dedede);
@@ -332,7 +332,7 @@ input:disabled:-webkit-any([type='password'],
 }
 
 :-webkit-any(.checkbox, .radio) label input ~ span {
-  -webkit-margin-start: 0.6em;
+  margin-block-start: 0.6em;
   /* Make sure long spans wrap at the same horizontal position they start. */
   display: block;
 }

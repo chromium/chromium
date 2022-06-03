@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "ui/base/win/accessibility_misc_utils.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/base/win/atl_module.h"
 
 namespace base {
@@ -17,7 +17,7 @@ UIATextProvider::~UIATextProvider() {
 }
 
 // static
-bool UIATextProvider::CreateTextProvider(const string16& value,
+bool UIATextProvider::CreateTextProvider(const std::u16string& value,
                                          bool editable,
                                          IUnknown** provider) {
   // Make sure ATL is initialized in this module.
@@ -40,29 +40,29 @@ bool UIATextProvider::CreateTextProvider(const string16& value,
 // ITextProvider methods.
 //
 
-STDMETHODIMP UIATextProvider::GetSelection(SAFEARRAY** ret) {
+HRESULT UIATextProvider::GetSelection(SAFEARRAY** ret) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP UIATextProvider::GetVisibleRanges(SAFEARRAY** ret) {
+HRESULT UIATextProvider::GetVisibleRanges(SAFEARRAY** ret) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP UIATextProvider::RangeFromChild(IRawElementProviderSimple* child,
-                                             ITextRangeProvider** ret) {
+HRESULT UIATextProvider::RangeFromChild(IRawElementProviderSimple* child,
+                                        ITextRangeProvider** ret) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP UIATextProvider::RangeFromPoint(struct UiaPoint point,
-                                             ITextRangeProvider** ret) {
+HRESULT UIATextProvider::RangeFromPoint(struct UiaPoint point,
+                                        ITextRangeProvider** ret) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP UIATextProvider::get_DocumentRange(ITextRangeProvider** ret) {
+HRESULT UIATextProvider::get_DocumentRange(ITextRangeProvider** ret) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP UIATextProvider::get_SupportedTextSelection(
+HRESULT UIATextProvider::get_SupportedTextSelection(
     enum SupportedTextSelection* ret) {
   return E_NOTIMPL;
 }

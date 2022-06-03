@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h>
+#include "device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h"
 
 #include "base/guid.h"
 #include "base/logging.h"
@@ -44,7 +44,8 @@ BluetoothLocalGattServiceBlueZ::BluetoothLocalGattServiceBlueZ(
       uuid_(uuid),
       is_primary_(is_primary),
       delegate_(delegate) {
-  VLOG(1) << "Creating local GATT service with identifier: " << GetIdentifier();
+  DVLOG(1) << "Creating local GATT service with identifier: "
+           << GetIdentifier();
   adapter->AddLocalGattService(base::WrapUnique(this));
 }
 
@@ -58,15 +59,16 @@ bool BluetoothLocalGattServiceBlueZ::IsPrimary() const {
   return is_primary_;
 }
 
-void BluetoothLocalGattServiceBlueZ::Register(const base::Closure& callback,
+void BluetoothLocalGattServiceBlueZ::Register(base::OnceClosure callback,
                                               ErrorCallback error_callback) {
-  GetAdapter()->RegisterGattService(this, callback, std::move(error_callback));
+  GetAdapter()->RegisterGattService(this, std::move(callback),
+                                    std::move(error_callback));
 }
 
-void BluetoothLocalGattServiceBlueZ::Unregister(const base::Closure& callback,
+void BluetoothLocalGattServiceBlueZ::Unregister(base::OnceClosure callback,
                                                 ErrorCallback error_callback) {
   DCHECK(GetAdapter());
-  GetAdapter()->UnregisterGattService(this, callback,
+  GetAdapter()->UnregisterGattService(this, std::move(callback),
                                       std::move(error_callback));
 }
 

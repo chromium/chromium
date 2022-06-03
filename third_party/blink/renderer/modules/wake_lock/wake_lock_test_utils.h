@@ -6,24 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_TEST_UTILS_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class DOMException;
-class Document;
 class WakeLockSentinel;
 
 // Mock WakeLock implementation that tracks whether it's bound or acquired, and
@@ -130,7 +130,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   mojo::Receiver<mojom::blink::PermissionService> receiver_{this};
 
-  base::Optional<mojom::blink::PermissionStatus>
+  absl::optional<mojom::blink::PermissionStatus>
       permission_responses_[kWakeLockTypeCount];
 
   base::OnceClosure request_permission_callbacks_[kWakeLockTypeCount];
@@ -143,7 +143,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 //   MockWakeLockService mock_service;
 //   WakeLockTestingContext context(&mock_service);
 //   mojo::Remote<mojom::blink::WakeLockService> service;
-//   context.GetDocument()->GetBrowserInterfaceBroker().GetInterface(
+//   context.DomWindow()->GetBrowserInterfaceBroker().GetInterface(
 //       service.BindNewPipeAndPassReceiver());
 //   service->GetWakeLock(...);  // Will call mock_service.GetWakeLock().
 // }
@@ -154,13 +154,13 @@ class WakeLockTestingContext final {
   WakeLockTestingContext(MockWakeLockService* mock_wake_lock_service);
   ~WakeLockTestingContext();
 
-  Document* GetDocument();
+  LocalDOMWindow* DomWindow();
   LocalFrame* Frame();
   ScriptState* GetScriptState();
   MockPermissionService& GetPermissionService();
 
   // Synchronously waits for |promise| to be fulfilled.
-  ScriptPromise WaitForPromiseFulfillment(ScriptPromise promise);
+  void WaitForPromiseFulfillment(ScriptPromise promise);
 
   // Synchronously waits for |promise| to be rejected.
   void WaitForPromiseRejection(ScriptPromise promise);

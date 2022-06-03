@@ -4,7 +4,6 @@ var OperatorDictionaryTests = {
         let entry = json.dictionary[key];
         let epsilon = 1;
 
-        assert_true(MathMLFeatureDetection.has_operator_spacing());
         document.body.insertAdjacentHTML("beforeend", `<div>\
 lspace/rspace for "${parsedKey.characters}" (${parsedKey.form}): \
 <math>\
@@ -43,7 +42,6 @@ lspace/rspace for "${parsedKey.characters}" (${parsedKey.form}): \
         let entry = json.dictionary[key];
         let epsilon = 1;
 
-        assert_true(MathMLFeatureDetection.has_movablelimits());
         var defaultValue = defaultPropertyValue(entry, "movablelimits");
         document.body.insertAdjacentHTML("beforeend", `<div>\
 movablelimits for "${parsedKey.characters}" (${parsedKey.form}): \
@@ -74,8 +72,6 @@ movablelimits for "${parsedKey.characters}" (${parsedKey.form}): \
         let entry = json.dictionary[key];
         let epsilon = 1;
 
-        // FIXME: Should really detect largeop support...
-        assert_true(MathMLFeatureDetection.has_mspace());
         var defaultValue = defaultPropertyValue(entry, "largeop");
         document.body.insertAdjacentHTML("beforeend", `<div>\
 largeop for "${parsedKey.characters}" (${parsedKey.form}): \
@@ -101,8 +97,8 @@ largeop for "${parsedKey.characters}" (${parsedKey.form}): \
         let epsilon = 1;
 
         if (entry.horizontal) {
-            // FIXME: Should really detect stretchy support...
-            assert_true(MathMLFeatureDetection.has_munder());
+            // FIXME: Should really do a MathMLFeatureDetection to verify
+            // support for *horizontal* stretching.
             var defaultValue = defaultPropertyValue(entry, "stretchy");
             document.body.insertAdjacentHTML("beforeend", `<div>\
 stretchy for "${parsedKey.characters}" (${parsedKey.form}): \
@@ -127,8 +123,6 @@ stretchy for "${parsedKey.characters}" (${parsedKey.form}): \
             assert_approx_equals(mo.width, moRef.width, epsilon, `Stretchy property for ${key} should be '${defaultValue}'`);
             div.style.display = "none";
         } else {
-            // FIXME: Should really detect stretchy support...
-            assert_true(MathMLFeatureDetection.has_mspace());
             var defaultValue = defaultPropertyValue(entry, "stretchy");
             document.body.insertAdjacentHTML("beforeend", `<div>\
 stretchy for "${parsedKey.characters}" (${parsedKey.form}): \
@@ -160,8 +154,6 @@ stretchy for "${parsedKey.characters}" (${parsedKey.form}): \
         let entry = json.dictionary[key];
         let epsilon = 1;
 
-        // FIXME: Should really detect symmetric support...
-        assert_true(MathMLFeatureDetection.has_mspace());
         var defaultValue = defaultPropertyValue(entry, "symmetric");
         document.body.insertAdjacentHTML("beforeend", `<div>\
 symmetric for "${parsedKey.characters}" (${parsedKey.form}): \
@@ -187,62 +179,40 @@ symmetric for "${parsedKey.characters}" (${parsedKey.form}): \
         div.style.display = "none";
     },
 
-    "accent": function(json, key) {
-        let parsedKey = splitKey(key);
-        let entry = json.dictionary[key];
-        let epsilon = 1;
+    run: async function(json, name, fileIndex) {
+        let has_required_feature_for_testing =
+            await MathMLFeatureDetection[`has_operator_${name}`]();
 
-        // FIXME: Should really detect accent support...
-        assert_true(MathMLFeatureDetection.has_mover());
-        var defaultValue = defaultPropertyValue(entry, "accent");
-        document.body.insertAdjacentHTML("beforeend", `<div>\
-accent for "${parsedKey.characters}" (${parsedKey.form}): \
-<math>\
-  <mover>\
-    <mn>&nbsp;</mn>\
-    <mo form="${parsedKey.form}">${parsedKey.characters}</mo>\
-  </mover>\
-</math>\
- VS \
-<math>\
-  <mover>\
-    <mn>&nbsp;</mn>\
-    <mo form="${parsedKey.form}" accent="${defaultValue}">${parsedKey.characters}</mo>\
-  </mover>\
-</math>\
-</div>`);
-        var div = document.body.lastElementChild;
-        var movers = div.getElementsByTagName("mover");
-        function gapBetweenBaseAndScript(mover) {
-            return mover.children[0].getBoundingClientRect().top -
-                mover.children[1].getBoundingClientRect().bottom;
-        }
-        var gap = gapBetweenBaseAndScript(movers[0])
-        var gapRef = gapBetweenBaseAndScript(movers[1])
-        assert_approx_equals(gap, gapRef, epsilon, `Accent property for ${key} should be '${defaultValue}'`);
-        div.style.display = "none";
-    },
-
-    run: function(json, name) {
         // The operator dictionary has more than one thousand of entries so the
         // tests are grouped in chunks so that these don't get much more
         // importance than other MathML tests. For easy debugging, one can set the
         // chunk size to 1. Also, note that the test div will remain visible for
         // failed tests.
         const entryPerChunk = 50
+        const filesPerProperty = 6
 
         var counter = 0;
         var test;
 
         for (key in json.dictionary) {
 
-            if (counter % entryPerChunk === 0) {
+            // Skip this key if it does not belong to that test file.
+            if (counter % filesPerProperty != fileIndex) {
+                counter++;
+                continue;
+            }
+
+            var counterInFile = (counter - fileIndex) / filesPerProperty;
+            if (counterInFile % entryPerChunk === 0) {
                 // Start of a new chunk.
                 // Complete current async tests and create new ones for the next chunk.
                 if (test) test.done();
-                test = async_test(`Operator dictionary chunk ${1 + counter / entryPerChunk} - ${name}`);
-            }
+                test = async_test(`Operator dictionary chunk ${1 + counterInFile / entryPerChunk} - ${name}`);
 
+                test.step(function() {
+                    assert_true(has_required_feature_for_testing, `${name} is supported`);
+                });
+            }
             test.step(function() {
                 OperatorDictionaryTests[name](json, key);
             });

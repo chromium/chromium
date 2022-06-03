@@ -6,25 +6,32 @@
 #define CC_TREES_PROXY_COMMON_H_
 
 #include <stddef.h>
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/callback_forward.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
 
-struct ScrollAndScaleSet;
+struct CompositorCommitData;
+class MutatorEvents;
 
 struct CC_EXPORT BeginMainFrameAndCommitState {
   BeginMainFrameAndCommitState();
   ~BeginMainFrameAndCommitState();
 
-  unsigned int begin_frame_id = 0;
   viz::BeginFrameArgs begin_frame_args;
-  std::unique_ptr<ScrollAndScaleSet> scroll_info;
+  std::unique_ptr<CompositorCommitData> commit_data;
   size_t memory_allocation_limit_bytes = 0;
-  bool evicted_ui_resources = false;
   std::vector<std::pair<int, bool>> completed_image_decode_requests;
+  std::unique_ptr<MutatorEvents> mutator_events;
+  // Bit encoding of the FrameSequenceTrackerType for active trackers
+  ActiveFrameSequenceTrackers active_sequence_trackers = 0;
+  bool evicted_ui_resources = false;
+  std::vector<uint32_t> finished_transition_request_sequence_ids;
 };
 
 }  // namespace cc

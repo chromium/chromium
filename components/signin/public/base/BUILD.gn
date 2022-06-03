@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 if (is_android) {
@@ -23,10 +24,13 @@ static_library("base") {
     "account_consistency_method.h",
     "avatar_icon_util.cc",
     "avatar_icon_util.h",
+    "consent_level.h",
     "device_id_helper.cc",
     "device_id_helper.h",
     "multilogin_parameters.cc",
     "multilogin_parameters.h",
+    "persistent_repeating_timer.cc",
+    "persistent_repeating_timer.h",
     "signin_client.cc",
     "signin_client.h",
     "signin_metrics.cc",
@@ -37,6 +41,7 @@ static_library("base") {
     "signin_switches.h",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//third_party/icu:icui18n",
     "//third_party/re2",
@@ -49,16 +54,21 @@ static_library("base") {
     "//url",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
+    public_deps += [ "//components/account_manager_core" ]
+  }
+  if (is_chromeos_lacros) {
+    public_deps += [ "//components/account_manager_core" ]
   }
 }
 
 if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
-    sources = [
-      "signin_metrics.h",
-    ]
+    sources = [ "signin_metrics.h" ]
+  }
+  java_cpp_enum("consent_level_enum_javagen") {
+    sources = [ "consent_level.h" ]
   }
 }
 
@@ -73,6 +83,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//google_apis:test_support",
   ]
@@ -89,6 +100,7 @@ source_set("unit_tests") {
   sources = [
     "avatar_icon_util_unittest.cc",
     "device_id_helper_unittest.cc",
+    "persistent_repeating_timer_unittest.cc",
     "signin_metrics_unittest.cc",
   ]
 
@@ -96,6 +108,8 @@ source_set("unit_tests") {
     ":base",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
     "//url",

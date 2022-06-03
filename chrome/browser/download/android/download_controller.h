@@ -25,11 +25,17 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 
 class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
+
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
 
   // DownloadControllerBase implementation.
   void AcquireFileAccessPermission(
@@ -52,7 +58,10 @@ class DownloadController : public DownloadControllerBase {
   };
   static void RecordStoragePermission(StoragePermissionType type);
 
-  static void CloseTabIfEmpty(content::WebContents* web_contents);
+  // Close the |web_contents| for |download|. |download| could be null
+  // if the download is created by Android DownloadManager.
+  static void CloseTabIfEmpty(content::WebContents* web_contents,
+                              download::DownloadItem* download);
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired, which permission to update.
@@ -64,15 +73,11 @@ class DownloadController : public DownloadControllerBase {
   DownloadController();
   ~DownloadController() override;
 
-  // Helper method for implementing AcquireFileAccessPermission().
-  bool HasFileAccessPermission();
-
   // DownloadControllerBase implementation.
   void OnDownloadStarted(download::DownloadItem* download_item) override;
   void StartContextMenuDownload(const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
-                                bool is_link,
-                                const std::string& extra_headers) override;
+                                bool is_link) override;
 
   // DownloadItem::Observer interface.
   void OnDownloadUpdated(download::DownloadItem* item) override;
@@ -92,6 +97,9 @@ class DownloadController : public DownloadControllerBase {
   bool IsInterruptedDownloadAutoResumable(
       download::DownloadItem* download_item);
 
+  // Get profile key from download item.
+  ProfileKey* GetProfileKey(download::DownloadItem* download_item);
+
   std::string default_file_name_;
 
   using StrongValidatorsMap =
@@ -101,7 +109,7 @@ class DownloadController : public DownloadControllerBase {
   // from the beginning and all downloaded data will be lost.
   StrongValidatorsMap strong_validators_map_;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
+  std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

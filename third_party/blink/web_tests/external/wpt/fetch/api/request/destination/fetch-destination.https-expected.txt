@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS Initialize global state
+PASS HTMLImageElement fetches with an "image" Request.destination
+PASS HTMLImageElement with srcset attribute fetches with an "image" Request.destination
+PASS HTMLImageElement with a HTMLPictureElement parent attribute fetches with an "image" Request.destination
+PASS SVGImageElement fetches with an "image" Request.destination
+PASS fetch() fetches with an empty string Request.destination
+PASS XMLHttpRequest() fetches with an empty string Request.destination
+PASS EventSource() fetches with an empty string Request.destination
+PASS HTMLAudioElement fetches with an "audio" Request.destination
+PASS HTMLVideoElement fetches with a "video" Request.destination
+PASS HTMLScriptElement fetches with a "script" Request.destination
+FAIL AudioWorklet module fetches with a "audioworklet" Request.destination promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+PASS HTMLLinkElement with rel=stylesheet fetches with a "style" Request.destination
+PASS HTMLLinkElement with rel=preload and as=fetch fetches with an empty string Request.destination
+PASS HTMLLinkElement with rel=preload and as=style fetches with a "style" Request.destination
+PASS HTMLLinkElement with rel=preload and as=script fetches with a "script" Request.destination
+PASS HTMLLinkElement with rel=preload and as=font fetches with a "font" Request.destination
+PASS HTMLLinkElement with rel=preload and as=image fetches with a "image" Request.destination
+PASS HTMLLinkElement with rel=preload and as=audio fetches with a "audio" Request.destination
+PASS HTMLLinkElement with rel=preload and as=video fetches with a "video" Request.destination
+PASS HTMLLinkElement with rel=preload and as=track fetches with a "track" Request.destination
+PASS HTMLLinkElement with rel=preload and as=document fetches with a "document" Request.destination
+PASS HTMLLinkElement with rel=preload and as=worker fetches with a "worker" Request.destination
+PASS HTMLLinkElement with rel=preload and as=sharedworker fetches with a "sharedworker" Request.destination
+PASS HTMLLinkElement with rel=preload and as=xslt fetches with a "xslt" Request.destination
+PASS HTMLLinkElement with rel=preload and as=manifest fetches with a "manifest" Request.destination
+Harness: the test ran to completion.
+

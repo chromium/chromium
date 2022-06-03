@@ -7,5 +7,5 @@
 dictionary RTCSessionDescriptionInit {
     // TODO(foolip): |type| should be required. https://crbug.com/662898
     RTCSdpType type;
-    DOMString sdp;
+    DOMString sdp = "";
 };

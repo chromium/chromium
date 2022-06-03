@@ -8,7 +8,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "components/cloud_devices/common/cloud_device_description_consts.h"
 
@@ -22,7 +21,7 @@ CloudDeviceDescription::CloudDeviceDescription()
 CloudDeviceDescription::~CloudDeviceDescription() = default;
 
 bool CloudDeviceDescription::InitFromString(const std::string& json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     return false;
 
@@ -41,8 +40,8 @@ bool CloudDeviceDescription::IsValidTicket(const base::Value& ticket) {
   if (!ticket.is_dict())
     return false;
 
-  const base::Value* version = ticket.FindKey(json::kVersion);
-  return version && version->GetString() == json::kVersion10;
+  const std::string* version = ticket.FindStringKey(json::kVersion);
+  return version && *version == json::kVersion10;
 }
 
 std::string CloudDeviceDescription::ToString() const {

@@ -4,17 +4,21 @@
 
 #include "services/network/expect_ct_reporter.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/test/cert_test_util.h"
@@ -45,16 +49,19 @@ class TestCertificateReportSender : public net::ReportSender {
       : ReportSender(nullptr, TRAFFIC_ANNOTATION_FOR_TESTS) {}
   ~TestCertificateReportSender() override {}
 
-  void Send(const GURL& report_uri,
-            base::StringPiece content_type,
-            base::StringPiece serialized_report,
-            const base::RepeatingCallback<void()>& success_callback,
-            const base::RepeatingCallback<void(const GURL&, int, int)>&
-                error_callback) override {
+  void Send(
+      const GURL& report_uri,
+      base::StringPiece content_type,
+      base::StringPiece serialized_report,
+      const net::NetworkIsolationKey& network_isolation_key,
+      base::OnceCallback<void()> success_callback,
+      base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
     sent_report_count_++;
     latest_report_uri_ = report_uri;
-    serialized_report.CopyToString(&latest_serialized_report_);
-    content_type.CopyToString(&latest_content_type_);
+    latest_serialized_report_.assign(serialized_report.data(),
+                                     serialized_report.size());
+    latest_content_type_.assign(content_type.data(), content_type.size());
+    latest_network_isolation_key_ = network_isolation_key;
     if (!report_callback_.is_null()) {
       EXPECT_EQ(expected_report_uri_, latest_report_uri_);
       std::move(report_callback_).Run();
@@ -71,6 +78,10 @@ class TestCertificateReportSender : public net::ReportSender {
 
   const std::string& latest_serialized_report() const {
     return latest_serialized_report_;
+  }
+
+  const net::NetworkIsolationKey latest_network_isolation_key() const {
+    return latest_network_isolation_key_;
   }
 
   // Can be called to wait for a single report, which is expected to be sent to
@@ -92,6 +103,7 @@ class TestCertificateReportSender : public net::ReportSender {
   GURL latest_report_uri_;
   std::string latest_content_type_;
   std::string latest_serialized_report_;
+  net::NetworkIsolationKey latest_network_isolation_key_;
   base::OnceClosure report_callback_;
   GURL expected_report_uri_;
 };
@@ -124,7 +136,7 @@ void CheckReportCertificateChain(
     const base::ListValue& chain) {
   std::vector<std::string> pem_encoded_chain;
   expected_cert->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), chain.GetSize());
+  ASSERT_EQ(pem_encoded_chain.size(), chain.GetList().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
     std::string cert_pem;
@@ -159,26 +171,26 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
     return ::testing::AssertionFailure() << "Failed to serialize SCT";
   }
 
-  for (size_t i = 0; i < report_list.GetSize(); i++) {
-    const base::DictionaryValue* report_sct;
-    if (!report_list.GetDictionary(i, &report_sct)) {
+  for (const base::Value& report_sct_value : report_list.GetList()) {
+    if (!report_sct_value.is_dict()) {
       return ::testing::AssertionFailure()
              << "Failed to get dictionary value from report SCT list";
     }
-
+    const base::DictionaryValue& report_sct =
+        base::Value::AsDictionaryValue(report_sct_value);
     std::string serialized_sct;
-    EXPECT_TRUE(report_sct->GetString("serialized_sct", &serialized_sct));
+    EXPECT_TRUE(report_sct.GetString("serialized_sct", &serialized_sct));
     std::string decoded_serialized_sct;
     EXPECT_TRUE(base::Base64Decode(serialized_sct, &decoded_serialized_sct));
     if (decoded_serialized_sct != expected_serialized_sct)
       continue;
 
     std::string source;
-    EXPECT_TRUE(report_sct->GetString("source", &source));
+    EXPECT_TRUE(report_sct.GetString("source", &source));
     EXPECT_EQ(expected_sct->origin, SCTOriginStringToOrigin(source));
 
     std::string report_status;
-    EXPECT_TRUE(report_sct->GetString("status", &report_status));
+    EXPECT_TRUE(report_sct.GetString("status", &report_status));
     switch (expected_status) {
       case net::ct::SCT_STATUS_LOG_UNKNOWN:
         EXPECT_EQ("unknown", report_status);
@@ -206,7 +218,7 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
 void CheckReportSCTs(
     const net::SignedCertificateTimestampAndStatusList& expected_scts,
     const base::ListValue& scts) {
-  EXPECT_EQ(expected_scts.size(), scts.GetSize());
+  EXPECT_EQ(expected_scts.size(), scts.GetList().size());
   for (const auto& expected_sct : expected_scts) {
     ASSERT_TRUE(
         FindSCTInReportList(expected_sct.sct, expected_sct.status, scts));
@@ -268,8 +280,19 @@ void CheckExpectCTReport(const std::string& serialized_report,
 // be run whenever a net::URLRequest is destroyed.
 class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
  public:
-  TestExpectCTNetworkDelegate()
-      : url_request_destroyed_callback_(base::NullCallback()) {}
+  TestExpectCTNetworkDelegate() = default;
+
+  TestExpectCTNetworkDelegate(const TestExpectCTNetworkDelegate&) = delete;
+  TestExpectCTNetworkDelegate& operator=(const TestExpectCTNetworkDelegate&) =
+      delete;
+
+  using OnBeforeURLRequestCallback =
+      base::RepeatingCallback<void(net::URLRequest* request)>;
+
+  void set_on_before_url_request_callback(
+      const OnBeforeURLRequestCallback& on_before_url_request_callback) {
+    on_before_url_request_callback_ = on_before_url_request_callback;
+  }
 
   void set_url_request_destroyed_callback(
       const base::RepeatingClosure& callback) {
@@ -277,14 +300,21 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
   }
 
   // net::NetworkDelegateImpl:
+  int OnBeforeURLRequest(net::URLRequest* request,
+                         net::CompletionOnceCallback callback,
+                         GURL* new_url) override {
+    if (on_before_url_request_callback_)
+      on_before_url_request_callback_.Run(request);
+    return net::OK;
+  }
   void OnURLRequestDestroyed(net::URLRequest* request) override {
-    url_request_destroyed_callback_.Run();
+    if (url_request_destroyed_callback_)
+      url_request_destroyed_callback_.Run();
   }
 
  private:
+  OnBeforeURLRequestCallback on_before_url_request_callback_;
   base::RepeatingClosure url_request_destroyed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExpectCTNetworkDelegate);
 };
 
 // A test fixture that allows tests to send a report and wait until the
@@ -294,9 +324,13 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   ExpectCTReporterWaitTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
+  ExpectCTReporterWaitTest(const ExpectCTReporterWaitTest&) = delete;
+  ExpectCTReporterWaitTest& operator=(const ExpectCTReporterWaitTest&) = delete;
+
   void SetUp() override {
     // Initializes URLRequestContext after the thread is set up.
-    context_.reset(new net::TestURLRequestContext(true));
+    context_ = std::make_unique<net::TestURLRequestContext>(
+        true /* delay_initialization */);
     context_->set_network_delegate(&network_delegate_);
     context_->Init();
     net::URLRequestFailedJob::AddUrlHandler();
@@ -319,7 +353,8 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
         run_loop.QuitClosure());
     reporter->OnExpectCTFailed(
         host_port, report_uri, expiration, ssl_info.cert.get(),
-        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
+        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
+        net::NetworkIsolationKey());
     run_loop.Run();
   }
 
@@ -327,8 +362,6 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   TestExpectCTNetworkDelegate network_delegate_;
   std::unique_ptr<net::TestURLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTReporterWaitTest);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> ReplyToPostWith200(
@@ -418,10 +451,13 @@ class ExpectCTReporterTest : public ::testing::Test {
 
     const GURL fail_report_uri = test_server().GetURL(fail_path);
     const GURL successful_report_uri = test_server().GetURL(successful_path);
+    const net::NetworkIsolationKey network_isolation_key =
+        net::NetworkIsolationKey::CreateTransient();
 
     reporter->OnExpectCTFailed(
         host_port, fail_report_uri, base::Time(), ssl_info.cert.get(),
-        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
+        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
+        network_isolation_key);
     bad_cors_run_loop.Run();
     // The CORS preflight response may not even have been received yet, so
     // these expectations are mostly aspirational.
@@ -435,9 +471,11 @@ class ExpectCTReporterTest : public ::testing::Test {
     // be 2.
     reporter->OnExpectCTFailed(
         host_port, successful_report_uri, base::Time(), ssl_info.cert.get(),
-        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
+        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
+        network_isolation_key);
     sender->WaitForReport(successful_report_uri);
     EXPECT_EQ(successful_report_uri, sender->latest_report_uri());
+    EXPECT_EQ(network_isolation_key, sender->latest_network_isolation_key());
     EXPECT_EQ(1, sender->sent_report_count());
   }
 
@@ -480,7 +518,8 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
 
     reporter.OnExpectCTFailed(
         host_port, report_uri, base::Time(), ssl_info.cert.get(),
-        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
+        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
+        net::NetworkIsolationKey());
     EXPECT_TRUE(sender->latest_report_uri().is_empty());
     EXPECT_TRUE(sender->latest_serialized_report().empty());
 
@@ -497,7 +536,8 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
     scoped_feature_list.InitAndEnableFeature(features::kExpectCTReporting);
     reporter.OnExpectCTFailed(
         host_port, report_uri, base::Time(), ssl_info.cert.get(),
-        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
+        ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
+        net::NetworkIsolationKey());
     sender->WaitForReport(report_uri);
     EXPECT_EQ(report_uri, sender->latest_report_uri());
     EXPECT_EQ(1, sender->sent_report_count());
@@ -519,7 +559,8 @@ TEST_F(ExpectCTReporterTest, EmptyReportURI) {
 
   reporter.OnExpectCTFailed(net::HostPortPair(), GURL(), base::Time(), nullptr,
                             nullptr,
-                            net::SignedCertificateTimestampAndStatusList());
+                            net::SignedCertificateTimestampAndStatusList(),
+                            net::NetworkIsolationKey());
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
   EXPECT_TRUE(sender->latest_serialized_report().empty());
 
@@ -660,10 +701,10 @@ TEST_F(ExpectCTReporterTest, SendReport) {
   const GURL report_uri = test_server().GetURL(report_path);
 
   // Check that the report is sent and contains the correct information.
-  reporter.OnExpectCTFailed(net::HostPortPair::FromURL(report_uri), report_uri,
-                            expiration, ssl_info.cert.get(),
-                            ssl_info.unverified_cert.get(),
-                            ssl_info.signed_certificate_timestamps);
+  reporter.OnExpectCTFailed(
+      net::HostPortPair::FromURL(report_uri), report_uri, expiration,
+      ssl_info.cert.get(), ssl_info.unverified_cert.get(),
+      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
 
   // A CORS preflight request should be sent before the actual report.
   cors_run_loop.Run();
@@ -723,13 +764,70 @@ TEST_F(ExpectCTReporterTest, SendReportSuccessCallback) {
 
   const GURL report_uri = test_server().GetURL("/report");
 
-  reporter.OnExpectCTFailed(net::HostPortPair::FromURL(report_uri), report_uri,
-                            expiration, ssl_info.cert.get(),
-                            ssl_info.unverified_cert.get(),
-                            ssl_info.signed_certificate_timestamps);
+  reporter.OnExpectCTFailed(
+      net::HostPortPair::FromURL(report_uri), report_uri, expiration,
+      ssl_info.cert.get(), ssl_info.unverified_cert.get(),
+      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
 
   // Wait to check that the success callback is run.
   run_loop.Run();
+}
+
+// Test that report preflight requests use the correct NetworkIsolationKey.
+TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
+  net::NetworkIsolationKey network_isolation_key =
+      net::NetworkIsolationKey::CreateTransient();
+
+  const std::string report_path = "/report";
+  std::map<std::string, std::string> cors_headers = kGoodCorsHeaders;
+  base::RunLoop cors_run_loop;
+  test_server().RegisterRequestHandler(
+      base::BindRepeating(&HandleReportPreflightForPath, report_path,
+                          cors_headers, cors_run_loop.QuitClosure()));
+  ASSERT_TRUE(test_server().Start());
+
+  TestCertificateReportSender* sender = new TestCertificateReportSender();
+
+  TestExpectCTNetworkDelegate network_delegate;
+  net::TestURLRequestContext context(true /* delay_initialization*/);
+  context.set_network_delegate(&network_delegate);
+  context.Init();
+
+  ExpectCTReporter reporter(&context, base::NullCallback(),
+                            base::NullCallback());
+  reporter.report_sender_.reset(sender);
+  EXPECT_TRUE(sender->latest_report_uri().is_empty());
+  EXPECT_TRUE(sender->latest_serialized_report().empty());
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl_info.unverified_cert = net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "localhost_cert.pem");
+
+  base::RunLoop before_url_request_run_loop;
+  network_delegate.set_on_before_url_request_callback(
+      base::BindLambdaForTesting([&](net::URLRequest* request) {
+        EXPECT_EQ(network_isolation_key,
+                  request->isolation_info().network_isolation_key());
+        before_url_request_run_loop.Quit();
+      }));
+
+  const GURL report_uri = test_server().GetURL(report_path);
+  reporter.OnExpectCTFailed(
+      net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
+      ssl_info.cert.get(), ssl_info.unverified_cert.get(),
+      ssl_info.signed_certificate_timestamps, network_isolation_key);
+
+  // Make sure the OnBeforeURLRequestCallback is hit.
+  before_url_request_run_loop.Run();
+
+  // A CORS preflight request should be sent before the actual report.
+  cors_run_loop.Run();
+  sender->WaitForReport(report_uri);
+
+  EXPECT_EQ(report_uri, sender->latest_report_uri());
+  EXPECT_FALSE(sender->latest_serialized_report().empty());
 }
 
 // Test that report preflight responses can contain whitespace.
@@ -758,10 +856,10 @@ TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
       net::GetTestCertsDirectory(), "localhost_cert.pem");
 
   const GURL report_uri = test_server().GetURL(report_path);
-  reporter.OnExpectCTFailed(net::HostPortPair::FromURL(report_uri), report_uri,
-                            base::Time::Now(), ssl_info.cert.get(),
-                            ssl_info.unverified_cert.get(),
-                            ssl_info.signed_certificate_timestamps);
+  reporter.OnExpectCTFailed(
+      net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
+      ssl_info.cert.get(), ssl_info.unverified_cert.get(),
+      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
 
   // A CORS preflight request should be sent before the actual report.
   cors_run_loop.Run();

@@ -16,6 +16,7 @@
 #include "net/cert/internal/cert_issuer_source_sync_unittest.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/test_helpers.h"
+#include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
@@ -27,17 +28,34 @@ namespace net {
 
 namespace {
 
+// Returns true if the provided slot looks like a built-in root.
+bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
+  if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot))
+    return false;
+  CERTCertList* cert_list = PK11_ListCertsInSlot(slot);
+  if (!cert_list)
+    return false;
+  bool built_in_cert_found = false;
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    if (IsKnownRoot(node->cert)) {
+      built_in_cert_found = true;
+      break;
+    }
+  }
+  CERT_DestroyCertList(cert_list);
+  return built_in_cert_found;
+}
+
 // Returns the slot which holds the built-in root certificates.
-crypto::ScopedPK11Slot GetRootCertsSlot() {
+crypto::ScopedPK11Slot GetBuiltInRootCertsSlot() {
   crypto::AutoSECMODListReadLock auto_lock;
   SECMODModuleList* head = SECMOD_GetDefaultModuleList();
   for (SECMODModuleList* item = head; item != NULL; item = item->next) {
     int slot_count = item->module->loaded ? item->module->slotCount : 0;
     for (int i = 0; i < slot_count; i++) {
       PK11SlotInfo* slot = item->module->slots[i];
-      if (!PK11_IsPresent(slot))
-        continue;
-      if (PK11_HasRootCerts(slot))
+      if (IsBuiltInRootSlot(slot))
         return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
     }
   }
@@ -48,13 +66,15 @@ crypto::ScopedPK11Slot GetRootCertsSlot() {
 // it is not specified which one is returned. If none are available, returns
 // nullptr.
 scoped_refptr<ParsedCertificate> GetASSLTrustedBuiltinRoot() {
-  crypto::ScopedPK11Slot root_certs_slot = GetRootCertsSlot();
+  crypto::ScopedPK11Slot root_certs_slot = GetBuiltInRootCertsSlot();
   if (!root_certs_slot)
     return nullptr;
 
   scoped_refptr<X509Certificate> ssl_trusted_root;
 
   CERTCertList* cert_list = PK11_ListCertsInSlot(root_certs_slot.get());
+  if (!cert_list)
+    return nullptr;
   for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
        !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
     CERTCertTrust trust;
@@ -234,8 +254,8 @@ class TrustStoreNSSTestBase : public ::testing::Test {
                 CertificateTrustType expected_trust) {
     bool success = true;
     for (const scoped_refptr<ParsedCertificate>& cert : certs) {
-      CertificateTrust trust;
-      trust_store_nss_->GetTrust(cert.get(), &trust, /*debug_data=*/nullptr);
+      CertificateTrust trust =
+          trust_store_nss_->GetTrust(cert.get(), /*debug_data=*/nullptr);
       if (trust.type != expected_trust) {
         EXPECT_EQ(expected_trust, trust.type) << GetCertString(cert);
         success = false;
@@ -298,26 +318,16 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, CertsNotPresent) {
   EXPECT_TRUE(TrustStoreContains(newroot_, ParsedCertificateList()));
 }
 
-#if !defined(OS_CHROMEOS)
-// TrustStoreNSS should not return temporary certs. (See
-// https://crbug.com/951166)
-TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertNotPresent) {
-  ScopedCERTCertificate temp_nss_cert(x509_util::CreateCERTCertificateFromBytes(
-      newintermediate_->der_cert().UnsafeData(),
-      newintermediate_->der_cert().Length()));
-  EXPECT_TRUE(TrustStoreContains(target_, ParsedCertificateList()));
-}
-#else   // !defined(OS_CHROMEOS)
 // TrustStoreNSS should return temporary certs on Chrome OS, because on Chrome
 // OS temporary certs are used to supply policy-provided untrusted authority
 // certs. (See https://crbug.com/978854)
+// On other platforms it's not required but doesn't hurt anything.
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
   ScopedCERTCertificate temp_nss_cert(x509_util::CreateCERTCertificateFromBytes(
       newintermediate_->der_cert().UnsafeData(),
       newintermediate_->der_cert().Length()));
   EXPECT_TRUE(TrustStoreContains(target_, {newintermediate_}));
 }
-#endif  // !defined(OS_CHROMEOS)
 
 // Independent of the specified slot-based filtering mode, built-in root certs
 // should always be trusted.
@@ -334,6 +344,36 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SlotFilterType::kDontFilter,
                       SlotFilterType::kDoNotAllowUserSlots,
                       SlotFilterType::kAllowSpecifiedUserSlot));
+
+// Tests a TrustStoreNSS that ignores root certs
+class TrustStoreNSSTestIgnoreSystemCerts : public TrustStoreNSSTestBase {
+ public:
+  TrustStoreNSSTestIgnoreSystemCerts() = default;
+  ~TrustStoreNSSTestIgnoreSystemCerts() override = default;
+
+  std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
+    return std::make_unique<TrustStoreNSS>(
+        trustSSL, TrustStoreNSS::IgnoreSystemTrustSettings());
+  }
+};
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootTrusted) {
+  AddCertsToNSS();
+  TrustCert(newroot_.get());
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+}
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootDistrusted) {
+  AddCertsToNSS();
+  DistrustCert(newroot_.get());
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::DISTRUSTED));
+}
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, SystemRootCertsIgnored) {
+  scoped_refptr<ParsedCertificate> system_root = GetASSLTrustedBuiltinRoot();
+  ASSERT_TRUE(system_root);
+  EXPECT_TRUE(HasTrust({system_root}, CertificateTrustType::UNSPECIFIED));
+}
 
 // Tests a TrustStoreNSS that does not filter which certificates
 class TrustStoreNSSTestWithoutSlotFilter : public TrustStoreNSSTestBase {

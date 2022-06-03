@@ -7,8 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "components/zucchini/target_pool.h"
 
 namespace zucchini {

@@ -15,7 +15,8 @@ class WebContents;
 
 namespace security_interstitials {
 class MetricsHelper;
-}
+class SettingsPageHelper;
+}  // namespace security_interstitials
 
 namespace weblayer {
 
@@ -30,7 +31,12 @@ class SSLErrorControllerClient
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
-      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper);
+      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
+
+  SSLErrorControllerClient(const SSLErrorControllerClient&) = delete;
+  SSLErrorControllerClient& operator=(const SSLErrorControllerClient&) = delete;
 
   ~SSLErrorControllerClient() override = default;
 
@@ -38,13 +44,13 @@ class SSLErrorControllerClient
   void GoBack() override;
   void Proceed() override;
   void OpenUrlInNewForegroundTab(const GURL& url) override;
+  bool CanLaunchDateAndTimeSettings() override;
+  void LaunchDateAndTimeSettings() override;
 
  private:
   const int cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorControllerClient);
 };
 
 }  // namespace weblayer

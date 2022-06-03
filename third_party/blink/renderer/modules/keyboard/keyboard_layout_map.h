@@ -25,7 +25,7 @@ class KeyboardLayoutMap final : public ScriptWrappable,
   // IDL attributes / methods
   uint32_t size() const { return layout_map_.size(); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
   }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(__x86_64__) || defined(__aarch64__)
+
 // base::mac::CallWithEHFrame(void () block_pointer)
 #define CALL_WITH_EH_FRAME __ZN4base3mac15CallWithEHFrameEU13block_pointerFvvE
 
@@ -10,7 +12,7 @@
   .private_extern CALL_WITH_EH_FRAME
 #endif
   .globl CALL_WITH_EH_FRAME
-  .align 4
+  .p2align 2
 CALL_WITH_EH_FRAME:
 
   .cfi_startproc
@@ -21,6 +23,7 @@ CALL_WITH_EH_FRAME:
   .cfi_personality 155, __ZN4base3mac21CxxPersonalityRoutineEi14_Unwind_ActionyP17_Unwind_ExceptionP15_Unwind_Context
   .cfi_lsda 16, CallWithEHFrame_exception_table
 
+#if defined(__x86_64__)
 Lfunction_start:
   pushq %rbp
   .cfi_def_cfa_offset 16
@@ -46,44 +49,85 @@ Lcatch:
   callq ___cxa_begin_catch  // The ABI requires a call to the catch handler.
   ud2  // In the event this is called, make it fatal.
 
+#elif defined(__aarch64__)
+Lfunction_start:
+  stp x29, x30, [sp, #-16]!
+  mov x29, sp
+  .cfi_def_cfa w29, 16
+  .cfi_offset w30, -8
+  .cfi_offset w29, -16
+
+  // Load the function pointer from the block descriptor.
+  ldr x8, [x0, #16]
+
+  // Execute the block in the context of a C++ try{}.
+Ltry_start:
+  blr x8
+Ltry_end:
+  ldp x29, x30, [sp], #16
+  ret
+
+  // Landing pad for the exception handler. This should never be called, since
+  // the personality routine will stop the search for an exception handler,
+  // which will cause the runtime to invoke the default terminate handler.
+Lcatch:
+  bl ___cxa_begin_catch  // The ABI requires a call to the catch handler.
+  brk #0x1  // In the event this is called, make it fatal.
+#endif
+
 Lfunction_end:
   .cfi_endproc
 
-// The C++ exception table that is used to identify this frame as an
-// exception handler. See http://llvm.org/docs/ExceptionHandling.html and
-// http://mentorembedded.github.io/cxx-abi/exceptions.pdf.
+  // The C++ exception table that is used to identify this frame as an
+  // exception handler. See https://llvm.org/docs/ExceptionHandling.html,
+  // https://itanium-cxx-abi.github.io/cxx-abi/exceptions.pdf and
+  // https://www.airs.com/blog/archives/464.
   .section __TEXT,__gcc_except_tab
-  .align 2
+  .p2align 2
 CallWithEHFrame_exception_table:
   .byte 255  // DW_EH_PE_omit
   .byte 155  // DW_EH_PE_indirect | DW_EH_PE_pcrel | DW_EH_PE_sdata4
-  .asciz "\242\200\200"  // LE int128 for the number of bytes in this table.
-  .byte 3  // DW_EH_PE_udata4
-  .byte 26  // Callsite table length.
+  // The number of bytes in this table
+  .uleb128 Ltypes_table_base - Ltypes_table_ref_base
 
+Ltypes_table_ref_base:
+  .byte 1  // DW_EH_PE_uleb128
+  // Callsite table length.
+  .uleb128 Lcall_site_table_end - Lcall_site_table_start
+
+Lcall_site_table_start:
 // First callsite.
 CS1_begin = Ltry_start - Lfunction_start
-  .long CS1_begin
+  .uleb128 CS1_begin
 CS1_end = Ltry_end - Ltry_start
-  .long CS1_end
+  .uleb128 CS1_end
 
 // First landing pad.
 LP1 = Lcatch - Lfunction_start
-  .long LP1
-  .byte 1  // Action record.
+  .uleb128 LP1
+  .uleb128 1  // Action record.
 
 // Second callsite.
 CS2_begin = Ltry_end - Lfunction_start
-  .long CS2_begin
+  .uleb128 CS2_begin
 CS2_end = Lfunction_end - Ltry_end
-  .long CS2_end
+  .uleb128 CS2_end
 
-// Second landing pad (none).
-  .long 0
-  .byte 0  // No action.
+  // Second landing pad (none).
+  .uleb128 0
+  .uleb128 0  // No action.
 
-// Action table.
-  .byte 1  // Action record 1.
-  .byte 0  // No further action to take.
-  .long 0  // No type filter for this catch(){} clause.
-  .align 2
+Lcall_site_table_end:
+  // Action table.
+  // Action record 1.
+  .uleb128 1  // Type filter -1.
+  .uleb128 0  // No further action to take.
+
+  // Types table.
+  .p2align 2
+  .long 0  // Type filter -1: no type filter for this catch(){} clause.
+
+Ltypes_table_base:
+  .p2align 2
+
+#endif  // defined(__x86_64__) || defined(__aarch64__)

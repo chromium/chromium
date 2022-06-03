@@ -20,7 +20,7 @@ async_test(t => {
     setTimeout(function() {
       setTimeout(function() {
         t.step(function() {
-          assert_throws("SecurityError", function() {
+          assert_throws_dom("SecurityError", function() {
             canvas.toDataURL();
           }, "Check toDataURL blocked.");
         });
@@ -29,7 +29,7 @@ async_test(t => {
         setTimeout(function() {
           setTimeout(function() {
             t.step(function() {
-              assert_throws("SecurityError", function() {
+              assert_throws_dom("SecurityError", function() {
                 canvas.toDataURL();
               });
             });

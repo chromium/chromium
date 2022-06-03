@@ -7,14 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/renderer/navigation_client.h"
-
-struct FrameHostMsg_DidCommitProvisionalLoad_Params;
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace blink {
 class WebDocumentLoader;
@@ -28,18 +23,20 @@ namespace content {
 
 class CONTENT_EXPORT NavigationState {
  public:
+  NavigationState(const NavigationState&) = delete;
+  NavigationState& operator=(const NavigationState&) = delete;
+
   ~NavigationState();
 
-  static std::unique_ptr<NavigationState> CreateBrowserInitiated(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
-      mojom::FrameNavigationControl::CommitNavigationCallback callback,
+  static std::unique_ptr<NavigationState> Create(
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       mojom::NavigationClient::CommitNavigationCallback
           per_navigation_mojo_interface_callback,
       std::unique_ptr<NavigationClient> navigation_client,
       bool was_initiated_in_this_frame);
 
-  static std::unique_ptr<NavigationState> CreateContentInitiated();
+  static std::unique_ptr<NavigationState> CreateForSynchronousCommit();
 
   static NavigationState* FromDocumentLoader(
       blink::WebDocumentLoader* document_loader);
@@ -47,18 +44,15 @@ class CONTENT_EXPORT NavigationState {
   // True iff the frame's navigation was within the same document.
   bool WasWithinSameDocument();
 
-  // True if this navigation was not initiated via WebFrame::LoadRequest.
-  bool IsContentInitiated();
+  bool IsForSynchronousCommit();
 
-  const mojom::CommonNavigationParams& common_params() const {
+  const blink::mojom::CommonNavigationParams& common_params() const {
     return *common_params_;
   }
-  const mojom::CommitNavigationParams& commit_params() const {
+  const blink::mojom::CommitNavigationParams& commit_params() const {
     return *commit_params_;
   }
-  bool uses_per_navigation_mojo_interface() const {
-    return navigation_client_.get();
-  }
+  bool has_navigation_client() const { return navigation_client_.get(); }
   void set_was_within_same_document(bool value) {
     was_within_same_document_ = value;
   }
@@ -71,32 +65,18 @@ class CONTENT_EXPORT NavigationState {
     common_params_->transition = transition;
   }
 
-  // Only used when PerNavigationMojoInterface is enabled.
-  void set_navigation_client(
-      std::unique_ptr<NavigationClient> navigation_client_impl) {
-    navigation_client_ = std::move(navigation_client_impl);
-  }
-
-  void set_navigation_start(const base::TimeTicks& navigation_start) {
-    common_params_->navigation_start = navigation_start;
-  }
-
-  void RunCommitNavigationCallback(blink::mojom::CommitResult result);
-
-  void RunPerNavigationInterfaceCommitNavigationCallback(
-      std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+  void RunCommitNavigationCallback(
+      mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
  private:
-  NavigationState(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
-      bool is_content_initiated,
-      content::mojom::FrameNavigationControl::CommitNavigationCallback callback,
-      content::mojom::NavigationClient::CommitNavigationCallback
-          per_navigation_mojo_interface_callback,
-      std::unique_ptr<NavigationClient> navigation_client,
-      bool was_initiated_in_this_frame);
+  NavigationState(blink::mojom::CommonNavigationParamsPtr common_params,
+                  blink::mojom::CommitNavigationParamsPtr commit_params,
+                  bool is_for_synchronous_commit,
+                  content::mojom::NavigationClient::CommitNavigationCallback
+                      commit_callback,
+                  std::unique_ptr<NavigationClient> navigation_client,
+                  bool was_initiated_in_this_frame);
 
   bool was_within_same_document_;
 
@@ -108,10 +88,12 @@ class CONTENT_EXPORT NavigationState {
   // Used to ensure consistent observer notifications about a navigation.
   bool was_initiated_in_this_frame_;
 
-  // True if this navigation was not initiated via WebFrame::LoadRequest.
-  const bool is_content_initiated_;
+  // True if this navigation is for a renderer synchronous commit (e.g. the
+  // synchronous about:blank navigation, same-origin initiated same-document
+  // navigations), rather than using the browser's navigation stack.
+  const bool is_for_synchronous_commit_;
 
-  mojom::CommonNavigationParamsPtr common_params_;
+  blink::mojom::CommonNavigationParamsPtr common_params_;
 
   // Note: if IsContentInitiated() is false, whether this navigation should
   // replace the current entry in the back/forward history list is determined by
@@ -124,24 +106,15 @@ class CONTENT_EXPORT NavigationState {
   // swaps because FrameLoader::loadWithNavigationAction treats loads before a
   // FrameLoader has committedFirstRealDocumentLoad as a replacement. (Added for
   // http://crbug.com/178380).
-  mojom::CommitNavigationParamsPtr commit_params_;
+  blink::mojom::CommitNavigationParamsPtr commit_params_;
 
   // The NavigationClient interface gives control over the navigation ongoing in
   // the browser process.
-  // Only used when PerNavigationMojoInterface is enabled.
   std::unique_ptr<NavigationClient> navigation_client_;
 
   // Used to notify whether a commit request from the browser process was
   // successful or not.
-  mojom::FrameNavigationControl::CommitNavigationCallback commit_callback_;
-
-  // Temporary member meant to be used in place of |commit_callback_| when
-  // PerNavigationMojoInterface is enabled. Should eventually replace it
-  // completely.
-  mojom::NavigationClient::CommitNavigationCallback
-      per_navigation_mojo_interface_commit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationState);
+  mojom::NavigationClient::CommitNavigationCallback commit_callback_;
 };
 
 }  // namespace content

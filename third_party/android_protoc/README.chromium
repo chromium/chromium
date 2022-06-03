@@ -1,0 +1,25 @@
+Name: Protocol Buffers - Google's data interchange format
+Short Name: protobuf
+URL: https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip
+Version: 3.13.0
+License: BSD
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+protobuf library's protoc compiler (prebuilt release). This is used by the
+chrome android gn targets to compile javalite protobufs (i.e. those which use
+the javalite runtime). The runtime lives in
+//third_party/android_deps/libs/com_google_protobuf_protobuf_javalite.
+
+This package exists to decouple the protoc version that compiles java protos
+from the protoc that compiles c++ protos since the runtimes are already
+decoupled and the runtimes should be in lockstep with the compiler.
+
+This package is not to be confused with //third_party/android_protobuf which is
+the nano runtime, //third_party/protoc_javalite which is a now deprecated code
+gen plugin for older versions of protoc, or //third_party/protobuf which
+contains the protoc used to compile c++ protos and contains the c++ runtime.
+
+Local Modifications:
+None.

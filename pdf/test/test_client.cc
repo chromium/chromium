@@ -4,7 +4,12 @@
 
 #include "pdf/test/test_client.h"
 
+#include <memory>
+
+#include "base/time/time.h"
 #include "pdf/document_layout.h"
+#include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
@@ -33,31 +38,36 @@ std::string TestClient::GetURL() {
   return std::string();
 }
 
-pp::URLLoader TestClient::CreateURLLoader() {
-  return pp::URLLoader();
+std::unique_ptr<UrlLoader> TestClient::CreateUrlLoader() {
+  return nullptr;
 }
 
 std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(
-    const base::char16* string,
-    const base::char16* term,
+    const char16_t* string,
+    const char16_t* term,
     bool case_sensitive) {
   return std::vector<SearchStringResult>();
 }
 
-pp::Instance* TestClient::GetPluginInstance() {
-  return nullptr;
-}
-
-bool TestClient::IsPrintPreview() {
+bool TestClient::IsPrintPreview() const {
   return false;
 }
 
-uint32_t TestClient::GetBackgroundColor() {
-  return 0;
+SkColor TestClient::GetBackgroundColor() {
+  return SK_ColorTRANSPARENT;
 }
 
-float TestClient::GetToolbarHeightInScreenCoords() {
-  return 0;
+void TestClient::SetSelectedText(const std::string& selected_text) {}
+
+void TestClient::SetLinkUnderCursor(const std::string& link_under_cursor) {}
+
+bool TestClient::IsValidLink(const std::string& url) {
+  return !url.empty();
 }
+
+void TestClient::ScheduleTaskOnMainThread(const base::Location& from_here,
+                                          ResultCallback callback,
+                                          int32_t result,
+                                          base::TimeDelta delay) {}
 
 }  // namespace chrome_pdf

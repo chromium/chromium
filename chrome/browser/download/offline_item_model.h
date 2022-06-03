@@ -30,6 +30,10 @@ class OfflineItemModel : public DownloadUIModel,
   // Constructs a OfflineItemModel.
   OfflineItemModel(OfflineItemModelManager* manager,
                    const OfflineItem& offline_item);
+
+  OfflineItemModel(const OfflineItemModel&) = delete;
+  OfflineItemModel& operator=(const OfflineItemModel&) = delete;
+
   ~OfflineItemModel() override;
 
   // DownloadUIModel implementation.
@@ -76,7 +80,7 @@ class OfflineItemModel : public DownloadUIModel,
   // FilteredOfflineItemObserver::Observer overrides.
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
 
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;
@@ -85,8 +89,6 @@ class OfflineItemModel : public DownloadUIModel,
 
   std::unique_ptr<FilteredOfflineItemObserver> offline_item_observer_;
   std::unique_ptr<OfflineItem> offline_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineItemModel);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_H_

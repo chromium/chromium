@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "fuchsia/engine/web_engine_export.h"
 
@@ -20,19 +21,31 @@ class WebContents;
 }  // namespace content
 
 // Implementation of fuchsia.web.NavigationController for content::WebContents.
-class NavigationControllerImpl : public fuchsia::web::NavigationController,
-                                 public content::WebContentsObserver {
+class NavigationControllerImpl final
+    : public fuchsia::web::NavigationController,
+      public content::WebContentsObserver,
+      public favicon::FaviconDriverObserver {
  public:
   explicit NavigationControllerImpl(content::WebContents* web_contents);
-  ~NavigationControllerImpl() final;
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
+  ~NavigationControllerImpl() override;
 
   void AddBinding(
       fidl::InterfaceRequest<fuchsia::web::NavigationController> controller);
 
   void SetEventListener(
-      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener);
+      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+      fuchsia::web::NavigationEventListenerFlags flags);
 
  private:
+  // Returns a NavigationState reflecting the current state of |web_contents_|'s
+  // visible navigation entry, taking into account |is_main_document_loaded_|
+  // and |uncommitted_load_error_| states.
+  fuchsia::web::NavigationState GetVisibleNavigationState() const;
+
   // Processes the most recent changes to the browser's navigation state and
   // triggers the publishing of change events.
   void OnNavigationEntryChanged();
@@ -44,20 +57,32 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   // fuchsia::web::NavigationController implementation.
   void LoadUrl(std::string url,
                fuchsia::web::LoadUrlParams params,
-               LoadUrlCallback callback) final;
-  void GoBack() final;
-  void GoForward() final;
-  void Stop() final;
-  void Reload(fuchsia::web::ReloadType type) final;
-  void GetVisibleEntry(GetVisibleEntryCallback callback) final;
+               LoadUrlCallback callback) override;
+  void GoBack() override;
+  void GoForward() override;
+  void Stop() override;
+  void Reload(fuchsia::web::ReloadType type) override;
+  void GetVisibleEntry(GetVisibleEntryCallback callback) override;
 
   // content::WebContentsObserver implementation.
   void TitleWasSet(content::NavigationEntry*) override;
-  void DocumentAvailableInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // favicon::FaviconDriverObserver implementation.
+  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
+                        NotificationIconType notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override;
 
   content::WebContents* const web_contents_;
 
@@ -70,12 +95,20 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   fuchsia::web::NavigationState pending_navigation_event_;
   bool waiting_for_navigation_event_ack_ = false;
 
-  // True once the main document finishes loading.
+  // True once the main document finishes loading and there are no outstanding
+  // navigations.
   bool is_main_document_loaded_ = false;
+  content::NavigationHandle* active_navigation_ = nullptr;
+
+  // True if navigation failed due to an error during page load.
+  bool uncommitted_load_error_ = false;
+
+  // Set to true  when NavigationEventListenerFlags::FAVICON flag
+  // was passed to the last SetEventListener() call, i.e. favicon reporting is
+  // enabled.
+  bool send_favicon_ = false;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 // Computes the differences from old_entry to new_entry and stores the result in

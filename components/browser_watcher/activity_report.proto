@@ -1,0 +1,275 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_watcher;
+
+// The state of the system on which Chrome is running (shutting down, battery
+// level, load, etc.).
+// Next id: 2
+message SystemState {
+  // The state of a system session. A system session begins when the system
+  // starts and ends when it shuts down.
+  enum SessionState {
+    UNKNOWN = 0;
+    CLEAN = 1;    // Normal shutdown.
+    UNCLEAN = 2;  // Abnormal shutdown (system crash, power loss).
+  }
+
+  // The state of the system session that contained Chrome's execution.
+  optional SessionState session_state = 1;
+}
+
+// Next id: 10
+message CodeModule {
+  // The base address of this code module as it was loaded by the process.
+  optional int64 base_address = 1;
+
+  // The size of the code module.
+  optional int64 size = 2;
+
+  // The path or file name that the code module was loaded from.
+  optional string code_file = 3;
+
+  // An identifying string used to discriminate between multiple versions and
+  // builds of the same code module.  This may contain a uuid, timestamp,
+  // version number, or any combination of this or other information, in an
+  // implementation-defined format.
+  optional string code_identifier = 4;
+
+  // The filename containing debugging information associated with the code
+  // module.  If debugging information is stored in a file separate from the
+  // code module itself (as is the case when .pdb or .dSYM files are used),
+  // this will be different from code_file.  If debugging information is
+  // stored in the code module itself (possibly prior to stripping), this
+  // will be the same as code_file.
+  optional string debug_file = 5;
+
+  // An identifying string similar to code_identifier, but identifies a
+  // specific version and build of the associated debug file.  This may be
+  // the same as code_identifier when the debug_file and code_file are
+  // identical or when the same identifier is used to identify distinct
+  // debug and code files.
+  optional string debug_identifier = 6;
+
+  // A human-readable representation of the code module's version.
+  optional string version = 7;
+
+  optional int64 shrink_down_delta = 8;
+
+  // Whether the module was still loaded into memory.
+  optional bool is_unloaded = 9;
+}
+
+// A typed value holds values of interest or references to such values.
+// Next id: 9
+message TypedValue {
+  // A reference to a value of interest.
+  message Reference {
+    optional uint64 address = 1;
+    optional int64 size = 2;
+  }
+
+  oneof value {
+    bytes bytes_value = 1;
+    Reference bytes_reference = 2;
+    string string_value = 3;
+    Reference string_reference = 4;
+    string char_value = 5;
+    bool bool_value = 6;
+    int64 signed_value = 7;
+    uint64 unsigned_value = 8;
+  }
+}
+
+// An activity represents information about something of interest on a thread.
+// Next id: 18
+message Activity {
+  enum Type {
+    UNKNOWN = 0;
+    ACT_TASK_RUN = 1;
+    ACT_LOCK_ACQUIRE = 2;
+    ACT_EVENT_WAIT = 3;
+    ACT_THREAD_JOIN = 4;
+    ACT_PROCESS_WAIT = 5;
+    ACT_GENERIC = 6;
+  }
+
+  // Identifies the type of the activity (and specifies which fields are
+  // relevant).
+  optional Type type = 1;
+
+  // Creation time of the activity.
+  optional int64 time = 2;
+
+  // The address that pushed the activity onto the stack.
+  optional uint64 address = 11;
+
+  // The address that is the origin of the activity. This is useful for things
+  // like tasks that are posted from a completely different thread though most
+  // activities will leave it null.
+  optional uint64 origin_address = 3;
+
+  // The sequence identifier of the posted task.
+  // Expected for ACT_TASK_*
+  optional uint64 task_sequence_id = 4;
+
+  // The memory address of the lock object.
+  optional uint64 lock_address = 5;
+
+  // The memory address of the event object.
+  optional uint64 event_address = 6;
+
+  // A unique identifier for a thread within a process.
+  optional int64 thread_id = 7;
+
+  // A unique identifier for a process.
+  optional int64 process_id = 8;
+
+  // An arbitrary identifier used for association.
+  optional uint32 generic_id = 12;
+
+  // An arbitrary value used for information purposes.
+  optional int32 generic_data = 13;
+
+  // Tag ids 10 and 14-17 are reserved for server side augmentation.
+
+  // A key-value store.
+  map<string, TypedValue> user_data = 9;
+}
+
+// Details about an exception.
+// Next id: 5
+message Exception {
+  optional uint32 code = 1;
+  optional uint64 program_counter = 2;
+  optional uint64 exception_address = 3;
+  optional int64 time = 4;
+}
+
+// The state of a thread.
+// Next id: 6
+message ThreadState {
+  // The name of the thread, up to a maxiumum length.
+  optional string thread_name = 1;
+
+  // The identifier of the thread.
+  optional int64 thread_id = 2;
+
+  // The activity stack. |activity_count| specifies the number of activities on
+  // stack and |activities| holds the base of the stack (up to a maximum size).
+  optional int32 activity_count = 3;
+  repeated Activity activities = 4;
+
+  // The last exception to be successfully captured. Note this exception may
+  // have been recovered from.
+  optional Exception exception = 5;
+}
+
+// The state of a process.
+// Next id: 7
+message ProcessState {
+  enum Type {
+    UNKNOWN_PROCESS = 0;
+    BROWSER_PROCESS = 1;
+    WATCHER_PROCESS = 2;
+  }
+
+  message MemoryState {
+    message WindowsMemory {
+      // The private byte usage of the process. Unit is 4K pages.
+      optional uint32 process_private_usage = 1;
+      // The peak working set usage of the process. Unit is 4K pages.
+      optional uint32 process_peak_workingset_size = 2;
+      // The peak pagefile usage of the process. Unit is 4K pages.
+      optional uint32 process_peak_pagefile_usage = 3;
+      // The allocation request that caused OOM, bytes.
+      optional uint32 process_allocation_attempt = 4;
+      // The number of opened handles in the process.
+      optional uint32 process_handle_count = 5;
+    }
+
+    optional WindowsMemory windows_memory = 1;
+  }
+
+  // The identifier of the process.
+  optional int64 process_id = 3;
+  optional Type process_type = 5;
+
+  // Note: likely only a subset of modules of interest (e.g. Chromium's own
+  // modules).
+  repeated CodeModule modules = 1;
+  repeated ThreadState threads = 2;
+
+  optional MemoryState memory_state = 4;
+
+  // A key-value store global to the process.
+  map<string, TypedValue> data = 6;
+}
+
+// Description of a field trial or experiment that the user is currently
+// enrolled in. This message is an analogue of the UMA proto in
+// third_party/metrics_proto/system_profile.proto. For details about generating
+// the identifiers from the field trial and group names, see
+// variations::MakeActiveGroupId().
+// Next id: 3
+message FieldTrial {
+  // A 32-bit identifier for the name of the field trial.
+  optional fixed32 name_id = 1;
+
+  // A 32-bit identifier for the user's group within the field trial.
+  optional fixed32 group_id = 2;
+}
+
+// Records the state of system memory at the time of crash.
+// Next id: 2
+message SystemMemoryState {
+  message WindowsMemory {
+    // The system commit limit. Unit is number of 4K pages.
+    optional uint32 system_commit_limit = 1;
+    // The amount of system commit remaining. Unit is number of 4K pages.
+    optional uint32 system_commit_remaining = 2;
+    // The current number of open handles.
+    optional uint32 system_handle_count = 3;
+  }
+
+  optional WindowsMemory windows_memory = 1;
+}
+
+// A stability report contains information pertaining to the execution of a
+// single logical instance of a "chrome browser". It is comprised of information
+// about the system state and about the chrome browser's processes.
+// Next id: 9
+// This message would more appropriately be named ActivityReport, but since this
+// proto is used in the crash backend, renaming it will take some dancing
+// around.
+message StabilityReport {
+  // Whether the report is complete. Reports can be incomplete when the
+  // recording size quota is hit.
+  optional bool is_complete = 6;
+
+  // The process identifier of the crashed process.
+  optional int64 crashed_process_id = 8;
+
+  // State pertaining to the system.
+  optional SystemState system_state = 1;
+
+  // State pertaining to Chrome's processes.
+  repeated ProcessState process_states = 2;
+
+  // Log messages. This is empty on official builds.
+  // TODO(manzagop): attribute messages to their process.
+  repeated string log_messages = 3;
+
+  // A global key-value store.
+  map<string, TypedValue> global_data = 4;
+
+  // The field trials the user is currently enrolled in.
+  repeated FieldTrial field_trials = 5;
+
+  optional SystemMemoryState system_memory_state = 7;
+}

@@ -19,7 +19,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::LOGFONTDataView, ::LOGFONT> {
   static base::span<const uint8_t> bytes(const ::LOGFONT& input);
   static bool Read(mojo_base::mojom::LOGFONTDataView data, ::LOGFONT* out);

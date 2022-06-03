@@ -1,94 +1,62 @@
-<style include="print-preview-shared throbber cr-hidden-style">
-<if expr="chromeos">
+<style include="print-preview-shared">
+<if expr="chromeos or lacros">
   :host([has-pin-setting_]) {
     margin-bottom: 0 !important;
   }
 </if>
-
-  .throbber-container {
-    align-items: center;
-    display: flex;
-    overflow: hidden;
-  }
-
-  .destination-additional-info,
-  .destination-additional-info div {
-    height: 100%;
-    min-height: 0;
-  }
-
-  .destination-status {
-    color: var(--cr-secondary-text-color);
-    font-size: calc(12/13 * 1em);
-    overflow: hidden;
-    padding-top: 4px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #destinationSelect {
-    /* Reduce margin by 2px so that the <select> inside this element will
-       be aligned with others after adding margin for the border. */
-    margin: 0 calc(var(--print-preview-sidebar-margin) - 2px);
-  }
 </style>
-<print-preview-user-manager id="userManager" active-user="{{activeUser_}}"
-    cloud-print-disabled="{{cloudPrintDisabled_}}"
-    cloud-print-interface="[[cloudPrintInterface]]"
-    users="{{users_}}" destination-store="[[destinationStore_]]"
-    invitation-store="[[invitationStore_]]"
-    should-reload-cookies="[[isDialogOpen_]]">
-</print-preview-user-manager>
-<print-preview-settings-section>
-  <span slot="title">$i18n{destinationLabel}</span>
-  <div slot="controls">
-    <div class="throbber-container" hidden$="[[shouldHideSpinner_]]">
-      <div class="throbber"></div>
-    </div>
-    <print-preview-destination-select id="destinationSelect"
-        hidden$="[[!shouldHideSpinner_]]"
-        active-user="[[activeUser_]]" dark="[[dark]]"
-        destination="[[destination]]"
-        disabled="[[shouldDisableDropdown_(
-                        destinationState, state, disabled)]]"
-        drive-destination-ready="[[driveDestinationReady_]]"
-        no-destinations="[[noDestinations_]]"
-        pdf-printer-disabled="[[pdfPrinterDisabled_]]"
-        recent-destination-list="[[displayedDestinations_]]"
-        on-selected-option-change="onSelectedDestinationOptionChange_">
-    </print-preview-destination-select>
-  </div>
-</print-preview-settings-section>
-<print-preview-settings-section class="destination-additional-info"
-    hidden$="[[!statusText_]]">
-  <div slot="title"></div>
-  <div slot="controls">
-    <div class="destination-status">[[statusText_]]</div>
-  </div>
-</print-preview-settings-section>
-<if expr="chromeos">
-  <print-preview-settings-section class="destination-additional-info"
-      id="destinationEulaWrapper"
-      hidden$="[[!destination.eulaUrl]]">
-    <div slot="title"></div>
-    <div slot="controls">
-      <a class="destination-status" href="[[destination.eulaUrl]]"
-          target="_blank">
-       $i18n{printerEulaURL}
-      </a>
-    </div>
-  </print-preview-settings-section>
+<template is="dom-if" if="[[!cloudPrintDisabled_]]">
+  <print-preview-user-manager id="userManager" active-user="{{activeUser_}}"
+      cloud-print-disabled="[[cloudPrintDisabled_]]"
+      users="{{users_}}" destination-store="[[destinationStore_]]">
+  </print-preview-user-manager>
+</template>
+<if expr="not chromeos and not lacros">
+  <print-preview-destination-select id="destinationSelect"
+      active-user="[[activeUser_]]" dark="[[dark]]"
+      destination="[[destination]]"
+      disabled="[[shouldDisableDropdown_(
+                      destinationState, state, disabled)]]"
+      loaded="[[loaded_]]"
+      no-destinations="[[noDestinations_]]"
+      pdf-printer-disabled="[[pdfPrinterDisabled_]]"
+      recent-destination-list="[[displayedDestinations_]]"
+      on-selected-option-change="onSelectedDestinationOptionChange_">
+  </print-preview-destination-select>
+  <cr-lazy-render id="destinationDialog">
+    <template>
+      <print-preview-destination-dialog
+          destination-store="[[destinationStore_]]"
+          recent-destination-list="[[recentDestinationList_]]"
+          active-user="[[activeUser_]]" users="[[users_]]"
+          current-destination-account="[[destination.account]]"
+          on-account-change="onAccountChange_" on-close="onDialogClose_">
+      </print-preview-destination-dialog>
+    </template>
+  </cr-lazy-render>
 </if>
-<cr-lazy-render id="destinationDialog">
-  <template>
-    <print-preview-destination-dialog
-        cloud-print-disabled="[[cloudPrintDisabled_]]"
-        destination-store="[[destinationStore_]]"
-        invitation-store="[[invitationStore_]]"
-        recent-destination-list="[[recentDestinationList_]]"
-        active-user="[[activeUser_]]" users="[[users_]]"
-        current-destination-account="[[destination.account]]"
-        on-account-change="onAccountChange_" on-close="onDialogClose_">
-    </print-preview-destination-dialog>
-  </template>
-</cr-lazy-render>
+<if expr="chromeos or lacros">
+  <print-preview-destination-select-cros id="destinationSelect"
+      active-user="[[activeUser_]]" dark="[[dark]]"
+      destination="[[destination]]"
+      disabled="[[shouldDisableDropdown_(
+                      destinationState, state, disabled)]]"
+      drive-destination-key="[[driveDestinationKey_]]"
+      loaded="[[loaded_]]"
+      no-destinations="[[noDestinations_]]"
+      pdf-printer-disabled="[[pdfPrinterDisabled_]]"
+      recent-destination-list="[[displayedDestinations_]]"
+      on-selected-option-change="onSelectedDestinationOptionChange_">
+  </print-preview-destination-select-cros>
+  <cr-lazy-render id="destinationDialog">
+    <template>
+      <print-preview-destination-dialog-cros
+          destination-store="[[destinationStore_]]"
+          recent-destination-list="[[recentDestinationList_]]"
+          active-user="[[activeUser_]]" users="[[users_]]"
+          current-destination-account="[[destination.account]]"
+          on-account-change="onAccountChange_" on-close="onDialogClose_">
+      </print-preview-destination-dialog-cros>
+    </template>
+  </cr-lazy-render>
+</if>

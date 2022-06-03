@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 
 #if !BUILDFLAG(RTC_USE_H264)
@@ -19,7 +19,7 @@
 namespace blink {
 
 // Class encapsulating all openh264 interactions for H264 encoding.
-class H264Encoder final : public VideoTrackRecorder::Encoder {
+class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
  public:
   struct ISVCEncoderDeleter {
     void operator()(ISVCEncoder* codec);
@@ -29,18 +29,29 @@ class H264Encoder final : public VideoTrackRecorder::Encoder {
   static void ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
                               ScopedISVCEncoderPtr encoder);
 
-  H264Encoder(
-      const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_callback,
-      int32_t bits_per_second,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  H264Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
+              VideoTrackRecorder::CodecProfile codec_profile,
+              int32_t bits_per_second,
+              scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  H264Encoder(const H264Encoder&) = delete;
+  H264Encoder& operator=(const H264Encoder&) = delete;
 
  private:
+  friend class H264EncoderFixture;
+
   // VideoTrackRecorder::Encoder implementation.
   ~H264Encoder() override;
   void EncodeOnEncodingTaskRunner(scoped_refptr<media::VideoFrame> frame,
                                   base::TimeTicks capture_timestamp) override;
 
-  void ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size);
+  WARN_UNUSED_RESULT bool ConfigureEncoderOnEncodingTaskRunner(
+      const gfx::Size& size);
+
+  SEncParamExt GetEncoderOptionForTesting();
+
+  // TODO(inker): Move this field into VideoTrackRecorder::Encoder.
+  const VideoTrackRecorder::CodecProfile codec_profile_;
 
   // |openh264_encoder_| is a special scoped pointer to guarantee proper
   // destruction, also when reconfiguring due to parameters change. Only used on
@@ -51,8 +62,6 @@ class H264Encoder final : public VideoTrackRecorder::Encoder {
   // The |VideoFrame::timestamp()| of the first received frame. Only used on
   // VideoTrackRecorder::Encoder::encoding_thread_.
   base::TimeTicks first_frame_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Encoder);
 };
 
 }  // namespace blink

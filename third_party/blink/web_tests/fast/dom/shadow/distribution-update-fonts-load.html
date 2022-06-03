@@ -11,7 +11,7 @@ setup({ explicit_done: true });
 function setNeedsDistributionRecalc() {
     var element = document.createElement("div");
     container.appendChild(element);
-    var shadowRoot = element.createShadowRoot();
+    var shadowRoot = element.attachShadow({mode: 'open'});
 }
 
 test(function () {

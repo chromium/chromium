@@ -23,8 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TEST_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TEST_REQUEST_H_
 
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -79,6 +79,11 @@ class HitTestRequest {
   bool IsChildFrameHitTest() const {
     return request_type_ & kChildFrameHitTest;
   }
+  // Returns true if this request is used for occlusion.
+  // See |LayoutObject::HitTestForOcclusion()|
+  bool IsHitTestVisualOverflow() const {
+    return request_type_ & kHitTestVisualOverflow;
+  }
   bool IgnorePointerEventsNone() const {
     return request_type_ & kIgnorePointerEventsNone;
   }
@@ -105,10 +110,12 @@ class HitTestRequest {
            stop_node_ == value.stop_node_;
   }
 
+  void Trace(Visitor*) const;
+
  private:
   HitTestRequestType request_type_;
   // If non-null, do not hit test the children of this object.
-  const LayoutObject* stop_node_;
+  Member<const LayoutObject> stop_node_;
 };
 
 }  // namespace blink

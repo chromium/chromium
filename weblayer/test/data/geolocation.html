@@ -1,0 +1,24 @@
+<html>
+<head>
+  <title>Geolocation</title>
+  <script>
+    var positionCount = 0;
+    var errorCount = 0;
+    function gotPos(position) {
+      positionCount++;
+    }
+    function errorCallback(error) {
+      errorCount++;
+    }
+    function initiate_getCurrentPosition() {
+      navigator.geolocation.getCurrentPosition(
+        gotPos, errorCallback, {});
+    }
+    function initiate_watchPosition() {
+      navigator.geolocation.watchPosition(
+        gotPos, errorCallback, {});
+    }
+  </script>
+  <body></body>
+</head>
+</html>

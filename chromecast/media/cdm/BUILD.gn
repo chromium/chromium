@@ -21,7 +21,7 @@ cast_source_set("cdm") {
     "//base",
     "//chromecast/base/metrics",
     "//chromecast/media/base",
-    "//chromecast/media/base:media_resource_tracker",
+    "//chromecast/media/common:media_resource_tracker",
     "//media",
     "//url",
   ]
@@ -32,4 +32,16 @@ cast_source_set("cdm") {
       "playready_drm_delegate_android.h",
     ]
   }
+}
+
+cast_source_set("cdm_origin_provider") {
+  sources = [
+    "cast_cdm_origin_provider.cc",
+    "cast_cdm_origin_provider.h",
+  ]
+
+  deps = [
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
 }

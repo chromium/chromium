@@ -26,10 +26,6 @@ extern const base::Feature kNtpMostLikelyFaviconsFromServerFeature;
 // If this feature is enabled, we enable popular sites in the suggestions UI.
 extern const base::Feature kUsePopularSitesSuggestions;
 
-// If this feature is enabled, we use the remote service to populate suggestions
-// tiles.
-extern const base::Feature kDisplaySuggestionsServiceTiles;
-
 }  // namespace ntp_tiles
 
 #endif  // COMPONENTS_NTP_TILES_FEATURES_H_

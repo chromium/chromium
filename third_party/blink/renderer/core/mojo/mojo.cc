@@ -8,16 +8,15 @@
 #include <utility>
 
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_data_pipe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_data_pipe_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_message_pipe_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_shared_buffer_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/mojo/mojo_create_data_pipe_options.h"
-#include "third_party/blink/renderer/core/mojo/mojo_create_data_pipe_result.h"
-#include "third_party/blink/renderer/core/mojo/mojo_create_message_pipe_result.h"
-#include "third_party/blink/renderer/core/mojo/mojo_create_shared_buffer_result.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -66,7 +65,7 @@ MojoCreateDataPipeResult* Mojo::createDataPipe(
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
     result_dict->setProducer(MakeGarbageCollected<MojoHandle>(
@@ -99,10 +98,26 @@ void Mojo::bindInterface(ScriptState* script_state,
                          const String& interface_name,
                          MojoHandle* request_handle,
                          const String& scope,
-                         bool use_browser_interface_broker) {
+                         ExceptionState& exception_state) {
   std::string name = interface_name.Utf8();
   auto handle =
       mojo::ScopedMessagePipeHandle::From(request_handle->TakeHandle());
+
+  auto* context = ExecutionContext::From(script_state);
+
+  // If MojoJS broker is enabled, it must be used to handle bindInterface
+  // calls.
+  if (context->use_mojo_js_interface_broker()) {
+    if (scope == "context") {
+      context->GetMojoJSInterfaceBroker().GetInterface(name, std::move(handle));
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          String::FromUTF8("MojoJS interface broker is specified, can't use "
+                           "scopes other than 'context'"));
+    }
+    return;
+  }
 
   if (scope == "process") {
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -110,21 +125,7 @@ void Mojo::bindInterface(ScriptState* script_state,
     return;
   }
 
-  // This should replace InterfaceProvider usage below when all
-  // InterfaceProvider clients are converted to use BrowserInterfaceBroker. See
-  // crbug.com/936482.
-  if (use_browser_interface_broker) {
-    ExecutionContext::From(script_state)
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(name, std::move(handle));
-    return;
-  }
-
-  // TODO(crbug.com/995556): remove when no longer used.
-  if (auto* interface_provider =
-          ExecutionContext::From(script_state)->GetInterfaceProvider()) {
-    interface_provider->GetInterfaceByName(name, std::move(handle));
-  }
+  context->GetBrowserInterfaceBroker().GetInterface(name, std::move(handle));
 }
 
 }  // namespace blink

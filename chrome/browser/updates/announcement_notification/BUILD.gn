@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("announcement_notification") {
+  sources = [
+    "announcement_notification_service.cc",
+    "announcement_notification_service.h",
+    "announcement_notification_service_factory.cc",
+    "announcement_notification_service_factory.h",
+    "empty_announcement_notification_service.cc",
+    "empty_announcement_notification_service.h",
+  ]
+
+  # TODO(xingliu): Move code depends on //chrome/browser out of this module.
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs:prefs",
+    "//skia",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "announcement_notification_delegate_android.cc",
+      "announcement_notification_delegate_android.h",
+    ]
+
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  } else {
+    sources += [
+      "announcement_notification_delegate.cc",
+      "announcement_notification_delegate.h",
+      "announcement_notification_handler.cc",
+      "announcement_notification_handler.h",
+    ]
+
+    deps += [
+      "//chrome/browser/ui",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "announcement_notification_service_unittest.cc" ]
+
+  deps = [
+    ":announcement_notification",
+    "//build:chromeos_buildflags",
+    "//chrome/test:test_support",
+    "//components/sync_preferences",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

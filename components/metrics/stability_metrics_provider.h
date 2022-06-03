@@ -20,21 +20,19 @@ class SystemProfileProto;
 class StabilityMetricsProvider : public MetricsProvider {
  public:
   explicit StabilityMetricsProvider(PrefService* local_state);
+
+  StabilityMetricsProvider(const StabilityMetricsProvider&) = delete;
+  StabilityMetricsProvider& operator=(const StabilityMetricsProvider&) = delete;
+
   ~StabilityMetricsProvider() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  void RecordBreakpadRegistration(bool success);
-  void RecordBreakpadHasDebugger(bool has_debugger);
 
   void CheckLastSessionEndCompleted();
   void MarkSessionEndCompleted(bool end_completed);
 
   void LogCrash(base::Time last_live_timestamp);
-  void LogStabilityLogDeferred();
-  void LogStabilityDataDiscarded();
   void LogLaunch();
-  void LogStabilityVersionMismatch();
 
  private:
 #if defined(OS_WIN)
@@ -58,8 +56,6 @@ class StabilityMetricsProvider : public MetricsProvider {
       SystemProfileProto* system_profile_proto) override;
 
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsProvider);
 };
 
 }  // namespace metrics

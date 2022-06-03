@@ -29,7 +29,7 @@ TEST(MessageBuilderTest, Add) {
 TEST(MessageBuilderTest, AddLine) {
   MessageBuilder builder;
   builder.AddLine(L"abc", L" ", 10).AddLine("xyz", L" ", false);
-  base::string16 expected = L"abc 10\nxyz 0\n";
+  std::wstring expected = L"abc 10\nxyz 0\n";
   EXPECT_EQ(expected, builder.content());
 
   builder.AddLine(" test ", true).AddLine(false);
@@ -40,7 +40,7 @@ TEST(MessageBuilderTest, AddLine) {
 TEST(MessageBuilderTest, ScopedIndentation) {
   MessageBuilder builder;
   builder.Add(L"*", L"*").NewLine();
-  base::string16 expected = L"**\n";
+  std::wstring expected = L"**\n";
   EXPECT_EQ(expected, builder.content());
 
   {
@@ -50,7 +50,7 @@ TEST(MessageBuilderTest, ScopedIndentation) {
     EXPECT_EQ(expected, builder.content());
 
     {
-      auto scoped_indent = builder.Indent();
+      auto indent = builder.Indent();
       builder.Add(L"*", L"*", L"*").NewLine();
       expected += L"\t\t***\n";
       EXPECT_EQ(expected, builder.content());
@@ -105,7 +105,7 @@ TEST(MessageBuilderTest, ScopedIndentation) {
 TEST(MessageBuilderTest, AddHeaderLine) {
   MessageBuilder builder;
   builder.AddHeaderLine(L"Header1").AddHeaderLine(L"Header2");
-  base::string16 expected = L"Header1:\nHeader2:\n";
+  std::wstring expected = L"Header1:\nHeader2:\n";
   EXPECT_EQ(expected, builder.content());
 
   MessageBuilder::ScopedIndent scoped_indent(&builder);
@@ -124,7 +124,7 @@ TEST(MessageBuilderTest, AddFieldValueLine) {
 
   builder.AddFieldValueLine(L"Field1", "abc")
       .AddFieldValueLine(L"Field2", L"xyz");
-  base::string16 expected = L"Field1: abc\nField2: xyz\n";
+  std::wstring expected = L"Field1: abc\nField2: xyz\n";
   EXPECT_EQ(expected, builder.content());
 
   MessageBuilder::ScopedIndent scoped_indent(&builder);

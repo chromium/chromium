@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
@@ -118,7 +118,7 @@ void MidiManagerUsb::OnReceivedData(size_t jack_index,
 void MidiManagerUsb::OnEnumerateDevicesDone(bool result,
                                             UsbMidiDevice::Devices* devices) {
   if (result) {
-    input_stream_.reset(new UsbMidiInputStream(this));
+    input_stream_ = std::make_unique<UsbMidiInputStream>(this);
     devices->swap(devices_);
     for (size_t i = 0; i < devices_.size(); ++i) {
       if (!AddPorts(devices_[i].get(), static_cast<int>(i))) {

@@ -2,25 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('multidevice_setup_post_oobe', function() {
-  /**
-   * This enum is tied directly to a UMA enum defined in
-   * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-   * change one without changing the other).
-   * @enum {number}
-   */
-  PageNameValue = {
-    UNKNOWN: 0,
-    START: 1,
-    PASSWORD: 2,
-    SUCCESS: 3,
-    MAX_VALUE: 4,
-  };
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './strings.m.js';
 
-  return {
-    PageNameValue: PageNameValue,
-  };
-});
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {PageName} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
+import {MultiDeviceSetupDelegate} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PostOobeDelegate} from './post_oobe_delegate.js';
+
+/**
+ * This enum is tied directly to a UMA enum defined in
+ * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+ * change one without changing the other).
+ * @enum {number}
+ */
+const PageNameValue = {
+  UNKNOWN: 0,
+  START: 1,
+  PASSWORD: 2,
+  SUCCESS: 3,
+  MAX_VALUE: 4,
+};
 
 /**
  * MultiDevice setup flow which is shown after OOBE has completed.
@@ -28,8 +33,10 @@ cr.define('multidevice_setup_post_oobe', function() {
 Polymer({
   is: 'multidevice-setup-post-oobe',
 
+  _template: html`{__html_template__}`,
+
   properties: {
-    /** @private {!multidevice_setup.MultiDeviceSetupDelegate} */
+    /** @private {!MultiDeviceSetupDelegate} */
     delegate_: Object,
 
     /**
@@ -69,46 +76,98 @@ Polymer({
   behaviors: [I18nBehavior],
 
   /** @override */
-  attached: function() {
-    this.delegate_ = new multidevice_setup.PostOobeDelegate();
+  ready() {
+    this.onWindowSizeUpdated_();
+  },
+
+  /** @override */
+  attached() {
+    this.delegate_ = new PostOobeDelegate();
     this.$$('multidevice-setup').initializeSetupFlow();
+    window.addEventListener('orientationchange', this.onWindowSizeUpdated_);
+    window.addEventListener('resize', this.onWindowSizeUpdated_);
+  },
+
+  /** @override */
+  detached() {
+    window.removeEventListener('orientationchange', this.onWindowSizeUpdated_);
+    window.removeEventListener('resize', this.onWindowSizeUpdated_);
   },
 
   /** @private */
-  onExitRequested_: function() {
+  onExitRequested_() {
     chrome.send('dialogClose');
   },
 
   /** @private */
-  onForwardButtonFocusRequested_: function() {
+  onForwardButtonFocusRequested_() {
     this.$$('#forward-button').focus();
   },
 
   /**
-   * @param {!CustomEvent<!{value: multidevice_setup.PageName}>} event
+   * @param {!CustomEvent<!{value: PageName}>} event
    * @private
    */
-  onVisiblePageNameChanged_: function(event) {
+  onVisiblePageNameChanged_(event) {
     let pageNameValue;
     switch (event.detail.value) {
-      case multidevice_setup.PageName.START:
-        pageNameValue = multidevice_setup_post_oobe.PageNameValue.START;
+      case PageName.START:
+        pageNameValue = PageNameValue.START;
         break;
-      case multidevice_setup.PageName.PASSWORD:
-        pageNameValue = multidevice_setup_post_oobe.PageNameValue.PASSWORD;
+      case PageName.PASSWORD:
+        pageNameValue = PageNameValue.PASSWORD;
         break;
-      case multidevice_setup.PageName.SUCCESS:
-        pageNameValue = multidevice_setup_post_oobe.PageNameValue.SUCCESS;
+      case PageName.SUCCESS:
+        pageNameValue = PageNameValue.SUCCESS;
         break;
       default:
         console.warn('Unexpected PageName.');
-        pageNameValue = multidevice_setup_post_oobe.PageNameValue.UNKNOWN;
+        pageNameValue = PageNameValue.UNKNOWN;
         break;
     }
 
     chrome.send('metricsHandler:recordInHistogram', [
       'MultiDevice.PostOOBESetupFlow.PageShown', pageNameValue,
-      multidevice_setup_post_oobe.PageNameValue.MAX_VALUE
+      PageNameValue.MAX_VALUE
     ]);
+  },
+
+  /**
+   * Called during initialization, when the window is resized, or the window's
+   * orientation is updated.
+   */
+  onWindowSizeUpdated_() {
+    // Below code is also used to set the dialog size for display manager and
+    // in-session assistant onboarding flow. Please make sure code changes are
+    // applied to all places.
+    document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-height-base', window.innerHeight + 'px');
+    document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-width-base', window.innerWidth + 'px');
+    if (window.innerWidth > window.innerHeight) {
+      document.documentElement.setAttribute('orientation', 'horizontal');
+    } else {
+      document.documentElement.setAttribute('orientation', 'vertical');
+    }
+  },
+
+  /**
+   * Wraps i18n to return early if text is not yet defined. This prevents
+   * console errors since some of the strings are initially undefined. Variables
+   * like |cancelButtonTextId_| are initially undefined because they get piped
+   * by a 2-way data binding from the embedded multidevice-setup component. This
+   * does not affect the ui since these variables get defined shortly after the
+   * page is initialized. We purposely don't set some of these properties if the
+   * button is not expected to be shown in which case they will remain
+   * undefined.
+   * @param {string|undefined} text
+   * @return {string}
+   */
+  getButtonText_(text) {
+    if (!text) {
+      return '';
+    }
+
+    return this.i18n(text);
   }
 });

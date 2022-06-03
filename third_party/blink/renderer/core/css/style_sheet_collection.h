@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_COLLECTION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -50,10 +49,12 @@ class CORE_EXPORT StyleSheetCollection
   friend class ImportedDocumentStyleSheetCollector;
 
   StyleSheetCollection();
-  virtual ~StyleSheetCollection() = default;
+  StyleSheetCollection(const StyleSheetCollection&) = delete;
+  StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
+  ~StyleSheetCollection() override = default;
 
-  const ActiveStyleSheetVector& ActiveAuthorStyleSheets() const {
-    return active_author_style_sheets_;
+  const ActiveStyleSheetVector& ActiveStyleSheets() const {
+    return active_style_sheets_;
   }
   const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
@@ -65,7 +66,7 @@ class CORE_EXPORT StyleSheetCollection
   void AppendSheetForList(StyleSheet*);
   void MarkSheetListDirty() { sheet_list_dirty_ = true; }
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "StyleSheetCollection";
   }
@@ -74,11 +75,8 @@ class CORE_EXPORT StyleSheetCollection
 
  protected:
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
-  ActiveStyleSheetVector active_author_style_sheets_;
+  ActiveStyleSheetVector active_style_sheets_;
   bool sheet_list_dirty_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StyleSheetCollection);
 };
 
 }  // namespace blink

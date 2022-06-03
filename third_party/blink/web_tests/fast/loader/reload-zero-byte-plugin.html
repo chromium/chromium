@@ -1,19 +1,22 @@
-<iframe src="data:application/x-blink-test-plugin," id="f"></iframe>
+<iframe src="data:application/x-blink-test-plugin," id="f" onload="reload_iframe()"></iframe>
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows(true);
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
+    testRunner.setPopupBlockingEnabled(false);
 }
 
-setTimeout(function() {
-    document.getElementById("f").contentWindow.location.replace('data:application/x-blink-test-plugin,');
-    setTimeout(function() {
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }, 100);
-}, 100);
+function done () {
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function reload_iframe () {
+    const iframe = document.getElementById("f");
+    iframe.onload = done;
+    iframe.contentWindow.location.replace('data:application/x-blink-test-plugin,');
+}
+
 </script>
 This test passes if it doesn't crash. To run manually, please disable your
 popup blocker.

@@ -12,7 +12,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center">
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
          android:id="@+id/browser_toolbar"
          android:layout_width="match_parent"
          android:layout_height="?attr/actionBarSize"

@@ -6,8 +6,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
 namespace {
@@ -16,41 +18,41 @@ namespace {
 // abort() should reject with exception.
 TEST(AbortTest, CannotAbortBeforeShow) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->abort(scope.GetScriptState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  request->abort(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kInvalidStateError));
 }
 
 // If request.abort() is called again before the previous abort() resolved, then
 // the second abort() should reject with exception.
 TEST(AbortTest, CannotAbortTwiceConcurrently) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
-  request->show(scope.GetScriptState());
-  request->abort(scope.GetScriptState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
 
-  request->abort(scope.GetScriptState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  request->abort(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kInvalidStateError));
 }
 
 // If request.abort() is called after calling request.show(), then abort()
 // should not reject with exception.
 TEST(AbortTest, CanAbortAfterShow) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
-  request->show(scope.GetScriptState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
 
-  request->abort(scope.GetScriptState())
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
 }
 
@@ -58,13 +60,13 @@ TEST(AbortTest, CanAbortAfterShow) {
 // promise should be rejected.
 TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
-  request->show(scope.GetScriptState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
 
-  request->abort(scope.GetScriptState())
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnAbort(
@@ -75,16 +77,16 @@ TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
 // call should not be rejected, as it's not a duplicate request anymore.
 TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
-  request->show(scope.GetScriptState());
-  request->abort(scope.GetScriptState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnAbort(
       false);
 
-  request->abort(scope.GetScriptState())
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
 }
 
@@ -92,14 +94,14 @@ TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
 // promise should be rejected, and request.abort() promise should be resolved.
 TEST(AbortTest, SuccessfulAbortShouldRejectShowPromiseAndResolveAbortPromise) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
-  request->show(scope.GetScriptState())
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
-  request->abort(scope.GetScriptState())
+  request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnAbort(

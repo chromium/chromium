@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL undefined assert_throws_dom: function "() => {
+    document.evaluate("/foo:bar", document.documentElement, resolver);
+  }" did not throw
+PASS null
+PASS number
+PASS boolean
+FAIL symbol assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS object coercion (abrupt completion)
+Harness: the test ran to completion.
+

@@ -52,8 +52,7 @@ int32_t PPB_Graphics3D_Shared::ResizeBuffers(int32_t width, int32_t height) {
   if ((width < 0) || (height < 0))
     return PP_ERROR_BADARGUMENT;
 
-  gles2_impl()->ResizeCHROMIUM(width, height, 1.f,
-                               GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, true);
+  gles2_impl()->ResizeCHROMIUM(width, height, 1.f, nullptr, true);
   size_ = gfx::Size(width, height);
   // TODO(alokp): Check if resize succeeded and return appropriate error code.
   return PP_OK;

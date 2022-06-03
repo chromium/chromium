@@ -4,31 +4,31 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "content/public/test/browser_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace {
 
-using autofill::ServerFieldType;
 using autofill::AutofillKey;
 using autofill::AutofillProfile;
+using autofill::ServerFieldType;
 using autofill_helper::GetAllAutoFillProfiles;
 using autofill_helper::GetAllKeys;
 using autofill_helper::GetKeyCount;
 using autofill_helper::GetProfileCount;
 using autofill_helper::RemoveKeys;
 using autofill_helper::SetProfiles;
-using sync_timing_helper::PrintResult;
 using sync_timing_helper::TimeMutualSyncCycle;
 
 // See comments in typed_urls_sync_perf_test.cc for reasons for these
@@ -38,6 +38,23 @@ using sync_timing_helper::TimeMutualSyncCycle;
 // into a macro and have all the perf tests use it.
 constexpr size_t kNumKeys = 163;
 constexpr size_t kNumProfiles = 163;
+
+constexpr char kMetricPrefixAutofill[] = "Autofill.";
+constexpr char kMetricAddProfilesSyncTime[] = "add_profiles_sync_time";
+constexpr char kMetricUpdateProfilesSyncTime[] = "update_profiles_sync_time";
+constexpr char kMetricDeleteProfilesSyncTime[] = "delete_profiles_sync_time";
+constexpr char kMetricAddKeysSyncTime[] = "add_keys_sync_time";
+constexpr char kMetricDeleteKeysSyncTime[] = "delete_keys_sync_time";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixAutofill, story);
+  reporter.RegisterImportantMetric(kMetricAddProfilesSyncTime, "ms");
+  reporter.RegisterImportantMetric(kMetricUpdateProfilesSyncTime, "ms");
+  reporter.RegisterImportantMetric(kMetricDeleteProfilesSyncTime, "ms");
+  reporter.RegisterImportantMetric(kMetricAddKeysSyncTime, "ms");
+  reporter.RegisterImportantMetric(kMetricDeleteKeysSyncTime, "ms");
+  return reporter;
+}
 
 std::string IntToName(int n) {
   return base::StringPrintf("Name%d", n);
@@ -55,6 +72,10 @@ class AutofillProfileSyncPerfTest : public SyncTest {
  public:
   AutofillProfileSyncPerfTest()
       : SyncTest(TWO_CLIENT), guid_number_(0), name_number_(0) {}
+
+  AutofillProfileSyncPerfTest(const AutofillProfileSyncPerfTest&) = delete;
+  AutofillProfileSyncPerfTest& operator=(const AutofillProfileSyncPerfTest&) =
+      delete;
 
   // Adds |num_profiles| new autofill profiles to the sync profile |profile|.
   void AddProfiles(int profile, int num_profiles);
@@ -80,7 +101,6 @@ class AutofillProfileSyncPerfTest : public SyncTest {
 
   int guid_number_;
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncPerfTest);
 };
 
 void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
@@ -136,25 +156,30 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
+  auto reporter =
+      SetUpReporter(base::NumberToString(kNumProfiles) + "_profiles");
   AddProfiles(0, kNumProfiles);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(kNumProfiles, GetProfileCount(1));
-  PrintResult("autofill", "add_autofill_profiles", dt);
+  reporter.AddResult(kMetricAddProfilesSyncTime, dt);
 
   UpdateProfiles(0);
   dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(kNumProfiles, GetProfileCount(1));
-  PrintResult("autofill", "update_autofill_profiles", dt);
+  reporter.AddResult(kMetricUpdateProfilesSyncTime, dt);
 
   RemoveProfiles(0);
   dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(0U, GetProfileCount(1));
-  PrintResult("autofill", "delete_autofill_profiles", dt);
+  reporter.AddResult(kMetricDeleteProfilesSyncTime, dt);
 }
 
 class AutocompleteSyncPerfTest : public SyncTest {
  public:
   AutocompleteSyncPerfTest() : SyncTest(TWO_CLIENT), name_number_(0) {}
+
+  AutocompleteSyncPerfTest(const AutocompleteSyncPerfTest&) = delete;
+  AutocompleteSyncPerfTest& operator=(const AutocompleteSyncPerfTest&) = delete;
 
   // Adds |num_keys| new autofill keys to the sync profile |profile|.
   void AddKeys(int profile, int num_keys);
@@ -167,7 +192,6 @@ class AutocompleteSyncPerfTest : public SyncTest {
   const std::string NextName();
 
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncPerfTest);
 };
 
 void AutocompleteSyncPerfTest::AddKeys(int profile, int num_keys) {
@@ -189,19 +213,20 @@ const std::string AutocompleteSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutocompleteSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
+  auto reporter = SetUpReporter(base::NumberToString(kNumKeys) + "_keys");
   AddKeys(0, kNumKeys);
   // TODO(lipalani): fix this. The following line is added to force sync.
   ForceSync(0);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(kNumKeys, GetKeyCount(1));
-  PrintResult("autofill", "add_autofill_keys", dt);
+  reporter.AddResult(kMetricAddKeysSyncTime, dt);
 
   RemoveKeys(0);
   // TODO(lipalani): fix this. The following line is added to force sync.
   ForceSync(0);
   dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(0U, GetKeyCount(1));
-  PrintResult("autofill", "delete_autofill_keys", dt);
+  reporter.AddResult(kMetricDeleteKeysSyncTime, dt);
 }
 
 }  // namespace

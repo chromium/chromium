@@ -25,9 +25,7 @@ static_library("core") {
     "request_metadata.cc",
     "request_metadata.h",
   ]
-  deps = [
-    ":metrics",
-  ]
+  deps = [ ":metrics" ]
   public_deps = [
     "cache",
     "//base",
@@ -45,8 +43,11 @@ static_library("metrics") {
     "image_fetcher_metrics_reporter.cc",
     "image_fetcher_metrics_reporter.h",
   ]
-  public_deps = [
-    "//base",
+  public_deps = [ "//base" ]
+
+  deps = [
+    "cache:types",
+    "cache/proto",
   ]
 }
 
@@ -84,7 +85,7 @@ source_set("unit_tests") {
     ":metrics",
     ":test_support",
     "cache",
-    "cache:cache_unit_tests",
+    "cache:unit_tests",
     "cache/proto",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",

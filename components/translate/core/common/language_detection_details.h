@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -27,16 +26,16 @@ struct LanguageDetectionDetails {
   // The language detected by the content (Content-Language).
   std::string content_language;
 
-  // The language detected by CLD.
-  std::string cld_language;
+  // The language detected by the model.
+  std::string model_detected_language;
 
-  // Whether the CLD detection is reliable or not.
-  bool is_cld_reliable;
+  // Whether the model detection is reliable or not.
+  bool is_model_reliable = false;
 
   // Whether the notranslate is specified in head tag as a meta;
   //   <meta name="google" value="notranslate"> or
   //   <meta name="google" content="notranslate">.
-  bool has_notranslate;
+  bool has_notranslate = false;
 
   // The language written in the lang attribute of the html element.
   std::string html_root_language;
@@ -45,7 +44,13 @@ struct LanguageDetectionDetails {
   std::string adopted_language;
 
   // The contents which is used for detection.
-  base::string16 contents;
+  std::u16string contents;
+
+  // The reliability score of the language detection model.
+  float model_reliability_score = 0.0;
+
+  // The model version that was used to detect the page's language.
+  std::string detection_model_version;
 };
 
 }  // namespace translate

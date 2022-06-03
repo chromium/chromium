@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ಅಯ್ಯೋ! ಯಾದೃಚ್ಛಿಕ RSA ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1445572445564823378">ಈ ವಿಸ್ತರಣೆಯು <ph name="PRODUCT_NAME" /> ಅನ್ನು ನಿಧಾನವಾಗಿಸುತ್ತಿದೆ. ನೀವು <ph name="PRODUCT_NAME" /> ರ ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಮತ್ತೊಮ್ಮೆ ಪ್ರಾರಂಭಿಸಲು ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದು ಅವಶ್ಯಕ.</translation>
 <translation id="1468038450257740950">WebGL ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
-<translation id="149347756975725155">'<ph name="ICON" />' ಎಕ್ಸ್‌ಟೆನ್ಷನ್ ಐಕಾನ್  ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' ಹಿನ್ನಲೆ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2159915644201199628">ಚಿತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ಲೋಕಲೈಜೇಷನ್ ಬಳಸಲಾಗಿದೆ, ಆದರೆ ಡಿಫಾಲ್ಟ್ _ಲೋಕಲ್ ಅನ್ನು ಮ್ಯಾನಿಫಾಸ್ಟ್‌ನಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ಗೌಪ್ಯತೆ ಕೀಲಿಯನ್ನು ಓದಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="6391538222494443604">ಇನ್‌ಪುಟ್ ಡೈರೆಕ್ಟರಿ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬೇಕು.</translation>
 <translation id="641087317769093025">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್ ಜಿಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="6413453408918378296">'<ph name="ICON" />' ಐಕಾನ್ ಸ್ಪಷ್ಟವಾಗಿ ಗೋಚರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಸಾಧನಗಳಿಗೆ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ:</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' ಹಿನ್ನೆಲೆ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ದಿಂದ <ph name="VENDOR_NAME" /> (ಕ್ರಮಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import json
-import urllib
-import urllib2
+import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.request  # pylint: disable=import-error
 
 
 TEST_RESULTS_SERVER = 'http://test-results.appspot.com'
@@ -15,9 +15,10 @@ def _Request(path, params=None):
   """Request json data from the test results server."""
   url = TEST_RESULTS_SERVER + path
   if params:
-    url += '?' + urllib.urlencode(params)
-  request = urllib2.Request(url, headers={'User-Agent': TOOL_USER_AGENT})
-  response = urllib2.urlopen(request)
+    url += '?' + six.moves.urllib.parse.urlencode(params)
+  request = six.moves.urllib.request.Request(
+      url, headers={'User-Agent': TOOL_USER_AGENT})
+  response = six.moves.urllib.request.urlopen(request)
   return json.load(response)
 
 

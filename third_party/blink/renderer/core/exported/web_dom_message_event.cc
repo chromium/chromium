@@ -50,70 +50,25 @@ WebDOMMessageEvent::WebDOMMessageEvent(
     const WebFrame* source_frame,
     const WebDocument& target_document,
     WebVector<MessagePortChannel> channels)
-    : WebDOMMessageEvent(MessageEvent::Create()) {
+    : WebDOMMessageEvent(MessageEvent::Create(), absl::nullopt) {
   DOMWindow* window = nullptr;
   if (source_frame)
     window = WebFrame::ToCoreFrame(*source_frame)->DomWindow();
   MessagePortArray* ports = nullptr;
   if (!target_document.IsNull()) {
     Document* core_document = target_document;
-    ports = MessagePort::EntanglePorts(*core_document, std::move(channels));
+    ports = MessagePort::EntanglePorts(*core_document->GetExecutionContext(),
+                                       std::move(channels));
   }
   // TODO(esprehn): Chromium always passes empty string for lastEventId, is that
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
       "message", false, false, message_data, origin, "" /*lastEventId*/, window,
-      ports, nullptr /*user_activation*/);
-}
-
-WebDOMMessageEvent::WebDOMMessageEvent(TransferableMessage message,
-                                       const WebString& origin,
-                                       const WebFrame* source_frame,
-                                       const WebDocument& target_document)
-    : WebDOMMessageEvent(MessageEvent::Create()) {
-  DOMWindow* window = nullptr;
-  if (source_frame)
-    window = WebFrame::ToCoreFrame(*source_frame)->DomWindow();
-  locked_agent_cluster_id_ = message.locked_agent_cluster_id;
-  BlinkTransferableMessage msg = ToBlinkTransferableMessage(std::move(message));
-  MessagePortArray* ports = nullptr;
-  if (!target_document.IsNull()) {
-    Document* core_document = target_document;
-    ports = MessagePort::EntanglePorts(*core_document, std::move(msg.ports));
-  }
-
-  UserActivation* user_activation = nullptr;
-  if (msg.user_activation) {
-    user_activation = MakeGarbageCollected<UserActivation>(
-        msg.user_activation->has_been_active, msg.user_activation->was_active);
-  }
-
-  // TODO(esprehn): Chromium always passes empty string for lastEventId, is that
-  // right?
-  Unwrap<MessageEvent>()->initMessageEvent(
-      "message", false, false, std::move(msg.message), origin,
-      "" /*lastEventId*/, window, ports, user_activation,
-      msg.transfer_user_activation, msg.allow_autoplay);
+      ports, nullptr /*user_activation*/, false);
 }
 
 WebString WebDOMMessageEvent::Origin() const {
   return WebString(ConstUnwrap<MessageEvent>()->origin());
-}
-
-TransferableMessage WebDOMMessageEvent::AsMessage() {
-  BlinkTransferableMessage msg;
-  msg.message = Unwrap<MessageEvent>()->DataAsSerializedScriptValue();
-  msg.ports = Unwrap<MessageEvent>()->ReleaseChannels();
-  msg.transfer_user_activation =
-      Unwrap<MessageEvent>()->transferUserActivation();
-  msg.allow_autoplay = Unwrap<MessageEvent>()->allowAutoplay();
-  UserActivation* user_activation = Unwrap<MessageEvent>()->userActivation();
-  TransferableMessage transferable_msg = ToTransferableMessage(std::move(msg));
-  if (user_activation) {
-    transferable_msg.user_activation = mojom::UserActivationSnapshot::New(
-        user_activation->hasBeenActive(), user_activation->isActive());
-  }
-  return transferable_msg;
 }
 
 }  // namespace blink

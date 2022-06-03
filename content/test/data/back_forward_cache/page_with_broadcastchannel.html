@@ -1,0 +1,31 @@
+<html>
+  <title>BroadcastChannel test</title>
+</html>
+<script>
+
+let channel;
+let shouldCloseChannelInPageHide;
+let shouldAcquireBroadcastChannelInPageHide;
+
+function acquireBroadcastChannel() {
+  channel = new BroadcastChannel('foo');
+}
+
+function setShouldCloseChannelInPageHide(close) {
+  shouldCloseChannelInPageHide = close;
+}
+
+function setShouldAcquireBroadcastChannelInPageHide(acquire) {
+  shouldAcquireBroadcastChannelInPageHide = acquire;
+}
+
+window.onpagehide = event => {
+  if (shouldCloseChannelInPageHide) {
+    channel.close();
+  }
+  if (shouldAcquireBroadcastChannelInPageHide) {
+    acquireBroadcastChannel();
+  }
+}
+
+</script>

@@ -16,12 +16,13 @@
 namespace offline_pages {
 
 namespace {
-const GURL kTestUrl("http://example.com");
+
 const int64_t kTestOfflineId = 1234LL;
 const char kTestClientNamespace[] = "default";
 const ClientId kTestClientId(kTestClientNamespace, "1234");
 const base::FilePath kTestFilePath(FILE_PATH_LITERAL("/test/path/file"));
 const int64_t kTestFileSize = 876543LL;
+
 }  // namespace
 
 class MarkPageAccessedTaskTest : public ModelTaskTestBase {
@@ -33,6 +34,7 @@ class MarkPageAccessedTaskTest : public ModelTaskTestBase {
 };
 
 TEST_F(MarkPageAccessedTaskTest, MarkPageAccessed) {
+  const GURL kTestUrl("http://example.com");
   OfflinePageItem page(kTestUrl, kTestOfflineId, kTestClientId, kTestFilePath,
                        kTestFileSize);
   store_test_util()->InsertItem(page);
@@ -59,6 +61,7 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessed) {
 }
 
 TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
+  const GURL kTestUrl("http://example.com");
   OfflinePageItem page(kTestUrl, kTestOfflineId, kTestClientId, kTestFilePath,
                        kTestFileSize);
   store_test_util()->InsertItem(page);

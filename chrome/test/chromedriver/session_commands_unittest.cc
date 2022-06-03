@@ -75,7 +75,7 @@ TEST(SessionCommandsTest, ExecuteSetTimeouts) {
 
   // Old pre-W3C format.
   params.Clear();
-  params.SetDouble("ms", 5000.0);
+  params.SetDoubleKey("ms", 5000.0);
   params.SetString("type", "page load");
   status = ExecuteSetTimeouts(&session, params, &value);
   ASSERT_EQ(kOk, status.code());
@@ -122,7 +122,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Empty) {
                        std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 }
 
 TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
@@ -140,7 +140,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
                        std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 
   // Invalid "alwaysMatch"
   params.SetInteger("capabilities.alwaysMatch.browserName", 10);
@@ -151,7 +151,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
   params.SetString("capabilities.alwaysMatch.browserName", "chrome");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   std::string result_string;
   ASSERT_TRUE(result.GetString("browserName", &result_string));
   ASSERT_EQ(result_string, "chrome");
@@ -190,7 +190,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   list_ptr->Set(0, std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 
   // Invalid entry
   base::DictionaryValue* entry_ptr;
@@ -203,7 +203,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   entry_ptr->SetString("pageLoadStrategy", "eager");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   std::string result_string;
   ASSERT_TRUE(result.GetString("pageLoadStrategy", &result_string));
   ASSERT_EQ(result_string, "eager");
@@ -215,7 +215,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   entry_ptr->SetString("browserName", "chrome");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   ASSERT_TRUE(result.GetString("pageLoadStrategy", &result_string));
   ASSERT_EQ(result_string, "eager");
 }
@@ -266,7 +266,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       })",
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 2u);
+  ASSERT_EQ(result.DictSize(), 2u);
   ASSERT_TRUE(result.HasKey("timeouts"));
   ASSERT_TRUE(result.HasKey("unhandledPromptBehavior"));
   ASSERT_FALSE(result.HasKey("pageLoadStrategy"));
@@ -304,7 +304,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       })",
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 3u);
+  ASSERT_EQ(result.DictSize(), 3u);
   ASSERT_TRUE(result.HasKey("timeouts"));
   ASSERT_EQ(result.FindKey("browserName")->GetString(), "chrome");
   ASSERT_FALSE(result.HasKey("unhandledPromptBehavior"));
@@ -338,11 +338,12 @@ TEST(SessionCommandsTest, FileUpload) {
   params.SetString("file", kBase64ZipEntry);
   Status status = ExecuteUploadFile(&session, params, &value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  base::FilePath::StringType path;
-  ASSERT_TRUE(value->GetAsString(&path));
-  ASSERT_TRUE(base::PathExists(base::FilePath(path)));
+  ASSERT_TRUE(value->is_string());
+  std::string path = value->GetString();
+  ASSERT_TRUE(base::PathExists(base::FilePath::FromUTF8Unsafe(path)));
   std::string data;
-  ASSERT_TRUE(base::ReadFileToString(base::FilePath(path), &data));
+  ASSERT_TRUE(
+      base::ReadFileToString(base::FilePath::FromUTF8Unsafe(path), &data));
   ASSERT_STREQ("COW\n", data.c_str());
 }
 
@@ -374,6 +375,38 @@ TEST(SessionCommandsTest, MatchCapabilities) {
   merged.SetString("browserName", "chrome");
 
   ASSERT_TRUE(MatchCapabilities(&merged));
+}
+
+TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticators) {
+  // Match webauthn:virtualAuthenticators on desktop.
+  base::DictionaryValue merged;
+  merged.SetBoolPath("webauthn:virtualAuthenticators", true);
+  EXPECT_TRUE(MatchCapabilities(&merged));
+
+  // Don't match webauthn:virtualAuthenticators on android.
+  merged.SetStringPath("goog:chromeOptions.androidPackage", "packageName");
+  EXPECT_FALSE(MatchCapabilities(&merged));
+
+  // Don't match values other than bools.
+  merged.Clear();
+  merged.SetStringPath("webauthn:virtualAuthenticators", "not a bool");
+  EXPECT_FALSE(MatchCapabilities(&merged));
+}
+
+TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticatorsLargeBlob) {
+  // Match webauthn:extension:largeBlob on desktop.
+  base::DictionaryValue merged;
+  merged.SetBoolPath("webauthn:extension:largeBlob", true);
+  EXPECT_TRUE(MatchCapabilities(&merged));
+
+  // Don't match webauthn:extension:largeBlob on android.
+  merged.SetStringPath("goog:chromeOptions.androidPackage", "packageName");
+  EXPECT_FALSE(MatchCapabilities(&merged));
+
+  // Don't match values other than bools.
+  merged.Clear();
+  merged.SetStringPath("webauthn:extension:largeBlob", "not a bool");
+  EXPECT_FALSE(MatchCapabilities(&merged));
 }
 
 TEST(SessionCommandsTest, Quit) {
@@ -583,9 +616,9 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   ASSERT_TRUE(capabilities_out.logging_prefs["driver"]);
   // Verify session settings are correct
   ASSERT_EQ(kAccept, session.unhandled_prompt_behavior);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(57), session.implicit_wait);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(29), session.page_load_timeout);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(21), session.script_timeout);
+  ASSERT_EQ(base::Seconds(57), session.implicit_wait);
+  ASSERT_EQ(base::Seconds(29), session.page_load_timeout);
+  ASSERT_EQ(base::Seconds(21), session.script_timeout);
   ASSERT_TRUE(session.strict_file_interactability);
   ASSERT_EQ(Log::Level::kDebug, session.driver_log.get()->min_level());
 }
@@ -615,9 +648,9 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   ASSERT_TRUE(desired_caps_out->is_dict());
   ASSERT_TRUE(merged_out.is_dict());
   // Testing specific values could be fragile, but want to verify they are set
-  ASSERT_EQ(base::TimeDelta::FromSeconds(0), session.implicit_wait);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(300), session.page_load_timeout);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(30), session.script_timeout);
+  ASSERT_EQ(base::Seconds(0), session.implicit_wait);
+  ASSERT_EQ(base::Seconds(300), session.page_load_timeout);
+  ASSERT_EQ(base::Seconds(30), session.script_timeout);
   ASSERT_FALSE(session.strict_file_interactability);
   ASSERT_EQ(Log::Level::kWarning, session.driver_log.get()->min_level());
   // w3c values:

@@ -24,9 +24,9 @@ namespace test {
 //!
 //! If the context structure has fields that tell whether it’s valid, such as
 //! magic numbers or size fields, sanity-checks those fields for validity with
-//! fatal gtest assertions. For other fields, where it’s possible to reason
-//! about their validity based solely on their contents, sanity-checks via
-//! nonfatal gtest assertions.
+//! fatal Google Test assertions. For other fields, where it’s possible to
+//! reason about their validity based solely on their contents, sanity-checks
+//! via nonfatal Google Test assertions.
 //!
 //! \param[in] context The context to check.
 void SanityCheckContext(const NativeCPUContext& context);

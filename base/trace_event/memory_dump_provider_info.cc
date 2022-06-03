@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace trace_event {
@@ -16,12 +16,12 @@ MemoryDumpProviderInfo::MemoryDumpProviderInfo(
     const char* name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options,
-    bool whitelisted_for_background_mode)
+    bool allowed_in_background_mode)
     : dump_provider(dump_provider),
       options(options),
       name(name),
       task_runner(std::move(task_runner)),
-      whitelisted_for_background_mode(whitelisted_for_background_mode),
+      allowed_in_background_mode(allowed_in_background_mode),
       consecutive_failures(0),
       disabled(false) {}
 

@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Prints the large commits given a .csv file from a telemetry size graph."""
-
-from __future__ import print_function
 
 import argparse
 import re
@@ -36,15 +34,17 @@ def _FindBigDeltas(revs_and_sizes, increase_threshold, decrease_threshold):
 
 
 def _LookupCommitInfo(rev):
-  sha1 = subprocess.check_output(['git', 'crrev-parse', str(rev)]).strip()
-  desc = subprocess.check_output(['git', 'log', '-n1', sha1])
+  sha1 = subprocess.check_output(
+      ['git', 'crrev-parse', str(rev)], encoding="utf-8").strip()
+  desc = subprocess.check_output(['git', 'log', '-n1', sha1], encoding="utf-8")
   author = re.search(r'Author: .*?<(.*?)>', desc).group(1)
   day, year = re.search(r'Date:\s+\w+\s+(\w+ \d+)\s+.*?\s+(\d+)', desc).groups()
   date = '{} {}'.format(day, year)
   title = re.search(r'\n +(\S.*)', desc).group(1).replace('\t', ' ')
   milestone = None
   if 'Roll AFDO' not in title:
-    releases = subprocess.check_output(['git', 'find-releases', sha1])
+    releases = subprocess.check_output(['git', 'find-releases', sha1],
+                                       encoding="utf-8")
     version = re.search('initially in (\d\d)', releases)
     milestone = ''
     if version:

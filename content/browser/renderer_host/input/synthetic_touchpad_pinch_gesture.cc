@@ -6,6 +6,8 @@
 
 #include "base/callback.h"
 #include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
+#include "content/common/input/input_injector.mojom.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace content {
 namespace {
@@ -19,10 +21,17 @@ float Lerp(float start, float end, float progress) {
 SyntheticTouchpadPinchGesture::SyntheticTouchpadPinchGesture(
     const SyntheticPinchGestureParams& params)
     : params_(params),
-      gesture_source_type_(SyntheticGestureParams::DEFAULT_INPUT),
+      gesture_source_type_(content::mojom::GestureSourceType::kDefaultInput),
       state_(SETUP),
       current_scale_(1.0f) {
   DCHECK_GT(params_.scale_factor, 0.0f);
+  if (params_.gesture_source_type !=
+      content::mojom::GestureSourceType::kTouchpadInput) {
+    DCHECK_EQ(params_.gesture_source_type,
+              content::mojom::GestureSourceType::kDefaultInput);
+    params_.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchpadInput;
+  }
 }
 
 SyntheticTouchpadPinchGesture::~SyntheticTouchpadPinchGesture() {}
@@ -32,15 +41,17 @@ SyntheticGesture::Result SyntheticTouchpadPinchGesture::ForwardInputEvents(
     SyntheticGestureTarget* target) {
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
-    if (gesture_source_type_ == SyntheticGestureParams::DEFAULT_INPUT)
+    if (gesture_source_type_ ==
+        content::mojom::GestureSourceType::kDefaultInput)
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     state_ = STARTED;
     start_time_ = timestamp;
   }
 
-  DCHECK_NE(gesture_source_type_, SyntheticGestureParams::DEFAULT_INPUT);
-  if (gesture_source_type_ == SyntheticGestureParams::MOUSE_INPUT) {
+  DCHECK_NE(gesture_source_type_,
+            content::mojom::GestureSourceType::kDefaultInput);
+  if (gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput) {
     ForwardGestureEvents(timestamp, target);
   } else {
     // Touch input should be using SyntheticTouchscreenPinchGesture.
@@ -73,9 +84,12 @@ void SyntheticTouchpadPinchGesture::ForwardGestureEvents(
 
       // Send the start event.
       target->DispatchInputEventToPlatform(
-          SyntheticWebGestureEventBuilder::Build(
-              blink::WebGestureEvent::kGesturePinchBegin,
-              blink::WebGestureDevice::kTouchpad));
+          blink::SyntheticWebGestureEventBuilder::Build(
+              blink::WebGestureEvent::Type::kGesturePinchBegin,
+              blink::WebGestureDevice::kTouchpad,
+              params_.from_devtools_debugger
+                  ? blink::WebInputEvent::kFromDebugger
+                  : blink::WebInputEvent::kNoModifiers));
       state_ = IN_PROGRESS;
       break;
     case IN_PROGRESS: {
@@ -87,15 +101,21 @@ void SyntheticTouchpadPinchGesture::ForwardGestureEvents(
 
       // Send the incremental scale event.
       target->DispatchInputEventToPlatform(
-          SyntheticWebGestureEventBuilder::BuildPinchUpdate(
+          blink::SyntheticWebGestureEventBuilder::BuildPinchUpdate(
               incremental_scale, params_.anchor.x(), params_.anchor.y(),
-              0 /* modifierFlags */, blink::WebGestureDevice::kTouchpad));
+              params_.from_devtools_debugger
+                  ? blink::WebInputEvent::kFromDebugger
+                  : blink::WebInputEvent::kNoModifiers,
+              blink::WebGestureDevice::kTouchpad));
 
       if (HasReachedTarget(event_timestamp)) {
         target->DispatchInputEventToPlatform(
-            SyntheticWebGestureEventBuilder::Build(
-                blink::WebGestureEvent::kGesturePinchEnd,
-                blink::WebGestureDevice::kTouchpad));
+            blink::SyntheticWebGestureEventBuilder::Build(
+                blink::WebGestureEvent::Type::kGesturePinchEnd,
+                blink::WebGestureDevice::kTouchpad,
+                params_.from_devtools_debugger
+                    ? blink::WebInputEvent::kFromDebugger
+                    : blink::WebInputEvent::kNoModifiers));
         state_ = DONE;
       }
       break;
@@ -116,8 +136,7 @@ float SyntheticTouchpadPinchGesture::CalculateTargetScale(
   if (HasReachedTarget(timestamp))
     return params_.scale_factor;
 
-  float progress = (timestamp - start_time_).InSecondsF() /
-                   (stop_time_ - start_time_).InSecondsF();
+  const float progress = (timestamp - start_time_) / (stop_time_ - start_time_);
   return Lerp(1.0f, params_.scale_factor, progress);
 }
 
@@ -141,12 +160,10 @@ void SyntheticTouchpadPinchGesture::CalculateEndTime(
   float scale_factor_delta =
       (scale_factor - 1.0f) * kPixelsNeededToDoubleOrHalve;
 
-  int64_t total_duration_in_us =
-      static_cast<int64_t>(1e6 * (static_cast<double>(scale_factor_delta) /
-                                  params_.relative_pointer_speed_in_pixels_s));
-  DCHECK_GT(total_duration_in_us, 0);
-  stop_time_ =
-      start_time_ + base::TimeDelta::FromMicroseconds(total_duration_in_us);
+  const base::TimeDelta total_duration = base::Seconds(
+      scale_factor_delta / params_.relative_pointer_speed_in_pixels_s);
+  DCHECK_GT(total_duration, base::TimeDelta());
+  stop_time_ = start_time_ + total_duration;
 }
 
 base::TimeTicks SyntheticTouchpadPinchGesture::ClampTimestamp(

@@ -8,16 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @protocol BrowserCommands;
+@class ShareToData;
 
 // Activity that sends the tab to another of the user's devices.
 @interface SendTabToSelfActivity : UIActivity
 
-// Identifier for the send tab to self activity.
-+ (NSString*)activityIdentifier;
-
-// Initialize the send tab to self activity with the |dispatcher| that is used
-// to add the tab to the other device.
-- (instancetype)initWithDispatcher:(id<BrowserCommands>)dispatcher;
+// Initializes the send tab to self activity with the given |data| and the
+// |handler| that is used to add the tab to the other device.
+- (instancetype)initWithData:(ShareToData*)data
+                     handler:(id<BrowserCommands>)handler
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

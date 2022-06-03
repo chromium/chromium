@@ -20,6 +20,8 @@
 
 // https://drafts.csswg.org/css-fonts/#om-fontface
 
-interface CSSFontFaceRule : CSSRule {
+[
+    Exposed=Window
+] interface CSSFontFaceRule : CSSRule {
     [Measure] readonly attribute CSSStyleDeclaration style;
 };

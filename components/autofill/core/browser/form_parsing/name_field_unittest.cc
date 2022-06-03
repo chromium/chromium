@@ -7,362 +7,206 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class NameFieldTest : public testing::Test {
+class NameFieldTest : public FormFieldTest {
  public:
-  NameFieldTest() {}
+  NameFieldTest() = default;
+  NameFieldTest(const NameFieldTest&) = delete;
+  NameFieldTest& operator=(const NameFieldTest&) = delete;
 
  protected:
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<NameField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
-  // Downcast for tests.
-  static std::unique_ptr<NameField> Parse(AutofillScanner* scanner) {
-    std::unique_ptr<FormField> field = NameField::Parse(scanner, nullptr);
-    return std::unique_ptr<NameField>(static_cast<NameField*>(field.release()));
+  std::unique_ptr<FormField> Parse(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language = LanguageCode("us")) override {
+    return NameField::Parse(scanner, page_language, nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NameFieldTest);
 };
 
 TEST_F(NameFieldTest, FirstMiddleLast) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("First Name", "First", NAME_FIRST);
+  AddTextFormFieldData("Name Middle", "Middle", NAME_MIDDLE);
+  AddTextFormFieldData("Last Name", "Last", NAME_LAST);
 
-  field.label = ASCIIToUTF16("First Name");
-  field.name = ASCIIToUTF16("First");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = ASCIIToUTF16("Middle Name");
-  field.name = ASCIIToUTF16("Middle");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  field.label = ASCIIToUTF16("Last Name");
-  field.name = ASCIIToUTF16("Last");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstMiddleLast2) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("firstName", "", NAME_FIRST);
+  AddTextFormFieldData("middleName", "", NAME_MIDDLE);
+  AddTextFormFieldData("lastName", "", NAME_LAST);
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("firstName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  ClassifyAndVerify(ParseResult::PARSED);
+}
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("middleName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+// Test that a field for a honorific title is parsed correctly.
+TEST_F(NameFieldTest, HonorificPrefixFirstLast) {
+  // With support for two last names, the parsing should find the first name
+  // field and the two last name fields.
+  // TODO(crbug.com/1098943): Remove once launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("lastName");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  AddTextFormFieldData("salutation", "", NAME_HONORIFIC_PREFIX);
+  AddTextFormFieldData("first_name", "", NAME_FIRST);
+  AddTextFormFieldData("last_name", "", NAME_LAST);
 
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstLast) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "", NAME_FIRST);
+  AddTextFormFieldData("last_name", "", NAME_LAST);
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstLast2) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "Name", NAME_FIRST);
+  AddTextFormFieldData("last_name", "Name", NAME_LAST);
 
-  field.label = ASCIIToUTF16("Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = ASCIIToUTF16("Name");
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstLastMiddleWithSpaces) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("fist_name", "First  Name", NAME_FIRST);
+  AddTextFormFieldData("middle_name", "Middle  Name", NAME_MIDDLE);
+  AddTextFormFieldData("last_name", "Last  Name", NAME_LAST);
 
-  field.label = ASCIIToUTF16("First  Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = ASCIIToUTF16("Middle  Name");
-  field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  field.label = ASCIIToUTF16("Last  Name");
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstLastEmpty) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "Name", NAME_FIRST);
+  AddTextFormFieldData("last_name", "", NAME_LAST);
 
-  field.label = ASCIIToUTF16("Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, FirstMiddleLastEmpty) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "Name", NAME_FIRST);
+  AddTextFormFieldData("middle_name", "", NAME_MIDDLE_INITIAL);
+  AddTextFormFieldData("last_name", "", NAME_LAST);
 
-  field.label = ASCIIToUTF16("Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, MiddleInitial) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "Name", NAME_FIRST);
+  AddTextFormFieldData("middle_name", "MI", NAME_MIDDLE_INITIAL);
+  AddTextFormFieldData("last_name", "", NAME_LAST);
 
-  field.label = ASCIIToUTF16("First Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
-
-  field.label = ASCIIToUTF16("MI");
-  field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
-
-  field.label = ASCIIToUTF16("Last Name");
-  field.name = ASCIIToUTF16("last_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(NameFieldTest, MiddleInitialNoLastName) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("first_name", "First Name", UNKNOWN_TYPE);
+  AddTextFormFieldData("middle_name", "MI", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("First Name");
-  field.name = ASCIIToUTF16("first_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
+}
 
-  field.label = ASCIIToUTF16("MI");
-  field.name = ASCIIToUTF16("middle_name");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+// Tests that a website with a first and second surname field is parsed
+// correctly.
+TEST_F(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
+  // With support for two last names, the parsing should find the first name
+  // field and the two last name fields.
+  // TODO(crbug.com/1098943): Remove once launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
 
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_EQ(nullptr, field_.get());
+  AddTextFormFieldData("tratamiento", "tratamiento", NAME_HONORIFIC_PREFIX);
+  AddTextFormFieldData("nombre", "nombre", NAME_FIRST);
+  AddTextFormFieldData("apellido paterno", "apellido_paterno", NAME_LAST_FIRST);
+  AddTextFormFieldData("segunda apellido", "segunda_apellido",
+                       NAME_LAST_SECOND);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+// Tests that a website with a first and second surname field is parsed
+// correctly.
+TEST_F(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
+  // With support for two last names, the parsing should find the first name
+  // field and the two last name fields.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
+  AddTextFormFieldData("nombre", "nombre", NAME_FIRST);
+  AddTextFormFieldData("middle name", "middle_name", NAME_MIDDLE);
+  AddTextFormFieldData("apellido paterno", "apellido_paterno", NAME_LAST_FIRST);
+  AddTextFormFieldData("segunda apellido", "segunda_apellido",
+                       NAME_LAST_SECOND);
+
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 // This case is from the dell.com checkout page.  The middle initial "mi" string
 // came at the end following other descriptive text.  http://crbug.com/45123.
 TEST_F(NameFieldTest, MiddleInitialAtEnd) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("XXXnameXXXfirst", "", NAME_FIRST);
+  AddTextFormFieldData("XXXnameXXXmi", "", NAME_MIDDLE_INITIAL);
+  AddTextFormFieldData("XXXnameXXXlast", "", NAME_LAST);
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("XXXnameXXXfirst");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name1")));
+  ClassifyAndVerify(ParseResult::PARSED);
+}
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("XXXnameXXXmi");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name2")));
+// Test the coverage of all found strings for first and second last names.
+TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
+  std::vector<std::u16string> first_last_name_strings = {
+      u"Primer apellido", u"apellidoPaterno", u"apellido_paterno",
+      u"first_surname",   u"first surname",   u"apellido1"};
 
-  field.label = base::string16();
-  field.name = ASCIIToUTF16("XXXnameXXXlast");
-  list_.push_back(
-      std::make_unique<AutofillField>(field, ASCIIToUTF16("name3")));
+  std::vector<std::u16string> second_last_name_strings = {
+      u"Segundo apellido", u"apellidoMaterno", u"apellido_materno",
+      u"apellido2",        u"second_surname",  u"second surname",
+  };
 
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassifications(&field_candidates_map_);
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name1")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_FIRST,
-            field_candidates_map_[ASCIIToUTF16("name1")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name2")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_MIDDLE_INITIAL,
-            field_candidates_map_[ASCIIToUTF16("name2")].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("name3")) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(NAME_LAST,
-            field_candidates_map_[ASCIIToUTF16("name3")].BestHeuristicType());
+  std::vector<std::u16string> neither_first_or_second_last_name_strings = {
+      u"apellido",
+      u"apellidos",
+  };
+
+  for (const auto& string : first_last_name_strings) {
+    SCOPED_TRACE(string);
+    EXPECT_TRUE(MatchesPattern(string, kNameLastFirstRe, nullptr));
+  }
+
+  for (const auto& string : second_last_name_strings) {
+    SCOPED_TRACE(string);
+    EXPECT_TRUE(MatchesPattern(string, kNameLastSecondRe, nullptr));
+  }
+
+  for (const auto& string : neither_first_or_second_last_name_strings) {
+    SCOPED_TRACE(string);
+    EXPECT_FALSE(MatchesPattern(string, kNameLastFirstRe, nullptr));
+    EXPECT_FALSE(MatchesPattern(string, kNameLastSecondRe, nullptr));
+  }
+}
+
+// Tests that address name is not misclassified as name or honorific prefix.
+TEST_F(NameFieldTest, NotAddressName) {
+  AddTextFormFieldData("name", "Identificação do Endereço", UNKNOWN_TYPE);
+  AddTextFormFieldData("title", "Adres Adı", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
+}
+
+// Tests that contact name is classified as full name.
+TEST_F(NameFieldTest, ContactNameFull) {
+  AddTextFormFieldData("contact", "Контактное лицо", NAME_FULL);
+
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 }  // namespace autofill

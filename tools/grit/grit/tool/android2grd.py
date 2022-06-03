@@ -30,7 +30,7 @@ from grit import tclib
 _STRING_NAME = lazy_re.compile(r'[a-z0-9_]+\Z')
 
 # A string's character limit in strings.xml
-_CHAR_LIMIT = lazy_re.compile(r'\[CHAR-LIMIT=(\d+)\]')
+_CHAR_LIMIT = lazy_re.compile(r'\[CHAR_LIMIT=(\d+)\]')
 
 # Finds String.Format() style format specifiers such as "%-5.2f".
 _FORMAT_SPECIFIER = lazy_re.compile(
@@ -202,7 +202,7 @@ OPTIONS may be any of the following:
              current_release="1" source_lang_id="en">
            <outputs />
            <translations />
-           <release allow_pseudo="false" seq="1">
+           <release seq="1">
              <messages fallback_to_english="true" />
            </release>
          </grit>'''), dir='.')
@@ -389,7 +389,7 @@ OPTIONS may be any of the following:
       char_limit = int(match.group(1))
       msg_content = msg.GetRealContent()
       if len(msg_content) > char_limit:
-        print('Warning: char-limit for %s is %d, but length is %d: %s' %
+        print('Warning: CHAR_LIMIT for %s is %d, but length is %d: %s' %
               (grd_name, char_limit, len(msg_content), msg_content))
     return message.MessageNode.Construct(parent=messages_node,
                                          name=grd_name,

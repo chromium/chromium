@@ -10,9 +10,7 @@ cast_source_set("shlib") {
     "le_scanner.h",
   ]
 
-  deps = [
-    "//chromecast/public",
-  ]
+  deps = [ "//chromecast/public" ]
 }
 
 cast_source_set("mock_shlib") {

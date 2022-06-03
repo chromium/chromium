@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>Container Queries - No crash when ::after is a container</title>
+<style>
+  div::after {
+    contain: strict;
+    content: '';
+    display: block;
+  }
+</style>
+<div>
+  PASS if no crash
+</div>

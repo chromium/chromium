@@ -5,17 +5,18 @@
 import logging
 import os
 import platform
+import signal
 import socket
 import subprocess
 import sys
+import time
+import threading
 
 DIR_SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 IMAGES_ROOT = os.path.join(
     DIR_SOURCE_ROOT, 'third_party', 'fuchsia-sdk', 'images')
 SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
-ARM64_SDK_TOOLS = os.path.join(SDK_ROOT, 'tools', 'arm64')
-X64_SDK_TOOLS = os.path.join(SDK_ROOT, 'tools', 'x64')
 
 def EnsurePathExists(path):
   """Checks that the file |path| exists on the filesystem and returns the path
@@ -44,16 +45,14 @@ def GetHostArchFromPlatform():
 
 def GetHostToolPathFromPlatform(tool):
   host_arch = platform.machine()
-  if host_arch == 'x86_64':
-    return os.path.join(X64_SDK_TOOLS, tool)
-  elif host_arch == 'aarch64':
-    return os.path.join(ARM64_SDK_TOOLS, tool)
-  raise Exception('Unsupported host architecture: %s' % host_arch)
+  return os.path.join(SDK_ROOT, 'tools', GetHostArchFromPlatform(), tool)
+
 
 def GetEmuRootForPlatform(emulator):
-  return os.path.join(DIR_SOURCE_ROOT, 'third_party',
-                      emulator + '-' + GetHostOsFromPlatform() + '-' +
-                       GetHostArchFromPlatform())
+  return os.path.join(
+      DIR_SOURCE_ROOT, 'third_party', '{0}-{1}-{2}'.format(
+          emulator, GetHostOsFromPlatform(), GetHostArchFromPlatform()))
+
 
 def ConnectPortForwardingTask(target, local_port, remote_port = 0):
   """Establishes a port forwarding SSH task to a localhost TCP endpoint hosted
@@ -96,3 +95,56 @@ def GetAvailableTcpPort():
   port = sock.getsockname()[1]
   sock.close()
   return port
+
+
+def RunGnSdkFunction(script, function):
+  script_path = os.path.join(SDK_ROOT, 'bin', script)
+  function_cmd = ['bash', '-c', '. %s; %s' % (script_path, function)]
+  return SubprocessCallWithTimeout(function_cmd)
+
+
+def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
+  """Helper function for running a command.
+
+  Args:
+    command: The command to run.
+    silent: If true, stdout and stderr of the command will not be printed.
+    timeout_secs: Maximum amount of time allowed for the command to finish.
+
+  Returns:
+    A tuple of (return code, stdout, stderr) of the command. Raises
+    an exception if the subprocess times out.
+  """
+
+  if silent:
+    devnull = open(os.devnull, 'w')
+    process = subprocess.Popen(command,
+                               stdout=devnull,
+                               stderr=devnull,
+                               text=True)
+  else:
+    process = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               text=True)
+  timeout_timer = None
+  if timeout_secs:
+
+    def interrupt_process():
+      process.send_signal(signal.SIGKILL)
+
+    timeout_timer = threading.Timer(timeout_secs, interrupt_process)
+
+    # Ensure that keyboard interrupts are handled properly (crbug/1198113).
+    timeout_timer.daemon = True
+
+    timeout_timer.start()
+
+  out, err = process.communicate()
+  if timeout_timer:
+    timeout_timer.cancel()
+
+  if process.returncode == -9:
+    raise Exception('Timeout when executing \"%s\".' % ' '.join(command))
+
+  return process.returncode, out, err

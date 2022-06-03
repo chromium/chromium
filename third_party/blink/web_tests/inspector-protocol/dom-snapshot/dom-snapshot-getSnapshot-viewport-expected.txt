@@ -1,250 +1,251 @@
 Tests DOMSnapshot.getSnapshot method on a mobile page.
 Emulating device: 600x600x1
 {
-  "domNodes": [
-    {
-      "nodeType": 9,
-      "nodeName": "#document",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        1,
-        2,
-        3
-      ],
-      "layoutNodeIndex": 0,
-      "documentURL": "<string>",
-      "baseURL": "<string>",
-      "documentEncoding": "windows-1252",
-      "frameId": "<string>",
-      "scrollOffsetX": 0,
-      "scrollOffsetY": 0
-    },
-    {
-      "nodeType": 10,
-      "nodeName": "html",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "publicId": "",
-      "systemId": ""
-    },
-    {
-      "nodeType": 8,
-      "nodeName": "#comment",
-      "nodeValue": " domSnapshot test for a document with a viewport.  ",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "HTML",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        4,
-        15
-      ],
-      "layoutNodeIndex": 1,
-      "frameId": "<string>"
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "HEAD",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        5,
-        6,
-        7,
-        9,
-        10,
-        12,
-        13,
-        14
-      ]
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "META",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "attributes": [
-        {
-          "name": "name",
-          "value": "viewport"
-        },
-        {
-          "name": "content",
-          "value": "width=300"
+    computedStyles : [
+    ]
+    domNodes : [
+        [0] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 1
+                [1] : 2
+                [2] : 3
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 0
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 0
         }
-      ]
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "STYLE",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        8
-      ]
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n@font-face {\n  font-family: 'ahem';\n  src: url(../../resources/Ahem.ttf);\n}\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "STYLE",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        11
-      ]
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n* {\n  margin: 0;\n  padding: 0;\n}\ndiv {\n  position: absolute;\n  top: 100px;\n  left: 100px;\n  width: 100px;\n  height: 100px;\n  background-color: green;\n}\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 8,
-      "nodeName": "#comment",
-      "nodeValue": " The div's box should have size and position of 100x100 to match the\n     computed style, even though it's visually scaled by the viewport. The\n     text's box should also be inside the div's box, not outside it. ",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n",
-      "backendNodeId": "<number>"
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "BODY",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        16,
-        18
-      ],
-      "layoutNodeIndex": 2
-    },
-    {
-      "nodeType": 1,
-      "nodeName": "DIV",
-      "nodeValue": "",
-      "backendNodeId": "<number>",
-      "childNodeIndexes": [
-        17
-      ],
-      "attributes": [
-        {
-          "name": "style",
-          "value": "font-family: ahem;"
-        },
-        {
-          "name": "id",
-          "value": "100x100"
+        [1] : {
+            backendNodeId : <number>
+            nodeName : html
+            nodeType : 10
+            nodeValue : 
+            publicId : 
+            systemId : 
         }
-      ],
-      "layoutNodeIndex": 3
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "Boxes!",
-      "backendNodeId": "<number>",
-      "layoutNodeIndex": 4
-    },
-    {
-      "nodeType": 3,
-      "nodeName": "#text",
-      "nodeValue": "\n\n",
-      "backendNodeId": "<number>"
-    }
-  ],
-  "layoutTreeNodes": [
-    {
-      "domNodeIndex": 0,
-      "boundingBox": {
-        "x": 0,
-        "y": 0,
-        "width": 300,
-        "height": 300
-      },
-      "isStackingContext": true
-    },
-    {
-      "domNodeIndex": 3,
-      "boundingBox": {
-        "x": 0,
-        "y": 0,
-        "width": 300,
-        "height": 0
-      },
-      "isStackingContext": true
-    },
-    {
-      "domNodeIndex": 15,
-      "boundingBox": {
-        "x": 0,
-        "y": 0,
-        "width": 300,
-        "height": 0
-      }
-    },
-    {
-      "domNodeIndex": 16,
-      "boundingBox": {
-        "x": 100,
-        "y": 100,
-        "width": 100,
-        "height": 100
-      }
-    },
-    {
-      "domNodeIndex": 17,
-      "boundingBox": {
-        "x": 100,
-        "y": 100,
-        "width": 96,
-        "height": 16
-      },
-      "layoutText": "Boxes!",
-      "inlineTextNodes": [
-        {
-          "boundingBox": {
-            "x": 100,
-            "y": 100,
-            "width": 96,
-            "height": 16
-          },
-          "startCharacterIndex": 0,
-          "numCharacters": 6
+        [2] : {
+            backendNodeId : <number>
+            nodeName : #comment
+            nodeType : 8
+            nodeValue :  domSnapshot test for a document with a viewport.  
         }
-      ]
-    }
-  ],
-  "computedStyles": []
+        [3] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 4
+                [1] : 15
+            ]
+            frameId : <string>
+            layoutNodeIndex : 1
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [4] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 5
+                [1] : 6
+                [2] : 7
+                [3] : 9
+                [4] : 10
+                [5] : 12
+                [6] : 13
+                [7] : 14
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [5] : {
+            attributes : [
+                [0] : {
+                    name : name
+                    value : viewport
+                }
+                [1] : {
+                    name : content
+                    value : width=300
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : META
+            nodeType : 1
+            nodeValue : 
+        }
+        [6] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [7] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 8
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [8] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  @font-face {   font-family: 'ahem';   src: url(../../resources/Ahem.ttf); } 
+        }
+        [9] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [10] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 11
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [11] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  * {   margin: 0;   padding: 0; } div {   position: absolute;   top: 100px;   left: 100px;   width: 100px;   height: 100px;   background-color: green; } 
+        }
+        [12] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [13] : {
+            backendNodeId : <number>
+            nodeName : #comment
+            nodeType : 8
+            nodeValue :  The div's box should have size and position of 100x100 to match the      computed style, even though it's visually scaled by the viewport. The      text's box should also be inside the div's box, not outside it. 
+        }
+        [14] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [15] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 16
+                [1] : 18
+            ]
+            layoutNodeIndex : 2
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [16] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : font-family: ahem;
+                }
+                [1] : {
+                    name : id
+                    value : 100x100
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 17
+            ]
+            layoutNodeIndex : 3
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [17] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 4
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Boxes!
+        }
+        [18] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :   
+        }
+    ]
+    layoutTreeNodes : [
+        [0] : {
+            boundingBox : {
+                height : 300
+                width : 300
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 0
+            isStackingContext : true
+        }
+        [1] : {
+            boundingBox : {
+                height : 0
+                width : 300
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 3
+            isStackingContext : true
+        }
+        [2] : {
+            boundingBox : {
+                height : 0
+                width : 300
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 15
+        }
+        [3] : {
+            boundingBox : {
+                height : 100
+                width : 100
+                x : 100
+                y : 100
+            }
+            domNodeIndex : 16
+        }
+        [4] : {
+            boundingBox : {
+                height : 16
+                width : 96
+                x : 100
+                y : 100
+            }
+            domNodeIndex : 17
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 16
+                        width : 96
+                        x : 100
+                        y : 100
+                    }
+                    numCharacters : 6
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : Boxes!
+        }
+    ]
 }
 

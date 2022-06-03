@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public",
-  "+third_party/blink/public/platform/web_gesture_event.h",
+  "+third_party/blink/public/common/input/web_gesture_event.h",
+  "+third_party/blink/public/mojom/loader/resource_load_info.mojom.h",
   "+ui/base",
   "+ui/gfx",
   "+ui/webui",

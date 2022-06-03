@@ -15,9 +15,7 @@ template("symlink") {
                              "testonly",
                              "visibility",
                            ])
-    outputs = [
-      invoker.output,
-    ]
+    outputs = [ invoker.output ]
     script = "//build/symlink.py"
     args = [
       "-f",
@@ -58,12 +56,8 @@ template("binary_symlink") {
                              "testonly",
                              "visibility",
                            ])
-    deps = [
-      invoker.binary_label,
-    ]
-    data_deps = [
-      invoker.binary_label,
-    ]
+    deps = [ invoker.binary_label ]
+    data_deps = [ invoker.binary_label ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }

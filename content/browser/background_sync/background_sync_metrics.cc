@@ -90,8 +90,8 @@ void BackgroundSyncMetrics::RecordBatchSyncEventComplete(
   // 6 minutes, to be safe.
   base::UmaHistogramCustomTimes(
       GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.Time", time,
-      /* min= */ base::TimeDelta::FromMilliseconds(10),
-      /* max= */ base::TimeDelta::FromMinutes(6),
+      /* min= */ base::Milliseconds(10),
+      /* max= */ base::Minutes(6),
       /* buckets= */ 50);
   base::UmaHistogramCounts100(
       GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.BatchSize",

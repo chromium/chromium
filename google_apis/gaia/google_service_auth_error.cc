@@ -8,7 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
 
@@ -61,6 +62,9 @@ GoogleServiceAuthError::GoogleServiceAuthError(State state,
 }
 
 GoogleServiceAuthError::GoogleServiceAuthError(
+    const GoogleServiceAuthError& other) = default;
+
+GoogleServiceAuthError& GoogleServiceAuthError::operator=(
     const GoogleServiceAuthError& other) = default;
 
 // static

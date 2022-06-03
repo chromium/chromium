@@ -16,8 +16,12 @@ class URLRequest;
 // A URLRequestJob that hangs when try to read response body.
 class URLRequestHangingReadJob : public URLRequestJob {
  public:
-  URLRequestHangingReadJob(URLRequest* request,
-                           NetworkDelegate* network_delegate);
+  explicit URLRequestHangingReadJob(URLRequest* request);
+
+  URLRequestHangingReadJob(const URLRequestHangingReadJob&) = delete;
+  URLRequestHangingReadJob& operator=(const URLRequestHangingReadJob&) = delete;
+
+  ~URLRequestHangingReadJob() override;
 
   void Start() override;
   int ReadRawData(IOBuffer* buf, int buf_size) override;
@@ -31,14 +35,11 @@ class URLRequestHangingReadJob : public URLRequestJob {
 
  private:
   void GetResponseInfoConst(HttpResponseInfo* info) const;
-  ~URLRequestHangingReadJob() override;
 
   void StartAsync();
 
   const int content_length_;
   base::WeakPtrFactory<URLRequestHangingReadJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestHangingReadJob);
 };
 
 }  // namespace net

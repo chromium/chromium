@@ -1,0 +1,200 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ .box1 {
+    border: 1px solid black;
+    margin: 10px;
+    padding: 5px;
+    height: 150px;
+  }
+  .outerbox {
+    border: 1px solid gray;
+    padding: 3px;
+    margin: 5px 5px 5px 100px;
+  }
+  .box2 {
+    position: relative;
+    padding: 0px; /* If the padding has >0 value, IE6 fails some tests. */
+    margin: -2px;
+  }
+  .box8 {
+    position: absolute;
+    padding: 0px; /* If the padding has >0 value, IE6 fails some tests. */
+    margin: -2px;
+    width: 500px;
+    height: 100px;
+  }
+  .box9 {
+    border: 1px solid black;
+    margin: 10px;
+    padding: 5px;
+    height: 150px;
+    width: 150px;
+  }
+  .anchorFrame {
+    overflow: auto;
+    width: 100px;
+    height: 100px;
+  }
+  #popup1, #popup2, #popup3, #popup5, #popup6, #popup7 {
+    position: absolute;
+    border: 1px solid red;
+    width: 100px;
+    height: 100px;
+  }
+  #popup9 {
+    border: 1px solid green;
+    height: 100px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100px;
+  }
+  #popup8 {
+    position: absolute;
+    border: 1px solid red;
+    width: 100px;
+    height: 100px;
+  }
+  #anchor1 {
+    border: 1px solid blue;
+  }
+  #anchor4 {
+    position: absolute;
+    left: 2px;
+  }
+
+  #test-area {
+    height: 1000px;
+    position: relative;
+    width: 1000px;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .overflow-auto {
+    overflow: auto;
+  }
+</style>
+<div id="offscreen-anchor" style="position: absolute; left: -1000px; top: -1000px">
+</div>
+<div dir="ltr" id="ltr">
+ Left to right element.
+</div>
+<div dir="rtl" id="rtl">
+ Right to left element.
+</div>
+<div class="outerbox">
+ <div class="box1" id="box1">
+  <span id="anchor1">
+   Anchor LTR.
+  </span>
+ </div>
+ <div class="box2">
+  <div id="popup1">
+   <div>
+    Popup ltr.
+   </div>
+  </div>
+ </div>
+</div>
+<div class="outerbox" dir="rtl">
+ <div class="box1">
+  <span id="anchor2">
+   Anchor RTL.
+  </span>
+ </div>
+ <div class="box2">
+  <div id="popup2">
+   <div>
+    Popup rtl.
+   </div>
+  </div>
+ </div>
+</div>
+<div id="anchor4">
+ Anchor 4.
+</div>
+<div id="popup3">
+ Popup.
+</div>
+<div dir="rtl" style="border: 1px solid red;">
+ <div dir="rtl" style="position: relative; overflow: auto; width: 150px; height: 100px; border: 1px solid black;">
+  <div style="height: 200px;">
+   <span id="anchor5">
+    Anchor 5.
+   </span>
+  </div>
+  <div id="popup5">
+   Popup.
+  </div>
+ </div>
+</div>
+<iframe class="anchorFrame" id="iframe-standard" src="positioning_test_standard.html">
+</iframe>
+<iframe class="anchorFrame" id="iframe-quirk" src="positioning_test_quirk.html">
+</iframe>
+<div id="popup6">
+ Popup6
+</div>
+<div style="position:relative;height:100px;width:100px;overflow:auto;">
+ I hate positioning!
+ <div>
+  1
+ </div>
+ <div>
+  2
+ </div>
+ <div>
+  3
+ </div>
+ <div>
+  4
+ </div>
+ <div>
+  5
+ </div>
+ <div>
+  6
+ </div>
+ <div>
+  7
+ </div>
+ <div id="popup7">
+  Popup7
+ </div>
+</div>
+<iframe id="nested-outer" src="positioning_test_iframe1.html" style="overflow:auto;width:150px;height:150px;">
+</iframe>
+<div class="outerbox" dir="rtl">
+ <div class="box1">
+  <span id="anchor8">
+   Anchor8 RTL.
+  </span>
+ </div>
+ <div class="box8 overflow-auto">
+  <div id="popup8">
+   <div>
+    Popup8 rtl.
+   </div>
+  </div>
+  <div style="width:10000px;">
+  </div>
+ </div>
+</div>
+<div class="box9" id="box9">
+ <div id="popup9">
+  <div>
+   Popup9
+  </div>
+ </div>
+ <span id="anchor9">
+  Anchor9
+ </span>
+</div>
+<div id="test-area">
+</div>

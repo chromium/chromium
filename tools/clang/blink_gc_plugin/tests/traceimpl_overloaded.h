@@ -11,12 +11,12 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  void Trace(Visitor*) {}
+  void Trace(Visitor*) const {}
 };
 
 class InlinedBase : public GarbageCollected<InlinedBase> {
  public:
-  virtual void Trace(Visitor* visitor) { visitor->Trace(x_base_); }
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(x_base_); }
 
  private:
   Member<X> x_base_;
@@ -24,7 +24,7 @@ class InlinedBase : public GarbageCollected<InlinedBase> {
 
 class InlinedDerived : public InlinedBase {
  public:
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(x_derived_);
     InlinedBase::Trace(visitor);
   }
@@ -34,7 +34,7 @@ class InlinedDerived : public InlinedBase {
 
 class ExternBase : public GarbageCollected<ExternBase> {
  public:
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   Member<X> x_base_;
@@ -42,7 +42,7 @@ class ExternBase : public GarbageCollected<ExternBase> {
 
 class ExternDerived : public ExternBase {
  public:
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<X> x_derived_;

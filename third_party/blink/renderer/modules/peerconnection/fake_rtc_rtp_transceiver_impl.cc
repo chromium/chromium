@@ -5,32 +5,30 @@
 #include <utility>
 
 #include "third_party/blink/renderer/modules/peerconnection/fake_rtc_rtp_transceiver_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 
 namespace blink {
 
-blink::WebMediaStreamTrack CreateWebMediaStreamTrack(
+MediaStreamComponent* CreateMediaStreamComponent(
     const std::string& id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  blink::WebMediaStreamSource web_source;
-  web_source.Initialize(blink::WebString::FromUTF8(id),
-                        blink::WebMediaStreamSource::kTypeAudio,
-                        blink::WebString::FromUTF8("audio_track"), false);
-  std::unique_ptr<blink::MediaStreamAudioSource> audio_source_ptr =
-      std::make_unique<blink::MediaStreamAudioSource>(
-          std::move(task_runner), true /* is_local_source */);
-  blink::MediaStreamAudioSource* audio_source = audio_source_ptr.get();
-  // Takes ownership of |audio_source_ptr|.
-  web_source.SetPlatformSource(std::move(audio_source_ptr));
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      String::FromUTF8(id), MediaStreamSource::kTypeAudio,
+      String::FromUTF8("audio_track"), false);
+  auto audio_source = std::make_unique<blink::MediaStreamAudioSource>(
+      std::move(task_runner), true /* is_local_source */);
+  auto* audio_source_ptr = audio_source.get();
+  source->SetPlatformSource(std::move(audio_source));
 
-  blink::WebMediaStreamTrack web_track;
-  web_track.Initialize(web_source.Id(), web_source);
-  audio_source->ConnectToTrack(web_track);
-  return web_track;
+  auto* component =
+      MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+  audio_source_ptr->ConnectToTrack(component);
+  return component;
 }
 
 FakeRTCRtpSenderImpl::FakeRTCRtpSenderImpl(
-    base::Optional<std::string> track_id,
+    absl::optional<std::string> track_id,
     std::vector<std::string> stream_ids,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : track_id_(std::move(track_id)),
@@ -69,9 +67,9 @@ FakeRTCRtpSenderImpl::DtlsTransportInformation() {
   return dummy;
 }
 
-blink::WebMediaStreamTrack FakeRTCRtpSenderImpl::Track() const {
-  return track_id_ ? CreateWebMediaStreamTrack(*track_id_, task_runner_)
-                   : blink::WebMediaStreamTrack();  // null
+MediaStreamComponent* FakeRTCRtpSenderImpl::Track() const {
+  return track_id_ ? CreateMediaStreamComponent(*track_id_, task_runner_)
+                   : nullptr;
 }
 
 Vector<String> FakeRTCRtpSenderImpl::StreamIds() const {
@@ -83,8 +81,8 @@ Vector<String> FakeRTCRtpSenderImpl::StreamIds() const {
   return wtf_stream_ids;
 }
 
-void FakeRTCRtpSenderImpl::ReplaceTrack(blink::WebMediaStreamTrack with_track,
-                                        blink::RTCVoidRequest* request) {
+void FakeRTCRtpSenderImpl::ReplaceTrack(MediaStreamComponent* with_track,
+                                        RTCVoidRequest* request) {
   NOTIMPLEMENTED();
 }
 
@@ -100,9 +98,10 @@ std::unique_ptr<webrtc::RtpParameters> FakeRTCRtpSenderImpl::GetParameters()
   return nullptr;
 }
 
-void FakeRTCRtpSenderImpl::SetParameters(Vector<webrtc::RtpEncodingParameters>,
-                                         webrtc::DegradationPreference,
-                                         blink::RTCVoidRequest*) {
+void FakeRTCRtpSenderImpl::SetParameters(
+    Vector<webrtc::RtpEncodingParameters>,
+    absl::optional<webrtc::DegradationPreference>,
+    blink::RTCVoidRequest*) {
   NOTIMPLEMENTED();
 }
 
@@ -119,7 +118,7 @@ FakeRTCRtpReceiverImpl::FakeRTCRtpReceiverImpl(
     const std::string& track_id,
     std::vector<std::string> stream_ids,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : track_(CreateWebMediaStreamTrack(track_id, task_runner)),
+    : component_(CreateMediaStreamComponent(track_id, task_runner)),
       stream_ids_(std::move(stream_ids)) {}
 
 FakeRTCRtpReceiverImpl::FakeRTCRtpReceiverImpl(const FakeRTCRtpReceiverImpl&) =
@@ -154,13 +153,14 @@ FakeRTCRtpReceiverImpl::DtlsTransportInformation() {
   return dummy;
 }
 
-const blink::WebMediaStreamTrack& FakeRTCRtpReceiverImpl::Track() const {
-  return track_;
+MediaStreamComponent* FakeRTCRtpReceiverImpl::Track() const {
+  return component_;
 }
 
 Vector<String> FakeRTCRtpReceiverImpl::StreamIds() const {
-  Vector<String> wtf_stream_ids(stream_ids_.size());
-  for (size_t i = 0; i < stream_ids_.size(); ++i) {
+  Vector<String> wtf_stream_ids(
+      base::checked_cast<wtf_size_t>(stream_ids_.size()));
+  for (wtf_size_t i = 0; i < wtf_stream_ids.size(); ++i) {
     wtf_stream_ids[i] = String::FromUTF8(stream_ids_[i]);
   }
   return wtf_stream_ids;
@@ -184,17 +184,17 @@ std::unique_ptr<webrtc::RtpParameters> FakeRTCRtpReceiverImpl::GetParameters()
 }
 
 void FakeRTCRtpReceiverImpl::SetJitterBufferMinimumDelay(
-    base::Optional<double> delay_seconds) {
+    absl::optional<double> delay_seconds) {
   NOTIMPLEMENTED();
 }
 
 FakeRTCRtpTransceiverImpl::FakeRTCRtpTransceiverImpl(
-    base::Optional<std::string> mid,
+    absl::optional<std::string> mid,
     FakeRTCRtpSenderImpl sender,
     FakeRTCRtpReceiverImpl receiver,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    base::Optional<webrtc::RtpTransceiverDirection> current_direction)
+    absl::optional<webrtc::RtpTransceiverDirection> current_direction)
     : mid_(std::move(mid)),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
@@ -236,20 +236,36 @@ webrtc::RtpTransceiverDirection FakeRTCRtpTransceiverImpl::Direction() const {
   return direction_;
 }
 
-void FakeRTCRtpTransceiverImpl::SetDirection(
+webrtc::RTCError FakeRTCRtpTransceiverImpl::SetDirection(
     webrtc::RtpTransceiverDirection direction) {
   NOTIMPLEMENTED();
+  return webrtc::RTCError::OK();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 FakeRTCRtpTransceiverImpl::CurrentDirection() const {
   return current_direction_;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 FakeRTCRtpTransceiverImpl::FiredDirection() const {
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return absl::nullopt;
+}
+
+webrtc::RTCError FakeRTCRtpTransceiverImpl::SetOfferedRtpHeaderExtensions(
+    Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
+  return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+}
+
+Vector<webrtc::RtpHeaderExtensionCapability>
+FakeRTCRtpTransceiverImpl::HeaderExtensionsNegotiated() const {
+  return {};
+}
+
+Vector<webrtc::RtpHeaderExtensionCapability>
+FakeRTCRtpTransceiverImpl::HeaderExtensionsToOffer() const {
+  return {};
 }
 
 }  // namespace blink

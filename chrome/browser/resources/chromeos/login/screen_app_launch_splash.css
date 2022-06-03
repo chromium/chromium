@@ -2,55 +2,65 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#app-launch-splash {
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-  background: white;
-  display: -webkit-box;
-}
-
-#splash-content {
-  -webkit-box-align: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-pack: center;
-  display: -webkit-box;
+#content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 100%;
+  height: 100%;
   position: relative;
 }
 
-#splash-header {
+#header {
   background: left center no-repeat;
   background-size: 96px;
-  color: #666;
-  display: -webkit-box;
-  font-size: 48px;
+  display: flex;
+  flex-direction: column;
   height: 96px;
-  line-height: 96px;
+  justify-content: center;
+  max-width: 100%;
   padding-inline-start: 108px;
 }
 
-#splash-launch-text {
+#appName {
+  color: #666;
+  font-size: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+
+#appUrl {
+  color: #666;
+  font-size: 18px;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+
+#launchText {
   color: #666;
   font-size: 18px;
   padding-top: 50px;
 }
 
-#splash-spinner {
-  height: 32px;
-  width: 32px;
-}
 
-#splash-config-network-container {
+#configNetworkContainer {
   height : 30px;
   opacity: 1;
   padding-bottom: 20px;
   transition: 1s opacity;
 }
 
-#splash-config-network-container.faded {
+#configNetworkContainer.faded {
   opacity: 0;
 }
 
-#splash-config-network {
+#configNetwork {
   font-size: 10px;
   font-weight: bold;
   margin: 0;
@@ -58,13 +68,13 @@
   text-decoration: none;
 }
 
-#splash-config-network:hover {
+#configNetwork:hover {
   color: rgb(202, 67, 100)
 }
 
-#splash-shortcut-info {
+#shortcutInfo {
   bottom: 50px;
-  color: gray;
+  color: rgb(102, 102, 102);  /* #666 */
   left: 0;
   position: absolute;
   right: 0;

@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 32: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 No cache headers or Last-modified header (result=Uncached expected=Uncached) PASS
 Expires: [now+10s]; (result=Cached expected=Cached) PASS
 Expires: [now-10s]; (result=Uncached expected=Uncached) PASS

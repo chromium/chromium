@@ -55,26 +55,23 @@ void NetworkPredictionPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   const base::Value* network_prediction_options =
       policies.GetValue(key::kNetworkPredictionOptions);
-  int int_setting;
-  if (network_prediction_options &&
-      network_prediction_options->GetAsInteger(&int_setting)) {
-    prefs->SetInteger(prefs::kNetworkPredictionOptions, int_setting);
+  if (network_prediction_options && network_prediction_options->is_int()) {
+    prefs->SetInteger(prefs::kNetworkPredictionOptions,
+                      network_prediction_options->GetInt());
     return;
   }
 
   // Observe deprecated policy setting for compatibility.
   const base::Value* network_prediction_enabled =
       policies.GetValue(key::kDnsPrefetchingEnabled);
-  bool bool_setting;
-  if (network_prediction_enabled &&
-      network_prediction_enabled->GetAsBoolean(&bool_setting)) {
+  if (network_prediction_enabled && network_prediction_enabled->is_bool()) {
     // Some predictive network actions, most notably prefetch, used to be
     // hardwired never to run on cellular network.  In order to retain this
     // behavior (unless explicitly overriden by kNetworkPredictionOptions),
     // kNetworkPredictionEnabled = true is translated to
     // kNetworkPredictionOptions = WIFI_ONLY.
     prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                      bool_setting
+                      network_prediction_enabled->GetBool()
                           ? chrome_browser_net::NETWORK_PREDICTION_WIFI_ONLY
                           : chrome_browser_net::NETWORK_PREDICTION_NEVER);
   }

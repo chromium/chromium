@@ -33,6 +33,11 @@ class MediaPipelineBackendForMixer : public MediaPipelineBackend,
  public:
   explicit MediaPipelineBackendForMixer(
       const MediaPipelineDeviceParams& params);
+
+  MediaPipelineBackendForMixer(const MediaPipelineBackendForMixer&) = delete;
+  MediaPipelineBackendForMixer& operator=(const MediaPipelineBackendForMixer&) =
+      delete;
+
   ~MediaPipelineBackendForMixer() override;
 
   // MediaPipelineBackend implementation:
@@ -102,8 +107,6 @@ class MediaPipelineBackendForMixer : public MediaPipelineBackend,
 
   base::WeakPtr<MediaPipelineBackendForMixer> weak_this_;
   base::WeakPtrFactory<MediaPipelineBackendForMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendForMixer);
 };
 
 }  // namespace media

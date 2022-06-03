@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import androidx.browser.trusted.sharing.ShareData;
+
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -12,9 +15,7 @@ import org.chromium.content_public.browser.WebContents;
  */
 public class WebApkPostShareTargetNavigator {
     public boolean navigateIfPostShareTarget(
-            String url,
-            WebApkInfo.ShareTarget target,
-            WebApkInfo.ShareData data, WebContents webContents) {
+            String url, WebApkShareTarget target, ShareData data, WebContents webContents) {
         WebApkShareTargetUtil.PostData postData =
                 WebApkShareTargetUtil.computePostData(target, data);
         if (postData == null) {

@@ -7,12 +7,13 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/media/router/issues_observer.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
+#include "components/media_router/browser/issues_observer.h"
+#include "components/media_router/browser/media_routes_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
 // Controller for the Cast toolbar icon that determines when to show and hide
@@ -44,6 +45,11 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   // Constructor for injecting dependencies in tests.
   MediaRouterActionController(Profile* profile,
                               media_router::MediaRouter* router);
+
+  MediaRouterActionController(const MediaRouterActionController&) = delete;
+  MediaRouterActionController& operator=(const MediaRouterActionController&) =
+      delete;
+
   ~MediaRouterActionController() override;
 
   // Whether the media router action is shown by an administrator policy.
@@ -126,8 +132,6 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterActionController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_

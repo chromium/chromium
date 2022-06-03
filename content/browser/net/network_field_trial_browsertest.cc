@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/test/mock_entropy_provider.h"
 #include "content/browser/startup_helper.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -24,6 +24,10 @@ const char kFieldTrialGroup[] = "UniqueFieldTrialGroupName";
 class TestFieldTrialListObserver : public base::FieldTrialList::Observer {
  public:
   TestFieldTrialListObserver() { base::FieldTrialList::AddObserver(this); }
+
+  TestFieldTrialListObserver(const TestFieldTrialListObserver&) = delete;
+  TestFieldTrialListObserver& operator=(const TestFieldTrialListObserver&) =
+      delete;
 
   ~TestFieldTrialListObserver() override {
     base::FieldTrialList::RemoveObserver(this);
@@ -42,8 +46,6 @@ class TestFieldTrialListObserver : public base::FieldTrialList::Observer {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFieldTrialListObserver);
 };
 
 }  // namespace
@@ -64,12 +66,14 @@ class NetworkFieldTrialBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(trial);
   }
 
+  NetworkFieldTrialBrowserTest(const NetworkFieldTrialBrowserTest&) = delete;
+  NetworkFieldTrialBrowserTest& operator=(const NetworkFieldTrialBrowserTest&) =
+      delete;
+
   ~NetworkFieldTrialBrowserTest() override = default;
 
  private:
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFieldTrialBrowserTest);
 };
 
 // Test that when the network process activates a field trial, the browser

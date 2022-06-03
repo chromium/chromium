@@ -48,8 +48,7 @@ Entry BuildEntry(DownloadClient client,
                  base::Time last_cleanup_check_time,
                  uint64_t bytes_downloaded,
                  int attempt_count,
-                 int resumption_count,
-                 int cleanup_attempt_count);
+                 int resumption_count);
 
 }  // namespace test
 }  // namespace download

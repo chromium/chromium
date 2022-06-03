@@ -23,8 +23,8 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
 #include "client/simple_string_dictionary.h"

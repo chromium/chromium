@@ -376,7 +376,7 @@ Node* TextTrack::Owner() const {
   return MediaElement();
 }
 
-void TextTrack::Trace(Visitor* visitor) {
+void TextTrack::Trace(Visitor* visitor) const {
   visitor->Trace(cues_);
   visitor->Trace(active_cues_);
   visitor->Trace(track_list_);

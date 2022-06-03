@@ -25,6 +25,10 @@ class RateCounter {
  public:
   // Constructs a rate counter over the specified |time_window|.
   explicit RateCounter(base::TimeDelta time_window);
+
+  RateCounter(const RateCounter&) = delete;
+  RateCounter& operator=(const RateCounter&) = delete;
+
   virtual ~RateCounter();
 
   // Records a point event count to include in the rate.
@@ -57,8 +61,6 @@ class RateCounter {
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RateCounter);
 };
 
 }  // namespace remoting

@@ -1,6 +1,3 @@
 # Anyone in the parent directories can review changes to this directory,
 # but the following people are the most knowledgeable:
 finnur@chromium.org
-
-# TEAM: extensions-dev@chromium.org
-# COMPONENT: Platform>Extensions>API

@@ -4,31 +4,32 @@
 
 #include "ash/shelf/shelf_button.h"
 
-#include "ash/public/cpp/ash_constants.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
+#include "ash/style/style_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop.h"
 
 namespace ash {
 
 ShelfButton::ShelfButton(Shelf* shelf,
                          ShelfButtonDelegate* shelf_button_delegate)
-    : Button(nullptr),
+    : Button(Button::PressedCallback()),
       shelf_(shelf),
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
-  set_hide_ink_drop_when_showing_context_menu(false);
-  set_ink_drop_base_color(ShelfConfig::Get()->shelf_ink_drop_base_color());
-  set_ink_drop_visible_opacity(
-      ShelfConfig::Get()->shelf_ink_drop_visible_opacity());
+  SetHideInkDropWhenShowingContextMenu(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(
       ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
       gfx::InsetsF()));
+  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
+                                            /*highlight_on_hover=*/false);
 }
 
 ShelfButton::~ShelfButton() = default;
@@ -36,8 +37,23 @@ ShelfButton::~ShelfButton() = default;
 ////////////////////////////////////////////////////////////////////////////////
 // views::View
 
+void ShelfButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  StyleUtil::ConfigureInkDropAttributes(
+      this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+}
+
 const char* ShelfButton::GetClassName() const {
   return "ash/ShelfButton";
+}
+
+gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
+  // Padding used to position bubbles offset from the shelf. Note that this
+  // includes Shelf tooltip.
+  constexpr int kAnchorOffset = 6;
+  bounds.Inset(gfx::Insets(-kAnchorOffset));
+  return bounds;
 }
 
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
@@ -63,14 +79,8 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
 
   Button::NotifyClick(event);
   if (shelf_button_delegate_)
-    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event, GetInkDrop());
-}
-
-std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      Button::CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  return std::move(ink_drop);
+    shelf_button_delegate_->ButtonPressed(
+        /*sender=*/this, event, views::InkDrop::Get(this)->GetInkDrop());
 }
 
 }  // namespace ash

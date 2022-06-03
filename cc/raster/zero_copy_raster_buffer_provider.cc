@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -66,10 +67,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
       ZeroCopyGpuBacking* backing)
       : backing_(backing),
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+        shutdown_event_(shutdown_event),
         resource_size_(in_use_resource.size()),
         resource_format_(in_use_resource.format()),
         resource_color_space_(in_use_resource.color_space()),
@@ -96,9 +99,10 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
           gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
-      backing_->mailbox = sii->CreateSharedImage(gpu_memory_buffer_.get(),
-                                                 gpu_memory_buffer_manager_,
-                                                 resource_color_space_, usage);
+      backing_->mailbox = sii->CreateSharedImage(
+          gpu_memory_buffer_.get(), gpu_memory_buffer_manager_,
+          resource_color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          usage);
     } else {
       sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
     }
@@ -122,7 +126,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     if (!gpu_memory_buffer_) {
       gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
           resource_size_, viz::BufferFormat(resource_format_), kBufferUsage,
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle, shutdown_event_);
       // Note that GpuMemoryBuffer allocation can fail.
       // https://crbug.com/554541
       if (!gpu_memory_buffer_)
@@ -146,12 +150,15 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     gpu_memory_buffer_->Unmap();
   }
 
+  bool SupportsBackgroundThreadPriority() const override { return true; }
+
  private:
   // This field may only be used on the compositor thread.
   ZeroCopyGpuBacking* backing_;
 
   // These fields are for use on the worker thread.
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  base::WaitableEvent* shutdown_event_;
   gfx::Size resource_size_;
   viz::ResourceFormat resource_format_;
   gfx::ColorSpace resource_color_space_;
@@ -197,8 +204,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
   ZeroCopyGpuBacking* backing =
       static_cast<ZeroCopyGpuBacking*>(resource.gpu_backing());
 
-  return std::make_unique<ZeroCopyRasterBufferImpl>(gpu_memory_buffer_manager_,
-                                                    resource, backing);
+  return std::make_unique<ZeroCopyRasterBufferImpl>(
+      gpu_memory_buffer_manager_, shutdown_event_, resource, backing);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -230,10 +237,11 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
   return 0;
 }
 
-void ZeroCopyRasterBufferProvider::Shutdown() {}
-
-bool ZeroCopyRasterBufferProvider::CheckRasterFinishedQueries() {
-  return false;
+void ZeroCopyRasterBufferProvider::SetShutdownEvent(
+    base::WaitableEvent* shutdown_event) {
+  shutdown_event_ = shutdown_event;
 }
+
+void ZeroCopyRasterBufferProvider::Shutdown() {}
 
 }  // namespace cc

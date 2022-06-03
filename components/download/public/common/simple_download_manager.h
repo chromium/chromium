@@ -24,14 +24,15 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   class Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() = default;
 
     virtual void OnDownloadsInitialized() {}
     virtual void OnManagerGoingDown() {}
     virtual void OnDownloadCreated(DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   SimpleDownloadManager();

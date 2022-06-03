@@ -51,7 +51,7 @@ class MODULES_EXPORT TransceiverStateSurfacer {
   blink::WebRTCSctpTransportSnapshot SctpTransportSnapshot();
   std::vector<blink::RtpTransceiverState> ObtainStates();
 
- protected:
+ private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;
   bool is_initialized_;
@@ -66,7 +66,8 @@ class MODULES_EXPORT TransceiverStateSurfacer {
 class MODULES_EXPORT SurfaceSenderStateOnly
     : public rtc::RefCountedObject<webrtc::RtpTransceiverInterface> {
  public:
-  SurfaceSenderStateOnly(rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
+  explicit SurfaceSenderStateOnly(
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
   ~SurfaceSenderStateOnly() override;
 
   cricket::MediaType media_type() const override;
@@ -90,7 +91,7 @@ class MODULES_EXPORT SurfaceSenderStateOnly
 class MODULES_EXPORT SurfaceReceiverStateOnly
     : public rtc::RefCountedObject<webrtc::RtpTransceiverInterface> {
  public:
-  SurfaceReceiverStateOnly(
+  explicit SurfaceReceiverStateOnly(
       rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver);
   ~SurfaceReceiverStateOnly() override;
 

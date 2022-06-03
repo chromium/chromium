@@ -11,6 +11,8 @@
      Nothing in the manifest is used, but it is still required by aapt.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.dummy">
+    package="org.dummy"
+    android:versionCode="1"
+    android:versionName="1.0">
 
 </manifest>

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_UNZIP_PUBLIC_CPP_UNZIP_H_
 #define COMPONENTS_SERVICES_UNZIP_PUBLIC_CPP_UNZIP_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

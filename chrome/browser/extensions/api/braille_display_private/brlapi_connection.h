@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "library_loaders/libbrlapi.h"
 
 namespace extensions {
@@ -22,7 +21,7 @@ namespace braille_display_private {
 // about the semantics of the methods in this class.
 class BrlapiConnection {
  public:
-  typedef base::Closure OnDataReadyCallback;
+  typedef base::RepeatingClosure OnDataReadyCallback;
 
   enum ConnectResult {
     CONNECT_ERROR_RETRY,
@@ -32,9 +31,11 @@ class BrlapiConnection {
 
   static std::unique_ptr<BrlapiConnection> Create(LibBrlapiLoader* loader);
 
-  virtual ~BrlapiConnection();
+  BrlapiConnection(const BrlapiConnection&) = delete;
+  BrlapiConnection& operator=(const BrlapiConnection&) = delete;
+  virtual ~BrlapiConnection() = default;
 
-  virtual ConnectResult Connect(const OnDataReadyCallback& onDataReady) = 0;
+  virtual ConnectResult Connect(OnDataReadyCallback onDataReady) = 0;
 
   virtual void Disconnect() = 0;
 
@@ -67,9 +68,11 @@ class BrlapiConnection {
   // value.
   virtual int ReadKey(brlapi_keyCode_t* keyCode) = 0;
 
+  // Gets the number of dots in a braille cell.
+  virtual bool GetCellSize(unsigned int* cell_size) = 0;
+
  protected:
-  BrlapiConnection();
-  DISALLOW_COPY_AND_ASSIGN(BrlapiConnection);
+  BrlapiConnection() = default;
 };
 
 }  // namespace braille_display_private

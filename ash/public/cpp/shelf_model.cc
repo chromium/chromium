@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model_observer.h"
+#include "ash/public/cpp/shelf_types.h"
 
 namespace ash {
 
@@ -18,10 +19,11 @@ static ShelfModel* g_shelf_model = nullptr;
 
 int ShelfItemTypeToWeight(ShelfItemType type) {
   switch (type) {
-    case TYPE_BROWSER_SHORTCUT:
     case TYPE_PINNED_APP:
+    case TYPE_BROWSER_SHORTCUT:
       return 1;
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       return 2;
     case TYPE_DIALOG:
       return 3;
@@ -53,33 +55,62 @@ ShelfModel::ShelfModel() = default;
 
 ShelfModel::~ShelfModel() = default;
 
-void ShelfModel::PinAppWithID(const std::string& app_id) {
-  const ShelfID shelf_id(app_id);
+void ShelfModel::AddAndPinAppWithFactoryConstructedDelegate(
+    const std::string& app_id) {
+  DCHECK_LT(ItemIndexByAppID(app_id), 0);
 
-  // If the app is already pinned, do nothing and return.
-  if (IsAppPinned(shelf_id.app_id))
+  ShelfItem item;
+  std::unique_ptr<ShelfItemDelegate> delegate;
+  bool result =
+      shelf_item_factory_->CreateShelfItemForAppId(app_id, &item, &delegate);
+  if (!result)
     return;
 
-  // Convert an existing item to be pinned, or create a new pinned item.
-  const int index = ItemIndexByID(shelf_id);
-  if (index >= 0) {
-    ShelfItem item = items_[index];
-    DCHECK_EQ(item.type, TYPE_APP);
-    DCHECK(!item.pinned_by_policy);
-    item.type = TYPE_PINNED_APP;
-    Set(index, item);
-  } else if (!shelf_id.IsNull()) {
-    ShelfItem item;
-    item.type = TYPE_PINNED_APP;
-    item.id = shelf_id;
-    Add(item);
-  }
+  item.type = TYPE_PINNED_APP;
+  Add(item, std::move(delegate));
 }
 
-bool ShelfModel::IsAppPinned(const std::string& app_id) {
+void ShelfModel::PinExistingItemWithID(const std::string& app_id) {
+  const int index = ItemIndexByAppID(app_id);
+  DCHECK_GE(index, 0);
+
+  if (IsAppPinned(app_id))
+    return;
+
+  ShelfItem item = items_[index];
+  DCHECK_EQ(item.type, TYPE_APP);
+  DCHECK(!item.pinned_by_policy);
+  item.type = TYPE_PINNED_APP;
+  Set(index, item);
+}
+
+bool ShelfModel::IsAppPinned(const std::string& app_id) const {
   const int index = ItemIndexByID(ShelfID(app_id));
-  return index >= 0 && (items_[index].type == TYPE_PINNED_APP ||
-                        items_[index].type == TYPE_BROWSER_SHORTCUT);
+  if (index < 0)
+    return false;
+  return IsPinnedShelfItemType(items_[index].type);
+}
+
+bool ShelfModel::AllowedToSetAppPinState(const std::string& app_id,
+                                         bool target_pin) const {
+  if (IsAppPinned(app_id) == target_pin)
+    return true;
+
+  const ShelfID shelf_id(app_id);
+  const int index = ItemIndexByID(shelf_id);
+
+  if (index < 0) {
+    // Allow to pin an app which is not open.
+    return !shelf_id.IsNull() && target_pin;
+  }
+
+  const ShelfItem& item = items_[index];
+  if (item.pinned_by_policy)
+    return false;
+
+  // Allow to unpin a pinned app or pin a running app.
+  return (item.type == TYPE_PINNED_APP && !target_pin) ||
+         (item.type == TYPE_APP && target_pin);
 }
 
 void ShelfModel::UnpinAppWithID(const std::string& app_id) {
@@ -106,20 +137,27 @@ void ShelfModel::DestroyItemDelegates() {
   id_to_item_delegate_map_.clear();
 }
 
-int ShelfModel::Add(const ShelfItem& item) {
-  return AddAt(items_.size(), item);
+int ShelfModel::Add(const ShelfItem& item,
+                    std::unique_ptr<ShelfItemDelegate> delegate) {
+  return AddAt(items_.size(), item, std::move(delegate));
 }
 
-int ShelfModel::AddAt(int index, const ShelfItem& item) {
+int ShelfModel::AddAt(int index,
+                      const ShelfItem& item,
+                      std::unique_ptr<ShelfItemDelegate> delegate) {
+  // Update the delegate map immediately. We don't send a
+  // ShelfItemDelegateChanged() call when adding items to the model.
+  delegate->set_shelf_id(item.id);
+  id_to_item_delegate_map_[item.id] = std::move(delegate);
+
   // Items should have unique non-empty ids to avoid undefined model behavior.
   DCHECK(!item.id.IsNull()) << " The id is null.";
   DCHECK_EQ(ItemIndexByID(item.id), -1) << " The id is not unique: " << item.id;
   index = ValidateInsertionIndex(item.type, index);
   items_.insert(items_.begin() + index, item);
-  items_[index].has_notification =
-      app_id_to_notification_id_.count(item.id.app_id) > 0;
   for (auto& observer : observers_)
     observer.ShelfItemAdded(index);
+
   return index;
 }
 
@@ -142,6 +180,32 @@ ShelfModel::RemoveItemAndTakeShelfItemDelegate(const ShelfID& shelf_id) {
   std::unique_ptr<ShelfItemDelegate> item = std::move(it->second);
   RemoveItemAt(index);
   return item;
+}
+
+bool ShelfModel::CanSwap(int index, bool with_next) const {
+  const int target_index = with_next ? index + 1 : index - 1;
+
+  // Out of bounds issues, or trying to swap the first item with the previous
+  // one, or the last item with the next one.
+  if (index < 0 || target_index >= item_count() || target_index < 0)
+    return false;
+
+  const ShelfItem source_item = items()[index];
+  const ShelfItem target_item = items()[target_index];
+  // Trying to swap two items of different pin states.
+  if (!SamePinState(source_item.type, target_item.type))
+    return false;
+
+  return true;
+}
+
+bool ShelfModel::Swap(int index, bool with_next) {
+  if (!CanSwap(index, with_next))
+    return false;
+
+  const int target_index = with_next ? index + 1 : index - 1;
+  Move(index, target_index);
+  return true;
 }
 
 void ShelfModel::Move(int index, int target_index) {
@@ -186,6 +250,18 @@ void ShelfModel::Set(int index, const ShelfItem& item) {
   }
 }
 
+void ShelfModel::UpdateItemsForDeskChange(
+    const std::vector<ItemDeskUpdate>& items_desk_updates) {
+  for (const auto& item : items_desk_updates) {
+    const int index = item.index;
+    DCHECK(index >= 0 && index < item_count());
+    items_[index].is_on_active_desk = item.is_on_active_desk;
+  }
+
+  for (auto& observer : observers_)
+    observer.ShelfItemsUpdatedForDeskChange();
+}
+
 // TODO(manucornet): Add some simple unit tests for this method.
 void ShelfModel::SetActiveShelfID(const ShelfID& shelf_id) {
   if (active_shelf_id_ == shelf_id)
@@ -204,56 +280,22 @@ void ShelfModel::OnItemStatusChanged(const ShelfID& id) {
     observer.ShelfItemStatusChanged(id);
 }
 
-void ShelfModel::RemoveNotificationRecord(const std::string& notification_id) {
-  auto notification_id_it = notification_id_to_app_id_.find(notification_id);
-
-  // Two maps are required here because when this notification has been
-  // delivered, the MessageCenter has already deleted the notification, so we
-  // can't fetch the corresponding App Id.
-  // If we have a record of this notification, erase it from both maps.
-  if (notification_id_it == notification_id_to_app_id_.end())
-    return;
-
-  // Save the AppId so the app can be updated.
-  const std::string app_id = notification_id_it->second;
-
-  auto app_id_it = app_id_to_notification_id_.find(app_id);
-
-  // Remove the notification_id.
-  app_id_it->second.erase(notification_id);
-
-  // If the set is empty erase the pair.
-  if (app_id_it->second.empty())
-    app_id_to_notification_id_.erase(app_id_it);
-
-  // Erase the pair in the NotificationId -> AppId map.
-  notification_id_to_app_id_.erase(notification_id_it);
-
-  UpdateItemNotificationsAndNotifyObservers(app_id);
+void ShelfModel::OnItemRippedOff() {
+  for (auto& observer : observers_)
+    observer.ShelfItemRippedOff();
 }
 
-void ShelfModel::AddNotificationRecord(const std::string& app_id,
-                                       const std::string& notification_id) {
-  auto it = app_id_to_notification_id_.find(app_id);
-  if (it != app_id_to_notification_id_.end()) {
-    // The app_id exists in the map, modify the set.
-    it->second.insert(notification_id);
-  } else {
-    // The app_id hasn't been recorded yet, create a set.
-    app_id_to_notification_id_.insert(
-        std::pair<std::string, std::set<std::string>>(app_id,
-                                                      {notification_id}));
-  }
-
-  notification_id_to_app_id_.insert(
-      std::pair<std::string, std::string>(notification_id, app_id));
-
-  UpdateItemNotificationsAndNotifyObservers(app_id);
+void ShelfModel::OnItemReturnedFromRipOff(int index) {
+  for (auto& observer : observers_)
+    observer.ShelfItemReturnedFromRipOff(index);
 }
 
 int ShelfModel::ItemIndexByID(const ShelfID& shelf_id) const {
-  ShelfItems::const_iterator i = ItemByID(shelf_id);
-  return i == items_.end() ? -1 : static_cast<int>(i - items_.begin());
+  for (size_t i = 0; i < items_.size(); ++i) {
+    if (items_[i].id == shelf_id)
+      return static_cast<int>(i);
+  }
+  return -1;
 }
 
 int ShelfModel::GetItemIndexForType(ShelfItemType type) {
@@ -264,12 +306,9 @@ int ShelfModel::GetItemIndexForType(ShelfItemType type) {
   return -1;
 }
 
-ShelfItems::const_iterator ShelfModel::ItemByID(const ShelfID& shelf_id) const {
-  for (ShelfItems::const_iterator i = items_.begin(); i != items_.end(); ++i) {
-    if (i->id == shelf_id)
-      return i;
-  }
-  return items_.end();
+const ShelfItem* ShelfModel::ItemByID(const ShelfID& shelf_id) const {
+  int index = ItemIndexByID(shelf_id);
+  return index >= 0 ? &items_[index] : nullptr;
 }
 
 int ShelfModel::ItemIndexByAppID(const std::string& app_id) const {
@@ -288,14 +327,14 @@ int ShelfModel::FirstRunningAppIndex() const {
          items_.begin();
 }
 
-void ShelfModel::SetShelfItemDelegate(
+void ShelfModel::ReplaceShelfItemDelegate(
     const ShelfID& shelf_id,
     std::unique_ptr<ShelfItemDelegate> item_delegate) {
+  DCHECK(item_delegate);
   // Create a copy of the id that can be safely accessed if |shelf_id| is backed
   // by a controller that will be deleted in the assignment below.
   const ShelfID safe_shelf_id = shelf_id;
-  if (item_delegate)
-    item_delegate->set_shelf_id(safe_shelf_id);
+  item_delegate->set_shelf_id(safe_shelf_id);
   // This assignment replaces any ShelfItemDelegate already registered for
   // |shelf_id|.
   std::unique_ptr<ShelfItemDelegate> old_item_delegate =
@@ -316,10 +355,14 @@ ShelfItemDelegate* ShelfModel::GetShelfItemDelegate(
   return nullptr;
 }
 
-AppWindowLauncherItemController* ShelfModel::GetAppWindowLauncherItemController(
+void ShelfModel::SetShelfItemFactory(ShelfModel::ShelfItemFactory* factory) {
+  shelf_item_factory_ = factory;
+}
+
+AppWindowShelfItemController* ShelfModel::GetAppWindowShelfItemController(
     const ShelfID& shelf_id) {
   ShelfItemDelegate* item_delegate = GetShelfItemDelegate(shelf_id);
-  return item_delegate ? item_delegate->AsAppWindowLauncherItemController()
+  return item_delegate ? item_delegate->AsAppWindowShelfItemController()
                        : nullptr;
 }
 
@@ -349,18 +392,17 @@ int ShelfModel::ValidateInsertionIndex(ShelfItemType type, int index) const {
   return index;
 }
 
-void ShelfModel::UpdateItemNotificationsAndNotifyObservers(
-    const std::string& app_id) {
+void ShelfModel::UpdateItemNotification(const std::string& app_id,
+                                        bool has_badge) {
   int index = ItemIndexByAppID(app_id);
   // If the item is not pinned or active on the shelf.
   if (index == -1)
     return;
 
-  const bool has_notification = app_id_to_notification_id_.count(app_id) > 0;
-  if (items_[index].has_notification == has_notification)
+  if (items_[index].has_notification == has_badge)
     return;
 
-  items_[index].has_notification = has_notification;
+  items_[index].has_notification = has_badge;
 
   for (auto& observer : observers_)
     observer.ShelfItemChanged(index, items_[index]);

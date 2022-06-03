@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/policy/core/common/policy_bundle.h"
 
 namespace policy {
 
-ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(NULL) {}
+ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(nullptr) {}
 
 ProxyPolicyProvider::~ProxyPolicyProvider() {
   DCHECK(!delegate_);
@@ -26,7 +26,7 @@ void ProxyPolicyProvider::SetDelegate(ConfigurationPolicyProvider* delegate) {
     delegate_->AddObserver(this);
     OnUpdatePolicy(delegate_);
   } else {
-    UpdatePolicy(std::unique_ptr<PolicyBundle>(new PolicyBundle()));
+    UpdatePolicy(std::make_unique<PolicyBundle>());
   }
 }
 
@@ -36,7 +36,7 @@ void ProxyPolicyProvider::Shutdown() {
   // Just drop the delegate without propagating updates here.
   if (delegate_) {
     delegate_->RemoveObserver(this);
-    delegate_ = NULL;
+    delegate_ = nullptr;
   }
   ConfigurationPolicyProvider::Shutdown();
 }
@@ -52,6 +52,10 @@ void ProxyPolicyProvider::RefreshPolicies() {
     bundle->CopyFrom(policies());
     UpdatePolicy(std::move(bundle));
   }
+}
+
+bool ProxyPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
+  return delegate_ && delegate_->IsInitializationComplete(domain);
 }
 
 void ProxyPolicyProvider::OnUpdatePolicy(

@@ -14,6 +14,14 @@ class GURL;
 
 namespace signin {
 
+enum class Tribool;
+
+// Name of the cookie used by Chrome sign-in to inform GAIA that an
+// authenticating user is already signed in to Chrome. Because it is not
+// possible to intercept headers from iOS WKWebView, Chrome requires this cookie
+// to communicate its signed-in state with GAIA.
+extern const char kChromeConnectedCookieName[];
+
 // SigninHeaderHelper implementation managing the "X-Chrome-Connected" header.
 class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
  public:
@@ -40,12 +48,18 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
   std::string BuildRequestHeader(bool is_header_request,
                                  const GURL& url,
                                  const std::string& gaia_id,
-                                 int profile_mode_mask);
+                                 Tribool is_child_account,
+                                 int profile_mode_mask,
+                                 const std::string& source,
+                                 bool force_account_consistency);
 
   // SigninHeaderHelper implementation:
   bool ShouldBuildRequestHeader(
       const GURL& url,
       const content_settings::CookieSettings* cookie_settings) override;
+
+  // SigninHeaderHelper implementation:
+  bool IsUrlEligibleForRequestHeader(const GURL& url) override;
 
  private:
   // Whether mirror account consistency should be used.
@@ -56,9 +70,6 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
 
   // Returns whether the URL has a Google Drive origin.
   bool IsDriveOrigin(const GURL& url);
-
-  // SigninHeaderHelper implementation:
-  bool IsUrlEligibleForRequestHeader(const GURL& url) override;
 };
 
 }  // namespace signin

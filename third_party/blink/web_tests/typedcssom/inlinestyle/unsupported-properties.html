@@ -32,7 +32,7 @@ test(function() {
 test(function() {
   testElement.style.color = '#00FF00';
 
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     secondElement.attributeStyleMap.set('border-left-color', testElement.attributeStyleMap.get('color'));
   });
 

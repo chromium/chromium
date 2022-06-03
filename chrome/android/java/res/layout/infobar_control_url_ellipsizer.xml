@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:textAppearance="@style/TextAppearance.BlueLink2"
+        android:textAppearance="@style/TextAppearance.TextMedium.Blue"
         android:clickable="false"
         tools:text="https://" />
 
@@ -23,7 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.BlueLink2"
+        android:textAppearance="@style/TextAppearance.TextMedium.Blue"
         android:clickable="false"
         android:ellipsize="start"
         android:singleLine="true"

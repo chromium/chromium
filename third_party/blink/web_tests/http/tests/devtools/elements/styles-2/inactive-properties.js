@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that effectively inactive properties are displayed correctly in the sidebar.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -21,8 +21,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('inspected', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(false, false);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(false, false);
     TestRunner.completeTest();
   }
 })();

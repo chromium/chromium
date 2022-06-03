@@ -22,4 +22,4 @@ CORE_EXPORT void BytesConsumerTee(ExecutionContext*,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BYTES_CONSUMER_TEE_H_

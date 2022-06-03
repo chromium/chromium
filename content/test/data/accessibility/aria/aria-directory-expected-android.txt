@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.ListView collection
+++android.widget.ListView role_description='directory' collection

@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 #define UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 
+#include "base/check_op.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -13,13 +14,16 @@ namespace gfx {
 
 // This class implements the subset of 2D linear transforms that only
 // translation and uniform scaling are allowed.
-// Internally this is stored as a scalar pre-scale factor, and a vector
+// Internally this is stored as a vector for pre-scale, and another vector
 // for post-translation. The class constructor and member accessor follows
-// the same convention.
+// the same convention, but a scalar scale factor is also accepted.
 class GEOMETRY_EXPORT AxisTransform2d {
  public:
   constexpr AxisTransform2d() = default;
   constexpr AxisTransform2d(float scale, const Vector2dF& translation)
+      : scale_(scale, scale), translation_(translation) {}
+  constexpr AxisTransform2d(const Vector2dF& scale,
+                            const Vector2dF& translation)
       : scale_(scale), translation_(translation) {}
 
   bool operator==(const AxisTransform2d& other) const {
@@ -29,13 +33,13 @@ class GEOMETRY_EXPORT AxisTransform2d {
     return !(*this == other);
   }
 
-  void PreScale(float scale) { scale_ *= scale; }
-  void PostScale(float scale) {
-    scale_ *= scale;
-    translation_.Scale(scale);
+  void PreScale(const Vector2dF& scale) { scale_.Scale(scale.x(), scale.y()); }
+  void PostScale(const Vector2dF& scale) {
+    scale_.Scale(scale.x(), scale.y());
+    translation_.Scale(scale.x(), scale.y());
   }
   void PreTranslate(const Vector2dF& translation) {
-    translation_ += ScaleVector2d(translation, scale_);
+    translation_ += ScaleVector2d(translation, scale_.x(), scale_.y());
   }
   void PostTranslate(const Vector2dF& translation) {
     translation_ += translation;
@@ -51,28 +55,31 @@ class GEOMETRY_EXPORT AxisTransform2d {
   }
 
   void Invert() {
-    DCHECK(scale_);
-    scale_ = 1.f / scale_;
-    translation_.Scale(-scale_);
+    DCHECK(scale_.x());
+    DCHECK(scale_.y());
+    scale_ = Vector2dF(1.f / scale_.x(), 1.f / scale_.y());
+    translation_.Scale(-scale_.x(), -scale_.y());
   }
 
   PointF MapPoint(const PointF& p) const {
-    return ScalePoint(p, scale_) + translation_;
+    return ScalePoint(p, scale_.x(), scale_.y()) + translation_;
   }
   PointF InverseMapPoint(const PointF& p) const {
-    return ScalePoint(p - translation_, 1.f / scale_);
+    return ScalePoint(p - translation_, 1.f / scale_.x(), 1.f / scale_.y());
   }
 
   RectF MapRect(const RectF& r) const {
-    DCHECK(scale_ >= 0.f);
-    return ScaleRect(r, scale_) + translation_;
+    DCHECK_GE(scale_.x(), 0.f);
+    DCHECK_GE(scale_.y(), 0.f);
+    return ScaleRect(r, scale_.x(), scale_.y()) + translation_;
   }
   RectF InverseMapRect(const RectF& r) const {
-    DCHECK(scale_ > 0.f);
-    return ScaleRect(r - translation_, 1.f / scale_);
+    DCHECK_GT(scale_.x(), 0.f);
+    DCHECK_GT(scale_.y(), 0.f);
+    return ScaleRect(r - translation_, 1.f / scale_.x(), 1.f / scale_.y());
   }
 
-  float scale() const { return scale_; }
+  const Vector2dF& scale() const { return scale_; }
   const Vector2dF& translation() const { return translation_; }
 
   std::string ToString() const;
@@ -80,25 +87,25 @@ class GEOMETRY_EXPORT AxisTransform2d {
  private:
   // Scale is applied before translation, i.e.
   // this->Transform(p) == scale_ * p + translation_
-  float scale_ = 1.f;
+  Vector2dF scale_{1.f, 1.f};
   Vector2dF translation_;
 };
 
-static inline AxisTransform2d PreScaleAxisTransform2d(const AxisTransform2d& t,
-                                                      float scale) {
+inline AxisTransform2d PreScaleAxisTransform2d(const AxisTransform2d& t,
+                                               float scale) {
   AxisTransform2d result(t);
-  result.PreScale(scale);
+  result.PreScale(Vector2dF(scale, scale));
   return result;
 }
 
-static inline AxisTransform2d PostScaleAxisTransform2d(const AxisTransform2d& t,
-                                                       float scale) {
+inline AxisTransform2d PostScaleAxisTransform2d(const AxisTransform2d& t,
+                                                float scale) {
   AxisTransform2d result(t);
-  result.PostScale(scale);
+  result.PostScale(Vector2dF(scale, scale));
   return result;
 }
 
-static inline AxisTransform2d PreTranslateAxisTransform2d(
+inline AxisTransform2d PreTranslateAxisTransform2d(
     const AxisTransform2d& t,
     const Vector2dF& translation) {
   AxisTransform2d result(t);
@@ -106,7 +113,7 @@ static inline AxisTransform2d PreTranslateAxisTransform2d(
   return result;
 }
 
-static inline AxisTransform2d PostTranslateAxisTransform2d(
+inline AxisTransform2d PostTranslateAxisTransform2d(
     const AxisTransform2d& t,
     const Vector2dF& translation) {
   AxisTransform2d result(t);
@@ -114,15 +121,14 @@ static inline AxisTransform2d PostTranslateAxisTransform2d(
   return result;
 }
 
-static inline AxisTransform2d ConcatAxisTransform2d(
-    const AxisTransform2d& post,
-    const AxisTransform2d& pre) {
+inline AxisTransform2d ConcatAxisTransform2d(const AxisTransform2d& post,
+                                             const AxisTransform2d& pre) {
   AxisTransform2d result(post);
   result.PreConcat(pre);
   return result;
 }
 
-static inline AxisTransform2d InvertAxisTransform2d(const AxisTransform2d& t) {
+inline AxisTransform2d InvertAxisTransform2d(const AxisTransform2d& t) {
   AxisTransform2d result = t;
   result.Invert();
   return result;

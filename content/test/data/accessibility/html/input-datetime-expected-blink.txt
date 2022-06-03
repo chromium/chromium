@@ -1,10 +1,11 @@
 rootWebArea
-++genericContainer
-++++textField inputType='datetime' value='1/1/2015 1:00AM'
-++++++genericContainer
-++++++++staticText name='1/1/2015 1:00AM'
-++++++++++inlineTextBox name='1/1/2015 1:00AM'
-++++textField inputType='datetime' name='Launch' value='1/1/2015 1:00AM'
-++++++genericContainer
-++++++++staticText name='1/1/2015 1:00AM'
-++++++++++inlineTextBox name='1/1/2015 1:00AM'
+++genericContainer ignored
+++++genericContainer
+++++++textField inputType='datetime' value='1/1/2015 1:00AM'
+++++++++genericContainer
+++++++++++staticText name='1/1/2015 1:00AM'
+++++++++++++inlineTextBox name='1/1/2015 1:00AM'
+++++++textField inputType='datetime' name='Launch' value='1/1/2015 1:00AM'
+++++++++genericContainer
+++++++++++staticText name='1/1/2015 1:00AM'
+++++++++++++inlineTextBox name='1/1/2015 1:00AM'

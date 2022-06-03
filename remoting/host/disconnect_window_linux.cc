@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_util.h"
@@ -25,6 +25,10 @@ namespace {
 class DisconnectWindowGtk : public HostWindow {
  public:
   DisconnectWindowGtk();
+
+  DisconnectWindowGtk(const DisconnectWindowGtk&) = delete;
+  DisconnectWindowGtk& operator=(const DisconnectWindowGtk&) = delete;
+
   ~DisconnectWindowGtk() override;
 
   // HostWindow overrides.
@@ -65,8 +69,6 @@ class DisconnectWindowGtk : public HostWindow {
   // notifications.
   int current_width_;
   int current_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowGtk);
 };
 
 // Helper function for creating a rectangular path with rounded corners, as
@@ -267,7 +269,7 @@ void DisconnectWindowGtk::Start(
 
   // Extract the user name from the JID.
   std::string client_jid = client_session_control_->client_jid();
-  base::string16 username =
+  std::u16string username =
       base::UTF8ToUTF16(client_jid.substr(0, client_jid.find('/')));
   gtk_label_set_text(
       GTK_LABEL(message_),

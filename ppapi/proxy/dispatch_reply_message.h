@@ -74,7 +74,7 @@ inline void DispatchResourceReply(CallbackType&& callback,
 // Used to dispatch resource replies. In most cases, you should not call this
 // function to dispatch a resource reply manually, but instead use
 // |PluginResource::CallBrowser|/|PluginResource::CallRenderer| with a
-// |base::Callback| which will be called when a reply message is received
+// |base::OnceCallback| which will be called when a reply message is received
 // (see plugin_resource.h).
 //
 // This function will call your callback with the nested reply message's

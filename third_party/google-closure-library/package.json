@@ -1,0 +1,41 @@
+{
+  "name": "google-closure-library",
+  "description": "Google's common JavaScript library",
+  "version": "20210907.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google/closure-library.git"
+  },
+  "main": "closure/goog/bootstrap/nodejs.js",
+  "keywords": [
+    "javascript",
+    "library",
+    "goog",
+    "closure"
+  ],
+  "author": "The Closure Library Authors",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/google/closure-library/issues"
+  },
+  "homepage": "https://developers.google.com/closure/library/",
+  "devDependencies": {
+    "google-closure-deps": "file:./closure-deps/",
+    "http-server": "^0.12.3",
+    "parse5": "^6.0.1",
+    "promises-aplus-tests": "^2.1.2",
+    "protractor": "^7.0.0"
+  },
+  "scripts": {
+    "check_closure_oss": "node scripts/check_closure_oss",
+    "gen_deps_js": "node scripts/generate_deps_js > ./closure/goog/deps.js",
+    "gen_deps_js_with_tests": "node scripts/generate_deps_js --with_tests > ./closure/goog/deps_with_tests.js",
+    "gen_alltests_js": "node scripts/generate_alltests_js > ./alltests.js",
+    "gen_test_htmls": "node scripts/generate_closure_unit_tests --base=closure/goog/base.js --dep_file=closure/goog/deps_with_tests.js --recursive ./closure/goog/ ./third_party/closure/goog/ --overwrite",
+    "prepare": "npm run gen_deps_js",
+    "preserve_tests": "npm run gen_deps_js_with_tests && npm run gen_test_htmls && npm run gen_alltests_js",
+    "preserve_demos": "npm run gen_deps_js_with_tests",
+    "serve_tests": "http-server -o alltests.html",
+    "serve_demos": "http-server -o closure/goog/demos/index.html"
+  }
+}

@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_ASH_VPN_LIST_FORWARDER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,6 +27,10 @@ class VpnListForwarder
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   VpnListForwarder();
+
+  VpnListForwarder(const VpnListForwarder&) = delete;
+  VpnListForwarder& operator=(const VpnListForwarder&) = delete;
+
   ~VpnListForwarder() override;
 
   // app_list::ArcVpnProviderManager::Observer:
@@ -82,8 +86,6 @@ class VpnListForwarder
       vpn_providers_;
 
   base::WeakPtrFactory<VpnListForwarder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VpnListForwarder);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_VPN_LIST_FORWARDER_H_

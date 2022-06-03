@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_VALUE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_VALUE_SET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -37,6 +36,7 @@
 namespace blink {
 
 class CSSStyleDeclaration;
+class ExecutionContext;
 class ImmutableCSSPropertyValueSet;
 class MutableCSSPropertyValueSet;
 class StyleSheetContents;
@@ -48,6 +48,9 @@ class CORE_EXPORT CSSPropertyValueSet
   friend class PropertyReference;
 
  public:
+  CSSPropertyValueSet(const CSSPropertyValueSet&) = delete;
+  CSSPropertyValueSet& operator=(const CSSPropertyValueSet&) = delete;
+
   void FinalizeGarbageCollectedObject();
 
   class PropertyReference {
@@ -58,21 +61,20 @@ class CORE_EXPORT CSSPropertyValueSet
         : property_set_(&property_set), index_(index) {}
 
     CSSPropertyID Id() const {
-      return static_cast<CSSPropertyID>(
-          PropertyMetadata().Property().PropertyID());
-    }
-    const CSSProperty& Property() const {
-      return PropertyMetadata().Property();
+      return static_cast<CSSPropertyID>(PropertyMetadata().PropertyID());
     }
     CSSPropertyID ShorthandID() const {
       return PropertyMetadata().ShorthandID();
     }
 
-    CSSPropertyName Name() const;
+    CSSPropertyName Name() const { return PropertyMetadata().Name(); }
 
     bool IsImportant() const { return PropertyMetadata().important_; }
-    bool IsInherited() const { return PropertyMetadata().inherited_; }
     bool IsImplicit() const { return PropertyMetadata().implicit_; }
+    bool IsAffectedByAll() const {
+      return Id() != CSSPropertyID::kVariable &&
+             CSSProperty::Get(Id()).IsAffectedByAll();
+    }
 
     const CSSValue& Value() const { return PropertyValue(); }
 
@@ -81,7 +83,7 @@ class CORE_EXPORT CSSPropertyValueSet
    private:
     const CSSValue& PropertyValue() const;
 
-    Member<const CSSPropertyValueSet> property_set_;
+    const CSSPropertyValueSet* property_set_;
     unsigned index_;
   };
 
@@ -92,23 +94,26 @@ class CORE_EXPORT CSSPropertyValueSet
   }
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
   bool HasProperty(CSSPropertyID property) const {
     return FindPropertyIndex(property) != -1;
   }
 
   template <typename T>  // CSSPropertyID or AtomicString
-  const CSSValue* GetPropertyCSSValue(T property) const;
+  const CSSValue* GetPropertyCSSValue(const T& property) const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  String GetPropertyValue(T property) const;
+  String GetPropertyValue(const T& property) const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  bool PropertyIsImportant(T property) const;
+  bool PropertyIsImportant(const T& property) const;
 
   bool ShorthandIsImportant(CSSPropertyID) const;
-  bool ShorthandIsImportant(AtomicString custom_property_name) const;
+  bool ShorthandIsImportant(const AtomicString& custom_property_name) const {
+    // Custom properties are never shorthands.
+    return false;
+  }
 
   CSSPropertyID GetPropertyShorthand(CSSPropertyID) const;
   bool IsPropertyImplicit(CSSPropertyID) const;
@@ -137,42 +142,41 @@ class CORE_EXPORT CSSPropertyValueSet
 
   bool PropertyMatches(CSSPropertyID, const CSSValue&) const;
 
-  void Trace(blink::Visitor*);
-  void TraceAfterDispatch(blink::Visitor* visitor) {}
+  void Trace(Visitor*) const;
+  void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
  protected:
   enum { kMaxArraySize = (1 << 28) - 1 };
 
-  CSSPropertyValueSet(CSSParserMode css_parser_mode)
-      : css_parser_mode_(css_parser_mode), is_mutable_(true), array_size_(0) {}
+  explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
+      : array_size_(0), css_parser_mode_(css_parser_mode), is_mutable_(true) {}
 
   CSSPropertyValueSet(CSSParserMode css_parser_mode,
                       unsigned immutable_array_size)
-      : css_parser_mode_(css_parser_mode), is_mutable_(false) {
-    // Avoid min()/max() from std here in the header, because that would require
-    // inclusion of <algorithm>, which is slow to compile.
-    if (immutable_array_size < unsigned(kMaxArraySize))
-      array_size_ = immutable_array_size;
-    else
-      array_size_ = unsigned(kMaxArraySize);
-  }
+      // Avoid min()/max() from std here in the header, because that would
+      // require inclusion of <algorithm>, which is slow to compile.
+      : array_size_((immutable_array_size < unsigned(kMaxArraySize))
+                        ? immutable_array_size
+                        : unsigned(kMaxArraySize)),
+        css_parser_mode_(css_parser_mode),
+        is_mutable_(false) {}
 
-  unsigned css_parser_mode_ : 3;
-  mutable unsigned is_mutable_ : 1;
-  unsigned array_size_ : 28;
+  const uint32_t array_size_ : 28;
+  const uint32_t css_parser_mode_ : 3;
+  const uint32_t is_mutable_ : 1;
 
   friend class PropertySetCSSStyleDeclaration;
-  DISALLOW_COPY_AND_ASSIGN(CSSPropertyValueSet);
 };
 
 // Used for lazily parsing properties.
 class CSSLazyPropertyParser : public GarbageCollected<CSSLazyPropertyParser> {
  public:
   CSSLazyPropertyParser() = default;
+  CSSLazyPropertyParser(const CSSLazyPropertyParser&) = delete;
+  CSSLazyPropertyParser& operator=(const CSSLazyPropertyParser&) = delete;
   virtual ~CSSLazyPropertyParser() = default;
   virtual CSSPropertyValueSet* ParseProperties() = 0;
-  virtual void Trace(blink::Visitor*);
-  DISALLOW_COPY_AND_ASSIGN(CSSLazyPropertyParser);
+  virtual void Trace(Visitor*) const;
 };
 
 class CORE_EXPORT ALIGNAS(alignof(Member<const CSSValue>))
@@ -192,9 +196,9 @@ class CORE_EXPORT ALIGNAS(alignof(Member<const CSSValue>))
   const CSSPropertyValueMetadata* MetadataArray() const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 };
 
 inline const Member<const CSSValue>* ImmutableCSSPropertyValueSet::ValueArray()
@@ -255,6 +259,9 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
                         SecureContextMode,
                         StyleSheetContents* context_style_sheet,
                         bool is_animation_tainted);
+  void SetProperty(const CSSPropertyName&,
+                   const CSSValue&,
+                   bool important = false);
   void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
 
   // These do not. FIXME: This is too messy, we can do better.
@@ -264,7 +271,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool SetProperty(const CSSPropertyValue&, CSSPropertyValue* slot = nullptr);
 
   template <typename T>  // CSSPropertyID or AtomicString
-  bool RemoveProperty(T property, String* return_text = nullptr);
+  bool RemoveProperty(const T& property, String* return_text = nullptr);
   bool RemovePropertiesInSet(const CSSProperty* const set[], unsigned length);
   void RemoveEquivalentProperties(const CSSPropertyValueSet*);
   void RemoveEquivalentProperties(const CSSStyleDeclaration*);
@@ -276,12 +283,13 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
                             SecureContextMode,
                             StyleSheetContents* context_style_sheet);
 
-  CSSStyleDeclaration* EnsureCSSStyleDeclaration();
+  CSSStyleDeclaration* EnsureCSSStyleDeclaration(
+      ExecutionContext* execution_context);
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   bool RemovePropertyAtIndex(int, String* return_text);
@@ -296,6 +304,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   friend class CSSPropertyValueSet;
 
   HeapVector<CSSPropertyValue, 4> property_vector_;
+  bool may_have_logical_properties_{false};
 };
 
 template <>
@@ -308,7 +317,7 @@ struct DowncastTraits<MutableCSSPropertyValueSet> {
 inline const CSSPropertyValueMetadata&
 CSSPropertyValueSet::PropertyReference::PropertyMetadata() const {
   if (auto* mutable_property_set =
-          DynamicTo<MutableCSSPropertyValueSet>(property_set_.Get())) {
+          DynamicTo<MutableCSSPropertyValueSet>(property_set_)) {
     return mutable_property_set->property_vector_.at(index_).Metadata();
   }
   return To<ImmutableCSSPropertyValueSet>(*property_set_)
@@ -318,7 +327,7 @@ CSSPropertyValueSet::PropertyReference::PropertyMetadata() const {
 inline const CSSValue& CSSPropertyValueSet::PropertyReference::PropertyValue()
     const {
   if (auto* mutable_property_set =
-          DynamicTo<MutableCSSPropertyValueSet>(property_set_.Get())) {
+          DynamicTo<MutableCSSPropertyValueSet>(property_set_)) {
     return *mutable_property_set->property_vector_.at(index_).Value();
   }
   return *To<ImmutableCSSPropertyValueSet>(*property_set_).ValueArray()[index_];
@@ -335,7 +344,7 @@ inline bool CSSPropertyValueSet::IsEmpty() const {
 }
 
 template <typename T>
-inline int CSSPropertyValueSet::FindPropertyIndex(T property) const {
+inline int CSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   if (auto* mutable_property_set = DynamicTo<MutableCSSPropertyValueSet>(this))
     return mutable_property_set->FindPropertyIndex(property);
   return To<ImmutableCSSPropertyValueSet>(this)->FindPropertyIndex(property);

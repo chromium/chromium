@@ -5,7 +5,6 @@
 #include "chromeos/services/multidevice_setup/device_with_connectivity_status.h"
 
 #include "base/base64.h"
-#include "base/stl_util.h"
 
 namespace chromeos {
 

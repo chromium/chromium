@@ -14,7 +14,6 @@
 #include "chromecast/common/extensions_api/generated_schemas.h"
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/common/manifest_handler.h"
-#include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/shell/grit/app_shell_resources.h"
 
@@ -65,8 +64,6 @@ void CastExtensionsAPIProvider::RegisterManifestHandlers() {
   // TODO(devlin): Pass in |registry| rather than Get()ing it.
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
 
-  // TODO(crbug/837773) De-dupe later.
-  registry->RegisterHandler(std::make_unique<AutomationHandler>());
   registry->RegisterHandler(
       std::make_unique<chromecast::CastRedirectHandler>());
 }

@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -25,14 +25,12 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
+#include "storage/browser/file_system/quota/quota_limit_type.h"
 #include "storage/browser/file_system/sandbox_quota_observer.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "url/gurl.h"
-
-using storage::QuotaManagerProxy;
-using storage::SpecialStoragePolicy;
 
 namespace storage {
 
@@ -50,12 +48,12 @@ void SandboxFileSystemBackend::Initialize(FileSystemContext* context) {
   DCHECK(delegate_);
 
   // Set quota observers.
-  delegate_->RegisterQuotaUpdateObserver(storage::kFileSystemTypeTemporary);
-  delegate_->AddFileAccessObserver(storage::kFileSystemTypeTemporary,
+  delegate_->RegisterQuotaUpdateObserver(kFileSystemTypeTemporary);
+  delegate_->AddFileAccessObserver(kFileSystemTypeTemporary,
                                    delegate_->quota_observer(), nullptr);
 
-  delegate_->RegisterQuotaUpdateObserver(storage::kFileSystemTypePersistent);
-  delegate_->AddFileAccessObserver(storage::kFileSystemTypePersistent,
+  delegate_->RegisterQuotaUpdateObserver(kFileSystemTypePersistent);
+  delegate_->AddFileAccessObserver(kFileSystemTypePersistent,
                                    delegate_->quota_observer(), nullptr);
 }
 
@@ -75,7 +73,7 @@ void SandboxFileSystemBackend::ResolveURL(const FileSystemURL& url,
   }
 
   delegate_->OpenFileSystem(
-      url.origin().GetURL(), url.type(), mode, std::move(callback),
+      url.storage_key(), url.type(), mode, std::move(callback),
       GetFileSystemRootURI(url.origin().GetURL(), url.type()));
 }
 
@@ -98,7 +96,8 @@ SandboxFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* SandboxFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+SandboxFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -113,27 +112,27 @@ FileSystemOperation* SandboxFileSystemBackend::CreateFileSystemOperation(
 
   SpecialStoragePolicy* policy = delegate_->special_storage_policy();
   if (policy && policy->IsStorageUnlimited(url.origin().GetURL()))
-    operation_context->set_quota_limit_type(storage::kQuotaLimitTypeUnlimited);
+    operation_context->set_quota_limit_type(QuotaLimitType::kUnlimited);
   else
-    operation_context->set_quota_limit_type(storage::kQuotaLimitTypeLimited);
+    operation_context->set_quota_limit_type(QuotaLimitType::kLimited);
 
   return FileSystemOperation::Create(url, context,
                                      std::move(operation_context));
 }
 
 bool SandboxFileSystemBackend::SupportsStreaming(
-    const storage::FileSystemURL& url) const {
+    const FileSystemURL& url) const {
   // Streaming is required for in-memory implementation to access memory-backed
   // files.
   return delegate_->file_system_options().is_incognito();
 }
 
 bool SandboxFileSystemBackend::HasInplaceCopyImplementation(
-    storage::FileSystemType type) const {
+    FileSystemType type) const {
   return false;
 }
 
-std::unique_ptr<storage::FileStreamReader>
+std::unique_ptr<FileStreamReader>
 SandboxFileSystemBackend::CreateFileStreamReader(
     const FileSystemURL& url,
     int64_t offset,
@@ -146,7 +145,7 @@ SandboxFileSystemBackend::CreateFileStreamReader(
                                            expected_modification_time, context);
 }
 
-std::unique_ptr<storage::FileStreamWriter>
+std::unique_ptr<FileStreamWriter>
 SandboxFileSystemBackend::CreateFileStreamWriter(
     const FileSystemURL& url,
     int64_t offset,
@@ -175,10 +174,10 @@ const AccessObserverList* SandboxFileSystemBackend::GetAccessObservers(
   return delegate_->GetAccessObservers(type);
 }
 
-SandboxFileSystemBackendDelegate::OriginEnumerator*
-SandboxFileSystemBackend::CreateOriginEnumerator() {
+SandboxFileSystemBackendDelegate::StorageKeyEnumerator*
+SandboxFileSystemBackend::CreateStorageKeyEnumerator() {
   DCHECK(delegate_);
-  return delegate_->CreateOriginEnumerator();
+  return delegate_->CreateStorageKeyEnumerator();
 }
 
 }  // namespace storage

@@ -7,7 +7,7 @@
  */
 
 /** @polymerBehavior */
-const NetworkConfigElementBehavior = {
+/* #export */ const NetworkConfigElementBehavior = {
   properties: {
     disabled: {
       type: Boolean,
@@ -29,9 +29,9 @@ const NetworkConfigElementBehavior = {
    * @param {boolean} disabled
    * @param {?OncMojo.ManagedProperty} property
    * @return {boolean} True if the element should be disabled.
-   * @private
+   * @protected
    */
-  getDisabled_: function(disabled, property) {
+  getDisabled_(disabled, property) {
     return disabled || (!!property && this.isNetworkPolicyEnforced(property));
   },
 };

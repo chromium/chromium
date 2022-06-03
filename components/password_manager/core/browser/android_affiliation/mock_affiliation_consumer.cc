@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace password_manager {
 
@@ -13,8 +13,7 @@ MockAffiliationConsumer::MockAffiliationConsumer() {
   EXPECT_CALL(*this, OnResultCallback(testing::_, testing::_)).Times(0);
 }
 
-MockAffiliationConsumer::~MockAffiliationConsumer() {
-}
+MockAffiliationConsumer::~MockAffiliationConsumer() = default;
 
 void MockAffiliationConsumer::ExpectSuccessWithResult(
     const AffiliatedFacets& expected_result) {
@@ -30,8 +29,8 @@ void MockAffiliationConsumer::ExpectFailure() {
 
 AffiliationService::ResultCallback
 MockAffiliationConsumer::GetResultCallback() {
-  return base::Bind(&MockAffiliationConsumer::OnResultCallback,
-                    base::Unretained(this));
+  return base::BindOnce(&MockAffiliationConsumer::OnResultCallback,
+                        base::Unretained(this));
 }
 
 }  // namespace password_manager

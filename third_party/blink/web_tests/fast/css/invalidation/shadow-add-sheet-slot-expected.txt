@@ -1,0 +1,11 @@
+Insert a style element into a shadow tree affecting a distributed node.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS getComputedStyle(outerSpan).color is "rgb(255, 0, 0)"
+PASS internals.updateStyleAndReturnAffectedElementCount() is 2
+PASS getComputedStyle(outerSpan).color is "rgb(0, 128, 0)"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

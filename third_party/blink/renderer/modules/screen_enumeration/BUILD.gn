@@ -6,12 +6,18 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("screen_enumeration") {
   sources = [
-    "global_screen_enumeration.cc",
-    "global_screen_enumeration.h",
+    "screen_detailed.cc",
+    "screen_detailed.h",
+    "screen_details.cc",
+    "screen_details.h",
+    "window_screens.cc",
+    "window_screens.h",
   ]
 
   public_deps = [
     "//third_party/blink/renderer/platform",
     "//ui/display/mojom:mojom_blink",
   ]
+
+  deps = [ "//third_party/blink/renderer/modules/permissions" ]
 }

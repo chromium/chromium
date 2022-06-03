@@ -1,0 +1,4 @@
+Document
+++Group IsControlElement=false
+++++Button Name='Text in iframe'
+++++++Document Name='Text in iframe'

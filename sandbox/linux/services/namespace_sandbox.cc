@@ -15,14 +15,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_utils.h"
@@ -46,6 +46,9 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
         supports_deny_setgroups_(
             NamespaceUtils::KernelSupportsDenySetgroups()) {}
 
+  WriteUidGidMapDelegate(const WriteUidGidMapDelegate&) = delete;
+  WriteUidGidMapDelegate& operator=(const WriteUidGidMapDelegate&) = delete;
+
   ~WriteUidGidMapDelegate() override {}
 
   void RunAsyncSafe() override {
@@ -60,7 +63,6 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
   const uid_t uid_;
   const gid_t gid_;
   const bool supports_deny_setgroups_;
-  DISALLOW_COPY_AND_ASSIGN(WriteUidGidMapDelegate);
 };
 
 void SetEnvironForNamespaceType(base::EnvironmentMap* environ,

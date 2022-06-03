@@ -5,4 +5,5 @@ include_rules = [
   "+services/service_manager/public/cpp/binder_registry.h",
   "+ui/base",
   "+ui/gfx",
+  "+components/content_settings/core"
 ]

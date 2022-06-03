@@ -8,6 +8,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -18,7 +21,7 @@
 
 namespace blink {
 
-void LoaderFactoryForWorker::Trace(Visitor* visitor) {
+void LoaderFactoryForWorker::Trace(Visitor* visitor) const {
   visitor->Trace(global_scope_);
   LoaderFactory::Trace(visitor);
 }
@@ -26,7 +29,9 @@ void LoaderFactoryForWorker::Trace(Visitor* visitor) {
 std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   WrappedResourceRequest wrapped(request);
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
@@ -48,9 +53,16 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
         request.Url(), url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
 
+  // KeepAlive is not yet supported in web workers.
+  mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle =
+      mojo::NullRemote();
+
   if (url_loader_factory) {
-    return web_context_->WrapURLLoaderFactory(url_loader_factory.PassPipe())
-        ->CreateURLLoader(wrapped, CreateTaskRunnerHandle(task_runner));
+    return web_context_->WrapURLLoaderFactory(std::move(url_loader_factory))
+        ->CreateURLLoader(
+            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+            CreateTaskRunnerHandle(unfreezable_task_runner),
+            std::move(keep_alive_handle), back_forward_cache_loader_helper);
   }
 
   // If |global_scope_| is a service worker, use |script_loader_factory_| for
@@ -63,13 +75,16 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   // a loader specific to script loading.
   if (global_scope_->IsServiceWorkerGlobalScope()) {
     if (request.GetRequestContext() ==
-            mojom::RequestContextType::SERVICE_WORKER ||
-        request.GetRequestContext() == mojom::RequestContextType::SCRIPT) {
+            mojom::blink::RequestContextType::SERVICE_WORKER ||
+        request.GetRequestContext() ==
+            mojom::blink::RequestContextType::SCRIPT) {
       // GetScriptLoaderFactory() may return nullptr in tests even for service
       // workers.
       if (web_context_->GetScriptLoaderFactory()) {
         return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
-            wrapped, CreateTaskRunnerHandle(task_runner));
+            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+            CreateTaskRunnerHandle(unfreezable_task_runner),
+            std::move(keep_alive_handle), back_forward_cache_loader_helper);
       }
     }
   } else {
@@ -77,12 +92,14 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   }
 
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(
-      wrapped, CreateTaskRunnerHandle(task_runner));
+      wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+      CreateTaskRunnerHandle(unfreezable_task_runner),
+      std::move(keep_alive_handle), back_forward_cache_loader_helper);
 }
 
-std::unique_ptr<CodeCacheLoader>
+std::unique_ptr<WebCodeCacheLoader>
 LoaderFactoryForWorker::CreateCodeCacheLoader() {
-  return web_context_->CreateCodeCacheLoader();
+  return web_context_->CreateCodeCacheLoader(global_scope_->GetCodeCacheHost());
 }
 
 // TODO(altimin): This is used when creating a URLLoader, and

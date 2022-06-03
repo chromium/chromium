@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/EXT_texture_norm16/
+
+[
+    LegacyNoInterfaceObject,
+    DoNotCheckConstants
+] interface EXTTextureNorm16 {
+  const unsigned long R16_EXT = 0x822A;
+  const unsigned long RG16_EXT = 0x822C;
+  const unsigned long RGB16_EXT = 0x8054;
+  const unsigned long RGBA16_EXT = 0x805B;
+  const unsigned long R16_SNORM_EXT = 0x8F98;
+  const unsigned long RG16_SNORM_EXT = 0x8F99;
+  const unsigned long RGB16_SNORM_EXT = 0x8F9A;
+  const unsigned long RGBA16_SNORM_EXT = 0x8F9B;
+};

@@ -6,8 +6,14 @@
 
 #include <wayland-server-core.h>
 
-#include "base/logging.h"
+#include <cstdint>
+
+#include "base/notreached.h"
+#include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
+#include "ui/ozone/platform/wayland/test/test_data_source.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
 
@@ -19,45 +25,79 @@ void DataDeviceStartDrag(wl_client* client,
                          wl_resource* origin,
                          wl_resource* icon,
                          uint32_t serial) {
-  NOTIMPLEMENTED();
-}
+  auto* data_source = GetUserDataAs<TestDataSource>(source);
+  auto* origin_surface = GetUserDataAs<MockSurface>(origin);
 
-void DataDeviceSetSelection(wl_client* client,
-                            wl_resource* resource,
-                            wl_resource* data_source,
-                            uint32_t serial) {
-  GetUserDataAs<TestDataDevice>(resource)->SetSelection(
-      data_source ? GetUserDataAs<TestDataSource>(data_source) : nullptr,
-      serial);
+  GetUserDataAs<TestDataDevice>(resource)->StartDrag(data_source,
+                                                     origin_surface, serial);
 }
 
 void DataDeviceRelease(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
+struct WlDataDeviceImpl : public TestSelectionDevice::Delegate {
+  explicit WlDataDeviceImpl(TestDataDevice* device) : device_(device) {}
+  ~WlDataDeviceImpl() override = default;
+
+  WlDataDeviceImpl(const WlDataDeviceImpl&) = delete;
+  WlDataDeviceImpl& operator=(const WlDataDeviceImpl&) = delete;
+
+  TestSelectionOffer* CreateAndSendOffer() override {
+    wl_resource* device_resource = device_->resource();
+    wl_resource* new_offer_resource = CreateResourceWithImpl<TestDataOffer>(
+        device_->client(), &wl_data_offer_interface,
+        wl_resource_get_version(device_resource), &kTestDataOfferImpl, 0);
+    wl_data_device_send_data_offer(device_resource, new_offer_resource);
+    return GetUserDataAs<TestSelectionOffer>(new_offer_resource);
+  }
+
+  void HandleSetSelection(TestSelectionSource* source,
+                          uint32_t serial) override {
+    device_->SetSelection(static_cast<TestDataSource*>(source), serial);
+  }
+
+  void SendSelection(TestSelectionOffer* selection_offer) override {
+    CHECK(selection_offer);
+    wl_data_device_send_selection(device_->resource(),
+                                  selection_offer->resource());
+  }
+
+  void OnDestroying() override { delete this; }
+
+ private:
+  TestDataDevice* const device_;
+};
+
 }  // namespace
 
 const struct wl_data_device_interface kTestDataDeviceImpl = {
-    &DataDeviceStartDrag, &DataDeviceSetSelection, &DataDeviceRelease};
+    &DataDeviceStartDrag, &TestSelectionDevice::SetSelection,
+    &DataDeviceRelease};
 
 TestDataDevice::TestDataDevice(wl_resource* resource, wl_client* client)
-    : ServerObject(resource), client_(client) {}
+    : TestSelectionDevice(resource, new WlDataDeviceImpl(this)),
+      client_(client) {}
 
-TestDataDevice::~TestDataDevice() {}
+TestDataDevice::~TestDataDevice() = default;
 
 void TestDataDevice::SetSelection(TestDataSource* data_source,
                                   uint32_t serial) {
   NOTIMPLEMENTED();
 }
 
-TestDataOffer* TestDataDevice::OnDataOffer() {
-  wl_resource* data_offer_resource = CreateResourceWithImpl<TestDataOffer>(
-      client_, &wl_data_offer_interface, wl_resource_get_version(resource()),
-      &kTestDataOfferImpl, 0);
-  data_offer_ = GetUserDataAs<TestDataOffer>(data_offer_resource);
-  wl_data_device_send_data_offer(resource(), data_offer_resource);
+TestDataOffer* TestDataDevice::CreateAndSendDataOffer() {
+  return static_cast<TestDataOffer*>(TestSelectionDevice::OnDataOffer());
+}
 
-  return GetUserDataAs<TestDataOffer>(data_offer_resource);
+void TestDataDevice::StartDrag(TestDataSource* source,
+                               MockSurface* origin,
+                               uint32_t serial) {
+  DCHECK(source);
+  DCHECK(origin);
+  if (drag_delegate_)
+    drag_delegate_->StartDrag(source, origin, serial);
+  wl_client_flush(client_);
 }
 
 void TestDataDevice::OnEnter(uint32_t serial,
@@ -79,10 +119,6 @@ void TestDataDevice::OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y) {
 
 void TestDataDevice::OnDrop() {
   wl_data_device_send_drop(resource());
-}
-
-void TestDataDevice::OnSelection(TestDataOffer* data_offer) {
-  wl_data_device_send_selection(resource(), data_offer->resource());
 }
 
 }  // namespace wl

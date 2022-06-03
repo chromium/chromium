@@ -5,23 +5,22 @@
 #include "chrome/browser/ui/views/bulleted_label_list_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace {
-constexpr int kColumnSetId = 0;
 
 class BulletView : public views::View {
  public:
-  explicit BulletView(SkColor color) : color_(color) {}
+  METADATA_HEADER(BulletView);
+  BulletView() = default;
+  BulletView(const BulletView&) = delete;
+  BulletView& operator=(const BulletView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override;
-
- private:
-  SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(BulletView);
 };
 
 void BulletView::OnPaint(gfx::Canvas* canvas) {
@@ -34,48 +33,51 @@ void BulletView::OnPaint(gfx::Canvas* canvas) {
   path.addCircle(center.x(), center.y(), radius);
 
   cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kStrokeAndFill_Style);
-  flags.setColor(color_);
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setColor(views::style::GetColor(*this, views::style::CONTEXT_LABEL,
+                                        views::style::STYLE_PRIMARY));
   flags.setAntiAlias(true);
 
   canvas->DrawPath(path, flags);
 }
 
+BEGIN_METADATA(BulletView, views::View)
+END_METADATA
+
 }  // namespace
 
 BulletedLabelListView::BulletedLabelListView()
-    : BulletedLabelListView(std::vector<base::string16>()) {}
+    : BulletedLabelListView(std::vector<std::u16string>()) {}
 
 BulletedLabelListView::BulletedLabelListView(
-    const std::vector<base::string16>& texts) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(kColumnSetId);
-
-  int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+    const std::vector<std::u16string>& texts) {
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize, views::GridLayout::FIXED,
-                     width, width);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                     views::GridLayout::USE_PREF, 0, 0);
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStretch,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kFixed, width, width)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, 1.0,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   for (const auto& text : texts)
     AddLabel(text);
 }
 
-BulletedLabelListView::~BulletedLabelListView() {}
+BulletedLabelListView::~BulletedLabelListView() = default;
 
-void BulletedLabelListView::AddLabel(const base::string16& text) {
-  views::GridLayout* layout =
-      static_cast<views::GridLayout*>(GetLayoutManager());
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
+void BulletedLabelListView::AddLabel(const std::u16string& text) {
+  views::TableLayout* layout =
+      static_cast<views::TableLayout*>(GetLayoutManager());
+  layout->AddRows(1, views::GridLayout::kFixedSize);
 
-  auto label = std::make_unique<views::Label>(text);
-
+  AddChildView(std::make_unique<BulletView>());
+  auto* label = AddChildView(std::make_unique<views::Label>(text));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  layout->AddView(std::make_unique<BulletView>(label->GetEnabledColor()));
-  layout->AddView(std::move(label));
 }
+
+BEGIN_METADATA(BulletedLabelListView, views::View)
+END_METADATA

@@ -1,0 +1,12 @@
+# This isn't a real DEPS file.
+# Undo things in third_party/DEPS that we don't want.
+include_rules = [
+  # Internal includes.
+    '+internal',
+  # The lib will be able to use abseil, but without being
+  # imported directly in chromium.
+    '+absl',
+  # Added to retrieve the regression tests file.
+    '+base/files',
+]
+

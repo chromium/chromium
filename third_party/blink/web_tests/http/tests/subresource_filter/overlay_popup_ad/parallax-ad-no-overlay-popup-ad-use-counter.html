@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div.content1 {
+  z-index: 3;
+  position: absolute;
+  top: 0px;
+  background-color: white;
+  width: 100vw;
+  height: 100vh;
+}
+div.empty {
+  z-index: 1;
+  position: absolute;
+  top: 100vh;
+  width: 100vw;
+  height: 100vh;
+}
+div.content2 {
+  z-index: 3;
+  position: absolute;
+  top: 200vh;
+  background-color: white;
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  z-index: 2;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  border: 0px;
+  background-color: blue;
+}
+p {
+  position: fixed;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<div class="content1">some content</div>
+<div class="empty"></div>
+<div class="content2">some content</div>
+
+<script>
+promise_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  // Create the parallax-ad, which is below the "content" div and above the
+  // "empty" div.
+  appendAdFrameTo(document.body);
+
+  // Scroll down to the position where the parallax-ad is no longer covered
+  // by "content1" and becomes visible.
+  window.scrollTo(0, document.documentElement.clientHeight);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate.
+  await forceLayoutUpdate();
+
+  // Scroll further down to the position where the parallax-ad is covered by
+  // "content2" and becomes invisible again.
+  window.scrollTo(0, document.documentElement.clientHeight * 2);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect no kOverlayPopupAd UseCounter as the scroll offset has changed
+  // since the candidate's appearance.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test parallax-ad while scrolling over the page. In this case, we expect no use counter for kOverlayPopupAd.");
+
+</script>
+</body>
+</html>

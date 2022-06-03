@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_DEBUG_MARKER_MANAGER_H_
-#define GPU_COMMAND_BUFFER_SERVICE_DEBUG_MARKER_MANAGER_H_
+#ifndef GPU_COMMAND_BUFFER_COMMON_DEBUG_MARKER_MANAGER_H_
+#define GPU_COMMAND_BUFFER_COMMON_DEBUG_MARKER_MANAGER_H_
 
 #include <string>
 
@@ -59,4 +59,4 @@ class GPU_EXPORT DebugMarkerManager {
 }  // namespace gles2
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_DEBUG_MARKER_MANAGER_H_
+#endif  // GPU_COMMAND_BUFFER_COMMON_DEBUG_MARKER_MANAGER_H_

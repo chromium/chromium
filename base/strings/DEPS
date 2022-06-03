@@ -1,0 +1,8 @@
+specific_include_rules = {
+  # absl::string_view is generally banned in Chromium. Including it is only
+  # allowed from abseil_string_conversions* to provide appropriate conversion
+  # functions from and to StringPiece at third party API boundaries.
+  "abseil_string_conversions(\.h|\.cc|_unittest.cc)": [
+    "+third_party/abseil-cpp/absl/strings/string_view.h",
+  ],
+}

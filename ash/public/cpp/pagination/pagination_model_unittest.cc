@@ -8,9 +8,9 @@
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -18,24 +18,26 @@ namespace test {
 
 class TestPaginationModelObserver : public PaginationModelObserver {
  public:
-  TestPaginationModelObserver()
-      : model_(NULL),
-        expected_page_selection_(0),
-        expected_transition_start_(0),
-        expected_transition_end_(0),
-        transition_page_(-1) {
-    Reset();
-  }
-  ~TestPaginationModelObserver() override {}
+  TestPaginationModelObserver() = default;
+
+  TestPaginationModelObserver(const TestPaginationModelObserver&) = delete;
+  TestPaginationModelObserver& operator=(const TestPaginationModelObserver&) =
+      delete;
+
+  ~TestPaginationModelObserver() override = default;
 
   void Reset() {
     selection_count_ = 0;
     transition_start_count_ = 0;
     transition_end_count_ = 0;
     selected_pages_.clear();
+    transition_start_call_count_ = 0;
+    transition_ended_call_count_ = 0;
+    wait_loop_ = nullptr;
   }
 
   void set_model(PaginationModel* model) { model_ = model; }
+  void set_wait_loop(base::RunLoop* wait_loop) { wait_loop_ = wait_loop; }
 
   void set_expected_page_selection(int expected_page_selection) {
     expected_page_selection_ = expected_page_selection;
@@ -52,6 +54,10 @@ class TestPaginationModelObserver : public PaginationModelObserver {
   int selection_count() const { return selection_count_; }
   int transition_start_count() const { return transition_start_count_; }
   int transition_end_count() const { return transition_end_count_; }
+  int transition_start_call_count() const {
+    return transition_start_call_count_;
+  }
+  int transition_end_call_count() const { return transition_ended_call_count_; }
 
  private:
   void AppendSelectedPage(int page) {
@@ -66,13 +72,13 @@ class TestPaginationModelObserver : public PaginationModelObserver {
   void SelectedPageChanged(int old_selected, int new_selected) override {
     AppendSelectedPage(new_selected);
     ++selection_count_;
-    if (expected_page_selection_ &&
+    if (wait_loop_ && expected_page_selection_ &&
         selection_count_ == expected_page_selection_) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      wait_loop_->Quit();
     }
   }
 
-  void TransitionStarted() override {}
+  void TransitionStarted() override { ++transition_start_call_count_; }
 
   void TransitionChanged() override {
     if (transition_page_ == -1 ||
@@ -83,38 +89,47 @@ class TestPaginationModelObserver : public PaginationModelObserver {
         ++transition_end_count_;
     }
 
+    if (!wait_loop_)
+      return;
+
     if ((expected_transition_start_ &&
          transition_start_count_ == expected_transition_start_) ||
         (expected_transition_end_ &&
          transition_end_count_ == expected_transition_end_)) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      wait_loop_->Quit();
     }
   }
 
-  void TransitionEnded() override {}
+  void TransitionEnded() override { ++transition_ended_call_count_; }
 
-  PaginationModel* model_;
+  PaginationModel* model_ = nullptr;
 
-  int expected_page_selection_;
-  int expected_transition_start_;
-  int expected_transition_end_;
+  int expected_page_selection_ = 0;
+  int expected_transition_start_ = 0;
+  int expected_transition_end_ = 0;
 
-  int selection_count_;
-  int transition_start_count_;
-  int transition_end_count_;
+  int selection_count_ = 0;
+  int transition_start_count_ = 0;
+  int transition_end_count_ = 0;
 
   // Indicate which page index should be counted for |transition_start_count_|
   // and |transition_end_count_|. -1 means all the pages should be counted.
-  int transition_page_;
+  int transition_page_ = -1;
 
   std::string selected_pages_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestPaginationModelObserver);
+  int transition_start_call_count_ = 0;
+  int transition_ended_call_count_ = 0;
+  base::RunLoop* wait_loop_ = nullptr;
 };
 
 class PaginationModelTest : public views::test::WidgetTest {
  public:
   PaginationModelTest() = default;
+
+  PaginationModelTest(const PaginationModelTest&) = delete;
+  PaginationModelTest& operator=(const PaginationModelTest&) = delete;
+
   ~PaginationModelTest() override = default;
 
   // testing::Test overrides:
@@ -123,8 +138,8 @@ class PaginationModelTest : public views::test::WidgetTest {
     widget_.reset(CreateTopLevelPlatformWidget());
     pagination_ = std::make_unique<PaginationModel>(widget_->GetContentsView());
     pagination_->SetTotalPages(5);
-    pagination_->SetTransitionDurations(base::TimeDelta::FromMilliseconds(1),
-                                        base::TimeDelta::FromMilliseconds(1));
+    pagination_->SetTransitionDurations(base::Milliseconds(1),
+                                        base::Milliseconds(1));
     observer_.set_model(pagination_.get());
     pagination_->AddObserver(&observer_);
   }
@@ -140,12 +155,30 @@ class PaginationModelTest : public views::test::WidgetTest {
                               int expected_selection,
                               int expected_transition_start,
                               int expected_transition_end) {
-    observer_.set_expected_page_selection(0);
+    observer_.set_wait_loop(nullptr);
     pagination_->SelectPage(start_page, /*animate=*/false);
     observer_.Reset();
+
+    paging_animation_wait_loop_ = std::make_unique<base::RunLoop>();
+    observer_.set_wait_loop(paging_animation_wait_loop_.get());
+
     observer_.set_expected_page_selection(expected_selection);
     observer_.set_expected_transition_start(expected_transition_start);
     observer_.set_expected_transition_end(expected_transition_end);
+  }
+
+  void WaitForPagingAnimation() {
+    ASSERT_TRUE(paging_animation_wait_loop_);
+    paging_animation_wait_loop_->Run();
+  }
+
+  void WaitForRevertAnimation() {
+    while (pagination()->IsRevertingCurrentTransition()) {
+      base::RunLoop run_loop;
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+      run_loop.Run();
+    }
   }
 
   PaginationModel* pagination() { return pagination_.get(); }
@@ -155,8 +188,7 @@ class PaginationModelTest : public views::test::WidgetTest {
  private:
   WidgetAutoclosePtr widget_;
   std::unique_ptr<PaginationModel> pagination_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaginationModelTest);
+  std::unique_ptr<base::RunLoop> paging_animation_wait_loop_;
 };
 
 TEST_F(PaginationModelTest, SelectPage) {
@@ -190,7 +222,7 @@ TEST_F(PaginationModelTest, SelectPageAnimated) {
   // One transition.
   SetStartPageAndExpects(kStartPage, 1, 0, 0);
   pagination()->SelectPage(1, /*animate=*/true);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.transition_start_count());
   EXPECT_EQ(1, observer_.transition_end_count());
   EXPECT_EQ(1, observer_.selection_count());
@@ -200,7 +232,7 @@ TEST_F(PaginationModelTest, SelectPageAnimated) {
   SetStartPageAndExpects(kStartPage, 2, 0, 0);
   pagination()->SelectPage(1, /*animate=*/true);
   pagination()->SelectPage(3, /*animate=*/true);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(2, observer_.transition_start_count());
   EXPECT_EQ(2, observer_.transition_end_count());
   EXPECT_EQ(2, observer_.selection_count());
@@ -210,7 +242,7 @@ TEST_F(PaginationModelTest, SelectPageAnimated) {
   SetStartPageAndExpects(kStartPage, 1, 0, 0);
   pagination()->SelectPage(1, /*animate=*/true);
   pagination()->SelectPage(1, /*animate=*/true);  // Ignored.
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.transition_start_count());
   EXPECT_EQ(1, observer_.transition_end_count());
   EXPECT_EQ(1, observer_.selection_count());
@@ -222,7 +254,7 @@ TEST_F(PaginationModelTest, SelectPageAnimated) {
   pagination()->SelectPage(3, /*animate=*/true);  // Ignored
   pagination()->SelectPage(4, /*animate=*/true);  // Ignored
   pagination()->SelectPage(2, /*animate=*/true);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(2, observer_.transition_start_count());
   EXPECT_EQ(2, observer_.transition_end_count());
   EXPECT_EQ(2, observer_.selection_count());
@@ -237,7 +269,7 @@ TEST_F(PaginationModelTest, SelectPageAnimated) {
   pagination()->SelectPage(2, /*animate=*/true);  // Ignored
   pagination()->SelectPage(kStartPage, /*animate=*/true);
   pagination()->SelectPage(3, /*animate=*/true);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(std::string("3"), observer_.selected_pages());
 }
 
@@ -250,7 +282,7 @@ TEST_F(PaginationModelTest, SimpleScroll) {
   pagination()->UpdateScroll(-0.1);
   EXPECT_EQ(kStartPage + 1, pagination()->transition().target_page);
   pagination()->EndScroll(false);  // Finish transition
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 
   // Scroll to the previous page (positive delta) and finish it.
@@ -259,7 +291,7 @@ TEST_F(PaginationModelTest, SimpleScroll) {
   pagination()->UpdateScroll(0.1);
   EXPECT_EQ(kStartPage - 1, pagination()->transition().target_page);
   pagination()->EndScroll(false);  // Finish transition
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 
   // Scroll to the next page (negative delta) and cancel it.
@@ -268,7 +300,7 @@ TEST_F(PaginationModelTest, SimpleScroll) {
   pagination()->UpdateScroll(-0.1);
   EXPECT_EQ(kStartPage + 1, pagination()->transition().target_page);
   pagination()->EndScroll(true);  // Cancel transition
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(0, observer_.selection_count());
 
   // Scroll to the previous page (position delta) and cancel it.
@@ -277,7 +309,7 @@ TEST_F(PaginationModelTest, SimpleScroll) {
   pagination()->UpdateScroll(0.1);
   EXPECT_EQ(kStartPage - 1, pagination()->transition().target_page);
   pagination()->EndScroll(true);  // Cancel transition
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(0, observer_.selection_count());
 }
 
@@ -293,7 +325,7 @@ TEST_F(PaginationModelTest, ScrollWithTransition) {
   EXPECT_EQ(kStartPage + 1, pagination()->transition().target_page);
   EXPECT_EQ(0.6, pagination()->transition().progress);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 
   // Scroll to the next page (negative delta) with a transition in a different
@@ -315,7 +347,7 @@ TEST_F(PaginationModelTest, ScrollWithTransition) {
   EXPECT_EQ(kStartPage - 1, pagination()->transition().target_page);
   EXPECT_EQ(0.6, pagination()->transition().progress);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 
   // Scroll to the previous page (positive delta) with a transition in a
@@ -345,7 +377,7 @@ TEST_F(PaginationModelTest, LongScroll) {
   pagination()->UpdateScroll(-0.5);
   EXPECT_EQ(kStartPage + 2, pagination()->transition().target_page);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(2, observer_.selection_count());
 
   // Scroll to the next page (negative delta) with a transition in a different
@@ -360,7 +392,7 @@ TEST_F(PaginationModelTest, LongScroll) {
   pagination()->UpdateScroll(-0.5);  // This starts a new transition.
   EXPECT_EQ(kStartPage + 1, pagination()->transition().target_page);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 
   // Similar cases as above but in the opposite direction.
@@ -377,7 +409,7 @@ TEST_F(PaginationModelTest, LongScroll) {
   pagination()->UpdateScroll(0.5);
   EXPECT_EQ(kStartPage - 2, pagination()->transition().target_page);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(2, observer_.selection_count());
 
   // Scroll to the previous page (positive delta) with a transition in a
@@ -392,7 +424,7 @@ TEST_F(PaginationModelTest, LongScroll) {
   pagination()->UpdateScroll(0.5);  // This starts a new transition.
   EXPECT_EQ(kStartPage - 1, pagination()->transition().target_page);
   pagination()->EndScroll(false);
-  base::RunLoop().Run();
+  WaitForPagingAnimation();
   EXPECT_EQ(1, observer_.selection_count());
 }
 
@@ -464,6 +496,27 @@ TEST_F(PaginationModelTest, SelectPageRelativeMiddle) {
 
   pagination()->SelectPageRelative(1, false);
   EXPECT_EQ(2, pagination()->selected_page());
+}
+
+// Tests that only one TransitionEnd is called for the invalid page selection
+// and no TransitionEnd happens for the reverse animation of the invalid page
+// selection..
+TEST_F(PaginationModelTest, NoTransitionEndForRevertingAnimation) {
+  // Attempts to go beyond the first page.
+  SetStartPageAndExpects(0, 0, 0, 1);
+  pagination()->SelectPageRelative(-1, /*animate=*/true);
+  WaitForPagingAnimation();
+  WaitForRevertAnimation();
+  EXPECT_EQ(1, observer_.transition_start_call_count());
+  EXPECT_EQ(1, observer_.transition_end_call_count());
+
+  // Attempts to go beyond the last page.
+  SetStartPageAndExpects(pagination()->total_pages() - 1, 0, 0, 1);
+  pagination()->SelectPageRelative(1, /*animate=*/true);
+  WaitForPagingAnimation();
+  WaitForRevertAnimation();
+  EXPECT_EQ(1, observer_.transition_start_call_count());
+  EXPECT_EQ(1, observer_.transition_end_call_count());
 }
 
 }  // namespace test

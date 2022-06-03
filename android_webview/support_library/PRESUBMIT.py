@@ -6,6 +6,9 @@
 Runs various style checks before upload.
 """
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckAnnotatedInvocationHandlers(input_api, output_api))
@@ -30,9 +33,9 @@ def _CheckAnnotatedInvocationHandlers(input_api, output_api):
 
   sources = lambda affected_file: input_api.FilterSourceFile(
       affected_file,
-      black_list=(input_api.DEFAULT_BLACK_LIST +
+      files_to_skip=(input_api.DEFAULT_FILES_TO_SKIP +
                   (r'.*support_lib_boundary[\\\/]util[\\\/].*',)),
-      white_list=(r'.*\.java$',))
+      files_to_check=(r'.*\.java$',))
 
   for f in input_api.AffectedSourceFiles(sources):
     for line_num, line in f.ChangedContents():

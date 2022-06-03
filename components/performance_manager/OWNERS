@@ -1,10 +1,8 @@
 chrisha@chromium.org
 fdoray@chromium.org
 siggi@chromium.org
+joenotcharles@chromium.org
 
 # For IPC security review
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: catan-team@chromium.org
-# COMPONENT: Internals>ResourceCoordinator

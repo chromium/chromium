@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/native_widget_types.h"
@@ -50,6 +49,10 @@ class VIEWS_EXPORT MouseWatcher {
   // listener must remain alive for the lifetime of this object.
   MouseWatcher(std::unique_ptr<MouseWatcherHost> host,
                MouseWatcherListener* listener);
+
+  MouseWatcher(const MouseWatcher&) = delete;
+  MouseWatcher& operator=(const MouseWatcher&) = delete;
+
   ~MouseWatcher();
 
   // Sets the amount to delay before notifying the listener when the mouse exits
@@ -89,8 +92,6 @@ class VIEWS_EXPORT MouseWatcher {
 
   // See description above setter.
   base::TimeDelta notify_on_exit_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWatcher);
 };
 
 }  // namespace views

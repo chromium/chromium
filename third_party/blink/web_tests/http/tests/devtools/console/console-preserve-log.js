@@ -4,15 +4,15 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the console can preserve log messages across navigations. Bug 53359\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   SDK.consoleModel.addMessage(new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.Other,
-      SDK.ConsoleMessage.MessageLevel.Info, 'PASS'));
+      TestRunner.runtimeModel, Protocol.Log.LogEntrySource.Other,
+      Protocol.Log.LogEntryLevel.Info, 'PASS'));
   Common.settingForTest('preserveConsoleLog').set(true);
-  TestRunner.reloadPage(function() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.reloadPage(async function() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     Common.settingForTest('preserveConsoleLog').set(false);
     TestRunner.completeTest();
   });

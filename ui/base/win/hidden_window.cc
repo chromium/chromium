@@ -4,6 +4,7 @@
 
 #include "ui/base/win/hidden_window.h"
 
+#include "base/notreached.h"
 #include "ui/gfx/win/window_impl.h"
 
 namespace ui {

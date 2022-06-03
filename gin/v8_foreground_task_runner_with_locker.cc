@@ -5,10 +5,10 @@
 #include "gin/v8_foreground_task_runner_with_locker.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-locker.h"
 
 namespace gin {
 
@@ -32,7 +32,8 @@ class IdleTaskWithLocker : public v8::IdleTask {
  public:
   IdleTaskWithLocker(v8::Isolate* isolate, std::unique_ptr<v8::IdleTask> task)
       : isolate_(isolate), task_(std::move(task)) {}
-
+  IdleTaskWithLocker(const IdleTaskWithLocker&) = delete;
+  IdleTaskWithLocker& operator=(const IdleTaskWithLocker&) = delete;
   ~IdleTaskWithLocker() override = default;
 
   // v8::IdleTask implementation.
@@ -44,8 +45,6 @@ class IdleTaskWithLocker : public v8::IdleTask {
  private:
   v8::Isolate* isolate_;
   std::unique_ptr<v8::IdleTask> task_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleTaskWithLocker);
 };
 
 }  // namespace
@@ -71,7 +70,7 @@ void V8ForegroundTaskRunnerWithLocker::PostDelayedTask(
       FROM_HERE,
       base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                      std::move(task)),
-      base::TimeDelta::FromSecondsD(delay_in_seconds));
+      base::Seconds(delay_in_seconds));
 }
 
 void V8ForegroundTaskRunnerWithLocker::PostIdleTask(

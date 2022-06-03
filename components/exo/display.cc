@@ -12,12 +12,14 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
-#include "components/exo/file_helper.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shared_memory.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
@@ -34,12 +36,14 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/shell_surface.h"
+#include "components/exo/toast_surface.h"
+#include "components/exo/toast_surface_manager.h"
 #include "components/exo/xdg_shell_surface.h"
 #endif
 
@@ -49,25 +53,38 @@ namespace exo {
 // Display, public:
 
 Display::Display()
+    : seat_(nullptr),
 #if defined(USE_OZONE)
-    : client_native_pixmap_factory_(
+      client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf())
 #endif
 {
 }
 
-#if defined(OS_CHROMEOS)
-Display::Display(NotificationSurfaceManager* notification_surface_manager,
-                 InputMethodSurfaceManager* input_method_surface_manager,
-                 std::unique_ptr<FileHelper> file_helper)
-    : Display() {
-  file_helper_ = std::move(file_helper);
-  notification_surface_manager_ = notification_surface_manager;
-  input_method_surface_manager_ = input_method_surface_manager;
-}
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+Display::Display(
+    std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
+    std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
+    std::unique_ptr<ToastSurfaceManager> toast_surface_manager,
+    std::unique_ptr<DataExchangeDelegate> data_exchange_delegate)
+    : notification_surface_manager_(std::move(notification_surface_manager)),
+      input_method_surface_manager_(std::move(input_method_surface_manager)),
+      toast_surface_manager_(std::move(toast_surface_manager)),
+      seat_(std::move(data_exchange_delegate)),
+      client_native_pixmap_factory_(
+          gfx::CreateClientNativePixmapFactoryDmabuf()) {}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-Display::~Display() {}
+Display::~Display() {
+  Shutdown();
+}
+
+void Display::Shutdown() {
+  if (shutdown_)
+    return;
+  shutdown_ = true;
+  seat_.Shutdown();
+}
 
 std::unique_ptr<Surface> Display::CreateSurface() {
   TRACE_EVENT0("exo", "Display::CreateSurface");
@@ -111,26 +128,18 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
   // Using zero-copy for optimal performance.
   bool use_zero_copy = true;
 
-#if defined(ARCH_CPU_X86_FAMILY)
-  // TODO(dcastagna): Re-enable NV12 format as HW overlay once b/113362843
-  // is addressed.
-  bool is_overlay_candidate = format != gfx::BufferFormat::YUV_420_BIPLANAR;
-#else
-  bool is_overlay_candidate = true;
-#endif
-
   return std::make_unique<Buffer>(
       std::move(gpu_memory_buffer),
       gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format)
           ? gpu::GetPlatformSpecificTextureTarget()
           : GL_TEXTURE_2D,
       // COMMANDS_COMPLETED queries are required by native pixmaps.
-      GL_COMMANDS_COMPLETED_CHROMIUM, use_zero_copy, is_overlay_candidate,
-      y_invert);
+      GL_COMMANDS_COMPLETED_CHROMIUM, use_zero_copy,
+      /*is_overlay_candidate=*/true, y_invert);
 }
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
   TRACE_EVENT1("exo", "Display::CreateShellSurface", "surface",
                surface->AsTracedValue());
@@ -140,7 +149,7 @@ std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
   }
 
   return std::make_unique<ShellSurface>(
-      surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
+      surface, gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
 }
 
@@ -154,15 +163,16 @@ std::unique_ptr<XdgShellSurface> Display::CreateXdgShellSurface(
   }
 
   return std::make_unique<XdgShellSurface>(
-      surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
+      surface, gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
 }
 
 std::unique_ptr<ClientControlledShellSurface>
-Display::CreateClientControlledShellSurface(
+Display::CreateOrGetClientControlledShellSurface(
     Surface* surface,
     int container,
-    double default_device_scale_factor) {
+    double default_device_scale_factor,
+    bool default_scale_cancellation) {
   TRACE_EVENT2("exo", "Display::CreateRemoteShellSurface", "surface",
                surface->AsTracedValue(), "container", container);
 
@@ -174,12 +184,32 @@ Display::CreateClientControlledShellSurface(
   // Remote shell surfaces in system modal container cannot be minimized.
   bool can_minimize = container != ash::kShellWindowId_SystemModalContainer;
 
-  std::unique_ptr<ClientControlledShellSurface> shell_surface(
-      std::make_unique<ClientControlledShellSurface>(surface, can_minimize,
-                                                     container));
-  DCHECK_GE(default_device_scale_factor, 1.0);
-  shell_surface->SetScale(default_device_scale_factor);
-  shell_surface->CommitPendingScale();
+  std::unique_ptr<ClientControlledShellSurface> shell_surface;
+
+  int window_session_id = surface->GetWindowSessionId();
+  if (window_session_id > 0) {
+    // Root surface has window session id, try get shell surface from external
+    // source first.
+    ui::PropertyHandler handler;
+    WMHelper::AppPropertyResolver::Params params;
+    params.window_session_id = window_session_id;
+    WMHelper::GetInstance()->PopulateAppProperties(params, handler);
+    shell_surface =
+        base::WrapUnique(GetShellClientControlledShellSurface(&handler));
+  }
+
+  if (shell_surface) {
+    shell_surface->RebindRootSurface(surface, can_minimize, container,
+                                     default_scale_cancellation);
+  } else {
+    shell_surface = std::make_unique<ClientControlledShellSurface>(
+        surface, can_minimize, container, default_scale_cancellation);
+  }
+
+  if (default_scale_cancellation) {
+    shell_surface->SetScale(default_device_scale_factor);
+    shell_surface->CommitPendingScale();
+  }
   return shell_surface;
 }
 
@@ -195,13 +225,14 @@ std::unique_ptr<NotificationSurface> Display::CreateNotificationSurface(
     return nullptr;
   }
 
-  return std::make_unique<NotificationSurface>(notification_surface_manager_,
-                                               surface, notification_key);
+  return std::make_unique<NotificationSurface>(
+      notification_surface_manager_.get(), surface, notification_key);
 }
 
 std::unique_ptr<InputMethodSurface> Display::CreateInputMethodSurface(
     Surface* surface,
-    double default_device_scale_factor) {
+    double default_device_scale_factor,
+    bool default_scale_cancellation) {
   TRACE_EVENT1("exo", "Display::CreateInputMethodSurface", "surface",
                surface->AsTracedValue());
 
@@ -215,10 +246,43 @@ std::unique_ptr<InputMethodSurface> Display::CreateInputMethodSurface(
     return nullptr;
   }
 
-  return std::make_unique<InputMethodSurface>(
-      input_method_surface_manager_, surface, default_device_scale_factor);
+  std::unique_ptr<InputMethodSurface> input_method_surface(
+      std::make_unique<InputMethodSurface>(input_method_surface_manager_.get(),
+                                           surface,
+                                           default_scale_cancellation));
+  if (default_scale_cancellation) {
+    input_method_surface->SetScale(default_device_scale_factor);
+    input_method_surface->CommitPendingScale();
+  }
+  return input_method_surface;
 }
-#endif  // defined(OS_CHROMEOS)
+
+std::unique_ptr<ToastSurface> Display::CreateToastSurface(
+    Surface* surface,
+    double default_device_scale_factor,
+    bool default_scale_cancellation) {
+  TRACE_EVENT1("exo", "Display::CreateToastSurface", "surface",
+               surface->AsTracedValue());
+
+  if (!toast_surface_manager_) {
+    DLOG(ERROR) << "Toast surface cannot be registered";
+    return nullptr;
+  }
+
+  if (surface->HasSurfaceDelegate()) {
+    DLOG(ERROR) << "Surface has already been assigned a role";
+    return nullptr;
+  }
+
+  std::unique_ptr<ToastSurface> toast_surface(std::make_unique<ToastSurface>(
+      toast_surface_manager_.get(), surface, default_scale_cancellation));
+  if (default_scale_cancellation) {
+    toast_surface->SetScale(default_device_scale_factor);
+    toast_surface->CommitPendingScale();
+  }
+  return toast_surface;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
                                                       Surface* parent) {
@@ -240,7 +304,7 @@ std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
 
 std::unique_ptr<DataDevice> Display::CreateDataDevice(
     DataDeviceDelegate* delegate) {
-  return std::make_unique<DataDevice>(delegate, &seat_, file_helper_.get());
+  return std::make_unique<DataDevice>(delegate, seat());
 }
 
 }  // namespace exo

@@ -5,13 +5,8 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_
 
-#include <set>
-#include <string>
-
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -28,8 +23,8 @@ class SigninErrorController : public KeyedService,
     // are in error state, only one of the errors is reported.
     ANY_ACCOUNT,
 
-    // Only errors on the primary account are reported. Other accounts are
-    // ignored.
+    // Only errors on the primary account are reported. The primary account
+    // must have sync consent. Other accounts are ignored.
     PRIMARY_ACCOUNT
   };
 
@@ -43,6 +38,10 @@ class SigninErrorController : public KeyedService,
 
   SigninErrorController(AccountMode mode,
                         signin::IdentityManager* identity_manager);
+
+  SigninErrorController(const SigninErrorController&) = delete;
+  SigninErrorController& operator=(const SigninErrorController&) = delete;
+
   ~SigninErrorController() override;
 
   // KeyedService implementation:
@@ -80,16 +79,15 @@ class SigninErrorController : public KeyedService,
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   const AccountMode account_mode_;
   signin::IdentityManager* identity_manager_;
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_identity_manager_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 
   // The account that generated the last auth error.
   CoreAccountId error_account_id_;
@@ -99,8 +97,6 @@ class SigninErrorController : public KeyedService,
   GoogleServiceAuthError auth_error_;
 
   base::ObserverList<Observer, false>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorController);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_

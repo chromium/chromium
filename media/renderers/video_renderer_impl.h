@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/condition_variable.h"
@@ -18,8 +17,11 @@
 #include "base/timer/timer.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/frame_rate_estimator.h"
+#include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/tuneable.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -58,6 +60,10 @@ class MEDIA_EXPORT VideoRendererImpl
       bool drop_frames,
       MediaLog* media_log,
       std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool);
+
+  VideoRendererImpl(const VideoRendererImpl&) = delete;
+  VideoRendererImpl& operator=(const VideoRendererImpl&) = delete;
+
   ~VideoRendererImpl() override;
 
   // VideoRenderer implementation.
@@ -65,11 +71,12 @@ class MEDIA_EXPORT VideoRendererImpl
                   CdmContext* cdm_context,
                   RendererClient* client,
                   const TimeSource::WallClockTimeCB& wall_clock_time_cb,
-                  const PipelineStatusCB& init_cb) override;
+                  PipelineStatusCallback init_cb) override;
   void Flush(base::OnceClosure callback) override;
   void StartPlayingFrom(base::TimeDelta timestamp) override;
   void OnTimeProgressing() override;
   void OnTimeStopped() override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
   size_t frames_queued_for_testing() const {
@@ -78,11 +85,13 @@ class MEDIA_EXPORT VideoRendererImpl
   size_t effective_frames_queued_for_testing() const {
     return algorithm_->effective_frames_queued();
   }
+  int min_buffered_frames_for_testing() const { return min_buffered_frames_; }
+  int max_buffered_frames_for_testing() const { return max_buffered_frames_; }
 
   // VideoRendererSink::RenderCallback implementation.
   scoped_refptr<VideoFrame> Render(base::TimeTicks deadline_min,
                                    base::TimeTicks deadline_max,
-                                   bool background_rendering) override;
+                                   RenderingMode rendering_mode) override;
   void OnFrameDropped() override;
   base::TimeDelta GetPreferredRenderInterval() override;
 
@@ -106,8 +115,7 @@ class MEDIA_EXPORT VideoRendererImpl
 
   // Callback for |video_decoder_stream_| to deliver decoded video frames and
   // report video decoding status.
-  void FrameReady(VideoDecoderStream::Status status,
-                  scoped_refptr<VideoFrame> frame);
+  void FrameReady(VideoDecoderStream::ReadResult result);
 
   // Helper method for enqueueing a frame to |alogorithm_|.
   void AddReadyFrame_Locked(scoped_refptr<VideoFrame> frame);
@@ -132,8 +140,18 @@ class MEDIA_EXPORT VideoRendererImpl
   // have been decoded since the last update.
   void UpdateStats_Locked(bool force_update = false);
 
-  // Returns true if there is no more room for additional buffered frames.
-  bool HaveReachedBufferingCap() const;
+  // Notifies |client_| if the current frame rate has changed since it was last
+  // reported, and tracks what the most recently reported frame rate was.
+  void ReportFrameRateIfNeeded_Locked();
+
+  // Update |min_buffered_frames_| and |max_buffered_frames_| using the latest
+  // |average_frame_duration|. Should only be called when |latency_hint_| > 0.
+  void UpdateLatencyHintBufferingCaps_Locked(
+      base::TimeDelta average_frame_duration);
+
+  // Returns true if algorithm_->effective_frames_queued() >= |buffering_cap|,
+  // or when the number of ineffective frames >= kAbsoluteMaxFrames.
+  bool HaveReachedBufferingCap(size_t buffering_cap) const;
 
   // Starts or stops |sink_| respectively. Do not call while |lock_| is held.
   void StartSink();
@@ -261,7 +279,7 @@ class MEDIA_EXPORT VideoRendererImpl
   BufferingState buffering_state_;
 
   // Playback operation callbacks.
-  PipelineStatusCB init_cb_;
+  PipelineStatusCallback init_cb_;
   base::OnceClosure flush_cb_;
   TimeSource::WallClockTimeCB wall_clock_time_cb_;
 
@@ -295,18 +313,44 @@ class MEDIA_EXPORT VideoRendererImpl
   gfx::Size last_frame_natural_size_;
   bool last_frame_opaque_;
 
+  // The last value from |video_decoder_stream_->AverageDuration()|.
+  base::TimeDelta last_decoder_stream_avg_duration_;
+
   // Indicates if we've painted the first valid frame after StartPlayingFrom().
   bool painted_first_frame_;
 
-  // Current minimum and maximum for buffered frames. |min_buffered_frames_| is
-  // the number of frames required to transition from BUFFERING_HAVE_NOTHING to
+  // The initial value for |min_buffered_frames_| and |max_buffered_frames_|.
+  Tuneable<size_t> initial_buffering_size_ = {
+      "MediaInitialBufferingSizeForHaveEnough", 3, limits::kMaxVideoFrames, 10};
+
+  // The number of frames required to transition from BUFFERING_HAVE_NOTHING to
   // BUFFERING_HAVE_ENOUGH.
   size_t min_buffered_frames_;
+
+  // The maximum number of frames to buffer. Always >= |min_buffered_frames_|.
+  // May be greater-than when |latency_hint_| set that decreases the minimum
+  // buffering limit.
+  size_t max_buffered_frames_;
 
   // Last Render() and last FrameReady() times respectively. Used to avoid
   // triggering underflow when background rendering.
   base::TimeTicks last_render_time_;
   base::TimeTicks last_frame_ready_time_;
+
+  // Running average of frame durations.
+  FrameRateEstimator fps_estimator_;
+
+  // Last FPS, if any, reported to the client.
+  absl::optional<int> last_reported_fps_;
+
+  // Value saved from last call to SetLatencyHint(). Used to recompute buffering
+  // limits as framerate fluctuates.
+  absl::optional<base::TimeDelta> latency_hint_;
+
+  // When latency_hint_ > 0, we make regular adjustments to buffering caps as
+  // |algorithm_->average_frame_duration()| fluctuates, but we only want to emit
+  // one MEDIA_LOG.
+  bool is_latency_hint_media_logged_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoRendererImpl> weak_factory_{this};
@@ -316,8 +360,6 @@ class MEDIA_EXPORT VideoRendererImpl
   // want to discard video frames that might be received after the stream has
   // been reset.
   base::WeakPtrFactory<VideoRendererImpl> cancel_on_flush_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };
 
 }  // namespace media

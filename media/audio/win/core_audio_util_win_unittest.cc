@@ -7,8 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -236,12 +235,12 @@ TEST_F(CoreAudioUtilWinTest, GetAudioControllerID) {
   for (size_t i = 0; i < base::size(flows); ++i) {
     ComPtr<IMMDeviceCollection> collection;
     ASSERT_TRUE(SUCCEEDED(enumerator->EnumAudioEndpoints(
-        flows[i], DEVICE_STATE_ACTIVE, collection.GetAddressOf())));
+        flows[i], DEVICE_STATE_ACTIVE, &collection)));
     UINT count = 0;
     collection->GetCount(&count);
     for (UINT j = 0; j < count; ++j) {
       ComPtr<IMMDevice> device;
-      collection->Item(j, device.GetAddressOf());
+      collection->Item(j, &device);
       std::string controller_id(
           CoreAudioUtil::GetAudioControllerID(device.Get(), enumerator.Get()));
       EXPECT_FALSE(controller_id.empty());
@@ -598,12 +597,12 @@ TEST_F(CoreAudioUtilWinTest, GetMatchingOutputDeviceID) {
   // the associated device.
   ComPtr<IMMDeviceCollection> collection;
   ASSERT_TRUE(SUCCEEDED(enumerator->EnumAudioEndpoints(
-      eCapture, DEVICE_STATE_ACTIVE, collection.GetAddressOf())));
+      eCapture, DEVICE_STATE_ACTIVE, &collection)));
   UINT count = 0;
   collection->GetCount(&count);
   for (UINT i = 0; i < count && !found_a_pair; ++i) {
     ComPtr<IMMDevice> device;
-    collection->Item(i, device.GetAddressOf());
+    collection->Item(i, &device);
     base::win::ScopedCoMem<WCHAR> wide_id;
     device->GetId(&wide_id);
     std::string id;

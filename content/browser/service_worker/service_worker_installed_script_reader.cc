@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -92,165 +93,103 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
 };
 
 ServiceWorkerInstalledScriptReader::ServiceWorkerInstalledScriptReader(
-    std::unique_ptr<ServiceWorkerResponseReader> reader,
+    mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader,
     Client* client)
-    : reader_(std::move(reader)),
-      client_(client),
-      body_watcher_(FROM_HERE,
-                    mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                    base::SequencedTaskRunnerHandle::Get()) {}
+    : reader_(std::move(reader)), client_(client) {
+  DCHECK(reader_.is_connected());
+  reader_.set_disconnect_handler(base::BindOnce(
+      &ServiceWorkerInstalledScriptReader::OnReaderDisconnected, AsWeakPtr()));
+}
 
 ServiceWorkerInstalledScriptReader::~ServiceWorkerInstalledScriptReader() {}
 
 void ServiceWorkerInstalledScriptReader::Start() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerInstalledScriptReader::Start");
-  auto info_buf = base::MakeRefCounted<HttpResponseInfoIOBuffer>();
-  reader_->ReadInfo(
-      info_buf.get(),
-      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadInfoComplete,
-                     AsWeakPtr(), info_buf));
+  DCHECK(reader_.is_connected());
+  reader_->ReadResponseHead(base::BindOnce(
+      &ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete,
+      AsWeakPtr()));
 }
 
-void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
-    scoped_refptr<HttpResponseInfoIOBuffer> http_info,
-    int result) {
+void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
+    int result,
+    network::mojom::URLResponseHeadPtr response_head,
+    absl::optional<mojo_base::BigBuffer> metadata) {
   DCHECK(client_);
-  DCHECK(http_info);
-  TRACE_EVENT0("ServiceWorker",
-               "ServiceWorkerInstalledScriptReader::OnReadInfoComplete");
-  if (!http_info->http_info) {
+  TRACE_EVENT0(
+      "ServiceWorker",
+      "ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete");
+  if (!response_head) {
     DCHECK_LT(result, 0);
     ServiceWorkerMetrics::CountReadResponseResult(
         ServiceWorkerMetrics::READ_HEADERS_ERROR);
-    CompleteSendIfNeeded(FinishedReason::kNoHttpInfoError);
+    CompleteSendIfNeeded(FinishedReason::kNoResponseHeadError);
     return;
   }
 
   DCHECK_GE(result, 0);
-  mojo::ScopedDataPipeConsumerHandle meta_data_consumer;
-  DCHECK_GE(http_info->response_data_size, 0);
-  body_size_ = http_info->response_data_size;
-  uint64_t meta_data_size = 0;
+  DCHECK(reader_.is_connected());
 
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      blink::BlobUtils::GetDataPipeCapacity(body_size_);
+  body_size_ = response_head->content_length;
+  int64_t content_length = response_head->content_length;
+  reader_->ReadData(
+      content_length, receiver_.BindNewPipeAndPassRemote(),
+      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadDataStarted,
+                     AsWeakPtr(), std::move(response_head),
+                     std::move(metadata)));
+}
 
-  mojo::ScopedDataPipeConsumerHandle body_consumer_handle;
-  MojoResult rv =
-      mojo::CreateDataPipe(&options, &body_handle_, &body_consumer_handle);
-  if (rv != MOJO_RESULT_OK) {
+void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
+    network::mojom::URLResponseHeadPtr response_head,
+    absl::optional<mojo_base::BigBuffer> metadata,
+    mojo::ScopedDataPipeConsumerHandle body_consumer_handle) {
+  if (!body_consumer_handle) {
     CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
     return;
   }
 
+  mojo::ScopedDataPipeConsumerHandle meta_data_consumer;
+
   // Start sending meta data (V8 code cache data).
-  if (http_info->http_info->metadata) {
-    DCHECK_GE(http_info->http_info->metadata->size(), 0);
-    meta_data_size = http_info->http_info->metadata->size();
+  if (metadata) {
+    DCHECK_GT(metadata->size(), 0UL);
 
     mojo::ScopedDataPipeProducerHandle meta_producer_handle;
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
     options.capacity_num_bytes =
-        blink::BlobUtils::GetDataPipeCapacity(meta_data_size);
-    rv = mojo::CreateDataPipe(&options, &meta_producer_handle,
-                              &meta_data_consumer);
+        blink::BlobUtils::GetDataPipeCapacity(metadata->size());
+    int rv = mojo::CreateDataPipe(&options, meta_producer_handle,
+                                  meta_data_consumer);
     if (rv != MOJO_RESULT_OK) {
       CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
       return;
     }
 
+    // TODO(crbug.com/1055677): Avoid copying |metadata| if |client_| doesn't
+    // need it.
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(metadata->size());
+    memmove(buffer->data(), metadata->data(), metadata->size());
     meta_data_sender_ = std::make_unique<MetaDataSender>(
-        http_info->http_info->metadata, std::move(meta_producer_handle));
+        std::move(buffer), std::move(meta_producer_handle));
     meta_data_sender_->Start(base::BindOnce(
         &ServiceWorkerInstalledScriptReader::OnMetaDataSent, AsWeakPtr()));
   }
 
-  // Start sending body.
-  body_watcher_.Watch(
-      body_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      base::BindRepeating(&ServiceWorkerInstalledScriptReader::OnWritableBody,
-                          AsWeakPtr()));
-  body_watcher_.ArmOrNotify();
-
-  client_->OnStarted(http_info, std::move(body_consumer_handle),
+  client_->OnStarted(std::move(response_head), std::move(metadata),
+                     std::move(body_consumer_handle),
                      std::move(meta_data_consumer));
 }
 
-void ServiceWorkerInstalledScriptReader::OnWritableBody(MojoResult) {
-  // It isn't necessary to handle MojoResult here since BeginWrite() returns
-  // an equivalent error.
-  DCHECK(!body_pending_write_);
-  DCHECK(body_handle_.is_valid());
-  TRACE_EVENT0("ServiceWorker",
-               "ServiceWorkerInstalledScriptReader::OnWritableBody");
-  uint32_t num_bytes = 0;
-  MojoResult rv = network::NetToMojoPendingBuffer::BeginWrite(
-      &body_handle_, &body_pending_write_, &num_bytes);
-
-  num_bytes = std::min(num_bytes, blink::BlobUtils::GetDataPipeChunkSize());
-
-  switch (rv) {
-    case MOJO_RESULT_INVALID_ARGUMENT:
-    case MOJO_RESULT_BUSY:
-      NOTREACHED();
-      return;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      CompleteSendIfNeeded(FinishedReason::kConnectionError);
-      return;
-    case MOJO_RESULT_SHOULD_WAIT:
-      body_watcher_.ArmOrNotify();
-      return;
-    case MOJO_RESULT_OK:
-      // |body_handle_| must have been taken by |body_pending_write_|.
-      DCHECK(body_pending_write_);
-      DCHECK(!body_handle_.is_valid());
-      break;
-  }
-
-  scoped_refptr<network::NetToMojoIOBuffer> buffer =
-      base::MakeRefCounted<network::NetToMojoIOBuffer>(
-          body_pending_write_.get());
-  reader_->ReadData(
-      buffer.get(), num_bytes,
-      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnResponseDataRead,
-                     AsWeakPtr()));
-}
-
-void ServiceWorkerInstalledScriptReader::OnResponseDataRead(int read_bytes) {
-  TRACE_EVENT1("ServiceWorker",
-               "ServiceWorkerInstalledScriptReader::OnResponseDataRead",
-               "read_bytes", read_bytes);
-  if (read_bytes < 0) {
-    ServiceWorkerMetrics::CountReadResponseResult(
-        ServiceWorkerMetrics::READ_DATA_ERROR);
-    body_watcher_.Cancel();
-    body_handle_.reset();
-    CompleteSendIfNeeded(FinishedReason::kResponseReaderError);
-    return;
-  }
-  body_handle_ = body_pending_write_->Complete(read_bytes);
-  DCHECK(body_handle_.is_valid());
-  body_pending_write_ = nullptr;
-  body_bytes_sent_ += read_bytes;
-  ServiceWorkerMetrics::CountReadResponseResult(ServiceWorkerMetrics::READ_OK);
-  if (read_bytes == 0 || body_bytes_sent_ == body_size_) {
-    // All data has been read.
-    body_watcher_.Cancel();
-    body_handle_.reset();
-    CompleteSendIfNeeded(FinishedReason::kSuccess);
-    return;
-  }
-  body_watcher_.ArmOrNotify();
+void ServiceWorkerInstalledScriptReader::OnReaderDisconnected() {
+  CompleteSendIfNeeded(FinishedReason::kConnectionError);
 }
 
 void ServiceWorkerInstalledScriptReader::OnMetaDataSent(bool success) {
   meta_data_sender_.reset();
   if (!success) {
-    body_watcher_.Cancel();
-    body_handle_.reset();
     CompleteSendIfNeeded(FinishedReason::kMetaDataSenderError);
     return;
   }
@@ -267,6 +206,19 @@ void ServiceWorkerInstalledScriptReader::CompleteSendIfNeeded(
 
   if (WasMetadataWritten() && WasBodyWritten())
     client_->OnFinished(reason);
+}
+
+void ServiceWorkerInstalledScriptReader::OnComplete(int32_t status) {
+  was_body_written_ = true;
+  if (status >= 0 && static_cast<uint64_t>(status) == body_size_) {
+    ServiceWorkerMetrics::CountReadResponseResult(
+        ServiceWorkerMetrics::READ_OK);
+    CompleteSendIfNeeded(FinishedReason::kSuccess);
+  } else if (status == net::ERR_ABORTED) {
+    CompleteSendIfNeeded(FinishedReason::kConnectionError);
+  } else {
+    CompleteSendIfNeeded(FinishedReason::kResponseReaderError);
+  }
 }
 
 }  // namespace content

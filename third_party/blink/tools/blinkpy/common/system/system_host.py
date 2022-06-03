@@ -38,13 +38,13 @@ from blinkpy.common.system.user import User
 
 
 class SystemHost(object):
-
     def __init__(self):
         self.executable = sys.executable
         self.executive = Executive()
         self.filesystem = FileSystem()
         self.user = User()
-        self.platform = PlatformInfo(sys, platform, self.filesystem, self.executive)
+        self.platform = PlatformInfo(sys, platform, self.filesystem,
+                                     self.executive)
         self.stdin = sys.stdin
         self.stdout = sys.stdout
         self.stderr = sys.stderr

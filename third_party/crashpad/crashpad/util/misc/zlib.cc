@@ -14,7 +14,9 @@
 
 #include "util/misc/zlib.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/zlib/zlib_crashpad.h"
 

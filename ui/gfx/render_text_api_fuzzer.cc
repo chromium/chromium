@@ -9,12 +9,20 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
+
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "base/test/test_discardable_memory_allocator.h"
+#endif
 
 namespace {
 
@@ -32,10 +40,22 @@ struct Environment {
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
-
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    // Some platforms require discardable memory to use bitmap fonts.
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator);
+#endif
     CHECK(base::i18n::InitializeICU());
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
+
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator;
+#endif
 
   base::AtExitManager at_exit_manager;
   base::test::TaskEnvironment task_environment;
@@ -71,7 +91,11 @@ enum class RenderTextAPI {
   kSetElideBehavior,
   kIsGraphemeBoundary,
   kIndexOfAdjacentGrapheme,
-  kMaxValue = kIndexOfAdjacentGrapheme
+  kSetObscuredGlyphSpacing,
+  kSetDisplayRect,
+  kGetSubstringBounds,
+  kGetCursorSpan,
+  kMaxValue = kGetCursorSpan
 };
 
 gfx::DirectionalityMode ConsumeDirectionalityMode(FuzzedDataProvider* fdp) {
@@ -124,14 +148,13 @@ gfx::TextStyle ConsumeStyle(FuzzedDataProvider* fdp) {
 }
 
 gfx::WordWrapBehavior ConsumeWordWrap(FuzzedDataProvider* fdp) {
-  switch (fdp->ConsumeIntegralInRange(0, 4)) {
+  // TODO(1150235): ELIDE_LONG_WORDS is not supported.
+  switch (fdp->ConsumeIntegralInRange(0, 3)) {
     case 0:
       return gfx::IGNORE_LONG_WORDS;
     case 1:
       return gfx::TRUNCATE_LONG_WORDS;
     case 2:
-      return gfx::ELIDE_LONG_WORDS;
-    case 3:
       return gfx::WRAP_LONG_WORDS;
     default:
       return gfx::IGNORE_LONG_WORDS;
@@ -325,7 +348,27 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             ConsumeLogicalCursorDirection(&fdp));
         bool is_grapheme = render_text->IsGraphemeBoundary(index);
         DCHECK(is_grapheme);
-      } break;
+        break;
+      }
+      case RenderTextAPI::kSetObscuredGlyphSpacing:
+        render_text->SetObscuredGlyphSpacing(
+            fdp.ConsumeIntegralInRange<size_t>(0, 10));
+        break;
+      case RenderTextAPI::kSetDisplayRect:
+        render_text->SetDisplayRect(
+            gfx::Rect(fdp.ConsumeIntegralInRange<int>(-30, 30),
+                      fdp.ConsumeIntegralInRange<int>(-30, 30),
+                      fdp.ConsumeIntegralInRange<int>(0, 200),
+                      fdp.ConsumeIntegralInRange<int>(0, 30)));
+        break;
+      case RenderTextAPI::kGetSubstringBounds:
+        render_text->GetSubstringBounds(
+            ConsumeRange(&fdp, render_text->text().length()));
+        break;
+      case RenderTextAPI::kGetCursorSpan:
+        render_text->GetCursorSpan(
+            ConsumeRange(&fdp, render_text->text().length()));
+        break;
     }
   }
 

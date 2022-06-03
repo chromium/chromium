@@ -16,7 +16,6 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "minidump/minidump_extensions.h"
 
@@ -61,15 +60,15 @@ bool ReadMinidumpUTF8String(FileReaderInterface* file_reader,
 }
 
 bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
-                            RVA rva,
-                            base::string16* string) {
+                             RVA rva,
+                             std::u16string* string) {
   return ReadMinidumpString(file_reader, rva, string);
 }
 
 bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
                             RVA rva,
                             std::string* string) {
-  base::string16 string_raw;
+  std::u16string string_raw;
 
   if (!ReadMinidumpString(file_reader, rva, &string_raw)) {
     return false;

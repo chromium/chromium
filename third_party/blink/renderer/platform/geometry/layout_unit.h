@@ -36,12 +36,13 @@
 #include <limits>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -86,7 +87,18 @@ ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
 
 // TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
 class PLATFORM_EXPORT LayoutUnit;
-constexpr inline bool operator<(const LayoutUnit&, const LayoutUnit&);
+constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
+
+// kIndefiniteSize is a special value used within layout code. It is typical
+// within layout to have sizes which are only allowed to be non-negative or
+// "indefinite". We use the value of "-1" to represent these indefinite values.
+//
+// It is common to clamp these indefinite values to zero.
+// |LayoutUnit::ClampIndefiniteToZero| provides this functionality, and
+// additionally DCHECKs that it isn't some other negative value.
+//
+// TODO(wangxianzhu): Make it a constexpr when LayoutUnit allows it.
+#define kIndefiniteSize LayoutUnit(-1)
 
 class LayoutUnit {
   DISALLOW_NEW();
@@ -130,6 +142,12 @@ class LayoutUnit {
   static LayoutUnit FromDoubleRound(double value) {
     LayoutUnit v;
     v.value_ = base::saturated_cast<int>(round(value * kFixedPointDenominator));
+    return v;
+  }
+
+  static LayoutUnit FromRawValue(int raw_value) {
+    LayoutUnit v;
+    v.value_ = raw_value;
     return v;
   }
 
@@ -202,6 +220,15 @@ class LayoutUnit {
     return value_ > 0 ? LayoutUnit() : *this;
   }
 
+  LayoutUnit ClampIndefiniteToZero() const {
+    // We compare to |kFixedPointDenominator| here instead of |kIndefiniteSize|
+    // as the operator== for LayoutUnit is inlined below.
+    if (value_ == -kFixedPointDenominator)
+      return LayoutUnit();
+    DCHECK_GE(value_, 0);
+    return *this;
+  }
+
   constexpr bool HasFraction() const {
     return RawValue() % kFixedPointDenominator;
   }
@@ -253,6 +280,11 @@ class LayoutUnit {
   }
 
   static LayoutUnit Clamp(double value) { return FromFloatFloor(value); }
+
+  // Multiply by |m| and divide by |d| as a single ("fused") operation, avoiding
+  // any saturation of the intermediate result. Rounding matches that of the
+  // regular operations (i.e the result of the divide is rounded towards zero).
+  LayoutUnit MulDiv(LayoutUnit m, LayoutUnit d) const;
 
   String ToString() const;
 
@@ -532,6 +564,12 @@ inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
   return return_val;
 }
 
+inline LayoutUnit LayoutUnit::MulDiv(LayoutUnit m, LayoutUnit d) const {
+  int64_t n = static_cast<int64_t>(RawValue()) * m.RawValue();
+  int64_t q = n / d.RawValue();
+  return FromRawValue(base::saturated_cast<int>(q));
+}
+
 constexpr float operator/(const LayoutUnit& a, float b) {
   return a.ToFloat() / b;
 }
@@ -582,11 +620,11 @@ inline LayoutUnit operator+(const IntegerType a, const LayoutUnit& b) {
   return LayoutUnit(a) + b;
 }
 
-constexpr inline float operator+(const float a, const LayoutUnit& b) {
+constexpr float operator+(const float a, const LayoutUnit& b) {
   return a + b.ToFloat();
 }
 
-constexpr inline double operator+(const double a, const LayoutUnit& b) {
+constexpr double operator+(const double a, const LayoutUnit& b) {
   return a + b.ToDouble();
 }
 
@@ -723,6 +761,15 @@ inline float& operator/=(float& a, const LayoutUnit& b) {
 
 inline int SnapSizeToPixel(LayoutUnit size, LayoutUnit location) {
   LayoutUnit fraction = location.Fraction();
+  int result = (fraction + size).Round() - fraction.Round();
+  if (UNLIKELY(result == 0 && (size.RawValue() > 4 || size.RawValue() < -4))) {
+    return size > 0 ? 1 : -1;
+  }
+  return result;
+}
+
+inline int SnapSizeToPixelAllowingZero(LayoutUnit size, LayoutUnit location) {
+  LayoutUnit fraction = location.Fraction();
   return (fraction + size).Round() - fraction.Round();
 }
 
@@ -732,6 +779,10 @@ inline int RoundToInt(LayoutUnit value) {
 
 inline int FloorToInt(LayoutUnit value) {
   return value.Floor();
+}
+
+inline int CeilToInt(LayoutUnit value) {
+  return value.Ceil();
 }
 
 inline LayoutUnit AbsoluteValue(const LayoutUnit& value) {

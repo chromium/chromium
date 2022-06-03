@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS At initial scroll position
-FAIL Scrolled to half way through target element assert_equals: expected true but got false
-PASS Scrolled to target element completely off screen
-Harness: the test ran to completion.
-

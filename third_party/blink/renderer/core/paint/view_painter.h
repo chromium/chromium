@@ -11,8 +11,10 @@ namespace blink {
 
 struct PaintInfo;
 class DisplayItemClient;
+class Document;
 class IntRect;
 class LayoutView;
+class PropertyTreeStateOrAlias;
 
 class ViewPainter {
   STACK_ALLOCATED();
@@ -26,10 +28,19 @@ class ViewPainter {
  private:
   const LayoutView& layout_view_;
 
-  void PaintBoxDecorationBackgroundInternal(
+  void PaintRootElementGroup(
       const PaintInfo&,
-      const IntRect& background_rect,
-      const DisplayItemClient& background_client);
+      const IntRect& pixel_snapped_background_rect,
+      const PropertyTreeStateOrAlias& background_paint_state,
+      const DisplayItemClient& background_client,
+      bool painted_separate_backdrop,
+      bool painted_separate_effect);
+
+  void PaintRootGroup(const PaintInfo& paint_info,
+                      const IntRect& pixel_snapped_background_rect,
+                      const Document&,
+                      const DisplayItemClient& background_client,
+                      const PropertyTreeStateOrAlias& state);
 };
 
 }  // namespace blink

@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +22,7 @@ const char kMediaSizes[] = "media_sizes";
 const char kPagesPerSheet[] = "Pages per sheet";
 const char kPaperType[] = "Paper Type";
 const char kPrinter[] = "printer";
+const char kResetToDefault[] = "reset_to_default";
 const char kValue[] = "value";
 const char kVendorCapability[] = "vendor_capability";
 
@@ -305,6 +305,35 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
   cdd.SetKey(kPrinter, printer.Clone());
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(&cdd_out, printer);
+}
+
+bool GetDpiResetToDefault(base::Value cdd) {
+  base::Value* printer =
+      cdd.FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
+  base::Value* dpi =
+      printer->FindKeyOfType(kDpi, base::Value::Type::DICTIONARY);
+  absl::optional<bool> reset_to_default = dpi->FindBoolKey(kResetToDefault);
+  EXPECT_TRUE(reset_to_default);
+  return *reset_to_default;
+}
+
+TEST_F(PrintPreviewUtilsTest, CddResetToDefault) {
+  base::DictionaryValue printer = GetCapabilitiesFull();
+  base::Value* dpi_dict =
+      printer.FindKeyOfType(kDpi, base::Value::Type::DICTIONARY);
+
+  base::DictionaryValue cdd;
+  dpi_dict->SetKey(kResetToDefault, base::Value(true));
+  cdd.SetKey(kPrinter, printer.Clone());
+  auto cdd_out = ValidateCddForPrintPreview(cdd.Clone());
+  ValidatePrinter(&cdd_out, printer);
+  EXPECT_TRUE(GetDpiResetToDefault(std::move(cdd_out)));
+
+  dpi_dict->SetKey(kResetToDefault, base::Value(false));
+  cdd.SetKey(kPrinter, printer.Clone());
+  cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(&cdd_out, printer);
+  EXPECT_FALSE(GetDpiResetToDefault(std::move(cdd_out)));
 }
 
 }  // namespace printing

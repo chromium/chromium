@@ -1,0 +1,23 @@
+Test for chromium bug : 406043. Negative row height when cell has percentage height.
+This is rowspan cell. It would span 3 rows in table.	This is first row second column.
+
+PASS
+This is second row first column. But it should display as second column.
+
+PASS
+This is third row first column. But it should display as second column.
+
+FAIL:
+Expected 70 for offsetTop, but got 250. 
+
+<tr data-offset-y="70">
+            <td id="percent-height"> This is third row first column. But it should display as second column. </td>
+        </tr>
+This is fourth row first column. But it should display as second column.
+
+FAIL:
+Expected 119 for offsetTop, but got 134. 
+
+<tr data-offset-y="119">
+            <td id="percent-height"> This is fourth row first column. But it should display as second column. </td>
+        </tr>

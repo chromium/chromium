@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/logging.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_source.h"
 
@@ -27,6 +28,10 @@ ImageSkia GetErrorImageSkia() {
 class PNGImageSource : public ImageSkiaSource {
  public:
   PNGImageSource() {}
+
+  PNGImageSource(const PNGImageSource&) = delete;
+  PNGImageSource& operator=(const PNGImageSource&) = delete;
+
   ~PNGImageSource() override {}
 
   ImageSkiaRep GetImageForScale(float scale) override {
@@ -84,8 +89,6 @@ class PNGImageSource : public ImageSkiaSource {
   typedef std::set<ImageSkiaRep, Compare> ImageSkiaRepSet;
   ImageSkiaRepSet image_skia_reps_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(PNGImageSource);
 };
 
 }  // namespace

@@ -12,13 +12,13 @@ function test(fn)
 
     sandbox.innerHTML = "<div id=host><div id=a><div id=b></div></div>";
     host = document.getElementById("host");
-    hostRoot = host.createShadowRoot();
-    hostRoot.innerHTML = "<div id=c><content></content></div>";
+    hostRoot = host.attachShadow({mode: 'open'});
+    hostRoot.innerHTML = "<div id=c><slot></slot></div>";
 
     a = document.getElementById("a");
     b = document.getElementById("b");
 
-    aRoot = a.createShadowRoot();
+    aRoot = a.attachShadow({mode: 'open'});
     aRoot.innerHTML = "<div id=d><div id=e></div></div>";
 
     c = hostRoot.getElementById("c");
@@ -44,13 +44,13 @@ test(function() {
     shouldBe("toArray(aRoot.querySelectorAll(':host-context(#c) #d'))", "[d]");
 });
 test(function() {
-    shouldBeNull("hostRoot.querySelector('::content #a')");
+    shouldBeNull("hostRoot.querySelector('::slotted(#a)')");
 });
 test(function() {
-    shouldBe("toArray(hostRoot.querySelectorAll('::content #a'))", "[]");
+    shouldBe("toArray(hostRoot.querySelectorAll('::slotted(#a)'))", "[]");
 });
 test(function() {
-    shouldBeFalse("a.matches('::content #a')");
+    shouldBeFalse("a.matches('::slotted(#a)')");
 });
 test(function() {
     shouldBeTrue("d.matches(':host-context(#host) #d')");
@@ -59,7 +59,7 @@ test(function() {
     shouldBeTrue("d.matches(':host-context(#c) #d')");
 });
 test(function() {
-    shouldBeNull("b.closest('::content #a')");
+    shouldBeNull("b.closest('::slotted(#a)')");
 });
 test(function() {
     shouldBe("e.closest(':host-context(#host) #d')", "d");

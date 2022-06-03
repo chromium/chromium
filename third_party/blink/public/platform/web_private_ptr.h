@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRIVATE_PTR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRIVATE_PTR_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -73,9 +73,8 @@ enum LifetimeManagementType {
 template <typename T>
 struct LifetimeOf {
  private:
-  static const bool kIsGarbageCollected =
-      WTF::IsSubclassOfTemplate<T, GarbageCollected>::value ||
-      IsGarbageCollectedMixin<T>::value;
+  // Covers GarbageCollected and GarbageCollectedMixin.
+  static const bool kIsGarbageCollected = WTF::IsGarbageCollectedType<T>::value;
 
  public:
   static const LifetimeManagementType value =
@@ -140,7 +139,7 @@ template <typename T, WebPrivatePtrDestruction, WebPrivatePtrStrength>
 struct WebPrivatePtrPersistentStorageType {
  public:
   using Type = Persistent<T>;
-  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T>
@@ -158,7 +157,7 @@ struct WebPrivatePtrPersistentStorageType<T,
                                           WebPrivatePtrStrength::kNormal> {
  public:
   using Type = CrossThreadPersistent<T>;
-  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T>
@@ -203,11 +202,11 @@ class PtrStorageImpl<T,
 
   void Assign(const PtrStorageImpl& other) { Assign(other.Get()); }
 
-  T* Get() const { return handle_ ? handle_->Get() : 0; }
+  T* Get() const { return handle_ ? handle_->Get() : nullptr; }
 
   void Release() {
     delete handle_;
-    handle_ = 0;
+    handle_ = nullptr;
   }
 
  private:
@@ -283,7 +282,7 @@ template <typename T,
           WebPrivatePtrStrength strongOrWeak = WebPrivatePtrStrength::kNormal>
 class WebPrivatePtr {
  public:
-  WebPrivatePtr() : storage_(0) {}
+  WebPrivatePtr() : storage_(nullptr) {}
   ~WebPrivatePtr() {
     // We don't destruct the object pointed by storage_ here because we don't
     // want to expose destructors of core classes to embedders. We should
@@ -297,7 +296,7 @@ class WebPrivatePtr {
 
 #if INSIDE_BLINK
   template <typename U>
-  WebPrivatePtr(U&& ptr) : storage_(0) {
+  WebPrivatePtr(U&& ptr) : storage_(nullptr) {
     Storage().Assign(std::forward<U>(ptr));
   }
 

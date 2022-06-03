@@ -6,7 +6,6 @@
 #define CHROME_INSTALLER_UTIL_CALLBACK_WORK_ITEM_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/installer/util/work_item.h"
 
@@ -16,45 +15,40 @@
 //
 // // A callback invoked to do some work.
 // bool SomeWorkItemCallback(const CallbackWorkItem& item) {
-//   if (item.IsRollback()) {
-//     // Rollback work goes here.  The return value is ignored in this case.
-//     return true;
-//   }
-//
 //   // Roll forward work goes here.  The return value indicates success/failure
 //   // of the item.
 //   return true;
 // }
 //
+// // A callback invoked to roll it back.
+// void SomeWorkItemRollbackCallback(const CallbackWorkItem& item) {
+//   // Rollback work goes here.
+// }
+//
 // void SomeFunctionThatAddsItemsToAList(WorkItemList* item_list) {
 //   ...
-//   item_list->AddCallbackWorkItem(base::Bind(&SomeWorkItemCallback));
+//   item_list->AddCallbackWorkItem(
+//       base::BindOnce(&SomeWorkItemCallback),
+//       base::BindOnce(&SomeWorkItemRollbackCallback));
 //   ...
 // }
 class CallbackWorkItem : public WorkItem {
  public:
   ~CallbackWorkItem() override;
 
-  bool IsRollback() const;
-
  private:
   friend class WorkItem;
 
-  enum RollState {
-    RS_UNDEFINED,
-    RS_FORWARD,
-    RS_BACKWARD,
-  };
-
-  explicit CallbackWorkItem(
-      base::Callback<bool(const CallbackWorkItem&)> callback);
+  CallbackWorkItem(
+      base::OnceCallback<bool(const CallbackWorkItem&)> do_action,
+      base::OnceCallback<void(const CallbackWorkItem&)> rollback_action);
 
   // WorkItem:
   bool DoImpl() override;
   void RollbackImpl() override;
 
-  base::Callback<bool(const CallbackWorkItem&)> callback_;
-  RollState roll_state_;
+  base::OnceCallback<bool(const CallbackWorkItem&)> do_action_;
+  base::OnceCallback<void(const CallbackWorkItem&)> rollback_action_;
 
   FRIEND_TEST_ALL_PREFIXES(CallbackWorkItemTest, TestFailure);
   FRIEND_TEST_ALL_PREFIXES(CallbackWorkItemTest, TestForwardBackward);

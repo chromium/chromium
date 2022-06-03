@@ -34,6 +34,10 @@ class DownloadDriverImpl : public DownloadDriver,
   // Create the driver.
   DownloadDriverImpl(
       SimpleDownloadManagerCoordinator* download_manager_coordinator);
+
+  DownloadDriverImpl(const DownloadDriverImpl&) = delete;
+  DownloadDriverImpl& operator=(const DownloadDriverImpl&) = delete;
+
   ~DownloadDriverImpl() override;
 
   // DownloadDriver implementation.
@@ -49,7 +53,7 @@ class DownloadDriverImpl : public DownloadDriver,
   void Remove(const std::string& guid, bool remove_file) override;
   void Pause(const std::string& guid) override;
   void Resume(const std::string& guid) override;
-  base::Optional<DriverEntry> Find(const std::string& guid) override;
+  absl::optional<DriverEntry> Find(const std::string& guid) override;
   std::set<std::string> GetActiveDownloads() override;
   size_t EstimateMemoryUsage() const override;
 
@@ -90,8 +94,6 @@ class DownloadDriverImpl : public DownloadDriver,
 
   // Only used to post tasks on the same thread.
   base::WeakPtrFactory<DownloadDriverImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDriverImpl);
 };
 
 }  // namespace download

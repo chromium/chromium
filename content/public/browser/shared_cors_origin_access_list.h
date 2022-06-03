@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
@@ -39,6 +38,10 @@ class CONTENT_EXPORT SharedCorsOriginAccessList
 
   SharedCorsOriginAccessList() = default;
 
+  SharedCorsOriginAccessList(const SharedCorsOriginAccessList&) = delete;
+  SharedCorsOriginAccessList& operator=(const SharedCorsOriginAccessList&) =
+      delete;
+
   // Sets the access list to an internal network::cors::OriginAccessList
   // instance so that its IsAllowed() method works for all users that refer the
   // shared network::cors::OriginAccessList instance returned by
@@ -60,8 +63,6 @@ class CONTENT_EXPORT SharedCorsOriginAccessList
 
  private:
   friend class base::RefCountedThreadSafe<SharedCorsOriginAccessList>;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedCorsOriginAccessList);
 };
 
 }  // namespace content

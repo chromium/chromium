@@ -5,9 +5,14 @@
 #ifndef ANDROID_WEBVIEW_COMMON_AW_CONTENT_CLIENT_H_
 #define ANDROID_WEBVIEW_COMMON_AW_CONTENT_CLIENT_H_
 
+#include "base/synchronization/lock.h"
 #include "content/public/common/content_client.h"
 
 #include "base/compiler_specific.h"
+
+namespace embedder_support {
+class OriginTrialPolicyImpl;
+}
 
 namespace gpu {
 struct GPUInfo;
@@ -17,24 +22,27 @@ namespace android_webview {
 
 class AwContentClient : public content::ContentClient {
  public:
+  AwContentClient();
+  ~AwContentClient() override;
   // ContentClient implementation.
   void AddAdditionalSchemes(Schemes* schemes) override;
-  base::string16 GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(int resource_id,
-                                    ui::ScaleFactor scale_factor) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
-  bool CanSendWhileSwappedOut(const IPC::Message* message) override;
   void SetGpuInfo(const gpu::GPUInfo& gpu_info) override;
   bool UsingSynchronousCompositing() override;
   media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
   void ExposeInterfacesToBrowser(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders) override;
-
-  const std::string& gpu_fingerprint() const { return gpu_fingerprint_; }
+  blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
 
  private:
-  std::string gpu_fingerprint_;
+  // Used to lock when |origin_trial_policy_| is initialized.
+  base::Lock origin_trial_policy_lock_;
+  std::unique_ptr<embedder_support::OriginTrialPolicyImpl> origin_trial_policy_;
 };
 
 }  // namespace android_webview

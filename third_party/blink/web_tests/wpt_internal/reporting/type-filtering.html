@@ -1,0 +1,52 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing ReportingObserver's |types| option.</p>
+</div>
+
+<script>
+async_test(function(test) {
+  var observer1 = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // Only the deprecation report should be observed, as specified by the
+      // |types| option.
+      assert_equals(reports.length, 1);
+      assert_equals(reports[0].type, "deprecation");
+      assert_equals(reports[0].body.id, "PrefixedRequestAnimationFrame");
+    });
+
+    test.done();
+  }, { types: [ "deprecation" ] });
+  observer1.observe();
+
+  // Generate a deprecation report and an intervention report.
+  // id = "PrefixedRequestAnimationFrame"
+  webkitRequestAnimationFrame(() => {});
+  causeIntervention();
+
+  observer1.disconnect();
+}, "Types filtered");
+
+
+async_test(function(test) {
+  var observer2 = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // Both reports should be observed, since there is no |types| filter
+      // specified.
+      assert_equals(reports.length, 2);
+    });
+
+    test.done();
+  });
+  observer2.observe();
+
+  // Generate a deprecation report and an intervention report.
+  window.webkitStorageInfo;
+  causeIntervention();
+
+  observer2.disconnect();
+}, "Types accepted by default");
+</script>

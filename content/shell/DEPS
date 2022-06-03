@@ -11,8 +11,6 @@ include_rules = [
   # content's public API.
   "+content/public",
 
-  "+services/network/ignore_errors_cert_verifier.h",
-
   # Network service public library.
   "+services/network/public/cpp",
 
@@ -25,6 +23,7 @@ include_rules = [
 
   # The content_shell for aura must work with the views and aura
   "+ui/aura",
+  "+ui/color",
   "+ui/platform_window",
   "+ui/views",
 
@@ -35,14 +34,19 @@ include_rules = [
   "+components/crash",
   "+components/download",
   "+components/keyed_service/core",
+  "+components/performance_manager",
+  "+components/permissions",
   "+components/url_formatter",
   "+components/network_session_configurator/browser",
   "+components/viz/common/resources",
   "+components/viz/common/switches.h",
   "+services/test/echo",
 
-  # Access to the process specific switches.
-  "+services/service_manager/embedder",
+  # Separating content shell and web test code. Only narrow parts of content
+  # shell may access and inject web test code at runtime.
+  "-content/web_test/browser",
+  "-content/web_test/common",
+  "-content/web_test/renderer",
 ]
 
 specific_include_rules = {

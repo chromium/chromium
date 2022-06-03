@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test forced colors mode while printing.</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-mode">
+<link rel=match href="forced-colors-mode-printing-01-expected.html">
+<style>
+  body {
+    background-image: url("resources/test-image.jpg");
+    color: red;
+    forced-color-adjust: auto;
+  }
+</style>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+</script>
+<body>
+  This text should remain red when printing in forced colors mode.
+</body>

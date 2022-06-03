@@ -20,7 +20,7 @@ namespace base {
 class SamplingHeapProfilerTest : public ::testing::Test {
  public:
   void SetUp() override {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     allocator::InitializeAllocatorShim();
 #endif
     SamplingHeapProfiler::Init();
@@ -116,7 +116,13 @@ TEST_F(SamplingHeapProfilerTest, IntervalRandomizationSanity) {
   EXPECT_NEAR(1000, mean_samples, 100);  // 10% tolerance.
 }
 
+#if defined(OS_IOS)
+// iOS devices generally have ~4GB of RAM with no swap and therefore need a
+// lower allocation limit here.
+const int kNumberOfAllocations = 1000;
+#else
 const int kNumberOfAllocations = 10000;
+#endif
 
 NOINLINE void Allocate1() {
   void* p = malloc(400);
@@ -216,7 +222,13 @@ TEST_F(SamplingHeapProfilerTest, DISABLED_SequentialLargeSmallStats) {
 
 // Platform TLS: alloc+free[ns]: 22.184  alloc[ns]: 8.910  free[ns]: 13.274
 // thread_local: alloc+free[ns]: 18.353  alloc[ns]: 5.021  free[ns]: 13.331
-TEST_F(SamplingHeapProfilerTest, MANUAL_SamplerMicroBenchmark) {
+// TODO(crbug.com/1117342) Disabled on Mac
+#if defined(OS_MAC)
+#define MAYBE_MANUAL_SamplerMicroBenchmark DISABLED_MANUAL_SamplerMicroBenchmark
+#else
+#define MAYBE_MANUAL_SamplerMicroBenchmark MANUAL_SamplerMicroBenchmark
+#endif
+TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
   // With the sampling interval of 100KB it happens to record ~ every 450th
   // allocation in the browser process. We model this pattern here.
   constexpr size_t sampling_interval = 100000;
@@ -275,7 +287,16 @@ TEST_F(SamplingHeapProfilerTest, StartStop) {
   EXPECT_EQ(1, GetRunningSessionsCount());
   profiler->Stop();
   EXPECT_EQ(0, GetRunningSessionsCount());
+}
 
+// TODO(crbug.com/1116543): Test is crashing on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ConcurrentStartStop DISABLED_ConcurrentStartStop
+#else
+#define MAYBE_ConcurrentStartStop ConcurrentStartStop
+#endif
+TEST_F(SamplingHeapProfilerTest, MAYBE_ConcurrentStartStop) {
+  auto* profiler = SamplingHeapProfiler::Get();
   WaitableEvent event;
   StartStopThread thread(&event);
   thread.Start();

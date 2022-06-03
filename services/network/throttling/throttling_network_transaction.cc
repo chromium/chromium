@@ -4,6 +4,8 @@
 
 #include "services/network/throttling/throttling_network_transaction.h"
 
+#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -117,11 +119,11 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
       ThrottlingController::GetInterceptor(net_log.source().id);
 
   if (interceptor) {
-    custom_request_.reset(new net::HttpRequestInfo(*request_));
+    custom_request_ = std::make_unique<net::HttpRequestInfo>(*request_);
 
     if (request_->upload_data_stream) {
-      custom_upload_data_stream_.reset(
-          new ThrottlingUploadDataStream(request_->upload_data_stream));
+      custom_upload_data_stream_ = std::make_unique<ThrottlingUploadDataStream>(
+          request_->upload_data_stream);
       custom_request_->upload_data_stream = custom_upload_data_stream_.get();
     }
 
@@ -203,6 +205,8 @@ bool ThrottlingNetworkTransaction::IsReadyToRestartForAuth() {
 int ThrottlingNetworkTransaction::Read(net::IOBuffer* buf,
                                        int buf_len,
                                        net::CompletionOnceCallback callback) {
+  constexpr int kPacketSize = 1500;
+
   if (CheckFailed())
     return net::ERR_INTERNET_DISCONNECTED;
   if (!interceptor_)
@@ -210,7 +214,7 @@ int ThrottlingNetworkTransaction::Read(net::IOBuffer* buf,
 
   callback_ = std::move(callback);
   int result = network_transaction_->Read(
-      buf, buf_len,
+      buf, std::min(buf_len, kPacketSize),
       base::BindOnce(&ThrottlingNetworkTransaction::IOCallback,
                      base::Unretained(this), false));
   // URLRequestJob relies on synchronous end-of-stream notification.
@@ -274,8 +278,8 @@ void ThrottlingNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
 }
 
 void ThrottlingNetworkTransaction::SetBeforeNetworkStartCallback(
-    const BeforeNetworkStartCallback& callback) {
-  network_transaction_->SetBeforeNetworkStartCallback(callback);
+    BeforeNetworkStartCallback callback) {
+  network_transaction_->SetBeforeNetworkStartCallback(std::move(callback));
 }
 
 void ThrottlingNetworkTransaction::SetRequestHeadersCallback(
@@ -288,9 +292,14 @@ void ThrottlingNetworkTransaction::SetResponseHeadersCallback(
   network_transaction_->SetResponseHeadersCallback(std::move(callback));
 }
 
-void ThrottlingNetworkTransaction::SetBeforeHeadersSentCallback(
-    const BeforeHeadersSentCallback& callback) {
-  network_transaction_->SetBeforeHeadersSentCallback(callback);
+void ThrottlingNetworkTransaction::SetEarlyResponseHeadersCallback(
+    net::ResponseHeadersCallback callback) {
+  network_transaction_->SetEarlyResponseHeadersCallback(std::move(callback));
+}
+
+void ThrottlingNetworkTransaction::SetConnectedCallback(
+    const ConnectedCallback& callback) {
+  network_transaction_->SetConnectedCallback(callback);
 }
 
 int ThrottlingNetworkTransaction::ResumeNetworkStart() {
@@ -302,6 +311,10 @@ int ThrottlingNetworkTransaction::ResumeNetworkStart() {
 void ThrottlingNetworkTransaction::GetConnectionAttempts(
     net::ConnectionAttempts* out) const {
   network_transaction_->GetConnectionAttempts(out);
+}
+
+void ThrottlingNetworkTransaction::CloseConnectionOnDestruction() {
+  network_transaction_->CloseConnectionOnDestruction();
 }
 
 }  // namespace network

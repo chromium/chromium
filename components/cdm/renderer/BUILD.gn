@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
-jumbo_static_library("renderer") {
+static_library("renderer") {
   sources = [
     "external_clear_key_key_system_properties.cc",
     "external_clear_key_key_system_properties.h",
@@ -31,6 +30,9 @@ jumbo_static_library("renderer") {
       "widevine_key_system_properties.cc",
       "widevine_key_system_properties.h",
     ]
-    deps += [ "//third_party/widevine/cdm:headers" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//third_party/widevine/cdm:headers",
+    ]
   }
 }

@@ -2,66 +2,75 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 assert(is_win)
 
 config("delay_load_mf") {
   ldflags = [
+    "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:mf.dll",
     "/DELAYLOAD:mfplat.dll",
     "/DELAYLOAD:mfreadwrite.dll",
   ]
 }
 
-jumbo_component("media_foundation_util") {
+component("media_foundation_util") {
   defines = [ "MF_INITIALIZER_IMPLEMENTATION" ]
-  set_sources_assignment_filter([])
   sources = [
+    "dxgi_device_manager.cc",
+    "dxgi_device_manager.h",
     "mf_helpers.cc",
     "mf_helpers.h",
     "mf_initializer.cc",
     "mf_initializer.h",
     "mf_initializer_export.h",
   ]
-  set_sources_assignment_filter(sources_assignment_filter)
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//media:shared_memory_support",
   ]
   libs = [
+    "d3d11.lib",
     "mf.lib",
     "mfplat.lib",
     "mfreadwrite.lib",
+    "dxguid.lib",
   ]
 
   # MediaFoundation is not available on Windows N, so must be delay loaded.
   all_dependent_configs = [ ":delay_load_mf" ]
 }
 
-source_set("d3d11") {
+source_set("hresult_status_helper") {
   sources = [
-    "d3d11_create_device_cb.h",
+    "hresult_status_helper.cc",
+    "hresult_status_helper.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//media" ]
 }
 
-source_set("d3d11_test_support") {
+source_set("mf_cdm_proxy") {
+  sources = [ "media_foundation_cdm_proxy.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("dcomp_texture_wrapper") {
+  sources = [ "dcomp_texture_wrapper.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
   testonly = true
   sources = [
     "d3d11_mocks.cc",
     "d3d11_mocks.h",
+    "mf_mocks.cc",
+    "mf_mocks.h",
+    "test_utils.h",
   ]
   deps = [
-    ":d3d11",
     "//base",
     "//testing/gmock",
+    "//testing/gtest",
   ]
 }

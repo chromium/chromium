@@ -34,6 +34,7 @@
 #include <memory>
 #include "base/time/default_tick_clock.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
@@ -41,8 +42,6 @@
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
-
-class CompositorAnimationTimeline;
 
 // ScrollAnimator is the Blink-side implementation of user-input scroll offset
 // animations ("smooth scrolling") on all platforms except for Mac.
@@ -117,21 +116,23 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
                           ScrollableArea::ScrollCallback on_finish) override;
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&) override;
   ScrollOffset DesiredTargetOffset() const override;
+  void AdjustAnimation(const IntSize& adjustment) override;
 
   // ScrollAnimatorCompositorCoordinator implementation.
-  void TickAnimation(double monotonic_time) override;
+  void TickAnimation(base::TimeTicks monotonic_time) override;
   void CancelAnimation() override;
-  void AdjustAnimationAndSetScrollOffset(const ScrollOffset&,
-                                         ScrollType) override;
   void TakeOverCompositorAnimation() override;
   void ResetAnimationState() override;
   void UpdateCompositorAnimations() override;
   void NotifyCompositorAnimationFinished(int group_id) override;
   void NotifyCompositorAnimationAborted(int group_id) override;
-  void LayerForCompositedScrollingDidChange(
-      CompositorAnimationTimeline*) override;
+  void MainThreadScrollingDidChange() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
+
+#if defined(OS_MAC)
+  bool HaveScrolledSincePageLoad() { return have_scrolled_since_page_load_; }
+#endif
 
  protected:
   // Returns whether or not the animation was sent to the compositor.
@@ -160,6 +161,14 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // on_finish_ is a callback to call on animation finished, cancelled, or
   // otherwise interrupted in any way.
   ScrollableArea::ScrollCallback on_finish_;
+
+  // TODO(crbug.com/1183387): investigate usage scenarios of this flag to verify
+  // if it is still useful.
+  // TODO(crbug.com/1122682): This is necessary for fade-in/out animations
+  // on Mac scrollbars. Remove this when MacScrollbarAnimatorImpl is removed.
+#if defined(OS_MAC)
+  bool have_scrolled_since_page_load_;
+#endif
 };
 
 }  // namespace blink

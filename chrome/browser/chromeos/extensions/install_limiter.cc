@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/extensions/install_limiter_factory.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
@@ -70,23 +71,43 @@ void InstallLimiter::DisableForTest() {
 
 void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
                          const CRXFileInfo& file_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // No deferred installs when disabled for test.
   if (disabled_for_test_) {
     installer->InstallCrxFile(file_info);
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  num_installs_waiting_for_file_size_++;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetFileSize, file_info.path),
       base::BindOnce(&InstallLimiter::AddWithSize, AsWeakPtr(), installer,
                      file_info));
 }
 
+void InstallLimiter::OnAllExternalProvidersReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  all_external_providers_ready_ = true;
+
+  if (AllInstallsQueuedWithFileSize()) {
+    // Stop wait timer and let install notification drive deferred installs.
+    wait_timer_.Stop();
+    CheckAndRunDeferrredInstalls();
+  }
+}
+
 void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
                                  const CRXFileInfo& file_info,
                                  int64_t size) {
-  if (!ShouldDeferInstall(size, installer->expected_id())) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  num_installs_waiting_for_file_size_--;
+
+  if (!ShouldDeferInstall(size, installer->expected_id()) ||
+      AllInstallsQueuedWithFileSize()) {
     RunInstall(installer, file_info);
 
     // Stop wait timer and let install notification drive deferred installs.
@@ -101,10 +122,8 @@ void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
   // big app is the first one in the list.
   if (running_installers_.empty() && !wait_timer_.IsRunning()) {
     const int kMaxWaitTimeInMs = 5000;  // 5 seconds.
-    wait_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kMaxWaitTimeInMs),
-        this, &InstallLimiter::CheckAndRunDeferrredInstalls);
+    wait_timer_.Start(FROM_HERE, base::Milliseconds(kMaxWaitTimeInMs), this,
+                      &InstallLimiter::CheckAndRunDeferrredInstalls);
   }
 }
 
@@ -138,6 +157,11 @@ void InstallLimiter::Observe(int type,
       content::Source<extensions::CrxInstaller>(source).ptr();
   running_installers_.erase(installer);
   CheckAndRunDeferrredInstalls();
+}
+
+bool InstallLimiter::AllInstallsQueuedWithFileSize() const {
+  return all_external_providers_ready_ &&
+         num_installs_waiting_for_file_size_ == 0;
 }
 
 }  // namespace extensions

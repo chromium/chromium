@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
@@ -23,6 +23,10 @@ namespace test {
 class InProcessDataDecoder : public ServiceProvider {
  public:
   InProcessDataDecoder();
+
+  InProcessDataDecoder(const InProcessDataDecoder&) = delete;
+  InProcessDataDecoder& operator=(const InProcessDataDecoder&) = delete;
+
   ~InProcessDataDecoder() override;
 
   DataDecoderService& service() { return service_; }
@@ -40,8 +44,6 @@ class InProcessDataDecoder : public ServiceProvider {
   DataDecoderService service_;
   mojo::ReceiverSet<mojom::DataDecoderService> receivers_;
   base::WeakPtrFactory<InProcessDataDecoder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessDataDecoder);
 };
 
 }  // namespace test

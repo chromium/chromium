@@ -89,12 +89,12 @@ cvox.BrailleInputHandler = function(translatorManager) {
 };
 
 /**
- * The ID of the Braille IME extension built into Chrome OS.
+ * The origin of the Braille IME extension built into Chrome OS.
  * @const {string}
  * @private
  */
-cvox.BrailleInputHandler.IME_EXTENSION_ID_ =
-    'jddehjeebkoimngcbdkaahpobgicbffp';
+cvox.BrailleInputHandler.IME_EXTENSION_ORIGIN_ =
+    'chrome-extension://jddehjeebkoimngcbdkaahpobgicbffp';
 
 /**
  * Name of the port to use for communicating with the Braille IME.
@@ -331,7 +331,7 @@ cvox.BrailleInputHandler.prototype = {
    */
   onImeConnect_: function(port) {
     if (port.name !== cvox.BrailleInputHandler.IME_PORT_NAME_ ||
-        port.sender.id !== cvox.BrailleInputHandler.IME_EXTENSION_ID_) {
+        port.sender.origin !== cvox.BrailleInputHandler.IME_EXTENSION_ORIGIN_) {
       return;
     }
     if (this.imePort_)

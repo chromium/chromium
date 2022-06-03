@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace mojo {
 
@@ -31,6 +31,8 @@ void MessageDispatcher::SetSink(MessageReceiver* sink) {
 }
 
 bool MessageDispatcher::Accept(Message* message) {
+  internal::MessageDispatchContext dispatch_context(message);
+
   DCHECK(sink_);
   if (validator_) {
     if (!validator_->Accept(message))

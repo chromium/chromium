@@ -19,7 +19,10 @@ source_set("file_system") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
+    "//components/filename_generation",
     "//content/public/browser",
+    "//extensions/browser/api",
     "//extensions/browser/api/file_handlers",
     "//extensions/common",
     "//extensions/common/api",
@@ -30,7 +33,5 @@ source_set("file_system") {
     "//ui/shell_dialogs",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

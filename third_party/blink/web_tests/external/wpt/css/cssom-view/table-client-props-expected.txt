@@ -5,12 +5,12 @@ PASS Basic caption
 PASS Table and narrower caption
 PASS Table and wider caption
 PASS Table with padding
-FAIL Table with padding and content-box sizing assert_equals: Table with padding and content-box sizing clientWidth expected 26 but got 20
-FAIL Table with separated border assert_equals: Table with separated border clientWidth expected 26 but got 20
-FAIL Table with collapsed border assert_equals: Table with collapsed border clientWidth expected 26 but got 20
+PASS Table with padding and content-box sizing
+FAIL Table with separated border assert_equals: Table with separated border clientLeft expected 0 but got 4
+FAIL Table with collapsed border assert_equals: Table with collapsed border clientLeft expected 0 but got 4
 PASS Caption with padding
 PASS Caption with border
-FAIL Caption with margin assert_equals: Caption with margin clientWidth expected 46 but got 40
+PASS Caption with margin
 PASS Bottom caption
 Harness: the test ran to completion.
 

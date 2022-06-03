@@ -8,7 +8,9 @@
 #include <climits>
 
 #include "base/bind.h"
-#include "cc/animation/animation_curve.h"
+#include "base/metrics/statistics_recorder.h"
+#include "build/build_config.h"
+#include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
@@ -17,9 +19,6 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/animation/scroll_offset_animations.h"
-#include "cc/animation/single_keyframe_effect_animation.h"
-#include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/base/completion_event.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -32,6 +31,10 @@
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace cc {
 namespace {
@@ -43,9 +46,8 @@ class LayerTreeHostAnimationTest : public LayerTreeTest {
         animation_id_(AnimationIdProvider::NextAnimationId()),
         animation_child_id_(AnimationIdProvider::NextAnimationId()) {
     timeline_ = AnimationTimeline::Create(timeline_id_);
-    animation_ = SingleKeyframeEffectAnimation::Create(animation_id_);
-    animation_child_ =
-        SingleKeyframeEffectAnimation::Create(animation_child_id_);
+    animation_ = Animation::Create(animation_id_);
+    animation_child_ = Animation::Create(animation_child_id_);
 
     animation_->set_animation_delegate(this);
   }
@@ -61,11 +63,10 @@ class LayerTreeHostAnimationTest : public LayerTreeTest {
     AnimationHost* animation_host_impl = GetImplAnimationHost(&host_impl);
     timeline_impl_ = animation_host_impl->GetTimelineById(timeline_id_);
     EXPECT_TRUE(timeline_impl_);
-    animation_impl_ = static_cast<SingleKeyframeEffectAnimation*>(
-        timeline_impl_->GetAnimationById(animation_id_));
+    animation_impl_ = timeline_impl_->GetAnimationById(animation_id_);
     EXPECT_TRUE(animation_impl_);
-    animation_child_impl_ = static_cast<SingleKeyframeEffectAnimation*>(
-        timeline_impl_->GetAnimationById(animation_child_id_));
+    animation_child_impl_ =
+        timeline_impl_->GetAnimationById(animation_child_id_);
     EXPECT_TRUE(animation_child_impl_);
   }
 
@@ -76,12 +77,12 @@ class LayerTreeHostAnimationTest : public LayerTreeTest {
 
  protected:
   scoped_refptr<AnimationTimeline> timeline_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_child_;
+  scoped_refptr<Animation> animation_;
+  scoped_refptr<Animation> animation_child_;
 
   scoped_refptr<AnimationTimeline> timeline_impl_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_impl_;
-  scoped_refptr<SingleKeyframeEffectAnimation> animation_child_impl_;
+  scoped_refptr<Animation> animation_impl_;
+  scoped_refptr<Animation> animation_child_impl_;
 
   const int timeline_id_;
   const int animation_id_;
@@ -186,7 +187,7 @@ class LayerTreeHostAnimationTestAddKeyframeModel
                               int group) override {
     EXPECT_LT(base::TimeTicks(), monotonic_time);
 
-    KeyframeModel* keyframe_model =
+    gfx::KeyframeModel* keyframe_model =
         animation_->GetKeyframeModel(TargetProperty::OPACITY);
     if (keyframe_model)
       animation_->RemoveKeyframeModel(keyframe_model->id());
@@ -371,15 +372,15 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
 
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_child_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_child_id_));
+    scoped_refptr<Animation> animation_child_impl =
+        timeline_impl->GetAnimationById(animation_child_id_);
 
     KeyframeModel* keyframe_model =
         animation_child_impl->GetKeyframeModel(TargetProperty::OPACITY);
 
-    const FloatAnimationCurve* curve =
-        keyframe_model->curve()->ToFloatAnimationCurve();
+    const gfx::FloatAnimationCurve* curve =
+        gfx::FloatAnimationCurve::ToFloatAnimationCurve(
+            keyframe_model->curve());
     float start_opacity = curve->GetValue(base::TimeDelta());
     float end_opacity = curve->GetValue(curve->Duration());
     float linearly_interpolated_opacity =
@@ -437,9 +438,8 @@ class LayerTreeHostAnimationTestSynchronizeAnimationStartTimes
                             bool has_unfinished_animation) override {
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(impl_host)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_child_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_child_id_));
+    scoped_refptr<Animation> animation_child_impl =
+        timeline_impl->GetAnimationById(animation_child_id_);
 
     KeyframeModel* keyframe_model =
         animation_child_impl->GetKeyframeModel(TargetProperty::OPACITY);
@@ -514,9 +514,8 @@ class LayerTreeHostAnimationTestDoNotSkipLayersWithAnimatedOpacity
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_id_));
+    scoped_refptr<Animation> animation_impl =
+        timeline_impl->GetAnimationById(animation_id_);
 
     KeyframeModel* keyframe_model_impl =
         animation_impl->GetKeyframeModel(TargetProperty::OPACITY);
@@ -558,9 +557,10 @@ class LayerTreeHostAnimationTestLayerAddedWithAnimation
       animation_->set_animation_delegate(this);
 
       // Any valid AnimationCurve will do here.
-      std::unique_ptr<AnimationCurve> curve(new FakeFloatAnimationCurve());
+      std::unique_ptr<gfx::AnimationCurve> curve(new FakeFloatAnimationCurve());
       std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-          std::move(curve), 1, 1, TargetProperty::OPACITY));
+          std::move(curve), 1, 1,
+          KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
       animation_->AddKeyframeModel(std::move(keyframe_model));
 
       // We add the animation *before* attaching the layer to the tree.
@@ -768,9 +768,8 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
 MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations);
 
-// Verifies that scroll offset animations are only accepted when impl-scrolling
-// is supported, and that when scroll offset animations are accepted,
-// scroll offset updates are sent back to the main thread.
+// Verifies that a scroll offset animation sends scroll offset updates back to
+// the main thread.
 class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
     : public LayerTreeHostAnimationTest {
  public:
@@ -781,7 +780,7 @@ class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
     scroll_layer_->SetScrollable(gfx::Size(100, 100));
     scroll_layer_->SetBounds(gfx::Size(1000, 1000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(10, 20));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
     AttachAnimationsToTimeline();
@@ -796,22 +795,19 @@ class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
         std::unique_ptr<ScrollOffsetAnimationCurve> curve(
             ScrollOffsetAnimationCurveFactory::
                 CreateEaseInOutAnimationForTesting(
-                    gfx::ScrollOffset(500.f, 550.f)));
+                    gfx::Vector2dF(500.f, 550.f)));
         std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-            std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+            std::move(curve), 1, 0,
+            KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
         keyframe_model->set_needs_synchronized_start_time(true);
-        bool impl_scrolling_supported = proxy()->SupportsImplScrolling();
-        if (impl_scrolling_supported)
-          animation_child_->AddKeyframeModel(std::move(keyframe_model));
-        else
-          EndTest();
+        animation_child_->AddKeyframeModel(std::move(keyframe_model));
         break;
       }
       default:
-        EXPECT_GE(scroll_layer_->CurrentScrollOffset().x(), 10);
-        EXPECT_GE(scroll_layer_->CurrentScrollOffset().y(), 20);
-        if (scroll_layer_->CurrentScrollOffset().x() > 10 &&
-            scroll_layer_->CurrentScrollOffset().y() > 20)
+        EXPECT_GE(scroll_layer_->scroll_offset().x(), 10);
+        EXPECT_GE(scroll_layer_->scroll_offset().y(), 20);
+        if (scroll_layer_->scroll_offset().x() > 10 &&
+            scroll_layer_->scroll_offset().y() > 20)
           EndTest();
     }
   }
@@ -837,7 +833,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationTakeover
     scroll_layer_ = FakePictureLayer::Create(&client_);
     scroll_layer_->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(10, 20));
     scroll_layer_->SetScrollable(gfx::Size(10, 10));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
@@ -863,15 +859,16 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationTakeover
   void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 0) {
       GetImplAnimationHost(host_impl)->ImplOnlyScrollAnimationCreate(
-          scroll_layer_->element_id(), gfx::ScrollOffset(650.f, 750.f),
-          gfx::ScrollOffset(10, 20), base::TimeDelta(), base::TimeDelta());
+          scroll_layer_->element_id(), gfx::Vector2dF(650.f, 750.f),
+          gfx::Vector2dF(10, 20), base::TimeDelta(), base::TimeDelta());
     }
   }
 
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override {
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override {
     EndTest();
   }
 
@@ -897,7 +894,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
     scroll_layer_ = FakePictureLayer::Create(&client_);
     scroll_layer_->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(10, 20));
     scroll_layer_->SetScrollable(gfx::Size(10, 10));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
@@ -937,47 +934,48 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
   void BeginCommitOnThread(LayerTreeHostImpl* host_impl) override {
     // Note that the frame number gets incremented after BeginCommitOnThread but
     // before WillCommitCompleteOnThread and CommitCompleteOnThread.
-    if (host_impl->sync_tree()->source_frame_number() == 0) {
+    if (host_impl->sync_tree()->source_frame_number() == 1) {
       GetImplTimelineAndAnimationByID(*host_impl);
       // This happens after the impl-only animation is added in
       // WillCommitCompleteOnThread.
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
 
       // Verifiy the initial and target position before the scroll offset
       // update from MT.
-      EXPECT_EQ(gfx::ScrollOffset(10.f, 20.f),
-                curve->GetValue(base::TimeDelta()));
-      EXPECT_EQ(gfx::ScrollOffset(650.f, 750.f), curve->target_value());
+      EXPECT_EQ(gfx::Vector2dF(10.f, 20.f), curve->GetValue(base::TimeDelta()));
+      EXPECT_EQ(gfx::Vector2dF(650.f, 750.f), curve->target_value());
     }
   }
 
   void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 0) {
       GetImplAnimationHost(host_impl)->ImplOnlyScrollAnimationCreate(
-          scroll_layer_->element_id(), gfx::ScrollOffset(650.f, 750.f),
-          gfx::ScrollOffset(10, 20), base::TimeDelta(), base::TimeDelta());
+          scroll_layer_->element_id(), gfx::Vector2dF(650.f, 750.f),
+          gfx::Vector2dF(10, 20), base::TimeDelta(), base::TimeDelta());
     }
   }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 1) {
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
       // Verifiy the initial and target position after the scroll offset
       // update from MT
       EXPECT_EQ(KeyframeModel::RunState::STARTING, keyframe_model->run_state());
-      EXPECT_EQ(gfx::ScrollOffset(110.f, 120.f),
+      EXPECT_EQ(gfx::Vector2dF(110.f, 120.f),
                 curve->GetValue(base::TimeDelta()));
-      EXPECT_EQ(gfx::ScrollOffset(750.f, 850.f), curve->target_value());
+      EXPECT_EQ(gfx::Vector2dF(750.f, 850.f), curve->target_value());
 
       EndTest();
     }
@@ -1003,14 +1001,15 @@ class LayerTreeHostPresentationDuringAnimation
     scroll_layer_->SetScrollable(gfx::Size(100, 100));
     scroll_layer_->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(100.0, 200.0));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(100.0, 200.0));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
     std::unique_ptr<ScrollOffsetAnimationCurve> curve(
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-            gfx::ScrollOffset(6500.f, 7500.f)));
+            gfx::Vector2dF(6500.f, 7500.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1024,18 +1023,25 @@ class LayerTreeHostPresentationDuringAnimation
     PostSetNeedsCommitToMainThread();
   }
 
+  void WillCommit(CommitState* commit_state) override {
+    if (commit_state->source_frame_number == 2) {
+      commit_state->pending_presentation_time_callbacks.push_back(
+          base::BindOnce(
+              &LayerTreeHostPresentationDuringAnimation::OnPresentation,
+              base::Unretained(this)));
+    }
+  }
+
   void BeginCommitOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->active_tree()->source_frame_number() == 1) {
       request_token_ = host_impl->next_frame_token();
-      layer_tree_host()->RequestPresentationTimeForNextFrame(base::BindOnce(
-          &LayerTreeHostPresentationDuringAnimation::OnPresentation,
-          base::Unretained(this)));
       host_impl->BlockNotifyReadyToActivateForTesting(true);
     }
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     if (host_impl->next_frame_token() >= 5)
       host_impl->BlockNotifyReadyToActivateForTesting(false);
   }
@@ -1049,6 +1055,10 @@ class LayerTreeHostPresentationDuringAnimation
     EXPECT_GT(request_token_, 0u);
     EXPECT_GT(received_token_, request_token_);
     EXPECT_GE(received_token_, 5u);
+    EXPECT_TRUE(base::StatisticsRecorder::FindHistogram(
+        "CompositorLatency.TotalLatency"));
+    EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
+        "CompositorLatency.Universal.TotalLatency"));
   }
 
  private:
@@ -1060,7 +1070,10 @@ class LayerTreeHostPresentationDuringAnimation
   uint32_t received_token_ = 0;
 };
 
+// Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
+#if !defined(OS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostPresentationDuringAnimation);
+#endif
 
 // Verifies that when the main thread removes a scroll animation and sets a new
 // scroll position, the active tree takes on exactly this new scroll position
@@ -1079,14 +1092,15 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
     scroll_layer_->SetScrollable(gfx::Size(100, 100));
     scroll_layer_->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(100.0, 200.0));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(100.0, 200.0));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
     std::unique_ptr<ScrollOffsetAnimationCurve> curve(
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-            gfx::ScrollOffset(6500.f, 7500.f)));
+            gfx::Vector2dF(6500.f, 7500.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1099,12 +1113,12 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
-        EXPECT_EQ(scroll_layer_->CurrentScrollOffset().x(), 100);
-        EXPECT_EQ(scroll_layer_->CurrentScrollOffset().y(), 200);
+        EXPECT_EQ(scroll_layer_->scroll_offset().x(), 100);
+        EXPECT_EQ(scroll_layer_->scroll_offset().y(), 200);
         break;
       case 1: {
-        EXPECT_GE(scroll_layer_->CurrentScrollOffset().x(), 100);
-        EXPECT_GE(scroll_layer_->CurrentScrollOffset().y(), 200);
+        EXPECT_GE(scroll_layer_->scroll_offset().x(), 100);
+        EXPECT_GE(scroll_layer_->scroll_offset().y(), 200);
         KeyframeModel* keyframe_model =
             animation_child_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
         animation_child_->RemoveKeyframeModel(keyframe_model->id());
@@ -1112,7 +1126,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
         break;
       }
       default:
-        EXPECT_EQ(final_postion_, scroll_layer_->CurrentScrollOffset());
+        EXPECT_EQ(final_postion_, scroll_layer_->scroll_offset());
     }
   }
 
@@ -1122,7 +1136,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     host_impl->BlockNotifyReadyToActivateForTesting(
         ShouldBlockActivation(host_impl));
   }
@@ -1132,7 +1147,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
       return;
     LayerImpl* scroll_layer_impl =
         host_impl->pending_tree()->LayerById(scroll_layer_->id());
-    EXPECT_EQ(final_postion_, scroll_layer_impl->CurrentScrollOffset());
+    EXPECT_EQ(final_postion_, CurrentScrollOffset(scroll_layer_impl));
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
@@ -1140,12 +1155,12 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
       return;
     LayerImpl* scroll_layer_impl =
         host_impl->active_tree()->LayerById(scroll_layer_->id());
-    EXPECT_EQ(final_postion_, scroll_layer_impl->CurrentScrollOffset());
+    EXPECT_EQ(final_postion_, CurrentScrollOffset(scroll_layer_impl));
     EndTest();
   }
 
   void AfterTest() override {
-    EXPECT_EQ(final_postion_, scroll_layer_->CurrentScrollOffset());
+    EXPECT_EQ(final_postion_, scroll_layer_->scroll_offset());
   }
 
  private:
@@ -1158,9 +1173,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
 
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_child_id_));
+    scoped_refptr<Animation> animation_impl =
+        timeline_impl->GetAnimationById(animation_child_id_);
 
     LayerImpl* scroll_layer_impl =
         host_impl->active_tree()->LayerById(scroll_layer_->id());
@@ -1182,7 +1196,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
 
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> scroll_layer_;
-  const gfx::ScrollOffset final_postion_;
+  const gfx::Vector2dF final_postion_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestScrollOffsetAnimationRemoval);
@@ -1205,14 +1219,15 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
     scroll_layer_->SetScrollable(gfx::Size(100, 100));
     scroll_layer_->SetBounds(gfx::Size(10000, 10000));
     client_.set_bounds(scroll_layer_->bounds());
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset(100.0, 200.0));
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF(100.0, 200.0));
     layer_tree_host()->root_layer()->AddChild(scroll_layer_);
 
     std::unique_ptr<ScrollOffsetAnimationCurve> curve(
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
             final_position_));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1227,8 +1242,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
         animation_child_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
-        EXPECT_EQ(scroll_layer_->CurrentScrollOffset().x(), 100);
-        EXPECT_EQ(scroll_layer_->CurrentScrollOffset().y(), 200);
+        EXPECT_EQ(scroll_layer_->scroll_offset().x(), 100);
+        EXPECT_EQ(scroll_layer_->scroll_offset().y(), 200);
         EXPECT_EQ(KeyframeModel::RunState::WAITING_FOR_TARGET_AVAILABILITY,
                   keyframe_model->run_state());
         break;
@@ -1276,13 +1291,13 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
                            TargetProperty::SCROLL_OFFSET));
 
     // The scroll should have been completed.
-    EXPECT_EQ(final_position_, scroll_layer_->CurrentScrollOffset());
+    EXPECT_EQ(final_position_, scroll_layer_->scroll_offset());
   }
 
  private:
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> scroll_layer_;
-  const gfx::ScrollOffset final_position_;
+  const gfx::Vector2dF final_position_;
   bool ran_animation_ = false;
 };
 
@@ -1345,7 +1360,8 @@ class LayerTreeHostAnimationTestAnimationsAddedToNewAndExistingLayers
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args) override {
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
     if (!host_impl->pending_tree() ||
         host_impl->pending_tree()->source_frame_number() != 2)
       return;
@@ -1360,15 +1376,13 @@ class LayerTreeHostAnimationTestAnimationsAddedToNewAndExistingLayers
                             bool has_unfinished_animation) override {
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_id_));
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_child_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_child_id_));
+    scoped_refptr<Animation> animation_impl =
+        timeline_impl->GetAnimationById(animation_id_);
+    scoped_refptr<Animation> animation_child_impl =
+        timeline_impl->GetAnimationById(animation_child_id_);
 
     // wait for tree activation.
-    if (!animation_impl->keyframe_effect()->element_animations())
+    if (!animation_impl->element_animations())
       return;
 
     KeyframeModel* root_keyframe_model =
@@ -1424,9 +1438,9 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
 
   void BeginTest() override {
     // Add a translate from 6,7 to 8,9.
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(6.f, 7.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(8.f, 9.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 4.0, start, end);
 
@@ -1445,9 +1459,8 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
 
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_id_));
+    scoped_refptr<Animation> animation_impl =
+        timeline_impl->GetAnimationById(animation_id_);
 
     LayerImpl* child = sync_tree->LayerById(layer_->id());
     KeyframeModel* keyframe_model =
@@ -1460,7 +1473,7 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
     // starting state which is 6,7.
     gfx::Transform expected_transform;
     expected_transform.Translate(6.0, 7.0);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform, child->DrawTransform());
+    EXPECT_TRANSFORM_EQ(expected_transform, child->DrawTransform());
     // And the sync tree layer should know it is animating.
     EXPECT_TRUE(child->screen_space_transform_is_animating());
 
@@ -1492,7 +1505,7 @@ class LayerTreeHostAnimationTestAnimatedLayerRemovedAndAdded
     animation_host()->AddAnimationTimeline(timeline_.get());
     timeline_->AttachAnimation(animation_.get());
     animation_->AttachElement(layer_->element_id());
-    DCHECK(animation_->keyframe_effect()->element_animations());
+    DCHECK(animation_->element_animations());
 
     AddOpacityTransitionToAnimation(animation_.get(), 10000.0, 0.1f, 0.9f,
                                     true);
@@ -1503,34 +1516,28 @@ class LayerTreeHostAnimationTestAnimatedLayerRemovedAndAdded
   void DidCommit() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
-        EXPECT_TRUE(animation_->keyframe_effect()
-                        ->element_animations()
-                        ->has_element_in_active_list());
-        EXPECT_FALSE(animation_->keyframe_effect()
-                         ->element_animations()
-                         ->has_element_in_pending_list());
+        EXPECT_TRUE(
+            animation_->element_animations()->has_element_in_active_list());
+        EXPECT_FALSE(
+            animation_->element_animations()->has_element_in_pending_list());
         EXPECT_TRUE(animation_host()->NeedsTickAnimations());
         break;
       case 1:
         layer_->RemoveFromParent();
-        EXPECT_FALSE(animation_->keyframe_effect()
-                         ->element_animations()
-                         ->has_element_in_active_list());
-        EXPECT_FALSE(animation_->keyframe_effect()
-                         ->element_animations()
-                         ->has_element_in_pending_list());
+        EXPECT_FALSE(
+            animation_->element_animations()->has_element_in_active_list());
+        EXPECT_FALSE(
+            animation_->element_animations()->has_element_in_pending_list());
         // Animations still need one more tick to deliver finished event.
         EXPECT_TRUE(animation_host()->NeedsTickAnimations());
         break;
       case 2:
         EXPECT_FALSE(animation_host()->NeedsTickAnimations());
         layer_tree_host()->root_layer()->AddChild(layer_);
-        EXPECT_TRUE(animation_->keyframe_effect()
-                        ->element_animations()
-                        ->has_element_in_active_list());
-        EXPECT_FALSE(animation_->keyframe_effect()
-                         ->element_animations()
-                         ->has_element_in_pending_list());
+        EXPECT_TRUE(
+            animation_->element_animations()->has_element_in_active_list());
+        EXPECT_FALSE(
+            animation_->element_animations()->has_element_in_pending_list());
         EXPECT_TRUE(animation_host()->NeedsTickAnimations());
         break;
     }
@@ -1539,29 +1546,25 @@ class LayerTreeHostAnimationTestAnimatedLayerRemovedAndAdded
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<SingleKeyframeEffectAnimation> animation_impl =
-        static_cast<SingleKeyframeEffectAnimation*>(
-            timeline_impl->GetAnimationById(animation_id_));
+    scoped_refptr<Animation> animation_impl =
+        timeline_impl->GetAnimationById(animation_id_);
 
     switch (host_impl->active_tree()->source_frame_number()) {
       case 0:
-        EXPECT_TRUE(animation_impl->keyframe_effect()
-                        ->element_animations()
-                        ->has_element_in_active_list());
+        EXPECT_TRUE(
+            animation_impl->element_animations()->has_element_in_active_list());
         EXPECT_TRUE(GetImplAnimationHost(host_impl)->NeedsTickAnimations());
         break;
       case 1:
-        EXPECT_FALSE(animation_impl->keyframe_effect()
-                         ->element_animations()
-                         ->has_element_in_active_list());
+        EXPECT_FALSE(
+            animation_impl->element_animations()->has_element_in_active_list());
         // Having updated state on the host_impl during the commit, we no longer
         // need to tick animations.
         EXPECT_FALSE(GetImplAnimationHost(host_impl)->NeedsTickAnimations());
         break;
       case 2:
-        EXPECT_TRUE(animation_impl->keyframe_effect()
-                        ->element_animations()
-                        ->has_element_in_active_list());
+        EXPECT_TRUE(
+            animation_impl->element_animations()->has_element_in_active_list());
         EXPECT_TRUE(GetImplAnimationHost(host_impl)->NeedsTickAnimations());
         EndTest();
         break;
@@ -1718,8 +1721,7 @@ class LayerTreeHostAnimationTestRemoveKeyframeModel
         // applied.
         gfx::Transform expected_transform;
         expected_transform.Translate(10.f, 10.f);
-        EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                        child->DrawTransform());
+        EXPECT_TRANSFORM_EQ(expected_transform, child->DrawTransform());
         EXPECT_FALSE(child->screen_space_transform_is_animating());
         animation_stopped_ = true;
         PostSetNeedsCommitToMainThread();
@@ -1757,7 +1759,12 @@ class LayerTreeHostAnimationTestRemoveKeyframeModel
   bool animation_stopped_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
+// Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
+#if !defined(OS_CHROMEOS)
+SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
+#endif
+
+MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
 
 class LayerTreeHostAnimationTestIsAnimating
     : public LayerTreeHostAnimationTest {
@@ -1893,8 +1900,8 @@ class LayerTreeHostAnimationTestAnimationFinishesDuringCommit
       AddAnimatedTransformToAnimation(animation_child_.get(), 0.04, 5, 5);
   }
 
-  void WillCommit() override {
-    if (layer_tree_host()->SourceFrameNumber() == 2) {
+  void WillCommit(CommitState* commit_state) override {
+    if (commit_state->source_frame_number == 2) {
       // Block until the animation finishes on the compositor thread. Since
       // animations have already been ticked on the main thread, when the commit
       // happens the state on the main thread will be consistent with having a
@@ -1913,8 +1920,7 @@ class LayerTreeHostAnimationTestAnimationFinishesDuringCommit
         gfx::Transform expected_transform;
         expected_transform.Translate(5.f, 5.f);
         LayerImpl* layer_impl = host_impl->sync_tree()->LayerById(layer_->id());
-        EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                        layer_impl->DrawTransform());
+        EXPECT_TRANSFORM_EQ(expected_transform, layer_impl->DrawTransform());
         EndTest();
         break;
     }
@@ -1964,8 +1970,8 @@ class LayerTreeHostAnimationTestImplSideInvalidation
       AddAnimatedTransformToAnimation(animation_child_.get(), 0.04, 5, 5);
   }
 
-  void WillCommit() override {
-    if (layer_tree_host()->SourceFrameNumber() == 2) {
+  void WillCommit(CommitState* commit_state) override {
+    if (commit_state->source_frame_number == 2) {
       // Block until the animation finishes on the compositor thread. Since
       // animations have already been ticked on the main thread, when the commit
       // happens the state on the main thread will be consistent with having a
@@ -2001,8 +2007,7 @@ class LayerTreeHostAnimationTestImplSideInvalidation
         gfx::Transform expected_transform;
         expected_transform.Translate(5.f, 5.f);
         LayerImpl* layer_impl = host_impl->sync_tree()->LayerById(layer_->id());
-        EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                        layer_impl->DrawTransform());
+        EXPECT_TRANSFORM_EQ(expected_transform, layer_impl->DrawTransform());
         EndTest();
         break;
     }
@@ -2041,12 +2046,28 @@ class LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit
       host_impl->RequestImplSideInvalidationForCheckerImagedTiles();
     }
   }
+  void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
+    completion_.Signal();
+    EndTest();
+  }
+
+  void WillCommit(CommitState* commit_state) override {
+    if (commit_state->source_frame_number == 1) {
+      // Block until the invalidation is done after animation finishes on the
+      // compositor thread. We need to make sure the pending tree has valid
+      // information based on invalidation only.
+      completion_.Wait();
+    }
+  }
 
  protected:
   scoped_refptr<Layer> layer_;
   FakeContentLayerClient client_;
   bool did_request_impl_side_invalidation_ = false;
   int num_draws_;
+
+ private:
+  CompletionEvent completion_;
 };
 
 class ImplSideInvalidationWithoutCommitTestOpacity
@@ -2072,7 +2093,8 @@ class ImplSideInvalidationWithoutCommitTestOpacity
     const float expected_opacity = 0.8f;
     LayerImpl* layer_impl = host_impl->sync_tree()->LayerById(layer_->id());
     EXPECT_FLOAT_EQ(expected_opacity, layer_impl->Opacity());
-    EndTest();
+    LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit::
+        DidInvalidateContentOnImplSide(host_impl);
   }
 };
 
@@ -2091,8 +2113,7 @@ class ImplSideInvalidationWithoutCommitTestTransform
       return;
     EXPECT_EQ(0, host_impl->active_tree()->source_frame_number());
     LayerImpl* layer_impl = host_impl->active_tree()->LayerById(layer_->id());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    layer_impl->DrawTransform());
+    EXPECT_TRANSFORM_EQ(gfx::Transform(), layer_impl->DrawTransform());
   }
 
   void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
@@ -2101,9 +2122,9 @@ class ImplSideInvalidationWithoutCommitTestTransform
     gfx::Transform expected_transform;
     expected_transform.Translate(5.f, 5.f);
     LayerImpl* layer_impl = host_impl->sync_tree()->LayerById(layer_->id());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                    layer_impl->DrawTransform());
-    EndTest();
+    EXPECT_TRANSFORM_EQ(expected_transform, layer_impl->DrawTransform());
+    LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit::
+        DidInvalidateContentOnImplSide(host_impl);
   }
 };
 
@@ -2139,7 +2160,8 @@ class ImplSideInvalidationWithoutCommitTestFilter
             ->property_trees()
             ->effect_tree.FindNodeFromElementId(layer_->element_id())
             ->filters.ToString());
-    EndTest();
+    LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit::
+        DidInvalidateContentOnImplSide(host_impl);
   }
 };
 
@@ -2154,28 +2176,19 @@ class ImplSideInvalidationWithoutCommitTestScroll
     layer_->SetScrollable(gfx::Size(100, 100));
     layer_->SetBounds(gfx::Size(1000, 1000));
     client_.set_bounds(layer_->bounds());
-    layer_->SetScrollOffset(gfx::ScrollOffset(10.f, 20.f));
+    layer_->SetScrollOffset(gfx::Vector2dF(10.f, 20.f));
   }
 
   void BeginTest() override {
     std::unique_ptr<ScrollOffsetAnimationCurve> curve(
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-            gfx::ScrollOffset(500.f, 550.f)));
+            gfx::Vector2dF(500.f, 550.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
-    ASSERT_TRUE(proxy()->SupportsImplScrolling());
     animation_child_->AddKeyframeModel(std::move(keyframe_model));
     PostSetNeedsCommitToMainThread();
-  }
-
-  void WillCommit() override {
-    if (layer_tree_host()->SourceFrameNumber() == 1) {
-      // Block until the invalidation is done after animation finishes on the
-      // compositor thread. We need to make sure the pending tree has valid
-      // information based on invalidation only.
-      completion_.Wait();
-    }
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
@@ -2183,22 +2196,17 @@ class ImplSideInvalidationWithoutCommitTestScroll
       return;
     EXPECT_EQ(0, host_impl->active_tree()->source_frame_number());
     LayerImpl* layer_impl = host_impl->active_tree()->LayerById(layer_->id());
-    EXPECT_VECTOR2DF_EQ(gfx::ScrollOffset(10.f, 20.f),
-                        layer_impl->CurrentScrollOffset());
+    EXPECT_EQ(gfx::Vector2dF(10.f, 20.f), CurrentScrollOffset(layer_impl));
   }
 
   void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
     ASSERT_TRUE(did_request_impl_side_invalidation_);
     EXPECT_EQ(0, host_impl->sync_tree()->source_frame_number());
     LayerImpl* layer_impl = host_impl->pending_tree()->LayerById(layer_->id());
-    EXPECT_VECTOR2DF_EQ(gfx::ScrollOffset(500.f, 550.f),
-                        layer_impl->CurrentScrollOffset());
-    completion_.Signal();
-    EndTest();
+    EXPECT_EQ(gfx::Vector2dF(500.f, 550.f), CurrentScrollOffset(layer_impl));
+    LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit::
+        DidInvalidateContentOnImplSide(host_impl);
   }
-
- private:
-  CompletionEvent completion_;
 };
 
 MULTI_THREAD_TEST_F(ImplSideInvalidationWithoutCommitTestScroll);
@@ -2257,7 +2265,7 @@ SINGLE_AND_MULTI_THREAD_TEST_F(
 
 // Check that transform sync happens correctly at commit when we remove and add
 // a different animation animation to an element.
-class LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation
+class LayerTreeHostAnimationTestChangeAnimation
     : public LayerTreeHostAnimationTest {
  public:
   void SetupTree() override {
@@ -2271,9 +2279,9 @@ class LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation
     timeline_->DetachAnimation(animation_child_.get());
     animation_->AttachElement(layer_->element_id());
 
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(5.f, 5.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(5.f, 5.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 1.0, start, end);
   }
@@ -2290,7 +2298,7 @@ class LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation
     translate.Translate(5, 5);
     switch (host_impl->sync_tree()->source_frame_number()) {
       case 2:
-        EXPECT_TRANSFORMATION_MATRIX_EQ(node->local, translate);
+        EXPECT_TRANSFORM_EQ(node->local, translate);
         EndTest();
         break;
       default:
@@ -2311,7 +2319,7 @@ class LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation
       KeyframeModel* keyframe_model =
           animation_child_->GetKeyframeModel(TargetProperty::TRANSFORM);
       keyframe_model->set_start_time(base::TimeTicks::Now() +
-                                     base::TimeDelta::FromSecondsD(1000));
+                                     base::Seconds(1000));
       keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
     }
   }
@@ -2320,8 +2328,7 @@ class LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation
   scoped_refptr<Layer> layer_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(
-    LayerTreeHostAnimationTestChangeSingleKeyframeEffectAnimation);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestChangeAnimation);
 
 // Check that SetTransformIsPotentiallyAnimatingChanged is called
 // if we destroy ElementAnimations.
@@ -2405,8 +2412,7 @@ class LayerTreeHostAnimationTestSetPotentiallyAnimatingOnLacDestruction
 MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestSetPotentiallyAnimatingOnLacDestruction);
 
-// Check that we invalidate property trees on
-// SingleKeyframeEffectAnimation::SetNeedsCommit.
+// Check that we invalidate property trees on Animation::SetNeedsCommit.
 class LayerTreeHostAnimationTestRebuildPropertyTreesOnAnimationSetNeedsCommit
     : public LayerTreeHostAnimationTest {
  public:

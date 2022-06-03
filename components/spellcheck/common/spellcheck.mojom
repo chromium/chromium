@@ -4,7 +4,7 @@
 
 module spellcheck.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // Render process interface exposed to the browser for receiving process-
@@ -25,7 +25,7 @@ interface SpellChecker {
 };
 
 struct SpellCheckBDictLanguage {
-  mojo_base.mojom.File? file;
+  mojo_base.mojom.ReadOnlyFile? file;
   string language;
 };
 
@@ -57,17 +57,6 @@ interface SpellCheckHost {
   RequestTextCheck(mojo_base.mojom.String16 text, int32 route_id) =>
       (array<SpellCheckResult> results);
 
-  // Exactly like RequestTextCheck, except the text has already been partially
-  // checked (i.e. only in some locales) by the renderer spell checker, and the
-  // native spell checker should check for the rest of the user's locales. The
-  // renderer's partial results are passed as an array of |SpellCheckResult|.
-  // The platform spell checker needs these results to combine them with the
-  // results from the native checks.
-  [EnableIf=USE_WIN_HYBRID_SPELLCHECKER]
-  RequestPartialTextCheck(mojo_base.mojom.String16 text, int32 route_id,
-      array<SpellCheckResult> partial_results, bool fill_suggestions)
-      => (array<SpellCheckResult> results);
-
   // Disconnects the Android spell checker session bridge.
   [EnableIf=is_android]
   DisconnectSessionBridge();
@@ -86,11 +75,12 @@ interface SpellCheckHost {
   FillSuggestionList(mojo_base.mojom.String16 word) =>
       (array<mojo_base.mojom.String16> suggestions);
 
-  // Returns a list of suggestions for each spellcheck language for a given word
-  // with a platform-specific spell checker.
-  [EnableIf=USE_WIN_HYBRID_SPELLCHECKER, Sync]
-  GetPerLanguageSuggestions(mojo_base.mojom.String16 word) =>
-      (array<array<mojo_base.mojom.String16>> suggestions);
+  // Completes initialization of the spellcheck service by loading dictionaries.
+  [EnableIf=is_win]
+  InitializeDictionaries() =>
+      (array<SpellCheckBDictLanguage> dictionaries,
+       array<string> custom_words,
+       bool enable);
 };
 
 enum Decoration {

@@ -5,15 +5,11 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_OFFER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_OFFER_H_
 
-#include <wayland-client.h>
-
 #include <string>
-#include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
-#include "ui/ozone/platform/wayland/host/internal/wayland_data_offer_base.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 
 namespace ui {
 
@@ -24,22 +20,26 @@ namespace ui {
 // The offer describes the different mime types that the data can be
 // converted to and provides the mechanism for transferring the data
 // directly from the source client.
-class WaylandDataOffer : public internal::WaylandDataOfferBase {
+class WaylandDataOffer : public WaylandDataOfferBase {
  public:
   // Takes ownership of data_offer.
   explicit WaylandDataOffer(wl_data_offer* data_offer);
+
+  WaylandDataOffer(const WaylandDataOffer&) = delete;
+  WaylandDataOffer& operator=(const WaylandDataOffer&) = delete;
+
   ~WaylandDataOffer() override;
 
-  void SetAction(uint32_t dnd_actions, uint32_t preferred_action);
   void Accept(uint32_t serial, const std::string& mime_type);
   void Reject(uint32_t serial);
+  void FinishOffer();
 
-  // internal::WaylandDataOfferBase overrides:
+  // WaylandDataOfferBase overrides:
   base::ScopedFD Receive(const std::string& mime_type) override;
 
-  void FinishOffer();
-  uint32_t source_actions() const;
-  uint32_t dnd_action() const;
+  uint32_t source_actions() const { return source_actions_; }
+  uint32_t dnd_action() const { return dnd_action_; }
+  void SetDndActions(uint32_t dnd_actions);
 
  private:
   // wl_data_offer_listener callbacks.
@@ -58,8 +58,6 @@ class WaylandDataOffer : public internal::WaylandDataOfferBase {
   uint32_t source_actions_;
   // Action selected by the compositor
   uint32_t dnd_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOffer);
 };
 
 }  // namespace ui

@@ -9,6 +9,7 @@ static_library("about_ui") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/resources:components_resources",
     "//ui/base",
     "//ui/resources",
@@ -17,9 +18,7 @@ static_library("about_ui") {
 
 if (is_android) {
   static_library("about_ui_android") {
-    sources = [
-      "credit_utils_android.cc",
-    ]
+    sources = [ "credit_utils_android.cc" ]
     deps = [
       ":about_ui",
       "//base",

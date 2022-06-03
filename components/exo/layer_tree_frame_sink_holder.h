@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/wm_helper.h"
@@ -33,6 +32,10 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
  public:
   LayerTreeFrameSinkHolder(SurfaceTreeHost* surface_tree_host,
                            std::unique_ptr<cc::LayerTreeFrameSink> frame_sink);
+
+  LayerTreeFrameSinkHolder(const LayerTreeFrameSinkHolder&) = delete;
+  LayerTreeFrameSinkHolder& operator=(const LayerTreeFrameSinkHolder&) = delete;
+
   ~LayerTreeFrameSinkHolder() override;
 
   // Delete frame sink after having reclaimed and called all resource
@@ -52,9 +55,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   // Overridden from cc::LayerTreeFrameSinkClient:
   void SetBeginFrameSource(viz::BeginFrameSource* source) override {}
-  base::Optional<viz::HitTestRegionList> BuildHitTestData() override;
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void SetTreeActivationCallback(base::RepeatingClosure callback) override {}
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
@@ -83,7 +85,6 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   gfx::Size last_frame_size_in_pixels_;
   float last_frame_device_scale_factor_ = 1.0f;
-  base::TimeTicks last_local_surface_id_allocation_time_;
   std::vector<viz::ResourceId> last_frame_resources_;
   viz::FrameTokenGenerator next_frame_token_;
 
@@ -91,8 +92,6 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool delete_pending_ = false;
 
   WMHelper::LifetimeManager* lifetime_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeFrameSinkHolder);
 };
 
 }  // namespace exo

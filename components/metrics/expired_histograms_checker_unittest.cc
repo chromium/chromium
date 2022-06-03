@@ -10,31 +10,31 @@
 namespace metrics {
 
 TEST(ExpiredHistogramsCheckerTests, BasicTest) {
-  uint64_t expired_hashes[] = {1, 2, 3};
+  uint32_t expired_hashes[] = {1, 2, 3};
   size_t size = 3;
-  std::string whitelist_str = "";
-  ExpiredHistogramsChecker checker(expired_hashes, size, whitelist_str);
+  std::string allowlist_str = "";
+  ExpiredHistogramsChecker checker(expired_hashes, size, allowlist_str);
 
   EXPECT_TRUE(checker.ShouldRecord(0));
   EXPECT_FALSE(checker.ShouldRecord(3));
 }
 
-TEST(ExpiredHistogramsCheckerTests, WhitelistTest) {
+TEST(ExpiredHistogramsCheckerTests, AllowlistTest) {
   std::string hist1 = "hist1";
   std::string hist2 = "hist2";
   std::string hist3 = "hist3";
   std::string hist4 = "hist4";
 
-  uint64_t expired_hashes[] = {base::HashMetricName(hist1),
-                               base::HashMetricName(hist2)};
+  uint32_t expired_hashes[] = {base::HashMetricNameAs32Bits(hist1),
+                               base::HashMetricNameAs32Bits(hist2)};
   size_t size = 2;
-  std::string whitelist_str = hist2 + "," + hist4;
-  ExpiredHistogramsChecker checker(expired_hashes, size, whitelist_str);
+  std::string allowlist_str = hist2 + "," + hist4;
+  ExpiredHistogramsChecker checker(expired_hashes, size, allowlist_str);
 
-  EXPECT_FALSE(checker.ShouldRecord(base::HashMetricName(hist1)));
-  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricName(hist2)));
-  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricName(hist3)));
-  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricName(hist4)));
+  EXPECT_FALSE(checker.ShouldRecord(base::HashMetricNameAs32Bits(hist1)));
+  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricNameAs32Bits(hist2)));
+  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricNameAs32Bits(hist3)));
+  EXPECT_TRUE(checker.ShouldRecord(base::HashMetricNameAs32Bits(hist4)));
 }
 
 }  // namespace metrics

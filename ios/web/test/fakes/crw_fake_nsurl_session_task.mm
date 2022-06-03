@@ -24,11 +24,9 @@
 @synthesize response = _response;
 
 - (instancetype)initWithURL:(NSURL*)URL {
-  if ((self = [super init])) {
-    _state = NSURLSessionTaskStateSuspended;
-    _currentRequest = [NSURLRequest requestWithURL:URL];
-    _originalRequest = [NSURLRequest requestWithURL:URL];
-  }
+  _state = NSURLSessionTaskStateSuspended;
+  _currentRequest = [NSURLRequest requestWithURL:URL];
+  _originalRequest = [NSURLRequest requestWithURL:URL];
   return self;
 }
 

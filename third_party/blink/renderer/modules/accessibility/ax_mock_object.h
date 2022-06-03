@@ -34,25 +34,37 @@ namespace blink {
 
 class AXObjectCacheImpl;
 
+// A mock object is an AXObject defined only by a role, having no backing object
+// such as a node, layout object or AccessibleNode. It must be explicitly added
+// by its parent. The only current type of AXMockObject is an AXMenuListPopup.
+// TODO(accessibility) Remove this class.
+
 class MODULES_EXPORT AXMockObject : public AXObject {
  protected:
   explicit AXMockObject(AXObjectCacheImpl&);
 
  public:
+  AXMockObject(const AXMockObject&) = delete;
+  AXMockObject& operator=(const AXMockObject&) = delete;
+
   ~AXMockObject() override;
 
   // AXObject overrides.
-  AXObject* ComputeParent() const override { return parent_; }
   AXRestriction Restriction() const override { return kRestrictionNone; }
   bool IsMockObject() const final { return true; }
+  Document* GetDocument() const override;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMockObject);
 };
 
-DEFINE_AX_OBJECT_TYPE_CASTS(AXMockObject, IsMockObject());
+template <>
+struct DowncastTraits<AXMockObject> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsMockObject();
+  }
+};
 
 }  // namespace blink
 

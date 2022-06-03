@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MSI_UTIL_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MSI_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 class MsiUtil {
  public:
@@ -24,9 +24,9 @@ class MsiUtil {
   //
   // Note: Marked virtual to allow mocking.
   virtual bool GetMsiComponentPaths(
-      const base::string16& product_guid,
-      const base::string16& user_sid,
-      std::vector<base::string16>* component_paths) const;
+      const std::wstring& product_guid,
+      const std::wstring& user_sid,
+      std::vector<std::wstring>* component_paths) const;
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MSI_UTIL_H_

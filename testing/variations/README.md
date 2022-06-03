@@ -5,13 +5,16 @@ which is used to ensure test coverage of active field trials.
 
 For each study, the first available experiment after platform filtering is used
 as the default experiment for Chromium builds. This experiment is also used for
-perf bots and browser tests in the waterfall.
+perf bots and various browser tests in the waterfall (e.g. browser_tests,
+components_browsertests, content_browsertests, extensions_browsertests, interactive_ui_tests and
+sync_integration_tests). It is not used by unit test targets.
 
 > Note: This configuration applies specifically to Chromium developer builds.
 > Chrome branded / official builds do not use these definitions.
 
-> Note: This configuration is NOT used for content_browsertests or other test
-> targets based on content_shell.
+> Note: Non-developer builds of Chromium (for example, non-Chrome browsers,
+> or Chromium builds provided by Linux distros) should disable the testing
+> config via the GN flag `disable_fieldtrial_testing_config=true`.
 
 ## Config File Format
 
@@ -45,7 +48,7 @@ array of *study configurations*. The study name in the configuration file
 > rely on the [Feature List API][FeatureListAPI] instead. Nonetheless, if a
 > study has a server-side configuration, the study `name` specified here
 > must still match the name specified in the server-side configuration; this is
-> used to implement sanity-checks on the server.
+> used to implement consistency checks on the server.
 
 ### Study Configurations
 
@@ -80,23 +83,31 @@ for the study. The first experiment matching the active platform will be used.
 
 ### Experiments (Groups)
 Each *experiment* is a dictionary that must contain the `name` key, identifying
-the experiment group name. This name **must** match the FieldTrial experiment
-group name used in the Chromium client code.
+the experiment group name.
 
-> Note: Many newer studies do not use experiment names in the client code at
-> all, and rely on the [Feature List API][FeatureListAPI] instead. Nonetheless,
-> if a study has a server-side configuration, the experiment `name` specified
-> here must still match the name specified in the server-side configuration;
-> this is used to implement sanity-checks on the server.
+> Note: Studies should typically use the [Feature List API][FeatureListAPI]. For
+> such studies, the experiment `name` specified in the testing config is still
+> required (for legacy reasons), but it is ignored. However, the lists of
+> `enable_features`, `disable_features`, and `params` **must** match the server
+> config. This is enforced via server-side Tricorder checks.
+>
+> For old-school studies that do check the actual experiment group name in the
+> client code, the `name` **must** exactly match the client code and the server
+> config.
 
-The remaining keys, `params`, `enable_features`, and `disable_features` are
-optional.
-
-`params` is a dictionary mapping parameter name to parameter.
+The remaining keys -- `enable_features`, `disable_features`, `min_os_version`,
+and `params` -- are optional.
 
 `enable_features` and `disable_features` indicate which features should be
 enabled and disabled, respectively, through the
 [Feature List API][FeatureListAPI].
+
+`min_os_version` indicates a minimum OS version level (e.g. "10.0.0") to apply
+the experiment. This string is decoded as a `base::Version`. The same version is
+applied to all platforms. If you need different versions for different
+platforms, you will need to use different studies.
+
+`params` is a dictionary mapping parameter name to parameter value.
 
 > Reminder: The variations framework does not actually fetch any field trial
 > definitions from the server for Chromium builds, so any feature enabling or

@@ -4,13 +4,12 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/gesture_detection/motion_event_buffer.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 
@@ -68,15 +67,15 @@ class MotionEventBufferTest : public testing::Test,
   }
 
   static base::TimeDelta LargeDelta() {
-    return base::TimeDelta::FromMilliseconds(kLargeDeltaMs);
+    return base::Milliseconds(kLargeDeltaMs);
   }
 
   static base::TimeDelta SmallDelta() {
-    return base::TimeDelta::FromMilliseconds(kSmallDeltaMs);
+    return base::Milliseconds(kSmallDeltaMs);
   }
 
   static base::TimeDelta ResampleDelta() {
-    return base::TimeDelta::FromMilliseconds(kResampleDeltaMs);
+    return base::Milliseconds(kResampleDeltaMs);
   }
 
   static void ExpectEqualsImpl(const MotionEvent& a,
@@ -169,11 +168,10 @@ class MotionEventBufferTest : public testing::Test,
     base::TimeTicks event_time = base::TimeTicks::Now();
     base::TimeTicks flush_time =
         event_time + flush_time_delta - event_time_offset;
-    base::TimeTicks max_event_time =
-        event_time + base::TimeDelta::FromSecondsD(0.5f);
+    base::TimeTicks max_event_time = event_time + base::Seconds(0.5f);
     const size_t min_expected_events =
-        static_cast<size_t>((max_event_time - flush_time) /
-                            std::max(event_time_delta, flush_time_delta));
+        base::ClampFloor<size_t>((max_event_time - flush_time) /
+                                 std::max(event_time_delta, flush_time_delta));
 
     MotionEventBuffer buffer(this, true);
 
@@ -279,7 +277,7 @@ TEST_F(MotionEventBufferTest, BufferFlushedOnNonActionMove) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
   EXPECT_FALSE(GetLastEvent());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // The second move should remain buffered.
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 2.f, 2.f);
@@ -319,7 +317,7 @@ TEST_F(MotionEventBufferTest, BufferFlushedOnIncompatibleActionMove) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
   EXPECT_FALSE(GetLastEvent());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // The second move has a different pointer count, flushing the first.
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 2.f, 2.f, 3.f,
@@ -329,7 +327,7 @@ TEST_F(MotionEventBufferTest, BufferFlushedOnIncompatibleActionMove) {
   ASSERT_TRUE(GetLastEvent());
   EXPECT_EVENT_EQ(move0, *GetLastEvent());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // The third move has differing tool types, flushing the second.
   MockMotionEvent move2(move1);
@@ -338,7 +336,7 @@ TEST_F(MotionEventBufferTest, BufferFlushedOnIncompatibleActionMove) {
   EXPECT_FALSE(GetAndResetNeedsFlush());
   EXPECT_EVENT_EQ(move1, *GetLastEvent());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // The flushed event should only include the latest move event.
   buffer.Flush(event_time);
@@ -348,7 +346,7 @@ TEST_F(MotionEventBufferTest, BufferFlushedOnIncompatibleActionMove) {
   EXPECT_EVENT_EQ(move2, *events.back());
   EXPECT_FALSE(GetAndResetNeedsFlush());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // Events with different pointer ids should not combine.
   PointerProperties pointer0(5.f, 5.f, 1.f);
@@ -425,7 +423,7 @@ TEST_F(MotionEventBufferTest, OutOfOrderPointersBuffered) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
   ASSERT_FALSE(GetLastEvent());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
 
   // The second move should remain buffered even if the logical pointers are
   // in a different order.
@@ -490,7 +488,7 @@ TEST_F(MotionEventBufferTest, FlushedEventsNeverLaterThanFlushTime) {
 
   // Flushing again with a similar timestamp should have no effect other than
   // triggering another flush request.
-  flush_time += base::TimeDelta::FromMilliseconds(1);
+  flush_time += base::Milliseconds(1);
   buffer.Flush(flush_time);
   EXPECT_FALSE(GetLastEvent());
   EXPECT_TRUE(GetAndResetNeedsFlush());
@@ -514,7 +512,7 @@ TEST_F(MotionEventBufferTest, NoResamplingWhenDisabled) {
   ASSERT_FALSE(GetLastEvent());
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 15.f, 30.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
@@ -549,7 +547,7 @@ TEST_F(MotionEventBufferTest, NoResamplingWhenDisabled) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
   // The second move should remain buffered.
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
   move1 = MockMotionEvent(MotionEvent::Action::MOVE, event_time, 10.f, 20.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
@@ -581,7 +579,7 @@ TEST_F(MotionEventBufferTest, NoResamplingWithOutOfOrderActionMove) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
   // The second move should remain buffered.
-  event_time += base::TimeDelta::FromMilliseconds(10);
+  event_time += base::Milliseconds(10);
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 10.f, 20.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
@@ -608,14 +606,14 @@ TEST_F(MotionEventBufferTest, NoResamplingWithOutOfOrderActionMove) {
 
   // Try enqueuing an event *after* the second event but *before* the
   // extrapolated event. It should be dropped.
-  event_time = move1.GetEventTime() + base::TimeDelta::FromMilliseconds(1);
+  event_time = move1.GetEventTime() + base::Milliseconds(1);
   MockMotionEvent move2(MotionEvent::Action::MOVE, event_time, 15.f, 25.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
   EXPECT_FALSE(GetAndResetNeedsFlush());
 
   // Finally queue an event *after* the extrapolated event.
-  event_time = expected_time + base::TimeDelta::FromMilliseconds(1);
+  event_time = expected_time + base::Milliseconds(1);
   MockMotionEvent move3(MotionEvent::Action::MOVE, event_time, 15.f, 25.f);
   buffer.OnMotionEvent(move3);
   ASSERT_FALSE(GetLastEvent());
@@ -704,7 +702,7 @@ TEST_F(MotionEventBufferTest, Interpolation) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
   // The second move should remain buffered.
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 15.f, 30.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
@@ -720,8 +718,8 @@ TEST_F(MotionEventBufferTest, Interpolation) {
 
   // There should only be one flushed event, with the event interpolated between
   // the two events. The second event should remain buffered.
-  float alpha = (interpolated_time - move0.GetEventTime()).InMillisecondsF() /
-                (move1.GetEventTime() - move0.GetEventTime()).InMillisecondsF();
+  const float alpha = (interpolated_time - move0.GetEventTime()) /
+                      (move1.GetEventTime() - move0.GetEventTime());
   MockMotionEvent interpolated_event(
       MotionEvent::Action::MOVE, interpolated_time,
       move0.GetX(0) + (move1.GetX(0) - move0.GetX(0)) * alpha,
@@ -750,7 +748,7 @@ TEST_F(MotionEventBufferTest, Extrapolation) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
   // The second move should remain buffered.
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 10.f, 20.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
@@ -771,9 +769,8 @@ TEST_F(MotionEventBufferTest, Extrapolation) {
   // determining the extrapolated event.
   base::TimeTicks expected_time =
       move1.GetEventTime() + (move1.GetEventTime() - move0.GetEventTime()) / 2;
-  float expected_alpha =
-      (expected_time - move0.GetEventTime()).InMillisecondsF() /
-      (move1.GetEventTime() - move0.GetEventTime()).InMillisecondsF();
+  const float expected_alpha = (expected_time - move0.GetEventTime()) /
+                               (move1.GetEventTime() - move0.GetEventTime());
   MockMotionEvent extrapolated_event(
       MotionEvent::Action::MOVE, expected_time,
       move0.GetX(0) + (move1.GetX(0) - move0.GetX(0)) * expected_alpha,
@@ -797,15 +794,14 @@ TEST_F(MotionEventBufferTest, ExtrapolationHorizonLimited) {
   EXPECT_TRUE(GetAndResetNeedsFlush());
 
   // The second move should remain buffered.
-  event_time += base::TimeDelta::FromMilliseconds(24);
+  event_time += base::Milliseconds(24);
   MockMotionEvent move1(MotionEvent::Action::MOVE, event_time, 10.f, 20.f);
   buffer.OnMotionEvent(move1);
   ASSERT_FALSE(GetLastEvent());
   EXPECT_FALSE(GetAndResetNeedsFlush());
 
   // Sample at a time beyond the first and second events.
-  base::TimeTicks extrapolated_time =
-      event_time + base::TimeDelta::FromMilliseconds(24);
+  base::TimeTicks extrapolated_time = event_time + base::Milliseconds(24);
   base::TimeTicks flush_time = extrapolated_time + ResampleDelta();
   buffer.Flush(flush_time);
   ASSERT_TRUE(GetLastEvent());
@@ -814,11 +810,9 @@ TEST_F(MotionEventBufferTest, ExtrapolationHorizonLimited) {
   // There should only be one flushed event, with the event extrapolated from
   // the two events. The first and second events should be in the history.
   // Note that the maximum extrapolation is limited by 8 ms.
-  base::TimeTicks expected_time =
-      move1.GetEventTime() + base::TimeDelta::FromMilliseconds(8);
-  float expected_alpha =
-      (expected_time - move0.GetEventTime()).InMillisecondsF() /
-      (move1.GetEventTime() - move0.GetEventTime()).InMillisecondsF();
+  base::TimeTicks expected_time = move1.GetEventTime() + base::Milliseconds(8);
+  const float expected_alpha = (expected_time - move0.GetEventTime()) /
+                               (move1.GetEventTime() - move0.GetEventTime());
   MockMotionEvent extrapolated_event(
       MotionEvent::Action::MOVE, expected_time,
       move0.GetX(0) + (move1.GetX(0) - move0.GetX(0)) * expected_alpha,
@@ -833,48 +827,33 @@ TEST_F(MotionEventBufferTest, ExtrapolationHorizonLimited) {
 }
 
 TEST_F(MotionEventBufferTest, Resampling30to60) {
-  base::TimeDelta flush_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-  base::TimeDelta event_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 30.);
-
-  RunResample(flush_time_delta, event_time_delta);
+  constexpr auto kFlushTimeDelta = base::Seconds(1) / 60;
+  constexpr auto kEventTimeDelta = base::Seconds(1) / 30;
+  RunResample(kFlushTimeDelta, kEventTimeDelta);
 }
 
 TEST_F(MotionEventBufferTest, Resampling60to60) {
-  base::TimeDelta flush_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-  base::TimeDelta event_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-
-  RunResample(flush_time_delta, event_time_delta);
+  constexpr auto kFlushTimeDelta = base::Seconds(1) / 60;
+  constexpr auto kEventTimeDelta = base::Seconds(1) / 60;
+  RunResample(kFlushTimeDelta, kEventTimeDelta);
 }
 
 TEST_F(MotionEventBufferTest, Resampling100to60) {
-  base::TimeDelta flush_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-  base::TimeDelta event_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 100.);
-
-  RunResample(flush_time_delta, event_time_delta);
+  constexpr auto kFlushTimeDelta = base::Seconds(1) / 60;
+  constexpr auto kEventTimeDelta = base::Seconds(1) / 100;
+  RunResample(kFlushTimeDelta, kEventTimeDelta);
 }
 
 TEST_F(MotionEventBufferTest, Resampling120to60) {
-  base::TimeDelta flush_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-  base::TimeDelta event_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 120.);
-
-  RunResample(flush_time_delta, event_time_delta);
+  constexpr auto kFlushTimeDelta = base::Seconds(1) / 60;
+  constexpr auto kEventTimeDelta = base::Seconds(1) / 120;
+  RunResample(kFlushTimeDelta, kEventTimeDelta);
 }
 
 TEST_F(MotionEventBufferTest, Resampling150to60) {
-  base::TimeDelta flush_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 60.);
-  base::TimeDelta event_time_delta =
-      base::TimeDelta::FromMillisecondsD(1000. / 150.);
-
-  RunResample(flush_time_delta, event_time_delta);
+  constexpr auto kFlushTimeDelta = base::Seconds(1) / 60;
+  constexpr auto kEventTimeDelta = base::Seconds(1) / 150;
+  RunResample(kFlushTimeDelta, kEventTimeDelta);
 }
 
 }  // namespace ui

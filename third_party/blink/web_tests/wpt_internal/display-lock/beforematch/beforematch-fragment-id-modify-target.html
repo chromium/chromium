@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <div style="height: 2000px;">spacer</div>
+
+  <script>
+
+  test(() => {
+    window.scrollTo(0, 0);
+    assert_true(window.pageYOffset === 0, 'Scroll should reset at the beginning of the test.');
+
+    const div = document.createElement('div');
+    div.textContent = 'move';
+    div.id = 'move';
+    document.body.appendChild(div);
+
+    let beforematchCalled = false;
+    div.addEventListener('beforematc', () => {
+      // Move the matched element 2000px down the page.
+      const spacer = document.createElement('div');
+      spacer.style.height = '2000px';
+      document.body.appendChild(spacer);
+      div.remove();
+      document.body.appendChild(div);
+      beforematchCalled = true;
+    });
+
+    window.location.hash = '#move';
+
+    const offsetAfterMatch = window.pageYOffset;
+    div.scrollIntoView();
+    assert_equals(offsetAfterMatch, window.pageYOffset, `The scroll after beforematch should be the same as scrolling directly to the element's final destination.`);
+  }, 'Verifies that when a beforematch event handler moves a matching element, we scroll to its final location.');
+
+  test(() => {
+    window.scrollTo(0, 0);
+    assert_true(window.pageYOffset === 0, 'Scroll should reset at the beginning of the test.');
+
+    const div = document.createElement('div');
+    div.textContent = 'detach';
+    div.id = 'detach';
+    document.body.appendChild(div);
+
+    let beforematchCalled = false;
+    div.addEventListener('beforematch', () => {
+      div.remove();
+      beforematchCalled = true;
+    });
+
+    window.location.hash = '#detach';
+
+    assert_true(beforematchCalled, 'beforematch should be called when window.location.hash is set to #detach.');
+    assert_true(window.pageYOffset === 0, 'The page should not be scrolled down to where #detach used to be.');
+  }, 'Verifies that no scrolling occurs when an element selected by the fragment identifier is detached by the beforematch event handler.');
+
+  test(() => {
+    window.scrollTo(0, 0);
+    assert_true(window.pageYOffset === 0, 'Scroll should reset at the beginning of the test.');
+
+    const div = document.createElement('div');
+    div.textContent = 'displaynone';
+    div.id = 'displaynone';
+    document.body.appendChild(div);
+
+    let beforematchCalled = false;
+    div.addEventListener('beforematch', () => {
+      div.style = 'display: none';
+      beforematchCalled = true;
+    });
+
+    window.location.hash = '#displaynone';
+
+    assert_true(beforematchCalled, 'beforematch should be called when window.location.hash is set to #displaynone.');
+    assert_true(window.pageYOffset === 0, 'The page should not be scrolled down to where #displaynone used to be.');
+  }, `No scrolling should occur when the beforematch event handler sets the target element's style to display: none.`);
+
+  test(() => {
+    window.scrollTo(0, 0);
+    assert_true(window.pageYOffset === 0, 'Scroll should reset at the beginning of the test.');
+
+    const div = document.createElement('div');
+    div.textContent = 'visibilityhidden';
+    div.id = 'visibilityhidden';
+    document.body.appendChild(div);
+
+    let beforematchCalled = false;
+    div.addEventListener('beforematch', () => {
+      div.style = 'visibility: hidden';
+      beforematchCalled = true;
+    });
+
+    window.location.hash = '#visibilityhidden';
+
+    assert_true(beforematchCalled, 'beforematch should be called when window.location.hash is set to #visibilityhidden.');
+    assert_true(window.pageYOffset !== 0, 'The page should be scrolled down to where #visibilityhidden is.');
+  }, `Scrolling should still occur when beforematch sets visiblity: none on the target element.`);
+
+  // TODO(jarhar): Write more tests here once we decide on a behavior here: https://github.com/WICG/display-locking/issues/150
+
+  </script>
+</body>

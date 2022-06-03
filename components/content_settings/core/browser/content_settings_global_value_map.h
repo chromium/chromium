@@ -22,20 +22,21 @@ class RuleIterator;
 class GlobalValueMap {
  public:
   GlobalValueMap();
+
+  GlobalValueMap(const GlobalValueMap&) = delete;
+  GlobalValueMap& operator=(const GlobalValueMap&) = delete;
+
   ~GlobalValueMap();
 
   // Returns nullptr to indicate the RuleIterator is empty.
   std::unique_ptr<RuleIterator> GetRuleIterator(
-      ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier) const;
+      ContentSettingsType content_type) const;
   void SetContentSetting(ContentSettingsType content_type,
                          ContentSetting setting);
   ContentSetting GetContentSetting(ContentSettingsType content_type) const;
 
  private:
   std::map<ContentSettingsType, ContentSetting> settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalValueMap);
 };
 
 }  // namespace content_settings

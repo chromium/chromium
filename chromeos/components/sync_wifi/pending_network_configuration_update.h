@@ -7,11 +7,10 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -24,7 +23,7 @@ class PendingNetworkConfigurationUpdate {
   PendingNetworkConfigurationUpdate(
       const NetworkIdentifier& id,
       const std::string& change_guid,
-      const base::Optional<sync_pb::WifiConfigurationSpecificsData>& specifics,
+      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
       int completed_attempts);
   PendingNetworkConfigurationUpdate(
       const PendingNetworkConfigurationUpdate& update);
@@ -39,9 +38,8 @@ class PendingNetworkConfigurationUpdate {
   const std::string& change_guid() const { return change_guid_; }
 
   // When null, this is a delete operation, if there is a
-  // WifiConfigurationSpecificsData then it is an add or update.
-  const base::Optional<sync_pb::WifiConfigurationSpecificsData>& specifics()
-      const {
+  // WifiConfigurationSpecifics then it is an add or update.
+  const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics() const {
     return specifics_;
   }
 
@@ -51,9 +49,15 @@ class PendingNetworkConfigurationUpdate {
   bool IsDeleteOperation() const;
 
  private:
+  friend class FakePendingNetworkConfigurationTracker;
+
+  void SetCompletedAttemptsForTesting(int completed_attempts) {
+    completed_attempts_ = completed_attempts;
+  }
+
   NetworkIdentifier id_;
   std::string change_guid_;
-  base::Optional<sync_pb::WifiConfigurationSpecificsData> specifics_;
+  absl::optional<sync_pb::WifiConfigurationSpecifics> specifics_;
   int completed_attempts_;
 };
 

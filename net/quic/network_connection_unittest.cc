@@ -5,8 +5,8 @@
 #include "net/quic/network_connection.h"
 
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -17,7 +17,10 @@ constexpr auto CONNECTION_2G = NetworkChangeNotifier::CONNECTION_2G;
 constexpr auto CONNECTION_ETHERNET = NetworkChangeNotifier::CONNECTION_ETHERNET;
 constexpr auto CONNECTION_WIFI = NetworkChangeNotifier::CONNECTION_WIFI;
 
-class NetworkConnectionTest : public testing::Test {
+// TestWithTaskEnvironment needed to instantiate a
+// net::NetworkChangeNotifier::NetworkChangeNotifier via
+// ScopedMockNetworkChangeNotifier.
+class NetworkConnectionTest : public TestWithTaskEnvironment {
  protected:
   NetworkConnectionTest()
       : notifier_(scoped_notifier_.mock_network_change_notifier()) {}
@@ -68,8 +71,6 @@ TEST_F(NetworkConnectionTest, ConnectionWifi) {
 }
 
 TEST_F(NetworkConnectionTest, ConnectionChange) {
-  base::test::TaskEnvironment task_environment;
-
   notifier_->SetConnectionType(CONNECTION_2G);
 
   NetworkConnection network_connection;

@@ -1,9 +1,9 @@
 include_rules = [
   "-content",
 
+  "+services/cert_verifier/public/mojom",
   "+services/network/public/mojom",
   "+services/service_manager/public",
-  "+services/service_manager/sandbox",
 
   # This file does not belong in content/public as it should not be
   # included directly by embedders of content/.  It must however be

@@ -6,7 +6,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
 #include "net/base/load_flags.h"
@@ -14,6 +15,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace gcm {
 
@@ -23,54 +25,62 @@ const int kRequestVersionValue = 3;
 const int kDefaultUserSerialNumber = 0;
 
 // This enum is also used in an UMA histogram (GCMCheckinRequestStatus
-// enum defined in tools/metrics/histograms/histogram.xml). Hence the entries
-// here shouldn't be deleted or re-ordered and new ones should be added to
-// the end, and update the GetCheckinRequestStatusString(...) below.
-enum CheckinRequestStatus {
-  SUCCESS,                    // Checkin completed successfully.
-  URL_FETCHING_FAILED,        // URL fetching failed.
-  HTTP_BAD_REQUEST,           // The request was malformed.
-  HTTP_UNAUTHORIZED,          // The security token didn't match the android id.
-  HTTP_NOT_OK,                // HTTP status was not OK.
-  RESPONSE_PARSING_FAILED,    // Check in response parsing failed.
-  ZERO_ID_OR_TOKEN,           // Either returned android id or security token
-                              // was zero.
+// enum defined in tools/metrics/histograms/enums.xml). Hence the entries here
+// shouldn't be deleted or re-ordered and new ones should be added to the end,
+// and update the GetCheckinRequestStatusString(...) below.
+enum class CheckinRequestStatus {
+  kSuccess = 0,  // Checkin completed successfully.
+  // kUrlFetchingFailed = 1,
+  kBadRequest = 2,             // The request was malformed.
+  kUnauthorized = 3,           // The security token didn't match the AID.
+  kStatusNotOK = 4,            // HTTP status was not OK.
+  kResponseParsingFailed = 5,  // Check in response parsing failed.
+  kZeroIdOrToken = 6,          // Either returned android id or security token
+                               // was zero.
+  kFailedNetError = 7,         // A network error was returned.
+  kFailedNoResponse = 8,       // No or invalid response info was returned.
+  kFailedNoHeaders = 9,        // No or invalid headers were returned.
+
   // NOTE: always keep this entry at the end. Add new status types only
   // immediately above this line. Make sure to update the corresponding
   // histogram enum accordingly.
-  STATUS_COUNT
+  kMaxValue = kFailedNoHeaders,
 };
 
 // Returns string representation of enum CheckinRequestStatus.
 std::string GetCheckinRequestStatusString(CheckinRequestStatus status) {
   switch (status) {
-    case SUCCESS:
-      return "SUCCESS";
-    case URL_FETCHING_FAILED:
-      return "URL_FETCHING_FAILED";
-    case HTTP_BAD_REQUEST:
-      return "HTTP_BAD_REQUEST";
-    case HTTP_UNAUTHORIZED:
-      return "HTTP_UNAUTHORIZED";
-    case HTTP_NOT_OK:
-      return "HTTP_NOT_OK";
-    case RESPONSE_PARSING_FAILED:
-      return "RESPONSE_PARSING_FAILED";
-    case ZERO_ID_OR_TOKEN:
-      return "ZERO_ID_OR_TOKEN";
-    case STATUS_COUNT:
-      NOTREACHED();
-      break;
+    case CheckinRequestStatus::kSuccess:
+      return "Success";
+    case CheckinRequestStatus::kBadRequest:
+      return "Failed: HTTP 400 Bad Request";
+    case CheckinRequestStatus::kUnauthorized:
+      return "Failed: HTTP 401 Unauthorized";
+    case CheckinRequestStatus::kStatusNotOK:
+      return "Failed: HTTP not OK";
+    case CheckinRequestStatus::kResponseParsingFailed:
+      return "Failed: Response parsing failed";
+    case CheckinRequestStatus::kZeroIdOrToken:
+      return "Failed: Zero Android ID or security token";
+    case CheckinRequestStatus::kFailedNetError:
+      return "Failed: Network error";
+    case CheckinRequestStatus::kFailedNoResponse:
+      return "Failed: No response";
+    case CheckinRequestStatus::kFailedNoHeaders:
+      return "Failed: No headers";
   }
-  return "UNKNOWN_STATUS";
+
+  NOTREACHED();
+  return "Failed: Unknown reason";
 }
 
 // Records checkin status to both stats recorder and reports to UMA.
 void RecordCheckinStatusAndReportUMA(CheckinRequestStatus status,
                                      GCMStatsRecorder* recorder,
                                      bool will_retry) {
-  UMA_HISTOGRAM_ENUMERATION("GCM.CheckinRequestStatus", status, STATUS_COUNT);
-  if (status == SUCCESS)
+  base::UmaHistogramEnumeration("GCM.CheckinRequestStatus", status);
+
+  if (status == CheckinRequestStatus::kSuccess)
     recorder->RecordCheckinSuccess();
   else {
     recorder->RecordCheckinFailure(GetCheckinRequestStatusString(status),
@@ -94,18 +104,18 @@ CheckinRequest::RequestInfo::RequestInfo(
 
 CheckinRequest::RequestInfo::RequestInfo(const RequestInfo& other) = default;
 
-CheckinRequest::RequestInfo::~RequestInfo() {}
+CheckinRequest::RequestInfo::~RequestInfo() = default;
 
 CheckinRequest::CheckinRequest(
     const GURL& checkin_url,
     const RequestInfo& request_info,
     const net::BackoffEntry::Policy& backoff_policy,
-    const CheckinRequestCallback& callback,
+    CheckinRequestCallback callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder)
     : url_loader_factory_(url_loader_factory),
-      callback_(callback),
+      callback_(std::move(callback)),
       backoff_entry_(&backoff_policy),
       checkin_url_(checkin_url),
       request_info_(request_info),
@@ -114,7 +124,7 @@ CheckinRequest::CheckinRequest(
   DCHECK(io_task_runner_);
 }
 
-CheckinRequest::~CheckinRequest() {}
+CheckinRequest::~CheckinRequest() = default;
 
 void CheckinRequest::Start() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -130,7 +140,7 @@ void CheckinRequest::Start() {
 
   checkin_proto::AndroidCheckinProto* checkin = request.mutable_checkin();
   checkin->mutable_chrome_build()->CopyFrom(request_info_.chrome_build_proto);
-#if defined(CHROME_OS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   checkin->set_type(checkin_proto::DEVICE_CHROME_OS);
 #else
   checkin->set_type(checkin_proto::DEVICE_CHROME_BROWSER);
@@ -217,14 +227,31 @@ void CheckinRequest::RetryWithBackoff() {
 
 void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
                                        std::unique_ptr<std::string> body) {
-  checkin_proto::AndroidCheckinResponse response_proto;
-  if (source->NetError() != net::OK || !source->ResponseInfo() ||
-      !source->ResponseInfo()->headers) {
-    LOG(ERROR) << "Failed to get checkin response. Fetcher failed. Retrying.";
-    RecordCheckinStatusAndReportUMA(URL_FETCHING_FAILED, recorder_, true);
+  if (source->NetError() != net::OK) {
+    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNetError,
+                                    recorder_, /* will_retry= */ true);
+    base::UmaHistogramSparse("GCM.CheckinRequestStatusNetError",
+                             std::abs(source->NetError()));
+
     RetryWithBackoff();
     return;
   }
+
+  if (!source->ResponseInfo()) {
+    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoResponse,
+                                    recorder_, /* will_retry= */ true);
+    RetryWithBackoff();
+    return;
+  }
+
+  if (!source->ResponseInfo()->headers) {
+    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoHeaders,
+                                    recorder_, /* will_retry= */ true);
+    RetryWithBackoff();
+    return;
+  }
+
+  checkin_proto::AndroidCheckinResponse response_proto;
 
   net::HttpStatusCode response_status = static_cast<net::HttpStatusCode>(
       source->ResponseInfo()->headers->response_code());
@@ -232,22 +259,24 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
       response_status == net::HTTP_UNAUTHORIZED) {
     // BAD_REQUEST indicates that the request was malformed.
     // UNAUTHORIZED indicates that security token didn't match the android id.
-    LOG(ERROR) << "No point retrying the checkin with status: "
-               << response_status << ". Checkin failed.";
-    CheckinRequestStatus status = response_status == net::HTTP_BAD_REQUEST ?
-        HTTP_BAD_REQUEST : HTTP_UNAUTHORIZED;
-    RecordCheckinStatusAndReportUMA(status, recorder_, false);
-    callback_.Run(response_status, response_proto);
+    CheckinRequestStatus status = response_status == net::HTTP_BAD_REQUEST
+                                      ? CheckinRequestStatus::kBadRequest
+                                      : CheckinRequestStatus::kUnauthorized;
+    RecordCheckinStatusAndReportUMA(status, recorder_, /* will_retry= */ false);
+    std::move(callback_).Run(response_status, response_proto);
     return;
   }
 
   if (response_status != net::HTTP_OK || !body ||
       !response_proto.ParseFromString(*body)) {
-    LOG(ERROR) << "Failed to get checkin response. HTTP Status: "
+    LOG(ERROR) << "Failed to parse checkin response. HTTP Status: "
                << response_status << ". Retrying.";
-    CheckinRequestStatus status = response_status != net::HTTP_OK ?
-        HTTP_NOT_OK : RESPONSE_PARSING_FAILED;
-    RecordCheckinStatusAndReportUMA(status, recorder_, true);
+
+    CheckinRequestStatus status =
+        response_status != net::HTTP_OK
+            ? CheckinRequestStatus::kStatusNotOK
+            : CheckinRequestStatus::kResponseParsingFailed;
+    RecordCheckinStatusAndReportUMA(status, recorder_, /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
@@ -256,14 +285,15 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
       !response_proto.has_security_token() ||
       response_proto.android_id() == 0 ||
       response_proto.security_token() == 0) {
-    LOG(ERROR) << "Android ID or security token is 0. Retrying.";
-    RecordCheckinStatusAndReportUMA(ZERO_ID_OR_TOKEN, recorder_, true);
+    RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kZeroIdOrToken,
+                                    recorder_, /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
 
-  RecordCheckinStatusAndReportUMA(SUCCESS, recorder_, false);
-  callback_.Run(response_status, response_proto);
+  RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kSuccess, recorder_,
+                                  /* will_retry= */ false);
+  std::move(callback_).Run(response_status, response_proto);
 }
 
 }  // namespace gcm

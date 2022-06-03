@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.util.Log;
@@ -13,6 +14,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +42,7 @@ public class AndroidProtocolHandler {
      * @return An InputStream to the Android resource.
      */
     @CalledByNative
-    public static InputStream open(String url) {
+    public static InputStream open(GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
@@ -93,8 +95,14 @@ public class AndroidProtocolHandler {
 
     private static int getFieldId(String assetType, String assetName)
             throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        Context appContext = ContextUtils.getApplicationContext();
+        String packageName = appContext.getPackageName();
+        int id = appContext.getResources().getIdentifier(assetName, assetType, packageName);
+        if (id != 0) {
+            return id;
+        }
+        // Fail back to reflection if getIdentifier fails, see https://crbug.com/923956.
         Class<?> clazz = null;
-        String packageName = ContextUtils.getApplicationContext().getPackageName();
         try {
             clazz = getClazz(packageName, assetType);
         } catch (ClassNotFoundException e) {
@@ -111,9 +119,9 @@ public class AndroidProtocolHandler {
                 }
             }
         }
-
         java.lang.reflect.Field field = clazz.getField(assetName);
-        int id = field.getInt(null);
+        id = field.getInt(null);
+
         return id;
     }
 
@@ -200,7 +208,7 @@ public class AndroidProtocolHandler {
      * @return The mime type or null if the type is unknown.
      */
     @CalledByNative
-    public static String getMimeType(InputStream stream, String url) {
+    public static String getMimeType(InputStream stream, GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
@@ -209,63 +217,37 @@ public class AndroidProtocolHandler {
             String path = uri.getPath();
             // The content URL type can be queried directly.
             if (uri.getScheme().equals(CONTENT_SCHEME)) {
-                String mimeType =
-                        ContextUtils.getApplicationContext().getContentResolver().getType(uri);
-                if (mimeType == null) {
-                    AwHistogramRecorder.recordMimeType(
-                            AwHistogramRecorder.MimeType.NULL_FROM_CONTENT_PROVIDER);
-                } else {
-                    AwHistogramRecorder.recordMimeType(
-                            AwHistogramRecorder.MimeType.NONNULL_FROM_CONTENT_PROVIDER);
-                }
-                return mimeType;
+                return ContextUtils.getApplicationContext().getContentResolver().getType(uri);
                 // Asset files may have a known extension.
             } else if (uri.getScheme().equals(FILE_SCHEME)
                     && path.startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath())) {
                 String mimeType = URLConnection.guessContentTypeFromName(path);
-                if (mimeType == null) {
-                    AwHistogramRecorder.recordMimeType(
-                            AwHistogramRecorder.MimeType.CANNOT_GUESS_FROM_ANDROID_ASSET_PATH);
-                    // Do not return yet, try guessing from the stream.
-                } else {
-                    AwHistogramRecorder.recordMimeType(
-                            AwHistogramRecorder.MimeType.GUESSED_FROM_ANDROID_ASSET_PATH);
+                if (mimeType != null) {
                     return mimeType;
                 }
             }
         } catch (Exception ex) {
             Log.e(TAG, "Unable to get mime type" + url);
-            AwHistogramRecorder.recordMimeType(
-                    AwHistogramRecorder.MimeType.CANNOT_GUESS_DUE_TO_GENERIC_EXCEPTION);
             return null;
         }
         // Fall back to sniffing the type from the stream.
         try {
-            String mimeType = URLConnection.guessContentTypeFromStream(stream);
-            if (mimeType == null) {
-                AwHistogramRecorder.recordMimeType(
-                        AwHistogramRecorder.MimeType.CANNOT_GUESS_FROM_ANDROID_ASSET_INPUT_STREAM);
-            } else {
-                AwHistogramRecorder.recordMimeType(
-                        AwHistogramRecorder.MimeType.GUESSED_FROM_ANDROID_ASSET_INPUT_STREAM);
-            }
-            return mimeType;
+            return URLConnection.guessContentTypeFromStream(stream);
         } catch (IOException e) {
-            AwHistogramRecorder.recordMimeType(
-                    AwHistogramRecorder.MimeType.CANNOT_GUESS_DUE_TO_IO_EXCEPTION);
             return null;
         }
     }
 
     /**
-     * Make sure the given string URL is correctly formed and parse it into a Uri.
+     * Make sure the given GURL is correctly formed and parse it into a Uri.
      *
      * @return a Uri instance, or null if the URL was invalid.
      */
-    private static Uri verifyUrl(String url) {
+    private static Uri verifyUrl(GURL url) {
         if (url == null) return null;
         if (url.isEmpty()) return null;
-        Uri uri = Uri.parse(url); // Never null. parse() doesn't actually parse or verify anything.
+        Uri uri = Uri.parse(
+                url.getSpec()); // Never null. parse() doesn't actually parse or verify anything.
         String path = uri.getPath();
         if (path == null || path.isEmpty() || path.equals("/")) {
             Log.e(TAG, "URL does not have a path: " + url);

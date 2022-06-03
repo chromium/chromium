@@ -1,0 +1,30 @@
+Tests that the touch events originating on an input element with type=range update the slider position. This test is only expected to pass if ENABLE_TOUCH_SLIDER is defined.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS event.touches[0].target.id is "slider1"
+PASS sliderValue is "50"
+PASS sliderValue is "50"
+PASS sliderValue is "0"
+FAIL sliderValue should be 100. Was 66.
+FAIL sliderValue should be 50. Was 30.
+PASS event.touches[0].target.id is "slider2"
+PASS sliderValue is "50"
+PASS sliderValue is "50"
+FAIL sliderValue should be 0. Was 50.
+FAIL sliderValue should be 100. Was 50.
+PASS sliderValue is "50"
+PASS event.touches[0].target.id is "slider3"
+PASS sliderValue is "50"
+PASS sliderValue is "50"
+FAIL sliderValue should be 0. Was 65.
+PASS sliderValue is "100"
+FAIL sliderValue should be 50. Was 100.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

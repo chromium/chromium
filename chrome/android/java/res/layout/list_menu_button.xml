@@ -5,16 +5,16 @@
      found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ui.widget.listmenu.ListMenuButton
+<org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/more"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/selectable_list_layout_row_padding"
-    android:paddingEnd="@dimen/selectable_list_layout_row_padding"
+    android:paddingStart="@dimen/default_list_row_padding"
+    android:paddingEnd="@dimen/default_list_row_padding"
     android:background="@null"
     android:src="@drawable/ic_more_vert_24dp"
-    app:tint="@color/standard_mode_tint"
+    app:tint="@color/default_icon_color_tint_list"
     tools:ignore="ContentDescription" />

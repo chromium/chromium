@@ -47,8 +47,6 @@ class TextTrackLoaderClient : public GarbageCollectedMixin {
 class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
                               public RawResourceClient,
                               private VTTParserClient {
-  USING_GARBAGE_COLLECTED_MIXIN(TextTrackLoader);
-
  public:
   TextTrackLoader(TextTrackLoaderClient&, Document&);
   ~TextTrackLoader() override;
@@ -62,7 +60,7 @@ class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
   void GetNewCues(HeapVector<Member<TextTrackCue>>& output_cues);
   void GetNewStyleSheets(HeapVector<Member<CSSStyleSheet>>& output_sheets);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // RawResourceClient
@@ -83,11 +81,11 @@ class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
   Member<VTTParser> cue_parser_;
   // FIXME: Remove this pointer and get the Document from m_client.
   Member<Document> document_;
-  TaskRunnerTimer<TextTrackLoader> cue_load_timer_;
+  HeapTaskRunnerTimer<TextTrackLoader> cue_load_timer_;
   State state_;
   bool new_cues_available_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_TEXT_TRACK_LOADER_H_

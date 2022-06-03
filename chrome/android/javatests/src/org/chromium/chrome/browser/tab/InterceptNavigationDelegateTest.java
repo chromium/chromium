@@ -5,46 +5,57 @@
 package org.chromium.chrome.browser.tab;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
 
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationParams;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.external_intents.ExternalNavigationParams;
+import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.navigation_interception.NavigationParams;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for InterceptNavigationDelegate
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class InterceptNavigationDelegateTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String BASE_PAGE = "/chrome/test/data/navigation_interception/";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
@@ -61,6 +72,8 @@ public class InterceptNavigationDelegateTest {
             BASE_PAGE + "navigation_from_image_onload.html";
     private static final String NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE =
             BASE_PAGE + "navigation_from_user_gesture_to_iframe_page.html";
+    private static final String NAVIGATION_FROM_PRERENDERING_PAGE =
+            BASE_PAGE + "navigation_from_prerender.html";
 
     private static final long DEFAULT_MAX_TIME_TO_WAIT_IN_MS = 3000;
     private static final long LONG_MAX_TIME_TO_WAIT_IN_MS = 20000;
@@ -72,42 +85,39 @@ public class InterceptNavigationDelegateTest {
 
     class TestExternalNavigationHandler extends ExternalNavigationHandler {
         public TestExternalNavigationHandler() {
-            super(mActivity.getActivityTab());
+            super(new ExternalNavigationDelegateImpl(mActivity.getActivityTab()));
         }
 
         @Override
-        public @OverrideUrlLoadingResult int shouldOverrideUrlLoading(
-                ExternalNavigationParams params) {
+        public OverrideUrlLoadingResult shouldOverrideUrlLoading(ExternalNavigationParams params) {
             mExternalNavParamHistory.add(params);
-            return OverrideUrlLoadingResult.NO_OVERRIDE;
+            return OverrideUrlLoadingResult.forNoOverride();
         }
     }
 
     private void waitTillExpectedCallsComplete(int count, long timeout) {
-        CriteriaHelper.pollUiThread(
-                Criteria.equals(count, new Callable<Integer>() {
-                    @Override
-                    public Integer call() {
-                        return mNavParamHistory.size();
-                    }
-                }), timeout, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mNavParamHistory.size(), Matchers.is(count));
+        }, timeout, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = sActivityTestRule.getActivity();
         final Tab tab = mActivity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(tab) {
+            InterceptNavigationDelegateClientImpl client =
+                    new InterceptNavigationDelegateClientImpl(tab);
+            InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(client) {
                 @Override
                 public boolean shouldIgnoreNavigation(NavigationParams navigationParams) {
                     mNavParamHistory.add(navigationParams);
                     return super.shouldIgnoreNavigation(navigationParams);
                 }
             };
+            client.initializeWithDelegate(delegate);
             delegate.setExternalNavigationHandler(new TestExternalNavigationHandler());
-            InterceptNavigationDelegateImpl.initDelegateForTesting(tab, delegate);
+            delegate.associateWithWebContents(tab.getWebContents());
         });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
@@ -120,7 +130,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromTimer() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
@@ -131,7 +141,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromUserGesture() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -144,7 +154,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallback() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -157,7 +167,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallbackAndShortTimeout() throws TimeoutException {
-        mActivityTestRule.loadUrl(
+        sActivityTestRule.loadUrl(
                 mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
@@ -171,7 +181,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallbackAndLongTimeout() throws TimeoutException {
-        mActivityTestRule.loadUrl(
+        sActivityTestRule.loadUrl(
                 mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LONG_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
@@ -184,7 +194,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromImageOnLoad() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_IMAGE_ONLOAD_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_IMAGE_ONLOAD_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -197,7 +207,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @MediumTest
     public void testExternalAppIframeNavigation() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -207,6 +217,23 @@ public class InterceptNavigationDelegateTest {
         Assert.assertTrue(mNavParamHistory.get(2).isExternalProtocol);
         Assert.assertFalse(mNavParamHistory.get(2).isMainFrame);
         Assert.assertTrue(
-                mExternalNavParamHistory.get(2).getRedirectHandler().shouldStayInChrome(true));
+                mExternalNavParamHistory.get(2).getRedirectHandler().shouldStayInApp(true, false));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.PRERENDER2})
+    public void testExternalAppPrerenderingNavigation() throws TimeoutException {
+        // Ensure that a prerendering main frame doesn't call into the delegate.
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDERING_PAGE));
+        Assert.assertEquals(1, mNavParamHistory.size());
+
+        // The click will reload the page with a user gesture. The delegate
+        // should still only hear about the navigation in the primary main
+        // frame, not the prerendering one.
+        DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "link");
+        waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
+        Assert.assertEquals(2, mNavParamHistory.size());
+        Assert.assertEquals(2, mExternalNavParamHistory.size());
     }
 }

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/host/resource_host.h"
 
 namespace content {
@@ -20,20 +19,16 @@ class PepperFlashFullscreenHost : public ppapi::host::ResourceHost {
   PepperFlashFullscreenHost(content::RendererPpapiHost* host,
                             PP_Instance instance,
                             PP_Resource resource);
+
+  PepperFlashFullscreenHost(const PepperFlashFullscreenHost&) = delete;
+  PepperFlashFullscreenHost& operator=(const PepperFlashFullscreenHost&) =
+      delete;
+
   ~PepperFlashFullscreenHost() override;
 
   int32_t OnResourceMessageReceived(
       const IPC::Message& msg,
       ppapi::host::HostMessageContext* context) override;
-
- private:
-  int32_t OnSetFullscreen(ppapi::host::HostMessageContext* context,
-                          bool fullscreen);
-
-  // Non-owning pointer.
-  content::RendererPpapiHost* renderer_ppapi_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFlashFullscreenHost);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_FLASH_FULLSCREEN_HOST_H_

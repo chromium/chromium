@@ -4,8 +4,11 @@
 
 #include "chrome/browser/media/webrtc/test_stats_dictionary.h"
 
+#include <memory>
+
+#include "base/check.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -20,10 +23,9 @@ TestStatsReportDictionary::~TestStatsReportDictionary() {
 
 void TestStatsReportDictionary::ForEach(
     std::function<void(const TestStatsDictionary&)> iteration) {
-  for (base::DictionaryValue::Iterator it(*report_); !it.IsAtEnd();
-       it.Advance()) {
+  for (auto it : report_->DictItems()) {
     const base::DictionaryValue* it_value;
-    CHECK(it.value().GetAsDictionary(&it_value));
+    CHECK(it.second.GetAsDictionary(&it_value));
     iteration(TestStatsDictionary(this, it_value));
   }
 }
@@ -43,8 +45,7 @@ std::unique_ptr<TestStatsDictionary> TestStatsReportDictionary::Get(
   const base::DictionaryValue* dictionary;
   if (!report_->GetDictionary(id, &dictionary))
     return nullptr;
-  return std::unique_ptr<TestStatsDictionary>(
-      new TestStatsDictionary(this, dictionary));
+  return std::make_unique<TestStatsDictionary>(this, dictionary);
 }
 
 std::vector<TestStatsDictionary> TestStatsReportDictionary::GetAll() {
@@ -147,7 +148,11 @@ bool TestStatsDictionary::GetBoolean(
 
 bool TestStatsDictionary::GetNumber(
     const std::string& key, double* out) const {
-  return stats_->GetDouble(key, out);
+  if (absl::optional<double> value = stats_->FindDoubleKey(key)) {
+    *out = *value;
+    return true;
+  }
+  return false;
 }
 
 bool TestStatsDictionary::GetString(
@@ -162,11 +167,11 @@ bool TestStatsDictionary::GetSequenceBoolean(
   if (!stats_->GetList(key, &list))
     return false;
   std::vector<bool> sequence;
-  bool element;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    if (!list->GetBoolean(i, &element))
+  base::Value::ConstListView args_list = list->GetList();
+  for (const base::Value& arg : args_list) {
+    if (!arg.is_bool())
       return false;
-    sequence.push_back(element);
+    sequence.push_back(arg.GetBool());
   }
   *out = std::move(sequence);
   return true;
@@ -175,17 +180,19 @@ bool TestStatsDictionary::GetSequenceBoolean(
 bool TestStatsDictionary::GetSequenceNumber(
     const std::string& key,
     std::vector<double>* out) const {
-  const base::ListValue* list;
-  if (!stats_->GetList(key, &list))
+  const base::Value* number_sequence = stats_->FindListKey(key);
+  if (!number_sequence)
     return false;
-  std::vector<double> sequence;
-  double element;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    if (!list->GetDouble(i, &element))
+
+  out->clear();
+  for (const base::Value& element : number_sequence->GetList()) {
+    absl::optional<double> double_value = element.GetIfDouble();
+    if (!double_value)
       return false;
-    sequence.push_back(element);
+
+    out->push_back(*double_value);
   }
-  *out = std::move(sequence);
+
   return true;
 }
 
@@ -197,7 +204,7 @@ bool TestStatsDictionary::GetSequenceString(
     return false;
   std::vector<std::string> sequence;
   std::string element;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (!list->GetString(i, &element))
       return false;
     sequence.push_back(element);

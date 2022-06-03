@@ -18,19 +18,27 @@ namespace content {
 class CONTENT_EXPORT SmsQueue {
  public:
   SmsQueue();
+
+  SmsQueue(const SmsQueue&) = delete;
+  SmsQueue& operator=(const SmsQueue&) = delete;
+
   ~SmsQueue();
 
+  using FailureType = SmsFetchFailureType;
   using Subscriber = SmsFetcher::Subscriber;
 
-  void Push(const url::Origin& origin, Subscriber* subscriber);
-  Subscriber* Pop(const url::Origin& origin);
-  void Remove(const url::Origin& origin, Subscriber* subscriber);
+  void Push(const OriginList& origin_list, Subscriber* subscriber);
+  Subscriber* Pop(const OriginList& origin_list);
+  void Remove(const OriginList& origin_list, Subscriber* subscriber);
   bool HasSubscribers();
+  bool HasSubscriber(const OriginList& origin_list,
+                     const Subscriber* subscriber);
+  // Pops and notifies the first subscriber of an origin iff there's one origin
+  // in the |subscribers_| map. Returns true if the failure is handled.
+  bool NotifyFailure(FailureType failure_type);
 
  private:
-  std::map<url::Origin, base::ObserverList<Subscriber>> subscribers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsQueue);
+  std::map<OriginList, base::ObserverList<Subscriber>> subscribers_;
 };
 
 }  // namespace content

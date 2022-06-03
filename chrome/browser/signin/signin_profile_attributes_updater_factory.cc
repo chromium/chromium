@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_profile_attributes_updater.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -30,7 +29,6 @@ SigninProfileAttributesUpdaterFactory::SigninProfileAttributesUpdaterFactory()
           "SigninProfileAttributesUpdater",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SigninErrorControllerFactory::GetInstance());
 }
 
 SigninProfileAttributesUpdaterFactory::
@@ -45,7 +43,6 @@ KeyedService* SigninProfileAttributesUpdaterFactory::BuildServiceInstanceFor(
 
   return new SigninProfileAttributesUpdater(
       IdentityManagerFactory::GetForProfile(profile),
-      SigninErrorControllerFactory::GetForProfile(profile),
       &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
       profile->GetPath(), profile->GetPrefs());
 }

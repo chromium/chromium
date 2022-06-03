@@ -4,20 +4,18 @@
 
 #include "components/component_updater/component_updater_service.h"
 
-#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -47,81 +45,58 @@ namespace component_updater {
 
 class MockInstaller : public CrxInstaller {
  public:
-  MockInstaller();
-
-  // gMock does not support mocking functions with parameters which have
-  // move semantics. This function is a shim to work around it.
-  void Install(const base::FilePath& unpack_path,
-               const std::string& public_key,
-               update_client::CrxInstaller::Callback callback) override {
-    DoInstall(unpack_path, callback);
-  }
-
+  MockInstaller() = default;
   MOCK_METHOD1(OnUpdateError, void(int error));
-  MOCK_METHOD2(DoInstall,
+  MOCK_METHOD5(Install,
                void(const base::FilePath& unpack_path,
-                    const update_client::CrxInstaller::Callback& callback));
+                    const std::string& public_key,
+                    std::unique_ptr<InstallParams> install_params,
+                    ProgressCallback progress_callback,
+                    Callback callback));
   MOCK_METHOD2(GetInstalledFile,
                bool(const std::string& file, base::FilePath* installed_file));
   MOCK_METHOD0(Uninstall, bool());
 
  private:
-  ~MockInstaller() override;
+  ~MockInstaller() override = default;
 };
 
 class MockUpdateClient : public UpdateClient {
  public:
-  MockUpdateClient();
-
-  // gMock does not support mocking functions with parameters which have
-  // move semantics. This function is a shim to work around it.
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               Callback callback) override {
-    DoInstall(id);
-    std::move(callback).Run(update_client::Error::NONE);
-  }
-
-  void Update(const std::vector<std::string>& ids,
-              CrxDataCallback crx_data_callback,
-              bool is_foreground,
-              Callback callback) override {
-    // All update calls initiated by the component update service are
-    // automatically triggered as background updates without user intervention.
-    EXPECT_FALSE(is_foreground);
-    DoUpdate(ids);
-    std::move(callback).Run(update_client::Error::NONE);
-  }
-
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
-                         int reason,
-                         Callback callback) override {
-    DoSendUninstallPing(id, version, reason);
-    std::move(callback).Run(update_client::Error::NONE);
-  }
+  MockUpdateClient() = default;
 
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
-  MOCK_METHOD1(DoInstall, void(const std::string& id));
-  MOCK_METHOD1(DoUpdate, void(const std::vector<std::string>& ids));
+  MOCK_METHOD4(Install,
+               void(const std::string& id,
+                    CrxDataCallback crx_data_callback,
+                    CrxStateChangeCallback crx_state_change_callback,
+                    Callback callback));
+  MOCK_METHOD5(Update,
+               void(const std::vector<std::string>& ids,
+                    CrxDataCallback crx_data_callback,
+                    CrxStateChangeCallback crx_state_change_callback,
+                    bool is_foreground,
+                    Callback callback));
   MOCK_CONST_METHOD2(GetCrxUpdateState,
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD3(DoSendUninstallPing,
-               void(const std::string& id,
-                    const base::Version& version,
-                    int reason));
+  MOCK_METHOD3(SendUninstallPing,
+               void(const CrxComponent& crx_component,
+                    int reason,
+                    Callback callback));
+  MOCK_METHOD2(SendRegistrationPing,
+               void(const CrxComponent& crx_component, Callback callback));
 
  private:
-  ~MockUpdateClient() override;
+  ~MockUpdateClient() override = default;
 };
 
 class MockServiceObserver : public ServiceObserver {
  public:
-  MockServiceObserver();
-  ~MockServiceObserver() override;
+  MockServiceObserver() = default;
+  ~MockServiceObserver() override = default;
 
   MOCK_METHOD2(OnEvent, void(Events event, const std::string&));
 };
@@ -136,14 +111,48 @@ class MockUpdateScheduler : public UpdateScheduler {
   MOCK_METHOD0(Stop, void());
 };
 
+class LoopHandler {
+ public:
+  explicit LoopHandler(int max_cnt, base::OnceClosure quit_closure)
+      : max_cnt_(max_cnt), quit_closure_(std::move(quit_closure)) {}
+
+  void OnInstall(const std::string&,
+                 UpdateClient::CrxDataCallback,
+                 UpdateClient::CrxStateChangeCallback,
+                 Callback callback) {
+    Handle(std::move(callback));
+  }
+
+  void OnUpdate(const std::vector<std::string>&,
+                UpdateClient::CrxDataCallback,
+                UpdateClient::CrxStateChangeCallback,
+                bool is_foreground,
+                Callback callback) {
+    EXPECT_FALSE(is_foreground);
+    Handle(std::move(callback));
+  }
+
+ private:
+  void Handle(Callback callback) {
+    ++cnt_;
+    if (cnt_ >= max_cnt_) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(quit_closure_));
+    }
+    std::move(callback).Run(update_client::Error::NONE);
+  }
+
+  const int max_cnt_ = 0;
+  base::OnceClosure quit_closure_;
+  int cnt_ = 0;
+};
+
 class ComponentUpdaterTest : public testing::Test {
  public:
   ComponentUpdaterTest();
+  ComponentUpdaterTest(const ComponentUpdaterTest&) = delete;
+  ComponentUpdaterTest& operator=(const ComponentUpdaterTest&) = delete;
   ~ComponentUpdaterTest() override;
-
-  void SetUp() override;
-
-  void TearDown() override;
 
   // Makes the full path to a component updater test file.
   const base::FilePath test_file(const char* file);
@@ -153,7 +162,6 @@ class ComponentUpdaterTest : public testing::Test {
   scoped_refptr<TestConfigurator> configurator() const { return config_; }
   base::OnceClosure quit_closure() { return runloop_.QuitClosure(); }
   MockUpdateScheduler& scheduler() { return *scheduler_; }
-  static void ReadyCallback() {}
 
  protected:
   void RunThreads();
@@ -174,8 +182,6 @@ class ComponentUpdaterTest : public testing::Test {
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ComponentUpdateService> component_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterTest);
 };
 
 class OnDemandTester {
@@ -190,24 +196,6 @@ class OnDemandTester {
 
   update_client::Error error_ = update_client::Error::NONE;
 };
-
-MockInstaller::MockInstaller() {
-}
-
-MockInstaller::~MockInstaller() {
-}
-
-MockUpdateClient::MockUpdateClient() {
-}
-
-MockUpdateClient::~MockUpdateClient() {
-}
-
-MockServiceObserver::MockServiceObserver() {
-}
-
-MockServiceObserver::~MockServiceObserver() {
-}
 
 void OnDemandTester::OnDemand(ComponentUpdateService* cus,
                               const std::string& id,
@@ -243,12 +231,6 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
 ComponentUpdaterTest::~ComponentUpdaterTest() {
   EXPECT_CALL(update_client(), RemoveObserver(_)).Times(1);
   component_updater_.reset();
-}
-
-void ComponentUpdaterTest::SetUp() {
-}
-
-void ComponentUpdaterTest::TearDown() {
 }
 
 void ComponentUpdaterTest::RunThreads() {
@@ -299,23 +281,6 @@ TEST_F(ComponentUpdaterTest, RemoveObserver) {
 // components are registered, and the component update starts.
 // Also tests that Uninstall is called when a component is unregistered.
 TEST_F(ComponentUpdaterTest, RegisterComponent) {
-  class LoopHandler {
-   public:
-    LoopHandler(int max_cnt, base::OnceClosure quit_closure)
-        : max_cnt_(max_cnt), quit_closure_(std::move(quit_closure)) {}
-
-    void OnUpdate(const std::vector<std::string>& ids) {
-      static int cnt = 0;
-      ++cnt;
-      if (cnt >= max_cnt_)
-        std::move(quit_closure_).Run();
-    }
-
-   private:
-    const int max_cnt_;
-    base::OnceClosure quit_closure_;
-  };
-
   base::HistogramTester ht;
 
   scoped_refptr<MockInstaller> installer =
@@ -345,7 +310,7 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
 
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
-  EXPECT_CALL(update_client(), DoUpdate(ids))
+  EXPECT_CALL(update_client(), Update(_, _, _, _, _))
       .WillRepeatedly(Invoke(&loop_handler, &LoopHandler::OnUpdate));
 
   EXPECT_CALL(update_client(), IsUpdating(id1)).Times(1);
@@ -366,35 +331,6 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
 
 // Tests that on-demand updates invoke UpdateClient::Install.
 TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
-  class LoopHandler {
-   public:
-    explicit LoopHandler(int max_cnt) : max_cnt_(max_cnt) {}
-
-    void OnInstall(const std::string& ids) {
-      ++cnt_;
-      if (cnt_ >= max_cnt_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&LoopHandler::Quit, base::Unretained(this)));
-      }
-    }
-
-    void OnUpdate(const std::vector<std::string>& ids) {
-      ++cnt_;
-      if (cnt_ >= max_cnt_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&LoopHandler::Quit, base::Unretained(this)));
-      }
-    }
-
-   private:
-    void Quit() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
-
-    int cnt_ = 0;
-    const int max_cnt_;
-  };
-
   base::HistogramTester ht;
 
   // Don't run periodic update task.
@@ -415,13 +351,11 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   // components have registered, calls to |Install| and |Update| corresponding
   // to each |OnDemand| invocation, and calls to |Stop| when the mocks are
   // torn down.
-  LoopHandler loop_handler(2);
+  LoopHandler loop_handler(2, quit_closure());
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(update_client(), DoInstall("jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(update_client(), Install(_, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
-  EXPECT_CALL(
-      update_client(),
-      DoUpdate(std::vector<std::string>({"abagagagagagagagagagagagagagagag"})))
+  EXPECT_CALL(update_client(), Update(_, _, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
   EXPECT_CALL(update_client(), Stop()).Times(1);
   EXPECT_CALL(scheduler(), Stop()).Times(1);
@@ -450,7 +384,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
                            OnDemandUpdater::Priority::FOREGROUND);
   ondemand_tester.OnDemand(&cus, "abagagagagagagagagagagagagagagag",
                            OnDemandUpdater::Priority::BACKGROUND);
-  base::RunLoop().Run();
+  RunThreads();
 
   EXPECT_EQ(update_client::Error::INVALID_ARGUMENT,
             ondemand_tester_component_not_registered.error());
@@ -463,23 +397,6 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
 
 // Tests that throttling an update invokes UpdateClient::Install.
 TEST_F(ComponentUpdaterTest, MaybeThrottle) {
-  class LoopHandler {
-   public:
-    LoopHandler(int max_cnt, base::OnceClosure quit_closure)
-        : max_cnt_(max_cnt), quit_closure_(std::move(quit_closure)) {}
-
-    void OnInstall(const std::string& ids) {
-      static int cnt = 0;
-      ++cnt;
-      if (cnt >= max_cnt_)
-        std::move(quit_closure_).Run();
-    }
-
-   private:
-    const int max_cnt_;
-    base::OnceClosure quit_closure_;
-  };
-
   base::HistogramTester ht;
 
   // Don't run periodic update task.
@@ -496,16 +413,15 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   crx_component.installer = installer;
 
   LoopHandler loop_handler(1, quit_closure());
-  EXPECT_CALL(update_client(), DoInstall("jebgalgnebhfojomionfpkfelancnnkf"))
+  EXPECT_CALL(update_client(), Install(_, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
   EXPECT_CALL(update_client(), Stop()).Times(1);
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
   EXPECT_CALL(scheduler(), Stop()).Times(1);
 
   EXPECT_TRUE(component_updater().RegisterComponent(crx_component));
-  component_updater().MaybeThrottle(
-      "jebgalgnebhfojomionfpkfelancnnkf",
-      base::BindOnce(&ComponentUpdaterTest::ReadyCallback));
+  component_updater().MaybeThrottle("jebgalgnebhfojomionfpkfelancnnkf",
+                                    base::DoNothing());
 
   RunThreads();
 

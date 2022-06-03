@@ -9,7 +9,7 @@ if (window.testRunner)
 function runTest()
 {
     var host = document.getElementById('host');
-    var sr = host.createShadowRoot();
+    var sr = host.attachShadow({mode: 'open'});
     sr.innerHTML = '<style>background-color: red;</style><div>Shadow</div>';
 
     // Need to use ShadowRoot.styleSheets API to create a styleSheetList.

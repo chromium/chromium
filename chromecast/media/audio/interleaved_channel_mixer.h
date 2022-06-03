@@ -17,8 +17,14 @@ namespace media {
 class InterleavedChannelMixer {
  public:
   InterleavedChannelMixer(::media::ChannelLayout input_layout,
+                          int input_channel_count,
                           ::media::ChannelLayout output_layout,
+                          int output_channel_count,
                           int max_frames);
+
+  InterleavedChannelMixer(const InterleavedChannelMixer&) = delete;
+  InterleavedChannelMixer& operator=(const InterleavedChannelMixer&) = delete;
+
   ~InterleavedChannelMixer();
 
   int input_channel_count() const { return input_channel_count_; }
@@ -42,8 +48,6 @@ class InterleavedChannelMixer {
 
   // Output buffer, if needed.
   std::vector<float> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterleavedChannelMixer);
 };
 
 }  // namespace media

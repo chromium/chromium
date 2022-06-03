@@ -20,9 +20,7 @@ source_set("webui") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "net_export_tab_helper_unittest.mm",
-  ]
+  sources = [ "net_export_tab_helper_unittest.mm" ]
   deps = [
     ":webui",
     "//base",

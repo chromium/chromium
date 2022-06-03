@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -32,18 +31,19 @@ class Screen;
 // TODO(crbug.com/846736): Extract the platform-specific code out of this class.
 class WindowSizer {
  public:
-  class StateProvider;
-
   // An interface implemented by an object that can retrieve state from either a
   // persistent store or an existing window.
   class StateProvider {
    public:
-    virtual ~StateProvider() {}
+    virtual ~StateProvider() = default;
 
-    // Retrieve the persisted bounds of the window. Returns true if there was
-    // persisted data to retrieve state information, false otherwise.
-    // The |show_state| variable will only be touched if there was persisted
-    // data and the |show_state| variable is SHOW_STATE_DEFAULT.
+    // Retrieve the persisted bounds of the window. Returns true if there were
+    // persisted bounds and false otherwise. If this method returns false, none
+    // of the out parameters are touched. If it returns true, |bounds| was
+    // overwritten, and |work_area| may have been overwritten if there was also
+    // a saved work area.  The |show_state| variable will only be touched if
+    // there was persisted data and the |show_state| variable is
+    // SHOW_STATE_DEFAULT.
     virtual bool GetPersistentState(gfx::Rect* bounds,
                                     gfx::Rect* work_area,
                                     ui::WindowShowState* show_state) const = 0;
@@ -58,26 +58,28 @@ class WindowSizer {
         ui::WindowShowState* show_state) const = 0;
   };
 
+  WindowSizer(const WindowSizer&) = delete;
+  WindowSizer& operator=(const WindowSizer&) = delete;
+
   // Determines the position and size for a window as it is created as well
   // as the initial state. This function uses several strategies to figure out
   // optimal size and placement, first looking for an existing active window,
   // then falling back to persisted data from a previous session, finally
   // utilizing a default algorithm. If |specified_bounds| are non-empty, this
-  // value is returned instead. For use only in testing.
+  // value is returned instead. To explicitly specify a particular window to
+  // base the bounds on, pass in a non-null value for |browser|.
+  //
   // |show_state| will be overwritten and return the initial visual state of
   // the window to use.
-  void DetermineWindowBoundsAndShowState(
-      const gfx::Rect& specified_bounds,
-      gfx::Rect* bounds,
-      ui::WindowShowState* show_state) const;
-
-  // Determines the size, position and maximized state for the browser window.
-  // See documentation for DetermineWindowBounds above. Normally,
-  // |window_bounds| is calculated by calling GetLastActiveWindowState(). To
-  // explicitly specify a particular window to base the bounds on, pass in a
-  // non-NULL value for |browser|.
   static void GetBrowserWindowBoundsAndShowState(
-      const std::string& app_name,
+      const gfx::Rect& specified_bounds,
+      const Browser* browser,
+      gfx::Rect* window_bounds,
+      ui::WindowShowState* show_state);
+
+  // As above, but takes a state provider for testing.
+  static void GetBrowserWindowBoundsAndShowState(
+      std::unique_ptr<StateProvider> state_provider,
       const gfx::Rect& specified_bounds,
       const Browser* browser,
       gfx::Rect* window_bounds,
@@ -93,27 +95,20 @@ class WindowSizer {
   // The maximum default window width. This value may differ between platforms.
   static const int kWindowMaxDefaultWidth;
 
-#if defined(OS_CHROMEOS)
-  // The number of pixels which are kept free top, left and right when a window
-  // gets positioned to its default location.
-  static const int kDesktopBorderSize = 16;
-
-  // Maximum width of a window even if there is more room on the desktop.
-  static const int kMaximumWindowWidth = 1100;
-#endif
-
  protected:
   const StateProvider* state_provider() const { return state_provider_.get(); }
+  const Browser* browser() const { return browser_; }
 
- private:
-  friend class WindowSizerAshTest;
-  friend class WindowSizerTestUtil;
-
-  // WindowSizer will use the platforms's display::Screen.
+  // WindowSizer will use the platform's display::Screen.
   WindowSizer(std::unique_ptr<StateProvider> state_provider,
               const Browser* browser);
-
   virtual ~WindowSizer();
+
+  // See GetBrowserWindowBoundsAndShowState() above.
+  virtual void DetermineWindowBoundsAndShowState(
+      const gfx::Rect& specified_bounds,
+      gfx::Rect* bounds,
+      ui::WindowShowState* show_state);
 
   // Gets the size and placement of the last active window. Returns true if this
   // data is valid, false if there is no last window and the application should
@@ -134,8 +129,8 @@ class WindowSizer {
   // |display| if there is no last window and no saved window
   // placement in prefs. This function determines the default size
   // based on monitor size, etc.
-  void GetDefaultWindowBounds(const display::Display& display,
-                              gfx::Rect* default_bounds) const;
+  virtual gfx::Rect GetDefaultWindowBounds(
+      const display::Display& display) const;
 
   // Adjusts |bounds| to be visible on-screen, biased toward the work area of
   // the |display|.  Despite the name, this doesn't
@@ -149,43 +144,23 @@ class WindowSizer {
                                         const gfx::Rect& saved_work_area,
                                         gfx::Rect* bounds) const;
 
-#if defined(OS_CHROMEOS)
-  // Ash specific logic for window placement. Returns true if |bounds| and
-  // |show_state| have been fully determined, otherwise returns false (but
-  // may still affect |show_state|).
-  // If the window is too big to fit in the display work area then the |bounds|
-  // are adjusted to default bounds and the |show_state| is adjusted to
-  // SHOW_STATE_MAXIMIZED.
-  bool GetBrowserBoundsAsh(gfx::Rect* bounds,
-                           ui::WindowShowState* show_state) const;
-
-  // Determines the position and size for a tabbed browser window in
-  // ash as it gets created. This will be called before other standard
-  // placement logic. |show_state| will only be changed
-  // if it was set to SHOW_STATE_DEFAULT.
-  void GetTabbedBrowserBoundsAsh(gfx::Rect* bounds,
-                                 ui::WindowShowState* show_state) const;
-
-  // Returns the default bounds for a browser window on |display|.
-  static gfx::Rect GetDefaultWindowBoundsAsh(const display::Display& display);
-#endif
-
   // Determine the default show state for the window - not looking at other
   // windows or at persistent information.
-  ui::WindowShowState GetWindowDefaultShowState() const;
+  static ui::WindowShowState GetWindowDefaultShowState(const Browser* browser);
 
   // Returns the target display for a new window with |bounds| in screen
   // coordinates.
   static display::Display GetDisplayForNewWindow(
       const gfx::Rect& bounds = gfx::Rect());
 
+ private:
+  friend class WindowSizerTestUtil;
+
   // Providers for persistent storage and monitor metrics.
   std::unique_ptr<StateProvider> state_provider_;
 
   // Note that this browser handle might be NULL.
   const Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowSizer);
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_H_

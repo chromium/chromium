@@ -22,10 +22,10 @@ namespace nacl {
 
 ManifestServiceChannel::ManifestServiceChannel(
     const IPC::ChannelHandle& handle,
-    const base::Callback<void(int32_t)>& connected_callback,
+    base::OnceCallback<void(int32_t)> connected_callback,
     std::unique_ptr<Delegate> delegate,
     base::WaitableEvent* waitable_event)
-    : connected_callback_(connected_callback),
+    : connected_callback_(std::move(connected_callback)),
       delegate_(std::move(delegate)),
       channel_(IPC::SyncChannel::Create(
           handle,
@@ -76,9 +76,8 @@ void ManifestServiceChannel::OnStartupInitializationComplete() {
 void ManifestServiceChannel::OnOpenResource(
     const std::string& key, IPC::Message* reply) {
   delegate_->OpenResource(
-      key,
-      base::Bind(&ManifestServiceChannel::DidOpenResource,
-                 weak_ptr_factory_.GetWeakPtr(), reply));
+      key, base::BindOnce(&ManifestServiceChannel::DidOpenResource,
+                          weak_ptr_factory_.GetWeakPtr(), reply));
 }
 
 void ManifestServiceChannel::DidOpenResource(IPC::Message* reply,

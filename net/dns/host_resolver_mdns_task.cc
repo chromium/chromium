@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -126,9 +127,9 @@ class HostResolverMdnsTask::Transaction {
 
 HostResolverMdnsTask::HostResolverMdnsTask(
     MDnsClient* mdns_client,
-    const std::string& hostname,
+    std::string hostname,
     const std::vector<DnsQueryType>& query_types)
-    : mdns_client_(mdns_client), hostname_(hostname) {
+    : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
   DCHECK(!query_types.empty());
   for (DnsQueryType query_type : query_types) {
     transactions_.emplace_back(query_type, this);
@@ -197,8 +198,13 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
   switch (query_type) {
     case DnsQueryType::UNSPECIFIED:
       // Should create two separate transactions with specified type.
-    case DnsQueryType::ESNI:
-      // ESNI queries are not expected to be useful in mDNS, so they're not
+    case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
+      // Not supported.
+      // TODO(ericorth@chromium.org): Consider support for HTTPS in mDNS if it
+      // is ever decided to support HTTPS via non-DoH.
+    case DnsQueryType::INTEGRITY:
+      // INTEGRITY queries are not expected to be useful in mDNS, so they're not
       // supported.
       NOTREACHED();
       return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);

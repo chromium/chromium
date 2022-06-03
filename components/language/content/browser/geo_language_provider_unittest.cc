@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -75,7 +75,7 @@ class GeoLanguageProviderTest : public testing::Test {
     std::vector<std::string> languages;
     const base::ListValue* const cached_languages_list =
         local_state_.GetList(GeoLanguageProvider::kCachedGeoLanguagesPref);
-    for (const auto& language_value : *cached_languages_list) {
+    for (const auto& language_value : cached_languages_list->GetList()) {
       languages.push_back(language_value.GetString());
     }
     return languages;
@@ -123,7 +123,7 @@ TEST_F(GeoLanguageProviderTest, NoFrequentCalls) {
   std::vector<std::string> expected_langs = {"hi", "en"};
   EXPECT_EQ(expected_langs, result);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
+  task_environment_.FastForwardBy(base::Hours(12));
   EXPECT_EQ(1, GetQueryNextPositionCalledTimes());
   EXPECT_EQ(expected_langs, GetCachedLanguages());
 }
@@ -141,7 +141,7 @@ TEST_F(GeoLanguageProviderTest, ButDoCallInTheNextDay) {
 
   // Move to another random place in Karnataka, India.
   MoveToLocation(23.0, 85.7);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(25));
+  task_environment_.FastForwardBy(base::Hours(25));
   EXPECT_EQ(2, GetQueryNextPositionCalledTimes());
 
   result = GetCurrentGeoLanguages();

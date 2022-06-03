@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/event.h"
@@ -46,10 +45,14 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
     kAbort,
   };
 
+  UserMessageImpl(const UserMessageImpl&) = delete;
+  UserMessageImpl& operator=(const UserMessageImpl&) = delete;
+
   ~UserMessageImpl() override;
 
   // Creates a new ports::UserMessageEvent with an attached UserMessageImpl.
-  static std::unique_ptr<ports::UserMessageEvent> CreateEventForNewMessage();
+  static std::unique_ptr<ports::UserMessageEvent> CreateEventForNewMessage(
+      MojoCreateMessageFlags flags);
 
   // Creates a new ports::UserMessageEvent with an attached serialized
   // UserMessageImpl. May fail iff one or more |dispatchers| fails to serialize
@@ -154,7 +157,8 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // |thunks|. If the message is ever going to be routed to another node (see
   // |WillBeRoutedExternally()| below), it will be serialized at that time using
   // operations provided by |thunks|.
-  UserMessageImpl(ports::UserMessageEvent* message_event);
+  UserMessageImpl(ports::UserMessageEvent* message_event,
+                  MojoCreateMessageFlags flags);
 
   // Creates a serialized UserMessageImpl backed by an existing Channel::Message
   // object. |header| and |user_payload| must be pointers into
@@ -183,6 +187,10 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // message.
   Channel::MessagePtr channel_message_;
 
+  // Whether or not this message should enforce size constraints at
+  // serialization time.
+  const bool unlimited_size_ = false;
+
   // Indicates whether any handles serialized within |channel_message_| have
   // yet to be extracted.
   bool has_serialized_handles_ = false;
@@ -208,8 +216,6 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // The node name from which this message was received, iff it came from
   // out-of-process and the source is known.
   ports::NodeName source_node_ = ports::kInvalidNodeName;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMessageImpl);
 };
 
 }  // namespace core

@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_sender.h"
 #include "media/cast/common/rtp_time.h"
@@ -29,7 +29,7 @@ class CastTransport;
 class VideoEncoder;
 class VideoFrameFactory;
 
-typedef base::Callback<void(base::TimeDelta)> PlayoutDelayChangeCB;
+using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 
 // Not thread safe. Only called from the main cast thread.
 // This class owns all objects related to sending video, objects that create RTP
@@ -41,11 +41,14 @@ class VideoSender : public FrameSender {
  public:
   VideoSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& video_config,
-              const StatusChangeCallback& status_change_cb,
+              StatusChangeCallback status_change_cb,
               const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-              const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb,
               CastTransport* const transport_sender,
-              const PlayoutDelayChangeCB& playout_delay_change_cb);
+              PlayoutDelayChangeCB playout_delay_change_cb,
+              media::VideoCaptureFeedbackCB feedback_callback);
+
+  VideoSender(const VideoSender&) = delete;
+  VideoSender& operator=(const VideoSender&) = delete;
 
   ~VideoSender() override;
 
@@ -93,6 +96,8 @@ class VideoSender : public FrameSender {
 
   PlayoutDelayChangeCB playout_delay_change_cb_;
 
+  media::VideoCaptureFeedbackCB feedback_cb_;
+
   // Indicates we are operating in a mode where the target playout latency is
   // low for best user experience. When operating in low latency mode, we
   // prefer dropping frames over increasing target playout time.
@@ -111,8 +116,6 @@ class VideoSender : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoSender);
 };
 
 }  // namespace cast

@@ -1,28 +1,24 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: CSS Regions Module Level 1 (https://drafts.csswg.org/css-regions/)
 
 partial interface Document {
   readonly attribute NamedFlowMap namedFlows;
 };
 
-[Exposed=Window,
- MapClass=(CSSOMString, NamedFlow)] interface NamedFlowMap {
-  NamedFlow? get(CSSOMString flowName);
-  boolean has(CSSOMString flowName);
-  NamedFlowMap set(CSSOMString flowName, NamedFlow flowValue);
-  boolean delete(CSSOMString flowName);
+[Exposed=Window] interface NamedFlowMap {
+  maplike<CSSOMString, NamedFlow>;
 };
 
 [Exposed=Window]
 interface NamedFlow : EventTarget {
   readonly attribute CSSOMString name;
   readonly attribute boolean overset;
-  sequence<Region> getRegions();
+  sequence<Element> getRegions();
   readonly attribute short firstEmptyRegionIndex;
   sequence<Node> getContent();
-  sequence<Region> getRegionsByContent(Node node);
+  sequence<Element> getRegionsByContent(Node node);
 };
 
 interface mixin Region {

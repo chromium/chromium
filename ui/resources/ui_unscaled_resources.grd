@@ -13,7 +13,6 @@
         <include name="IDC_CELL" file="cursors/cell.cur" type="CURSOR" />
         <include name="IDC_COLRESIZE" file="cursors/col_resize.cur" type="CURSOR" />
         <include name="IDC_COPYCUR" file="cursors/copy.cur" type="CURSOR" />
-        <include name="IDC_CURSOR_NONE" file="cursors/none.cur" type="CURSOR" />
         <include name="IDC_HAND_GRAB" file="cursors/hand_grab.cur" type="CURSOR" />
         <include name="IDC_HAND_GRABBING" file="cursors/hand_grabbing.cur" type="CURSOR" />
         <include name="IDC_PAN_EAST" file="cursors/pan_east.cur" type="CURSOR" />

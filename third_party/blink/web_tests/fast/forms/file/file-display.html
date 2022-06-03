@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<body>
+<!-- crbug.com/1119312.  Only block/inline diffrence should be applied. -->
+<div>Flex <input type=file style="display:flex"></div>
+<div>Inline-flex <input type=file style="display:inline-flex"></div>
+<div>Grid <input type=file style="display:grid"></div>
+<div>Inline-grid <input type=file style="display:inline-grid"></div>
+<div>Table <input type=file style="display:table"></div>
+<div>Inline-table <input type=file style="display:inline-table"></div>
+<div>Block <input type=file style="display:block"></div>
+<div>Inline <input type=file style="display:inline"></div>
+<script>
+for (let input of document.querySelectorAll('input')) {
+  let text = document.createTextNode(getComputedStyle(input).display);
+  input.parentNode.insertBefore(text, input.nextSibling);
+}
+</script>
+</body>

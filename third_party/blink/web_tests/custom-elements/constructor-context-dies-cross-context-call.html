@@ -22,7 +22,7 @@ if (fork()) {
     return watcher.wait_for('message');
   })).then(t.step_func((event) => {
     assert_equals(event.data, 'PASS child done');
-    assert_throws(new Error, () => new window.C());
+    assert_throws_js(ChildError, () => new window.C());
     t.done();
   }));
 } else {
@@ -30,6 +30,7 @@ if (fork()) {
   class C extends HTMLElement {}
   window.customElements.define('a-a', C);
   window.parent.C = C;
+  window.parent.ChildError = Error;
   destroyContext();
   done();
 }

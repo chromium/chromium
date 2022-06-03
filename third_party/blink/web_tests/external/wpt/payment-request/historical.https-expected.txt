@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS paymentRequestID in PaymentRequest
+PASS paymentRequestID in PaymentResponse
+PASS careOf in PaymentAddress
+PASS totalAmount in PaymentResponse
+PASS paymentRequestId in PaymentRequest
+PASS paymentRequestId in PaymentResponse
+PASS languageCode in PaymentAddress
+FAIL allowPaymentRequest in HTMLIFrameElement assert_false: expected false got true
+PASS supportedMethods must not support sequence<DOMString>
+Harness: the test ran to completion.
+

@@ -7,14 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-class UrlLoadingService;
+class UrlLoadingBrowserAgent;
 
 // The scrollview containing the views. Its content's size is constrained on its
 // superview's size.
 @interface IncognitoView : UIScrollView
 
 - (instancetype)initWithFrame:(CGRect)frame
-            urlLoadingService:(UrlLoadingService*)urlLoadingService;
+                    URLLoader:(UrlLoadingBrowserAgent*)URLLoader;
 
 @end
 

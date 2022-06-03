@@ -1,0 +1,11 @@
+{
+  // Sample telemetry extension public key. Currently, this is the only
+  // allowed extension to declare "chromeos_system_extension" key.
+  // See //chrome/common/chromeos/extensions/api/_manifest_features.json
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt2CwI94nqAQzLTBHSIwtkMlkoRyhu27rmkDsBneMprscOzl4524Y0bEA+0RSjNZB+kZgP6M8QAZQJHCpAzULXa49MooDDIdzzmqQswswguAALm2FS7XP2N0p2UYQneQce4Wehq/C5Yr65mxasAgjXgDWlYBwV3mgiISDPXI/5WG94TM2Z3PDQePJ91msDAjN08jdBme3hAN976yH3Q44M7cP1r+OWRkZGwMA6TSQjeESEuBbkimaLgPIyzlJp2k6jwuorG5ujmbAGFiTQoSDFBFCjwPEtywUMLKcZjH4fD76pcIQIdkuuzRQCVyuImsGzm1cmGosJ/Z4iyb80c1ytwIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "chromeos_system_extension": {},
+  "externally_connectable": {}
+}

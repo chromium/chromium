@@ -7,6 +7,7 @@ if (self.importScripts) {
 // Spec: https://fetch.spec.whatwg.org/#cors-preflight-fetch
 
 var TEST_TARGETS = [];
+var {BASE_ORIGIN, OTHER_BASE_URL} = get_thorough_test_options();
 
 ['PUT', 'XXX'].forEach(function(method) {
     var checkMethod = checkJsonpMethod.bind(this, method);

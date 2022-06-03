@@ -6,6 +6,7 @@
 #define UI_GFX_SELECTION_MODEL_H_
 
 #include <stddef.h>
+#include <vector>
 
 #include <iosfwd>
 #include <string>
@@ -73,10 +74,25 @@ class GFX_EXPORT SelectionModel {
   // Create a SelectionModel representing a selection (which may be empty).
   // The caret position is the end of the range.
   SelectionModel(const Range& selection, LogicalCursorDirection affinity);
+  // Create a SelectionModel representing multiple selections (which may be
+  // empty but not overlapping). The end of the first range determines the caret
+  // position.
+  SelectionModel(const std::vector<Range>& selections,
+                 LogicalCursorDirection affinity);
+  SelectionModel(const SelectionModel& selection_model);
+  ~SelectionModel();
+
+  // |selection| should overlap with neither |selection_| nor
+  // |secondary_selections_|.
+  void AddSecondarySelection(const Range& selection);
 
   const Range& selection() const { return selection_; }
   size_t caret_pos() const { return selection_.end(); }
   LogicalCursorDirection caret_affinity() const { return caret_affinity_; }
+  const std::vector<Range>& secondary_selections() const {
+    return secondary_selections_;
+  }
+  std::vector<Range> GetAllSelections() const;
 
   // WARNING: Generally the selection start should not be changed without
   // considering the effect on the caret affinity.
@@ -90,6 +106,8 @@ class GFX_EXPORT SelectionModel {
  private:
   // Logical selection. The logical caret position is the end of the selection.
   Range selection_;
+  // Secondary selections not associated with the cursor. Do not overlap.
+  std::vector<Range> secondary_selections_;
 
   // The logical direction from the caret position (selection_.end()) to the
   // character it is attached to for display purposes. This matters only when

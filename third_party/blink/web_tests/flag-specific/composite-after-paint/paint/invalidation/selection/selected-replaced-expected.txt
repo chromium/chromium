@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutImage (relative positioned) IMG id='test' class='moved'",
-          "rect": [8, 132, 214, 232],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutImage (relative positioned) IMG id='test' class='moved'",
-          "rect": [8, 52, 214, 232],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 132, 214, 232],
+        [8, 52, 214, 232]
       ]
     }
   ]

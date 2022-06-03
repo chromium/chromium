@@ -119,4 +119,35 @@ TEST_F(SelectionTest, SetAsBacwardAndForward) {
   EXPECT_EQ(EphemeralRange(start, start), collapsed_selection.ComputeRange());
 }
 
+TEST_F(SelectionTest, EquivalentPositions) {
+  SetBodyContent(
+      "<div id='first'></div>"
+      "<div id='last'></div>");
+  Element* first = GetDocument().getElementById("first");
+  Element* last = GetDocument().getElementById("last");
+  Position after_first = Position::AfterNode(*first);
+  Position before_last = Position::BeforeNode(*last);
+
+  // Test selections created with different but equivalent positions.
+  EXPECT_NE(after_first, before_last);
+  EXPECT_TRUE(after_first.IsEquivalent(before_last));
+
+  for (bool reversed : {false, true}) {
+    const Position& start = reversed ? before_last : after_first;
+    const Position& end = reversed ? after_first : before_last;
+    EphemeralRange range(start, end);
+
+    const SelectionInDOMTree& selection =
+        SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build();
+    EXPECT_EQ(
+        selection,
+        SelectionInDOMTree::Builder().SetAsForwardSelection(range).Build());
+
+    EXPECT_TRUE(selection.IsCaret());
+    EXPECT_EQ(range, selection.ComputeRange());
+    EXPECT_EQ(start, selection.Base());
+    EXPECT_EQ(start, selection.Extent());
+  }
+}
+
 }  // namespace blink

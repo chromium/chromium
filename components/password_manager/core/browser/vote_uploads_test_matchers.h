@@ -8,8 +8,10 @@
 #include <string>
 
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Matches a FormStructure if its signature is the same as that of the
 // PasswordForm |form|.
@@ -28,7 +30,7 @@ MATCHER_P(SignatureIsSameAs,
 MATCHER_P(SignatureIs,
           signature,
           std::string(negation ? "signature isn't " : "signature is ") +
-              base::NumberToString(signature)) {
+              base::NumberToString(signature.value())) {
   if (signature == arg.form_signature())
     return true;
 
@@ -169,8 +171,81 @@ MATCHER_P2(UploadedGenerationTypesAre,
   return true;
 }
 
+MATCHER_P(UploadedSingleUsernameVoteTypeIs, expected_type, "") {
+  for (const auto& field : arg) {
+    autofill::ServerFieldType vote = field->possible_types().empty()
+                                         ? autofill::UNKNOWN_TYPE
+                                         : *field->possible_types().begin();
+    if ((vote == autofill::SINGLE_USERNAME || vote == autofill::NOT_USERNAME) &&
+        expected_type != field->single_username_vote_type()) {
+      // Wrong vote type.
+      *result_listener << "Expected vote type for the field " << field->name
+                       << " is " << expected_type << ", but found "
+                       << field->single_username_vote_type().value();
+      return false;
+    }
+  }
+  return true;
+}
+
+MATCHER_P(UploadedSingleUsernameDataIs, expected_data, "") {
+  if (!arg.single_username_data()) {
+    *result_listener << "Single username data missing";
+    return false;
+  }
+  if (expected_data.username_form_signature() !=
+      arg.single_username_data()->username_form_signature()) {
+    // Wrong form signature.
+    *result_listener << "Expected form signature is "
+                     << expected_data.username_form_signature()
+                     << ", but found "
+                     << arg.single_username_data()->username_form_signature();
+    return false;
+  }
+  if (expected_data.username_field_signature() !=
+      arg.single_username_data()->username_field_signature()) {
+    // Wrong field signature.
+    *result_listener << "Expected field signature is "
+                     << expected_data.username_field_signature()
+                     << ", but found "
+                     << arg.single_username_data()->username_field_signature();
+    return false;
+  }
+  if (expected_data.value_type() != arg.single_username_data()->value_type()) {
+    // Wrong value type.
+    *result_listener << "Expected value type is " << expected_data.value_type()
+                     << ", but found "
+                     << arg.single_username_data()->value_type();
+    return false;
+  }
+  if (expected_data.prompt_edit() !=
+      arg.single_username_data()->prompt_edit()) {
+    // Wrong information about username edits in prompt.
+    *result_listener << "Expected prompt edit is "
+                     << expected_data.prompt_edit() << ", but found "
+                     << arg.single_username_data()->prompt_edit();
+    return false;
+  }
+  return true;
+}
+
+MATCHER(SingleUsernameDataNotUploaded, "") {
+  if (arg.single_username_data()) {
+    *result_listener << "Single username not expected to be uploaded";
+    return false;
+  }
+  return true;
+}
+
 MATCHER_P(PasswordsWereRevealed, passwords_were_revealed, "") {
   return passwords_were_revealed == arg.passwords_were_revealed();
+}
+
+MATCHER_P(HasPasswordAttributesVote, is_vote_expected, "") {
+  absl::optional<std::pair<autofill::PasswordAttribute, bool>> vote =
+      arg.get_password_attributes_vote();
+  EXPECT_EQ(is_vote_expected, vote.has_value());
+  return true;
 }
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_VOTE_UPLOADS_TEST_MATCHERS_H_

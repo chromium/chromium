@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -21,7 +22,7 @@ namespace i18n {
 class FileUtilICUTest : public PlatformTest {
 };
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 
 // On linux, file path is parsed and filtered as UTF-8.
 static const struct GoodBadPairLinux {
@@ -48,54 +49,73 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathLinuxTest) {
 #endif
 
 // For Mac & Windows, which both do Unicode validation on filenames. These
-// characters are given as wide strings since its more convenient to specify
-// unicode characters. For Mac they should be converted to UTF-8.
-static const struct goodbad_pair {
-  // TODO(https://crbug.com/911896): Make these UTF16 literals once
-  // base::string16 is std::u16string.
-  const wchar_t* bad_name;
-  const wchar_t* good_name;
+// characters are given as UTF-16 strings since its more convenient to specify
+// unicode characters. For Mac they should be converted to UTF-8, for Windows to
+// wide.
+static const struct FileUtilICUTestCases {
+  const char16_t* bad_name;
+  const char16_t* good_name_with_dash;
+  const char16_t* good_name_with_space;
 } kIllegalCharacterCases[] = {
-    {L"bad*file:name?.jpg", L"bad-file-name-.jpg"},
-    {L"**********::::.txt", L"--------------.txt"},
+    {u"bad*file:name?.jpg", u"bad-file-name-.jpg", u"bad file name .jpg"},
+    {u"**********::::.txt", u"--------------.txt", u"_.txt"},
     // We can't use UCNs (universal character names) for C0/C1 characters and
     // U+007F, but \x escape is interpreted by MSVC and gcc as we intend.
-    {L"bad\x0003\x0091 file\u200E\u200Fname.png", L"bad-- file--name.png"},
-    {L"bad*file\\?name.jpg", L"bad-file--name.jpg"},
-    {L"\t  bad*file\\name/.jpg", L"-  bad-file-name-.jpg"},
-    {L"this_file_name is okay!.mp3", L"this_file_name is okay!.mp3"},
-    {L"\u4E00\uAC00.mp3", L"\u4E00\uAC00.mp3"},
-    {L"\u0635\u200C\u0644.mp3", L"\u0635-\u0644.mp3"},
-    {L"\U00010330\U00010331.mp3", L"\U00010330\U00010331.mp3"},
+    {u"bad\x0003\x0091 file\u200E\u200Fname.png", u"bad-- file--name.png",
+     u"bad   file  name.png"},
+    {u"bad*file\\?name.jpg", u"bad-file--name.jpg", u"bad file  name.jpg"},
+    {u"\t  bad*file\\name/.jpg", u"-  bad-file-name-.jpg",
+     u"bad file name .jpg"},
+    {u"this_file_name is okay!.mp3", u"this_file_name is okay!.mp3",
+     u"this_file_name is okay!.mp3"},
+    {u"\u4E00\uAC00.mp3", u"\u4E00\uAC00.mp3", u"\u4E00\uAC00.mp3"},
+    {u"\u0635\u200C\u0644.mp3", u"\u0635-\u0644.mp3", u"\u0635 \u0644.mp3"},
+    {u"\U00010330\U00010331.mp3", u"\U00010330\U00010331.mp3",
+     u"\U00010330\U00010331.mp3"},
     // Unassigned codepoints are ok.
-    {L"\u0378\U00040001.mp3", L"\u0378\U00040001.mp3"},
+    {u"\u0378\U00040001.mp3", u"\u0378\U00040001.mp3", u"\u0378\U00040001.mp3"},
     // Non-characters are not allowed.
-    {L"bad\uFFFFfile\U0010FFFEname.jpg", L"bad-file-name.jpg"},
-    {L"bad\uFDD0file\uFDEFname.jpg", L"bad-file-name.jpg"},
+    {u"bad\uFFFFfile\U0010FFFEname.jpg", u"bad-file-name.jpg",
+     u"bad file name.jpg"},
+    {u"bad\uFDD0file\uFDEFname.jpg", u"bad-file-name.jpg",
+     u"bad file name.jpg"},
     // CVE-2014-9390
-    {L"(\u200C.\u200D.\u200E.\u200F.\u202A.\u202B.\u202C.\u202D.\u202E.\u206A."
-     L"\u206B.\u206C.\u206D.\u206F.\uFEFF)",
-     L"(-.-.-.-.-.-.-.-.-.-.-.-.-.-.-)"},
-    {L"config~1", L"config-1"},
-    {L" _ ", L"-_-"},
-    {L" ", L"-"},
-    {L"\u2008.(\u2007).\u3000", L"-.(\u2007).-"},
-    {L"     ", L"-   -"},
-    {L".    ", L"-   -"}
-};
+    {u"(\u200C.\u200D.\u200E.\u200F.\u202A.\u202B.\u202C.\u202D.\u202E.\u206A."
+     u"\u206B.\u206C.\u206D.\u206F.\uFEFF)",
+     u"(-.-.-.-.-.-.-.-.-.-.-.-.-.-.-)", u"( . . . . . . . . . . . . . . )"},
+    {u"config~1", u"config-1", u"config 1"},
+    {u" _ ", u"-_-", u"_"},
+    {u" ", u"-", u"_ _"},
+    {u"\u2008.(\u2007).\u3000", u"-.(\u2007).-", u"(\u2007)"},
+    {u"     ", u"-   -", u"_     _"},
+    {u".    ", u"-   -", u"_.    _"}};
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_POSIX)
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_POSIX)
 
 TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
   for (auto i : kIllegalCharacterCases) {
 #if defined(OS_WIN)
-    std::wstring bad_name = i.bad_name;
+    std::wstring bad_name = UTF16ToWide(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, '-');
-    EXPECT_EQ(i.good_name, bad_name);
+    EXPECT_EQ(UTF16ToWide(i.good_name_with_dash), bad_name);
 #else
-    std::string bad_name(WideToUTF8(i.bad_name));
+    std::string bad_name = UTF16ToUTF8(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, '-');
-    EXPECT_EQ(WideToUTF8(i.good_name), bad_name);
+    EXPECT_EQ(UTF16ToUTF8(i.good_name_with_dash), bad_name);
+#endif
+  }
+}
+
+TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathWithIllegalEndCharTest) {
+  for (auto i : kIllegalCharacterCases) {
+#if defined(OS_WIN)
+    std::wstring bad_name = UTF16ToWide(i.bad_name);
+    ReplaceIllegalCharactersInPath(&bad_name, ' ');
+    EXPECT_EQ(UTF16ToWide(i.good_name_with_space), bad_name);
+#else
+    std::string bad_name(UTF16ToUTF8(i.bad_name));
+    ReplaceIllegalCharactersInPath(&bad_name, ' ');
+    EXPECT_EQ(UTF16ToUTF8(i.good_name_with_space), bad_name);
 #endif
   }
 }
@@ -103,11 +123,11 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
 #endif
 
 TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
-  EXPECT_TRUE(IsFilenameLegal(string16()));
+  EXPECT_TRUE(IsFilenameLegal(std::u16string()));
 
   for (const auto& test_case : kIllegalCharacterCases) {
-    string16 bad_name = WideToUTF16(test_case.bad_name);
-    string16 good_name = WideToUTF16(test_case.good_name);
+    std::u16string bad_name = test_case.bad_name;
+    std::u16string good_name = test_case.good_name_with_dash;
 
     EXPECT_TRUE(IsFilenameLegal(good_name)) << good_name;
     if (good_name != bad_name)
@@ -115,7 +135,7 @@ TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 static const struct normalize_name_encoding_test_cases {
   const char* original_path;
   const char* normalized_path;

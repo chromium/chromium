@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/orientation-sensor/#relativeorientationsensor-interface
 
 [
     SecureContext,
-    MeasureAs=RelativeOrientationSensorConstructor,
     Exposed=Window
 ] interface RelativeOrientationSensor : OrientationSensor {
-  [CallWith=ExecutionContext, RaisesException] constructor(optional SpatialSensorOptions sensorOptions);
+  [CallWith=ExecutionContext, RaisesException, MeasureAs=RelativeOrientationSensorConstructor] constructor(optional SpatialSensorOptions sensorOptions = {});
 };

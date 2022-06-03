@@ -7,14 +7,25 @@
 // require: list_selection_controller.js
 // require: list_item.js
 
+// clang-format off
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from '../../cr.m.js';
+// #import {ArrayDataModel} from './array_data_model.m.js';
+// #import {ListSelectionModel} from './list_selection_model.m.js';
+// #import {ListSelectionController} from './list_selection_controller.m.js';
+// #import {ListItem} from './list_item.m.js';
+// clang-format on
+
 /**
  * @fileoverview This implements a list control.
  */
 
 cr.define('cr.ui', function() {
-  /** @const */ const ListSelectionModel = cr.ui.ListSelectionModel;
-  /** @const */ const ListSelectionController = cr.ui.ListSelectionController;
-  /** @const */ const ArrayDataModel = cr.ui.ArrayDataModel;
+  /* #ignore */ /** @const */ const ListSelectionModel =
+      /* #ignore */ cr.ui.ListSelectionModel;
+  /* #ignore */ /** @const */ const ListSelectionController =
+      /* #ignore */ cr.ui.ListSelectionController;
+  /* #ignore */ /** @const */ const ArrayDataModel = cr.ui.ArrayDataModel;
 
   /**
    *  @typedef {{
@@ -26,7 +37,7 @@ cr.define('cr.ui', function() {
    *    width: number
    *  }}
    */
-  let Size;
+  /* #export */ let Size;
 
   /**
    * Whether a mouse event is inside the element viewport. This will return
@@ -55,7 +66,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLUListElement}
    */
-  const List = cr.ui.define('list');
+  /* #export */ const List = cr.ui.define('list');
 
   List.prototype = {
     __proto__: HTMLUListElement.prototype,
@@ -109,7 +120,7 @@ cr.define('cr.ui', function() {
       return this.itemConstructor_;
     },
     set itemConstructor(func) {
-      if (func != this.itemConstructor_) {
+      if (func !== this.itemConstructor_) {
         this.itemConstructor_ = func;
         this.cachedItems_ = {};
         this.redraw();
@@ -123,7 +134,7 @@ cr.define('cr.ui', function() {
      * @type {ArrayDataModel}
      */
     set dataModel(dataModel) {
-      if (this.dataModel_ == dataModel) {
+      if (this.dataModel_ === dataModel) {
         return;
       }
 
@@ -169,7 +180,7 @@ cr.define('cr.ui', function() {
      * Override to be notified when |this.dataModel| is set.
      * @protected
      */
-    onSetDataModelComplete: function() {},
+    onSetDataModelComplete() {},
 
     /**
      * Cached item for measuring the default item size by measureItem().
@@ -186,7 +197,7 @@ cr.define('cr.ui', function() {
     },
     set selectionModel(sm) {
       const oldSm = this.selectionModel_;
-      if (oldSm == sm) {
+      if (oldSm === sm) {
         return;
       }
 
@@ -218,7 +229,7 @@ cr.define('cr.ui', function() {
       return this.autoExpands_;
     },
     set autoExpands(autoExpands) {
-      if (this.autoExpands_ == autoExpands) {
+      if (this.autoExpands_ === autoExpands) {
         return;
       }
       this.autoExpands_ = autoExpands;
@@ -233,7 +244,7 @@ cr.define('cr.ui', function() {
       return this.fixedHeight_;
     },
     set fixedHeight(fixedHeight) {
-      if (this.fixedHeight_ == fixedHeight) {
+      if (this.fixedHeight_ === fixedHeight) {
         return;
       }
       this.fixedHeight_ = fixedHeight;
@@ -248,7 +259,7 @@ cr.define('cr.ui', function() {
       const dataModel = this.dataModel;
       if (dataModel) {
         const index = this.selectionModel.selectedIndex;
-        if (index != -1) {
+        if (index !== -1) {
           return dataModel.item(index);
         }
       }
@@ -291,9 +302,9 @@ cr.define('cr.ui', function() {
      * @param {Node} child Child of the list.
      * @return {boolean} True if a list item.
      */
-    isItem: function(child) {
-      return child.nodeType == Node.ELEMENT_NODE &&
-          child != this.beforeFiller_ && child != this.afterFiller_;
+    isItem(child) {
+      return child.nodeType === Node.ELEMENT_NODE &&
+          child !== this.beforeFiller_ && child !== this.afterFiller_;
     },
 
     batchCount_: 0,
@@ -304,16 +315,16 @@ cr.define('cr.ui', function() {
      * sure that the code will not return without calling endBatchUpdates or the
      * list will not be correctly updated.
      */
-    startBatchUpdates: function() {
+    startBatchUpdates() {
       this.batchCount_++;
     },
 
     /**
      * See startBatchUpdates.
      */
-    endBatchUpdates: function() {
+    endBatchUpdates() {
       this.batchCount_--;
-      if (this.batchCount_ == 0) {
+      if (this.batchCount_ === 0) {
         this.redraw();
       }
     },
@@ -321,7 +332,7 @@ cr.define('cr.ui', function() {
     /**
      * Initializes the element.
      */
-    decorate: function() {
+    decorate() {
       // Add fillers.
       this.beforeFiller_ = this.ownerDocument.createElement('div');
       this.afterFiller_ = this.ownerDocument.createElement('div');
@@ -360,7 +371,7 @@ cr.define('cr.ui', function() {
      * is set by 'px', uses that value as height. Otherwise, measures the size.
      * @private
      */
-    measureItemHeight_: function(item) {
+    measureItemHeight_(item) {
       return this.measureItem(item).height;
     },
 
@@ -368,7 +379,7 @@ cr.define('cr.ui', function() {
      * @return {number} The height of default item, measuring it if necessary.
      * @protected
      */
-    getDefaultItemHeight_: function() {
+    getDefaultItemHeight_() {
       return this.getDefaultItemSize_().height;
     },
 
@@ -376,7 +387,7 @@ cr.define('cr.ui', function() {
      * @param {number} index The index of the item.
      * @return {number} The height of the item, measuring it if necessary.
      */
-    getItemHeightByIndex_: function(index) {
+    getItemHeightByIndex_(index) {
       // If |this.fixedHeight_| is true, all the rows have same default height.
       if (this.fixedHeight_) {
         return this.getDefaultItemHeight_();
@@ -400,7 +411,7 @@ cr.define('cr.ui', function() {
      *     if necessary.
      * @protected
      */
-    getDefaultItemSize_: function() {
+    getDefaultItemSize_() {
       if (!this.measured_ || !this.measured_.height) {
         this.measured_ = this.measureItem();
       }
@@ -416,7 +427,7 @@ cr.define('cr.ui', function() {
      * @return {!cr.ui.Size} The height and width of the item, taking margins
      *     into account, and the top, bottom, left and right margins themselves.
      */
-    measureItem: function(opt_item) {
+    measureItem(opt_item) {
       const dataModel = this.dataModel;
       if (!dataModel || !dataModel.length) {
         return {
@@ -483,7 +494,7 @@ cr.define('cr.ui', function() {
      * @param {Event} e The mouse event object.
      * @private
      */
-    handleDoubleClick_: function(e) {
+    handleDoubleClick_(e) {
       if (this.disabled) {
         return;
       }
@@ -509,7 +520,7 @@ cr.define('cr.ui', function() {
      * @param {Event} e The mouse event object.
      * @private
      */
-    handlePointerDownUp_: function(e) {
+    handlePointerDownUp_(e) {
       if (this.disabled) {
         return;
       }
@@ -518,7 +529,7 @@ cr.define('cr.ui', function() {
 
       // If the target was this element we need to make sure that the user did
       // not click on a border or a scrollbar.
-      if (target == this) {
+      if (target === this) {
         if (inViewport(target, e)) {
           this.selectionController_.handlePointerDownUp(e, -1);
         }
@@ -526,6 +537,9 @@ cr.define('cr.ui', function() {
       }
 
       target = this.getListItemAncestor(target);
+      if (!target) {
+        return;
+      }
 
       const index = this.getIndexOfListItem(target);
       this.selectionController_.handlePointerDownUp(e, index);
@@ -537,7 +551,7 @@ cr.define('cr.ui', function() {
      * @param {Event} e The focus event.
      * @private
      */
-    handleElementFocus_: function(e) {
+    handleElementFocus_(e) {
       if (!this.hasElementFocus) {
         this.hasElementFocus = true;
       }
@@ -553,7 +567,7 @@ cr.define('cr.ui', function() {
      * TODO(dbeam): remove suppression when the extern
      * Node.prototype.contains() will be fixed.
      */
-    handleElementBlur_: function(e) {
+    handleElementBlur_(e) {
       if (!this.contains(e.relatedTarget)) {
         this.hasElementFocus = false;
       }
@@ -565,19 +579,20 @@ cr.define('cr.ui', function() {
      * @param {HTMLElement} element The element.
      * @return {HTMLLIElement} The list item containing |element|, or null.
      */
-    getListItemAncestor: function(element) {
+    getListItemAncestor(element) {
       let container = element;
-      while (container && container.parentNode != this) {
+      while (container && container.parentNode !== this) {
         container = container.parentNode;
       }
-      return container && assertInstanceof(container, HTMLLIElement);
+
+      return (container instanceof HTMLLIElement ? container : null);
     },
 
     /**
      * Handle a keydown event.
      * @param {Event} e The keydown event.
      */
-    handleKeyDown: function(e) {
+    handleKeyDown(e) {
       if (!this.disabled) {
         this.selectionController_.handleKeyDown(e);
       }
@@ -587,7 +602,7 @@ cr.define('cr.ui', function() {
      * Handle a scroll event.
      * @param {Event} e The scroll event.
      */
-    handleScroll: function(e) {
+    handleScroll(e) {
       requestAnimationFrame(this.redraw.bind(this));
     },
 
@@ -596,14 +611,14 @@ cr.define('cr.ui', function() {
      * @param {!Event} e The event.
      * @private
      */
-    handleTouchEvents_: function(e) {
+    handleTouchEvents_(e) {
       if (this.disabled) {
         return;
       }
 
       let target = /** @type {HTMLElement} */ (e.target);
 
-      if (target == this) {
+      if (target === this) {
         // Unlike the mouse events, we don't check if the touch is inside the
         // viewport because of these reasons:
         // - The scrollbars do not interact with touch.
@@ -614,6 +629,9 @@ cr.define('cr.ui', function() {
       }
 
       target = this.getListItemAncestor(target);
+      if (!target) {
+        return;
+      }
 
       const index = this.getIndexOfListItem(target);
       this.selectionController_.handleTouchEvents(e, index);
@@ -625,7 +643,7 @@ cr.define('cr.ui', function() {
      * @param {!Event} ce Event with change info.
      * @private
      */
-    handleOnChange_: function(ce) {
+    handleOnChange_(ce) {
       ce.changes.forEach(function(change) {
         const listItem = this.getListItemByIndex(change.index);
         if (listItem) {
@@ -649,19 +667,19 @@ cr.define('cr.ui', function() {
      * @param {Event} e The property change event.
      * @protected
      */
-    handleLeadChange: function(e) {
+    handleLeadChange(e) {
       let element;
-      if (e.oldValue != -1) {
+      if (e.oldValue !== -1) {
         if ((element = this.getListItemByIndex(e.oldValue))) {
           element.lead = false;
         }
       }
 
-      if (e.newValue != -1) {
+      if (e.newValue !== -1) {
         if ((element = this.getListItemByIndex(e.newValue))) {
           element.lead = true;
         }
-        if (e.oldValue != e.newValue) {
+        if (e.oldValue !== e.newValue) {
           if (element) {
             this.setAttribute('aria-activedescendant', element.id);
           }
@@ -697,10 +715,10 @@ cr.define('cr.ui', function() {
      *  adjustments.
      * @param {Event} e The 'permuted' event.
      */
-    handleDataModelPermuted_: function(e) {
+    handleDataModelPermuted_(e) {
       const newCachedItems = {};
       for (const index in this.cachedItems_) {
-        if (e.permutation[index] != -1) {
+        if (e.permutation[index] !== -1) {
           const newIndex = e.permutation[index];
           newCachedItems[newIndex] = this.cachedItems_[index];
           newCachedItems[newIndex].listIndex = newIndex;
@@ -711,7 +729,7 @@ cr.define('cr.ui', function() {
 
       const newCachedItemHeights = {};
       for (const index in this.cachedItemHeights_) {
-        if (e.permutation[index] != -1) {
+        if (e.permutation[index] !== -1) {
           newCachedItemHeights[e.permutation[index]] =
               this.cachedItemHeights_[index];
         }
@@ -727,7 +745,7 @@ cr.define('cr.ui', function() {
       this.endBatchUpdates();
     },
 
-    handleDataModelChange_: function(e) {
+    handleDataModelChange_(e) {
       delete this.cachedItems_[e.index];
       delete this.cachedItemHeights_[e.index];
       this.cachedMeasuredItem_ = null;
@@ -742,7 +760,7 @@ cr.define('cr.ui', function() {
      * @param {number} index The index of the item.
      * @return {number} The top position of the item inside the list.
      */
-    getItemTop: function(index) {
+    getItemTop(index) {
       if (this.fixedHeight_) {
         const itemHeight = this.getDefaultItemHeight_();
         return index * itemHeight;
@@ -761,7 +779,7 @@ cr.define('cr.ui', function() {
      * @return {number} The row of the item. May vary in the case
      *     of multiple columns.
      */
-    getItemRow: function(index) {
+    getItemRow(index) {
       return index;
     },
 
@@ -769,7 +787,7 @@ cr.define('cr.ui', function() {
      * @param {number} row The row.
      * @return {number} The index of the first item in the row.
      */
-    getFirstItemInRow: function(row) {
+    getFirstItemInRow(row) {
       return row;
     },
 
@@ -777,7 +795,7 @@ cr.define('cr.ui', function() {
      * Ensures that a given index is inside the viewport.
      * @param {number} index The index of the item to scroll into view.
      */
-    scrollIndexIntoView: function(index) {
+    scrollIndexIntoView(index) {
       const dataModel = this.dataModel;
       if (!dataModel || index < 0 || index >= dataModel.length) {
         return;
@@ -822,7 +840,7 @@ cr.define('cr.ui', function() {
     /**
      * @return {!ClientRect} The rect to use for the context menu.
      */
-    getRectForContextMenu: function() {
+    getRectForContextMenu() {
       // TODO(arv): Add trait support so we can share more code between trees
       // and lists.
       const index = this.selectionModel.selectedIndex;
@@ -839,7 +857,7 @@ cr.define('cr.ui', function() {
      *     item for.
      * @return {cr.ui.ListItem} The first found list item or null if not found.
      */
-    getListItem: function(value) {
+    getListItem(value) {
       const dataModel = this.dataModel;
       if (dataModel) {
         const index = dataModel.indexOf(value);
@@ -853,7 +871,7 @@ cr.define('cr.ui', function() {
      * @param {number} index The index of the list item to get.
      * @return {cr.ui.ListItem} The found list item or null if not found.
      */
-    getListItemByIndex: function(index) {
+    getListItemByIndex(index) {
       return this.cachedItems_[index] || null;
     },
 
@@ -862,9 +880,9 @@ cr.define('cr.ui', function() {
      * @param {HTMLLIElement} item The list item to get the index of.
      * @return {number} The index of the list item, or -1 if not found.
      */
-    getIndexOfListItem: function(item) {
+    getIndexOfListItem(item) {
       const index = item.listIndex;
-      if (this.cachedItems_[index] == item) {
+      if (this.cachedItems_[index] === item) {
         return index;
       }
       return -1;
@@ -875,10 +893,10 @@ cr.define('cr.ui', function() {
      * @param {?} value The value to use for the item.
      * @return {!cr.ui.ListItem} The newly created list item.
      */
-    createItem: function(value) {
+    createItem(value) {
       const item = new this.itemConstructor_(value);
       item.label = value;
-      if (typeof item.decorate == 'function') {
+      if (typeof item.decorate === 'function') {
         item.decorate();
       }
       return item;
@@ -890,7 +908,7 @@ cr.define('cr.ui', function() {
      * @return {!cr.ui.ListSelectionController} The newly created selection
      *     controller.
      */
-    createSelectionController: function(sm) {
+    createSelectionController(sm) {
       return new ListSelectionController(sm);
     },
 
@@ -901,7 +919,7 @@ cr.define('cr.ui', function() {
      * @param {number} index The index to find the top height of.
      * @return {{top: number, height: number}} The heights for the given index.
      */
-    getHeightsForIndex: function(index) {
+    getHeightsForIndex(index) {
       const itemHeight = this.getItemHeightByIndex_(index);
       const top = this.getItemTop(index);
       return {top: top, height: itemHeight};
@@ -916,7 +934,7 @@ cr.define('cr.ui', function() {
      *     given offset exceeds the height of list.
      * @protected
      */
-    getIndexForListOffset_: function(offset) {
+    getIndexForListOffset_(offset) {
       const itemHeight = this.getDefaultItemHeight_();
       if (!itemHeight) {
         return this.dataModel.length;
@@ -965,7 +983,7 @@ cr.define('cr.ui', function() {
      * @return {number} The number of list items visible.
      * @protected
      */
-    countItemsInRange_: function(startIndex, endOffset) {
+    countItemsInRange_(startIndex, endOffset) {
       const endIndex = this.getIndexForListOffset_(endOffset);
       return endIndex - startIndex + 1;
     },
@@ -977,7 +995,7 @@ cr.define('cr.ui', function() {
      * @return {{first: number, length: number, last: number}} The index of
      *     first item in view port, The number of items, The item past the last.
      */
-    getItemsInViewPort: function(scrollTop, clientHeight) {
+    getItemsInViewPort(scrollTop, clientHeight) {
       if (this.autoExpands_) {
         return {
           first: 0,
@@ -1004,7 +1022,7 @@ cr.define('cr.ui', function() {
      * @param {number} firstIndex The index of first item, inclusively.
      * @param {number} lastIndex The index of last item, exclusively.
      */
-    mergeItems: function(firstIndex, lastIndex) {
+    mergeItems(firstIndex, lastIndex) {
       const self = this;
       const dataModel = this.dataModel;
       let currentIndex = firstIndex;
@@ -1021,7 +1039,7 @@ cr.define('cr.ui', function() {
 
       function remove() {
         const next = item.nextSibling;
-        if (item != self.pinnedItem_) {
+        if (item !== self.pinnedItem_) {
           self.removeChild(item);
         }
         item = next;
@@ -1029,16 +1047,16 @@ cr.define('cr.ui', function() {
 
       let item;
       for (item = this.beforeFiller_.nextSibling;
-           item != this.afterFiller_ && currentIndex < lastIndex;) {
+           item !== this.afterFiller_ && currentIndex < lastIndex;) {
         if (!this.isItem(item)) {
           item = item.nextSibling;
           continue;
         }
 
         const index = item.listIndex;
-        if (this.cachedItems_[index] != item || index < currentIndex) {
+        if (this.cachedItems_[index] !== item || index < currentIndex) {
           remove();
-        } else if (index == currentIndex) {
+        } else if (index === currentIndex) {
           this.cachedItems_[currentIndex] = item;
           item = item.nextSibling;
           currentIndex++;
@@ -1047,7 +1065,7 @@ cr.define('cr.ui', function() {
         }
       }
 
-      while (item != this.afterFiller_) {
+      while (item !== this.afterFiller_) {
         if (this.isItem(item)) {
           remove();
         } else {
@@ -1072,7 +1090,7 @@ cr.define('cr.ui', function() {
     /**
      * Ensures that all the item sizes in the list have been already cached.
      */
-    ensureAllItemSizesInCache: function() {
+    ensureAllItemSizesInCache() {
       const measuringIndexes = [];
       const isElementAppended = [];
       for (let y = 0; y < this.dataModel.length; y++) {
@@ -1123,7 +1141,7 @@ cr.define('cr.ui', function() {
      * @param {number} lastIndex The index of item past the last in viewport.
      * @return {number} The height of after filler.
      */
-    getAfterFillerHeight: function(lastIndex) {
+    getAfterFillerHeight(lastIndex) {
       if (this.fixedHeight_) {
         const itemHeight = this.getDefaultItemHeight_();
         return (this.dataModel.length - lastIndex) * itemHeight;
@@ -1139,17 +1157,17 @@ cr.define('cr.ui', function() {
     /**
      * Redraws the viewport.
      */
-    redraw: function() {
-      if (this.batchCount_ != 0) {
+    redraw() {
+      if (this.batchCount_ !== 0) {
         return;
       }
 
       const dataModel = this.dataModel;
-      if (!dataModel || !this.autoExpands_ && this.clientHeight == 0) {
+      if (!dataModel || !this.autoExpands_ && this.clientHeight === 0) {
         this.cachedItems_ = {};
         this.firstIndex_ = 0;
         this.lastIndex_ = 0;
-        this.remainingSpace_ = this.clientHeight != 0;
+        this.remainingSpace_ = this.clientHeight !== 0;
         this.mergeItems(0, 0);
         return;
       }
@@ -1187,7 +1205,7 @@ cr.define('cr.ui', function() {
       // it from cache. Note, that we restore the hidden status to false, since
       // the item is still in cache, and may be reused.
       if (this.pinnedItem_ &&
-          this.pinnedItem_ != this.cachedItems_[leadIndex]) {
+          this.pinnedItem_ !== this.cachedItems_[leadIndex]) {
         if (this.pinnedItem_.hidden) {
           this.removeChild(this.pinnedItem_);
           this.pinnedItem_.hidden = false;
@@ -1198,7 +1216,7 @@ cr.define('cr.ui', function() {
       this.mergeItems(firstIndex, lastIndex);
 
       if (!this.pinnedItem_ && this.cachedItems_[leadIndex] &&
-          this.cachedItems_[leadIndex].parentNode == this) {
+          this.cachedItems_[leadIndex].parentNode === this) {
         this.pinnedItem_ = this.cachedItems_[leadIndex];
       }
 
@@ -1210,11 +1228,11 @@ cr.define('cr.ui', function() {
 
       // We don't set the lead or selected properties until after adding all
       // items, in case they force relayout in response to these events.
-      if (leadIndex != -1 && this.cachedItems_[leadIndex]) {
+      if (leadIndex !== -1 && this.cachedItems_[leadIndex]) {
         this.cachedItems_[leadIndex].lead = true;
       }
       for (let y = firstIndex; y < lastIndex; y++) {
-        if (sm.getIndexSelected(y) != this.cachedItems_[y].selected) {
+        if (sm.getIndexSelected(y) !== this.cachedItems_[y].selected) {
           this.cachedItems_[y].selected = !this.cachedItems_[y].selected;
         }
       }
@@ -1244,7 +1262,7 @@ cr.define('cr.ui', function() {
      *
      * @param {cr.ui.ListItem} leadItem Already existing lead item.
      */
-    restoreLeadItem: function(leadItem) {
+    restoreLeadItem(leadItem) {
       delete this.cachedItems_[leadItem.listIndex];
 
       leadItem.listIndex = this.selectionModel.leadIndex;
@@ -1254,7 +1272,7 @@ cr.define('cr.ui', function() {
     /**
      * Invalidates list by removing cached items.
      */
-    invalidate: function() {
+    invalidate() {
       this.cachedItems_ = {};
       this.cachedItemSized_ = {};
     },
@@ -1263,7 +1281,7 @@ cr.define('cr.ui', function() {
      * Redraws a single item.
      * @param {number} index The row index to redraw.
      */
-    redrawItem: function(index) {
+    redrawItem(index) {
       if (index >= this.firstIndex_ &&
           (index < this.lastIndex_ || this.remainingSpace_)) {
         delete this.cachedItems_[index];
@@ -1276,7 +1294,7 @@ cr.define('cr.ui', function() {
      * event.
      * @param {number} index The index of the activated item.
      */
-    activateItemAtIndex: function(index) {},
+    activateItemAtIndex(index) {},
 
     /**
      * Returns a ListItem for the leadIndex. If the item isn't present in the
@@ -1289,7 +1307,7 @@ cr.define('cr.ui', function() {
      *
      * @return {cr.ui.ListItem} The lead item for the list.
      */
-    ensureLeadItemExists: function() {
+    ensureLeadItemExists() {
       const index = this.selectionModel.leadIndex;
       if (index < 0) {
         return null;
@@ -1298,18 +1316,18 @@ cr.define('cr.ui', function() {
 
       const item =
           cachedItems[index] || this.createItem(this.dataModel.item(index));
-      if (this.pinnedItem_ != item && this.pinnedItem_ &&
+      if (this.pinnedItem_ !== item && this.pinnedItem_ &&
           this.pinnedItem_.hidden) {
         this.removeChild(this.pinnedItem_);
       }
       this.pinnedItem_ = item;
       cachedItems[index] = item;
       item.listIndex = index;
-      if (item.parentNode == this) {
+      if (item.parentNode === this) {
         return item;
       }
 
-      if (this.batchCount_ != 0) {
+      if (this.batchCount_ !== 0) {
         item.hidden = true;
       }
 
@@ -1328,7 +1346,7 @@ cr.define('cr.ui', function() {
      * Starts drag selection by reacting 'dragstart' event.
      * @param {Event} event Event of dragstart.
      */
-    startDragSelection: function(event) {
+    startDragSelection(event) {
       event.preventDefault();
       const border = document.createElement('div');
       border.className = 'drag-selection-border';
@@ -1357,15 +1375,23 @@ cr.define('cr.ui', function() {
     },
   };
 
-  cr.defineProperty(List, 'disabled', cr.PropertyKind.BOOL_ATTR);
+  /** @type {boolean} */
+  List.prototype.disabled;
+  Object.defineProperty(
+      List.prototype, 'disabled',
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the list or one of its descendents has focus. This is necessary
    * because list items can contain controls that can be focused, and for some
    * purposes (e.g., styling), the list can still be conceptually focused at
    * that point even though it doesn't actually have the page focus.
+   * @type {boolean}
    */
-  cr.defineProperty(List, 'hasElementFocus', cr.PropertyKind.BOOL_ATTR);
+  List.prototype.hasElementFocus;
+  Object.defineProperty(
+      List.prototype, 'hasElementFocus',
+      cr.getPropertyDescriptor('hasElementFocus', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Mousedown event handler.
@@ -1373,12 +1399,12 @@ cr.define('cr.ui', function() {
    * @param {Event} e The mouse event object.
    */
   function handleMouseDown(e) {
-    e.target = /** @type {!HTMLElement} */ (e.target);
-    const listItem = this.getListItemAncestor(e.target);
+    const target = /** @type {!HTMLElement} */ (e.target);
+    const listItem = this.getListItemAncestor(target);
     const wasSelected = listItem && listItem.selected;
     this.handlePointerDownUp_(e);
 
-    if (e.defaultPrevented || e.button != 0) {
+    if (e.defaultPrevented || e.button !== 0) {
       return;
     }
 
@@ -1393,7 +1419,7 @@ cr.define('cr.ui', function() {
     //
     // [1] For example, clicking non-focusable area gives focus on the first
     // form control in the item.
-    if (!containsFocusableElement(e.target, listItem) &&
+    if (!containsFocusableElement(target, listItem) &&
         listItem.contains(listItem.ownerDocument.activeElement)) {
       e.preventDefault();
     }
@@ -1416,7 +1442,7 @@ cr.define('cr.ui', function() {
     }
 
     const index = this.getIndexOfListItem(listItem);
-    if (index == -1) {
+    if (index === -1) {
       return;
     }
 
@@ -1434,7 +1460,7 @@ cr.define('cr.ui', function() {
    * @return {boolean} True if we found a focusable element.
    */
   function containsFocusableElement(start, root) {
-    for (let element = start; element && element != root;
+    for (let element = start; element && element !== root;
          element = element.parentElement) {
       if (element.tabIndex >= 0 && !element.disabled) {
         return true;
@@ -1443,6 +1469,8 @@ cr.define('cr.ui', function() {
     return false;
   }
 
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     List: List,
     Size: Size,

@@ -6,11 +6,13 @@ package org.chromium.weblayer_private;
 
 import android.os.IBinder;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerFactory;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
+import org.chromium.weblayer_private.interfaces.WebLayerVersionConstants;
 
 /**
  * Factory used to create WebLayer as well as verify compatibility.
@@ -18,8 +20,8 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  */
 @UsedByReflection("WebLayer")
 public final class WebLayerFactoryImpl extends IWebLayerFactory.Stub {
-    private final int mClientMajorVersion;
-    private final String mClientVersion;
+    private static int sClientMajorVersion;
+    private static String sClientVersion;
 
     /**
      * This function is called by the client using reflection.
@@ -37,8 +39,8 @@ public final class WebLayerFactoryImpl extends IWebLayerFactory.Stub {
     }
 
     private WebLayerFactoryImpl(String clientVersion, int clientMajorVersion) {
-        mClientMajorVersion = clientMajorVersion;
-        mClientVersion = clientVersion;
+        sClientMajorVersion = clientMajorVersion;
+        sClientVersion = clientVersion;
     }
 
     /**
@@ -48,7 +50,16 @@ public final class WebLayerFactoryImpl extends IWebLayerFactory.Stub {
     @Override
     public boolean isClientSupported() {
         StrictModeWorkaround.apply();
-        return Math.abs(mClientMajorVersion - getImplementationMajorVersion()) <= 3;
+        if (sClientMajorVersion < WebLayerVersionConstants.MIN_VERSION) {
+            return false;
+        }
+        int implMajorVersion = getImplementationMajorVersion();
+        // While the client always calls this method, the most recently shipped product gets to
+        // decide compatibility. If we instead let the implementation always decide, then we would
+        // not be able to change the allowed skew of older implementations, even if the client could
+        // support it.
+        if (sClientMajorVersion > implMajorVersion) return true;
+        return implMajorVersion - sClientMajorVersion <= WebLayerVersionConstants.MAX_SKEW;
     }
 
     /**
@@ -58,6 +69,15 @@ public final class WebLayerFactoryImpl extends IWebLayerFactory.Stub {
     public int getImplementationMajorVersion() {
         StrictModeWorkaround.apply();
         return VersionConstants.PRODUCT_MAJOR_VERSION;
+    }
+
+    @CalledByNative
+    public static int getClientMajorVersion() {
+        if (sClientMajorVersion == 0) {
+            throw new IllegalStateException(
+                    "This should only be called once WebLayer is initialized");
+        }
+        return sClientMajorVersion;
     }
 
     /**

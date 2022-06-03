@@ -16,12 +16,16 @@
 
 typedef std::vector<std::unique_ptr<media::KeySystemProperties>>
     KeySystemPropertiesVector;
-typedef base::Callback<void(KeySystemPropertiesVector*)>
+typedef base::RepeatingCallback<void(KeySystemPropertiesVector*)>
     KeySystemsProviderDelegate;
 
 class ChromeKeySystemsProvider {
  public:
   ChromeKeySystemsProvider();
+
+  ChromeKeySystemsProvider(const ChromeKeySystemsProvider&) = delete;
+  ChromeKeySystemsProvider& operator=(const ChromeKeySystemsProvider&) = delete;
+
   ~ChromeKeySystemsProvider();
 
   // Adds properties for supported key systems.
@@ -34,8 +38,7 @@ class ChromeKeySystemsProvider {
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
-  void SetProviderDelegateForTesting(
-      const KeySystemsProviderDelegate& test_provider);
+  void SetProviderDelegateForTesting(KeySystemsProviderDelegate test_provider);
 
  private:
   // Whether AddSupportedKeySystems() has ever been called.
@@ -57,8 +60,6 @@ class ChromeKeySystemsProvider {
   // For unit tests to inject their own key systems. Will bypass adding default
   // Chrome key systems when set.
   KeySystemsProviderDelegate test_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeySystemsProvider);
 };
 
 #endif  // CHROME_RENDERER_MEDIA_CHROME_KEY_SYSTEMS_PROVIDER_H_

@@ -14,13 +14,13 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.webkit.WebViewClientCompat;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -65,7 +65,7 @@ public class WebPlatformTestsActivity extends Activity {
             WebView childWebView = createChildLayoutAndGetNewWebView(parentWebView);
             WebSettings settings = childWebView.getSettings();
             setUpWebSettings(settings);
-            childWebView.setWebViewClient(new WebViewClient() {
+            childWebView.setWebViewClient(new WebViewClientCompat() {
                 @Override
                 public void onPageFinished(WebView childWebView, String url) {
                     if (DEBUG) Log.i(TAG, "onPageFinished");

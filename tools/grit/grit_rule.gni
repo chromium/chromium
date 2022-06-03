@@ -14,13 +14,13 @@
 #   source (required)
 #       Path to .grd file.
 #
-#   source_is_generated (optional, defaults to false)
-#       Declares that the input (or one of its dependencies) is generated so
-#       that grit_info is not run on the file when
-#       compute_inputs_for_analyze is set (because the file will not
-#       exist at analyze time). For "analyze" to be correct in this case, the
-#       inputs to the grit file must either be listed in the inputs variable
-#       or are listed as inputs to dependencies of this target.
+#   enable_input_discovery_for_gn_analyze (default=true)
+#       Runs grit_info.py via exec_script() when compute_inputs_for_analyze=true
+#       in order to discover all files that affect this target.
+#       Turn this off when the .grd file is generated, or an <include> with
+#       flattenhtml=true points to a generated file.
+#       For "gn analyze" to be correct with this arg disabled, all inputs
+#       must be listed via |inputs|.
 #
 #   inputs  (optional)
 #       List of additional files, required for grit to process source file.
@@ -72,6 +72,7 @@
 #   visibility  (optional)
 #       Normal meaning.
 #
+#
 # Example
 #
 #   grit("my_resources") {
@@ -86,144 +87,19 @@
 #     # You can also put deps here if the grit source depends on generated
 #     # files.
 #   }
-import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
-import("//build/config/crypto.gni")
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/ui.gni")
-import("//build/toolchain/gcc_toolchain.gni")  # For enable_resource_whitelist_generation
-if (enable_resource_whitelist_generation) {
-  assert(target_os == "android" || target_os == "win",
-         "unsupported platform for resource whitelist generation")
-  assert(
-      symbol_level > 0 && !strip_debug_info && !is_component_build,
-      "resource whitelist generation only works on non-component builds with debug info enabled.")
-}
-
-grit_defines = []
-
-if (is_mac || is_win || is_linux || is_ios) {
-  grit_defines += [
-    "-D",
-    "scale_factors=2x",
-  ]
-}
-
-# Mac and iOS want Title Case strings.
-use_titlecase_in_grd_files = is_mac || is_ios
-if (use_titlecase_in_grd_files) {
-  grit_defines += [
-    "-D",
-    "use_titlecase",
-  ]
-}
-
-if (is_chrome_branded) {
-  grit_defines += [
-    "-D",
-    "_google_chrome",
-    "-E",
-    "CHROMIUM_BUILD=google_chrome",
-  ]
-} else {
-  grit_defines += [
-    "-D",
-    "_chromium",
-    "-E",
-    "CHROMIUM_BUILD=chromium",
-  ]
-}
-
-if (is_chromeos) {
-  grit_defines += [
-    "-D",
-    "chromeos",
-  ]
-}
-
-if (is_desktop_linux) {
-  grit_defines += [
-    "-D",
-    "desktop_linux",
-  ]
-}
-
-if (toolkit_views) {
-  grit_defines += [
-    "-D",
-    "toolkit_views",
-  ]
-}
-
-if (use_aura) {
-  grit_defines += [
-    "-D",
-    "use_aura",
-  ]
-}
-
-if (use_nss_certs) {
-  grit_defines += [
-    "-D",
-    "use_nss_certs",
-  ]
-}
-
-if (use_ozone) {
-  grit_defines += [
-    "-D",
-    "use_ozone",
-  ]
-}
-
-if (is_android) {
-  grit_defines += [
-    "-E",
-    "ANDROID_JAVA_TAGGED_ONLY=true",
-  ]
-}
-
-# When cross-compiling, explicitly pass the target system to grit.
-if (current_toolchain != host_toolchain) {
-  if (is_android) {
-    grit_defines += [
-      "-t",
-      "android",
-    ]
-  }
-  if (is_ios) {
-    grit_defines += [
-      "-t",
-      "ios",
-    ]
-  }
-  if (is_linux) {
-    grit_defines += [
-      "-t",
-      "linux2",
-    ]
-  }
-  if (is_mac) {
-    grit_defines += [
-      "-t",
-      "darwin",
-    ]
-  }
-  if (is_win) {
-    grit_defines += [
-      "-t",
-      "win32",
-    ]
-  }
-}
-
+import("//build/toolchain/gcc_toolchain.gni")
+import("//tools/grit/grit_defines.gni")
 _strip_resource_files = is_android && is_official_build
 _js_minifier = "//tools/grit/minify_with_uglify.py"
 _css_minifier = "//tools/grit/minimize_css.py"
 
-grit_resource_id_file = "//tools/gritsettings/resource_ids"
+grit_resource_id_target = "//tools/gritsettings:default_resource_ids"
+grit_resource_id_file =
+    get_label_info(grit_resource_id_target, "target_gen_dir") +
+    "/default_resource_ids"
 grit_info_script = "//tools/grit/grit_info.py"
 
 # TODO(asvitkine): Add predetermined ids files for other platforms.
@@ -238,197 +114,170 @@ if (is_win) {
 }
 
 template("grit") {
-  assert(defined(invoker.source),
-         "\"source\" must be defined for the grit template $target_name")
-
-  if (defined(invoker.resource_ids)) {
-    resource_ids = invoker.resource_ids
+  if (defined(invoker.output_dir)) {
+    _output_dir = invoker.output_dir
   } else {
-    resource_ids = grit_resource_id_file
+    _output_dir = target_gen_dir
   }
 
-  if (defined(invoker.output_dir)) {
-    output_dir = invoker.output_dir
-  } else {
-    output_dir = target_gen_dir
+  _grit_outputs =
+      get_path_info(rebase_path(invoker.outputs, ".", _output_dir), "abspath")
+
+  # Add .info output for all pak files
+  _pak_info_outputs = []
+  foreach(output, _grit_outputs) {
+    if (get_path_info(output, "extension") == "pak") {
+      _pak_info_outputs += [ output + ".info" ]
+    }
   }
 
   if (defined(invoker.output_name)) {
-    grit_output_name = invoker.output_name
+    _grit_output_name = invoker.output_name
   } else {
-    grit_output_name = target_name
+    _grit_output_name = target_name
   }
 
-  # These are all passed as arguments to the script so have to be relative to
-  # the build directory.
-  rebased_output_dir = rebase_path(output_dir, root_build_dir)
-  source_path = rebase_path(invoker.source, root_build_dir)
+  _grit_custom_target = target_name + "_grit"
+  action(_grit_custom_target) {
+    script = "//tools/grit/grit.py"
+    inputs = [ invoker.source ]
 
-  # Compute flags.
-  grit_flags = []
-  if (defined(invoker.grit_flags)) {
-    grit_flags += invoker.grit_flags
-  }
-  if (resource_ids != "") {
-    grit_flags += [
-      "-f",
-      rebase_path(resource_ids, root_build_dir),
-    ]
-  }
-  if (grit_predetermined_resource_ids_file != "") {
-    grit_flags += [
-      "-p",
-      rebase_path(grit_predetermined_resource_ids_file, root_build_dir),
-    ]
-  }
-
-  if (defined(invoker.source_is_generated)) {
-    source_is_generated = invoker.source_is_generated
-  } else {
-    source_is_generated = false
-  }
-
-  assert_files_flags = []
-
-  # We want to make sure the declared outputs actually match what Grit is
-  # writing. We write the list to a file (some of the output lists are long
-  # enough to not fit on a Windows command line) and ask Grit to verify those
-  # are the actual outputs at runtime.
-  asserted_list_file =
-      "$target_out_dir/${grit_output_name}_expected_outputs.txt"
-  write_file(asserted_list_file,
-             rebase_path(invoker.outputs, root_build_dir, output_dir))
-  assert_files_flags += [ "--assert-file-list=" +
-                          rebase_path(asserted_list_file, root_build_dir) ]
-  grit_outputs =
-      get_path_info(rebase_path(invoker.outputs, ".", output_dir), "abspath")
-
-  # Add .info output for all pak files
-  pak_info_outputs = []
-  foreach(output, grit_outputs) {
-    if (get_path_info(output, "extension") == "pak") {
-      pak_info_outputs += [ output + ".info" ]
-    }
-  }
-
-  grit_custom_target = target_name + "_grit"
-  action(grit_custom_target) {
     testonly = defined(invoker.testonly) && invoker.testonly
 
-    script = "//tools/grit/grit.py"
-
-    inputs = [
-      invoker.source,
-      asserted_list_file,
-    ]
-    if (resource_ids != "") {
-      # The script depends on the ID file. Only add this dependency if the ID
-      # file is specified.
-      inputs += [ resource_ids ]
-    }
-    if (grit_predetermined_resource_ids_file != "") {
-      # If the predetermined ID file is present, the script outputs depend on
-      # it too.
-      inputs += [ grit_predetermined_resource_ids_file ]
-    }
-
     depfile = "$target_gen_dir/$target_name.d"
-    outputs = [ "${depfile}.stamp" ] + grit_outputs + pak_info_outputs
 
-    args = [
-             "-i",
-             source_path,
-             "build",
-             "-o",
-             rebased_output_dir,
-             "--depdir",
-             ".",
-             "--depfile",
-             rebase_path(depfile, root_build_dir),
-             "--write-only-new=1",
-             "--depend-on-stamp",
-           ] + grit_defines
+    deps = [ "//tools/grit:grit_sources" ]
+    outputs = [ "${depfile}.stamp" ] + _grit_outputs + _pak_info_outputs
 
-    # Add brotli executable if using brotli.
-    if (defined(invoker.use_brotli) && invoker.use_brotli) {
-      brotli_target = "//third_party/brotli:brotli($host_toolchain)"
-      brotli_executable = get_label_info(brotli_target, "root_out_dir") + "/" +
-                          get_label_info(brotli_target, "name")
-      if (host_os == "win") {
-        brotli_executable += ".exe"
-      }
-
-      inputs += [ brotli_executable ]
-      args += [
-        "--brotli",
-        rebase_path(brotli_executable, root_build_dir),
-      ]
-    }
+    _grit_flags = grit_defines
 
     # Add extra defines with -D flags.
-    define_args = []
     if (defined(invoker.defines)) {
       foreach(i, invoker.defines) {
-        define_args += [
+        _grit_flags += [
           "-D",
           i,
         ]
       }
     }
 
-    args += define_args + grit_flags + assert_files_flags
+    if (defined(invoker.grit_flags)) {
+      _grit_flags += invoker.grit_flags
+    }
 
-    if (enable_resource_whitelist_generation) {
-      rc_grit_outputs = []
-      foreach(output, grit_outputs) {
+    _rebased_source_path = rebase_path(invoker.source, root_build_dir)
+    _enable_grit_info =
+        !defined(invoker.enable_input_discovery_for_gn_analyze) ||
+        invoker.enable_input_discovery_for_gn_analyze
+    if (_enable_grit_info && compute_inputs_for_analyze) {
+      # Only call exec_script when the user has explicitly opted into greater
+      # precision at the expense of performance.
+      _rel_inputs = exec_script("//tools/grit/grit_info.py",
+                                [
+                                      "--inputs",
+                                      _rebased_source_path,
+                                    ] + _grit_flags,
+                                "list lines")
+      inputs += rebase_path(_rel_inputs, ".", root_build_dir)
+    }
+
+    args = [
+             "-i",
+             _rebased_source_path,
+             "build",
+             "-o",
+             rebase_path(_output_dir, root_build_dir),
+             "--depdir",
+             ".",
+             "--depfile",
+             rebase_path(depfile, root_build_dir),
+             "--write-only-new=1",
+             "--depend-on-stamp",
+           ] + _grit_flags
+
+    # Add brotli executable if using brotli.
+    if (defined(invoker.use_brotli) && invoker.use_brotli) {
+      _brotli_target = "//third_party/brotli:brotli($host_toolchain)"
+      _brotli_executable = get_label_info(_brotli_target, "root_out_dir") +
+                           "/" + get_label_info(_brotli_target, "name")
+      if (host_os == "win") {
+        _brotli_executable += ".exe"
+      }
+
+      inputs += [ _brotli_executable ]
+      args += [
+        "--brotli",
+        rebase_path(_brotli_executable, root_build_dir),
+      ]
+    }
+
+    _resource_ids = grit_resource_id_file
+    if (defined(invoker.resource_ids)) {
+      _resource_ids = invoker.resource_ids
+    }
+
+    if (_resource_ids != "") {
+      inputs += [ _resource_ids ]
+      args += [
+        "-f",
+        rebase_path(_resource_ids, root_build_dir),
+      ]
+      if (_resource_ids == grit_resource_id_file) {
+        deps += [ grit_resource_id_target ]
+      }
+    }
+    if (grit_predetermined_resource_ids_file != "") {
+      inputs += [ grit_predetermined_resource_ids_file ]
+      args += [
+        "-p",
+        rebase_path(grit_predetermined_resource_ids_file, root_build_dir),
+      ]
+    }
+
+    # We want to make sure the declared outputs actually match what Grit is
+    # writing. We write the list to a file (some of the output lists are long
+    # enough to not fit on a Windows command line) and ask Grit to verify those
+    # are the actual outputs at runtime.
+    _asserted_list_file =
+        "$target_out_dir/${_grit_output_name}_expected_outputs.txt"
+    write_file(_asserted_list_file,
+               rebase_path(invoker.outputs, root_build_dir, _output_dir))
+    inputs += [ _asserted_list_file ]
+    args += [
+      "--assert-file-list",
+      rebase_path(_asserted_list_file, root_build_dir),
+    ]
+
+    if (enable_resource_allowlist_generation) {
+      _rc_grit_outputs = []
+      foreach(output, _grit_outputs) {
         if (get_path_info(output, "extension") == "rc") {
-          rc_grit_outputs += [ output ]
+          _rc_grit_outputs += [ output ]
         }
       }
 
-      if (rc_grit_outputs != []) {
-        # Resource whitelisting cannot be used with .rc files.
+      if (_rc_grit_outputs != []) {
+        # Resource allowlisting cannot be used with .rc files.
         # Make sure that there aren't any .pak outputs which would require
-        # whitelist annotations.
-        assert(pak_info_outputs == [], "can't combine .pak and .rc outputs")
+        # allowlist annotations.
+        assert(_pak_info_outputs == [], "can't combine .pak and .rc outputs")
       } else {
-        args += [ "--whitelist-support" ]
+        args += [ "--allowlist-support" ]
       }
     }
     if (_strip_resource_files) {
-      js_minifier_command = rebase_path(_js_minifier, root_build_dir)
-      css_minifier_command = rebase_path(_css_minifier, root_build_dir)
+      _js_minifier_command = rebase_path(_js_minifier, root_build_dir)
+      _css_minifier_command = rebase_path(_css_minifier, root_build_dir)
       args += [
         "--js-minifier",
-        js_minifier_command,
+        _js_minifier_command,
         "--css-minifier",
-        css_minifier_command,
+        _css_minifier_command,
       ]
       inputs += [
         _js_minifier,
         _css_minifier,
       ]
-    }
-
-    # Must be after the args are computed since they are re-used.
-    # See the comments for the two variables used in this condition for
-    # why this works this way.
-    if (compute_inputs_for_analyze && !source_is_generated) {
-      grit_info_script = "//tools/grit/grit_info.py"
-      grit_info_args = [
-                         "--inputs",
-                         source_path,
-                       ] + grit_flags + grit_defines + define_args
-
-      # Only call exec_script when the user has explicitly opted into greater
-      # precision at the expense of performance.
-      rel_inputs = exec_script(grit_info_script,
-                               grit_info_args,
-                               "list lines",
-                               [ grit_info_script ])
-      inputs += rebase_path(rel_inputs, ".", root_build_dir)
-    } else {
-      assert(source_is_generated || !source_is_generated)  # Prevent error.
     }
 
     if (defined(invoker.visibility)) {
@@ -442,9 +291,6 @@ template("grit") {
       visibility = [ ":${invoker.target_name}" ] + invoker.visibility
     }
 
-    deps = [
-      "//tools/grit:grit_sources",
-    ]
     if (defined(invoker.use_brotli) && invoker.use_brotli) {
       if (is_mac && is_asan) {
         deps += [ "//tools/grit:brotli_mac_asan_workaround" ]
@@ -468,11 +314,11 @@ template("grit") {
     # Since we generate a file, we need to be run before the targets that
     # depend on us.
     sources = []
-    foreach(output, grit_outputs) {
-      extension = get_path_info(output, "extension")
-      if (extension != "json" && extension != "gz" && extension != "pak" &&
-          extension != "xml") {
-        sources += [ output ]
+    foreach(_output, _grit_outputs) {
+      _extension = get_path_info(_output, "extension")
+      if (_extension != "json" && _extension != "gz" && _extension != "pak" &&
+          _extension != "xml") {
+        sources += [ _output ]
       }
     }
 
@@ -480,13 +326,9 @@ template("grit") {
     # grit above rather than this library. This target needs to depend on the
     # action publicly so other scripts can take the outputs from the grit
     # script as inputs.
-    public_deps = [
-      ":$grit_custom_target",
-    ]
+    public_deps = [ ":$_grit_custom_target" ]
 
-    deps = [
-      "//base",
-    ]
+    deps = [ "//base" ]
 
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
@@ -499,6 +341,113 @@ template("grit") {
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
     }
-    output_name = grit_output_name
+    output_name = _grit_output_name
+  }
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  # Declare a target that generates localized strings.xml from a .grd file.
+  #
+  # If this target is included in the deps of an android resources/library/apk,
+  # the strings.xml will be included with that target.
+  #
+  # Variables
+  #   deps: Specifies the dependencies of this target.
+  #   grd_file: Path to the .grd file to generate strings.xml from.
+  #   outputs: Expected grit outputs (see grit rule).
+  #
+  # Example
+  #  java_strings_grd("foo_strings_grd") {
+  #    grd_file = "foo_strings.grd"
+  #  }
+  template("java_strings_grd") {
+    forward_variables_from(invoker, [ "testonly" ])
+
+    _resources_zip = "$target_out_dir/$target_name.resources.zip"
+    _grit_target_name = "${target_name}__grit"
+    _grit_output_dir = "$target_gen_dir/${target_name}_grit_output"
+
+    grit(_grit_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "defines",
+                             ])
+      grit_flags = [
+        "-E",
+        "ANDROID_JAVA_TAGGED_ONLY=false",
+      ]
+      output_dir = _grit_output_dir
+      resource_ids = ""
+      source = invoker.grd_file
+      outputs = invoker.outputs
+    }
+
+    _zip_target_name = "${target_name}__zip"
+
+    zip(_zip_target_name) {
+      base_dir = _grit_output_dir
+
+      # This needs to get outputs from grit's internal target, not the final
+      # source_set.
+      inputs = filter_exclude(get_target_outputs(":${_grit_target_name}_grit"),
+                              [ "*.stamp" ])
+      output = _resources_zip
+      deps = [ ":$_grit_target_name" ]
+    }
+
+    android_generated_resources(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "resource_overlay",
+                               "visibility",
+                             ])
+      generating_target = ":$_zip_target_name"
+      generated_resources_zip = _resources_zip
+    }
+  }
+
+  # Declare a target that packages strings.xml generated from a grd file.
+  #
+  # If this target is included in the deps of an android resources/library/apk,
+  # the strings.xml will be included with that target.
+  #
+  # Variables
+  #  grit_output_dir: directory containing grit-generated files.
+  #  generated_files: list of android resource files to package.
+  #
+  # Example
+  #  java_strings_grd_prebuilt("foo_strings_grd") {
+  #    grit_output_dir = "$root_gen_dir/foo/grit"
+  #    generated_files = [
+  #      "values/strings.xml"
+  #    ]
+  #  }
+  template("java_strings_grd_prebuilt") {
+    forward_variables_from(invoker, [ "testonly" ])
+
+    _resources_zip = "$target_out_dir/$target_name.resources.zip"
+    _zip_target_name = "${target_name}__zip"
+
+    zip(_zip_target_name) {
+      base_dir = invoker.grit_output_dir
+      inputs = rebase_path(invoker.generated_files, ".", base_dir)
+      output = _resources_zip
+      if (defined(invoker.deps)) {
+        deps = invoker.deps
+      }
+    }
+
+    android_generated_resources(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "resource_overlay",
+                               "visibility",
+                             ])
+      generating_target = ":$_zip_target_name"
+      generated_resources_zip = _resources_zip
+    }
   }
 }

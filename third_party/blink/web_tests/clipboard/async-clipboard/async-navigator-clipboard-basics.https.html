@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset="utf-8">
 <title>Async Clipboard input type validation tests</title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
@@ -35,30 +35,30 @@ promise_test(async t => {
   const item1 = new ClipboardItem({'text/plain': blob1});
   const item2 = new ClipboardItem({'text/plain': blob2});
 
-  await promise_rejects(t, "NotAllowedError",
+  await promise_rejects_dom(t, "NotAllowedError",
       navigator.clipboard.write([item1, item2]));
 }, 'navigator.clipboard.write([>1 ClipboardItems]) fails (not implemented)');
 
 promise_test(async t => {
   await getPermissions();
-  await promise_rejects(t, new TypeError(), navigator.clipboard.write());
+  await promise_rejects_js(t, TypeError, navigator.clipboard.write());
 }, 'navigator.clipboard.write() fails (expect [ClipboardItem])');
 
 promise_test(async t => {
   await getPermissions();
-  await promise_rejects(t, new TypeError(), navigator.clipboard.write(null));
+  await promise_rejects_js(t, TypeError, navigator.clipboard.write(null));
 }, 'navigator.clipboard.write(null) fails (expect [ClipboardItem])');
 
 promise_test(async t => {
   await getPermissions();
-  await promise_rejects(t, new TypeError(),
-                         navigator.clipboard.write('Bad string'));
+  await promise_rejects_js(t, TypeError,
+                           navigator.clipboard.write('Bad string'));
 }, 'navigator.clipboard.write(DOMString) fails (expect [ClipboardItem])');
 
 promise_test(async t => {
   await getPermissions();
   const blob = new Blob(['hello'], {type: 'text/plain'});
-  await promise_rejects(t, new TypeError(), navigator.clipboard.write(blob));
+  await promise_rejects_js(t, TypeError, navigator.clipboard.write(blob));
 }, 'navigator.clipboard.write(Blob) fails (expect [ClipboardItem])');
 
 promise_test(async () => {
@@ -68,8 +68,8 @@ promise_test(async () => {
 
 promise_test(async t => {
   await getPermissions();
-  await promise_rejects(t, new TypeError(),
-                         navigator.clipboard.writeText());
+  await promise_rejects_js(t, TypeError,
+                           navigator.clipboard.writeText());
 }, 'navigator.clipboard.writeText() fails (expect DOMString)');
 
 promise_test(async () => {

@@ -26,7 +26,9 @@ class ExceptionState;
 class ResponseInit;
 class ScriptState;
 
-class CORE_EXPORT Response final : public Body {
+class CORE_EXPORT Response final : public ScriptWrappable,
+                                   public ActiveScriptWrappable<Response>,
+                                   public Body {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -67,6 +69,8 @@ class CORE_EXPORT Response final : public Body {
   explicit Response(ExecutionContext*);
   Response(ExecutionContext*, FetchResponseData*);
   Response(ExecutionContext*, FetchResponseData*, Headers*);
+  Response(const Response&) = delete;
+  Response& operator=(const Response&) = delete;
 
   const FetchResponseData* GetResponse() const { return response_; }
 
@@ -86,7 +90,7 @@ class CORE_EXPORT Response final : public Body {
   // ScriptWrappable
   bool HasPendingActivity() const final;
 
-  // Does not contain the blob response body.
+  // Does not contain the blob response body or any side data blob.
   // |request_url| is the current request URL that resulted in the response. It
   // is needed to process some response headers (e.g. CSP).
   // TODO(lfg, kinuko): The FetchResponseData::url_list_ should include the
@@ -111,7 +115,7 @@ class CORE_EXPORT Response final : public Body {
     return response_->InternalBuffer();
   }
 
-  BodyUsed IsBodyUsed(ExceptionState&) override;
+  bool IsBodyUsed() const override;
 
   String ContentType() const override;
   String MimeType() const override;
@@ -121,17 +125,11 @@ class CORE_EXPORT Response final : public Body {
 
   FetchHeaderList* InternalHeaderList() const;
 
-  void Trace(blink::Visitor*) override;
-
- protected:
-  // A version of IsBodyUsed() which catches exceptions and returns
-  // false. Should never be used outside DCHECK().
-  bool IsBodyUsedForDCheck(ExceptionState&) override;
+  void Trace(Visitor*) const override;
 
  private:
   const Member<FetchResponseData> response_;
   const Member<Headers> headers_;
-  DISALLOW_COPY_AND_ASSIGN(Response);
 };
 
 }  // namespace blink

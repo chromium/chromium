@@ -1,0 +1,12 @@
+Name: flex
+URL: https://github.com/westes/flex
+Version: v2.6.4
+Revision: ab49343
+License: BSD
+Security Critical: no
+
+Description:
+The Fast Lexical Analyzer - scanner generator for lexing in C and C++
+
+This isn't shipped and isn't even used as part of the build. It exists
+only so that it can be used as a 3pp build dep for third_party/mig.

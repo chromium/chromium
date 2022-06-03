@@ -1,5 +1,5 @@
 {
-  "x-version": 4,
+  "x-version": 5,
   "google-talk": {
     "mime_types": [
     ],
@@ -28,7 +28,8 @@
     "help_url": "https://support.google.com/chrome/?p=plugin_flash",
     "url": "http://get.adobe.com/flashplayer/",
     "displayurl": true,
-    "group_name_matcher": "*Shockwave Flash*"
+    "group_name_matcher": "*Shockwave Flash*",
+    "plugin_is_deprecated": true
   },
   "google-chrome-pdf": {
     "mime_types": [

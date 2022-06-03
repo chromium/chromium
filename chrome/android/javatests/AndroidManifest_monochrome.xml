@@ -17,3 +17,16 @@
         android:targetPackage="{{manifest_package}}"
         android:label="Tests for {{manifest_package}}"/>
 {% endblock %}
+
+{% block extra_application_attributes %}
+{{ super() }}
+## Test listing breaks because of scoped storage in Android 10 - see
+## https://developer.android.com/training/data-storage#scoped-storage and
+## https://developer.android.com/training/data-storage/compatibility.
+android:requestLegacyExternalStorage="true"
+{% endblock %}
+
+{% block base_application_definitions %}
+    <meta-data android:name="com.google.ar.core.session_settings"
+      android:value="dataset_path,/sdcard/chromium_tests_root/chrome/test/data/xr/dataset.mp4"/>
+{% endblock %}

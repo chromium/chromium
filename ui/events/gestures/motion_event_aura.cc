@@ -4,7 +4,8 @@
 
 #include "ui/events/gestures/motion_event_aura.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 namespace ui {
@@ -13,15 +14,15 @@ namespace {
 MotionEvent::ToolType EventPointerTypeToMotionEventToolType(
     EventPointerType type) {
   switch (type) {
-    case EventPointerType::POINTER_TYPE_UNKNOWN:
+    case EventPointerType::kUnknown:
       return MotionEvent::ToolType::UNKNOWN;
-    case EventPointerType::POINTER_TYPE_MOUSE:
+    case EventPointerType::kMouse:
       return MotionEvent::ToolType::MOUSE;
-    case EventPointerType::POINTER_TYPE_PEN:
+    case EventPointerType::kPen:
       return MotionEvent::ToolType::STYLUS;
-    case EventPointerType::POINTER_TYPE_TOUCH:
+    case EventPointerType::kTouch:
       return MotionEvent::ToolType::FINGER;
-    case EventPointerType::POINTER_TYPE_ERASER:
+    case EventPointerType::kEraser:
       return MotionEvent::ToolType::ERASER;
   }
 
@@ -49,8 +50,8 @@ PointerProperties GetPointerPropertiesFromTouchEvent(const TouchEvent& touch) {
   if (!pointer_properties.touch_major) {
     float default_size;
     switch (touch.pointer_details().pointer_type) {
-      case EventPointerType::POINTER_TYPE_PEN:
-      case EventPointerType::POINTER_TYPE_ERASER:
+      case EventPointerType::kPen:
+      case EventPointerType::kEraser:
         // Default size for stylus events is 1x1.
         default_size = 1;
         break;

@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<script src='../../../resources/gesture-util.js'></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <style>
@@ -42,58 +43,25 @@
 </div>
 
 <script>
-var parentDiv = document.getElementById('parentDiv');
-var childDiv = document.getElementById('childDiv');
+const WHEEL_SOURCE_TYPE = GestureSourceType.MOUSE_INPUT;
 
-const WHEEL_SOURCE_TYPE = 2; // MOUSE_INPUT from synthetic_gesture_params.h
-function scrollDown(pixels_to_scroll, start_x, start_y, speed_in_pixels_s) {
-  return new Promise((resolve, reject) => {
-    chrome.gpuBenchmarking.smoothScrollBy(pixels_to_scroll,
-                                          resolve,
-                                          start_x,
-                                          start_y,
-                                          WHEEL_SOURCE_TYPE,
-                                          'down',
-                                          speed_in_pixels_s);
+const parentDiv = document.getElementById('parentDiv');
+const childDiv = document.getElementById('childDiv');
+const rect = childDiv.getBoundingClientRect();
+const startX = (rect.left + rect.right) / 2;
+const startY = (rect.top + rect.bottom) / 2;
+
+promise_test(async () => {
+  await smoothScroll(
+    500, startX, startY, WHEEL_SOURCE_TYPE, 'down', SPEED_INSTANT
+  );
+  await waitForAnimationEndTimeBased(() => {
+    return childDiv.scrollTop;
   });
-}
-
-const MAX_RAF = 1000;
-var last_child_scroll_offset = childDiv.scrollTop;
-var last_parent_scroll_offset = parentDiv.scrollTop;
-var last_changed_count = 0;
-function waitForAnimationEnd() {
-  return new Promise((resolve, reject) => {
-    function tick(raf_count) {
-    // We requestAnimationFrame either for 1000 frames or until 20 frames with
-    // no change have been observed.
-      if (raf_count >= MAX_RAF || raf_count - last_changed_count > 20) {
-        resolve();
-      } else {
-        if (childDiv.scrollTop != last_child_scroll_offset ||
-            parentDiv.scrollTop != last_parent_scroll_offset) {
-          last_changed_count = raf_count;
-          last_child_scroll_offset = childDiv.scrollTop;
-          last_parent_scroll_offset = parentDiv.scrollTop;
-        }
-        requestAnimationFrame(tick.bind(this, raf_count + 1));
-      }
-    }
-    tick(0);
+  await waitForAnimationEndTimeBased(() => {
+    return parentDiv.scrollTop;
   });
-}
-
-var rect = childDiv.getBoundingClientRect();
-function testWheelScrollLatching() {
-  return scrollDown(400, (rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, 1000)
-  .then(waitForAnimationEnd)
-  .then(() => {
-    assert_equals(childDiv.scrollTop, 10, "childDiv must be fully scrolled");
-    assert_equals(parentDiv.scrollTop, 0, "parentDiv shouldn't scroll at all");
-  });
-}
-
-promise_test(t => {
-    return testWheelScrollLatching();
-  }, 'With wheel scroll latching enabled only child div must scroll');
+  assert_equals(childDiv.scrollTop, 10, "childDiv must be fully scrolled");
+  assert_equals(parentDiv.scrollTop, 0, "parentDiv shouldn't scroll at all");
+}, 'With wheel scroll latching enabled only child div must scroll');
 </script>

@@ -8,15 +8,17 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/safe_browsing/password_protection/metrics_util.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -29,13 +31,15 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 
 namespace {
@@ -87,10 +91,15 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
  public:
   PageInfoBubbleViewSyncBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
+  PageInfoBubbleViewSyncBrowserTest(
+      const PageInfoBubbleViewSyncBrowserTest& chip) = delete;
+  PageInfoBubbleViewSyncBrowserTest& operator=(
+      const PageInfoBubbleViewSyncBrowserTest& chip) = delete;
+
  protected:
   void SetupSyncForAccount(Profile* profile) {
-    syncer::ProfileSyncService* sync_service =
-        ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
+    syncer::SyncServiceImpl* sync_service =
+        SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
 
     sync_service->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
@@ -102,17 +111,17 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
       username = "user@gmail.com";
     }
 
-    std::unique_ptr<ProfileSyncServiceHarness> harness =
-        ProfileSyncServiceHarness::Create(
+    std::unique_ptr<SyncServiceImplHarness> harness =
+        SyncServiceImplHarness::Create(
             browser()->profile(), username, "password",
-            ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+            SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
     // Sign the profile in.
     ASSERT_TRUE(harness->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(browser()->profile())
-            ->GetPrimaryAccountInfo();
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;
@@ -126,14 +135,12 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(harness->SetupSync());
   }
 
-  const base::string16 GetPageInfoBubbleViewDetailText() {
-    PageInfoBubbleView* page_info_bubble_view =
-        static_cast<PageInfoBubbleView*>(
-            PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    return page_info_bubble_view->details_text();
+  const std::u16string GetPageInfoBubbleViewDetailText() {
+    auto* label =
+        PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
+    return static_cast<views::StyledLabel*>(label)->GetText();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewSyncBrowserTest);
 };
 
 // Test opening page info bubble that matches
@@ -148,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(safe_browsing::kSyncPasswordPageInfoHistogram, 0);
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/")));
   // Update security state of the current page to match
   // SB_THREAT_TYPE_GAIA_PASSWORD_REUSE.
   safe_browsing::ChromePasswordProtectionService* service = safe_browsing::
@@ -162,17 +170,19 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
   account_type.set_is_account_syncing(true);
   service->set_reused_password_account_type_for_last_shown_warning(
       account_type);
+  scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
+      safe_browsing::CreateDummyRequest(contents);
   service->ShowModalWarning(
-      contents, safe_browsing::RequestOutcome::UNKNOWN,
+      request.get(),
       safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
 
   OpenPageInfoBubble(browser());
   views::View* change_password_button = GetView(
-      browser(), PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
+      browser(), PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   views::View* safelist_password_reuse_button = GetView(
       browser(),
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_WHITELIST_PASSWORD_REUSE);
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(contents);
@@ -182,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
       security_state::MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
       visible_security_state->malicious_content_status);
   ASSERT_EQ(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC) +
+          u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE),
       GetPageInfoBubbleViewDetailText());
 
   // Verify these two buttons are showing.
@@ -213,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
           base::Bucket(static_cast<int>(
                            safe_browsing::WarningAction::MARK_AS_LEGITIMATE),
                        1)));
-  // Security state will change after whitelisting.
+  // Security state will change after allowlisting.
   visible_security_state = helper->GetVisibleSecurityState();
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
             visible_security_state->malicious_content_status);

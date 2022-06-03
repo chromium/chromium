@@ -10,7 +10,7 @@ void RunShellDrag(gfx::NativeView view,
                   std::unique_ptr<ui::OSExchangeData> data,
                   const gfx::Point& location,
                   int operation,
-                  ui::DragDropTypes::DragEventSource source) {
+                  ui::mojom::DragEventSource source) {
   NOTIMPLEMENTED();
 }
 

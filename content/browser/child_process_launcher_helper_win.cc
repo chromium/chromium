@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
@@ -16,9 +15,8 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "services/service_manager/embedder/result_codes.h"
-#include "services/service_manager/sandbox/win/sandbox_win.h"
 
 namespace content {
 namespace internal {
@@ -27,12 +25,12 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
 }
 
-base::Optional<mojo::NamedPlatformChannel>
+absl::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
 
   if (!delegate_->ShouldLaunchElevated())
-    return base::nullopt;
+    return absl::nullopt;
 
   mojo::NamedPlatformChannel::Options options;
   mojo::NamedPlatformChannel named_channel(options);
@@ -42,13 +40,17 @@ ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
 
 std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
-  return std::unique_ptr<FileMappedForLaunch>();
+  return nullptr;
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  if (!delegate_->ShouldLaunchElevated()) {
+    mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
+                                               command_line());
+  }
   return true;
 }
 
@@ -69,15 +71,10 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     process.process = base::LaunchElevatedProcess(*command_line(), win_options);
     return process;
   }
-  base::HandlesToInheritVector handles;
-  mojo_channel_->PrepareToPassRemoteEndpoint(&handles, command_line());
-  base::FieldTrialList::AppendFieldTrialHandleIfNeeded(&handles);
   ChildProcessLauncherHelper::Process process;
-  *launch_result = StartSandboxedProcess(
-      delegate_.get(),
-      command_line(),
-      handles,
-      &process.process);
+  *launch_result =
+      StartSandboxedProcess(delegate_.get(), *command_line(),
+                            options.handles_to_inherit, &process.process);
   return process;
 }
 
@@ -107,7 +104,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
-  process.process.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, false);
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
 }
 
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(

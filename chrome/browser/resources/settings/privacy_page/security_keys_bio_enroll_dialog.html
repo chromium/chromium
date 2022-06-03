@@ -1,24 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../site_favicon.html">
-<link rel="import" href="security_keys_browser_proxy.html">
-<link rel="import" href="security_keys_pin_field.html">
-
-<dom-module id="settings-security-keys-bio-enroll-dialog">
-  <template>
     <style include="settings-shared">
       div[slot='body'] {
         /* Make the secondary 'Add' button in the body to align with the
@@ -65,7 +44,8 @@
           </div>
 
           <div id="pinPrompt">
-            <settings-security-keys-pin-field id="pin">
+            <settings-security-keys-pin-field id="pin"
+                min-pin-length="[[minPinLength_]]">
             </settings-security-keys-pin-field>
           </div>
 
@@ -102,15 +82,19 @@
 
           <div id="enroll">
             <p>[[progressArcLabel_]]</p>
-            <cr-fingerprint-progress-arc id="arc"></cr-fingerprint-progress-arc>
+            <cr-fingerprint-progress-arc id="arc" autoplay>
+            </cr-fingerprint-progress-arc>
           </div>
 
           <div id="chooseName">
             <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
             <cr-input type="text" id="enrollmentName"
+                max-length="[[enrollmentNameMaxUtf8Length_]]"
                 value="{{recentEnrollmentName_}}"
                 label="$i18n{securityKeysBioEnrollmentNameLabel}"
                 on-input="onEnrollmentNameInput_"
+                error-message="[[enrollmentNameError_]]"
+                invalid="[[!isNullOrEmpty_(enrollmentNameError_)]]"
                 spellcheck="false">
             </cr-input>
           </div>
@@ -129,7 +113,7 @@
             hidden="[[!confirmButtonVisible_]]"
             disabled="[[confirmButtonDisabled_]]"
             on-click="confirmButtonClick_">
-          $i18n{continue}
+          [[confirmButtonLabel_]]
         </cr-button>
         <cr-button id="doneButton" class="action-button"
             on-click="done_" hidden="[[!doneButtonVisible_]]">
@@ -137,7 +121,3 @@
         </cr-button>
       </div>
     </cr-dialog>
-
-  </template>
-  <script src="security_keys_bio_enroll_dialog.js"></script>
-</dom-module>

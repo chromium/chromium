@@ -8,21 +8,22 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/service/service_process.h"
 #include "components/version_info/version_info.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/url_request/url_request_context_builder.h"
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_MAC)
 #include <sys/utsname.h>
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Not supported on ChromeOS"
 #endif
 
@@ -34,7 +35,7 @@ namespace {
 std::string BuildOSCpuInfo() {
   std::string os_cpu;
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
@@ -42,7 +43,7 @@ std::string BuildOSCpuInfo() {
                                                &os_minor_version,
                                                &os_bugfix_version);
 #endif
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_MAC)
   // Should work on any Posix system.
   struct utsname unixinfo;
   uname(&unixinfo);
@@ -63,7 +64,7 @@ std::string BuildOSCpuInfo() {
       "Windows NT %d.%d",
       os_major_version,
       os_minor_version
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
       "Intel Mac OS X %d_%d_%d",
       os_major_version,
       os_minor_version,
@@ -100,7 +101,7 @@ ServiceURLRequestContextGetter::ServiceURLRequestContextGetter()
       network_task_runner_(g_service_process->io_task_runner()) {
   DCHECK(g_service_process);
   proxy_config_service_ =
-      net::ProxyResolutionService::CreateSystemProxyConfigService(
+      net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
           g_service_process->io_task_runner());
 }
 

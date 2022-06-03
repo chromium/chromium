@@ -11,13 +11,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -28,18 +27,28 @@ class POLICY_EXPORT RemoteCommandJob {
   using UniqueIDType = int64_t;
 
   // Status of this job.
+  // This enum is used to define the buckets for an enumerated UMA histogram.
+  // Hence,
+  //   (a) existing enumerated constants should never be deleted or reordered
+  //   (b) new constants should only be appended at the end of the enumeration
+  //       (update RemoteCommandExecutuionStatus in
+  //       tools/metrics/histograms/enums.xml as well).
   enum Status {
     NOT_INITIALIZED = 0,  // The job is not initialized yet.
-    INVALID,              // The job was initialized from a malformed protobuf.
-    EXPIRED,              // The job is expired and won't be executed.
-    NOT_STARTED,          // The job is initialized and ready to be started.
-    RUNNING,              // The job was started and is running now.
-    SUCCEEDED,            // The job finished running successfully.
-    FAILED,               // The job finished running with failure.
-    TERMINATED,           // The job was terminated before finishing by itself.
+    INVALID = 1,          // The job was initialized from a malformed protobuf.
+    EXPIRED = 2,          // The job is expired and won't be executed.
+    NOT_STARTED = 3,      // The job is initialized and ready to be started.
+    RUNNING = 4,          // The job was started and is running now.
+    SUCCEEDED = 5,        // The job finished running successfully.
+    FAILED = 6,           // The job finished running with failure.
+    TERMINATED = 7,       // The job was terminated before finishing by itself.
+    STATUS_TYPE_SIZE      // Used by UMA histograms. Shall be the last.
   };
 
   using FinishedCallback = base::OnceClosure;
+
+  RemoteCommandJob(const RemoteCommandJob&) = delete;
+  RemoteCommandJob& operator=(const RemoteCommandJob&) = delete;
 
   virtual ~RemoteCommandJob();
 
@@ -91,6 +100,7 @@ class POLICY_EXPORT RemoteCommandJob {
   base::TimeTicks issued_time() const { return issued_time_; }
   base::Time execution_started_time() const { return execution_started_time_; }
   Status status() const { return status_; }
+  bool has_signed_data() const { return signed_command_.has_value(); }
 
   // Returns whether execution of this command is finished.
   bool IsExecutionFinished() const;
@@ -143,7 +153,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // The default implementation does nothing.
   virtual void TerminateImpl();
 
-  const base::Optional<enterprise_management::SignedData>& signed_command()
+  const absl::optional<enterprise_management::SignedData>& signed_command()
       const {
     return signed_command_;
   }
@@ -164,7 +174,7 @@ class POLICY_EXPORT RemoteCommandJob {
 
   // Serialized command inside policy data proto with signature in case of a
   // signed command, otherwise empty.
-  base::Optional<enterprise_management::SignedData> signed_command_;
+  absl::optional<enterprise_management::SignedData> signed_command_;
 
   std::unique_ptr<ResultPayload> result_payload_;
 
@@ -173,8 +183,6 @@ class POLICY_EXPORT RemoteCommandJob {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<RemoteCommandJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandJob);
 };
 
 }  // namespace policy

@@ -45,7 +45,6 @@ class SVGAnimatedNumberOptionalNumber;
 class SVGAnimatedNumber : public ScriptWrappable,
                           public SVGAnimatedProperty<SVGNumber> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedNumber);
 
  public:
   SVGAnimatedNumber(SVGElement* context_element,
@@ -73,7 +72,7 @@ class SVGAnimatedNumber : public ScriptWrappable,
     parent_number_optional_number_ = number_optional_number;
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<SVGAnimatedNumberOptionalNumber> parent_number_optional_number_;

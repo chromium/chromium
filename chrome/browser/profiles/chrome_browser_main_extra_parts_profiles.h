@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILES_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILES_H_
 #define CHROME_BROWSER_PROFILES_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILES_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
 class ChromeBrowserMainParts;
@@ -18,6 +16,10 @@ void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts);
 class ChromeBrowserMainExtraPartsProfiles : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsProfiles();
+  ChromeBrowserMainExtraPartsProfiles(
+      const ChromeBrowserMainExtraPartsProfiles&) = delete;
+  ChromeBrowserMainExtraPartsProfiles& operator=(
+      const ChromeBrowserMainExtraPartsProfiles&) = delete;
   ~ChromeBrowserMainExtraPartsProfiles() override;
 
   // Instantiates all chrome KeyedService factories, which is
@@ -27,9 +29,6 @@ class ChromeBrowserMainExtraPartsProfiles : public ChromeBrowserMainExtraParts {
 
   // Overridden from ChromeBrowserMainExtraParts:
   void PreProfileInit() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsProfiles);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILES_H_

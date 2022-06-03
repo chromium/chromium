@@ -1,0 +1,15 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "tab_search.mojom" ]
+  public_deps = [
+    "//components/tab_groups/public/mojom:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/"
+}

@@ -1,0 +1,56 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package mojolpm;
+
+// TODO(markbrand): Is there anything sensible to do to fuzz interfaces that
+// use or expect a generic mojo handle?
+message Handle {}
+
+message CreateDataPipeOptions {
+  required uint32 flags = 2;
+  required uint32 element_num_bytes = 3;
+  required uint32 capacity_num_bytes = 4;
+}
+
+message DataPipeConsumerHandle {
+  oneof instance {
+    uint32 old = 1;
+    CreateDataPipeOptions new = 2;
+  }
+}
+
+message DataPipeProducerHandle {
+  oneof instance {
+    uint32 old = 1;
+    CreateDataPipeOptions new = 2;
+  }
+}
+
+message DataPipeRead {
+  required DataPipeConsumerHandle handle = 1;
+  required uint32 size = 2;
+}
+
+message DataPipeWrite {
+  required DataPipeProducerHandle handle = 1;
+  required bytes data = 2;
+}
+
+message DataPipeConsumerClose {
+  required uint32 id = 1;
+}
+
+message DataPipeProducerClose {
+  required uint32 id = 1;
+}
+
+// TODO(markbrand): Implement these last two.
+message MessagePipeHandle {}
+
+message SharedBufferHandle {}
+
+message PlatformHandle {}

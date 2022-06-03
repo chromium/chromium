@@ -42,7 +42,7 @@ interface ProxyErrorClient {
   // This only surfaces failures for an entire URL load, and not from
   // individual proxy servers. For instance if a PAC script returned 4 proxy
   // servers, and sending the request through the first three failed before
-  // successfulyl sending through the fourth, this method is NOT called.
+  // successfully sending through the fourth, this method is NOT called.
   //
   // There is some ambiguity with how errors are classified as being a
   // "proxy error". The current implementation includes a mix of

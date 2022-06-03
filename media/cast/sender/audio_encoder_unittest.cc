@@ -12,8 +12,9 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -34,6 +35,11 @@ namespace {
 class TestEncodedAudioFrameReceiver {
  public:
   TestEncodedAudioFrameReceiver() : frames_received_(0) {}
+
+  TestEncodedAudioFrameReceiver(const TestEncodedAudioFrameReceiver&) = delete;
+  TestEncodedAudioFrameReceiver& operator=(
+      const TestEncodedAudioFrameReceiver&) = delete;
+
   virtual ~TestEncodedAudioFrameReceiver() = default;
 
   int frames_received() const { return frames_received_; }
@@ -77,8 +83,6 @@ class TestEncodedAudioFrameReceiver {
   int samples_per_frame_;
   base::TimeTicks lower_bound_;
   base::TimeTicks upper_bound_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEncodedAudioFrameReceiver);
 };
 
 struct TestScenario {
@@ -114,6 +118,9 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
                                             task_runner_, task_runner_);
   }
 
+  AudioEncoderTest(const AudioEncoderTest&) = delete;
+  AudioEncoderTest& operator=(const AudioEncoderTest&) = delete;
+
   virtual ~AudioEncoderTest() = default;
 
   void RunTestForCodec(Codec codec) {
@@ -126,8 +133,8 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
     for (size_t i = 0; i < scenario.num_durations; ++i) {
       const bool simulate_missing_data = scenario.durations_in_ms[i] < 0;
-      const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-          std::abs(scenario.durations_in_ms[i]));
+      const base::TimeDelta duration =
+          base::Milliseconds(std::abs(scenario.durations_in_ms[i]));
       receiver_->SetCaptureTimeBounds(
           testing_clock_.NowTicks() - frame_duration,
           testing_clock_.NowTicks() + duration);
@@ -156,14 +163,11 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
     receiver_.reset(new TestEncodedAudioFrameReceiver());
 
-    audio_encoder_.reset(new AudioEncoder(
-        cast_environment_,
-        kNumChannels,
-        kDefaultAudioSamplingRate,
-        kDefaultAudioEncoderBitrate,
-        codec,
-        base::Bind(&TestEncodedAudioFrameReceiver::FrameEncoded,
-                   base::Unretained(receiver_.get()))));
+    audio_encoder_ = std::make_unique<AudioEncoder>(
+        cast_environment_, kNumChannels, kDefaultAudioSamplingRate,
+        kDefaultAudioEncoderBitrate, codec,
+        base::BindRepeating(&TestEncodedAudioFrameReceiver::FrameEncoded,
+                            base::Unretained(receiver_.get())));
 
     receiver_->SetSamplesPerFrame(audio_encoder_->GetSamplesPerFrame());
   }
@@ -174,8 +178,6 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
   std::unique_ptr<TestEncodedAudioFrameReceiver> receiver_;
   std::unique_ptr<AudioEncoder> audio_encoder_;
   scoped_refptr<CastEnvironment> cast_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoderTest);
 };
 
 TEST_P(AudioEncoderTest, EncodeOpus) {
@@ -186,7 +188,7 @@ TEST_P(AudioEncoderTest, EncodePcm16) {
   RunTestForCodec(CODEC_AUDIO_PCM16);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 TEST_P(AudioEncoderTest, EncodeAac) {
   RunTestForCodec(CODEC_AUDIO_AAC);
 }

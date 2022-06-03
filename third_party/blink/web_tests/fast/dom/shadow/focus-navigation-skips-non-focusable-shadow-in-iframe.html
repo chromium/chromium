@@ -8,8 +8,8 @@
 <input type=text></input>
 <div id='div2'>I shouldn't be here either</div>
 <script>
-document.getElementById('div1').createShadowRoot();
-document.getElementById('div2').createShadowRoot();
+document.getElementById('div1').attachShadow({mode: 'open'});
+document.getElementById('div2').attachShadow({mode: 'open'});
 </script>
 "></iframe>
 <button id="button2"></button>

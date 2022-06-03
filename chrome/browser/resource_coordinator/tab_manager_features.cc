@@ -5,7 +5,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "base/numerics/ranges.h"
 #include "chrome/common/chrome_features.h"
 
 namespace {
@@ -16,29 +15,11 @@ constexpr char kTabLoadTimeoutInMsParameterName[] = "tabLoadTimeoutInMs";
 
 namespace features {
 
-// Enables using customized value for tab load timeout. This is used by both
-// staggered background tab opening and session restore in finch experiment to
-// see what timeout value is better. The default timeout is used when this
-// feature is disabled.
+// Enables using customized value for tab load timeout. This is used by session
+// restore in finch experiment to see what timeout value is better. The default
+// timeout is used when this feature is disabled.
 const base::Feature kCustomizedTabLoadTimeout{
     "CustomizedTabLoadTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables proactive tab freezing and discarding.
-const base::Feature kProactiveTabFreezeAndDiscard{
-    resource_coordinator::kProactiveTabFreezeAndDiscardFeatureName,
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables delaying the navigation of background tabs in order to improve
-// foreground tab's user experience.
-const base::Feature kStaggeredBackgroundTabOpening{
-    "StaggeredBackgroundTabOpening", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// This controls whether we are running experiment with staggered background
-// tab opening feature. For control group, this should be disabled. This depends
-// on |kStaggeredBackgroundTabOpening| above.
-const base::Feature kStaggeredBackgroundTabOpeningExperiment{
-    "StaggeredBackgroundTabOpeningExperiment",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables using the Tab Ranker to score tabs for discarding instead of relying
 // on last focused time.
@@ -48,137 +29,6 @@ const base::Feature kTabRanker{"TabRanker", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace resource_coordinator {
 
-namespace {
-
-// Determines the moderate threshold for tab discarding based on system memory,
-// and enforces the constraint that it must be in the interval
-// [low_loaded_tab_count, high_loaded_tab_count].
-int GetModerateThresholdTabCountBasedOnSystemMemory(
-    ProactiveTabFreezeAndDiscardParams* params,
-    int memory_in_gb) {
-  int moderate_loaded_tab_count_per_gb =
-      ProactiveTabFreezeAndDiscardParams::kModerateLoadedTabsPerGbRam.Get();
-
-  int moderate_level = moderate_loaded_tab_count_per_gb * memory_in_gb;
-
-  moderate_level =
-      base::ClampToRange(moderate_level, params->low_loaded_tab_count,
-                         params->high_loaded_tab_count);
-
-  return moderate_level;
-}
-
-}  // namespace
-
-const char kProactiveTabFreezeAndDiscardFeatureName[] =
-    "ProactiveTabFreezeAndDiscard";
-const char kProactiveTabFreezeAndDiscard_ShouldProactivelyDiscardParam[] =
-    "ShouldProactivelyDiscard";
-const char kProactiveTabFreezeAndDiscard_ShouldPeriodicallyUnfreezeParam[] =
-    "ShouldPeriodicallyUnfreeze";
-const char kProactiveTabFreezeAndDiscard_FreezingProtectMediaOnlyParam[] =
-    "FreezingProtectMediaOnly";
-
-// Instantiate the feature parameters for proactive tab discarding.
-constexpr base::FeatureParam<bool>
-    ProactiveTabFreezeAndDiscardParams::kShouldProactivelyDiscard;
-constexpr base::FeatureParam<bool>
-    ProactiveTabFreezeAndDiscardParams::kShouldPeriodicallyUnfreeze;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kLowLoadedTabCount;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kModerateLoadedTabsPerGbRam;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kHighLoadedTabCount;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kLowOccludedTimeout;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kModerateOccludedTimeout;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kHighOccludedTimeout;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kFreezeTimeout;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout;
-constexpr base::FeatureParam<int>
-    ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout;
-constexpr base::FeatureParam<bool>
-    ProactiveTabFreezeAndDiscardParams::kFreezingProtectMediaOnly;
-
-ProactiveTabFreezeAndDiscardParams::ProactiveTabFreezeAndDiscardParams() =
-    default;
-ProactiveTabFreezeAndDiscardParams::ProactiveTabFreezeAndDiscardParams(
-    const ProactiveTabFreezeAndDiscardParams& rhs) = default;
-
-ProactiveTabFreezeAndDiscardParams GetProactiveTabFreezeAndDiscardParams(
-    int memory_in_gb) {
-  // TimeDelta::Max() should be used to express infinite timeouts. A large
-  // timeout that is not TimeDelta::Max() causes MessageLoop to output a
-  // warning.
-  constexpr base::TimeDelta kLargeTimeout = base::TimeDelta::FromDays(14);
-
-  ProactiveTabFreezeAndDiscardParams params = {};
-
-  params.should_proactively_discard =
-      ProactiveTabFreezeAndDiscardParams::kShouldProactivelyDiscard.Get();
-
-  params.should_periodically_unfreeze =
-      ProactiveTabFreezeAndDiscardParams::kShouldPeriodicallyUnfreeze.Get();
-
-  params.low_loaded_tab_count =
-      ProactiveTabFreezeAndDiscardParams::kLowLoadedTabCount.Get();
-
-  params.high_loaded_tab_count =
-      ProactiveTabFreezeAndDiscardParams::kHighLoadedTabCount.Get();
-
-  // |moderate_loaded_tab_count| determined after |high_loaded_tab_count| so it
-  // can be enforced that it is lower than |high_loaded_tab_count|.
-  params.moderate_loaded_tab_count =
-      GetModerateThresholdTabCountBasedOnSystemMemory(&params, memory_in_gb);
-
-  params.low_occluded_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kLowOccludedTimeout.Get());
-  DCHECK_LT(params.low_occluded_timeout, kLargeTimeout);
-
-  params.moderate_occluded_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kModerateOccludedTimeout.Get());
-  DCHECK_LT(params.moderate_occluded_timeout, kLargeTimeout);
-
-  params.high_occluded_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kHighOccludedTimeout.Get());
-  DCHECK_LT(params.high_occluded_timeout, kLargeTimeout);
-
-  params.freeze_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kFreezeTimeout.Get());
-  DCHECK_LT(params.freeze_timeout, kLargeTimeout);
-
-  params.unfreeze_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout.Get());
-  DCHECK_LT(params.unfreeze_timeout, kLargeTimeout);
-
-  params.refreeze_timeout = base::TimeDelta::FromSeconds(
-      ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout.Get());
-  DCHECK_LT(params.refreeze_timeout, kLargeTimeout);
-
-  params.freezing_protect_media_only =
-      ProactiveTabFreezeAndDiscardParams::kFreezingProtectMediaOnly.Get();
-
-  return params;
-}
-
-const ProactiveTabFreezeAndDiscardParams&
-GetStaticProactiveTabFreezeAndDiscardParams() {
-  static base::NoDestructor<ProactiveTabFreezeAndDiscardParams> params(
-      GetProactiveTabFreezeAndDiscardParams());
-  return *params;
-}
-
-ProactiveTabFreezeAndDiscardParams*
-GetMutableStaticProactiveTabFreezeAndDiscardParamsForTesting() {
-  return const_cast<ProactiveTabFreezeAndDiscardParams*>(
-      &GetStaticProactiveTabFreezeAndDiscardParams());
-}
-
 base::TimeDelta GetTabLoadTimeout(const base::TimeDelta& default_timeout) {
   int timeout_in_ms = base::GetFieldTrialParamByFeatureAsInt(
       features::kCustomizedTabLoadTimeout, kTabLoadTimeoutInMsParameterName,
@@ -187,17 +37,18 @@ base::TimeDelta GetTabLoadTimeout(const base::TimeDelta& default_timeout) {
   if (timeout_in_ms <= 0)
     return default_timeout;
 
-  return base::TimeDelta::FromMilliseconds(timeout_in_ms);
+  return base::Milliseconds(timeout_in_ms);
 }
 
 int GetNumOldestTabsToScoreWithTabRanker() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabRanker, "number_of_oldest_tabs_to_score_with_TabRanker", 0);
+      features::kTabRanker, "number_of_oldest_tabs_to_score_with_TabRanker",
+      50);
 }
 
 int GetProcessTypeToScoreWithTabRanker() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabRanker, "process_type_of_tabs_to_score_with_TabRanker", 4);
+      features::kTabRanker, "process_type_of_tabs_to_score_with_TabRanker", 3);
 }
 
 int GetNumOldestTabsToLogWithTabRanker() {

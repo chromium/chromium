@@ -7,9 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
@@ -18,9 +16,7 @@
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
-#include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -31,8 +27,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/browser_action_test_util.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -43,32 +40,33 @@
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_host_observer.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/skia_util.h"
 
 using content::WebContents;
 
@@ -101,38 +99,28 @@ void VerifyIconsMatch(const gfx::Image& bar_rendering,
           .GetBitmap()));
 }
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class BrowserActionApiTest : public ExtensionApiTest {
  public:
-  BrowserActionApiTest() {}
-  ~BrowserActionApiTest() override {}
+  explicit BrowserActionApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~BrowserActionApiTest() override = default;
+  BrowserActionApiTest(const BrowserActionApiTest&) = delete;
+  BrowserActionApiTest& operator=(const BrowserActionApiTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
+  void TearDownOnMainThread() override {
+    // Clean up the test util first, so that any created UI properly removes
+    // itself before profile destruction.
+    browser_action_test_util_.reset();
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
  protected:
-  BrowserActionTestUtil* GetBrowserActionsBar() {
+  ExtensionActionTestHelper* GetBrowserActionsBar() {
     if (!browser_action_test_util_)
-      browser_action_test_util_ = BrowserActionTestUtil::Create(browser());
+      browser_action_test_util_ = ExtensionActionTestHelper::Create(browser());
     return browser_action_test_util_.get();
-  }
-
-  WebContents* OpenPopup(int index) {
-    ResultCatcher catcher;
-    content::WindowedNotificationObserver popup_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
-    GetBrowserActionsBar()->Press(index);
-    popup_observer.Wait();
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-    if (!GetBrowserActionsBar()->HasPopup())
-      return nullptr;
-
-    const auto& source = static_cast<const content::Source<WebContents>&>(
-        popup_observer.source());
-    return source.ptr();
   }
 
   ExtensionAction* GetBrowserAction(Browser* browser,
@@ -146,44 +134,104 @@ class BrowserActionApiTest : public ExtensionApiTest {
   }
 
  private:
-  std::unique_ptr<BrowserActionTestUtil> browser_action_test_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionApiTest);
+  std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util_;
 };
 
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
+// TODO(https://crbug.com/1093066): Investigate to see if these tests can be
+// enabled for Service Worker-based extensions.
 class BrowserActionApiCanvasTest : public BrowserActionApiTest {
  public:
   void SetUp() override {
     EnablePixelOutput();
-    ExtensionApiTest::SetUp();
+    BrowserActionApiTest::SetUp();
   }
 };
 
-// Watches a frame is swapped with a new frame by e.g., navigation.
-class RenderFrameChangedWatcher : public content::WebContentsObserver {
+class BrowserActionApiTestWithContextType
+    : public BrowserActionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
-  explicit RenderFrameChangedWatcher(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
+  BrowserActionApiTestWithContextType() : BrowserActionApiTest(GetParam()) {}
+  ~BrowserActionApiTestWithContextType() override = default;
+  BrowserActionApiTestWithContextType(
+      const BrowserActionApiTestWithContextType&) = delete;
+  BrowserActionApiTestWithContextType& operator=(
+      const BrowserActionApiTestWithContextType&) = delete;
 
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override {
-    created_frame_ = new_host;
-    run_loop_.Quit();
+ protected:
+  void RunUpdateTest(base::StringPiece path, bool expect_failure) {
+    ExtensionTestMessageListener ready_listener("ready", true);
+    ASSERT_TRUE(embedded_test_server()->Start());
+    const Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII(path));
+    ASSERT_TRUE(extension) << message_;
+    // Test that there is a browser action in the toolbar.
+    ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+    ExtensionAction* action = GetBrowserAction(browser(), *extension);
+    EXPECT_EQ("This is the default title.",
+              action->GetTitle(ExtensionAction::kDefaultTabId));
+    EXPECT_EQ(
+        "", action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
+    EXPECT_EQ(SkColorSetARGB(0, 0, 0, 0),
+              action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
+
+    // Tell the extension to update the browser action state and then
+    // catch the result.
+    ResultCatcher catcher;
+    ready_listener.Reply("update");
+
+    if (expect_failure) {
+      EXPECT_FALSE(catcher.GetNextResult());
+      EXPECT_EQ("The source image could not be decoded.", catcher.message());
+      return;
+    }
+
+    EXPECT_TRUE(catcher.GetNextResult());
+    // Test that we received the changes.
+    EXPECT_EQ("Modified", action->GetTitle(ExtensionAction::kDefaultTabId));
+    EXPECT_EQ("badge", action->GetExplicitlySetBadgeText(
+                           ExtensionAction::kDefaultTabId));
+    EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255),
+              action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
   }
 
-  content::RenderFrameHost* WaitAndReturnNewFrame() {
-    run_loop_.Run();
-    return created_frame_;
+  void RunEnableTest(base::StringPiece path, bool start_enabled) {
+    ExtensionTestMessageListener ready_listener("ready", true);
+    const Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII(path));
+    ASSERT_TRUE(extension) << message_;
+    // Test that there is a browser action in the toolbar.
+    ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+    ExtensionAction* action = GetBrowserAction(browser(), *extension);
+
+    // Tell the extension to enable/disable the browser action state and then
+    // catch the result.
+    ResultCatcher catcher;
+    if (start_enabled) {
+      action->SetIsVisible(ExtensionAction::kDefaultTabId, true);
+      ready_listener.Reply("start enabled");
+    } else {
+      action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
+      ready_listener.Reply("start disabled");
+    }
+    EXPECT_TRUE(catcher.GetNextResult());
+
+    // Test that changes were applied.
+    EXPECT_EQ(!start_enabled,
+              action->GetIsVisible(ExtensionAction::kDefaultTabId));
   }
 
  private:
-  base::RunLoop run_loop_;
-  content::RenderFrameHost* created_frame_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
   const Extension* extension =
@@ -197,8 +245,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
 
   // Open a URL in the tab, so the event handler can check the tab's
   // "url" and "title" properties.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
   // Simulate the browser action being clicked.
@@ -207,50 +255,45 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Update) {
-  ExtensionTestMessageListener ready_listener("ready", true);
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("browser_action/update"));
-  ASSERT_TRUE(extension) << message_;
-  // Test that there is a browser action in the toolbar.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-  ExtensionAction* action = GetBrowserAction(browser(), *extension);
-  EXPECT_EQ("This is the default title.",
-            action->GetTitle(ExtensionAction::kDefaultTabId));
-  EXPECT_EQ("",
-            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
-  EXPECT_EQ(SkColorSetARGB(0, 0, 0, 0),
-            action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
-
-  // Tell the extension to update the browser action state and then
-  // catch the result.
-  ResultCatcher catcher;
-  ready_listener.Reply("update");
-  ASSERT_TRUE(catcher.GetNextResult());
-
-  // Test that we received the changes.
-  EXPECT_EQ("Modified", action->GetTitle(ExtensionAction::kDefaultTabId));
-  EXPECT_EQ("badge",
-            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
-  EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255),
-            action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Disable) {
+  ASSERT_NO_FATAL_FAILURE(RunEnableTest("browser_action/enable", true));
 }
+
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Enable) {
+  ASSERT_NO_FATAL_FAILURE(RunEnableTest("browser_action/enable", false));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
+  ASSERT_NO_FATAL_FAILURE(RunUpdateTest("browser_action/update", false));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
+  // TODO(crbug.com/1064671): Service Workers currently don't support loading
+  // SVG images.
+  const bool expect_failure = GetParam() == ContextType::kServiceWorker;
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateTest("browser_action/update_svg", expect_failure));
+}
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         BrowserActionApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         BrowserActionApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-#if defined (OS_MACOSX)
+#if defined(OS_MAC)
   // We need this on mac so we don't loose 2x representations from browser icon
   // in transformations gfx::ImageSkia -> NSImage -> gfx::ImageSkia.
-  std::vector<ui::ScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::SetSupportedScaleFactors(supported_scale_factors);
+  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
+  supported_scale_factors.push_back(ui::k100Percent);
+  supported_scale_factors.push_back(ui::k200Percent);
+  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 #endif
 
   // We should not be creating icons asynchronously, so we don't need an
@@ -259,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
       profile(), extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(0));
+  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -268,9 +311,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_EQ(action_icon_last_id,
             icon_factory.GetIcon(0).ToSkBitmap()->getGenerationID());
 
-  gfx::Image last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(last_bar_icon,
-                                        GetBrowserActionsBar()->GetIcon(0)));
+  gfx::Image last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
 
   // The reason we don't test more standard scales (like 1x, 2x, etc.) is that
   // these may be generated from the provided scales.
@@ -281,12 +324,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using ImageData object.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -299,13 +342,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_FALSE(action_icon.ToImageSkia()->HasRepresentation(kLargeIconScale));
 
   // Tell the extension to update the icon using path.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Make sure the browser action bar updated.
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -319,12 +362,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -337,12 +380,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_TRUE(action_icon.AsImageSkia().HasRepresentation(kLargeIconScale));
 
   // Tell the extension to update the icon using dictionary of paths.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -356,12 +399,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects, but setting only one size.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -375,12 +418,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of paths, but
   // setting only one size.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -394,12 +437,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
 
   // Tell the extension to update the icon using dictionary of ImageData
   // objects, but setting only size 42.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 
-  EXPECT_FALSE(gfx::test::AreImagesEqual(last_bar_icon,
-                                         GetBrowserActionsBar()->GetIcon(0)));
-  last_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      last_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
+  last_bar_icon = GetBrowserActionsBar()->GetIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
   action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -411,24 +454,17 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   EXPECT_TRUE(action_icon.AsImageSkia().HasRepresentation(kLargeIconScale));
 
   // Try setting icon with empty dictionary of ImageData objects.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_FALSE(catcher.GetNextResult());
   EXPECT_EQ(kEmptyImageDataError, catcher.message());
 
   // Try setting icon with empty dictionary of path objects.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_FALSE(catcher.GetNextResult());
   EXPECT_EQ(kEmptyPathError, catcher.message());
 }
 
-// https://crbug.com/1019669; flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_InvisibleIconBrowserAction DISABLED_InvisibleIconBrowserAction
-#else
-#define MAYBE_InvisibleIconBrowserAction InvisibleIconBrowserAction
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
-                       MAYBE_InvisibleIconBrowserAction) {
+IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
   // Turn this on so errors are reported.
   ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
       true);
@@ -438,8 +474,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
 
   // Test there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(0));
-  gfx::Image initial_bar_icon = GetBrowserActionsBar()->GetIcon(0);
+  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
+  gfx::Image initial_bar_icon =
+      GetBrowserActionsBar()->GetIcon(extension->id());
 
   ExtensionHost* background_page =
       ProcessManager::Get(profile())->GetBackgroundHostForExtension(
@@ -463,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
         base::StringPrintf(kScript, "invisibleImageData"), &result));
     EXPECT_EQ("Icon not sufficiently visible.", result);
     // The icon should not have changed.
-    EXPECT_TRUE(gfx::test::AreImagesEqual(initial_bar_icon,
-                                          GetBrowserActionsBar()->GetIcon(0)));
+    EXPECT_TRUE(gfx::test::AreImagesEqual(
+        initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
     EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
                 testing::ElementsAre(base::Bucket(0, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(new_histogram_name),
@@ -479,8 +516,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
         base::StringPrintf(kScript, "visibleImageData"), &result));
     EXPECT_EQ("", result);
     // The icon should have changed.
-    EXPECT_FALSE(gfx::test::AreImagesEqual(initial_bar_icon,
-                                           GetBrowserActionsBar()->GetIcon(0)));
+    EXPECT_FALSE(gfx::test::AreImagesEqual(
+        initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
     EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
                 testing::ElementsAre(base::Bucket(1, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(new_histogram_name),
@@ -488,74 +525,76 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TabSpecificBrowserActionState) {
-  ASSERT_TRUE(RunExtensionTest("browser_action/tab_specific_state")) <<
-      message_;
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       TabSpecificBrowserActionState) {
+  ASSERT_TRUE(RunExtensionTest("browser_action/tab_specific_state"))
+      << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar and that it has an icon.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(0));
+  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
 
   // Execute the action, its title should change.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
-  EXPECT_EQ("Showing icon 2", GetBrowserActionsBar()->GetTooltip(0));
+  EXPECT_EQ("Showing icon 2",
+            GetBrowserActionsBar()->GetTooltip(extension->id()));
 
   // Open a new tab, the title should go back.
   chrome::NewTab(browser());
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(0));
+  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
 
   // Go back to first tab, changed title should reappear.
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  EXPECT_EQ("Showing icon 2", GetBrowserActionsBar()->GetTooltip(0));
+  EXPECT_EQ("Showing icon 2",
+            GetBrowserActionsBar()->GetTooltip(extension->id()));
 
   // Reload that tab, default title should come back.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(0));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
 }
 
-// http://code.google.com/p/chromium/issues/detail?id=70829
-// Mac used to be ok, but then mac 10.5 started failing too. =(
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DISABLED_BrowserActionPopup) {
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("browser_action/popup")));
-  BrowserActionTestUtil* actions_bar = GetBrowserActionsBar();
+// Test that calling chrome.browserAction.setIcon() can set the icon for
+// extension.
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, SetIcon) {
+  ASSERT_TRUE(RunExtensionTest("browser_action/set_icon")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  // The extension's popup's size grows by |growFactor| each click.
-  const int growFactor = 500;
-  gfx::Size minSize = actions_bar->GetMinPopupSize();
-  gfx::Size middleSize = gfx::Size(growFactor, growFactor);
-  gfx::Size maxSize = actions_bar->GetMaxPopupSize();
+  int tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
-  // Ensure that two clicks will exceed the maximum allowed size.
-  ASSERT_GT(minSize.height() + growFactor * 2, maxSize.height());
-  ASSERT_GT(minSize.width() + growFactor * 2, maxSize.width());
+  ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
+  ASSERT_TRUE(browser_action)
+      << "Browser action test extension should have a browser action.";
 
-  // Simulate a click on the browser action and verify the size of the resulting
-  // popup.  The first one tries to be 0x0, so it should be the min values.
-  ASSERT_TRUE(OpenPopup(0));
-  EXPECT_EQ(minSize, actions_bar->GetPopupSize());
-  EXPECT_TRUE(actions_bar->HidePopup());
+  EXPECT_FALSE(browser_action->default_icon());
+  EXPECT_EQ(0u,
+            browser_action->GetExplicitlySetIcon(tab_id).RepresentationCount());
 
-  ASSERT_TRUE(OpenPopup(0));
-  EXPECT_EQ(middleSize, actions_bar->GetPopupSize());
-  EXPECT_TRUE(actions_bar->HidePopup());
+  // Simulate a click on the browser action icon. The onClicked handler will
+  // call setIcon().
+  {
+    ResultCatcher catcher;
+    GetBrowserActionsBar()->Press(extension->id());
+    ASSERT_TRUE(catcher.GetNextResult());
+  }
 
-  // One more time, but this time it should be constrained by the max values.
-  ASSERT_TRUE(OpenPopup(0));
-  EXPECT_EQ(maxSize, actions_bar->GetPopupSize());
-  EXPECT_TRUE(actions_bar->HidePopup());
+  // The call to setIcon in background.html set an icon, so the
+  // current tab's setting should have changed, but the default setting
+  // should not have changed.
+  EXPECT_FALSE(browser_action->default_icon());
+  EXPECT_EQ(1u,
+            browser_action->GetExplicitlySetIcon(tab_id).RepresentationCount());
 }
 
 // Test that calling chrome.browserAction.setPopup() can enable and change
 // a popup.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   ASSERT_TRUE(RunExtensionTest("browser_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
@@ -574,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
   // will add a popup.
   {
     ResultCatcher catcher;
-    GetBrowserActionsBar()->Press(0);
+    GetBrowserActionsBar()->Press(extension->id());
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -595,9 +634,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
   // a page which removes the popup using chrome.browserAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("change_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -610,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
 }
 
 // Test that calling chrome.browserAction.setPopup() can remove a popup.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionRemovePopup) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
   // Load the extension, which has a browser action with a default popup.
   ASSERT_TRUE(RunExtensionTest("browser_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -631,9 +669,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionRemovePopup) {
   // Load a page which removes the popup using chrome.browserAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("remove_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -644,10 +681,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionRemovePopup) {
       << "a specific tab id.";
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoBasic) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension =
+  scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
@@ -658,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoBasic) {
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
-  ASSERT_EQ(0, BrowserActionTestUtil::Create(incognito_browser)
+  ASSERT_EQ(0, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
 
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -674,29 +711,32 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoBasic) {
       extension->id(), browser()->profile(), true);
   extension = registry_observer.WaitForExtensionLoaded();
 
-  ASSERT_EQ(1, BrowserActionTestUtil::Create(incognito_browser)
+  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
 
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
 
   // Open a URL in the tab, so the event handler can check the tab's
   // "url" and "title" properties.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      embedded_test_server()->GetURL("/extensions/test_file.txt"));
+      embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
   // Simulate the browser action being clicked.
-  ExecuteExtensionAction(incognito_browser, extension);
+  ExecuteExtensionAction(incognito_browser, extension.get());
 
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoUpdate) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension =
+  ExtensionTestMessageListener incognito_not_allowed_listener(
+      "incognito not allowed", false);
+  scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
+  ASSERT_TRUE(incognito_not_allowed_listener.WaitUntilSatisfied());
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
 
@@ -704,25 +744,31 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoUpdate) {
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
-  ASSERT_EQ(0, BrowserActionTestUtil::Create(incognito_browser)
+  ASSERT_EQ(0, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
 
   // Set up a listener so we can reply for the extension to do the update.
-  ExtensionTestMessageListener incognito_ready_listener("incognito ready",
-                                                        true);
+  // This listener also adds a sequence point between the browser and the
+  // renderer for the transition between incognito mode not being allowed
+  // and it's being allowed. This ensures the browser ignores the renderer's
+  // execution until the transition is completed, since the script will
+  // start and stop multiple times during the initial load of the extension
+  // and the enabling of incognito mode.
+  ExtensionTestMessageListener incognito_allowed_listener("incognito allowed",
+                                                          true);
   // Now enable the extension in incognito mode, and test that the browser
-  // action shows up.
-  // SetIsIncognitoEnabled() requires a reload of the extension, so we have to
-  // wait for it.
+  // action shows up. SetIsIncognitoEnabled() requires a reload of the
+  // extension, so we have to wait for it to finish.
   TestExtensionRegistryObserver registry_observer(
       ExtensionRegistry::Get(profile()), extension->id());
   extensions::util::SetIsIncognitoEnabled(extension->id(), browser()->profile(),
                                           true);
   extension = registry_observer.WaitForExtensionLoaded();
-  ASSERT_EQ(1, BrowserActionTestUtil::Create(incognito_browser)
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
 
-  ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(incognito_allowed_listener.WaitUntilSatisfied());
   ExtensionAction* action = GetBrowserAction(incognito_browser, *extension);
   EXPECT_EQ("This is the default title.",
             action->GetTitle(ExtensionAction::kDefaultTabId));
@@ -733,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoUpdate) {
   // Tell the extension to update the browser action state and then
   // catch the result.
   ResultCatcher incognito_catcher;
-  incognito_ready_listener.Reply("incognito update");
+  incognito_allowed_listener.Reply("incognito update");
   ASSERT_TRUE(incognito_catcher.GetNextResult());
 
   // Test that we received the changes.
@@ -746,22 +792,34 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoUpdate) {
 
 // Tests that events are dispatched to the correct profile for split mode
 // extensions.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoSplit) {
-  ResultCatcher catcher;
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("browser_action/split_mode"),
-      kFlagEnableIncognito);
-  ASSERT_TRUE(extension) << message_;
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
+  ExtensionTestMessageListener listener_ready("regular ready", false);
+  ExtensionTestMessageListener incognito_ready("incognito ready", false);
 
   // Open an incognito browser.
+  // Note: It is important that we create incognito profile before loading
+  // |extension| below. "event_page" based test fails otherwise.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  ASSERT_EQ(1, BrowserActionTestUtil::Create(incognito_browser)
+
+  ResultCatcher catcher;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
+                    {.allow_in_incognito = true});
+  ASSERT_TRUE(extension) << message_;
+
+  ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
+
+  // NOTE: It is necessary to ensure that browser.onClicked listener was
+  // registered from the extension. Otherwise SW based extension occasionally
+  // times out.
+  EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
 
   // A click in the regular profile should open a tab in the regular profile.
   ExecuteExtensionAction(browser(), extension);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
+  EXPECT_TRUE(incognito_ready.WaitUntilSatisfied());
   // A click in the incognito profile should open a tab in the
   // incognito profile.
   ExecuteExtensionAction(incognito_browser, extension);
@@ -769,9 +827,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoSplit) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
+  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browser_action/close_background")));
   const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // There is a background page and a browser action with no badge text.
   extensions::ProcessManager* manager =
@@ -785,50 +845,21 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
   ASSERT_EQ("",
             action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 
-  // A helper class to wait for the ExtensionHost to shut down.
-  // TODO(devlin): Hoist this somewhere more common and track down other similar
-  // usages.
-  class ExtensionHostDestructionObserver : public ExtensionHostObserver {
-   public:
-    explicit ExtensionHostDestructionObserver(ExtensionHost* host) {
-      host_observer_.Add(host);
-    }
-    ExtensionHostDestructionObserver(
-        const ExtensionHostDestructionObserver& other) = delete;
-    ExtensionHostDestructionObserver& operator=(
-        const ExtensionHostDestructionObserver& other) = delete;
-    ~ExtensionHostDestructionObserver() override = default;
-
-    void OnExtensionHostDestroyed(const ExtensionHost* host) override {
-      // TODO(devlin): It would be nice to
-      // ASSERT_TRUE(host_observer_.IsObserving(host));
-      // host_observer_.Remove(host);
-      // But we can't, because |host| is const. Work around it by just
-      // RemoveAll()ing.
-      host_observer_.RemoveAll();
-      run_loop_.QuitWhenIdle();
-    }
-
-    void Wait() { run_loop_.Run(); }
-
-   private:
-    base::RunLoop run_loop_;
-    ScopedObserver<ExtensionHost, ExtensionHostObserver> host_observer_{this};
-  };
-
-  ExtensionHostDestructionObserver host_destroyed_observer(extension_host);
+  ExtensionHostTestHelper host_destroyed_observer(profile());
+  host_destroyed_observer.RestrictToHost(extension_host);
 
   // Click the browser action.
   ExecuteExtensionAction(browser(), extension);
 
-  host_destroyed_observer.Wait();
+  host_destroyed_observer.WaitForHostDestroyed();
 
   EXPECT_FALSE(manager->GetBackgroundHostForExtension(extension->id()));
   EXPECT_EQ("X",
             action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       BadgeBackgroundColor) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("browser_action/color")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -844,24 +875,24 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
 
   // Tell the extension to update the browser action state.
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that CSS values (#0F0) set color correctly.
   ASSERT_EQ(SkColorSetARGB(255, 0, 255, 0),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that array values set color correctly.
   ASSERT_EQ(SkColorSetARGB(255, 255, 255, 255),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(extension->GetResourceURL("update3.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update3.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that hsl() values 'hsl(120, 100%, 50%)' set color correctly.
@@ -869,15 +900,15 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
   // Test basic color keyword set correctly.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(extension->GetResourceURL("update4.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update4.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   ASSERT_EQ(SkColorSetARGB(255, 0, 0, 255),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Getters) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Getters) {
   ASSERT_TRUE(RunExtensionTest("browser_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
@@ -887,18 +918,19 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Getters) {
 
   // Test the getters for defaults.
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test the getters for a specific tab.
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
 // Verify triggering browser action.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       TestTriggerBrowserAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(RunExtensionTest("trigger_actions/browser_action")) << message_;
@@ -908,8 +940,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   EXPECT_TRUE(browser_action);
@@ -917,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
   // Simulate a click on the browser action icon.
   {
     ResultCatcher catcher;
-    GetBrowserActionsBar()->Press(0);
+    GetBrowserActionsBar()->Press(extension->id());
     EXPECT_TRUE(catcher.GetNextResult());
   }
 
@@ -934,59 +966,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
   EXPECT_EQ(result, "red");
 }
 
-// Test that a browser action popup with a web iframe works correctly. The
-// iframe is expected to run in a separate process.
-// See https://crbug.com/546267.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionPopupWithIframe) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/popup_with_iframe")));
-  BrowserActionTestUtil* actions_bar = GetBrowserActionsBar();
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  // Simulate a click on the browser action to open the popup.
-  ASSERT_TRUE(OpenPopup(0));
-
-  // Find the RenderFrameHost associated with the iframe in the popup.
-  content::RenderFrameHost* frame_host = nullptr;
-  extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
-  std::set<content::RenderFrameHost*> frame_hosts =
-      manager->GetRenderFrameHostsForExtension(extension->id());
-  for (auto* host : frame_hosts) {
-    if (host->GetFrameName() == "child_frame") {
-      frame_host = host;
-      break;
-    }
-  }
-
-  ASSERT_TRUE(frame_host);
-  EXPECT_EQ(extension->GetResourceURL("frame.html"),
-            frame_host->GetLastCommittedURL());
-  EXPECT_TRUE(frame_host->GetParent());
-
-  // Navigate the popup's iframe to a (cross-site) web page, and wait for that
-  // page to send a message, which will ensure that the page has loaded.
-  RenderFrameChangedWatcher watcher(
-      WebContents::FromRenderFrameHost(frame_host));
-  GURL foo_url(embedded_test_server()->GetURL("foo.com", "/popup_iframe.html"));
-  std::string script = "location.href = '" + foo_url.spec() + "'";
-  EXPECT_TRUE(ExecuteScript(frame_host, script));
-
-  frame_host = watcher.WaitAndReturnNewFrame();
-
-  // Confirm that the new page (popup_iframe.html) is actually loaded.
-  content::DOMMessageQueue dom_message_queue(frame_host);
-  std::string json;
-  EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
-  EXPECT_EQ("\"DONE\"", json);
-
-  EXPECT_TRUE(actions_bar->HidePopup());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionWithRectangularIcon) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       WithRectangularIcon) {
   ExtensionTestMessageListener ready_listener("ready", true);
 
   const Extension* extension = LoadExtension(
@@ -998,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionWithRectangularIcon) {
   // gfx::Image.
   TestIconImageObserver::WaitForExtensionActionIcon(extension, profile());
 
-  gfx::Image first_icon = GetBrowserActionsBar()->GetIcon(0);
+  gfx::Image first_icon = GetBrowserActionsBar()->GetIcon(extension->id());
   ASSERT_FALSE(first_icon.IsEmpty());
 
   TestExtensionActionAPIObserver observer(profile(), extension->id());
@@ -1008,293 +989,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionWithRectangularIcon) {
   // Wait for extension action to be updated.
   observer.Wait();
 
-  gfx::Image next_icon = GetBrowserActionsBar()->GetIcon(0);
+  gfx::Image next_icon = GetBrowserActionsBar()->GetIcon(extension->id());
   ASSERT_FALSE(next_icon.IsEmpty());
   EXPECT_FALSE(gfx::test::AreImagesEqual(first_icon, next_icon));
-}
-
-// Test that we don't try and show a browser action popup with
-// browserAction.openPopup if there is no toolbar (e.g., for web popup windows).
-// Regression test for crbug.com/584747.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionOpenPopupOnPopup) {
-  // Open a new web popup window.
-  NavigateParams params(browser(), GURL("http://www.google.com/"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  ui_test_utils::NavigateToURL(&params);
-  Browser* popup_browser = params.browser;
-  // Verify it is a popup, and it is the active window.
-  ASSERT_TRUE(popup_browser);
-  // The window isn't considered "active" on MacOSX for odd reasons. The more
-  // important test is that it *is* considered the last active browser, since
-  // that's what we check when we try to open the popup.
-#if !defined(OS_MACOSX)
-  EXPECT_TRUE(popup_browser->window()->IsActive());
-#endif
-  EXPECT_FALSE(browser()->window()->IsActive());
-  EXPECT_FALSE(popup_browser->SupportsWindowFeature(Browser::FEATURE_TOOLBAR));
-  EXPECT_EQ(popup_browser,
-            chrome::FindLastActiveWithProfile(browser()->profile()));
-
-  // Load up the extension, which will call chrome.browserAction.openPopup()
-  // when it is loaded and verify that the popup didn't open.
-  ExtensionTestMessageListener listener("ready", true);
-  EXPECT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/open_popup_on_reply")));
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  ResultCatcher catcher;
-  listener.Reply(std::string());
-  EXPECT_TRUE(catcher.GetNextResult()) << message_;
-}
-
-// Test that a browser action popup can download data URLs. See
-// https://crbug.com/821219
-// Fails consistently on Win7. https://crbug.com/827160
-#if defined(OS_WIN)
-#define MAYBE_BrowserActionPopupDownload DISABLED_BrowserActionPopupDownload
-#else
-#define MAYBE_BrowserActionPopupDownload BrowserActionPopupDownload
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, MAYBE_BrowserActionPopupDownload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/popup_download")));
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  content::DownloadTestObserverTerminal downloads_observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()), 1,
-      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-
-  // Simulate a click on the browser action to open the popup.
-  content::WebContents* popup = OpenPopup(0);
-  ASSERT_TRUE(popup);
-  content::ExecuteScriptAsync(popup, "run_tests()");
-
-  // Wait for the download that this should have triggered to finish.
-  downloads_observer.WaitForFinished();
-
-  EXPECT_EQ(1u, downloads_observer.NumDownloadsSeenInState(
-                    download::DownloadItem::COMPLETE));
-  EXPECT_TRUE(GetBrowserActionsBar()->HidePopup());
-}
-
-class NavigatingExtensionPopupBrowserTest : public BrowserActionApiTest {
- public:
-  const Extension& popup_extension() { return *popup_extension_; }
-  const Extension& other_extension() { return *other_extension_; }
-
-  void SetUpOnMainThread() override {
-    BrowserActionApiTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    // Load an extension with a pop-up.
-    ASSERT_TRUE(popup_extension_ = LoadExtension(test_data_dir_.AppendASCII(
-                    "browser_action/popup_with_form")));
-
-    // Load another extension (that we can try navigating to).
-    ASSERT_TRUE(other_extension_ = LoadExtension(test_data_dir_.AppendASCII(
-                    "browser_action/popup_with_iframe")));
-  }
-
-  enum ExpectedNavigationStatus {
-    EXPECTING_NAVIGATION_SUCCESS,
-    EXPECTING_NAVIGATION_FAILURE,
-    EXPECTING_NO_NAVIGATION,
-  };
-
-  void TestPopupNavigationViaGet(
-      const GURL& target_url,
-      ExpectedNavigationStatus expected_navigation_status) {
-    std::string navigation_starting_script =
-        "window.location = '" + target_url.spec() + "';\n";
-    TestPopupNavigation(target_url, expected_navigation_status,
-                        navigation_starting_script);
-  }
-
-  void TestPopupNavigationViaPost(
-      const GURL& target_url,
-      ExpectedNavigationStatus expected_navigation_status) {
-    std::string navigation_starting_script =
-        "var form = document.getElementById('form');\n"
-        "form.action = '" + target_url.spec() + "';\n"
-        "form.submit();\n";
-    TestPopupNavigation(target_url, expected_navigation_status,
-                        navigation_starting_script);
-  }
-
- private:
-  void TestPopupNavigation(const GURL& target_url,
-                           ExpectedNavigationStatus expected_navigation_status,
-                           std::string navigation_starting_script) {
-    // Were there any failures so far (e.g. in SetUpOnMainThread)?
-    ASSERT_FALSE(HasFailure());
-
-    // Simulate a click on the browser action to open the popup.
-    WebContents* popup = OpenPopup(0);
-    ASSERT_TRUE(popup);
-    GURL popup_url = popup_extension().GetResourceURL("popup.html");
-    EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
-
-    // Note that the |setTimeout| call below is needed to make sure
-    // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
-    // already started.
-    std::string script_to_execute =
-        navigation_starting_script +
-        "setTimeout(\n"
-        "    function() { window.domAutomationController.send(true); },\n"
-        "    0);\n";
-
-    // Try to navigate the pop-up.
-    bool ignored_script_result = false;
-    content::WebContentsDestroyedWatcher popup_destruction_watcher(popup);
-    content::TestNavigationObserver popup_navigation_observer(popup);
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(popup, script_to_execute,
-                                            &ignored_script_result));
-    popup = popup_destruction_watcher.web_contents();
-
-    // Verify if the popup navigation succeeded or failed as expected.
-    if (!popup) {
-      // If navigation ends up in a tab, then the tab will be focused and
-      // therefore the popup will be closed, destroying associated WebContents -
-      // don't do any verification in this case.
-      ADD_FAILURE() << "Navigation should not close extension pop-up";
-    } else {
-      // If the extension popup is still opened, then wait until there is no
-      // load in progress, and verify whether the navigation succeeded or not.
-      if (expected_navigation_status != EXPECTING_NO_NAVIGATION) {
-        popup_navigation_observer.Wait();
-      } else {
-        EXPECT_FALSE(popup->IsLoading());
-      }
-      // The popup should still be alive.
-      ASSERT_TRUE(popup_destruction_watcher.web_contents());
-
-      if (expected_navigation_status == EXPECTING_NAVIGATION_SUCCESS) {
-        EXPECT_EQ(target_url, popup->GetLastCommittedURL())
-            << "Navigation to " << target_url
-            << " should succeed in an extension pop-up";
-      } else {
-        EXPECT_NE(target_url, popup->GetLastCommittedURL())
-            << "Navigation to " << target_url
-            << " should fail in an extension pop-up";
-        EXPECT_THAT(
-            popup->GetLastCommittedURL(),
-            ::testing::AnyOf(::testing::Eq(popup_url),
-                             ::testing::Eq(GURL("chrome-extension://invalid")),
-                             ::testing::Eq(GURL("about:blank"))));
-      }
-
-      // Close the pop-up.
-      EXPECT_TRUE(GetBrowserActionsBar()->HidePopup());
-      popup_destruction_watcher.Wait();
-    }
-
-    // Make sure that the web navigation did not succeed somewhere outside of
-    // the extension popup (as it might if ExtensionViewHost::OpenURLFromTab
-    // forwards the navigation to Browser::OpenURL [which doesn't specify a
-    // source WebContents]).
-    TabStripModel* tabs = browser()->tab_strip_model();
-    for (int i = 0; i < tabs->count(); i++) {
-      WebContents* tab_contents = tabs->GetWebContentsAt(i);
-      WaitForLoadStop(tab_contents);
-      EXPECT_NE(target_url, tab_contents->GetLastCommittedURL())
-          << "Navigating an extension pop-up should not affect tabs.";
-    }
-  }
-
-  const Extension* popup_extension_;
-  const Extension* other_extension_;
-};
-
-// Flaky - crbug.com/1021172
-#if defined(OS_LINUX)
-#define MAYBE_Webpage DISABLED_Webpage
-#else
-#define MAYBE_Webpage Webpage
-#endif
-// Tests that an extension pop-up cannot be navigated to a web page.
-IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, MAYBE_Webpage) {
-  GURL web_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-
-  // The GET request will be blocked in ExtensionViewHost::OpenURLFromTab
-  // (which silently drops navigations with CURRENT_TAB disposition).
-  TestPopupNavigationViaGet(web_url, EXPECTING_NO_NAVIGATION);
-
-  // POST requests don't go through ExtensionViewHost::OpenURLFromTab.
-  TestPopupNavigationViaPost(web_url, EXPECTING_NAVIGATION_FAILURE);
-}
-
-// Tests that an extension pop-up can be navigated to another page
-// in the same extension.
-// Times out on all platforms: https://crbug.com/882200
-IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest,
-                       DISABLED_PageInSameExtension) {
-  GURL other_page_in_same_extension =
-      popup_extension().GetResourceURL("other_page.html");
-  TestPopupNavigationViaGet(other_page_in_same_extension,
-                            EXPECTING_NAVIGATION_SUCCESS);
-  TestPopupNavigationViaPost(other_page_in_same_extension,
-                             EXPECTING_NAVIGATION_SUCCESS);
-}
-
-// Tests that an extension pop-up cannot be navigated to a page
-// in another extension.
-IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest,
-                       PageInOtherExtension) {
-  GURL other_extension_url = other_extension().GetResourceURL("other.html");
-  TestPopupNavigationViaGet(other_extension_url, EXPECTING_NO_NAVIGATION);
-  TestPopupNavigationViaPost(other_extension_url, EXPECTING_NAVIGATION_FAILURE);
-}
-
-// Tests that navigating an extension pop-up to a http URI that returns
-// Content-Disposition: attachment; filename=...
-// works: No navigation, but download shelf visible + download goes through.
-//
-// Note - there is no "...ViaGet" flavour of this test, because we don't care
-// (yet) if GET succeeds with the download or not (it probably should succeed
-// for consistency with POST, but it always failed in M54 and before).  After
-// abandoing ShouldFork/OpenURL for all methods (not just for POST) [see comment
-// about https://crbug.com/646261 in ChromeContentRendererClient::ShouldFork]
-// GET should automagically start working for downloads.
-// TODO(lukasza): https://crbug.com/650694: Add a "Get" flavour of the test once
-// the download works both for GET and POST requests.
-IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, DownloadViaPost) {
-  // Setup monitoring of the downloads.
-  content::DownloadTestObserverTerminal downloads_observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()),
-      1,  // == wait_count (only waiting for "download-test3.gif").
-      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-
-  // Navigate to a URL that replies with
-  // Content-Disposition: attachment; filename=...
-  // header.
-  GURL download_url(
-      embedded_test_server()->GetURL("foo.com", "/download-test3.gif"));
-  TestPopupNavigationViaPost(download_url, EXPECTING_NAVIGATION_FAILURE);
-
-  // Verify that "download-test3.gif got downloaded.
-  downloads_observer.WaitForFinished();
-  EXPECT_EQ(0u, downloads_observer.NumDangerousDownloadsSeen());
-  EXPECT_EQ(1u, downloads_observer.NumDownloadsSeenInState(
-                    download::DownloadItem::COMPLETE));
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath downloads_directory =
-      DownloadPrefs(browser()->profile()).DownloadPath();
-  EXPECT_TRUE(base::PathExists(
-      downloads_directory.AppendASCII("download-test3-attachment.gif")));
-
-  // The test verification below is applicable only to scenarios where the
-  // download shelf is supported - on ChromeOS, instead of the download shelf,
-  // there is a download notification in the right-bottom corner of the screen.
-#if !defined(OS_CHROMEOS)
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-#endif
 }
 
 // Verify video can enter and exit Picture-in_Picture when browser action icon
@@ -1330,12 +1027,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
 
   // Click on the browser action icon to enter Picture-in-Picture.
   ResultCatcher catcher;
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(window_controller->GetWindowForTesting()->IsVisible());
 
   // Click on the browser action icon to exit Picture-in-Picture.
-  GetBrowserActionsBar()->Press(0);
+  GetBrowserActionsBar()->Press(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
 }

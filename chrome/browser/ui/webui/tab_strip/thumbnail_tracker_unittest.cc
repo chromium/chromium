@@ -11,10 +11,11 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,8 +44,8 @@ class ThumbnailTrackerTest : public ::testing::Test,
   ThumbnailTrackerTest()
       : thumbnail_tracker_(
             thumbnail_updated_callback_.Get(),
-            base::Bind(&ThumbnailTrackerTest::GetTestingThumbnail,
-                       base::Unretained(this))) {}
+            base::BindRepeating(&ThumbnailTrackerTest::GetTestingThumbnail,
+                                base::Unretained(this))) {}
 
   static SkBitmap CreateTestingBitmap() {
     SkBitmap bitmap;
@@ -57,7 +58,7 @@ class ThumbnailTrackerTest : public ::testing::Test,
   std::unique_ptr<content::WebContents> CreateWebContents() {
     auto contents =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    SessionTabHelper::CreateForWebContents(contents.get());
+    CreateSessionServiceTabHelper(contents.get());
     return contents;
   }
 
@@ -70,6 +71,7 @@ class ThumbnailTrackerTest : public ::testing::Test,
   void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {}
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
 
   base::MockCallback<ThumbnailTracker::ThumbnailUpdatedCallback>

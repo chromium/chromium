@@ -8,16 +8,18 @@
 #include <sstream>
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/active_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/ble_connection_manager_impl.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
+#include "chromeos/services/secure_channel/ble_scanner_impl.h"
+#include "chromeos/services/secure_channel/ble_synchronizer.h"
+#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
+#include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
+#include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -29,24 +31,17 @@ namespace secure_channel {
 SecureChannelImpl::Factory* SecureChannelImpl::Factory::test_factory_ = nullptr;
 
 // static
-SecureChannelImpl::Factory* SecureChannelImpl::Factory::Get() {
+std::unique_ptr<mojom::SecureChannel> SecureChannelImpl::Factory::Create(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance(bluetooth_adapter);
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new SecureChannelImpl(bluetooth_adapter));
 }
 
 // static
 void SecureChannelImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
   test_factory_ = test_factory;
-}
-
-SecureChannelImpl::Factory::~Factory() = default;
-
-std::unique_ptr<mojom::SecureChannel> SecureChannelImpl::Factory::BuildInstance(
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
-  return base::WrapUnique(new SecureChannelImpl(bluetooth_adapter));
 }
 
 SecureChannelImpl::ConnectionRequestWaitingForDisconnection::
@@ -72,25 +67,33 @@ SecureChannelImpl::ConnectionRequestWaitingForDisconnection::
 SecureChannelImpl::SecureChannelImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
     : bluetooth_adapter_(std::move(bluetooth_adapter)),
-      timer_factory_(TimerFactoryImpl::Factory::Get()->BuildInstance()),
-      remote_device_cache_(
-          multidevice::RemoteDeviceCache::Factory::Get()->BuildInstance()),
-      ble_service_data_helper_(
-          BleServiceDataHelperImpl::Factory::Get()->BuildInstance(
-              remote_device_cache_.get())),
-      ble_connection_manager_(
-          BleConnectionManagerImpl::Factory::Get()->BuildInstance(
-              bluetooth_adapter_,
-              ble_service_data_helper_.get(),
-              timer_factory_.get())),
-      pending_connection_manager_(
-          PendingConnectionManagerImpl::Factory::Get()->BuildInstance(
-              this /* delegate */,
-              ble_connection_manager_.get(),
-              bluetooth_adapter_)),
+      timer_factory_(TimerFactoryImpl::Factory::Create()),
+      remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
+      bluetooth_helper_(
+          BluetoothHelperImpl::Factory::Create(remote_device_cache_.get())),
+      ble_synchronizer_(BleSynchronizer::Factory::Create(bluetooth_adapter_)),
+      ble_scanner_(BleScannerImpl::Factory::Create(bluetooth_helper_.get(),
+                                                   ble_synchronizer_.get(),
+                                                   bluetooth_adapter_)),
+      secure_channel_disconnector_(
+          SecureChannelDisconnectorImpl::Factory::Create()),
+      ble_connection_manager_(BleConnectionManagerImpl::Factory::Create(
+          bluetooth_adapter_,
+          bluetooth_helper_.get(),
+          ble_synchronizer_.get(),
+          ble_scanner_.get(),
+          secure_channel_disconnector_.get(),
+          timer_factory_.get())),
+      nearby_connection_manager_(NearbyConnectionManagerImpl::Factory::Create(
+          ble_scanner_.get(),
+          secure_channel_disconnector_.get())),
+      pending_connection_manager_(PendingConnectionManagerImpl::Factory::Create(
+          this /* delegate */,
+          ble_connection_manager_.get(),
+          nearby_connection_manager_.get(),
+          bluetooth_adapter_)),
       active_connection_manager_(
-          ActiveConnectionManagerImpl::Factory::Get()->BuildInstance(
-              this /* delegate */)) {}
+          ActiveConnectionManagerImpl::Factory::Create(this /* delegate */)) {}
 
 SecureChannelImpl::~SecureChannelImpl() = default;
 
@@ -98,28 +101,33 @@ void SecureChannelImpl::ListenForConnectionFromDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   ProcessConnectionRequest(
       ApiFunctionName::kListenForConnection, device_to_connect, local_device,
-      ClientConnectionParametersImpl::Factory::Get()->BuildInstance(
-          feature, std::move(delegate)),
-      ConnectionRole::kListenerRole, connection_priority,
-      ConnectionMedium::kBluetoothLowEnergy);
+      ClientConnectionParametersImpl::Factory::Create(feature,
+                                                      std::move(delegate)),
+      ConnectionRole::kListenerRole, connection_priority, connection_medium);
 }
 
 void SecureChannelImpl::InitiateConnectionToDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   ProcessConnectionRequest(
       ApiFunctionName::kInitiateConnection, device_to_connect, local_device,
-      ClientConnectionParametersImpl::Factory::Get()->BuildInstance(
-          feature, std::move(delegate)),
-      ConnectionRole::kInitiatorRole, connection_priority,
-      ConnectionMedium::kBluetoothLowEnergy);
+      ClientConnectionParametersImpl::Factory::Create(feature,
+                                                      std::move(delegate)),
+      ConnectionRole::kInitiatorRole, connection_priority, connection_medium);
+}
+
+void SecureChannelImpl::SetNearbyConnector(
+    mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {
+  nearby_connection_manager_->SetNearbyConnector(std::move(nearby_connector));
 }
 
 void SecureChannelImpl::OnDisconnected(
@@ -196,22 +204,33 @@ void SecureChannelImpl::ProcessConnectionRequest(
 
   // Check 2: Is the provided device to connect valid? If not, notify client and
   // return early.
-  if (CheckForInvalidInputDevice(api_fn_name, device_to_connect,
-                                 client_connection_parameters.get(),
-                                 false /* is_local_device */)) {
+  if (CheckForInvalidInputDevice(
+          api_fn_name, device_to_connect, client_connection_parameters.get(),
+          connection_medium, false /* is_local_device */)) {
     return;
   }
 
   // Check 3: Is the provided local device valid? If not, notify client and
   // return early.
-  if (CheckForInvalidInputDevice(api_fn_name, local_device,
-                                 client_connection_parameters.get(),
-                                 true /* is_local_device */)) {
+  if (CheckForInvalidInputDevice(
+          api_fn_name, local_device, client_connection_parameters.get(),
+          connection_medium, true /* is_local_device */)) {
     return;
   }
 
   // Check 4: Medium-specific verification.
   switch (connection_medium) {
+    case ConnectionMedium::kNearbyConnections:
+      // Nearby Connections only supports certain roles.
+      if (CheckForInvalidNearbyRequest(api_fn_name,
+                                       client_connection_parameters.get(),
+                                       connection_role)) {
+        return;
+      }
+
+      // Nearby Connections requires Bluetooth functionality, so fall through to
+      // the Bluetooth case below.
+      FALLTHROUGH;
     case ConnectionMedium::kBluetoothLowEnergy:
       // Is the local Bluetooth adapter disabled or not present? If either,
       // notify client and return early.
@@ -307,9 +326,10 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
     ApiFunctionName api_fn_name,
     const multidevice::RemoteDevice& device,
     ClientConnectionParameters* client_connection_parameters,
+    ConnectionMedium connection_medium,
     bool is_local_device) {
-  base::Optional<InvalidRemoteDeviceReason> potential_invalid_reason =
-      AddDeviceToCacheIfPossible(api_fn_name, device);
+  absl::optional<InvalidRemoteDeviceReason> potential_invalid_reason =
+      AddDeviceToCacheIfPossible(api_fn_name, device, connection_medium);
   if (!potential_invalid_reason)
     return false;
 
@@ -332,9 +352,41 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
                     REMOTE_DEVICE_INVALID_PSK,
           client_connection_parameters);
       break;
+    case InvalidRemoteDeviceReason::kInvalidBluetoothAddress:
+      RejectRequestForReason(api_fn_name,
+                             is_local_device
+                                 ? mojom::ConnectionAttemptFailureReason::
+                                       LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS
+                                 : mojom::ConnectionAttemptFailureReason::
+                                       REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS,
+                             client_connection_parameters);
+      break;
   }
 
   return true;
+}
+
+bool SecureChannelImpl::CheckForInvalidNearbyRequest(
+    ApiFunctionName api_fn_name,
+    ClientConnectionParameters* client_connection_parameters,
+    ConnectionRole connection_role) {
+  if (connection_role == ConnectionRole::kListenerRole) {
+    RejectRequestForReason(
+        api_fn_name,
+        mojom::ConnectionAttemptFailureReason::UNSUPPORTED_ROLE_FOR_MEDIUM,
+        client_connection_parameters);
+    return true;
+  }
+
+  if (!nearby_connection_manager_->IsNearbyConnectorSet()) {
+    RejectRequestForReason(
+        api_fn_name,
+        mojom::ConnectionAttemptFailureReason::MISSING_NEARBY_CONNECTOR,
+        client_connection_parameters);
+    return true;
+  }
+
+  return false;
 }
 
 bool SecureChannelImpl::CheckIfBluetoothAdapterDisabledOrNotPresent(
@@ -357,10 +409,11 @@ bool SecureChannelImpl::CheckIfBluetoothAdapterDisabledOrNotPresent(
   return false;
 }
 
-base::Optional<SecureChannelImpl::InvalidRemoteDeviceReason>
+absl::optional<SecureChannelImpl::InvalidRemoteDeviceReason>
 SecureChannelImpl::AddDeviceToCacheIfPossible(
     ApiFunctionName api_fn_name,
-    const multidevice::RemoteDevice& device) {
+    const multidevice::RemoteDevice& device,
+    ConnectionMedium connection_medium) {
   if (device.public_key.empty()) {
     PA_LOG(WARNING) << "SecureChannelImpl::" << api_fn_name << "(): "
                     << "Provided device has an invalid public key. Cannot "
@@ -375,8 +428,17 @@ SecureChannelImpl::AddDeviceToCacheIfPossible(
     return InvalidRemoteDeviceReason::kInvalidPsk;
   }
 
+  if (connection_medium == ConnectionMedium::kNearbyConnections &&
+      device.bluetooth_public_address.empty()) {
+    PA_LOG(WARNING) << "SecureChannelImpl::" << api_fn_name << "(): "
+                    << "Provided device does not have a valid Bluetooth "
+                    << "address, which is required to use Nearby Connections. "
+                    << "Cannot process request.";
+    return InvalidRemoteDeviceReason::kInvalidBluetoothAddress;
+  }
+
   remote_device_cache_->SetRemoteDevices({device});
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& stream,

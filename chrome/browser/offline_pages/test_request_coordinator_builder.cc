@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/test_request_coordinator_builder.h"
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
@@ -39,10 +40,10 @@ std::unique_ptr<KeyedService> BuildTestRequestCoordinator(
   std::unique_ptr<Offliner> offliner(new OfflinerStub());
   std::unique_ptr<Scheduler> scheduler_stub(new SchedulerStub());
 
-  return std::unique_ptr<RequestCoordinator>(new RequestCoordinator(
+  return std::make_unique<RequestCoordinator>(
       std::move(policy), std::move(offliner), std::move(queue),
       std::move(scheduler_stub), g_browser_process->network_quality_tracker(),
-      std::make_unique<ActiveTabInfo>()));
+      std::make_unique<ActiveTabInfo>());
 }
 
 }  // namespace offline_pages

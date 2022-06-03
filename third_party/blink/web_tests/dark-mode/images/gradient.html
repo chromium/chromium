@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<style>
+  .gradient {
+    background-image: linear-gradient(white 0%, blue 100%);
+    width: 400px;
+    height: 200px;
+  }
+  .gradient_shader {
+    background-image: linear-gradient(white 0%, blue 100%);
+    width: 400px;
+    height: 200px;
+    border-radius:0 0.5rem 0.5rem 0;
+  }
+</style>
+<div class="gradient"></div>
+<div class="gradient_shader"></div>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+        <linearGradient id="linearGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0" style="stop-color:white"></stop>
+            <stop offset="1" style="stop-color:blue"></stop>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="200" fill="url(#linearGradient)" />
+</svg>

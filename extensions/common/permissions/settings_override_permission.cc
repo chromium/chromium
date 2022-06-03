@@ -50,7 +50,10 @@ bool SettingsOverrideAPIPermission::FromValue(
     const base::Value* value,
     std::string* /*error*/,
     std::vector<std::string>* unhandled_permissions) {
-  return value && value->GetAsString(&setting_value_);
+  if (!value || !value->is_string())
+    return false;
+  setting_value_ = value->GetString();
+  return true;
 }
 
 std::unique_ptr<base::Value> SettingsOverrideAPIPermission::ToValue() const {
@@ -80,17 +83,6 @@ std::unique_ptr<APIPermission> SettingsOverrideAPIPermission::Intersect(
   CHECK_EQ(info(), rhs->info());
   return std::make_unique<SettingsOverrideAPIPermission>(info(),
                                                          setting_value_);
-}
-
-void SettingsOverrideAPIPermission::Write(base::Pickle* m) const {}
-
-bool SettingsOverrideAPIPermission::Read(const base::Pickle* m,
-                                         base::PickleIterator* iter) {
-  return true;
-}
-
-void SettingsOverrideAPIPermission::Log(std::string* log) const {
-  *log = setting_value_;
 }
 
 }  // namespace extensions

@@ -7,13 +7,14 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/check.h"
 #include "components/security_interstitials/content/origin_policy_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/origin_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace security_interstitials {
@@ -31,14 +32,14 @@ std::unique_ptr<SecurityInterstitialPage> GetErrorPageImpl(
           web_contents,
           std::make_unique<MetricsHelper>(url, report_details, nullptr),
           nullptr, /* pref service: can be null */
-          "", GURL());
+          "", GURL(), /* settings_page_helper: not used */ nullptr);
   return std::make_unique<security_interstitials::OriginPolicyInterstitialPage>(
       web_contents, url, std::move(controller), error_reason);
 }
 
 }  // namespace
 
-base::Optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
+absl::optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
     network::OriginPolicyState error_reason,
     content::NavigationHandle* handle) {
   DCHECK(handle);
@@ -49,7 +50,7 @@ base::Optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
   // The page object is "associated" with the web contents, and this is how
   // the interstitial infrastructure will find this instance again.
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      handle->GetWebContents(), handle->GetNavigationId(), std::move(page));
+      handle, std::move(page));
 
   return html;
 }

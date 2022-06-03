@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
@@ -17,6 +18,7 @@
 #define EGL_TEXTURE_RECTANGLE_ANGLE 0x345B
 #define EGL_TEXTURE_TYPE_ANGLE 0x345C
 #define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
+#define EGL_BIND_TO_TEXTURE_TARGET_ANGLE 0x348D
 
 namespace gl {
 
@@ -37,9 +39,12 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
     case gfx::BufferFormat::R_8:
       return {GL_RED, GL_UNSIGNED_BYTE};
     case gfx::BufferFormat::R_16:
+      // TODO(https://crbug.com/1233228): This should be GL_RED.
       return {GL_RED_INTEGER, GL_UNSIGNED_SHORT};
     case gfx::BufferFormat::RG_88:
       return {GL_RG, GL_UNSIGNED_BYTE};
+    case gfx::BufferFormat::RG_1616:
+      return {GL_RG, GL_UNSIGNED_SHORT};
     case gfx::BufferFormat::BGRX_8888:
       if (emulate_rgb) {
         return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
@@ -51,15 +56,14 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
       return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
     case gfx::BufferFormat::RGBA_F16:
       return {GL_RGBA, GL_HALF_FLOAT};
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::BGRX_1010102:
-      NOTIMPLEMENTED();
-      return {GL_NONE, GL_NONE};
+    case gfx::BufferFormat::BGRA_1010102:
+      return {GL_RGB10_A2, GL_UNSIGNED_INT_2_10_10_10_REV};
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBA_1010102:
     case gfx::BufferFormat::YVU_420:
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       NOTREACHED();
       return {GL_NONE, GL_NONE};
@@ -67,6 +71,46 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
 
   NOTREACHED();
   return {GL_NONE, GL_NONE};
+}
+
+GLint GLTargetFromEGLTarget(GLint egl_target) {
+  switch (egl_target) {
+    case EGL_TEXTURE_2D:
+      return GL_TEXTURE_2D;
+    case EGL_TEXTURE_RECTANGLE_ANGLE:
+      return GL_TEXTURE_RECTANGLE_ARB;
+    default:
+      NOTIMPLEMENTED() << " Target not supported.";
+      return GL_NONE;
+  }
+}
+
+EGLint EGLTargetFromGLTarget(GLint gl_target) {
+  switch (gl_target) {
+    case GL_TEXTURE_2D:
+      return EGL_TEXTURE_2D;
+    case GL_TEXTURE_RECTANGLE_ARB:
+      return EGL_TEXTURE_RECTANGLE_ANGLE;
+    default:
+      NOTIMPLEMENTED() << " Target not supported.";
+      return EGL_NO_TEXTURE;
+  }
+}
+
+GLenum TargetGetterFromGLTarget(GLint gl_target) {
+  switch (gl_target) {
+    case GL_TEXTURE_2D:
+      return GL_TEXTURE_BINDING_2D;
+    case GL_TEXTURE_CUBE_MAP:
+      return GL_TEXTURE_BINDING_CUBE_MAP;
+    case GL_TEXTURE_EXTERNAL_OES:
+      return GL_TEXTURE_BINDING_EXTERNAL_OES;
+    case GL_TEXTURE_RECTANGLE_ARB:
+      return GL_TEXTURE_BINDING_RECTANGLE_ARB;
+    default:
+      NOTIMPLEMENTED() << " Target not supported.";
+      return GL_NONE;
+  }
 }
 
 }  // anonymous namespace
@@ -79,6 +123,7 @@ GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
       display_(GLSurfaceEGL::GetHardwareDisplay()),
       pbuffer_(EGL_NO_SURFACE),
       dummy_config_(nullptr),
+      texture_target_(EGL_TEXTURE_RECTANGLE_ANGLE),
       texture_bound_(false) {
   DCHECK(display_ != EGL_NO_DISPLAY);
 
@@ -90,9 +135,25 @@ GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
   DCHECK(result == EGL_TRUE);
   DCHECK(numConfigs = 1);
   DCHECK(dummy_config_ != nullptr);
+  const char* extensions = eglQueryString(display_, EGL_EXTENSIONS);
+  if (GLSurface::ExtensionsContain(extensions,
+                                   "EGL_ANGLE_iosurface_client_buffer")) {
+    result =
+        eglGetConfigAttrib(display_, dummy_config_,
+                           EGL_BIND_TO_TEXTURE_TARGET_ANGLE, &texture_target_);
+    DCHECK(result == EGL_TRUE);
+  }
+  DCHECK(texture_target_ != EGL_NO_TEXTURE);
 }
 
 GLImageIOSurfaceEGL::~GLImageIOSurfaceEGL() {
+  GLint target_gl = GLTargetFromEGLTarget(texture_target_);
+  if (target_gl == GL_NONE) {
+    return;
+  }
+  if (texture_bound_) {
+    ReleaseTexImage(target_gl);
+  }
   if (pbuffer_ != EGL_NO_SURFACE) {
     EGLBoolean result = eglDestroySurface(display_, pbuffer_);
     DCHECK(result == EGL_TRUE);
@@ -100,20 +161,40 @@ GLImageIOSurfaceEGL::~GLImageIOSurfaceEGL() {
 }
 
 void GLImageIOSurfaceEGL::ReleaseTexImage(unsigned target) {
-  DCHECK(target == GL_TEXTURE_RECTANGLE_ARB);
-  if (texture_bound_) {
-    DCHECK(pbuffer_ != EGL_NO_SURFACE);
-
-    EGLBoolean result = eglReleaseTexImage(display_, pbuffer_, EGL_BACK_BUFFER);
-    DCHECK(result == EGL_TRUE);
-    texture_bound_ = false;
+  EGLint target_egl = EGLTargetFromGLTarget(target);
+  if (target_egl == EGL_NO_TEXTURE) {
+    return;
   }
+
+  DCHECK(texture_target_ == target_egl);
+
+  if (!texture_bound_) {
+    return;
+  }
+
+  DCHECK(pbuffer_ != EGL_NO_SURFACE);
+
+  EGLBoolean result = eglReleaseTexImage(display_, pbuffer_, EGL_BACK_BUFFER);
+  DCHECK(result == EGL_TRUE);
+  texture_bound_ = false;
 }
 
-bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned internalformat) {
+bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
+                                           unsigned internalformat) {
   // TODO(cwallez@chromium.org): internalformat is used by Blink's
   // DrawingBuffer::SetupRGBEmulationForBlitFramebuffer to bind an RGBA
   // IOSurface as RGB. We should support this.
+
+  CHECK(!texture_bound_) << "Cannot re-bind already bound IOSurface.";
+
+  GLenum target_getter = TargetGetterFromGLTarget(target);
+  EGLint target_egl = EGLTargetFromGLTarget(target);
+  if (target_getter == GL_NONE || target_egl == EGL_NO_TEXTURE) {
+    return false;
+  }
+
+  DCHECK(texture_target_ == target_egl);
+
   if (internalformat != 0) {
     LOG(ERROR) << "GLImageIOSurfaceEGL doesn't support binding with a custom "
                   "internal format yet.";
@@ -131,11 +212,11 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned internalformat) {
     const EGLint attribs[] = {
       EGL_WIDTH,                         size_.width(),
       EGL_HEIGHT,                        size_.height(),
-      EGL_IOSURFACE_PLANE_ANGLE,         0,
-      EGL_TEXTURE_TARGET,                EGL_TEXTURE_RECTANGLE_ANGLE,
-      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, formatType.format,
+      EGL_IOSURFACE_PLANE_ANGLE,         static_cast<EGLint>(io_surface_plane_),
+      EGL_TEXTURE_TARGET,                texture_target_,
+      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, static_cast<EGLint>(formatType.format),
       EGL_TEXTURE_FORMAT,                EGL_TEXTURE_RGBA,
-      EGL_TEXTURE_TYPE_ANGLE,            formatType.type,
+      EGL_TEXTURE_TYPE_ANGLE,            static_cast<EGLint>(formatType.type),
       EGL_NONE,                          EGL_NONE,
     };
     // clang-format on
@@ -165,8 +246,16 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned internalformat) {
 bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (format_ != gfx::BufferFormat::YUV_420_BIPLANAR)
+  GLint target_gl = GLTargetFromEGLTarget(texture_target_);
+  if (target_gl == GL_NONE) {
     return false;
+  }
+
+  if (format_ != gfx::BufferFormat::YUV_420_BIPLANAR &&
+      format_ != gfx::BufferFormat::P010) {
+    LOG(ERROR) << "non-YUV buffer format passed to CopyTexImage";
+    return false;
+  }
 
   GLContext* gl_context = GLContext::GetCurrent();
   DCHECK(gl_context);
@@ -178,23 +267,9 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
   // Note that state restoration is done explicitly instead of scoped binders to
   // avoid https://crbug.com/601729.
   GLint rgb_texture = 0;
-  GLenum target_getter = 0;
-  switch (target) {
-    case GL_TEXTURE_2D:
-      target_getter = GL_TEXTURE_BINDING_2D;
-      break;
-    case GL_TEXTURE_CUBE_MAP:
-      target_getter = GL_TEXTURE_BINDING_CUBE_MAP;
-      break;
-    case GL_TEXTURE_EXTERNAL_OES:
-      target_getter = GL_TEXTURE_BINDING_EXTERNAL_OES;
-      break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      target_getter = GL_TEXTURE_BINDING_RECTANGLE_ARB;
-      break;
-    default:
-      NOTIMPLEMENTED() << " Target not supported.";
-      return false;
+  GLenum target_getter = TargetGetterFromGLTarget(target);
+  if (target_getter == GL_NONE) {
+    return false;
   }
 
   EGLSurface y_surface = EGL_NO_SURFACE;
@@ -222,21 +297,30 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
         glBindTexture(target, rgb_texture);
       })));
 
-  glBindTexture(GL_TEXTURE_RECTANGLE_ARB, yuv_to_rgb_converter->y_texture());
+  glBindTexture(target_gl, yuv_to_rgb_converter->y_texture());
   if (glGetError() != GL_NO_ERROR) {
     LOG(ERROR) << "Can't bind Y texture";
     return false;
   }
+
+  // Disable mipmap filtering since iosurface doesn't have mipmap. Rectangle
+  // textures have mipmap disabled by default but other types of texture don't.
+  glTexParameteri(target_gl, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  const EGLint texture_type =
+      format_ == gfx::BufferFormat::P010 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_BYTE;
 
   // clang-format off
   const EGLint yAttribs[] = {
     EGL_WIDTH,                         size_.width(),
     EGL_HEIGHT,                        size_.height(),
     EGL_IOSURFACE_PLANE_ANGLE,         0,
-    EGL_TEXTURE_TARGET,                EGL_TEXTURE_RECTANGLE_ANGLE,
+    EGL_TEXTURE_TARGET,                texture_target_,
     EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, GL_RED,
     EGL_TEXTURE_FORMAT,                EGL_TEXTURE_RGBA,
-    EGL_TEXTURE_TYPE_ANGLE,            GL_UNSIGNED_BYTE,
+    EGL_TEXTURE_TYPE_ANGLE,            texture_type,
     EGL_NONE,                          EGL_NONE,
   };
   // clang-format on
@@ -256,21 +340,25 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
     return false;
   }
 
-  glBindTexture(GL_TEXTURE_RECTANGLE_ARB, yuv_to_rgb_converter->uv_texture());
+  glBindTexture(target_gl, yuv_to_rgb_converter->uv_texture());
   if (glGetError() != GL_NO_ERROR) {
     LOG(ERROR) << "Can't bind UV texture";
     return false;
   }
+
+  glTexParameteri(target_gl, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   // clang-format off
   const EGLint uvAttribs[] = {
     EGL_WIDTH,                         size_.width() / 2,
     EGL_HEIGHT,                        size_.height() / 2,
     EGL_IOSURFACE_PLANE_ANGLE,         1,
-    EGL_TEXTURE_TARGET,                EGL_TEXTURE_RECTANGLE_ANGLE,
+    EGL_TEXTURE_TARGET,                texture_target_,
     EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, GL_RG,
     EGL_TEXTURE_FORMAT,                EGL_TEXTURE_RGBA,
-    EGL_TEXTURE_TYPE_ANGLE,            GL_UNSIGNED_BYTE,
+    EGL_TEXTURE_TYPE_ANGLE,            texture_type,
     EGL_NONE,                          EGL_NONE,
   };
   // clang-format on
@@ -290,7 +378,8 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
     return false;
   }
 
-  yuv_to_rgb_converter->CopyYUV420ToRGB(target, size_, rgb_texture);
+  yuv_to_rgb_converter->CopyYUV420ToRGB(target, size_, rgb_texture,
+                                        texture_type);
   if (glGetError() != GL_NO_ERROR) {
     LOG(ERROR) << "Failed converting from YUV to RGB";
     return false;

@@ -5,11 +5,11 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "connector.mojom",
-  ]
+  sources = [ "connector.mojom" ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+mojom("test_support") {
+  sources = [ "test_connector.mojom" ]
 }

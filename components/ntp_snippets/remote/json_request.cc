@@ -31,6 +31,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -121,7 +122,7 @@ std::string GetUserClassString(UserClassifier::UserClass user_class) {
 }  // namespace
 
 JsonRequest::JsonRequest(
-    base::Optional<Category> exclusive_category,
+    absl::optional<Category> exclusive_category,
     const base::Clock* clock,  // Needed until destruction of the request.
     const ParseJSONCallback& callback)
     : exclusive_category_(exclusive_category),
@@ -190,10 +191,11 @@ void JsonRequest::OnSimpleLoaderComplete(
              /*error_details=*/base::StringPrintf(" %d", response_code));
   } else {
     last_response_string_ = std::move(*response_body);
-    parse_json_callback_.Run(
-        last_response_string_,
-        base::Bind(&JsonRequest::OnJsonParsed, weak_ptr_factory_.GetWeakPtr()),
-        base::Bind(&JsonRequest::OnJsonError, weak_ptr_factory_.GetWeakPtr()));
+    parse_json_callback_.Run(last_response_string_,
+                             base::BindOnce(&JsonRequest::OnJsonParsed,
+                                            weak_ptr_factory_.GetWeakPtr()),
+                             base::BindOnce(&JsonRequest::OnJsonError,
+                                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -316,7 +318,7 @@ std::string JsonRequest::Builder::BuildBody() const {
 
   auto excluded = std::make_unique<base::ListValue>();
   for (const auto& id : params_.excluded_ids) {
-    excluded->AppendString(id);
+    excluded->Append(id);
   }
   request->Set("excludedSuggestionIds", std::move(excluded));
 

@@ -4,7 +4,7 @@
 
 #include "chromeos/system/name_value_pairs_parser.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -57,8 +57,8 @@ TEST(NameValuePairsParser, TestParseNameValuePairsWithComments) {
   NameValuePairsParser parser(&map);
 
   const std::string contents1 = "foo=Foo,bar=#Bar,baz= 0 #Baz";
-  EXPECT_TRUE(parser.ParseNameValuePairsWithComments(
-      contents1, "=", ",\n", "#"));
+  EXPECT_TRUE(
+      parser.ParseNameValuePairsWithComments(contents1, "=", ",\n", "#"));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("Foo", map["foo"]);
   EXPECT_EQ("", map["bar"]);
@@ -66,15 +66,15 @@ TEST(NameValuePairsParser, TestParseNameValuePairsWithComments) {
 
   map.clear();
   const std::string contents2 = "foo=";
-  EXPECT_TRUE(parser.ParseNameValuePairsWithComments(
-      contents2, "=", ",\n", "#"));
+  EXPECT_TRUE(
+      parser.ParseNameValuePairsWithComments(contents2, "=", ",\n", "#"));
   EXPECT_EQ(1U, map.size());
   EXPECT_EQ("", map["foo"]);
 
   map.clear();
   const std::string contents3 = " \t ,,#all empty,";
-  EXPECT_FALSE(parser.ParseNameValuePairsWithComments(
-      contents3, "=", ",\n", "#"));
+  EXPECT_FALSE(
+      parser.ParseNameValuePairsWithComments(contents3, "=", ",\n", "#"));
   EXPECT_EQ(0U, map.size());
 }
 

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_NODE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
@@ -38,7 +39,8 @@ class BaseAudioContext;
 class AudioParam;
 class BiquadFilterOptions;
 
-class BiquadFilterHandler : public AudioBasicProcessorHandler {
+class BiquadFilterHandler : public AudioBasicProcessorHandler,
+                            public base::SupportsWeakPtr<BiquadFilterHandler> {
  public:
   static scoped_refptr<BiquadFilterHandler> Create(AudioNode&,
                                                    float sample_rate,
@@ -91,7 +93,7 @@ class BiquadFilterNode final : public AudioNode {
 
   BiquadFilterNode(BaseAudioContext&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   String type() const;
   void setType(const String&);
@@ -114,7 +116,7 @@ class BiquadFilterNode final : public AudioNode {
 
  private:
   BiquadProcessor* GetBiquadProcessor() const;
-  bool setType(unsigned);  // Returns true on success.
+  bool SetType(BiquadProcessor::FilterType);  // Returns true on success.
 
   Member<AudioParam> frequency_;
   Member<AudioParam> q_;

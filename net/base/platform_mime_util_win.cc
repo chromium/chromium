@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 
@@ -20,9 +19,9 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
   // names are not case-sensitive).
   base::FilePath::StringType value, key = FILE_PATH_LITERAL(".") + ext;
   base::win::RegKey(HKEY_CLASSES_ROOT, key.c_str(), KEY_READ)
-      .ReadValue(STRING16_LITERAL("Content Type"), &value);
+      .ReadValue(L"Content Type", &value);
   if (!value.empty()) {
-    *result = base::UTF16ToUTF8(value);
+    *result = base::WideToUTF8(value);
     return true;
   }
   return false;
@@ -32,10 +31,9 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     const std::string& mime_type,
     base::FilePath::StringType* ext) const {
   base::FilePath::StringType key =
-      STRING16_LITERAL("MIME\\Database\\Content Type\\") +
-      base::UTF8ToUTF16(mime_type);
+      L"MIME\\Database\\Content Type\\" + base::UTF8ToWide(mime_type);
   if (base::win::RegKey(HKEY_CLASSES_ROOT, key.c_str(), KEY_READ)
-          .ReadValue(STRING16_LITERAL("Extension"), ext) != ERROR_SUCCESS) {
+          .ReadValue(L"Extension", ext) != ERROR_SUCCESS) {
     return false;
   }
   // Strip off the leading dot, this should always be the case.

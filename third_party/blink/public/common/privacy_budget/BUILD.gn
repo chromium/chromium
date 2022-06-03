@@ -1,0 +1,62 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal") {
+  sources = [ "identifiability_internal_templates.h" ]
+
+  deps = [ "//base" ]
+
+  visibility = [
+    ":*",
+    "//third_party/blink/common/privacy_budget:*",
+  ]
+}
+
+source_set("privacy_budget") {
+  sources = [
+    "identifiability_metric_builder.h",
+    "identifiability_metrics.h",
+    "identifiability_sample_collector.h",
+    "identifiability_study_settings.h",
+    "identifiability_study_settings_provider.h",
+    "identifiable_sample.h",
+    "identifiable_surface.h",
+    "identifiable_token.h",
+    "identifiable_token_builder.h",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/cpp:cpp",
+    "//third_party/blink/public/common:common_export",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "scoped_identifiability_test_sample_collector.h",
+    "scoped_switch_sample_collector.h",
+  ]
+
+  public_deps = [ "//third_party/blink/public/common:headers" ]
+
+  deps = [
+    ":internal",
+    "//third_party/blink/public/common:common_export",
+  ]
+}
+
+# Adds //tools/privacy_budget targets to the top level "gn_all" group. See the
+# top level //BUILD.gn file for details on how that target is used. Builders
+# that build the "all" target also build the targets in //tools/privacy_budget
+# as a result of this dependency.
+group("gn_all") {
+  testonly = true
+  deps = [ "//tools/privacy_budget:privacy_budget_tools" ]
+}

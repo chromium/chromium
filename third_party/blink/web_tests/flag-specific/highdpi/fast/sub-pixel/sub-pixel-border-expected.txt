@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Size of all elements are correct. assert_equals: Size of 0.75px box should be equal to 0.5px box. expected 81.33333587646484 but got 81.5
+FAIL All elements should have correctly sized borders. assert_equals: Border thickness of 0.25px box should be 1px. expected "1px 1px 1px 1px" but got "0.666667px 0.666667px 0.666667px 0.666667px"
+Harness: the test ran to completion.
+

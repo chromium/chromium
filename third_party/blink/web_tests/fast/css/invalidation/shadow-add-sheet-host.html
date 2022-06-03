@@ -11,15 +11,15 @@
 <script>
     description("Insert a style element into a shadow tree affecting the host.");
 
-    var outerRoot = outerHost.createShadowRoot();
+    var outerRoot = outerHost.attachShadow({mode: 'open'});
     outerRoot.innerHTML = "<div><div id='host1'></div></div><div></div>";
 
     var host1 = outerRoot.querySelector("#host1");
-    var root1 = host1.createShadowRoot();
+    var root1 = host1.attachShadow({mode: 'open'});
     root1.innerHTML = "<div><div id='host2'></div></div><div></div>";
 
     var host2 = root1.querySelector("#host2");
-    var root2 = host2.createShadowRoot();
+    var root2 = host2.attachShadow({mode: 'open'});
     root2.innerHTML = "This text should be green";
 
     shouldBeEqualToString("getComputedStyle(host2).color", "rgb(255, 0, 0)");

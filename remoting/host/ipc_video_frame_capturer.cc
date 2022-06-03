@@ -4,7 +4,8 @@
 
 #include "remoting/host/ipc_video_frame_capturer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "remoting/host/desktop_session_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 

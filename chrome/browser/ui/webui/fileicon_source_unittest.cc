@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/fileicon_source.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/icon_manager.h"
@@ -113,10 +113,10 @@ MATCHER(CallbackIsNull, "") {
 }  // namespace
 
 TEST_F(FileIconSourceTest, FileIconSource_Parse) {
-  std::vector<ui::ScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::test::ScopedSetSupportedScaleFactors scoped_supported(
+  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
+  supported_scale_factors.push_back(ui::k100Percent);
+  supported_scale_factors.push_back(ui::k200Percent);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       supported_scale_factors);
 
   for (unsigned i = 0; i < base::size(kBasicExpectations); i++) {

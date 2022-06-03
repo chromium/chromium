@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_screen_info.h"
+#include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
@@ -29,17 +30,18 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_shared_helper.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/display/screen_info.h"
 
 namespace {
 
 const int kThumbRadius = 6;
+const base::TimeDelta kRenderTimelineInterval = base::Seconds(1);
 
 // Only respond to main button of primary pointer(s).
 bool IsValidPointerEvent(const blink::Event& event) {
-  DCHECK(event.IsPointerEvent());
-  const blink::PointerEvent& pointer_event = ToPointerEvent(event);
+  DCHECK(blink::IsA<blink::PointerEvent>(event));
+  const auto& pointer_event = blink::To<blink::PointerEvent>(event);
   return pointer_event.isPrimary() &&
          pointer_event.button() ==
              static_cast<int16_t>(blink::WebPointerProperties::Button::kLeft);
@@ -56,7 +58,11 @@ namespace blink {
 // +-div#thumb (created by the HTMLSliderElement)
 MediaControlTimelineElement::MediaControlTimelineElement(
     MediaControlsImpl& media_controls)
-    : MediaControlSliderElement(media_controls) {
+    : MediaControlSliderElement(media_controls),
+      render_timeline_timer_(
+          GetDocument().GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &MediaControlTimelineElement::RenderTimelineTimerFired) {
   SetShadowPseudoId(AtomicString("-webkit-media-controls-timeline"));
 }
 
@@ -64,8 +70,7 @@ bool MediaControlTimelineElement::WillRespondToMouseClickEvents() {
   return isConnected() && GetDocument().IsActive();
 }
 
-void MediaControlTimelineElement::SetPosition(double current_time) {
-  setValue(String::Number(current_time));
+void MediaControlTimelineElement::UpdateAria() {
   String aria_label =
       GetLocale().QueryString(IsA<HTMLVideoElement>(MediaElement())
                                   ? IDS_AX_MEDIA_VIDEO_SLIDER_HELP
@@ -78,12 +83,31 @@ void MediaControlTimelineElement::SetPosition(double current_time) {
                AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_CURRENT_TIME_DISPLAY,
                    GetMediaControls().CurrentTimeDisplay().textContent(true))));
+}
+
+void MediaControlTimelineElement::SetPosition(double current_time,
+                                              bool suppress_aria) {
+  if (is_live_ && !live_anchor_time_ && current_time != 0) {
+    live_anchor_time_.emplace();
+    live_anchor_time_->clock_time_ = base::TimeTicks::Now();
+    live_anchor_time_->media_time_ = MediaElement().currentTime();
+  }
+
+  MaybeUpdateTimelineInterval();
+  setValue(String::Number(current_time));
+
+  if (!suppress_aria)
+    UpdateAria();
+
   RenderBarSegments();
 }
 
 void MediaControlTimelineElement::SetDuration(double duration) {
-  double duration_value = std::isfinite(duration) ? duration : 0;
-  SetFloatingPointAttribute(html_names::kMaxAttr, duration_value);
+  is_live_ = std::isinf(duration);
+  double duration_value = duration;
+  SetFloatingPointAttribute(html_names::kMaxAttr,
+                            is_live_ ? 0.0 : duration_value);
+  SetFloatingPointAttribute(html_names::kMinAttr, 0.0);
   RenderBarSegments();
 }
 
@@ -100,35 +124,28 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
   if (BeginScrubbingEvent(event)) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingBegin"));
+    is_scrubbing_ = true;
     GetMediaControls().BeginScrubbing(MediaControlsImpl::IsTouchEvent(&event));
-    Element* thumb = UserAgentShadowRoot()->getElementById(
-        shadow_element_names::SliderThumb());
-    bool started_from_thumb = thumb && thumb == event.target()->ToNode();
-    metrics_.StartGesture(started_from_thumb);
   } else if (EndScrubbingEvent(event)) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingEnd"));
+    is_scrubbing_ = false;
     GetMediaControls().EndScrubbing();
-    metrics_.RecordEndGesture(TrackWidth(), MediaElement().duration());
   }
 
-  if (event.type() == event_type_names::kKeydown) {
-    metrics_.StartKey();
-  }
-  if (event.type() == event_type_names::kKeyup && event.IsKeyboardEvent()) {
-    metrics_.RecordEndKey(TrackWidth(), ToKeyboardEvent(event).keyCode());
-  }
+  if (event.type() == event_type_names::kFocus)
+    UpdateAria();
 
   MediaControlInputElement::DefaultEventHandler(event);
 
-  if (event.IsMouseEvent() || event.IsKeyboardEvent() ||
-      event.IsGestureEvent() || event.IsPointerEvent()) {
+  if (IsA<MouseEvent>(event) || IsA<KeyboardEvent>(event) ||
+      IsA<GestureEvent>(event) || IsA<PointerEvent>(event)) {
     MaybeRecordInteracted();
   }
 
   // Update the value based on the touchmove event.
   if (is_touching_ && event.type() == event_type_names::kTouchmove) {
-    auto& touch_event = ToTouchEvent(event);
+    auto& touch_event = To<TouchEvent>(event);
     if (touch_event.touches()->length() != 1)
       return;
 
@@ -148,8 +165,6 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
   if (time > duration)
     time = duration;
 
-  metrics_.OnInput(MediaElement().currentTime(), time);
-
   // FIXME: This will need to take the timeline offset into consideration
   // once that concept is supported, see https://crbug.com/312699
   if (MediaElement().seekable()->Contain(time))
@@ -165,6 +180,54 @@ bool MediaControlTimelineElement::KeepEventInNode(const Event& event) const {
       event, GetLayoutObject());
 }
 
+void MediaControlTimelineElement::OnMediaPlaying() {
+  if (!is_live_)
+    return;
+
+  render_timeline_timer_.Stop();
+}
+
+void MediaControlTimelineElement::OnMediaStoppedPlaying() {
+  if (!is_live_ || is_scrubbing_ || !live_anchor_time_)
+    return;
+
+  render_timeline_timer_.StartRepeating(kRenderTimelineInterval, FROM_HERE);
+}
+
+void MediaControlTimelineElement::OnProgress() {
+  MaybeUpdateTimelineInterval();
+  RenderBarSegments();
+}
+
+void MediaControlTimelineElement::RenderTimelineTimerFired(TimerBase*) {
+  MaybeUpdateTimelineInterval();
+  RenderBarSegments();
+}
+
+void MediaControlTimelineElement::MaybeUpdateTimelineInterval() {
+  if (!is_live_ || !MediaElement().seekable()->length() || !live_anchor_time_)
+    return;
+
+  int last_seekable = MediaElement().seekable()->length() - 1;
+  double seekable_start =
+      MediaElement().seekable()->start(last_seekable, ASSERT_NO_EXCEPTION);
+  double seekable_end =
+      MediaElement().seekable()->end(last_seekable, ASSERT_NO_EXCEPTION);
+  double expected_media_time_now =
+      live_anchor_time_->media_time_ +
+      (base::TimeTicks::Now() - live_anchor_time_->clock_time_).InSecondsF();
+
+  // Cap the current live time in seekable range.
+  if (expected_media_time_now > seekable_end) {
+    live_anchor_time_->media_time_ = seekable_end;
+    live_anchor_time_->clock_time_ = base::TimeTicks::Now();
+    expected_media_time_now = seekable_end;
+  }
+
+  SetFloatingPointAttribute(html_names::kMinAttr, seekable_start);
+  SetFloatingPointAttribute(html_names::kMaxAttr, expected_media_time_now);
+}
+
 void MediaControlTimelineElement::RenderBarSegments() {
   SetupBarSegments();
 
@@ -176,6 +239,16 @@ void MediaControlTimelineElement::RenderBarSegments() {
   // buffered range containing the current play head.
   TimeRanges* buffered_time_ranges = MediaElement().buffered();
   DCHECK(buffered_time_ranges);
+
+  // Calculate |current_time| and |duration| for live media base on the timeline
+  // value since timeline's minimum value is not necessarily zero.
+  if (is_live_) {
+    current_time =
+        value().ToDouble() - GetFloatingPointAttribute(html_names::kMinAttr);
+    duration = GetFloatingPointAttribute(html_names::kMaxAttr) -
+               GetFloatingPointAttribute(html_names::kMinAttr);
+  }
+
   if (std::isnan(duration) || std::isinf(duration) || !duration ||
       std::isnan(current_time)) {
     SetBeforeSegmentPosition(MediaControlSliderElement::Position(0, 0));
@@ -203,7 +276,7 @@ void MediaControlTimelineElement::RenderBarSegments() {
   // the current time.
   before_segment.width = current_position;
 
-  base::Optional<unsigned> current_buffered_time_range =
+  absl::optional<unsigned> current_buffered_time_range =
       MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(MediaElement());
 
   if (current_buffered_time_range) {
@@ -224,7 +297,8 @@ void MediaControlTimelineElement::RenderBarSegments() {
   SetAfterSegmentPosition(after_segment);
 }
 
-void MediaControlTimelineElement::Trace(blink::Visitor* visitor) {
+void MediaControlTimelineElement::Trace(Visitor* visitor) const {
+  visitor->Trace(render_timeline_timer_);
   MediaControlSliderElement::Trace(visitor);
 }
 

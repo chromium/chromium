@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/archive_manager.h"
@@ -145,7 +145,8 @@ TEST_F(OfflinePageArchivePublisherImplTest, PublishArchive) {
   EXPECT_EQ(kDownloadId, publish_archive_result().id.download_id);
 
   // The file move should not happen on Android Q and later.
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_q()) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q) {
     // Check there is a file in the new location.
     EXPECT_TRUE(public_archive_dir_path().IsParent(
         publish_archive_result().id.new_file_path));

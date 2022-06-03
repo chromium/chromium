@@ -132,13 +132,22 @@ _NAMED_TYPE_INFO = {
       'viz::ResourceFormat::RGBX_8888',
       'viz::ResourceFormat::BGRX_8888',
       'viz::ResourceFormat::RGBA_1010102',
-      'viz::ResourceFormat::BGRX_1010102',
+      'viz::ResourceFormat::BGRA_1010102',
       'viz::ResourceFormat::YVU_420',
       'viz::ResourceFormat::YUV_420_BIPLANAR',
-
+      'viz::ResourceFormat::P010',
     ],
     'invalid': [
       'viz::ResourceFormat::ETC1',
+    ],
+  },
+  'gpu::raster::MsaaMode': {
+    'type': 'gpu::raster::MsaaMode',
+    'is_complete': True,
+    'valid': [
+      'gpu::raster::MsaaMode::kNoMSAA',
+      'gpu::raster::MsaaMode::kMSAA',
+      'gpu::raster::MsaaMode::kDMSAA',
     ],
   },
 }
@@ -189,15 +198,59 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'trace_level': 2,
   },
+  'WritePixelsINTERNAL': {
+    'decoder_func': 'DoWritePixelsINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'trace_level': 2,
+  },
+  'ReadbackARGBImagePixelsINTERNAL': {
+    'decoder_func': 'DoReadbackARGBImagePixelsINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'result': ['uint32_t'],
+    'trace_level': 2,
+  },
+  'ReadbackYUVImagePixelsINTERNAL': {
+    'decoder_func': 'DoReadbackYUVImagePixelsINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 16, # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'result': ['uint32_t'],
+    'trace_level': 2,
+  },
+  'ConvertYUVAMailboxesToRGBINTERNAL': {
+    'decoder_func': 'DoConvertYUVAMailboxesToRGBINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
+    'unit_test': False,
+    'trace_level': 2,
+  },
+  'ConvertRGBAToYUVAMailboxesINTERNAL': {
+    'decoder_func': 'DoConvertRGBAToYUVAMailboxesINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
+    'unit_test': False,
+    'trace_level': 2,
+  },
   'Finish': {
     'impl_func': False,
     'client_test': False,
     'decoder_func': 'DoFinish',
+    'unit_test': False,
     'trace_level': 1,
   },
   'Flush': {
     'impl_func': False,
     'decoder_func': 'DoFlush',
+    'unit_test': False,
     'trace_level': 1,
   },
   'GetError': {
@@ -255,9 +308,6 @@ _FUNCTION_INFO = {
   'GetQueryObjectui64vEXT': {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectui64v',
-  },
-  'ShallowFlushCHROMIUM': {
-    'type': 'NoCommand',
   },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',

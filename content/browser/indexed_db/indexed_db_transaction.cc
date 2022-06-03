@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -26,6 +27,26 @@
 namespace content {
 
 namespace {
+
+std::string WriteBlobToFileResultToString(
+    storage::mojom::WriteBlobToFileResult result) {
+  switch (result) {
+    case storage::mojom::WriteBlobToFileResult::kError:
+      return "Error";
+    case storage::mojom::WriteBlobToFileResult::kBadPath:
+      return "BadPath";
+    case storage::mojom::WriteBlobToFileResult::kInvalidBlob:
+      return "InvalidBlob";
+    case storage::mojom::WriteBlobToFileResult::kIOError:
+      return "IOError";
+    case storage::mojom::WriteBlobToFileResult::kTimestampError:
+      return "TimestampError";
+    case storage::mojom::WriteBlobToFileResult::kSuccess:
+      return "Success";
+  }
+  NOTREACHED();
+  return "";
+}
 
 const int64_t kInactivityTimeoutPeriodSeconds = 60;
 
@@ -265,7 +286,8 @@ void IndexedDBTransaction::EnsureBackingStoreTransactionBegun() {
 }
 
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
-    BlobWriteResult result) {
+    BlobWriteResult result,
+    storage::mojom::WriteBlobToFileResult error) {
   IDB_TRACE("IndexedDBTransaction::BlobWriteComplete");
   if (state_ == FINISHED)  // aborted
     return leveldb::Status::OK();
@@ -274,7 +296,10 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
   switch (result) {
     case BlobWriteResult::kFailure: {
       leveldb::Status status = Abort(IndexedDBDatabaseError(
-          blink::mojom::IDBException::kDataError, "Failed to write blobs."));
+          blink::mojom::IDBException::kDataError,
+          base::ASCIIToUTF16(base::StringPrintf(
+              "Failed to write blobs (%s)",
+              WriteBlobToFileResultToString(error).c_str()))));
       if (!status.ok())
         tear_down_callback_.Run(status);
       // The result is ignored.
@@ -337,10 +362,11 @@ leveldb::Status IndexedDBTransaction::Commit() {
     // to write.
     s = transaction_->CommitPhaseOne(base::BindOnce(
         [](base::WeakPtr<IndexedDBTransaction> transaction,
-           BlobWriteResult result) {
+           BlobWriteResult result,
+           storage::mojom::WriteBlobToFileResult error) {
           if (!transaction)
             return leveldb::Status::OK();
-          return transaction->BlobWriteComplete(result);
+          return transaction->BlobWriteComplete(result, error);
         },
         ptr_factory_.GetWeakPtr()));
   }
@@ -409,21 +435,12 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
   if (committed) {
     abort_task_stack_.clear();
 
-    // |observations_callback_| must be called before OnComplete to ensure
-    // consistency of callbacks at renderer.
-    if (!connection_changes_map_.empty()) {
-      if (database_)
-        database_->SendObservations(std::move(connection_changes_map_));
-      connection_changes_map_.clear();
-    }
     {
       IDB_TRACE1(
           "IndexedDBTransaction::CommitPhaseTwo.TransactionCompleteCallbacks",
           "txn.id", id());
       callbacks_->OnComplete(*this);
     }
-    if (!pending_observers_.empty() && connection_)
-      connection_->ActivatePendingObservers(std::move(pending_observers_));
     if (database_)
       database_->TransactionFinished(mode_, true);
     return s;
@@ -514,7 +531,8 @@ IndexedDBTransaction::RunTasks() {
   // Otherwise, start a timer in case the front-end gets wedged and
   // never requests further activity. Read-only transactions don't
   // block other transactions, so don't time those out.
-  if (mode_ != blink::mojom::IDBTransactionMode::ReadOnly &&
+  if (!HasPendingTasks() &&
+      mode_ != blink::mojom::IDBTransactionMode::ReadOnly &&
       state_ == STARTED) {
     timeout_timer_.Start(FROM_HERE, GetInactivityTimeout(),
                          base::BindOnce(&IndexedDBTransaction::Timeout,
@@ -525,13 +543,13 @@ IndexedDBTransaction::RunTasks() {
 }
 
 base::TimeDelta IndexedDBTransaction::GetInactivityTimeout() const {
-  return base::TimeDelta::FromSeconds(kInactivityTimeoutPeriodSeconds);
+  return base::Seconds(kInactivityTimeoutPeriodSeconds);
 }
 
 void IndexedDBTransaction::Timeout() {
-  leveldb::Status result = Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kTimeoutError,
-      base::ASCIIToUTF16("Transaction timed out due to inactivity.")));
+  leveldb::Status result = Abort(
+      IndexedDBDatabaseError(blink::mojom::IDBException::kTimeoutError,
+                             u"Transaction timed out due to inactivity."));
   if (!result.ok())
     tear_down_callback_.Run(result);
 }
@@ -553,45 +571,6 @@ void IndexedDBTransaction::CloseOpenCursors() {
   open_cursors_.clear();
   for (auto* cursor : open_cursors)
     cursor->Close();
-}
-
-void IndexedDBTransaction::AddPendingObserver(
-    int32_t observer_id,
-    const IndexedDBObserver::Options& options) {
-  DCHECK_NE(mode(), blink::mojom::IDBTransactionMode::VersionChange);
-  pending_observers_.push_back(std::make_unique<IndexedDBObserver>(
-      observer_id, object_store_ids_, options));
-}
-
-void IndexedDBTransaction::RemovePendingObservers(
-    const std::vector<int32_t>& pending_observer_ids) {
-  const auto& it = std::remove_if(
-      pending_observers_.begin(), pending_observers_.end(),
-      [&pending_observer_ids](const std::unique_ptr<IndexedDBObserver>& o) {
-        return base::Contains(pending_observer_ids, o->id());
-      });
-  if (it != pending_observers_.end())
-    pending_observers_.erase(it, pending_observers_.end());
-}
-
-void IndexedDBTransaction::AddObservation(
-    int32_t connection_id,
-    blink::mojom::IDBObservationPtr observation) {
-  auto it = connection_changes_map_.find(connection_id);
-  if (it == connection_changes_map_.end()) {
-    it = connection_changes_map_
-             .insert({connection_id, blink::mojom::IDBObserverChanges::New()})
-             .first;
-  }
-  it->second->observations.push_back(std::move(observation));
-}
-
-blink::mojom::IDBObserverChangesPtr*
-IndexedDBTransaction::GetPendingChangesForConnection(int32_t connection_id) {
-  auto it = connection_changes_map_.find(connection_id);
-  if (it != connection_changes_map_.end())
-    return &it->second;
-  return nullptr;
 }
 
 }  // namespace content

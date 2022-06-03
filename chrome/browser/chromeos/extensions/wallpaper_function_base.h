@@ -8,12 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
-class RefCountedBytes;
 class SequencedTaskRunner;
 }
 
@@ -69,10 +68,8 @@ class WallpaperFunctionBase : public ExtensionFunction {
   void OnFailure(const std::string& error);
 
   // Resize the image to |size|, encode it and save to |thumbnail_data_out|.
-  void GenerateThumbnail(
-      const gfx::ImageSkia& image,
-      const gfx::Size& size,
-      scoped_refptr<base::RefCountedBytes>* thumbnail_data_out);
+  std::vector<uint8_t> GenerateThumbnail(const gfx::ImageSkia& image,
+                                         const gfx::Size& size);
 
  private:
   virtual void OnWallpaperDecoded(const gfx::ImageSkia& wallpaper) = 0;

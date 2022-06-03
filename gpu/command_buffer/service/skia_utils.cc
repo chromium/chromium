@@ -4,22 +4,33 @@
 
 #include "gpu/command_buffer/service/skia_utils.h"
 
+#include "base/command_line.h"
 #include "base/logging.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "build/build_config.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_switches.h"
+#include "gpu/config/skia_limits.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
 
+#if defined(OS_ANDROID)
+#include "gpu/config/gpu_finch_features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_VULKAN)
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
 #endif
 
 namespace gpu {
@@ -42,6 +53,11 @@ void CleanupAfterSkiaFlush(void* context) {
 template <class T>
 void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
   DCHECK(sk_object && sk_object->unique());
+
+  if (context_state->context_lost())
+    return;
+  DCHECK(!context_state->gr_context()->abandoned());
+
   if (!context_state->GrContextIsVulkan())
     return;
 
@@ -49,7 +65,7 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
   auto* fence_helper =
       context_state->vk_context_provider()->GetDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
-      [](const sk_sp<GrContext>& gr_context, sk_sp<T> sk_object,
+      [](const sk_sp<GrDirectContext>& gr_context, sk_sp<T> sk_object,
          gpu::VulkanDeviceQueue* device_queue, bool is_lost) {},
       sk_ref_sp(context_state->gr_context()), std::move(sk_object)));
 #endif
@@ -57,15 +73,75 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
 
 }  // namespace
 
-GLuint GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
-                                   viz::ResourceFormat resource_format) {
+GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
+  // If you make any changes to the GrContext::Options here that could affect
+  // text rendering, make sure to match the capabilities initialized in
+  // GetCapabilities and ensuring these are also used by the
+  // PaintOpBufferSerializer.
+  GrContextOptions options;
+  size_t max_resource_cache_bytes;
+  size_t glyph_cache_max_texture_bytes;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            &glyph_cache_max_texture_bytes);
+  options.fDisableCoverageCountingPaths = true;
+  options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
+  // TODO(junov, csmartdalton): Find a way to control fInternalMultisampleCount
+  // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
+  // a texture atlas with sample count of 4 would be sufficient
+  options.fInternalMultisampleCount = 8;
+  if (type == GrContextType::kMetal)
+    options.fRuntimeProgramCacheSize = 1024;
+
+  options.fSuppressMipmapSupport =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMipmapGeneration);
+
+  return options;
+}
+
+GLuint GetGrGLBackendTextureFormat(
+    const gles2::FeatureInfo* feature_info,
+    viz::ResourceFormat resource_format,
+    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
   GLuint internal_format = gl::GetInternalFormat(
       version_info, viz::TextureStorageFormat(resource_format));
 
+  bool use_version_es2 = false;
+#if defined(OS_ANDROID)
+  use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
+#endif
+
+  // Use R8 and R16F when using later GLs where ALPHA8, LUMINANCE8, ALPHA16F and
+  // LUMINANCE16F are deprecated
+  if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
+    switch (internal_format) {
+      case GL_ALPHA8_EXT:
+      case GL_LUMINANCE8:
+        internal_format = GL_R8_EXT;
+        break;
+      case GL_ALPHA16F_EXT:
+      case GL_LUMINANCE16F_EXT:
+        internal_format = GL_R16F_EXT;
+        break;
+    }
+  }
+
+  // Map ETC1 to ETC2 type depending on conversion by skia
+  if (resource_format == viz::ResourceFormat::ETC1) {
+    GrGLFormat gr_gl_format =
+        gr_context_thread_safe
+            ->compressedBackendFormat(SkImage::kETC1_CompressionType)
+            .asGLFormat();
+    if (gr_gl_format == GrGLFormat::kCOMPRESSED_ETC1_RGB8) {
+      internal_format = GL_ETC1_RGB8_OES;
+    } else if (gr_gl_format == GrGLFormat::kCOMPRESSED_RGB8_ETC2) {
+      internal_format = GL_COMPRESSED_RGB8_ETC2;
+    }
+  }
+
   // We tell Skia to use es2 which does not have GL_R8_EXT
-  if (feature_info->gl_version_info().is_es3 &&
-      feature_info->workarounds().use_es2_for_oopr) {
+  if (feature_info->gl_version_info().is_es3 && use_version_es2) {
     if (internal_format == GL_R8_EXT)
       internal_format = GL_LUMINANCE8;
   }
@@ -78,6 +154,7 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
                          const gfx::Size& size,
                          GLuint service_id,
                          viz::ResourceFormat resource_format,
+                         sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
                          GrBackendTexture* gr_texture) {
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ARB &&
       target != GL_TEXTURE_EXTERNAL_OES) {
@@ -88,8 +165,8 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
   GrGLTextureInfo texture_info;
   texture_info.fID = service_id;
   texture_info.fTarget = target;
-  texture_info.fFormat =
-      GetGrGLBackendTextureFormat(feature_info, resource_format);
+  texture_info.fFormat = GetGrGLBackendTextureFormat(
+      feature_info, resource_format, gr_context_thread_safe);
   *gr_texture = GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo,
                                  texture_info);
   return true;
@@ -128,7 +205,13 @@ void AddVulkanCleanupTaskForSkiaFlush(
 void DeleteGrBackendTexture(SharedContextState* context_state,
                             GrBackendTexture* backend_texture) {
   DCHECK(backend_texture && backend_texture->isValid());
+
+  if (context_state->context_lost())
+    return;
+  DCHECK(!context_state->gr_context()->abandoned());
+
   if (!context_state->GrContextIsVulkan()) {
+    DCHECK(context_state->gr_context());
     context_state->gr_context()->deleteBackendTexture(
         std::move(*backend_texture));
     return;
@@ -138,11 +221,11 @@ void DeleteGrBackendTexture(SharedContextState* context_state,
   auto* fence_helper =
       context_state->vk_context_provider()->GetDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
-      [](const sk_sp<GrContext>& gr_context, GrBackendTexture backend_texture,
-         gpu::VulkanDeviceQueue* device_queue, bool is_lost) {
-        // If underlying Vulkan device is destroyed, gr_context should have been
-        // abandoned, the deleteBackendTexture() should be noop.
-        gr_context->deleteBackendTexture(std::move(backend_texture));
+      [](const sk_sp<GrDirectContext>& gr_context,
+         GrBackendTexture backend_texture, gpu::VulkanDeviceQueue* device_queue,
+         bool is_lost) {
+        if (!gr_context->abandoned())
+          gr_context->deleteBackendTexture(std::move(backend_texture));
       },
       sk_ref_sp(context_state->gr_context()), std::move(*backend_texture)));
 #endif
@@ -158,11 +241,39 @@ void DeleteSkSurface(SharedContextState* context_state,
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
+GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
+  DCHECK(image);
+  VkPhysicalDevice physical_device =
+      image->device_queue()->GetVulkanPhysicalDevice();
+  GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
+      physical_device, image->image_tiling(), image->ycbcr_info());
+  GrVkAlloc alloc;
+  alloc.fMemory = image->device_memory();
+  alloc.fOffset = 0;
+  alloc.fSize = image->device_size();
+  alloc.fFlags = 0;
+
+  bool is_protected = image->flags() & VK_IMAGE_CREATE_PROTECTED_BIT;
+  GrVkImageInfo image_info;
+  image_info.fImage = image->image();
+  image_info.fAlloc = alloc;
+  image_info.fImageTiling = image->image_tiling();
+  image_info.fImageLayout = image->image_layout();
+  image_info.fFormat = image->format();
+  image_info.fImageUsageFlags = image->usage();
+  image_info.fSampleCount = 1;
+  image_info.fLevelCount = 1;
+  image_info.fCurrentQueueFamily = image->queue_family_index();
+  image_info.fProtected = is_protected ? GrProtected::kYes : GrProtected::kNo;
+  image_info.fYcbcrConversionInfo = gr_ycbcr_info;
+
+  return image_info;
+}
 
 GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
-    const base::Optional<VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<VulkanYCbCrInfo>& ycbcr_info) {
   if (!ycbcr_info)
     return GrVkYcbcrConversionInfo();
 
@@ -196,17 +307,42 @@ GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
           ? VK_FILTER_LINEAR
           : VK_FILTER_NEAREST;
 
-  return GrVkYcbcrConversionInfo(
-      vk_format, ycbcr_info->external_format,
-      static_cast<VkSamplerYcbcrModelConversion>(
-          ycbcr_info->suggested_ycbcr_model),
-      static_cast<VkSamplerYcbcrRange>(ycbcr_info->suggested_ycbcr_range),
+  GrVkYcbcrConversionInfo gr_ycbcr_info;
+  gr_ycbcr_info.fFormat = vk_format;
+  gr_ycbcr_info.fExternalFormat = ycbcr_info->external_format;
+  gr_ycbcr_info.fYcbcrModel = static_cast<VkSamplerYcbcrModelConversion>(
+      ycbcr_info->suggested_ycbcr_model);
+  gr_ycbcr_info.fYcbcrRange =
+      static_cast<VkSamplerYcbcrRange>(ycbcr_info->suggested_ycbcr_range);
+  gr_ycbcr_info.fXChromaOffset =
       static_cast<VkChromaLocation>(ycbcr_info->suggested_xchroma_offset),
+  gr_ycbcr_info.fYChromaOffset =
       static_cast<VkChromaLocation>(ycbcr_info->suggested_ychroma_offset),
-      chroma_filter,
-      /*forceExplicitReconstruction=*/false, format_features);
+  gr_ycbcr_info.fChromaFilter = chroma_filter;
+  gr_ycbcr_info.fForceExplicitReconstruction = false;
+  gr_ycbcr_info.fFormatFeatures = format_features;
+
+  return gr_ycbcr_info;
 }
 
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+
+bool ShouldVulkanSyncCpuForSkiaSubmit(
+    viz::VulkanContextProvider* context_provider) {
+#if BUILDFLAG(ENABLE_VULKAN)
+  if (context_provider) {
+    const absl::optional<uint32_t>& sync_cpu_memory_limit =
+        context_provider->GetSyncCpuMemoryLimit();
+    if (sync_cpu_memory_limit.has_value()) {
+      uint64_t total_allocated_bytes = gpu::vma::GetTotalAllocatedMemory(
+          context_provider->GetDeviceQueue()->vma_allocator());
+      if (total_allocated_bytes > sync_cpu_memory_limit.value()) {
+        return true;
+      }
+    }
+  }
+#endif
+  return false;
+}
 
 }  // namespace gpu

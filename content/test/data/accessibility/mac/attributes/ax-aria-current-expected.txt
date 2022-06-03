@@ -1,0 +1,8 @@
+page.AXARIACurrent='page'
+step.AXARIACurrent='step'
+location.AXARIACurrent='location'
+date.AXARIACurrent='date'
+time.AXARIACurrent='time'
+true.AXARIACurrent='true'
+false.AXARIACurrent='false'
+none.AXARIACurrent=n/a

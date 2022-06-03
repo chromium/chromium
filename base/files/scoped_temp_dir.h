@@ -18,8 +18,8 @@
 // intervening calls to Delete or Take, or the calls will fail.
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace base {
 
@@ -27,6 +27,9 @@ class BASE_EXPORT ScopedTempDir {
  public:
   // No directory is owned/created initially.
   ScopedTempDir();
+
+  ScopedTempDir(ScopedTempDir&&) noexcept;
+  ScopedTempDir& operator=(ScopedTempDir&&);
 
   // Recursively delete path.
   ~ScopedTempDir();
@@ -62,8 +65,6 @@ class BASE_EXPORT ScopedTempDir {
 
  private:
   FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempDir);
 };
 
 }  // namespace base

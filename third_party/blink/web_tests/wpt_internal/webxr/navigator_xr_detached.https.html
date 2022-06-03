@@ -11,9 +11,10 @@
 // This behavior is not in the webxr spec, so this is an internal-only test.
 promise_test((t) => {
   var nav_xr = window.frames[0].navigator.xr;
+  const dom_exception = window.frames[0].DOMException;
   document.getElementById("subframe").remove();
-  return promise_rejects(t, "InvalidStateError", nav_xr.supportsSession('inline'))
-      .then(() => promise_rejects(t, "InvalidStateError", nav_xr.requestSession('inline')));
+  return promise_rejects_dom(t, "InvalidStateError", dom_exception, nav_xr.supportsSession('inline'))
+      .then(() => promise_rejects_dom(t, "InvalidStateError", dom_exception, nav_xr.requestSession('inline')));
 }, "Check that navigator.xr.supportsSession and navigator.xr.requestSession reject on a detached navigator.");
 
 </script>

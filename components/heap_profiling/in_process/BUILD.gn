@@ -1,0 +1,39 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/allocator/allocator.gni")
+
+source_set("in_process") {
+  # HeapProfilerController's dependencies are not compiled on iOS unless
+  # use_allocator_shim is true.
+  if (!is_ios || use_allocator_shim) {
+    sources = [
+      "heap_profiler_controller.cc",
+      "heap_profiler_controller.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/metrics",
+      "//components/metrics:child_call_stack_profile_builder",
+      "//components/services/heap_profiling/public/cpp:cpp",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # HeapProfilerController's dependencies are not compiled on iOS unless
+  # use_allocator_shim is true.
+  if (!is_ios || use_allocator_shim) {
+    sources = [ "heap_profiler_controller_unittest.cc" ]
+    deps = [
+      ":in_process",
+      "//base/test:test_support",
+      "//components/metrics",
+      "//components/metrics:child_call_stack_profile_builder",
+    ]
+  }
+}

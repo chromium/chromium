@@ -4,92 +4,18 @@
 
 #include "ui/gfx/x/x11_atom_cache.h"
 
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
+
+namespace x11 {
 
 namespace {
-
-struct {
-  const char* atom_name;
-  Atom atom_value;
-} const kPredefinedAtoms[] = {
-    // {"PRIMARY", XA_PRIMARY},
-    // {"SECONDARY", XA_SECONDARY},
-    // {"ARC", XA_ARC},
-    {"ATOM", XA_ATOM},
-    // {"BITMAP", XA_BITMAP},
-    {"CARDINAL", XA_CARDINAL},
-    // {"COLORMAP", XA_COLORMAP},
-    // {"CURSOR", XA_CURSOR},
-    // {"CUT_BUFFER0", XA_CUT_BUFFER0},
-    // {"CUT_BUFFER1", XA_CUT_BUFFER1},
-    // {"CUT_BUFFER2", XA_CUT_BUFFER2},
-    // {"CUT_BUFFER3", XA_CUT_BUFFER3},
-    // {"CUT_BUFFER4", XA_CUT_BUFFER4},
-    // {"CUT_BUFFER5", XA_CUT_BUFFER5},
-    // {"CUT_BUFFER6", XA_CUT_BUFFER6},
-    // {"CUT_BUFFER7", XA_CUT_BUFFER7},
-    // {"DRAWABLE", XA_DRAWABLE},
-    // {"FONT", XA_FONT},
-    // {"INTEGER", XA_INTEGER},
-    // {"PIXMAP", XA_PIXMAP},
-    // {"POINT", XA_POINT},
-    // {"RECTANGLE", XA_RECTANGLE},
-    // {"RESOURCE_MANAGER", XA_RESOURCE_MANAGER},
-    // {"RGB_COLOR_MAP", XA_RGB_COLOR_MAP},
-    // {"RGB_BEST_MAP", XA_RGB_BEST_MAP},
-    // {"RGB_BLUE_MAP", XA_RGB_BLUE_MAP},
-    // {"RGB_DEFAULT_MAP", XA_RGB_DEFAULT_MAP},
-    // {"RGB_GRAY_MAP", XA_RGB_GRAY_MAP},
-    // {"RGB_GREEN_MAP", XA_RGB_GREEN_MAP},
-    // {"RGB_RED_MAP", XA_RGB_RED_MAP},
-    {"STRING", XA_STRING},
-    // {"VISUALID", XA_VISUALID},
-    // {"WINDOW", XA_WINDOW},
-    // {"WM_COMMAND", XA_WM_COMMAND},
-    // {"WM_HINTS", XA_WM_HINTS},
-    // {"WM_CLIENT_MACHINE", XA_WM_CLIENT_MACHINE},
-    // {"WM_ICON_NAME", XA_WM_ICON_NAME},
-    // {"WM_ICON_SIZE", XA_WM_ICON_SIZE},
-    // {"WM_NAME", XA_WM_NAME},
-    // {"WM_NORMAL_HINTS", XA_WM_NORMAL_HINTS},
-    // {"WM_SIZE_HINTS", XA_WM_SIZE_HINTS},
-    // {"WM_ZOOM_HINTS", XA_WM_ZOOM_HINTS},
-    // {"MIN_SPACE", XA_MIN_SPACE},
-    // {"NORM_SPACE", XA_NORM_SPACE},
-    // {"MAX_SPACE", XA_MAX_SPACE},
-    // {"END_SPACE", XA_END_SPACE},
-    // {"SUPERSCRIPT_X", XA_SUPERSCRIPT_X},
-    // {"SUPERSCRIPT_Y", XA_SUPERSCRIPT_Y},
-    // {"SUBSCRIPT_X", XA_SUBSCRIPT_X},
-    // {"SUBSCRIPT_Y", XA_SUBSCRIPT_Y},
-    // {"UNDERLINE_POSITION", XA_UNDERLINE_POSITION},
-    // {"UNDERLINE_THICKNESS", XA_UNDERLINE_THICKNESS},
-    // {"STRIKEOUT_ASCENT", XA_STRIKEOUT_ASCENT},
-    // {"STRIKEOUT_DESCENT", XA_STRIKEOUT_DESCENT},
-    // {"ITALIC_ANGLE", XA_ITALIC_ANGLE},
-    // {"X_HEIGHT", XA_X_HEIGHT},
-    // {"QUAD_WIDTH", XA_QUAD_WIDTH},
-    // {"WEIGHT", XA_WEIGHT},
-    // {"POINT_SIZE", XA_POINT_SIZE},
-    // {"RESOLUTION", XA_RESOLUTION},
-    // {"COPYRIGHT", XA_COPYRIGHT},
-    // {"NOTICE", XA_NOTICE},
-    // {"FONT_NAME", XA_FONT_NAME},
-    // {"FAMILY_NAME", XA_FAMILY_NAME},
-    // {"FULL_NAME", XA_FULL_NAME},
-    // {"CAP_HEIGHT", XA_CAP_HEIGHT},
-    {"WM_CLASS", XA_WM_CLASS},
-    // {"WM_TRANSIENT_FOR", XA_WM_TRANSIENT_FOR},
-};
 
 constexpr const char* kAtomsToCache[] = {
     "ATOM_PAIR",
@@ -126,6 +52,7 @@ constexpr const char* kAtomsToCache[] = {
     "Enabled",
     "FAKE_SELECTION",
     "Full aspect",
+    "_GTK_FRAME_EXTENTS",
     "INCR",
     "KEYBOARD",
     "LOCK",
@@ -177,7 +104,6 @@ constexpr const char* kAtomsToCache[] = {
     "_MOTIF_WM_HINTS",
     "_NETSCAPE_URL",
     "_NET_ACTIVE_WINDOW",
-    "_NET_CLIENT_LIST_STACKING",
     "_NET_CURRENT_DESKTOP",
     "_NET_FRAME_EXTENTS",
     "_NET_SUPPORTED",
@@ -191,6 +117,7 @@ constexpr const char* kAtomsToCache[] = {
     "_NET_WM_ICON",
     "_NET_WM_MOVERESIZE",
     "_NET_WM_NAME",
+    "_NET_WM_OPAQUE_REGION",
     "_NET_WM_PID",
     "_NET_WM_PING",
     "_NET_WM_STATE",
@@ -207,6 +134,7 @@ constexpr const char* kAtomsToCache[] = {
     "_NET_WM_USER_TIME",
     "_NET_WM_WINDOW_OPACITY",
     "_NET_WM_WINDOW_TYPE",
+    "_NET_WM_WINDOW_TYPE_DIALOG",
     "_NET_WM_WINDOW_TYPE_DND",
     "_NET_WM_WINDOW_TYPE_MENU",
     "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -227,6 +155,7 @@ constexpr const char* kAtomsToCache[] = {
     "chromium/x-web-custom-data",
     "chromium/x-webkit-paste",
     "image/png",
+    "image/svg+xml",
     "marker_event",
     "scaling mode",
     "text/html",
@@ -235,15 +164,16 @@ constexpr const char* kAtomsToCache[] = {
     "text/rtf",
     "text/uri-list",
     "text/x-moz-url",
+    "xwayland-pointer",
+    "xwayland-keyboard",
+    "xwayland-touch",
 };
 
 constexpr int kCacheCount = base::size(kAtomsToCache);
 
 }  // namespace
 
-namespace gfx {
-
-XAtom GetAtom(const char* name) {
+Atom GetAtom(const std::string& name) {
   return X11AtomCache::GetInstance()->GetAtom(name);
 }
 
@@ -251,38 +181,43 @@ X11AtomCache* X11AtomCache::GetInstance() {
   return base::Singleton<X11AtomCache>::get();
 }
 
-X11AtomCache::X11AtomCache() : xdisplay_(gfx::GetXDisplay()) {
-  for (const auto& predefined_atom : kPredefinedAtoms)
-    cached_atoms_[predefined_atom.atom_name] = predefined_atom.atom_value;
+X11AtomCache::X11AtomCache() : connection_(Connection::Get()) {
+  // Clipboard formats are keyed on their format string (eg. "STRING",
+  // "UTF8_STRING", "image/png").  Plumbing through x11::Atoms instead would be
+  // tricky, so set "STRING" here to prevent hitting the DCHECK_GT() in
+  // GetAtom().
+  cached_atoms_["STRING"] = x11::Atom::STRING;
 
-  // Grab all the atoms we need now to minimize roundtrips to the X11 server.
-  std::vector<XAtom> cached_atoms(kCacheCount);
-  XInternAtoms(xdisplay_, const_cast<char**>(kAtomsToCache), kCacheCount, False,
-               cached_atoms.data());
-
-  for (int i = 0; i < kCacheCount; ++i)
-    cached_atoms_[kAtomsToCache[i]] = cached_atoms[i];
+  std::vector<Future<InternAtomReply>> requests;
+  requests.reserve(kCacheCount);
+  for (const char* name : kAtomsToCache)
+    requests.push_back(
+        connection_->InternAtom(InternAtomRequest{.name = name}));
+  // Flush so all requests are sent before waiting on any replies.
+  connection_->Flush();
+  for (size_t i = 0; i < kCacheCount; ++i) {
+    if (auto response = requests[i].Sync())
+      cached_atoms_[kAtomsToCache[i]] = static_cast<Atom>(response->atom);
+  }
 }
 
-X11AtomCache::~X11AtomCache() {}
+X11AtomCache::~X11AtomCache() = default;
 
-XAtom X11AtomCache::GetAtom(const char* name) const {
+Atom X11AtomCache::GetAtom(const std::string& name) const {
   const auto it = cached_atoms_.find(name);
   if (it != cached_atoms_.end())
     return it->second;
 
-  // XInternAtom returns None on failure. Source:
-  // https://www.x.org/releases/X11R7.5/doc/man/man3/XInternAtom.3.html
-  XAtom atom = XInternAtom(xdisplay_, name, False);
-  if (atom == None) {
-    static int error_count = 0;
-    ++error_count;
-    // TODO(https://crbug.com/1000919): Evaluate and remove UMA metrics after
-    // enough data is gathered.
-    base::UmaHistogramCounts100("X11.XInternAtomFailure", error_count);
+  Atom atom = Atom::None;
+  if (auto response =
+          connection_->InternAtom(InternAtomRequest{.name = name}).Sync()) {
+    atom = response->atom;
+    DCHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
+        << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
+        << "\")";
+    cached_atoms_.emplace(name, atom);
   }
-  cached_atoms_.emplace(name, atom);
   return atom;
 }
 
-}  // namespace gfx
+}  // namespace x11

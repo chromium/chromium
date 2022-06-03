@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace base {
 class CommandLine;
@@ -19,6 +18,8 @@ class Time;
 }  // namespace base
 
 namespace updater {
+
+enum class UpdaterScope;
 
 // This class wraps a scheduled task and expose an API to parametrize a task
 // before calling |Register|, or to verify its existence, or delete it.
@@ -57,7 +58,7 @@ class TaskScheduler {
   struct TaskExecAction {
     base::FilePath application_path;
     base::FilePath working_dir;
-    base::string16 arguments;
+    std::wstring arguments;
   };
 
   // Detailed description of a scheduled task. This type is returned by the
@@ -70,10 +71,10 @@ class TaskScheduler {
     TaskInfo& operator=(const TaskInfo&);
     TaskInfo& operator=(TaskInfo&&);
 
-    base::string16 name;
+    std::wstring name;
 
     // Description of the task.
-    base::string16 description;
+    std::wstring description;
 
     // A scheduled task can have more than one action associated with it and
     // actions can be of types other than executables (for example, sending
@@ -85,22 +86,18 @@ class TaskScheduler {
     uint32_t logon_type = 0;
   };
 
-  // Control the lifespan of static data for the TaskScheduler. |Initialize|
-  // must be called before the first call to |CreateInstance|, and not other
-  // methods can be called after |Terminate| was called (unless |Initialize| is
-  // called again). |Initialize| can't be called out of balance with
-  // |Terminate|. |Terminate| can be called any number of times.
-  static bool Initialize();
-  static void Terminate();
-
   static std::unique_ptr<TaskScheduler> CreateInstance();
-  virtual ~TaskScheduler() {}
+
+  TaskScheduler(const TaskScheduler&) = delete;
+  TaskScheduler& operator=(const TaskScheduler&) = delete;
+  virtual ~TaskScheduler() = default;
 
   // Identify whether the task is registered or not.
   virtual bool IsTaskRegistered(const wchar_t* task_name) = 0;
 
   // Return the time of the next schedule run for the given task name. Return
   // false on failure.
+  // `next_run_time` is returned as local time on the current system, not UTC.
   virtual bool GetNextTaskRunTime(const wchar_t* task_name,
                                   base::Time* next_run_time) = 0;
 
@@ -116,15 +113,19 @@ class TaskScheduler {
   virtual bool IsTaskEnabled(const wchar_t* task_name) = 0;
 
   // List all currently registered scheduled tasks.
-  virtual bool GetTaskNameList(std::vector<base::string16>* task_names) = 0;
+  virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
 
   // Return detailed information about a task. Return true if no errors were
   // encountered. On error, the struct is left unmodified.
   virtual bool GetTaskInfo(const wchar_t* task_name, TaskInfo* info) = 0;
 
+  // Returns true if the task folder specified by |folder_name| exists.
+  virtual bool HasTaskFolder(const wchar_t* folder_name) = 0;
+
   // Register the task to run the specified application and using the given
   // |trigger_type|.
-  virtual bool RegisterTask(const wchar_t* task_name,
+  virtual bool RegisterTask(UpdaterScope scope,
+                            const wchar_t* task_name,
                             const wchar_t* task_description,
                             const base::CommandLine& run_command,
                             TriggerType trigger_type,
@@ -132,8 +133,6 @@ class TaskScheduler {
 
  protected:
   TaskScheduler();
-
-  DISALLOW_COPY_AND_ASSIGN(TaskScheduler);
 };
 
 }  // namespace updater

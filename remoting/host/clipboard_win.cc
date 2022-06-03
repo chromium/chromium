@@ -6,11 +6,14 @@
 
 #include <windows.h>
 
+#include <memory>
+#include <string>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/message_window.h"
@@ -44,8 +47,7 @@ class ScopedClipboard {
 
   bool Init(HWND owner) {
     const int kMaxAttemptsToOpenClipboard = 5;
-    const base::TimeDelta kSleepTimeBetweenAttempts =
-        base::TimeDelta::FromMilliseconds(5);
+    const base::TimeDelta kSleepTimeBetweenAttempts = base::Milliseconds(5);
 
     if (opened_) {
       NOTREACHED();
@@ -104,6 +106,10 @@ namespace remoting {
 class ClipboardWin : public Clipboard {
  public:
   ClipboardWin();
+
+  ClipboardWin(const ClipboardWin&) = delete;
+  ClipboardWin& operator=(const ClipboardWin&) = delete;
+
   ~ClipboardWin() override;
 
   void Start(
@@ -123,8 +129,6 @@ class ClipboardWin : public Clipboard {
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
   // Used to subscribe to WM_CLIPBOARDUPDATE messages.
   std::unique_ptr<base::win::MessageWindow> window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardWin);
 };
 
 ClipboardWin::ClipboardWin() {}
@@ -140,9 +144,9 @@ void ClipboardWin::Start(
 
   client_clipboard_.swap(client_clipboard);
 
-  window_.reset(new base::win::MessageWindow());
-  if (!window_->Create(base::Bind(&ClipboardWin::HandleMessage,
-                                  base::Unretained(this)))) {
+  window_ = std::make_unique<base::win::MessageWindow>();
+  if (!window_->Create(base::BindRepeating(&ClipboardWin::HandleMessage,
+                                           base::Unretained(this)))) {
     LOG(ERROR) << "Couldn't create clipboard window.";
     window_.reset();
     return;
@@ -161,12 +165,12 @@ void ClipboardWin::InjectClipboardEvent(
   // Currently we only handle UTF-8 text.
   if (event.mime_type().compare(kMimeTypeTextUtf8) != 0)
     return;
-  if (!StringIsUtf8(event.data().c_str(), event.data().length())) {
+  if (!base::IsStringUTF8AllowingNoncharacters(event.data())) {
     LOG(ERROR) << "ClipboardEvent: data is not UTF-8 encoded.";
     return;
   }
 
-  base::string16 text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
+  std::u16string text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
 
   ScopedClipboard clipboard;
   if (!clipboard.Init(window_->hwnd())) {
@@ -196,7 +200,7 @@ void ClipboardWin::OnClipboardUpdate() {
   DCHECK(window_);
 
   if (::IsClipboardFormatAvailable(CF_UNICODETEXT)) {
-    base::string16 text;
+    std::wstring text;
     // Add a scope, so that we keep the clipboard open for as short a time as
     // possible.
     {
@@ -223,7 +227,7 @@ void ClipboardWin::OnClipboardUpdate() {
 
     protocol::ClipboardEvent event;
     event.set_mime_type(kMimeTypeTextUtf8);
-    event.set_data(ReplaceCrLfByLf(base::UTF16ToUTF8(text)));
+    event.set_data(ReplaceCrLfByLf(base::WideToUTF8(text)));
 
     if (client_clipboard_.get()) {
       client_clipboard_->InjectClipboardEvent(event);

@@ -4,15 +4,16 @@
 
 #include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 
-#include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -33,13 +34,12 @@ PresentationAvailability::PresentationAvailability(
     ExecutionContext* execution_context,
     const WTF::Vector<KURL>& urls,
     bool value)
-    : ContextLifecycleStateObserver(execution_context),
-      PageVisibilityObserver(To<Document>(execution_context)->GetPage()),
+    : ExecutionContextLifecycleStateObserver(execution_context),
+      PageVisibilityObserver(
+          To<LocalDOMWindow>(execution_context)->GetFrame()->GetPage()),
       urls_(urls),
       value_(value),
-      state_(State::kActive) {
-  DCHECK(execution_context->IsDocument());
-}
+      state_(State::kActive) {}
 
 PresentationAvailability::~PresentationAvailability() = default;
 
@@ -48,7 +48,7 @@ const AtomicString& PresentationAvailability::InterfaceName() const {
 }
 
 ExecutionContext* PresentationAvailability::GetExecutionContext() const {
-  return ContextLifecycleStateObserver::GetExecutionContext();
+  return ExecutionContextLifecycleStateObserver::GetExecutionContext();
 }
 
 void PresentationAvailability::AddedEventListener(
@@ -84,7 +84,7 @@ void PresentationAvailability::ContextLifecycleStateChanged(
     SetState(State::kSuspended);
 }
 
-void PresentationAvailability::ContextDestroyed(ExecutionContext*) {
+void PresentationAvailability::ContextDestroyed() {
   SetState(State::kInactive);
 }
 
@@ -106,7 +106,7 @@ void PresentationAvailability::UpdateListening() {
     return;
 
   if (state_ == State::kActive &&
-      (To<Document>(GetExecutionContext())->IsPageVisible()))
+      (To<LocalDOMWindow>(GetExecutionContext())->document()->IsPageVisible()))
     controller->GetAvailabilityState()->AddObserver(this);
   else
     controller->GetAvailabilityState()->RemoveObserver(this);
@@ -120,10 +120,10 @@ bool PresentationAvailability::value() const {
   return value_;
 }
 
-void PresentationAvailability::Trace(blink::Visitor* visitor) {
+void PresentationAvailability::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
-  ContextLifecycleStateObserver::Trace(visitor);
+  ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
 }  // namespace blink

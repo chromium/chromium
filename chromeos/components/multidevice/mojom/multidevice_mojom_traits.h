@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
-#include "chromeos/components/multidevice/mojom/multidevice_types.mojom.h"
+#include "chromeos/components/multidevice/mojom/multidevice_types.mojom-shared.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
@@ -56,6 +56,8 @@ class StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
                         chromeos::multidevice::SoftwareFeatureState>&
   software_features(const chromeos::multidevice::RemoteDevice& remote_device);
   static const std::vector<chromeos::multidevice::BeaconSeed>& beacon_seeds(
+      const chromeos::multidevice::RemoteDevice& remote_device);
+  static const std::string& bluetooth_public_address(
       const chromeos::multidevice::RemoteDevice& remote_device);
 
   static bool Read(chromeos::multidevice::mojom::RemoteDeviceDataView in,

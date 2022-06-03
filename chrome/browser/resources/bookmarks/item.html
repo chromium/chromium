@@ -15,15 +15,40 @@
     background-color: var(--highlight-color);
   }
 
-  :host([is-selected-item_]) cr-icon-button {
-    --cr-icon-button-fill-color-focus: var(--highlight-color);
+  :host-context([enable-branding-update]):host {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+  }
+
+  :host-context([enable-branding-update]):host([is-selected-item_]) {
+    --iron-icon-fill-color: var(--google-blue-600);
   }
 
   @media (prefers-color-scheme: dark) {
     :host([is-selected-item_]),
     :host([is-selected-item_]) .folder-icon {
+      --cr-icon-button-focus-outline-color: white;
       color: var(--google-grey-refresh-700);
     }
+
+    :host-context([enable-branding-update]):host {
+      --iron-icon-fill-color: var(--google-grey-refresh-500);
+    }
+
+    :host-context([enable-branding-update]):host([is-selected-item_]) {
+      --iron-icon-fill-color: black;
+    }
+  }
+
+<if expr="is_macosx">
+  .folder-icon {
+    margin: 2px;
+  }
+</if>
+
+  #website-text {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
   }
 
   #website-title {
@@ -87,17 +112,21 @@
   }
 </style>
 <div id="icon"></div>
-<div id="website-title" class="elided-text" title="[[item_.title]]">
-  [[item_.title]]
+<div id="website-text" role="gridcell">
+  <div id="website-title" class="elided-text" title="[[item_.title]]">
+    [[item_.title]]
+  </div>
+  <div id="website-url" class="elided-text" title="[[getItemUrl_(item_)]]">
+    [[getItemUrl_(item_)]]
+  </div>
 </div>
-<div id="website-url" class="elided-text" title="[[item_.url]]">
-  [[item_.url]]
+<div role="gridcell">
+  <cr-icon-button class="icon-more-vert"
+      id="menuButton"
+      tabindex="[[ironListTabIndex]]"
+      title="$i18n{moreActionsButtonTitle}"
+      aria-label$="[[getButtonAriaLabel_(item_, isSelectedItem_,
+          isMultiSelect_)]]"
+      on-click="onMenuButtonClick_"
+      aria-haspopup="menu"></cr-icon-button>
 </div>
-<cr-icon-button class="icon-more-vert"
-    id="menuButton"
-    tabindex="[[ironListTabIndex]]"
-    title="$i18n{moreActionsButtonTitle}"
-    aria-label$="[[getButtonAriaLabel_(item_, isSelectedItem_,
-        isMultiSelect_)]]"
-    on-click="onMenuButtonClick_"
-    aria-haspopup="menu"></cr-icon-button>

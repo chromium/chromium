@@ -5,11 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 
-#include <vector>
-
-#include "base/macros.h"
-#include "base/strings/string16.h"
-
 namespace content {
 class BrowserContext;
 }
@@ -27,11 +22,8 @@ class ExtensionErrorUI {
     // Get the BrowserContext associated with this UI.
     virtual content::BrowserContext* GetContext() = 0;
 
-    // Get the set of external extensions to warn the user about.
-    virtual const ExtensionSet& GetExternalExtensions() = 0;
-
-    // Get the set of blacklisted extensions to warn the user about.
-    virtual const ExtensionSet& GetBlacklistedExtensions() = 0;
+    // Get the set of blocklisted extensions to warn the user about.
+    virtual const ExtensionSet& GetBlocklistedExtensions() = 0;
 
     // Handle the user clicking to get more details on the extension alert.
     virtual void OnAlertDetails() = 0;

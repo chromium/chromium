@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "event_rewriter_delegate_impl\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+  "event_rewriter_unittest\.cc": [
+    "+device/udev_linux/fake_udev_loader.h",
+    "+ui/message_center/fake_message_center.h",
+  ]
+}

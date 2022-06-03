@@ -4,16 +4,14 @@
 #
 # Fuzzing Infrastructure Tests
 
-import("//testing/test.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 
 # TODO(crbug.com/906751): Get the tests working on Windows. Disable them for now
-# becaue they cause the Windows clang ToT builder to fail.
+# because they cause the Windows clang ToT builder to fail.
 if (!is_win) {
   test("libfuzzer_tests") {
-    sources = [
-      "fuzzer_launcher_test.cc",
-    ]
+    sources = [ "fuzzer_launcher_test.cc" ]
     deps = [
       ":test_config_and_dict",
       ":test_config_and_seed_corpus",
@@ -34,17 +32,13 @@ if (!is_win) {
 }
 
 fuzzer_test("test_dict_only") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   dict = "test.dict"
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
 
 fuzzer_test("test_config_only") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   libfuzzer_options = [
     "some_test_option=test_value",
     "max_len=1024",
@@ -53,9 +47,7 @@ fuzzer_test("test_config_only") {
 }
 
 fuzzer_test("test_config_and_dict") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   dict = "test.dict"
   libfuzzer_options = [
     "max_len=random(1337, 31337)",
@@ -66,9 +58,7 @@ fuzzer_test("test_config_and_dict") {
 }
 
 fuzzer_test("test_config_and_seed_corpus") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   seed_corpus = "test_corpus"
   libfuzzer_options = [
     "some_test_option=test_value",
@@ -78,9 +68,7 @@ fuzzer_test("test_config_and_seed_corpus") {
 }
 
 fuzzer_test("test_config_and_seed_corpuses") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   seed_corpuses = [
     "test_corpus",
     "test_corpus_2",
@@ -93,27 +81,17 @@ fuzzer_test("test_config_and_seed_corpuses") {
 }
 
 fuzzer_test("test_dict_from_subdir") {
-  sources = [
-    "../fuzzers/empty_fuzzer.cc",
-  ]
+  sources = [ "../fuzzers/empty_fuzzer.cc" ]
   dict = "dicts_subdir/test_subdir.dict"
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
 
 copy("check_fuzzer_config") {
-  sources = [
-    "check_fuzzer_config.py",
-  ]
-  outputs = [
-    "$root_build_dir/check_fuzzer_config.py",
-  ]
+  sources = [ "check_fuzzer_config.py" ]
+  outputs = [ "$root_build_dir/check_fuzzer_config.py" ]
 }
 
 copy("check_seed_corpus_archive") {
-  sources = [
-    "check_seed_corpus_archive.py",
-  ]
-  outputs = [
-    "$root_build_dir/check_seed_corpus_archive.py",
-  ]
+  sources = [ "check_seed_corpus_archive.py" ]
+  outputs = [ "$root_build_dir/check_seed_corpus_archive.py" ]
 }

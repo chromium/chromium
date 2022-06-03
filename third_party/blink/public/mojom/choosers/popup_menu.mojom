@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/text_direction.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Struct for information about entries in an HTML select popup menu.
+struct MenuItem {
+  enum Type { kOption, kCheckableOption, kGroup, kSeparator, kSubMenu };
+
+  string? label;
+  string? tool_tip;
+  Type type = kOption;
+  uint32 action = 0;
+  mojo_base.mojom.TextDirection text_direction =
+      mojo_base.mojom.TextDirection.LEFT_TO_RIGHT;
+  bool has_text_direction_override = false;
+  bool enabled = false;
+  bool checked = false;
+};
+
+// Interface to be sent the action of the popup menu.
+interface PopupMenuClient {
+  // Should be called when a set of indices have been selected.
+  DidAcceptIndices(array<int32> indices);
+
+  // Should be called when the popup menu was discarded (closed without a
+  // selection).
+  DidCancel();
+};

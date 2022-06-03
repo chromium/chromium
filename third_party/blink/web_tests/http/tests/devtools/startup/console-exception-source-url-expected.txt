@@ -1,8 +1,0 @@
-Tests that when exception happens before inspector is open source url is correctly shown in console.
-
-foo2.js:1 Uncaught ReferenceError: FAIL is not defined
-    at foo (foo2.js:1)
-    at onload (console-exception-source-url.html:10)
-    at onload (console-exception-source-url.html:14)
-TEST COMPLETE
-

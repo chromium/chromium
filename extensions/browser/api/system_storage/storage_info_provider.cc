@@ -4,8 +4,6 @@
 
 #include "extensions/browser/api/system_storage/storage_info_provider.h"
 
-#include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -18,23 +16,6 @@ namespace extensions {
 
 using content::BrowserThread;
 using api::system_storage::StorageUnitInfo;
-using api::system_storage::STORAGE_UNIT_TYPE_FIXED;
-using api::system_storage::STORAGE_UNIT_TYPE_REMOVABLE;
-
-namespace systeminfo {
-
-void BuildStorageUnitInfo(const StorageInfo& info, StorageUnitInfo* unit) {
-  unit->id = StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
-      info.device_id());
-  unit->name = base::UTF16ToUTF8(info.GetDisplayName(false));
-  // TODO(hmin): Might need to take MTP device into consideration.
-  unit->type = StorageInfo::IsRemovableDevice(info.device_id())
-                   ? STORAGE_UNIT_TYPE_REMOVABLE
-                   : STORAGE_UNIT_TYPE_FIXED;
-  unit->capacity = static_cast<double>(info.total_size_in_bytes());
-}
-
-}  // namespace systeminfo
 
 // Static member intialization.
 base::LazyInstance<scoped_refptr<StorageInfoProvider>>::DestructorAtExit
@@ -58,12 +39,13 @@ void StorageInfoProvider::PrepareQueryOnUIThread() {
 }
 
 void StorageInfoProvider::InitializeProvider(
-    const base::Closure& do_query_info_callback) {
+    base::OnceClosure do_query_info_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Register the |do_query_info_callback| callback to StorageMonitor.
   // See the comments of StorageMonitor::EnsureInitialized about when the
   // callback gets run.
-  StorageMonitor::GetInstance()->EnsureInitialized(do_query_info_callback);
+  StorageMonitor::GetInstance()->EnsureInitialized(
+      std::move(do_query_info_callback));
 }
 
 bool StorageInfoProvider::QueryInfo() {

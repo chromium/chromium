@@ -11,10 +11,6 @@ import test_util
 
 def main(argv):
   options = webdriver.ChromeOptions()
-  # Add option for enrolling to the dev DMServer
-  options.add_argument(
-      "device-management-url=https://crosman-qa.sandbox.google.com/devicemanagement/data/api"
-  )
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
   driver = test_util.create_chrome_webdriver(chrome_options=options)
 
@@ -26,12 +22,12 @@ def main(argv):
     policy_url = "chrome://policy"
     driver.get(policy_url)
     driver.find_element_by_id('reload-policies').click
-    print driver.find_element_by_class_name('legend').text
-    print driver.find_element_by_class_name('machine-enrollment-name').text
-    print driver.find_element_by_class_name('machine-enrollment-token').text
-    print driver.find_element_by_class_name('status').text
+    print(driver.find_element_by_class_name('legend').text)
+    print(driver.find_element_by_class_name('machine-enrollment-name').text)
+    print(driver.find_element_by_class_name('machine-enrollment-token').text)
+    print(driver.find_element_by_class_name('status').text)
   except Exception as error:
-    print error
+    print(error)
   finally:
     driver.quit()
 

@@ -27,14 +27,12 @@ SecureChannelFactory::~SecureChannelFactory() {
   DCHECK(channel_authenticators_.empty());
 }
 
-void SecureChannelFactory::CreateChannel(
-    const std::string& name,
-    const ChannelCreatedCallback& callback) {
+void SecureChannelFactory::CreateChannel(const std::string& name,
+                                         ChannelCreatedCallback callback) {
   DCHECK(!callback.is_null());
   channel_factory_->CreateChannel(
-      name,
-      base::Bind(&SecureChannelFactory::OnBaseChannelCreated,
-                 base::Unretained(this), name, callback));
+      name, base::BindOnce(&SecureChannelFactory::OnBaseChannelCreated,
+                           base::Unretained(this), name, std::move(callback)));
 }
 
 void SecureChannelFactory::CancelChannelCreation(
@@ -50,10 +48,10 @@ void SecureChannelFactory::CancelChannelCreation(
 
 void SecureChannelFactory::OnBaseChannelCreated(
     const std::string& name,
-    const ChannelCreatedCallback& callback,
+    ChannelCreatedCallback callback,
     std::unique_ptr<P2PStreamSocket> socket) {
   if (!socket) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -62,13 +60,13 @@ void SecureChannelFactory::OnBaseChannelCreated(
   channel_authenticators_[name] = channel_authenticator;
   channel_authenticator->SecureAndAuthenticate(
       std::move(socket),
-      base::Bind(&SecureChannelFactory::OnSecureChannelCreated,
-                 base::Unretained(this), name, callback));
+      base::BindOnce(&SecureChannelFactory::OnSecureChannelCreated,
+                     base::Unretained(this), name, std::move(callback)));
 }
 
 void SecureChannelFactory::OnSecureChannelCreated(
     const std::string& name,
-    const ChannelCreatedCallback& callback,
+    ChannelCreatedCallback callback,
     int error,
     std::unique_ptr<P2PStreamSocket> socket) {
   DCHECK((socket && error == net::OK) || (!socket && error != net::OK));
@@ -78,7 +76,7 @@ void SecureChannelFactory::OnSecureChannelCreated(
   delete it->second;
   channel_authenticators_.erase(it);
 
-  callback.Run(std::move(socket));
+  std::move(callback).Run(std::move(socket));
 }
 
 }  // namespace protocol

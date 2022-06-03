@@ -97,11 +97,6 @@ public class InstanceIDWithSubtype {
         return mInstanceID.getToken(authorizedEntity, scope);
     }
 
-    public String getToken(String authorizedEntity, String scope, Bundle extras)
-            throws IOException {
-        return mInstanceID.getToken(authorizedEntity, scope, extras);
-    }
-
     /** Fake subclasses can set {@link #sFakeFactoryForTesting} to an implementation of this. */
     @VisibleForTesting
     public interface FakeFactory {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gesture_detector.h"
@@ -17,9 +16,9 @@
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 class Transform;
@@ -39,6 +38,10 @@ class VrController : public PlatformController {
  public:
   // Controller API entry point.
   explicit VrController(gvr::GvrApi* gvr_api);
+
+  VrController(const VrController&) = delete;
+  VrController& operator=(const VrController&) = delete;
+
   ~VrController() override;
 
   // Must be called when the Activity gets OnResume().
@@ -122,8 +125,6 @@ class VrController : public PlatformController {
   int64_t last_timestamp_nanos_ = 0;
 
   float alpha_value_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(VrController);
 };
 
 }  // namespace vr

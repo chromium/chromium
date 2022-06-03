@@ -4,8 +4,8 @@
 
 #include "content/public/test/test_frame_navigation_observer.h"
 
-#include "content/browser/frame_host/navigation_entry_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,12 +24,9 @@ RenderFrameHostImpl* ToRenderFrameHostImpl(const ToRenderFrameHost& frame) {
 TestFrameNavigationObserver::TestFrameNavigationObserver(
     const ToRenderFrameHost& adapter)
     : WebContentsObserver(
-          ToRenderFrameHostImpl(adapter)->delegate()->GetAsWebContents()),
-      frame_tree_node_id_(ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()),
-      navigation_started_(false),
-      has_committed_(false),
-      wait_for_commit_(false),
-      last_navigation_succeeded_(false) {
+          WebContents::FromRenderFrameHost(ToRenderFrameHostImpl(adapter))),
+      frame_tree_node_id_(
+          ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -54,8 +51,7 @@ void TestFrameNavigationObserver::WaitForCommit() {
 void TestFrameNavigationObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   last_navigation_succeeded_ = false;
-  if (!navigation_handle->IsSameDocument() &&
-      navigation_handle->GetFrameTreeNodeId() == frame_tree_node_id_) {
+  if (navigation_handle->GetFrameTreeNodeId() == frame_tree_node_id_) {
     navigation_started_ = true;
     has_committed_ = false;
   }
@@ -67,6 +63,7 @@ void TestFrameNavigationObserver::DidFinishNavigation(
     return;
 
   last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
+  last_net_error_code_ = navigation_handle->GetNetErrorCode();
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsErrorPage() ||
       navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {

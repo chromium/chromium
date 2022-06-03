@@ -4,8 +4,8 @@
 
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 

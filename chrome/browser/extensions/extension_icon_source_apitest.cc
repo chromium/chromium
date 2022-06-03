@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -11,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -18,14 +18,7 @@
 
 using ExtensionIconSourceTest = extensions::ExtensionApiTest;
 
-// Times out on Mac and Win. http://crbug.com/238705
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_IconsLoaded DISABLED_IconsLoaded
-#else
-#define MAYBE_IconsLoaded IconsLoaded
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoaded) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoaded) {
   base::FilePath basedir = test_data_dir_.AppendASCII("icons");
   ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_with_permission")));
   ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_no_permission")));
@@ -33,9 +26,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoaded) {
 
   // Test that the icons are loaded and that the chrome://extension-icon
   // parameters work correctly.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html"));
+      GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html")));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -44,9 +37,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoaded) {
 
   // Verify that the an extension can't load chrome://extension-icon icons
   // without the management permission.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html"));
+      GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html")));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -58,9 +51,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
   std::string result;
 
   // Test that navigation to an invalid url works.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("chrome://extension-icon/invalid"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://extension-icon/invalid")));
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -69,19 +61,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
   EXPECT_EQ(result, "invalid (96\xC3\x97""96)");
 }
 
-// Times out on Mac and Win. http://crbug.com/238705
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_IconsLoadedIncognito DISABLED_IconsLoadedIncognito
-#else
-#define MAYBE_IconsLoadedIncognito IconsLoadedIncognito
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoadedIncognito) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoadedIncognito) {
   base::FilePath basedir = test_data_dir_.AppendASCII("icons");
-  ASSERT_TRUE(LoadExtensionIncognito(
-      basedir.AppendASCII("extension_with_permission")));
-  ASSERT_TRUE(LoadExtensionIncognito(
-      basedir.AppendASCII("extension_no_permission")));
+  ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_with_permission"),
+                            {.allow_in_incognito = true}));
+  ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_no_permission"),
+                            {.allow_in_incognito = true}));
   std::string result;
 
   // Test that the icons are loaded and that the chrome://extension-icon

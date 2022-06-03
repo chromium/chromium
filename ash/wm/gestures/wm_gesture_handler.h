@@ -6,8 +6,8 @@
 #define ASH_WM_GESTURES_WM_GESTURE_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ScrollEvent;
@@ -15,9 +15,10 @@ class ScrollEvent;
 
 namespace ash {
 
-// This handles 3-finger touchpad scroll events to enter/exit overview mode and
-// move the overview highlight if it is visible. This class also handles
-// 4-finger horizontal scrolls to switch desks.
+// This handles the following interactions:
+//   - 3-finger touchpad scroll events to enter/exit overview mode and move the
+//   overview highlight if it is visible.
+//   - 4-finger horizontal scrolls to switch desks.
 class ASH_EXPORT WmGestureHandler {
  public:
   // The thresholds of performing a wm action with a touchpad three or four
@@ -25,11 +26,18 @@ class ASH_EXPORT WmGestureHandler {
   static constexpr float kVerticalThresholdDp = 300.f;
   static constexpr float kHorizontalThresholdDp = 330.f;
 
+  // The amount in trackpad units the fingers must move in a direction before a
+  // continuous gesture animation is started. This is to minimize accidental
+  // scrolls.
+  static constexpr int kContinuousGestureMoveThresholdDp = 5;
+
   WmGestureHandler();
+  WmGestureHandler(const WmGestureHandler&) = delete;
+  WmGestureHandler& operator=(const WmGestureHandler&) = delete;
   virtual ~WmGestureHandler();
 
   // Processes a scroll event and may switch desks, start overview or move the
-  // overivew highlight. Returns true if the event has been handled and should
+  // overview highlight. Returns true if the event has been handled and should
   // not be processed further, false otherwise.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
 
@@ -37,9 +45,22 @@ class ASH_EXPORT WmGestureHandler {
   // A struct containing the relevant data during a scroll session.
   struct ScrollData {
     int finger_count = 0;
+
+    // Values are cumulative (ex. |scroll_x| is the total x distance moved
+    // since the scroll began.
     float scroll_x = 0.f;
     float scroll_y = 0.f;
+
+    // Continuous gestures need to first pass a threshold before we update the
+    // UI. We still update this struct before that happens.
+    bool continuous_gesture_started = false;
   };
+
+  // Called by ProcessScrollEvent(). Depending on |finger_count|, may switch
+  // desks, start overview or move the overview highlight. Returns true if the
+  // event has been handled and should not be processed further, false
+  // otherwise. Forwards events to DesksController.
+  bool ProcessEventImpl(int finger_count, float delta_x, float delta_y);
 
   // Called when a scroll is ended. Returns true if the scroll is processed.
   bool EndScroll();
@@ -48,12 +69,14 @@ class ASH_EXPORT WmGestureHandler {
   // the middle of scrolls and when scrolls have ended.
   bool MoveOverviewSelection(int finger_count, float scroll_x, float scroll_y);
 
-  const bool can_handle_desks_gestures_;
+  // Returns whether or not a given session of overview should horizontally
+  // scroll.
+  bool ShouldHorizontallyScroll(bool in_session,
+                                float scroll_x,
+                                float scroll_y);
 
   // Contains the data during a scroll session. Empty is no scroll is underway.
-  base::Optional<ScrollData> scroll_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WmGestureHandler);
+  absl::optional<ScrollData> scroll_data_;
 };
 
 }  // namespace ash

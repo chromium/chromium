@@ -11,12 +11,19 @@
 namespace extensions {
 
 ContentVerifierIOData::ExtensionData::ExtensionData(
-    std::unique_ptr<std::set<base::FilePath>> browser_image_paths,
-    std::unique_ptr<std::set<base::FilePath>> background_or_content_paths,
+    std::unique_ptr<std::set<CanonicalRelativePath>>
+        canonical_browser_image_paths,
+    std::unique_ptr<std::set<CanonicalRelativePath>>
+        canonical_background_or_content_paths,
+    std::unique_ptr<std::set<CanonicalRelativePath>>
+        canonical_indexed_ruleset_paths,
     const base::Version& version,
     ContentVerifierDelegate::VerifierSourceType source_type)
-    : browser_image_paths(std::move(browser_image_paths)),
-      background_or_content_paths(std::move(background_or_content_paths)),
+    : canonical_browser_image_paths(std::move(canonical_browser_image_paths)),
+      canonical_background_or_content_paths(
+          std::move(canonical_background_or_content_paths)),
+      canonical_indexed_ruleset_paths(
+          std::move(canonical_indexed_ruleset_paths)),
       version(version),
       source_type(source_type) {}
 
@@ -32,7 +39,7 @@ ContentVerifierIOData::~ContentVerifierIOData() {
 void ContentVerifierIOData::AddData(const std::string& extension_id,
                                     std::unique_ptr<ExtensionData> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  CHECK(data->browser_image_paths.get());
+  CHECK(data->canonical_browser_image_paths.get());
   data_map_[extension_id] = std::move(data);
 }
 

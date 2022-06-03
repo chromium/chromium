@@ -25,6 +25,9 @@ class BASE_EXPORT ThreadIdNameManager {
  public:
   static ThreadIdNameManager* GetInstance();
 
+  ThreadIdNameManager(const ThreadIdNameManager&) = delete;
+  ThreadIdNameManager& operator=(const ThreadIdNameManager&) = delete;
+
   static const char* GetDefaultInternedString();
 
   class BASE_EXPORT Observer {
@@ -85,8 +88,6 @@ class BASE_EXPORT ThreadIdNameManager {
   // There's no point using a base::ObserverList behind a lock, so we just use
   // an std::vector instead.
   std::vector<Observer*> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadIdNameManager);
 };
 
 }  // namespace base

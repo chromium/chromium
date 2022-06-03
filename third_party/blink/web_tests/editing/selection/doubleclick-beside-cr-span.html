@@ -1,31 +1,30 @@
-<html>
-<head>
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-     testRunner.dumpAsText();
+// This tests that double-clicking a word that follows newline and span.
+if (window.internals) {
      internals.settings.setSmartInsertDeleteEnabled(false);
      internals.settings.setSelectTrailingWhitespaceEnabled(true);
 }
 
-function getPositionOfNode(id)
-{
-    var n = document.getElementById(id);
-    var pos = {x: 0, y: 0};
-
-    while (n) {
-        pos.x += n.offsetLeft + n.clientLeft;
-        pos.y += n.offsetTop + n.clientTop;
-        n = n.offsetParent;
-    }
-    return pos;
-}
-
-function doubleClickPosition(pos)
-{
-    // Our test cases will have at most a single leading tab or four spaces,
-    // followed by a word which is wider than 4 "X"s.
-    // So, pos.x + CHAR_WIDTH * 4 always hits the words.
-    eventSender.mouseMoveTo(pos.x + CHAR_WIDTH * 4, pos.y + LINE_HEIGHT / 2);
+function doubleClick(selection) {
+    if (!window.eventSender)
+        throw 'This test requires eventSender.';
+    const target = selection.document.querySelector('b');
+    const [x, y] = target.offsetHeight > 15
+        ? [
+            selection.computeLeft(target.parentNode) + 5,
+            selection.computeTop(target) + 15
+          ]
+        : [
+            selection.computeLeft(target) + 45,
+            selection.computeTop(target) + 5
+          ];
+    eventSender.leapForward(9999); // Reset mouse click
+    eventSender.mouseMoveTo(x, y);
     eventSender.mouseDown();
     eventSender.leapForward(1);
     eventSender.mouseUp();
@@ -33,497 +32,197 @@ function doubleClickPosition(pos)
     eventSender.mouseDown();
     eventSender.leapForward(1);
     eventSender.mouseUp();
+    if (!selection.window.getSelection().anchorNode)
+      throw 'No selection';
 }
 
-function defocus()
-{
-    doubleClickPosition({x:0, y:0});
+function doTest(whiteSpace, title, input, expected) {
+    const kStyle = [
+      'font: 10px/10px Ahem;',
+      'outline: none;',
+      `white-space: ${whiteSpace};`,
+      'width: 20ch;',
+    ].join(' ');
+
+    selection_test(
+        `<div style="${kStyle}">${input}</div>`,
+        doubleClick,
+        `<div style="${kStyle}">${expected}</div>`,
+        `${whiteSpace}: ${title}`);
+    selection_test(
+        `<div contenteditable style="${kStyle}">${input}</div>`,
+        doubleClick,
+        `<div contenteditable style="${kStyle}">${expected}</div>`,
+        `${whiteSpace}: ${title} [editable]`);
 }
 
-function findParentDiv(spanId)
-{
-    var n = document.getElementById(spanId);
-    while (n) {
-      var parent = n.parentNode;
-      if (parent && parent.tagName == "DIV")
-        return parent;
-      n = parent;
-    }
+doTest('normal', '1 minimum case',
+    'abcd efgh ijkl mnop <b>select1</b>',
+    'abcd efgh ijkl mnop <b>^select1|</b>');
 
-    return null;
-}
+// We may have to make EditorClient::isSelectTrailingWhitespaceEnabled false on
+// DumpRenderTree to clarify cases...
+doTest('normal', '2 with another word after the span',
+    'abcd efgh ijkl mnop <b>select2</b> nottoselect',
+    'abcd efgh ijkl mnop <b>^select2</b> |nottoselect');
 
-function makeParentBlockEditable(spanId)
-{
-    var parent = findParentDiv(spanId);
-    parent.contentEditable = true;
-}
+doTest('normal', '3 use linebreak as word separator (outside element)',
+    'abcd efgh ijkl mnop\n<b>select3</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select3</b>\n|nottoselect');
 
-function hideCaseBlockFor(spanId)
-{
-    var n = document.getElementById(spanId);
-    while (n) {
-      n = n.parentNode;
-      if (n && n.className == "case") {
-        n.style.display = "none";
-        n.style.offsetTop;
-        return;
-      }
-    }
-}
+doTest('normal', '4 use tab as word separator (outside element)',
+    'abcd efgh ijkl mnop\t<b>select4</b>\tnottoselect',
+    'abcd efgh ijkl mnop\t<b>^select4</b>\t|nottoselect');
 
-function doTest(testId, expectedText, givenClickPosition)
-{
-    // Simulate a double click.
-    defocus()
-    var pos = givenClickPosition || getPositionOfNode(testId);
-    doubleClickPosition(pos);
+doTest('normal', '5 use multiple whitespaces as word separator (outside element)',
+    'abcd efgh ijkl mnop    <b>select5</b>    nottoselect',
+    'abcd efgh ijkl mnop    <b>^select5</b> |   nottoselect');
 
-    // Get the text of the current selection.
-    var sel = window.getSelection();
-    var actualText = sel.getRangeAt(0).toString();
+doTest('normal', '6 use linebreak as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\nselect6\n</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\n^select6\n|</b>nottoselect');
 
-    if (expectedText == actualText) {
-        log("Passed " + testId);
-    } else {
-        log("Failed " + testId);
-        log("  Expected: " + expectedText);
-        log("  Actual: " + actualText);
-    }
+doTest('normal', '7 use tab as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\tselect7\t</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\t^select7\t|</b>nottoselect');
 
-    // Run the same case with contentEditable enabled.
-    makeParentBlockEditable(testId);
+doTest('normal', '8 use multiple whitespaces as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>    select8    </b>nottoselect',
+    'abcd efgh ijkl mnop<b>    ^select8 |   </b>nottoselect');
 
-    defocus();
-    doubleClickPosition(pos);
+doTest('normal', '9 with another word in same the span',
+    'abcd efgh ijkl mnop <b>select9 not</b> notyet',
+    'abcd efgh ijkl mnop <b>^select9 |not</b> notyet');
 
-    sel = window.getSelection();
-    actualText = sel.getRangeAt(0).toString();
+doTest('normal', '10 with another word before the span, in the same line',
+    'abcd efgh ijkl mnop qrst <b>select10</b> notyet',
+    'abcd efgh ijkl mnop qrst <b>^select10</b> |notyet');
 
-    if (expectedText == actualText) {
-        log("Passed " + testId + " (with contentEditable)");
-    } else {
-        log("Failed " + testId + " (with contentEditable)");
-        log("  Expected: " + expectedText);
-        log("  Actual: " + actualText);
-    }
+doTest('normal', '11 a first half of word is inside b element',
+    'abcd efgh ijkl mnop qrst <b>sel</b>ect11 notyet',
+    'abcd efgh ijkl mnop qrst <b>^sel</b>ect11 |notyet');
 
-    // Hide a container for the case to workaround limited window size
-    hideCaseBlockFor(testId);
-}
+// We choose selectHere12 instead select12 here because <b>ect12</b> would be
+// too short to be clicked by |doubleClick()|.
+doTest('normal', '12 a second half of word is inside b element',
+    'abcd efgh ijkl mnop qrst uvwx yz123 sel<b>ectHere12</b> notyet',
+    'abcd efgh ijkl mnop qrst uvwx yz123 ^sel<b>ectHere12</b> |notyet');
 
-function log(msg)
-{
-    var l = document.getElementById('log');
-    l.appendChild(document.createTextNode(msg));
-    l.appendChild(document.createElement('br'));
-}
+// white-space:pre
+doTest('pre', '1 use linebreak as word separator (outside element)',
+    'abcd efgh ijkl mnop\n<b>select1</b>',
+    'abcd efgh ijkl mnop\n<b>^select1|</b>',
+    'pre');
 
-function initConstants()
-{
-   var heightMeasure = document.getElementById("heightMeasure");
-   LINE_HEIGHT = heightMeasure.offsetHeight;
-   LINE_LEFT   = heightMeasure.offsetLeft + heightMeasure.clientLeft;
-   CHAR_WIDTH  = heightMeasure.offsetWidth;
-   heightMeasure.style.display = "none"; // hide for readable test result
-}
+doTest('pre', '2 use tab as word separator (outside element)',
+    'abcd efgh ijkl mnop\t<b>select2</b>\tnottoselect',
+    'abcd efgh ijkl mnop\t<b>^select2</b>\t|nottoselect');
 
-function getPositionOfNextLineHeadOf(spanId)
-{
-   var pos = getPositionOfNode(spanId)
-   pos.x  = LINE_LEFT;
-   pos.y += LINE_HEIGHT;
-   return pos;
-}
+doTest('pre', '3 use multiple whitespaces as word separator (outside element)',
+    'abcd efgh ijkl mnop    <b>select3</b>    nottoselect',
+    'abcd efgh ijkl mnop    <b>^select3</b>    |nottoselect');
 
-function runTests()
-{
-    initConstants();
+doTest('pre', '4 use linebreak as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\nselect4\n</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\n^select4|\n</b>nottoselect');
 
-    if (window.testRunner) {
-        doTest("totest_minimum", "select1");
-        // We may have to make EditorClient::isSelectTrailingWhitespaceEnabled false on
-        // DumpRenderTree to clarify cases...
-        doTest("totest_before_after", "select2 ");
+doTest('pre', '5 use tab as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\tselect5\t</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\t^select5\t|</b>nottoselect');
 
-        doTest("totest_linebreak_out", "select3\n");
-        doTest("totest_tab_out", "select4\t");
-        doTest("totest_multiple_whitespaces_out", "select5 ");
-        doTest("totest_linebreak_in", "select6\n");
-        doTest("totest_tab_in", "select7\t");
-        doTest("totest_multiple_whitespaces_in", "select8 ");
+doTest('pre', '6 use multiple whitespaces as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>    select6    </b>nottoselect',
+    'abcd efgh ijkl mnop<b>    ^select6    |</b>nottoselect');
 
-        doTest("totest_multiple_word_in_span", "select9 ");
-        doTest("totest_word_before_here_in_line", "select10 ");
-        doTest("totest_span_first_half", "select11 ");
-        doTest("totest_span_second_half", "selectHere12 ");
-
-        doTest("totest_linebreak_out_pre", "select1");
-        doTest("totest_tab_out_pre", "select2\t");
-        doTest("totest_multiple_whitespaces_out_pre", "select3    ");
-        doTest("totest_linebreak_in_pre", "select4", getPositionOfNextLineHeadOf("totest_linebreak_in_pre"));
-        doTest("totest_tab_in_pre", "select5\t");
-        doTest("totest_multiple_whitespaces_in_pre", "select6    ");
-
-        doTest("totest_linebreak_out_prewrap", "select1");
-        doTest("totest_tab_out_prewrap", "select2\t");
-        doTest("totest_multiple_whitespaces_out_prewrap", "select3    ");
-        doTest("totest_linebreak_in_prewrap", "select4", getPositionOfNextLineHeadOf("totest_linebreak_in_prewrap"));
-        doTest("totest_tab_in_prewrap", "select5\t", getPositionOfNextLineHeadOf("totest_tab_in_prewrap"));
-        doTest("totest_multiple_whitespaces_in_prewrap", "select6    ", getPositionOfNextLineHeadOf("totest_multiple_whitespaces_in_prewrap"));
-
-        doTest("totest_linebreak_out_preline", "select1");
-        doTest("totest_tab_out_preline", "select2\t");
-        doTest("totest_multiple_whitespaces_out_preline", "select3 ");
-        doTest("totest_linebreak_in_preline", "select4", getPositionOfNextLineHeadOf("totest_linebreak_in_preline"));
-        doTest("totest_tab_in_preline", "select5\t");
-        doTest("totest_multiple_whitespaces_in_preline", "select6 ");
-
-        doTest("totest_linebreak_out_nowrap", "select1\n");
-        doTest("totest_tab_out_nowrap", "select2\t");
-        doTest("totest_multiple_whitespaces_out_nowrap", "select3 ");
-        doTest("totest_linebreak_in_nowrap", "select4\n");
-        doTest("totest_tab_in_nowrap", "select5\t");
-        doTest("totest_multiple_whitespaces_in_nowrap", "select6 ");
-
-    }
-}
+// white-space: pre-wrwap
+doTest('pre-wrwap', '1 use linebreak as word separator (outside element)',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1</b>\n|nottoselect');
 
 
+doTest('pre-wrap', '2 use tab as word separator (outside element)',
+    'abcd efgh ijkl mnop\t<b>select2</b>\tnottoselect',
+    'abcd efgh ijkl mnop\t<b>^select2</b>\t|nottoselect');
+
+doTest('pre-wrap', '3 use multiple whitespaces as word separator (outside element)',
+    'abcd efgh ijkl mnop    <b>select3</b>    nottoselect',
+    'abcd efgh ijkl mnop    <b>^select3</b>    |nottoselect');
+
+doTest('pre-wrap', '4 use linebreak as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\nselect4\n</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\n^select4|\n</b>nottoselect');
+
+doTest('pre-wrap', '5 use tab as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\tselect5\t</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\t^select5\t|</b>nottoselect');
+
+doTest('pre-wrap', '6 use multiple whitespaces as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>    select6    </b>nottoselect',
+    'abcd efgh ijkl mnop<b>    ^select6    |</b>nottoselect');
+
+// white-space: pre-line
+doTest('pre-line', '1 use linebreak as word separator (outside element)',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1|</b>\nnottoselect');
+
+doTest('pre-line', '2 use tab as word separator (outside element)',
+    'abcd efgh ijkl mnop\t<b>select2</b>\tnottoselect',
+    'abcd efgh ijkl mnop\t<b>^select2</b>\t|nottoselect');
+
+doTest('pre-line', '3 use multiple whitespaces as word separator (outside element)',
+    'abcd efgh ijkl mnop    <b>select3</b>    nottoselect',
+    'abcd efgh ijkl mnop    <b>^select3</b> |   nottoselect');
+
+doTest('pre-line', '4 use linebreak as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\nselect4\n</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\n^select4|\n</b>nottoselect');
+
+doTest('pre-line', '5 use tab as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\tselect5\t</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\t^select5\t|</b>nottoselect');
+
+doTest('pre-line', '6 use multiple whitespaces as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>    select6    </b>nottoselect',
+    'abcd efgh ijkl mnop<b>    ^select6 |   </b>nottoselect');
+
+// white-space: nowrap
+// Note: Although following cases have no line-breaks that had caused problem
+// reported bug28036, we add these for comprehensiveness.
+
+doTest('nowrap', '1 use linebreak as word separator (outside element)',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1</b>\n|nottoselect');
+
+doTest('nowrap', '2 use tab as word separator (outside element)',
+    'abcd efgh ijkl mnop\t<b>select2</b>\tnottoselect',
+    'abcd efgh ijkl mnop\t<b>^select2</b>\t|nottoselect');
+
+doTest('nowrap', '3 use multiple whitespaces as word separator (outside element)',
+    'abcd efgh ijkl mnop    <b>select3</b>    nottoselect',
+    'abcd efgh ijkl mnop    <b>^select3</b> |   nottoselect');
+
+doTest('nowrap', '4 use linebreak as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\nselect4\n</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\n^select4\n|</b>nottoselect');
+
+doTest('nowrap', '5 use tab as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>\tselect5\t</b>nottoselect',
+    'abcd efgh ijkl mnop<b>\t^select5\t|</b>nottoselect');
+
+doTest('nowrap', '6 use multiple whitespaces as word separator (inside element)',
+    'abcd efgh ijkl mnop<b>    select6    </b>nottoselect',
+    'abcd efgh ijkl mnop<b>    ^select6 |   </b>nottoselect');
+
+// cases for source-originated line-breaks with white-space: pre-* family
+doTest('pre', 'source break',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1|</b>\nnottoselect');
+
+doTest('pre-wrap', 'source break',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1|</b>\nnottoselect');
+
+doTest('pre-line', 'source break',
+    'abcd efgh ijkl mnop\n<b>select1</b>\nnottoselect',
+    'abcd efgh ijkl mnop\n<b>^select1|</b>\nnottoselect');
 </script>
-</head>
-<body onload="runTests()">
-
-<p>
-This tests that double-clicking a word that follows newline and span
-</p>
-
-<div class="case">
-<h3>minimum case</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop <b id="totest_minimum">select1</b>
-</div>
-</div>
-
-<div class="case">
-<h3>with another word after the span</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop <b id="totest_before_after">select2</b> nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (outside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop
-<b id="totest_linebreak_out">select3</b>
-nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (outside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop	<b id="totest_tab_out">select4</b>	nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (outside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop    <b id="totest_multiple_whitespaces_out">select5</b>    nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (inside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop<b id="totest_linebreak_in">
-select6
-</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (inside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop<b id="totest_tab_in">	select7	</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (inside element)</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop<b id="totest_multiple_whitespaces_in">    select8    </b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>with another word in same the span</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop <b id="totest_multiple_word_in_span">select9 not</b> notyet
-</div>
-</div>
-
-<div class="case">
-<h3>with another word before the span, in the same line</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop qrst <b id="totest_word_before_here_in_line">select10</b> notyet
-</div>
-</div>
-
-<div class="case">
-<h3>a first half of word is inside b element</h3>
-<div style="width:100pt">
-abcd efgh ijkl mnop qrst <b id="totest_span_first_half">sel</b>ect11 notyet
-</div>
-</div>
-
-<div class="case">
-<h3>a second half of word is inside b element</h3>
-<!-- We choose selectHere12 instead select12 here
-     because <b>ect12</b> would be too short to be clicked by doubleClickPosition(). -->
-<div style="width:150pt">
-abcd efgh ijkl mnop qrst uvwx yz123 sel<b id="totest_span_second_half">ectHere12</b> notyet
-</div>
-</div>
-
-<h2>cases for white-space: pre</h2>
-<p>
-Note: Here for pre, we change width value to 200 to prevent layout change on contentEditable enabled.
-</p>
-
-<div class="case">
-<h3>use linebreak as word separator (outside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop
-<b id="totest_linebreak_out_pre">select1</b>
-nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (outside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop	<b id="totest_tab_out_pre">select2</b>	nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (outside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop    <b id="totest_multiple_whitespaces_out_pre">select3</b>    nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (inside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop<b id="totest_linebreak_in_pre">
-select4
-</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (inside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop<b id="totest_tab_in_pre">	select5	</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (inside element, white-space:pre)</h3>
-<div style="width:200pt;white-space:pre;">
-abcd efgh ijkl mnop<b id="totest_multiple_whitespaces_in_pre">    select6    </b>nottoselect
-</div>
-</div>
-
-<h2>cases for white-space: pre-wrap</h2>
-
-<div class="case">
-<h3>use linebreak as word separator (outside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop
-<b id="totest_linebreak_out_prewrap">select1</b>
-nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (outside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop	<b id="totest_tab_out_prewrap">select2</b>	nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (outside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop    <b id="totest_multiple_whitespaces_out_prewrap">select3</b>    nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (inside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop<b id="totest_linebreak_in_prewrap">
-select4
-</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (inside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop<b id="totest_tab_in_prewrap">	select5	</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (inside element, white-space:pre-wrap)</h3>
-<div style="width:100pt;white-space:pre-wrap;">
-abcd efgh ijkl mnop<b id="totest_multiple_whitespaces_in_prewrap">    select6    </b>nottoselect
-</div>
-</div>
-
-
-
-<h2>cases for white-space: pre-line</h2>
-
-<div class="case">
-<h3>use linebreak as word separator (outside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop
-<b id="totest_linebreak_out_preline">select1</b>
-nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (outside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop	<b id="totest_tab_out_preline">select2</b>	nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (outside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop    <b id="totest_multiple_whitespaces_out_preline">select3</b>    nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (inside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop<b id="totest_linebreak_in_preline">
-select4
-</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (inside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop<b id="totest_tab_in_preline">	select5	</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (inside element, white-space:pre-line)</h3>
-<div style="width:100pt;white-space:pre-line;">
-abcd efgh ijkl mnop<b id="totest_multiple_whitespaces_in_preline">    select6    </b>nottoselect
-</div>
-</div>
-
-<h2>cases for white-space: nowrap</h2>
-<p>
-Note: Although following cases have no line-breaks that had caused problem reported bug28036,
-we add these for comprehensiveness.
-</p>
-
-<div class="case">
-<h3>use linebreak as word separator (outside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop
-<b id="totest_linebreak_out_nowrap">select1</b>
-nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (outside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop	<b id="totest_tab_out_nowrap">select2</b>	nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (outside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop    <b id="totest_multiple_whitespaces_out_nowrap">select3</b>    nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use linebreak as word separator (inside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop<b id="totest_linebreak_in_nowrap">
-select4
-</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use tab as word separator (inside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop<b id="totest_tab_in_nowrap">	select5	</b>nottoselect
-</div>
-</div>
-
-<div class="case">
-<h3>use multiple whitespaces as word separator (inside element, white-space:nowrap)</h3>
-<div style="width:100pt;white-space:nowrap;">
-abcd efgh ijkl mnop<b id="totest_multiple_whitespaces_in_nowrap">    select6    </b>nottoselect
-</div>
-</div>
-
-<!--
-
-<h2>cases for source-originated line-breaks with white-space: pre-* family</h2>
-
-<div class="case">
-<h3>white-space:pre</h3>
-<div style="width:200pt;white-space:pre;background-color:lightgray;">
-abcd efgh ijkl mnop
-<b id="totest_sourcebreak_pre">select1</b>
-nottoselect
-</div>
-</div>
-
-<h3>white-space:pre-wrap</h3>
-<div style="width:200pt;white-space:pre-wrap;background-color:lightgray;">
-abcd efgh ijkl mnop
-<b id="totest_sourcebreak_prewrap">select2</b>
-nottoselect
-</div>
-</div>
-
-<h3>white-space:pre-line</h3>
-<div style="width:200pt;white-space:pre-line;background-color:lightgray;">
-abcd efgh ijkl mnop
-<b id="totest_sourcebreak_preline">select3</b>
-nottoselect
-</div>
-</div>
-
--->
-
-<div><span id="heightMeasure">x</span></div>
-
-<pre id="log">
-</pre>
-
-</body>
-</html>

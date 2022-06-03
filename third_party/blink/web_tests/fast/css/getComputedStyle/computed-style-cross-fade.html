@@ -3,6 +3,7 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<base href="https://basedomain">
 </head>
 <body>
 <script type="text/javascript">
@@ -31,6 +32,7 @@ test(() => {
   assert_equals(testCrossfade("background-image: -webkit-cross-fade(url(dummy://example.png), url(dummy://example.png), 700%)", "background-image"), '-webkit-cross-fade(url("dummy://example.png"), url("dummy://example.png"), 1)');
 
   assert_equals(testCrossfade("background-image: -webkit-cross-fade(url(dummy://example.png), url(dummy://example.png), -20)", "background-image"), '-webkit-cross-fade(url("dummy://example.png"), url("dummy://example.png"), 0)');
+  assert_equals(testCrossfade("display:none;background-image: -webkit-cross-fade(url(example.png), url(example.png), 20%)", "background-image"), '-webkit-cross-fade(url("https://basedomain/example.png"), url("https://basedomain/example.png"), 0.2)');
 }, 'Valid -webkit-cross-fade');
 
 test(() => {

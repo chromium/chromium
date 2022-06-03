@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
@@ -15,63 +15,45 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "media/base/bitrate.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 
 namespace {
-base::Optional<media::VideoFrameLayout> CreateVideoFrameLayout(
-    media::VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::GpuMemoryBufferHandle& gmb_handle) {
-  const size_t num_planes = gmb_handle.native_pixmap_handle.planes.size();
 
-  std::vector<media::ColorPlaneLayout> layout_planes(num_planes);
-  for (size_t i = 0; i < num_planes; i++) {
-    const auto& plane = gmb_handle.native_pixmap_handle.planes[i];
-    if (!base::IsValueInRangeForNumericType<int32_t>(plane.stride)) {
-      DLOG(ERROR) << "Invalid stride";
-      return base::nullopt;
-    }
-    if (!base::IsValueInRangeForNumericType<size_t>(plane.offset)) {
-      DLOG(ERROR) << "Invalid offset";
-      return base::nullopt;
-    }
-    if (!base::IsValueInRangeForNumericType<size_t>(plane.size)) {
-      DLOG(ERROR) << "Invalid size";
-      return base::nullopt;
-    }
-
-    // convert uint32_t -> int32_t.
-    layout_planes[i].stride = base::checked_cast<int32_t>(plane.stride);
-    // convert uint64_t -> size_t
-    layout_planes[i].offset = base::checked_cast<size_t>(plane.offset);
-    // convert uint64_t -> size_t
-    layout_planes[i].size = base::checked_cast<size_t>(plane.size);
-  }
-
-  gfx::Size frame_size(layout_planes[0].stride, coded_size.height());
-  return media::VideoFrameLayout::CreateWithPlanes(format, frame_size,
-                                                   std::move(layout_planes));
-}
+// Maximum number of concurrent ARC video clients.
+// Currently we have no way to know the resources are not enough to create more
+// VEAs. Currently this value is selected as 40 instances are enough to pass
+// the CTS tests.
+constexpr size_t kMaxConcurrentClients = 8;
 }  // namespace
 
+// static
+size_t GpuArcVideoEncodeAccelerator::client_count_ = 0;
+
 GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
-    const gpu::GpuPreferences& gpu_preferences)
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : gpu_preferences_(gpu_preferences),
-      input_storage_type_(
-          media::VideoEncodeAccelerator::Config::StorageType::kShmem),
+      gpu_workarounds_(gpu_workarounds),
       bitstream_buffer_serial_(0) {}
 
-GpuArcVideoEncodeAccelerator::~GpuArcVideoEncodeAccelerator() = default;
+GpuArcVideoEncodeAccelerator::~GpuArcVideoEncodeAccelerator() {
+  // Normally |client_count_| should always be > 0 if vea_ is set, but if it
+  // isn't and we underflow then we won't be able to create any new decoder
+  // forever. (b/173700103). So let's use an extra check to avoid this...
+  if (accelerator_ && client_count_ > 0)
+    client_count_--;
+}
 
 // VideoEncodeAccelerator::Client implementation.
 void GpuArcVideoEncodeAccelerator::RequireBitstreamBuffers(
@@ -110,31 +92,60 @@ void GpuArcVideoEncodeAccelerator::GetSupportedProfiles(
     GetSupportedProfilesCallback callback) {
   std::move(callback).Run(
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          gpu_preferences_));
+          gpu_preferences_, gpu_workarounds_));
 }
 
 void GpuArcVideoEncodeAccelerator::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
-    VideoEncodeClientPtr client,
+    mojo::PendingRemote<mojom::VideoEncodeClient> client,
     InitializeCallback callback) {
+  auto result = InitializeTask(config, std::move(client));
+  std::move(callback).Run(result);
+}
+
+void GpuArcVideoEncodeAccelerator::InitializeDeprecated(
+    const media::VideoEncodeAccelerator::Config& config,
+    mojo::PendingRemote<mojom::VideoEncodeClient> client,
+    InitializeDeprecatedCallback callback) {
+  auto result = InitializeTask(config, std::move(client));
+  std::move(callback).Run(result ==
+                          mojom::VideoEncodeAccelerator::Result::kSuccess);
+}
+
+mojom::VideoEncodeAccelerator::Result
+GpuArcVideoEncodeAccelerator::InitializeTask(
+    const media::VideoEncodeAccelerator::Config& config,
+    mojo::PendingRemote<mojom::VideoEncodeClient> client) {
   DVLOGF(2) << config.AsHumanReadableString();
   if (!config.storage_type.has_value()) {
     DLOG(ERROR) << "storage type must be specified";
-    std::move(callback).Run(false);
-    return;
+    return mojom::VideoEncodeAccelerator::Result::kInvalidArgumentError;
   }
-  input_pixel_format_ = config.input_format;
-  input_storage_type_ = *config.storage_type;
+
+  if (config.input_format != media::PIXEL_FORMAT_NV12) {
+    VLOGF(1) << "Unsupported pixel format: " << config.input_format;
+    return mojom::VideoEncodeAccelerator::Result::kInvalidArgumentError;
+  }
+
+  if (client_count_ >= kMaxConcurrentClients) {
+    VLOGF(1) << "Reject to Initialize() due to too many clients: "
+             << client_count_;
+    return mojom::VideoEncodeAccelerator::Result::kInsufficientResourcesError;
+  }
+
   visible_size_ = config.input_visible_size;
   accelerator_ = media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      config, this, gpu_preferences_);
+      config, this, gpu_preferences_, gpu_workarounds_);
   if (accelerator_ == nullptr) {
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
-    std::move(callback).Run(false);
-    return;
+    return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
   }
-  client_ = std::move(client);
-  std::move(callback).Run(true);
+
+  client_.Bind(std::move(client));
+
+  client_count_++;
+  VLOGF(2) << "Number of concurrent clients: " << client_count_;
+  return mojom::VideoEncodeAccelerator::Result::kSuccess;
 }
 
 void GpuArcVideoEncodeAccelerator::Encode(
@@ -161,23 +172,6 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  if (input_storage_type_ ==
-      media::VideoEncodeAccelerator::Config::StorageType::kShmem) {
-    EncodeSharedMemory(std::move(fd), format, planes, timestamp, force_keyframe,
-                       std::move(callback));
-  } else {
-    EncodeDmabuf(std::move(fd), format, planes, timestamp, force_keyframe,
-                 std::move(callback));
-  }
-}
-
-void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
-    base::ScopedFD fd,
-    media::VideoPixelFormat format,
-    const std::vector<::arc::VideoFramePlane>& planes,
-    int64_t timestamp,
-    bool force_keyframe,
-    EncodeCallback callback) {
   if (format != media::PIXEL_FORMAT_NV12) {
     DLOG(ERROR) << "Formats other than NV12 are unsupported. format=" << format;
     client_->NotifyError(Error::kInvalidArgumentError);
@@ -191,14 +185,15 @@ void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
     return;
   }
   auto gmb_handle =
-      CreateGpuMemoryBufferHandle(format, coded_size_, std::move(fds), planes);
+      CreateGpuMemoryBufferHandle(format, gfx::NativePixmapHandle::kNoModifier,
+                                  coded_size_, std::move(fds), planes);
   if (!gmb_handle) {
     DLOG(ERROR) << "Failed to create GpuMemoryBufferHandle";
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
   }
 
-  base::Optional<gfx::BufferFormat> buffer_format =
+  absl::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(format);
   if (!format) {
     DLOG(ERROR) << "Unexpected format: " << format;
@@ -208,7 +203,7 @@ void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       support_.CreateGpuMemoryBufferImplFromHandle(
           std::move(gmb_handle).value(), coded_size_, *buffer_format,
-          gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           base::NullCallback());
 
   gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
@@ -216,7 +211,7 @@ void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
       dummy_mailbox /* mailbox_holders */,
       base::NullCallback() /* mailbox_holder_release_cb_ */,
-      base::TimeDelta::FromMicroseconds(timestamp));
+      base::Microseconds(timestamp));
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";
     client_->NotifyError(Error::kInvalidArgumentError);
@@ -225,93 +220,6 @@ void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
 
   frame->AddDestructionObserver(std::move(callback));
   accelerator_->Encode(std::move(frame), force_keyframe);
-}
-
-void GpuArcVideoEncodeAccelerator::EncodeSharedMemory(
-    base::ScopedFD fd,
-    media::VideoPixelFormat format,
-    const std::vector<::arc::VideoFramePlane>& planes,
-    int64_t timestamp,
-    bool force_keyframe,
-    EncodeCallback callback) {
-  if (format != media::PIXEL_FORMAT_I420) {
-    DLOG(ERROR) << "Formats other than I420 are unsupported. format=" << format;
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-
-  base::ScopedFD dup_fd(HANDLE_EINTR(dup(fd.get())));
-  std::vector<base::ScopedFD> fds =
-      DuplicateFD(std::move(dup_fd), planes.size());
-  if (fds.empty()) {
-    DLOG(ERROR) << "Failed to duplicate fd";
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-
-  auto gmb_handle =
-      CreateGpuMemoryBufferHandle(format, coded_size_, std::move(fds), planes);
-  if (!gmb_handle) {
-    DLOG(ERROR) << "Failed to create GpuMemoryBufferHandle";
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-
-  auto layout = CreateVideoFrameLayout(format, coded_size_, *gmb_handle);
-  if (!layout) {
-    DLOG(ERROR) << "Failed to create VideoFrameLayout.";
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-
-  base::CheckedNumeric<size_t> map_size = 0;
-  for (const auto& plane : layout->planes()) {
-    map_size = map_size.Max(plane.offset + plane.size);
-  }
-  if (!map_size.IsValid()) {
-    DLOG(ERROR) << "Invalid map_size";
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-
-  // TODO(rockot): Pass GUIDs through Mojo. https://crbug.com/713763.
-  // TODO(rockot): This fd comes from a mojo::ScopedHandle in
-  // GpuArcVideoService::BindSharedMemory. That should be passed through,
-  // rather than pulling out the fd. https://crbug.com/713763.
-  base::UnguessableToken guid = base::UnguessableToken::Create();
-  base::subtle::PlatformSharedMemoryRegion platform_region =
-      base::subtle::PlatformSharedMemoryRegion::Take(
-          std::move(fd),
-          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-          map_size.ValueOrDie(), guid);
-  base::UnsafeSharedMemoryRegion shared_region =
-      base::UnsafeSharedMemoryRegion::Deserialize(std::move(platform_region));
-  base::WritableSharedMemoryMapping mapping =
-      shared_region.MapAt(0u, map_size.ValueOrDie());
-  if (!mapping.IsValid()) {
-    DLOG(ERROR) << "Failed to map memory.";
-    client_->NotifyError(Error::kPlatformFailureError);
-    return;
-  }
-
-  uint8_t* shm_memory = mapping.GetMemoryAsSpan<uint8_t>().data();
-  auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-      *layout, gfx::Rect(visible_size_), visible_size_,
-      shm_memory + layout->planes()[0].offset,
-      shm_memory + layout->planes()[1].offset,
-      shm_memory + layout->planes()[2].offset,
-      base::TimeDelta::FromMicroseconds(timestamp));
-  if (!frame) {
-    DLOG(ERROR) << "Failed to create VideoFrame";
-    client_->NotifyError(Error::kInvalidArgumentError);
-    return;
-  }
-  frame->BackWithOwnedSharedMemory(std::move(shared_region),
-                                   std::move(mapping));
-  // Add the function to |callback| to |frame|'s  destruction observer. When the
-  // |frame| goes out of scope, it executes |callback|.
-  frame->AddDestructionObserver(std::move(callback));
-  accelerator_->Encode(frame, force_keyframe);
 }
 
 void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
@@ -359,6 +267,22 @@ void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
 }
 
 void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
+    const media::Bitrate& bitrate,
+    uint32_t framerate) {
+  DVLOGF(2) << bitrate.ToString();
+
+  if (!accelerator_) {
+    DLOG(ERROR) << "Accelerator is not initialized.";
+    return;
+  }
+
+  // Note that dynamic bitrate mode changes are not allowed. Attempting to
+  // change the bitrate mode at runtime will result in the |accelerator_|
+  // reporting an error through NotifyError.
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+}
+
+void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
     uint32_t bitrate,
     uint32_t framerate) {
   DVLOGF(2) << "bitrate=" << bitrate << ", framerate=" << framerate;
@@ -366,7 +290,8 @@ void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
     DLOG(ERROR) << "Accelerator is not initialized.";
     return;
   }
-  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+  accelerator_->RequestEncodingParametersChange(
+      media::Bitrate::ConstantBitrate(bitrate), framerate);
 }
 
 void GpuArcVideoEncodeAccelerator::Flush(FlushCallback callback) {

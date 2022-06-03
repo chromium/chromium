@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_FOCUS_EXTERNAL_FOCUS_TRACKER_H_
 #define UI_VIEWS_FOCUS_EXTERNAL_FOCUS_TRACKER_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace views {
@@ -30,6 +31,9 @@ class ViewTracker;
 class VIEWS_EXPORT ExternalFocusTracker : public FocusChangeListener {
  public:
   ExternalFocusTracker(View* parent_view, FocusManager* focus_manager);
+
+  ExternalFocusTracker(const ExternalFocusTracker&) = delete;
+  ExternalFocusTracker& operator=(const ExternalFocusTracker&) = delete;
   ~ExternalFocusTracker() override;
 
   // FocusChangeListener:
@@ -66,8 +70,6 @@ class VIEWS_EXPORT ExternalFocusTracker : public FocusChangeListener {
 
   // Holds the last focused view.
   std::unique_ptr<ViewTracker> last_focused_view_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFocusTracker);
 };
 
 }  // namespace views

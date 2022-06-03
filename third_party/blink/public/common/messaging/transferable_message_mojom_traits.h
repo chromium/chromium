@@ -7,6 +7,7 @@
 
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -21,12 +22,12 @@ struct BLINK_COMMON_EXPORT
     return input;
   }
 
-  static std::vector<mojo::ScopedMessagePipeHandle> ports(
+  static std::vector<blink::MessagePortDescriptor> ports(
       blink::TransferableMessage& input) {
     return blink::MessagePortChannel::ReleaseHandles(input.ports);
   }
 
-  static std::vector<mojo::ScopedMessagePipeHandle> stream_channels(
+  static std::vector<blink::MessagePortDescriptor> stream_channels(
       blink::TransferableMessage& input) {
     return blink::MessagePortChannel::ReleaseHandles(input.stream_channels);
   }
@@ -46,12 +47,8 @@ struct BLINK_COMMON_EXPORT
     return input.user_activation;
   }
 
-  static bool transfer_user_activation(blink::TransferableMessage& input) {
-    return input.transfer_user_activation;
-  }
-
-  static bool allow_autoplay(blink::TransferableMessage& input) {
-    return input.allow_autoplay;
+  static bool delegate_payment_request(blink::TransferableMessage& input) {
+    return input.delegate_payment_request;
   }
 
   static bool Read(blink::mojom::TransferableMessage::DataView data,

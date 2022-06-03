@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+PASS applyConstraints() sets the value of a constraint set by getUserMedia()
+FAIL Attempting to change the deviceId with applyConstraints() fails promise_rejects_js: function "function OverconstrainedError() { [native code] }" is not an Error subtype
+PASS An unsupported constraint is ignored by applyConstraints()
+PASS All valid keys are returned for complex constraints
+PASS Simple integer
+PASS Ideal integer
+PASS Min/max integer
+PASS Exact unwrapped integer
+PASS Simple double
+PASS Ideal double
+PASS Min/max double
+PASS Exact unwrapped double
+PASS Simple String
+PASS Ideal String
+PASS Multiple String in Brackets
+PASS Multiple Bracketed Naked String
+PASS Single Bracketed string unwrapped
+PASS Both Ideal and Exact string
+PASS echoCancellation with simple boolean value
+PASS echoCancellation with ideal boolean value
+PASS echoCancellation with exact unwrapped boolean value
+PASS autoGainControl with simple boolean value
+PASS autoGainControl with ideal boolean value
+PASS autoGainControl with exact unwrapped boolean value
+PASS noiseSuppression with simple boolean value
+PASS noiseSuppression with ideal boolean value
+PASS noiseSuppression with exact unwrapped boolean value
+PASS applyConstraints() supports resizeMode in getUserMedia() tracks
+PASS Contradicting echoCancellation constraints
+PASS Contradicting noiseSuppression constraints
+PASS Contradicting autoGainControl constraints
+Harness: the test ran to completion.
+

@@ -42,8 +42,9 @@ LayerTreeImplTestBase::LayerTreeImplTestBase(
                                       &task_graph_runner_,
                                       animation_host_.get(),
                                       settings)),
-      render_pass_(viz::RenderPass::Create()),
+      render_pass_(viz::CompositorRenderPass::Create()),
       layer_impl_id_(2) {
+  host_->CreateFakeLayerTreeHostImpl();
   std::unique_ptr<LayerImpl> root =
       LayerImpl::Create(host_impl()->active_tree(), 1);
   root->SetBounds(gfx::Size(1, 1));
@@ -105,7 +106,7 @@ void LayerTreeImplTestBase::AppendQuadsWithOcclusion(
 
 void LayerTreeImplTestBase::AppendQuadsForPassWithOcclusion(
     LayerImpl* layer_impl,
-    viz::RenderPass* given_render_pass,
+    viz::CompositorRenderPass* given_render_pass,
     const gfx::Rect& occluded) {
   AppendQuadsData data;
 

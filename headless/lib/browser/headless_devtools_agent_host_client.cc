@@ -21,7 +21,7 @@ HeadlessDevToolsAgentHostClient::~HeadlessDevToolsAgentHostClient() {
 
 void HeadlessDevToolsAgentHostClient::DispatchProtocolMessage(
     content::DevToolsAgentHost* agent_host,
-    const std::string& json_message) {
+    base::span<const uint8_t> json_message) {
   DCHECK_EQ(agent_host, agent_host_.get());
   if (client_)
     client_->ReceiveProtocolMessage(json_message);
@@ -41,7 +41,7 @@ void HeadlessDevToolsAgentHostClient::SetClient(
 }
 
 void HeadlessDevToolsAgentHostClient::SendProtocolMessage(
-    const std::string& message) {
+    base::span<const uint8_t> message) {
   if (agent_host_)
     agent_host_->DispatchProtocolMessage(this, message);
 }

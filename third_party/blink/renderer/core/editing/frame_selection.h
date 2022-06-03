@@ -29,8 +29,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -42,8 +41,9 @@
 
 namespace blink {
 
-class DisplayItemClient;
+class CaretDisplayItemClient;
 class Element;
+class InlineTextBox;
 class LayoutBlock;
 class LayoutText;
 class LocalFrame;
@@ -51,6 +51,8 @@ class FrameCaret;
 class GranularityStrategy;
 class GraphicsContext;
 class NGInlineCursor;
+class NGInlineCursorPosition;
+class NGPhysicalBoxFragment;
 class Range;
 class SelectionEditor;
 class LayoutSelection;
@@ -87,6 +89,9 @@ struct LayoutSelectionStatus {
       : start(passed_start), end(passed_end), line_break(passed_line_break) {
     DCHECK_LE(start, end);
   }
+
+  bool HasValidRange() const { return start < end; }
+
   bool operator==(const LayoutSelectionStatus& other) const {
     return start == other.start && end == other.end &&
            line_break == other.line_break;
@@ -123,21 +128,21 @@ struct LayoutTextSelectionStatus {
 class CORE_EXPORT FrameSelection final
     : public GarbageCollected<FrameSelection>,
       public SynchronousMutationObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(FrameSelection);
-
  public:
   explicit FrameSelection(LocalFrame&);
+  FrameSelection(const FrameSelection&) = delete;
+  FrameSelection& operator=(const FrameSelection&) = delete;
   ~FrameSelection();
 
-  bool IsAvailable() const { return LifecycleContext(); }
+  bool IsAvailable() const;
   // You should not call |document()| when |!isAvailable()|.
   Document& GetDocument() const;
   LocalFrame* GetFrame() const { return frame_; }
   Element* RootEditableElementOrDocumentElement() const;
-  size_t CharacterIndexForPoint(const IntPoint&) const;
+  wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 
   // An implementation of |WebFrame::moveCaretSelection()|
-  void MoveCaretSelection(const IntPoint&);
+  void MoveCaretSelection(const gfx::Point&);
 
   VisibleSelection ComputeVisibleSelectionInDOMTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
@@ -163,7 +168,10 @@ class CORE_EXPORT FrameSelection final
   // be called.
   bool SetSelectionDeprecated(const SelectionInDOMTree&,
                               const SetSelectionOptions&);
-  void DidSetSelectionDeprecated(const SetSelectionOptions&);
+  void DidSetSelectionDeprecated(const SelectionInDOMTree&,
+                                 const SetSelectionOptions&);
+  void SetSelectionForAccessibility(const SelectionInDOMTree&,
+                                    const SetSelectionOptions&);
 
   // Call this after doing user-triggered selections to make it easy to delete
   // the frame you entirely selected.
@@ -180,9 +188,9 @@ class CORE_EXPORT FrameSelection final
   // This function does not allow the selection to collapse. If the new
   // extent is resolved to the same position as the current base, this
   // function will do nothing.
-  void MoveRangeSelectionExtent(const IntPoint&);
-  void MoveRangeSelection(const IntPoint& base_point,
-                          const IntPoint& extent_point,
+  void MoveRangeSelectionExtent(const gfx::Point&);
+  void MoveRangeSelection(const gfx::Point& base_point,
+                          const gfx::Point& extent_point,
                           TextGranularity);
 
   TextGranularity Granularity() const { return granularity_; }
@@ -190,6 +198,7 @@ class CORE_EXPORT FrameSelection final
   // Returns true if specified layout block should paint caret. This function is
   // called during painting only.
   bool ShouldPaintCaret(const LayoutBlock&) const;
+  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
 
   // Bounds of (possibly transformed) caret in absolute coords
   IntRect AbsoluteCaretBounds() const;
@@ -212,12 +221,11 @@ class CORE_EXPORT FrameSelection final
 
   void DidLayout();
   void CommitAppearanceIfNeeded();
-  void SetCaretVisible(bool caret_is_visible);
+  void SetCaretEnabled(bool caret_is_visible);
   void ScheduleVisualUpdate() const;
   void ScheduleVisualUpdateForPaintInvalidationIfNeeded() const;
 
   // Paint invalidation methods delegating to FrameCaret.
-  void ClearPreviousCaretVisualRect(const LayoutBlock&);
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);
   void UpdateStyleAndLayoutIfNeeded();
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
@@ -236,6 +244,7 @@ class CORE_EXPORT FrameSelection final
   void PageActivationChanged();
 
   bool IsHandleVisible() const { return is_handle_visible_; }
+  void SetHandleVisibleForTesting() { is_handle_visible_ = true; }
   bool ShouldShrinkNextTap() const { return should_shrink_next_tap_; }
 
   // Returns true if a word is selected.
@@ -260,13 +269,11 @@ class CORE_EXPORT FrameSelection final
   // TODO(tkent): This function has a bug that scrolling doesn't work well in
   // a case of RangeSelection. crbug.com/443061
   void RevealSelection(
-      const ScrollAlignment& = ScrollAlignment::kAlignCenterIfNeeded,
+      const mojom::blink::ScrollAlignment& = ScrollAlignment::CenterIfNeeded(),
       RevealExtentOption = kDoNotRevealExtent);
   void SetSelectionFromNone();
 
   void UpdateAppearance();
-  bool ShouldShowBlockCursor() const;
-  void SetShouldShowBlockCursor(bool);
 
   void CacheRangeOfDocument(Range*);
   Range* DocumentCachedRange() const;
@@ -282,8 +289,12 @@ class CORE_EXPORT FrameSelection final
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
       const NGInlineCursor& cursor) const;
+  SelectionState ComputeLayoutSelectionStateForCursor(
+      const NGInlineCursorPosition& position) const;
+  SelectionState ComputeLayoutSelectionStateForInlineTextBox(
+      const InlineTextBox& text_box) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class CaretDisplayItemClientTest;
@@ -291,11 +302,7 @@ class CORE_EXPORT FrameSelection final
   friend class PaintControllerPaintTestBase;
   friend class SelectionControllerTest;
 
-  const DisplayItemClient& CaretDisplayItemClientForTesting() const;
-
-  // Note: We have |selectionInFlatTree()| for unit tests, we should
-  // use |visibleSelection<EditingInFlatTreeStrategy>()|.
-  VisibleSelectionInFlatTree GetSelectionInFlatTree() const;
+  const CaretDisplayItemClient& CaretDisplayItemClientForTesting() const;
 
   void NotifyAccessibilityForSelectionChange();
   void NotifyCompositorForSelectionChange();
@@ -308,7 +315,7 @@ class CORE_EXPORT FrameSelection final
   void MoveRangeSelectionInternal(const SelectionInDOMTree&, TextGranularity);
 
   // Implementation of |SynchronousMutationObserver| member functions.
-  void ContextDestroyed(Document*) final;
+  void ContextDestroyed() final;
   void NodeChildrenWillBeRemoved(ContainerNode&) final;
   void NodeWillBeRemoved(Node&) final;
 
@@ -320,6 +327,10 @@ class CORE_EXPORT FrameSelection final
   LayoutUnit x_pos_for_vertical_arrow_navigation_;
 
   bool focused_ : 1;
+
+  // The selection is currently being modified via the "Modify" method.
+  bool is_being_modified_ = false;
+
   bool is_handle_visible_ = false;
   // TODO(editing-dev): We should change is_directional_ type to enum.
   // as directional can have three values forward, backward or directionless.
@@ -331,16 +342,14 @@ class CORE_EXPORT FrameSelection final
   std::unique_ptr<GranularityStrategy> granularity_strategy_;
 
   const Member<FrameCaret> frame_caret_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSelection);
 };
 
 }  // namespace blink
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::FrameSelection&);
-void showTree(const blink::FrameSelection*);
+void ShowTree(const blink::FrameSelection&);
+void ShowTree(const blink::FrameSelection*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FRAME_SELECTION_H_

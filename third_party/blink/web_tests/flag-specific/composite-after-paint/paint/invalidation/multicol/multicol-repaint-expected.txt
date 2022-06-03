@@ -5,27 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'XXXXXX'",
-          "rect": [234, 15, 300, 50],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [234, 15, 50, 50],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox '\u00A0'",
-          "rect": [9, 10, 13, 57],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '\u00A0'",
-          "rect": [9, 10, 13, 57],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [234, 15, 300, 50],
+        [9, 10, 13, 57]
       ]
     }
   ]

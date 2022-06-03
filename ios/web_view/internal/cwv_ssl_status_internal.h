@@ -10,9 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Converts net::CertStatus to CWVCertStatus.
-CWVCertStatus CWVCertStatusFromNetCertStatus(net::CertStatus cert_status);
-
 @interface CWVSSLStatus ()
 
 // Creates CWVSSLStatus which wraps |internalStatus|.

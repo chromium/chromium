@@ -10,6 +10,8 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
@@ -27,9 +29,9 @@
 namespace viz {
 namespace {
 
-static const int kTimeLimitMillis = 2000;
+static const auto kTimeLimit = base::Seconds(2);
 static const int kNumWarmupRuns = 20;
-static const int kTimeCheckInterval = 10;
+static const int kNumRunsPerTimeRecord = 10;
 
 enum class UseSingleSharedQuadState { YES, NO };
 
@@ -73,14 +75,12 @@ class VizSerializationPerfTest : public testing::Test {
           message.payload(), message.payload_num_bytes(), &compositor_frame);
     }
 
-    base::TimeTicks start = base::TimeTicks::Now();
-    base::TimeTicks end =
-        start + base::TimeDelta::FromMilliseconds(kTimeLimitMillis);
-    base::TimeTicks now = start;
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeTicks end = now + kTimeLimit;
     base::TimeDelta min_time;
     size_t count = 0;
-    while (start < end) {
-      for (int i = 0; i < kTimeCheckInterval; ++i) {
+    for (base::TimeTicks start = now; start < end; start = now) {
+      for (int i = 0; i < kNumRunsPerTimeRecord; ++i) {
         CompositorFrame compositor_frame;
         mojom::CompositorFrame::Deserialize(
             message.payload(), message.payload_num_bytes(), &compositor_frame);
@@ -92,14 +92,13 @@ class VizSerializationPerfTest : public testing::Test {
 
       if (now - start < min_time || min_time.is_zero())
         min_time = now - start;
-      start = now;
     }
 
     auto reporter = SetUpReporter(story, single_sqs);
     reporter.AddResult(kMetricStructDeserializationTimeUs,
-                       min_time.InMicrosecondsF() / kTimeCheckInterval);
+                       min_time.InMicrosecondsF() / kNumRunsPerTimeRecord);
     reporter.AddResult(kMetricStructDeserializationThroughputRunsPerS,
-                       count * 1000 / kTimeLimitMillis);
+                       count * kTimeLimit.ToHz());
   }
 
   static void RunSerializationTestStructTraits(
@@ -111,14 +110,12 @@ class VizSerializationPerfTest : public testing::Test {
           mojom::CompositorFrame::SerializeAsMessage(&frame);
     }
 
-    base::TimeTicks start = base::TimeTicks::Now();
-    base::TimeTicks end =
-        start + base::TimeDelta::FromMilliseconds(kTimeLimitMillis);
-    base::TimeTicks now = start;
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeTicks end = now + kTimeLimit;
     base::TimeDelta min_time;
     size_t count = 0;
-    while (start < end) {
-      for (int i = 0; i < kTimeCheckInterval; ++i) {
+    for (base::TimeTicks start = now; start < end; start = now) {
+      for (int i = 0; i < kNumRunsPerTimeRecord; ++i) {
         mojo::Message message =
             mojom::CompositorFrame::SerializeAsMessage(&frame);
         now = base::TimeTicks::Now();
@@ -129,18 +126,17 @@ class VizSerializationPerfTest : public testing::Test {
 
       if (now - start < min_time || min_time.is_zero())
         min_time = now - start;
-      start = now;
     }
 
     auto reporter = SetUpReporter(story, single_sqs);
     reporter.AddResult(kMetricStructSerializationTimeUs,
-                       min_time.InMicrosecondsF() / kTimeCheckInterval);
+                       min_time.InMicrosecondsF() / kNumRunsPerTimeRecord);
     reporter.AddResult(kMetricStructSerializationThroughputRunsPerS,
-                       count * 1000 / kTimeLimitMillis);
+                       count / kTimeLimit.InSecondsF());
   }
 
   static void RunComplexCompositorFrameTest(const std::string& story) {
-    CompositorFrame frame;
+    CompositorFrame frame = MakeEmptyCompositorFrame();
     frame.metadata.begin_frame_ack = BeginFrameAck(0, 1, true);
 
     std::vector<TransferableResource>& resource_list = frame.resource_list;
@@ -183,6 +179,7 @@ class VizSerializationPerfTest : public testing::Test {
     bool arbitrary_bool4 = true;
     bool arbitrary_bool5 = false;
     bool arbitrary_bool6 = true;
+    bool arbitrary_bool7 = false;
     gfx::ProtectedVideoType arbitrary_protected_video_type =
         gfx::ProtectedVideoType::kClear;
     int arbitrary_context_id1 = 12;
@@ -192,31 +189,31 @@ class VizSerializationPerfTest : public testing::Test {
     SkBlendMode arbitrary_blend_mode1 = SkBlendMode::kScreen;
     SkBlendMode arbitrary_blend_mode2 = SkBlendMode::kLighten;
     SkBlendMode arbitrary_blend_mode3 = SkBlendMode::kOverlay;
-    ResourceId arbitrary_resourceid1 = 55;
-    ResourceId arbitrary_resourceid2 = 47;
-    ResourceId arbitrary_resourceid3 = 23;
-    ResourceId arbitrary_resourceid4 = 16;
+    ResourceId arbitrary_resourceid1(55);
+    ResourceId arbitrary_resourceid2(47);
+    ResourceId arbitrary_resourceid3(23);
+    ResourceId arbitrary_resourceid4(16);
     SkScalar arbitrary_sigma = SkFloatToScalar(2.0f);
-    gfx::ColorSpace arbitrary_color_space = gfx::ColorSpace::CreateXYZD50();
-    int root_id = 14;
+    CompositorRenderPassId root_id{14};
 
     cc::FilterOperations arbitrary_filters1;
     arbitrary_filters1.Append(
         cc::FilterOperation::CreateGrayscaleFilter(arbitrary_float1));
     arbitrary_filters1.Append(cc::FilterOperation::CreateReferenceFilter(
-        sk_make_sp<cc::BlurPaintFilter>(
-            arbitrary_sigma, arbitrary_sigma,
-            cc::BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr)));
+        sk_make_sp<cc::BlurPaintFilter>(arbitrary_sigma, arbitrary_sigma,
+                                        SkTileMode::kDecal, nullptr)));
 
     cc::FilterOperations arbitrary_filters2;
     arbitrary_filters2.Append(
         cc::FilterOperation::CreateBrightnessFilter(arbitrary_float2));
 
-    std::unique_ptr<RenderPass> pass_in = RenderPass::Create();
+    auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
-                    arbitrary_rrectf1, arbitrary_color_space, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1);
+                    arbitrary_rrectf1, SubtreeCaptureId(),
+                    arbitrary_rect1.size(), SharedElementResourceId(),
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
+                    arbitrary_bool1, arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {
@@ -224,8 +221,9 @@ class VizSerializationPerfTest : public testing::Test {
           pass_in->CreateAndAppendSharedQuadState();
       shared_state1_in->SetAll(
           arbitrary_matrix1, arbitrary_rect1, arbitrary_rect1,
-          arbitrary_rrectf1, arbitrary_rect2, arbitrary_bool1, arbitrary_bool1,
-          arbitrary_float1, arbitrary_blend_mode1, arbitrary_context_id1);
+          gfx::MaskFilterInfo(arbitrary_rrectf1), arbitrary_rect2,
+          arbitrary_bool1, arbitrary_float1, arbitrary_blend_mode1,
+          arbitrary_context_id1);
 
       auto* texture_in = pass_in->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_in->SetAll(
@@ -266,8 +264,9 @@ class VizSerializationPerfTest : public testing::Test {
           pass_in->CreateAndAppendSharedQuadState();
       shared_state2_in->SetAll(
           arbitrary_matrix2, arbitrary_rect2, arbitrary_rect2,
-          arbitrary_rrectf2, arbitrary_rect3, arbitrary_bool1, arbitrary_bool1,
-          arbitrary_float2, arbitrary_blend_mode2, arbitrary_context_id2);
+          gfx::MaskFilterInfo(arbitrary_rrectf2), arbitrary_rect3,
+          arbitrary_bool1, arbitrary_float2, arbitrary_blend_mode2,
+          arbitrary_context_id2);
       for (uint32_t j = 0; j < 6; ++j) {
         auto* tile_in = pass_in->CreateAndAppendDrawQuad<TileDrawQuad>();
         tile_in->SetAll(
@@ -283,8 +282,9 @@ class VizSerializationPerfTest : public testing::Test {
           pass_in->CreateAndAppendSharedQuadState();
       shared_state3_in->SetAll(
           arbitrary_matrix1, arbitrary_rect3, arbitrary_rect3,
-          arbitrary_rrectf3, arbitrary_rect1, arbitrary_bool1, arbitrary_bool1,
-          arbitrary_float3, arbitrary_blend_mode3, arbitrary_context_id3);
+          gfx::MaskFilterInfo(arbitrary_rrectf3), arbitrary_rect1,
+          arbitrary_bool1, arbitrary_float3, arbitrary_blend_mode3,
+          arbitrary_context_id3);
       for (uint32_t j = 0; j < 5; ++j) {
         auto* solidcolor_in =
             pass_in->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -305,8 +305,9 @@ class VizSerializationPerfTest : public testing::Test {
     CompositorFrame frame = MakeEmptyCompositorFrame();
 
     for (uint32_t i = 0; i < num_passes; ++i) {
-      std::unique_ptr<RenderPass> render_pass = RenderPass::Create();
-      render_pass->SetNew(1, gfx::Rect(20, 20), gfx::Rect(), gfx::Transform());
+      auto render_pass = CompositorRenderPass::Create();
+      render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(20, 20),
+                          gfx::Rect(), gfx::Transform());
       for (uint32_t j = 0; j < num_quads; ++j) {
         if (j == 0 || single_sqs == UseSingleSharedQuadState::NO)
           render_pass->CreateAndAppendSharedQuadState();

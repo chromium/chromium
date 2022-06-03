@@ -15,7 +15,7 @@ ArcOptInFocusManager.prototype = {
   __proto__: cr.ui.FocusManager.prototype,
 
   /** @override */
-  getFocusParent: function() {
+  getFocusParent() {
     var overlay = $('overlay-container');
     if (overlay.hidden) {
       return document.body;

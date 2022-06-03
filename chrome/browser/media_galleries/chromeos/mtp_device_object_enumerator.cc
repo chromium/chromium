@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 MTPDeviceObjectEnumerator::MTPDeviceObjectEnumerator(
     std::vector<device::mojom::MtpFileEntryPtr> entries)

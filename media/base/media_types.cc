@@ -10,7 +10,7 @@ namespace media {
 
 // static
 AudioType AudioType::FromDecoderConfig(const AudioDecoderConfig& config) {
-  return {config.codec()};
+  return {config.codec(), AudioCodecProfile::kUnknown, false};
 }
 
 // static
@@ -28,26 +28,26 @@ VideoType VideoType::FromDecoderConfig(const VideoDecoderConfig& config) {
 
   switch (config.codec()) {
     // These have no notion of level.
-    case kUnknownVideoCodec:
-    case kCodecTheora:
-    case kCodecVP8:
+    case VideoCodec::kUnknown:
+    case VideoCodec::kTheora:
+    case VideoCodec::kVP8:
     // These use non-numeric levels, aren't part of our mime code, and
     // are ancient with very limited support.
-    case kCodecVC1:
-    case kCodecMPEG2:
-    case kCodecMPEG4:
+    case VideoCodec::kVC1:
+    case VideoCodec::kMPEG2:
+    case VideoCodec::kMPEG4:
       break;
-    case kCodecH264:
-    case kCodecVP9:
-    case kCodecHEVC:
+    case VideoCodec::kH264:
+    case VideoCodec::kVP9:
+    case VideoCodec::kHEVC:
       // 10 is the level_idc for level 1.0.
       level = 10;
       break;
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       // Dolby doesn't do decimals, so 1 is just 1.
       level = 1;
       break;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       // Strangely, AV1 starts at 2.0.
       level = 20;
       break;
@@ -57,7 +57,8 @@ VideoType VideoType::FromDecoderConfig(const VideoDecoderConfig& config) {
 }
 
 bool operator==(const AudioType& x, const AudioType& y) {
-  return x.codec == y.codec;
+  return std::tie(x.codec, x.profile, x.spatial_rendering) ==
+         std::tie(y.codec, y.profile, y.spatial_rendering);
 }
 
 bool operator!=(const AudioType& x, const AudioType& y) {

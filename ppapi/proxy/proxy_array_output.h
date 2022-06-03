@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_array_output.h"
 

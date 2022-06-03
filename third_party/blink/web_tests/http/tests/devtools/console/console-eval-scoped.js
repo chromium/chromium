@@ -8,7 +8,7 @@
     `Tests that evaluating 'console.log()' in the console will have access to its outer scope variables. Bug 60547.\n`
   );
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -55,8 +55,8 @@
   }
 
   function dumpAndClearConsoleMessages(next) {
-    TestRunner.deprecatedRunAfterPendingDispatches(function() {
-      ConsoleTestRunner.dumpConsoleMessages();
+    TestRunner.deprecatedRunAfterPendingDispatches(async function() {
+      await ConsoleTestRunner.dumpConsoleMessages();
       Console.ConsoleView.clearConsole();
       TestRunner.deprecatedRunAfterPendingDispatches(next);
     });

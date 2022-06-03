@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/test_interaction_provider.h"
 
+#include "base/check.h"
+
 namespace extensions {
 
 namespace {

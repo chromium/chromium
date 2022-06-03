@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
@@ -33,6 +33,9 @@ class RenderbufferAttachment
       Renderbuffer* renderbuffer)
       : renderbuffer_(renderbuffer) {
   }
+
+  RenderbufferAttachment(const RenderbufferAttachment&) = delete;
+  RenderbufferAttachment& operator=(const RenderbufferAttachment&) = delete;
 
   GLsizei width() const override { return renderbuffer_->width(); }
 
@@ -132,8 +135,6 @@ class RenderbufferAttachment
 
  private:
   scoped_refptr<Renderbuffer> renderbuffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderbufferAttachment);
 };
 
 class TextureAttachment
@@ -148,6 +149,9 @@ class TextureAttachment
         samples_(samples),
         layer_(layer) {
   }
+
+  TextureAttachment(const TextureAttachment&) = delete;
+  TextureAttachment& operator=(const TextureAttachment&) = delete;
 
   GLsizei width() const override {
     GLsizei temp_width = 0;
@@ -314,8 +318,6 @@ class TextureAttachment
   GLint level_;
   GLsizei samples_;
   GLint layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureAttachment);
 };
 
 FramebufferManager::FramebufferManager(

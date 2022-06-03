@@ -1,0 +1,38 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reauthentication") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "reauthentication_event.h",
+    "reauthentication_module.h",
+    "reauthentication_module.mm",
+    "reauthentication_protocol.h",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "LocalAuthentication.framework" ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "reauthentication_module_for_testing.h" ]
+  deps = [ ":reauthentication" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "reauthentication_module_unittest.mm" ]
+  deps = [
+    ":reauthentication",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

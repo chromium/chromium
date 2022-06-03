@@ -17,7 +17,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/win/win_child_process.h"
 #include "util/file/file_io.h"
@@ -30,6 +29,9 @@ namespace test {
 class WinMultiprocess {
  public:
   WinMultiprocess();
+
+  WinMultiprocess(const WinMultiprocess&) = delete;
+  WinMultiprocess& operator=(const WinMultiprocess&) = delete;
 
   //! \brief Runs the test.
   //!
@@ -127,15 +129,16 @@ class WinMultiprocess {
   class ChildProcessHelperBase : public WinChildProcess {
    public:
     ChildProcessHelperBase() {}
+
+    ChildProcessHelperBase(const ChildProcessHelperBase&) = delete;
+    ChildProcessHelperBase& operator=(const ChildProcessHelperBase&) = delete;
+
     ~ChildProcessHelperBase() override {}
 
     void CloseWritePipeForwarder() { CloseWritePipe(); }
     void CloseReadPipeForwarder() { CloseReadPipe(); }
     FileHandle ReadPipeHandleForwarder() const { return ReadPipeHandle(); }
     FileHandle WritePipeHandleForwarder() const { return WritePipeHandle(); }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ChildProcessHelperBase);
   };
 
   // Forwards WinChildProcess::Run to T::WinMultiprocessChild.
@@ -143,6 +146,10 @@ class WinMultiprocess {
   class ChildProcessHelper : public ChildProcessHelperBase {
    public:
     ChildProcessHelper() {}
+
+    ChildProcessHelper(const ChildProcessHelper&) = delete;
+    ChildProcessHelper& operator=(const ChildProcessHelper&) = delete;
+
     ~ChildProcessHelper() override {}
 
    private:
@@ -154,14 +161,12 @@ class WinMultiprocess {
         return 255;
       return EXIT_SUCCESS;
     }
-
-    DISALLOW_COPY_AND_ASSIGN(ChildProcessHelper);
   };
 
   //! \brief The subclass-provided parent routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! This method need not use `WaitForSingleObject()`-family call to wait for
   //! the child process to exit, as this is handled by this class.
@@ -185,8 +190,8 @@ class WinMultiprocess {
 
   //! \brief The subclass-provided child routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! Subclasses must implement this method to define how the child operates.
   //! Subclasses may exit with a failure status by using `LOG(FATAL)`,
@@ -197,8 +202,6 @@ class WinMultiprocess {
   unsigned int exit_code_;
   WinChildProcess::Handles* child_handles_;
   ChildProcessHelperBase* child_process_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinMultiprocess);
 };
 
 }  // namespace test

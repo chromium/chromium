@@ -8,21 +8,28 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
 class FakeWallpaperInstance : public mojom::WallpaperInstance {
  public:
   FakeWallpaperInstance();
+
+  FakeWallpaperInstance(const FakeWallpaperInstance&) = delete;
+  FakeWallpaperInstance& operator=(const FakeWallpaperInstance&) = delete;
+
   ~FakeWallpaperInstance() override;
 
   const std::vector<int32_t>& changed_ids() const { return changed_ids_; }
 
   // Overridden from mojom::WallpaperInstance
-  void InitDeprecated(mojom::WallpaperHostPtr host_ptr) override;
-  void Init(mojom::WallpaperHostPtr host_ptr, InitCallback callback) override;
+  void InitDeprecated(
+      mojo::PendingRemote<mojom::WallpaperHost> host_remote) override;
+  void Init(mojo::PendingRemote<mojom::WallpaperHost> host_remote,
+            InitCallback callback) override;
   void OnWallpaperChanged(int32_t walpaper_id) override;
 
  private:
@@ -30,9 +37,7 @@ class FakeWallpaperInstance : public mojom::WallpaperInstance {
 
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
-  mojom::WallpaperHostPtr host_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWallpaperInstance);
+  mojo::Remote<mojom::WallpaperHost> host_remote_;
 };
 
 }  // namespace arc

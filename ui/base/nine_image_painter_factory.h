@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 // A macro to define arrays of IDR constants used with CreateImageGridPainter.
 #define IMAGE_GRID(x) { x ## _TOP_LEFT,    x ## _TOP,    x ## _TOP_RIGHT, \
@@ -44,7 +44,8 @@ namespace ui {
 
 // Creates a NineImagePainter from an array of image ids. It's expected the
 // array came from the IMAGE_GRID macro.
-UI_BASE_EXPORT std::unique_ptr<gfx::NineImagePainter> CreateNineImagePainter(
+COMPONENT_EXPORT(UI_BASE)
+std::unique_ptr<gfx::NineImagePainter> CreateNineImagePainter(
     const int image_ids[]);
 
 }  // namespace ui

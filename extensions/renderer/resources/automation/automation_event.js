@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
+const utils = require('utils');
 
-function AutomationEventImpl(type, target, eventFrom) {
+function AutomationEventImpl(
+    type, target, eventFrom, eventFromAction, mouseX, mouseY, intents) {
   this.propagationStopped = false;
   this.type = type;
   this.target = target;
   this.eventPhase = Event.NONE;
   this.eventFrom = eventFrom;
+  this.eventFromAction = eventFromAction;
+  this.mouseX = mouseX;
+  this.mouseY = mouseY;
+  this.intents = intents;
 }
 
 AutomationEventImpl.prototype = {
@@ -26,11 +31,18 @@ utils.expose(AutomationEvent, AutomationEventImpl, {
   functions: [
     'stopPropagation',
   ],
+  properties: [
+    'generatedType',
+  ],
   readonly: [
     'type',
     'target',
     'eventPhase',
     'eventFrom',
+    'eventFromAction',
+    'mouseX',
+    'mouseY',
+    'intents',
   ],
 });
 

@@ -6,22 +6,23 @@
 #define CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -36,6 +37,7 @@ class SharedURLLoaderFactory;
 
 namespace net_log {
 class NetExportFileWriter;
+class NetLogProxySource;
 }
 
 // Responsible for creating and managing access to the system NetworkContext.
@@ -59,6 +61,10 @@ class NetExportFileWriter;
 // to being compatible with the network service.
 class SystemNetworkContextManager {
  public:
+  SystemNetworkContextManager(const SystemNetworkContextManager&) = delete;
+  SystemNetworkContextManager& operator=(const SystemNetworkContextManager&) =
+      delete;
+
   ~SystemNetworkContextManager();
 
   // Creates the global instance of SystemNetworkContextManager. If an
@@ -77,6 +83,8 @@ class SystemNetworkContextManager {
   static void DeleteInstance();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  static StubResolverConfigReader* GetStubResolverConfigReader();
 
   // Returns the System NetworkContext. May only be called after SetUp(). Does
   // any initialization of the NetworkService that may be needed when first
@@ -113,13 +121,29 @@ class SystemNetworkContextManager {
   void AddSSLConfigToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
 
-  // Returns default set of parameters for configuring the network service.
+  // Configures default set of parameters for configuring the network context.
+  void ConfigureDefaultNetworkContextParams(
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params);
+
+  // Performs the same function as ConfigureDefaultNetworkContextParams(), and
+  // then returns a newly allocated network::mojom::NetworkContextParams with
+  // some modifications: if the CertVerifierService is enabled, the new
+  // NetworkContextParams will contain a CertVerifierServiceRemoteParams.
+  // Otherwise the newly configured CertVerifierCreationParams is placed
+  // directly into the NetworkContextParams.
   network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams();
 
   // Returns a shared global NetExportFileWriter instance, used by net-export.
   // It lives here so it can outlive chrome://net-export/ if the tab is closed
   // or destroyed, and so that it's destroyed before Mojo is shut down.
   net_log::NetExportFileWriter* GetNetExportFileWriter();
+
+  // Returns whether the network sandbox is enabled. This depends on  policy but
+  // also feature status from sandbox. Called before there is an instance of
+  // SystemNetworkContextManager.
+  static bool IsNetworkSandboxEnabled();
 
   // Flushes all pending SSL configuration changes.
   void FlushSSLConfigManagerForTesting();
@@ -131,25 +155,29 @@ class SystemNetworkContextManager {
   // use only.
   void FlushNetworkInterfaceForTesting();
 
-  // Returns configuration that would be sent to the stub DNS resolver.
-  static void GetStubResolverConfigForTesting(
-      bool* insecure_stub_resolver_enabled,
-      net::DnsConfig::SecureDnsMode* secure_dns_mode,
-      base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>*
-          dns_over_https_servers);
-
   static network::mojom::HttpAuthStaticParamsPtr
   GetHttpAuthStaticParamsForTesting();
   static network::mojom::HttpAuthDynamicParamsPtr
   GetHttpAuthDynamicParamsForTesting();
 
   // Enables Certificate Transparency and enforcing the Chrome Certificate
-  // Transparency Policy. For test use only. Use base::nullopt_t to reset to
+  // Transparency Policy. For test use only. Use absl::nullopt_t to reset to
   // the default state.
   static void SetEnableCertificateTransparencyForTesting(
-      base::Optional<bool> enabled);
+      absl::optional<bool> enabled);
+
+  static bool IsCertificateTransparencyEnabled();
+
+  static void set_stub_resolver_config_reader_for_testing(
+      StubResolverConfigReader* reader) {
+    stub_resolver_config_reader_for_testing_ = reader;
+  }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
+      Test);
+
   class URLLoaderFactoryForSystem;
 
   // Constructor. |pref_service| must out live this object.
@@ -160,6 +188,10 @@ class SystemNetworkContextManager {
   // Creates parameters for the NetworkContext. May only be called once, since
   // it initializes some class members.
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
+
+  // Send the current value of the net.explicitly_allowed_network_ports pref to
+  // the network process.
+  void UpdateExplicitlyAllowedNetworkPorts();
 
   // The PrefService to retrieve all the pref values.
   PrefService* local_state_;
@@ -186,10 +218,18 @@ class SystemNetworkContextManager {
 
   BooleanPrefMember enable_referrers_;
 
+  // Copies NetLog events from the browser process to the Network Service, if
+  // the network service is running in a separate process. It will be destroyed
+  // and re-created on Network Service crash.
+  std::unique_ptr<net_log::NetLogProxySource> net_log_proxy_source_;
+
   // Initialized on first access.
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemNetworkContextManager);
+  StubResolverConfigReader stub_resolver_config_reader_;
+  static StubResolverConfigReader* stub_resolver_config_reader_for_testing_;
+
+  static absl::optional<bool> certificate_transparency_enabled_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_

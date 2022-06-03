@@ -20,7 +20,7 @@ function onResize() {
   const runnerContainer = document.querySelector('.runner-container');
 
   // Check for change in nav status.
-  if (mobileNav != window.matchMedia(mediaQuery).matches) {
+  if (mobileNav !== window.matchMedia(mediaQuery).matches) {
     mobileNav = !mobileNav;
 
     // Handle showing the top content / details sections according to state.

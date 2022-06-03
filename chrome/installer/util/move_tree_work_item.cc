@@ -10,21 +10,19 @@
 #include "chrome/installer/util/duplicate_tree_detector.h"
 #include "chrome/installer/util/logging_installer.h"
 
-MoveTreeWorkItem::~MoveTreeWorkItem() {
-}
+MoveTreeWorkItem::~MoveTreeWorkItem() {}
 
 MoveTreeWorkItem::MoveTreeWorkItem(const base::FilePath& source_path,
                                    const base::FilePath& dest_path,
-                                   const base::FilePath& temp_dir,
+                                   const base::FilePath& temp_path,
                                    MoveTreeOption duplicate_option)
     : source_path_(source_path),
       dest_path_(dest_path),
-      temp_dir_(temp_dir),
+      temp_path_(temp_path),
       moved_to_dest_path_(false),
       moved_to_backup_(false),
       source_moved_to_backup_(false),
-      duplicate_option_(duplicate_option) {
-}
+      duplicate_option_(duplicate_option) {}
 
 bool MoveTreeWorkItem::DoImpl() {
   if (!base::PathExists(source_path_)) {
@@ -42,9 +40,9 @@ bool MoveTreeWorkItem::DoImpl() {
   //    fail if files in dest_path_ are in use.
   if (base::PathExists(dest_path_)) {
     // Generate a backup path that can keep the original files under dest_path_.
-    if (!backup_path_.CreateUniqueTempDirUnderPath(temp_dir_)) {
+    if (!backup_path_.CreateUniqueTempDirUnderPath(temp_path_)) {
       PLOG(ERROR) << "Failed to get backup path in folder "
-                  << temp_dir_.value();
+                  << temp_path_.value();
       return false;
     }
     base::FilePath backup =
@@ -68,9 +66,8 @@ bool MoveTreeWorkItem::DoImpl() {
                       << " for duplicate trees. Trying regular Move instead.";
         }
       } else {
-        VLOG(1) << "Source path " << source_path_.value()
-                << " differs from " << dest_path_.value()
-                << ", updating now.";
+        VLOG(1) << "Source path " << source_path_.value() << " differs from "
+                << dest_path_.value() << ", updating now.";
       }
     }
 
@@ -79,8 +76,8 @@ bool MoveTreeWorkItem::DoImpl() {
       VLOG(1) << "Moved destination " << dest_path_.value()
               << " to backup path " << backup.value();
     } else {
-      PLOG(ERROR) << "failed moving " << dest_path_.value()
-                  << " to " << backup.value();
+      PLOG(ERROR) << "failed moving " << dest_path_.value() << " to "
+                  << backup.value();
       return false;
     }
   }
@@ -88,11 +85,11 @@ bool MoveTreeWorkItem::DoImpl() {
   // Now move source to destination.
   if (base::Move(source_path_, dest_path_)) {
     moved_to_dest_path_ = true;
-    VLOG(1) << "Moved source " << source_path_.value()
-            << " to destination " << dest_path_.value();
+    VLOG(1) << "Moved source " << source_path_.value() << " to destination "
+            << dest_path_.value();
   } else {
-    PLOG(ERROR) << "failed move " << source_path_.value()
-                << " to " << dest_path_.value();
+    PLOG(ERROR) << "failed move " << source_path_.value() << " to "
+                << dest_path_.value();
     return false;
   }
 
@@ -101,8 +98,8 @@ bool MoveTreeWorkItem::DoImpl() {
 
 void MoveTreeWorkItem::RollbackImpl() {
   if (moved_to_dest_path_ && !base::Move(dest_path_, source_path_)) {
-    PLOG(ERROR) << "Can not move " << dest_path_.value()
-                << " to " << source_path_.value();
+    PLOG(ERROR) << "Can not move " << dest_path_.value() << " to "
+                << source_path_.value();
   }
 
   if (moved_to_backup_ || source_moved_to_backup_) {

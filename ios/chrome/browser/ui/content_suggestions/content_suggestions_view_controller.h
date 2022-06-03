@@ -8,25 +8,25 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 
+@class BubblePresenter;
 @class ContentSuggestionsSectionInformation;
+@protocol ContentSuggestionsActionHandler;
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsDataSource;
-@protocol ContentSuggestionsHeaderSynchronizing;
-@protocol ContentSuggestionsMetricsRecording;
+@protocol ContentSuggestionsHeaderControlling;
+@protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
-@protocol OverscrollActionsControllerDelegate;
+@protocol DiscoverFeedHeaderChanging;
+@protocol DiscoverFeedMenuCommands;
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
-
-extern NSString* const
-    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix;
+@protocol ThemeChangeDelegate;
 
 // CollectionViewController to display the suggestions items.
-@interface ContentSuggestionsViewController
-    : CollectionViewController<ContentSuggestionsCollectionControlling>
+@interface ContentSuggestionsViewController : CollectionViewController
 
+// Inits view controller with |style|.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
     NS_DESIGNATED_INITIALIZER;
 
@@ -43,11 +43,26 @@ extern NSString* const
 @property(nonatomic, readonly)
     CollectionViewModel<CollectionViewItem<SuggestedContent>*>*
         collectionViewModel;
-// Delegate for the overscroll actions.
-@property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
-    overscrollDelegate;
-@property(nonatomic, weak) id<ContentSuggestionsMetricsRecording>
-    metricsRecorder;
+// Delegate for handling theme changes (dark/light theme).
+@property(nonatomic, weak) id<ThemeChangeDelegate> themeChangeDelegate;
+@property(nonatomic, weak) id<DiscoverFeedMenuCommands> discoverFeedMenuHandler;
+@property(nonatomic, weak, readonly) id<DiscoverFeedHeaderChanging>
+    discoverFeedHeaderDelegate;
+// Whether or not the contents section should be hidden completely.
+@property(nonatomic, assign) BOOL contentSuggestionsEnabled;
+// Provides information about the content suggestions header. Used to get the
+// header height.
+// TODO(crbug.com/1114792): Remove this and replace its call with refactored
+// header synchronizer.
+@property(nonatomic, weak) id<ContentSuggestionsHeaderControlling>
+    headerProvider;
+// Delegate for handling actions relating to content suggestions.
+@property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
+// Provider of menu configurations for the contentSuggestions component.
+@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
+
+// Bubble presenter for displaying IPH bubbles relating to the NTP.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
@@ -61,18 +76,6 @@ extern NSString* const
 - (void)addSuggestions:
             (NSArray<CollectionViewItem<SuggestedContent>*>*)suggestions
          toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo;
-// Returns the number of suggestions displayed above this |section|.
-- (NSInteger)numberOfSuggestionsAbove:(NSInteger)section;
-// Returns the number of sections containing suggestions displayed above this
-// |section|.
-- (NSInteger)numberOfSectionsAbove:(NSInteger)section;
-// Updates the constraints of the collection.
-- (void)updateConstraints;
-// Clear the overscroll actions.
-- (void)clearOverscroll;
-// Sets the collection contentOffset to |offset|, or caches the value and
-// applies it after the first layout.
-- (void)setContentOffset:(CGFloat)offset;
 
 @end
 

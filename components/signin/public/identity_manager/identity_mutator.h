@@ -42,13 +42,13 @@ class JniIdentityMutator {
   //   - there is not already a primary account set.
   bool SetPrimaryAccount(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& primary_account_id);
+      const base::android::JavaParamRef<jobject>& primary_account_id,
+      jint consent_level);
 
   // Called by java to clear the primary account, and return whether the
   // operation succeeded or not. Depending on |action|, the other accounts known
   // to the IdentityManager may be deleted.
   bool ClearPrimaryAccount(JNIEnv* env,
-                           jint action,
                            jint source_metric,
                            jint delete_metric);
 

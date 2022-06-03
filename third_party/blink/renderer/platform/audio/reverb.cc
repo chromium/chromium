@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -52,12 +53,12 @@ const float kMinPower = 0.000125f;
 
 static float CalculateNormalizationScale(AudioBus* response) {
   // Normalize by RMS power
-  size_t number_of_channels = response->NumberOfChannels();
-  size_t length = response->length();
+  unsigned number_of_channels = response->NumberOfChannels();
+  uint32_t length = response->length();
 
   float power = 0;
 
-  for (size_t i = 0; i < number_of_channels; ++i) {
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     float channel_power = 0;
     vector_math::Vsvesq(response->Channel(i)->Data(), 1, &channel_power,
                         length);
@@ -72,7 +73,7 @@ static float CalculateNormalizationScale(AudioBus* response) {
 
   float scale = 1 / power;
 
-  scale *= powf(
+  scale *= fdlibm::powf(
       10, kGainCalibration *
               0.05f);  // calibrate to make perceived volume same as unprocessed
 
@@ -88,8 +89,8 @@ static float CalculateNormalizationScale(AudioBus* response) {
 }
 
 Reverb::Reverb(AudioBus* impulse_response,
-               size_t render_slice_size,
-               size_t max_fft_size,
+               unsigned render_slice_size,
+               unsigned max_fft_size,
                bool use_background_threads,
                bool normalize) {
   float scale = 1;
@@ -103,8 +104,8 @@ Reverb::Reverb(AudioBus* impulse_response,
 }
 
 void Reverb::Initialize(AudioBus* impulse_response_buffer,
-                        size_t render_slice_size,
-                        size_t max_fft_size,
+                        unsigned render_slice_size,
+                        unsigned max_fft_size,
                         bool use_background_threads,
                         float scale) {
   impulse_response_length_ = impulse_response_buffer->length();
@@ -133,7 +134,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // repeatedly allocating it in the process() method.  It can be bad to
   // allocate memory in a real-time thread.
   if (number_of_response_channels_ == 4)
-    temp_buffer_ = AudioBus::Create(2, kMaxFrameSize);
+    temp_buffer_ = AudioBus::Create(2, render_slice_size);
 }
 
 void Reverb::Process(const AudioBus* source_bus,
@@ -146,7 +147,6 @@ void Reverb::Process(const AudioBus* source_bus,
   DCHECK(destination_bus);
   DCHECK_GT(source_bus->NumberOfChannels(), 0u);
   DCHECK_GT(destination_bus->NumberOfChannels(), 0u);
-  DCHECK_LE(frames_to_process, kMaxFrameSize);
   DCHECK_LE(frames_to_process, source_bus->length());
   DCHECK_LE(frames_to_process, destination_bus->length());
 
@@ -269,7 +269,7 @@ void Reverb::Process(const AudioBus* source_bus,
 }
 
 void Reverb::Reset() {
-  for (size_t i = 0; i < convolvers_.size(); ++i)
+  for (wtf_size_t i = 0; i < convolvers_.size(); ++i)
     convolvers_[i]->Reset();
 }
 

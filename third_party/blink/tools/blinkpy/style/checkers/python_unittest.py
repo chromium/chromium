@@ -19,7 +19,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for python.py."""
 
 import os
@@ -29,7 +28,6 @@ from blinkpy.style.checkers.python import PythonChecker
 
 
 class PythonCheckerTest(unittest.TestCase):
-
     """Tests the PythonChecker class."""
 
     def test_init(self):
@@ -40,8 +38,7 @@ class PythonCheckerTest(unittest.TestCase):
 
         checker = PythonChecker("foo.txt", _mock_handle_style_error)
         self.assertEqual(checker._file_path, "foo.txt")
-        self.assertEqual(checker._handle_style_error,
-                         _mock_handle_style_error)
+        self.assertEqual(checker._handle_style_error, _mock_handle_style_error)
 
     # TODO(crbug.com/757067): Figure out why this is failing on LUCI mac/win.
     def disable_test_check(self):
@@ -59,13 +56,13 @@ class PythonCheckerTest(unittest.TestCase):
         checker = PythonChecker(file_path, _mock_handle_style_error)
         checker.check()
 
-        self.assertEqual(
-            [
-                (2, 'pep8/W291', 5, 'trailing whitespace'),
-                (3, 'pep8/E261', 5, 'at least two spaces before inline comment'),
-                (3, 'pep8/E262', 5, "inline comment should start with '# '"),
-                (2, 'pylint/C0303(trailing-whitespace)', 5, '[] Trailing whitespace'),
-                (2, 'pylint/E0602(undefined-variable)', 5, u"[] Undefined variable 'error'"),
-                (3, 'pylint/W0611(unused-import)', 5, '[] Unused import math'),
-            ],
-            errors)
+        self.assertEqual([
+            (2, 'pep8/W291', 5, 'trailing whitespace'),
+            (3, 'pep8/E261', 5, 'at least two spaces before inline comment'),
+            (3, 'pep8/E262', 5, "inline comment should start with '# '"),
+            (2, 'pylint/C0303(trailing-whitespace)', 5,
+             '[] Trailing whitespace'),
+            (2, 'pylint/E0602(undefined-variable)', 5,
+             u"[] Undefined variable 'error'"),
+            (3, 'pylint/W0611(unused-import)', 5, '[] Unused import math'),
+        ], errors)

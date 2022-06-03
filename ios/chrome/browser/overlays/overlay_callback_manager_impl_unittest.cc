@@ -7,20 +7,13 @@
 #include "base/bind.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #include "testing/platform_test.h"
 
 namespace {
 // Fake dispatch response info types.
-class FirstResponseInfo : public OverlayUserData<FirstResponseInfo> {
- private:
-  OVERLAY_USER_DATA_SETUP(FirstResponseInfo);
-};
-OVERLAY_USER_DATA_SETUP_IMPL(FirstResponseInfo);
-class SecondResponseInfo : public OverlayUserData<SecondResponseInfo> {
- private:
-  OVERLAY_USER_DATA_SETUP(SecondResponseInfo);
-};
-OVERLAY_USER_DATA_SETUP_IMPL(SecondResponseInfo);
+DEFINE_TEST_OVERLAY_RESPONSE_INFO(FirstResponseInfo);
+DEFINE_TEST_OVERLAY_RESPONSE_INFO(SecondResponseInfo);
 }  // namespace
 
 using OverlayCallbackManagerImplTest = PlatformTest;
@@ -74,10 +67,12 @@ TEST_F(OverlayCallbackManagerImplTest, DispatchCallbacks) {
       ^(OverlayResponse* response) {
         ++second_execution_count;
       };
-  manager.AddDispatchCallback<FirstResponseInfo>(
-      base::BindRepeating(base::RetainBlock(first_callback_block)));
-  manager.AddDispatchCallback<SecondResponseInfo>(
-      base::BindRepeating(base::RetainBlock(second_callback_block)));
+  manager.AddDispatchCallback(OverlayDispatchCallback(
+      base::BindRepeating(base::RetainBlock(first_callback_block)),
+      FirstResponseInfo::ResponseSupport()));
+  manager.AddDispatchCallback(OverlayDispatchCallback(
+      base::BindRepeating(base::RetainBlock(second_callback_block)),
+      SecondResponseInfo::ResponseSupport()));
   ASSERT_EQ(0U, first_execution_count);
   ASSERT_EQ(0U, second_execution_count);
 

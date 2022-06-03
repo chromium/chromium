@@ -18,29 +18,22 @@ TetherHostFetcherImpl::Factory*
     TetherHostFetcherImpl::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<TetherHostFetcher> TetherHostFetcherImpl::Factory::NewInstance(
+std::unique_ptr<TetherHostFetcher> TetherHostFetcherImpl::Factory::Create(
     device_sync::DeviceSyncClient* device_sync_client,
     chromeos::multidevice_setup::MultiDeviceSetupClient*
         multidevice_setup_client) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(device_sync_client,
+                                             multidevice_setup_client);
   }
-  return factory_instance_->BuildInstance(device_sync_client,
-                                          multidevice_setup_client);
+
+  return base::WrapUnique(
+      new TetherHostFetcherImpl(device_sync_client, multidevice_setup_client));
 }
 
 // static
-void TetherHostFetcherImpl::Factory::SetInstanceForTesting(Factory* factory) {
+void TetherHostFetcherImpl::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
-}
-
-std::unique_ptr<TetherHostFetcher>
-TetherHostFetcherImpl::Factory::BuildInstance(
-    device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::multidevice_setup::MultiDeviceSetupClient*
-        multidevice_setup_client) {
-  return base::WrapUnique(
-      new TetherHostFetcherImpl(device_sync_client, multidevice_setup_client));
 }
 
 TetherHostFetcherImpl::TetherHostFetcherImpl(
@@ -65,15 +58,15 @@ bool TetherHostFetcherImpl::HasSyncedTetherHosts() {
 }
 
 void TetherHostFetcherImpl::FetchAllTetherHosts(
-    const TetherHostListCallback& callback) {
-  ProcessFetchAllTetherHostsRequest(current_remote_device_list_, callback);
+    TetherHostListCallback callback) {
+  ProcessFetchAllTetherHostsRequest(current_remote_device_list_,
+                                    std::move(callback));
 }
 
-void TetherHostFetcherImpl::FetchTetherHost(
-    const std::string& device_id,
-    const TetherHostCallback& callback) {
+void TetherHostFetcherImpl::FetchTetherHost(const std::string& device_id,
+                                            TetherHostCallback callback) {
   ProcessFetchSingleTetherHostRequest(device_id, current_remote_device_list_,
-                                      callback);
+                                      std::move(callback));
 }
 
 void TetherHostFetcherImpl::OnNewDevicesSynced() {

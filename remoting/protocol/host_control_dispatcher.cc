@@ -26,27 +26,34 @@ void HostControlDispatcher::SetCapabilities(
     const Capabilities& capabilities) {
   ControlMessage message;
   message.mutable_capabilities()->CopyFrom(capabilities);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::SetPairingResponse(
     const PairingResponse& pairing_response) {
   ControlMessage message;
   message.mutable_pairing_response()->CopyFrom(pairing_response);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::DeliverHostMessage(
     const ExtensionMessage& message) {
   ControlMessage control_message;
   control_message.mutable_extension_message()->CopyFrom(message);
-  message_pipe()->Send(&control_message, base::Closure());
+  message_pipe()->Send(&control_message, {});
 }
 
 void HostControlDispatcher::SetVideoLayout(const VideoLayout& layout) {
   ControlMessage message;
   message.mutable_video_layout()->CopyFrom(layout);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
+}
+
+void HostControlDispatcher::SetTransportInfo(
+    const TransportInfo& transport_info) {
+  ControlMessage message;
+  message.mutable_transport_info()->CopyFrom(transport_info);
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
@@ -60,7 +67,7 @@ void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
                  << message_size << " is larger than " << max_message_size_;
     return;
   }
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::SetCursorShape(
@@ -75,13 +82,13 @@ void HostControlDispatcher::SetCursorShape(
                  << message_size << " is larger than " << max_message_size_;
     return;
   }
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::SetKeyboardLayout(const KeyboardLayout& layout) {
   ControlMessage message;
   message.mutable_keyboard_layout()->CopyFrom(layout);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostControlDispatcher::OnIncomingMessage(
@@ -117,6 +124,8 @@ void HostControlDispatcher::OnIncomingMessage(
     host_stub_->DeliverClientMessage(message->extension_message());
   } else if (message->has_select_display()) {
     host_stub_->SelectDesktopDisplay(message->select_display());
+  } else if (message->has_peer_connection_parameters()) {
+    host_stub_->ControlPeerConnection(message->peer_connection_parameters());
   } else {
     LOG(WARNING) << "Unknown control message received.";
   }

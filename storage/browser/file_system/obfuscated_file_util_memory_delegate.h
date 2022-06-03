@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
     : public ObfuscatedFileUtilDelegate {
  public:
   ObfuscatedFileUtilMemoryDelegate(const base::FilePath& file_system_directory);
+
+  ObfuscatedFileUtilMemoryDelegate(const ObfuscatedFileUtilMemoryDelegate&) =
+      delete;
+  ObfuscatedFileUtilMemoryDelegate& operator=(
+      const ObfuscatedFileUtilMemoryDelegate&) = delete;
+
   ~ObfuscatedFileUtilMemoryDelegate() override;
 
   bool DirectoryExists(const base::FilePath& path) override;
@@ -69,12 +75,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   base::File::Error CopyOrMoveFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) override;
   base::File::Error CopyInForeignFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) override;
   base::File::Error DeleteFile(const base::FilePath& path) override;
 
@@ -88,7 +94,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   // bytes are returned. Otherwise a net::Error value is returned.
   int ReadFile(const base::FilePath& path,
                int64_t offset,
-               net::IOBuffer* buf,
+               scoped_refptr<net::IOBuffer> buf,
                int buf_len);
 
   // Writes |buf_len| bytes to the file at |path|, starting from |offset|.
@@ -96,7 +102,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   // net::Error value is returned.
   int WriteFile(const base::FilePath& path,
                 int64_t offset,
-                net::IOBuffer* buf,
+                scoped_refptr<net::IOBuffer> buf,
                 int buf_len);
 
   base::File::Error CreateFileForTesting(const base::FilePath& path,
@@ -112,7 +118,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
 
   // Parses the given path into a decomposed path and performs validity checks
   // and normalization. Returns an empty value if checks fail.
-  base::Optional<DecomposedPath> ParsePath(const base::FilePath& path);
+  absl::optional<DecomposedPath> ParsePath(const base::FilePath& path);
 
   // Creates or opens a file specified in |dp|.
   void CreateOrOpenInternal(const DecomposedPath& dp, int file_flags);
@@ -126,6 +132,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
                               const DecomposedPath& dest_dp,
                               bool move);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // The root of the directory tree.
   std::unique_ptr<Entry> root_;
 
@@ -133,8 +141,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   std::vector<base::FilePath::StringType> root_path_components_;
 
   base::WeakPtrFactory<ObfuscatedFileUtilMemoryDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilMemoryDelegate);
 };
 
 }  // namespace storage

@@ -21,8 +21,9 @@ source_set("tab_ranker") {
     "window_features.cc",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//chrome/browser:resources",
     "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
@@ -41,7 +42,5 @@ static_library("tab_features_test_helper") {
     "tab_features_test_helper.h",
   ]
 
-  deps = [
-    ":tab_ranker",
-  ]
+  deps = [ ":tab_ranker" ]
 }

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -15,26 +16,27 @@ namespace network_time {
 
 // Update as follows:
 //
-// curl -i http://clients2.google.com/time/1/current?cup2key=2:123123123
+// curl -i http://clients2.google.com/time/1/current?cup2key=5:123123123
 //
-// where 2 is the key version and 123123123 is the nonce.  Copy the
-// response and the x-cup-server-proof header into
-// |kGoodTimeResponseBody| and |kGoodTimeResponseServerProofHeader|
-// respectively, and the 'current_time_millis' value of the response
-// into |kGoodTimeResponseHandlerJsTime|.
+// where 5 is the key version and 123123123 is the nonce.  Copy the response
+// and the x-cup-server-proof header into |kGoodTimeResponseBody| and
+// |kGoodTimeResponseServerProofHeader| respectively, and the
+// 'current_time_millis' value of the response into
+// |kGoodTimeResponseHandlerJsTime|.  Do this twice, so that the two requests
+// appear in order below.
 const char* kGoodTimeResponseBody[] = {
-    ")]}'\n{\"current_time_millis\":1522081016324,"
-    "\"server_nonce\":-1.475187036492045E154}",
-    ")]}'\n{\"current_time_millis\":1522096305984,"
-    "\"server_nonce\":-1.1926302260014708E-276}"};
+    ")]}'\n{\"current_time_millis\":1619464140565,"
+    "\"server_nonce\":-1.656679479914492E230}",
+    ")]}'\n{\"current_time_millis\":1619464273366,"
+    "\"server_nonce\":2.1195306862817135E-5}"};
 const char* kGoodTimeResponseServerProofHeader[] = {
-    "3046022100c0351a20558bac037253f3969547f82805b340f51de06461e83f33b41f8e85d3"
-    "022100d04162c448438e5462df4bf6171ef26c53ec7d3a0cb915409e8bec6c99c69c67:"
+    "3045022100f829ced2af34ade53400f66eef6df9af732fa8bfe08517287c2805c92891e321"
+    "022062fb405b2cf12bc3e2ac037985c4b8065a62e86e29a2e745ebff80fd52189c6a:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "304402201758cc66f7be58692362dad351ee71ecce78bd8491c8bfe903da39ea048ff67d02"
-    "203aa51acfac9462b19ef3e6d6c885a60cb0858a274ae97506934737d8e66bc081:"
+    "3046022100c78436ad47904634aacd33f4c4bcb55bd6f7f2ed84a620fda0deaede99c32de6"
+    "022100b595458bd03d83f33bfb891de1327b26620d576937f3713af59bb1f2c53f2e8b:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"};
-const double kGoodTimeResponseHandlerJsTime[] = {1522081016324, 1522096305984};
+const double kGoodTimeResponseHandlerJsTime[] = {1619464140565, 1619464273366};
 
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {
@@ -51,7 +53,7 @@ FieldTrialTest::FieldTrialTest() {}
 
 FieldTrialTest::~FieldTrialTest() {}
 
-void FieldTrialTest::SetNetworkQueriesWithVariationsService(
+void FieldTrialTest::SetFeatureParams(
     bool enable,
     float query_probability,
     NetworkTimeTracker::FetchBehavior fetch_behavior) {
@@ -63,7 +65,8 @@ void FieldTrialTest::SetNetworkQueriesWithVariationsService(
 
   base::FieldTrialParams params;
   params["RandomQueryProbability"] = base::NumberToString(query_probability);
-  params["CheckTimeIntervalSeconds"] = base::NumberToString(360);
+  // See string format defined by `base::TimeDeltaFromString`.
+  params["CheckTimeInterval"] = "360s";
   std::string fetch_behavior_param;
   switch (fetch_behavior) {
     case NetworkTimeTracker::FETCH_BEHAVIOR_UNKNOWN:

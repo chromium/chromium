@@ -16,7 +16,7 @@
 
 ᨀᨁ
 #bug:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ᐐᐑ
 #cans:
@@ -24,23 +24,23 @@
 
 𐊠𐊡
 #xcr:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ᎡᎢ
 #chr:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ⲁⲂ
 #copt:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𒀀𒀌
 #akk:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐠀𐠁
 #ecy:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 АБВ
 #ru:
@@ -48,7 +48,7 @@
 
 𐐀𐐁
 #en:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 अआ
 #hi:
@@ -56,7 +56,7 @@
 
 ሁሂ
 #am:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ႠႡ
 #ka:
@@ -104,27 +104,27 @@
 
 𐡁𐡂
 #arc:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐭡𐭢
 #pal:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐭁𐭂
 #xpr:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ꦑꦒ
 #jv:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ಡಢ
 #kn:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐨐𐨑
 #sa:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ໐໑
 #lo:
@@ -136,27 +136,27 @@
 
 𐊁𐊂
 #xlc:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐤡𐤢
 #xld:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ഡഢ
 #ml:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐦡𐦢
 #script_meroitic:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ကခ
 #my:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ᦁᦂ
 #script_new_tai_lue:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ߁߂
 #nko:
@@ -168,7 +168,7 @@
 
 ᱑᱒
 #script_ol_chiki:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐌁𐌂
 #script_old_italic:
@@ -176,43 +176,43 @@
 
 𐎡𐎢
 #peo:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐩡𐩢
 #script_old_south_arabian:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ଡଢ
 #or:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ꡁꡂ
 #script_phags_pa:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ᚠᚡ
 #script_runic:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𐑑𐑒
 #script_shavian:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 එඒ
 #si:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 𑃑𑃒
 #script_sora_sompeng:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ܑܒ
 #syr:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ᥑᥒ
 #script_tai_le:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 றல
 #ta:
@@ -220,11 +220,11 @@
 
 డఢ
 #te:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ށނ
 #script_thaana:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 กข
 #th:
@@ -232,7 +232,7 @@
 
 ༁༂
 #bo:
-"DejaVu Sans" : 2
+"Noto Sans Tibetan" : 2
 
 ⴱⴲ
 #script_tifinagh:
@@ -240,10 +240,10 @@
 
 ꔁꔂ
 #vai:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 ꀀꀁ
 #yi:
-"DejaVu Sans" : 2
+"Tinos" : 2
 
 

@@ -16,6 +16,9 @@
 - (void)popupMenuViewControllerWillDismiss:
     (PopupMenuViewController*)viewController;
 
+- (void)containedViewControllerContentSizeChangedForPopupMenuViewController:
+    (PopupMenuViewController*)viewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_VIEW_CONTROLLER_DELEGATE_H_

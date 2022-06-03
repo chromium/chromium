@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,7 +10,7 @@ class CodeTest(unittest.TestCase):
   def testAppend(self):
     c = Code()
     c.Append('line')
-    self.assertEquals('line', c.Render())
+    self.assertEqual('line', c.Render())
 
   def testBlock(self):
     c = Code()
@@ -24,7 +24,7 @@ class CodeTest(unittest.TestCase):
         .Append('inner')
       .Eblock('out')
     )
-    self.assertEquals(
+    self.assertEqual(
       'line\n'
       'sblock\n'
       '  inner\n'
@@ -59,9 +59,9 @@ class CodeTest(unittest.TestCase):
     d = Code()
     a = Code()
     a.Concat(d)
-    self.assertEquals('', a.Render())
+    self.assertEqual('', a.Render())
     a.Concat(c)
-    self.assertEquals(
+    self.assertEqual(
       '1\n'
       '  2\n'
       '    2\n'
@@ -85,11 +85,11 @@ class CodeTest(unittest.TestCase):
     c = Code()
     c.Append('%(var1)s %(var2)s %(var1)s')
     c.Substitute({'var1': 'one', 'var2': 'two'})
-    self.assertEquals('one two one', c.Render())
+    self.assertEqual('one two one', c.Render())
     c.Append('%(var1)s %(var2)s %(var3)s')
     c.Append('%(var2)s %(var1)s %(var3)s')
     c.Substitute({'var1': 'one', 'var2': 'two', 'var3': 'three'})
-    self.assertEquals(
+    self.assertEqual(
         'one two one\n'
         'one two three\n'
         'two one three',
@@ -121,7 +121,7 @@ class CodeTest(unittest.TestCase):
         'that is, using a different word, length.')
     c = Code()
     c.Comment(long_comment)
-    self.assertEquals(
+    self.assertEqual(
         '// This comment is ninety one characters '
         'in longness, that is, using a different\n'
         '// word, length.',
@@ -131,7 +131,7 @@ class CodeTest(unittest.TestCase):
     c.Comment(long_comment)
     c.Eblock('eblock')
     c.Comment(long_comment)
-    self.assertEquals(
+    self.assertEqual(
         'sblock\n'
         '  // This comment is ninety one characters '
         'in longness, that is, using a\n'
@@ -141,17 +141,21 @@ class CodeTest(unittest.TestCase):
         'longness, that is, using a different\n'
         '// word, length.',
         c.Render())
+    # Words that cannot be broken up are left as too long.
     long_word = 'x' * 100
     c = Code()
+    c.Comment('xxx')
     c.Comment(long_word)
-    self.assertEquals(
-        '// ' + 'x' * 77 + '\n'
-        '// ' + 'x' * 23,
+    c.Comment('xxx')
+    self.assertEqual(
+        '// xxx\n'
+        '// ' + 'x' * 100 + '\n'
+        '// xxx',
         c.Render())
     c = Code(indent_size=2, comment_length=40)
     c.Comment('Pretend this is a Closure Compiler style comment, which should '
         'both wrap and indent', comment_prefix=' * ', wrap_indent=4)
-    self.assertEquals(
+    self.assertEqual(
         ' * Pretend this is a Closure Compiler\n'
         ' *     style comment, which should both\n'
         ' *     wrap and indent',
@@ -161,11 +165,11 @@ class CodeTest(unittest.TestCase):
     c = Code()
     c.Comment('20% of 80%s')
     c.Substitute({})
-    self.assertEquals('// 20% of 80%s', c.Render())
+    self.assertEqual('// 20% of 80%s', c.Render())
     d = Code()
     d.Append('90')
     d.Concat(c)
-    self.assertEquals('90\n'
+    self.assertEqual('90\n'
         '// 20% of 80%s',
         d.Render())
 
@@ -198,14 +202,14 @@ class CodeTest(unittest.TestCase):
     d = Code()
     d.Append('And this.')
     c.Concat(d, new_line=False)
-    self.assertEquals('This is a line.This too.And this.', c.Render())
+    self.assertEqual('This is a line.This too.And this.', c.Render())
     c = Code()
     c.Append('This is a')
     c.Comment(' spectacular 80-character line thingy ' +
                   'that fits wonderfully everywhere.',
               comment_prefix='',
               new_line=False)
-    self.assertEquals('This is a spectacular 80-character line thingy that ' +
+    self.assertEqual('This is a spectacular 80-character line thingy that ' +
                           'fits wonderfully everywhere.',
                       c.Render())
 

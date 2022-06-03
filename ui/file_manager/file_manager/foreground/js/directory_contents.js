@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {FileListModel} from './file_list_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+
 /**
  * Scanner of the entries.
  */
-class ContentScanner {
+export class ContentScanner {
   constructor() {
     this.cancelled_ = false;
   }
@@ -36,7 +51,7 @@ class ContentScanner {
 /**
  * Scanner of the entries in a directory.
  */
-class DirectoryContentScanner extends ContentScanner {
+export class DirectoryContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry|FilesAppDirEntry} entry The directory to be read.
    */
@@ -85,7 +100,7 @@ class DirectoryContentScanner extends ContentScanner {
 /**
  * Scanner of the entries for the search results on Drive File System.
  */
-class DriveSearchContentScanner extends ContentScanner {
+export class DriveSearchContentScanner extends ContentScanner {
   /** @param {string} query The query string. */
   constructor(query) {
     super();
@@ -160,7 +175,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
  * Scanner of the entries of the file name search on the directory tree, whose
  * root is entry.
  */
-class LocalSearchContentScanner extends ContentScanner {
+export class LocalSearchContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry} entry The root of the search target directory tree.
    * @param {string} query The query of the search.
@@ -189,9 +204,9 @@ class LocalSearchContentScanner extends ContentScanner {
 /**
  * Scanner of the entries for the metadata search on Drive File System.
  */
-class DriveMetadataSearchContentScanner extends ContentScanner {
+export class DriveMetadataSearchContentScanner extends ContentScanner {
   /**
-   * @param {!DriveMetadataSearchContentScanner.SearchType} searchType The
+   * @param {!chrome.fileManagerPrivate.SearchType} searchType The
    *     option of the search.
    */
   constructor(searchType) {
@@ -232,24 +247,13 @@ class DriveMetadataSearchContentScanner extends ContentScanner {
   }
 }
 
-/**
- * The search types on the Drive File System.
- * @enum {!chrome.fileManagerPrivate.SearchType}
- */
-DriveMetadataSearchContentScanner.SearchType = {
-  SEARCH_ALL: chrome.fileManagerPrivate.SearchType.ALL,
-  SEARCH_SHARED_WITH_ME: chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME,
-  SEARCH_RECENT_FILES: chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
-  SEARCH_OFFLINE: chrome.fileManagerPrivate.SearchType.OFFLINE,
-};
-Object.freeze(DriveMetadataSearchContentScanner.SearchType);
-
-class RecentContentScanner extends ContentScanner {
+export class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
-   * @param {string=} opt_sourceRestriction
+   * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
+   * @param {chrome.fileManagerPrivate.RecentFileType=} opt_recentFileType
    */
-  constructor(query, opt_sourceRestriction) {
+  constructor(query, opt_sourceRestriction, opt_recentFileType) {
     super();
 
     /**
@@ -258,10 +262,16 @@ class RecentContentScanner extends ContentScanner {
     this.query_ = query.toLowerCase();
 
     /**
-     * @private {string}
+     * @private {chrome.fileManagerPrivate.SourceRestriction}
      */
     this.sourceRestriction_ = opt_sourceRestriction ||
         chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE;
+
+    /**
+     * @private {chrome.fileManagerPrivate.RecentFileType}
+     */
+    this.recentFileType_ =
+        opt_recentFileType || chrome.fileManagerPrivate.RecentFileType.ALL;
   }
 
   /**
@@ -269,7 +279,7 @@ class RecentContentScanner extends ContentScanner {
    */
   scan(entriesCallback, successCallback, errorCallback) {
     chrome.fileManagerPrivate.getRecentFiles(
-        this.sourceRestriction_, entries => {
+        this.sourceRestriction_, this.recentFileType_, entries => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
             errorCallback(
@@ -288,7 +298,7 @@ class RecentContentScanner extends ContentScanner {
 /**
  * Scanner of media-view volumes.
  */
-class MediaViewContentScanner extends ContentScanner {
+export class MediaViewContentScanner extends ContentScanner {
   /**
    * @param {!DirectoryEntry} rootEntry The root entry of the media-view volume.
    */
@@ -331,22 +341,19 @@ class MediaViewContentScanner extends ContentScanner {
  * is mounted as a disk volume and hide the fake root item while the
  * disk volume exists.
  */
-class CrostiniMounter extends ContentScanner {
+export class CrostiniMounter extends ContentScanner {
   /**
    * @override
    */
   scan(entriesCallback, successCallback, errorCallback) {
-    metrics.startInterval('MountCrostiniContainer');
     chrome.fileManagerPrivate.mountCrostini(() => {
       if (chrome.runtime.lastError) {
         console.error(
             'mountCrostini error: ', chrome.runtime.lastError.message);
         errorCallback(util.createDOMError(
-            DirectoryModel.CROSTINI_CONNECT_ERR,
-            chrome.runtime.lastError.message));
+            constants.CROSTINI_CONNECT_ERR, chrome.runtime.lastError.message));
         return;
       }
-      metrics.recordInterval('MountCrostiniContainer');
       successCallback();
     });
   }
@@ -356,9 +363,9 @@ class CrostiniMounter extends ContentScanner {
  * This class manages filters and determines a file should be shown or not.
  * When filters are changed, a 'changed' event is fired.
  */
-class FileFilter extends cr.EventTarget {
-  /** @param {!MetadataModel} metadataModel */
-  constructor(metadataModel) {
+export class FileFilter extends EventTarget {
+  /** @param {!VolumeManager} volumeManager */
+  constructor(volumeManager) {
     super();
 
     /**
@@ -370,11 +377,11 @@ class FileFilter extends cr.EventTarget {
     this.setAllAndroidFoldersVisible(false);
 
     /**
-     * @type {!MetadataModel}
+     * @type {!VolumeManager}
      * @const
      * @private
      */
-    this.metadataModel_ = metadataModel;
+    this.volumeManager_ = volumeManager;
 
     this.hideAndroidDownload();
   }
@@ -386,7 +393,7 @@ class FileFilter extends cr.EventTarget {
    */
   addFilter(name, callback) {
     this.filters_[name] = callback;
-    cr.dispatchSimpleEvent(this, 'changed');
+    dispatchSimpleEvent(this, 'changed');
   }
 
   /**
@@ -394,18 +401,31 @@ class FileFilter extends cr.EventTarget {
    */
   removeFilter(name) {
     delete this.filters_[name];
-    cr.dispatchSimpleEvent(this, 'changed');
+    dispatchSimpleEvent(this, 'changed');
   }
 
   /**
-   * Show/Hide hidden files (i.e. files starting with '.').
+   * Show/Hide hidden files (i.e. files starting with '.', or other system files
+   * for Windows files).
    * @param {boolean} visible True if hidden files should be visible to the
    *     user.
    */
   setHiddenFilesVisible(visible) {
     if (!visible) {
       this.addFilter('hidden', entry => {
-        return entry.name.substr(0, 1) !== '.';
+        if (entry.name.startsWith('.')) {
+          return false;
+        }
+        // Only hide WINDOWS_HIDDEN in downloads:/PvmDefault.
+        if (entry.fullPath.startsWith('/PvmDefault/') &&
+            FileFilter.WINDOWS_HIDDEN.includes(entry.name)) {
+          const info = this.volumeManager_.getLocationInfo(entry);
+          if (info &&
+              info.rootType === VolumeManagerCommon.RootType.DOWNLOADS) {
+            return false;
+          }
+        }
+        return true;
       });
     } else {
       this.removeFilter('hidden');
@@ -420,7 +440,7 @@ class FileFilter extends cr.EventTarget {
   }
 
   /**
-   * Show/Hide uncommon Android folders which are not whitelisted.
+   * Show/Hide uncommon Android folders.
    * @param {boolean} visible True if uncommon folders should be visible to the
    *     user.
    */
@@ -430,8 +450,7 @@ class FileFilter extends cr.EventTarget {
         if (entry.filesystem && entry.filesystem.name !== 'android_files') {
           return true;
         }
-        // If |entry| is an Android top-level folder which is not whitelisted or
-        // its sub folder, it should be hidden.
+        // Hide top-level folder or sub-folders that should be hidden.
         if (entry.fullPath) {
           const components = entry.fullPath.split('/');
           if (components[1] &&
@@ -492,10 +511,17 @@ FileFilter.DEFAULT_ANDROID_FOLDERS =
     ['Documents', 'Movies', 'Music', 'Pictures'];
 
 /**
+ * Windows files or folders to hide by default.
+ * @const {!Array<string>}
+ */
+FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
+
+
+/**
  * A context of DirectoryContents.
  * TODO(yoshiki): remove this. crbug.com/224869.
  */
-class FileListContext {
+export class FileListContext {
   /**
    * @param {FileFilter} fileFilter The file-filter context.
    * @param {!MetadataModel} metadataModel
@@ -560,7 +586,7 @@ class FileListContext {
  * results.
  * TODO(hidehiko): Remove EventTarget from this.
  */
-class DirectoryContents extends cr.EventTarget {
+export class DirectoryContents extends EventTarget {
   /**
    *
    * @param {FileListContext} context The file list context.
@@ -796,7 +822,7 @@ class DirectoryContents extends cr.EventTarget {
     }
 
     const addedList = [];
-    for (let url in updatedMap) {
+    for (const url in updatedMap) {
       addedList.push(updatedMap[url]);
     }
 
@@ -826,7 +852,7 @@ class DirectoryContents extends cr.EventTarget {
     this.onScanFinished_();
 
     this.processNewEntriesQueue_.cancel();
-    cr.dispatchSimpleEvent(this, 'scan-cancelled');
+    dispatchSimpleEvent(this, 'scan-cancelled');
   }
 
   /**
@@ -853,7 +879,7 @@ class DirectoryContents extends cr.EventTarget {
       // handlers.
       callback();
 
-      cr.dispatchSimpleEvent(this, 'scan-completed');
+      dispatchSimpleEvent(this, 'scan-completed');
     });
   }
 
@@ -901,9 +927,6 @@ class DirectoryContents extends cr.EventTarget {
       return;
     }
 
-    // Enlarge the cache size into the new filelist size.
-    const newListSize = this.fileList_.length + entries.length;
-
     this.processNewEntriesQueue_.run(callbackOuter => {
       const finish = () => {
         if (!this.scanCancelled_) {
@@ -922,7 +945,7 @@ class DirectoryContents extends cr.EventTarget {
           });
           // Update the filelist without waiting the metadata.
           this.fileList_.push.apply(this.fileList_, entriesFiltered);
-          cr.dispatchSimpleEvent(this, 'scan-updated');
+          dispatchSimpleEvent(this, 'scan-updated');
         }
         callbackOuter();
       };
@@ -974,138 +997,5 @@ class DirectoryContents extends cr.EventTarget {
     this.context_.metadataModel
         .get(entries, this.context_.prefetchPropertyNames)
         .then(callback);
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show entries in a directory.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {DirectoryEntry|FilesAppDirEntry} directoryEntry The current
-   *     directory entry.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForDirectory(context, directoryEntry) {
-    return new DirectoryContents(
-        context,
-        false,  // Non search.
-        directoryEntry, () => {
-          return new DirectoryContentScanner(directoryEntry);
-        });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the result of the search on
-   * Drive File System.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {DirectoryEntry} directoryEntry The current directory entry.
-   * @param {string} query Search query.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForDriveSearch(context, directoryEntry, query) {
-    return new DirectoryContents(
-        context,
-        true,  // Search.
-        directoryEntry, () => {
-          return new DriveSearchContentScanner(query);
-        });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the result of the search on
-   * Local File System.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {DirectoryEntry} directoryEntry The current directory entry.
-   * @param {string} query Search query.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForLocalSearch(context, directoryEntry, query) {
-    return new DirectoryContents(
-        context,
-        true,  // Search.
-        directoryEntry, () => {
-          return new LocalSearchContentScanner(directoryEntry, query);
-        });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the result of metadata search
-   * on Drive File System.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {!FakeEntry} fakeDirectoryEntry Fake directory entry representing
-   *     the set of result entries. This serves as a top directory for the
-   *     search.
-   * @param {!DriveMetadataSearchContentScanner.SearchType} searchType The type
-   *     of the search. The scanner will restricts the entries based on the
-   *     given type.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForDriveMetadataSearch(context, fakeDirectoryEntry, searchType) {
-    return new DirectoryContents(
-        context,
-        true,  // Search
-        fakeDirectoryEntry, () => {
-          return new DriveMetadataSearchContentScanner(searchType);
-        });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the mixed recent files.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {!FakeEntry} recentRootEntry Fake directory entry representing the
-   *     root of recent files.
-   * @param {string} query Search query.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForRecent(context, recentRootEntry, query) {
-    return new DirectoryContents(context, true, recentRootEntry, () => {
-      return new RecentContentScanner(query, recentRootEntry.sourceRestriction);
-    });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the flatten media views.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {!DirectoryEntry} rootEntry Root directory entry representing the
-   *     root of each media view volume.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForMediaView(context, rootEntry) {
-    return new DirectoryContents(context, true, rootEntry, () => {
-      return new MediaViewContentScanner(rootEntry);
-    });
-  }
-
-  /**
-   * Creates a DirectoryContents instance to show the sshfs crostini files.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {!FakeEntry} crostiniRootEntry Fake directory entry representing the
-   *     root of recent files.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForCrostiniMounter(context, crostiniRootEntry) {
-    return new DirectoryContents(context, true, crostiniRootEntry, () => {
-      return new CrostiniMounter();
-    });
-  }
-
-  /**
-   * Creates an empty DirectoryContents instance to show the Google Drive
-   * placeholder that never completes loading.
-   *
-   * @param {FileListContext} context File list context.
-   * @param {!FakeEntry} rootEntry Fake directory entry representing the fake
-   *     root of Google Drive.
-   * @return {DirectoryContents} Created DirectoryContents instance.
-   */
-  static createForFakeDrive(context, rootEntry) {
-    return new DirectoryContents(context, true, rootEntry, () => {
-      return new ContentScanner();
-    });
   }
 }

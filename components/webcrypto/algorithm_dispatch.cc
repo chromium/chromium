@@ -4,7 +4,6 @@
 
 #include "components/webcrypto/algorithm_dispatch.h"
 
-#include "base/logging.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithm_implementations.h"
 #include "components/webcrypto/algorithm_registry.h"

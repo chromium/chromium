@@ -24,12 +24,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_UI_EVENT_WITH_KEY_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_UI_EVENT_WITH_KEY_STATE_H_
 
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/events/event_modifier_init.h"
 #include "third_party/blink/renderer/core/events/ui_event.h"
 
 namespace blink {
+
+class EventModifierInit;
 
 class CORE_EXPORT UIEventWithKeyState : public UIEvent {
  public:
@@ -91,7 +92,7 @@ class CORE_EXPORT UIEventWithKeyState : public UIEvent {
   static bool new_tab_modifier_set_from_isolated_world_;
 };
 
-UIEventWithKeyState* FindEventWithKeyState(Event*);
+const UIEventWithKeyState* FindEventWithKeyState(const Event*);
 
 }  // namespace blink
 

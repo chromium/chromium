@@ -22,7 +22,7 @@ class CORE_EXPORT JSEventListener final : public JSBasedEventListener {
       : event_listener_(listener) {}
 
   // blink::CustomWrappable overrides:
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // blink::EventListener overrides:
   //

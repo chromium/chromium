@@ -24,8 +24,9 @@ class BASE_EXPORT StackCopierSignal : public StackCopier {
   // StackCopier:
   bool CopyStack(StackBuffer* stack_buffer,
                  uintptr_t* stack_top,
-                 ProfileBuilder* profile_builder,
-                 RegisterContext* thread_context) override;
+                 TimeTicks* timestamp,
+                 RegisterContext* thread_context,
+                 Delegate* delegate) override;
 
   using StackCopier::CopyStackContentsAndRewritePointers;
 

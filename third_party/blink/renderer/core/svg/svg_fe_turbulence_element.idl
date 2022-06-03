@@ -26,7 +26,8 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFETurbulenceElement
 
 [
-    DoNotCheckConstants
+    DoNotCheckConstants,
+    Exposed=Window
 ] interface SVGFETurbulenceElement : SVGElement {
     // Turbulence Types
     [MeasureAs=SVG1DOMFilter] const unsigned short SVG_TURBULENCE_TYPE_UNKNOWN = 0;

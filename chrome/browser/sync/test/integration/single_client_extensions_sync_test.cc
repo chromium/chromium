@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server/fake_server.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 
@@ -22,11 +22,12 @@ using extensions_helper::InstallExtensionForAllProfiles;
 class SingleClientExtensionsSyncTest : public SyncTest {
  public:
   SingleClientExtensionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientExtensionsSyncTest() override = default;
 
-  ~SingleClientExtensionsSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientExtensionsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137717): rewrite tests to not use verifier profile.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, StartWithNoExtensions) {
@@ -34,9 +35,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, StartWithNoExtensions) {
   ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
 }
 
-// Flaky: https://crbug.com/1030556
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest,
-                       DISABLED_StartWithSomeExtensions) {
+                       StartWithSomeExtensions) {
   ASSERT_TRUE(SetupClients());
 
   const int kNumExtensions = 5;
@@ -64,8 +64,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, InstallSomeExtensions) {
 
 // Helper function for waiting to see the extension count in a profile
 // become a specific number.
-static bool ExtensionCountCheck(Profile* profile, size_t expected_count) {
-  return GetInstalledExtensions(profile).size() == expected_count;
+static bool ExtensionCountCheck(Profile* profile,
+                                size_t expected_count,
+                                std::ostream* os) {
+  const size_t actual_count = GetInstalledExtensions(profile).size();
+  *os << "Waiting for profile to have " << expected_count
+      << " extensions; actual count " << actual_count;
+  return actual_count == expected_count;
 }
 
 // Tests the case of an uninstall from the server conflicting with a local
@@ -93,9 +98,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
   ASSERT_EQ(1u, GetInstalledExtensions(GetProfile(0)).size());
 
   // Expect the extension to get uninstalled locally.
-  AwaitMatchStatusChangeChecker checker(
-      base::Bind(&ExtensionCountCheck, GetProfile(0), 0u),
-      "Waiting for profile to have no extensions");
+  AwaitMatchStatusChangeChecker checker(base::BindRepeating(
+      &ExtensionCountCheck, GetProfile(0), /*expected_count=*/0u));
   EXPECT_TRUE(checker.Wait());
   EXPECT_TRUE(GetInstalledExtensions(GetProfile(0)).empty());
 

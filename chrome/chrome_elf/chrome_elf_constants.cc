@@ -17,6 +17,7 @@ const DWORD kBeaconMaxAttempts = 2;
 
 namespace elf_sec {
 
-const wchar_t kRegSecurityFinchKeyName[] = L"\\BrowserSboxFinch";
+const wchar_t kRegBrowserExtensionPointKeyName[] =
+    L"\\BrowserExtensionPointPolicy";
 
 }  // namespace elf_sec

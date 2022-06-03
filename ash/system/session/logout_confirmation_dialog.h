@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 #define ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -25,6 +24,10 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
  public:
   LogoutConfirmationDialog(LogoutConfirmationController* controller,
                            base::TimeTicks logout_time);
+
+  LogoutConfirmationDialog(const LogoutConfirmationDialog&) = delete;
+  LogoutConfirmationDialog& operator=(const LogoutConfirmationDialog&) = delete;
+
   ~LogoutConfirmationDialog() override;
 
   void Update(base::TimeTicks logout_time);
@@ -32,13 +35,7 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   // Called when |controller_| is no longer valid.
   void ControllerGone();
 
-  // views::DialogDelegateView:
-  bool Accept() override;
-
   // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
 
   // views::View:
@@ -47,6 +44,7 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
 
  private:
   void UpdateLabel();
+  void OnDialogAccepted();
 
   LogoutConfirmationController* controller_;
   base::TimeTicks logout_time_;
@@ -54,8 +52,6 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   views::Label* label_;
 
   base::RepeatingTimer update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationDialog);
 };
 
 }  // namespace ash

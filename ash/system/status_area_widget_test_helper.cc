@@ -8,8 +8,41 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "base/run_loop.h"
+#include "ui/compositor/layer_animation_observer.h"
 
 namespace ash {
+
+// An observer that quits a run loop when the animation finishes.
+class AnimationEndObserver : public ui::LayerAnimationObserver {
+ public:
+  explicit AnimationEndObserver(ui::LayerAnimator* animator)
+      : animator_(animator) {
+    animator_->AddObserver(this);
+  }
+  ~AnimationEndObserver() override { animator_->RemoveObserver(this); }
+
+  void WaitForAnimationEnd() {
+    if (!animator_->is_animating())
+      return;
+    // This will return immediately if |Quit| was already called.
+    run_loop_.Run();
+  }
+
+  // ui::LayerAnimationObserver:
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
+    run_loop_.Quit();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
+
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
+ private:
+  ui::LayerAnimator* animator_;
+  base::RunLoop run_loop_;
+};
 
 LoginStatus StatusAreaWidgetTestHelper::GetUserLoginStatus() {
   return Shell::Get()->session_controller()->login_status();
@@ -30,6 +63,18 @@ StatusAreaWidget* StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget() {
   }
 
   return nullptr;
+}
+
+void StatusAreaWidgetTestHelper::WaitForAnimationEnd(
+    StatusAreaWidget* status_area_widget) {
+  AnimationEndObserver observer(status_area_widget->GetLayer()->GetAnimator());
+  observer.WaitForAnimationEnd();
+  status_area_widget->GetLayer()->GetAnimator()->StopAnimating();
+}
+
+void StatusAreaWidgetTestHelper::WaitForLayerAnimationEnd(ui::Layer* layer) {
+  AnimationEndObserver observer(layer->GetAnimator());
+  observer.WaitForAnimationEnd();
 }
 
 }  // namespace ash

@@ -9,7 +9,6 @@ source_set("download") {
     ":download_cookies",
     "//base",
     "//ios/net",
-    "//ios/web/common",
     "//ios/web/net/cookies",
     "//ios/web/public",
     "//ios/web/public/download",
@@ -24,7 +23,7 @@ source_set("download") {
     "download_task_impl.mm",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -33,6 +32,7 @@ source_set("download_cookies") {
   visibility = [ ":*" ]
 
   deps = [
+    "//base",
     "//ios/net",
     "//net",
   ]
@@ -42,7 +42,7 @@ source_set("download_cookies") {
     "download_session_cookie_storage.mm",
   ]
 
-  libs = [ "Foundation.framework" ]
+  frameworks = [ "Foundation.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -85,7 +85,5 @@ source_set("download_inttests") {
     "//net:test_support",
   ]
 
-  sources = [
-    "download_inttest.mm",
-  ]
+  sources = [ "download_inttest.mm" ]
 }

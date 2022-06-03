@@ -41,16 +41,21 @@ class MockPostProcessingPipeline : public PostProcessingPipeline {
 
   explicit MockPostProcessingPipeline(int num_output_channels)
       : num_output_channels_(num_output_channels) {
-    ON_CALL(*this, ProcessFrames(_, _, _, _))
+    ON_CALL(*this, ProcessFrames(_, _, _, _, _))
         .WillByDefault(
             testing::Invoke(this, &MockPostProcessingPipeline::StorePtr));
   }
 
+  MockPostProcessingPipeline(const MockPostProcessingPipeline&) = delete;
+  MockPostProcessingPipeline& operator=(const MockPostProcessingPipeline&) =
+      delete;
+
   ~MockPostProcessingPipeline() override {}
-  MOCK_METHOD4(ProcessFrames,
+  MOCK_METHOD5(ProcessFrames,
                double(float* data,
                       int num_frames,
                       float current_volume,
+                      float target_volume,
                       bool is_silence));
   MOCK_METHOD2(SetPostProcessorConfig,
                void(const std::string& name, const std::string& config));
@@ -71,6 +76,7 @@ class MockPostProcessingPipeline : public PostProcessingPipeline {
   double StorePtr(float* data,
                   int num_frames,
                   float current_volume,
+                  float target_volume,
                   bool is_silence) {
     output_buffer_ = data;
     return 0;
@@ -79,8 +85,6 @@ class MockPostProcessingPipeline : public PostProcessingPipeline {
   float* output_buffer_;
   const int num_output_channels_;
   int sample_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPostProcessingPipeline);
 };
 
 // PostProcessor that inverts one channel.
@@ -89,17 +93,22 @@ class InvertChannelPostProcessor : public MockPostProcessingPipeline {
   explicit InvertChannelPostProcessor(int channels, int channel_to_invert)
       : MockPostProcessingPipeline(channels),
         channel_to_invert_(channel_to_invert) {
-    ON_CALL(*this, ProcessFrames(_, _, _, _))
+    ON_CALL(*this, ProcessFrames(_, _, _, _, _))
         .WillByDefault(testing::Invoke(
             this, &InvertChannelPostProcessor::DoInvertChannel));
   }
 
+  InvertChannelPostProcessor(const InvertChannelPostProcessor&) = delete;
+  InvertChannelPostProcessor& operator=(const InvertChannelPostProcessor&) =
+      delete;
+
   ~InvertChannelPostProcessor() override {}
 
-  MOCK_METHOD4(ProcessFrames,
+  MOCK_METHOD5(ProcessFrames,
                double(float* data,
                       int num_frames,
                       float current_volume,
+                      float target_volume,
                       bool is_silence));
   MOCK_METHOD2(SetPostProcessorConfig,
                void(const std::string& name, const std::string& config));
@@ -108,6 +117,7 @@ class InvertChannelPostProcessor : public MockPostProcessingPipeline {
   int DoInvertChannel(float* data,
                       int num_frames,
                       float current_volume,
+                      float target_volume,
                       bool is_silence) {
     output_buffer_ = data;
     for (int fr = 0; fr < num_frames; ++fr) {
@@ -123,8 +133,6 @@ class InvertChannelPostProcessor : public MockPostProcessingPipeline {
   std::string name() const { return "invert"; }
 
   int channel_to_invert_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvertChannelPostProcessor);
 };
 
 }  // namespace
@@ -158,6 +166,10 @@ std::unique_ptr<::media::AudioBus> GetTestData() {
 }
 
 class FilterGroupTest : public testing::Test {
+ public:
+  FilterGroupTest(const FilterGroupTest&) = delete;
+  FilterGroupTest& operator=(const FilterGroupTest&) = delete;
+
  protected:
   using RenderingDelay = MixerInput::RenderingDelay;
   FilterGroupTest() : source_(kInputSampleRate) {
@@ -172,7 +184,7 @@ class FilterGroupTest : public testing::Test {
     EXPECT_CALL(*post_processor_, SetContentType(kDefaultContentType));
     EXPECT_CALL(*post_processor_, UpdatePlayoutChannel(kDefaultPlayoutChannel));
     filter_group_ = std::make_unique<FilterGroup>(
-        kNumInputChannels, "test_filter", std::move(post_processor));
+        kNumInputChannels, "test_filter", std::move(post_processor), nullptr);
     input_ = std::make_unique<MixerInput>(&source_, filter_group_.get());
     AudioPostProcessor2::Config config;
     config.output_sample_rate = kInputSampleRate;
@@ -207,14 +219,11 @@ class FilterGroupTest : public testing::Test {
   std::unique_ptr<FilterGroup> filter_group_;
   std::unique_ptr<MixerInput> input_;
   MockPostProcessingPipeline* post_processor_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilterGroupTest);
 };
 
 TEST_F(FilterGroupTest, Passthrough) {
   MakeFilterGroup(std::make_unique<NiceMock<MockPostProcessingPipeline>>());
-  EXPECT_CALL(*post_processor_, ProcessFrames(_, kInputFrames, _, false));
+  EXPECT_CALL(*post_processor_, ProcessFrames(_, kInputFrames, _, _, false));
 
   filter_group_->MixAndFilter(kInputFrames, RenderingDelay());
   AssertPassthrough();

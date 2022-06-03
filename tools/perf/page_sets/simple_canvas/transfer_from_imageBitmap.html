@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var source = new OffscreenCanvas(2000, 1000);
+var ctx = source.getContext("2d");
+var destination = document.createElement('canvas');
+var destinationCtx = destination.getContext('bitmaprenderer')
+document.body.appendChild(destination);
+
+function doRun() {
+  ctx.fillRect(0, 0, 1, 1);
+  var img = source.transferToImageBitmap();
+  destinationCtx.transferFromImageBitmap(img);
+  requestAnimationFrame(doRun);
+}
+
+window.onload = function () {
+  doRun();
+}
+
+</script>
+</body>
+</html>

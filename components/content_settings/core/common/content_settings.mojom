@@ -4,6 +4,7 @@
 
 module content_settings.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 [Native]
@@ -65,6 +66,7 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   mojo_base.mojom.Value setting_value;
+  mojo_base.mojom.Time expiration;
   string source;
   bool incognito;
 };
@@ -73,7 +75,7 @@ struct ContentSettingPatternSource {
 struct RendererContentSettingRules {
   array<ContentSettingPatternSource> image_rules;
   array<ContentSettingPatternSource> script_rules;
-  array<ContentSettingPatternSource> client_hints_rules;
   array<ContentSettingPatternSource> popup_redirect_rules;
   array<ContentSettingPatternSource> mixed_content_rules;
+  array<ContentSettingPatternSource> auto_dark_content_rules;
 };

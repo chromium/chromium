@@ -12,6 +12,8 @@ Tests that the WebXR API is not present if the flag to enable it is not set.
     <script src="../resources/webxr_e2e.js"></script>
   </body>
   <script>
+    setup({single_test: true});
+
     if (navigator.xr) {
       assert_unreached("API is visible");
     }

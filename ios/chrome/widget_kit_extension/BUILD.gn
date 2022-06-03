@@ -1,0 +1,79 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/compile_entitlements.gni")
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/rules.gni")
+import("//build/config/locales.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/build/config.gni")
+import("//ios/chrome/extension_repack.gni")
+import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+tweak_info_plist("tweak_info_plist") {
+  info_plist = "Info.plist"
+}
+
+compile_entitlements("entitlements") {
+  substitutions = [
+    "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
+    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+  ]
+  output_name = "$target_gen_dir/widget_kit_extension.appex.entitlements"
+  entitlements_templates =
+      [ "entitlements/external/widget_kit_extension.appex.entitlements" ]
+}
+
+ios_appex_bundle("widget_kit_extension") {
+  sources = [
+    "dino_game_widget.swift",
+    "main.swift",
+    "quick_actions_widget.swift",
+    "search_widget.swift",
+    "widget_constants.swift",
+  ]
+
+  deps = [
+    ":system_strings",
+    "resources:widget_actions_row_background_color",
+    "resources:widget_background_color",
+    "resources:widget_chrome_logo",
+    "resources:widget_dino_background",
+    "resources:widget_dino_background_placeholder",
+    "resources:widget_incognito_icon",
+    "resources:widget_qr_icon",
+    "resources:widget_search_bar_color",
+    "resources:widget_separator_color",
+    "resources:widget_text_color",
+    "resources:widget_voice_search_icon",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  frameworks = [
+    "WidgetKit.framework",
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+  entitlements_target = ":entitlements"
+  info_plist_target = ":tweak_info_plist"
+  bundle_identifier = "$chromium_bundle_id.WidgetKitExtension"
+}
+
+extension_repack_all_locales("packed_resources") {
+  extension = "widget_kit_extension"
+  input_locales = ios_packed_locales
+  output_locales = ios_packed_locales_as_mac_outputs
+}
+
+generate_localizable_strings("system_strings") {
+  visibility = [ ":*" ]
+  _packed_resources_target = ":packed_resources"
+  config_file = "widget_kit_extension_localize_strings_config.plist"
+  datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
+  packed_locales = ios_packed_locales_as_mac_outputs
+  output_filenames = [ "Localizable.strings" ]
+  deps = [ _packed_resources_target ]
+}

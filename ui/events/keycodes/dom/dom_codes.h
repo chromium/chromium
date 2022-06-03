@@ -10,12 +10,12 @@
 namespace ui {
 
 #define DOM_CODE_TYPE(x) static_cast<DomCode>(x)
-#define USB_KEYMAP(usb, evdev, xkb, win, mac, code, id) DOM_CODE_TYPE(usb)
-#define USB_KEYMAP_DECLARATION constexpr DomCode dom_codes[] =
-#include "ui/events/keycodes/dom/keycode_converter_data.inc"
+#define DOM_CODE(usb, evdev, xkb, win, mac, code, id) DOM_CODE_TYPE(usb)
+#define DOM_CODE_DECLARATION constexpr DomCode dom_codes[] =
+#include "ui/events/keycodes/dom/dom_code_data.inc"
 #undef DOM_CODE_TYPE
-#undef USB_KEYMAP
-#undef USB_KEYMAP_DECLARATION
+#undef DOM_CODE
+#undef DOM_CODE_DECLARATION
 
 }  // namespace ui
 

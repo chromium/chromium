@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
+# This file is used in TranslationExpectationsTest in PRESUBMIT_test.py
+#
 # This is a .pyl, or "Python Literal", file. You can treat it just like a
 # .json file, with the following exceptions:
 # * all keys must be quoted (use single quotes, please);
@@ -17,6 +19,7 @@
     ],
     "files": [
       "test.grd",
+      "unlisted.grd"
     ],
   },
   # Grd files that contain <message> or <translations> elements, but that

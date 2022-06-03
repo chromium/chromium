@@ -4,5 +4,5 @@
 set noparent
 file://ui/android/java/res/LAYOUT_OWNERS
 
-# COMPONENT: UI>Browser>Mobile
-# OS: Android
+per-file ...color*.xml=lazzzis@google.com
+per-file ...style*.xml=lazzzis@google.com

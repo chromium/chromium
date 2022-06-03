@@ -8,45 +8,49 @@
 
 #include <memory>
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/audio_devices_pref_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/audio_devices_pref_handler.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::AudioDevice;
-using chromeos::AudioNode;
-using chromeos::AudioNodeList;
-
 namespace extensions {
+
+using ::ash::AudioDevice;
+using ::ash::AudioDeviceType;
+using ::ash::CrasAudioHandler;
+using ::chromeos::AudioNode;
+using ::chromeos::AudioNodeList;
 
 class ShellAudioControllerTest : public testing::Test {
  public:
   ShellAudioControllerTest() : next_node_id_(1) {
     chromeos::CrasAudioClient::InitializeFake();
     audio_client()->SetAudioNodesForTesting(AudioNodeList());
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    CrasAudioHandler::InitializeForTesting();
 
-    controller_.reset(new ShellAudioController());
+    controller_ = std::make_unique<ShellAudioController>();
   }
+
+  ShellAudioControllerTest(const ShellAudioControllerTest&) = delete;
+  ShellAudioControllerTest& operator=(const ShellAudioControllerTest&) = delete;
 
   ~ShellAudioControllerTest() override {
     controller_.reset();
-    chromeos::CrasAudioHandler::Shutdown();
+    CrasAudioHandler::Shutdown();
     chromeos::CrasAudioClient::Shutdown();
   }
 
  protected:
   // Fills a AudioNode for use by tests.
-  AudioNode CreateNode(chromeos::AudioDeviceType type) {
+  AudioNode CreateNode(AudioDeviceType type) {
     AudioNode node;
-    node.is_input =
-        type == chromeos::AUDIO_TYPE_MIC ||
-        type == chromeos::AUDIO_TYPE_INTERNAL_MIC ||
-        type == chromeos::AUDIO_TYPE_KEYBOARD_MIC;
+    node.is_input = type == AudioDeviceType::kMic ||
+                    type == AudioDeviceType::kInternalMic ||
+                    type == AudioDeviceType::kKeyboardMic;
     node.id = next_node_id_++;
     node.type = AudioDevice::GetTypeString(type);
     return node;
@@ -68,27 +72,21 @@ class ShellAudioControllerTest : public testing::Test {
     return chromeos::FakeCrasAudioClient::Get();
   }
 
-  chromeos::CrasAudioHandler* audio_handler() {
-    return chromeos::CrasAudioHandler::Get();
-  }
+  CrasAudioHandler* audio_handler() { return CrasAudioHandler::Get(); }
 
   std::unique_ptr<ShellAudioController> controller_;
 
   // Next audio node ID to be returned by CreateNode().
   uint64_t next_node_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAudioControllerTest);
 };
 
 // Tests that higher-priority devices are activated as soon as they're
 // connected.
 TEST_F(ShellAudioControllerTest, SelectBestDevices) {
-  AudioNode internal_speaker =
-      CreateNode(chromeos::AUDIO_TYPE_INTERNAL_SPEAKER);
-  AudioNode internal_mic = CreateNode(chromeos::AUDIO_TYPE_INTERNAL_MIC);
-  AudioNode headphone = CreateNode(chromeos::AUDIO_TYPE_HEADPHONE);
-  AudioNode external_mic = CreateNode(chromeos::AUDIO_TYPE_MIC);
+  AudioNode internal_speaker = CreateNode(AudioDeviceType::kInternalSpeaker);
+  AudioNode internal_mic = CreateNode(AudioDeviceType::kInternalMic);
+  AudioNode headphone = CreateNode(AudioDeviceType::kHeadphone);
+  AudioNode external_mic = CreateNode(AudioDeviceType::kMic);
 
   // AudioDevice gives the headphone jack a higher priority than the internal
   // speaker and an external mic a higher priority than the internal mic, so we
@@ -123,17 +121,16 @@ TEST_F(ShellAudioControllerTest, SelectBestDevices) {
 // Tests that active audio devices are unmuted and have correct initial volume.
 TEST_F(ShellAudioControllerTest, InitialVolume) {
   AudioNodeList nodes;
-  nodes.push_back(CreateNode(chromeos::AUDIO_TYPE_INTERNAL_SPEAKER));
-  nodes.push_back(CreateNode(chromeos::AUDIO_TYPE_INTERNAL_MIC));
+  nodes.push_back(CreateNode(AudioDeviceType::kInternalSpeaker));
+  nodes.push_back(CreateNode(AudioDeviceType::kInternalMic));
   audio_client()->SetAudioNodesAndNotifyObserversForTesting(nodes);
 
   EXPECT_FALSE(audio_handler()->IsOutputMuted());
   EXPECT_FALSE(audio_handler()->IsInputMuted());
   EXPECT_EQ(static_cast<double>(
-                chromeos::AudioDevicesPrefHandler::kDefaultOutputVolumePercent),
+                ash::AudioDevicesPrefHandler::kDefaultOutputVolumePercent),
             audio_handler()->GetOutputVolumePercent());
 
-  // TODO(rkc): The default value for gain is wrong. http://crbug.com/442489
   EXPECT_EQ(75.0, audio_handler()->GetInputGainPercent());
 }
 

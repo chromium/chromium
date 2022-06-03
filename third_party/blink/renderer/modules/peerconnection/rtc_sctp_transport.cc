@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/sctp_transport_proxy.h"
@@ -30,20 +30,15 @@ String TransportStateToString(webrtc::SctpTransportState state) {
       // only be visible after reaching "connecting" state.
       NOTREACHED();
       return String("new");
-      break;
     case webrtc::SctpTransportState::kConnecting:
       return String("connecting");
-      break;
     case webrtc::SctpTransportState::kConnected:
       return String("connected");
-      break;
     case webrtc::SctpTransportState::kClosed:
       return String("closed");
-      break;
     default:
       NOTREACHED();
       return String("failed");
-      break;
   }
 }
 
@@ -55,7 +50,7 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
     scoped_refptr<base::SingleThreadTaskRunner> worker_thread) {
   DCHECK(main_thread);
   DCHECK(worker_thread);
-  LocalFrame* frame = To<Document>(context)->GetFrame();
+  LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
   DCHECK(frame);
   return SctpTransportProxy::Create(*frame, main_thread, worker_thread,
                                     native_transport, delegate);
@@ -68,17 +63,16 @@ RTCSctpTransport::RTCSctpTransport(
     rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport)
     : RTCSctpTransport(context,
                        native_transport,
-                       To<Document>(context)->GetFrame()->GetTaskRunner(
-                           TaskType::kNetworking),
-                       PeerConnectionDependencyFactory::GetInstance()
-                           ->GetWebRtcWorkerTaskRunner()) {}
+                       context->GetTaskRunner(TaskType::kNetworking),
+                       PeerConnectionDependencyFactory::From(*context)
+                           .GetWebRtcNetworkTaskRunner()) {}
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
     rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     scoped_refptr<base::SingleThreadTaskRunner> worker_thread)
-    : ContextClient(context),
+    : ExecutionContextClient(context),
       current_state_(webrtc::SctpTransportState::kNew),
       native_transport_(native_transport),
       proxy_(CreateProxy(context,
@@ -106,13 +100,10 @@ double RTCSctpTransport::maxMessageSize() const {
   return std::numeric_limits<double>::infinity();
 }
 
-int16_t RTCSctpTransport::maxChannels(bool& isNull) const {
-  if (!current_state_.MaxChannels()) {
-    isNull = true;
-    return 0;
-  }
-  isNull = false;
-  return *current_state_.MaxChannels();
+absl::optional<int16_t> RTCSctpTransport::maxChannels() const {
+  if (!current_state_.MaxChannels())
+    return absl::nullopt;
+  return current_state_.MaxChannels().value();
 }
 
 RTCDtlsTransport* RTCSctpTransport::transport() const {
@@ -163,13 +154,13 @@ const AtomicString& RTCSctpTransport::InterfaceName() const {
 }
 
 ExecutionContext* RTCSctpTransport::GetExecutionContext() const {
-  return ContextClient::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
-void RTCSctpTransport::Trace(Visitor* visitor) {
+void RTCSctpTransport::Trace(Visitor* visitor) const {
   visitor->Trace(dtls_transport_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   SctpTransportProxy::Delegate::Trace(visitor);
 }
 

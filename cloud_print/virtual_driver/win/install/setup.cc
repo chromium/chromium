@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <iomanip>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -16,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "cloud_print/common/win/cloud_print_utils.h"
@@ -44,7 +44,7 @@ const char kRegisterSwitch[] = "register";
 const char kUninstallSwitch[] = "uninstall";
 const char kUnregisterSwitch[] = "unregister";
 
-base::FilePath GetSystemPath(const base::string16& binary) {
+base::FilePath GetSystemPath(const std::wstring& binary) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &path)) {
     LOG(ERROR) << "Unable to get system path.";
@@ -53,7 +53,7 @@ base::FilePath GetSystemPath(const base::string16& binary) {
   return path.Append(binary);
 }
 
-base::FilePath GetNativeSystemPath(const base::string16& binary) {
+base::FilePath GetNativeSystemPath(const std::wstring& binary) {
   if (!IsSystem64Bit())
     return GetSystemPath(binary);
   base::FilePath path;
@@ -137,9 +137,9 @@ HRESULT RegisterPortMonitor(bool install, const base::FilePath& install_path) {
       return HRESULT_FROM_WIN32(exit_code);
     }
   } else {
-    if (!base::DeleteFile(target_path, false)) {
+    if (!base::DeleteFile(target_path)) {
       SpoolerServiceCommand("stop");
-      bool deleted = base::DeleteFile(target_path, false);
+      bool deleted = base::DeleteFile(target_path);
       SpoolerServiceCommand("start");
 
       if (!deleted) {
@@ -156,7 +156,7 @@ HRESULT InstallDriver(const base::FilePath& install_path) {
   wchar_t package_path[MAX_PATH * 10] = {0};
 
   base::FilePath inf_file = install_path.Append(kInfFileName);
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
 
   HRESULT result = UploadPrinterDriverPackage(
       NULL, inf_file.value().c_str(), NULL,
@@ -215,12 +215,12 @@ HRESULT InstallPrinter(void) {
 
   // None of the print API structures likes constant strings even though they
   // don't modify the string.  const_casting is the cleanest option.
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
   printer_info.pDriverName = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pPrinterName = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pComment = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pLocation = const_cast<LPWSTR>(kGcpUrl);
-  base::string16 port_name;
+  std::u16string port_name;
   printer_info.pPortName = const_cast<LPWSTR>(kPortName);
   printer_info.Attributes = PRINTER_ATTRIBUTE_DIRECT | PRINTER_ATTRIBUTE_LOCAL;
   printer_info.pPrintProcessor = const_cast<LPWSTR>(L"winprint");
@@ -238,7 +238,7 @@ HRESULT UninstallPrinter(void) {
   HANDLE handle = NULL;
   PRINTER_DEFAULTS printer_defaults = {0};
   printer_defaults.DesiredAccess = PRINTER_ALL_ACCESS;
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
   if (!OpenPrinter(const_cast<LPWSTR>(driver_name.c_str()), &handle,
                    &printer_defaults)) {
     // If we can't open the printer, it was probably already removed.
@@ -352,7 +352,7 @@ HRESULT DoDelete(const base::FilePath& install_path) {
   if (!base::DirectoryExists(install_path))
     return S_FALSE;
   Sleep(5000);  // Give parent some time to exit.
-  return base::DeleteFileRecursively(install_path) ? S_OK : E_FAIL;
+  return base::DeletePathRecursively(install_path) ? S_OK : E_FAIL;
 }
 
 HRESULT DoInstall(const base::FilePath& install_path) {
@@ -364,7 +364,7 @@ HRESULT DoInstall(const base::FilePath& install_path) {
   base::FilePath old_install_path = GetInstallLocation(kUninstallId);
   if (!old_install_path.value().empty() && install_path != old_install_path) {
     if (base::DirectoryExists(old_install_path))
-      base::DeleteFileRecursively(old_install_path);
+      base::DeletePathRecursively(old_install_path);
   }
   CreateUninstallKey(kUninstallId, LoadLocalString(IDS_DRIVER_NAME),
                      kUninstallSwitch);

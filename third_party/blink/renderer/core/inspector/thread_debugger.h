@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -26,6 +25,8 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
                                    public V8PerIsolateData::Data {
  public:
   explicit ThreadDebugger(v8::Isolate*);
+  ThreadDebugger(const ThreadDebugger&) = delete;
+  ThreadDebugger& operator=(const ThreadDebugger&) = delete;
   ~ThreadDebugger() override;
 
   static ThreadDebugger* From(v8::Isolate*);
@@ -83,10 +84,11 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
  private:
   // V8InspectorClient implementation.
   void beginUserGesture() override;
-  void endUserGesture() override;
   std::unique_ptr<v8_inspector::StringBuffer> valueSubtype(
       v8::Local<v8::Value>) override;
-  bool formatAccessorsAsProperties(v8::Local<v8::Value>) override;
+  std::unique_ptr<v8_inspector::StringBuffer> descriptionForValueSubtype(
+      v8::Local<v8::Context>,
+      v8::Local<v8::Value>) override;
   double currentTimeMS() override;
   bool isInspectableHeapObject(v8::Local<v8::Object>) override;
   void consoleTime(const v8_inspector::StringView& title) override;
@@ -96,6 +98,7 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
                            v8_inspector::V8InspectorClient::TimerCallback,
                            void* data) override;
   void cancelTimer(void* data) override;
+  int64_t generateUniqueId() override;
 
   void OnTimer(TimerBase*);
 
@@ -105,6 +108,10 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   static void MonitorEventsCallback(const v8::FunctionCallbackInfo<v8::Value>&);
   static void UnmonitorEventsCallback(
       const v8::FunctionCallbackInfo<v8::Value>&);
+  static void GetAccessibleNameCallback(
+      const v8::FunctionCallbackInfo<v8::Value>&);
+  static void GetAccessibleRoleCallback(
+      const v8::FunctionCallbackInfo<v8::Value>&);
 
   static void GetEventListenersCallback(
       const v8::FunctionCallbackInfo<v8::Value>&);
@@ -113,7 +120,6 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   Vector<std::unique_ptr<TaskRunnerTimer<ThreadDebugger>>> timers_;
   Vector<v8_inspector::V8InspectorClient::TimerCallback> timer_callbacks_;
   Vector<void*> timer_data_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadDebugger);
 };
 
 }  // namespace blink

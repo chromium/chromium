@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test the name property of shared workers mixing constructor options and constructor strings Uncaught Error: assert_equals: expected "my name" but got "[object Object]"
-Harness: the test ran to completion.
-

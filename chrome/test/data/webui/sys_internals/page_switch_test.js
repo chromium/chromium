@@ -40,15 +40,15 @@ PageTest.Switch = function() {
       const lineChart = SysInternals.lineChart;
       assertTrue(lineChart.shouldRender());
       const PAGE_HASH = SysInternals.PAGE_HASH;
-      if (hash == PAGE_HASH.CPU) {
+      if (hash === PAGE_HASH.CPU) {
         assertEquals(lineChart.subCharts_[0].dataSeriesList_.length, 0);
         assertEquals(lineChart.subCharts_[1].dataSeriesList_.length, 9);
         assertEquals(lineChart.menu_.buttons_.length, 9);
-      } else if (hash == PAGE_HASH.MEMORY) {
+      } else if (hash === PAGE_HASH.MEMORY) {
         assertEquals(lineChart.subCharts_[0].dataSeriesList_.length, 2);
         assertEquals(lineChart.subCharts_[1].dataSeriesList_.length, 2);
         assertEquals(lineChart.menu_.buttons_.length, 4);
-      } else if (hash == PAGE_HASH.ZRAM) {
+      } else if (hash === PAGE_HASH.ZRAM) {
         assertEquals(lineChart.subCharts_[0].dataSeriesList_.length, 2);
         assertEquals(lineChart.subCharts_[1].dataSeriesList_.length, 3);
         assertEquals(lineChart.menu_.buttons_.length, 5);
@@ -58,9 +58,9 @@ PageTest.Switch = function() {
     }
 
     function clickDrawerBtn(btnIndex) {
-      MockInteractions.tap($('nav-menu-btn'));
+      $('nav-menu-btn').click();
       const infoBtn = document.getElementsByClassName('drawer-item')[btnIndex];
-      MockInteractions.tap(infoBtn);
+      infoBtn.click();
     }
 
     function goPage(hash, btnIndex) {
@@ -69,7 +69,7 @@ PageTest.Switch = function() {
       clickDrawerBtn(btnIndex);
       return promiseResolvers.waitOnHashChangeCompleted.promise.then(
           function() {
-            if (hash == SysInternals.PAGE_HASH.INFO) {
+            if (hash === SysInternals.PAGE_HASH.INFO) {
               checkInfoPage();
             } else {
               checkChartPage(hash);

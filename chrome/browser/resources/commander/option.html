@@ -1,0 +1,54 @@
+<style>
+  :host {
+    align-items: center;
+    box-sizing: border-box;
+    cursor: default;
+    display: flex;
+    height: 48px;
+    padding: 1em;
+    width: 100%;
+  }
+
+  :host(:hover) {
+    background-color: #eee;
+  }
+
+  :host(.focused) {
+    background-color: rgba(var(--google-grey-900-rgb), 6%);
+  }
+
+  .annotation {
+    color: var(--google-blue-600);
+    margin-inline-start: auto;
+  }
+
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .title-piece {
+    white-space: pre;
+  }
+
+  .match {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  iron-icon {
+    flex-shrink: 0;
+    margin-inline-end: .5em;
+    --iron-icon-fill-color: --google-grey-800;
+  }
+</style>
+<iron-icon icon="[[computeIcon_(model.entity)]]"></iron-icon>
+<span class="title">
+<template is="dom-repeat"
+    items="[[computeMatchSpans_(model.title, model.matchedRanges)]]"
+    as="span">
+  <span class$="title-piece
+      [[getClassForMatch_(span.isMatch)]]">[[span.text]]</span>
+</template>
+</span>
+<span class="annotation">[[model.annotation]]</span>

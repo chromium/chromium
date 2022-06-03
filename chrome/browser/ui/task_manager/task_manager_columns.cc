@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/nacl/common/buildflags.h"
 
@@ -28,9 +29,9 @@ const TableColumnData kColumns[] = {
      200, true, true, false},
     {IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("800 MiB") * kCharWidth,
-     base::size("Memory Footprint") * 1.5 * kCharWidth, true, false, true},
+     base::size("Memory Footprint") * kCharWidth * 3 / 2, true, false, true},
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("800 MiB") * kCharWidth, -1, true, false, false},
 #endif
@@ -39,13 +40,13 @@ const TableColumnData kColumns[] = {
 // to make it the primary sort column a caret appears to the right of the
 // column's label. Without a little extra space, the tableview squeezes the
 // caret in by tail-truncating the label, which looks terrible.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     {IDS_TASK_MANAGER_CPU_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("0099.9") * kCharWidth, -1, true, false, true},
 #else
     {IDS_TASK_MANAGER_CPU_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("99.9") * kCharWidth, -1, true, false, true},
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
     {IDS_TASK_MANAGER_CPU_TIME_COLUMN, ui::TableColumn::RIGHT, -1, 0,
@@ -93,10 +94,10 @@ const TableColumnData kColumns[] = {
      base::size("100000") * kCharWidth, -1, true, false, false},
 #endif
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     {IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("999") * kCharWidth, -1, true, false, false},
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     {IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN, ui::TableColumn::LEFT, -1, 0,
      base::size("background") * kCharWidth, -1, true, true, false},
     {IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN, ui::TableColumn::RIGHT, -1, 0,

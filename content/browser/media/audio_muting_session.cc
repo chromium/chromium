@@ -11,7 +11,7 @@ AudioMutingSession::AudioMutingSession(const base::UnguessableToken& group_id)
 
 AudioMutingSession::~AudioMutingSession() = default;
 
-void AudioMutingSession::Connect(audio::mojom::StreamFactory* factory) {
+void AudioMutingSession::Connect(media::mojom::AudioStreamFactory* factory) {
   if (muter_)
     muter_.reset();
 

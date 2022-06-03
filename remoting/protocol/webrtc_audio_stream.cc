@@ -4,9 +4,9 @@
 
 #include "remoting/protocol/webrtc_audio_stream.h"
 
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/webrtc_audio_source_adapter.h"

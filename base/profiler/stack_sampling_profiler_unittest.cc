@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <set>
@@ -19,19 +18,20 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/native_library.h"
-#include "base/path_service.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/profiler/profiler_buildflags.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/profiler/stack_sampler.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/unwinder.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_native_library.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -46,8 +46,11 @@
 #endif
 
 // STACK_SAMPLING_PROFILER_SUPPORTED is used to conditionally enable the tests
-// below for supported platforms (currently Win x64 and Mac x64).
-#if defined(_WIN64) || (defined(OS_MACOSX) && !defined(OS_IOS))
+// below for supported platforms (currently Win x64, Mac x64 and iOS 64).
+#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) ||  \
+    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) ||  \
+    (defined(OS_IOS) && defined(ARCH_CPU_64_BITS)) || \
+    (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
 #define STACK_SAMPLING_PROFILER_SUPPORTED 1
 #endif
 
@@ -64,82 +67,23 @@ using SamplingParams = StackSamplingProfiler::SamplingParams;
 
 namespace {
 
-// Calls into |wait_for_sample| after using alloca(), to test unwinding with a
-// frame pointer.
-// Disable inlining for this function so that it gets its own stack frame.
-NOINLINE FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample) {
-  const void* start_program_counter = GetProgramCounter();
-
-  // Volatile to force a dynamic stack allocation.
-  const volatile size_t alloca_size = 100;
-  // Use the memory via volatile writes to prevent the allocation from being
-  // optimized out.
-  volatile char* const allocation =
-      const_cast<volatile char*>(static_cast<char*>(alloca(alloca_size)));
-  for (volatile char* p = allocation; p < allocation + alloca_size; ++p)
-    *p = '\0';
-
-  if (!wait_for_sample.is_null())
-    std::move(wait_for_sample).Run();
-
-  // Volatile to prevent a tail call to GetProgramCounter().
-  const void* volatile end_program_counter = GetProgramCounter();
-  return {start_program_counter, end_program_counter};
-}
-
-// The function to be executed by the code in the other library.
-void OtherLibraryCallback(void* arg) {
-  OnceClosure* wait_for_sample = static_cast<OnceClosure*>(arg);
-
-  std::move(*wait_for_sample).Run();
-
-  // Prevent tail call.
-  volatile int i = 0;
-  ALLOW_UNUSED_LOCAL(i);
-}
-
-// Calls into |wait_for_sample| through a function within another library, to
-// test unwinding through multiple modules and scenarios involving unloaded
-// modules.
-// Disable inlining for this function so that it gets its own stack frame.
-NOINLINE FunctionAddressRange
-CallThroughOtherLibrary(NativeLibrary library, OnceClosure wait_for_sample) {
-  const void* start_program_counter = GetProgramCounter();
-
-  if (!wait_for_sample.is_null()) {
-    // A function whose arguments are a function accepting void*, and a void*.
-    using InvokeCallbackFunction = void (*)(void (*)(void*), void*);
-    EXPECT_TRUE(library);
-    InvokeCallbackFunction function = reinterpret_cast<InvokeCallbackFunction>(
-        GetFunctionPointerFromNativeLibrary(library, "InvokeCallbackFunction"));
-    EXPECT_TRUE(function);
-
-    (*function)(&OtherLibraryCallback, &wait_for_sample);
-  }
-
-  // Volatile to prevent a tail call to GetProgramCounter().
-  const void* volatile end_program_counter = GetProgramCounter();
-  return {start_program_counter, end_program_counter};
-}
+// State provided to the ProfileBuilder's ApplyMetadataRetrospectively function.
+struct RetrospectiveMetadata {
+  TimeTicks period_start;
+  TimeTicks period_end;
+  MetadataRecorder::Item item;
+};
 
 // Profile consists of a set of samples and other sampling information.
 struct Profile {
-  Profile() = default;
-  Profile(Profile&& other) = default;
-  Profile(const std::vector<std::vector<Frame>>& samples,
-          int metadata_count,
-          TimeDelta profile_duration,
-          TimeDelta sampling_period);
-
-  ~Profile() = default;
-
-  Profile& operator=(Profile&& other) = default;
-
   // The collected samples.
   std::vector<std::vector<Frame>> samples;
 
   // The number of invocations of RecordMetadata().
-  int metadata_count;
+  int record_metadata_count;
+
+  // The retrospective metadata requests.
+  std::vector<RetrospectiveMetadata> retrospective_metadata;
 
   // Duration of this profile.
   TimeDelta profile_duration;
@@ -147,15 +91,6 @@ struct Profile {
   // Time between samples.
   TimeDelta sampling_period;
 };
-
-Profile::Profile(const std::vector<std::vector<Frame>>& samples,
-                 int metadata_count,
-                 TimeDelta profile_duration,
-                 TimeDelta sampling_period)
-    : samples(samples),
-      metadata_count(metadata_count),
-      profile_duration(profile_duration),
-      sampling_period(sampling_period) {}
 
 // The callback type used to collect a profile. The passed Profile is move-only.
 // Other threads, including the UI thread, may block on callback completion so
@@ -168,13 +103,21 @@ class TestProfileBuilder : public ProfileBuilder {
   TestProfileBuilder(ModuleCache* module_cache,
                      ProfileCompletedCallback callback);
 
+  TestProfileBuilder(const TestProfileBuilder&) = delete;
+  TestProfileBuilder& operator=(const TestProfileBuilder&) = delete;
+
   ~TestProfileBuilder() override;
 
   // ProfileBuilder:
   ModuleCache* GetModuleCache() override;
   void RecordMetadata(
-      ProfileBuilder::MetadataProvider* metadata_provider) override;
-  void OnSampleCompleted(std::vector<Frame> sample) override;
+      const MetadataRecorder::MetadataProvider& metadata_provider) override;
+  void ApplyMetadataRetrospectively(
+      TimeTicks period_start,
+      TimeTicks period_end,
+      const MetadataRecorder::Item& item) override;
+  void OnSampleCompleted(std::vector<Frame> sample,
+                         TimeTicks sample_timestamp) override;
   void OnProfileCompleted(TimeDelta profile_duration,
                           TimeDelta sampling_period) override;
 
@@ -185,12 +128,13 @@ class TestProfileBuilder : public ProfileBuilder {
   std::vector<std::vector<Frame>> samples_;
 
   // The number of invocations of RecordMetadata().
-  int metadata_count_ = 0;
+  int record_metadata_count_ = 0;
+
+  // The retrospective metadata requests.
+  std::vector<RetrospectiveMetadata> retrospective_metadata_;
 
   // Callback made when sampling a profile completes.
   ProfileCompletedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileBuilder);
 };
 
 TestProfileBuilder::TestProfileBuilder(ModuleCache* module_cache,
@@ -204,39 +148,28 @@ ModuleCache* TestProfileBuilder::GetModuleCache() {
 }
 
 void TestProfileBuilder::RecordMetadata(
-    ProfileBuilder::MetadataProvider* metadata_provider) {
-  ++metadata_count_;
+    const MetadataRecorder::MetadataProvider& metadata_provider) {
+  ++record_metadata_count_;
 }
 
-void TestProfileBuilder::OnSampleCompleted(std::vector<Frame> sample) {
+void TestProfileBuilder::ApplyMetadataRetrospectively(
+    TimeTicks period_start,
+    TimeTicks period_end,
+    const MetadataRecorder::Item& item) {
+  retrospective_metadata_.push_back(
+      RetrospectiveMetadata{period_start, period_end, item});
+}
+
+void TestProfileBuilder::OnSampleCompleted(std::vector<Frame> sample,
+                                           TimeTicks sample_timestamp) {
   samples_.push_back(std::move(sample));
 }
 
 void TestProfileBuilder::OnProfileCompleted(TimeDelta profile_duration,
                                             TimeDelta sampling_period) {
-  std::move(callback_).Run(
-      Profile(samples_, metadata_count_, profile_duration, sampling_period));
-}
-
-// Loads the other library, which defines a function to be called in the
-// WITH_OTHER_LIBRARY configuration.
-NativeLibrary LoadOtherLibrary() {
-  // The lambda gymnastics works around the fact that we can't use ASSERT_*
-  // macros in a function returning non-null.
-  const auto load = [](NativeLibrary* library) {
-    FilePath other_library_path;
-    ASSERT_TRUE(PathService::Get(DIR_EXE, &other_library_path));
-    other_library_path = other_library_path.AppendASCII(
-        GetNativeLibraryName("base_profiler_test_support_library"));
-    NativeLibraryLoadError load_error;
-    *library = LoadNativeLibrary(other_library_path, &load_error);
-    ASSERT_TRUE(*library) << "error loading " << other_library_path.value()
-                          << ": " << load_error.ToString();
-  };
-
-  NativeLibrary library = nullptr;
-  load(&library);
-  return library;
+  std::move(callback_).Run(Profile{samples_, record_metadata_count_,
+                                   retrospective_metadata_, profile_duration,
+                                   sampling_period});
 }
 
 // Unloads |library| and returns when it has completed unloading. Unloading a
@@ -255,10 +188,10 @@ void SynchronousUnloadNativeLibrary(NativeLibrary library) {
                              reinterpret_cast<LPCTSTR>(module_base_address),
                              &module_handle) ||
          ::GetLastError() != ERROR_MOD_NOT_FOUND) {
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+    PlatformThread::Sleep(Milliseconds(1));
   }
-#elif defined(OS_MACOSX)
-// Unloading a library on the Mac is synchronous.
+#elif defined(OS_APPLE) || defined(OS_ANDROID)
+// Unloading a library on Mac and Android is synchronous.
 #else
   NOTIMPLEMENTED();
 #endif
@@ -284,33 +217,19 @@ struct TestProfilerInfo {
                        profile = std::move(result_profile);
                        completed.Signal();
                      })),
+                 CreateCoreUnwindersFactoryForTesting(module_cache),
+                 RepeatingClosure(),
                  delegate) {}
+
+  TestProfilerInfo(const TestProfilerInfo&) = delete;
+  TestProfilerInfo& operator=(const TestProfilerInfo&) = delete;
 
   // The order here is important to ensure objects being referenced don't get
   // destructed until after the objects referencing them.
   Profile profile;
   WaitableEvent completed;
   StackSamplingProfiler profiler;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProfilerInfo);
 };
-
-// Creates multiple profilers based on a vector of parameters.
-std::vector<std::unique_ptr<TestProfilerInfo>> CreateProfilers(
-    SamplingProfilerThreadToken target_thread_token,
-    const std::vector<SamplingParams>& params,
-    ModuleCache* module_cache) {
-  DCHECK(!params.empty());
-
-  std::vector<std::unique_ptr<TestProfilerInfo>> profilers;
-  for (const auto& i : params) {
-    profilers.push_back(std::make_unique<TestProfilerInfo>(target_thread_token,
-                                                           i, module_cache));
-  }
-
-  return profilers;
-}
 
 // Captures samples as specified by |params| on the TargetThread, and returns
 // them. Waits up to |profiler_wait_time| for the profiler to complete.
@@ -336,10 +255,10 @@ size_t WaitForSamplingComplete(
     const std::vector<std::unique_ptr<TestProfilerInfo>>& infos) {
   // Map unique_ptrs to something that WaitMany can accept.
   std::vector<WaitableEvent*> sampling_completed_rawptrs(infos.size());
-  std::transform(infos.begin(), infos.end(), sampling_completed_rawptrs.begin(),
-                 [](const std::unique_ptr<TestProfilerInfo>& info) {
-                   return &info.get()->completed;
-                 });
+  ranges::transform(infos, sampling_completed_rawptrs.begin(),
+                    [](const std::unique_ptr<TestProfilerInfo>& info) {
+                      return &info.get()->completed;
+                    });
   // Wait for one profiler to finish.
   return WaitableEvent::WaitMany(sampling_completed_rawptrs.data(),
                                  sampling_completed_rawptrs.size());
@@ -348,7 +267,7 @@ size_t WaitForSamplingComplete(
 // Returns a duration that is longer than the test timeout. We would use
 // TimeDelta::Max() but https://crbug.com/465948.
 TimeDelta AVeryLongTimeDelta() {
-  return TimeDelta::FromDays(1);
+  return Days(1);
 }
 
 // Tests the scenario where the library is unloaded after copying the stack, but
@@ -380,7 +299,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
   };
 
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   NativeLibrary other_library = LoadOtherLibrary();
@@ -417,6 +336,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
                 profile = std::move(result_profile);
                 sampling_thread_completed.Signal();
               })),
+      CreateCoreUnwindersFactoryForTesting(module_cache), RepeatingClosure(),
       &test_delegate);
 
   profiler.Start();
@@ -513,10 +433,14 @@ class StackSamplingProfilerTest : public testing::Test {
 // Checks that the basic expected information is present in sampled frames.
 //
 // macOS ASAN is not yet supported - crbug.com/718628.
-#if !(defined(ADDRESS_SANITIZER) && defined(OS_MACOSX))
-#define MAYBE_Basic Basic
-#else
+//
+// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// ASAN. This is now disabled because the android-asan bot fails.
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || \
+    (defined(ADDRESS_SANITIZER) && defined(OS_ANDROID))
 #define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
 #endif
 PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Basic) {
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
@@ -535,33 +459,42 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Basic) {
 // A simple unwinder that always generates one frame then aborts the stack walk.
 class TestAuxUnwinder : public Unwinder {
  public:
-  TestAuxUnwinder(const Frame& frame_to_report)
-      : frame_to_report_(frame_to_report) {}
+  TestAuxUnwinder(const Frame& frame_to_report,
+                  base::RepeatingClosure add_initial_modules_callback)
+      : frame_to_report_(frame_to_report),
+        add_initial_modules_callback_(std::move(add_initial_modules_callback)) {
+  }
 
   TestAuxUnwinder(const TestAuxUnwinder&) = delete;
   TestAuxUnwinder& operator=(const TestAuxUnwinder&) = delete;
 
-  bool CanUnwindFrom(const Frame* current_frame) const override { return true; }
+  void InitializeModules() override {
+    if (add_initial_modules_callback_)
+      add_initial_modules_callback_.Run();
+  }
+  bool CanUnwindFrom(const Frame& current_frame) const override { return true; }
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override {
     stack->push_back(frame_to_report_);
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
   }
 
  private:
   const Frame frame_to_report_;
+  base::RepeatingClosure add_initial_modules_callback_;
 };
 
 // Checks that the profiler handles stacks containing dynamically-allocated
 // stack memory.
 // macOS ASAN is not yet supported - crbug.com/718628.
-#if !(defined(ADDRESS_SANITIZER) && defined(OS_MACOSX))
-#define MAYBE_Alloca Alloca
-#else
+// Android is not supported since Chrome unwind tables don't support dynamic
+// frames.
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || defined(OS_ANDROID)
 #define MAYBE_Alloca DISABLED_Alloca
+#else
+#define MAYBE_Alloca Alloca
 #endif
 PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
@@ -576,10 +509,17 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
 // macOS ASAN is not yet supported - crbug.com/718628.
-#if !(defined(ADDRESS_SANITIZER) && defined(OS_MACOSX))
-#define MAYBE_OtherLibrary OtherLibrary
-#else
+// iOS chrome doesn't support loading native libraries.
+// Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
+// have unwind tables.
+// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// ASAN. This is now disabled because the android-asan bot fails.
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || defined(OS_IOS) || \
+    (defined(OS_ANDROID) && BUILDFLAG(EXCLUDE_UNWIND_TABLES)) ||            \
+    (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OtherLibrary DISABLED_OtherLibrary
+#else
+#define MAYBE_OtherLibrary OtherLibrary
 #endif
 PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
   ScopedNativeLibrary other_library(LoadOtherLibrary());
@@ -596,10 +536,16 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
 // Checks that a stack that runs through a library that is unloading produces a
 // stack, and doesn't crash.
 // Unloading is synchronous on the Mac, so this test is inapplicable.
-#if !defined(OS_MACOSX)
-#define MAYBE_UnloadingLibrary UnloadingLibrary
-#else
+// Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
+// have unwind tables.
+// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// ASAN. This is now disabled because the android-asan bot fails.
+#if defined(OS_APPLE) ||                                         \
+    (defined(OS_ANDROID) && BUILDFLAG(EXCLUDE_UNWIND_TABLES)) || \
+    (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
 #define MAYBE_UnloadingLibrary DISABLED_UnloadingLibrary
+#else
+#define MAYBE_UnloadingLibrary UnloadingLibrary
 #endif
 PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_UnloadingLibrary) {
   TestLibraryUnload(false, module_cache());
@@ -608,10 +554,12 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_UnloadingLibrary) {
 // Checks that a stack that runs through a library that has been unloaded
 // produces a stack, and doesn't crash.
 // macOS ASAN is not yet supported - crbug.com/718628.
-#if !(defined(ADDRESS_SANITIZER) && defined(OS_MACOSX))
-#define MAYBE_UnloadedLibrary UnloadedLibrary
-#else
+// Android is not supported since modules are found before unwinding.
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || \
+    defined(OS_ANDROID) || defined(OS_IOS)
 #define MAYBE_UnloadedLibrary DISABLED_UnloadedLibrary
+#else
+#define MAYBE_UnloadedLibrary UnloadedLibrary
 #endif
 PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_UnloadedLibrary) {
   TestLibraryUnload(true, module_cache());
@@ -622,7 +570,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopWithoutStarting) {
   WithTargetThread(BindLambdaForTesting(
       [this](SamplingProfilerThreadToken target_thread_token) {
         SamplingParams params;
-        params.sampling_interval = TimeDelta::FromMilliseconds(0);
+        params.sampling_interval = Milliseconds(0);
         params.samples_per_profile = 1;
 
         Profile profile;
@@ -638,7 +586,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopWithoutStarting) {
                     [&profile, &sampling_completed](Profile result_profile) {
                       profile = std::move(result_profile);
                       sampling_completed.Signal();
-                    })));
+                    })),
+            CreateCoreUnwindersFactoryForTesting(module_cache()));
 
         profiler.Stop();  // Constructed but never started.
         EXPECT_FALSE(sampling_completed.IsSignaled());
@@ -668,28 +617,28 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
     size_t count_ = 0;
   };
 
-  WithTargetThread(BindLambdaForTesting(
-      [this](SamplingProfilerThreadToken target_thread_token) {
+  WithTargetThread(
+      BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
         SamplingParams params[2];
 
         // Providing an initial delay makes it more likely that both will be
         // scheduled before either starts to run. Once started, samples will
         // run ordered by their scheduled, interleaved times regardless of
         // whatever interval the thread wakes up.
-        params[0].initial_delay = TimeDelta::FromMilliseconds(10);
-        params[0].sampling_interval = TimeDelta::FromMilliseconds(1);
+        params[0].initial_delay = Milliseconds(10);
+        params[0].sampling_interval = Milliseconds(1);
         params[0].samples_per_profile = 100000;
 
-        params[1].initial_delay = TimeDelta::FromMilliseconds(10);
-        params[1].sampling_interval = TimeDelta::FromMilliseconds(1);
+        params[1].initial_delay = Milliseconds(10);
+        params[1].sampling_interval = Milliseconds(1);
         params[1].samples_per_profile = 100000;
 
         SampleRecordedCounter samples_recorded[size(params)];
-
+        ModuleCache module_cache1, module_cache2;
         TestProfilerInfo profiler_info0(target_thread_token, params[0],
-                                        module_cache(), &samples_recorded[0]);
+                                        &module_cache1, &samples_recorded[0]);
         TestProfilerInfo profiler_info1(target_thread_token, params[1],
-                                        module_cache(), &samples_recorded[1]);
+                                        &module_cache2, &samples_recorded[1]);
 
         profiler_info0.profiler.Start();
         profiler_info1.profiler.Start();
@@ -699,7 +648,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
         // knowing if 0 or 1 additional sample will be taken after Stop() and
         // thus no way of knowing how many Wait() calls to make on it.
         while (samples_recorded[0].Get() == 0 || samples_recorded[1].Get() == 0)
-          PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+          PlatformThread::Sleep(Milliseconds(1));
 
         // Ensure that the first sampler can be safely stopped while the second
         // continues to run. The stopped first profiler will still have a
@@ -714,7 +663,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
         // that the pending RecordSampleTask for the first has executed because
         // tasks are always ordered by their next scheduled time.
         while (samples_recorded[1].Get() < count1 + 2)
-          PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+          PlatformThread::Sleep(Milliseconds(1));
 
         // Ensure that the first profiler didn't do anything since it was
         // stopped.
@@ -726,10 +675,10 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
 // initial delay.
 PROFILER_TEST_F(StackSamplingProfilerTest, StopDuringInitialDelay) {
   SamplingParams params;
-  params.initial_delay = TimeDelta::FromSeconds(60);
+  params.initial_delay = Seconds(60);
 
   std::vector<std::vector<Frame>> samples =
-      CaptureSamples(params, TimeDelta::FromMilliseconds(0), module_cache());
+      CaptureSamples(params, Milliseconds(0), module_cache());
 
   EXPECT_TRUE(samples.empty());
 }
@@ -776,10 +725,77 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopDuringInterSampleInterval) {
       }));
 }
 
+PROFILER_TEST_F(StackSamplingProfilerTest, GetNextSampleTime_NormalExecution) {
+  const auto& GetNextSampleTime =
+      StackSamplingProfiler::TestPeer::GetNextSampleTime;
+
+  const TimeTicks scheduled_current_sample_time = TimeTicks::UnixEpoch();
+  const TimeDelta sampling_interval = Milliseconds(10);
+
+  // When executing the sample at exactly the scheduled time the next sample
+  // should be one interval later.
+  EXPECT_EQ(scheduled_current_sample_time + sampling_interval,
+            GetNextSampleTime(scheduled_current_sample_time, sampling_interval,
+                              scheduled_current_sample_time));
+
+  // When executing the sample less than half an interval after the scheduled
+  // time the next sample also should be one interval later.
+  EXPECT_EQ(scheduled_current_sample_time + sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 0.4 * sampling_interval));
+
+  // When executing the sample less than half an interval before the scheduled
+  // time the next sample also should be one interval later. This is not
+  // expected to occur in practice since delayed tasks never run early.
+  EXPECT_EQ(scheduled_current_sample_time + sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time - 0.4 * sampling_interval));
+}
+
+PROFILER_TEST_F(StackSamplingProfilerTest, GetNextSampleTime_DelayedExecution) {
+  const auto& GetNextSampleTime =
+      StackSamplingProfiler::TestPeer::GetNextSampleTime;
+
+  const TimeTicks scheduled_current_sample_time = TimeTicks::UnixEpoch();
+  const TimeDelta sampling_interval = Milliseconds(10);
+
+  // When executing the sample between 0.5 and 1.5 intervals after the scheduled
+  // time the next sample should be two intervals later.
+  EXPECT_EQ(scheduled_current_sample_time + 2 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 0.6 * sampling_interval));
+  EXPECT_EQ(scheduled_current_sample_time + 2 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 1.0 * sampling_interval));
+  EXPECT_EQ(scheduled_current_sample_time + 2 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 1.4 * sampling_interval));
+
+  // Similarly when executing the sample between 9.5 and 10.5 intervals after
+  // the scheduled time the next sample should be 11 intervals later.
+  EXPECT_EQ(scheduled_current_sample_time + 11 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 9.6 * sampling_interval));
+  EXPECT_EQ(scheduled_current_sample_time + 11 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 10.0 * sampling_interval));
+  EXPECT_EQ(scheduled_current_sample_time + 11 * sampling_interval,
+            GetNextSampleTime(
+                scheduled_current_sample_time, sampling_interval,
+                scheduled_current_sample_time + 10.4 * sampling_interval));
+}
+
 // Checks that we can destroy the profiler while profiling.
 PROFILER_TEST_F(StackSamplingProfilerTest, DestroyProfilerWhileProfiling) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(10);
+  params.sampling_interval = Milliseconds(10);
 
   Profile profile;
   WithTargetThread(BindLambdaForTesting([&, this](SamplingProfilerThreadToken
@@ -790,21 +806,22 @@ PROFILER_TEST_F(StackSamplingProfilerTest, DestroyProfilerWhileProfiling) {
         BindLambdaForTesting([&profile](Profile result_profile) {
           profile = std::move(result_profile);
         }));
-    profiler.reset(new StackSamplingProfiler(target_thread_token, params,
-                                             std::move(profile_builder)));
+    profiler = std::make_unique<StackSamplingProfiler>(
+        target_thread_token, params, std::move(profile_builder),
+        CreateCoreUnwindersFactoryForTesting(module_cache()));
     profiler->Start();
     profiler.reset();
 
     // Wait longer than a sample interval to catch any use-after-free actions by
     // the profiler thread.
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(50));
+    PlatformThread::Sleep(Milliseconds(50));
   }));
 }
 
 // Checks that the different profilers may be run.
 PROFILER_TEST_F(StackSamplingProfilerTest, CanRunMultipleProfilers) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   std::vector<std::vector<Frame>> samples =
@@ -817,23 +834,26 @@ PROFILER_TEST_F(StackSamplingProfilerTest, CanRunMultipleProfilers) {
 
 // Checks that a sampler can be started while another is running.
 PROFILER_TEST_F(StackSamplingProfilerTest, MultipleStart) {
-  WithTargetThread(BindLambdaForTesting(
-      [this](SamplingProfilerThreadToken target_thread_token) {
-        std::vector<SamplingParams> params(2);
+  WithTargetThread(
+      BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
+        SamplingParams params1;
+        params1.initial_delay = AVeryLongTimeDelta();
+        params1.samples_per_profile = 1;
+        ModuleCache module_cache1;
+        TestProfilerInfo profiler_info1(target_thread_token, params1,
+                                        &module_cache1);
 
-        params[0].initial_delay = AVeryLongTimeDelta();
-        params[0].samples_per_profile = 1;
+        SamplingParams params2;
+        params2.sampling_interval = Milliseconds(1);
+        params2.samples_per_profile = 1;
+        ModuleCache module_cache2;
+        TestProfilerInfo profiler_info2(target_thread_token, params2,
+                                        &module_cache2);
 
-        params[1].sampling_interval = TimeDelta::FromMilliseconds(1);
-        params[1].samples_per_profile = 1;
-
-        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos =
-            CreateProfilers(target_thread_token, params, module_cache());
-
-        profiler_infos[0]->profiler.Start();
-        profiler_infos[1]->profiler.Start();
-        profiler_infos[1]->completed.Wait();
-        EXPECT_EQ(1u, profiler_infos[1]->profile.samples.size());
+        profiler_info1.profiler.Start();
+        profiler_info2.profiler.Start();
+        profiler_info2.completed.Wait();
+        EXPECT_EQ(1u, profiler_info2.profile.samples.size());
       }));
 }
 
@@ -844,7 +864,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ProfileGeneralInfo) {
   WithTargetThread(BindLambdaForTesting(
       [this](SamplingProfilerThreadToken target_thread_token) {
         SamplingParams params;
-        params.sampling_interval = TimeDelta::FromMilliseconds(1);
+        params.sampling_interval = Milliseconds(1);
         params.samples_per_profile = 3;
 
         TestProfilerInfo profiler_info(target_thread_token, params,
@@ -859,19 +879,18 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ProfileGeneralInfo) {
         EXPECT_GT(profiler_info.profile.profile_duration,
                   profiler_info.profile.sampling_period * 3);
 
-        EXPECT_EQ(TimeDelta::FromMilliseconds(1),
-                  profiler_info.profile.sampling_period);
+        EXPECT_EQ(Milliseconds(1), profiler_info.profile.sampling_period);
 
         // The number of invocations of RecordMetadata() should be equal to the
         // number of samples recorded.
-        EXPECT_EQ(3, profiler_info.profile.metadata_count);
+        EXPECT_EQ(3, profiler_info.profile.record_metadata_count);
       }));
 }
 
 // Checks that the sampling thread can shut down.
 PROFILER_TEST_F(StackSamplingProfilerTest, SamplerIdleShutdown) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   std::vector<std::vector<Frame>> samples =
@@ -890,14 +909,14 @@ PROFILER_TEST_F(StackSamplingProfilerTest, SamplerIdleShutdown) {
   // happens asynchronously. Watch until the thread actually exits. This test
   // will time-out in the case of failure.
   while (StackSamplingProfiler::TestPeer::IsSamplingThreadRunning())
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+    PlatformThread::Sleep(Milliseconds(1));
 }
 
 // Checks that additional requests will restart a stopped profiler.
 PROFILER_TEST_F(StackSamplingProfilerTest,
                 WillRestartSamplerAfterIdleShutdown) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   std::vector<std::vector<Frame>> samples =
@@ -924,7 +943,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopAfterIdleShutdown) {
       [this](SamplingProfilerThreadToken target_thread_token) {
         SamplingParams params;
 
-        params.sampling_interval = TimeDelta::FromMilliseconds(1);
+        params.sampling_interval = Milliseconds(1);
         params.samples_per_profile = 1;
 
         TestProfilerInfo profiler_info(target_thread_token, params,
@@ -950,20 +969,24 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopAfterIdleShutdown) {
 // started.
 PROFILER_TEST_F(StackSamplingProfilerTest,
                 ProfileBeforeAndAfterSamplingThreadRunning) {
-  WithTargetThread(BindLambdaForTesting(
-      [this](SamplingProfilerThreadToken target_thread_token) {
-        std::vector<SamplingParams> params(2);
+  WithTargetThread(
+      BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
+        ModuleCache module_cache1;
+        ModuleCache module_cache2;
 
-        params[0].initial_delay = AVeryLongTimeDelta();
-        params[0].sampling_interval = TimeDelta::FromMilliseconds(1);
-        params[0].samples_per_profile = 1;
-
-        params[1].initial_delay = TimeDelta::FromMilliseconds(0);
-        params[1].sampling_interval = TimeDelta::FromMilliseconds(1);
-        params[1].samples_per_profile = 1;
-
-        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos =
-            CreateProfilers(target_thread_token, params, module_cache());
+        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos;
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/AVeryLongTimeDelta(),
+                           /*samples_per_profile=*/1,
+                           /*sampling_interval=*/Milliseconds(1)},
+            &module_cache1));
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(0),
+                           /*samples_per_profile=*/1,
+                           /*sampling_interval=*/Milliseconds(1)},
+            &module_cache2));
 
         // First profiler is started when there has never been a sampling
         // thread.
@@ -987,7 +1010,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, IdleShutdownAbort) {
       [this](SamplingProfilerThreadToken target_thread_token) {
         SamplingParams params;
 
-        params.sampling_interval = TimeDelta::FromMilliseconds(1);
+        params.sampling_interval = Milliseconds(1);
         params.samples_per_profile = 1;
 
         TestProfilerInfo profiler_info(target_thread_token, params,
@@ -1008,7 +1031,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, IdleShutdownAbort) {
         // the thread was just running ("perform" blocked until it was), it
         // should finish almost immediately and without any waiting for tasks or
         // events.
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(200));
+        PlatformThread::Sleep(Milliseconds(200));
         EXPECT_TRUE(StackSamplingProfiler::TestPeer::IsSamplingThreadRunning());
 
         // Ensure that it's still possible to run another sampler.
@@ -1022,9 +1045,9 @@ PROFILER_TEST_F(StackSamplingProfilerTest, IdleShutdownAbort) {
 
 // Checks that synchronized multiple sampling requests execute in parallel.
 PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
-  WithTargetThread(BindLambdaForTesting(
-      [this](SamplingProfilerThreadToken target_thread_token) {
-        std::vector<SamplingParams> params(2);
+  WithTargetThread(
+      BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
+        std::vector<ModuleCache> module_caches(2);
 
         // Providing an initial delay makes it more likely that both will be
         // scheduled before either starts to run. Once started, samples will
@@ -1032,16 +1055,19 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
         // whatever interval the thread wakes up. Thus, total execution time
         // will be 10ms (delay) + 10x1ms (sampling) + 1/2 timer minimum
         // interval.
-        params[0].initial_delay = TimeDelta::FromMilliseconds(10);
-        params[0].sampling_interval = TimeDelta::FromMilliseconds(1);
-        params[0].samples_per_profile = 9;
-
-        params[1].initial_delay = TimeDelta::FromMilliseconds(11);
-        params[1].sampling_interval = TimeDelta::FromMilliseconds(1);
-        params[1].samples_per_profile = 8;
-
-        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos =
-            CreateProfilers(target_thread_token, params, module_cache());
+        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos;
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(10),
+                           /*samples_per_profile=*/9,
+                           /*sampling_interval=*/Milliseconds(1)},
+            &module_caches[0]));
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(11),
+                           /*samples_per_profile=*/8,
+                           /*sampling_interval=*/Milliseconds(1)},
+            &module_caches[1]));
 
         profiler_infos[0]->profiler.Start();
         profiler_infos[1]->profiler.Start();
@@ -1061,39 +1087,43 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
 
 // Checks that several mixed sampling requests execute in parallel.
 PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_Mixed) {
-  WithTargetThread(BindLambdaForTesting(
-      [this](SamplingProfilerThreadToken target_thread_token) {
-        std::vector<SamplingParams> params(3);
+  WithTargetThread(BindLambdaForTesting([](SamplingProfilerThreadToken
+                                               target_thread_token) {
+    std::vector<ModuleCache> module_caches(3);
 
-        params[0].initial_delay = TimeDelta::FromMilliseconds(8);
-        params[0].sampling_interval = TimeDelta::FromMilliseconds(4);
-        params[0].samples_per_profile = 10;
+    std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos;
+    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+        target_thread_token,
+        SamplingParams{/*initial_delay=*/Milliseconds(8),
+                       /*samples_per_profile=*/10,
+                       /*sampling_interval=*/Milliseconds(4)},
+        &module_caches[0]));
+    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+        target_thread_token,
+        SamplingParams{/*initial_delay=*/Milliseconds(9),
+                       /*samples_per_profile=*/10,
+                       /*sampling_interval=*/Milliseconds(3)},
+        &module_caches[1]));
+    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+        target_thread_token,
+        SamplingParams{/*initial_delay=*/Milliseconds(10),
+                       /*samples_per_profile=*/10,
+                       /*sampling_interval=*/Milliseconds(2)},
+        &module_caches[2]));
 
-        params[1].initial_delay = TimeDelta::FromMilliseconds(9);
-        params[1].sampling_interval = TimeDelta::FromMilliseconds(3);
-        params[1].samples_per_profile = 10;
+    for (auto& i : profiler_infos)
+      i->profiler.Start();
 
-        params[2].initial_delay = TimeDelta::FromMilliseconds(10);
-        params[2].sampling_interval = TimeDelta::FromMilliseconds(2);
-        params[2].samples_per_profile = 10;
-
-        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos =
-            CreateProfilers(target_thread_token, params, module_cache());
-
-        for (auto& i : profiler_infos)
-          i->profiler.Start();
-
-        // Wait for one profiler to finish.
-        size_t completed_profiler = WaitForSamplingComplete(profiler_infos);
-        EXPECT_EQ(10u,
-                  profiler_infos[completed_profiler]->profile.samples.size());
-        // Stop and destroy all profilers, always in the same order. Don't
-        // crash.
-        for (auto& i : profiler_infos)
-          i->profiler.Stop();
-        for (auto& i : profiler_infos)
-          i.reset();
-      }));
+    // Wait for one profiler to finish.
+    size_t completed_profiler = WaitForSamplingComplete(profiler_infos);
+    EXPECT_EQ(10u, profiler_infos[completed_profiler]->profile.samples.size());
+    // Stop and destroy all profilers, always in the same order. Don't
+    // crash.
+    for (auto& i : profiler_infos)
+      i->profiler.Stop();
+    for (auto& i : profiler_infos)
+      i.reset();
+  }));
 }
 
 // Checks that different threads can be sampled in parallel.
@@ -1122,14 +1152,15 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
   // run ordered by their scheduled, interleaved times regardless of
   // whatever interval the thread wakes up.
   SamplingParams params1, params2;
-  params1.initial_delay = TimeDelta::FromMilliseconds(10);
-  params1.sampling_interval = TimeDelta::FromMilliseconds(1);
+  params1.initial_delay = Milliseconds(10);
+  params1.sampling_interval = Milliseconds(1);
   params1.samples_per_profile = 9;
-  params2.initial_delay = TimeDelta::FromMilliseconds(10);
-  params2.sampling_interval = TimeDelta::FromMilliseconds(1);
+  params2.initial_delay = Milliseconds(10);
+  params2.sampling_interval = Milliseconds(1);
   params2.samples_per_profile = 8;
 
   Profile profile1, profile2;
+  ModuleCache module_cache1, module_cache2;
 
   WaitableEvent sampling_thread_completed1(
       WaitableEvent::ResetPolicy::MANUAL,
@@ -1137,12 +1168,13 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
   StackSamplingProfiler profiler1(
       target_thread1.thread_token(), params1,
       std::make_unique<TestProfileBuilder>(
-          module_cache(),
+          &module_cache1,
           BindLambdaForTesting(
               [&profile1, &sampling_thread_completed1](Profile result_profile) {
                 profile1 = std::move(result_profile);
                 sampling_thread_completed1.Signal();
-              })));
+              })),
+      CreateCoreUnwindersFactoryForTesting(&module_cache1));
 
   WaitableEvent sampling_thread_completed2(
       WaitableEvent::ResetPolicy::MANUAL,
@@ -1150,12 +1182,13 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
   StackSamplingProfiler profiler2(
       target_thread2.thread_token(), params2,
       std::make_unique<TestProfileBuilder>(
-          module_cache(),
+          &module_cache2,
           BindLambdaForTesting(
               [&profile2, &sampling_thread_completed2](Profile result_profile) {
                 profile2 = std::move(result_profile);
                 sampling_thread_completed2.Signal();
-              })));
+              })),
+      CreateCoreUnwindersFactoryForTesting(&module_cache2));
 
   // Finally the real work.
   profiler1.Start();
@@ -1190,8 +1223,8 @@ class ProfilerThread : public SimpleThread {
                       BindLambdaForTesting([this](Profile result_profile) {
                         profile_ = std::move(result_profile);
                         completed_.Signal();
-                      }))) {}
-
+                      })),
+                  CreateCoreUnwindersFactoryForTesting(module_cache)) {}
   void Run() override {
     run_.Wait();
     profiler_.Start();
@@ -1220,11 +1253,11 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleProfilerThreads) {
         // run ordered by their scheduled, interleaved times regardless of
         // whatever interval the thread wakes up.
         SamplingParams params1, params2;
-        params1.initial_delay = TimeDelta::FromMilliseconds(10);
-        params1.sampling_interval = TimeDelta::FromMilliseconds(1);
+        params1.initial_delay = Milliseconds(10);
+        params1.sampling_interval = Milliseconds(1);
         params1.samples_per_profile = 9;
-        params2.initial_delay = TimeDelta::FromMilliseconds(10);
-        params2.sampling_interval = TimeDelta::FromMilliseconds(1);
+        params2.initial_delay = Milliseconds(10);
+        params2.sampling_interval = Milliseconds(1);
         params2.samples_per_profile = 8;
 
         // Start the profiler threads and give them a moment to get going.
@@ -1236,7 +1269,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleProfilerThreads) {
                                         params2, &module_cache2);
         profiler_thread1.Start();
         profiler_thread2.Start();
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+        PlatformThread::Sleep(Milliseconds(10));
 
         // This will (approximately) synchronize the two threads.
         profiler_thread1.Go();
@@ -1255,10 +1288,16 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleProfilerThreads) {
 
 PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
+
+  int add_initial_modules_invocation_count = 0;
+  const auto add_initial_modules_callback =
+      [&add_initial_modules_invocation_count]() {
+        ++add_initial_modules_invocation_count;
+      };
 
   Profile profile;
   WithTargetThread(
@@ -1276,12 +1315,16 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
                                              Profile result_profile) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
-                    })));
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+                    })),
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr),
+                BindLambdaForTesting(add_initial_modules_callback)));
             profiler.Start();
             sampling_thread_completed.Wait();
           }));
+
+  ASSERT_EQ(1, add_initial_modules_invocation_count);
 
   // The sample should have one frame from the context values and one from the
   // TestAuxUnwinder.
@@ -1295,10 +1338,16 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
 PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
-  params.samples_per_profile = 1;
+  params.sampling_interval = Milliseconds(10);
+  params.samples_per_profile = 2;
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
+
+  int add_initial_modules_invocation_count = 0;
+  const auto add_initial_modules_callback =
+      [&add_initial_modules_invocation_count]() {
+        ++add_initial_modules_invocation_count;
+      };
 
   Profile profile;
   WithTargetThread(
@@ -1316,18 +1365,24 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
                                              Profile result_profile) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
-                    })));
+                    })),
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr),
+                BindLambdaForTesting(add_initial_modules_callback)));
             sampling_thread_completed.Wait();
           }));
 
+  ASSERT_EQ(1, add_initial_modules_invocation_count);
+
   // The sample should have one frame from the context values and one from the
   // TestAuxUnwinder.
-  ASSERT_EQ(1u, profile.samples.size());
-  const std::vector<Frame>& frames = profile.samples[0];
+  ASSERT_EQ(2u, profile.samples.size());
 
+  // Whether the aux unwinder is available for the first sample is racy, so rely
+  // on the second sample.
+  const std::vector<Frame>& frames = profile.samples[1];
   ASSERT_EQ(2u, frames.size());
   EXPECT_EQ(23u, frames[1].instruction_pointer);
   EXPECT_EQ(nullptr, frames[1].module);
@@ -1335,7 +1390,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
 
 PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStop) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
@@ -1356,16 +1411,115 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStop) {
                                              Profile result_profile) {
                       profile = std::move(result_profile);
                       sampling_thread_completed.Signal();
-                    })));
+                    })),
+                CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
             profiler.Stop();
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr), base::RepeatingClosure()));
             sampling_thread_completed.Wait();
           }));
 
   // The AuxUnwinder should be accepted without error. It will have no effect
   // since the collection has stopped.
+}
+
+// Checks that requests to apply metadata to past samples are passed on to the
+// profile builder.
+PROFILER_TEST_F(StackSamplingProfilerTest,
+                ApplyMetadataToPastSamples_PassedToProfileBuilder) {
+  // Runs the passed closure on the profiler thread after a sample is taken.
+  class PostSampleInvoker : public StackSamplerTestDelegate {
+   public:
+    explicit PostSampleInvoker(RepeatingClosure post_sample_closure)
+        : post_sample_closure_(std::move(post_sample_closure)) {}
+
+    void OnPreStackWalk() override { post_sample_closure_.Run(); }
+
+   private:
+    RepeatingClosure post_sample_closure_;
+  };
+
+  // Thread-safe representation of the times that samples were taken.
+  class SynchronizedSampleTimes {
+   public:
+    void AddNow() {
+      AutoLock lock(lock_);
+      times_.push_back(TimeTicks::Now());
+    }
+
+    std::vector<TimeTicks> GetTimes() {
+      AutoLock lock(lock_);
+      return times_;
+    }
+
+   private:
+    Lock lock_;
+    std::vector<TimeTicks> times_;
+  };
+
+  SamplingParams params;
+  params.sampling_interval = Milliseconds(10);
+  // 10,000 samples ensures the profiler continues running until manually
+  // stopped, after applying metadata.
+  params.samples_per_profile = 10000;
+
+  UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
+
+  std::vector<TimeTicks> sample_times;
+  Profile profile;
+  WithTargetThread(
+      &scenario,
+      BindLambdaForTesting(
+          [&](SamplingProfilerThreadToken target_thread_token) {
+            SynchronizedSampleTimes synchronized_sample_times;
+            WaitableEvent sample_seen(WaitableEvent::ResetPolicy::AUTOMATIC);
+            PostSampleInvoker post_sample_invoker(BindLambdaForTesting([&]() {
+              synchronized_sample_times.AddNow();
+              sample_seen.Signal();
+            }));
+
+            StackSamplingProfiler profiler(
+                target_thread_token, params,
+                std::make_unique<TestProfileBuilder>(
+                    module_cache(),
+                    BindLambdaForTesting([&profile](Profile result_profile) {
+                      profile = std::move(result_profile);
+                    })),
+                CreateCoreUnwindersFactoryForTesting(module_cache()),
+                RepeatingClosure(), &post_sample_invoker);
+            profiler.Start();
+            // Wait for 5 samples to be collected.
+            for (int i = 0; i < 5; ++i)
+              sample_seen.Wait();
+            sample_times = synchronized_sample_times.GetTimes();
+            // Record metadata on past samples, with and without a key value.
+            // The range [times[1], times[3]] is guaranteed to include only
+            // samples 2 and 3, and likewise [times[2], times[4]] is guaranteed
+            // to include only samples 3 and 4.
+            ApplyMetadataToPastSamples(sample_times[1], sample_times[3],
+                                       "TestMetadata1", 10);
+            ApplyMetadataToPastSamples(sample_times[2], sample_times[4],
+                                       "TestMetadata2", 100, 11);
+            profiler.Stop();
+          }));
+
+  ASSERT_EQ(2u, profile.retrospective_metadata.size());
+
+  const RetrospectiveMetadata& metadata1 = profile.retrospective_metadata[0];
+  EXPECT_EQ(sample_times[1], metadata1.period_start);
+  EXPECT_EQ(sample_times[3], metadata1.period_end);
+  EXPECT_EQ(HashMetricName("TestMetadata1"), metadata1.item.name_hash);
+  EXPECT_FALSE(metadata1.item.key.has_value());
+  EXPECT_EQ(10, metadata1.item.value);
+
+  const RetrospectiveMetadata& metadata2 = profile.retrospective_metadata[1];
+  EXPECT_EQ(sample_times[2], metadata2.period_start);
+  EXPECT_EQ(sample_times[4], metadata2.period_end);
+  EXPECT_EQ(HashMetricName("TestMetadata2"), metadata2.item.name_hash);
+  ASSERT_TRUE(metadata2.item.key.has_value());
+  EXPECT_EQ(100, *metadata2.item.key);
+  EXPECT_EQ(11, metadata2.item.value);
 }
 
 }  // namespace base

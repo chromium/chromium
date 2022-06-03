@@ -52,7 +52,7 @@ BASE_EXPORT std::string GetQuotedJSONString(StringPiece16 str);
 // interpret it as UTF-16 and convert it to UTF-8.
 //
 // The output of this function takes the *appearance* of JSON but is not in
-// fact valid according to RFC 4627.
+// fact valid according to RFC 8259.
 BASE_EXPORT std::string EscapeBytesAsInvalidJSONString(StringPiece str,
                                                        bool put_in_quotes);
 

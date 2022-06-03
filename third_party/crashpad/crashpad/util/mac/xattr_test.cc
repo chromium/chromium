@@ -22,7 +22,6 @@
 
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "test/scoped_temp_dir.h"

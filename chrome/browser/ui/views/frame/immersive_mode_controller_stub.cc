@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {
 }

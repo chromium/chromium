@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 
+#include <utility>
+
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -13,9 +15,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
@@ -45,7 +49,7 @@ AuthenticatorRequestSheetView::AuthenticatorRequestSheetView(
 AuthenticatorRequestSheetView::~AuthenticatorRequestSheetView() = default;
 
 void AuthenticatorRequestSheetView::ReInitChildViews() {
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 
   // No need to add further spacing between the upper and lower half. The image
   // is designed to fill the dialog's top half without any border/margins, and
@@ -62,24 +66,22 @@ void AuthenticatorRequestSheetView::ReInitChildViews() {
 }
 
 views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
-  return step_specific_content_;
-}
-
-std::unique_ptr<views::View>
-AuthenticatorRequestSheetView::BuildStepSpecificContent() {
+  if (should_focus_step_specific_content_ == AutoFocus::kYes) {
+    return step_specific_content_;
+  }
   return nullptr;
 }
 
-void AuthenticatorRequestSheetView::ButtonPressed(views::Button* sender,
-                                                  const ui::Event& event) {
-  DCHECK_EQ(sender, back_arrow_button_);
-  model()->OnBack();
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
+AuthenticatorRequestSheetView::BuildStepSpecificContent() {
+  return std::make_pair(nullptr, AutoFocus::kNo);
 }
 
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   const int illustration_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const gfx::Size illustration_size(illustration_width, kIllustrationHeight);
 
   // The container view has no layout, so its preferred size is hardcoded to
@@ -89,7 +91,6 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 
   auto image_view = std::make_unique<NonAccessibleImageView>();
   step_illustration_ = image_view.get();
-  UpdateIconImageFromModel();
   image_view->SetSize(illustration_size);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   image_with_overlays->AddChildView(image_view.release());
@@ -106,8 +107,8 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   }
 
   if (model()->IsBackButtonVisible()) {
-    auto back_arrow = views::CreateVectorImageButton(this);
-    back_arrow->SetFocusForPlatform();
+    auto back_arrow = views::CreateVectorImageButton(base::BindRepeating(
+        &AuthenticatorRequestSheetModel::OnBack, base::Unretained(model())));
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_BACK_BUTTON_AUTHENTICATOR_REQUEST_DIALOG));
 
@@ -115,19 +116,22 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
     // between the top/left side of the back button and the dialog borders.
     const gfx::Insets dialog_insets =
         views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::CONTROL, views::CONTROL);
+            views::DialogContentType::kControl,
+            views::DialogContentType::kControl);
     auto color_reference = std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_DIALOG_TITLE,
+        std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_PRIMARY);
-    views::SetImageFromVectorIcon(back_arrow.get(),
-                                  vector_icons::kBackArrowIcon,
-                                  color_utils::DeriveDefaultIconColor(
-                                      color_reference->GetEnabledColor()));
     back_arrow->SizeToPreferredSize();
     back_arrow->SetX(dialog_insets.left());
     back_arrow->SetY(dialog_insets.top());
+    back_arrow_ = back_arrow.get();
     back_arrow_button_ =
         image_with_overlays->AddChildView(std::move(back_arrow));
+  }
+
+  if (GetWidget()) {
+    UpdateIconImageFromModel();
+    UpdateIconColors();
   }
 
   return image_with_overlays;
@@ -144,7 +148,8 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
 
   contents->SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::CONTROL)));
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl)));
 
   auto label_container = std::make_unique<views::View>();
   label_container->SetLayoutManager(std::make_unique<BoxLayout>(
@@ -160,22 +165,21 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   title_label->SetAllowCharacterBreak(true);
   label_container->AddChildView(title_label.release());
 
-  base::string16 description = model()->GetStepDescription();
+  std::u16string description = model()->GetStepDescription();
   if (!description.empty()) {
     auto description_label = std::make_unique<views::Label>(
-        std::move(description), views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+        std::move(description), views::style::CONTEXT_DIALOG_BODY_TEXT);
     description_label->SetMultiLine(true);
     description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     description_label->SetAllowCharacterBreak(true);
     label_container->AddChildView(description_label.release());
   }
 
-  base::Optional<base::string16> additional_desciption =
-      model()->GetAdditionalDescription();
-  if (additional_desciption) {
-    auto label = std::make_unique<views::Label>(
-        std::move(*additional_desciption),
-        views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+  std::u16string additional_desciption = model()->GetAdditionalDescription();
+  if (!additional_desciption.empty()) {
+    auto label =
+        std::make_unique<views::Label>(std::move(additional_desciption),
+                                       views::style::CONTEXT_DIALOG_BODY_TEXT);
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetAllowCharacterBreak(true);
@@ -184,30 +188,53 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
 
   contents->AddChildView(label_container.release());
 
-  std::unique_ptr<views::View> step_specific_content =
+  std::unique_ptr<views::View> step_specific_content;
+  std::tie(step_specific_content, should_focus_step_specific_content_) =
       BuildStepSpecificContent();
+  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
+         step_specific_content);
   if (step_specific_content) {
     step_specific_content_ = step_specific_content.get();
     contents->AddChildView(step_specific_content.release());
     contents_layout->SetFlexForView(step_specific_content_, 1);
   }
 
+  std::u16string error = model()->GetError();
+  if (!error.empty()) {
+    auto error_label = std::make_unique<views::Label>(
+        std::move(error), views::style::CONTEXT_LABEL, STYLE_RED);
+    error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    error_label->SetMultiLine(true);
+    error_label_ = contents->AddChildView(std::move(error_label));
+  }
+
   return contents;
 }
 
 void AuthenticatorRequestSheetView::OnThemeChanged() {
+  views::View::OnThemeChanged();
   UpdateIconImageFromModel();
+  UpdateIconColors();
 }
 
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
   if (!step_illustration_)
     return;
 
-  gfx::IconDescription icon_description(
-      model()->GetStepIllustration(GetNativeTheme()->ShouldUseDarkColors()
-                                       ? ImageColorScheme::kDark
-                                       : ImageColorScheme::kLight),
-      0 /* automatic dip_size */, SK_ColorBLACK, base::TimeDelta(),
-      gfx::kNoneIcon);
+  gfx::IconDescription icon_description(model()->GetStepIllustration(
+      GetNativeTheme()->ShouldUseDarkColors() ? ImageColorScheme::kDark
+                                              : ImageColorScheme::kLight));
   step_illustration_->SetImage(gfx::CreateVectorIcon(icon_description));
 }
+
+void AuthenticatorRequestSheetView::UpdateIconColors() {
+  if (back_arrow_) {
+    views::SetImageFromVectorIcon(
+        back_arrow_, vector_icons::kBackArrowIcon,
+        color_utils::DeriveDefaultIconColor(views::style::GetColor(
+            *this, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
+  }
+}
+
+BEGIN_METADATA(AuthenticatorRequestSheetView, views::View)
+END_METADATA

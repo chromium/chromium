@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -31,6 +30,10 @@ class Rect;
 class BrowserLiveTabContext : public sessions::LiveTabContext {
  public:
   explicit BrowserLiveTabContext(Browser* browser) : browser_(browser) {}
+
+  BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
+  BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
+
   ~BrowserLiveTabContext() override {}
 
   // Overridden from LiveTabContext:
@@ -39,16 +42,17 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   int GetTabCount() const override;
   int GetSelectedIndex() const override;
   std::string GetAppName() const override;
+  std::string GetUserTitle() const override;
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
   bool IsTabPinned(int index) const override;
-  base::Optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
-  tab_groups::TabGroupVisualData* GetVisualDataForGroup(
-      tab_groups::TabGroupId group) const override;
+  const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
+      const tab_groups::TabGroupId& group) const override;
   void SetVisualDataForGroup(
-      tab_groups::TabGroupId group,
-      tab_groups::TabGroupVisualData visual_data) override;
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data) override;
   const gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;
@@ -58,21 +62,21 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
-      base::Optional<tab_groups::TabGroupId> group,
-      const tab_groups::TabGroupVisualData group_visual_data,
+      absl::optional<tab_groups::TabGroupId> group,
+      const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
-      bool from_last_session,
       const sessions::PlatformSpecificTabData* storage_namespace,
-      const std::string& user_agent_override) override;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
-      bool from_last_session,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
-      const std::string& user_agent_override) override;
+      const sessions::SerializedUserAgentOverride& user_agent_override)
+      override;
   void CloseTab() override;
 
   // see Browser::Create
@@ -80,7 +84,8 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
                                           const std::string& app_name,
                                           const gfx::Rect& bounds,
                                           ui::WindowShowState show_state,
-                                          const std::string& workspace);
+                                          const std::string& workspace,
+                                          const std::string& user_title);
 
   // see browser::FindBrowserForWebContents
   static sessions::LiveTabContext* FindContextForWebContents(
@@ -91,10 +96,15 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   // such a Browser exists.
   static sessions::LiveTabContext* FindContextWithID(SessionID desired_id);
 
+  // see chrome::FindBrowserWithGroup
+  // Returns the LiveTabContext of the Browser containing the group with ID
+  // |group| if such a Browser exists within the given |profile|.
+  static sessions::LiveTabContext* FindContextWithGroup(
+      tab_groups::TabGroupId group,
+      Profile* profile);
+
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLiveTabContext);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIVE_TAB_CONTEXT_H_

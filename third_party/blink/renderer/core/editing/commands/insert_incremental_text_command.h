@@ -12,14 +12,10 @@ namespace blink {
 class CORE_EXPORT InsertIncrementalTextCommand final
     : public InsertTextCommand {
  public:
-  static InsertIncrementalTextCommand* Create(
+  InsertIncrementalTextCommand(
       Document&,
-      const String&,
+      const String& text,
       RebalanceType = kRebalanceLeadingAndTrailingWhitespaces);
-
-  InsertIncrementalTextCommand(Document&,
-                               const String& text,
-                               RebalanceType);
 
  private:
   void DoApply(EditingState*) override;

@@ -18,16 +18,14 @@ WebLayerInternalsUI::WebLayerInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIWebLayerHost);
   source->AddResourcePath("weblayer_internals.js", IDR_WEBLAYER_INTERNALS_JS);
-  source->AddResourcePath("weblayer_internals.mojom-lite.js",
+  source->AddResourcePath("weblayer_internals.mojom-webui.js",
                           IDR_WEBLAYER_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_WEBLAYER_INTERNALS_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
-  AddHandlerToRegistry(base::BindRepeating(
-      &WebLayerInternalsUI::BindPageHandler, base::Unretained(this)));
 }
 
-WebLayerInternalsUI::~WebLayerInternalsUI() {}
+WebLayerInternalsUI::~WebLayerInternalsUI() = default;
 
 #if defined(OS_ANDROID)
 void WebLayerInternalsUI::GetRemoteDebuggingEnabled(
@@ -40,7 +38,7 @@ void WebLayerInternalsUI::SetRemoteDebuggingEnabled(bool enabled) {
 }
 #endif
 
-void WebLayerInternalsUI::BindPageHandler(
+void WebLayerInternalsUI::BindInterface(
     mojo::PendingReceiver<weblayer_internals::mojom::PageHandler>
         pending_receiver) {
   if (receiver_.is_bound())
@@ -48,5 +46,7 @@ void WebLayerInternalsUI::BindPageHandler(
 
   receiver_.Bind(std::move(pending_receiver));
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(WebLayerInternalsUI)
 
 }  // namespace weblayer

@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "support_tool.js" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "support_tool"
+  out_grd = resources_grd_file
+  input_files = [
+    "support_tool.css",
+    "support_tool_container.html",
+    "support_tool.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/support_tool_resources.h",
+    "grit/support_tool_resources_map.cc",
+    "grit/support_tool_resources_map.h",
+    "support_tool_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+html_to_js("web_components") {
+  js_files = [ "support_tool.js" ]
+}
+
+js_library("support_tool") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":support_tool" ]
+}

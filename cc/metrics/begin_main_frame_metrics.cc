@@ -11,4 +11,7 @@ BeginMainFrameMetrics::BeginMainFrameMetrics() = default;
 BeginMainFrameMetrics::BeginMainFrameMetrics(
     const BeginMainFrameMetrics& other) = default;
 
+BeginMainFrameMetrics& BeginMainFrameMetrics::operator=(
+    const BeginMainFrameMetrics& other) = default;
+
 }  // namespace cc

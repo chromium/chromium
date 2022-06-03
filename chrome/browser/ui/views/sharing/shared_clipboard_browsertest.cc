@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,8 +17,9 @@
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/ui/views/sharing/sharing_browsertest.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl.h"
+#include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
 namespace {
@@ -31,6 +31,11 @@ const char kTestPageURL[] = "/sharing/tel.html";
 class SharedClipboardBrowserTestBase : public SharingBrowserTest {
  public:
   SharedClipboardBrowserTestBase() {}
+
+  SharedClipboardBrowserTestBase(const SharedClipboardBrowserTestBase&) =
+      delete;
+  SharedClipboardBrowserTestBase& operator=(
+      const SharedClipboardBrowserTestBase&) = delete;
 
   ~SharedClipboardBrowserTestBase() override = default;
 
@@ -47,9 +52,6 @@ class SharedClipboardBrowserTestBase : public SharingBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardBrowserTestBase);
 };
 
 class SharedClipboardBrowserTest : public SharedClipboardBrowserTestBase {
@@ -60,10 +62,10 @@ class SharedClipboardBrowserTest : public SharedClipboardBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest, ContextMenu_SingleDevice) {
-  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD,
+  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   ASSERT_EQ(1u, devices.size());
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -75,16 +77,16 @@ IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest, ContextMenu_SingleDevice) {
 
   menu->ExecuteCommand(
       IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE, 0);
-  CheckLastReceiver(devices[0]->guid());
+  CheckLastReceiver(*devices[0]);
   CheckLastSharingMessageSent(kSelectedText);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest,
                        ContextMenu_MultipleDevices) {
-  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD,
-       sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
+       sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   ASSERT_EQ(2u, devices.size());
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -106,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest,
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
-    CheckLastReceiver(device->guid());
+    CheckLastReceiver(*device);
     CheckLastSharingMessageSent(kSelectedText);
     device_id++;
   }
@@ -116,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest, ContextMenu_NoDevices) {
   Init(sync_pb::SharingSpecificFields::UNKNOWN,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   ASSERT_EQ(0u, devices.size());
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -128,18 +130,16 @@ IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest, ContextMenu_NoDevices) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardBrowserTest, ContextMenu_SyncTurnedOff) {
-  if (base::FeatureList::IsEnabled(kSharingUseDeviceInfo) &&
-      base::FeatureList::IsEnabled(kSharingDeriveVapidKey) &&
-      base::FeatureList::IsEnabled(switches::kSyncDeviceInfoInTransportMode)) {
+  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
     // Turning off sync will have no effect when Shared Clipboard is available
     // on sign-in.
     return;
   }
 
-  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD,
+  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   ASSERT_EQ(1u, devices.size());
 
   // Disable syncing preferences which is necessary for Sharing.
@@ -164,10 +164,10 @@ class SharedClipboardUIFeatureDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardUIFeatureDisabledBrowserTest,
                        ContextMenu_UIFeatureDisabled) {
-  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD,
-       sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+  Init(sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2,
+       sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD);
+      sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
   ASSERT_EQ(2u, devices.size());
 
   std::unique_ptr<TestRenderViewContextMenu> menu =

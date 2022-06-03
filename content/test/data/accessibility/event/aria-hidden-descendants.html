@@ -1,0 +1,28 @@
+<!--
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+-->
+<html>
+<body>
+<!-- Show/hide events only need to occur on the root of what's shown/hidden,
+     not for each descendant -->
+<div role="toolbar">
+  <div id="heading-root" role="heading" aria-label="Heading" class="a">
+    <div id="heading-child">
+      <div id="heading-grandchild"></div>
+    </div>
+  </div>
+  <div id="banner-root" role="banner" aria-label="Banner" aria-hidden="true" class="b">
+    <div id="banner-child">
+      <div id="banner-grandchild"></div>
+    </div>
+  </div>
+</div>
+<script>
+  function go() {
+    document.querySelector('.a').setAttribute("aria-hidden", "true");
+    document.querySelector('.b').removeAttribute("aria-hidden");
+  }
+</script>
+</body>
+</html>

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_VR_MODEL_CAPTURING_STATE_MODEL_H_
 #define CHROME_BROWSER_VR_MODEL_CAPTURING_STATE_MODEL_H_
 
-#include <string>
-
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {

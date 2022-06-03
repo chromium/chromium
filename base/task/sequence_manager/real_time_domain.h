@@ -6,8 +6,8 @@
 #define BASE_TASK_SEQUENCE_MANAGER_REAL_TIME_DOMAIN_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/time_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -15,24 +15,26 @@ namespace internal {
 
 class BASE_EXPORT RealTimeDomain : public TimeDomain {
  public:
-  RealTimeDomain();
-  ~RealTimeDomain() override;
+  explicit RealTimeDomain(const base::TickClock* clock);
+  RealTimeDomain(const RealTimeDomain&) = delete;
+  RealTimeDomain& operator=(const RealTimeDomain&) = delete;
+  ~RealTimeDomain() override = default;
+
+  // TickClock implementation:
+  TimeTicks NowTicks() const override;
 
   // TimeDomain implementation:
-  LazyNow CreateLazyNow() const override;
-  TimeTicks Now() const override;
-  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override;
-  bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
+  base::TimeTicks GetNextDelayedTaskTime(
+      DelayedWakeUp next_wake_up,
+      sequence_manager::LazyNow* lazy_now) const override;
+  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> next_wake_up,
+                                bool quit_when_idle_requested) override;
 
  protected:
-  void OnRegisterWithSequenceManager(
-      SequenceManagerImpl* sequence_manager) override;
   const char* GetName() const override;
 
  private:
   const TickClock* tick_clock_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeDomain);
 };
 
 }  // namespace internal

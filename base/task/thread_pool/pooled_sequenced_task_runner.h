@@ -11,8 +11,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/sequence.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/updateable_sequenced_task_runner.h"
 
 namespace base {
 namespace internal {
@@ -25,6 +25,9 @@ class BASE_EXPORT PooledSequencedTaskRunner
   PooledSequencedTaskRunner(
       const TaskTraits& traits,
       PooledTaskRunnerDelegate* pooled_task_runner_delegate);
+  PooledSequencedTaskRunner(const PooledSequencedTaskRunner&) = delete;
+  PooledSequencedTaskRunner& operator=(const PooledSequencedTaskRunner&) =
+      delete;
 
   // UpdateableSequencedTaskRunner:
   bool PostDelayedTask(const Location& from_here,
@@ -46,8 +49,6 @@ class BASE_EXPORT PooledSequencedTaskRunner
 
   // Sequence for all Tasks posted through this TaskRunner.
   const scoped_refptr<Sequence> sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(PooledSequencedTaskRunner);
 };
 
 }  // namespace internal

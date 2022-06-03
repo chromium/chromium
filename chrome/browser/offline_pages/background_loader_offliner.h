@@ -30,7 +30,6 @@ namespace offline_pages {
 
 class OfflinerPolicy;
 class OfflinePageModel;
-class PageRenovationLoader;
 class PageRenovator;
 
 struct RequestStats {
@@ -55,6 +54,10 @@ class BackgroundLoaderOffliner
       const OfflinerPolicy* policy,
       OfflinePageModel* offline_page_model,
       std::unique_ptr<LoadTerminationListener> load_termination_listener);
+
+  BackgroundLoaderOffliner(const BackgroundLoaderOffliner&) = delete;
+  BackgroundLoaderOffliner& operator=(const BackgroundLoaderOffliner&) = delete;
+
   ~BackgroundLoaderOffliner() override;
 
   static BackgroundLoaderOffliner* FromWebContents(
@@ -75,16 +78,18 @@ class BackgroundLoaderOffliner
   void CanDownload(base::OnceCallback<void(bool)> callback) override;
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame() override;
-  void DocumentOnLoadCompletedInMainFrame() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
   // BackgroundSnapshotController::Client implementation.
   void StartSnapshot() override;
-  void RunRenovations() override;
 
   void SetBackgroundSnapshotControllerForTest(
       std::unique_ptr<BackgroundSnapshotController> controller);
@@ -170,11 +175,6 @@ class BackgroundLoaderOffliner
   // Whether we are on a low-end device.
   bool is_low_end_device_;
 
-  // PageRenovationLoader must live longer than the PageRenovator.
-  std::unique_ptr<PageRenovationLoader> page_renovation_loader_;
-  // Per-offliner PageRenovator instance.
-  std::unique_ptr<PageRenovator> page_renovator_;
-
   // Save state.
   SaveState save_state_;
   // Page load state.
@@ -200,7 +200,6 @@ class BackgroundLoaderOffliner
   RequestStats stats_[ResourceDataType::RESOURCE_DATA_TYPE_COUNT];
 
   base::WeakPtrFactory<BackgroundLoaderOffliner> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderOffliner);
 };
 
 }  // namespace offline_pages

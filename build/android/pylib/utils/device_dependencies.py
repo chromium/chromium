@@ -8,7 +8,7 @@ import re
 from pylib import constants
 
 
-_BLACKLIST = [
+_EXCLUSIONS = [
     re.compile(r'.*OWNERS'),  # Should never be included.
     re.compile(r'.*\.crx'),  # Chrome extension zip files.
     re.compile(os.path.join('.*',
@@ -16,9 +16,11 @@ _BLACKLIST = [
     re.compile(r'.*\.so'),  # Libraries packed into .apk.
     re.compile(r'.*Mojo.*manifest\.json'),  # Some source_set()s pull these in.
     re.compile(r'.*\.py'),  # Some test_support targets include python deps.
-    re.compile(r'.*\.stamp'),  # Stamp files should never be included.
     re.compile(r'.*\.apk'),  # Should be installed separately.
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
+
+    # Test filter files:
+    re.compile(r'.*/testing/buildbot/filters/.*'),
 
     # Chrome external extensions config file.
     re.compile(r'.*external_extensions\.json'),
@@ -36,15 +38,22 @@ _BLACKLIST = [
     re.compile(os.path.join('.*', 'development', 'scripts', 'stack')),
 
     # Required for java deobfuscation on the host:
+    re.compile(r'.*build/android/stacktrace/.*'),
     re.compile(r'.*third_party/jdk/.*'),
+    re.compile(r'.*third_party/proguard/.*'),
+
+    # Build artifacts:
+    re.compile(r'.*\.stamp'),
+    re.compile(r'.*.pak\.info'),
+    re.compile(r'.*\.incremental\.json'),
 ]
 
 
 def _FilterDataDeps(abs_host_files):
-  blacklist = _BLACKLIST + [
-      re.compile(os.path.join(constants.GetOutDirectory(), 'bin'))]
-  return [p for p in abs_host_files
-          if not any(r.match(p) for r in blacklist)]
+  exclusions = _EXCLUSIONS + [
+      re.compile(os.path.join(constants.GetOutDirectory(), 'bin'))
+  ]
+  return [p for p in abs_host_files if not any(r.match(p) for r in exclusions)]
 
 
 def DevicePathComponentsFor(host_path, output_directory):
@@ -56,7 +65,7 @@ def DevicePathComponentsFor(host_path, output_directory):
 
   e.g., given
 
-    '$CHROMIUM_SRC/foo/bar/baz.txt'
+    '$RUNTIME_DEPS_ROOT_DIR/foo/bar/baz.txt'
 
   this would return
 
@@ -64,12 +73,16 @@ def DevicePathComponentsFor(host_path, output_directory):
 
   This handles a couple classes of paths differently than it otherwise would:
     - All .pak files get mapped to top-level paks/
-    - Anything in the output directory gets mapped relative to the output
-      directory rather than the source directory.
+    - All other dependencies get mapped to the top level directory
+        - If a file is not in the output directory then it's relative path to
+          the output directory will start with .. strings, so we remove those
+          and then the path gets mapped to the top-level directory
+        - If a file is in the output directory then the relative path to the
+          output directory gets mapped to the top-level directory
 
   e.g. given
 
-    '$CHROMIUM_SRC/out/Release/icu_fake_dir/icudtl.dat'
+    '$RUNTIME_DEPS_ROOT_DIR/out/Release/icu_fake_dir/icudtl.dat'
 
   this would return
 
@@ -80,18 +93,20 @@ def DevicePathComponentsFor(host_path, output_directory):
   Returns:
     A list of device path components.
   """
-  if host_path.startswith(output_directory):
-    if os.path.splitext(host_path)[1] == '.pak':
-      return [None, 'paks', os.path.basename(host_path)]
-    rel_host_path = os.path.relpath(host_path, output_directory)
-  else:
-    rel_host_path = os.path.relpath(host_path, constants.DIR_SOURCE_ROOT)
+  if (host_path.startswith(output_directory) and
+      os.path.splitext(host_path)[1] == '.pak'):
+    return [None, 'paks', os.path.basename(host_path)]
+
+  rel_host_path = os.path.relpath(host_path, output_directory)
 
   device_path_components = [None]
   p = rel_host_path
   while p:
     p, d = os.path.split(p)
-    if d:
+    # The relative path from the output directory to a file under the runtime
+    # deps root directory may start with multiple .. strings, so they need to
+    # be skipped.
+    if d and d != os.pardir:
       device_path_components.insert(1, d)
   return device_path_components
 

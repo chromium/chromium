@@ -19,6 +19,7 @@ enum RemotingStartFailReason {
   CANNOT_START_MULTIPLE,  // Remoting was already active.
   ROUTE_TERMINATED,  // User-initated disconnect while starting remoting.
   INVALID_ANSWER_MESSAGE,  // Invalid ANSWER message.
+  REMOTING_NOT_PERMITTED,  // Remoter does not have dialog permission.
 };
 
 enum RemotingSinkFeature {

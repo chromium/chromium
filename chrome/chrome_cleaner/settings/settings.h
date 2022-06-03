@@ -6,13 +6,13 @@
 #define CHROME_CHROME_CLEANER_SETTINGS_SETTINGS_H_
 
 #include <windows.h>
+
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/settings/settings_definitions.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
@@ -38,7 +38,7 @@ class Settings {
   virtual bool allow_crash_report_upload() const;
 
   // Returns the session id for this run as passed by Chrome to the reporter.
-  virtual base::string16 session_id() const;
+  virtual std::wstring session_id() const;
 
   virtual std::string cleanup_id() const;
 
@@ -183,7 +183,7 @@ class Settings {
 
   // Statistics about the current run.
   std::string cleanup_id_;
-  base::string16 session_id_;
+  std::wstring session_id_;
 
   // Execution parameters.
   ExecutionMode execution_mode_ = ExecutionMode::kNone;

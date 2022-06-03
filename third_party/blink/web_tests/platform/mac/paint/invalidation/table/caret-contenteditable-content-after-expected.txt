@@ -1,121 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='editor'",
-          "rect": [3, 39, 794, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV id='editor'",
-          "rect": [3, 39, 794, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV id='editor'",
-          "rect": [3, 39, 794, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV id='editor'",
-          "rect": [3, 39, 794, 28],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'abc'",
-          "rect": [8, 44, 23, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'ab'",
-          "rect": [8, 44, 16, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'ab'",
-          "rect": [8, 44, 16, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [30, 44, 9, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [23, 44, 9, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [23, 44, 9, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [15, 44, 9, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [15, 44, 9, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'a'",
-          "rect": [8, 44, 8, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'a'",
-          "rect": [8, 44, 8, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'x'",
-          "rect": [8, 44, 8, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "Caret",
-          "rect": [30, 44, 1, 18],
-          "reason": "caret"
-        },
-        {
-          "object": "Caret",
-          "rect": [23, 44, 1, 18],
-          "reason": "caret"
-        },
-        {
-          "object": "Caret",
-          "rect": [23, 44, 1, 18],
-          "reason": "caret"
-        },
-        {
-          "object": "Caret",
-          "rect": [15, 44, 1, 18],
-          "reason": "caret"
-        },
-        {
-          "object": "Caret",
-          "rect": [15, 44, 1, 18],
-          "reason": "caret"
-        },
-        {
-          "object": "Caret",
-          "rect": [8, 44, 1, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "Caret",
-          "rect": [8, 44, 1, 18],
-          "reason": "caret"
-        }
+      "invalidations": [
+        [6, 42, 788, 22]
       ]
     }
   ]

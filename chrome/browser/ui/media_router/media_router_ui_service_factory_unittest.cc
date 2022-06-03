@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,20 +40,23 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
+    ClearMediaRouterStoredPrefsForTesting();
     // MediaRouterUIService instantiates MediaRouterActionController, which
     // requires ToolbarActionsModel.
     builder.AddTestingFactory(
         ToolbarActionsModelFactory::GetInstance(),
         base::BindRepeating(&BuildFakeToolBarActionsModel));
-    builder.AddTestingFactory(MediaRouterFactory::GetInstance(),
+    builder.AddTestingFactory(ChromeMediaRouterFactory::GetInstance(),
                               base::BindRepeating(&MockMediaRouter::Create));
     profile_ = builder.Build();
   }
 
+  void TearDown() override { ClearMediaRouterStoredPrefsForTesting(); }
+
   static std::unique_ptr<KeyedService> BuildFakeToolBarActionsModel(
       content::BrowserContext* context) {
-    return std::unique_ptr<ToolbarActionsModel>(
-        new ToolbarActionsModel(static_cast<Profile*>(context), nullptr));
+    return std::make_unique<ToolbarActionsModel>(static_cast<Profile*>(context),
+                                                 nullptr);
   }
 
  protected:
@@ -75,7 +79,7 @@ TEST_F(MediaRouterUIServiceFactoryUnitTest, CreateService) {
 TEST_F(MediaRouterUIServiceFactoryUnitTest,
        DoNotCreateActionControllerWhenDisabled) {
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   std::unique_ptr<MediaRouterUIService> service(
       static_cast<MediaRouterUIService*>(
           MediaRouterUIServiceFactory::GetInstance()->BuildServiceInstanceFor(
@@ -97,7 +101,7 @@ TEST_F(MediaRouterUIServiceFactoryUnitTest, DisablingMediaRouting) {
   EXPECT_CALL(mock_observer, OnServiceDisabled).Times(testing::Exactly(1));
 
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   EXPECT_EQ(nullptr, service->action_controller());
   service->RemoveObserver(&mock_observer);
 }

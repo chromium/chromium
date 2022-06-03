@@ -7,11 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -73,6 +71,11 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
           remote_controller,
       const std::string& client_id);
 
+  ControllerServiceWorkerConnector(const ControllerServiceWorkerConnector&) =
+      delete;
+  ControllerServiceWorkerConnector& operator=(
+      const ControllerServiceWorkerConnector&) = delete;
+
   // This may return nullptr if the connection to the ContainerHost (in the
   // browser process) is already terminated.
   blink::mojom::ControllerServiceWorker* GetControllerServiceWorker(
@@ -83,6 +86,9 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
 
   void OnContainerHostConnectionClosed();
   void OnControllerConnectionClosed();
+
+  void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
+                        base::OnceClosure callback);
 
   void AddBinding(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorkerConnector>
@@ -119,11 +125,8 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // The web-exposed client id, used for FetchEvent#clientId (i.e.,
-  // ServiceWorkerProviderHost::client_uuid and not
-  // ServiceWorkerProviderHost::provider_id).
+  // ServiceWorkerContainerHost::client_uuid).
   std::string client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerServiceWorkerConnector);
 };
 
 }  // namespace content

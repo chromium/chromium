@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_MODIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_MODIFIER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -51,6 +50,8 @@ class CORE_EXPORT SelectionModifier {
                     const SelectionInDOMTree&,
                     LayoutUnit);
   SelectionModifier(const LocalFrame&, const SelectionInDOMTree&);
+  SelectionModifier(const SelectionModifier&) = delete;
+  SelectionModifier& operator=(const SelectionModifier&) = delete;
 
   LayoutUnit XPosForVerticalArrowNavigation() const {
     return x_pos_for_vertical_arrow_navigation_;
@@ -60,6 +61,8 @@ class CORE_EXPORT SelectionModifier {
   // |ComputeVisibleSelectionDeprecated()| and introduce |GetSelection()|
   // to return |current_selection_|.
   VisibleSelection Selection() const;
+
+  TextDirection DirectionOfSelection() const;
 
   bool Modify(SelectionModifyAlteration,
               SelectionModifyDirection,
@@ -75,55 +78,59 @@ class CORE_EXPORT SelectionModifier {
   const LocalFrame& GetFrame() const { return *frame_; }
 
   static bool ShouldAlwaysUseDirectionalSelection(const LocalFrame&);
-  VisibleSelection PrepareToModifySelection(SelectionModifyAlteration,
-                                            SelectionModifyDirection) const;
+  VisibleSelectionInFlatTree PrepareToModifySelection(
+      SelectionModifyAlteration,
+      SelectionModifyDirection) const;
   TextDirection DirectionOfEnclosingBlock() const;
-  TextDirection DirectionOfSelection() const;
   TextDirection LineDirectionOfExtent() const;
-  VisiblePosition PositionForPlatform(bool is_get_start) const;
-  VisiblePosition StartForPlatform() const;
-  VisiblePosition EndForPlatform() const;
-  LayoutUnit LineDirectionPointForBlockDirectionNavigation(const Position&);
-  VisiblePosition ComputeModifyPosition(SelectionModifyAlteration,
-                                        SelectionModifyDirection,
-                                        TextGranularity);
-  VisiblePosition ModifyExtendingRight(TextGranularity);
-  VisiblePosition ModifyExtendingRightInternal(TextGranularity);
-  VisiblePosition ModifyExtendingForward(TextGranularity);
-  VisiblePosition ModifyExtendingForwardInternal(TextGranularity);
-  VisiblePosition ModifyMovingRight(TextGranularity);
-  VisiblePosition ModifyMovingForward(TextGranularity);
-  VisiblePosition ModifyExtendingLeft(TextGranularity);
-  VisiblePosition ModifyExtendingLeftInternal(TextGranularity);
-  VisiblePosition ModifyExtendingBackward(TextGranularity);
-  VisiblePosition ModifyExtendingBackwardInternal(TextGranularity);
-  VisiblePosition ModifyMovingLeft(TextGranularity);
-  VisiblePosition ModifyMovingBackward(TextGranularity);
-  Position NextWordPositionForPlatform(const Position&);
+  VisiblePositionInFlatTree PositionForPlatform(bool is_get_start) const;
+  VisiblePositionInFlatTree StartForPlatform() const;
+  VisiblePositionInFlatTree EndForPlatform() const;
+  LayoutUnit LineDirectionPointForBlockDirectionNavigation(
+      const PositionInFlatTree&);
+  VisiblePositionInFlatTree ComputeModifyPosition(SelectionModifyAlteration,
+                                                  SelectionModifyDirection,
+                                                  TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingRight(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingRightInternal(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingForward(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingForwardInternal(TextGranularity);
+  VisiblePositionInFlatTree ModifyMovingRight(TextGranularity);
+  VisiblePositionInFlatTree ModifyMovingForward(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingLeft(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingLeftInternal(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingBackward(TextGranularity);
+  VisiblePositionInFlatTree ModifyExtendingBackwardInternal(TextGranularity);
+  VisiblePositionInFlatTree ModifyMovingLeft(TextGranularity);
+  VisiblePositionInFlatTree ModifyMovingBackward(TextGranularity);
+  PositionInFlatTree NextWordPositionForPlatform(const PositionInFlatTree&);
 
-  static VisiblePosition PreviousLinePosition(const VisiblePosition&,
-                                              LayoutUnit line_direction_point);
-  static VisiblePosition NextLinePosition(const VisiblePosition&,
-                                          LayoutUnit line_direction_point);
-  static VisiblePosition PreviousParagraphPosition(
-      const VisiblePosition&,
+  void UpdateLifecycleToPrePaintClean();
+
+  static PositionInFlatTreeWithAffinity PreviousLinePosition(
+      const PositionInFlatTreeWithAffinity&,
       LayoutUnit line_direction_point);
-  static VisiblePosition NextParagraphPosition(const VisiblePosition&,
-                                               LayoutUnit line_direction_point);
+  static PositionInFlatTreeWithAffinity NextLinePosition(
+      const PositionInFlatTreeWithAffinity&,
+      LayoutUnit line_direction_point);
+  static VisiblePositionInFlatTree PreviousParagraphPosition(
+      const VisiblePositionInFlatTree&,
+      LayoutUnit line_direction_point);
+  static VisiblePositionInFlatTree NextParagraphPosition(
+      const VisiblePositionInFlatTree&,
+      LayoutUnit line_direction_point);
 
-  Member<const LocalFrame> frame_;
+  const LocalFrame* frame_;
   // TODO(editing-dev): We should get rid of |selection_| once we change
   // all member functions not to use |selection_|.
   // |selection_| is used as implicit parameter or a cache instead of pass it.
-  VisibleSelection selection_;
+  VisibleSelectionInFlatTree selection_;
   // TODO(editing-dev): We should introduce |GetSelection()| to return
   // |result_| to replace |Selection().AsSelection()|.
   // |current_selection_| holds initial value and result of |Modify()|.
-  SelectionInDOMTree current_selection_;
+  SelectionInFlatTree current_selection_;
   LayoutUnit x_pos_for_vertical_arrow_navigation_;
   bool selection_is_directional_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionModifier);
 };
 
 LayoutUnit NoXPosForVerticalArrowNavigation();

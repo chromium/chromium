@@ -7,9 +7,6 @@
 
 // A content settings provider that takes its settings out of policies.
 
-#include <vector>
-
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
@@ -27,20 +24,24 @@ namespace content_settings {
 class PolicyProvider : public ObservableProvider {
  public:
   explicit PolicyProvider(PrefService* prefs);
+
+  PolicyProvider(const PolicyProvider&) = delete;
+  PolicyProvider& operator=(const PolicyProvider&) = delete;
+
   ~PolicyProvider() override;
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
       bool incognito) const override;
 
-  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
-                         const ContentSettingsPattern& secondary_pattern,
-                         ContentSettingsType content_type,
-                         const ResourceIdentifier& resource_identifier,
-                         std::unique_ptr<base::Value>&& value) override;
+  bool SetWebsiteSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      std::unique_ptr<base::Value>&& value,
+      const ContentSettingConstraints& constraint = {}) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
 
@@ -78,8 +79,6 @@ class PolicyProvider : public ObservableProvider {
   // Used around accesses to the |value_map_| object to guarantee
   // thread safety.
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvider);
 };
 
 }  // namespace content_settings

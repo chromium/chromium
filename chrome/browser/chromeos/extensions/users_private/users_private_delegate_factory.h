@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_FACTORY_H__
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_FACTORY_H__
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -24,6 +23,10 @@ class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
 
   static UsersPrivateDelegateFactory* GetInstance();
 
+  UsersPrivateDelegateFactory(const UsersPrivateDelegateFactory&) = delete;
+  UsersPrivateDelegateFactory& operator=(const UsersPrivateDelegateFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UsersPrivateDelegateFactory>;
 
@@ -33,8 +36,6 @@ class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateDelegateFactory);
 };
 
 }  // namespace extensions

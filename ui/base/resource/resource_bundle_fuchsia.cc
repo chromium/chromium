@@ -4,8 +4,8 @@
 
 #include "ui/base/resource/resource_bundle.h"
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/base_paths.h"
+#include "base/path_service.h"
 #include "ui/gfx/image/image.h"
 
 namespace ui {

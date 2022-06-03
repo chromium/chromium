@@ -18,8 +18,6 @@ class FakeTaskRunner;
 class BytesConsumerTestReader final
     : public GarbageCollected<BytesConsumerTestReader>,
       public BytesConsumer::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(BytesConsumerTestReader);
-
  public:
   // |consumer| must not have a client when called.
   explicit BytesConsumerTestReader(BytesConsumer* /* consumer */);
@@ -30,7 +28,7 @@ class BytesConsumerTestReader final
   std::pair<BytesConsumer::Result, Vector<char>> Run(
       scheduler::FakeTaskRunner*);
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);
     BytesConsumer::Client::Trace(visitor);
   }

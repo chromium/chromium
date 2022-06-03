@@ -15,11 +15,11 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/io_buffer.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/test_completion_callback.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
@@ -29,6 +29,9 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -144,11 +147,11 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
     auto transport_socket = std::make_unique<ClientSocketHandle>();
     scoped_refptr<ClientSocketPool::SocketParams> null_params;
     ClientSocketPool::GroupId group_id(
-        HostPortPair("a", 80), ClientSocketPool::SocketType::kHttp,
+        url::SchemeHostPort(url::kHttpScheme, "a", 80),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-        false /* disable_secure_dns */);
+        SecureDnsPolicy::kAllow);
     transport_socket->Init(
-        group_id, null_params, base::nullopt /* proxy_annotation_tag */, MEDIUM,
+        group_id, null_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
         NetLogWithSource());

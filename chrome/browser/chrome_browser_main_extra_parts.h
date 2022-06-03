@@ -28,9 +28,9 @@ class ChromeBrowserMainExtraParts {
   // ToolkitInitialized methods.
   virtual void ToolkitInitialized() {}
 
-  // MainMessageLoopStart methods.
-  virtual void PreMainMessageLoopStart() {}
-  virtual void PostMainMessageLoopStart() {}
+  // CreateMainMessageLoop methods.
+  virtual void PreCreateMainMessageLoop() {}
+  virtual void PostCreateMainMessageLoop() {}
 
   // MainMessageLoopRun methods.
   virtual void PreCreateThreads() {}

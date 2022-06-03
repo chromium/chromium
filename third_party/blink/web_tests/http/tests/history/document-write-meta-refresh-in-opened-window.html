@@ -1,0 +1,17 @@
+<script>
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+  testRunner.setPopupBlockingEnabled(false);
+  testRunner.dumpAsText();
+  testRunner.dumpBackForwardList();
+  if (window.opener)
+    testRunner.notifyDone();
+}
+
+if (!window.opener) {
+  var w = window.open();
+  w.document.write(
+      "<meta http-equiv='refresh' content='0; url='" + location.toString() + ">");
+  w.document.close();
+}
+</script>

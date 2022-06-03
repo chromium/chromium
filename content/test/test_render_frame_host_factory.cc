@@ -4,8 +4,8 @@
 
 #include "content/test/test_render_frame_host_factory.h"
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "content/test/test_render_frame_host.h"
 
 namespace content {
@@ -26,12 +26,15 @@ TestRenderFrameHostFactory::CreateRenderFrameHost(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
-    int32_t widget_routing_id,
-    bool renderer_initiated_creation) {
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+    const blink::LocalFrameToken& frame_token,
+    bool renderer_initiated_creation,
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
   DCHECK(!renderer_initiated_creation);
   return std::make_unique<TestRenderFrameHost>(
       site_instance, std::move(render_view_host), delegate, frame_tree,
-      frame_tree_node, routing_id, widget_routing_id);
+      frame_tree_node, routing_id, std::move(frame_remote), frame_token,
+      lifecycle_state);
 }
 
 }  // namespace content

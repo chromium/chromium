@@ -19,10 +19,18 @@ namespace ui {
 // coordinates are relative to the top-level window. The frame coordinates are
 // equivalent to the root frame coordinates when the current accessibility tree
 // is the root accessibility tree.
-//   kScreen:    Relative to the screen space on the user's device
-//   kRootFrame: Relative to the top-level accessibility tree of the same type
-//   kFrame:     Relative to the current accessibility tree
-enum class AXCoordinateSystem { kScreen, kRootFrame, kFrame };
+//   kScreenPhysicalPixels: Relative to screen space in hardware pixels
+//   kScreenDIPs:     Relative to screen space in device-independent pixels
+//                    (i.e. accounting for display DPI)
+//   kRootFrame:      Relative to the top-level accessibility tree of
+//                    the same type
+//   kFrame:          Relative to the current accessibility tree
+enum class AXCoordinateSystem {
+  kScreenPhysicalPixels,
+  kScreenDIPs,
+  kRootFrame,
+  kFrame
+};
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_COORDINATE_SYSTEM_H_

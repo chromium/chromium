@@ -140,7 +140,7 @@ int get_frame_size_enum(int frame_size, int sampling_rate)
    return frame_size_enum;
 }
 
-void test_encode(OpusEncoder *enc, int channels, int frame_size, OpusDecoder *dec, const char* debug_info)
+int test_encode(OpusEncoder *enc, int channels, int frame_size, OpusDecoder *dec)
 {
    int samp_count = 0;
    opus_int16 *inbuf;
@@ -148,6 +148,7 @@ void test_encode(OpusEncoder *enc, int channels, int frame_size, OpusDecoder *de
    int len;
    opus_int16 *outbuf;
    int out_samples;
+   int ret = 0;
 
    /* Generate input data */
    inbuf = (opus_int16*)malloc(sizeof(*inbuf)*SSAMPLES);
@@ -160,16 +161,16 @@ void test_encode(OpusEncoder *enc, int channels, int frame_size, OpusDecoder *de
    do {
       len = opus_encode(enc, &inbuf[samp_count*channels], frame_size, packet, MAX_PACKET);
       if(len<0 || len>MAX_PACKET) {
-         fprintf(stderr,"%s\n",debug_info);
          fprintf(stderr,"opus_encode() returned %d\n",len);
-         test_failed();
+         ret = -1;
+         break;
       }
 
       out_samples = opus_decode(dec, packet, len, outbuf, MAX_FRAME_SAMP, 0);
       if(out_samples!=frame_size) {
-         fprintf(stderr,"%s\n",debug_info);
          fprintf(stderr,"opus_decode() returned %d\n",out_samples);
-         test_failed();
+         ret = -1;
+         break;
       }
 
       samp_count += frame_size;
@@ -178,6 +179,7 @@ void test_encode(OpusEncoder *enc, int channels, int frame_size, OpusDecoder *de
    /* Clean up */
    free(inbuf);
    free(outbuf);
+   return ret;
 }
 
 void fuzz_encoder_settings(const int num_encoders, const int num_setting_changes)
@@ -205,7 +207,6 @@ void fuzz_encoder_settings(const int num_encoders, const int num_setting_changes
    int prediction_disabled[3] = {0, 0, 1};
    int use_dtx[2] = {0, 1};
    int frame_sizes_ms_x2[9] = {5, 10, 20, 40, 80, 120, 160, 200, 240};  /* x2 to avoid 2.5 ms */
-   char debug_info[512];
 
    for (i=0; i<num_encoders; i++) {
       int sampling_rate = RAND_SAMPLE(sampling_rates);
@@ -236,15 +237,6 @@ void fuzz_encoder_settings(const int num_encoders, const int num_setting_changes
          int frame_size_enum = get_frame_size_enum(frame_size, sampling_rate);
          force_channel = IMIN(force_channel, num_channels);
 
-         sprintf(debug_info,
-                 "fuzz_encoder_settings: %d kHz, %d ch, application: %d, "
-                 "%d bps, force ch: %d, vbr: %d, vbr constraint: %d, complexity: %d, "
-                 "max bw: %d, signal: %d, inband fec: %d, pkt loss: %d%%, lsb depth: %d, "
-                 "pred disabled: %d, dtx: %d, (%d/2) ms\n",
-                 sampling_rate/1000, num_channels, application, bitrate,
-                 force_channel, vbr, vbr_constraint, complexity, max_bw, sig, inband_fec,
-                 pkt_loss, lsb_depth, pred_disabled, dtx, frame_size_ms_x2);
-
          if(opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) test_failed();
          if(opus_encoder_ctl(enc, OPUS_SET_FORCE_CHANNELS(force_channel)) != OPUS_OK) test_failed();
          if(opus_encoder_ctl(enc, OPUS_SET_VBR(vbr)) != OPUS_OK) test_failed();
@@ -259,7 +251,17 @@ void fuzz_encoder_settings(const int num_encoders, const int num_setting_changes
          if(opus_encoder_ctl(enc, OPUS_SET_DTX(dtx)) != OPUS_OK) test_failed();
          if(opus_encoder_ctl(enc, OPUS_SET_EXPERT_FRAME_DURATION(frame_size_enum)) != OPUS_OK) test_failed();
 
-         test_encode(enc, num_channels, frame_size, dec, debug_info);
+         if(test_encode(enc, num_channels, frame_size, dec)) {
+            fprintf(stderr,
+               "fuzz_encoder_settings: %d kHz, %d ch, application: %d, "
+               "%d bps, force ch: %d, vbr: %d, vbr constraint: %d, complexity: %d, "
+               "max bw: %d, signal: %d, inband fec: %d, pkt loss: %d%%, lsb depth: %d, "
+               "pred disabled: %d, dtx: %d, (%d/2) ms\n",
+               sampling_rate/1000, num_channels, application, bitrate,
+               force_channel, vbr, vbr_constraint, complexity, max_bw, sig, inband_fec,
+               pkt_loss, lsb_depth, pred_disabled, dtx, frame_size_ms_x2);
+            test_failed();
+         }
       }
 
       opus_encoder_destroy(enc);

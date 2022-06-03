@@ -4,10 +4,8 @@
 
 #include "chrome/browser/vr/ui_scene_creator.h"
 
-#include "base/macros.h"
 #include "base/numerics/ranges.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -141,8 +139,8 @@ TEST_F(UiTest, WebVrToastTransience) {
   browser_ui->SetCapturingState(CapturingStateModel(), CapturingStateModel(),
                                 CapturingStateModel());
   EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
-  EXPECT_TRUE(
-      RunForSeconds(kWmrInitialIndicatorsTimeoutSeconds + kSmallDelaySeconds));
+  EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
+                            kSmallDelaySeconds));
   EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
 
   browser_ui->SetWebVrMode(false);
@@ -155,21 +153,21 @@ TEST_F(UiTest, PlatformToast) {
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
 
   // show and hide toast after a timeout.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(IsVisible(kPlatformToast));
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds + kSmallDelaySeconds));
   EXPECT_FALSE(IsVisible(kPlatformToast));
 
   // toast can be cancelled.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(IsVisible(kPlatformToast));
   browser_ui->CancelPlatformToast();
   EXPECT_FALSE(IsVisible(kPlatformToast));
 
   // toast can refresh visible timeout.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(RunForSeconds(kSmallDelaySeconds));
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds - kSmallDelaySeconds));
   EXPECT_TRUE(IsVisible(kPlatformToast));
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds + kSmallDelaySeconds));
@@ -222,7 +220,7 @@ TEST_F(UiTest, CaptureToasts) {
                                     potential_capturing);
       EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
       EXPECT_TRUE(IsVisible(spec.webvr_name) == (string_id != 0));
-      EXPECT_TRUE(RunForSeconds(kWmrInitialIndicatorsTimeoutSeconds +
+      EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
                                 kSmallDelaySeconds));
       EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
 
@@ -912,7 +910,7 @@ TEST_F(UiTest, SpeechRecognitionUiVisibility) {
 
   // Mock received speech result.
   model_->speech.speech_recognition_state = SPEECH_RECOGNITION_END;
-  browser_ui->SetRecognitionResult(base::ASCIIToUTF16("test"));
+  browser_ui->SetRecognitionResult(u"test");
   browser_ui->SetSpeechRecognitionEnabled(false);
 
   EXPECT_TRUE(RunForMs(10));
@@ -990,9 +988,9 @@ TEST_F(UiTest, OmniboxSuggestionBindings) {
   EXPECT_EQ(NumVisibleInTree(kOmniboxSuggestions), 0);
 
   model_->omnibox_suggestions.emplace_back(
-      OmniboxSuggestion(base::string16(), base::string16(),
+      OmniboxSuggestion(std::u16string(), std::u16string(),
                         ACMatchClassifications(), ACMatchClassifications(),
-                        nullptr, GURL(), base::string16(), base::string16()));
+                        nullptr, GURL(), std::u16string(), std::u16string()));
   AdvanceFrame();
   EXPECT_EQ(container->children().size(), 1u);
   EXPECT_GT(NumVisibleInTree(kOmniboxSuggestions), 1);
@@ -1008,9 +1006,9 @@ TEST_F(UiTest, OmniboxSuggestionNavigates) {
   GURL gurl("http://test.com/");
   model_->push_mode(kModeEditingOmnibox);
   model_->omnibox_suggestions.emplace_back(
-      OmniboxSuggestion(base::string16(), base::string16(),
+      OmniboxSuggestion(std::u16string(), std::u16string(),
                         ACMatchClassifications(), ACMatchClassifications(),
-                        nullptr, gurl, base::string16(), base::string16()));
+                        nullptr, gurl, std::u16string(), std::u16string()));
   AdvanceFrame();
 
   // Let the omnibox fade in.

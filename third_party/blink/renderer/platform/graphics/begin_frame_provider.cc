@@ -7,10 +7,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
@@ -18,12 +24,19 @@ namespace blink {
 
 BeginFrameProvider::BeginFrameProvider(
     const BeginFrameProviderParams& begin_frame_provider_params,
-    BeginFrameProviderClient* client)
+    BeginFrameProviderClient* client,
+    ContextLifecycleNotifier* context)
     : needs_begin_frame_(false),
       requested_needs_begin_frame_(false),
+      cfs_receiver_(this, context),
+      efs_receiver_(this, context),
       frame_sink_id_(begin_frame_provider_params.frame_sink_id),
       parent_frame_sink_id_(begin_frame_provider_params.parent_frame_sink_id),
-      begin_frame_client_(client) {}
+      compositor_frame_sink_(context),
+      begin_frame_client_(client),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation.Worker")) {}
 
 void BeginFrameProvider::ResetCompositorFrameSink() {
   compositor_frame_sink_.reset();
@@ -74,10 +87,10 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
       parent_frame_sink_id_, frame_sink_id_,
       efs_receiver_.BindNewPipeAndPassRemote(task_runner),
       cfs_receiver_.BindNewPipeAndPassRemote(task_runner),
-      compositor_frame_sink_.BindNewPipeAndPassReceiver());
+      compositor_frame_sink_.BindNewPipeAndPassReceiver(task_runner));
 
-  compositor_frame_sink_.set_disconnect_with_reason_handler(base::BindOnce(
-      &BeginFrameProvider::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
+  compositor_frame_sink_.set_disconnect_with_reason_handler(WTF::Bind(
+      &BeginFrameProvider::OnMojoConnectionError, WrapWeakPersistent(this)));
 }
 
 void BeginFrameProvider::RequestBeginFrame() {
@@ -90,11 +103,12 @@ void BeginFrameProvider::RequestBeginFrame() {
 
   needs_begin_frame_ = true;
   compositor_frame_sink_->SetNeedsBeginFrame(true);
+  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
 }
 
 void BeginFrameProvider::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    WTF::HashMap<uint32_t, ::viz::mojom::blink::FrameTimingDetailsPtr>) {
+    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&) {
   TRACE_EVENT_WITH_FLOW0("blink", "BeginFrameProvider::OnBeginFrame",
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
@@ -112,12 +126,21 @@ void BeginFrameProvider::OnBeginFrame(
     if (!requested_needs_begin_frame_) {
       needs_begin_frame_ = false;
       compositor_frame_sink_->SetNeedsBeginFrame(false);
+      animation_power_mode_voter_->ResetVoteAfterTimeout(
+          power_scheduler::PowerModeVoter::kAnimationTimeout);
     }
   }
 }
 
 void BeginFrameProvider::FinishBeginFrame(const viz::BeginFrameArgs& args) {
   compositor_frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(args, false));
+}
+
+void BeginFrameProvider::Trace(Visitor* visitor) const {
+  visitor->Trace(cfs_receiver_);
+  visitor->Trace(efs_receiver_);
+  visitor->Trace(compositor_frame_sink_);
+  visitor->Trace(begin_frame_client_);
 }
 
 }  // namespace blink

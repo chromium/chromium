@@ -29,18 +29,21 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -57,6 +60,7 @@ namespace blink {
 
 class ConsoleMessageStorage;
 class InspectorTaskRunner;
+class InspectorIssueStorage;
 class WorkerBackingThread;
 class WorkerInspectorController;
 class WorkerOrWorkletGlobalScope;
@@ -65,6 +69,7 @@ class WorkerResourceTimingNotifier;
 struct CrossThreadFetchClientSettingsObjectData;
 struct GlobalScopeCreationParams;
 struct WorkerDevToolsParams;
+struct WorkerMainScriptLoadParameters;
 
 // WorkerThread is a kind of WorkerBackingThread client. Each worker mechanism
 // can access the lower thread infrastructure via an implementation of this
@@ -88,21 +93,21 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
     kGracefullyTerminated,
     kSyncForciblyTerminated,
     kAsyncForciblyTerminated,
-    kLastEnum,
+    kMaxValue = kAsyncForciblyTerminated,
   };
 
   ~WorkerThread() override;
 
   // Starts the underlying thread and creates the global scope. Called on the
   // main thread.
-  // Startup data for WorkerBackingThread is base::nullopt if |this| doesn't own
+  // Startup data for WorkerBackingThread is absl::nullopt if |this| doesn't own
   // the underlying WorkerBackingThread.
   // TODO(nhiroki): We could separate WorkerBackingThread initialization from
   // GlobalScope initialization sequence, that is, InitializeOnWorkerThread().
   // After that, we could remove this startup data for WorkerBackingThread.
   // (https://crbug.com/710364)
   void Start(std::unique_ptr<GlobalScopeCreationParams>,
-             const base::Optional<WorkerBackingThreadStartupData>&,
+             const absl::optional<WorkerBackingThreadStartupData>&,
              std::unique_ptr<WorkerDevToolsParams>);
 
   // Posts a task to evaluate a top-level classic script on the worker thread.
@@ -116,6 +121,8 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // thread. Called on the main thread after Start().
   void FetchAndRunClassicScript(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object_data,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
@@ -125,10 +132,14 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // thread. Called on the main thread after Start().
   void FetchAndRunModuleScript(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object_data,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
-      network::mojom::CredentialsMode);
+      network::mojom::CredentialsMode,
+      RejectCoepUnsafeNone reject_coep_unsafe_none =
+          RejectCoepUnsafeNone(false));
 
   // Posts a task to the worker thread to close the global scope and terminate
   // the underlying thread. This task may be blocked by JavaScript execution on
@@ -142,14 +153,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // is quickly terminated. Called on the main thread.
   virtual void TerminateForTesting();
 
-  // Called on the main thread for the leak detector. Forcibly terminates the
-  // script execution and waits by *blocking* the calling thread until the
-  // workers are shut down. Please be careful when using this function, because
-  // after the synchronous termination any V8 APIs may suddenly start to return
-  // empty handles and it may cause crashes.
-  // WARNING: This is not safe if a nested worker is running.
-  static void TerminateAllWorkersForTesting();
-
   // Thread::TaskObserver.
   void WillProcessTask(const base::PendingTask&, bool) override;
   void DidProcessTask(const base::PendingTask&) override;
@@ -158,6 +161,9 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   virtual void ClearWorkerBackingThread() = 0;
   ConsoleMessageStorage* GetConsoleMessageStorage() const {
     return console_message_storage_.Get();
+  }
+  InspectorIssueStorage* GetInspectorIssueStorage() {
+    return &inspector_issue_storage_;
   }
   v8::Isolate* GetIsolate();
 
@@ -188,22 +194,24 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // adds the current WorkerThread* as the first parameter |function|.
   // This only calls |function| for threads for which Start() was already
   // called.
+  // Returns the number of workers that are scheduled to run the function.
   template <typename FunctionType, typename... Parameters>
-  static void CallOnAllWorkerThreads(FunctionType function,
-                                     TaskType task_type,
-                                     Parameters&&... parameters) {
+  static unsigned CallOnAllWorkerThreads(FunctionType function,
+                                         TaskType task_type,
+                                         Parameters&&... parameters) {
     MutexLocker lock(ThreadSetMutex());
+    unsigned called_worker_count = 0;
     for (WorkerThread* thread : WorkerThreads()) {
       PostCrossThreadTask(
           *thread->GetTaskRunner(task_type), FROM_HERE,
           CrossThreadBindOnce(function, WTF::CrossThreadUnretained(thread),
                               parameters...));
+      ++called_worker_count;
     }
+    return called_worker_count;
   }
 
   int GetWorkerThreadId() const { return worker_thread_id_; }
-
-  PlatformThreadId GetPlatformThreadId();
 
   bool IsForciblyTerminated() LOCKS_EXCLUDED(mutex_);
 
@@ -215,16 +223,11 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   scheduler::WorkerScheduler* GetScheduler();
 
-  // Returns a task runner bound to the per-global-scope scheduler's task queue.
-  // You don't have to care about the lifetime of the associated global scope
-  // and underlying thread. After the global scope is destroyed, queued tasks
-  // are discarded and PostTask on the returned task runner just fails. This
-  // function can be called on both the main thread and the worker thread.
-  // You must not call this after Terminate() is called.
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType type) {
-    DCHECK(worker_scheduler_);
-    return worker_scheduler_->GetTaskRunner(type);
-  }
+  // Returns a task runner bound to this worker. Users of the task runner don't
+  // have to care about the lifetime of the worker. When the worker global scope
+  // is destroyed, the task runner starts failing PostTask calls and discards
+  // queued tasks. This function can be called from any threads.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType type);
 
   void ChildThreadStartedOnWorkerThread(WorkerThread*);
   void ChildThreadTerminatedOnWorkerThread(WorkerThread*);
@@ -322,7 +325,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   void InitializeSchedulerOnWorkerThread(base::WaitableEvent*);
   void InitializeOnWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
-      const base::Optional<WorkerBackingThreadStartupData>&,
+      const absl::optional<WorkerBackingThreadStartupData>&,
       std::unique_ptr<WorkerDevToolsParams>) LOCKS_EXCLUDED(mutex_);
 
   void EvaluateClassicScriptOnWorkerThread(
@@ -332,18 +335,51 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       const v8_inspector::V8StackTraceId& stack_id);
   void FetchAndRunClassicScriptOnWorkerThread(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id);
   void FetchAndRunModuleScriptOnWorkerThread(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
-      network::mojom::CredentialsMode);
+      network::mojom::CredentialsMode,
+      bool reject_coep_unsafe_none);
 
-  // These are called in this order during worker thread termination.
+  // PrepareForShutdownOnWorkerThread() notifies that the context will be
+  // destroyed, discards queued tasks to prevent running further tasks, and
+  // initiates termination of nested workers. It runs on the worker thread. It
+  // can be called due to the parent thread posting a task to run it on the
+  // worker thread, or the worker thread calling it itself synchronously.
+  //
+  // PerformShutdownOnWorkerThread() destroys the global scope, and notifies the
+  // parent thread of completion of worker shutdown. A call of this function can
+  // be postponed until all nested workers are terminated. It runs on the worker
+  // thread. It can be called due to the parent thread posting a task to run it
+  // on the worker thread, or the worker thread calling it itself synchronously
+  // after all nested workers are terminated.
+  //
+  // These are called in this order during worker shutdown.
+  //
+  // The reason why worker shutdown is separated into these 2 functions:
+  // Workers can simultaneously be requested to terminate for various reasons.
+  // To serialize the termination requests, worker shutdown is supposed to be
+  // initiated from the parent thread (i.e., Terminate()). On the other hand,
+  // queued tasks etc must be discarded as soon as possible after shutdown is
+  // requested to prevent running further tasks. To be specific, when close() is
+  // called on the worker global scope, queued tasks must be discarded soon
+  // before worker shutdown is formally requested via the parent thread. The
+  // HTML spec defines this behavior (see spec comments in DidProcessTask()).
+  // To achieve this, the worker thread runs PrepareForShutdownOnWorkerThread()
+  // immediately after the task that called close() (see DidProcessTask()), and
+  // then posts a task to the parent thread to request termination. In addition
+  // to that, separate functions are useful for waiting until all nested workers
+  // are terminated before the parent thread shut down.
   void PrepareForShutdownOnWorkerThread() LOCKS_EXCLUDED(mutex_);
   void PerformShutdownOnWorkerThread() LOCKS_EXCLUDED(mutex_);
 
@@ -375,6 +411,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   base::UnguessableToken devtools_worker_token_;
+  InspectorIssueStorage inspector_issue_storage_;
   int debugger_task_counter_ GUARDED_BY(mutex_) = 0;
 
   WorkerReportingProxy& worker_reporting_proxy_;
@@ -389,6 +426,14 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // Tasks managed by this scheduler are canceled when the global scope is
   // closed.
   std::unique_ptr<scheduler::WorkerScheduler> worker_scheduler_;
+
+  // Task runners bound with |worker_scheduler_|. These are captured when the
+  // worker scheduler is initialized.
+  using TaskRunnerHashMap = HashMap<TaskType,
+                                    scoped_refptr<base::SingleThreadTaskRunner>,
+                                    WTF::IntHash<TaskType>,
+                                    TaskTypeTraits>;
+  TaskRunnerHashMap worker_task_runners_;
 
   // This lock protects shared states between the main thread and the worker
   // thread. See thread-safety annotations (e.g., GUARDED_BY) in this header

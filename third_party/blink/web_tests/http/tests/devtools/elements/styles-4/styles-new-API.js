@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that InspectorCSSAgent API methods work as expected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <head>
@@ -25,14 +25,31 @@ body.mainpage {
 body:hover {
   color: #CDE;
 }
+
+#target:target {
+  background: #bada55;
+  outline: 5px solid lime;
+}
 </style>
 </head>
 <body id="mainBody" class="main1 main2 mainpage" style="font-weight: normal; width: 85%; background-image: url(bar.png)">
   <table width="50%" id="thetable">
   </table>
   <h1 id="toggle">H1</h1>
+  <p id="target">:target</p>
 </body>
     `);
+
+  await (() => {
+    // TODO(crbug.com/1046354): This is a workaround for loadHTML() resolving
+    // before parsing is finished. In this case the link stylesheet is blocking
+    // html parsing with BlockHTMLParsingOnStyleSheets enabled and mainBody is
+    // not  found by selectNodeWithId below.
+    let resolve;
+    const promise = new Promise(r => resolve = r);
+    TestRunner.waitForPageLoad(() => resolve());
+    return promise;
+  })();
 
   var bodyId;
   TestRunner.runTestSuite([
@@ -80,8 +97,8 @@ body:hover {
       }
 
       function matchedCallback(response) {
-        if (response[Protocol.Error]) {
-          TestRunner.addResult('error: ' + response[Protocol.Error]);
+        if (response.getError()) {
+          TestRunner.addResult('error: ' + response.getError());
           TestRunner.completeTest();
           return;
         }
@@ -103,13 +120,34 @@ body:hover {
       ElementsTestRunner.selectNodeWithId('mainBody', nodeCallback);
     },
 
-    async function test_forcedState(next) {
-      TestRunner.CSSAgent.forcePseudoState(bodyId, ['hover']);
-      var response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: bodyId});
+    async function test_forcedStateHover(next) {
+      await TestRunner.CSSAgent.forcePseudoState(bodyId, ['hover']);
+      const response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: bodyId});
 
       TestRunner.addResult('=== BODY with forced :hover ===');
       ElementsTestRunner.dumpRuleMatchesArray(response.matchedCSSRules);
-      TestRunner.CSSAgent.forcePseudoState(bodyId, ['hover']).then(next);
+
+      // Note: the forced :hover state persists for now, but is removed
+      // as part of the next test.
+      next();
+    },
+
+    async function test_forcedStateTarget(next) {
+      await TestRunner.CSSAgent.forcePseudoState(bodyId, ['target']);
+      ElementsTestRunner.nodeWithId('target', nodeCallback);
+
+      async function nodeCallback(node) {
+        const nodeId = node.id;
+        await TestRunner.CSSAgent.forcePseudoState(nodeId, ['target']);
+        const response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: nodeId});
+
+        TestRunner.addResult('=== #target with forced :target ===');
+        ElementsTestRunner.dumpRuleMatchesArray(response.matchedCSSRules);
+
+        // Reset all forced pseudo states for the next tests.
+        await TestRunner.CSSAgent.forcePseudoState(nodeId, []);
+        next();
+      }
     },
 
     function test_textNodeComputedStyles(next) {
@@ -138,8 +176,8 @@ body:hover {
     function test_tableStyles(next) {
       async function nodeCallback(node) {
         var response = await TestRunner.CSSAgent.invoke_getInlineStylesForNode({nodeId: node.id});
-        if (response[Protocol.Error]) {
-          TestRunner.addResult('error: ' + response[Protocol.Error]);
+        if (response.getError()) {
+          TestRunner.addResult('error: ' + response.getError());
           next();
           return;
         }
@@ -198,8 +236,8 @@ body:hover {
       }
 
       var response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: bodyId});
-      if (response[Protocol.Error]) {
-        TestRunner.addResult('error: ' + response[Protocol.Error]);
+      if (response.getError()) {
+        TestRunner.addResult('error: ' + response.getError());
         next();
         return;
       }

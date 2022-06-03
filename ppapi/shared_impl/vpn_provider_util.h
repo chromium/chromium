@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
-#define PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
+#ifndef PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_
+#define PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_
 
 #include <memory>
 
@@ -19,6 +19,10 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
                           uint32_t packet_size,
                           base::UnsafeSharedMemoryRegion shm,
                           base::WritableSharedMemoryMapping mapping);
+
+  VpnProviderSharedBuffer(const VpnProviderSharedBuffer&) = delete;
+  VpnProviderSharedBuffer& operator=(const VpnProviderSharedBuffer&) = delete;
+
   ~VpnProviderSharedBuffer();
 
   bool GetAvailable(uint32_t* id);
@@ -33,10 +37,8 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
   base::UnsafeSharedMemoryRegion shm_;
   base::WritableSharedMemoryMapping shm_mapping_;
   std::vector<bool> available_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnProviderSharedBuffer);
 };
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
+#endif  // PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_

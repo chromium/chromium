@@ -7,7 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/cronet/ios/test/cronet_test_base.h"
 #include "components/cronet/ios/test/start_cronet.h"
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/test/quic_simple_test_server.h"
 #include "testing/gtest_mac.h"
@@ -119,7 +119,9 @@ TEST_F(CronetEnabledMetricsTest, ProtocolIsQuic) {
 
     EXPECT_FALSE(metrics.proxyConnection);
 
-    EXPECT_TRUE([metrics.networkProtocolName containsString:@"quic"]);
+    EXPECT_TRUE([metrics.networkProtocolName containsString:@"quic"] ||
+                [metrics.networkProtocolName containsString:@"h3"])
+        << base::SysNSStringToUTF8(metrics.networkProtocolName);
   }
 }
 

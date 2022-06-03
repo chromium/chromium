@@ -23,9 +23,9 @@ class MODULES_EXPORT HTMLMediaElementRemotePlayback final {
   STATIC_ONLY(HTMLMediaElementRemotePlayback);
 
  public:
-  static bool FastHasAttribute(const QualifiedName&, const HTMLMediaElement&);
-  static void SetBooleanAttribute(const QualifiedName&,
-                                  HTMLMediaElement&,
+  static bool FastHasAttribute(const HTMLMediaElement&, const QualifiedName&);
+  static void SetBooleanAttribute(HTMLMediaElement&,
+                                  const QualifiedName&,
                                   bool);
 
   static HTMLMediaElementRemotePlayback& From(HTMLMediaElement&);

@@ -1,1 +1,1 @@
-This is drag-bookmark-destination.html.
+PASS: Dropped bookmark

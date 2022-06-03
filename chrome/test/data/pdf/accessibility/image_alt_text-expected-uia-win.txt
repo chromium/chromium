@@ -1,7 +1,6 @@
-group
-++document Name='PDF document containing 1 page'
-++++region Name='Page 1'
-++++++group IsControlElement=false
-++++++++img Name='Image 1'
-++++++++img Name='Image 2'
-++++++++img Name='Image 3'
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Image Name='Image 1'
+++++++Image Name='Image 2'
+++++++Image Name='Image 3'

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_GCM_ENCRYPTOR_H_
-#define GOOGLE_APIS_GCM_ENCRYPTOR_H_
+#ifndef GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_
+#define GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_
 
 #include <string>
 #include "google_apis/gcm/base/gcm_export.h"
@@ -24,4 +24,4 @@ class GCM_EXPORT Encryptor {
 
 }  // namespace gcm
 
-#endif  // GOOGLE_APIS_GCM_ENCRYPTOR_H_
+#endif  // GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_

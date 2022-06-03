@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("config.gni")
 if (is_clang) {
   import("//build/config/clang/clang.gni")
@@ -48,13 +49,9 @@ config("inside_blink") {
       "-Wno-implicit-float-conversion",
       "-Wno-implicit-int-conversion",
     ]
-
-    if (llvm_force_head_revision) {
-      cflags += [
-        "-Wno-enum-enum-conversion",
-      ]
-    }
   }
+
+  configs = [ "//build/config/compiler:noshadowing" ]
 }
 
 # blink_pch --------------------------------------------------------------------
@@ -82,6 +79,8 @@ config("blink_pch") {
       cflags = [ "/FI$precompiled_header" ]
     } else if (is_mac) {
       precompiled_source = "//third_party/blink/renderer/build/mac/prefix.h"
+    } else if (is_linux) {
+      precompiled_source = "//third_party/blink/renderer/build/linux/prefix.h"
     }
   }
 }
@@ -98,7 +97,6 @@ config("config") {
       "/wd4324",  # Struct padded due to declspec(align).
       "/wd4714",  # Function marked forceinline not inlined.
       "/wd4800",  # Value forced to bool.
-      "/wd4996",  # Deprecated function call.
     ]
   }
 
@@ -118,14 +116,6 @@ config("config") {
       "blink-gc-plugin",
     ]
 
-    # Don't perform checks for GarbageCollectedFinalized.
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "no-gc-finalized",
-    ]
-
     # Add arguments for enabled GC plugin options:
     if (blink_gc_plugin_option_do_dump_graph) {
       cflags += [
@@ -133,14 +123,6 @@ config("config") {
         "-plugin-arg-blink-gc-plugin",
         "-Xclang",
         "dump-graph",
-      ]
-    }
-    if (blink_gc_plugin_option_warn_unneeded_finalizer) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-blink-gc-plugin",
-        "-Xclang",
-        "warn-unneeded-finalizer",
       ]
     }
   }
@@ -154,4 +136,6 @@ config("non_test_config") {
   if (is_clang) {
     cflags += [ "-Wglobal-constructors" ]
   }
+
+  configs = [ "//build/config/compiler:noshadowing" ]
 }

@@ -33,8 +33,8 @@ std::unique_ptr<ExtensionSet> ExtensionRegistry::GenerateInstalledExtensionsSet(
     installed_extensions->InsertAll(disabled_extensions_);
   if (include_mask & IncludeFlag::TERMINATED)
     installed_extensions->InsertAll(terminated_extensions_);
-  if (include_mask & IncludeFlag::BLACKLISTED)
-    installed_extensions->InsertAll(blacklisted_extensions_);
+  if (include_mask & IncludeFlag::BLOCKLISTED)
+    installed_extensions->InsertAll(blocklisted_extensions_);
   if (include_mask & IncludeFlag::BLOCKED)
     installed_extensions->InsertAll(blocked_extensions_);
   return installed_extensions;
@@ -43,7 +43,7 @@ std::unique_ptr<ExtensionSet> ExtensionRegistry::GenerateInstalledExtensionsSet(
 base::Version ExtensionRegistry::GetStoredVersion(const ExtensionId& id) const {
   int include_mask = ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
                      ExtensionRegistry::TERMINATED |
-                     ExtensionRegistry::BLACKLISTED |
+                     ExtensionRegistry::BLOCKLISTED |
                      ExtensionRegistry::BLOCKED;
   const Extension* registry_extension = GetExtensionById(id, include_mask);
   return registry_extension ? registry_extension->version() : base::Version();
@@ -107,6 +107,14 @@ void ExtensionRegistry::TriggerOnUninstalled(const Extension* extension,
     observer.OnExtensionUninstalled(browser_context_, extension, reason);
 }
 
+void ExtensionRegistry::TriggerOnUninstallationDenied(
+    const Extension* extension) {
+  CHECK(extension);
+  DCHECK(GenerateInstalledExtensionsSet()->Contains(extension->id()));
+  for (auto& observer : observers_)
+    observer.OnExtensionUninstallationDenied(browser_context_, extension);
+}
+
 const Extension* ExtensionRegistry::GetExtensionById(const std::string& id,
                                                      int include_mask) const {
   std::string lowercase_id = base::ToLowerASCII(id);
@@ -125,8 +133,8 @@ const Extension* ExtensionRegistry::GetExtensionById(const std::string& id,
     if (extension)
       return extension;
   }
-  if (include_mask & BLACKLISTED) {
-    const Extension* extension = blacklisted_extensions_.GetByID(lowercase_id);
+  if (include_mask & BLOCKLISTED) {
+    const Extension* extension = blocklisted_extensions_.GetByID(lowercase_id);
     if (extension)
       return extension;
   }
@@ -174,13 +182,13 @@ bool ExtensionRegistry::RemoveTerminated(const std::string& id) {
   return terminated_extensions_.Remove(id);
 }
 
-bool ExtensionRegistry::AddBlacklisted(
+bool ExtensionRegistry::AddBlocklisted(
     const scoped_refptr<const Extension>& extension) {
-  return blacklisted_extensions_.Insert(extension);
+  return blocklisted_extensions_.Insert(extension);
 }
 
-bool ExtensionRegistry::RemoveBlacklisted(const std::string& id) {
-  return blacklisted_extensions_.Remove(id);
+bool ExtensionRegistry::RemoveBlocklisted(const std::string& id) {
+  return blocklisted_extensions_.Remove(id);
 }
 
 bool ExtensionRegistry::AddBlocked(
@@ -205,7 +213,7 @@ void ExtensionRegistry::ClearAll() {
   enabled_extensions_.Clear();
   disabled_extensions_.Clear();
   terminated_extensions_.Clear();
-  blacklisted_extensions_.Clear();
+  blocklisted_extensions_.Clear();
   blocked_extensions_.Clear();
   ready_extensions_.Clear();
 }

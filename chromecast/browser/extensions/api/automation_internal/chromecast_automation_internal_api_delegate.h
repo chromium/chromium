@@ -15,6 +15,12 @@ class ChromecastAutomationInternalApiDelegate
     : public AutomationInternalApiDelegate {
  public:
   ChromecastAutomationInternalApiDelegate();
+
+  ChromecastAutomationInternalApiDelegate(
+      const ChromecastAutomationInternalApiDelegate&) = delete;
+  ChromecastAutomationInternalApiDelegate& operator=(
+      const ChromecastAutomationInternalApiDelegate&) = delete;
+
   ~ChromecastAutomationInternalApiDelegate() override;
 
   bool CanRequestAutomation(const Extension* extension,
@@ -28,12 +34,12 @@ class ChromecastAutomationInternalApiDelegate
   int GetTabId(content::WebContents* contents) override;
   content::WebContents* GetActiveWebContents(
       ExtensionFunction* function) override;
+  bool EnableTree(const ui::AXTreeID& tree_id) override;
   void EnableDesktop() override;
   ui::AXTreeID GetAXTreeID() override;
-  void SetEventBundleSink(ui::AXEventBundleSink* sink) override;
+  void SetAutomationEventRouterInterface(
+      AutomationEventRouterInterface* router) override;
   content::BrowserContext* GetActiveUserContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromecastAutomationInternalApiDelegate);
 };
 
 }  // namespace extensions

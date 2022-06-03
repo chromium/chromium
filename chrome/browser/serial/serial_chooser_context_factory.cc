@@ -36,7 +36,22 @@ SerialChooserContext* SerialChooserContextFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
+// static
+SerialChooserContext* SerialChooserContextFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<SerialChooserContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
+}
+
 content::BrowserContext* SerialChooserContextFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+void SerialChooserContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* serial_chooser_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (serial_chooser_context)
+    serial_chooser_context->FlushScheduledSaveSettingsCalls();
 }

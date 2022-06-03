@@ -1,0 +1,125 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>RTCPeerConnection.addTrack multiple times</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../external/wpt/webrtc/RTCPeerConnection-helper.js"></script>
+<script>
+
+'use strict';
+
+const reasonableNegotiationTimeMs = 1000; // 1 second
+// The overall time for a test of this type is 10 secs, so timeout must be small
+// There are 4 tests in the file, of which 2 are dynamic runtime, and 2 will
+// return failure if they take more than reasonableNegotiationTimeMs.
+// Flakiness has been observed if this limit was set to 2000.
+const reasonableTotalTestTimeMs = 1000;
+
+function maybeLog(arg) {
+  // Uncomment to log performance data
+  // console.log(arg);
+}
+
+async function doNegotiation(caller, callee) {
+  const startTime = performance.now();
+  const offer = await caller.createOffer();
+  await caller.setLocalDescription(offer);
+  await callee.setRemoteDescription(offer);
+  const answer = await callee.createAnswer();
+  await callee.setLocalDescription(answer);
+  await caller.setRemoteDescription(answer);
+  return performance.now() - startTime;
+}
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      const transceiver = caller.addTrack(track.clone());
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Audio: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    // 6 has been observed on a weak Linux cloudtop in debug mode.
+    assert_greater_than_equal(count, 5);
+  }, 'Adding multiple audio tracks with addTrack(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const kTrackCount = 10;
+    for (let count = 1; count <= kTrackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+    maybeLog('Time taken for audio all at once: ' + timeTakenMs);
+  }, 'Adding multiple audio tracks with addTrack(), all at once');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({video: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      const transceiver = caller.addTrack(track.clone());
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Video: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    // 2 has been observed on a weak Linux cloudtop instance in debug mode.
+    assert_greater_than_equal(count, 2);
+  }, 'Adding multiple video tracks with addTrack(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({video: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    // More than 1 second on 3 tracks has been observed
+    // on a weak Linux cloudtop in debug mode.
+    const kTrackCount = 2;
+    for (let count = 1; count <= kTrackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    maybeLog('Time taken for video all at once: ' + timeTakenMs);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+  }, 'Adding multiple video tracks with addTrack(), all at once');
+
+</script>

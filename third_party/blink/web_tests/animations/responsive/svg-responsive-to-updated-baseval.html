@@ -10,7 +10,6 @@ function createOffsetTestTarget() {
   var animation = target.animate({'svg-offset': '1'}, 1);
   animation.pause();
   animation.currentTime = 0.5;
-  assert_equals(target.getAttribute('offset'), '0.5', 'Initial getAttribute()');
   assert_equals(target.offset.animVal, 0.5, 'Initial get animVal');
   return target;
 }
@@ -18,20 +17,8 @@ function createOffsetTestTarget() {
 test(() => {
   var target = createOffsetTestTarget();
   target.setAttribute('offset', '0.5');
-  assert_equals(target.getAttribute('offset'), '0.75');
-}, document.title + ': setAttribute() -> getAttribute()');
-
-test(() => {
-  var target = createOffsetTestTarget();
-  target.setAttribute('offset', '0.5');
   assert_equals(target.offset.animVal, 0.75);
 }, document.title + ': setAttribute() -> get primitive animVal');
-
-test(() => {
-  var target = createOffsetTestTarget();
-  target.offset.baseVal = '0.5';
-  assert_equals(target.getAttribute('offset'), '0.75');
-}, document.title + ': set baseVal -> getAttribute()');
 
 test(() => {
   var target = createOffsetTestTarget();
@@ -51,7 +38,6 @@ function createViewBoxTestTarget() {
   var animation = target.animate({'svg-viewBox': '1 1 1 1'}, 1);
   animation.pause();
   animation.currentTime = 0.5;
-  assert_equals(target.getAttribute('viewBox'), '0.5 0.5 0.5 0.5', 'Initial getAttribute()');
   assert_equals(serializeRect(target.viewBox.animVal), '0.5 0.5 0.5 0.5', 'Initial get animVal');
   return target;
 }

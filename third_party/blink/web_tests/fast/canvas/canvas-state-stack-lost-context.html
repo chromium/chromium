@@ -1,0 +1,59 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id='canvas' height='800'></canvas>
+<script>
+/*
+  Both these tests are refactored versions of fuzzer code that managed to
+lose the context and then create an invalid state stack by saving and drawing
+in a particular order. See:
+    crbug.com/1035224
+    crbug.com/982321
+*/
+
+async_test(t => {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  // The height is too big, so context will be lost
+  canvas.setAttribute('height', 16777217);
+  // Perform any operation with the lost context
+  ctx.fillRect(0, 0, 10, 10);
+  // Changing size resets the canvas
+  canvas.setAttribute('height', 800);
+  // Encode the canvas to an image, causing it to save
+  ctx.createPattern(canvas, 'no-repeat');
+  ctx.save();
+  // Any context operation here. State stacks will be out of sync unless the
+  // context loss was handled gracefully.
+  ctx.fillRect(0, 0, 10, 10);
+
+  setTimeout(function() {
+    t.done();
+  });
+}, "Verify that creating a pattern on a lost context does not cause an invalid state stack. See crbug.com/982321");
+
+async_test(t => {
+  var canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  // The height is too big, so context will be lost
+  canvas.setAttribute('height', 16777215);
+  // Perform any operation with the lost context
+  ctx.fillRect(0,0,10,10);
+  // Changing size resets the canvas
+  canvas.setAttribute('height', 800);
+  // Draw to it again
+  ctx.fillRect(0,0,10,10);
+  ctx.save();
+  // Text baseline code involves setting a modifiable state
+  ctx.textBaseline = 'top';
+
+  setTimeout(function() {
+    // Reset the canvas again on the next frame. This can cause an invalid stack
+    // unless the context loss was handled gracefully
+    canvas.setAttribute('width', 800);
+    t.done();
+  });
+}, "Verify that resetting and drawing to a canvas with a lost context does not cause an invalid state stack. See crbug.com/1035224");
+
+
+</script>

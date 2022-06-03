@@ -12,6 +12,8 @@ blink_modules_sources("sensor") {
     "accelerometer.h",
     "ambient_light_sensor.cc",
     "ambient_light_sensor.h",
+    "gravity_sensor.cc",
+    "gravity_sensor.h",
     "gyroscope.cc",
     "gyroscope.h",
     "linear_acceleration_sensor.cc",

@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -56,13 +56,18 @@ net::ClientCertIdentityList CertificateListToIdentityList(
 PlatformKeysCertificateSelector::PlatformKeysCertificateSelector(
     const net::CertificateList& certificates,
     const std::string& extension_name,
-    const CertificateSelectedCallback& callback,
+    CertificateSelectedCallback callback,
     content::WebContents* web_contents)
     : CertificateSelector(CertificateListToIdentityList(certificates),
                           web_contents),
       extension_name_(extension_name),
-      callback_(callback) {
+      callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
+  SetCancelCallback(base::BindOnce(
+      [](PlatformKeysCertificateSelector* dialog) {
+        std::move(dialog->callback_).Run(nullptr);
+      },
+      base::Unretained(this)));
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::PLATFORM_KEYS_CERTIFICATE_SELECTOR);
 }
@@ -75,25 +80,17 @@ PlatformKeysCertificateSelector::~PlatformKeysCertificateSelector() {
 }
 
 void PlatformKeysCertificateSelector::Init() {
-  const base::string16 name = base::ASCIIToUTF16(extension_name_);
+  const std::u16string name = base::ASCIIToUTF16(extension_name_);
 
+  auto label = std::make_unique<views::StyledLabel>();
   size_t offset;
-  const base::string16 text = l10n_util::GetStringFUTF16(
-      IDS_PLATFORM_KEYS_SELECT_CERT_DIALOG_TEXT, name, &offset);
-
-  std::unique_ptr<views::StyledLabel> label(
-      new views::StyledLabel(text, nullptr /* no listener */));
+  label->SetText(l10n_util::GetStringFUTF16(
+      IDS_PLATFORM_KEYS_SELECT_CERT_DIALOG_TEXT, name, &offset));
 
   views::StyledLabel::RangeStyleInfo bold_style;
   bold_style.text_style = STYLE_EMPHASIZED;
   label->AddStyleRange(gfx::Range(offset, offset + name.size()), bold_style);
   CertificateSelector::InitWithText(std::move(label));
-}
-
-bool PlatformKeysCertificateSelector::Cancel() {
-  DCHECK(!callback_.is_null());
-  std::move(callback_).Run(nullptr);
-  return true;
 }
 
 void PlatformKeysCertificateSelector::AcceptCertificate(
@@ -106,11 +103,10 @@ void ShowPlatformKeysCertificateSelector(
     content::WebContents* web_contents,
     const std::string& extension_name,
     const net::CertificateList& certificates,
-    const base::Callback<void(const scoped_refptr<net::X509Certificate>&)>&
-        callback) {
+    CertificateSelectedCallback callback) {
   PlatformKeysCertificateSelector* selector =
       new PlatformKeysCertificateSelector(certificates, extension_name,
-                                          callback, web_contents);
+                                          std::move(callback), web_contents);
   selector->Init();
   selector->Show();
 }

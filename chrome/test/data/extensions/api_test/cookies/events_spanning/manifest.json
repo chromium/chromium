@@ -6,6 +6,7 @@
   "permissions": ["cookies", "http://a.com/"],
   "incognito": "spanning",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": false
   }
 }

@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_H_
 
-#include <memory>
-#include <queue>
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/offline_pages/core/background/request_queue_results.h"

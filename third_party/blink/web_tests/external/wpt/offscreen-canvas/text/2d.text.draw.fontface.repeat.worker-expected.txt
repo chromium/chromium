@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Draw with the font immediately, then wait a bit until and draw again. (This crashes some version of WebKit.) assert_approx_equals: Red channel of the pixel at (5, 5) expected 0 +/- 2 but got 255
-Harness: the test ran to completion.
-

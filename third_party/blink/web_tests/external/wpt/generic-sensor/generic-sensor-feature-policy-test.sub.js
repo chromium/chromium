@@ -28,12 +28,12 @@ function run_fp_tests_disabled(sensorName) {
   const desc = "'new " + sensorName + "()'";
 
   test(() => {
-    assert_true(sensorName in self);
-    assert_throws("SecurityError", () => {new sensorType()});
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
+    assert_throws_dom("SecurityError", () => {new sensorType()});
   }, `${sensorName}: ${header} disallows the top-level document.`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -43,7 +43,7 @@ function run_fp_tests_disabled(sensorName) {
   }, `${sensorName}: ${header} disallows same-origin iframes.`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -54,17 +54,16 @@ function run_fp_tests_disabled(sensorName) {
 }
 
 function run_fp_tests_enabled(sensorName) {
-  const sensorType = self[sensorName];
   const featureNameList = feature_policies[sensorName];
   const header = "Feature-Policy header " + featureNameList.join(" *;") + " *";
   const desc = "'new " + sensorName + "()'";
 
   test(() => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
   }, `${sensorName}: ${header} allows the top-level document.`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -73,25 +72,27 @@ function run_fp_tests_enabled(sensorName) {
     );
   }, `${sensorName}: ${header} allows same-origin iframes.`);
 
+  // Set allow="feature;feature;..." on iframe element to delegate features
+  // under test to cross origin subframe.
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
       cross_origin_src + sensorName,
-      expect_feature_available_default
+      expect_feature_available_default,
+      feature_policies[sensorName].join(";")
     );
   }, `${sensorName}: ${header} allows cross-origin iframes.`);
 }
 
 function run_fp_tests_enabled_by_attribute(sensorName) {
-  const sensorType = self[sensorName];
   const featureNameList = feature_policies[sensorName];
   const header = "Feature-Policy allow='" + featureNameList.join(" ") + "' attribute";
   const desc = "'new " + sensorName + "()'";
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -102,7 +103,7 @@ function run_fp_tests_enabled_by_attribute(sensorName) {
   }, `${sensorName}: ${header} allows same-origin iframe`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -114,13 +115,12 @@ function run_fp_tests_enabled_by_attribute(sensorName) {
 }
 
 function run_fp_tests_enabled_by_attribute_redirect_on_load(sensorName) {
-  const sensorType = self[sensorName];
   const featureNameList = feature_policies[sensorName];
   const header = "Feature-Policy allow='" + featureNameList.join(" ") + "' attribute";
   const desc = "'new " + sensorName + "()'";
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -131,7 +131,7 @@ function run_fp_tests_enabled_by_attribute_redirect_on_load(sensorName) {
   }, `${sensorName}: ${header} allows same-origin relocation`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -143,17 +143,16 @@ function run_fp_tests_enabled_by_attribute_redirect_on_load(sensorName) {
 }
 
 function run_fp_tests_enabled_on_self_origin(sensorName) {
-  const sensorType = self[sensorName];
   const featureNameList = feature_policies[sensorName];
   const header = "Feature-Policy header " + featureNameList.join(" 'self';") + " 'self'";
   const desc = "'new " + sensorName + "()'";
 
   test(() => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
   }, `${sensorName}: ${header} allows the top-level document.`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,
@@ -163,7 +162,7 @@ function run_fp_tests_enabled_on_self_origin(sensorName) {
   }, `${sensorName}: ${header} allows same-origin iframes.`);
 
   async_test(t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     test_feature_availability(
       desc,
       t,

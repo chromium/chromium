@@ -14,12 +14,12 @@ blink_modules_sources("accessibility") {
     "ax_inline_text_box.h",
     "ax_layout_object.cc",
     "ax_layout_object.h",
-    "ax_list.cc",
-    "ax_list.h",
     "ax_list_box.cc",
     "ax_list_box.h",
     "ax_list_box_option.cc",
     "ax_list_box_option.h",
+    "ax_media_control.cc",
+    "ax_media_control.h",
     "ax_media_element.cc",
     "ax_media_element.h",
     "ax_menu_list.cc",
@@ -40,8 +40,6 @@ blink_modules_sources("accessibility") {
     "ax_position.h",
     "ax_progress_indicator.cc",
     "ax_progress_indicator.h",
-    "ax_radio_input.cc",
-    "ax_radio_input.h",
     "ax_range.cc",
     "ax_range.h",
     "ax_relation_cache.cc",
@@ -52,8 +50,6 @@ blink_modules_sources("accessibility") {
     "ax_slider.h",
     "ax_sparse_attribute_setter.cc",
     "ax_sparse_attribute_setter.h",
-    "ax_svg_root.cc",
-    "ax_svg_root.h",
     "ax_validation_message.cc",
     "ax_validation_message.h",
     "ax_virtual_object.cc",
@@ -65,6 +61,11 @@ blink_modules_sources("accessibility") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
+    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/renderer/modules/media_controls:media_controls",
+    "//third_party/blink/renderer/modules/permissions:permissions",
+    "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo_blink",
   ]
 

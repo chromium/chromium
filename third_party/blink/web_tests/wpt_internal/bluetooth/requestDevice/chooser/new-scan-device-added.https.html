@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'The chooser should display newly detected devices.';
+
+bluetooth_test(async () => {
+  let fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+  let fake_chooser = await navigator.bluetooth.test.getManualChooser();
+
+  // 1. Open the chooser.
+  let requestDevicePromise = requestDeviceWithTrustedClick({
+    filters: [{services: ['health_thermometer']}]
+  });
+
+  let events = await fake_chooser.waitForEvents(2);
+  assert_equals(events.length, 2);
+  assert_equals(events[0].type, 'chooser-opened');
+  assert_equals(events[0].origin.scheme, 'https');
+  assert_equals(events[1].type, 'discovering');
+
+  // 2. Send the advertisement packet to central.
+  let fake_peripheral =
+      await fake_central.simulateAdvertisementReceived(
+          health_thermometer_ad_packet);
+
+  events = await fake_chooser.waitForEvents(1);
+  assert_equals(events.length, 1);
+  assert_equals(events[0].type, 'add-or-update-device');
+  assert_equals(events[0].peripheral_address,
+      health_thermometer_ad_packet.scanRecord.deviceAddress);
+
+  // 3. Select the device on the chooser.
+  await fake_chooser.selectPeripheral(fake_peripheral);
+
+  events = await fake_chooser.waitForEvents(1);
+  assert_equals(events.length, 1);
+  assert_equals(events[0].type, 'chooser-closed');
+
+  // 4. Check that the device and advertisement packet have the same name.
+  let device = await requestDevicePromise;
+  assert_equals(device.name, health_thermometer_ad_packet.scanRecord.name);
+}, test_desc);
+</script>

@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("audio") {
+  defines = [ "IS_ASH_COMPONENTS_AUDIO_IMPL" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/dbus/audio",
+    "//components/prefs",
+    "//device/bluetooth",
+    "//media/base:video_facing",
+    "//services/media_session/public/mojom",
+    "//ui/events/devices",
+  ]
+  sources = [
+    "audio_device.cc",
+    "audio_device.h",
+    "audio_devices_pref_handler.h",
+    "audio_devices_pref_handler_impl.cc",
+    "audio_devices_pref_handler_impl.h",
+    "audio_devices_pref_handler_stub.cc",
+    "audio_devices_pref_handler_stub.h",
+    "audio_pref_observer.h",
+    "cras_audio_handler.cc",
+    "cras_audio_handler.h",
+    "sounds.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":audio",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chromeos/dbus/audio",
+    "//components/prefs:test_support",
+    "//device/bluetooth",
+    "//media/base:video_facing",
+    "//services/media_session/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "audio_devices_pref_handler_impl_unittest.cc",
+    "cras_audio_handler_unittest.cc",
+  ]
+}

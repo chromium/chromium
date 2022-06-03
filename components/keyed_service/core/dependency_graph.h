@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 class DependencyNode;
@@ -20,6 +19,10 @@ class DependencyNode;
 class KEYED_SERVICE_EXPORT DependencyGraph {
  public:
   DependencyGraph();
+
+  DependencyGraph(const DependencyGraph&) = delete;
+  DependencyGraph& operator=(const DependencyGraph&) = delete;
+
   ~DependencyGraph();
 
   // Adds/Removes a node from our list of live nodes. Removing will
@@ -41,9 +44,10 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
       WARN_UNUSED_RESULT;
 
   // Returns representation of the dependency graph in graphviz format.
-  std::string DumpAsGraphviz(const std::string& toplevel_name,
-                             const base::Callback<std::string(DependencyNode*)>&
-                                 node_name_callback) const;
+  std::string DumpAsGraphviz(
+      const std::string& toplevel_name,
+      const base::RepeatingCallback<std::string(DependencyNode*)>&
+          node_name_callback) const;
 
  private:
   typedef std::multimap<DependencyNode*, DependencyNode*> EdgeMap;
@@ -61,8 +65,6 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
   // Cached construction order (needs rebuild with BuildConstructionOrder
   // when empty).
   std::vector<DependencyNode*> construction_order_;
-
-  DISALLOW_COPY_AND_ASSIGN(DependencyGraph);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_DEPENDENCY_GRAPH_H_

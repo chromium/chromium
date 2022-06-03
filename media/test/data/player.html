@@ -7,8 +7,10 @@
 <script type="text/javascript">
 // <audio> or <video> player element.
 var player;
+var tag = '';
 var logs = document.getElementById('logs');
 var heartbeatCount = 0;
+var isSizeTest = false;
 
 function Log(message) {
   logs.innerHTML = message + '<br>' + logs.innerHTML;
@@ -16,7 +18,7 @@ function Log(message) {
 }
 
 function onLogEvent(e) {
-  Log('Event: ' + e.type +' video: ' + getVideoStatus(e.target));
+  Log('Event: ' + e.type + ', State: {' + getMediaStatus(e.target) + '}');
 }
 
 function getTimeRanges(range) {
@@ -27,7 +29,7 @@ function getTimeRanges(range) {
   return '[' + result.join(', ') + ']';
 }
 
-function getVideoStatus(video) {
+function getMediaStatus(video) {
   if (video == null) {
     return 'null';
   }
@@ -40,6 +42,9 @@ function getVideoStatus(video) {
   result.push(`duration: ${video.duration}`);
   result.push(`buffered: ${getTimeRanges(video.buffered)}`);
   result.push(`played: ${getTimeRanges(video.played)}`);
+  if (tag == 'video') {
+    result.push(`size: ${video.videoWidth}x${video.videoHeight}`);
+  }
   if (video.error) {
     result.push(`error: {${video.error.code},${video.error.message}}`);
   }
@@ -54,7 +59,15 @@ function getVideoStatus(video) {
 function InstallTitleEventHandler(element, event) {
   element.addEventListener(event, function(e) {
     onLogEvent(e);
-    document.title = event.toUpperCase();
+
+    if (!isSizeTest) {
+      document.title = event.toUpperCase();
+      return;
+    }
+
+    var video = e.target;
+    document.title =
+        event.toUpperCase() + ` ${video.videoWidth} ${video.videoHeight}`;
   }, false);
 }
 
@@ -89,7 +102,10 @@ function Failed() {
 
 function SeekTestStep(e) {
   if (e) onLogEvent(e);
+
+  // Remove the previous triggers for this step.
   player.removeEventListener('ended', SeekTestStep, false);
+  player.removeEventListener('timeupdate', SeekTestTimeoutSetup, false);
 
   // Test completes on the next ended event.
   InstallTitleEventHandler(player, 'ended');
@@ -99,15 +115,13 @@ function SeekTestStep(e) {
   player.play().catch(function(error) {
     Log(error);
   });
-
 }
 
 function SeekTestTimeoutSetup() {
-  Log('timeupdate @ ' + player.currentTime);
   if (player.currentTime < 2)
     return;
 
-  player.removeEventListener('timeupdate', SeekTestTimeoutSetup, false);
+  Log('Triggering seek due to timeout @ ' + player.currentTime);
   SeekTestStep();
 }
 
@@ -129,7 +143,6 @@ function RunTest() {
   if (url_parts.length != 2)
     return Failed();
 
-  var tag = '';
   var media_url = '';
   var loop = false;
   var error_substr = null;
@@ -156,6 +169,11 @@ function RunTest() {
       error_substr = decodeURIComponent(query_parts[1]);
       continue;
     }
+
+    if (query_parts[0] == 'sizetest') {
+      isSizeTest = true;
+      continue;
+    }
   }
 
   if (tag != 'audio' && tag != 'video') {
@@ -166,15 +184,6 @@ function RunTest() {
   player = document.createElement(tag);
   player.controls = true;
   document.getElementById('player_container').appendChild(player);
-
-  // We use loadeddata instead of loadedmetadata to ensure the decoder has
-  // completed initialization, even though we don't need to decode anything to
-  // get the size metadata. This is an unfortunate workaround for an Android
-  // framework bug (http://crbug.com/682387) where we have to avoid killing
-  // the GPU process while the decoder is initializing.
-  player.addEventListener('loadeddata', function(e) {
-    document.title = '' + player.videoWidth + ' ' + player.videoHeight;
-  });
 
   // Transition to the seek test after X seconds of playback or when the ended
   // event occurs, whichever happens first.
@@ -193,13 +202,14 @@ function RunTest() {
   player.addEventListener('play', onLogEvent);
   player.addEventListener('playing', onLogEvent);
   player.addEventListener('progress', onLogEvent);
+  player.addEventListener('resize', onLogEvent);
   player.addEventListener('stalled', onLogEvent);
   player.addEventListener('suspend', onLogEvent);
+  player.addEventListener('timeupdate', onLogEvent);
   player.addEventListener('waiting', onLogEvent);
 
   setInterval(function () {
-    Log('heartbeat #' + ++heartbeatCount +
-    ' video: ' + getVideoStatus(player));
+    onLogEvent({'type': 'heartbeat #' + ++heartbeatCount, 'target': player});
   }, 1000);
 
   // Ensure we percolate up any error events, and optionally verify they contain
@@ -210,7 +220,7 @@ function RunTest() {
   player.loop = loop;
   player.preload = 'auto';
   player.src = media_url;
-  Log('Starting by calling play()');
+  Log('Starting test by calling ' + tag + '.play()');
   player.play().catch(function(error) {
     Log(error);
   });

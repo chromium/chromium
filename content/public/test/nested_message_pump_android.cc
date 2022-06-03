@@ -5,151 +5,126 @@
 #include "content/public/test/nested_message_pump_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
-#include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
+#include "base/auto_reset.h"
 #include "content/public/test/android/test_support_content_jni_headers/NestedSystemMessageHandler_jni.h"
-
-namespace {
-
-base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
-    DestructorAtExit g_message_handler_obj = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 
 namespace content {
 
-struct NestedMessagePumpAndroid::RunState {
-  RunState(base::MessagePump::Delegate* delegate, int run_depth)
-      : delegate(delegate),
-        run_depth(run_depth),
-        should_quit(false),
-        waitable_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
-    waitable_event.declare_only_used_while_idle();
-  }
+NestedMessagePumpAndroid::NestedMessagePumpAndroid() = default;
+NestedMessagePumpAndroid::~NestedMessagePumpAndroid() = default;
 
-  base::MessagePump::Delegate* delegate;
+// We need to override Run() instead of using the implementation from
+// base::MessagePumpForUI because one of the side-effects of
+// dispatchOneMessage() is calling Looper::pollOnce(). If that happens while we
+// are inside Alooper_pollOnce(), we get a crash because Android Looper
+// isn't re-entrant safe. Instead, we keep the entire run loop in Java (in
+// MessageQueue.next()).
+void NestedMessagePumpAndroid::Run(base::MessagePump::Delegate* delegate) {
+  // Preserve delegate and quit state of the current run loop so it can be
+  // restored after the loop below has completed.
+  auto* old_delegate = SetDelegate(delegate);
+  bool old_quit = SetQuit(false);
 
-  // Used to count how many Run() invocations are on the stack.
-  int run_depth;
+  ScheduleWork();
+  while (!ShouldQuit()) {
+    RunJavaSystemMessageHandler();
 
-  // Used to flag that the current Run() invocation should return ASAP.
-  bool should_quit;
-
-  // Used to sleep until there is more work to do.
-  base::WaitableEvent waitable_event;
-
-  // The time at which we should call DoDelayedWork.
-  base::TimeTicks delayed_work_time;
-};
-
-NestedMessagePumpAndroid::NestedMessagePumpAndroid()
-    : state_(NULL) {
-}
-
-NestedMessagePumpAndroid::~NestedMessagePumpAndroid() {
-}
-
-void NestedMessagePumpAndroid::Run(Delegate* delegate) {
-  RunState state(delegate, state_ ? state_->run_depth + 1 : 1);
-  RunState* previous_state = state_;
-  state_ = &state;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  DCHECK(env);
-
-  // Need to cap the wait time to allow task processing on the java
-  // side. Otherwise, a long wait time on the native will starve java
-  // tasks.
-  base::TimeDelta max_delay = base::TimeDelta::FromMilliseconds(100);
-
-  for (;;) {
-    if (state_->should_quit)
-      break;
-
-    bool did_work = state_->delegate->DoWork();
-    if (state_->should_quit)
-      break;
-
-    did_work |= state_->delegate->DoDelayedWork(&state_->delayed_work_time);
-    if (state_->should_quit)
-      break;
-
-    if (did_work) {
-      continue;
-    }
-
-    did_work = state_->delegate->DoIdleWork();
-    if (state_->should_quit)
-      break;
-
-    if (did_work)
-      continue;
-
-    // No native tasks to process right now. Process tasks from the Java
-    // System message handler. This will return when the java message queue
-    // is idle.
-    bool ret = Java_NestedSystemMessageHandler_runNestedLoopTillIdle(
-        env, g_message_handler_obj.Get());
-    CHECK(ret) << "Error running java message loop, tests will likely fail.";
-
-    if (state_->delayed_work_time.is_null()) {
-      state_->waitable_event.TimedWait(max_delay);
-    } else {
-      base::TimeDelta delay =
-          state_->delayed_work_time - base::TimeTicks::Now();
-      if (delay > max_delay)
-        delay = max_delay;
-      if (delay > base::TimeDelta()) {
-        state_->waitable_event.TimedWait(delay);
-      } else {
-        // It looks like delayed_work_time indicates a time in the past, so we
-        // need to call DoDelayedWork now.
-        state_->delayed_work_time = base::TimeTicks();
-      }
+    // Handle deferred work if necessary.
+    // Note: |deferred_work_type_| and |deferred_do_idle_work_| must be reset
+    // here because another Run() loop can be triggered when we dispatch work.
+    CHECK(!ShouldDeferWork());
+    auto work_type = std::exchange(deferred_work_type_, kNone);
+    auto do_idle_work = std::exchange(deferred_do_idle_work_, true);
+    switch (work_type) {
+      case kNone:
+        // Do nothing.
+        break;
+      case kDelayed:
+        base::MessagePumpForUI::DoDelayedLooperWork();
+        break;
+      case kNonDelayed:
+        base::MessagePumpForUI::DoNonDelayedLooperWork(do_idle_work);
+        break;
     }
   }
 
-  state_ = previous_state;
-}
-
-void NestedMessagePumpAndroid::Attach(
-    base::MessagePump::Delegate* delegate) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  DCHECK(env);
-  g_message_handler_obj.Get().Reset(
-      Java_NestedSystemMessageHandler_create(env));
+  // Restore old run loop state.
+  SetDelegate(old_delegate);
+  SetQuit(old_quit);
 }
 
 void NestedMessagePumpAndroid::Quit() {
-  if (state_) {
-    state_->should_quit = true;
-    state_->waitable_event.Signal();
-    return;
-  }
+  QuitJavaSystemMessageHandler();
+  SetQuit(true);
 }
 
-void NestedMessagePumpAndroid::ScheduleWork() {
-  if (state_) {
-    state_->waitable_event.Signal();
+// Since this pump allows Run() to be called on the UI thread, there's no need
+// to also attach the pump on that thread. Making attach a no-op also prevents
+// the top level run loop from being considered a nested one.
+void NestedMessagePumpAndroid::Attach(Delegate*) {}
+
+void NestedMessagePumpAndroid::DoDelayedLooperWork() {
+  if (ShouldDeferWork()) {
+    switch (deferred_work_type_) {
+      case kNone:
+        deferred_work_type_ = kDelayed;
+        break;
+      case kDelayed:
+        // Do nothing. We are already going to process the next delayed work.
+        break;
+      case kNonDelayed:
+        // Do nothing. The immediate work will be processed and then a
+        // request to process immediate and idle work will be made. This
+        // will unconditionally process the next work item which should be
+        // the delayed item.
+        break;
+    }
+    QuitJavaSystemMessageHandler();
     return;
   }
+
+  base::MessagePumpForUI::DoDelayedLooperWork();
 }
 
-void NestedMessagePumpAndroid::ScheduleDelayedWork(
-    const base::TimeTicks& delayed_work_time) {
-  if (state_) {
-    // We know that we can't be blocked on Wait right now since this method can
-    // only be called on the same thread as Run, so we only need to update our
-    // record of how long to sleep when we do sleep.
-    state_->delayed_work_time = delayed_work_time;
+void NestedMessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
+  if (ShouldDeferWork()) {
+    deferred_work_type_ = kNonDelayed;
+
+    // Only do idle work if we are consistently asked to do it. If there
+    // is a request to defer the idle work, then we will honor that over
+    // any previous request to do idle work. Once the non-delayed work is
+    // dispatched, another request to do the idle work will be made.
+    deferred_do_idle_work_ &= do_idle_work;
+
+    QuitJavaSystemMessageHandler();
     return;
   }
+
+  base::MessagePumpForUI::DoNonDelayedLooperWork(do_idle_work);
+}
+
+void NestedMessagePumpAndroid::RunJavaSystemMessageHandler() {
+  auto* env = base::android::AttachCurrentThread();
+  CHECK(!quit_message_handler_);
+  CHECK(!inside_run_message_handler_);
+  base::AutoReset<bool> auto_reset(&inside_run_message_handler_, true);
+  // Dispatch the first available Java message and one or more C++ messages as
+  // a side effect. If there are no Java messages available, this call will
+  // block until one becomes available (while continuing to process C++ work).
+  bool ret = Java_NestedSystemMessageHandler_dispatchOneMessage(env);
+  CHECK(ret) << "Error running java message loop, tests will likely fail.";
+  quit_message_handler_ = false;
+}
+
+void NestedMessagePumpAndroid::QuitJavaSystemMessageHandler() {
+  if (!inside_run_message_handler_ || quit_message_handler_)
+    return;
+
+  quit_message_handler_ = true;
+
+  // Wake up the Java message dispatcher to exit dispatchOneMessage().
+  auto* env = base::android::AttachCurrentThread();
+  Java_NestedSystemMessageHandler_postQuitMessage(env);
 }
 
 }  // namespace content

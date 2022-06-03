@@ -3,12 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
 import logging
 import os
 import sys
 import textwrap
 import unittest
+
+from six import StringIO
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -55,7 +56,7 @@ class ReduceDebuglineTest(unittest.TestCase):
 
   def test(self):
     ranges_dict = reduce_debugline.reduce_decoded_debugline(
-        cStringIO.StringIO(self._DECODED_DEBUGLINE))
+        StringIO(self._DECODED_DEBUGLINE))
     self.assertEqual(self._EXPECTED_REDUCED_DEBUGLINE, ranges_dict)
 
 

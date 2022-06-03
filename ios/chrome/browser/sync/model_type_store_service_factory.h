@@ -11,20 +11,18 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
+
 namespace syncer {
 class ModelTypeStoreService;
 }  // namespace syncer
 
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
-
 // Singleton that owns all ModelTypeStoreService and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class ModelTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static syncer::ModelTypeStoreService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static ModelTypeStoreServiceFactory* GetInstance();
 

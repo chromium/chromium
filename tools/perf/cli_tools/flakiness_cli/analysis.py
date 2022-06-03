@@ -36,7 +36,7 @@ def FilterBy(df, **kwargs):
   Returns:
     The filtered data frame (a view on the original data frame).
   """
-  for column, pattern in kwargs.iteritems():
+  for column, pattern in kwargs.items():
     if pattern is not None:
       df = df[df[column].str.match(fnmatch.translate(pattern), case=False)]
   return df

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/gtest_util.h"
 #include "components/zucchini/address_translator.h"
@@ -220,7 +219,7 @@ TEST_F(RelocUtilsWin32Test, ReadWrite) {
 
   // Read all references and check.
   std::vector<Reference> refs;
-  for (base::Optional<Reference> ref = reader->GetNext(); ref.has_value();
+  for (absl::optional<Reference> ref = reader->GetNext(); ref.has_value();
        ref = reader->GetNext()) {
     refs.push_back(ref.value());
   }

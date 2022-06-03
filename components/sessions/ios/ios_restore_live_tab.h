@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
-#include "components/sessions/core/live_tab.h"
+#include "components/sessions/ios/ios_live_tab.h"
 
 @class CRWSessionStorage;
 
@@ -15,7 +14,7 @@ namespace sessions {
 
 // An implementation of LiveTab that is backed by web::CRWSessionStorage for use
 // when restoring tabs from a crashed session.
-class SESSIONS_EXPORT RestoreIOSLiveTab : public LiveTab {
+class SESSIONS_EXPORT RestoreIOSLiveTab : public IOSLiveTab {
  public:
   explicit RestoreIOSLiveTab(CRWSessionStorage* session);
   ~RestoreIOSLiveTab() override;
@@ -29,13 +28,11 @@ class SESSIONS_EXPORT RestoreIOSLiveTab : public LiveTab {
   sessions::SerializedNavigationEntry GetEntryAtIndex(int index) override;
   sessions::SerializedNavigationEntry GetPendingEntry() override;
   int GetEntryCount() override;
-  const std::string& GetUserAgentOverride() override;
+  sessions::SerializedUserAgentOverride GetUserAgentOverride() override;
+  const web::WebState* GetWebState() const override;
 
  private:
   CRWSessionStorage* session_;
-
-  // Needed to return an empty string in GetUserAgentOverride().
-  const std::string user_agent_override_;
 };
 
 }  // namespace sessions

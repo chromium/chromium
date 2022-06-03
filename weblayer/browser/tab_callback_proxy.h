@@ -20,18 +20,20 @@ class Tab;
 class TabCallbackProxy : public TabObserver {
  public:
   TabCallbackProxy(JNIEnv* env, jobject obj, Tab* tab);
+
+  TabCallbackProxy(const TabCallbackProxy&) = delete;
+  TabCallbackProxy& operator=(const TabCallbackProxy&) = delete;
+
   ~TabCallbackProxy() override;
 
-  // BrowserObserver:
+  // TabObserver:
   void DisplayedUrlChanged(const GURL& url) override;
-
   void OnRenderProcessGone() override;
+  void OnTitleUpdated(const std::u16string& title) override;
 
  private:
   Tab* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabCallbackProxy);
 };
 
 }  // namespace weblayer

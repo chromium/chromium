@@ -120,6 +120,12 @@ SANDBOX_EXPORT ResultExpr
 SANDBOX_EXPORT ResultExpr
     UnsafeTrap(TrapRegistry::TrapFnc trap_func, const void* aux);
 
+// UserNotify specifies that the kernel shall notify a listening process that a
+// syscall occurred. The listening process may perform the system call on
+// behalf of the sandboxed process, or may instruct the sandboxed process to
+// continue the system call.
+SANDBOX_EXPORT ResultExpr UserNotify();
+
 // BoolConst converts a bool value into a BoolExpr.
 SANDBOX_EXPORT BoolExpr BoolConst(bool value);
 
@@ -149,6 +155,8 @@ class SANDBOX_EXPORT Arg {
 
   Arg(const Arg& arg) : num_(arg.num_), mask_(arg.mask_) {}
 
+  Arg& operator=(const Arg&) = delete;
+
   // Returns an Arg representing the current argument, but after
   // bitwise-and'ing it with |rhs|.
   friend Arg operator&(const Arg& lhs, uint64_t rhs) {
@@ -170,8 +178,6 @@ class SANDBOX_EXPORT Arg {
 
   int num_;
   uint64_t mask_;
-
-  DISALLOW_ASSIGN(Arg);
 };
 
 // If begins a conditional result expression predicated on the
@@ -181,6 +187,9 @@ SANDBOX_EXPORT Elser If(BoolExpr cond, ResultExpr then_result);
 class SANDBOX_EXPORT Elser {
  public:
   Elser(const Elser& elser);
+
+  Elser& operator=(const Elser&) = delete;
+
   ~Elser();
 
   // ElseIf extends the conditional result expression with another
@@ -201,7 +210,6 @@ class SANDBOX_EXPORT Elser {
   friend Elser If(BoolExpr, ResultExpr);
   template <typename T>
   friend Caser<T> Switch(const Arg<T>&);
-  DISALLOW_ASSIGN(Elser);
 };
 
 // Switch begins a switch expression dispatched according to the
@@ -213,6 +221,9 @@ template <typename T>
 class SANDBOX_EXPORT Caser {
  public:
   Caser(const Caser<T>& caser) : arg_(caser.arg_), elser_(caser.elser_) {}
+
+  Caser& operator=(const Caser&) = delete;
+
   ~Caser() {}
 
   // Case adds a single-value "case" clause to the switch.
@@ -235,7 +246,6 @@ class SANDBOX_EXPORT Caser {
 
   template <typename U>
   friend Caser<U> Switch(const Arg<U>&);
-  DISALLOW_ASSIGN(Caser);
 };
 
 // Recommended usage is to put

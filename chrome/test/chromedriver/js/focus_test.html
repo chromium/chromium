@@ -14,8 +14,8 @@ function testInactiveElement() {
   c.focus();
   assertEquals(c, document.activeElement);
   focus(a);
-  assertEquals(3, a.selectionStart);
-  assertEquals(3, a.selectionEnd);
+  assertEquals(0, a.selectionStart);
+  assertEquals(2, a.selectionEnd);
 }
 
 function testActiveElement() {

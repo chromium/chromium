@@ -6,7 +6,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -37,6 +37,10 @@ using api_errors::MissingRequiredProperty;
 using V8Validator = base::OnceCallback<void(v8::Local<v8::Value>)>;
 
 class ArgumentSpecUnitTest : public gin::V8Test {
+ public:
+  ArgumentSpecUnitTest(const ArgumentSpecUnitTest&) = delete;
+  ArgumentSpecUnitTest& operator=(const ArgumentSpecUnitTest&) = delete;
+
  protected:
   ArgumentSpecUnitTest()
       : type_refs_(APITypeReferenceMap::InitializeTypeCallback()) {}
@@ -136,8 +140,6 @@ class ArgumentSpecUnitTest : public gin::V8Test {
   void RunTest(RunTestParams& params);
 
   APITypeReferenceMap type_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArgumentSpecUnitTest);
 };
 
 void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
@@ -405,18 +407,12 @@ TEST_F(ArgumentSpecUnitTest, Test) {
                   base::Value(base::Value::Type::BINARY));
     {
       // A non-empty (but zero-filled) ArrayBufferView.
-      const char kBuffer[] = {0, 0, 0, 0};
-      std::unique_ptr<base::Value> expected_value =
-          base::Value::CreateWithCopiedBuffer(kBuffer, base::size(kBuffer));
-      ASSERT_TRUE(expected_value);
       ExpectSuccessWithNoConversion(spec, "(new Int32Array(2))");
     }
     {
       // Actual data.
-      const char kBuffer[] = {'p', 'i', 'n', 'g'};
-      std::unique_ptr<base::Value> expected_value =
-          base::Value::CreateWithCopiedBuffer(kBuffer, base::size(kBuffer));
-      ASSERT_TRUE(expected_value);
+      const uint8_t kBuffer[] = {'p', 'i', 'n', 'g'};
+      base::Value expected_value(base::make_span(kBuffer));
       ExpectSuccess(spec,
                     "var b = new ArrayBuffer(4);\n"
                     "var v = new Uint8Array(b);\n"
@@ -424,7 +420,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
                     "for (var i = 0; i < s.length; ++i)\n"
                     "  v[i] = s.charCodeAt(i);\n"
                     "b;",
-                    *expected_value);
+                    expected_value);
     }
     ExpectFailure(spec, "1",
                   InvalidType(api_errors::kTypeBinary, kTypeInteger));
@@ -1020,6 +1016,39 @@ TEST_F(ArgumentSpecUnitTest, TestV8ValuePassedThrough) {
             .Build();
     test_is_same_value(*additional_properties_spec, "({foo: 'bar'})");
   }
+}
+
+// Tests the serialization of functions that are explicitly marked as
+// serializable (otherwise, they are represented as empty DictionaryValues).
+TEST_F(ArgumentSpecUnitTest, SerializableFunctions) {
+  constexpr char kFunctionSpec[] =
+      R"({
+           "type": "function",
+           "serializableFunction": true
+         })";
+  ArgumentSpec spec(*ValueFromString(kFunctionSpec));
+
+  constexpr char kExpectedSerialization[] = R"("function() { }")";
+  ExpectSuccess(spec, "(function() { })", kExpectedSerialization);
+
+  {
+    constexpr char kNonTrivialFunction[] =
+        R"(function(foo, bar, baz) { let alpha = baz; })";
+    ExpectSuccess(spec, base::StringPrintf("(%s)", kNonTrivialFunction),
+                  base::StringPrintf(R"("%s")", kNonTrivialFunction));
+  }
+
+  // Test a couple tricky values with custom toString() implementations.
+  ExpectSuccess(spec,
+                R"(var f = function() { };
+         f.toString = function() { throw new Error('haha!'); };
+         f;)",
+                kExpectedSerialization);
+  ExpectSuccess(spec,
+                R"(var g = function() { };
+         g.toString = function() { return 'function() { return 3; }'; };
+         g;)",
+                kExpectedSerialization);
 }
 
 }  // namespace extensions

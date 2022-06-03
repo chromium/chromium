@@ -1,0 +1,10 @@
+{
+  "name": "NaClExtensionTest",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test extensions for Native Client.",
+  "nacl_modules": [{
+    "path": "dummy.nmf",
+    "mime_type": "application/pdf"
+  }]
+}

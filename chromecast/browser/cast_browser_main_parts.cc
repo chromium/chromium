@@ -13,16 +13,16 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -37,22 +37,23 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_browser_client.h"
+#include "chromecast/browser/cast_extension_url_loader_factory.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/browser/metrics/cast_browser_metrics.h"
+#include "chromecast/browser/metrics/metrics_helper_impl.h"
 #include "chromecast/browser/service_connector.h"
-#include "chromecast/browser/tts/tts_controller_impl.h"
-#include "chromecast/browser/tts/tts_platform_stub.h"
-#include "chromecast/browser/url_request_context_factory.h"
+#include "chromecast/browser/service_manager_connection.h"
+#include "chromecast/browser/service_manager_context.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
-#include "chromecast/media/base/media_resource_tracker.h"
 #include "chromecast/media/base/video_plane_controller.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "chromecast/net/connectivity_checker.h"
 #include "chromecast/public/cast_media_shlib.h"
@@ -65,16 +66,19 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <fontconfig/fontconfig.h>
 #include <signal.h>
 #include <sys/prctl.h>
@@ -100,21 +104,27 @@
 // gn check ignored on OverlayManagerCast as it's not a public ozone
 // header, but is exported to allow injecting the overlay-composited
 // callback.
-#include "chromecast/browser/accessibility/accessibility_manager.h"
+#include "chromecast/browser/accessibility/accessibility_manager_impl.h"
 #include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
+#include "chromecast/graphics/rounded_window_corners_manager.h"
 #include "chromecast/media/service/cast_renderer.h"  // nogncheck
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"  // nogncheck
+#if !defined(OS_FUCHSIA)
+#include "components/ui_devtools/devtools_server.h"  // nogncheck
+#include "components/ui_devtools/switches.h"         // nogncheck
+#endif
 #include "ui/display/screen.h"
 #include "ui/views/views_delegate.h"  // nogncheck
 #else
-#include "chromecast/graphics/cast_window_manager_default.h"
+#include "chromecast/graphics/cast_window_manager_default.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "chromecast/browser/extensions/api/tts/tts_extension_api.h"
 #include "chromecast/browser/extensions/cast_extension_system.h"
+#include "chromecast/browser/extensions/cast_extension_system_factory.h"
 #include "chromecast/browser/extensions/cast_extensions_browser_client.h"
 #include "chromecast/browser/extensions/cast_prefs.h"
 #include "chromecast/common/cast_extensions_client.h"
@@ -123,7 +133,7 @@
 #include "extensions/browser/extension_prefs.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_CAST_WAYLAND_SERVER)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
 #include "chromecast/browser/exo/wayland_server_controller.h"
 #endif
 
@@ -132,9 +142,11 @@
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
 #if !defined(OS_FUCHSIA)
-#include "base/bind_helpers.h"
-#include "components/heap_profiling/client_connection_manager.h"
-#include "components/heap_profiling/supervisor.h"
+#include "base/callback_helpers.h"
+#include "chromecast/base/cast_sys_info_util.h"
+#include "chromecast/public/cast_sys_info.h"
+#include "components/heap_profiling/multi_process/client_connection_manager.h"  // nogncheck
+#include "components/heap_profiling/multi_process/supervisor.h"  // nogncheck
 #endif  // !defined(OS_FUCHSIA)
 
 namespace {
@@ -144,7 +156,7 @@ int kSignalsToRunClosure[] = {
     SIGTERM, SIGINT,
 };
 // Closure to run on SIGTERM and SIGINT.
-base::Closure* g_signal_closure = nullptr;
+base::OnceClosure* g_signal_closure = nullptr;
 base::PlatformThreadId g_main_thread_id;
 
 void RunClosureOnSignal(int signum) {
@@ -154,20 +166,22 @@ void RunClosureOnSignal(int signum) {
   }
 
   char message[48] = "Received close signal: ";
-  strncat(message, sys_siglist[signum], sizeof(message) - strlen(message) - 1);
+  strncat(message, strsignal(signum), sizeof(message) - strlen(message) - 1);
   RAW_LOG(INFO, message);
 
   DCHECK(g_signal_closure);
-  g_signal_closure->Run();
+  if (*g_signal_closure)
+    std::move(*g_signal_closure).Run();
 }
 
-void RegisterClosureOnSignal(const base::Closure& closure) {
+void RegisterClosureOnSignal(base::OnceClosure closure) {
   DCHECK(!g_signal_closure);
+  DCHECK(closure);
   DCHECK_GT(base::size(kSignalsToRunClosure), 0U);
 
   // Memory leak on purpose, since |g_signal_closure| should live until
   // process exit.
-  g_signal_closure = new base::Closure(closure);
+  g_signal_closure = new base::OnceClosure(std::move(closure));
   g_main_thread_id = base::PlatformThread::CurrentId();
 
   struct sigaction sa_new;
@@ -253,22 +267,24 @@ CreateClientConnectionManager(
 class CastViewsDelegate : public views::ViewsDelegate {
  public:
   CastViewsDelegate() = default;
-  ~CastViewsDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastViewsDelegate);
+  CastViewsDelegate(const CastViewsDelegate&) = delete;
+  CastViewsDelegate& operator=(const CastViewsDelegate&) = delete;
+
+  ~CastViewsDelegate() override = default;
 };
 
 #endif  // defined(USE_AURA)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 base::FilePath GetApplicationFontsDir() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::string fontconfig_sysroot;
   if (env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot)) {
     // Running with hermetic fontconfig; using the full path will not work.
-    // Assume the root is base::DIR_MODULE as set by base::SetUpFontconfig().
+    // Assume the root is base::DIR_MODULE as set by
+    // test_fonts::SetUpFontconfig().
     return base::FilePath("/fonts");
   } else {
     base::FilePath dir_module;
@@ -277,7 +293,7 @@ base::FilePath GetApplicationFontsDir() {
   }
 }
 
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -299,24 +315,24 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
     {switches::kDisableGpu, ""},
     {switches::kDisableSoftwareRasterizer, ""},
+    {switches::kDisableGpuCompositing, ""},
 #if defined(OS_ANDROID)
     {switches::kDisableFrameRateLimit, ""},
     {switches::kDisableGLDrawingForTests, ""},
-    {switches::kDisableGpuCompositing, ""},
     {cc::switches::kDisableThreadedAnimation, ""},
 #endif  // defined(OS_ANDROID)
 #endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if defined(ARCH_CPU_X86_FAMILY)
     // This is needed for now to enable the x11 Ozone platform to work with
     // current Linux/NVidia OpenGL drivers.
-    {switches::kIgnoreGpuBlacklist, ""},
+    {switches::kIgnoreGpuBlocklist, ""},
 #elif defined(ARCH_CPU_ARM_FAMILY)
 #if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
     {switches::kEnableHardwareOverlays, "cast"},
 #endif
 #endif
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
     // It's better to start GPU process on demand. For example, for TV platforms
     // cast starts in background and can't render until TV switches to cast
     // input.
@@ -328,9 +344,6 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
     {switches::kEnableUseZoomForDSF, "false"},
     // TODO(halliwell): Revert after fix for b/63101386.
     {switches::kDisallowNonExactResourceReuse, ""},
-    // Enable autoplay without requiring any user gesture.
-    {switches::kAutoplayPolicy,
-     switches::autoplay::kNoUserGestureRequiredPolicy},
     // Disable pinch zoom gesture.
     {switches::kDisablePinch, ""},
 };
@@ -370,22 +383,38 @@ void AddDefaultCommandLineSwitches(base::CommandLine* command_line) {
   }
 }
 
+#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
+// Instantiates all cast KeyedService factories, which is especially important
+// for services that should be created at profile creation time as compared to
+// lazily on first access.
+void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+  extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+
+  extensions::CastExtensionSystemFactory::GetInstance();
+  CastExtensionURLLoaderFactory::EnsureShutdownNotifierFactoryBuilt();
+}
+#endif
+
 }  // namespace
 
 CastBrowserMainParts::CastBrowserMainParts(
-    const content::MainFunctionParams& parameters,
-    URLRequestContextFactory* url_request_context_factory,
+    content::MainFunctionParams parameters,
     CastContentBrowserClient* cast_content_browser_client)
     : BrowserMainParts(),
       cast_browser_process_(new CastBrowserProcess()),
-      parameters_(parameters),
+      parameters_(std::move(parameters)),
       cast_content_browser_client_(cast_content_browser_client),
-      url_request_context_factory_(url_request_context_factory),
-      media_caps_(new media::MediaCapsImpl()),
+
+      media_caps_(std::make_unique<media::MediaCapsImpl>()),
+      metrics_helper_(std::make_unique<metrics::MetricsHelperImpl>()),
       cast_system_memory_pressure_evaluator_adjuster_(nullptr) {
   DCHECK(cast_content_browser_client);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   AddDefaultCommandLineSwitches(command_line);
+
+  service_manager_context_ = std::make_unique<ServiceManagerContext>(
+      cast_content_browser_client_, content::GetUIThreadTaskRunner({}));
+  ServiceManagerConnection::GetForProcess()->Start();
 }
 
 CastBrowserMainParts::~CastBrowserMainParts() {
@@ -422,11 +451,15 @@ media::MediaCapsImpl* CastBrowserMainParts::media_caps() {
   return media_caps_.get();
 }
 
+metrics::MetricsHelperImpl* CastBrowserMainParts::metrics_helper() {
+  return metrics_helper_.get();
+}
+
 content::BrowserContext* CastBrowserMainParts::browser_context() {
   return cast_browser_process_->browser_context();
 }
 
-void CastBrowserMainParts::PreMainMessageLoopStart() {
+void CastBrowserMainParts::PreCreateMainMessageLoop() {
   // GroupedHistograms needs to be initialized before any threads are created
   // to prevent race conditions between calls to Preregister and those threads
   // attempting to collect metrics.
@@ -446,7 +479,7 @@ void CastBrowserMainParts::PreMainMessageLoopStart() {
 #endif  // !(defined(OS_ANDROID) || defined(OS_FUCHSIA))
 }
 
-void CastBrowserMainParts::PostMainMessageLoopStart() {
+void CastBrowserMainParts::PostCreateMainMessageLoop() {
   // Ensure CastMetricsHelper initialized on UI thread.
   metrics::CastMetricsHelper::GetInstance();
 }
@@ -458,7 +491,7 @@ void CastBrowserMainParts::ToolkitInitialized() {
     views_delegate_ = std::make_unique<CastViewsDelegate>();
 #endif  // defined(USE_AURA)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::FilePath dir_font = GetApplicationFontsDir();
   const FcChar8 *dir_font_char8 = reinterpret_cast<const FcChar8*>(dir_font.value().data());
   if (!FcConfigAppFontAddDir(gfx::GetGlobalFontConfig(), dir_font_char8)) {
@@ -494,9 +527,10 @@ int CastBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void CastBrowserMainParts::PreMainMessageLoopRun() {
+int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  memory_pressure_monitor_.reset(new util::MultiSourceMemoryPressureMonitor());
+  memory_pressure_monitor_.reset(
+      new memory_pressure::MultiSourceMemoryPressureMonitor());
   auto cast_system_memory_pressure_evaluator =
       std::make_unique<CastSystemMemoryPressureEvaluator>(
           memory_pressure_monitor_->CreateVoter());
@@ -513,9 +547,12 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
       base::Unretained(cast_browser_process_->browser_client())));
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
+  cast_content_browser_client_->SetPersistentCookieAccessSettings(
+      cast_browser_process_->pref_service());
+
 #if defined(OS_ANDROID)
-  crash_reporter_runner_ = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+  crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   crash_reporter_runner_->PostTask(
       FROM_HERE,
@@ -523,15 +560,13 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
                      base::Unretained(this)));
 #endif  // defined(OS_ANDROID)
 
-  url_request_context_factory_->InitializeOnUIThread(nullptr);
-
   cast_browser_process_->SetBrowserContext(
       std::make_unique<CastBrowserContext>());
 
   cast_browser_process_->SetConnectivityChecker(ConnectivityChecker::Create(
-      base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
-      content::BrowserContext::GetDefaultStoragePartition(
-          cast_browser_process_->browser_context())
+      content::GetIOThreadTaskRunner({}),
+      cast_browser_process_->browser_context()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       content::GetNetworkConnectionTracker()));
 
@@ -539,8 +574,8 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
       std::make_unique<metrics::CastMetricsServiceClient>(
           cast_browser_process_->browser_client(),
           cast_browser_process_->pref_service(),
-          content::BrowserContext::GetDefaultStoragePartition(
-              cast_browser_process_->browser_context())
+          cast_browser_process_->browser_context()
+              ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()));
   cast_browser_process_->SetRemoteDebuggingServer(
       std::make_unique<RemoteDebuggingServer>(
@@ -556,30 +591,52 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
   video_plane_controller_.reset(new media::VideoPlaneController(
       Size(display_size.width(), display_size.height()),
       cast_content_browser_client_->GetMediaTaskRunner()));
-  // TODO(crbug.com/925450): Once compositor migrates to GPU process, We
-  // don't need to set the callback in viz::OverlayStrategyUnderlayCast.
-  viz::OverlayStrategyUnderlayCast::SetOverlayCompositedCallback(
-      base::BindRepeating(&media::VideoPlaneController::SetGeometry,
-                          base::Unretained(video_plane_controller_.get())));
   media::CastRenderer::SetOverlayCompositedCallback(BindToCurrentThread(
       base::BindRepeating(&media::VideoPlaneController::SetGeometry,
                           base::Unretained(video_plane_controller_.get()))));
 #endif
 
 #if defined(USE_AURA)
+
+#if !defined(OS_FUCHSIA)
+  // Start UI devtools if this is a dev device or explicitly enabled.
+  // Note that this must happen before the window tree host is created by the
+  // window manager.
+  auto build_type = CreateSysInfo()->GetBuildType();
+  if (CAST_IS_DEBUG_BUILD() || build_type == CastSysInfo::BUILD_ENG ||
+      ::ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
+          ::ui_devtools::switches::kEnableUiDevTools)) {
+    // Starts the UI Devtools server for browser Aura UI
+    ui_devtools_ = std::make_unique<CastUIDevTools>(
+        cast_content_browser_client_->GetSystemNetworkContext());
+  }
+#endif
+
   window_manager_ = std::make_unique<CastWindowManagerAura>(
       CAST_IS_DEBUG_BUILD() ||
       GetSwitchValueBoolean(switches::kEnableInput, false));
   window_manager_->Setup();
 
+  if (GetSwitchValueBoolean(switches::kEnableRoundedWindowCorners, false)) {
+    rounded_window_corners_manager_ =
+        std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
+  }
+
+  display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(
+      cast_browser_process_->display_configurator(), window_manager_.get());
+
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(
-      std::make_unique<AccessibilityManager>(window_manager_.get()));
+      std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 #else   // defined(USE_AURA)
   window_manager_ = std::make_unique<CastWindowManagerDefault>();
 #endif  // defined(USE_AURA)
+
+  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
+  ::media::InitializeMediaLibrary();
+  media_caps_->Initialize();
 
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
@@ -588,13 +645,6 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->pref_service(),
           video_plane_controller_.get(), window_manager_.get()));
   cast_browser_process_->cast_service()->Initialize();
-
-  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
-  ::media::InitializeMediaLibrary();
-  media_caps_->Initialize();
-
-  cast_browser_process_->SetTtsController(std::make_unique<TtsControllerImpl>(
-      std::make_unique<TtsPlatformImplStub>()));
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   user_pref_service_ = extensions::cast_prefs::CreateUserPrefService(
@@ -609,7 +659,7 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_content_browser_client_->cast_network_contexts());
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 
-  extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+  EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
   extensions::CastExtensionSystem* extension_system =
       static_cast<extensions::CastExtensionSystem*>(
@@ -627,7 +677,7 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
       cast_browser_process_->browser_context());
 #endif
 
-#if BUILDFLAG(ENABLE_CAST_WAYLAND_SERVER)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
   wayland_server_controller_ =
       std::make_unique<WaylandServerController>(window_manager_.get());
 #endif
@@ -638,7 +688,6 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
   // initialized by cast service.
   cast_browser_process_->cast_browser_metrics()->Initialize();
   cast_content_browser_client_->InitializeURLLoaderThrottleDelegate();
-  url_request_context_factory_->InitializeNetworkDelegates();
 
   cast_content_browser_client_->CreateGeneralAudienceBrowsingService();
 
@@ -649,11 +698,7 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
 
   cast_browser_process_->cast_service()->Start();
 
-  if (parameters_.ui_task) {
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
-    run_message_loop_ = false;
-  }
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 #if defined(OS_ANDROID)
@@ -661,7 +706,7 @@ void CastBrowserMainParts::StartPeriodicCrashReportUpload() {
   OnStartPeriodicCrashReportUpload();
   crash_reporter_timer_.reset(new base::RepeatingTimer());
   crash_reporter_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(20), this,
+      FROM_HERE, base::Minutes(20), this,
       &CastBrowserMainParts::OnStartPeriodicCrashReportUpload);
 }
 
@@ -676,25 +721,19 @@ void CastBrowserMainParts::OnStartPeriodicCrashReportUpload() {
 }
 #endif  // defined(OS_ANDROID)
 
-bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
+void CastBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
 #if defined(OS_ANDROID)
   // Android does not use native main MessageLoop.
   NOTREACHED();
-  return true;
-#else
-  if (run_message_loop_) {
-    base::RunLoop run_loop;
-    base::Closure quit_closure(run_loop.QuitClosure());
-
-#if !defined(OS_FUCHSIA)
-    // Fuchsia doesn't have signals.
-    RegisterClosureOnSignal(quit_closure);
+#elif !defined(OS_FUCHSIA)
+  // Fuchsia doesn't have signals.
+  RegisterClosureOnSignal(run_loop->QuitClosure());
 #endif  // !defined(OS_FUCHSIA)
+}
 
-    run_loop.Run();
-  }
-
-#if !defined(OS_FUCHSIA)
+void CastBrowserMainParts::PostMainMessageLoopRun() {
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   // Once the main loop has stopped running, we give the browser process a few
   // seconds to stop cast service and finalize all resources. If a hang occurs
   // and cast services refuse to terminate successfully, then we SIGKILL the
@@ -703,15 +742,11 @@ bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
   // TODO(sergeyu): Fuchsia doesn't implement POSIX signals. Implement a
   // different shutdown watchdog mechanism.
   RegisterKillOnAlarm(kKillOnAlarmTimeoutSec);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
   cast_browser_process_->cast_service()->Stop();
-  return true;
-#endif
-}
 
-void CastBrowserMainParts::PostMainMessageLoopRun() {
-#if BUILDFLAG(ENABLE_CAST_WAYLAND_SERVER)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
   wayland_server_controller_.reset();
 #endif
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
@@ -727,9 +762,21 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   // Android does not use native main MessageLoop.
   NOTREACHED();
 #else
+
+#if defined(USE_AURA)
+  // Reset display change observer here to ensure it is deleted before
+  // display_configurator since display_configurator is deleted when
+  // `cast_browser_process_` is reset below.
+  display_change_observer_.reset();
+#endif
+
   cast_browser_process_->cast_service()->Finalize();
   cast_browser_process_->cast_browser_metrics()->Finalize();
   cast_browser_process_.reset();
+
+#if defined(USE_AURA)
+  rounded_window_corners_manager_.reset();
+#endif
 
   window_manager_.reset();
 #if defined(USE_AURA)
@@ -741,9 +788,12 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   DeregisterKillOnAlarm();
 #endif  // !defined(OS_FUCHSIA)
 #endif
+
+  service_manager_context_.reset();
 }
 
 void CastBrowserMainParts::PostCreateThreads() {
+  cast_content_browser_client_->InitializeExternalConnector();
 #if !defined(OS_FUCHSIA)
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();

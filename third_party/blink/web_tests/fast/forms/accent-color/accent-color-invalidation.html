@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+
+<div>The following checkbox should be red: <input type=checkbox checked></div>
+
+<script>
+testRunner.waitUntilDone();
+
+const input = document.querySelector('input');
+input.style = 'accent-color: green';
+
+runAfterLayoutAndPaint(() => {
+  input.style = 'accent-color: red';
+  testRunner.notifyDone();
+});
+</script>

@@ -5,38 +5,49 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
+class TabMenuModelDelegate;
 
 // A menu model that builds the contents of the tab context menu. To make sure
 // the menu reflects the real state of the tab a new TabMenuModel should be
 // created each time the menu is shown.
+// IDS in the TabMenuModel cannot overlap. Most menu items will use an ID
+// defined in chrome/app/chrome_command_ids.h however dynamic menus will not.
+// If adding dynamic IDs to a submenu of this menu, add it to this list
+// and make sure the values don't overlap with ranges used by any of the models
+// in this list. Also make sure to allocate a fairly large range so you're not
+// likely having to expand it later on:
+//   ExistingTabGroupSubMenuModel
+//   ExistingWindowSubMenuModel
+//   SendTabToSelfSubMenuModel
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
-  // Range of command IDs to use for the items in the send tab to self submenu.
-  static const int kMinSendTabToSelfSubMenuCommandId =
-      send_tab_to_self::SendTabToSelfSubMenuModel::kMinCommandId;
-  static const int kMaxSendTabToSelfSubMenuCommandId =
-      send_tab_to_self::SendTabToSelfSubMenuModel::kMaxCommandId;
-
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+               TabMenuModelDelegate* tab_menu_model_delegate,
                TabStripModel* tab_strip,
                int index);
+  TabMenuModel(const TabMenuModel&) = delete;
+  TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,
+                                         kAddToNewGroupItemIdentifier);
 
  private:
   void Build(TabStripModel* tab_strip, int index);
 
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
+  std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
 
-  DISALLOW_COPY_AND_ASSIGN(TabMenuModel);
+  TabMenuModelDelegate* tab_menu_model_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_

@@ -60,7 +60,7 @@ const AtomicString& RTCDTMFToneChangeEvent::InterfaceName() const {
   return event_interface_names::kRTCDTMFToneChangeEvent;
 }
 
-void RTCDTMFToneChangeEvent::Trace(blink::Visitor* visitor) {
+void RTCDTMFToneChangeEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

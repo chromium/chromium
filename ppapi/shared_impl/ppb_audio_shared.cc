@@ -4,6 +4,7 @@
 
 #include "ppapi/shared_impl/ppb_audio_shared.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -98,10 +99,11 @@ void PPB_Audio_Shared::SetStopPlaybackState() {
 void PPB_Audio_Shared::SetStreamInfo(
     PP_Instance instance,
     base::UnsafeSharedMemoryRegion shared_memory_region,
-    base::SyncSocket::Handle socket_handle,
+    base::SyncSocket::ScopedHandle socket_handle,
     PP_AudioSampleRate sample_rate,
     int sample_frame_count) {
-  socket_.reset(new base::CancelableSyncSocket(socket_handle));
+  socket_ =
+      std::make_unique<base::CancelableSyncSocket>(std::move(socket_handle));
   shared_memory_size_ = media::ComputeAudioOutputBufferSize(
       kAudioOutputChannels, sample_frame_count);
   DCHECK_GE(shared_memory_region.GetSize(), shared_memory_size_);
@@ -155,8 +157,8 @@ void PPB_Audio_Shared::StartThread() {
     nacl_thread_active_ = true;
   } else {
     DCHECK(!audio_thread_.get());
-    audio_thread_.reset(
-        new base::DelegateSimpleThread(this, "plugin_audio_thread"));
+    audio_thread_ = std::make_unique<base::DelegateSimpleThread>(
+        this, "plugin_audio_thread");
     audio_thread_->Start();
   }
 }
@@ -181,8 +183,9 @@ void PPB_Audio_Shared::StopThread() {
   } else {
     if (audio_thread_.get()) {
       auto local_audio_thread(std::move(audio_thread_));
-      CallWhileUnlocked(base::Bind(&base::DelegateSimpleThread::Join,
-                                   base::Unretained(local_audio_thread.get())));
+      CallWhileUnlocked(
+          base::BindOnce(&base::DelegateSimpleThread::Join,
+                         base::Unretained(local_audio_thread.get())));
     }
   }
 }
@@ -228,8 +231,7 @@ void PPB_Audio_Shared::Run() {
       TRACE_EVENT0("audio", "PPB_Audio_Shared::FireRenderCallback");
       media::AudioOutputBuffer* buffer =
           reinterpret_cast<media::AudioOutputBuffer*>(shared_memory_.memory());
-      base::TimeDelta delay =
-          base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+      base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
       callback_.Run(client_buffer_.get(), client_buffer_size_bytes_,
                     delay.InSecondsF(), user_data_);

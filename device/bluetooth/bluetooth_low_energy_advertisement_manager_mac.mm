@@ -5,10 +5,11 @@
 #include "device/bluetooth/bluetooth_low_energy_advertisement_manager_mac.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -102,9 +103,9 @@ void BluetoothLowEnergyAdvertisementManagerMac::StartAdvertising() {
 
 void BluetoothLowEnergyAdvertisementManagerMac::RegisterAdvertisement(
     std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
-    const BluetoothAdapter::CreateAdvertisementCallback& callback,
-    const BluetoothAdapter::AdvertisementErrorCallback& error_callback) {
-  base::Optional<BluetoothAdvertisement::ErrorCode> error_code;
+    BluetoothAdapter::CreateAdvertisementCallback callback,
+    BluetoothAdapter::AdvertisementErrorCallback error_callback) {
+  absl::optional<BluetoothAdvertisement::ErrorCode> error_code;
 
   std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids =
       advertisement_data->service_uuids();
@@ -127,15 +128,16 @@ void BluetoothLowEnergyAdvertisementManagerMac::RegisterAdvertisement(
     return;
   }
 
-  active_advertisement_ = new BluetoothAdvertisementMac(
-      std::move(service_uuids), callback, error_callback, this);
+  active_advertisement_ = base::MakeRefCounted<BluetoothAdvertisementMac>(
+      std::move(service_uuids), std::move(callback), std::move(error_callback),
+      this);
   OnPeripheralManagerStateChanged();
 }
 
 void BluetoothLowEnergyAdvertisementManagerMac::UnregisterAdvertisement(
     BluetoothAdvertisementMac* advertisement,
-    const BluetoothAdvertisement::SuccessCallback& success_callback,
-    const BluetoothAdvertisement::ErrorCallback& error_callback) {
+    BluetoothAdvertisement::SuccessCallback success_callback,
+    BluetoothAdvertisement::ErrorCallback error_callback) {
   if (advertisement != active_advertisement_.get()) {
     DVLOG(1) << "Cannot unregister none-active advertisement.";
     ui_task_runner_->PostTask(

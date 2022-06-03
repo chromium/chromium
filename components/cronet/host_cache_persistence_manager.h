@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -47,6 +46,11 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
                               std::string pref_name,
                               base::TimeDelta delay,
                               net::NetLog* net_log);
+
+  HostCachePersistenceManager(const HostCachePersistenceManager&) = delete;
+  HostCachePersistenceManager& operator=(const HostCachePersistenceManager&) =
+      delete;
+
   virtual ~HostCachePersistenceManager();
 
   // net::HostCache::PersistenceDelegate implementation
@@ -72,8 +76,6 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<HostCachePersistenceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostCachePersistenceManager);
 };
 
 }  // namespace cronet

@@ -22,9 +22,8 @@ class BatteryStatusService {
  public:
   typedef base::RepeatingCallback<void(const mojom::BatteryStatus&)>
       BatteryUpdateCallback;
-  typedef base::CallbackList<void(const mojom::BatteryStatus&)>
+  typedef base::RepeatingCallbackList<void(const mojom::BatteryStatus&)>
       BatteryUpdateCallbackList;
-  typedef BatteryUpdateCallbackList::Subscription BatteryUpdateSubscription;
 
   // Returns the BatteryStatusService singleton.
   static BatteryStatusService* GetInstance();
@@ -33,12 +32,16 @@ class BatteryStatusService {
   // BatteryStatusService object in an std::unique_ptr. Clients should use only
   // the static GetInstance() method above.
   BatteryStatusService();
+
+  BatteryStatusService(const BatteryStatusService&) = delete;
+  BatteryStatusService& operator=(const BatteryStatusService&) = delete;
+
   virtual ~BatteryStatusService();
 
   // Adds a callback to receive battery status updates.  Must be called on the
   // main thread. The callback itself will be called on the main thread as well.
   // NOTE: The callback may be run before AddCallback returns!
-  std::unique_ptr<BatteryUpdateSubscription> AddCallback(
+  base::CallbackListSubscription AddCallback(
       const BatteryUpdateCallback& callback);
 
   // Gracefully clean-up.
@@ -67,8 +70,6 @@ class BatteryStatusService {
   mojom::BatteryStatus status_;
   bool status_updated_;
   bool is_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusService);
 };
 
 }  // namespace device

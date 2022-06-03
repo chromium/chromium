@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -32,6 +31,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -53,6 +54,7 @@ void DrawIcon(cc::PaintCanvas* canvas,
               const PaintFlags& flags,
               float x,
               float y,
+              const SkSamplingOptions& sampling,
               float scale_factor) {
   // Note that |icon_image| will be a 0x0 image when running
   // blink_platform_unittests.
@@ -65,32 +67,33 @@ void DrawIcon(cc::PaintCanvas* canvas,
   // area) and so that all placeholder images on the same page look consistent.
   canvas->drawImageRect(
       icon_image->PaintImageForCurrentFrame(),
-      IntRect(IntPoint::Zero(), icon_image->Size()),
+      IntRect(gfx::Point(), icon_image->Size()),
       FloatRect(x, y, scale_factor * kIconWidth, scale_factor * kIconHeight),
-      &flags, cc::PaintCanvas::kFast_SrcRectConstraint);
+      sampling, &flags, SkCanvas::kFast_SrcRectConstraint);
 }
 
 void DrawCenteredIcon(cc::PaintCanvas* canvas,
                       const PaintFlags& flags,
                       const FloatRect& dest_rect,
+                      const SkSamplingOptions& sampling,
                       float scale_factor) {
   DrawIcon(
       canvas, flags,
-      dest_rect.X() + (dest_rect.Width() - scale_factor * kIconWidth) / 2.0f,
-      dest_rect.Y() + (dest_rect.Height() - scale_factor * kIconHeight) / 2.0f,
-      scale_factor);
+      dest_rect.x() + (dest_rect.width() - scale_factor * kIconWidth) / 2.0f,
+      dest_rect.y() + (dest_rect.height() - scale_factor * kIconHeight) / 2.0f,
+      sampling, scale_factor);
 }
 
 FontDescription CreatePlaceholderFontDescription(float scale_factor) {
   FontDescription description;
-  description.FirstFamily().SetFamily("Roboto");
+  description.FirstFamily().SetFamily("Roboto", FontFamily::Type::kFamilyName);
 
   scoped_refptr<SharedFontFamily> helvetica_neue = SharedFontFamily::Create();
-  helvetica_neue->SetFamily("Helvetica Neue");
+  helvetica_neue->SetFamily("Helvetica Neue", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create();
-  helvetica->SetFamily("Helvetica");
+  helvetica->SetFamily("Helvetica", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create();
-  arial->SetFamily("Arial");
+  arial->SetFamily("Arial", FontFamily::Type::kFamilyName);
 
   helvetica->AppendFamily(std::move(arial));
   helvetica_neue->AppendFamily(std::move(helvetica));
@@ -177,7 +180,6 @@ class PlaceholderImage::SharedFont : public RefCounted<SharedFont> {
   explicit SharedFont(float scale_factor)
       : font_(CreatePlaceholderFontDescription(scale_factor)),
         scale_factor_(scale_factor) {
-    font_.Update(nullptr);
   }
 
   ~SharedFont() {
@@ -191,7 +193,6 @@ class PlaceholderImage::SharedFont : public RefCounted<SharedFont> {
 
     scale_factor_ = scale_factor;
     font_ = Font(CreatePlaceholderFontDescription(scale_factor_));
-    font_.Update(nullptr);
   }
 
   const Font& font() const { return font_; }
@@ -209,19 +210,17 @@ PlaceholderImage::SharedFont* PlaceholderImage::SharedFont::g_instance_ =
 
 PlaceholderImage::PlaceholderImage(ImageObserver* observer,
                                    const IntSize& size,
-                                   int64_t original_resource_size,
-                                   bool is_lazy_image)
+                                   int64_t original_resource_size)
     : Image(observer),
       size_(size),
       text_(original_resource_size <= 0
                 ? String()
                 : FormatOriginalResourceSizeBytes(original_resource_size)),
-      is_lazy_image_(is_lazy_image),
       paint_record_content_id_(-1) {}
 
 PlaceholderImage::~PlaceholderImage() = default;
 
-IntSize PlaceholderImage::Size() const {
+IntSize PlaceholderImage::SizeWithConfig(SizeConfig) const {
   return size_;
 }
 
@@ -242,7 +241,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   auto builder = CreatePaintImageBuilder().set_completion_state(
       PaintImage::CompletionState::DONE);
 
-  const IntRect dest_rect(0, 0, size_.Width(), size_.Height());
+  const gfx::Rect dest_rect(0, 0, size_.width(), size_.height());
   if (paint_record_for_current_frame_) {
     return builder
         .set_paint_record(paint_record_for_current_frame_, dest_rect,
@@ -251,9 +250,9 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
-  Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), kRespectImageOrientation,
-       kClampImageToSourceRect, kSyncDecode);
+  SkRect sk_dest_rect = gfx::RectToSkRect(dest_rect);
+  Draw(paint_recorder.beginRecording(sk_dest_rect), PaintFlags(), sk_dest_rect,
+       sk_dest_rect, ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
@@ -276,16 +275,10 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
                             const PaintFlags& base_flags,
                             const FloatRect& dest_rect,
                             const FloatRect& src_rect,
-                            RespectImageOrientationEnum respect_orientation,
-                            ImageClampingMode image_clamping_mode,
-                            ImageDecodingMode decode_mode) {
+                            const ImageDrawOptions& draw_options) {
   if (!src_rect.Intersects(FloatRect(0.0f, 0.0f,
-                                     static_cast<float>(size_.Width()),
-                                     static_cast<float>(size_.Height())))) {
-    return;
-  }
-  if (is_lazy_image_) {
-    // Keep the image without any color and text decorations.
+                                     static_cast<float>(size_.width()),
+                                     static_cast<float>(size_.height())))) {
     return;
   }
 
@@ -294,15 +287,16 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   flags.setColor(SkColorSetARGB(0x80, 0xD9, 0xD9, 0xD9));
   canvas->drawRect(dest_rect, flags);
 
-  if (dest_rect.Width() <
+  if (dest_rect.width() <
           icon_and_text_scale_factor_ * (kIconWidth + 2 * kFeaturePaddingX) ||
-      dest_rect.Height() <
+      dest_rect.height() <
           icon_and_text_scale_factor_ * (kIconHeight + 2 * kIconPaddingY)) {
     return;
   }
 
   if (text_.IsEmpty()) {
     DrawCenteredIcon(canvas, base_flags, dest_rect,
+                     draw_options.sampling_options,
                      icon_and_text_scale_factor_);
     return;
   }
@@ -320,17 +314,18 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
       icon_and_text_scale_factor_ *
           (kIconWidth + 2 * kFeaturePaddingX + kPaddingBetweenIconAndText);
 
-  if (dest_rect.Width() < icon_and_text_width) {
+  if (dest_rect.width() < icon_and_text_width) {
     DrawCenteredIcon(canvas, base_flags, dest_rect,
+                     draw_options.sampling_options,
                      icon_and_text_scale_factor_);
     return;
   }
 
   const float feature_x =
-      dest_rect.X() + (dest_rect.Width() - icon_and_text_width) / 2.0f;
+      dest_rect.x() + (dest_rect.width() - icon_and_text_width) / 2.0f;
   const float feature_y =
-      dest_rect.Y() +
-      (dest_rect.Height() -
+      dest_rect.y() +
+      (dest_rect.height() -
        icon_and_text_scale_factor_ * (kIconHeight + 2 * kIconPaddingY)) /
           2.0f;
 
@@ -349,7 +344,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
 
   DrawIcon(canvas, base_flags, icon_x,
            feature_y + icon_and_text_scale_factor_ * kIconPaddingY,
-           icon_and_text_scale_factor_);
+           draw_options.sampling_options, icon_and_text_scale_factor_);
 
   flags.setColor(SkColorSetARGB(0xAB, 0, 0, 0));
   shared_font_->font().DrawBidiText(
@@ -359,25 +354,17 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
       Font::kUseFallbackIfFontNotReady, 1.0f, flags);
 }
 
-void PlaceholderImage::DrawPattern(
-    GraphicsContext& context,
-    const FloatRect& src_rect,
-    const FloatSize& scale,
-    const FloatPoint& phase,
-    SkBlendMode mode,
-    const FloatRect& dest_rect,
-    const FloatSize& repeat_spacing,
-    RespectImageOrientationEnum respect_orientation) {
+void PlaceholderImage::DrawPattern(GraphicsContext& context,
+                                   const PaintFlags& base_flags,
+                                   const FloatRect& dest_rect,
+                                   const ImageTilingInfo& tiling_info,
+                                   const ImageDrawOptions& draw_options) {
   DCHECK(context.Canvas());
-
-  PaintFlags flags = context.FillFlags();
-  flags.setBlendMode(mode);
-
   // Ignore the pattern specifications and just draw a single placeholder image
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
-  Draw(context.Canvas(), flags, dest_rect, src_rect, respect_orientation,
-       kClampImageToSourceRect, kUnspecifiedDecode);
+  Draw(context.Canvas(), base_flags, dest_rect, tiling_info.image_rect,
+       draw_options);
 }
 
 void PlaceholderImage::DestroyDecodedData() {

@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #if defined(OS_ANDROID)
 #include "net/android/network_library.h"

@@ -29,6 +29,10 @@ source_set("inttests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/url_formatter",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//ios/third_party/webkit",
+    "//ios/web/common:uikit",
     "//ios/web_view:web_view+link",
     "//net",
     "//net:test_support",
@@ -60,6 +64,7 @@ source_set("test_support") {
   deps = [
     "//base:base",
     "//base/test:test_support",
+    "//ios/third_party/webkit",
     "//testing/gtest",
     "//ui/base",
   ]

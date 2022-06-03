@@ -27,16 +27,12 @@ static_library("crash_handler") {
 }
 
 proto_library("crash_proto") {
-  sources = [
-    "crash.proto",
-  ]
+  sources = [ "crash.proto" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "crash_analyzer_unittest.cc",
-  ]
+  sources = [ "crash_analyzer_unittest.cc" ]
 
   deps = [
     ":crash_handler",
@@ -66,9 +62,8 @@ source_set("unit_tests") {
       metadata = {
         shared_libraries = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
       }
-      deps += [
-        "//components/crash/content/app:chrome_crashpad_handler_named_as_so",
-      ]
+      deps +=
+          [ "//components/crash/core/app:chrome_crashpad_handler_named_as_so" ]
     }
   }
 }

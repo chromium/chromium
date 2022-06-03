@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/thunk/resource_creation_api.h"
 
 namespace content {
@@ -22,6 +21,10 @@ class PepperPluginInstanceImpl;
 class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
  public:
   explicit ResourceCreationImpl(PepperPluginInstanceImpl* instance);
+
+  ResourceCreationImpl(const ResourceCreationImpl&) = delete;
+  ResourceCreationImpl& operator=(const ResourceCreationImpl&) = delete;
+
   ~ResourceCreationImpl() override;
 
   // ResourceCreationAPI implementation.
@@ -33,24 +36,18 @@ class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
                           PP_Resource config_id,
                           PPB_Audio_Callback audio_callback,
                           void* user_data) override;
-  PP_Resource CreateAudioEncoder(PP_Instance instance) override;
   PP_Resource CreateAudioTrusted(PP_Instance instance) override;
   PP_Resource CreateAudioConfig(PP_Instance instance,
                                 PP_AudioSampleRate sample_rate,
                                 uint32_t sample_frame_count) override;
   PP_Resource CreateAudioInput(PP_Instance instance) override;
   PP_Resource CreateAudioOutput(PP_Instance instance) override;
-  PP_Resource CreateBroker(PP_Instance instance) override;
   PP_Resource CreateBuffer(PP_Instance instance, uint32_t size) override;
   PP_Resource CreateCameraDevicePrivate(PP_Instance instance) override;
-  PP_Resource CreateFlashDRM(PP_Instance instance) override;
   PP_Resource CreateFlashFontFile(
       PP_Instance instance,
       const PP_BrowserFont_Trusted_Description* description,
       PP_PrivateFontCharset charset) override;
-  PP_Resource CreateFlashMenu(PP_Instance instance,
-                              const PP_Flash_Menu* menu_data) override;
-  PP_Resource CreateFlashMessageLoop(PP_Instance instance) override;
   PP_Resource CreateGraphics3D(PP_Instance instance,
                                PP_Resource share_context,
                                const int32_t* attrib_list) override;
@@ -136,9 +133,6 @@ class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
                                     const PP_FloatPoint* wheel_ticks,
                                     PP_Bool scroll_by_page) override;
   PP_Resource CreateX509CertificatePrivate(PP_Instance instance) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceCreationImpl);
 };
 
 }  // namespace content

@@ -6,25 +6,25 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Importing AES-GCM key...
 
 encrypt() without iv...
-error is: TypeError: AesGcmParams: iv: Missing required property
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: iv: Missing required property
 
 encrypt() with iv that is a number...
-error is: TypeError: AesGcmParams: iv: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: iv: Not a BufferSource
 
 encrypt() with iv that is a string...
-error is: TypeError: AesGcmParams: iv: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: iv: Not a BufferSource
 
 encrypt() with additionalData that is a string...
-error is: TypeError: AesGcmParams: additionalData: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: additionalData: Not a BufferSource
 
 encrypt() with tagLength that is a string...
-error is: TypeError: AesGcmParams: tagLength: Is not a number
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Is not a number
 
 encrypt() with negative tagLength...
-error is: TypeError: AesGcmParams: tagLength: Outside of numeric range
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range
 
 encrypt() with tagLength larger than an octet...
-error is: TypeError: AesGcmParams: tagLength: Outside of numeric range
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range
 
 encrypt() with tagLength that is 0...
 error is: OperationError: The tag length is invalid: Must be 32, 64, 96, 104, 112, 120, or 128 bits

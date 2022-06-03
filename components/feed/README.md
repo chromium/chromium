@@ -1,10 +1,12 @@
-# Feed Host Component
+# Feed Component
 
-Feed host is a component providing necessary APIs for hosting a third party
-[Feed](https://chromium.googlesource.com/feed) library in Chrome. Initially the
-Feed library is only supporting Chrome for Android, but most of the host API
-implementations are designed to be reusable on other platforms.
+The Feed component provides a cross-platform implementation of many components
+used in the Discover Feed (shown on the NTP).
 
-Library code and host API definitions can be found under
-[//third_party/feed_library/](../../third_party/feed_library/). More information about the
-library is available in the [README.md](../../third_party/feed_library/src/README.md).
+Primary responsibilities:
+* Fetching, loading and persisting Feed content.
+* Sending actions
+* Recording metrics
+* Configuration of WebFeeds
+
+Note that 'v2' is now the only Feed implementation available.

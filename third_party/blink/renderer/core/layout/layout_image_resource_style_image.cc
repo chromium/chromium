@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 
+#include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 
@@ -70,19 +71,32 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
 
 FloatSize LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
   // TODO(davve): Find out the correct default object size in this context.
-  return ImageSizeWithDefaultSize(multiplier,
-                                  LayoutSize(LayoutReplaced::kDefaultWidth,
-                                             LayoutReplaced::kDefaultHeight));
+  auto* list_marker = DynamicTo<LayoutListMarkerImage>(layout_object_.Get());
+  FloatSize default_size = list_marker
+                               ? list_marker->DefaultSize()
+                               : FloatSize(LayoutReplaced::kDefaultWidth,
+                                           LayoutReplaced::kDefaultHeight);
+  return ImageSizeWithDefaultSize(multiplier, default_size);
 }
 
 FloatSize LayoutImageResourceStyleImage::ImageSizeWithDefaultSize(
     float multiplier,
-    const LayoutSize& default_size) const {
+    const FloatSize& default_size) const {
   return style_image_->ImageSize(
-      layout_object_->GetDocument(), multiplier, default_size,
+      multiplier, default_size,
       LayoutObject::ShouldRespectImageOrientation(layout_object_));
 }
-void LayoutImageResourceStyleImage::Trace(blink::Visitor* visitor) {
+
+RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
+    const {
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  RespectImageOrientationEnum respect_orientation =
+      LayoutObject::ShouldRespectImageOrientation(layout_object_);
+  return style_image_->ForceOrientationIfNecessary(respect_orientation);
+}
+
+void LayoutImageResourceStyleImage::Trace(Visitor* visitor) const {
   visitor->Trace(style_image_);
   LayoutImageResource::Trace(visitor);
 }

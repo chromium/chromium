@@ -38,5 +38,5 @@ interface SVGGeometryElement : SVGGraphicsElement {
     [HighEntropy, Measure] boolean isPointInFill(SVGPoint point);
     [HighEntropy, Measure] boolean isPointInStroke(SVGPoint point);
     [HighEntropy, Measure, RaisesException] float getTotalLength();
-    [HighEntropy, Measure] SVGPoint getPointAtLength(float distance);
+    [HighEntropy, Measure, RaisesException] SVGPoint getPointAtLength(float distance);
 };

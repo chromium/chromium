@@ -5,8 +5,6 @@
 #ifndef BASE_PATH_SERVICE_H_
 #define BASE_PATH_SERVICE_H_
 
-#include <string>
-
 #include "base/base_export.h"
 #include "base/base_paths.h"
 #include "base/gtest_prod_util.h"
@@ -22,14 +20,13 @@ class ScopedPathOverride;
 //
 class BASE_EXPORT PathService {
  public:
-  // Retrieves a path to a special directory or file and places it into the
-  // string pointed to by 'path'. If you ask for a directory it is guaranteed
-  // to NOT have a path separator at the end. For example, "c:\windows\temp"
-  // Directories are also guaranteed to exist when this function succeeds.
-  //
-  // Returns true if the directory or file was successfully retrieved. On
-  // failure, 'path' will not be changed.
+  // Populates |path| with a special directory or file. Returns true on success,
+  // in which case |path| is guaranteed to have a non-empty value. On failure,
+  // |path| will not be changed.
   static bool Get(int key, FilePath* path);
+
+  // Returns the corresponding path; CHECKs that the operation succeeds.
+  static FilePath CheckedGet(int key);
 
   // Overrides the path to a special directory or file.  This cannot be used to
   // change the value of DIR_CURRENT, but that should be obvious.  Also, if the
@@ -85,8 +82,10 @@ class BASE_EXPORT PathService {
 
   // Removes an override for a special directory or file. Returns true if there
   // was an override to remove or false if none was present.
-  // NOTE: This function is intended to be used by tests only!
-  static bool RemoveOverride(int key);
+  static bool RemoveOverrideForTests(int key);
+
+  // Returns whether an override is present for a special directory or file.
+  static bool IsOverriddenForTests(int key);
 };
 
 }  // namespace base

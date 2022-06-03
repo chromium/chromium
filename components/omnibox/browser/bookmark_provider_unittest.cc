@@ -11,22 +11,26 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 using bookmarks::BookmarkModel;
@@ -40,39 +44,41 @@ struct BookmarksTestInfo {
   std::string title;
   std::string url;
 } bookmark_provider_test_data[] = {
-  { "abc def", "http://www.catsanddogs.com/a" },
-  { "abcde", "http://www.catsanddogs.com/b" },
-  { "abcdef", "http://www.catsanddogs.com/c" },
-  { "carry carbon carefully", "http://www.catsanddogs.com/d" },
-  { "a definition", "http://www.catsanddogs.com/e" },
-  { "ghi jkl", "http://www.catsanddogs.com/f" },
-  { "jkl ghi", "http://www.catsanddogs.com/g" },
-  { "frankly frankly frank", "http://www.catsanddogs.com/h" },
-  { "foobar foobar", "http://www.foobar.com/" },
-  { "domain", "http://www.domain.com/http/" },
-  { "repeat", "http://www.repeat.com/1/repeat/2/" },
-  // For testing inline_autocompletion.
-  { "http://blah.com/", "http://blah.com/" },
-  { "http://fiddle.com/", "http://fiddle.com/" },
-  { "http://www.www.com/", "http://www.www.com/" },
-  { "chrome://version", "chrome://version" },
-  { "chrome://omnibox", "chrome://omnibox" },
-  // For testing ranking with different URLs.
-  { "achlorhydric featherheads resuscitates mockingbirds",
-    "http://www.manylongwords.com/1a" },
-  { "achlorhydric mockingbirds resuscitates featherhead",
-    "http://www.manylongwords.com/2b" },
-  { "featherhead resuscitates achlorhydric mockingbirds",
-    "http://www.manylongwords.com/3c" },
-  { "mockingbirds resuscitates featherheads achlorhydric",
-    "http://www.manylongwords.com/4d" },
-  // For testing URL boosting.  (URLs referenced multiple times are boosted.)
-  { "burning worms #1",  "http://www.burns.com/" },
-  { "burning worms #2",  "http://www.worms.com/" },
-  { "worming burns #10", "http://www.burns.com/" },
-  // For testing strange spacing in bookmark titles.
-  { " hello1  hello2  ", "http://whatever.com/" },
-  { "",                  "http://emptytitle.com/" },
+    {"abc def", "http://www.catsanddogs.com/a"},
+    {"abcde", "http://www.catsanddogs.com/b"},
+    {"abcdef", "http://www.catsanddogs.com/c"},
+    {"carry carbon carefully", "http://www.catsanddogs.com/d"},
+    {"a definition", "http://www.catsanddogs.com/e"},
+    {"ghi jkl", "http://www.catsanddogs.com/f"},
+    {"jkl ghi", "http://www.catsanddogs.com/g"},
+    {"frankly frankly frank", "http://www.catsanddogs.com/h"},
+    {"foobar foobar", "http://www.foobar.com/"},
+    {"domain", "http://www.domain.com/http/"},
+    {"repeat", "http://www.repeat.com/1/repeat/2/"},
+    // For testing inline_autocompletion.
+    {"http://blah.com/", "http://blah.com/"},
+    {"http://fiddle.com/", "http://fiddle.com/"},
+    {"http://www.www.com/", "http://www.www.com/"},
+    {"chrome://version", "chrome://version"},
+    {"chrome://omnibox", "chrome://omnibox"},
+    // For testing ranking with different URLs.
+    {"achlorhydric featherheads resuscitates mockingbirds",
+     "http://www.manylongwords.com/1a"},
+    {"achlorhydric mockingbirds resuscitates featherhead",
+     "http://www.manylongwords.com/2b"},
+    {"featherhead resuscitates achlorhydric mockingbirds",
+     "http://www.manylongwords.com/3c"},
+    {"mockingbirds resuscitates featherheads achlorhydric",
+     "http://www.manylongwords.com/4d"},
+    // For testing URL boosting.  (URLs referenced multiple times are boosted.)
+    {"burning worms #1", "http://www.burns.com/"},
+    {"burning worms #2", "http://www.worms.com/"},
+    {"worming burns #10", "http://www.burns.com/"},
+    // For testing strange spacing in bookmark titles.
+    {" hello1  hello2  ", "http://whatever.com/"},
+    {"", "http://emptytitle.com/"},
+    // For testing short bookmarks.
+    {"testing short bookmarks", "https://zzz.com"},
 };
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
@@ -103,12 +109,12 @@ std::string TestBookmarkPositionsAsString(
 
 // Return the positions in |matches| as a formatted string for unit test
 // diagnostic output.
-base::string16 MatchesAsString16(const ACMatches& matches) {
-  base::string16 matches_string;
+std::u16string MatchesAsString16(const ACMatches& matches) {
+  std::u16string matches_string;
   for (auto i = matches.begin(); i != matches.end(); ++i) {
-    matches_string.append(base::ASCIIToUTF16("    '"));
+    matches_string.append(u"    '");
     matches_string.append(i->description);
-    matches_string.append(base::ASCIIToUTF16("'\n"));
+    matches_string.append(u"'\n");
   }
   return matches_string;
 }
@@ -167,17 +173,25 @@ TestBookmarkPositions PositionsFromExpectations(
 class BookmarkProviderTest : public testing::Test {
  public:
   BookmarkProviderTest();
+  BookmarkProviderTest(const BookmarkProviderTest&) = delete;
+  BookmarkProviderTest& operator=(const BookmarkProviderTest&) = delete;
 
  protected:
   void SetUp() override;
+
+  // Invokes |Start()| with |input_text| and verifies the number of matches
+  // returned and whether |expected_triggered_feature| was triggered. If
+  // |expected_triggered_feature| is empty, verifies no feature was triggered.
+  void TestNumMatchesAndTriggeredFeature(
+      std::string input_text,
+      size_t expected_matches_count,
+      absl::optional<OmniboxTriggeredFeatureService::Feature>
+          expected_triggered_feature = {});
 
   std::unique_ptr<MockAutocompleteProviderClient> provider_client_;
   std::unique_ptr<BookmarkModel> model_;
   scoped_refptr<BookmarkProvider> provider_;
   TestSchemeClassifier classifier_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkProviderTest);
 };
 
 BookmarkProviderTest::BookmarkProviderTest() {
@@ -185,7 +199,7 @@ BookmarkProviderTest::BookmarkProviderTest() {
 }
 
 void BookmarkProviderTest::SetUp() {
-  provider_client_.reset(new MockAutocompleteProviderClient());
+  provider_client_ = std::make_unique<MockAutocompleteProviderClient>();
   EXPECT_CALL(*provider_client_, GetBookmarkModel())
       .WillRepeatedly(testing::Return(model_.get()));
   EXPECT_CALL(*provider_client_, GetSchemeClassifier())
@@ -199,6 +213,32 @@ void BookmarkProviderTest::SetUp() {
     model_->AddURL(other_node, other_node->children().size(),
                    base::ASCIIToUTF16(cur.title), url);
   }
+}
+
+void BookmarkProviderTest::TestNumMatchesAndTriggeredFeature(
+    std::string input_text,
+    size_t expected_matches_count,
+    absl::optional<OmniboxTriggeredFeatureService::Feature>
+        expected_triggered_feature) {
+  SCOPED_TRACE("[" + input_text + "]");  // Wrap |input_text| in `[]` to make
+                                         // trailing whitespace apparent.
+
+  AutocompleteInput input(base::UTF8ToUTF16(input_text),
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+  EXPECT_EQ(provider_->matches().size(), expected_matches_count);
+
+  auto* triggered_feature_service =
+      provider_client_->GetOmniboxTriggeredFeatureService();
+  OmniboxTriggeredFeatureService::Features triggered_features;
+  triggered_feature_service->RecordToLogs(&triggered_features);
+  triggered_feature_service->ResetSession();
+  if (expected_triggered_feature) {
+    ASSERT_TRUE(!triggered_features.empty());
+    EXPECT_EQ(*triggered_features.begin(), *expected_triggered_feature);
+  } else
+    EXPECT_TRUE(triggered_features.empty());
 }
 
 TEST_F(BookmarkProviderTest, Positions) {
@@ -275,12 +315,12 @@ TEST_F(BookmarkProviderTest, Positions) {
     // Validate number of results is as expected.
     EXPECT_LE(matches.size(), query_data[i].match_count)
         << "One or more of the following matches were unexpected:\n"
-        << MatchesAsString16(matches)
-        << "For query '" << query_data[i].query << "'.";
+        << MatchesAsString16(matches) << "For query '" << query_data[i].query
+        << "'.";
     EXPECT_GE(matches.size(), query_data[i].match_count)
         << "One or more expected matches are missing. Matches found:\n"
-        << MatchesAsString16(matches)
-        << "for query '" << query_data[i].query << "'.";
+        << MatchesAsString16(matches) << "for query '" << query_data[i].query
+        << "'.";
     // Validate positions within each match is as expected.
     for (size_t j = 0; j < matches.size(); ++j) {
       // Collect the expected positions as a vector, collect the match's
@@ -290,8 +330,7 @@ TEST_F(BookmarkProviderTest, Positions) {
       TestBookmarkPositions actual_positions(
           PositionsFromAutocompleteMatch(matches[j]));
       EXPECT_TRUE(std::equal(expected_positions.begin(),
-                             expected_positions.end(),
-                             actual_positions.begin(),
+                             expected_positions.end(), actual_positions.begin(),
                              TestBookmarkPositionsEqual))
           << "EXPECTED: " << TestBookmarkPositionsAsString(expected_positions)
           << "ACTUAL:   " << TestBookmarkPositionsAsString(actual_positions)
@@ -354,14 +393,15 @@ TEST_F(BookmarkProviderTest, Rankings) {
     // Validate number and content of results is as expected.
     for (size_t j = 0; j < std::max(query_data[i].match_count, matches.size());
          ++j) {
-      EXPECT_LT(j, query_data[i].match_count) << "    Unexpected match '"
+      EXPECT_LT(j, query_data[i].match_count)
+          << "    Unexpected match '"
           << base::UTF16ToUTF8(matches[j].description) << "' for query: '"
-          <<  query_data[i].query << "'.";
+          << query_data[i].query << "'.";
       if (j >= query_data[i].match_count)
         continue;
-      EXPECT_LT(j, matches.size()) << "    Missing match '"
-          << query_data[i].matches[j] << "' for query: '"
-          << query_data[i].query << "'.";
+      EXPECT_LT(j, matches.size())
+          << "    Missing match '" << query_data[i].matches[j]
+          << "' for query: '" << query_data[i].query << "'.";
       if (j >= matches.size())
         continue;
       EXPECT_EQ(query_data[i].matches[j],
@@ -380,33 +420,34 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
     const bool allowed_to_be_default_match;
     const std::string inline_autocompletion;
   } query_data[] = {
-    { "bla", "http://blah.com/", true, "h.com" },
-    { "blah ", "http://blah.com/", false, ".com" },
-    { "http://bl", "http://blah.com/", true, "ah.com" },
-    { "fiddle.c", "http://fiddle.com/", true, "om" },
-    { "www", "http://www.www.com/", true, ".com" },
-    { "chro", "chrome://version", true, "me://version" },
-    { "chrome://ve", "chrome://version", true, "rsion" },
-    { "chrome ver", "chrome://version", false, "" },
-    { "versi", "chrome://version", false, "" },
-    { "abou", "chrome://omnibox", false, "" },
-    { "about:om", "chrome://omnibox", true, "nibox" }
-    // Note: when adding a new URL to this test, be sure to add it to the list
-    // of bookmarks at the top of the file as well.  All items in this list
-    // need to be in the bookmarks list because BookmarkProvider's
-    // TitleMatchToACMatch() has an assertion that verifies the URL is
-    // actually bookmarked.
+      {"bla", "http://blah.com/", true, "h.com"},
+      {"blah ", "http://blah.com/", false, ".com"},
+      {"http://bl", "http://blah.com/", true, "ah.com"},
+      {"fiddle.c", "http://fiddle.com/", true, "om"},
+      {"www", "http://www.www.com/", true, ".com"},
+      {"chro", "chrome://version", true, "me://version"},
+      {"chrome://ve", "chrome://version", true, "rsion"},
+      {"chrome ver", "chrome://version", false, ""},
+      {"versi", "chrome://version", false, ""},
+      {"abou", "chrome://omnibox", false, ""},
+      {"about:om", "chrome://omnibox", true, "nibox"}
+      // Note: when adding a new URL to this test, be sure to add it to the list
+      // of bookmarks at the top of the file as well.  All items in this list
+      // need to be in the bookmarks list because BookmarkProvider's
+      // TitleMatchToACMatch() has an assertion that verifies the URL is
+      // actually bookmarked.
   };
 
   for (size_t i = 0; i < base::size(query_data); ++i) {
-    const std::string description = "for query=" + query_data[i].query +
-        " and url=" + query_data[i].url;
+    const std::string description =
+        "for query=" + query_data[i].query + " and url=" + query_data[i].url;
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    const base::string16 fixed_up_input(
+    const std::u16string fixed_up_input(
         provider_->FixupUserInput(input).second);
-    BookmarkNode node(/*id=*/0, base::GenerateGUID(), GURL(query_data[i].url));
+    BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(),
+                      GURL(query_data[i].url));
     node.SetTitle(base::ASCIIToUTF16(query_data[i].url));
     TitledUrlMatch bookmark_match;
     bookmark_match.node = &node;
@@ -415,9 +456,11 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
         bookmark_match, AutocompleteMatchType::BOOKMARK_TITLE, relevance,
         provider_.get(), classifier_, input, fixed_up_input);
     EXPECT_EQ(query_data[i].allowed_to_be_default_match,
-              ac_match.allowed_to_be_default_match) << description;
+              ac_match.allowed_to_be_default_match)
+        << description;
     EXPECT_EQ(base::ASCIIToUTF16(query_data[i].inline_autocompletion),
-              ac_match.inline_autocompletion) << description;
+              ac_match.inline_autocompletion)
+        << description;
   }
 }
 
@@ -468,25 +511,241 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     ASSERT_EQ(class_strings.size(), match.contents_class.size())
         << description;
-    for (size_t i = 0; i < class_strings.size(); ++i) {
+    for (size_t j = 0; j < class_strings.size(); ++j) {
       std::vector<std::string> chunks = base::SplitString(
-          class_strings[i], ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+          class_strings[j], ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(2U, chunks.size()) << description;
       size_t offset;
       EXPECT_TRUE(base::StringToSizeT(chunks[0], &offset)) << description;
-      EXPECT_EQ(offset, match.contents_class[i].offset) << description;
+      EXPECT_EQ(offset, match.contents_class[j].offset) << description;
       int style;
       EXPECT_TRUE(base::StringToInt(chunks[1], &style)) << description;
-      EXPECT_EQ(style, match.contents_class[i].style) << description;
+      EXPECT_EQ(style, match.contents_class[j].style) << description;
     }
   }
 }
 
 TEST_F(BookmarkProviderTest, DoesNotProvideMatchesOnFocus) {
-  AutocompleteInput input(base::ASCIIToUTF16("foo"),
-                          metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  input.set_from_omnibox_focus(true);
+  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
+}
+
+TEST_F(BookmarkProviderTest, ShortBookmarks) {
+  // Test the 2 short bookmark features that determine when short inputs should
+  // be allowed to prefix match. These tests are trying to match the mock
+  // bookmark "testing short bookmarks".
+
+  auto trigger_feature = OmniboxTriggeredFeatureService::Feature::
+      kShortBookmarkSuggestionsByTotalInputLength;
+
+  {
+    SCOPED_TRACE("Default.");
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kShortBookmarkSuggestions);
+    TestNumMatchesAndTriggeredFeature("te", 1);
+    TestNumMatchesAndTriggeredFeature("te ", 1);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks for long inputs enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength);
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks for long inputs enabled with threshold 5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        {{OmniboxFieldTrial::
+              kShortBookmarkSuggestionsByTotalInputLengthThreshold.name,
+          "5"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks for long inputs counterfactual.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        {{OmniboxFieldTrial::
+              kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE(
+        "Short bookmarks for long inputs counterfactual with threshold 5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        {{OmniboxFieldTrial::
+              kShortBookmarkSuggestionsByTotalInputLengthThreshold.name,
+          "5"},
+         {OmniboxFieldTrial::
+              kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te   ", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE("Shortcut non-prefix rich autocompletion enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
+          "4"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+              .name,
+          "5"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te   ", 0);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0);
+  }
+
+  {
+    SCOPED_TRACE("Non-prefix rich autocompletion enabled with limit 5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
+          "4"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+              .name,
+          "5"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE("Title rich autocompletion enabled with limit 4.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
+          "4"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+              .name,
+          "5"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+  }
+
+  {
+    SCOPED_TRACE(
+        "Title and non-prefix rich autocompletion enabled with limits 4 and "
+        "5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
+          "4"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+              .name,
+          "5"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+              .name,
+          "true"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
+          "true"}});
+    TestNumMatchesAndTriggeredFeature("te", 0);
+    TestNumMatchesAndTriggeredFeature("te ", 0);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("tes", 1);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+  }
+}
+
+TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
+  auto trigger_feature =
+      OmniboxTriggeredFeatureService::Feature::kBookmarkPaths;
+
+  {
+    // When the feature is off, should not return path matched bookmarks nor
+    // trigger counterfactual logging.
+    SCOPED_TRACE("feature disabled");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kBookmarkPaths);
+    TestNumMatchesAndTriggeredFeature("carefully other", 0);
+  }
+
+  {
+    // When enabled without counterfactual logging, should return path matched
+    // bookmark but not trigger counterfactual logging even it path matched.
+    SCOPED_TRACE("feature enabled without counterfactual");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
+    TestNumMatchesAndTriggeredFeature("carefully other", 1);
+  }
+
+  {
+    // When enabled with "control" counterfactual logging, should not return
+    // path matched bookmarks but trigger counterfactual logging if it path
+    // matched.
+    SCOPED_TRACE("feature enabled with control counterfactual");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}});
+    TestNumMatchesAndTriggeredFeature("carefully", 1);
+    TestNumMatchesAndTriggeredFeature("carefully other", 0, trigger_feature);
+  }
+
+  {
+    // When enabled with "enabled" counterfactual logging, should return path
+    // matched bookmarks and trigger counterfactual logging if it path
+    // matched.
+    SCOPED_TRACE("feature enabled with enabled counterfactual");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}});
+    TestNumMatchesAndTriggeredFeature("carefully", 1);
+    TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
+  }
 }

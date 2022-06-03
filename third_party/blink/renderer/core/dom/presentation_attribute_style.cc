@@ -32,15 +32,11 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -62,7 +58,7 @@ static bool operator!=(const PresentationAttributeCacheKey& a,
 struct PresentationAttributeCacheEntry final
     : public GarbageCollected<PresentationAttributeCacheEntry> {
  public:
-  void Trace(Visitor* visitor) { visitor->Trace(value); }
+  void Trace(Visitor* visitor) const { visitor->Trace(value); }
 
   PresentationAttributeCacheKey key;
   Member<CSSPropertyValueSet> value;
@@ -85,42 +81,9 @@ static bool AttributeNameSort(const std::pair<StringImpl*, AtomicString>& p1,
   return p1.first < p2.first;
 }
 
-static void MakePresentationAttributeCacheKey(
-    Element& element,
-    PresentationAttributeCacheKey& result) {
-  // FIXME: Enable for SVG.
-  if (!element.IsHTMLElement())
-    return;
-  // Interpretation of the size attributes on <input> depends on the type
-  // attribute.
-  if (IsA<HTMLInputElement>(element))
-    return;
-  AttributeCollection attributes = element.AttributesWithoutUpdate();
-  for (const Attribute& attr : attributes) {
-    if (!element.IsPresentationAttribute(attr.GetName()))
-      continue;
-    if (!attr.NamespaceURI().IsNull())
-      return;
-    // FIXME: Background URL may depend on the base URL and can't be shared.
-    // Disallow caching.
-    if (attr.GetName() == html_names::kBackgroundAttr)
-      return;
-    result.attributes_and_values.push_back(
-        std::make_pair(attr.LocalName().Impl(), attr.Value()));
-  }
-  if (result.attributes_and_values.IsEmpty())
-    return;
-  // Attribute order doesn't matter. Sort for easy equality comparison.
-  std::sort(result.attributes_and_values.begin(),
-            result.attributes_and_values.end(), AttributeNameSort);
-  // The cache key is non-null when the tagName is set.
-  result.tag_name = element.localName().Impl();
-}
-
 static unsigned ComputePresentationAttributeCacheHash(
     const PresentationAttributeCacheKey& key) {
-  if (!key.tag_name)
-    return 0;
+  DCHECK(key.tag_name);
   DCHECK(key.attributes_and_values.size());
   unsigned attribute_hash = StringHasher::HashMemory(
       key.attributes_and_values.data(),
@@ -128,73 +91,95 @@ static unsigned ComputePresentationAttributeCacheHash(
   return WTF::HashInts(key.tag_name->ExistingHash(), attribute_hash);
 }
 
+static unsigned MakePresentationAttributeCacheKey(
+    Element& element,
+    PresentationAttributeCacheKey& result) {
+  // FIXME: Enable for SVG.
+  if (!element.IsHTMLElement())
+    return 0;
+  // Interpretation of the size attributes on <input> depends on the type
+  // attribute.
+  if (IsA<HTMLInputElement>(element))
+    return 0;
+  if (element.HasExtraStyleForPresentationAttribute())
+    return 0;
+  AttributeCollection attributes = element.AttributesWithoutUpdate();
+  for (const Attribute& attr : attributes) {
+    if (!element.IsPresentationAttribute(attr.GetName()))
+      continue;
+    if (!attr.NamespaceURI().IsNull())
+      return 0;
+    // FIXME: Background URL may depend on the base URL and can't be shared.
+    // Disallow caching.
+    if (attr.GetName() == html_names::kBackgroundAttr)
+      return 0;
+    result.attributes_and_values.push_back(
+        std::make_pair(attr.LocalName().Impl(), attr.Value()));
+  }
+  if (result.attributes_and_values.IsEmpty())
+    return 0;
+  // Attribute order doesn't matter. Sort for easy equality comparison.
+  std::sort(result.attributes_and_values.begin(),
+            result.attributes_and_values.end(), AttributeNameSort);
+  // The cache key is non-null when the tagName is set.
+  result.tag_name = element.localName().Impl();
+  return ComputePresentationAttributeCacheHash(result);
+}
+
 CSSPropertyValueSet* ComputePresentationAttributeStyle(Element& element) {
   DCHECK(element.IsStyledElement());
 
   PresentationAttributeCacheKey cache_key;
-  MakePresentationAttributeCacheKey(element, cache_key);
-
-  unsigned cache_hash = ComputePresentationAttributeCacheHash(cache_key);
+  unsigned cache_hash = MakePresentationAttributeCacheKey(element, cache_key);
 
   PresentationAttributeCache::ValueType* cache_value;
-
+  PresentationAttributeCache& cache = GetPresentationAttributeCache();
   if (cache_hash) {
-    cache_value = GetPresentationAttributeCache()
-                      .insert(cache_hash, nullptr)
-                      .stored_value;
+    cache_value = cache.insert(cache_hash, nullptr).stored_value;
     if (cache_value->value && cache_value->value->key != cache_key)
       cache_hash = 0;
   } else {
     cache_value = nullptr;
   }
 
-  // Keep the entry value of |cache_value| here in order to assure that the
-  // value lives when it is used. Without this keeping, calling
-  // |GetPresentationAttributeCache().clear()| destroys |cache_value->value| and
-  // causes use-after-poison (crbug.com/810368).
-  PresentationAttributeCacheEntry* entry = nullptr;
-  if (cache_value)
-    entry = cache_value->value;
-
-  CSSPropertyValueSet* style = nullptr;
+  // The element can be cached (has non-zero hash) and has an entry in the
+  // cache. Hit.
   if (cache_hash && cache_value->value) {
-    style = cache_value->value->value;
+    // Reference the property set, since if we clean the cache below it may
+    // disappear.
+    CSSPropertyValueSet* style = cache_value->value->value;
 
     static const unsigned kMinimumPresentationAttributeCacheSizeForCleaning =
         100;
-    if (GetPresentationAttributeCache().size() >=
-        kMinimumPresentationAttributeCacheSizeForCleaning) {
-      GetPresentationAttributeCache().clear();
-    }
-  } else {
-    style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
-        element.IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode);
-    AttributeCollection attributes = element.AttributesWithoutUpdate();
-    for (const Attribute& attr : attributes) {
-      element.CollectStyleForPresentationAttribute(
-          attr.GetName(), attr.Value(), To<MutableCSSPropertyValueSet>(style));
-    }
+    if (cache.size() >= kMinimumPresentationAttributeCacheSizeForCleaning)
+      cache.clear();
+    return style;
   }
 
-  if (!cache_hash || entry)
+  // No entry in the cache or cannot be cached. Miss. Create a new property set.
+  CSSPropertyValueSet* style = element.CreatePresentationAttributeStyle();
+
+  // Cannot be cached, so return without inserting into cache.
+  if (!cache_hash)
     return style;
 
-  PresentationAttributeCacheEntry* new_entry =
-      MakeGarbageCollected<PresentationAttributeCacheEntry>();
+  // Have an unpopulated cached entry.
+  DCHECK(cache_value);
+  DCHECK(!cache_value->value);
+
+  auto* new_entry = MakeGarbageCollected<PresentationAttributeCacheEntry>();
   new_entry->key = cache_key;
   new_entry->value = style;
 
   static const unsigned kPresentationAttributeCacheMaximumSize = 4096;
-  if (GetPresentationAttributeCache().size() >
-      kPresentationAttributeCacheMaximumSize) {
+  if (cache.size() > kPresentationAttributeCacheMaximumSize) {
     // FIXME: Discarding the entire cache when it gets too big is probably bad
     // since it creates a perf "cliff". Perhaps we should use an LRU?
-    GetPresentationAttributeCache().clear();
-    GetPresentationAttributeCache().Set(cache_hash, new_entry);
+    cache.clear();
+    cache.Set(cache_hash, new_entry);
   } else {
     cache_value->value = new_entry;
   }
-
   return style;
 }
 

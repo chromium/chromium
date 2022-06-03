@@ -4,8 +4,9 @@
 
 package org.chromium.content.browser;
 
-import android.support.test.filters.MediumTest;
 import android.util.Pair;
+
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -16,9 +17,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
@@ -138,8 +139,8 @@ public class TracingControllerAndroidImplTest {
         Assert.assertNull(tracingController.getOutputPath());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(
-                    tracingController.startTracing(null, true, "*", "record-until-full", true));
+            Assert.assertTrue(tracingController.startTracing(null, true, "*", "record-until-full",
+                    /*compressFile=*/true, /*useProtobuf=*/false));
         });
 
         Assert.assertTrue(tracingController.isTracing());
@@ -158,6 +159,44 @@ public class TracingControllerAndroidImplTest {
         Assert.assertEquals(2, stream.read(bytes));
         Assert.assertEquals((byte) 0x1f, bytes[0]);
         Assert.assertEquals((byte) 0x8b, bytes[1]);
+        Assert.assertTrue(file.delete());
+        TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.destroy());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"GPU"})
+    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/899894")
+    public void testProtobufTracing() throws Exception {
+        ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl("about:blank");
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+
+        final TracingControllerAndroidImpl tracingController =
+                new TracingControllerAndroidImpl(activity);
+        Assert.assertFalse(tracingController.isTracing());
+        Assert.assertNull(tracingController.getOutputPath());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(tracingController.startTracing(null, true, "*", "record-until-full",
+                    /*compressFile=*/false, /*useProtobuf=*/true));
+        });
+
+        Assert.assertTrue(tracingController.isTracing());
+        File file = new File(tracingController.getOutputPath());
+
+        TestCallback<Void> callback = new TestCallback<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.stopTracing(callback));
+
+        // Callback should be run once stopped.
+        callback.waitForFirst(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+
+        // Should have written the output file, which should start with the
+        // trace packet field descriptor (0x0a).
+        Assert.assertTrue(file.exists());
+        FileInputStream stream = new FileInputStream(file);
+        byte[] bytes = new byte[1];
+        Assert.assertEquals(1, stream.read(bytes));
+        Assert.assertEquals((byte) 0x0a, bytes[0]);
         Assert.assertTrue(file.delete());
         TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.destroy());
     }

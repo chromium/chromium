@@ -1,0 +1,49 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("renderer") {
+  deps = [
+    ":demuxer",
+    "//base",
+    "//components/cast_streaming/public",
+    "//content/public/renderer",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
+  ]
+  public = [ "public/demuxer_provider.h " ]
+  sources = [
+    "cast_streaming_render_frame_observer.cc",
+    "cast_streaming_render_frame_observer.h",
+    "demuxer_provider.cc",
+  ]
+}
+
+source_set("demuxer") {
+  deps = [
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
+  ]
+  sources = [
+    "cast_streaming_demuxer.cc",
+    "cast_streaming_demuxer.h",
+    "cast_streaming_receiver.cc",
+    "cast_streaming_receiver.h",
+  ]
+  visibility = [ ":*" ]
+}
+
+# NOTE: This source set is intentionally empty. It is used to force the building
+# of the code defined in this directory, as it is production code which must
+# be validated as part of the CQ.
+# TODO(crbug.com/1207721): Add unit tests for code in this directory.
+source_set("unit_tests") {
+  testonly = true
+  deps = [ ":renderer" ]
+  sources = []
+}

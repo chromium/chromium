@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/sync_utils.h"
 
@@ -28,6 +27,7 @@ class PersonalDataManager;
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
                                const std::string& user_email,
+                               const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
                                LogManager* log_manager);
 
@@ -44,14 +44,10 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
 // disables providing suggestions.
 bool IsInAutofillSuggestionsDisabledExperiment();
 
-// Returns whether locally saving card when credit card upload succeeds should
-// be disabled.
-bool IsAutofillNoLocalSaveOnUploadSuccessExperimentEnabled();
-
-// Returns true if the user should be offered to locally store unmasked cards.
-// This controls whether the option is presented at all rather than the default
-// response of the option.
-bool OfferStoreUnmaskedCards(bool is_off_the_record);
+// Returns true if the feature is explicitly enabled by the corresponding Finch
+// flag, or if launched in general for this platform, which is true for Windows,
+// Android, and Mac OS X >= 10.13.
+bool IsCreditCardFidoAuthenticationEnabled();
 
 }  // namespace autofill
 

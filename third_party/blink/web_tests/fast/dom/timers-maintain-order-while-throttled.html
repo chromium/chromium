@@ -2,6 +2,8 @@
 <html>
 
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/visibility.js"></script>
 
 <script>
 description('Checks that timers maintain their scheduled order while the page is invisible.');
@@ -22,8 +24,7 @@ function processTimer(index)
 
 function runTest()
 {
-  if (window.testRunner)
-    testRunner.setPageVisibility('hidden');
+  assert_equals(document.visibilityState, "hidden")
 
   for (var i = 0; i < 100; i++) {
     expectedIndices.push(i);
@@ -36,6 +37,6 @@ function runTest()
 }
 </script>
 
-<body onload="runTest()">
+<body onload="setMainWindowHidden(true).then(runTest)">
 </body>
 </html>

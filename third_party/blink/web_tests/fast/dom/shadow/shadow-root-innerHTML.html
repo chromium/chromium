@@ -14,7 +14,7 @@ if (!window.internals)
 
 host = document.createElement("div");
 document.body.appendChild(host);
-root = host.createShadowRoot();
+root = host.attachShadow({mode: 'open'});
 
 var div1 = document.createElement("div");
 div1.setAttribute("id", "div1");

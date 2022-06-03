@@ -25,7 +25,7 @@ enum AnchorType : ubyte {
 // url_pattern_index::proto::UrlRule, but here, they are represented as flags
 // of the same bitmask to allow for compact storage.
 enum OptionFlag : ubyte (bit_flags) {
-  IS_WHITELIST,
+  IS_ALLOWLIST,
   APPLIES_TO_FIRST_PARTY,
   APPLIES_TO_THIRD_PARTY,
   IS_CASE_INSENSITIVE,
@@ -55,9 +55,26 @@ enum ElementType : ushort (bit_flags) {
   MEDIA,
   FONT,
   WEBSOCKET,
+  WEBTRANSPORT,
+  WEBBUNDLE,
   CSP_REPORT,
   MAIN_FRAME,
   // Note: Update the default value for |element_types| field in UrlRule, on
+  // adding/removing values from this enum.
+}
+
+// The request methods that a URL rule should be applied to.
+enum RequestMethod : ushort (bit_flags) {
+  CONNECT,
+  DELETE,
+  GET,
+  HEAD,
+  OPTIONS,
+  PATCH,
+  POST,
+  PUT,
+  NON_HTTP,
+  // Note: Update the default value for `request_methods` field in UrlRule, on
   // adding/removing values from this enum.
 }
 
@@ -71,7 +88,10 @@ table UrlRule {
   // by default for compactness. We expect most rules to not use
   // ElementType_MAIN_FRAME. Keep this in sync with
   // url_pattern_index::kDefaultFlatElementTypesMask.
-  element_types : ushort = 8191;
+  element_types : ushort = 32767;
+
+  // A bitmask of RequestMethod. Equals RequestMethod_ANY by default.
+  request_methods : ushort = 511;
 
   // A bitmask of ActivationType. Disables all activation types by default.
   activation_types : ubyte = 0;
@@ -104,7 +124,11 @@ table UrlRule {
   id : uint;
 
   // Priority of the rule. Larger the value, greater the priority.
-  priority : uint;
+  priority : uint64;
+
+  // Binary blob for any embedder specific rule conditions. When specified,
+  // these should be interpreted by the url_pattern_index embedder.
+  embedder_conditions : [ubyte];
 }
 
 // Contains an N-gram (acting as a key in a hash table) and a list of URL rules

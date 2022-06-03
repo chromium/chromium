@@ -26,6 +26,16 @@ def StartJobFromConfig(config_path):
   if not isinstance(config, dict):
     raise ValueError('Invalid job config')
 
+  # An absent comparison_mode denotes a tryjob configuration.
+  if 'comparison_mode' not in config:
+    config['comparison_mode'] = 'try'
+
+  # As of crrev.com/c/1965875 try jobs must specify a base git hash.
+  if config['comparison_mode'] == 'try' and 'base_git_hash' not in config:
+    config['base_git_hash'] = config['start_git_hash']
+    del config['start_git_hash']
+    del config['end_git_hash']
+
   response = pinpoint_service.NewJob(**config)
   print('Started:', response['jobUrl'])
 

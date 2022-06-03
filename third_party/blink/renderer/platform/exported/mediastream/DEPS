@@ -1,9 +1,0 @@
-include_rules = [
-    "+media/base",
-]
-
-specific_include_rules = {
-  "media_stream_audio_test\.cc" : [
-    "+base/threading/platform_thread.h",
-  ],
-}

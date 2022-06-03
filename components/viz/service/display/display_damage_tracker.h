@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_DAMAGE_TRACKER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
@@ -29,7 +30,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   class VIZ_SERVICE_EXPORT Observer {
    public:
     virtual ~Observer() = default;
-    virtual void OnDisplayDamaged() = 0;
+    virtual void OnDisplayDamaged(SurfaceId surface_id) = 0;
     virtual void OnRootFrameMissing(bool missing) = 0;
     virtual void OnPendingSurfacesChanged() = 0;
   };
@@ -75,8 +76,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
 
   // SurfaceObserver implementation.
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
-  void OnSurfaceActivated(const SurfaceId& surface_id,
-                          base::Optional<base::TimeDelta> duration) override {}
+  void OnSurfaceActivated(const SurfaceId& surface_id) override {}
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;
@@ -101,7 +101,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
                             bool display_damaged);
 
   // Used to send corresponding notifications to observers.
-  void NotifyDisplayDamaged();
+  void NotifyDisplayDamaged(SurfaceId surface_id);
   void NotifyRootFrameMissing(bool missing);
   void NotifyPendingSurfacesChanged();
 

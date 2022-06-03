@@ -78,7 +78,9 @@ bool DoesViewHaveAccessibilityErrors(views::View* view,
           "\n- Focusable View has no accessible name or placeholder, and the "
           "name attribute does not use kAttributeExplicitlyEmpty.";
     }
-    if (node_data.HasState(State::kInvisible))
+    if (node_data.HasState(State::kIgnored))
+      violations += "\n- Focusable View should not be ignored.";
+    if (node_data.IsInvisible())
       violations += "\n- Focusable View should not be invisible.";
   }
 
@@ -117,10 +119,10 @@ void AddFailureOnWidgetAccessibilityError(views::Widget* widget) {
   }
 }
 
-AccessibilityChecker::AccessibilityChecker() : scoped_observer_(this) {}
+AccessibilityChecker::AccessibilityChecker() = default;
 
 AccessibilityChecker::~AccessibilityChecker() {
-  DCHECK(!scoped_observer_.IsObservingSources());
+  DCHECK(!scoped_observations_.IsObservingAnySource());
 }
 
 void AccessibilityChecker::OnBeforeWidgetInit(
@@ -129,11 +131,11 @@ void AccessibilityChecker::OnBeforeWidgetInit(
   ChromeViewsDelegate::OnBeforeWidgetInit(params, delegate);
   views::Widget* widget = delegate->AsWidget();
   if (widget)
-    scoped_observer_.Add(widget);
+    scoped_observations_.AddObservation(widget);
 }
 
 void AccessibilityChecker::OnWidgetDestroying(views::Widget* widget) {
-  scoped_observer_.Remove(widget);
+  scoped_observations_.RemoveObservation(widget);
 }
 
 void AccessibilityChecker::OnWidgetVisibilityChanged(views::Widget* widget,

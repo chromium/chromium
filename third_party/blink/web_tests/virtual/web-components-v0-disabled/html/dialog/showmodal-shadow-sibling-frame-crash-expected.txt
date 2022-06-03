@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Shadow DOM <dialog>.showModal() on a page with an <iframe> should not crash. document.registerElement is not a function
-Harness: the test ran to completion.
-

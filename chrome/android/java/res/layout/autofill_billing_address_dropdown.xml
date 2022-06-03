@@ -11,10 +11,10 @@
         android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
         android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:labelFor="@+id/autofill_credit_card_editor_billing_address_spinner"
-        android:textAppearance="@style/TextAppearance.BlackCaption"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:text="@string/autofill_credit_card_editor_billing_address" />
 
-    <android.support.v7.widget.AppCompatSpinner
+    <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/autofill_credit_card_editor_billing_address_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

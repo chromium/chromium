@@ -18,12 +18,12 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/namespace_utils.h"
 #include "sandbox/linux/services/proc_util.h"
@@ -37,7 +37,9 @@ namespace sandbox {
 namespace {
 
 const int kExitSuccess = 0;
+#if !defined(THREAD_SANITIZER)
 const int kExitFailure = 1;
+#endif
 
 #if defined(__clang__)
 // Disable sanitizers that rely on TLS and may write to non-stack memory.
@@ -88,12 +90,14 @@ bool ChrootToSafeEmptyDir() {
 
   int clone_flags = CLONE_FS | LINUX_SIGCHLD;
   void* tls = nullptr;
-#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM_FAMILY)
+#if (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM_FAMILY)) && \
+    !defined(MEMORY_SANITIZER)
   // Use CLONE_VM | CLONE_VFORK as an optimization to avoid copying page tables.
   // Since clone writes to the new child's TLS before returning, we must set a
   // new TLS to avoid corrupting the current process's TLS. On ARCH_CPU_X86,
   // glibc performs syscalls by calling a function pointer in TLS, so we do not
   // attempt this optimization.
+  // TODO(crbug.com/1247458) Broken in MSan builds after LLVM f1bb30a4956f.
   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
 
   char tls_buf[PTHREAD_STACK_MIN] = {0};
@@ -260,8 +264,7 @@ bool Credentials::CanCreateProcessInNewUserNS() {
   // With TSAN, processes will always have threads running and can never
   // enter a new user namespace with MoveToNewUserNS().
   return false;
-#endif
-
+#else
   uid_t uid;
   gid_t gid;
   if (!GetRESIds(&uid, &gid)) {
@@ -306,6 +309,7 @@ bool Credentials::CanCreateProcessInNewUserNS() {
   // clone(2) succeeded.  Now return true only if the system grants
   // unprivileged use of CLONE_NEWUSER as well.
   return WIFEXITED(status) && WEXITSTATUS(status) == kExitSuccess;
+#endif
 }
 
 bool Credentials::MoveToNewUserNS() {

@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("enterprise_icon_blue_large") {
+  sources = [
+    "enterprise_icon_blue_large.imageset/Contents.json",
+    "enterprise_icon_blue_large.imageset/enterprise_icon_blue_large@2x.png",
+    "enterprise_icon_blue_large.imageset/enterprise_icon_blue_large@3x.png",
+  ]
+}
+
+imageset("enterprise_grey_icon_large") {
+  sources = [
+    "enterprise_grey_icon_large.imageset/Contents.json",
+    "enterprise_grey_icon_large.imageset/enterprise_grey_icon_large@2x.png",
+    "enterprise_grey_icon_large.imageset/enterprise_grey_icon_large@3x.png",
+  ]
+}

@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "components/leveldb_proto/internal/proto/shared_db_metadata.pb.h"
 #include "components/leveldb_proto/internal/shared_proto_database_client.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -29,6 +32,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   using SharedClientInitCallback =
       base::OnceCallback<void(Enums::InitStatus,
                               SharedDBMetadataProto::MigrationStatus)>;
+
+  SharedProtoDatabase(const SharedProtoDatabase&) = delete;
+  SharedProtoDatabase& operator=(const SharedProtoDatabase&) = delete;
 
   // Always returns a SharedProtoDatabaseClient pointer, but that should ONLY
   // be used if the callback returns success.
@@ -53,6 +59,12 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
       SharedDBMetadataProto::MigrationStatus migration_status,
       Callbacks::UpdateCallback callback);
 
+ protected:
+  SharedProtoDatabase(const std::string& client_db_id,
+                      const base::FilePath& db_dir);
+
+  virtual ~SharedProtoDatabase();
+
  private:
   friend class base::RefCountedThreadSafe<SharedProtoDatabase>;
   friend class ProtoDatabaseProvider;
@@ -61,6 +73,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   friend class SharedProtoDatabaseTest;
   friend class SharedProtoDatabaseClientTest;
   friend class TestSharedProtoDatabase;
+  friend class TestSharedProtoDatabaseClient;
+  FRIEND_TEST_ALL_PREFIXES(SharedProtoDatabaseTest,
+                           CancelDeleteObsoleteClients);
+  FRIEND_TEST_ALL_PREFIXES(SharedProtoDatabaseTest, DeleteObsoleteClients);
 
   enum InitState {
     // Initialization hasn't been attempted.
@@ -93,11 +109,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   // affecting startup or navigations.
   static const base::TimeDelta kDelayToClearObsoleteDatabase;
 
-  // Private since we only want to create a singleton of it.
-  SharedProtoDatabase(const std::string& client_db_id,
-                      const base::FilePath& db_dir);
-
-  virtual ~SharedProtoDatabase();
+  void Shutdown();
 
   void ProcessInitRequests(Enums::InitStatus status);
 
@@ -125,7 +137,8 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   void OnGetGlobalMetadata(bool corruption,
                            bool success,
                            std::unique_ptr<SharedDBMetadataProto> proto);
-  void OnFinishCorruptionCountWrite(bool success);
+  void OnWriteMetadataAtInit(bool success);
+  void OnDestroySharedDatabase(bool success);
   void InitDatabase();
   void OnDatabaseInit(bool create_if_missing, Enums::InitStatus status);
   void CheckCorruptionAndRunInitCallback(
@@ -145,7 +158,13 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
       Callbacks::InitStatusCallback callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
+  // |done| will be called on |task_runner|.
+  virtual void DestroyObsoleteSharedProtoDatabaseClients(
+      Callbacks::UpdateCallback done);
+
   LevelDB* GetLevelDBForTesting() const;
+
+  void SetDeleteObsoleteDelayForTesting(base::TimeDelta delay);
 
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_for_testing()
       const {
@@ -175,7 +194,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   base::queue<std::unique_ptr<InitRequest>> outstanding_init_requests_;
   bool create_if_missing_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(SharedProtoDatabase);
+  base::TimeDelta delete_obsolete_delay_ = base::Seconds(120);
+  base::Lock delete_obsolete_delay_lock_;
+  base::CancelableOnceClosure delete_obsolete_task_;
 };
 
 }  // namespace leveldb_proto

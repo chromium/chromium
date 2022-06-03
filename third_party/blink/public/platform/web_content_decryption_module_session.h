@@ -38,6 +38,8 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace media {
+enum class CdmMessageType;
+enum class CdmSessionClosedReason;
 enum class EmeInitDataType;
 }
 
@@ -50,29 +52,23 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
  public:
   class BLINK_PLATFORM_EXPORT Client {
    public:
-    enum class MessageType {
-      kLicenseRequest,
-      kLicenseRenewal,
-      kLicenseRelease,
-      kIndividualizationRequest
-    };
-
-    virtual void Message(MessageType,
-                         const unsigned char* message,
-                         size_t message_length) = 0;
-    virtual void Close() = 0;
+    virtual void OnSessionMessage(media::CdmMessageType,
+                                  const unsigned char* message,
+                                  size_t message_length) = 0;
+    virtual void OnSessionClosed(media::CdmSessionClosedReason reason) = 0;
 
     // Called when the expiration time for the session changes.
     // |updated_expiry_time_in_ms| is specified as the number of milliseconds
     // since 01 January, 1970 UTC.
-    virtual void ExpirationChanged(double updated_expiry_time_in_ms) = 0;
+    virtual void OnSessionExpirationUpdate(
+        double updated_expiry_time_in_ms) = 0;
 
     // Called when the set of keys for this session changes or existing keys
     // change state. |has_additional_usable_key| is set if a key is newly
     // usable (e.g. new key available, previously expired key has been
     // renewed, etc.) and the browser should attempt to resume playback
     // if necessary.
-    virtual void KeysStatusesChange(
+    virtual void OnSessionKeysChange(
         const WebVector<WebEncryptedMediaKeyInformation>&,
         bool has_additional_usable_key) = 0;
 
@@ -88,7 +84,6 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   virtual void InitializeNewSession(media::EmeInitDataType,
                                     const unsigned char* init_data,
                                     size_t init_data_length,
-                                    WebEncryptedMediaSessionType,
                                     WebContentDecryptionModuleResult) = 0;
   virtual void Load(const WebString& session_id,
                     WebContentDecryptionModuleResult) = 0;

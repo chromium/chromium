@@ -17,6 +17,9 @@ namespace gpu {
 
 class GPU_EXPORT GpuDriverBugList : public GpuControlList {
  public:
+  GpuDriverBugList(const GpuDriverBugList&) = delete;
+  GpuDriverBugList& operator=(const GpuDriverBugList&) = delete;
+
   ~GpuDriverBugList() override;
 
   static std::unique_ptr<GpuDriverBugList> Create();
@@ -38,8 +41,6 @@ class GPU_EXPORT GpuDriverBugList : public GpuControlList {
 
  private:
   explicit GpuDriverBugList(const GpuControlListData& data);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuDriverBugList);
 };
 
 }  // namespace gpu

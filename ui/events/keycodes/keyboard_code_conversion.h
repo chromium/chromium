@@ -5,8 +5,8 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 
+
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -40,8 +40,8 @@ enum class DomCode;
 // Returns true and sets the output parameters if the (dom_code, flags) pair
 // has an interpretation in the US English layout; otherwise the output
 // parameters are untouched.
-EVENTS_BASE_EXPORT base::char16 DomCodeToUsLayoutCharacter(DomCode dom_code,
-                                                           int flags);
+EVENTS_BASE_EXPORT char16_t DomCodeToUsLayoutCharacter(DomCode dom_code,
+                                                       int flags);
 EVENTS_BASE_EXPORT bool DomCodeToUsLayoutDomKey(DomCode dom_code,
                                                 int flags,
                                                 DomKey* dom_key,
@@ -110,6 +110,10 @@ DomCodeToUsLayoutNonLocatedKeyboardCode(DomCode dom_code);
 // Returns the ui::EventFlags value associated with a modifier key,
 // or 0 (EF_NONE) if the key is not a modifier.
 EVENTS_BASE_EXPORT int ModifierDomKeyToEventFlag(DomKey key);
+
+// Returns the physical DOM code along with a corresponding non-located
+// Windows-based key_code.
+EVENTS_BASE_EXPORT DomCode UsLayoutDomKeyToDomCode(DomKey dom_key);
 
 }  // namespace ui
 

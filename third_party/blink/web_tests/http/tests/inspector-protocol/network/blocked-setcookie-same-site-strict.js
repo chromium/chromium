@@ -12,17 +12,17 @@
   // make a cross origin request to set the cookie, see that it gets blocked
   await helper.navigateWithExtraInfo(thirdPartyUrl);
   var {responseExtraInfo} = await helper.fetchWithExtraInfo(setCookieUrl);
-  testRunner.log(`Javascript initiated subresource blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}\n`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Javascript initiated subresource blocked set-cookies:');
 
   // make a cross origin navigation via javascript to set the cookie, see that it gets blocked
   await helper.navigateWithExtraInfo(thirdPartyUrl);
   var {responseExtraInfo} = await helper.jsNavigateWithExtraInfo(setCookieUrl);
-  testRunner.log(`Javascript initiated navigation blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}\n`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Javascript initiated navigation blocked set-cookies:');
 
   // make a cross origin navigation via browser to set the cookie, see that it is not blocked
   await helper.navigateWithExtraInfo(thirdPartyUrl);
   var {responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieUrl);
-  testRunner.log(`Browser initiated navigation blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Browser initiated navigation blocked set-cookies:');
 
   testRunner.completeTest();
 })

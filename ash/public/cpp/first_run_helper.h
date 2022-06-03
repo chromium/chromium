@@ -31,7 +31,7 @@ class ASH_EXPORT FirstRunHelper {
   static std::unique_ptr<FirstRunHelper> Start(base::OnceClosure on_cancelled);
 
   // Returns the bounds of the home button on the primary display in screen
-  // coordinates.
+  // coordinates. Returns empty bounds if the home button is not shown in shelf.
   virtual gfx::Rect GetAppListButtonBounds() = 0;
 
   // Opens the system tray bubble menu to show the default view. Does nothing if

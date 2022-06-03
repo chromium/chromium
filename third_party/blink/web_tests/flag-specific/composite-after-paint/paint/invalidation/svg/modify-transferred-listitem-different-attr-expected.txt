@@ -5,62 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 23],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 23],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 23],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 23],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 23],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 23],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 80, 23],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 80, 23],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' Y Z'",
-          "rect": [58, 45, 50, 26],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'X'",
-          "rect": [58, 45, 50, 26],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'X Y Z'",
-          "rect": [58, 45, 50, 16],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [23, 8, 85, 23],
+        [58, 45, 50, 26]
       ]
     }
   ]

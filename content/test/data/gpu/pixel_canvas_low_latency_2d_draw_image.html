@@ -32,20 +32,23 @@ function main()
   let c1 = document.getElementById("c1");
   let ctx1 = c1.getContext("2d", {"desynchronized": true});
 
+  let c2 = document.getElementById("c2");
+  let ctx2 = c2.getContext("2d", {"desynchronized": true});
+
   let width = c1.width;
   let height = c1.height;
 
   ctx1.fillStyle = "#FF0000";
   ctx1.fillRect(0, 0, 100, 100);
+  ctx2.drawImage(c1, 0, 0, 100, 100, 0, 0, 100, 100);
+
   ctx1.fillStyle = "#00FF00";
   ctx1.fillRect(0, 50, 50, 50);
+  ctx2.drawImage(c1, 0, 50, 50, 50, 0, 50, 50, 50);
+
   ctx1.fillStyle = "#0000FF";
   ctx1.fillRect(50, 0, 50, 50);
-
-  let c2 = document.getElementById("c2");
-  let ctx2 = c2.getContext("2d");
-
-  ctx2.drawImage(c1, 0, 0);
+  ctx2.drawImage(c1, 50, 0, 50, 50, 50, 0, 50, 50);
 
   waitForFinish();
 }

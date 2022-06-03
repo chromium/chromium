@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 
 class ToolbarActionViewController;
 class ToolbarActionsBarBubbleDelegate;
@@ -24,9 +25,21 @@ class ExtensionsContainer {
   // that relate to more than one extension.
   virtual ToolbarActionViewController* GetPoppedOutAction() const = 0;
 
+  // Called when a context menu is shown so the container can perform any
+  // necessary setup.
+  virtual void OnContextMenuShown(ToolbarActionViewController* extension) {}
+
+  // Called when a context menu is closed so the container can perform any
+  // necessary cleanup.
+  virtual void OnContextMenuClosed(ToolbarActionViewController* extension) {}
+
   // Returns true if the given |action| is visible on the toolbar.
   virtual bool IsActionVisibleOnToolbar(
       const ToolbarActionViewController* action) const = 0;
+
+  // Returns the action's toolbar button visibility.
+  virtual extensions::ExtensionContextMenuModel::ButtonVisibility
+  GetActionVisibility(const ToolbarActionViewController* action) const = 0;
 
   // Undoes the current "pop out"; i.e., moves the popped out action back into
   // overflow.
@@ -48,13 +61,12 @@ class ExtensionsContainer {
   // |closure| will be called once any animation is complete.
   virtual void PopOutAction(ToolbarActionViewController* action,
                             bool is_sticky,
-                            const base::Closure& closure) = 0;
+                            base::OnceClosure closure) = 0;
 
-  // Shows the popup for the action with |id|, returning true if a popup is
-  // shown. If |grant_active_tab| is true, then active tab permissions should
-  // be given to the action (only do this if this is through a user action).
-  virtual bool ShowToolbarActionPopup(const std::string& action_id,
-                                      bool grant_active_tab) = 0;
+  // Shows the popup for the action with |id| as the result of an API call,
+  // returning true if a popup is shown.
+  virtual bool ShowToolbarActionPopupForAPICall(
+      const std::string& action_id) = 0;
 
   // Displays the given |bubble| once the toolbar is no longer animating.
   virtual void ShowToolbarActionBubble(
@@ -63,6 +75,12 @@ class ExtensionsContainer {
   // Same as above, but uses PostTask() in all cases.
   virtual void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
+
+  // Toggle the Extensions menu (as if the user clicked the puzzle piece icon).
+  virtual void ToggleExtensionsMenu() = 0;
+
+  // Whether there are any Extensions registered with the ExtensionsContainer.
+  virtual bool HasAnyExtensions() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

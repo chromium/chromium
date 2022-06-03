@@ -60,7 +60,7 @@ cvox.ChromeVoxUserCommands.init_ = function() {
   } else {
     cvox.ChromeVoxUserCommands.commands = {};
   }
-  for (var cmd in cvox.CommandStore.CMD_WHITELIST) {
+  for (var cmd in cvox.CommandStore.CMD_ALLOWLIST) {
     cvox.ChromeVoxUserCommands.commands[cmd] =
         cvox.ChromeVoxUserCommands.createCommand_(cmd);
   }
@@ -260,7 +260,7 @@ cvox.ChromeVoxUserCommands.doCommand_ = function(cmdStruct) {
     return true;
   }
 
-  if (cmdStruct.disallowOOBE && document.URL.match(/^chrome:\/\/oobe/i)) {
+  if (cmdStruct.denyOOBE && document.URL.match(/^chrome:\/\/oobe/i)) {
     return true;
   }
 
@@ -270,7 +270,7 @@ cvox.ChromeVoxUserCommands.doCommand_ = function(cmdStruct) {
     cvox.ChromeVoxEventSuspender.enterSuspendEvents();
   }
 
-  if (cmdStruct.disallowContinuation) {
+  if (cmdStruct.denyContinuation) {
     cvox.ChromeVox.navigationManager.stopReading(true);
   }
 
@@ -773,7 +773,7 @@ cvox.ChromeVoxUserCommands.doCommand_ = function(cmdStruct) {
         cvox.QueueMode.FLUSH,
         cvox.AbstractTts.PERSONALITY_ANNOTATION);
   } else if (cvox.ChromeVox.navigationManager.isReading()) {
-    if (cmdStruct.disallowContinuation) {
+    if (cmdStruct.denyContinuation) {
       cvox.ChromeVox.navigationManager.stopReading(true);
     } else if (cmd != 'readFromHere') {
       cvox.ChromeVox.navigationManager.skip();
@@ -815,7 +815,7 @@ cvox.ChromeVoxUserCommands.handleChromeVoxUserEvent = function(cvoxUserEvent) {
  * @private
  */
 cvox.ChromeVoxUserCommands.lookupCommand_ = function(cmd, opt_kwargs) {
-  var cmdStruct = cvox.CommandStore.CMD_WHITELIST[cmd];
+  var cmdStruct = cvox.CommandStore.CMD_ALLOWLIST[cmd];
   if (!cmdStruct) {
     throw 'Invalid command: ' + cmd;
   }

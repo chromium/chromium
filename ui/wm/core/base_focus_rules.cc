@@ -52,6 +52,10 @@ bool BaseFocusRules::CanActivateWindow(const aura::Window* window) const {
   if (!window)
     return true;
 
+  // A window that is being destroyed should not be activatable.
+  if (window->is_destroying())
+    return false;
+
   // Only toplevel windows can be activated.
   if (!IsToplevelWindow(window))
     return false;

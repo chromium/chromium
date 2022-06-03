@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "net/ssl/ssl_info.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace security_interstitials {
+class SettingsPageHelper;
 }
 
 // Provides embedder-specific logic for the SSL error page controller.
@@ -31,7 +34,13 @@ class SSLErrorControllerClient
       const net::SSLInfo& ssl_info,
       int cert_error,
       const GURL& request_url,
-      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper);
+      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
+
+  SSLErrorControllerClient(const SSLErrorControllerClient&) = delete;
+  SSLErrorControllerClient& operator=(const SSLErrorControllerClient&) = delete;
+
   ~SSLErrorControllerClient() override;
 
   // security_interstitials::ControllerClient overrides
@@ -45,8 +54,6 @@ class SSLErrorControllerClient
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
   const int cert_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorControllerClient);
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_

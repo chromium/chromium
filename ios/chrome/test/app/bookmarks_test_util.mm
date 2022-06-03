@@ -22,7 +22,7 @@ bool BookmarksLoaded() {
 }
 
 bool ClearBookmarks() {
-  ios::ChromeBrowserState* browserState = GetOriginalBrowserState();
+  ChromeBrowserState* browserState = GetOriginalBrowserState();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   BOOL removeSucceeded = RemoveAllUserBookmarksIOS(browserState);

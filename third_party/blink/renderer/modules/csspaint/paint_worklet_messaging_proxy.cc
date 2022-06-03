@@ -13,7 +13,7 @@ PaintWorkletMessagingProxy::PaintWorkletMessagingProxy(
     ExecutionContext* execution_context)
     : ThreadedWorkletMessagingProxy(execution_context) {}
 
-void PaintWorkletMessagingProxy::Trace(blink::Visitor* visitor) {
+void PaintWorkletMessagingProxy::Trace(Visitor* visitor) const {
   ThreadedWorkletMessagingProxy::Trace(visitor);
 }
 

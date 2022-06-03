@@ -24,7 +24,7 @@
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
@@ -72,7 +72,7 @@ void SetUpBlinkTestEnvironment() {
     blink::WebRuntimeFeatures::EnableFeatureFromString(feature, false);
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   mock_cr_app::RegisterMockCrApp();
 #endif
 

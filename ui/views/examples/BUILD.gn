@@ -2,13 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//testing/test.gni")
+import("//tools/grit/grit_rule.gni")
 
-jumbo_component("views_examples_lib") {
+component("views_examples_lib") {
   testonly = true
 
   sources = [
+    "animated_image_view_example.cc",
+    "animated_image_view_example.h",
+    "animation_example.cc",
+    "animation_example.h",
     "ax_example.cc",
     "ax_example.h",
     "box_layout_example.cc",
@@ -21,8 +27,14 @@ jumbo_component("views_examples_lib") {
     "button_sticker_sheet.h",
     "checkbox_example.cc",
     "checkbox_example.h",
+    "colored_dialog_example.cc",
+    "colored_dialog_example.h",
+    "colors_example.cc",
+    "colors_example.h",
     "combobox_example.cc",
     "combobox_example.h",
+    "create_examples.cc",
+    "create_examples.h",
     "dialog_example.cc",
     "dialog_example.h",
     "example_base.cc",
@@ -31,22 +43,28 @@ jumbo_component("views_examples_lib") {
     "example_combobox_model.h",
     "examples_window.cc",
     "examples_window.h",
+    "fade_animation.cc",
+    "fade_animation.h",
     "flex_layout_example.cc",
     "flex_layout_example.h",
+    "ink_drop_example.cc",
+    "ink_drop_example.h",
     "label_example.cc",
     "label_example.h",
     "layout_example_base.cc",
     "layout_example_base.h",
     "link_example.cc",
     "link_example.h",
+    "login_bubble_dialog_example.cc",
+    "login_bubble_dialog_example.h",
     "menu_example.cc",
     "menu_example.h",
     "message_box_example.cc",
     "message_box_example.h",
     "multiline_example.cc",
     "multiline_example.h",
-    "native_theme_example.cc",
-    "native_theme_example.h",
+    "notification_example.cc",
+    "notification_example.h",
     "progress_bar_example.cc",
     "progress_bar_example.h",
     "radio_button_example.cc",
@@ -55,12 +73,16 @@ jumbo_component("views_examples_lib") {
     "scroll_view_example.h",
     "slider_example.cc",
     "slider_example.h",
+    "square_ink_drop_example.cc",
+    "square_ink_drop_example.h",
     "tabbed_pane_example.cc",
     "tabbed_pane_example.h",
     "table_example.cc",
     "table_example.h",
     "text_example.cc",
     "text_example.h",
+    "textarea_example.cc",
+    "textarea_example.h",
     "textfield_example.cc",
     "textfield_example.h",
     "throbber_example.cc",
@@ -76,26 +98,29 @@ jumbo_component("views_examples_lib") {
     "widget_example.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
     "VIEWS_EXAMPLES_IMPLEMENTATION",
   ]
 
   deps = [
+    ":views_examples_resources_grd",
+    ":views_examples_resources_pak",
     "//base",
     "//cc/paint",
     "//skia",
     "//third_party/icu",
     "//ui/base",
+    "//ui/color",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/lottie",
+    "//ui/message_center",
     "//ui/native_theme",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
+    "//ui/strings:ui_strings",
     "//ui/views",
   ]
 
@@ -108,33 +133,47 @@ jumbo_component("views_examples_lib") {
   }
 }
 
-executable("views_examples_exe") {
+source_set("views_examples_proc") {
   testonly = true
 
   sources = [
-    "examples_main.cc",
+    "examples_exit_code.h",
+    "examples_main_proc.cc",
+    "examples_main_proc.h",
   ]
 
   deps = [
     ":views_examples_lib",
     "//base",
-    "//base:i18n",
     "//base/test:test_support",
-    "//build/win:default_exe_manifest",
+    "//build:chromeos_buildflags",
+    "//cc/paint",
     "//components/viz/host",
     "//components/viz/service",
     "//mojo/core/embedder",
+    "//skia",
     "//ui/base",
-    "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gfx",
-    "//ui/gl",
-    "//ui/gl/init",
-    "//ui/resources:ui_test_pak",
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+    sources += [
+      "examples_skia_gold_pixel_diff.cc",
+      "examples_skia_gold_pixel_diff.h",
+    ]
+    deps += [
+      "//ui/base:pixel_diff_test_support",
+      "//ui/snapshot",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//build/win:default_exe_manifest" ]
+  }
 
   if (use_aura) {
     deps += [
@@ -142,12 +181,31 @@ executable("views_examples_exe") {
       "//ui/wm",
     ]
   }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
+  if (is_chromeos_ash) {
+    sources += [
+      "examples_views_delegate_chromeos.cc",
+      "examples_views_delegate_chromeos.h",
+    ]
+    deps += [ "//ui/wm:test_support" ]
   }
 }
 
-jumbo_component("views_examples_with_content_lib") {
+executable("views_examples") {
+  testonly = true
+
+  sources = [ "examples_main.cc" ]
+
+  deps = [
+    ":views_examples_lib",
+    ":views_examples_proc",
+    "//base",
+    "//base/test:test_support",
+    "//build/win:default_exe_manifest",
+    "//ui/resources:ui_test_pak",
+  ]
+}
+
+component("views_examples_with_content_lib") {
   testonly = true
   sources = [
     "examples_window_with_content.cc",
@@ -160,7 +218,8 @@ jumbo_component("views_examples_with_content_lib") {
   defines = [ "VIEWS_EXAMPLES_WITH_CONTENT_IMPLEMENTATION" ]
 
   deps = [
-    ":views_examples_lib",
+    ":views_examples_resources_grd",
+    ":views_examples_resources_pak",
     "//base",
     "//content",
     "//skia",
@@ -169,14 +228,13 @@ jumbo_component("views_examples_with_content_lib") {
     "//ui/views/controls/webview",
     "//url",
   ]
+  public_deps = [ ":views_examples_lib" ]
 }
 
-executable("views_examples_with_content_exe") {
+executable("views_examples_with_content") {
   testonly = true
 
-  sources = [
-    "examples_with_content_main_exe.cc",
-  ]
+  sources = [ "examples_with_content_main.cc" ]
 
   defines = [ "VIEWS_EXAMPLES_WITH_CONTENT_IMPLEMENTATION" ]
 
@@ -195,16 +253,79 @@ executable("views_examples_with_content_exe") {
     configs += [ "//build/config/win:windowed" ]
     configs -= [ "//build/config/win:console" ]
   }
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:seatbelt" ]
+  }
 }
 
 copy("copy_content_resources") {
-  deps = [
-    "//content:resources",
-  ]
-  sources = [
-    "$root_gen_dir/content/content_resources.pak",
-  ]
+  deps = [ "//content:content_resources" ]
+  sources = [ "$root_gen_dir/content/content_resources.pak" ]
+  outputs = [ "$root_out_dir/content_resources.pak" ]
+}
+
+grit("views_examples_resources_grd") {
+  testonly = true
+  source = "views_examples_resources.grd"
   outputs = [
-    "$root_out_dir/content_resources.pak",
+    "grit/views_examples_resources.h",
+    "views_examples_resources.pak",
   ]
+}
+
+copy("views_examples_resources_pak") {
+  testonly = true
+  sources = [ "$target_gen_dir/views_examples_resources.pak" ]
+  outputs = [ "$root_out_dir/views_examples_resources.pak" ]
+  public_deps = [ ":views_examples_resources_grd" ]
+}
+
+test("views_examples_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [
+    "examples_unittest.cc",
+    "examples_unittest_main.cc",
+  ]
+
+  deps = [
+    ":views_examples_lib",
+    ":views_examples_proc",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/host",
+    "//components/viz/service",
+    "//mojo/core/embedder",
+    "//ui/base",
+    "//ui/base/ime/init",
+    "//ui/compositor",
+    "//ui/compositor:test_support",
+    "//ui/gfx",
+    "//ui/gl",
+    "//ui/gl/init",
+    "//ui/resources:ui_test_pak",
+    "//ui/snapshot",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+    ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/vulkan_capabilities.test-cmx" ]
+  }
+
+  data_deps = [
+    ":views_examples_resources_pak",
+    "//ui/resources:ui_test_pak_data",
+  ]
+
+  data = [ "$root_out_dir/views_examples_resources.pak" ]
 }

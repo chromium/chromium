@@ -18,8 +18,14 @@ void AssociateMailbox(GLuint device_id,
                       GLuint id,
                       GLuint generation,
                       GLuint usage,
+                      MailboxFlags flags,
                       const GLbyte* mailbox) override;
 
 void DissociateMailbox(GLuint texture_id, GLuint texture_generation) override;
+
+void DissociateMailboxForPresent(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint texture_id,
+                                 GLuint texture_generation) override;
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_AUTOGEN_H_

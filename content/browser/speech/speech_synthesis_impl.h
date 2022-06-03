@@ -12,6 +12,7 @@
 
 namespace content {
 class BrowserContext;
+class RenderFrameHostImpl;
 
 // Back-end for the web speech synthesis API; dispatches speech requests to
 // content::TtsController and forwards voice lists and events back to the
@@ -19,7 +20,8 @@ class BrowserContext;
 class SpeechSynthesisImpl : public blink::mojom::SpeechSynthesis,
                             public VoicesChangedDelegate {
  public:
-  explicit SpeechSynthesisImpl(BrowserContext* browser_context);
+  SpeechSynthesisImpl(BrowserContext* browser_context,
+                      RenderFrameHostImpl* rfh);
   ~SpeechSynthesisImpl() override;
 
   SpeechSynthesisImpl(const SpeechSynthesisImpl&) = delete;
@@ -44,6 +46,8 @@ class SpeechSynthesisImpl : public blink::mojom::SpeechSynthesis,
 
  private:
   BrowserContext* browser_context_;
+  WebContents* web_contents_;
+
   mojo::ReceiverSet<blink::mojom::SpeechSynthesis> receiver_set_;
   mojo::RemoteSet<blink::mojom::SpeechSynthesisVoiceListObserver> observer_set_;
 };

@@ -18,17 +18,22 @@ namespace extensions {
 
 class BookmarksApiUnittest : public ExtensionServiceTestBase {
  public:
-  BookmarksApiUnittest() {}
+  BookmarksApiUnittest() = default;
+  BookmarksApiUnittest(const BookmarksApiUnittest&) = delete;
+  BookmarksApiUnittest& operator=(const BookmarksApiUnittest&) = delete;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
-    InitializeEmptyExtensionService();
-    profile_->CreateBookmarkModel(false);
+
+    ExtensionServiceInitParams params = CreateDefaultInitParams();
+    params.enable_bookmark_model = true;
+    InitializeExtensionService(params);
+
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
 
-    const bookmarks::BookmarkNode* node = model_->AddFolder(
-        model_->other_node(), 0, base::ASCIIToUTF16("Empty folder"));
+    const bookmarks::BookmarkNode* node =
+        model_->AddFolder(model_->other_node(), 0, u"Empty folder");
     node_id_ = base::NumberToString(node->id());
   }
 
@@ -37,8 +42,6 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
  private:
   bookmarks::BookmarkModel* model_ = nullptr;
   std::string node_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksApiUnittest);
 };
 
 // Tests that running updating a bookmark folder's url does not succeed.

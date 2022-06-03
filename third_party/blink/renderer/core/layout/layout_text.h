@@ -24,6 +24,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_H_
 
 #include <iterator>
+
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -39,7 +41,8 @@ namespace blink {
 class AbstractInlineTextBox;
 class ContentCaptureManager;
 class InlineTextBox;
-class NGInlineItem;
+struct NGInlineItemsData;
+struct NGInlineItemSpan;
 class NGOffsetMapping;
 
 enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
@@ -80,15 +83,26 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // doesn't re-transform the string.
   LayoutText(Node*, scoped_refptr<StringImpl>);
 
-  ~LayoutText() override;
+  void Trace(Visitor*) const override;
 
   static LayoutText* CreateEmptyAnonymous(Document&,
                                           scoped_refptr<const ComputedStyle>,
                                           LegacyLayout);
 
-  const char* GetName() const override { return "LayoutText"; }
+  static LayoutText* CreateAnonymous(Document&,
+                                     scoped_refptr<const ComputedStyle>,
+                                     scoped_refptr<StringImpl>,
+                                     LegacyLayout legacy);
 
-  bool IsTextFragment() const { return is_text_fragment_; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutText";
+  }
+
+  bool IsTextFragment() const {
+    NOT_DESTROYED();
+    return is_text_fragment_;
+  }
   virtual bool IsWordBreak() const;
 
   virtual scoped_refptr<StringImpl> OriginalText() const;
@@ -97,18 +111,26 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void AttachTextBox(InlineTextBox*);
   void RemoveTextBox(InlineTextBox*);
 
-  NGPaintFragment* FirstInlineFragment() const final;
-  void SetFirstInlineFragment(NGPaintFragment*) final;
+  bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  const String& GetText() const { return text_; }
-  virtual unsigned TextStartOffset() const { return 0; }
-  String PlainText() const;
+  const String& GetText() const {
+    NOT_DESTROYED();
+    return text_;
+  }
+  virtual unsigned TextStartOffset() const {
+    NOT_DESTROYED();
+    return 0;
+  }
+  virtual String PlainText() const;
 
   // Returns first letter part of |LayoutTextFragment|.
-  virtual LayoutText* GetFirstLetterPart() const { return nullptr; }
+  virtual LayoutText* GetFirstLetterPart() const {
+    NOT_DESTROYED();
+    return nullptr;
+  }
 
   InlineTextBox* CreateInlineTextBox(int start, uint16_t length);
   void DirtyOrDeleteLineBoxesIfNeeded(bool full_layout);
@@ -127,15 +149,31 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  bool Is8Bit() const { return text_.Is8Bit(); }
-  const LChar* Characters8() const { return text_.Impl()->Characters8(); }
-  const UChar* Characters16() const { return text_.Impl()->Characters16(); }
-  bool HasEmptyText() const { return text_.IsEmpty(); }
+  bool Is8Bit() const {
+    NOT_DESTROYED();
+    return text_.Is8Bit();
+  }
+  const LChar* Characters8() const {
+    NOT_DESTROYED();
+    return text_.Impl()->Characters8();
+  }
+  const UChar* Characters16() const {
+    NOT_DESTROYED();
+    return text_.Impl()->Characters16();
+  }
+  bool HasEmptyText() const {
+    NOT_DESTROYED();
+    return text_.IsEmpty();
+  }
   UChar CharacterAt(unsigned) const;
   UChar UncheckedCharacterAt(unsigned) const;
-  UChar operator[](unsigned i) const { return UncheckedCharacterAt(i); }
+  UChar operator[](unsigned i) const {
+    NOT_DESTROYED();
+    return UncheckedCharacterAt(i);
+  }
   UChar32 CodepointAt(unsigned) const;
   unsigned TextLength() const {
+    NOT_DESTROYED();
     return text_.length();
   }  // non virtual implementation of length()
   bool ContainsOnlyWhitespace(unsigned from, unsigned len) const;
@@ -188,6 +226,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // in containing block's physical coordinates with flipped blocks direction.
   PhysicalRect PhysicalVisualOverflowRect() const;
 
+  void InvalidateVisualOverflow();
+
   PhysicalOffset FirstLineBoxTopLeft() const;
 
   void SetTextIfNeeded(scoped_refptr<StringImpl>);
@@ -208,6 +248,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // TextBoxes() and FirstInlineFragment() are mutually exclusive,
   // depends on IsInLayoutNGInlineFormattingContext().
   const InlineTextBoxList& TextBoxes() const {
+    NOT_DESTROYED();
     return IsInLayoutNGInlineFormattingContext() ? InlineTextBoxList::Empty()
                                                  : text_boxes_;
   }
@@ -215,16 +256,21 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Returns first |InlineTextBox| produces for associated |Node|.
   // Note: When |this| is remaining part of ::first-letter, this function
   // returns first-letter part of |InlineTextBox| instead of remaining part.
-  InlineTextBox* FirstTextBox() const { return TextBoxes().First(); }
-  InlineTextBox* LastTextBox() const { return TextBoxes().Last(); }
-
-  // True if we have inline text box children which implies rendered text (or
-  // whitespace) output.
-  bool HasTextBoxes() const;
+  InlineTextBox* FirstTextBox() const {
+    NOT_DESTROYED();
+    return TextBoxes().First();
+  }
+  InlineTextBox* LastTextBox() const {
+    NOT_DESTROYED();
+    return TextBoxes().Last();
+  }
 
   // TODO(layoutng) Legacy-only implementation of HasTextBoxes.
   // All callers should call HasTextBoxes instead, and take NG into account.
-  bool HasLegacyTextBoxes() const { return FirstTextBox(); }
+  bool HasLegacyTextBoxes() const {
+    NOT_DESTROYED();
+    return FirstTextBox();
+  }
 
   // Compute the rect and offset of text boxes for this LayoutText.
   struct TextBoxInfo {
@@ -242,7 +288,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Returns the offset in the |text_| string that corresponds to the given
   // position in DOM; Returns nullopt is the position is not in this LayoutText.
   // TODO(layout-dev): Fix it when text-transform changes text length.
-  virtual base::Optional<unsigned> CaretOffsetForPosition(
+  virtual absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const;
 
   // Returns true if the offset (0-based in the |text_| string) is next to a
@@ -257,16 +303,20 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   bool IsBeforeNonCollapsedCharacter(unsigned) const;
   bool IsAfterNonCollapsedCharacter(unsigned) const;
 
-  int CaretMinOffset() const override;
-  int CaretMaxOffset() const override;
+  virtual int CaretMinOffset() const;
+  virtual int CaretMaxOffset() const;
   unsigned ResolvedTextLength() const;
 
   // True if any character remains after CSS white-space collapsing.
   bool HasNonCollapsedText() const;
 
-  bool ContainsReversedText() const { return contains_reversed_text_; }
+  bool ContainsReversedText() const {
+    NOT_DESTROYED();
+    return contains_reversed_text_;
+  }
 
   bool IsSecure() const {
+    NOT_DESTROYED();
     return StyleRef().TextSecurity() != ETextSecurity::kNone;
   }
   void MomentarilyRevealLastTypedCharacter(
@@ -279,16 +329,21 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   scoped_refptr<AbstractInlineTextBox> FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
+    NOT_DESTROYED();
     return has_abstract_inline_text_box_;
   }
 
-  void SetHasAbstractInlineTextBox() { has_abstract_inline_text_box_ = true; }
+  void SetHasAbstractInlineTextBox() {
+    NOT_DESTROYED();
+    has_abstract_inline_text_box_ = true;
+  }
 
   float HyphenWidth(const Font&, TextDirection);
 
   PhysicalRect DebugRect() const override;
 
   void AutosizingMultiplerChanged() {
+    NOT_DESTROYED();
     known_to_have_no_overflow_and_no_fallback_fonts_ = false;
 
     // The font size is changing, so we need to make sure to rebuild everything.
@@ -312,29 +367,89 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                                        unsigned* start,
                                        unsigned* end) const;
   DOMNodeId EnsureNodeId();
-  bool HasNodeId() const { return node_id_ != kInvalidDOMNodeId; }
+  bool HasNodeId() const {
+    NOT_DESTROYED();
+    return node_id_ != kInvalidDOMNodeId;
+  }
 
-  void SetInlineItems(NGInlineItem* begin, NGInlineItem* end);
+  void SetInlineItems(NGInlineItemsData* data, size_t begin, size_t size);
   void ClearInlineItems();
-  bool HasValidInlineItems() const { return valid_ng_items_; }
-  const base::span<NGInlineItem>& InlineItems() const;
+  bool HasValidInlineItems() const {
+    NOT_DESTROYED();
+    return valid_ng_items_;
+  }
+  const NGInlineItemSpan& InlineItems() const;
   // Inline items depends on context. It needs to be invalidated not only when
   // it was inserted/changed but also it was moved.
-  void InvalidateInlineItems() { valid_ng_items_ = false; }
+  void InvalidateInlineItems() {
+    NOT_DESTROYED();
+    valid_ng_items_ = false;
+  }
 
-  bool HasBidiControlInlineItems() const { return has_bidi_control_items_; }
-  void SetHasBidiControlInlineItems() { has_bidi_control_items_ = true; }
-  void ClearHasBidiControlInlineItems() { has_bidi_control_items_ = false; }
+  bool HasBidiControlInlineItems() const {
+    NOT_DESTROYED();
+    return has_bidi_control_items_;
+  }
+  void SetHasBidiControlInlineItems() {
+    NOT_DESTROYED();
+    has_bidi_control_items_ = true;
+  }
+  void ClearHasBidiControlInlineItems() {
+    NOT_DESTROYED();
+    has_bidi_control_items_ = false;
+  }
 
-  virtual const base::span<NGInlineItem>* GetNGInlineItems() const {
+  virtual const NGInlineItemSpan* GetNGInlineItems() const {
+    NOT_DESTROYED();
     return nullptr;
   }
-  virtual base::span<NGInlineItem>* GetNGInlineItems() { return nullptr; }
+  virtual NGInlineItemSpan* GetNGInlineItems() {
+    NOT_DESTROYED();
+    return nullptr;
+  }
+
+  void InvalidateSubtreeLayoutForFontUpdates() override;
+
+  void DetachAbstractInlineTextBoxesIfNeeded();
+
+  // Returns the logical location of the first line box, and the logical height
+  // of the LayoutText.
+  void LogicalStartingPointAndHeight(LogicalOffset& logical_starting_point,
+                                     LayoutUnit& logical_height) const;
+
+  // Returns the size of area occupied by this LayoutText.
+  LayoutUnit PhysicalAreaSize() const;
+
+  // Returns the rightmost offset occupied by this LayoutText.
+  LayoutUnit PhysicalRightOffset() const;
+
+  // For LayoutShiftTracker. Saves the value of LogicalStartingPoint() value
+  // during the previous paint invalidation.
+  LogicalOffset PreviousLogicalStartingPoint() const {
+    NOT_DESTROYED();
+    return previous_logical_starting_point_;
+  }
+  // This is const because LayoutObjects are const for paint invalidation.
+  void SetPreviousLogicalStartingPoint(const LogicalOffset& point) const {
+    NOT_DESTROYED();
+    DCHECK_EQ(GetDocument().Lifecycle().GetState(),
+              DocumentLifecycle::kInPrePaint);
+    previous_logical_starting_point_ = point;
+  }
+  static LogicalOffset UninitializedLogicalStartingPoint() {
+    return {LayoutUnit::Max(), LayoutUnit::Max()};
+  }
+
+#if DCHECK_IS_ON()
+  void RecalcVisualOverflow() override;
+#endif
 
  protected:
   void WillBeDestroyed() override;
 
-  void StyleWillChange(StyleDifference, const ComputedStyle&) final {}
+  void StyleWillChange(StyleDifference, const ComputedStyle&) final {
+    NOT_DESTROYED();
+  }
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
@@ -344,9 +459,18 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   virtual InlineTextBox* CreateTextBox(int start,
                                        uint16_t length);  // Subclassed by SVG.
 
-  void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
+  void InvalidatePaint(const PaintInvalidatorContext&) const final;
+  void InvalidateDisplayItemClients(PaintInvalidationReason) const final;
 
-  bool CanBeSelectionLeafInternal() const final { return true; }
+  bool CanBeSelectionLeafInternal() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
+  // Override |LayoutObject| implementation to invalidate |LayoutNGtextCombine|.
+  // Note: This isn't a virtual function.
+  void SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+      LayoutInvalidationReasonForTracing reason);
 
  private:
   InlineTextBoxList& MutableTextBoxes();
@@ -368,15 +492,25 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Make length() private so that callers that have a LayoutText*
   // will use the more efficient textLength() instead, while
   // callers with a LayoutObject* can continue to use length().
-  unsigned length() const final { return TextLength(); }
+  unsigned length() const final {
+    NOT_DESTROYED();
+    return TextLength();
+  }
 
   // See the class comment as to why we shouldn't call this function directly.
-  void Paint(const PaintInfo&) const final { NOTREACHED(); }
-  void UpdateLayout() final { NOTREACHED(); }
+  void Paint(const PaintInfo&) const final {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
+  void UpdateLayout() final {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset&,
                    HitTestAction) final {
+    NOT_DESTROYED();
     NOTREACHED();
     return false;
   }
@@ -402,6 +536,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   bool CanOptimizeSetText() const;
   void SetFirstTextBoxLogicalLeft(float text_width) const;
+
+  const DisplayItemClient* GetSelectionDisplayItemClient() const final;
 
   // We put the bitfield first to minimize padding on 64-bit.
  protected:
@@ -439,10 +575,14 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
  private:
   ContentCaptureManager* GetContentCaptureManager();
+  void DetachAbstractInlineTextBoxes();
 
   // Used for LayoutNG with accessibility. True if inline fragments are
   // associated to |NGAbstractInlineTextBox|.
   unsigned has_abstract_inline_text_box_ : 1;
+
+  DOMNodeId node_id_ = kInvalidDOMNodeId;
+
   float min_width_;
   float max_width_;
   float first_line_min_width_;
@@ -450,20 +590,19 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   String text_;
 
-  union {
-    // The line boxes associated with this object.
-    // Read the LINE BOXES OWNERSHIP section in the class header comment.
-    // Valid only when !IsInLayoutNGInlineFormattingContext().
-    InlineTextBoxList text_boxes_;
-    // The first fragment of text boxes associated with this object.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    NGPaintFragment* first_paint_fragment_;
-    // The index of the first fragment item associated with this object in
-    // |NGFragmentItems::Items()|. Zero means there are no such item.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    wtf_size_t first_fragment_item_index_;
-  };
-  DOMNodeId node_id_ = kInvalidDOMNodeId;
+  // This is mutable for paint invalidation.
+  mutable LogicalOffset previous_logical_starting_point_ =
+      UninitializedLogicalStartingPoint();
+
+  // The line boxes associated with this object.
+  // Read the LINE BOXES OWNERSHIP section in the class header comment.
+  // Valid only when !IsInLayoutNGInlineFormattingContext().
+  InlineTextBoxList text_boxes_;
+
+  // The index of the first fragment item associated with this object in
+  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // Valid only when IsInLayoutNGInlineFormattingContext().
+  wtf_size_t first_fragment_item_index_ = 0u;
 };
 
 inline InlineTextBoxList& LayoutText::MutableTextBoxes() {
@@ -471,20 +610,9 @@ inline InlineTextBoxList& LayoutText::MutableTextBoxes() {
   return text_boxes_;
 }
 
-inline NGPaintFragment* LayoutText::FirstInlineFragment() const {
-  if (!IsInLayoutNGInlineFormattingContext())
-    return nullptr;
-  // TODO(yosin): Once we replace all usage of |FirstInlineFragment()| to
-  // |NGInlineCursor|, we should change this to |DCHECK()|.
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return nullptr;
-  return first_paint_fragment_;
-}
-
 inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   return first_fragment_item_index_;
 }
 
@@ -517,10 +645,18 @@ inline float LayoutText::HyphenWidth(const Font& font,
                                      style, direction));
 }
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutText, IsText());
+inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {
+  if (UNLIKELY(has_abstract_inline_text_box_))
+    DetachAbstractInlineTextBoxes();
+}
+
+template <>
+struct DowncastTraits<LayoutText> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsText(); }
+};
 
 inline LayoutText* Text::GetLayoutObject() const {
-  return ToLayoutText(CharacterData::GetLayoutObject());
+  return To<LayoutText>(CharacterData::GetLayoutObject());
 }
 
 }  // namespace blink

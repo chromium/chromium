@@ -5,8 +5,9 @@
 #include "components/webrtc_logging/common/partial_circular_buffer.h"
 
 #include <algorithm>
+#include <cstring>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace webrtc_logging {
 

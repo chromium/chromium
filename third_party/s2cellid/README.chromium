@@ -44,7 +44,7 @@ Local Modifications:
   - Change int64 -> int64
   - Change GG_ULONGLONG -> static_cast<uint64_t>
   - Remove absl/base/macros.h and use chromium base/macros.h
-- Change glog to use chromium base/logging.h
+- Change glog to use chromium base/{logging.h, check.h, etc.}
 - Remove s2/base/strings/stringprintf.h to use chromium base/strings/stringprintf.h
 - Remove base/casts.h and change implicit_cast to static_cast.
 - Append std:: to string type.

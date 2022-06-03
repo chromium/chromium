@@ -1,12 +1,11 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/pin_keyboard.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="lock_screen_constants.html">
+<link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="../../../cr_elements/shared_vars_css.html">
+<link rel="import" href="../../../html/assert.html">
+<link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="pin_keyboard.html">
 
 <!--
 
@@ -44,18 +43,8 @@ Where:
 <dom-module id="setup-pin-keyboard">
   <template>
     <style include="settings-shared">
-      #errorIcon {
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        display: none;
-      }
-
       .error {
-        color: var(--google-red-600);
-      }
-
-      .error #errorIcon {
-        --iron-icon-fill-color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
         display: inline-block;
       }
 
@@ -70,6 +59,7 @@ Where:
         font-size: 10px;
         height: 32px;
         min-height: 0;
+        padding-bottom: 8px;
       }
 
       /* Hide this using visibility: hidden instead of hidden so that the
@@ -81,19 +71,17 @@ Where:
     <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
         on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
         has-error="[[hasError_(problemMessageId_, problemClass_)]]"
+        disabled="[[isSetModesCallPending_]]"
         enable-placeholder="[[enablePlaceholder]]" enable-letters>
       <!-- Warning/error; only shown if title is hidden. -->
       <div id="problemDiv" class$="[[problemClass_]]"
           invisible$="[[!problemMessageId_]]" problem>
-        <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
-        <span>
+        <span aria-live="assertive">
           [[formatProblemMessage_(locale, problemMessageId_,
                 problemMessageParameters_)]]
         </span>
       </div>
     </pin-keyboard>
   </template>
-  <script
-      src="chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.js">
-  </script>
+  <script src="setup_pin_keyboard.js"></script>
 </dom-module>

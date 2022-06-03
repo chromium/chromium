@@ -8,9 +8,11 @@ import android.os.Bundle;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ResourceId;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.datareduction.DataReductionPreferenceFragment;
+import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBar;
 
 /**
  * An InfoBar that lets the user know that Data Saver Lite Mode now also applies to HTTPS pages.
@@ -19,9 +21,8 @@ public class PreviewsLitePageInfoBar extends ConfirmInfoBar {
     public static final String FROM_INFOBAR = "FromInfoBar";
 
     @CalledByNative
-    private static InfoBar show(int enumeratedIconId, String message, String linkText) {
-        return new PreviewsLitePageInfoBar(
-                ResourceId.mapToDrawableId(enumeratedIconId), message, linkText);
+    private static InfoBar show(int iconId, String message, String linkText) {
+        return new PreviewsLitePageInfoBar(iconId, message, linkText);
     }
 
     private PreviewsLitePageInfoBar(int iconDrawbleId, String message, String linkText) {
@@ -35,7 +36,8 @@ public class PreviewsLitePageInfoBar extends ConfirmInfoBar {
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(FROM_INFOBAR, true);
-        SettingsLauncher.launchSettingsPage(
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(
                 getContext(), DataReductionPreferenceFragment.class, fragmentArgs);
     }
 }

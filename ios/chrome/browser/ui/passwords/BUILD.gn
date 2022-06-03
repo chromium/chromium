@@ -5,30 +5,113 @@
 source_set("passwords") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "password_breach_action_handler.h",
     "password_breach_consumer.h",
     "password_breach_coordinator.h",
     "password_breach_coordinator.mm",
-    "password_breach_learn_more_view_controller.h",
-    "password_breach_learn_more_view_controller.mm",
     "password_breach_mediator.h",
     "password_breach_mediator.mm",
     "password_breach_presenter.h",
     "password_breach_view_controller.h",
     "password_breach_view_controller.mm",
+    "password_protection_coordinator.h",
+    "password_protection_coordinator.mm",
+    "password_protection_view_controller.h",
+    "password_protection_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "resources",
     "//base",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_constants.h",
+    "password_constants.mm",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "password_breach_app_interface.h",
+    "password_breach_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "password_breach_app_interface.h",
+    "password_breach_app_interface_stub.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "password_breach_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "XCTest.framework",
+  ]
 }

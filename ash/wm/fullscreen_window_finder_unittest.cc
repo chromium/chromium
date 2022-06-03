@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -20,6 +18,11 @@ namespace ash {
 class FullscreenWindowFinderTest : public AshTestBase {
  public:
   FullscreenWindowFinderTest() = default;
+
+  FullscreenWindowFinderTest(const FullscreenWindowFinderTest&) = delete;
+  FullscreenWindowFinderTest& operator=(const FullscreenWindowFinderTest&) =
+      delete;
+
   ~FullscreenWindowFinderTest() override = default;
 
   void SetUp() override {
@@ -39,9 +42,6 @@ class FullscreenWindowFinderTest : public AshTestBase {
 
  protected:
   std::unique_ptr<aura::Window> test_window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWindowFinderTest);
 };
 
 // Test that a non-fullscreen window isn't found by GetWindowForFullscreenMode.
@@ -58,14 +58,14 @@ TEST_F(FullscreenWindowFinderTest, RegularFullscreen) {
 
 // Test that a pinned fullscreen window is found by GetWindowForFullscreenMode.
 TEST_F(FullscreenWindowFinderTest, PinnedFullscreen) {
-  test_window_->SetProperty(kWindowPinTypeKey, WindowPinType::kPinned);
+  window_util::PinWindow(test_window_.get(), /*trusted=*/false);
   EXPECT_TRUE(FullscreenWindowExists());
 }
 
 // Test that a trusted pinned fullscreen window is found by
 // GetWindowForFullscreenMode.
 TEST_F(FullscreenWindowFinderTest, TrustedPinnedFullscreen) {
-  test_window_->SetProperty(kWindowPinTypeKey, WindowPinType::kTrustedPinned);
+  window_util::PinWindow(test_window_.get(), /*trusted=*/true);
   EXPECT_TRUE(FullscreenWindowExists());
 }
 

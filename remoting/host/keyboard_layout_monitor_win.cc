@@ -14,14 +14,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "base/timer/timer.h"
@@ -35,8 +34,12 @@ namespace remoting {
 
 namespace {
 
-constexpr base::TimeDelta POLL_INTERVAL =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta POLL_INTERVAL = base::Milliseconds(1000);
+// If second is equivalent to first (generates the same functions/characters at
+// all shift levels), second will be removed from the map.
+constexpr std::pair<ui::DomCode, ui::DomCode> POSSIBLE_EQUIVALENTS[] = {
+    // These are equivalent on the US QWERTY layout, among others.
+    {ui::DomCode::BACKSLASH, ui::DomCode::INTL_BACKSLASH}};
 
 class KeyboardLayoutMonitorWin : public KeyboardLayoutMonitor {
  public:
@@ -165,6 +168,44 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
   std::vector<std::pair<std::uint32_t, int>> right_alts;
 
   for (ui::DomCode key : KeyboardLayoutMonitor::kSupportedKeys) {
+    // These keys cannot be injected properly on Windows with the APIs we use.
+    //
+    // The USB keyboard driver translates NumLock to the scancode 0x45, but it
+    // is delivered to applications as 0xE045. Meanwhile, Pause is translated
+    // to the scancode sequence 0xE1 0x1D 0x45 0xE1 0x9D 0xC5, but is delivered
+    // to applications as a plain 0x45.
+    //
+    // Injecting 0x45 using SendInput does get interpreted by Windows as
+    // VK_NUMLOCK, but is not translated to 0xE045 before being delivered to
+    // applications as it is with a physical keyboard. As a result, Chrome (for
+    // example) reports a key value of "NumLock" but a code value of "Pause".
+    //
+    // Injecting 0xE045, on the otherhand, does not get interpreted as
+    // VK_NUMLOCK, so Chrome sees reports a code value of "NumLock", but a key
+    // value of "Unidentified".
+    //
+    // I have not been able to determine any way to use SendInput to inject an
+    // event that Windows interprets as VK_PAUSE.
+    //
+    // NumpadEqual also behaves inconsistently when injected, but in a
+    // different way: while when input using a physical keyboard, the
+    // corresponding scancode (0x59) is always interpreted as VK_CLEAR
+    // regardless of the num lock state. When injected, however, Windows
+    // translates the key to VK_NUMPAD5 when numlock is enabled. Since the
+    // virtual keyboard considers num lock always to be enabled, this
+    // effectively results in an extra 5 key in the NumpadEqual position, which
+    // is both redundant and confusing. Given that most keyboards lack this key,
+    // and those that do have it label it '=', it seems easiest just to exclude
+    // it for now. In the future, we could consider adding support to it for
+    // keyboard layouts that treat is as something other than VK_CLEAR, if such
+    // layouts turn out to exist. (Why Windows maps the USB 'Keypad =' key to
+    // scancode 0x59 in the first place, even though 0x59 does not generate an
+    // '=' character, is unclear.)
+    if (key == ui::DomCode::NUM_LOCK || key == ui::DomCode::PAUSE ||
+        key == ui::DomCode::NUMPAD_EQUAL) {
+      continue;
+    }
+
     std::uint32_t usb_code = ui::KeycodeConverter::DomCodeToUsbKeycode(key);
     int scancode = ui::KeycodeConverter::DomCodeToNativeKeycode(key);
     UINT virtual_key = MapVirtualKeyEx(scancode, MAPVK_VSC_TO_VK_EX, layout);
@@ -175,6 +216,9 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
 
     if (virtual_key == VK_CAPITAL || virtual_key == VK_NUMLOCK) {
       // Don't send caps or numlock keys until we decide how to handle them.
+      // (We currently skip the key in the NumLock position above due to
+      // difficulties injecting it, but the user still may have mapped a
+      // different key to that function.)
       continue;
     }
 
@@ -200,7 +244,18 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
       key_state[VK_NUMLOCK] = 1;
       key_state[VK_CAPITAL] = 0;
       WCHAR char_buffer[16];
-      int size = ToUnicodeEx(translated_key, scancode, key_state, char_buffer,
+      // According to the documentation, ToUnicodeEx usually does the
+      // translation solely based on the virtual key, but can use bit 15 of the
+      // scancode to distinguish between a keypress and a key release. This
+      // suggests that the expected format for scancode is the upper word of
+      // lParam from a WM_CHAR, where the top bit similarly distinguished press
+      // versus release. In any event, passing |scancode| as the second
+      // parameter here would thus cause extended scancodes (which have the 15th
+      // bit set) to erroneously be interpreted as key-up events and not
+      // generate the appropriate character. Rather than attempting to munge the
+      // scancode into whatever format ToUnicodeEx expects, passing 0 seems to
+      // work just fine.
+      int size = ToUnicodeEx(translated_key, 0, key_state, char_buffer,
                              base::size(char_buffer), 0, layout);
       if (size < 0) {
         // We don't handle dead keys specially for the layout, but we do
@@ -209,9 +264,32 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
         size = -size;
       }
       if (size > 0) {
+        if (size == 1 && char_buffer[0] < 0x20) {
+          // Handle known control characters.
+          protocol::LayoutKeyFunction function =
+              protocol::LayoutKeyFunction::UNKNOWN;
+          switch (char_buffer[0]) {
+            case 0x08:
+              function = protocol::LayoutKeyFunction::BACKSPACE;
+              break;
+            case 0x09:
+              function = protocol::LayoutKeyFunction::TAB;
+              break;
+            case 0x0D:
+              function = protocol::LayoutKeyFunction::ENTER;
+              break;
+            case 0x1B:
+              function = protocol::LayoutKeyFunction::ESCAPE;
+              break;
+          }
+          if (function != protocol::LayoutKeyFunction::UNKNOWN) {
+            key_actions[shift_level].set_function(function);
+            continue;
+          }
+        }
         // The key generated at least one character.
         key_actions[shift_level].set_character(
-            base::UTF16ToUTF8(base::StringPiece16(char_buffer, size)));
+            base::WideToUTF8(base::WStringPiece(char_buffer, size)));
         if (shift_level > 2) {
           has_altgr = true;
         }
@@ -241,6 +319,46 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
     for (auto& key : *layout_message.mutable_keys()) {
       key.second.mutable_actions()->erase(2);
       key.second.mutable_actions()->erase(3);
+    }
+  }
+
+  // Some layouts have equivalent keys. Remove the redundant keys to make the
+  // layout cleaner.
+  auto* keys = layout_message.mutable_keys();
+  for (const std::pair<ui::DomCode, ui::DomCode>& possible_equivalent :
+       POSSIBLE_EQUIVALENTS) {
+    std::uint32_t code1 =
+        ui::KeycodeConverter::DomCodeToUsbKeycode(possible_equivalent.first);
+    std::uint32_t code2 =
+        ui::KeycodeConverter::DomCodeToUsbKeycode(possible_equivalent.second);
+    auto key_behavior1 = keys->find(code1);
+    auto key_behavior2 = keys->find(code2);
+    if (key_behavior1 != keys->end() && key_behavior2 != keys->end() &&
+        key_behavior1->second.SerializeAsString() ==
+            key_behavior2->second.SerializeAsString()) {
+      keys->erase(key_behavior2);
+    }
+  }
+
+  // There seem to be a number of keys that are mapped to a virtual key in the
+  // layout but don't do anything useful. E.g., the US QWERTY layout maps
+  // NonConvert, which isn't on a standard US keyboard, to VK_OEM_PA1, which
+  // doesn't appear to be useful. To avoid cluttering the on-screen keyboard
+  // with blank, useless keys, just omit unknown keys for now. We can revisit
+  // this if folks send feedback about useful keys being missing.
+  for (auto it = keys->begin(); it != keys->end();) {
+    bool has_action = false;
+    for (const auto& action : it->second.actions()) {
+      if (action.second.has_character() ||
+          (action.second.has_function() &&
+           action.second.function() != protocol::LayoutKeyFunction::UNKNOWN)) {
+        has_action = true;
+      }
+    }
+    if (!has_action) {
+      it = keys->erase(it);
+    } else {
+      ++it;
     }
   }
 
@@ -310,6 +428,8 @@ UINT TranslateVirtualKey(bool numlock_state,
     return virtual_key;
   }
   switch (virtual_key) {
+    case VK_DELETE:
+      return VK_DECIMAL;
     case VK_INSERT:
       return VK_NUMPAD0;
     case VK_END:
@@ -438,7 +558,7 @@ protocol::LayoutKeyFunction VirtualKeyToLayoutKeyFunction(UINT virtual_key,
       return protocol::LayoutKeyFunction::CONTEXT_MENU;
     case VK_PAUSE:
       return protocol::LayoutKeyFunction::PAUSE;
-    case VK_PRINT:
+    case VK_SNAPSHOT:
       return protocol::LayoutKeyFunction::PRINT_SCREEN;
   }
 

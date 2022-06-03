@@ -32,8 +32,8 @@ namespace blink {
 void WebAudioBus::Initialize(unsigned number_of_channels,
                              size_t length,
                              double sample_rate) {
-  scoped_refptr<AudioBus> audio_bus =
-      AudioBus::Create(number_of_channels, length);
+  scoped_refptr<AudioBus> audio_bus = AudioBus::Create(
+      number_of_channels, base::checked_cast<wtf_size_t>(length));
   audio_bus->SetSampleRate(sample_rate);
 
   if (private_)
@@ -47,7 +47,7 @@ void WebAudioBus::ResizeSmaller(size_t new_length) {
   DCHECK(private_);
   if (private_) {
     DCHECK_LE(new_length, length());
-    private_->ResizeSmaller(new_length);
+    private_->ResizeSmaller(static_cast<wtf_size_t>(new_length));
   }
 }
 

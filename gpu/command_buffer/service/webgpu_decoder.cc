@@ -19,11 +19,12 @@ WebGPUDecoder* WebGPUDecoder::Create(
     CommandBufferServiceBase* command_buffer_service,
     SharedImageManager* shared_image_manager,
     MemoryTracker* memory_tracker,
-    gles2::Outputter* outputter) {
+    gles2::Outputter* outputter,
+    const GpuPreferences& gpu_preferences) {
 #if BUILDFLAG(USE_DAWN)
   return CreateWebGPUDecoderImpl(client, command_buffer_service,
                                  shared_image_manager, memory_tracker,
-                                 outputter);
+                                 outputter, gpu_preferences);
 #else
   NOTREACHED();
   return nullptr;

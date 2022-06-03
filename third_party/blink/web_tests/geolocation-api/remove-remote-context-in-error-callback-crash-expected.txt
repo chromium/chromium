@@ -1,9 +1,0 @@
-Tests that we do not crash when a Geolocation request is made from a remote frame, which is then removed from the DOM in the error callback.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Error callback invoked.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

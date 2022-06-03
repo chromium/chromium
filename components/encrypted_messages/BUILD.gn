@@ -10,9 +10,7 @@ static_library("encrypted_messages") {
     "message_encrypter.h",
   ]
 
-  public_deps = [
-    ":encrypted_message_proto",
-  ]
+  public_deps = [ ":encrypted_message_proto" ]
 
   deps = [
     "//base",
@@ -22,17 +20,13 @@ static_library("encrypted_messages") {
 }
 
 proto_library("encrypted_message_proto") {
-  sources = [
-    "encrypted_message.proto",
-  ]
+  sources = [ "encrypted_message.proto" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "message_encrypter_unittest.cc",
-  ]
+  sources = [ "message_encrypter_unittest.cc" ]
 
   deps = [
     ":encrypted_messages",

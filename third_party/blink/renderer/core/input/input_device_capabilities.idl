@@ -11,11 +11,13 @@
 
 // https://wicg.github.io/InputDeviceCapabilities/#the-inputdevicecapabilities-interface
 
-interface InputDeviceCapabilities {
-    constructor(optional InputDeviceCapabilitiesInit deviceInitDict);
+[
+    Exposed=Window
+] interface InputDeviceCapabilities {
+    constructor(optional InputDeviceCapabilitiesInit deviceInitDict = {});
 
     // Whether this device dispatches touch events for movement.  This is used to detect
     // mouse events which represent only an action that has already been handled  by
     // touch event handlers.
-    [Measure] readonly attribute boolean firesTouchEvents;
+    [HighEntropy=Direct, Measure] readonly attribute boolean firesTouchEvents;
 };

@@ -8,7 +8,6 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
@@ -28,6 +27,10 @@ class TouchPointView;
 class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
  public:
   explicit TouchHudRenderer(views::Widget* parent_widget);
+
+  TouchHudRenderer(const TouchHudRenderer&) = delete;
+  TouchHudRenderer& operator=(const TouchHudRenderer&) = delete;
+
   ~TouchHudRenderer() override;
 
   // Called to clear touch points and traces from the screen.
@@ -46,9 +49,7 @@ class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
   views::Widget* parent_widget_;
 
   // A map of touch ids to TouchPointView.
-  std::map<int, std::unique_ptr<TouchPointView>> points_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudRenderer);
+  std::map<int, TouchPointView*> points_;
 };
 
 }  // namespace ash

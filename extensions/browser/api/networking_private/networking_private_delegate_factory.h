@@ -31,14 +31,20 @@ class NetworkingPrivateDelegateFactory
   class UIDelegateFactory {
    public:
     UIDelegateFactory();
+
+    UIDelegateFactory(const UIDelegateFactory&) = delete;
+    UIDelegateFactory& operator=(const UIDelegateFactory&) = delete;
+
     virtual ~UIDelegateFactory();
 
     virtual std::unique_ptr<NetworkingPrivateDelegate::UIDelegate>
     CreateDelegate() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UIDelegateFactory);
   };
+
+  NetworkingPrivateDelegateFactory(const NetworkingPrivateDelegateFactory&) =
+      delete;
+  NetworkingPrivateDelegateFactory& operator=(
+      const NetworkingPrivateDelegateFactory&) = delete;
 
   // Provide optional factories for creating delegate instances.
   void SetUIDelegateFactory(std::unique_ptr<UIDelegateFactory> factory);
@@ -58,12 +64,8 @@ class NetworkingPrivateDelegateFactory
       content::BrowserContext* browser_context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 
   std::unique_ptr<UIDelegateFactory> ui_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateDelegateFactory);
 };
 
 }  // namespace extensions

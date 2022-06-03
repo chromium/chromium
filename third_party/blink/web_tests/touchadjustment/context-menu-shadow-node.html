@@ -30,7 +30,7 @@
 
     function addShadowDOM() {
         var targetDiv = document.getElementById("sandbox");
-        var root = targetDiv.createShadowRoot();
+        var root = targetDiv.attachShadow({mode: 'open'});
         var shadowDiv = document.createElement("div");
         shadowDiv.style.width = "20px";
         shadowDiv.style.height = "20px";

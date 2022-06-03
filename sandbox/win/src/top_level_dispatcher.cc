@@ -7,7 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/filesystem_dispatcher.h"
 #include "sandbox/win/src/interception.h"
@@ -19,6 +20,7 @@
 #include "sandbox/win/src/registry_dispatcher.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/signed_dispatcher.h"
+#include "sandbox/win/src/socket_dispatcher.h"
 #include "sandbox/win/src/sync_dispatcher.h"
 
 namespace sandbox {
@@ -64,32 +66,15 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
   ipc_targets_[static_cast<size_t>(IpcTag::GDI_GDIDLLINITIALIZE)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETSTOCKOBJECT)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::USER_REGISTERCLASSW)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_ENUMDISPLAYMONITORS)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_ENUMDISPLAYDEVICES)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::USER_GETMONITORINFO)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETCERTIFICATE)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETCERTIFICATESIZE)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETOPMINFORMATION)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::GDI_GETOPMRANDOMNUMBER)] =
-      dispatcher;
-  ipc_targets_[static_cast<size_t>(
-      IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(
-      IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS)] = dispatcher;
   process_mitigations_win32k_dispatcher_.reset(dispatcher);
 
   dispatcher = new SignedDispatcher(policy_);
   ipc_targets_[static_cast<size_t>(IpcTag::NTCREATESECTION)] = dispatcher;
   signed_dispatcher_.reset(dispatcher);
+
+  dispatcher = new SocketDispatcher(policy_);
+  ipc_targets_[static_cast<size_t>(IpcTag::WS2SOCKET)] = dispatcher;
+  socket_dispatcher_.reset(dispatcher);
 }
 
 TopLevelDispatcher::~TopLevelDispatcher() {}

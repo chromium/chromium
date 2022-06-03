@@ -14,6 +14,8 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.content_public.common.Referrer;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.Locale;
 import java.util.Map;
@@ -26,30 +28,30 @@ import java.util.Map;
 @JNINamespace("content")
 public class LoadUrlParams {
     // Fields with counterparts in NavigationController::LoadURLParams.
-    // Package private so that NavigationController.loadUrl can pass them down to
-    // native code. Should not be accessed directly anywhere else outside of
-    // this class.
-    String mUrl;
-    // TODO(nasko,tedchoc): https://crbug.com/980641: Don't use String to store
-    // initiator origin, as it is a lossy format.
-    String mInitiatorOrigin;
-    int mLoadUrlType;
-    int mTransitionType;
-    Referrer mReferrer;
+    private String mUrl;
+    private Origin mInitiatorOrigin;
+    private int mLoadUrlType;
+    private int mTransitionType;
+    private Referrer mReferrer;
     private Map<String, String> mExtraHeaders;
     private String mVerbatimHeaders;
-    int mUaOverrideOption;
-    ResourceRequestBody mPostData;
-    String mBaseUrlForDataUrl;
-    String mVirtualUrlForDataUrl;
-    String mDataUrlAsString;
-    boolean mCanLoadLocalResources;
-    boolean mIsRendererInitiated;
-    boolean mShouldReplaceCurrentEntry;
-    long mIntentReceivedTimestamp;
-    long mInputStartTimestamp;
-    boolean mHasUserGesture;
-    boolean mShouldClearHistoryList;
+    private int mUaOverrideOption;
+    private ResourceRequestBody mPostData;
+    private String mBaseUrlForDataUrl;
+    private String mVirtualUrlForDataUrl;
+    private String mDataUrlAsString;
+    private boolean mCanLoadLocalResources;
+    private boolean mIsRendererInitiated;
+    private boolean mShouldReplaceCurrentEntry;
+    private long mIntentReceivedTimestamp;
+    private long mInputStartTimestamp;
+    private boolean mHasUserGesture;
+    private boolean mShouldClearHistoryList;
+    private String mAttributionSourcePackageName;
+    private String mAttributionSourceEventId;
+    private String mAttributionDestination;
+    private String mAttributionReportTo;
+    private long mAttributionExpiry;
 
     /**
      * Creates an instance with default page transition type.
@@ -57,6 +59,23 @@ public class LoadUrlParams {
      */
     public LoadUrlParams(String url) {
         this(url, PageTransition.LINK);
+    }
+
+    /**
+     * Creates an instance with default page transition type.
+     * @param url the url to be loaded
+     */
+    public LoadUrlParams(GURL url) {
+        this(url.getSpec(), PageTransition.LINK);
+    }
+
+    /**
+     * Creates an instance with the given page transition type.
+     * @param url the url to be loaded
+     * @param transitionType the PageTransitionType constant corresponding to the load
+     */
+    public LoadUrlParams(GURL url, int transitionType) {
+        this(url.getSpec(), transitionType);
     }
 
     /**
@@ -208,14 +227,14 @@ public class LoadUrlParams {
     /**
      * Sets the initiator origin.
      */
-    public void setInitiatorOrigin(String initiatorOrigin) {
+    public void setInitiatorOrigin(@Nullable Origin initiatorOrigin) {
         mInitiatorOrigin = initiatorOrigin;
     }
 
     /**
      * Return the initiator origin.
      */
-    public @Nullable String getInitiatorOrigin() {
+    public @Nullable Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
     }
 
@@ -270,6 +289,7 @@ public class LoadUrlParams {
      */
     public void setExtraHeaders(Map<String, String> extraHeaders) {
         mExtraHeaders = extraHeaders;
+        verifyHeaders();
     }
 
     /**
@@ -322,6 +342,16 @@ public class LoadUrlParams {
      */
     public void setVerbatimHeaders(String headers) {
         mVerbatimHeaders = headers;
+        verifyHeaders();
+    }
+
+    private void verifyHeaders() {
+        // TODO(https://crbug.com/1199393): Merge extra and verbatim headers internally, and only
+        // expose one way to get headers, so users of this class don't miss headers.
+        if (mExtraHeaders != null && mVerbatimHeaders != null) {
+            // If both header types are set, ensure they're the same.
+            assert mVerbatimHeaders.equalsIgnoreCase(getExtraHeadersString());
+        }
     }
 
     /**
@@ -348,12 +378,12 @@ public class LoadUrlParams {
     }
 
     /**
-     * Set the post data of this load. This field is ignored unless load type is
-     * LoadURLType.HTTP_POST.
+     * Set the post data of this load, and if non-null, sets the load type to HTTP_POST.
      * @param postData Post data for this http post load.
      */
     public void setPostData(ResourceRequestBody postData) {
         mPostData = postData;
+        if (postData != null) setLoadType(LoadURLType.HTTP_POST);
     }
 
     /**
@@ -461,7 +491,8 @@ public class LoadUrlParams {
 
     /**
      * @param intentReceivedTimestamp the timestamp at which Chrome received the intent that
-     *                                triggered this URL load, as returned by System.currentMillis.
+     *                                triggered this URL load, as returned by
+     *                                SystemClock.uptimeMillis.
      */
     public void setIntentReceivedTimestamp(long intentReceivedTimestamp) {
         mIntentReceivedTimestamp = intentReceivedTimestamp;
@@ -476,7 +507,7 @@ public class LoadUrlParams {
 
     /**
      * @param inputStartTimestamp the timestamp of the event in the location bar that triggered
-     *                            this URL load, as returned by System.currentMillis.
+     *                            this URL load, as returned by SystemClock.uptimeMillis.
      */
     public void setInputStartTimestamp(long inputStartTimestamp) {
         mInputStartTimestamp = inputStartTimestamp;
@@ -522,6 +553,67 @@ public class LoadUrlParams {
             return true;
         }
         return LoadUrlParamsJni.get().isDataScheme(mBaseUrlForDataUrl);
+    }
+
+    /**
+     * Sets the Attribution Parameters for this load, used to construct a blink::Impression.
+     *
+     * @param sourcePackageName The Package Name of the app that triggered this navigation.
+     * @param sourceEventId A uint64_t encoded as a string identifying the attribution source.
+     * @param destination The origin on which this navigation is intended to finish.
+     * @param reportTo An optional origin to send any attribution report to.
+     * @param expiryMs An optional offset in milliseconds from the current time, after which the
+     *          attribution expires. 0 represents an unset expiry time.
+     *
+     * For more information see https://wicg.github.io/conversion-measurement-api/
+     */
+    public void setAttributionParameters(String sourcePackageName, String sourceEventId,
+            String destination, String reportTo, long expiryMs) {
+        mAttributionSourcePackageName = sourcePackageName;
+        mAttributionSourceEventId = sourceEventId;
+        mAttributionDestination = destination;
+        mAttributionReportTo = reportTo;
+        mAttributionExpiry = expiryMs;
+    }
+
+    /**
+     * {@see #setAttributionParameters}
+     * @return the PackageName for the source of this navigation with Attribution, if any.
+     */
+    public String getAttributionSourcePackageName() {
+        return mAttributionSourcePackageName;
+    }
+
+    /**
+     * {@see #setAttributionParameters}
+     * @return the Attribution SourceEventId for this navigation, if any.
+     */
+    public String getAttributionSourceEventId() {
+        return mAttributionSourceEventId;
+    }
+
+    /**
+     * {@see #setAttributionParameters}
+     * @return the Attribution Destination for this navigation, if any.
+     */
+    public String getAttributionDestination() {
+        return mAttributionDestination;
+    }
+
+    /**
+     * {@see #setAttributionParameters}
+     * @return the Attribution ReportTo for this navigation, if any.
+     */
+    public String getAttributionReportTo() {
+        return mAttributionReportTo;
+    }
+
+    /**
+     * {@see #setAttributionParameters}
+     * @return the Attribution Expiry for this navigation, if any.
+     */
+    public long getAttributionExpiry() {
+        return mAttributionExpiry;
     }
 
     @NativeMethods

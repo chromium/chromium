@@ -37,6 +37,42 @@ void CardNameFixFlowViewAndroid::PromptDismissed(
 }
 
 void CardNameFixFlowViewAndroid::Show() {
+  auto java_object = GetOrCreateJavaObject();
+  if (!java_object)
+    return;
+
+  java_object_.Reset(java_object);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ui::ViewAndroid* view_android = web_contents_->GetNativeView();
+
+  Java_AutofillNameFixFlowBridge_show(
+      env, java_object_, view_android->GetWindowAndroid()->GetJavaObject());
+}
+
+void CardNameFixFlowViewAndroid::ControllerGone() {
+  controller_ = nullptr;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (java_object_internal_) {
+    // Don't create an object just for dismiss.
+    Java_AutofillNameFixFlowBridge_dismiss(env, java_object_internal_);
+  }
+}
+
+CardNameFixFlowViewAndroid::~CardNameFixFlowViewAndroid() {
+  if (controller_)
+    controller_->OnConfirmNameDialogClosed();
+}
+
+base::android::ScopedJavaGlobalRef<jobject>
+CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
+  if (java_object_internal_)
+    return java_object_internal_;
+
+  if (web_contents_->GetNativeView() == nullptr ||
+      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr)
+    return nullptr;  // No window attached (yet or anymore).
+
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
 
@@ -50,24 +86,11 @@ void CardNameFixFlowViewAndroid::Show() {
   ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
       env, controller_->GetSaveButtonLabel());
 
-  java_object_.Reset(Java_AutofillNameFixFlowBridge_create(
-      env, reinterpret_cast<intptr_t>(this), dialog_title, inferred_name,
-      confirm, ResourceMapper::MapFromChromiumId(controller_->GetIconId()),
-      view_android->GetWindowAndroid()->GetJavaObject()));
-
-  Java_AutofillNameFixFlowBridge_show(
-      env, java_object_, view_android->GetWindowAndroid()->GetJavaObject());
-}
-
-void CardNameFixFlowViewAndroid::ControllerGone() {
-  controller_ = nullptr;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillNameFixFlowBridge_dismiss(env, java_object_);
-}
-
-CardNameFixFlowViewAndroid::~CardNameFixFlowViewAndroid() {
-  if (controller_)
-    controller_->OnConfirmNameDialogClosed();
+  return java_object_internal_ = Java_AutofillNameFixFlowBridge_create(
+             env, reinterpret_cast<intptr_t>(this), dialog_title, inferred_name,
+             confirm,
+             ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),
+             view_android->GetWindowAndroid()->GetJavaObject());
 }
 
 }  // namespace autofill

@@ -1,7 +1,6 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 main frame - BeginNavigation request to 'http://127.0.0.1:8000/navigation/resources/pass-and-notify-done.html', http method GET
 main frame - didFinishLoadForFrame
@@ -9,7 +8,6 @@ main frame - DidStartNavigation
 main frame - didHandleOnloadEventsForFrame
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame

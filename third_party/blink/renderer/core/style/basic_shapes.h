@@ -65,7 +65,7 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     return GetType() == other.GetType();
   }
 
-  virtual void GetPath(Path&, const FloatRect&) = 0;
+  virtual void GetPath(Path&, const FloatRect&, float zoom) = 0;
   virtual WindRule GetWindRule() const { return RULE_NONZERO; }
   virtual bool operator==(const BasicShape&) const = 0;
 
@@ -89,10 +89,9 @@ class BasicShapeCenterCoordinate {
                              ? length
                              : length.SubtractFromOneHundredPercent()) {}
 
-  BasicShapeCenterCoordinate(const BasicShapeCenterCoordinate& other)
-      : direction_(other.GetDirection()),
-        length_(other.length()),
-        computed_length_(other.computed_length_) {}
+  BasicShapeCenterCoordinate(const BasicShapeCenterCoordinate&) = default;
+  BasicShapeCenterCoordinate& operator=(const BasicShapeCenterCoordinate&) =
+      default;
 
   bool operator==(const BasicShapeCenterCoordinate& other) const {
     return direction_ == other.direction_ && length_ == other.length_ &&
@@ -117,8 +116,8 @@ class BasicShapeRadius {
   BasicShapeRadius() : type_(kClosestSide) {}
   explicit BasicShapeRadius(const Length& v) : value_(v), type_(kValue) {}
   explicit BasicShapeRadius(RadiusType t) : type_(t) {}
-  BasicShapeRadius(const BasicShapeRadius& other)
-      : value_(other.Value()), type_(other.GetType()) {}
+  BasicShapeRadius(const BasicShapeRadius&) = default;
+  BasicShapeRadius& operator=(const BasicShapeRadius&) = default;
   bool operator==(const BasicShapeRadius& other) const {
     return type_ == other.type_ && value_ == other.value_;
   }
@@ -146,7 +145,7 @@ class CORE_EXPORT BasicShapeCircle final : public BasicShape {
   void SetCenterY(BasicShapeCenterCoordinate center_y) { center_y_ = center_y; }
   void SetRadius(BasicShapeRadius radius) { radius_ = radius; }
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float) override;
   bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeCircleType; }
@@ -185,7 +184,7 @@ class BasicShapeEllipse final : public BasicShape {
   void SetRadiusX(BasicShapeRadius radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(BasicShapeRadius radius_y) { radius_y_ = radius_y; }
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float) override;
   bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeEllipseType; }
@@ -220,7 +219,7 @@ class BasicShapePolygon final : public BasicShape {
     values_.push_back(y);
   }
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float) override;
   bool operator==(const BasicShape&) const override;
 
   WindRule GetWindRule() const override { return wind_rule_; }
@@ -273,7 +272,7 @@ class BasicShapeInset : public BasicShape {
     bottom_left_radius_ = radius;
   }
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float) override;
   bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeInsetType; }
@@ -300,4 +299,4 @@ struct DowncastTraits<BasicShapeInset> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_BASIC_SHAPES_H_

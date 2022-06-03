@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CREDIT_CARD_SCANNER_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CREDIT_CARD_SCANNER_VIEW_DELEGATE_H_
 
-#include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace autofill {

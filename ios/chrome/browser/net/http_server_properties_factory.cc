@@ -23,23 +23,24 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
       : pref_store_(std::move(pref_store)),
         path_(prefs::kHttpServerProperties) {}
 
+  PrefServiceAdapter(const PrefServiceAdapter&) = delete;
+  PrefServiceAdapter& operator=(const PrefServiceAdapter&) = delete;
+
   ~PrefServiceAdapter() override {
     if (on_pref_load_callback_)
       pref_store_->RemoveObserver(this);
   }
 
   // PrefDelegate implementation.
-  const base::DictionaryValue* GetServerProperties() const override {
+  const base::Value* GetServerProperties() const override {
     const base::Value* value;
-    if (pref_store_->GetValue(path_, &value)) {
-      const base::DictionaryValue* dict;
-      if (value->GetAsDictionary(&dict))
-        return dict;
+    if (pref_store_->GetValue(path_, &value) && value->is_dict()) {
+      return value;
     }
 
     return nullptr;
   }
-  void SetServerProperties(const base::DictionaryValue& value,
+  void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {
     pref_store_->SetValue(path_, value.CreateDeepCopy(),
                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
@@ -75,8 +76,6 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   // Only non-null while waiting for initial pref load. |this| is observes the
   // |pref_store_| exactly when non-null.
   base::OnceClosure on_pref_load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceAdapter);
 };
 
 }  // namespace

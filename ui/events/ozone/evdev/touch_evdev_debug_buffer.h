@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_EVDEV_TOUCH_DEBUG_BUFFER_H_
-#define UI_EVENTS_OZONE_EVDEV_TOUCH_DEBUG_BUFFER_H_
+#ifndef UI_EVENTS_OZONE_EVDEV_TOUCH_EVDEV_DEBUG_BUFFER_H_
+#define UI_EVENTS_OZONE_EVDEV_TOUCH_EVDEV_DEBUG_BUFFER_H_
 
 #include <linux/input.h>
 #include <stddef.h>
@@ -58,4 +58,4 @@ class COMPONENT_EXPORT(EVDEV) TouchEventLogEvdev {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_EVDEV_TOUCH_EVDEV_BUFFER_H_
+#endif  // UI_EVENTS_OZONE_EVDEV_TOUCH_EVDEV_DEBUG_BUFFER_H_

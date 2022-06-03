@@ -14,6 +14,8 @@
 
 #include "absl/base/internal/exception_safety_testing.h"
 
+#ifdef ABSL_HAVE_EXCEPTIONS
+
 #include "gtest/gtest.h"
 #include "absl/meta/type_traits.h"
 
@@ -73,3 +75,5 @@ std::string GetSpecString(AllocSpec spec) {
 }  // namespace exceptions_internal
 
 }  // namespace testing
+
+#endif  // ABSL_HAVE_EXCEPTIONS

@@ -1,0 +1,11 @@
+<body>
+PASS if no crash.
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var doc = i.contentDocument;
+i.remove();
+doc.addressSpace;
+</script>

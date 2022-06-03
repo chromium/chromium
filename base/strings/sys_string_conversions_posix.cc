@@ -5,6 +5,7 @@
 #include "base/strings/sys_string_conversions.h"
 
 #include <stddef.h>
+#include <string.h>
 #include <wchar.h>
 
 #include "base/strings/string_piece.h"
@@ -57,7 +58,6 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
       // Handle any errors and return an empty string.
       case static_cast<size_t>(-1):
         return std::string();
-        break;
       case 0:
         // We hit an embedded null byte, keep going.
         ++num_out_chars;
@@ -85,7 +85,6 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
       // Handle any errors and return an empty string.
       case static_cast<size_t>(-1):
         return std::string();
-        break;
       case 0:
         // We hit an embedded null byte, keep going.
         ++j;  // Output is already zeroed.
@@ -114,7 +113,6 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
       case static_cast<size_t>(-2):
       case static_cast<size_t>(-1):
         return std::wstring();
-        break;
       case 0:
         // We hit an embedded null byte, keep going.
         i += 1;
@@ -144,7 +142,6 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
       case static_cast<size_t>(-2):
       case static_cast<size_t>(-1):
         return std::wstring();
-        break;
       case 0:
         i += 1;  // Skip null byte.
         break;

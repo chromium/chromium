@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/background_task_scheduler",
+  "+components/browser_ui/widget",
+  "+components/image_fetcher",
+  "+components/keyed_service",
+  "+components/leveldb_proto",
+  "+components/prefs",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/skia",
+  "+ui/gfx",
+]

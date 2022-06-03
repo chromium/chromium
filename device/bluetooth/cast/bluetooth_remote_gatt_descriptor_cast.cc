@@ -50,12 +50,10 @@ BluetoothRemoteGattDescriptorCast::GetCharacteristic() const {
 }
 
 void BluetoothRemoteGattDescriptorCast::ReadRemoteDescriptor(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   remote_descriptor_->Read(
       base::BindOnce(&BluetoothRemoteGattDescriptorCast::OnReadRemoteDescriptor,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BluetoothRemoteGattDescriptorCast::WriteRemoteDescriptor(
@@ -72,15 +70,15 @@ void BluetoothRemoteGattDescriptorCast::WriteRemoteDescriptor(
 
 void BluetoothRemoteGattDescriptorCast::OnReadRemoteDescriptor(
     ValueCallback callback,
-    ErrorCallback error_callback,
     bool success,
     const std::vector<uint8_t>& result) {
   if (success) {
     value_ = result;
-    std::move(callback).Run(result);
+    std::move(callback).Run(/*error_code=*/absl::nullopt, result);
     return;
   }
-  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
+  std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+                          /*value=*/std::vector<uint8_t>());
 }
 
 void BluetoothRemoteGattDescriptorCast::OnWriteRemoteDescriptor(

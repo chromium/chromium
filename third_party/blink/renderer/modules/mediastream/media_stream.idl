@@ -26,8 +26,10 @@
 // https://w3c.github.io/mediacapture-main/#idl-def-mediastream
 
 [
+    ActiveScriptWrappable,
     Exposed=Window,
-    ActiveScriptWrappable
+    LegacyWindowAlias=webkitMediaStream,
+    LegacyWindowAlias_Measure
 ] interface MediaStream : EventTarget {
     [CallWith=ExecutionContext] constructor();
     [CallWith=ExecutionContext] constructor(MediaStream stream);

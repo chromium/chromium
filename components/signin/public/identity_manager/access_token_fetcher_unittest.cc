@@ -8,15 +8,20 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
+#include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -31,6 +36,8 @@ using testing::StrictMock;
 namespace signin {
 
 namespace {
+
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 const char kTestGaiaId[] = "dummyId";
 const char kTestGaiaId2[] = "dummyId2";
@@ -55,11 +62,16 @@ class AccessTokenFetcherTest
       : signin_client_(&pref_service_),
         token_service_(&pref_service_),
         access_token_info_("access token",
-                           base::Time::Now() + base::TimeDelta::FromHours(1),
-                           std::string(kIdTokenEmptyServices)) {
+                           base::Time::Now() + base::Hours(1),
+                           std::string(kIdTokenEmptyServices)),
+        account_tracker_(std::make_unique<AccountTrackerService>()),
+        primary_account_manager_(&signin_client_,
+                                 &token_service_,
+                                 account_tracker_.get(),
+                                 nullptr /* policy_manager */) {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
 
-    account_tracker_ = std::make_unique<AccountTrackerService>();
     account_tracker_->Initialize(&pref_service_, base::FilePath());
 
     token_service_.AddAccessTokenDiagnosticsObserver(this);
@@ -69,20 +81,68 @@ class AccessTokenFetcherTest
     token_service_.RemoveAccessTokenDiagnosticsObserver(this);
   }
 
-  CoreAccountId AddAccount(const std::string& gaia_id,
-                           const std::string& email) {
+  CoreAccountId AddSyncPrimaryAccount(const std::string& gaia_id,
+                                      const std::string& email) {
+    CoreAccountInfo account_info = AddAccount(gaia_id, email);
+    primary_account_manager_.SetSyncPrimaryAccountInfo(account_info);
+
+    return account_info.account_id;
+  }
+
+  CoreAccountId AddPrimaryAccount(const std::string& gaia_id,
+                                  const std::string& email) {
+    CoreAccountInfo account_info = AddAccount(gaia_id, email);
+    primary_account_manager_.SetUnconsentedPrimaryAccountInfo(account_info);
+
+    return account_info.account_id;
+  }
+
+  CoreAccountInfo AddAccount(const std::string& gaia_id,
+                             const std::string& email) {
     account_tracker()->SeedAccountInfo(gaia_id, email);
-    return account_tracker()->FindAccountInfoByGaiaId(gaia_id).account_id;
+    return account_tracker()->FindAccountInfoByGaiaId(gaia_id);
+  }
+
+  // Verifies that the consumer_name has the appropriate consent level for the
+  // scopes it requests to access.
+  void VerifyScopeAccess(CoreAccountId account_id,
+                         const std::string consumer_name,
+                         std::set<std::string> scopes) {
+    TestTokenCallback callback;
+
+    base::RunLoop run_loop;
+    set_on_access_token_request_callback(run_loop.QuitClosure());
+
+    token_service()->UpdateCredentials(account_id, "refresh token");
+
+    // Since the refresh token is already available, this should result in an
+    // immediate request for an access token.
+    auto fetcher =
+        CreateFetcher(account_id, callback.Get(),
+                      AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable,
+                      scopes, consumer_name);
+
+    run_loop.Run();
+
+    // Once the access token request is fulfilled, we should get called back
+    // with the access token.
+    EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
+                              access_token_info()));
+
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
   }
 
   std::unique_ptr<AccessTokenFetcher> CreateFetcher(
       const CoreAccountId& account_id,
       AccessTokenFetcher::TokenCallback callback,
       AccessTokenFetcher::Mode mode) {
-    std::set<std::string> scopes{"scope"};
-    return std::make_unique<AccessTokenFetcher>(account_id, "test_consumer",
-                                                &token_service_, scopes,
-                                                std::move(callback), mode);
+    std::set<std::string> scopes = {"scope"};
+    return CreateFetcher(account_id, std::move(callback), mode, scopes);
   }
 
   std::unique_ptr<AccessTokenFetcher> CreateFetcherWithURLLoaderFactory(
@@ -92,8 +152,8 @@ class AccessTokenFetcherTest
       AccessTokenFetcher::Mode mode) {
     std::set<std::string> scopes{"scope"};
     return std::make_unique<AccessTokenFetcher>(
-        account_id, "test_consumer", &token_service_, url_loader_factory,
-        scopes, std::move(callback), mode);
+        account_id, "test_consumer", &token_service_, &primary_account_manager_,
+        url_loader_factory, scopes, std::move(callback), mode);
   }
 
   AccountTrackerService* account_tracker() { return account_tracker_.get(); }
@@ -109,6 +169,17 @@ class AccessTokenFetcherTest
   AccessTokenInfo access_token_info() { return access_token_info_; }
 
  private:
+  std::unique_ptr<AccessTokenFetcher> CreateFetcher(
+      const CoreAccountId& account_id,
+      AccessTokenFetcher::TokenCallback callback,
+      AccessTokenFetcher::Mode mode,
+      std::set<std::string> scopes,
+      std::string oauth_consumer_name = "test_consumer") {
+    return std::make_unique<AccessTokenFetcher>(
+        account_id, oauth_consumer_name, &token_service_,
+        &primary_account_manager_, scopes, std::move(callback), mode);
+  }
+
   // OAuth2AccessTokenManager::DiagnosticsObserver:
   void OnAccessTokenRequested(
       const CoreAccountId& account_id,
@@ -124,8 +195,29 @@ class AccessTokenFetcherTest
   FakeProfileOAuth2TokenService token_service_;
   AccessTokenInfo access_token_info_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
+  PrimaryAccountManager primary_account_manager_;
   base::OnceClosure on_access_token_request_callback_;
 };
+
+TEST_F(AccessTokenFetcherTest, EmptyAccountFailsButDoesNotCrash) {
+  TestTokenCallback callback;
+
+  base::RunLoop run_loop;
+
+  // This should result in a request for an access token.
+  auto fetcher = CreateFetcher(CoreAccountId(), callback.Get(),
+                               AccessTokenFetcher::Mode::kImmediate);
+
+  // Fetching access tokens for an empty account id should respond with
+  // USER_NOT_SIGNED_UP error.
+  EXPECT_CALL(callback,
+              Run(GoogleServiceAuthError(
+                      GoogleServiceAuthError::State::USER_NOT_SIGNED_UP),
+                  AccessTokenInfo()))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  run_loop.Run();
+}
 
 TEST_F(AccessTokenFetcherTest, OneShotShouldCallBackOnFulfilledRequest) {
   TestTokenCallback callback;
@@ -133,7 +225,7 @@ TEST_F(AccessTokenFetcherTest, OneShotShouldCallBackOnFulfilledRequest) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -148,10 +240,11 @@ TEST_F(AccessTokenFetcherTest, OneShotShouldCallBackOnFulfilledRequest) {
                             access_token_info()));
 
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -161,7 +254,7 @@ TEST_F(AccessTokenFetcherTest,
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // Since the refresh token is already available, this should result in an
@@ -178,10 +271,11 @@ TEST_F(AccessTokenFetcherTest,
                             access_token_info()));
 
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -191,7 +285,7 @@ TEST_F(AccessTokenFetcherTest,
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
 
   // Since the refresh token is not available yet, this should just start
   // waiting for it.
@@ -201,11 +295,14 @@ TEST_F(AccessTokenFetcherTest,
 
   // Before the refresh token is available, the callback shouldn't get called.
   EXPECT_CALL(callback, Run(_, _)).Times(0);
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 
   // Once the refresh token becomes available, we should get an access token
   // request.
@@ -218,11 +315,14 @@ TEST_F(AccessTokenFetcherTest,
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
 
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -232,8 +332,9 @@ TEST_F(AccessTokenFetcherTest,
   MockCallback<base::OnceClosure> access_token_request_callback;
   set_on_access_token_request_callback(access_token_request_callback.Get());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
-  CoreAccountId other_account_id = AddAccount(kTestGaiaId2, kTestEmail2);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId other_account_id =
+      AddAccount(kTestGaiaId2, kTestEmail2).account_id;
 
   // Since the refresh token is not available yet, this should just start
   // waiting for it.
@@ -255,7 +356,7 @@ TEST_F(AccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -269,29 +370,11 @@ TEST_F(AccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
 
   // Now fulfilling the access token request should have no effect.
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
-}
-
-TEST_F(AccessTokenFetcherTest, ReturnsErrorWhenAccountIsUnknown) {
-  TestTokenCallback callback;
-
-  base::RunLoop run_loop;
-
-  // Account not present -> we should get called back.
-  auto fetcher =
-      CreateFetcher(CoreAccountId("dummy_account_id"), callback.Get(),
-                    AccessTokenFetcher::Mode::kImmediate);
-
-  EXPECT_CALL(callback,
-              Run(GoogleServiceAuthError(
-                      GoogleServiceAuthError::State::USER_NOT_SIGNED_UP),
-                  AccessTokenInfo()))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-
-  run_loop.Run();
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest, ReturnsErrorWhenAccountHasNoRefreshToken) {
@@ -299,7 +382,7 @@ TEST_F(AccessTokenFetcherTest, ReturnsErrorWhenAccountHasNoRefreshToken) {
 
   base::RunLoop run_loop;
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
 
   // Account has no refresh token -> we should get called back.
   auto fetcher = CreateFetcher(account_id, callback.Get(),
@@ -320,7 +403,7 @@ TEST_F(AccessTokenFetcherTest, CanceledAccessTokenRequest) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -350,7 +433,7 @@ TEST_F(AccessTokenFetcherTest, RefreshTokenRevoked) {
 
   TestTokenCallback callback;
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -374,7 +457,7 @@ TEST_F(AccessTokenFetcherTest, FailedAccessTokenRequest) {
 
   TestTokenCallback callback;
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // Signed in and refresh token already exists, so this should result in a
@@ -400,7 +483,7 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -424,10 +507,11 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
@@ -436,7 +520,7 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -446,7 +530,7 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
   run_loop.Run();
 
   // Add a second account and request an access token for it.
-  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2);
+  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2).account_id;
   token_service()->UpdateCredentials(account_id2, "refresh token");
   TestTokenCallback callback2;
   base::RunLoop run_loop2;
@@ -459,21 +543,28 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
   // called back with the access token.
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 
   // Once the second access token request is fulfilled, it should get
   // called back with the access token.
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
-  token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id2,
+        TokenResponseBuilder()
+            .WithAccessToken(access_token_info().token)
+            .WithExpirationTime(access_token_info().expiration_time)
+            .WithIdToken(access_token_info().id_token)
+            .build());
+  }
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -483,7 +574,7 @@ TEST_F(AccessTokenFetcherTest,
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   // This should result in a request for an access token.
@@ -492,7 +583,7 @@ TEST_F(AccessTokenFetcherTest,
   run_loop.Run();
 
   // Add a second account and request an access token for it.
-  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2);
+  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2).account_id;
   token_service()->UpdateCredentials(account_id2, "refresh token");
 
   base::RunLoop run_loop2;
@@ -525,10 +616,11 @@ TEST_F(AccessTokenFetcherTest,
               Run(GoogleServiceAuthError::AuthErrorNone(), access_token_info()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop4, &base::RunLoop::Quit));
   token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id2, TokenResponseBuilder()
+                       .WithAccessToken(access_token_info().token)
+                       .WithExpirationTime(access_token_info().expiration_time)
+                       .WithIdToken(access_token_info().id_token)
+                       .build());
 
   run_loop4.Run();
 }
@@ -537,7 +629,7 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   base::RunLoop run_loop;
   set_on_access_token_request_callback(run_loop.QuitClosure());
 
-  CoreAccountId account_id = AddAccount(kTestGaiaId, kTestEmail);
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
   token_service()->UpdateCredentials(account_id, "refresh token");
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -566,12 +658,12 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   // with the access token.
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
-
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 
   // Now add a second account and request an access token for it to test
   // that the default URLLoaderFactory is used if none is specified.
@@ -579,7 +671,7 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   TestTokenCallback callback2;
 
   set_on_access_token_request_callback(run_loop2.QuitClosure());
-  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2);
+  CoreAccountId account_id2 = AddAccount(kTestGaiaId2, kTestEmail2).account_id;
   token_service()->UpdateCredentials(account_id2, "refresh token");
 
   // CreateFetcher will create an AccessTokenFetcher without specifying
@@ -605,10 +697,92 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
   token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id2, TokenResponseBuilder()
+                       .WithAccessToken(access_token_info().token)
+                       .WithExpirationTime(access_token_info().expiration_time)
+                       .WithIdToken(access_token_info().id_token)
+                       .build());
+}
+
+// APIs consent tests.
+
+// Tests that a request with a consented client accessing an OAuth2 API
+// that requires sync consent is fulfilled.
+TEST_F(AccessTokenFetcherTest, FetcherWithConsentedClientAccessToConsentAPI) {
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
+  VerifyScopeAccess(account_id, "test_consumer",
+                    {GaiaConstants::kOAuth1LoginScope});
+}
+
+// Tests that a request with a consented client accessing an OAuth2 API
+// that does not require sync consent is fulfilled.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithConsentedClientAccessToUnconsentedAPI) {
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
+  VerifyScopeAccess(account_id, "test_consumer",
+                    {GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
+}
+
+// Tests that a request with an unconsented client accessing an OAuth2 API
+// that does not require consent is fulfilled.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithUnconsentedClientAccessToUnconsentedAPI) {
+  CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
+  VerifyScopeAccess(account_id, "test_consumer",
+                    {GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
+}
+
+// Tests that a request with a privileged client accessing a privileged OAuth2
+// API is fulfilled.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithPriveledgedClientAccessToPriveledgedAPI) {
+  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
+  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
+    CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
+    VerifyScopeAccess(account_id, privileged_client,
+                      {GaiaConstants::kAnyApiOAuth2Scope});
+  }
+}
+
+// Tests that a request with a privileged client accessing an OAuth2 API
+// that requires sync consent is fulfilled.
+TEST_F(AccessTokenFetcherTest, FetcherWithPriveledgedClientAccessToConsentAPI) {
+  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
+  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
+    CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
+    VerifyScopeAccess(account_id, privileged_client,
+                      {GaiaConstants::kOAuth1LoginScope});
+  }
+}
+
+// Tests that a request with a privileged client accessing an OAuth2 API
+// that does not require consent is fulfilled.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithPriveledgedClientAccessToUnconsentedAPI) {
+  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
+  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
+    CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
+    VerifyScopeAccess(account_id, privileged_client,
+                      {GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
+  }
+}
+
+// Tests that a request with an unconsented client accessing an OAuth2 API
+// that requires privileged access fails.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithUnconsentedClientAccessToPrivelegedAPI) {
+  CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
+  EXPECT_CHECK_DEATH(VerifyScopeAccess(account_id, "test_consumer",
+                                       {GaiaConstants::kAnyApiOAuth2Scope}));
+}
+
+// Tests that a request with a consented client accessing a privileged OAuth2
+// API fails.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithConsentedClientAccessToPrivilegedAPI) {
+  CoreAccountId account_id = AddSyncPrimaryAccount(kTestGaiaId, kTestEmail);
+  EXPECT_CHECK_DEATH(VerifyScopeAccess(account_id, "test_consumer",
+                                       {GaiaConstants::kAnyApiOAuth2Scope}));
 }
 
 }  // namespace signin

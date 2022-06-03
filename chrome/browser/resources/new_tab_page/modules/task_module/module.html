@@ -1,0 +1,251 @@
+<style include="cr-hidden-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #moduleContent {
+    box-sizing: border-box;
+    display: block;
+    flex-grow: 1;
+    padding-bottom: 15px;
+    padding-inline-end: 15px;
+    padding-inline-start: 15px;
+    width: 100%;
+  }
+
+  #taskItems {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .task-item {
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+  }
+
+  :host([shopping]) .task-item {
+    width: 120px;
+  }
+
+  :host([recipe]) .task-item {
+    width: 165px;
+  }
+
+  :host-context(.focus-outline-visible) .task-item:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .task-item:not([hidden]) + .task-item {
+    margin-inline-start: 16px;
+  }
+
+  .image-background {
+    /* Mixes to Google Grey 50 underneath .image-container. */
+    background-color: rgb(22, 55, 88);
+    border-radius: 4px;
+    height: 120px;
+    margin-bottom: 8px;
+    width: inherit;
+  }
+
+  .image-container {
+    background-color: white;
+    border-radius: 4px;
+    /* Using box-shadow mimics proper rendering,
+     * so the color of the image-background may not be seen
+     * after rounding edges. */
+    box-shadow: 0 0 0 0.2px white;
+    box-sizing: border-box;
+    height: 100%;
+    opacity: 97%;
+    padding: 10px;
+  }
+
+  :host([shopping]) img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  :host([recipe]) img {
+    border-radius: 4px;
+    height: 136px;
+    margin-bottom: 8px;
+    object-fit: cover;
+    width: inherit;
+  }
+
+  .tag {
+    background: rgba(var(--ntp-background-override-color-rgb), .9);
+    border-radius: 4px;
+    color: var(--cr-primary-text-color);
+    font-size: 9px;
+    margin: 8px;
+    padding:  8px;
+    position: absolute;
+  }
+
+  :host-context([dir=rtl]) .tag {
+    right: 0;
+  }
+
+  .price {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: bold;
+    height: 14px;
+    line-height: 15px;
+    margin-bottom: 8px;
+  }
+
+  .name {
+    color: var(--cr-primary-text-color);
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+
+  :host([shopping]) .name {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    height: 40px;
+  }
+
+  :host([recipe]) .name {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .secondary {
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    height: 13px;
+    text-overflow: ellipsis;
+  }
+
+  #relatedSearches {
+    display: flex;
+    flex-direction: row;
+    margin-top: 16px;
+  }
+
+  .pill {
+    align-items: center;
+    border: solid var(--ntp-border-color) 1px;
+    border-radius: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    height: 32px;
+    outline: none;
+    text-decoration: none;
+  }
+
+  .pill:hover {
+    background-color: var(--ntp-hover-background-color);
+  }
+
+  .pill:active {
+    background-color: var(--ntp-active-background-color);
+  }
+
+  :host-context(.focus-outline-visible) .pill:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .pill + .pill {
+    margin-inline-start: 8px;
+  }
+
+  .clock {
+    -webkit-mask-image: url(chrome://resources/images/icon_clock.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--cr-secondary-text-color);
+    height: 16px;
+    margin-inline-start: 12px;
+    width: 16px;
+  }
+
+  .search-text {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    margin-inline-end: 12px;
+    margin-inline-start: 8px;
+  }
+
+  ntp-info-dialog a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  ntp-info-dialog a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+</style>
+<ntp-module-header
+    dismiss-text="[[i18n('modulesDismissButtonText', dismissName_)]]"
+    disable-text="[[i18n('modulesDisableButtonText', disableName_)]]"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
+  [[task.title]]
+</ntp-module-header>
+<div id="moduleContent">
+  <div id="taskItems">
+    <template is="dom-repeat" id="taskItemsRepeat" items="[[task.taskItems]]"
+        on-dom-change="onDomChange_">
+      <a class="task-item" href="[[item.targetUrl.url]]"
+          on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
+        <template is="dom-if" if="[[isShopping_(taskModuleType)]]">
+          <div class="image-background">
+            <div class="image-container">
+              <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+                  draggable="false"></img>
+            </div>
+          </div>
+          <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
+          <div class="name" title="[[item.name]]">[[item.name]]</div>
+          <div class="secondary">[[item.info]]</div>
+        </template>
+        <template is="dom-if" if="[[isRecipe_(taskModuleType)]]">
+          <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+              draggable="false">
+          </img>
+          <div class="tag">[[item.info]]</div>
+          <div class="name" title="[[item.name]]">[[item.name]]</div>
+          <div class="secondary">[[item.siteName]]</div>
+        </template>
+      </a>
+    </template>
+  </div>
+  <div id="relatedSearches">
+    <template is="dom-repeat" id="relatedSearchesRepeat"
+        items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
+      <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
+          on-auxclick="onPillClick_">
+        <div class="clock"></div>
+        <div class="search-text">[[item.text]]</div>
+      </a>
+    </template>
+  </div>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesTasksInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

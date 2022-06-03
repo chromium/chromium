@@ -1,0 +1,51 @@
+diff --git a/third_party/abseil-cpp/absl/base/dynamic_annotations.h b/third_party/abseil-cpp/absl/base/dynamic_annotations.h
+index 1444dc48e283..6687291cade3 100644
+--- a/third_party/abseil-cpp/absl/base/dynamic_annotations.h
++++ b/third_party/abseil-cpp/absl/base/dynamic_annotations.h
+@@ -49,9 +49,6 @@
+ 
+ #include "absl/base/config.h"
+ 
+-// TODO(rogeeff): Remove after the backward compatibility period.
+-#include "absl/base/internal/dynamic_annotations.h"  // IWYU pragma: export
+-
+ // -------------------------------------------------------------------------
+ // Decide which features are enabled
+ 
+diff --git a/third_party/abseil-cpp/absl/base/thread_annotations.h b/third_party/abseil-cpp/absl/base/thread_annotations.h
+index 5f51c0c2d2d5..10b9bde551a7 100644
+--- a/third_party/abseil-cpp/absl/base/thread_annotations.h
++++ b/third_party/abseil-cpp/absl/base/thread_annotations.h
+@@ -35,8 +35,6 @@
+ #define ABSL_BASE_THREAD_ANNOTATIONS_H_
+ 
+ #include "absl/base/config.h"
+-// TODO(mbonadei): Remove after the backward compatibility period.
+-#include "absl/base/internal/thread_annotations.h"  // IWYU pragma: export
+ 
+ #if defined(__clang__)
+ #define ABSL_INTERNAL_THREAD_ANNOTATION_ATTRIBUTE(x) __attribute__((x))
+diff --git a/third_party/abseil-cpp/absl/base/BUILD.bazel b/third_party/abseil-cpp/absl/base/BUILD.bazel
+index 65ff0ddef9fd..d6fbf3581158 100644
+--- a/third_party/abseil-cpp/absl/base/BUILD.bazel
++++ b/third_party/abseil-cpp/absl/base/BUILD.bazel
+@@ -115,9 +115,6 @@ cc_library(
+
+ cc_library(
+     name = "dynamic_annotations",
+-    srcs = [
+-        "internal/dynamic_annotations.h",
+-    ],
+     hdrs = [
+         "dynamic_annotations.h",
+     ],
+@@ -131,9 +128,6 @@ cc_library(
+
+ cc_library(
+     name = "core_headers",
+-    srcs = [
+-        "internal/thread_annotations.h",
+-    ],
+     hdrs = [
+         "attributes.h",
+         "const_init.h",

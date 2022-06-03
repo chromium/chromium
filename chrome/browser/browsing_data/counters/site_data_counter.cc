@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,7 +22,7 @@ bool CheckSyncState(Profile* profile, const syncer::SyncService* sync_service) {
 
 SiteDataCounter::SiteDataCounter(Profile* profile)
     : profile_(profile),
-      sync_tracker_(this, ProfileSyncServiceFactory::GetForProfile(profile)) {}
+      sync_tracker_(this, SyncServiceFactory::GetForProfile(profile)) {}
 
 SiteDataCounter::~SiteDataCounter() {}
 
@@ -43,8 +43,8 @@ void SiteDataCounter::Count() {
       base::BindOnce(&SiteDataCounter::Done, weak_ptr_factory_.GetWeakPtr());
   // Use a helper class that owns itself to avoid issues when SiteDataCounter is
   // deleted before counting finished.
-  auto* helper =
-      new SiteDataCountingHelper(profile_, begin, std::move(done_callback));
+  auto* helper = new SiteDataCountingHelper(profile_, begin, GetPeriodEnd(),
+                                            std::move(done_callback));
   helper->CountAndDestroySelfWhenFinished();
 }
 

@@ -15,6 +15,13 @@ import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 
+// Tags the frame sink with the type of source producing its content.
+enum CompositorFrameSinkType {
+  kUnspecified,
+  kVideo,
+  kMediaStream,
+  kLayerTree,
+};
 
 // A CompositorFrameSink is an interface for receiving CompositorFrame
 // structs. A CompositorFrame contains the complete output meant for display.
@@ -46,6 +53,11 @@ interface CompositorFrameSink {
   // For successful swaps, the implementation must call
   // DidReceiveCompositorFrameAck() asynchronously when the frame has been
   // processed in order to unthrottle the next frame.
+  //
+  // TODO(crbug.com/1141980): Investigate whether it's possible to alter the
+  // CompositorFrame structure to be less likely to exceed soft message size
+  // limits and remove [UnlimitedSize] here.
+  [UnlimitedSize]
   SubmitCompositorFrame(LocalSurfaceId local_surface_id,
                         CompositorFrame frame,
                         HitTestRegionList? hit_test_region_list,
@@ -76,6 +88,11 @@ interface CompositorFrameSink {
   // via DidAllocateSharedBitmap(). The |id| is a Mailbox type which doubles as a
   // SharedBitmapId for this case.
   DidDeleteSharedBitmap(gpu.mojom.Mailbox id);
+
+  // This should be called atmost once for the lifetime of this frame sink. Once
+  // the value has been set to anything other than kUnspecified, subsequent calls
+  // are silently ignored.
+  InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
 };
 
 interface CompositorFrameSinkClient {
@@ -100,4 +117,8 @@ interface CompositorFrameSinkClient {
 
   // Returns resources sent to SubmitCompositorFrame to be reused or freed.
   ReclaimResources(array<ReturnedResource> resources);
+
+  // Inform the client that a compositor frame transition directive was fully
+  // processed.
+  OnCompositorFrameTransitionDirectiveProcessed(uint32 sequence_id);
 };

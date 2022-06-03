@@ -8,6 +8,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -22,8 +23,11 @@ namespace views {
 class AccessiblePaneViewFocusSearch : public FocusSearch {
  public:
   explicit AccessiblePaneViewFocusSearch(AccessiblePaneView* pane_view)
-      : FocusSearch(pane_view, true, true),
-        accessible_pane_view_(pane_view) {}
+      : FocusSearch(pane_view, true, true), accessible_pane_view_(pane_view) {}
+
+  AccessiblePaneViewFocusSearch(const AccessiblePaneViewFocusSearch&) = delete;
+  AccessiblePaneViewFocusSearch& operator=(
+      const AccessiblePaneViewFocusSearch&) = delete;
 
  protected:
   View* GetParent(View* v) override {
@@ -40,7 +44,6 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
 
  private:
   AccessiblePaneView* accessible_pane_view_;
-  DISALLOW_COPY_AND_ASSIGN(AccessiblePaneViewFocusSearch);
 };
 
 AccessiblePaneView::AccessiblePaneView()
@@ -166,7 +169,6 @@ views::FocusTraversable* AccessiblePaneView::GetPaneFocusTraversable() {
 
 bool AccessiblePaneView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-
   views::View* focused_view = focus_manager_->GetFocusedView();
   if (!ContainsForFocusSearch(this, focused_view))
     return false;
@@ -266,8 +268,7 @@ views::View* AccessiblePaneView::GetFocusTraversableParentView() {
   return nullptr;
 }
 
-BEGIN_METADATA(AccessiblePaneView)
-METADATA_PARENT_CLASS(View)
-END_METADATA()
+BEGIN_METADATA(AccessiblePaneView, View)
+END_METADATA
 
 }  // namespace views

@@ -1,6 +1,7 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
 Version: 1.6.0
+CPEPrefix: cpe:/a:hunspell_project:hunspell:1.6.0
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: COPYING.MPL
 Security Critical: yes
@@ -21,6 +22,8 @@ The patch is in google.patch.
 * Avoid crash in SuggestMgr::forgotchar_utf() and SuggestMgr::forgotchar() on
   Windows by using a one-character larger buffer.
 * calloc buffers in SuggestMgr::lcs to avoid reads from uninintialized buffers.
+* Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
+  Upstream issue: https://github.com/hunspell/hunspell/issues/714
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
 steps, or simply run update_google_patch.sh from the commandline.

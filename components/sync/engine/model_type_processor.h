@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
@@ -17,8 +17,8 @@ class CommitQueue;
 // Interface used by sync backend to issue requests to a synced data type.
 class ModelTypeProcessor {
  public:
-  ModelTypeProcessor();
-  virtual ~ModelTypeProcessor();
+  ModelTypeProcessor() = default;
+  virtual ~ModelTypeProcessor() = default;
 
   // Connect this processor to the sync engine via |commit_queue|. Once called,
   // the processor will send any pending and future commits via this channel.
@@ -40,10 +40,15 @@ class ModelTypeProcessor {
                                GetLocalChangesCallback callback) = 0;
 
   // Informs this object that some of its commit requests have been
-  // successfully serviced.
+  // serviced (successfully or not).
   virtual void OnCommitCompleted(
       const sync_pb::ModelTypeState& type_state,
-      const CommitResponseDataList& response_list) = 0;
+      const CommitResponseDataList& committed_response_list,
+      const FailedCommitResponseDataList& error_response_list) = 0;
+
+  // Informs this object that a commit attempt failed, e.g. due to network or
+  // server issues. The commit may not include all pending entities.
+  virtual void OnCommitFailed(SyncCommitError commit_error) {}
 
   // Informs this object that there are some incoming updates it should
   // handle.

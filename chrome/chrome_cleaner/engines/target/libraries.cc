@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/chrome_cleaner/buildflags.h"
@@ -41,7 +41,7 @@ internal::LibraryPostExtractionCallback* g_post_extraction_callback = nullptr;
 // Should be called before any call to an engine library.
 bool ExtractEmbeddedLibraries(Engine::Name engine,
                               const base::FilePath& extraction_dir) {
-  std::unordered_map<base::string16, int> resource_names_to_id =
+  std::unordered_map<std::wstring, int> resource_names_to_id =
       GetEmbeddedLibraryResourceIds(engine);
   for (const auto& name_id : resource_names_to_id) {
     LOG(INFO) << "Extracting " << name_id.first << " to "
@@ -67,7 +67,7 @@ bool ExtractEmbeddedLibraries(Engine::Name engine,
 }
 
 void VerifyEngineLibraryAllowed(Engine::Name engine,
-                                const base::string16& requested_library) {
+                                const std::wstring& requested_library) {
 #if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
   if (Settings::GetInstance()->run_without_sandbox_for_testing())
     return;
@@ -94,19 +94,19 @@ void VerifyRunningInSandbox() {
 extern "C" FARPROC WINAPI DllLoadHook(unsigned dliNotify, PDelayLoadInfo pdli) {
   switch (dliNotify) {
     case dliNotePreLoadLibrary: {
-      const base::string16 requested_library = base::ASCIIToUTF16(pdli->szDll);
+      const std::wstring requested_library = base::ASCIIToWide(pdli->szDll);
       const Engine::Name engine = Settings::GetInstance()->engine();
 
       VerifyEngineLibraryAllowed(engine, requested_library);
 
 #if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
-      const std::unordered_map<base::string16, base::string16>
+      const std::unordered_map<std::wstring, std::wstring>
           library_replacements = GetLibraryTestReplacements(engine);
       if (library_replacements.count(requested_library)) {
         // Try loading the original DLL first, then try the replacement.
         HMODULE library = ::LoadLibrary(requested_library.c_str());
         if (library == nullptr) {
-          const base::string16& fallback_library =
+          const std::wstring& fallback_library =
               library_replacements.find(requested_library)->second;
           PLOG(WARNING) << "Could not load " << requested_library
                         << "; falling back to " << fallback_library;
@@ -165,7 +165,7 @@ bool LoadAndValidateLibraries(Engine::Name engine,
   // the version that is validated here is not overwritten before it is loaded.
   VerifyRunningInSandbox();
 
-  const std::set<base::string16> libraries_to_load = GetLibrariesToLoad(engine);
+  const std::set<std::wstring> libraries_to_load = GetLibrariesToLoad(engine);
   if (libraries_to_load.empty())
     return true;
 
@@ -190,7 +190,7 @@ bool LoadAndValidateLibraries(Engine::Name engine,
   CHECK(digest_verifier);
 
   // Load all libraries and validate them if required.
-  for (const base::string16& library_name : libraries_to_load) {
+  for (const std::wstring& library_name : libraries_to_load) {
     base::FilePath dll_path = extraction_dir.Append(library_name);
 
     // Open a handle to the DLL before verifying it.

@@ -6,17 +6,16 @@
 
 namespace blink {
 
-void Base::Trace(Visitor* visitor) { }
+void Base::Trace(Visitor* visitor) const {}
 
-void Mixin1::Trace(Visitor* visitor) { }
+void Mixin1::Trace(Visitor* visitor) const {}
 
-void Mixin2::Trace(Visitor* visitor) { }
+void Mixin2::Trace(Visitor* visitor) const {}
 
-// Missing: void Derived1::Trace(Visitor* visitor);
+// Missing: void Derived1::Trace(Visitor* visitor) const;
 
-void Derived2::Trace(Visitor* visitor) {
-    Base::Trace(visitor);
-    Mixin1::Trace(visitor);
+void Derived2::Trace(Visitor* visitor) const {
+  Base::Trace(visitor);
+  Mixin1::Trace(visitor);
 }
-
 }

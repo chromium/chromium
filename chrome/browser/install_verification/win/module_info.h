@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/strings/string16.h"
+#include <string>
 
 // Represents and facilitates operations on the address range corresponding to a
 // loaded module.
@@ -15,7 +15,7 @@ struct ModuleInfo {
   ModuleInfo() : base_address(0), size(0) {
   }
 
-  ModuleInfo(const base::char16* const module_name,
+  ModuleInfo(const wchar_t* const module_name,
              uintptr_t module_base_address,
              uint32_t module_size)
       : name(module_name),
@@ -32,7 +32,7 @@ struct ModuleInfo {
     return address >= base_address && address < base_address + size;
   }
 
-  base::string16 name;
+  std::wstring name;
   uintptr_t base_address;
   uint32_t size;
 };

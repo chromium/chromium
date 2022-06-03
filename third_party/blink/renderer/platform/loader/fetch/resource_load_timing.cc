@@ -4,35 +4,88 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "services/network/public/mojom/load_timing_info.mojom-blink.h"
 
 namespace blink {
 
-ResourceLoadTiming::ResourceLoadTiming() {}
+ResourceLoadTiming::ResourceLoadTiming() = default;
+
+ResourceLoadTiming::ResourceLoadTiming(
+    base::TimeTicks request_time,
+    base::TimeTicks proxy_start,
+    base::TimeTicks proxy_end,
+    base::TimeTicks dns_start,
+    base::TimeTicks dns_end,
+    base::TimeTicks connect_start,
+    base::TimeTicks connect_end,
+    base::TimeTicks worker_start,
+    base::TimeTicks worker_ready,
+    base::TimeTicks worker_fetch_start,
+    base::TimeTicks worker_respond_with_settled,
+    base::TimeTicks send_start,
+    base::TimeTicks send_end,
+    base::TimeTicks receive_headers_start,
+    base::TimeTicks receive_headers_end,
+    base::TimeTicks ssl_start,
+    base::TimeTicks ssl_end,
+    base::TimeTicks push_start,
+    base::TimeTicks push_end)
+    : request_time_(request_time),
+      proxy_start_(proxy_start),
+      proxy_end_(proxy_end),
+      dns_start_(dns_start),
+      dns_end_(dns_end),
+      connect_start_(connect_start),
+      connect_end_(connect_end),
+      worker_start_(worker_start),
+      worker_ready_(worker_ready),
+      worker_fetch_start_(worker_fetch_start),
+      worker_respond_with_settled_(worker_respond_with_settled),
+      send_start_(send_start),
+      send_end_(send_end),
+      receive_headers_start_(receive_headers_start),
+      receive_headers_end_(receive_headers_end),
+      ssl_start_(ssl_start),
+      ssl_end_(ssl_end),
+      push_start_(push_start),
+      push_end_(push_end) {}
 
 scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::Create() {
   return base::AdoptRef(new ResourceLoadTiming);
 }
 
-scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::DeepCopy() {
-  scoped_refptr<ResourceLoadTiming> timing = Create();
-  timing->request_time_ = request_time_;
-  timing->proxy_start_ = proxy_start_;
-  timing->proxy_end_ = proxy_end_;
-  timing->dns_start_ = dns_start_;
-  timing->dns_end_ = dns_end_;
-  timing->connect_start_ = connect_start_;
-  timing->connect_end_ = connect_end_;
-  timing->worker_start_ = worker_start_;
-  timing->worker_ready_ = worker_ready_;
-  timing->send_start_ = send_start_;
-  timing->send_end_ = send_end_;
-  timing->receive_headers_start_ = receive_headers_start_;
-  timing->receive_headers_end_ = receive_headers_end_;
-  timing->ssl_start_ = ssl_start_;
-  timing->ssl_end_ = ssl_end_;
-  timing->push_start_ = push_start_;
-  timing->push_end_ = push_end_;
+scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::FromMojo(
+    const network::mojom::blink::LoadTimingInfo* mojo_timing) {
+  if (!mojo_timing)
+    return ResourceLoadTiming::Create();
+  return base::AdoptRef(new ResourceLoadTiming(
+      mojo_timing->request_start, mojo_timing->proxy_resolve_start,
+      mojo_timing->proxy_resolve_end, mojo_timing->connect_timing->dns_start,
+      mojo_timing->connect_timing->dns_end,
+      mojo_timing->connect_timing->connect_start,
+      mojo_timing->connect_timing->connect_end,
+      mojo_timing->service_worker_start_time,
+      mojo_timing->service_worker_ready_time,
+      mojo_timing->service_worker_fetch_start,
+      mojo_timing->service_worker_respond_with_settled, mojo_timing->send_start,
+      mojo_timing->send_end, mojo_timing->receive_headers_start,
+      mojo_timing->receive_headers_end, mojo_timing->connect_timing->ssl_start,
+      mojo_timing->connect_timing->ssl_end, mojo_timing->push_start,
+      mojo_timing->push_end));
+}
+
+network::mojom::blink::LoadTimingInfoPtr ResourceLoadTiming::ToMojo() const {
+  network::mojom::blink::LoadTimingInfoPtr timing =
+      network::mojom::blink::LoadTimingInfo::New(
+          false, 0, base::Time(), request_time_, proxy_start_, proxy_end_,
+          network::mojom::blink::LoadTimingInfoConnectTiming::New(
+              dns_start_, dns_end_, connect_start_, connect_end_, ssl_start_,
+              ssl_end_),
+          send_start_, send_end_, receive_headers_start_, receive_headers_end_,
+          /*receive_non_informational_headers_start=*/base::TimeTicks::Now(),
+          /*first_early_hints_time=*/base::TimeTicks::Now(), push_start_,
+          push_end_, worker_start_, worker_ready_, worker_fetch_start_,
+          worker_respond_with_settled_);
   return timing;
 }
 
@@ -44,6 +97,8 @@ bool ResourceLoadTiming::operator==(const ResourceLoadTiming& other) const {
          connect_end_ == other.connect_end_ &&
          worker_start_ == other.worker_start_ &&
          worker_ready_ == other.worker_ready_ &&
+         worker_fetch_start_ == other.worker_fetch_start_ &&
+         worker_respond_with_settled_ == other.worker_respond_with_settled_ &&
          send_start_ == other.send_start_ && send_end_ == other.send_end_ &&
          receive_headers_start_ == other.receive_headers_start_ &&
          receive_headers_end_ == other.receive_headers_end_ &&
@@ -91,9 +146,17 @@ void ResourceLoadTiming::SetWorkerReady(base::TimeTicks worker_ready) {
   worker_ready_ = worker_ready;
 }
 
+void ResourceLoadTiming::SetWorkerFetchStart(
+    base::TimeTicks worker_fetch_start) {
+  worker_fetch_start_ = worker_fetch_start;
+}
+
+void ResourceLoadTiming::SetWorkerRespondWithSettled(
+    base::TimeTicks worker_respond_with_settled) {
+  worker_respond_with_settled_ = worker_respond_with_settled;
+}
+
 void ResourceLoadTiming::SetSendStart(base::TimeTicks send_start) {
-  TRACE_EVENT_MARK_WITH_TIMESTAMP0("blink.user_timing", "requestStart",
-                                   send_start);
   send_start_ = send_start;
 }
 

@@ -7,13 +7,11 @@
 #include <list>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/screen_resolution.h"
@@ -98,15 +96,7 @@ class FakeDesktopResizer : public DesktopResizer {
 
 class ResizingHostObserverTest : public testing::Test {
  public:
-  ResizingHostObserverTest()
-      : now_(base::TimeTicks::Now()) {
-  }
-
-  // This needs to be public because the derived test-case class needs to
-  // pass it to Bind, which fails if it's protected.
-  base::TimeTicks GetTime() {
-    return now_;
-  }
+  ResizingHostObserverTest() { clock_.SetNowTicks(base::TimeTicks::Now()); }
 
  protected:
   void InitDesktopResizer(const ScreenResolution& initial_resolution,
@@ -120,13 +110,17 @@ class ResizingHostObserverTest : public testing::Test {
             exact_size_supported, std::move(supported_resolutions),
             &current_resolution_, &call_counts_, restore_resolution),
         restore_resolution);
-    resizing_host_observer_->SetNowFunctionForTesting(
-        base::Bind(&ResizingHostObserverTest::GetTimeAndIncrement,
-                   base::Unretained(this)));
+    resizing_host_observer_->SetClockForTesting(&clock_);
+  }
+
+  void SetScreenResolution(const ScreenResolution& client_size) {
+    resizing_host_observer_->SetScreenResolution(client_size);
+    if (auto_advance_clock_)
+      clock_.Advance(base::Seconds(1));
   }
 
   ScreenResolution GetBestResolution(const ScreenResolution& client_size) {
-    resizing_host_observer_->SetScreenResolution(client_size);
+    SetScreenResolution(client_size);
     return current_resolution_;
   }
 
@@ -142,16 +136,11 @@ class ResizingHostObserverTest : public testing::Test {
     }
   }
 
-  base::TimeTicks GetTimeAndIncrement() {
-    base::TimeTicks result = now_;
-    now_ += base::TimeDelta::FromSeconds(1);
-    return result;
-  }
-
   ScreenResolution current_resolution_;
   FakeDesktopResizer::CallCounts call_counts_;
   std::unique_ptr<ResizingHostObserver> resizing_host_observer_;
-  base::TimeTicks now_;
+  base::SimpleTestTickClock clock_;
+  bool auto_advance_clock_ = true;
 };
 
 // Check that the resolution isn't restored if it wasn't changed by this class.
@@ -202,11 +191,11 @@ TEST_F(ResizingHostObserverTest, RestoreFlag) {
 TEST_F(ResizingHostObserverTest, RestoreOnEmptyClientResolution) {
   InitDesktopResizer(MakeResolution(640, 480), true,
                      std::vector<ScreenResolution>(), true);
-  resizing_host_observer_->SetScreenResolution(MakeResolution(200, 100));
+  SetScreenResolution(MakeResolution(200, 100));
   EXPECT_EQ(1, call_counts_.set_resolution);
   EXPECT_EQ(0, call_counts_.restore_resolution);
   EXPECT_EQ(MakeResolution(200, 100), current_resolution_);
-  resizing_host_observer_->SetScreenResolution(MakeResolution(0, 0));
+  SetScreenResolution(MakeResolution(0, 0));
   EXPECT_EQ(1, call_counts_.set_resolution);
   EXPECT_EQ(1, call_counts_.restore_resolution);
   EXPECT_EQ(MakeResolution(640, 480), current_resolution_);
@@ -294,21 +283,20 @@ TEST_F(ResizingHostObserverTest, NoSetSizeForSameSize) {
 TEST_F(ResizingHostObserverTest, RateLimited) {
   InitDesktopResizer(MakeResolution(640, 480), true,
                      std::vector<ScreenResolution>(), true);
-  resizing_host_observer_->SetNowFunctionForTesting(
-      base::Bind(&ResizingHostObserverTest::GetTime, base::Unretained(this)));
+  auto_advance_clock_ = false;
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(100, 100)));
-  now_ += base::TimeDelta::FromMilliseconds(900);
+  clock_.Advance(base::Milliseconds(900));
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(200, 200)));
-  now_ += base::TimeDelta::FromMilliseconds(99);
+  clock_.Advance(base::Milliseconds(99));
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(300, 300)));
-  now_ += base::TimeDelta::FromMilliseconds(1);
+  clock_.Advance(base::Milliseconds(1));
 
   // Due to the kMinimumResizeIntervalMs constant in resizing_host_observer.cc,
   // We need to wait a total of 1000ms for the final resize to be processed.
@@ -316,7 +304,7 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   // additional 1ms. However, since RunLoop is not guaranteed to process tasks
   // with the same due time in FIFO order, wait an additional 1ms for safety.
   task_environment.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(2));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 
   // If the QuitClosure fired before the final resize, it's a test failure.

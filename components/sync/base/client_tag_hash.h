@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/hash/hash.h"
 #include "components/sync/base/model_type.h"
 
 namespace syncer {
@@ -15,9 +16,17 @@ namespace syncer {
 // Represents a client defined unique hash for sync entities. Hash is derived
 // from client tag, and should be used as |client_defined_unique_tag| for
 // SyncEntity at least for CommitMessages. For convenience it supports storing
-// in ordered stl containers, logging and equality comparisons.
+// in ordered stl containers, logging and equality comparisons. It also supports
+// unordered stl containers using ClientTagHash::Hash.
 class ClientTagHash {
  public:
+  // For use in std::unordered_map.
+  struct Hash {
+    size_t operator()(const ClientTagHash& client_tag_hash) const {
+      return base::FastHash(client_tag_hash.value());
+    }
+  };
+
   // Creates ClientTagHash based on |client_tag|.
   static ClientTagHash FromUnhashed(ModelType type,
                                     const std::string& client_tag);

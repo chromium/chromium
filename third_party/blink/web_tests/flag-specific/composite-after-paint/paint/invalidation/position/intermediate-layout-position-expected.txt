@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTable TABLE",
-          "rect": [8, 172, 46, 20],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [8, 74, 46, 20],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [8, 148, 46, 44],
+        [8, 74, 46, 20]
       ]
     }
   ]

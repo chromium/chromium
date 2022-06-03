@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JINGLE_NOTIFIER_BASE_CONST_BASE_H_
-#define JINGLE_NOTIFIER_BASE_CONST_BASE_H_
+#ifndef JINGLE_NOTIFIER_BASE_CONST_COMMUNICATOR_H_
+#define JINGLE_NOTIFIER_BASE_CONST_COMMUNICATOR_H_
 
 namespace notifier {
 // The default port for jabber/xmpp communications.
 const int kDefaultXmppPort = 5222;
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_BASE_CONST_BASE_H_
+#endif  // JINGLE_NOTIFIER_BASE_CONST_COMMUNICATOR_H_

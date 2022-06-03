@@ -11,7 +11,7 @@
 test(function() {
   host1.attachShadow({mode : 'open'});
   var closedShadowRoot = host2.attachShadow({mode : 'closed'});
-  host3.createShadowRoot();
+  host3.attachShadow({mode: 'open'});
   assert_equals(host1.shadowRoot.mode, 'open');
   assert_equals(closedShadowRoot.mode, 'closed');
   assert_equals(host3.shadowRoot.mode, 'open');

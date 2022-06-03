@@ -13,7 +13,7 @@
       (t) => {
       return navigator.xr.test.simulateDeviceConnection(VALID_NON_IMMERSIVE_DEVICE)
         .then( (controller) => {
-          return promise_rejects(
+          return promise_rejects_dom(
             t,
             "NotSupportedError",
             navigator.xr.supportsSession('immersive-vr')

@@ -38,7 +38,7 @@ PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientHeight is 48
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetWidth is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetHeight is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollWidth is 31
-PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight is 104
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight should be 104. Was 102.
 
 
 Properties = innerHTML: "A", disabled: "true",
@@ -56,7 +56,7 @@ PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientH
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetWidth is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetHeight is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollWidth is 31
-PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight is 104
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight should be 104. Was 102.
 
 
 Properties = innerHTML: "A", style: "padding:8px",
@@ -92,7 +92,7 @@ PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientHeight 
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetWidth is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetHeight is 50
 PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollWidth is 31
-PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight is 104
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight should be 104. Was 102.
 
 
 Testing CSS1Compat document.
@@ -129,7 +129,7 @@ PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientHeight is 54
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetWidth is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetHeight is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollWidth is 37
-PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight is 64
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight should be 64. Was 104.
 
 
 Properties = innerHTML: "A", disabled: "true",
@@ -147,7 +147,7 @@ PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientH
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetWidth is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetHeight is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollWidth is 37
-PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight is 64
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight should be 64. Was 104.
 
 
 Properties = innerHTML: "A", style: "padding:8px",
@@ -165,7 +165,7 @@ PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').cli
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetWidth is 68
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetHeight is 68
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollWidth is 49
-PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollHeight is 76
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollHeight should be 76. Was 116.
 
 
 Properties = innerHTML: "A", rows: "10",
@@ -183,7 +183,7 @@ PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientHeight 
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetWidth is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetHeight is 56
 PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollWidth is 37
-PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight is 64
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight should be 64. Was 104.
 
 
 PASS successfullyParsed is true

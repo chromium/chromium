@@ -21,10 +21,10 @@ const int kInitialIntervalSeconds = 60;
 
 }  // namespace
 
-MetricsScheduler::MetricsScheduler(const base::Closure& task_callback,
+MetricsScheduler::MetricsScheduler(const base::RepeatingClosure& task_callback,
                                    bool fast_startup_for_testing)
     : task_callback_(task_callback),
-      interval_(base::TimeDelta::FromSeconds(
+      interval_(base::Seconds(
           fast_startup_for_testing ? 0 : kInitialIntervalSeconds)),
       running_(false),
       callback_pending_(false) {}
@@ -51,6 +51,10 @@ void MetricsScheduler::TaskDone(base::TimeDelta next_interval) {
 }
 
 void MetricsScheduler::TriggerTask() {
+  // This can happen in tests which set a very small timer interval.
+  if (callback_pending_)
+    return;
+
   callback_pending_ = true;
   task_callback_.Run();
 }

@@ -7,14 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/base/scheme_host_port_matcher.h"
 
 class GURL;
 
 // Identifies if a URL is from a trusted source.
 class TrustedSourcesManager {
  public:
+  TrustedSourcesManager(const TrustedSourcesManager&) = delete;
+  TrustedSourcesManager& operator=(const TrustedSourcesManager&) = delete;
+
   virtual ~TrustedSourcesManager();
 
   // Creates a platform-dependent instance of TrustedSourcesManager.
@@ -41,11 +43,7 @@ class TrustedSourcesManager {
   TrustedSourcesManager();
 
  private:
-  // We are using ProxyBypassRules because they have the functionality that we
-  // want, but we are not using it for proxy bypass.
-  net::ProxyBypassRules rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustedSourcesManager);
+  net::SchemeHostPortMatcher matcher_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_TRUSTED_SOURCES_MANAGER_H_

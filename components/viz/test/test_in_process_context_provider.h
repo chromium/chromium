@@ -9,15 +9,15 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "components/viz/test/test_image_factory.h"
 #include "gpu/config/gpu_feature_info.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace gpu {
 class GLInProcessContext;
@@ -34,8 +34,11 @@ class GrContextForGLES2Interface;
 }
 
 namespace viz {
+class DisplayCompositorMemoryAndTaskController;
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
+
+enum RasterInterfaceType { None, Software, GPU, OOPR };
 
 class TestInProcessContextProvider
     : public base::RefCountedThreadSafe<TestInProcessContextProvider>,
@@ -43,8 +46,9 @@ class TestInProcessContextProvider
       public RasterContextProvider {
  public:
   explicit TestInProcessContextProvider(
-      bool enable_oop_rasterization,
+      bool enable_gles2_interface,
       bool support_locking,
+      RasterInterfaceType raster_interface_type,
       gpu::raster::GrShaderCache* gr_shader_cache = nullptr,
       gpu::GpuProcessActivityFlags* activity_flags = nullptr);
 
@@ -55,7 +59,7 @@ class TestInProcessContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrContext* GrContext() override;
+  class GrDirectContext* GrContext() override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
@@ -71,14 +75,17 @@ class TestInProcessContextProvider
   ~TestInProcessContextProvider() override;
 
  private:
-  bool enable_oop_rasterization_ = false;
+  const bool enable_gles2_interface_;
+  const RasterInterfaceType raster_interface_type_;
   gpu::raster::GrShaderCache* gr_shader_cache_ = nullptr;
   gpu::GpuProcessActivityFlags* activity_flags_ = nullptr;
 
   TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   TestImageFactory image_factory_;
+  gpu::Capabilities caps_;
 
   // Used if support_gles2_interface.
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController> display_controller_;
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_implementation_gles2_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
@@ -87,7 +94,7 @@ class TestInProcessContextProvider
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
-  base::Optional<base::Lock> context_lock_;
+  absl::optional<base::Lock> context_lock_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 };
 

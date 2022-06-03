@@ -6,16 +6,47 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("url_mojom_gurl") {
   generate_java = true
-  sources = [
-    "url.mojom",
+  sources = [ "url.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "url.mojom.Url"
+          cpp = "::GURL"
+        },
+      ]
+      traits_headers = [ "//url/mojom/url_gurl_mojom_traits.h" ]
+      traits_public_deps = [
+        ":mojom_traits",
+        "//url",
+      ]
+    },
   ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "url.mojom.Url"
+          cpp = "::blink::KURL"
+          force_serialize = true
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/renderer/platform/mojo/kurl_mojom_traits.h",
+        "//third_party/blink/renderer/platform/weborigin/kurl_hash.h",
+      ]
+      traits_public_deps = [ "//url" ]
+    },
+  ]
+
+  webui_module_path = "chrome://resources/mojo/url/mojom"
 }
 
 mojom("url_mojom_origin") {
   generate_java = true
-  sources = [
-    "origin.mojom",
-  ]
+  sources = [ "origin.mojom" ]
 
   public_deps = [
     ":url_mojom_gurl",
@@ -23,15 +54,66 @@ mojom("url_mojom_origin") {
   ]
 
   check_includes_blink = false
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "url.mojom.Origin"
+          cpp = "::url::Origin"
+        },
+      ]
+      traits_headers = [ "//url/mojom/origin_mojom_traits.h" ]
+      traits_public_deps = [
+        ":mojom_traits",
+        "//url",
+      ]
+    },
+  ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "url.mojom.Origin"
+          cpp = "::scoped_refptr<const ::blink::SecurityOrigin>"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/platform/mojo/security_origin_mojom_traits.h" ]
+      traits_public_deps = [ "//url" ]
+    },
+  ]
+
+  webui_module_path = "chrome://resources/mojo/url/mojom"
 }
 
 mojom("test_url_mojom_gurl") {
-  sources = [
-    "url_test.mojom",
-  ]
+  sources = [ "url_test.mojom" ]
 
   public_deps = [
     ":url_mojom_gurl",
     ":url_mojom_origin",
+  ]
+}
+
+component("mojom_traits") {
+  output_name = "url_mojom_traits"
+
+  sources = [
+    "origin_mojom_traits.cc",
+    "origin_mojom_traits.h",
+    "url_gurl_mojom_traits.cc",
+    "url_gurl_mojom_traits.h",
+  ]
+
+  defines = [ "IS_URL_MOJOM_TRAITS_IMPL" ]
+
+  public_deps = [
+    ":url_mojom_gurl_shared",
+    ":url_mojom_origin_shared",
+    "//base",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//url",
   ]
 }

@@ -12,7 +12,7 @@ namespace cc {
 
 // TODO(khushalsagar): Find a better name?
 struct CC_PAINT_EXPORT FrameMetadata {
-  FrameMetadata() {}
+  FrameMetadata() = default;
   FrameMetadata(bool complete, base::TimeDelta duration)
       : complete(complete), duration(duration) {}
 

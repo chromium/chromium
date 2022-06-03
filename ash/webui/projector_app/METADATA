@@ -1,0 +1,7 @@
+buganizer {
+  component_id: 1080013
+}
+monorail {
+  component: "FamilyExperiences"
+}
+os: CHROME_OS

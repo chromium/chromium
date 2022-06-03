@@ -96,7 +96,6 @@ template <typename URBG>
 void TestReproducibleVariateSequencesForNonsecureURBG() {
   const size_t kNumVariates = 1000;
 
-  // Master RNG instance.
   URBG rng;
   // Reused for both RNG instances.
   auto reusable_seed = absl::CreateSeedSeqFrom(&rng);

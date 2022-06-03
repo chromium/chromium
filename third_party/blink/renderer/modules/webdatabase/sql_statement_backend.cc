@@ -97,7 +97,7 @@ SQLStatementBackend::SQLStatementBackend(SQLStatement* frontend,
   frontend_->SetBackend(this);
 }
 
-void SQLStatementBackend::Trace(blink::Visitor* visitor) {
+void SQLStatementBackend::Trace(Visitor* visitor) const {
   visitor->Trace(frontend_);
   visitor->Trace(result_set_);
 }

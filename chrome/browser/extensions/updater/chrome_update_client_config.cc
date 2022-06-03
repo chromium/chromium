@@ -5,10 +5,17 @@
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 
 #include <algorithm>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
@@ -19,6 +26,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/patcher.h"
@@ -47,20 +55,27 @@ class ExtensionActivityDataService final
     : public update_client::ActivityDataService {
  public:
   explicit ExtensionActivityDataService(ExtensionPrefs* extension_prefs);
-  ~ExtensionActivityDataService() override {}
+
+  ExtensionActivityDataService(const ExtensionActivityDataService&) = delete;
+  ExtensionActivityDataService& operator=(const ExtensionActivityDataService&) =
+      delete;
+
+  ~ExtensionActivityDataService() override = default;
 
   // update_client::ActivityDataService:
-  bool GetActiveBit(const std::string& id) const override;
+  void GetActiveBits(const std::vector<std::string>& ids,
+                     base::OnceCallback<void(const std::set<std::string>&)>
+                         callback) const override;
+  void GetAndClearActiveBits(
+      const std::vector<std::string>& ids,
+      base::OnceCallback<void(const std::set<std::string>&)> callback) override;
   int GetDaysSinceLastActive(const std::string& id) const override;
   int GetDaysSinceLastRollCall(const std::string& id) const override;
-  void ClearActiveBit(const std::string& id) override;
 
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
   ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActivityDataService);
 };
 
 // Calculates the value to use for the ping days parameter.
@@ -76,8 +91,16 @@ ExtensionActivityDataService::ExtensionActivityDataService(
   DCHECK(extension_prefs_);
 }
 
-bool ExtensionActivityDataService::GetActiveBit(const std::string& id) const {
-  return extension_prefs_->GetActiveBit(id);
+void ExtensionActivityDataService::GetActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) const {
+  std::set<std::string> actives;
+  for (const auto& id : ids) {
+    if (extension_prefs_->GetActiveBit(id))
+      actives.insert(id);
+  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
 int ExtensionActivityDataService::GetDaysSinceLastActive(
@@ -90,8 +113,17 @@ int ExtensionActivityDataService::GetDaysSinceLastRollCall(
   return CalculatePingDays(extension_prefs_->LastPingDay(id));
 }
 
-void ExtensionActivityDataService::ClearActiveBit(const std::string& id) {
-  extension_prefs_->SetActiveBit(id, false);
+void ExtensionActivityDataService::GetAndClearActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) {
+  std::set<std::string> actives;
+  for (const auto& id : ids) {
+    if (extension_prefs_->GetActiveBit(id))
+      actives.insert(id);
+    extension_prefs_->SetActiveBit(id, false);
+  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
 }  // namespace
@@ -99,18 +131,20 @@ void ExtensionActivityDataService::ClearActiveBit(const std::string& id) {
 // For privacy reasons, requires encryption of the component updater
 // communication with the update backend.
 ChromeUpdateClientConfig::ChromeUpdateClientConfig(
-    content::BrowserContext* context)
+    content::BrowserContext* context,
+    absl::optional<GURL> url_override)
     : context_(context),
       impl_(ExtensionUpdateClientCommandLineConfigPolicy(
                 base::CommandLine::ForCurrentProcess()),
             /*require_encryption=*/true),
       pref_service_(ExtensionPrefs::Get(context)->pref_service()),
       activity_data_service_(std::make_unique<ExtensionActivityDataService>(
-          ExtensionPrefs::Get(context))) {
+          ExtensionPrefs::Get(context))),
+      url_override_(url_override) {
   DCHECK(pref_service_);
 }
 
-int ChromeUpdateClientConfig::InitialDelay() const {
+double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
 
@@ -127,10 +161,14 @@ int ChromeUpdateClientConfig::UpdateDelay() const {
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::UpdateUrl() const {
+  if (url_override_.has_value())
+    return {*url_override_};
   return impl_.UpdateUrl();
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::PingUrl() const {
+  if (url_override_.has_value())
+    return {*url_override_};
   return impl_.PingUrl();
 }
 
@@ -144,7 +182,7 @@ base::Version ChromeUpdateClientConfig::GetBrowserVersion() const {
 }
 
 std::string ChromeUpdateClientConfig::GetChannel() const {
-  return chrome::GetChannelName();
+  return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 std::string ChromeUpdateClientConfig::GetBrand() const {
@@ -175,7 +213,7 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
-            content::BrowserContext::GetDefaultStoragePartition(context_)
+            context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess(),
             // Only extension updates that require authentication are served
             // from chrome.google.com, so send cookies if and only if that is
@@ -185,6 +223,15 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
             }));
   }
   return network_fetcher_factory_;
+}
+
+scoped_refptr<update_client::CrxDownloaderFactory>
+ChromeUpdateClientConfig::GetCrxDownloaderFactory() {
+  if (!crx_downloader_factory_) {
+    crx_downloader_factory_ =
+        update_client::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
+  }
+  return crx_downloader_factory_;
 }
 
 scoped_refptr<update_client::UnzipperFactory>
@@ -220,6 +267,8 @@ bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
 }
 
 bool ChromeUpdateClientConfig::EnabledCupSigning() const {
+  if (url_override_.has_value())
+    return false;
   return impl_.EnabledCupSigning();
 }
 
@@ -241,14 +290,15 @@ ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
   return impl_.GetProtocolHandlerFactory();
 }
 
-ChromeUpdateClientConfig::~ChromeUpdateClientConfig() {}
+ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
 
 // static
 scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    absl::optional<GURL> update_url_override) {
   FactoryCallback& factory = GetFactoryCallback();
-  return factory.is_null() ? scoped_refptr<ChromeUpdateClientConfig>(
-                                 new ChromeUpdateClientConfig(context))
+  return factory.is_null() ? base::MakeRefCounted<ChromeUpdateClientConfig>(
+                                 context, update_url_override)
                            : factory.Run(context);
 }
 

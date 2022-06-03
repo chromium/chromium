@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 
 #include "content/public/browser/video_capture_service.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace content {
 

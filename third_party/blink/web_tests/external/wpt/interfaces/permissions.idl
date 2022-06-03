@@ -1,23 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Permissions (https://w3c.github.io/permissions/)
-
-dictionary PermissionDescriptor {
-  required PermissionName name;
-};
-
-enum PermissionState {
-  "granted",
-  "denied",
-  "prompt",
-};
-
-[Exposed=(Window,Worker)]
-interface PermissionStatus : EventTarget {
-  readonly attribute PermissionState state;
-  attribute EventHandler onchange;
-};
 
 [Exposed=(Window)]
 partial interface Navigator {
@@ -34,6 +18,45 @@ interface Permissions {
   Promise<PermissionStatus> query(object permissionDesc);
 };
 
+dictionary PermissionDescriptor {
+  required PermissionName name;
+};
+
+[Exposed=(Window,Worker)]
+interface PermissionStatus : EventTarget {
+  readonly attribute PermissionState state;
+  readonly attribute PermissionName name;
+  attribute EventHandler onchange;
+};
+
+enum PermissionState {
+  "granted",
+  "denied",
+  "prompt",
+};
+
+enum PermissionName {
+  "accelerometer",
+  "ambient-light-sensor",
+  "background-fetch",
+  "background-sync",
+  "bluetooth",
+  "camera",
+  "display-capture",
+  "geolocation",
+  "gyroscope",
+  "magnetometer",
+  "microphone",
+  "midi",
+  "nfc",
+  "notifications",
+  "persistent-storage",
+  "push",
+  "screen-wake-lock",
+  "speaker-selection",
+  "xr-spatial-tracking",
+};
+
 dictionary PushPermissionDescriptor : PermissionDescriptor {
   boolean userVisibleOnly = false;
 };
@@ -46,8 +69,6 @@ dictionary DevicePermissionDescriptor : PermissionDescriptor {
   DOMString deviceId;
 };
 
-dictionary PermissionSetParameters {
-  required PermissionDescriptor descriptor;
-  required PermissionState state;
-  boolean oneRealm = false;
+dictionary CameraDevicePermissionDescriptor : DevicePermissionDescriptor {
+  boolean panTiltZoom = false;
 };

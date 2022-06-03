@@ -17,7 +17,7 @@
 namespace base {
 namespace trace_event {
 
-class TestTaskRunner : public SingleThreadTaskRunner {
+class TestTaskRunner final : public SingleThreadTaskRunner {
  public:
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
@@ -47,7 +47,7 @@ class TestTaskRunner : public SingleThreadTaskRunner {
   }
 
  private:
-  ~TestTaskRunner() final {}
+  ~TestTaskRunner() override {}
 
   std::list<std::pair<base::TimeDelta, OnceClosure>> delayed_tasks_;
 };
@@ -151,8 +151,7 @@ class CPUFreqMonitorTest : public testing::Test {
       std::string file_path =
           delegate_->GetScalingCurFreqPathString(pair.first);
       std::string str_freq = base::StringPrintf("%d\n", pair.second);
-      base::WriteFile(base::FilePath(file_path), str_freq.c_str(),
-                      str_freq.length());
+      base::WriteFile(base::FilePath(file_path), str_freq);
     }
   }
 
@@ -160,8 +159,7 @@ class CPUFreqMonitorTest : public testing::Test {
                              const std::vector<std::string>& related_cpus) {
     for (unsigned int i = 0; i < clusters.size(); i++) {
       base::WriteFile(base::FilePath(delegate_->GetRelatedCPUsPathString(i)),
-                      related_cpus[clusters[i]].c_str(),
-                      related_cpus[clusters[i]].length());
+                      related_cpus[clusters[i]]);
     }
   }
 

@@ -11,10 +11,12 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -31,6 +33,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/widget/widget.h"
 
+using chromeos::network_config::mojom::ActivationStateType;
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStateType;
@@ -44,6 +47,9 @@ namespace {
 
 // Delay between scan requests.
 constexpr int kRequestScanDelaySeconds = 10;
+
+// 00:00:00:00:00:00 is provided when a device MAC address cannot be retrieved.
+constexpr char kMissingMacAddress[] = "00:00:00:00:00:00";
 
 // This margin value is used throughout the bubble:
 // - margins inside the border
@@ -79,18 +85,38 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
   return false;
 }
 
+void LogUserNetworkEvent(const NetworkStateProperties& network) {
+  auto* const logger = ml::UserSettingsEventLogger::Get();
+  if (logger) {
+    logger->LogNetworkUkmEvent(network);
+  }
+}
+
 }  // namespace
 
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
+    chromeos::network_config::mojom::ActivationStateType activation_state,
     bool connectable) {
   // Network can be connected to if the network is not connected and:
   // * The network is connectable or
-  // * The active user is primary and the network is configurable
-  return connection_state == ConnectionStateType::kNotConnected &&
-         (connectable ||
-          (!IsSecondaryUser() && NetworkTypeIsConfigurable(type)));
+  // * The active user is primary and the network is configurable or
+  // * The network is cellular and activated
+  if (connection_state != ConnectionStateType::kNotConnected) {
+    return false;
+  }
+  if (connectable) {
+    return true;
+  }
+  if (!IsSecondaryUser() && NetworkTypeIsConfigurable(type)) {
+    return true;
+  }
+  if (type == NetworkType::kCellular &&
+      activation_state == ActivationStateType::kActivated) {
+    return true;
+  }
+  return false;
 }
 
 // A bubble which displays network info.
@@ -102,14 +128,17 @@ class NetworkStateListDetailedView::InfoBubble
              NetworkStateListDetailedView* detailed_view)
       : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
         detailed_view_(detailed_view) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
     set_margins(gfx::Insets(kBubbleMargin));
     SetArrow(views::BubbleBorder::NONE);
-    set_shadow(views::BubbleBorder::NO_ASSETS);
-    set_anchor_view_insets(gfx::Insets(0, 0, kBubbleMargin, 0));
-    set_notify_enter_exit_on_child(true);
+    set_shadow(views::BubbleBorder::NO_SHADOW);
+    SetNotifyEnterExitOnChild(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(content);
   }
+
+  InfoBubble(const InfoBubble&) = delete;
+  InfoBubble& operator=(const InfoBubble&) = delete;
 
   ~InfoBubble() override {
     // The detailed view can be destructed before info bubble is destructed.
@@ -138,9 +167,6 @@ class NetworkStateListDetailedView::InfoBubble
       detailed_view_->ResetInfoBubble();
   }
 
-  // BubbleDialogDelegateView:
-  int GetDialogButtons() const override { return ui::DIALOG_BUTTON_NONE; }
-
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override {
     params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
@@ -150,8 +176,6 @@ class NetworkStateListDetailedView::InfoBubble
 
   // Not owned.
   NetworkStateListDetailedView* detailed_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubble);
 };
 
 //------------------------------------------------------------------------------
@@ -160,6 +184,10 @@ class NetworkStateListDetailedView::InfoBubble
 class InfoThrobberLayout : public views::LayoutManager {
  public:
   InfoThrobberLayout() = default;
+
+  InfoThrobberLayout(const InfoThrobberLayout&) = delete;
+  InfoThrobberLayout& operator=(const InfoThrobberLayout&) = delete;
+
   ~InfoThrobberLayout() override = default;
 
   // views::LayoutManager
@@ -195,8 +223,6 @@ class InfoThrobberLayout : public views::LayoutManager {
     }
     return max_size;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InfoThrobberLayout);
 };
 
 //------------------------------------------------------------------------------
@@ -257,17 +283,6 @@ void NetworkStateListDetailedView::NetworkListChanged() {
   Update();
 }
 
-void NetworkStateListDetailedView::HandleButtonPressed(views::Button* sender,
-                                                       const ui::Event& event) {
-  if (sender == info_button_) {
-    ToggleInfoBubble();
-    return;
-  }
-
-  if (sender == settings_button_)
-    ShowSettings();
-}
-
 void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
   if (login_ == LoginStatus::LOCKED)
     return;
@@ -283,14 +298,32 @@ void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
 
 void NetworkStateListDetailedView::HandleViewClickedImpl(
     NetworkStatePropertiesPtr network) {
-  if (network && CanNetworkConnect(network->connection_state, network->type,
-                                   network->connectable)) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        list_type_ == LIST_TYPE_VPN
-            ? UMA_STATUS_AREA_CONNECT_TO_VPN
-            : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
-    chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
-    return;
+  if (network) {
+    // If the network is locked and is cellular show SIM unlock dialog in OS
+    // Settings.
+    if (network->type == NetworkType::kCellular &&
+        network->type_state->get_cellular()->sim_locked) {
+      if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
+        return;
+      }
+      Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
+      return;
+    }
+
+    if (CanNetworkConnect(
+            network->connection_state, network->type,
+            network->type == NetworkType::kCellular
+                ? network->type_state->get_cellular()->activation_state
+                : ActivationStateType::kUnknown,
+            network->connectable)) {
+      Shell::Get()->metrics()->RecordUserMetricsAction(
+          list_type_ == LIST_TYPE_VPN
+              ? UMA_STATUS_AREA_CONNECT_TO_VPN
+              : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
+      LogUserNetworkEvent(*network.get());
+      chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
+      return;
+    }
   }
   // If the network is no longer available or not connectable or configurable,
   // show the Settings UI.
@@ -309,11 +342,17 @@ void NetworkStateListDetailedView::CreateExtraTitleRowButtons() {
   DCHECK(!info_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
-  info_button_ = CreateInfoButton(IDS_ASH_STATUS_TRAY_NETWORK_INFO);
+  info_button_ = CreateInfoButton(
+      base::BindRepeating(&NetworkStateListDetailedView::ToggleInfoBubble,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_NETWORK_INFO);
   tri_view()->AddView(TriView::Container::END, info_button_);
 
   DCHECK(!settings_button_);
-  settings_button_ = CreateSettingsButton(IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS);
+  settings_button_ = CreateSettingsButton(
+      base::BindRepeating(&NetworkStateListDetailedView::ShowSettings,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS);
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 
@@ -321,10 +360,20 @@ void NetworkStateListDetailedView::ShowSettings() {
   Shell::Get()->metrics()->RecordUserMetricsAction(
       list_type_ == LIST_TYPE_VPN ? UMA_STATUS_AREA_VPN_SETTINGS_OPENED
                                   : UMA_STATUS_AREA_NETWORK_SETTINGS_OPENED);
+
+  const std::string guid = model_->default_network()
+                               ? model_->default_network()->guid
+                               : std::string();
+
+  // Showing network settings window may close the bubble (and destroy this
+  // view). Explicitly request bubble closure here, before showing network
+  // settings.
   CloseBubble();  // Deletes |this|.
-  Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
-      model_->default_network() ? model_->default_network()->guid
-                                : std::string());
+
+  SystemTrayClient* system_tray_client =
+      Shell::Get()->system_tray_model()->client();
+  if (system_tray_client)
+    system_tray_client->ShowNetworkSettings(guid);
 }
 
 void NetworkStateListDetailedView::UpdateHeaderButtons() {
@@ -417,14 +466,14 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
       cellular_address = *cellular->mac_address;
   }
 
-  base::string16 bubble_text;
+  std::u16string bubble_text;
   auto maybe_add_mac_address = [&bubble_text](const std::string& address,
                                               int ids) {
-    if (address.empty())
+    if (address.empty() || address == kMissingMacAddress)
       return;
 
     if (!bubble_text.empty())
-      bubble_text += base::ASCIIToUTF16("\n");
+      bubble_text += u"\n";
 
     bubble_text += l10n_util::GetStringFUTF16(ids, base::UTF8ToUTF16(address));
   };
@@ -450,7 +499,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
 void NetworkStateListDetailedView::ScanAndStartTimer() {
   CallRequestScan();
   network_scan_repeating_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kRequestScanDelaySeconds), this,
+      FROM_HERE, base::Seconds(kRequestScanDelaySeconds), this,
       &NetworkStateListDetailedView::CallRequestScan);
 }
 

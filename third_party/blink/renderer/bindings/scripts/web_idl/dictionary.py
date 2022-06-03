@@ -22,7 +22,7 @@ from .user_defined_type import UserDefinedType
 class Dictionary(UserDefinedType, WithExtendedAttributes,
                  WithCodeGeneratorInfo, WithExposure, WithComponent,
                  WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-dictionaries"""
+    """https://webidl.spec.whatwg.org/#idl-dictionaries"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):
@@ -103,6 +103,13 @@ class Dictionary(UserDefinedType, WithExtendedAttributes,
                     dictionary.own_members)
 
         return tuple(collect_inherited_members(self))
+
+    @property
+    def has_required_member(self):
+        """
+        Returns True if the dictionary has any required dictionary members.
+        """
+        return bool(any(member.is_required for member in self.members))
 
     # UserDefinedType overrides
     @property

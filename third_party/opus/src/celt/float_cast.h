@@ -67,6 +67,38 @@
 #include <xmmintrin.h>
 static OPUS_INLINE opus_int32 float2int(float x) {return _mm_cvt_ss2si(_mm_set_ss(x));}
 
+#elif (defined(_MSC_VER) && _MSC_VER >= 1400) && (defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 1))
+
+        #include <xmmintrin.h>
+        static OPUS_INLINE opus_int32 float2int(float value)
+        {
+                /* _mm_load_ss will generate same code as _mm_set_ss
+                ** in _MSC_VER >= 1914 /02 so keep __mm_load__ss
+                ** for backward compatibility.
+                */
+                return _mm_cvtss_si32(_mm_load_ss(&value));
+        }
+
+#elif (defined(_MSC_VER) && _MSC_VER >= 1400) && defined (_M_IX86)
+
+        #include <math.h>
+
+        /*      Win32 doesn't seem to have these functions.
+        **      Therefore implement OPUS_INLINE versions of these functions here.
+        */
+
+        static OPUS_INLINE opus_int32
+        float2int (float flt)
+        {       int intgr;
+
+                _asm
+                {       fld flt
+                        fistp intgr
+                } ;
+
+                return intgr ;
+        }
+
 #elif defined(HAVE_LRINTF)
 
 /*      These defines enable functionality introduced with the 1999 ISO C
@@ -95,32 +127,6 @@ static OPUS_INLINE opus_int32 float2int(float x) {return _mm_cvt_ss2si(_mm_set_s
 
 #include <math.h>
 #define float2int(x) lrint(x)
-
-#elif (defined(_MSC_VER) && _MSC_VER >= 1400) && defined (_M_X64)
-        #include <xmmintrin.h>
-
-        __inline long int float2int(float value)
-        {
-                return _mm_cvtss_si32(_mm_load_ss(&value));
-        }
-#elif (defined(_MSC_VER) && _MSC_VER >= 1400) && defined (_M_IX86)
-        #include <math.h>
-
-        /*      Win32 doesn't seem to have these functions.
-        **      Therefore implement OPUS_INLINE versions of these functions here.
-        */
-
-        __inline long int
-        float2int (float flt)
-        {       int intgr;
-
-                _asm
-                {       fld flt
-                        fistp intgr
-                } ;
-
-                return intgr ;
-        }
 
 #else
 

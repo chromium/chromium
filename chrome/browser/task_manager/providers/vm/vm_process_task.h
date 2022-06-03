@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 namespace task_manager {
@@ -20,6 +19,8 @@ class VmProcessTask : public Task {
                 base::ProcessId pid,
                 const std::string& owner_id,
                 const std::string& vm_name);
+  VmProcessTask(const VmProcessTask&) = delete;
+  VmProcessTask& operator=(const VmProcessTask&) = delete;
   ~VmProcessTask() override = default;
 
   // task_manager::Task:
@@ -29,8 +30,6 @@ class VmProcessTask : public Task {
  protected:
   std::string owner_id_;
   std::string vm_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(VmProcessTask);
 };
 
 }  // namespace task_manager

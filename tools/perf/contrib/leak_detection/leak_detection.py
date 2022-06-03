@@ -24,7 +24,7 @@ class _LeakDetectionBase(perf_benchmark.PerfBenchmark):
     tbm_options.AddTimelineBasedMetric('leakDetectionMetric')
     return tbm_options
 
-  def CustomizeOptions(self, options):
+  def CustomizeOptions(self, options, possible_browser=None):
     # TODO(crbug.com/936805): Note this is a hack. Perf benchmarks should not
     # override the CustomizeOptions method.
     options.browser_options.AppendExtraBrowserArgs('--js-flags=--expose-gc')

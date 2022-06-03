@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -20,21 +19,11 @@ class Layer;
 
 namespace blink {
 
-class ClipPaintPropertyNode;
-class EffectPaintPropertyNode;
+class ClipPaintPropertyNodeOrAlias;
+class EffectPaintPropertyNodeOrAlias;
 class PaintArtifact;
 class TransformPaintPropertyNode;
-
-class DummyRectClient : public FakeDisplayItemClient {
- public:
-  IntRect VisualRect() const final { return rect_; }
-  void SetVisualRect(const IntRect& rect) { rect_ = rect; }
-
-  sk_sp<PaintRecord> MakeRecord(const IntRect& rect, Color color);
-
- private:
-  IntRect rect_;
-};
+class TransformPaintPropertyNodeOrAlias;
 
 // Useful for quickly making a paint artifact in unit tests.
 //
@@ -55,20 +44,19 @@ class DummyRectClient : public FakeDisplayItemClient {
 // Usage:
 //   auto artifact = TestPaintArtifact().Chunk(0).Chunk(1).Build();
 //   DoSomethingWithArtifact(artifact);
+//  or
+//   DoSomethingWithArtifact(TestPaintArtifact().Chunk(0).Chunk(1).Build());
 //
 class TestPaintArtifact {
   STACK_ALLOCATED();
 
  public:
-  TestPaintArtifact();
-  ~TestPaintArtifact();
-
   // Add a chunk to the artifact. Each chunk will have a different automatically
   // created client.
   TestPaintArtifact& Chunk() { return Chunk(NewClient()); }
 
   // Add a chunk with the specified client.
-  TestPaintArtifact& Chunk(DummyRectClient&,
+  TestPaintArtifact& Chunk(DisplayItemClient&,
                            DisplayItem::Type = DisplayItem::kDrawingFirst);
 
   // This is for RasterInvalidatorTest, to create a chunk with specific id and
@@ -77,23 +65,24 @@ class TestPaintArtifact {
   // artifact.
   TestPaintArtifact& Chunk(int id);
 
-  TestPaintArtifact& Properties(const PropertyTreeState&);
-  TestPaintArtifact& Properties(const TransformPaintPropertyNode& transform,
-                                const ClipPaintPropertyNode& clip,
-                                const EffectPaintPropertyNode& effect) {
-    return Properties(PropertyTreeState(transform, clip, effect));
+  TestPaintArtifact& Properties(const PropertyTreeStateOrAlias&);
+  TestPaintArtifact& Properties(
+      const TransformPaintPropertyNodeOrAlias& transform,
+      const ClipPaintPropertyNodeOrAlias& clip,
+      const EffectPaintPropertyNodeOrAlias& effect) {
+    return Properties(PropertyTreeStateOrAlias(transform, clip, effect));
   }
   TestPaintArtifact& Properties(const RefCountedPropertyTreeState& properties) {
     return Properties(properties.GetPropertyTreeState());
   }
 
   // Shorthands of Chunk().Properties(...).
-  TestPaintArtifact& Chunk(const TransformPaintPropertyNode& transform,
-                           const ClipPaintPropertyNode& clip,
-                           const EffectPaintPropertyNode& effect) {
+  TestPaintArtifact& Chunk(const TransformPaintPropertyNodeOrAlias& transform,
+                           const ClipPaintPropertyNodeOrAlias& clip,
+                           const EffectPaintPropertyNodeOrAlias& effect) {
     return Chunk().Properties(transform, clip, effect);
   }
-  TestPaintArtifact& Chunk(const PropertyTreeState& properties) {
+  TestPaintArtifact& Chunk(const PropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
   TestPaintArtifact& Chunk(const RefCountedPropertyTreeState& properties) {
@@ -102,31 +91,37 @@ class TestPaintArtifact {
 
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
-  TestPaintArtifact& RectDrawing(const IntRect& bounds, Color color);
+  TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
-      const TransformPaintPropertyNode* scroll_offset,
-      const IntRect& scroll_container_bounds);
+      const gfx::Rect&,
+      const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
-                                  const FloatPoint& offset);
+                                  const gfx::Point& offset);
 
   // Add display item with the specified client in the chunk.
-  TestPaintArtifact& RectDrawing(DummyRectClient&,
-                                 const IntRect& bounds,
+  TestPaintArtifact& RectDrawing(DisplayItemClient&,
+                                 const gfx::Rect& bounds,
                                  Color color);
   TestPaintArtifact& ScrollHitTest(
-      DummyRectClient&,
-      const TransformPaintPropertyNode* scroll_offset,
-      const IntRect& scroll_container_bounds);
+      DisplayItemClient&,
+      const gfx::Rect&,
+      const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
-  // display items.
-  TestPaintArtifact& Bounds(const IntRect&);
+  // display items. Bounds() sets both bounds and drawable_bounds, while
+  // DrawableBounds() sets drawable_bounds only.
+  TestPaintArtifact& Bounds(const gfx::Rect&);
+  TestPaintArtifact& DrawableBounds(const gfx::Rect&);
 
-  TestPaintArtifact& OutsetForRasterEffects(float);
-  TestPaintArtifact& KnownToBeOpaque();
+  TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
+  TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
+  TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
+  TestPaintArtifact& HasText();
+  TestPaintArtifact& EffectivelyInvisible();
   TestPaintArtifact& Uncacheable();
+  TestPaintArtifact& IsMovedFromCachedSubsequence();
 
   // Build the paint artifact. After that, if this object has automatically
   // created any display item client, the caller must retain this object when
@@ -134,17 +129,16 @@ class TestPaintArtifact {
   scoped_refptr<PaintArtifact> Build();
 
   // Create a new display item client which is owned by this TestPaintArtifact.
-  DummyRectClient& NewClient();
+  FakeDisplayItemClient& NewClient();
 
-  DummyRectClient& Client(wtf_size_t) const;
+  FakeDisplayItemClient& Client(wtf_size_t) const;
 
  private:
-  void FinishLastChunk();
+  void DidAddDisplayItem();
 
-  Vector<std::unique_ptr<DummyRectClient>> dummy_clients_;
-
-  DisplayItemList display_item_list_;
-  Vector<PaintChunk> paint_chunks_;
+  HeapVector<Member<FakeDisplayItemClient>> clients_;
+  scoped_refptr<PaintArtifact> paint_artifact_ =
+      base::MakeRefCounted<PaintArtifact>();
 };
 
 }  // namespace blink

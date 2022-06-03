@@ -16,7 +16,6 @@ gfx::ImageSkia* BrowserProcessTask::s_icon_ = nullptr;
 
 BrowserProcessTask::BrowserProcessTask()
     : Task(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT),
-           "Browser Process",
            FetchIcon(IDR_PRODUCT_LOGO_16, &s_icon_),
            base::GetCurrentProcessHandle()),
       used_sqlite_memory_(-1) {}

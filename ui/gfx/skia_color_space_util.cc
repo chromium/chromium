@@ -8,8 +8,7 @@
 #include <cmath>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 namespace gfx {
 
@@ -21,7 +20,7 @@ float SkTransferFnEvalUnclamped(const skcms_TransferFunction& fn, float x) {
 
 float SkTransferFnEval(const skcms_TransferFunction& fn, float x) {
   float fn_at_x_unclamped = SkTransferFnEvalUnclamped(fn, x);
-  return base::ClampToRange(fn_at_x_unclamped, 0.0f, 1.0f);
+  return base::clamp(fn_at_x_unclamped, 0.0f, 1.0f);
 }
 
 skcms_TransferFunction SkTransferFnInverse(const skcms_TransferFunction& fn) {
@@ -39,6 +38,22 @@ skcms_TransferFunction SkTransferFnInverse(const skcms_TransferFunction& fn) {
     fn_inv.f = -fn.f / fn.c;
   }
   return fn_inv;
+}
+
+skcms_TransferFunction SkTransferFnScaled(const skcms_TransferFunction& fn,
+                                          float scale) {
+  if (scale == 1.f)
+    return fn;
+  float scale_to_g_inv = std::pow(scale, 1.f / fn.g);
+  skcms_TransferFunction fn_scaled = {0};
+  fn_scaled.a = fn.a * scale_to_g_inv;
+  fn_scaled.b = fn.b * scale_to_g_inv;
+  fn_scaled.c = fn.c * scale;
+  fn_scaled.d = fn.d;
+  fn_scaled.e = fn.e * scale;
+  fn_scaled.f = fn.f * scale;
+  fn_scaled.g = fn.g;
+  return fn_scaled;
 }
 
 bool SkTransferFnsApproximatelyCancel(const skcms_TransferFunction& a,
@@ -65,7 +80,7 @@ bool SkTransferFnIsApproximatelyIdentity(const skcms_TransferFunction& a) {
   return true;
 }
 
-bool SkMatrixIsApproximatelyIdentity(const SkMatrix44& m) {
+bool SkMatrixIsApproximatelyIdentity(const skia::Matrix44& m) {
   const float kEpsilon = 1.f / 256.f;
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {

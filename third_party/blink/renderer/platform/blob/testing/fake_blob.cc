@@ -15,6 +15,8 @@ namespace {
 class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
  public:
   SimpleDataPipeGetter(const String& str) : str_(str) {}
+  SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
+  SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
 
   // network::mojom::DataPipeGetter implementation:
@@ -33,8 +35,6 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
 
  private:
   String str_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDataPipeGetter);
 };
 
 }  // namespace
@@ -76,8 +76,20 @@ void FakeBlob::ReadAll(
     client_remote->OnComplete(0 /* OK */, body_.length());
 }
 
+void FakeBlob::Load(
+    mojo::PendingReceiver<network::mojom::blink::URLLoader>,
+    const String& method,
+    const net::HttpRequestHeaders&,
+    mojo::PendingRemote<network::mojom::blink::URLLoaderClient>) {
+  NOTREACHED();
+}
+
 void FakeBlob::ReadSideData(ReadSideDataCallback callback) {
   NOTREACHED();
+}
+
+void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback callback) {
+  std::move(callback).Run(body_.length(), absl::nullopt);
 }
 
 void FakeBlob::GetInternalUUID(GetInternalUUIDCallback callback) {

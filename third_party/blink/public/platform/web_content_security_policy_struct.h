@@ -32,91 +32,83 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_
 
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
-#include "third_party/blink/public/platform/web_content_security_policy.h"
-#include "third_party/blink/public/platform/web_source_location.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
-enum WebWildcardDisposition {
-  kWebWildcardDispositionNoWildcard,
-  kWebWildcardDispositionHasWildcard
-};
-
-struct WebContentSecurityPolicySourceExpression {
+struct WebCSPSource {
   WebString scheme;
   WebString host;
-  WebWildcardDisposition is_host_wildcard;
-  int port;
-  WebWildcardDisposition is_port_wildcard;
+  int port = -1;
   WebString path;
+  bool is_host_wildcard;
+  bool is_port_wildcard;
 };
 
-struct WebContentSecurityPolicySourceList {
+struct WebCSPHashSource {
+  network::mojom::CSPHashAlgorithm algorithm;
+  WebVector<uint8_t> value;
+};
+
+struct WebCSPSourceList {
+  WebVector<WebCSPSource> sources;
+  WebVector<WebString> nonces;
+  WebVector<WebCSPHashSource> hashes;
   bool allow_self;
   bool allow_star;
-  bool allow_redirects;
-  WebVector<WebContentSecurityPolicySourceExpression> sources;
+  bool allow_response_redirects;
+  bool allow_inline;
+  bool allow_eval;
+  bool allow_wasm_eval;
+  bool allow_wasm_unsafe_eval;
+  bool allow_dynamic;
+  bool allow_unsafe_hashes;
+  bool report_sample;
 };
 
 struct WebContentSecurityPolicyDirective {
-  WebString name;
-  WebContentSecurityPolicySourceList source_list;
+  network::mojom::CSPDirectiveName name;
+  WebCSPSourceList source_list;
+};
+
+struct WebContentSecurityPolicyRawDirective {
+  network::mojom::CSPDirectiveName name;
+  WebString value;
+};
+
+struct WebCSPTrustedTypes {
+  WebVector<WebString> list;
+  bool allow_any;
+  bool allow_duplicates;
+};
+
+struct WebContentSecurityPolicyHeader {
+  WebString header_value;
+  network::mojom::ContentSecurityPolicyType type =
+      network::mojom::ContentSecurityPolicyType::kEnforce;
+  network::mojom::ContentSecurityPolicySource source =
+      network::mojom::ContentSecurityPolicySource::kHTTP;
 };
 
 struct WebContentSecurityPolicy {
-  network::mojom::ContentSecurityPolicyType disposition;
-  network::mojom::ContentSecurityPolicySource source;
+  WebCSPSource self_origin;
+  WebVector<WebContentSecurityPolicyRawDirective> raw_directives;
   WebVector<WebContentSecurityPolicyDirective> directives;
-  WebVector<WebString> report_endpoints;
-  WebString header;
+  bool upgrade_insecure_requests;
+  bool treat_as_public_address;
+  bool block_all_mixed_content;
+  network::mojom::WebSandboxFlags sandbox =
+      network::mojom::WebSandboxFlags::kNone;
+  WebContentSecurityPolicyHeader header;
   bool use_reporting_api;
-};
-
-struct WebContentSecurityPolicyList {
-  WebVector<WebContentSecurityPolicy> policies;
-  base::Optional<WebContentSecurityPolicySourceExpression> self_source;
-};
-
-struct WebContentSecurityPolicyViolation {
-  // The name of the directive that violates the policy. |directive| might be a
-  // directive that serves as a fallback to the |effective_directive|.
-  WebString directive;
-
-  // The name the effective directive that was checked against.
-  WebString effective_directive;
-
-  // The console message to be displayed to the user.
-  WebString console_message;
-
-  // The URL that was blocked by the policy.
-  WebURL blocked_url;
-
-  // The set of endpoints where a report of the violation should be sent.
-  // Based on 'use_reporting_api' it can be either a set of group_names (when
-  // 'use_reporting_api' = true) or a set of URLs. This means that it's not
-  // possible to use both methods of reporting. This is by design.
   WebVector<WebString> report_endpoints;
-
-  // Whether to use the reporting api or not.
-  bool use_reporting_api;
-
-  // The raw content security policy header that was infringed.
-  WebString header;
-
-  // Each policy has an associated disposition, which is either "enforce" or
-  // "report".
-  network::mojom::ContentSecurityPolicyType disposition;
-
-  // Whether or not the violation happens after a redirect.
-  bool after_redirect;
-
-  // The source code location that triggered the blocked navigation.
-  WebSourceLocation source_location;
+  network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
+  absl::optional<WebCSPTrustedTypes> trusted_types;
+  WebVector<WebString> parsing_errors;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_

@@ -63,9 +63,8 @@ TEST(TextureLayerImplTest, Occlusion) {
   TextureLayerImpl* texture_layer_impl = impl.AddLayer<TextureLayerImpl>();
   texture_layer_impl->SetBounds(layer_size);
   texture_layer_impl->SetDrawsContent(true);
-  texture_layer_impl->SetTransferableResource(
-      resource,
-      viz::SingleReleaseCallback::Create(base::BindOnce(&IgnoreCallback)));
+  texture_layer_impl->SetTransferableResource(resource,
+                                              base::BindOnce(&IgnoreCallback));
   CopyProperties(impl.root_layer(), texture_layer_impl);
 
   impl.CalcDrawProps(viewport_size);

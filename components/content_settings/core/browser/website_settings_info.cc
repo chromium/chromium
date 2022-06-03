@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -64,16 +64,10 @@ uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
   return flags;
 }
 
-bool WebsiteSettingsInfo::SupportsEmbeddedExceptions() const {
-  // Note that REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE supports embedded
-  // exceptions but because these are deprecated and planned to be removed they
-  // aren't included here.
-  if (scoping_type_ == COOKIES_SCOPE ||
-      scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE) {
-    return true;
-  }
-
-  return false;
+bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
+  return scoping_type_ == COOKIES_SCOPE ||
+         scoping_type_ == STORAGE_ACCESS_SCOPE ||
+         scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE;
 }
 
 }  // namespace content_settings

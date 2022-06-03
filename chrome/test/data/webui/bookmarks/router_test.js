@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-router>', function() {
   let store;
@@ -85,8 +86,8 @@ suite('URL preload', function() {
    * given |url| to trigger routing initialization code.
    */
   function setupWithUrl(url) {
-    PolymerTest.clearBody();
-    Store.instance_ = undefined;
+    document.body.innerHTML = '';
+    Store.setInstance(undefined);
     window.history.replaceState({}, '', url);
 
     chrome.bookmarks.getTree = function(callback) {

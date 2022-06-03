@@ -6,8 +6,9 @@
 
 #include <cmath>
 
-#include "third_party/blink/public/platform/web_media_constraints.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 
 namespace blink {
 namespace media_constraints {
@@ -94,9 +95,9 @@ bool IsPositiveFiniteAspectRatio(double aspect_ratio) {
 // |vertices| must have 1 or 2 elements. Otherwise, behavior is undefined.
 // This function is called when |point| has already been determined to be
 // outside a polygon and |vertices| is the vertex or side closest to |point|.
-Point GetClosestPointToVertexOrSide(const std::vector<Point> vertices,
+Point GetClosestPointToVertexOrSide(const Vector<Point> vertices,
                                     const Point& point) {
-  DCHECK(!vertices.empty());
+  DCHECK(!vertices.IsEmpty());
   // If only a single vertex closest to |point|, return that vertex.
   if (vertices.size() == 1U)
     return vertices[0];
@@ -268,7 +269,7 @@ ResolutionSet ResolutionSet::Intersection(const ResolutionSet& other) const {
 }
 
 Point ResolutionSet::SelectClosestPointToIdeal(
-    const WebMediaTrackConstraintSet& constraint_set,
+    const MediaTrackConstraintSetPlatform& constraint_set,
     int default_height,
     int default_width) const {
   DCHECK_GE(default_height, 1);
@@ -308,7 +309,7 @@ Point ResolutionSet::SelectClosestPointToIdeal(
           return intersection.ClosestPointTo(
               Point(ideal_height, ideal_height * default_aspect_ratio));
         }
-        std::vector<Point> closest_vertices =
+        Vector<Point> closest_vertices =
             GetClosestVertices(&Point::height, ideal_height);
         Point ideal_point(closest_vertices[0].height(),
                           closest_vertices[0].height() * default_aspect_ratio);
@@ -322,7 +323,7 @@ Point ResolutionSet::SelectClosestPointToIdeal(
           return intersection.ClosestPointTo(
               Point(ideal_width / default_aspect_ratio, ideal_width));
         }
-        std::vector<Point> closest_vertices =
+        Vector<Point> closest_vertices =
             GetClosestVertices(&Point::width, ideal_width);
         Point ideal_point(closest_vertices[0].width() / default_aspect_ratio,
                           closest_vertices[0].width());
@@ -378,7 +379,7 @@ Point ResolutionSet::SelectClosestPointToIdealAspectRatio(
         intersection.ClosestPointTo(default_height_point),
         intersection.ClosestPointTo(default_width_point));
   }
-  std::vector<Point> closest_vertices =
+  Vector<Point> closest_vertices =
       GetClosestVertices(&Point::AspectRatio, ideal_aspect_ratio);
   double actual_aspect_ratio = closest_vertices[0].AspectRatio();
   Point default_height_point(default_height,
@@ -401,7 +402,7 @@ Point ResolutionSet::ClosestPointTo(const Point& point) const {
   DCHECK_GE(vertices.size(), 1U);
   Point best_candidate(0, 0);
   double best_distance = HUGE_VAL;
-  for (size_t i = 0; i < vertices.size(); ++i) {
+  for (WTF::wtf_size_t i = 0; i < vertices.size(); ++i) {
     Point candidate = Point::ClosestPointInSegment(
         point, vertices[i], vertices[(i + 1) % vertices.size()]);
     double distance = Point::SquareEuclideanDistance(point, candidate);
@@ -415,12 +416,12 @@ Point ResolutionSet::ClosestPointTo(const Point& point) const {
   return best_candidate;
 }
 
-std::vector<Point> ResolutionSet::GetClosestVertices(double (Point::*accessor)()
-                                                         const,
-                                                     double value) const {
+Vector<Point> ResolutionSet::GetClosestVertices(double (Point::*accessor)()
+                                                    const,
+                                                double value) const {
   DCHECK(!IsEmpty());
-  std::vector<Point> vertices = ComputeVertices();
-  std::vector<Point> closest_vertices;
+  Vector<Point> vertices = ComputeVertices();
+  Vector<Point> closest_vertices;
   double best_diff = HUGE_VAL;
   for (const auto& vertex : vertices) {
     double diff;
@@ -436,7 +437,7 @@ std::vector<Point> ResolutionSet::GetClosestVertices(double (Point::*accessor)()
       closest_vertices.push_back(vertex);
     }
   }
-  DCHECK(!closest_vertices.empty());
+  DCHECK(!closest_vertices.IsEmpty());
   DCHECK_LE(closest_vertices.size(), 2U);
   return closest_vertices;
 }
@@ -480,8 +481,8 @@ ResolutionSet ResolutionSet::FromExactResolution(int width, int height) {
                        std::isnan(aspect_ratio) ? HUGE_VAL : aspect_ratio);
 }
 
-std::vector<Point> ResolutionSet::ComputeVertices() const {
-  std::vector<Point> vertices;
+Vector<Point> ResolutionSet::ComputeVertices() const {
+  Vector<Point> vertices;
   // Add vertices in counterclockwise order
   // Start with (min_height, min_width) and continue along min_width.
   TryAddVertex(&vertices, Point(min_height_, min_width_));
@@ -520,7 +521,7 @@ std::vector<Point> ResolutionSet::ComputeVertices() const {
   return vertices;
 }
 
-void ResolutionSet::TryAddVertex(std::vector<Point>* vertices,
+void ResolutionSet::TryAddVertex(Vector<Point>* vertices,
                                  const Point& point) const {
   if (!ContainsPoint(point))
     return;
@@ -528,14 +529,14 @@ void ResolutionSet::TryAddVertex(std::vector<Point>* vertices,
   // Add the point to the |vertices| if not already added.
   // This is to prevent duplicates in case an aspect ratio intersects a width
   // or height right on a vertex.
-  if (vertices->empty() ||
+  if (vertices->IsEmpty() ||
       (*(vertices->end() - 1) != point && *vertices->begin() != point)) {
     vertices->push_back(point);
   }
 }
 
 ResolutionSet ResolutionSet::FromConstraintSet(
-    const WebMediaTrackConstraintSet& constraint_set) {
+    const MediaTrackConstraintSetPlatform& constraint_set) {
   return ResolutionSet(
       MinDimensionFromConstraint(constraint_set.height),
       MaxDimensionFromConstraint(constraint_set.height),
@@ -550,7 +551,7 @@ DiscreteSet<std::string> StringSetFromConstraint(
   if (!constraint.HasExact())
     return DiscreteSet<std::string>::UniversalSet();
 
-  std::vector<std::string> elements;
+  Vector<std::string> elements;
   for (const auto& entry : constraint.Exact())
     elements.push_back(entry.Ascii());
 
@@ -567,12 +568,12 @@ DiscreteSet<bool> BoolSetFromConstraint(const BooleanConstraint& constraint) {
 DiscreteSet<bool> RescaleSetFromConstraint(
     const StringConstraint& resize_mode_constraint) {
   DCHECK_EQ(resize_mode_constraint.GetName(),
-            WebMediaTrackConstraintSet().resize_mode.GetName());
+            MediaTrackConstraintSetPlatform().resize_mode.GetName());
   bool contains_none = resize_mode_constraint.Matches(
       WebString::FromASCII(WebMediaStreamTrack::kResizeModeNone));
   bool contains_rescale = resize_mode_constraint.Matches(
       WebString::FromASCII(WebMediaStreamTrack::kResizeModeRescale));
-  if (resize_mode_constraint.Exact().empty() ||
+  if (resize_mode_constraint.Exact().IsEmpty() ||
       (contains_none && contains_rescale)) {
     return DiscreteSet<bool>::UniversalSet();
   }

@@ -1,6 +1,6 @@
 # CSS Style Calculation in Blink
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/css/style-calculation.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/css/style-calculation.md)
 
 
 # About this document
@@ -36,13 +36,13 @@ The following are long-lived objects that remain static during the calculation
 of each element's style.
 
 * [`Element`](https://cs.chromium.org/?q=symbol:%5Eblink::Element$) See also
-[dom/README.md](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/dom/README.md)
+[dom/README.md](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/dom/README.md)
 * [`TreeScope`](https://cs.chromium.org/?q=symbol:%5Eblink::TreeScope$)
 Represents a tree of elements for a document or shadow root. Gives fast access
 to various things inside the tree of elements. Holds a
 [`ScopedStyleResolver`](https://cs.chromium.org/?q=symbol:%5Eblink::ScopedStyleResolver$)
 for this scope. See
-[dom/README.md](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/dom/README.md#treescope)
+[dom/README.md](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/dom/README.md#treescope)
 * [`StyleEngine`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleEngine$)
 * [`StyleResolver`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleResolver$)
 * [`ScopedStyleResolver`](https://cs.chromium.org/?q=symbol:%5Eblink::ScopedStyleResolver$)
@@ -110,7 +110,7 @@ of `CSSSelector`s.
 If there are no custom style callbacks or animations
 [`StyleForLayoutObject`](https://cs.chromium.org/?q=symbol:%5Eblink::Element::StyleForLayoutObject$)
 leads to
-[`StyleResolver::StyleForElement`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleResolver::StyleForElement$)
+[`StyleResolver::ResolveStyle`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleResolver::ResolveStyle$)
 which is where the bulk of the work occurs. First by finding all of the rules
 which match the element and then using that and other info to compute the final
 style.

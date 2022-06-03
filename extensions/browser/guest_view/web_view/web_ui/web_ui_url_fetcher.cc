@@ -9,8 +9,10 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 WebUIURLFetcher::WebUIURLFetcher(int render_process_id,
                                  int render_frame_id,
@@ -32,8 +34,8 @@ void WebUIURLFetcher::Start() {
     return;
   }
 
-  auto factory = content::CreateWebUIURLLoader(rfh, url_.scheme(),
-                                               base::flat_set<std::string>());
+  mojo::Remote<network::mojom::URLLoaderFactory> factory(
+      content::CreateWebUIURLLoaderFactory(rfh, url_.scheme(), {}));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("webui_content_scripts_download", R"(

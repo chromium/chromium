@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+onload = runRepaintAndPixelTest;
+function repaintTest() {
+  // This should not invalidate.
+  rect.style.transform = "translateY(50px)";
+}
+</script>
+<svg width="200" height="200">
+  <rect id="rect" x="10" y="10" width="100" height="100" fill="green" style="will-change: transform">
+</svg>

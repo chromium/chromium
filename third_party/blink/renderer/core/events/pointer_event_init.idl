@@ -9,8 +9,10 @@ dictionary PointerEventInit : MouseEventInit {
     double    width = 1;
     double    height = 1;
     float     pressure = 0;
-    long      tiltX = 0;
-    long      tiltY = 0;
+    long      tiltX;
+    long      tiltY;
+    double azimuthAngle;
+    double altitudeAngle;
     float     tangentialPressure = 0;
     long      twist = 0;
     DOMString pointerType = "";
@@ -18,5 +20,5 @@ dictionary PointerEventInit : MouseEventInit {
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
     sequence<PointerEvent> coalescedEvents = [];
-    [RuntimeEnabled=PredictedEvents]sequence<PointerEvent> predictedEvents = [];
+    sequence<PointerEvent> predictedEvents = [];
 };

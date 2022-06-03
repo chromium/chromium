@@ -260,6 +260,7 @@ CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153: interface WritableStream
 CONSOLE MESSAGE: line 153:     getter locked
 CONSOLE MESSAGE: line 153:     method abort
+CONSOLE MESSAGE: line 153:     method close
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     method getWriter
 CONSOLE MESSAGE: line 153: interface WritableStreamDefaultWriter
@@ -538,6 +539,7 @@ CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153: interface WritableStream
 CONSOLE MESSAGE: line 153:     getter locked
 CONSOLE MESSAGE: line 153:     method abort
+CONSOLE MESSAGE: line 153:     method close
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     method getWriter
 CONSOLE MESSAGE: line 153: interface WritableStreamDefaultWriter

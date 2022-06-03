@@ -15,12 +15,11 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
@@ -36,7 +35,7 @@ const base::FilePath::CharType kRecoveryFileName[] =
 
 // Returns the Chrome's appid registered with Google Update for updates.
 std::string GetBrowserAppId() {
-  return base::UTF16ToUTF8(install_static::GetAppGuid());
+  return base::WideToUTF8(install_static::GetAppGuid());
 }
 
 // Returns the current browser version.
@@ -76,7 +75,7 @@ std::tuple<bool, int, int> RunRecoveryCRXElevated(
     return {false, static_cast<int>(hr), 0};
 
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
@@ -120,8 +119,9 @@ base::CommandLine RecoveryComponentActionHandlerWin::MakeCommandLine(
 }
 
 void RecoveryComponentActionHandlerWin::Elevate(Callback callback) {
-  base::CreateCOMSTATaskRunner(
-      kTaskTraitsRunCommand, base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      kThreadPoolTaskTraitsRunCommand,
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&RecoveryComponentActionHandlerWin::RunElevatedInSTA,

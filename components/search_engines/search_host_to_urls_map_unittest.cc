@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -21,14 +20,15 @@ class SearchHostToURLsMapTest : public testing::Test {
  public:
   SearchHostToURLsMapTest() {}
 
+  SearchHostToURLsMapTest(const SearchHostToURLsMapTest&) = delete;
+  SearchHostToURLsMapTest& operator=(const SearchHostToURLsMapTest&) = delete;
+
   void SetUp() override;
 
  protected:
   std::unique_ptr<SearchHostToURLsMap> provider_map_;
   TemplateURLService::OwnedTemplateURLVector template_urls_;
   std::string host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchHostToURLsMapTest);
 };
 
 void SearchHostToURLsMapTest::SetUp() {
@@ -40,7 +40,7 @@ void SearchHostToURLsMapTest::SetUp() {
   data.SetURL("http://" + host_ + "/path2");
   template_urls_.push_back(std::make_unique<TemplateURL>(data));
 
-  provider_map_.reset(new SearchHostToURLsMap);
+  provider_map_ = std::make_unique<SearchHostToURLsMap>();
   provider_map_->Init(template_urls_, SearchTermsData());
 }
 

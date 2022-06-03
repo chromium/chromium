@@ -47,6 +47,11 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
                                   MediaStreamManager* media_stream_manager,
                                   int render_process_id_);
 
+  AudioOutputAuthorizationHandler(const AudioOutputAuthorizationHandler&) =
+      delete;
+  AudioOutputAuthorizationHandler& operator=(
+      const AudioOutputAuthorizationHandler&) = delete;
+
   ~AudioOutputAuthorizationHandler();
 
   // Checks authorization of the device with the hashed id |device_id| for the
@@ -61,6 +66,14 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
   // Calling this method will make the checks for permission from the user
   // always return |override_value|.
   void OverridePermissionsForTesting(bool override_value);
+
+  // Calling this method will grant authorization to the device with the given
+  // hashed id until this method is called again with a different id. If
+  // |hashed_device_id| is the empty string, then this permission will be unset.
+  // |hashed_device_id| is a hash of the raw device id that is usable only on
+  // one origin.
+  void SetAuthorizedDeviceIdForGlobalMediaControls(
+      std::string hashed_device_id);
 
   static void UMALogDeviceAuthorizationTime(base::TimeTicks auth_start_time);
 
@@ -96,20 +109,19 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
       AuthorizationCompletedCallback cb,
       const std::string& device_id_for_renderer,
       const std::string& raw_device_id,
-      const base::Optional<media::AudioParameters>& params) const;
+      const absl::optional<media::AudioParameters>& params) const;
 
   media::AudioSystem* const audio_system_;
   MediaStreamManager* const media_stream_manager_;
   const int render_process_id_;
   bool override_permissions_ = false;
   bool permissions_override_value_ = false;
+  std::string hashed_device_id_for_global_media_controls_;
 
   // All access is on the IO thread, and taking a weak pointer to const looks
   // const, so this can be mutable.
   mutable base::WeakPtrFactory<const AudioOutputAuthorizationHandler>
       weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputAuthorizationHandler);
 };
 
 }  // namespace content

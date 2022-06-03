@@ -17,9 +17,9 @@ namespace chrome_browser_net {
 
 namespace {
 
-static base::Optional<net::AddressList> AddressListForResponse(
+static absl::optional<net::AddressList> AddressListForResponse(
     FakeHostResolver::Response response) {
-  base::Optional<net::AddressList> resolved_addresses;
+  absl::optional<net::AddressList> resolved_addresses;
   switch (response) {
     case FakeHostResolver::kNoResponse:
       break;
@@ -115,28 +115,39 @@ void HangingHostResolver::MdnsListen(
 }
 
 FakeHostResolverNetworkContext::FakeHostResolverNetworkContext(
-    std::vector<FakeHostResolver::SingleResult> system_result_list,
-    std::vector<FakeHostResolver::SingleResult> public_result_list)
-    : system_result_list_(std::move(system_result_list)),
-      public_result_list_(std::move(public_result_list)) {}
+    std::vector<FakeHostResolver::SingleResult> current_config_result_list,
+    std::vector<FakeHostResolver::SingleResult> google_config_result_list)
+    : current_config_result_list_(std::move(current_config_result_list)),
+      google_config_result_list_(std::move(google_config_result_list)) {}
 
 FakeHostResolverNetworkContext::~FakeHostResolverNetworkContext() = default;
 
 void FakeHostResolverNetworkContext::CreateHostResolver(
-    const base::Optional<net::DnsConfigOverrides>& config_overrides,
+    const absl::optional<net::DnsConfigOverrides>& config_overrides,
     mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
   ASSERT_TRUE(config_overrides);
   if (!config_overrides->nameservers) {
-    if (!system_resolver_) {
-      system_resolver_ = std::make_unique<FakeHostResolver>(
-          std::move(receiver), system_result_list_);
+    if (!current_config_resolver_) {
+      current_config_resolver_ = std::make_unique<FakeHostResolver>(
+          std::move(receiver), current_config_result_list_);
     }
   } else {
-    if (!public_resolver_) {
-      public_resolver_ = std::make_unique<FakeHostResolver>(
-          std::move(receiver), public_result_list_);
+    if (!google_config_resolver_) {
+      google_config_resolver_ = std::make_unique<FakeHostResolver>(
+          std::move(receiver), google_config_result_list_);
     }
   }
+}
+
+HangingHostResolverNetworkContext::HangingHostResolverNetworkContext() =
+    default;
+HangingHostResolverNetworkContext::~HangingHostResolverNetworkContext() =
+    default;
+
+void HangingHostResolverNetworkContext::CreateHostResolver(
+    const absl::optional<net::DnsConfigOverrides>& config_overrides,
+    mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
+  resolver_ = std::make_unique<HangingHostResolver>(std::move(receiver));
 }
 
 FakeDnsConfigChangeManager::FakeDnsConfigChangeManager(

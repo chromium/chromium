@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/keyed_service/core/keyed_service.h",
+  "+device/bluetooth/public/cpp/bluetooth_uuid.h",
+]

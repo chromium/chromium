@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_STATIC_RANGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -15,8 +16,9 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class StaticRangeInit;
 
-class CORE_EXPORT StaticRange final : public ScriptWrappable {
+class CORE_EXPORT StaticRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -26,48 +28,56 @@ class CORE_EXPORT StaticRange final : public ScriptWrappable {
         range->endContainer(), range->endOffset());
   }
   static StaticRange* Create(const EphemeralRange&);
+  static StaticRange* Create(Document&,
+                             const StaticRangeInit*,
+                             ExceptionState&);
 
-  explicit StaticRange(Document&);
   StaticRange(Document&,
               Node* start_container,
               unsigned start_offset,
               Node* end_container,
               unsigned end_offset);
 
-  Node* startContainer() const { return start_container_.Get(); }
-  void setStartContainer(Node* start_container) {
-    start_container_ = start_container;
-  }
+  Node* startContainer() const override { return start_container_.Get(); }
+  unsigned startOffset() const override { return start_offset_; }
 
-  unsigned startOffset() const { return start_offset_; }
-  void setStartOffset(unsigned start_offset) { start_offset_ = start_offset; }
+  Node* endContainer() const override { return end_container_.Get(); }
+  unsigned endOffset() const override { return end_offset_; }
 
-  Node* endContainer() const { return end_container_.Get(); }
-  void setEndContainer(Node* end_container) { end_container_ = end_container; }
-
-  unsigned endOffset() const { return end_offset_; }
-  void setEndOffset(unsigned end_offset) { end_offset_ = end_offset; }
-
-  bool collapsed() const {
+  bool collapsed() const override {
     return start_container_ == end_container_ && start_offset_ == end_offset_;
   }
 
-  void setStart(Node* container, unsigned offset);
-  void setEnd(Node* container, unsigned offset);
-
   Range* toRange(ExceptionState& = ASSERT_NO_EXCEPTION) const;
 
-  void Trace(Visitor*) override;
+  bool IsValid() const;
+  bool CrossesContainBoundary() const;
+  bool IsStaticRange() const override { return true; }
+  Document& OwnerDocument() const override { return *owner_document_.Get(); }
+
+  void Trace(Visitor*) const override;
 
  private:
   Member<Document> owner_document_;  // Required by |toRange()|.
   Member<Node> start_container_;
-  unsigned start_offset_;
+  unsigned start_offset_ = 0;
   Member<Node> end_container_;
-  unsigned end_offset_;
+  unsigned end_offset_ = 0;
+  mutable bool is_valid_ = false;
+  mutable bool crosses_contain_boundary_ = false;
+  mutable uint64_t dom_tree_version_for_is_valid_ = 0;
+  mutable uint64_t style_version_for_crosses_contain_boundary_ =
+      static_cast<uint64_t>(-1);
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
+
+template <>
+struct DowncastTraits<StaticRange> {
+  static bool AllowFrom(const AbstractRange& abstract_range) {
+    return abstract_range.IsStaticRange();
+  }
+};
 
 }  // namespace blink
 

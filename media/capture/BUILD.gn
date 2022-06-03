@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
+import("//build/config/ui.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
@@ -24,10 +25,11 @@ component("capture_switches") {
     "capture_switches.cc",
     "capture_switches.h",
   ]
+  deps = [ "//base" ]
 }
 
 # Things needed by //media/capture/mojom/video_capture_types.mojom.
-jumbo_component("capture_base") {
+component("capture_base") {
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
     "capture_export.h",
@@ -35,28 +37,27 @@ jumbo_component("capture_base") {
     "video/video_capture_device_descriptor.h",
     "video/video_capture_device_info.cc",
     "video/video_capture_device_info.h",
+    "video/video_capture_feedback.cc",
+    "video/video_capture_feedback.h",
     "video_capture_types.cc",
     "video_capture_types.h",
   ]
   deps = [
     "//base",
     "//base:i18n",
-    "//media",
+    "//media:shared_memory_support",
+    "//media/base:video_facing",
     "//ui/gfx",
   ]
 }
 
 # Target which allows breakout of Android BUILD.gn files.
-jumbo_source_set("capture_device_specific") {
+source_set("capture_device_specific") {
   visibility = [
     ":capture_lib",
     "//media/capture/content/android",
     "//media/capture/video/android",
   ]
-  if (is_win) {
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-  }
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
     "content/animated_content_sampler.cc",
@@ -87,25 +88,26 @@ jumbo_source_set("capture_device_specific") {
     "video/video_capture_device_factory.h",
   ]
 
-  public_deps = [
-    ":capture_base",
-  ]
+  public_deps = [ ":capture_base" ]
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/ipc/common:common",
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
     "//media/parsers",
+    "//skia",
     "//third_party/libyuv",
     "//ui/gfx",
   ]
 }
 
-jumbo_component("capture_lib") {
+component("capture_lib") {
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
     "video/create_video_capture_device_factory.cc",
@@ -116,30 +118,36 @@ jumbo_component("capture_lib") {
     "video/video_capture_buffer_pool.h",
     "video/video_capture_buffer_pool_impl.cc",
     "video/video_capture_buffer_pool_impl.h",
+    "video/video_capture_buffer_pool_util.cc",
+    "video/video_capture_buffer_pool_util.h",
+    "video/video_capture_buffer_tracker.cc",
     "video/video_capture_buffer_tracker.h",
     "video/video_capture_buffer_tracker_factory.h",
     "video/video_capture_buffer_tracker_factory_impl.cc",
     "video/video_capture_buffer_tracker_factory_impl.h",
     "video/video_capture_device_client.cc",
     "video/video_capture_device_client.h",
+    "video/video_capture_metrics.cc",
+    "video/video_capture_metrics.h",
     "video/video_capture_system.h",
     "video/video_capture_system_impl.cc",
     "video/video_capture_system_impl.h",
+    "video/video_frame_receiver.cc",
     "video/video_frame_receiver.h",
     "video/video_frame_receiver_on_task_runner.cc",
     "video/video_frame_receiver_on_task_runner.h",
-    "video_capturer_source.cc",
-    "video_capturer_source.h",
   ]
 
   public_deps = [
     ":capture_base",
     ":capture_device_specific",
+    ":capture_switches",
   ]
 
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
@@ -164,26 +172,41 @@ jumbo_component("capture_lib") {
 
   if (is_mac) {
     sources += [
+      "video/mac/gpu_memory_buffer_tracker_mac.cc",
+      "video/mac/gpu_memory_buffer_tracker_mac.h",
+      "video/mac/pixel_buffer_pool_mac.cc",
+      "video/mac/pixel_buffer_pool_mac.h",
+      "video/mac/pixel_buffer_transferer_mac.cc",
+      "video/mac/pixel_buffer_transferer_mac.h",
+      "video/mac/sample_buffer_transformer_mac.cc",
+      "video/mac/sample_buffer_transformer_mac.h",
       "video/mac/video_capture_device_avfoundation_mac.h",
       "video/mac/video_capture_device_avfoundation_mac.mm",
+      "video/mac/video_capture_device_avfoundation_utils_mac.h",
+      "video/mac/video_capture_device_avfoundation_utils_mac.mm",
       "video/mac/video_capture_device_decklink_mac.h",
       "video/mac/video_capture_device_decklink_mac.mm",
       "video/mac/video_capture_device_factory_mac.h",
       "video/mac/video_capture_device_factory_mac.mm",
       "video/mac/video_capture_device_mac.h",
       "video/mac/video_capture_device_mac.mm",
+      "video/mac/video_capture_metrics_mac.h",
+      "video/mac/video_capture_metrics_mac.mm",
     ]
     deps += [
+      "//components/crash/core/common:crash_key",
       "//services/video_capture/public/uma",
       "//third_party/decklink",
     ]
-    libs = [
+    frameworks = [
       "AVFoundation.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",
       "Foundation.framework",
+      "IOSurface.framework",
+      "VideoToolbox.framework",
     ]
   }
 
@@ -193,6 +216,8 @@ jumbo_component("capture_lib") {
       "video/win/capability_list_win.h",
       "video/win/filter_base_win.cc",
       "video/win/filter_base_win.h",
+      "video/win/gpu_memory_buffer_tracker.cc",
+      "video/win/gpu_memory_buffer_tracker.h",
       "video/win/metrics.cc",
       "video/win/metrics.h",
       "video/win/pin_base_win.cc",
@@ -202,6 +227,8 @@ jumbo_component("capture_lib") {
       "video/win/sink_filter_win.h",
       "video/win/sink_input_pin_win.cc",
       "video/win/sink_input_pin_win.h",
+      "video/win/video_capture_buffer_tracker_factory_win.cc",
+      "video/win/video_capture_buffer_tracker_factory_win.h",
       "video/win/video_capture_device_factory_win.cc",
       "video/win/video_capture_device_factory_win.h",
       "video/win/video_capture_device_mf_win.cc",
@@ -223,16 +250,10 @@ jumbo_component("capture_lib") {
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",
     ]
-
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
   }
 
-  # This includes the case of ChromeOS
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
-      "video/linux/camera_config_chromeos.cc",
-      "video/linux/camera_config_chromeos.h",
       "video/linux/scoped_v4l2_device_fd.cc",
       "video/linux/scoped_v4l2_device_fd.h",
       "video/linux/v4l2_capture_delegate.cc",
@@ -240,8 +261,6 @@ jumbo_component("capture_lib") {
       "video/linux/v4l2_capture_device.h",
       "video/linux/v4l2_capture_device_impl.cc",
       "video/linux/v4l2_capture_device_impl.h",
-      "video/linux/video_capture_device_chromeos.cc",
-      "video/linux/video_capture_device_chromeos.h",
       "video/linux/video_capture_device_factory_linux.cc",
       "video/linux/video_capture_device_factory_linux.h",
       "video/linux/video_capture_device_linux.cc",
@@ -249,7 +268,7 @@ jumbo_component("capture_lib") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "video/chromeos/camera_3a_controller.cc",
       "video/chromeos/camera_3a_controller.h",
@@ -271,6 +290,7 @@ jumbo_component("capture_lib") {
       "video/chromeos/camera_hal_dispatcher_impl.h",
       "video/chromeos/camera_metadata_utils.cc",
       "video/chromeos/camera_metadata_utils.h",
+      "video/chromeos/capture_metadata_dispatcher.h",
       "video/chromeos/display_rotation_observer.cc",
       "video/chromeos/display_rotation_observer.h",
       "video/chromeos/gpu_memory_buffer_tracker.cc",
@@ -285,22 +305,32 @@ jumbo_component("capture_lib") {
       "video/chromeos/scoped_video_capture_jpeg_decoder.h",
       "video/chromeos/stream_buffer_manager.cc",
       "video/chromeos/stream_buffer_manager.h",
+      "video/chromeos/token_manager.cc",
+      "video/chromeos/token_manager.h",
       "video/chromeos/vendor_tag_ops_delegate.cc",
       "video/chromeos/vendor_tag_ops_delegate.h",
+      "video/chromeos/video_capture_device_chromeos_delegate.cc",
+      "video/chromeos/video_capture_device_chromeos_delegate.h",
       "video/chromeos/video_capture_device_chromeos_halv3.cc",
       "video/chromeos/video_capture_device_chromeos_halv3.h",
       "video/chromeos/video_capture_device_factory_chromeos.cc",
       "video/chromeos/video_capture_device_factory_chromeos.h",
+      "video/chromeos/video_capture_features_chromeos.cc",
+      "video/chromeos/video_capture_features_chromeos.h",
       "video/chromeos/video_capture_jpeg_decoder.h",
       "video/chromeos/video_capture_jpeg_decoder_impl.cc",
       "video/chromeos/video_capture_jpeg_decoder_impl.h",
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
+      "//ash/constants",
+      "//ash/webui/camera_app_ui:document_scanning",
       "//build/config/linux/libdrm",
+      "//chromeos/components/sensors:sensors",
       "//chromeos/dbus/power",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
+      "//components/device_event_log",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//third_party/libsync",
@@ -311,6 +341,14 @@ jumbo_component("capture_lib") {
     sources += [
       "video/fuchsia/video_capture_device_factory_fuchsia.cc",
       "video/fuchsia/video_capture_device_factory_fuchsia.h",
+      "video/fuchsia/video_capture_device_fuchsia.cc",
+      "video/fuchsia/video_capture_device_fuchsia.h",
+    ]
+    deps += [
+      "//media/fuchsia/common",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//third_party/libyuv",
     ]
   }
 }
@@ -323,6 +361,8 @@ source_set("test_support") {
     "video/mock_device.h",
     "video/mock_device_factory.cc",
     "video/mock_device_factory.h",
+    "video/mock_gpu_memory_buffer_manager.cc",
+    "video/mock_gpu_memory_buffer_manager.h",
     "video/mock_video_capture_device_client.cc",
     "video/mock_video_capture_device_client.h",
     "video/mock_video_frame_receiver.cc",
@@ -332,6 +372,9 @@ source_set("test_support") {
   deps = [
     ":capture_lib",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/common:common",
     "//media:test_support",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
@@ -339,10 +382,36 @@ source_set("test_support") {
     "//ui/gfx:test_support",
   ]
 
+  if (is_linux || is_chromeos_lacros) {
+    sources += [
+      "video/linux/fake_device_provider.cc",
+      "video/linux/fake_device_provider.h",
+      "video/linux/fake_v4l2_impl.cc",
+      "video/linux/fake_v4l2_impl.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "video/chromeos/mock_camera_module.cc",
+      "video/chromeos/mock_camera_module.h",
+      "video/chromeos/mock_vendor_tag_ops.cc",
+      "video/chromeos/mock_vendor_tag_ops.h",
+      "video/chromeos/mock_video_capture_client.cc",
+      "video/chromeos/mock_video_capture_client.h",
+    ]
+    deps += [
+      "//media/capture/video/chromeos/mojom:cros_camera",
+      "//media/capture/video/chromeos/public",
+    ]
+  }
+
   testonly = true
 }
 
 test("capture_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "content/animated_content_sampler_unittest.cc",
     "content/capture_resolution_chooser_unittest.cc",
@@ -351,27 +420,19 @@ test("capture_unittests") {
     "run_all_unittests.cc",
     "video/fake_video_capture_device_unittest.cc",
     "video/file_video_capture_device_unittest.cc",
-    "video/linux/camera_config_chromeos_unittest.cc",
-    "video/linux/fake_v4l2_impl.cc",
-    "video/linux/fake_v4l2_impl.h",
-    "video/linux/v4l2_capture_delegate_unittest.cc",
-    "video/linux/video_capture_device_factory_linux_unittest.cc",
-    "video/mac/video_capture_device_factory_mac_unittest.mm",
-    "video/mock_gpu_memory_buffer_manager.cc",
-    "video/mock_gpu_memory_buffer_manager.h",
     "video/video_capture_device_client_unittest.cc",
     "video/video_capture_device_unittest.cc",
+    "video/video_capture_metrics_unittest.cc",
     "video_capture_types_unittest.cc",
   ]
 
-  data = [
-    "//media/test/data/bear.mjpeg",
-  ]
+  data = [ "//media/test/data/bear.mjpeg" ]
 
   deps = [
     ":capture",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture/mojom:image_capture",
@@ -379,8 +440,16 @@ test("capture_unittests") {
     "//mojo/core/embedder",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libyuv:libyuv",
     "//ui/gfx:test_support",
   ]
+
+  if (is_linux || is_chromeos_lacros) {
+    sources += [
+      "video/linux/v4l2_capture_delegate_unittest.cc",
+      "video/linux/video_capture_device_factory_linux_unittest.cc",
+    ]
+  }
 
   if (is_android) {
     deps += [
@@ -389,8 +458,52 @@ test("capture_unittests") {
     ]
   }
 
+  if (is_fuchsia) {
+    deps += [
+      "//media/fuchsia/camera:test_support",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+    sources += [
+      "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
+      "video/fuchsia/video_capture_device_fuchsia_test.cc",
+    ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "video/mac/pixel_buffer_pool_mac_unittest.mm",
+      "video/mac/pixel_buffer_transferer_mac_unittest.mm",
+      "video/mac/sample_buffer_transformer_mac_unittest.mm",
+      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
+      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
+      "video/mac/test/pixel_buffer_test_utils_mac.cc",
+      "video/mac/test/pixel_buffer_test_utils_mac.h",
+      "video/mac/test/video_capture_test_utils_mac.h",
+      "video/mac/test/video_capture_test_utils_mac.mm",
+      "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
+      "video/mac/video_capture_device_factory_mac_unittest.mm",
+      "video/mac/video_capture_device_mac_unittest.mm",
+      "video/mac/video_capture_metrics_mac_unittest.mm",
+    ]
+    frameworks = [
+      "AVFoundation.framework",
+      "CoreMedia.framework",
+      "CoreVideo.framework",
+      "IOSurface.framework",
+    ]
+    deps += [ "//third_party/ocmock" ]
+  }
+
   if (is_win) {
     sources += [
+      "video/win/d3d_capture_test_utils.cc",
+      "video/win/d3d_capture_test_utils.h",
+      "video/win/gpu_memory_buffer_tracker_unittest.cc",
       "video/win/video_capture_device_factory_win_unittest.cc",
       "video/win/video_capture_device_mf_win_unittest.cc",
     ]
@@ -399,6 +512,7 @@ test("capture_unittests") {
       "mfplat.lib",
       "mfreadwrite.lib",
       "mfuuid.lib",
+      "dxguid.lib",
     ]
     ldflags = [
       "/DELAYLOAD:mf.dll",
@@ -406,27 +520,22 @@ test("capture_unittests") {
       "/DELAYLOAD:mfreadwrite.dll",
     ]
 
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+    deps += [ "//media/base/win:media_foundation_util" ]
   }
 
-  if (is_chromeos) {
+  # TODO(https://crbug.com/1043007): use is_linux.
+  if (is_chromeos_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "video/chromeos/camera_3a_controller_unittest.cc",
       "video/chromeos/camera_device_delegate_unittest.cc",
       "video/chromeos/camera_hal_delegate_unittest.cc",
       "video/chromeos/camera_hal_dispatcher_impl_unittest.cc",
-      "video/chromeos/mock_camera_module.cc",
-      "video/chromeos/mock_camera_module.h",
-      "video/chromeos/mock_vendor_tag_ops.cc",
-      "video/chromeos/mock_vendor_tag_ops.h",
-      "video/chromeos/mock_video_capture_client.cc",
-      "video/chromeos/mock_video_capture_client.h",
       "video/chromeos/request_manager_unittest.cc",
+      "video/chromeos/token_manager_unittest.cc",
     ]
     deps += [
       "//build/config/linux/libdrm",

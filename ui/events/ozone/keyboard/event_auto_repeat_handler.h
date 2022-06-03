@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
-#define UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
+#ifndef UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_
+#define UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -21,16 +21,23 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
     // Useful under janky situations.
     virtual void FlushInput(base::OnceClosure closure) = 0;
     virtual void DispatchKey(unsigned int key,
+                             unsigned int scan_code,
                              bool down,
                              bool repeat,
                              base::TimeTicks timestamp,
-                             int device_id) = 0;
+                             int device_id,
+                             int flags) = 0;
   };
 
   explicit EventAutoRepeatHandler(Delegate* delegate);
+
+  EventAutoRepeatHandler(const EventAutoRepeatHandler&) = delete;
+  EventAutoRepeatHandler& operator=(const EventAutoRepeatHandler&) = delete;
+
   ~EventAutoRepeatHandler();
 
   void UpdateKeyRepeat(unsigned int key,
+                       unsigned int scan_code,
                        bool down,
                        bool suppress_auto_repeat,
                        int device_id);
@@ -46,7 +53,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
  private:
   static constexpr unsigned int kInvalidKey = 0;
 
-  void StartKeyRepeat(unsigned int key, int device_id);
+  void StartKeyRepeat(unsigned int key, unsigned int scan_code, int device_id);
   void ScheduleKeyRepeat(const base::TimeDelta& delay);
   void OnRepeatTimeout(unsigned int sequence);
   void OnRepeatCommit(unsigned int sequence);
@@ -54,6 +61,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   // Key repeat state.
   bool auto_repeat_enabled_ = true;
   unsigned int repeat_key_ = kInvalidKey;
+  unsigned int repeat_scan_code_ = 0;
   unsigned int repeat_sequence_ = 0;
   int repeat_device_id_ = 0;
   base::TimeDelta repeat_delay_;
@@ -62,10 +70,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   Delegate* delegate_ = nullptr;
 
   base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventAutoRepeatHandler);
 };
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
+#endif  // UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_

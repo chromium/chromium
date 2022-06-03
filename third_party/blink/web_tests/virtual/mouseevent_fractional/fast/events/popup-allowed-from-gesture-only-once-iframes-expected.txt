@@ -1,5 +1,0 @@
-Test that we don't create a new user gesture indicator every time an event is passed to an iframe.
-
-To run, click on the iframe. The test passes, if only one window is opened in response to the click.
-
-PASSED

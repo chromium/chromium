@@ -51,10 +51,10 @@ TEST_F(GCMDelayedTaskControllerTest, SetReadyWithNoTasks) {
 
 // Tests that tasks are triggered when controlles is set to ready.
 TEST_F(GCMDelayedTaskControllerTest, PendingTasksTriggeredWhenSetReady) {
-  controller()->AddTask(base::Bind(&GCMDelayedTaskControllerTest::TestTask,
-                                   base::Unretained(this)));
-  controller()->AddTask(base::Bind(&GCMDelayedTaskControllerTest::TestTask,
-                                   base::Unretained(this)));
+  controller()->AddTask(base::BindOnce(&GCMDelayedTaskControllerTest::TestTask,
+                                       base::Unretained(this)));
+  controller()->AddTask(base::BindOnce(&GCMDelayedTaskControllerTest::TestTask,
+                                       base::Unretained(this)));
 
   controller()->SetReady();
   EXPECT_EQ(2, number_of_triggered_tasks());

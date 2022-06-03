@@ -1,9 +1,7 @@
-ortuno@chromium.org
+cmumford@google.com
 reillyg@chromium.org
-odejesush@chromium.org
-dougt@chromium.org
 
 per-file BUILD.gn=*
 
-# TEAM: web-bluetooth@chromium.org
-# COMPONENT: IO>Bluetooth
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org

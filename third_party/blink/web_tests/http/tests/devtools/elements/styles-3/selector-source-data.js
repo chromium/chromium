@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that WebInspector.CSSStyleSheet methods work as expected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -23,8 +23,8 @@
 
   async function nodeFound(node) {
     var response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: node.id});
-    if (response[Protocol.Error]) {
-      TestRunner.addResult('Failed to get styles: ' + response[Protocol.Error]);
+    if (response.getError()) {
+      TestRunner.addResult('Failed to get styles: ' + response.getError());
       return;
     }
     ElementsTestRunner.dumpRuleMatchesArray(response.matchedCSSRules);

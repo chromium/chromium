@@ -9,7 +9,7 @@ function createBackgroundTab(url, callback) {
   chrome.tabs.query({ active: true }, function(tabs) {
     chrome.test.assertEq(1, tabs.length);
     originalActiveTab = tabs[0];
-    createTab(url, function(tab) {
+    createTabAndWaitUntilLoaded(url, function(tab) {
       chrome.tabs.update(originalActiveTab.id, { active: true }, function() {
         callback(tab);
       });
@@ -46,9 +46,6 @@ var allTests = [
           chrome.automation.getTree(backgroundTab.id, function(rootNode) {
             chrome.test.assertFalse(rootNode === undefined,
                                     "Got automation tree for background tab");
-            chrome.test.assertFalse(
-                rootNode.docLoaded,
-                "Load complete never fires unless tab is foregrounded");
 
             chrome.tabs.update(backgroundTab.id, { active: true }, function() {
               if (rootNode.docLoaded) {

@@ -4,9 +4,12 @@
 
 #include "content/browser/renderer_host/text_input_manager.h"
 
+#include <algorithm>
+
+#include "base/numerics/clamped_math.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/common/widget_messages.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
@@ -14,13 +17,14 @@ namespace content {
 
 namespace {
 
-bool ShouldUpdateTextInputState(const content::TextInputState& old_state,
-                                 const content::TextInputState& new_state) {
+bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
+                                const ui::mojom::TextInputState& new_state) {
 #if defined(USE_AURA)
-  return old_state.type != new_state.type || old_state.mode != new_state.mode ||
+  return old_state.node_id != new_state.node_id ||
+         old_state.type != new_state.type || old_state.mode != new_state.mode ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return old_state.type != new_state.type ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
@@ -48,7 +52,7 @@ TextInputManager::~TextInputManager() {
 
   // Unregister all the remaining views.
   std::vector<RenderWidgetHostViewBase*> views;
-  for (auto pair : text_input_state_map_)
+  for (auto const& pair : text_input_state_map_)
     views.push_back(pair.first);
 
   for (auto* view : views)
@@ -61,8 +65,68 @@ RenderWidgetHostImpl* TextInputManager::GetActiveWidget() const {
                         : nullptr;
 }
 
-const TextInputState* TextInputManager::GetTextInputState() const {
-  return !!active_view_ ? &text_input_state_map_.at(active_view_) : nullptr;
+const ui::mojom::TextInputState* TextInputManager::GetTextInputState() const {
+  if (!active_view_) {
+    return nullptr;
+  }
+
+  return text_input_state_map_.at(active_view_).get();
+}
+
+gfx::Range TextInputManager::GetAutocorrectRange() const {
+  if (!active_view_)
+    return gfx::Range();
+
+  for (auto const& pair : text_input_state_map_) {
+    for (const auto& ime_text_span_info : pair.second->ime_text_spans_info) {
+      if (ime_text_span_info->span.type ==
+          ui::ImeTextSpan::Type::kAutocorrect) {
+        return gfx::Range(ime_text_span_info->span.start_offset,
+                          ime_text_span_info->span.end_offset);
+      }
+    }
+  }
+  return gfx::Range();
+}
+
+absl::optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
+    gfx::Range range) const {
+  if (!active_view_)
+    return absl::nullopt;
+
+  for (const auto& ime_text_span_info :
+       text_input_state_map_.at(active_view_)->ime_text_spans_info) {
+    if (ime_text_span_info->span.type ==
+            ui::ImeTextSpan::Type::kGrammarSuggestion &&
+        ime_text_span_info->span.suggestions.size() > 0) {
+      auto span_range = gfx::Range(ime_text_span_info->span.start_offset,
+                                   ime_text_span_info->span.end_offset);
+      if (span_range.Contains(range)) {
+        return ui::GrammarFragment(span_range,
+                                   ime_text_span_info->span.suggestions[0]);
+      }
+    }
+  }
+  return absl::nullopt;
+}
+
+bool TextInputManager::OverlapsWithSpellCheckMarker(
+    const gfx::Range range) const {
+  if (!active_view_)
+    return false;
+
+  for (const auto& ime_text_span_info :
+       text_input_state_map_.at(active_view_)->ime_text_spans_info) {
+    if (ime_text_span_info->span.type ==
+        ui::ImeTextSpan::Type::kMisspellingSuggestion) {
+      auto span_range = gfx::Range(ime_text_span_info->span.start_offset,
+                                   ime_text_span_info->span.end_offset);
+      if (span_range.Intersects(range)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
@@ -89,9 +153,34 @@ const TextInputManager::TextSelection* TextInputManager::GetTextSelection(
   return (view && IsRegistered(view)) ? &text_selection_map_.at(view) : nullptr;
 }
 
+const absl::optional<gfx::Rect> TextInputManager::GetTextControlBounds() const {
+  const ui::mojom::TextInputState* state = GetTextInputState();
+  if (!active_view_ || !state || !state->edit_context_control_bounds)
+    return absl::nullopt;
+
+  auto control_bounds = state->edit_context_control_bounds.value();
+  auto new_top_left =
+      active_view_->TransformPointToRootCoordSpace(control_bounds.origin());
+  return absl::optional<gfx::Rect>(
+      gfx::Rect(new_top_left, control_bounds.size()));
+}
+
+const absl::optional<gfx::Rect> TextInputManager::GetTextSelectionBounds()
+    const {
+  const ui::mojom::TextInputState* state = GetTextInputState();
+  if (!active_view_ || !state || !state->edit_context_selection_bounds)
+    return absl::nullopt;
+
+  auto selection_bounds = state->edit_context_selection_bounds.value();
+  auto new_top_left =
+      active_view_->TransformPointToRootCoordSpace(selection_bounds.origin());
+  return absl::optional<gfx::Rect>(
+      gfx::Rect(new_top_left, selection_bounds.size()));
+}
+
 void TextInputManager::UpdateTextInputState(
     RenderWidgetHostViewBase* view,
-    const TextInputState& text_input_state) {
+    const ui::mojom::TextInputState& text_input_state) {
   DCHECK(IsRegistered(view));
 
   if (text_input_state.type == ui::TEXT_INPUT_TYPE_NONE &&
@@ -112,10 +201,28 @@ void TextInputManager::UpdateTextInputState(
 
   // Since |view| is registered, we already have a previous value for its
   // TextInputState.
-  bool changed = ShouldUpdateTextInputState(text_input_state_map_[view],
+  bool changed = ShouldUpdateTextInputState(*text_input_state_map_[view],
                                             text_input_state);
-
-  text_input_state_map_[view] = text_input_state;
+  TRACE_EVENT2(
+      "ime", "TextInputManager::UpdateTextInputState", "changed", changed,
+      "text_input_state - type, selection, composition, "
+      "show_ime_if_needed, control_bounds",
+      std::to_string(text_input_state.type) + ", " +
+          text_input_state.selection.ToString() + ", " +
+          (text_input_state.composition.has_value()
+               ? text_input_state.composition->ToString()
+               : "") +
+          ", " + std::to_string(text_input_state.show_ime_if_needed) + ", " +
+          (text_input_state.edit_context_control_bounds.has_value()
+               ? text_input_state.edit_context_control_bounds->ToString()
+               : ""));
+  text_input_state_map_[view] = text_input_state.Clone();
+  for (const auto& ime_text_span_info :
+       text_input_state_map_[view]->ime_text_spans_info) {
+    const gfx::Rect& bounds = ime_text_span_info->bounds;
+    ime_text_span_info->bounds = gfx::Rect(
+        view->TransformPointToRootCoordSpace(bounds.origin()), bounds.size());
+  }
 
   // If |view| is different from |active_view| and its |TextInputState.type| is
   // not NONE, |active_view_| should change to |view|.
@@ -129,7 +236,7 @@ void TextInputManager::UpdateTextInputState(
       // RenderWidget's IPC might arrive sooner and we reach here. To make the
       // IME behavior identical to the non-OOPIF case, we have to manually reset
       // the state for |active_view_|.
-      text_input_state_map_[active_view_].type = ui::TEXT_INPUT_TYPE_NONE;
+      text_input_state_map_[active_view_]->type = ui::TEXT_INPUT_TYPE_NONE;
       RenderWidgetHostViewBase* active_view = active_view_;
       active_view_ = nullptr;
       NotifyObserversAboutInputStateUpdate(active_view, true);
@@ -153,62 +260,94 @@ void TextInputManager::ImeCancelComposition(RenderWidgetHostViewBase* view) {
 
 void TextInputManager::SelectionBoundsChanged(
     RenderWidgetHostViewBase* view,
-    const WidgetHostMsg_SelectionBounds_Params& params) {
+    const gfx::Rect& anchor_rect,
+    base::i18n::TextDirection anchor_dir,
+    const gfx::Rect& focus_rect,
+    base::i18n::TextDirection focus_dir,
+    const gfx::Rect& bounding_box,
+    bool is_anchor_first) {
   DCHECK(IsRegistered(view));
   // Converting the anchor point to root's coordinate space (for child frame
   // views).
   gfx::Point anchor_origin_transformed =
-      view->TransformPointToRootCoordSpace(params.anchor_rect.origin());
+      view->TransformPointToRootCoordSpace(anchor_rect.origin());
 
   gfx::SelectionBound anchor_bound, focus_bound;
 
   anchor_bound.SetEdge(gfx::PointF(anchor_origin_transformed),
                        gfx::PointF(view->TransformPointToRootCoordSpace(
-                           params.anchor_rect.bottom_left())));
-  focus_bound.SetEdge(gfx::PointF(view->TransformPointToRootCoordSpace(
-                          params.focus_rect.origin())),
-                      gfx::PointF(view->TransformPointToRootCoordSpace(
-                          params.focus_rect.bottom_left())));
+                           anchor_rect.bottom_left())));
+  focus_bound.SetEdge(
+      gfx::PointF(view->TransformPointToRootCoordSpace(focus_rect.origin())),
+      gfx::PointF(
+          view->TransformPointToRootCoordSpace(focus_rect.bottom_left())));
 
-  if (params.anchor_rect == params.focus_rect) {
+  if (anchor_rect == focus_rect) {
     anchor_bound.set_type(gfx::SelectionBound::CENTER);
     focus_bound.set_type(gfx::SelectionBound::CENTER);
   } else {
     // Whether text is LTR at the anchor handle.
-    bool anchor_LTR = params.anchor_dir == blink::kWebTextDirectionLeftToRight;
+    bool anchor_LTR = anchor_dir == base::i18n::LEFT_TO_RIGHT;
     // Whether text is LTR at the focus handle.
-    bool focus_LTR = params.focus_dir == blink::kWebTextDirectionLeftToRight;
+    bool focus_LTR = focus_dir == base::i18n::LEFT_TO_RIGHT;
 
-    if ((params.is_anchor_first && anchor_LTR) ||
-        (!params.is_anchor_first && !anchor_LTR)) {
+    if ((is_anchor_first && anchor_LTR) || (!is_anchor_first && !anchor_LTR)) {
       anchor_bound.set_type(gfx::SelectionBound::LEFT);
     } else {
       anchor_bound.set_type(gfx::SelectionBound::RIGHT);
     }
-    if ((params.is_anchor_first && focus_LTR) ||
-        (!params.is_anchor_first && !focus_LTR)) {
+    if ((is_anchor_first && focus_LTR) || (!is_anchor_first && !focus_LTR)) {
       focus_bound.set_type(gfx::SelectionBound::RIGHT);
     } else {
       focus_bound.set_type(gfx::SelectionBound::LEFT);
     }
   }
 
+  // Transform `bounding_box` to the top-level frame's coordinate space.
+  std::vector<gfx::Point> bounding_box_vertice = {
+      bounding_box.origin(), bounding_box.top_right(),
+      bounding_box.bottom_left(), bounding_box.bottom_right()};
+  std::vector<int> x_after_transform;
+  std::vector<int> y_after_transform;
+  for (const auto& vertex : bounding_box_vertice) {
+    const gfx::Point vertex_after_transform =
+        view->TransformPointToRootCoordSpace(vertex);
+    x_after_transform.push_back(vertex_after_transform.x());
+    y_after_transform.push_back(vertex_after_transform.y());
+  }
+
+  std::sort(x_after_transform.begin(), x_after_transform.end());
+  std::sort(y_after_transform.begin(), y_after_transform.end());
+
+  const gfx::Point bounding_box_origin_after_transform(x_after_transform[0],
+                                                       y_after_transform[0]);
+  const gfx::Point bounding_box_bottom_right_after_transform(
+      x_after_transform.back(), y_after_transform.back());
+  const gfx::Rect bounding_box_transformed(
+      bounding_box_origin_after_transform,
+      gfx::Size(base::ClampSub(bounding_box_bottom_right_after_transform.x(),
+                               bounding_box_origin_after_transform.x()),
+                base::ClampSub(bounding_box_bottom_right_after_transform.y(),
+                               bounding_box_origin_after_transform.y())));
+
   if (anchor_bound == selection_region_map_[view].anchor &&
-      focus_bound == selection_region_map_[view].focus)
+      focus_bound == selection_region_map_[view].focus &&
+      bounding_box_transformed == selection_region_map_[view].bounding_box) {
     return;
+  }
 
   selection_region_map_[view].anchor = anchor_bound;
   selection_region_map_[view].focus = focus_bound;
+  selection_region_map_[view].bounding_box = bounding_box_transformed;
 
-  if (params.anchor_rect == params.focus_rect) {
+  if (anchor_rect == focus_rect) {
     selection_region_map_[view].caret_rect.set_origin(
         anchor_origin_transformed);
-    selection_region_map_[view].caret_rect.set_size(params.anchor_rect.size());
+    selection_region_map_[view].caret_rect.set_size(anchor_rect.size());
   }
   selection_region_map_[view].first_selection_rect.set_origin(
       anchor_origin_transformed);
-  selection_region_map_[view].first_selection_rect.set_size(
-      params.anchor_rect.size());
+  selection_region_map_[view].first_selection_rect.set_size(anchor_rect.size());
 
   NotifySelectionBoundsChanged(view);
 }
@@ -244,7 +383,7 @@ void TextInputManager::ImeCompositionRangeChanged(
 }
 
 void TextInputManager::SelectionChanged(RenderWidgetHostViewBase* view,
-                                        const base::string16& text,
+                                        const std::u16string& text,
                                         size_t offset,
                                         const gfx::Range& range) {
   DCHECK(IsRegistered(view));
@@ -255,8 +394,7 @@ void TextInputManager::SelectionChanged(RenderWidgetHostViewBase* view,
 
 void TextInputManager::Register(RenderWidgetHostViewBase* view) {
   DCHECK(!IsRegistered(view));
-
-  text_input_state_map_[view] = TextInputState();
+  text_input_state_map_[view] = ui::mojom::TextInputState::New();
   selection_region_map_[view] = SelectionRegion();
   composition_range_info_map_[view] = CompositionRangeInfo();
   text_selection_map_[view] = TextSelection();
@@ -300,7 +438,7 @@ size_t TextInputManager::GetRegisteredViewsCountForTesting() {
 ui::TextInputType TextInputManager::GetTextInputTypeForViewForTesting(
     RenderWidgetHostViewBase* view) {
   DCHECK(IsRegistered(view));
-  return text_input_state_map_[view].type;
+  return text_input_state_map_[view]->type;
 }
 
 const gfx::Range* TextInputManager::GetCompositionRangeForTesting() const {
@@ -316,17 +454,20 @@ void TextInputManager::NotifyObserversAboutInputStateUpdate(
     observer.OnUpdateTextInputStateCalled(this, updated_view, did_update_state);
 }
 
-TextInputManager::SelectionRegion::SelectionRegion() {}
+TextInputManager::SelectionRegion::SelectionRegion() = default;
 
 TextInputManager::SelectionRegion::SelectionRegion(
     const SelectionRegion& other) = default;
 
-TextInputManager::CompositionRangeInfo::CompositionRangeInfo() {}
+TextInputManager::SelectionRegion& TextInputManager::SelectionRegion::operator=(
+    const SelectionRegion& other) = default;
+
+TextInputManager::CompositionRangeInfo::CompositionRangeInfo() = default;
 
 TextInputManager::CompositionRangeInfo::CompositionRangeInfo(
     const CompositionRangeInfo& other) = default;
 
-TextInputManager::CompositionRangeInfo::~CompositionRangeInfo() {}
+TextInputManager::CompositionRangeInfo::~CompositionRangeInfo() = default;
 
 TextInputManager::TextSelection::TextSelection()
     : offset_(0), range_(gfx::Range::InvalidRange()) {}
@@ -334,9 +475,9 @@ TextInputManager::TextSelection::TextSelection()
 TextInputManager::TextSelection::TextSelection(const TextSelection& other) =
     default;
 
-TextInputManager::TextSelection::~TextSelection() {}
+TextInputManager::TextSelection::~TextSelection() = default;
 
-void TextInputManager::TextSelection::SetSelection(const base::string16& text,
+void TextInputManager::TextSelection::SetSelection(const std::u16string& text,
                                                    size_t offset,
                                                    const gfx::Range& range) {
   text_ = text;

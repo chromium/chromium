@@ -1,0 +1,23 @@
+<style>
+.container { position: relative; width: 0; height: 0 }
+.scale { transform-origin: 0 0; transform: scale(40); }
+.child { width: 1px; height: 1px; background: blue; position: relative }
+</style>
+<div id="container1" class="container scale">
+  <div id="child1" class="child"></div>
+</div>
+<div id="container2" class="container" style="top: 50px">
+  <div id="child2" class="child scale" style="left: 1px"></div>
+</div>
+<div id="container3" class="container scale" style="top: 100px">
+  <div id="child3" class="child"></div>
+</div>
+<div id="container4" class="container" style="top: 150px">
+  <div id="child4" class="child scale"></div>
+</div>
+<div id="container5" class="container scale" style="top: 200px">
+  <div id="child5" class="child"></div>
+</div>
+<div id="container6" class="container" style="top: 250px">
+  <div id="child6" class="child scale"></div>
+</div>

@@ -8,6 +8,36 @@
     </output>
     <if expr="is_android">
       <output filename="components_strings_af.pak" type="data_package" lang="af" />
+      <output filename="components_strings_as.pak" type="data_package" lang="as" />
+      <output filename="components_strings_az.pak" type="data_package" lang="az" />
+      <output filename="components_strings_be.pak" type="data_package" lang="be" />
+      <output filename="components_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="components_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="components_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="components_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="components_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="components_strings_is.pak" type="data_package" lang="is" />
+      <output filename="components_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="components_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="components_strings_km.pak" type="data_package" lang="km" />
+      <output filename="components_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="components_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="components_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="components_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="components_strings_my.pak" type="data_package" lang="my" />
+      <output filename="components_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="components_strings_or.pak" type="data_package" lang="or" />
+      <output filename="components_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="components_strings_si.pak" type="data_package" lang="si" />
+      <output filename="components_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="components_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="components_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="components_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="components_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="components_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="components_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="components_strings_am.pak" type="data_package" lang="am" />
     <output filename="components_strings_ar.pak" type="data_package" lang="ar" />
@@ -30,7 +60,6 @@
     </if>
     <output filename="components_strings_et.pak" type="data_package" lang="et" />
     <output filename="components_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="components_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="components_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="components_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="components_strings_fr.pak" type="data_package" lang="fr" />
@@ -84,8 +113,12 @@
       <output filename="java/res/values-af/components_strings.xml" lang="af" type="android" context="android_java" />
       <output filename="java/res/values-am/components_strings.xml" lang="am" type="android" context="android_java" />
       <output filename="java/res/values-ar/components_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/components_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/components_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/components_strings.xml" lang="be" type="android" context="android_java" />
       <output filename="java/res/values-bg/components_strings.xml" lang="bg" type="android" context="android_java" />
       <output filename="java/res/values-bn/components_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/components_strings.xml" lang="bs" type="android" context="android_java" />
       <output filename="java/res/values-ca/components_strings.xml" lang="ca" type="android" context="android_java" />
       <output filename="java/res/values-cs/components_strings.xml" lang="cs" type="android" context="android_java" />
       <output filename="java/res/values-da/components_strings.xml" lang="da" type="android" context="android_java" />
@@ -96,35 +129,54 @@
       <output filename="java/res/values-es/components_strings.xml" lang="es" type="android" context="android_java" />
       <output filename="java/res/values-es-rUS/components_strings.xml" lang="es-419" type="android" context="android_java" />
       <output filename="java/res/values-et/components_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/components_strings.xml" lang="eu" type="android" context="android_java" />
       <output filename="java/res/values-fa/components_strings.xml" lang="fa" type="android" context="android_java" />
       <output filename="java/res/values-fi/components_strings.xml" lang="fi" type="android" context="android_java" />
       <output filename="java/res/values-tl/components_strings.xml" lang="fil" type="android" context="android_java" />
       <output filename="java/res/values-fr/components_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/components_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/components_strings.xml" lang="gl" type="android" context="android_java" />
       <output filename="java/res/values-gu/components_strings.xml" lang="gu" type="android" context="android_java" />
       <output filename="java/res/values-iw/components_strings.xml" lang="he" type="android" context="android_java" />
       <output filename="java/res/values-hi/components_strings.xml" lang="hi" type="android" context="android_java" />
       <output filename="java/res/values-hr/components_strings.xml" lang="hr" type="android" context="android_java" />
       <output filename="java/res/values-hu/components_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/components_strings.xml" lang="hy" type="android" context="android_java" />
       <output filename="java/res/values-in/components_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/components_strings.xml" lang="is" type="android" context="android_java" />
       <output filename="java/res/values-it/components_strings.xml" lang="it" type="android" context="android_java" />
       <output filename="java/res/values-ja/components_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/components_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/components_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/components_strings.xml" lang="km" type="android" context="android_java" />
       <output filename="java/res/values-kn/components_strings.xml" lang="kn" type="android" context="android_java" />
       <output filename="java/res/values-ko/components_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/components_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/components_strings.xml" lang="lo" type="android" context="android_java" />
       <output filename="java/res/values-lt/components_strings.xml" lang="lt" type="android" context="android_java" />
       <output filename="java/res/values-lv/components_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/components_strings.xml" lang="mk" type="android" context="android_java" />
       <output filename="java/res/values-ml/components_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/components_strings.xml" lang="mn" type="android" context="android_java" />
       <output filename="java/res/values-mr/components_strings.xml" lang="mr" type="android" context="android_java" />
       <output filename="java/res/values-ms/components_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/components_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/components_strings.xml" lang="ne" type="android" context="android_java" />
       <output filename="java/res/values-nl/components_strings.xml" lang="nl" type="android" context="android_java" />
       <output filename="java/res/values-nb/components_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/components_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/components_strings.xml" lang="pa" type="android" context="android_java" />
       <output filename="java/res/values-pl/components_strings.xml" lang="pl" type="android" context="android_java" />
       <output filename="java/res/values-pt-rBR/components_strings.xml" lang="pt-BR" type="android" context="android_java" />
       <output filename="java/res/values-pt-rPT/components_strings.xml" lang="pt-PT" type="android" context="android_java" />
       <output filename="java/res/values-ro/components_strings.xml" lang="ro" type="android" context="android_java" />
       <output filename="java/res/values-ru/components_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/components_strings.xml" lang="si" type="android" context="android_java" />
       <output filename="java/res/values-sk/components_strings.xml" lang="sk" type="android" context="android_java" />
       <output filename="java/res/values-sl/components_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/components_strings.xml" lang="sq" type="android" context="android_java" />
       <output filename="java/res/values-sr/components_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/components_strings.xml" lang="sr-Latn" type="android" context="android_java" />
       <output filename="java/res/values-sv/components_strings.xml" lang="sv" type="android" context="android_java" />
       <output filename="java/res/values-sw/components_strings.xml" lang="sw" type="android" context="android_java" />
       <output filename="java/res/values-ta/components_strings.xml" lang="ta" type="android" context="android_java" />
@@ -132,11 +184,19 @@
       <output filename="java/res/values-th/components_strings.xml" lang="th" type="android" context="android_java" />
       <output filename="java/res/values-tr/components_strings.xml" lang="tr" type="android" context="android_java" />
       <output filename="java/res/values-uk/components_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/components_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/components_strings.xml" lang="uz" type="android" context="android_java" />
       <output filename="java/res/values-vi/components_strings.xml" lang="vi" type="android" context="android_java" />
       <output filename="java/res/values-zh-rCN/components_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/components_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/components_strings.xml" lang="zu" type="android" context="android_java" />
     </if>
 
+
+    <!-- Pseudolocales -->
+    <output filename="components_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="components_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/components_strings_af.xtb" lang="af" />
@@ -205,6 +265,7 @@
     <file path="strings/components_strings_sl.xtb" lang="sl" />
     <file path="strings/components_strings_sq.xtb" lang="sq" />
     <file path="strings/components_strings_sr.xtb" lang="sr" />
+    <file path="strings/components_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="strings/components_strings_sv.xtb" lang="sv" />
     <file path="strings/components_strings_sw.xtb" lang="sw" />
     <file path="strings/components_strings_ta.xtb" lang="ta" />
@@ -220,23 +281,30 @@
     <file path="strings/components_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/components_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
-      <part file="app_modal_strings.grdp" />
+      <part file="arc_strings.grdp" />
       <part file="autofill_assistant_strings.grdp" />
       <part file="autofill_payments_strings.grdp" />
       <part file="autofill_strings.grdp" />
       <part file="bookmark_bar_strings.grdp" />
       <part file="bookmark_component_strings.grdp" />
+      <part file="blocked_content_strings.grdp" />
       <part file="browsing_data_strings.grdp" />
+      <part file="live_caption_strings.grdp" />
       <part file="components_settings_strings.grdp" />
+      <part file="content_creation_strings.grdp" />
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
       <part file="error_page_strings.grdp" />
       <part file="find_in_page_strings.grdp" />
       <part file="flags_strings.grdp" />
+      <part file="fullscreen_control_strings.grdp" />
+      <part file="global_media_controls_strings.grdp" />
+      <part file="heavy_ad_intervention_strings.grdp" />
       <part file="history_strings.grdp" />
+      <part file="javascript_dialogs_strings.grdp" />
       <part file="login_dialog_strings.grdp" />
       <part file="media_message_center_strings.grdp" />
       <part file="new_or_sad_tab_strings.grdp" />
@@ -247,22 +315,41 @@
       <part file="password_manager_strings.grdp" />
       <part file="payments_strings.grdp" />
       <part file="pdf_strings.grdp" />
+      <part file="permissions_strings.grdp" />
       <part file="policy_strings.grdp" />
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
+      <part file="privacy_sandbox_strings.grdp" />
       <part file="reset_password_strings.grdp" />
       <part file="safe_browsing_strings.grdp" />
       <part file="security_interstitials_strings.grdp" />
-      <part file="security_state_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
+      <part file="site_settings_strings.grdp" />
+      <part file="sms_strings.grdp" />
+      <part file="soda_strings.grdp" />
       <part file="ssl_errors_strings.grdp" />
+      <part file="subresource_filter_strings.grdp" />
       <part file="sync_ui_strings.grdp" />
       <part file="translate_strings.grdp" />
+      <part file="tab_groups_strings.grdp" />
       <part file="undo_strings.grdp" />
       <part file="version_ui_strings.grdp" />
+      <part file="webapps_strings.grdp" />
 
       <if expr="not is_android and not is_ios">
         <part file="management_strings.grdp" />
+      </if>
+      <if expr="not is_android and not is_ios">
+        <part file="history_clusters_strings.grdp" />
+      </if>
+      <if expr="is_android">
+        <part file="android_system_error_page_strings.grdp" />
+      </if>
+      <if expr="is_ios">
+        <part file="management_ios_strings.grdp" />
+      </if>
+      <if expr="enable_vr">
+        <part file="webxr_strings.grdp" />
       </if>
 
       <!-- Generic terms -->
@@ -272,7 +359,7 @@
       <message name="IDS_CLOSE" desc="A generic term for Close on buttons and menus.">
         Close
       </message>
-      <message name="IDS_CLEAR" desc="A generic term for Clearing input fields.">
+      <message name="IDS_CLEAR" desc="A generic term for Clearing input fields." formatter_data="android_java">
         Clear
       </message>
       <message name="IDS_DONE" desc="A generic term for Done on buttons and menus.">
@@ -283,6 +370,9 @@
       </message>
       <message name="IDS_OK" desc="Used for OK on buttons">
         OK
+      </message>
+      <message name="IDS_RELOAD" desc="Used for Reload on buttons">
+        Reload
       </message>
       <message name="IDS_ADD" desc="Used for Add on buttons">
         Add
@@ -296,11 +386,17 @@
       <message name="IDS_MENU" desc="The accessible name for the Menu. This is used as the aria-roledescription for context menus.">
         Menu
       </message>
+      <message name="IDS_INSTALL" desc="Text to be displayed when an action will trigger an installation (of a component, app from the Play Store, etc.).">
+        Install
+      </message>
+      <message name="IDS_UPDATE" desc="Text to be displayed when an action will trigger an update of an existing item (e.g. a component, app from the Play Store, etc.).">
+        Update
+      </message>
       <if expr="is_android">
-        <message name="IDS_SHOW" desc="Generic label to show content for a feature. [CHAR-LIMIT=20]" formatter_data="android_java">
+        <message name="IDS_SHOW_CONTENT" desc="Generic label to show content for a feature. [CHAR_LIMIT=20]" formatter_data="android_java">
           Show
         </message>
-        <message name="IDS_HIDE" desc="Generic label to hide content for a feature. [CHAR-LIMIT=20]" formatter_data="android_java">
+        <message name="IDS_HIDE_CONTENT" desc="Generic label to hide content for a feature. [CHAR_LIMIT=20]" formatter_data="android_java">
           Hide
         </message>
       </if>
@@ -360,7 +456,7 @@
           Recently Closed
         </message>
       </if>
-      <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR-LIMIT=20]" formatter_data="android_java">
+      <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR_LIMIT=20]" formatter_data="android_java">
         Choose
       </message>
 
@@ -420,6 +516,10 @@
       <!-- Advanced Section Titles -->
       <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY">
         Privacy
+      </message>
+
+      <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_SAFETY_CHECK">
+        Safety Check
       </message>
 
       <message name="IDS_PATCH_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for patching file operations.">

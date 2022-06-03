@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("gif_player_java") {
-  java_files = [
+  sources = [
     "src/jp/tomorrowkey/android/gifplayer/BaseGifDrawable.java",
     "src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java",
   ]

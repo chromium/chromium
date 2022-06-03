@@ -49,7 +49,7 @@ class HTMLSourceElement::Listener final : public MediaQueryListListener {
   }
 
   void ClearElement() { element_ = nullptr; }
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(element_);
     MediaQueryListListener::Trace(visitor);
   }
@@ -73,9 +73,11 @@ void HTMLSourceElement::CreateMediaQueryList(const AtomicString& media) {
     return;
   }
 
-  scoped_refptr<MediaQuerySet> set = MediaQuerySet::Create(media);
+  ExecutionContext* execution_context = GetExecutionContext();
+  scoped_refptr<MediaQuerySet> set =
+      MediaQuerySet::Create(media, execution_context);
   media_query_list_ = MakeGarbageCollected<MediaQueryList>(
-      &GetDocument(), &GetDocument().GetMediaQueryMatcher(), set);
+      execution_context, &GetDocument().GetMediaQueryMatcher(), set);
   AddMediaQueryListListener();
 }
 
@@ -159,6 +161,17 @@ bool HTMLSourceElement::MediaQueryMatches() const {
   return media_query_list_->matches();
 }
 
+void HTMLSourceElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  const QualifiedName& name = params.name;
+  if (name == html_names::kWidthAttr || name == html_names::kHeightAttr) {
+    if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement()))
+      picture->SourceAttributeChanged();
+  }
+
+  HTMLElement::AttributeChanged(params);
+}
+
 bool HTMLSourceElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == html_names::kSrcAttr ||
          HTMLElement::IsURLAttribute(attribute);
@@ -182,7 +195,7 @@ void HTMLSourceElement::NotifyMediaQueryChanged() {
     picture->SourceOrMediaChanged();
 }
 
-void HTMLSourceElement::Trace(Visitor* visitor) {
+void HTMLSourceElement::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_list_);
   visitor->Trace(listener_);
   HTMLElement::Trace(visitor);

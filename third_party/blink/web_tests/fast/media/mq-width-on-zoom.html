@@ -8,7 +8,7 @@
             Tests that width MQ feature is correct on zoom.
         </p>
         <script>
-            // eventSender.zoomPageOut/In zooms with a fixed factor of 1.2 instead
+            // testRunner.zoomPageOut/In zooms with a fixed factor of 1.2 instead
             // of the zoom levels of the actual browser.
 
             function test() {
@@ -18,14 +18,14 @@
                 shouldBeTrue("window.matchMedia('(max-width: " + maxWidth + "px)').matches");
             }
 
-            if (window.eventSender) {
+            if (window.testRunner) {
                 for (var i = 0; i < 5; i++) {
-                    eventSender.zoomPageOut();
+                    testRunner.zoomPageOut();
                     test();
                 }
 
                 for (var i = 0; i < 10; i++) {
-                    eventSender.zoomPageIn();
+                    testRunner.zoomPageIn();
                     test();
                 }
             }

@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.compositor.layouts.components;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 /**
  * Class for a CompositorButton that uses tint instead of multiple drawable resources.
@@ -16,10 +17,10 @@ import androidx.annotation.IdRes;
 public class TintedCompositorButton extends CompositorButton {
     private Context mContext;
 
-    private @IdRes int mDefaultTintResource;
-    private @IdRes int mPressedTintResource;
-    private @IdRes int mIncognitoTintResource;
-    private @IdRes int mIncognitoPressedTintResource;
+    private @ColorRes int mDefaultTintResource;
+    private @ColorRes int mPressedTintResource;
+    private @ColorRes int mIncognitoTintResource;
+    private @ColorRes int mIncognitoPressedTintResource;
 
     public TintedCompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
@@ -67,8 +68,8 @@ public class TintedCompositorButton extends CompositorButton {
      * @param incognitoTint         The incognito tint resource.
      * @param incognitoPressedTint  The incognito pressed tint resource.
      */
-    public void setTintResources(@IdRes int defaultTint, @IdRes int pressedTint,
-            @IdRes int incognitoTint, @IdRes int incognitoPressedTint) {
+    public void setTintResources(@ColorRes int defaultTint, @ColorRes int pressedTint,
+            @ColorRes int incognitoTint, @ColorRes int incognitoPressedTint) {
         mDefaultTintResource = defaultTint;
         mPressedTintResource = pressedTint;
         mIncognitoTintResource = incognitoTint;
@@ -85,6 +86,6 @@ public class TintedCompositorButton extends CompositorButton {
             tint = isIncognito() ? mIncognitoPressedTintResource : mPressedTintResource;
         }
 
-        return mContext.getResources().getColor(tint);
+        return AppCompatResources.getColorStateList(mContext, tint).getDefaultColor();
     }
 }

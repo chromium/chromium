@@ -1,8 +1,8 @@
-document
-++list
-++++listitem IsControlElement=false
-++++++description Name='Term'
-++++description IsControlElement=false
-++++++description Name='Description'
-++definition
-++++description Name='Definition'
+Document
+++List
+++++ListItem IsControlElement=false
+++++++Text Name='Term'
+++++Text IsControlElement=false
+++++++Text Name='Description'
+++Group
+++++Text Name='Definition'

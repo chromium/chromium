@@ -12,6 +12,7 @@
 namespace content {
 class WebContents;
 }
+class Profile;
 
 #if defined(OS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -26,6 +27,10 @@ namespace chrome_test_utils {
 // Returns the active WebContents. On desktop this is in the first browser
 // window created by tests, more specific behaviour requires other means.
 content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test);
+
+// Returns the active Profile. On desktop this is in the first browser
+// window created by tests, more specific behaviour requires other means.
+Profile* GetProfile(PlatformBrowserTest* browser_test);
 
 }  // namespace chrome_test_utils
 

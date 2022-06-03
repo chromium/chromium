@@ -1,0 +1,35 @@
+<!--
+@BLINK-ALLOW:focus*
+@AURALINUX-ALLOW:focus*
+@WAIT-FOR:done
+-->
+<!-- Only the first image that uses a given map gets its area children.
+When the image moves, it may no longer be the first image. Therefore, the
+children must be recomputed for both the image that moved and the new
+first image that uses that map -->
+<img id="img0" alt="star0" usemap="#map0"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<img id="img2" alt="star2" usemap="#map"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<map name="map0">
+  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+</map>
+<map name="map">
+  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+  <area shape="rect" coords="3,3,8,8" href="about:blank" alt="Area2" autofocus>
+</map>
+<div id="container">
+  <img id="img1" alt="star1" usemap="#map"
+       src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      // Move the last image before a previous image with the same map.
+      document.body.insertBefore(document.querySelector('#img1'),
+                                 document.querySelector('#img2'));
+      document.title = 'done';
+    }, 250);
+  });
+</script>

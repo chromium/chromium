@@ -4,12 +4,11 @@
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,10 +21,14 @@
 namespace content {
 namespace {
 
-class FakeOverlay : public MouseCursorOverlayController::Overlay {
+class FakeOverlay final : public MouseCursorOverlayController::Overlay {
  public:
   FakeOverlay() = default;
-  ~FakeOverlay() final = default;
+
+  FakeOverlay(const FakeOverlay&) = delete;
+  FakeOverlay& operator=(const FakeOverlay&) = delete;
+
+  ~FakeOverlay() override = default;
 
   const SkBitmap& image() const { return image_; }
   const gfx::RectF& bounds() const { return bounds_; }
@@ -41,8 +44,6 @@ class FakeOverlay : public MouseCursorOverlayController::Overlay {
  private:
   SkBitmap image_;
   gfx::RectF bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOverlay);
 };
 
 }  // namespace
@@ -50,6 +51,12 @@ class FakeOverlay : public MouseCursorOverlayController::Overlay {
 class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
  public:
   MouseCursorOverlayControllerBrowserTest() = default;
+
+  MouseCursorOverlayControllerBrowserTest(
+      const MouseCursorOverlayControllerBrowserTest&) = delete;
+  MouseCursorOverlayControllerBrowserTest& operator=(
+      const MouseCursorOverlayControllerBrowserTest&) = delete;
+
   ~MouseCursorOverlayControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() final {
@@ -63,8 +70,7 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     auto overlay_ptr = std::make_unique<FakeOverlay>();
     FakeOverlay* const overlay = overlay_ptr.get();
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    controller_.Start(std::move(overlay_ptr),
-                      base::CreateSingleThreadTaskRunner({BrowserThread::UI}));
+    controller_.Start(std::move(overlay_ptr), GetUIThreadTaskRunner({}));
     return overlay;
   }
 
@@ -170,8 +176,6 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
   }
 
   MouseCursorOverlayController controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorOverlayControllerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,

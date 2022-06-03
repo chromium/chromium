@@ -11,19 +11,18 @@
 #include <vector>
 
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "url/origin.h"
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 
 CredentialCache::CredentialCache() = default;
 CredentialCache::~CredentialCache() = default;
 
-void CredentialCache::SaveCredentialsForOrigin(
+void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
     const std::vector<const PasswordForm*>& best_matches,
+    IsOriginBlocklisted is_blocklisted,
     const url::Origin& origin) {
   std::vector<UiCredential> credentials;
   credentials.reserve(best_matches.size());
@@ -42,6 +41,8 @@ void CredentialCache::SaveCredentialsForOrigin(
                           return credential.origin() == origin;
                         });
   GetOrCreateCredentialStore(origin).SaveCredentials(std::move(credentials));
+  GetOrCreateCredentialStore(origin).SetBlocklistedStatus(
+      is_blocklisted.value());
 }
 
 const OriginCredentialStore& CredentialCache::GetCredentialStore(

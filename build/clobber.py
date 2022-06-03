@@ -89,13 +89,15 @@ def delete_build_dir(build_dir):
       f.write(build_commands)
     else:
       # Couldn't parse the build.ninja file, write a default thing.
-      f.write('''rule gn
-command = gn -q gen //out/%s/
-description = Regenerating ninja files
+      f.write('''ninja_required_version = 1.7.2
+
+rule gn
+  command = gn -q gen //out/%s/
+  description = Regenerating ninja files
 
 build build.ninja: gn
-generator = 1
-depfile = build.ninja.d
+  generator = 1
+  depfile = build.ninja.d
 ''' % (os.path.split(build_dir)[1]))
 
   # Write a .d file for the build which references a nonexistant file. This

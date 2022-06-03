@@ -18,6 +18,10 @@ class VideoFeedbackStub;
 class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
  public:
   HostVideoDispatcher();
+
+  HostVideoDispatcher(const HostVideoDispatcher&) = delete;
+  HostVideoDispatcher& operator=(const HostVideoDispatcher&) = delete;
+
   ~HostVideoDispatcher() override;
 
   void set_video_feedback_stub(VideoFeedbackStub* video_feedback_stub) {
@@ -32,8 +36,6 @@ class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
   VideoFeedbackStub* video_feedback_stub_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVideoDispatcher);
 };
 
 }  // namespace protocol

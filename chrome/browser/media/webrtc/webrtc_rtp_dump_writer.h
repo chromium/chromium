@@ -12,10 +12,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
 
@@ -34,7 +33,8 @@
 // This object must run on the IO thread.
 class WebRtcRtpDumpWriter {
  public:
-  typedef base::Callback<void(bool incoming_succeeded, bool outgoing_succeeded)>
+  typedef base::OnceCallback<void(bool incoming_succeeded,
+                                  bool outgoing_succeeded)>
       EndDumpCallback;
 
   // |incoming_dump_path| and |outgoing_dump_path| are the file paths of the
@@ -45,7 +45,10 @@ class WebRtcRtpDumpWriter {
   WebRtcRtpDumpWriter(const base::FilePath& incoming_dump_path,
                       const base::FilePath& outgoing_dump_path,
                       size_t max_dump_size,
-                      const base::Closure& max_dump_size_reached_callback);
+                      base::RepeatingClosure max_dump_size_reached_callback);
+
+  WebRtcRtpDumpWriter(const WebRtcRtpDumpWriter&) = delete;
+  WebRtcRtpDumpWriter& operator=(const WebRtcRtpDumpWriter&) = delete;
 
   virtual ~WebRtcRtpDumpWriter();
 
@@ -61,8 +64,7 @@ class WebRtcRtpDumpWriter {
   // |finished_callback| will be called to indicate whether the dump is valid.
   // If this object is destroyed before the operation is finished, the callback
   // will be canceled and the dump files will be deleted.
-  virtual void EndDump(RtpDumpType type,
-                       const EndDumpCallback& finished_callback);
+  virtual void EndDump(RtpDumpType type, EndDumpCallback finished_callback);
 
   size_t max_dump_size() const;
 
@@ -83,12 +85,12 @@ class WebRtcRtpDumpWriter {
 
   class FileWorker;
 
-  typedef base::Callback<void(bool)> FlushDoneCallback;
+  typedef base::OnceCallback<void(bool)> FlushDoneCallback;
 
   // Used by EndDump to cache the input and intermediate results.
   struct EndDumpContext {
-    EndDumpContext(RtpDumpType type, const EndDumpCallback& callback);
-    EndDumpContext(const EndDumpContext& other);
+    EndDumpContext(RtpDumpType type, EndDumpCallback callback);
+    EndDumpContext(EndDumpContext&& other);
     ~EndDumpContext();
 
     RtpDumpType type;
@@ -101,14 +103,12 @@ class WebRtcRtpDumpWriter {
   // buffer will be flushed; otherwise, the outgoing buffer will be flushed.
   // The dump file will be ended if |end_stream| is true. |callback| will be
   // called when flushing is done.
-  void FlushBuffer(bool incoming,
-                   bool end_stream,
-                   const FlushDoneCallback& callback);
+  void FlushBuffer(bool incoming, bool end_stream, FlushDoneCallback callback);
 
   // Called when FlushBuffer finishes. Checks the max dump size limit and
   // maybe calls the |max_dump_size_reached_callback_|. Also calls |callback|
   // with the flush result.
-  void OnFlushDone(const FlushDoneCallback& callback,
+  void OnFlushDone(FlushDoneCallback callback,
                    const std::unique_ptr<FlushResult>& result,
                    const std::unique_ptr<size_t>& bytes_written);
 
@@ -121,7 +121,7 @@ class WebRtcRtpDumpWriter {
   const size_t max_dump_size_;
 
   // The callback to call when the max size limit is reached.
-  const base::Closure max_dump_size_reached_callback_;
+  const base::RepeatingClosure max_dump_size_reached_callback_;
 
   // The in-memory buffers for the uncompressed dumps.
   std::vector<uint8_t> incoming_buffer_;
@@ -141,8 +141,6 @@ class WebRtcRtpDumpWriter {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<WebRtcRtpDumpWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRtpDumpWriter);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_RTP_DUMP_WRITER_H_

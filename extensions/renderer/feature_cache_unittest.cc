@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/feature_cache.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
@@ -73,16 +73,16 @@ TEST_F(FeatureCacheTest, WebUIContexts) {
   FeatureCache cache;
   scoped_refptr<const Extension> extension_a = ExtensionBuilder("a").Build();
 
-  // The chrome://extensions page is whitelisted for the management API.
+  // The chrome://extensions page is allowlisted for the management API.
   FakeContext webui_context = {Feature::WEBUI_CONTEXT, nullptr,
                                content::GetWebUIURL("extensions")};
-  // chrome://baz is not whitelisted, and should not have access.
+  // chrome://baz is not allowlisted, and should not have access.
   FakeContext webui_context_without_access = {Feature::WEBUI_CONTEXT, nullptr,
                                               content::GetWebUIURL("baz")};
 
   EXPECT_TRUE(HasFeature(cache, webui_context, "management"));
   EXPECT_FALSE(HasFeature(cache, webui_context_without_access, "management"));
-  // No webui context is whitelisted for, e.g., the idle API, so neither should
+  // No webui context is allowlisted for, e.g., the idle API, so neither should
   // have access.
   EXPECT_FALSE(HasFeature(cache, webui_context, "idle"));
   EXPECT_FALSE(HasFeature(cache, webui_context_without_access, "idle"));

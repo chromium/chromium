@@ -7,10 +7,8 @@
 
 #include "components/performance_manager/frame_node_source.h"
 
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 
 namespace performance_manager {
@@ -21,15 +19,21 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
                                  public PerformanceManagerTabHelper::Observer {
  public:
   TabHelperFrameNodeSource();
+
+  TabHelperFrameNodeSource(const TabHelperFrameNodeSource&) = delete;
+  TabHelperFrameNodeSource& operator=(const TabHelperFrameNodeSource&) = delete;
+
   ~TabHelperFrameNodeSource() override;
 
   // FrameNodeSource:
-  FrameNodeImpl* GetFrameNode(int render_process_id, int frame_id) override;
-  void SubscribeToFrameNode(int render_process_id,
-                            int frame_id,
-                            OnbeforeFrameNodeRemovedCallback
-                                on_before_frame_node_removed_callback) override;
-  void UnsubscribeFromFrameNode(int render_process_id, int frame_id) override;
+  FrameNodeImpl* GetFrameNode(
+      content::GlobalRenderFrameHostId render_process_host_id) override;
+  void SubscribeToFrameNode(
+      content::GlobalRenderFrameHostId render_process_host_id,
+      OnbeforeFrameNodeRemovedCallback on_before_frame_node_removed_callback)
+      override;
+  void UnsubscribeFromFrameNode(
+      content::GlobalRenderFrameHostId render_process_host_id) override;
 
   // PerformanceManagerTabHelper::Observer:
   void OnBeforeFrameNodeRemoved(
@@ -61,11 +65,9 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
       observed_frame_nodes_;
 
   // Observes frame node deletions.
-  ScopedObserver<PerformanceManagerTabHelper,
-                 PerformanceManagerTabHelper::Observer>
-      performance_manager_tab_helper_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabHelperFrameNodeSource);
+  base::ScopedMultiSourceObservation<PerformanceManagerTabHelper,
+                                     PerformanceManagerTabHelper::Observer>
+      performance_manager_tab_helper_observations_;
 };
 
 }  // namespace performance_manager

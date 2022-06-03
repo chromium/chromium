@@ -1,7 +1,0 @@
-Tests that we calculate correct intrinsic widths when orthogonal flows are involved.
-
-PASS
-Some text
-PASS
-Some text
-PASS

@@ -1,0 +1,44 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/dcheck_always_on.gni")
+import("//third_party/blink/renderer/core/core.gni")
+
+source_set("web_test") {
+  testonly = true
+
+  visibility = [ "//content/web_test:web_test_renderer" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    "//base:base",
+
+    # There is a circular dependency with test runner. This
+    # will eventually be removed when all dependent classes move
+    # into blink.
+    # We do not include the dependency here but it is marked as allowing
+    # circular includes in the web_test_renderer config.
+    # "//content/web_test:web_test_renderer",
+
+    # TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in
+    # `//content/web_test:web_test_renderer` does not propagate the public_deps
+    # from `web_test_renderer`'s own dependencies. This means that those targets
+    # are not built, and some generated mojom headers are missing. As a
+    # workaround, add this dep so that `web_test_renderer` has all of the
+    # headers it needs.
+    "//content/web_test:web_test_common",
+
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core:core",
+  ]
+
+  sources = [
+    "web_test_web_frame_widget_impl.cc",
+    "web_test_web_frame_widget_impl.h",
+  ]
+}

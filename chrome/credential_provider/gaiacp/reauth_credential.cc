@@ -7,58 +7,112 @@
 #include "base/command_line.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
+#include "chrome/credential_provider/gaiacp/gcp_utils.h"
+#include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
 namespace credential_provider {
+
+// TODO(crbug.com/1111561): Change it back to emdedded/reauth/windows
+// once reauth flow latency issue is resolved.
+constexpr char kGaiaReauthPath[] = "embedded/setup/windows";
 
 CReauthCredential::CReauthCredential() = default;
 
 CReauthCredential::~CReauthCredential() = default;
 
 HRESULT CReauthCredential::FinalConstruct() {
-  LOGFN(INFO);
+  LOGFN(VERBOSE);
   return S_OK;
 }
 
 void CReauthCredential::FinalRelease() {
-  LOGFN(INFO);
+  LOGFN(VERBOSE);
 }
 
 // CGaiaCredentialBase /////////////////////////////////////////////////////////
+bool CReauthCredential::CheckIfTosAccepted() {
+  DCHECK(os_user_sid_.Length());
+
+  DWORD acceptTos = 0;
+  HRESULT hr = GetUserProperty(OLE2W(os_user_sid_), kKeyAcceptTos, &acceptTos);
+  if (FAILED(hr))
+    LOGFN(ERROR) << "Failed getting accept_tos. hr = " << putHR(hr);
+  return acceptTos == 1;
+}
 
 HRESULT CReauthCredential::GetUserGlsCommandline(
     base::CommandLine* command_line) {
   DCHECK(command_line);
   DCHECK(os_user_sid_.Length());
 
+  // This boolean is set to false if generating GlsCommandLine HRESULT
+  // is E_UNEXPECTED.
+  bool get_cmd_line_status = false;
+
+  // Check if tos is accepted. If not, we need to load gaia login page
+  // with ToS acceptance screen.
+  // Note:
+  // 1. We need to append this switch irrespective of whether its a
+  // reauth flow vs add user flow.
+  // 2. We only show tos for GEM usecases.
+  bool show_tos = false;
+  if (!CheckIfTosAccepted() && IsGemEnabled())
+    show_tos = true;
+
   // If this is an existing user with an SID, try to get its gaia id and pass
   // it to the GLS for verification.
-  base::string16 gaia_id;
+  std::wstring gaia_id;
   if (GetIdFromSid(OLE2CW(os_user_sid_), &gaia_id) == S_OK &&
       !gaia_id.empty()) {
     command_line->AppendSwitchNative(kGaiaIdSwitch, gaia_id);
-    if (email_for_reauth_.Length()) {
-      command_line->AppendSwitchNative(kPrefillEmailSwitch,
-                                       OLE2CW(email_for_reauth_));
-    }
-    return CGaiaCredentialBase::GetUserGlsCommandline(command_line);
-  } else if (CGaiaCredentialBase::IsAdToGoogleAssociationEnabled() &&
+    get_cmd_line_status = true;
+  } else if (CGaiaCredentialBase::IsCloudAssociationEnabled() &&
              OSUserManager::Get()->IsUserDomainJoined(OLE2CW(os_user_sid_))) {
     // Note that if ADAssociationIsEnabled and the reauth credential is an AD
     // user account, then fallback to the GaiaCredentialBase for loading Gls.
+    get_cmd_line_status = true;
+  }
+
+  HRESULT hr;
+  // If there is an existing email with an SID then pass it to the GLS
+  // as PrefillEmail switch.
+  if (email_for_reauth_.Length()) {
+    get_cmd_line_status = true;
+    command_line->AppendSwitchNative(kPrefillEmailSwitch,
+                                     OLE2CW(email_for_reauth_));
+    // Use kGaiaReauthPath when there is no email_for_reauth_ field set.
+    hr = SetGaiaEndpointCommandLineIfNeeded(L"ep_reauth_url", kGaiaReauthPath,
+                                            IsGemEnabled(), show_tos,
+                                            command_line);
+  } else {
+    // Use kGaiaSetupPath when there is no email_for_reauth_ field set.
+    hr = SetGaiaEndpointCommandLineIfNeeded(L"ep_reauth_url", kGaiaSetupPath,
+                                            IsGemEnabled(), show_tos,
+                                            command_line);
+  }
+
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "Setting gaia url for reauth credential on user="
+                 << os_username_ << " failed";
+    return E_FAIL;
+  }
+
+  if (get_cmd_line_status) {
     return CGaiaCredentialBase::GetUserGlsCommandline(command_line);
   } else {
     LOGFN(ERROR) << "Reauth credential on user=" << os_username_
-                 << " does not have an associated Gaia id";
+                 << " does not have an associated Gaia id or Email address";
     return E_UNEXPECTED;
   }
 }
 
-HRESULT CReauthCredential::ValidateExistingUser(const base::string16& username,
-                                                const base::string16& domain,
-                                                const base::string16& sid,
+HRESULT CReauthCredential::ValidateExistingUser(const std::wstring& username,
+                                                const std::wstring& domain,
+                                                const std::wstring& sid,
                                                 BSTR* error_text) {
   DCHECK(os_username_.Length());
   DCHECK(os_user_sid_.Length());
@@ -82,7 +136,7 @@ HRESULT CReauthCredential::ValidateExistingUser(const base::string16& username,
 
 HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
   if (field_id == FID_PROVIDER_LABEL) {
-    base::string16 label(
+    std::wstring label(
         GetStringResource(IDS_EXISTING_AUTH_FID_PROVIDER_LABEL_BASE));
     return ::SHStrDupW(label.c_str(), value);
   } else if (field_id == FID_DESCRIPTION) {
@@ -90,16 +144,16 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
     HRESULT hr = GetUserSid(&sid_buffer);
     if (FAILED(hr)) {
       LOGFN(ERROR) << "GetUserSid: Empty sid found";
-      return ::SHStrDupW(base::string16().c_str(), value);
+      return ::SHStrDupW(std::wstring().c_str(), value);
     }
-    base::string16 sid = sid_buffer;
+    std::wstring sid = sid_buffer;
     ::CoTaskMemFree(sid_buffer);
 
     int description_label_id;
     // If its an AD user sid without a user_id set in the registry, then
     // we need to show a different description message.
     if (email_for_reauth_.Length() == 0 &&
-        CGaiaCredentialBase::IsAdToGoogleAssociationEnabled() &&
+        CGaiaCredentialBase::IsCloudAssociationEnabled() &&
         OSUserManager::Get()->IsUserDomainJoined(sid)) {
       description_label_id = IDS_REAUTH_AD_NO_USER_FID_DESCRIPTION_BASE;
     } else {
@@ -115,13 +169,27 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
           description_label_id =
               IDS_REAUTH_MISSING_PASSWORD_RECOVERY_INFO_FID_DESCRIPTION_BASE;
           break;
+        case AssociatedUserValidator::EnforceAuthReason::
+            UPLOAD_DEVICE_DETAILS_FAILED:
+          description_label_id =
+              IDS_REAUTH_FAILED_UPLOAD_DEVICE_DETAILS_DESCRIPTION_BASE;
+          break;
+        case AssociatedUserValidator::EnforceAuthReason::
+            ONLINE_LOGIN_ENFORCED:
+          description_label_id =
+              IDS_REAUTH_ONLINE_LOGIN_ENFORCED_DESCRIPTION_BASE;
+          break;
+        case AssociatedUserValidator::EnforceAuthReason::
+            MISSING_OR_STALE_USER_POLICIES:
+          description_label_id = IDS_REAUTH_MISSING_POLICIES_DESCRIPTION_BASE;
+          break;
         default:
           description_label_id = IDS_REAUTH_FID_DESCRIPTION_BASE;
           break;
       }
     }
 
-    base::string16 label(GetStringResource(description_label_id));
+    std::wstring label(GetStringResource(description_label_id));
     return ::SHStrDupW(label.c_str(), value);
   }
 
@@ -133,7 +201,7 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
 HRESULT CReauthCredential::GetUserSid(wchar_t** sid) {
   USES_CONVERSION;
   DCHECK(sid);
-  LOGFN(INFO) << "sid=" << OLE2CW(get_os_user_sid());
+  LOGFN(VERBOSE) << "sid=" << OLE2CW(get_os_user_sid());
 
   HRESULT hr = ::SHStrDupW(OLE2CW(get_os_user_sid()), sid);
   if (FAILED(hr))

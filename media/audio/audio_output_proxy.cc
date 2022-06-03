@@ -4,7 +4,7 @@
 
 #include "media/audio/audio_output_proxy.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher.h"
 

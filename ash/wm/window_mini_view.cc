@@ -4,50 +4,67 @@
 
 #include "ash/wm/window_mini_view.h"
 
-#include "ash/wm/overview/rounded_rect_view.h"
+#include <memory>
+#include <utility>
+
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_preview_view.h"
+#include "ash/wm/wm_highlight_item_border.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
 
-// Foreground label color.
-constexpr SkColor kLabelColor = SK_ColorWHITE;
-
-// Horizontal padding for the label, on both sides.
-constexpr int kHorizontalLabelPaddingDp = 12;
-
-// The size in dp of the window icon shown on the overview window next to the
-// title.
-constexpr gfx::Size kIconSize{24, 24};
-
 // The font delta of the window title.
 constexpr int kLabelFontDelta = 2;
 
 // Values of the backdrop.
-constexpr int kBackdropRoundingDp = 4;
-constexpr SkColor kBackdropColor = SkColorSetA(SK_ColorWHITE, 0x24);
+constexpr int kBackdropBorderRoundingDp = 4;
+
+std::u16string GetWindowTitle(aura::Window* window) {
+  aura::Window* transient_root = wm::GetTransientRoot(window);
+  const std::u16string* overview_title =
+      transient_root->GetProperty(chromeos::kWindowOverviewTitleKey);
+  return (overview_title && !overview_title->empty())
+             ? *overview_title
+             : transient_root->GetTitle();
+}
 
 }  // namespace
 
 WindowMiniView::~WindowMiniView() = default;
+
+constexpr gfx::Size WindowMiniView::kIconSize;
+constexpr int WindowMiniView::kHeaderPaddingDp;
 
 void WindowMiniView::SetBackdropVisibility(bool visible) {
   if (!backdrop_view_ && !visible)
     return;
 
   if (!backdrop_view_) {
-    backdrop_view_ = new RoundedRectView(kBackdropRoundingDp, kBackdropColor);
-    backdrop_view_->set_can_process_events_within_subtree(false);
-    AddChildViewOf(this, backdrop_view_);
+    backdrop_view_ = AddChildView(std::make_unique<views::View>());
+    backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    ui::Layer* layer = backdrop_view_->layer();
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    layer->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kBackdropBorderRoundingDp));
+    layer->SetIsFastRoundedCorner(true);
+    backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     Layout();
   }
   backdrop_view_->SetVisible(visible);
@@ -67,18 +84,37 @@ void WindowMiniView::SetShowPreview(bool show) {
   if (!source_window_)
     return;
 
-  preview_view_ = new WindowPreviewView(source_window_,
-                                        /*trilinear_filtering_on_init=*/false);
-  AddChildViewOf(this, preview_view_);
+  preview_view_ = AddChildView(std::make_unique<WindowPreviewView>(
+      source_window_,
+      /*trilinear_filtering_on_init=*/false));
+  preview_view_->SetPaintToLayer();
+  preview_view_->layer()->SetFillsBoundsOpaquely(false);
   Layout();
 }
 
-int WindowMiniView::GetMargin() const {
-  return 0;
+void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
+  if (!preview_view())
+    return;
+
+  ui::Layer* layer = preview_view()->layer();
+  DCHECK(layer);
+  const float scale = layer->transform().Scale2d().x();
+  const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
+  const gfx::RoundedCornersF radii(show ? rounding / scale : 0.0f);
+  layer->SetRoundedCornerRadius(radii);
+  layer->SetIsFastRoundedCorner(true);
+}
+
+void WindowMiniView::UpdateBorderState(bool show) {
+  border_ptr_->SetFocused(show);
+  SchedulePaint();
 }
 
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
-  return gfx::Rect(GetLocalBounds().width(), kHeaderHeightDp);
+  gfx::Rect header_bounds = GetContentsBounds();
+  header_bounds.set_height(kHeaderHeightDp);
+  return header_bounds;
 }
 
 gfx::Size WindowMiniView::GetPreviewViewSize() const {
@@ -86,55 +122,67 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
   return preview_view_->GetPreferredSize();
 }
 
-WindowMiniView::WindowMiniView(aura::Window* source_window,
-                               bool views_should_paint_to_layers)
-    : source_window_(source_window),
-      views_should_paint_to_layers_(views_should_paint_to_layers) {
-  window_observer_.Add(source_window);
+WindowMiniView::WindowMiniView(aura::Window* source_window)
+    : source_window_(source_window) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
-  header_view_ = new views::View();
+  window_observation_.Observe(source_window);
+
+  header_view_ = AddChildView(std::make_unique<views::View>());
+  header_view_->SetPaintToLayer();
+  header_view_->layer()->SetFillsBoundsOpaquely(false);
   views::BoxLayout* layout =
       header_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kHorizontalLabelPaddingDp));
-  AddChildViewOf(this, header_view_);
+          kHeaderPaddingDp));
 
-  UpdateIconView();
-
-  title_label_ =
-      new views::Label(wm::GetTransientRoot(source_window_)->GetTitle());
+  title_label_ = header_view_->AddChildView(
+      std::make_unique<views::Label>(GetWindowTitle(source_window_)));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  title_label_->SetEnabledColor(kLabelColor);
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  AddChildViewOf(header_view_, title_label_);
   layout->SetFlexForView(title_label_, 1);
+
+  auto border =
+      std::make_unique<WmHighlightItemBorder>(kBackdropBorderRoundingDp);
+  border_ptr_ = border.get();
+  SetBorder(std::move(border));
 }
 
-void WindowMiniView::AddChildViewOf(views::View* parent, views::View* child) {
-  parent->AddChildView(child);
-  if (views_should_paint_to_layers_) {
-    child->SetPaintToLayer();
-    child->layer()->SetFillsBoundsOpaquely(false);
+void WindowMiniView::UpdateIconView() {
+  aura::Window* transient_root = wm::GetTransientRoot(source_window_);
+  // Prefer kAppIconKey over kWindowIconKey as the app icon is typically larger.
+  gfx::ImageSkia* icon = transient_root->GetProperty(aura::client::kAppIconKey);
+  if (!icon || icon->size().IsEmpty())
+    icon = transient_root->GetProperty(aura::client::kWindowIconKey);
+  if (!icon)
+    return;
+
+  if (!icon_view_) {
+    icon_view_ =
+        header_view_->AddChildViewAt(std::make_unique<views::ImageView>(), 0);
   }
+
+  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+      *icon, skia::ImageOperations::RESIZE_BEST, kIconSize));
+}
+
+gfx::Rect WindowMiniView::GetContentAreaBounds() const {
+  gfx::Rect bounds(GetContentsBounds());
+  bounds.Inset(0, kHeaderHeightDp, 0, 0);
+  return bounds;
 }
 
 void WindowMiniView::Layout() {
-  const int margin = GetMargin();
-  gfx::Rect bounds(GetLocalBounds());
-  bounds.Inset(margin, margin);
-
-  if (backdrop_view_) {
-    gfx::Rect backdrop_bounds = bounds;
-    backdrop_bounds.Inset(0, kHeaderHeightDp, 0, 0);
-    backdrop_view_->SetBoundsRect(backdrop_bounds);
-  }
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  if (backdrop_view_)
+    backdrop_view_->SetBoundsRect(content_area_bounds);
 
   if (preview_view_) {
-    gfx::Rect preview_bounds = bounds;
-    preview_bounds.Inset(0, kHeaderHeightDp, 0, 0);
+    gfx::Rect preview_bounds = content_area_bounds;
     preview_bounds.ClampToCenteredSize(GetPreviewViewSize());
     preview_view_->SetBoundsRect(preview_bounds);
   }
@@ -144,7 +192,13 @@ void WindowMiniView::Layout() {
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kWindow;
-  node_data->SetName(title_label_->GetText());
+  node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
+}
+
+void WindowMiniView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void WindowMiniView::OnWindowPropertyChanged(aura::Window* window,
@@ -162,32 +216,16 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
   if (window != source_window_)
     return;
 
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   source_window_ = nullptr;
   SetShowPreview(false);
 }
 
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
-  title_label_->SetText(wm::GetTransientRoot(window)->GetTitle());
+  title_label_->SetText(GetWindowTitle(window));
 }
 
-void WindowMiniView::UpdateIconView() {
-  aura::Window* transient_root = wm::GetTransientRoot(source_window_);
-  // Prefer kAppIconKey over kWindowIconKey as the app icon is typically larger.
-  gfx::ImageSkia* icon = transient_root->GetProperty(aura::client::kAppIconKey);
-  if (!icon || icon->size().IsEmpty())
-    icon = transient_root->GetProperty(aura::client::kWindowIconKey);
-  if (!icon)
-    return;
-
-  if (!icon_view_) {
-    icon_view_ = new views::ImageView();
-    icon_view_->SetSize(kIconSize);
-    AddChildViewOf(header_view_, icon_view_);
-  }
-
-  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      *icon, skia::ImageOperations::RESIZE_BEST, kIconSize));
-}
+BEGIN_METADATA(WindowMiniView, views::View)
+END_METADATA
 
 }  // namespace ash

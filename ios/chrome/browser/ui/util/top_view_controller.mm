@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -11,8 +12,7 @@
 namespace top_view_controller {
 
 UIViewController* TopPresentedViewController() {
-  return TopPresentedViewControllerFrom(
-      [[UIApplication sharedApplication] keyWindow].rootViewController);
+  return TopPresentedViewControllerFrom(GetAnyKeyWindow().rootViewController);
 }
 UIViewController* TopPresentedViewControllerFrom(
     UIViewController* base_view_controller) {

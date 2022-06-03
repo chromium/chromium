@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_CLIENT_H_
 #define EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_CLIENT_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"
 
@@ -16,6 +14,8 @@ namespace extensions {
 class ShellExtensionsClient : public ExtensionsClient {
  public:
   ShellExtensionsClient();
+  ShellExtensionsClient(const ShellExtensionsClient&) = delete;
+  ShellExtensionsClient& operator=(const ShellExtensionsClient&) = delete;
   ~ShellExtensionsClient() override;
 
   // ExtensionsClient overrides:
@@ -27,8 +27,8 @@ class ShellExtensionsClient : public ExtensionsClient {
   void FilterHostPermissions(const URLPatternSet& hosts,
                              URLPatternSet* new_hosts,
                              PermissionIDSet* permissions) const override;
-  void SetScriptingWhitelist(const ScriptingWhitelist& whitelist) override;
-  const ScriptingWhitelist& GetScriptingWhitelist() const override;
+  void SetScriptingAllowlist(const ScriptingAllowlist& allowlist) override;
+  const ScriptingAllowlist& GetScriptingAllowlist() const override;
   URLPatternSet GetPermittedChromeSchemeHosts(
       const Extension* extension,
       const APIPermissionSet& api_permissions) const override;
@@ -38,12 +38,10 @@ class ShellExtensionsClient : public ExtensionsClient {
   bool IsBlacklistUpdateURL(const GURL& url) const override;
 
  private:
-  ScriptingWhitelist scripting_whitelist_;
+  ScriptingAllowlist scripting_allowlist_;
 
   const GURL webstore_base_url_;
   const GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionsClient);
 };
 
 }  // namespace extensions

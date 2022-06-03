@@ -11,8 +11,10 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.wait
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,24 +23,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-
-import java.util.concurrent.Callable;
 
 /**
  * Integration testing for Android's N+ MultiWindow.
@@ -67,6 +68,7 @@ public class MultiWindowIntegrationTest {
     @MediumTest
     @Feature("MultiWindow")
     @TargetApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
         try {
@@ -82,15 +84,14 @@ public class MultiWindowIntegrationTest {
 
             final ChromeTabbedActivity2 cta2 = waitForSecondChromeTabbedActivity();
 
-            CriteriaHelper.pollUiThread(Criteria.equals(1, new Callable<Integer>() {
-                @Override
-                public Integer call() {
-                    return cta2.getTabModelSelector().getModel(true).getCount();
-                }
-            }));
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat(
+                        cta2.getTabModelSelector().getModel(true).getCount(), Matchers.is(1));
+            });
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertEquals(1, TabWindowManager.getInstance().getIncognitoTabCount());
+                Assert.assertEquals(
+                        1, TabWindowManagerSingleton.getInstance().getIncognitoTabCount());
 
                 // Ensure the same tab exists in the new activity.
                 Assert.assertEquals(incognitoTabId, cta2.getActivityTab().getId());

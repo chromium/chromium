@@ -19,6 +19,7 @@ struct BeginFrameArgs {
   mojo_base.mojom.TimeDelta interval;
   uint64 source_id;
   uint64 sequence_number;
+  uint64 frames_throttled_since_last;
   int64 trace_id;
   BeginFrameArgsType type;
   bool on_critical_path;

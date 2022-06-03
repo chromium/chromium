@@ -4,12 +4,22 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_image.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -31,8 +41,8 @@ bool EncodeAsImage(char* body,
                    const String& encoding,
                    const double quality,
                    Vector<unsigned char>* output) {
-  const WebSize maximum_size = WebSize(kMaximumEncodeImageWidthInPixels,
-                                       kMaximumEncodeImageHeightInPixels);
+  const gfx::Size maximum_size = gfx::Size(kMaximumEncodeImageWidthInPixels,
+                                           kMaximumEncodeImageHeightInPixels);
   SkBitmap bitmap = WebImage::FromData(WebData(body, size), maximum_size);
   if (bitmap.isNull())
     return false;
@@ -61,15 +71,56 @@ bool EncodeAsImage(char* body,
   return image_to_encode->EncodeImage(mime_type, quality, output);
 }
 
+std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
+    const ContrastInfo& info) {
+  Element* element = info.element;
+
+  StringBuilder sb;
+  auto element_id = element->getAttribute("id").LowerASCII();
+  sb.Append(element->nodeName().LowerASCII());
+  if (!element_id.IsEmpty()) {
+    sb.Append("#");
+    sb.Append(element_id);
+  }
+  for (unsigned i = 0; i < element->classList().length(); i++) {
+    sb.Append(".");
+    sb.Append(element->classList().item(i));
+  }
+
+  auto issue_details = protocol::Audits::InspectorIssueDetails::create();
+  auto low_contrast_details =
+      protocol::Audits::LowTextContrastIssueDetails::create()
+          .setThresholdAA(info.threshold_aa)
+          .setThresholdAAA(info.threshold_aaa)
+          .setFontSize(info.font_size)
+          .setFontWeight(info.font_weight)
+          .setContrastRatio(info.contrast_ratio)
+          .setViolatingNodeSelector(sb.ToString())
+          .setViolatingNodeId(DOMNodeIds::IdForNode(element))
+          .build();
+  issue_details.setLowTextContrastIssueDetails(std::move(low_contrast_details));
+
+  return protocol::Audits::InspectorIssue::create()
+      .setCode(protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue)
+      .setDetails(issue_details.build())
+      .build();
+}
+
 }  // namespace
 
-void InspectorAuditsAgent::Trace(blink::Visitor* visitor) {
+void InspectorAuditsAgent::Trace(Visitor* visitor) const {
   visitor->Trace(network_agent_);
+  visitor->Trace(inspected_frames_);
   InspectorBaseAgent::Trace(visitor);
 }
 
-InspectorAuditsAgent::InspectorAuditsAgent(InspectorNetworkAgent* network_agent)
-    : network_agent_(network_agent) {}
+InspectorAuditsAgent::InspectorAuditsAgent(InspectorNetworkAgent* network_agent,
+                                           InspectorIssueStorage* storage,
+                                           InspectedFrames* inspected_frames)
+    : inspector_issue_storage_(storage),
+      enabled_(&agent_state_, false),
+      network_agent_(network_agent),
+      inspected_frames_(inspected_frames) {}
 
 InspectorAuditsAgent::~InspectorAuditsAgent() = default;
 
@@ -88,20 +139,20 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   bool is_base64_encoded;
   Response response =
       network_agent_->GetResponseBody(request_id, &body, &is_base64_encoded);
-  if (!response.isSuccess())
+  if (!response.IsSuccess())
     return response;
 
   Vector<char> base64_decoded_buffer;
   if (!is_base64_encoded || !Base64Decode(body, base64_decoded_buffer) ||
       base64_decoded_buffer.size() == 0) {
-    return Response::Error("Failed to decode original image");
+    return Response::ServerError("Failed to decode original image");
   }
 
   Vector<unsigned char> encoded_image;
   if (!EncodeAsImage(base64_decoded_buffer.data(), base64_decoded_buffer.size(),
                      encoding, quality.fromMaybe(kDefaultEncodeQuality),
                      &encoded_image)) {
-    return Response::Error("Could not encode image with given settings");
+    return Response::ServerError("Could not encode image with given settings");
   }
 
   *out_original_size = static_cast<int>(base64_decoded_buffer.size());
@@ -110,7 +161,71 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   if (!size_only.fromMaybe(false)) {
     *out_body = protocol::Binary::fromVector(std::move(encoded_image));
   }
-  return Response::OK();
+  return Response::Success();
+}
+
+void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
+                                                    bool report_aaa) {
+  InspectorContrast contrast(document);
+  Vector<std::pair<Element*, mojom::blink::InspectorIssueInfoPtr>> issues;
+  unsigned max_elements = 100;
+  for (ContrastInfo info :
+       contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
+    GetFrontend()->issueAdded(CreateLowTextContrastIssue(info));
+  }
+  GetFrontend()->flush();
+}
+
+Response InspectorAuditsAgent::checkContrast(protocol::Maybe<bool> report_aaa) {
+  if (!inspected_frames_)
+    return Response::ServerError("Inspected frames are not available");
+
+  auto* main_window = inspected_frames_->Root()->DomWindow();
+  if (!main_window)
+    return Response::ServerError("Document is not available");
+
+  CheckContrastForDocument(main_window->document(),
+                           report_aaa.fromMaybe(false));
+
+  return Response::Success();
+}
+
+Response InspectorAuditsAgent::enable() {
+  if (enabled_.Get()) {
+    return Response::Success();
+  }
+
+  enabled_.Set(true);
+  InnerEnable();
+  return Response::Success();
+}
+
+Response InspectorAuditsAgent::disable() {
+  if (!enabled_.Get()) {
+    return Response::Success();
+  }
+
+  enabled_.Clear();
+  instrumenting_agents_->RemoveInspectorAuditsAgent(this);
+  return Response::Success();
+}
+
+void InspectorAuditsAgent::Restore() {
+  if (!enabled_.Get())
+    return;
+  InnerEnable();
+}
+
+void InspectorAuditsAgent::InnerEnable() {
+  instrumenting_agents_->AddInspectorAuditsAgent(this);
+  for (wtf_size_t i = 0; i < inspector_issue_storage_->size(); ++i)
+    InspectorIssueAdded(inspector_issue_storage_->at(i));
+}
+
+void InspectorAuditsAgent::InspectorIssueAdded(
+    protocol::Audits::InspectorIssue* issue) {
+  GetFrontend()->issueAdded(issue->Clone());
+  GetFrontend()->flush();
 }
 
 }  // namespace blink

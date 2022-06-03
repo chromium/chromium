@@ -25,4 +25,18 @@ if (use_udev) {
       "//build/linux/libudev",
     ]
   }
+
+  source_set("test_support") {
+    testonly = true
+    public_deps = [ ":udev_linux" ]
+    sources = [
+      "fake_udev_loader.cc",
+      "fake_udev_loader.h",
+    ]
+
+    deps = [
+      "//base",
+      "//build/linux/libudev",
+    ]
+  }
 }

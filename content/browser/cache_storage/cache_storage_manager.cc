@@ -4,15 +4,16 @@
 
 #include "content/browser/cache_storage/cache_storage_manager.h"
 
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
 // static
-bool CacheStorageManager::IsValidQuotaOrigin(const url::Origin& origin) {
-  // Disallow opaque origins at the quota boundary because we DCHECK that we
-  // don't get an opaque origin in lower code layers.
-  return !origin.opaque();
+bool CacheStorageManager::IsValidQuotaStorageKey(
+    const blink::StorageKey& storage_key) {
+  // Disallow opaque storage keys at the quota boundary because we DCHECK that
+  // we don't get an opaque key in lower code layers.
+  return !storage_key.origin().opaque();
 }
 
 }  // namespace content

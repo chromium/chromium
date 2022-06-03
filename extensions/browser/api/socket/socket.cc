@@ -104,7 +104,7 @@ void Socket::Listen(const std::string& address,
 
 void Socket::Accept(AcceptCompletionCallback callback) {
   std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote() /* socket */,
-                          base::nullopt, mojo::ScopedDataPipeConsumerHandle(),
+                          absl::nullopt, mojo::ScopedDataPipeConsumerHandle(),
                           mojo::ScopedDataPipeProducerHandle());
 }
 
@@ -167,8 +167,8 @@ net::NetworkTrafficAnnotationTag Socket::GetNetworkTrafficAnnotationTag() {
             "uses this API. Other than that, this request will not be sent if "
             "the user does not install a Chrome App that uses the Socket API."
           chrome_policy {
-            ExtensionInstallBlacklist {
-              ExtensionInstallBlacklist: {
+            ExtensionInstallBlocklist {
+              ExtensionInstallBlocklist: {
                 entries: '*'
               }
             }

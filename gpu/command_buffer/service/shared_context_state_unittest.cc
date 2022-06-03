@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -72,6 +72,9 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
 
   // Setup expectations for SharedContextState::InitializeGL().
   EXPECT_CALL(gl_interface, GetIntegerv(GL_MAX_VERTEX_ATTRIBS, _))
+      .WillOnce(SetArgPointee<1>(8u))
+      .RetiresOnSaturation();
+  EXPECT_CALL(gl_interface, GetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, _))
       .WillOnce(SetArgPointee<1>(8u))
       .RetiresOnSaturation();
   ContextStateTestHelpers::SetupInitState(&gl_interface, feature_info.get(),

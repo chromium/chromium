@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/testing/worker_internals_fetch.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
@@ -26,7 +28,7 @@ Vector<String> WorkerInternalsFetch::getInternalResponseURLList(
   return url_list;
 }
 
-ScriptPromise WorkerInternalsFetch::getResourcePriority(
+ScriptPromise WorkerInternalsFetch::getInitialResourcePriority(
     ScriptState* script_state,
     WorkerInternals& internals,
     const String& url,
@@ -38,7 +40,7 @@ ScriptPromise WorkerInternalsFetch::getResourcePriority(
   DCHECK(worker_global);
 
   auto callback = WTF::Bind(&WorkerInternalsFetch::ResolveResourcePriority,
-                            WTF::Passed(WrapPersistent(resolver)));
+                            WrapPersistent(resolver));
   ResourceFetcher::AddPriorityObserverForTesting(resource_url,
                                                  std::move(callback));
 

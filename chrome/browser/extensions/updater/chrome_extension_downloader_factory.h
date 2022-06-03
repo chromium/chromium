@@ -37,7 +37,7 @@ class ChromeExtensionDownloaderFactory {
   //   non-empty.
   //
   // |profile_path| is used exclusely to support download of extensions through
-  // the file:// protocol. In practice, it whitelists specific directories the
+  // the file:// protocol. In practice, it allowlists specific directories the
   // the browser has access to.
   static std::unique_ptr<extensions::ExtensionDownloader>
   CreateForURLLoaderFactory(

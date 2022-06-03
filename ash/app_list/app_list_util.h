@@ -5,52 +5,77 @@
 #ifndef ASH_APP_LIST_APP_LIST_UTIL_H_
 #define ASH_APP_LIST_APP_LIST_UTIL_H_
 
-#include "ash/app_list/app_list_export.h"
-#include "ui/events/event.h"
+#include "ash/ash_export.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+
+namespace gfx {
+class Canvas;
+class ImageSkia;
+class Point;
+}  // namespace gfx
+
+namespace ui {
+class KeyEvent;
+}  // namespace ui
 
 namespace views {
 class Textfield;
-}
+class View;
+}  // namespace views
 
 namespace ash {
-class AppListView;
+class AppListItem;
 
 // Returns true if the key event is an unhandled left or right arrow (unmodified
 // by ctrl, shift, or alt)
-APP_LIST_EXPORT bool IsUnhandledLeftRightKeyEvent(const ui::KeyEvent& event);
+ASH_EXPORT bool IsUnhandledLeftRightKeyEvent(const ui::KeyEvent& event);
 
 // Returns true if the key event is an unhandled up or down arrow (unmodified by
 // ctrl, shift, or alt)
-APP_LIST_EXPORT bool IsUnhandledUpDownKeyEvent(const ui::KeyEvent& event);
+ASH_EXPORT bool IsUnhandledUpDownKeyEvent(const ui::KeyEvent& event);
 
 // Returns true if the key event is an unhandled arrow key event of any type
 // (unmodified by ctrl, shift, or alt)
-APP_LIST_EXPORT bool IsUnhandledArrowKeyEvent(const ui::KeyEvent& event);
+ASH_EXPORT bool IsUnhandledArrowKeyEvent(const ui::KeyEvent& event);
 
 // Returns whether the event is an arrow key event.
-APP_LIST_EXPORT bool IsArrowKeyEvent(const ui::KeyEvent& event);
+ASH_EXPORT bool IsArrowKeyEvent(const ui::KeyEvent& event);
 
 // Returns true if the keyboard code is one of: |VKEY_UP|, |VKEY_LEFT|,
 // |VKEY_RIGHT|, |VKEY_DOWN|
-APP_LIST_EXPORT bool IsArrowKey(const ui::KeyboardCode& key_code);
+ASH_EXPORT bool IsArrowKey(const ui::KeyboardCode& key_code);
+
+// Returns true if the |item| is a folder item.
+ASH_EXPORT bool IsFolderItem(AppListItem* item);
 
 // Returns true if the arrow key event should move focus away from the
 // |textfield|. This is usually when the insertion point would move away from
 // text.
-APP_LIST_EXPORT bool LeftRightKeyEventShouldExitText(
-    views::Textfield* textfield,
-    const ui::KeyEvent& key_event);
+ASH_EXPORT bool LeftRightKeyEventShouldExitText(views::Textfield* textfield,
+                                                const ui::KeyEvent& key_event);
 
 // Processes left/right key traversal for the given |textfield|. Returns true
 // if focus is moved.
-APP_LIST_EXPORT bool ProcessLeftRightKeyTraversalForTextfield(
+ASH_EXPORT bool ProcessLeftRightKeyTraversalForTextfield(
     views::Textfield* textfield,
     const ui::KeyEvent& key_event);
 
-// Updates the activation for |app_list_view|. Intended to be a callback
-// function for when the view's bounds are finished animating.
-APP_LIST_EXPORT void UpdateActivationForAppListView(AppListView* app_list_view,
-                                                    bool is_tablet_mode);
+// Returns a new image with the `icon` atop a circle background with
+// `background_color`.
+ASH_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
+    const gfx::ImageSkia& icon,
+    SkColor background_color);
+
+// Paints a rounded focus bar on |canvas| starting at |content_origin| extending
+// |height| dips vertically.
+ASH_EXPORT void PaintFocusBar(gfx::Canvas* canvas,
+                              const gfx::Point content_origin,
+                              const int height);
+
+// Sets a view as an ignored leaf node, so that it and its child views will be
+// ignored by ChromeVox.
+ASH_EXPORT void SetViewIgnoredForAccessibility(views::View* view, bool ignored);
 
 }  // namespace ash
 

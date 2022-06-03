@@ -52,7 +52,7 @@ template("wayland_protocol") {
       rebase_path(root_gen_dir, root_build_dir),
     ]
 
-    if (use_system_libwayland) {
+    if (use_system_wayland_scanner) {
       args += [
         "--cmd",
         system_wayland_scanner_path,
@@ -60,9 +60,7 @@ template("wayland_protocol") {
     } else {
       wayland_scanner_label =
           "//third_party/wayland:wayland_scanner($host_toolchain)"
-      deps = [
-        wayland_scanner_label,
-      ]
+      deps = [ wayland_scanner_label ]
       wayland_scanner_path = get_label_info(wayland_scanner_label,
                                             "root_out_dir") + "/wayland_scanner"
       cmd = "./" + rebase_path(wayland_scanner_path, root_build_dir)

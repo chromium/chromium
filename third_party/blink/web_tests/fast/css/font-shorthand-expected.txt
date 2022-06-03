@@ -107,112 +107,112 @@ line-height: 28px
 font-family: Arial, sans-serif
 
 Longhands for font: caption
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: icon
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: menu
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: message-box
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: small-caption
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: status-bar
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: -webkit-mini-control
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: -webkit-small-control
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: -webkit-control
-font-style
-font-weight
-font-size
-font-family
-font-stretch
-font-variant-caps
-font-variant-ligatures
-font-variant-numeric
-font-variant-east-asian
-line-height
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
 
 Longhands for font: italic small-caps bold 12px/24px
 

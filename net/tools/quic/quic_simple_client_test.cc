@@ -19,7 +19,7 @@ TEST(QuicSimpleClientTest, Initialize) {
   quic::QuicServerId server_id("hostname", server_address.port(), false);
   quic::ParsedQuicVersionVector versions = quic::AllSupportedVersions();
   QuicSimpleClient client(
-      server_address, server_id, versions,
+      server_address, server_id, versions, quic::QuicConfig(),
       quic::test::crypto_test_utils::ProofVerifierForTesting());
   EXPECT_TRUE(client.Initialize());
 }

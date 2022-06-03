@@ -37,7 +37,8 @@ debug('Sets other types:');
 input.value = '1970-01';
 input.valueAsDate = null;
 shouldBe('input.value', '""');
-shouldThrow('input.valueAsDate = undefined');
+input.valueAsDate = undefined;
+shouldBe('input.value', '""');
 shouldThrow('input.valueAsDate = document');
 </script>
 </body>

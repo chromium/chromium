@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/get_script_context.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"

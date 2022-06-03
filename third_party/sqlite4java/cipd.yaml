@@ -13,3 +13,4 @@ data:
   - file: lib/mac-x86_64/libsqlite4java.jnilib
   - file: lib/windows-x86/sqlite4java.dll
   - file: lib/windows-x86_64/sqlite4java.dll
+install_mode: "copy"

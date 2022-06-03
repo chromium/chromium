@@ -4,9 +4,9 @@
 
 #include "ash/login/login_screen_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -18,7 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -52,11 +52,11 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   // (hashed) password, and the correct PIN state.
   EXPECT_CALL(*client,
               AuthenticateUserWithPasswordOrPin_(id, password, false, _));
-  base::Optional<bool> callback_result;
+  absl::optional<bool> callback_result;
   base::RunLoop run_loop1;
   controller->AuthenticateUserWithPasswordOrPin(
       id, password, false,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop1.Quit();
       }));
@@ -76,7 +76,7 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   base::RunLoop run_loop2;
   controller->AuthenticateUserWithPasswordOrPin(
       id, pin, true,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop2.Quit();
       }));
@@ -139,6 +139,21 @@ TEST_F(LoginScreenControllerNoSessionTest, ShowSystemTrayOnPrimaryLoginScreen) {
   EXPECT_FALSE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
 
   ash::LockScreen::Get()->Destroy();
+}
+
+TEST_F(LoginScreenControllerNoSessionTest,
+       SystemTrayVisibilityOnSecondaryScreenRestored) {
+  // Create setup with 2 displays primary and secondary.
+  UpdateDisplay("800x600,800x600");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  // Show login screen, then hide it.
+  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  ash::LockScreen::Get()->Destroy();
+
+  // The system tray should be visible on the secondary screen.
+  EXPECT_TRUE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
 }
 
 TEST_F(LoginScreenControllerTest, ShowSystemTrayOnPrimaryLockScreen) {

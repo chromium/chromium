@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<input id="filetype" type="file">
+
+<div id="description"></div>
+<div id="console"></div>
+
+<script type="module">
+import {mockFileChooserFactory} from '/wpt_internal/forms/resources/mock-file-chooser.js';
+
+promise_test(async () => {
+  const inputFile = document.getElementById('filetype');
+  const activatePromise = new Promise(
+      resolve => inputFile.addEventListener('DOMActivate', resolve));
+  const openPromise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+  accessibilityController.accessibleElementById('filetype').press();
+  await activatePromise;
+  const {detail} = await openPromise;
+  assert_equals(detail, 'kOpen');
+}, 'when AXPress is used, DOMActivate will be handled by file input elements');
+
+</script>
+</body>
+</html>

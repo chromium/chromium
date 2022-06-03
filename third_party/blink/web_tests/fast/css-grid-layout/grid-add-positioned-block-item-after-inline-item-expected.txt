@@ -1,3 +1,0 @@
-This test checks that adding a positioned block grid item after an inline grid item (which inserts it inside the existing anonymous block wrapping the inline item) does not crash on debug.
-
-test

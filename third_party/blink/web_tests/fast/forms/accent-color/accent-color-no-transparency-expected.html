@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<p>The alpha component of accent-color should be ignored, and the form control
+should be drawn as if alpha fully opaque.</p>
+
+<div>
+  <input checked type=checkbox style="accent-color:rgba(255, 0, 0, 1)">
+</div>
+
+<div>
+  <input checked type=radio style="accent-color:rgba(255, 0, 0, 1)">
+</div>
+
+<div>
+  <input type=range style="accent-color:rgba(255, 0, 0, 1)">
+</div>
+
+<div>
+  <progress style="accent-color:rgba(255, 0, 0, 1)" max="100" value="50"> 50% </progress>
+</div>

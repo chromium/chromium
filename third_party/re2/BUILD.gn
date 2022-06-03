@@ -61,10 +61,6 @@ static_library("re2") {
 }
 
 fuzzer_test("third_party_re2_fuzzer") {
-  sources = [
-    "src/re2/fuzzing/re2_fuzzer.cc",
-  ]
-  deps = [
-    ":re2",
-  ]
+  sources = [ "src/re2/fuzzing/re2_fuzzer.cc" ]
+  deps = [ ":re2" ]
 }

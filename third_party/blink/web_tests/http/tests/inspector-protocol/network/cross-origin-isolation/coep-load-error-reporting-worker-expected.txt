@@ -1,0 +1,6 @@
+Tests that cross-origin embedder policy (COEP) related blocking for worker sources is reported correctly.
+https://devtools.test:8443/inspector-protocol/network/cross-origin-isolation/resources/coep-page-with-worker.php: *loading finished*
+https://devtools.test:8443/inspector-protocol/network/cross-origin-isolation/resources/script-with-coep-corp.php: net::ERR_BLOCKED_BY_RESPONSE coep-frame-resource-needs-coep-header
+https://devtools.test:8443/inspector-protocol/network/cross-origin-isolation/resources/script-with-coep-corp.php?coep: *loading finished*
+https://devtools.test:8443/inspector-protocol/network/cross-origin-isolation/resources/script-with-coep-corp.php?coep&corp=same-site: *loading finished*
+

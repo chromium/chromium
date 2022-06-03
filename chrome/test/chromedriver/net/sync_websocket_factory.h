@@ -12,7 +12,8 @@
 class SyncWebSocket;
 class URLRequestContextGetter;
 
-typedef base::Callback<std::unique_ptr<SyncWebSocket>()> SyncWebSocketFactory;
+typedef base::RepeatingCallback<std::unique_ptr<SyncWebSocket>()>
+    SyncWebSocketFactory;
 
 SyncWebSocketFactory CreateSyncWebSocketFactory(
     URLRequestContextGetter* getter);

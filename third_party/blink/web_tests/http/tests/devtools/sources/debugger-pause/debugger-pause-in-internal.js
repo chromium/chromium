@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that pause on exception in internal script does not crash.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function throwException()
@@ -33,8 +33,8 @@
     SourcesTestRunner.waitUntilPaused(step3);
   }
 
-  function step3(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function step3(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

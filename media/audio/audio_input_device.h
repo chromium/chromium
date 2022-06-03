@@ -49,18 +49,16 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "media/audio/alive_checker.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -68,11 +66,20 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
                                       public AudioInputIPCDelegate {
  public:
   enum Purpose : int8_t { kUserInput, kLoopback };
+  enum class DeadStreamDetection : bool { kDisabled = false, kEnabled = true };
+
+  AudioInputDevice() = delete;
 
   // NOTE: Clients must call Initialize() before using.
   // |enable_uma| controls logging of UMA stats. It is used to ensure that
   // stats are not logged for mirroring service streams.
-  AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc, Purpose purpose);
+  // |detect_dead_stream| controls the dead stream detection.
+  AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
+                   Purpose purpose,
+                   DeadStreamDetection detect_dead_stream);
+
+  AudioInputDevice(const AudioInputDevice&) = delete;
+  AudioInputDevice& operator=(const AudioInputDevice&) = delete;
 
   // AudioCapturerSource implementation.
   void Initialize(const AudioParameters& params,
@@ -111,9 +118,9 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   // AudioInputIPCDelegate implementation.
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
-  void OnError() override;
+  void OnError(AudioCapturerSource::ErrorCode code) override;
   void OnMuted(bool is_muted) override;
   void OnIPCClosed() override;
 
@@ -142,6 +149,10 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   // Stores the Automatic Gain Control state. Default is false.
   bool agc_is_enabled_;
 
+  // Controls the dead stream detection. Only the DSP hotword devices set this
+  // to kDisabled to disable dead stream detection.
+  const DeadStreamDetection detect_dead_stream_;
+
   // Checks regularly that the input stream is alive and notifies us if it
   // isn't by calling DetectedDeadInputStream(). Must outlive |audio_callback_|.
   std::unique_ptr<AliveChecker> alive_checker_;
@@ -153,9 +164,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   // Cache the output device used for AEC in case it's called before the stream
   // is created.
-  base::Optional<std::string> output_device_id_for_aec_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioInputDevice);
+  absl::optional<std::string> output_device_id_for_aec_;
 };
 
 }  // namespace media

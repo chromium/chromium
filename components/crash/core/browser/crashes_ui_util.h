@@ -29,6 +29,8 @@ extern const size_t kCrashesUILocalizedStringsCount;
 // Strings used by the WebUI resources.
 // Must match the constants used in the resource files.
 extern const char kCrashesUICrashesJS[];
+extern const char kCrashesUICrashesCSS[];
+extern const char kCrashesUISadTabSVG[];
 extern const char kCrashesUIRequestCrashList[];
 extern const char kCrashesUIRequestCrashUpload[];
 extern const char kCrashesUIShortProductName[];

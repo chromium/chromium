@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "ash/public/cpp/window_state_type.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -19,34 +19,55 @@ class GpuMemoryBuffer;
 }
 
 namespace exo {
-class Buffer;
 class ClientControlledShellSurface;
+class InputMethodSurface;
+class InputMethodSurfaceManager;
 class Surface;
-class ShellSurface;
+class ToastSurface;
+class ToastSurfaceManager;
 
 namespace test {
 
-class ExoTestWindow {
+class ClientControlledShellSurfaceDelegate
+    : public ClientControlledShellSurface::Delegate {
  public:
-  ExoTestWindow(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
-                bool is_modal);
-  ExoTestWindow(ExoTestWindow&& window);
-  virtual ~ExoTestWindow();
-
-  Surface* surface() { return surface_.get(); }
-  ShellSurface* shell_surface() { return shell_surface_.get(); }
-  gfx::Point origin();
+  explicit ClientControlledShellSurfaceDelegate(
+      ClientControlledShellSurface* shell_surface,
+      bool delay_commit = false);
+  ~ClientControlledShellSurfaceDelegate() override;
+  ClientControlledShellSurfaceDelegate(
+      const ClientControlledShellSurfaceDelegate&) = delete;
+  ClientControlledShellSurfaceDelegate& operator=(
+      const ClientControlledShellSurfaceDelegate&) = delete;
 
  private:
-  std::unique_ptr<Surface> surface_;
-  std::unique_ptr<Buffer> buffer_;
-  std::unique_ptr<ShellSurface> shell_surface_;
+  // ClientControlledShellSurface::Delegate:
+  void OnGeometryChanged(const gfx::Rect& geometry) override;
+  void OnStateChanged(chromeos::WindowStateType old_state_type,
+                      chromeos::WindowStateType new_state_type) override;
+  void OnBoundsChanged(chromeos::WindowStateType current_state,
+                       chromeos::WindowStateType requested_state,
+                       int64_t display_id,
+                       const gfx::Rect& bounds_in_display,
+                       bool is_resize,
+                       int bounds_change) override;
+  void OnDragStarted(int component) override;
+  void OnDragFinished(int x, int y, bool canceled) override;
+  void OnZoomLevelChanged(ZoomChange zoom_change) override;
+  void Commit();
+
+  ClientControlledShellSurface* shell_surface_;
+  bool delay_commit_;
 };
 
 // A helper class that does common initialization required for Exosphere.
 class ExoTestHelper {
  public:
   ExoTestHelper();
+
+  ExoTestHelper(const ExoTestHelper&) = delete;
+  ExoTestHelper& operator=(const ExoTestHelper&) = delete;
+
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
@@ -54,13 +75,18 @@ class ExoTestHelper {
       const gfx::Size& size,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
 
-  // Creates window of size (width, height) at center of screen.
-  ExoTestWindow CreateWindow(int width, int height, bool is_modal);
   std::unique_ptr<ClientControlledShellSurface>
-  CreateClientControlledShellSurface(Surface* surface, bool is_modal = false);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExoTestHelper);
+  CreateClientControlledShellSurface(Surface* surface,
+                                     bool is_modal = false,
+                                     bool default_scale_cancellation = true);
+  std::unique_ptr<InputMethodSurface> CreateInputMethodSurface(
+      Surface* surface,
+      InputMethodSurfaceManager* surface_manager,
+      bool default_scale_cancellation = true);
+  std::unique_ptr<ToastSurface> CreateToastSurface(
+      Surface* surface,
+      ToastSurfaceManager* surface_manager,
+      bool default_scale_cancellation = true);
 };
 
 }  // namespace test

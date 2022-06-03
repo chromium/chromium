@@ -8,6 +8,9 @@
 
             function start()
             {
+                // Set the rVFC callback before the src, to make sure to catch
+                // the first frame.
+                document.querySelector('video').requestVideoFrameCallback(finish);
                 setSrcByTagName("video", "content/counting.ogv");
             }
 
@@ -20,7 +23,7 @@
     </head>
     <body onload="start()">
         <p>Movie with no audio track. The volume button should not render.</p>
-        <video controls oncanplaythrough="finish()"></video>
+        <video controls></video>
     </body>
     <script>
       const video = document.querySelector('video');

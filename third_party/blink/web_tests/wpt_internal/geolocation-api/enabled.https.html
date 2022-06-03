@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("Tests that the navigator.geolocation object is present.");
+
+function hasGeolocationProperty()
+{
+    for (var property in navigator) {
+        if (property == "geolocation")
+            return true;
+    }
+    return false;
+}
+
+shouldBeTrue("typeof navigator.geolocation == 'object'");
+shouldBeTrue("hasGeolocationProperty()");
+shouldBeTrue("'geolocation' in navigator");
+
+finishJSTest();
+</script>
+</body>
+</html>

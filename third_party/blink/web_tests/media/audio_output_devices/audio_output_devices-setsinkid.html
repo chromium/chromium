@@ -50,13 +50,13 @@
       // Note: 'unauthorized' is the name of an unauthorized device in the test runner.
       promise_test(function() {
         var audio = document.createElement('audio');
-        return promise_rejects(this, 'SecurityError', audio.setSinkId('unauthorized'));
+        return promise_rejects_dom(this, 'SecurityError', audio.setSinkId('unauthorized'));
       }, 'setSinkId("unauthorized")' );
 
       // Test that setting the sink to a nonexistent device fails
       promise_test(function() {
         var audio = document.createElement('audio');
-        return promise_rejects(this, 'NotFoundError', audio.setSinkId('nonexistent'));
+        return promise_rejects_dom(this, 'NotFoundError', audio.setSinkId('nonexistent'));
       }, 'setSinkId("nonexistent")');
 
       // Tests that changing the sink twice succeeds

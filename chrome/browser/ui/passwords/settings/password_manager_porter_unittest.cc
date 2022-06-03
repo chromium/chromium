@@ -56,11 +56,14 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
       : ui::SelectFileDialog(listener, std::move(policy)),
         forced_path_(forced_path) {}
 
+  TestSelectFileDialog(const TestSelectFileDialog&) = delete;
+  TestSelectFileDialog& operator=(const TestSelectFileDialog&) = delete;
+
  protected:
-  ~TestSelectFileDialog() override {}
+  ~TestSelectFileDialog() override = default;
 
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -78,23 +81,23 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
  private:
   // The path that will be selected by this dialog.
   base::FilePath forced_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSelectFileDialog);
 };
 
 class TestSelectFilePolicy : public ui::SelectFilePolicy {
  public:
+  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
+
   bool CanOpenSelectFileDialog() override { return true; }
   void SelectFileDenied() override {}
-
- private:
-  DISALLOW_ASSIGN(TestSelectFilePolicy);
 };
 
 class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
   explicit TestSelectFileDialogFactory(const base::FilePath& forced_path)
       : forced_path_(forced_path) {}
+
+  TestSelectFileDialogFactory& operator=(const TestSelectFileDialogFactory&) =
+      delete;
 
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
@@ -106,8 +109,6 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  private:
   // The path that will be selected by created dialogs.
   base::FilePath forced_path_;
-
-  DISALLOW_ASSIGN(TestSelectFileDialogFactory);
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of
@@ -118,9 +119,14 @@ class FakeCancellingSelectFileDialog : public ui::SelectFileDialog {
                                  std::unique_ptr<ui::SelectFilePolicy> policy)
       : ui::SelectFileDialog(listener, std::move(policy)) {}
 
+  FakeCancellingSelectFileDialog(const FakeCancellingSelectFileDialog&) =
+      delete;
+  FakeCancellingSelectFileDialog& operator=(
+      const FakeCancellingSelectFileDialog&) = delete;
+
  protected:
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -138,8 +144,6 @@ class FakeCancellingSelectFileDialog : public ui::SelectFileDialog {
 
  private:
   ~FakeCancellingSelectFileDialog() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCancellingSelectFileDialog);
 };
 
 class FakeCancellingSelectFileDialogFactory
@@ -147,15 +151,15 @@ class FakeCancellingSelectFileDialogFactory
  public:
   FakeCancellingSelectFileDialogFactory() {}
 
+  TestSelectFileDialogFactory& operator=(const TestSelectFileDialogFactory&) =
+      delete;
+
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
     return new FakeCancellingSelectFileDialog(
         listener, std::make_unique<TestSelectFilePolicy>());
   }
-
- private:
-  DISALLOW_ASSIGN(TestSelectFileDialogFactory);
 };
 
 class TestPasswordManagerPorter : public PasswordManagerPorter {
@@ -163,12 +167,13 @@ class TestPasswordManagerPorter : public PasswordManagerPorter {
   TestPasswordManagerPorter()
       : PasswordManagerPorter(nullptr, ProgressCallback()) {}
 
+  TestPasswordManagerPorter(const TestPasswordManagerPorter&) = delete;
+  TestPasswordManagerPorter& operator=(const TestPasswordManagerPorter&) =
+      delete;
+
   MOCK_METHOD1(ImportPasswordsFromPath, void(const base::FilePath& path));
 
   MOCK_METHOD1(ExportPasswordsToPath, void(const base::FilePath& path));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPasswordManagerPorter);
 };
 
 class MockPasswordManagerExporter
@@ -179,6 +184,11 @@ class MockPasswordManagerExporter
             nullptr,
             base::BindRepeating([](password_manager::ExportProgressStatus,
                                    const std::string&) -> void {})) {}
+
+  MockPasswordManagerExporter(const MockPasswordManagerExporter&) = delete;
+  MockPasswordManagerExporter& operator=(const MockPasswordManagerExporter&) =
+      delete;
+
   ~MockPasswordManagerExporter() override = default;
 
   MOCK_METHOD0(PreparePasswordsForExport, void());
@@ -186,14 +196,17 @@ class MockPasswordManagerExporter
   MOCK_METHOD1(SetDestination, void(const base::FilePath&));
   MOCK_METHOD0(GetExportProgressStatus,
                password_manager::ExportProgressStatus());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerExporter);
 };
 
 class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
+ public:
+  PasswordManagerPorterTest(const PasswordManagerPorterTest&) = delete;
+  PasswordManagerPorterTest& operator=(const PasswordManagerPorterTest&) =
+      delete;
+
  protected:
   PasswordManagerPorterTest() = default;
+
   ~PasswordManagerPorterTest() override = default;
 
   void SetUp() override {
@@ -216,8 +229,6 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<TestPasswordManagerPorter> password_manager_porter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerPorterTest);
 };
 
 // Password importing and exporting using a |SelectFileDialog| is not yet
@@ -298,7 +309,7 @@ class PasswordManagerPorterStoreTest
 MATCHER(FormHasDescription, "") {
   const auto& form = std::get<0>(arg);
   const auto& desc = std::get<1>(arg);
-  return form.origin == GURL(desc.origin) &&
+  return form.url == GURL(desc.origin) &&
          form.username_value == base::ASCIIToUTF16(desc.username) &&
          form.password_value == base::ASCIIToUTF16(desc.password);
 }
@@ -313,7 +324,7 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
       base::BindRepeating(
           &password_manager::BuildPasswordStore<
               content::BrowserContext, password_manager::TestPasswordStore>));
-  scoped_refptr<password_manager::PasswordStore> store(
+  scoped_refptr<password_manager::PasswordStoreInterface> store(
       PasswordStoreFactory::GetForProfile(profile.get(),
                                           ServiceAccessType::EXPLICIT_ACCESS));
   auto* test_password_store =
@@ -323,8 +334,7 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
 
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
-  ASSERT_EQ(static_cast<int>(tc.csv.size()),
-            base::WriteFile(temp_file_path, tc.csv.data(), tc.csv.size()));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, tc.csv));
 
   // No credential provider needed, because this |porter| won't be used for
   // exporting. No progress callback needed, because UI interaction will be
@@ -345,7 +355,7 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
   EXPECT_THAT(credentials.second,
               UnorderedPointwise(FormHasDescription(), tc.descriptions));
 
-  base::DeleteFile(temp_file_path, /*recursive=*/false);
+  base::DeleteFile(temp_file_path);
   store->ShutdownOnUIThread();
 }
 

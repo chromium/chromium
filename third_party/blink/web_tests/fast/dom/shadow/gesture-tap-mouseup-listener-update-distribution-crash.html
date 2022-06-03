@@ -8,7 +8,7 @@ if (window.testRunner)
 var tapme = document.querySelector('#tapme');
 
 tapme.addEventListener('mouseup', function() {
-    tapme.createShadowRoot();
+    tapme.attachShadow({mode: 'open'});
 }, false);
 
 if (window.eventSender) {

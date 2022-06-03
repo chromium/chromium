@@ -22,8 +22,11 @@ public abstract class NewTabCallback {
     /**
      * Called when a tab previously opened via onNewTab() was asked to close. Generally this should
      * destroy the Tab and/or Browser.
+     * NOTE: This callback was deprecated in 84; WebLayer now internally closes tabs in this case
+     * and the embedder will be notified via TabListCallback#onTabRemoved().
      *
      * @see Browser#destroyTab
      */
-    public abstract void onCloseTab();
+    @Deprecated
+    public void onCloseTab() {}
 }

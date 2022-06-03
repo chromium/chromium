@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -27,7 +25,8 @@ struct CONTENT_EXPORT ContentIndexEntry {
   ContentIndexEntry(int64_t service_worker_registration_id,
                     blink::mojom::ContentDescriptionPtr description,
                     const GURL& launch_url,
-                    base::Time registration_time);
+                    base::Time registration_time,
+                    bool is_top_level_context);
   ContentIndexEntry(ContentIndexEntry&& other);
   ContentIndexEntry& operator=(ContentIndexEntry&& other);
   ~ContentIndexEntry();
@@ -44,12 +43,19 @@ struct CONTENT_EXPORT ContentIndexEntry {
 
   // The time the registration was created.
   base::Time registration_time;
+
+  // Whether the entry was created from a top-level context.
+  bool is_top_level_context;
 };
 
 // Interface for content providers to receive content-related updates.
 class CONTENT_EXPORT ContentIndexProvider {
  public:
   ContentIndexProvider();
+
+  ContentIndexProvider(const ContentIndexProvider&) = delete;
+  ContentIndexProvider& operator=(const ContentIndexProvider&) = delete;
+
   virtual ~ContentIndexProvider();
 
   // Returns the number of icons needed and their ideal sizes (in pixels).
@@ -63,8 +69,6 @@ class CONTENT_EXPORT ContentIndexProvider {
   virtual void OnContentDeleted(int64_t service_worker_registration_id,
                                 const url::Origin& origin,
                                 const std::string& description_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexProvider);
 };
 
 }  // namespace content

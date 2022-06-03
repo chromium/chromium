@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
@@ -16,13 +16,15 @@
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/common/content_features.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_interface.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
@@ -63,7 +65,7 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     return;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
     static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
@@ -78,9 +80,8 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
   }
 
   if (auto r = receiver.As<blink::mojom::DWriteFontProxy>()) {
-    base::CreateSequencedTaskRunner({base::ThreadPool(),
-                                     base::TaskPriority::USER_BLOCKING,
-                                     base::MayBlock()})
+    base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_BLOCKING, base::MayBlock()})
         ->PostTask(FROM_HERE,
                    base::BindOnce(&DWriteFontProxyImpl::Create, std::move(r)));
     return;
@@ -88,26 +89,26 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
 #endif
 
   if (auto r = receiver.As<mojom::FieldTrialRecorder>()) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&FieldTrialRecorder::Create, std::move(r)));
+    FieldTrialRecorder::Create(std::move(r));
     return;
   }
 
   if (auto r = receiver.As<
                discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-        std::move(r));
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](mojo::PendingReceiver<
+                discardable_memory::mojom::DiscardableSharedMemoryManager> r) {
+              discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+                  std::move(r));
+            },
+            std::move(r)));
     return;
   }
 
   if (auto r = receiver.As<device::mojom::PowerMonitor>()) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(
-            [](mojo::PendingReceiver<device::mojom::PowerMonitor> r) {
-              GetDeviceService().BindPowerMonitor(std::move(r));
-            },
-            std::move(r)));
+    GetDeviceService().BindPowerMonitor(std::move(r));
     return;
   }
 

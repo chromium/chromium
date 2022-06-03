@@ -4,6 +4,7 @@
 
 #include "cc/trees/occlusion.h"
 
+#include "base/check_op.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/geometry/rect.h"
 

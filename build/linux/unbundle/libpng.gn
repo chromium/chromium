@@ -18,8 +18,6 @@ shim_headers("libpng_shim") {
 }
 
 source_set("libpng") {
-  deps = [
-    ":libpng_shim",
-  ]
+  deps = [ ":libpng_shim" ]
   public_configs = [ ":libpng_config" ]
 }

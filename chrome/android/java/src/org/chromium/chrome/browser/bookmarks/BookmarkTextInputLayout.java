@@ -11,14 +11,15 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.ChromeTextInputLayout;
 
 /**
- * Wraps around {@link ChromeTextInputLayout} to implement a basic empty field error behavior
+ * Wraps around {@link TextInputLayout} to implement a basic empty field error behavior
  * for the Bookmark related TextInputLayouts.
  */
-public class BookmarkTextInputLayout extends ChromeTextInputLayout {
+public class BookmarkTextInputLayout extends TextInputLayout {
     private String mEmptyErrorMessage;
 
     public BookmarkTextInputLayout(Context context, AttributeSet attrs) {

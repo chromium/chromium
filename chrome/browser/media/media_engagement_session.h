@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -30,6 +31,9 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
                          const url::Origin& origin,
                          RestoreType restore_status,
                          ukm::SourceId ukm_source_id);
+
+  MediaEngagementSession(const MediaEngagementSession&) = delete;
+  MediaEngagementSession& operator=(const MediaEngagementSession&) = delete;
 
   // Returns whether the session's origin is same origin with |origin|.
   bool IsSameOriginWith(const url::Origin& origin) const;
@@ -118,8 +122,6 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
 
   // If the |is_high_| bit has changed since this object was created.
   bool high_score_changed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementSession);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_

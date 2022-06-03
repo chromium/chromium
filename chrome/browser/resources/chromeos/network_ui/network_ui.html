@@ -1,124 +1,125 @@
-<!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<style>
+  .button-group > cr-button {
+    margin-inline-start: 10px;
+  }
 
-<head>
-  <meta charset="utf-8">
-  <title id="network">$i18n{titleText}</title>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="stylesheet" href="chrome://network/network_ui.css">
-  <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-  <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
-  <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_select.html">
-  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+  .tabpanel > div {
+    margin-bottom: 10px;
+  }
 
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="chrome://network/strings.js"></script>
-  <script src="chrome://network/network_ui.js"></script>
+  #global-policy {
+    white-space: pre-wrap;
+  }
 
-  <style>
-    #cellular-error-text {
-      color: red;
-    }
-  </style>
-</head>
+  #select-div {
+    display: flex;
+    height: 400px;
+    width: 500px;
+  }
 
-<body>
-  <div>$i18n{autoRefreshText}</div>
-  <span>$i18nRaw{deviceLogLinkText}</span>
+  #onc-import-result {
+    margin: 10px 0
+  }
 
-  <div>
-    <h2>$i18n{cellularActivationLabel}</h2>
-    <cr-button class="action-button" id="cellular-activation-button">
-      $i18n{cellularActivationButtonText}
-    </cr-button>
-    <div id="cellular-error-text" hidden>$i18n{noCellularErrorText}</div>
+  iron-pages {
+    flex: 1;
+    position: relative;
+  }
+
+  network-select {
+    flex: 1;
+  }
+
+  .error {
+    color: red;
+  }
+</style>
+
+<cr-tabs selected="{{selectedTab_}}" tab-names="[[tabNames_]]">
+</cr-tabs>
+<iron-pages selected="[[selectedTab_]]">
+  <div class="tabpanel" id="general">
+    <h2>$i18n{titleText}</h2>
+    <div>
+      <h2>$i18n{globalPolicyLabel}</h2>
+      <div id="global-policy"></div>
+    </div>
+
+    <div>
+      <h2>$i18n{dhcpHostnameLabel}</h2>
+      <cr-input id="hostnameInput" value="{{hostname_}}"
+          on-change="onHostnameChanged_">
+      </cr-input>
+    </div>
+
+    <div>
+      <h2>$i18n{cellularActivationLabel}</h2>
+      <cr-button class="action-button" id="cellular-activation-button"
+          on-click="openCellularActivationUi_">
+        $i18n{cellularActivationButtonText}
+      </cr-button>
+      <div id="cellular-error-text" class="error" hidden>
+        $i18n{noCellularErrorText}
+      </div>
+    </div>
+
+    <div>
+      <h2>$i18n{resetESimCacheLabel}</h2>
+      <cr-button class="action-button" on-click="onResetESimCacheClick_">
+        $i18n{resetESimCacheButtonText}
+      </cr-button>
+    </div>
+
+    <div>
+      <h2>$i18n{addNewWifiLabel}</h2>
+      <cr-button class="action-button" id="add-new-wifi-button"
+          on-click="showAddNewWifi_">
+        $i18n{addNewWifiButtonText}
+      </cr-button>
+    </div>
+
+    <div>
+      <h2>$i18n{importOncButtonText}</h2>
+      <input type="file" id="import-onc" on-change="onImportOncChange_">
+      <div id="onc-import-result"></div>
+    </div>
   </div>
 
-  <div>
-    <h2>$i18n{addNewWifiLabel}</h2>
-    <cr-button class="action-button" id="add-new-wifi-button">
-      $i18n{addNewWifiButtonText}
-    </cr-button>
+  <div class="tabpanel" id="health">
+    <h2>$i18n{networkHealthLabel}</h2>
+    <network-health-summary></network-health-summary>
+    <h2>$i18n{networkDiagnosticsLabel}</h2>
+    <div class="button-group">
+      <cr-button on-click="onRunAllRoutinesClick_">
+        [[i18n('NetworkDiagnosticsRunAll')]]
+      </cr-button>
+      <cr-button on-click="onSendFeedbackReportClick_">
+        [[i18n('NetworkDiagnosticsSendFeedback')]]
+      </cr-button>
+    </div>
+    <network-diagnostics id="network-diagnostics"
+        on-open-feedback-dialog="onOpenFeedbackDialog_">
+    </network-diagnostics>
   </div>
 
-  <h2>$i18n{globalPolicyLabel}</h2>
-  <div id="global-policy"></div>
-
-  <div id="select-div">
-    <network-select></network-select>
-  </div>
-  <div>
-    <cr-button class="action-button" id="refresh">
-      $i18n{networkRefreshText}
-    </cr-button>
+  <div class="tabpanel" id="logs">
+    <network-logs-ui></network-logs-ui>
   </div>
 
-  <h2>$i18n{networkListsLabel}</h2>
-
-  <div>$i18n{clickToExpandText}</div>
-  <div>
-    <span>$i18n{propertyFormatText}</span>
-    <select id="get-property-format">
-      <option value="normal">$i18n{normalFormatOption}</option>
-      <option value="managed">$i18n{managedFormatOption}</option>
-      <option value="state">$i18n{stateFormatOption}</option>
-      <option value="shill">$i18n{shillFormatOption}</option>
-    </select>
+  <div class="tabpanel" id="state">
+    <network-state-ui></network-state-ui>
   </div>
 
-  <h3>$i18n{devicesLabel}</h3>
-  <table id="device-state-table" class="state-table">
-    <tr class="state-table-header">
-      <td></td>
-      <td></td>
-      <td>Type</td>
-      <td>State</td>
-    </tr>
-  </table>
+  <div class="tabpanel" id="select">
+    <div id="select-div">
+      <network-select
+          on-network-item-selected="onNetworkItemSelected_"
+          on-custom-item-selected="onCustomItemSelected_">
+      </network-select>
+    </div>
+  </div>
 
-  <h3>$i18n{visibleNetworksLabel}</h3>
-  <table id="network-state-table" class="state-table">
-    <tr class="state-table-header">
-      <td></td>
-      <td></td>
-      <td>GUID</td>
-      <td>Name</td>
-      <td>Type</td>
-      <td>State</td>
-      <td>Connect?</td>
-      <td>Error</td>
-      <td>Security</td>
-      <td>Tech</td>
-      <td>Activation</td>
-      <td>Roam</td>
-      <td>Frequency</td>
-      <td>Strength</td>
-    </tr>
-  </table>
-
-  <h3>$i18n{ethernetEapNetworkLabel}</h3>
-  <table id="ethernet-eap-state-table" class="state-table">
-    <tr class="state-table-header">
-      <td></td>
-      <td></td>
-      <td>GUID</td>
-      <td>Name</td>
-      <td>Type</td>
-      <td>ONC Source</td>
-    </tr>
-  </table>
-
-  <h3>$i18n{favoriteNetworksLabel}</h3>
-  <table id="favorite-state-table" class="state-table">
-    <tr class="state-table-header">
-      <td></td>
-      <td></td>
-      <td>GUID</td>
-      <td>Name</td>
-      <td>Type</td>
-      <td>ONC Source</td>
-    </tr>
-  </table>
-</body>
-</html>
+  <div class="tabpanel" id="counters">
+    <traffic-counters id="traffic-counters"></traffic-counters>
+  </div>
+</iron-pages>

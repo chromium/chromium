@@ -10,7 +10,8 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 
@@ -28,47 +29,35 @@ class ClockSmoother {
   explicit ClockSmoother(base::TimeDelta clock_accuracy) :
       clock_accuracy_(clock_accuracy),
       inaccuracy_delta_(clock_accuracy * 10) {
-    inaccuracies_.push_back(std::make_pair(inaccuracy_sum_, inaccuracy_delta_));
+    inaccuracies_.push_back({inaccuracy_sum_, inaccuracy_delta_});
   }
 
-  base::TimeTicks Smooth(base::TimeTicks t,
-                         base::TimeDelta delta) {
-    base::TimeTicks ret = t;
-    if (!previous_.is_null()) {
-      base::TimeDelta actual_delta = t - previous_;
-      base::TimeDelta new_fraction_off = actual_delta - delta;
+  base::TimeTicks Smooth(base::TimeTicks t, base::TimeDelta delta) {
+    if (previous_.is_null()) {
+      previous_ = t;
+    } else {
+      const base::TimeDelta actual_delta = t - previous_;
+      const base::TimeDelta new_fraction_off = actual_delta - delta;
       inaccuracy_sum_ += new_fraction_off;
       inaccuracy_delta_ += actual_delta;
-      inaccuracies_.push_back(std::make_pair(new_fraction_off, actual_delta));
+      inaccuracies_.push_back({new_fraction_off, actual_delta});
       if (inaccuracies_.size() > 1000) {
         inaccuracy_sum_ -= inaccuracies_.front().first;
         inaccuracy_delta_ -= inaccuracies_.front().second;
         inaccuracies_.pop_front();
       }
-      // 0.01 means 1% faster than regular clock.
-      // -0.02 means 2% slower than regular clock.
-      double fraction_off = inaccuracy_sum_.InSecondsF() /
-          inaccuracy_delta_.InSecondsF();
 
-      double delta_seconds = delta.InSecondsF();
-      delta_seconds += delta_seconds * fraction_off;
-      base::TimeTicks expected = previous_ +
-          base::TimeDelta::FromSecondsD(delta_seconds);
-      base::TimeDelta diff = t - expected;
-      if (diff < clock_accuracy_ && diff > -clock_accuracy_) {
-        ret = t + diff / 1000;
-      }
+      const base::TimeDelta diff = t - (previous_ + delta * Rate());
+      previous_ = (-clock_accuracy_ < diff && diff < clock_accuracy_)
+                      ? (t + diff / 1000)
+                      : t;
     }
-    previous_ = ret;
-    return ret;
+    return previous_;
   }
 
   // 1.01 means 1% faster than regular clock.
   // -0.98 means 2% slower than regular clock.
-  double Rate() const {
-    return 1.0 + inaccuracy_sum_.InSecondsF() /
-          inaccuracy_delta_.InSecondsF();
-  }
+  double Rate() const { return 1.0 + inaccuracy_sum_ / inaccuracy_delta_; }
 
  private:
   base::TimeDelta clock_accuracy_;
@@ -119,8 +108,7 @@ void AudioShifter::Push(std::unique_ptr<AudioBus> input,
                (playout_time - base::TimeTicks()).InMillisecondsF());
   if (!queue_.empty()) {
     playout_time = input_clock_smoother_->Smooth(
-        playout_time,
-        base::TimeDelta::FromSeconds(queue_.back().audio->frames()) / rate_);
+        playout_time, base::Seconds(queue_.back().audio->frames() / rate_));
   }
   queue_.push_back(AudioQueueEntry(playout_time, std::move(input)));
   while (!queue_.empty() &&
@@ -136,15 +124,12 @@ void AudioShifter::Pull(AudioBus* output,
                         base::TimeTicks playout_time) {
   TRACE_EVENT1("audio", "AudioShifter::Pull", "time (ms)",
                (playout_time - base::TimeTicks()).InMillisecondsF());
-  // Add the kernel size since we incur some internal delay in
-  // resampling. All resamplers incur some delay, and for the
-  // SincResampler (used by MultiChannelResampler), this is
-  // (currently) kKernalSize / 2 frames.
-  playout_time += base::TimeDelta::FromSeconds(
-      SincResampler::kKernelSize) / rate_ / 2;
+  // Add the kernel size since we incur some internal delay in resampling. All
+  // resamplers incur some delay, and for the SincResampler (used by
+  // MultiChannelResampler), this is (currently) kKernelSize / 2 frames.
+  playout_time += base::Seconds(SincResampler::kKernelSize / 2 / rate_);
   playout_time = output_clock_smoother_->Smooth(
-      playout_time,
-      base::TimeDelta::FromSeconds(previous_requested_samples_) / rate_);
+      playout_time, base::Seconds(previous_requested_samples_ / rate_));
   previous_requested_samples_ = output->frames();
 
   base::TimeTicks stream_time;
@@ -157,20 +142,19 @@ void AudioShifter::Pull(AudioBus* output,
     stream_time = queue_.front().target_playout_time;
     buffer_end_time = queue_.back().target_playout_time;
   }
-  stream_time += base::TimeDelta::FromSecondsD(
-      (position_ - resampler_.BufferedFrames()) / rate_);
+  stream_time +=
+      base::Seconds((position_ - resampler_.BufferedFrames()) / rate_);
 
   if (!running_ &&
-      base::TimeDelta::FromSeconds(output->frames() * 2) / rate_ +
-      clock_accuracy_ > buffer_end_time - stream_time) {
+      base::Seconds(output->frames() * 2 / rate_) + clock_accuracy_ >
+          buffer_end_time - stream_time) {
     // We're not running right now, and we don't really have enough data
     // to satisfy output reliably. Wait.
     Zero(output);
     return;
   }
-  if (playout_time < stream_time -
-      base::TimeDelta::FromSeconds(output->frames()) / rate_ / 2 -
-      (running_ ? clock_accuracy_ : base::TimeDelta())) {
+  if (playout_time < stream_time - base::Seconds(output->frames() / rate_ / 2) -
+                         (running_ ? clock_accuracy_ : base::TimeDelta())) {
     // |playout_time| is too far before the earliest known audio sample.
     Zero(output);
     return;
@@ -182,9 +166,8 @@ void AudioShifter::Pull(AudioBus* output,
     // play audio in the past. We add one buffer size to the
     // bias to avoid buffer underruns in the future.
     if (bias_.is_zero()) {
-      bias_ = playout_time - stream_time +
-          clock_accuracy_ +
-          base::TimeDelta::FromSeconds(output->frames()) / rate_;
+      bias_ = playout_time - stream_time + clock_accuracy_ +
+              base::Seconds(output->frames() / rate_);
     }
     stream_time += bias_;
   } else {
@@ -211,19 +194,19 @@ void AudioShifter::Pull(AudioBus* output,
   }
 
   running_ = true;
-  double steady_ratio = output_clock_smoother_->Rate() /
-      input_clock_smoother_->Rate();
-  double time_difference = (playout_time - stream_time).InSecondsF();
-  double adjustment_time = adjustment_time_.InSecondsF();
+  const double steady_ratio =
+      output_clock_smoother_->Rate() / input_clock_smoother_->Rate();
+  const base::TimeDelta time_difference = playout_time - stream_time;
   // This is the ratio we would need to get perfect sync after
-  // |adjustment_time| has passed.
-  double slow_ratio = steady_ratio + time_difference / adjustment_time;
-  slow_ratio = base::ClampToRange(slow_ratio, 0.9, 1.1);
-  adjustment_time = output->frames() / static_cast<double>(rate_);
+  // |adjustment_time_| has passed.
+  double slow_ratio = steady_ratio + time_difference / adjustment_time_;
+  slow_ratio = base::clamp(slow_ratio, 0.9, 1.1);
+  const base::TimeDelta adjustment_time =
+      base::Seconds(output->frames() / rate_);
   // This is ratio we we'd need get perfect sync at the end of the
   // current output audiobus.
   double fast_ratio = steady_ratio + time_difference / adjustment_time;
-  fast_ratio = base::ClampToRange(fast_ratio, 0.9, 1.1);
+  fast_ratio = base::clamp(fast_ratio, 0.9, 1.1);
 
   // If the current ratio is somewhere between the slow and the fast
   // ratio, then keep it. This means we don't have to recalculate the
@@ -237,7 +220,7 @@ void AudioShifter::Pull(AudioBus* output,
       // perfect sync in the alloted time. Clamp.
       double max_ratio = std::max(fast_ratio, slow_ratio);
       double min_ratio = std::min(fast_ratio, slow_ratio);
-      current_ratio_ = base::ClampToRange(current_ratio_, min_ratio, max_ratio);
+      current_ratio_ = base::clamp(current_ratio_, min_ratio, max_ratio);
     } else {
       // The "direction" has changed. (From speed up to slow down or
       // vice versa, so we just take the slow ratio.
@@ -246,6 +229,13 @@ void AudioShifter::Pull(AudioBus* output,
     resampler_.SetRatio(current_ratio_);
   }
   resampler_.Resample(output->frames(), output);
+}
+
+void AudioShifter::Zero(AudioBus* output) {
+  output->Zero();
+  running_ = false;
+  previous_playout_time_ = base::TimeTicks();
+  bias_ = base::TimeDelta();
 }
 
 void AudioShifter::ResamplerCallback(int frame_delay, AudioBus* destination) {
@@ -263,8 +253,9 @@ void AudioShifter::ResamplerCallback(int frame_delay, AudioBus* destination) {
     pos += to_copy;
     position_ += to_copy;
     if (position_ >= static_cast<size_t>(queue_.front().audio->frames())) {
-      end_of_last_consumed_audiobus_ = queue_.front().target_playout_time +
-          base::TimeDelta::FromSeconds(queue_.front().audio->frames()) / rate_;
+      end_of_last_consumed_audiobus_ =
+          queue_.front().target_playout_time +
+          base::Seconds(queue_.front().audio->frames() / rate_);
       position_ -= queue_.front().audio->frames();
       queue_.pop_front();
     }
@@ -278,13 +269,6 @@ void AudioShifter::ResamplerCallback(int frame_delay, AudioBus* destination) {
     bias_ = base::TimeDelta();
     destination->ZeroFramesPartial(pos, destination->frames() - pos);
   }
-}
-
-void AudioShifter::Zero(AudioBus* output) {
-  output->Zero();
-  running_ = false;
-  previous_playout_time_ = base::TimeTicks();
-  bias_ = base::TimeDelta();
 }
 
 }  // namespace media

@@ -1,0 +1,4 @@
+HTTP/1.1 301 Moved Permanently
+Location: /title1.html
+Set-Cookie: foo=bar; Path=/
+

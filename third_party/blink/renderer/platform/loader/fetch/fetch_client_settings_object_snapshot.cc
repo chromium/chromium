@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 
-#include "third_party/blink/renderer/platform/heap/trace_traits.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
     HttpsState https_state,
     AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
     network::mojom::IPAddressSpace address_space,
-    WebInsecureRequestPolicy insecure_requests_policy,
+    mojom::blink::InsecureRequestPolicy insecure_requests_policy,
     InsecureNavigationsSet insecure_navigations_set)
     : global_object_url_(global_object_url),
       base_url_(base_url),

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -975,6 +975,17 @@ TEST(HttpUtilTest, ParseContentType) {
       true,
       ""
     },
+    // Empty subtype should be accepted.
+    { "text/",
+      "text/",
+      "",
+      false,
+      ""
+    },
+    // "*/*" is ignored unless it has params, or is not an exact match.
+    { "*/*", "", "", false, "" },
+    { "*/*; charset=utf-8", "*/*", "utf-8", true, "" },
+    { "*/* ", "*/*", "", false, "" },
     // TODO(abarth): Add more interesting test cases.
   };
   // clang-format on
@@ -1070,21 +1081,21 @@ TEST(HttpUtilTest, ParseRetryAfterHeader) {
     const char* retry_after_string;
     bool expected_return_value;
     base::TimeDelta expected_retry_after;
-  } tests[] = {
-    { "", false, base::TimeDelta() },
-    { "-3", false, base::TimeDelta() },
-    { "-2", false, base::TimeDelta() },
-    { "-1", false, base::TimeDelta() },
-    { "0", true, base::TimeDelta::FromSeconds(0) },
-    { "1", true, base::TimeDelta::FromSeconds(1) },
-    { "2", true, base::TimeDelta::FromSeconds(2) },
-    { "3", true, base::TimeDelta::FromSeconds(3) },
-    { "60", true, base::TimeDelta::FromSeconds(60) },
-    { "3600", true, base::TimeDelta::FromSeconds(3600) },
-    { "86400", true, base::TimeDelta::FromSeconds(86400) },
-    { "Thu, 1 Jan 2015 12:34:56 GMT", true, later - now },
-    { "Mon, 1 Jan 1900 12:34:56 GMT", false, base::TimeDelta() }
-  };
+  } tests[] = {{"", false, base::TimeDelta()},
+               {"-3", false, base::TimeDelta()},
+               {"-2", false, base::TimeDelta()},
+               {"-1", false, base::TimeDelta()},
+               {"+0", false, base::TimeDelta()},
+               {"+1", false, base::TimeDelta()},
+               {"0", true, base::Seconds(0)},
+               {"1", true, base::Seconds(1)},
+               {"2", true, base::Seconds(2)},
+               {"3", true, base::Seconds(3)},
+               {"60", true, base::Seconds(60)},
+               {"3600", true, base::Seconds(3600)},
+               {"86400", true, base::Seconds(86400)},
+               {"Thu, 1 Jan 2015 12:34:56 GMT", true, later - now},
+               {"Mon, 1 Jan 1900 12:34:56 GMT", false, base::TimeDelta()}};
 
   for (size_t i = 0; i < base::size(tests); ++i) {
     base::TimeDelta retry_after;
@@ -1531,6 +1542,24 @@ TEST(HttpUtilTest, IsLWS) {
   EXPECT_TRUE(HttpUtil::IsLWS(' '));
 }
 
+TEST(HttpUtilTest, IsControlChar) {
+  EXPECT_FALSE(HttpUtil::IsControlChar('1'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('a'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('.'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('$'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\x7E'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\x80'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\xFF'));
+
+  EXPECT_TRUE(HttpUtil::IsControlChar('\0'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\v'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\n'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\r'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\t'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\x01'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\x7F'));
+}
+
 TEST(HttpUtilTest, ParseAcceptEncoding) {
   const struct {
     const char* const value;
@@ -1633,6 +1662,12 @@ TEST(HttpUtilTest, ExpandLanguageList) {
             HttpUtil::ExpandLanguageList("en-US,fr-CA,it,fr,es-AR,it-IT"));
   // Trims a whitespace.
   EXPECT_EQ("en-US,en,fr", HttpUtil::ExpandLanguageList("en-US, fr"));
+
+  // Do not expand the single character subtag 'x' as a language.
+  EXPECT_EQ("x-private-agreement-subtags",
+            HttpUtil::ExpandLanguageList("x-private-agreement-subtags"));
+  // Do not expand the single character subtag 'i' as a language.
+  EXPECT_EQ("i-klingon", HttpUtil::ExpandLanguageList("i-klingon"));
 }
 
 }  // namespace net

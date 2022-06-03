@@ -1,15 +1,14 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
-goog.provide('FindHandler');
 
-goog.require('Output');
+const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
-goog.scope(function() {
-var TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
+export class FindHandler {}
 
 /**
  * Initializes this module.
@@ -38,10 +37,31 @@ FindHandler.onTextMatch_ = function(evt) {
     return;
   }
 
-  var range = cursors.Range.fromNode(evt.target);
+  // When a user types, a flurry of events gets sent from the tree updates being
+  // applied. Drop all but the first. Note that when hitting enter, there's only
+  // one marker changed ever sent.
+  const delta = new Date() - FindHandler.lastFindMarkerReceived;
+  FindHandler.lastFindMarkerReceived = new Date();
+  if (delta < FindHandler.DROP_MATCH_WITHIN_TIME_MS) {
+    return;
+  }
+
+  const range = cursors.Range.fromNode(evt.target);
   ChromeVoxState.instance.setCurrentRange(range);
   new Output()
-      .withRichSpeechAndBraille(range, null, Output.EventType.NAVIGATE)
+      .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
       .go();
 };
-});  // goog.scope
+
+/**
+ * The amount of time where a subsequent find text marker is dropped from
+ * output.
+ * @const {number}
+ */
+FindHandler.DROP_MATCH_WITHIN_TIME_MS = 50;
+
+/**
+ * The last time a find marker was received.
+ * @type {!Date}
+ */
+FindHandler.lastFindMarkerReceived = new Date();

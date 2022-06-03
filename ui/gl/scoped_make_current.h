@@ -6,9 +6,7 @@
 #define UI_GL_SCOPED_MAKE_CURRENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -26,15 +24,21 @@ namespace ui {
 class GL_EXPORT ScopedMakeCurrent {
  public:
   ScopedMakeCurrent(gl::GLContext* context, gl::GLSurface* surface);
+
+  ScopedMakeCurrent(const ScopedMakeCurrent&) = delete;
+  ScopedMakeCurrent& operator=(const ScopedMakeCurrent&) = delete;
+
   ~ScopedMakeCurrent();
+
+  // Returns whether the |context_| is current.
+  bool IsContextCurrent() { return is_context_current_; }
 
  private:
   scoped_refptr<gl::GLContext> previous_context_;
   scoped_refptr<gl::GLSurface> previous_surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMakeCurrent);
+  bool is_context_current_ = false;
 };
 
 }  // namespace ui

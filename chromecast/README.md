@@ -4,7 +4,7 @@
 
 This file contains tools for checking the feature state of all of the features
 which affect Cast products. Cast features build upon
-[the Chrome feature system](https://chromium.googlesource.com/chromium/src/+/master/base/feature_list.h).
+[the Chrome feature system](https://chromium.googlesource.com/chromium/src/+/main/base/feature_list.h).
 Some aspects of Cast require the feature system to work differently, however,
 so some additional logic has been layered on top. Details are available in
 comments of the header file. The basics are:

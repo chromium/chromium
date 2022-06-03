@@ -64,25 +64,6 @@ inputs[2].checked = true;
 shouldBeFalse('inputs[0].validity.valueMissing');
 shouldBeFalse('inputs[1].validity.valueMissing');
 shouldBeFalse('inputs[2].validity.valueMissing');
-
-debug('');
-debug('Not in a radio button group');
-var requiredButton = document.createElement('input');
-requiredButton.type = 'radio';
-requiredButton.name = 'victim';
-requiredButton.required = true;
-shouldBeFalse('requiredButton.validity.valueMissing');
-
-parent.innerHTML = '<input name=victim type=radio required><input name=victim type=radio>';
-requiredButton = document.getElementsByName('victim')[0];
-var button = document.getElementsByName('victim')[1];
-shouldBeTrue('requiredButton.validity.valueMissing');
-shouldBeTrue('button.validity.valueMissing');
-parent.removeChild(button);
-shouldBeFalse('button.validity.valueMissing');
-parent.removeChild(requiredButton);
-shouldBeFalse('requiredButton.validity.valueMissing');
-
 </script>
 </body>
 </html>

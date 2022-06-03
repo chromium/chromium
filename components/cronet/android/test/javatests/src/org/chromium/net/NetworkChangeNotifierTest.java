@@ -15,9 +15,10 @@ import static org.chromium.net.CronetTestRule.assertContains;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.system.Os;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;

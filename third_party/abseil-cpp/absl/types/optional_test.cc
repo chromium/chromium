@@ -14,6 +14,9 @@
 
 #include "absl/types/optional.h"
 
+// This test is a no-op when absl::optional is an alias for std::optional.
+#if !defined(ABSL_USES_STD_OPTIONAL)
+
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -221,7 +224,7 @@ TEST(optionalTest, CopyConstructor) {
 
   EXPECT_FALSE(
       absl::is_trivially_copy_constructible<absl::optional<Copyable>>::value);
-#if defined(ABSL_HAVE_STD_OPTIONAL) && defined(__GLIBCXX__)
+#if defined(ABSL_USES_STD_OPTIONAL) && defined(__GLIBCXX__)
   // libstdc++ std::optional implementation (as of 7.2) has a bug: when T is
   // trivially copyable, optional<T> is not trivially copyable (due to one of
   // its base class is unconditionally nontrivial).
@@ -276,7 +279,7 @@ TEST(optionalTest, CopyConstructor) {
     // std::optional when T is volatile-qualified. So skipping this test.
     // Bug report:
     // https://connect.microsoft.com/VisualStudio/feedback/details/3142534
-#if defined(ABSL_HAVE_STD_OPTIONAL) && defined(_MSC_VER) && _MSC_VER >= 1911
+#if defined(ABSL_USES_STD_OPTIONAL) && defined(_MSC_VER) && _MSC_VER >= 1911
 #define ABSL_MSVC_OPTIONAL_VOLATILE_COPY_BUG 1
 #endif
 #ifndef ABSL_MSVC_OPTIONAL_VOLATILE_COPY_BUG
@@ -302,7 +305,7 @@ TEST(optionalTest, MoveConstructor) {
   EXPECT_FALSE(std::is_move_constructible<absl::optional<NonMovable>>::value);
   // test noexcept
   EXPECT_TRUE(std::is_nothrow_move_constructible<absl::optional<int>>::value);
-#ifndef ABSL_HAVE_STD_OPTIONAL
+#ifndef ABSL_USES_STD_OPTIONAL
   EXPECT_EQ(
       absl::default_allocator_is_nothrow::value,
       std::is_nothrow_move_constructible<absl::optional<MoveableThrow>>::value);
@@ -636,7 +639,7 @@ TEST(optionalTest, CopyAssignment) {
   EXPECT_FALSE(absl::is_trivially_copy_assignable<NonTrivial>::value);
 
   // std::optional doesn't support volatile nontrivial types.
-#ifndef ABSL_HAVE_STD_OPTIONAL
+#ifndef ABSL_USES_STD_OPTIONAL
   {
     StructorListener listener;
     Listenable::listener = &listener;
@@ -655,7 +658,7 @@ TEST(optionalTest, CopyAssignment) {
     EXPECT_EQ(1, listener.destruct);
     EXPECT_EQ(1, listener.volatile_copy_assign);
   }
-#endif  // ABSL_HAVE_STD_OPTIONAL
+#endif  // ABSL_USES_STD_OPTIONAL
 }
 
 TEST(optionalTest, MoveAssignment) {
@@ -679,7 +682,7 @@ TEST(optionalTest, MoveAssignment) {
     EXPECT_EQ(1, listener.move_assign);
   }
   // std::optional doesn't support volatile nontrivial types.
-#ifndef ABSL_HAVE_STD_OPTIONAL
+#ifndef ABSL_USES_STD_OPTIONAL
   {
     StructorListener listener;
     Listenable::listener = &listener;
@@ -699,7 +702,7 @@ TEST(optionalTest, MoveAssignment) {
     EXPECT_EQ(1, listener.destruct);
     EXPECT_EQ(1, listener.volatile_move_assign);
   }
-#endif  // ABSL_HAVE_STD_OPTIONAL
+#endif  // ABSL_USES_STD_OPTIONAL
   EXPECT_FALSE(absl::is_move_assignable<absl::optional<const int>>::value);
   EXPECT_TRUE(absl::is_move_assignable<absl::optional<Copyable>>::value);
   EXPECT_TRUE(absl::is_move_assignable<absl::optional<MoveableThrow>>::value);
@@ -941,7 +944,7 @@ TEST(optionalTest, Swap) {
 
 template <int v>
 struct DeletedOpAddr {
-  constexpr static const int value = v;
+  int value = v;
   constexpr DeletedOpAddr() = default;
   constexpr const DeletedOpAddr<v>* operator&() const = delete;  // NOLINT
   DeletedOpAddr<v>* operator&() = delete;                        // NOLINT
@@ -951,9 +954,9 @@ struct DeletedOpAddr {
 // to document the fact that the current implementation of absl::optional<T>
 // expects such usecases to be malformed and not compile.
 TEST(optionalTest, OperatorAddr) {
-  constexpr const int v = -1;
+  constexpr int v = -1;
   {  // constexpr
-    constexpr const absl::optional<DeletedOpAddr<v>> opt(absl::in_place_t{});
+    constexpr absl::optional<DeletedOpAddr<v>> opt(absl::in_place_t{});
     static_assert(opt.has_value(), "");
     // static_assert(opt->value == v, "");
     static_assert((*opt).value == v, "");
@@ -1048,14 +1051,13 @@ TEST(optionalTest, Value) {
 #ifdef ABSL_HAVE_EXCEPTIONS
   EXPECT_THROW((void)empty.value(), absl::bad_optional_access);
 #else
-  EXPECT_DEATH((void)empty.value(), "Bad optional access");
+  EXPECT_DEATH_IF_SUPPORTED((void)empty.value(), "Bad optional access");
 #endif
 
   // test constexpr value()
   constexpr absl::optional<int> o1(1);
   static_assert(1 == o1.value(), "");  // const &
-#if !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_MSVC_BUG) && \
-    !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_GCC_BUG)
+#if !defined(_MSC_VER) && !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_GCC_BUG)
   using COI = const absl::optional<int>;
   static_assert(2 == COI(2).value(), "");  // const &&
 #endif
@@ -1095,8 +1097,7 @@ TEST(optionalTest, DerefOperator) {
 
   constexpr absl::optional<int> opt1(1);
   static_assert(*opt1 == 1, "");
-#if !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_MSVC_BUG) && \
-    !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_GCC_BUG)
+#if !defined(_MSC_VER) && !defined(ABSL_SKIP_OVERLOAD_TEST_DUE_TO_GCC_BUG)
   using COI = const absl::optional<int>;
   static_assert(*COI(2) == 2, "");
 #endif
@@ -1557,7 +1558,7 @@ TEST(optionalTest, NoExcept) {
   static_assert(
       std::is_nothrow_move_constructible<absl::optional<MoveMeNoThrow>>::value,
       "");
-#ifndef ABSL_HAVE_STD_OPTIONAL
+#ifndef ABSL_USES_STD_OPTIONAL
   static_assert(absl::default_allocator_is_nothrow::value ==
                     std::is_nothrow_move_constructible<
                         absl::optional<MoveMeThrow>>::value,
@@ -1654,3 +1655,5 @@ TEST(optionalTest, InPlaceTSFINAEBug) {
 #endif  // !defined(__EMSCRIPTEN__)
 
 }  // namespace
+
+#endif  // #if !defined(ABSL_USES_STD_OPTIONAL)

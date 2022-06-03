@@ -32,8 +32,12 @@ MEDIA_EXPORT void StripCodecs(std::vector<std::string>* codecs);
 
 // Returns true if successfully parsed the given |mime_type| and |codec_id|,
 // setting |out_*| arguments to the parsed video codec, profile, and level.
-// |out_is_ambiguous| will be true when the codec string is incomplete such that
-// some guessing was required to decide the codec, profile, or level.
+// Empty string |mime_type| indicates "no mime type". |mime_type| should be
+// provided whenever available for parsing and validation in combination with
+// |codec_id|. |out_is_ambiguous| will be true when the codec string is
+// incomplete such that some guessing was required to decide the codec, profile,
+// or level.
+//
 // Returns false if parsing fails (invalid string, or unrecognized video codec),
 // in which case values for |out_*| arguments are undefined.
 MEDIA_EXPORT bool ParseVideoCodecString(const std::string& mime_type,
@@ -45,9 +49,12 @@ MEDIA_EXPORT bool ParseVideoCodecString(const std::string& mime_type,
                                         VideoColorSpace* out_colorspace);
 
 // Returns true if successfully parsed the given |mime_type| and |codec_id|,
-// setting |out_audio_codec| to found codec. |out_is_ambiguous| will be true
-// when the codec string is incomplete such that some guessing was required to
-// decide the codec.
+// setting |out_audio_codec| to found codec. Empty string |mime_type| indicates
+// "no mime type". |mime_type| should be provided whenever available for parsing
+// and validation in combination with |codec_id|. |out_is_ambiguous| will be
+// true when the codec string is incomplete such that some guessing was required
+// to decide the codec.
+//
 // Returns false if parsing fails (invalid string, or unrecognized audio codec),
 // in which case values for |out_*| arguments are undefined.
 MEDIA_EXPORT bool ParseAudioCodecString(const std::string& mime_type,

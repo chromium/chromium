@@ -5,7 +5,8 @@
     position: relative;
     width: 100px;
     height: 50px;
-    will-change: transform;
+    /* Not using will-change:transform because it ignores subpixel accumulation. */ 
+    will-change: opacity;
 }
 #test {
     position: absolute;
@@ -50,7 +51,7 @@ function runTest() {
     document.getElementById('test').style.left = testData[testIndex][2];
     if (window.internals) {
         document.getElementById('console').textContent += testData[testIndex] + ':\n'
-            + internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+            + internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
     }
 

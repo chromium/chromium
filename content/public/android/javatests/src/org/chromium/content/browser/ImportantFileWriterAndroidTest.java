@@ -5,18 +5,19 @@
 package org.chromium.content.browser;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ImportantFileWriterAndroid;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -31,10 +32,8 @@ import java.io.IOException;
  * testing that the Java code is calling the native code correctly.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ImportantFileWriterAndroidTest {
-    @Rule
-    public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
-
     private void checkFile(File testFile, byte[] data) {
         Assert.assertTrue(testFile.exists());
         try {
@@ -86,6 +85,6 @@ public class ImportantFileWriterAndroidTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.loadNativeLibraryNoBrowserProcess();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 }

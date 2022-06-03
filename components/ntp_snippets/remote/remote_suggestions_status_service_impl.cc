@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/ntp_snippets/content_suggestions_metrics.h"
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/pref_names.h"
@@ -20,9 +22,9 @@ namespace ntp_snippets {
 RemoteSuggestionsStatusServiceImpl::RemoteSuggestionsStatusServiceImpl(
     bool is_signed_in,
     PrefService* pref_service,
-    const std::string& additional_toggle_pref)
+    const std::vector<std::string>& additional_toggle_prefs)
     : status_(RemoteSuggestionsStatus::EXPLICITLY_DISABLED),
-      additional_toggle_pref_(additional_toggle_pref),
+      additional_toggle_prefs_(additional_toggle_prefs),
       is_signed_in_(is_signed_in),
       list_visible_during_session_(true),
       pref_service_(pref_service) {
@@ -33,13 +35,6 @@ RemoteSuggestionsStatusServiceImpl::RemoteSuggestionsStatusServiceImpl(
 RemoteSuggestionsStatusServiceImpl::~RemoteSuggestionsStatusServiceImpl() =
     default;
 
-// static
-void RemoteSuggestionsStatusServiceImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kEnableSnippets, true);
-  registry->RegisterBooleanPref(prefs::kArticlesListVisible, true);
-}
-
 void RemoteSuggestionsStatusServiceImpl::Init(
     const StatusChangeCallback& callback) {
   DCHECK(status_change_callback_.is_null());
@@ -47,7 +42,7 @@ void RemoteSuggestionsStatusServiceImpl::Init(
   status_change_callback_ = callback;
 
   list_visible_during_session_ =
-      pref_service_->GetBoolean(prefs::kArticlesListVisible);
+      pref_service_->GetBoolean(feed::prefs::kArticlesListVisible);
 
   // Notify about the current state before registering the observer, to make
   // sure we don't get a double notification due to an undefined start state.
@@ -57,19 +52,19 @@ void RemoteSuggestionsStatusServiceImpl::Init(
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kEnableSnippets,
+      feed::prefs::kEnableSnippets,
       base::BindRepeating(
           &RemoteSuggestionsStatusServiceImpl::OnSnippetsEnabledChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kArticlesListVisible,
+      feed::prefs::kArticlesListVisible,
       base::BindRepeating(
           &RemoteSuggestionsStatusServiceImpl::OnListVisibilityChanged,
           base::Unretained(this)));
 
-  if (!additional_toggle_pref_.empty()) {
+  for (const std::string& additional_toggle_pref : additional_toggle_prefs_) {
     pref_change_registrar_.Add(
-        additional_toggle_pref_,
+        additional_toggle_pref,
         base::BindRepeating(
             &RemoteSuggestionsStatusServiceImpl::OnSnippetsEnabledChanged,
             base::Unretained(this)));
@@ -101,14 +96,14 @@ void RemoteSuggestionsStatusServiceImpl::OnSignInStateChanged(
 }
 
 void RemoteSuggestionsStatusServiceImpl::OnListVisibilityChanged() {
-  if (pref_service_->GetBoolean(prefs::kArticlesListVisible)) {
+  if (pref_service_->GetBoolean(feed::prefs::kArticlesListVisible)) {
     list_visible_during_session_ = true;
   }
   OnStateChanged(GetStatusFromDeps());
 }
 
 bool RemoteSuggestionsStatusServiceImpl::IsExplicitlyDisabled() const {
-  if (!pref_service_->GetBoolean(prefs::kEnableSnippets)) {
+  if (!pref_service_->GetBoolean(feed::prefs::kEnableSnippets)) {
     DVLOG(1) << "[GetStatusFromDeps] Disabled via pref.";
     return true;
   }
@@ -118,9 +113,9 @@ bool RemoteSuggestionsStatusServiceImpl::IsExplicitlyDisabled() const {
     return true;
   }
 
-  // |additional_toggle_pref_| will always be empty on Android.
-  if (!additional_toggle_pref_.empty()) {
-    if (!pref_service_->GetBoolean(additional_toggle_pref_)) {
+  // |additional_toggle_prefs_| will always be empty on Android.
+  for (const std::string& additional_toggle_pref : additional_toggle_prefs_) {
+    if (!pref_service_->GetBoolean(additional_toggle_pref)) {
       DVLOG(1) << "[GetStatusFromDeps] Disabled via additional pref";
       return true;
     }

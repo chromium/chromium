@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_NETWORK_CONNECTION_CHANGE_SIMULATOR_H_
 #define CONTENT_PUBLIC_TEST_NETWORK_CONNECTION_CHANGE_SIMULATOR_H_
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {
@@ -19,9 +19,15 @@ class NetworkConnectionChangeSimulator
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   NetworkConnectionChangeSimulator();
+
+  NetworkConnectionChangeSimulator(const NetworkConnectionChangeSimulator&) =
+      delete;
+  NetworkConnectionChangeSimulator& operator=(
+      const NetworkConnectionChangeSimulator&) = delete;
+
   ~NetworkConnectionChangeSimulator() override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initializes the ChromeOS network connection type.
   // This should be used in tests that don't have a DBus set up.
   void InitializeChromeosConnectionType();
@@ -37,8 +43,6 @@ class NetworkConnectionChangeSimulator
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionChangeSimulator);
 };
 
 }  // namespace content

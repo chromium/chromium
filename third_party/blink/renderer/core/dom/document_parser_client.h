@@ -14,7 +14,7 @@ class DocumentParserClient : public GarbageCollectedMixin {
   // This callback is called when all data pushed to parser has been consumed.
   virtual void NotifyParserStopped() = 0;
 
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
  protected:
   DocumentParserClient() = default;

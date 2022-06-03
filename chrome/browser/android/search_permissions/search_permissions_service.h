@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,7 +41,7 @@ class SearchPermissionsService : public KeyedService {
     virtual ~SearchEngineDelegate() {}
 
     // Returns the name of the current DSE.
-    virtual base::string16 GetDSEName() = 0;
+    virtual std::u16string GetDSEName() = 0;
 
     // Returns the origin of the DSE. If the current DSE is Google this will
     // return the current CCTLD.
@@ -47,7 +49,7 @@ class SearchPermissionsService : public KeyedService {
 
     // Set a callback that will be called if the DSE or CCTLD changes for any
     // reason.
-    virtual void SetDSEChangedCallback(const base::Closure& callback) = 0;
+    virtual void SetDSEChangedCallback(base::RepeatingClosure callback) = 0;
   };
 
   // Factory implementation will not create a service in incognito.
@@ -79,6 +81,9 @@ class SearchPermissionsService : public KeyedService {
   bool IsPermissionControlledByDSE(ContentSettingsType type,
                                    const url::Origin& requesting_origin);
 
+  // Returns whether the given origin matches the DSE origin.
+  bool IsDseOrigin(const url::Origin& origin);
+
   // Resets the DSE permission for a single ContentSettingsType.
   void ResetDSEPermission(ContentSettingsType type);
 
@@ -91,7 +96,7 @@ class SearchPermissionsService : public KeyedService {
  private:
   friend class ChromeBrowsingDataRemoverDelegateTest;
   friend class SearchPermissionsServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(GeolocationPermissionContextTests,
+  FRIEND_TEST_ALL_PREFIXES(GeolocationPermissionContextDelegateTests,
                            SearchGeolocationInIncognito);
   struct PrefValue;
 
@@ -119,7 +124,8 @@ class SearchPermissionsService : public KeyedService {
   ContentSetting RestoreOldSettingAndReturnPrevious(
       const GURL& dse_origin,
       ContentSettingsType type,
-      ContentSetting setting_to_restore);
+      ContentSetting setting_to_restore,
+      bool preserve_block_setting);
 
   // Helper function for OnDSEChanged which transitions the DSE setting for a
   // specific permission. It returns the content setting to be restored later
@@ -146,6 +152,17 @@ class SearchPermissionsService : public KeyedService {
   void SetContentSetting(const GURL& origin,
                          ContentSettingsType type,
                          ContentSetting setting);
+
+  // Record how the content setting transitions when DSE permissions autogrant
+  // is disabled via feature.
+  void RecordAutoDSEPermissionReverted(ContentSettingsType permission_type,
+                                       ContentSetting backed_up_setting,
+                                       ContentSetting effective_setting,
+                                       const GURL& origin);
+
+  // Record the content settings for notifications and geolocation on the DSE
+  // origin. Called at initialization or when the DSE origin changes.
+  void RecordEffectiveDSEOriginPermissions();
 
   void SetSearchEngineDelegateForTest(
       std::unique_ptr<SearchEngineDelegate> delegate);

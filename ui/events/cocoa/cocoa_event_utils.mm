@@ -4,6 +4,9 @@
 
 #import "ui/events/cocoa/cocoa_event_utils.h"
 
+#include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+#include <IOKit/hidsystem/IOLLEvent.h>  // for NX_ constants
+
 #include "base/mac/scoped_cftyperef.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -78,6 +81,10 @@ int EventFlagsFromNSEventWithModifiers(NSEvent* event, NSUInteger modifiers) {
 
   flags |= IsRightButtonEvent(event) ? ui::EF_RIGHT_MOUSE_BUTTON : 0;
   flags |= IsMiddleButtonEvent(event) ? ui::EF_MIDDLE_MOUSE_BUTTON : 0;
+
+  if ([event type] == NSKeyDown && [event isARepeat])
+    flags |= ui::EF_IS_REPEAT;
+
   return flags;
 }
 
@@ -85,50 +92,39 @@ bool IsKeyUpEvent(NSEvent* event) {
   if ([event type] != NSFlagsChanged)
     return [event type] == NSKeyUp;
 
-  // Unofficial bit-masks for left- and right-hand versions of modifier keys.
-  // These values were determined empirically.
-  const unsigned int kLeftControlKeyMask = 1 << 0;
-  const unsigned int kLeftShiftKeyMask = 1 << 1;
-  const unsigned int kRightShiftKeyMask = 1 << 2;
-  const unsigned int kLeftCommandKeyMask = 1 << 3;
-  const unsigned int kRightCommandKeyMask = 1 << 4;
-  const unsigned int kLeftAlternateKeyMask = 1 << 5;
-  const unsigned int kRightAlternateKeyMask = 1 << 6;
-  const unsigned int kRightControlKeyMask = 1 << 13;
-
   switch ([event keyCode]) {
-    case 54:  // Right Command
-      return IsModifierKeyUp([event modifierFlags], kRightCommandKeyMask,
-                             kLeftCommandKeyMask, NSCommandKeyMask);
-    case 55:  // Left Command
-      return IsModifierKeyUp([event modifierFlags], kLeftCommandKeyMask,
-                             kRightCommandKeyMask, NSCommandKeyMask);
+    case kVK_Command:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICELCMDKEYMASK,
+                             NX_DEVICERCMDKEYMASK, NSCommandKeyMask);
+    case kVK_RightCommand:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICERCMDKEYMASK,
+                             NX_DEVICELCMDKEYMASK, NSCommandKeyMask);
 
-    case 57:  // Capslock
+    case kVK_CapsLock:
       return ([event modifierFlags] & NSAlphaShiftKeyMask) == 0;
 
-    case 56:  // Left Shift
-      return IsModifierKeyUp([event modifierFlags], kLeftShiftKeyMask,
-                             kRightShiftKeyMask, NSShiftKeyMask);
-    case 60:  // Right Shift
-      return IsModifierKeyUp([event modifierFlags], kRightShiftKeyMask,
-                             kLeftShiftKeyMask, NSShiftKeyMask);
+    case kVK_Shift:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICELSHIFTKEYMASK,
+                             NX_DEVICERSHIFTKEYMASK, NSShiftKeyMask);
+    case kVK_RightShift:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICERSHIFTKEYMASK,
+                             NX_DEVICELSHIFTKEYMASK, NSShiftKeyMask);
 
-    case 58:  // Left Alt
-      return IsModifierKeyUp([event modifierFlags], kLeftAlternateKeyMask,
-                             kRightAlternateKeyMask, NSAlternateKeyMask);
-    case 61:  // Right Alt
-      return IsModifierKeyUp([event modifierFlags], kRightAlternateKeyMask,
-                             kLeftAlternateKeyMask, NSAlternateKeyMask);
+    case kVK_Option:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICELALTKEYMASK,
+                             NX_DEVICERALTKEYMASK, NSAlternateKeyMask);
+    case kVK_RightOption:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICERALTKEYMASK,
+                             NX_DEVICELALTKEYMASK, NSAlternateKeyMask);
 
-    case 59:  // Left Ctrl
-      return IsModifierKeyUp([event modifierFlags], kLeftControlKeyMask,
-                             kRightControlKeyMask, NSControlKeyMask);
-    case 62:  // Right Ctrl
-      return IsModifierKeyUp([event modifierFlags], kRightControlKeyMask,
-                             kLeftControlKeyMask, NSControlKeyMask);
+    case kVK_Control:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICELCTLKEYMASK,
+                             NX_DEVICERCTLKEYMASK, NSControlKeyMask);
+    case kVK_RightControl:
+      return IsModifierKeyUp([event modifierFlags], NX_DEVICERCTLKEYMASK,
+                             NX_DEVICELCTLKEYMASK, NSControlKeyMask);
 
-    case 63:  // Function
+    case kVK_Function:
       return ([event modifierFlags] & NSFunctionKeyMask) == 0;
   }
   return false;

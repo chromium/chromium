@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
@@ -48,6 +49,8 @@ void WebGLMultiDraw::multiDrawArraysImpl(
     return;
   }
 
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->MultiDrawArraysWEBGL(
       mode, &firsts[firstsOffset], &counts[countsOffset], drawcount);
 }
@@ -71,6 +74,8 @@ void WebGLMultiDraw::multiDrawElementsImpl(
                      offsetsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawElementsWEBGL(
       mode, &counts[countsOffset], type, &offsets[offsetsOffset], drawcount);
@@ -100,6 +105,8 @@ void WebGLMultiDraw::multiDrawArraysInstancedImpl(
                      instanceCounts.size(), instanceCountsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawArraysInstancedWEBGL(
       mode, &firsts[firstsOffset], &counts[countsOffset],
@@ -131,6 +138,8 @@ void WebGLMultiDraw::multiDrawElementsInstancedImpl(
                      instanceCounts.size(), instanceCountsOffset, drawcount)) {
     return;
   }
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
 
   scoped.Context()->ContextGL()->MultiDrawElementsInstancedWEBGL(
       mode, &counts[countsOffset], type, &offsets[offsetsOffset],

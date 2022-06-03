@@ -11,10 +11,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -24,37 +26,6 @@
 namespace em = enterprise_management;
 
 namespace policy {
-
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration.
-//
-// Keep this in sync with EnterprisePolicyLoadStatus in histograms.xml.
-enum PolicyLoadStatusForUma {
-  // Policy blob was successfully loaded and parsed.
-  LOAD_RESULT_SUCCESS,
-
-  // No previously stored policy was found.
-  LOAD_RESULT_NO_POLICY_FILE,
-
-  // Could not load the previously stored policy due to either a parse or
-  // file read error.
-  LOAD_RESULT_LOAD_ERROR,
-
-  // LOAD_RESULT_SIZE is the number of items in this enum and is used when
-  // logging histograms to set the bucket size, so should always be the last
-  // item.
-  LOAD_RESULT_SIZE,
-};
-
-// Struct containing the result of a policy load - if |status| ==
-// LOAD_RESULT_SUCCESS, |policy| is initialized from the policy file on disk.
-struct PolicyLoadResult {
-  PolicyLoadStatusForUma status;
-  em::PolicyFetchResponse policy;
-  em::PolicySigningKey key;
-};
 
 namespace {
 
@@ -68,55 +39,9 @@ const base::FilePath::CharType kPolicyCacheFile[] =
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
 
-const char kMetricPolicyHasVerifiedCachedKey[] =
-    "Enterprise.PolicyHasVerifiedCachedKey";
-
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
-
-// Loads policy from the backing file. Returns a PolicyLoadResult with the
-// results of the fetch.
-policy::PolicyLoadResult LoadPolicyFromDisk(const base::FilePath& policy_path,
-                                            const base::FilePath& key_path) {
-  policy::PolicyLoadResult result;
-  // If the backing file does not exist, just return. We don't verify the key
-  // path here, because the key is optional (the validation code will fail if
-  // the key does not exist but the loaded policy is unsigned).
-  if (!base::PathExists(policy_path)) {
-    result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
-    return result;
-  }
-  std::string data;
-
-  if (!base::ReadFileToStringWithMaxSize(policy_path, &data,
-                                         kPolicySizeLimit) ||
-      !result.policy.ParseFromString(data)) {
-    LOG(WARNING) << "Failed to read or parse policy data from "
-                 << policy_path.value();
-    result.status = policy::LOAD_RESULT_LOAD_ERROR;
-    return result;
-  }
-
-  if (!base::ReadFileToStringWithMaxSize(key_path, &data, kKeySizeLimit) ||
-      !result.key.ParseFromString(data)) {
-    // Log an error on missing key data, but do not trigger a load failure
-    // for now since there are still old unsigned cached policy blobs in the
-    // wild with no associated key (see kMetricPolicyHasVerifiedCachedKey UMA
-    // stat below).
-    LOG(ERROR) << "Failed to read or parse key data from " << key_path.value();
-    result.key.clear_signing_key();
-  }
-
-  // Track the occurrence of valid cached keys - when this ratio gets high
-  // enough, we can update the code to reject unsigned policy or unverified
-  // keys.
-  UMA_HISTOGRAM_BOOLEAN(kMetricPolicyHasVerifiedCachedKey,
-                        result.key.has_signing_key());
-
-  result.status = policy::LOAD_RESULT_SUCCESS;
-  return result;
-}
 
 bool WriteStringToFile(const base::FilePath path, const std::string& data) {
   if (!base::CreateDirectory(path.DirName())) {
@@ -171,35 +96,37 @@ void StorePolicyToDiskOnBackgroundThread(
 DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    PolicyLoadFilter policy_load_filter,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope,
-    PolicySource policy_source)
-    : UserCloudPolicyStoreBase(background_task_runner,
-                               policy_scope,
-                               policy_source),
+    PolicyScope policy_scope)
+    : UserCloudPolicyStoreBase(background_task_runner, policy_scope),
       policy_path_(policy_path),
-      key_path_(key_path) {}
+      key_path_(key_path),
+      policy_load_filter_(std::move(policy_load_filter)) {}
 
 DesktopCloudPolicyStore::~DesktopCloudPolicyStore() {}
 
 void DesktopCloudPolicyStore::LoadImmediately() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DVLOG(1) << "Initiating immediate policy load from disk";
   // Cancel any pending Load/Store/Validate operations.
   weak_factory_.InvalidateWeakPtrs();
   // Load the policy from disk...
-  PolicyLoadResult result = LoadPolicyFromDisk(policy_path_, key_path_);
+  PolicyLoadResult result =
+      LoadAndFilterPolicyFromDisk(policy_path_, key_path_, policy_load_filter_);
   // ...and install it, reporting success/failure to any observers.
   PolicyLoaded(false, result);
 }
 
 void DesktopCloudPolicyStore::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                policy_path_, false));
+      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), policy_path_));
   background_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&base::DeleteFile), key_path_, false));
-  policy_.reset();
+      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), key_path_));
+  ResetPolicy();
   policy_map_.Clear();
   policy_signature_public_key_.clear();
   persisted_policy_key_.clear();
@@ -207,6 +134,8 @@ void DesktopCloudPolicyStore::Clear() {
 }
 
 void DesktopCloudPolicyStore::Load() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DVLOG(1) << "Initiating policy load from disk";
   // Cancel any pending Load/Store/Validate operations.
   weak_factory_.InvalidateWeakPtrs();
@@ -215,16 +144,62 @@ void DesktopCloudPolicyStore::Load() {
   // complete.
   base::PostTaskAndReplyWithResult(
       background_task_runner().get(), FROM_HERE,
-      base::BindOnce(&LoadPolicyFromDisk, policy_path_, key_path_),
+      base::BindOnce(&DesktopCloudPolicyStore::LoadAndFilterPolicyFromDisk,
+                     policy_path_, key_path_, policy_load_filter_),
       base::BindOnce(&DesktopCloudPolicyStore::PolicyLoaded,
                      weak_factory_.GetWeakPtr(), true));
 }
 
+// static
+PolicyLoadResult DesktopCloudPolicyStore::LoadAndFilterPolicyFromDisk(
+    const base::FilePath& policy_path,
+    const base::FilePath& key_path,
+    const PolicyLoadFilter& policy_load_filter) {
+  policy::PolicyLoadResult result =
+      DesktopCloudPolicyStore::LoadPolicyFromDisk(policy_path, key_path);
+  return policy_load_filter ? policy_load_filter.Run(std::move(result))
+                            : result;
+}
+
+// static
+PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
+    const base::FilePath& policy_path,
+    const base::FilePath& key_path) {
+  policy::PolicyLoadResult result;
+  // If the backing file does not exist, just return. We don't verify the key
+  // path here, because the key is optional (the validation code will fail if
+  // the key does not exist but the loaded policy is unsigned).
+  if (!base::PathExists(policy_path)) {
+    result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
+    return result;
+  }
+  std::string data;
+
+  if (!base::ReadFileToStringWithMaxSize(policy_path, &data,
+                                         kPolicySizeLimit) ||
+      !result.policy.ParseFromString(data)) {
+    LOG(WARNING) << "Failed to read or parse policy data from "
+                 << policy_path.value();
+    result.status = policy::LOAD_RESULT_LOAD_ERROR;
+    return result;
+  }
+
+  result.status = policy::LOAD_RESULT_SUCCESS;
+
+  if (key_path.empty())
+    return result;
+
+  if (!base::ReadFileToStringWithMaxSize(key_path, &data, kKeySizeLimit) ||
+      !result.key.ParseFromString(data)) {
+    LOG(ERROR) << "Failed to read or parse key data from " << key_path;
+    result.key.clear_signing_key();
+  }
+
+  return result;
+}
+
 void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
                                            PolicyLoadResult result) {
-  // TODO(zmin): figure out what do with the metrics. https://crbug.com/814371
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserCloudPolicyStore.LoadStatus",
-                            result.status, LOAD_RESULT_SIZE);
   switch (result.status) {
     case LOAD_RESULT_LOAD_ERROR:
       status_ = STATUS_LOAD_ERROR;
@@ -240,20 +215,17 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       // Found policy on disk - need to validate it before it can be used.
       std::unique_ptr<em::PolicyFetchResponse> cloud_policy(
           new em::PolicyFetchResponse(result.policy));
-      std::unique_ptr<em::PolicySigningKey> key(
-          new em::PolicySigningKey(result.key));
+      std::unique_ptr<em::PolicySigningKey> key =
+          std::make_unique<em::PolicySigningKey>(result.key);
 
-      bool doing_key_rotation = false;
-      if (!key->has_verification_key() ||
-          key->verification_key() != GetPolicyVerificationKey()) {
+      bool doing_key_rotation = result.doing_key_rotation;
+      if (key && (!key->has_verification_key() ||
+                  key->verification_key() != GetPolicyVerificationKey())) {
         // The cached key didn't match our current key, so we're doing a key
         // rotation - make sure we request a new key from the server on our
         // next fetch.
         doing_key_rotation = true;
         DLOG(WARNING) << "Verification key rotation detected";
-        // TODO(atwilson): Add code to update |verification_key| to point to
-        // the correct key to validate the existing blob (can't do this until
-        // we've done our first key rotation).
       }
 
       Validate(std::move(cloud_policy), std::move(key), validate_in_background,
@@ -327,10 +299,6 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     bool doing_key_rotation,
     const std::string& signing_key,
     UserCloudPolicyValidator* validator) {
-  // TODO(zmin): metrics
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.LoadValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     DVLOG(1) << "Validation failed: status=" << validator->status();
@@ -353,13 +321,16 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     persisted_policy_key_ = signing_key;
   }
 
-  InstallPolicy(std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy()),
+                std::move(validator->policy_data()),
                 std::move(validator->payload()), persisted_policy_key_);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
 }
 
 void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
@@ -373,9 +344,6 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
 
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.StoreValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   DVLOG(1) << "Policy validation complete: status = " << validator->status();
   if (!validator->success()) {
@@ -395,7 +363,8 @@ void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
   if (validator->policy()->has_new_public_key())
     persisted_policy_key_ = validator->policy()->new_public_key();
 
-  InstallPolicy(std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy()),
+                std::move(validator->policy_data()),
                 std::move(validator->payload()), persisted_policy_key_);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
@@ -407,9 +376,9 @@ UserCloudPolicyStore::UserCloudPolicyStore(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
+                              PolicyLoadFilter(),
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER,
-                              PolicySource::POLICY_SOURCE_CLOUD) {}
+                              PolicyScope::POLICY_SCOPE_USER) {}
 
 UserCloudPolicyStore::~UserCloudPolicyStore() {}
 

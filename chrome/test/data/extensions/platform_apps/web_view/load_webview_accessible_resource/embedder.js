@@ -14,6 +14,11 @@ window.runTest = function(testName) {
     testBlobInWebviewAccessibleResource();
   } else if (testName == 'testLoadWebviewInaccessibleResource') {
     testLoadWebviewInaccessibleResource();
+  } else if (testName == 'testLoadAccessibleSubresourceInAppWebviewFrame') {
+    testLoadAccessibleSubresourceInAppWebviewFrame();
+  } else if (
+      testName == 'testInaccessibleResourceDoesNotLoadInAppWebviewFrame') {
+    testInaccessibleResourceDoesNotLoadInAppWebviewFrame();
   } else if (testName == 'testNavigateGuestToWebviewAccessibleResource') {
     testNavigateGuestToWebviewAccessibleResource();
   } else {
@@ -55,8 +60,50 @@ function testNavigateGuestToWebviewAccessibleResource() {
         });
   });
 
-  webview.src =
-      'chrome-extension://lmnhajohhbenlbinimlfhbpnciehhmao/assets/foo.html';
+  webview.src = chrome.runtime.getURL('assets/foo.html');
+};
+
+function testInaccessibleResourceDoesNotLoadInAppWebviewFrame() {
+  var webview = document.querySelector('webview');
+
+  webview.addEventListener('loadstop', function() {
+    var script = `
+      fetch('inaccessible.txt')
+        .then(response => {
+          chrome.test.sendMessage('TEST_FAILED');
+        })
+        .catch(() => {
+          chrome.test.sendMessage('TEST_PASSED');
+        });
+    `;
+    webview.executeScript({code: script});
+  });
+
+  webview.src = chrome.runtime.getURL('assets/foo.html');
+};
+
+function testLoadAccessibleSubresourceInAppWebviewFrame() {
+  var webview = document.querySelector('webview');
+
+  webview.addEventListener('loadstop', function() {
+    var script = `
+      fetch('accessible.txt')
+        .then(response => response.text())
+        .then(data => {
+          if (data == 'Hello World\\n')
+            chrome.test.sendMessage('TEST_PASSED');
+          else 
+            throw new Error("Unexpected data: " + data);
+        })
+        .catch((error) => {
+          console.warn(error);
+          chrome.test.sendMessage('TEST_FAILED');
+        });
+    `;
+    webview.executeScript({code: script});
+  });
+
+  webview.src = chrome.runtime.getURL('assets/foo.html');
 };
 
 function testReloadWebviewAccessibleResource() {
@@ -120,7 +167,6 @@ function testLoadWebviewInaccessibleResource() {
     webview.executeScript({code: 'location="' + inaccessibleURL + '";'});
     didNavigate = true;
   });
-
   // The inaccessible URL should be blocked, and the webview should stay at
   // foo.html.
   webview.addEventListener('loadabort', function(e) {

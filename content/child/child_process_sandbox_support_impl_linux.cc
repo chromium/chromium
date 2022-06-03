@@ -76,8 +76,6 @@ bool WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName(
   std::string family_name;
   if (!font_loader_->MatchFontByPostscriptNameOrFullFontName(font_unique_name,
                                                              &font_identity)) {
-    LOG(ERROR) << "FontService unique font name matching request did not "
-                  "receive a response.";
     return false;
   }
 

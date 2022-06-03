@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/WebAudio.h"
+#include "third_party/blink/renderer/core/inspector/protocol/web_audio.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -24,6 +24,10 @@ class MODULES_EXPORT InspectorWebAudioAgent final
     : public InspectorBaseAgent<protocol::WebAudio::Metainfo> {
  public:
   explicit InspectorWebAudioAgent(Page*);
+
+  InspectorWebAudioAgent(const InspectorWebAudioAgent&) = delete;
+  InspectorWebAudioAgent& operator=(const InspectorWebAudioAgent&) = delete;
+
   ~InspectorWebAudioAgent() override;
 
   // Base Agent methods.
@@ -61,7 +65,7 @@ class MODULES_EXPORT InspectorWebAudioAgent final
                               AudioParam* destination_param,
                               int32_t source_output_index = 0);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   std::unique_ptr<protocol::WebAudio::BaseAudioContext>
@@ -69,7 +73,6 @@ class MODULES_EXPORT InspectorWebAudioAgent final
 
   Member<Page> page_;
   InspectorAgentState::Boolean enabled_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorWebAudioAgent);
 };
 
 }  // namespace blink

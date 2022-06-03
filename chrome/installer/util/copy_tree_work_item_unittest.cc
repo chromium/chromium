@@ -296,7 +296,7 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
 
   // Create an executable in destination path by copying ourself to it.
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
 
   base::FilePath dir_name_to(test_dir_.GetPath());
@@ -309,16 +309,16 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
   base::CopyFile(exe_full_path, file_name_to);
   ASSERT_TRUE(base::PathExists(file_name_to));
 
-  VLOG(1) << "copy ourself from " << exe_full_path.value()
-          << " to " << file_name_to.value();
+  VLOG(1) << "copy ourself from " << exe_full_path.value() << " to "
+          << file_name_to.value();
 
   // Run the executable in destination path
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  ASSERT_TRUE(
-      ::CreateProcess(NULL, const_cast<wchar_t*>(file_name_to.value().c_str()),
-                       NULL, NULL, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED,
-                       NULL, NULL, &si, &pi));
+  ASSERT_TRUE(::CreateProcess(
+      nullptr, const_cast<wchar_t*>(file_name_to.value().c_str()), nullptr,
+      nullptr, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr,
+      &si, &pi));
 
   // test Do().
   std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
@@ -372,7 +372,7 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
 
   // Create an executable in destination path by copying ourself to it.
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
 
   base::FilePath dir_name_to(test_dir_.GetPath());
@@ -387,16 +387,16 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
   ASSERT_TRUE(base::PathExists(file_name_to));
   ASSERT_FALSE(CopyTreeWorkItem::IsFileInUse(file_name_to));
 
-  VLOG(1) << "copy ourself from " << exe_full_path.value()
-          << " to " << file_name_to.value();
+  VLOG(1) << "copy ourself from " << exe_full_path.value() << " to "
+          << file_name_to.value();
 
   // Run the executable in destination path
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  ASSERT_TRUE(
-      ::CreateProcess(NULL, const_cast<wchar_t*>(file_name_to.value().c_str()),
-                       NULL, NULL, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED,
-                       NULL, NULL, &si, &pi));
+  ASSERT_TRUE(::CreateProcess(
+      nullptr, const_cast<wchar_t*>(file_name_to.value().c_str()), nullptr,
+      nullptr, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr,
+      &si, &pi));
 
   // test Do().
   std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
@@ -435,7 +435,7 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
       file_name_from, file_name_to, temp_dir_.GetPath(),
       WorkItem::NEW_NAME_IF_IN_USE, alternate_to));
   if (CopyTreeWorkItem::IsFileInUse(file_name_to))
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+    base::PlatformThread::Sleep(base::Seconds(2));
   // If file is still in use, the rest of the test will fail.
   ASSERT_FALSE(CopyTreeWorkItem::IsFileInUse(file_name_to));
   EXPECT_TRUE(work_item->Do());
@@ -480,7 +480,7 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_IfNotPresentTest) {
 
   // Create an executable in destination path by copying ourself to it.
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
 
   base::FilePath dir_name_to(test_dir_.GetPath());
@@ -522,7 +522,7 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_IfNotPresentTest) {
   EXPECT_FALSE(base::PathExists(backup_file));
 
   // Now delete the destination and try copying the file again.
-  base::DeleteFile(file_name_to, false);
+  base::DeleteFile(file_name_to);
   work_item.reset(WorkItem::CreateCopyTreeWorkItem(
       file_name_from, file_name_to, temp_dir_.GetPath(),
       WorkItem::IF_NOT_PRESENT, base::FilePath()));
@@ -558,7 +558,7 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_CopyFileInUseAndCleanup) {
 
   // Create an executable in destination path by copying ourself to it.
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
 
   base::FilePath dir_name_to(test_dir_.GetPath());
@@ -571,16 +571,16 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_CopyFileInUseAndCleanup) {
   base::CopyFile(exe_full_path, file_name_to);
   ASSERT_TRUE(base::PathExists(file_name_to));
 
-  VLOG(1) << "copy ourself from " << exe_full_path.value()
-          << " to " << file_name_to.value();
+  VLOG(1) << "copy ourself from " << exe_full_path.value() << " to "
+          << file_name_to.value();
 
   // Run the executable in destination path
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  ASSERT_TRUE(
-      ::CreateProcess(NULL, const_cast<wchar_t*>(file_name_to.value().c_str()),
-                       NULL, NULL, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED,
-                       NULL, NULL, &si, &pi));
+  ASSERT_TRUE(::CreateProcess(
+      nullptr, const_cast<wchar_t*>(file_name_to.value().c_str()), nullptr,
+      nullptr, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr,
+      &si, &pi));
 
   base::FilePath backup_file;
 
@@ -664,15 +664,15 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_CopyTree) {
   file_name_to_1 = file_name_to_1.AppendASCII("1");
   file_name_to_1 = file_name_to_1.AppendASCII("File_1.txt");
   EXPECT_TRUE(base::PathExists(file_name_to_1));
-  VLOG(1) << "compare " << file_name_from_1.value()
-          << " and " << file_name_to_1.value();
+  VLOG(1) << "compare " << file_name_from_1.value() << " and "
+          << file_name_to_1.value();
   EXPECT_TRUE(base::ContentsEqual(file_name_from_1, file_name_to_1));
 
   base::FilePath file_name_to_2(dir_name_to);
   file_name_to_2 = file_name_to_2.AppendASCII("2");
   file_name_to_2 = file_name_to_2.AppendASCII("File_2.txt");
   EXPECT_TRUE(base::PathExists(file_name_to_2));
-  VLOG(1) << "compare " << file_name_from_2.value()
-          << " and " << file_name_to_2.value();
+  VLOG(1) << "compare " << file_name_from_2.value() << " and "
+          << file_name_to_2.value();
   EXPECT_TRUE(base::ContentsEqual(file_name_from_2, file_name_to_2));
 }

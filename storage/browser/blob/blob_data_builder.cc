@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -320,7 +321,7 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
 }
 
 void BlobDataBuilder::AppendFileSystemFile(
-    const GURL& url,
+    const FileSystemURL& url,
     uint64_t offset,
     uint64_t length,
     const base::Time& expected_modification_time,

@@ -6,10 +6,9 @@ include_rules = [
   "+device/vr/jni_headers",
   "+services/device/public",
   "+services/metrics/public/cpp/ukm_builders.h",
-  "+third_party/blink/public/platform/modules/vr/vr_service.mojom.h",
   "+third_party/gvr-android-sdk/src",
-  "+third_party/libovr/src",
-  "+third_party/openvr/src/headers/openvr.h",
+  "+third_party/skia/include/core/SkColor.h",
   "+ui/display",
   "+ui/gfx",
+  "+ui/gl/gl_bindings.h",
 ]

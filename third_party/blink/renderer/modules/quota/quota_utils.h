@@ -6,15 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_QUOTA_UTILS_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/quota/quota_dispatcher_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-blink.h"
 
 namespace blink {
 
 class ExecutionContext;
 
-void ConnectToQuotaDispatcherHost(
+void ConnectToQuotaManagerHost(
     ExecutionContext*,
-    mojo::PendingReceiver<mojom::blink::QuotaDispatcherHost>);
+    mojo::PendingReceiver<mojom::blink::QuotaManagerHost>);
 
 }  // namespace blink
 

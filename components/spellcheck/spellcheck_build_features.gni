@@ -14,21 +14,6 @@ use_browser_spellchecker = is_android || is_mac || is_win
 # Therefore, include Windows in both build flags.
 use_renderer_spellchecker = !use_browser_spellchecker || is_win
 
-# Use both Hunspell and the OS's spellchecker. Try to use the OS, but if
-# a locale is not supported (i.e. no Windows language pack installed by
-# the user), fall back to Hunspell. Requires Windows, and requires both
-# use_browser_spellchecker and use_renderer_spellchecker.
-use_win_hybrid_spellchecker =
-    is_win && use_browser_spellchecker && use_renderer_spellchecker
-
-# TODO(https://crbug.com/1000443): Use Windows preferred languages to help populate spellcheck settings.
-# Use union of Chromium preferred languages (from Language settings) and
-# the Windows preferred languages (from system language settings) as the
-# source of the spellcheck languages in the "Spell check" section of the
-# Chromium language settings, provided they are supported for spellcheck.
-use_windows_preferred_languages_for_spellcheck =
-    use_browser_spellchecker && is_win
-
 # Whether the enhanced spellcheck service is available on the platform. This is
 # effectively equal to all desktop platforms.
 enable_spelling_service = use_renderer_spellchecker || is_mac

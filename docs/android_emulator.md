@@ -2,12 +2,7 @@
 Always use x86 emulators (or x86\_64 for testing 64-bit APKs). Although arm
 emulators exist, they are so slow that they are not worth your time.
 
-*** note
-**Note:** apps with native code must be compiled specifically for the device
-architecture, so make sure your copy of the app supports x86. Also, be aware the
-Play Store may not display ARM-only applications for an x86 emulator. The steps
-below show how to locally compile chromium-based apps for x86.
-***
+[TOC]
 
 ## Building for Emulation
 You need to target the correct architecture via GN args:
@@ -15,7 +10,156 @@ You need to target the correct architecture via GN args:
 target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 ```
 
-## Creating an Emulator Image
+## Running an Emulator
+
+### Using Prebuilt CIPD packages
+
+Chromium has a set of prebuilt images stored as CIPD packages. These are used
+by various builders to run tests on the emulator. Their configurations are
+currently stored in `//tools/android/avd/proto`.
+
+| File | Builder |
+|:----:|:-------:|
+| `tools/android/avd/proto/generic_android23.textpb` | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
+| `tools/android/avd/proto/generic_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
+| `tools/android/avd/proto/generic_playstore_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
+
+You can use these configuration files to run the same emulator images locally.
+
+[android-marshmallow-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-marshmallow-x86-rel
+[android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
+
+#### Prerequisite
+
+ * Make sure KVM (Kernel-based Virtual Machine) is enabled.
+   See this
+   [link](https://developer.android.com/studio/run/emulator-acceleration#vm-linux)
+   from android studio for more details and instructions.
+
+ * You need to have the permissions to use KVM.
+   Use the following command to see if you are in group `kvm`:
+
+   ```
+     $ grep kvm /etc/group
+   ```
+
+   If your username is not shown in the group, add yourself to the group:
+
+   ```
+     $ sudo adduser $USER kvm
+     $ newgrp kvm
+   ```
+
+   You need to log out and log back in so the new groups take effect. Or you
+   can use the following on a per-shell basis without logging out:
+
+   ```
+     $ su - $USER
+   ```
+
+#### Running via the test runner
+
+The android test runner can run emulator instances on its own. In doing so, it
+starts the emulator instances, runs tests against them, and then shuts them
+down. This is how builders run the emulator.
+
+##### Options
+
+ * `--avd-config`
+
+    To have the test runner run an emulator instance, use `--avd-config`:
+
+    ```
+      $ out/Debug/bin/run_base_unittests \
+          --avd-config tools/android/avd/proto/generic_android28.textpb
+    ```
+
+ * `--emulator-count`
+
+    The test runner will launch one instance by default. To have it run multiple
+    instances, use `--emulator-count`:
+
+    ```
+      $ out/Debug/bin/run_base_unittests \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --emulator-count 4
+    ```
+
+ * `--emulator-window`
+
+    The test runner runs the emulator in headless mode by default. To have it run
+    with a window, use `--emulator-window`:
+
+    ```
+      $ out/Debug/bin/run_base_unittests \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --emulator-window
+    ```
+
+#### Running standalone
+
+The test runner will set up and tear down the emulator on each invocation.
+To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
+
+> Note: Before calling `avd.py start`, use `avd.py install` to install the
+> emulator configuration you intend to use. Otherwise the emulator won't start
+> correctly.
+>
+> ```
+>   $ tools/android/avd/avd.py install \
+>       --avd-config tools/android/avd/proto/generic_android28.textpb
+> ```
+
+##### Options
+
+ * `--avd-config`
+
+    This behaves the same as it does for the test runner.
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb
+    ```
+
+    > Note: `avd.py start` will start an emulator instance and then terminate.
+    > To shut down the emulator, use `adb emu kill`.
+
+ * `--emulator-window`
+
+    Like the test runner, `avd.py` runs the emulator in headless mode by default.
+    To have it run with a window, use `--emulator-window`:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --emulator-window
+    ```
+
+ * `--no-read-only`
+
+    `avd.py` runs the emulator in read-only mode by default. To run a modifiable
+    emulator, use `--no-read-only`:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --no-read-only
+    ```
+
+ * `--debug-tags`
+
+    `avd.py` disables the emulator log by default. When this option is used,
+    emulator log will be enabled. It is useful when the emulator cannot be
+    launched correctly. See `emulator -help-debug-tags` for a full list of tags.
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --debug-tags init,snapshot
+    ```
+
+### Using Your Own Emulator Image
+
 By far the easiest way to set up emulator images is to use Android Studio.
 If you don't have an [Android Studio project](android_studio.md) already, you
 can create a blank one to be able to reach the Virtual Device Manager screen.
@@ -27,11 +171,15 @@ Where files live:
  * Emulator configs and data partition images are stored within
    `~/.android/avd/`.
 
-### Choosing a Skin
+#### Creating an Image
+
+##### Choosing a Skin
+
 Choose a skin with a small screen for better performance (unless you care about
 testing large screens).
 
-### Choosing an Image
+##### Choosing an Image
+
 Android Studio's image labels roughly translate to the following:
 
 | AVD "Target" | Virtual Device Configuration tab | GMS? | Build Properties |
@@ -45,12 +193,14 @@ Android Studio's image labels roughly translate to the following:
 Images** tab in the Virtual Device Configuration wizard.
 ***
 
-### Configuration
+##### Configuration
+
 "Show Advanced Settings" > scroll down:
 * Set internal storage to 4000MB (component builds are really big).
 * Set SD card to 1000MB (our tests push a lot of files to /sdcard).
 
-### Known Issues
+##### Known Issues
+
  * Our test & installer scripts do not work with pre-MR1 Jelly Bean.
  * Component builds do not work on pre-KitKat (due to the OS having a max
    number of shared libraries).
@@ -59,15 +209,30 @@ Images** tab in the Virtual Device Configuration wizard.
    * To ensure it's there: `adb -s emulator-5554 shell mount` (look for /sdcard)
    * Can often be fixed by editing `~/.android/avd/YOUR_DEVICE/config.ini`.
      * Look for `hw.sdCard=no` and set it to `yes`
+ * The "Google APIs" Android L and M emulator images are configured to expect
+   the "AOSP" WebView package (`com.android.webview`). This does not resemble
+   production devices with GMS, which expect the ["Google WebView"
+   configuration](/android_webview/docs/webview-providers.md#webview-provider-options)
+   (`com.google.android.webview` on L and M). See [Removing preinstalled
+   WebView](/android_webview/docs/build-instructions.md#Removing-preinstalled-WebView)
+   if you need to install a local build or official build.
 
-## Starting an Emulator from the Command Line
+
+#### Starting an Emulator from the Command Line
+
 Refer to: https://developer.android.com/studio/run/emulator-commandline.html.
 
 *** promo
 Ctrl-C will gracefully close an emulator.
 ***
 
-### Basic Command Line Use
+*** promo
+**Tip:** zsh users can add https://github.com/zsh-users/zsh-completions to
+provide tab completion for the `emulator` command line tool.
+***
+
+#### Basic Command Line Use
+
 ```shell
 $ # List virtual devices that you've created:
 $ ~/Android/Sdk/emulator/emulator -list-avds
@@ -75,7 +240,8 @@ $ # Start a named device:
 $ ~/Android/Sdk/emulator/emulator @EMULATOR_ID
 ```
 
-### Running a Headless Emulator
+#### Running a Headless Emulator
+
 You can run an emulator without creating a window on your desktop (useful for
 `ssh`):
 ```shell
@@ -84,7 +250,8 @@ $ # This also works for new enough emulator builds:
 $ ~/Android/Sdk/emulator/emulator-headless @EMULATOR_ID
 ```
 
-### Running Multiple Emulators
+#### Running Multiple Emulators
+
 Tests are automatically sharded amongst available devices. If you run multiple
 emulators, then running test suites becomes much faster. Refer to the
 "Multiple AVD instances" section of these [emulator release notes](
@@ -97,7 +264,8 @@ $ # Start 12 emulators. More than 10 requires disabling audio on some OS's. Redu
 $ ( for i in $(seq 12); do ~/Android/Sdk/emulator/emulator @EMULATOR_ID -read-only -no-audio -cores 2 & done; wait )
 ```
 
-### Writable system partition
+#### Writable system partition
+
 Unlike physical devices, an emulator's `/system` partition cannot be modified by
 default (even on rooted devices). If you need to do so (such as to remove a
 system app), you can start your emulator like so:
@@ -109,3 +277,27 @@ $ ~/Android/Sdk/emulator/emulator -writable-system @EMULATOR_ID
  * Emulators show up just like devices via `adb devices`
    * Device serials will look like "emulator-5554", "emulator-5556", etc.
 
+## Emulator pros and cons
+
+### Pros
+ * **Compiles are faster.** Many physical devices are arm64, whereas emulators
+   are typically x86 (32-bit). 64-bit builds may require 2 copies of the native
+   library (32-bit and 64-bit), so compiling for an arm64 phone is ~twice as
+   much work as for an emulator (for targets which support WebView).
+ * **APKs install faster.** Since emulators run on your workstation, adb can
+   push the APK onto the emulator without being [bandwidth-constrained by
+   USB](https://youtu.be/Mzop8bXZI3E).
+ * Emulators can be nice for working remotely. Physical devices usually require
+   `scp` or ssh port forwarding to copy the APK from your workstation and
+   install on a local device. Emulators run on your workstation, so there's **no
+   ssh slow-down**.
+
+### Cons
+ * If you're investigating a hardware-specific bug report, you'll need a
+   physical device with the actual hardware to repro that issue.
+ * x86 emulators need a separate out directory, so building for both physical
+   devices and emulators takes up more disk space (not a problem if you build
+   exclusively for the emulator).
+ * `userdebug`/`eng` emulators don't come with the Play Store installed, so you
+   can't install third party applications. Sideloading is tricky, as not all
+   third-party apps support x86.

@@ -2,6 +2,7 @@
 
 <script src="../../resources/js-test.js"></script>
 <script src="../dom/resources/event-sender-util.js"></script>
+
 <script>
 description('This test checks if contextmenu event target is correct when handled at the document level and in the' +
             ' presence of pinch-zoom. To test manually, first pinch-zoom into the page, scroll away from the origin' +
@@ -75,14 +76,7 @@ function handleContextMenuEditable(e) {
 
 var runTest = function() {
     internals.setPageScaleFactor(scale);
-
-    // Position the visual viewport.
-    eventSender.gestureScrollBegin(0, 0);
-
-    // Start from visual viewport offset (0, 0).
-    eventSender.gestureScrollUpdate(-visualViewportContentX*scale,
-                                    -visualViewportContentY*scale);
-    eventSender.gestureScrollEnd(0, 0);
+    internals.setVisualViewportOffset(visualViewportContentX, visualViewportContentY);
 
     anchor = document.getElementById("anchor");
 

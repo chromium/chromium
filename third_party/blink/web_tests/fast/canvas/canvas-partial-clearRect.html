@@ -1,0 +1,24 @@
+<html>
+<body>
+<canvas id="c" width=800 height=1000></canvas>
+<script>
+
+// Test that canvas content is retained from previous frame for partial updates.
+var canvas = document.getElementById('c');
+let ctx = canvas.getContext("2d");
+
+// Since it checks if content retaining |mode_| changes from frame to frame,
+// multiple calls to rAF are used to assure the craetion of new frame.
+ctx.fillRect(0, 0, 50, 50);
+window.requestAnimationFrame(dt => {
+  ctx.clearRect(0, 0, 40, 50);
+  ctx.fillRect(60, 60, 50, 50);
+    window.requestAnimationFrame(dt => {
+    ctx.clearRect(60, 60, 50, 40);
+    ctx.fillRect(200, 200, 20, 10);
+  });
+});
+
+</script>
+</body>
+</html>

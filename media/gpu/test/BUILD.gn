@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 
@@ -10,10 +11,12 @@ source_set("helpers") {
   sources = [
     "image.cc",
     "image.h",
+    "image_quality_metrics.cc",
+    "image_quality_metrics.h",
+    "video.cc",
+    "video.h",
     "video_frame_helpers.cc",
     "video_frame_helpers.h",
-    "video_test_environment.cc",
-    "video_test_environment.h",
   ]
   deps = [
     "//base:base",
@@ -22,19 +25,10 @@ source_set("helpers") {
     "//gpu/ipc/common",
     "//media:test_support",
     "//media/gpu",
-    "//mojo/core/embedder:embedder",
+    "//third_party/ffmpeg",
     "//third_party/libyuv",
   ]
-  public_deps = [
-    "//testing/gtest",
-  ]
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
-  if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
-  }
+  public_deps = [ "//testing/gtest" ]
 }
 
 source_set("frame_validator") {
@@ -44,8 +38,9 @@ source_set("frame_validator") {
     "video_frame_validator.h",
   ]
   deps = [
-    ":decode_helpers",
     ":helpers",
+    ":test_helpers",
+    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
 }
@@ -58,23 +53,29 @@ source_set("frame_file_writer") {
   ]
   deps = [
     ":helpers",
+    "//build:chromeos_buildflags",
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
 }
 
-source_set("decode_helpers") {
+source_set("test_helpers") {
   testonly = true
   sources = [
-    "video_decode_accelerator_unittest_helpers.cc",
-    "video_decode_accelerator_unittest_helpers.h",
+    "video_test_helpers.cc",
+    "video_test_helpers.h",
   ]
   public_deps = [
     ":helpers",
+    "//media:test_support",
   ]
   deps = [
     "//media/gpu",
+    "//media/mojo/common:mojo_shared_buffer_video_frame",
+    "//media/parsers",
+    "//mojo/public/cpp/system",
     "//testing/gtest",
+    "//third_party/libyuv",
   ]
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -89,7 +90,7 @@ static_library("video_player_thumbnail_renderer") {
     "video_player/frame_renderer_thumbnail.h",
   ]
   deps = [
-    ":decode_helpers",
+    ":test_helpers",
     "//gpu/command_buffer/common",
     "//media/gpu",
     "//ui/gfx/codec:codec",
@@ -106,18 +107,41 @@ static_library("video_player") {
     "video_player/frame_renderer_dummy.h",
     "video_player/test_vda_video_decoder.cc",
     "video_player/test_vda_video_decoder.h",
-    "video_player/video.cc",
-    "video_player/video.h",
     "video_player/video_decoder_client.cc",
     "video_player/video_decoder_client.h",
     "video_player/video_player.cc",
     "video_player/video_player.h",
   ]
   deps = [
-    ":decode_helpers",
+    ":test_helpers",
     "//media/gpu",
     "//testing/gtest:gtest",
   ]
+}
+
+static_library("video_test_environment") {
+  testonly = true
+  sources = [
+    "video_test_environment.cc",
+    "video_test_environment.h",
+  ]
+
+  deps = [
+    ":helpers",
+    "//base:base",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/gpu",
+    "//mojo/core/embedder:embedder",
+  ]
+
+  public_deps = [
+    ":frame_file_writer",
+    "//testing/gtest",
+  ]
+  if (use_ozone) {
+    public_deps += [ "//ui/ozone" ]
+  }
 }
 
 static_library("video_player_test_environment") {
@@ -126,13 +150,55 @@ static_library("video_player_test_environment") {
     "video_player/video_player_test_environment.cc",
     "video_player/video_player_test_environment.h",
   ]
-  data = [
-    "//media/test/data/",
-  ]
+  data = [ "//media/test/data/" ]
   deps = [
     ":frame_file_writer",
     ":helpers",
     ":video_player",
+    ":video_test_environment",
+    "//build:chromeos_buildflags",
+    "//media/gpu",
+  ]
+}
+
+static_library("video_encoder") {
+  testonly = true
+  sources = [
+    "bitstream_helpers.cc",
+    "bitstream_helpers.h",
+    "video_encoder/bitstream_file_writer.cc",
+    "video_encoder/bitstream_file_writer.h",
+    "video_encoder/bitstream_validator.cc",
+    "video_encoder/bitstream_validator.h",
+    "video_encoder/decoder_buffer_validator.cc",
+    "video_encoder/decoder_buffer_validator.h",
+    "video_encoder/video_encoder.cc",
+    "video_encoder/video_encoder.h",
+    "video_encoder/video_encoder_client.cc",
+    "video_encoder/video_encoder_client.h",
+  ]
+  deps = [
+    ":test_helpers",
+    "//media/gpu",
+    "//media/parsers",
+    "//testing/gtest:gtest",
+  ]
+}
+
+static_library("video_encoder_test_environment") {
+  testonly = true
+  sources = [
+    "video_encoder/video_encoder_test_environment.cc",
+    "video_encoder/video_encoder_test_environment.h",
+  ]
+  data = [ "//media/test/data/" ]
+  public_deps = [
+    ":helpers",
+    ":video_test_environment",
+  ]
+  deps = [
+    "//base:base",
+    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
 }
@@ -146,19 +212,18 @@ if (use_vaapi || use_v4l2_codec) {
     ]
     deps = [
       ":helpers",
+      "//build:chromeos_buildflags",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/chromeos",
       "//testing/gtest",
       "//third_party/libyuv",
     ]
-    data = [
-      "//media/test/data/",
-    ]
+    data = [ "//media/test/data/" ]
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [

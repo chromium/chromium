@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_FRAME_WORKER_ANIMATION_FRAME_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_FRAME_WORKER_ANIMATION_FRAME_PROVIDER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -32,11 +32,14 @@ class CORE_EXPORT WorkerAnimationFrameProvider
   WorkerAnimationFrameProvider(
       ExecutionContext* context,
       const BeginFrameProviderParams& begin_frame_provider_params);
+  WorkerAnimationFrameProvider(const WorkerAnimationFrameProvider&) = delete;
+  WorkerAnimationFrameProvider& operator=(const WorkerAnimationFrameProvider&) =
+      delete;
 
-  int RegisterCallback(FrameRequestCallbackCollection::FrameCallback* callback);
+  int RegisterCallback(FrameCallback* callback);
   void CancelCallback(int id);
 
-  void Trace(blink::Visitor* visitor);
+  void Trace(Visitor* visitor) const override;
 
   // BeginFrameProviderClient
   void BeginFrame(const viz::BeginFrameArgs&) override;
@@ -47,17 +50,12 @@ class CORE_EXPORT WorkerAnimationFrameProvider
   static const int kInvalidCallbackId = -1;
 
  private:
-  const std::unique_ptr<BeginFrameProvider> begin_frame_provider_;
-  DISALLOW_COPY_AND_ASSIGN(WorkerAnimationFrameProvider);
+  const Member<BeginFrameProvider> begin_frame_provider_;
   FrameRequestCallbackCollection callback_collection_;
 
-  // To avoid leaking OffscreenCanvas objects, the following vector must
-  // not hold strong references.
-  Vector<UntracedMember<OffscreenCanvas>> offscreen_canvases_;
+  HeapLinkedHashSet<WeakMember<OffscreenCanvas>> offscreen_canvases_;
 
   Member<ExecutionContext> context_;
-
-  base::WeakPtrFactory<WorkerAnimationFrameProvider> weak_factory_{this};
 };
 
 }  // namespace blink

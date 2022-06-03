@@ -7,17 +7,19 @@
 <p>When selecting from a child of shadow host to an element in Shadow DOM, a crash should not be caused.
 This is because the start position of Selection comes after the end position of Selection.</p>
 
+<p>This test was converted from Shadow DOM v0 to v1, so might not be as applicable with v1.</p>
+
 <div contenteditable>
     before host <span id="host" contenteditable="false">drag from here<span id="target"> </span> after host</span>
 </div>
 <pre id="console"></pre>
 
 <script>
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = "<span id='shadow-host'>before shadow<shadow id='shadow'></shadow>after shadow</span>"
 
 var nestedShadowHost = shadowRoot.getElementById('shadow-host');
-var nestedShadowRoot = nestedShadowHost.createShadowRoot();
+var nestedShadowRoot = nestedShadowHost.attachShadow({mode: 'open'});
 nestedShadowRoot.innerHTML = "<span contenteditable>before nested<shadow></shadow>after nested</span>"
 
 // This should not cause a crash.

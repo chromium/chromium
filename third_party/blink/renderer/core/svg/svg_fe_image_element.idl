@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEImageElement
 
-interface SVGFEImageElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEImageElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
 };
 

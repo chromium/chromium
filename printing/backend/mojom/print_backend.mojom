@@ -1,0 +1,89 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "printing/mojom/print.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Basic information for a specific printer.
+// Corresponds to `printing::PrinterBasicInfo` in
+// printing/backend/print_backend.h.
+struct PrinterBasicInfo {
+  string printer_name;
+  string display_name;
+  string printer_description;
+  int32 printer_status;
+  bool is_default;
+  map<string, string> options;
+};
+
+// Paper used by printer semantic capabilities and defaults.
+// Corresponds to `printing::PrinterSemanticCapsAndDefaults::Paper` in
+// printing/backend/print_backend.h.
+[Stable]
+struct Paper {
+  string display_name;
+  string vendor_id;
+  gfx.mojom.Size size_um;
+};
+
+// An advanced capability value for ChromeOS printing.
+// Paper used by printer semantic capabilities and defaults.
+// Corresponds to `printing::AdvancedCapabilityValue` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_chromeos]
+struct AdvancedCapabilityValue {
+  string name;
+  string display_name;
+};
+
+// The type of the values for advanced capabilities.
+// Corresponds to `printing::AdvancedCapability::Type` in
+// printing/backend/print_backend.h.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum AdvancedCapabilityType {
+  [Default] kString,
+  kBoolean,
+  kFloat,
+  kInteger,
+};
+
+// An advanced capability for ChromeOS printing.
+// Corresponds to `printing::AdvancedCapability` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_chromeos]
+struct AdvancedCapability {
+  string name;
+  string display_name;
+  AdvancedCapabilityType type;
+  string default_value;
+  array<AdvancedCapabilityValue> values;
+};
+
+// The semantic capabilities and defaults used for a printer.
+// Corresponds to `printing::PrinterSemanticCapsAndDefaults` in
+// printing/backend/print_backend.h.
+[Stable]
+struct PrinterSemanticCapsAndDefaults {
+  bool collate_capable = false;
+  bool collate_default = false;
+  int32 copies_max = 1;  // Valid values are only >= 1.
+  array<DuplexMode> duplex_modes;
+  DuplexMode duplex_default = kUnknownDuplexMode;
+  bool color_changeable = false;
+  bool color_default = false;
+  ColorModel color_model = kUnknownColorModel;
+  ColorModel bw_model = kUnknownColorModel;
+  array<Paper> papers;  // Empty and duplicates allowed.
+  array<Paper> user_defined_papers;
+  Paper default_paper;
+  array<gfx.mojom.Size> dpis;  // Duplicates allowed.
+  gfx.mojom.Size default_dpi;
+
+  [EnableIf=is_chromeos]
+  bool pin_supported = false;
+  [EnableIf=is_chromeos]
+  array<AdvancedCapability> advanced_capabilities;
+};

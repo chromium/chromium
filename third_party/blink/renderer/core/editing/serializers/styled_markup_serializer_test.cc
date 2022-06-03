@@ -44,10 +44,10 @@ class StyledMarkupSerializerTest : public EditingTestBase {
 template <typename Strategy>
 std::string StyledMarkupSerializerTest::Serialize(
     const CreateMarkupOptions& options) {
-  PositionTemplate<Strategy> start = PositionTemplate<Strategy>(
-      GetDocument().body(), PositionAnchorType::kBeforeChildren);
-  PositionTemplate<Strategy> end = PositionTemplate<Strategy>(
-      GetDocument().body(), PositionAnchorType::kAfterChildren);
+  PositionTemplate<Strategy> start =
+      PositionTemplate<Strategy>::FirstPositionInNode(*GetDocument().body());
+  PositionTemplate<Strategy> end =
+      PositionTemplate<Strategy>::LastPositionInNode(*GetDocument().body());
   return CreateMarkup(start, end, options).Utf8();
 }
 
@@ -133,65 +133,75 @@ TEST_F(StyledMarkupSerializerTest, Mixed) {
 
 TEST_F(StyledMarkupSerializerTest, ShadowTreeDistributeOrder) {
   const char* body_content =
-      "<p id=\"host\">00<b id=\"one\">11</b><b id=\"two\">22</b>33</p>";
+      "<p id=\"host\">00<b slot='#one' id=\"one\">11</b><b slot='#two' "
+      "id=\"two\">22</b>33</p>";
   const char* shadow_content =
-      "<a><content select=#two></content><content select=#one></content></a>";
+      "<a><slot name='#two'></slot><slot name='#one'></slot></a>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  EXPECT_EQ("<p id=\"host\"><b id=\"one\">11</b><b id=\"two\">22</b></p>",
-            Serialize<EditingStrategy>())
+  EXPECT_EQ(
+      "<p id=\"host\"><b slot=\"#one\" id=\"one\">11</b><b slot=\"#two\" "
+      "id=\"two\">22</b></p>",
+      Serialize<EditingStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
   EXPECT_EQ(
-      "<p id=\"host\"><a><b id=\"two\">22</b><b id=\"one\">11</b></a></p>",
+      "<p id=\"host\"><a><slot name=\"#two\"><b slot=\"#two\" "
+      "id=\"two\">22</b></slot><slot name=\"#one\"><b slot=\"#one\" "
+      "id=\"one\">11</b></slot></a></p>",
       Serialize<EditingInFlatTreeStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
 }
 
 TEST_F(StyledMarkupSerializerTest, ShadowTreeInput) {
   const char* body_content =
-      "<p id=\"host\">00<b id=\"one\">11</b><b id=\"two\"><input "
-      "value=\"22\"></b>33</p>";
+      "<p id=\"host\">00<b slot='#one' id=\"one\">11</b><b slot='#two' "
+      "id=\"two\"><input value=\"22\"></b>33</p>";
   const char* shadow_content =
-      "<a><content select=#two></content><content select=#one></content></a>";
+      "<a><slot name='#two'></slot><slot name='#one'></slot></a>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   EXPECT_EQ(
-      "<p id=\"host\"><b id=\"one\">11</b><b id=\"two\"><input "
-      "value=\"22\"></b></p>",
+      "<p id=\"host\"><b slot=\"#one\" id=\"one\">11</b><b slot=\"#two\" "
+      "id=\"two\"><input value=\"22\"></b></p>",
       Serialize<EditingStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
   EXPECT_EQ(
-      "<p id=\"host\"><a><b id=\"two\"><input value=\"22\"></b><b "
-      "id=\"one\">11</b></a></p>",
+      "<p id=\"host\"><a><slot name=\"#two\"><b slot=\"#two\" "
+      "id=\"two\"><input value=\"22\"></b></slot><slot name=\"#one\"><b "
+      "slot=\"#one\" id=\"one\">11</b></slot></a></p>",
       Serialize<EditingInFlatTreeStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
 }
 
 TEST_F(StyledMarkupSerializerTest, ShadowTreeNested) {
   const char* body_content =
-      "<p id=\"host\">00<b id=\"one\">11</b><b id=\"two\">22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content1 =
-      "<a><content select=#two></content><b id=host2></b><content "
-      "select=#one></content></a>";
+      "<a><slot name='#two'></slot><span id=host2></span><slot "
+      "name='#one'></slot></a>";
   const char* shadow_content2 = "NESTED";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root1 = SetShadowContent(shadow_content1, "host");
   CreateShadowRootForElementWithIDAndSetInnerHTML(*shadow_root1, "host2",
                                                   shadow_content2);
 
-  EXPECT_EQ("<p id=\"host\"><b id=\"one\">11</b><b id=\"two\">22</b></p>",
-            Serialize<EditingStrategy>())
+  EXPECT_EQ(
+      "<p id=\"host\"><b slot=\"#one\" id=\"one\">11</b><b slot=\"#two\" "
+      "id=\"two\">22</b></p>",
+      Serialize<EditingStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
   EXPECT_EQ(
-      "<p id=\"host\"><a><b id=\"two\">22</b><b id=\"host2\">NESTED</b><b "
-      "id=\"one\">11</b></a></p>",
+      "<p id=\"host\"><a><slot name=\"#two\"><b slot=\"#two\" "
+      "id=\"two\">22</b></slot><span id=\"host2\">NESTED</span><slot "
+      "name=\"#one\"><b slot=\"#one\" id=\"one\">11</b></slot></a></p>",
       Serialize<EditingInFlatTreeStrategy>())
       << "00 and 33 aren't appeared since they aren't distributed.";
 }
 
 TEST_F(StyledMarkupSerializerTest, ShadowTreeInterchangedNewline) {
-  const char* body_content = "<a id=host><b id=one>1</b></a>";
-  const char* shadow_content = "<content select=#one></content><div><br></div>";
+  const char* body_content = "<span id=host><b slot='#one' id=one>1</b></span>";
+  const char* shadow_content = "<slot name='#one'></slot><div><br></div>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -205,9 +215,13 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeInterchangedNewline) {
   // Note: We check difference between DOM tree result and flat tree
   // result, because results contain "style" attribute and this test
   // doesn't care about actual value of "style" attribute.
-  EXPECT_EQ("/a>", result_from_dom_tree.substr(mismatched_index));
-  EXPECT_EQ("div><br></div></a><br class=\"Apple-interchange-newline\">",
-            result_from_flat_tree.substr(mismatched_index));
+  EXPECT_EQ("b slot=\"#one\" id=\"one\">1</b></span>",
+            result_from_dom_tree.substr(mismatched_index));
+  EXPECT_EQ(
+      "slot name=\"#one\"><b slot=\"#one\" "
+      "id=\"one\">1</b></slot><div><br></div></span><br "
+      "class=\"Apple-interchange-newline\">",
+      result_from_flat_tree.substr(mismatched_index));
 }
 
 TEST_F(StyledMarkupSerializerTest, StyleDisplayNone) {
@@ -238,9 +252,10 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
       start_dom, end_dom, ShouldAnnotateOptions());
 
   body_content =
-      "<p id='host' style='color: red'>00<span id='one'>11</span>22</p>\n";
+      "<p id='host' style='color: red'>00<span slot='#one' "
+      "id='one'>11</span>22</p>\n";
   const char* shadow_content =
-      "<span style='font-weight: bold'><content select=#one></content></span>";
+      "<span style='font-weight: bold'><slot name='#one'></slot></span>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   one = GetDocument().getElementById("one");
@@ -253,7 +268,8 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
   EXPECT_EQ(serialized_dom, serialized_ict);
 }
 
-TEST_F(StyledMarkupSerializerTest, AcrossShadow) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(StyledMarkupSerializerTest, DISABLED_AcrossShadow) {
   const char* body_content =
       "<p id='host1'>[<span id='one'>11</span>]</p><p id='host2'>[<span "
       "id='two'>22</span>]</p>";
@@ -266,10 +282,11 @@ TEST_F(StyledMarkupSerializerTest, AcrossShadow) {
       start_dom, end_dom, ShouldAnnotateOptions());
 
   body_content =
-      "<p id='host1'><span id='one'>11</span></p><p id='host2'><span "
-      "id='two'>22</span></p>";
-  const char* shadow_content1 = "[<content select=#one></content>]";
-  const char* shadow_content2 = "[<content select=#two></content>]";
+      "<p id='host1'><span slot='#one' id='one'>11</span></p><p "
+      "id='host2'><span "
+      "slot='#two' id='two'>22</span></p>";
+  const char* shadow_content1 = "[<slot name='#one'></slot>]";
+  const char* shadow_content2 = "[<slot name='#two'></slot>]";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content1, "host1");
   SetShadowContent(shadow_content2, "host2");
@@ -280,6 +297,8 @@ TEST_F(StyledMarkupSerializerTest, AcrossShadow) {
   const std::string& serialized_ict = SerializePart<EditingInFlatTreeStrategy>(
       start_ict, end_ict, ShouldAnnotateOptions());
 
+  // TODO(crbug.com/1157146): serialized_ict contains the <slot> elements, while
+  // serialized_dom does not.
   EXPECT_EQ(serialized_dom, serialized_ict);
 }
 

@@ -1,0 +1,49 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("rmad") {
+  defines = [ "IS_RMAD_IMPL" ]
+
+  deps = [
+    ":rmad_proto",
+    "//base",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_rmad_client.cc",
+    "fake_rmad_client.h",
+    "rmad_client.cc",
+    "rmad_client.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":rmad" ]
+  deps = [
+    ":rmad_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "fake_rmad_client_unittest.cc",
+    "rmad_client_unittest.cc",
+  ]
+}
+
+proto_library("rmad_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/rmad/rmad.proto" ]
+
+  proto_out_dir = "chromeos/dbus/rmad"
+}

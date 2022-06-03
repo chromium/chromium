@@ -5,8 +5,8 @@
 #include "chromecast/media/cma/pipeline/cdm_decryptor.h"
 
 #include "base/bind.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "chromecast/media/cma/pipeline/decrypt_util.h"
 
 namespace chromecast {

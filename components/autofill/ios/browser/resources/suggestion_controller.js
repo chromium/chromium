@@ -222,7 +222,7 @@ __gCrWeb.suggestion.isSequentiallyReachable = function(element) {
   // It is proposed in W3C that if tabIndex is a negative integer, the user
   // agent should not allow the element to be reached using sequential focus
   // navigation.
-  if ((!tabIndex && tabIndex != 0) || tabIndex < 0) {
+  if ((!tabIndex && tabIndex !== 0) || tabIndex < 0) {
     return false;
   }
   if (element.type === 'hidden' || element.hasAttribute('disabled')) {

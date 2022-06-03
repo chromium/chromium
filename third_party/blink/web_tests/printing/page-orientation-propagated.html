@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting(true);
+</script>
+<style>
+  @page counter-clockwise {
+      page-orientation: rotate-left;
+  }
+  @page clockwise {
+      page-orientation: rotate-right;
+  }
+  @page upright {
+      page-orientation: upright;
+  }
+</style>
+<div style="page:counter-clockwise;">
+  First page is counter-clockwise.
+</div>
+<div>
+  Second page is upright.
+</div>
+<div style="border:solid;">
+  <div style="page:clockwise;">
+    The third page is rotated clockwise, and the element with the
+    border is also on this page (including the block-start border).
+  </div>
+</div>
+<div style="page:clockwise;">
+  <div>
+    Still on the third page.
+  </div>
+  <div style="page:counter-clockwise;">
+    <div style="page:upright;">
+      Page four is upright.
+    </div>
+    Counter-clockwise on the fifth page.
+  </div>
+</div>
+<div>
+  <div style="page:counter-clockwise;">
+    Still on the fifth page.
+  </div>
+</div>

@@ -1,0 +1,55 @@
+Tests for browser.cancelDownload
+## Expected usage
+Page.downloadWillBegin: {
+    method : Page.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1&tail_wait=10000&size=4096
+    }
+    sessionId : <string>
+}
+Page.downloadProgress (change of state): {
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 0
+    }
+    sessionId : <string>
+}
+Page.downloadProgress (change of state): {
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : canceled
+        totalBytes : 0
+    }
+    sessionId : <string>
+}
+Browser.cancelDownload: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+## Trying already terminated downloads
+Browser.cancelDownload: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+## Trying invalid GUID
+Browser.cancelDownload: {
+    error : {
+        code : -32602
+        message : No download item found for the given GUID
+    }
+    id : <number>
+    sessionId : <string>
+}
+

@@ -7,7 +7,7 @@
 
   // Constants ----------------------------------------------------------------
   var kInterfaceIdNamespaceMask = 0x80000000;
-  var kMasterInterfaceId = 0x00000000;
+  var kPrimaryInterfaceId = 0x00000000;
   var kInvalidInterfaceId = 0xFFFFFFFF;
 
   // ---------------------------------------------------------------------------
@@ -69,8 +69,8 @@
     this.interfaceEndpointHandle.reset(reason);
   };
 
-  function isMasterInterfaceId(interfaceId) {
-    return interfaceId === kMasterInterfaceId;
+  function isPrimaryInterfaceId(interfaceId) {
+    return interfaceId === kPrimaryInterfaceId;
   }
 
   function isValidInterfaceId(interfaceId) {
@@ -88,10 +88,10 @@
   mojo.InterfaceRequest = InterfaceRequest;
   mojo.AssociatedInterfacePtrInfo = AssociatedInterfacePtrInfo;
   mojo.AssociatedInterfaceRequest = AssociatedInterfaceRequest;
-  internal.isMasterInterfaceId = isMasterInterfaceId;
+  internal.isPrimaryInterfaceId = isPrimaryInterfaceId;
   internal.isValidInterfaceId = isValidInterfaceId;
   internal.hasInterfaceIdNamespaceBitSet = hasInterfaceIdNamespaceBitSet;
   internal.kInvalidInterfaceId = kInvalidInterfaceId;
-  internal.kMasterInterfaceId = kMasterInterfaceId;
+  internal.kPrimaryInterfaceId = kPrimaryInterfaceId;
   internal.kInterfaceIdNamespaceMask = kInterfaceIdNamespaceMask;
 })();

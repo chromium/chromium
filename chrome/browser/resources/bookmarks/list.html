@@ -11,9 +11,9 @@
   }
 
   #list {
-    @apply --cr-card-elevation;
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
     margin: 0 auto;
     max-width: var(--card-max-width);
     padding: 8px 0;
@@ -31,22 +31,28 @@
     user-select: none;
     white-space: nowrap;
   }
+
+  [role='row']:focus-within {
+    z-index: 1;
+  }
 </style>
 <iron-list id="list"
     items="[[displayedList_]]"
     hidden$="[[isEmptyList_(displayedList_.length)]]"
     role="grid"
-    aria-label="$i18n{listAxLabel}">
+    aria-label="$i18n{listAxLabel}"
+    aria-multiselectable="true">
   <template>
-    <div role="row" id$="bookmark_[[index]]"
-        aria-rowindex$="[[getAriaRowindex_(index)]]">
-      <bookmarks-item item-id="[[item.id]]"
-          draggable="true"
-          role="gridcell"
-          tabindex$="[[tabIndex]]"
-          iron-list-tab-index="[[tabIndex]]">
-      </bookmarks-item>
-    </div>
+    <bookmarks-item
+        id="bookmark_[[index]]"
+        item-id="[[item.id]]"
+        draggable="true"
+        role="row"
+        tabindex$="[[tabIndex]]"
+        iron-list-tab-index="[[tabIndex]]"
+        aria-rowindex$="[[getAriaRowindex_(index)]]"
+        aria-selected="[[getAriaSelected_(item.id, selectedItems_)]]">
+    </bookmarks-item>
   </template>
 </iron-list>
 <div id="message" class="centered-message"

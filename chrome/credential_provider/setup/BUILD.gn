@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/allocator.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -19,32 +18,32 @@ process_version_rc_template("version") {
 
 source_set("common") {
   sources = [
+    "gcpw_files.cc",
+    "gcpw_files.h",
     "setup_lib.cc",
     "setup_lib.h",
+    "setup_utils.cc",
+    "setup_utils.h",
   ]
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
   deps = [
+    "../extension:common",
     "../gaiacp:common",
+    "../gaiacp:util",
+    "//chrome/common:version_header",
+    "//chrome/credential_provider/gaiacp:string_resources",
     "//chrome/installer/util:with_no_strings",
   ]
 }
 
 grit("setup_resources") {
   source = "gcp_setup_resources.grd"
-  inputs = [
-    "gcp_icon.ico",
-  ]
+  inputs = [ "gcp_icon.ico" ]
   outputs = [
     "grit/gcp_setup_resources.h",
     "grit/gcp_setup_resources.rc",
   ]
   resource_ids = ""
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 }
 
 # Builds a self extracting 7-zip binary using the 7-zip SFX sources but with
@@ -69,12 +68,14 @@ executable("gcp_setup") {
     ":setup_resources",
     ":version",
     "../eventlog:gcp_eventlog_messages",
+    "../extension:common",
     "../gaiacp:common",
+    "../gaiacp:util",
     "//build:branding_buildflags",
     "//chrome/common:version_header",
-    "//components/crash/content/app:app",
-    "//components/crash/content/app:crash_export_thunks",
-    "//components/crash/content/app:run_as_crashpad_handler",
+    "//components/crash/core/app:app",
+    "//components/crash/core/app:crash_export_thunks",
+    "//components/crash/core/app:run_as_crashpad_handler",
     "//components/crash/core/common",
     "//content/public/common:static_switches",
   ]

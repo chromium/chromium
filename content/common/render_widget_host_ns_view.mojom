@@ -4,11 +4,13 @@
 
 module remote_cocoa.mojom;
 
-import "content/common/native_types.mojom";
-import "content/common/input/input_handler.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/input/input_handler.mojom";
+import "third_party/blink/public/mojom/webshare/share_error.mojom";
+import "ui/base/mojom/attributed_string.mojom";
+import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
-import "ui/display/mojom/display.mojom";
+import "ui/display/mojom/screen_infos.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
@@ -68,10 +70,14 @@ interface RenderWidgetHostNSView {
   SetShowingContextMenu(bool showing);
 
   // Set the cursor type to display.
-  DisplayCursor(content.mojom.WebCursor cursor);
+  DisplayCursor(ui.mojom.Cursor cursor);
 
   // Lock or unlock the cursor.
   SetCursorLocked(bool locked);
+
+  // Set whether unaccelerated (unadjusted) mouse move events are
+  // generated while the cursor is locked.
+  SetCursorLockedUnacceleratedMovement(bool unaccelerated_movement);
 
   // Open the dictionary overlay for the currently selected string. This
   // will roundtrip to the NSView to determine the selected range.
@@ -79,7 +85,7 @@ interface RenderWidgetHostNSView {
 
   // Open the dictionary overlay for the specified string at the specified
   // point.
-  ShowDictionaryOverlay(content.mojom.EncodedAttributedString attributed_string,
+  ShowDictionaryOverlay(ui.mojom.AttributedString attributed_string,
                         gfx.mojom.Point baseline_point);
 
   // Start intercepting keyboard events for the specified codes.
@@ -87,6 +93,14 @@ interface RenderWidgetHostNSView {
 
   // Stop intercepting keyboard events.
   UnlockKeyboard();
+
+  // Show the NSSharingServicePicker using the requested data that is passed and
+  // returning the result of that action.
+  ShowSharingServicePicker(string title,
+                           string text,
+                           string url,
+                           array<string> file_paths)
+    => (blink.mojom.ShareError error);
 };
 
 // The interface through which the RenderWidgetHostViewCocoa NSView in the app
@@ -125,8 +139,8 @@ interface RenderWidgetHostNSViewHost {
   OnWindowFrameInScreenChanged(
       gfx.mojom.Rect window_frame_in_screen_dip);
 
-  // Indicate changes to the NSView's NSScreen's properties.
-  OnDisplayChanged(display.mojom.Display display);
+  // Indicate changes to the NSScreen hosting the NSView, or other NSScreens.
+  OnScreenInfosChanged(display.mojom.ScreenInfos screen_infos);
 
   // Indicate the begin and end block of a keyboard event. The beginning of this
   // block will record the active RenderWidgetHost, and will forward all
@@ -137,28 +151,28 @@ interface RenderWidgetHostNSViewHost {
   // Forward a keyboard event to the RenderWidgetHost that is currently handling
   // the key-down event.
   ForwardKeyboardEventWithCommands(
-      content.mojom.Event event,
+      blink.mojom.Event event,
       array<uint8> native_event_data,
       bool skip_in_browser,
-      array<content.mojom.EditCommand> commands);
+      array<blink.mojom.EditCommand> commands);
 
   // Forward events to the renderer or the input router, as appropriate.
-  RouteOrProcessMouseEvent(content.mojom.Event event);
-  RouteOrProcessTouchEvent(content.mojom.Event event);
-  RouteOrProcessWheelEvent(content.mojom.Event event);
+  RouteOrProcessMouseEvent(blink.mojom.Event event);
+  RouteOrProcessTouchEvent(blink.mojom.Event event);
+  RouteOrProcessWheelEvent(blink.mojom.Event event);
 
   // Special case forwarding of synthetic events to the renderer.
-  ForwardMouseEvent(content.mojom.Event event);
-  ForwardWheelEvent(content.mojom.Event event);
+  ForwardMouseEvent(blink.mojom.Event event);
+  ForwardWheelEvent(blink.mojom.Event event);
 
   // Handling pinch gesture events. Note that for GestureBegin, the type of the
   // event is ignored, and is inferred from subsequent GestureUpdate calls.
-  GestureBegin(content.mojom.Event event, bool is_synthetically_injected);
-  GestureUpdate(content.mojom.Event event);
-  GestureEnd(content.mojom.Event event);
+  GestureBegin(blink.mojom.Event event, bool is_synthetically_injected);
+  GestureUpdate(blink.mojom.Event event);
+  GestureEnd(blink.mojom.Event event);
 
   // Handle a double-tap magnify event.
-  SmartMagnify(content.mojom.Event event);
+  SmartMagnify(blink.mojom.Event event);
 
   // Forward the corresponding Ime commands to the appropriate RenderWidgetHost.
   // Appropriate, has two meanings here. If this is during a key-down event,

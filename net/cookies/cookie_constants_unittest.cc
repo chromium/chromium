@@ -62,4 +62,41 @@ TEST(CookieConstantsTest, TestCookieSameSite) {
   }
 }
 
+TEST(CookieConstantsTest, TestReducePortRangeForCookieHistogram) {
+  struct TestData {
+    int input_port;
+    CookiePort expected_enum;
+  };
+
+  const TestData kTestValues[] = {
+      {-1234 /* Invalid port. */, CookiePort::kOther},
+      {0 /* Invalid port. */, CookiePort::kOther},
+      {1 /* Valid but outside range. */, CookiePort::kOther},
+      {79 /* Valid but outside range. */, CookiePort::kOther},
+      {80, CookiePort::k80},
+      {445, CookiePort::k445},
+      {3001, CookiePort::k3001},
+      {4200, CookiePort::k4200},
+      {5002, CookiePort::k5002},
+      {7003, CookiePort::k7003},
+      {8001, CookiePort::k8001},
+      {8080, CookiePort::k8080},
+      {8086 /* Valid but outside range. */, CookiePort::kOther},
+      {8095, CookiePort::k8095},
+      {8100, CookiePort::k8100},
+      {8201, CookiePort::k8201},
+      {8445, CookiePort::k8445},
+      {8888, CookiePort::k8888},
+      {9004, CookiePort::k9004},
+      {9091, CookiePort::k9091},
+      {65535 /* Valid but outside range. */, CookiePort::kOther},
+      {655356 /* Invalid port. */, CookiePort::kOther},
+  };
+
+  for (const auto& value : kTestValues) {
+    EXPECT_EQ(value.expected_enum,
+              ReducePortRangeForCookieHistogram(value.input_port));
+  }
+}
+
 }  // namespace net

@@ -8,9 +8,7 @@ import("//chrome/process_version_rc_template.gni")
 assert(is_win)
 
 group("port_monitor") {
-  public_deps = [
-    ":port_monitor_dll",
-  ]
+  public_deps = [ ":port_monitor_dll" ]
 }
 
 shared_library("port_monitor_dll") {
@@ -38,9 +36,7 @@ shared_library("port_monitor_dll") {
 }
 
 group("copy_gcp_portmon_binaries") {
-  deps = [
-    ":copy_gcp_portmon_dll",
-  ]
+  deps = [ ":copy_gcp_portmon_dll" ]
   # TODO(pastarmovj): Find some way to reference the pdb file for the 64bit dll
   # simply using it in the sources directive causes gn to error when generating
   # the build files.
@@ -48,15 +44,9 @@ group("copy_gcp_portmon_binaries") {
 
 if (current_cpu == "x64") {
   copy("copy_gcp_portmon_dll") {
-    sources = [
-      "$root_out_dir/gcp_portmon64.dll",
-    ]
-    outputs = [
-      "$root_out_dir/gcp_portmon.dll",
-    ]
-    deps = [
-      ":port_monitor_dll",
-    ]
+    sources = [ "$root_out_dir/gcp_portmon64.dll" ]
+    outputs = [ "$root_out_dir/gcp_portmon.dll" ]
+    deps = [ ":port_monitor_dll" ]
   }
 } else {
   # Make sure that we have a copy of gcp_portmon64.dll in the root out
@@ -73,27 +63,15 @@ if (current_cpu == "x64") {
   if (symbol_level > 0) {
     copy("copy_gcp_portmon_pdb") {
       visibility = [ ":copy_gcp_portmon_dll" ]
-      sources = [
-        "$gcp_portmon64_out_dir/gcp_portmon64.dll.pdb",
-      ]
-      outputs = [
-        "$root_out_dir/{{source_file_part}}",
-      ]
-      deps = [
-        gcp_portmon64_label,
-      ]
+      sources = [ "$gcp_portmon64_out_dir/gcp_portmon64.dll.pdb" ]
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
+      deps = [ gcp_portmon64_label ]
     }
   }
   copy("copy_gcp_portmon_dll") {
-    sources = [
-      "$gcp_portmon64_out_dir/gcp_portmon64.dll",
-    ]
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
-    deps = [
-      gcp_portmon64_label,
-    ]
+    sources = [ "$gcp_portmon64_out_dir/gcp_portmon64.dll" ]
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
+    deps = [ gcp_portmon64_label ]
     if (symbol_level > 0) {
       deps += [ ":copy_gcp_portmon_pdb" ]
     }
@@ -116,9 +94,7 @@ source_set("lib") {
 }
 
 process_version_rc_template("resources") {
-  sources = [
-    "../gcp_portmon_dll.ver",
-  ]
+  sources = [ "../gcp_portmon_dll.ver" ]
 
   # Note: target_gen_dir will be different for each toolchain so the output
   # name doesn't need mangling.

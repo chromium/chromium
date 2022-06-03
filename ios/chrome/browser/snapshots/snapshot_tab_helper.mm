@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -44,17 +44,21 @@ SnapshotTabHelper::~SnapshotTabHelper() {
 
 // static
 void SnapshotTabHelper::CreateForWebState(web::WebState* web_state,
-                                          NSString* session_id) {
+                                          NSString* tab_id) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
     web_state->SetUserData(
         UserDataKey(),
-        base::WrapUnique(new SnapshotTabHelper(web_state, session_id)));
+        base::WrapUnique(new SnapshotTabHelper(web_state, tab_id)));
   }
 }
 
 void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
   snapshot_generator_.delegate = delegate;
+}
+
+void SnapshotTabHelper::SetSnapshotCache(SnapshotCache* snapshot_cache) {
+  snapshot_generator_.snapshotCache = snapshot_cache;
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
@@ -78,15 +82,11 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   }
   // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
   // unavailable.
-  UIImage* image = UpdateSnapshot();
+  UIImage* image = [snapshot_generator_ updateSnapshot];
   dispatch_async(dispatch_get_main_queue(), ^{
     if (callback)
       callback(image);
   });
-}
-
-UIImage* SnapshotTabHelper::UpdateSnapshot() {
-  return [snapshot_generator_ updateSnapshot];
 }
 
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
@@ -94,7 +94,6 @@ UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
 }
 
 void SnapshotTabHelper::RemoveSnapshot() {
-  DCHECK(web_state_);
   [snapshot_generator_ removeSnapshot];
 }
 
@@ -102,21 +101,23 @@ void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }
 
-SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state,
-                                     NSString* session_id)
-    : web_state_(web_state),
-      web_state_observer_(this),
-      infobar_observer_(this),
-      weak_ptr_factory_(this) {
-  snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
-                                                  snapshotSessionId:session_id];
-  web_state_observer_.Add(web_state_);
+void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
+  [snapshot_generator_.snapshotCache willBeSavedGreyWhenBackgrounding:tab_id_];
+}
 
-  // Supports missing InfoBarManager to make testing easier.
-  infobar_manager_ = InfoBarManagerImpl::FromWebState(web_state_);
-  if (infobar_manager_) {
-    infobar_observer_.Add(infobar_manager_);
-  }
+void SnapshotTabHelper::SaveGreyInBackground() {
+  [snapshot_generator_.snapshotCache saveGreyInBackgroundForSnapshotID:tab_id_];
+}
+
+SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state, NSString* tab_id)
+    : web_state_(web_state),
+      tab_id_([tab_id copy]),
+      weak_ptr_factory_(this) {
+  DCHECK(web_state_);
+  DCHECK(tab_id_.length > 0);
+  snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
+                                                              tabID:tab_id_];
+  web_state_observation_.Observe(web_state_);
 }
 
 void SnapshotTabHelper::PageLoaded(
@@ -163,7 +164,7 @@ void SnapshotTabHelper::PageLoaded(
                 UMA_HISTOGRAM_ENUMERATION("IOS.PageLoadedSnapshotResult",
                                           snapshotResult);
               }),
-          base::TimeDelta::FromSeconds(1));
+          base::Seconds(1));
       break;
   }
   ignore_next_load_ = false;
@@ -172,29 +173,10 @@ void SnapshotTabHelper::PageLoaded(
 
 void SnapshotTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  web_state_observer_.Remove(web_state);
+  DCHECK(web_state_observation_.IsObservingSource(web_state));
+  web_state_observation_.Reset();
   web_state_ = nullptr;
-}
-
-void SnapshotTabHelper::OnInfoBarAdded(infobars::InfoBar* infobar) {
-  UpdateSnapshotWithCallback(nil);
-}
-
-void SnapshotTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                         bool animate) {
-  UpdateSnapshotWithCallback(nil);
-}
-
-void SnapshotTabHelper::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                                          infobars::InfoBar* new_infobar) {
-  UpdateSnapshotWithCallback(nil);
-}
-
-void SnapshotTabHelper::OnManagerShuttingDown(
-    infobars::InfoBarManager* manager) {
-  DCHECK_EQ(infobar_manager_, manager);
-  infobar_observer_.Remove(manager);
-  infobar_manager_ = nullptr;
+  tab_id_ = nil;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SnapshotTabHelper)

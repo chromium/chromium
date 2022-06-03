@@ -8,9 +8,7 @@ assert(is_win)
 
 executable("alternate_version_generator") {
   testonly = true
-  sources = [
-    "alternate_version_generator_main.cc",
-  ]
+  sources = [ "alternate_version_generator_main.cc" ]
 
   deps = [
     ":alternate_version_generator_lib",
@@ -56,7 +54,5 @@ test("upgrade_test") {
     "//chrome/installer/util:with_rc_strings",
     "//testing/gtest",
   ]
-  data_deps = [
-    "//chrome/installer/mini_installer",
-  ]
+  data_deps = [ "//chrome/installer/mini_installer" ]
 }
